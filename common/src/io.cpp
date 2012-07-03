@@ -72,11 +72,18 @@ pcl::concatenateFields (const sensor_msgs::PointCloud2 &cloud1,
 {
   // If the cloud's sizes differ (points wise), then exit with error
   if (cloud1.width != cloud2.width || cloud1.height != cloud2.height)
+  {
+    PCL_ERROR ("[pcl::concatenateFields] Dimensions of input clouds do not match: cloud1 (w, %d, h, %d), cloud2 (w, %d, h, %d)\n", cloud1.width, cloud1.height, cloud2.width, cloud2.height );
     return (false);
+  }
+  
 
   if (cloud1.is_bigendian != cloud2.is_bigendian)
+  {
+    PCL_ERROR ("[pcl::concatenateFields] Endianness of clouds does not match\n");
     return (false);
-
+  }
+  
   // Else, copy the second cloud (width, height, header stay the same)
   // we do this since fields from the second cloud are supposed to overwrite
   // those of the first
@@ -213,12 +220,18 @@ pcl::concatenatePointCloud (const sensor_msgs::PointCloud2 &cloud1,
                             sensor_msgs::PointCloud2 &cloud_out)
 {
   if (cloud1.fields.size () != cloud2.fields.size ())
+  {
+    PCL_ERROR ("[pcl::concatenatePointCloud] Number of fields in cloud1 (%u) != Number of fields in cloud2 (%u)\n", cloud1.fields.size (), cloud2.fields.size ());
     return (false);
-
+  }
+  
   for (size_t i = 0; i < cloud1.fields.size (); ++i)
     if (cloud1.fields[i].name != cloud2.fields[i].name)
+    {
+      PCL_ERROR ("[pcl::concatenatePointCloud] Name of field %d in cloud1, %s, does not match name in cloud2, %s\n", i, cloud1.fields[i].name.c_str (), cloud2.fields[i].name.c_str () );      
       return (false);
-
+    }
+  
   // Copy cloud1 into cloud_out
   cloud_out = cloud1;
   size_t nrpts = cloud_out.data.size ();
@@ -356,3 +369,27 @@ pcl::copyPointCloud (
   }
 }
 
+////////////////////////////////////////////////////////////////////////////////
+void 
+pcl::copyPointCloud (
+    const sensor_msgs::PointCloud2 &cloud_in, 
+    sensor_msgs::PointCloud2 &cloud_out)
+{
+  cloud_out.header       = cloud_in.header;
+  cloud_out.height       = cloud_in.height;
+  cloud_out.width        = cloud_in.width;
+  cloud_out.fields       = cloud_in.fields;
+  cloud_out.is_bigendian = cloud_in.is_bigendian;
+  cloud_out.point_step   = cloud_in.point_step;
+  cloud_out.row_step     = cloud_in.row_step;
+
+  if (cloud_in.is_dense)
+    cloud_out.is_dense = true;
+  else
+    cloud_out.is_dense = false;
+
+  cloud_out.data.resize (cloud_out.width * cloud_out.height * cloud_out.point_step);
+
+  //copy the data directly
+  memcpy ( &cloud_out.data[0], &cloud_in.data[0], cloud_in.point_step * cloud_in.width * cloud_in.height );
+}

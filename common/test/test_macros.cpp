@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: test_macros.cpp 3512 2011-12-12 08:37:39Z rusu $
+ * $Id: test_macros.cpp 5027 2012-03-12 03:10:45Z rusu $
  */
 
 #include <gtest/gtest.h>

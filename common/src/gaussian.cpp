@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: gaussian.cpp 3486 2011-12-10 21:46:06Z nizar $
+ * $Id: gaussian.cpp 4874 2012-03-01 07:22:00Z rusu $
  *
  */
 
@@ -161,7 +161,7 @@ pcl::GaussianKernel::convolveRows (const pcl::PointCloud<float>& input,
     for ( ; i < input_->width - radius ; i++)  
     {
       output (i,j) = 0;
-      for (int k = kernel_width, l = i - radius; k >= 0 ; k--, l++)
+      for (int k = static_cast<int>(kernel_width), l = static_cast<int>(i - radius); k >= 0 ; k--, l++)
         output (i,j) += (*input_) (l,j) * kernel[k];
     }
 
@@ -205,7 +205,7 @@ pcl::GaussianKernel::convolveCols (const pcl::PointCloud<float>& input,
 
     for ( ; j < input_->height - radius ; j++)  {
       output (i,j) = 0;
-      for (int k = kernel_width, l = j - radius ; k >= 0 ; k--, l++)
+      for (int k = static_cast<int>(kernel_width), l = static_cast<int>(j - radius) ; k >= 0 ; k--, l++)
       {
         output (i,j) += (*input_) (i,l) * kernel[k];
       }

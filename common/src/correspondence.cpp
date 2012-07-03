@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- *  $Id: correspondence.cpp 2749 2011-10-13 16:10:15Z bouffa $
+ *  $Id: correspondence.cpp 4912 2012-03-05 16:55:55Z rusu $
  */
 
 #include <pcl/correspondence.h>

@@ -235,8 +235,8 @@ pcl::ConvexHull<PointInT>::performReconstruction2D (PointCloud &hull, std::vecto
   {
     for (size_t j = 0; j < hull.points.size (); j++)
     {
-      idx_points[j].second[0] = hull.points[j].y - centroid[0];
-      idx_points[j].second[1] = hull.points[j].z - centroid[1];
+      idx_points[j].second[0] = hull.points[j].y - centroid[1];
+      idx_points[j].second[1] = hull.points[j].z - centroid[2];
     }
   }
   else if (xz_proj_safe)
@@ -244,7 +244,7 @@ pcl::ConvexHull<PointInT>::performReconstruction2D (PointCloud &hull, std::vecto
     for (size_t j = 0; j < hull.points.size (); j++)
     {
       idx_points[j].second[0] = hull.points[j].x - centroid[0];
-      idx_points[j].second[1] = hull.points[j].z - centroid[1];
+      idx_points[j].second[1] = hull.points[j].z - centroid[2];
     }
   }
   std::sort (idx_points.begin (), idx_points.end (), comparePoints2D);

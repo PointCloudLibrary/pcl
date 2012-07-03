@@ -33,7 +33,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: cloud_properties.h 3579 2011-12-18 22:43:34Z rusu $
+ * $Id: cloud_properties.h 5295 2012-03-25 19:03:32Z rusu $
  *
  */
 

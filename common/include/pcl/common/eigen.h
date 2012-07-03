@@ -212,19 +212,38 @@ namespace pcl
   template <typename Matrix, typename Vector> inline void
   eigen22 (const Matrix& mat, typename Matrix::Scalar& eigenvalue, Vector& eigenvector)
   {
+    // if diagonal matrix, the eigenvalues are the diagonal elements
+    // and the eigenvectors are not unique, thus set to Identity
+    if (fabs(mat.coeff (1)) <= std::numeric_limits<typename Matrix::Scalar>::min ())
+    {
+      if (mat.coeff (0) < mat.coeff (2))
+      {
+        eigenvalue = mat.coeff (0);
+        eigenvector [0] = 1.0;
+        eigenvector [1] = 0.0;
+      }
+      else
+      {
+        eigenvalue = mat.coeff (2);
+        eigenvector [0] = 0.0;
+        eigenvector [1] = 1.0;
+      }
+      return;
+    }
+    
     // 0.5 to optimize further calculations
-    typename Matrix::Scalar trace = 0.5 * (mat (0, 0) + mat (1, 1));
-    typename Matrix::Scalar determinant = mat (0, 0) * mat (1, 1) - mat (0,1) * mat (1, 0);
+    typename Matrix::Scalar trace = static_cast<typename Matrix::Scalar> (0.5) * (mat.coeff (0) + mat.coeff (3));
+    typename Matrix::Scalar determinant = mat.coeff (0) * mat.coeff (3) - mat.coeff (1) * mat.coeff (1);
 
     typename Matrix::Scalar temp = trace * trace - determinant;
+
     if (temp < 0)
       temp = 0;
 
     eigenvalue = trace - sqrt (temp);
-
-    eigenvector (0) = - mat (0, 1);
-    eigenvector (1) = mat (0, 0) - eigenvalue;
-
+    
+    eigenvector [0] = - mat.coeff (1);
+    eigenvector [1] = mat.coeff (0) - eigenvalue;
     eigenvector.normalize ();
   }
 
@@ -241,12 +260,24 @@ namespace pcl
     // and the eigenvectors are not unique, thus set to Identity
     if (fabs(mat.coeff (1)) <= std::numeric_limits<typename Matrix::Scalar>::min ())
     {
-      eigenvalues.coeffRef (0) = std::min(mat.coeff (0), mat.coeff (2));
-      eigenvalues.coeffRef (1) = std::max(mat.coeff (0), mat.coeff (2));
-      eigenvectors.coeffRef (0) = 1.0;
-      eigenvectors.coeffRef (1) = 0.0;
-      eigenvectors.coeffRef (2) = 0.0;
-      eigenvectors.coeffRef (3) = 1.0;
+      if (mat.coeff (0) < mat.coeff (3))
+      {
+        eigenvalues.coeffRef (0) = mat.coeff (0);
+        eigenvalues.coeffRef (1) = mat.coeff (3);
+        eigenvectors.coeffRef (0) = 1.0;
+        eigenvectors.coeffRef (1) = 0.0;
+        eigenvectors.coeffRef (2) = 0.0;
+        eigenvectors.coeffRef (3) = 1.0;        
+      }
+      else
+      {
+        eigenvalues.coeffRef (0) = mat.coeff (3);
+        eigenvalues.coeffRef (1) = mat.coeff (0);
+        eigenvectors.coeffRef (0) = 0.0;
+        eigenvectors.coeffRef (1) = 1.0;
+        eigenvectors.coeffRef (2) = 1.0;
+        eigenvectors.coeffRef (3) = 0.0;        
+      }
       return;
     }
 

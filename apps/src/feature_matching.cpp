@@ -25,8 +25,7 @@
 #include <pcl/common/transforms.h>
 #include <pcl/surface/grid_projection.h>
 #include <pcl/surface/gp3.h>
-#include <pcl/surface/marching_cubes_greedy.h>
-#include <pcl/surface/marching_cubes_greedy_dot.h>
+#include <pcl/surface/marching_cubes_hoppe.h>
 
 template<typename FeatureType>
 class ICCVTutorial
@@ -286,7 +285,7 @@ void ICCVTutorial<FeatureType>::findCorrespondences (typename pcl::PointCloud<Fe
   const int k = 1;
   std::vector<int> k_indices (k);
   std::vector<float> k_squared_distances (k);
-  for (size_t i = 0; i < source->size (); ++i)
+  for (int i = 0; i < static_cast<int> (source->size ()); ++i)
   {
     descriptor_kdtree.nearestKSearch (*source, i, k, k_indices, k_squared_distances);
     correspondences[i] = k_indices[0];
@@ -300,7 +299,7 @@ void ICCVTutorial<FeatureType>::filterCorrespondences ()
   cout << "correspondence rejection..." << std::flush;
   std::vector<std::pair<unsigned, unsigned> > correspondences;
   for (unsigned cIdx = 0; cIdx < source2target_.size (); ++cIdx)
-    if (target2source_[source2target_[cIdx]] == (int)cIdx)
+    if (target2source_[source2target_[cIdx]] == static_cast<int> (cIdx))
       correspondences.push_back(std::make_pair(cIdx, source2target_[cIdx]));
   
   correspondences_->resize (correspondences.size());
@@ -359,7 +358,7 @@ void ICCVTutorial<FeatureType>::reconstructSurface ()
   // apply grid filtering to reduce amount of points as well as to make them uniform distributed
   pcl::VoxelGrid<pcl::PointXYZRGB> voxel_grid;
   voxel_grid.setInputCloud(merged);
-  voxel_grid.setLeafSize(0.002, 0.002, 0.002);
+  voxel_grid.setLeafSize (0.002f, 0.002f, 0.002f);
   voxel_grid.setDownsampleAllData(true);
   voxel_grid.filter(*merged);
 
@@ -388,7 +387,7 @@ void ICCVTutorial<FeatureType>::run()
 }
 
 template<typename FeatureType>
-void ICCVTutorial<FeatureType>::keyboard_callback (const pcl::visualization::KeyboardEvent& event, void* cookie)
+void ICCVTutorial<FeatureType>::keyboard_callback (const pcl::visualization::KeyboardEvent& event, void*)
 {
   if (event.keyUp())
   {
@@ -538,17 +537,17 @@ main (int argc, char ** argv)
   if (keypoint_type == 1)
   {
     pcl::SIFTKeypoint<pcl::PointXYZRGB, pcl::PointXYZI>* sift3D = new pcl::SIFTKeypoint<pcl::PointXYZRGB, pcl::PointXYZI>;
-    sift3D->setScales(0.01, 3, 2);
-    sift3D->setMinimumContrast(0.0);
-    keypoint_detector.reset(sift3D);
+    sift3D->setScales (0.01f, 3, 2);
+    sift3D->setMinimumContrast (0.0);
+    keypoint_detector.reset (sift3D);
   }
   else
   {
     pcl::HarrisKeypoint3D<pcl::PointXYZRGB,pcl::PointXYZI>* harris3D = new pcl::HarrisKeypoint3D<pcl::PointXYZRGB,pcl::PointXYZI> (pcl::HarrisKeypoint3D<pcl::PointXYZRGB,pcl::PointXYZI>::HARRIS);
-    harris3D->setNonMaxSupression(true);
-    harris3D->setRadius (0.01);
-    harris3D->setRadiusSearch (0.01);
-    keypoint_detector.reset(harris3D);
+    harris3D->setNonMaxSupression (true);
+    harris3D->setRadius (0.01f);
+    harris3D->setRadiusSearch (0.01f);
+    keypoint_detector.reset (harris3D);
     switch (keypoint_type)
     {
       case 2:
@@ -598,9 +597,9 @@ main (int argc, char ** argv)
   }
   else if (surface_type == 2)
   {
-    pcl::MarchingCubes<pcl::PointXYZRGBNormal>* mc = new pcl::MarchingCubesGreedy<pcl::PointXYZRGBNormal>;
-    mc->setIsoLevel(0.001);
-    mc->setLeafSize(0.001);
+    pcl::MarchingCubes<pcl::PointXYZRGBNormal>* mc = new pcl::MarchingCubesHoppe<pcl::PointXYZRGBNormal>;
+    mc->setIsoLevel (0.001f);
+    mc->setGridResolution (50, 50, 50);
     surface_reconstruction.reset(mc);
   }
   else

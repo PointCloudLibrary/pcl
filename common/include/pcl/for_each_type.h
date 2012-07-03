@@ -33,7 +33,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: for_each_type.h 3564 2011-12-16 06:11:13Z rusu $
+ * $Id: for_each_type.h 4950 2012-03-07 20:40:03Z bouffa $
  *
  */
 

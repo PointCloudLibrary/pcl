@@ -120,7 +120,7 @@ private:
   /* \brief Callback to interact with the keyboard
    *
    */
-  void keyboardEventOccurred(const pcl::visualization::KeyboardEvent &event, void * object_void)
+  void keyboardEventOccurred(const pcl::visualization::KeyboardEvent &event, void *)
   {
 
     if (event.getKeySym() == "a" && event.keyDown())

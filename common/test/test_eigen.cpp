@@ -2,7 +2,7 @@
  * Software License Agreement (BSD License)
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
- *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *  Copyright (c) 2010-2012, Willow Garage, Inc.
  *
  *  All rights reserved.
  *
@@ -46,7 +46,8 @@
 using namespace pcl;
 using namespace std;
 
-boost::variate_generator< boost::mt19937, boost::uniform_real<double> > rng(boost::mt19937 (), boost::uniform_real<double> (0, 1));
+boost::variate_generator< boost::mt19937, boost::uniform_real<double> > rand_double(boost::mt19937 (), boost::uniform_real<double> (0, 1));
+boost::variate_generator< boost::mt19937, boost::uniform_int<unsigned> > rand_uint(boost::mt19937 (), boost::uniform_int<unsigned> (0, 100));
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, InverseGeneral3x3f)
@@ -68,7 +69,7 @@ TEST (PCL, InverseGeneral3x3f)
   for (unsigned idx = 0; idx < iterations; ++idx)
   {
     for (unsigned elIdx = 0; elIdx < 9; ++elIdx)
-      r_matrix.coeffRef (elIdx) = Scalar(rng ());
+      r_matrix.coeffRef (elIdx) = Scalar(rand_double ());
 
     c_matrix = r_matrix;
 
@@ -129,7 +130,7 @@ TEST (PCL, InverseGeneral3x3d)
   {
     for (unsigned elIdx = 0; elIdx < 9; ++elIdx)
     {
-      r_matrix.coeffRef (elIdx) = Scalar(rng ());
+      r_matrix.coeffRef (elIdx) = Scalar(rand_double ());
     }
     c_matrix = r_matrix;
     // test row-major -> row-major
@@ -188,7 +189,7 @@ TEST (PCL, InverseSymmetric3x3f)
   for (unsigned idx = 0; idx < iterations; ++idx)
   {
     for (unsigned elIdx = 0; elIdx < 9; ++elIdx)
-      r_matrix.coeffRef (elIdx) = Scalar(rng ());
+      r_matrix.coeffRef (elIdx) = Scalar(rand_double ());
 
     r_matrix.coeffRef (3) = r_matrix.coeffRef (1);
     r_matrix.coeffRef (6) = r_matrix.coeffRef (2);
@@ -254,7 +255,7 @@ TEST (PCL, InverseSymmetric3x3d)
   for (unsigned idx = 0; idx < iterations; ++idx)
   {
     for (unsigned elIdx = 0; elIdx < 9; ++elIdx)
-      r_matrix.coeffRef (elIdx) = Scalar(rng ());
+      r_matrix.coeffRef (elIdx) = Scalar(rand_double ());
 
     r_matrix.coeffRef (3) = r_matrix.coeffRef (1);
     r_matrix.coeffRef (6) = r_matrix.coeffRef (2);
@@ -321,7 +322,7 @@ TEST (PCL, Inverse2x2f)
   for (unsigned idx = 0; idx < iterations; ++idx)
   {
     for (unsigned elIdx = 0; elIdx < 4; ++elIdx)
-      r_matrix.coeffRef (elIdx) = Scalar(rng ());
+      r_matrix.coeffRef (elIdx) = Scalar(rand_double ());
 
     c_matrix = r_matrix;
     // test row-major -> row-major
@@ -380,7 +381,7 @@ TEST (PCL, Inverse2x2d)
   for (unsigned idx = 0; idx < iterations; ++idx)
   {
     for (unsigned elIdx = 0; elIdx < 4; ++elIdx)
-      r_matrix.coeffRef (elIdx) = Scalar(rng ());
+      r_matrix.coeffRef (elIdx) = Scalar(rand_double ());
 
     c_matrix = r_matrix;
     // test row-major -> row-major
@@ -424,10 +425,10 @@ inline void generateSymPosMatrix2x2 (Matrix& matrix)
 {
   typedef typename Matrix::Scalar Scalar;
 
-  unsigned test_case = rand () % 10;
+  unsigned test_case = rand_uint () % 10;
 
-	Scalar val1 = Scalar (rng ());
-	Scalar val2 = Scalar (rng ());
+	Scalar val1 = Scalar (rand_double ());
+	Scalar val2 = Scalar (rand_double ());
 
   // 10% of test cases include equal eigenvalues
   if (test_case == 0)
@@ -439,20 +440,23 @@ inline void generateSymPosMatrix2x2 (Matrix& matrix)
     val1 = 0.0;
 
   Scalar sqrNorm;
-  Matrix eigenvectors = Matrix::Zero ();
+  Matrix eigenvectors = Matrix::Identity ();
   Matrix eigenvalues = Matrix::Zero ();
 
-  do
+  unsigned test_case2 = rand_uint () % 10;
+  if (test_case2 != 0)
   {
-    eigenvectors.col (0)[0] = Scalar (rng ());
-    eigenvectors.col (0)[1] = Scalar (rng ());
-    sqrNorm = eigenvectors.col (0).squaredNorm ();
-  } while (sqrNorm == 0);
-  eigenvectors.col (0) /= sqrt (sqrNorm);
+    do
+    {
+      eigenvectors.col (0)[0] = Scalar (rand_double ());
+      eigenvectors.col (0)[1] = Scalar (rand_double ());
+      sqrNorm = eigenvectors.col (0).squaredNorm ();
+    } while (sqrNorm == 0);
+    eigenvectors.col (0) /= sqrt (sqrNorm);
 
-  eigenvectors.col (1)[0] = -eigenvectors.col (1)[1];
-  eigenvectors.col (1)[1] =  eigenvectors.col (1)[0];
-
+    eigenvectors.col (1)[0] = -eigenvectors.col (1)[1];
+    eigenvectors.col (1)[1] =  eigenvectors.col (1)[0];
+  }
   eigenvalues (0, 0) = val1;
   eigenvalues (1, 1) = val2;
 	matrix = eigenvectors * eigenvalues * eigenvectors.adjoint();
@@ -478,7 +482,7 @@ TEST (PCL, eigen22d)
   Eigen::Matrix<Scalar, 2, 2> c_error;
   Scalar diff;
 
-  const Scalar epsilon = 1e-14;
+  const Scalar epsilon = 1.25e-14;
   const unsigned iterations = 1000000;
 
   // test floating point row-major : row-major
@@ -537,7 +541,7 @@ TEST (PCL, eigen22f)
   Eigen::Matrix<Scalar, 2, 2> c_error;
   Scalar diff;
 
-  const Scalar epsilon = 1e-6f;
+  const Scalar epsilon = 3.1e-5f;
   const unsigned iterations = 1000000;
 
   // test floating point row-major : row-major
@@ -590,11 +594,11 @@ inline void generateSymPosMatrix3x3 (Matrix& matrix)
   // 1 x 0
   // anything
 
-  unsigned test_case = rand () % 100;
+  unsigned test_case = rand_uint ();
 
-	Scalar val1 = Scalar (rng ());
-	Scalar val2 = Scalar (rng ());
-	Scalar val3 = Scalar (rng ());
+	Scalar val1 = Scalar (rand_double ());
+	Scalar val2 = Scalar (rand_double ());
+	Scalar val3 = Scalar (rand_double ());
 
   // 1%: all three values are equal and non-zero
   if (test_case == 0)
@@ -635,12 +639,12 @@ inline void generateSymPosMatrix3x3 (Matrix& matrix)
 
   do
   {
-    eigenvectors.col (0)[0] = Scalar (rng ());
-    eigenvectors.col (0)[1] = Scalar (rng ());
-    eigenvectors.col (0)[2] = Scalar (rng ());
-    eigenvectors.col (1)[0] = Scalar (rng ());
-    eigenvectors.col (1)[1] = Scalar (rng ());
-    eigenvectors.col (1)[2] = Scalar (rng ());
+    eigenvectors.col (0)[0] = Scalar (rand_double ());
+    eigenvectors.col (0)[1] = Scalar (rand_double ());
+    eigenvectors.col (0)[2] = Scalar (rand_double ());
+    eigenvectors.col (1)[0] = Scalar (rand_double ());
+    eigenvectors.col (1)[1] = Scalar (rand_double ());
+    eigenvectors.col (1)[2] = Scalar (rand_double ());
     eigenvectors.col (2) = eigenvectors.col (0).cross (eigenvectors.col (1));
 
     sqrNorm = eigenvectors.col (2).squaredNorm ();

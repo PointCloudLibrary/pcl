@@ -73,6 +73,19 @@ namespace pcl
   lineWithLineIntersection (const pcl::ModelCoefficients &line_a, 
                             const pcl::ModelCoefficients &line_b, 
                             Eigen::Vector4f &point, double sqr_eps = 1e-4);
+
+  /** \brief Determine the line of intersection of two non-parallel planes using lagrange multipliers
+    * \described in: "Intersection of Two Planes, John Krumm, Microsoft Research, Redmond, WA, USA"
+    * \param[in] coefficients of plane A and plane B in the form ax + by + cz + d = 0
+    * \param[out] coefficients of line where line.tail<3>() = direction vector and
+    * line.head<3>() the point on the line clossest to (0, 0, 0)
+    * \return true if succeeded/planes aren't parallel
+    */
+  PCL_EXPORTS bool
+  planeWithPlaneIntersection (const Eigen::Vector4f &plane_a,
+                              const Eigen::Vector4f &fplane_b,
+                              Eigen::VectorXf &line,
+                              double angular_tolerance = 0.1);
 }
 /*@}*/
 #endif  //#ifndef PCL_INTERSECTIONS_H_

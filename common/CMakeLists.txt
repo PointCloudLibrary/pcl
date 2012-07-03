@@ -37,7 +37,7 @@ if(build)
         src/time_trigger.cpp
         src/gaussian.cpp
         ${range_image_srcs}
-	)
+        )
 
     set(incs 
         include/pcl/correspondence.h
@@ -51,7 +51,6 @@ if(build)
         include/pcl/point_representation.h
         include/pcl/correspondence.h
         include/pcl/point_types.h
-        include/pcl/win32_macros.h
         include/pcl/cloud_properties.h
         include/pcl/channel_properties.h
         include/pcl/for_each_type.h
@@ -76,7 +75,8 @@ if(build)
         set(std_msg_incs include/std_msgs/Header.h)
     endif(NOT USE_ROS)
     
-    set(common_incs include/pcl/common/angles.h
+    set(common_incs 
+        include/pcl/common/angles.h
         include/pcl/common/bivariate_polynomial.h
         include/pcl/common/centroid.h
         include/pcl/common/concatenate.h
@@ -88,7 +88,6 @@ if(build)
         include/pcl/common/file_io.h
         include/pcl/common/intersections.h
         include/pcl/common/norms.h
-        include/pcl/common/point_correspondence.h
         include/pcl/common/piecewise_linear_function.h
         include/pcl/common/polynomial_calculations.h
         include/pcl/common/poses_from_matches.h
@@ -104,7 +103,7 @@ if(build)
         include/pcl/common/gaussian.h
         include/pcl/common/point_operators.h
         include/pcl/common/spring.h
-        include/pcl/common/convolution.h
+        include/pcl/common/intensity.h
         )
 
     set(common_incs_impl
@@ -124,12 +123,12 @@ if(build)
         include/pcl/common/impl/vector_average.hpp
         include/pcl/common/impl/gaussian.hpp
         include/pcl/common/impl/spring.hpp
-        include/pcl/common/impl/convolution.hpp
-       )
+        include/pcl/common/impl/intensity.hpp
+        )
 
     set(impl_incs include/pcl/impl/instantiate.hpp
         include/pcl/impl/point_types.hpp
-	)
+        )
 
     set(ros_incs include/pcl/ros/conversions.h
         include/pcl/ros/register_point_struct.h
@@ -140,10 +139,12 @@ if(build)
         include/pcl/console/print.h
         include/pcl/console/time.h
         )
+        
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
-    PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${common_incs} ${impl_incs} ${ros_incs} ${tools_incs} ${common_incs_impl} ${sensor_msg_incs} ${std_msg_incs} ${range_image_incs} ${range_image_incs_impl})
+    PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${kissfft_srcs} ${incs} ${common_incs} ${impl_incs} ${ros_incs} ${tools_incs} ${kissfft_incs} ${common_incs_impl} ${sensor_msg_incs} ${std_msg_incs} ${range_image_incs} ${range_image_incs_impl})
+    #PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${common_incs} ${impl_incs} ${ros_incs} ${tools_incs} ${common_incs_impl} ${sensor_msg_incs} ${std_msg_incs} ${range_image_incs} ${range_image_incs_impl})
     link_ros_libs (${LIB_NAME})
     PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}" "" ""
         "" "" "")

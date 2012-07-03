@@ -33,7 +33,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: channel_properties.h 3669 2011-12-29 08:24:43Z svn $
+ * $Id: channel_properties.h 4696 2012-02-23 06:12:55Z rusu $
  *
  */
 

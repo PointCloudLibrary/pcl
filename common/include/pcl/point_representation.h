@@ -47,11 +47,11 @@ namespace pcl
 {
   /** \brief @b PointRepresentation provides a set of methods for converting a point structs/object into an
     * n-dimensional vector.
-    * \note This is an abstract class.  Subclasses must set nr_dimensions_ to the appropriate value in the constructor 
+    * \note This is an abstract class.  Subclasses must set nr_dimensions_ to the appropriate value in the constructor
     * and provide an implemention of the pure virtual copyToFloatArray method.
     * \author Michael Dixon
     */
-  template <typename PointT> 
+  template <typename PointT>
   class PointRepresentation
   {
     protected:
@@ -69,18 +69,18 @@ namespace pcl
        *  representation can be trivial; it is only trivial if setRescaleValues() has not been set.
        */
       bool trivial_;
-      
+
     public:
       typedef boost::shared_ptr<PointRepresentation<PointT> > Ptr;
       typedef boost::shared_ptr<const PointRepresentation<PointT> > ConstPtr;
 
       /** \brief Empty constructor */
       PointRepresentation () : nr_dimensions_ (0), alpha_ (0), trivial_ (false) {}
-     
+
       /** \brief Empty destructor */
       virtual ~PointRepresentation () {}
 
-      /** \brief Copy point data from input point to a float array. This method must be overriden in all subclasses. 
+      /** \brief Copy point data from input point to a float array. This method must be overriden in all subclasses.
        *  \param[in] p The input point
        *  \param[out] out A pointer to a float array.
        */
@@ -94,11 +94,11 @@ namespace pcl
        *  In short, a trivial point representation converts the input point to a float array that is the same as if
        *  the point was reinterpret_casted to a float array of length nr_dimensions_ . */
       inline bool isTrivial() const { return trivial_ && alpha_.empty (); }
-      
+
       /** \brief Verify that the input point is valid.
        *  \param p The point to validate
        */
-      virtual bool 
+      virtual bool
       isValid (const PointT &p) const
       {
         bool is_valid = true;
@@ -133,7 +133,7 @@ namespace pcl
         }
         return (is_valid);
       }
-      
+
       /** \brief Convert input point into a vector representation, rescaling by \a alpha.
         * \param[in] p the input point
         * \param[out] out The output vector.  Can be of any type that implements the [] operator.
@@ -155,18 +155,18 @@ namespace pcl
         }
         delete [] temp;
       }
-      
+
       /** \brief Set the rescale values to use when vectorizing points
         * \param[in] rescale_array The array/vector of rescale values.  Can be of any type that implements the [] operator.
         */
-      void 
+      void
       setRescaleValues (const float *rescale_array)
       {
         alpha_.resize (nr_dimensions_);
         for (int i = 0; i < nr_dimensions_; ++i)
           alpha_[i] = rescale_array[i];
       }
-      
+
       /** \brief Return the number of dimensions in the point's vector representation. */
       inline int getNumberOfDimensions () const { return (nr_dimensions_); }
   };
@@ -197,13 +197,13 @@ namespace pcl
 
       virtual ~DefaultPointRepresentation () {}
 
-      inline Ptr 
-      makeShared () const 
-      { 
+      inline Ptr
+      makeShared () const
+      {
         return (Ptr (new DefaultPointRepresentation<PointDefault> (*this)));
       }
 
-      virtual void 
+      virtual void
       copyToFloatArray (const PointDefault &p, float * out) const
       {
         // If point type is unknown, treat it as a struct/array of floats
@@ -230,12 +230,12 @@ namespace pcl
         {
           n_ = 0;
         }
-        
+
         template<typename Key> inline void operator () ()
         {
           n_ += pcl::traits::datatype<PointDefault, Key>::size;
         }
-        
+
       private:
         int &n_;
       };
@@ -243,24 +243,24 @@ namespace pcl
     struct NdCopyPointFunctor
     {
       typedef typename traits::POD<PointDefault>::type Pod;
-      
+
       NdCopyPointFunctor (const PointDefault &p1, float * p2)
         : p1_ (reinterpret_cast<const Pod&>(p1)), p2_ (p2), f_idx_ (0) { }
-      
+
       template<typename Key> inline void operator() ()
-      {  
+      {
         typedef typename pcl::traits::datatype<PointDefault, Key>::type FieldT;
         const int NrDims = pcl::traits::datatype<PointDefault, Key>::size;
         Helper<Key, FieldT, NrDims>::copyPoint (p1_, p2_, f_idx_);
       }
-      
+
       // Copy helper for scalar fields
       template <typename Key, typename FieldT, int NrDims>
       struct Helper
       {
-        static void copyPoint (const Pod &p1, float * p2, int &f_idx) 
+        static void copyPoint (const Pod &p1, float * p2, int &f_idx)
         {
-          const uint8_t * data_ptr = reinterpret_cast<const uint8_t *> (&p1) + 
+          const uint8_t * data_ptr = reinterpret_cast<const uint8_t *> (&p1) +
             pcl::traits::offset<PointDefault, Key>::value;
           p2[f_idx++] = *reinterpret_cast<const FieldT*> (data_ptr);
         }
@@ -271,7 +271,7 @@ namespace pcl
       {
         static void copyPoint (const Pod &p1, float * p2, int &f_idx)
         {
-          const uint8_t * data_ptr = reinterpret_cast<const uint8_t *> (&p1) + 
+          const uint8_t * data_ptr = reinterpret_cast<const uint8_t *> (&p1) +
             pcl::traits::offset<PointDefault, Key>::value;
           int nr_dims = NrDims;
           const FieldT * array = reinterpret_cast<const FieldT *> (data_ptr);
@@ -281,7 +281,7 @@ namespace pcl
           }
         }
       };
-  
+
     private:
       const Pod &p1_;
       float * p2_;
@@ -295,18 +295,18 @@ namespace pcl
       typedef typename pcl::traits::fieldList<PointDefault>::type FieldList;
 
       DefaultFeatureRepresentation ()
-      {      
+      {
         nr_dimensions_ = 0; // zero-out the nr_dimensions_ before it gets incremented
         pcl::for_each_type <FieldList> (IncrementFunctor (nr_dimensions_));
       }
 
-      inline Ptr 
-      makeShared () const 
-      { 
+      inline Ptr
+      makeShared () const
+      {
         return (Ptr (new DefaultFeatureRepresentation<PointDefault> (*this)));
       }
 
-      virtual void 
+      virtual void
       copyToFloatArray (const PointDefault &p, float * out) const
       {
         pcl::for_each_type <FieldList> (NdCopyPointFunctor (p, out));
@@ -324,7 +324,7 @@ namespace pcl
         trivial_ = true;
       }
 
-      virtual void 
+      virtual void
       copyToFloatArray (const PointXYZ &p, float * out) const
       {
         out[0] = p.x;
@@ -344,7 +344,7 @@ namespace pcl
         trivial_ = true;
       }
 
-      virtual void 
+      virtual void
       copyToFloatArray (const PointXYZI &p, float * out) const
       {
         out[0] = p.x;
@@ -365,7 +365,7 @@ namespace pcl
         trivial_ = true;
       }
 
-      virtual void 
+      virtual void
       copyToFloatArray (const PointNormal &p, float * out) const
       {
         out[0] = p.x;
@@ -417,30 +417,33 @@ namespace pcl
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   template <>
-  class DefaultPointRepresentation<NormalBasedSignature12> : public DefaultFeatureRepresentation <NormalBasedSignature12> 
+  class DefaultPointRepresentation<NormalBasedSignature12> : public DefaultFeatureRepresentation <NormalBasedSignature12>
   {};
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  template <> 
+  template <>
   class DefaultPointRepresentation<ShapeContext> : public PointRepresentation<ShapeContext>
-  { 
-    public: 
-      DefaultPointRepresentation () 
-      { 
-        nr_dimensions_ = 1980; 
-      } 
+  {
+    public:
+      DefaultPointRepresentation ()
+      {
+        nr_dimensions_ = 1980;
+      }
 
-      virtual void 
-      copyToFloatArray (const ShapeContext &p, float * out) const 
-      { 
-        for (int i = 0; i < nr_dimensions_; ++i) 
-          out[i] = p.descriptor[i]; 
-      } 
-  }; 
+      virtual void
+      copyToFloatArray (const ShapeContext &p, float * out) const
+      {
+        for (int i = 0; i < nr_dimensions_; ++i)
+          out[i] = p.descriptor[i];
+      }
+  };
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   template <>
-  class DefaultPointRepresentation<SHOT> : public PointRepresentation<SHOT>
+  class
+  PCL_DEPRECATED_CLASS (DefaultPointRepresentation, "SHOT POINT IS DEPRECATED, USE SHOT352 FOR SHAPE AND SHOT1344 FOR SHAPE+COLOR INSTEAD")
+    <SHOT>
+    : public PointRepresentation<SHOT>
   {
     public:
       DefaultPointRepresentation ()
@@ -450,6 +453,42 @@ namespace pcl
 
       virtual void
       copyToFloatArray (const SHOT &p, float * out) const
+      {
+        for (int i = 0; i < nr_dimensions_; ++i)
+          out[i] = p.descriptor[i];
+      }
+  };
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  template <>
+  class DefaultPointRepresentation<SHOT352> : public PointRepresentation<SHOT352>
+  {
+    public:
+      DefaultPointRepresentation ()
+      {
+        nr_dimensions_ = 352;
+      }
+
+      virtual void
+      copyToFloatArray (const SHOT352 &p, float * out) const
+      {
+        for (int i = 0; i < nr_dimensions_; ++i)
+          out[i] = p.descriptor[i];
+      }
+  };
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  template <>
+  class DefaultPointRepresentation<SHOT1344> : public PointRepresentation<SHOT1344>
+  {
+    public:
+      DefaultPointRepresentation ()
+      {
+        nr_dimensions_ = 1344;
+      }
+
+      virtual void
+      copyToFloatArray (const SHOT1344 &p, float * out) const
       {
         for (int i = 0; i < nr_dimensions_; ++i)
           out[i] = p.descriptor[i];
@@ -474,20 +513,20 @@ namespace pcl
         * \param[in] max_dim the maximum number of dimensions to use
         * \param[in] start_dim the starting dimension
         */
-      CustomPointRepresentation (const int max_dim = 3, const int start_dim = 0) 
+      CustomPointRepresentation (const int max_dim = 3, const int start_dim = 0)
         : max_dim_(max_dim), start_dim_(start_dim)
       {
         // If point type is unknown, assume it's a struct/array of floats, and compute the number of dimensions
         nr_dimensions_ = static_cast<int> (sizeof (PointDefault) / sizeof (float)) - start_dim_;
         // Limit the default representation to the first 3 elements
-        if (nr_dimensions_ > max_dim_) 
+        if (nr_dimensions_ > max_dim_)
           nr_dimensions_ = max_dim_;
       }
 
-      inline Ptr 
-      makeShared () const 
-      { 
-        return Ptr (new CustomPointRepresentation<PointDefault> (*this)); 
+      inline Ptr
+      makeShared () const
+      {
+        return Ptr (new CustomPointRepresentation<PointDefault> (*this));
       }
 
       /** \brief Copy the point data into a float array

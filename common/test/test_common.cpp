@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2012, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -952,6 +954,12 @@ TEST (PCL, SetIfFieldExists)
   EXPECT_EQ (p.normal_y, 0.0);
   pcl::for_each_type<FieldList> (SetIfFieldExists<PointXYZRGBNormal, float> (p, "normal_z", 0.0));
   EXPECT_EQ (p.normal_z, 0.0);
+
+//  pcl::PointXY p1;
+//  pcl::for_each_type<pcl::traits::fieldList<pcl::PointXY>::type> (pcl::SetIfFieldExists<pcl::PointXY, float> (p1, "intensity", 3.0));
+//
+//  pcl::PFHSignature125 p2;
+//  pcl::for_each_type<pcl::traits::fieldList<pcl::PFHSignature125>::type> (pcl::SetIfFieldExists<pcl::PFHSignature125, float*> (p2, "intensity", 3.0));
 }
 
 //* ---[ */

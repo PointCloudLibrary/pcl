@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2012, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -81,41 +83,34 @@ namespace pcl
       {
       }
       
-      template<typename Tag> void operator() ()
+      template<typename Tag> void 
+      operator () ()
       {
-        const char* name = traits::name<PointT, Tag>::value;
-        BOOST_FOREACH(const sensor_msgs::PointField& field, fields_)
+        BOOST_FOREACH (const sensor_msgs::PointField& field, fields_)
         {
-          if (field.name == name)
+          if (FieldMatches<PointT, Tag>()(field))
           {
-            typedef traits::datatype<PointT, Tag> Data;
-            assert (Data::value == field.datatype);
-            //@todo: Talk to Patrick about this
-            //assert (Data::size  == field.count);
-            
             FieldMapping mapping;
             mapping.serialized_offset = field.offset;
             mapping.struct_offset = traits::offset<PointT, Tag>::value;
-            mapping.size = sizeof (typename Data::type);
+            mapping.size = sizeof (typename traits::datatype<PointT, Tag>::type);
             map_.push_back (mapping);
             return;
           }
         }
-        // didn't find it...
-        std::stringstream ss;
-        ss << "Failed to find a field named: '" << name
-           << "'. Cannot convert message to PCL type.";
-        PCL_ERROR ("%s\n", ss.str().c_str());
-        throw pcl::InvalidConversionException(ss.str());
+        // Disable thrown exception per #595: http://dev.pointclouds.org/issues/595
+        PCL_WARN ("Failed to find match for field '%s'.\n", traits::name<PointT, Tag>::value);
+        //throw pcl::InvalidConversionException (ss.str ());
       }
 
       const std::vector<sensor_msgs::PointField>& fields_;
       std::vector<FieldMapping>& map_;
     };
 
-    inline bool fieldOrdering(const FieldMapping& a, const FieldMapping& b)
+    inline bool 
+    fieldOrdering (const FieldMapping& a, const FieldMapping& b)
     {
-      return a.serialized_offset < b.serialized_offset;
+      return (a.serialized_offset < b.serialized_offset);
     }
 
   } //namespace detail
@@ -257,7 +252,7 @@ namespace pcl
 
     // Fill fields metadata
     msg.fields.clear ();
-    for_each_type< typename traits::fieldList<PointT>::type > (detail::FieldAdder<PointT>(msg.fields));
+    for_each_type<typename traits::fieldList<PointT>::type> (detail::FieldAdder<PointT>(msg.fields));
 
     msg.header     = cloud.header;
     msg.point_step = sizeof (PointT);
@@ -273,30 +268,29 @@ namespace pcl
      * \note will throw std::runtime_error if there is a problem
      */
   template<typename CloudT> void
-  toROSMsg(const CloudT& cloud, sensor_msgs::Image& msg)
+  toROSMsg (const CloudT& cloud, sensor_msgs::Image& msg)
   {
     // Ease the user's burden on specifying width/height for unorganized datasets
     if (cloud.width == 0 && cloud.height == 0)
       throw std::runtime_error("Needs to be a dense like cloud!!");
     else
     {
-      if(cloud.points.size () != cloud.width * cloud.height){
+      if (cloud.points.size () != cloud.width * cloud.height)
         throw std::runtime_error("The width and height do not match the cloud size!");
-      }
       msg.height = cloud.height;
       msg.width = cloud.width;
     }
 
     // ensor_msgs::image_encodings::BGR8;
     msg.encoding = "bgr8";
-    msg.step = msg.width * sizeof(uint8_t) * 3;
-    msg.data.resize(msg.step * msg.height);
+    msg.step = msg.width * sizeof (uint8_t) * 3;
+    msg.data.resize (msg.step * msg.height);
     for (size_t y = 0; y < cloud.height; y++)
     {
       for (size_t x = 0; x < cloud.width; x++)
       {
         uint8_t * pixel = &(msg.data[y * msg.step + x * 3]);
-        memcpy(pixel, &cloud (x, y).rgb, 3 * sizeof(uint8_t));
+        memcpy (pixel, &cloud (x, y).rgb, 3 * sizeof(uint8_t));
       }
     }
   }

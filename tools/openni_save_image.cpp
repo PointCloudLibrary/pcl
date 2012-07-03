@@ -41,15 +41,11 @@
 #include <pcl/io/openni_grabber.h>
 #include <pcl/io/openni_camera/openni_driver.h>
 #include <pcl/console/parse.h>
-#include <vtkImageViewer.h>
-#include <vtkImageImport.h>
-#include <vtkJPEGWriter.h>
-#include <vtkBMPWriter.h>
-#include <vtkPNGWriter.h>
-#include <vtkTIFFWriter.h>
+
 #include <vector>
 #include <string>
 
+#include <pcl/visualization/vtk.h>
 #include <pcl/visualization/pcl_visualizer.h>
 
 #define SHOW_FPS 1
@@ -80,21 +76,26 @@ class SimpleOpenNIViewer
 {
   public:
     SimpleOpenNIViewer (pcl::OpenNIGrabber& grabber)
-      : grabber_ (grabber),
-        importer_ (vtkSmartPointer<vtkImageImport>::New ()),
-        depth_importer_ (vtkSmartPointer<vtkImageImport>::New ()),
-        writer_ (vtkSmartPointer<vtkTIFFWriter>::New ())
+      : grabber_ (grabber)
+      , image_mutex_ ()
+      , image_ ()
+      , depth_image_ ()
+      , importer_ (vtkSmartPointer<vtkImageImport>::New ())
+      , depth_importer_ (vtkSmartPointer<vtkImageImport>::New ())
+      , writer_ (vtkSmartPointer<vtkTIFFWriter>::New ())
+      , flipper_ (vtkSmartPointer<vtkImageFlip>::New ())
     {
       importer_->SetNumberOfScalarComponents (3);
       importer_->SetDataScalarTypeToUnsignedChar ();
       depth_importer_->SetNumberOfScalarComponents (1);
       depth_importer_->SetDataScalarTypeToUnsignedShort ();
       writer_->SetCompressionToPackBits ();
+      flipper_->SetFilteredAxes (1);
     }
 
     void
     image_callback (const boost::shared_ptr<openni_wrapper::Image> &image, 
-                    const boost::shared_ptr<openni_wrapper::DepthImage> &depth_image, float constant)
+                    const boost::shared_ptr<openni_wrapper::DepthImage> &depth_image, float)
     {
       FPS_CALC ("image callback");
       boost::mutex::scoped_lock lock (image_mutex_);
@@ -148,8 +149,10 @@ class SimpleOpenNIViewer
           ss << "frame_" + time + "_rgb.tiff";
           importer_->SetImportVoidPointer (const_cast<void*>(data), 1);
           importer_->Update ();
+          flipper_->SetInputConnection (importer_->GetOutputPort ());
+          flipper_->Update ();
           writer_->SetFileName (ss.str ().c_str ());
-          writer_->SetInputConnection (importer_->GetOutputPort ());
+          writer_->SetInputConnection (flipper_->GetOutputPort ());
           writer_->Write ();
         }
 
@@ -165,8 +168,10 @@ class SimpleOpenNIViewer
           depth_importer_->SetDataExtentToWholeExtent ();
           depth_importer_->SetImportVoidPointer (const_cast<void*> (reinterpret_cast<const void*> (depth_image->getDepthMetaData ().Data ())), 1);
           depth_importer_->Update ();
+          flipper_->SetInputConnection (depth_importer_->GetOutputPort ());
+          flipper_->Update ();
           writer_->SetFileName (ss.str ().c_str ());
-          writer_->SetInputConnection (depth_importer_->GetOutputPort ());
+          writer_->SetInputConnection (flipper_->GetOutputPort ());
           writer_->Write ();
         }
       }
@@ -185,6 +190,7 @@ class SimpleOpenNIViewer
     boost::shared_ptr<openni_wrapper::DepthImage> depth_image_;
     vtkSmartPointer<vtkImageImport> importer_, depth_importer_;
     vtkSmartPointer<vtkTIFFWriter> writer_;
+    vtkSmartPointer<vtkImageFlip> flipper_;
 };
 
 void

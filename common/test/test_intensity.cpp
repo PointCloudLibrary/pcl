@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2012, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -31,7 +33,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: test_operators.cpp 5297 2012-03-26 02:56:37Z nizar $
+ * $Id: test_intensity.cpp 5299 2012-03-26 03:27:10Z svn $
  *
  */
 
@@ -39,56 +41,38 @@
 #include <pcl/pcl_tests.h>
 #include <pcl/point_types.h>
 #include <pcl/common/point_operators.h>
+#include <pcl/common/intensity.h>
 
 using namespace pcl;
 using namespace pcl::test;
 
-TEST (PointOperators, PointXYZI)
+TEST (PointOperators, PointXYZRGBtoIntensity)
 {
   using namespace pcl::common;
-  PointXYZI p0; p0.x = 0.1f; p0.y = 0.2f;  p0.z = 0.3f; p0.intensity = 123;
-  PointXYZI p1; p1.x = 0.05f; p1.y = 0.05f; p1.z = 0.05f; p1.intensity = 133;
-  PointXYZI p2 = p0 + p1;
-
-  EXPECT_EQ (p2.x, p0.x + p1.x);
-  EXPECT_EQ (p2.y, p0.y + p1.y);
-  EXPECT_EQ (p2.z, p0.z + p1.z);
-  EXPECT_EQ (p2.intensity, p0.intensity + p1.intensity);
-  p2 = 0.1f * p1;
-  EXPECT_NEAR (p2.x, 0.1 * p1.x, 1e-4);
-  EXPECT_NEAR (p2.y, 0.1 * p1.y, 1e-4);
-  EXPECT_NEAR (p2.z, 0.1 * p1.z, 1e-4);
-  EXPECT_NEAR (p2.intensity, 0.1 * p1.intensity, 1e-4);
-  PointXYZI p3 = p1 * 0.1f;
-  EXPECT_EQ_VECTORS (p2.getVector3fMap (), p3.getVector3fMap ());
-  EXPECT_EQ (p2.intensity, p3.intensity);
+  IntensityFieldAccessor <PointXYZRGB> convert;
+  PointXYZRGB p0; p0.x = 0.1f; p0.y = 0.2f;  p0.z = 0.3f; p0.r = 0; p0.g = 127; p0.b = 127;
+  PointXYZRGB p1; p1.x = 0.05f; p1.y = 0.05f; p1.z = 0.05f; p1.r = 0; p1.g = 127; p1.b = 127;
+  float p2 = convert (p0 + p1);
+  EXPECT_EQ (p2, static_cast<float> (299*p0.r + 587*p0.g + 114*p0.b)/1000.0f + static_cast<float> (299*p1.r + 587*p1.g + 114*p1.b)/1000.0f);
+  p2 = 0.1f * convert (p1);
+  EXPECT_NEAR (p2, 0.1 * static_cast<float> (299*p1.r + 587*p1.g + 114*p1.b)/1000.0f, 1e-4);
 }
 
-TEST (PointOperators, PointXYZRGB)
+TEST (PointOperators, PointXYZRGBtoPointXYZI)
 {
   using namespace pcl::common;
-  PointXYZRGB p0; p0.x = 0.1f; p0.y = 0.2f;  p0.z = 0.3f; p0.r = 123; p0.g = 125; p0.b = 127;
-  PointXYZRGB p1; p1.x = 0.05f; p1.y = 0.05f; p1.z = 0.05f; p1.r = 123; p1.g = 125; p1.b = 127;
-  PointXYZRGB p2 = p0 + p1;
+  IntensityFieldAccessor <PointXYZRGB> rgb_intensity;
+  IntensityFieldAccessor <PointXYZI> intensity;
+  PointXYZRGB p0; p0.x = 0.1f; p0.y = 0.2f;  p0.z = 0.3f; p0.r = 0; p0.g = 127; p0.b = 127;
+  PointXYZRGB p1; p1.x = 0.05f; p1.y = 0.05f; p1.z = 0.05f; p1.r = 0; p1.g = 127; p1.b = 127;
+  float value = rgb_intensity (p0 + p1);
+  PointXYZI p2;
+  intensity.set (p2, value);
 
-  EXPECT_EQ (p2.x, p0.x + p1.x);
-  EXPECT_EQ (p2.y, p0.y + p1.y);
-  EXPECT_EQ (p2.z, p0.z + p1.z);
-  EXPECT_EQ (p2.r, p0.r + p1.r);
-  EXPECT_EQ (p2.g, p0.g + p1.g);
-  EXPECT_EQ (p2.b, p0.b + p1.b);
-  p2 = 0.1f * p1;
-  EXPECT_NEAR (p2.x, 0.1 * p1.x, 1e-4);
-  EXPECT_NEAR (p2.y, 0.1 * p1.y, 1e-4);
-  EXPECT_NEAR (p2.z, 0.1 * p1.z, 1e-4);
-  EXPECT_EQ (p2.r, static_cast<pcl::uint8_t> (0.1 * p1.r));
-  EXPECT_EQ (p2.g, static_cast<pcl::uint8_t> (0.1 * p1.g));
-  EXPECT_EQ (p2.b, static_cast<pcl::uint8_t> (0.1 * p1.b));
-  PointXYZRGB p3 = p1 * 0.1f;
-  EXPECT_EQ_VECTORS (p2.getVector3fMap (), p3.getVector3fMap ());
-  EXPECT_EQ (p2.r, p3.r);
-  EXPECT_EQ (p2.g, p3.g);
-  EXPECT_EQ (p2.b, p3.b);
+  EXPECT_EQ (p2.intensity, static_cast<float> (299*p0.r + 587*p0.g + 114*p0.b)/1000.0f + static_cast<float> (299*p1.r + 587*p1.g + 114*p1.b)/1000.0f);
+  value = rgb_intensity (p1);
+  intensity.set (p2, rgb_intensity (p1) * 0.1f);
+  EXPECT_NEAR (p2.intensity, static_cast<float> (299*p1.r + 587*p1.g + 114*p1.b) / 1000.0f * 0.1, 1e-4);
 }
 
 int

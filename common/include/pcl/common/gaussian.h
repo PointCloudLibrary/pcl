@@ -33,7 +33,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: gaussian.h 3535 2011-12-14 22:21:39Z rusu $
+ * $Id: gaussian.h 5294 2012-03-25 18:10:50Z rusu $
  *
  */
 

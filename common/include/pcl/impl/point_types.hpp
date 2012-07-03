@@ -68,6 +68,7 @@
   (pcl::NormalBasedSignature12) \
   (pcl::FPFHSignature33)        \
   (pcl::VFHSignature308)        \
+  (pcl::ESFSignature640)        \
   (pcl::Narf36)                 \
   (pcl::IntensityGradient)      \
   (pcl::PointWithScale)         \
@@ -93,7 +94,7 @@
 // Define all point types with XYZ and label
 #define PCL_XYZL_POINT_TYPES  \
   (pcl::PointXYZL)            \
-  (pcl::PointXYZRGBL)       
+  (pcl::PointXYZRGBL)
 
 
 // Define all point types that include normal[3] data
@@ -112,6 +113,7 @@
   (pcl::NormalBasedSignature12) \
   (pcl::FPFHSignature33)        \
   (pcl::VFHSignature308)        \
+  (pcl::ESFSignature640)        \
   (pcl::Narf36)
 
 namespace pcl
@@ -183,7 +185,7 @@ namespace pcl
   struct _PointXYZ
   {
     PCL_ADD_POINT4D; // This adds the members x,y,z which can also be accessed using the point (which is float[4])
-    
+
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 
@@ -260,13 +262,13 @@ namespace pcl
   {
     inline PointXYZI ()
     {
-      x = y = z = 0.0f; 
+      x = y = z = 0.0f;
       data[3] = 1.0f;
       intensity = 0.0f;
     }
     inline PointXYZI (float _intensity)
     {
-      x = y = z = 0.0f; 
+      x = y = z = 0.0f;
       data[3] = 1.0f;
       intensity = _intensity;
     }
@@ -301,12 +303,12 @@ namespace pcl
     os << "(" << p.x << "," << p.y << "," << p.z << " - " << p.label << ")";
     return (os);
   }
-  
+
   struct Label
   {
-    uint32_t label;   
+    uint32_t label;
   };
-  
+
   inline std::ostream& operator << (std::ostream& os, const Label& p)
   {
     os << "(" << p.label << ")";
@@ -355,17 +357,18 @@ namespace pcl
     inline const Eigen::Vector4i getRGBVector4i () const { return (Eigen::Vector4i (r, g, b, 0)); }
   };
 
-  inline std::ostream& 
+  inline std::ostream&
   operator << (std::ostream& os, const PointXYZRGBA& p)
   {
     const unsigned char* rgba_ptr = reinterpret_cast<const unsigned char*>(&p.rgba);
-    os << "(" << p.x << "," << p.y << "," << p.z << " - " 
-      << static_cast<int>(*rgba_ptr) << "," 
-      << static_cast<int>(*(rgba_ptr+1)) << "," 
-      << static_cast<int>(*(rgba_ptr+2)) << "," 
+    os << "(" << p.x << "," << p.y << "," << p.z << " - "
+      << static_cast<int>(*rgba_ptr) << ","
+      << static_cast<int>(*(rgba_ptr+1)) << ","
+      << static_cast<int>(*(rgba_ptr+2)) << ","
       << static_cast<int>(*(rgba_ptr+3)) << ")";
     return (os);
   }
+
 
   struct EIGEN_ALIGN16 _PointXYZRGB
   {
@@ -417,13 +420,13 @@ namespace pcl
   {
     inline PointXYZRGB ()
     {
-      x = y = z = 0.0f; 
+      x = y = z = 0.0f;
       data[3] = 1.0f;
       r = g = b = a = 0;
     }
     inline PointXYZRGB (uint8_t _r, uint8_t _g, uint8_t _b)
     {
-      x = y = z = 0.0f; 
+      x = y = z = 0.0f;
       data[3] = 1.0f;
       r = _r;
       g = _g;
@@ -440,9 +443,9 @@ namespace pcl
   };
   inline std::ostream& operator << (std::ostream& os, const PointXYZRGB& p)
   {
-    os << "(" << p.x << "," << p.y << "," << p.z << " - " 
-      << static_cast<int>(p.r) << "," 
-      << static_cast<int>(p.g) << "," 
+    os << "(" << p.x << "," << p.y << "," << p.z << " - "
+      << static_cast<int>(p.r) << ","
+      << static_cast<int>(p.g) << ","
       << static_cast<int>(p.b) << ")";
     return (os);
   }
@@ -451,14 +454,14 @@ namespace pcl
   {
     inline PointXYZRGBL ()
     {
-      x = y = z = 0.0f; 
+      x = y = z = 0.0f;
       data[3] = 1.0f;
-      r = g = b = 0; 
+      r = g = b = 0;
       label = 255;
     }
     inline PointXYZRGBL (uint8_t _r, uint8_t _g, uint8_t _b, uint32_t _label)
     {
-      x = y = z = 0.0f; 
+      x = y = z = 0.0f;
       data[3] = 1.0f;
       r = _r;
       g = _g;
@@ -719,7 +722,7 @@ namespace pcl
   {
     inline PointXYZRGBNormal ()
     {
-      x = y = z = 0.0f; 
+      x = y = z = 0.0f;
       data[3] = 1.0f;
       r = g = b = a = 0;
       normal_x = normal_y = normal_z = data_n[3] = 0.0f;
@@ -785,7 +788,7 @@ namespace pcl
         float range;
       };
       float data_c[4];
-    };  
+    };
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 
@@ -974,7 +977,7 @@ namespace pcl
     os << (i == 0 ? "(" : "") << p.values[i] << (i < 11 ? ", " : ")");
     return (os);
   }
-  
+
   /** \brief A point structure representing a Shape Context.
     * \ingroup common
     */
@@ -1002,6 +1005,7 @@ namespace pcl
     float rf[9];
   };
 
+  PCL_DEPRECATED (inline std::ostream& operator << (std::ostream& os, const SHOT& p), "SHOT POINT IS DEPRECATED, USE SHOT352 FOR SHAPE AND SHOT1344 FOR SHAPE+COLOR INSTEAD");
   inline std::ostream& operator << (std::ostream& os, const SHOT& p)
   {
     for (int i = 0; i < 9; ++i)
@@ -1011,22 +1015,65 @@ namespace pcl
     return (os);
   }
 
+  /** \brief A point structure representing the generic Signature of Histograms of OrienTations (SHOT) - shape only.
+    * \ingroup common
+    */
+  struct SHOT352
+  {
+    float descriptor[352];
+    float rf[9];
+  };
+
+  inline std::ostream& operator << (std::ostream& os, const SHOT352& p)
+  {
+    for (int i = 0; i < 9; ++i)
+    os << (i == 0 ? "(" : "") << p.rf[i] << (i < 8 ? ", " : ")");
+    for (size_t i = 0; i < 352; ++i)
+    os << (i == 0 ? "(" : "") << p.descriptor[i] << (i < 351 ? ", " : ")");
+    return (os);
+  }
+
+  /** \brief A point structure representing the generic Signature of Histograms of OrienTations (SHOT) - shape+color.
+    * \ingroup common
+    */
+  struct SHOT1344
+  {
+    float descriptor[1344];
+    float rf[9];
+  };
+
+  inline std::ostream& operator << (std::ostream& os, const SHOT1344& p)
+  {
+    for (int i = 0; i < 9; ++i)
+    os << (i == 0 ? "(" : "") << p.rf[i] << (i < 8 ? ", " : ")");
+    for (size_t i = 0; i < 1344; ++i)
+    os << (i == 0 ? "(" : "") << p.descriptor[i] << (i < 1343 ? ", " : ")");
+    return (os);
+  }
+
   /** \brief A structure representing the Local Reference Frame of a point.
     *  \ingroup common
     */
   struct EIGEN_ALIGN16 _ReferenceFrame
   {
-    _Axis x_axis;
-    _Axis y_axis;
-    _Axis z_axis;
     union
     {
       struct
       {
-        float confidence;
+        _Axis x_axis;
+        _Axis y_axis;
+        _Axis z_axis;
       };
-      float data_c[4];
+      float rf[12];
     };
+    //union
+    //{
+      //struct
+      //{
+        //float confidence;
+      //};
+      //float data_c[4];
+    //};
 
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
@@ -1034,22 +1081,25 @@ namespace pcl
   struct EIGEN_ALIGN16 ReferenceFrame : public _ReferenceFrame
   {
     ReferenceFrame ()
-    { confidence = 0.; }
+    {
+      x_axis = y_axis = z_axis = Axis();
+      //confidence = 0.;
+    }
 
-    ReferenceFrame (_Axis const &x, _Axis const &y, _Axis const &z, float c = 1.0)
+    ReferenceFrame (Axis const &x, Axis const &y, Axis const &z/*, float c = 1.0*/)
     {
       x_axis = x;
       y_axis = y;
       z_axis = z;
-      confidence = c;
+      //confidence = c;
     }
-    
+
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 
   inline std::ostream& operator << (std::ostream& os, const ReferenceFrame& p)
   {
-    os << "(" << p.x_axis << "," << p.y_axis << "," << p.z_axis << " - " << p.confidence << ")";
+    os << "(" << p.x_axis << "," << p.y_axis << "," << p.z_axis /*<< " - " << p.confidence*/ << ")";
     return (os);
   }
 
@@ -1080,7 +1130,21 @@ namespace pcl
     os << (i == 0 ? "(" : "") << p.histogram[i] << (i < 307 ? ", " : ")");
     return (os);
   }
-  
+
+  /** \brief A point structure representing the Ensemble of Shape Functions (ESF).
+   * \ingroup common
+   */
+  struct ESFSignature640
+  {
+    float histogram[640];
+  };
+  inline std::ostream& operator << (std::ostream& os, const ESFSignature640& p)
+  {
+    for (int i = 0; i < 640; ++i)
+    os << (i == 0 ? "(" : "") << p.histogram[i] << (i < 639 ? ", " : ")");
+    return (os);
+  }
+
   /** \brief A point structure representing the GFPFH descriptor with 16 bins.
    * \ingroup common
    */
@@ -1229,10 +1293,10 @@ namespace pcl
     const unsigned char* rgba_ptr = reinterpret_cast<const unsigned char*>(&p.rgba);
     os <<
     "(" << p.x << "," << p.y << "," << p.z << " - " <<
-    p.normal_x << "," << p.normal_y << "," << p.normal_z << " - " 
-    << static_cast<int>(*rgba_ptr) << "," 
-    << static_cast<int>(*(rgba_ptr+1)) << "," 
-    << static_cast<int>(*(rgba_ptr+2)) << "," 
+    p.normal_x << "," << p.normal_y << "," << p.normal_z << " - "
+    << static_cast<int>(*rgba_ptr) << ","
+    << static_cast<int>(*(rgba_ptr+1)) << ","
+    << static_cast<int>(*(rgba_ptr+2)) << ","
     << static_cast<int>(*(rgba_ptr+3)) << " - " <<
     p.radius << " - " << p.confidence << " - " << p.curvature << ")";
     return (os);
@@ -1252,22 +1316,6 @@ namespace pcl
   isFinite<pcl::Normal> (const pcl::Normal &n)
   {
     return (pcl_isfinite (n.normal_x) && pcl_isfinite (n.normal_y) && pcl_isfinite (n.normal_z));
-  }
-
-  /** Fast version of isFinite tests only the first component
-    * param[in] pt point to be tested
-    */
-  template <typename PointT> inline bool
-  isFiniteFast (const PointT& pt)
-  {
-    return (pcl_isfinite (pt.x));
-  }
-
-  // specification for pcl::Normal
-  template <> inline bool
-  isFiniteFast<pcl::Normal> (const pcl::Normal& n)
-  {
-    return (pcl_isfinite (n.normal_x));
   }
 } // End namespace
 

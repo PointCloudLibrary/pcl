@@ -98,7 +98,7 @@ pcl::compute3DCentroid (const pcl::PointCloud<PointT> &cloud, const std::vector<
       centroid += cloud.points[indices[i]].getVector4fMap ();
     centroid[3] = 0;
     centroid /= static_cast<float> (indices.size ());
-    return (indices.size ());
+    return (static_cast<unsigned int> (indices.size ()));
   }
   // NaN or Inf values could exist => check for them
   else
@@ -217,7 +217,7 @@ pcl::computeCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
   // Initialize to 0
   covariance_matrix.setZero ();
 
-  unsigned point_count;
+  size_t point_count;
   // If the data is dense, we don't need to check for NaN
   if (cloud.is_dense)
   {
@@ -266,7 +266,7 @@ pcl::computeCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
   covariance_matrix (1, 0) = covariance_matrix (0, 1);
   covariance_matrix (2, 0) = covariance_matrix (0, 2);
   covariance_matrix (2, 1) = covariance_matrix (1, 2);
-  return (point_count);
+  return (static_cast<unsigned int> (point_count));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -300,9 +300,9 @@ pcl::computeCovarianceMatrixNormalized (const pcl::PointCloud<PointT> &cloud,
                                         const Eigen::Vector4f &centroid,
                                         Eigen::Matrix3f &covariance_matrix)
 {
-  unsigned point_count = pcl::computeCovarianceMatrix (cloud, indices.indices, centroid, covariance_matrix);
+  unsigned int point_count = pcl::computeCovarianceMatrix (cloud, indices.indices, centroid, covariance_matrix);
   if (point_count != 0)
-    covariance_matrix /= point_count;
+    covariance_matrix /= static_cast<int>(point_count);
 
   return point_count;
 }
@@ -546,7 +546,7 @@ pcl::computeMeanAndCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
 {
   // create the buffer on the stack which is much faster than using cloud.points[indices[i]] and centroid as a buffer
   Eigen::Matrix<float, 1, 9, Eigen::RowMajor> accu = Eigen::Matrix<float, 1, 9, Eigen::RowMajor>::Zero ();
-  unsigned point_count;
+  size_t point_count;
   if (cloud.is_dense)
   {
     point_count = cloud.size ();
@@ -600,7 +600,7 @@ pcl::computeMeanAndCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
     covariance_matrix.coeffRef (6) = covariance_matrix.coeff (2);
     covariance_matrix.coeffRef (7) = covariance_matrix.coeff (5);
   }
-  return (point_count);
+  return (static_cast<unsigned int> (point_count));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -612,7 +612,7 @@ pcl::computeMeanAndCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
 {
   // create the buffer on the stack which is much faster than using cloud.points[indices[i]] and centroid as a buffer
   Eigen::Matrix<float, 1, 9, Eigen::RowMajor> accu = Eigen::Matrix<float, 1, 9, Eigen::RowMajor>::Zero ();
-  unsigned int point_count;
+  size_t point_count;
   if (cloud.is_dense)
   {
     point_count = indices.size ();
@@ -667,7 +667,7 @@ pcl::computeMeanAndCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
   covariance_matrix.coeffRef (6) = covariance_matrix.coeff (2);
   covariance_matrix.coeffRef (7) = covariance_matrix.coeff (5);
 
-  return (point_count);
+  return (static_cast<unsigned int> (point_count));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

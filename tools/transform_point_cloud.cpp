@@ -50,7 +50,7 @@ using namespace pcl::io;
 using namespace pcl::console;
 
 void
-printHelp (int argc, char **argv)
+printHelp (int, char **argv)
 {
   print_error ("Syntax is: %s input.pcd output.pcd <options>\n", argv[0]);
   print_info ("  where options are:\n");

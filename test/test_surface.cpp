@@ -137,6 +137,91 @@ TEST (PCL, MovingLeastSquares)
   EXPECT_NEAR (fabs (mls_normals->points[0].normal[1]), 0.594906, 1e-3);
   EXPECT_NEAR (fabs (mls_normals->points[0].normal[2]), 0.795969, 1e-3);
   EXPECT_NEAR (mls_normals->points[0].curvature, 0.012019, 1e-3);
+
+
+  // Testing OpenMP version
+  MovingLeastSquaresOMP<PointXYZ, PointNormal> mls_omp;
+  mls_omp.setInputCloud (cloud);
+  mls_omp.setComputeNormals (true);
+  mls_omp.setPolynomialFit (true);
+  mls_omp.setSearchMethod (tree);
+  mls_omp.setSearchRadius (0.03);
+  mls_omp.setNumberOfThreads (4);
+
+  // Reconstruct
+  mls_normals->clear ();
+  mls_omp.process (*mls_normals);
+
+  int count = 0;
+  for (size_t i = 0; i < mls_normals->size (); ++i)
+  {
+	if (fabs (mls_normals->points[i].x - 0.005417) < 1e-3 &&
+	    fabs (mls_normals->points[i].y - 0.113463) < 1e-3 &&
+	    fabs (mls_normals->points[i].z - 0.040715) < 1e-3 &&
+	    fabs (fabs (mls_normals->points[i].normal[0]) - 0.111894) < 1e-3 &&
+		fabs (fabs (mls_normals->points[i].normal[1]) - 0.594906) < 1e-3 &&
+		fabs (fabs (mls_normals->points[i].normal[2]) - 0.795969) < 1e-3 &&
+		fabs (mls_normals->points[i].curvature - 0.012019) < 1e-3)
+		count ++;
+  }
+
+  EXPECT_EQ (count, 1);
+
+
+
+  // Testing upsampling
+  MovingLeastSquares<PointXYZ, PointNormal> mls_upsampling;
+  // Set parameters
+  mls_upsampling.setInputCloud (cloud);
+  mls_upsampling.setComputeNormals (true);
+  mls_upsampling.setPolynomialFit (true);
+  mls_upsampling.setSearchMethod (tree);
+  mls_upsampling.setSearchRadius (0.03);
+  mls_upsampling.setUpsamplingMethod (MovingLeastSquares<PointXYZ, PointNormal>::SAMPLE_LOCAL_PLANE);
+  mls_upsampling.setUpsamplingRadius (0.025);
+  mls_upsampling.setUpsamplingStepSize (0.01);
+
+  mls_normals->clear ();
+  mls_upsampling.process (*mls_normals);
+
+  EXPECT_NEAR (mls_normals->points[10].x, -0.000538, 1e-3);
+  EXPECT_NEAR (mls_normals->points[10].y, 0.110080, 1e-3);
+  EXPECT_NEAR (mls_normals->points[10].z, 0.043602, 1e-3);
+  EXPECT_NEAR (fabs (mls_normals->points[10].normal[0]), 0.022678, 1e-3);
+  EXPECT_NEAR (fabs (mls_normals->points[10].normal[1]), 0.554978, 1e-3);
+  EXPECT_NEAR (fabs (mls_normals->points[10].normal[2]), 0.831556, 1e-3);
+  EXPECT_NEAR (mls_normals->points[10].curvature, 0.012019, 1e-3);
+  EXPECT_EQ (mls_normals->size (), 6352);
+
+
+  /// TODO Would need to set a seed point here for the random number generator
+  /// But as long as the other 2 upsampling methods work fine, this should have no issues.
+  /// The RANDOM_UNIFORM_DENSITY upsampling will be changed soon anyway, hopefully in PCL 1.6.1
+//  mls_upsampling.setUpsamplingMethod (MovingLeastSquares<PointXYZ, PointNormal>::RANDOM_UNIFORM_DENSITY);
+//  mls_upsampling.setPointDensity (100);
+//  mls_normals->clear ();
+//  mls_upsampling.process (*mls_normals);
+//
+//  EXPECT_NEAR (mls_normals->points[10].x, 0.018806, 1e-3);
+//  EXPECT_NEAR (mls_normals->points[10].y, 0.114685, 1e-3);
+//  EXPECT_NEAR (mls_normals->points[10].z, 0.037500, 1e-3);
+//  EXPECT_NEAR (fabs (mls_normals->points[10].normal[0]), 0.351352, 1e-3);
+//  EXPECT_NEAR (fabs (mls_normals->points[10].normal[1]), 0.537741, 1e-3);
+//  EXPECT_NEAR (fabs (mls_normals->points[10].normal[2]), 0.766411, 1e-3);
+//  EXPECT_NEAR (mls_normals->points[10].curvature, 0.019003, 1e-3);
+//  EXPECT_EQ (mls_normals->size (), 457);
+
+
+  mls_upsampling.setUpsamplingMethod (MovingLeastSquares<PointXYZ, PointNormal>::VOXEL_GRID_DILATION);
+  mls_upsampling.setDilationIterations (5);
+  mls_upsampling.setDilationVoxelSize (0.005f);
+  mls_normals->clear ();
+  mls_upsampling.process (*mls_normals);
+  EXPECT_NEAR (mls_normals->points[10].x, -0.075887, 2e-3);
+  EXPECT_NEAR (mls_normals->points[10].y, 0.030984, 2e-3);
+  EXPECT_NEAR (mls_normals->points[10].z, 0.020856, 2e-3);
+  EXPECT_NEAR (mls_normals->points[10].curvature, 0.107273, 1e-1);
+  EXPECT_NEAR (mls_normals->size (), 26266, 2);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////

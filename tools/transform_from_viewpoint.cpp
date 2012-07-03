@@ -33,7 +33,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: fpfh_estimation.cpp 1032 2011-05-18 22:43:27Z marton $
+ * $Id: transform_from_viewpoint.cpp 4962 2012-03-08 00:19:55Z rusu $
  *
  */
 
@@ -43,13 +43,11 @@
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
 #include <pcl/console/time.h>
+#include <pcl/common/transforms.h>
 
 using namespace pcl;
 using namespace pcl::io;
 using namespace pcl::console;
-
-int    default_k = 0;
-double default_radius = 0.0;
 
 Eigen::Vector4f    translation;
 Eigen::Quaternionf orientation;
@@ -57,12 +55,7 @@ Eigen::Quaternionf orientation;
 void
 printHelp (int, char **argv)
 {
-  print_error ("Syntax is: %s input.pcd output.pcd <options>\n", argv[0]);
-  print_info ("  where options are:\n");
-  print_info ("                     -radius X = use a radius of Xm around each point to determine the neighborhood (default: "); 
-  print_value ("%f", default_radius); print_info (")\n");
-  print_info ("                     -k X      = use a fixed number of X-nearest neighbors around each point (default: "); 
-  print_value ("%d", default_k); print_info (")\n");
+  print_error ("Syntax is: %s input.pcd output.pcd\n", argv[0]);
 }
 
 bool
@@ -77,45 +70,49 @@ loadCloud (const std::string &filename, sensor_msgs::PointCloud2 &cloud)
   print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", cloud.width * cloud.height); print_info (" points]\n");
   print_info ("Available dimensions: "); print_value ("%s\n", getFieldsList (cloud).c_str ());
 
-  // Check if the dataset has normals
-  if (getFieldIndex (cloud, "normal_x") == -1)
-  {
-    print_error ("The input dataset does not contain normal information!\n");
-    return (false);
-  }
   return (true);
 }
 
 void
-compute (const sensor_msgs::PointCloud2::ConstPtr &input, sensor_msgs::PointCloud2 &output,
-         int k, double radius)
+transform (const sensor_msgs::PointCloud2::ConstPtr &input, sensor_msgs::PointCloud2 &output)
 {
-  // Convert data to PointCloud<T>
-  PointCloud<PointNormal>::Ptr xyznormals (new PointCloud<PointNormal>);
-  fromROSMsg (*input, *xyznormals);
+  // Check for 'normals'
+  bool has_normals = false;
+  for (size_t i = 0; i < input->fields.size (); ++i)
+    if (input->fields[i].name == "normals")
+      has_normals = true;
 
   // Estimate
   TicToc tt;
   tt.tic ();
-  
-  print_highlight (stderr, "Computing ");
+  print_highlight (stderr, "Transforming ");
 
-  FPFHEstimation<PointNormal, PointNormal, FPFHSignature33> ne;
-  ne.setInputCloud (xyznormals);
-  ne.setInputNormals (xyznormals);
-  ne.setSearchMethod (search::KdTree<PointNormal>::Ptr (new search::KdTree<PointNormal>));
-  ne.setKSearch (k);
-  ne.setRadiusSearch (radius);
-  
-  PointCloud<FPFHSignature33> fpfhs;
-  ne.compute (fpfhs);
+  // Convert data to PointCloud<T>
+  if (has_normals)
+  {
+    PointCloud<PointNormal> xyznormals;
+    fromROSMsg (*input, xyznormals);
+    pcl::transformPointCloud<PointNormal> (xyznormals, xyznormals, translation.head<3> (), orientation);
+    // Copy back the xyz and normals
+    sensor_msgs::PointCloud2 output_xyznormals;
+    toROSMsg (xyznormals, output_xyznormals);
+    concatenateFields (*input, output_xyznormals, output);
+  }
+  else
+  {
+    PointCloud<PointXYZ> xyz;
+    fromROSMsg (*input, xyz);
+    pcl::transformPointCloud<PointXYZ> (xyz, xyz, translation.head<3> (), orientation);
+    // Copy back the xyz and normals
+    sensor_msgs::PointCloud2 output_xyz;
+    toROSMsg (xyz, output_xyz);
+    concatenateFields (*input, output_xyz, output);
+  }
 
-  print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", fpfhs.width * fpfhs.height); print_info (" points]\n");
+  translation = Eigen::Vector4f::Zero ();
+  orientation = Eigen::Quaternionf::Identity ();
 
-  // Convert data back
-  sensor_msgs::PointCloud2 output_fpfhs;
-  toROSMsg (fpfhs, output_fpfhs);
-  concatenateFields (*input, output_fpfhs, output);
+  print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", output.width * output.height); print_info (" points]\n");
 }
 
 void
@@ -126,7 +123,8 @@ saveCloud (const std::string &filename, const sensor_msgs::PointCloud2 &output)
 
   print_highlight ("Saving "); print_value ("%s ", filename.c_str ());
   
-  io::savePCDFile (filename, output, translation, orientation, true);
+  PCDWriter writer;
+  writer.writeBinaryCompressed (filename, output, translation, orientation);
   
   print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", output.width * output.height); print_info (" points]\n");
 }
@@ -135,7 +133,7 @@ saveCloud (const std::string &filename, const sensor_msgs::PointCloud2 &output)
 int
 main (int argc, char** argv)
 {
-  print_info ("Estimate FPFH (33) descriptors using pcl::FPFHEstimation. For more information, use: %s -h\n", argv[0]);
+  print_info ("Take the input point cloud and transform it according to its stored VIEWPOINT information. For more information, use %s -h\n", argv[0]);
   bool help = false;
   parse_argument (argc, argv, "-h", help);
   if (argc < 3 || help)
@@ -153,12 +151,6 @@ main (int argc, char** argv)
     return (-1);
   }
 
-  // Command line parsing
-  int k = default_k;
-  double radius = default_radius;
-  parse_argument (argc, argv, "-k", k);
-  parse_argument (argc, argv, "-radius", radius);
-
   // Load the first file
   sensor_msgs::PointCloud2::Ptr cloud (new sensor_msgs::PointCloud2);
   if (!loadCloud (argv[p_file_indices[0]], *cloud)) 
@@ -166,7 +158,7 @@ main (int argc, char** argv)
 
   // Perform the feature estimation
   sensor_msgs::PointCloud2 output;
-  compute (cloud, output, k, radius);
+  transform (cloud, output);
 
   // Save into the second file
   saveCloud (argv[p_file_indices[1]], output);

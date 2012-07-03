@@ -33,7 +33,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: point_traits.h 4302 2012-02-07 23:14:39Z rusu $
+ * $Id: point_traits.h 5286 2012-03-25 01:43:57Z nizar $
  *
  */
 
@@ -44,6 +44,7 @@
 #include <boost/type_traits/remove_all_extents.hpp>
 #include <boost/type_traits/is_same.hpp>
 #include <boost/mpl/assert.hpp>
+#include <boost/mpl/bool.hpp>
 
 // We're doing a lot of black magic with Boost here, so disable warnings in Maintainer mode, as we will never
 // be able to fix them anyway
@@ -54,14 +55,14 @@
 #      pragma GCC diagnostic ignored "-Weffc++"
 #      pragma GCC diagnostic ignored "-pedantic"
 #    else
-#      pragma GCC system_header 
+#      pragma GCC system_header
 #    endif
 #  elif defined _MSC_VER
 #    pragma warning(push, 1)
 #  endif
 #endif
 
-namespace pcl 
+namespace pcl
 {
 
   namespace fields
@@ -82,7 +83,7 @@ namespace pcl
     template<> struct asEnum<float>    { static const uint8_t value = sensor_msgs::PointField::FLOAT32; };
     template<> struct asEnum<double>   { static const uint8_t value = sensor_msgs::PointField::FLOAT64; };
 
-    // Metafunction to return type of enum value 
+    // Metafunction to return type of enum value
     template<int> struct asType {};
     template<> struct asType<sensor_msgs::PointField::INT8>    { typedef int8_t   type; };
     template<> struct asType<sensor_msgs::PointField::UINT8>   { typedef uint8_t  type; };
@@ -102,7 +103,7 @@ namespace pcl
     };
 
     // For non-POD point types, this is specialized to return the corresponding POD type.
-    template<typename PointT> 
+    template<typename PointT>
     struct POD
     {
       typedef PointT type;
@@ -123,7 +124,7 @@ namespace pcl
     {
       // Contents of specialization:
       // static const char value[];
-      
+
       // Avoid infinite compile-time recursion
       BOOST_MPL_ASSERT_MSG((!boost::is_same<PointT, typename POD<PointT>::type>::value),
                            POINT_TYPE_NOT_PROPERLY_REGISTERED, (PointT&));
@@ -135,7 +136,7 @@ namespace pcl
     {
       // Contents of specialization:
       // static const size_t value;
-      
+
       // Avoid infinite compile-time recursion
       BOOST_MPL_ASSERT_MSG((!boost::is_same<PointT, typename POD<PointT>::type>::value),
                            POINT_TYPE_NOT_PROPERLY_REGISTERED, (PointT&));
@@ -149,7 +150,7 @@ namespace pcl
       // typedef ... type;
       // static const uint8_t value;
       // static const uint32_t size;
-      
+
       // Avoid infinite compile-time recursion
       BOOST_MPL_ASSERT_MSG((!boost::is_same<PointT, typename POD<PointT>::type>::value),
                            POINT_TYPE_NOT_PROPERLY_REGISTERED, (PointT&));
@@ -161,30 +162,51 @@ namespace pcl
     {
       // Contents of specialization:
       // typedef boost::mpl::vector<...> type;
-      
+
       // Avoid infinite compile-time recursion
       BOOST_MPL_ASSERT_MSG((!boost::is_same<PointT, typename POD<PointT>::type>::value),
                            POINT_TYPE_NOT_PROPERLY_REGISTERED, (PointT&));
     };
 
+    /*
+      At least on GCC 4.4.3, but not later versions, some valid usages of the above traits for
+      non-POD (but registered) point types fail with:
+      error: ‘!(bool)mpl_::bool_<false>::value’ is not a valid template argument for type ‘bool’ because it is a non-constant expression
+
+      "Priming the pump" with the trivial assertion below somehow fixes the problem...
+     */
+    //BOOST_MPL_ASSERT_MSG((!bool (mpl_::bool_<false>::value)), WTF_GCC443, (bool));
+    BOOST_MPL_ASSERT_MSG((!bool (boost::mpl::bool_<false>::value)), WTF_GCC443, (bool));
   } //namespace traits
 
+  // Return true if the PointField matches the expected name and data type.
+  // Written as a struct to allow partially specializing on Tag.
+  template<typename PointT, typename Tag>
+  struct FieldMatches
+  {
+    bool operator() (const sensor_msgs::PointField& field)
+    {
+      return (field.name == traits::name<PointT, Tag>::value &&
+              field.datatype == traits::datatype<PointT, Tag>::value &&
+              field.count == traits::datatype<PointT, Tag>::size);
+    }
+  };
 
   /** \brief A helper functor that can copy a specific value if the given field exists. */
   template <typename PointInT, typename OutT>
-  struct CopyIfFieldExists 
+  struct CopyIfFieldExists
   {
     typedef typename traits::POD<PointInT>::type Pod;
 
     /** \brief Constructor.
-      * \param[in] pt the input point 
+      * \param[in] pt the input point
       * \param[in] field the name of the field
       * \param[out] exists set to true if the field exists, false otherwise
       * \param[out] value the copied field value
       */
-    CopyIfFieldExists (const PointInT &pt, 
-                       const std::string &field, 
-                       bool &exists, 
+    CopyIfFieldExists (const PointInT &pt,
+                       const std::string &field,
+                       bool &exists,
                        OutT &value)
       : pt_ (reinterpret_cast<const Pod&>(pt)), name_ (field), exists_ (exists), value_ (value)
     {
@@ -192,12 +214,12 @@ namespace pcl
     }
 
     /** \brief Constructor.
-      * \param[in] pt the input point 
+      * \param[in] pt the input point
       * \param[in] field the name of the field
       * \param[out] value the copied field value
       */
-    CopyIfFieldExists (const PointInT &pt, 
-                       const std::string &field, 
+    CopyIfFieldExists (const PointInT &pt,
+                       const std::string &field,
                        OutT &value)
       : pt_ (reinterpret_cast<const Pod&>(pt)), name_ (field), exists_ (exists_tmp_), value_ (value)
     {
@@ -224,20 +246,20 @@ namespace pcl
       bool exists_tmp_;
       OutT &value_;
   };
-  
+
   /** \brief A helper functor that can set a specific value in a field if the field exists. */
   template <typename PointOutT, typename InT>
-  struct SetIfFieldExists 
+  struct SetIfFieldExists
   {
     typedef typename traits::POD<PointOutT>::type Pod;
 
     /** \brief Constructor.
-      * \param[in] pt the input point 
+      * \param[in] pt the input point
       * \param[in] field the name of the field
       * \param[out] value the value to set
       */
-    SetIfFieldExists (PointOutT &pt, 
-                      const std::string &field, 
+    SetIfFieldExists (PointOutT &pt,
+                      const std::string &field,
                       const InT &value)
       : pt_ (reinterpret_cast<Pod&>(pt)), name_ (field), value_ (value)
     {
