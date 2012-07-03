@@ -50,7 +50,7 @@
 #include <pcl/segmentation/sac_segmentation.h>
 #include <pcl/segmentation/extract_polygonal_prism_data.h>
 #include <pcl/sample_consensus/sac_model_plane.h>
-#include <pcl/io/tar_io.h>
+//#include <pcl/io/tar_io.h>
 #include <pcl/surface/convex_hull.h>
 #include <pcl/visualization/point_cloud_handlers.h>
 #include <pcl/visualization/pcl_visualizer.h>
@@ -354,7 +354,7 @@ class NILinemod
         segmentObject (picked_idx, search_.getInputCloud (), plane_indices_, plane_boundary_indices, *object);
 
         // Save to disk
-        pcl::io::saveTARPointCloud ("output.ltm", *object, "object.pcd");
+        //pcl::io::saveTARPointCloud ("output.ltm", *object, "object.pcd");
       }
       first_frame_ = false;
     }
