@@ -307,6 +307,9 @@ namespace pcl
       // find branch child from key
       childIdx = key_arg.getChildIdxWithDepthMask(depthMask_arg);
 
+      // add data to branch node container
+      branch_arg->setData (data_arg);
+
       OctreeNode* childNode = (*branch_arg)[childIdx];
 
       if (!childNode)
