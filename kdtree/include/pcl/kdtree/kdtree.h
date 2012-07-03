@@ -75,7 +75,7 @@ namespace pcl
         * \param[in] sorted set to true if the application that the tree will be used for requires sorted nearest neighbor indices (default). False otherwise. 
         */
       KdTree (bool sorted = true) : input_(), indices_(), 
-                                    epsilon_(0.0), min_pts_(1), sorted_(sorted), 
+                                    epsilon_(0.0f), min_pts_(1), sorted_(sorted), 
                                     point_representation_ (new DefaultPointRepresentation<PointT>)
       {
       };
@@ -318,13 +318,13 @@ namespace pcl
         * \param[in] eps precision (error bound) for nearest neighbors searches
         */
       virtual inline void
-      setEpsilon (double eps)
+      setEpsilon (float eps)
       {
         epsilon_ = eps;
       }
 
       /** \brief Get the search epsilon precision (error bound) for nearest neighbors searches. */
-      inline double
+      inline float
       getEpsilon () const
       {
         return (epsilon_);
@@ -354,7 +354,7 @@ namespace pcl
       IndicesConstPtr indices_;
 
       /** \brief Epsilon precision (error bound) for nearest neighbors searches. */
-      double epsilon_;
+      float epsilon_;
 
       /** \brief Minimum allowed number of k nearest neighbors points that a viable result must contain. */
       int min_pts_;
