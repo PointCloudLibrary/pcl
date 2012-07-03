@@ -74,8 +74,8 @@ class NILinemod
 {
   public:
     typedef PointCloud<PointT> Cloud;
-    typedef typename Cloud::Ptr CloudPtr;
-    typedef typename Cloud::ConstPtr CloudConstPtr;
+    typedef Cloud::Ptr CloudPtr;
+    typedef Cloud::ConstPtr CloudConstPtr;
     bool added;
 
     NILinemod (Grabber& grabber)
