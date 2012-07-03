@@ -54,6 +54,9 @@ if(build)
     PCL_ADD_EXECUTABLE(pcl_feature_matching ${SUBSYS_NAME} src/feature_matching.cpp)
     target_link_libraries(pcl_feature_matching pcl_common pcl_io pcl_registration pcl_keypoints pcl_sample_consensus pcl_visualization pcl_search pcl_features pcl_kdtree pcl_surface pcl_segmentation)
 
+    PCL_ADD_EXECUTABLE(pcl_convolve ${SUBSYS_NAME} src/convolve.cpp)
+    target_link_libraries(pcl_convolve pcl_common pcl_io pcl_visualization)
+
     PCL_ADD_EXECUTABLE(pcl_pcd_organized_multi_plane_segmentation ${SUBSYS_NAME} src/pcd_organized_multi_plane_segmentation.cpp)
     target_link_libraries(pcl_pcd_organized_multi_plane_segmentation pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_features)
 
@@ -122,7 +125,9 @@ if(build)
 	target_link_libraries(pcl_organized_segmentation_demo pcl_common pcl_io pcl_visualization pcl_segmentation pcl_features pcl_surface QVTK ${QT_LIBRARIES})
       endif ()
       
-      set(incs include/pcl/${SUBSYS_NAME}/render_views_tesselated_sphere.h)  
+      set(incs 
+        include/pcl/${SUBSYS_NAME}/render_views_tesselated_sphere.h
+        include/pcl/${SUBSYS_NAME}/timer.h)
       set(srcs src/render_views_tesselated_sphere.cpp)
 
       if (QHULL_FOUND)
@@ -155,6 +160,9 @@ if(build)
       PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}" "" "" "" "" "")
     
       
+      PCL_ADD_EXECUTABLE(pcl_ni_linemod ${SUBSYS_NAME} src/ni_linemod.cpp)
+      target_link_libraries(pcl_ni_linemod pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_features pcl_surface pcl_search)
+
     endif() # OPENNI_FOUND + BUILD_OPENNI
     
   endif() # VTK_FOUND
