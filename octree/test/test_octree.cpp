@@ -333,7 +333,9 @@ TEST (PCL, Octree_Dynamic_Depth_Test)
     // make sure all indices are within indexVector
     for (i = 0; i < indexVector.size (); ++i)
     {
+#if !defined(__APPLE__)
       ASSERT_NE(std::find(indexVector.begin(), indexVector.end(), i), indexVector.end());
+#endif
     }
 
     // compare node, branch and leaf count against actual tree values
