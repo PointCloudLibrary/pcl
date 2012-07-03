@@ -223,25 +223,33 @@ ONIGrabber::stop ()
   }
 }
 
-bool ONIGrabber::isRunning() const
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+bool 
+ONIGrabber::isRunning() const
 {
-  return running_;
+  return (running_);
 }
 
-std::string ONIGrabber::getName() const
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+std::string 
+ONIGrabber::getName () const
 {
-  return std::string("ONIGrabber");
+  return (std::string("ONIGrabber"));
 }
 
-float ONIGrabber::getFramesPerSecond () const
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+float 
+ONIGrabber::getFramesPerSecond () const
 {
   if (device_->isStreaming())
-    return static_cast<float> (device_->getDepthOutputMode ().nFPS);
+    return (static_cast<float> (device_->getDepthOutputMode ().nFPS));
   else
-    return 0;
+    return (0);
 }
 
-void ONIGrabber::imageCallback(boost::shared_ptr<openni_wrapper::Image> image, void* cookie)
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void 
+ONIGrabber::imageCallback(boost::shared_ptr<openni_wrapper::Image> image, void*)
 {
   if (num_slots<sig_cb_openni_point_cloud_rgb> () > 0 ||
       num_slots<sig_cb_openni_point_cloud_rgba> () > 0 ||
@@ -254,7 +262,9 @@ void ONIGrabber::imageCallback(boost::shared_ptr<openni_wrapper::Image> image, v
   return;
 }
 
-void ONIGrabber::depthCallback(boost::shared_ptr<openni_wrapper::DepthImage> depth_image, void* cookie)
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void 
+ONIGrabber::depthCallback(boost::shared_ptr<openni_wrapper::DepthImage> depth_image, void*)
 {
   if (num_slots<sig_cb_openni_point_cloud_rgb> () > 0 ||
       num_slots<sig_cb_openni_point_cloud_rgba> () > 0 ||
@@ -274,7 +284,9 @@ void ONIGrabber::depthCallback(boost::shared_ptr<openni_wrapper::DepthImage> dep
   return;
 }
 
-void ONIGrabber::irCallback(boost::shared_ptr<openni_wrapper::IRImage> ir_image, void* cookie)
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void 
+ONIGrabber::irCallback(boost::shared_ptr<openni_wrapper::IRImage> ir_image, void*)
 {
   if (num_slots<sig_cb_openni_point_cloud_i > () > 0 ||
       num_slots<sig_cb_openni_ir_depth_image > () > 0)
@@ -333,11 +345,11 @@ ONIGrabber::convertToXYZPointCloud(const boost::shared_ptr<openni_wrapper::Depth
   cloud->width = depth_width_;
   cloud->is_dense = false;
 
-  cloud->points.resize(cloud->height * cloud->width);
+  cloud->points.resize (cloud->height * cloud->width);
 
-  register float constant = 1.0f / device_->getDepthFocalLength(depth_width_);
+  register float constant = 1.0f / device_->getDepthFocalLength (depth_width_);
 
-  if (device_->isDepthRegistered())
+  if (device_->isDepthRegistered ())
     cloud->header.frame_id = rgb_frame_id_;
   else
     cloud->header.frame_id = depth_frame_id_;
@@ -345,22 +357,22 @@ ONIGrabber::convertToXYZPointCloud(const boost::shared_ptr<openni_wrapper::Depth
   register int centerX = (cloud->width >> 1);
   int centerY = (cloud->height >> 1);
 
-  float bad_point = std::numeric_limits<float>::quiet_NaN();
+  float bad_point = std::numeric_limits<float>::quiet_NaN ();
 
   // we have to use Data, since operator[] uses assert -> Debug-mode very slow!
-  register const unsigned short* depth_map = depth_image->getDepthMetaData().Data();
-  if (depth_image->getWidth() != depth_width_ || depth_image->getHeight() != depth_height_)
+  register const unsigned short* depth_map = depth_image->getDepthMetaData ().Data ();
+  if (depth_image->getWidth () != depth_width_ || depth_image->getHeight () != depth_height_)
   {
     static unsigned buffer_size = 0;
-    static boost::shared_array<unsigned short> depth_buffer(0);
+    static boost::shared_array<unsigned short> depth_buffer (0);
 
     if (buffer_size < depth_width_ * depth_height_)
     {
       buffer_size = depth_width_ * depth_height_;
-      depth_buffer.reset(new unsigned short [buffer_size]);
+      depth_buffer.reset (new unsigned short [buffer_size]);
     }
-    depth_image->fillDepthImageRaw(depth_width_, depth_height_, depth_buffer.get());
-    depth_map = depth_buffer.get();
+    depth_image->fillDepthImageRaw (depth_width_, depth_height_, depth_buffer.get ());
+    depth_map = depth_buffer.get ();
   }
 
   register int depth_idx = 0;
@@ -371,22 +383,22 @@ ONIGrabber::convertToXYZPointCloud(const boost::shared_ptr<openni_wrapper::Depth
       pcl::PointXYZ& pt = cloud->points[depth_idx];
       // Check for invalid measurements
       if (depth_map[depth_idx] == 0 ||
-          depth_map[depth_idx] == depth_image->getNoSampleValue() ||
-          depth_map[depth_idx] == depth_image->getShadowValue())
+          depth_map[depth_idx] == depth_image->getNoSampleValue () ||
+          depth_map[depth_idx] == depth_image->getShadowValue ())
       {
         // not valid
         pt.x = pt.y = pt.z = bad_point;
         continue;
       }
-      pt.z = depth_map[depth_idx] * 0.001;
-      pt.x = u * pt.z * constant;
-      pt.y = v * pt.z * constant;
+      pt.z = depth_map[depth_idx] * 0.001f;
+      pt.x = static_cast<float> (u) * pt.z * constant;
+      pt.y = static_cast<float> (v) * pt.z * constant;
     }
   }
-  return cloud;
+  return (cloud);
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 pcl::PointCloud<pcl::PointXYZRGB>::Ptr ONIGrabber::convertToXYZRGBPointCloud (
     const boost::shared_ptr<openni_wrapper::Image> &image, 
     const boost::shared_ptr<openni_wrapper::DepthImage> &depth_image) const
@@ -464,7 +476,7 @@ pcl::PointCloud<pcl::PointXYZRGB>::Ptr ONIGrabber::convertToXYZRGBPointCloud (
       color.Red = rgb_buffer[color_idx];
       color.Green = rgb_buffer[color_idx + 1];
       color.Blue = rgb_buffer[color_idx + 2];
-      pt.rgba = color.float_value;
+      pt.rgb = color.float_value;
     }
   }
   return (cloud);

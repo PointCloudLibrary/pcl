@@ -114,7 +114,7 @@ class OpenNIIO
 
           CloudConstPtr temp_cloud;
           temp_cloud.swap (cloud_);
-//          writer_.writeBinaryCompressed ("test_binary.pcd", *temp_cloud);
+          writer_.writeBinaryCompressed ("test_binary.pcd", *temp_cloud);
         }
         boost::this_thread::sleep (boost::posix_time::milliseconds (1));
       }
@@ -132,7 +132,7 @@ class OpenNIIO
 
           CloudConstPtr temp_cloud;
           temp_cloud.swap (cloud_);
-//          writer_.writeBinaryCompressedEigen ("test_binary.pcd", *temp_cloud);
+          writer_.writeBinaryCompressedEigen ("test_binary.pcd", *temp_cloud);
         }
         boost::this_thread::sleep (boost::posix_time::milliseconds (1));
       }
@@ -180,26 +180,26 @@ main (int argc, char ** argv)
   }
 
   pcl::OpenNIGrabber grabber ("");
-//  if (grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_eigen> ())
-//  {
-//    PCL_INFO ("Eigen mode enabled.\n");
-//    OpenNIIO<Eigen::MatrixXf> v ("");
-//    v.init ();
-//    v.runEigen ();
-//  }
-//  else if (grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgba> ())
-//  {
+  if (grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_eigen> ())
+  {
+    PCL_INFO ("Eigen mode enabled.\n");
+    OpenNIIO<Eigen::MatrixXf> v ("");
+    v.init ();
+    v.runEigen ();
+  }
+  else if (grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgba> ())
+  {
     PCL_INFO ("PointXYZRGBA mode enabled.\n");
     OpenNIIO<pcl::PointXYZRGBA> v ("");
     v.init ();
     v.run ();
-//  }
-//  else
-//  {
-//    PCL_INFO ("PointXYZ mode enabled.\n");
-//    OpenNIIO<pcl::PointXYZ> v ("");
-//    v.init ();
-//    v.run ();
-//  }
+  }
+  else
+  {
+    PCL_INFO ("PointXYZ mode enabled.\n");
+    OpenNIIO<pcl::PointXYZ> v ("");
+    v.init ();
+    v.run ();
+  }
   return (0);
 }

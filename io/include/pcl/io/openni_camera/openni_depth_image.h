@@ -241,7 +241,7 @@ namespace openni_wrapper
   unsigned long
   DepthImage::getTimeStamp () const throw ()
   {
-    return (unsigned long) depth_md_->Timestamp ();
+    return static_cast<unsigned long> (depth_md_->Timestamp ());
   }
 } // namespace
 #endif

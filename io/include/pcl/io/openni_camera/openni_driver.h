@@ -208,7 +208,7 @@ namespace openni_wrapper
     getDeviceType (const std::string& connection_string, unsigned short& vendorId, unsigned short& productId);
   protected:
 
-    struct DeviceContext
+    struct PCL_EXPORTS DeviceContext
     {
       DeviceContext (const xn::NodeInfo& device_node, xn::NodeInfo* image_node, xn::NodeInfo* depth_node, xn::NodeInfo * ir_node);
       DeviceContext (const xn::NodeInfo & device_node);
@@ -246,7 +246,7 @@ namespace openni_wrapper
   unsigned
   OpenNIDriver::getNumberDevices () const throw ()
   {
-    return (unsigned) device_context_.size ();
+    return static_cast<unsigned> (device_context_.size ());
   }
 } // namespace
 #endif

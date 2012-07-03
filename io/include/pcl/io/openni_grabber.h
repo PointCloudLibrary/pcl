@@ -160,7 +160,6 @@ namespace pcl
       void
       stopSynchronization ();
 
-
       /** \brief ... */
       bool
       mapConfigMode2XnMode (int mode, XnMapOutputMode &xnmode) const;
@@ -215,14 +214,9 @@ namespace pcl
       convertToXYZPointCloud (const boost::shared_ptr<openni_wrapper::DepthImage> &depth) const;
 
       /** \brief ... */
-      boost::shared_ptr<pcl::PointCloud<pcl::PointXYZRGB> >
+      template <typename PointT> typename pcl::PointCloud<PointT>::Ptr
       convertToXYZRGBPointCloud (const boost::shared_ptr<openni_wrapper::Image> &image,
-                                 const boost::shared_ptr<openni_wrapper::DepthImage> &depth_image) const;
-
-      /** \brief ... */
-      boost::shared_ptr<pcl::PointCloud<pcl::PointXYZRGBA> >
-      convertToXYZRGBAPointCloud (const boost::shared_ptr<openni_wrapper::Image> &image,
-                                  const boost::shared_ptr<openni_wrapper::DepthImage> &depth_image) const;
+                                 const boost::shared_ptr<openni_wrapper::DepthImage> &depth_image) const;      
       /** \brief ... */
       boost::shared_ptr<pcl::PointCloud<pcl::PointXYZI> >
       convertToXYZIPointCloud (const boost::shared_ptr<openni_wrapper::IRImage> &image,
@@ -249,7 +243,7 @@ namespace pcl
       unsigned image_height_;
       unsigned depth_width_;
       unsigned depth_height_;
-
+      
       bool image_required_;
       bool depth_required_;
       bool ir_required_;

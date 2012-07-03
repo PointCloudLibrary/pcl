@@ -58,7 +58,7 @@ namespace openni_wrapper
       THROW_OPENNI_EXCEPTION ("downsampling only supported for integer scale: %d x %d -> %d x %d", depth_md_->XRes (), depth_md_->YRes (), width, height);
 
     if (line_step == 0)
-      line_step = width * unsigned (sizeof (unsigned short));
+      line_step = width * static_cast<unsigned> (sizeof (unsigned short));
 
     // special case no sclaing, no padding => memcopy!
     if (width == depth_md_->XRes () && height == depth_md_->YRes () && (line_step == width * sizeof (unsigned short)))
@@ -68,7 +68,7 @@ namespace openni_wrapper
     }
 
     // padding skip for destination image
-    unsigned bufferSkip = line_step - width * unsigned (sizeof (unsigned short));
+    unsigned bufferSkip = line_step - width * static_cast<unsigned> (sizeof (unsigned short));
 
     // step and padding skip for source image
     unsigned xStep = depth_md_->XRes () / width;
@@ -111,10 +111,10 @@ namespace openni_wrapper
       THROW_OPENNI_EXCEPTION ("downsampling only supported for integer scale: %d x %d -> %d x %d", depth_md_->XRes (), depth_md_->YRes (), width, height);
 
     if (line_step == 0)
-      line_step = width * unsigned (sizeof (float));
+      line_step = width * static_cast<unsigned> (sizeof (float));
 
     // padding skip for destination image
-    unsigned bufferSkip = line_step - width * unsigned (sizeof (float));
+    unsigned bufferSkip = line_step - width * static_cast<unsigned> (sizeof (float));
 
     // step and padding skip for source image
     unsigned xStep = depth_md_->XRes () / width;
@@ -157,12 +157,12 @@ namespace openni_wrapper
       THROW_OPENNI_EXCEPTION ("downsampling only supported for integer scale: %d x %d -> %d x %d", depth_md_->XRes (), depth_md_->YRes (), width, height);
 
     if (line_step == 0)
-      line_step = width * unsigned (sizeof (float));
+      line_step = width * static_cast<unsigned> (sizeof (float));
 
     unsigned xStep = depth_md_->XRes () / width;
     unsigned ySkip = (depth_md_->YRes () / height - 1) * depth_md_->XRes ();
 
-    unsigned bufferSkip = line_step - width * unsigned (sizeof (float));
+    unsigned bufferSkip = line_step - width * static_cast<unsigned> (sizeof (float));
 
     // Fill in the depth image data
     // iterate over all elements and fill disparity matrix: disp[x,y] = f * b / z_distance[x,y];

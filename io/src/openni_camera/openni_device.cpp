@@ -244,10 +244,10 @@ openni_wrapper::OpenNIDevice::OpenNIDevice (xn::Context& context, const xn::Node
   if (status != XN_STATUS_OK)
     THROW_OPENNI_EXCEPTION ("creating IR generator instance failed. Reason: %s", xnGetStatusString (status));
 #endif // (XN_MINOR_VERSION >= 3)
-  ir_generator_.RegisterToNewDataAvailable ((xn::StateChangedHandler)NewIRDataAvailable, this, ir_callback_handle_);
+  ir_generator_.RegisterToNewDataAvailable (static_cast<xn::StateChangedHandler> (NewIRDataAvailable), this, ir_callback_handle_);
 #endif // __APPLE__
 
-  depth_generator_.RegisterToNewDataAvailable ((xn::StateChangedHandler)NewDepthDataAvailable, this, depth_callback_handle_);
+  depth_generator_.RegisterToNewDataAvailable (static_cast <xn::StateChangedHandler> (NewDepthDataAvailable), this, depth_callback_handle_);
   // set up rest
   Init ();
 }
@@ -310,14 +310,28 @@ openni_wrapper::OpenNIDevice::~OpenNIDevice () throw ()
   depth_mutex_.unlock ();
   image_mutex_.unlock ();
 
+  xn::Device deviceNode;
+  device_node_info_.GetInstance(deviceNode);
+  if (deviceNode.IsValid())
+    deviceNode.Release ();
+  
   if (hasImageStream ())
+  {
     image_thread_.join ();
-
+    image_generator_.Release ();
+  }
+  
   if (hasDepthStream ())
+  {
     depth_thread_.join ();
-
+    depth_generator_.Release ();
+  }
+  
   if (hasIRStream ())
+  {
     ir_thread_.join ();
+    ir_generator_.Release ();
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -357,7 +371,7 @@ openni_wrapper::OpenNIDevice::Init ()
     baseline_ = static_cast<float> (baseline * 0.01);
 
     //focal length from mm -> pixels (valid for 1280x1024)
-    depth_focal_length_SXGA_ = static_cast<float> (depth_focal_length_SXGA / pixel_size);
+    depth_focal_length_SXGA_ = static_cast<float> (static_cast<XnDouble> (depth_focal_length_SXGA) / pixel_size);
 
     depth_thread_ = boost::thread (&OpenNIDevice::DepthDataThreadFunction, this);
   }
@@ -686,7 +700,7 @@ openni_wrapper::OpenNIDevice::setDepthCropping (unsigned x, unsigned y, unsigned
     cropping.nYOffset = static_cast<XnUInt16> (y);
     cropping.nXSize   = static_cast<XnUInt16> (width);
     cropping.nYSize   = static_cast<XnUInt16> (height);
-
+    
     cropping.bEnabled = (width != 0 && height != 0);
     XnStatus status = depth_generator_.GetCroppingCap ().SetCropping (cropping);
     if (status != XN_STATUS_OK)

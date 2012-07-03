@@ -403,7 +403,7 @@ namespace openni_wrapper
       depth_focal_length_SXGA_ = focal_length;
     }
   private:
-
+    // make OpenNIDevice non copyable
     OpenNIDevice (OpenNIDevice const &);
     OpenNIDevice& operator=(OpenNIDevice const &);
   protected:
@@ -501,7 +501,7 @@ namespace openni_wrapper
     if (output_x_resolution == 0)
       output_x_resolution = getImageOutputMode ().nXRes;
 
-    float scale = output_x_resolution / (float) XN_SXGA_X_RES;
+    float scale = static_cast<float> (output_x_resolution) / static_cast<float> (XN_SXGA_X_RES);
     return (rgb_focal_length_SXGA_ * scale);
   }
 
@@ -512,7 +512,7 @@ namespace openni_wrapper
     if (output_x_resolution == 0)
       output_x_resolution = getDepthOutputMode ().nXRes;
 
-    float scale = output_x_resolution / (float) XN_SXGA_X_RES;
+    float scale = static_cast<float> (output_x_resolution) / static_cast<float> (XN_SXGA_X_RES);
     if (isDepthRegistered ())
       return (rgb_focal_length_SXGA_ * scale);
     else

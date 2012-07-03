@@ -188,9 +188,9 @@ namespace pcl
             PointT& point = outputCloud_arg->points[beginIdx_arg + i];
 
             // decode point position
-            point.x = referencePoint_arg[0] + ((static_cast<float> (diffX)) * pointCompressionResolution_);
-            point.y = referencePoint_arg[1] + ((static_cast<float> (diffY)) * pointCompressionResolution_);
-            point.z = referencePoint_arg[2] + ((static_cast<float> (diffZ)) * pointCompressionResolution_);
+            point.x = static_cast<float> (referencePoint_arg[0] + diffX * pointCompressionResolution_);
+            point.y = static_cast<float> (referencePoint_arg[1] + diffY * pointCompressionResolution_);
+            point.z = static_cast<float> (referencePoint_arg[2] + diffZ * pointCompressionResolution_);
           }
         }
 

@@ -74,19 +74,19 @@ DeviceONI::DeviceONI(xn::Context& context, const std::string& file_name, bool re
   else
   {
     available_depth_modes_.push_back(getDepthOutputMode());
-    depth_generator_.RegisterToNewDataAvailable ((xn::StateChangedHandler)NewONIDepthDataAvailable, this, depth_callback_handle_);
+    depth_generator_.RegisterToNewDataAvailable (static_cast<xn::StateChangedHandler> (NewONIDepthDataAvailable), this, depth_callback_handle_);
   }
 
   status = context.FindExistingNode(XN_NODE_TYPE_IMAGE, image_generator_);
   if (status == XN_STATUS_OK)
   {
     available_image_modes_.push_back(getImageOutputMode());
-    image_generator_.RegisterToNewDataAvailable ((xn::StateChangedHandler)NewONIImageDataAvailable, this, image_callback_handle_);
+    image_generator_.RegisterToNewDataAvailable (static_cast<xn::StateChangedHandler> (NewONIImageDataAvailable), this, image_callback_handle_);
   }
 
   status = context.FindExistingNode(XN_NODE_TYPE_IR, ir_generator_);
   if (status == XN_STATUS_OK)
-    ir_generator_.RegisterToNewDataAvailable ((xn::StateChangedHandler)NewONIIRDataAvailable, this, ir_callback_handle_);
+    ir_generator_.RegisterToNewDataAvailable (static_cast<xn::StateChangedHandler> (NewONIIRDataAvailable), this, ir_callback_handle_);
 
   device_node_info_ = player_.GetInfo();
 
@@ -181,21 +181,21 @@ void DeviceONI::PlayerThreadFunction()
     player_.ReadNext();
 }
 
-void __stdcall DeviceONI::NewONIDepthDataAvailable (xn::ProductionNode& node, void* cookie) throw ()
+void __stdcall DeviceONI::NewONIDepthDataAvailable (xn::ProductionNode&, void* cookie) throw ()
 {
   DeviceONI* device = reinterpret_cast<DeviceONI*>(cookie);
   if (device->depth_stream_running_)
     device->depth_condition_.notify_all ();
 }
 
-void __stdcall DeviceONI::NewONIImageDataAvailable (xn::ProductionNode& node, void* cookie) throw ()
+void __stdcall DeviceONI::NewONIImageDataAvailable (xn::ProductionNode&, void* cookie) throw ()
 {
   DeviceONI* device = reinterpret_cast<DeviceONI*>(cookie);
   if (device->image_stream_running_)
     device->image_condition_.notify_all ();
 }
 
-void __stdcall DeviceONI::NewONIIRDataAvailable (xn::ProductionNode& node, void* cookie) throw ()
+void __stdcall DeviceONI::NewONIIRDataAvailable (xn::ProductionNode&, void* cookie) throw ()
 {
   DeviceONI* device = reinterpret_cast<DeviceONI*>(cookie);
   if (device->ir_stream_running_)

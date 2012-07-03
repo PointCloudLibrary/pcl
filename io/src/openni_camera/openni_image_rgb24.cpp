@@ -36,7 +36,9 @@ void ImageRGB24::fillGrayscale (unsigned width, unsigned height, unsigned char* 
     {
       for (unsigned xIdx = 0; xIdx < width; ++xIdx, src_line += src_step, dst_line ++)
       {
-        *dst_line = (unsigned char)(((int)src_line->nRed * 299 + (int)src_line->nGreen * 587 + (int)src_line->nBlue * 114) * 0.001);
+        *dst_line = static_cast<unsigned char>((static_cast<int> (src_line->nRed)   * 299 + 
+                                                static_cast<int> (src_line->nGreen) * 587 +
+                                                static_cast<int> (src_line->nBlue)  * 114) * 0.001);
       }
     }
   }
@@ -61,7 +63,7 @@ void ImageRGB24::fillRGB (unsigned width, unsigned height, unsigned char* rgb_bu
     else // line by line
     {
       unsigned char* rgb_line = rgb_buffer;
-      const unsigned char* src_line = (const unsigned char*)image_md_->Data();
+      const unsigned char* src_line = static_cast<const unsigned char*> (image_md_->Data());
       for (unsigned yIdx = 0; yIdx < height; ++yIdx, rgb_line += rgb_line_step, src_line += line_size)
       {
         memcpy (rgb_line, src_line, line_size);
@@ -78,7 +80,7 @@ void ImageRGB24::fillRGB (unsigned width, unsigned height, unsigned char* rgb_bu
 
     unsigned dst_skip = rgb_line_step - width * 3; // skip of padding values in bytes
 
-    XnRGB24Pixel* dst_line = (XnRGB24Pixel*)rgb_buffer;
+    XnRGB24Pixel* dst_line = reinterpret_cast<XnRGB24Pixel*> (rgb_buffer);
     const XnRGB24Pixel* src_line = image_md_->RGB24Data();
 
     for (unsigned yIdx = 0; yIdx < height; ++yIdx, src_line += src_skip)
@@ -91,8 +93,8 @@ void ImageRGB24::fillRGB (unsigned width, unsigned height, unsigned char* rgb_bu
       if (dst_skip != 0)
       {
         // use bytes to skip rather than XnRGB24Pixel's, since line_step does not need to be multiple of 3
-        unsigned char* temp = (unsigned char*) dst_line;
-        dst_line = (XnRGB24Pixel*) (temp + dst_skip);
+        unsigned char* temp = reinterpret_cast <unsigned char*> (dst_line);
+        dst_line = reinterpret_cast <XnRGB24Pixel*> (temp + dst_skip);
       }
     }
   }

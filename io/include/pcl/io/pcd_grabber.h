@@ -203,7 +203,7 @@ namespace pcl
         ++k;
       }
 
-    boost::shared_ptr<openni_wrapper::DepthImage> depth_image (new openni_wrapper::DepthImage (depth_meta_data, 0.075, 525, 0, 0));
+    boost::shared_ptr<openni_wrapper::DepthImage> depth_image (new openni_wrapper::DepthImage (depth_meta_data, 0.075f, 525, 0, 0));
     if (depth_image_signal_->num_slots() > 0)
       depth_image_signal_->operator()(depth_image);
 #endif

@@ -69,7 +69,7 @@ DeviceXtionPro::~DeviceXtionPro () throw ()
   depth_mutex_.unlock ();
 }
 
-bool DeviceXtionPro::isImageResizeSupported (unsigned input_width, unsigned input_height, unsigned output_width, unsigned output_height) const throw ()
+bool DeviceXtionPro::isImageResizeSupported (unsigned, unsigned, unsigned, unsigned) const throw ()
 {
   return false;
 }
@@ -107,9 +107,9 @@ void DeviceXtionPro::enumAvailableModes () throw ()
   available_depth_modes_.push_back (output_mode);
 }
 
-boost::shared_ptr<Image> DeviceXtionPro::getCurrentImage (boost::shared_ptr<xn::ImageMetaData> image_data) const throw ()
+boost::shared_ptr<Image> DeviceXtionPro::getCurrentImage (boost::shared_ptr<xn::ImageMetaData>) const throw ()
 {
-  return boost::shared_ptr<Image> ((Image*)0);
+  return boost::shared_ptr<Image> (reinterpret_cast<Image*> (0));
 }
 
 void DeviceXtionPro::startDepthStream ()

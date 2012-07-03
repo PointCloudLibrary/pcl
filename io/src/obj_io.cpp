@@ -63,15 +63,15 @@ pcl::io::saveOBJFile (const std::string &file_name,
 
   /* Write 3D information */
   // number of points
-  int nr_points  = tex_mesh.cloud.width * tex_mesh.cloud.height;
-  int point_size = tex_mesh.cloud.data.size () / nr_points;
+  unsigned nr_points  = tex_mesh.cloud.width * tex_mesh.cloud.height;
+  unsigned point_size = static_cast<unsigned> (tex_mesh.cloud.data.size () / nr_points);
 
   // mesh size
-  int nr_meshes = tex_mesh.tex_polygons.size ();
+  unsigned nr_meshes = static_cast<unsigned> (tex_mesh.tex_polygons.size ());
   // number of faces for header
-  int nr_faces = 0;
-  for (int m = 0; m < nr_meshes; ++m)
-    nr_faces += tex_mesh.tex_polygons[m].size ();
+  unsigned nr_faces = 0;
+  for (unsigned m = 0; m < nr_meshes; ++m)
+    nr_faces += static_cast<unsigned> (tex_mesh.tex_polygons[m].size ());
 
   // Write the header information
   fs << "####" << std::endl;
@@ -84,7 +84,7 @@ pcl::io::saveOBJFile (const std::string &file_name,
 
   // Write vertex coordinates
   fs << "# Vertices" << std::endl;
-  for (int i = 0; i < nr_points; ++i)
+  for (unsigned i = 0; i < nr_points; ++i)
   {
     int xyz = 0;
     // "v" just be written one
@@ -125,7 +125,7 @@ pcl::io::saveOBJFile (const std::string &file_name,
   fs << "# "<< nr_points <<" vertices" << std::endl;
 
   // Write vertex normals
-  for (int i = 0; i < nr_points; ++i)
+  for (unsigned i = 0; i < nr_points; ++i)
   {
     int xyz = 0;
     // "vn" just be written one
@@ -165,7 +165,7 @@ pcl::io::saveOBJFile (const std::string &file_name,
   }
   // Write vertex texture with "vt" (adding latter)
 
-  for (int m = 0; m < nr_meshes; ++m)
+  for (unsigned m = 0; m < nr_meshes; ++m)
   {
     fs << "# " << tex_mesh.tex_coordinates[m].size() << " vertex textures in submesh " << m <<  std::endl;
     for (size_t i = 0; i < tex_mesh.tex_coordinates[m].size (); ++i)
@@ -175,12 +175,12 @@ pcl::io::saveOBJFile (const std::string &file_name,
     }
   }
 
-  int f_idx = 0;
+  unsigned f_idx = 0;
 
   // int idx_vt =0;
-  for (int m = 0; m < nr_meshes; ++m)
+  for (unsigned m = 0; m < nr_meshes; ++m)
   {
-    if (m > 0) f_idx += tex_mesh.tex_polygons[m-1].size ();
+    if (m > 0) f_idx += static_cast<unsigned> (tex_mesh.tex_polygons[m-1].size ());
 
     fs << "# The material will be used for mesh " << m << std::endl;
     fs << "usemtl " <<  tex_mesh.tex_materials[m].tex_name << std::endl;
@@ -197,7 +197,7 @@ pcl::io::saveOBJFile (const std::string &file_name,
       {
         uint32_t idx = tex_mesh.tex_polygons[m][i].vertices[j] + 1;
         fs << " " << idx
-           << "/" << 3*(i+f_idx) +j+1
+           << "/" << tex_mesh.tex_polygons[m][i].vertices.size () * (i+f_idx) +j+1
            << "/" << idx; // vertex index in obj file format starting with 1
       }
       fs << std::endl;
@@ -220,7 +220,7 @@ pcl::io::saveOBJFile (const std::string &file_name,
   m_fs << "#" << std::endl;
   m_fs << "# Wavefront material file" << std::endl;
   m_fs << "#" << std::endl;
-  for(int m = 0; m < nr_meshes; ++m)
+  for(unsigned m = 0; m < nr_meshes; ++m)
   {
     m_fs << "newmtl " << tex_mesh.tex_materials[m].tex_name << std::endl;
     m_fs << "Ka "<< tex_mesh.tex_materials[m].tex_Ka.r << " " << tex_mesh.tex_materials[m].tex_Ka.g << " " << tex_mesh.tex_materials[m].tex_Ka.b << std::endl; // defines the ambient color of the material to be (r,g,b).
@@ -256,9 +256,9 @@ pcl::io::saveOBJFile (const std::string &file_name,
   // number of points
   int nr_points  = mesh.cloud.width * mesh.cloud.height;
   // point size
-  int point_size = mesh.cloud.data.size () / nr_points;
+  unsigned point_size = static_cast<unsigned> (mesh.cloud.data.size () / nr_points);
   // number of faces for header
-  int nr_faces = mesh.polygons.size ();
+  unsigned nr_faces = static_cast<unsigned> (mesh.polygons.size ());
   // Do we have vertices normals?
   int normal_index = getFieldIndex (mesh.cloud, "normal");
 
@@ -350,7 +350,7 @@ pcl::io::saveOBJFile (const std::string &file_name,
   // Write down faces
   if(normal_index == -1)
   {
-    for(int i = 0; i < nr_faces; i++)
+    for(unsigned i = 0; i < nr_faces; i++)
     {
       fs << "f ";
       size_t j = 0;    
@@ -361,7 +361,7 @@ pcl::io::saveOBJFile (const std::string &file_name,
   }
   else
   {
-    for(int i = 0; i < nr_faces; i++)
+    for(unsigned i = 0; i < nr_faces; i++)
     {
       fs << "f ";
       size_t j = 0;    

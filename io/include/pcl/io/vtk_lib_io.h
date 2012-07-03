@@ -90,6 +90,7 @@ namespace pcl
     /** \brief Load a \ref PolygonMesh object given an input file name, based on the file extension
       * \param[in] file_name the name of the file containing the polygon data
       * \param[out] mesh the object that we want to load the data in 
+      * \ingroup io
       */ 
     PCL_EXPORTS int
     loadPolygonFile (const std::string &file_name, pcl::PolygonMesh& mesh);
@@ -97,6 +98,7 @@ namespace pcl
     /** \brief Save a \ref PolygonMesh object given an input file name, based on the file extension
       * \param[in] file_name the name of the file to save the data to
       * \param[in] mesh the object that contains the data
+      * \ingroup io
       */
     PCL_EXPORTS int
     savePolygonFile (const std::string &file_name, const pcl::PolygonMesh& mesh);
@@ -104,6 +106,7 @@ namespace pcl
     /** \brief Load a VTK file into a \ref PolygonMesh object
       * \param[in] file_name the name of the file that contains the data
       * \param[out] mesh the object that we want to load the data in 
+      * \ingroup io
       */
     PCL_EXPORTS int
     loadPolygonFileVTK (const std::string &file_name, pcl::PolygonMesh& mesh);
@@ -111,6 +114,7 @@ namespace pcl
     /** \brief Load a PLY file into a \ref PolygonMesh object
       * \param[in] file_name the name of the file that contains the data
       * \param[out] mesh the object that we want to load the data in 
+      * \ingroup io
       */
     PCL_EXPORTS int
     loadPolygonFilePLY (const std::string &file_name, pcl::PolygonMesh& mesh);
@@ -118,6 +122,7 @@ namespace pcl
     /** \brief Load an OBJ file into a \ref PolygonMesh object
       * \param[in] file_name the name of the file that contains the data
       * \param[out] mesh the object that we want to load the data in 
+      * \ingroup io
       */
     PCL_EXPORTS int
     loadPolygonFileOBJ (const std::string &file_name, pcl::PolygonMesh& mesh);
@@ -125,6 +130,7 @@ namespace pcl
     /** \brief Load an STL file into a \ref PolygonMesh object
       * \param[in] file_name the name of the file that contains the data
       * \param[out] mesh the object that we want to load the data in 
+      * \ingroup io
       */
     PCL_EXPORTS int
     loadPolygonFileSTL (const std::string &file_name, pcl::PolygonMesh& mesh);
@@ -132,6 +138,7 @@ namespace pcl
     /** \brief Save a \ref PolygonMesh object into a VTK file
       * \param[in] file_name the name of the file to save the data to
       * \param[in] mesh the object that contains the data
+      * \ingroup io
       */
     PCL_EXPORTS int
     savePolygonFileVTK (const std::string &file_name, const pcl::PolygonMesh& mesh);
@@ -139,6 +146,7 @@ namespace pcl
     /** \brief Save a \ref PolygonMesh object into a PLY file
       * \param[in] file_name the name of the file to save the data to
       * \param[in] mesh the object that contains the data
+      * \ingroup io
       */
     PCL_EXPORTS int
     savePolygonFilePLY (const std::string &file_name, const pcl::PolygonMesh& mesh);
@@ -146,6 +154,7 @@ namespace pcl
     /** \brief Save a \ref PolygonMesh object into an STL file
       * \param[in] file_name the name of the file to save the data to
       * \param[in] mesh the object that contains the data
+      * \ingroup io
       */
     PCL_EXPORTS int
     savePolygonFileSTL (const std::string &file_name, const pcl::PolygonMesh& mesh);
@@ -153,6 +162,7 @@ namespace pcl
     /** \brief Write a \ref RangeImagePlanar object to a PNG file
       * \param[in] file_name the name of the file to save the data to
       * \param[in] range_image the object that contains the data
+      * \ingroup io
       */
     PCL_EXPORTS void
     saveRangeImagePlanarFilePNG (const std::string &file_name,

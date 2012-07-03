@@ -395,7 +395,7 @@ pcl::io::mesh2vtk (const pcl::PolygonMesh& mesh, vtkSmartPointer<vtkPolyData>& p
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::io::saveRangeImagePlanarFilePNG (const std::string &file_name,
-    const pcl::RangeImagePlanar& range_image)
+const pcl::RangeImagePlanar& range_image)
 {
   vtkSmartPointer<vtkImageData> image = vtkSmartPointer<vtkImageData>::New();
   image->SetDimensions(range_image.width, range_image.height, 1);
@@ -408,13 +408,13 @@ pcl::io::saveRangeImagePlanarFilePNG (const std::string &file_name,
   std::cout << "Dims: " << " x: " << dims[0] << " y: " << dims[1] << " z: " << dims[2] << std::endl;
 
   for (int y = 0; y < dims[1]; y++)
-  {
-    for (int x = 0; x < dims[0]; x++)
     {
+    for (int x = 0; x < dims[0]; x++)
+      {
       float* pixel = static_cast<float*>(image->GetScalarPointer(x,y,0));
       pixel[0] = range_image(y,x).range;
+      }
     }
-  }
 
   // Compute the scaling
   float oldRange = static_cast<float> (image->GetScalarRange()[1] - image->GetScalarRange()[0]);

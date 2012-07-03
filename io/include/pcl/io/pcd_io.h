@@ -108,7 +108,7 @@ namespace pcl
         *
         * \return
         *  * < 0 (-1) on error
-        *  * > 0 on success
+        *  * == 0 on success
         */
       int 
       readHeader (const std::string &file_name, sensor_msgs::PointCloud2 &cloud, 
@@ -164,7 +164,7 @@ namespace pcl
         *
         * \return
         *  * < 0 (-1) on error
-        *  * > 0 on success
+        *  * == 0 on success
         *
         */
       int 
@@ -186,7 +186,7 @@ namespace pcl
         *
         * \return
         *  * < 0 (-1) on error
-        *  * > 0 on success
+        *  * == 0 on success
         */
       int 
       read (const std::string &file_name, sensor_msgs::PointCloud2 &cloud, 
@@ -210,7 +210,7 @@ namespace pcl
         *
         * \return
         *  * < 0 (-1) on error
-        *  * > 0 on success
+        *  * == 0 on success
         */
       int 
       read (const std::string &file_name, sensor_msgs::PointCloud2 &cloud, const int offset = 0);
@@ -227,7 +227,7 @@ namespace pcl
         *
         * \return
         *  * < 0 (-1) on error
-        *  * > 0 on success
+        *  * == 0 on success
         */
       template<typename PointT> int
       read (const std::string &file_name, pcl::PointCloud<PointT> &cloud, const int offset = 0)
@@ -258,7 +258,7 @@ namespace pcl
         *
         * \return
         *  * < 0 (-1) on error
-        *  * > 0 on success
+        *  * == 0 on success
         */
       int
       readEigen (const std::string &file_name, pcl::PointCloud<Eigen::MatrixXf> &cloud, const int offset = 0);

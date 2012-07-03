@@ -41,10 +41,10 @@
 #include <sstream>
 #include <iostream>
 
-#define AVG(a,b) (((int)(a) + (int)(b)) >> 1)
-#define AVG3(a,b,c) (((int)(a) + (int)(b) + (int)(c)) / 3)
-#define AVG4(a,b,c,d) (((int)(a) + (int)(b) + (int)(c) + (int)(d)) >> 2)
-#define WAVG4(a,b,c,d,x,y)  ( ( ((int)(a) + (int)(b)) * (int)(x) + ((int)(c) + (int)(d)) * (int)(y) ) / ( ((int)(x) + (int(y))) << 1 ) )
+#define AVG(a,b) static_cast<unsigned char>((int(a) + int(b)) >> 1)
+#define AVG3(a,b,c) static_cast<unsigned char>((int(a) + int(b) + int(c)) / 3)
+#define AVG4(a,b,c,d) static_cast<unsigned char>((int(a) + int(b) + int(c) + int(d)) >> 2)
+#define WAVG4(a,b,c,d,x,y) static_cast<unsigned char>( ( (int(a) + int(b)) * int(x) + (int(c) + int(d)) * int(y) ) / ( (int(x) + (int(y))) << 1 ) )
 using namespace std;
 
 namespace openni_wrapper

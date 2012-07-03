@@ -44,6 +44,10 @@
 #include <sensor_msgs/PointCloud2.h>
 #include <pcl/PolygonMesh.h>
 
+// VTK
+class vtkPolyData;
+class vtkStructuredGrid;
+
 namespace pcl
 {
   namespace io
@@ -65,7 +69,25 @@ namespace pcl
       */
     PCL_EXPORTS int 
     saveVTKFile (const std::string &file_name, const sensor_msgs::PointCloud2 &cloud, unsigned precision = 5);
+    
+    template <typename PointT> void
+    pointCloudToPolyData(const pcl::PointCloud<PointT>& cloud, vtkPolyData* const polydata);
+
+    // PCL to vtkStructuredGrid
+    template <typename PointT> void
+    pointCloudToStructuredGrid(const pcl::PointCloud<PointT>& cloud, vtkStructuredGrid* const structured_grid);
+
+    /** Convert a vtkPolyData to a pcl::PointCloud. */
+    template <typename PointT> void
+    polyDataToPointCloud(vtkPolyData* const polydata, pcl::PointCloud<PointT>& cloud);
+
+    /** Convert a vtkStructuredGrid to a pcl::PointCloud. */
+    template <typename PointT> void
+    structuredGridToPointCloud(vtkStructuredGrid* const structured_grid, pcl::PointCloud<PointT>& cloud);
+
   }
 }
 
-#endif  //#ifndef PCL_IO_PCD_IO_H_
+
+
+#endif  //#ifndef PCL_IO_VTK_IO_H_

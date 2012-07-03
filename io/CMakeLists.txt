@@ -72,11 +72,12 @@ if(build)
 	include/pcl/${SUBSYS_NAME}/ply/ply.h
 	include/pcl/${SUBSYS_NAME}/ply/ply_parser.h)
     PCL_ADD_LIBRARY(pcl_io_ply ${SUBSYS_NAME} ${PLY_SOURCES} ${PLY_INCLUDES})
-    PCL_ADD_INCLUDES(${SUBSYS_NAME} ply ${PLY_INCLUDES})
+    PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/ply ${PLY_INCLUDES})
 
     set(srcs 
         src/pcd_grabber.cpp
         src/pcd_io.cpp
+		src/png_io.cpp
         src/vtk_io.cpp
         src/ply_io.cpp
         src/compression.cpp
@@ -96,7 +97,9 @@ if(build)
         include/pcl/${SUBSYS_NAME}/pcl_io_exception.h
         include/pcl/${SUBSYS_NAME}/vtk_io.h
         include/pcl/${SUBSYS_NAME}/ply_io.h
+        include/pcl/${SUBSYS_NAME}/tar.h
         include/pcl/${SUBSYS_NAME}/obj_io.h 
+		include/pcl/${SUBSYS_NAME}/png_io.h 
         ${VTK_IO_INCLUDES}
         ${OPENNI_GRABBER_INCLUDES}
         )
@@ -111,6 +114,7 @@ if(build)
 
     set(impl_incs 
         include/pcl/${SUBSYS_NAME}/impl/pcd_io.hpp
+	include/pcl/${SUBSYS_NAME}/impl/vtk_io.hpp
         include/pcl/compression/impl/entropy_range_coder.hpp
         include/pcl/compression/impl/octree_pointcloud_compression.hpp
        )
@@ -127,6 +131,7 @@ if(build)
       if(NOT WIN32)
         find_package(libusb-1.0 REQUIRED)
         target_link_libraries(${LIB_NAME} ${LIBUSB_1_LIBRARIES})
+        include_directories(${LIBUSB_1_INCLUDE_DIR})
       endif()
     endif(OPENNI_FOUND)
 
