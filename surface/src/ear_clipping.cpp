@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: ear_clipping.cpp 4208 2012-02-03 00:38:09Z aichim $
+ * $Id: ear_clipping.cpp 5027 2012-03-12 03:10:45Z rusu $
  *
  */
 

@@ -2,7 +2,7 @@
  * Software License Agreement (BSD License)
  *
  * Point Cloud Library (PCL) - www.pointclouds.org
- * Copyright (c) 2009-2011, Willow Garage, Inc.
+ * Copyright (c) 2009-2012, Willow Garage, Inc.
  *
  * All rights reserved.
  *
@@ -33,18 +33,27 @@
  * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id$
+ * $Id: processing.hpp 5022 2012-03-11 23:12:23Z aichim $
  *
  */
 
-#include <pcl/impl/instantiate.hpp>
-#include <pcl/point_types.h>
-#include <pcl/surface/mls.h>
-#include <pcl/surface/impl/mls.hpp>
 
-// Instantiations of specific point types
-PCL_INSTANTIATE_PRODUCT(MovingLeastSquares, ((pcl::PointXYZ)(pcl::PointXYZRGB)(pcl::PointXYZRGBA))
-                                            ((pcl::PointXYZ)(pcl::PointXYZRGB)(pcl::PointXYZRGBA)(pcl::PointNormal)))
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT, typename PointOutT> void
+pcl::CloudSurfaceProcessing<PointInT, PointOutT>::process (pcl::PointCloud<PointOutT> &output)
+{
+  // Copy the header
+  output.header = input_->header;
 
-/// Ideally, we should instantiate like below, but it takes large amounts of main memory for compilation
-//PCL_INSTANTIATE_PRODUCT(MovingLeastSquares, (PCL_XYZ_POINT_TYPES)(PCL_XYZ_POINT_TYPES))
+  if (!initCompute ())
+  {
+    output.width = output.height = 0;
+    output.points.clear ();
+    return;
+  }
+
+  // Perform the actual surface reconstruction
+  performProcessing (output);
+
+  deinitCompute ();
+}

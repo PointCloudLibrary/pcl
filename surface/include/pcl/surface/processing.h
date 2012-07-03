@@ -33,7 +33,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: processing.h 3726 2011-12-30 21:58:56Z rusu $
+ * $Id: processing.h 5022 2012-03-11 23:12:23Z aichim $
  *
  */
 
@@ -41,12 +41,48 @@
 #define PCL_MESH_PROCESSING_H_
 
 #include <pcl/pcl_base.h>
+#include <pcl/point_cloud.h>
 #include <pcl/PolygonMesh.h>
 
 namespace pcl
 {
+  /** \brief @b CloudSurfaceProcessing represents the base class for algorithms that take a point cloud as an input and
+    * produce a new output cloud that has been modified towards a better surface representation. These types of
+    * algorithms include surface smoothing, hole filling, cloud upsampling etc.
+    *
+    * \author Alexandru E. Ichim
+    * \ingroup surface
+    */
+  template <typename PointInT, typename PointOutT>
+  class CloudSurfaceProcessing : public PCLBase<PointInT>
+  {
+    public:
+      using PCLBase<PointInT>::input_;
+      using PCLBase<PointInT>::indices_;
+      using PCLBase<PointInT>::initCompute;
+      using PCLBase<PointInT>::deinitCompute;
+
+    public:
+      /** \brief Constructor. */
+      CloudSurfaceProcessing () : PCLBase<PointInT> ()
+      {};
+
+      /** \brief Process the input cloud and store the results
+        * \param[out] output the cloud where the results will be stored
+        */
+      virtual void
+      process (pcl::PointCloud<PointOutT> &output);
+
+    protected:
+      /** \brief Abstract cloud processing method */
+      virtual void
+      performProcessing (pcl::PointCloud<PointOutT> &output) = 0;
+
+  };
+
+
   /** \brief @b MeshProcessing represents the base class for mesh processing algorithms.
-    * \author Alexandru Eugen Ichim
+    * \author Alexandru E. Ichim
     * \ingroup surface
     */
   class PCL_EXPORTS MeshProcessing
@@ -96,6 +132,8 @@ namespace pcl
       pcl::PolygonMeshConstPtr input_mesh_;
   };
 }
+
+#include "pcl/surface/impl/processing.hpp"
 
 #endif  /* PCL_MESH_PROCESSING_H_ */
 

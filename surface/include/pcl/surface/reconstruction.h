@@ -56,7 +56,7 @@ namespace pcl
     *  - \b setSearchMethod(&SearchPtr): passes a search locator
     *  - \b reconstruct(&PolygonMesh): creates a PolygonMesh object from the input data
     *
-    * \author Radu B. Rusu, Michael Dixon, Alex Ichim
+    * \author Radu B. Rusu, Michael Dixon, Alexandru E. Ichim
     */
   template <typename PointInT>
   class PCLSurfaceBase: public PCLBase<PointInT>
@@ -99,7 +99,7 @@ namespace pcl
 
   /** \brief SurfaceReconstruction represents a base surface reconstruction
     * class. All \b surface reconstruction methods take in a point cloud and
-    * generate a new surface from it, by either resampling the data or
+    * generate a new surface from it, by either re-sampling the data or
     * generating new data altogether. These methods are thus \b not preserving
     * the topology of the original data.
     *
@@ -107,7 +107,7 @@ namespace pcl
     * point cloud data as the surface vertices and simply construct the mesh on
     * top should inherit from \ref MeshConstruction.
     *
-    * \author Radu B. Rusu, Michael Dixon, Alex Ichim
+    * \author Radu B. Rusu, Michael Dixon, Alexandru E. Ichim
     * \ingroup surface
     */
   template <typename PointInT>
@@ -173,7 +173,7 @@ namespace pcl
     * vertices in locations different than the input data should inherit from
     * \ref SurfaceReconstruction.
     *
-    * \author Radu B. Rusu, Michael Dixon, Alex Ichim
+    * \author Radu B. Rusu, Michael Dixon, Alexandru E. Ichim
     * \ingroup surface
     */
   template <typename PointInT>

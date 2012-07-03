@@ -33,7 +33,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: mls_omp.cpp 4094 2012-01-31 04:56:24Z rusu $
+ * $Id: mls_omp.cpp 5027 2012-03-12 03:10:45Z rusu $
  *
  */
 
@@ -42,5 +42,10 @@
 #include <pcl/surface/mls_omp.h>
 #include <pcl/surface/impl/mls_omp.hpp>
 
+
 // Instantiations of specific point types
-PCL_INSTANTIATE_PRODUCT(MovingLeastSquaresOMP, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES))
+PCL_INSTANTIATE_PRODUCT(MovingLeastSquaresOMP, ((pcl::PointXYZ)(pcl::PointXYZRGB)(pcl::PointXYZRGBA))
+                                               ((pcl::PointXYZ)(pcl::PointXYZRGB)(pcl::PointXYZRGBA)(pcl::PointNormal)))
+
+/// Ideally, we should instantiate like below, but it takes large amounts of main memory for compilation
+//PCL_INSTANTIATE_PRODUCT(MovingLeastSquares, (PCL_XYZ_POINT_TYPES)(PCL_XYZ_POINT_TYPES))

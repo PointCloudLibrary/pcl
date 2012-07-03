@@ -33,7 +33,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: mls_omp.h 4193 2012-02-01 23:39:05Z aichim $
+ * $Id: mls_omp.h 5823 2012-06-01 20:25:35Z aichim $
  *
  */
 
@@ -49,20 +49,30 @@ namespace pcl
     * \author Radu B. Rusu
     * \ingroup surface
     */
-  template <typename PointInT, typename NormalOutT>
-  class MovingLeastSquaresOMP : public MovingLeastSquares<PointInT, NormalOutT>
+  template <typename PointInT, typename PointOutT>
+  class MovingLeastSquaresOMP : public MovingLeastSquares<PointInT, PointOutT>
   {
-    using MovingLeastSquares<PointInT, NormalOutT>::input_;
-    using MovingLeastSquares<PointInT, NormalOutT>::indices_;
-    using MovingLeastSquares<PointInT, NormalOutT>::fake_indices_;
-    using MovingLeastSquares<PointInT, NormalOutT>::initCompute;
-    using MovingLeastSquares<PointInT, NormalOutT>::deinitCompute;
-    using MovingLeastSquares<PointInT, NormalOutT>::nr_coeff_;
-    using MovingLeastSquares<PointInT, NormalOutT>::order_;
-    using MovingLeastSquares<PointInT, NormalOutT>::normals_;
+    using MovingLeastSquares<PointInT, PointOutT>::input_;
+    using MovingLeastSquares<PointInT, PointOutT>::indices_;
+    using MovingLeastSquares<PointInT, PointOutT>::fake_indices_;
+    using MovingLeastSquares<PointInT, PointOutT>::initCompute;
+    using MovingLeastSquares<PointInT, PointOutT>::deinitCompute;
+    using MovingLeastSquares<PointInT, PointOutT>::nr_coeff_;
+    using MovingLeastSquares<PointInT, PointOutT>::order_;
+    using MovingLeastSquares<PointInT, PointOutT>::normals_;
+    using MovingLeastSquares<PointInT, PointOutT>::upsample_method_;
+    using MovingLeastSquares<PointInT, PointOutT>::voxel_size_;
+    using MovingLeastSquares<PointInT, PointOutT>::dilation_iteration_num_;
+    using MovingLeastSquares<PointInT, PointOutT>::tree_;
+    using MovingLeastSquares<PointInT, PointOutT>::mls_results_;
+    using MovingLeastSquares<PointInT, PointOutT>::search_radius_;
+    using MovingLeastSquares<PointInT, PointOutT>::compute_normals_;
+    using MovingLeastSquares<PointInT, PointOutT>::searchForNeighbors;
       
-    typedef typename MovingLeastSquares<PointInT, NormalOutT>::PointCloudIn PointCloudIn;
-    typedef typename MovingLeastSquares<PointInT, NormalOutT>::NormalCloudOut NormalCloudOut;
+    typedef typename MovingLeastSquares<PointInT, PointOutT>::PointCloudIn PointCloudIn;
+    typedef typename MovingLeastSquares<PointInT, PointOutT>::PointCloudOut PointCloudOut;
+    typedef typename MovingLeastSquares<PointInT, PointOutT>::NormalCloud NormalCloud;
+    typedef typename MovingLeastSquares<PointInT, PointOutT>::MLSVoxelGrid MLSVoxelGrid;
 
     public:
       /** \brief Empty constructor. */
@@ -96,7 +106,7 @@ namespace pcl
         * \param[out] output the result of the reconstruction 
         */
       virtual void 
-      performReconstruction (PointCloudIn &output);
+      performProcessing (PointCloudOut &output);
 
       /** \brief Abstract class get name method. */
       std::string getClassName () const { return ("MovingLeastSquaresOMP"); }

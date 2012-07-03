@@ -45,15 +45,15 @@ namespace pcl
    * Tables, and functions, derived from Paul Bourke's Marching Cubes implementation:
    * http://paulbourke.net/geometry/polygonise/
    * Cube vertex indices:
-   *         4 ________ 5
-   *         /|       /| 
-   *       /  |     /  | 
+   *   y_dir 4 ________ 5
+   *         /|       /|
+   *       /  |     /  |
    *   7 /_______ /    |
    *    |     |  |6    |
-   *    |    0|__|_____|1
-   *    |    /   |    /  
-   *    |  /     |  /    
-   *    |/_______|/      
+   *    |    0|__|_____|1 x_dir
+   *    |    /   |    /
+   *    |  /     |  /
+   z_dir|/_______|/
    *   3          2
    */
   const unsigned int edgeTable[256] = {
@@ -350,8 +350,13 @@ namespace pcl
   };
 
 
-  /** \brief The marching cubes surface reconstruction algorithm.
-    * \author Gregory Long
+  /** \brief The marching cubes surface reconstruction algorithm. This is an abstract class that takes a grid and
+    * extracts the isosurface as a mesh, based on the original marching cubes paper:
+    *
+    * Lorensen W.E., Cline H.E., "Marching cubes: A high resolution 3d surface construction algorithm",
+    * SIGGRAPH '87
+    *
+    * \author Alexandru E. Ichim
     * \ingroup surface
     */
   template <typename PointNT>
@@ -366,170 +371,136 @@ namespace pcl
       typedef typename pcl::KdTree<PointNT> KdTree;
       typedef typename pcl::KdTree<PointNT>::Ptr KdTreePtr;
 
-      /** \brief Simple structure to hold a voxel */
-      struct Leaf
-      {
-        Leaf () { vertex[0] = vertex[1] = vertex[2] = vertex[3] = vertex[4] = vertex[5] = vertex[6] = vertex[7] = 0; }
-        float vertex[8];
-      };
 
-      typedef boost::unordered_map<uint64_t, Leaf, boost::hash<uint64_t>, std::equal_to<uint64_t>, Eigen::aligned_allocator<uint64_t> > HashMap;
-
-
-      /** \brief Constructor. */ 
+      /** \brief Constructor. */
       MarchingCubes ();
 
       /** \brief Destructor. */
       ~MarchingCubes ();
 
-      /** \brief set the voxel size.
-        * \param[in] leaf_size the size of the voxel
-        */
-      inline void
-      setLeafSize (double leaf_size)
-      {
-        leaf_size_ = leaf_size;
-      };
 
-      /** \brief set the iso level.
-        * \param iso_level the iso level.
+      /** \brief Method that sets the iso level of the surface to be extracted.
+        * \param[in] iso_level the iso level.
         */
       inline void
       setIsoLevel (float iso_level)
-      {
-        iso_level_ = iso_level;
-      };
+      { iso_level_ = iso_level; }
 
-      /** \brief Get the 3d index (x,y,z) of the cell based on the location of
-        * the cell
-        * \param p the coordinate of the input point
-        * \param index the output 3d index
+      /** \brief Method that returns the iso level of the surface to be extracted. */
+      inline float
+      getIsoLevel ()
+      { return iso_level_; }
+
+      /** \brief Method that sets the marching cubes grid resolution.
+        * \param[in] res_x the resolution of the grid along the x-axis
+        * \param[in] res_y the resolution of the grid along the y-axis
+        * \param[in] res_z the resolution of the grid along the z-axis
         */
       inline void
-      getCellIndex (const Eigen::Vector4f &p, Eigen::Vector3i& index) const
-      {
-        for (int i = 0; i < 3; ++i)
-          index[i] = static_cast<Eigen::Vector3i::Scalar> ((p[i] - min_p_(i)) / leaf_size_);
-      }
+      setGridResolution (int res_x, int res_y, int res_z)
+      { res_x_ = res_x; res_y_ = res_y; res_z_ = res_z; }
 
-      /** \brief Given an index (x, y, z) in 3d, translate it into the index
-        * in 1d
-        * \param index the index of the cell in (x,y,z) 3d format
-        */
-      inline uint64_t
-      getIndexIn1D (const Eigen::Vector3i &index) const
-      {
-        //assert(data_size_ > 0);
-        return (index[0] * data_size_ * data_size_ +
-                index[1] * data_size_ + index[2]);
-      }
 
-      /** \brief Given an index in 1d, translate it into the index (x, y, z)
-        * in 3d
-        * \param index_1d the input 1d index
-        * \param index_3d the output 3d index
+      /** \brief Method to get the marching cubes grid resolution.
+        * \param[in] res_x the resolution of the grid along the x-axis
+        * \param[in] res_y the resolution of the grid along the y-axis
+        * \param[in] res_z the resolution of the grid along the z-axis
         */
       inline void
-      getIndexIn3D (uint64_t index_1d, Eigen::Vector3i& index_3d) const
-      {
-        //assert(data_size_ > 0);
-        index_3d[0] = static_cast<Eigen::Vector3i::Scalar> (index_1d / (data_size_ * data_size_));
-        index_1d -= index_3d[0] * data_size_ * data_size_;
-        index_3d[1] = static_cast<Eigen::Vector3i::Scalar> (index_1d / data_size_);
-        index_1d -= index_3d[1] * data_size_;
-        index_3d[2] = static_cast<Eigen::Vector3i::Scalar> (index_1d);
-      }
+      getGridResolution (int &res_x, int &res_y, int &res_z)
+      { res_x = res_x_; res_y = res_y_; res_z = res_z_; }
 
-      /** \brief Given a voxel index, get all the neighbors indexes in 1D
-       *
-       */
-      void
-      getNeighborList1D (Leaf leaf, Eigen::Vector3i &index3d, HashMap &neighbor_list);
-
-      /** \brief Given the 3d index (x, y, z) of the cell, get the
-        * coordinates of the cell center
-        * \param index the output 3d index
-        * \param center the resultant cell center
+      /** \brief Method that sets the parameter that defines how much free space should be left inside the grid between
+        * the bounding box of the point cloud and the grid limits. Does not affect the resolution of the grid, it just
+        * changes the voxel size accordingly.
+        * \param[in] percentage the percentage of the bounding box that should be left empty between the bounding box and
+        * the grid limits.
         */
       inline void
-      getCellCenterFromIndex (const Eigen::Vector3i &index, Eigen::Vector4f &center) const
-      {
-        for (int i = 0; i < 3; ++i)
-          center[i] = min_p_[i] + index[i] * leaf_size_ + leaf_size_/2;
-      }
+      setPercentageExtendGrid (float percentage)
+      { percentage_extend_grid_ = percentage; }
 
-     protected:
+      /** \brief Method that gets the parameter that defines how much free space should be left inside the grid between
+        * the bounding box of the point cloud and the grid limits, as a percentage of the bounding box.
+        */
+      inline float
+      getPercentageExtendGrid ()
+      { return percentage_extend_grid_; }
 
+protected:
+      /** \brief The data structure storing the 3D grid */
+      std::vector<float> grid_;
 
-      /** \brief The point cloud input (XYZ+Normals). */
-      PointCloudPtr data_;
+      /** \brief The grid resolution */
+      int res_x_, res_y_, res_z_;
 
-      /** \brief The 3D grid leaves. */
-      HashMap leaves_;
+      /** \brief Parameter that defines how much free space should be left inside the grid between
+        * the bounding box of the point cloud and the grid limits, as a percentage of the bounding box.*/
+      float percentage_extend_grid_;
 
       /** \brief Min and max data points. */
       Eigen::Vector4f min_p_, max_p_;
 
-      /** \brief The size of a leaf. */
-      double leaf_size_;
-
-      /** \brief Gaussian scale. */
-      double gaussian_scale_;
-
-      /** \brief Data size. */
-      uint64_t data_size_;
-
-      /** \brief Padding size. */
-      int padding_size_;
-
-      /** \brief iso level. */
+      /** \brief The iso level to be extracted. */
       float iso_level_;
-
-      /** \brief Map containing the set of leaves. */
-      HashMap cell_hash_map_;
 
       /** \brief Convert the point cloud into voxel data. */
       virtual void
-      voxelizeData() =0;
+      voxelizeData () = 0;
 
-      /** \brief Interpolate along the voxel edge
-       *
-       */
+      /** \brief Interpolate along the voxel edge.
+        * \param[in] p1 The first point on the edge
+        * \param[in] p2 The second point on the edge
+        * \param[in] val_p1 The scalar value at p1
+        * \param[in] val_p2 The scalar value at p2
+        * \param[out] output The interpolated point along the edge
+        */
       void
-      interpolateEdge (float iso_level, Eigen::Vector3f &p1, Eigen::Vector3f &p2, float val_p1, float val_p2, Eigen::Vector3f &output);
+      interpolateEdge (Eigen::Vector3f &p1, Eigen::Vector3f &p2, float val_p1, float val_p2, Eigen::Vector3f &output);
 
 
       /** \brief Calculate out the corresponding polygons in the leaf node
-       *
-       * \param leaf_node the leaf node to be checked
-       * \param index_3d the 3d index of the leaf node to be checked
-       * \param cloud point cloud to store the vertices of the polygon
-       * \param iso_level the iso level to do the reconstruction on
+        * \param leaf_node the leaf node to be checked
+        * \param index_3d the 3d index of the leaf node to be checked
+        * \param cloud point cloud to store the vertices of the polygon
        */
       void
-      createSurface (Leaf leaf_node,
+      createSurface (std::vector<float> &leaf_node,
                      Eigen::Vector3i &index_3d,
-                     pcl::PointCloud<PointNT> &cloud,
-                     float iso_level);
+                     pcl::PointCloud<PointNT> &cloud);
 
-      /** \brief Get the bounding box for the input data points, also calculating the
-        * cell size, and the gaussian scale factor
-        */
+      /** \brief Get the bounding box for the input data points. */
       void
       getBoundingBox ();
+
+
+      /** \brief Method that returns the scalar value at the given grid position.
+        * \param[in] pos The 3D position in the grid
+        */
+      float
+      getGridValue (Eigen::Vector3i pos);
+
+      /** \brief Method that returns the scalar values of the neighbors of a given 3D position in the grid.
+        * \param[in] index3d the point in the grid
+        * \param[out] leaf the set of values
+        */
+      void
+      getNeighborList1D (std::vector<float> &leaf,
+                         Eigen::Vector3i &index3d);
 
       /** \brief Class get name method. */
       std::string getClassName () const { return ("MarchingCubes"); }
 
-      /** \brief Create the surface.
-         *
-         * More details here.
-         *
-         * \param output the resultant polygonal mesh
-         */
+      /** \brief Extract the surface.
+        * \param[out] output the resultant polygonal mesh
+        */
        void
        performReconstruction (pcl::PolygonMesh &output);
 
+       /** \brief Extract the surface.
+         * \param[out] points the points of the extracted mesh
+         * \param[out] polygons the connectivity between the point of the extracted mesh.
+         */
        void
        performReconstruction (pcl::PointCloud<PointNT> &points,
                               std::vector<pcl::Vertices> &polygons);
@@ -540,4 +511,4 @@ namespace pcl
 }
 
 #endif  // PCL_SURFACE_MARCHING_CUBES_H_
- 
+

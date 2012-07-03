@@ -33,48 +33,78 @@
  *
  */
 
-#ifndef PCL_SURFACE_MARCHING_CUBES_GREEDY_H_
-#define PCL_SURFACE_MARCHING_CUBES_GREEDY_H_
+#ifndef PCL_SURFACE_MARCHING_CUBES_RBF_H_
+#define PCL_SURFACE_MARCHING_CUBES_RBF_H_
 
 #include <pcl/surface/marching_cubes.h>
+#include <boost/unordered_map.hpp>
 
 namespace pcl
 {
-
-  /** \brief The marching cubes surface reconstruction algorithm, using a "greedy" voxelization algorithm
-    * \author Gregory Long
+  /** \brief The marching cubes surface reconstruction algorithm, using a signed distance function based on radial
+    * basis functions. Partially based on:
+    * Carr J.C., Beatson R.K., Cherrie J.B., Mitchell T.J., Fright W.R., McCallum B.C. and Evans T.R.,
+    * "Reconstruction and representation of 3D objects with radial basis functions"
+    * SIGGRAPH '01
+    *
+    * \author Alexandru E. Ichim
     * \ingroup surface
     */
   template <typename PointNT>
-  class MarchingCubesGreedy : public MarchingCubes<PointNT>
+  class MarchingCubesRBF : public MarchingCubes<PointNT>
   {
     public:
       using SurfaceReconstruction<PointNT>::input_;
-      using MarchingCubes<PointNT>::cell_hash_map_;
-
-      typedef typename MarchingCubes<PointNT>::Leaf Leaf;
+      using SurfaceReconstruction<PointNT>::tree_;
+      using MarchingCubes<PointNT>::grid_;
+      using MarchingCubes<PointNT>::res_x_;
+      using MarchingCubes<PointNT>::res_y_;
+      using MarchingCubes<PointNT>::res_z_;
+      using MarchingCubes<PointNT>::min_p_;
+      using MarchingCubes<PointNT>::max_p_;
 
       typedef typename pcl::PointCloud<PointNT>::Ptr PointCloudPtr;
 
       typedef typename pcl::KdTree<PointNT> KdTree;
       typedef typename pcl::KdTree<PointNT>::Ptr KdTreePtr;
-      typedef boost::unordered_map<uint64_t, Leaf, boost::hash<uint64_t>, std::equal_to<uint64_t>, Eigen::aligned_allocator<uint64_t> > HashMap;
 
-      /** \brief Constructor. */ 
-      MarchingCubesGreedy ();
+
+      /** \brief Constructor. */
+      MarchingCubesRBF ();
 
       /** \brief Destructor. */
-      ~MarchingCubesGreedy ();
+      ~MarchingCubesRBF ();
 
-    private:
       /** \brief Convert the point cloud into voxel data. */
       void
-      voxelizeData();
+      voxelizeData ();
+
+
+      /** \brief Set the off-surface points displacement value.
+        * \param[in] epsilon the value
+        */
+      inline void
+      setOffSurfaceDisplacement (float epsilon)
+      { off_surface_epsilon_ = epsilon; }
+
+      /** \brief Get the off-surface points displacement value. */
+      inline float
+      getOffSurfaceDisplacement ()
+      { return off_surface_epsilon_; }
+
+
+    protected:
+      /** \brief the Radial Basis Function kernel. */
+      double
+      kernel (Eigen::Vector3d c, Eigen::Vector3d x);
+
+      /** \brief The off-surface displacement value. */
+      float off_surface_epsilon_;
 
     public:
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 }
 
-#endif  // PCL_SURFACE_MARCHING_CUBES_H_
- 
+#endif  // PCL_SURFACE_MARCHING_CUBES_RBF_H_
+

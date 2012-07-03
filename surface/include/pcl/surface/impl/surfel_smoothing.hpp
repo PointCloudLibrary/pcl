@@ -32,7 +32,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: surfel_smoothing.hpp 3387 2011-12-05 05:17:22Z rusu $
+ * $Id: surfel_smoothing.hpp 5060 2012-03-14 02:19:39Z rusu $
  */
 
 #ifndef PCL_SURFACE_IMPL_SURFEL_SMOOTHING_H_

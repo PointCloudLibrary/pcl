@@ -32,7 +32,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: vtk_mesh_smoothing_windowed_sinc.cpp 3739 2011-12-31 09:52:02Z aichim $
+ * $Id: vtk_mesh_smoothing_windowed_sinc.cpp 5027 2012-03-12 03:10:45Z rusu $
  *
  */
 

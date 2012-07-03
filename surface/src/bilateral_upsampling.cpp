@@ -2,7 +2,7 @@
  * Software License Agreement (BSD License)
  *
  * Point Cloud Library (PCL) - www.pointclouds.org
- * Copyright (c) 2009-2011, Willow Garage, Inc.
+ * Copyright (c) 2009-2012, Willow Garage, Inc.
  *
  * All rights reserved.
  *
@@ -11,7 +11,7 @@
  * are met:
  *
  * * Redistributions of source code must retain the above copyright
- *   notice, this list of conditions and the following disclaimer.
+ * notice, this list of conditions and the following disclaimer.
  * * Redistributions in binary form must reproduce the above
  *   copyright notice, this list of conditions and the following
  *   disclaimer in the documentation and/or other materials provided
@@ -37,14 +37,13 @@
  *
  */
 
-#include <pcl/impl/instantiate.hpp>
-#include <pcl/point_types.h>
-#include <pcl/surface/mls.h>
-#include <pcl/surface/impl/mls.hpp>
+
+#include "pcl/impl/instantiate.hpp"
+#include "pcl/point_types.h"
+#include "pcl/surface/bilateral_upsampling.h"
+#include "pcl/surface/impl/bilateral_upsampling.hpp"
+
 
 // Instantiations of specific point types
-PCL_INSTANTIATE_PRODUCT(MovingLeastSquares, ((pcl::PointXYZ)(pcl::PointXYZRGB)(pcl::PointXYZRGBA))
-                                            ((pcl::PointXYZ)(pcl::PointXYZRGB)(pcl::PointXYZRGBA)(pcl::PointNormal)))
-
-/// Ideally, we should instantiate like below, but it takes large amounts of main memory for compilation
-//PCL_INSTANTIATE_PRODUCT(MovingLeastSquares, (PCL_XYZ_POINT_TYPES)(PCL_XYZ_POINT_TYPES))
+PCL_INSTANTIATE_PRODUCT(BilateralUpsampling, ((pcl::PointXYZRGB)(pcl::PointXYZRGBA))
+                                             ((pcl::PointXYZRGB)(pcl::PointXYZRGBA)))

@@ -34,10 +34,13 @@
  * $Id: texture_mapping.cpp 1006 2011-07-13 13:07:00 ktran $
  *
  */
-#include <pcl/impl/instantiate.hpp>
-#include <pcl/point_types.h>
-#include <pcl/surface/texture_mapping.h>
-#include <pcl/surface/impl/texture_mapping.hpp>
+
+/** \author Khai Tran */
+#include "pcl/impl/instantiate.hpp"
+#include "pcl/point_types.h"
+#include "pcl/surface/texture_mapping.h"
+#include "pcl/surface/impl/texture_mapping.hpp"
+
 
 // Instantiations of specific point types
 PCL_INSTANTIATE(TextureMapping, (pcl::PointXYZ))

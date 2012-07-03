@@ -33,7 +33,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: texture_mapping.h 3527 2011-12-14 19:57:12Z rusu $
+ * $Id: texture_mapping.h 6064 2012-06-29 17:57:23Z raph $
  *
  */
 
@@ -41,32 +41,83 @@
 #define PCL_SURFACE_TEXTURE_MAPPING_H_
 
 #include <pcl/surface/reconstruction.h>
+#include <pcl/common/transforms.h>
 #include <pcl/TextureMesh.h>
+
 
 namespace pcl
 {
+  namespace texture_mapping
+  {
+        
+    /** \brief Structure to store camera pose and focal length. */
+    struct Camera
+    {
+      Camera () : pose (), focal_length (), height (), width (), texture_file () {}
+      Eigen::Affine3f pose;
+      double focal_length;
+      double height;
+      double width;
+      std::string texture_file;
+
+      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    };
+
+    /** \brief Structure that links a uv coordinate to its 3D point and face.
+      */
+    struct UvIndex
+    {
+      UvIndex () : idx_cloud (), idx_face () {}
+      int idx_cloud; // Index of the PointXYZ in the camera's cloud
+      int idx_face; // Face corresponding to that projection
+    };
+    
+    typedef std::vector<Camera, Eigen::aligned_allocator<Camera> > CameraVector;
+    
+  }
+  
   /** \brief The texture mapping algorithm
-    * \author Khai Tran
+    * \author Khai Tran, Raphael Favier
     * \ingroup surface
     */
-  template <typename PointInT>
+  template<typename PointInT>
   class TextureMapping
   {
     public:
+     
+      typedef boost::shared_ptr< PointInT > Ptr;
+      typedef boost::shared_ptr< const PointInT > ConstPtr;
+
+      typedef pcl::PointCloud<PointInT> PointCloud;
+      typedef typename PointCloud::Ptr PointCloudPtr;
+      typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+
+      typedef pcl::octree::OctreePointCloudSearch<PointInT> Octree;
+      typedef typename Octree::Ptr OctreePtr;
+      typedef typename Octree::ConstPtr OctreeConstPtr;
+      
+      typedef pcl::texture_mapping::Camera Camera;
+      typedef pcl::texture_mapping::UvIndex UvIndex;
+
       /** \brief Constructor. */
-      TextureMapping () : f_ (), vector_field_ (), tex_files_ (), tex_material_ () {};
+      TextureMapping () :
+        f_ (), vector_field_ (), tex_files_ (), tex_material_ ()
+      {
+      }
 
       /** \brief Destructor. */
-      ~TextureMapping () {};
+      ~TextureMapping ()
+      {
+      }
 
       /** \brief Set mesh scale control
-        * \param[in] f 
+        * \param[in] f
         */
       inline void
       setF (float f)
       {
         f_ = f;
-      };
+      }
 
       /** \brief Set vector field
         * \param[in] x data point x
@@ -76,10 +127,10 @@ namespace pcl
       inline void
       setVectorField (float x, float y, float z)
       {
-        vector_field_ =  Eigen::Vector3f(x, y, z);
+        vector_field_ = Eigen::Vector3f (x, y, z);
         // normalize vector field
-        vector_field_ = vector_field_/std::sqrt(vector_field_.dot(vector_field_));
-      };
+        vector_field_ = vector_field_ / std::sqrt (vector_field_.dot (vector_field_));
+      }
 
       /** \brief Set texture files
         * \param[in] tex_files list of texture files
@@ -88,7 +139,7 @@ namespace pcl
       setTextureFiles (std::vector<std::string> tex_files)
       {
         tex_files_ = tex_files;
-      };
+      }
 
       /** \brief Set texture materials
         * \param[in] tex_material texture material
@@ -97,7 +148,7 @@ namespace pcl
       setTextureMaterials (TexMaterial tex_material)
       {
         tex_material_ = tex_material;
-      };
+      }
 
       /** \brief Map texture to a mesh synthesis algorithm
         * \param[in] tex_mesh texture mesh
@@ -111,8 +162,150 @@ namespace pcl
       void
       mapTexture2MeshUV (pcl::TextureMesh &tex_mesh);
 
-    protected:
+      /** \brief map textures aquired from a set of cameras onto a mesh.
+        * \details With UV mapping, the mesh must be divided into NbCamera + 1 sub-meshes.
+        * Each sub-mesh corresponding to the faces visible by one camera. The last submesh containing all non-visible faces
+        * \param[in] tex_mesh texture mesh
+        * \param[in] cams cameras used for UV mapping
+        */
+      void
+      mapMultipleTexturesToMeshUV (pcl::TextureMesh &tex_mesh, 
+                                   pcl::texture_mapping::CameraVector &cams);
 
+      /** \brief computes UV coordinates of point, observed by one particular camera
+        * \param[in] pt XYZ point to project on camera plane
+        * \param[in] cam the camera used for projection
+        * \param[out] UV_coordinates the resulting uv coordinates. Set to (-1.0,-1.0) if the point is not visible by the camera
+        * \returns false if the point is not visible by the camera
+        */
+      inline bool
+      getPointUVCoordinates (const pcl::PointXYZ &pt, const Camera &cam, Eigen::Vector2f &UV_coordinates)
+      {
+        // if the point is in front of the camera
+        if (pt.z > 0)
+        {
+          // compute image center and dimension
+          double sizeX = cam.width;
+          double sizeY = cam.height;
+          double cx = (sizeX) / 2.0;
+          double cy = (sizeY) / 2.0;
+
+          double focal_x = cam.focal_length;
+          double focal_y = cam.focal_length;
+
+          // project point on image frame
+          UV_coordinates[0] = static_cast<float> ((focal_x * (pt.x / pt.z) + cx) / sizeX); //horizontal
+          UV_coordinates[1] = 1.0f - static_cast<float> (((focal_y * (pt.y / pt.z) + cy) / sizeY)); //vertical
+
+          // point is visible!
+          if (UV_coordinates[0] >= 0.0 && UV_coordinates[0] <= 1.0 && UV_coordinates[1] >= 0.0 && UV_coordinates[1]
+                                                                                                                 <= 1.0)
+            return (true);
+        }
+
+        // point is NOT visible by the camera
+        UV_coordinates[0] = -1.0;
+        UV_coordinates[1] = -1.0;
+        return (false);
+      }
+
+      /** \brief Check if a point is occluded using raycasting on octree.
+        * \param[in] pt XYZ from which the ray will start (toward the camera)
+        * \param[in] octree the octree used for raycasting. It must be initialized with a cloud transformed into the camera's frame
+        * \returns true if the point is occluded.
+        */
+      inline bool
+      isPointOccluded (const pcl::PointXYZ &pt, const OctreePtr octree);
+
+      /** \brief Remove occluded points from a point cloud
+        * \param[in] input_cloud the cloud on which to perform occlusion detection
+        * \param[out] filtered_cloud resulting cloud, containing only visible points
+        * \param[in] octree_voxel_size octree resolution (in meters)
+        * \param[out] visible_indices will contain indices of visible points
+        * \param[out] occluded_indices will contain indices of occluded points
+        */
+      void
+      removeOccludedPoints (const PointCloudPtr &input_cloud,
+                            PointCloudPtr &filtered_cloud, const double octree_voxel_size,
+                            std::vector<int> &visible_indices, std::vector<int> &occluded_indices);
+
+      /** \brief Remove occluded points from a textureMesh
+        * \param[in] tex_mesh input mesh, on witch to perform occlusion detection
+        * \param[out] cleaned_mesh resulting mesh, containing only visible points
+        * \param[in] octree_voxel_size octree resolution (in meters)
+        */
+      void
+      removeOccludedPoints (const pcl::TextureMesh &tex_mesh, pcl::TextureMesh &cleaned_mesh, const double octree_voxel_size);
+
+
+      /** \brief Remove occluded points from a textureMesh
+        * \param[in] tex_mesh input mesh, on witch to perform occlusion detection
+        * \param[out] filtered_cloud resulting cloud, containing only visible points
+        * \param[in] octree_voxel_size octree resolution (in meters)
+        */
+      void
+      removeOccludedPoints (const pcl::TextureMesh &tex_mesh, PointCloudPtr &filtered_cloud, const double octree_voxel_size);
+
+
+      /** \brief Segment faces by camera visibility. Point-based segmentation.
+        * \details With N camera, faces will be arranged into N+1 groups: 1 for each camera, plus 1 for faces not visible from any camera.
+        * \param[in] tex_mesh input mesh that needs sorting. Must contain only 1 sub-mesh.
+        * \param[in] sorted_mesh resulting mesh, will contain nbCamera + 1 sub-mesh.
+        * \param[in] cameras vector containing the cameras used for texture mapping.
+        * \param[in] octree_voxel_size octree resolution (in meters)
+        * \param[out] visible_pts cloud containing only visible points
+        */
+      int
+      sortFacesByCamera (pcl::TextureMesh &tex_mesh, 
+                         pcl::TextureMesh &sorted_mesh, 
+                         const pcl::texture_mapping::CameraVector &cameras,
+                         const double octree_voxel_size, PointCloud &visible_pts);
+
+      /** \brief Colors a point cloud, depending on its occlusions.
+        * \details If showNbOcclusions is set to True, each point is colored depending on the number of points occluding it.
+        * Else, each point is given a different a 0 value is not occluded, 1 if occluded.
+        * By default, the number of occlusions is bounded to 4.
+        * \param[in] input_cloud input cloud on which occlusions will be computed.
+        * \param[out] colored_cloud resulting colored cloud showing the number of occlusions per point.
+        * \param[in] octree_voxel_size octree resolution (in meters).
+        * \param[in] show_nb_occlusions If false, color information will only represent.
+        * \param[in] max_occlusions Limit the number of occlusions per point.
+        */
+      void
+      showOcclusions (const PointCloudPtr &input_cloud, 
+                      pcl::PointCloud<pcl::PointXYZI>::Ptr &colored_cloud,
+                      const double octree_voxel_size, 
+                      const bool show_nb_occlusions = true,
+                      const int max_occlusions = 4);
+
+      /** \brief Colors the point cloud of a Mesh, depending on its occlusions.
+        * \details If showNbOcclusions is set to True, each point is colored depending on the number of points occluding it.
+        * Else, each point is given a different a 0 value is not occluded, 1 if occluded.
+        * By default, the number of occlusions is bounded to 4.
+        * \param[in] tex_mesh input mesh on which occlusions will be computed.
+        * \param[out] colored_cloud resulting colored cloud showing the number of occlusions per point.
+        * \param[in] octree_voxel_size octree resolution (in meters).
+        * \param[in] show_nb_occlusions If false, color information will only represent.
+        * \param[in] max_occlusions Limit the number of occlusions per point.
+        */
+      void
+      showOcclusions (pcl::TextureMesh &tex_mesh, 
+                      pcl::PointCloud<pcl::PointXYZI>::Ptr &colored_cloud,
+                      double octree_voxel_size, 
+                      bool show_nb_occlusions = true, 
+                      int max_occlusions = 4);
+
+      /** \brief Segment and texture faces by camera visibility. Face-based segmentation.
+        * \details With N camera, faces will be arranged into N+1 groups: 1 for each camera, plus 1 for faces not visible from any camera.
+        * The mesh will also contain uv coordinates for each face
+        * \param[in/out] tex_mesh input mesh that needs sorting. Should contain only 1 sub-mesh.
+        * \param[in] cameras vector containing the cameras used for texture mapping.
+        */
+      void 
+      textureMeshwithMultipleCameras (pcl::TextureMesh &mesh, 
+                                      const pcl::texture_mapping::CameraVector &cameras);
+
+    protected:
       /** \brief mesh scale control. */
       float f_;
 
@@ -125,24 +318,67 @@ namespace pcl
       /** \brief list of texture materials */
       TexMaterial tex_material_;
 
-
-      /** \brief get the distance of 2 3D points.
-        * \param[in] p1 the first point
-        * \param[in] p2 the second point
-        */
-      float
-      getDistance (Eigen::Vector3f &p1, Eigen::Vector3f &p2);
-
       /** \brief Map texture to a face
         * \param[in] p1 the first point
         * \param[in] p2 the second point
         * \param[in] p3 the third point
         */
       std::vector<Eigen::Vector2f>
-      mapTexture2Face (Eigen::Vector3f  &p1, Eigen::Vector3f  &p2, Eigen::Vector3f &p3);
+      mapTexture2Face (const Eigen::Vector3f &p1, const Eigen::Vector3f &p2, const Eigen::Vector3f &p3);
 
-       /** \brief Class get name method. */
-      std::string getClassName () const { return ("TextureMapping"); }
+      /** \brief Returns the circumcenter of a triangle and the circle's radius.
+        * \details see http://en.wikipedia.org/wiki/Circumcenter for formulas.
+        * \param[in] p1 first point of the triangle.
+        * \param[in] p2 second point of the triangle.
+        * \param[in] p3 third point of the triangle.
+        * \param[out] circumcenter resulting circumcenter
+        * \param[out] radius the radius of the circumscribed circle.
+        */
+      inline void
+      getTriangleCircumcenterAndSize (const pcl::PointXY &p1, const pcl::PointXY &p2, const pcl::PointXY &p3, pcl::PointXY &circomcenter, double &radius);
+
+      /** \brief computes UV coordinates of point, observed by one particular camera
+        * \param[in] pt XYZ point to project on camera plane
+        * \param[in] cam the camera used for projection
+        * \param[out] UV_coordinates the resulting UV coordinates. Set to (-1.0,-1.0) if the point is not visible by the camera
+        * \returns false if the point is not visible by the camera
+        */
+      inline bool
+      getPointUVCoordinates (const pcl::PointXYZ &pt, const Camera &cam, pcl::PointXY &UV_coordinates);
+
+      /** \brief Returns true if all the vertices of one face are projected on the camera's image plane.
+        * \param[in] camera camera on which to project the face.
+        * \param[in] p1 first point of the face.
+        * \param[in] p2 second point of the face.
+        * \param[in] p3 third point of the face.
+        * \param[out] proj1 UV coordinates corresponding to p1.
+        * \param[out] proj2 UV coordinates corresponding to p2.
+        * \param[out] proj3 UV coordinates corresponding to p3.
+        */
+      inline bool
+      isFaceProjected (const Camera &camera, 
+                       const pcl::PointXYZ &p1, const pcl::PointXYZ &p2, const pcl::PointXYZ &p3, 
+                       pcl::PointXY &proj1, pcl::PointXY &proj2, pcl::PointXY &proj3);
+
+      /** \brief Returns True if a point lays within a triangle
+        * \details see http://www.blackpawn.com/texts/pointinpoly/default.html
+        * \param[in] p1 first point of the triangle.
+        * \param[in] p2 second point of the triangle.
+        * \param[in] p3 third point of the triangle.
+        * \param[in] pt the querry point.
+        */
+      inline bool
+      checkPointInsideTriangle (const pcl::PointXY &p1, const pcl::PointXY &p2, const pcl::PointXY &p3, const pcl::PointXY &pt);
+
+      /** \brief Class get name method. */
+      std::string
+      getClassName () const
+      {
+        return ("TextureMapping");
+      }
+
+    public:
+      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 }
 
