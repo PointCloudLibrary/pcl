@@ -115,6 +115,7 @@ main (int argc, char** argv)
   }
   else
   {
+    setUnseenToMaxRange = true;
     cout << "\nNo *.pcd file given => Genarating example point cloud.\n\n";
     for (float x=-0.5f; x<=0.5f; x+=0.01f)
     {
@@ -159,7 +160,7 @@ main (int argc, char** argv)
   // -----Show range image-----
   // --------------------------
   pcl::visualization::RangeImageVisualizer range_image_widget ("Range image");
-  range_image_widget.setRangeImage (range_image);
+  range_image_widget.showRangeImage (range_image);
   
   // --------------------------------
   // -----Extract NARF keypoints-----
@@ -178,9 +179,9 @@ main (int argc, char** argv)
   // ----------------------------------------------
   // -----Show keypoints in range image widget-----
   // ----------------------------------------------
-  for (size_t i=0; i<keypoint_indices.points.size (); ++i)
-    range_image_widget.markPoint (keypoint_indices.points[i]%range_image.width,
-                                  keypoint_indices.points[i]/range_image.width);
+  //for (size_t i=0; i<keypoint_indices.points.size (); ++i)
+    //range_image_widget.markPoint (keypoint_indices.points[i]%range_image.width,
+                                  //keypoint_indices.points[i]/range_image.width);
   
   // -------------------------------------
   // -----Show keypoints in 3D viewer-----
@@ -198,10 +199,10 @@ main (int argc, char** argv)
   //--------------------
   // -----Main loop-----
   //--------------------
-  while (!viewer.wasStopped () && range_image_widget.isShown ())
+  while (!viewer.wasStopped ())
   {
-    pcl::visualization::ImageWidgetWX::spinOnce ();  // process GUI events
-    viewer.spinOnce (100);
-    boost::this_thread::sleep (boost::posix_time::microseconds (100000));
+    range_image_widget.spinOnce ();  // process GUI events
+    viewer.spinOnce ();
+    pcl_sleep(0.01);
   }
 }

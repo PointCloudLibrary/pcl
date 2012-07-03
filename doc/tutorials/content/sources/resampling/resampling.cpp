@@ -14,15 +14,13 @@ main (int argc, char** argv)
   // Create a KD-Tree
   pcl::search::KdTree<pcl::PointXYZ>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZ>);
 
-  // Output has the same type as the input one, it will be only smoothed
-  pcl::PointCloud<pcl::PointXYZ> mls_points;
+  // Output has the PointNormal type in order to store the normals calculated by MLS
+  pcl::PointCloud<pcl::PointNormal> mls_points;
 
   // Init object (second point type is for the normals, even if unused)
-  pcl::MovingLeastSquares<pcl::PointXYZ, pcl::Normal> mls;
-
-  // Optionally, a pointer to a cloud can be provided, to be set by MLS
-  pcl::PointCloud<pcl::Normal>::Ptr mls_normals (new pcl::PointCloud<pcl::Normal> ());
-  mls.setOutputNormals (mls_normals);
+  pcl::MovingLeastSquares<pcl::PointXYZ, pcl::PointNormal> mls;
+ 
+  mls.setComputeNormals (true);
 
   // Set parameters
   mls.setInputCloud (cloud);
@@ -31,12 +29,8 @@ main (int argc, char** argv)
   mls.setSearchRadius (0.03);
 
   // Reconstruct
-  mls.reconstruct (mls_points);
-
-  // Concatenate fields for saving
-  pcl::PointCloud<pcl::PointNormal> mls_cloud;
-  pcl::concatenateFields (mls_points, *mls_normals, mls_cloud);
+  mls.process (mls_points);
 
   // Save output
-  pcl::io::savePCDFile ("bun0-mls.pcd", mls_cloud);
+  pcl::io::savePCDFile ("bun0-mls.pcd", mls_points);
 }

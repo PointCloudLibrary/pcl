@@ -181,10 +181,10 @@ main (int argc, char** argv)
   //--------------------
   // -----Main loop-----
   //--------------------
-  while (!viewer.wasStopped () && range_image_borders_widget->isShown ())
+  while (!viewer.wasStopped ())
   {
-    pcl::visualization::ImageWidgetWX::spinOnce ();
-    viewer.spinOnce (100);
-    boost::this_thread::sleep (boost::posix_time::microseconds (100000));
+    range_image_borders_widget->spinOnce ();
+    viewer.spinOnce ();
+    pcl_sleep(0.01);
   }
 }

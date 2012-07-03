@@ -121,6 +121,7 @@ main (int argc, char** argv)
   }
   else
   {
+    setUnseenToMaxRange = true;
     cout << "\nNo *.pcd file given => Genarating example point cloud.\n\n";
     for (float x=-0.5f; x<=0.5f; x+=0.01f)
     {
@@ -165,7 +166,7 @@ main (int argc, char** argv)
   // -----Show range image-----
   // --------------------------
   pcl::visualization::RangeImageVisualizer range_image_widget ("Range image");
-  range_image_widget.setRangeImage (range_image);
+  range_image_widget.showRangeImage (range_image);
   
   // --------------------------------
   // -----Extract NARF keypoints-----
@@ -183,18 +184,20 @@ main (int argc, char** argv)
   // ----------------------------------------------
   // -----Show keypoints in range image widget-----
   // ----------------------------------------------
-  for (size_t i=0; i<keypoint_indices.points.size (); ++i)
-    range_image_widget.markPoint (keypoint_indices.points[i]%range_image.width,
-                                  keypoint_indices.points[i]/range_image.width);
+  //for (size_t i=0; i<keypoint_indices.points.size (); ++i)
+    //range_image_widget.markPoint (keypoint_indices.points[i]%range_image.width,
+                                  //keypoint_indices.points[i]/range_image.width);
   
   // -------------------------------------
   // -----Show keypoints in 3D viewer-----
   // -------------------------------------
-  pcl::PointCloud<pcl::PointXYZ> keypoints;
+  pcl::PointCloud<pcl::PointXYZ>::Ptr keypoints_ptr (new pcl::PointCloud<pcl::PointXYZ>);
+  pcl::PointCloud<pcl::PointXYZ>& keypoints = *keypoints_ptr;
   keypoints.points.resize (keypoint_indices.points.size ());
   for (size_t i=0; i<keypoint_indices.points.size (); ++i)
     keypoints.points[i].getVector3fMap () = range_image.points[keypoint_indices.points[i]].getVector3fMap ();
-  viewer.addPointCloud (keypoints.makeShared (), "keypoints");
+  pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> keypoints_color_handler (keypoints_ptr, 0, 255, 0);
+  viewer.addPointCloud<pcl::PointXYZ> (keypoints_ptr, keypoints_color_handler, "keypoints");
   viewer.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 7, "keypoints");
   
   // ------------------------------------------------------
@@ -215,10 +218,10 @@ main (int argc, char** argv)
   //--------------------
   // -----Main loop-----
   //--------------------
-  while (!viewer.wasStopped () || range_image_widget.isShown ())
+  while (!viewer.wasStopped ())
   {
-    pcl::visualization::ImageWidgetWX::spinOnce ();  // process GUI events
-    viewer.spinOnce (100);
-    boost::this_thread::sleep (boost::posix_time::microseconds (100000));
+    range_image_widget.spinOnce ();  // process GUI events
+    viewer.spinOnce ();
+    pcl_sleep(0.01);
   }
 }
