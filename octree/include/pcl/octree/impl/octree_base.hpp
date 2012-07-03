@@ -400,58 +400,8 @@ namespace pcl
               }
             }
             break;
-
-        }
-
-      }
-
-/*
-      if (depthMask_arg > 1)
-      {
-        // we have not reached maximum tree depth
-
-        BranchNode* childBranch;
-        if (!branch_arg->hasChild(childIdx))
-        {
-
-          // if required branch does not exist -> create it
-          createBranchChild (*branch_arg, childIdx, childBranch);
-
-          branchCount_++;
-
-        }
-        else
-        {
-          // required branch exists
-          childBranch = static_cast<BranchNode*> ( (*branch_arg)[childIdx]);
-        }
-
-        // recursively proceed with indexed child branch
-        createLeafRecursive (key_arg, depthMask_arg / 2, childBranch, result_arg);
-      }
-      else
-      {
-        // branch childs are leaf nodes
-        LeafNode* childLeaf;
-        if (!branch_arg->hasChild(childIdx))
-        {
-          // if leaf node at childIdx does not exist
-          createLeafChild (*branch_arg, childIdx, childLeaf);
-          leafCount_++;
-
-          // return leaf node
-          result_arg = childLeaf;
-        }
-        else
-        {
-          // leaf node already exist
-          childLeaf = static_cast<LeafNode*> ((*branch_arg)[childIdx]);
-
-          // return leaf node
-          result_arg = childLeaf;
         }
       }
-      */
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
