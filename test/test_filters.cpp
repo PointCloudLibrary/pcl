@@ -94,7 +94,7 @@ TEST (ExtractIndicesSelf, Filters)
   EXPECT_EQ (cloud->points[cloud->points.size () - 1].y, output->points[1].y);
   EXPECT_EQ (cloud->points[cloud->points.size () - 1].z, output->points[1].z);
 }
-  
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (ExtractIndices, Filters)
 {
@@ -816,7 +816,7 @@ TEST (RadiusOutlierRemoval, Filters)
   RadiusOutlierRemoval<PointXYZ> outrem;
   outrem.setInputCloud (cloud);
   outrem.setRadiusSearch (0.02);
-  outrem.setMinNeighborsInRadius (15);
+  outrem.setMinNeighborsInRadius (14);
   outrem.filter (cloud_out);
 
   EXPECT_EQ (int (cloud_out.points.size ()), 307);
@@ -846,7 +846,7 @@ TEST (RadiusOutlierRemoval, Filters)
   RadiusOutlierRemoval<PointXYZ> outrem_(true);
   outrem_.setInputCloud (cloud);
   outrem_.setRadiusSearch (0.02);
-  outrem_.setMinNeighborsInRadius (15);
+  outrem_.setMinNeighborsInRadius (14);
   outrem_.filter (cloud_out);
 
   EXPECT_EQ (int (cloud_out.points.size ()), 307);
@@ -1311,7 +1311,7 @@ TEST (ConditionalRemovalSetIndices, Filters)
   // build some indices
   boost::shared_ptr<vector<int> > indices (new vector<int> (2));
   (*indices)[0] = 0;
-  (*indices)[1] = cloud->points.size () - 1;
+  (*indices)[1] = static_cast<int> (cloud->points.size ()) - 1;
 
   // build a condition which is always true
   ConditionAnd<PointXYZ>::Ptr true_cond (new ConditionAnd<PointXYZ> ());
@@ -1327,9 +1327,9 @@ TEST (ConditionalRemovalSetIndices, Filters)
   condrem2.setKeepOrganized (false);
   condrem2.filter (output);
 
-  EXPECT_EQ ((int)output.points.size (), 2);
-  EXPECT_EQ ((int)output.width, 2);
-  EXPECT_EQ ((int)output.height, 1);
+  EXPECT_EQ (int (output.points.size ()), 2);
+  EXPECT_EQ (int (output.width), 2);
+  EXPECT_EQ (int (output.height), 1);
 
   EXPECT_EQ (cloud->points[0].x, output.points[0].x);
   EXPECT_EQ (cloud->points[0].y, output.points[0].y);
@@ -1360,9 +1360,9 @@ TEST (ConditionalRemovalSetIndices, Filters)
       num_not_nan++;
   }
 
-  EXPECT_EQ ((int)output.points.size (), (int)cloud->points.size ());
-  EXPECT_EQ ((int)output.width, (int)cloud->width);
-  EXPECT_EQ ((int)output.height, (int)cloud->height);
+  EXPECT_EQ (int (output.points.size ()), int (cloud->points.size ()));
+  EXPECT_EQ (int (output.width), int (cloud->width));
+  EXPECT_EQ (int (output.height), int (cloud->height));
   EXPECT_EQ (num_not_nan, 2);
 
   // build the filter
@@ -1374,9 +1374,9 @@ TEST (ConditionalRemovalSetIndices, Filters)
   condrem2_.setKeepOrganized (false);
   condrem2_.filter (output);
 
-  EXPECT_EQ ((int)output.points.size (), 2);
-  EXPECT_EQ ((int)output.width, 2);
-  EXPECT_EQ ((int)output.height, 1);
+  EXPECT_EQ (int (output.points.size ()), 2);
+  EXPECT_EQ (int (output.width), 2);
+  EXPECT_EQ (int (output.height), 1);
 
   EXPECT_EQ (cloud->points[0].x, output.points[0].x);
   EXPECT_EQ (cloud->points[0].y, output.points[0].y);
@@ -1386,7 +1386,7 @@ TEST (ConditionalRemovalSetIndices, Filters)
   EXPECT_EQ (cloud->points[cloud->points.size () - 1].y, output.points[1].y);
   EXPECT_EQ (cloud->points[cloud->points.size () - 1].z, output.points[1].z);
 
-  EXPECT_EQ ((int)output.points.size (), (int)indices->size () - (int)condrem2_.getRemovedIndices ()->size ());
+  EXPECT_EQ (int (output.points.size ()), int (indices->size ()) - int (condrem2_.getRemovedIndices ()->size ()));
 
   // try the not dense version
   condrem2_.setKeepOrganized (true);
@@ -1409,12 +1409,12 @@ TEST (ConditionalRemovalSetIndices, Filters)
       num_not_nan++;
   }
 
-  EXPECT_EQ ((int)output.points.size (), (int)cloud->points.size ());
-  EXPECT_EQ ((int)output.width, (int)cloud->width);
-  EXPECT_EQ ((int)output.height, (int)cloud->height);
+  EXPECT_EQ (int (output.points.size ()), int (cloud->points.size ()));
+  EXPECT_EQ (int (output.width), int (cloud->width));
+  EXPECT_EQ (int (output.height), int (cloud->height));
   EXPECT_EQ (num_not_nan, 2);
 
-  EXPECT_EQ (num_not_nan, (int)indices->size () - (int)condrem2_.getRemovedIndices ()->size ());
+  EXPECT_EQ (num_not_nan, int (indices->size ()) - int (condrem2_.getRemovedIndices ()->size ()));
 }
 
 TEST (ConditionalRemovalTfQuadraticXYZComparison, Filters)
@@ -1453,7 +1453,7 @@ TEST (ConditionalRemovalTfQuadraticXYZComparison, Filters)
   // apply it
   condrem.filter (output);
 
-  EXPECT_EQ (10, (int)output.points.size ());
+  EXPECT_EQ (10, int (output.points.size ()));
 
   EXPECT_EQ (input->points[0].x, output.points[0].x);
   EXPECT_EQ (input->points[0].y, output.points[0].y);
@@ -1468,7 +1468,7 @@ TEST (ConditionalRemovalTfQuadraticXYZComparison, Filters)
 
   condrem.filter (output);
 
-  EXPECT_EQ (4, (int)output.points.size ());
+  EXPECT_EQ (4, int (output.points.size ()));
 
   EXPECT_EQ (input->points[0].x, output.points[0].x);
   EXPECT_EQ (input->points[0].y, output.points[0].y);
@@ -1489,7 +1489,7 @@ TEST (ConditionalRemovalTfQuadraticXYZComparison, Filters)
 
   condrem.filter (output);
 
-  EXPECT_EQ (6, (int)output.points.size ());
+  EXPECT_EQ (6, int (output.points.size ()));
 
   EXPECT_EQ (input->points[0].x, output.points[0].x);
   EXPECT_EQ (input->points[0].y, output.points[0].y);
