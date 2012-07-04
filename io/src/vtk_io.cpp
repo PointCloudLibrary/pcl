@@ -39,7 +39,6 @@
 
 #include <pcl/point_types.h>
 #include <pcl/io/vtk_io.h>
-#include <pcl/io/impl/vtk_io.hpp>
 #include <fstream>
 #include <iostream>
 #include <pcl/common/io.h>
