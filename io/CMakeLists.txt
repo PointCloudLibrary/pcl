@@ -62,11 +62,9 @@ if(build)
         include (${VTK_USE_FILE})
         set(VTK_IO_INCLUDES 
             include/pcl/${SUBSYS_NAME}/vtk_lib_io.h
-            include/pcl/${SUBSYS_NAME}/png_io.h 
            )
         set(VTK_IO_SOURCE 
             src/vtk_lib_io.cpp
-            src/png_io.cpp
            )
         set(VTK_IO_TARGET_LINK_LIBRARIES vtkCommon vtkWidgets vtkIO vtkImaging)
     endif ()
