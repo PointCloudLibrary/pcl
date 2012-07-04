@@ -101,6 +101,7 @@ namespace pcl
       IterativeClosestPoint () 
       {
         reg_name_ = "IterativeClosestPoint";
+        ransac_iterations_ = 1000;
         transformation_estimation_.reset (new pcl::registration::TransformationEstimationSVD<PointSource, PointTarget>);
       };
 

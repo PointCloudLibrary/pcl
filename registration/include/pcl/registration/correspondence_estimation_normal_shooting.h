@@ -85,7 +85,7 @@ namespace pcl
           * \param[in] normals the normals computed for the input cloud
           */
         inline void
-        setSourceNormals (NormalsPtr &normals) { source_normals_ = normals; }
+        setSourceNormals (const NormalsPtr &normals) { source_normals_ = normals; }
 
         /** \brief Get the normals of the input point cloud
           */

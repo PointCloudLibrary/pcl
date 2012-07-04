@@ -39,8 +39,6 @@
 #define PCL_REGISTRATION_CORRESPONDENCE_REJECTION_DISTANCE_H_
 
 #include <pcl/registration/correspondence_rejection.h>
-#include <pcl/point_cloud.h>
-#include <pcl/kdtree/kdtree_flann.h>
 
 namespace pcl
 {
@@ -133,70 +131,9 @@ namespace pcl
           */
         float max_distance_;
 
-        class DataContainerInterface
-        {
-          public:
-            virtual ~DataContainerInterface () {}
-            virtual double getCorrespondenceScore (int index) = 0;
-            virtual double getCorrespondenceScore (const pcl::Correspondence &) = 0;
-        };
-
-        template <typename PointT>
-        class DataContainer : public DataContainerInterface
-        {
-          typedef typename pcl::PointCloud<PointT>::ConstPtr PointCloudConstPtr;
-          typedef typename pcl::KdTree<PointT>::Ptr KdTreePtr;
-          
-          public:
-
-            DataContainer () : input_ (), target_ ()
-            {
-              tree_.reset (new pcl::KdTreeFLANN<PointT>);
-            }
-
-            inline void 
-            setInputCloud (const PointCloudConstPtr &cloud)
-            {
-              input_ = cloud;
-            }
-
-            inline void 
-            setInputTarget (const PointCloudConstPtr &target)
-            {
-              target_ = target;
-              tree_->setInputCloud (target_);
-            }
-
-            inline double 
-            getCorrespondenceScore (int index)
-            {
-              std::vector<int> indices (1);
-              std::vector<float> distances (1);
-              if (tree_->nearestKSearch (input_->points[index], 1, indices, distances))
-              {
-                return (distances[0]);
-              }
-              else
-                return (std::numeric_limits<double>::max ());
-            }
-
-            inline double 
-            getCorrespondenceScore (const pcl::Correspondence &corr)
-            {
-              // Get the source and the target feature from the list
-              const PointT &src = input_->points[corr.index_query];
-              const PointT &tgt = target_->points[corr.index_match];
-
-              return ((src.getVector4fMap () - tgt.getVector4fMap ()).squaredNorm ());
-            }
-
-          private:
-            PointCloudConstPtr input_, target_;
-            KdTreePtr tree_;
-        };
-
         typedef boost::shared_ptr<DataContainerInterface> DataContainerPtr;
 
+        /** \brief A pointer to the DataContainer object containing the input and target point clouds */
         DataContainerPtr data_container_;
     };
 

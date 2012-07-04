@@ -1,6 +1,6 @@
 set(SUBSYS_NAME registration)
 set(SUBSYS_DESC "Point cloud registration library")
-set(SUBSYS_DEPS common kdtree search sample_consensus features)
+set(SUBSYS_DEPS common octree kdtree search sample_consensus features filters)
 
 set(build TRUE)
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
@@ -85,19 +85,24 @@ if(build)
         src/correspondence_rejection_sample_consensus.cpp
         src/correspondence_rejection_trimmed.cpp
         src/correspondence_rejection_var_trimmed.cpp
-        src/registration.cpp
         src/ppf_registration.cpp
-        src/pyramid_feature_matching.cpp)
+        src/pyramid_feature_matching.cpp
+        src/icp.cpp
+        src/icp_nl.cpp
+        src/transformation_estimation_svd.cpp
+        src/transformation_estimation_lm.cpp
+        src/transformation_estimation_point_to_plane_lls.cpp
+        src/transformation_validation_euclidean.cpp
+        )
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
     PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${impl_incs})
-    target_link_libraries(${LIB_NAME} pcl_kdtree pcl_sample_consensus pcl_features)
+    target_link_libraries(${LIB_NAME} pcl_kdtree pcl_search pcl_sample_consensus pcl_features pcl_filters)
     PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}"
       "${SUBSYS_DEPS}" "" "" "" "")
     # Install include files
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${impl_incs})
 
-    #add_subdirectory(tools)
 endif(build)
