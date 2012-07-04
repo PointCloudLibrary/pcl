@@ -144,7 +144,7 @@ pcl::NormalBasedSignatureEstimation<PointT, PointNT, PointFeature>::computeFeatu
       {
         float Xk = 0.0f;
         for (int n = 0; n < s_row.size (); ++n)
-          Xk += s_row[n] * cos (M_PI / M_ * (n + 0.5f) * k);
+          Xk += static_cast<float> (s_row[n] * cos (M_PI / (static_cast<double> (M_ * n) + 0.5) * static_cast<double> (k)));
         dct_row[m] = Xk;
       }
       s_row = dct_row;
@@ -161,8 +161,8 @@ pcl::NormalBasedSignatureEstimation<PointT, PointNT, PointFeature>::computeFeatu
         float Xk_real = 0.0f, Xk_imag = 0.0f;
         for (size_t n = 0; n < N_; ++n)
         {
-          Xk_real += s_matrix(n, column_i) * cos (2.0f * M_PI / N_ * k * n);
-          Xk_imag += s_matrix(n, column_i) * sin (2.0f * M_PI / N_ * k * n);
+          Xk_real += static_cast<float> (s_matrix (n, column_i) * cos (2.0f * M_PI / static_cast<double> (N_ * k * n)));
+          Xk_imag += static_cast<float> (s_matrix (n, column_i) * sin (2.0f * M_PI / static_cast<double> (N_ * k * n)));
         }
         dft_col[k] = sqrt (Xk_real*Xk_real + Xk_imag*Xk_imag);
       }

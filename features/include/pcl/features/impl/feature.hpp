@@ -141,14 +141,6 @@ pcl::Feature<PointInT, PointOutT>::initCompute ()
     else // Use the radiusSearch () function
     {
       search_parameter_ = search_radius_;
-      if (surface_ == input_) // if the two surfaces are the same
-      {
-        // Declare the search locator definition
-        int (KdTree::*radiusSearch)(int index, double radius, std::vector<int> &k_indices,
-                                    std::vector<float> &k_distances, unsigned int max_nn) const = &KdTree::radiusSearch;
-        search_method_ = boost::bind (radiusSearch, boost::ref (tree_), _1, _2, _3, _4, 0);
-      }
-
       // Declare the search locator definition
       int (KdTree::*radiusSearchSurface)(const PointCloudIn &cloud, int index, double radius,
                                          std::vector<int> &k_indices, std::vector<float> &k_distances,
@@ -161,13 +153,6 @@ pcl::Feature<PointInT, PointOutT>::initCompute ()
     if (k_ != 0) // Use the nearestKSearch () function
     {
       search_parameter_ = k_;
-      if (surface_ == input_) // if the two surfaces are the same
-      {
-        // Declare the search locator definition
-        int (KdTree::*nearestKSearch)(int index, int k, std::vector<int> &k_indices,
-                                      std::vector<float> &k_distances) const = &KdTree::nearestKSearch;
-        search_method_ = boost::bind (nearestKSearch, boost::ref (tree_), _1, _2, _3, _4);
-      }
       // Declare the search locator definition
       int (KdTree::*nearestKSearchSurface)(const PointCloudIn &cloud, int index, int k, std::vector<int> &k_indices,
                                            std::vector<float> &k_distances) const = &KdTree::nearestKSearch;
@@ -331,6 +316,51 @@ pcl::FeatureFromLabels<PointInT, PointLT, PointOutT>::initCompute ()
     PCL_ERROR ("[pcl::%s::initCompute] The number of points in the input dataset differs from the number of points in the dataset containing the labels!\n", getClassName ().c_str ());
     Feature<PointInT, PointOutT>::deinitCompute ();
     return (false);
+  }
+
+  return (true);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT, typename PointRFT> bool
+pcl::FeatureWithLocalReferenceFrames<PointInT, PointRFT>::initLocalReferenceFrames (const size_t& indices_size,
+                                                                                    const LRFEstimationPtr& lrf_estimation)
+{
+  if (frames_never_defined_)
+    frames_.reset ();
+
+  // Check if input frames are set
+  if (!frames_)
+  {
+    if (!lrf_estimation)
+    {
+      PCL_ERROR ("[initLocalReferenceFrames] No input dataset containing reference frames was given!\n");
+      return (false);
+    } else
+    {
+      //PCL_WARN ("[initLocalReferenceFrames] No input dataset containing reference frames was given! Proceed using default\n");
+      PointCloudLRFPtr default_frames (new PointCloudLRF());
+      lrf_estimation->compute (*default_frames);
+      frames_ = default_frames;
+    }
+  }
+
+  // Check if the size of frames is the same as the size of the input cloud
+  if (frames_->points.size () != indices_size)
+  {
+    if (!lrf_estimation)
+    {
+      PCL_ERROR ("[initLocalReferenceFrames] The number of points in the input dataset differs from the number of points in the dataset containing the reference frames!\n");
+      return (false);
+    } else
+    {
+      //PCL_WARN ("[initLocalReferenceFrames] The number of points in the input dataset differs from the number of points in the dataset containing the reference frames! Proceed using default\n");
+      PointCloudLRFPtr default_frames (new PointCloudLRF());
+      lrf_estimation->compute (*default_frames);
+      frames_ = default_frames;
+    }
   }
 
   return (true);

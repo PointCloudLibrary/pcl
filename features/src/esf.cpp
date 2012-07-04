@@ -33,19 +33,18 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id$
+ * ww
  *
  */
 
 #include <pcl/point_types.h>
 #include <pcl/impl/instantiate.hpp>
-#include <pcl/features/usc.h>
-#include <pcl/features/impl/usc.hpp>
+#include <pcl/features/esf.h>
+#include <pcl/features/impl/esf.hpp>
 
 // Instantiations of specific point types
 #ifdef PCL_ONLY_CORE_POINT_TYPES
-  PCL_INSTANTIATE_PRODUCT(UniqueShapeContext, ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA))((pcl::SHOT))((pcl::ReferenceFrame)))
+  PCL_INSTANTIATE_PRODUCT(ESFEstimation, ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointNormal))((pcl::ESFSignature640)))
 #else
-  PCL_INSTANTIATE_PRODUCT(UniqueShapeContext, (PCL_XYZ_POINT_TYPES)((pcl::SHOT))((pcl::ReferenceFrame)))
-  PCL_INSTANTIATE_PRODUCT(UniqueShapeContext, (PCL_XYZ_POINT_TYPES)((Eigen::MatrixXf))((pcl::ReferenceFrame)))
+  PCL_INSTANTIATE_PRODUCT(ESFEstimation, (PCL_XYZ_POINT_TYPES)((pcl::ESFSignature640)))
 #endif

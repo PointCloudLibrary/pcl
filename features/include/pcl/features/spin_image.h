@@ -106,6 +106,9 @@ namespace pcl
       typedef typename PointCloudIn::Ptr PointCloudInPtr;
       typedef typename PointCloudIn::ConstPtr PointCloudInConstPtr;
       
+      typedef typename boost::shared_ptr<SpinImageEstimation<PointInT, PointNT, PointOutT> > Ptr;
+      typedef typename boost::shared_ptr<const SpinImageEstimation<PointInT, PointNT, PointOutT> > ConstPtr;
+
       /** \brief Constructs empty spin image estimator.
         * 
         * \param[in] image_width spin-image resolution, number of bins along one dimension

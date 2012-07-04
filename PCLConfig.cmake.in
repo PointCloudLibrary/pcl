@@ -18,7 +18,7 @@ macro(pcl_report_not_found _reason)
   unset(PCL_LIBRARIES)
   unset(PCL_INCLUDE_DIRS)
   unset(PCL_LIBRARY_DIRS)
-  unset(PCL_DEFINITONS)
+  unset(PCL_DEFINITIONS)
   if(PCL_FIND_REQUIRED)
     message(FATAL_ERROR ${_reason})
   elseif(NOT PCL_FIND_QUIETLY)
@@ -133,24 +133,21 @@ macro(find_qhull)
   find_path(QHULL_INCLUDE_DIRS
     NAMES libqhull/libqhull.h qhull.h
     HINTS "${QHULL_ROOT}" "$ENV{QHULL_ROOT}"
-    PATHS "$ENV{PROGRAMFILES}/qhull 6.2.0.1373" "$ENV{PROGRAMW6432}/qhull 6.2.0.1373" 
-          "$ENV{PROGRAMFILES}/qhull" "$ENV{PROGRAMW6432}/qhull" 
+    PATHS "$ENV{PROGRAMFILES}/qhull" "$ENV{PROGRAMW6432}/qhull" 
     PATH_SUFFIXES qhull src/libqhull libqhull include)
 
   # Most likely we are on windows so prefer static libraries over shared ones (Mourad's recommend)
   find_library(QHULL_LIBRARY 
     NAMES qhullstatic qhull qhull${QHULL_MAJOR_VERSION}
     HINTS "${QHULL_ROOT}" "$ENV{QHULL_ROOT}"
-    PATHS "$ENV{PROGRAMFILES}/qhull 6.2.0.1373" "$ENV{PROGRAMW6432}/qhull 6.2.0.1373" 
-          "$ENV{PROGRAMFILES}/qhull" "$ENV{PROGRAMW6432}/qhull" 
+    PATHS "$ENV{PROGRAMFILES}/qhull" "$ENV{PROGRAMW6432}/qhull" 
     PATH_SUFFIXES project build bin lib)
   
   find_library(QHULL_LIBRARY_DEBUG 
-    NAMES qhullstatic_d qhull_d qhull${QHULL_MAJOR_VERSION}_d 
+    NAMES qhullstatic_d qhull_d qhull${QHULL_MAJOR_VERSION}_d qhull_d${QHULL_MAJOR_VERSION}
           qhull qhull${QHULL_MAJOR_VERSION}
     HINTS "${QHULL_ROOT}" "$ENV{QHULL_ROOT}"
-    PATHS "$ENV{PROGRAMFILES}/qhull 6.2.0.1373" "$ENV{PROGRAMW6432}/qhull 6.2.0.1373" 
-          "$ENV{PROGRAMFILES}/qhull" "$ENV{PROGRAMW6432}/qhull" 
+    PATHS "$ENV{PROGRAMFILES}/qhull" "$ENV{PROGRAMW6432}/qhull" 
     PATH_SUFFIXES project build bin lib)
   
   find_package_handle_standard_args(qhull DEFAULT_MSG QHULL_LIBRARY QHULL_INCLUDE_DIRS)
@@ -165,6 +162,14 @@ macro(find_qhull)
       set(QHULL_LIBRARIES ${QHULL_LIBRARY})
       set(QHULL_LIBRARY_DIRS ${QHULL_LIBRARY_PATH}) 
     endif(QHULL_LIBRARY_DEBUG)
+    set(QHULL_DEFINITIONS)
+    get_filename_component(qhull_lib ${QHULL_LIBRARY} NAME_WE)
+    if(NOT "${qhull_lib}" MATCHES "qhullstatic")
+      set(QHULL_DEFINITIONS ${QHULL_DEFINITIONS} -Dqh_QHpointer)
+      if(MSVC)
+        set(QHULL_DEFINITIONS ${QHULL_DEFINITIONS} -Dqh_QHpointer_dllimport)
+      endif(MSVC)
+    endif(NOT "${qhull_lib}" MATCHES "qhullstatic")
   endif(QHULL_FOUND)
 endmacro(find_qhull)
 
@@ -422,7 +427,7 @@ list(LENGTH pcl_all_components PCL_NB_COMPONENTS)
 
 @PCLCONFIG_OPTIONAL_DEPENDENCIES@
 
-set(pcl_header_only_components cuda_common)
+set(pcl_header_only_components geometry)
 
 include(FindPackageHandleStandardArgs)
 

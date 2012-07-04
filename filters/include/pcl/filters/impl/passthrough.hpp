@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2012, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -35,210 +37,122 @@
  *
  */
 
-#ifndef PCL_FILTERS_IMPL_PASSTHROUGH_H_
-#define PCL_FILTERS_IMPL_PASSTHROUGH_H_
+#ifndef PCL_FILTERS_IMPL_PASSTHROUGH_HPP_
+#define PCL_FILTERS_IMPL_PASSTHROUGH_HPP_
 
 #include <pcl/filters/passthrough.h>
 #include <pcl/common/io.h>
 
-//////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
 pcl::PassThrough<PointT>::applyFilter (PointCloud &output)
 {
-  // Has the input dataset been set already?
-  if (!input_)
-  {
-    PCL_WARN ("[pcl::%s::applyFilter] No input dataset given!\n", getClassName ().c_str ());
-    output.width = output.height = 0;
-    output.points.clear ();
-    return;
-  }
-
-  // Check if we're going to keep the organized structure of the cloud or not
+  std::vector<int> indices;
   if (keep_organized_)
   {
-    if (filter_field_name_.empty ())
-    {
-      // Silly - if no filtering is actually done, and we want to keep the data organized, 
-      // just copy everything. Any optimizations that can be done here???
-      output = *input_;
-      return;
-    }
+    bool temp = extract_removed_indices_;
+    extract_removed_indices_ = true;
+    applyFilterIndices (indices);
+    extract_removed_indices_ = temp;
 
-    output.width  = input_->width;
-    output.height = input_->height;
-    // Check what the user value is: if !finite, set is_dense to false, true otherwise
+    output = *input_;
+    for (int rii = 0; rii < static_cast<int> (removed_indices_->size ()); ++rii)  // rii = removed indices iterator
+      output.points[(*removed_indices_)[rii]].x = output.points[(*removed_indices_)[rii]].y = output.points[(*removed_indices_)[rii]].z = user_filter_value_;
     if (!pcl_isfinite (user_filter_value_))
       output.is_dense = false;
-    else
-      output.is_dense = input_->is_dense;
   }
   else
   {
-    output.height = 1;                    // filtering breaks the organized structure
-    // Because we're doing explit checks for isfinite, is_dense = true
-    output.is_dense = true;
+    applyFilterIndices (indices);
+    copyPointCloud (*input_, indices, output);
   }
-  output.points.resize (input_->points.size ());
-  removed_indices_->resize (input_->points.size ());
+}
 
-  size_t nr_p = 0;
-  int nr_removed_p = 0;
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT> void
+pcl::PassThrough<PointT>::applyFilterIndices (std::vector<int> &indices)
+{
+  // The arrays to be used
+  indices.resize (indices_->size ());
+  removed_indices_->resize (indices_->size ());
+  int oii = 0, rii = 0;  // oii = output indices iterator, rii = removed indices iterator
 
-  // If we don't want to process the entire cloud, but rather filter points far away from the viewpoint first...
-  if (!filter_field_name_.empty ())
+  // Has a field name been specified?
+  if (filter_field_name_.empty ())
   {
-    // Get the distance field index
+    // Only filter for non-finite entries then
+    for (int iii = 0; iii < static_cast<int> (indices_->size ()); ++iii)  // iii = input indices iterator
+    {
+      // Non-finite entries are always passed to removed indices
+      if (!pcl_isfinite (input_->points[(*indices_)[iii]].x) ||
+          !pcl_isfinite (input_->points[(*indices_)[iii]].y) ||
+          !pcl_isfinite (input_->points[(*indices_)[iii]].z))
+      {
+        if (extract_removed_indices_)
+          (*removed_indices_)[rii++] = (*indices_)[iii];
+        continue;
+      }
+      indices[oii++] = (*indices_)[iii];
+    }
+  }
+  else
+  {
+    // Attempt to get the field name's index
     std::vector<sensor_msgs::PointField> fields;
     int distance_idx = pcl::getFieldIndex (*input_, filter_field_name_, fields);
     if (distance_idx == -1)
     {
-      PCL_WARN ("[pcl::%s::applyFilter] Invalid filter field name. Index is %d.\n", getClassName ().c_str (), distance_idx);
-      output.width = output.height = 0;
-      output.points.clear ();
+      PCL_WARN ("[pcl::%s::applyFilter] Unable to find field name in point type.\n", getClassName ().c_str ());
+      indices.clear ();
+      removed_indices_->clear ();
       return;
     }
 
-    if (keep_organized_)
+    // Filter for non-finite entries and the specified field limits
+    for (int iii = 0; iii < static_cast<int> (indices_->size ()); ++iii)  // iii = input indices iterator
     {
-      for (int cp = 0; cp < static_cast<int>(input_->points.size ()); ++cp)
-      {
-        if (pcl_isnan (input_->points[cp].x) ||
-            pcl_isnan (input_->points[cp].y) ||
-            pcl_isnan (input_->points[cp].z))
-        {
-          output.points[cp].x = output.points[cp].y = output.points[cp].z = user_filter_value_;
-          continue;
-        }
-
-        // Copy the point
-        pcl::for_each_type<FieldList> (pcl::NdConcatenateFunctor <PointT, PointT> (input_->points[cp], output.points[cp]));
-
-        // Filter it. Get the distance value
-        const uint8_t* pt_data = reinterpret_cast<const uint8_t*>(&input_->points[cp]);
-        float distance_value = 0;
-        memcpy (&distance_value, pt_data + fields[distance_idx].offset, sizeof (float));
-
-        if (filter_limit_negative_)
-        {
-          // Use a threshold for cutting out points which inside the interval
-          if ((distance_value < filter_limit_max_) && (distance_value > filter_limit_min_))
-          {
-            output.points[cp].x = output.points[cp].y = output.points[cp].z = user_filter_value_;
-            continue;
-          }
-          else 
-          {
-            if (extract_removed_indices_)
-            {
-              (*removed_indices_)[nr_removed_p] = cp;
-              nr_removed_p++;
-            }
-          }
-        }
-        else
-        {
-          // Use a threshold for cutting out points which are too close/far away
-          if ((distance_value > filter_limit_max_) || (distance_value < filter_limit_min_))
-          {
-            output.points[cp].x = output.points[cp].y = output.points[cp].z = user_filter_value_;
-            continue;
-          }
-          else
-          {
-            if (extract_removed_indices_)
-            {
-              (*removed_indices_)[nr_removed_p] = cp;
-              nr_removed_p++;
-            }
-          }
-        }
-      }
-      nr_p = input_->points.size ();
-    }
-    // Remove filtered points
-    else
-    {
-      // Go over all points
-      for (int cp = 0; cp < static_cast<int>(input_->points.size ()); ++cp)
-      {
-        // Check if the point is invalid
-        if (!pcl_isfinite (input_->points[cp].x) || !pcl_isfinite (input_->points[cp].y) || !pcl_isfinite (input_->points[cp].z))
-        {
-          if (extract_removed_indices_)
-          {
-            (*removed_indices_)[nr_removed_p] = cp;
-            nr_removed_p++;
-          }
-          continue;
-        }
-
-        // Get the distance value
-        const uint8_t* pt_data = reinterpret_cast<const uint8_t*>(&input_->points[cp]);
-        float distance_value = 0;
-        memcpy (&distance_value, pt_data + fields[distance_idx].offset, sizeof (float));
-
-        if (filter_limit_negative_)
-        {
-          // Use a threshold for cutting out points which inside the interval
-          if (distance_value < filter_limit_max_ && distance_value > filter_limit_min_)
-          {
-            if (extract_removed_indices_)
-            {
-              (*removed_indices_)[nr_removed_p] = cp;
-              nr_removed_p++;
-            }
-            continue;
-          }
-        }
-        else
-        {
-          // Use a threshold for cutting out points which are too close/far away
-          if (distance_value > filter_limit_max_ || distance_value < filter_limit_min_)
-          {
-            if (extract_removed_indices_)
-            {
-              (*removed_indices_)[nr_removed_p] = cp;
-              nr_removed_p++;
-            }
-            continue;
-          }
-        }
-
-        pcl::for_each_type <FieldList> (pcl::NdConcatenateFunctor <PointT, PointT> (input_->points[cp], output.points[nr_p]));
-        nr_p++;
-      }
-      output.width = static_cast<uint32_t>(nr_p);
-    } // !keep_organized_
-  }
-  // No distance filtering, process all data. No need to check for is_organized here as we did it above
-  else
-  {
-    // First pass: go over all points and insert them into the right leaf
-    for (int cp = 0; cp < static_cast<int>(input_->points.size ()); ++cp)
-    {
-      // Check if the point is invalid
-      if (!pcl_isfinite (input_->points[cp].x) || !pcl_isfinite (input_->points[cp].y) || !pcl_isfinite (input_->points[cp].z))
+      // Non-finite entries are always passed to removed indices
+      if (!pcl_isfinite (input_->points[(*indices_)[iii]].x) ||
+          !pcl_isfinite (input_->points[(*indices_)[iii]].y) ||
+          !pcl_isfinite (input_->points[(*indices_)[iii]].z))
       {
         if (extract_removed_indices_)
-        {
-          (*removed_indices_)[nr_removed_p] = cp;
-          nr_removed_p++;
-        }
+          (*removed_indices_)[rii++] = (*indices_)[iii];
         continue;
       }
 
-      pcl::for_each_type <FieldList> (pcl::NdConcatenateFunctor <PointT, PointT> (input_->points[cp], output.points[nr_p]));
-      nr_p++;
+      // Get the field's value
+      const uint8_t* pt_data = reinterpret_cast<const uint8_t*> (&input_->points[(*indices_)[iii]]);
+      float field_value = 0;
+      memcpy (&field_value, pt_data + fields[distance_idx].offset, sizeof (float));
+
+      // Outside of the field limits are passed to removed indices
+      if (!negative_ && (field_value < filter_limit_min_ || field_value > filter_limit_max_))
+      {
+        if (extract_removed_indices_)
+          (*removed_indices_)[rii++] = (*indices_)[iii];
+        continue;
+      }
+
+      // Inside of the field limits are passed to removed indices if negative was set
+      if (negative_ && field_value > filter_limit_min_ && field_value < filter_limit_max_)
+      {
+        if (extract_removed_indices_)
+          (*removed_indices_)[rii++] = (*indices_)[iii];
+        continue;
+      }
+
+      // Otherwise it was a normal point for output (inlier)
+      indices[oii++] = (*indices_)[iii];
     }
-    output.width = static_cast<uint32_t>(nr_p);
   }
 
-  output.points.resize (output.width * output.height);
-  removed_indices_->resize(nr_removed_p);
+  // Resize the output arrays
+  indices.resize (oii);
+  removed_indices_->resize (rii);
 }
 
 #define PCL_INSTANTIATE_PassThrough(T) template class PCL_EXPORTS pcl::PassThrough<T>;
 
-#endif    // PCL_FILTERS_IMPL_PASSTHROUGH_H_
+#endif  // PCL_FILTERS_IMPL_PASSTHROUGH_HPP_
 

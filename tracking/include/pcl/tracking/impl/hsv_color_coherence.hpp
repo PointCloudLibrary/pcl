@@ -33,7 +33,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: pcl_base.h 4093 2012-01-31 04:54:52Z rusu $
+ * $Id: hsv_color_coherence.hpp 4979 2012-03-08 16:56:57Z bouffa $
  *
  */
 #ifndef PCL_TRACKING_IMPL_HSV_COLOR_COHERENCE_H_
@@ -63,7 +63,7 @@ namespace pcl
         unsigned char Red; // Red channel
       };
       float float_value;
-      long long_value;
+      int int_value;
     } RGBValue;
 
     /** \brief Convert a RGB tuple to an HSV one.
@@ -149,8 +149,8 @@ namespace pcl
     {
       // convert color space from RGB to HSV
       RGBValue source_rgb, target_rgb;
-      source_rgb.float_value = static_cast<float> (source.rgba);
-      target_rgb.float_value = static_cast<float> (target.rgba);
+      source_rgb.int_value = source.rgba;
+      target_rgb.int_value = target.rgba;
 
       float source_h, source_s, source_v, target_h, target_s, target_v;
       RGB2HSV (source_rgb.Red, source_rgb.Blue, source_rgb.Green,

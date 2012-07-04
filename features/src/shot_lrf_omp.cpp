@@ -1,9 +1,7 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Point Cloud Library (PCL) - www.pointclouds.org
- *  Copyright (c) 2010-2012, Willow Garage, Inc.
- *
+ *  Copyright (c) 2012, Willow Garage, Inc.
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -33,19 +31,16 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id$
  *
  */
-
 #include <pcl/point_types.h>
 #include <pcl/impl/instantiate.hpp>
-#include <pcl/features/usc.h>
-#include <pcl/features/impl/usc.hpp>
+#include <pcl/features/shot_lrf_omp.h>
+#include <pcl/features/impl/shot_lrf_omp.hpp>
 
 // Instantiations of specific point types
 #ifdef PCL_ONLY_CORE_POINT_TYPES
-  PCL_INSTANTIATE_PRODUCT(UniqueShapeContext, ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA))((pcl::SHOT))((pcl::ReferenceFrame)))
+  PCL_INSTANTIATE_PRODUCT(SHOTLocalReferenceFrameEstimationOMP, ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGB))((pcl::ReferenceFrame)))
 #else
-  PCL_INSTANTIATE_PRODUCT(UniqueShapeContext, (PCL_XYZ_POINT_TYPES)((pcl::SHOT))((pcl::ReferenceFrame)))
-  PCL_INSTANTIATE_PRODUCT(UniqueShapeContext, (PCL_XYZ_POINT_TYPES)((Eigen::MatrixXf))((pcl::ReferenceFrame)))
+  PCL_INSTANTIATE_PRODUCT(SHOTLocalReferenceFrameEstimationOMP, (PCL_XYZ_POINT_TYPES)((pcl::ReferenceFrame)))
 #endif

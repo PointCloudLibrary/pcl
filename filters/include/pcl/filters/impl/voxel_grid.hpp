@@ -281,8 +281,16 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
   if (save_leaf_layout_)
   {
     try
-    {
-      leaf_layout_.resize (div_b_[0]*div_b_[1]*div_b_[2], -1);
+    { 
+      // Resizing won't reset old elements to -1.  If leaf_layout_ has been used previously, it needs to be re-initialized to -1
+      uint32_t new_layout_size = div_b_[0]*div_b_[1]*div_b_[2];
+      //This is the number of elements that need to be re-initialized to -1
+      uint32_t reinit_size = std::min (static_cast<unsigned int> (new_layout_size), static_cast<unsigned int> (leaf_layout_.size()));
+      for (uint32_t i = 0; i < reinit_size; i++)
+      {
+        leaf_layout_[i] = -1;
+      }        
+      leaf_layout_.resize (new_layout_size, -1);           
     }
     catch (std::bad_alloc&)
     {

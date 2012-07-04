@@ -89,9 +89,9 @@ pcl::computeRGBPairFeatures (const Eigen::Vector4f &p1, const Eigen::Vector4f &n
 
   // everything before was standard 4D-Darboux frame feature pair
   // now, for the experimental color stuff
-  f5 = static_cast<float> (colors1[0] / colors2[0]);
-  f6 = static_cast<float> (colors1[1] / colors2[1]);
-  f7 = static_cast<float> (colors1[2] / colors2[2]);
+  f5 = (colors2[0] != 0) ? static_cast<float> (colors1[0] / colors2[0]) : 1.0f;
+  f6 = (colors2[1] != 0) ? static_cast<float> (colors1[1] / colors2[1]) : 1.0f;
+  f7 = (colors2[2] != 0) ? static_cast<float> (colors1[2] / colors2[2]) : 1.0f;
 
   // make sure the ratios are in the [-1, 1] interval
   if (f5 > 1.0f) f5 = - 1.0f / f5;
@@ -103,11 +103,11 @@ pcl::computeRGBPairFeatures (const Eigen::Vector4f &p1, const Eigen::Vector4f &n
 
 // Instantiations of specific point types
 #ifdef PCL_ONLY_CORE_POINT_TYPES
-  PCL_INSTANTIATE_PRODUCT(PFHRGBEstimation, ((pcl::PointXYZRGB) (pcl::PointXYZRGBNormal))
+  PCL_INSTANTIATE_PRODUCT(PFHRGBEstimation, ((pcl::PointXYZRGBA)(pcl::PointXYZRGB)(pcl::PointXYZRGBNormal))
                           ((pcl::Normal)(pcl::PointXYZRGBNormal))
                           ((pcl::PFHRGBSignature250)))
 #else
-  PCL_INSTANTIATE_PRODUCT(PFHRGBEstimation, ((pcl::PointXYZRGB) (pcl::PointXYZRGBNormal))
+  PCL_INSTANTIATE_PRODUCT(PFHRGBEstimation, ((pcl::PointXYZRGB)(pcl::PointXYZRGBA)(pcl::PointXYZRGBNormal))
                           (PCL_NORMAL_POINT_TYPES)
                           ((pcl::PFHRGBSignature250)))
 #endif

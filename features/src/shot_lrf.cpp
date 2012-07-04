@@ -1,9 +1,7 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Point Cloud Library (PCL) - www.pointclouds.org
- *  Copyright (c) 2010-2011, Willow Garage, Inc.
- *
+ *  Copyright (c) 2012, Willow Garage, Inc.
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -33,35 +31,16 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id$
+ *
  */
+#include <pcl/point_types.h>
+#include <pcl/impl/instantiate.hpp>
+#include <pcl/features/shot_lrf.h>
+#include <pcl/features/impl/shot_lrf.hpp>
 
-#ifndef PCL_FEATURES_SHOT_COMMON_H_
-#define PCL_FEATURES_SHOT_COMMON_H_
-
-#include <pcl/point_cloud.h>
-
-namespace pcl
-{
-  /** \brief Computes disambiguated local RF for a point index
-    * \param cloud input point cloud
-    * \param search_radius the neighborhood radius
-    * \param central_point the point from the input_ cloud at which the local RF is computed
-    * \param indices the neighbours indices
-    * \param dists the distances to the neighbours
-    * \param rf reference frame to compute
-    */
-  template<typename PointInT> float 
-  getLocalRF (const pcl::PointCloud<PointInT> &cloud,
-              const double search_radius, 
-              const Eigen::Vector4f & central_point, 
-              const std::vector<int> &indices, 
-              const std::vector<float> &dists, 
-              std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> > &rf);
-
-}
-
-#include <pcl/features/impl/shot_common.hpp>
-
-#endif    // PCL_FEATURES_SHOT_COMMON_H_
-
+// Instantiations of specific point types
+#ifdef PCL_ONLY_CORE_POINT_TYPES
+  PCL_INSTANTIATE_PRODUCT(SHOTLocalReferenceFrameEstimation, ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGB))((pcl::ReferenceFrame)))
+#else
+  PCL_INSTANTIATE_PRODUCT(SHOTLocalReferenceFrameEstimation, (PCL_XYZ_POINT_TYPES)((pcl::ReferenceFrame)))
+#endif

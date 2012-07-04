@@ -111,14 +111,11 @@ namespace pcl
     * \param normal the plane normal to be flipped
     * \ingroup features
     */
-  template <typename PointT> inline void
+  template <typename PointT, typename Scalar> inline void
   flipNormalTowardsViewpoint (const PointT &point, float vp_x, float vp_y, float vp_z,
-                              Eigen::Vector4f &normal)
+                              Eigen::Matrix<Scalar, 4, 1>& normal)
   {
-    Eigen::Vector4f vp (vp_x, vp_y, vp_z, 0);
-    // See if we need to flip any plane normals
-    vp -= point.getVector4fMap ();
-    vp[3] = 0;  // enforce the last coordinate
+    Eigen::Matrix <Scalar, 4, 1> vp (vp_x - point.x, vp_y - point.x, vp_z - point.z, 0);
 
     // Dot product between the (viewpoint - point) and the plane normal
     float cos_theta = vp.dot (normal);
@@ -127,12 +124,31 @@ namespace pcl
     if (cos_theta < 0)
     {
       normal *= -1;
-      normal[3] = 0;  // enforce the last coordinate;
+      normal[3] = 0.0f;
       // Hessian form (D = nc . p_plane (centroid here) + p)
       normal[3] = -1 * normal.dot (point.getVector4fMap ());
     }
   }
 
+  /** \brief Flip (in place) the estimated normal of a point towards a given viewpoint
+    * \param point a given point
+    * \param vp_x the X coordinate of the viewpoint
+    * \param vp_y the X coordinate of the viewpoint
+    * \param vp_z the X coordinate of the viewpoint
+    * \param normal the plane normal to be flipped
+    * \ingroup features
+    */
+  template <typename PointT, typename Scalar> inline void
+  flipNormalTowardsViewpoint (const PointT &point, float vp_x, float vp_y, float vp_z,
+                              Eigen::Matrix<Scalar, 3, 1>& normal)
+  {
+    Eigen::Matrix <Scalar, 3, 1> vp (vp_x - point.x, vp_y - point.x, vp_z - point.z);
+
+    // Flip the plane normal
+    if (vp.dot (normal) < 0)
+      normal *= -1;
+  }
+  
   /** \brief Flip (in place) the estimated normal of a point towards a given viewpoint
     * \param point a given point
     * \param vp_x the X coordinate of the viewpoint
@@ -185,11 +201,18 @@ namespace pcl
       using Feature<PointInT, PointOutT>::k_;
       using Feature<PointInT, PointOutT>::search_radius_;
       using Feature<PointInT, PointOutT>::search_parameter_;
-
+      
       typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
-
+      typedef typename Feature<PointInT, PointOutT>::PointCloudConstPtr PointCloudConstPtr;
+      
       /** \brief Empty constructor. */
-      NormalEstimation () : vpx_ (0), vpy_ (0), vpz_ (0), covariance_matrix_ (), xyz_centroid_ ()
+      NormalEstimation () 
+      : vpx_ (0)
+      , vpy_ (0)
+      , vpz_ (0)
+      , covariance_matrix_ ()
+      , xyz_centroid_ ()
+      , use_sensor_origin_ (true)
       {
         feature_name_ = "NormalEstimation";
       };
@@ -243,6 +266,21 @@ namespace pcl
         solvePlaneParameters (covariance_matrix_, nx, ny, nz, curvature);
       }
 
+      /** \brief Provide a pointer to the input dataset
+        * \param cloud the const boost shared pointer to a PointCloud message
+        */
+      virtual inline void 
+      setInputCloud (const PointCloudConstPtr &cloud)
+      {
+        input_ = cloud;
+        if (use_sensor_origin_)
+        {
+          vpx_ = input_->sensor_origin_.coeff (0);
+          vpy_ = input_->sensor_origin_.coeff (1);
+          vpz_ = input_->sensor_origin_.coeff (2);
+        }
+      }
+      
       /** \brief Set the viewpoint.
         * \param vpx the X coordinate of the viewpoint
         * \param vpy the Y coordinate of the viewpoint
@@ -254,9 +292,17 @@ namespace pcl
         vpx_ = vpx;
         vpy_ = vpy;
         vpz_ = vpz;
+        use_sensor_origin_ = false;
       }
 
-      /** \brief Get the viewpoint. */
+      /** \brief Get the viewpoint.
+        * \param [out] vpx x-coordinate of the view point
+        * \param [out] vpy y-coordinate of the view point
+        * \param [out] vpz z-coordinate of the view point
+        * \note this method returns the currently used viewpoint for normal flipping.
+        * If the viewpoint is set manually using the setViewPoint method, this method will return the set view point coordinates.
+        * If an input cloud is set, it will return the sensor origin otherwise it will return the origin (0, 0, 0)
+        */
       inline void
       getViewPoint (float &vpx, float &vpy, float &vpz)
       {
@@ -265,6 +311,28 @@ namespace pcl
         vpz = vpz_;
       }
 
+      /** \brief sets whether the sensor origin or a user given viewpoint should be used. After this method, the 
+        * normal estimation method uses the sensor origin of the input cloud.
+        * to use a user defined view point, use the method setViewPoint
+        */
+      inline void
+      useSensorOriginAsViewPoint ()
+      {
+        use_sensor_origin_ = true;
+        if (input_)
+        {
+          vpx_ = input_->sensor_origin_.coeff (0);
+          vpy_ = input_->sensor_origin_.coeff (1);
+          vpz_ = input_->sensor_origin_.coeff (2);
+        }
+        else
+        {
+          vpx_ = 0;
+          vpy_ = 0;
+          vpz_ = 0;
+        }
+      }
+      
     protected:
       /** \brief Estimate normals for all points given in <setInputCloud (), setIndices ()> using the surface in
         * setSearchSurface () and the spatial locator in setSearchMethod ()
@@ -283,6 +351,9 @@ namespace pcl
 
       /** \brief 16-bytes aligned placeholder for the XYZ centroid of a surface patch. */
       Eigen::Vector4f xyz_centroid_;
+      
+      /** whether the sensor origin of the input cloud or a user given viewpoint should be used.*/
+      bool use_sensor_origin_;
 
     private:
       /** \brief Make the computeFeature (&Eigen::MatrixXf); inaccessible from outside the class

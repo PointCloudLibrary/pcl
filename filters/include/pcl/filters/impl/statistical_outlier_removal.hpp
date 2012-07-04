@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2012, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -39,120 +41,108 @@
 #define PCL_FILTERS_IMPL_STATISTICAL_OUTLIER_REMOVAL_H_
 
 #include <pcl/filters/statistical_outlier_removal.h>
+#include <pcl/common/io.h>
 
-
-//////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
 pcl::StatisticalOutlierRemoval<PointT>::applyFilter (PointCloud &output)
 {
-  if (std_mul_ == 0.0)
+  std::vector<int> indices;
+  if (keep_organized_)
   {
-    PCL_ERROR ("[pcl::%s::applyFilter] Standard deviation multiplier not set!\n", getClassName ().c_str ());
-    output.width = output.height = 0;
-    output.points.clear ();
-    return;
-  }
+    bool temp = extract_removed_indices_;
+    extract_removed_indices_ = true;
+    applyFilterIndices (indices);
+    extract_removed_indices_ = temp;
 
-  if (input_->points.empty ())
+    output = *input_;
+    for (int rii = 0; rii < static_cast<int> (removed_indices_->size ()); ++rii)  // rii = removed indices iterator
+      output.points[(*removed_indices_)[rii]].x = output.points[(*removed_indices_)[rii]].y = output.points[(*removed_indices_)[rii]].z = user_filter_value_;
+    if (!pcl_isfinite (user_filter_value_))
+      output.is_dense = false;
+  }
+  else
   {
-    output.width = output.height = 0;
-    output.points.clear ();
-    return;
+    applyFilterIndices (indices);
+    copyPointCloud (*input_, indices, output);
   }
+}
 
-  // Initialize the spatial locator
-  if (!tree_)
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT> void
+pcl::StatisticalOutlierRemoval<PointT>::applyFilterIndices (std::vector<int> &indices)
+{
+  // Initialize the search class
+  if (!searcher_)
   {
     if (input_->isOrganized ())
-      tree_.reset (new pcl::search::OrganizedNeighbor<PointT> ());
+      searcher_.reset (new pcl::search::OrganizedNeighbor<PointT> ());
     else
-      tree_.reset (new pcl::search::KdTree<PointT> (false));
+      searcher_.reset (new pcl::search::KdTree<PointT> (false));
   }
+  searcher_->setInputCloud (input_);
 
-  // Send the input dataset to the spatial locator
-  tree_->setInputCloud (input_);
-
-  // Allocate enough space to hold the results
+  // The arrays to be used
   std::vector<int> nn_indices (mean_k_);
   std::vector<float> nn_dists (mean_k_);
-
   std::vector<float> distances (indices_->size ());
-  // Go over all the points and calculate the mean or smallest distance
-  for (size_t cp = 0; cp < indices_->size (); ++cp)
+  indices.resize (indices_->size ());
+  removed_indices_->resize (indices_->size ());
+  int oii = 0, rii = 0;  // oii = output indices iterator, rii = removed indices iterator
+
+  // First pass: Compute the mean distances for all points with respect to their k nearest neighbors
+  for (int iii = 0; iii < static_cast<int> (indices_->size ()); ++iii)  // iii = input indices iterator
   {
-    if (!pcl_isfinite (input_->points[(*indices_)[cp]].x) ||
-        !pcl_isfinite (input_->points[(*indices_)[cp]].y) ||
-        !pcl_isfinite (input_->points[(*indices_)[cp]].z))
+    if (!pcl_isfinite (input_->points[(*indices_)[iii]].x) ||
+        !pcl_isfinite (input_->points[(*indices_)[iii]].y) ||
+        !pcl_isfinite (input_->points[(*indices_)[iii]].z))
     {
-      distances[cp] = 0;
+      distances[iii] = 0.0;
       continue;
     }
 
-    if (tree_->nearestKSearch ((*indices_)[cp], mean_k_, nn_indices, nn_dists) == 0)
+    // Perform the nearest k search
+    if (searcher_->nearestKSearch ((*indices_)[iii], mean_k_ + 1, nn_indices, nn_dists) == 0)
     {
-      distances[cp] = 0;
+      distances[iii] = 0.0;
       PCL_WARN ("[pcl::%s::applyFilter] Searching for the closest %d neighbors failed.\n", getClassName ().c_str (), mean_k_);
       continue;
     }
 
-    // Minimum distance (if mean_k_ == 2) or mean distance
-    double dist_sum = 0;
-    for (int j = 1; j < mean_k_; ++j)
-      dist_sum += sqrt (nn_dists[j]);
-    distances[cp] = static_cast<float> (dist_sum / (mean_k_ - 1));
+    // Calculate the mean distance to its neighbors
+    double dist_sum = 0.0;
+    for (int k = 1; k < mean_k_ + 1; ++k)  // k = 0 is the query point
+      dist_sum += sqrt (nn_dists[k]);
+    distances[iii] = static_cast<float> (dist_sum / mean_k_);
   }
 
   // Estimate the mean and the standard deviation of the distance vector
   double mean, stddev;
   getMeanStd (distances, mean, stddev);
-  double distance_threshold = mean + std_mul_ * stddev; // a distance that is bigger than this signals an outlier
+  double distance_threshold = mean + std_mul_ * stddev;
 
-  output.points.resize (input_->points.size ());      // reserve enough space
-  removed_indices_->resize (input_->points.size ());
-  
-  // Build a new cloud by neglecting outliers
-  int nr_p = 0;
-  int nr_removed_p = 0;
-  
-  for (int cp = 0; cp < static_cast<int> (indices_->size ()); ++cp)
+  // Second pass: Classify the points on the computed distance threshold
+  for (int iii = 0; iii < static_cast<int> (indices_->size ()); ++iii)  // iii = input indices iterator
   {
-    if (negative_)
+    // Points having a too high average distance are outliers and are passed to removed indices
+    // Unless negative was set, then it's the opposite condition
+    if ((!negative_ && distances[iii] > distance_threshold) || (negative_ && distances[iii] <= distance_threshold))
     {
-      if (distances[cp] <= distance_threshold)
-      {
-        if (extract_removed_indices_)
-        {
-          (*removed_indices_)[nr_removed_p] = cp;
-          nr_removed_p++;
-        }
-        continue;
-      }
-    }
-    else
-    {
-      if (distances[cp] > distance_threshold)
-      {
-        if (extract_removed_indices_)
-        {
-          (*removed_indices_)[nr_removed_p] = cp;
-          nr_removed_p++;
-        }
-        continue;
-      }
+      if (extract_removed_indices_)
+        (*removed_indices_)[rii++] = (*indices_)[iii];
+      continue;
     }
 
-    output.points[nr_p++] = input_->points[(*indices_)[cp]];
+    // Otherwise it was a normal point for output (inlier)
+    indices[oii++] = (*indices_)[iii];
   }
 
-  output.points.resize (nr_p);
-  output.width  = nr_p;
-  output.height = 1;
-  output.is_dense = true; // nearestKSearch filters invalid points
-
-  removed_indices_->resize (nr_removed_p);
+  // Resize the output arrays
+  indices.resize (oii);
+  removed_indices_->resize (rii);
 }
 
 #define PCL_INSTANTIATE_StatisticalOutlierRemoval(T) template class PCL_EXPORTS pcl::StatisticalOutlierRemoval<T>;
 
-#endif    // PCL_FILTERS_IMPL_STATISTICAL_OUTLIER_REMOVAL_H_
+#endif  // PCL_FILTERS_IMPL_STATISTICAL_OUTLIER_REMOVAL_H_
 

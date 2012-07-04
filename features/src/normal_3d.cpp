@@ -44,7 +44,7 @@
 
 // Instantiations of specific point types
 #ifdef PCL_ONLY_CORE_POINT_TYPES
-  PCL_INSTANTIATE_PRODUCT(NormalEstimation, ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGB)(pcl::PointXYZRGBA)(pcl::PointNormal))((pcl::Normal)(pcl::PointNormal)))
+  PCL_INSTANTIATE_PRODUCT(NormalEstimation, ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGB)(pcl::PointXYZRGBA)(pcl::PointNormal))((pcl::Normal)(pcl::PointNormal)(pcl::PointXYZRGBNormal)))
 #else
   PCL_INSTANTIATE_PRODUCT(NormalEstimation, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES))
   PCL_INSTANTIATE_PRODUCT(NormalEstimation, (PCL_XYZ_POINT_TYPES)((Eigen::MatrixXf)))

@@ -128,6 +128,7 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::normalizeWeight ()
         w_max = weight;
     }
     
+    fit_ratio_ = w_min;
     if (w_max != w_min)
     {
       for ( size_t i = 0; i < particles_->points.size (); i++ )

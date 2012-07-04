@@ -45,14 +45,14 @@ template <typename PointT> bool
 pcl::LeastMedianSquares<PointT>::computeModel (int debug_verbosity_level)
 {
   // Warn and exit if no threshold was set
-  if (threshold_ == DBL_MAX)
+  if (threshold_ == std::numeric_limits<double>::max())
   {
     PCL_ERROR ("[pcl::LeastMedianSquares::computeModel] No threshold set!\n");
     return (false);
   }
 
   iterations_ = 0;
-  double d_best_penalty = DBL_MAX;
+  double d_best_penalty = std::numeric_limits<double>::max();
 
   std::vector<int> best_model;
   std::vector<int> selection;
@@ -97,8 +97,8 @@ pcl::LeastMedianSquares<PointT>::computeModel (int debug_verbosity_level)
 
     std::sort (distances.begin (), distances.end ());
     // d_cur_penalty = median (distances)
-    int mid = sac_model_->getIndices ()->size () / 2;
-    if (mid >= (int)distances.size ())
+    size_t mid = sac_model_->getIndices ()->size () / 2;
+    if (mid >= distances.size ())
     {
       //iterations_++;
       ++skipped_count;

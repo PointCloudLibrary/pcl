@@ -105,14 +105,6 @@ namespace pcl
         return (*this);
       }
 
-      /** \brief Get 3 random non-collinear points as data samples and return them as point indices.
-        * \param[out] iterations the internal number of iterations used by SAC methods
-        * \param[out] samples the resultant model samples
-        * \note assumes unique points!
-        */
-      void 
-      getSamples (int &iterations, std::vector<int> &samples);
-
       /** \brief Check whether the given index samples can form a valid 2D circle model, compute the model coefficients
         * from these samples and store them in model_coefficients. The circle coefficients are: x, y, R.
         * \param[in] samples the point indices found as possible good candidates for creating a valid model

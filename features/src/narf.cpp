@@ -204,7 +204,8 @@ Narf::extractFromRangeImage (const RangeImage& range_image, const Eigen::Affine3
                              float support_size, int surface_patch_pixel_size)
 {
   reset();
-  position_ = pose.inverse ().translation ();
+  transformation_ = pose;
+  position_ = pose.inverse (Eigen::Isometry).translation ();
   surface_patch_world_size_ = support_size;
   surface_patch_pixel_size_ = surface_patch_pixel_size;
   surface_patch_rotation_ = 0.0f;

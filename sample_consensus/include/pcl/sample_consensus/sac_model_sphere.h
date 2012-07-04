@@ -106,19 +106,6 @@ namespace pcl
         return (*this);
       }
 
-      /** \brief Get 4 random points (3 non-collinear) as data samples and return them as point indices.
-        * \param[out] iterations the internal number of iterations used by SAC methods
-        * \param[out] samples the resultant model samples
-        * \note assumes unique points!
-        * \note Two different points could be enough in theory, to infere some sort of a center and a radius,
-        *       but in practice, we might end up with a lot of points which are just 'close' to one another.
-        *       Therefore we have two options:
-        *       a) use normal information (good but I wouldn't rely on it in extremely noisy point clouds, no matter what)
-        *       b) get two more points and uniquely identify a sphere in space (3 unique points define a circle)
-        */
-      void 
-      getSamples (int &iterations, std::vector<int> &samples);
-
       /** \brief Check whether the given index samples can form a valid sphere model, compute the model 
         * coefficients from these samples and store them internally in model_coefficients. 
         * The sphere coefficients are: x, y, z, R.
@@ -208,9 +195,9 @@ namespace pcl
           return (false);
         }
 
-        if (radius_min_ != -DBL_MAX && model_coefficients[3] < radius_min_)
+        if (radius_min_ != -std::numeric_limits<double>::max() && model_coefficients[3] < radius_min_)
           return (false);
-        if (radius_max_ != DBL_MAX && model_coefficients[3] > radius_max_)
+        if (radius_max_ != std::numeric_limits<double>::max() && model_coefficients[3] > radius_max_)
           return (false);
 
         return (true);

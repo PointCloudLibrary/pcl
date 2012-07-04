@@ -32,7 +32,8 @@ if(build)
         include/pcl/${SUBSYS_NAME}/ppf.h
         include/pcl/${SUBSYS_NAME}/ppfrgb.h
         include/pcl/${SUBSYS_NAME}/shot.h
-        include/pcl/${SUBSYS_NAME}/shot_common.h
+        include/pcl/${SUBSYS_NAME}/shot_lrf.h
+        include/pcl/${SUBSYS_NAME}/shot_lrf_omp.h
         include/pcl/${SUBSYS_NAME}/shot_omp.h
         include/pcl/${SUBSYS_NAME}/spin_image.h
         include/pcl/${SUBSYS_NAME}/principal_curvatures.h
@@ -40,6 +41,7 @@ if(build)
         #include/pcl/${SUBSYS_NAME}/rsd.h
         include/pcl/${SUBSYS_NAME}/statistical_multiscale_interest_region_extraction.h
         include/pcl/${SUBSYS_NAME}/vfh.h
+        include/pcl/${SUBSYS_NAME}/esf.h        
         include/pcl/${SUBSYS_NAME}/3dsc.h
         include/pcl/${SUBSYS_NAME}/usc.h
         include/pcl/${SUBSYS_NAME}/boundary.h
@@ -66,7 +68,8 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/ppf.hpp
         include/pcl/${SUBSYS_NAME}/impl/ppfrgb.hpp
         include/pcl/${SUBSYS_NAME}/impl/shot.hpp
-        include/pcl/${SUBSYS_NAME}/impl/shot_common.hpp
+        include/pcl/${SUBSYS_NAME}/impl/shot_lrf.hpp
+        include/pcl/${SUBSYS_NAME}/impl/shot_lrf_omp.hpp
         include/pcl/${SUBSYS_NAME}/impl/shot_omp.hpp
         include/pcl/${SUBSYS_NAME}/impl/spin_image.hpp
         include/pcl/${SUBSYS_NAME}/impl/principal_curvatures.hpp
@@ -74,6 +77,7 @@ if(build)
         #include/pcl/${SUBSYS_NAME}/impl/rsd.hpp
         include/pcl/${SUBSYS_NAME}/impl/statistical_multiscale_interest_region_extraction.hpp
         include/pcl/${SUBSYS_NAME}/impl/vfh.hpp
+        include/pcl/${SUBSYS_NAME}/impl/esf.hpp         
         include/pcl/${SUBSYS_NAME}/impl/3dsc.hpp
         include/pcl/${SUBSYS_NAME}/impl/usc.hpp
         include/pcl/${SUBSYS_NAME}/impl/boundary.hpp
@@ -101,12 +105,15 @@ if(build)
         src/ppfrgb.cpp
         src/shot.cpp
         src/shot_omp.cpp
+        src/shot_lrf.cpp
+        src/shot_lrf_omp.cpp
         src/spin_image.cpp
         src/principal_curvatures.cpp
         src/rift.cpp
         #src/rsd.cpp
         src/statistical_multiscale_interest_region_extraction.cpp
         src/vfh.cpp
+        src/esf.cpp        
         src/3dsc.cpp
         src/usc.cpp
         src/range_image_border_extractor.cpp
@@ -115,8 +122,7 @@ if(build)
     set(LIB_NAME pcl_${SUBSYS_NAME})
     PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${impl_incs})
     target_link_libraries(${LIB_NAME} pcl_common pcl_search pcl_kdtree pcl_octree)
-    PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}"
-      "${SUBSYS_DEPS}" "" "" "" "")
+    PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}" "${SUBSYS_DEPS}" "" "" "" "")
     # Install headers
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${impl_incs})

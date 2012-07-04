@@ -50,6 +50,8 @@
 #include <pcl/point_cloud.h>
 #include <pcl/sample_consensus/model_types.h>
 
+#include <pcl/search/search.h>
+
 namespace pcl
 {
   template<class T> class ProgressiveSampleConsensus;
@@ -66,6 +68,7 @@ namespace pcl
       typedef typename pcl::PointCloud<PointT> PointCloud;
       typedef typename pcl::PointCloud<PointT>::ConstPtr PointCloudConstPtr;
       typedef typename pcl::PointCloud<PointT>::Ptr PointCloudPtr;
+      typedef typename pcl::search::Search<PointT>::Ptr SearchPtr;
 
       typedef boost::shared_ptr<SampleConsensusModel> Ptr;
       typedef boost::shared_ptr<const SampleConsensusModel> ConstPtr;
@@ -77,7 +80,7 @@ namespace pcl
       SampleConsensusModel (bool random = false) : 
         input_ (),
         indices_ (),
-        radius_min_ (-DBL_MAX), radius_max_ (DBL_MAX),
+        radius_min_ (-std::numeric_limits<double>::max()), radius_max_ (std::numeric_limits<double>::max()), samples_radius_ (0.),
         shuffled_indices_ (),
         rng_alg_ (),
         rng_dist_ (new boost::uniform_int<> (0, std::numeric_limits<int>::max ())),
@@ -100,7 +103,7 @@ namespace pcl
       SampleConsensusModel (const PointCloudConstPtr &cloud, bool random = false) : 
         input_ (),
         indices_ (),
-        radius_min_ (-DBL_MAX), radius_max_ (DBL_MAX),
+        radius_min_ (-std::numeric_limits<double>::max()), radius_max_ (std::numeric_limits<double>::max()), samples_radius_ (0.),
         shuffled_indices_ (),
         rng_alg_ (),
         rng_dist_ (new boost::uniform_int<> (0, std::numeric_limits<int>::max ())),
@@ -126,7 +129,7 @@ namespace pcl
       SampleConsensusModel (const PointCloudConstPtr &cloud, const std::vector<int> &indices, bool random = false) :
                             input_ (cloud),
                             indices_ (new std::vector<int> (indices)),
-                            radius_min_ (-DBL_MAX), radius_max_ (DBL_MAX),
+                            radius_min_ (-std::numeric_limits<double>::max()), radius_max_ (std::numeric_limits<double>::max()), samples_radius_ (0.),
                             shuffled_indices_ (),
                             rng_alg_ (),
                             rng_dist_ (new boost::uniform_int<> (0, std::numeric_limits<int>::max ())),
@@ -175,7 +178,10 @@ namespace pcl
         for (unsigned int iter = 0; iter < max_sample_checks_; ++iter)
         {
           // Choose the random indices
-          SampleConsensusModel<PointT>::drawIndexSample (samples);
+          if(samples_radius_ < std::numeric_limits<double>::epsilon())
+        	  SampleConsensusModel<PointT>::drawIndexSample (samples);
+          else
+        	  SampleConsensusModel<PointT>::drawIndexSampleRadius (samples);
 
           // If it's a good sample, stop here
           if (isSampleGood (samples))
@@ -360,6 +366,26 @@ namespace pcl
         max_radius = radius_max_;
       }
       
+      /** \brief Set the maximum distance allowed when drawing random samples
+        * \param[in] radius the maximum distance (L2 norm)
+        */
+      inline void
+      setSamplesMaxDist (const double &radius, SearchPtr search)
+      {
+        samples_radius_ = radius;
+        samples_radius_search_ = search;
+      }
+
+      /** \brief Get maximum distance allowed when drawing random samples
+        *
+        * \param[out] radius the maximum distance (L2 norm)
+        */
+      inline void
+      getSamplesMaxDist (double &radius)
+      {
+        radius = samples_radius_;
+      }
+
       friend class ProgressiveSampleConsensus<PointT>;
 
 		protected:
@@ -376,6 +402,42 @@ namespace pcl
           // elements, that does not matter (and nowadays, random number generators are good)
           //std::swap (shuffled_indices_[i], shuffled_indices_[i + (rand () % (index_size - i))]);
           std::swap (shuffled_indices_[i], shuffled_indices_[i + (rnd () % (index_size - i))]);
+        std::copy (shuffled_indices_.begin (), shuffled_indices_.begin () + sample_size, sample.begin ());
+      }
+
+      /** \brief Fills a sample array with one random sample from the indices_ vector
+        *        and other random samples that are closer than samples_radius_
+        * \param[out] sample the set of indices of target_ to analyze
+        */
+      inline void
+      drawIndexSampleRadius (std::vector<int> &sample)
+      {
+        size_t sample_size = sample.size ();
+        size_t index_size = shuffled_indices_.size ();
+
+        std::swap (shuffled_indices_[0], shuffled_indices_[0 + (rnd () % (index_size - 0))]);
+        //const PointT& pt0 = (*input_)[shuffled_indices_[0]];
+
+        std::vector<int> indices;
+        std::vector<float> sqr_dists;
+
+        samples_radius_search_->radiusSearch (shuffled_indices_[0], samples_radius_,
+                                              indices, sqr_dists );
+
+        if (indices.size() < sample_size - 1)
+        {
+          // radius search failed, make an invalid model
+          for(unsigned int i = 1; i < sample_size; ++i)
+        	shuffled_indices_[i] = shuffled_indices_[0];
+        }
+        else
+        {
+          for (unsigned int i = 0; i < sample_size-1; ++i)
+            std::swap (indices[i], indices[i + (rnd () % (indices.size() - i))]);
+          for (unsigned int i = 1; i < sample_size; ++i)
+            shuffled_indices_[i] = indices[i-1];
+        }
+
         std::copy (shuffled_indices_.begin (), shuffled_indices_.begin () + sample_size, sample.begin ());
       }
 
@@ -405,6 +467,12 @@ namespace pcl
         * Applicable to all models that estimate a radius. 
         */
       double radius_min_, radius_max_;
+
+      /** \brief The maximum distance of subsequent samples from the first (radius search) */
+      double samples_radius_;
+
+      /** \brief The search object for picking subsequent samples using radius search */
+      SearchPtr samples_radius_search_;
 
       /** Data containing a shuffled version of the indices. This is used and modified when drawing samples. */
       std::vector<int> shuffled_indices_;

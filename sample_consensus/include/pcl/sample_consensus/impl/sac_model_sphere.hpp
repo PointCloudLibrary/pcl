@@ -103,9 +103,9 @@ pcl::SampleConsensusModelSphere<PointT>::computeModelCoefficients (
 
   // Center (x , y, z)
   model_coefficients.resize (4);
-  model_coefficients[0] = 0.5 * m12 / m11;
-  model_coefficients[1] = 0.5 * m13 / m11;
-  model_coefficients[2] = 0.5 * m14 / m11;
+  model_coefficients[0] = 0.5f * m12 / m11;
+  model_coefficients[1] = 0.5f * m13 / m11;
+  model_coefficients[2] = 0.5f * m14 / m11;
   // Radius
   model_coefficients[3] = sqrtf (
                                  model_coefficients[0] * model_coefficients[0] +
@@ -237,7 +237,7 @@ pcl::SampleConsensusModelSphere<PointT>::optimizeModelCoefficients (
 
   tmp_inliers_ = &inliers;
 
-  OptimizationFunctor functor (inliers.size (), this);
+  OptimizationFunctor functor (static_cast<int> (inliers.size ()), this);
   Eigen::NumericalDiff<OptimizationFunctor> num_diff (functor);
   Eigen::LevenbergMarquardt<Eigen::NumericalDiff<OptimizationFunctor>, float> lm (num_diff);
   int info = lm.minimize (optimized_coefficients);

@@ -75,6 +75,10 @@ namespace pcl
       typedef typename PointCloudGradient::Ptr PointCloudGradientPtr;
       typedef typename PointCloudGradient::ConstPtr PointCloudGradientConstPtr;
 
+      typedef typename boost::shared_ptr<RIFTEstimation<PointInT, GradientT, PointOutT> > Ptr;
+      typedef typename boost::shared_ptr<const RIFTEstimation<PointInT, GradientT, PointOutT> > ConstPtr;
+
+
       /** \brief Empty constructor. */
       RIFTEstimation () : gradient_ (), nr_distance_bins_ (4), nr_gradient_bins_ (8)
       {

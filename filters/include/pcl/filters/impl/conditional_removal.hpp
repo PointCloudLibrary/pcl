@@ -770,7 +770,7 @@ pcl::ConditionalRemoval<PointT>::applyFilter (PointCloud &output)
 
           if (extract_removed_indices_)
           {
-            (*removed_indices_)[nr_removed_p] = cp;
+            (*removed_indices_)[nr_removed_p] = static_cast<int> (cp);
             nr_removed_p++;
           }
         }

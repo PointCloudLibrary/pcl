@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2012, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -39,66 +41,87 @@
 #define PCL_FILTERS_IMPL_RADIUS_OUTLIER_REMOVAL_H_
 
 #include <pcl/filters/radius_outlier_removal.h>
+#include <pcl/common/io.h>
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
 pcl::RadiusOutlierRemoval<PointT>::applyFilter (PointCloud &output)
+{
+  std::vector<int> indices;
+  if (keep_organized_)
+  {
+    bool temp = extract_removed_indices_;
+    extract_removed_indices_ = true;
+    applyFilterIndices (indices);
+    extract_removed_indices_ = temp;
+
+    output = *input_;
+    for (int rii = 0; rii < static_cast<int> (removed_indices_->size ()); ++rii)  // rii = removed indices iterator
+      output.points[(*removed_indices_)[rii]].x = output.points[(*removed_indices_)[rii]].y = output.points[(*removed_indices_)[rii]].z = user_filter_value_;
+    if (!pcl_isfinite (user_filter_value_))
+      output.is_dense = false;
+  }
+  else
+  {
+    applyFilterIndices (indices);
+    copyPointCloud (*input_, indices, output);
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT> void
+pcl::RadiusOutlierRemoval<PointT>::applyFilterIndices (std::vector<int> &indices)
 {
   if (search_radius_ == 0.0)
   {
     PCL_ERROR ("[pcl::%s::applyFilter] No radius defined!\n", getClassName ().c_str ());
-    output.width = output.height = 0;
-    output.points.clear ();
+    indices.clear ();
+    removed_indices_->clear ();
     return;
   }
-  // Initialize the spatial locator
-  if (!tree_)
+
+  // Initialize the search class
+  if (!searcher_)
   {
     if (input_->isOrganized ())
-      tree_.reset (new pcl::search::OrganizedNeighbor<PointT> ());
+      searcher_.reset (new pcl::search::OrganizedNeighbor<PointT> ());
     else
-      tree_.reset (new pcl::search::KdTree<PointT> (false));
+      searcher_.reset (new pcl::search::KdTree<PointT> (false));
   }
+  searcher_->setInputCloud (input_);
 
-  // Send the input dataset to the spatial locator
-  tree_->setInputCloud (input_);
-
-  // Allocate enough space to hold the results
+  // The arrays to be used
   std::vector<int> nn_indices (indices_->size ());
   std::vector<float> nn_dists (indices_->size ());
+  indices.resize (indices_->size ());
+  removed_indices_->resize (indices_->size ());
+  int oii = 0, rii = 0;  // oii = output indices iterator, rii = removed indices iterator
 
-
-  output.points.resize (input_->points.size ());      // reserve enough space
-  removed_indices_->resize (input_->points.size ());
-  
-  int nr_p = 0;
-  int nr_removed_p = 0;
-  
-  // Go over all the points and check which doesn't have enough neighbors
-  for (int cp = 0; cp < static_cast<int>(indices_->size ()); ++cp)
+  for (int iii = 0; iii < static_cast<int> (indices_->size ()); ++iii)  // iii = input indices iterator
   {
-    int k = tree_->radiusSearch ((*indices_)[cp], search_radius_, nn_indices, nn_dists);
-    // Check if the number of neighbors is larger than the user imposed limit
-    if (k < min_pts_radius_)
+    // Perform the radius search
+    // Note: k includes the query point, so is always at least 1
+    int k = searcher_->radiusSearch ((*indices_)[iii], search_radius_, nn_indices, nn_dists);
+
+    // Points having too few neighbors are outliers and are passed to removed indices
+    // Unless negative was set, then it's the opposite condition
+    if ((!negative_ && k <= min_pts_radius_) || (negative_ && k > min_pts_radius_))
     {
       if (extract_removed_indices_)
-      {
-        (*removed_indices_)[nr_removed_p] = cp;
-        nr_removed_p++;
-      }
+        (*removed_indices_)[rii++] = (*indices_)[iii];
       continue;
     }
 
-    output.points[nr_p++] = input_->points[(*indices_)[cp]];
+    // Otherwise it was a normal point for output (inlier)
+    indices[oii++] = (*indices_)[iii];
   }
-  removed_indices_->resize (nr_removed_p);
-  output.points.resize (nr_p);
-  output.width  = nr_p;
-  output.height = 1;
-  output.is_dense = true; // radiusSearch filters invalid points
+
+  // Resize the output arrays
+  indices.resize (oii);
+  removed_indices_->resize (rii);
 }
 
 #define PCL_INSTANTIATE_RadiusOutlierRemoval(T) template class PCL_EXPORTS pcl::RadiusOutlierRemoval<T>;
 
-#endif    // PCL_FILTERS_IMPL_RADIUS_OUTLIER_REMOVAL_H_
+#endif  // PCL_FILTERS_IMPL_RADIUS_OUTLIER_REMOVAL_H_
 

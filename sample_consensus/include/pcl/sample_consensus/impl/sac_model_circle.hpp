@@ -88,12 +88,12 @@ pcl::SampleConsensusModelCircle2D<PointT>::computeModelCoefficients (const std::
   Eigen::Vector2d m (- p1p0dif[0] / p1p0dif[1], - p2p1dif[0] / p2p1dif[1]);
 
   // Center (x, y)
-  model_coefficients[0] = (m[0] * u[0] -  m[1] * v[0]  - uvdif[1] )             / (m[0] - m[1]);
-  model_coefficients[1] = (m[0] * m[1] * uvdif[0] +  m[0] * v[1] - m[1] * u[1]) / (m[0] - m[1]);
+  model_coefficients[0] = static_cast<float> ((m[0] * u[0] -  m[1] * v[0]  - uvdif[1] )             / (m[0] - m[1]));
+  model_coefficients[1] = static_cast<float> ((m[0] * m[1] * uvdif[0] +  m[0] * v[1] - m[1] * u[1]) / (m[0] - m[1]));
 
   // Radius
-  model_coefficients[2] = sqrt ((model_coefficients[0] - p0[0]) * (model_coefficients[0] - p0[0]) +
-                                (model_coefficients[1] - p0[1]) * (model_coefficients[1] - p0[1]));
+  model_coefficients[2] = static_cast<float> (sqrt ((model_coefficients[0] - p0[0]) * (model_coefficients[0] - p0[0]) +
+                                                    (model_coefficients[1] - p0[1]) * (model_coefficients[1] - p0[1])));
   return (true);
 }
 
@@ -210,7 +210,7 @@ pcl::SampleConsensusModelCircle2D<PointT>::optimizeModelCoefficients (
 
   tmp_inliers_ = &inliers;
 
-  OptimizationFunctor functor (inliers.size (), this);
+  OptimizationFunctor functor (static_cast<int> (inliers.size ()), this);
   Eigen::NumericalDiff<OptimizationFunctor> num_diff (functor);
   Eigen::LevenbergMarquardt<Eigen::NumericalDiff<OptimizationFunctor>, float> lm (num_diff);
   int info = lm.minimize (optimized_coefficients);
@@ -265,7 +265,7 @@ pcl::SampleConsensusModelCircle2D<PointT>::projectPoints (
   {
     // Allocate enough space and copy the basics
     projected_points.points.resize (inliers.size ());
-    projected_points.width    = inliers.size ();
+    projected_points.width    = static_cast<uint32_t> (inliers.size ());
     projected_points.height   = 1;
 
     typedef typename pcl::traits::fieldList<PointT>::type FieldList;
@@ -324,9 +324,9 @@ pcl::SampleConsensusModelCircle2D<PointT>::isModelValid (const Eigen::VectorXf &
     return (false);
   }
 
-  if (radius_min_ != -DBL_MAX && model_coefficients[2] < radius_min_)
+  if (radius_min_ != -std::numeric_limits<double>::max() && model_coefficients[2] < radius_min_)
     return (false);
-  if (radius_max_ != DBL_MAX && model_coefficients[2] > radius_max_)
+  if (radius_max_ != std::numeric_limits<double>::max() && model_coefficients[2] > radius_max_)
     return (false);
 
   return (true);

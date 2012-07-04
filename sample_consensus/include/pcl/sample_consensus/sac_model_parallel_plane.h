@@ -46,7 +46,7 @@
 namespace pcl
 {
   /** \brief @b SampleConsensusModelParallelPlane defines a model for 3D plane segmentation using additional
-    * angular constraints. The plane normal must be parallel to a user-specified axis
+    * angular constraints. The plane must be parallel to a user-specified axis
     * (\ref setAxis) within an user-specified angle threshold (\ref setEpsAngle).
     *
     * Code example for a plane model, parallel (within a 15 degrees tolerance) with the Z axis:
@@ -77,7 +77,7 @@ namespace pcl
       SampleConsensusModelParallelPlane (const PointCloudConstPtr &cloud) : 
         SampleConsensusModelPlane<PointT> (cloud),
         axis_ (Eigen::Vector3f::Zero ()),
-        eps_angle_ (0.0), cos_angle_ (-1.0)
+        eps_angle_ (0.0), sin_angle_ (-1.0)
       {
       }
 
@@ -88,7 +88,7 @@ namespace pcl
       SampleConsensusModelParallelPlane (const PointCloudConstPtr &cloud, const std::vector<int> &indices) : 
         SampleConsensusModelPlane<PointT> (cloud, indices),
         axis_ (Eigen::Vector3f::Zero ()),
-        eps_angle_ (0.0), cos_angle_ (-1.0)
+        eps_angle_ (0.0), sin_angle_ (-1.0)
       {
       }
 
@@ -107,7 +107,7 @@ namespace pcl
         * \note You need to specify an angle > 0 in order to activate the axis-angle constraint!
         */
       inline void
-      setEpsAngle (const double ea) { eps_angle_ = ea; cos_angle_ = fabs (cos (ea));}
+      setEpsAngle (const double ea) { eps_angle_ = ea; sin_angle_ = fabs (sin (ea));}
 
       /** \brief Get the angle epsilon (delta) threshold. */
       inline double
@@ -155,11 +155,11 @@ namespace pcl
       /** \brief The axis along which we need to search for a plane perpendicular to. */
       Eigen::Vector3f axis_;
 
-      /** \brief The maximum allowed difference between the plane normal and the given axis. */
+      /** \brief The maximum allowed difference between the plane and the given axis. */
       double eps_angle_;
 
-      /** \brief The cosine of the angle*/
-      double cos_angle_;
+      /** \brief The sine of the angle*/
+      double sin_angle_;
   };
 }
 

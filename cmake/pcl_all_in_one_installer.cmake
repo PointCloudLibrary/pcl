@@ -11,7 +11,7 @@ if(BUILD_all_in_one_installer)
     get_filename_component(VTK_ROOT "${VTK_DIR}" PATH)
     get_filename_component(VTK_ROOT "${VTK_ROOT}" PATH)
     set(PCL_3RDPARTY_COMPONENTS)
-    foreach(dep Eigen Boost Qhull Flann VTK)
+    foreach(dep Eigen Boost Qhull FLANN VTK)
         string(TOUPPER ${dep} DEP)
         install(
             DIRECTORY "${${DEP}_ROOT}/"

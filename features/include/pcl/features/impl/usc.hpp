@@ -41,16 +41,30 @@
 #define PCL_FEATURES_IMPL_USC_HPP_
 
 #include <pcl/features/usc.h>
-#include <pcl/features/shot_common.h>
+#include <pcl/features/shot_lrf.h>
 #include <pcl/common/geometry.h>
 #include <pcl/common/angles.h>
 #include <pcl/common/utils.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointInT, typename PointOutT> bool
-pcl::UniqueShapeContext<PointInT, PointOutT>::initCompute ()
+template <typename PointInT, typename PointOutT, typename PointRFT> bool
+pcl::UniqueShapeContext<PointInT, PointOutT, PointRFT>::initCompute ()
 {
   if (!Feature<PointInT, PointOutT>::initCompute ())
+  {
+    PCL_ERROR ("[pcl::%s::initCompute] Init failed.\n", getClassName ().c_str ());
+    return (false);
+  }
+
+  // Default LRF estimation alg: SHOTLocalReferenceFrameEstimation
+  typename SHOTLocalReferenceFrameEstimation<PointInT, PointRFT>::Ptr lrf_estimator(new SHOTLocalReferenceFrameEstimation<PointInT, PointRFT>());
+  lrf_estimator->setRadiusSearch (local_radius_);
+  lrf_estimator->setInputCloud (input_);
+  lrf_estimator->setIndices (indices_);
+  if (!fake_surface_)
+    lrf_estimator->setSearchSurface(surface_);
+
+  if (!FeatureWithLocalReferenceFrames<PointInT, PointRFT>::initLocalReferenceFrames (indices_->size (), lrf_estimator))
   {
     PCL_ERROR ("[pcl::%s::initCompute] Init failed.\n", getClassName ().c_str ());
     return (false);
@@ -95,7 +109,7 @@ pcl::UniqueShapeContext<PointInT, PointOutT>::initCompute ()
   // "integr_phi" has always the same value so we compute it only one time
   float integr_phi  = pcl::deg2rad (phi_divisions_[1]) - pcl::deg2rad (phi_divisions_[0]);
   // exponential to compute the cube root using pow
-  float e = 1.0f / 3.0f;    
+  float e = 1.0f / 3.0f;
   // Resize volume look up table
   volume_lut_.resize (radius_bins_ * elevation_bins_ * azimuth_bins_);
   // Fill volumes look up table
@@ -103,18 +117,18 @@ pcl::UniqueShapeContext<PointInT, PointOutT>::initCompute ()
   {
     // "r" term of the volume integral
     float integr_r = (radii_interval_[j+1]*radii_interval_[j+1]*radii_interval_[j+1] / 3) - (radii_interval_[j]*radii_interval_[j]*radii_interval_[j]/ 3);
-    
+
     for (size_t k = 0; k < elevation_bins_; k++)
     {
       // "theta" term of the volume integral
       float integr_theta = cosf (deg2rad (theta_divisions_[k])) - cosf (deg2rad (theta_divisions_[k+1]));
       // Volume
       float V = integr_phi * integr_theta * integr_r;
-      // Compute cube root of the computed volume commented for performance but left 
+      // Compute cube root of the computed volume commented for performance but left
       // here for clarity
       // float cbrt = pow(V, e);
       // cbrt = 1 / cbrt;
-      
+
       for (size_t l = 0; l < azimuth_bins_; l++)
         // Store in lut 1/cbrt
         //volume_lut_[ (l*elevation_bins_*radius_bins_) + k*radius_bins_ + j ] = cbrt;
@@ -125,37 +139,15 @@ pcl::UniqueShapeContext<PointInT, PointOutT>::initCompute ()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointInT, typename PointOutT> bool
-pcl::UniqueShapeContext<PointInT, PointOutT>::computePointRF (size_t index, float rf[9])
-{
-  std::vector<int> nn_indices;
-  std::vector<float> nn_dists;
-  size_t nb_neighbours = searchForNeighbors ((*indices_)[index], local_radius_, nn_indices, nn_dists);
-
-  // The RF is formed as the SHOT local RF
-  if (nb_neighbours < 5)
-  {
-    //PCL_WARN ("[pcl::%s::computePointRF] Neighborhood has %d vertices which is less than 5, aborting description of point index %d\n!", getClassName ().c_str (), nb_neighbours, (*indices_)[index]);
-    return (false);
-  }
-  std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> > rf_ (3);
-  Eigen::Vector4f central_point = input_->points[(*indices_)[index]].getVector4fMap ();
-  central_point[3] = 0;
-  pcl::getLocalRF (*surface_, local_radius_, central_point /*(*indices_)[index]*/, nn_indices, nn_dists, rf_);
-  for (int d = 0; d < 9; ++d)
-    rf[d] = rf_[d/3][d%3];
-
-  return (true);
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointInT, typename PointOutT> void
-pcl::UniqueShapeContext<PointInT, PointOutT>::computePointDescriptor (size_t index, float rf[9], std::vector<float> &desc)
+template <typename PointInT, typename PointOutT, typename PointRFT> void
+pcl::UniqueShapeContext<PointInT, PointOutT, PointRFT>::computePointDescriptor (size_t index, /*float rf[9],*/ std::vector<float> &desc)
 {
   pcl::Vector3fMapConst origin = input_->points[(*indices_)[index]].getVector3fMap ();
-  const Eigen::Map<Eigen::Vector3f> x_axis (rf);
-  const Eigen::Map<Eigen::Vector3f> y_axis (rf + 3);
-  const Eigen::Map<Eigen::Vector3f> normal (rf + 6);
+
+  const Eigen::Vector3f& x_axis = frames_->points[index].x_axis.getNormalVector3fMap ();
+  //const Eigen::Vector3f& y_axis = frames_->points[index].y_axis.getNormalVector3fMap ();
+  const Eigen::Vector3f& normal = frames_->points[index].z_axis.getNormalVector3fMap ();
+
   // Find every point within specified search_radius_
   std::vector<int> nn_indices;
   std::vector<float> nn_dists;
@@ -169,10 +161,10 @@ pcl::UniqueShapeContext<PointInT, PointOutT>::computePointDescriptor (size_t ind
     Eigen::Vector3f neighbour = surface_->points[nn_indices[ne]].getVector3fMap ();
 
     // ----- Compute current neighbour polar coordinates -----
-    
+
     // Get distance between the neighbour and the origin
-    float r = sqrt (nn_dists[ne]); 
-    
+    float r = sqrt (nn_dists[ne]);
+
     // Project point into the tangent plane
     Eigen::Vector3f proj;
     pcl::geometry::project (neighbour, origin, normal, proj);
@@ -180,8 +172,8 @@ pcl::UniqueShapeContext<PointInT, PointOutT>::computePointDescriptor (size_t ind
 
     // Normalize to compute the dot product
     proj.normalize ();
-    
-    // Compute the angle between the projection and the x axis in the interval [0,360] 
+
+    // Compute the angle between the projection and the x axis in the interval [0,360]
     Eigen::Vector3f cross = x_axis.cross (proj);
     float phi = rad2deg (std::atan2 (cross.norm (), x_axis.dot (proj)));
     phi = cross.dot (normal) < 0.f ? (360.0f - phi) : phi;
@@ -197,7 +189,7 @@ pcl::UniqueShapeContext<PointInT, PointOutT>::computePointDescriptor (size_t ind
     size_t l = 0;
 
     /// Compute the Bin(j, k, l) coordinates of current neighbour
-    for (size_t rad = 1; rad < radius_bins_ + 1; rad++) 
+    for (size_t rad = 1; rad < radius_bins_ + 1; rad++)
     {
       if (r <= radii_interval_[rad])
       {
@@ -206,18 +198,18 @@ pcl::UniqueShapeContext<PointInT, PointOutT>::computePointDescriptor (size_t ind
       }
     }
 
-    for (size_t ang = 1; ang < elevation_bins_ + 1; ang++) 
+    for (size_t ang = 1; ang < elevation_bins_ + 1; ang++)
     {
-      if (theta <= theta_divisions_[ang]) 
+      if (theta <= theta_divisions_[ang])
       {
         k = ang - 1;
         break;
       }
     }
 
-    for (size_t ang = 1; ang < azimuth_bins_ + 1; ang++) 
+    for (size_t ang = 1; ang < azimuth_bins_ + 1; ang++)
     {
-      if (phi <= phi_divisions_[ang]) 
+      if (phi <= phi_divisions_[ang])
       {
         l = ang - 1;
         break;
@@ -229,10 +221,10 @@ pcl::UniqueShapeContext<PointInT, PointOutT>::computePointDescriptor (size_t ind
     std::vector<float> neighbour_didtances;
     float point_density = static_cast<float> (searchForNeighbors (*surface_, nn_indices[ne], point_density_radius_, neighbour_indices, neighbour_didtances));
     /// point_density is always bigger than 0 because FindPointsWithinRadius returns at least the point itself
-    float w = (1.0f / point_density) * volume_lut_[(l*elevation_bins_*radius_bins_) + 
-                                                   (k*radius_bins_) + 
+    float w = (1.0f / point_density) * volume_lut_[(l*elevation_bins_*radius_bins_) +
+                                                   (k*radius_bins_) +
                                                    j];
-      
+
     assert (w >= 0.0);
     if (w == std::numeric_limits<float>::infinity ())
       PCL_ERROR ("Shape Context Error INF!\n");
@@ -246,35 +238,37 @@ pcl::UniqueShapeContext<PointInT, PointOutT>::computePointDescriptor (size_t ind
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointInT, typename PointOutT> void
-pcl::UniqueShapeContext<PointInT, PointOutT>::computeFeature (PointCloudOut &output)
+template <typename PointInT, typename PointOutT, typename PointRFT> void
+pcl::UniqueShapeContext<PointInT, PointOutT, PointRFT>::computeFeature (PointCloudOut &output)
 {
   for (size_t point_index = 0; point_index < indices_->size (); point_index++)
   {
     output[point_index].descriptor.resize (descriptor_length_);
-    computePointRF (point_index, output[point_index].rf);
-    computePointDescriptor (point_index, output[point_index].rf, output[point_index].descriptor);
+    for (int d = 0; d < 9; ++d)
+      output.points[point_index].rf[d] = frames_->points[point_index].rf[ (4*(d/3) + (d%3)) ];
+
+    computePointDescriptor (point_index, output[point_index].descriptor);
   }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointInT> void
-pcl::UniqueShapeContext<PointInT, Eigen::MatrixXf>::computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &output)
+template <typename PointInT, typename PointRFT> void
+pcl::UniqueShapeContext<PointInT, Eigen::MatrixXf, PointRFT>::computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &output)
 {
-  Eigen::VectorXf rf (9);
   output.points.resize (indices_->size (), descriptor_length_ + 9);
+
   for (size_t point_index = 0; point_index < indices_->size (); point_index++)
   {
-    computePointRF (point_index, rf.data ());
-    for (int j = 0; j < 9; ++j)
-      output.points (point_index, j) = rf[j];
+    for (int d = 0; d < 9; ++d)
+      output.points (point_index, d) = frames_->points[point_index].rf[ (4*(d/3) + (d%3)) ];
+
     std::vector<float> descriptor (descriptor_length_);
-    computePointDescriptor (point_index, rf.data (), descriptor);
+    computePointDescriptor (point_index, descriptor);
     for (size_t j = 0; j < descriptor_length_; ++j)
       output.points (point_index, 9 + j) = descriptor[j];
   }
 }
 
-#define PCL_INSTANTIATE_UniqueShapeContext(T,OutT) template class PCL_EXPORTS pcl::UniqueShapeContext<T,OutT>;
+#define PCL_INSTANTIATE_UniqueShapeContext(T,OutT,RFT) template class PCL_EXPORTS pcl::UniqueShapeContext<T,OutT,RFT>;
 
 #endif

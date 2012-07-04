@@ -74,17 +74,17 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::computeModelCoefficients (
   Eigen::Vector4f n2 (normals_->points[samples[1]].normal[0], normals_->points[samples[1]].normal[1], normals_->points[samples[1]].normal[2], 0);
   Eigen::Vector4f w = n1 + p1 - p2;
 
-  double a = n1.dot (n1);
-  double b = n1.dot (n2);
-  double c = n2.dot (n2);
-  double d = n1.dot (w);
-  double e = n2.dot (w);
-  double denominator = a*c - b*b;
-  double sc, tc;
+  float a = n1.dot (n1);
+  float b = n1.dot (n2);
+  float c = n2.dot (n2);
+  float d = n1.dot (w);
+  float e = n2.dot (w);
+  float denominator = a*c - b*b;
+  float sc, tc;
   // Compute the line parameters of the two closest points
   if (denominator < 1e-8)          // The lines are almost parallel
   {
-    sc = 0.0;
+    sc = 0.0f;
     tc = (b > c ? d / b : e / c);  // Use the largest denominator
   }
   else
@@ -108,7 +108,7 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::computeModelCoefficients (
   model_coefficients[4] = line_dir[1];
   model_coefficients[5] = line_dir[2];
   // cylinder radius
-  model_coefficients[6] = sqrt (pcl::sqrPointToLineDistance (p1, line_pt, line_dir));
+  model_coefficients[6] = static_cast<float> (sqrt (pcl::sqrPointToLineDistance (p1, line_pt, line_dir)));
 
   if (model_coefficients[6] > radius_max_ || model_coefficients[6] < radius_min_)
     return (false);
@@ -132,8 +132,8 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::getDistancesToModel (
 
   Eigen::Vector4f line_pt  (model_coefficients[0], model_coefficients[1], model_coefficients[2], 0);
   Eigen::Vector4f line_dir (model_coefficients[3], model_coefficients[4], model_coefficients[5], 0);
-  double ptdotdir = line_pt.dot (line_dir);
-  double dirdotdir = 1.0 / line_dir.dot (line_dir);
+  float ptdotdir = line_pt.dot (line_dir);
+  float dirdotdir = 1.0f / line_dir.dot (line_dir);
   // Iterate through the 3d points and calculate the distances from them to the sphere
   for (size_t i = 0; i < indices_->size (); ++i)
   {
@@ -146,7 +146,7 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::getDistancesToModel (
     double d_euclid = fabs (pointToLineDistance (pt, model_coefficients) - model_coefficients[6]);
 
     // Calculate the point's projection on the cylinder axis
-    double k = (pt.dot (line_dir) - ptdotdir) * dirdotdir;
+    float k = (pt.dot (line_dir) - ptdotdir) * dirdotdir;
     Eigen::Vector4f pt_proj = line_pt + k * line_dir;
     Eigen::Vector4f dir = pt - pt_proj;
     dir.normalize ();
@@ -176,8 +176,8 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::selectWithinDistance (
 
   Eigen::Vector4f line_pt  (model_coefficients[0], model_coefficients[1], model_coefficients[2], 0);
   Eigen::Vector4f line_dir (model_coefficients[3], model_coefficients[4], model_coefficients[5], 0);
-  double ptdotdir = line_pt.dot (line_dir);
-  double dirdotdir = 1.0 / line_dir.dot (line_dir);
+  float ptdotdir = line_pt.dot (line_dir);
+  float dirdotdir = 1.0f / line_dir.dot (line_dir);
   // Iterate through the 3d points and calculate the distances from them to the sphere
   for (size_t i = 0; i < indices_->size (); ++i)
   {
@@ -188,7 +188,7 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::selectWithinDistance (
     double d_euclid = fabs (pointToLineDistance (pt, model_coefficients) - model_coefficients[6]);
 
     // Calculate the point's projection on the cylinder axis
-    double k = (pt.dot (line_dir) - ptdotdir) * dirdotdir;
+    float k = (pt.dot (line_dir) - ptdotdir) * dirdotdir;
     Eigen::Vector4f pt_proj = line_pt + k * line_dir;
     Eigen::Vector4f dir = pt - pt_proj;
     dir.normalize ();
@@ -220,8 +220,8 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::countWithinDistance (
 
   Eigen::Vector4f line_pt  (model_coefficients[0], model_coefficients[1], model_coefficients[2], 0);
   Eigen::Vector4f line_dir (model_coefficients[3], model_coefficients[4], model_coefficients[5], 0);
-  double ptdotdir = line_pt.dot (line_dir);
-  double dirdotdir = 1.0 / line_dir.dot (line_dir);
+  float ptdotdir = line_pt.dot (line_dir);
+  float dirdotdir = 1.0f / line_dir.dot (line_dir);
   // Iterate through the 3d points and calculate the distances from them to the sphere
   for (size_t i = 0; i < indices_->size (); ++i)
   {
@@ -232,7 +232,7 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::countWithinDistance (
     double d_euclid = fabs (pointToLineDistance (pt, model_coefficients) - model_coefficients[6]);
 
     // Calculate the point's projection on the cylinder axis
-    double k = (pt.dot (line_dir) - ptdotdir) * dirdotdir;
+    float k = (pt.dot (line_dir) - ptdotdir) * dirdotdir;
     Eigen::Vector4f pt_proj = line_pt + k * line_dir;
     Eigen::Vector4f dir = pt - pt_proj;
     dir.normalize ();
@@ -269,7 +269,7 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::optimizeModelCoefficients (
 
   tmp_inliers_ = &inliers;
 
-  OptimizationFunctor functor (inliers.size (), this);
+  OptimizationFunctor functor (static_cast<int> (inliers.size ()), this);
   Eigen::NumericalDiff<OptimizationFunctor > num_diff (functor);
   Eigen::LevenbergMarquardt<Eigen::NumericalDiff<OptimizationFunctor>, float> lm (num_diff);
   int info = lm.minimize (optimized_coefficients);
@@ -278,6 +278,12 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::optimizeModelCoefficients (
   PCL_DEBUG ("[pcl::SampleConsensusModelCylinder::optimizeModelCoefficients] LM solver finished with exit code %i, having a residual norm of %g. \nInitial solution: %g %g %g %g %g %g %g \nFinal solution: %g %g %g %g %g %g %g\n",
              info, lm.fvec.norm (), model_coefficients[0], model_coefficients[1], model_coefficients[2], model_coefficients[3],
              model_coefficients[4], model_coefficients[5], model_coefficients[6], optimized_coefficients[0], optimized_coefficients[1], optimized_coefficients[2], optimized_coefficients[3], optimized_coefficients[4], optimized_coefficients[5], optimized_coefficients[6]);
+    
+  Eigen::Vector3f line_dir (optimized_coefficients[3], optimized_coefficients[4], optimized_coefficients[5]);
+  line_dir.normalize ();
+  optimized_coefficients[3] = line_dir[0];
+  optimized_coefficients[4] = line_dir[1];
+  optimized_coefficients[5] = line_dir[2];
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -297,8 +303,8 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::projectPoints (
 
   Eigen::Vector4f line_pt  (model_coefficients[0], model_coefficients[1], model_coefficients[2], 0);
   Eigen::Vector4f line_dir (model_coefficients[3], model_coefficients[4], model_coefficients[5], 0);
-  double ptdotdir = line_pt.dot (line_dir);
-  double dirdotdir = 1.0 / line_dir.dot (line_dir);
+  float ptdotdir = line_pt.dot (line_dir);
+  float dirdotdir = 1.0f / line_dir.dot (line_dir);
 
   // Copy all the data fields from the input cloud to the projected one?
   if (copy_data_fields)
@@ -322,7 +328,7 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::projectPoints (
                          input_->points[inliers[i]].z,
                          1);
 
-      double k = (p.dot (line_dir) - ptdotdir) * dirdotdir;
+      float k = (p.dot (line_dir) - ptdotdir) * dirdotdir;
 
       pcl::Vector4fMap pp = projected_points.points[inliers[i]].getVector4fMap ();
       pp = line_pt + k * line_dir;
@@ -338,7 +344,7 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::projectPoints (
   {
     // Allocate enough space and copy the basics
     projected_points.points.resize (inliers.size ());
-    projected_points.width    = inliers.size ();
+    projected_points.width    = static_cast<uint32_t> (inliers.size ());
     projected_points.height   = 1;
 
     typedef typename pcl::traits::fieldList<PointT>::type FieldList;
@@ -353,7 +359,7 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::projectPoints (
       pcl::Vector4fMap pp = projected_points.points[i].getVector4fMap ();
       pcl::Vector4fMapConst p = input_->points[inliers[i]].getVector4fMap ();
 
-      double k = (p.dot (line_dir) - ptdotdir) * dirdotdir;
+      float k = (p.dot (line_dir) - ptdotdir) * dirdotdir;
       // Calculate the projection of the point on the line
       pp = line_pt + k * line_dir;
 
@@ -409,7 +415,7 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::projectPointToCylinder (
   Eigen::Vector4f line_pt  (model_coefficients[0], model_coefficients[1], model_coefficients[2], 0);
   Eigen::Vector4f line_dir (model_coefficients[3], model_coefficients[4], model_coefficients[5], 0);
 
-  double k = (pt.dot (line_dir) - line_pt.dot (line_dir)) * line_dir.dot (line_dir);
+  float k = (pt.dot (line_dir) - line_pt.dot (line_dir)) * line_dir.dot (line_dir);
   pt_proj = line_pt + k * line_dir;
 
   Eigen::Vector4f dir = pt - pt_proj;
@@ -448,9 +454,9 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::isModelValid (const Eigen::V
       return (false);
   }
 
-  if (radius_min_ != -DBL_MAX && model_coefficients[6] < radius_min_)
+  if (radius_min_ != -std::numeric_limits<double>::max() && model_coefficients[6] < radius_min_)
     return (false);
-  if (radius_max_ != DBL_MAX && model_coefficients[6] > radius_max_)
+  if (radius_max_ != std::numeric_limits<double>::max() && model_coefficients[6] > radius_max_)
     return (false);
 
   return (true);

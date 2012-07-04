@@ -83,7 +83,7 @@ namespace pcl
         * \param[in] cloud the input point cloud dataset
         */
       SampleConsensusModelCone (const PointCloudConstPtr &cloud) : 
-        SampleConsensusModel<PointT> (cloud), axis_ (Eigen::Vector3f::Zero ()), eps_angle_ (0), min_angle_ (-DBL_MAX), max_angle_ (DBL_MAX),
+        SampleConsensusModel<PointT> (cloud), axis_ (Eigen::Vector3f::Zero ()), eps_angle_ (0), min_angle_ (-std::numeric_limits<double>::max()), max_angle_ (std::numeric_limits<double>::max()),
         tmp_inliers_ ()
       {
       }
@@ -94,7 +94,7 @@ namespace pcl
         */
       SampleConsensusModelCone (const PointCloudConstPtr &cloud, const std::vector<int> &indices) : 
         SampleConsensusModel<PointT> (cloud, indices),
-        axis_ (Eigen::Vector3f::Zero ()), eps_angle_ (0), min_angle_ (-DBL_MAX), max_angle_ (DBL_MAX),
+        axis_ (Eigen::Vector3f::Zero ()), eps_angle_ (0), min_angle_ (-std::numeric_limits<double>::max()), max_angle_ (std::numeric_limits<double>::max()),
         tmp_inliers_ ()
       {
       }
@@ -165,14 +165,6 @@ namespace pcl
         min_angle = min_angle_;
         max_angle = max_angle_;
       }
-
-      /** \brief Get 3 random points with their normals as data samples and return them as point indices.
-        * \param[in,out] iterations the internal number of iterations used by SAC methods
-        * \param[out] samples the resultant model samples
-        * \note assumes unique points!
-        */
-      void 
-      getSamples (int &iterations, std::vector<int> &samples);
 
       /** \brief Check whether the given index samples can form a valid cone model, compute the model coefficients
         * from these samples and store them in model_coefficients. The cone coefficients are: apex,
@@ -315,10 +307,10 @@ namespace pcl
         {
           Eigen::Vector4f apex  (x[0], x[1], x[2], 0);
           Eigen::Vector4f axis_dir (x[3], x[4], x[5], 0);
-          double opening_angle = x[6];
+          float opening_angle = x[6];
 
-          double apexdotdir = apex.dot (axis_dir);
-          double dirdotdir = 1.0 / axis_dir.dot (axis_dir);
+          float apexdotdir = apex.dot (axis_dir);
+          float dirdotdir = 1.0f / axis_dir.dot (axis_dir);
 
           for (int i = 0; i < values (); ++i)
           {
@@ -328,14 +320,14 @@ namespace pcl
                                 model_->input_->points[(*model_->tmp_inliers_)[i]].z, 0);
 
             // Calculate the point's projection on the cone axis
-            double k = (pt.dot (axis_dir) - apexdotdir) * dirdotdir;
+            float k = (pt.dot (axis_dir) - apexdotdir) * dirdotdir;
             Eigen::Vector4f pt_proj = apex + k * axis_dir;
 
             // Calculate the actual radius of the cone at the level of the projected point
             Eigen::Vector4f height = apex-pt_proj;
-            double actual_cone_radius = tan(opening_angle) * height.norm ();
+            float actual_cone_radius = tanf (opening_angle) * height.norm ();
 
-            fvec[i] = pcl::sqrPointToLineDistance (pt, apex, axis_dir) - actual_cone_radius * actual_cone_radius;
+            fvec[i] = static_cast<float> (pcl::sqrPointToLineDistance (pt, apex, axis_dir) - actual_cone_radius * actual_cone_radius);
           }
           return (0);
         }
