@@ -334,7 +334,8 @@ TEST (PCL, Octree_Dynamic_Depth_Test)
     for (i = 0; i < indexVector.size (); ++i)
     {
 #if !defined(__APPLE__)
-      ASSERT_NE(std::find(indexVector.begin(), indexVector.end(), i), indexVector.end());
+      bool indexFound = (std::find(indexVector.begin(), indexVector.end(), i) != indexVector.end());
+      ASSERT_EQ(indexFound, true);
 #endif
     }
 
