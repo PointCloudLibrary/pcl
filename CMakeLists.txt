@@ -185,7 +185,7 @@ add_definitions(-DEIGEN_USE_NEW_STDVECTOR
 if(NOT PCL_SHARED_LIBS OR WIN32)
   set(FLANN_USE_STATIC ON)
 endif(NOT PCL_SHARED_LIBS OR WIN32)
-find_package(Flann REQUIRED)
+find_package(FLANN 1.7.0 REQUIRED)
 include_directories(SYSTEM ${FLANN_INCLUDE_DIRS})
 # OpenNI
 find_package(OpenNI)

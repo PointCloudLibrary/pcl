@@ -13,7 +13,7 @@ add_definitions(${PCL_DEFINITIONS})
 find_package(HDF5)
 if(HDF5_FOUND)
 
-  find_package(Flann)
+  find_package(FLANN)
   include_directories(${FLANN_INCLUDE_DIRS})
 
   include_directories(${HDF5_INCLUDE_DIR})
