@@ -51,7 +51,7 @@ main ()
     float total = 0.0f;
     for (size_t i = 0; i < 1e4; ++i)
     {
-      total += i;
+      total += static_cast<float> (i);
     }
   }
   std::cout << "Done." << std::endl;

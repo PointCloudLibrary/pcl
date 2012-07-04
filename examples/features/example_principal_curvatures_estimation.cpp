@@ -33,7 +33,7 @@
  * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: example_principal_curvatures_estimation.cpp 4516 2012-02-17 08:03:46Z nizar $
+ * $Id: example_principal_curvatures_estimation.cpp 5003 2012-03-10 02:43:45Z gedikli $
  *
  */
 
@@ -48,7 +48,7 @@
 
 
 int
-main (int argc, char** argv)
+main (int, char** argv)
 {
   std::string filename = argv[1];
   std::cout << "Reading " << filename << std::endl;
