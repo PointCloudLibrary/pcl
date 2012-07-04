@@ -51,6 +51,8 @@
 #include <pcl/sample_consensus/model_types.h>
 #include <pcl/sample_consensus/sac_model.h>
 
+#include <pcl/search/search.h>
+
 namespace pcl
 {
   /** \brief @b SACSegmentation represents the Nodelet segmentation class for
@@ -72,6 +74,7 @@ namespace pcl
       typedef pcl::PointCloud<PointT> PointCloud;
       typedef typename PointCloud::Ptr PointCloudPtr;
       typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+      typedef typename pcl::search::Search<PointT>::Ptr SearchPtr;
 
       typedef typename SampleConsensus<PointT>::Ptr SampleConsensusPtr;
       typedef typename SampleConsensusModel<PointT>::Ptr SampleConsensusModelPtr;
@@ -79,7 +82,7 @@ namespace pcl
       /** \brief Empty constructor. */
       SACSegmentation () :  model_ (), sac_ (), model_type_ (-1), method_type_ (0), 
                             threshold_ (0), optimize_coefficients_ (true), 
-                            radius_min_ (-DBL_MAX), radius_max_ (DBL_MAX), eps_angle_ (0.0),
+                            radius_min_ (-std::numeric_limits<double>::max()), radius_max_ (std::numeric_limits<double>::max()), samples_radius_ (0.0), eps_angle_ (0.0),
                             axis_ (Eigen::Vector3f::Zero ()), max_iterations_ (50), probability_ (0.99)
       {
         //srand ((unsigned)time (0)); // set a random seed
@@ -179,6 +182,26 @@ namespace pcl
         max_radius = radius_max_;
       }
 
+      /** \brief Set the maximum distance allowed when drawing random samples
+        * \param[in] radius the maximum distance (L2 norm)
+        */
+      inline void
+      setSamplesMaxDist (const double &radius, SearchPtr search)
+      {
+        samples_radius_ = radius;
+        samples_radius_search_ = search;
+      }
+
+      /** \brief Get maximum distance allowed when drawing random samples
+        *
+        * \param[out] radius the maximum distance (L2 norm)
+        */
+      inline void
+      getSamplesMaxDist (double &radius)
+      {
+        radius = samples_radius_;
+      }
+
       /** \brief Set the axis along which we need to search for a model perpendicular to.
         * \param[in] ax the axis along which we need to search for a model perpendicular to
         */
@@ -239,6 +262,12 @@ namespace pcl
 
       /** \brief The minimum and maximum radius limits for the model. Applicable to all models that estimate a radius. */
       double radius_min_, radius_max_;
+
+      /** \brief The maximum distance of subsequent samples from the first (radius search) */
+      double samples_radius_;
+
+      /** \brief The search object for picking subsequent samples using radius search */
+      SearchPtr samples_radius_search_;
 
       /** \brief The maximum allowed difference between the model normal and the given axis. */
       double eps_angle_;

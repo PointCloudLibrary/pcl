@@ -168,6 +168,7 @@ namespace pcl
         for (size_t j = 0; j < seed_queue.size (); ++j)
           r.indices[j] = seed_queue[j];
 
+        // These two lines should not be needed: (can anyone confirm?) -FF
         std::sort (r.indices.begin (), r.indices.end ());
         r.indices.erase (std::unique (r.indices.begin (), r.indices.end ()), r.indices.end ());
 
@@ -219,26 +220,26 @@ namespace pcl
       return;
     }
     // Create a bool vector of processed point indices, and initialize it to false
-    std::vector<bool> processed (indices.size (), false);
+    std::vector<bool> processed (cloud.points.size (), false);
 
     std::vector<int> nn_indices;
     std::vector<float> nn_distances;
     // Process all points in the indices vector
     for (size_t i = 0; i < indices.size (); ++i)
     {
-      if (processed[i])
+      if (processed[indices[i]])
         continue;
 
       std::vector<int> seed_queue;
       int sq_idx = 0;
-      seed_queue.push_back (i);
+      seed_queue.push_back (indices[i]);
 
-      processed[i] = true;
+      processed[indices[i]] = true;
 
       while (sq_idx < static_cast<int> (seed_queue.size ()))
       {
         // Search for sq_idx
-        if (!tree->radiusSearch (seed_queue[sq_idx], tolerance, nn_indices, nn_distances))
+        if (!tree->radiusSearch (cloud.points[seed_queue[sq_idx]], tolerance, nn_indices, nn_distances))
         {
           sq_idx++;
           continue;
@@ -271,8 +272,9 @@ namespace pcl
         pcl::PointIndices r;
         r.indices.resize (seed_queue.size ());
         for (size_t j = 0; j < seed_queue.size (); ++j)
-          r.indices[j] = indices[seed_queue[j]];
+          r.indices[j] = seed_queue[j];
 
+        // These two lines should not be needed: (can anyone confirm?) -FF
         std::sort (r.indices.begin (), r.indices.end ());
         r.indices.erase (std::unique (r.indices.begin (), r.indices.end ()), r.indices.end ());
 

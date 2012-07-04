@@ -81,7 +81,7 @@ pcl::extractEuclideanClusters (const PointCloud<PointT> &cloud,
 
       for (size_t j = 1; j < nn_indices.size (); ++j)             // nn_indices[0] should be sq_idx
       {
-        if (processed[nn_indices[j]])                             // Has this point been processed before ?
+        if (nn_indices[j] == -1 || processed[nn_indices[j]])        // Has this point been processed before ?
           continue;
 
         // Perform a simple Euclidean clustering
@@ -100,6 +100,7 @@ pcl::extractEuclideanClusters (const PointCloud<PointT> &cloud,
       for (size_t j = 0; j < seed_queue.size (); ++j)
         r.indices[j] = seed_queue[j];
 
+      // These two lines should not be needed: (can anyone confirm?) -FF
       std::sort (r.indices.begin (), r.indices.end ());
       r.indices.erase (std::unique (r.indices.begin (), r.indices.end ()), r.indices.end ());
 
@@ -133,26 +134,26 @@ pcl::extractEuclideanClusters (const PointCloud<PointT> &cloud,
   }
 
   // Create a bool vector of processed point indices, and initialize it to false
-  std::vector<bool> processed (indices.size (), false);
+  std::vector<bool> processed (cloud.points.size (), false);
 
   std::vector<int> nn_indices;
   std::vector<float> nn_distances;
   // Process all points in the indices vector
   for (int i = 0; i < static_cast<int> (indices.size ()); ++i)
   {
-    if (processed[i])
+    if (processed[indices[i]])
       continue;
 
     std::vector<int> seed_queue;
     int sq_idx = 0;
-    seed_queue.push_back (i);
+    seed_queue.push_back (indices[i]);
 
-    processed[i] = true;
+    processed[indices[i]] = true;
 
     while (sq_idx < static_cast<int> (seed_queue.size ()))
     {
       // Search for sq_idx
-      int ret = tree->radiusSearch (seed_queue[sq_idx], tolerance, nn_indices, nn_distances);
+      int ret = tree->radiusSearch (cloud.points[seed_queue[sq_idx]], tolerance, nn_indices, nn_distances);
       if( ret == -1)
       {
         PCL_ERROR("[pcl::extractEuclideanClusters] Received error code -1 from radiusSearch\n");
@@ -166,7 +167,7 @@ pcl::extractEuclideanClusters (const PointCloud<PointT> &cloud,
 
       for (size_t j = 1; j < nn_indices.size (); ++j)             // nn_indices[0] should be sq_idx
       {
-        if (processed[nn_indices[j]])                             // Has this point been processed before ?
+        if (nn_indices[j] == -1 || processed[nn_indices[j]])        // Has this point been processed before ?
           continue;
 
         // Perform a simple Euclidean clustering
@@ -184,8 +185,9 @@ pcl::extractEuclideanClusters (const PointCloud<PointT> &cloud,
       r.indices.resize (seed_queue.size ());
       for (size_t j = 0; j < seed_queue.size (); ++j)
         // This is the only place where indices come into play
-        r.indices[j] = indices[seed_queue[j]];
+        r.indices[j] = seed_queue[j];
 
+      // These two lines should not be needed: (can anyone confirm?) -FF
       //r.indices.assign(seed_queue.begin(), seed_queue.end());
       std::sort (r.indices.begin (), r.indices.end ());
       r.indices.erase (std::unique (r.indices.begin (), r.indices.end ()), r.indices.end ());
