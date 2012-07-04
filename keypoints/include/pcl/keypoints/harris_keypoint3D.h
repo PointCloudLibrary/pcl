@@ -65,7 +65,7 @@ namespace pcl
       using Keypoint<PointInT, PointOutT>::k_;
       using Keypoint<PointInT, PointOutT>::search_radius_;
       using Keypoint<PointInT, PointOutT>::search_parameter_;
-
+      using Keypoint<PointInT, PointOutT>::initCompute;
 
       typedef enum {HARRIS = 1, NOBLE, LOWE, TOMASI, CURVATURE} ResponseMethod;
 
@@ -74,7 +74,7 @@ namespace pcl
         * \param[in] radius the radius for normal estimation as well as for non maxima suppression
         * \param[in] threshold the threshold to filter out weak corners
         */
-      HarrisKeypoint3D (ResponseMethod method = HARRIS, float radius = 0.01, float threshold = 0.0)
+      HarrisKeypoint3D (ResponseMethod method = HARRIS, float radius = 0.01f, float threshold = 0.0f)
       : threshold_ (threshold)
       , refine_ (true)
       , nonmax_ (true)
@@ -135,6 +135,8 @@ namespace pcl
         threads_ = nr_threads;
       }
     protected:
+      bool
+      initCompute ();
       void detectKeypoints (PointCloudOut &output);
       /** \brief gets the corner response for valid input points*/
       void responseHarris (PointCloudOut &output) const;

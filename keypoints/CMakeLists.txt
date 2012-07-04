@@ -13,7 +13,7 @@ if(build)
         src/narf_keypoint.cpp
         src/uniform_sampling.cpp
         src/sift_keypoint.cpp
-				src/smoothed_surfaces_keypoint.cpp
+		src/smoothed_surfaces_keypoint.cpp
         src/harris_keypoint3D.cpp
         )
 

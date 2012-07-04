@@ -46,29 +46,9 @@
 template <typename PointInT, typename PointOutT> void 
 pcl::SIFTKeypoint<PointInT, PointOutT>::setScales (float min_scale, int nr_octaves, int nr_scales_per_octave)
 {
-  if (min_scale <= 0)
-  {
-    PCL_ERROR ("[pcl::%s::setScales] : min_scale (%f) must be positive!\n", 
-               name_.c_str (), min_scale);
-    return;
-  }
-  if (nr_octaves <= 0)
-  {
-    PCL_ERROR ("[pcl::%s::setScales] : Number of octaves (%d) must be at least 1!\n", 
-               name_.c_str (), nr_octaves);
-    return;
-  }
-  if (nr_scales_per_octave < 1)
-  {
-    PCL_ERROR ("[pcl::%s::setScales] : Number of scales per octave (%d) must be at least 1!\n", 
-               name_.c_str (), nr_scales_per_octave);
-    return;
-  }
   min_scale_ = min_scale;
   nr_octaves_ = nr_octaves;
   nr_scales_per_octave_ = nr_scales_per_octave;
-  
-  this->setKSearch (1);
 }
 
 
@@ -76,28 +56,47 @@ pcl::SIFTKeypoint<PointInT, PointOutT>::setScales (float min_scale, int nr_octav
 template <typename PointInT, typename PointOutT> void 
 pcl::SIFTKeypoint<PointInT, PointOutT>::setMinimumContrast (float min_contrast)
 {
-  if (min_contrast < 0)
-  {
-    PCL_ERROR ("[pcl::%s::setMinimumContrast] : min_contrast (%f) must be non-negative!\n", 
-               name_.c_str (), min_contrast);
-    return;
-  } 
   min_contrast_ = min_contrast;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT, typename PointOutT> bool
+pcl::SIFTKeypoint<PointInT, PointOutT>::initCompute ()
+{
+  if (min_scale_ <= 0)
+  {
+    PCL_ERROR ("[pcl::%s::initCompute] : Minimum scale (%f) must be strict positive!\n", 
+               name_.c_str (), min_scale_);
+    return (false);
+  }
+  if (nr_octaves_ < 1)
+  {
+    PCL_ERROR ("[pcl::%s::initCompute] : Number of octaves (%d) must be at least 1!\n", 
+               name_.c_str (), nr_octaves_);
+    return (false);
+  }
+  if (nr_scales_per_octave_ < 1)
+  {
+    PCL_ERROR ("[pcl::%s::initCompute] : Number of scales per octave (%d) must be at least 1!\n", 
+               name_.c_str (), nr_scales_per_octave_);
+    return (false);
+  }
+  if (min_contrast_ < 0)
+  {
+    PCL_ERROR ("[pcl::%s::initCompute] : Minimum contrast (%f) must be non-negative!\n", 
+               name_.c_str (), min_contrast_);
+    return (false);
+  }
+  
+  this->setKSearch (1);
+  tree_.reset (new pcl::search::KdTree<PointInT> (true));
+  return (true);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT> void 
 pcl::SIFTKeypoint<PointInT, PointOutT>::detectKeypoints (PointCloudOut &output)
 {
-  tree_.reset (new pcl::search::KdTree<PointInT> (true));
-
-  // Check for valid inputs
-  if (min_scale_ == 0 || nr_octaves_ == 0 || nr_scales_per_octave_ == 0)
-  {
-    PCL_ERROR ("[pcl::%s::detectKeypoints] : ", name_.c_str ());
-    PCL_ERROR ("A valid range of scales must be specified by setScales before detecting keypoints!\n");
-    return;
-  }
   if (surface_ != input_)
   {
     PCL_WARN ("[pcl::%s::detectKeypoints] : ", name_.c_str ());

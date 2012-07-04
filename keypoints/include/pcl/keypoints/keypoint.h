@@ -43,6 +43,7 @@
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
 #include <pcl/search/pcl_search.h>
+#include <pcl/pcl_config.h>
 
 namespace pcl
 {
@@ -142,7 +143,7 @@ namespace pcl
         * k-nearest neighbors
         */
       inline int
-      searchForNeighbors (int index, double parameter, std::vector<int> &indices, std::vector<float> &distances)
+      searchForNeighbors (int index, double parameter, std::vector<int> &indices, std::vector<float> &distances) const
       {
         if (surface_ == input_)       // if the two surfaces are the same
           return (search_method_ (index, parameter, indices, distances));

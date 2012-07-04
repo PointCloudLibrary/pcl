@@ -103,6 +103,7 @@ namespace pcl
       using Keypoint<PointInT, PointOutT>::indices_;
       using Keypoint<PointInT, PointOutT>::surface_;
       using Keypoint<PointInT, PointOutT>::tree_;
+      using Keypoint<PointInT, PointOutT>::initCompute;    
 
       /** \brief Empty constructor. */
       SIFTKeypoint () : min_scale_ (0.0), nr_octaves_ (0), nr_scales_per_octave_ (0), 
@@ -127,6 +128,9 @@ namespace pcl
       setMinimumContrast (float min_contrast);
 
     protected:
+      bool
+      initCompute ();
+
       /** \brief Detect the SIFT keypoints for a set of points given in setInputCloud () using the spatial locator in 
         * setSearchMethod ().
         * \param output the resultant cloud of keypoints
@@ -197,4 +201,3 @@ namespace pcl
 #include <pcl/keypoints/impl/sift_keypoint.hpp>
 
 #endif // #ifndef PCL_SIFT_KEYPOINT_H_
-

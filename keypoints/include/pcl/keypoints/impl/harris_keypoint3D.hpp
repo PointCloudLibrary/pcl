@@ -182,9 +182,21 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::calculateNormalCovar (const
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointInT, typename PointOutT, typename NormalT> void
-pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloudOut &output)
+template <typename PointInT, typename PointOutT, typename NormalT> bool
+pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::initCompute ()
 {
+  if (!Keypoint<PointInT, PointOutT>::initCompute ())
+  {
+    PCL_ERROR ("[pcl::%s::initCompute] init failed!\n", name_.c_str ());
+    return (false);
+  }
+
+  if (method_ < 1 || method_ > 5)
+  {
+    PCL_ERROR ("[pcl::%s::initCompute] method (%d) must be in [1..5]!\n", name_.c_str (), method_);
+    return (false);
+  }
+
   if (normals_->empty ())
   {
     normals_->reserve (surface_->size ());
@@ -204,7 +216,13 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloud
       normal_estimation.compute (*normals_);
     }
   }
+  return (true);
+}
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT, typename PointOutT, typename NormalT> void
+pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloudOut &output)
+{
   boost::shared_ptr<pcl::PointCloud<PointOutT> > response (new pcl::PointCloud<PointOutT> ());
 
   response->points.reserve (input_->points.size());
@@ -235,10 +253,8 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloud
     output.points.clear ();
     output.points.reserve (response->points.size());
 
-#if defined __GNUC__
-#  if __GNUC__ == 4 && __GNUC_MINOR__ > 3
-#    pragma omp parallel for shared (output) num_threads(threads_)
-#  endif
+#if defined (HAVE_OPENMP) && (defined(_WIN32) || ((__GNUC__ > 4) && (__GNUC_MINOR__ > 2)))
+#pragma omp parallel for shared (output) num_threads(threads_)   
 #endif
     for (int idx = 0; idx < static_cast<int> (response->points.size ()); ++idx)
     {
@@ -257,7 +273,9 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloud
         }
       }
       if (is_maxima)
-        #pragma omp critical
+#if defined (HAVE_OPENMP) && (defined(_WIN32) || ((__GNUC__ > 4) && (__GNUC_MINOR__ > 2)))        
+#pragma omp critical
+#endif
         output.points.push_back (response->points[idx]);
     }
 
@@ -278,10 +296,8 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::responseHarris (PointCloudO
 {
   PCL_ALIGN (16) float covar [8];
   output.resize (input_->size ());
-#if defined __GNUC__
-#  if __GNUC__ == 4 && __GNUC_MINOR__ > 3
-#    pragma omp parallel for shared (output) private (covar) num_threads(threads_)
-#  endif
+#if defined (HAVE_OPENMP) && (defined(_WIN32) || ((__GNUC__ > 4) && (__GNUC_MINOR__ > 2)))
+  #pragma omp parallel for shared (output) private (covar) num_threads(threads_)
 #endif
   for (int pIdx = 0; pIdx < static_cast<int> (input_->size ()); ++pIdx)
   {
@@ -319,10 +335,8 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::responseNoble (PointCloudOu
 {
   PCL_ALIGN (16) float covar [8];
   output.resize (input_->size ());
-#if defined __GNUC__
-#  if __GNUC__ == 4 && __GNUC_MINOR__ > 3
-#    pragma omp parallel for shared (output) private (covar) num_threads(threads_)
-#  endif
+#if defined (HAVE_OPENMP) && (defined(_WIN32) || ((__GNUC__ > 4) && (__GNUC_MINOR__ > 2)))
+  #pragma omp parallel for shared (output) private (covar) num_threads(threads_)
 #endif
   for (int pIdx = 0; pIdx < static_cast<int> (input_->size ()); ++pIdx)
   {
@@ -359,10 +373,8 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::responseLowe (PointCloudOut
 {
   PCL_ALIGN (16) float covar [8];
   output.resize (input_->size ());
-#if defined __GNUC__
-#  if __GNUC__ == 4 && __GNUC_MINOR__ > 3
-#    pragma omp parallel for shared (output) private (covar) num_threads(threads_)
-#  endif
+#if defined (HAVE_OPENMP) && (defined(_WIN32) || ((__GNUC__ > 4) && (__GNUC_MINOR__ > 2)))
+  #pragma omp parallel for shared (output) private (covar) num_threads(threads_)
 #endif
   for (int pIdx = 0; pIdx < static_cast<int> (input_->size ()); ++pIdx)
   {
@@ -418,10 +430,8 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::responseTomasi (PointCloudO
   PCL_ALIGN (16) float covar [8];
   Eigen::Matrix3f covariance_matrix;
   output.resize (input_->size ());
-#if defined __GNUC__
-#  if __GNUC__ == 4 && __GNUC_MINOR__ > 3
-#    pragma omp parallel for shared (output) private (covar, covariance_matrix) num_threads(threads_)
-#  endif
+#if defined (HAVE_OPENMP) && (defined(_WIN32) || ((__GNUC__ > 4) && (__GNUC_MINOR__ > 2)))
+  #pragma omp parallel for shared (output) private (covar, covariance_matrix) num_threads(threads_)
 #endif
   for (int pIdx = 0; pIdx < static_cast<int> (input_->size ()); ++pIdx)
   {
@@ -466,12 +476,9 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::refineCorners (PointCloudOu
   Eigen::Vector3f NNTp;
   float diff;
   const unsigned max_iterations = 10;
-#if defined __GNUC__
-#  if __GNUC__ == 4 && __GNUC_MINOR__ > 3
-#    pragma omp parallel for shared (corners) private (nnT, NNT, NNTInv, NNTp, diff) num_threads(threads_)
-#  endif
+#if defined (HAVE_OPENMP) && (defined(_WIN32) || ((__GNUC__ > 4) && (__GNUC_MINOR__ > 2)))
+  #pragma omp parallel for shared (corners) private (nnT, NNT, NNTInv, NNTp, diff) num_threads(threads_)
 #endif
-  //for (typename PointCloudOut::iterator cornerIt = corners.begin(); cornerIt != corners.end(); ++cornerIt)
   for (int cIdx = 0; cIdx < static_cast<int> (corners.size ()); ++cIdx)
   {
     unsigned iterations = 0;
