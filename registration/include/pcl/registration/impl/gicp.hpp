@@ -372,7 +372,7 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeTransfor
 
     Eigen::Matrix3d R = transform_R.topLeftCorner<3,3> ();
 
-    for(size_t i = 0; i < N; i++)
+    for (size_t i = 0; i < N; i++)
     {
       PointSource query = output[i];
       query.getVector4fMap () = guess * query.getVector4fMap ();
@@ -397,7 +397,7 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeTransfor
         temp+= C2;
         // M = temp^-1
         M = temp.inverse ();
-        source_indices[cnt] = i;
+        source_indices[cnt] = static_cast<int> (i);
         target_indices[cnt] = nn_indices[0];
         cnt++;
       }
