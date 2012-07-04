@@ -42,7 +42,7 @@
 #include <pcl/common/time.h>
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
-#define BOOST_FILESYSTEM_VERSION 2
+#define BOOST_FILESYSTEM_VERSION 3
 #include <boost/filesystem.hpp>
 #include <pcl/visualization/pcl_visualizer.h>
 
@@ -207,11 +207,11 @@ class OpenNIGrabFrame
           std::cerr << "directory \"" << path.parent_path () << "\" does not exist!\n";
           exit (1);
         }
-        file_name_ = path.stem ();
+        file_name_ = path.stem ().string ();
       }
       
       std::cout << "dir: " << dir_name_ << " :: " << path.parent_path () << std::endl;
-      std::cout << "file: " << file_name_ << " :: " << path.stem () << std::endl;
+      std::cout << "file: " << file_name_ << " :: " << path.stem (). string () << std::endl;
       
       if (pcd_format == "b" || pcd_format == "all")
         format_ |= 1;
