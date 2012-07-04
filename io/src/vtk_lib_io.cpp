@@ -36,7 +36,7 @@
  */
 
 #include <pcl/io/vtk_lib_io.h>
-
+#include <pcl/io/impl/vtk_lib_io.hpp>
 #include <vtkImageData.h>
 #include <vtkImageShiftScale.h>
 #include <vtkPNGWriter.h>
@@ -394,8 +394,8 @@ pcl::io::mesh2vtk (const pcl::PolygonMesh& mesh, vtkSmartPointer<vtkPolyData>& p
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::io::saveRangeImagePlanarFilePNG (const std::string &file_name,
-const pcl::RangeImagePlanar& range_image)
+pcl::io::saveRangeImagePlanarFilePNG (
+    const std::string &file_name, const pcl::RangeImagePlanar& range_image)
 {
   vtkSmartPointer<vtkImageData> image = vtkSmartPointer<vtkImageData>::New();
   image->SetDimensions(range_image.width, range_image.height, 1);
@@ -404,8 +404,6 @@ const pcl::RangeImagePlanar& range_image)
   image->AllocateScalars();
 
   int* dims = image->GetDimensions();
-
-  std::cout << "Dims: " << " x: " << dims[0] << " y: " << dims[1] << " z: " << dims[2] << std::endl;
 
   for (int y = 0; y < dims[1]; y++)
     {

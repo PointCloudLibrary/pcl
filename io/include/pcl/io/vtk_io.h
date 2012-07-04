@@ -3,6 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -16,7 +17,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -44,9 +45,8 @@
 #include <sensor_msgs/PointCloud2.h>
 #include <pcl/PolygonMesh.h>
 
-// VTK
-class vtkPolyData;
-class vtkStructuredGrid;
+// Please do not add any functions tha depend on VTK structures to this file!
+// Use vtk_io_lib.h instead.
 
 namespace pcl
 {
@@ -68,26 +68,8 @@ namespace pcl
       * \ingroup io
       */
     PCL_EXPORTS int 
-    saveVTKFile (const std::string &file_name, const sensor_msgs::PointCloud2 &cloud, unsigned precision = 5);
-    
-    template <typename PointT> void
-    pointCloudToPolyData(const pcl::PointCloud<PointT>& cloud, vtkPolyData* const polydata);
-
-    // PCL to vtkStructuredGrid
-    template <typename PointT> void
-    pointCloudToStructuredGrid(const pcl::PointCloud<PointT>& cloud, vtkStructuredGrid* const structured_grid);
-
-    /** Convert a vtkPolyData to a pcl::PointCloud. */
-    template <typename PointT> void
-    polyDataToPointCloud(vtkPolyData* const polydata, pcl::PointCloud<PointT>& cloud);
-
-    /** Convert a vtkStructuredGrid to a pcl::PointCloud. */
-    template <typename PointT> void
-    structuredGridToPointCloud(vtkStructuredGrid* const structured_grid, pcl::PointCloud<PointT>& cloud);
-
+    saveVTKFile (const std::string &file_name, const sensor_msgs::PointCloud2 &cloud, unsigned precision = 5);    
   }
 }
-
-
 
 #endif  //#ifndef PCL_IO_VTK_IO_H_
