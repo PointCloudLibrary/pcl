@@ -274,14 +274,23 @@ pcl::SUSAN<PointInT, PointOutT, NormalT, IntensityT>::isWithinNucleusCentroid (c
 // pcl::SUSAN<PointInT, PointOutT, NormalT, IntensityT>::isWithinSusan2D (int nucleus, int neighbor) const
 // {
 //   return (fabs (intensity_ (surface_->points[nucleus]) - 
-//                 intensity_ (surface_->points[neighbor])) <= intensiity_threshold_);
+//                 intensity_ (surface_->points[neighbor])) <= intensity_threshold_);
 // }
 
 
 // template <typename PointInT, typename PointOutT, typename NormalT, typename IntensityT> bool
 // pcl::SUSAN<PointInT, PointOutT, NormalT, IntensityT>::isWithinSusan3D (int nucleus, int neighbor) const
 // {
-//   return (1 - nucleus_normal.dot (normals_->points[*index].getNormalVector3fMap ()) <= angular_threshold_)
+//   Eigen::Vector3f nucleus_normal = normals_->point[nucleus].getVector3fMap ();
+//   return (1 - nucleus_normal.dot (normals_->points[*index].getNormalVector3fMap ()) <= angular_threshold_);
+// }
+
+// template <typename PointInT, typename PointOutT, typename NormalT, typename IntensityT> bool
+// pcl::SUSAN<PointInT, PointOutT, NormalT, IntensityT>::isWithinSusanH (int nucleus, int neighbor) const
+// {
+//   Eigen::Vector3f nucleus_normal = normals_->point[nucleus].getVector3fMap ();
+//   return ((1 - nucleus_normal.dot (normals_->points[*index].getNormalVector3fMap ()) <= angular_threshold_) || 
+//           (fabs (intensity_ (surface_->points[nucleus]) - intensity_ (surface_->points[neighbor])) <= intensity_threshold_));
 // }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -304,6 +313,7 @@ pcl::SUSAN<PointInT, PointOutT, NormalT, IntensityT>::detectKeypoints (PointClou
     {
       Eigen::Vector3f nucleus = point_in.getVector3fMap ();
       Eigen::Vector3f nucleus_normal = normals_->points [point_index].getNormalVector3fMap ();
+      float nucleus_intensity = intensity_ (point_in);
       std::vector<int> nn_indices;
       std::vector<float> nn_dists;
       int nb_neigbors = tree_->radiusSearch (point_in, search_radius_, nn_indices, nn_dists);
@@ -316,7 +326,7 @@ pcl::SUSAN<PointInT, PointOutT, NormalT, IntensityT>::detectKeypoints (PointClou
         if ((*index != point_index) && pcl_isfinite (normals_->points[*index].normal_x))
         {
           // if the point fulfill condition
-          if ((fabs (intensity_ (point_in) - intensity_ (surface_->points[*index])) <= intensity_threshold_) ||
+          if ((fabs (nucleus_intensity - intensity_ (surface_->points[*index])) <= intensity_threshold_) ||
               (1 - nucleus_normal.dot (normals_->points[*index].getNormalVector3fMap ()) <= angular_threshold_))
           {
             ++area;
@@ -344,7 +354,6 @@ pcl::SUSAN<PointInT, PointOutT, NormalT, IntensityT>::detectKeypoints (PointClou
         {
           centroid /= area;
           Eigen::Vector3f dist = nucleus - centroid;
-          std::cout << "Distance " << dist.transpose () << " " << dist.norm () << std::endl;
           // Check the distance <= distance_threshold_
           if (dist.norm () >= distance_threshold_)
           {
@@ -376,50 +385,48 @@ pcl::SUSAN<PointInT, PointOutT, NormalT, IntensityT>::detectKeypoints (PointClou
   
   response->height = 1;
   response->width = static_cast<uint32_t> (response->size ());
-
+  
   if (!nonmax_)
     output = *response;
   else
   {
-  output.points.clear ();
-  output.points.reserve (response->points.size());
-  
+    output.points.clear ();
+    output.points.reserve (response->points.size());
+    
 #if defined (HAVE_OPENMP) && (defined(_WIN32) || ((__GNUC__ > 4) && (__GNUC_MINOR__ > 2)))
 #pragma omp parallel for shared (output) num_threads(threads_)   
 #endif
-  for (int idx = 0; idx < static_cast<int> (response->points.size ()); ++idx)
-  {
-    const PointOutT& point_in = response->points [idx];
-    const NormalT& normal_in = normals_->points [idx];
-    const float intensity = response->points[idx].intensity;
-    if (!isFinite (point_in) || !isFinite (normal_in) || (intensity == 0))
-      continue;
-    std::vector<int> nn_indices;
-    std::vector<float> nn_dists;
-    tree_->radiusSearch (idx, search_radius_, nn_indices, nn_dists);
-    bool is_minima = true;
-    for (std::vector<int>::const_iterator nn_it = nn_indices.begin(); nn_it != nn_indices.end(); ++nn_it)
+    for (int idx = 0; idx < static_cast<int> (response->points.size ()); ++idx)
     {
-      if (intensity > response->points[*nn_it].intensity)
+      const PointOutT& point_in = response->points [idx];
+      const NormalT& normal_in = normals_->points [idx];
+      const float intensity = response->points[idx].intensity;
+      if (!isFinite (point_in) || !isFinite (normal_in) || (intensity == 0))
+        continue;
+      std::vector<int> nn_indices;
+      std::vector<float> nn_dists;
+      tree_->radiusSearch (idx, search_radius_, nn_indices, nn_dists);
+      bool is_minima = true;
+      for (std::vector<int>::const_iterator nn_it = nn_indices.begin(); nn_it != nn_indices.end(); ++nn_it)
       {
-        is_minima = false;
-        std::cout << idx << " non maxima" << std::endl;
-        break;
+        if (intensity > response->points[*nn_it].intensity)
+        {
+          is_minima = false;
+          break;
+        }
       }
-    }
-    if (is_minima)
+      if (is_minima)
 #if defined (HAVE_OPENMP) && (defined(_WIN32) || ((__GNUC__ > 4) && (__GNUC_MINOR__ > 2)))        
 #pragma omp critical
 #endif
-      output.points.push_back (response->points[idx]);
-  }
-  
-  output.height = 1;
-  output.width = static_cast<uint32_t> (output.points.size());  
+        output.points.push_back (response->points[idx]);
+    }
+    
+    output.height = 1;
+    output.width = static_cast<uint32_t> (output.points.size());  
   }
   // we don not change the denseness
   output.is_dense = surface_->is_dense;
-  std::cout << "output size " << output.size () << std::endl;
 }
 
 #define PCL_INSTANTIATE_SUSAN(T,U,N) template class PCL_EXPORTS pcl::SUSAN<T,U,N>;
