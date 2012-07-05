@@ -102,6 +102,9 @@ namespace pcl
       
       /** \brief A list of model coefficients (a,b,c,d). */
       Eigen::Vector4f coefficients_;
+    
+    public:
+      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 }
 
