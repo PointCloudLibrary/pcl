@@ -166,10 +166,15 @@ namespace pcl
         addPointCloud (PointCloudConstPtr point_cloud);
         
         boost::uint64_t
-        addPointCloud (sensor_msgs::PointCloud2& input_cloud, bool skip_bb_check = false)
+        addPointCloud (sensor_msgs::PointCloud2::Ptr input_cloud, const bool skip_bb_check = false)
         {
-          this->root_->addPointCloud ( input_cloud );
+          uint64_t pt_added = this->root_->addPointCloud ( input_cloud, skip_bb_check ) ;
+          assert ( input_cloud->width*input_cloud->height == pt_added );
+          return (pt_added);
         }
+
+        boost::uint64_t
+        addPointCloud_and_genLOD (sensor_msgs::PointCloud2::Ptr input_cloud);
 
         boost::uint64_t
         addPointCloud_and_genLOD (PointCloudConstPtr point_cloud);
@@ -208,19 +213,17 @@ namespace pcl
 
         /** \brief get point in BB into a pointcloud2 blob */
         void
-        queryBBIncludes (const double min[3], const double max[3], size_t query_depth, sensor_msgs::PointCloud2& dst_blob) const
+        queryBBIncludes (const double min[3], const double max[3], size_t query_depth, const sensor_msgs::PointCloud2::Ptr& dst_blob) const
         {
           boost::shared_lock < boost::shared_mutex > lock (read_write_mutex_);
-          //make sure the destination blob is empty
-          dst_blob.data.clear ();
-          dst_blob.height = 0;
-          dst_blob.width = 0;
+
+          dst_blob->data.clear ();
+          dst_blob->width = 0;
+          dst_blob->height =1;
 
           root_->queryBBIncludes ( min, max, query_depth, dst_blob );
         }
         
-
-
         /** \brief random sample of points in BB includes
          *  \todo adjust for varying densities at different LODs */
         void

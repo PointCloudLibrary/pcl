@@ -117,28 +117,29 @@ namespace pcl
         insertRange (const AlignedPointTVector& src);
 
         void
-        insertRange (const sensor_msgs::PointCloud2& input)
+        insertRange (const sensor_msgs::PointCloud2::Ptr input_cloud)
         {
           //this needs to be stress tested; also does no delayed-write caching (for now)
-
-          sensor_msgs::PointCloud2 tmp_cloud;
+          sensor_msgs::PointCloud2::Ptr tmp_cloud (new sensor_msgs::PointCloud2 ());
           
           //if there's a pcd file with data, read the data, concatenate, and resave
           if ( boost::filesystem::exists ( *fileback_name_ ) )
           {
             //open the existing file
             pcl::PCDReader reader;
-            assert ( reader.read ( *fileback_name_, tmp_cloud) == 0 );
+            assert ( reader.read ( *fileback_name_, *tmp_cloud) == 0 );
             pcl::PCDWriter writer;
-            pcl::concatenatePointCloud ( tmp_cloud, input, tmp_cloud );
-            writer.writeBinaryCompressed ( *fileback_name_, input );
+            PCL_INFO ("[pcl::outofcore::octree_disk_container::%s] Concatenating point cloud from %s to new cloud\n", __FUNCTION__, fileback_name_->c_str () );
+            pcl::concatenatePointCloud ( *tmp_cloud, *input_cloud, *tmp_cloud );
+            writer.writeBinaryCompressed ( *fileback_name_, *input_cloud );
             
           }
           else //otherwise create the point cloud which will be saved to the pcd file for the first time
           {
             pcl::PCDWriter writer;
-            assert (writer.writeBinaryCompressed ( *fileback_name_, input ) == 0 );
+            assert (writer.writeBinaryCompressed ( *fileback_name_, *input_cloud ) == 0 );
           }            
+
         }
         
 
@@ -194,31 +195,26 @@ namespace pcl
         readRange (const uint64_t start, const uint64_t count, AlignedPointTVector& dst);
 
         void
-        readRange (const uint64_t start, const uint64_t count, sensor_msgs::PointCloud2& dst)
+        readRange (const uint64_t start, const uint64_t count, sensor_msgs::PointCloud2::Ptr& dst)
         {
-          if (count == 0)
-          {
-            PCL_DEBUG ( "[pcl::outofcore::octree_disk_container] No points requested for reading\n" );
-            return;
-          }
-
-          if ((start + count) > size ())
-          {
-            PCL_ERROR ( "[pcl::outofcore::octree_disk_container] Indicies out of range; start + count exceeds the size of the stored points\n" );
-            PCL_THROW_EXCEPTION (PCLException, "[pcl::outofcore::octree_disk_container] Outofcore Octree Exception: Read indices exceed range");
-          }
-
-          uint64_t filestart = 0;
-          uint64_t filecount = 0;
-
           pcl::PCDReader reader;
 
           Eigen::Vector4f  origin;
           Eigen::Quaternionf  orientation;
           int  pcd_version;
-
-          //something wrong here ?
-          assert ( reader.read ( *fileback_name_, dst, origin, orientation, pcd_version) == 0 );
+          
+          if( boost::filesystem::exists ( *fileback_name_ ) )
+          {
+//            PCL_INFO ( "[pcl::outofcore::octree_disk_container::%s] Reading points from disk from %s.\n", __FUNCTION__ , fileback_name_->c_str () );
+          
+            assert ( reader.read ( *fileback_name_, *dst, origin, orientation, pcd_version) != -1 );
+//            PCL_INFO ( "[pcl::outofcore::octree_disk_container::%s] Read %d points from disk\n", __FUNCTION__ , dst->width*dst->height );
+            
+          }
+          else
+          {
+            PCL_ERROR ("[pcl::outofcore::octree_disk_container::%s] File %s does not exist in node.\n", __FUNCTION__, fileback_name_->c_str () );
+          }
         }
 
 
@@ -359,6 +355,7 @@ namespace pcl
         std::string *fileback_name_;
 
         //number of elements in file
+        /// \todo This value was originally computed by the number of bytes in the binary dump to disk. Now, since we are using binary compressed, it needs to be computed in a different way (!). This is causing Unit Tests: PCL.Outofcore_Point_Query, OutofcoreTest.PointCloud2_Query and OutofcoreTest.PointCloud2_Insert( on post-insert query test) to fail as of 4 July 2012. SDF
         uint64_t filelen_;
 
         const static uint64_t READ_BLOCK_SIZE_;

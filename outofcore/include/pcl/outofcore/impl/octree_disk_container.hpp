@@ -194,6 +194,9 @@ namespace pcl
         //write data to a pcd file
         pcl::PCDWriter writer;
 
+
+//        PCL_INFO ( "[pcl::outofcore::octree_disk_container::%s] Flushing writebuffer in a dangerous way to file %s. This might overwrite data in destination file\n", __FUNCTION__, fileback_name_->c_str ());
+        
         //write ascii for now to debug
         assert ( writer.writeBinaryCompressed (*fileback_name_, *cloud) == 0 );
         
@@ -265,7 +268,7 @@ namespace pcl
     {
       if (count == 0)
       {
-        PCL_DEBUG ( "[pcl::outofcore::octree_disk_container] No points requested for reading\n" );
+//        PCL_DEBUG ( "[pcl::outofcore::octree_disk_container] No points requested for reading\n" );
         return;
       }
 
@@ -339,21 +342,7 @@ namespace pcl
 
       fclose (f);
 */
-#if 0
-      //copy the extra
-      if (cloud->points.size () < count && !writebuff_.empty () )
-      {
-
-        typename AlignedPointTVector::const_iterator start = writebuff_.begin ();
-        typename AlignedPointTVector::const_iterator end = writebuff_.end ();
-
-        std::advance (start, 0);
-        std::advance (end, writebuff_.size ());
-
-        dst.insert (dst.end (), start, end);
-      }
-#endif
-    }
+}
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename PointT> void
@@ -416,7 +405,7 @@ namespace pcl
           boost::bernoulli_distribution<double> filedist (percent);
           boost::variate_generator<boost::mt19937&, boost::bernoulli_distribution<double> > filecoin (rand_gen_, filedist);
           for (uint64_t i = filestart; i < (filestart + filecount); i++)
-          {
+         {
             if (filecoin ())
             {
               offsets.push_back (i);
@@ -440,7 +429,7 @@ namespace pcl
 
           dst.push_back (p);
         }
-//        int closeret = 
+
         fclose (f);
       }
     }
@@ -543,6 +532,7 @@ namespace pcl
     template<typename PointT> void
     octree_disk_container<PointT>::push_back (const PointT& p)
     {
+      ///\todo modfiy this method & delayed write cache for construction
       writebuff_.push_back (p);
       if (writebuff_.size () > WRITE_BUFF_MAX_)
       {
@@ -585,7 +575,7 @@ namespace pcl
             
       //save and close
       PCDWriter writer;
-
+      
       /// \todo allow appending to pcd file without loading all of the point data into memory
       assert ( writer.writeBinaryCompressed ( *fileback_name_, *tmp_cloud)==0);
         
@@ -596,7 +586,8 @@ namespace pcl
     template<typename PointT> void
     octree_disk_container<PointT>::insertRange (const PointT* start, const uint64_t count)
     {
-      ///\todo standardize the interface for writing points to disk with this class
+      ///\todo standardize the interface for writing points to disk with this class; this method may not work properly
+      ///\todo deprecate this
 
       //variables which ultimately need to be global
       int outofcore_v = 3;
@@ -614,6 +605,7 @@ namespace pcl
         {
           pcl::PCDReader reader;
           //open it
+//          PCL_INFO ( "[pcl::outofcore::octree_disk_container::%s] Opening file to append point data\n",__FUNCTION__);
           assert ( reader.read (fileback_name_->c_str (), *tmp_cloud) == 0 );
         }
         else //otherwise create the pcd file

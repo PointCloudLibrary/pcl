@@ -206,7 +206,7 @@ outofcoreViewer (boost::filesystem::path tree_root, int depth, bool display_octr
   //  cout << " Voxel Bounds: [" << voxel_centers[0].x - voxel_side_length << ", " << voxel_centers[0].y - voxel_side_length << ", " << voxel_centers[0].z - voxel_side_length << "] -" <<
   //          " [" << voxel_centers[0].x + voxel_side_length << ", " << voxel_centers[0].y + voxel_side_length << ", " << voxel_centers[0].z + voxel_side_length << "]" << endl;
 
-  std::list<PointT> points;
+  std::vector<PointT, Eigen::aligned_allocator<PointT> > points;
   octree.queryBBIncludes (min, max, static_cast<uint64_t>(depth), points);
   cout << " Point Count: " << points.size () << endl;
 

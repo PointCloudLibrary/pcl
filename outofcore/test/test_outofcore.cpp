@@ -72,7 +72,7 @@ using namespace pcl::outofcore;
 
 // For doing exhaustive checks this is set low remove those, and this can be
 // set much higher
-const static uint64_t numPts ( 5000 );
+const static uint64_t numPts ( 999 );
 
 const static boost::uint32_t rngseed = 0xAAFF33DD;
 
@@ -301,7 +301,7 @@ void point_test(octree_disk& t)
   }
 }
 
-#if 0
+/*
 TEST (PCL, Outofcore_Point_Query)
 {
   octree_disk treeA(filename_otreeA, false);
@@ -310,9 +310,9 @@ TEST (PCL, Outofcore_Point_Query)
   point_test(treeA);
   point_test(treeB);
 }
-#endif
+*/
 
-#if 0
+#if 0 //this class will be deprecated soon.
 TEST (PCL, Outofcore_Ram_Tree)
 {
   double min[3] = {0,0,0};
@@ -407,7 +407,7 @@ class OutofcoreTest : public testing::Test
 
     virtual void SetUp ()
     {
-      smallest_voxel_dim = 0.1f;
+      smallest_voxel_dim = 3.0f;
     }
 
     virtual void TearDown ()
@@ -451,7 +451,7 @@ TEST_F (OutofcoreTest, Outofcore_Constructors)
   const double max[3] = { 1024, 1024, 1024 };
 
   AlignedPointTVector some_points;
-  for(int i=0; i< numPts; i++)
+  for(unsigned int i=0; i< numPts; i++)
     some_points.push_back (PointT (static_cast<float>( rand () % 1024 ), static_cast<float>( rand () % 1024 ), static_cast<float>( rand () % 1024 ) ));
   
 
@@ -464,7 +464,7 @@ TEST_F (OutofcoreTest, Outofcore_Constructors)
   
   //(Case 2)
   //create Octree by prespecified depth in constructor
-  int depth = 4;
+  int depth = 2;
   octree_disk octreeB (depth, min, max, filename_otreeB, "ECEF");
   EXPECT_EQ (some_points.size (), octreeB.addDataToLeaf ( some_points ) ) << "Dropped points in fixed-depth constructor\n";
   
@@ -477,18 +477,16 @@ TEST_F (OutofcoreTest, Outofcore_ConstructorSafety)
   const double min[3] = { -1024, -1024, -1024 };
   //Specify the upper corner of the axis-aligned bounding box
   const double max[3] = { 1024, 1024, 1024 };
-
+  int depth = 2;
+  
   //(Case 3) Constructor Safety. These should throw OCT_CHILD_EXISTS exceptions and write an error
   //message of conflicting file path
   EXPECT_TRUE (boost::filesystem::exists (filename_otreeA));
   EXPECT_TRUE (boost::filesystem::exists (filename_otreeB));
 
-  /**\todo behaviors of the two constructors don't match. the one with resolution in the constructor doesn't check if a tree is being overwritten.
-   */
-
   EXPECT_ANY_THROW ({ octree_disk octreeC (min, max, smallest_voxel_dim, filename_otreeA, "ECEF"); });
 
-  EXPECT_ANY_THROW ({ octree_disk octreeD (4, min, max, filename_otreeB, "ECEF"); });
+  EXPECT_ANY_THROW ({ octree_disk octreeD (depth, min, max, filename_otreeB, "ECEF"); });
 
   //(Case 4): Load existing tree from disk
   octree_disk octree_from_disk (filename_otreeB, true);
@@ -556,8 +554,8 @@ TEST_F (OutofcoreTest, Outofcore_PointsOnBoundaries)
 {
   cleanUpFilesystem ();
   
-  const double min[3] = { -2.0, -2.0, -2.0 };
-  const double max[3] = { 2.0, 2.0, 2.0 };
+  const double min[3] = { -1.0, -1.0, -1.0 };
+  const double max[3] = { 1.0, 1.0, 1.0 };
   
   PointCloud<PointT>::Ptr cloud (new PointCloud<PointT> ());
   cloud->width = 8;
@@ -581,6 +579,19 @@ TEST_F (OutofcoreTest, Outofcore_PointsOnBoundaries)
   EXPECT_EQ ( 8, octree.getNumPointsAtDepth ( octree.getDepth () ));
 
 }
+
+/*
+TEST_F (OutofcoreTest, Outofcore_PointCloud2Basic)
+{
+  cleanUpFilesystem ();
+  
+  const double min[3] = { -1.0, -1.0, -1.0 };
+  const double max[3] = { 1.0, 1.0, 1.0 };
+
+  sensor_msgs::PointCloud2::Ptr cloud (new sensor_msgs::PointCloud2 ());
+
+}
+*/
 
 TEST_F (OutofcoreTest, Outofcore_MultiplePointClouds)
 {
@@ -684,76 +695,143 @@ TEST_F (OutofcoreTest, Outofcore_PointCloudInput_LOD )
   cleanUpFilesystem ();
 }
 
-//test that the PointCloud2 query returns the same points as the templated queries
-TEST_F ( OutofcoreTest, PointCloud2_Query )
+TEST_F ( OutofcoreTest, PointCloud2_Constructors )
 {
-
   cleanUpFilesystem ();
-
-  //Specify the lower corner of the axis-aligned bounding box
-  const double min[3] = { -1024, -1024, -1024 };
-  //Specify the upper corner of the axis-aligned bounding box
-  const double max[3] = { 1024, 1024, 1024 };
-
-  AlignedPointTVector some_points;
-  for(int i=0; i< numPts; i++)
-    some_points.push_back (PointT (static_cast<float>( rand () % 1024 ), static_cast<float>( rand () % 1024 ), static_cast<float>( rand () % 1024 ) ));
-
-
-  //create a test tree
-  octree_disk octreeA (min, max, smallest_voxel_dim, filename_otreeA, "ECEF");
-
-  sensor_msgs::PointCloud2 dst_blob;
-
-  AlignedPointTVector cloud;
-  octreeA.addDataToLeaf ( some_points );
   
-  octreeA.queryBBIncludes ( min, max, octreeA.getDepth (), dst_blob );
-  PCL_INFO ( " PointCloud2 Query Successful\n");
+  //Specify the bounding box of the point clouds
+  const double min[3] = { -100.1, -100.1, -100.1 };
+  const double max[3] = { 100.1, 100.1, 100.1 };
+  const boost::uint64_t depth = 2;
   
-  octreeA.queryBBIncludes ( min, max, octreeA.getDepth (), cloud );
+  //create a point cloud
+  PointCloud<PointT>::Ptr test_cloud (new PointCloud<PointT> () );
 
+  test_cloud->width = numPts;
+  test_cloud->height = 1;
+  test_cloud->reserve (numPts);
+
+  //generate some random points
+  for(size_t i=0; i < numPts; i++)
+  {
+    PointT tmp ( static_cast<float> (i % 200) - 99 , 
+                 static_cast<float> (i % 200) - 99, 
+                 static_cast<float> (i % 200) - 99);
+    
+    test_cloud->points.push_back (tmp);
+  }
+
+  sensor_msgs::PointCloud2::Ptr point_cloud (new sensor_msgs::PointCloud2 () );
   
-  EXPECT_EQ ( dst_blob.width*dst_blob.height, some_points.size () ) << "PointCloud2 Query number of points returned failed";
-  
-  EXPECT_EQ ( cloud.size () , some_points.size () ) << "Query error";
-  
+  pcl::toROSMsg ( *test_cloud, *point_cloud );
+
+  octree_disk octreeA ( depth, min, max, filename_otreeA, "ECEF" );
+  octree_disk octreeB ( depth, min, max, filename_otreeB, "ECEF" );
+
+  EXPECT_EQ ( octreeA.addPointCloud (point_cloud) , point_cloud->width*point_cloud->height );
+
+  EXPECT_EQ (octreeB.addPointCloud_and_genLOD (point_cloud), point_cloud->width*point_cloud->height ) << "Number of points inserted when generating LOD does not match the size of the point cloud\n";
 }
 
 TEST_F ( OutofcoreTest, PointCloud2_Insertion )
 {
   cleanUpFilesystem ();
   
-  const double min[3] = { -1024, -1024, -1024 };  
-  const double max[3] = {1024,1024,1024};
+  const double min[3] = { -11, -11, -11 };  
+  const double max[3] = {11,11,11};
 
   pcl::PointCloud<pcl::PointXYZ> point_cloud;
 
   point_cloud.points.reserve (numPts);
-
-  for(int i=0; i < numPts; i++)
-    point_cloud.points.push_back (PointT (static_cast<float>( rand () % 1024 ), static_cast<float>( rand () % 1024 ), static_cast<float>( rand () % 1024 ) ));
-
-  point_cloud.width = point_cloud.points.size ();
+  point_cloud.width = static_cast<uint32_t> (numPts);
   point_cloud.height = 1;
 
-  sensor_msgs::PointCloud2 input_cloud;
+  for(size_t i=0; i < numPts; i++)
+    point_cloud.points.push_back (PointT (static_cast<float>( rand () % 10 ), static_cast<float>( rand () % 10 ), static_cast<float>( rand () % 10 ) ));
 
-  toROSMsg<PointXYZ> ( point_cloud, input_cloud );
+
+  sensor_msgs::PointCloud2::Ptr input_cloud (new sensor_msgs::PointCloud2 () );
+
+  toROSMsg<PointXYZ> ( point_cloud, *input_cloud );
+  ASSERT_EQ ( point_cloud.width*point_cloud.height, input_cloud->width*input_cloud->height );
 
   octree_disk octreeA (min, max, smallest_voxel_dim, filename_otreeA, "ECEF");
+  octree_disk octreeB (1, min, max, filename_otreeB, "ECEF");
 
-  octreeA.addPointCloud ( input_cloud , false );
-
+  //make sure the number of points successfully added are the same as how many we input
+  uint64_t points_in_input_cloud = input_cloud->width*input_cloud->height;
+  EXPECT_EQ ( octreeA.addPointCloud ( input_cloud, false ), points_in_input_cloud ) << "Insertion failure. Number of points successfully added does not match size of input cloud\n";
+  EXPECT_EQ ( octreeB.addPointCloud ( input_cloud, false ), points_in_input_cloud ) << "Insertion failure. Number of points successfully added does not match size of input cloud\n";
 }
 
+//test that the PointCloud2 query returns the same points as the templated queries
+TEST_F ( OutofcoreTest, PointCloud2_Query )
+{
+
+  cleanUpFilesystem ();
+
+  //Specify the bounding box of the point clouds
+  const double min[3] = { -100.1, -100.1, -100.1 };
+  const double max[3] = { 100.1, 100.1, 100.1 };
+  const boost::uint64_t depth = 2;
   
+  //create a point cloud
+  PointCloud<PointT>::Ptr test_cloud (new PointCloud<PointT> () );
+
+  test_cloud->width = numPts;
+  test_cloud->height = 1;
+  test_cloud->reserve (numPts);
+
+  //generate some random points
+  for(size_t i=0; i < numPts; i++)
+  {
+    PointT tmp ( static_cast<float> (i % 50) - 50 , 
+                 static_cast<float> (i % 50) - 50, 
+                 static_cast<float> (i % 50) - 50);
+    
+    test_cloud->points.push_back (tmp);
+  }
+
+  sensor_msgs::PointCloud2::Ptr dst_blob (new sensor_msgs::PointCloud2 () );
+  
+  pcl::toROSMsg ( *test_cloud, *dst_blob );
+
+  octree_disk octreeA ( depth, min, max, filename_otreeA, "ECEF" );
+  octree_disk octreeB ( depth, min, max, filename_otreeB, "ECEF" );
+
+  uint64_t points_added = octreeA.addPointCloud ( dst_blob );
+  uint64_t LOD_points_added = octreeB.addPointCloud_and_genLOD ( dst_blob );
+
+  ASSERT_EQ (points_added, dst_blob->width*dst_blob->height );
+  ASSERT_EQ (LOD_points_added, dst_blob->width*dst_blob->height );
+
+  sensor_msgs::PointCloud2::Ptr query_result_a (new sensor_msgs::PointCloud2 () );
+  sensor_msgs::PointCloud2::Ptr query_result_b (new sensor_msgs::PointCloud2 () );
+
+  octreeA.queryBBIncludes ( min, max, octreeA.getDepth (), query_result_a );
+  
+  EXPECT_TRUE ( query_result_a->data.size () > 0 ) << "Size of data blob is 0\n";
+  EXPECT_EQ ( test_cloud->width*test_cloud->height, query_result_a->width*query_result_a->height ) << "PointCloud2 Query number of points returned failed\n";
+
+  uint64_t total_octreeB_LOD_query = 0;
+  
+  for( int i=0; i <= octreeB.getDepth (); i++ )
+  {
+    octreeB.queryBBIncludes ( min, max, i, query_result_b );
+    total_octreeB_LOD_query += query_result_b->width*query_result_b->height;
+    query_result_b->data.clear ();
+    query_result_b->width =0;
+    query_result_b->height =0;
+  }
+  
+  EXPECT_EQ ( test_cloud->width*test_cloud->height, total_octreeB_LOD_query ) << "PointCloud2 Query number of points returned failed\n";
+}
 
 /* [--- */
 int
 main (int argc, char** argv)
 {
-  pcl::console::setVerbosityLevel ( pcl::console::L_DEBUG );
+//  pcl::console::setVerbosityLevel ( pcl::console::L_DEBUG );
   
   testing::InitGoogleTest (&argc, argv);
   return (RUN_ALL_TESTS ());

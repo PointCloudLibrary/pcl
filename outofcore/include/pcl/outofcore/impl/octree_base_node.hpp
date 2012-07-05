@@ -59,6 +59,8 @@
 #include <pcl/outofcore/octree_base_node.h>
 #include <pcl/outofcore/octree_exceptions.h>
 
+#include <pcl/filters/random_sample.h>
+#include <pcl/filters/extract_indices.h>
 // JSON
 #include <pcl/outofcore/cJSON.h>
 
@@ -92,6 +94,9 @@ namespace pcl
     const std::string octree_base_node<Container, PointT>::pcd_extension = ".pcd";
 
     template<typename Container, typename PointT>
+    uint64_t octree_base_node<Container, PointT>::recursion_counter = 0;
+
+    template<typename Container, typename PointT>
     octree_base_node<Container, PointT>::octree_base_node (const boost::filesystem::path& path, octree_base_node<Container, PointT>* super, bool loadAll)
       : thisdir_ ()
       , thisnodeindex_ ()
@@ -117,7 +122,7 @@ namespace pcl
         {
           PCL_ERROR ("[pcl::outofcore::octree_base_node] Could not find dir %s\n",thisdir_.c_str ());
           PCL_THROW_EXCEPTION (PCLException, "[pcl::outofcore::octree_base_node] Outofcore Exception: missing directory")
-        }
+          }
 
         thisnodeindex_ = path;
 
@@ -193,8 +198,6 @@ namespace pcl
       // If the root directory is a file
       else if (!boost::filesystem::is_directory (dir))
       {
-        //boost::filesystem::remove_all(dir);
-        //boost::filesystem::create_directory(dir);
         PCL_ERROR ("[pcl::outofcore::octree_base_node] Need empty directory structure. Dir %s exists and is a file.\n",dir.c_str ());
         PCL_THROW_EXCEPTION (PCLException, "[pcl::outofcore::octree_base_node] Bad Path: Directory Already Exists");
       }
@@ -391,77 +394,13 @@ namespace pcl
           if (!this->pointWithinBB (pt))
           {
             PCL_ERROR ( "[pcl::outofcore::octree_base_node::%s] Failed to place point within bounding box\n", __FUNCTION__ );
-            
-            //	std::cerr << "failed to place point!!!" << std::endl;
             continue;
           }
         }
 
-        uint8_t box = 00;
-        box = ((pt.z >= midz_) << 2) | ((pt.y >= midy_) << 1) | ((pt.x >= midx_) << 0);
-        c[box].push_back (&pt);
-      
-        /*
-        if ((pt.z >= midz_))
-        {
-          if ((pt.y >= midy_))
-          {
-            if ((pt.x >= midx_))
-            {
-              c[7].push_back (&pt);
-              continue;
-            }
-            else
-            {
-              c[6].push_back (&pt);
-              continue;
-            }
-          }
-          else
-          {
-            if ((pt.x >= midx_))
-            {
-              c[5].push_back (&pt);
-              continue;
-            }
-            else
-            {
-              c[4].push_back (&pt);
-              continue;
-            }
-          }
-        }
-        else
-        {
-          if ((pt.y >= midy_))
-          {
-            if ((pt.x >= midx_))
-            {
-              c[3].push_back (&pt);
-              continue;
-            }
-            else
-            {
-              c[2].push_back (&pt);
-              continue;
-            }
-          }
-          else
-          {
-            if ((pt.x >= midx_))
-            {
-              c[1].push_back (&pt);
-              continue;
-            }
-            else
-            {
-              c[0].push_back (&pt);
-              continue;
-            }
-          }
-        }
-      }
-        */
+        uint8_t box = 0;
+        box = static_cast<uint8_t>(((pt.z >= midz_) << 2) | ((pt.y >= midy_) << 1) | ((pt.x >= midx_) << 0));
+        c[static_cast<size_t>(box)].push_back (&pt);
       }
       
       boost::uint64_t points_added = 0;
@@ -479,10 +418,11 @@ namespace pcl
 ////////////////////////////////////////////////////////////////////////////////
 
 
-//return number of points added
     template<typename Container, typename PointT> boost::uint64_t
     octree_base_node<Container, PointT>::addDataToLeaf (const std::vector<const PointT*>& p, const bool skip_bb_check)
     {
+      ///\todo deprecate this method
+      
       if (p.empty ())
       {
         return (0);
@@ -554,67 +494,6 @@ namespace pcl
           box = ((p[i]->z >= midz_) << 2) | ((p[i]->y >= midy_) << 1) | ((p[i]->x >= midx_ ));
           //3 bit, 8 octants
           c[box].push_back (p[i]);
-/*
-          if ((p[i]->z >= midz_))
-          {
-            if ((p[i]->y >= midy_))
-            {
-              if ((p[i]->x >= midx_))
-              {
-                c[7].push_back (p[i]);
-                continue;
-              }
-              else
-              {
-                c[6].push_back (p[i]);
-                continue;
-              }
-            }
-            else
-            {
-              if ((p[i]->x >= midx_))
-              {
-                c[5].push_back (p[i]);
-                continue;
-              }
-              else
-              {
-                c[4].push_back (p[i]);
-                continue;
-              }
-            }
-          }
-          else
-          {
-            if ((p[i]->y >= midy_))
-            {
-              if ((p[i]->x >= midx_))
-              {
-                c[3].push_back (p[i]);
-                continue;
-              }
-              else
-              {
-                c[2].push_back (p[i]);
-                continue;
-              }
-            }
-            else
-            {
-              if ((p[i]->x >= midx_))
-              {
-                c[1].push_back (p[i]);
-                continue;
-              }
-              else
-              {
-                c[0].push_back (p[i]);
-                continue;
-              }
-            }
-          }
-       }
-*/
         }
         
         boost::uint64_t points_added = 0;
@@ -634,12 +513,21 @@ namespace pcl
     }
 ////////////////////////////////////////////////////////////////////////////////
 
+    //template safe for pointcloud 2    
+    template<typename Container, typename PointT> void
+    octree_base_node<Container, PointT>::randomSample ( const typename PointCloud<PointT>::Ptr input_cloud,
+                                                        typename PointCloud<PointT>::Ptr output_cloud,
+                                                        const bool skip_bb_check)
+    {
+
+    }
+    
 /** todo: This seems like a lot of work to get a random uniform sample? */
 /** todo: Need to refactor this further as to not pass in a BBCheck */
     template<typename Container, typename PointT> void
     octree_base_node<Container, PointT>::randomSample(const AlignedPointTVector& p, AlignedPointTVector& insertBuff, const bool skip_bb_check)
     {
-//    std::cout << "randomSample" << std::endl;
+
       AlignedPointTVector sampleBuff;
       if (!skip_bb_check)
       {
@@ -698,10 +586,9 @@ namespace pcl
         root_->m_tree_->incrementPointsInLOD (this->depth_, p.size ());
 
         // Insert point data
-//        payload_->insertRange (p.data (), p.size ());
         payload_->insertRange ( p );
         
-        //this is not a failsafe way to know all the points were written
+        ///\todo this is not a failsafe way to know all the points were written (!!!!)
         return (p.size ());
       }
 
@@ -709,7 +596,7 @@ namespace pcl
       /// \todo standardize the boundary case
       else
       {
-        std::vector<PointT> buff;
+        AlignedPointTVector buff;
         const size_t len = p.size ();
 
         for (size_t i = 0; i < len; i++)
@@ -723,8 +610,8 @@ namespace pcl
         if (!buff.empty ())
         {
           root_->m_tree_->incrementPointsInLOD (this->depth_, buff.size ());
-          payload_->insertRange (buff.data (), buff.size ());
-          //payload_->insertRange ( const_cast<AlignedPointTVector&> (buff) );
+          payload_->insertRange ( buff );
+          
         }
         return (buff.size ());
       }
@@ -818,6 +705,129 @@ namespace pcl
           }
         }
       }
+    }
+////////////////////////////////////////////////////////////////////////////////
+    template<typename Container, typename PointT> boost::uint64_t
+    octree_base_node<Container, PointT>::addPointCloud_and_genLOD (const sensor_msgs::PointCloud2::Ptr input_cloud, const bool skip_bb_check = false )
+    {
+      /// \todo reduce number of copies in @addPointCloud_and_genLOD@ here by keeping the cloud on the heap in the first place
+      boost::uint64_t points_added = 0;
+      
+      if ( input_cloud->width * input_cloud->height == 0 )
+      {
+        return (0);
+      }
+      
+      if ( this->depth_ == root_->m_tree_->max_depth_ || input_cloud->width*input_cloud->height < 8 )
+      {
+        uint64_t points_added = addDataAtMaxDepth (input_cloud);
+        assert ( points_added > 0 );
+        return (points_added);        
+      }
+      
+      if (num_child_ < 8 )
+      {
+        if ( hasUnloadedChildren () )
+        {
+          loadChildren (false);
+        }
+      }
+
+      //------------------------------------------------------------
+      //subsample data:
+      //   1. Get indices from a random sample
+      //   2. Extract those indices with the extract indices class (in order to also get the complement)
+      //------------------------------------------------------------
+      pcl::RandomSample<sensor_msgs::PointCloud2> random_sampler;
+      random_sampler.setInputCloud ( input_cloud );
+
+      //set sample size to 1/8 of total points (12.5%)
+      uint64_t sample_size = input_cloud->width*input_cloud->height / 8;
+      random_sampler.setSample ( input_cloud->width*input_cloud->height / 8 );      
+      
+      //create our destination
+      sensor_msgs::PointCloud2::Ptr downsampled_cloud ( new sensor_msgs::PointCloud2 () );
+      //create destination for indices
+      pcl::IndicesPtr downsampled_cloud_indices ( new std::vector< int > () );
+      random_sampler.filter (*downsampled_cloud_indices);
+      //extract the "random subset", size by setSampleSize
+      pcl::ExtractIndices<sensor_msgs::PointCloud2> extractor;
+      extractor.setInputCloud ( input_cloud );
+      extractor.setIndices ( downsampled_cloud_indices );
+      extractor.filter ( *downsampled_cloud );
+      //extract the complement of those points (i.e. everything remaining)
+      sensor_msgs::PointCloud2::Ptr remaining_points ( new sensor_msgs::PointCloud2 () );
+      extractor.setNegative (true);
+      extractor.filter ( *remaining_points );
+
+//      PCL_INFO ( "[pcl::outofcore::octree_base_node::%s] Random sampled: %lu of %lu\n", __FUNCTION__, downsampled_cloud->width * downsampled_cloud->height, input_cloud->width * input_cloud->height );
+      
+      //insert subsampled data to the node's disk container payload
+      if ( downsampled_cloud->width * downsampled_cloud->height != 0 )
+      {
+        root_->m_tree_->incrementPointsInLOD ( this->depth_, downsampled_cloud->width * downsampled_cloud->height );
+        payload_->insertRange (downsampled_cloud);
+        points_added += downsampled_cloud->width*downsampled_cloud->height ;
+      }
+
+//      PCL_INFO ("[pcl::outofcore::octree_base_node::%s] Remaining points are %u\n",__FUNCTION__, remaining_points->width*remaining_points->height);
+
+      //subdivide remaining data by destination octant
+      vector< vector<int> > indices;
+      indices.resize (8);
+      //get the location of the fields in the PointCloud2 blob
+      int x_idx = pcl::getFieldIndex (*remaining_points , std::string ("x") );
+      int y_idx = pcl::getFieldIndex (*remaining_points, std::string ("y") );
+      int z_idx = pcl::getFieldIndex (*remaining_points, std::string ("z") );
+      //compute the offset
+      int x_offset = remaining_points->fields[x_idx].offset;
+      int y_offset = remaining_points->fields[y_idx].offset;
+      int z_offset = remaining_points->fields[z_idx].offset;
+      
+      //iterate over all of the points, compute the octant/child to which it belongs, and pass it down
+      for ( size_t point_idx = 0; point_idx < remaining_points->data.size (); point_idx += remaining_points->point_step )
+      {
+        PointXYZ local_pt;
+        //copy the point data into our local point; does anyone know if you can assume that XYZ are contiguous and in order for PointCloud2?
+        local_pt.x = * (reinterpret_cast<float*>(&remaining_points->data[point_idx + x_offset]));
+        local_pt.y = * (reinterpret_cast<float*>(&remaining_points->data[point_idx + y_offset]));
+        local_pt.z = * (reinterpret_cast<float*>(&remaining_points->data[point_idx + z_offset]));
+
+        if( !this->pointWithinBB (local_pt) )
+        {
+//          PCL_ERROR ( "[pcl::outofcore::octree_base_node::%s] Failed to place point within bounding box\n", __FUNCTION__ );
+          continue;
+        }
+        uint8_t box = 0;
+        //hash each coordinate to the appropriate octant
+        box = ((local_pt.z >= midz_) << 2) | ((local_pt.y >= midy_) << 1) | ((local_pt.x >= midx_) << 0);
+        assert (box < 8);
+        
+        //store the point into vector of indices
+        indices[box].push_back ( point_idx / remaining_points->point_step );
+      }
+
+      //pass each set of points to the appropriate child octant
+      for(int i=0; i<8; i++)
+      {
+
+        if(indices[i].empty ())
+          continue;
+
+        if( children_[i] == false )
+          createChild (i);
+
+        //copy correct indices into a temporary cloud
+        sensor_msgs::PointCloud2::Ptr tmp_local_point_cloud ( new sensor_msgs::PointCloud2 () );
+        pcl::copyPointCloud ( *remaining_points, indices[i], *tmp_local_point_cloud );
+
+        //recursively add points and keep track of how many were successfully added to the tree
+        points_added += children_[i]->addPointCloud_and_genLOD ( tmp_local_point_cloud );
+//        PCL_INFO ("[pcl::outofcore::octree_base_node::%s] points_added: %lu, indices[i].size: %lu, tmp_local_point_cloud size: %lu\n", __FUNCTION__, points_added, indices[i].size (), tmp_local_point_cloud->width*tmp_local_point_cloud->height);
+
+      }
+      assert ( points_added == input_cloud->width*input_cloud->height );
+      return (points_added);
     }
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -1000,9 +1010,9 @@ namespace pcl
           std::cout << "  ";
 
         std::cout << "[" << min_[0] << ", " << min_[1] << ", " << min_[2] << "] - " <<
-                "[" << max_[0] << ", " << max_[1] << ", " << max_[2] << "] - " <<
-                //"[" << midx_ << ", " << midy_ << ", " << midz_ << "]" << std::endl;
-                "[" << max_[0] - min_[0] << ", " << max_[1] - min_[1] << ", " << max_[2] - min_[2] << "]" << std::endl;
+        "[" << max_[0] << ", " << max_[1] << ", " << max_[2] << "] - " <<
+        //"[" << midx_ << ", " << midy_ << ", " << midz_ << "]" << std::endl;
+        "[" << max_[0] - min_[0] << ", " << max_[1] - min_[1] << ", " << max_[2] - min_[2] << "]" << std::endl;
 
         if (num_child_ > 0)
         {
@@ -1086,8 +1096,12 @@ namespace pcl
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename Container, typename PointT> void
-    octree_base_node<Container, PointT>::queryBBIncludes (const double min_bb[3], const double max_bb[3], size_t query_depth, sensor_msgs::PointCloud2& dst_blob) 
+    octree_base_node<Container, PointT>::queryBBIncludes (const double min_bb[3], const double max_bb[3], size_t query_depth, const sensor_msgs::PointCloud2::Ptr& dst_blob) 
     {
+      uint64_t startingSize = dst_blob->width*dst_blob->height;
+      
+//      PCL_INFO ("[pcl::outofcore::octree_base_node::%s] Starting points in destination blob: %ul\n", __FUNCTION__, startingSize );
+
       //if the queried bounding box has any intersection with this node's bounding box
       if (intersectsWithBB (min_bb, max_bb))
       {
@@ -1109,36 +1123,46 @@ namespace pcl
               if (children_[i])
                 children_[i]->queryBBIncludes (min_bb, max_bb, query_depth, dst_blob);
             }
+//            PCL_INFO ( "[pcl::outofcore::octree_base_node::%s] Points in dst_blob: %ul\n", __FUNCTION__, dst_blob->width*dst_blob->height );
             return;
           }
         }
-        //otherwise if we are at the max depth
-        else
+        else //otherwise if we are at the max depth
         {
           //get all the points from the payload and return (easy with PointCloud2)
-          sensor_msgs::PointCloud2 tmp_blob;
-                
+          sensor_msgs::PointCloud2::Ptr tmp_blob (new sensor_msgs::PointCloud2 ());
+          sensor_msgs::PointCloud2::Ptr tmp_dst_blob (new sensor_msgs::PointCloud2 ());
+          //load all the data in this node from disk
           payload_->readRange (0, payload_->size (), tmp_blob);
 
-          //if this node's bounding box falls completely within the queried bounding box
+          if( tmp_blob->width*tmp_blob->height == 0 )
+            return;
+
+          //if this node's bounding box falls completely within the queried bounding box, keep all the points
           if (withinBB (min_bb, max_bb))
           {
             //concatenate all of what was just read into the main dst_blob
             //(is it safe to do in place?)
             
             //if there is already something in the destination blob (remember this method is recursive)
-            if( dst_blob.fields.size () != 0 )
+            if( dst_blob->width*dst_blob->height != 0 )
             {
-              PCL_INFO ("[pcl::outofcore::octree_base_node] Concatenating point cloud\n");
+//              PCL_INFO ("[pcl::outofocre::octree_base_node::%s] Size of cloud before: %lu\n", __FUNCTION__, dst_blob->width*dst_blob->height );
+
               //can this be done in place?
-              assert ( pcl::concatenatePointCloud ( dst_blob, tmp_blob, dst_blob ) == 1 );
+//              PCL_INFO ("[pcl::outofcore::octree_base_node::%s] Concatenating point cloud\n", __FUNCTION__);
+              assert ( pcl::concatenatePointCloud ( *dst_blob, *tmp_blob, *dst_blob ) == 1 );
+
+//              PCL_INFO ("[pcl::outofocre::octree_base_node::%s] Size of cloud after: %lu\n", __FUNCTION__, dst_blob->width*dst_blob->height );
             }
             //otherwise, just copy the tmp_blob into the dst_blob
             else 
             {
-              PCL_INFO ( "[pcl::outofcore::octree_base_node] Copying point cloud\n");
-              pcl::copyPointCloud ( tmp_blob, dst_blob );
+//              PCL_INFO ( "[pcl::outofcore::octree_base_node] Copying point cloud into the destination blob\n");
+              pcl::copyPointCloud ( *tmp_blob, *dst_blob );
+              assert ( tmp_blob->width*tmp_blob->height == dst_blob->width*dst_blob->height );
             }
+//            PCL_INFO ( "[pcl::outofcore::octree_base_node::%s] Points in dst_blob: %ul\n", __FUNCTION__, dst_blob->width*dst_blob->height );
             return;
           }
           //otherwise queried bounding box only partially intersects this
@@ -1146,31 +1170,36 @@ namespace pcl
           //this box for intersection with queried bounding box
           else
           {
+//            PCL_INFO ("[pcl::outofcore::octree_base_node::%s] Partial extraction of points in bounding box. Desired: %.2lf %.2lf %2lf, %.2lf %.2lf %.2lf; This node BB: %.2lf %.2lf %.2lf, %.2lf %.2lf %.2lf\n", __FUNCTION__, min_bb[0], min_bb[1], min_bb[2], max_bb[0], max_bb[1], max_bb[2], min_[0], min_[1], min_[2], max_[0], max_[1], max_[2] );
+            
             //put the ros message into a pointxyz point cloud (just to get the indices by using getPointsInBox)
             pcl::PointCloud<pcl::PointXYZ>::Ptr tmp_cloud ( new pcl::PointCloud<pcl::PointXYZ> () );
-            pcl::fromROSMsg ( tmp_blob, *tmp_cloud );
-                
+            pcl::fromROSMsg ( *tmp_blob, *tmp_cloud );
+            assert (tmp_blob->width*tmp_blob->height == tmp_cloud->width*tmp_cloud->height );
+
             Eigen::Vector4f min_pt ( min_bb[0], min_bb[1], min_bb[2], 1);
             Eigen::Vector4f max_pt ( max_bb[0], max_bb[1], max_bb[2], 1);
                 
             std::vector<int> indices;
 
             pcl::getPointsInBox ( *tmp_cloud, min_pt, max_pt, indices );
-
-            PCL_DEBUG ( "Points in box: %d", indices.size () );
-
+//            PCL_INFO ( "[pcl::outofcore::octree_base_node::%s] Points in box: %d", __FUNCTION__, indices.size () );
+//            PCL_INFO ( "[pcl::outofcore::octree_base_node::%s] Points remaining: %d", __FUNCTION__, tmp_cloud->width*tmp_cloud->height - indices.size () );
 
             //need a new tmp destination with extracted points within BB
-            sensor_msgs::PointCloud2 tmp_blob_within_bb;
+            sensor_msgs::PointCloud2::Ptr tmp_blob_within_bb (new sensor_msgs::PointCloud2 ());
                 
             //copy just the points marked in indices
-            pcl::copyPointCloud ( tmp_blob, indices, tmp_blob_within_bb );
+            pcl::copyPointCloud ( *tmp_blob, indices, *tmp_blob_within_bb );
 
             //concatenate those points into the returned dst_blob
-            assert ( pcl::concatenatePointCloud ( dst_blob, tmp_blob_within_bb, dst_blob ) == 1 );
+//            PCL_INFO ("[pcl::outofcore::octree_base_node::%s] Concatenating point cloud in place\n", __FUNCTION__);
+            pcl::concatenatePointCloud ( *dst_blob, *tmp_blob_within_bb, *dst_blob );
           }
         }
       }
+
+//      PCL_INFO ("[pcl::outofcore::octree_base_node::%s] Points added by function call: %ul\n", __FUNCTION__, dst_blob->width*dst_blob->height - startingSize );
     }
 
     template<typename Container, typename PointT> void
@@ -1449,11 +1478,11 @@ namespace pcl
     octree_base_node<Container, PointT>::withinBB (const double min_bb[3], const double max_bb[3]) const
     {
 
-      if ((min_bb[0] <= min_[0]) && (max_[0] < max_bb[0]))
+      if ((min_bb[0] <= min_[0]) && (max_[0] <= max_bb[0]))
       {
-        if ((min_bb[1] <= min_[1]) && (max_[1] < max_bb[1]))
+        if ((min_bb[1] <= min_[1]) && (max_[1] <= max_bb[1]))
         {
-          if ((min_bb[2] <= min_[2]) && (max_[2] < max_bb[2]))
+          if ((min_bb[2] <= min_[2]) && (max_[2] <= max_bb[2]))
           {
             return (true);
           }
