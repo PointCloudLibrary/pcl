@@ -1,0 +1,427 @@
+/*
+ * Software License Agreement (BSD License)
+ *
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *
+ *  All rights reserved.
+ *
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions
+ *  are met:
+ *
+ *   * Redistributions of source code must retain the above copyright
+ *     notice, this list of conditions and the following disclaimer.
+ *   * Redistributions in binary form must reproduce the above
+ *     copyright notice, this list of conditions and the following
+ *     disclaimer in the documentation and/or other materials provided
+ *     with the distribution.
+ *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *     contributors may be used to endorse or promote products derived
+ *     from this software without specific prior written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ *  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ *  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ *  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ *  POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
+
+#ifndef PCL_SUSAN_IMPL_HPP_
+#define PCL_SUSAN_IMPL_HPP_
+
+#include <pcl/keypoints/susan.h>
+#include <pcl/features/normal_3d.h>
+#include <pcl/features/integral_image_normal.h>
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT, typename PointOutT, typename NormalT, typename IntensityT> void
+pcl::SUSAN<PointInT, PointOutT, NormalT, IntensityT>::setNonMaxSupression (bool nonmax)
+{
+  nonmax_ = nonmax;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT, typename PointOutT, typename NormalT, typename IntensityT> void
+pcl::SUSAN<PointInT, PointOutT, NormalT, IntensityT>::setGeometricValidation (bool validate)
+{
+  geometric_validation_ = validate;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT, typename PointOutT, typename NormalT, typename IntensityT> void 
+pcl::SUSAN<PointInT, PointOutT, NormalT, IntensityT>::setRadius (float radius)
+{ 
+  search_radius_ = radius; 
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT, typename PointOutT, typename NormalT, typename IntensityT> void 
+pcl::SUSAN<PointInT, PointOutT, NormalT, IntensityT>::setDistanceThreshold (float distance_threshold) 
+{
+  distance_threshold_ = distance_threshold; 
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT, typename PointOutT, typename NormalT, typename IntensityT> void 
+pcl::SUSAN<PointInT, PointOutT, NormalT, IntensityT>::setAngularThreshold (float angular_threshold) 
+{ 
+  angular_threshold_ = angular_threshold; 
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT, typename PointOutT, typename NormalT, typename IntensityT> void 
+pcl::SUSAN<PointInT, PointOutT, NormalT, IntensityT>::setIntensityThreshold (float intensity_threshold) 
+{ 
+  intensity_threshold_ = intensity_threshold; 
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT, typename PointOutT, typename NormalT, typename IntensityT> void 
+pcl::SUSAN<PointInT, PointOutT, NormalT, IntensityT>::setNormals (boost::shared_ptr<pcl::PointCloud<NormalT> > normals ) const 
+{ 
+  normals_.reset (normals); 
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT, typename PointOutT, typename NormalT, typename IntensityT> void
+pcl::SUSAN<PointInT, PointOutT, NormalT, IntensityT>::setSearchSurface (const PointCloudInConstPtr &cloud) 
+{ 
+  surface_ = cloud; 
+  normals_->clear (); 
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT, typename PointOutT, typename NormalT, typename IntensityT> void
+pcl::SUSAN<PointInT, PointOutT, NormalT, IntensityT>::setNumberOfThreads (int nr_threads)
+{
+  if (nr_threads == 0)
+          nr_threads = 1;
+  threads_ = nr_threads;
+}
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// template <typename PointInT, typename PointOutT, typename NormalT, typename IntensityT> void
+// pcl::SUSAN<PointInT, PointOutT, NormalT, IntensityT>::USAN (const PointInT& nucleus,
+//                                                 const NormalT& nucleus_normal,
+//                                                 const std::vector<int>& neighbors, 
+//                                                 const float& t,
+//                                                 float& response,
+//                                                 Eigen::Vector3f& centroid) const
+// {
+//   float area = 0;
+//   response = 0;
+//   float x0 = nucleus.x;
+//   float y0 = nucleus.y;
+//   float z0 = nucleus.z;
+//   //xx xy xz yy yz zz
+//   std::vector<float> coefficients(6);
+//   memset (&coefficients[0], 0, sizeof (float) * 6);
+//   for (std::vector<int>::const_iterator index = neighbors.begin(); index != neighbors.end(); ++index)
+//   {
+//     if (pcl_isfinite (normals_->points[*index].normal_x))
+//     {
+//       Eigen::Vector3f diff = normals_->points[*index].getNormal3fMap () - nucleus_normal.getNormal3fMap ();
+//       float c = diff.norm () / t;
+//       c = -1 * pow (c, 6.0);
+//       c = exp (c);
+//       Eigen::Vector3f xyz = surface_->points[*index].getVector3fMap ();
+//       centroid += c * xyz;
+//       area += c;
+//       coefficients[0] += c * (x0 - xyz.x) * (x0 - xyz.x);
+//       coefficients[1] += c * (x0 - xyz.x) * (y0 - xyz.y);
+//       coefficients[2] += c * (x0 - xyz.x) * (z0 - xyz.z);
+//       coefficients[3] += c * (y0 - xyz.y) * (y0 - xyz.y);
+//       coefficients[4] += c * (y0 - xyz.y) * (z0 - xyz.z);
+//       coefficients[5] += c * (z0 - xyz.z) * (z0 - xyz.z);
+//     }
+//   }
+
+//   if (area > 0)
+//   {
+//     centroid /= area;
+//     if (area < geometric_threshold)
+//       response = geometric_threshold - area;
+//     // Look for edge direction
+//     // X direction
+//     if ((coefficients[3]/coefficients[0]) < 1 && (coefficients[5]/coefficients[0]) < 1)
+//       direction = Eigen::Vector3f (1, 0, 0);
+//     else
+//     {
+//       // Y direction
+//       if ((coefficients[0]/coefficients[3]) < 1 && (coefficients[5]/coefficients[3]) < 1)
+//         direction = Eigen::Vector3f (0, 1, 0);
+//       else
+//       {
+//         // Z direction
+//         if ((coefficients[0]/coefficients[5]) < 1 && (coefficients[3]/coefficients[5]) < 1)
+//           direction = Eigen::Vector3f (0, 1, 0);
+//         // Diagonal edge
+//         else 
+//         {
+//           //XY direction
+//           if ((coefficients[2]/coeffcients[1]) < 1 && (coeffcients[4]/coeffcients[1]) < 1)
+//           {
+//             if (coeffcients[1] > 0)
+//               direction = Eigen::Vector3f (1,1,0);
+//             else
+//               direction = Eigen::Vector3f (-1,1,0);
+//           }
+//           else
+//           {
+//             //XZ direction
+//             if ((coefficients[1]/coeffcients[2]) > 1 && (coeffcients[4]/coeffcients[2]) < 1)
+//             {
+//               if (coeffcients[2] > 0)
+//                 direction = Eigen::Vector3f (1,0,1);
+//               else
+//                 direction = Eigen::Vector3f (-1,0,1);
+//             }
+//             //YZ direction
+//             else
+//             {
+//               if (coeffcients[4] > 0)
+//                 direction = Eigen::Vector3f (0,1,1);
+//               else
+//                 direction = Eigen::Vector3f (0,-1,1);
+//             }
+//           }
+//         }
+//       }
+//     }
+    
+//     // std::size_t max_index = std::distance (coefficients.begin (), max);
+//     // switch (max_index)
+//     // {
+//     //   case 0 : direction = Eigen::Vector3f (1, 0, 0); break;
+//     //   case 1 : direction = Eigen::Vector3f (1, 1, 0); break;
+//     //   case 2 : direction = Eigen::Vector3f (1, 0, 1); break;
+//     //   case 3 : direction = Eigen::Vector3f (0, 1, 0); break;
+//     //   case 4 : direction = Eigen::Vector3f (0, 1, 1); break;
+//     //   case 5 : direction = Eigen::Vector3f (0, 0, 1); break;
+//     // }
+//   }
+// }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT, typename PointOutT, typename NormalT, typename IntensityT> bool
+pcl::SUSAN<PointInT, PointOutT, NormalT, IntensityT>::initCompute ()
+{
+  if (!Keypoint<PointInT, PointOutT>::initCompute ())
+  {
+    PCL_ERROR ("[pcl::%s::initCompute] init failed!\n", name_.c_str ());
+    return (false);
+  }
+  
+  if (normals_->empty ())
+  {
+    normals_->reserve (surface_->size ());
+    if (surface_->height == 1 ) // not organized
+    {
+      pcl::NormalEstimation<PointInT, NormalT> normal_estimation;
+      normal_estimation.setInputCloud(surface_);
+      normal_estimation.setRadiusSearch(search_radius_);
+      normal_estimation.compute (*normals_);
+    }
+    else
+    {
+      IntegralImageNormalEstimation<PointInT, NormalT> normal_estimation;
+      normal_estimation.setNormalEstimationMethod (pcl::IntegralImageNormalEstimation<PointInT, NormalT>::SIMPLE_3D_GRADIENT);
+      normal_estimation.setInputCloud(surface_);
+      normal_estimation.setNormalSmoothingSize (5.0);
+      normal_estimation.compute (*normals_);
+    }
+  }
+  return (true);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT, typename PointOutT, typename NormalT, typename IntensityT> bool
+pcl::SUSAN<PointInT, PointOutT, NormalT, IntensityT>::isWithinNucleusCentroid (const Eigen::Vector3f& nucleus,
+                                                                   const Eigen::Vector3f& centroid,
+                                                                   const Eigen::Vector3f& nc,
+                                                                   const PointInT& point) const
+{
+  Eigen::Vector3f pc = centroid - point.getVector3fMap ();
+  Eigen::Vector3f pn = nucleus - point.getVector3fMap ();
+  Eigen::Vector3f pc_cross_nc = pc.cross (nc);
+  return ((pc_cross_nc.norm () <= tolerance_) && (pc.dot (nc) >= 0) && (pn.dot (nc) <= 0));
+}
+
+// template <typename PointInT, typename PointOutT, typename NormalT, typename IntensityT> bool
+// pcl::SUSAN<PointInT, PointOutT, NormalT, IntensityT>::isValidQueryPoint3D (int point_index) const
+// {
+//   return (isFinite (surface_->points [point_index]) && 
+//           isFinite (normals_->points [point_index]));
+// }
+
+// template <typename PointInT, typename PointOutT, typename NormalT, typename IntensityT> bool
+// pcl::SUSAN<PointInT, PointOutT, NormalT, IntensityT>::isValidQueryPoint2D (int point_index) const
+// {
+//   return (isFinite (surface_->points [point_index]));
+// }
+
+// template <typename PointInT, typename PointOutT, typename NormalT, typename IntensityT> bool
+// pcl::SUSAN<PointInT, PointOutT, NormalT, IntensityT>::isWithinSusan2D (int nucleus, int neighbor) const
+// {
+//   return (fabs (intensity_ (surface_->points[nucleus]) - 
+//                 intensity_ (surface_->points[neighbor])) <= intensiity_threshold_);
+// }
+
+
+// template <typename PointInT, typename PointOutT, typename NormalT, typename IntensityT> bool
+// pcl::SUSAN<PointInT, PointOutT, NormalT, IntensityT>::isWithinSusan3D (int nucleus, int neighbor) const
+// {
+//   return (1 - nucleus_normal.dot (normals_->points[*index].getNormalVector3fMap ()) <= angular_threshold_)
+// }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT, typename PointOutT, typename NormalT, typename IntensityT> void
+pcl::SUSAN<PointInT, PointOutT, NormalT, IntensityT>::detectKeypoints (PointCloudOut &output)
+{
+  boost::shared_ptr<pcl::PointCloud<PointOutT> > response (new pcl::PointCloud<PointOutT> ());
+  response->reserve (surface_->size ());
+  const int surface_size = surface_->size ();
+#if defined (HAVE_OPENMP) && (defined(_WIN32) || ((__GNUC__ > 4) && (__GNUC_MINOR__ > 2)))
+#pragma omp parallel for shared ((*response)) num_threads(threads_)
+#endif
+  for (int point_index = 0; point_index < surface_size; ++point_index)
+  {
+    const PointInT& point_in = surface_->points [point_index];
+    const NormalT& normal_in = normals_->points [point_index];
+    if (!isFinite (point_in) || !isFinite (normal_in))
+      continue;
+    else
+    {
+      Eigen::Vector3f nucleus = point_in.getVector3fMap ();
+      Eigen::Vector3f nucleus_normal = normals_->points [point_index].getNormalVector3fMap ();
+      std::vector<int> nn_indices;
+      std::vector<float> nn_dists;
+      int nb_neigbors = tree_->radiusSearch (point_in, search_radius_, nn_indices, nn_dists);
+      float area = 0;
+      Eigen::Vector3f centroid = Eigen::Vector3f::Zero ();
+      // Exclude nucleus from the usan
+      std::vector<int> usan; usan.reserve (nn_indices.size () - 1);
+      for (std::vector<int>::const_iterator index = nn_indices.begin(); index != nn_indices.end(); ++index)
+      {
+        if ((*index != point_index) && pcl_isfinite (normals_->points[*index].normal_x))
+        {
+          // if the point fulfill condition
+          if ((fabs (intensity_ (point_in) - intensity_ (surface_->points[*index])) <= intensity_threshold_) ||
+              (1 - nucleus_normal.dot (normals_->points[*index].getNormalVector3fMap ()) <= angular_threshold_))
+          {
+            ++area;
+            centroid += surface_->points[*index].getVector3fMap ();
+            usan.push_back (*index);
+          }
+        }
+      }
+
+      float geometric_threshold = 0.5 * (nn_indices.size () - 1);
+      if ((area > 0) && (area < geometric_threshold))
+      {
+        // if no geometric validation required add the point to the response
+        if (!geometric_validation_)
+        {
+          PointOutT point_out;
+          point_out.getVector3fMap () = point_in.getVector3fMap ();
+          point_out.intensity = geometric_threshold - area; 
+#if defined (HAVE_OPENMP) && (defined(_WIN32) || ((__GNUC__ > 4) && (__GNUC_MINOR__ > 2)))        
+#pragma omp critical
+#endif
+          response->push_back (point_out);
+        }
+        else
+        {
+          centroid /= area;
+          Eigen::Vector3f dist = nucleus - centroid;
+          std::cout << "Distance " << dist.transpose () << " " << dist.norm () << std::endl;
+          // Check the distance <= distance_threshold_
+          if (dist.norm () >= distance_threshold_)
+          {
+            // point is valid from distance point of view 
+            Eigen::Vector3f nc = centroid - nucleus;
+            // Check the contiguity
+            std::vector<int>::const_iterator usan_it = usan.begin ();
+            for (; usan_it != usan.end (); ++usan_it)
+            {
+              if (!isWithinNucleusCentroid (nucleus, centroid, nc, surface_->points[*usan_it]))
+                break;
+            }
+            // All points within usan lies on the segment [nucleus centroid]
+            if (usan_it == usan.end ())
+            {
+              PointOutT point_out;
+              point_out.getVector3fMap () = point_in.getVector3fMap ();
+              point_out.intensity = geometric_threshold - area; 
+#if defined (HAVE_OPENMP) && (defined(_WIN32) || ((__GNUC__ > 4) && (__GNUC_MINOR__ > 2)))        
+#pragma omp critical
+#endif
+              response->push_back (point_out);
+            }
+          }
+        }
+      }
+    }  
+  }
+  
+  response->height = 1;
+  response->width = static_cast<uint32_t> (response->size ());
+
+  if (!nonmax_)
+    output = *response;
+  else
+  {
+  output.points.clear ();
+  output.points.reserve (response->points.size());
+  
+#if defined (HAVE_OPENMP) && (defined(_WIN32) || ((__GNUC__ > 4) && (__GNUC_MINOR__ > 2)))
+#pragma omp parallel for shared (output) num_threads(threads_)   
+#endif
+  for (int idx = 0; idx < static_cast<int> (response->points.size ()); ++idx)
+  {
+    const PointOutT& point_in = response->points [idx];
+    const NormalT& normal_in = normals_->points [idx];
+    const float intensity = response->points[idx].intensity;
+    if (!isFinite (point_in) || !isFinite (normal_in) || (intensity == 0))
+      continue;
+    std::vector<int> nn_indices;
+    std::vector<float> nn_dists;
+    tree_->radiusSearch (idx, search_radius_, nn_indices, nn_dists);
+    bool is_minima = true;
+    for (std::vector<int>::const_iterator nn_it = nn_indices.begin(); nn_it != nn_indices.end(); ++nn_it)
+    {
+      if (intensity > response->points[*nn_it].intensity)
+      {
+        is_minima = false;
+        std::cout << idx << " non maxima" << std::endl;
+        break;
+      }
+    }
+    if (is_minima)
+#if defined (HAVE_OPENMP) && (defined(_WIN32) || ((__GNUC__ > 4) && (__GNUC_MINOR__ > 2)))        
+#pragma omp critical
+#endif
+      output.points.push_back (response->points[idx]);
+  }
+  
+  output.height = 1;
+  output.width = static_cast<uint32_t> (output.points.size());  
+  }
+  // we don not change the denseness
+  output.is_dense = surface_->is_dense;
+  std::cout << "output size " << output.size () << std::endl;
+}
+
+#define PCL_INSTANTIATE_SUSAN(T,U,N) template class PCL_EXPORTS pcl::SUSAN<T,U,N>;
+#endif // #ifndef PCL_HARRIS_KEYPOINT_3D_IMPL_H_
+
