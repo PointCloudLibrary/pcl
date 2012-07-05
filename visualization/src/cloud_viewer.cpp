@@ -336,7 +336,7 @@ pcl::visualization::CloudViewer::removeVisualizationCallable (const std::string 
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl::visualization::CloudViewer::wasStopped (int millis)
+pcl::visualization::CloudViewer::wasStopped (int)
 {
   boost::thread::yield (); //allow this to be called in a loop
   return !impl_->viewer_;

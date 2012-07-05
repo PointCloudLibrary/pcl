@@ -33,7 +33,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: vtk.h 3779 2012-01-03 07:25:01Z rusu $
+ * $Id: vtk.h 5937 2012-06-17 15:39:28Z ksarkar $
  *
  */
 #ifndef PCL_PCL_VISUALIZER_VTK_H_
@@ -130,6 +130,12 @@
 #include <vtkImageCanvasSource2D.h>
 #include <vtkImageBlend.h>
 #include <vtkImageStencilData.h>
+#include <vtkChartXY.h>
+#include <vtkPlot.h>
+#include <vtkTable.h>
+#include <vtkContextView.h>
+#include <vtkContextScene.h>
+#include <vtkColorSeries.h>
 #if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
 #  include <pcl/visualization/interactor.h>
 #else

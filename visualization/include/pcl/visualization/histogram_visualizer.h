@@ -234,7 +234,7 @@ namespace pcl
           {
             if (event_id != vtkCommand::TimerEvent)
               return;
-            int timer_id = *(int*)call_data;
+            int timer_id = *(reinterpret_cast<int*> (call_data));
 
             if (timer_id != right_timer_id)
               return;
@@ -256,35 +256,28 @@ namespace pcl
         
         struct ExitCallback : public vtkCommand
         {
+          ExitCallback () : his () {}
+
           static ExitCallback* New ()
           {
             return (new ExitCallback);
           }
+
           virtual void 
-          Execute (vtkObject* caller, unsigned long event_id, void* call_data)
+          Execute (vtkObject*, unsigned long event_id, void*)
           {
             if (event_id != vtkCommand::ExitEvent)
               return;
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
-           interact->stopped = true;
-#else
             his->stopped_ = true;
-#endif
           }
-#if (VTK_MAJOR_VERSION == 5 && (VTK_MINOR_VERSION <= 4))
-          PCLVisualizerInteractor *interact;
-#else
           PCLHistogramVisualizer *his;
-#endif
         };
 
         /** \brief Callback object enabling us to leave the main loop, when a timer fires. */
         vtkSmartPointer<ExitMainLoopTimerCallback> exit_main_loop_timer_callback_;
         vtkSmartPointer<ExitCallback> exit_callback_;
-#if !((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
         /** \brief Set to true when the histogram visualizer is ready to be terminated. */
         bool stopped_;
-#endif
     };
   }
 }

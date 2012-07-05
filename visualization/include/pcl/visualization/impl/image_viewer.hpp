@@ -33,7 +33,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: image_viewer.hpp 5207 2012-03-20 22:55:35Z svn $
+ * $Id: image_viewer.hpp 5629 2012-04-26 00:22:41Z rusu $
  */
 
 #ifndef PCL_VISUALIZATION_IMAGE_VISUALIZER_HPP_
@@ -65,6 +65,32 @@ pcl::visualization::ImageViewer::showRGBImage (const pcl::PointCloud<T> &cloud,
           data_[i * 3 + j] = 0;
   }
   return (showRGBImage (data_.get (), cloud.width, cloud.height, layer_id, opacity));
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+template <typename T> void
+pcl::visualization::ImageViewer::addRGBImage (const pcl::PointCloud<T> &cloud,
+                                              const std::string &layer_id,
+                                              double opacity)
+{
+  if (data_size_ < cloud.width * cloud.height)
+  {
+    data_size_ = cloud.width * cloud.height * 3;
+    data_.reset (new unsigned char[data_size_]);
+  }
+  
+  for (size_t i = 0; i < cloud.points.size (); ++i)
+  {
+    memcpy (&data_[i * 3], reinterpret_cast<const unsigned char*> (&cloud.points[i].rgba), sizeof (unsigned char) * 3);
+    /// Convert from BGR to RGB
+    unsigned char aux = data_[i*3];
+    data_[i*3] = data_[i*3+2];
+    data_[i*3+2] = aux;
+    for (int j = 0; j < 3; ++j)
+      if (pcl_isnan (data_[i * 3 + j]))
+          data_[i * 3 + j] = 0;
+  }
+  return (addRGBImage (data_.get (), cloud.width, cloud.height, layer_id, opacity));
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
