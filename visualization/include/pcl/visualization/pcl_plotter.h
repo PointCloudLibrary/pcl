@@ -67,7 +67,7 @@ namespace pcl
 	/** \brief PCL Plotter constructor.  
          *  \param[in] name Name of the window
          */
-	PCLPlotter (char const * name = "PCL Plotter");
+        PCLPlotter (char const * name = "PCL Plotter");
 	
 	/** \brief adds a plot with correspondences in the arrays arrayX and arrayY
           * \param[in] array_X X coordinates of point correspondence array
@@ -78,7 +78,7 @@ namespace pcl
 	  * \param[in] color a character array of 4 fields denoting the R,G,B and A component of the color of the plot ranging from 0 to 255. If this argument is not passed (or NULL is passed) the plot is colored based on a color scheme 
           */
 	void 
-	addPlotData (double const *array_X, 
+        addPlotData (double const *array_X, 
                     double const *array_Y, 
                     unsigned long size, 
                     char const * name = "Y Axis", 
@@ -88,7 +88,7 @@ namespace pcl
 	/** \brief adds a plot with correspondences in vectors arrayX and arrayY. This is the vector version of the addPlotData function. Parameters mean same as before
           */
 	void 
-	addPlotData (std::vector<double> const &array_X, 
+        addPlotData (std::vector<double> const &array_X, 
                     std::vector<double>const &array_Y, 
                     char const * name = "Y Axis", 
                     int type = LINE,
@@ -172,8 +172,8 @@ namespace pcl
         
         /** \brief draws all the plots added by addPlotData() or addHistogramData() till now 
         */
-	void 
-	plot ();
+        void 
+        plot ();
 	
         
         /** \brief set method for the color scheme of the plot. The plots gets autocolored differently based on the color scheme.
@@ -223,8 +223,8 @@ namespace pcl
         
         
       private:
-	vtkSmartPointer<vtkContextView> view_;  
-	//vtkSmartPointer<vtkChartXY> chart_;
+        vtkSmartPointer<vtkContextView> view_;  
+        //vtkSmartPointer<vtkChartXY> chart_;
         vtkSmartPointer<vtkColorSeries> color_series_;   //for automatic coloring
         
         //extra state variables
