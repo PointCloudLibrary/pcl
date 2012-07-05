@@ -44,16 +44,22 @@
 //VTK includes
 #include<pcl/visualization/vtk.h>
 
+//pcl includes
+#include <pcl/visualization/common/common.h>
+#include <pcl/point_types.h>
+#include <pcl/correspondence.h>
+#include <pcl/point_cloud.h>
+#include <pcl/common/io.h>
 
 namespace pcl
 {
   namespace visualization
   {
-    /** \brief PCL Plotter main class.
+    /** \brief PCL Plotter main class. Given point correspondances this class can be used to plot the data one against the other and display it on the screen. It also has methods for providing plot for important functions like histogram etc. Important functions of PCLHistogramVisualizer are redefined here so that this single class can take responsibility of all ploting related functionalities.
       * \author Kripasindhu Sarkar
       * \ingroup visualization
       */
-    class PCLPlotter: public vtkChartXY 
+    class PCL_EXPORTS PCLPlotter: public vtkChartXY 
     {
       
       public:
@@ -75,7 +81,7 @@ namespace pcl
 	addPlotData (double const *array_X, 
                     double const *array_Y, 
                     unsigned long size, 
-                    char * name = "Y Axis", 
+                    char const * name = "Y Axis", 
                     int type  = LINE , 
                     char const *color=NULL);
 	
@@ -84,7 +90,7 @@ namespace pcl
 	void 
 	addPlotData (std::vector<double> const &array_X, 
                     std::vector<double>const &array_Y, 
-                    char * name = "Y Axis", 
+                    char const * name = "Y Axis", 
                     int type = LINE,
                     std::vector<char> const &color = std::vector<char>());
 	
@@ -92,7 +98,7 @@ namespace pcl
           */
         void
         addPlotData (std::vector<std::pair<double, double> > const &plot_data, 
-                    char * name = "Y Axis",
+                    char const * name = "Y Axis",
                     int type = LINE,
                     std::vector<char> const &color = std::vector<char>());
         
@@ -105,9 +111,65 @@ namespace pcl
         void
         addHistogramData (std::vector<double> const & data, 
                           int const nbins = 10, 
-                          char * name = "Histogram", 
+                          char const * name = "Histogram", 
                           std::vector<char> const &color = std::vector<char>());
 	
+        
+        //PCLHistogramVisulizer methods
+        /** \brief Add a histogram feature to screen as a separate window, from a cloud containing a single histogram.
+          * \param[in] cloud the PointCloud dataset containing the histogram
+          * \param[in] hsize the length of the histogram
+          * \param[in] id the point cloud object id (default: cloud)
+          * \param[in] win_width the width of the window
+          * \param[in] win_height the height of the window
+          */
+        template <typename PointT> bool 
+        addFeatureHistogram (const pcl::PointCloud<PointT> &cloud, 
+                             int hsize, 
+                             const std::string &id = "cloud", int win_width = 640, int win_height = 200);
+        
+        /** \brief Add a histogram feature to screen as a separate window from a cloud containing a single histogram.
+          * \param[in] cloud the PointCloud dataset containing the histogram
+          * \param[in] field_name the field name containing the histogram
+          * \param[in] id the point cloud object id (default: cloud)
+          * \param[in] win_width the width of the window
+          * \param[in] win_height the height of the window
+          */
+        bool 
+        addFeatureHistogram (const sensor_msgs::PointCloud2 &cloud, 
+                             const std::string &field_name, 
+                             const std::string &id = "cloud", int win_width = 640, int win_height = 200);
+        
+        /** \brief Add a histogram feature to screen as a separate window.
+          * \param[in] cloud the PointCloud dataset containing the histogram
+          * \param[in] field_name the field name containing the histogram
+          * \param[in] index the point index to extract the histogram from
+          * \param[in] id the point cloud object id (default: cloud)
+          * \param[in] win_width the width of the window
+          * \param[in] win_height the height of the window 
+          */
+        template <typename PointT> bool 
+        addFeatureHistogram (const pcl::PointCloud<PointT> &cloud, 
+                             const std::string &field_name, 
+                             const int index,
+                             const std::string &id = "cloud", int win_width = 640, int win_height = 200);
+        
+        /** \brief Add a histogram feature to screen as a separate window.
+          * \param[in] cloud the PointCloud dataset containing the histogram
+          * \param[in] field_name the field name containing the histogram
+          * \param[in] index the point index to extract the histogram from
+          * \param[in] id the point cloud object id (default: cloud)
+          * \param[in] win_width the width of the window
+          * \param[in] win_height the height of the window
+          */
+        bool 
+        addFeatureHistogram (const sensor_msgs::PointCloud2 &cloud, 
+                             const std::string &field_name, 
+                             const int index,
+                             const std::string &id = "cloud", int win_width = 640, int win_height = 200);
+        
+        
+        
         /** \brief draws all the plots added by addPlotData() or addHistogramData() till now 
         */
 	void 
@@ -182,5 +244,8 @@ namespace pcl
     };
   }
 }
+
+#include <pcl/visualization/impl/pcl_plotter.hpp>
+
 #endif	/* PCL_VISUALUALIZATION_PCL_PLOTTER_H_ */
 

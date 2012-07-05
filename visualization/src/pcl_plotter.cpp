@@ -36,6 +36,7 @@
  */
 
 #include <pcl/visualization/pcl_plotter.h>
+#include <pcl/common/common_headers.h>
 
 
 #define VTK_CREATE(type, name) \
@@ -60,22 +61,28 @@ pcl::visualization::PCLPlotter::PCLPlotter (char const *name)
 }
 
 void
-pcl::visualization::PCLPlotter::addPlotData (double const* array_X, double const* array_Y, unsigned long size, char * name /* = "Y Axis" */, int type, char const* color)
+pcl::visualization::PCLPlotter::addPlotData (double const* array_X, double const* array_Y, unsigned long size, char const * name /* = "Y Axis" */, int type, char const* color)
 {
   //updating the current plot ID
   current_plot_++;
+  
+  //creating a permanent copy of the arrays
+  double *permanent_X = new double[size];
+  double *permanent_Y = new double[size];
+  memcpy(permanent_X, array_X, size*sizeof(double));
+  memcpy(permanent_Y, array_Y, size*sizeof(double));
   
   //transforming data to be fed to the vtkChartXY
   VTK_CREATE (vtkTable, table);
 
   VTK_CREATE (vtkDoubleArray, varray_X);
   varray_X->SetName ("X Axis");
-  varray_X->SetArray ((double *) array_X, size, 1);
+  varray_X->SetArray (permanent_X, size, 1);
   table->AddColumn (varray_X);
 
   VTK_CREATE (vtkDoubleArray, varray_Y);
   varray_Y->SetName (name);
-  varray_Y->SetArray ((double *) array_Y, size, 1);
+  varray_Y->SetArray (permanent_Y, size, 1);
   table->AddColumn (varray_Y);
 
   //adding to chart
@@ -94,13 +101,13 @@ pcl::visualization::PCLPlotter::addPlotData (double const* array_X, double const
 }
 
 void
-pcl::visualization::PCLPlotter::addPlotData (std::vector<double> const &array_X, std::vector<double> const &array_Y, char * name /* = "Y Axis" */, int type /* = vtkChart::LINE */, std::vector<char> const &color)
+pcl::visualization::PCLPlotter::addPlotData (std::vector<double> const &array_X, std::vector<double> const &array_Y, char const * name /* = "Y Axis" */, int type /* = vtkChart::LINE */, std::vector<char> const &color)
 {
   this->addPlotData (&array_X[0], &array_Y[0], static_cast<unsigned long> (array_X.size ()), name, type, (color.size () == 0) ? NULL : &color[0]);
 }
 
 void
-pcl::visualization::PCLPlotter::addPlotData (std::vector<std::pair<double, double> > const &plot_data, char * name /* = "Y Axis" */, int type, std::vector<char> const &color)
+pcl::visualization::PCLPlotter::addPlotData (std::vector<std::pair<double, double> > const &plot_data, char const * name /* = "Y Axis" */, int type, std::vector<char> const &color)
 {
   double *array_x = new double[plot_data.size ()];
   double *array_y = new double[plot_data.size ()];
@@ -114,13 +121,92 @@ pcl::visualization::PCLPlotter::addPlotData (std::vector<std::pair<double, doubl
 }
 
 void
-pcl::visualization::PCLPlotter::addHistogramData (std::vector<double> const& data, int const nbins, char * name, std::vector<char> const &color)
+pcl::visualization::PCLPlotter::addHistogramData (std::vector<double> const& data, int const nbins, char const * name, std::vector<char> const &color)
 {
   std::vector<std::pair<double, double> > histogram;
   computeHistogram (data, nbins, histogram);
   this->addPlotData (histogram, name, vtkChart::BAR, color);
   
 }
+
+////////////////////////////////HistVizualizer Functions//////////////////////////////////////
+bool
+pcl::visualization::PCLPlotter::addFeatureHistogram (
+    const sensor_msgs::PointCloud2 &cloud, const std::string &field_name, 
+    const std::string &id, int win_width, int win_height)
+{
+  // Get the field
+  int field_idx = pcl::getFieldIndex (cloud, field_name);
+  if (field_idx == -1)
+  {
+    PCL_ERROR ("[addFeatureHistogram] Invalid field (%s) given!", field_name.c_str ());
+    return (false);
+  }
+
+  int hsize = cloud.fields[field_idx].count;
+  std::vector<double> array_x (hsize), array_y (hsize);
+  
+  // Parse the cloud data and store it in the array
+  for (int i = 0; i < hsize; ++i)
+  {
+    array_x[i] = i;
+    float data;
+    // TODO: replace float with the real data type
+    memcpy (&data, &cloud.data[cloud.fields[field_idx].offset + i * sizeof (float)], sizeof (float));
+    array_y[i] = data;
+  }
+  
+  this->addPlotData(array_x, array_y, id.c_str(), vtkChart::LINE);
+  setWindowSize (win_width, win_height);
+  return (true);
+}
+
+bool
+pcl::visualization::PCLPlotter::addFeatureHistogram (
+    const sensor_msgs::PointCloud2 &cloud, 
+    const std::string &field_name, 
+    const int index,
+    const std::string &id, int win_width, int win_height)
+{
+  if (index < 0 || index >= static_cast<int> (cloud.width * cloud.height))
+  {
+    PCL_ERROR ("[addFeatureHistogram] Invalid point index (%d) given!\n", index);
+    return (false);
+  }
+  
+  // Get the field
+  int field_idx = pcl::getFieldIndex (cloud, field_name);
+  if (field_idx == -1)
+  {
+    PCL_ERROR ("[addFeatureHistogram] Invalid field (%s) given!", field_name.c_str ());
+    return (false);
+  }
+
+  // Compute the total size of the fields
+  unsigned int fsize = 0;
+  for (size_t i = 0; i < cloud.fields.size (); ++i)
+    fsize += cloud.fields[i].count * pcl::getFieldSize (cloud.fields[i].datatype);
+  
+  int hsize = cloud.fields[field_idx].count;
+  std::vector<double> array_x (hsize), array_y (hsize);
+  
+  // Parse the cloud data and store it in the array
+  for (int i = 0; i < hsize; ++i)
+  {
+    array_x[i] = i;
+    float data;
+    // TODO: replace float with the real data type
+    memcpy (&data, &cloud.data[index * fsize + cloud.fields[field_idx].offset + i * sizeof (float)], sizeof (float));
+    array_y[i] = data;
+  }
+  
+  this->addPlotData(array_x, array_y, id.c_str(), vtkChart::LINE);
+  setWindowSize (win_width, win_height);
+  return (true);
+}
+
+///////////////////end of PCLHistogramVisualizer functions/////////////////////
+
 
 void
 pcl::visualization::PCLPlotter::setColorScheme (int scheme)

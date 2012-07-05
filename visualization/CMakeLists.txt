@@ -77,6 +77,7 @@ if(build)
 
     set(impl_incs 
         include/pcl/${SUBSYS_NAME}/impl/histogram_visualizer.hpp
+        include/pcl/${SUBSYS_NAME}/impl/pcl_plotter.hpp
         include/pcl/${SUBSYS_NAME}/impl/pcl_visualizer.hpp
         include/pcl/${SUBSYS_NAME}/impl/image_viewer.hpp
         include/pcl/${SUBSYS_NAME}/impl/registration_visualizer.hpp
