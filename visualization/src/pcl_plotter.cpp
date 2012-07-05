@@ -121,6 +121,26 @@ pcl::visualization::PCLPlotter::addPlotData (std::vector<std::pair<double, doubl
 }
 
 void
+pcl::visualization::PCLPlotter::addPlotData (PolynomialFunction const & p_function,
+                    double x_min, double y_min,
+                    char const *name,
+                    int num_points,
+                    std::vector<char> const &color)
+{
+  std::vector<double> array_x(num_points), array_y(num_points);
+  double incr = (y_min - x_min)/num_points;
+  
+  for (int i = 0; i < num_points; i++)
+  {
+    double xval = i*incr + x_min;
+    array_x[i] = xval;
+    array_y[i] = compute(p_function, xval);
+  }
+  
+  this->addPlotData (array_x, array_y, name, vtkChart::LINE, color);
+}
+
+void
 pcl::visualization::PCLPlotter::addHistogramData (std::vector<double> const& data, int const nbins, char const * name, std::vector<char> const &color)
 {
   std::vector<std::pair<double, double> > histogram;
@@ -305,4 +325,14 @@ pcl::visualization::PCLPlotter::computeHistogram (std::vector<double> const &dat
     if (index == nbins) index = nbins - 1; //including right boundary
     histogram[index ].second++;
   }
+}
+
+double pcl::visualization::PCLPlotter::compute(pcl::visualization::PCLPlotter::PolynomialFunction const & p_function, double val)
+{
+  double res = 0;
+  for (size_t i = 0; i < p_function.size(); i++)
+  {
+    res += (p_function[i] * pow(val, i));
+  }
+  return res;
 }

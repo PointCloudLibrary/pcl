@@ -64,6 +64,9 @@ namespace pcl
       
       public:
 	
+        /**\brief A representation of polynomial function. i'th element of the vector denotes the coefficient of x^i of the polynomial. 
+         */
+        typedef std::vector<int> PolynomialFunction; 
 	/** \brief PCL Plotter constructor.  
          *  \param[in] name Name of the window
          */
@@ -102,6 +105,21 @@ namespace pcl
                     int type = LINE,
                     std::vector<char> const &color = std::vector<char>());
         
+        /** \brief adds a plot based on the given polynomial function and the range in X axis. 
+          * \param[in] p_function A polynomial function which is represented by a vector which stores the coefficients. See description on the  typedef.   
+          * \param[in] x_min the left boundary of the range for displaying the plot
+	  * \param[in] x_max the right boundary of the range for displaying the plot
+          * \param[in] name name of the plot which appears in the legend when toggled on
+          * \param[in] num_points Number of points plotted to show the graph. More this number, more is the resolution.
+	  * \param[in] color a character array of 4 fields denoting the R,G,B and A component of the color of the plot ranging from 0 to 255. If this argument is not passed (or NULL is passed) the plot is colored based on a color scheme 
+          */
+        void
+        addPlotData(PolynomialFunction const & p_function,
+                    double x_min, double x_max,
+                    char const *name = "Y Axis",
+                    int num_points = 100,
+                    std::vector<char> const &color = std::vector<char>());
+        
         /** \brief bins the elements in vector data into nbins equally spaced containers and plots the resulted histogram 
           * \param[in] data the raw data 
           * \param[in] nbins the number of bins for the histogram
@@ -115,7 +133,7 @@ namespace pcl
                           std::vector<char> const &color = std::vector<char>());
 	
         
-        //PCLHistogramVisulizer methods
+        //##PCLHistogramVisulizer methods##
         /** \brief Add a histogram feature to screen as a separate window, from a cloud containing a single histogram.
           * \param[in] cloud the PointCloud dataset containing the histogram
           * \param[in] hsize the length of the histogram
@@ -180,12 +198,12 @@ namespace pcl
           * \param[in] scheme the color scheme. Possible values are vtkColorSeries::WARM, vtkColorSeries::COOL, vtkColorSeries::BLUES, vtkColorSeries::WILD_FLOWER, vtkColorSeries::CITRUS
           */       
         void
-        setColorScheme(int scheme);
+        setColorScheme (int scheme);
         
         /** \brief get the currently used color scheme
           * \return[out] the currently used color scheme. Values include WARM, COOL, BLUES, WILD_FLOWER, CITRUS, CUSTOM
           */  
-        int getColorScheme();
+        int getColorScheme ();
         
         /** \brief set/get method for the viewport's background color.
           * \param[in] r the red component of the RGB color
@@ -233,6 +251,11 @@ namespace pcl
         double bkg_color_[3];
         
         
+        /** \brief computes the value of the polynomial function at val
+          * \param[in] p_function polynomial function
+          * \param[in] value the value at which the function is to be computed
+          */
+        double compute(PolynomialFunction const & p_function, double val);
         /** \brief bins the elements in vector data into nbins equally spaced containers and returns the histogram form, ie, computes the histogram for 'data'
           * \param[in] data data who's frequency distribution is to be found
           * \param[in] nbins number of bins for the histogram
