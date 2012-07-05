@@ -103,6 +103,8 @@ namespace pcl
         */
       std::vector<bool> contour_labels_;
 
+    public:
+      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 }
 
