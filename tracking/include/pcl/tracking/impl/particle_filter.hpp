@@ -170,9 +170,9 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::cropInputPointCloud (
 {
   double x_min, y_min, z_min, x_max, y_max, z_max;
   calcBoundingBox (x_min, x_max, y_min, y_max, z_min, z_max);
-  pass_x_.setFilterLimits (x_min, x_max);
-  pass_y_.setFilterLimits (y_min, y_max);
-  pass_z_.setFilterLimits (z_min, z_max);
+  pass_x_.setFilterLimits (float (x_min), float (x_max));
+  pass_y_.setFilterLimits (float (y_min), float (y_max));
+  pass_z_.setFilterLimits (float (z_min), float (z_max));
   
   // x
   PointCloudInPtr xcloud (new PointCloudIn);

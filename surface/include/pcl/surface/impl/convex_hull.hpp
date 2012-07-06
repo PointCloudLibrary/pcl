@@ -366,7 +366,11 @@ pcl::ConvexHull<PointInT>::performReconstruction3D (
 
       // Needed by FOREACHvertex_i_
       int vertex_n, vertex_i;
+#ifdef __GNUC__
+#pragma GCC diagnostic ignored "-Wold-style-cast"
       FOREACHvertex_i_ ((*facet).vertices)
+#pragma GCC diagnostic warning "-Wold-style-cast"
+#endif
       //facet_vertices.vertices.push_back (qhid_to_pcidx[vertex->id]);
       polygons[dd].vertices[vertex_i] = qhid_to_pcidx[vertex->id];
       ++dd;

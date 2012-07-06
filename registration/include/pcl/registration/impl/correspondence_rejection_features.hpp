@@ -54,7 +54,7 @@ pcl::registration::CorrespondenceRejectorFeatures::getRemainingCorrespondences (
     {
       // Check if the score in feature space is above the given threshold
       // (assume that the number of feature correspondenecs is the same as the number of point correspondences)
-      if (!it->second->isCorrespondenceValid (i))
+      if (!it->second->isCorrespondenceValid (static_cast<int> (i)))
         break;
 
       remaining_correspondences[number_valid_correspondences] = original_correspondences[i];
