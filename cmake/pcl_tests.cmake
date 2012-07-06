@@ -1,16 +1,17 @@
 # Test management
 
 # Need GTest to build the tests
-find_package(GTest)
-if(GTEST_FOUND)
-    set(REASON)
-    set(DEFAULT ON)
-else(GTEST_FOUND)
-    set(REASON "GTest was not found.")
-    set(DEFAULT OFF)
-endif(GTEST_FOUND)
+#find_package(GTest)
+#if(GTEST_FOUND)
+#    set(REASON)
+#    set(DEFAULT ON)
+#else(GTEST_FOUND)
+#    set(REASON "GTest was not found.")
+#    set(DEFAULT OFF)
+#endif(GTEST_FOUND)
 
 # Add an option so the user can turn tests off
+set(DEFAULT ON)
 option(BUILD_TESTS "Build the library tests" ${DEFAULT})
 
 # Print a suitable status message
