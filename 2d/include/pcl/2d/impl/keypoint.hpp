@@ -76,13 +76,13 @@ pcl::pcl_2d::keypoint::harrisCorner  (ImageType &output, ImageType &input, const
   conv_2d->convolve  (M11, kernel_i, I_y2);
 
   /*harris function*/
-  const int height = input.size ();
-  const int width = input[0].size ();
+  const size_t height = input.size ();
+  const size_t width = input[0].size ();
   output.resize (height);
-  for (int i = 0; i < height; i++)
+  for (size_t i = 0; i < height; i++)
   {
     output[i].resize (width);
-    for (int j = 0; j < width; j++)
+    for (size_t j = 0; j < width; j++)
     {
       output[i][j] = M00[i][j] * M11[i][j] - (M10[i][j] * M10[i][j]) - alpha * ((M00[i][j] + M11[i][j]) * (M00[i][j] + M11[i][j]));
       if (thresh != 0)
@@ -96,9 +96,9 @@ pcl::pcl_2d::keypoint::harrisCorner  (ImageType &output, ImageType &input, const
   }
 
   /*local maxima*/
-  for (int i = 1; i < height - 1; i++)
+  for (size_t i = 1; i < height - 1; i++)
   {
-    for (int j = 1; j < width - 1; j++)
+    for (size_t j = 1; j < width - 1; j++)
     {
       if (output[i][j] > output[i - 1][j - 1] && output[i][j] > output[i - 1][j] && output[i][j] > output[i - 1][j + 1] &&
           output[i][j] > output[i][j - 1] && output[i][j] > output[i][j + 1] &&
@@ -131,15 +131,15 @@ pcl::pcl_2d::keypoint::hessianBlob  (ImageType &output, ImageType &input, const 
   edge_detection->ComputeDerivativeYCentral  (I_xy, I_x);
   edge_detection->ComputeDerivativeYCentral  (I_yy, I_y);
   /*Determinant of Hessian*/
-  const int height = input.size ();
-  const int width = input[0].size ();
+  const size_t height = input.size ();
+  const size_t width = input[0].size ();
   float min = std::numeric_limits<float>::max();
   float max = std::numeric_limits<float>::min();
   cornerness.resize (height);
-  for (int i = 0; i < height; i++)
+  for (size_t i = 0; i < height; i++)
   {
     cornerness[i].resize (width);
-    for (int j = 0; j < width; j++)
+    for (size_t j = 0; j < width; j++)
     {
       cornerness[i][j] = sigma*sigma*(I_xx[i][j]+I_yy[i][j]-I_xy[i][j]*I_xy[i][j]);
       if(SCALED){
@@ -154,10 +154,10 @@ pcl::pcl_2d::keypoint::hessianBlob  (ImageType &output, ImageType &input, const 
     output.resize (height);
     output[0].resize (width);
     output[height-1].resize (width);
-    for (int i = 1; i < height - 1; i++)
+    for (size_t i = 1; i < height - 1; i++)
     {
       output[i].resize (width);
-      for (int j = 1; j < width - 1; j++)
+      for (size_t j = 1; j < width - 1; j++)
       {
         if(SCALED)
           output[i][j] = ((cornerness[i][j]-min)/(max-min));
@@ -170,8 +170,8 @@ pcl::pcl_2d::keypoint::hessianBlob  (ImageType &output, ImageType &input, const 
 
 void
 pcl::pcl_2d::keypoint::hessianBlob  (ImageType &output, ImageType &input, const float start_scale, const float scaling_factor, const int num_scales){
-  const int height = input.size();
-  const int width = input[0].size();
+  const size_t height = input.size();
+  const size_t width = input[0].size();
   const int local_search_radius = 1;
   float scale = start_scale;
   std::vector<ImageType> cornerness;
@@ -182,8 +182,8 @@ pcl::pcl_2d::keypoint::hessianBlob  (ImageType &output, ImageType &input, const 
   }
   bool non_max_flag = false;
   float scale_max, local_max;
-  for(int i = 0;i < height;i++){
-    for(int j = 0;j < width;j++){
+  for(size_t i = 0;i < height;i++){
+    for(size_t j = 0;j < width;j++){
       scale_max = std::numeric_limits<float>::min();
       /*default output in case of no blob at the current point is 0*/
       output[i][j] = 0;
@@ -225,13 +225,13 @@ pcl::pcl_2d::keypoint::hessianBlob  (ImageType &output, ImageType &input, const 
 }
 void
 pcl::pcl_2d::keypoint::imageElementMultiply  (ImageType &output, ImageType &input1, ImageType &input2){
-  const int height = input1.size ();
-  const int width = input1[0].size ();
+  const size_t height = input1.size ();
+  const size_t width = input1[0].size ();
   output.resize (height);
-  for (int i = 0; i < height; i++)
+  for (size_t i = 0; i < height; i++)
   {
     output[i].resize (width);
-    for (int j = 0; j < width; j++)
+    for (size_t j = 0; j < width; j++)
     {
       output[i][j] = input1[i][j] * input2[i][j];
     }

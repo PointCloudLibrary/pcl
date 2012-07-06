@@ -72,22 +72,22 @@ pcl::pcl_2d::convolution_2d::gaussianSmooth  (ImageType &input, ImageType &outpu
 
 void
 pcl::pcl_2d::convolution_2d::convolve  (ImageType &output, ImageType &kernel, ImageType &input){
-  int rows = input.size ();
-  int cols = input[0].size ();
-  int k_rows = kernel.size ();
-  int k_cols = kernel[0].size ();
+  size_t rows = input.size ();
+  size_t cols = input[0].size ();
+  size_t k_rows = kernel.size ();
+  size_t k_cols = kernel[0].size ();
 
   /*default boundary option : zero padding*/
   output.resize (input.size ());
-  for (int i = 0; i < rows; i++)
+  for (size_t i = 0; i < rows; i++)
   {
     output[i].resize (cols);
-    for (int j = 0; j < cols; j++)
+    for (size_t j = 0; j < cols; j++)
     {
       output[i][j] = 0;
-      for (int k = 0; k < k_rows; k++)
+      for (size_t k = 0; k < k_rows; k++)
       {
-        for (int l = 0; l < k_cols; l++)
+        for (size_t l = 0; l < k_cols; l++)
         {
           if ((i + k - k_rows / 2) < 0 || (i + k - k_rows / 2) >= rows || (j + l - k_cols / 2) < 0 || (j + l - k_cols / 2) >= cols)
           {
@@ -105,25 +105,25 @@ pcl::pcl_2d::convolution_2d::convolve  (ImageType &output, ImageType &kernel, Im
 
 void
 pcl::pcl_2d::convolution_2d::convolve  (ImageType &output, ImageType &kernel, ImageType &input, BOUNDARY_OPTIONS_ENUM boundary_option){
-  int rows = input.size ();
-  int cols = input[0].size ();
-  int k_rows = kernel.size ();
-  int k_cols = kernel[0].size ();
-  int input_row = 0, input_col = 0;
+  size_t rows = input.size ();
+  size_t cols = input[0].size ();
+  size_t k_rows = kernel.size ();
+  size_t k_cols = kernel[0].size ();
+  size_t input_row = 0, input_col = 0;
 
   output.resize (input.size ());
 
   if (boundary_option == BOUNDARY_OPTION_CLAMP)
   {
-    for (int i = 0; i < rows; i++)
+    for (size_t i = 0; i < rows; i++)
     {
       output[i].resize (cols);
-      for (int j = 0; j < cols; j++)
+      for (size_t j = 0; j < cols; j++)
       {
         output[i][j] = 0;
-        for (int k = 0; k < k_rows; k++)
+        for (size_t k = 0; k < k_rows; k++)
         {
-          for (int l = 0; l < k_cols; l++)
+          for (size_t l = 0; l < k_cols; l++)
           {
             if ((i + k - k_rows / 2) < 0)
               input_row = 0;
@@ -150,15 +150,15 @@ pcl::pcl_2d::convolution_2d::convolve  (ImageType &output, ImageType &kernel, Im
   else
     if (boundary_option == BOUNDARY_OPTION_MIRROR)
     {
-      for (int i = 0; i < rows; i++)
+      for (size_t i = 0; i < rows; i++)
       {
         output[i].resize (cols);
-        for (int j = 0; j < cols; j++)
+        for (size_t j = 0; j < cols; j++)
         {
           output[i][j] = 0;
-          for (int k = 0; k < k_rows; k++)
+          for (size_t k = 0; k < k_rows; k++)
           {
-            for (int l = 0; l < k_cols; l++)
+            for (size_t l = 0; l < k_cols; l++)
             {
               if ((i + k - (k_rows / 2)) < 0)
                 input_row = -(i + k - (k_rows / 2))-1;

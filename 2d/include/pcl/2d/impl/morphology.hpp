@@ -45,17 +45,17 @@
 /*assumes input, kernel and output images have 0's and 1's only*/
 void
 pcl::pcl_2d::morphology::erosionBinary  (ImageType &output, ImageType &kernel, ImageType &input){
-  const int height = input.size ();
-  const int width = input[0].size ();
-  const int kernel_height = kernel.size ();
-  const int kernel_width = kernel[0].size ();
+  const size_t height = input.size ();
+  const size_t width = input[0].size ();
+  const size_t kernel_height = kernel.size ();
+  const size_t kernel_width = kernel[0].size ();
   bool mismatch_flag;
 
   output.resize (height);
-  for (int i = 0; i < height; i++)
+  for (size_t i = 0; i < height; i++)
   {
     output[i].resize (width);
-    for (int j = 0; j < width; j++)
+    for (size_t j = 0; j < width; j++)
     {
       /*operation done only at 1's*/
       if (input[i][j] == 0)
@@ -64,11 +64,11 @@ pcl::pcl_2d::morphology::erosionBinary  (ImageType &output, ImageType &kernel, I
         continue;
       }
       mismatch_flag = false;
-      for (int k = 0; k < kernel_height; k++)
+      for (size_t k = 0; k < kernel_height; k++)
       {
         if (mismatch_flag)
           break;
-        for (int l = 0; l < kernel_width; l++)
+        for (size_t l = 0; l < kernel_width; l++)
         {
           /*we only check for 1's in the kernel*/
           if (kernel[k][l] == 0)
@@ -96,24 +96,24 @@ pcl::pcl_2d::morphology::erosionBinary  (ImageType &output, ImageType &kernel, I
 /*assumes input, kernel and output images have 0's and 1's only*/
 void
 pcl::pcl_2d::morphology::dilationBinary  (ImageType &output, ImageType &kernel, ImageType &input){
-  const int height = input.size ();
-  const int width = input[0].size ();
-  const int kernel_height = kernel.size ();
-  const int kernel_width = kernel[0].size ();
+  const size_t height = input.size ();
+  const size_t width = input[0].size ();
+  const size_t kernel_height = kernel.size ();
+  const size_t kernel_width = kernel[0].size ();
   bool match_flag;
 
   output.resize (height);
-  for (int i = 0; i < height; i++)
+  for (size_t i = 0; i < height; i++)
   {
     output[i].resize (width);
-    for (int j = 0; j < width; j++)
+    for (size_t j = 0; j < width; j++)
     {
       match_flag = false;
-      for (int k = 0; k < kernel_height; k++)
+      for (size_t k = 0; k < kernel_height; k++)
       {
         if (match_flag)
           break;
-        for (int l = 0; l < kernel_width; l++)
+        for (size_t l = 0; l < kernel_width; l++)
         {
           /*we only check for 1's in the kernel*/
           if (kernel[k][l] == 0)
@@ -154,22 +154,22 @@ pcl::pcl_2d::morphology::closingBinary  (ImageType &output, ImageType &kernel, I
 
 void
 pcl::pcl_2d::morphology::erosionGray  (ImageType &output, ImageType &kernel, ImageType &input){
-  const int height = input.size ();
-  const int width = input[0].size ();
-  const int kernel_height = kernel.size ();
-  const int kernel_width = kernel[0].size ();
+  const size_t height = input.size ();
+  const size_t width = input[0].size ();
+  const size_t kernel_height = kernel.size ();
+  const size_t kernel_width = kernel[0].size ();
   float min;
 
   output.resize (height);
-  for (int i = 0; i < height; i++)
+  for (size_t i = 0; i < height; i++)
   {
     output[i].resize (width);
-    for (int j = 0; j < width; j++)
+    for (size_t j = 0; j < width; j++)
     {
       min = -1;
-      for (int k = 0; k < kernel_height; k++)
+      for (size_t k = 0; k < kernel_height; k++)
       {
-        for (int l = 0; l < kernel_width; l++)
+        for (size_t l = 0; l < kernel_width; l++)
         {
           /*we only check for 1's in the kernel*/
           if (kernel[k][l] == 0)
@@ -194,22 +194,22 @@ pcl::pcl_2d::morphology::erosionGray  (ImageType &output, ImageType &kernel, Ima
 
 void
 pcl::pcl_2d::morphology::dilationGray  (ImageType &output, ImageType &kernel, ImageType &input){
-  const int height = input.size ();
-  const int width = input[0].size ();
-  const int kernel_height = kernel.size ();
-  const int kernel_width = kernel[0].size ();
+  const size_t height = input.size ();
+  const size_t width = input[0].size ();
+  const size_t kernel_height = kernel.size ();
+  const size_t kernel_width = kernel[0].size ();
   float max;
 
   output.resize (height);
-  for (int i = 0; i < height; i++)
+  for (size_t i = 0; i < height; i++)
   {
     output[i].resize (width);
-    for (int j = 0; j < width; j++)
+    for (size_t j = 0; j < width; j++)
     {
       max = -1;
-      for (int k = 0; k < kernel_height; k++)
+      for (size_t k = 0; k < kernel_height; k++)
       {
-        for (int l = 0; l < kernel_width; l++)
+        for (size_t l = 0; l < kernel_width; l++)
         {
           /*we only check for 1's in the kernel*/
           if (kernel[k][l] == 0)
@@ -249,13 +249,13 @@ pcl::pcl_2d::morphology::closingGray  (ImageType &output, ImageType &kernel, Ima
 
 void
 pcl::pcl_2d::morphology::subtractionBinary  (ImageType &output, ImageType &input1, ImageType &input2){
-  const int height = (input1.size () < input2.size ()) ? input1.size () : input2.size ();
-  const int width = (input1[0].size () < input2[0].size ()) ? input1[0].size () : input2[0].size ();
+  const size_t height = (input1.size () < input2.size ()) ? input1.size () : input2.size ();
+  const size_t width = (input1[0].size () < input2[0].size ()) ? input1[0].size () : input2[0].size ();
   output.resize (height);
-  for (int i = 0; i < height; i++)
+  for (size_t i = 0; i < height; i++)
   {
     output[i].resize (width);
-    for (int j = 0; j < width; j++)
+    for (size_t j = 0; j < width; j++)
     {
       if (input1[i][j] == 1 && input2[i][j] == 0)
         output[i][j] = 1;
@@ -267,13 +267,13 @@ pcl::pcl_2d::morphology::subtractionBinary  (ImageType &output, ImageType &input
 
 void
 pcl::pcl_2d::morphology::unionBinary  (ImageType &output, ImageType &input1, ImageType &input2){
-  const int height = (input1.size () < input2.size ()) ? input1.size () : input2.size ();
-  const int width = (input1[0].size () < input2[0].size ()) ? input1[0].size () : input2[0].size ();
+  const size_t height = (input1.size () < input2.size ()) ? input1.size () : input2.size ();
+  const size_t width = (input1[0].size () < input2[0].size ()) ? input1[0].size () : input2[0].size ();
   output.resize (height);
-  for (int i = 0; i < height; i++)
+  for (size_t i = 0; i < height; i++)
   {
     output[i].resize (width);
-    for (int j = 0; j < width; j++)
+    for (size_t j = 0; j < width; j++)
     {
       if (input1[i][j] == 1 || input2[i][j] == 1)
         output[i][j] = 1;
@@ -285,13 +285,13 @@ pcl::pcl_2d::morphology::unionBinary  (ImageType &output, ImageType &input1, Ima
 
 void
 pcl::pcl_2d::morphology::intersectionBinary  (ImageType &output, ImageType &input1, ImageType &input2){
-  const int height = (input1.size () < input2.size ()) ? input1.size () : input2.size ();
-  const int width = (input1[0].size () < input2[0].size ()) ? input1[0].size () : input2[0].size ();
+  const size_t height = (input1.size () < input2.size ()) ? input1.size () : input2.size ();
+  const size_t width = (input1[0].size () < input2[0].size ()) ? input1[0].size () : input2[0].size ();
   output.resize (height);
-  for (int i = 0; i < height; i++)
+  for (size_t i = 0; i < height; i++)
   {
     output[i].resize (width);
-    for (int j = 0; j < width; j++)
+    for (size_t j = 0; j < width; j++)
     {
       if (input1[i][j] == 1 && input2[i][j] == 1)
         output[i][j] = 1;
