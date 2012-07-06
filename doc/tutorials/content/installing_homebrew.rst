@@ -37,7 +37,7 @@ which parts of PCL are installed.
 
    The PCL formula is currently in development. It will be submitted to
    Homebrew shortly. Until then, you can download it from
-   `PCL.RB <http://dev.pointclouds.org/attachments/download/604/pcl.rb>`_. To prepare it,
+   `PCL.RB <http://dev.pointclouds.org/attachments/download/876/pcl.rb>`_. To prepare it,
    follow these steps:
 
 
@@ -51,18 +51,11 @@ To install using the formula, execute the following command::
 
   $ brew install pcl
 
-.. note::
-
-   The current version of PCL (1.3.1) properly supports the visualization
-   module for Mac OS X. However if you do want to disable it, you can run::
-
-     $ brew install pcl --novis
-
 You can specify options to control which parts of PCL are installed. For
-example, to disable the Python bindings and Segmentation, and enable the
+example, to disable the Python bindings and visualisation, and enable the
 documentation, execute the following command::
 
-  $ brew install pcl --nopython --nosegmentation --doc
+  $ brew install pcl --nopython --novis --doc
 
 For a full list of the available options, see the formula's help::
 

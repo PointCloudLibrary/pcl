@@ -10,92 +10,71 @@ cloud using integral images.
 The code
 --------
 
-First, create a file, let's say, ``normal_estimation.cpp`` in your favorite
+First, create a file, let's say, ``normal_estimation_using_integral_images.cpp`` in your favorite
 editor, and place the following inside it:
 
 .. code-block:: cpp
    :linenos:
 
-    #include <pcl/point_cloud.h>
-    #include <pcl/point_types.h>
-    #include <pcl/features/integral_image_normal.h>
+	#include <pcl/io/io.h>
+	#include <pcl/io/pcd_io.h>
+	#include <pcl/features/integral_image_normal.h>
+	#include <pcl/visualization/cloud_viewer.h>
+		
+	int 
+	main ()
+	{
+		// load point cloud
+		pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
+		pcl::io::loadPCDFile ("table_scene_mug_stereo_textured.pcd", *cloud);
+		
+		// estimate normals
+		pcl::PointCloud<pcl::Normal>::Ptr normals (new pcl::PointCloud<pcl::Normal>);
 
-    int
-    main (int argc, char** argv)
-    {
-      pcl::PointCloud<pcl::PointXYZ> cloud;
+		pcl::IntegralImageNormalEstimation<pcl::PointXYZ, pcl::Normal> ne;
+		ne.setNormalEstimationMethod (ne.AVERAGE_3D_GRADIENT);
+		ne.setMaxDepthChangeFactor(0.02f);
+		ne.setNormalSmoothingSize(10.0f);
+		ne.setInputCloud(cloud);
+		ne.compute(*normals);
 
-      // ... fill point cloud...
-
-      cloud.width = 640;
-      cloud.height = 480;
-      cloud.points.resize (cloud.width * cloud.height);
-
-      for (int ri = 0; ri < cloud.height; ++ri)
-      {
-        for (int ci = 0; ci < cloud.width; ++ci)
-        {
-          const float depth = 0.2f*static_cast<float> (rand ()) / static_cast<float>(RAND_MAX) + 1.0f;
-          cloud.points (ri, ci).x = (ci - 320) * depth;
-          cloud.points (ri, ci).y = (ri - 240) * depth;
-          cloud.points (ri, ci).z = depth;
-         }
-       }
-
-      // Estimate normals
-      pcl::IntegralImageNormalEstimation<pcl::PointXYZ, pcl::Normal> ne;
-
-      pcl::PointCloud<pcl::Normal> normals;
-	  
-      ne.setNormalEstimationMethod (ne.AVERAGE_DEPTH_CHANGE);
-      ne.setMaxDepthChangeFactor(0.02f);
-      ne.setNormalSmoothingSize(10.0f);
-      ne.setInputCloud(cloud);
-      ne.compute(normals);
-
-      return (0);
-    }
+		// visualize normals
+		pcl::visualization::PCLVisualizer viewer("PCL Viewer");
+		viewer.setBackgroundColor (0.0, 0.0, 0.5);
+		viewer.addPointCloudNormals<pcl::PointXYZ,pcl::Normal>(cloud, normals);
+		
+		while (!viewer.wasStopped ())
+		{
+		  viewer.spinOnce ();
+		}
+		return 0;
+	}
 
 The explanation
 ---------------
 
-Now, let's break down the code piece by piece. In the first part we create a
-random point cloud for which we estimate the normals:
+Now, let's break down the code piece by piece. In the first part we load a
+point cloud from a file:
 
 .. code-block:: cpp
 
-    pcl::PointCloud<pcl::PointXYZ> cloud;
-    // ... fill point cloud...
-
-    cloud.width = 640;
-    cloud.height = 480;
-    cloud.points.resize (cloud.width*cloud.height);
-
-    for (int ri = 0; ri < cloud.height; ++ri)
-    {
-      for (int ci = 0; ci < cloud.width; ++ci)
-      {
-        const float depth = 0.2f*static_cast<float> (rand ()) / static_cast<float>(RAND_MAX) + 1.0f;
-        cloud.points (ri, ci).x = (ci - 320) * depth;
-        cloud.points (ri, ci).y = (ri - 240) * depth;
-        cloud.points (ri, ci).z = depth;
-       }
-     }
+	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
+	pcl::io::loadPCDFile ("table_scene_mug_stereo_textured.pcd", *cloud);
 
 In the second part we create an object for the normal estimation and compute
 the normals:
 
 .. code-block:: cpp
 
-    // Estimate normals
-    pcl::IntegralImageNormalEstimation<pcl::PointXYZ, pcl::Normal> ne;
+	// estimate normals
+	pcl::PointCloud<pcl::Normal>::Ptr normals (new pcl::PointCloud<pcl::Normal>);
 
-    pcl::PointCloud<pcl::Normal> normals;
-    ne.setNormalEstimationMethod (ne.AVERAGE_DEPTH_CHANGE);
-    ne.setMaxDepthChangeFactor(0.02f);
-    ne.setNormalSmoothingSize(10.0f);
-    ne.setInputCloud(cloud);
-    ne.compute(normals);
+	pcl::IntegralImageNormalEstimation<pcl::PointXYZ, pcl::Normal> ne;
+	ne.setNormalEstimationMethod (ne.AVERAGE_3D_GRADIENT);
+	ne.setMaxDepthChangeFactor(0.02f);
+	ne.setNormalSmoothingSize(10.0f);
+	ne.setInputCloud(cloud);
+	ne.compute(*normals);
 
 The following normal estimation methods are available:
 
@@ -115,4 +94,19 @@ of horizontal and vertical 3D gradients and computes the normals using the
 cross-product between these two gradients. The AVERAGE_DEPTH_CHANGE mode
 creates only a single integral image and computes the normals from the average
 depth changes.
+
+In the last part we visualize the point cloud and the corresponding normals:
+
+.. code-block:: cpp
+
+	// visualize normals
+	pcl::visualization::PCLVisualizer viewer("PCL Viewer");
+	viewer.setBackgroundColor (0.0, 0.0, 0.5);
+	viewer.addPointCloudNormals<pcl::PointXYZ,pcl::Normal>(cloud, normals);
+	
+	while (!viewer.wasStopped ())
+	{
+	  viewer.spinOnce ();
+	}
+
 

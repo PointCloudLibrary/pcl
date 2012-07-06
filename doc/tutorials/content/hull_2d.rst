@@ -11,7 +11,7 @@ The code
 --------
 
 First, download the dataset `table_scene_mug_stereo_textured.pcd
-<http://dev.pointclouds.org/attachments/download/158/table_scene_mug_stereo_textured.pcd>`_
+<http://svn.pointclouds.org/data/tutorials/table_scene_mug_stereo_textured.pcd>`_
 and save it somewhere to disk.
 
 Then, create a file, let's say, ``concave_hull_2d.cpp`` or
@@ -23,10 +23,11 @@ Then, create a file, let's say, ``concave_hull_2d.cpp`` or
 
 .. note::
 
-   This tutorial is written for assuming you are looking for the **CONCAVE**
-   hull.  If you would like the **CONVEX** hull for a plane model, just replace
-   concave with convex at EVERY point in this tutorial, including the source
-   file, file names and the CMakeLists.txt file.
+   This tutorial is written for assuming you are looking for the **CONCAVE** hull.
+   If you would like the **CONVEX** hull for a plane model, just replace concave
+   with convex at EVERY point in this tutorial, including the source file, file
+   names and the CMakeLists.txt file. You will also need to comment out
+   setAlpha(), as this is not applicable to convex hulls.
 
 The explanation
 ---------------

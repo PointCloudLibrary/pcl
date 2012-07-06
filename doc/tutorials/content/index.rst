@@ -25,6 +25,7 @@ Table of contents
   * :ref:`kdtree_tutorial`
   * :ref:`octree_tutorial`
   * :ref:`range_images`
+  * :ref:`recognition_tutorial`
   * :ref:`registration_tutorial`
   * :ref:`sample_consensus`
   * :ref:`segmentation_tutorial`
@@ -55,7 +56,7 @@ Basic Usage
   * :ref:`using_pcl_pcl_config`
 
      ======  ======
-     |mi_1|  Title: **Using PCL in own project**
+     |mi_1|  Title: **Using PCL in your own project**
 
              Author: *Nizar Sallem*
 
@@ -130,7 +131,7 @@ Basic Usage
   * :ref:`installing_homebrew`
 
      ======  ======
-     |mi_5|  Title: **Installing on Mac OS X using Homebrew**
+     |mi_6|  Title: **Installing on Mac OS X using Homebrew**
 
              Author: *Geoffrey Biggs*
 
@@ -139,7 +140,7 @@ Basic Usage
              This tutorial explains how to install the Point Cloud Library on Mac OS X using Homebrew. Both direct installation and compiling PCL from source are explained.
      ======  ======
 
-     .. |mi_5| image:: images/macosx_logo.png
+     .. |mi_6| image:: images/macosx_logo.png
                :height: 100px
 
 .. _advanced_usage:
@@ -616,7 +617,7 @@ Registration
 
              Author: *Dirk Holz, Radu B. Rusu, Jochen Sprickerhof*
 
-             Compatibility: PCL 1.2
+             Compatibility: > PCL 1.5
 
              In this document, we describe the point cloud registration API and its modules: the estimation and rejection of point correspondences, and the estimation of rigid transformations.
      ======  ======

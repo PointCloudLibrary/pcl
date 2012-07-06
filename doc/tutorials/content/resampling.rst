@@ -9,7 +9,7 @@ the video below:
 
 .. raw:: html
 
-  <iframe title="Smoothing and normal estimation based on polynomial reconstruction" width="480" height="390" src="http://www.youtube.com/embed/FqHroDuo_I8?rel=0" frameborder="0" allowfullscreen></iframe>
+   <iframe title="Smoothing and normal estimation based on polynomial reconstruction" width="480" height="390" src="http://www.youtube.com/embed/FqHroDuo_I8?rel=0" frameborder="0" allowfullscreen></iframe>
 
 
 Some of the data irregularities (caused by small distance measurement errors)
@@ -34,13 +34,13 @@ we obtain:
 
 .. image:: images/resampling_2.png
 
-To approximate the surface defined by a local neighborhood of points **p1, p2
-...  pk** at a point **q** we use a bivariate polynomial height function
+To approximate the surface defined by a local neighborhood of points 
+**p1**, **p2** ... **pk** at a point **q** we use a bivariate polynomial height function
 defined on a on a robustly computed reference plane. 
 
 .. raw:: html
 
-  <iframe title="Removing noisy data through resampling" width="480" height="390" src="http://www.youtube.com/embed/N5AgC0KEcw0?rel=0" frameborder="0" allowfullscreen></iframe>
+   <iframe title="Removing noisy data through resampling" width="480" height="390" src="http://www.youtube.com/embed/N5AgC0KEcw0?rel=0" frameborder="0" allowfullscreen></iframe>
 
 The code
 --------
@@ -71,29 +71,29 @@ allowed and will be preserved.
 
 .. literalinclude:: sources/resampling/resampling.cpp
    :language: cpp
-   :lines: 25
+   :lines: 23
 
 if normal estimation is not required, this step can be skipped.
 
 .. literalinclude:: sources/resampling/resampling.cpp
    :language: cpp
-   :lines: 28
+   :lines: 21
 
 the first template type is used for the input and output cloud. Only the XYZ
 dimensions of the input are smoothed in the output.
 
 .. literalinclude:: sources/resampling/resampling.cpp
    :language: cpp
-   :lines: 29
+   :lines: 27
 
    
 polynomial fitting could be disabled for speeding up smoothing. Please consult
-the code API (:pcl:`MovingLeastSquares<pcl::MovingLeastSquares>`) for default values and additional
-parameters to control the smoothing process.
+the code API (:pcl:`MovingLeastSquares <pcl::MovingLeastSquares>`) for default
+values and additional parameters to control the smoothing process.
 
 .. literalinclude:: sources/resampling/resampling.cpp
    :language: cpp
-   :lines: 36-38
+   :lines: 34-36
 
    
 if the normals and the original dimensions need to be in the same cloud, the
