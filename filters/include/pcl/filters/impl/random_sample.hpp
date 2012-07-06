@@ -71,9 +71,9 @@ pcl::RandomSample<PointT>::applyFilter (PointCloud &output)
     // Algorithm A
     for (size_t n = sample_; n >= 2; n--)
     {
-      unsigned int V = unifRand ();
+      unsigned int V = static_cast<unsigned int> (unifRand ());
       unsigned S = 0;
-      float quot = float (top) * one_over_N;
+      float quot = static_cast<float> (top) * one_over_N;
       while (quot > V)
       {
         S++;
@@ -120,7 +120,7 @@ pcl::RandomSample<PointT>::applyFilter (std::vector<int> &indices)
 
     for (size_t n = sample_; n >= 2; n--)
     {
-      unsigned int V = unifRand ();
+      unsigned int V = static_cast<unsigned int>( unifRand () );
       unsigned S = 0;
       float quot = float (top) * one_over_N;
       while (quot > V)

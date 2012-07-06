@@ -708,7 +708,7 @@ namespace pcl
     }
 ////////////////////////////////////////////////////////////////////////////////
     template<typename Container, typename PointT> boost::uint64_t
-    octree_base_node<Container, PointT>::addPointCloud_and_genLOD (const sensor_msgs::PointCloud2::Ptr input_cloud, const bool skip_bb_check = false )
+    octree_base_node<Container, PointT>::addPointCloud_and_genLOD (const sensor_msgs::PointCloud2::Ptr input_cloud) //, const bool skip_bb_check = false )
     {
       /// \todo reduce number of copies in @addPointCloud_and_genLOD@ here by keeping the cloud on the heap in the first place
       boost::uint64_t points_added = 0;
@@ -743,7 +743,7 @@ namespace pcl
 
       //set sample size to 1/8 of total points (12.5%)
       uint64_t sample_size = input_cloud->width*input_cloud->height / 8;
-      random_sampler.setSample ( input_cloud->width*input_cloud->height / 8 );      
+      random_sampler.setSample ( sample_size );
       
       //create our destination
       sensor_msgs::PointCloud2::Ptr downsampled_cloud ( new sensor_msgs::PointCloud2 () );
@@ -798,7 +798,7 @@ namespace pcl
 //          PCL_ERROR ( "[pcl::outofcore::octree_base_node::%s] Failed to place point within bounding box\n", __FUNCTION__ );
           continue;
         }
-        uint8_t box = 0;
+        size_t box = 0;
         //hash each coordinate to the appropriate octant
         box = ((local_pt.z >= midz_) << 2) | ((local_pt.y >= midy_) << 1) | ((local_pt.x >= midx_) << 0);
         assert (box < 8);
@@ -1098,8 +1098,7 @@ namespace pcl
     template<typename Container, typename PointT> void
     octree_base_node<Container, PointT>::queryBBIncludes (const double min_bb[3], const double max_bb[3], size_t query_depth, const sensor_msgs::PointCloud2::Ptr& dst_blob) 
     {
-      uint64_t startingSize = dst_blob->width*dst_blob->height;
-      
+//    uint64_t startingSize = dst_blob->width*dst_blob->height;
 //      PCL_INFO ("[pcl::outofcore::octree_base_node::%s] Starting points in destination blob: %ul\n", __FUNCTION__, startingSize );
 
       //if the queried bounding box has any intersection with this node's bounding box
@@ -1177,8 +1176,8 @@ namespace pcl
             pcl::fromROSMsg ( *tmp_blob, *tmp_cloud );
             assert (tmp_blob->width*tmp_blob->height == tmp_cloud->width*tmp_cloud->height );
 
-            Eigen::Vector4f min_pt ( min_bb[0], min_bb[1], min_bb[2], 1);
-            Eigen::Vector4f max_pt ( max_bb[0], max_bb[1], max_bb[2], 1);
+            Eigen::Vector4f min_pt ( static_cast<float> ( min_bb[0] ), static_cast<float> ( min_bb[1] ), static_cast<float> ( min_bb[2] ), 1.0f);
+            Eigen::Vector4f max_pt ( static_cast<float> ( max_bb[0] ), static_cast<float> ( max_bb[1] ) , static_cast<float>( max_bb[2] ), 1.0f );
                 
             std::vector<int> indices;
 

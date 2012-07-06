@@ -555,7 +555,7 @@ namespace pcl
       }
       else //otherwise create the point cloud which will be saved to the pcd file for the first time
       {
-        tmp_cloud->width = count + writebuff_.size ();
+        tmp_cloud->width = static_cast<uint32_t> (count + writebuff_.size ());
         tmp_cloud->height = 1;
       }            
 
@@ -569,7 +569,7 @@ namespace pcl
       }
 
       //assume unorganized point cloud
-      tmp_cloud->width = tmp_cloud->points.size ();
+      tmp_cloud->width = static_cast<uint32_t> (tmp_cloud->points.size ());
             
       //save and close
       PCDWriter writer;
@@ -585,7 +585,7 @@ namespace pcl
     octree_disk_container<PointT>::insertRange (const PointT* start, const uint64_t count)
     {
       ///\todo standardize the interface for writing points to disk with this class; this method may not work properly
-      ///\todo deprecate this
+      ///\todo deprecate this method
 
       //variables which ultimately need to be global
       int outofcore_v = 3;
@@ -607,7 +607,7 @@ namespace pcl
         }
         else //otherwise create the pcd file
         {
-          tmp_cloud->width = count + static_cast<uint32_t> (writebuff_.size ());
+          tmp_cloud->width = static_cast<uint32_t>( count ) + static_cast<uint32_t> (writebuff_.size ());
           tmp_cloud->height = 1;
         }            
 

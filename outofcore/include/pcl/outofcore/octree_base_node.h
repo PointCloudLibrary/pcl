@@ -362,11 +362,12 @@ namespace pcl
               }
 
               //compute the box we are in
-              int box = ((local_pt.z >= midz_) << 2) | ((local_pt.y >= midy_) << 1) | ((local_pt.x >= midx_) << 0);
+              size_t box = 0;
+              box = ((local_pt.z >= midz_) << 2) | ((local_pt.y >= midy_) << 1) | ((local_pt.x >= midx_) << 0);
               assert ( box < 8 );
               
               //insert to the vector of indices
-              indices[box].push_back (point_idx/input_cloud->point_step);
+              indices[box].push_back ( static_cast<int> ( point_idx / input_cloud->point_step ) );
             }
 
             boost::uint64_t points_added = 0;
@@ -402,7 +403,7 @@ namespace pcl
         }
 
         boost::uint64_t
-        addPointCloud_and_genLOD (const sensor_msgs::PointCloud2::Ptr input_cloud, const bool skip_bb_check);
+        addPointCloud_and_genLOD (const sensor_msgs::PointCloud2::Ptr input_cloud); //, const bool skip_bb_check);
         
         /** \brief Recursively add points to the leaf and children subsampling LODs
          * on the way down.

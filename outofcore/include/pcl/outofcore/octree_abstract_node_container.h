@@ -59,8 +59,11 @@ namespace pcl
         typedef std::vector<PointT, Eigen::aligned_allocator<PointT> > AlignedPointTVector;
 
         OutofcoreAbstractNodeContainer () {}
-        
+
         OutofcoreAbstractNodeContainer (const boost::filesystem::path&) {}
+
+        virtual 
+        ~OutofcoreAbstractNodeContainer () {}        
 
         virtual void
         insertRange (const PointT* start, const uint64_t count)=0;

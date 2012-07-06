@@ -194,6 +194,7 @@ namespace pcl
         void
         readRange (const uint64_t start, const uint64_t count, AlignedPointTVector& dst);
 
+        /// \todo refactor \ref readRange and strip start & count parameters and replace with array of indices
         void
         readRange (const uint64_t start, const uint64_t count, sensor_msgs::PointCloud2::Ptr& dst)
         {
