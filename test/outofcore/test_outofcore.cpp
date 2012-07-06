@@ -810,7 +810,6 @@ TEST_F ( OutofcoreTest, PointCloud2_Query )
 
   octreeA.queryBBIncludes ( min, max, octreeA.getDepth (), query_result_a );
   
-  EXPECT_TRUE ( query_result_a->data.size () > 0 ) << "Size of data blob is 0\n";
   EXPECT_EQ ( test_cloud->width*test_cloud->height, query_result_a->width*query_result_a->height ) << "PointCloud2 Query number of points returned failed\n";
 
   uint64_t total_octreeB_LOD_query = 0;
