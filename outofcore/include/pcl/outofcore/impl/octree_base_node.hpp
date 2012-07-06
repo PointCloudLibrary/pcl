@@ -773,7 +773,7 @@ namespace pcl
 //      PCL_INFO ("[pcl::outofcore::octree_base_node::%s] Remaining points are %u\n",__FUNCTION__, remaining_points->width*remaining_points->height);
 
       //subdivide remaining data by destination octant
-      vector< vector<int> > indices;
+      std::vector<std::vector<int> > indices;
       indices.resize (8);
       //get the location of the fields in the PointCloud2 blob
       int x_idx = pcl::getFieldIndex (*remaining_points , std::string ("x") );
