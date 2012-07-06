@@ -31,6 +31,10 @@
 //
 // This file implements death tests.
 
+#ifdef __GNUC__
+#pragma GCC system_header
+#endif
+
 #include "gtest/gtest-death-test.h"
 #include "gtest/internal/gtest-port.h"
 
