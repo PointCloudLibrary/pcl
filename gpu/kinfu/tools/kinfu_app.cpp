@@ -743,7 +743,7 @@ struct KinFuApp
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   void
-  startMainLoop ()
+  startMainLoop (bool triggered_capture)
   {   
     using namespace openni_wrapper;
     typedef boost::shared_ptr<DepthImage> DepthImagePtr;
@@ -758,9 +758,13 @@ struct KinFuApp
     {
       boost::unique_lock<boost::mutex> lock(data_ready_mutex_);
 
-      capture_.start ();
+      if (!triggered_capture)
+          capture_.start (); // Start stream
+          
       while (!exit_ && !scene_cloud_view_.cloud_viewer_.wasStopped () && !image_view_.viewerScene_.wasStopped ())
-      {      
+      { 
+        if (triggered_capture)
+            capture_.start(); // Triggers new frame
         bool has_data = data_ready_cond_.timed_wait (lock, boost::posix_time::millisec(100));
                        
         try { this->execute (depth_, rgb24_, has_data); }
@@ -768,8 +772,10 @@ struct KinFuApp
         catch (const std::exception& /*e*/) { cout << "Exception" << endl; break; }
         
         scene_cloud_view_.cloud_viewer_.spinOnce (3);                  
-      }        
-      capture_.stop ();
+      }
+      
+      if (!triggered_capture)     
+          capture_.stop (); // Stop stream
     }
     c.disconnect();
   }
@@ -987,6 +993,8 @@ main (int argc, char* argv[])
   
   boost::shared_ptr<pcl::Grabber> capture;
   
+  bool triggered_capture = false;
+  
   std::string eval_folder, match_file, openni_device, oni_file, pcd_dir;
   try
   {    
@@ -996,7 +1004,9 @@ main (int argc, char* argv[])
     }
     else if (pc::parse_argument (argc, argv, "-oni", oni_file) > 0)
     {
-      capture.reset (new pcl::ONIGrabber (oni_file, true, true));
+      triggered_capture = true;
+      bool repeat = false; // Only run ONI file once
+      capture.reset (new pcl::ONIGrabber (oni_file, repeat, ! triggered_capture));
     }
     else if (pc::parse_argument (argc, argv, "-pcd", pcd_dir) > 0)
     {
@@ -1049,7 +1059,7 @@ main (int argc, char* argv[])
     app.toggleColorIntegration();
 
   // executing
-  try { app.startMainLoop (); }  
+  try { app.startMainLoop (triggered_capture); }  
   catch (const pcl::PCLException& /*e*/) { cout << "PCLException" << endl; }
   catch (const std::bad_alloc& /*e*/) { cout << "Bad alloc" << endl; }
   catch (const std::exception& /*e*/) { cout << "Exception" << endl; }
