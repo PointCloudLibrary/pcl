@@ -963,6 +963,22 @@ namespace pcl
         void
         resetStoppedFlag () { if (interactor_ != NULL) stopped_ = false; }
 #endif
+
+        /** \brief Stop the interaction and close the visualizaton window. */
+        void
+        close ()
+        {
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
+          interactor_->stopped = true;
+          // This tends to close the window...
+          interactor_->stopLoop ();
+#else
+          stopped_ = true;
+          // This tends to close the window...
+          interactor_->TerminateApp ();
+#endif
+        }
+
         /** \brief Create a new viewport from [xmin,ymin] -> [xmax,ymax].
           * \param[in] xmin the minimum X coordinate for the viewport (0.0 <= 1.0)
           * \param[in] ymin the minimum Y coordinate for the viewport (0.0 <= 1.0)
@@ -1031,17 +1047,31 @@ namespace pcl
           * \param[in] r the red channel of the color that the line should be rendered with
           * \param[in] g the green channel of the color that the line should be rendered with
           * \param[in] b the blue channel of the color that the line should be rendered with
-          * \param[in] id the line id/name (default: "arrow")
+          * \param[in] id the arrow id/name (default: "arrow")
           * \param[in] viewport (optional) the id of the new viewport (default: 0)
           */
         template <typename P1, typename P2> bool
         addArrow (const P1 &pt1, const P2 &pt2, double r, double g, double b,
                   const std::string &id = "arrow", int viewport = 0);
 
+        /** \brief Add a line arrow segment between two points, and display the distance between them
+          * \param[in] pt1 the first (start) point on the line
+          * \param[in] pt2 the second (end) point on the line
+          * \param[in] r the red channel of the color that the line should be rendered with
+          * \param[in] g the green channel of the color that the line should be rendered with
+          * \param[in] b the blue channel of the color that the line should be rendered with
+          * \param[in] display_length true if the length should be displayed on the arrow as text
+          * \param[in] id the line id/name (default: "arrow")
+          * \param[in] viewport (optional) the id of the new viewport (default: 0)
+          */
+        template <typename P1, typename P2> bool
+        addArrow (const P1 &pt1, const P2 &pt2, double r, double g, double b, bool display_length,
+                  const std::string &id = "arrow", int viewport = 0);
+
         /** \brief Add a sphere shape from a point and a radius
           * \param[in] center the center of the sphere
           * \param[in] radius the radius of the sphere
-          * \param[in] id the line id/name (default: "sphere")
+          * \param[in] id the sphere id/name (default: "sphere")
           * \param[in] viewport (optional) the id of the new viewport (default: 0)
           */
         template <typename PointT> bool

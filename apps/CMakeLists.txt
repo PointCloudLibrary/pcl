@@ -60,18 +60,12 @@ if(build)
 #    PCL_ADD_EXECUTABLE(pcl_convolve ${SUBSYS_NAME} src/convolve.cpp)
 #    target_link_libraries(pcl_convolve pcl_common pcl_io pcl_visualization)
 
-    PCL_ADD_EXECUTABLE(pcl_pcd_organized_edge_detection ${SUBSYS_NAME} src/pcd_organized_edge_detection.cpp)
-    target_link_libraries(pcl_pcd_organized_edge_detection pcl_common pcl_io pcl_features pcl_visualization)
-
     if (OPENNI_FOUND AND BUILD_OPENNI)  
       PCL_ADD_EXECUTABLE(openni_fast_mesh ${SUBSYS_NAME} src/openni_fast_mesh.cpp)
       target_link_libraries(openni_fast_mesh pcl_common pcl_io pcl_visualization pcl_surface)
       
       PCL_ADD_EXECUTABLE(openni_voxel_grid ${SUBSYS_NAME} src/openni_voxel_grid.cpp)
       target_link_libraries(openni_voxel_grid pcl_common pcl_io pcl_filters pcl_visualization)
-
-      PCL_ADD_EXECUTABLE(openni_passthrough ${SUBSYS_NAME} src/openni_passthrough.cpp)
-      target_link_libraries(openni_passthrough pcl_common pcl_io pcl_filters pcl_visualization)
 
       PCL_ADD_EXECUTABLE(pcl_openni_grab_frame ${SUBSYS_NAME} src/openni_grab_frame.cpp)
       target_link_libraries(pcl_openni_grab_frame pcl_common pcl_io pcl_visualization)
@@ -122,11 +116,11 @@ if(build)
         PCL_ADD_EXECUTABLE(pcl_openni_passthrough ${SUBSYS_NAME} ${openni_passthrough_ui} ${openni_passthrough_moc} src/openni_passthrough.cpp)
         target_link_libraries(pcl_openni_passthrough pcl_common pcl_io pcl_filters pcl_visualization QVTK ${QT_LIBRARIES})
 
-	# OpenNI Organized Connected Component application demo
-	QT4_WRAP_UI(organized_segmentation_demo_ui src/organized_segmentation_demo.ui)
-	QT4_WRAP_CPP(organized_segmentation_demo_moc include/pcl/apps/organized_segmentation_demo.h)
-	PCL_ADD_EXECUTABLE(pcl_organized_segmentation_demo ${SUBSYS_NAME} ${organized_segmentation_demo_ui} ${organized_segmentation_demo_moc} src/organized_segmentation_demo.cpp)
-	target_link_libraries(pcl_organized_segmentation_demo pcl_common pcl_io pcl_visualization pcl_segmentation pcl_features pcl_surface QVTK ${QT_LIBRARIES})
+        # OpenNI Organized Connected Component application demo
+        QT4_WRAP_UI(organized_segmentation_demo_ui src/organized_segmentation_demo.ui)
+        QT4_WRAP_CPP(organized_segmentation_demo_moc include/pcl/apps/organized_segmentation_demo.h)
+        PCL_ADD_EXECUTABLE(pcl_organized_segmentation_demo ${SUBSYS_NAME} ${organized_segmentation_demo_ui} ${organized_segmentation_demo_moc} src/organized_segmentation_demo.cpp)
+        target_link_libraries(pcl_organized_segmentation_demo pcl_common pcl_io pcl_visualization pcl_segmentation pcl_features pcl_surface QVTK ${QT_LIBRARIES})
       endif ()
       
       set(incs 
