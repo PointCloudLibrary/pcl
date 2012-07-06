@@ -16,6 +16,7 @@ if(build)
         src/smoothed_surfaces_keypoint.cpp
         src/harris_keypoint3D.cpp
         src/harris_keypoint6D.cpp
+        src/agast_keypoint2D.cpp
         src/susan.cpp
         )
 
