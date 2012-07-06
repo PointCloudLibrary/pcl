@@ -155,8 +155,4 @@ if(build)
                 
     add_subdirectory(tools)
 
-    if(BUILD_TESTS)
-        add_subdirectory(test)
-    endif(BUILD_TESTS)
-
 endif(build)
