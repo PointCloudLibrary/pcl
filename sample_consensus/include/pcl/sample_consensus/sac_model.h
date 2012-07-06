@@ -174,7 +174,7 @@ namespace pcl
         }
 
         // Get a second point which is different than the first
-        samples.resize (getSampleSize());
+        samples.resize (getSampleSize ());
         for (unsigned int iter = 0; iter < max_sample_checks_; ++iter)
         {
           // Choose the random indices
@@ -418,23 +418,24 @@ namespace pcl
         std::swap (shuffled_indices_[0], shuffled_indices_[0 + (rnd () % (index_size - 0))]);
         //const PointT& pt0 = (*input_)[shuffled_indices_[0]];
 
-        std::vector< int > indices;
-        std::vector< float > sqr_dists;
+        std::vector<int> indices;
+        std::vector<float> sqr_dists;
 
-        samples_radius_search_->radiusSearch( shuffled_indices_[0], samples_radius_,
+        samples_radius_search_->radiusSearch (shuffled_indices_[0], samples_radius_,
                                               indices, sqr_dists );
 
-        if(indices.size() < sample_size - 1) {
-        	// radius search failed, make an invalid model
-        	for(unsigned int i = 1; i < sample_size; ++i)
-        		shuffled_indices_[i] = shuffled_indices_[0];
+        if (indices.size () < sample_size - 1)
+        {
+          // radius search failed, make an invalid model
+          for(unsigned int i = 1; i < sample_size; ++i)
+        	shuffled_indices_[i] = shuffled_indices_[0];
         }
         else
         {
-            for (unsigned int i = 0; i < sample_size-1; ++i)
-              std::swap (indices[i], indices[i + (rnd () % (indices.size() - i))]);
-            for (unsigned int i = 1; i < sample_size; ++i)
-              shuffled_indices_[i] = indices[i-1];
+          for (unsigned int i = 0; i < sample_size-1; ++i)
+            std::swap (indices[i], indices[i + (rnd () % (indices.size () - i))]);
+          for (unsigned int i = 1; i < sample_size; ++i)
+            shuffled_indices_[i] = indices[i-1];
         }
 
         std::copy (shuffled_indices_.begin (), shuffled_indices_.begin () + sample_size, sample.begin ());
