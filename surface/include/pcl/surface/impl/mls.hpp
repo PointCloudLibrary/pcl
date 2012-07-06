@@ -450,7 +450,7 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::performProcessing (PointCloudOut &
   for (size_t cp = 0; cp < indices_->size (); ++cp)
   {
     // Get the initial estimates of point positions and their neighborhoods
-    if (!searchForNeighbors (cp, nn_indices, nn_sqr_dists))
+    if (!searchForNeighbors (int (cp), nn_indices, nn_sqr_dists))
       continue;
 
     // Check the number of nearest neighbors for normal estimation (and later
@@ -462,7 +462,7 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::performProcessing (PointCloudOut &
     PointCloudOut projected_points;
     NormalCloud projected_points_normals;
     // Get a plane approximating the local surface's tangent and project point onto it
-    computeMLSPointNormal (cp, *input_, nn_indices, nn_sqr_dists, projected_points, projected_points_normals);
+    computeMLSPointNormal (int (cp), *input_, nn_indices, nn_sqr_dists, projected_points, projected_points_normals);
 
     // Append projected points to output
     output.insert (output.end (), projected_points.begin (), projected_points.end ());
