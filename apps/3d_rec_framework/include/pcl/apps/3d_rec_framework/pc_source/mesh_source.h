@@ -195,7 +195,7 @@ namespace pcl
 
             std::stringstream direc;
             direc << dir << "/" << model.class_ << "/" << model.id_;
-            createClassAndModelDirectories (dir, model.class_, model.id_);
+            this->createClassAndModelDirectories (dir, model.class_, model.id_);
 
             for (size_t i = 0; i < model.views_->size (); i++)
             {
@@ -241,7 +241,7 @@ namespace pcl
           for (size_t i = 0; i < files.size (); i++)
           {
             ModelT m;
-            getIdAndClassFromFilename (files[i], m.id_, m.class_);
+            this->getIdAndClassFromFilename (files[i], m.id_, m.class_);
 
             //check which of them have been trained using training_dir and the model_id_
             //load views, poses and self-occlusions for those that exist
