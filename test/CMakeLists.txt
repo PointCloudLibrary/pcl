@@ -11,6 +11,7 @@ set(SUBSYS_DEPS common sample_consensus io kdtree features filters geometry keyp
 #    set(DEFAULT OFF)
 #endif(GTEST_FOUND)
 
+set(DEFAULT ON)
 set(build TRUE)
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ${DEFAULT} ${REASON})
 PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS})
