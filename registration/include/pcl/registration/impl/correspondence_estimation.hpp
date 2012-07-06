@@ -127,7 +127,6 @@ pcl::registration::CorrespondenceEstimation<PointSource, PointTarget>::determine
   correspondences.resize (indices_->size());
   std::vector<int> index (1);
   std::vector<float> distance (1);
-  index[0] = distance[0] = 0;
   std::vector<int> index_reciprocal (1);
   std::vector<float> distance_reciprocal (1);
   pcl::Correspondence corr;
@@ -142,10 +141,8 @@ pcl::registration::CorrespondenceEstimation<PointSource, PointTarget>::determine
           pt_src));
 
     //tree_->nearestKSearch (input_->points[(*indices_)[i]], 1, index, distance);
-    int k = tree_->nearestKSearch (pt_src, 1, index, distance);
+    tree_->nearestKSearch (pt_src, 1, index, distance);
 
-    //std::cerr << input_->points[(*indices_)[i]] << std::endl;
-    //std::cerr << i << " " << (*indices_)[i] << " " << k << " " << index[0] << std::endl;
     // Copy the target data to a target PointSource format so we can search in the tree_reciprocal
     PointSource pt_tgt;
     pcl::for_each_type <FieldList> (pcl::NdConcatenateFunctor <PointTarget, PointSource> (

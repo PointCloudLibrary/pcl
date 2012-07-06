@@ -174,7 +174,7 @@ namespace pcl
         }
 
         // Get a second point which is different than the first
-        samples.resize (getSampleSize());
+        samples.resize (getSampleSize ());
         for (unsigned int iter = 0; iter < max_sample_checks_; ++iter)
         {
           // Choose the random indices
@@ -424,7 +424,7 @@ namespace pcl
         samples_radius_search_->radiusSearch (shuffled_indices_[0], samples_radius_,
                                               indices, sqr_dists );
 
-        if (indices.size() < sample_size - 1)
+        if (indices.size () < sample_size - 1)
         {
           // radius search failed, make an invalid model
           for(unsigned int i = 1; i < sample_size; ++i)
@@ -433,7 +433,7 @@ namespace pcl
         else
         {
           for (unsigned int i = 0; i < sample_size-1; ++i)
-            std::swap (indices[i], indices[i + (rnd () % (indices.size() - i))]);
+            std::swap (indices[i], indices[i + (rnd () % (indices.size () - i))]);
           for (unsigned int i = 1; i < sample_size; ++i)
             shuffled_indices_[i] = indices[i-1];
         }

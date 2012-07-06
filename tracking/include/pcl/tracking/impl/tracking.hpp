@@ -196,7 +196,7 @@ namespace pcl
         data[3] = 1.0f;
       }
 
-      inline ParticleXYZR (float _x, float _y, float _z, float _roll, float _pitch, float _yaw)
+      inline ParticleXYZR (float _x, float _y, float _z, float, float _pitch, float)
       {
         x = _x; y = _y; z = _z;
         roll = 0; pitch = _pitch; yaw = 0;
@@ -344,14 +344,14 @@ namespace pcl
         data[3] = 1.0f;
       }
 
-      inline ParticleXYRPY (float _x, float _y, float _z)
+      inline ParticleXYRPY (float _x, float, float _z)
       {
         x = _x; y = 0; z = _z;
         roll = pitch = yaw = 0.0;
         data[3] = 1.0f;
       }
 
-      inline ParticleXYRPY (float _x, float _y, float _z, float _roll, float _pitch, float _yaw)
+      inline ParticleXYRPY (float _x, float, float _z, float _roll, float _pitch, float _yaw)
       {
         x = _x; y = 0; z = _z;
         roll = _roll; pitch = _pitch; yaw = _yaw;
@@ -497,14 +497,14 @@ namespace pcl
         data[3] = 1.0f;
       }
 
-      inline ParticleXYRP (float _x, float _y, float _z)
+      inline ParticleXYRP (float _x, float, float _z)
       {
         x = _x; y = 0; z = _z;
         roll = pitch = yaw = 0.0;
         data[3] = 1.0f;
       }
 
-      inline ParticleXYRP (float _x, float _y, float _z, float _roll, float _pitch, float _yaw)
+      inline ParticleXYRP (float _x, float, float _z, float, float _pitch, float _yaw)
       {
         x = _x; y = 0; z = _z;
         roll = 0; pitch = _pitch; yaw = _yaw;
@@ -650,14 +650,14 @@ namespace pcl
         data[3] = 1.0f;
       }
 
-      inline ParticleXYR (float _x, float _y, float _z)
+      inline ParticleXYR (float _x, float, float _z)
       {
         x = _x; y = 0; z = _z;
         roll = pitch = yaw = 0.0;
         data[3] = 1.0f;
       }
 
-      inline ParticleXYR (float _x, float _y, float _z, float _roll, float _pitch, float _yaw)
+      inline ParticleXYR (float _x, float, float _z, float, float _pitch, float)
       {
         x = _x; y = 0; z = _z;
         roll = 0; pitch = _pitch; yaw = 0;

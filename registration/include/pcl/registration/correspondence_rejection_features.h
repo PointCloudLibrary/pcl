@@ -251,9 +251,9 @@ namespace pcl
 
               // Set the internal feature point representation of choice
               Eigen::VectorXf feat_src_ptr = Eigen::VectorXf::Zero (feature_representation_->getNumberOfDimensions ());
-              feature_representation_->vectorize ((FeatureT)feat_src, feat_src_ptr);
+              feature_representation_->vectorize (FeatureT (feat_src), feat_src_ptr);
               Eigen::VectorXf feat_tgt_ptr = Eigen::VectorXf::Zero (feature_representation_->getNumberOfDimensions ());
-              feature_representation_->vectorize ((FeatureT)feat_tgt, feat_tgt_ptr);
+              feature_representation_->vectorize (FeatureT (feat_tgt), feat_tgt_ptr);
 
               // Compute the L2 norm
               return ((feat_src_ptr - feat_tgt_ptr).squaredNorm ());
