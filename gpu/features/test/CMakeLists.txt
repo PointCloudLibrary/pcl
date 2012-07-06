@@ -20,5 +20,5 @@ if(BUILD_TESTS)
     include_directories(${INC1} ${INC2} ${INC3} ${INC4} ${INC5} ${INC6} ${INC7} ${VTK_INCLUDE_DIRS})
     #PCL_ADD_TEST(a_gpu_octree_test ${the_test_target} FILES ${test_src} LINK_WITH pcl_gpu_containers pcl_gpu_octree pcl_gpu_features pcl_io pcl_features pcl_visualization pcl_common)
     
-    add_dependencies(${the_test_target} pcl_gpu_octree pcl_gpu_containes pcl_gpu_features pcl_io pcl_features pcl_visualization pcl_common)    
+    #add_dependencies(${the_test_target} pcl_gpu_octree pcl_gpu_containes pcl_gpu_features pcl_io pcl_features pcl_visualization pcl_common)    
 endif(BUILD_TESTS)
