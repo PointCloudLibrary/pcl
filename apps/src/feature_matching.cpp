@@ -352,7 +352,7 @@ void ICCVTutorial<FeatureType>::reconstructSurface ()
   cout << "surface reconstruction..." << std::flush;
   // merge the transformed and the target point cloud
   pcl::PointCloud<pcl::PointXYZRGB>::Ptr merged (new pcl::PointCloud<pcl::PointXYZRGB>);
-  *merged = *source_transformed_;
+  *merged = *source_registered_;
   *merged += *target_segmented_;
   
   // apply grid filtering to reduce amount of points as well as to make them uniform distributed
