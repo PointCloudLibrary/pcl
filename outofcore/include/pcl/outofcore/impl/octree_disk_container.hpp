@@ -186,7 +186,7 @@ namespace pcl
         //construct the point cloud for this node
         typename pcl::PointCloud<PointT>::Ptr cloud ( new pcl::PointCloud<PointT> );
         
-        cloud->width = writebuff_.size ();
+        cloud->width = static_cast<uint32_t> (writebuff_.size ());
         cloud->height = 1;
 
         cloud->points = writebuff_;
@@ -262,7 +262,8 @@ namespace pcl
       //else, throw out of range exception
       PCL_THROW_EXCEPTION (PCLException, "[pcl::outofcore::octree_disk_container] Index is out of range");
     }
-////////////////////////////////////////////////////////////////////////////////
+    
+    ////////////////////////////////////////////////////////////////////////////////
     template<typename PointT> void
     octree_disk_container<PointT>::readRange (const uint64_t start, const uint64_t count, AlignedPointTVector& dst)
     {
@@ -277,9 +278,6 @@ namespace pcl
         PCL_ERROR ( "[pcl::outofcore::octree_disk_container] Indicies out of range; start + count exceeds the size of the stored points\n" );
         PCL_THROW_EXCEPTION (PCLException, "[pcl::outofcore::octree_disk_container] Outofcore Octree Exception: Read indices exceed range");
       }
-
-      uint64_t filestart = 0;
-      uint64_t filecount = 0;
 
       pcl::PCDReader reader;
       typename pcl::PointCloud<PointT>::Ptr cloud ( new pcl::PointCloud<PointT>() );
@@ -605,12 +603,11 @@ namespace pcl
         {
           pcl::PCDReader reader;
           //open it
-//          PCL_INFO ( "[pcl::outofcore::octree_disk_container::%s] Opening file to append point data\n",__FUNCTION__);
           assert ( reader.read (fileback_name_->c_str (), *tmp_cloud) == 0 );
         }
         else //otherwise create the pcd file
         {
-          tmp_cloud->width = count + writebuff_.size ();
+          tmp_cloud->width = count + static_cast<uint32_t> (writebuff_.size ());
           tmp_cloud->height = 1;
         }            
 
@@ -626,7 +623,7 @@ namespace pcl
           tmp_cloud->points.push_back ( *(start + i ) );
         }
 
-        tmp_cloud->width = tmp_cloud->points.size ();
+        tmp_cloud->width = static_cast<uint32_t> (tmp_cloud->points.size ());
         tmp_cloud->height = 1;
             
         //save and close
