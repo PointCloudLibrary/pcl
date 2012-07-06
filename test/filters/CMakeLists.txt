@@ -1,0 +1,1 @@
+#PCL_ADD_TEST(common_convolution test_convolution FILES test_convolution.cpp LINK_WITH pcl_filters pcl_common)
