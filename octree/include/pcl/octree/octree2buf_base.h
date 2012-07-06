@@ -385,15 +385,6 @@ namespace pcl
         deserializeTree (std::vector<char>& binaryTreeIn_arg,
             std::vector<DataT>& dataVector_arg, bool doXORDecoding_arg = false);
 
-        /** \brief Deserialize a binary octree description vector and create a corresponding octree structure. Leaf nodes are initialized with getDataTByKey(..). Generated DataT objects are copied to output vector.
-         *  \param binaryTreeIn_arg: reference to input vector for reading binary tree structure.
-         *  \param dataVector_arg: reference to DataT vector that receives a copy of generated DataT objects.
-         *  \param doXORDecoding_arg: select if binary tree structure is based on current octree (false) of based on a XOR comparison between current and previous octree
-         * */
-        void
-        deserializeTreeAndOutputLeafData (std::vector<char>& binaryTreeIn_arg,
-            std::vector<DataT>& dataVector_arg, bool doXORDecoding_arg = false);
-
       protected:
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
