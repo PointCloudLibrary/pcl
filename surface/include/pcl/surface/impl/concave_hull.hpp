@@ -112,6 +112,8 @@ pcl::ConcaveHull<PointInT>::reconstruct (PointCloud &output, std::vector<pcl::Ve
   deinitCompute ();
 }
 
+#ifdef __GNUC__
+#pragma GCC diagnostic ignored "-Wold-style-cast"
 //////////////////////////////////////////////////////////////////////////
 template <typename PointInT> void
 pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std::vector<pcl::Vertices> &polygons)
@@ -283,11 +285,7 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
           facet->good = true;
           facet->visitid = qh visit_id;
           ridgeT *ridge, **ridgep;
-#ifdef __GNUC__
-#pragma GCC diagnostic ignored "-Wold-style-cast"
           FOREACHridge_ (facet->ridges)
-#pragma GCC diagnostic warning "-Wold-style-cast"
-#endif
           {
             neighb = otherfacet_ (ridge, facet);
             if ((neighb->visitid != qh visit_id))
@@ -301,11 +299,7 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
           facet->visitid = qh visit_id;
           qh_makeridges (facet);
           ridgeT *ridge, **ridgep;
-#ifdef __GNUC__
-#pragma GCC diagnostic ignored "-Wold-style-cast"
           FOREACHridge_ (facet->ridges)
-#pragma GCC diagnostic warning "-Wold-style-cast"
-#endif
           {
             facetT *neighb;
             neighb = otherfacet_ (ridge, facet);
@@ -340,11 +334,7 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
 
     int num_good_triangles = 0;
     ridgeT *ridge, **ridgep;
-#ifdef __GNUC__
-#pragma GCC diagnostic ignored "-Wold-style-cast"
     FOREACHridge_ (triangles_set)
-#pragma GCC diagnostic warning "-Wold-style-cast"
-#endif
     {
       if (ridge->bottom->upperdelaunay || ridge->top->upperdelaunay || !ridge->top->good || !ridge->bottom->good)
         num_good_triangles++;
@@ -356,21 +346,13 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
     std::vector<bool> added_vertices (max_vertex_id, false);
 
     int triangles = 0;
-#ifdef __GNUC__
-#pragma GCC diagnostic ignored "-Wold-style-cast"
     FOREACHridge_ (triangles_set)
-#pragma GCC diagnostic warning "-Wold-style-cast"
-#endif
     {
       if (ridge->bottom->upperdelaunay || ridge->top->upperdelaunay || !ridge->top->good || !ridge->bottom->good)
       {
         polygons[triangles].vertices.resize (3);
         int vertex_n, vertex_i;
-#ifdef __GNUC__
-#pragma GCC diagnostic ignored "-Wold-style-cast"
         FOREACHvertex_i_ ((*ridge).vertices)  //3 vertices per ridge!
-#pragma GCC diagnostic warning "-Wold-style-cast"
-#endif
         {
           if (!added_vertices[vertex->id])
           {
@@ -422,11 +404,7 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
           facet->good = true;
 
           ridgeT *ridge, **ridgep;
-#ifdef __GNUC__
-#pragma GCC diagnostic ignored "-Wold-style-cast"
           FOREACHridge_ (facet->ridges)
-#pragma GCC diagnostic warning "-Wold-style-cast"
-#endif
           qh_setappend (&edges_set, ridge);
 
           if (voronoi_centers_)
@@ -448,11 +426,7 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
     std::map<int, std::vector<int> > edges;
 
     ridgeT *ridge, **ridgep;
-#ifdef __GNUC__
-#pragma GCC diagnostic ignored "-Wold-style-cast"
     FOREACHridge_ (edges_set)
-#pragma GCC diagnostic warning "-Wold-style-cast"
-#endif
     {
       if (ridge->bottom->upperdelaunay || ridge->top->upperdelaunay || !ridge->top->good || !ridge->bottom->good)
       {
@@ -461,11 +435,7 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
         std::vector<int> pcd_indices;
         pcd_indices.resize (2);
 
-#ifdef __GNUC__
-#pragma GCC diagnostic ignored "-Wold-style-cast"
         FOREACHvertex_i_ ((*ridge).vertices)  //in 2-dim, 2 vertices per ridge!
-#pragma GCC diagnostic warning "-Wold-style-cast"
-#endif
         {
           if (!added_vertices[vertex->id])
           {
@@ -607,6 +577,8 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
     pcl::copyPointCloud (*input_, indices, alpha_shape);
   }
 }
+#pragma GCC diagnostic warning "-Wold-style-cast"
+#endif
 
 //////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT> void

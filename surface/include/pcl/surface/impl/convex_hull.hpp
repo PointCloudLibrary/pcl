@@ -269,6 +269,8 @@ pcl::ConvexHull<PointInT>::performReconstruction2D (PointCloud &hull, std::vecto
   return;
 }
 
+#ifdef __GNUC__
+#pragma GCC diagnostic ignored "-Wold-style-cast"
 //////////////////////////////////////////////////////////////////////////
 template <typename PointInT> void
 pcl::ConvexHull<PointInT>::performReconstruction3D (
@@ -366,11 +368,7 @@ pcl::ConvexHull<PointInT>::performReconstruction3D (
 
       // Needed by FOREACHvertex_i_
       int vertex_n, vertex_i;
-#ifdef __GNUC__
-#pragma GCC diagnostic ignored "-Wold-style-cast"
       FOREACHvertex_i_ ((*facet).vertices)
-#pragma GCC diagnostic warning "-Wold-style-cast"
-#endif
       //facet_vertices.vertices.push_back (qhid_to_pcidx[vertex->id]);
       polygons[dd].vertices[vertex_i] = qhid_to_pcidx[vertex->id];
       ++dd;
@@ -385,6 +383,8 @@ pcl::ConvexHull<PointInT>::performReconstruction3D (
   hull.height = 1;
   hull.is_dense = false;
 }
+#pragma GCC diagnostic warning "-Wold-style-cast"
+#endif
 
 //////////////////////////////////////////////////////////////////////////
 template <typename PointInT> void
