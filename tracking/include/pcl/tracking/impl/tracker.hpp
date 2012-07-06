@@ -34,7 +34,7 @@ pcl::tracking::Tracker<PointInT, StateT>::compute ()
     return;
   
   computeTracking ();
-  //deinitCompute ();
+  deinitCompute ();
 }
 
 #endif

@@ -290,7 +290,7 @@ namespace pcl
           return change_detector_filter_;
         }
         
-	/** \brief get the adjustment ratio. */
+        /** \brief get the adjustment ratio. */
         inline double
         getFitRatio() const { return fit_ratio_; }
         
@@ -300,7 +300,6 @@ namespace pcl
           if (particles_)
             particles_->points.clear ();
         }
-        
 
       protected:
 
@@ -436,8 +435,8 @@ namespace pcl
         /** \brief the minimum number of points which the hypothesis should have. */
         int min_indices_;
 	
-	/** \brief adjustment of the particle filter. */
-	double fit_ratio_;
+        /** \brief adjustment of the particle filter. */
+        double fit_ratio_;
 
         /** \brief a pointer to reference point cloud. */
         PointCloudInConstPtr ref_;

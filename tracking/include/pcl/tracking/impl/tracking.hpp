@@ -44,9 +44,7 @@ namespace pcl
       inline ParticleXYZRPY (float _x, float _y, float _z, float _roll, float _pitch, float _yaw)
       {
         x = _x; y = _y; z = _z;
-	//x = _x; y = 0; z = _z;
         roll = _roll; pitch = _pitch; yaw = _yaw;
-	//roll = 0; pitch = _pitch; yaw = 0;
         data[3] = 1.0f;
       }
 
