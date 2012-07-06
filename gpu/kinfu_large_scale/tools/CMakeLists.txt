@@ -39,10 +39,6 @@ if(OPENNI_FOUND)
 	PCL_ADD_EXECUTABLE(${the_target} ${SUBSYS_NAME} ${srcs} ${hdrs})
 	target_link_libraries(${the_target} pcl_common pcl_io ${OPENNI_LIBRARIES} pcl_visualization pcl_gpu_kinfu_large_scale pcl_filters)
         
-	if(OpenCV_FOUND)
-		target_link_libraries(${the_target} ${OpenCV_LIBS})
-	endif()
-
 	## WORLD MODEL TEST
 	#set(the_target world_model_test)
 	#set(srcs world_model_test.cpp)
@@ -70,16 +66,12 @@ if(OPENNI_FOUND)
 	#		set(srcs kinfu_app_sim.cpp capture.cpp evaluation.cpp)
 	#
 	#		source_group("Source Files" FILES ${srcs} )
-   	#			find_package( OpenCV REQUIRED )
 	#		PCL_ADD_EXECUTABLE(${the_target} ${SUBSYS_NAME} ${srcs} ${hdrs})
 	#		target_link_libraries(${the_target}  pcl_common pcl_io 
-  	#			pcl_visualization pcl_kdtree  pcl_simulation  ${OpenCV_LIBS}
+  	#			pcl_visualization pcl_kdtree  pcl_simulation  
 	#	 		${OPENNI_LIBRARIES} pcl_gpu_kinfu
 	#	  		${GLEW_LIBRARIES} ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES})
  	#
-	#		if(OpenCV_FOUND)
-	#			target_link_libraries(${the_target} ${OpenCV_LIBS})
-	#		endif()
 	#	endif(GLUT_FOUND)
 	#endif (GLEW_FOUND)
 
