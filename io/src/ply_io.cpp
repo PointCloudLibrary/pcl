@@ -1233,12 +1233,12 @@ pcl::io::savePLYFile (const std::string &file_name, const pcl::PolygonMesh &mesh
         if(rgb_index != -1)
         {
           memcpy (&color, &mesh.cloud.data[i * point_size + mesh.cloud.fields[rgb_index].offset + c * sizeof (float)], sizeof (RGB));
-          fs << (int) color.r << " " << (int) color.g << " " << (int) color.b;
+          fs << int (color.r) << " " << int (color.g) << " " << int (color.b);
         }
         else
         {
           memcpy (&color, &mesh.cloud.data[i * point_size + mesh.cloud.fields[rgba_index].offset + c * sizeof (float)], sizeof (RGB));
-          fs << (int) color.r << " " << (int) color.g << " " << (int) color.b << " " << (int) color.a;
+          fs << int (color.r) << " " << int (color.g) << " " << int (color.b) << " " << int (color.a);
         }
       }
       fs << " ";
