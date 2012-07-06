@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2012, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -117,7 +119,7 @@ namespace pcl
         // Save the mapping from labels to indices in the class list
         std::map<std::string, int> label2idx;
         for (std::vector<std::string>::const_iterator it = classes_.begin (); it != classes_.end (); it++)
-          label2idx[*it] = it - classes_.begin ();
+          label2idx[*it] = int (it - classes_.begin ());
 
         // Create a list holding the class index of each label
         labels_idx_.reserve (labels.size ());
@@ -289,7 +291,7 @@ namespace pcl
           {
             result->first.push_back (classes_[it - sqr_distances->begin ()]);
             // TODO leave it squared, and relate param to sigma...
-            result->second.push_back (exp (-sqrt(*it)/gaussian_param));
+            result->second.push_back (expf (-sqrtf (*it) / gaussian_param));
           }
 
         // Return label/score list pair

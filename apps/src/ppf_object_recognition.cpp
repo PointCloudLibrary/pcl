@@ -15,8 +15,8 @@
 using namespace pcl;
 using namespace std;
 
-const Eigen::Vector4f subsampling_leaf_size (0.02, 0.02, 0.02, 0.0);
-const float normal_estimation_search_radius = 0.05;
+const Eigen::Vector4f subsampling_leaf_size (0.02f, 0.02f, 0.02f, 0.0f);
+const float normal_estimation_search_radius = 0.05f;
 
 
 PointCloud<PointNormal>::Ptr
@@ -83,7 +83,7 @@ main (int argc, char** argv)
   extract.setNegative (true);
   pcl::ModelCoefficients::Ptr coefficients (new pcl::ModelCoefficients ());
   pcl::PointIndices::Ptr inliers (new pcl::PointIndices ());
-  unsigned int nr_points = cloud_scene->points.size ();
+  unsigned nr_points = unsigned (cloud_scene->points.size ());
   while (cloud_scene->points.size () > 0.3 * nr_points)
   {
     seg.setInputCloud (cloud_scene);
@@ -112,8 +112,8 @@ main (int argc, char** argv)
     ppf_estimator.setInputNormals (cloud_model_input);
     ppf_estimator.compute (*cloud_model_ppf);
 
-    PPFHashMapSearch::Ptr hashmap_search (new PPFHashMapSearch (12.0 / 180 * M_PI,
-                                                                 0.05));
+    PPFHashMapSearch::Ptr hashmap_search (new PPFHashMapSearch (12.0f / 180.0f * float (M_PI),
+                                                                 0.05f));
     hashmap_search->setInputFeatureCloud (cloud_model_ppf);
     hashmap_search_vector.push_back (hashmap_search);
   }
@@ -130,8 +130,8 @@ main (int argc, char** argv)
     PPFRegistration<PointNormal, PointNormal> ppf_registration;
     // set parameters for the PPF registration procedure
     ppf_registration.setSceneReferencePointSamplingRate (10);
-    ppf_registration.setPositionClusteringThreshold (0.2);
-    ppf_registration.setRotationClusteringThreshold (30.0 / 180 * M_PI);
+    ppf_registration.setPositionClusteringThreshold (0.2f);
+    ppf_registration.setRotationClusteringThreshold (30.0f / 180.0f * float (M_PI));
     ppf_registration.setSearchMethod (hashmap_search_vector[model_i]);
     ppf_registration.setInputCloud (cloud_models_with_normals[model_i]);
     ppf_registration.setInputTarget (cloud_scene_input);

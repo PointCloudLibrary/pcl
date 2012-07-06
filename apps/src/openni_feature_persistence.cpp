@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2011, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2009-2012, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -31,7 +33,6 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- *  $Id$
  */
 
 #include <boost/thread/thread.hpp>
@@ -67,11 +68,11 @@ do \
     } \
 }while(false)
 
-const double default_subsampling_leaf_size = 0.02;
-const double default_normal_search_radius = 0.041;
+const float default_subsampling_leaf_size = 0.02f;
+const float default_normal_search_radius = 0.041f;
 const double aux [] = {0.21, 0.32};
 const std::vector<double> default_scales_vector (aux, aux + 2);
-const double default_alpha = 1.2;
+const float default_alpha = 1.2f;
 
 template <typename PointType>
 class OpenNIFeaturePersistence
@@ -81,10 +82,10 @@ class OpenNIFeaturePersistence
     typedef typename Cloud::Ptr CloudPtr;
     typedef typename Cloud::ConstPtr CloudConstPtr;
 
-    OpenNIFeaturePersistence (double &subsampling_leaf_size,
+    OpenNIFeaturePersistence (float &subsampling_leaf_size,
                               double &normal_search_radius,
                               std::vector<float> &scales_vector,
-                              double &alpha,
+                              float &alpha,
                               const std::string& device_id = "")
       : viewer ("PCL OpenNI Feature Persistence Viewer")
     , device_id_(device_id)
@@ -241,7 +242,7 @@ usage (char ** argv)
     for (unsigned deviceIdx = 0; deviceIdx < driver.getNumberDevices (); ++deviceIdx)
     {
       cout << "Device: " << deviceIdx + 1 << ", vendor: " << driver.getVendorName (deviceIdx) << ", product: " << driver.getProductName (deviceIdx)
-              << ", connected: " << (int)driver.getBus (deviceIdx) << " @ " << (int)driver.getAddress (deviceIdx) << ", serial number: \'" << driver.getSerialNumber (deviceIdx) << "\'" << endl;
+              << ", connected: " << driver.getBus (deviceIdx) << " @ " << driver.getAddress (deviceIdx) << ", serial number: \'" << driver.getSerialNumber (deviceIdx) << "\'" << endl;
       cout << "device_id may be #1, #2, ... for the first second etc device in the list or" << endl
            << "                 bus@address for the device connected to a specific usb-bus / address combination (works only in Linux) or" << endl
            << "                 <serial-number> (only in Linux and for devices which provide serial numbers)"  << endl;
@@ -264,16 +265,16 @@ main (int argc, char **argv)
   }
 
   // Parse arguments
-  double subsampling_leaf_size = default_subsampling_leaf_size;
+  float subsampling_leaf_size = default_subsampling_leaf_size;
   pcl::console::parse_argument (argc, argv, "-octree_leaf_size", subsampling_leaf_size);
   double normal_search_radius = default_normal_search_radius;
   pcl::console::parse_argument (argc, argv, "-normal_search_radius", normal_search_radius);
   std::vector<double> scales_vector_double = default_scales_vector;
   pcl::console::parse_multiple_arguments (argc, argv, "-scales", scales_vector_double);
   std::vector<float> scales_vector (scales_vector_double.size ());
-  for (size_t i = 0; i < scales_vector_double.size (); ++i) scales_vector[i] = scales_vector_double[i];
+  for (size_t i = 0; i < scales_vector_double.size (); ++i) scales_vector[i] = float (scales_vector_double[i]);
 
-  double alpha = default_alpha;
+  float alpha = default_alpha;
   pcl::console::parse_argument (argc, argv, "-persistence_alpha", alpha);
 
 

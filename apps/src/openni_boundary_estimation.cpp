@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2011, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2009-2012, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -84,7 +86,7 @@ class OpenNIIntegralImageNormalEstimation
       new_cloud_ = false;
 
       pass_.setDownsampleAllData (true);
-      pass_.setLeafSize (0.005, 0.005, 0.005);
+      pass_.setLeafSize (0.005f, 0.005f, 0.005f);
 
       pcl::search::OrganizedNeighbor<pcl::PointXYZRGBNormal>::Ptr tree (new pcl::search::OrganizedNeighbor<pcl::PointXYZRGBNormal>);
       be_.setRadiusSearch (0.02);
@@ -193,7 +195,7 @@ usage (char ** argv)
     for (unsigned deviceIdx = 0; deviceIdx < driver.getNumberDevices (); ++deviceIdx)
     {
       cout << "Device: " << deviceIdx + 1 << ", vendor: " << driver.getVendorName (deviceIdx) << ", product: " << driver.getProductName (deviceIdx)
-              << ", connected: " << (int)driver.getBus (deviceIdx) << " @ " << (int)driver.getAddress (deviceIdx) << ", serial number: \'" << driver.getSerialNumber (deviceIdx) << "\'" << endl;
+              << ", connected: " << driver.getBus (deviceIdx) << " @ " << driver.getAddress (deviceIdx) << ", serial number: \'" << driver.getSerialNumber (deviceIdx) << "\'" << endl;
       cout << "device_id may be #1, #2, ... for the first second etc device in the list or" << endl
            << "                 bus@address for the device connected to a specific usb-bus / address combination (works only in Linux) or" << endl
            << "                 <serial-number> (only in Linux and for devices which provide serial numbers)"  << endl;

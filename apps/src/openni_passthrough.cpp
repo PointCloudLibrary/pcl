@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2011, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2009-2011, Willow Garage, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -33,153 +35,109 @@
  *	
  */
 
-#include <boost/thread/thread.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
-#include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
-#include <pcl/io/openni_grabber.h>
-#include <pcl/visualization/cloud_viewer.h>
-#include <pcl/io/openni_camera/openni_driver.h>
-#include <pcl/filters/passthrough.h>
+#include <pcl/apps/openni_passthrough.h>
+// QT4
+#include <QApplication>
+#include <QMutexLocker>
+#include <QEvent>
+#include <QObject>
+// PCL
 #include <pcl/console/parse.h>
-#include <pcl/common/time.h>
 
-#define FPS_CALC(_WHAT_) \
-do \
-{ \
-    static unsigned count = 0;\
-    static double last = pcl::getTime ();\
-    double now = pcl::getTime (); \
-    ++count; \
-    if (now - last >= 1.0) \
-    { \
-      std::cout << "Average framerate("<< _WHAT_ << "): " << double(count)/double(now - last) << " Hz" <<  std::endl; \
-      count = 0; \
-      last = now; \
-    } \
-}while(false)
-
-
-template <typename PointType>
-class OpenNIPassthrough
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+OpenNIPassthrough::OpenNIPassthrough (pcl::OpenNIGrabber& grabber) 
+  : vis_ ()
+  , grabber_(grabber)
+  , device_id_ ()
+  , cloud_pass_()
+  , pass_ ()
+  , mtx_ ()
+  , ui_ (new Ui::MainWindow)
+  , vis_timer_ (new QTimer (this))
 {
-  public:
-    typedef pcl::PointCloud<PointType> Cloud;
-    typedef typename Cloud::Ptr CloudPtr;
-    typedef typename Cloud::ConstPtr CloudConstPtr;
+  // Create a timer and fire it up every 5ms
+  vis_timer_->start (5);
 
-    OpenNIPassthrough (const std::string& device_id = "", 
-                       const std::string& field_name = "z", float min_v = 0, float max_v = 5.0)
-    : viewer ("PCL OpenNI PassThrough Viewer")
-    , device_id_(device_id)
-    {
-      pass_.setFilterFieldName (field_name);
-      pass_.setFilterLimits (min_v, max_v);
-    }
+  connect (vis_timer_, SIGNAL (timeout ()), this, SLOT (timeoutSlot ()));
 
-    void 
-    cloud_cb_ (const CloudConstPtr& cloud)
-    {
-      boost::mutex::scoped_lock lock (mtx_);
-      FPS_CALC ("computation");
+  ui_->setupUi (this);
 
-      cloud_pass_.reset (new Cloud);
-      // Computation goes here
-      pass_.setInputCloud (cloud);
-      pass_.filter (*cloud_pass_);
-      cloud_  = cloud;
-    }
+  this->setWindowTitle ("PCL OpenNI PassThrough Viewer");
+  vis_.reset (new pcl::visualization::PCLVisualizer ("", false));
+  ui_->qvtk_widget->SetRenderWindow (vis_->getRenderWindow ());
+  vis_->setupInteractor (ui_->qvtk_widget->GetInteractor (), ui_->qvtk_widget->GetRenderWindow ());
+  vis_->getInteractorStyle ()->setKeyboardModifier (pcl::visualization::INTERACTOR_KB_MOD_SHIFT);
+  ui_->qvtk_widget->update (); 
 
-    void
-    run ()
-    {
-      pcl::Grabber* interface = new pcl::OpenNIGrabber (device_id_);
+  // Start the OpenNI data acquision
+  boost::function<void (const CloudConstPtr&)> f = boost::bind (&OpenNIPassthrough::cloud_cb, this, _1);
+  boost::signals2::connection c = grabber_.registerCallback (f);
 
-      boost::function<void (const CloudConstPtr&)> f = boost::bind (&OpenNIPassthrough::cloud_cb_, this, _1);
-      boost::signals2::connection c = interface->registerCallback (f);
-      
-      interface->start ();
-      
-      while (!viewer.wasStopped ())
-      {
-        if (cloud_pass_)
-        {
-          boost::mutex::scoped_lock lock (mtx_);
+  grabber_.start ();
 
-          FPS_CALC ("visualization");
-          CloudPtr temp_cloud;
-          temp_cloud.swap (cloud_pass_); //here we set cloud_ to null, so that
-          viewer.showCloud (temp_cloud);
-        }
-      }
+  // Set defaults
+  pass_.setFilterFieldName ("z");
+  pass_.setFilterLimits (0.5, 5.0);
+  
+  ui_->fieldValueSlider->setRange (5, 50);
+  ui_->fieldValueSlider->setValue (50);
+  connect (ui_->fieldValueSlider, SIGNAL (valueChanged (int)), this, SLOT (adjustPassThroughValues (int)));
+}
 
-      interface->stop ();
-    }
-
-    pcl::PassThrough<PointType> pass_;
-    pcl::visualization::CloudViewer viewer;
-    std::string device_id_;
-    boost::mutex mtx_;
-    CloudConstPtr cloud_;
-    CloudPtr cloud_pass_;
-};
-
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-usage (char ** argv)
+OpenNIPassthrough::cloud_cb (const CloudConstPtr& cloud)
 {
-  std::cout << "usage: " << argv[0] << " <device_id> <options>\n\n"
-            << "where options are:\n         -minmax min-max  :: set the PassThrough min-max cutting values (default: 0-5.0)\n"
-            <<                     "         -field  X        :: use field/dimension 'X' to filter data on (default: 'z')\n";
+  QMutexLocker locker (&mtx_);  
+  FPS_CALC ("computation");
 
-  openni_wrapper::OpenNIDriver& driver = openni_wrapper::OpenNIDriver::getInstance ();
-  if (driver.getNumberDevices () > 0)
+  // Computation goes here
+  cloud_pass_.reset (new Cloud);
+  pass_.setInputCloud (cloud);
+  pass_.filter (*cloud_pass_);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+void
+OpenNIPassthrough::timeoutSlot ()
+{
+  if (!cloud_pass_)
   {
-    for (unsigned deviceIdx = 0; deviceIdx < driver.getNumberDevices (); ++deviceIdx)
-    {
-      cout << "Device: " << deviceIdx + 1 << ", vendor: " << driver.getVendorName (deviceIdx) << ", product: " << driver.getProductName (deviceIdx)
-              << ", connected: " << (int)driver.getBus (deviceIdx) << " @ " << (int)driver.getAddress (deviceIdx) << ", serial number: \'" << driver.getSerialNumber (deviceIdx) << "\'" << endl;
-      cout << "device_id may be #1, #2, ... for the first second etc device in the list or" << endl
-           << "                 bus@address for the device connected to a specific usb-bus / address combination (works only in Linux) or" << endl
-           << "                 <serial-number> (only in Linux and for devices which provide serial numbers)"  << endl;
-    }
+    boost::this_thread::sleep (boost::posix_time::milliseconds (1));
+    return;
   }
-  else
-    cout << "No devices connected." << endl;
+
+  CloudPtr temp_cloud;
+  {
+    QMutexLocker locker (&mtx_);
+    temp_cloud.swap (cloud_pass_); 
+  }
+  // Add to the 3D viewer
+  if (!vis_->updatePointCloud (temp_cloud, "cloud_pass"))
+  {
+    vis_->addPointCloud (temp_cloud, "cloud_pass");
+    vis_->resetCameraViewpoint ("cloud_pass");
+  }
+  FPS_CALC ("visualization");
+  ui_->qvtk_widget->update ();
 }
 
 int 
 main (int argc, char ** argv)
 {
-  if (argc < 2)
+  // Initialize QT
+  QApplication app (argc, argv); 
+
+  // Open the first available camera
+  pcl::OpenNIGrabber grabber ("#1");
+  // Check if an RGB stream is provided
+  if (!grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgb> ())
   {
-    usage (argv);
-    return 1;
+    PCL_ERROR ("Device #1 does not provide an RGB stream!\n");
+    return (-1);
   }
 
-  std::string arg (argv[1]);
-  
-  if (arg == "--help" || arg == "-h")
-  {
-    usage (argv);
-    return 1;
-  }
-
-  double min_v = 0, max_v = 5.0;
-  pcl::console::parse_2x_arguments (argc, argv, "-minmax", min_v, max_v, false);
-  std::string field_name ("z");
-  pcl::console::parse_argument (argc, argv, "-field", field_name);
-
-  pcl::OpenNIGrabber grabber (arg);
-  if (grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgb> ())
-  {
-    OpenNIPassthrough<pcl::PointXYZRGB> v (arg, field_name, min_v, max_v);
-    v.run ();
-  }
-  else
-  {
-    OpenNIPassthrough<pcl::PointXYZ> v (arg, field_name, min_v, max_v);
-    v.run ();
-  }
-
-  return (0);
+  OpenNIPassthrough v (grabber);
+  v.show ();
+  return (app.exec ());
 }

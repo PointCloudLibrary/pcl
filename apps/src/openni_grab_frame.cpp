@@ -1,0 +1,304 @@
+/*
+ * Software License Agreement (BSD License)
+ *
+ *  Copyright (c) 2011, Willow Garage, Inc.
+ *  All rights reserved.
+ *
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions
+ *  are met:
+ *
+ *   * Redistributions of source code must retain the above copyright
+ *     notice, this list of conditions and the following disclaimer.
+ *   * Redistributions in binary form must reproduce the above
+ *     copyright notice, this list of conditions and the following
+ *     disclaimer in the documentation and/or other materials provided
+ *     with the distribution.
+ *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *     contributors may be used to endorse or promote products derived
+ *     from this software without specific prior written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ *  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ *  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ *  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ *  POSSIBILITY OF SUCH DAMAGE.
+ *	
+ * Author: Nico Blodow (blodow@cs.tum.edu)
+ *         Christian Potthast (potthast@usc.edu)
+ */
+
+#include <pcl/point_cloud.h>
+#include <pcl/point_types.h>
+#include <pcl/io/openni_grabber.h>
+#include <pcl/io/pcd_io.h>
+#include <pcl/common/time.h>
+#include <pcl/console/print.h>
+#include <pcl/console/parse.h>
+#include <boost/filesystem.hpp>
+#include <pcl/visualization/pcl_visualizer.h>
+
+
+using namespace pcl::console;
+using namespace boost::filesystem;
+
+template<typename PointType>
+class OpenNIGrabFrame
+{
+  typedef pcl::PointCloud<PointType> Cloud;
+  typedef typename Cloud::ConstPtr CloudConstPtr;  
+  public:
+    OpenNIGrabFrame () 
+    : visualizer_ (new pcl::visualization::PCLVisualizer ("OpenNI Viewer"))
+    , writer_ ()
+    , quit_ (false)
+    , trigger_ (false)
+    , continuous_ (false)
+    , file_name_ ("")
+    , dir_name_ ("")
+    , format_ (4)
+    {
+    }
+
+    void 
+    cloud_cb_ (const CloudConstPtr& cloud)
+    {
+      if (quit_)
+        return;
+      
+      boost::mutex::scoped_lock lock (cloud_mutex_);
+        cloud_ = cloud;
+        
+      if (continuous_ || trigger_)
+        saveCloud ();
+      
+      trigger_ = false;
+    }
+    
+    void 
+    keyboard_callback (const pcl::visualization::KeyboardEvent& event, void*)
+    {
+      if (event.keyUp ())
+      {
+        switch (event.getKeyCode ())
+        {
+          case 27:
+          case 'Q':
+          case 'q': quit_ = true; visualizer_->close ();
+            break;
+          case ' ': continuous_ = !continuous_;
+            break;
+        }
+      }
+    }
+    
+    void 
+    mouse_callback (const pcl::visualization::MouseEvent& mouse_event, void*)
+    {
+      if (mouse_event.getType() == pcl::visualization::MouseEvent::MouseButtonPress && mouse_event.getButton() == pcl::visualization::MouseEvent::LeftButton)
+      {
+        trigger_ = true;
+      }
+    }
+    
+    CloudConstPtr
+    getLatestCloud ()
+    {
+      //lock while we swap our cloud and reset it.
+      boost::mutex::scoped_lock lock(cloud_mutex_);
+      CloudConstPtr temp_cloud;
+      temp_cloud.swap (cloud_); //here we set cloud_ to null, so that
+      //it is safe to set it again from our
+      //callback
+      return (temp_cloud);
+    }
+    
+    void saveCloud ()
+    {
+      std::stringstream ss;
+      ss << dir_name_ << "/" << file_name_ << "_" << boost::posix_time::to_iso_string (boost::posix_time::microsec_clock::local_time ()) << ".pcd";
+
+      if (format_ & 1)
+      {
+        writer_.writeBinary<PointType> (ss.str (), *cloud_);
+        std::cerr << "Data saved in BINARY format to " << ss.str () << std::endl;
+      }
+      
+      if (format_ & 2)
+      {
+        writer_.writeBinaryCompressed<PointType> (ss.str (), *cloud_);
+        std::cerr << "Data saved in BINARY COMPRESSED format to " << ss.str () << std::endl;
+      }
+      
+      if (format_ & 4)
+      {
+        writer_.writeBinaryCompressed<PointType> (ss.str (), *cloud_);
+        std::cerr << "Data saved in BINARY COMPRESSED format to " << ss.str () << std::endl;
+      }
+    }
+    
+    void 
+    run ()
+    {
+      // register the keyboard and mouse callback for the visualizer
+      visualizer_->registerMouseCallback (&OpenNIGrabFrame::mouse_callback, *this);
+      visualizer_->registerKeyboardCallback(&OpenNIGrabFrame::keyboard_callback, *this);
+      
+      // create a new grabber for OpenNI devices
+      pcl::Grabber* interface = new pcl::OpenNIGrabber ();
+
+      // make callback function from member function
+      boost::function<void (const CloudConstPtr&)> f =
+        boost::bind (&OpenNIGrabFrame::cloud_cb_, this, _1);
+
+      // connect callback function for desired signal. In this case its a point cloud with color values
+      boost::signals2::connection c = interface->registerCallback (f);
+
+      // start receiving point clouds
+      interface->start ();
+
+      // wait until user quits program with Ctrl-C, but no busy-waiting -> sleep (1);
+      while (!visualizer_->wasStopped())
+      {
+        visualizer_->spinOnce ();
+        if (cloud_)
+        {
+          CloudConstPtr cloud = getLatestCloud ();
+          if (!visualizer_->updatePointCloud (cloud, "OpenNICloud"))
+          {
+            visualizer_->addPointCloud (cloud, "OpenNICloud");
+            visualizer_->resetCameraViewpoint ("OpenNICloud");
+          }          
+        }
+        boost::this_thread::sleep (boost::posix_time::microseconds (100));
+      }
+      
+      //while (!quit_)
+        //boost::this_thread::sleep (boost::posix_time::seconds (1));
+   
+      // stop the grabber
+      interface->stop ();
+    }
+
+    void
+    setOptions (std::string filename, std::string pcd_format, bool paused)
+    {
+      boost::filesystem::path path(filename);
+
+      if (filename.empty ())
+      {
+        dir_name_ = ".";
+        file_name_ = "frame";
+      }
+      else
+      {
+        dir_name_ = path.parent_path ().string ();
+        
+        if (!dir_name_.empty () && !boost::filesystem::exists (path.parent_path ()))
+        {
+          std::cerr << "directory \"" << path.parent_path () << "\" does not exist!\n";
+          exit (1);
+        }
+#if BOOST_FILESYSTEM_VERSION == 3
+        file_name_ = path.stem ().string ();
+#else
+        file_name_ = path.stem ();
+#endif
+      }
+      
+      std::cout << "dir: " << dir_name_ << " :: " << path.parent_path () << std::endl;
+#if BOOST_FILESYSTEM_VERSION == 3
+      std::cout << "file: " << file_name_ << " :: " << path.stem (). string () << std::endl;
+#else
+      std::cout << "file: " << file_name_ << " :: " << path.stem () << std::endl;
+#endif
+      
+      if (pcd_format == "b" || pcd_format == "all")
+        format_ |= 1;
+      else if (pcd_format == "ascii" || pcd_format == "all")
+        format_ |= 2;
+      else if (pcd_format == "bc" || pcd_format == "all")
+        format_ |= 4;
+    
+      continuous_ = !paused;
+    }
+
+    boost::shared_ptr<pcl::visualization::PCLVisualizer> visualizer_;
+    pcl::PCDWriter writer_;
+    bool quit_;
+    bool continuous_;
+    bool trigger_;
+    std::string file_name_;
+    std::string dir_name_;
+    unsigned format_;
+    CloudConstPtr cloud_;
+    mutable boost::mutex cloud_mutex_;
+};
+
+void
+usage (char ** argv)
+{
+  std::cout << "usage: " << argv[0] << " <filename> <options>\n\n";
+  
+  print_info ("  filename: if no filename is provided a generic timestamp will be set as filename\n\n");
+  print_info ("  where options are:\n");
+  print_info ("                    -format = PCD file format (b=binary; bc=binary compressed; ascii=ascii; all=all) (default: bc)\n");
+  print_info ("                    -XYZ  = store just a XYZ cloud\n");
+  print_info ("                    -paused = start grabber in paused mode. Toggle pause by pressing the space bar\n");
+  print_info ("                              or grab single frames by just pressing the left mouse button.\n");
+}
+
+int 
+main (int argc, char** argv)
+{
+  std::string arg;
+  if (argc > 1)
+    arg = std::string (argv[1]);
+
+  if (arg == "--help" || arg == "-h")
+  {
+    usage (argv);
+    return 1;
+  }
+
+  std::string format = "bc";
+  std::string filename;
+  bool paused = false;
+  bool xyz = false;
+  if (argc > 1)
+  {
+    // Parse the command line arguments for .pcd file
+    std::vector<int> p_file_indices;
+    p_file_indices = parse_file_extension_argument (argc, argv, ".pcd");
+    if (p_file_indices.size () > 0)
+      filename = argv[p_file_indices[0]];
+    
+    std::cout << "fname: " << filename << std::endl;
+    // Command line parsing
+    parse_argument (argc, argv, "-format", format);
+    xyz = find_switch (argc, argv, "-XYZ");
+    paused = find_switch (argc, argv, "-paused");
+  }
+
+  if (xyz)
+  {
+    OpenNIGrabFrame<pcl::PointXYZ> grab_frame;
+    grab_frame.setOptions (filename, format, paused);
+    grab_frame.run ();
+  }
+  else
+  {
+    OpenNIGrabFrame<pcl::PointXYZRGBA> grab_frame;    
+    grab_frame.setOptions (filename, format, paused);
+    grab_frame.run ();
+  }
+  return (0);
+}
+
