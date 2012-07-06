@@ -114,6 +114,7 @@ pcl::ConcaveHull<PointInT>::reconstruct (PointCloud &output, std::vector<pcl::Ve
 
 #ifdef __GNUC__
 #pragma GCC diagnostic ignored "-Wold-style-cast"
+#endif
 //////////////////////////////////////////////////////////////////////////
 template <typename PointInT> void
 pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std::vector<pcl::Vertices> &polygons)
@@ -577,6 +578,7 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
     pcl::copyPointCloud (*input_, indices, alpha_shape);
   }
 }
+#ifdef __GNUC__
 #pragma GCC diagnostic warning "-Wold-style-cast"
 #endif
 
