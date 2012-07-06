@@ -788,9 +788,9 @@ TEST (VoxelGridCovariance, Filters)
   EXPECT_EQ (bool (output.is_dense), true);
 
 
-  EXPECT_NEAR (output.points[0].x, -0.0692412, 1e-4);
-  EXPECT_NEAR (output.points[0].y, 0.114566, 1e-4);
-  EXPECT_NEAR (output.points[0].z, 0.0475084, 1e-4);
+  EXPECT_NEAR (output.points[0].x, -0.064583674073219299, 1e-4);
+  EXPECT_NEAR (output.points[0].y,  0.04627450555562973,  1e-4);
+  EXPECT_NEAR (output.points[0].z,  0.011529932729899883, 1e-4);
 
   EXPECT_NEAR (output.points[13].x, -0.0857542, 1e-4);
   EXPECT_NEAR (output.points[13].y, 0.149493, 1e-4);

@@ -46,6 +46,7 @@
 #include <boost/random.hpp>
 #include <boost/random/normal_distribution.hpp>
 
+//////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT> void
 pcl::VoxelGridCovariance<PointT>::applyFilter (PointCloud &output)
 {
@@ -68,9 +69,9 @@ pcl::VoxelGridCovariance<PointT>::applyFilter (PointCloud &output)
   Eigen::Vector4f min_p, max_p;
   // Get the minimum and maximum dimensions
   if (!filter_field_name_.empty ()) // If we don't want to process the entire cloud...
-    getMinMax3D<PointT>(input_, filter_field_name_, static_cast<float> (filter_limit_min_), static_cast<float> (filter_limit_max_), min_p, max_p, filter_limit_negative_);
+    getMinMax3D<PointT> (input_, filter_field_name_, static_cast<float> (filter_limit_min_), static_cast<float> (filter_limit_max_), min_p, max_p, filter_limit_negative_);
   else
-    getMinMax3D<PointT>(*input_, min_p, max_p);
+    getMinMax3D<PointT> (*input_, min_p, max_p);
 
   // Compute the minimum and maximum bounding box values
   min_b_[0] = static_cast<int> (floor (min_p[0] * inverse_leaf_size_[0]));
@@ -357,7 +358,7 @@ pcl::VoxelGridCovariance<PointT>::applyFilter (PointCloud &output)
   output.width = static_cast<uint32_t> (output.points.size ());
 }
 
-//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT> int
 pcl::VoxelGridCovariance<PointT>::getNeighborhoodAtPoint (const PointT& reference_point, std::vector<LeafConstPtr> &neighbors)
 {
@@ -392,6 +393,7 @@ pcl::VoxelGridCovariance<PointT>::getNeighborhoodAtPoint (const PointT& referenc
   return (static_cast<int> (neighbors.size ()));
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT> void
 pcl::VoxelGridCovariance<PointT>::getDisplayCloud (pcl::PointCloud<PointXYZ>& cell_cloud)
 {
