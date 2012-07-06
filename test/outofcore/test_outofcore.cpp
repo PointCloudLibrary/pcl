@@ -101,7 +101,7 @@ AlignedPointTVector points;
 
 /** \brief helper function to compare two points. is there a templated function in pcl to do this for arbitrary point types?*/
 bool 
-compPt ( PointT p1, PointT p2 )
+compPt ( const PointT &p1, const PointT &p2 )
 {
   if( p1.x != p2.x || p1.y != p2.y || p1.z != p2.z )
     return false;
