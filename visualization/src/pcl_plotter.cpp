@@ -332,7 +332,7 @@ double pcl::visualization::PCLPlotter::compute(pcl::visualization::PCLPlotter::P
   double res = 0;
   for (size_t i = 0; i < p_function.size(); i++)
   {
-    res += (p_function[i] * pow(val, i));
+    res += (p_function[i] * pow(val, double (i)));
   }
   return res;
 }
