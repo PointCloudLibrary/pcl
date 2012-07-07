@@ -1,12 +1,12 @@
 .. _using_kinfu_large_scale:
 
 Using Kinfu Large Scale to generate a textured mesh
---------------------------------------------------------------------
+---------------------------------------------------
 
 This tutorial demonstrates how to use KinFu Large Scale to produce a mesh (in meters) from a room, and apply texture information in post-processing for a more appealing visual result. The first part of this tutorial shows how to obtain the TSDF cloud from KinFu Large Scale. The second part shows how to convert the TSDF cloud into a uniform mesh. The third part shows how to texture the obtained mesh using the RGB images and poses we obtained from KinFu Large Scale.
 
 Part 1: Running pcl_kinfu_largeScale to obtain a TSDF cloud
--------------------------------
+-----------------------------------------------------------
 
 *TSDF Cloud*
 
