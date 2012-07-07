@@ -29,6 +29,8 @@ if(build)
         include/pcl/${SUBSYS_NAME}/point_xy_32f.h
         include/pcl/${SUBSYS_NAME}/regression_variance_stats_estimator.h
         include/pcl/${SUBSYS_NAME}/stats_estimator.h
+        include/pcl/${SUBSYS_NAME}/svm_wrapper.h
+        include/pcl/${SUBSYS_NAME}/svm.h
         )
 
     set(impl_incs 
@@ -38,11 +40,14 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/dt/decision_tree_trainer.hpp
         include/pcl/${SUBSYS_NAME}/impl/ferns/fern_evaluator.hpp
         include/pcl/${SUBSYS_NAME}/impl/ferns/fern_trainer.hpp
+        include/pcl/${SUBSYS_NAME}/impl/svm/svm_wrapper.hpp
         )
 
     set(srcs
 		src/point_xy_32i.cpp
 		src/point_xy_32f.cpp
+		src/svm_wrapper.cpp
+		src/svm.cpp
         )
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
