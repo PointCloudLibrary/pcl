@@ -191,7 +191,7 @@ pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::segment (std::ve
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT, typename PointNT, typename PointLT> void
-pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::segment (std::vector<PlanarRegion<PointT> >& regions)
+pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::segment (std::vector<PlanarRegion<PointT>, Eigen::aligned_allocator<PlanarRegion<PointT> > >& regions)
 {
   std::vector<ModelCoefficients> model_coefficients;
   std::vector<PointIndices> inlier_indices;  
@@ -228,7 +228,7 @@ pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::segment (std::ve
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT, typename PointNT, typename PointLT> void
-pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::segmentAndRefine (std::vector<PlanarRegion<PointT> >& regions)
+pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::segmentAndRefine (std::vector<PlanarRegion<PointT>, Eigen::aligned_allocator<PlanarRegion<PointT> > >& regions)
 {
   std::vector<ModelCoefficients> model_coefficients;
   std::vector<PointIndices> inlier_indices;  
@@ -272,7 +272,7 @@ pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::segmentAndRefine
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT, typename PointNT, typename PointLT> void
-pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::segmentAndRefine (std::vector<PlanarRegion<PointT> >& regions,
+pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::segmentAndRefine (std::vector<PlanarRegion<PointT>, Eigen::aligned_allocator<PlanarRegion<PointT> > >& regions,
                                                                                   std::vector<ModelCoefficients>& model_coefficients,
                                                                                   std::vector<PointIndices>& inlier_indices,
                                                                                   PointCloudLPtr& labels,

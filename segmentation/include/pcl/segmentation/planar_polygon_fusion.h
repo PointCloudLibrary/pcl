@@ -69,7 +69,7 @@ namespace pcl
         * \param[in] input the list of 2D planar polygons to refine
         */
       void
-      addInputPolygons (const std::vector<PlanarRegion<PointT> > &input)
+      addInputPolygons (const std::vector<PlanarRegion<PointT>, Eigen::aligned_allocator<PlanarRegion<PointT> > > &input)
       {
         int start = static_cast<int> (regions_.size ());
         regions_.resize (regions_.size () + input.size ());
@@ -79,7 +79,7 @@ namespace pcl
 
     protected:
       /** \brief Internal list of planar states. */
-      std::vector<pcl::PlanarRegion<PointT> > regions_;
+      std::vector<pcl::PlanarRegion<PointT>, Eigen::aligned_allocator<pcl::PlanarRegion<PointT> > > regions_;
   };
 }
 
