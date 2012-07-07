@@ -150,6 +150,29 @@ pcl::visualization::PCLPlotter::addPlotData (
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
+pcl::visualization::PCLPlotter::addPlotData (RationalFunction const & r_function,
+                    double x_min, double y_min,
+                    char const *name,
+                    int num_points,
+                    std::vector<char> const &color)
+{
+  std::vector<double> array_x(num_points), array_y(num_points);
+  double incr = (y_min - x_min)/num_points;
+  
+  for (int i = 0; i < num_points; i++)
+  {
+    double xval = i*incr + x_min;
+    double yval = compute(r_function, xval);
+    //if (yval == DBL_MAX) continue; //handling dived by zero 
+    
+    array_x[i] = xval;
+    array_y[i] = yval;
+  }
+  
+  this->addPlotData (array_x, array_y, name, vtkChart::LINE, color);
+}
+
+void
 pcl::visualization::PCLPlotter::addHistogramData (std::vector<double> const& data, int const nbins, char const * name, std::vector<char> const &color)
 {
   std::vector<std::pair<double, double> > histogram;
@@ -308,7 +331,7 @@ pcl::visualization::PCLPlotter::getWindowSize ()
   return (sz);
 }
 
-///////////////////////IMPORTANT PRIVATE FUNCTIONS//////////////////////.
+///////////////////////IMPORTANT PRIVATE FUNCTIONS///////////////////////////////
 void
 pcl::visualization::PCLPlotter::computeHistogram (std::vector<double> const &data, int const nbins, std::vector<std::pair<double, double> > &histogram)
 {
@@ -347,12 +370,28 @@ double
 pcl::visualization::PCLPlotter::compute (
     pcl::visualization::PCLPlotter::PolynomialFunction const & p_function, 
     double val)
+
 {
   double res = 0;
   for (size_t i = 0; i < p_function.size (); i++)
   {
-    res += (static_cast<double> (p_function[i]) * pow (val, static_cast<double> (i)) );
+    res += (p_function[i] * pow (val, static_cast<double> (i)) );
   }
   return (res);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+double 
+pcl::visualization::PCLPlotter::compute(RationalFunction const & r_function, double val)
+{
+  PolynomialFunction numerator = r_function.first, denominator = r_function.second;
+  
+  double dres = this->compute (denominator,val);
+  //if (dres == 0) return DBL_MAX;  //return the max possible double value to represent infinity
+  
+  double nres = this->compute (numerator,val);
+  
+  return (nres/dres);
+
 }
 
