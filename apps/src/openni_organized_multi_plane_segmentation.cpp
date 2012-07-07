@@ -133,7 +133,7 @@ class OpenNIOrganizedMultiPlaneSegmentation
       mps.setAngularThreshold (0.017453 * 2.0); //3 degrees
       mps.setDistanceThreshold (0.02); //2cm
 
-      std::vector<pcl::PlanarRegion<PointT> > regions;
+      std::vector<pcl::PlanarRegion<PointT>, Eigen::aligned_allocator<pcl::PlanarRegion<PointT> > > regions;
       pcl::PointCloud<PointT>::Ptr contour (new pcl::PointCloud<PointT>);
       size_t prev_models_size = 0;
       char name[1024];

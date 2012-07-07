@@ -83,7 +83,7 @@ like. In this case, we are setting it to black.
 .. code-block:: cpp
 
     ...
-    viewer->addPointCloud (point_cloud_ptr, "sample cloud");
+    viewer->addPointCloud<pcl::PointXYZ> (cloud, "sample cloud");
     ...
 
 This is the most important line. We add the point cloud to the viewer,
@@ -195,7 +195,7 @@ colour fields), PCLVisualizer would not know what colours to use.
 .. code-block:: cpp
 
     ...
-    pcl::PointCloudColorHandlerRGB<pcl::PointXYZRGB> rgb(point_cloud_ptr);
+    pcl::visualization::PointCloudColorHandlerRGB<pcl::PointXYZRGB> rgb(point_cloud_ptr);
     ...
 
 Next, after setting the viewer's background colour, we create a colour
@@ -213,16 +213,11 @@ clouds. See the documentation_ for details.
 .. code-block:: cpp
 
     ...
-    viewer->addPointCloud<pcl::PointXYZRGB> (point_cloud_ptr, rgb, "sample cloud");
+    viewer->addPointCloud<pcl::PointXYZRGB> (cloud, rgb, "sample cloud");
     ...
 
 Finally, when we add the point cloud, we specify the colour handler when
-we add the point cloud to the viewer. Note also that we must now specify
-the point type as a template argument to the ``addPointCloud<>()``
-method. The version we used in the first code sample is the only version
-of this method that does not require a template parameter, because it
-can only handle ``PointXYZ`` data. All other versions require the point
-type.
+we add the point cloud to the viewer.
 
 
 Custom colours
@@ -472,7 +467,7 @@ same point cloud, but this time we give it a custom colour handler.
     viewer->addCoordinateSystem (1.0);
     ...
 
-These two lines set some properties globally for all viewports. Most of
+These three lines set some properties globally for all viewports. Most of
 the PCLVisualizer methods accept an optional viewport ID parameter. When
 it is specified, they affect only that viewport. When it is not, as in
 this case, they affect all viewports.

@@ -25,6 +25,13 @@ PointCloud is a C++ class which contains the following data fields:
        much more efficient, thus speeding up the computation and lowering the
        costs of certain algorithms in PCL.
 
+    .. note::
+
+       An **projectable point cloud** dataset is the name given to point clouds
+       that have a correlation according to a pinhole camera model between the (u,v) index
+       of a point in the organized point cloud and the actual 3D values. This correlation can be
+       expressed in it's easiest form as: u = f*x/z and v = f*y/z
+
     Examples::
 
       cloud.width = 640; // there are 640 points per line

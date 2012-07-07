@@ -206,11 +206,11 @@ Let's check whether CMake did actually find the needed third party dependencies 
 		
 - **Qt** :
 
-    It is highly recommended to install Qt to the default path suggested by the installer. You need then to define an 
+	It is highly recommended to install Qt to the default path suggested by the installer. You need then to define an 
 	environment variable named **QTDIR** to point to Qt installation path (e.g. `C:\\Qt\\4.8.0`). Also, you need to
 	append the bin folder to the **PATH** environment variable. Once you modify the environment variables, you need to
 	restart CMake and click "Configure" again. If Qt is not found, you need at least to fill **QT_QMAKE_EXECUTABLE**
-	CMake entry with the path of `qmake.exe` (e.g. C:\\Qt\\4.8.0\\bin\qmake.exe), then click "Configure".
+	CMake entry with the path of `qmake.exe` (e.g. C:\\Qt\\4.8.0\\bin\\qmake.exe), then click "Configure".
 	
 - **VTK** :
 

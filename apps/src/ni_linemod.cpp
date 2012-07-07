@@ -316,7 +316,7 @@ class NILinemod
       mps_.setInputCloud (search_.getInputCloud ());
 
       // Use one of the overloaded segmentAndRefine calls to get all the information that we want out
-      vector<PlanarRegion<PointT> > regions;
+      vector<PlanarRegion<PointT>, Eigen::aligned_allocator<PlanarRegion<PointT> > > regions;
       vector<ModelCoefficients> model_coefficients;
       vector<PointIndices> inlier_indices;  
       PointCloud<Label>::Ptr labels (new PointCloud<Label>);
