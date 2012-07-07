@@ -38,7 +38,7 @@ if(build)
         src/window.cpp
         src/range_image_visualizer.cpp
         src/common/float_image_utils.cpp
-        src/pcl_image_canvas_source_2d.cpp
+        src/vtk/pcl_image_canvas_source_2d.cpp
         )
     if("${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}" VERSION_LESS "5.6")
         # A custom interactor is necessary on VTK 5.4 and below
@@ -60,7 +60,6 @@ if(build)
         include/pcl/${SUBSYS_NAME}/range_image_visualizer.h
         include/pcl/${SUBSYS_NAME}/interactor.h
         include/pcl/${SUBSYS_NAME}/vtk.h
-        include/pcl/${SUBSYS_NAME}/vtk/pcl_image_canvas_source_2d.h
         )
 
     set(common_incs 
@@ -82,9 +81,19 @@ if(build)
 
     set(common_impl_incs include/pcl/${SUBSYS_NAME}/common/impl/shapes.hpp)
 
+    set(vtk_incs 
+        include/pcl/${SUBSYS_NAME}/vtk/pcl_image_canvas_source_2d.h
+        )
+
     set(LIB_NAME pcl_${SUBSYS_NAME})
-    PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${common_incs} ${impl_incs} ${common_impl_incs})
-    target_link_libraries(${LIB_NAME} pcl_common pcl_io pcl_kdtree vtkCommon vtkWidgets vtkHybrid)
+    PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${common_incs} ${impl_incs} ${common_impl_incs} ${vtk_incs})
+    
+    if(APPLE)
+      find_package(OpenGL)
+    endif(APPLE)
+    
+    target_link_libraries(${LIB_NAME} pcl_common pcl_io pcl_kdtree vtkCommon vtkWidgets vtkHybrid vtkCharts vtkFiltering vtkRendering ${OPENGL_LIBRARIES})
+
     set(EXT_DEPS "")
     if(OPENNI_FOUND)
       list(APPEND EXT_DEPS openni-dev)
@@ -96,8 +105,8 @@ if(build)
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/common ${common_incs})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${impl_incs})
-    PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/common/impl
-        ${common_impl_incs})
+    PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/common/impl ${common_impl_incs})
+    PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/vtk ${vtk_incs})
 
     if(BUILD_TESTS)
         add_subdirectory(test)
