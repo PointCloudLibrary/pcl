@@ -8,7 +8,6 @@ foreach(subdir
           concatenate_clouds
           concatenate_fields
           concatenate_points
-          convex_hull_2d
           concave_hull_2d
           conditional_removal
           convex_hull_2d
@@ -42,11 +41,10 @@ foreach(subdir
           template_alignment
           vfh_recognition
           voxel_grid
-          normal_distributions_transform
           # Additional/Complex tutorials presented at PCL events
           iros2011
           iccv2011
-		  normal_estimation_using_integral_images
+          normal_estimation_using_integral_images
        )
 
   add_subdirectory(${subdir})
