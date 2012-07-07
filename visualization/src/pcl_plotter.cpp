@@ -130,13 +130,13 @@ pcl::visualization::PCLPlotter::addPlotData (std::vector<std::pair<double, doubl
 void
 pcl::visualization::PCLPlotter::addPlotData (
     PolynomialFunction const & p_function,
-    double x_min, double y_min,
+    double x_min, double x_max,
     char const *name,
     int num_points,
     std::vector<char> const &color)
 {
   std::vector<double> array_x(num_points), array_y(num_points);
-  double incr = (y_min - x_min)/num_points;
+  double incr = (x_max - x_min)/num_points;
   
   for (int i = 0; i < num_points; i++)
   {
@@ -151,13 +151,13 @@ pcl::visualization::PCLPlotter::addPlotData (
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::visualization::PCLPlotter::addPlotData (RationalFunction const & r_function,
-                    double x_min, double y_min,
+                    double x_min, double x_max,
                     char const *name,
                     int num_points,
                     std::vector<char> const &color)
 {
   std::vector<double> array_x(num_points), array_y(num_points);
-  double incr = (y_min - x_min)/num_points;
+  double incr = (x_max - x_min)/num_points;
   
   for (int i = 0; i < num_points; i++)
   {
@@ -172,6 +172,28 @@ pcl::visualization::PCLPlotter::addPlotData (RationalFunction const & r_function
   this->addPlotData (array_x, array_y, name, vtkChart::LINE, color);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::visualization::PCLPlotter::addPlotData (double (*function)(double),
+                    double x_min, double x_max,
+                    char const *name,
+                    int num_points,
+                    std::vector<char> const &color)
+{
+  std::vector<double> array_x(num_points), array_y(num_points);
+  double incr = (x_max - x_min)/num_points;
+  
+  for (int i = 0; i < num_points; i++)
+  {
+    double xval = i*incr + x_min;
+    array_x[i] = xval;
+    array_y[i] = function(xval);
+  }
+  
+  this->addPlotData (array_x, array_y, name, vtkChart::LINE, color);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::visualization::PCLPlotter::addHistogramData (std::vector<double> const& data, int const nbins, char const * name, std::vector<char> const &color)
 {

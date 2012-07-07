@@ -136,7 +136,22 @@ namespace pcl
 	  * \param[in] color a character array of 4 fields denoting the R,G,B and A component of the color of the plot ranging from 0 to 255. If this argument is not passed (or NULL is passed) the plot is colored based on a color scheme 
           */
         void
-        addPlotData(RationalFunction const & r_function,
+        addPlotData (RationalFunction const & r_function,
+                    double x_min, double x_max,
+                    char const *name = "Y Axis",
+                    int num_points = 100,
+                    std::vector<char> const &color = std::vector<char>());
+        
+        /** \brief adds a plot based on a user defined callback function representing the function to plot
+          * \param[in] function a user defined callback function representing the relation y = function(x)
+          * \param[in] x_min the left boundary of the range for displaying the plot
+	  * \param[in] x_max the right boundary of the range for displaying the plot
+          * \param[in] name name of the plot which appears in the legend when toggled on
+          * \param[in] num_points Number of points plotted to show the graph. More this number, more is the resolution.
+	  * \param[in] color a character array of 4 fields denoting the R,G,B and A component of the color of the plot ranging from 0 to 255. If this argument is not passed (or NULL is passed) the plot is colored based on a color scheme 
+          */
+        void
+        addPlotData (double (*function)(double),
                     double x_min, double x_max,
                     char const *name = "Y Axis",
                     int num_points = 100,
