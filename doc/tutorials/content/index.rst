@@ -926,6 +926,21 @@ Applications
      
      .. |ap_3| image:: images/mobile_streaming_1.png
                :height: 100px
+               
+  * :ref:`using_kinfu_large_scale`
+     
+     ======  ======
+     |ap_4|  Title: **Using Kinfu Large Scale to generate a textured mesh**
+
+             Author: *Francisco Heredia and Raphael Favier*
+
+             Compatibility: > PCL 1.5
+
+             This tutorial demonstrates how to use KinFu Large Scale to produce a mesh from a room, and apply texture information in post-processing for a more appealing visual result.
+     ======  ======
+     
+     .. |ap_4| image:: images/using_kinfu_large_scale.png
+               :height: 100px
 
  ..
   * :ref:`normal_estimation_integral_images`

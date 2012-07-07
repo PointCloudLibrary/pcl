@@ -111,11 +111,11 @@ General Recommendations
 
 There is a set of recommendations that we want to mention regarding the use of KinFu Large Scale. These recommendations are listed below:
  
-  1)**Scan scenes with enough details for ICP:** It is a known fact that ICP does not perform well in scenes with few details, or where there are a lot of co-planer surfaces. In other words, if the only thing you have is a wall and floor, most probably the tracking will not perform well.
+  1) **Scan scenes with enough details for ICP:** It is a known fact that ICP does not perform well in scenes with few details, or where there are a lot of co-planer surfaces. In other words, if the only thing you have is a wall and floor, most probably the tracking will not perform well.
 
-  2)**Frame rate is less than original KinFu:** The code in Kinfu largescale is experimental. There are still many areas in which the performance can be optimized to provide a faster execution. In our tests, the obtained frame rate is around 20 fps. We are using a GTX480 and 4GB of RAM. The decrease in frame rate is mainly because of two things. First, that the code has not yet been completely optimized. Second, that additional operations are taking place in the frame processing loop as a result of the large scale implementation. 
+  2) **Frame rate is less than original KinFu:** The code in Kinfu largescale is experimental. There are still many areas in which the performance can be optimized to provide a faster execution. In our tests, the obtained frame rate is around 20 fps. We are using a GTX480 and 4GB of RAM. The decrease in frame rate is mainly because of two things. First, that the code has not yet been completely optimized. Second, that additional operations are taking place in the frame processing loop as a result of the large scale implementation. 
 
-  3)**Scan smoothly:** Since there are more things happening per frame, KinFu Large Scale may not respond as fast as the original KinFu. Data is exchanged between GPU and CPU especially at the time of shifting. Performing smooth movements, in particular at the time of shifting, decreases the risk of losing the camera pose tracking. Be patient and you will get good results. 
+  3) **Scan smoothly:** Since there are more things happening per frame, KinFu Large Scale may not respond as fast as the original KinFu. Data is exchanged between GPU and CPU especially at the time of shifting. Performing smooth movements, in particular at the time of shifting, decreases the risk of losing the camera pose tracking. Be patient and you will get good results. 
 
 Related Executables
 -------------------
