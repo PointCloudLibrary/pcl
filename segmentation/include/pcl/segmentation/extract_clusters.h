@@ -127,7 +127,7 @@ namespace pcl
 
       std::vector<unsigned int> seed_queue;
       int sq_idx = 0;
-      seed_queue.push_back (i);
+      seed_queue.push_back (static_cast<int> (i));
 
       processed[i] = true;
 
