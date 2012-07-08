@@ -996,25 +996,6 @@ namespace pcl
     return (os);
   }
 
-  /** \brief A point structure representing the generic Signature of Histograms of OrienTations (SHOT).
-    * \ingroup common
-    */
-  struct SHOT
-  {
-    std::vector<float> descriptor;
-    float rf[9];
-  };
-
-  PCL_DEPRECATED (inline std::ostream& operator << (std::ostream& os, const SHOT& p), "SHOT POINT IS DEPRECATED, USE SHOT352 FOR SHAPE AND SHOT1344 FOR SHAPE+COLOR INSTEAD");
-  inline std::ostream& operator << (std::ostream& os, const SHOT& p)
-  {
-    for (int i = 0; i < 9; ++i)
-    os << (i == 0 ? "(" : "") << p.rf[i] << (i < 8 ? ", " : ")");
-    for (size_t i = 0; i < p.descriptor.size (); ++i)
-    os << (i == 0 ? "(" : "") << p.descriptor[i] << (i < p.descriptor.size()-1 ? ", " : ")");
-    return (os);
-  }
-
   /** \brief A point structure representing the generic Signature of Histograms of OrienTations (SHOT) - shape only.
     * \ingroup common
     */

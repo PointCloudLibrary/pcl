@@ -181,13 +181,6 @@ namespace pcl
     */
   struct PrincipalCurvatures;
 
-  /** \brief Members: std::vector<float> descriptor, rf[9]
-    * \ingroup common
-    * \deprecated USE SHOT352 FOR SHAPE AND SHOT1344 FOR SHAPE+COLOR INSTEAD
-    */
-  struct
-  PCL_DEPRECATED_CLASS (SHOT, "USE SHOT352 FOR SHAPE AND SHOT1344 FOR SHAPE+COLOR INSTEAD");
-
   /** \brief Members: float descriptor[352], rf[9]
     * \ingroup common
     */
