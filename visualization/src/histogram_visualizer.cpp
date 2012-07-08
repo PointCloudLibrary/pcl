@@ -78,8 +78,7 @@ pcl::visualization::PCLHistogramVisualizer::spinOnce (int time, bool force_redra
     {
       (*am_it).second.interactor_->Render ();
       exit_main_loop_timer_callback_->right_timer_id = (*am_it).second.interactor_->CreateRepeatingTimer (time);
-      // Set the correct interactor to both callbacks
-      exit_callback_->interact = (*am_it).second.interactor_;
+
       exit_main_loop_timer_callback_->interact = (*am_it).second.interactor_;
 
       (*am_it).second.interactor_->Start ();
@@ -94,8 +93,6 @@ pcl::visualization::PCLHistogramVisualizer::spinOnce (int time, bool force_redra
       (*am_it).second.interactor_->Render ();
       exit_main_loop_timer_callback_->right_timer_id = (*am_it).second.interactor_->CreateRepeatingTimer (time);
 
-      // Set the correct interactor to both callbacks
-      exit_callback_->interact = (*am_it).second.interactor_;
       exit_main_loop_timer_callback_->interact = (*am_it).second.interactor_;
 
       (*am_it).second.interactor_->Start ();
@@ -180,7 +177,7 @@ pcl::visualization::PCLHistogramVisualizer::spin ()
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void 
-pcl::visualization::PCLHistogramVisualizer::setBackgroundColor (const double &r, const double &g, const double &b, int viewport)
+pcl::visualization::PCLHistogramVisualizer::setBackgroundColor (const double &, const double &, const double &, int)
 {
 /*  rens_->InitTraversal ();
   vtkRenderer* renderer = NULL;
@@ -303,7 +300,7 @@ pcl::visualization::PCLHistogramVisualizer::createActor (
 
   renwinint.xy_plot_->SetYTitle (""); renwinint.xy_plot_->SetXTitle ("");
   renwinint.xy_plot_->SetYRange (min_max[0], min_max[1]); 
-  renwinint.xy_plot_->SetXRange (0, xy_array->GetNumberOfTuples () - 1);
+  renwinint.xy_plot_->SetXRange (0, static_cast<double> (xy_array->GetNumberOfTuples () - 1));
 
   //renwinint.xy_plot_->SetTitle (id.c_str ());
   renwinint.xy_plot_->GetProperty ()->SetColor (0, 0, 0);
@@ -411,7 +408,7 @@ pcl::visualization::PCLHistogramVisualizer::addFeatureHistogram (
     const int index,
     const std::string &id, int win_width, int win_height)
 {
-  if (index < 0 || index >= (int)(cloud.width * cloud.height))
+  if (index < 0 || index >= static_cast<int> (cloud.width * cloud.height))
   {
     PCL_ERROR ("[addFeatureHistogram] Invalid point index (%d) given!\n", index);
     return (false);
@@ -510,7 +507,7 @@ pcl::visualization::PCLHistogramVisualizer::updateFeatureHistogram (
     const int index,
     const std::string &id)
 {
-  if (index < 0 || index >= (int)(cloud.width * cloud.height))
+  if (index < 0 || index >= static_cast<int> (cloud.width * cloud.height))
   {
     PCL_ERROR ("[updateFeatureHistogram] Invalid point index (%d) given!\n", index);
     return (false);
