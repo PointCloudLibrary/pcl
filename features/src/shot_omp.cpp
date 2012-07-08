@@ -37,15 +37,15 @@
  */
 #include <pcl/point_types.h>
 #include <pcl/impl/instantiate.hpp>
-#include <pcl/features/shot_omp.h>
-#include <pcl/features/impl/shot_omp.hpp>
+//#include <pcl/features/shot_omp.h>
+//#include <pcl/features/impl/shot_omp.hpp>
 
 // Instantiations of specific point types
-#ifdef PCL_ONLY_CORE_POINT_TYPES
-  PCL_INSTANTIATE_PRODUCT(SHOTEstimationOMP, ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGB)(pcl::PointXYZRGBA))((pcl::Normal))((pcl::SHOT))((pcl::ReferenceFrame)))
-#else
-  PCL_INSTANTIATE_PRODUCT(SHOTEstimationOMP, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((pcl::SHOT))((pcl::ReferenceFrame)))
-
-  PCL_INSTANTIATE_PRODUCT(SHOTEstimationOMP, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((pcl::SHOT352))((pcl::ReferenceFrame)))
-  PCL_INSTANTIATE_PRODUCT(SHOTColorEstimationOMP, ((pcl::PointXYZRGBA)(pcl::PointXYZRGB)(pcl::PointXYZRGBL)(pcl::PointXYZRGBNormal))(PCL_NORMAL_POINT_TYPES)((pcl::SHOT1344))((pcl::ReferenceFrame)))
-#endif
+//#ifdef PCL_ONLY_CORE_POINT_TYPES
+//  PCL_INSTANTIATE_PRODUCT(SHOTEstimationOMP, ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGB)(pcl::PointXYZRGBA))((pcl::Normal))((pcl::SHOT))((pcl::ReferenceFrame)))
+//#else
+//  PCL_INSTANTIATE_PRODUCT(SHOTEstimationOMP, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((pcl::SHOT))((pcl::ReferenceFrame)))
+//
+//  PCL_INSTANTIATE_PRODUCT(SHOTEstimationOMP, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((pcl::SHOT352))((pcl::ReferenceFrame)))
+//  PCL_INSTANTIATE_PRODUCT(SHOTColorEstimationOMP, ((pcl::PointXYZRGBA)(pcl::PointXYZRGB)(pcl::PointXYZRGBL)(pcl::PointXYZRGBNormal))(PCL_NORMAL_POINT_TYPES)((pcl::SHOT1344))((pcl::ReferenceFrame)))
+//#endif

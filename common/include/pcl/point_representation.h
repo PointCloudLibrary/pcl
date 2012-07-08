@@ -440,27 +440,6 @@ namespace pcl
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   template <>
-  class
-  PCL_DEPRECATED_CLASS (DefaultPointRepresentation, "SHOT POINT IS DEPRECATED, USE SHOT352 FOR SHAPE AND SHOT1344 FOR SHAPE+COLOR INSTEAD")
-    <SHOT>
-    : public PointRepresentation<SHOT>
-  {
-    public:
-      DefaultPointRepresentation ()
-      {
-        nr_dimensions_ = 352;
-      }
-
-      virtual void
-      copyToFloatArray (const SHOT &p, float * out) const
-      {
-        for (int i = 0; i < nr_dimensions_; ++i)
-          out[i] = p.descriptor[i];
-      }
-  };
-
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  template <>
   class DefaultPointRepresentation<SHOT352> : public PointRepresentation<SHOT352>
   {
     public:

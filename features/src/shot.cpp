@@ -38,20 +38,20 @@
 
 #include <pcl/point_types.h>
 #include <pcl/impl/instantiate.hpp>
-#include <pcl/features/shot.h>
-#include <pcl/features/impl/shot.hpp>
+//#include <pcl/features/shot.h>
+//#include <pcl/features/impl/shot.hpp>
 
 // Instantiations of specific point types
-#ifdef PCL_ONLY_CORE_POINT_TYPES
-  PCL_INSTANTIATE_PRODUCT(SHOTEstimationBase, ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGB)(pcl::PointXYZRGBA))((pcl::Normal))((pcl::SHOT))((pcl::ReferenceFrame)))
-  PCL_INSTANTIATE_PRODUCT(SHOTEstimation, ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGB)(pcl::PointXYZRGBA))((pcl::Normal))((pcl::SHOT))((pcl::ReferenceFrame)))
-#else
-  //PCL_INSTANTIATE_PRODUCT(SHOTEstimationBase, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((pcl::SHOT))((pcl::ReferenceFrame)))
-  //PCL_INSTANTIATE_PRODUCT(SHOTEstimationBase, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((Eigen::MatrixXf))((pcl::ReferenceFrame)))
-  PCL_INSTANTIATE_PRODUCT(SHOTEstimation, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((pcl::SHOT))((pcl::ReferenceFrame)))
-  PCL_INSTANTIATE_PRODUCT(SHOTEstimation, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((Eigen::MatrixXf))((pcl::ReferenceFrame)))
-
-  PCL_INSTANTIATE_PRODUCT(SHOTEstimation, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((pcl::SHOT352))((pcl::ReferenceFrame)))
-  PCL_INSTANTIATE_PRODUCT(SHOTColorEstimation, ((pcl::PointXYZRGBA)(pcl::PointXYZRGB)(pcl::PointXYZRGBL)(pcl::PointXYZRGBNormal))(PCL_NORMAL_POINT_TYPES)((pcl::SHOT1344))((pcl::ReferenceFrame)))
-  PCL_INSTANTIATE_PRODUCT(SHOTColorEstimation, ((pcl::PointXYZRGBA)(pcl::PointXYZRGB)(pcl::PointXYZRGBL)(pcl::PointXYZRGBNormal))(PCL_NORMAL_POINT_TYPES)((Eigen::MatrixXf))((pcl::ReferenceFrame)))
-#endif
+//#ifdef PCL_ONLY_CORE_POINT_TYPES
+//  PCL_INSTANTIATE_PRODUCT(SHOTEstimationBase, ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGB)(pcl::PointXYZRGBA))((pcl::Normal))((pcl::SHOT))((pcl::ReferenceFrame)))
+//  PCL_INSTANTIATE_PRODUCT(SHOTEstimation, ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGB)(pcl::PointXYZRGBA))((pcl::Normal))((pcl::SHOT))((pcl::ReferenceFrame)))
+//#else
+//  //PCL_INSTANTIATE_PRODUCT(SHOTEstimationBase, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((pcl::SHOT))((pcl::ReferenceFrame)))
+//  //PCL_INSTANTIATE_PRODUCT(SHOTEstimationBase, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((Eigen::MatrixXf))((pcl::ReferenceFrame)))
+//  PCL_INSTANTIATE_PRODUCT(SHOTEstimation, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((pcl::SHOT))((pcl::ReferenceFrame)))
+//  PCL_INSTANTIATE_PRODUCT(SHOTEstimation, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((Eigen::MatrixXf))((pcl::ReferenceFrame)))
+//
+//  PCL_INSTANTIATE_PRODUCT(SHOTEstimation, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((pcl::SHOT352))((pcl::ReferenceFrame)))
+//  PCL_INSTANTIATE_PRODUCT(SHOTColorEstimation, ((pcl::PointXYZRGBA)(pcl::PointXYZRGB)(pcl::PointXYZRGBL)(pcl::PointXYZRGBNormal))(PCL_NORMAL_POINT_TYPES)((pcl::SHOT1344))((pcl::ReferenceFrame)))
+//  PCL_INSTANTIATE_PRODUCT(SHOTColorEstimation, ((pcl::PointXYZRGBA)(pcl::PointXYZRGB)(pcl::PointXYZRGBL)(pcl::PointXYZRGBNormal))(PCL_NORMAL_POINT_TYPES)((Eigen::MatrixXf))((pcl::ReferenceFrame)))
+//#endif

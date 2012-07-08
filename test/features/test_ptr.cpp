@@ -40,7 +40,7 @@
 #include <gtest/gtest.h>
 #include <pcl/point_cloud.h>
 #include <pcl/features/vfh.h>
-#include <pcl/features/usc.h>
+//#include <pcl/features/usc.h>
 #include <pcl/features/statistical_multiscale_interest_region_extraction.h>
 #include <pcl/features/spin_image.h>
 #include <pcl/features/rsd.h>
@@ -56,8 +56,8 @@ TEST (PCL, FeaturePtr)
   VFHEstimation<PointXYZ, PointNormal, VFHSignature308>::Ptr vfh (new VFHEstimation<PointXYZ, PointNormal, VFHSignature308> ());
   vfh->setViewPoint (1.0f, 1.0f, 1.0f);
 
-  UniqueShapeContext<PointXYZ, SHOT, ReferenceFrame>::Ptr usc (new UniqueShapeContext<PointXYZ, SHOT, ReferenceFrame> ());
-  usc->setAzimuthBins (5);
+//  UniqueShapeContext<PointXYZ, SHOT, ReferenceFrame>::Ptr usc (new UniqueShapeContext<PointXYZ, SHOT, ReferenceFrame> ());
+//  usc->setAzimuthBins (5);
 
   StatisticalMultiscaleInterestRegionExtraction<PointXYZ>::Ptr smire (new StatisticalMultiscaleInterestRegionExtraction<PointXYZ> ());
   smire->getScalesVector ();
