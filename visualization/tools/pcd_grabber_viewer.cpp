@@ -202,7 +202,7 @@ main (int argc, char** argv)
           pcd_files.push_back (itr->path ().string ());
           std::cout << "added: " << itr->path ().string () << std::endl;
 #else
-          pcd_files.push_back (itr->path ());
+          pcd_files.push_back (itr->path ().string ());
           std::cout << "added: " << itr->path () << std::endl;
 #endif
         }
@@ -231,8 +231,10 @@ main (int argc, char** argv)
   std::string mouse_msg_2D ("Mouse coordinates in image viewer");
   std::string key_msg_2D ("Key event for image viewer");
 
+#if !((VTK_MAJOR_VERSION == 5)&&(VTK_MINOR_VERSION <= 4))
   img_viewer->registerMouseCallback (&mouse_callback, static_cast<void*> (&mouse_msg_2D));
   img_viewer->registerKeyboardCallback(&keyboard_callback, static_cast<void*> (&key_msg_2D));
+#endif
 
   grabber->start ();
   while (!cloud_viewer->wasStopped ())
