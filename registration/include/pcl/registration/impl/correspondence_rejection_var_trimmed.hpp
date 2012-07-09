@@ -62,8 +62,8 @@ pcl::registration::CorrespondenceRejectorVarTrimmed::getRemainingCorrespondences
     }
   }
   factor_ = optimizeInlierRatio (dists);
-  nth_element (dists.begin (), dists.begin () + int (dists.size () * factor_), dists.end ());
-  trimmed_distance_ = dists [int (dists.size () * factor_)];
+  nth_element (dists.begin (), dists.begin () + int (double (dists.size ()) * factor_), dists.end ());
+  trimmed_distance_ = dists [int (double (dists.size ()) * factor_)];
 
   unsigned int number_valid_correspondences = 0;
   remaining_correspondences.resize (original_correspondences.size ());
@@ -83,7 +83,7 @@ pcl::registration::CorrespondenceRejectorVarTrimmed::getRemainingCorrespondences
 float
 pcl::registration::CorrespondenceRejectorVarTrimmed::optimizeInlierRatio (std::vector <double>&  dists)
 {
-  unsigned int points_nbr = dists.size ();
+  unsigned int points_nbr = static_cast<unsigned int> (dists.size ());
   std::sort (dists.begin (), dists.end ());
 
   const int min_el = int (floor (min_ratio_ * points_nbr));

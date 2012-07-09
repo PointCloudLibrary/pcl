@@ -96,7 +96,7 @@ namespace pcl
         return (templates_[template_id]);
       }
 
-      inline const size_t
+      inline size_t
       getNumOfTemplates ()
       {
         return (templates_.size ());

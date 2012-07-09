@@ -427,19 +427,19 @@ namespace pcl
       getPercentageExtendGrid ()
       { return percentage_extend_grid_; }
 
-protected:
+    protected:
       /** \brief The data structure storing the 3D grid */
       std::vector<float> grid_;
 
       /** \brief The grid resolution */
       int res_x_, res_y_, res_z_;
 
+      /** \brief Min and max data points. */
+      Eigen::Vector4f min_p_, max_p_;
+
       /** \brief Parameter that defines how much free space should be left inside the grid between
         * the bounding box of the point cloud and the grid limits, as a percentage of the bounding box.*/
       float percentage_extend_grid_;
-
-      /** \brief Min and max data points. */
-      Eigen::Vector4f min_p_, max_p_;
 
       /** \brief The iso level to be extracted. */
       float iso_level_;

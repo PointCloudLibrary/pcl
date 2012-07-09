@@ -551,9 +551,9 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormalMirro
     sumArea<typename IntegralImage2D<float, 3>::ElementType>(start_x, start_y, end_x, end_y, width, height, boost::bind(&IntegralImage2D<float, 3>::getFirstOrderSumSE, &integral_image_XYZ_, _1, _2, _3, _4), tmp_center);
     sumArea<typename IntegralImage2D<float, 3>::SecondOrderType>(start_x, start_y, end_x, end_y, width, height, boost::bind(&IntegralImage2D<float, 3>::getSecondOrderSumSE, &integral_image_XYZ_, _1, _2, _3, _4), so_elements);
 
-    center[0] = tmp_center[0];
-    center[1] = tmp_center[1];
-    center[2] = tmp_center[2];
+    center[0] = float (tmp_center[0]);
+    center[1] = float (tmp_center[1]);
+    center[2] = float (tmp_center[2]);
 
     covariance_matrix.coeffRef (0) = static_cast<float> (so_elements [0]);
     covariance_matrix.coeffRef (1) = covariance_matrix.coeffRef (3) = static_cast<float> (so_elements [1]);
@@ -735,10 +735,10 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormalMirro
     sumArea<float>(start_x_U, start_y_U, end_x_U, end_y_U, width, height, boost::bind(&IntegralImage2D<float, 1>::getFirstOrderSumSE, &integral_image_depth_, _1, _2, _3, _4), mean_U_z);
     sumArea<float>(start_x_D, start_y_D, end_x_D, end_y_D, width, height, boost::bind(&IntegralImage2D<float, 1>::getFirstOrderSumSE, &integral_image_depth_, _1, _2, _3, _4), mean_D_z);
 
-    mean_L_z /= count_L_z;
-    mean_R_z /= count_R_z;
-    mean_U_z /= count_U_z;
-    mean_D_z /= count_D_z;
+    mean_L_z /= float (count_L_z);
+    mean_R_z /= float (count_R_z);
+    mean_U_z /= float (count_U_z);
+    mean_D_z /= float (count_D_z);
 
 
     //PointInT pointL = input_->points[point_index - rect_width_4_ - 1];

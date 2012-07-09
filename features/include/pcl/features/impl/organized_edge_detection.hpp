@@ -58,11 +58,10 @@ pcl::OrganizedEdgeDetection<PointT, PointLT>::compute (pcl::PointCloud<PointLT>&
   labels.points.resize (input_->points.size (), invalid_pt);
   labels.width = input_->width;
   labels.height = input_->height;
-  unsigned int clust_id = 0;
 
-  std::cout << "width: " << labels.width << std::endl;
-  std::cout << "height: " << labels.height << std::endl;
-  std::cout << "[done] OrganizedEdgeDetection::compute ()" << std::endl;
+//  std::cout << "width: " << labels.width << std::endl;
+//  std::cout << "height: " << labels.height << std::endl;
+//  std::cout << "[done] OrganizedEdgeDetection::compute ()" << std::endl;
 
   // fill lookup table for next points to visit
   const int num_of_ngbr = 8;
@@ -83,7 +82,7 @@ pcl::OrganizedEdgeDetection<PointT, PointLT>::compute (pcl::PointCloud<PointLT>&
       if (!pcl_isfinite (input_->points[curr_idx].z))
         continue;
 
-      float curr_depth = fabs (input_->points[curr_idx].z);
+      float curr_depth = fabsf (input_->points[curr_idx].z);
 
       // Calculate depth distances between current point and neighboring points
       std::vector<float> nghr_dist;
@@ -98,7 +97,7 @@ pcl::OrganizedEdgeDetection<PointT, PointLT>::compute (pcl::PointCloud<PointLT>&
           found_invalid_neighbor = true;
           break;
         }
-        nghr_dist[d_idx] = curr_depth - fabs (input_->points[nghr_idx].z);
+        nghr_dist[d_idx] = curr_depth - fabsf (input_->points[nghr_idx].z);
       }
 
       if (!found_invalid_neighbor)
@@ -155,7 +154,7 @@ pcl::OrganizedEdgeDetection<PointT, PointLT>::compute (pcl::PointCloud<PointLT>&
 
           if (pcl_isfinite (input_->points[s_row*int(input_->width)+s_col].z))
           {
-            corr_depth = fabs (input_->points[s_row*int(input_->width)+s_col].z);
+            corr_depth = fabsf (input_->points[s_row*int(input_->width)+s_col].z);
             break;
           }
         }

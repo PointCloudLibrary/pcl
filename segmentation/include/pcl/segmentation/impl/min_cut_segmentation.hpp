@@ -317,7 +317,7 @@ pcl::MinCutSegmentation<PointT>::segmentPoints ()
     binary_potentials_are_valid_ = true;
   }
 
-  IndexMap index_map = boost::get (boost::vertex_index, *graph_);
+  //IndexMap index_map = boost::get (boost::vertex_index, *graph_);
   ResidualCapacityMap residual_capacity = boost::get (boost::edge_residual_capacity, *graph_);
 
   max_flow_ = boost::boykov_kolmogorov_max_flow (*graph_, source_, sink_);
@@ -411,7 +411,8 @@ pcl::MinCutSegmentation<PointT>::calculateUnaryPotential (int point, double& sou
 {
   double min_dist_to_foreground = std::numeric_limits<double>::max ();
   //double min_dist_to_background = std::numeric_limits<double>::max ();
-  double closest_foreground_point[] = {0.0, 0.0};
+  double closest_foreground_point[2];
+  closest_foreground_point[0] = closest_foreground_point[1] = 0;
   //double closest_background_point[] = {0.0, 0.0};
   double initial_point[] = {0.0, 0.0};
 

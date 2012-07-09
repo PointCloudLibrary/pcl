@@ -173,7 +173,7 @@ detectTemplates (const std::vector<DOTModality*> & modalities,
       }
 
       // find templates with response over threshold
-      const float scaling_factor = 1.0f / (nr_template_horizontal_bins * nr_template_vertical_bins);
+      const float scaling_factor = 1.0f / float (nr_template_horizontal_bins * nr_template_vertical_bins);
       for (size_t template_index = 0; template_index < nr_templates; ++template_index)
       {
         const float response = responses[template_index] * scaling_factor;

@@ -62,6 +62,7 @@ namespace pcl
       {
         initPattern ();
       }
+
       /** \brief Destructor. */
       ~AgastHelper7_12 () {}
 
@@ -92,13 +93,16 @@ namespace pcl
 		  }
 
       /** \brief Detects corners. */
-      void detect (const unsigned char* im, std::vector<pcl::PointXY, Eigen::aligned_allocator<pcl::PointXY> > & corners_all) const;
+      void 
+      detect (const unsigned char* im, std::vector<pcl::PointXY, Eigen::aligned_allocator<pcl::PointXY> > & corners_all) const;
 
       /** \brief Computes corner score. */
-      int computeCornerScore (const unsigned char* im) const;
+      int 
+      computeCornerScore (const unsigned char* im) const;
 
       /** \brief Computes corner scores for the specified points. */
-      void computeCornerScores (const unsigned char* im, std::vector<pcl::PointXY, Eigen::aligned_allocator<pcl::PointXY> > & corners_all, std::vector<int> & scores);
+      void 
+      computeCornerScores (const unsigned char* im, std::vector<pcl::PointXY, Eigen::aligned_allocator<pcl::PointXY> > & corners_all, std::vector<int> & scores);
 
     private:
       /** \brief Width of the image to process. */
@@ -147,7 +151,6 @@ namespace pcl
       using Keypoint<PointInT, pcl::PointXY>::name_;
       using Keypoint<PointInT, pcl::PointXY>::input_;
       using Keypoint<PointInT, pcl::PointXY>::indices_;
-
 
       /** \brief Constructor */
       AgastKeypoint2D ()

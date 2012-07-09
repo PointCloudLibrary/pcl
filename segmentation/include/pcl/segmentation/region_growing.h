@@ -299,7 +299,7 @@ namespace pcl
       std::vector<int> num_pts_in_segment_;
 
       /** \brief Contains neighbours of each point. */
-      std::vector< std::vector<int> > point_neighbours_;
+      std::vector<std::vector<int> > point_neighbours_;
 
       /** \brief Stores the number of segments. */
       int number_of_segments_;

@@ -183,10 +183,10 @@ namespace pcl
       static void
       convertTransform (const Eigen::Matrix<double, 6, 1> &x, Eigen::Affine3f &trans)
       {
-        trans = Eigen::Translation<float, 3>(x (0), x (1), x (2)) *
-                Eigen::AngleAxis<float>(x (3), Eigen::Vector3f::UnitX ()) *
-                Eigen::AngleAxis<float>(x (4), Eigen::Vector3f::UnitY ()) *
-                Eigen::AngleAxis<float>(x (5), Eigen::Vector3f::UnitZ ());
+        trans = Eigen::Translation<float, 3>(float (x (0)), float (x (1)), float (x (2))) *
+                Eigen::AngleAxis<float>(float (x (3)), Eigen::Vector3f::UnitX ()) *
+                Eigen::AngleAxis<float>(float (x (4)), Eigen::Vector3f::UnitY ()) *
+                Eigen::AngleAxis<float>(float (x (5)), Eigen::Vector3f::UnitZ ());
       }
 
       /** \brief Convert 6 element transformation vector to transformation matrix.

@@ -1,7 +1,10 @@
 /*
  * Software License Agreement (BSD License)
  *
+ *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -14,7 +17,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -56,7 +59,6 @@ pcl::MarchingCubesRBF<PointNT>::~MarchingCubesRBF ()
 {
 }
 
-
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointNT> void
 pcl::MarchingCubesRBF<PointNT>::voxelizeData ()
@@ -65,7 +67,6 @@ pcl::MarchingCubesRBF<PointNT>::voxelizeData ()
   unsigned int N = static_cast<unsigned int> (input_->size ());
   Eigen::MatrixXd M (2*N, 2*N),
                   d (2*N, 1);
-
 
   for (unsigned int row_i = 0; row_i < 2*N; ++row_i)
   {
@@ -98,24 +99,22 @@ pcl::MarchingCubesRBF<PointNT>::voxelizeData ()
     weights[i + N] = w (i + N, 0);
   }
 
-
-
   for (int x = 0; x < res_x_; ++x)
     for (int y = 0; y < res_y_; ++y)
       for (int z = 0; z < res_z_; ++z)
       {
         Eigen::Vector3d point;
-        point[0] = min_p_[0] + (max_p_[0] - min_p_[0]) * x / res_x_;
-        point[1] = min_p_[1] + (max_p_[1] - min_p_[1]) * y / res_y_;
-        point[2] = min_p_[2] + (max_p_[2] - min_p_[2]) * z / res_z_;
+        point[0] = min_p_[0] + (max_p_[0] - min_p_[0]) * float (x) / float (res_x_);
+        point[1] = min_p_[1] + (max_p_[1] - min_p_[1]) * float (y) / float (res_y_);
+        point[2] = min_p_[2] + (max_p_[2] - min_p_[2]) * float (z) / float (res_z_);
 
-        double f = 0.0f;
+        double f = 0.0;
         std::vector<double>::const_iterator w_it (weights.begin());
         for (std::vector<Eigen::Vector3d>::const_iterator c_it = centers.begin ();
              c_it != centers.end (); ++c_it, ++w_it)
           f += *w_it * kernel (*c_it, point);
 
-        grid_[x * res_y_*res_z_ + y * res_z_ + z] = f;
+        grid_[x * res_y_*res_z_ + y * res_z_ + z] = float (f);
       }
 }
 
@@ -123,11 +122,9 @@ pcl::MarchingCubesRBF<PointNT>::voxelizeData ()
 template <typename PointNT> double
 pcl::MarchingCubesRBF<PointNT>::kernel (Eigen::Vector3d c, Eigen::Vector3d x)
 {
-  double r = (x - c).norm();
-  return r*r*r;
+  double r = (x - c).norm ();
+  return (r * r * r);
 }
-
-
 
 #define PCL_INSTANTIATE_MarchingCubesRBF(T) template class PCL_EXPORTS pcl::MarchingCubesRBF<T>;
 

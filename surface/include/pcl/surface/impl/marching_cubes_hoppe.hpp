@@ -68,9 +68,9 @@ pcl::MarchingCubesHoppe<PointNT>::voxelizeData ()
         std::vector<float> nn_sqr_dists;
 
         Eigen::Vector3f point;
-        point[0] = min_p_[0] + (max_p_[0] - min_p_[0]) * x / res_x_;
-        point[1] = min_p_[1] + (max_p_[1] - min_p_[1]) * y / res_y_;
-        point[2] = min_p_[2] + (max_p_[2] - min_p_[2]) * z / res_z_;
+        point[0] = min_p_[0] + (max_p_[0] - min_p_[0]) * float (x) / float (res_x_);
+        point[1] = min_p_[1] + (max_p_[1] - min_p_[1]) * float (y) / float (res_y_);
+        point[2] = min_p_[2] + (max_p_[2] - min_p_[2]) * float (z) / float (res_z_);
 
         PointNT p;
         p.getVector3fMap () = point;

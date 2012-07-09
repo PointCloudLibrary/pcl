@@ -71,8 +71,8 @@ pcl::AgastHelper7_12::applyNonMaxSuppression (
 	std::vector<int>::iterator nmsFlags_p;
 	std::vector<pcl::PointXY, Eigen::aligned_allocator<pcl::PointXY> >::iterator currCorner_nms;
 	int j;
-	int numCorners_all=corners_all.size();
-	int nMaxCorners=corners_nms.capacity();
+	int numCorners_all = int (corners_all.size ());
+	int nMaxCorners = int (corners_nms.capacity ());
 
 	currCorner=corners_all.begin();
 
@@ -116,8 +116,8 @@ pcl::AgastHelper7_12::applyNonMaxSuppression (
 		}
 		if(next_lastRow!=currCorner->y)
 		{
-			next_lastRow=currCorner->y;
-			next_lastRowCorner_ind=currCorner_ind;
+			next_lastRow = int (currCorner->y);
+			next_lastRowCorner_ind = currCorner_ind;
 		}
 		if(lastRow+1==currCorner->y)
 		{
@@ -181,11 +181,11 @@ pcl::AgastHelper7_12::applyNonMaxSuppression (
 	}
 
 	//collecting maximum corners
-	corners_nms.resize(0);
-	for(currCorner_ind=0; currCorner_ind<numCorners_all; currCorner_ind++)
+	corners_nms.resize (0);
+	for (currCorner_ind = 0; currCorner_ind < numCorners_all; currCorner_ind++)
 	{
 		if(*nmsFlags_p++ == -1)
-			corners_nms.push_back(corners_all[currCorner_ind]);
+			corners_nms.push_back (corners_all[currCorner_ind]);
 	}
 
   output.height = 1;
@@ -198,33 +198,33 @@ void
 pcl::AgastHelper7_12::detect (const unsigned char* im, std::vector<pcl::PointXY, Eigen::aligned_allocator<pcl::PointXY> > & corners_all) const
 {
 	int total=0;
-	int nExpectedCorners=corners_all.capacity();
+	int nExpectedCorners = int (corners_all.capacity ());
 	pcl::PointXY h;
 	register int x, y;
-	register int widthB=width_ - 3; //2, +1 due to faster test x>widthB
-	register int heightB=height_ - 2;
+	register int widthB  = int (width_) - 3; //2, +1 due to faster test x>widthB
+	register int heightB = int (height_) - 2;
 	register int_fast16_t offset0, offset1, offset2, offset3, offset4, offset5, offset6, offset7, offset8, offset9, offset10, offset11;
 	register int width;
 
-	corners_all.resize(0);
+	corners_all.resize (0);
 
-	offset0=s_offset0;
-	offset1=s_offset1;
-	offset2=s_offset2;
-	offset3=s_offset3;
-	offset4=s_offset4;
-	offset5=s_offset5;
-	offset6=s_offset6;
-	offset7=s_offset7;
-	offset8=s_offset8;
-	offset9=s_offset9;
-	offset10=s_offset10;
-	offset11=s_offset11;
-	width=width_;
+	offset0  = s_offset0;
+	offset1  = s_offset1;
+	offset2  = s_offset2;
+	offset3  = s_offset3;
+	offset4  = s_offset4;
+	offset5  = s_offset5;
+	offset6  = s_offset6;
+	offset7  = s_offset7;
+	offset8  = s_offset8;
+	offset9  = s_offset9;
+	offset10 = s_offset10;
+	offset11 = s_offset11;
+	width = int (width_);
 
-	for(y=2; y < heightB; y++)
+	for (y = 2; y < heightB; y++)
 	{										
-		x=1;
+		x = 1;
 		while(1)							
 		{									
 homogeneous:
@@ -235,8 +235,8 @@ homogeneous:
 			else
 			{
 				register const unsigned char* const p = im + y*width + x;
-				register const int cb = *p + threshold_;
-				register const int c_b = *p - threshold_;
+				register const int cb = *p + int (threshold_);
+				register const int c_b = *p - int (threshold_);
 				if(p[offset0] > cb)
 				  if(p[offset2] > cb)
 					if(p[offset5] > cb)
@@ -1273,8 +1273,8 @@ structured:
 			else
 			{
 				register const unsigned char* const p = im + y*width + x;
-				register const int cb = *p + threshold_;
-				register const int c_b = *p - threshold_;
+				register const int cb = *p + int (threshold_);
+				register const int c_b = *p - int (threshold_);
 				if(p[offset0] > cb)
 				  if(p[offset2] > cb)
 					if(p[offset5] > cb)
@@ -2242,8 +2242,8 @@ success_homogeneous:
 					corners_all.reserve(nExpectedCorners);
 				}
 			}
-			h.x=x;
-			h.y=y;
+			h.x = float (x);
+			h.y = float (y);
 			corners_all.push_back(h);
 			total++;						
 			goto homogeneous;				
@@ -2261,9 +2261,9 @@ success_structured:
 					corners_all.reserve(nExpectedCorners);
 				}
 			}
-			h.x=x;
-			h.y=y;
-			corners_all.push_back(h);
+			h.x = float (x);
+			h.y = float (y);
+			corners_all.push_back (h);
 			total++;						
 			goto structured;				
 		}									
@@ -2275,9 +2275,9 @@ int
 pcl::AgastHelper7_12::computeCornerScore (
   const unsigned char* p) const
 {
-    int bmin = threshold_;
-    int bmax = 255;
-    int b_test = (bmax + bmin)/2;
+  int bmin = int (threshold_);
+  int bmax = 255;
+  int b_test = (bmax + bmin)/2;
 
 	register int_fast16_t offset0=s_offset0;
 	register int_fast16_t offset1=s_offset1;
@@ -7912,28 +7912,28 @@ pcl::AgastHelper7_12::computeCornerScores (
   std::vector<pcl::PointXY, Eigen::aligned_allocator<pcl::PointXY> > & corners_all, 
   std::vector<int> & scores)
 {
-	unsigned int n=0;
-  unsigned int num_corners=corners_all.size();
+	unsigned int n = 0;
+  unsigned int num_corners = static_cast<unsigned int> (corners_all.size ());
 
-	if(num_corners > scores.capacity())
+	if (num_corners > scores.capacity ())
 	{
-		if(scores.capacity()==0)
+		if (scores.capacity () == 0)
 		{
-			scores.reserve(512 > num_corners ? 512 : num_corners);
+			scores.reserve (512 > num_corners ? 512 : num_corners);
 		}
 		else
 		{
-			unsigned int nScores = scores.capacity()*2;
-			if(num_corners > nScores)
+			unsigned int nScores = static_cast<unsigned int> (scores.capacity ()) * 2;
+			if (num_corners > nScores)
 				nScores = num_corners;
-			scores.reserve(nScores);
+			scores.reserve (nScores);
 		}
 	}
+  scores.resize (num_corners);
 
-    scores.resize(num_corners);
-
-    for(; n < num_corners; n++)
-        scores[n] = computeCornerScore(im + static_cast<size_t> (corners_all[n].y)*width_ + static_cast<size_t> (corners_all[n].x));
+  for (; n < num_corners; n++)
+    scores[n] = computeCornerScore (im + static_cast<size_t> (corners_all[n].y) * width_ + static_cast<size_t> (corners_all[n].x));
 }
 
 // Instantiations of specific point types
+

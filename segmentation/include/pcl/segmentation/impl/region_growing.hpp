@@ -62,6 +62,7 @@ pcl::comparePair (std::pair<float, int> i, std::pair<float, int> j)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 pcl::RegionGrowing<PointT>::RegionGrowing () :
+  normal_flag_ (true),
   curvature_flag_ (true),
   smooth_mode_ (true),
   residual_flag_ (false),
@@ -69,15 +70,14 @@ pcl::RegionGrowing<PointT>::RegionGrowing () :
   residual_threshold_ (0.05f),
   curvature_threshold_ (0.05f),
   neighbour_number_ (30),
-  normal_flag_ (true),
-  number_of_segments_ (0),
+  search_ (),
+  normals_ (),
+  cloud_for_segmentation_ (),
   segments_ (0),
   point_labels_ (0),
   num_pts_in_segment_ (0),
   point_neighbours_ (0),
-  search_ (),
-  normals_ (),
-  cloud_for_segmentation_ ()
+  number_of_segments_ (0)
 {
 }
 
@@ -586,7 +586,7 @@ pcl::RegionGrowing<PointT>::validatePoint (int initial_seed, int point, int nghb
 {
   is_a_seed = true;
 
-  float cosine_threshold = cos (theta_threshold_);
+  float cosine_threshold = cosf (theta_threshold_);
   Eigen::Map<Eigen::Vector3f> initial_point (static_cast<float*> (cloud_for_segmentation_->points[point].data));
   Eigen::Map<Eigen::Vector3f> initial_normal (static_cast<float*> (normals_->points[point].normal));
 
@@ -594,7 +594,7 @@ pcl::RegionGrowing<PointT>::validatePoint (int initial_seed, int point, int nghb
   if (smooth_mode_ == true)
   {
     Eigen::Map<Eigen::Vector3f> nghbr_normal (static_cast<float*> (normals_->points[nghbr].normal));
-    float dot_product = fabs ( nghbr_normal.dot (initial_normal) );
+    float dot_product = fabsf (nghbr_normal.dot (initial_normal));
     if (dot_product < cosine_threshold)
     {
       return (false);
@@ -604,7 +604,7 @@ pcl::RegionGrowing<PointT>::validatePoint (int initial_seed, int point, int nghb
   {
     Eigen::Map<Eigen::Vector3f> nghbr_normal (static_cast<float*> (normals_->points[nghbr].normal));
     Eigen::Map<Eigen::Vector3f> initial_seed_normal (static_cast<float*> (normals_->points[initial_seed].normal));
-    float dot_product = fabsf ( nghbr_normal.dot (initial_seed_normal) );
+    float dot_product = fabsf (nghbr_normal.dot (initial_seed_normal));
     if (dot_product < cosine_threshold)
       return (false);
   }
@@ -616,8 +616,8 @@ pcl::RegionGrowing<PointT>::validatePoint (int initial_seed, int point, int nghb
   }
 
   // check the residual if needed
-  Eigen::Map<Eigen::Vector3f> nghbr_point ( (float*)cloud_for_segmentation_->points[nghbr].data );
-  float residual = fabs ( initial_normal.dot (initial_point - nghbr_point) );
+  Eigen::Map<Eigen::Vector3f> nghbr_point (static_cast<float*> (cloud_for_segmentation_->points[nghbr].data));
+  float residual = fabsf (initial_normal.dot (initial_point - nghbr_point));
   if (residual_flag_ && residual > residual_threshold_)
     is_a_seed = false;
 

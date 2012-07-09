@@ -86,9 +86,9 @@ namespace pcl
     if (in.r == out.v)
       out.h = static_cast<float> (in.g - in.b) / (out.v - min);
     else if (in.g == out.v)
-      out.h = static_cast<float> (2 + (in.b - in.r) / (out.v - min));
+      out.h = static_cast<float> (2.0f + float (in.b - in.r) / float (out.v - min));
     else 
-      out.h = static_cast<float> (4 + (in.r - in.g) / (out.v - min));
+      out.h = static_cast<float> (4.0f + float (in.r - in.g) / float (out.v - min));
     out.h *= 60;
     if (out.h < 0)
       out.h += 360;

@@ -70,7 +70,7 @@ namespace pcl
 
       /** \brief Constructor for OrganizedEdgeDetection */
       OrganizedEdgeDetection ()
-        : th_depth_discon_(0.02), max_search_neighbors_(50)
+        : th_depth_discon_ (0.02f), max_search_neighbors_ (50)
       {
       }
 

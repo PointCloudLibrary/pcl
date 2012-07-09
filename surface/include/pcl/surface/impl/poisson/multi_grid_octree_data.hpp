@@ -315,7 +315,7 @@ namespace pcl
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
-    template<int Degree> void 
+    template <int Degree> void 
     Octree<Degree>::NonLinearGetSampleDepthAndWeight (TreeOctNode* node,
                                                       const Point3D<Real>& position,
                                                       const Real& samplesPerNode,
@@ -336,11 +336,10 @@ namespace pcl
           oldAlpha = newAlpha;
           newAlpha = Real (1.0) / NonLinearGetSampleWeight (temp, position);
         }
-        depth = Real (temp->depth () + log (newAlpha / (samplesPerNode + 1)) / log (newAlpha / oldAlpha));
+        depth = Real (Real (temp->depth ()) + log (newAlpha / (samplesPerNode + 1.0f)) / log (newAlpha / oldAlpha));
       }
       weight = Real (pow (double (1 << (DIMENSION - 1)), -double (depth)));
     }
-
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<int Degree> Real 
