@@ -1,8 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2011 2011 Willow Garage, Inc.
- *    Suat Gedikli <gedikli@willowgarage.com>
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2011, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -16,7 +17,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -37,16 +38,15 @@
 #include <pcl/pcl_config.h>
 #ifdef HAVE_OPENNI
 
+#ifdef __GNUC__
+#pragma GCC diagnostic ignored "-Wold-style-cast"
+#endif
+
 #include <pcl/io/openni_camera/openni_device_oni.h>
 #include <pcl/io/openni_camera/openni_image_rgb24.h>
 
-using namespace std;
-using namespace boost;
-
-namespace openni_wrapper
-{
-
-DeviceONI::DeviceONI(xn::Context& context, const std::string& file_name, bool repeat, bool streaming)
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+openni_wrapper::DeviceONI::DeviceONI(xn::Context& context, const std::string& file_name, bool repeat, bool streaming)
   : OpenNIDevice(context)
   , streaming_ (streaming)
   , depth_stream_running_ (false)
@@ -97,7 +97,8 @@ DeviceONI::DeviceONI(xn::Context& context, const std::string& file_name, bool re
     player_thread_ = boost::thread (&DeviceONI::PlayerThreadFunction, this);
 }
 
-DeviceONI::~DeviceONI() throw ()
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+openni_wrapper::DeviceONI::~DeviceONI() throw ()
 {
   if (streaming_)
   {
@@ -106,112 +107,144 @@ DeviceONI::~DeviceONI() throw ()
   }
 }
 
-void DeviceONI::startImageStream ()
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void 
+openni_wrapper::DeviceONI::startImageStream ()
 {
   if (hasImageStream() && !image_stream_running_)
     image_stream_running_ = true;
 }
 
-void DeviceONI::stopImageStream ()
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void 
+openni_wrapper::DeviceONI::stopImageStream ()
 {
   if (hasImageStream() && image_stream_running_)
     image_stream_running_ = false;
 }
 
-void DeviceONI::startDepthStream ()
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void 
+openni_wrapper::DeviceONI::startDepthStream ()
 {
   if (hasDepthStream() && !depth_stream_running_)
     depth_stream_running_ = true;
 }
 
-void DeviceONI::stopDepthStream ()
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void 
+openni_wrapper::DeviceONI::stopDepthStream ()
 {
   if (hasDepthStream() && depth_stream_running_)
     depth_stream_running_ = false;
 }
 
-void DeviceONI::startIRStream ()
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void 
+openni_wrapper::DeviceONI::startIRStream ()
 {
   if (hasIRStream() && !ir_stream_running_)
     ir_stream_running_ = true;
 }
 
-void DeviceONI::stopIRStream ()
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void 
+openni_wrapper::DeviceONI::stopIRStream ()
 {
   if (hasIRStream() && ir_stream_running_)
     ir_stream_running_ = false;
 }
 
-bool DeviceONI::isImageStreamRunning () const throw ()
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+bool 
+openni_wrapper::DeviceONI::isImageStreamRunning () const throw ()
 {
- return image_stream_running_;
+ return (image_stream_running_);
 }
 
-bool DeviceONI::isDepthStreamRunning () const throw ()
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+bool 
+openni_wrapper::DeviceONI::isDepthStreamRunning () const throw ()
 {
-  return depth_stream_running_;
+  return (depth_stream_running_);
 }
 
-bool DeviceONI::isIRStreamRunning () const throw ()
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+bool 
+openni_wrapper::DeviceONI::isIRStreamRunning () const throw ()
 {
-  return ir_stream_running_;
+  return (ir_stream_running_);
 }
 
-bool DeviceONI::trigger ()
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+bool 
+openni_wrapper::DeviceONI::trigger ()
 {
-  if (player_.IsEOF())
-    return false;
+  if (player_.IsEOF ())
+    return (false);
 
   if (streaming_)
     THROW_OPENNI_EXCEPTION ("Virtual device is in streaming mode. Trigger not available.");
 
-  player_.ReadNext();
-  return true;
+  player_.ReadNext ();
+  return (true);
 }
 
-bool DeviceONI::isStreaming () const throw ()
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+bool 
+openni_wrapper::DeviceONI::isStreaming () const throw ()
 {
-  return streaming_;
+  return (streaming_);
 }
 
-void DeviceONI::PlayerThreadFunction()
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void 
+openni_wrapper::DeviceONI::PlayerThreadFunction ()
 {
   quit_ = false;
   while (!quit_)
-    player_.ReadNext();
+    player_.ReadNext ();
 }
 
-void __stdcall DeviceONI::NewONIDepthDataAvailable (xn::ProductionNode&, void* cookie) throw ()
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void __stdcall 
+openni_wrapper::DeviceONI::NewONIDepthDataAvailable (xn::ProductionNode&, void* cookie) throw ()
 {
   DeviceONI* device = reinterpret_cast<DeviceONI*>(cookie);
   if (device->depth_stream_running_)
     device->depth_condition_.notify_all ();
 }
 
-void __stdcall DeviceONI::NewONIImageDataAvailable (xn::ProductionNode&, void* cookie) throw ()
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void __stdcall 
+openni_wrapper::DeviceONI::NewONIImageDataAvailable (xn::ProductionNode&, void* cookie) throw ()
 {
-  DeviceONI* device = reinterpret_cast<DeviceONI*>(cookie);
+  DeviceONI* device = reinterpret_cast<DeviceONI*> (cookie);
   if (device->image_stream_running_)
     device->image_condition_.notify_all ();
 }
 
-void __stdcall DeviceONI::NewONIIRDataAvailable (xn::ProductionNode&, void* cookie) throw ()
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void __stdcall 
+openni_wrapper::DeviceONI::NewONIIRDataAvailable (xn::ProductionNode&, void* cookie) throw ()
 {
-  DeviceONI* device = reinterpret_cast<DeviceONI*>(cookie);
+  DeviceONI* device = reinterpret_cast<DeviceONI*> (cookie);
   if (device->ir_stream_running_)
     device->ir_condition_.notify_all ();
 }
 
-boost::shared_ptr<Image> DeviceONI::getCurrentImage(boost::shared_ptr<xn::ImageMetaData> image_meta_data) const throw ()
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+boost::shared_ptr<openni_wrapper::Image> 
+openni_wrapper::DeviceONI::getCurrentImage(boost::shared_ptr<xn::ImageMetaData> image_meta_data) const throw ()
 {
-  return boost::shared_ptr<Image > (new ImageRGB24(image_meta_data));
+  return (boost::shared_ptr<openni_wrapper::Image> (new openni_wrapper::ImageRGB24 (image_meta_data)));
 }
 
-bool DeviceONI::isImageResizeSupported(unsigned input_width, unsigned input_height, unsigned output_width, unsigned output_height) const throw ()
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+bool 
+openni_wrapper::DeviceONI::isImageResizeSupported(unsigned input_width, unsigned input_height, unsigned output_width, unsigned output_height) const throw ()
 {
-  return ImageRGB24::resizingSupported (input_width, input_height, output_width, output_height);
-}
-
+  return (openni_wrapper::ImageRGB24::resizingSupported (input_width, input_height, output_width, output_height));
 }
 
 #endif //HAVE_OPENNI

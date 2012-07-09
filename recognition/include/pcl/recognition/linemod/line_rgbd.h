@@ -220,6 +220,7 @@ namespace pcl
 
         // TODO: compute transform from detection
         // TODO: transform template points
+        return (0);
       }
 
 
@@ -237,6 +238,7 @@ namespace pcl
 
         // TODO: compute transform from detection
         // TODO: transform template points
+        return (0);
       }
 
       /** \brief Refines the found detections along the depth. */

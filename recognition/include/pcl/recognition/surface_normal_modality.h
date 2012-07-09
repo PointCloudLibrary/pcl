@@ -924,7 +924,7 @@ pcl::SurfaceNormalModality<PointInT>::computeAndQuantizeSurfaceNormals2 ()
           //int l_val3 = static_cast<int>(l_nz * GRANULARITY + GRANULARITY);
 
           //*lp_norm = NORMAL_LUT[l_val3][l_val2][l_val1];
-          *lp_norm = 0x1 << bin_index;
+          *lp_norm = static_cast<unsigned char> (0x1 << bin_index);
         }
         else
         {
@@ -1241,10 +1241,9 @@ pcl::SurfaceNormalModality<PointInT>::extractFeatures (const MaskMap & mask,
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT> void
-pcl::SurfaceNormalModality<PointInT>::extractAllFeatures (const MaskMap & mask,
-                                                       const size_t nr_features,
-                                                       const size_t modality_index,
-                                                       std::vector<QuantizedMultiModFeature> & features) const
+pcl::SurfaceNormalModality<PointInT>::extractAllFeatures (
+    const MaskMap & mask, const size_t, const size_t modality_index,
+    std::vector<QuantizedMultiModFeature> & features) const
 {
   const size_t width = mask.getWidth ();
   const size_t height = mask.getHeight ();

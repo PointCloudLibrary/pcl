@@ -1,8 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2011 2011 Willow Garage, Inc.
- *    Suat Gedikli <gedikli@willowgarage.com>
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2011, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -16,7 +17,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -37,16 +38,18 @@
 #include <pcl/pcl_config.h>
 #ifdef HAVE_OPENNI
 
+#ifdef __GNUC__
+#pragma GCC diagnostic ignored "-Wold-style-cast"
+#endif
+
 #include <pcl/io/openni_camera/openni_device_kinect.h>
 #include <pcl/io/openni_camera/openni_image_bayer_grbg.h>
-
-using namespace std;
-using namespace boost;
 
 namespace openni_wrapper
 {
 
-DeviceKinect::DeviceKinect (xn::Context& context, const xn::NodeInfo& device_node, const xn::NodeInfo& image_node, const xn::NodeInfo& depth_node, const xn::NodeInfo& ir_node)
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+openni_wrapper::DeviceKinect::DeviceKinect (xn::Context& context, const xn::NodeInfo& device_node, const xn::NodeInfo& image_node, const xn::NodeInfo& depth_node, const xn::NodeInfo& ir_node)
 : OpenNIDevice (context, device_node, image_node, depth_node, ir_node)
 , debayering_method_ (ImageBayerGRBG::EdgeAwareWeighted)
 {
@@ -59,7 +62,7 @@ DeviceKinect::DeviceKinect (xn::Context& context, const xn::NodeInfo& device_nod
   // device specific initialization
   XnStatus status;
 
-  unique_lock<mutex> image_lock(image_mutex_);
+  boost::unique_lock<boost::mutex> image_lock (image_mutex_);
   // set kinect specific format. Thus input = uncompressed Bayer, output = grayscale = bypass = bayer
   status = image_generator_.SetIntProperty ("InputFormat", 6);
   if (status != XN_STATUS_OK)
@@ -71,14 +74,15 @@ DeviceKinect::DeviceKinect (xn::Context& context, const xn::NodeInfo& device_nod
     THROW_OPENNI_EXCEPTION ("Failed to set image pixel format to 8bit-grayscale. Reason: %s", xnGetStatusString (status));
   image_lock.unlock ();
 
-  lock_guard<mutex> depth_lock(depth_mutex_);
+  boost::lock_guard<boost::mutex> depth_lock (depth_mutex_);
   // RegistrationType should be 2 (software) for Kinect, 1 (hardware) for PS
   status = depth_generator_.SetIntProperty ("RegistrationType", 2);
   if (status != XN_STATUS_OK)
     THROW_OPENNI_EXCEPTION ("Error setting the registration type. Reason: %s", xnGetStatusString (status));
 }
 
-DeviceKinect::~DeviceKinect () throw ()
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+openni_wrapper::DeviceKinect::~DeviceKinect () throw ()
 {
   depth_mutex_.lock ();
   depth_generator_.UnregisterFromNewDataAvailable (depth_callback_handle_);
@@ -89,12 +93,16 @@ DeviceKinect::~DeviceKinect () throw ()
   image_mutex_.unlock ();
 }
 
-bool DeviceKinect::isImageResizeSupported (unsigned input_width, unsigned input_height, unsigned output_width, unsigned output_height) const throw ()
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+bool 
+openni_wrapper::DeviceKinect::isImageResizeSupported (unsigned input_width, unsigned input_height, unsigned output_width, unsigned output_height) const throw ()
 {
-  return ImageBayerGRBG::resizingSupported (input_width, input_height, output_width, output_height);
+  return (ImageBayerGRBG::resizingSupported (input_width, input_height, output_width, output_height));
 }
 
-void DeviceKinect::enumAvailableModes () throw ()
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void 
+openni_wrapper::DeviceKinect::enumAvailableModes () throw ()
 {
   XnMapOutputMode output_mode;
   available_image_modes_.clear();
@@ -112,9 +120,11 @@ void DeviceKinect::enumAvailableModes () throw ()
   available_image_modes_.push_back (output_mode);
 }
 
-boost::shared_ptr<Image> DeviceKinect::getCurrentImage (boost::shared_ptr<xn::ImageMetaData> image_data) const throw ()
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+boost::shared_ptr<openni_wrapper::Image> 
+openni_wrapper::DeviceKinect::getCurrentImage (boost::shared_ptr<xn::ImageMetaData> image_data) const throw ()
 {
-  return boost::shared_ptr<Image> (new ImageBayerGRBG (image_data, debayering_method_));
+  return (boost::shared_ptr<Image> (new ImageBayerGRBG (image_data, debayering_method_)));
 }
 
 }//namespace

@@ -733,8 +733,8 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::removeOverlappingDetections ()
       average_center_z += p_center_z * weight;
       weight_sum += weight;
 
-      average_region_x += detections_[detection_id].region.x * weight;
-      average_region_y += detections_[detection_id].region.y * weight;
+      average_region_x += float (detections_[detection_id].region.x) * weight;
+      average_region_y += float (detections_[detection_id].region.y) * weight;
     }
 
     typename LineRGBD<PointXYZT, PointRGBT>::Detection detection;
@@ -755,8 +755,8 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::removeOverlappingDetections ()
     detection.bounding_box.height = best_detection_bb_height;
     detection.bounding_box.depth  = best_detection_bb_depth;
 
-    detection.region.x = average_region_x * inv_weight_sum;
-    detection.region.y = average_region_y * inv_weight_sum;
+    detection.region.x = int (average_region_x * inv_weight_sum);
+    detection.region.y = int (average_region_y * inv_weight_sum);
     detection.region.width = detections_[best_detection_id].region.width;
     detection.region.height = detections_[best_detection_id].region.height;
 
