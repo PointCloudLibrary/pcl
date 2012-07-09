@@ -57,9 +57,16 @@
 openni_wrapper::OpenNIDevice::OpenNIDevice (
     xn::Context& context, 
     const xn::NodeInfo& device_node, 
+#ifdef __APPLE__
+    const xn::NodeInfo&, 
+    const xn::NodeInfo&, 
+    const xn::NodeInfo&
+#else
     const xn::NodeInfo& image_node, 
     const xn::NodeInfo& depth_node, 
-    const xn::NodeInfo& ir_node) 
+    const xn::NodeInfo& ir_node
+#endif
+  )
   : image_callback_ (),
     depth_callback_ (),
     ir_callback_ (),
@@ -91,7 +98,6 @@ openni_wrapper::OpenNIDevice::OpenNIDevice (
 #ifdef __APPLE__
   XnStatus rc;
 
-  image_node = image_node; depth_node = depth_node; ir_node = ir_node;
   xn::EnumerationErrors errors;
   rc = context_.InitFromXmlFile ("/etc/openni/SamplesConfig.xml", &errors);
   if (rc == XN_STATUS_NO_NODE_PRESENT)
@@ -166,7 +172,15 @@ openni_wrapper::OpenNIDevice::OpenNIDevice (
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-openni_wrapper::OpenNIDevice::OpenNIDevice (xn::Context& context, const xn::NodeInfo& device_node, const xn::NodeInfo& depth_node, const xn::NodeInfo& ir_node)
+openni_wrapper::OpenNIDevice::OpenNIDevice (xn::Context& context, const xn::NodeInfo& device_node, 
+#ifdef __APPLE__
+    const xn::NodeInfo&, 
+    const xn::NodeInfo&
+#else
+    const xn::NodeInfo& depth_node, 
+    const xn::NodeInfo& ir_node
+#endif
+    )
   : image_callback_ (),
     depth_callback_ (),
     ir_callback_ (),
