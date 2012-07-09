@@ -53,7 +53,7 @@ pcl::GaussianKernel::compute (float sigma,
     kernel[k] = kernel[j] = expf (-static_cast<float>(i) * static_cast<float>(i) * sigma_sqr);
   kernel[hw] = 1;
   unsigned g_width = kernel_width;
-  for (unsigned i = 0; fabs (kernel[i]/max_gauss) < factor; i++, g_width-= 2);
+  for (unsigned i = 0; fabs (kernel[i]/max_gauss) < factor; i++, g_width-= 2) ;
   if (g_width == kernel_width)
   { 
     PCL_THROW_EXCEPTION (pcl::KernelWidthTooSmallException,
@@ -98,8 +98,8 @@ pcl::GaussianKernel::compute (float sigma,
   // Compute kernel and derivative true width
   unsigned g_width = kernel_width;
   unsigned d_width = kernel_width;
-  for (unsigned i = 0; fabs (derivative[i]/max_deriv) < factor; i++, d_width-= 2);
-  for (unsigned i = 0; fabs (kernel[i]/max_gauss) < factor; i++, g_width-= 2);
+  for (unsigned i = 0; fabs (derivative[i]/max_deriv) < factor; i++, d_width-= 2) ;
+  for (unsigned i = 0; fabs (kernel[i]/max_gauss) < factor; i++, g_width-= 2) ;
   if (g_width == kernel_width || d_width == kernel_width)
   { 
     PCL_THROW_EXCEPTION (KernelWidthTooSmallException,
