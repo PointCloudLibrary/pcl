@@ -40,6 +40,10 @@
 #ifndef PCL_ROS_CONVERSIONS_H_ 
 #define PCL_ROS_CONVERSIONS_H_
 
+#ifdef __GNUC__
+#pragma GCC system_header 
+#endif
+
 #include <sensor_msgs/PointField.h>
 #include <sensor_msgs/PointCloud2.h>
 #include <sensor_msgs/Image.h>

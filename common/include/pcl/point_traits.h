@@ -40,27 +40,15 @@
 #ifndef PCL_POINT_TRAITS_H_
 #define PCL_POINT_TRAITS_H_
 
+#ifdef __GNUC__
+#pragma GCC system_header 
+#endif
+
 #include <sensor_msgs/PointField.h>
 #include <boost/type_traits/remove_all_extents.hpp>
 #include <boost/type_traits/is_same.hpp>
 #include <boost/mpl/assert.hpp>
 #include <boost/mpl/bool.hpp>
-
-// We're doing a lot of black magic with Boost here, so disable warnings in Maintainer mode, as we will never
-// be able to fix them anyway
-#ifdef BUILD_Maintainer
-#  if defined __GNUC__
-#    include <features.h>
-#    if __GNUC_PREREQ(4, 3)
-#      pragma GCC diagnostic ignored "-Weffc++"
-#      pragma GCC diagnostic ignored "-pedantic"
-#    else
-#      pragma GCC system_header
-#    endif
-#  elif defined _MSC_VER
-#    pragma warning(push, 1)
-#  endif
-#endif
 
 namespace pcl
 {
@@ -283,16 +271,5 @@ namespace pcl
       const InT &value_;
   };
 }
-
-#ifdef BUILD_Maintainer
-#  if defined __GNUC__
-#    if __GNUC_PREREQ(4, 3)
-#      pragma GCC diagnostic warning "-Weffc++"
-#      pragma GCC diagnostic warning "-pedantic"
-#    endif
-#  elif defined _MSC_VER
-#    pragma warning(pop)
-#  endif
-#endif
 
 #endif  //#ifndef PCL_POINT_TRAITS_H_
