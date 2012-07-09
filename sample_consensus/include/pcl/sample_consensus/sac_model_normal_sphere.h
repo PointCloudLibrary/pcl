@@ -88,7 +88,9 @@ namespace pcl
       /** \brief Constructor for base SampleConsensusModelNormalSphere.
         * \param[in] cloud the input point cloud dataset
         */
-      SampleConsensusModelNormalSphere (const PointCloudConstPtr &cloud) : SampleConsensusModelSphere<PointT> (cloud)
+      SampleConsensusModelNormalSphere (const PointCloudConstPtr &cloud) 
+        : SampleConsensusModelSphere<PointT> (cloud)
+        , SampleConsensusModelFromNormals<PointT, PointNT> ()
       {
       }
 
@@ -96,7 +98,9 @@ namespace pcl
         * \param[in] cloud the input point cloud dataset
         * \param[in] indices a vector of point indices to be used from \a cloud
         */
-      SampleConsensusModelNormalSphere (const PointCloudConstPtr &cloud, const std::vector<int> &indices) : SampleConsensusModelSphere<PointT> (cloud, indices)
+      SampleConsensusModelNormalSphere (const PointCloudConstPtr &cloud, const std::vector<int> &indices) 
+        : SampleConsensusModelSphere<PointT> (cloud, indices)
+        , SampleConsensusModelFromNormals<PointT, PointNT> ()
       {
       }
 

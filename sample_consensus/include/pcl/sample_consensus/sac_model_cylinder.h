@@ -107,6 +107,7 @@ namespace pcl
         */
       SampleConsensusModelCylinder (const SampleConsensusModelCylinder &source) :
         SampleConsensusModel<PointT> (),
+        SampleConsensusModelFromNormals<PointT, PointNT> (), 
         axis_ (Eigen::Vector3f::Zero ()),
         eps_angle_ (0),
         tmp_inliers_ ()

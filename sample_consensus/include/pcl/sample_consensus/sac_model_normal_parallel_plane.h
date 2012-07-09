@@ -105,6 +105,7 @@ namespace pcl
         */
       SampleConsensusModelNormalParallelPlane (const PointCloudConstPtr &cloud) : 
         SampleConsensusModelPlane<PointT> (cloud),
+        SampleConsensusModelFromNormals<PointT, PointNT> (),
         axis_ (Eigen::Vector4f::Zero ()),
         distance_from_origin_ (0),
         eps_angle_ (-1.0), cos_angle_ (-1.0), eps_dist_ (0.0)
@@ -117,6 +118,7 @@ namespace pcl
         */
       SampleConsensusModelNormalParallelPlane (const PointCloudConstPtr &cloud, const std::vector<int> &indices) : 
         SampleConsensusModelPlane<PointT> (cloud, indices),
+        SampleConsensusModelFromNormals<PointT, PointNT> (),
         axis_ (Eigen::Vector4f::Zero ()),
         distance_from_origin_ (0),
         eps_angle_ (-1.0), cos_angle_ (-1.0), eps_dist_ (0.0)

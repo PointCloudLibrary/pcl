@@ -82,7 +82,9 @@ namespace pcl
         * \param[in] cloud the input point cloud dataset
         */
       SampleConsensusModelCone (const PointCloudConstPtr &cloud) : 
-        SampleConsensusModel<PointT> (cloud), axis_ (Eigen::Vector3f::Zero ()), eps_angle_ (0), min_angle_ (-std::numeric_limits<double>::max()), max_angle_ (std::numeric_limits<double>::max()),
+        SampleConsensusModel<PointT> (cloud), 
+        SampleConsensusModelFromNormals<PointT, PointNT> (), 
+        axis_ (Eigen::Vector3f::Zero ()), eps_angle_ (0), min_angle_ (-std::numeric_limits<double>::max()), max_angle_ (std::numeric_limits<double>::max()),
         tmp_inliers_ ()
       {
       }
@@ -93,6 +95,7 @@ namespace pcl
         */
       SampleConsensusModelCone (const PointCloudConstPtr &cloud, const std::vector<int> &indices) : 
         SampleConsensusModel<PointT> (cloud, indices),
+        SampleConsensusModelFromNormals<PointT, PointNT> (),
         axis_ (Eigen::Vector3f::Zero ()), eps_angle_ (0), min_angle_ (-std::numeric_limits<double>::max()), max_angle_ (std::numeric_limits<double>::max()),
         tmp_inliers_ ()
       {
@@ -102,7 +105,9 @@ namespace pcl
         * \param[in] source the model to copy into this
         */
       SampleConsensusModelCone (const SampleConsensusModelCone &source) :
-        SampleConsensusModel<PointT> (), axis_ (), eps_angle_ (), min_angle_ (), max_angle_ (), tmp_inliers_ ()
+        SampleConsensusModel<PointT> (), 
+        SampleConsensusModelFromNormals<PointT, PointNT> (),
+        axis_ (), eps_angle_ (), min_angle_ (), max_angle_ (), tmp_inliers_ ()
       {
         *this = source;
       }
