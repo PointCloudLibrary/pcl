@@ -43,7 +43,7 @@
 #include <pcl/surface/openNURBS/opennurbs.h>
 #include <pcl/PolygonMesh.h>
 
-//#include <pcl/surface/on_nurbs/nurbs_object.h>
+#include <pcl/surface/on_nurbs/nurbs_data.h>
 
 namespace pcl
 {
@@ -55,6 +55,7 @@ namespace pcl
     {
 
     protected:
+
       /** \brief Create indices for triangulation. */
       static void
       createIndices (std::vector<pcl::Vertices> &vertices, unsigned vidx, unsigned segX, unsigned segY);
@@ -66,12 +67,12 @@ namespace pcl
 
     public:
 
-//      /** \brief Converts an NurbsObject to a pcl::PolygonMesh by sampling all NURBS according to the resolution specified.
-//       *  \param[in] object The NURBS object.
-//       *  \param[out] mesh The pcl::PolygonMesh
-//       *  \param[in] resolution mesh resolution (number of vertices along each of the two dimensions of the surface. */
-//      static void
-//      convertObject2PolygonMesh (const NurbsObject &object, PolygonMesh &mesh, unsigned resolution);
+      //      /** \brief Converts an NurbsObject to a pcl::PolygonMesh by sampling all NURBS according to the resolution specified.
+      //       *  \param[in] object The NURBS object.
+      //       *  \param[out] mesh The pcl::PolygonMesh
+      //       *  \param[in] resolution mesh resolution (number of vertices along each of the two dimensions of the surface. */
+      //      static void
+      //      convertObject2PolygonMesh (const NurbsObject &object, PolygonMesh &mesh, unsigned resolution);
 
       /** \brief Converts an openNURBS NurbsSurface to a pcl::PolygonMesh by sampling the NURBS according to the resolution specified.
        *  \param[in] nurbs The openNURBS surface.
@@ -88,6 +89,9 @@ namespace pcl
       static void
       convertTrimmedSurface2PolygonMesh (const ON_NurbsSurface &nurbs, const ON_NurbsCurve &curve, PolygonMesh &mesh,
                                          unsigned resolution);
+      static void
+      convertTrimmedSurface2PolygonMesh (const ON_NurbsSurface &nurbs, const ON_NurbsCurve &curve, PolygonMesh &mesh,
+                                         unsigned resolution, vector_vec3d &start, vector_vec3d &end);
 
       /** \brief Converts an openNURBS NurbsSurface to a point-cloud (vertices) and an vertex-index list
        * by sampling the NURBS according to the resolution specified.

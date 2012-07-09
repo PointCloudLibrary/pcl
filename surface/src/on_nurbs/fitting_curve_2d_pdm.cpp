@@ -145,7 +145,7 @@ FittingCurve2d::fitting (FitParameter &param)
     for (unsigned i = 0; i < s; i++)
     {
       double &e = m_data->closest_points_error[i];
-      avgerr += (e / static_cast<double>(s));
+      avgerr += (e / static_cast<double> (s));
       if (e > maxerr)
       {
         maxerr = e;
@@ -497,6 +497,38 @@ FittingCurve2d::addCageRegularisation (double weight, unsigned &row, const std::
   }
 }
 
+//ON_NurbsCurve
+//FittingCurve2d::initCPsNurbsCurve2D (int order, const vector_vec2d &cps)
+//{
+//  ON_NurbsCurve nurbs;
+//  if ((int)cps.size () < (2 * order))
+//  {
+//    printf ("[FittingCurve2d::initCPsNurbsCurve2D] Warning, number of control points too low.\n");
+//    return nurbs;
+//  }
+//
+//  int cp_red = order - 2;
+//  int ncps = cps.size () + cp_red;
+//  nurbs = ON_NurbsCurve (2, false, order, ncps);
+//  nurbs.MakePeriodicUniformKnotVector (1.0 / (ncps - order + 1));
+//
+//  for (int j = 0; j < ncps; j++)
+//    nurbs.SetCV (j, ON_3dPoint (cps[j] (0), cps[j] (1), 0.0));
+//
+//  for (int j = 0; j < cp_red; j++)
+//  {
+//    ON_3dPoint cp;
+//    nurbs.GetCV (nurbs.m_cv_count - 1 - cp_red + j, cp);
+//    nurbs.SetCV (j, cp);
+//
+//    nurbs.GetCV (cp_red - j, cp);
+//    nurbs.SetCV (nurbs.m_cv_count - 1 - j, cp);
+//  }
+//
+//  return nurbs;
+//} // commented 6.6.2012 (thomas.moerwald)
+// reason: B-Splines are not closed properly
+
 ON_NurbsCurve
 FittingCurve2d::initCPsNurbsCurve2D (int order, const vector_vec2d &cps)
 {
@@ -508,21 +540,25 @@ FittingCurve2d::initCPsNurbsCurve2D (int order, const vector_vec2d &cps)
   }
 
   int cp_red = order - 2;
-  int ncps = cps.size () + cp_red;
+  int ncps = cps.size () + 2 * cp_red + 1; // +2*cp_red for smoothness and +1 for closing
   nurbs = ON_NurbsCurve (2, false, order, ncps);
-  nurbs.MakePeriodicUniformKnotVector (1.0 / (ncps - order + 1));
+  nurbs.MakePeriodicUniformKnotVector (1.0 / (ncps - order));
 
-  for (int j = 0; j < ncps; j++)
-    nurbs.SetCV (j, ON_3dPoint (cps[j] (0), cps[j] (1), 0.0));
+  for (int j = 0; j < cps.size (); j++)
+    nurbs.SetCV (cp_red + j, ON_3dPoint (cps[j] (0), cps[j] (1), 0.0));
 
+  // close nurbs
+  nurbs.SetCV (cp_red + cps.size (), ON_3dPoint (cps[0] (0), cps[0] (1), 0.0));
+
+  // make smooth at closing point
   for (int j = 0; j < cp_red; j++)
   {
     ON_3dPoint cp;
-    nurbs.GetCV (nurbs.m_cv_count - 1 - cp_red + j, cp);
+    nurbs.GetCV (nurbs.CVCount () - 2 - cp_red + j, cp);
     nurbs.SetCV (j, cp);
 
-    nurbs.GetCV (cp_red - j, cp);
-    nurbs.SetCV (nurbs.m_cv_count - 1 - j, cp);
+    nurbs.GetCV (cp_red - j + 1, cp);
+    nurbs.SetCV (nurbs.CVCount () - 1 - j, cp);
   }
 
   return nurbs;
@@ -825,6 +861,9 @@ FittingCurve2d::inverseMapping (const ON_NurbsCurve &nurbs, const Eigen::Vector2
                                 double &error, Eigen::Vector2d &p, Eigen::Vector2d &t, int maxSteps, double accuracy,
                                 bool quiet)
 {
+  if (nurbs.Order () == 2)
+    return inverseMappingO2 (nurbs, pt, error, p, t);
+
   int cp_red = (nurbs.m_order - 2);
   int ncpj = (nurbs.m_cv_count - 2 * cp_red);
   double pointAndTangents[4];
@@ -883,6 +922,121 @@ FittingCurve2d::inverseMapping (const ON_NurbsCurve &nurbs, const Eigen::Vector2
   return current;
 }
 
+double
+FittingCurve2d::inverseMappingO2 (const ON_NurbsCurve &nurbs, const Eigen::Vector2d &pt, double &error,
+                                  Eigen::Vector2d &p, Eigen::Vector2d &t)
+{
+  if (nurbs.Order () != 2)
+    printf ("[FittingCurve2d::inverseMappingO2] Error, order not 2 (polynomial degree 1)\n");
+
+  std::vector<double> elements = getElementVector (nurbs);
+
+  Eigen::Vector2d min_pt;
+  double min_param (DBL_MAX);
+  double min_dist (DBL_MAX);
+  error = DBL_MAX;
+  int is_corner;
+
+  for (unsigned i = 0; i < elements.size () - 1; i++)
+  {
+    Eigen::Vector2d p1;
+    nurbs.Evaluate (elements[i], 0, 2, &p1 (0));
+
+    Eigen::Vector2d p2;
+    nurbs.Evaluate (elements[i + 1], 0, 2, &p2 (0));
+
+    Eigen::Vector2d d1 (p2 (0) - p1 (0), p2 (1) - p1 (1));
+    Eigen::Vector2d d2 (pt (0) - p1 (0), pt (1) - p1 (1));
+
+    double d1_norm = d1.norm ();
+
+    double d0_norm = d1.dot (d2) / d1_norm;
+    Eigen::Vector2d d0 = d1 * d0_norm / d1_norm;
+    Eigen::Vector2d p0 = p1 + d0;
+
+    if (d0_norm < 0.0)
+    {
+      double tmp_dist = (p1 - pt).norm ();
+      if (tmp_dist < min_dist)
+      {
+        min_dist = tmp_dist;
+        min_pt = p1;
+        min_param = elements[i];
+        is_corner = i;
+      }
+    }
+    else if (d0_norm >= d1_norm)
+    {
+      double tmp_dist = (p2 - pt).norm ();
+      if (tmp_dist < min_dist)
+      {
+        min_dist = tmp_dist;
+        min_pt = p2;
+        min_param = elements[i + 1];
+        is_corner = i + 1;
+      }
+    }
+    else
+    { // p0 lies on line segment
+      double tmp_dist = (p0 - pt).norm ();
+      if (tmp_dist < min_dist)
+      {
+        min_dist = tmp_dist;
+        min_pt = p0;
+        min_param = elements[i] + (d0_norm / d1_norm) * (elements[i + 1] - elements[i]);
+        is_corner = -1;
+      }
+    }
+  }
+
+  if (is_corner >= 0)
+  {
+    double param1, param2;
+    if (is_corner == 0 || is_corner == elements.size () - 1)
+    {
+      double x0a = elements[0];
+      double x0b = elements[elements.size () - 1];
+      double xa = elements[1];
+      double xb = elements[elements.size () - 2];
+
+      param1 = x0a + 0.5 * (xa - x0a);
+      param2 = x0b + 0.5 * (xb - x0b);
+    }
+    else
+    {
+      double x0 = elements[is_corner];
+      double x1 = elements[is_corner - 1];
+      double x2 = elements[is_corner + 1];
+
+      param1 = x0 + 0.5 * (x1 - x0);
+      param2 = x0 + 0.5 * (x2 - x0);
+    }
+
+    double pt1[4];
+    nurbs.Evaluate (param1, 1, 2, pt1);
+    Eigen::Vector2d t1 (pt1[2], pt1[3]);
+    t1.normalize();
+
+    double pt2[4];
+    nurbs.Evaluate (param2, 1, 2, pt2);
+    Eigen::Vector2d t2 (pt2[2], pt2[3]);
+    t2.normalize();
+
+    t = 0.5 * (t1 + t2);
+  }
+  else
+  {
+    double point_tangent[4];
+    nurbs.Evaluate (min_param, 1, 2, point_tangent);
+    t (0) = point_tangent[2];
+    t (1) = point_tangent[3];
+  }
+
+  t.normalize ();
+  p = min_pt;
+  return min_param;
+}
+
 //double
 //FittingCurve2d::inverseMapping (const ON_NurbsCurve &nurbs, const Eigen::Vector2d &pt, double* phint, double &error,
 //                                Eigen::Vector2d &p, Eigen::Vector2d &t, int maxSteps, double accuracy, bool quiet)
@@ -925,33 +1079,55 @@ FittingCurve2d::inverseMapping (const ON_NurbsCurve &nurbs, const Eigen::Vector2
 //}
 
 double
-FittingCurve2d::findClosestElementMidPoint (const ON_NurbsCurve &nurbs, const Eigen::Vector2d &pt)
+FittingCurve2d::findClosestElementMidPoint (const ON_NurbsCurve &nurbs, const Eigen::Vector2d &pt,
+                                            unsigned samples_per_element, bool quiet)
 {
   double hint (0.0);
   Eigen::Vector2d p, r;
   std::vector<double> elements = getElementVector (nurbs);
   double points[2];
 
+  if (samples_per_element <= 0)
+    samples_per_element = 1;
+
   double d_shortest (DBL_MAX);
+  double seg = 1.0 / (samples_per_element + 1);
+
+  if (!quiet)
+  {
+    printf ("[FittingCurve2d::findClosestElementMidPoint] elements: ");
+    printf (" %f", elements[0]);
+  }
 
   for (unsigned i = 0; i < elements.size () - 1; i++)
   {
-    double xi = elements[i] + 0.5 * (elements[i + 1] - elements[i]);
+    double xi0 = elements[i];
+    double xi1 = elements[i + 1];
 
-    nurbs.Evaluate (xi, 0, 2, points);
-    p (0) = points[0];
-    p (1) = points[1];
+    if (!quiet)
+      printf (" %f", elements[i + 1]);
 
-    r = p - pt;
-
-    double d = r.squaredNorm ();
-
-    if (d < d_shortest)
+    for (unsigned j = 0; j < samples_per_element; j++)
     {
-      d_shortest = d;
-      hint = xi;
+      double xi = xi0 + (seg * (j + 1)) * (xi1 - xi0);
+
+      nurbs.Evaluate (xi, 0, 2, points);
+      p (0) = points[0];
+      p (1) = points[1];
+
+      r = p - pt;
+
+      double d = r.squaredNorm ();
+
+      if (d < d_shortest)
+      {
+        d_shortest = d;
+        hint = xi;
+      }
     }
   }
+  if (!quiet)
+    printf ("\n");
 
   return hint;
 }

@@ -101,6 +101,19 @@ FittingSurface::refine (int dim)
 }
 
 void
+FittingSurface::refine (ON_NurbsSurface &nurbs, int dim)
+{
+  std::vector<double> xi;
+  std::vector<double> elements = getElementVector (nurbs, dim);
+
+  for (unsigned i = 0; i < elements.size () - 1; i++)
+    xi.push_back (elements[i] + 0.5 * (elements[i + 1] - elements[i]));
+
+  for (unsigned i = 0; i < xi.size (); i++)
+    nurbs.InsertKnot (dim, xi[i], 1);
+}
+
+void
 FittingSurface::assemble (Parameter param)
 {
   clock_t time_start, time_end;

@@ -110,6 +110,9 @@ namespace pcl
       void
       refine (int dim);
 
+      static void
+      refine (ON_NurbsSurface &nurbs, int dim);
+
       /** \brief Assemble the system of equations for fitting
        * - for large point-clouds this is time consuming.
        * - should be done once before refinement to initialize the starting points for point inversion. */

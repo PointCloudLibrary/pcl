@@ -86,8 +86,8 @@ GlobalOptimization::assemble (Parameter params)
     nInt += m_data[i]->interior.size ();
     nBnd += m_data[i]->boundary.size ();
     nCommonBnd += m_data[i]->common_boundary_point.size ();
-    nCageRegInt += (m_nurbs[i]->m_cv_count[0] - 2) * (m_nurbs[i]->m_cv_count[1] - 2);
-    nCageRegBnd += 2 * (m_nurbs[i]->m_cv_count[0] - 1) + 2 * (m_nurbs[i]->m_cv_count[1] - 1);
+    nCageRegInt += (m_nurbs[i]->CVCount(0) - 2) * (m_nurbs[i]->CVCount(1) - 2);
+    nCageRegBnd += 2 * (m_nurbs[i]->CVCount(0) - 1) + 2 * (m_nurbs[i]->CVCount(1) - 1);
     m_ncols += m_nurbs[i]->CVCount ();
   }
 
@@ -510,8 +510,8 @@ GlobalOptimization::addParamConstraint (const Eigen::Vector2i &id, const Eigen::
     double N0[nurbs->m_order[0] * nurbs->m_order[0]];
     double N1[nurbs->m_order[1] * nurbs->m_order[1]];
 
-    int E = ON_NurbsSpanIndex (nurbs->m_order[0], nurbs->m_cv_count[0], nurbs->m_knot[0], params[n] (0), 0, 0);
-    int F = ON_NurbsSpanIndex (nurbs->m_order[1], nurbs->m_cv_count[1], nurbs->m_knot[1], params[n] (1), 0, 0);
+    int E = ON_NurbsSpanIndex (nurbs->m_order[0], nurbs->CVCount(0), nurbs->m_knot[0], params[n] (0), 0, 0);
+    int F = ON_NurbsSpanIndex (nurbs->m_order[1], nurbs->CVCount(1), nurbs->m_knot[1], params[n] (1), 0, 0);
     //    int E = ntools.E(params[n](0));
     //    int F = ntools.F(params[n](1));
 
@@ -557,8 +557,8 @@ GlobalOptimization::addPointConstraint (unsigned id, int ncps, const Eigen::Vect
   double N0[nurbs->m_order[0] * nurbs->m_order[0]];
   double N1[nurbs->m_order[1] * nurbs->m_order[1]];
 
-  int E = ON_NurbsSpanIndex (nurbs->m_order[0], nurbs->m_cv_count[0], nurbs->m_knot[0], params (0), 0, 0);
-  int F = ON_NurbsSpanIndex (nurbs->m_order[1], nurbs->m_cv_count[1], nurbs->m_knot[1], params (1), 0, 0);
+  int E = ON_NurbsSpanIndex (nurbs->m_order[0], nurbs->CVCount(0), nurbs->m_knot[0], params (0), 0, 0);
+  int F = ON_NurbsSpanIndex (nurbs->m_order[1], nurbs->CVCount(1), nurbs->m_knot[1], params (1), 0, 0);
 
   ON_EvaluateNurbsBasis (nurbs->m_order[0], nurbs->m_knot[0] + E, params (0), N0);
   ON_EvaluateNurbsBasis (nurbs->m_order[1], nurbs->m_knot[1] + F, params (1), N1);

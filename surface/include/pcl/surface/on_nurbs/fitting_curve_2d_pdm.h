@@ -186,12 +186,17 @@ namespace pcl
                       Eigen::Vector2d &p, Eigen::Vector2d &t, int maxSteps = 100, double accuracy = 1e-6,
                       bool quiet = true);
 
+      static double
+      inverseMappingO2 (const ON_NurbsCurve &nurbs, const Eigen::Vector2d &pt, double &error, Eigen::Vector2d &p,
+                        Eigen::Vector2d &t);
+
       /** \brief Given a point pt, the function finds the closest midpoint of the elements of the curve.
        *  \param[in] nurbs the B-Spline curve.
        *  \param[in] pt the point to which the closest midpoint of the elements will be computed.
        *  return closest midpoint in parametric domain. */
       static double
-      findClosestElementMidPoint (const ON_NurbsCurve &nurbs, const Eigen::Vector2d &pt);
+      findClosestElementMidPoint (const ON_NurbsCurve &nurbs, const Eigen::Vector2d &pt,
+                                  unsigned samples_per_element = 1, bool quiet = true);
 
       /** \brief Enable/Disable debug outputs in console. */
       inline void
