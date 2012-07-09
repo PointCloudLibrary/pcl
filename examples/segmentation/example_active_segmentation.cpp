@@ -39,6 +39,7 @@
 
 //pcl
 #include <pcl/segmentation/active_segmentation.h>
+#include <pcl/segmentation/impl/active_segmentation.hpp>
 #include <pcl/io/pcd_io.h>
 
 int main(int argc, char** argv)
@@ -101,12 +102,12 @@ int main(int argc, char** argv)
   {
     //if(out_cloud_2->points[i].label> 0 && out_cloud_2->points[i].label != std::numeric_limits<unsigned>::max ())
     if(out_cloud_2->points[i].label != std::numeric_limits<unsigned>::max ())
-      bps->points[i].boundary_point = out_cloud_2->points[i].label+1;
+      bps->points[i].boundary_point = static_cast<unsigned char> (out_cloud_2->points[i].label+1);
     else
       bps->points[i].boundary_point = 0;
   }
 
-  pcl::ActiveSegmentation as;
+  pcl::ActiveSegmentation<pcl::PointXYZRGB, pcl::Normal> as;
   pcl::PointIndices segment;
   as.setInputCloud(cloud);
   as.setInputNormals(normals);
@@ -127,7 +128,7 @@ int main(int argc, char** argv)
     out_cloud->points[i].label = bps->points[i].boundary_point;
     if (std::find(segment.indices.begin(),segment.indices.end(),i) != segment.indices.end() && bps->points[i].boundary_point == 0)
       out_cloud->points[i].label = 8;
-    if((i == as.getFixationPointIndice()) || (std::find(fp_indices.begin(),fp_indices.end(),i)!=fp_indices.end() ))
+    if((i == as.getFixationPointIndex ()) || (std::find(fp_indices.begin(),fp_indices.end(),i)!=fp_indices.end() ))
     {
       out_cloud->points[i].label = 4;
     }
