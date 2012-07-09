@@ -3,6 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -40,8 +41,8 @@
 #ifndef PCL_COMMON_IO_H_
 #define PCL_COMMON_IO_H_
 
+#include <pcl/common/boost.h>
 #include <string>
-#include <boost/fusion/sequence/intrinsic/at_key.hpp>
 #include <pcl/pcl_base.h>
 #include <pcl/PointIndices.h>
 #include <pcl/ros/conversions.h>

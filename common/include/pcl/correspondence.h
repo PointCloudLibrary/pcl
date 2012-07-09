@@ -38,7 +38,7 @@
 #ifndef PCL_COMMON_CORRESPONDENCE_H_
 #define PCL_COMMON_CORRESPONDENCE_H_
 
-#include <boost/shared_ptr.hpp>
+#include <pcl/common/boost.h>
 #include <pcl/common/eigen.h>
 #include <vector>
 

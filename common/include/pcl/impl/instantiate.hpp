@@ -37,6 +37,10 @@
 #ifndef PCL_IMPL_INSTANTIATE_H_
 #define PCL_IMPL_INSTANTIATE_H_
 
+#ifdef __GNUC__
+#pragma GCC system_header 
+#endif
+
 #include <boost/preprocessor/seq/for_each.hpp>
 #include <boost/preprocessor/seq/for_each_product.hpp>
 #include <boost/preprocessor/seq/to_tuple.hpp>

@@ -76,6 +76,7 @@ if(build)
     endif(NOT USE_ROS)
     
     set(common_incs 
+        include/pcl/common/boost.h
         include/pcl/common/angles.h
         include/pcl/common/bivariate_polynomial.h
         include/pcl/common/centroid.h

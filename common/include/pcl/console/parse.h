@@ -43,9 +43,8 @@
 #include <string>
 #include <string.h>
 #include <stdlib.h>
-#include <boost/algorithm/string.hpp>
 #include <sstream>
-
+#include <pcl/common/boost.h>
 #include <pcl/pcl_macros.h>
 
 namespace pcl

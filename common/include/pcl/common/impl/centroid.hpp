@@ -39,7 +39,7 @@
 #define PCL_COMMON_IMPL_CENTROID_H_
 
 #include <pcl/ros/conversions.h>
-#include <boost/mpl/size.hpp>
+#include <pcl/common/boost.h>
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> inline unsigned int

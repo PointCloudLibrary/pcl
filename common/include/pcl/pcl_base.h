@@ -40,16 +40,13 @@
 #define PCL_PCL_BASE_H_
 
 #include <cstddef>
-// Eigen includes
 #include <pcl/common/eigen.h>
+#include <pcl/common/boost.h>
 // STD includes
 #include <vector>
 
 // Include PCL macros such as PCL_ERROR, etc
 #include <pcl/pcl_macros.h>
-
-// Boost includes. Needed everywhere.
-#include <boost/shared_ptr.hpp>
 
 // Point Cloud message includes. Needed everywhere.
 #include <sensor_msgs/PointCloud2.h>

@@ -39,12 +39,7 @@
 #ifndef __PCL_TIME_TRIGGER__
 #define __PCL_TIME_TRIGGER__
 
-#include <boost/timer.hpp>
-#include <boost/thread.hpp>
-#include <boost/thread/condition.hpp>
-#include <boost/signals2.hpp>
-#include <boost/signals2/slot.hpp>
-
+#include <pcl/common/boost.h>
 #include <pcl/pcl_macros.h>
 
 namespace pcl

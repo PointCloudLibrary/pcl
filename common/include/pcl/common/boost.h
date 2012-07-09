@@ -2,7 +2,8 @@
  * Software License Agreement (BSD License)
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
- *  Copyright (c) 2010-2012, Willow Garage, Inc.
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -33,58 +34,28 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id$
+ * $Id: io.h 5850 2012-06-06 14:04:59Z stfox88 $
  *
  */
-#ifndef TERMINAL_TOOLS_TIME_H_
-#define TERMINAL_TOOLS_TIME_H_
 
-#include <pcl/common/boost.h>
-#include <pcl/console/print.h>
+#ifndef PCL_COMMON_BOOST_H_
+#define PCL_COMMON_BOOST_H_
 
-namespace pcl
-{
-  namespace console
-  {
-    class TicToc
-    {
-      public:
-
-        TicToc () : tictic (), toctoc () {}
-
-        void 
-        tic ()
-        {
-          tictic = boost::posix_time::microsec_clock::local_time ();
-        };
-
-        inline double 
-        toc ()
-        {
-          toctoc = boost::posix_time::microsec_clock::local_time ();
-          return (static_cast<double> ((toctoc - tictic).total_milliseconds ()));
-        };
-        
-        inline void 
-        toc_print ()
-        {
-          double milliseconds = toc ();
-          //int minutes = (int) floor ( seconds / 60.0 );
-          //seconds -= minutes * 60.0;
-          //if (minutes != 0)
-          //{
-          //  print_value ("%i", minutes);
-          //  print_info (" minutes, ");
-          //}
-          print_value ("%g", milliseconds);
-          print_info (" ms\n");
-        };
-      
-      private:
-        boost::posix_time::ptime tictic;
-        boost::posix_time::ptime toctoc;
-    };
-  } 
-}
-
+#ifdef __GNUC__
+#pragma GCC system_header 
 #endif
+
+// Marking all Boost headers as system headers to remove warnings
+#include <boost/fusion/sequence/intrinsic/at_key.hpp>
+#include <boost/shared_ptr.hpp>
+#include <boost/mpl/size.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/function.hpp>
+#include <boost/timer.hpp>
+#include <boost/thread.hpp>
+#include <boost/thread/condition.hpp>
+#include <boost/signals2.hpp>
+#include <boost/signals2/slot.hpp>
+#include <boost/algorithm/string.hpp>
+
+#endif    // PCL_COMMON_BOOST_H_

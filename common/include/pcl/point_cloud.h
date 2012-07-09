@@ -40,6 +40,7 @@
 #ifndef PCL_POINT_CLOUD_H_
 #define PCL_POINT_CLOUD_H_
 
+#include <pcl/common/boost.h>
 #include <pcl/common/eigen.h>
 #include <cstddef>
 #include <std_msgs/Header.h>
@@ -49,9 +50,7 @@
 #include <pcl/channel_properties.h>
 #include <pcl/point_traits.h>
 #include <pcl/for_each_type.h>
-#include <boost/shared_ptr.hpp>
 #include <map>
-#include <boost/mpl/size.hpp>
 
 namespace pcl
 {

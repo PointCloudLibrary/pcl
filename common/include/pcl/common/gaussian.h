@@ -42,8 +42,8 @@
 
 #include <sstream>
 #include <pcl/common/eigen.h>
+#include <pcl/common/boost.h>
 #include <pcl/point_cloud.h>
-#include <boost/function.hpp>
 
 namespace pcl
 {
