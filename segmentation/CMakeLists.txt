@@ -1,6 +1,6 @@
 set(SUBSYS_NAME segmentation)
 set(SUBSYS_DESC "Point cloud segmentation library")
-set(SUBSYS_DEPS common geometry search sample_consensus kdtree octree)
+set(SUBSYS_DEPS common geometry search sample_consensus kdtree octree features)
 
 set(build TRUE)
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
@@ -21,6 +21,7 @@ if(build)
         src/organized_connected_component_segmentation.cpp
         src/organized_multi_plane_segmentation.cpp
         src/planar_polygon_fusion.cpp
+        src/active_segmentation.cpp
        )
 
     set(incs 
@@ -45,6 +46,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/region_3d.h
         include/pcl/${SUBSYS_NAME}/planar_region.h
         include/pcl/${SUBSYS_NAME}/planar_polygon_fusion.h
+        include/pcl/${SUBSYS_NAME}/active_segmentation.h
         )
 
     set(impl_incs 
@@ -60,6 +62,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/organized_connected_component_segmentation.hpp
         include/pcl/${SUBSYS_NAME}/impl/organized_multi_plane_segmentation.hpp
         include/pcl/${SUBSYS_NAME}/impl/planar_polygon_fusion.hpp
+        include/pcl/${SUBSYS_NAME}/impl/active_segmentation.hpp
         )
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
