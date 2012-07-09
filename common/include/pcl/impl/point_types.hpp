@@ -74,6 +74,13 @@
   (pcl::PointWithScale)         \
   (pcl::ReferenceFrame)
 
+// Define all point types that include RGB data
+#define PCL_RGB_POINT_TYPES     \
+  (pcl::PointXYZRGBA)           \
+  (pcl::PointXYZRGB)            \
+  (pcl::PointXYZRGBL)           \
+  (pcl::PointXYZRGBNormal)      \
+
 // Define all point types that include XYZ data
 #define PCL_XYZ_POINT_TYPES   \
   (pcl::PointXYZ)             \
@@ -95,7 +102,6 @@
 #define PCL_XYZL_POINT_TYPES  \
   (pcl::PointXYZL)            \
   (pcl::PointXYZRGBL)
-
 
 // Define all point types that include normal[3] data
 #define PCL_NORMAL_POINT_TYPES  \
