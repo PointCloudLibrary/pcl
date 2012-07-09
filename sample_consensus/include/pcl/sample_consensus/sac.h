@@ -40,8 +40,8 @@
 #ifndef PCL_SAMPLE_CONSENSUS_H_
 #define PCL_SAMPLE_CONSENSUS_H_
 
+#include <pcl/sample_consensus/boost.h>
 #include <pcl/sample_consensus/sac_model.h>
-#include <boost/random.hpp>
 #include <ctime>
 #include <set>
 

@@ -44,10 +44,10 @@
 #include <ctime>
 #include <limits.h>
 #include <set>
-#include <boost/random.hpp>
 
 #include <pcl/console/print.h>
 #include <pcl/point_cloud.h>
+#include <pcl/sample_consensus/boost.h>
 #include <pcl/sample_consensus/model_types.h>
 
 #include <pcl/search/search.h>
