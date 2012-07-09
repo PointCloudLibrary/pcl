@@ -193,10 +193,6 @@ namespace pcl
 
     private:
 
-      //members derived form base class
-      using PCLBase_::input_;
-      using PCLBase_::indices_;
-
       /** \brief A pointer to the spatial search object. */
       KdTreePtr tree_;
 
