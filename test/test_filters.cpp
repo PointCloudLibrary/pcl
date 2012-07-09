@@ -250,7 +250,7 @@ TEST (PassThrough, Filters)
   EXPECT_EQ (output.height, cloud->height);
 
   pt.setFilterFieldName ("z");
-  pt.setFilterLimits (0.05, 0.1);
+  pt.setFilterLimits (0.05f, 0.1f);
   pt.filter (output);
 
   EXPECT_EQ (int (output.points.size ()), 42);
@@ -293,7 +293,7 @@ TEST (PassThrough, Filters)
   EXPECT_EQ (output.height, cloud->height);
 
   pt_.setFilterFieldName ("z");
-  pt_.setFilterLimits (0.05, 0.1);
+  pt_.setFilterLimits (0.05f, 0.1f);
   pt_.filter (output);
 
   EXPECT_EQ (int (output.points.size ()), 42);
@@ -1511,9 +1511,9 @@ TEST (SamplingSurfaceNormal, Filters)
   PointCloud <PointNormal> outcloud;
 
   //Creating a point cloud on the XY plane
-  for (float i = 0; i < 5; i+=0.1)
+  for (float i = 0.0f; i < 5.0f; i += 0.1f)
   {
-    for (float j = 0; j < 5; j+=0.1)
+    for (float j = 0.0f; j < 5.0f; j += 0.1f)
     {
       PointNormal pt;
       pt.x = i;
@@ -1523,19 +1523,19 @@ TEST (SamplingSurfaceNormal, Filters)
     }
   }
   incloud->width = 1;
-  incloud->height = incloud->points.size ();
+  incloud->height = uint32_t (incloud->points.size ());
 
   pcl::SamplingSurfaceNormal <pcl::PointNormal> ssn_filter;
   ssn_filter.setInputCloud (incloud);
-  ssn_filter.setRatio (0.3);
+  ssn_filter.setRatio (0.3f);
   ssn_filter.filter (outcloud);
 
   // All the sampled points should have normals along the direction of Z axis
   for (unsigned int i = 0; i < outcloud.points.size (); i++)
   {
-    EXPECT_NEAR (outcloud.points[i].normal[0], 0, 1e-4);
-    EXPECT_NEAR (outcloud.points[i].normal[1], 0, 1e-4);
-    EXPECT_NEAR (outcloud.points[i].normal[2], 1, 1e-4);
+    EXPECT_NEAR (outcloud.points[i].normal[0], 0, 1e-3);
+    EXPECT_NEAR (outcloud.points[i].normal[1], 0, 1e-3);
+    EXPECT_NEAR (outcloud.points[i].normal[2], 1, 1e-3);
   }
 }
 TEST (ConditionalRemovalTfQuadraticXYZComparison, Filters)
