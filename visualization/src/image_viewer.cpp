@@ -108,7 +108,7 @@ pcl::visualization::ImageViewer::addRGBImage (
   LayerMap::iterator am_it = std::find_if (layer_map_.begin (), layer_map_.end (), LayerComparator (layer_id));
   if (am_it == layer_map_.end ())
   {
-    PCL_DEBUG ("[pcl::visualization::ImageViewer::showRGBImage] No layer with ID'=%s' found. Creating new one...\n", layer_id.c_str ());
+    PCL_DEBUG ("[pcl::visualization::ImageViewer::addRGBImage] No layer with ID'=%s' found. Creating new one...\n", layer_id.c_str ());
     am_it = createLayer (layer_id, width, height, opacity, false);
   }
 

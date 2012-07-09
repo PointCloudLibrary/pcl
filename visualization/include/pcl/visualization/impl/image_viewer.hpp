@@ -68,6 +68,32 @@ pcl::visualization::ImageViewer::showRGBImage (const pcl::PointCloud<T> &cloud,
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
+template <typename T> void
+pcl::visualization::ImageViewer::addRGBImage (const pcl::PointCloud<T> &cloud,
+                                              const std::string &layer_id,
+                                              double opacity)
+{
+  if (data_size_ < cloud.width * cloud.height)
+  {
+    data_size_ = cloud.width * cloud.height * 3;
+    data_.reset (new unsigned char[data_size_]);
+  }
+  
+  for (size_t i = 0; i < cloud.points.size (); ++i)
+  {
+    memcpy (&data_[i * 3], reinterpret_cast<const unsigned char*> (&cloud.points[i].rgba), sizeof (unsigned char) * 3);
+    /// Convert from BGR to RGB
+    unsigned char aux = data_[i*3];
+    data_[i*3] = data_[i*3+2];
+    data_[i*3+2] = aux;
+    for (int j = 0; j < 3; ++j)
+      if (pcl_isnan (data_[i * 3 + j]))
+          data_[i * 3 + j] = 0;
+  }
+  return (addRGBImage (data_.get (), cloud.width, cloud.height, layer_id, opacity));
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
 template <typename T> bool
 pcl::visualization::ImageViewer::addMask (
     const typename pcl::PointCloud<T>::ConstPtr &image,

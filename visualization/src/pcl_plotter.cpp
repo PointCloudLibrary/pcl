@@ -381,7 +381,7 @@ pcl::visualization::PCLPlotter::computeHistogram (std::vector<double> const &dat
   //fill the freq for each data
   for (int i = 0; i < data.size (); i++)
   {
-    int index = (int) (data[i] - min) / size;
+    int index = int (data[i] - min) / int (size);
     if (index == nbins) index = nbins - 1; //including right boundary
     histogram[index ].second++;
   }

@@ -564,7 +564,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
         {
           for (actor->InitPathTraversal (); vtkAssemblyPath* path = actor->GetNextPath (); )
           {
-            vtkSmartPointer<vtkActor> apart = (vtkActor*)path->GetLastNode ()->GetViewProp ();
+            vtkSmartPointer<vtkActor> apart = static_cast<vtkActor*> (path->GetLastNode ()->GetViewProp ());
             float psize = apart->GetProperty ()->GetPointSize ();
             if (psize > 1.0f)
               apart->GetProperty ()->SetPointSize (psize - 1.0f);
