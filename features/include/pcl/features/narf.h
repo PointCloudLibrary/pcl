@@ -36,8 +36,7 @@
 #ifndef PCL_NARF_H_
 #define PCL_NARF_H_
 
-#include <vector>
-#include <Eigen/Geometry>
+#include <pcl/features/eigen.h>
 #include <pcl/common/common_headers.h>
 #include <pcl/point_representation.h>
 

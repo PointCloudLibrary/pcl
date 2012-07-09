@@ -1,8 +1,8 @@
 #ifndef PCL_PPFRGB_H_
 #define PCL_PPFRGB_H_
 
+#include <pcl/features/boost.h>
 #include <pcl/features/feature.h>
-#include <boost/unordered_map.hpp>
 
 namespace pcl
 {

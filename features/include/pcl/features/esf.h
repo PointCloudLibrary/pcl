@@ -43,7 +43,6 @@
 #include <pcl/features/feature.h>
 #define GRIDSIZE 64
 #define GRIDSIZE_H GRIDSIZE/2
-//#include <boost/multi_array.hpp>
 #include <vector>
 
 namespace pcl

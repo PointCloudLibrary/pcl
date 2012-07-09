@@ -40,8 +40,8 @@
 #ifndef PCL_FEATURES_GSS3D_H_
 #define PCL_FEATURES_GSS3D_H_
 
+#include <pcl/features/boost.h>
 #include <pcl/features/feature.h>
-#include <boost/multi_array.hpp>
 
 namespace pcl
 {

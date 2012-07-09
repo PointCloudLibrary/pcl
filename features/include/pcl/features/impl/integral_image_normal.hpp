@@ -36,10 +36,9 @@
 #ifndef PCL_FEATURES_INTEGRALIMAGE_BASED_IMPL_NORMAL_ESTIMATOR_H_
 #define PCL_FEATURES_INTEGRALIMAGE_BASED_IMPL_NORMAL_ESTIMATOR_H_
 
+#include <pcl/features/boost.h>
 #include <pcl/features/integral_image_normal.h>
 #include <pcl/features/normal_3d.h>
-
-#include <boost/bind.hpp>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT>

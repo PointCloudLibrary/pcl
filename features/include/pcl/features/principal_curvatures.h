@@ -40,8 +40,7 @@
 #ifndef PCL_PRINCIPAL_CURVATURES_H_
 #define PCL_PRINCIPAL_CURVATURES_H_
 
-#include <Eigen/StdVector>
-#include <Eigen/Sparse>
+#include <pcl/features/eigen.h>
 #include <pcl/features/feature.h>
 
 namespace pcl

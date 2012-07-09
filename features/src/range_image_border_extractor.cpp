@@ -40,12 +40,12 @@ using std::cerr;
 #include <map>
 #include <set>
 #include <cmath>
-#include <Eigen/Geometry>
 #include <pcl/pcl_macros.h>
 #include <pcl/common/common_headers.h>
 #include <pcl/range_image/range_image.h>
 #include <pcl/point_cloud.h>
 #include <pcl/common/vector_average.h>
+#include <pcl/features/eigen.h>
 #include <pcl/features/range_image_border_extractor.h>
 
 namespace pcl 

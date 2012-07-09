@@ -41,8 +41,8 @@
 #define PCL_FEATURES_3DSC_H_
 
 #include <pcl/point_types.h>
+#include <pcl/features/boost.h>
 #include <pcl/features/feature.h>
-#include <boost/random.hpp>
 
 namespace pcl
 {

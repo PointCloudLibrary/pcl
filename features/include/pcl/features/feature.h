@@ -40,10 +40,7 @@
 #ifndef PCL_FEATURE_H_
 #define PCL_FEATURE_H_
 
-#include <boost/function.hpp>
-#include <boost/bind.hpp>
-#include <boost/mpl/size.hpp>
-
+#include <pcl/features/boost.h>
 // PCL includes
 #include <pcl/pcl_base.h>
 #include <pcl/common/eigen.h>

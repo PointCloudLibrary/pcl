@@ -39,8 +39,8 @@
 #ifndef PCL_PPF_H_
 #define PCL_PPF_H_
 
+#include <pcl/features/boost.h>
 #include <pcl/features/feature.h>
-#include <boost/unordered_map.hpp>
 
 namespace pcl
 {

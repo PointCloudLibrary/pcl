@@ -12,6 +12,8 @@ if(build)
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
     set(incs
+        include/pcl/${SUBSYS_NAME}/boost.h
+        include/pcl/${SUBSYS_NAME}/eigen.h
         include/pcl/${SUBSYS_NAME}/board.h
         include/pcl/${SUBSYS_NAME}/cvfh.h
         include/pcl/${SUBSYS_NAME}/crh.h
