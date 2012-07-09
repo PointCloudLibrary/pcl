@@ -69,11 +69,13 @@ namespace pcl
       public:
 
         /** \brief Empty constructor. */
-        CorrespondenceRejectorVarTrimmed () : trimmed_distance_(0), 
-                                            min_ratio_ (0.05),
-                                            max_ratio_ (0.95),
-                                            lambda_ (0.95),
-                                            data_container_ ()
+        CorrespondenceRejectorVarTrimmed () : 
+          trimmed_distance_ (0), 
+          factor_ (),
+          min_ratio_ (0.05),
+          max_ratio_ (0.95),
+          lambda_ (0.95),
+          data_container_ ()
         {
           rejection_name_ = "CorrespondenceRejectorVarTrimmed";
         }

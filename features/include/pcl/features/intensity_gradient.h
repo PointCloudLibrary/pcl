@@ -66,10 +66,9 @@ namespace pcl
       typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
 
       /** \brief Empty constructor. */
-      IntensityGradientEstimation ()
+      IntensityGradientEstimation () : intensity_ (), threads_ (1)
       {
         feature_name_ = "IntensityGradientEstimation";
-        threads_ = 1;
       };
 
       /** \brief Initialize the scheduler and set the number of threads to use.

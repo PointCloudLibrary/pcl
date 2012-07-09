@@ -80,7 +80,9 @@ namespace pcl
       SampleConsensusModel (bool random = false) : 
         input_ (),
         indices_ (),
-        radius_min_ (-std::numeric_limits<double>::max()), radius_max_ (std::numeric_limits<double>::max()), samples_radius_ (0.),
+        radius_min_ (-std::numeric_limits<double>::max ()), radius_max_ (std::numeric_limits<double>::max ()), 
+        samples_radius_ (0.),
+        samples_radius_search_ (),
         shuffled_indices_ (),
         rng_alg_ (),
         rng_dist_ (new boost::uniform_int<> (0, std::numeric_limits<int>::max ())),
@@ -103,7 +105,9 @@ namespace pcl
       SampleConsensusModel (const PointCloudConstPtr &cloud, bool random = false) : 
         input_ (),
         indices_ (),
-        radius_min_ (-std::numeric_limits<double>::max()), radius_max_ (std::numeric_limits<double>::max()), samples_radius_ (0.),
+        radius_min_ (-std::numeric_limits<double>::max ()), radius_max_ (std::numeric_limits<double>::max ()), 
+        samples_radius_ (0.),
+        samples_radius_search_ (),
         shuffled_indices_ (),
         rng_alg_ (),
         rng_dist_ (new boost::uniform_int<> (0, std::numeric_limits<int>::max ())),
@@ -129,7 +133,9 @@ namespace pcl
       SampleConsensusModel (const PointCloudConstPtr &cloud, const std::vector<int> &indices, bool random = false) :
                             input_ (cloud),
                             indices_ (new std::vector<int> (indices)),
-                            radius_min_ (-std::numeric_limits<double>::max()), radius_max_ (std::numeric_limits<double>::max()), samples_radius_ (0.),
+                            radius_min_ (-std::numeric_limits<double>::max()), radius_max_ (std::numeric_limits<double>::max()), 
+                            samples_radius_ (0.),
+                            samples_radius_search_ (),
                             shuffled_indices_ (),
                             rng_alg_ (),
                             rng_dist_ (new boost::uniform_int<> (0, std::numeric_limits<int>::max ())),

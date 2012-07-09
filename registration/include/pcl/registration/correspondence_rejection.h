@@ -155,7 +155,7 @@ namespace pcl
       * \ingroup registration
       */
     template <typename PointT, typename NormalT=pcl::PointNormal>
-      class DataContainer : public DataContainerInterface
+    class DataContainer : public DataContainerInterface
     {
       typedef typename pcl::PointCloud<PointT>::ConstPtr PointCloudConstPtr;
       typedef typename pcl::KdTree<PointT>::Ptr KdTreePtr;
@@ -164,31 +164,35 @@ namespace pcl
       public:
 
       /** \brief Empty constructor. */
-      DataContainer () : input_ (), target_ ()
+      DataContainer () 
+        : input_ ()
+        , target_ ()
+        , input_normals_ ()
+        , target_normals_ ()
+        , tree_ (new pcl::KdTreeFLANN<PointT>)
       {
-        tree_.reset (new pcl::KdTreeFLANN<PointT>);
       }
 
       /** \brief Provide a source point cloud dataset (must contain XYZ
-       * data!), used to compute the correspondence distance.  
-       * \param[in] cloud a cloud containing XYZ data
-       */
+        * data!), used to compute the correspondence distance.  
+        * \param[in] cloud a cloud containing XYZ data
+        */
       inline void 
-        setInputCloud (const PointCloudConstPtr &cloud)
-        {
-          input_ = cloud;
-        }
+      setInputCloud (const PointCloudConstPtr &cloud)
+      {
+        input_ = cloud;
+      }
 
       /** \brief Provide a target point cloud dataset (must contain XYZ
-       * data!), used to compute the correspondence distance.  
-       * \param[in] target a cloud containing XYZ data
-       */
+        * data!), used to compute the correspondence distance.  
+        * \param[in] target a cloud containing XYZ data
+        */
       inline void 
-        setInputTarget (const PointCloudConstPtr &target)
-        {
-          target_ = target;
-          tree_->setInputCloud (target_);
-        }
+      setInputTarget (const PointCloudConstPtr &target)
+      {
+        target_ = target;
+        tree_->setInputCloud (target_);
+      }
 
       /** \brief Set the normals computed on the input point cloud
         * \param[in] normals the normals computed for the input cloud
@@ -211,33 +215,33 @@ namespace pcl
       getTargetNormals () { return target_normals_; }
 
       /** \brief Get the correspondence score for a point in the input cloud
-       *  \param[index] index of the point in the input cloud
-       */
+        * \param[in] index index of the point in the input cloud
+        */
       inline double 
-        getCorrespondenceScore (int index)
+      getCorrespondenceScore (int index)
+      {
+        std::vector<int> indices (1);
+        std::vector<float> distances (1);
+        if (tree_->nearestKSearch (input_->points[index], 1, indices, distances))
         {
-          std::vector<int> indices (1);
-          std::vector<float> distances (1);
-          if (tree_->nearestKSearch (input_->points[index], 1, indices, distances))
-          {
-            return (distances[0]);
-          }
-          else
-            return (std::numeric_limits<double>::max ());
+          return (distances[0]);
         }
+        else
+          return (std::numeric_limits<double>::max ());
+      }
 
       /** \brief Get the correspondence score for a given pair of correspondent points
-       *  \param[corr] Correspondent points
-       */
+        * \param[in] corr Correspondent points
+        */
       inline double 
-        getCorrespondenceScore (const pcl::Correspondence &corr)
-        {
-          // Get the source and the target feature from the list
-          const PointT &src = input_->points[corr.index_query];
-          const PointT &tgt = target_->points[corr.index_match];
+      getCorrespondenceScore (const pcl::Correspondence &corr)
+      {
+        // Get the source and the target feature from the list
+        const PointT &src = input_->points[corr.index_query];
+        const PointT &tgt = target_->points[corr.index_match];
 
-          return ((src.getVector4fMap () - tgt.getVector4fMap ()).squaredNorm ());
-        }
+        return ((src.getVector4fMap () - tgt.getVector4fMap ()).squaredNorm ());
+      }
       
       /** \brief Get the correspondence score for a given pair of correspondent points based on 
         * the angle betweeen the normals. The normmals for the in put and target clouds must be 

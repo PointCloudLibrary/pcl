@@ -65,10 +65,13 @@ namespace pcl
 
       public:
         /** \brief Empty constructor. */
-        CorrespondenceRejectorFeatures () : max_distance_ (std::numeric_limits<float>::max ())
+        CorrespondenceRejectorFeatures () : max_distance_ (std::numeric_limits<float>::max ()), features_map_ ()
         {
           rejection_name_ = "CorrespondenceRejectorFeatures";
         }
+
+        /** \brief Empty destructor. */
+        virtual ~CorrespondenceRejectorFeatures () {}
 
         /** \brief Get a list of valid correspondences after rejection from the original set of correspondences
           * \param[in] original_correspondences the set of initial correspondences given

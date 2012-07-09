@@ -68,7 +68,7 @@ namespace pcl
     public:
       /** \brief Empty constructor. */
       SamplingSurfaceNormal () : 
-        sample_ (10), seed_ (static_cast<unsigned int> (time (NULL)))
+        sample_ (10), seed_ (static_cast<unsigned int> (time (NULL))), ratio_ ()
       {
         filter_name_ = "SamplingSurfaceNormal";
         srand (seed_);
