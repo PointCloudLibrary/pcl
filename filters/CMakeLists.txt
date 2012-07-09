@@ -20,6 +20,7 @@ if(build)
         src/radius_outlier_removal.cpp
         src/random_sample.cpp
         src/normal_space.cpp
+        src/sampling_surface_normal.cpp
         src/statistical_outlier_removal.cpp
         src/voxel_grid.cpp
         src/approximate_voxel_grid.cpp
@@ -43,6 +44,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/radius_outlier_removal.h
         include/pcl/${SUBSYS_NAME}/random_sample.h
         include/pcl/${SUBSYS_NAME}/normal_space.h
+        include/pcl/${SUBSYS_NAME}/sampling_surface_normal.h
         include/pcl/${SUBSYS_NAME}/statistical_outlier_removal.h
         include/pcl/${SUBSYS_NAME}/voxel_grid.h
         include/pcl/${SUBSYS_NAME}/approximate_voxel_grid.h
@@ -66,6 +68,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/radius_outlier_removal.hpp
         include/pcl/${SUBSYS_NAME}/impl/random_sample.hpp
         include/pcl/${SUBSYS_NAME}/impl/normal_space.hpp
+        include/pcl/${SUBSYS_NAME}/impl/sampling_surface_normal.hpp
         include/pcl/${SUBSYS_NAME}/impl/statistical_outlier_removal.hpp
         include/pcl/${SUBSYS_NAME}/impl/voxel_grid.hpp
         include/pcl/${SUBSYS_NAME}/impl/approximate_voxel_grid.hpp

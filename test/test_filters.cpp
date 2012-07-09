@@ -40,8 +40,10 @@
 #include <gtest/gtest.h>
 #include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
+#include <pcl/features/normal_3d.h>
 #include <pcl/filters/filter.h>
 #include <pcl/filters/passthrough.h>
+#include <pcl/filters/sampling_surface_normal.h>
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/filters/voxel_grid_covariance.h>
 #include <pcl/filters/extract_indices.h>
@@ -1502,6 +1504,40 @@ TEST (ConditionalRemovalSetIndices, Filters)
   EXPECT_EQ (num_not_nan, int (indices->size ()) - int (condrem2_.getRemovedIndices ()->size ()));
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////
+TEST (SamplingSurfaceNormal, Filters)
+{
+  PointCloud <PointNormal>::Ptr incloud (new PointCloud <PointNormal> ());
+  PointCloud <PointNormal> outcloud;
+
+  //Creating a point cloud on the XY plane
+  for (float i = 0; i < 5; i+=0.1)
+  {
+    for (float j = 0; j < 5; j+=0.1)
+    {
+      PointNormal pt;
+      pt.x = i;
+      pt.y = j;
+      pt.z = 1;
+      incloud->points.push_back (pt);
+    }
+  }
+  incloud->width = 1;
+  incloud->height = incloud->points.size ();
+
+  pcl::SamplingSurfaceNormal <pcl::PointNormal> ssn_filter;
+  ssn_filter.setInputCloud (incloud);
+  ssn_filter.setRatio (0.3);
+  ssn_filter.filter (outcloud);
+
+  // All the sampled points should have normals along the direction of Z axis
+  for (unsigned int i = 0; i < outcloud.points.size (); i++)
+  {
+    EXPECT_NEAR (outcloud.points[i].normal[0], 0, 1e-4);
+    EXPECT_NEAR (outcloud.points[i].normal[1], 0, 1e-4);
+    EXPECT_NEAR (outcloud.points[i].normal[2], 1, 1e-4);
+  }
+}
 TEST (ConditionalRemovalTfQuadraticXYZComparison, Filters)
 {
   // Test the PointCloud<PointT> method
