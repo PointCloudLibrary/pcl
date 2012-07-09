@@ -40,8 +40,8 @@
 #ifndef PCL_SAMPLE_CONSENSUS_MODEL_REGISTRATION_H_
 #define PCL_SAMPLE_CONSENSUS_MODEL_REGISTRATION_H_
 
+#include <pcl/sample_consensus/eigen.h>
 #include <boost/unordered_map.hpp>
-#include <Eigen/Core>
 #include <pcl/sample_consensus/sac_model.h>
 #include <pcl/sample_consensus/model_types.h>
 #include <pcl/common/eigen.h>

@@ -38,8 +38,8 @@
 #ifndef PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_SPHERE_H_
 #define PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_SPHERE_H_
 
+#include <pcl/sample_consensus/eigen.h>
 #include <pcl/sample_consensus/sac_model_sphere.h>
-#include <unsupported/Eigen/NonLinearOptimization>
 
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool

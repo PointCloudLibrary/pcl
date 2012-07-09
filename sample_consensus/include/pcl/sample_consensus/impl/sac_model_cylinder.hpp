@@ -38,9 +38,9 @@
 #ifndef PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_CYLINDER_H_
 #define PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_CYLINDER_H_
 
+#include <pcl/sample_consensus/eigen.h>
 #include <pcl/sample_consensus/sac_model_cylinder.h>
 #include <pcl/common/concatenate.h>
-#include <unsupported/Eigen/NonLinearOptimization>
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename PointNT> bool
