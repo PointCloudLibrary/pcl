@@ -38,18 +38,10 @@
 #ifndef PCL_APPS_OPENNI_PASSTHROUGH_3D_
 #define PCL_APPS_OPENNI_PASSTHROUGH_3D_
 
-#ifdef __GNUC__
-#pragma GCC system_header
-#endif
-
-#include <ui_openni_passthrough.h>
-// QT4
-#include <QMainWindow>
-#include <QMutex>
-#include <QTimer>
 // Boost
 #include <boost/thread/thread.hpp>
 // PCL
+#include <pcl/apps/openni_passthrough_qt.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/io/openni_grabber.h>
@@ -114,7 +106,7 @@ class OpenNIPassthrough : public QMainWindow
     void
     adjustPassThroughValues (int new_value)
     {
-      pass_.setFilterLimits (0, new_value / 10.0f);
+      pass_.setFilterLimits (0.0f, float (new_value) / 10.0f);
       PCL_INFO ("Changed passthrough maximum value to: %f\n", float (new_value) / 10.0f);
     }
     
