@@ -195,28 +195,27 @@ openni_wrapper::OpenNIDevice::OpenNIDevice (xn::Context& context, const xn::Node
 {
 // workaround for MAC from Alex Ichim
 #ifdef __APPLE__
-  cerr << "Creating OpenNIDevice" << endl;
   XnStatus rc;
 
     xn::EnumerationErrors errors;
     rc = context_.InitFromXmlFile("/etc/primesense/SamplesConfig.xml", &errors);
     if (rc == XN_STATUS_NO_NODE_PRESENT)
     {
-            XnChar strError[1024];
-            errors.ToString(strError, 1024);
-            printf("%s\n", strError);
+      XnChar strError[1024];
+      errors.ToString(strError, 1024);
+      printf("%s\n", strError);
     }
     else if (rc != XN_STATUS_OK)
     {
-            printf("Open failed: %s\n", xnGetStatusString(rc));
+      printf ("Open failed: %s\n", xnGetStatusString(rc));
     }
 
-  XnStatus status = context_.FindExistingNode(XN_NODE_TYPE_DEPTH, depth_generator_);
-  if (status != XN_STATUS_OK)
-    cerr << "node depth problems" << endl;
-  status = context_.FindExistingNode(XN_NODE_TYPE_IR, ir_generator_);
-    if (status != XN_STATUS_OK)
-      cerr << "node ir problems" << endl;
+  XnStatus status = context_.FindExistingNode (XN_NODE_TYPE_DEPTH, depth_generator_);
+//  if (status != XN_STATUS_OK)
+//    cerr << "node depth problems" << endl;
+  status = context_.FindExistingNode (XN_NODE_TYPE_IR, ir_generator_);
+//    if (status != XN_STATUS_OK)
+//      cerr << "node ir problems" << endl;
 
 #else
   XnStatus status;
