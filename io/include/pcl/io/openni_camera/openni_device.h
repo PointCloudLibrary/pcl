@@ -44,7 +44,7 @@
 #include <vector>
 #include <utility>
 #include "openni_exception.h"
-#include <XnCppWrapper.h>
+#include "openni.h"
 #include <boost/function.hpp>
 #include <boost/thread.hpp>
 #include <boost/thread/condition.hpp>

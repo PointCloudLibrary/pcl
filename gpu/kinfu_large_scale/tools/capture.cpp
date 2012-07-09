@@ -34,8 +34,7 @@
  *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
  */
 
-#include <XnOS.h>
-#include <XnCppWrapper.h>
+#include <pcl/io/openni_camera/openni.h>
 
 #include "openni_capture.h"
 #include <pcl/gpu/containers/initialization.h>

@@ -39,7 +39,7 @@
 #ifndef __OPENNI_DEPTH_IMAGE__
 #define __OPENNI_DEPTH_IMAGE__
 
-#include <XnCppWrapper.h>
+#include "openni.h"
 
 //#include <pcl/pcl_macros.h> // <-- because current header is included in NVCC-compiled code and contains <Eigen/Core>. Consider <pcl/pcl_exports.h>
 #include <pcl/pcl_exports.h>

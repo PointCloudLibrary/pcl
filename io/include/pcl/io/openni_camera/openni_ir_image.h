@@ -36,8 +36,8 @@
 #ifndef __OPENNI_IR_IMAGE__
 #define __OPENNI_IR_IMAGE__
 
-#include <XnCppWrapper.h>
 #include <pcl/pcl_macros.h>
+#include "openni.h"
 #include "openni_exception.h"
 #include <boost/shared_ptr.hpp>
 

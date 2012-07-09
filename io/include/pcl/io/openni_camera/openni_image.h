@@ -39,8 +39,8 @@
 #ifndef __OPENNI_IMAGE__
 #define __OPENNI_IMAGE__
 
-#include <XnCppWrapper.h>
 #include <pcl/pcl_exports.h>
+#include "openni.h"
 #include "openni_exception.h"
 #include <boost/shared_ptr.hpp>
 
