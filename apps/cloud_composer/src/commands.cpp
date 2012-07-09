@@ -1,8 +1,7 @@
-
+#include <pcl/apps/cloud_composer/qt.h>
 #include <pcl/apps/cloud_composer/commands.h>
 #include <pcl/apps/cloud_composer/tool_interface/abstract_tool.h>
 #include <pcl/apps/cloud_composer/project_model.h>
-#include <QDebug>
 
 pcl::cloud_composer::CloudCommand::CloudCommand (QList <const CloudComposerItem*> input_data, QUndoCommand* parent)
   : QUndoCommand (parent)
@@ -25,10 +24,9 @@ pcl::cloud_composer::ModifyCloudCommand::ModifyCloudCommand (QList <const CloudC
 }
 
 bool
-pcl::cloud_composer::ModifyCloudCommand::runCommand (AbstractTool* tool)
+pcl::cloud_composer::ModifyCloudCommand::runCommand (AbstractTool*)
 {
-  
-  
+  return (true);
 }
 
 void

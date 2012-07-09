@@ -38,9 +38,7 @@
 #ifndef WORK_QUEUE_H_
 #define WORK_QUEUE_H_
 
-
-#include <QObject> 
-#include <QQueue>
+#include "qt.h"
 
 #include <pcl/apps/cloud_composer/commands.h>
 

@@ -34,6 +34,7 @@
  *
  */
 
+#include <pcl/apps/modeler/qt.h>
 #include <pcl/apps/modeler/render_widget.h>
 #include <pcl/apps/modeler/dock_widget.h>
 #include <pcl/apps/modeler/main_window.h>
@@ -44,14 +45,11 @@
 #include <vtkRendererCollection.h>
 #include <vtkRenderWindow.h>
 
-#include <QMenu>
-#include <QContextMenuEvent>
-
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::modeler::RenderWidget::RenderWidget(MainWindow* main_window, QWidget *parent, Qt::WFlags flags) : 
   QVTKWidget(parent, flags),
-  main_window_(main_window),
-  TreeItem(QObject::tr("Render Window"))
+  TreeItem(QObject::tr("Render Window")),
+  main_window_(main_window)
 {
   if (parent != NULL)
   {

@@ -38,11 +38,9 @@
 #ifndef COMMANDS_H_
 #define COMMANDS_H_
 
-#include <QUndoCommand>
-
+#include "qt.h"
 #include <pcl/apps/cloud_composer/items/cloud_composer_item.h>
 
-typedef QList<const pcl::cloud_composer::CloudComposerItem*> ConstItemList;
 namespace pcl
 {
   namespace cloud_composer

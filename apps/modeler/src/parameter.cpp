@@ -34,14 +34,12 @@
  *
  */
 
+#include <pcl/apps/modeler/qt.h>
 #include <pcl/apps/modeler/parameter.h>
 
 #include <cassert>
 #include <fstream>
 #include <iomanip>
-
-#include <QWidget>
-#include <QSpinBox>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 std::string
@@ -69,7 +67,7 @@ pcl::modeler::IntParameter::setEditorData(QWidget *editor)
   QSpinBox *spinBox = static_cast<QSpinBox*>(editor);
   spinBox->setAlignment(Qt::AlignHCenter);
 
-  int value = (int)(*this);
+  int value = int (*this);
   spinBox->setValue(value);
 }
 
@@ -87,7 +85,7 @@ pcl::modeler::IntParameter::setModelData(QWidget *editor, QAbstractItemModel *mo
 QString
 pcl::modeler::IntParameter::toString()
 {
-  int value = (int)(*this);
+  int value = int (*this);
   return QString("%1").arg(value);
 }
 
@@ -126,7 +124,7 @@ pcl::modeler::DoubleParameter::setEditorData(QWidget *editor)
   QDoubleSpinBox *spinBox = static_cast<QDoubleSpinBox*>(editor);
   spinBox->setAlignment(Qt::AlignHCenter);
 
-  double value = (double)(*this);
+  double value = double (*this);
   spinBox->setValue(value);
 }
 
@@ -144,7 +142,7 @@ pcl::modeler::DoubleParameter::setModelData(QWidget *editor, QAbstractItemModel 
 QString
 pcl::modeler::DoubleParameter::toString()
 {
-  double value = (double)(*this);
+  double value = double (*this);
   return QString("%1").arg(value);
 }
 

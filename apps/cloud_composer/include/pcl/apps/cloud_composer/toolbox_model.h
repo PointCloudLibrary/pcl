@@ -38,11 +38,10 @@
 #ifndef TOOLBOX_MODEL_H_
 #define TOOLBOX_MODEL_H_
 
-#include <QStandardItemModel>
-#include <QItemSelectionModel>
-#include <QVariant>
+#include "qt.h"
 
-enum TOOLBOX_ROLES { 
+enum TOOLBOX_ROLES 
+{ 
   FACTORY = Qt::UserRole,
   PARAMETER_MODEL
 };
@@ -86,8 +85,8 @@ namespace pcl
       QStandardItem* 
       addToolGroup (QString tool_group_name);
       
-      QTreeView* parameter_view_;
       QTreeView* tool_view_;
+      QTreeView* parameter_view_;
       QItemSelectionModel* selection_model_;
       
     };

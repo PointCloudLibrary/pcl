@@ -38,8 +38,7 @@
 #include <pcl/apps/modeler/render_widget.h>
 #include <pcl/apps/modeler/main_window.h>
 #include <pcl/apps/modeler/abstract_worker.h>
-
-#include <QMenu>
+#include <pcl/apps/modeler/qt.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::modeler::CloudActor::CloudActor (MainWindow* main_window,
@@ -47,12 +46,12 @@ pcl::modeler::CloudActor::CloudActor (MainWindow* main_window,
   const std::string &id,
   const Eigen::Vector4f& sensor_origin,
   const Eigen::Quaternion<float>& sensor_orientation) : 
+  TreeItem(id.c_str()),
   cloud_(cloud),
   id_(id),
   viewpoint_transformation_(vtkSmartPointer<vtkMatrix4x4>::New()),
   actor_(vtkSmartPointer<vtkLODActor>::New ()),
-  main_window_(main_window),
-  TreeItem(id.c_str())
+  main_window_(main_window)
 {
   setCheckable(true);
   updateOnStateChange(Qt::Checked);

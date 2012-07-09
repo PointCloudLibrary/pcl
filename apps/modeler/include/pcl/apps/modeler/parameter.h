@@ -40,8 +40,7 @@
 #include <string>
 
 #include <boost/any.hpp>
-
-#include <QModelIndex>
+#include <pcl/apps/modeler/qt.h>
 
 class QWidget;
 class QAbstractItemModel;

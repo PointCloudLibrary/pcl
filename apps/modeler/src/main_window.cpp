@@ -34,6 +34,7 @@
  *
  */
 
+#include <pcl/apps/modeler/qt.h>
 #include <ui_main_window.h>
 #include <pcl/apps/modeler/main_window.h>
 #include <pcl/apps/modeler/pcl_modeler.h>
@@ -42,16 +43,6 @@
 #include <pcl/apps/modeler/cloud_actor.h>
 #include <pcl/apps/modeler/color_handler_switcher.h>
 #include <pcl/apps/modeler/downsample_worker.h>
-
-#include <QFile>
-#include <QColor>
-#include <QThread>
-#include <QSettings>
-#include <QMessageBox>
-#include <QFileDialog>
-#include <QColorDialog>
-#include <QStandardItem>
-#include <QStandardItemModel>
 
 #include <vtkActor.h>
 #include <vtkRenderer.h>
@@ -366,8 +357,6 @@ pcl::modeler::MainWindow::slotUpdateSelection(const QItemSelection & selected, c
 {
   updateRenderWidgetSelection(selected, true);
   updateRenderWidgetSelection(deselected, false);
-
-  return;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -376,17 +365,16 @@ pcl::modeler::MainWindow::slotChangeBackgroundColor()
 {
   double r, g, b;
   vtkRenderer* renderer = getActiveRender();
-  renderer->GetBackground(r, g, b);
-  QColor color = QColorDialog::getColor(QColor(r, g, b), this);
+  renderer->GetBackground (r, g, b);
+  QColor color = QColorDialog::getColor (QColor (int (r), int (g), int (b)), this);
 
-  if (color.isValid()) {
-    r = color.red();
-    g = color.green();
-    b = color.blue();
-    renderer->SetBackground(r, g, b);
+  if (color.isValid ()) 
+  {
+    r = color.red ();
+    g = color.green ();
+    b = color.blue ();
+    renderer->SetBackground (r, g, b);
   }
-
-  return;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -532,42 +520,37 @@ pcl::modeler::MainWindow::updateRecentProjectActions()
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 bool 
-pcl::modeler::MainWindow::openProjectImpl(const QString& filename)
+pcl::modeler::MainWindow::openProjectImpl (const QString&)
 {
   return (true);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void 
-pcl::modeler::MainWindow::updateRecentActions(std::vector<boost::shared_ptr<QAction> >& recent_actions, QStringList& recent_items)
+pcl::modeler::MainWindow::updateRecentActions (std::vector<boost::shared_ptr<QAction> >& recent_actions, QStringList& recent_items)
 {
-  QMutableStringListIterator recent_items_it(recent_items);
-  while (recent_items_it.hasNext())
+  QMutableStringListIterator recent_items_it (recent_items);
+  while (recent_items_it.hasNext ())
   {
-    if (!QFile::exists(recent_items_it.next()))
-      recent_items_it.remove();
+    if (!QFile::exists (recent_items_it.next ()))
+      recent_items_it.remove ();
   }
 
-  recent_items.removeDuplicates();
-  int recent_number = std::min((int)MAX_RECENT_NUMBER, recent_items.size());
+  recent_items.removeDuplicates ();
+  int recent_number = std::min (int (MAX_RECENT_NUMBER), recent_items.size ());
   for (int i = 0; i < recent_number; ++ i)
   {
-    QString text = tr("%1 %2").arg(i+1).arg(recent_items[i]);
-    recent_actions[i]->setText(text);
-    recent_actions[i]->setData(recent_items[i]);
-    recent_actions[i]->setVisible(true);
+    QString text = tr ("%1 %2").arg (i + 1).arg (recent_items[i]);
+    recent_actions[i]->setText (text);
+    recent_actions[i]->setData (recent_items[i]);
+    recent_actions[i]->setVisible (true);
   }
 
-  for (size_t i = recent_number, i_end = recent_actions.size(); i < i_end; ++ i)
-  {
-    recent_actions[i]->setVisible(false);
-  }
+  for (size_t i = recent_number, i_end = recent_actions.size (); i < i_end; ++ i)
+    recent_actions[i]->setVisible (false);
 
-  while (recent_items.size() > recent_number) {
-    recent_items.pop_back();
-  }
-
-  return;
+  while (recent_items.size () > recent_number)
+    recent_items.pop_back ();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

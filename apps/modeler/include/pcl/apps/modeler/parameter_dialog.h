@@ -36,10 +36,7 @@
 #ifndef PCL_MODELER_PARAMETER_DIALOG_H_
 #define PCL_MODELER_PARAMETER_DIALOG_H_
 
-#include <QDialog>
-#include <QModelIndex>
-#include <QStandardItemModel>
-#include <QStyledItemDelegate>
+#include <pcl/apps/modeler/qt.h>
 
 namespace pcl
 {

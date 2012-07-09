@@ -34,16 +34,12 @@
 *
 */
 
+#include <pcl/apps/modeler/qt.h>
 #include <pcl/apps/modeler/parameter_dialog.h>
 #include <pcl/apps/modeler/parameter.h>
 
 #include <cassert>
 #include <fstream>
-
-#include <QTableView>
-#include <QPushButton>
-#include <QHeaderView>
-#include <QGridLayout>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
@@ -71,7 +67,7 @@ pcl::modeler::ParameterDialog::ParameterDialog(const std::string& title, QWidget
 int
 pcl::modeler::ParameterDialog::exec()
 {
-  pcl::modeler::ParameterModel parameterModel(name_parameter_map_.size(), 2, this);
+  pcl::modeler::ParameterModel parameterModel (int (name_parameter_map_.size ()), 2, this);
   parameter_model_ = &parameterModel;
 
   QStringList headerLabels;
@@ -87,10 +83,10 @@ pcl::modeler::ParameterDialog::exec()
     it != name_parameter_map_.end();
     ++ it)
   {
-    QModelIndex name = parameterModel.index(currentRow, 0, QModelIndex());
+    QModelIndex name = parameterModel.index(int (currentRow), 0, QModelIndex());
     parameterModel.setData(name, QVariant(it->first.c_str()));
 
-    QModelIndex value = parameterModel.index(currentRow, 1, QModelIndex());
+    QModelIndex value = parameterModel.index(int (currentRow), 1, QModelIndex());
     parameterModel.setData(value, QVariant(it->second->toString()));
 
     currentRow ++;
@@ -140,7 +136,7 @@ pcl::modeler::ParameterDialog::reset()
   {
     it->second->reset();
 
-    QModelIndex value = parameter_model_->index(currentRow, 1, QModelIndex());
+    QModelIndex value = parameter_model_->index(int (currentRow), 1, QModelIndex());
     parameter_model_->setData(value, QVariant(it->second->toString()));
 
     currentRow ++;
@@ -167,14 +163,14 @@ pcl::modeler::Parameter* pcl::modeler::ParameterDelegate::getCurrentParameter(co
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::modeler::ParameterDelegate::ParameterDelegate(std::map<std::string, Parameter*>& parameterMap, QObject *parent):
-  parameter_map_(parameterMap),
-  QStyledItemDelegate(parent)
+  QStyledItemDelegate(parent),
+  parameter_map_(parameterMap)
 {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 QWidget *
-pcl::modeler::ParameterDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option , const QModelIndex &index) const
+pcl::modeler::ParameterDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &, const QModelIndex &index) const
 {
   return getCurrentParameter(index)->createEditor(parent);
 }
@@ -195,7 +191,7 @@ pcl::modeler::ParameterDelegate::setModelData(QWidget *editor, QAbstractItemMode
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::modeler::ParameterDelegate::updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const
+pcl::modeler::ParameterDelegate::updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &) const
 {
   editor->setGeometry(option.rect);
 }

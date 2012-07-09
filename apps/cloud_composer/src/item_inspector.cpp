@@ -1,9 +1,6 @@
+#include <pcl/apps/cloud_composer/qt.h>
 #include <pcl/apps/cloud_composer/item_inspector.h>
 #include <pcl/apps/cloud_composer/items/cloud_composer_item.h>
-
-#include <QItemSelectionModel>
-
-#include <QDebug>
 
 pcl::cloud_composer::ItemInspector::ItemInspector (QWidget* parent)
   : QTreeView(parent)
@@ -50,7 +47,7 @@ pcl::cloud_composer::ItemInspector::setProjectAndSelectionModels (ProjectModel* 
 }
 
 void
-pcl::cloud_composer::ItemInspector::selectionChanged (const QModelIndex &current, const QModelIndex &previous)
+pcl::cloud_composer::ItemInspector::selectionChanged (const QModelIndex &current, const QModelIndex &)
 {
   //If we have a model loaded, save its tree state 
   if (current_item_model_)
@@ -104,7 +101,7 @@ pcl::cloud_composer::ItemInspector::restoreTreeState ()
 }
 
 void 
-pcl::cloud_composer::ItemInspector::itemChanged (QStandardItem *item)
+pcl::cloud_composer::ItemInspector::itemChanged (QStandardItem *)
 {
 
   

@@ -37,8 +37,8 @@
 #ifndef PCL_MODELER_COLOR_HANDLER_SWITCHER_H_
 #define PCL_MODELER_COLOR_HANDLER_SWITCHER_H_
 
+#include <pcl/apps/modeler/qt.h>
 #include <pcl/visualization/point_cloud_handlers.h>
-#include <QDialog>
 
 class QColorDialog;
 

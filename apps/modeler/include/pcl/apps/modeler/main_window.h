@@ -37,10 +37,9 @@
 #ifndef PCL_MODELER_MAIN_WINDOW_H_
 #define PCL_MODELER_MAIN_WINDOW_H_
 
+#include <pcl/apps/modeler/qt.h>
 #include <boost/shared_ptr.hpp>
 #include <vtkSmartPointer.h>
-#include <QMainWindow>
-#include <QItemSelection>
 
 // Forward Qt class declarations
 namespace Ui

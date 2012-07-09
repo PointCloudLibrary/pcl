@@ -38,8 +38,7 @@
 #ifndef ITEM_INSPECTOR_H_
 #define ITEM_INSPECTOR_H_
 
-#include <QTreeView>
-
+#include "qt.h"
 #include <pcl/apps/cloud_composer/project_model.h>
 class QItemSelectionModel;
 

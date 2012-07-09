@@ -38,9 +38,7 @@
 #ifndef CLOUD_VIEW_H_
 #define CLOUD_VIEW_H_
 
-
-#include <QAbstractItemView>
-#include <QVTKWidget.h>
+#include "qt.h"
 
 #include <pcl/visualization/pcl_visualizer.h>
 

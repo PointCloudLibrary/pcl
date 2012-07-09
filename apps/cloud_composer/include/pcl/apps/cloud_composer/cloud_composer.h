@@ -38,20 +38,13 @@
 #ifndef CLOUD_COMPOSER_H_
 #define CLOUD_COMPOSER_H_
 
-//Qt
-#include <QMainWindow>
-#include <QMetaType>
-#include <QDir>
-#include <Qt>
-
-#include <ui_cloud_composer_main_window.h>
+#include "qt.h"
 
 //PCL
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 
-
-
+#include <ui_cloud_composer_main_window.h>
 class QTreeView;
 
 namespace pcl

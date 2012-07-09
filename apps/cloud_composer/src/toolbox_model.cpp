@@ -1,6 +1,4 @@
-#include <QTreeView>
-#include <QMessageBox>
-
+#include <pcl/apps/cloud_composer/qt.h>
 #include <pcl/apps/cloud_composer/toolbox_model.h>
 #include <pcl/apps/cloud_composer/tool_interface/abstract_tool.h>
 #include <pcl/apps/cloud_composer/tool_interface/tool_factory.h>
@@ -14,10 +12,7 @@ pcl::cloud_composer::ToolBoxModel::ToolBoxModel (QTreeView* tool_view, QTreeView
  
 }
 
-
-
-
-pcl::cloud_composer::ToolBoxModel::ToolBoxModel (const ToolBoxModel& to_copy)
+pcl::cloud_composer::ToolBoxModel::ToolBoxModel (const ToolBoxModel&)
 {
 }
 
@@ -74,7 +69,7 @@ pcl::cloud_composer::ToolBoxModel::addToolGroup (QString tool_group_name)
 }
 
 void
-pcl::cloud_composer::ToolBoxModel::selectedToolChanged (const QModelIndex & current, const QModelIndex & previous)
+pcl::cloud_composer::ToolBoxModel::selectedToolChanged (const QModelIndex & current, const QModelIndex &)
 {
   //qDebug() << "Selected Tool changed";
   if (!parameter_view_)

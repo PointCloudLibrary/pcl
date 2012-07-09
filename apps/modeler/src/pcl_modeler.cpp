@@ -44,20 +44,17 @@
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////
-pcl::modeler::PCLModeler::PCLModeler(MainWindow* main_window) : 
-  main_window_(main_window),
-  QStandardItemModel(main_window)
+pcl::modeler::PCLModeler::PCLModeler (MainWindow* main_window) : 
+  QStandardItemModel (main_window),
+  main_window_ (main_window)
 {
-  connect(this, SIGNAL(rowsInserted(const QModelIndex &, int, int )), this, SLOT(slotUpdateRenderWidgetTitle()));
-  connect(this, SIGNAL(rowsRemoved(const QModelIndex &, int, int )), this, SLOT(slotUpdateRenderWidgetTitle()));
-
-  return;
+  connect (this, SIGNAL (rowsInserted (const QModelIndex &, int, int )), this, SLOT (slotUpdateRenderWidgetTitle ()));
+  connect (this, SIGNAL (rowsRemoved (const QModelIndex &, int, int )), this, SLOT (slotUpdateRenderWidgetTitle ()));
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
-pcl::modeler::PCLModeler::~PCLModeler()
+pcl::modeler::PCLModeler::~PCLModeler ()
 {
-  return;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////

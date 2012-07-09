@@ -1,5 +1,4 @@
-#include <QtGui>
-
+#include <pcl/apps/cloud_composer/qt.h>
 #include <pcl/apps/cloud_composer/cloud_view.h>
 #include <pcl/apps/cloud_composer/cloud_composer.h>
 #include <pcl/apps/cloud_composer/project_model.h>
@@ -72,7 +71,7 @@ pcl::cloud_composer::CloudView::refresh ()
 }
 
 void
-pcl::cloud_composer::CloudView::dataChanged (const QModelIndex& topLeft, const QModelIndex& bottomRight)
+pcl::cloud_composer::CloudView::dataChanged (const QModelIndex&, const QModelIndex&)
 {
   qDebug () << "Data Changed - Redrawing!";
   
@@ -128,7 +127,7 @@ pcl::cloud_composer::CloudView::rowsInserted (const QModelIndex& parent, int sta
         
         QVariant normals_variant = item->data (NORMALS_CLOUD);
         pcl::PointCloud<pcl::Normal>::Ptr normals_ptr = normals_variant.value<pcl::PointCloud<pcl::Normal>::Ptr> ();
-        QString normals_name = project_name + item->text () + tr("%1%2").arg(radius).arg((long)item);
+        QString normals_name = project_name + item->text () + tr ("%1%2").arg (radius).arg (long (item));
         //Get the parent cloud, convert to XYZ 
         if (parent_item->type () == CLOUD_ITEM)
         {
@@ -137,7 +136,7 @@ pcl::cloud_composer::CloudView::rowsInserted (const QModelIndex& parent, int sta
           pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
           pcl::fromROSMsg (*cloud_blob, *cloud); 
           //TODO: Add somewhere where these parameters can be adjusted!!
-          vis_->addPointCloudNormals<pcl::PointXYZ, pcl::Normal> (cloud, normals_ptr, 100, 0.04, normals_name.toStdString ());
+          vis_->addPointCloudNormals<pcl::PointXYZ, pcl::Normal> (cloud, normals_ptr, 100, 0.04f, normals_name.toStdString ());
         }
         else
           qWarning () << "Normal item inserted, but parent not a cloud. Don't know how to draw that!";
@@ -180,7 +179,7 @@ pcl::cloud_composer::CloudView::rowsAboutToBeRemoved (const QModelIndex& parent,
         double radius = (item->getProperty ("Radius")).toDouble();
         QVariant normals_variant = item->data (NORMALS_CLOUD);
         pcl::PointCloud<pcl::Normal>::Ptr normals_ptr = normals_variant.value<pcl::PointCloud<pcl::Normal>::Ptr> ();
-        QString normals_name = project_name + item->text () + tr("%1%2").arg(radius).arg((long)item);
+        QString normals_name = project_name + item->text () + tr ("%1%2").arg (radius).arg (long (item));
         vis_->removePointCloud (normals_name.toStdString ());
         break;
       }
@@ -193,13 +192,13 @@ pcl::cloud_composer::CloudView::rowsAboutToBeRemoved (const QModelIndex& parent,
 
 
 void 
-pcl::cloud_composer::CloudView::paintEvent (QPaintEvent* event)
+pcl::cloud_composer::CloudView::paintEvent (QPaintEvent*)
 {
   qvtk_->update ();
 }
 
 void 
-pcl::cloud_composer::CloudView::resizeEvent (QResizeEvent* event)
+pcl::cloud_composer::CloudView::resizeEvent (QResizeEvent*)
 {
   qvtk_->update ();
 }

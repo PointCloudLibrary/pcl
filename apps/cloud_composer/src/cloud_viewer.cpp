@@ -1,5 +1,4 @@
-#include <QtGui>
-
+#include <pcl/apps/cloud_composer/qt.h>
 #include <pcl/apps/cloud_composer/cloud_viewer.h>
 #include <pcl/apps/cloud_composer/project_model.h>
 #include <pcl/apps/cloud_composer/cloud_view.h>
@@ -64,7 +63,7 @@ pcl::cloud_composer::CloudViewer::setModel (ProjectModel* new_model)
 void
 pcl::cloud_composer::CloudViewer::modelChanged (int index)
 {
-  CloudView* view = static_cast<CloudView*> (this->widget (index));
+  CloudView* view = static_cast<CloudView*> (this->widget (index)); view = view;
   emit newModelSelected (getModel ());
 }
 

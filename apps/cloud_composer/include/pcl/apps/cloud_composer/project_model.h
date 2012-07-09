@@ -38,12 +38,7 @@
 #ifndef PROJECT_MODEL_H_
 #define PROJECT_MODEL_H_
 
-#include <QStandardItemModel>
-#include <QItemSelectionModel>
-#include <QModelIndex>
-#include <QVariant>
-#include <QUndoStack>
-
+#include "qt.h"
 #include <vtkSmartPointer.h>
 #include <vtkCamera.h>
 
@@ -85,7 +80,7 @@ namespace pcl
         setName (QString new_name);     
         
         /** \brief Returns the selection model which is used for this project */
-        inline QItemSelectionModel* const
+        inline QItemSelectionModel*
         getSelectionModel ()
         {
           return selection_model_;

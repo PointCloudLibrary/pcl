@@ -37,9 +37,8 @@
 #ifndef PCL_MODELER_PCLMODELER_H_
 #define PCL_MODELER_PCLMODELER_H_
 
+#include <pcl/apps/modeler/qt.h>
 #include <map>
-
-#include <QStandardItemModel>
 
 #include <vtkLODActor.h>
 #include <pcl/visualization/point_cloud_handlers.h>

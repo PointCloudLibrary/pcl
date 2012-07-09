@@ -42,13 +42,12 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::modeler::DownSampleWorker::DownSampleWorker(const std::vector<CloudActor*>& cloud_actors, QWidget* parent) :
+  AbstractWorker (cloud_actors, parent),
   x_min_(std::numeric_limits<double>::max()), x_max_(std::numeric_limits<double>::min()),
   y_min_(std::numeric_limits<double>::max()), y_max_(std::numeric_limits<double>::min()),
   z_min_(std::numeric_limits<double>::max()), z_max_(std::numeric_limits<double>::min()),
-  leaf_size_x_(NULL), leaf_size_y_(NULL), leaf_size_z_(NULL),
-  AbstractWorker(cloud_actors, parent)
+  leaf_size_x_(NULL), leaf_size_y_(NULL), leaf_size_z_(NULL)
 {
-
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -106,11 +105,11 @@ pcl::modeler::DownSampleWorker::setupParameters()
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::modeler::DownSampleWorker::processImpl(PointCloud2Ptr input_cloud, PointCloud2Ptr output_cloud) const
+pcl::modeler::DownSampleWorker::processImpl (PointCloud2Ptr input_cloud, PointCloud2Ptr output_cloud) const
 {
   pcl::VoxelGrid<sensor_msgs::PointCloud2> voxel_grid;
   voxel_grid.setInputCloud (input_cloud);
-  voxel_grid.setLeafSize (*leaf_size_x_, *leaf_size_y_, *leaf_size_z_);
+  voxel_grid.setLeafSize (float (*leaf_size_x_), float (*leaf_size_y_), float (*leaf_size_z_));
   voxel_grid.filter (*output_cloud);
 
   return;

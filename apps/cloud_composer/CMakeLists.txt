@@ -49,7 +49,8 @@ if(build)
   
   if (VTK_FOUND AND QT4_FOUND AND VTK_USE_QVTK)
     #Sources & Headers for main application
-    set(incs include/pcl/apps/${SUBSYS_NAME}/cloud_composer.h
+    set(incs include/pcl/apps/${SUBSYS_NAME}/qt.h
+             include/pcl/apps/${SUBSYS_NAME}/cloud_composer.h
              include/pcl/apps/${SUBSYS_NAME}/project_model.h
              include/pcl/apps/${SUBSYS_NAME}/cloud_viewer.h
              include/pcl/apps/${SUBSYS_NAME}/cloud_view.h

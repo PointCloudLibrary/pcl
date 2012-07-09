@@ -86,7 +86,7 @@ namespace pcl
     {
       QComboBox *comboBox = static_cast<QComboBox*>(editor);
 
-      T value = (T)(*this);
+      T value = T (*this);
       comboBox->setCurrentIndex(value);
     }
 
@@ -95,7 +95,7 @@ namespace pcl
     EnumParameter<T>::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index)
     {
       QComboBox *comboBox = static_cast<QComboBox*>(editor);
-      T value = (T)(comboBox->currentIndex());
+      T value = T (comboBox->currentIndex());
       current_value_ = value;
       model->setData(index, toString(), Qt::EditRole);
     }
@@ -104,7 +104,7 @@ namespace pcl
     template <class T> QString
     EnumParameter<T>::toString()
     {
-      T value = (T)(*this);
+      T value = T (*this);
       std::string valueString = "should not see this";
       for (typename std::map<T, std::string>::const_iterator it = candidates_.begin();
         it != candidates_.end();

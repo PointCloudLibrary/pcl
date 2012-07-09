@@ -36,8 +36,7 @@
 
 #ifndef PCL_MODELER_ABSTRACT_WORKER_H_
 #define PCL_MODELER_ABSTRACT_WORKER_H_
-
-#include <QObject>
+#include <pcl/apps/modeler/qt.h>
 #include <sensor_msgs/PointCloud2.h>
 
 namespace pcl

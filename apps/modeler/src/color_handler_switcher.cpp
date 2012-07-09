@@ -37,8 +37,7 @@
 #include <set>
 #include <algorithm>
 
-#include <QPushButton>
-#include <QColorDialog>
+#include <pcl/apps/modeler/qt.h>
 
 #include <ui_color_handler_switcher.h>
 #include <pcl/apps/modeler/color_handler_switcher.h>
@@ -47,10 +46,10 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::modeler::ColorHandlerSwitcher::ColorHandlerSwitcher(const std::vector<CloudActor*>& cloud_actors, QWidget * parent, Qt::WindowFlags f) :
-  cloud_actors_(cloud_actors),
-  color_picker_(new QColorDialog(this)),
+  QDialog(parent, f),
   ui_(new Ui::ColorHandlerSwitcher),
-  QDialog(parent, f)
+  color_picker_(new QColorDialog(this)),
+  cloud_actors_(cloud_actors)
 {
   ui_->setupUi(this);
 

@@ -1,7 +1,4 @@
-#include <QtGui>
-#include <QFileInfo>
-
-
+#include <pcl/apps/cloud_composer/qt.h>
 #include <pcl/apps/cloud_composer/cloud_composer.h>
 #include <pcl/apps/cloud_composer/project_model.h>
 #include <pcl/apps/cloud_composer/cloud_viewer.h>

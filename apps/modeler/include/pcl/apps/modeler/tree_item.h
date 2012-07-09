@@ -37,8 +37,7 @@
 #ifndef PCL_MODELER_TREE_ITEM_H_
 #define PCL_MODELER_TREE_ITEM_H_
 
-#include <QStandardItem>
-#include <QPoint>
+#include <pcl/apps/modeler/qt.h>
 
 namespace pcl
 {

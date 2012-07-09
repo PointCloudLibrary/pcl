@@ -38,10 +38,10 @@
 #ifndef ABSTRACT_TOOL_H_
 #define ABSTRACT_TOOL_H_
 
-#include <QObject>
-#include <QDebug>
+#include <pcl/apps/cloud_composer/qt.h>
 #include <pcl/apps/cloud_composer/commands.h>
 #include <pcl/apps/cloud_composer/items/cloud_item.h>
+
 namespace pcl
 {
   namespace cloud_composer

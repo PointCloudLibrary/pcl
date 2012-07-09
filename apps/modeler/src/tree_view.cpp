@@ -34,10 +34,9 @@
  *
  */
 
+#include <pcl/apps/modeler/qt.h>
 #include <pcl/apps/modeler/tree_view.h>
 #include <pcl/apps/modeler/tree_item.h>
-
-#include <QContextMenuEvent>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::modeler::TreeView::TreeView(QWidget * parent) : 

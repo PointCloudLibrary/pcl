@@ -37,7 +37,7 @@
 #ifndef PCL_MODELER_TREE_VIEW_H_
 #define PCL_MODELER_TREE_VIEW_H_
 
-#include <QTreeView>
+#include <pcl/apps/modeler/qt.h>
 
 class QContextMenuEvent;
 

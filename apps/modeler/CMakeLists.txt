@@ -42,6 +42,7 @@ if(build)
   set(resources resources/resources.qrc)
 
   set(incs ${moc_incs}
+           include/pcl/apps/${SUBSYS_NAME}/qt.h
            include/pcl/apps/${SUBSYS_NAME}/cloud_actor.h
            include/pcl/apps/${SUBSYS_NAME}/render_widget.h
            include/pcl/apps/${SUBSYS_NAME}/dock_widget.h
