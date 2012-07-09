@@ -55,7 +55,7 @@
 #include <pcl/surface/marching_cubes_hoppe.h>
 #include <pcl/surface/marching_cubes_rbf.h>
 #include <pcl/common/common.h>
-#include <boost/random.hpp>
+#include "boost.h"
 
 #include <pcl/io/obj_io.h>
 #include <pcl/TextureMesh.h>

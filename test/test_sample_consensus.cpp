@@ -38,6 +38,7 @@
  */
 #include <gtest/gtest.h>
 #include <pcl/io/pcd_io.h>
+#include "boost.h"
 #include <pcl/sample_consensus/sac.h>
 #include <pcl/sample_consensus/lmeds.h>
 #include <pcl/sample_consensus/ransac.h>
@@ -57,7 +58,6 @@
 #include <pcl/sample_consensus/sac_model_parallel_plane.h>
 #include <pcl/sample_consensus/sac_model_normal_parallel_plane.h>
 #include <pcl/features/normal_3d.h>
-#include <boost/thread.hpp>
 
 using namespace pcl;
 using namespace pcl::io;

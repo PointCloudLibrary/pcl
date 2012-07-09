@@ -82,6 +82,7 @@ namespace pcl
         */
       SampleConsensusModelCylinder (const PointCloudConstPtr &cloud) : 
         SampleConsensusModel<PointT> (cloud), 
+        SampleConsensusModelFromNormals<PointT, PointNT> (), 
         axis_ (Eigen::Vector3f::Zero ()),
         eps_angle_ (0),
         tmp_inliers_ ()
@@ -94,6 +95,7 @@ namespace pcl
         */
       SampleConsensusModelCylinder (const PointCloudConstPtr &cloud, const std::vector<int> &indices) : 
         SampleConsensusModel<PointT> (cloud, indices), 
+        SampleConsensusModelFromNormals<PointT, PointNT> (), 
         axis_ (Eigen::Vector3f::Zero ()),
         eps_angle_ (0),
         tmp_inliers_ ()

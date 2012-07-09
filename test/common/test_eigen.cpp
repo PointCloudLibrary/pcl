@@ -38,10 +38,9 @@
  */
 
 #include <gtest/gtest.h>
-#include <boost/random.hpp>
-#include <boost/random/variate_generator.hpp>
 #include <pcl/point_types.h>
 #include <pcl/common/eigen.h>
+#include "boost.h"
 
 using namespace pcl;
 using namespace std;

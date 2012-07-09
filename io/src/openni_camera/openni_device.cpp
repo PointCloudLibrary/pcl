@@ -91,6 +91,7 @@ openni_wrapper::OpenNIDevice::OpenNIDevice (
 #ifdef __APPLE__
   XnStatus rc;
 
+  image_node = image_node; depth_node = depth_node; ir_node = ir_node;
   xn::EnumerationErrors errors;
   rc = context_.InitFromXmlFile ("/etc/openni/SamplesConfig.xml", &errors);
   if (rc == XN_STATUS_NO_NODE_PRESENT)
@@ -111,7 +112,7 @@ openni_wrapper::OpenNIDevice::OpenNIDevice (
 //  if (status != XN_STATUS_OK)
 //    std:cerr << "node image problems" << std::endl;
   status = context_.FindExistingNode (XN_NODE_TYPE_IR, ir_generator_);
-//    if (status != XN_STATUS_OK)
+  if (status != XN_STATUS_OK) ;
 //      std::cerr << "node ir problems" << std::endl;
 
 #else
@@ -197,23 +198,25 @@ openni_wrapper::OpenNIDevice::OpenNIDevice (xn::Context& context, const xn::Node
 #ifdef __APPLE__
   XnStatus rc;
 
-    xn::EnumerationErrors errors;
-    rc = context_.InitFromXmlFile("/etc/primesense/SamplesConfig.xml", &errors);
-    if (rc == XN_STATUS_NO_NODE_PRESENT)
-    {
-      XnChar strError[1024];
-      errors.ToString(strError, 1024);
-      printf("%s\n", strError);
-    }
-    else if (rc != XN_STATUS_OK)
-    {
-      printf ("Open failed: %s\n", xnGetStatusString(rc));
-    }
+  depth_node = depth_node; ir_node = ir_node;
+  xn::EnumerationErrors errors;
+  rc = context_.InitFromXmlFile("/etc/primesense/SamplesConfig.xml", &errors);
+  if (rc == XN_STATUS_NO_NODE_PRESENT)
+  {
+    XnChar strError[1024];
+    errors.ToString(strError, 1024);
+    printf("%s\n", strError);
+  }
+  else if (rc != XN_STATUS_OK)
+  {
+    printf ("Open failed: %s\n", xnGetStatusString(rc));
+  }
 
   XnStatus status = context_.FindExistingNode (XN_NODE_TYPE_DEPTH, depth_generator_);
 //  if (status != XN_STATUS_OK)
 //    cerr << "node depth problems" << endl;
   status = context_.FindExistingNode (XN_NODE_TYPE_IR, ir_generator_);
+  if (status != XN_STATUS_OK) ;
 //    if (status != XN_STATUS_OK)
 //      cerr << "node ir problems" << endl;
 
