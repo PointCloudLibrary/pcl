@@ -46,7 +46,7 @@
 #include <errno.h>
 #include <iostream>
 #include <fstream>
-#include <Eigen/Core>
+#include <pcl/common/eigen.h>
 #include <vector>
 
 #include <pcl/console/time.h>

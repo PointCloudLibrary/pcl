@@ -85,7 +85,7 @@ if(build)
     set(resources resources/resources.qrc)
 
     QT4_WRAP_UI(cloud_composer_ui ${uis})
-    QT4_WRAP_CPP(cloud_composer_moc ${incs} ${item_incs})
+    QT4_WRAP_CPP(cloud_composer_moc ${incs} ${item_incs} OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)
     QT4_ADD_RESOURCES(resource_srcs ${resources})
     
     set(EXE_NAME pcl_${SUBSYS_NAME})
@@ -107,7 +107,7 @@ if(build)
     set(INTERFACE_HEADERS 
                           include/pcl/apps/${SUBSYS_NAME}/tool_interface/abstract_tool.h)
 
-    QT4_WRAP_CPP(INTERFACE_HEADERS_MOC ${INTERFACE_HEADERS})
+    QT4_WRAP_CPP(INTERFACE_HEADERS_MOC ${INTERFACE_HEADERS} OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)
     PCL_ADD_LIBRARY(pcl_cc_tool_interface ${SUBSYS_NAME} ${INTERFACE_HEADERS_MOC})
 
     include(ComposerTool.cmake REQUIRED)

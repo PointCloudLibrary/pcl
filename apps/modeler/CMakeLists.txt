@@ -69,7 +69,7 @@ if(build)
            include/pcl/apps/${SUBSYS_NAME}/impl/parameter.hpp)
   # Qt stuff
   QT4_WRAP_UI(ui_srcs ${uis})
-  QT4_WRAP_CPP(moc_srcs ${moc_incs})
+  QT4_WRAP_CPP(moc_srcs ${moc_incs} OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)
   QT4_ADD_RESOURCES(resource_srcs ${resources})
 
   # Organize files
