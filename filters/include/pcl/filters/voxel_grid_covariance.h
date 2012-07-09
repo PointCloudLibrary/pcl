@@ -38,11 +38,9 @@
 #ifndef PCL_VOXEL_GRID_COVARIANCE_H_
 #define PCL_VOXEL_GRID_COVARIANCE_H_
 
+#include <pcl/filters/boost.h>
 #include <pcl/filters/voxel_grid.h>
 #include <map>
-#include <boost/unordered_map.hpp>
-#include <boost/mpl/size.hpp>
-#include <boost/fusion/sequence/intrinsic/at_key.hpp>
 #include <pcl/point_types.h>
 #include <pcl/kdtree/kdtree_flann.h>
 

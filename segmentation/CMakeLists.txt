@@ -25,6 +25,7 @@ if(build)
        )
 
     set(incs 
+        include/pcl/${SUBSYS_NAME}/boost.h
         include/pcl/${SUBSYS_NAME}/extract_clusters.h
         include/pcl/${SUBSYS_NAME}/extract_labeled_clusters.h
         include/pcl/${SUBSYS_NAME}/extract_polygonal_prism_data.h

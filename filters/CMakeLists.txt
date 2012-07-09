@@ -30,6 +30,7 @@ if(build)
         )
 
     set(incs
+        include/pcl/${SUBSYS_NAME}/boost.h
         include/pcl/${SUBSYS_NAME}/conditional_removal.h
         include/pcl/${SUBSYS_NAME}/crop_box.h
         include/pcl/${SUBSYS_NAME}/clipper3D.h

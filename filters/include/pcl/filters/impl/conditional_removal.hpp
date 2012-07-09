@@ -39,7 +39,7 @@
 #define PCL_FILTER_IMPL_FIELD_VAL_CONDITION_H_
 
 #include <pcl/common/io.h>
-#include <boost/shared_ptr.hpp>
+#include <pcl/filters/boost.h>
 #include <vector>
 #include <Eigen/Geometry>
 
@@ -48,8 +48,9 @@
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 pcl::FieldComparison<PointT>::FieldComparison (
-    std::string field_name, ComparisonOps::CompareOp op, double compare_val) :
-      compare_val_ (compare_val), point_data_ (NULL)
+    std::string field_name, ComparisonOps::CompareOp op, double compare_val) 
+  : ComparisonBase<PointT> ()
+  , compare_val_ (compare_val), point_data_ (NULL)
 {
   field_name_ = field_name;
   op_ = op;

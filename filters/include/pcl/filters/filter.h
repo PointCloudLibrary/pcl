@@ -42,7 +42,7 @@
 
 #include <pcl/pcl_base.h>
 #include <pcl/ros/conversions.h>
-#include <boost/make_shared.hpp>
+#include <pcl/filters/boost.h>
 #include <cfloat>
 
 namespace pcl

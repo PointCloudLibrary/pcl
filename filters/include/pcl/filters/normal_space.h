@@ -38,11 +38,10 @@
 #ifndef PCL_FILTERS_NORMAL_SUBSAMPLE_H_
 #define PCL_FILTERS_NORMAL_SUBSAMPLE_H_
 
+#include <pcl/filters/boost.h>
 #include <pcl/filters/filter_indices.h>
 #include <time.h>
 #include <limits.h>
-
-#include <boost/dynamic_bitset.hpp>
 
 namespace pcl
 {

@@ -39,12 +39,10 @@
 #define PCL_VOXEL_GRID_COVARIANCE_IMPL_H_
 
 #include <pcl/common/common.h>
+#include <pcl/filters/boost.h>
 #include <pcl/filters/voxel_grid_covariance.h>
 #include <Eigen/Dense>
 #include <Eigen/Cholesky>
-
-#include <boost/random.hpp>
-#include <boost/random/normal_distribution.hpp>
 
 //////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT> void

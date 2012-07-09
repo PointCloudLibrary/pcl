@@ -40,8 +40,8 @@
 #ifndef PCL_RGB_SEGMENTATION_PLANE_COEFFICIENT_COMPARATOR_H_
 #define PCL_RGB_SEGMENTATION_PLANE_COEFFICIENT_COMPARATOR_H_
 
+#include <pcl/segmentation/boost.h>
 #include <pcl/segmentation/plane_coefficient_comparator.h>
-#include <boost/make_shared.hpp>
 
 namespace pcl
 {

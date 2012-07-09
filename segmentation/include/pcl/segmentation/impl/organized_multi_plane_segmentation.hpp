@@ -40,11 +40,11 @@
 #ifndef PCL_SEGMENTATION_IMPL_ORGANIZED_MULTI_PLANE_SEGMENTATION_H_
 #define PCL_SEGMENTATION_IMPL_ORGANIZED_MULTI_PLANE_SEGMENTATION_H_
 
+#include <pcl/segmentation/boost.h>
 #include <pcl/segmentation/organized_connected_component_segmentation.h>
 #include <pcl/segmentation/organized_multi_plane_segmentation.h>
 #include <pcl/common/centroid.h>
 #include <pcl/common/eigen.h>
-#include <boost/make_shared.hpp>
 
 ///////////////////////////////////////////////////////////////
 Eigen::Vector3f linePlaneIntersection (Eigen::Vector3f& p1, Eigen::Vector3f& p2, Eigen::Vector3f& norm, Eigen::Vector3f& p3)

@@ -41,10 +41,8 @@
 #define PCL_FILTERS_CONVOLUTION_3D_H
 
 #include <pcl/pcl_base.h>
-#include <boost/function.hpp>
-#include <boost/bind.hpp>
+#include <pcl/filters/boost.h>
 #include <pcl/search/pcl_search.h>
-#include <boost/optional.hpp>
 
 namespace pcl
 {

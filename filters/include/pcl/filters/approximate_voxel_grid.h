@@ -38,8 +38,8 @@
 #ifndef PCL_FILTERS_APPROXIMATE_VOXEL_GRID_MAP_H_
 #define PCL_FILTERS_APPROXIMATE_VOXEL_GRID_MAP_H_
 
+#include <pcl/filters/boost.h>
 #include <pcl/filters/filter.h>
-#include <boost/mpl/size.hpp>
 
 namespace pcl
 {

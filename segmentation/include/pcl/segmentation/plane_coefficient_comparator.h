@@ -41,8 +41,8 @@
 #define PCL_SEGMENTATION_PLANE_COEFFICIENT_COMPARATOR_H_
 
 #include <pcl/common/angles.h>
+#include <pcl/segmentation/boost.h>
 #include <pcl/segmentation/comparator.h>
-#include <boost/make_shared.hpp>
 
 namespace pcl
 {

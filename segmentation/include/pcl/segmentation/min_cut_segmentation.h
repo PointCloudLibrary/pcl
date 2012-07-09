@@ -42,8 +42,7 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/search/search.h>
-#include <boost/graph/adjacency_list.hpp>
-#include <boost/shared_ptr.hpp>
+#include <pcl/segmentation/boost.h>
 #include <string>
 #include <set>
 

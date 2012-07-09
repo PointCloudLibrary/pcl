@@ -40,8 +40,8 @@
 #ifndef PCL_SEGMENTATION_EUCLIDEAN_CLUSTER_COMPARATOR_H_
 #define PCL_SEGMENTATION_EUCLIDEAN_CLUSTER_COMPARATOR_H_
 
+#include <pcl/segmentation/boost.h>
 #include <pcl/segmentation/comparator.h>
-#include <boost/make_shared.hpp>
 
 namespace pcl
 {

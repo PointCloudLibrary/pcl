@@ -145,8 +145,9 @@ namespace pcl
       /** \brief Copy constructor.
         * \param[in] src the field comparison object to copy into this
         */
-      FieldComparison (const FieldComparison &src) :
-        compare_val_ (src.compare_val_), point_data_ (src.point_data_)
+      FieldComparison (const FieldComparison &src) 
+        : ComparisonBase<PointT> ()
+        , compare_val_ (src.compare_val_), point_data_ (src.point_data_)
       {
       }
 

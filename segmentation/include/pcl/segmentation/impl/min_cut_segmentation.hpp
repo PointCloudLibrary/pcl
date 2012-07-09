@@ -39,10 +39,10 @@
 #ifndef PCL_SEGMENTATION_MIN_CUT_SEGMENTATION_HPP_
 #define PCL_SEGMENTATION_MIN_CUT_SEGMENTATION_HPP_
 
+#include <pcl/segmentation/boost.h>
 #include <pcl/segmentation/min_cut_segmentation.h>
 #include <pcl/search/search.h>
 #include <pcl/search/kdtree.h>
-#include <boost/graph/boykov_kolmogorov_max_flow.hpp>
 #include <stdlib.h>
 #include <cmath>
 
