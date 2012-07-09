@@ -118,7 +118,7 @@ openni_wrapper::OpenNIDevice::OpenNIDevice (
 //  if (status != XN_STATUS_OK)
 //    std:cerr << "node image problems" << std::endl;
   status = context_.FindExistingNode (XN_NODE_TYPE_IR, ir_generator_);
-  if (status != XN_STATUS_OK) ;
+  if (status != XN_STATUS_OK) {}
 //      std::cerr << "node ir problems" << std::endl;
 
 #else
@@ -212,7 +212,6 @@ openni_wrapper::OpenNIDevice::OpenNIDevice (xn::Context& context, const xn::Node
 #ifdef __APPLE__
   XnStatus rc;
 
-  depth_node = depth_node; ir_node = ir_node;
   xn::EnumerationErrors errors;
   rc = context_.InitFromXmlFile("/etc/primesense/SamplesConfig.xml", &errors);
   if (rc == XN_STATUS_NO_NODE_PRESENT)
@@ -230,7 +229,7 @@ openni_wrapper::OpenNIDevice::OpenNIDevice (xn::Context& context, const xn::Node
 //  if (status != XN_STATUS_OK)
 //    cerr << "node depth problems" << endl;
   status = context_.FindExistingNode (XN_NODE_TYPE_IR, ir_generator_);
-  if (status != XN_STATUS_OK) ;
+  if (status != XN_STATUS_OK) {}
 //    if (status != XN_STATUS_OK)
 //      cerr << "node ir problems" << endl;
 
