@@ -42,6 +42,7 @@
 #pragma GCC diagnostic ignored "-Wold-style-cast"
 #endif
 
+#include <pcl/io/openni_camera/openni.h>
 #include <pcl/io/openni_camera/openni_driver.h>
 #include <pcl/io/openni_camera/openni_device_kinect.h>
 #include <pcl/io/openni_camera/openni_device_primesense.h>
@@ -53,13 +54,11 @@
 #include <locale>
 #include <cctype>
 #include <map>
-#include <XnVersion.h>
 
 #ifndef _WIN32
 #include <libusb-1.0/libusb.h>
 #else
-#include <boost/foreach.hpp>
-#include <boost/tokenizer.hpp>
+#include <pcl/io/boost.h>
 #endif
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

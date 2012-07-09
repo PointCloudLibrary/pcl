@@ -42,8 +42,8 @@
 #include <pcl/point_types.h>
 #include <pcl/common/time.h>
 #include <pcl/console/print.h>
+#include <pcl/io/boost.h>
 #include <pcl/io/pcl_io_exception.h>
-#include <boost/shared_array.hpp>
 #include <iostream>
 
 namespace pcl

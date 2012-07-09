@@ -48,20 +48,6 @@
 #include <string>
 #include <vector>
 
-#include <boost/function.hpp>
-#include <boost/tuple/tuple.hpp>
-#include <boost/shared_ptr.hpp>
-#include <boost/mpl/fold.hpp>
-#include <boost/mpl/inherit.hpp>
-#include <boost/mpl/inherit_linearly.hpp>
-#include <boost/mpl/joint_view.hpp>
-#include <boost/mpl/transform.hpp>
-#include <boost/mpl/vector.hpp>
-
-#include <pcl/io/ply/ply.h>
-#include <pcl/io/ply/io_operators.h>
-#include <pcl/pcl_macros.h>
-
 #ifdef BUILD_Maintainer
 #  if defined __GNUC__
 #    if __GNUC__ == 4 && __GNUC_MINOR__ > 3
@@ -74,6 +60,12 @@
 #    pragma warning(push, 1)
 #  endif
 #endif
+
+#include <pcl/io/boost.h>
+
+#include <pcl/io/ply/ply.h>
+#include <pcl/io/ply/io_operators.h>
+#include <pcl/pcl_macros.h>
 
 namespace pcl
 {

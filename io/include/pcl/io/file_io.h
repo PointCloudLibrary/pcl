@@ -40,7 +40,7 @@
 
 #include <pcl/pcl_macros.h>
 #include <pcl/common/io.h>
-#include <boost/numeric/conversion/cast.hpp>
+#include <pcl/io/boost.h>
 #include <cmath>
 #include <sstream>
 

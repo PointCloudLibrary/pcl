@@ -41,7 +41,7 @@
 #ifndef PCL_IO_VTK_LIB_IO_H_
 #define PCL_IO_VTK_LIB_IO_H_
 
-#include <boost/filesystem.hpp>
+#include <pcl/io/boost.h>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 #include <pcl/PolygonMesh.h>

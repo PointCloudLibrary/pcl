@@ -45,10 +45,8 @@
 #include <utility>
 #include "openni_exception.h"
 #include "openni.h"
-#include <boost/function.hpp>
-#include <boost/thread.hpp>
-#include <boost/thread/condition.hpp>
 
+#include <pcl/io/boost.h>
 #include <pcl/pcl_macros.h>
 
 /// @todo Get rid of all exception-specifications, these are useless and soon to be deprecated

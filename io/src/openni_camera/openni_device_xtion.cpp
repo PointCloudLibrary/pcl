@@ -44,7 +44,7 @@
 
 #include <pcl/io/openni_camera/openni_device_xtion.h>
 #include <sstream>
-#include <boost/thread/mutex.hpp>
+#include <pcl/io/boost.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 openni_wrapper::DeviceXtionPro::DeviceXtionPro (xn::Context& context, const xn::NodeInfo& device_node, const xn::NodeInfo& depth_node, const xn::NodeInfo& ir_node)

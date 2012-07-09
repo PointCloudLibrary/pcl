@@ -42,6 +42,7 @@
 #define __PCL_IO_OPENNI_GRABBER__
 
 #include <pcl/io/eigen.h>
+#include <pcl/io/boost.h>
 #include <pcl/io/grabber.h>
 #include <pcl/io/openni_camera/openni_driver.h>
 #include <pcl/io/openni_camera/openni_device_kinect.h>
@@ -50,7 +51,6 @@
 #include <pcl/io/openni_camera/openni_ir_image.h>
 #include <string>
 #include <deque>
-#include <boost/thread/mutex.hpp>
 #include <pcl/common/synchronizer.h>
 
 namespace pcl

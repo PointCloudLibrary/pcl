@@ -45,9 +45,7 @@
 #include "openni.h"
 #include "openni_exception.h"
 #include "openni_device.h"
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
-
+#include <pcl/io/boost.h>
 #include <pcl/pcl_macros.h>
 
 namespace openni_wrapper

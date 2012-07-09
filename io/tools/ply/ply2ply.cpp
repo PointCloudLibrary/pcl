@@ -42,8 +42,7 @@
 #include <fstream>
 #include <iostream>
 
-#include <boost/bind.hpp>
-
+#include <pcl/io/boost.h>
 #include <pcl/io/ply/ply_parser.h>
 
 /** \class ply_to_ply_converter

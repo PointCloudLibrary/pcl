@@ -43,8 +43,8 @@
 #include <pcl/point_types.h>
 #include <pcl/common/io.h>
 #include <pcl/io/ply_io.h>
+#include <pcl/io/boost.h>
 #include <sstream>
-#include <boost/algorithm/string.hpp>
 
 boost::tuple<boost::function<void ()>, boost::function<void ()> >
 pcl::PLYReader::elementDefinitionCallback (const std::string& element_name, std::size_t count)

@@ -96,6 +96,7 @@ if(build)
         )
 
     set(incs 
+        include/pcl/${SUBSYS_NAME}/boost.h
         include/pcl/${SUBSYS_NAME}/eigen.h
         include/pcl/${SUBSYS_NAME}/file_io.h
         include/pcl/${SUBSYS_NAME}/lzf.h

@@ -41,12 +41,11 @@
 #include <map>
 #include <iostream>
 #include <string>
-#include <boost/signals2.hpp>
-#include <boost/signals2/slot.hpp>
 #include <typeinfo>
 #include <vector>
 #include <sstream>
 #include <pcl/pcl_macros.h>
+#include <pcl/io/boost.h>
 #include <pcl/io/pcl_io_exception.h>
 
 namespace pcl

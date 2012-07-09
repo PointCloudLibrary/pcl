@@ -42,8 +42,7 @@
 #include <fstream>
 #include <iostream>
 
-#include <boost/bind.hpp>
-
+#include <pcl/io/boost.h>
 #include <pcl/io/ply/ply_parser.h>
 
 /** Class ply_to_raw_converter converts a PLY file to a povray (www.povray.org) RAW file

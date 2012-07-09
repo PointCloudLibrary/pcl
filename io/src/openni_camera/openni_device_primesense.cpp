@@ -46,7 +46,7 @@
 #include <pcl/io/openni_camera/openni_image_yuv_422.h>
 #include <iostream>
 #include <sstream>
-#include <boost/thread/mutex.hpp>
+#include <pcl/io/boost.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 openni_wrapper::DevicePrimesense::DevicePrimesense (

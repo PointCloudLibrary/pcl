@@ -41,7 +41,7 @@
 #ifndef PLY_PLY_H
 #define PLY_PLY_H
 
-#include <boost/cstdint.hpp>
+#include <pcl/io/boost.h>
 #include <pcl/io/ply/byte_order.h>
 
 /** \file ply.h contains standard typedefs and generic type traits

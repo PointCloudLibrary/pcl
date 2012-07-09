@@ -44,7 +44,7 @@
 #include <fcntl.h>
 #include <string>
 #include <stdlib.h>
-#include <boost/algorithm/string.hpp>
+#include <pcl/io/boost.h>
 #include <pcl/channel_properties.h>
 #include <pcl/console/print.h>
 #ifdef _WIN32

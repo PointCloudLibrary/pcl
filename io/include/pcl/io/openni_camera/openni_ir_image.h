@@ -39,7 +39,7 @@
 #include <pcl/pcl_macros.h>
 #include "openni.h"
 #include "openni_exception.h"
-#include <boost/shared_ptr.hpp>
+#include <pcl/io/boost.h>
 
 namespace openni_wrapper
 {

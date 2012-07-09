@@ -2,6 +2,7 @@
  * Software License Agreement (BSD License)
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2011-2012, Willow Garage, Inc.
  *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
@@ -16,7 +17,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -32,21 +33,40 @@
  *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
- *
  */
-#include <pcl/pcl_config.h>
-#ifdef HAVE_OPENNI
 
-#ifndef _PCL_OPENNI_OPENNI_H_
-#define _PCL_OPENNI_OPENNI_H_
+#ifndef _PCL_IO_BOOST_H_
+#define _PCL_IO_BOOST_H_
 
 #if defined __GNUC__
 #  pragma GCC system_header 
 #endif
 
-#include <XnOS.h>
-#include <XnCppWrapper.h>
-#include <XnVersion.h>
+#include <boost/numeric/conversion/cast.hpp>
+#include <boost/thread/mutex.hpp>
+#include <boost/thread/condition.hpp>
+#include <boost/thread.hpp>
+#include <boost/thread/thread.hpp>
+#include <boost/filesystem.hpp>
+#include <boost/bind.hpp>
+#include <boost/signals2.hpp>
+#include <boost/signals2/slot.hpp>
+#include <boost/cstdint.hpp>
+#include <boost/function.hpp>
+#include <boost/tuple/tuple.hpp>
+#include <boost/shared_ptr.hpp>
+#include <boost/weak_ptr.hpp>
+#include <boost/mpl/fold.hpp>
+#include <boost/mpl/inherit.hpp>
+#include <boost/mpl/inherit_linearly.hpp>
+#include <boost/mpl/joint_view.hpp>
+#include <boost/mpl/transform.hpp>
+#include <boost/mpl/vector.hpp>
+#include <boost/algorithm/string.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/tokenizer.hpp>
+#include <boost/foreach.hpp>
+#include <boost/shared_array.hpp>
 
-#endif
-#endif    // _PCL_OPENNI_OPENNI_H_
+#endif    // _PCL_IO_BOOST_H_
+

@@ -41,12 +41,10 @@
 #include <fcntl.h>
 #include <string>
 #include <stdlib.h>
-#include <boost/algorithm/string.hpp>
+#include <pcl/io/boost.h>
 #include <pcl/common/io.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/io/lzf.h>
-
-#include <boost/filesystem.hpp>
 
 #include <cstring>
 #include <cerrno>

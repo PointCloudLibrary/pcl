@@ -44,7 +44,7 @@
 //#include <pcl/pcl_macros.h> // <-- because current header is included in NVCC-compiled code and contains <Eigen/Core>. Consider <pcl/pcl_exports.h>
 #include <pcl/pcl_exports.h>
 #include "openni_exception.h"
-#include <boost/shared_ptr.hpp>
+#include <pcl/io/boost.h>
 
 namespace openni_wrapper
 {
