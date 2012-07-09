@@ -112,12 +112,12 @@ namespace pcl
       public:
         static T* asPtr (QVariant v)
         {
-          return (T *) v.value<void *> ();
+          return (static_cast<T *> (v.value<void *> ()));
         }
 
         static QVariant asQVariant (T* ptr)
         {
-          return qVariantFromValue ( (void *) ptr);
+          return (qVariantFromValue (static_cast<void*>(ptr)));
         }
     };
     

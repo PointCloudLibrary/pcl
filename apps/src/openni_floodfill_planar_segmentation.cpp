@@ -517,7 +517,7 @@ run ()
                                            centroid[2] + (0.5f * plane_normals[i].values[2]));
         char normal_name[500];
         sprintf (normal_name, "normal_%d", unsigned (i));
-        viewer->addArrow (pt2, pt1, 1.0, 0, 0, normal_name);
+        viewer->addArrow (pt2, pt1, 1.0, 0, 0, std::string (normal_name));
       }
 
       viewer->addPointCloud<pcl::PointXYZ>(boost::make_shared<pcl::PointCloud<pcl::PointXYZ> >(downsampled_cloud), "cloud");

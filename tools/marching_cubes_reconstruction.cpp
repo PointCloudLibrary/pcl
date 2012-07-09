@@ -99,7 +99,7 @@ compute (const sensor_msgs::PointCloud2::ConstPtr &input, PolygonMesh &output,
   else
   {
     mc = new MarchingCubesRBF<PointNormal> ();
-    ((MarchingCubesRBF<PointNormal>*) mc)->setOffSurfaceDisplacement (off_surface_displacement);
+    (reinterpret_cast<MarchingCubesRBF<PointNormal>*> (mc))->setOffSurfaceDisplacement (off_surface_displacement);
   }
 
   mc->setIsoLevel (iso_level);

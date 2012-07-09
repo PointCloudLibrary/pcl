@@ -86,19 +86,4 @@ namespace pcl
   }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 #endif //WORK_QUEUE_H_
