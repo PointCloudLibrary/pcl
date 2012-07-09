@@ -73,10 +73,11 @@ template <class T> static inline void swap (T& x, T& y)
   y = t;
 }
 
-template <class S, class T> static inline void clone (T*& dst, S* src, int n)
+template <class S, class T> static inline void 
+clone (T*& dst, S* src, int n)
 {
   dst = new T[n];
-  memcpy ( (void *) dst, (void *) src, sizeof (T) *n);
+  memcpy (reinterpret_cast<void*> (dst), (void*) (src), sizeof (T) *n);
 }
 
 static inline double powi (double base, int times)
@@ -96,8 +97,8 @@ static inline double powi (double base, int times)
 
 #define INF HUGE_VAL
 #define TAU 1e-12
-#define Malloc(type,n) (type *)malloc((n)*sizeof(type))
-#define Realloc(var,type,n) (type *)realloc(var,(n)*sizeof(type))
+#define Malloc(type,n) static_cast<type *> (malloc((n)*sizeof(type)))
+#define Realloc(var,type,n) static_cast<type *> (realloc(var,(n)*sizeof(type)))
 
 static void print_string_stdout (const char *s)
 {
@@ -161,10 +162,10 @@ class Cache
 
 Cache::Cache (int l_, long int size_) : l (l_), size (size_)
 {
-  head = (head_t *) calloc (l, sizeof (head_t)); // initialized to 0
+  head = static_cast<head_t *> (calloc (l, sizeof (head_t))); // initialized to 0
   size /= sizeof (Qfloat);
   size -= l * sizeof (head_t) / sizeof (Qfloat);
-  size = max (size, 2 * (long int) l); // cache must be large enough for two columns
+  size = max (size, 2 * static_cast<long int> (l)); // cache must be large enough for two columns
   lru_head.next = lru_head.prev = &lru_head;
 }
 
@@ -215,7 +216,7 @@ int Cache::get_data (const int index, Qfloat **data, int len)
     }
 
     // allocate new space
-    h->data = (Qfloat *) realloc (h->data, sizeof (Qfloat) * len);
+    h->data = static_cast<Qfloat *> (realloc (h->data, sizeof (Qfloat) * len));
 
     size -= more;
 
@@ -345,7 +346,7 @@ class Kernel: public QMatrix
 
     double kernel_precomputed (int i, int j) const
     {
-      return x[i][ (int) (x[j][0].value) ].value;
+      return x[i][ int (x[j][0].value) ].value;
     }
 };
 
@@ -479,7 +480,7 @@ double Kernel::k_function (const svm_node *x, const svm_node *y,
       return tanh (param.gamma*dot (x, y) + param.coef0);
 
     case PRECOMPUTED:  //x: test (validation), y: SV
-      return x[ (int) (y->value) ].value;
+      return x[ int (y->value) ].value;
 
     default:
       return 0;  // Unreachable
@@ -1497,7 +1498,7 @@ class SVC_Q: public Kernel
         : Kernel (prob.l, prob.x, param)
     {
       clone (y, y_, prob.l);
-      cache = new Cache (prob.l, (long int) (param.cache_size* (1 << 20)));
+      cache = new Cache (prob.l, static_cast<long int> (param.cache_size* (1 << 20)));
       QD = new double[prob.l];
 
       for (int i = 0;i < prob.l;i++)
@@ -1512,7 +1513,7 @@ class SVC_Q: public Kernel
       if ( (start = cache->get_data (i, &data, len)) < len)
       {
         for (j = start;j < len;j++)
-          data[j] = (Qfloat) (y[i] * y[j] * (this->*kernel_function) (i, j));
+          data[j] = Qfloat (y[i] * y[j] * (this->*kernel_function) (i, j));
       }
 
       return data;
@@ -1551,7 +1552,7 @@ class ONE_CLASS_Q: public Kernel
     ONE_CLASS_Q (const svm_problem& prob, const svm_parameter& param)
         : Kernel (prob.l, prob.x, param)
     {
-      cache = new Cache (prob.l, (long int) (param.cache_size* (1 << 20)));
+      cache = new Cache (prob.l, static_cast<long int> (param.cache_size* (1 << 20)));
       QD = new double[prob.l];
 
       for (int i = 0;i < prob.l;i++)
@@ -1566,7 +1567,7 @@ class ONE_CLASS_Q: public Kernel
       if ( (start = cache->get_data (i, &data, len)) < len)
       {
         for (j = start;j < len;j++)
-          data[j] = (Qfloat) (this->*kernel_function) (i, j);
+          data[j] = Qfloat ((this->*kernel_function) (i, j));
       }
 
       return data;
@@ -1603,7 +1604,7 @@ class SVR_Q: public Kernel
         : Kernel (prob.l, prob.x, param)
     {
       l = prob.l;
-      cache = new Cache (l, (long int) (param.cache_size* (1 << 20)));
+      cache = new Cache (l, static_cast<long int> (param.cache_size* (1 << 20)));
       QD = new double[2*l];
       sign = new schar[2*l];
       index = new int[2*l];
@@ -1639,7 +1640,7 @@ class SVR_Q: public Kernel
       if (cache->get_data (real_i, &data, l) < l)
       {
         for (j = 0;j < l;j++)
-          data[j] = (Qfloat) (this->*kernel_function) (real_i, j);
+          data[j] = Qfloat ((this->*kernel_function) (real_i, j));
       }
 
       // reorder and copy
@@ -1650,7 +1651,7 @@ class SVR_Q: public Kernel
       schar si = sign[i];
 
       for (j = 0;j < len;j++)
-        buf[j] = (Qfloat) si * (Qfloat) sign[j] * data[index[j]];
+        buf[j] = Qfloat (si) * Qfloat (sign[j]) * data[index[j]];
 
       return buf;
     }
@@ -1796,7 +1797,7 @@ static void solve_one_class (
   schar *ones = new schar[l];
   int i;
 
-  int n = (int) (param->nu * prob->l); // # of alpha's at upper bound
+  int n = int (param->nu * prob->l); // # of alpha's at upper bound
 
   for (i = 0;i < n;i++)
     alpha[i] = 1;
@@ -2382,7 +2383,7 @@ static void svm_group_classes (const svm_problem *prob, int *nr_class_ret, int *
 
   for (i = 0;i < l;i++)
   {
-    int this_label = (int) prob->y[i];
+    int this_label = int (prob->y[i]);
     int j;
 
     for (j = 0;j < nr_class;j++)
@@ -2401,8 +2402,8 @@ static void svm_group_classes (const svm_problem *prob, int *nr_class_ret, int *
       if (nr_class == max_nr_class)
       {
         max_nr_class *= 2;
-        label = (int *) realloc (label, max_nr_class * sizeof (int));
-        count = (int *) realloc (count, max_nr_class * sizeof (int));
+        label = static_cast<int *> (realloc (label, max_nr_class * sizeof (int)));
+        count = static_cast<int *> (realloc (count, max_nr_class * sizeof (int)));
       }
 
       label[nr_class] = this_label;
@@ -3190,7 +3191,7 @@ int svm_save_model (const char *model_file_name, const svm_model *model)
     const svm_node *p = SV[i];
 
     if (param.kernel_type == PRECOMPUTED)
-      fprintf (fp, "0:%d ", (int) (p->value));
+      fprintf (fp, "0:%d ", int (p->value));
     else
       while (p->index != -1)
       {
@@ -3220,8 +3221,8 @@ static char* readline (FILE *input)
   while (strrchr (line, '\n') == NULL)
   {
     max_line_len *= 2;
-    line = (char *) realloc (line, max_line_len);
-    len = (int) strlen (line);
+    line = static_cast<char *> (realloc (line, max_line_len));
+    len = int (strlen (line));
 
     if (fgets (line + len, max_line_len - len, input) == NULL)
       break;
@@ -3261,11 +3262,12 @@ svm_model *svm_load_model (const char *model_file_name)
 
   while (1)
   {
-    fscanf (fp, "%80s", cmd);
+    int res = fscanf (fp, "%80s", cmd);
+    res = res;
 
     if (strcmp (cmd, "svm_type") == 0)
     {
-      fscanf (fp, "%80s", cmd);
+      res = fscanf (fp, "%80s", cmd);
       int i;
 
       for (i = 0;svm_type_table[i];i++)
@@ -3290,7 +3292,7 @@ svm_model *svm_load_model (const char *model_file_name)
     else
       if (strcmp (cmd, "kernel_type") == 0)
       {
-        fscanf (fp, "%80s", cmd);
+        res = fscanf (fp, "%80s", cmd);
         int i;
 
         for (i = 0;kernel_type_table[i];i++)
@@ -3314,19 +3316,19 @@ svm_model *svm_load_model (const char *model_file_name)
       }
       else
         if (strcmp (cmd, "degree") == 0)
-          fscanf (fp, "%d", &param.degree);
+          res = fscanf (fp, "%d", &param.degree);
         else
           if (strcmp (cmd, "gamma") == 0)
-            fscanf (fp, "%lf", &param.gamma);
+            res = fscanf (fp, "%lf", &param.gamma);
           else
             if (strcmp (cmd, "coef0") == 0)
-              fscanf (fp, "%lf", &param.coef0);
+              res = fscanf (fp, "%lf", &param.coef0);
             else
               if (strcmp (cmd, "nr_class") == 0)
-                fscanf (fp, "%d", &model->nr_class);
+                res = fscanf (fp, "%d", &model->nr_class);
               else
                 if (strcmp (cmd, "total_sv") == 0)
-                  fscanf (fp, "%d", &model->l);
+                  res = fscanf (fp, "%d", &model->l);
                 else
                   if (strcmp (cmd, "rho") == 0)
                   {
@@ -3334,7 +3336,7 @@ svm_model *svm_load_model (const char *model_file_name)
                     model->rho = Malloc (double, n);
 
                     for (int i = 0;i < n;i++)
-                      fscanf (fp, "%lf", &model->rho[i]);
+                      res = fscanf (fp, "%lf", &model->rho[i]);
                   }
                   else
                     if (strcmp (cmd, "label") == 0)
@@ -3343,7 +3345,7 @@ svm_model *svm_load_model (const char *model_file_name)
                       model->label = Malloc (int, n);
 
                       for (int i = 0;i < n;i++)
-                        fscanf (fp, "%d", &model->label[i]);
+                        res = fscanf (fp, "%d", &model->label[i]);
                     }
                     else
                       if (strcmp (cmd, "probA") == 0)
@@ -3352,7 +3354,7 @@ svm_model *svm_load_model (const char *model_file_name)
                         model->probA = Malloc (double, n);
 
                         for (int i = 0;i < n;i++)
-                          fscanf (fp, "%lf", &model->probA[i]);
+                          res = fscanf (fp, "%lf", &model->probA[i]);
                       }
                       else
                         if (strcmp (cmd, "probB") == 0)
@@ -3361,7 +3363,7 @@ svm_model *svm_load_model (const char *model_file_name)
                           model->probB = Malloc (double, n);
 
                           for (int i = 0;i < n;i++)
-                            fscanf (fp, "%lf", &model->probB[i]);
+                            res = fscanf (fp, "%lf", &model->probB[i]);
                         }
                         else
                           if (strcmp (cmd, "nr_sv") == 0)
@@ -3370,7 +3372,7 @@ svm_model *svm_load_model (const char *model_file_name)
                             model->nSV = Malloc (int, n);
 
                             for (int i = 0;i < n;i++)
-                              fscanf (fp, "%d", &model->nSV[i]);
+                              res = fscanf (fp, "%d", &model->nSV[i]);
                           }
                           else
                             if (strcmp (cmd, "scaling") == 0)
@@ -3379,7 +3381,7 @@ svm_model *svm_load_model (const char *model_file_name)
                               int ii = 0, pre_ii = 0;
                               //char delims[]="\t: ";
                               model->scaling = Malloc (struct svm_node, 1);
-                              fscanf (fp, "%10000[^\n]", buff);
+                              res = fscanf (fp, "%10000[^\n]", buff);
                               idx = strtok (buff, ":");
 
                               while (idx != NULL)
@@ -3505,7 +3507,7 @@ svm_model *svm_load_model (const char *model_file_name)
       if (val == NULL)
         break;
 
-      x_space[j].index = (int) strtol (idx, &endptr, 10);
+      x_space[j].index = int (strtol (idx, &endptr, 10));
 
       x_space[j].value = strtod (val, &endptr);
 
@@ -3534,7 +3536,7 @@ svm_model *svm_load_model (const char *model_file_name)
 void svm_free_model_content (svm_model* model_ptr)
 {
   if (model_ptr->free_sv && model_ptr->l > 0 && model_ptr->SV != NULL)
-    free ( (void *) (model_ptr->SV[0]));
+    free (static_cast<void *> (model_ptr->SV[0]));
 
   if (model_ptr->sv_coef)
   {
@@ -3662,7 +3664,7 @@ const char *svm_check_parameter (const svm_problem *prob, const svm_parameter *p
 
     for (i = 0;i < l;i++)
     {
-      int this_label = (int) prob->y[i];
+      int this_label = int (prob->y[i]);
       int j;
 
       for (j = 0;j < nr_class;j++)
@@ -3677,8 +3679,8 @@ const char *svm_check_parameter (const svm_problem *prob, const svm_parameter *p
         if (nr_class == max_nr_class)
         {
           max_nr_class *= 2;
-          label = (int *) realloc (label, max_nr_class * sizeof (int));
-          count = (int *) realloc (count, max_nr_class * sizeof (int));
+          label = static_cast<int *> (realloc (label, max_nr_class * sizeof (int)));
+          count = static_cast<int *> (realloc (count, max_nr_class * sizeof (int)));
         }
 
         label[nr_class] = this_label;
