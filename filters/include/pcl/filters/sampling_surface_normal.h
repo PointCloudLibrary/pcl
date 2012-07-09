@@ -45,12 +45,12 @@
 namespace pcl
 {
   /** \brief @b SamplingSurfaceNormal divides the input space into grids until each grid contains a maximum of N points, 
-   *  and samples points randomly within each grid. Normal is computed using the N points of each grid. All points
-   *  sampled within a grid are assigned the same normal.
-   *
-   *  \author Aravindhan K Krishnan. This code is ported from libpointmatcher (https://github.com/ethz-asl/libpointmatcher)
-   *  \ingroup filters
-   */
+    * and samples points randomly within each grid. Normal is computed using the N points of each grid. All points
+    * sampled within a grid are assigned the same normal.
+    *
+    * \author Aravindhan K Krishnan. This code is ported from libpointmatcher (https://github.com/ethz-asl/libpointmatcher)
+    * \ingroup filters
+    */
   template<typename PointT>
   class SamplingSurfaceNormal: public FilterIndices<PointT>
   {
@@ -75,7 +75,7 @@ namespace pcl
       }
 
       /** \brief Set maximum number of samples in each grid
-        * \param[in] maximum number of samples in each grid
+        * \param[in] sample maximum number of samples in each grid
         */
       inline void
       setSample (unsigned int sample)
@@ -108,7 +108,7 @@ namespace pcl
       }
 
       /** \brief Set ratio of points to be sampled in each grid
-        * \param[in] sample the ratio of points to be sampled in each grid
+        * \param[in] ratio sample the ratio of points to be sampled in each grid
         */
       inline void
       setRatio (float ratio)
@@ -142,7 +142,7 @@ namespace pcl
         * \param indices the resultant point cloud indices
         */
       void
-      applyFilter (vector <int>& indices)
+      applyFilter (std::vector<int>&)
       {
       }
 
@@ -163,71 +163,90 @@ namespace pcl
         }
 
         /** \brief The operator function for sorting. */
-        bool operator () (const int& p0, const int& p1)
+        bool 
+        operator () (const int& p0, const int& p1)
         {
           if (dim == 0)
-          {
-            return cloud.points[p0].x < cloud.points[p1].x;
-          }
+            return (cloud.points[p0].x < cloud.points[p1].x);
           else if (dim == 1)
-          {
-            return cloud.points[p0].y < cloud.points[p1].y;
-          }
+            return (cloud.points[p0].y < cloud.points[p1].y);
           else if (dim == 2)
-          {
-            return cloud.points[p0].z < cloud.points[p1].z;
-          }
+            return (cloud.points[p0].z < cloud.points[p1].z);
+          return (false);
         }
       };
 
       /** \brief Finds the max and min values in each dimension
-        * \param[out] max and min vectors
+        * \param[in] cloud the input cloud 
+        * \param[out] max_vec the max value vector
+        * \param[out] min_vec the min value vector
         */
-      void findXYZMaxMin (const PointCloud& cloud, Vector& max_vec, Vector& min_vec);
+      void 
+      findXYZMaxMin (const PointCloud& cloud, Vector& max_vec, Vector& min_vec);
 
       /** \brief Recursively partition the point cloud, stopping when each grid contains less than sample_ points
-       *  Points are randomly sampled when a grid is found
-        * \param[out] output the resultant point cloud
+        *  Points are randomly sampled when a grid is found
+        * \param cloud
+        * \param first
+        * \param last
+        * \param min_values
+        * \param max_values
+        * \param indices
+        * \param[out] outcloud output the resultant point cloud
         */
-      void partition (PointCloud&  cloud, const int first, const int last, const Vector minValues,
-                      const Vector maxValues, std::vector <int>& indices, PointCloud& outcloud);
+      void 
+      partition (const PointCloud& cloud, const int first, const int last, 
+                 const Vector min_values, const Vector max_values, 
+                 std::vector<int>& indices, PointCloud& outcloud);
 
       /** \brief Randomly sample the points in each grid.
+        * \param[in] data 
+        * \param[in] first
+        * \param[in] last
+        * \param[out] indices 
         * \param[out] output the resultant point cloud
         */
-      void samplePartition (PointCloud& data, const int first, const int last, 
-                            vector <int>& indices, PointCloud& outcloud);
+      void 
+      samplePartition (const PointCloud& data, const int first, const int last, 
+                       std::vector<int>& indices, PointCloud& outcloud);
 
       /** \brief Returns the threshold for splitting in a given dimension.
+        * \param[in] cloud the input cloud
+        * \param[in] cut_dim the input dimension (0=x, 1=y, 2=z)
+        * \param[in] cut_index the input index in the cloud
         */
-      float findCutVal (PointCloud& cloud, const int cutDim, const int cutIndex);
+      float 
+      findCutVal (const PointCloud& cloud, const int cut_dim, const int cut_index);
 
       /** \brief Computes the normal for points in a grid. This is a port from features to avoid features dependency for
-       *  filters
-       *  \param cloud The input cloud
-       *  \param[out] normal the computed normal
-       *  \param[out] curvature the computed curvature
-       */
-      void computeNormal (PointCloud& cloud, Eigen::Vector4f &normal, float& curvature);
+        * filters
+        * \param[in] cloud The input cloud
+        * \param[out] normal the computed normal
+        * \param[out] curvature the computed curvature
+        */
+      void 
+      computeNormal (const PointCloud& cloud, Eigen::Vector4f &normal, float& curvature);
 
       /** \brief Computes the covariance matrix for points in the cloud. This is a port from features to avoid features dependency for
-       *  filters
-       *  \param cloud The input cloud
-       *  \param[out] covariance_matrix the covariance matrix 
-       *  \param[out] centroid the centroid
-       */
-      unsigned int computeMeanAndCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
-                                                    Eigen::Matrix3f &covariance_matrix,
-                                                    Eigen::Vector4f &centroid);
+        * filters
+        * \param[in] cloud The input cloud
+        * \param[out] covariance_matrix the covariance matrix 
+        * \param[out] centroid the centroid
+        */
+      unsigned int 
+      computeMeanAndCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
+                                      Eigen::Matrix3f &covariance_matrix,
+                                      Eigen::Vector4f &centroid);
 
       /** \brief Solve the eigenvalues and eigenvectors of a given 3x3 covariance matrix, and estimate the least-squares
-       * plane normal and surface curvature.
-       * \param covariance_matrix the 3x3 covariance matrix
-       * \param[out] (nx ny nz) plane_parameters the resultant plane parameters as: a, b, c, d (ax + by + cz + d = 0)
-       * \param[out] curvature the estimated surface curvature as a measure of
-       */
-      void solvePlaneParameters (const Eigen::Matrix3f &covariance_matrix,
-                                  float &nx, float &ny, float &nz, float &curvature);
+        * plane normal and surface curvature.
+        * \param[in] covariance_matrix the 3x3 covariance matrix
+        * \param[out] (nx ny nz) plane_parameters the resultant plane parameters as: a, b, c, d (ax + by + cz + d = 0)
+        * \param[out] curvature the estimated surface curvature as a measure of
+        */
+      void 
+      solvePlaneParameters (const Eigen::Matrix3f &covariance_matrix,
+                            float &nx, float &ny, float &nz, float &curvature);
   };
 }
 #endif  //#ifndef PCL_FILTERS_SAMPLING_SURFACE_NORMAL_H_

@@ -40,7 +40,6 @@
 
 #include <iostream>
 #include <vector>
-using namespace std;
 
 #include <pcl/filters/sampling_surface_normal.h>
 
@@ -49,11 +48,9 @@ template<typename PointT> void
 pcl::SamplingSurfaceNormal<PointT>::applyFilter (PointCloud &output)
 {
   std::vector <int> indices;
-  int npts = input_->points.size ();
+  int npts = int (input_->points.size ());
   for (unsigned int i = 0; i < npts; i++)
-  {
     indices.push_back (i);
-  }
 
   Vector max_vec (3, 1);
   Vector min_vec (3, 1);
@@ -61,7 +58,7 @@ pcl::SamplingSurfaceNormal<PointT>::applyFilter (PointCloud &output)
   PointCloud data = *input_;
   partition (data, 0, npts, min_vec, max_vec, indices, output);
   output.width = 1;
-  output.height = output.points.size ();
+  output.height = uint32_t (output.points.size ());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -122,9 +119,10 @@ pcl::SamplingSurfaceNormal<PointT>::findXYZMaxMin (const PointCloud& cloud, Vect
 
 ///////////////////////////////////////////////////////////////////////////////
 template<typename PointT> void 
-pcl::SamplingSurfaceNormal<PointT>::partition (PointCloud& cloud, const int first, const int last,
-                                              const Vector minValues, const Vector maxValues, 
-                                              std::vector <int>& indices, PointCloud&  output)
+pcl::SamplingSurfaceNormal<PointT>::partition (
+    const PointCloud& cloud, const int first, const int last,
+    const Vector min_values, const Vector max_values, 
+    std::vector<int>& indices, PointCloud&  output)
 {
 	const int count (last - first);
   if (count <= sample_)
@@ -133,7 +131,7 @@ pcl::SamplingSurfaceNormal<PointT>::partition (PointCloud& cloud, const int firs
     return;
   }
 	int cutDim = 0;
-  (maxValues - minValues).maxCoeff (&cutDim);
+  (max_values - min_values).maxCoeff (&cutDim);
 
 	const int rightCount (count / 2);
 	const int leftCount (count - rightCount);
@@ -147,21 +145,22 @@ pcl::SamplingSurfaceNormal<PointT>::partition (PointCloud& cloud, const int firs
 	const float cutVal = findCutVal (cloud, cutDim, cutIndex);
 	
 	// update bounds for left
-	Vector leftMaxValues (maxValues);
+	Vector leftMaxValues (max_values);
 	leftMaxValues[cutDim] = cutVal;
 	// update bounds for right
-	Vector rightMinValues (minValues);
+	Vector rightMinValues (min_values);
 	rightMinValues[cutDim] = cutVal;
 	
 	// recurse
-	partition (cloud, first, first + leftCount, minValues, leftMaxValues, indices, output);
-	partition (cloud, first + leftCount, last, rightMinValues, maxValues, indices, output);
+	partition (cloud, first, first + leftCount, min_values, leftMaxValues, indices, output);
+	partition (cloud, first + leftCount, last, rightMinValues, max_values, indices, output);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 template<typename PointT> void 
-pcl::SamplingSurfaceNormal<PointT>::samplePartition (PointCloud& data, const int first, const int last,
-                                                     vector <int>& indices, PointCloud& output)
+pcl::SamplingSurfaceNormal<PointT>::samplePartition (
+    const PointCloud& data, const int first, const int last,
+    std::vector <int>& indices, PointCloud& output)
 {
   pcl::PointCloud <PointT> cloud;
   
@@ -174,7 +173,7 @@ pcl::SamplingSurfaceNormal<PointT>::samplePartition (PointCloud& data, const int
     cloud.points.push_back (pt);
   }
   cloud.width = 1;
-  cloud.height = cloud.points.size ();
+  cloud.height = uint32_t (cloud.points.size ());
 
   Eigen::Vector4f normal;
   float curvature = 0;
@@ -184,24 +183,25 @@ pcl::SamplingSurfaceNormal<PointT>::samplePartition (PointCloud& data, const int
 
   for (unsigned int i = 0; i < cloud.points.size (); i++)
   {
-			const float r = (float)std::rand () / (float)RAND_MAX;
-      
-			if (r < ratio_)
-			{
-        PointT pt = cloud.points[i];
-        pt.normal[0] = normal (0);
-        pt.normal[1] = normal (1);
-        pt.normal[2] = normal (2);
-        pt.curvature = curvature;
+    // TODO: change to Boost random number generators!
+    const float r = float (std::rand ()) / float (RAND_MAX);
 
-        output.points.push_back (pt);
-      }
+    if (r < ratio_)
+    {
+      PointT pt = cloud.points[i];
+      pt.normal[0] = normal (0);
+      pt.normal[1] = normal (1);
+      pt.normal[2] = normal (2);
+      pt.curvature = curvature;
+
+      output.points.push_back (pt);
+    }
   }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 template<typename PointT> void
-pcl::SamplingSurfaceNormal<PointT>::computeNormal (PointCloud& cloud, Eigen::Vector4f &normal, float& curvature)
+pcl::SamplingSurfaceNormal<PointT>::computeNormal (const PointCloud& cloud, Eigen::Vector4f &normal, float& curvature)
 {
   EIGEN_ALIGN16 Eigen::Matrix3f covariance_matrix;
   Eigen::Vector4f xyz_centroid;
@@ -293,21 +293,18 @@ pcl::SamplingSurfaceNormal<PointT>::solvePlaneParameters (const Eigen::Matrix3f 
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-template<typename PointT> float
-pcl::SamplingSurfaceNormal<PointT>::findCutVal (PointCloud& cloud, const int cutDim, const int cutIndex)
+template <typename PointT> float
+pcl::SamplingSurfaceNormal<PointT>::findCutVal (
+    const PointCloud& cloud, const int cut_dim, const int cut_index)
 {
-  if (cutDim == 0)
-  {
-    return cloud.points[cutIndex].x;
-  }
-  if (cutDim == 1)
-  {
-    return cloud.points[cutIndex].y;
-  }
-  if (cutDim == 2)
-  {
-    return cloud.points[cutIndex].z;
-  }
+  if (cut_dim == 0)
+    return (cloud.points[cut_index].x);
+  else if (cut_dim == 1)
+    return (cloud.points[cut_index].y);
+  else if (cut_dim == 2)
+    return (cloud.points[cut_index].z);
+
+  return (0.0f);
 }
 
 
