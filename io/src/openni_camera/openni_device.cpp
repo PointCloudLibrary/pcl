@@ -101,18 +101,18 @@ openni_wrapper::OpenNIDevice::OpenNIDevice (
   }
   else if (rc != XN_STATUS_OK)
   {
-    printf ("Open failed: %s\n", xnGetStatusString(rc));
+    printf ("Open failed: %s\n", xnGetStatusString (rc));
   }
 
-  XnStatus status = context_.FindExistingNode(XN_NODE_TYPE_DEPTH, depth_generator_);
-  if (status != XN_STATUS_OK)
-    cerr << "node depth problems" << endl;
-  status = context_.FindExistingNode(XN_NODE_TYPE_IMAGE, image_generator_);
-  if (status != XN_STATUS_OK)
-    cerr << "node image problems" << endl;
-  status = context_.FindExistingNode(XN_NODE_TYPE_IR, ir_generator_);
-    if (status != XN_STATUS_OK)
-      cerr << "node ir problems" << endl;
+  XnStatus status = context_.FindExistingNode (XN_NODE_TYPE_DEPTH, depth_generator_);
+//  if (status != XN_STATUS_OK)
+//    std::cerr << "node depth problems" << std::endl;
+  status = context_.FindExistingNode (XN_NODE_TYPE_IMAGE, image_generator_);
+//  if (status != XN_STATUS_OK)
+//    std:cerr << "node image problems" << std::endl;
+  status = context_.FindExistingNode (XN_NODE_TYPE_IR, ir_generator_);
+//    if (status != XN_STATUS_OK)
+//      std::cerr << "node ir problems" << std::endl;
 
 #else
 
