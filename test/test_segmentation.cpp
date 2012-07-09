@@ -261,7 +261,7 @@ TEST (MinCutSegmentationTest, SegmentWithoutForegroundPoints)
   mcSeg.setRadius (3.8003856);
 
   bool success = mcSeg.segmentPoints ();
-  EXPECT_EQ (false, success);
+  EXPECT_FALSE (success);
 
   std::vector<int> labels = mcSeg.getSegments ();
   int number_of_labels = static_cast<int> (labels.size ());
@@ -274,7 +274,7 @@ TEST (MinCutSegmentationTest, SegmentWithoutCloud)
   pcl::MinCutSegmentation<pcl::PointXYZ> mcSeg;
 
   bool success = mcSeg.segmentPoints ();
-  EXPECT_EQ (false, success);
+  EXPECT_FALSE (success);
 
   std::vector<int> labels = mcSeg.getSegments ();
   int number_of_labels = static_cast<int> (labels.size ());
@@ -289,7 +289,7 @@ TEST (MinCutSegmentationTest, SegmentEmptyCloud)
   mcSeg.setInputCloud (empty_cloud);
 
   bool success = mcSeg.segmentPoints ();
-  EXPECT_EQ (false, success);
+  EXPECT_FALSE (success);
 
   std::vector<int> labels = mcSeg.getSegments ();
   int number_of_labels = static_cast<int> (labels.size ());
