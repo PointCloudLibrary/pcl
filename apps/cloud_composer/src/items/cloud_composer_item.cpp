@@ -1,8 +1,7 @@
+#include <pcl/apps/cloud_composer/qt.h>
 #include <pcl/apps/cloud_composer/items/cloud_composer_item.h>
 //Needed for the helper function which gets a cloud ptr... this is a bad dependency
 #include <pcl/apps/cloud_composer/items/cloud_item.h>
-
-#include <QDebug>
 
 pcl::cloud_composer::CloudComposerItem::CloudComposerItem (QString name)
   : QStandardItem(name)
@@ -12,7 +11,8 @@ pcl::cloud_composer::CloudComposerItem::CloudComposerItem (QString name)
   properties_->setHorizontalHeaderItem (0, new QStandardItem ("Name"));
   properties_->setHorizontalHeaderItem (1, new QStandardItem ("Value"));
   //Set the pointer to a data role so item inspector can get it
-  this->setData ( qVariantFromValue ( (void*)properties_), PROPERTIES); 
+  this->setData ( qVariantFromValue (static_cast<void*> (properties_)), PROPERTIES); 
+  
 }
 
 pcl::cloud_composer::CloudComposerItem::~CloudComposerItem ()

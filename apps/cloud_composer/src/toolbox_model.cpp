@@ -13,6 +13,7 @@ pcl::cloud_composer::ToolBoxModel::ToolBoxModel (QTreeView* tool_view, QTreeView
 }
 
 pcl::cloud_composer::ToolBoxModel::ToolBoxModel (const ToolBoxModel&)
+  : QStandardItemModel ()
 {
 }
 

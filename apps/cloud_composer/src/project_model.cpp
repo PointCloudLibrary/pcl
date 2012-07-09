@@ -22,7 +22,8 @@ pcl::cloud_composer::ProjectModel::ProjectModel (QObject* parent)
   work_thread_->start ();
 }
 
-pcl::cloud_composer::ProjectModel::ProjectModel (const ProjectModel& to_copy)
+pcl::cloud_composer::ProjectModel::ProjectModel (const ProjectModel&)
+  : QStandardItemModel ()
 {
 }
 

@@ -34,7 +34,7 @@ displayPlanarRegions (std::vector<pcl::PlanarRegion<PointT>, Eigen::aligned_allo
     viewer->addArrow (pt2, pt1, 1.0, 0, 0, false, name);
     
     contour->points = regions[i].getContour ();
-    sprintf (name, "plane_%02d", (int)i);
+    sprintf (name, "plane_%02d", int (i));
     pcl::visualization::PointCloudColorHandlerCustom <PointT> color (contour, red[i%6], grn[i%6], blu[i%6]);
     if(!viewer->updatePointCloud(contour, color, name))
       viewer->addPointCloud (contour, color, name);
@@ -53,7 +53,7 @@ displayEuclideanClusters (const pcl::PointCloud<PointT>::CloudVectorType &cluste
 
   for (size_t i = 0; i < clusters.size (); i++)
   {
-    sprintf (name, "cluster_%d",i);
+    sprintf (name, "cluster_%d" , int (i));
     pcl::visualization::PointCloudColorHandlerCustom<PointT> color0(boost::make_shared<pcl::PointCloud<PointT> >(clusters[i]),red[i%6],grn[i%6],blu[i%6]);
     if (!viewer->updatePointCloud (boost::make_shared<pcl::PointCloud<PointT> >(clusters[i]),color0,name))
       viewer->addPointCloud (boost::make_shared<pcl::PointCloud<PointT> >(clusters[i]),color0,name);
@@ -138,7 +138,6 @@ compareClusterToRegion (pcl::PlanarRegion<PointT>& region, pcl::PointCloud<Point
   pcl::PointCloud<PointT> poly;
   poly.points = region.getContour ();
   
-  bool cluster_ok = false;
   for (size_t i = 0; i < cluster.points.size (); i++)
   {
     double ptp_dist = fabs (model[0] * cluster.points[i].x +
@@ -155,19 +154,16 @@ compareClusterToRegion (pcl::PlanarRegion<PointT>& region, pcl::PointCloud<Point
 bool
 comparePointToRegion (PointT& pt, pcl::ModelCoefficients& model, pcl::PointCloud<PointT>& poly)
 {
-  bool dist_ok = false;
-  bool inside = false;
+  //bool dist_ok;
   
   double ptp_dist = fabs (model.values[0] * pt.x +
                           model.values[1] * pt.y +
                           model.values[2] * pt.z +
                           model.values[3]);
-  if (ptp_dist < 0.1)
-  {
-    dist_ok = true;
-  }
-  else
-    return false;
+  if (ptp_dist >= 0.1)
+    return (false);
+//  else
+//    dist_ok = true;
 
   //project the point onto the plane
   Eigen::Vector3f mc (model.values[0], model.values[1], model.values[2]);
@@ -175,7 +171,7 @@ comparePointToRegion (PointT& pt, pcl::ModelCoefficients& model, pcl::PointCloud
   pt_vec[0] = pt.x;
   pt_vec[1] = pt.y;
   pt_vec[2] = pt.z;
-  Eigen::Vector3f projected (pt_vec - mc * ptp_dist);
+  Eigen::Vector3f projected (pt_vec - mc * float (ptp_dist));
   PointT projected_pt;
   projected_pt.x = projected[0];
   projected_pt.y = projected[1];

@@ -1,6 +1,5 @@
+#include <pcl/apps/cloud_composer/qt.h>
 #include <pcl/apps/cloud_composer/items/cloud_item.h>
-#include <QDebug>
-
 
 pcl::cloud_composer::CloudItem::CloudItem (QString name,
                                            sensor_msgs::PointCloud2::Ptr cloud_ptr, 

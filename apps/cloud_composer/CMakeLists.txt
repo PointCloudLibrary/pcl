@@ -49,15 +49,15 @@ if(build)
   
   if (VTK_FOUND AND QT4_FOUND AND VTK_USE_QVTK)
     #Sources & Headers for main application
-    set(incs include/pcl/apps/${SUBSYS_NAME}/qt.h
+    set(incs #include/pcl/apps/${SUBSYS_NAME}/qt.h
              include/pcl/apps/${SUBSYS_NAME}/cloud_composer.h
              include/pcl/apps/${SUBSYS_NAME}/project_model.h
              include/pcl/apps/${SUBSYS_NAME}/cloud_viewer.h
              include/pcl/apps/${SUBSYS_NAME}/cloud_view.h
              include/pcl/apps/${SUBSYS_NAME}/item_inspector.h
              include/pcl/apps/${SUBSYS_NAME}/tool_interface/abstract_tool.h
-             include/pcl/apps/${SUBSYS_NAME}/tool_interface/tool_factory.h
-             include/pcl/apps/${SUBSYS_NAME}/commands.h
+             #include/pcl/apps/${SUBSYS_NAME}/tool_interface/tool_factory.h
+             #include/pcl/apps/${SUBSYS_NAME}/commands.h
              include/pcl/apps/${SUBSYS_NAME}/work_queue.h
              include/pcl/apps/${SUBSYS_NAME}/toolbox_model.h)
           
@@ -72,9 +72,10 @@ if(build)
              src/toolbox_model.cpp)
           
     #Sources and headers for item types      
-    set(item_incs include/pcl/apps/${SUBSYS_NAME}/items/cloud_composer_item.h
-                  include/pcl/apps/${SUBSYS_NAME}/items/cloud_item.h
-                  include/pcl/apps/${SUBSYS_NAME}/items/normals_item.h)
+    set(item_incs #include/pcl/apps/${SUBSYS_NAME}/items/cloud_composer_item.h
+                  #include/pcl/apps/${SUBSYS_NAME}/items/cloud_item.h
+                  #include/pcl/apps/${SUBSYS_NAME}/items/normals_item.h
+                  )
            
     set(item_srcs src/items/cloud_composer_item.cpp
                   src/items/cloud_item.cpp
@@ -103,7 +104,7 @@ if(build)
     set (CLOUD_COMPOSER_PLUGIN_DIR ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/cloud_composer_plugins)
     make_directory (${CLOUD_COMPOSER_PLUGIN_DIR})
 
-    set(INTERFACE_HEADERS include/pcl/apps/${SUBSYS_NAME}/tool_interface/tool_factory.h 
+    set(INTERFACE_HEADERS 
                           include/pcl/apps/${SUBSYS_NAME}/tool_interface/abstract_tool.h)
 
     QT4_WRAP_CPP(INTERFACE_HEADERS_MOC ${INTERFACE_HEADERS})
