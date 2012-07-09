@@ -64,8 +64,8 @@ CopyPointCloudToBuffers (pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr cloud, Poi
   cloud_buffers.points.resize (nr_points*3);
   cloud_buffers.rgb.resize (nr_points*3);
 
-  const pcl::PointXYZ  bounds_min (-0.9, -0.8, 1.0);
-  const pcl::PointXYZ  bounds_max (0.9, 3.0, 3.3);
+  const pcl::PointXYZ  bounds_min (-0.9f, -0.8f, 1.0f);
+  const pcl::PointXYZ  bounds_max (0.9f, 3.0f, 3.3f);
 
   size_t j = 0;
   for (size_t i = 0; i < nr_points; ++i)
@@ -246,7 +246,7 @@ main (int argc, char ** argv)
   }
 
   int port = 11111;
-  double leaf_x = 0.01, leaf_y = 0.01, leaf_z = 0.01;
+  float leaf_x = 0.01f, leaf_y = 0.01f, leaf_z = 0.01f;
   std::string device_id = "";
 
   pcl::console::parse_argument (argc, argv, "-port", port);

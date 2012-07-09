@@ -171,7 +171,7 @@ class PCDOrganizedMultiPlaneSegmentation
                                            centroid[1] + (0.5f * model[1]),
                                            centroid[2] + (0.5f * model[2]));
         sprintf (name, "normal_%d", unsigned (i));
-        viewer.addArrow (pt2, pt1, 1.0, 0, 0, name);
+        viewer.addArrow (pt2, pt1, 1.0, 0, 0, std::string (name));
 
         contour->points = regions[i].getContour ();        
         sprintf (name, "plane_%02d", int (i));

@@ -491,7 +491,7 @@ namespace pcl
 
           uint8_t box = 00;
           //hash each coordinate to the appropriate octant
-          box = ((p[i]->z >= midz_) << 2) | ((p[i]->y >= midy_) << 1) | ((p[i]->x >= midx_ ));
+          box = static_cast<uint8_t> (((p[i]->z >= midz_) << 2) | ((p[i]->y >= midy_) << 1) | ((p[i]->x >= midx_ )));
           //3 bit, 8 octants
           c[box].push_back (p[i]);
         }
