@@ -66,8 +66,8 @@ pcl::SVM::readline (FILE *input)
   while (strrchr (line_ , '\n') == NULL)
   {
     max_line_len_ *= 2;
-    line_ = (char *) realloc (line_, max_line_len_);
-    len = (int) strlen (line_);
+    line_ = static_cast<char *> (realloc (line_, max_line_len_));
+    len = int (strlen (line_));
 
     // if the new read part of the string is unavailable, break the while
     if (fgets (line_ + len, max_line_len_ - len, input) == NULL)
@@ -184,7 +184,7 @@ pcl::SVM::adaptLibSVMToInput (std::vector<SVMData> &training_set, svm_problem pr
       if (pcl_isfinite (prob.x[i][j].value))
       {
         seed.idx = prob.x[i][j].index;
-        seed.value = prob.x[i][j].value;
+        seed.value = float (prob.x[i][j].value);
         parent.SV.push_back (seed);
       }
 
@@ -208,7 +208,7 @@ pcl::SVM::adaptInputToLibSVM (std::vector<SVMData> training_set, svm_problem &pr
     return;
   }
 
-  prob.l = training_set.size (); // n of elements/points
+  prob.l = int (training_set.size ()); // n of elements/points
   prob.y = Malloc (double, prob.l);
   prob.x = Malloc (struct svm_node *, prob.l);
 
@@ -276,7 +276,7 @@ pcl::SVMTrain::trainClassifier ()
   else
   {
     SVMModel* out;
-    out = (SVMModel*) svm_train (&prob_, &param_);
+    out = static_cast<SVMModel*> (svm_train (&prob_, &param_));
     if (out == NULL)
     {
       PCL_ERROR ("[pcl::%s::trainClassifier] Error taining the classifier model.\n", getClassName ().c_str ());
@@ -401,7 +401,7 @@ pcl::SVM::loadProblem (const char *filename, svm_problem &prob)
       //std::cout << idx << ":" << val<< " ";
       errno = 0;
 
-      x_space_[j].index = (int) strtol (idx, &endptr, 10);
+      x_space_[j].index = int (strtol (idx, &endptr, 10));
 
       if (endptr == idx || errno != 0 || *endptr != '\0' || x_space_[j].index <= inst_max_index)
         exitInputError (i + 1);
@@ -440,7 +440,7 @@ pcl::SVM::loadProblem (const char *filename, svm_problem &prob)
         return 0;
       }
 
-      if ( (int) prob.x[i][0].value <= 0 || (int) prob.x[i][0].value > max_index)
+      if (int (prob.x[i][0].value) <= 0 || int (prob.x[i][0].value) > max_index)
       {
 	PCL_ERROR ("[pcl::%s] Wrong input format: sample_serial_number out of range.\n", getClassName ().c_str () );
         return 0;
@@ -534,7 +534,7 @@ bool
 pcl::SVMClassify::loadClassifierModel (const char *filename)
 {
   SVMModel *out;
-  out = (SVMModel*) svm_load_model (filename);
+  out = static_cast<SVMModel*> (svm_load_model (filename));
   if (out == NULL)
   {
     PCL_ERROR ("[pcl::%s::loadClassifierModel] Can't open classifier model %s.\n", getClassName ().c_str (), filename);
@@ -616,7 +616,7 @@ pcl::SVMClassify::classificationTest ()
       PCL_WARN ("[pcl::%s::classificationTest] Prob. model for test data: target value = predicted value + z,\nz: Laplace distribution e^(-|z|/sigma)/(2sigma),sigma=%g\n", getClassName ().c_str (),svm_get_svr_probability (&model_));
     else
     {
-      prob_estimates = (double *) malloc (nr_class * sizeof (double));
+      prob_estimates = static_cast<double *> (malloc (nr_class * sizeof (double)));
     }
   }
 
@@ -629,7 +629,7 @@ pcl::SVMClassify::classificationTest ()
     //int i = 0;
     double target_label, predict_label;
     //char *idx, *val, *endptr;
-    int inst_max_index = -1; // strtol gives 0 if wrong format, and precomputed kernel has <index> start from 0
+    //int inst_max_index = -1; // strtol gives 0 if wrong format, and precomputed kernel has <index> start from 0
 
     target_label = prob_.y[ii]; //takes the first label
 
@@ -679,7 +679,7 @@ pcl::SVMClassify::classificationTest ()
   {
     pcl::console::print_info (" - Accuracy (classification) = ");
     pcl::console::print_value ("%g%% (%d/%d)\n",
-            (double) correct / total*100, correct, total);
+            double (correct) / total*100, correct, total);
   }
 
   if (predict_probability_)
@@ -718,7 +718,7 @@ pcl::SVMClassify::classification ()
       PCL_WARN("[pcl::%s::classification] Classifier model supports probability estimates, but disabled in prediction.\n", getClassName ().c_str ());
   }
 
-  int correct = 0;
+  //int correct = 0;
   int total = 0;
   int svm_type = svm_get_svm_type (&model_);
   int nr_class = svm_get_nr_class (&model_);
@@ -735,7 +735,7 @@ pcl::SVMClassify::classification ()
       PCL_WARN ("[pcl::%s::classificationTest] Prob. model for test data: target value = predicted value + z,\nz: Laplace distribution e^(-|z|/sigma)/(2sigma),sigma=%g\n", getClassName ().c_str (),svm_get_svr_probability (&model_));
     else
     {
-      prob_estimates = (double *) malloc (nr_class * sizeof (double));
+      prob_estimates = static_cast<double *> (malloc (nr_class * sizeof (double)));
     }
   }
 
@@ -747,7 +747,7 @@ pcl::SVMClassify::classification ()
   {
     double predict_label;
     //char *idx, *val, *endptr;
-    int inst_max_index = -1; // strtol gives 0 if wrong format, and precomputed kernel has <index> start from 0
+    //int inst_max_index = -1; // strtol gives 0 if wrong format, and precomputed kernel has <index> start from 0
 
     if (predict_probability_ && (svm_type == C_SVC || svm_type == NU_SVC))
     {
@@ -772,6 +772,8 @@ pcl::SVMClassify::classification ()
 
   if (predict_probability_)
     free (prob_estimates);
+
+  return (true);
 }
 
 std::vector<double>
@@ -831,7 +833,7 @@ pcl::SVMClassify::classification (pcl::SVMData in)
      PCL_WARN ("[pcl::%s::classification] Prob. model for test data: target value = predicted value + z,\nz: Laplace distribution e^(-|z|/sigma)/(2sigma),sigma=%g\n", getClassName ().c_str (),svm_get_svr_probability (&model_));
     else
     {
-      prob_estimates = (double *) malloc (nr_class * sizeof (double));
+      prob_estimates = static_cast<double *> (malloc (nr_class * sizeof (double)));
     }
   }
 
@@ -895,7 +897,7 @@ pcl::SVMClassify::saveClassificationResult (const char *filename)
   output.open (filename);
 
   int nr_class = svm_get_nr_class (&model_);
-  int *labels = (int *) malloc (nr_class * sizeof (int));
+  int *labels = static_cast<int *> (malloc (nr_class * sizeof (int)));
   svm_get_labels (&model_, labels);
 
   if (predict_probability_)

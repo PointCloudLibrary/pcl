@@ -52,7 +52,7 @@
 #include <pcl/console/time.h>
 
 #include <pcl/ml/svm.h>
-#define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+#define Malloc(type,n) static_cast<type *> (malloc((n)*sizeof(type)))
 
 namespace pcl
 {
@@ -134,15 +134,14 @@ namespace pcl
       SVMModel model_; // model of the classifier
       svm_scaling scaling_; // for the best model training, the input dataset is scaled and the scaling factors are stored here
       SVMParam param_; // it stores the training parameters
-      bool labelled_training_set_; // it stores whether the input set of samples is labelled
       std::string class_name_; // The SVM class name.
 
       char *line_; // buffer for line reading
       int max_line_len_; // max line length in the input file
-      
+      bool labelled_training_set_; // it stores whether the input set of samples is labelled
       /** \brief Set for output printings during classification. */
       static void 
-      printNull (const char *s) {}; 
+      printNull (const char *) {}; 
       
       /** \brief To read a line from the input file. Stored in "line_". */
       char* 
@@ -179,7 +178,9 @@ namespace pcl
 
     public:
       /** \brief  Constructor. */
-      SVM() : line_ (NULL), max_line_len_ (10000), labelled_training_set_ (1)
+      SVM () : 
+        training_set_ (), prob_ (), model_ (), scaling_ (), param_ (), 
+        class_name_ (), line_ (NULL), max_line_len_ (10000), labelled_training_set_ (1)
       {
       }
 
@@ -204,7 +205,7 @@ namespace pcl
       getLabel (std::vector<int> &labels)
       {
         int nr_class = svm_get_nr_class (&model_);
-        int *labels_ = (int *) malloc (nr_class * sizeof (int));
+        int *labels_ = static_cast<int *> (malloc (nr_class * sizeof (int)));
         svm_get_labels (&model_, labels_);
 
         for (int j = 0 ; j < nr_class; j++)
@@ -245,10 +246,9 @@ namespace pcl
       using SVM::param_;
       using SVM::class_name_;
 
+      bool debug_; // Set to 1 to see the training output
       int cross_validation_; // Set too 1 for cross validating the classifier
       int nr_fold_; // Number of folds to be used during cross validation. It indicates in how many parts is split the input training set.
-
-      bool debug_; // Set to 1 to see the training output
 
       /** \brief To cross validate the classifier. It is automatic for probability estimate. */
       void 
@@ -263,7 +263,7 @@ namespace pcl
       /** \brief Constructor. */
       SVMTrain() : debug_ (0), cross_validation_ (0), nr_fold_ (0)
       {
-	class_name_ = "SvmTrain";
+        class_name_ = "SVMTrain";
         svm_set_print_string_function (&printNull); // Default to NULL to not print debugging info
       }
 
@@ -374,8 +374,8 @@ namespace pcl
       using SVM::param_;
       using SVM::class_name_;
 
-      bool predict_probability_; // Set to 1 to predict probabilities.
       bool model_extern_copied_; // Set to 0 if the model is loaded from an extern file.
+      bool predict_probability_; // Set to 1 to predict probabilities.
       std::vector< std::vector<double> > prediction_; // It stores the resulting prediction.
       
       /** \brief It scales the input dataset using the model information. */
@@ -385,7 +385,7 @@ namespace pcl
       /** \brief Constructor. */
       SVMClassify () : model_extern_copied_ (0), predict_probability_ (0)
       {
-	class_name_ = "SvmClassify";
+        class_name_ = "SvmClassify";
       }
 
       /** \brief Destructor. */
