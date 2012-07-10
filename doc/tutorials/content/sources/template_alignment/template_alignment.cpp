@@ -264,7 +264,10 @@ main (int argc, char **argv)
   pcl::VoxelGrid<pcl::PointXYZ> vox_grid;
   vox_grid.setInputCloud (cloud);
   vox_grid.setLeafSize (voxel_grid_size, voxel_grid_size, voxel_grid_size);
-  vox_grid.filter (*cloud);
+  //vox_grid.filter (*cloud); // Please see this http://www.pcl-developers.org/Possible-problem-in-new-VoxelGrid-implementation-from-PCL-1-5-0-td5490361.html
+  pcl::PointCloud<pcl::PointXYZ>::Ptr tempCloud (new pcl::PointCloud<pcl::PointXYZ>); 
+  vox_grid.filter (*tempCloud);
+  cloud = tempCloud; 
 
   // Assign to the target FeatureCloud
   FeatureCloud target_cloud;
