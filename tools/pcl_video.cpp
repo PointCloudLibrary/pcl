@@ -34,12 +34,6 @@
  *  \author Geoffrey Biggs
  */
 
-#include <boost/date_time/gregorian/gregorian_types.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
-#include <boost/date_time/posix_time/posix_time_types.hpp>
-#include <boost/thread/thread.hpp>
-#include <boost/uuid/uuid.hpp>
-#include <boost/uuid/uuid_generators.hpp>
 #include <iostream>
 #include <string>
 #include <tide/ebml_element.h>
@@ -57,6 +51,7 @@
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/console/parse.h>
 #include <pcl/common/time.h>
+#include "boost.h"
 
 namespace bpt = boost::posix_time;
 

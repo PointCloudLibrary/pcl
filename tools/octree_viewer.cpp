@@ -35,8 +35,6 @@
  *  \author Raphael Favier
  * */
 
-#include <boost/thread/thread.hpp>
-
 #include <pcl/io/pcd_io.h>
 
 #include <pcl/visualization/pcl_visualizer.h>
@@ -47,6 +45,8 @@
 #include <pcl/octree/octree_impl.h>
 
 #include <pcl/filters/filter.h>
+#include "boost.h"
+
 //=============================
 // Displaying cubes is very long!
 // so we limit their numbers.

@@ -35,18 +35,16 @@
  *	
  */
 
-#include <boost/thread/thread.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
 #include <pcl/common/time.h> //fps calculations
 #include <pcl/io/openni_grabber.h>
 #include <pcl/io/openni_camera/openni_driver.h>
 #include <pcl/console/parse.h>
-
 #include <vector>
 #include <string>
 
 #include <pcl/visualization/vtk.h>
 #include <pcl/visualization/pcl_visualizer.h>
+#include "boost.h"
 
 #define SHOW_FPS 1
 #if SHOW_FPS

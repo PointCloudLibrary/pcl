@@ -50,7 +50,6 @@
 #include <pcl/console/parse.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_cloud.h>
-#include <Eigen/Core>
 #include <vtkPolyDataReader.h>
 #include <vtkDoubleArray.h>
 #include <vtkDataArray.h>

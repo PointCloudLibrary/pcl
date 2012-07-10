@@ -44,8 +44,7 @@
 #include <pcl/console/parse.h>
 #include <pcl/console/time.h>
 #include <vector>
-#include <boost/lexical_cast.hpp>
-#include <boost/make_shared.hpp>
+#include "boost.h"
 
 using namespace pcl;
 using namespace pcl::io;

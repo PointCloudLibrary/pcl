@@ -51,7 +51,7 @@
 #include <pcl/point_types.h>
 #include <pcl/console/parse.h>
 #include <pcl/visualization/vtk.h>
-#include <boost/random.hpp>
+#include "boost.h"
 
 using namespace pcl;
 

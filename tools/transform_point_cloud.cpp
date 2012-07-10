@@ -35,7 +35,6 @@
  *
  */
 
-#include <Eigen/Core>
 #include <sensor_msgs/PointCloud2.h>
 #include <pcl/ros/conversions.h>
 #include <pcl/io/pcd_io.h>

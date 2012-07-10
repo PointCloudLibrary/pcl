@@ -41,13 +41,7 @@
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
 #include <pcl/console/time.h>
-
-#ifdef __GNUC__
-#pragma GCC system_header 
-#endif
-
-#include <boost/random.hpp>
-#include <boost/random/normal_distribution.hpp>
+#include "boost.h"
 
 using namespace pcl;
 using namespace pcl::io;
