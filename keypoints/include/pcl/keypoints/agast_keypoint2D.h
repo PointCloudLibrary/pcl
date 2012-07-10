@@ -76,20 +76,21 @@ namespace pcl
 
     protected:
       /** \brief Initializes the sample pattern. */
-      void initPattern ()
+      void 
+      initPattern ()
       {
-			  s_offset0=(-2)+(0)*width_;
-			  s_offset1=(-2)+(-1)*width_;
-			  s_offset2=(-1)+(-2)*width_;
-			  s_offset3=(0)+(-2)*width_;
-			  s_offset4=(1)+(-2)*width_;
-			  s_offset5=(2)+(-1)*width_;
-			  s_offset6=(2)+(0)*width_;
-			  s_offset7=(2)+(1)*width_;
-			  s_offset8=(1)+(2)*width_;
-			  s_offset9=(0)+(2)*width_;
-			  s_offset10=(-1)+(2)*width_;
-			  s_offset11=(-2)+(1)*width_;
+			  s_offset0  = static_cast<int_fast16_t> ((-2)+(0)*width_);
+			  s_offset1  = static_cast<int_fast16_t> ((-2)+(-1)*width_);
+			  s_offset2  = static_cast<int_fast16_t> ((-1)+(-2)*width_);
+			  s_offset3  = static_cast<int_fast16_t> ((0)+(-2)*width_);
+			  s_offset4  = static_cast<int_fast16_t> ((1)+(-2)*width_);
+			  s_offset5  = static_cast<int_fast16_t> ((2)+(-1)*width_);
+			  s_offset6  = static_cast<int_fast16_t> ((2)+(0)*width_);
+			  s_offset7  = static_cast<int_fast16_t> ((2)+(1)*width_);
+			  s_offset8  = static_cast<int_fast16_t> ((1)+(2)*width_);
+			  s_offset9  = static_cast<int_fast16_t> ((0)+(2)*width_);
+			  s_offset10 = static_cast<int_fast16_t> ((-1)+(2)*width_);
+			  s_offset11 = static_cast<int_fast16_t> ((-2)+(1)*width_);
 		  }
 
       /** \brief Detects corners. */

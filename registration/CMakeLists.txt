@@ -10,6 +10,8 @@ PCL_ADD_DOC(${SUBSYS_NAME})
 
 if(build)
     set(incs 
+        include/pcl/${SUBSYS_NAME}/eigen.h
+        include/pcl/${SUBSYS_NAME}/boost.h
         include/pcl/${SUBSYS_NAME}/correspondence_estimation.h
         include/pcl/${SUBSYS_NAME}/correspondence_estimation_normal_shooting.h
         include/pcl/${SUBSYS_NAME}/correspondence_rejection.h

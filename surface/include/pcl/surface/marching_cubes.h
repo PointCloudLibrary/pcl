@@ -36,8 +36,8 @@
 #ifndef PCL_SURFACE_MARCHING_CUBES_H_
 #define PCL_SURFACE_MARCHING_CUBES_H_
 
+#include <pcl/surface/boost.h>
 #include <pcl/surface/reconstruction.h>
-#include <boost/unordered_map.hpp>
 
 namespace pcl
 {

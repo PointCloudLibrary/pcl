@@ -105,7 +105,10 @@ if(build)
         ${ON_NURBS_SOURCES}
         )
 
-    set(incs include/pcl/${SUBSYS_NAME}/ear_clipping.h
+    set(incs 
+        include/pcl/${SUBSYS_NAME}/boost.h
+        include/pcl/${SUBSYS_NAME}/eigen.h
+        include/pcl/${SUBSYS_NAME}/ear_clipping.h
         include/pcl/${SUBSYS_NAME}/gp3.h
         include/pcl/${SUBSYS_NAME}/grid_projection.h
         include/pcl/${SUBSYS_NAME}/marching_cubes.h

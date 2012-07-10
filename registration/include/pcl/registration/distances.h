@@ -39,7 +39,7 @@
 #ifndef PCL_REGISTRATION_DISTANCES_H
 #define PCL_REGISTRATION_DISTANCES_H
 
-#include <Eigen/Core>
+#include <pcl/registration/eigen.h>
 #include <vector>
 
 namespace pcl

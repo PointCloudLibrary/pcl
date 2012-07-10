@@ -42,15 +42,12 @@
 
 // PCL includes
 #include <pcl/pcl_base.h>
-#include <boost/bind.hpp>
-#include <boost/function.hpp>
-#include <boost/random.hpp>
-#include <boost/unordered_map.hpp>
 #include <pcl/search/pcl_search.h>
 #include <pcl/common/common.h>
-#include <pcl/surface/processing.h>
 
-#include <Eigen/SVD>
+#include <pcl/surface/boost.h>
+#include <pcl/surface/eigen.h>
+#include <pcl/surface/processing.h>
 
 namespace pcl
 {

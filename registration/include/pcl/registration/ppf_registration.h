@@ -39,9 +39,9 @@
 #ifndef PCL_PPF_REGISTRATION_H_
 #define PCL_PPF_REGISTRATION_H_
 
+#include <pcl/registration/boost.h>
 #include <pcl/registration/registration.h>
 #include <pcl/features/ppf.h>
-#include <boost/unordered_map.hpp>
 
 namespace pcl
 {

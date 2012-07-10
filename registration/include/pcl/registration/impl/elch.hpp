@@ -43,13 +43,9 @@
 #include <list>
 #include <algorithm>
 
-#include <boost/graph/adjacency_list.hpp>
-#include <boost/graph/graph_traits.hpp>
-#include <boost/graph/dijkstra_shortest_paths.hpp>
-
-#include <Eigen/Geometry>
-
 #include <pcl/common/transforms.h>
+#include <pcl/registration/eigen.h>
+#include <pcl/registration/boost.h>
 #include <pcl/registration/registration.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////

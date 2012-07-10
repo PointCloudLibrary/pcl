@@ -40,16 +40,12 @@
 #ifndef PCL_ELCH_H_
 #define PCL_ELCH_H_
 
-#include <boost/graph/adjacency_list.hpp>
-#include <boost/graph/graph_traits.hpp>
-#include <boost/shared_ptr.hpp>
-
-#include <Eigen/Geometry>
-
 #include <pcl/pcl_base.h>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 #include <pcl/registration/registration.h>
+#include <pcl/registration/boost.h>
+#include <pcl/registration/eigen.h>
 #include <pcl/registration/icp.h>
 
 namespace pcl

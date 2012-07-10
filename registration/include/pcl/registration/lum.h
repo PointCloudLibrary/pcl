@@ -40,10 +40,11 @@
 #ifndef PCL_REGISTRATION_LUM_H_
 #define PCL_REGISTRATION_LUM_H_
 
-#include <pcl/common/eigen.h>
+#include <pcl/pcl_base.h>
+#include <pcl/registration/eigen.h>
+#include <pcl/registration/boost.h>
 #include <pcl/common/transforms.h>
 #include <pcl/correspondence.h>
-#include <boost/graph/adjacency_list.hpp>
 
 namespace Eigen
 {

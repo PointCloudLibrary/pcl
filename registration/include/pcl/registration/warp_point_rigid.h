@@ -38,8 +38,7 @@
 #ifndef PCL_WARP_POINT_RIGID_H_
 #define PCL_WARP_POINT_RIGID_H_
 
-#include <Eigen/Core>
-#include <Eigen/Geometry>
+#include <pcl/registration/eigen.h>
 
 namespace pcl
 {

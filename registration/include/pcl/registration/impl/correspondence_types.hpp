@@ -37,8 +37,9 @@
 #define PCL_REGISTRATION_IMPL_CORRESPONDENCE_TYPES_H_
 
 #include <limits>
-#include <Eigen/Core>
+#include <pcl/registration/eigen.h>
 
+//////////////////////////////////////////////////////////////////////////////////////////
 inline void
 pcl::registration::getCorDistMeanStd (const pcl::Correspondences &correspondences, double &mean, double &stddev)
 {
@@ -57,6 +58,7 @@ pcl::registration::getCorDistMeanStd (const pcl::Correspondences &correspondence
   stddev = sqrt (variance);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////
 inline void
 pcl::registration::getQueryIndices (const pcl::Correspondences& correspondences, std::vector<int>& indices)
 {
@@ -65,6 +67,7 @@ pcl::registration::getQueryIndices (const pcl::Correspondences& correspondences,
     indices[i] = correspondences[i].index_query;
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////
 inline void
 pcl::registration::getMatchIndices (const pcl::Correspondences& correspondences, std::vector<int>& indices)
 {

@@ -38,10 +38,8 @@
 #define PCL_NDT_2D_IMPL_H_
 #include <cmath>
 
-#include <boost/noncopyable.hpp>
-#include <boost/make_shared.hpp>
-
-#include <Eigen/Dense>
+#include <pcl/registration/eigen.h>
+#include <pcl/registration/boost.h>
 
 namespace pcl
 {

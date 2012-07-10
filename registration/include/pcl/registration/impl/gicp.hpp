@@ -35,7 +35,7 @@
  *
  */
 
-#include <boost/unordered_map.hpp>
+#include <pcl/registration/boost.h>
 #include <pcl/registration/exceptions.h>
 
 ////////////////////////////////////////////////////////////////////////////////////////

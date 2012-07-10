@@ -44,8 +44,7 @@
 #include <pcl/PolygonMesh.h>
 #include <pcl/search/pcl_search.h>
 #include <pcl/ros/conversions.h>
-#include <boost/bind.hpp>
-#include <boost/function.hpp>
+#include <pcl/surface/boost.h>
 
 namespace pcl
 {

@@ -38,7 +38,7 @@
 #ifndef PCL_REGISTRATION_IMPL_CORRESPONDENCE_REJECTION_SAMPLE_CONSENSUS_HPP_
 #define PCL_REGISTRATION_IMPL_CORRESPONDENCE_REJECTION_SAMPLE_CONSENSUS_HPP_
 
-#include <boost/unordered_map.hpp>
+#include <pcl/registration/boost.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void 

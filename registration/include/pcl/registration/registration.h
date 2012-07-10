@@ -40,14 +40,12 @@
 #ifndef PCL_REGISTRATION_H_
 #define PCL_REGISTRATION_H_
 
-#include <boost/function.hpp>
-#include <boost/bind.hpp>
-
 // PCL includes
 #include <pcl/pcl_base.h>
 #include <pcl/common/transforms.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/kdtree/kdtree_flann.h>
+#include <pcl/registration/boost.h>
 #include <pcl/registration/transformation_estimation.h>
 
 namespace pcl

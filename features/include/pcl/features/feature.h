@@ -40,12 +40,12 @@
 #ifndef PCL_FEATURE_H_
 #define PCL_FEATURE_H_
 
-#include <pcl/features/boost.h>
 // PCL includes
 #include <pcl/pcl_base.h>
 #include <pcl/common/eigen.h>
 #include <pcl/common/centroid.h>
 #include <pcl/search/search.h>
+#include <pcl/features/boost.h>
 
 namespace pcl
 {

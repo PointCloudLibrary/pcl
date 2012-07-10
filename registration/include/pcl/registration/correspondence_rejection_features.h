@@ -38,11 +38,10 @@
 #ifndef PCL_REGISTRATION_CORRESPONDENCE_REJECTION_FEATURES_H_
 #define PCL_REGISTRATION_CORRESPONDENCE_REJECTION_FEATURES_H_
 
-#include <boost/function.hpp>
-#include <boost/unordered_map.hpp>
 #include <pcl/registration/correspondence_rejection.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_representation.h>
+#include <pcl/registration/boost.h>
 
 namespace pcl
 {

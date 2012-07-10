@@ -1,12 +1,11 @@
 #ifndef PCL_FOR_EIGEN_BFGS_H
 #define PCL_FOR_EIGEN_BFGS_H
 
-#include <Eigen/Core>
-#include <unsupported/Eigen/Polynomials>
-
 #if defined __GNUC__
 #  pragma GCC system_header 
 #endif
+
+#include <pcl/registration/eigen.h>
 
 namespace Eigen
 {
