@@ -46,7 +46,7 @@
 #include <sstream>
 #include <pcl/pcl_macros.h>
 #include <pcl/io/boost.h>
-#include <pcl/io/pcl_io_exception.h>
+#include <pcl/exceptions.h>
 
 namespace pcl
 {
