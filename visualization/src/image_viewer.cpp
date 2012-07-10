@@ -70,6 +70,8 @@ pcl::visualization::ImageViewer::ImageViewer (const std::string& window_title)
   // Create our own  interactor and set the window title
   image_viewer_->SetupInteractor (interactor_);
   image_viewer_->GetRenderWindow ()->SetWindowName (window_title.c_str ());
+  image_viewer_->GetRenderWindow ()->DoubleBufferOn ();
+  image_viewer_->GetRenderWindow ()->EraseOff ();
 
   // Initialize and create timer
   interactor_->Initialize ();

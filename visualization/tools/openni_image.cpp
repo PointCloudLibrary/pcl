@@ -143,17 +143,11 @@ class SimpleOpenNIViewer
       unsigned char* rgb_data = 0;
       unsigned rgb_data_size = 0;
       
-      boost::shared_ptr<openni_wrapper::Image> image;
-      boost::shared_ptr<openni_wrapper::DepthImage> depth_image;
+      //boost::shared_ptr<openni_wrapper::Image> image;
+      //boost::shared_ptr<openni_wrapper::DepthImage> depth_image;
       while (!image_viewer_.wasStopped () && !depth_image_viewer_.wasStopped ())
       {
         if (image_)
-          image.swap (image_);
-
-        if (depth_image_)
-          depth_image.swap (depth_image_);
-
-        if (image)
         {
           boost::mutex::scoped_lock lock (image_mutex_);
           if (!image_cld_init_)
@@ -162,50 +156,51 @@ class SimpleOpenNIViewer
             image_cld_init_ = !image_cld_init_;
           }
 
-          if (image->getEncoding() == openni_wrapper::Image::RGB)
+          if (image_->getEncoding() == openni_wrapper::Image::RGB)
             // Use add instead of show to save a render call
-            image_viewer_.addRGBImage (image->getMetaData ().Data (), image->getWidth (), image->getHeight ());
-            //image_viewer_.showRGBImage (image->getMetaData ().Data (), image->getWidth (), image->getHeight ());
+            image_viewer_.addRGBImage (image_->getMetaData ().Data (), image_->getWidth (), image_->getHeight ());
+            //image_viewer_.showRGBImage (image_->getMetaData ().Data (), image_->getWidth (), image_->getHeight ());
           else
           {
-            if (rgb_data_size < image->getWidth () * image->getHeight ())
+            if (rgb_data_size < image_->getWidth () * image_->getHeight ())
             {
               if (rgb_data)
                 delete [] rgb_data;
-              rgb_data_size = image->getWidth () * image->getHeight ();
+              rgb_data_size = image_->getWidth () * image_->getHeight ();
               rgb_data = new unsigned char [rgb_data_size * 3];
             }
-            image->fillRGB (image->getWidth (), image->getHeight (), rgb_data);
+            image_->fillRGB (image_->getWidth (), image_->getHeight (), rgb_data);
             // Use add instead of show to save a render call
-            image_viewer_.addRGBImage (rgb_data, image->getWidth (), image->getHeight ());
-            //image_viewer_.showRGBImage (rgb_data, image->getWidth (), image->getHeight ());
+            image_viewer_.addRGBImage (rgb_data, image_->getWidth (), image_->getHeight ());
+            //image_viewer_.showRGBImage (rgb_data, image_->getWidth (), image_->getHeight ());
           }
+          image_viewer_.spinOnce ();
         }
         if (depth_image_)
         {
           boost::mutex::scoped_lock lock (image_mutex_);
           if (!depth_image_cld_init_)
           {
-            depth_image_viewer_.setPosition (depth_image->getWidth (), 0);
+            depth_image_viewer_.setPosition (depth_image_->getWidth (), 0);
             depth_image_cld_init_ = !depth_image_cld_init_;
           }
 
           // Use add instead of show to save a render call
-          depth_image_viewer_.addShortImage (reinterpret_cast<const unsigned short*> (depth_image->getDepthMetaData ().Data ()), 
-                                             depth_image->getWidth (), depth_image->getHeight (),
+          depth_image_viewer_.addShortImage (reinterpret_cast<const unsigned short*> (depth_image_->getDepthMetaData ().Data ()), 
+                                             depth_image_->getWidth (), depth_image_->getHeight (),
                                              std::numeric_limits<unsigned short>::min (), 
                                              // Scale so that the colors look brigher on screen
                                              std::numeric_limits<unsigned short>::max () / 10, 
                                              true);
-          //depth_image_viewer_.showShortImage (reinterpret_cast<const unsigned short*> (depth_image->getDepthMetaData ().Data ()), 
-          //                                    depth_image->getWidth (), depth_image->getHeight (),
+          //depth_image_viewer_.showShortImage (reinterpret_cast<const unsigned short*> (depth_image_->getDepthMetaData ().Data ()), 
+          //                                    depth_image_->getWidth (), depth_image_->getHeight (),
           //                                    std::numeric_limits<unsigned short>::min (), 
           //                                    // Scale so that the colors look brigher on screen
           //                                    std::numeric_limits<unsigned short>::max () / 10, 
           //                                    true);
+          depth_image_viewer_.spinOnce ();
         }
-        image_viewer_.spinOnce ();
-        depth_image_viewer_.spinOnce ();
+        boost::this_thread::sleep (boost::posix_time::microseconds (100));
       }
 
       grabber_.stop ();
