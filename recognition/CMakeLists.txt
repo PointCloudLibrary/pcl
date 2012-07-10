@@ -17,6 +17,7 @@ if(build)
         )
 
     set(incs 
+        include/pcl/${SUBSYS_NAME}/boost.h
         include/pcl/${SUBSYS_NAME}/color_gradient_dot_modality.h
         include/pcl/${SUBSYS_NAME}/color_gradient_modality.h
 		    include/pcl/${SUBSYS_NAME}/color_modality.h

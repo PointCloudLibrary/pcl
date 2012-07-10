@@ -42,7 +42,6 @@
 #include "voxel_structure.h"
 #include <pcl/pcl_exports.h>
 #include <pcl/point_cloud.h>
-#include <Eigen/Core>
 #include <string>
 #include <list>
 #include <set>

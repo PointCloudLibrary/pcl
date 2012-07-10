@@ -40,8 +40,7 @@
 #include <pcl/pcl_macros.h>
 #include <pcl/recognition/hv/hypotheses_verification.h>
 #include <pcl/common/common.h>
-#include <boost/graph/graph_traits.hpp>
-#include <boost/graph/adjacency_list.hpp>
+#include <pcl/recognition/boost.h>
 
 namespace pcl
 {

@@ -39,7 +39,7 @@
 #ifndef PCL_RECOGNITION_VOXEL_STRUCTURE_H_
 #define PCL_RECOGNITION_VOXEL_STRUCTURE_H_
 
-#include <Eigen/Core>
+#include <pcl/common/eigen.h>
 
 namespace pcl
 {

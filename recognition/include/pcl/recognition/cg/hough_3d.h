@@ -41,9 +41,7 @@
 #define PCL_RECOGNITION_HOUGH_3D_H_
 
 #include <pcl/recognition/cg/correspondence_grouping.h>
-#include <boost/unordered_map.hpp>
-
-
+#include <pcl/recognition/boost.h>
 
 namespace pcl
 {

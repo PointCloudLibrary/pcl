@@ -42,7 +42,6 @@
 #include "model_library.h"
 #include <pcl/pcl_exports.h>
 #include <pcl/point_cloud.h>
-#include <Eigen/Core>
 #include <cmath>
 #include <string>
 #include <list>

@@ -41,7 +41,7 @@
 //#include <pcl/recognition/linemod/line_rgbd.h>
 #include <pcl/io/pcd_io.h>
 #include <fcntl.h>
-#include <Eigen/Dense>
+#include <pcl/point_cloud.h>
 #include <limits>
 #ifdef _WIN32
 # include <io.h>
