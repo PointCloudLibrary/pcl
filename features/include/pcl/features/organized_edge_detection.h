@@ -70,7 +70,7 @@ namespace pcl
 
       /** \brief Constructor for OrganizedEdgeDetection */
       OrganizedEdgeDetection ()
-        : th_depth_discon_ (0.02f), max_search_neighbors_ (50)
+        : th_depth_discon_(0.02), max_search_neighbors_(50), detecting_edge_types_(EDGELABEL_NAN_BOUNDARY | EDGELABEL_OCCLUDING | EDGELABEL_OCCLUDED | EDGELABEL_HIGH_CURVATURE | EDGELABEL_RGB_CANNY)
       {
       }
 
@@ -115,9 +115,22 @@ namespace pcl
         return (max_search_neighbors_);
       }
 
-      enum {EDGELABEL_NAN_BOUNDARY, EDGELABEL_OCCLUDING, EDGELABEL_OCCLUDED, EDGELABEL_HIGH_CURVATURE, EDGELABEL_RGB_CANNY};
+      /** \brief Set the detecting edge types. */
+      inline void
+      setEdgeType (int edge_types)
+      {
+        detecting_edge_types_ = edge_types;
+      }
 
-    protected:
+      /** \brief Get the detecting edge types. */
+      inline int
+      getEdgeType () const
+      {
+        return detecting_edge_types_;
+      }
+      
+      enum {EDGELABEL_NAN_BOUNDARY=1, EDGELABEL_OCCLUDING=2, EDGELABEL_OCCLUDED=4, EDGELABEL_HIGH_CURVATURE=8, EDGELABEL_RGB_CANNY=16};
+      static const int num_of_edgetype_ = 5;
 
     private:
       struct Neighbor
@@ -141,6 +154,9 @@ namespace pcl
 
       /** \brief The max search distance for deciding occluding and occluded edges */
       int max_search_neighbors_;
+
+      /** \brief The bit encoded value that represents edge types to detect */
+      int detecting_edge_types_;
   };
 }
 

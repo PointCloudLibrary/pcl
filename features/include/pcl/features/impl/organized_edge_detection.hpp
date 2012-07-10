@@ -41,6 +41,16 @@
 #define PCL_FEATURES_IMPL_ORGANIZED_EDGE_DETECTION_H_
 
 #include <pcl/features/organized_edge_detection.h>
+#include <pcl/features/integral_image_normal.h>
+#include <pcl/point_types.h>
+#include <pcl/2d/edge.h>
+#include <pcl/console/print.h>
+#include <pcl/console/time.h>
+
+using namespace pcl;
+using namespace pcl::io;
+using namespace pcl::console;
+using namespace pcl::pcl_2d;
 
 /**
  *  Directions: 1 2 3
@@ -52,142 +62,248 @@
 template<typename PointT, typename PointLT> void
 pcl::OrganizedEdgeDetection<PointT, PointLT>::compute (pcl::PointCloud<PointLT>& labels, std::vector<pcl::PointIndices>& label_indices) const
 {
-  const unsigned invalid_label = std::numeric_limits<unsigned>::max ();
+  const unsigned invalid_label = (unsigned)0;
   pcl::Label invalid_pt;
-  invalid_pt.label = std::numeric_limits<unsigned>::max ();
+  invalid_pt.label = (unsigned)0;
   labels.points.resize (input_->points.size (), invalid_pt);
   labels.width = input_->width;
   labels.height = input_->height;
+  unsigned int clust_id = 0;
 
-//  std::cout << "width: " << labels.width << std::endl;
-//  std::cout << "height: " << labels.height << std::endl;
-//  std::cout << "[done] OrganizedEdgeDetection::compute ()" << std::endl;
+  std::cout << "width: " << labels.width << std::endl;
+  std::cout << "height: " << labels.height << std::endl;
+  std::cout << "OrganizedEdgeDetection::compute ()" << std::endl;
 
-  // fill lookup table for next points to visit
-  const int num_of_ngbr = 8;
-  Neighbor directions [num_of_ngbr] = {Neighbor(-1,  0,                -1),
-                                       Neighbor(-1, -1, -labels.width - 1), 
-                                       Neighbor( 0, -1, -labels.width    ),
-                                       Neighbor( 1, -1, -labels.width + 1),
-                                       Neighbor( 1,  0,                 1),
-                                       Neighbor( 1,  1,  labels.width + 1),
-                                       Neighbor( 0,  1,  labels.width    ),
-                                       Neighbor(-1,  1,  labels.width - 1)};
-  
-  for (int row = 1; row < int(input_->height) - 1; row++)
+  if ((detecting_edge_types_ & EDGELABEL_NAN_BOUNDARY) || (detecting_edge_types_ & EDGELABEL_OCCLUDING) || (detecting_edge_types_ & EDGELABEL_OCCLUDED))
   {
-    for (int col = 1; col < int(input_->width) - 1; col++)
+    print_info ("Detecting nan boundaries, occluding and occluded edges... ");
+    TicToc tt;
+    tt.tic ();
+    // Fill lookup table for next points to visit
+    const int num_of_ngbr = 8;
+    Neighbor directions [num_of_ngbr] = {Neighbor(-1, 0, -1),
+      Neighbor(-1, -1, -labels.width - 1), 
+      Neighbor( 0, -1, -labels.width    ),
+      Neighbor( 1, -1, -labels.width + 1),
+      Neighbor( 1,  0,                 1),
+      Neighbor( 1,  1,  labels.width + 1),
+      Neighbor( 0,  1,  labels.width    ),
+      Neighbor(-1,  1,  labels.width - 1)};
+
+    for (int row = 1; row < int(input_->height) - 1; row++)
     {
-      int curr_idx = row*int(input_->width) + col;
-      if (!pcl_isfinite (input_->points[curr_idx].z))
-        continue;
-
-      float curr_depth = fabsf (input_->points[curr_idx].z);
-
-      // Calculate depth distances between current point and neighboring points
-      std::vector<float> nghr_dist;
-      nghr_dist.resize (8);
-      bool found_invalid_neighbor = false;
-      for (int d_idx = 0; d_idx < num_of_ngbr; d_idx++)
+      for (int col = 1; col < int(input_->width) - 1; col++)
       {
-        int nghr_idx = curr_idx + directions[d_idx].d_index;
-        assert (nghr_idx >= 0 && nghr_idx < input_->points.size ());
-        if (!pcl_isfinite (input_->points[nghr_idx].z))
-        {
-          found_invalid_neighbor = true;
-          break;
-        }
-        nghr_dist[d_idx] = curr_depth - fabsf (input_->points[nghr_idx].z);
-      }
+        int curr_idx = row*int(input_->width) + col;
+        if (!pcl_isfinite (input_->points[curr_idx].z))
+          continue;
 
-      if (!found_invalid_neighbor)
-      {
-        // Every neighboring points are valid
-        std::vector<float>::iterator min_itr = std::min_element (nghr_dist.begin (), nghr_dist.end ());
-        std::vector<float>::iterator max_itr = std::max_element (nghr_dist.begin (), nghr_dist.end ());
-        float nghr_dist_min = *min_itr;
-        float nghr_dist_max = *max_itr;
-        float dist_dominant = fabs (nghr_dist_min) > fabs (nghr_dist_max) ? nghr_dist_min : nghr_dist_max;
-        if (fabs (dist_dominant) > th_depth_discon_*fabs (curr_depth))
-        {
-          // Found a depth discontinuity
-          if (dist_dominant > 0.f)
-            labels[curr_idx].label = EDGELABEL_OCCLUDED;
-          else
-            labels[curr_idx].label = EDGELABEL_OCCLUDING;
-        }
-      }
-      else
-      {
-        // Some neighboring points are not valid (nan points)
-        // Search for corresponding point across invalid points
-        // Search direction is determined by nan point locations with respect to current point
-        int dx = 0;
-        int dy = 0;
-        int num_of_invalid_pt = 0;
+        float curr_depth = fabs (input_->points[curr_idx].z);
+
+        // Calculate depth distances between current point and neighboring points
+        std::vector<float> nghr_dist;
+        nghr_dist.resize (8);
+        bool found_invalid_neighbor = false;
         for (int d_idx = 0; d_idx < num_of_ngbr; d_idx++)
         {
           int nghr_idx = curr_idx + directions[d_idx].d_index;
           assert (nghr_idx >= 0 && nghr_idx < input_->points.size ());
           if (!pcl_isfinite (input_->points[nghr_idx].z))
           {
-            dx += directions[d_idx].d_x;
-            dy += directions[d_idx].d_y;
-            num_of_invalid_pt++;
-          }
-        }
-
-        // Search directions
-        assert (num_of_invalid_pt > 0);
-        float f_dx = static_cast<float> (dx) / static_cast<float> (num_of_invalid_pt);
-        float f_dy = static_cast<float> (dy) / static_cast<float> (num_of_invalid_pt);
-
-        // Search for corresponding point across invalid points
-        float corr_depth = std::numeric_limits<float>::quiet_NaN ();
-        for (int s_idx = 1; s_idx < max_search_neighbors_; s_idx++)
-        {
-          int s_row = row + static_cast<int> (std::floor (f_dy*static_cast<float> (s_idx)));
-          int s_col = col + static_cast<int> (std::floor (f_dx*static_cast<float> (s_idx)));
-
-          if (s_row < 0 || s_row >= int(input_->height) || s_col < 0 || s_col >= int(input_->width))
-            break;
-
-          if (pcl_isfinite (input_->points[s_row*int(input_->width)+s_col].z))
-          {
-            corr_depth = fabsf (input_->points[s_row*int(input_->width)+s_col].z);
+            found_invalid_neighbor = true;
             break;
           }
+          nghr_dist[d_idx] = curr_depth - fabs (input_->points[nghr_idx].z);
         }
 
-        if (!pcl_isnan (corr_depth))
+        if (!found_invalid_neighbor)
         {
-          // Found a corresponding point
-          float dist = curr_depth - corr_depth;
-          if (fabs (dist) > th_depth_discon_*fabs (curr_depth))
+          // Every neighboring points are valid
+          std::vector<float>::iterator min_itr = std::min_element (nghr_dist.begin (), nghr_dist.end ());
+          std::vector<float>::iterator max_itr = std::max_element (nghr_dist.begin (), nghr_dist.end ());
+          float nghr_dist_min = *min_itr;
+          float nghr_dist_max = *max_itr;
+          float dist_dominant = fabs (nghr_dist_min) > fabs (nghr_dist_max) ? nghr_dist_min : nghr_dist_max;
+          if (fabs (dist_dominant) > th_depth_discon_*fabs (curr_depth))
           {
             // Found a depth discontinuity
-            if (dist > 0.f)
-              labels[curr_idx].label = EDGELABEL_OCCLUDED;
+            if (dist_dominant > 0.f)
+            {
+              if (detecting_edge_types_ & EDGELABEL_OCCLUDED)
+                labels[curr_idx].label |= EDGELABEL_OCCLUDED;
+            }
             else
-              labels[curr_idx].label = EDGELABEL_OCCLUDING;
+            {
+              if (detecting_edge_types_ & EDGELABEL_OCCLUDING)
+                labels[curr_idx].label |= EDGELABEL_OCCLUDING;
+            }
           }
-        } 
+        }
         else
         {
-          // Not found a corresponding point, just nan boundary edge
-          labels[curr_idx].label = EDGELABEL_NAN_BOUNDARY;
+          // Some neighboring points are not valid (nan points)
+          // Search for corresponding point across invalid points
+          // Search direction is determined by nan point locations with respect to current point
+          int dx = 0;
+          int dy = 0;
+          int num_of_invalid_pt = 0;
+          for (int d_idx = 0; d_idx < num_of_ngbr; d_idx++)
+          {
+            int nghr_idx = curr_idx + directions[d_idx].d_index;
+            assert (nghr_idx >= 0 && nghr_idx < input_->points.size ());
+            if (!pcl_isfinite (input_->points[nghr_idx].z))
+            {
+              dx += directions[d_idx].d_x;
+              dy += directions[d_idx].d_y;
+              num_of_invalid_pt++;
+            }
+          }
+
+          // Search directions
+          assert (num_of_invalid_pt > 0);
+          float f_dx = static_cast<float> (dx) / static_cast<float> (num_of_invalid_pt);
+          float f_dy = static_cast<float> (dy) / static_cast<float> (num_of_invalid_pt);
+
+          // Search for corresponding point across invalid points
+          float corr_depth = std::numeric_limits<float>::quiet_NaN ();
+          for (int s_idx = 1; s_idx < max_search_neighbors_; s_idx++)
+          {
+            int s_row = row + static_cast<int> (std::floor (f_dy*static_cast<float> (s_idx)));
+            int s_col = col + static_cast<int> (std::floor (f_dx*static_cast<float> (s_idx)));
+
+            if (s_row < 0 || s_row >= int(input_->height) || s_col < 0 || s_col >= int(input_->width))
+              break;
+
+            if (pcl_isfinite (input_->points[s_row*int(input_->width)+s_col].z))
+            {
+              corr_depth = fabs (input_->points[s_row*int(input_->width)+s_col].z);
+              break;
+            }
+          }
+
+          if (!pcl_isnan (corr_depth))
+          {
+            // Found a corresponding point
+            float dist = curr_depth - corr_depth;
+            if (fabs (dist) > th_depth_discon_*fabs (curr_depth))
+            {
+              // Found a depth discontinuity
+              if (dist > 0.f)
+              {
+                if (detecting_edge_types_ & EDGELABEL_OCCLUDED)
+                  labels[curr_idx].label |= EDGELABEL_OCCLUDED;
+              }
+              else
+              {
+                if (detecting_edge_types_ & EDGELABEL_OCCLUDING)
+                  labels[curr_idx].label |= EDGELABEL_OCCLUDING;
+              }
+            }
+          } 
+          else
+          {
+            // Not found a corresponding point, just nan boundary edge
+            if (detecting_edge_types_ & EDGELABEL_NAN_BOUNDARY)
+              labels[curr_idx].label |= EDGELABEL_NAN_BOUNDARY;
+          }
         }
       }
     }
+    print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms]\n");
+  }
+
+  if ((detecting_edge_types_ & EDGELABEL_HIGH_CURVATURE))
+  {
+    print_info ("Detecting high curvature edges... ");
+    TicToc tt;
+    tt.tic ();
+
+    pcl::PointCloud<pcl::Normal>::Ptr normal (new pcl::PointCloud<pcl::Normal>);
+    pcl::IntegralImageNormalEstimation<PointT, pcl::Normal> ne;
+    //ne.setNormalEstimationMethod (ne.AVERAGE_3D_GRADIENT);
+    ne.setNormalEstimationMethod (ne.COVARIANCE_MATRIX);
+    ne.setNormalSmoothingSize (10.0f);
+    ne.setBorderPolicy (ne.BORDER_POLICY_MIRROR);
+    ne.setInputCloud (input_);
+    ne.compute (*normal);
+
+    ImageType nx, ny;
+    nx.resize (normal->height);
+    ny.resize (normal->height);
+
+    for (int r=0; r<normal->height; r++)
+    {
+      nx[r].resize (normal->width);
+      ny[r].resize (normal->width);
+      for (int c=0; c<normal->width; c++)
+      {
+        nx[r][c] = normal->points[r*normal->width + c].normal_x;
+        ny[r][c] = normal->points[r*normal->width + c].normal_y;
+      }
+    }
+
+    ImageType img_edge;
+    pcl::pcl_2d::edge edge;
+    edge.canny (img_edge, nx, ny, 0.4, 1.1);
+
+    for (int r=0; r<labels.height; r++)
+    {
+      for (int c=0; c<labels.width; c++)
+      {
+        if (img_edge[r][c] == 255.f)
+          labels[r*int(labels.width) + c].label |= EDGELABEL_HIGH_CURVATURE;
+      }
+    }
+    print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms]\n");
+  }
+
+  if ((detecting_edge_types_ & EDGELABEL_RGB_CANNY))
+  {
+    print_info ("Detecting rgb edges... ");
+    TicToc tt;
+    tt.tic ();
+#if 1
+    ImageType gray;
+    gray.resize (input_->height);
+    for (int row = 0; row < int(input_->height); row++)
+    {
+      gray[row].resize (input_->width);
+      for (int col = 0; col < int(input_->width); col++)
+      {
+        int r = input_->points[row*int(input_->width) + col].r;
+        int g = input_->points[row*int(input_->width) + col].g;
+        int b = input_->points[row*int(input_->width) + col].b;
+        gray[row][col] = int((r+g+b)/3);
+      }
+    }
+
+    ImageType img_edge_rgb;
+    pcl::pcl_2d::edge edge;
+    edge.canny (img_edge_rgb, gray, 40, 100);
+
+    for (int r=0; r<labels.height; r++)
+    {
+      for (int c=0; c<labels.width; c++)
+      {
+        if (img_edge_rgb[r][c] == 255.f)
+          labels[r*int(labels.width) + c].label |= EDGELABEL_RGB_CANNY;
+      }
+    }
+#endif
+    print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms]\n");
   }
 
   // Assign label indices
-  label_indices.resize (3);
+  label_indices.resize (num_of_edgetype_);
   for (unsigned idx = 0; idx < input_->points.size (); idx++)
   {
     if (labels[idx].label != invalid_label)
     {
-      label_indices[labels[idx].label].indices.push_back (idx);
+      for (int edge_type = 0; edge_type < num_of_edgetype_; edge_type++)
+      {
+        if ((labels[idx].label >> edge_type) & 1)
+          label_indices[edge_type].indices.push_back (idx);
+      }
     }
   }
 }

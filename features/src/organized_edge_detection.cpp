@@ -42,5 +42,5 @@
 #include <pcl/features/organized_edge_detection.h>
 #include <pcl/features/impl/organized_edge_detection.hpp>
 
-PCL_INSTANTIATE_PRODUCT(OrganizedEdgeDetection, (PCL_XYZ_POINT_TYPES)((pcl::Label)))
+PCL_INSTANTIATE_PRODUCT(OrganizedEdgeDetection, ((pcl::PointXYZRGBA)(pcl::PointXYZRGB)(pcl::PointXYZRGBL))((pcl::Label)))
 
