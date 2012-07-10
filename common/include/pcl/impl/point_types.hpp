@@ -987,18 +987,18 @@ namespace pcl
   /** \brief A point structure representing a Shape Context.
     * \ingroup common
     */
-  struct ShapeContext
+  struct ShapeContext1980
   {
-    std::vector<float> descriptor;
+    float descriptor[1980];
     float rf[9];
   };
 
-  inline std::ostream& operator << (std::ostream& os, const ShapeContext& p)
+  inline std::ostream& operator << (std::ostream& os, const ShapeContext1980& p)
   {
     for (int i = 0; i < 9; ++i)
     os << (i == 0 ? "(" : "") << p.rf[i] << (i < 8 ? ", " : ")");
-    for (size_t i = 0; i < p.descriptor.size (); ++i)
-    os << (i == 0 ? "(" : "") << p.descriptor[i] << (i < p.descriptor.size()-1 ? ", " : ")");
+    for (size_t i = 0; i < 1980; ++i)
+      os << (i == 0 ? "(" : "") << p.descriptor[i] << (i < 1979 ? ", " : ")");
     return (os);
   }
 

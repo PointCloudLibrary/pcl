@@ -241,13 +241,36 @@ pcl::UniqueShapeContext<PointInT, PointOutT, PointRFT>::computePointDescriptor (
 template <typename PointInT, typename PointOutT, typename PointRFT> void
 pcl::UniqueShapeContext<PointInT, PointOutT, PointRFT>::computeFeature (PointCloudOut &output)
 {
-  for (size_t point_index = 0; point_index < indices_->size (); point_index++)
-  {
-    output[point_index].descriptor.resize (descriptor_length_);
-    for (int d = 0; d < 9; ++d)
-      output.points[point_index].rf[d] = frames_->points[point_index].rf[ (4*(d/3) + (d%3)) ];
+  assert (descriptor_length_ == 1980);
 
-    computePointDescriptor (point_index, output[point_index].descriptor);
+  output.is_dense = true;
+
+  for (size_t point_index = 0; point_index < indices_->size (); ++point_index)
+  {
+    //output[point_index].descriptor.resize (descriptor_length_);
+
+    // If the point is not finite, set the descriptor to NaN and continue
+    const PointRFT& current_frame = (*frames_)[point_index];
+    if (!isFinite ((*input_)[(*indices_)[point_index]]) ||
+        !pcl_isfinite (current_frame.rf[0]) ||
+        !pcl_isfinite (current_frame.rf[4]) ||
+        !pcl_isfinite (current_frame.rf[11])  )
+    {
+      for (size_t i = 0; i < descriptor_length_; ++i)
+        output[point_index].descriptor[i] = std::numeric_limits<float>::quiet_NaN ();
+
+      memset (output[point_index].rf, 0, sizeof (output[point_index].rf[0]) * 9);
+      output.is_dense = false;
+      continue;
+    }
+
+    for (int d = 0; d < 9; ++d)
+      output.points[point_index].rf[d] = current_frame.rf[ (4*(d/3) + (d%3)) ];
+
+    std::vector<float> descriptor (descriptor_length_);
+    computePointDescriptor (point_index, descriptor);
+    for (size_t j = 0; j < descriptor_length_; ++j)
+      output [point_index].descriptor[j] = descriptor[j];
   }
 }
 
@@ -255,12 +278,32 @@ pcl::UniqueShapeContext<PointInT, PointOutT, PointRFT>::computeFeature (PointClo
 template <typename PointInT, typename PointRFT> void
 pcl::UniqueShapeContext<PointInT, Eigen::MatrixXf, PointRFT>::computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &output)
 {
+  // Set up the output channels
+  output.channels["usc"].name     = "usc";
+  output.channels["usc"].offset   = 0;
+  output.channels["usc"].size     = 4;
+  output.channels["usc"].count    = static_cast<uint32_t> (descriptor_length_) + 9;
+  output.channels["usc"].datatype = sensor_msgs::PointField::FLOAT32;
+
+  output.is_dense = true;
   output.points.resize (indices_->size (), descriptor_length_ + 9);
 
-  for (size_t point_index = 0; point_index < indices_->size (); point_index++)
+  for (size_t point_index = 0; point_index < indices_->size (); ++point_index)
   {
+    // If the point is not finite, set the descriptor to NaN and continue
+    const PointRFT& current_frame = (*frames_)[point_index];
+    if (!isFinite ((*input_)[(*indices_)[point_index]]) ||
+        !pcl_isfinite (current_frame.rf[0]) ||
+        !pcl_isfinite (current_frame.rf[4]) ||
+        !pcl_isfinite (current_frame.rf[11])  )
+    {
+      output.points.row (point_index).setConstant (std::numeric_limits<float>::quiet_NaN ());
+      output.is_dense = false;
+      continue;
+    }
+
     for (int d = 0; d < 9; ++d)
-      output.points (point_index, d) = frames_->points[point_index].rf[ (4*(d/3) + (d%3)) ];
+      output.points (point_index, d) = current_frame.rf[ (4*(d/3) + (d%3)) ];
 
     std::vector<float> descriptor (descriptor_length_);
     computePointDescriptor (point_index, descriptor);

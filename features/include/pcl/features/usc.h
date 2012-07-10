@@ -45,7 +45,7 @@
 
 namespace pcl
 {
-  /** \brief UniqueShapeContext implements the Unique Shape Descriptor
+  /** \brief UniqueShapeContext implements the Unique Shape Context Descriptor
     * described here:
     *
     *   - F. Tombari, S. Salti, L. Di Stefano,
@@ -53,16 +53,13 @@ namespace pcl
     *     International Workshop on 3D Object Retrieval (3DOR 10) -
     *     in conjuction with ACM Multimedia 2010
     *
-    * The USC computed feature has the following structure:
-    *   - rf float[9] = x_axis | y_axis | normal and represents the local frame
-    *   - desc std::vector<float> which size is determined by the number of bins
-    *     radius_bins_, elevation_bins_ and azimuth_bins_.
+    * The suggested PointOutT is pcl::ShapeContext1980
     *
     * \author Alessandro Franchi, Federico Tombari, Samuele Salti (original code)
     * \author Nizar Sallem (port to PCL)
     * \ingroup features
     */
-  template <typename PointInT, typename PointOutT, typename PointRFT = pcl::ReferenceFrame>
+  template <typename PointInT, typename PointOutT = pcl::ShapeContext1980, typename PointRFT = pcl::ReferenceFrame>
   class UniqueShapeContext : public Feature<PointInT, PointOutT>,
                              public FeatureWithLocalReferenceFrames<PointInT, PointRFT>
   {
@@ -96,31 +93,22 @@ namespace pcl
 
       virtual ~UniqueShapeContext() { }
 
-      /** \brief Set the number of bins along the azimuth
-        * \param[in] bins the number of bins along the azimuth
-        */
-      inline void
-      setAzimuthBins (size_t bins) { azimuth_bins_ = bins; }
+      //inline void
+      //setAzimuthBins (size_t bins) { azimuth_bins_ = bins; }
 
       /** \return The number of bins along the azimuth. */
       inline size_t
       getAzimuthBins () const { return (azimuth_bins_); }
 
-      /** \brief Set the number of bins along the elevation
-        * \param[in] bins the number of bins along the elevation
-        */
-      inline void
-      setElevationBins (size_t bins) { elevation_bins_ = bins; }
+      //inline void
+      //setElevationBins (size_t bins) { elevation_bins_ = bins; }
 
       /** \return The number of bins along the elevation */
       inline size_t
       getElevationBins () const { return (elevation_bins_); }
 
-      /** \brief Set the number of bins along the radii
-        * \param[in] bins the number of bins along the radii
-        */
-      inline void
-      setRadiusBins (size_t bins) { radius_bins_ = bins; }
+      //inline void
+      //setRadiusBins (size_t bins) { radius_bins_ = bins; }
 
       /** \return The number of bins along the radii direction. */
       inline size_t
@@ -223,24 +211,41 @@ namespace pcl
     *     International Workshop on 3D Object Retrieval (3DOR 10) -
     *     in conjuction with ACM Multimedia 2010
     *
-    * The USC computed feature has the following structure:
-    *   - rf float[9] = x_axis | y_axis | normal and represents the local frame
-    *     desc std::vector<float> which size is determined by the number of bins
-    *     radius_bins_, elevation_bins_ and azimuth_bins_.
-    *
     * \author Alessandro Franchi, Federico Tombari, Samuele Salti (original code)
     * \author Nizar Sallem (port to PCL)
     * \ingroup features
     */
   template <typename PointInT, typename PointRFT>
-  class UniqueShapeContext<PointInT, Eigen::MatrixXf, PointRFT> : public UniqueShapeContext<PointInT, pcl::SHOT, PointRFT>
+  class UniqueShapeContext<PointInT, Eigen::MatrixXf, PointRFT> : public UniqueShapeContext<PointInT, pcl::ShapeContext1980, PointRFT>
   {
     public:
       using FeatureWithLocalReferenceFrames<PointInT, PointRFT>::frames_;
-      using UniqueShapeContext<PointInT, pcl::SHOT, PointRFT>::indices_;
-      using UniqueShapeContext<PointInT, pcl::SHOT, PointRFT>::descriptor_length_;
-      using UniqueShapeContext<PointInT, pcl::SHOT, PointRFT>::compute;
-      using UniqueShapeContext<PointInT, pcl::SHOT, PointRFT>::computePointDescriptor;
+      using UniqueShapeContext<PointInT, pcl::ShapeContext1980, PointRFT>::input_;
+      using UniqueShapeContext<PointInT, pcl::ShapeContext1980, PointRFT>::indices_;
+      using UniqueShapeContext<PointInT, pcl::ShapeContext1980, PointRFT>::descriptor_length_;
+      using UniqueShapeContext<PointInT, pcl::ShapeContext1980, PointRFT>::compute;
+      using UniqueShapeContext<PointInT, pcl::ShapeContext1980, PointRFT>::computePointDescriptor;
+      using UniqueShapeContext<PointInT, pcl::ShapeContext1980, PointRFT>::azimuth_bins_;
+      using UniqueShapeContext<PointInT, pcl::ShapeContext1980, PointRFT>::elevation_bins_;
+      using UniqueShapeContext<PointInT, pcl::ShapeContext1980, PointRFT>::radius_bins_;
+
+      /** \brief Set the number of bins along the azimuth
+        * \param[in] bins the number of bins along the azimuth
+        */
+      inline void
+      setAzimuthBins (size_t bins) { azimuth_bins_ = bins; }
+
+      /** \brief Set the number of bins along the elevation
+        * \param[in] bins the number of bins along the elevation
+        */
+      inline void
+      setElevationBins (size_t bins) { elevation_bins_ = bins; }
+
+      /** \brief Set the number of bins along the radii
+        * \param[in] bins the number of bins along the radii
+        */
+      inline void
+      setRadiusBins (size_t bins) { radius_bins_ = bins; }
 
     private:
       /** \brief The actual feature computation.
@@ -253,7 +258,7 @@ namespace pcl
         * \param[out] output the output point cloud
         */
       void
-      compute (pcl::PointCloud<pcl::SHOT> &) {}
+      compute (pcl::PointCloud<pcl::ShapeContext1980> &) {}
   };
 }
 

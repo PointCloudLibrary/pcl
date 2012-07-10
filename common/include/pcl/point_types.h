@@ -196,10 +196,10 @@ namespace pcl
     */
   struct ReferenceFrame;
 
-  /** \brief Members: std::vector<float> descriptor, rf[9]
+  /** \brief Members: float descriptor[1980], rf[9]
     * \ingroup common
     */
-  struct ShapeContext;
+  struct ShapeContext1980;
 
   /** \brief Members: float pfh[125]
     * \ingroup common
@@ -487,6 +487,11 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::PPFRGBSignature,
 
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::NormalBasedSignature12,
     (float[12], values, values)
+)
+
+POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::ShapeContext1980,
+    (float[1980], descriptor, shape_context)
+    (float[9], rf, rf)
 )
 
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::SHOT352,

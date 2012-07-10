@@ -39,15 +39,13 @@
 
 #include <pcl/point_types.h>
 #include <pcl/impl/instantiate.hpp>
-//#include <pcl/features/3dsc.h>
-//#include <pcl/features/impl/3dsc.hpp>
-//
-//// Instantiations of specific point types
-//#ifdef PCL_ONLY_CORE_POINT_TYPES
-//  PCL_INSTANTIATE_PRODUCT(ShapeContext3DEstimation, ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA))((pcl::Normal))((pcl::SHOT)))
-//  PCL_INSTANTIATE_PRODUCT(ShapeContext3DEstimation, ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA))((pcl::Normal))((pcl::ShapeContext)))
-//#else
-//  PCL_INSTANTIATE_PRODUCT(ShapeContext3DEstimation, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((pcl::SHOT)))
-//  PCL_INSTANTIATE_PRODUCT(ShapeContext3DEstimation, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((pcl::ShapeContext)))
-//  PCL_INSTANTIATE_PRODUCT(ShapeContext3DEstimation, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((Eigen::MatrixXf)))
-//#endif
+#include <pcl/features/3dsc.h>
+#include <pcl/features/impl/3dsc.hpp>
+
+// Instantiations of specific point types
+#ifdef PCL_ONLY_CORE_POINT_TYPES
+  PCL_INSTANTIATE_PRODUCT(ShapeContext3DEstimation, ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA))((pcl::Normal))((pcl::ShapeContext1980)))
+#else
+  PCL_INSTANTIATE_PRODUCT(ShapeContext3DEstimation, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((pcl::ShapeContext1980)))
+  PCL_INSTANTIATE_PRODUCT(ShapeContext3DEstimation, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((Eigen::MatrixXf)))
+#endif

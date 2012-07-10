@@ -422,7 +422,7 @@ namespace pcl
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   template <>
-  class DefaultPointRepresentation<ShapeContext> : public PointRepresentation<ShapeContext>
+  class DefaultPointRepresentation<ShapeContext1980> : public PointRepresentation<ShapeContext1980>
   {
     public:
       DefaultPointRepresentation ()
@@ -431,7 +431,7 @@ namespace pcl
       }
 
       virtual void
-      copyToFloatArray (const ShapeContext &p, float * out) const
+      copyToFloatArray (const ShapeContext1980 &p, float * out) const
       {
         for (int i = 0; i < nr_dimensions_; ++i)
           out[i] = p.descriptor[i];
