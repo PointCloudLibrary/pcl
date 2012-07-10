@@ -163,7 +163,9 @@ class SimpleOpenNIViewer
           }
 
           if (image->getEncoding() == openni_wrapper::Image::RGB)
-            image_viewer_.showRGBImage (image->getMetaData ().Data (), image->getWidth (), image->getHeight ());
+            // Use add instead of show to save a render call
+            image_viewer_.addRGBImage (image->getMetaData ().Data (), image->getWidth (), image->getHeight ());
+            //image_viewer_.showRGBImage (image->getMetaData ().Data (), image->getWidth (), image->getHeight ());
           else
           {
             if (rgb_data_size < image->getWidth () * image->getHeight ())
@@ -174,7 +176,9 @@ class SimpleOpenNIViewer
               rgb_data = new unsigned char [rgb_data_size * 3];
             }
             image->fillRGB (image->getWidth (), image->getHeight (), rgb_data);
-            image_viewer_.showRGBImage (rgb_data, image->getWidth (), image->getHeight ());
+            // Use add instead of show to save a render call
+            image_viewer_.addRGBImage (rgb_data, image->getWidth (), image->getHeight ());
+            //image_viewer_.showRGBImage (rgb_data, image->getWidth (), image->getHeight ());
           }
         }
         if (depth_image_)
@@ -186,12 +190,19 @@ class SimpleOpenNIViewer
             depth_image_cld_init_ = !depth_image_cld_init_;
           }
 
-          depth_image_viewer_.showShortImage (reinterpret_cast<const unsigned short*> (depth_image->getDepthMetaData ().Data ()), 
-                                              depth_image->getWidth (), depth_image->getHeight (),
-                                              std::numeric_limits<unsigned short>::min (), 
-                                              // Scale so that the colors look brigher on screen
-                                              std::numeric_limits<unsigned short>::max () / 10, 
-                                              true);
+          // Use add instead of show to save a render call
+          depth_image_viewer_.addShortImage (reinterpret_cast<const unsigned short*> (depth_image->getDepthMetaData ().Data ()), 
+                                             depth_image->getWidth (), depth_image->getHeight (),
+                                             std::numeric_limits<unsigned short>::min (), 
+                                             // Scale so that the colors look brigher on screen
+                                             std::numeric_limits<unsigned short>::max () / 10, 
+                                             true);
+          //depth_image_viewer_.showShortImage (reinterpret_cast<const unsigned short*> (depth_image->getDepthMetaData ().Data ()), 
+          //                                    depth_image->getWidth (), depth_image->getHeight (),
+          //                                    std::numeric_limits<unsigned short>::min (), 
+          //                                    // Scale so that the colors look brigher on screen
+          //                                    std::numeric_limits<unsigned short>::max () / 10, 
+          //                                    true);
         }
         image_viewer_.spinOnce ();
         depth_image_viewer_.spinOnce ();
