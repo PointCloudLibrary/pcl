@@ -40,26 +40,11 @@
 #ifndef PCL_CUDA_COMMON_THRUST_H_
 #define PCL_CUDA_COMMON_THRUST_H_
 
-#if defined __GNUC__
-#  include <features.h>
-#  if __GNUC_PREREQ(4, 6)
-#    pragma GCC diagnostic push
-#  endif
-#  pragma GCC diagnostic ignored "-Wold-style-cast"
-#endif
-
 #include <thrust/host_vector.h>
 #include <thrust/device_vector.h>
 #include <thrust/copy.h>
 #include <thrust/device_ptr.h>
 #include <thrust/sequence.h>
-
-#if defined __GNUC__
-#  include <features.h>
-#  if __GNUC_PREREQ(4, 6)
-#    pragma GCC diagnostic pop
-#  endif
-#endif
 
 #endif    // PCL_CUDA_COMMON_THRUST_H_
 

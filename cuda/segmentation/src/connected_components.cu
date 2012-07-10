@@ -171,6 +171,7 @@ namespace pcl
                           int min_size, 
                           float percentage)
     {
+      return (std::vector<typename Storage<int>::type> ());
     }
 
 

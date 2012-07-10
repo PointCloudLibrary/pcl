@@ -14,6 +14,12 @@ endif(NOT CUDA_FOUND)
 
 OPTION(BUILD_CUDA "Build the CUDA-related subsystems" ${DEFAULT})
 
+if(CMAKE_COMPILER_IS_GNUCXX)
+  string(REPLACE "-Wold-style-cast" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+  string(REPLACE "-Wno-invalid-offsetof" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-conversion -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable -Wno-unused-function")
+endif()
+
 if(BUILD_CUDA)
     if(CUDA_FOUND)      
         set(CUDA_ARCH_BIN "20" CACHE STRING "Specify 'real' GPU arch to build binaries for, BIN(PTX) format is supported. Example: 1.3 2.1(1.3) or 13 21(13)")

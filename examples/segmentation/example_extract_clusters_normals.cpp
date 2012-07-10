@@ -42,7 +42,6 @@
 #include <iostream>
 
 // PCL
-#include <boost/thread/thread.hpp>
 #include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/filters/extract_indices.h>

@@ -14,6 +14,12 @@ endif(NOT CUDA_FOUND)
 
 OPTION(BUILD_GPU "Build the GPU-related subsystems" ${DEFAULT})
 
+if(CMAKE_COMPILER_IS_GNUCXX)
+  string(REPLACE "-Wold-style-cast" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+  string(REPLACE "-Wno-invalid-offsetof" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-conversion -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable -Wno-unused-function")
+endif()
+
 if(BUILD_GPU)
     if(CUDA_FOUND)
         # Find a complete list for CUDA compute capabilities at http://developer.nvidia.com/cuda-gpus
