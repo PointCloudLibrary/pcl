@@ -58,6 +58,7 @@
 #include <pcl/io/openni_grabber.h>
 #include <pcl/io/oni_grabber.h>
 #include <pcl/io/pcd_grabber.h>
+#include <pcl/exceptions.h>
 
 #include "openni_capture.h"
 #include "color_handler.h"
@@ -104,7 +105,7 @@ vector<string> getPcdFilesInDir(const string& directory)
  
   std::cout << "path: " << directory << std::endl;
   if (directory.empty() || !fs::exists(dir) || !fs::is_directory(dir))
-    throw pcl::PCLIOException("No valid PCD directory given!\n");
+    PCL_THROW_EXCEPTION (pcl::IOException, "No valid PCD directory given!\n");
     
   vector<string> result;
   fs::directory_iterator pos(dir);

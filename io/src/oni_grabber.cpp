@@ -43,7 +43,7 @@
 #include <pcl/common/time.h>
 #include <pcl/console/print.h>
 #include <pcl/io/boost.h>
-#include <pcl/io/pcl_io_exception.h>
+#include <pcl/exceptions.h>
 #include <iostream>
 
 namespace pcl
@@ -84,7 +84,7 @@ ONIGrabber::ONIGrabber (const std::string& file_name, bool repeat, bool stream)
   device_ = boost::dynamic_pointer_cast< openni_wrapper::DeviceONI> (driver.createVirtualDevice (file_name, repeat, stream));
 
   if (!device_->hasDepthStream ())
-    THROW_PCL_IO_EXCEPTION("Device does not provide 3D information.");
+    PCL_THROW_EXCEPTION (pcl::IOException, "Device does not provide 3D information.");
 
   XnMapOutputMode depth_mode = device_->getDepthOutputMode();
   depth_width_ = depth_mode.nXRes;
@@ -181,7 +181,7 @@ ONIGrabber::start ()
     }
     catch (openni_wrapper::OpenNIException& ex)
     {
-      THROW_PCL_IO_EXCEPTION("Could not start streams. Reason: %s", ex.what());
+      PCL_THROW_EXCEPTION (pcl::IOException, "Could not start streams. Reason: " << ex.what());
     }
   }
   else
@@ -218,7 +218,7 @@ ONIGrabber::stop ()
     }
     catch (openni_wrapper::OpenNIException& ex)
     {
-      THROW_PCL_IO_EXCEPTION("Could not stop streams. Reason: %s", ex.what());
+      PCL_THROW_EXCEPTION (pcl::IOException, "Could not stop streams. Reason: " << ex.what());
     }
   }
 }

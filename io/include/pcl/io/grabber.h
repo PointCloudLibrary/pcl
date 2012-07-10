@@ -248,7 +248,7 @@ namespace pcl
         sstream << cIt->first << std::endl;
       }*/
 
-      THROW_PCL_IO_EXCEPTION ("[%s] %s", getName ().c_str (), sstream.str ().c_str ());
+      PCL_THROW_EXCEPTION (pcl::IOException, "[" << getName () << "] " << sstream.str ());
       //return (boost::signals2::connection ());
     }
     Signal* signal = dynamic_cast<Signal*> (signals_[typeid (T).name ()]);

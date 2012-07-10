@@ -136,6 +136,10 @@ pcl_isnan (T &val)
 #define RAD2DEG(x) ((x)*57.29578)
 #endif
 
+/** \brief Macro that maps version information given by major.minor.patch to a linear integer value to enable easy comparison
+ */
+#define PCL_LINEAR_VERSION(major,minor,patch) ((major)<<16|(minor)<<8|(patch))
+
 /** Win32 doesn't seem to have rounding functions.
   * Therefore implement our own versions of these functions here.
   */
@@ -282,10 +286,7 @@ log2f (float x)
 
 // gcc supports this starting from 4.5 : http://gcc.gnu.org/bugzilla/show_bug.cgi?id=43666
 #ifdef __GNUC__
-#define GCC_VERSION (__GNUC__ * 10000 \
-    + __GNUC_MINOR__ * 100 \
-    + __GNUC_PATCHLEVEL__)
-#if GCC_VERSION < 40500
+#if PCL_LINEAR_VERSION(__GNUC__,__GNUC_MINOR__,__GNUC_PATCHLEVEL__) < PCL_LINEAR_VERSION(4,5,0)
 #define PCL_DEPRECATED(func, message) func __attribute__ ((deprecated))
 #else
 #define PCL_DEPRECATED(func, message) func __attribute__ ((deprecated(message)))
@@ -316,10 +317,7 @@ log2f (float x)
 
 // gcc supports this starting from 4.5 : http://gcc.gnu.org/bugzilla/show_bug.cgi?id=43666
 #ifdef __GNUC__
-#define GCC_VERSION (__GNUC__ * 10000 \
-    + __GNUC_MINOR__ * 100 \
-    + __GNUC_PATCHLEVEL__)
-#if GCC_VERSION < 40500
+#if PCL_LINEAR_VERSION (__GNUC__, __GNU_MINOR__, __GNU_PATCHLEVEL__) < PCL_LINEAR_VERSION (4, 5, 0)
 #define PCL_DEPRECATED_CLASS(func, message) __attribute__ ((deprecated)) func
 #else
 #define PCL_DEPRECATED_CLASS(func, message) __attribute__ ((deprecated(message))) func
@@ -340,8 +338,7 @@ log2f (float x)
   #error Alignment not supported on your platform
 #endif
 
-#if defined(__GLIBC__) && ((__GLIBC__>=2 && __GLIBC_MINOR__ >= 8) || __GLIBC__>2) \
- && defined(__LP64__)
+#if defined(__GLIBC__) && PCL_LINEAR_VERSION(__GLIBC__,__GLIBC_MINOR__,0)>PCL_LINEAR_VERSION(2,8,0)
   #define GLIBC_MALLOC_ALIGNED 1
 #else
   #define GLIBC_MALLOC_ALIGNED 0

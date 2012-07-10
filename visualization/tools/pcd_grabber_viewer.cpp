@@ -43,6 +43,9 @@
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/visualization/image_viewer.h>
 
+#if (PCL_LINEAR_VERSION(VTK_MAJOR_VERSION,VTK_MINOR_VERSION,0)<=PCL_LINEAR_VERSION(5,4,0))
+  #define DISPLAY_IMAGE
+#endif
 
 using pcl::console::print_error;
 using pcl::console::print_info;
@@ -69,7 +72,7 @@ printHelp (int, char **argv)
 
 // Create the PCLVisualizer object
 boost::shared_ptr<pcl::visualization::PCLVisualizer> cloud_viewer;
-#if !((VTK_MAJOR_VERSION == 5)&&(VTK_MINOR_VERSION <= 4))
+#ifdef DISPLAY_IMAGE
 boost::shared_ptr<pcl::visualization::ImageViewer> img_viewer;
 #endif
 
@@ -83,6 +86,7 @@ struct EventHelper
   {
     if (mutex_.try_lock ())
     {
+      std::cout << "new cloud with points: " << cloud->size () << std::endl;
       cloud_ = cloud;
       mutex_.unlock ();
     }
@@ -139,7 +143,7 @@ main (int argc, char** argv)
 
   cloud_viewer.reset (new pcl::visualization::PCLVisualizer (argc, argv, "PCD viewer"));
 
-#if !((VTK_MAJOR_VERSION == 5)&&(VTK_MINOR_VERSION <= 4))
+#ifdef DISPLAY_IMAGE
   img_viewer.reset (new pcl::visualization::ImageViewer ("OpenNI Viewer"));
 #endif
 
@@ -168,6 +172,7 @@ main (int argc, char** argv)
   pcl::console::parse (argc, argv, "-fps", frames_per_second);
   if (frames_per_second < 0)
     frames_per_second = 0.0;
+
 
   bool repeat = (pcl::console::find_argument (argc, argv, "-repeat") != -1);
 
@@ -228,7 +233,7 @@ main (int argc, char** argv)
   std::string mouse_msg_2D ("Mouse coordinates in image viewer");
   std::string key_msg_2D ("Key event for image viewer");
 
-#if !((VTK_MAJOR_VERSION == 5)&&(VTK_MINOR_VERSION <= 4))
+#if DISPLAY_IMAGE
   img_viewer->registerMouseCallback (&mouse_callback, static_cast<void*> (&mouse_msg_2D));
   img_viewer->registerKeyboardCallback(&keyboard_callback, static_cast<void*> (&key_msg_2D));
 #endif
@@ -238,7 +243,7 @@ main (int argc, char** argv)
   {
     cloud_viewer->spinOnce ();
 
-#if !((VTK_MAJOR_VERSION == 5)&&(VTK_MINOR_VERSION <= 4))
+#ifdef DISPLAY_IMAGE
     img_viewer->spinOnce ();
 #endif
 
@@ -247,14 +252,13 @@ main (int argc, char** argv)
       boost::this_thread::sleep(boost::posix_time::microseconds(10000));
       continue;
     }
-
-    if (mutex_.try_lock ())
+    else if (mutex_.try_lock ())
     {
       pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr temp_cloud;
       temp_cloud.swap (cloud_);
       mutex_.unlock ();
 
-#if !((VTK_MAJOR_VERSION == 5)&&(VTK_MINOR_VERSION <= 4))
+#ifdef DISPLAY_IMAGE
       img_viewer->showRGBImage (*temp_cloud);
 #endif
 

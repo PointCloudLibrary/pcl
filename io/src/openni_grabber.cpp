@@ -88,7 +88,7 @@ pcl::OpenNIGrabber::OpenNIGrabber (const std::string& device_id, const Mode& dep
   onInit (device_id, depth_mode, image_mode);
 
   if (!device_->hasDepthStream ())
-    THROW_PCL_IO_EXCEPTION ("Device does not provide 3D information.");
+    PCL_THROW_EXCEPTION (pcl::IOException, "Device does not provide 3D information.");
 
   depth_image_signal_    = createSignal<sig_cb_openni_depth_image> ();
   ir_image_signal_       = createSignal<sig_cb_openni_ir_image> ();
@@ -248,7 +248,7 @@ pcl::OpenNIGrabber::start ()
   }
   catch (openni_wrapper::OpenNIException& ex)
   {
-    THROW_PCL_IO_EXCEPTION ("Could not start streams. Reason: %s", ex.what ());
+    PCL_THROW_EXCEPTION (pcl::IOException, "Could not start streams. Reason: " << ex.what ());
   }
   // workaround, since the first frame is corrupted
   boost::this_thread::sleep (boost::posix_time::seconds (1));
@@ -274,7 +274,7 @@ pcl::OpenNIGrabber::stop ()
   }
   catch (openni_wrapper::OpenNIException& ex)
   {
-    THROW_PCL_IO_EXCEPTION ("Could not stop streams. Reason: %s", ex.what ());
+    PCL_THROW_EXCEPTION (pcl::IOException, "Could not stop streams. Reason: " << ex.what ());
   }
 }
 
@@ -306,7 +306,7 @@ pcl::OpenNIGrabber::signalsChanged ()
   checkDepthStreamRequired ();
   checkIRStreamRequired ();
   if (ir_required_ && image_required_)
-    THROW_PCL_IO_EXCEPTION ("Can not provide IR stream and RGB stream at the same time.");
+    PCL_THROW_EXCEPTION (pcl::IOException, "Can not provide IR stream and RGB stream at the same time.");
 
   checkImageAndDepthSynchronizationRequired ();
   if (running_)
@@ -335,7 +335,7 @@ pcl::OpenNIGrabber::setupDevice (const std::string& device_id, const Mode& depth
     }
     else if (driver.getNumberDevices () == 0)
     {
-      THROW_PCL_IO_EXCEPTION ("No devices connected.");
+      PCL_THROW_EXCEPTION (pcl::IOException, "No devices connected.");
     }
     else if (device_id[0] == '#')
     {
@@ -366,17 +366,17 @@ pcl::OpenNIGrabber::setupDevice (const std::string& device_id, const Mode& depth
   catch (const openni_wrapper::OpenNIException& exception)
   {
     if (!device_)
-      THROW_PCL_IO_EXCEPTION ("No matching device found. %s", exception.what ());
+      PCL_THROW_EXCEPTION (pcl::IOException, "No matching device found. " << exception.what ())
     else
-      THROW_PCL_IO_EXCEPTION ("could not retrieve device. Reason %s", exception.what ());
+      PCL_THROW_EXCEPTION (pcl::IOException, "could not retrieve device. Reason " << exception.what ())
   }
-  catch (const pcl::PCLIOException&)
+  catch (const pcl::IOException&)
   {
     throw;
   }
   catch (...)
   {
-    THROW_PCL_IO_EXCEPTION ("unknown error occured");
+    PCL_THROW_EXCEPTION (pcl::IOException, "unknown error occured");
   }
 
   XnMapOutputMode depth_md;
@@ -385,7 +385,7 @@ pcl::OpenNIGrabber::setupDevice (const std::string& device_id, const Mode& depth
   {
     XnMapOutputMode actual_depth_md;
     if (!mapConfigMode2XnMode (depth_mode, depth_md) || !device_->findCompatibleDepthMode (depth_md, actual_depth_md))
-      THROW_PCL_IO_EXCEPTION ("could not find compatible depth stream mode %d", static_cast<int> (depth_mode) );
+      PCL_THROW_EXCEPTION (pcl::IOException, "could not find compatible depth stream mode " << static_cast<int> (depth_mode) );
 
     XnMapOutputMode current_depth_md =  device_->getDepthOutputMode ();
     if (current_depth_md.nXRes != actual_depth_md.nXRes || current_depth_md.nYRes != actual_depth_md.nYRes)
@@ -406,7 +406,7 @@ pcl::OpenNIGrabber::setupDevice (const std::string& device_id, const Mode& depth
     {
       XnMapOutputMode actual_image_md;
       if (!mapConfigMode2XnMode (image_mode, image_md) || !device_->findCompatibleImageMode (image_md, actual_image_md))
-        THROW_PCL_IO_EXCEPTION ("could not find compatible image stream mode %d", static_cast<int> (image_mode) );
+        PCL_THROW_EXCEPTION (pcl::IOException, "could not find compatible image stream mode " << static_cast<int> (image_mode) );
 
       XnMapOutputMode current_image_md =  device_->getImageOutputMode ();
       if (current_image_md.nXRes != actual_image_md.nXRes || current_image_md.nYRes != actual_image_md.nYRes)
@@ -435,7 +435,7 @@ pcl::OpenNIGrabber::startSynchronization ()
   }
   catch (const openni_wrapper::OpenNIException& exception)
   {
-    THROW_PCL_IO_EXCEPTION ("Could not start synchronization %s", exception.what ());
+    PCL_THROW_EXCEPTION (pcl::IOException, "Could not start synchronization " << exception.what ());
   }
 }
 
@@ -450,7 +450,7 @@ pcl::OpenNIGrabber::stopSynchronization ()
   }
   catch (const openni_wrapper::OpenNIException& exception)
   {
-    THROW_PCL_IO_EXCEPTION ("Could not start synchronization %s", exception.what ());
+    PCL_THROW_EXCEPTION (pcl::IOException, "Could not start synchronization " << exception.what ());
   }
 }
 

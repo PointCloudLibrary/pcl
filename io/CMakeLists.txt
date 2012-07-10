@@ -104,7 +104,6 @@ if(build)
         include/pcl/${SUBSYS_NAME}/grabber.h
         include/pcl/${SUBSYS_NAME}/pcd_grabber.h
         include/pcl/${SUBSYS_NAME}/pcd_io.h
-        include/pcl/${SUBSYS_NAME}/pcl_io_exception.h
         include/pcl/${SUBSYS_NAME}/vtk_io.h
         include/pcl/${SUBSYS_NAME}/ply_io.h
         include/pcl/${SUBSYS_NAME}/tar.h
