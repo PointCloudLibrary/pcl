@@ -1,7 +1,10 @@
 /*
  * Software License Agreement (BSD License)
  *
+ *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2011, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -31,10 +34,6 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *	
- * Author: Nico Blodow (blodow@cs.tum.edu)
- *         Radu Bogdan Rusu (rusu@willowgarage.com)
- *         Suat Gedikli (gedikli@willowgarage.com)
- *         Ethan Rublee (rublee@willowgarage.com)
  */
 
 #include <pcl/point_cloud.h>
@@ -42,15 +41,12 @@
 #include <pcl/common/time.h> //fps calculations
 #include <pcl/io/openni_grabber.h>
 #include <pcl/visualization/boost.h>
+#include <pcl/visualization/common/float_image_utils.h>
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/visualization/image_viewer.h>
 #include <pcl/io/openni_camera/openni_driver.h>
 #include <pcl/console/parse.h>
 #include <pcl/visualization/mouse_event.h>
-#include <vtkImageViewer.h>
-#include <vtkImageImport.h>
-#include <vector>
-#include <string>
 
 using namespace std;
 
@@ -85,7 +81,8 @@ class SimpleOpenNIViewer
       : grabber_ (grabber),
         image_viewer_ ("PCL/OpenNI RGB image viewer"),
         depth_image_viewer_ ("PCL/OpenNI depth image viewer"),
-        image_cld_init_ (false), depth_image_cld_init_ (false)
+        image_cld_init_ (false), depth_image_cld_init_ (false),
+        rgb_data_ (0), depth_data_ (0), rgb_data_size_ (0)
     {
     }
 
@@ -95,8 +92,32 @@ class SimpleOpenNIViewer
     {
       FPS_CALC ("image callback");
       boost::mutex::scoped_lock lock (image_mutex_);
+
+      // Copy data
       image_ = image;
+      if (image->getEncoding() != openni_wrapper::Image::RGB)
+      {
+        if (rgb_data_size_ < image->getWidth () * image->getHeight ())
+        {
+          if (rgb_data_)
+            delete [] rgb_data_;
+          rgb_data_size_ = image->getWidth () * image->getHeight ();
+          rgb_data_ = new unsigned char [rgb_data_size_ * 3];
+        }
+        image_->fillRGB (image_->getWidth (), image_->getHeight (), rgb_data_);
+      }
+
+      // Copy data
       depth_image_ = depth_image;
+      if (depth_data_)
+        delete[] depth_data_;
+      depth_data_ = pcl::visualization::FloatImageUtils::getVisualImage (
+          reinterpret_cast<const unsigned short*> (depth_image->getDepthMetaData ().Data ()),
+            depth_image->getWidth (), depth_image->getHeight (),
+            std::numeric_limits<unsigned short>::min (), 
+            // Scale so that the colors look brigher on screen
+            std::numeric_limits<unsigned short>::max () / 10, 
+            true);
     }
     
     void 
@@ -139,67 +160,51 @@ class SimpleOpenNIViewer
       boost::signals2::connection image_connection = grabber_.registerCallback (image_cb);
       
       grabber_.start ();
-      
-      unsigned char* rgb_data = 0;
-      unsigned rgb_data_size = 0;
-      
-      //boost::shared_ptr<openni_wrapper::Image> image;
-      //boost::shared_ptr<openni_wrapper::DepthImage> depth_image;
+           
+      boost::shared_ptr<openni_wrapper::Image> image;
+      boost::shared_ptr<openni_wrapper::DepthImage> depth_image;
       while (!image_viewer_.wasStopped () && !depth_image_viewer_.wasStopped ())
       {
-        if (image_)
+        if (!image_cld_init_)
         {
-          boost::mutex::scoped_lock lock (image_mutex_);
-          if (!image_cld_init_)
+          image_viewer_.setPosition (0, 0);
+          image_cld_init_ = !image_cld_init_;
+        }
+
+        if (image_mutex_.try_lock ())
+        {
+          // Swap data
+          if (image_)
+            image_.swap (image);
+
+          if (depth_image_)
+            depth_image_.swap (depth_image);
+
+          // Unlock
+          image_mutex_.unlock ();
+
+          // Add to renderer
+          if (image)
           {
-            image_viewer_.setPosition (0, 0);
-            image_cld_init_ = !image_cld_init_;
+            if (image->getEncoding() == openni_wrapper::Image::RGB)
+              image_viewer_.addRGBImage (image->getMetaData ().Data (), image->getWidth (), image->getHeight ());
+            else
+              image_viewer_.addRGBImage (rgb_data_, image->getWidth (), image->getHeight ());
           }
 
-          if (image_->getEncoding() == openni_wrapper::Image::RGB)
-            // Use add instead of show to save a render call
-            image_viewer_.addRGBImage (image_->getMetaData ().Data (), image_->getWidth (), image_->getHeight ());
-            //image_viewer_.showRGBImage (image_->getMetaData ().Data (), image_->getWidth (), image_->getHeight ());
-          else
+          if (depth_image)
           {
-            if (rgb_data_size < image_->getWidth () * image_->getHeight ())
+            depth_image_viewer_.addRGBImage (depth_data_, depth_image->getWidth (), depth_image->getHeight ());
+            if (!depth_image_cld_init_)
             {
-              if (rgb_data)
-                delete [] rgb_data;
-              rgb_data_size = image_->getWidth () * image_->getHeight ();
-              rgb_data = new unsigned char [rgb_data_size * 3];
+              depth_image_viewer_.setPosition (depth_image->getWidth (), 0);
+              depth_image_cld_init_ = !depth_image_cld_init_;
             }
-            image_->fillRGB (image_->getWidth (), image_->getHeight (), rgb_data);
-            // Use add instead of show to save a render call
-            image_viewer_.addRGBImage (rgb_data, image_->getWidth (), image_->getHeight ());
-            //image_viewer_.showRGBImage (rgb_data, image_->getWidth (), image_->getHeight ());
           }
-          image_viewer_.spinOnce ();
         }
-        if (depth_image_)
-        {
-          boost::mutex::scoped_lock lock (image_mutex_);
-          if (!depth_image_cld_init_)
-          {
-            depth_image_viewer_.setPosition (depth_image_->getWidth (), 0);
-            depth_image_cld_init_ = !depth_image_cld_init_;
-          }
-
-          // Use add instead of show to save a render call
-          depth_image_viewer_.addShortImage (reinterpret_cast<const unsigned short*> (depth_image_->getDepthMetaData ().Data ()), 
-                                             depth_image_->getWidth (), depth_image_->getHeight (),
-                                             std::numeric_limits<unsigned short>::min (), 
-                                             // Scale so that the colors look brigher on screen
-                                             std::numeric_limits<unsigned short>::max () / 10, 
-                                             true);
-          //depth_image_viewer_.showShortImage (reinterpret_cast<const unsigned short*> (depth_image_->getDepthMetaData ().Data ()), 
-          //                                    depth_image_->getWidth (), depth_image_->getHeight (),
-          //                                    std::numeric_limits<unsigned short>::min (), 
-          //                                    // Scale so that the colors look brigher on screen
-          //                                    std::numeric_limits<unsigned short>::max () / 10, 
-          //                                    true);
-          depth_image_viewer_.spinOnce ();
-        }
+        image_viewer_.spinOnce ();
+        depth_image_viewer_.spinOnce ();
+        
         boost::this_thread::sleep (boost::posix_time::microseconds (100));
       }
 
@@ -207,8 +212,10 @@ class SimpleOpenNIViewer
       
       image_connection.disconnect ();
       
-      if (rgb_data)
-        delete[] rgb_data;
+      if (rgb_data_)
+        delete[] rgb_data_;
+      if (depth_data_)
+        delete[] depth_data_;
     }
 
     pcl::OpenNIGrabber& grabber_;
@@ -218,6 +225,8 @@ class SimpleOpenNIViewer
     pcl::visualization::ImageViewer image_viewer_;
     pcl::visualization::ImageViewer depth_image_viewer_;
     bool image_cld_init_, depth_image_cld_init_;
+    unsigned char* rgb_data_, *depth_data_;
+    unsigned rgb_data_size_;
 };
 
 void
