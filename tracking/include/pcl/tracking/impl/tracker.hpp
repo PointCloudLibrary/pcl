@@ -1,9 +1,9 @@
 #ifndef PCL_TRACKING_IMPL_TRACKER_H_
 #define PCL_TRACKING_IMPL_TRACKER_H_
 
-#include <boost/random.hpp>
 #include <pcl/common/eigen.h>
 #include <ctime>
+#include <pcl/tracking/boost.h>
 
 template <typename PointInT, typename StateT> bool
 pcl::tracking::Tracker<PointInT, StateT>::initCompute ()

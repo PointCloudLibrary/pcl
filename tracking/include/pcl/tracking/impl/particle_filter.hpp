@@ -1,11 +1,10 @@
 #ifndef PCL_TRACKING_IMPL_PARTICLE_FILTER_H_
 #define PCL_TRACKING_IMPL_PARTICLE_FILTER_H_
 
-#include <boost/random.hpp>
-
 #include <pcl/common/common.h>
 #include <pcl/common/eigen.h>
 #include <pcl/common/transforms.h>
+#include <pcl/tracking/boost.h>
 
 template <typename PointInT, typename StateT> bool
 pcl::tracking::ParticleFilterTracker<PointInT, StateT>::initCompute ()

@@ -23,6 +23,7 @@ if(build)
         )
 
     set(incs 
+        include/pcl/${SUBSYS_NAME}/boost.h
         include/pcl/${SUBSYS_NAME}/tracking.h
         include/pcl/${SUBSYS_NAME}/tracker.h
         include/pcl/${SUBSYS_NAME}/coherence.h
