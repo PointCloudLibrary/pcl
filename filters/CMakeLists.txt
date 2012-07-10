@@ -27,6 +27,7 @@ if(build)
         src/bilateral.cpp
         src/crop_hull.cpp
         src/voxel_grid_covariance.cpp
+	src/voxel_grid_label.cpp
         )
 
     set(incs
@@ -53,6 +54,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/voxel_grid_covariance.h
         include/pcl/${SUBSYS_NAME}/convolution.h
         include/pcl/${SUBSYS_NAME}/convolution_3d.h
+        include/pcl/${SUBSYS_NAME}/voxel_grid_label.h
         )
 
     set(impl_incs
