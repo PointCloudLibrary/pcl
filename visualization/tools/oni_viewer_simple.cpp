@@ -37,12 +37,11 @@
  *         Ethan Rublee (rublee@willowgarage.com)
  */
 
-#include <boost/thread/thread.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/common/time.h> //fps calculations
 #include <pcl/io/oni_grabber.h>
+#include <pcl/visualization/boost.h>
 #include <pcl/visualization/cloud_viewer.h>
 #include <vector>
 #include <pcl/common/time_trigger.h>

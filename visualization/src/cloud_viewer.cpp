@@ -37,10 +37,7 @@
 
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/visualization/pcl_visualizer.h>
-
-#include <boost/thread.hpp>
-#include <boost/thread/mutex.hpp>
-#include <boost/foreach.hpp>
+#include <pcl/visualization/boost.h>
 
 namespace pcl
 {

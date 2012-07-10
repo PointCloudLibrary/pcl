@@ -40,15 +40,13 @@
 #define PCL_PCL_VISUALIZER_INTERACTOR_STYLE_H_
 
 #include <pcl/visualization/vtk.h>
-#include <boost/shared_ptr.hpp>
 #include <pcl/console/print.h>
 #include <pcl/visualization/common/actor_map.h>
 #include <pcl/visualization/common/ren_win_interact_map.h>
-#include <boost/shared_ptr.hpp>
-#include <boost/signals2.hpp>
 #include <pcl/visualization/keyboard_event.h>
 #include <pcl/visualization/mouse_event.h>
 #include <pcl/visualization/point_picking_event.h>
+#include <pcl/visualization/boost.h>
 
 namespace pcl
 {

@@ -62,12 +62,17 @@ include(${PCL_SOURCE_DIR}/cmake/pcl_options.cmake)
 if(CMAKE_COMPILER_IS_GNUCXX)
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wno-unknown-pragmas -Wconversion -Wold-style-cast -fno-strict-aliasing -Wno-format-extra-args -Wno-sign-compare -Wno-invalid-offsetof")
 
-  # Only enable -Wabi for GCC > 4.3 to disable a lot of warnings which are not fixable
+  # Enable -Wabi for GCC > 4.3, and -Wno-deprecated for GCC < 4.3 
+  # to disable a lot of warnings which are not fixable
   execute_process(COMMAND ${CMAKE_C_COMPILER} -dumpversion OUTPUT_VARIABLE GCC_VERSION)
   if (GCC_VERSION VERSION_GREATER 4.3)
     message("-- GCC > 4.3 found, enabling -Wabi")
     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wabi")
+  else()
+    message("-- GCC < 4.3 found, enabling -Wno-deprecated")
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated")
   endif ()
+
 
   if(NOT ANDROID_NDK)
     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")

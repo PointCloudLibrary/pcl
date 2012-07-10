@@ -40,8 +40,7 @@
 #include <pcl/point_cloud.h> //basic pcl includes
 #include <pcl/point_types.h>
 
-#include <boost/function.hpp>
-
+#include <pcl/visualization/boost.h>
 #include <string>
 
 namespace pcl

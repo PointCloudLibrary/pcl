@@ -38,12 +38,11 @@
 #ifndef PCL_VISUALIZATION_IMAGE_VISUALIZER_H__
 #define	PCL_VISUALIZATION_IMAGE_VISUALIZER_H__
 
-#include <boost/shared_array.hpp>
 #include <pcl/pcl_macros.h>
 #include <pcl/console/print.h>
-#include <boost/signals2.hpp>
 #include <pcl/visualization/interactor_style.h>
 #include <pcl/visualization/vtk.h>
+#include <pcl/visualization/boost.h>
 #include <pcl/visualization/vtk/pcl_image_canvas_source_2d.h>
 #include <pcl/geometry/planar_polygon.h>
 

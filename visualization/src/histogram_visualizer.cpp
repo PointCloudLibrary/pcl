@@ -35,7 +35,6 @@
  *
  */
 
-#include <boost/thread/thread.hpp>
 #include <pcl/common/common_headers.h>
 #include <pcl/visualization/common/common.h>
 #if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
@@ -44,6 +43,7 @@
 #include <vtkRenderWindowInteractor.h>
 #endif
 #include <pcl/visualization/histogram_visualizer.h>
+#include <pcl/visualization/boost.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::visualization::PCLHistogramVisualizer::PCLHistogramVisualizer () : 

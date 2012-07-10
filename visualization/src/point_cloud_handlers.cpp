@@ -35,6 +35,7 @@
 *
 */
 
+#include <pcl/visualization/vtk.h>
 #include <pcl/visualization/point_cloud_handlers.h>
 #include <pcl/console/time.h>
 #include <pcl/pcl_macros.h>

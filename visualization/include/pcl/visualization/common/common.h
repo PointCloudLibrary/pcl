@@ -40,7 +40,7 @@
 #include <vtkTextActor.h>
 
 #include <pcl/pcl_macros.h>
-#include <Eigen/Dense>
+#include <pcl/visualization/eigen.h>
 
 namespace pcl
 {

@@ -38,11 +38,8 @@
  */
 #include <pcl/io/pcd_grabber.h>
 #include <pcl/console/parse.h>
-#include <boost/filesystem.hpp>
-#include <boost/algorithm/string.hpp>
-#include <boost/thread/thread.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
 #include <pcl/console/print.h>
+#include <pcl/visualization/boost.h>
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/visualization/image_viewer.h>
 

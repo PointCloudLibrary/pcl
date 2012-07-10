@@ -99,7 +99,8 @@ namespace pcl
       {}
 
       PLYReader (const PLYReader &p)
-        : parser_ ()
+        : FileReader ()
+        , parser_ ()
         , origin_ (Eigen::Vector4f::Zero ())
         , orientation_ (Eigen::Matrix3f::Zero ())
         , cloud_ ()

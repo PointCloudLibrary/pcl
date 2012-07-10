@@ -50,8 +50,8 @@
 #include <vtkVisibleCellSelector.h>
 #include <vtkSelection.h>
 #include <vtkPointPicker.h>
-#include <boost/unordered/unordered_map.hpp>
 
+#include <pcl/visualization/boost.h>
 #include <pcl/visualization/vtk/vtkVertexBufferObjectMapper.h>
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -3026,9 +3026,9 @@ pcl::visualization::PCLVisualizer::renderView (int xres, int yres, pcl::PointClo
   render_win->GetZbufferData (0, 0, xres - 1, yres - 1, &(depth[0]));
 
   int count_valid_depth_pixels = 0;
-  for (size_t x = 0; x < (size_t)xres; x++)
+  for (size_t x = 0; x < size_t (xres); x++)
   {
-    for (size_t y = 0; y < (size_t)yres; y++)
+    for (size_t y = 0; y < size_t (yres); y++)
     {
       float value = depth[y * xres + x];
 
@@ -3311,7 +3311,7 @@ pcl::visualization::PCLVisualizer::addPointCloud (
 /////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::visualization::PCLVisualizer::FPSCallback::Execute (
-    vtkObject* caller, unsigned long event_id, void*)
+    vtkObject* caller, unsigned long, void*)
 {
   vtkRenderer *ren = reinterpret_cast<vtkRenderer *> (caller);
   float fps = 1.0 / ren->GetLastRenderTimeInSeconds ();

@@ -34,9 +34,10 @@
  * $Id$
  *
  */
+
 #include <pcl/visualization/common/io.h>
-#include <Eigen/Geometry>
 #include <pcl/io/pcd_io.h>
+#include <pcl/visualization/eigen.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void

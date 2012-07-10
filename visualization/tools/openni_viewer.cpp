@@ -35,12 +35,12 @@
  *
  */
 
-#include <boost/thread/thread.hpp>
 #define MEASURE_FUNCTION_TIME
 #include <pcl/common/time.h> //fps calculations
 #include <pcl/io/openni_grabber.h>
 #include <pcl/visualization/point_cloud_handlers.h>
 #include <pcl/visualization/pcl_visualizer.h>
+#include <pcl/visualization/boost.h>
 #include <pcl/visualization/image_viewer.h>
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>

@@ -39,10 +39,10 @@
 #ifndef PCL_PCL_VISUALIZER_SHAPES_H_
 #define PCL_PCL_VISUALIZER_SHAPES_H_
 
-#include <Eigen/Geometry>
 #include <pcl/ModelCoefficients.h>
 #include <pcl/point_cloud.h>
 #include <pcl/visualization/vtk.h>
+#include <pcl/visualization/eigen.h>
 #include <pcl/geometry/planar_polygon.h>
 
 /**

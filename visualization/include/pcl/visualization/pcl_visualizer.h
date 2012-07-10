@@ -50,10 +50,9 @@
 #include <pcl/visualization/common/common.h>
 #include <pcl/visualization/common/shapes.h>
 #include <pcl/visualization/window.h>
-#include <boost/algorithm/string/split.hpp>
-#include <boost/algorithm/string/classification.hpp>
 // VTK includes
 #include <pcl/visualization/vtk.h>
+#include <pcl/visualization/boost.h>
 
 namespace pcl
 {

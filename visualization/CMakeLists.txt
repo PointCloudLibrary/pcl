@@ -49,6 +49,8 @@ if(build)
     endif("${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}" VERSION_LESS "5.6")
 
     set(incs 
+        include/pcl/${SUBSYS_NAME}/eigen.h
+        include/pcl/${SUBSYS_NAME}/boost.h
         include/pcl/${SUBSYS_NAME}/cloud_viewer.h
         include/pcl/${SUBSYS_NAME}/histogram_visualizer.h
         include/pcl/${SUBSYS_NAME}/image_viewer.h

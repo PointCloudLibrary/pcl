@@ -37,8 +37,6 @@
  *         Ethan Rublee (rublee@willowgarage.com)
  */
 
-#include <boost/thread/thread.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/common/time.h> //fps calculations
@@ -47,6 +45,7 @@
 #include <pcl/visualization/image_viewer.h>
 #include <pcl/io/openni_camera/openni_driver.h>
 #include <pcl/console/parse.h>
+#include <pcl/visualization/boost.h>
 #include <pcl/visualization/mouse_event.h>
 #include <vtkImageViewer.h>
 #include <vtkImageImport.h>
