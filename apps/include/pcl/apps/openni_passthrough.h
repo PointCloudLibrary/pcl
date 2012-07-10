@@ -38,8 +38,6 @@
 #ifndef PCL_APPS_OPENNI_PASSTHROUGH_3D_
 #define PCL_APPS_OPENNI_PASSTHROUGH_3D_
 
-// Boost
-#include <boost/thread/thread.hpp>
 // PCL
 #include <pcl/apps/openni_passthrough_qt.h>
 #include <pcl/point_cloud.h>
