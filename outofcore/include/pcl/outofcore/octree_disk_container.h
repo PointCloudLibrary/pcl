@@ -208,7 +208,7 @@ namespace pcl
           {
 //            PCL_INFO ( "[pcl::outofcore::octree_disk_container::%s] Reading points from disk from %s.\n", __FUNCTION__ , fileback_name_->c_str () );
           
-            assert ( reader.read ( *fileback_name_, *dst, origin, orientation, pcd_version) != -1 );
+            //assert ( reader.read ( *fileback_name_, *dst, origin, orientation, pcd_version) != -1 );
 //            PCL_INFO ( "[pcl::outofcore::octree_disk_container::%s] Read %d points from disk\n", __FUNCTION__ , dst->width*dst->height );
             
           }
