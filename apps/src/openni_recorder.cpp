@@ -34,9 +34,7 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/io/openni_grabber.h>
-#include <boost/thread/mutex.hpp>
 #include <boost/thread/condition.hpp>
-#include <boost/thread/thread.hpp>
 #include <boost/circular_buffer.hpp>
 #include <csignal>
 #include <pcl/io/pcd_io.h>

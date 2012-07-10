@@ -125,7 +125,7 @@ main (int argc, char **argv)
 //  io::savePCDFileASCII ("persistent_features.pcd", *persistent_features_locations);
 //  PCL_INFO ("\nPersistent feature locations written to persistent_features.pcd\n");
 
-  while (!viewer.wasStopped (50));
+  while (!viewer.wasStopped (50)) {}
 
-  return 0;
+  return (0);
 }

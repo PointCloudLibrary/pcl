@@ -5,8 +5,6 @@
 #include <QMutexLocker>
 #include <QEvent>
 #include <QObject>
-#include <boost/make_shared.hpp>
-#include <boost/filesystem.hpp>
 
 #include <pcl/segmentation/extract_polygonal_prism_data.h>
 #include <pcl/surface/convex_hull.h>

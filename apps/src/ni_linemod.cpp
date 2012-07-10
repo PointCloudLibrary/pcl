@@ -37,7 +37,6 @@
  *
  */
 
-#include <boost/thread/thread.hpp>
 #include <pcl/apps/timer.h>
 #include <pcl/common/common.h>
 #include <pcl/common/angles.h>

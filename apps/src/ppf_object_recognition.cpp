@@ -5,7 +5,6 @@
 #include <pcl/registration/ppf_registration.h>
 
 #include <pcl/visualization/pcl_visualizer.h>
-#include <boost/thread/thread.hpp>
 
 #include <pcl/segmentation/sac_segmentation.h>
 #include <pcl/filters/extract_indices.h>

@@ -35,10 +35,8 @@
 
 #include <pcl/io/openni_grabber.h>
 #include <pcl/visualization/cloud_viewer.h>
-#include <boost/thread/thread.hpp>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/io/io.h>
-#include <boost/make_shared.hpp>
 #include <pcl/common/time.h>
 #include <pcl/features/integral_image_normal.h>
 #include <pcl/features/normal_3d.h>
