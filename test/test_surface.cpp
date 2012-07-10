@@ -44,7 +44,6 @@
 #include <pcl/io/vtk_io.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/surface/mls.h>
-#include <pcl/surface/mls_omp.h>
 #include <pcl/surface/gp3.h>
 #include <pcl/surface/grid_projection.h>
 #include <pcl/surface/convex_hull.h>
@@ -140,13 +139,13 @@ TEST (PCL, MovingLeastSquares)
 
 
   // Testing OpenMP version
-  MovingLeastSquaresOMP<PointXYZ, PointNormal> mls_omp;
+  MovingLeastSquares<PointXYZ, PointNormal> mls_omp;
   mls_omp.setInputCloud (cloud);
   mls_omp.setComputeNormals (true);
   mls_omp.setPolynomialFit (true);
   mls_omp.setSearchMethod (tree);
   mls_omp.setSearchRadius (0.03);
-  mls_omp.setNumberOfThreads (4);
+  //mls_omp.setNumberOfThreads (4);
 
   // Reconstruct
   mls_normals->clear ();
@@ -217,7 +216,7 @@ TEST (PCL, MovingLeastSquares)
   mls_upsampling.setDilationVoxelSize (0.005f);
   mls_normals->clear ();
   mls_upsampling.process (*mls_normals);
-  EXPECT_NEAR (mls_normals->points[10].x, -0.074478879570960999, 2e-3);
+  EXPECT_NEAR (mls_normals->points[10].x, 0.03079305961728096, 2e-3);
   EXPECT_NEAR (mls_normals->points[10].y, 0.089299865067005157, 2e-3);
   EXPECT_NEAR (mls_normals->points[10].z, 0.04994254931807518, 2e-3);
   EXPECT_NEAR (mls_normals->points[10].curvature, 0.107273, 1e-1);

@@ -376,8 +376,7 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::computeMLSPointNormal (int index,
   }
 }
 
-
-
+//////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT> void
 pcl::MovingLeastSquares<PointInT, PointOutT>::projectPointToMLSSurface (float &u_disp, float &v_disp,
                                                                         Eigen::Vector3d &u, Eigen::Vector3d &v,
@@ -536,11 +535,6 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::performProcessing (PointCloudOut &
     }
   }
 }
-
-
-
-
-
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT>

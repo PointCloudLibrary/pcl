@@ -30,6 +30,9 @@ if (build)
   PCL_ADD_EXECUTABLE (pcl_ply2pcd ${SUBSYS_NAME} ply2pcd.cpp)
   target_link_libraries (pcl_ply2pcd pcl_common pcl_io)
 
+  PCL_ADD_EXECUTABLE (scale ${SUBSYS_NAME} scale.cpp)
+  target_link_libraries (scale pcl_common pcl_io)
+
   PCL_ADD_EXECUTABLE (pcl_pcd2vtk ${SUBSYS_NAME} pcd2vtk.cpp)
   target_link_libraries (pcl_pcd2vtk pcl_common pcl_io)
 

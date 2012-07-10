@@ -47,9 +47,6 @@
 #include <pcl/octree/octree_impl.h>
 
 #include <pcl/filters/filter.h>
-
-#include <omp.h>
-
 //=============================
 // Displaying cubes is very long!
 // so we limit their numbers.
@@ -327,7 +324,7 @@ private:
 
     pcl::PointXYZ pt;
     std::cout << "===== Extracting data at depth " << depth << "... " << std::flush;
-    double start = omp_get_wtime();
+    double start = pcl::getTime ();
     while (*tree_it++)
     {
       if (static_cast<int> (tree_it.getCurrentOctreeDepth ()) != depth)
@@ -345,7 +342,7 @@ private:
       tree_it.skipChildVoxels();
     }
 
-    double end = omp_get_wtime();
+    double end = pcl::getTime ();
     printf("%zu pts, %.4gs. %.4gs./pt. =====\n", displayCloud->points.size (), end - start,
            (end - start) / static_cast<double> (displayCloud->points.size ()));
 

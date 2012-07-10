@@ -92,7 +92,6 @@ if(build)
         src/marching_cubes_rbf.cpp
         src/bilateral_upsampling.cpp
         src/mls.cpp
-        src/mls_omp.cpp
         src/organized_fast_mesh.cpp
         src/simplification_remove_unused_vertices.cpp
         src/surfel_smoothing.cpp
@@ -116,7 +115,6 @@ if(build)
         include/pcl/${SUBSYS_NAME}/marching_cubes_rbf.h
         include/pcl/${SUBSYS_NAME}/bilateral_upsampling.h
         include/pcl/${SUBSYS_NAME}/mls.h
-        include/pcl/${SUBSYS_NAME}/mls_omp.h
         include/pcl/${SUBSYS_NAME}/organized_fast_mesh.h
         include/pcl/${SUBSYS_NAME}/reconstruction.h
         include/pcl/${SUBSYS_NAME}/processing.h
@@ -138,7 +136,6 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/marching_cubes_rbf.hpp
         include/pcl/${SUBSYS_NAME}/impl/bilateral_upsampling.hpp
         include/pcl/${SUBSYS_NAME}/impl/mls.hpp
-        include/pcl/${SUBSYS_NAME}/impl/mls_omp.hpp
         include/pcl/${SUBSYS_NAME}/impl/organized_fast_mesh.hpp
         include/pcl/${SUBSYS_NAME}/impl/reconstruction.hpp
         include/pcl/${SUBSYS_NAME}/impl/processing.hpp

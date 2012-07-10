@@ -42,7 +42,6 @@
 #include <pcl/console/parse.h>
 #include <pcl/console/time.h>
 #include <pcl/surface/mls.h>
-#include <pcl/surface/mls_omp.h>
 #include <pcl/filters/voxel_grid.h>
 
 using namespace pcl;
@@ -108,7 +107,7 @@ compute (const sensor_msgs::PointCloud2::ConstPtr &input, sensor_msgs::PointClou
 
   PointCloud<PointNormal>::Ptr xyz_cloud_smoothed (new PointCloud<PointNormal> ());
 
-  MovingLeastSquaresOMP<PointXYZ, PointNormal> mls;
+  MovingLeastSquares<PointXYZ, PointNormal> mls;
   mls.setInputCloud (xyz_cloud);
   mls.setSearchRadius (search_radius);
   if (sqr_gauss_param_set) mls.setSqrGaussParam (sqr_gauss_param);
