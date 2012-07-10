@@ -29,6 +29,13 @@ if(build)
         include/pcl/${SUBSYS_NAME}/point_xy_32f.h
         include/pcl/${SUBSYS_NAME}/regression_variance_stats_estimator.h
         include/pcl/${SUBSYS_NAME}/stats_estimator.h
+	include/pcl/${SUBSYS_NAME}/densecrf.h
+	include/pcl/${SUBSYS_NAME}/pairwise_potential.h
+	include/pcl/${SUBSYS_NAME}/permutohedral.h
+	#include/pcl/${SUBSYS_NAME}/util.h
+	#include/pcl/${SUBSYS_NAME}/permutohedralORI.h
+	#include/pcl/${SUBSYS_NAME}/fastmath.h
+	#include/pcl/${SUBSYS_NAME}/densecrfORI.h
         include/pcl/${SUBSYS_NAME}/svm_wrapper.h
         include/pcl/${SUBSYS_NAME}/svm.h
         )
@@ -46,6 +53,13 @@ if(build)
     set(srcs
 		src/point_xy_32i.cpp
 		src/point_xy_32f.cpp
+		src/densecrf.cpp
+		src/pairwise_potential.cpp
+		src/permutohedral.cpp
+		#src/permutohedralORI.cpp
+		#src/filter.cpp
+		#src/util.cpp
+		#src/densecrfORI.cpp		
 		src/svm_wrapper.cpp
 		src/svm.cpp
         )
