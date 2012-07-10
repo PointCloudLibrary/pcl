@@ -36,8 +36,8 @@
  */
 #ifndef PCL_PCL_VISUALIZER_COMMON_H_
 #define PCL_PCL_VISUALIZER_COMMON_H_
-#include <vtkCommand.h>
-#include <vtkTextActor.h>
+
+#include <pcl/visualization/vtk.h>
 
 #include <pcl/pcl_macros.h>
 #include <pcl/visualization/eigen.h>

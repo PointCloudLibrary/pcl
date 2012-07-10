@@ -41,6 +41,10 @@
 
 #if defined __GNUC__
 #pragma GCC system_header 
+#ifdef __DEPRECATED
+#undef __DEPRECATED
+#define __DEPRECATED_DISABLED__
+#endif
 #endif
 
 #include <vtkAppendPolyData.h>
@@ -145,6 +149,11 @@
 #include <vtkVisibleCellSelector.h>
 #include <vtkTriangle.h>
 #include <vtkWorldPointPicker.h>
+
+#if defined __GNUC__ && defined __DEPRECATED_DISABLED__
+#define __DEPRECATED
+#undef __DEPRECATED_DISABLED__
+#endif
 
 #endif    // PCL_PCL_VISUALIZER_VTK_H_
 
