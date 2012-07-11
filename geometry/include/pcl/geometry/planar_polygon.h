@@ -42,6 +42,7 @@
 
 #include <Eigen/Core>
 #include <vector>
+#include <pcl/ModelCoefficients.h>
 
 namespace pcl
 {
@@ -68,6 +69,15 @@ namespace pcl
       /** \brief Destructor. */
       virtual ~PlanarPolygon () {}
 
+      /** \brief Set the internal contour
+        * \param[in] contour the new planar polygonal contour
+        */
+      void
+      setContour (const pcl::PointCloud<PointT> &contour)
+      {
+        contour_ = contour.points;
+      }
+
       /** \brief Getter for the contour / boundary */
       typename pcl::PointCloud<PointT>::VectorType&
       getContour ()
@@ -80,6 +90,25 @@ namespace pcl
       getContour () const
       {
         return (contour_);
+      }
+
+      /** \brief Setr the internal coefficients
+        * \param[in] coefficients the new coefficients to be set 
+        */
+      void
+      setCoefficients (const Eigen::Vector4f &coefficients)
+      {
+        coefficients_ = coefficients;
+      }
+
+      /** \brief Set the internal coefficients
+        * \param[in] coefficients the new coefficients to be set 
+        */
+      void
+      setCoefficients (const pcl::ModelCoefficients &coefficients)
+      {
+        for (int i = 0; i < 4; i++)
+          coefficients_[i] = coefficients.values.at (i);
       }
 
       /** \brief Getter for the coefficients */

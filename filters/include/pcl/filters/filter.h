@@ -44,6 +44,7 @@
 #include <pcl/ros/conversions.h>
 #include <pcl/filters/boost.h>
 #include <cfloat>
+#include <pcl/PointIndices.h>
 
 namespace pcl
 {
@@ -95,6 +96,15 @@ namespace pcl
       getRemovedIndices ()
       {
         return (removed_indices_);
+      }
+
+      /** \brief Get the point indices being removed 
+        * \param[out] pi the resultant point indices that have been removed
+        */
+      inline void
+      getRemovedIndices (PointIndices &pi)
+      {
+        pi.indices = *removed_indices_;
       }
 
       /** \brief Calls the filtering method and returns the filtered dataset in output.
@@ -181,6 +191,15 @@ namespace pcl
       getRemovedIndices ()
       {
         return (removed_indices_);
+      }
+
+      /** \brief Get the point indices being removed 
+        * \param[out] pi the resultant point indices that have been removed
+        */
+      inline void
+      getRemovedIndices (PointIndices &pi)
+      {
+        pi.indices = *removed_indices_;
       }
 
       /** \brief Calls the filtering method and returns the filtered dataset in output.
