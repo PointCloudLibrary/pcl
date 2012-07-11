@@ -42,6 +42,7 @@
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 #include <pcl/common/time.h>
+#include <pcl/exceptions.h>
 #include <pcl/console/parse.h>
 #include <pcl/console/print.h>
 #include <pcl/gpu/containers/initialization.h>
@@ -71,7 +72,7 @@ vector<string> getPcdFilesInDir(const string& directory)
   fs::path dir(directory);
         
   if (!fs::exists(dir) || !fs::is_directory(dir))
-    throw pcl::PCLIOException("Wrong PCD directory");
+    PCL_THROW_EXCEPTION(pcl::IOException, "Wrong PCD directory");
     
   vector<string> result;
   fs::directory_iterator pos(dir);
