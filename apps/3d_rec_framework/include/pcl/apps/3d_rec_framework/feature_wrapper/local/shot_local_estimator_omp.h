@@ -59,7 +59,7 @@ namespace pcl
           }
 
           //compute signatures
-          typedef typename pcl::SHOTEstimationOMP<PointInT, pcl::Normal, pcl::SHOT> SHOTEstimator;
+          typedef typename pcl::SHOTEstimationOMP<PointInT, pcl::Normal, pcl::SHOT352> SHOTEstimator;
           typename pcl::search::KdTree<PointInT>::Ptr tree (new pcl::search::KdTree<PointInT>);
 
           boost::shared_ptr < std::vector<int> > indices (new std::vector<int> ());
@@ -67,7 +67,7 @@ namespace pcl
           for (size_t i = 0; i < indices->size (); i++)
             (*indices)[i] = keypoints.points[i];
 
-          pcl::PointCloud<pcl::SHOT>::Ptr shots (new pcl::PointCloud<pcl::SHOT>);
+          pcl::PointCloud<pcl::SHOT352>::Ptr shots (new pcl::PointCloud<pcl::SHOT352>);
           SHOTEstimator shot_estimate;
           shot_estimate.setNumberOfThreads(8);
           shot_estimate.setSearchMethod (tree);

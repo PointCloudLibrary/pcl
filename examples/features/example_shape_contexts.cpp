@@ -73,7 +73,7 @@ main (int, char** argv)
   normal_estimation.compute (*normals);
 
   // Setup the shape context computation
-  pcl::ShapeContext3DEstimation<pcl::PointXYZ, pcl::Normal, pcl::ShapeContext> shape_context;
+  pcl::ShapeContext3DEstimation<pcl::PointXYZ, pcl::Normal, pcl::ShapeContext1980> shape_context;
 
   // Provide the point cloud
   shape_context.setInputCloud (cloud);
@@ -81,7 +81,7 @@ main (int, char** argv)
   shape_context.setInputNormals (normals);
   // Use the same KdTree from the normal estimation
   shape_context.setSearchMethod (kdtree);
-  pcl::PointCloud<pcl::ShapeContext>::Ptr shape_context_features (new pcl::PointCloud<pcl::ShapeContext>);
+  pcl::PointCloud<pcl::ShapeContext1980>::Ptr shape_context_features (new pcl::PointCloud<pcl::ShapeContext1980>);
 
   // The minimal radius is generally set to approx. 1/10 of the search radius, while the pt. density radius is generally set to 1/5
   shape_context.setRadiusSearch (0.2);
@@ -94,7 +94,7 @@ main (int, char** argv)
 
   // Display and retrieve the shape context descriptor vector for the 0th point.
   std::cout << shape_context_features->points[0] << std::endl;
-  std::vector<float> first_descriptor = shape_context_features->points[0].descriptor;
+  float* first_descriptor = shape_context_features->points[0].descriptor; // 1980 elements
 
   return 0;
 }

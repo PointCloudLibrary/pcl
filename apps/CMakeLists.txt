@@ -51,8 +51,8 @@ if(build)
     PCL_ADD_EXECUTABLE(pcl_surfel_smoothing_test ${SUBSYS_NAME} src/surfel_smoothing_test.cpp)
     target_link_libraries(pcl_surfel_smoothing_test pcl_common pcl_io pcl_surface pcl_filters pcl_features pcl_visualization)
     
-    #PCL_ADD_EXECUTABLE(pcl_feature_matching ${SUBSYS_NAME} src/feature_matching.cpp)
-    #target_link_libraries(pcl_feature_matching pcl_common pcl_io pcl_registration pcl_keypoints pcl_sample_consensus pcl_visualization pcl_search pcl_features pcl_kdtree pcl_surface pcl_segmentation)
+    PCL_ADD_EXECUTABLE(pcl_feature_matching ${SUBSYS_NAME} src/feature_matching.cpp)
+    target_link_libraries(pcl_feature_matching pcl_common pcl_io pcl_registration pcl_keypoints pcl_sample_consensus pcl_visualization pcl_search pcl_features pcl_kdtree pcl_surface pcl_segmentation)
 
     PCL_ADD_EXECUTABLE(pcl_convolve ${SUBSYS_NAME} src/convolve.cpp)
     target_link_libraries(pcl_convolve pcl_common pcl_io pcl_visualization)
@@ -172,7 +172,7 @@ if(build)
     
   endif() # VTK_FOUND
 
-  #add_subdirectory(3d_rec_framework)
+  add_subdirectory(3d_rec_framework)
   add_subdirectory(modeler)
   add_subdirectory(cloud_composer)
 

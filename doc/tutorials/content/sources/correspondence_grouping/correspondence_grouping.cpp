@@ -16,7 +16,7 @@
 typedef pcl::PointXYZRGBA PointType;
 typedef pcl::Normal NormalType;
 typedef pcl::ReferenceFrame RFType;
-typedef pcl::SHOT DescriptorType;
+typedef pcl::SHOT1344 DescriptorType;
 
 std::string model_filename_;
 std::string scene_filename_;
@@ -104,7 +104,7 @@ parseCommandLine (int argc, char *argv[])
     }else if (used_algorithm.compare ("GC") == 0)
     {
       use_hough_ = false;
-    } 
+    }
     else
     {
       std::cout << "Wrong algorithm name.\n";
@@ -170,7 +170,7 @@ main (int argc, char *argv[])
 
   //
   //  Load clouds
-  //  
+  //
   if (pcl::io::loadPCDFile (model_filename_, *model) < 0)
   {
     std::cout << "Error loading model cloud." << std::endl;
@@ -198,7 +198,7 @@ main (int argc, char *argv[])
       descr_rad_  *= resolution;
       cg_size_    *= resolution;
     }
-	
+
     std::cout << "Model resolution:       " << resolution << std::endl;
     std::cout << "Model sampling size:    " << model_ss_ << std::endl;
     std::cout << "Scene sampling size:    " << scene_ss_ << std::endl;
@@ -209,7 +209,7 @@ main (int argc, char *argv[])
 
   //
   //  Compute Normals
-  // 
+  //
   pcl::NormalEstimationOMP<PointType, NormalType> norm_est;
   norm_est.setKSearch (10);
   norm_est.setInputCloud (model);
@@ -220,7 +220,7 @@ main (int argc, char *argv[])
 
   //
   //  Downsample Clouds to Extract keypoints
-  // 
+  //
   pcl::PointCloud<int> sampled_indices;
 
   pcl::UniformSampling<PointType> uniform_sampling;
@@ -239,8 +239,8 @@ main (int argc, char *argv[])
 
   //
   //  Compute Descriptor for keypoints
-  // 
-  pcl::SHOTEstimationOMP<PointType, NormalType, DescriptorType> descr_est;
+  //
+  pcl::SHOTColorEstimationOMP<PointType, NormalType, DescriptorType> descr_est;
   descr_est.setRadiusSearch (descr_rad_);
 
   descr_est.setInputCloud (model_keypoints);
@@ -255,7 +255,7 @@ main (int argc, char *argv[])
 
   //
   //  Find Model-Scene Correspondences with KdTree
-  // 
+  //
   pcl::CorrespondencesPtr model_scene_corrs (new pcl::Correspondences ());
 
   pcl::KdTreeFLANN<DescriptorType> match_search;
@@ -281,7 +281,7 @@ main (int argc, char *argv[])
 
   //
   //  Actual Clustering
-  //  
+  //
   std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f> > rototranslations;
   std::vector<pcl::Correspondences> clustered_corrs;
 
@@ -290,7 +290,7 @@ main (int argc, char *argv[])
   {
     //
     //  Compute (Keypoints) Reference Frames only for Hough
-    // 
+    //
     pcl::PointCloud<RFType>::Ptr model_rf (new pcl::PointCloud<RFType> ());
     pcl::PointCloud<RFType>::Ptr scene_rf (new pcl::PointCloud<RFType> ());
 
@@ -340,7 +340,7 @@ main (int argc, char *argv[])
 
   //
   //  Output results
-  //  
+  //
   std::cout << "Model instances found: " << rototranslations.size () << std::endl;
   for (size_t i = 0; i < rototranslations.size (); ++i)
   {
@@ -361,7 +361,7 @@ main (int argc, char *argv[])
 
   //
   //  Visualization
-  //  
+  //
   pcl::visualization::PCLVisualizer viewer ("Correspondence Grouping");
   viewer.addPointCloud (scene, "scene_cloud");
 
@@ -375,7 +375,7 @@ main (int argc, char *argv[])
     pcl::transformPointCloud (*model_keypoints, *off_scene_model_keypoints, Eigen::Vector3f (-1,0,0), Eigen::Quaternionf (1, 0, 0, 0));
 
     pcl::visualization::PointCloudColorHandlerCustom<PointType> off_scene_model_color_handler (off_scene_model, 255, 255, 128);
-    viewer.addPointCloud (off_scene_model, off_scene_model_color_handler, "off_scene_model");    
+    viewer.addPointCloud (off_scene_model, off_scene_model_color_handler, "off_scene_model");
   }
 
   if (show_keypoints_)

@@ -58,7 +58,7 @@ using namespace pcl::io;
 typedef PointXYZRGBA PointType;
 typedef Normal NormalType;
 typedef ReferenceFrame RFType;
-typedef SHOT DescriptorType;
+typedef SHOT1344 DescriptorType;
 
 PointCloud<PointType>::Ptr model_ (new PointCloud<PointType> ());
 PointCloud<PointType>::Ptr model_downsampled_ (new PointCloud<PointType> ());
@@ -97,7 +97,7 @@ computeRmsE (const PointCloud<PointType>::ConstPtr &model, const PointCloud<Poin
 
   if (found_points > 0)
     return sqrt (sqr_norm_sum / transformed_model.size ());
-  
+
   return numeric_limits<double>::max ();
 }
 
@@ -202,7 +202,7 @@ main (int argc, char** argv)
   copyPointCloud (*scene_, sampled_indices.points, *scene_downsampled_);
 
   //Descriptor
-  SHOTEstimationOMP<PointType, NormalType, DescriptorType> descr_est;
+  SHOTColorEstimationOMP<PointType, NormalType, DescriptorType> descr_est;
   descr_est.setRadiusSearch (0.015);
   descr_est.setInputCloud (model_downsampled_);
   descr_est.setInputNormals (model_normals_);

@@ -11,7 +11,7 @@ foreach(subdir
           concave_hull_2d
           conditional_removal
           convex_hull_2d
-          #correspondence_grouping
+          correspondence_grouping
           cylinder_segmentation
           extract_indices
           #feature_evaluation
