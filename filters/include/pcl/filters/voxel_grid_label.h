@@ -48,7 +48,7 @@ namespace pcl
     *
     * \author Christian Potthast (potthast@usc.edu)
     */
-  class VoxelGridLabel : public VoxelGrid<pcl::PointXYZRGBL>
+  class PCL_EXPORTS VoxelGridLabel : public VoxelGrid<pcl::PointXYZRGBL>
   {
     public:
 

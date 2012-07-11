@@ -163,7 +163,7 @@ pcl::Permutohedral::init (const std::vector<float> &feature, const int feature_d
 
       // insert key in hash table      
       size_t hash_key = generateHashKey (key);
-      std::map<size_t ,int>::iterator it = hash_table.find (hash_key);
+      std::multimap<size_t ,int>::iterator it = hash_table.find (hash_key);
       int key_index = -1;
       if ( it != hash_table.end () )
       {
@@ -245,7 +245,7 @@ pcl::Permutohedral::init (const std::vector<float> &feature, const int feature_d
       n1[j] = static_cast<short> (key[j] + d_);
       n2[j] = static_cast<short> (key[j] - d_);
 
-      std::map<size_t ,int>::iterator it;
+      std::multimap<size_t ,int>::iterator it;
       size_t hash_key;
       int key_index = -1;      
       hash_key = generateHashKey (n1);
@@ -310,7 +310,7 @@ pcl::Permutohedral::compute ( std::vector<float> &out, const std::vector<float> 
   }
 
   // Alpha is a magic scaling constant (write Andrew if you really wanna understand this)
-  float alpha = 1.0f / (1.0f + static_cast<float> (pow(2, -d_)));
+  float alpha = 1.0f / (1.0f + static_cast<float> (pow(2.0f, -d_)));
 		
   // Slicing
   for( int i = 0; i < out_size; i++ ){
@@ -386,7 +386,7 @@ pcl::Permutohedral::initOLD (const std::vector<float> &feature, const int featur
     float up_factor = static_cast<float>(d_+1);
     int sum = 0;
     for( int i=0; i<=d_; i++ ){
-      int rd = static_cast<int> (round( down_factor * elevated[i]));
+      int rd = static_cast<int> (pcl_round( down_factor * elevated[i]));
       rem0[i] = static_cast<float>(rd)*up_factor;
       sum += rd;
     }
