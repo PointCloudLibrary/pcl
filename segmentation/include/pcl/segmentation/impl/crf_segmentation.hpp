@@ -330,6 +330,7 @@ pcl::CrfSegmentation<PointT>::createUnaryPotentials (std::vector<float> &unary,
 {
   /* initialize random seed: */
   srand ( static_cast<unsigned int> (time (NULL)) );
+  //srand ( time (NULL) );
 
   // Certainty that the groundtruth is correct
   const float GT_PROB = 0.3f;
@@ -361,18 +362,19 @@ pcl::CrfSegmentation<PointT>::createUnaryPotentials (std::vector<float> &unary,
     }
 
    /* generate secret number: */
-    double iSecret = static_cast<double> (rand () / (RAND_MAX));
-    
-    //if (k < 100)
-    //  std::cout << iSecret << std::endl;
-    
-    int gg = static_cast<int> (labels.size ());
+    double iSecret = static_cast<double> (rand ())  / static_cast<double> (RAND_MAX);
+   
+    /* 
+    if (k < 100)
+      std::cout << iSecret << std::endl;
+    */
 
-    if (iSecret < -0.5)
+    int gg = 5; //static_cast<int> (labels.size ());
+    if (iSecret < 0.5)
     {
-      int r = rand ();      
+      int r = 0;
       if (gg != 0)
-        r = r % (gg - 1 + 1) + 1;
+        r = rand () % (gg - 1 + 1) + 1;
       else
         r = 0;
       c_idx = r;      
