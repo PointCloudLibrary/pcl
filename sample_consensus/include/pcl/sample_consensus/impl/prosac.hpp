@@ -172,10 +172,9 @@ pcl::ProgressiveSampleConsensus<PointT>::computeModel (int debug_verbosity_level
         // Make sure we have a better epsilon_possible_n_star
         if ((epsilon_possible_n_star > epsilon_n_star) && (epsilon_possible_n_star > epsilon_possible_n_star_best))
         {
-          using namespace boost::math;
           // Typo in Equation 7, not (n-m choose i-m) but (n choose i-m)
           size_t I_possible_n_star_min = m
-                           + static_cast<size_t> (ceil (quantile (complement (binomial_distribution<float>(static_cast<float> (possible_n_star), 0.1f), 0.05))));
+                           + static_cast<size_t> (ceil (boost::math::quantile (boost::math::complement (boost::math::binomial_distribution<float>(static_cast<float> (possible_n_star), 0.1f), 0.05))));
           // If Equation 9 is not verified, exit
           if (I_possible_n_star < I_possible_n_star_min)
             break;
