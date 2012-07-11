@@ -43,9 +43,6 @@ So let's look at the code. From *visualization/tools/openni_viewer_simple.cpp*
 
     #include <pcl/io/openni_grabber.h>
     #include <pcl/visualization/cloud_viewer.h>
-    #ifdef _WIN32
-    # define sleep(x) Sleep((x)*1000) 
-    #endif
     
     class SimpleOpenNIViewer
     {
