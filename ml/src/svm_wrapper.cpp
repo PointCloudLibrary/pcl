@@ -471,7 +471,7 @@ pcl::SVM::saveProblem (const char *filename, bool labelled = 0)
 
     if (labelled)
     {
-      assert (std::isfinite (training_set_[j].label));
+      assert (pcl_isfinite (training_set_[j].label));
       myfile << training_set_[j].label << " ";
     }
 
