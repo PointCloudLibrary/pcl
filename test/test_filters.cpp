@@ -43,6 +43,7 @@
 #include <pcl/features/normal_3d.h>
 #include <pcl/filters/filter.h>
 #include <pcl/filters/passthrough.h>
+#include <pcl/filters/shadowpoints.h>
 #include <pcl/filters/sampling_surface_normal.h>
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/filters/voxel_grid_covariance.h>
@@ -1538,6 +1539,52 @@ TEST (SamplingSurfaceNormal, Filters)
     EXPECT_NEAR (outcloud.points[i].normal[2], 1, 1e-3);
   }
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+TEST (ShadowPoints, Filters)
+{
+  //Creating a point cloud on the XY plane
+  PointCloud<PointXYZ>::Ptr input (new PointCloud<PointXYZ> ());
+  for (float i = 0; i < 10; i+=0.1)
+  {
+    for (float j = 0; j < 10; j+=0.1)
+    {
+      input->push_back (PointXYZ (i, j, 1.0));
+    }
+  }
+
+  // Adding a shadow point
+  unsigned int N = input->points.size ();
+  PointXYZ pt = input->points[N];
+  pt.z = input->points[N].z + 0.1;
+  input->points.push_back (pt);
+
+  input->width = 1;
+  input->height = input->points.size ();
+
+	NormalEstimation<PointXYZ, PointNormal> ne;
+	ne.setInputCloud (input);
+
+	pcl::search::KdTree<pcl::PointXYZ>::Ptr tree(new pcl::search::KdTree<pcl::PointXYZ>());
+	ne.setSearchMethod(tree);
+
+	pcl::PointCloud<PointNormal>::Ptr input_normals (new PointCloud<PointNormal>);
+	ne.setKSearch (15);
+	ne.compute (*input_normals);
+
+  PointCloud<PointXYZ> output;
+  ShadowPoints <PointXYZ, PointNormal> spfilter;
+  spfilter.setInputCloud (input);
+  spfilter.setThreshold (0.1);
+  spfilter.setNormals (input_normals);
+
+  spfilter.filter (output);
+
+  // Should filter out the one shadow point that was added.
+  EXPECT_EQ (int (output.points.size ()), 10000);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
 TEST (ConditionalRemovalTfQuadraticXYZComparison, Filters)
 {
   // Test the PointCloud<PointT> method
