@@ -230,7 +230,7 @@ const vtkgl::GLchar* IntensityShader =
   "}\0";
 
 // Display Intensity data as RGB
-const GLchar* NormalColorShader =
+const vtkgl::GLchar* NormalColorShader =
   "#version 120\n"
 
   "void main(void){"
