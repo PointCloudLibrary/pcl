@@ -81,6 +81,9 @@ if (build)
   PCL_ADD_EXECUTABLE(pcl_ndt3d ${SUBSYS_NAME} ndt3d.cpp)
   target_link_libraries(pcl_ndt3d pcl_common pcl_io pcl_registration)
 
+  PCL_ADD_EXECUTABLE(pcl_pcd_change_viewpoint ${SUBSYS_NAME} pcd_change_viewpoint.cpp)
+  target_link_libraries(pcl_pcd_change_viewpoint pcl_common pcl_io)
+
   PCL_ADD_EXECUTABLE(pcl_concatenate_points_pcd ${SUBSYS_NAME} concatenate_points_pcd.cpp)
   target_link_libraries(pcl_concatenate_points_pcd pcl_common pcl_io)
   
