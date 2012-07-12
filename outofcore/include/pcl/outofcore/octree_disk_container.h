@@ -127,7 +127,8 @@ namespace pcl
           {
             //open the existing file
             pcl::PCDReader reader;
-            assert ( reader.read ( *fileback_name_, *tmp_cloud) == 0 );
+            int res = reader.read (*fileback_name_, *tmp_cloud);
+            assert (res == 0);
             pcl::PCDWriter writer;
             PCL_INFO ("[pcl::outofcore::octree_disk_container::%s] Concatenating point cloud from %s to new cloud\n", __FUNCTION__, fileback_name_->c_str () );
             pcl::concatenatePointCloud ( *tmp_cloud, *input_cloud, *tmp_cloud );
@@ -137,7 +138,8 @@ namespace pcl
           else //otherwise create the point cloud which will be saved to the pcd file for the first time
           {
             pcl::PCDWriter writer;
-            assert (writer.writeBinaryCompressed ( *fileback_name_, *input_cloud ) == 0 );
+            int res = writer.writeBinaryCompressed (*fileback_name_, *input_cloud);
+            assert (res == 0);
           }            
 
         }
@@ -204,13 +206,11 @@ namespace pcl
           Eigen::Quaternionf  orientation;
           int  pcd_version;
           
-          if( boost::filesystem::exists ( *fileback_name_ ) )
+          if (boost::filesystem::exists (*fileback_name_))
           {
 //            PCL_INFO ( "[pcl::outofcore::octree_disk_container::%s] Reading points from disk from %s.\n", __FUNCTION__ , fileback_name_->c_str () );
-          
-            assert ( reader.read ( *fileback_name_, *dst, origin, orientation, pcd_version) != -1 );
-//            PCL_INFO ( "[pcl::outofcore::octree_disk_container::%s] Read %d points from disk\n", __FUNCTION__ , dst->width*dst->height );
-            
+            int res = reader.read (*fileback_name_, *dst, origin, orientation, pcd_version);
+            assert (res != -1);
           }
           else
           {
@@ -321,8 +321,10 @@ namespace pcl
 
               fwrite (ss.str ().c_str (), 1, ss.str ().size (), fxyz);
             }
-            assert ( fclose (f) == 0 );
-            assert ( fclose (fxyz) == 0);
+            int res = fclose (f);
+            assert (res == 0);
+            res = fclose (fxyz);
+            assert (res == 0);
           }
         }
 

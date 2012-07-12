@@ -758,7 +758,7 @@ namespace pcl
       if ( this->depth_ == root_->m_tree_->max_depth_ || input_cloud->width*input_cloud->height < 8 )
       {
         uint64_t points_added = addDataAtMaxDepth (input_cloud);
-        assert ( points_added > 0 );
+        assert (points_added > 0);
         return (points_added);        
       }
       
@@ -863,7 +863,7 @@ namespace pcl
 //        PCL_INFO ("[pcl::outofcore::octree_base_node::%s] points_added: %lu, indices[i].size: %lu, tmp_local_point_cloud size: %lu\n", __FUNCTION__, points_added, indices[i].size (), tmp_local_point_cloud->width*tmp_local_point_cloud->height);
 
       }
-      assert ( points_added == input_cloud->width*input_cloud->height );
+      assert (points_added == input_cloud->width*input_cloud->height);
       return (points_added);
     }
 ////////////////////////////////////////////////////////////////////////////////
@@ -1213,7 +1213,8 @@ namespace pcl
 
               //can this be done in place?
 //              PCL_INFO ("[pcl::outofcore::octree_base_node::%s] Concatenating point cloud\n", __FUNCTION__);
-              assert ( pcl::concatenatePointCloud ( *dst_blob, *tmp_blob, *dst_blob ) == 1 );
+              int res = pcl::concatenatePointCloud (*dst_blob, *tmp_blob, *dst_blob);
+              assert (res == 1);
 
 //              PCL_INFO ("[pcl::outofocre::octree_base_node::%s] Size of cloud after: %lu\n", __FUNCTION__, dst_blob->width*dst_blob->height );
             }
@@ -1221,8 +1222,8 @@ namespace pcl
             else 
             {
 //              PCL_INFO ( "[pcl::outofcore::octree_base_node] Copying point cloud into the destination blob\n");
-              pcl::copyPointCloud ( *tmp_blob, *dst_blob );
-              assert ( tmp_blob->width*tmp_blob->height == dst_blob->width*dst_blob->height );
+              pcl::copyPointCloud (*tmp_blob, *dst_blob);
+              assert (tmp_blob->width*tmp_blob->height == dst_blob->width*dst_blob->height);
             }
 //            PCL_INFO ( "[pcl::outofcore::octree_base_node::%s] Points in dst_blob: %ul\n", __FUNCTION__, dst_blob->width*dst_blob->height );
             return;
