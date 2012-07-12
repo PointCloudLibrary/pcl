@@ -349,7 +349,16 @@ namespace pcl
         getVoxelCenters(AlignedPointTVector &voxel_centers, size_t query_depth) const;
 
         void
+        getVoxelCenters(std::vector<Eigen::Vector3f> &voxel_centers, size_t query_depth) const;
+
+        void
         getVoxelCenters(AlignedPointTVector &voxel_centers) const
+        {
+          getVoxelCenters(voxel_centers, max_depth_);
+        }
+
+        void
+        getVoxelCenters(std::vector<Eigen::Vector3f> &voxel_centers) const
         {
           getVoxelCenters(voxel_centers, max_depth_);
         }

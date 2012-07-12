@@ -175,81 +175,6 @@ namespace pcl
          */
         void
         queryBBIncludes (const double min_bb[3], const double max_bb[3], size_t query_depth, const sensor_msgs::PointCloud2::Ptr& dst_blob);
-        
-        
-        // {
-        //   //if the queried bounding box has any intersection with this node's bounding box
-        //   if (intersectsWithBB (min_bb, max_bb))
-        //   {
-        //     //if we aren't at the max desired depth
-        //     if (this->depth_ < query_depth)
-        //     {
-        //       //if this node doesn't have any children, we are at the max depth for this query
-        //       if ((num_child_ == 0) && (hasUnloadedChildren ()))
-        //       {
-        //         loadChildren (false);
-        //       }
-
-        //       //if this node has children
-        //       if (num_child_ > 0)
-        //       {
-        //         //recursively store any points that fall into the queried bounding box into v and return
-        //         for (size_t i = 0; i < 8; i++)
-        //         {
-        //           if (children_[i])
-        //             children_[i]->queryBBIncludes (min_bb, max_bb, query_depth, dst_blob);
-        //         }
-        //         return;
-        //       }
-        //     }
-        //     //otherwise if we are at the max depth
-        //     else
-        //     {
-        //         //get all the points from the payload and return (easy with PointCloud2)
-
-        //         sensor_msgs::PointCloud2 tmp_blob;
-                
-        //         payload_->readRange (0, payload_->size (), tmp_blob);
-
-        //       //if this node's bounding box falls completely within the queried bounding box
-        //       if (withinBB (min_bb, max_bb))
-        //       {
-        //         //concatenate all of what was just read into the main dst_blob
-        //         //(is it safe to do in place?)
-        //         assert ( pcl::concatenatePointCloud ( dst_blob, tmp_blob, dst_blob ) == 1 );
-        //         return;
-        //       }
-        //       //otherwise queried bounding box only partially intersects this
-        //       //node's bounding box, so we have to check all the points in
-        //       //this box for intersection with queried bounding box
-        //       else
-        //       {
-
-
-        //         //put the ros message into a pointxyz point cloud (just to get the indices by using getPointsInBox)
-        //         pcl::PointCloud<pcl::PointXYZ>::Ptr tmp_cloud ( new pcl::PointCloud<pcl::PointXYZ> () );
-        //         pcl::fromROSMsg ( tmp_blob, *tmp_cloud );
-                
-        //         Eigen::Vector4f min_pt ( min_bb[0], min_bb[1], min_bb[2], 1);
-        //         Eigen::Vector4f max_pt ( max_bb[0], max_bb[1], max_bb[2], 1);
-                
-        //         std::vector<int> indices;
-
-        //         pcl::getPointsInBox ( *tmp_cloud, min_pt, max_pt, indices );
-
-        //         //need a new tmp destination with extracted points within BB
-        //         sensor_msgs::PointCloud2 tmp_blob_within_bb;
-                
-        //         //copy just the points marked in indices
-        //         pcl::copyPointCloud ( tmp_blob, indices, tmp_blob_within_bb );
-
-        //         //concatenate those points into the returned dst_blob
-        //         assert ( pcl::concatenatePointCloud ( dst_blob, tmp_blob_within_bb, dst_blob ) == 1 );
-                
-        //       }
-        //     }
-//   }
-        // }
 
         /** \brief Recursively add points that fall into the queried bounding box up to the \b query_depth 
          *
@@ -578,6 +503,9 @@ namespace pcl
 
         void
         getVoxelCenters(AlignedPointTVector &voxel_centers, const size_t query_depth);
+
+        void
+        getVoxelCenters(std::vector<Eigen::Vector3f> &voxel_centers, const size_t query_depth);
 
         boost::filesystem::path thisdir_;//the dir containing the node's data and its children
         boost::filesystem::path thisnodeindex_;//the node's index file, node.idx

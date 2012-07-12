@@ -183,6 +183,43 @@ namespace pcl
       // Set bounding box and mid point
       memcpy (min_, bb_min, 3 * sizeof(double));
       memcpy (max_, bb_max, 3 * sizeof(double));
+
+      // Make the bounding box square based on the largest axis
+      double xdiff = max_[0] - min_[0];
+      double ydiff = max_[1] - min_[1];
+      double zdiff = max_[2] - min_[2];
+
+      // X is largest, increase y/z in both +/- directions
+      if (xdiff > ydiff && xdiff > zdiff)
+      {
+        min_[1] -= (xdiff - ydiff)/2.0;
+        max_[1] += (xdiff - ydiff)/2.0;
+        min_[2] -= (xdiff - zdiff)/2.0;
+        max_[2] += (xdiff - zdiff)/2.0;
+      // Y is largest, increase y/z in both +/- directions
+      }
+      else if (ydiff > xdiff && ydiff > zdiff)
+      {
+        min_[0] -= (ydiff - xdiff)/2.0;
+        max_[0] += (ydiff - xdiff)/2.0;
+        min_[2] -= (ydiff - zdiff)/2.0;
+        max_[2] += (ydiff - zdiff)/2.0;
+      // Z is largest, increase y/z in both +/- directions
+      }
+      else if (zdiff > xdiff && zdiff > ydiff)
+      {
+        min_[0] -= (zdiff - xdiff)/2.0;
+        max_[0] += (zdiff - xdiff)/2.0;
+        min_[1] -= (zdiff - ydiff)/2.0;
+        max_[1] += (zdiff - ydiff)/2.0;
+      }
+
+      // Need to make the bounding box slightly bigger so points that fall on the max side aren't excluded
+      float epsilon = 1e-8;
+      max_[0] += epsilon;
+      max_[1] += epsilon;
+      max_[2] += epsilon;
+
       midx_ = (max_[0] + min_[0]) / double (2);
       midy_ = (max_[1] + min_[1]) / double (2);
       midz_ = (max_[2] + min_[2]) / double (2);
@@ -1049,6 +1086,32 @@ namespace pcl
         voxel_centers.push_back(voxel_center);
       }
     }
+
+////////////////////////////////////////////////////////////////////////////////
+    template<typename Container, typename PointT> void
+    octree_base_node<Container, PointT>::getVoxelCenters(std::vector<Eigen::Vector3f> &voxel_centers, const size_t query_depth)
+    {
+      if (this->depth_ < query_depth){
+        if (num_child_ > 0)
+        {
+          for (size_t i = 0; i < 8; i++)
+          {
+            if (children_[i])
+              children_[i]->getVoxelCenters (voxel_centers, query_depth);
+          }
+        }
+      }
+      else
+      {
+        Eigen::Vector3f voxel_center;
+        voxel_center.x () = static_cast<float>(midx_);
+        voxel_center.y () = static_cast<float>(midy_);
+        voxel_center.z () = static_cast<float>(midz_);
+	
+        voxel_centers.push_back(voxel_center);
+      }
+    }
+
 
 ////////////////////////////////////////////////////////////////////////////////
 
