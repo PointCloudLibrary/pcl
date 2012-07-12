@@ -52,7 +52,6 @@ namespace pcl
   template<typename PointT, typename NormalT>
   class ShadowPoints : public FilterIndices<PointT>
   {
-    using PCLBase<PointT>::indices_;
     using FilterIndices<PointT>::filter_name_;
     using FilterIndices<PointT>::getClassName;
     using FilterIndices<PointT>::indices_;
@@ -66,7 +65,7 @@ namespace pcl
 
     public:
       /** \brief Empty constructor. */
-      ShadowPoints () : input_normals_ (), threshold_ (0.1)
+      ShadowPoints () : input_normals_ (), threshold_ (0.1f)
       {
         filter_name_ = "ShadowPoints";
       }

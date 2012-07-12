@@ -57,7 +57,7 @@ pcl::ShadowPoints<PointT, NormalT>::applyFilter (PointCloud &output)
       continue;
     }
 
-    float val = fabs (normal[0] * pt.x + normal[1] * pt.y + normal[2] * pt.z);
+    float val = fabsf (normal[0] * pt.x + normal[1] * pt.y + normal[2] * pt.z);
 
     if (val > threshold_)
     {
@@ -65,7 +65,7 @@ pcl::ShadowPoints<PointT, NormalT>::applyFilter (PointCloud &output)
     }
   }
   output.width = 1;
-  output.height = output.points.size ();
+  output.height = static_cast<uint32_t> (output.points.size ());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -88,7 +88,7 @@ pcl::ShadowPoints<PointT, NormalT>::applyFilter (std::vector<int> &indices)
       continue;
     }
 
-    float val = fabs (normal[0] * pt.x + normal[1] * pt.y + normal[2] * pt.z);
+    float val = fabsf (normal[0] * pt.x + normal[1] * pt.y + normal[2] * pt.z);
 
     if (val > threshold_)
     {

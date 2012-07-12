@@ -1545,28 +1545,28 @@ TEST (ShadowPoints, Filters)
 {
   //Creating a point cloud on the XY plane
   PointCloud<PointXYZ>::Ptr input (new PointCloud<PointXYZ> ());
-  for (float i = 0; i < 10; i+=0.1)
+  for (float i = 0.0f; i < 10.0f; i+=0.1f)
   {
-    for (float j = 0; j < 10; j+=0.1)
+    for (float j = 0.0f; j < 10.0f; j+=0.1f)
     {
-      input->push_back (PointXYZ (i, j, 1.0));
+      input->push_back (PointXYZ (i, j, 1.0f));
     }
   }
 
   // Adding a shadow point
-  unsigned int N = input->points.size ();
+  unsigned int N = static_cast<unsigned int> (input->points.size ());
   PointXYZ pt = input->points[N];
-  pt.z = input->points[N].z + 0.1;
+  pt.z = input->points[N].z + 0.1f;
   input->points.push_back (pt);
 
   input->width = 1;
-  input->height = input->points.size ();
+  input->height = static_cast<uint32_t> (input->points.size ());
 
 	NormalEstimation<PointXYZ, PointNormal> ne;
 	ne.setInputCloud (input);
 
-	pcl::search::KdTree<pcl::PointXYZ>::Ptr tree(new pcl::search::KdTree<pcl::PointXYZ>());
-	ne.setSearchMethod(tree);
+	pcl::search::KdTree<pcl::PointXYZ>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZ> ());
+	ne.setSearchMethod (tree);
 
 	pcl::PointCloud<PointNormal>::Ptr input_normals (new PointCloud<PointNormal>);
 	ne.setKSearch (15);
@@ -1575,7 +1575,7 @@ TEST (ShadowPoints, Filters)
   PointCloud<PointXYZ> output;
   ShadowPoints <PointXYZ, PointNormal> spfilter;
   spfilter.setInputCloud (input);
-  spfilter.setThreshold (0.1);
+  spfilter.setThreshold (0.1f);
   spfilter.setNormals (input_normals);
 
   spfilter.filter (output);
