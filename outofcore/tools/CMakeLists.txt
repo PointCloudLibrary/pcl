@@ -1,5 +1,5 @@
 PCL_ADD_EXECUTABLE(pcl_outofcore_process ${SUBSYS_NAME} outofcore_process.cpp)
-target_link_libraries(pcl_outofcore_process pcl_common pcl_io pcl_outofcore)
+target_link_libraries(pcl_outofcore_process pcl_common pcl_filters pcl_io pcl_outofcore)
 
 if(NOT VTK_FOUND)
   set(DEFAULT FALSE)
@@ -14,16 +14,13 @@ else(NOT VTK_FOUND)
   #PCL_ADD_EXECUTABLE(pcl_outofcore_viewer ${SUBSYS_NAME} outofcore_viewer.cpp)
   #target_link_libraries(pcl_outofcore_viewer pcl_common pcl_io pcl_outofcore pcl_visualization)
 
-  set(srcs
-      outofcore_viewer.cpp
-      )
+  set(srcs outofcore_viewer.cpp)
   
-    set(incs 
-        )
+  set(incs )
     
-      # Doesn't compile as of 07/04
-      #PCL_ADD_INCLUDES(pcl_outofcore_viewer ${SUBSYS_NAME} ${incs})
-      #PCL_ADD_EXECUTABLE(pcl_outofcore_viewer ${SUBSYS_NAME} ${srcs})
-      #target_link_libraries(pcl_outofcore_viewer pcl_common pcl_io pcl_outofcore pcl_visualization)
+  # Doesn't compile as of 07/04
+  PCL_ADD_INCLUDES(pcl_outofcore_viewer ${SUBSYS_NAME} ${incs})
+  PCL_ADD_EXECUTABLE(pcl_outofcore_viewer ${SUBSYS_NAME} ${srcs})
+  target_link_libraries(pcl_outofcore_viewer pcl_common pcl_io pcl_outofcore pcl_visualization)
   
 endif(NOT VTK_FOUND)
