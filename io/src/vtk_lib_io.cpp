@@ -37,6 +37,9 @@
 
 #include <pcl/io/vtk_lib_io.h>
 #include <pcl/io/impl/vtk_lib_io.hpp>
+#include <vtkCellArray.h>
+#include <vtkCellData.h>
+#include <vtkDoubleArray.h>
 #include <vtkImageData.h>
 #include <vtkImageShiftScale.h>
 #include <vtkPNGWriter.h>
@@ -429,4 +432,106 @@ pcl::io::saveRangeImagePlanarFilePNG (
   writer->SetFileName(file_name.c_str());
   writer->SetInputConnection(shiftScaleFilter->GetOutputPort());
   writer->Write();
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::io::pointCloudTovtkPolyData(const sensor_msgs::PointCloud2Ptr& cloud, vtkSmartPointer<vtkPolyData>& poly_data)
+{
+  poly_data = vtkSmartPointer<vtkPolyData>::New (); // OR poly_data->Reset();
+
+  // Add Points
+  size_t x_idx = pcl::getFieldIndex (*cloud, std::string ("x") );
+  vtkSmartPointer<vtkPoints> cloud_points = vtkSmartPointer<vtkPoints>::New ();
+  vtkSmartPointer<vtkCellArray> cloud_vertices = vtkSmartPointer<vtkCellArray>::New ();
+
+  vtkIdType pid[1];
+  for (size_t point_idx = 0; point_idx < cloud->width * cloud->height; point_idx ++)
+  {
+    float point[3];
+
+    int point_offset = (point_idx * cloud->point_step);
+    int offset = point_offset + cloud->fields[x_idx].offset;
+    memcpy (&point, &cloud->data[offset], sizeof (float)*3);
+
+    pid[0] = cloud_points->InsertNextPoint (point);
+    cloud_vertices->InsertNextCell (1, pid);
+  }
+
+  //set the points and vertices we created as the geometry and topology of the polydata
+  poly_data->SetPoints (cloud_points);
+  poly_data->SetVerts (cloud_vertices);
+
+  // Add RGB
+  int rgb_idx = pcl::getFieldIndex (*cloud, "rgb");
+  if (rgb_idx > 0)
+  {
+    //std::cout << "Adding rgb" << std::endl;
+    vtkSmartPointer<vtkUnsignedCharArray> colors = vtkSmartPointer<vtkUnsignedCharArray>::New ();
+
+    colors->SetNumberOfComponents (3);
+    colors->SetName ("rgb");
+
+    for (size_t point_idx = 0; point_idx < cloud->width * cloud->height; point_idx ++)
+    {
+      unsigned char bgr[3];
+
+      int point_offset = (point_idx * cloud->point_step);
+      int offset = point_offset + cloud->fields[rgb_idx].offset;
+      memcpy (&bgr, &cloud->data[offset], sizeof (unsigned char)*3);
+
+      colors->InsertNextTuple3(bgr[2], bgr[1], bgr[0]);
+    }
+
+    poly_data->GetCellData()->SetScalars(colors);
+  }
+
+  // Add Intensity
+  int intensity_idx = pcl::getFieldIndex (*cloud, "intensity");
+  if (intensity_idx > 0)
+  {
+    //std::cout << "Adding intensity" << std::endl;
+    vtkSmartPointer<vtkFloatArray> cloud_intensity = vtkSmartPointer<vtkFloatArray>::New ();
+    cloud_intensity->SetNumberOfComponents (1);
+    cloud_intensity->SetName("intensity");
+
+    for (size_t point_idx = 0; point_idx < cloud->width * cloud->height; point_idx ++)
+    {
+      float intensity;
+
+      int point_offset = (point_idx * cloud->point_step);
+      int offset = point_offset + cloud->fields[intensity_idx].offset;
+      memcpy (&intensity, &cloud->data[offset], sizeof(float));
+
+      cloud_intensity->InsertNextValue(intensity);
+    }
+
+    poly_data->GetCellData()->AddArray(cloud_intensity);
+    if (!rgb_idx > 0)
+      poly_data->GetCellData()->SetActiveAttribute("intensity", vtkDataSetAttributes::SCALARS);
+  }
+  // Add Normals
+  int normal_x_idx = pcl::getFieldIndex (*cloud, std::string ("normal_x") );
+
+  if (normal_x_idx > 0)
+  {
+    //std::cout << "Adding normals" << std::endl;
+    vtkSmartPointer<vtkFloatArray> normals = vtkSmartPointer<vtkFloatArray>::New();
+    normals->SetNumberOfComponents(3); //3d normals (ie x,y,z)
+    normals->SetName("normals");
+
+    for (size_t point_idx = 0; point_idx < cloud->width * cloud->height; point_idx ++)
+    {
+      float normal[3];
+
+      int point_offset = (point_idx * cloud->point_step);
+      int offset = point_offset + cloud->fields[normal_x_idx].offset;
+      memcpy (&normal, &cloud->data[offset], sizeof (float)*3);
+
+      normals->InsertNextTuple(normal);
+    }
+
+    poly_data->GetCellData()->SetNormals(normals);
+    //poly_data->GetCellData()->SetActiveAttribute("normals", vtkDataSetAttributes::SCALARS);
+  }
 }

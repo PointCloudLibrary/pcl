@@ -190,6 +190,14 @@ namespace pcl
     pointCloudTovtkPolyData (const pcl::PointCloud<PointT>& cloud, 
                              vtkPolyData* const polydata);
 
+    /** \brief Convert a PointCloud2 object to a VTK PolyData object.
+      * \param[in] cloud the input PointCloud2Ptr object
+      * \param[out] poly_data the resultant VTK PolyData object
+      * \ingroup io
+      */
+    PCL_EXPORTS void
+    pointCloudTovtkPolyData(const sensor_msgs::PointCloud2Ptr& cloud, vtkSmartPointer<vtkPolyData>& poly_data);
+
     /** \brief Convert a pcl::PointCloud object to a VTK StructuredGrid one.
       * \param[in] cloud the input pcl::PointCloud object
       * \param[out] structured_grid the resultant VTK StructuredGrid object
