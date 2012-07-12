@@ -196,7 +196,7 @@ namespace pcl
 
         /// \todo refactor \ref readRange and strip start & count parameters and replace with array of indices
         void
-        readRange (const uint64_t, const uint64_t, sensor_msgs::PointCloud2::Ptr&)
+        readRange (const uint64_t start, const uint64_t count, sensor_msgs::PointCloud2::Ptr& dst)
         {
           pcl::PCDReader reader;
 
@@ -208,7 +208,7 @@ namespace pcl
           {
 //            PCL_INFO ( "[pcl::outofcore::octree_disk_container::%s] Reading points from disk from %s.\n", __FUNCTION__ , fileback_name_->c_str () );
           
-            //assert ( reader.read ( *fileback_name_, *dst, origin, orientation, pcd_version) != -1 );
+            assert ( reader.read ( *fileback_name_, *dst, origin, orientation, pcd_version) != -1 );
 //            PCL_INFO ( "[pcl::outofcore::octree_disk_container::%s] Read %d points from disk\n", __FUNCTION__ , dst->width*dst->height );
             
           }
