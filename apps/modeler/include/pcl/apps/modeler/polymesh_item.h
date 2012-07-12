@@ -1,8 +1,7 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Point Cloud Library (PCL) - www.pointclouds.org
- *  Copyright (c) 2012, Willow Garage, Inc.
+ *  Copyright (c) 2010, Willow Garage, Inc.
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -32,72 +31,93 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
+ *
  */
+#ifndef PCL_MODELER_POLYMESH_ITEM_H_
+#define PCL_MODELER_POLYMESH_ITEM_H_
 
-#ifndef PCL_MODELER_TREE_ITEM_H_
-#define PCL_MODELER_TREE_ITEM_H_
+#include <pcl/apps/modeler/tree_item.h>
+#include <pcl/PolygonMesh.h>
+#include <pcl/point_types.h>
 
-#include <pcl/apps/modeler/qt.h>
-
-class QMenu;
-class QPoint;
 
 namespace pcl
 {
   namespace modeler
   {
     class MainWindow;
+    class RenderWidget;
 
-    class TreeItem : public QStandardItem
+    class PolymeshItem : public TreeItem, private pcl::PolygonMesh
     {
       public:
-        TreeItem(MainWindow* main_window);
-        TreeItem(MainWindow* main_window, const QString & text);
-        TreeItem(MainWindow* main_window, const QIcon & icon, const QString & text);
-        virtual ~TreeItem();
+        typedef sensor_msgs::PointCloud2  PointCloud2;
+        typedef PointCloud2::Ptr          PointCloud2Ptr;
+        typedef PointCloud2::ConstPtr     PointCloud2ConstPtr;
 
-        virtual TreeItem*
-        parent();
+        typedef boost::shared_ptr<PolymeshItem> Ptr;
+        typedef boost::shared_ptr<const PolymeshItem> ConstPtr;
+
+        PolymeshItem (MainWindow* main_window, const std::string& id);
+        ~PolymeshItem ();
+
+        std::vector<std::string>
+        getAvaiableFieldNames() const;
+
+        PointCloud2Ptr
+        getCloud()
+        {return boost::shared_ptr<PointCloud2>(&cloud, NullDeleter());}
+        PointCloud2ConstPtr
+        getCloud() const
+        {return boost::shared_ptr<const PointCloud2>(&cloud, NullDeleter());}
+
+        std::vector<pcl::Vertices>&
+        getPolygons() {return polygons;}
+        const std::vector<pcl::Vertices>&
+        getPolygons() const {return polygons;}
 
         void
-        updateOnDataChanged();
+        updateGeometryItems();
 
-        virtual void
-        updateOnAboutToBeInserted();
+        void
+        attachNormalItem();
 
-        virtual void
-        updateOnAboutToBeRemoved();
+        void
+        setNormalField(pcl::PointCloud<pcl::Normal>::Ptr normals);
+
+        static void
+        save(const std::vector<PolymeshItem*>& polymesh_items, const std::string& filename);
 
         virtual void
         updateOnInserted();
 
         virtual void
-        updateOnRemoved();
-
-        virtual void
-        updateOnSelectionChange(bool selected);
-
-        void
-        showContextMenu(const QPoint* position);
+        updateOnAboutToBeRemoved();
 
       protected:
-        virtual void
-        handleDataChange();
-
         virtual void
         prepareContextMenu(QMenu* menu) const;
 
+      private:
         void
-        forceChildCheckState(Qt::CheckState check_state);
+        open();
 
-        void
-        updateParentCheckState();
+        virtual RenderWidget*
+        getParent();
 
-      protected:
-        MainWindow*     main_window_;
-        QStandardItem*  old_state_;
+        static bool
+        concatenatePointCloud (const PointCloud2& cloud, PointCloud2& cloud_out);
+
+      private:
+        std::string     filename_;
+
+        struct NullDeleter
+        {
+          void operator()(void const *) const
+          {}
+        };
     };
   }
 }
 
-#endif // PCL_MODELER_TREE_ITEM_H_
+#endif // PCL_MODELER_POLYMESH_ITEM_H_

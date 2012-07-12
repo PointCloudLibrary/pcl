@@ -34,97 +34,62 @@
  *
  */
 
-#ifndef PCL_MODELER_TREE_VIEW_H_
-#define PCL_MODELER_TREE_VIEW_H_
+#ifndef PCL_MODELER_TREE_MODEL_H_
+#define PCL_MODELER_TREE_MODEL_H_
 
-#include <pcl/apps/modeler/qt.h>
+#include <QStandardItemModel>
 
-class QContextMenuEvent;
 
 namespace pcl
 {
   namespace modeler
   {
     class TreeItem;
-    class TreeModel;
     class MainWindow;
-    class AbstractWorker;
 
-    class TreeView : public QTreeView
+    /** \brief The model class that holds the scene data.
+      * \author Yangyan Li
+      * \ingroup apps
+      */
+    class TreeModel : public QStandardItemModel
     {
       Q_OBJECT
 
       public:
-        TreeView(QWidget * parent = 0);
-        ~TreeView();
+        TreeModel (QObject* parent);
+
+        virtual ~TreeModel ();
+
+        virtual MainWindow*
+        parent();
 
         void
-        setMainWindow(MainWindow* main_window);
-
-        virtual QSize
-        sizeHint() const;
-
-        template <class T>
-        std::vector<T*>
-        selectedItems();
-
-        bool 
-        openPointCloud(const QString& filename);
-
-      public slots:
-        void
-        slotChangeBackgroundColor();
-
-        // slots for file menu
-        void 
-        slotOpenPointCloud();
-
-        void 
-        slotImportPointCloud();
-
-        void
-        slotSavePointCloud();
-
-        void
-        slotClosePointCloud();
-
-        // slots for edit menu
-        void
-        slotDownSampleFilter();
-        void
-        slotEstimateNormal();
-        void
-        slotPoissonReconstruction();
+        emitItemChanged(QStandardItem* item);
 
       private:
-        virtual TreeModel*
-        model();
-
-        std::vector<TreeItem*>
-        selectedItems();
-
-        void
-        executeWorker(AbstractWorker* worker);
-
-        virtual void
-        contextMenuEvent(QContextMenuEvent *event);
-
-        void
-        updateOnSelectionChange(const QItemSelection & selection, bool selected);
 
       private slots:
         void
-        slotOnSelectionChange(const QItemSelection & selected, const QItemSelection & deselected);
+        slotOnDataChanged(QStandardItem* item);
 
         void
-        slotOnDoubleClick(const QModelIndex & index);
+        slotOnAboutToBeInserted(const QModelIndex& parent, int start, int end);
+
+        void
+        slotOnAboutToBeRemoved(const QModelIndex& parent, int start, int end);
+
+        void
+        slotOnInserted(const QModelIndex& parent, int start, int end);
+
+        void
+        slotOnRemoved(const QModelIndex& parent, int start, int end);
 
       private:
-        MainWindow*   main_window_;
+
     };
   }
 }
 
-#include <pcl/apps/modeler/impl/tree_view.hpp>
+#include <pcl/apps/modeler/impl/tree_model.hpp>
 
-#endif // PCL_MODELER_TREE_VIEW_H_
+#endif // PCL_MODELER_TREE_MODEL_H_

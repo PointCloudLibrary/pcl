@@ -56,26 +56,29 @@ namespace pcl
         RenderWidget(MainWindow* main_window, QWidget *parent = 0, Qt::WFlags flags = 0);
         ~RenderWidget();
 
-        vtkSmartPointer<vtkRenderer>
-        getRenderer();
+        virtual void
+        updateOnInserted();
+
+        virtual void
+        updateOnSelectionChange(bool selected);
+
+        void
+        changeBackgroundColor();
 
         virtual QSize
         sizeHint() const {return QSize(512, 512);}
 
         virtual void
-        showContextMenu(const QPoint& position);
-
-        virtual void
-        updateOnStateChange(const Qt::CheckState& check_state);
-
-      protected:
-        virtual void
         focusInEvent ( QFocusEvent * event );
         virtual void
         contextMenuEvent(QContextMenuEvent *event);
 
-      private:
-        MainWindow*       main_window_;
+        vtkSmartPointer<vtkRenderer>
+        getRenderer();
+
+      protected:
+        virtual void
+        prepareContextMenu(QMenu* menu) const;
 
       private:
         void

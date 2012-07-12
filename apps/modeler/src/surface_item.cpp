@@ -34,70 +34,49 @@
  *
  */
 
-#ifndef PCL_MODELER_TREE_ITEM_H_
-#define PCL_MODELER_TREE_ITEM_H_
+#include <pcl/apps/modeler/surface_item.h>
+#include <pcl/apps/modeler/polymesh_item.h>
+#include <pcl/apps/modeler/main_window.h>
 
-#include <pcl/apps/modeler/qt.h>
+#include <QMenu>
 
-class QMenu;
-class QPoint;
 
-namespace pcl
+//////////////////////////////////////////////////////////////////////////////////////////////
+pcl::modeler::SurfaceItem::SurfaceItem (MainWindow* main_window) : 
+  GeometryItem(main_window, "Polygonal Surface")
 {
-  namespace modeler
-  {
-    class MainWindow;
-
-    class TreeItem : public QStandardItem
-    {
-      public:
-        TreeItem(MainWindow* main_window);
-        TreeItem(MainWindow* main_window, const QString & text);
-        TreeItem(MainWindow* main_window, const QIcon & icon, const QString & text);
-        virtual ~TreeItem();
-
-        virtual TreeItem*
-        parent();
-
-        void
-        updateOnDataChanged();
-
-        virtual void
-        updateOnAboutToBeInserted();
-
-        virtual void
-        updateOnAboutToBeRemoved();
-
-        virtual void
-        updateOnInserted();
-
-        virtual void
-        updateOnRemoved();
-
-        virtual void
-        updateOnSelectionChange(bool selected);
-
-        void
-        showContextMenu(const QPoint* position);
-
-      protected:
-        virtual void
-        handleDataChange();
-
-        virtual void
-        prepareContextMenu(QMenu* menu) const;
-
-        void
-        forceChildCheckState(Qt::CheckState check_state);
-
-        void
-        updateParentCheckState();
-
-      protected:
-        MainWindow*     main_window_;
-        QStandardItem*  old_state_;
-    };
-  }
 }
 
-#endif // PCL_MODELER_TREE_ITEM_H_
+//////////////////////////////////////////////////////////////////////////////////////////////
+pcl::modeler::SurfaceItem::~SurfaceItem ()
+{
+
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::modeler::SurfaceItem::initHandlers()
+{
+  PointCloud2Ptr cloud = dynamic_cast<PolymeshItem*>(parent())->getCloud();
+
+  geometry_handler_.reset(new pcl::visualization::PointCloudGeometryHandlerXYZ<PointCloud2>(cloud));
+
+  color_handler_.reset(new pcl::visualization::PointCloudColorHandlerRGBField<PointCloud2>(cloud));
+  if (!color_handler_->isCapable())
+    color_handler_.reset(new pcl::visualization::PointCloudColorHandlerRandom<PointCloud2>(cloud));
+}
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+bool
+pcl::modeler::SurfaceItem::createActor ()
+{
+  return (true);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::modeler::SurfaceItem::prepareContextMenu(QMenu* menu) const
+{
+  GeometryItem::prepareContextMenu(menu);
+}

@@ -52,23 +52,19 @@ namespace pcl
 {
   namespace modeler
   {
-    class CloudActor;
+    class PolymeshItem;
 
     class ColorHandlerSwitcher : public QDialog
     {
       Q_OBJECT
 
       public:
-        ColorHandlerSwitcher(const std::vector<CloudActor*>& cloud_actors, QWidget * parent = 0, Qt::WindowFlags f = 0);
+        ColorHandlerSwitcher(QWidget * parent = 0, Qt::WindowFlags f = 0);
         ~ColorHandlerSwitcher();
-
-        void
-        apply(const std::vector<CloudActor*>& cloud_actors);
 
       private:
         Ui::ColorHandlerSwitcher            *ui_; // Designer form
         QColorDialog*                       color_picker_;
-        std::vector<CloudActor*>            cloud_actors_;
 
         void
         setupAvaiableFieldNames();

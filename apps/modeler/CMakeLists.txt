@@ -34,39 +34,57 @@ if(build)
   set(uis main_window.ui
            color_handler_switcher.ui)
   set(moc_incs include/pcl/apps/${SUBSYS_NAME}/main_window.h
-           include/pcl/apps/${SUBSYS_NAME}/pcl_modeler.h
+           include/pcl/apps/${SUBSYS_NAME}/tree_model.h
            include/pcl/apps/${SUBSYS_NAME}/color_handler_switcher.h
            include/pcl/apps/${SUBSYS_NAME}/parameter_dialog.h
-           include/pcl/apps/${SUBSYS_NAME}/abstract_worker.h)
+           include/pcl/apps/${SUBSYS_NAME}/abstract_worker.h
+           include/pcl/apps/${SUBSYS_NAME}/tree_view.h)
 
   set(resources resources/resources.qrc)
 
   set(incs ${moc_incs}
            include/pcl/apps/${SUBSYS_NAME}/qt.h
-           include/pcl/apps/${SUBSYS_NAME}/cloud_actor.h
+           include/pcl/apps/${SUBSYS_NAME}/geometry_item.h
+           include/pcl/apps/${SUBSYS_NAME}/polymesh_item.h
+           include/pcl/apps/${SUBSYS_NAME}/cloud_item.h
+           include/pcl/apps/${SUBSYS_NAME}/normal_item.h
+           include/pcl/apps/${SUBSYS_NAME}/surface_item.h
+
            include/pcl/apps/${SUBSYS_NAME}/render_widget.h
            include/pcl/apps/${SUBSYS_NAME}/dock_widget.h
-           include/pcl/apps/${SUBSYS_NAME}/tree_item.h
-           include/pcl/apps/${SUBSYS_NAME}/tree_view.h
            include/pcl/apps/${SUBSYS_NAME}/parameter.h
-           include/pcl/apps/${SUBSYS_NAME}/downsample_worker.h)
 
-  set(srcs src/main.cpp
-           src/main_window.cpp
+           include/pcl/apps/${SUBSYS_NAME}/downsample_worker.h
+           include/pcl/apps/${SUBSYS_NAME}/normal_estimation_worker.h
+           include/pcl/apps/${SUBSYS_NAME}/poisson_worker.h)
+
+  set(srcs src/main_window.cpp
+           src/tree_model.cpp
            src/color_handler_switcher.cpp
-           src/pcl_modeler.cpp
-           src/cloud_actor.cpp
-           src/render_widget.cpp
-           src/dock_widget.cpp
-           src/tree_item.cpp
-           src/tree_view.cpp
-           src/parameter.cpp
            src/parameter_dialog.cpp
            src/abstract_worker.cpp
-           src/downsample_worker.cpp)
 
-  set(impl_incs include/pcl/apps/${SUBSYS_NAME}/impl/pcl_modeler.hpp
+           src/main.cpp
+
+           src/tree_item.cpp
+           src/geometry_item.cpp
+           src/polymesh_item.cpp
+           src/cloud_item.cpp
+           src/normal_item.cpp
+           src/surface_item.cpp
+
+           src/render_widget.cpp
+           src/dock_widget.cpp
+           src/tree_view.cpp
+           src/parameter.cpp
+
+           src/downsample_worker.cpp
+           src/normal_estimation_worker.cpp
+           src/poisson_worker.cpp)
+
+  set(impl_incs include/pcl/apps/${SUBSYS_NAME}/impl/tree_model.hpp
            include/pcl/apps/${SUBSYS_NAME}/impl/parameter.hpp)
+
   # Qt stuff
   QT4_WRAP_UI(ui_srcs ${uis})
   QT4_WRAP_CPP(moc_srcs ${moc_incs} OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)

@@ -34,90 +34,77 @@
  *
  */
 
-#include <pcl/apps/modeler/cloud_actor.h>
+#include <pcl/apps/modeler/cloud_item.h>
+#include <pcl/apps/modeler/polymesh_item.h>
 #include <pcl/apps/modeler/render_widget.h>
 #include <pcl/apps/modeler/main_window.h>
 #include <pcl/apps/modeler/abstract_worker.h>
-#include <pcl/apps/modeler/qt.h>
+
+#include <QMenu>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::modeler::CloudActor::CloudActor (MainWindow* main_window,
-  const sensor_msgs::PointCloud2::Ptr &cloud,
-  const std::string &id,
+pcl::modeler::CloudItem::CloudItem (MainWindow* main_window,
   const Eigen::Vector4f& sensor_origin,
   const Eigen::Quaternion<float>& sensor_orientation) : 
-  TreeItem(id.c_str()),
-  cloud_(cloud),
-  id_(id),
   viewpoint_transformation_(vtkSmartPointer<vtkMatrix4x4>::New()),
-  actor_(vtkSmartPointer<vtkLODActor>::New ()),
-  main_window_(main_window)
+  GeometryItem(main_window, "Point Cloud")
 {
-  setCheckable(true);
-  updateOnStateChange(Qt::Checked);
-
-  color_handler_.reset(new pcl::visualization::PointCloudColorHandlerRGBField<sensor_msgs::PointCloud2>(cloud));
-  geometry_handler_.reset(new pcl::visualization::PointCloudGeometryHandlerXYZ<sensor_msgs::PointCloud2>(cloud));
-
-  if (!color_handler_->isCapable())
-    color_handler_.reset(new pcl::visualization::PointCloudColorHandlerRandom<sensor_msgs::PointCloud2>(cloud));
-
   convertToVtkMatrix (sensor_origin, sensor_orientation, viewpoint_transformation_);
-  createActorFromHandlers();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::modeler::CloudActor::~CloudActor ()
+pcl::modeler::CloudItem::~CloudItem ()
 {
+}
 
+//////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::modeler::CloudItem::initHandlers()
+{
+  PointCloud2Ptr cloud = dynamic_cast<PolymeshItem*>(parent())->getCloud();
+
+  geometry_handler_.reset(new pcl::visualization::PointCloudGeometryHandlerXYZ<PointCloud2>(cloud));
+
+  color_handler_.reset(new pcl::visualization::PointCloudColorHandlerRGBField<PointCloud2>(cloud));
+  if (!color_handler_->isCapable())
+    color_handler_.reset(new pcl::visualization::PointCloudColorHandlerRandom<PointCloud2>(cloud));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl::modeler::CloudActor::createActorFromHandlers ()
+pcl::modeler::CloudItem::createActor()
 {
-  if (!geometry_handler_->isCapable ())
-  {
-    PCL_WARN ("[createActorFromHandlers] PointCloud <%s> requested with an invalid geometry handler (%s)!\n", id_.c_str (), geometry_handler_->getName ().c_str ());
-    return (false);
-  }
-
-  if (!color_handler_->isCapable ())
-  {
-    PCL_WARN ("[createActorFromHandlers] PointCloud <%s> requested with an invalid color handler (%s)!\n", id_.c_str (), color_handler_->getName ().c_str ());
-    return (false);
-  }
+  if (actor_.GetPointer() == NULL)
+    actor_ = vtkSmartPointer<vtkLODActor>::New ();
+  
+  vtkSmartPointer<vtkLODActor> actor = vtkSmartPointer<vtkLODActor>(dynamic_cast<vtkLODActor*>(actor_.GetPointer()));
 
   vtkSmartPointer<vtkPolyData> polydata;
   vtkSmartPointer<vtkIdTypeArray> initcells;
   // Convert the PointCloud to VTK PolyData
-  convertPointCloudToVTKPolyData (geometry_handler_, polydata, initcells);
+  convertPointCloudToVTKPolyData (getGeometryHandler(), polydata, initcells);
   // use the given geometry handler
   polydata->Update ();
 
   // Get the colors from the handler
   vtkSmartPointer<vtkDataArray> scalars;
-  color_handler_->getColor (scalars);
+  getColorHandler()->getColor (scalars);
   polydata->GetPointData ()->SetScalars (scalars);
   double minmax[2];
   scalars->GetRange (minmax);
 
   // Create an Actor
-  createActorFromVTKDataSet (polydata, actor_);
-  actor_->GetMapper ()->SetScalarRange (minmax);
+  createActorFromVTKDataSet (polydata, actor);
+  actor->GetMapper ()->SetScalarRange (minmax);
 
-  cells_ = reinterpret_cast<vtkPolyDataMapper*>(actor_->GetMapper ())->GetInput ()->GetVerts ()->GetData ();
-
-  RenderWidget* render_widget = dynamic_cast<RenderWidget*>(TreeItem::parent());
-  if (render_widget != NULL)
-    render_widget->GetRenderWindow()->Render();
+  cells_ = reinterpret_cast<vtkPolyDataMapper*>(actor->GetMapper ())->GetInput ()->GetVerts ()->GetData ();
 
   return (true);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::modeler::CloudActor::convertToVtkMatrix (
+pcl::modeler::CloudItem::convertToVtkMatrix (
   const Eigen::Vector4f &origin,
   const Eigen::Quaternion<float> &orientation,
   vtkSmartPointer<vtkMatrix4x4> &vtk_matrix)
@@ -137,7 +124,7 @@ pcl::modeler::CloudActor::convertToVtkMatrix (
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::modeler::CloudActor::convertPointCloudToVTKPolyData (
+pcl::modeler::CloudItem::convertPointCloudToVTKPolyData (
   const GeometryHandlerConstPtr &geometry_handler,
   vtkSmartPointer<vtkPolyData> &polydata,
   vtkSmartPointer<vtkIdTypeArray> &initcells)
@@ -171,7 +158,7 @@ pcl::modeler::CloudActor::convertPointCloudToVTKPolyData (
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::modeler::CloudActor::updateCells (vtkSmartPointer<vtkIdTypeArray> &cells,
+pcl::modeler::CloudItem::updateCells (vtkSmartPointer<vtkIdTypeArray> &cells,
   vtkSmartPointer<vtkIdTypeArray> &initcells,
   vtkIdType nr_points)
 {
@@ -217,7 +204,7 @@ pcl::modeler::CloudActor::updateCells (vtkSmartPointer<vtkIdTypeArray> &cells,
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::modeler::CloudActor::createActorFromVTKDataSet (const vtkSmartPointer<vtkDataSet> &data,
+pcl::modeler::CloudItem::createActorFromVTKDataSet (const vtkSmartPointer<vtkDataSet> &data,
   vtkSmartPointer<vtkLODActor> &actor,
   bool use_scalars)
 {
@@ -254,87 +241,7 @@ pcl::modeler::CloudActor::createActorFromVTKDataSet (const vtkSmartPointer<vtkDa
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::modeler::CloudActor::showContextMenu(const QPoint& position)
+pcl::modeler::CloudItem::prepareContextMenu(QMenu* menu) const
 {
-  QMenu menu(main_window_);
-  main_window_->addActionsToCloudActor(&menu);
-  menu.exec(position);
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////////
-std::vector<std::string>
-pcl::modeler::CloudActor::getAvaiableFieldNames() const
-{
-  const std::vector< ::sensor_msgs::PointField >& fields = cloud_->fields;
-
-  std::vector<std::string> field_names;
-  for (size_t i = 0, i_end = fields.size(); i < i_end; ++ i)
-  {
-    field_names.push_back(fields[i].name);
-  }
-
-  return (field_names);
-}
-
-
-/////////////////////////////////////////////////////////////////////////////////////////////
-void
-pcl::modeler::CloudActor::setColorHandler(double r, double g, double b)
-{
-  color_handler_.reset(new pcl::visualization::PointCloudColorHandlerCustom<sensor_msgs::PointCloud2>(cloud_, r, g, b));
-
-  createActorFromHandlers();
-
-  return;
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////////
-void
-pcl::modeler::CloudActor::setColorHandler(const std::string& field_name)
-{
-  if (field_name == "rgb")
-  {
-    color_handler_.reset(new pcl::visualization::PointCloudColorHandlerRGBField<sensor_msgs::PointCloud2>(cloud_));
-  }
-  else if (field_name == "hsv")
-  {
-    color_handler_.reset(new pcl::visualization::PointCloudColorHandlerHSVField<sensor_msgs::PointCloud2>(cloud_));
-  }
-  else
-  {
-    color_handler_.reset(new pcl::visualization::PointCloudColorHandlerGenericField<sensor_msgs::PointCloud2>(cloud_, field_name));
-  }
-
-  createActorFromHandlers();
-
-  return;
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////////
-void
-pcl::modeler::CloudActor::updateCloud(sensor_msgs::PointCloud2::Ptr cloud)
-{
-  pcl::copyPointCloud(*cloud, *cloud_);
-
-  createActorFromHandlers();
-
-  return;
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-void
-pcl::modeler::CloudActor::updateOnStateChange(const Qt::CheckState& check_state)
-{
-  RenderWidget* render_widget = dynamic_cast<RenderWidget*>(TreeItem::parent());
-  if (render_widget != NULL)
-  {
-    if (check_state == Qt::Checked)
-      render_widget->getRenderer()->AddActor(actor_);
-    else
-      render_widget->getRenderer()->RemoveActor(actor_);
-
-    render_widget->GetRenderWindow()->Render();
-  }
-
-  return;
+  GeometryItem::prepareContextMenu(menu);
 }

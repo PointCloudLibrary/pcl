@@ -48,7 +48,7 @@
      <x>0</x>
      <y>0</y>
      <width>1063</width>
-     <height>25</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -103,7 +103,21 @@
     <property name="title">
      <string>Edit</string>
     </property>
-    <addaction name="actionDownSampleFilter"/>
+    <widget class="QMenu" name="menuPointCloudFilter">
+     <property name="title">
+      <string>Point Cloud Filter</string>
+     </property>
+     <addaction name="actionDownSampleFilter"/>
+     <addaction name="actionEstimateNormal"/>
+    </widget>
+    <widget class="QMenu" name="menuSurfaceReconstruction">
+     <property name="title">
+      <string>Surface Reconstruction</string>
+     </property>
+     <addaction name="actionPoissonSurfaceReconstruction"/>
+    </widget>
+    <addaction name="menuPointCloudFilter"/>
+    <addaction name="menuSurfaceReconstruction"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -224,7 +238,17 @@
   </action>
   <action name="actionDownSampleFilter">
    <property name="text">
-    <string>Down Sample Filter</string>
+    <string>Down Sample</string>
+   </property>
+  </action>
+  <action name="actionPoissonSurfaceReconstruction">
+   <property name="text">
+    <string>Poisson</string>
+   </property>
+  </action>
+  <action name="actionEstimateNormal">
+   <property name="text">
+    <string>Estimate Normal</string>
    </property>
   </action>
  </widget>

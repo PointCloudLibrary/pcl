@@ -41,11 +41,7 @@
 #include <boost/shared_ptr.hpp>
 #include <vtkSmartPointer.h>
 
-// Forward Qt class declarations
-namespace Ui
-{
-  class MainWindow;
-}
+#include <ui_main_window.h>
 
 class QMenu;
 class vtkActor;
@@ -56,8 +52,8 @@ namespace pcl
 {
   namespace modeler
   {
-    class CloudActor;
-    class PCLModeler;
+    class TreeItem;
+    class TreeModel;
     class RenderWidget;
 
     class MainWindow : public QMainWindow
@@ -71,32 +67,19 @@ namespace pcl
         void
         setActiveDockWidget(RenderWidget* render_widget);
 
-        std::vector<CloudActor*>
-        getSelectedCloud();
-
-        void
-        addActionsToRenderWidget(QMenu* menu);
-        void
-        addActionsToCloudActor(QMenu* menu);
-
-        vtkSmartPointer<vtkRenderer>
-        getActiveRender();
-
-        RenderWidget*
-        getActiveRenderWidget();
+        Ui::MainWindow*
+        ui() {return ui_;}
 
         void
         triggerRender(vtkActor* actor);
+
+        QString 
+        getRecentFolder();
+
+        QStringList&
+        getRecentFiles();
+
       public slots:
-        // slots for file menu
-        void 
-        slotOpenPointCloud();
-        void 
-        slotImportPointCloud();
-        void 
-        slotSavePointCloud();
-        void 
-        slotClosePointCloud();
         void 
         slotOpenProject();
         void 
@@ -109,19 +92,11 @@ namespace pcl
         // slots for view menu
         void
         slotCreateRenderWindow();
-        void
-        slotChangeBackgroundColor();
 
         // slots for render menu
         void
         slotSwitchColorHandler();
 
-        // slots for edit menu
-        void
-        slotDownSampleFilter();
-
-        void
-        slotUpdateSelection(const QItemSelection & selected, const QItemSelection & deselected);
       private:
         // methods for file Menu
         void 
@@ -130,10 +105,6 @@ namespace pcl
         createRecentPointCloudActions();
         void 
         updateRecentPointCloudActions();
-        bool
-        openPointCloudImpl(const QStringList& filenames);
-        bool 
-        openPointCloudImpl(const QString& filename);
         void 
         createRecentProjectActions();
         void 
@@ -142,9 +113,6 @@ namespace pcl
         openProjectImpl(const QString& filename);
         static void 
         updateRecentActions(std::vector<boost::shared_ptr<QAction> >& recent_actions, QStringList& recent_items);
-        QString 
-        getRecentFolder();
-
 
         // methods for view menu
         void 
@@ -164,33 +132,24 @@ namespace pcl
         void 
         saveGlobalSettings();
 
-        void
-        updateRenderWidgetSelection(const QItemSelection & selection, bool selected);
-
       private slots:
         void 
         slotOpenRecentPointCloud();
         void 
         slotOpenRecentProject();
 
-        void
-        slotOnTreeViewItemClick(const QModelIndex & index);
-
-        void
-        slotOnTreeViewItemDoubleClick(const QModelIndex & index);
-
       private:
         Ui::MainWindow                    *ui_; // Designer form
 
         // shortcuts for recent point clouds/projects
-        QStringList                       recent_pointclouds_;
+        QStringList                       recent_files_;
         QStringList                       recent_projects_;
         static const size_t               MAX_RECENT_NUMBER = 8;
         std::vector<boost::shared_ptr<QAction> >  recent_pointcloud_actions_;
         std::vector<boost::shared_ptr<QAction> >  recent_project_actions_;
 
         // data
-        boost::shared_ptr<PCLModeler>  pcl_modeler_;
+        boost::shared_ptr<TreeModel>    scene_tree_;
     };
   }
 }

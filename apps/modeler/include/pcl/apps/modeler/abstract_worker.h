@@ -43,7 +43,7 @@ namespace pcl
 {
   namespace modeler
   {
-    class CloudActor;
+    class PolymeshItem;
     class ParameterDialog;
 
     class AbstractWorker : public QObject
@@ -55,7 +55,7 @@ namespace pcl
         typedef PointCloud2::Ptr          PointCloud2Ptr;
         typedef PointCloud2::ConstPtr     PointCloud2ConstPtr;
 
-        AbstractWorker(const std::vector<CloudActor*>& cloud_actors, QWidget* parent=0);
+        AbstractWorker(const std::vector<PolymeshItem*>& polymeshs, QWidget* parent=0);
         ~AbstractWorker(void);
 
         virtual int
@@ -65,8 +65,15 @@ namespace pcl
         void
         process();
 
+        void
+        postProcess();
+
       signals:
-        void finished();
+        void
+        processed();
+
+        void
+        finished();
 
       protected:
         virtual std::string
@@ -79,10 +86,13 @@ namespace pcl
         setupParameters() = 0;
 
         virtual void
-        processImpl(PointCloud2Ptr input_cloud, PointCloud2Ptr output_cloud) const = 0;
+        processImpl(PolymeshItem* polymesh) const = 0;
+
+        virtual void
+        postProcessImpl(PolymeshItem* polymesh) const = 0;
 
       protected:
-        std::vector<CloudActor*>  cloud_actors_;
+        std::vector<PolymeshItem*>  polymeshs_;
         ParameterDialog*          parameter_dialog_;
     };
 

@@ -41,15 +41,17 @@
 
 #include <ui_color_handler_switcher.h>
 #include <pcl/apps/modeler/color_handler_switcher.h>
-#include <pcl/apps/modeler/cloud_actor.h>
+#include <pcl/apps/modeler/polymesh_item.h>
+#include <pcl/apps/modeler/geometry_item.h>
+#include <pcl/apps/modeler/main_window.h>
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::modeler::ColorHandlerSwitcher::ColorHandlerSwitcher(const std::vector<CloudActor*>& cloud_actors, QWidget * parent, Qt::WindowFlags f) :
-  QDialog(parent, f),
-  ui_(new Ui::ColorHandlerSwitcher),
+pcl::modeler::ColorHandlerSwitcher::ColorHandlerSwitcher(QWidget * parent, Qt::WindowFlags f) :
   color_picker_(new QColorDialog(this)),
-  cloud_actors_(cloud_actors)
+  ui_(new Ui::ColorHandlerSwitcher),
+  QDialog(parent, f)
+
 {
   ui_->setupUi(this);
 
@@ -57,10 +59,11 @@ pcl::modeler::ColorHandlerSwitcher::ColorHandlerSwitcher(const std::vector<Cloud
   color_picker_->setOption(QColorDialog::NoButtons, true);
   ui_->verticalLayout->addWidget(color_picker_);
 
-  connect(ui_->buttonBox->button(QDialogButtonBox::Apply), SIGNAL(clicked()), this, SLOT(slotSwitchColorHandler()));
+  connect(ui_->buttonBox->button(QDialogButtonBox::Apply), SIGNAL(clicked()),this, SLOT(slotSwitchColorHandler()));
   connect(ui_->buttonBox, SIGNAL(accepted()), this, SLOT(slotSwitchColorHandler()));
 
-  connect(ui_->comboBoxColorHandlers, SIGNAL(currentIndexChanged(const QString &)), this, SLOT(slotToggleColorPicker(const QString &)));
+  connect(ui_->comboBoxColorHandlers, SIGNAL(currentIndexChanged(const QString &)),
+    this, SLOT(slotToggleColorPicker(const QString &)));
 
   setupAvaiableFieldNames();
   ui_->comboBoxColorHandlers->setCurrentIndex(0);
@@ -77,16 +80,24 @@ pcl::modeler::ColorHandlerSwitcher::~ColorHandlerSwitcher()
 void
 pcl::modeler::ColorHandlerSwitcher::setupAvaiableFieldNames()
 {
-  if (cloud_actors_.empty())
+  TreeView* tree_view = dynamic_cast<MainWindow*>(parent())->ui()->treeViewSceneExplorer;
+  std::vector<GeometryItem*> geometry_items = tree_view->selectedItems<GeometryItem>();
+  if (geometry_items.empty())
     return;
 
-  std::vector<std::string> intersection = cloud_actors_[0]->getAvaiableFieldNames();
+  std::vector<PolymeshItem*> polymesh_items;
+  for (size_t i = 0, i_end = geometry_items.size(); i < i_end; ++ i)
+  {
+    polymesh_items.push_back(dynamic_cast<PolymeshItem*>(geometry_items[i]->parent()));
+  }
+
+  std::vector<std::string> intersection = polymesh_items[0]->getAvaiableFieldNames();
   std::sort(intersection.begin(), intersection.end());
 
-  for (size_t i = 1, i_end = cloud_actors_.size(); i < i_end; ++ i)
+  for (size_t i = 1, i_end = polymesh_items.size(); i < i_end; ++ i)
   {
-    CloudActor* cloud_actor = cloud_actors_[i];
-    std::vector<std::string> field_names = cloud_actor->getAvaiableFieldNames();
+    PolymeshItem* polymesh = polymesh_items[i];
+    std::vector<std::string> field_names = polymesh->getAvaiableFieldNames();
     std::sort(field_names.begin(), field_names.end());
 
     std::vector<std::string> temp;
@@ -97,9 +108,7 @@ pcl::modeler::ColorHandlerSwitcher::setupAvaiableFieldNames()
   }
 
   for (size_t i = 0, i_end = intersection.size(); i < i_end; ++ i)
-  {
     ui_->comboBoxColorHandlers->addItem(intersection[i].c_str());
-  }
 
   return;
 }
@@ -108,21 +117,22 @@ pcl::modeler::ColorHandlerSwitcher::setupAvaiableFieldNames()
 void
 pcl::modeler::ColorHandlerSwitcher::slotSwitchColorHandler()
 {
+  TreeView* tree_view = dynamic_cast<MainWindow*>(parent())->ui()->treeViewSceneExplorer;
+  std::vector<GeometryItem*> geometry_items = tree_view->selectedItems<GeometryItem>();
+  if (geometry_items.empty())
+    return;
+
   std::string color_handler = ui_->comboBoxColorHandlers->currentText().toStdString();
   if (color_handler == "custom")
   {
-    for (size_t i = 0, i_end = cloud_actors_.size(); i < i_end; ++ i)
-    {
-      QColor color = color_picker_->selectedColor();
-      cloud_actors_[i]->setColorHandler(color.red(), color.green(), color.blue());
-    }
+    QColor color = color_picker_->currentColor();
+    for (size_t i = 0, i_end = geometry_items.size(); i < i_end; ++ i)
+      geometry_items[i]->setColorHandler(color.red(), color.green(), color.blue());
   }
   else
   {
-    for (size_t i = 0, i_end = cloud_actors_.size(); i < i_end; ++ i)
-    {
-      cloud_actors_[i]->setColorHandler(color_handler);
-    }
+    for (size_t i = 0, i_end = geometry_items.size(); i < i_end; ++ i)
+      geometry_items[i]->setColorHandler(color_handler);
   }
 
   return;
@@ -133,9 +143,7 @@ void
 pcl::modeler::ColorHandlerSwitcher::slotToggleColorPicker(const QString &text)
 {
   if (text.toStdString() == "custom")
-  {
     color_picker_->show();
-  }
   else
   {
     color_picker_->hide();

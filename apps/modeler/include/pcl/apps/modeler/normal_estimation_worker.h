@@ -34,97 +34,49 @@
  *
  */
 
-#ifndef PCL_MODELER_TREE_VIEW_H_
-#define PCL_MODELER_TREE_VIEW_H_
+#ifndef PCL_MODELER_NORMAL_ESTIMATION_WORKER_H_
+#define PCL_MODELER_NORMAL_ESTIMATION_WORKER_H_
 
-#include <pcl/apps/modeler/qt.h>
-
-class QContextMenuEvent;
+#include <pcl/apps/modeler/abstract_worker.h>
 
 namespace pcl
 {
   namespace modeler
   {
-    class TreeItem;
-    class TreeModel;
-    class MainWindow;
-    class AbstractWorker;
+    class DoubleParameter;
 
-    class TreeView : public QTreeView
+    class NormalEstimationWorker : public AbstractWorker 
     {
-      Q_OBJECT
-
       public:
-        TreeView(QWidget * parent = 0);
-        ~TreeView();
+        NormalEstimationWorker(const std::vector<PolymeshItem*>& polymeshs, QWidget* parent=0);
+        ~NormalEstimationWorker(void);
 
-        void
-        setMainWindow(MainWindow* main_window);
-
-        virtual QSize
-        sizeHint() const;
-
-        template <class T>
-        std::vector<T*>
-        selectedItems();
-
-        bool 
-        openPointCloud(const QString& filename);
-
-      public slots:
-        void
-        slotChangeBackgroundColor();
-
-        // slots for file menu
-        void 
-        slotOpenPointCloud();
-
-        void 
-        slotImportPointCloud();
-
-        void
-        slotSavePointCloud();
-
-        void
-        slotClosePointCloud();
-
-        // slots for edit menu
-        void
-        slotDownSampleFilter();
-        void
-        slotEstimateNormal();
-        void
-        slotPoissonReconstruction();
-
-      private:
-        virtual TreeModel*
-        model();
-
-        std::vector<TreeItem*>
-        selectedItems();
-
-        void
-        executeWorker(AbstractWorker* worker);
+      protected:
+        virtual std::string
+        getName () const {return ("Normal Estimation");}
 
         virtual void
-        contextMenuEvent(QContextMenuEvent *event);
+        initParameters(PointCloud2Ptr input_cloud);
 
-        void
-        updateOnSelectionChange(const QItemSelection & selection, bool selected);
+        virtual void
+        setupParameters();
 
-      private slots:
-        void
-        slotOnSelectionChange(const QItemSelection & selected, const QItemSelection & deselected);
+        virtual void
+        processImpl(PolymeshItem* polymesh) const;
 
-        void
-        slotOnDoubleClick(const QModelIndex & index);
+        virtual void
+        postProcessImpl(PolymeshItem* polymesh) const;
 
       private:
-        MainWindow*   main_window_;
+        double x_min_, x_max_;
+        double y_min_, y_max_;
+        double z_min_, z_max_;
+
+        DoubleParameter* search_radius_;
+
     };
+
   }
 }
 
-#include <pcl/apps/modeler/impl/tree_view.hpp>
-
-#endif // PCL_MODELER_TREE_VIEW_H_
+#endif // PCL_MODELER_NORMAL_ESTIMATION_WORKER_H_

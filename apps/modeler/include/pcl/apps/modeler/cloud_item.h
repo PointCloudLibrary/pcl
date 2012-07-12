@@ -33,99 +33,40 @@
  *
  *
  */
-#ifndef PCL_MODELER_CLOUD_ACTOR_H_
-#define PCL_MODELER_CLOUD_ACTOR_H_
+#ifndef PCL_MODELER_CLOUD_ITEM_H_
+#define PCL_MODELER_CLOUD_ITEM_H_
 
+#include <pcl/apps/modeler/geometry_item.h>
 #include <pcl/visualization/point_cloud_handlers.h>
-#include <pcl/apps/modeler/tree_item.h>
 
 namespace pcl
 {
   namespace modeler
   {
     class MainWindow;
-    class AbstractWorker;
 
-    class CloudActor : public TreeItem
+    class CloudItem : public GeometryItem
     {
       public:
-        typedef pcl::visualization::PointCloudGeometryHandler<sensor_msgs::PointCloud2> GeometryHandler;
-        typedef GeometryHandler::Ptr GeometryHandlerPtr;
-        typedef GeometryHandler::ConstPtr GeometryHandlerConstPtr;
+        typedef boost::shared_ptr<CloudItem> Ptr;
+        typedef boost::shared_ptr<const CloudItem> ConstPtr;
 
-        typedef pcl::visualization::PointCloudColorHandler<sensor_msgs::PointCloud2> ColorHandler;
-        typedef ColorHandler::Ptr ColorHandlerPtr;
-        typedef ColorHandler::ConstPtr ColorHandlerConstPtr;
-
-        typedef boost::shared_ptr<CloudActor> Ptr;
-        typedef boost::shared_ptr<const CloudActor> ConstPtr;
-
-        CloudActor (MainWindow* main_window,
-          const sensor_msgs::PointCloud2::Ptr &cloud,
-          const std::string &id = "cloud",
-          const Eigen::Vector4f& sensor_origin = Eigen::Vector4f (0, 0, 0, 0),
+        CloudItem (MainWindow* main_window, const Eigen::Vector4f& sensor_origin = Eigen::Vector4f (0, 0, 0, 0),
           const Eigen::Quaternion<float>& sensor_orientation = Eigen::Quaternion<float> (1, 0, 0 ,0));
 
-        virtual ~CloudActor ();
+        virtual ~CloudItem ();
 
-        vtkSmartPointer<vtkLODActor>
-        getActor() {return actor_;}
-
-        std::string
-        getID() {return id_;}
-
-        std::vector<std::string>
-        getAvaiableFieldNames() const;
-
-        void
-        setColorHandler(double r, double g, double b);
-        void
-        setColorHandler(const std::string& field_name);
+      protected:
+        virtual void
+        prepareContextMenu(QMenu* menu) const;
 
         virtual void
-        showContextMenu(const QPoint& position);
+        initHandlers();
 
-        sensor_msgs::PointCloud2::Ptr
-        getCloud() {return cloud_;}
-
-        sensor_msgs::PointCloud2::ConstPtr
-        getCloud() const {return cloud_;}
-
-        void
-        updateCloud(sensor_msgs::PointCloud2::Ptr cloud);
-
-        virtual void
-        updateOnStateChange(const Qt::CheckState& check_state);
+        virtual bool
+        createActor();
 
       private:
-        sensor_msgs::PointCloud2::Ptr cloud_;
-
-        /** \brief geometry handler that can be used for rendering the data. */
-        GeometryHandlerConstPtr geometry_handler_;
-
-        /** \brief color handler that can be used for rendering the data. */
-        ColorHandlerConstPtr color_handler_;
-
-        /** \brief The string id of the cloud actor. */
-        std::string id_;
-
-        /** \brief The viewpoint transformation matrix. */
-        vtkSmartPointer<vtkMatrix4x4> viewpoint_transformation_;
-
-        /** \brief The actor holding the data to render. */
-        vtkSmartPointer<vtkLODActor> actor_;
-
-        /** \brief Internal cell array. Used for optimizing updatePointCloud. */
-        vtkSmartPointer<vtkIdTypeArray> cells_;
-
-        MainWindow*   main_window_;
-
-        /** \brief Internal method. Converts the information present in the geometric
-          * and color handlers into VTK PolyData+Scalars, constructs a vtkActor object.
-          */
-        bool
-        createActorFromHandlers ();
-
         /** \brief Internal method. Convert origin and orientation to vtkMatrix4x4.
           * \param[in] origin the point cloud origin
           * \param[in] orientation the point cloud orientation
@@ -169,8 +110,14 @@ namespace pcl
         createActorFromVTKDataSet (const vtkSmartPointer<vtkDataSet> &data,
                                    vtkSmartPointer<vtkLODActor> &actor,
                                    bool use_scalars = true);
+      private:
+        /** \brief The viewpoint transformation matrix. */
+        vtkSmartPointer<vtkMatrix4x4> viewpoint_transformation_;
+
+        /** \brief Internal cell array. Used for optimizing updatePointCloud. */
+        vtkSmartPointer<vtkIdTypeArray> cells_;
     };
   }
 }
 
-#endif // PCL_MODELER_CLOUD_ACTOR_H_
+#endif // PCL_MODELER_CLOUD_ITEM_H_

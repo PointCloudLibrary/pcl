@@ -34,34 +34,35 @@
  *
  */
 
-#include <pcl/apps/modeler/downsample_worker.h>
+#include <pcl/apps/modeler/normal_estimation_worker.h>
 #include <pcl/apps/modeler/parameter_dialog.h>
 #include <pcl/apps/modeler/parameter.h>
 #include <pcl/apps/modeler/polymesh_item.h>
+#include <pcl/apps/modeler/normal_item.h>
+#include <pcl/features/normal_3d.h>
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/common/io.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::modeler::DownSampleWorker::DownSampleWorker(const std::vector<PolymeshItem*>& polymeshs, QWidget* parent) :
-  AbstractWorker(polymeshs, parent),
+pcl::modeler::NormalEstimationWorker::NormalEstimationWorker(const std::vector<PolymeshItem*>& polymeshs, QWidget* parent) :
   x_min_(std::numeric_limits<double>::max()), x_max_(std::numeric_limits<double>::min()),
   y_min_(std::numeric_limits<double>::max()), y_max_(std::numeric_limits<double>::min()),
   z_min_(std::numeric_limits<double>::max()), z_max_(std::numeric_limits<double>::min()),
-  leaf_size_x_(NULL), leaf_size_y_(NULL), leaf_size_z_(NULL)
+  search_radius_(NULL),
+  AbstractWorker(polymeshs, parent)
 {
+
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::modeler::DownSampleWorker::~DownSampleWorker(void)
+pcl::modeler::NormalEstimationWorker::~NormalEstimationWorker(void)
 {
-  delete leaf_size_x_;
-  delete leaf_size_y_;
-  delete leaf_size_z_;
+  delete search_radius_;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::modeler::DownSampleWorker::initParameters(PointCloud2Ptr input_cloud)
+pcl::modeler::NormalEstimationWorker::initParameters(PointCloud2Ptr input_cloud)
 {
   Eigen::Vector4f min_pt, max_pt;
   int x_idx = pcl::getFieldIndex(*input_cloud, "x");
@@ -83,48 +84,58 @@ pcl::modeler::DownSampleWorker::initParameters(PointCloud2Ptr input_cloud)
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::modeler::DownSampleWorker::setupParameters()
+pcl::modeler::NormalEstimationWorker::setupParameters()
 {
   double x_range = x_max_ - x_min_;
   double y_range = y_max_ - y_min_;
   double z_range = z_max_ - z_min_;
 
   double range_max = std::max(x_range, std::max(y_range, z_range));
-  double size = range_max/1000;
+  double radius = range_max/100;
   double step = range_max/1000;
 
-  leaf_size_x_ = new DoubleParameter("Leaf Size X", "The X size of the voxel grid", size, 0, x_max_-x_min_, step);
-  leaf_size_y_ = new DoubleParameter("Leaf Size Y", "The Y size of the voxel grid", size, 0, y_max_-y_min_, step);
-  leaf_size_z_ = new DoubleParameter("Leaf Size Z", "The Z size of the voxel grid", size, 0, z_max_-z_min_, step);
+  search_radius_ = new DoubleParameter("Search Radius",
+    "The sphere radius that is to be used for determining the nearest neighbors", radius, 0, x_max_-x_min_, step);
 
-  parameter_dialog_->addParameter(leaf_size_x_);
-  parameter_dialog_->addParameter(leaf_size_y_);
-  parameter_dialog_->addParameter(leaf_size_z_);
+  parameter_dialog_->addParameter(search_radius_);
 
   return;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::modeler::DownSampleWorker::processImpl(PolymeshItem* polymesh) const
+pcl::modeler::NormalEstimationWorker::processImpl(PolymeshItem* polymesh) const
 {
-  sensor_msgs::PointCloud2::Ptr output_cloud(new sensor_msgs::PointCloud2);
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
+  pcl::fromROSMsg(*(polymesh->getCloud()), *cloud);
 
-  pcl::VoxelGrid<sensor_msgs::PointCloud2> voxel_grid;
-  voxel_grid.setInputCloud (polymesh->getCloud());
-  voxel_grid.setLeafSize (float (*leaf_size_x_), float (*leaf_size_y_), float (*leaf_size_z_));
-  voxel_grid.filter (*output_cloud);
+  // Create the normal estimation class, and pass the input dataset to it
+  pcl::NormalEstimation<pcl::PointXYZ, pcl::Normal> ne;
+  ne.setInputCloud (cloud);
 
-  *(polymesh->getCloud()) = *output_cloud;
+  // Create an empty kdtree representation, and pass it to the normal estimation object.
+  // Its content will be filled inside the object, based on the given input dataset (as no other search surface is given).
+  pcl::search::KdTree<pcl::PointXYZ>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZ> ());
+  ne.setSearchMethod (tree);
+
+  // Output datasets
+  pcl::PointCloud<pcl::Normal>::Ptr cloud_normals (new pcl::PointCloud<pcl::Normal>);
+
+  // Use all neighbors in a sphere of radius 3cm
+  ne.setRadiusSearch (*search_radius_);
+
+  // Compute the features
+  ne.compute (*cloud_normals);
+
 
   return;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::modeler::DownSampleWorker::postProcessImpl(PolymeshItem* polymesh) const
+pcl::modeler::NormalEstimationWorker::postProcessImpl(PolymeshItem* polymesh) const
 {
-  polymesh->updateGeometryItems();
+  polymesh->attachNormalItem();
 
   return;
 }
