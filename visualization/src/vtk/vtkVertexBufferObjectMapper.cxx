@@ -18,6 +18,7 @@
 #include "pcl/visualization/vtk/vtkVertexBufferObject.h"
 #include "pcl/visualization/vtk/vtkVertexBufferObjectMapper.h"
 
+#include "vtkCellData.h"
 #include "vtkExecutive.h"
 #include "vtkInformation.h"
 #include "vtkMath.h"
@@ -25,6 +26,7 @@
 #include "vtkObjectFactory.h"
 #include "vtkOpenGL.h"
 #include "vtkOpenGLRenderWindow.h"
+#include "vtkPainterDeviceAdapter.h"
 #include "vtkPointData.h"
 #include "vtkPolyData.h"
 #include "vtkProperty.h"
@@ -35,215 +37,113 @@
 #include "vtkShader2Collection.h"
 #include "vtkUniformVariables.h"
 
-
-// Shaders
-// ----------------------------------------------------------------------------
-
-// Display BGR data as RGB
-const vtkgl::GLchar* RGBVertexShader =
-"#version 120\n"
-
-"attribute vec3 color;"
-"uniform float alpha;"
-
-"void main(void){\n"
-"  gl_Position = ftransform();"
-"  gl_FrontColor = vec4(color[0]/255.0f, color[1]/255.0f, color[2]/255.0f, alpha);"
-"}\0";
-
-const vtkgl::GLchar* PassthroughFrag = {
-"#version 120\n"
-
-"void main(void){"
-"   gl_FragColor = gl_Color;"
-"}\0"
-};
-
-const vtkgl::GLchar* SimpleVertexShader =
-"#version 120\n"
-"void main(void)\n"
-"{\n"
-"  gl_FrontColor = gl_Color;\n"
-"  gl_Position = ftransform();\n"
-"}\n";
-
-const vtkgl::GLchar* SimpleFragmentShader =
-"#version 120\n"
-
-"void main(void){"
-"   gl_FragColor = gl_Color;"
-"}\0";
-
 //----------------------------------------------------------------------------
-// Needed when we don't use the vtkStandardNewMacro.
-//vtkInstantiatorNewMacro(vtkVertexBufferObjectMapper);
 vtkStandardNewMacro(vtkVertexBufferObjectMapper);
-
-//----------------------------------------------------------------------------
-// return the correct type of PolyDataMapper
-//vtkVertexBufferObjectMapper *vtkVertexBufferObjectMapper::New()
-//{
-////  // First try to create the object from the vtkObjectFactory
-////  vtkObject* ret = vtkGraphicsFactory::CreateInstance("vtkVertexBufferObjectMapper");
-////  return static_cast<vtkVertexBufferObjectMapper *>(ret);
-//  std::cout << "Creating vtkVertexBufferObjectMapper" << endl;
-//  return new vtkVertexBufferObjectMapper;
-//
-//}
 
 //----------------------------------------------------------------------------
 vtkVertexBufferObjectMapper::vtkVertexBufferObjectMapper()
 {
-  std::cout << "vtkVertexBufferObjectMapper()" << endl;
   initialized = false;
-  shadersInitialized = false;
+//  shadersInitialized = false;
 
+  program = NULL;
   vertexVbo = vtkVertexBufferObject::New();
   indiceVbo = vtkVertexBufferObject::New();
   colorVbo = vtkVertexBufferObject::New();
+  normalVbo = vtkVertexBufferObject::New();
+//  normalIndiceVbo = vtkVertexBufferObject::New();
 
 }
-
-//void vtkVertexBufferObjectMapper::RenderPiece(vtkRenderer *ren, vtkActor *act)
-//{
-//  //vtkPolyData *input= this->GetInput();
-//
-//  // make sure our window is current
-//  //ren->GetRenderWindow()->MakeCurrent();
-//
-//  std::cout << "RenderPiece vtkVertexBufferObjectMapper" << endl;
-//}
-
-//bool vtkVertexBufferObjectMapper::Init(vtkRenderWindow* win)
-//{
-//  vtkOpenGLRenderWindow* renWin = vtkOpenGLRenderWindow::SafeDownCast(win);
-//    if (!renWin)
-//      return false;
-//
-//    vtkOpenGLExtensionManager* mgr = renWin->GetExtensionManager();
-//
-//    bool vbo=mgr->ExtensionSupported("GL_VERSION_1_5") ||
-//      mgr->ExtensionSupported("GL_ARB_vertex_buffer_object");
-//
-//    if(vbo){
-//      mgr->LoadExtension("GL_VERSION_1_5");
-//      mgr->LoadCorePromotedExtension("GL_ARB_vertex_buffer_object");
-//      std::cout << "VBOs are good!" << endl;
-//      createShaders(renWin);
-//      return vbo;
-//    }
-//    std::cout << "VBOs are not so good :(" << endl;
-//
-//    return false;
-//}
 
 //----------------------------------------------------------------------------
 void vtkVertexBufferObjectMapper::Render(vtkRenderer *ren, vtkActor *act)
 {
   ren->GetRenderWindow()->MakeCurrent();
 
-  if (!this->shadersInitialized)
-  {
-    createShaders(vtkOpenGLRenderWindow::SafeDownCast(ren->GetRenderWindow()));
-    shadersInitialized = true;
-  }
+  if (this->program)
+      this->program->SetContext(vtkOpenGLRenderWindow::SafeDownCast(ren->GetRenderWindow()));
 
+//  this->InvokeEvent(vtkCommand::StartEvent,NULL);
+//  this->GetInputAlgorithm()->Update();
+//  this->InvokeEvent(vtkCommand::EndEvent,NULL);
+
+  ren->GetRenderWindow()->MakeCurrent();
+  this->SetColorModeToMapScalars();
+  this->MapScalars(act->GetProperty()->GetOpacity());
 
   if (!this->initialized)
   {
-    std::cout << "Initializing" << endl;
-    ren->GetRenderWindow()->MakeCurrent();
-    //Init(ren->GetRenderWindow());
-
-    if ( this->LookupTable == NULL )
-    {
-      this->CreateDefaultLookupTable();
-    }
-
-    this->MapScalars(act->GetProperty()->GetOpacity());
-
     createVBOs(ren->GetRenderWindow());
-
     initialized = true;
   }
 
-  // get the property
-  vtkProperty *prop = act->GetProperty();
-
   // If full transparency
+  vtkProperty *prop = act->GetProperty();
   if (prop->GetOpacity() <= 0.0)
     return;
 
-//  vtkPolyData *input = this->GetInput();
-//  vtkPoints *points = input->GetPoints();
+  // Set point size
+  glPointSize(prop->GetPointSize());
 
-//  vtkCellArray *vertices = input->GetVerts();
-//  vtkIdType *ptIds = vertices->GetPointer();
-//  cout << "Count: " << vertices->GetNumberOfCells() << endl;
-//  cout << "Count? " << *ptIds << endl;
-//
-//  if (colors->GetName() != NULL)
-//    std::cout << "Colors Name: " << colors->GetName() << std::endl;
+  // Use program
+  if (this->program)
+    this->program->Use();
 
-//  if (colors)
-//  {
-//  idx |= VTK_PDM_COLORS;
-//  if (c->GetName())
-//    { // In the future, I will look at the number of components.
-//    // All paths will have to handle 3 componet colors.
-//    idx |= VTK_PDM_OPAQUE_COLORS;
-//    }
-//  }
-
-
-  //vtkCellArray *verts = input->GetVerts();
-  //vtkIdType *pIds = verts->GetPointer();
-//  unsigned int numPoints = points->GetNumberOfPoints();
-
-  vtkUniformVariables *v=this->program->GetUniformVariables();
-  int colorIndex = this->program->GetAttributeLocation("color");
-
-  float alpha = 0.5;
-  v->SetUniformf("alpha", 1, &alpha);
-
-  this->program->Use();
-
-  // Bind position and indices
+  // Bind vertices and indices
   vertexVbo->Bind();
   indiceVbo->Bind();
 
-  // Position
-  vtkgl::VertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-  vtkgl::EnableVertexAttribArray(0);
-
+  // Bind colors if present
   if (this->Colors)
-  {
     colorVbo->Bind();
-    vtkgl::VertexAttribPointer(colorIndex, 4, GL_UNSIGNED_BYTE, GL_FALSE, 0, 0);
-    vtkgl::EnableVertexAttribArray(colorIndex);
-  }
 
-  glDrawElements(GL_POINTS, indiceVbo->GetCount(), GL_UNSIGNED_INT, 0);
+  // Bind normals if present
+  if (this->GetInput()->GetCellData()->GetNormals())
+    normalVbo->Bind();
 
-  // Unbind VBOs
+  // Draw
+  ren->GetRenderWindow()->GetPainterDeviceAdapter()->DrawElements(VTK_VERTEX, indiceVbo->GetCount(), VTK_UNSIGNED_INT, 0);
+  //glDrawElements(GL_POINTS, indiceVbo->GetCount(), GL_UNSIGNED_INT, 0);
+
+  // Unbind vertices and indices
   vertexVbo->UnBind();
   indiceVbo->UnBind();
 
+  // Unbind colors if present
   if (this->Colors)
-  {
     colorVbo->UnBind();
-    vtkgl::DisableVertexAttribArray(colorIndex);
-  }
 
-  vtkgl::DisableVertexAttribArray(0);
+  // Unbind normals if present
+  if (this->GetInput()->GetCellData()->GetNormals())
+    normalVbo->UnBind();
 
-  this->program->Restore();
+  if (this->program)
+    this->program->Restore();
+
+//  //Display Normals (WIP for use with a geometry shader)
+//  vtkPolyData *input= this->GetInput();
+//  vtkDataArray *normals = input->GetCellData()->GetNormals();
+//  if (normals){
+//    if (this->program)
+//        this->program->Use();
+//    vertexVbo->Bind();
+//    normalVbo->Bind();
+//    normalIndiceVbo->Bind();
+//
+//    ren->GetRenderWindow()->GetPainterDeviceAdapter()->DrawElements(VTK_VERTEX, normalIndiceVbo->GetCount(), VTK_UNSIGNED_INT, 0);
+//
+//    vertexVbo->UnBind();
+//    normalVbo->UnBind();
+//    normalIndiceVbo->UnBind();
+//    if (this->program)
+//        this->program->Restore();
+//  }
 }
 
 //----------------------------------------------------------------------------
 void vtkVertexBufferObjectMapper::SetInput(vtkPolyData *input)
 {
-  std::cout << "SetInput" << endl;
+//  std::cout << "SetInput" << endl;
   if(input)
   {
     this->SetInputConnection(0, input->GetProducerPort());
@@ -259,7 +159,7 @@ void vtkVertexBufferObjectMapper::SetInput(vtkPolyData *input)
 
 void vtkVertexBufferObjectMapper::SetInput(vtkDataSet *input)
 {
-  std::cout << "SetInput" << endl;
+//  std::cout << "SetInput" << endl;
   if(input)
   {
     this->SetInputConnection(0, input->GetProducerPort());
@@ -271,122 +171,109 @@ void vtkVertexBufferObjectMapper::SetInput(vtkDataSet *input)
   }
 }
 
-//void vtkVertexBufferObjectMapper::setVertexShader()
-//{
-//  // The vertex shader
-//  vtkShader2 *shader = vtkShader2::New();
-//  shader->SetType(VTK_SHADER_TYPE_VERTEX);
-//  shader->SetSourceCode(SimpleVertexShader);
-//  shader->SetContext(this->program->GetContext());
-//  this->program->GetShaders()->AddItem(shader);
-//  shader->Delete();
-//
-//  std::cout << "Created Vertex Shader" << std::endl;
-//}
+void vtkVertexBufferObjectMapper::createVBOs(vtkRenderWindow* win)
+{
 
-void vtkVertexBufferObjectMapper::createShaders(vtkOpenGLRenderWindow* glContext){
-
-  std::cout << "Creating Shaders" << std::endl;
-
-  // Check if GLSL is supported
-  if (!vtkShaderProgram2::IsSupported(glContext))
-    {
-    vtkErrorMacro("GLSL is not supported on this system.");
-    //this->IsCompiled = false;
-    return;
-    }
-
-  this->program = vtkSmartPointer<vtkShaderProgram2>::New();
-  this->program->SetContext(glContext);
-
-  // The vertex shader
-  vtkShader2 *shader = vtkShader2::New();
-  shader->SetType(VTK_SHADER_TYPE_VERTEX);
-  shader->SetSourceCode(RGBVertexShader);
-  shader->SetContext(this->program->GetContext());
-  this->program->GetShaders()->AddItem(shader);
-  shader->Delete();
-
-  std::cout << "Created Vertex Shader" << std::endl;
-
-  // The fragment shader
-  shader = vtkShader2::New();
-  shader->SetType(VTK_SHADER_TYPE_FRAGMENT);
-  shader->SetSourceCode(SimpleFragmentShader);
-  shader->SetContext(this->program->GetContext());
-  this->program->GetShaders()->AddItem(shader);
-  shader->Delete();
-
-  std::cout << "Created Fragment Shader" << std::endl;
-
-  // Build the shader programs
-  this->program->Build();
-  if(this->program->GetLastBuildStatus() != VTK_SHADER_PROGRAM2_LINK_SUCCEEDED)
-    {
-    vtkErrorMacro("Couldn't build the shader program. It could be an error in a shader, or a driver bug.");
-    return;
-    }
-
-  std::cout << "Compiled Program" << std::endl;
-}
-
-void vtkVertexBufferObjectMapper::createVBOs(vtkRenderWindow* win){
-
-  std::cout << "Creating VBOs..." << std::endl;
   vtkPolyData *input= this->GetInput();
-
-  //vtkCellArray *verts = input->GetVerts();
-  //vtkIdType *pIds = verts->GetPointer();
 
   // Create vertex buffer
   vertexVbo->SetContext(win);
-  vertexVbo->SetData(input->GetPoints());
+  vertexVbo->Upload(input->GetPoints());
 
   // Create index buffer
-
-  //indiceVbo.SetData(input->GetVerts());
-  unsigned int numPoints = input->GetPoints()->GetNumberOfPoints();
-  std::cout << "Num Points: " << numPoints << std::endl;
-  std::vector<unsigned int> *indices = new std::vector<unsigned int>;
-  indices->resize(numPoints);
-  //unsigned int *indices = new unsigned int[numPoints];
-  for (size_t i=0; i < numPoints; i++){
-    (*indices)[i] = i;
-  }
-
   indiceVbo->SetContext(win);
   indiceVbo->SetUsage(vtkVertexBufferObject::DynamicDraw);
-  indiceVbo->SetData(indices);
+  indiceVbo->Upload(input->GetVerts());
 
-  // are they cell or point scalars
-  bool cellScalars = false;
-  vtkUnsignedCharArray *colors = NULL;
+//  int cellFlag = 0;
+//  vtkDataArray *scalars = vtkAbstractMapper::
+//      GetScalars(this->GetInput(), this->ScalarMode, this->ArrayAccessMode,
+//                 this->ArrayId, this->ArrayName, cellFlag);
 
-  if ( this->Colors )
-  {
-//    colors = this->Colors;
-    if ( (this->ScalarMode == VTK_SCALAR_MODE_USE_CELL_DATA ||
-          this->ScalarMode == VTK_SCALAR_MODE_USE_CELL_FIELD_DATA ||
-          this->ScalarMode == VTK_SCALAR_MODE_USE_FIELD_DATA ||
-          !input->GetPointData()->GetScalars() )
-         && this->ScalarMode != VTK_SCALAR_MODE_USE_POINT_FIELD_DATA)
-    {
-      cellScalars = true;
-    }
-  }
-
-  std::cout << "Cell Scalars: " << cellScalars << std::endl;
+//  cout << "Color Mode" << this->GetColorModeAsString() << endl;
+//
+//  cout << "ArrayId " << this->ArrayId << endl;
+//  cout << "ArrayName " << this->ArrayName << endl;
+//  cout << "ScalarVisibility " << this->ScalarVisibility << endl;
+//  cout << "scalars " << scalars << endl;
+//  cout << "GetLookupTable " << scalars->GetLookupTable() << endl;
+//  cout << "LookupTable " << this->LookupTable  << endl;
+//  cout << "UseLookupTableScalarRange " << this->UseLookupTableScalarRange << endl;
+//  cout << "InterpolateScalarsBeforeMapping " << this->InterpolateScalarsBeforeMapping << endl;
 
 //  vtkDataArray *scalars = input->GetPointData()->GetScalars();
-//  vtkDataArray *scalars = input->GetCellData()->GetScalars();
-//  cout << "Count: " << scalars->GetNumberOfTuples() << endl;
-  if (this->Colors)
+//  cout << "Number of tuples:" << scalars->GetNumberOfTuples() << endl;
+//  cout << "Number of components:" << scalars->GetNumberOfComponents() << endl;
+//  float rgb[3];
+//  scalars->GetTuple(0, rgb);
+//  cout << "r: " << rgb[0] << "\tg: " << rgb[1] << "\tb: " << rgb[2] << endl;
+
+//  if(input->GetPointData()->GetScalars()){
+//    colorVbo->SetContext(win);
+//
+//    int rgb = scalars->GetTuple1(0);
+//      uint8_t r = (rgb >> 16) & 0x0000ff;
+//      uint8_t g = (rgb >> 8)  & 0x0000ff;
+//      uint8_t b = (rgb)     & 0x0000ff;
+//    cout << "r: " << r << "\tg: " << g<< "\tb: " << b << endl;
+//
+//    colorVbo->SetAttributeNormalized(true);
+//    colorVbo->UploadColors(input->GetPointData()->GetScalars());
+//    colorVbo->Upload(input->GetPointData()->GetScalars());
+//  }
+
+  // todo: This is VERY BAD!  We need to figure out where the scalar data is coming from, ie PointData, CellData etc.
+  //       Then use this as our color data.  In addition, scalars need to be mapped correctly via LUTs.  Although,
+  //       writing a glsl shader for these mappings would probably be faster.
+  vtkDataArray *scalars = input->GetCellData()->GetScalars();
+  if (scalars)
   {
     colorVbo->SetContext(win);
-    colorVbo->SetData(this->Colors);
+    colorVbo->Upload(input->GetCellData()->GetScalars());
   }
 
-  std:: cout << "\tDONE" << endl;
+//  // Create color buffer
+//  this->Colors = this->MapScalars(1.0);
+//  if (this->Colors)
+//  {
+//
+//    colorVbo->SetContext(win);
+//    colorVbo->Upload(this->Colors);
+//    colorVbo->SetAttributeNormalized(true);
+//    colorVbo->UploadColors(this->Colors);
+//
+//    cout << "Number of tuples:" << this->Colors->GetNumberOfTuples() << endl;
+//              //for (size_t i = 0; i < scalars->GetNumberOfTuples(); i++){
+//                double rgb[3];
+//                this->Colors->GetTuple(0, rgb);
+//                cout << "r: " << rgb[0] << "\tg: " << rgb[1] << "\tb: " << rgb[2] << endl;
+//
+//    for (size_t i = 0; i < this->Colors->GetNumberOfTuples(); i++){
+//      double rgb[3];
+//      this->Colors->GetTuple(i, rgb);
+//      cout << "r: " << rgb[0] << "\tg: " << rgb[1] << "\tb: " << rgb[2] << endl;
+//    }
+//      colorVbo->Upload(input->GetCellData()->GetScalars());
+//      colorVbo->Upload(input->GetPointData()->GetScalars());
+//  }
+
+  vtkDataArray *normals = input->GetCellData()->GetNormals();
+  if (normals)
+  {
+    normalVbo->SetContext(win);
+    normalVbo->UploadNormals(normals);
+
+//    //Create normal IBO
+//    normalIndiceVbo->SetContext(win);
+//    normalIndiceVbo->SetUsage(vtkVertexBufferObject::DynamicDraw);
+//
+//    std::vector<unsigned int> indices;
+//    for (size_t i=0; i < input->GetPoints()->GetNumberOfPoints(); i+=100){
+//      indices.push_back(i);
+//    }
+//
+//    normalIndiceVbo->Upload(&indices[0], indices.size());
+  }
 }
 
 //----------------------------------------------------------------------------
@@ -399,6 +286,7 @@ vtkPolyData *vtkVertexBufferObjectMapper::GetInput()
 
 void vtkVertexBufferObjectMapper::Update()
 {
+  cout << "Update" << endl;
   this->Superclass::Update();
 }
 
@@ -420,64 +308,16 @@ void vtkVertexBufferObjectMapper::ComputeBounds()
   this->GetInput()->GetBounds(this->Bounds);
 }
 
-//void vtkVertexBufferObjectMapper::ShallowCopy(vtkAbstractMapper *mapper)
+//void vtkVertexBufferObjectMapper::PrintSelf(ostream& os, vtkIndent indent)
 //{
-////  vtkVertexBufferObjectMapper *m = vtkVertexBufferObjectMapper::SafeDownCast(mapper);
-////  if ( m != NULL )
-////    {
-////    this->SetInputConnection(m->GetInputConnection(0, 0));
-////    this->SetGhostLevel(m->GetGhostLevel());
-////    this->SetNumberOfPieces(m->GetNumberOfPieces());
-////    this->SetNumberOfSubPieces(m->GetNumberOfSubPieces());
-////    }
+//  this->Superclass::PrintSelf(os,indent);
 //
-//  // Now do superclass
-//  this->vtkMapper::ShallowCopy(mapper);
+////  os << indent << "Piece : " << this->Piece << endl;
+////  os << indent << "NumberOfPieces : " << this->NumberOfPieces << endl;
+////  os << indent << "GhostLevel: " << this->GhostLevel << endl;
+////  os << indent << "Number of sub pieces: " << this->NumberOfSubPieces
+////     << endl;
 //}
-
-//void vtkVertexBufferObjectMapper::MapDataArrayToVertexAttribute(
-//    const char* vtkNotUsed(vertexAttributeName),
-//    const char* vtkNotUsed(dataArrayName),
-//    int vtkNotUsed(fieldAssociation),
-//    int vtkNotUsed(componentno)
-//    )
-//{
-//  vtkErrorMacro("Not implemented at this level...");
-//}
-//
-//void vtkVertexBufferObjectMapper::MapDataArrayToMultiTextureAttribute(
-//    int vtkNotUsed(unit),
-//    const char* vtkNotUsed(dataArrayName),
-//    int vtkNotUsed(fieldAssociation),
-//    int vtkNotUsed(componentno)
-//    )
-//{
-//  vtkErrorMacro("Not implemented at this level...");
-//}
-//
-//
-//void vtkVertexBufferObjectMapper::RemoveVertexAttributeMapping(const char* vtkNotUsed(vertexAttributeName))
-//{
-//  vtkErrorMacro("Not implemented at this level...");
-//}
-//
-//
-//void vtkVertexBufferObjectMapper::RemoveAllVertexAttributeMappings()
-//{
-//  vtkErrorMacro("Not implemented at this level...");
-//}
-
-
-void vtkVertexBufferObjectMapper::PrintSelf(ostream& os, vtkIndent indent)
-{
-  this->Superclass::PrintSelf(os,indent);
-
-//  os << indent << "Piece : " << this->Piece << endl;
-//  os << indent << "NumberOfPieces : " << this->NumberOfPieces << endl;
-//  os << indent << "GhostLevel: " << this->GhostLevel << endl;
-//  os << indent << "Number of sub pieces: " << this->NumberOfSubPieces
-//     << endl;
-}
 
 //----------------------------------------------------------------------------
 int vtkVertexBufferObjectMapper::FillInputPortInformation(

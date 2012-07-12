@@ -35,6 +35,7 @@
  *  \author Justin Rosen (jmylesrosen@gmail.com)
  * */
 
+
 // C++
 #include <iostream>
 
@@ -43,7 +44,11 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 
+#include <sensor_msgs/PointCloud2.h>
+
 #include <pcl/io/pcd_io.h>
+#include <pcl/io/vtk_io.h>
+#include <pcl/io/vtk_lib_io.h>
 #include <pcl/pcl_macros.h>
 
 #include <pcl/console/print.h>
@@ -51,14 +56,21 @@
 
 // PCL - visualziation
 //#include <pcl/visualization/pcl_visualizer.h>
-#include "vtkVBOPolyDataMapper.h"
+#include "pcl/visualization/vtk/vtkVertexBufferObjectMapper.h"
 
 // PCL - outofcore
 #include <pcl/outofcore/outofcore.h>
 #include <pcl/outofcore/outofcore_impl.h>
 
+// VTK
+#include "vtkgl.h"
+#include "vtkShaderProgram2.h"
+#include "vtkShader2.h"
+#include "vtkShader2Collection.h"
+
 using namespace pcl;
 using namespace pcl::outofcore;
+using namespace sensor_msgs;
 
 using pcl::console::parse_argument;
 using pcl::console::find_switch;
@@ -66,7 +78,8 @@ using pcl::console::print_error;
 using pcl::console::print_warn;
 using pcl::console::print_info;
 
-typedef PointXYZRGB PointT;
+typedef PointXYZ PointT;
+//typedef PointCloud2 PointT;
 typedef octree_base<octree_disk_container<PointT> , PointT> octree_disk;
 typedef octree_base_node<octree_disk_container<PointT> , PointT> octree_disk_node;
 typedef Eigen::aligned_allocator<PointT> AlignedPointT;
@@ -78,14 +91,17 @@ typedef Eigen::aligned_allocator<PointT> AlignedPointT;
 #include <vtkCellData.h>
 #include <vtkCubeSource.h>
 #include <vtkDataSetMapper.h>
+#include <vtkDoubleArray.h>
 #include <vtkInteractorStyleTrackballCamera.h>
 #include <vtkPolyData.h>
 #include <vtkProperty.h>
+#include <vtkRectilinearGrid.h>
 #include <vtkRenderer.h>
 #include <vtkRenderWindow.h>
 #include <vtkRenderWindowInteractor.h>
 #include <vtkSmartPointer.h>
 #include <vtkUnsignedCharArray.h>
+#include <vtkUniformVariables.h>
 
 // Boost
 #include <boost/filesystem.hpp>
@@ -102,16 +118,16 @@ getCuboid (double x_min, double x_max, double y_min, double y_max, double z_min,
 }
 
 vtkSmartPointer<vtkActor>
-getOctreeActor (std::vector<PointT, AlignedPointT> &voxel_centers, double voxel_side_length)
+getOctreeActor (std::vector<Eigen::Vector3f> &voxel_centers, double voxel_side_length)
 {
   vtkSmartPointer<vtkAppendPolyData> treeWireframe = vtkSmartPointer<vtkAppendPolyData>::New ();
 
   double s = voxel_side_length / 2;
   for (size_t i = 0; i < voxel_centers.size (); i++)
   {
-    double x = voxel_centers[i].x;
-    double y = voxel_centers[i].y;
-    double z = voxel_centers[i].z;
+    double x = voxel_centers[i].x ();
+    double y = voxel_centers[i].y ();
+    double z = voxel_centers[i].z ();
 
     treeWireframe->AddInput (getCuboid (x - s, x + s, y - s, y + s, z - s, z + s));
   }
@@ -129,39 +145,189 @@ getOctreeActor (std::vector<PointT, AlignedPointT> &voxel_centers, double voxel_
 }
 
 vtkSmartPointer<vtkActor>
-getCloudActor (std::list<PointT> points)
-{
-  vtkSmartPointer<vtkPoints> cloud_points = vtkSmartPointer<vtkPoints>::New ();
-  vtkSmartPointer<vtkCellArray> cloud_vertices = vtkSmartPointer<vtkCellArray>::New ();
-  vtkSmartPointer<vtkUnsignedCharArray> colors = vtkSmartPointer<vtkUnsignedCharArray>::New ();
+getGridActor(int size=10, double spacing=1.0){
 
-  colors->SetNumberOfComponents (3);
-  colors->SetName ("Colors");
+// Create a grid
+  vtkSmartPointer<vtkRectilinearGrid> grid =
+    vtkSmartPointer<vtkRectilinearGrid>::New();
 
-  std::list<PointT>::iterator it;
-  vtkIdType pid[1];
-  for (it = points.begin (); it != points.end (); it++)
-  {
-    pid[0] = cloud_points->InsertNextPoint (it->x, it->y, it->z);
-    cloud_vertices->InsertNextCell (1, pid);
-    unsigned char rgb[3] = {it->r, it->g, it->b};
-    colors->InsertNextTupleValue (rgb);
+  grid->SetDimensions(size, size, 1);
+
+  vtkSmartPointer<vtkDoubleArray> array = vtkSmartPointer<vtkDoubleArray>::New();
+  for (int i=-size/2; i <= size/2; i++){
+    array->InsertNextValue((double)i*spacing);
   }
 
-  vtkSmartPointer<vtkPolyData> cloud = vtkSmartPointer<vtkPolyData>::New ();
-  //set the points and vertices we created as the geometry and topology of the polydata
-  cloud->SetPoints (cloud_points);
-  cloud->SetVerts (cloud_vertices);
+//  vtkSmartPointer<vtkDoubleArray> yArray =
+//    vtkSmartPointer<vtkDoubleArray>::New();
+//  yArray->InsertNextValue(0.0);
+//  yArray->InsertNextValue(1.0);
+//  yArray->InsertNextValue(2.0);
+//
+  vtkSmartPointer<vtkDoubleArray> zArray =
+    vtkSmartPointer<vtkDoubleArray>::New();
+  zArray->InsertNextValue(0.0);
 
-  cloud->GetCellData()->SetScalars(colors);
+  grid->SetXCoordinates(array);
+  grid->SetYCoordinates(array);
+  grid->SetZCoordinates(zArray);
+
+
+  std::cout << "There are " << grid->GetNumberOfPoints()
+            << " points." << std::endl;
+  std::cout << "There are " << grid->GetNumberOfCells()
+            << " cells." << std::endl;
+
+  for(vtkIdType id = 0; id < grid->GetNumberOfPoints(); id++)
+    {
+    double p[3];
+    grid->GetPoint(id, p);
+    std::cout << "Point " << id
+              << " : (" << p[0] << " , " << p[1] << " , " << p[2] << ")" << std::endl;
+    }
+
+  // Create a mapper and actor
+  vtkSmartPointer<vtkDataSetMapper> mapper =
+    vtkSmartPointer<vtkDataSetMapper>::New();
+#if VTK_MAJOR_VERSION <= 5
+  mapper->SetInputConnection(grid->GetProducerPort());
+#else
+  mapper->SetInputData(grid);
+#endif
+
+  vtkSmartPointer<vtkActor> actor =
+    vtkSmartPointer<vtkActor>::New();
+  actor->SetMapper(mapper);
+
+  actor->GetProperty ()->SetRepresentationToWireframe ();
+  actor->GetProperty ()->SetColor (0.3, 0.3, 0.3);
+  actor->GetProperty ()->SetLighting (false);
+
+  return actor;
+}
+
+// Shaders
+// ----------------------------------------------------------------------------
+
+const vtkgl::GLchar* VertexShader =
+  "#version 120\n"
+
+//  "varying vec4 normals;"
+
+  "void main(void){\n"
+  "  gl_Position = ftransform();\n"
+  "  gl_FrontColor = gl_Color;\n"
+  "  gl_BackColor = gl_Color;\n"
+  "}\0";
+
+const vtkgl::GLchar* IntensityShader =
+  "#version 120\n"
+
+  "void main(void){"
+  "  gl_Position = ftransform();"
+  "  gl_FrontColor = vec4(gl_Color[0], gl_Color[0], gl_Color[0], gl_Color[3]);"
+  "  gl_BackColor = vec4(gl_Color[0], gl_Color[0], gl_Color[0], gl_Color[3]);"
+  "}\0";
+
+// Display Intensity data as RGB
+const GLchar* NormalColorShader =
+  "#version 120\n"
+
+  "void main(void){"
+  "  gl_Position = ftransform();"
+  "  gl_FrontColor = vec4(abs(gl_Color[0]), abs(gl_Color[1]), abs(gl_Color[2]), gl_Color[3]);"
+  "  gl_BackColor = vec4(abs(gl_Color[0]), abs(gl_Color[1]), abs(gl_Color[2]), gl_Color[3]);"
+  "}\0";
+
+
+const vtkgl::GLchar* FragmentShader =
+  "#version 120\n"
+
+  "void main(void){\n"
+  "   gl_FragColor = gl_Color;\n"
+  "}\0";
+
+const vtkgl::GLchar* NormalsVertexShader =
+  "#version 120\n"
+
+  "varying vec4 normals;"
+
+  "void main(void){\n"
+  "  gl_Position = gl_Vertex;\n"
+  "  normals = vec4(gl_Normal, 0);"
+  "}\0";
+
+const vtkgl::GLchar* NormalsGeometryShader =
+  "#version 120\n"
+  "#extension GL_EXT_geometry_shader4 : enable\n"
+
+  "varying in vec4 normals[];"
+
+  "void main(void){"
+  "  for(int i = 0; i < gl_VerticesIn; i=i++){"
+  "    if (mod(i,1000) == 0){"
+  "      gl_Position = gl_ModelViewProjectionMatrix * gl_PositionIn[i];"
+  "      gl_FrontColor = vec4(0.0, 0.698, 0.0, 1.0);"
+  "      gl_BackColor = vec4(0.0, 0.698, 0.0, 1.0);"
+  "      EmitVertex();"
+
+  "      gl_Position = gl_ModelViewProjectionMatrix * (gl_PositionIn[i] + (normals[i] * 0.05));"
+  "      gl_FrontColor = vec4(0.0, 0.698, 0.0, 1.0);"
+  "      gl_BackColor = vec4(0.0, 0.698, 0.0, 1.0);"
+  "      EmitVertex();"
+  "    }"
+  "    EndPrimitive();"
+  "  }"
+  "}\0";
+
+vtkSmartPointer<vtkActor>
+getCloudActor (const PointCloud2Ptr &cloud)
+{
+
+  vtkSmartPointer<vtkPolyData> vtkCloud;
+  pcl::io::pointCloudTovtkPolyData(cloud, vtkCloud);
 
   vtkSmartPointer<vtkActor> cloud_actor = vtkSmartPointer<vtkActor>::New ();
-//  vtkSmartPointer<vtkDataSetMapper> mapper = vtkSmartPointer<vtkDataSetMapper>::New ();
-  vtkSmartPointer<vtkVBOPolyDataMapper> mapper = vtkSmartPointer<vtkVBOPolyDataMapper>::New ();
-  mapper->SetInput (cloud);
+  vtkSmartPointer<vtkVertexBufferObjectMapper> mapper = vtkSmartPointer<vtkVertexBufferObjectMapper>::New ();
+
+  mapper->SetInput (vtkCloud);
+
+  vtkSmartPointer<vtkShaderProgram2> program = vtkSmartPointer<vtkShaderProgram2>::New();
+
+  vtkShader2 *vertexShader = vtkShader2::New();
+  vertexShader->SetType(VTK_SHADER_TYPE_VERTEX);
+  vertexShader->SetSourceCode(VertexShader);
+  //vertexShader->SetSourceCode(IntensityShader);
+  //vertexShader->SetSourceCode(NormalColorShader);
+
+  vtkShader2 *fragmentShader = vtkShader2::New();
+  fragmentShader->SetType(VTK_SHADER_TYPE_FRAGMENT);
+  fragmentShader->SetSourceCode(FragmentShader);
+
+  // Geometry shaders available in 5.8+
+//  vtkShader2 *geometryShader = vtkShader2::New();
+//  geometryShader->SetType(VTK_SHADER_TYPE_GEOMETRY);
+//  geometryShader->SetSourceCode(NormalsGeometryShader);
+//
+//  program->SetGeometryTypeIn(VTK_GEOMETRY_SHADER_IN_TYPE_POINTS);
+//  program->SetGeometryTypeOut(VTK_GEOMETRY_SHADER_OUT_TYPE_LINE_STRIP);
+
+//  int maxVertices;
+//  glGetIntegerv(vtkgl::MAX_GEOMETRY_OUTPUT_VERTICES_EXT, &maxVertices);
+//  program->SetGeometryVerticesOut(maxVertices);
+
+  program->GetShaders()->AddItem(vertexShader);
+  program->GetShaders()->AddItem(fragmentShader);
+//  program->GetShaders()->AddItem(geometryShader);
+
+  std::cout << "Created Shaders" << std::endl;
+
+  mapper->SetProgram(program);
   cloud_actor->SetMapper (mapper);
   cloud_actor->GetProperty ()->SetColor (0.0, 0.0, 1.0);
-  cloud_actor->GetProperty ()->SetPointSize (1);
+  cloud_actor->GetProperty ()->SetOpacity (1.0);
+  cloud_actor->GetProperty ()->SetPointSize (1.0);
+
 #if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION >= 4))
   cloud_actor->GetProperty ()->SetLighting (0);
 #endif
@@ -172,7 +338,7 @@ getCloudActor (std::list<PointT> points)
 }
 
 int
-outofcoreViewer (boost::filesystem::path tree_root, int depth, bool display_octree=true)
+outofcoreViewer (boost::filesystem::path tree_root, size_t depth, bool display_octree=true)
 {
   cout << boost::filesystem::absolute (tree_root) << endl;
   octree_disk octree (tree_root, true);
@@ -193,22 +359,21 @@ outofcoreViewer (boost::filesystem::path tree_root, int depth, bool display_octr
   cout << lodPoints[lodPoints.size () - 1] << "]" << endl;
 
   // Get voxel size and divide by 2 - we +/- from the center for bounding cubes
-  double voxel_side_length = octree.getVoxelSideLength (static_cast<uint64_t>(depth));
+  double voxel_side_length = octree.getVoxelSideLength (depth);
   cout << " Voxel Side Length: " << voxel_side_length << endl;
 
   // Print bounding box info
   //octree.printBBox();
 
   // Print voxel count
-  std::vector<PointT, AlignedPointT> voxel_centers;
-  octree.getVoxelCenters (voxel_centers, static_cast<uint64_t>(depth));
-  cout << " Voxel Count: " << voxel_centers.size () << " - " << voxel_centers[0] << endl;
-  //  cout << " Voxel Bounds: [" << voxel_centers[0].x - voxel_side_length << ", " << voxel_centers[0].y - voxel_side_length << ", " << voxel_centers[0].z - voxel_side_length << "] -" <<
-  //          " [" << voxel_centers[0].x + voxel_side_length << ", " << voxel_centers[0].y + voxel_side_length << ", " << voxel_centers[0].z + voxel_side_length << "]" << endl;
+  //std::vector<PointT, AlignedPointT> voxel_centers;
+  std::vector<Eigen::Vector3f> voxel_centers;
+  octree.getVoxelCenters (voxel_centers, depth);
+  cout << " Voxel Count: " << voxel_centers.size () << endl;
 
-  std::vector<PointT, Eigen::aligned_allocator<PointT> > points;
-  octree.queryBBIncludes (min, max, static_cast<uint64_t>(depth), points);
-  cout << " Point Count: " << points.size () << endl;
+  PointCloud2Ptr cloud(new PointCloud2);
+  octree.queryBBIncludes (min, max, depth, cloud);
+  cout << " Point Count: " << cloud->width * cloud->height << endl;
 
   vtkRenderer *renderer = vtkRenderer::New ();
   vtkRenderWindowInteractor *interactor = vtkRenderWindowInteractor::New ();
@@ -216,7 +381,7 @@ outofcoreViewer (boost::filesystem::path tree_root, int depth, bool display_octr
 
   // Generate voxel boxes
   vtkSmartPointer<vtkActor> octree_actor = getOctreeActor (voxel_centers, voxel_side_length);
-  vtkSmartPointer<vtkActor> cloud_actor = getCloudActor (points);
+  vtkSmartPointer<vtkActor> cloud_actor = getCloudActor (cloud);
 
   renderer->AddActor (cloud_actor);
   if (display_octree)
@@ -306,5 +471,5 @@ main (int argc, char* argv[])
     }
   }
 
-  return outofcoreViewer (tree_root, depth, display_octree);
+  return outofcoreViewer (tree_root, static_cast<size_t>(depth), display_octree);
 }

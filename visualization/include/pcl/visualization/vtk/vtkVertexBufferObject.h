@@ -1,4 +1,4 @@
-/*=========================================================================
+  /*=========================================================================
 
   Program:   Visualization Toolkit
   Module:    vtkPixelBufferObject.h
@@ -34,7 +34,7 @@
 
 #include "vtkgl.h" // Needed for gl data types exposed in API
 
-//class vtkCellArray;
+class vtkCellArray;
 class vtkDataArray;
 class vtkObject;
 class vtkPoints;
@@ -95,12 +95,35 @@ public:
   vtkGetMacro(Usage, int);
   vtkSetMacro(Usage, int);
   
-  bool SetData(vtkPoints *points);
-  //bool SetData(vtkCellArray *verts);
-  bool SetData(std::vector<unsigned int> *indices);
-  bool SetData(vtkUnsignedCharArray *colors);
-  bool SetData(vtkDataArray *colors);
-  bool SetData(GLvoid* data);
+  int GetAttributeIndex();
+  void SetUserDefinedAttribute(int index, bool normalized=false, int stride=0);
+  void ResetUserDefinedAttribute();
+
+  void SetAttributeNormalized(bool normalized);
+
+  // Description:
+  // Set point data
+  bool Upload(vtkPoints *points);
+
+  // Description:
+  // Set indice data
+  bool Upload(vtkCellArray *verts);
+
+  // Description:
+  // Set indice data
+  bool Upload(unsigned int *indices, unsigned int count);
+
+  // Description:
+  // Set color data
+  bool Upload(vtkUnsignedCharArray *colors);
+
+  // Description:
+  // Set color data
+  bool Upload(vtkDataArray *array);
+  bool Upload(vtkDataArray *array, int attributeType, int arrayType);
+  bool UploadNormals(vtkDataArray *normals);
+  bool UploadColors(vtkDataArray *colors);
+
 
   // Description:
   // Get the size of the data loaded into the GPU. Size is in the number of
@@ -120,8 +143,6 @@ public:
   // Inactivate the buffer.
   void UnBind();
 
-//BTX
-
   // Description:
   // Make the buffer active.
   void Bind();
@@ -130,6 +151,8 @@ public:
   // Allocate the memory. size is in number of bytes. type is a VTK type.
 //  void Allocate(unsigned int size, int type);
   
+//BTX
+
   // Description:
   // Release the memory allocated without destroying the PBO handle.
   void ReleaseMemory();
@@ -157,17 +180,36 @@ protected:
   // Destroys the pixel buffer object.
   void DestroyBuffer();
 
-//  int Type;
+  // Description:
+  // Uploads data to buffer object
+  bool Upload(GLvoid* data);
+
+  // Description:
+  // Get the openGL buffer handle.
+  vtkGetMacro(ArrayType, unsigned int);
+
   int Usage;
   unsigned int Size;
   unsigned int Count;
   unsigned int Handle;
+  unsigned int ArrayType;
   unsigned int BufferTarget;
+
+  int AttributeIndex;
+  int AttributeSize;
+  int AttributeType;
+  int AttributeNormalized;
+  int AttributeStride;
+
   vtkWeakPointer<vtkRenderWindow> Context;
+
 
 private:
   vtkVertexBufferObject(const vtkVertexBufferObject&); // Not implemented.
   void operator=(const vtkVertexBufferObject&); // Not implemented.
+
+  // Helper to get data type sizes when passing to opengl
+  int GetDataTypeSize(int type);
   //ETX
 };
 

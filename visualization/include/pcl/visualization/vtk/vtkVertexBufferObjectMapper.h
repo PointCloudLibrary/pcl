@@ -29,6 +29,7 @@ class vtkOpenGLRenderWindow;
 class vtkPolyData;
 class vtkRenderer;
 class vtkRenderWindow;
+class vtkShader2;
 class vtkShaderProgram2;
 class vtkVertexBufferObject;
 
@@ -37,7 +38,7 @@ class VTK_RENDERING_EXPORT vtkVertexBufferObjectMapper : public vtkMapper
 public:
   static vtkVertexBufferObjectMapper *New();
   vtkTypeMacro(vtkVertexBufferObjectMapper, vtkMapper);
-  void PrintSelf(ostream& os, vtkIndent indent);
+//  void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
   // Implemented by sub classes. Actual rendering is done here.
@@ -54,8 +55,10 @@ public:
   void SetInput(vtkDataSet *input);
   vtkPolyData *GetInput();
   
-//  vtkGetMacro(VertexShader, vtkShader2);
-//  vtkSetMacro(VertexShader, vtkShader2);
+  void SetProgram(vtkSmartPointer<vtkShaderProgram2> program)
+  {
+    this->program = program;
+  }
 
   // Description:
   // Update that sets the update piece first.
@@ -109,23 +112,15 @@ protected:
   virtual void ComputeBounds();
 
   vtkVertexBufferObject *vertexVbo;
-  vtkVertexBufferObject *colorVbo;
   vtkVertexBufferObject *indiceVbo;
+  vtkVertexBufferObject *colorVbo;
+  vtkVertexBufferObject *normalVbo;
+//  vtkVertexBufferObject *normalIndiceVbo;
 
   vtkSmartPointer<vtkShaderProgram2> program;
-  //vtkShader2 *VertexShader;
-  //vtkShader2 *FragmentShader;
-  //vtkShader2 *GeometryShader;
-
-  //bool useVertexFragmentShaders;
-  //bool useGeometryShader;
-  //void setVertexShader
-  //void setFragmentShdaer
-  //void setGeometryShader
 
   virtual int FillInputPortInformation(int, vtkInformation*);
 
-//  bool Init(vtkRenderWindow* win);
   void createShaders(vtkOpenGLRenderWindow* win);
   void createVBOs(vtkRenderWindow* win);
 

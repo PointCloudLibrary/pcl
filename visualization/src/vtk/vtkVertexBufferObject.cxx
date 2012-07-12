@@ -34,6 +34,9 @@
 #include "vtkTimerLog.h"
 #endif
 
+#define GL_GPU_MEM_INFO_TOTAL_AVAILABLE_MEM_NVX 0x9048
+#define GL_GPU_MEM_INFO_CURRENT_AVAILABLE_MEM_NVX 0x9049
+
 // Mapping from Usage values to OpenGL values.
 
 GLenum OpenGLVertexBufferObjectUsage[9]=
@@ -75,8 +78,13 @@ vtkVertexBufferObject::vtkVertexBufferObject()
   this->BufferTarget = 0;
   this->Size=0;
   this->Count=0;
-//  this->Type=VTK_UNSIGNED_CHAR;
+  this->ArrayType = 0;
   this->Usage=StaticDraw;
+  this->AttributeIndex = -1;
+  this->AttributeSize = 0;
+  this->AttributeType = GL_INVALID_ENUM;
+  this->AttributeNormalized = GL_FALSE;
+  this->AttributeStride = 0;
 }
 
 //----------------------------------------------------------------------------
@@ -111,6 +119,19 @@ bool vtkVertexBufferObject::LoadRequiredExtensions(
 
   bool vbo = gl15 || mgr->ExtensionSupported("GL_ARB_vertex_buffer_object");
   
+//  const char *glVendor(reinterpret_cast<const char *>(glGetString(GL_VENDOR)));
+
+//  // Get available gpu memory
+//  const char *glRenderer(reinterpret_cast<const char *>(glGetString(GL_RENDERER)));
+//  const char *glVersion(reinterpret_cast<const char *>(glGetString(GL_VERSION)));
+//
+//  if (strncmp(glVendor, "NVIDIA", 6) == 0){
+//    if (mgr->ExtensionSupported("GL_NVX_gpu_memory_info")){
+//      GLint nTotalMemoryInKB = 0;
+//        glGetIntegerv(GL_GPU_MEM_INFO_TOTAL_AVAILABLE_MEM_NVX, &nTotalMemoryInKB);
+//    }
+//  }
+
   if(vbo)
     {
     if(gl15)
@@ -135,8 +156,7 @@ void vtkVertexBufferObject::SetContext(vtkRenderWindow* renWin)
   
   this->DestroyBuffer(); 
   
-  vtkOpenGLRenderWindow* openGLRenWin =
-    vtkOpenGLRenderWindow::SafeDownCast(renWin);
+  vtkOpenGLRenderWindow* openGLRenWin = vtkOpenGLRenderWindow::SafeDownCast(renWin);
   this->Context = openGLRenWin;
   if (openGLRenWin)
     {
@@ -157,6 +177,38 @@ vtkRenderWindow* vtkVertexBufferObject::GetContext()
 }
 
 //----------------------------------------------------------------------------
+//int vtkVertexBufferObject::GetAttributeIndex(){
+//  return this->AttributeIndex;
+//}
+
+//----------------------------------------------------------------------------
+void vtkVertexBufferObject::SetUserDefinedAttribute(int index, bool normalized/*=false*/, int stride/*=0*/)
+{
+  this->AttributeIndex = index;
+  SetAttributeNormalized(normalized);
+  this->AttributeStride = stride;
+}
+
+//----------------------------------------------------------------------------
+void vtkVertexBufferObject::ResetUserDefinedAttribute()
+{
+  this->AttributeIndex = -1;
+}
+
+void vtkVertexBufferObject::SetAttributeNormalized(bool normalized)
+{
+  if (normalized)
+  {
+    this->AttributeNormalized = GL_TRUE;
+  }
+  else
+  {
+    this->AttributeNormalized = GL_FALSE;
+  }
+
+}
+
+//----------------------------------------------------------------------------
 void vtkVertexBufferObject::Bind()
 {
   if (!this->Context)
@@ -164,23 +216,51 @@ void vtkVertexBufferObject::Bind()
     vtkErrorMacro("No context specified. Cannot Bind.");
     return;
     }
-  
+
   this->CreateBuffer();
   
   vtkgl::BindBuffer(static_cast<GLenum>(this->BufferTarget), this->Handle);
 
-  vtkGraphicErrorMacro(this->Context,"after BindBuffer");
+  if(this->AttributeIndex >= 0){
+    vtkgl::VertexAttribPointer(this->AttributeIndex, this->AttributeSize, this->AttributeType, this->AttributeNormalized, this->AttributeStride, 0);
+    vtkgl::EnableVertexAttribArray(this->AttributeIndex);
+  } else {
+    glEnableClientState(this->ArrayType);
+    switch(this->ArrayType){
+      case GL_VERTEX_ARRAY:
+        glVertexPointer(this->AttributeSize, this->AttributeType, this->AttributeStride, 0);
+        break;
+
+      case GL_INDEX_ARRAY:
+        glIndexPointer(this->AttributeType, this->AttributeStride, 0);
+        break;
+
+      case GL_COLOR_ARRAY:
+        glColorPointer(this->AttributeSize, this->AttributeType, this->AttributeStride, 0);
+        break;
+
+      case GL_NORMAL_ARRAY:
+        glNormalPointer(this->AttributeType, this->AttributeStride, 0);
+        break;
+
+      default:
+        vtkErrorMacro("Unsupported Array Type: " << this->ArrayType)
+    }
+  }
 }
 
 //----------------------------------------------------------------------------
 void vtkVertexBufferObject::UnBind()
 {
-  if (this->Context && this->Handle && this->BufferTarget)
-    {
+  if (this->Context && this->Handle && this->BufferTarget){
     vtkgl::BindBuffer(this->BufferTarget, 0);
-    vtkGraphicErrorMacro(this->Context,"after BindBuffer");
-    //this->BufferTarget = 0;
+
+    if(this->AttributeIndex >= 0){
+      vtkgl::DisableVertexAttribArray(this->AttributeIndex);
+    } else {
+      glDisableClientState(this->ArrayType);
     }
+  }
 }
 
 //----------------------------------------------------------------------------
@@ -189,7 +269,6 @@ void vtkVertexBufferObject::CreateBuffer()
   this->Context->MakeCurrent();
   if (!this->Handle)
     {
-    cout << "Creating Buffer..." << endl;
     GLuint ioBuf;
     vtkgl::GenBuffers(1, &ioBuf);
     vtkGraphicErrorMacro(this->Context, "after GenBuffers");
@@ -209,81 +288,150 @@ void vtkVertexBufferObject::DestroyBuffer()
 }
 
 //----------------------------------------------------------------------------
-bool vtkVertexBufferObject::SetData(vtkPoints *points)
+int vtkVertexBufferObject::GetDataTypeSize(int type)
 {
-  std::cout << "Setting Points" << endl;
-  this->Count = points->GetNumberOfPoints();
-  this->Size = this->Count * 3 * sizeof(float);
-  this->BufferTarget = vtkgl::ARRAY_BUFFER;
+  switch (type)
+    {
+    vtkTemplateMacro(
+      return sizeof(static_cast<VTK_TT>(0))
+      );
 
-  return this->SetData(points->GetVoidPointer(0));
+    case VTK_BIT:
+      return 0;
+      break;
+
+    case VTK_STRING:
+      return 0;
+      break;
+
+    case VTK_UNICODE_STRING:
+      return 0;
+      break;
+
+    default:
+      vtkGenericWarningMacro(<<"Unsupported data type!");
+    }
+
+  return 1;
 }
 
 //----------------------------------------------------------------------------
-//bool vtkVertexBufferObject::SetData(vtkCellArray *verts)
-//{
-//  // The correct way to do this is to use each cells vtkIdTypes, but this
-//  // returns a tuple (1, index) which I don't have time to understand right
-//  // now
-//  //vtkIdType *oldarray = input->GetVerts()->GetPointer();
-//  //int *newarray = new int[numPoints];
-//  //std::copy(oldarray, oldarray + numPoints, newarray);
-//  //for (size_t i=0; i < numPoints*2; i+=2)
-//  //  std::cout << "really" << oldarray[i] << endl;
-//
-//  this->Size = points->GetNumberOfPoints() * sizeof(unsigned int);
-//  this->BufferTarget = vtkgl::ELEMENT_ARRAY_BUFFER;
-//
-//  // For now, display every indice
-//  unsigned int *indices = new unsigned int[numPoints];
-//  for (size_t i=0; i < numPoints; i++){
-//    indices[i] = i;
-//  }
-//
-//  this->SetData((void *)indices);
-//}
+bool vtkVertexBufferObject::Upload(vtkPoints *points)
+{
+  this->Count = points->GetNumberOfPoints();
+  this->AttributeSize = points->GetData()->GetNumberOfComponents();
+  this->AttributeType = GL_FLOAT;
+  this->Size = this->Count * this->AttributeSize * GetDataTypeSize(points->GetDataType());
+  this->BufferTarget = vtkgl::ARRAY_BUFFER;
+  this->ArrayType = GL_VERTEX_ARRAY;
+
+  return this->Upload(points->GetVoidPointer(0));
+}
 
 //----------------------------------------------------------------------------
-bool vtkVertexBufferObject::SetData(std::vector<unsigned int> *indices)
+bool vtkVertexBufferObject::Upload(vtkCellArray *verts)
 {
-  std::cout << "Setting Indices" << endl;
-  this->Count = indices->size();
+  vtkIdType npts;
+  vtkIdType *pts;
+  std::vector<unsigned int> indices;
+
+  verts->InitTraversal();
+  while(verts->GetNextCell(npts, pts) != 0){
+    for (size_t i=0; i < static_cast<size_t>(npts); i++)
+        indices.push_back(pts[i]);
+  }
+
+  this->Count = indices.size();
+  this->AttributeSize = 1;
+  this->AttributeType = GL_INT;
   this->Size = this->Count * sizeof(unsigned int);
   this->BufferTarget = vtkgl::ELEMENT_ARRAY_BUFFER;
+  this->ArrayType = GL_INDEX_ARRAY;
 
-  return this->SetData(reinterpret_cast<GLvoid *>(&indices[0]));
+  return this->Upload(&indices[0], indices.size());
 }
 
 //----------------------------------------------------------------------------
-bool vtkVertexBufferObject::SetData(vtkDataArray *colors)
+bool vtkVertexBufferObject::Upload(unsigned int *indices, unsigned int count)
 {
-  std::cout << "Setting Colors" << endl;
-  //this->Count = colors->GetNumberOfTuples();
-  this->Count = colors->GetSize();
-  std::cout << "Type: " << colors->GetDataTypeAsString() <<std::endl;
-  this->Size = this->Count * 1 * sizeof(float);
-  this->BufferTarget = vtkgl::ARRAY_BUFFER;
-  std::cout << "Setting Data" << endl;
+  this->Count = count;
+  this->AttributeSize = 1;
+  this->AttributeType = GL_INT;
+  this->Size = this->Count * sizeof(unsigned int);
+  this->BufferTarget = vtkgl::ELEMENT_ARRAY_BUFFER;
+  this->ArrayType = GL_INDEX_ARRAY;
 
-  return this->SetData(reinterpret_cast<GLvoid *>(colors->GetVoidPointer(0)));
+  return this->Upload(reinterpret_cast<GLvoid *>(indices));
 }
 
 //----------------------------------------------------------------------------
-bool vtkVertexBufferObject::SetData(vtkUnsignedCharArray *colors)
+bool vtkVertexBufferObject::UploadNormals(vtkDataArray *normals)
 {
-  std::cout << "Setting Colors" << endl;
-  std::cout << "Colors == NULL: " << (colors == NULL) << endl;
-  this->Count = colors->GetSize();
-  std::cout << "Type: " << colors->GetDataTypeAsString() <<std::endl;
-  this->Size = this->Count * 1 * sizeof(float);
-  this->BufferTarget = vtkgl::ARRAY_BUFFER;
-
-  std::cout << "Setting Data" << endl;
-  return this->SetData(reinterpret_cast<GLvoid *>(colors->GetPointer(0)));
+  return Upload(normals, GL_FLOAT, GL_NORMAL_ARRAY);
 }
 
 //----------------------------------------------------------------------------
-bool vtkVertexBufferObject::SetData(GLvoid* data)
+bool vtkVertexBufferObject::UploadColors(vtkDataArray *colors)
+{
+  return Upload(colors, GL_UNSIGNED_BYTE, GL_COLOR_ARRAY);
+}
+
+//----------------------------------------------------------------------------
+bool vtkVertexBufferObject::Upload(vtkDataArray *array)
+{
+//  cout << "vtkDataArray" << endl;
+  if (!array)
+    return false;
+
+  this->Count = array->GetNumberOfTuples();
+  this->AttributeSize = 3;
+  this->AttributeType = GL_UNSIGNED_BYTE;
+  if(array->GetNumberOfComponents() == 1){
+//    cout << "in here" << endl;
+    this->AttributeType = GL_UNSIGNED_INT;
+  }
+  this->Size = this->Count * array->GetNumberOfComponents() * GetDataTypeSize(array->GetDataType());
+  this->BufferTarget = vtkgl::ARRAY_BUFFER;
+  this->ArrayType = GL_COLOR_ARRAY;
+
+//  cout << "Count: " << this->Count << endl;
+//  cout << "Attribute Size: " << this->AttributeSize << endl;
+//  cout << "Size: " << this->Size << endl;
+//  cout << "Usage:" << VertexBufferObjectUsageAsString[this->Usage] << endl;
+
+  return this->Upload(reinterpret_cast<GLvoid *>(array->GetVoidPointer(0)));
+}
+
+//----------------------------------------------------------------------------
+bool vtkVertexBufferObject::Upload(vtkDataArray *array, int attributeType, int arrayType)
+{
+//  cout << "vtkDataArray - attributeType/Array" << endl;
+  this->Count = array->GetNumberOfTuples();
+  this->AttributeSize = array->GetNumberOfComponents();
+  this->AttributeType = attributeType;
+  this->Size = this->Count * this->AttributeSize * GetDataTypeSize(array->GetDataType());
+  this->BufferTarget = vtkgl::ARRAY_BUFFER;
+  this->ArrayType = arrayType;
+
+  return this->Upload(reinterpret_cast<GLvoid *>(array->GetVoidPointer(0)));
+}
+
+//----------------------------------------------------------------------------
+bool vtkVertexBufferObject::Upload(vtkUnsignedCharArray *colors)
+{
+//  cout << "vtkUnsignedCharArray" << endl;
+  this->Count = colors->GetNumberOfTuples();
+  this->AttributeSize = colors->GetNumberOfComponents();
+  this->AttributeType = GL_UNSIGNED_BYTE;
+  this->Size = this->Count * this->AttributeSize * GetDataTypeSize(colors->GetDataType());
+  this->BufferTarget = vtkgl::ARRAY_BUFFER;
+  this->ArrayType = GL_COLOR_ARRAY;
+
+  return this->Upload(reinterpret_cast<GLvoid *>(colors->GetPointer(0)));
+}
+
+//----------------------------------------------------------------------------
+bool vtkVertexBufferObject::Upload(GLvoid* data)
 {
   if (!this->Context)
      {
@@ -293,19 +441,14 @@ bool vtkVertexBufferObject::SetData(GLvoid* data)
 
   this->CreateBuffer();
 
-//  cout << "  Context: " << this->Context << endl;
-//  cout << "  Handle: " << this->Handle << endl;
-//  cout << "  Size: " << this->Size << endl;
-//  cout << "  Count: " << this->Count << endl;
-//  cout << "  Usage: " << VertexBufferObjectUsageAsString[this->Usage] << endl;
-
   GLenum usage = OpenGLVertexBufferObjectUsage[this->Usage];
+
+//  std::cout << "Pushing " << (this->Size / 1024 / 1024) << "MB to GPU" << std::endl;
 
   this->Bind();
     vtkgl::BufferData(this->BufferTarget, this->Size, data, usage);
   this->UnBind();
 
-  cout << "Buffer Created" << endl;
   return true;
 }
 
