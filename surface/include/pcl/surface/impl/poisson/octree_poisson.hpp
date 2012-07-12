@@ -85,7 +85,7 @@ namespace pcl
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////
     template <class NodeData, class Real>
-    OctNode<NodeData, Real>::OctNode () : parent (NULL), children (NULL), d (0), off (), nodeData ()
+    OctNode<NodeData, Real>::OctNode () : parent (NULL), children (NULL), d (0), nodeData ()
     {
       off[0] = off[1] = off[2] = 0;
     }

@@ -44,7 +44,7 @@
 
 #include <vector>
 #include "geometry.h"
-
+#include <pcl/pcl_exports.h>
 
 namespace pcl {
   namespace poisson {
@@ -54,52 +54,52 @@ namespace pcl {
     {
     public:
       const static int CORNERS = 4, EDGES = 4, NEIGHBORS = 4;
-      static int  CornerIndex (const int& x, const int& y);
-      static void FactorCornerIndex (const int& idx, int& x, int& y);
-      static int  EdgeIndex (const int& orientation, const int& i);
-      static void FactorEdgeIndex (const int& idx, int& orientation, int& i);
+      static int  PCL_EXPORTS CornerIndex (const int& x, const int& y);
+      static void PCL_EXPORTS FactorCornerIndex (const int& idx, int& x, int& y);
+      static int  PCL_EXPORTS EdgeIndex (const int& orientation, const int& i);
+      static void PCL_EXPORTS FactorEdgeIndex (const int& idx, int& orientation, int& i);
 
-      static int  ReflectCornerIndex (const int& idx, const int& edgeIndex);
-      static int  ReflectEdgeIndex (const int& idx, const int& edgeIndex);
+      static int  PCL_EXPORTS ReflectCornerIndex (const int& idx, const int& edgeIndex);
+      static int  PCL_EXPORTS ReflectEdgeIndex (const int& idx, const int& edgeIndex);
 
-      static void EdgeCorners (const int& idx, int& c1, int &c2);
+      static void PCL_EXPORTS EdgeCorners (const int& idx, int& c1, int &c2);
     };
 
     class Cube{
     public:
       const static int CORNERS = 8, EDGES = 12, NEIGHBORS = 6;
 
-      static int CornerIndex (const int& x, const int& y, const int& z);
-      static void FactorCornerIndex (const int& idx, int& x, int& y, int& z);
-      static int EdgeIndex (const int& orientation, const int& i, const int& j);
-      static void FactorEdgeIndex (const int& idx, int& orientation, int& i, int &j);
-      static int FaceIndex (const int& dir, const int& offSet);
-      static int FaceIndex (const int& x, const int& y, const int& z);
-      static void FactorFaceIndex (const int& idx, int& x, int &y, int& z);
-      static void FactorFaceIndex (const int& idx, int& dir, int& offSet);
+      static int  PCL_EXPORTS CornerIndex (const int& x, const int& y, const int& z);
+      static void PCL_EXPORTS FactorCornerIndex (const int& idx, int& x, int& y, int& z);
+      static int  PCL_EXPORTS EdgeIndex (const int& orientation, const int& i, const int& j);
+      static void PCL_EXPORTS FactorEdgeIndex (const int& idx, int& orientation, int& i, int &j);
+      static int  PCL_EXPORTS FaceIndex (const int& dir, const int& offSet);
+      static int  PCL_EXPORTS FaceIndex (const int& x, const int& y, const int& z);
+      static void PCL_EXPORTS FactorFaceIndex (const int& idx, int& x, int &y, int& z);
+      static void PCL_EXPORTS FactorFaceIndex (const int& idx, int& dir, int& offSet);
 
-      static int AntipodalCornerIndex (const int& idx);
-      static int FaceReflectCornerIndex (const int& idx, const int& faceIndex);
-      static int FaceReflectEdgeIndex (const int& idx, const int& faceIndex);
-      static int FaceReflectFaceIndex (const int& idx, const int& faceIndex);
-      static int EdgeReflectCornerIndex	(const int& idx, const int& edgeIndex);
-      static int EdgeReflectEdgeIndex (const int& edgeIndex);
+      static int PCL_EXPORTS AntipodalCornerIndex (const int& idx);
+      static int PCL_EXPORTS FaceReflectCornerIndex (const int& idx, const int& faceIndex);
+      static int PCL_EXPORTS FaceReflectEdgeIndex (const int& idx, const int& faceIndex);
+      static int PCL_EXPORTS FaceReflectFaceIndex (const int& idx, const int& faceIndex);
+      static int PCL_EXPORTS EdgeReflectCornerIndex	(const int& idx, const int& edgeIndex);
+      static int PCL_EXPORTS EdgeReflectEdgeIndex (const int& edgeIndex);
 
-      static int FaceAdjacentToEdges (const int& eIndex1, const int& eIndex2);
-      static void FacesAdjacentToEdge (const int& eIndex, int& f1Index, int& f2Index);
+      static int  PCL_EXPORTS FaceAdjacentToEdges (const int& eIndex1, const int& eIndex2);
+      static void PCL_EXPORTS FacesAdjacentToEdge (const int& eIndex, int& f1Index, int& f2Index);
 
-      static void EdgeCorners (const int& idx, int& c1, int &c2);
-      static void FaceCorners (const int& idx, int& c1, int &c2, int& c3, int& c4);
+      static void PCL_EXPORTS EdgeCorners (const int& idx, int& c1, int &c2);
+      static void PCL_EXPORTS FaceCorners (const int& idx, int& c1, int &c2, int& c3, int& c4);
     };
 
-    class MarchingSquares
+    class PCL_EXPORTS MarchingSquares
     {
       static double Interpolate (const double& v1, const double& v2);
       static void SetVertex (const int& e, const double values[Square::CORNERS], const double& iso);
     public:
       const static int MAX_EDGES = 2;
-      static const int edgeMask[1<<Square::CORNERS];
-      static const int edges[1<<Square::CORNERS][2*MAX_EDGES+1];
+      static const int edgeMask (int idx);
+      static const int edges (int x, int y);
       static double vertexList[Square::EDGES][2];
 
       static int GetIndex (const double values[Square::CORNERS], const double& iso);
@@ -108,7 +108,7 @@ namespace pcl {
       static int AddEdgeIndices (const double v[Square::CORNERS], const double& isoValue, int* edges);
     };
 
-    class MarchingCubes
+    class PCL_EXPORTS MarchingCubes
     {
       static double Interpolate (const double& v1, const double& v2);
       static void SetVertex (const int& e, const double values[Cube::CORNERS], const double& iso);
@@ -121,9 +121,9 @@ namespace pcl {
       static int GetFaceIndex (const int& mcIndex, const int& faceIndex);
     public:
       const static int MAX_TRIANGLES=5;
-      static const int edgeMask[1<<Cube::CORNERS];
+      static const int edgeMask (int idx);
       static const int triangles[1<<Cube::CORNERS][3*MAX_TRIANGLES+1];
-      static const int cornerMap[Cube::CORNERS];
+      static const int cornerMap (int idx);
       static double vertexList[Cube::EDGES][3];
 
       static int AddTriangleIndices (const int& mcIndex, int* triangles);

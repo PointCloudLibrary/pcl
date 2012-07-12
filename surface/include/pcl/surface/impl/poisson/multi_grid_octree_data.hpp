@@ -1798,7 +1798,7 @@ namespace pcl
           {
             TreeOctNode* parent = temp->parent;
             int c = int (temp - temp->parent->children);
-            int mcid = temp->nodeData.mcIndex & (1 << MarchingCubes::cornerMap[c]);
+            int mcid = temp->nodeData.mcIndex & (1 << MarchingCubes::cornerMap (c));
 
             if (mcid)
             {
@@ -1859,7 +1859,7 @@ namespace pcl
           {
             TreeOctNode* parent = temp->parent;
             int c = int (temp - temp->parent->children);
-            int mcid = temp->nodeData.mcIndex & (1 << MarchingCubes::cornerMap[c]);
+            int mcid = temp->nodeData.mcIndex & (1 << MarchingCubes::cornerMap (c));
 
             if (mcid)
             {
@@ -1911,7 +1911,7 @@ namespace pcl
       // Copy old corner values
       for (i = 0; i < Cube::CORNERS; i++)
       {
-        cornerIndex2[i] = node->nodeData.mcIndex & (1 << MarchingCubes::cornerMap[i]);
+        cornerIndex2[i] = node->nodeData.mcIndex & (1 << MarchingCubes::cornerMap (i));
       }
       // 8 of 27 corners set
 
@@ -1935,7 +1935,7 @@ namespace pcl
       {
         for (i = 0; i < Cube::CORNERS; i++)
         {
-          cornerIndex2[i] |= 1 << MarchingCubes::cornerMap[Cube::AntipodalCornerIndex (i)];
+          cornerIndex2[i] |= 1 << MarchingCubes::cornerMap (Cube::AntipodalCornerIndex (i));
         }
       }
       // 9 of 27 set
@@ -1959,7 +1959,7 @@ namespace pcl
         {
           for (j = 0; j < 4; j++)
           {
-            cornerIndex2[c[j]] |= 1 << MarchingCubes::cornerMap[Cube::EdgeReflectCornerIndex (c[j], e)];
+            cornerIndex2[c[j]] |= 1 << MarchingCubes::cornerMap (Cube::EdgeReflectCornerIndex (c[j], e));
           }
         }
       }
@@ -1984,7 +1984,7 @@ namespace pcl
         {
           for (j = 0; j < 2; j++)
           {
-            cornerIndex2[c[j]] |= 1 << MarchingCubes::cornerMap[Cube::FaceReflectCornerIndex (c[j], f)];
+            cornerIndex2[c[j]] |= 1 << MarchingCubes::cornerMap (Cube::FaceReflectCornerIndex (c[j], f));
           }
         }
       }
@@ -2655,7 +2655,7 @@ namespace pcl
 
 
       // The assumption is that the super-edge has a root along it.
-      if (!(MarchingCubes::edgeMask[node->nodeData.mcIndex] & (1 << edgeIndex)))
+      if (!(MarchingCubes::edgeMask (node->nodeData.mcIndex) & (1 << edgeIndex)))
       {
         return 0;
       }

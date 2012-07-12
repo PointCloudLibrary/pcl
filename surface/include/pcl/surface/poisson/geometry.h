@@ -46,6 +46,8 @@
 #include <vector>
 #include "hash.h"
 
+#include <pcl/pcl_exports.h>
+
 namespace pcl 
 {
   namespace poisson 
@@ -157,7 +159,7 @@ namespace pcl
         int idx[3];
     };
 
-    class TriangulationEdge
+    class PCL_EXPORTS TriangulationEdge
     {
       public:
         TriangulationEdge (void);
@@ -165,7 +167,7 @@ namespace pcl
         int tIndex[2];
     };
 
-    class TriangulationTriangle
+    class PCL_EXPORTS TriangulationTriangle
     {
       public:
         TriangulationTriangle (void);
@@ -256,7 +258,7 @@ namespace pcl
         polygonCount () = 0;
     };
 
-    class CoredVectorMeshData : public CoredMeshData
+    class PCL_EXPORTS CoredVectorMeshData : public CoredMeshData
     {
       std::vector<Point3D<float> > oocPoints;
       std::vector< std::vector< int > > polygons;
@@ -280,7 +282,7 @@ namespace pcl
         int polygonCount (void);
     };
 
-    class CoredFileMeshData : public CoredMeshData
+    class /*PCL_EXPORTS*/ CoredFileMeshData : public CoredMeshData
     {
       FILE *oocPointFile ,  *polygonFile;
       int oocPoints ,  polygons;

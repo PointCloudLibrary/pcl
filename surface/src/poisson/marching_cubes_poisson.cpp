@@ -291,7 +291,10 @@ namespace pcl {
 2} // (0,1) -> (1,1)
 3} // (0,0) -> (0,1)
      */
-    const int MarchingSquares::edgeMask[1<<Square::CORNERS]={
+
+    const int MarchingSquares::edgeMask (int idx)
+    {
+      static const int edgeMask_array[1<<Square::CORNERS]={
                                                              0, //  0 ->         ->                         ->
                                                              9, //  1 -> 0       -> (0,0)                   -> 0,3     ->  9
                                                              3, //  2 -> 1       -> (1,0)                   -> 0,1     ->  3
@@ -308,8 +311,13 @@ namespace pcl {
                                                              3, // 13 -> 0,2,3   -> (0,0) (0,1) (1,1)       -> 0,1     ->  3
                                                              9, // 14 -> 1,2,3   -> (1,0) (0,1) (1,1)       -> 0,3     ->  9
                                                              0, // 15 -> 0,1,2,3 -> (0,0) (1,0) (0,1) (1,1) ->
-    };
-    const int MarchingSquares::edges[1<<Square::CORNERS][MAX_EDGES*2+1] = {
+                                                            };
+      return edgeMask_array[idx];
+    }
+
+    const int MarchingSquares::edges(int x, int y)
+    {
+      static const int edges_array[1<<Square::CORNERS][MAX_EDGES*2+1] = {
                                                                            { -1,  -1,  -1,  -1,  -1}, //
                                                                            {  3,   0,  -1,  -1,  -1}, // (0,0)
                                                                            {  0,   1,  -1,  -1,  -1}, // (1,0)
@@ -326,7 +334,9 @@ namespace pcl {
                                                                            {  1,   0,  -1,  -1,  -1}, // (0,0) (0,1) (1,1)
                                                                            {  0,   3,  -1,  -1,  -1}, // (1,0) (0,1) (1,1)
                                                                            { -1,  -1,  -1,  -1,  -1}, // (0,0) (1,0) (0,1) (1,1)
-    };
+      };
+      return edges_array[x][y];
+    }
 
     double MarchingSquares::vertexList[Square::EDGES][2];
     int MarchingSquares::GetIndex(const double v[Square::CORNERS],const double& iso){
@@ -346,19 +356,19 @@ namespace pcl {
       idx=GetIndex(v,iso);
 
       /* Cube is entirely in/out of the surface */
-      if (!edgeMask[idx]) return 0;
+      if (!edgeMask (idx)) return 0;
 
       /* Find the vertices where the surface intersects the cube */
       int i,j,ii=1;
       for(i=0;i<12;i++){
-        if(edgeMask[idx] & ii){SetVertex(i,v,iso);}
+        if(edgeMask (idx) & ii){SetVertex(i,v,iso);}
         ii<<=1;
       }
       /* Create the triangle */
-      for (i=0;edges[idx][i]!=-1;i+=2) {
+      for (i=0;edges (idx, i)!=-1;i+=2) {
         for(j=0;j<2;j++){
-          e.p[0][j]=vertexList[edges[idx][i+0]][j];
-          e.p[1][j]=vertexList[edges[idx][i+1]][j];
+          e.p[0][j]=vertexList[edges (idx,i+0)][j];
+          e.p[1][j]=vertexList[edges (idx,i+1)][j];
         }
         isoEdges[nEdges++]=e;
       }
@@ -371,11 +381,11 @@ namespace pcl {
       idx=GetIndex(v,iso);
 
       /* Cube is entirely in/out of the surface */
-      if (!edgeMask[idx]) return 0;
+      if (!edgeMask (idx)) return 0;
 
       /* Create the triangle */
-      for(int i=0;edges[idx][i]!=-1;i+=2){
-        for(int j=0;j<2;j++){isoIndices[i+j]=edges[idx][i+j];}
+      for(int i=0;edges (idx,i)!=-1;i+=2){
+        for(int j=0;j<2;j++){isoIndices[i+j]=edges (idx,i+j);}
         nEdges++;
       }
       return nEdges;
@@ -401,7 +411,9 @@ namespace pcl {
     ///////////////////
     // MarchingCubes //
     ///////////////////
-    const int MarchingCubes::edgeMask[1<<Cube::CORNERS]={
+    const int MarchingCubes::edgeMask (int idx)
+    {
+      static const int edgeMask_array[1<<Cube::CORNERS]={
                                                          0,  273,  545,  816, 2082, 2355, 2563, 2834,
                                                          1042, 1283, 1587, 1826, 3120, 3361, 3601, 3840,
                                                          324,   85,  869,  628, 2406, 2167, 2887, 2646,
@@ -434,7 +446,9 @@ namespace pcl {
                                                          2646, 2887, 2167, 2406,  628,  869,   85,  324,
                                                          3840, 3601, 3361, 3120, 1826, 1587, 1283, 1042,
                                                          2834, 2563, 2355, 2082,  816,  545,  273,    0
-    };
+      };
+      return (edgeMask_array[idx]);
+    }
     const int MarchingCubes::triangles[1<<Cube::CORNERS][MAX_TRIANGLES*3+1] = {
                                                                                {  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1},
                                                                                {   0,   4,   8,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1},
@@ -693,7 +707,11 @@ namespace pcl {
                                                                                {   8,   4,   0,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1},
                                                                                {  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1}
     };
-    const int MarchingCubes::cornerMap[Cube::CORNERS]={0,1,3,2,4,5,7,6};
+    const int MarchingCubes::cornerMap (int idx)
+    {
+      static const int cornerMap_array[Cube::CORNERS]={0,1,3,2,4,5,7,6};
+      return (cornerMap_array[idx]);
+    }
     double MarchingCubes::vertexList[Cube::EDGES][3];
 
     int MarchingCubes::GetIndex(const double v[Cube::CORNERS],const double& iso){
@@ -748,12 +766,12 @@ namespace pcl {
       idx=GetIndex(v,iso);
 
       /* Cube is entirely in/out of the surface */
-      if (!edgeMask[idx]) return 0;
+      if (!edgeMask (idx)) return 0;
 
       /* Find the vertices where the surface intersects the cube */
       int i,j,ii=1;
       for(i=0;i<12;i++){
-        if(edgeMask[idx] & ii){SetVertex(i,v,iso);}
+        if(edgeMask (idx) & ii){SetVertex(i,v,iso);}
         ii<<=1;
       }
       /* Create the triangle */
@@ -774,7 +792,7 @@ namespace pcl {
       idx=GetIndex(v,iso);
 
       /* Cube is entirely in/out of the surface */
-      if (!edgeMask[idx]) return 0;
+      if (!edgeMask (idx)) return 0;
 
       /* Create the triangle */
       for(int i=0;triangles[idx][i]!=-1;i+=3){
@@ -873,12 +891,12 @@ namespace pcl {
       int i,j,x,y,z,idx=0;
       int v[2][2];
       Cube::FactorFaceIndex(faceIndex,x,y,z);
-      if		(x<0){for(i=0;i<2;i++){for(j=0;j<2;j++){v[i][j]=mcIndex&(1<<MarchingCubes::cornerMap[Cube::CornerIndex(0,i,j)]);}}}
-      else if	(x>0){for(i=0;i<2;i++){for(j=0;j<2;j++){v[i][j]=mcIndex&(1<<MarchingCubes::cornerMap[Cube::CornerIndex(1,i,j)]);}}}
-      else if	(y<0){for(i=0;i<2;i++){for(j=0;j<2;j++){v[i][j]=mcIndex&(1<<MarchingCubes::cornerMap[Cube::CornerIndex(i,0,j)]);}}}
-      else if	(y>0){for(i=0;i<2;i++){for(j=0;j<2;j++){v[i][j]=mcIndex&(1<<MarchingCubes::cornerMap[Cube::CornerIndex(i,1,j)]);}}}
-      else if	(z<0){for(i=0;i<2;i++){for(j=0;j<2;j++){v[i][j]=mcIndex&(1<<MarchingCubes::cornerMap[Cube::CornerIndex(i,j,1)]);}}}
-      else if	(z>0){for(i=0;i<2;i++){for(j=0;j<2;j++){v[i][j]=mcIndex&(1<<MarchingCubes::cornerMap[Cube::CornerIndex(i,j,1)]);}}}
+      if		(x<0){for(i=0;i<2;i++){for(j=0;j<2;j++){v[i][j]=mcIndex&(1<<MarchingCubes::cornerMap (Cube::CornerIndex(0,i,j)));}}}
+      else if	(x>0){for(i=0;i<2;i++){for(j=0;j<2;j++){v[i][j]=mcIndex&(1<<MarchingCubes::cornerMap (Cube::CornerIndex(1,i,j)));}}}
+      else if	(y<0){for(i=0;i<2;i++){for(j=0;j<2;j++){v[i][j]=mcIndex&(1<<MarchingCubes::cornerMap (Cube::CornerIndex(i,0,j)));}}}
+      else if	(y>0){for(i=0;i<2;i++){for(j=0;j<2;j++){v[i][j]=mcIndex&(1<<MarchingCubes::cornerMap (Cube::CornerIndex(i,1,j)));}}}
+      else if	(z<0){for(i=0;i<2;i++){for(j=0;j<2;j++){v[i][j]=mcIndex&(1<<MarchingCubes::cornerMap (Cube::CornerIndex(i,j,1)));}}}
+      else if	(z>0){for(i=0;i<2;i++){for(j=0;j<2;j++){v[i][j]=mcIndex&(1<<MarchingCubes::cornerMap (Cube::CornerIndex(i,j,1)));}}}
       if (v[0][0]) idx |=   1;
       if (v[1][0]) idx |=   2;
       if (v[1][1]) idx |=   4;
@@ -909,8 +927,8 @@ namespace pcl {
     int MarchingCubes::HasEdgeRoots(const int& mcIndex,const int& edgeIndex){
       int c1,c2;
       Cube::EdgeCorners(edgeIndex,c1,c2);
-      if(	( (mcIndex&(1<<MarchingCubes::cornerMap[c1])) &&  (mcIndex&(1<<MarchingCubes::cornerMap[c2]))) ||
-          (!(mcIndex&(1<<MarchingCubes::cornerMap[c1])) && !(mcIndex&(1<<MarchingCubes::cornerMap[c2])))){return 0;}
+      if(	( (mcIndex&(1<<MarchingCubes::cornerMap (c1))) &&  (mcIndex&(1<<MarchingCubes::cornerMap (c2)))) ||
+          (!(mcIndex&(1<<MarchingCubes::cornerMap (c1))) && !(mcIndex&(1<<MarchingCubes::cornerMap (c2))))){return 0;}
       else{return 1;}
     }
     int MarchingCubes::AddTriangles(const float v[Cube::CORNERS],const float& iso,Triangle* isoTriangles){
@@ -920,12 +938,12 @@ namespace pcl {
       idx=GetIndex(v,iso);
 
       /* Cube is entirely in/out of the surface */
-      if (!edgeMask[idx]) return 0;
+      if (!edgeMask (idx)) return 0;
 
       /* Find the vertices where the surface intersects the cube */
       int i,j,ii=1;
       for(i=0;i<12;i++){
-        if(edgeMask[idx] & ii){SetVertex(i,v,iso);}
+        if(edgeMask (idx) & ii){SetVertex(i,v,iso);}
         ii<<=1;
       }
       /* Create the triangle */
@@ -944,7 +962,7 @@ namespace pcl {
       int idx,ntriang=0;
       idx=GetIndex(v,iso);
       /* Cube is entirely in/out of the surface */
-      if (!edgeMask[idx]) return 0;
+      if (!edgeMask (idx)) return 0;
       /* Create the triangle */
       for(int i=0;triangles[idx][i]!=-1;i+=3){
         for(int j=0;j<3;j++){isoIndices[i+j]=triangles[idx][i+j];}
@@ -956,7 +974,7 @@ namespace pcl {
       int ntriang=0;
 
       /* Cube is entirely in/out of the surface */
-      if (!edgeMask[idx]) return 0;
+      if (!edgeMask (idx)) return 0;
 
       /* Create the triangle */
       for(int i=0;triangles[idx][i]!=-1;i+=3){
