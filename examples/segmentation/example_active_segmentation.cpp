@@ -34,108 +34,97 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-//stl
+//STL
 #include <iostream>
 
-//pcl
+//PCL
 #include <pcl/segmentation/active_segmentation.h>
 #include <pcl/segmentation/impl/active_segmentation.hpp>
 #include <pcl/io/pcd_io.h>
 
-int main(int argc, char** argv)
+int
+main (int argc, char** argv)
 {
-  if (argc < 2)
-  {
-    throw std::runtime_error("Required arguments: filename.pcd");
-  }
-  std::string fileName = argv[1];
-  std::cout << "Reading " << fileName << std::endl;
+  typedef pcl::PointXYZRGBA PointType;
 
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
+  pcl::PointCloud<PointType>::Ptr cloud (new pcl::PointCloud<PointType> ());
+  pcl::PointCloud<pcl::Normal>::Ptr cloud_normals (new pcl::PointCloud<pcl::Normal> ());
+  pcl::PointCloud<pcl::Boundary>::Ptr boundary (new pcl::PointCloud<pcl::Boundary> ());
+  pcl::PCDWriter writer;
 
-  if (pcl::io::loadPCDFile<pcl::PointXYZRGB>(fileName, *cloud) == -1) // load the file
+  int min_segment_size = 100;
+
+  if (argc < 3)
+    throw std::runtime_error ("Required arguments: filename.pcd index");
+
+  if (pcl::io::loadPCDFile<PointType> (argv[1], *cloud) == -1)
   {
-    PCL_ERROR("Couldn't read file");
+    PCL_ERROR("Couldn't read file %s", argv[1]);
     return (-1);
   }
-  int fp_indice =atoi(argv[2]);
-  std::cout << "Loaded " << cloud->points.size() << " points." << std::endl;
 
-  pcl::search::KdTree<pcl::PointXYZRGB>::Ptr tree(new pcl::search::KdTree<pcl::PointXYZRGB>());
-  tree->setInputCloud(cloud);
+  unsigned int fp_index = atoi (argv[2]);
+  if (fp_index > cloud->size ())
+    throw std::runtime_error ("Index of fixation point must be valid");
 
-  pcl::PointCloud<pcl::Normal>::Ptr normals(new pcl::PointCloud<pcl::Normal>);
+  //edge detection in an organized point cloud;
+  pcl::PointCloud<pcl::Label>::Ptr labels_cloud (new pcl::PointCloud<pcl::Label> ());
+  std::vector<pcl::PointIndices> labels_vect;
 
-  pcl::NormalEstimation<pcl::PointXYZRGB, pcl::Normal> ne;
-
-  ne.setInputCloud(cloud);
-  ne.setSearchMethod(tree);
-  ne.setRadiusSearch(0.02);
-  ne.compute(*normals);
-  pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr norms(new  pcl::PointCloud<pcl::PointXYZRGBNormal>());
-  pcl::concatenateFields(*cloud,*normals,*norms);
-  pcl::io::savePCDFile("/tmp/normals.pcd", *norms);
-
-  pcl::PointCloud<pcl::Boundary>::Ptr bps(new pcl::PointCloud<pcl::Boundary>());
-  bps->resize(cloud->size());
-
-  //cloud out with boundaries
-  pcl::PointCloud<pcl::PointXYZRGBL>::Ptr out_cloud(new pcl::PointCloud<pcl::PointXYZRGBL>());
-  pcl::copyPointCloud(*cloud,*out_cloud);
-
-  //edge detection in an orgaized Point cloud;
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_xyz (new pcl::PointCloud<pcl::PointXYZ >());
-  pcl::copyPointCloud(*cloud, *cloud_xyz);
-  pcl::PointCloud<pcl::Label>::Ptr out_cloud_2(new pcl::PointCloud<pcl::Label>());
-  std::vector<pcl::PointIndices> labels;
-  pcl::OrganizedEdgeDetection<pcl::PointXYZ,pcl::Label> oed;
-  oed.setInputCloud(cloud_xyz);
-  oed.compute(*out_cloud_2, labels);
-
-  if(bps->points.size()!= out_cloud->points.size())
+  if(cloud->height !=1)
   {
-    PCL_ERROR("SOMETHING WENT WRONG!. BOUNDARY MAP SHOULD HAVE THE SAME NUMBER OF POINTS AS THE INPUT CLOUD\n");
-    exit(0);
+    pcl::OrganizedEdgeDetection<PointType, pcl::Label> oed;
+    oed.setInputCloud (cloud);
+    oed.setEdgeType(oed.EDGELABEL_NAN_BOUNDARY | oed.EDGELABEL_OCCLUDED | oed.EDGELABEL_OCCLUDING);//oed.EDGELABEL_HIGH_CURVATURE
+    oed.compute (*labels_cloud, labels_vect);
   }
+  else
+    throw std::runtime_error ("Input cloud must be organized");
 
-  for (unsigned int i = 0; i<out_cloud_2->points.size();++i)
+  //estimating normals
+  pcl::NormalEstimation<PointType, pcl::Normal> ne;
+  ne.setInputCloud (cloud);
+  pcl::search::KdTree<PointType>::Ptr tree_n (new pcl::search::KdTree<PointType> ());
+  ne.setSearchMethod (tree_n);
+  ne.setRadiusSearch (0.02);
+  ne.compute (*cloud_normals);
+  std::cout << "Normals are computed and size is " << cloud_normals->points.size () << std::endl;
+
+  boundary->resize( labels_cloud->points.size ());
+  for (unsigned int i = 0; i < labels_cloud->points.size (); ++i)
+      boundary->points[i].boundary_point = static_cast<unsigned char> (labels_cloud->points[i].label);
+
+  //create Kd tree
+  pcl::search::KdTree<PointType>::Ptr tree_as (new pcl::search::KdTree<PointType> ());
+  tree_as->setInputCloud(cloud);
+
+  //segment points
+  pcl::ActiveSegmentation<PointType, pcl::Normal> as;
+  pcl::PointIndices indices_out;
+  as.setInputCloud (cloud);
+  as.setInputNormals (cloud_normals);
+  as.setSearchMethod (tree_as);
+  as.setFixationPoint (fp_index);
+  as.setBoundaryMap (boundary);
+  as.setSearchRadius (0.01);
+  //as.segment (indices_out);
+
+  pcl::activeSegmentation<PointType>(*cloud,*boundary,*cloud_normals,tree_as,fp_index,0.01f,indices_out);
+
+  //save segment to pcd file if it contains more points the a certain threshold
+  if (indices_out.indices.size() > min_segment_size)
   {
-    //if(out_cloud_2->points[i].label> 0 && out_cloud_2->points[i].label != std::numeric_limits<unsigned>::max ())
-    if(out_cloud_2->points[i].label != std::numeric_limits<unsigned>::max ())
-      bps->points[i].boundary_point = static_cast<unsigned char> (out_cloud_2->points[i].label+1);
-    else
-      bps->points[i].boundary_point = 0;
+    pcl::PointCloud<PointType>::Ptr cloud_segment (new pcl::PointCloud<PointType> ());
+    for (std::vector<int>::const_iterator pit = indices_out.indices.begin (); pit != indices_out.indices.end (); pit++)
+      cloud_segment->points.push_back (cloud->points[*pit]);
+    cloud_segment->width = static_cast<uint32_t> (cloud_segment->points.size ());
+    cloud_segment->height = 1;
+    cloud_segment->is_dense = true;
+
+    std::cout << "PointCloud representing the segment has " << cloud_segment->points.size () << " data points." << std::endl;
+    writer.write<PointType> ("segment_cloud.pcd", *cloud_segment, false);
   }
-
-  pcl::ActiveSegmentation<pcl::PointXYZRGB, pcl::Normal> as;
-  pcl::PointIndices segment;
-  as.setInputCloud(cloud);
-  as.setInputNormals(normals);
-  as.setSearchMethod(tree);
-  as.setFixationPoint(fp_indice);
-  as.setBoundaryMap(bps);
-  as.setSearchRadius(0.01);
-  as.segment(segment);
-
-  std::vector<int> fp_indices;
-  std::vector<float> fp_dist;
-
-  //this is done so I can see the fixation point more easily.
-  tree->nearestKSearch(cloud->points[fp_indice],20,fp_indices,fp_dist);
-
-  for(unsigned int i = 0; i<out_cloud->points.size(); ++i)
-  {
-    out_cloud->points[i].label = bps->points[i].boundary_point;
-    if (std::find(segment.indices.begin(),segment.indices.end(),i) != segment.indices.end() && bps->points[i].boundary_point == 0)
-      out_cloud->points[i].label = 8;
-    if((i == as.getFixationPointIndex ()) || (std::find(fp_indices.begin(),fp_indices.end(),i)!=fp_indices.end() ))
-    {
-      out_cloud->points[i].label = 4;
-    }
-  }
-
-  pcl::io::savePCDFile("/tmp/segmented_boundary.pcd", *out_cloud);
-  std::cout<<"SEGMENT SIZE: "<<segment.indices.size()<<std::endl;
-
+  else
+    PCL_INFO ("NO Segment found.\n");
 
 }

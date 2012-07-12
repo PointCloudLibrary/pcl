@@ -41,3 +41,6 @@
 #include <pcl/segmentation/active_segmentation.h>
 
 //class instantiation will happen here
+
+PCL_INSTANTIATE_PRODUCT ( ActiveSegmentation, (PCL_RGB_POINT_TYPES) (PCL_NORMAL_POINT_TYPES))
+PCL_INSTANTIATE ( activeSegmentation, PCL_RGB_POINT_TYPES )

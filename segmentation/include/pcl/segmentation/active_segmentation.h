@@ -49,6 +49,25 @@
 
 namespace pcl
 {
+  /////////////////////////////////////////////////////////////////////
+  /**
+    * \brief stand alone method for doing active segmentation
+    * \param[in] cloud_in input cloud
+    * \param[in] boundary the boundary map
+    * \param[in] normals normals for the input cloud
+    * \param[in] tree the spatial locator used for radius search
+    * \param[in] index of the fixation point
+    * \param[in] search_radius radius of search
+    * \param[out] indices_out the resulting segment as indices of the input cloud
+    */
+  template <typename PointT> void
+  activeSegmentation (const pcl::PointCloud<PointT>                         &cloud_in,
+                      const pcl::PointCloud<pcl::Boundary>                  &boundary,
+                      const pcl::PointCloud<pcl::Normal>                    &normals,
+                      const boost::shared_ptr<pcl::search::Search<PointT> > &tree,
+                      int                                                   fp_index,
+                      float                                                 search_radius,
+                      pcl::PointIndices                                     &indices_out);
 
   /**
     * \brief
@@ -64,10 +83,9 @@ namespace pcl
     *      In 2009 IEEERSJ International Conference on Intelligent Robots and Systems (2009)
     *
     */
-  template <typename PointT, typename NormalT>
+  template<typename PointT, typename NormalT>
   class ActiveSegmentation : public PCLBase<PointT>
   {
-    typedef PCLBase<PointT> PCLBase_;
     typedef pcl::search::Search<PointT> KdTree;
     typedef typename KdTree::Ptr KdTreePtr;
     typedef pcl::PointCloud<pcl::Boundary> Boundary;
@@ -76,15 +94,15 @@ namespace pcl
     typedef pcl::PointCloud<NormalT> Normal;
     typedef typename Normal::Ptr NormalPtr;
 
-    using PCLBase_::input_;
-    using PCLBase_::indices_;
+    using PCLBase<PointT>::input_;
+    using PCLBase<PointT>::indices_;
 
     typedef pcl::PointCloud<PointT> PointCloud;
 
     public:
       /* \brief empty constructor */
-      ActiveSegmentation() :
-          tree_ (), normals_ (), boundary_ (), fixation_point_ (), fp_indice_ (), search_radius_ (0.02)
+      ActiveSegmentation () :
+          tree_ (), normals_ (), boundary_ (), fixation_point_ (), fp_index_ (), search_radius_ (0.02)
       {
       }
 
@@ -94,26 +112,28 @@ namespace pcl
       }
 
       /** \brief Set the fixation point.
-        * \param[in] p the fixation point  
+        * \param[in] p the fixation point
         */
       void
       setFixationPoint (const PointT &p);
 
       /** \brief Set the fixation point.
-        * \param[in] x the X coordinate of the fixation point  
-        * \param[in] y the Y coordinate of the fixation point  
-        * \param[in] z the Z coordinate of the fixation point  
+        * \param[in] x the X coordinate of the fixation point
+        * \param[in] y the Y coordinate of the fixation point
+        * \param[in] z the Z coordinate of the fixation point
         */
-      inline void 
+      inline void
       setFixationPoint (float x, float y, float z)
       {
         PointT p;
-        p.x = x; p.y = y; p.z = z;
+        p.x = x;
+        p.y = y;
+        p.z = z;
         setFixationPoint (p);
       }
 
       /* \brief Returns the fixation point as a Point struct. */
-      PointT 
+      PointT
       getFixationPoint ()
       {
         return (fixation_point_);
@@ -122,30 +142,31 @@ namespace pcl
       /** \brief Set the fixation point as an index in the input cloud.
         * \param[in] index the index of the point in the input cloud to use
         */
-      inline void 
+      inline void
       setFixationPoint (int index)
       {
         fixation_point_ = input_->points[index];
-        fp_indice_ = index;
+        fp_index_ = index;
       }
 
       /* \brief Returns the fixation point index. */
-      int getFixationPointIndex ()
+      int
+      getFixationPointIndex ()
       {
-        return (fp_indice_);
+        return (fp_index_);
       }
 
       /** \brief Provide a pointer to the search object.
         * \param[in] tree a pointer to the spatial search object.
         */
-      inline void 
+      inline void
       setSearchMethod (const KdTreePtr &tree)
       {
         tree_ = tree;
       }
 
-      /** \brief Get a pointer to the search method used. */
-      inline KdTreePtr 
+      /** \brief returns a pointer to the search method used. */
+      inline KdTreePtr
       getSearchMethod () const
       {
         return (tree_);
@@ -154,13 +175,13 @@ namespace pcl
       /** \brief Set the boundary map of the input cloud
         * \param[in] boundary a pointer to the boundary cloud
         */
-      inline void 
+      inline void
       setBoundaryMap (const BoundaryPtr &boundary)
       {
         boundary_ = boundary;
       }
 
-      /* \brief Returns the boundary map currently set. */
+      /* \brief returns a pointer to the boundary map currently set. */
       inline BoundaryPtr
       getBoundaryMap () const
       {
@@ -170,7 +191,7 @@ namespace pcl
       /** \brief Set search radius for the region growing
         * \param[in] r the radius used
         */
-      inline void 
+      inline void
       setSearchRadius (double r)
       {
         search_radius_ = r;
@@ -179,16 +200,24 @@ namespace pcl
       /** \brief Set the input normals to be used for the segmentation
         * \param[in] norm the normals to be used
         */
-      inline void 
+      inline void
       setInputNormals (const NormalPtr &norm)
       {
         normals_ = norm;
       }
 
-      /** \brief Method for segmenting the object that contains the fixation point
+      /** \brief returns a pointer to the normals */
+      inline NormalPtr
+      getInputNormals ()
+      {
+        return normals_;
+      }
+
+      /**
+        * \brief Method for segmenting the object that contains the fixation point
         * \param[out] indices_out
         */
-      void 
+      void
       segment (PointIndices &indices_out);
 
     private:
@@ -205,8 +234,8 @@ namespace pcl
       /**\brief fixation point as a pcl:struct*/
       PointT fixation_point_;
 
-      /** \brief fixation point as an indice*/
-      int fp_indice_;
+      /** \brief fixation point as an index*/
+      int fp_index_;
 
       /**radius of search for region growing*/
       double search_radius_;
@@ -214,11 +243,11 @@ namespace pcl
       /** \brief Checks if a point should be added to the segment
         * \return true if point can be added to segment
         * \param[in] index of point to be verified
-        * \param[in] seed point indice
+        * \param[in] seed point index
         * \param[out] output var true if point can be a seed
         * \param[out] output var true if point belongs to a boundary
         */
-      bool 
+      bool
       isPointValid (int v_point, int seed, bool &is_seed, bool &is_boundary);
   };
 
