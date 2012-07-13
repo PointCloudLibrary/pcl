@@ -111,11 +111,10 @@ class OpenNIViewer
     typedef typename Cloud::ConstPtr CloudConstPtr;
 
     OpenNIViewer (pcl::Grabber& grabber)
-      : visualizer_ (new pcl::visualization::PCLVisualizer ("OpenNI Viewer"))
+      : cloud_viewer_ (new pcl::visualization::PCLVisualizer ("PCL OpenNI cloud"))
+      , image_viewer_ ()
       , grabber_ (grabber)
-#if !((VTK_MAJOR_VERSION == 5)&&(VTK_MINOR_VERSION <= 4))
-      , image_viewer_ ("PCL image viewer")
-#endif
+      , rgb_data_ (0), rgb_data_size_ (0)
     {
     }
 
@@ -127,24 +126,25 @@ class OpenNIViewer
       cloud_ = cloud;
     }
 
-#if !((VTK_MAJOR_VERSION == 5)&&(VTK_MINOR_VERSION <= 4))
     void
     image_callback (const boost::shared_ptr<openni_wrapper::Image>& image)
     {
       FPS_CALC ("image callback");
       boost::mutex::scoped_lock lock (image_mutex_);
       image_ = image;
+
+      if (image->getEncoding () != openni_wrapper::Image::RGB)
+      {
+        if (rgb_data_size_ < image->getWidth () * image->getHeight ())
+        {
+          if (rgb_data_)
+            delete [] rgb_data_;
+          rgb_data_size_ = image->getWidth () * image->getHeight ();
+          rgb_data_ = new unsigned char [rgb_data_size_ * 3];
+        }
+        image_->fillRGB (image_->getWidth (), image_->getHeight (), rgb_data_);
+      }
     }
-    
-    boost::shared_ptr<openni_wrapper::Image>
-    getLatestImage ()
-    {
-      boost::mutex::scoped_lock lock(image_mutex_);
-      boost::shared_ptr<openni_wrapper::Image> temp_image;
-      temp_image.swap (image_);
-      return (temp_image);
-    }    
-#endif
     
     void 
     keyboard_callback (const pcl::visualization::KeyboardEvent& event, void*)
@@ -167,21 +167,6 @@ class OpenNIViewer
         cout << "left button pressed @ " << mouse_event.getX () << " , " << mouse_event.getY () << endl;
       }
     }
-    /**
-     * @brief swaps the pointer to the point cloud with Null pointer and returns the cloud pointer
-     * @return boost shared pointer to point cloud
-     */
-    CloudConstPtr
-    getLatestCloud ()
-    {
-      //lock while we swap our cloud and reset it.
-      boost::mutex::scoped_lock lock(cloud_mutex_);
-      CloudConstPtr temp_cloud;
-      temp_cloud.swap (cloud_); //here we set cloud_ to null, so that
-      //it is safe to set it again from our
-      //callback
-      return (temp_cloud);
-    }
 
     /**
      * @brief starts the main loop
@@ -189,93 +174,104 @@ class OpenNIViewer
     void
     run ()
     {
-      visualizer_->registerMouseCallback (&OpenNIViewer::mouse_callback, *this);
-      visualizer_->registerKeyboardCallback(&OpenNIViewer::keyboard_callback, *this);
+      cloud_viewer_->registerMouseCallback (&OpenNIViewer::mouse_callback, *this);
+      cloud_viewer_->registerKeyboardCallback(&OpenNIViewer::keyboard_callback, *this);
       boost::function<void (const CloudConstPtr&) > cloud_cb = boost::bind (&OpenNIViewer::cloud_callback, this, _1);
       boost::signals2::connection cloud_connection = grabber_.registerCallback (cloud_cb);
       
-#if !((VTK_MAJOR_VERSION == 5)&&(VTK_MINOR_VERSION <= 4))
       boost::signals2::connection image_connection;
       if (grabber_.providesCallback<void (const boost::shared_ptr<openni_wrapper::Image>&)>())
       {
-        image_viewer_.registerMouseCallback (&OpenNIViewer::mouse_callback, *this);
-        image_viewer_.registerKeyboardCallback(&OpenNIViewer::keyboard_callback, *this);
+        image_viewer_.reset (new pcl::visualization::ImageViewer ("PCL OpenNI image"));
+        image_viewer_->registerMouseCallback (&OpenNIViewer::mouse_callback, *this);
+        image_viewer_->registerKeyboardCallback(&OpenNIViewer::keyboard_callback, *this);
         boost::function<void (const boost::shared_ptr<openni_wrapper::Image>&) > image_cb = boost::bind (&OpenNIViewer::image_callback, this, _1);
         image_connection = grabber_.registerCallback (image_cb);
       }
-      unsigned char* rgb_data = 0;
-      unsigned rgb_data_size = 0;
-#endif        
+      
+      bool image_init = false, cloud_init = false;
+      boost::shared_ptr<openni_wrapper::Image> image;
+      CloudConstPtr cloud;
       
       grabber_.start ();
-      
-      while (!visualizer_->wasStopped())
+
+      while (!cloud_viewer_->wasStopped () && (image_viewer_ && !image_viewer_->wasStopped ()))
       {
-        visualizer_->spinOnce ();
-        if (cloud_)
+        cloud_viewer_->spinOnce ();
+
+        // See if we can get a cloud
+        if (cloud_mutex_.try_lock ())
         {
+          if (cloud_)
+            cloud_.swap (cloud);
+
+          cloud_mutex_.unlock ();
+
           FPS_CALC ("drawing cloud");
-          //the call to get() sets the cloud_ to null;
-          CloudConstPtr cloud = getLatestCloud ();
-          if (!visualizer_->updatePointCloud (cloud, "OpenNICloud"))
+          
+          if (!cloud_init)
           {
-            visualizer_->addPointCloud (cloud, "OpenNICloud");
-            visualizer_->resetCameraViewpoint ("OpenNICloud");
+            cloud_viewer_->setPosition (0, 0);
+            cloud_viewer_->setSize (cloud->width, cloud->height);
+            cloud_init = !cloud_init;
+          }
+
+          if (!cloud_viewer_->updatePointCloud (cloud, "OpenNICloud"))
+          {
+            cloud_viewer_->addPointCloud (cloud, "OpenNICloud");
+            cloud_viewer_->resetCameraViewpoint ("OpenNICloud");
           }          
         }
-#if !((VTK_MAJOR_VERSION == 5)&&(VTK_MINOR_VERSION <= 4))        
-        if (image_)
+
+        // See if we can get an image
+        if (image_mutex_.try_lock ())
         {
-          boost::shared_ptr<openni_wrapper::Image> image = getLatestImage ();
-          
+          if (image_)
+            image_.swap (image);
+        
+          image_mutex_.unlock ();
+
+          if (!image_init && cloud && cloud->width != 0)
+          {
+            image_viewer_->setPosition (cloud->width, 0);
+            image_viewer_->setSize (cloud->width, cloud->height);
+            image_init = !image_init;
+          }
+
           if (image->getEncoding() == openni_wrapper::Image::RGB)
-          {
-            image_viewer_.showRGBImage(image->getMetaData().Data(), image->getWidth(), image->getHeight());
-          }
+            image_viewer_->addRGBImage (image->getMetaData ().Data (), image->getWidth (), image->getHeight ());
           else
-          {
-            if (rgb_data_size < image->getWidth() * image->getHeight())
-            {
-              rgb_data_size = image->getWidth() * image->getHeight();
-              rgb_data = new unsigned char [rgb_data_size * 3];
-            }
-            image->fillRGB (image->getWidth(), image->getHeight(), rgb_data);
-            image_viewer_.showRGBImage(rgb_data, image->getWidth(), image->getHeight());
-          }
-          // This will crash: image_viewer_.spinOnce (10);
-          image_viewer_.spinOnce ();
+            image_viewer_->addRGBImage (rgb_data_, image->getWidth (), image->getHeight ());
+          image_viewer_->spinOnce ();
         }
-#endif        
+        
         boost::this_thread::sleep (boost::posix_time::microseconds (100));
       }
 
-      grabber_.stop();
+      grabber_.stop ();
       
-      cloud_connection.disconnect();
-#if !((VTK_MAJOR_VERSION == 5)&&(VTK_MINOR_VERSION <= 4))      
-      image_connection.disconnect();
-      if (rgb_data)
-        delete[] rgb_data;
-#endif      
+      cloud_connection.disconnect ();
+      image_connection.disconnect ();
+      if (rgb_data_)
+        delete[] rgb_data_;
     }
     
-    boost::shared_ptr<pcl::visualization::PCLVisualizer> visualizer_;
+    boost::shared_ptr<pcl::visualization::PCLVisualizer> cloud_viewer_;
+    boost::shared_ptr<pcl::visualization::ImageViewer> image_viewer_;
+    
     pcl::Grabber& grabber_;
     boost::mutex cloud_mutex_;
-    CloudConstPtr cloud_;
-    
-#if !((VTK_MAJOR_VERSION == 5)&&(VTK_MINOR_VERSION <= 4))    
     boost::mutex image_mutex_;
+    
+    CloudConstPtr cloud_;
     boost::shared_ptr<openni_wrapper::Image> image_;
-    pcl::visualization::ImageViewer image_viewer_;
-#endif    
+    unsigned char* rgb_data_;
+    unsigned rgb_data_size_;
 };
 
 // Create the PCLVisualizer object
 boost::shared_ptr<pcl::visualization::PCLVisualizer> cld;
-#if !((VTK_MAJOR_VERSION == 5)&&(VTK_MINOR_VERSION <= 4))
 boost::shared_ptr<pcl::visualization::ImageViewer> img;
-#endif
 
 /* ---[ */
 int
