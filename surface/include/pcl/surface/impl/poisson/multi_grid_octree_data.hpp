@@ -2612,7 +2612,7 @@ namespace pcl
       }
       else
       {
-        if (!(MarchingCubes::edgeMask[finest->nodeData.mcIndex] & (1 << finestIndex)))
+        if (!(MarchingCubes::edgeMask (finest->nodeData.mcIndex) & (1 << finestIndex)))
         {
           return 0;
         }
