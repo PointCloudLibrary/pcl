@@ -70,43 +70,29 @@ using namespace pcl;
 using namespace pcl::console;
 using namespace std;
 
-typedef PointXYZ PointT;
-
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT>
 class SelectObject
 {
   public:
-    SelectObject (const PointCloud<PointT> &cloud)
-      : cloud_ (new PointCloud<PointT> (cloud))
-      , cloud_viewer_ ("PointCloud")
+    SelectObject ()
+      : plane_comparator_ (new EdgeAwarePlaneComparator<PointT, Normal>)
+      , rgb_data_ ()
+    { 
+      // Set the parameters for planar segmentation
+      plane_comparator_->setDistanceThreshold (0.01f, false);
+    }
+
+    /////////////////////////////////////////////////////////////////////////
+    virtual ~SelectObject ()
     {
-      cloud_viewer_.addCoordinateSystem (0.1, 0, 0, 0);
-
-      // If the dataset is organized, and has RGB data, create an image viewer
-      vector<sensor_msgs::PointField> fields;
-      int rgba_index = -1;
-      rgba_index = getFieldIndex (cloud, "rgba", fields);
-    
-      if (cloud_->isOrganized ())
-      {
-        if (rgba_index >= 0)
-          image_viewer_.reset (new visualization::ImageViewer ("RGB Image"));
-
-        search_.reset (new search::OrganizedNeighbor<PointT>);
-
-        // Set the parameters for planar segmentation
-        plane_comparator_.reset (new EdgeAwarePlaneComparator<PointT, Normal>);
-        plane_comparator_->setDistanceThreshold (0.01f, false);
-      }
-      else
-        search_.reset (new search::KdTree<PointT>);
-
-      search_->setInputCloud (cloud_);
+      if (rgb_data_)
+        delete[] rgb_data_;
     }
 
     /////////////////////////////////////////////////////////////////////////
     void
-    estimateNormals (const PointCloud<PointT>::ConstPtr &input, PointCloud<Normal> &normals)
+    estimateNormals (const typename PointCloud<PointT>::ConstPtr &input, PointCloud<Normal> &normals)
     {
       if (input->isOrganized ())
       {
@@ -150,10 +136,10 @@ class SelectObject
     void 
     mouse_callback (const visualization::MouseEvent& mouse_event, void*)
     {
-      //if (mouse_event.getType() == visualization::MouseEvent::MouseButtonPress && mouse_event.getButton() == visualization::MouseEvent::LeftButton)
-      //{
-      //  cout << "left button pressed @ " << mouse_event.getX () << " , " << mouse_event.getY () << endl;
-      //}
+      if (mouse_event.getType() == visualization::MouseEvent::MouseButtonPress && mouse_event.getButton() == visualization::MouseEvent::LeftButton)
+      {
+        cout << "left button pressed @ " << mouse_event.getX () << " , " << mouse_event.getY () << endl;
+      }
     }
 
     /////////////////////////////////////////////////////////////////////////
@@ -167,11 +153,11 @@ class SelectObject
       */
     void
     segmentObject (int picked_idx, 
-                   const PointCloud<PointT>::ConstPtr &cloud, 
+                   const typename PointCloud<PointT>::ConstPtr &cloud, 
                    const PointIndices::Ptr &plane_indices, 
                    PointCloud<PointT> &object)
     {
-      PointCloud<PointT>::Ptr plane_hull (new PointCloud<PointT>);
+      typename PointCloud<PointT>::Ptr plane_hull (new PointCloud<PointT>);
 
       // Compute the convex hull of the plane
       ConvexHull<PointT> chull;
@@ -181,7 +167,7 @@ class SelectObject
       chull.reconstruct (*plane_hull);
 
       // Remove the plane indices from the data
-      PointCloud<PointT>::Ptr plane (new PointCloud<PointT>);
+      typename PointCloud<PointT>::Ptr plane (new PointCloud<PointT>);
       ExtractIndices<PointT> extract (true);
       extract.setInputCloud (cloud);
       extract.setIndices (plane_indices);
@@ -197,7 +183,7 @@ class SelectObject
       exppd.setIndices (indices_but_the_plane);
       exppd.setInputPlanarHull (plane_hull);
       exppd.setViewPoint (cloud->points[picked_idx].x, cloud->points[picked_idx].y, cloud->points[picked_idx].z);
-      exppd.setHeightLimits (0.0, 0.5);           // up to half a meter
+      exppd.setHeightLimits (0.001, 0.5);           // up to half a meter
       exppd.segment (*points_above_plane);
 
       vector<PointIndices> euclidean_label_indices;
@@ -205,7 +191,7 @@ class SelectObject
       if (cloud_->isOrganized ())
       {
         // Use an organized clustering segmentation to extract the individual clusters
-        EuclideanClusterComparator<PointT, Normal, Label>::Ptr euclidean_cluster_comparator (new EuclideanClusterComparator<PointT, Normal, Label>);
+        typename EuclideanClusterComparator<PointT, Normal, Label>::Ptr euclidean_cluster_comparator (new EuclideanClusterComparator<PointT, Normal, Label>);
         euclidean_cluster_comparator->setInputCloud (cloud);
         euclidean_cluster_comparator->setDistanceThreshold (0.03f, false);
         // Set the entire scene to false, and the inliers of the objects located on top of the plane to true
@@ -264,8 +250,7 @@ class SelectObject
     segment (const PointT &picked_point, 
              int picked_idx,
              PlanarRegion<PointT> &region,
-             PointIndices &indices,
-             PointCloud<PointT>::Ptr &object)
+             typename PointCloud<PointT>::Ptr &object)
     {
       object.reset ();
 
@@ -285,9 +270,9 @@ class SelectObject
         print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%zu", normal_cloud->size ()); print_info (" points]\n");
 
         OrganizedMultiPlaneSegmentation<PointT, Normal, Label> mps;
-        mps.setMinInliers (5000);
+        mps.setMinInliers (1000);
         mps.setAngularThreshold (deg2rad (3.0)); // 3 degrees
-        mps.setDistanceThreshold (0.02); // 2 cm
+        mps.setDistanceThreshold (0.03); // 2 cm
         mps.setMaximumCurvature (0.001); // a small curvature
         mps.setProjectPoints (true);
         mps.setComparator (plane_comparator_);
@@ -309,8 +294,8 @@ class SelectObject
         seg.setDistanceThreshold (0.005);
 
         // Copy XYZ and Normals to a new cloud
-        PointCloud<PointT>::Ptr cloud_segmented (new PointCloud<PointT> (*cloud_));
-        PointCloud<PointT>::Ptr cloud_remaining (new PointCloud<PointT>);
+        typename PointCloud<PointT>::Ptr cloud_segmented (new PointCloud<PointT> (*cloud_));
+        typename PointCloud<PointT>::Ptr cloud_remaining (new PointCloud<PointT>);
 
         ModelCoefficients coefficients;
         ExtractIndices<PointT> extract;
@@ -318,7 +303,7 @@ class SelectObject
 
         // Up until 30% of the original cloud is left
         int i = 1;
-        while (cloud_segmented->size () > 0.3 * cloud_->size ())
+        while (double (cloud_segmented->size ()) > 0.3 * double (cloud_->size ()))
         {
           seg.setInputCloud (cloud_segmented);
 
@@ -362,7 +347,6 @@ class SelectObject
         }
       }
 
-      //PointIndices::Ptr plane_boundary_indices;
       // Get the plane that holds the object of interest
       if (idx != -1)
       {
@@ -370,10 +354,8 @@ class SelectObject
 
         if (cloud_->isOrganized ())
         {
-          approximatePolygon (regions[idx], region, 0.01, false, true);
+          approximatePolygon (regions[idx], region, 0.01f, false, true);
           print_highlight ("Planar region: %zu points initial, %zu points after refinement.\n", regions[idx].getContour ().size (), region.getContour ().size ());
-
-          //plane_boundary_indices.reset (new PointIndices (boundary_indices[idx]));
         }
         else
         {
@@ -383,7 +365,7 @@ class SelectObject
           print_highlight (stderr, "Obtaining the boundary points for the region ");
           TicToc tt; tt.tic ();
           // Project the inliers to obtain a better hull
-          PointCloud<PointT>::Ptr cloud_projected (new PointCloud<PointT>);
+          typename PointCloud<PointT>::Ptr cloud_projected (new PointCloud<PointT>);
           ModelCoefficients::Ptr coefficients (new ModelCoefficients (model_coefficients[idx]));
           ProjectInliers<PointT> proj;
           proj.setModelType (SACMODEL_PLANE);
@@ -400,8 +382,6 @@ class SelectObject
           chull.reconstruct (plane_hull);
           region.setContour (plane_hull);
           print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%zu", plane_hull.size ()); print_info (" points]\n");
-
-          //plane_boundary_indices.reset (new PointIndices (boundary_indices[idx]));
         }
 
       }
@@ -442,7 +422,7 @@ class SelectObject
       // Add a sphere to it in the PCLVisualizer window
       stringstream ss;
       ss << "sphere_" << idx;
-      cloud_viewer_.addSphere (picked_pt, 0.01, 1.0, 0.0, 0.0, ss.str ());
+      cloud_viewer_->addSphere (picked_pt, 0.01, 1.0, 0.0, 0.0, ss.str ());
 
       // Because VTK/OpenGL stores data without NaN, we lose the 1-1 correspondence, so we must search for the real point
       search_->nearestKSearch (picked_pt, 1, indices, distances);
@@ -465,8 +445,7 @@ class SelectObject
       //  * first, segment all the planes in the scene, and find the one closest to our picked point
       //  * then, use euclidean clustering to find the object that we clicked on and return it
       PlanarRegion<PointT> region;
-      PointIndices region_indices;
-      segment (picked_pt, indices[0], region, region_indices, object_);
+      segment (picked_pt, indices[0], region, object_);
 
       // If no region could be determined, exit
       if (region.getContour ().empty ())
@@ -477,8 +456,8 @@ class SelectObject
       // Else, draw it on screen
       else
       {
-        cloud_viewer_.addPolygon (region, 0.0, 0.0, 1.0, "region");
-        cloud_viewer_.setShapeRenderingProperties (visualization::PCL_VISUALIZER_LINE_WIDTH, 10, "region");
+        cloud_viewer_->addPolygon (region, 0.0, 0.0, 1.0, "region");
+        cloud_viewer_->setShapeRenderingProperties (visualization::PCL_VISUALIZER_LINE_WIDTH, 10, "region");
 
         // Draw in image space
         if (image_viewer_)
@@ -497,8 +476,8 @@ class SelectObject
       {
         // Visualize the object in 3D...
         visualization::PointCloudColorHandlerCustom<PointT> red (object_, 255, 0, 0);
-        if (!cloud_viewer_.updatePointCloud (object_, red, "object"))
-          cloud_viewer_.addPointCloud (object_, red, "object");
+        if (!cloud_viewer_->updatePointCloud (object_, red, "object"))
+          cloud_viewer_->addPointCloud (object_, red, "object");
         // ...and 2D
         if (image_viewer_)
         {
@@ -514,68 +493,133 @@ class SelectObject
     
     /////////////////////////////////////////////////////////////////////////
     void
-    compute (PointCloud<PointT> &object, PointCloud<PointT> &plane)
+    compute ()
     {
       // Visualize the data
-      //if (image_viewer_)
-      //  image_viewer_->showRGBImage<PointT> (cloud_);
-      cloud_viewer_.addPointCloud (cloud_, "scene");
-      cloud_viewer_.resetCameraViewpoint ("scene");
-
-      while (!cloud_viewer_.wasStopped ())
+      while (!cloud_viewer_->wasStopped ())
       {
         /*// Add the plane that we're tracking to the cloud visualizer
         PointCloud<PointT>::Ptr plane (new Cloud);
         if (plane_)
           *plane = *plane_;
         visualization::PointCloudColorHandlerCustom<PointT> blue (plane, 0, 255, 0);
-        if (!cloud_viewer_.updatePointCloud (plane, blue, "plane"))
-          cloud_viewer_.addPointCloud (plane, "plane");
+        if (!cloud_viewer_->updatePointCloud (plane, blue, "plane"))
+          cloud_viewer_->addPointCloud (plane, "plane");
 */
-        cloud_viewer_.spinOnce ();
+        cloud_viewer_->spinOnce ();
         if (image_viewer_)
+        {
           image_viewer_->spinOnce ();
+          if (image_viewer_->wasStopped ())
+            break;
+        }
         boost::this_thread::sleep (boost::posix_time::microseconds (100));
       }
-
-      object = *object_;
-      plane = *plane_;
     }
     
     /////////////////////////////////////////////////////////////////////////
     void
-    init ()
+    initGUI ()
     {
-      cloud_viewer_.registerMouseCallback (&SelectObject::mouse_callback, *this);
-      cloud_viewer_.registerKeyboardCallback(&SelectObject::keyboard_callback, *this);
-      cloud_viewer_.registerPointPickingCallback (&SelectObject::pp_callback, *this);
+      cloud_viewer_.reset (new visualization::PCLVisualizer ("PointCloud"));
 
-      cloud_viewer_.setPosition (0, 0);
-
-      if (image_viewer_)
+      if (cloud_->isOrganized ())
       {
-        cloud_viewer_.setSize (cloud_->width, cloud_->height);
+        // If the dataset is organized, and has RGB data, create an image viewer
+        vector<sensor_msgs::PointField> fields;
+        int rgba_index = -1;
+        rgba_index = getFieldIndex (*cloud_, "rgba", fields);
+       
+        if (rgba_index >= 0)
+        {
+          image_viewer_.reset (new visualization::ImageViewer ("RGB Image"));
 
-        image_viewer_->registerMouseCallback (&SelectObject::mouse_callback, *this);
-        image_viewer_->registerKeyboardCallback(&SelectObject::keyboard_callback, *this);
-        image_viewer_->setPosition (cloud_->width, 0);
-        image_viewer_->setSize (cloud_->width, cloud_->height);
+          image_viewer_->registerMouseCallback (&SelectObject::mouse_callback, *this);
+          image_viewer_->registerKeyboardCallback(&SelectObject::keyboard_callback, *this);
+          image_viewer_->setPosition (cloud_->width, 0);
+          image_viewer_->setSize (cloud_->width, cloud_->height);
+
+          int poff = fields[rgba_index].offset;
+          // BGR to RGB
+          rgb_data_ = new unsigned char [cloud_->width * cloud_->height * 3];
+          for (uint32_t i = 0; i < cloud_->width * cloud_->height; ++i)
+          {
+            RGB rgb;
+            memcpy (&rgb, reinterpret_cast<unsigned char*> (&cloud_->points[i]) + poff, sizeof (rgb));
+
+            rgb_data_[i * 3 + 0] = rgb.r;
+            rgb_data_[i * 3 + 1] = rgb.g;
+            rgb_data_[i * 3 + 2] = rgb.b;
+          }
+          image_viewer_->showRGBImage (rgb_data_, cloud_->width, cloud_->height);
+        }
+        cloud_viewer_->setSize (cloud_->width, cloud_->height);
+      }
+
+      cloud_viewer_->registerMouseCallback (&SelectObject::mouse_callback, *this);
+      cloud_viewer_->registerKeyboardCallback(&SelectObject::keyboard_callback, *this);
+      cloud_viewer_->registerPointPickingCallback (&SelectObject::pp_callback, *this);
+      cloud_viewer_->setPosition (0, 0);
+
+      cloud_viewer_->addPointCloud (cloud_, "scene");
+      cloud_viewer_->resetCameraViewpoint ("scene");
+      cloud_viewer_->addCoordinateSystem (0.1, 0, 0, 0);
+    }
+
+    /////////////////////////////////////////////////////////////////////////
+    bool
+    load (const std::string &file)
+    {
+      // Load the input file
+      TicToc tt; tt.tic ();
+      print_highlight (stderr, "Loading "); 
+      print_value (stderr, "%s ", file.c_str ());
+      cloud_.reset (new PointCloud<PointT>);
+      if (io::loadPCDFile (file, *cloud_) < 0) 
+      {
+        print_error (stderr, "[error]\n");
+        return (false);
+      }
+      print_info ("[done, "); print_value ("%g", tt.toc ()); 
+      print_info (" ms : "); print_value ("%zu", cloud_->size ()); print_info (" points]\n");
+      
+      if (cloud_->isOrganized ())
+        search_.reset (new search::OrganizedNeighbor<PointT>);
+      else
+        search_.reset (new search::KdTree<PointT>);
+
+      search_->setInputCloud (cloud_);
+
+      return (true);
+    }
+    
+    /////////////////////////////////////////////////////////////////////////
+    void
+    save (const std::string &object_file, const std::string &plane_file)
+    {
+      PCDWriter w;
+      if (object_ && !object_->empty ())
+      {
+        w.writeBinaryCompressed (object_file, *object_);
+        w.writeBinaryCompressed (plane_file, *plane_);
+        print_highlight ("Object succesfully segmented. Saving results in: %s, and %s.\n", object_file.c_str (), plane_file.c_str ());
       }
     }
 
-    visualization::PCLVisualizer cloud_viewer_;
+    boost::shared_ptr<visualization::PCLVisualizer> cloud_viewer_;
     boost::shared_ptr<visualization::ImageViewer> image_viewer_;
     
-    PointCloud<PointT>::Ptr cloud_;
-    search::Search<PointT>::Ptr search_;
+    typename PointCloud<PointT>::Ptr cloud_;
+    typename search::Search<PointT>::Ptr search_;
   private:
     // Segmentation
-    EdgeAwarePlaneComparator<PointT, Normal>::Ptr plane_comparator_;
+    typename EdgeAwarePlaneComparator<PointT, Normal>::Ptr plane_comparator_;
     PointIndices::Ptr plane_indices_;
+    unsigned char* rgb_data_;
 
     // Results
-    PointCloud<PointT>::Ptr plane_;
-    PointCloud<PointT>::Ptr object_;
+    typename PointCloud<PointT>::Ptr plane_;
+    typename PointCloud<PointT>::Ptr object_;
 };
 
 /* ---[ */
@@ -601,30 +645,28 @@ main (int argc, char** argv)
     object_file = argv[p_file_indices[1]];
 
 
-  // Load the first file
-  TicToc tt; tt.tic ();
-  print_highlight (stderr, "Loading "); print_value (stderr, "%s ", argv[p_file_indices[0]]);
-  PointCloud<PointT> cloud;
-  if (io::loadPCDFile (argv[p_file_indices[0]], cloud) < 0) 
+  PCDReader reader;
+  // Test the header
+  sensor_msgs::PointCloud2 dummy;
+  reader.readHeader (argv[p_file_indices[0]], dummy);
+  if (dummy.height != 1 && getFieldIndex (dummy, "rgba") != -1)
   {
-    print_error (stderr, "[error]\n");
-    return (-1);
+    print_highlight ("Enabling 2D image viewer mode.\n");
+    SelectObject<PointXYZRGBA> s;
+    if (!s.load (argv[p_file_indices[0]])) return (-1);
+    s.initGUI ();
+    s.compute ();
+    s.save (object_file, plane_file);
   }
-  print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%zu", cloud.size ()); print_info (" points]\n");
- 
-  // Select the cluster
-  SelectObject s (cloud);
-  s.init ();
+  else
+  {
+    SelectObject<PointXYZ> s;
+    if (!s.load (argv[p_file_indices[0]])) return (-1);
+    s.initGUI ();
+    s.compute ();
+    s.save (object_file, plane_file);
+  }
 
-  // Save the output
-  PointCloud<PointT> object, plane;
-  s.compute (object, plane);
-
-  print_info ("Object succesfully segmented. Saving results in: %s, %s and %s.\n", object_file.c_str (), plane_file.c_str (), rest_file.c_str ());
-  PCDWriter w;
-  w.writeBinaryCompressed (object_file, object);
-  w.writeBinaryCompressed (plane_file, plane);
- 
   return (0);
 }
 /* ]--- */
