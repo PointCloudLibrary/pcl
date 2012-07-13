@@ -14,9 +14,9 @@ if(build)
         src/uniform_sampling.cpp
         src/sift_keypoint.cpp
         src/smoothed_surfaces_keypoint.cpp
-        src/harris_keypoint3D.cpp
-        src/harris_keypoint6D.cpp
-        src/agast_keypoint2D.cpp
+        src/harris_3d.cpp
+        src/harris_6d.cpp
+        src/agast_2d.cpp
         src/susan.cpp
         )
 
@@ -26,9 +26,9 @@ if(build)
         include/pcl/${SUBSYS_NAME}/sift_keypoint.h
         include/pcl/${SUBSYS_NAME}/uniform_sampling.h
         include/pcl/${SUBSYS_NAME}/smoothed_surfaces_keypoint.h
-        include/pcl/${SUBSYS_NAME}/agast_keypoint2D.h
-        include/pcl/${SUBSYS_NAME}/harris_keypoint3D.h
-        include/pcl/${SUBSYS_NAME}/harris_keypoint6D.h
+        include/pcl/${SUBSYS_NAME}/agast_2d.h
+        include/pcl/${SUBSYS_NAME}/harris_3d.h
+        include/pcl/${SUBSYS_NAME}/harris_6d.h
         include/pcl/${SUBSYS_NAME}/susan.h
         )
 
@@ -37,9 +37,9 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/sift_keypoint.hpp
         include/pcl/${SUBSYS_NAME}/impl/uniform_sampling.hpp
         include/pcl/${SUBSYS_NAME}/impl/smoothed_surfaces_keypoint.hpp
-        include/pcl/${SUBSYS_NAME}/impl/agast_keypoint2D.hpp
-        include/pcl/${SUBSYS_NAME}/impl/harris_keypoint3D.hpp
-        include/pcl/${SUBSYS_NAME}/impl/harris_keypoint6D.hpp
+        include/pcl/${SUBSYS_NAME}/impl/agast_2d.hpp
+        include/pcl/${SUBSYS_NAME}/impl/harris_3d.hpp
+        include/pcl/${SUBSYS_NAME}/impl/harris_6d.hpp
         include/pcl/${SUBSYS_NAME}/impl/susan.hpp
         )
 
@@ -47,8 +47,7 @@ if(build)
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
     PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${impl_incs})
     target_link_libraries(${LIB_NAME} pcl_features pcl_filters)
-    PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}"
-      "${SUBSYS_DEPS}" "" "" "" "")
+    PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}" "${SUBSYS_DEPS}" "" "" "" "")
 
     # Install include files
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs})

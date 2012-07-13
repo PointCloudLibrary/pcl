@@ -172,7 +172,7 @@ namespace pcl
   };
 }
 
-#include <pcl/keypoints/impl/harris_keypoint3D.hpp>
+#include <pcl/keypoints/impl/harris_3d.hpp>
 
 #endif // #ifndef PCL_HARRIS_KEYPOINT_3D_H_
 

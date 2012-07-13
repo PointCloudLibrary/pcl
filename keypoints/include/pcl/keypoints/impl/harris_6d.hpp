@@ -38,7 +38,7 @@
 #ifndef PCL_HARRIS_KEYPOINT_6D_IMPL_H_
 #define PCL_HARRIS_KEYPOINT_6D_IMPL_H_
 
-#include <pcl/keypoints/harris_keypoint6D.h>
+#include <pcl/keypoints/harris_6d.h>
 #include <pcl/common/io.h>
 #include <pcl/filters/passthrough.h>
 #include <pcl/filters/extract_indices.h>

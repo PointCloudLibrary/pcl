@@ -36,7 +36,7 @@
  */
 
 #include <pcl/keypoints/sift_keypoint.h>
-#include <pcl/keypoints/impl/harris_keypoint3D.hpp>
+#include <pcl/keypoints/impl/harris_3d.hpp>
 #include <pcl/point_types.h>
 #include <pcl/impl/instantiate.hpp>
 

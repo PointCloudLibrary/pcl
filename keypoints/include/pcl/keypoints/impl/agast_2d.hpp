@@ -3,6 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -80,14 +81,14 @@ pcl::AgastKeypoint2D<PointInT, IntensityT>::detectKeypoints (PointCloudOut &outp
   {
     pcl::PointCloud<pcl::PointXY> tmp_cloud;
 
-    AgastHelper7_12 agast_helper (width, height, threshold_);
+    pcl::keypoints::agast::AgastHelper7_12 agast_helper (width, height, threshold_);
     agast_helper.detectKeypoints (image_data, tmp_cloud);
 
     agast_helper.applyNonMaxSuppression (image_data, tmp_cloud, output);
   }
   else
   {
-    AgastHelper7_12 agast_helper (width, height, threshold_);
+    pcl::keypoints::agast::AgastHelper7_12 agast_helper (width, height, threshold_);
     agast_helper.detectKeypoints (image_data, output);
   }
 

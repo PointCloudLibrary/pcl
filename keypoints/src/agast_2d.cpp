@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
+ *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -34,14 +36,14 @@
  *
  */
 
-#include <pcl/keypoints/agast_keypoint2D.h>
+#include <pcl/keypoints/agast_2d.h>
 #include <pcl/point_types.h>
 #include <pcl/impl/instantiate.hpp>
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::AgastHelper7_12::detectKeypoints (std::vector<unsigned char> & intensity_data, pcl::PointCloud<pcl::PointXY> &output)
+pcl::keypoints::agast::AgastHelper7_12::detectKeypoints (std::vector<unsigned char> & intensity_data, pcl::PointCloud<pcl::PointXY> &output)
 {
   detect (&(intensity_data[0]), output.points);
 
@@ -51,7 +53,7 @@ pcl::AgastHelper7_12::detectKeypoints (std::vector<unsigned char> & intensity_da
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::AgastHelper7_12::applyNonMaxSuppression (
+pcl::keypoints::agast::AgastHelper7_12::applyNonMaxSuppression (
   std::vector<unsigned char> & intensity_data, 
   pcl::PointCloud<pcl::PointXY> &input,
   pcl::PointCloud<pcl::PointXY> &output)
@@ -74,104 +76,104 @@ pcl::AgastHelper7_12::applyNonMaxSuppression (
 	int numCorners_all = int (corners_all.size ());
 	int nMaxCorners = int (corners_nms.capacity ());
 
-	currCorner=corners_all.begin();
+	currCorner = corners_all.begin ();
 
-	if(numCorners_all > nMaxCorners)
+	if (numCorners_all > nMaxCorners)
 	{
-		if(nMaxCorners==0)
+		if (nMaxCorners == 0)
 		{
-			nMaxCorners=512 > numCorners_all ? 512 : numCorners_all;
-			corners_nms.reserve(nMaxCorners);
-			nmsFlags.reserve(nMaxCorners);
+			nMaxCorners = 512 > numCorners_all ? 512 : numCorners_all;
+			corners_nms.reserve (nMaxCorners);
+			nmsFlags.reserve (nMaxCorners);
 		}
 		else
 		{
-			nMaxCorners *=2;
-			if(numCorners_all > nMaxCorners)
+			nMaxCorners *= 2;
+			if (numCorners_all > nMaxCorners)
 				nMaxCorners = numCorners_all;
-			corners_nms.reserve(nMaxCorners);
-			nmsFlags.reserve(nMaxCorners);
+			corners_nms.reserve (nMaxCorners);
+			nmsFlags.reserve (nMaxCorners);
 		}
 	}
-	corners_nms.resize(numCorners_all);
-	nmsFlags.resize(numCorners_all);
+	corners_nms.resize (numCorners_all);
+	nmsFlags.resize (numCorners_all);
 
-	nmsFlags_p=nmsFlags.begin();
-	currCorner_nms=corners_nms.begin();
+	nmsFlags_p = nmsFlags.begin ();
+	currCorner_nms = corners_nms.begin ();
 
 	//set all flags to MAXIMUM
-	for(j=numCorners_all; j>0; j--)
+	for (j = numCorners_all; j > 0; j--)
 		*nmsFlags_p++=-1;
-	nmsFlags_p=nmsFlags.begin();
+	nmsFlags_p = nmsFlags.begin ();
 
-	for(currCorner_ind=0; currCorner_ind<numCorners_all; currCorner_ind++)
+	for (currCorner_ind = 0; currCorner_ind < numCorners_all; currCorner_ind++)
 	{
 		int t;
 
 		//check above
-		if(lastRow+1 < currCorner->y)
+		if (lastRow+1 < currCorner->y)
 		{
 			lastRow=next_lastRow;
 			lastRowCorner_ind=next_lastRowCorner_ind;
 		}
-		if(next_lastRow!=currCorner->y)
+		if (next_lastRow!=currCorner->y)
 		{
 			next_lastRow = int (currCorner->y);
 			next_lastRowCorner_ind = currCorner_ind;
 		}
-		if(lastRow+1==currCorner->y)
+		if (lastRow+1 == currCorner->y)
 		{
 			//find the corner above the current one
-			while((corners_all[lastRowCorner_ind].x < currCorner->x) && (corners_all[lastRowCorner_ind].y == lastRow))
+			while ((corners_all[lastRowCorner_ind].x < currCorner->x) && (corners_all[lastRowCorner_ind].y == lastRow))
 				lastRowCorner_ind++;
 
-			if( (corners_all[lastRowCorner_ind].x == currCorner->x) && (lastRowCorner_ind!=currCorner_ind) )
+			if ((corners_all[lastRowCorner_ind].x == currCorner->x) && (lastRowCorner_ind!=currCorner_ind))
 			{
-				int t=lastRowCorner_ind;
-				while(nmsFlags[t]!=-1) //find the maximum in this block
-					t=nmsFlags[t];
+				int t = lastRowCorner_ind;
+				while (nmsFlags[t] != -1) //find the maximum in this block
+					t = nmsFlags[t];
 
-				if( scores[currCorner_ind] < scores[t] )
+				if (scores[currCorner_ind] < scores[t])
 				{
-					nmsFlags[currCorner_ind]=t;
+					nmsFlags[currCorner_ind] = t;
 				}
 				else
-					nmsFlags[t]=currCorner_ind;
+					nmsFlags[t] = currCorner_ind;
 			}
 		}
 
 		//check left
 		t=currCorner_ind-1;
-		if( (currCorner_ind!=0) && (corners_all[t].y == currCorner->y) && (corners_all[t].x+1 == currCorner->x) )
+		if ((currCorner_ind!=0) && (corners_all[t].y == currCorner->y) && (corners_all[t].x+1 == currCorner->x))
 		{
-			int currCornerMaxAbove_ind=nmsFlags[currCorner_ind];
+			int currCornerMaxAbove_ind = nmsFlags[currCorner_ind];
 
-			while(nmsFlags[t]!=-1) //find the maximum in that area
+			while (nmsFlags[t] != -1) //find the maximum in that area
 				t=nmsFlags[t];
 
-			if(currCornerMaxAbove_ind==-1) //no maximum above
+			if (currCornerMaxAbove_ind == -1) //no maximum above
 			{
-				if(t!=currCorner_ind)
+				if (t != currCorner_ind)
 				{
-					if( scores[currCorner_ind] < scores[t] )
-						nmsFlags[currCorner_ind]=t;
+					if (scores[currCorner_ind] < scores[t] )
+						nmsFlags[currCorner_ind] = t;
 					else
-						nmsFlags[t]=currCorner_ind;
+						nmsFlags[t] = currCorner_ind;
 				}
 			}
 			else	//maximum above
 			{
-				if(t!=currCornerMaxAbove_ind)
+				if (t != currCornerMaxAbove_ind)
 				{
-					if(scores[currCornerMaxAbove_ind] < scores[t])
+					if (scores[currCornerMaxAbove_ind] < scores[t])
 					{
-						nmsFlags[currCornerMaxAbove_ind]=t;
-						nmsFlags[currCorner_ind]=t;
+						nmsFlags[currCornerMaxAbove_ind] = t;
+						nmsFlags[currCorner_ind] = t;
 					}
 					else
 					{
-						nmsFlags[t]=currCornerMaxAbove_ind;
-						nmsFlags[currCorner_ind]=currCornerMaxAbove_ind;
+						nmsFlags[t] = currCornerMaxAbove_ind;
+						nmsFlags[currCorner_ind] = currCornerMaxAbove_ind;
 					}
 				}
 			}
@@ -195,7 +197,7 @@ pcl::AgastHelper7_12::applyNonMaxSuppression (
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::AgastHelper7_12::detect (const unsigned char* im, std::vector<pcl::PointXY, Eigen::aligned_allocator<pcl::PointXY> > & corners_all) const
+pcl::keypoints::agast::AgastHelper7_12::detect (const unsigned char* im, std::vector<pcl::PointXY, Eigen::aligned_allocator<pcl::PointXY> > & corners_all) const
 {
 	int total=0;
 	int nExpectedCorners = int (corners_all.capacity ());
@@ -2272,12 +2274,11 @@ success_structured:
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 int
-pcl::AgastHelper7_12::computeCornerScore (
-  const unsigned char* p) const
+pcl::keypoints::agast::AgastHelper7_12::computeCornerScore (const unsigned char* p) const
 {
   int bmin = int (threshold_);
   int bmax = 255;
-  int b_test = (bmax + bmin)/2;
+  int b_test = (bmax + bmin) / 2;
 
 	register int_fast16_t offset0=s_offset0;
 	register int_fast16_t offset1=s_offset1;
@@ -2292,7 +2293,7 @@ pcl::AgastHelper7_12::computeCornerScore (
 	register int_fast16_t offset10=s_offset10;
 	register int_fast16_t offset11=s_offset11;
 
-	while(1)
+	while (1)
 	{
 		register const int cb = *p + b_test;
 		register const int c_b = *p - b_test;
@@ -7907,7 +7908,7 @@ pcl::AgastHelper7_12::computeCornerScore (
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::AgastHelper7_12::computeCornerScores (
+pcl::keypoints::agast::AgastHelper7_12::computeCornerScores (
   const unsigned char* im, 
   std::vector<pcl::PointXY, Eigen::aligned_allocator<pcl::PointXY> > & corners_all, 
   std::vector<int> & scores)
