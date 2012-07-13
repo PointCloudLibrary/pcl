@@ -74,18 +74,18 @@ namespace pcl
         typedef std::pair<PolynomialFunction, PolynomialFunction> RationalFunction;
         
         
-	/** \brief PCL Plotter constructor.  
+        /** \brief PCL Plotter constructor.  
          *  \param[in] name Name of the window
          */
         PCLPlotter (char const * name = "PCL Plotter");
-	
-	/** \brief adds a plot with correspondences in the arrays arrayX and arrayY
+        
+         /** \brief adds a plot with correspondences in the arrays arrayX and arrayY
           * \param[in] array_X X coordinates of point correspondence array
           * \param[in] array_Y Y coordinates of point correspondence array
-	  * \param[in] size length of the array arrayX and arrayY
+          * \param[in] size length of the array arrayX and arrayY
           * \param[in] name name of the plot which appears in the legend when toggled on
           * \param[in] type type of the graph plotted. vtkChart::LINE for line plot, vtkChart::BAR for bar plot, and vtkChart::POINTS for a scattered point plot
-	  * \param[in] color a character array of 4 fields denoting the R,G,B and A component of the color of the plot ranging from 0 to 255. If this argument is not passed (or NULL is passed) the plot is colored based on a color scheme 
+          * \param[in] color a character array of 4 fields denoting the R,G,B and A component of the color of the plot ranging from 0 to 255. If this argument is not passed (or NULL is passed) the plot is colored based on a color scheme 
           */
         void 
         addPlotData (double const *array_X, 
@@ -95,7 +95,7 @@ namespace pcl
                     int type  = LINE , 
                     char const *color=NULL);
 	
-	/** \brief adds a plot with correspondences in vectors arrayX and arrayY. This is the vector version of the addPlotData function. Parameters mean same as before
+         /** \brief adds a plot with correspondences in vectors arrayX and arrayY. This is the vector version of the addPlotData function. Parameters mean same as before
           */
         void 
         addPlotData (std::vector<double> const &array_X, 
@@ -103,7 +103,7 @@ namespace pcl
                     char const * name = "Y Axis", 
                     int type = LINE,
                     std::vector<char> const &color = std::vector<char>());
-	
+        
         /** \brief adds a plot with correspondences in vector of pairs. The the first and second field of the pairs of the vector forms the correspondence. Rest parameters mean same as before
           */
         void
@@ -115,53 +115,56 @@ namespace pcl
         /** \brief adds a plot based on the given polynomial function and the range in X axis. 
           * \param[in] p_function A polynomial function which is represented by a vector which stores the coefficients. See description on the  typedef.   
           * \param[in] x_min the left boundary of the range for displaying the plot
-	  * \param[in] x_max the right boundary of the range for displaying the plot
+          * \param[in] x_max the right boundary of the range for displaying the plot
           * \param[in] name name of the plot which appears in the legend when toggled on
           * \param[in] num_points Number of points plotted to show the graph. More this number, more is the resolution.
-	  * \param[in] color a character array of 4 fields denoting the R,G,B and A component of the color of the plot ranging from 0 to 255. If this argument is not passed (or NULL is passed) the plot is colored based on a color scheme 
+          * \param[in] color a character array of 4 fields denoting the R,G,B and A component of the color of the plot ranging from 0 to 255. If this argument is not passed (or NULL is passed) the plot is colored based on a color scheme 
           */
         void
         addPlotData(PolynomialFunction const & p_function,
                     double x_min, double x_max,
                     char const *name = "Y Axis",
                     int num_points = 100,
+                    int type = LINE,
                     std::vector<char> const &color = std::vector<char>());
         
         /** \brief adds a plot based on the given rational function and the range in X axis. 
           * \param[in] r_function A rational function which is represented by the ratio of two polynomial functions. See description on the  typedef for more details.
           * \param[in] x_min the left boundary of the range for displaying the plot
-	  * \param[in] x_max the right boundary of the range for displaying the plot
+          * \param[in] x_max the right boundary of the range for displaying the plot
           * \param[in] name name of the plot which appears in the legend when toggled on
           * \param[in] num_points Number of points plotted to show the graph. More this number, more is the resolution.
-	  * \param[in] color a character array of 4 fields denoting the R,G,B and A component of the color of the plot ranging from 0 to 255. If this argument is not passed (or NULL is passed) the plot is colored based on a color scheme 
+          * \param[in] color a character array of 4 fields denoting the R,G,B and A component of the color of the plot ranging from 0 to 255. If this argument is not passed (or NULL is passed) the plot is colored based on a color scheme 
           */
         void
         addPlotData (RationalFunction const & r_function,
                     double x_min, double x_max,
                     char const *name = "Y Axis",
                     int num_points = 100,
+                    int type = LINE,
                     std::vector<char> const &color = std::vector<char>());
         
         /** \brief adds a plot based on a user defined callback function representing the function to plot
           * \param[in] function a user defined callback function representing the relation y = function(x)
           * \param[in] x_min the left boundary of the range for displaying the plot
-	  * \param[in] x_max the right boundary of the range for displaying the plot
+          * \param[in] x_max the right boundary of the range for displaying the plot
           * \param[in] name name of the plot which appears in the legend when toggled on
           * \param[in] num_points Number of points plotted to show the graph. More this number, more is the resolution.
-	  * \param[in] color a character array of 4 fields denoting the R,G,B and A component of the color of the plot ranging from 0 to 255. If this argument is not passed (or NULL is passed) the plot is colored based on a color scheme 
+          * \param[in] color a character array of 4 fields denoting the R,G,B and A component of the color of the plot ranging from 0 to 255. If this argument is not passed (or NULL is passed) the plot is colored based on a color scheme 
           */
         void
         addPlotData (double (*function)(double),
                     double x_min, double x_max,
                     char const *name = "Y Axis",
                     int num_points = 100,
+                    int type = LINE,
                     std::vector<char> const &color = std::vector<char>());
         
         /** \brief bins the elements in vector data into nbins equally spaced containers and plots the resulted histogram 
           * \param[in] data the raw data 
           * \param[in] nbins the number of bins for the histogram
-	  * \param[in] name name of this histogram which will appear on legends if toggled on
-	  * \param[in] color a character array of 4 fields denoting the R,G,B and A component of the color of the plot ranging from 0 to 255. If this argument is not passed (or an empty vector is passed) the histogram is colored based on the current color scheme 
+          * \param[in] name name of this histogram which will appear on legends if toggled on
+          * \param[in] color a character array of 4 fields denoting the R,G,B and A component of the color of the plot ranging from 0 to 255. If this argument is not passed (or an empty vector is passed) the histogram is colored based on the current color scheme 
           */
         void
         addHistogramData (std::vector<double> const & data, 
@@ -293,14 +296,14 @@ namespace pcl
           * \param[in] value the value at which the function is to be computed
           */
         double 
-        compute(PolynomialFunction const & p_function, double val);
+        compute (PolynomialFunction const & p_function, double val);
         
         /** \brief computes the value of the rational function at val
           * \param[in] r_function the rational function
           * \param[in] value the value at which the function is to be computed
           */
         double 
-        compute(RationalFunction const & r_function, double val);
+        compute (RationalFunction const & r_function, double val);
         
         /** \brief bins the elements in vector data into nbins equally spaced containers and returns the histogram form, ie, computes the histogram for 'data'
           * \param[in] data data who's frequency distribution is to be found

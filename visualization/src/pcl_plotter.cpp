@@ -133,6 +133,7 @@ pcl::visualization::PCLPlotter::addPlotData (
     double x_min, double x_max,
     char const *name,
     int num_points,
+    int type,
     std::vector<char> const &color)
 {
   std::vector<double> array_x(num_points), array_y(num_points);
@@ -145,7 +146,7 @@ pcl::visualization::PCLPlotter::addPlotData (
     array_y[i] = compute(p_function, xval);
   }
   
-  this->addPlotData (array_x, array_y, name, vtkChart::LINE, color);
+  this->addPlotData (array_x, array_y, name, type, color);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -154,6 +155,7 @@ pcl::visualization::PCLPlotter::addPlotData (RationalFunction const & r_function
                     double x_min, double x_max,
                     char const *name,
                     int num_points,
+                    int type,
                     std::vector<char> const &color)
 {
   std::vector<double> array_x(num_points), array_y(num_points);
@@ -169,7 +171,7 @@ pcl::visualization::PCLPlotter::addPlotData (RationalFunction const & r_function
     array_y[i] = yval;
   }
   
-  this->addPlotData (array_x, array_y, name, vtkChart::LINE, color);
+  this->addPlotData (array_x, array_y, name, type, color);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -178,6 +180,7 @@ pcl::visualization::PCLPlotter::addPlotData (double (*function)(double),
                     double x_min, double x_max,
                     char const *name,
                     int num_points,
+                    int type,
                     std::vector<char> const &color)
 {
   std::vector<double> array_x(num_points), array_y(num_points);
@@ -190,7 +193,7 @@ pcl::visualization::PCLPlotter::addPlotData (double (*function)(double),
     array_y[i] = function(xval);
   }
   
-  this->addPlotData (array_x, array_y, name, vtkChart::LINE, color);
+  this->addPlotData (array_x, array_y, name, type, color);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
