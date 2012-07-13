@@ -72,10 +72,10 @@ using namespace std;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-class SelectObject
+class ObjectSelection
 {
   public:
-    SelectObject ()
+    ObjectSelection ()
       : plane_comparator_ (new EdgeAwarePlaneComparator<PointT, Normal>)
       , rgb_data_ ()
     { 
@@ -84,7 +84,7 @@ class SelectObject
     }
 
     /////////////////////////////////////////////////////////////////////////
-    virtual ~SelectObject ()
+    virtual ~ObjectSelection ()
     {
       if (rgb_data_)
         delete[] rgb_data_;
@@ -534,8 +534,8 @@ class SelectObject
         {
           image_viewer_.reset (new visualization::ImageViewer ("RGB Image"));
 
-          image_viewer_->registerMouseCallback (&SelectObject::mouse_callback, *this);
-          image_viewer_->registerKeyboardCallback(&SelectObject::keyboard_callback, *this);
+          image_viewer_->registerMouseCallback (&ObjectSelection::mouse_callback, *this);
+          image_viewer_->registerKeyboardCallback(&ObjectSelection::keyboard_callback, *this);
           image_viewer_->setPosition (cloud_->width, 0);
           image_viewer_->setSize (cloud_->width, cloud_->height);
 
@@ -556,9 +556,9 @@ class SelectObject
         cloud_viewer_->setSize (cloud_->width, cloud_->height);
       }
 
-      cloud_viewer_->registerMouseCallback (&SelectObject::mouse_callback, *this);
-      cloud_viewer_->registerKeyboardCallback(&SelectObject::keyboard_callback, *this);
-      cloud_viewer_->registerPointPickingCallback (&SelectObject::pp_callback, *this);
+      cloud_viewer_->registerMouseCallback (&ObjectSelection::mouse_callback, *this);
+      cloud_viewer_->registerKeyboardCallback(&ObjectSelection::keyboard_callback, *this);
+      cloud_viewer_->registerPointPickingCallback (&ObjectSelection::pp_callback, *this);
       cloud_viewer_->setPosition (0, 0);
 
       cloud_viewer_->addPointCloud (cloud_, "scene");
@@ -652,7 +652,7 @@ main (int argc, char** argv)
   if (dummy.height != 1 && getFieldIndex (dummy, "rgba") != -1)
   {
     print_highlight ("Enabling 2D image viewer mode.\n");
-    SelectObject<PointXYZRGBA> s;
+    ObjectSelection<PointXYZRGBA> s;
     if (!s.load (argv[p_file_indices[0]])) return (-1);
     s.initGUI ();
     s.compute ();
@@ -660,7 +660,7 @@ main (int argc, char** argv)
   }
   else
   {
-    SelectObject<PointXYZ> s;
+    ObjectSelection<PointXYZ> s;
     if (!s.load (argv[p_file_indices[0]])) return (-1);
     s.initGUI ();
     s.compute ();
