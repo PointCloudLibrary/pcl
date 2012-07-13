@@ -5,7 +5,14 @@
 #include <pcl/registration/transforms.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/keypoints/sift_keypoint.h>
-#include <pcl/keypoints/harris_keypoint3D.h>
+
+#include <pcl/pcl_config.h>
+#if PCL_MAJOR_VERSION >= 1 && PCL_MINOR_VERSION >= 7
+#  include <pcl/keypoints/harris_3d.h>
+#else
+#  include <pcl/keypoints/harris_3d.h>
+#endif
+
 #include <pcl/ModelCoefficients.h>
 #include <pcl/sample_consensus/method_types.h>
 #include <pcl/sample_consensus/model_types.h>
