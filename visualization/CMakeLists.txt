@@ -30,6 +30,7 @@ if(build)
         src/point_cloud_handlers.cpp
         src/pcl_visualizer.cpp
         src/pcl_plotter.cpp
+        src/pcl_painter2D.cpp
         src/histogram_visualizer.cpp
         src/common/common.cpp
         src/common/io.cpp
@@ -57,6 +58,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/interactor_style.h
         include/pcl/${SUBSYS_NAME}/pcl_visualizer.h
         include/pcl/${SUBSYS_NAME}/pcl_plotter.h
+        include/pcl/${SUBSYS_NAME}/pcl_painter2D.h
         include/pcl/${SUBSYS_NAME}/registration_visualizer.h
         include/pcl/${SUBSYS_NAME}/point_cloud_handlers.h
         include/pcl/${SUBSYS_NAME}/keyboard_event.h
