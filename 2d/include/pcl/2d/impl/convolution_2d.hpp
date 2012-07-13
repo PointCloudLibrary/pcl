@@ -49,7 +49,7 @@ pcl::pcl_2d::convolution_2d::gaussianKernel  (const int kernel_size, const float
     kernel[i].resize (kernel_size);
     for (int j = 0; j < kernel_size; j++)
     {
-      kernel[i][j] = exp (-(((i - kernel_size / 2) * (i - kernel_size / 2) + (j - kernel_size / 2) * (j - kernel_size / 2)) / (2 * sigma * sigma)));
+      kernel[i][j] = exp (-(((i - kernel_size / 2.0f) * (i - kernel_size / 2.0f) + (j - kernel_size / 2.0f) * (j - kernel_size / 2.0f)) / (2.0f * sigma * sigma)));
       sum += kernel[i][j];
     }
   }

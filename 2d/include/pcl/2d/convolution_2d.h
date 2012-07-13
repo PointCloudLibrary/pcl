@@ -87,14 +87,12 @@ namespace pcl
          * Note that the input image is not actually extended in size. Instead, based on these options,
          * the convolution is performed differently at the border pixels.
          */
-        typedef enum BOUNDARY_OPTIONS_ENUM{
+        enum BOUNDARY_OPTIONS_ENUM
+        {
             BOUNDARY_OPTION_CLAMP,
             BOUNDARY_OPTION_MIRROR,
             BOUNDARY_OPTION_ZERO_PADDING
         };
-//        static const int BOUNDARY_OPTION_CLAMP = 0;
-//        static const int BOUNDARY_OPTION_MIRROR = 1;
-//        static const int BOUNDARY_OPTION_ZERO_PADDING = 2;
 
         convolution_2d  ()
         {
