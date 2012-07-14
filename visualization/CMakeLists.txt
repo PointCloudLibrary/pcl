@@ -21,6 +21,8 @@ if (ANDROID_NDK)
   message("VTK was found, but cannot be compiled for Android. Please use VES instead.")
 endif ()
 
+find_package(OpenGL)
+
 PCL_ADD_DOC(${SUBSYS_NAME})
 
 if(build)
@@ -98,11 +100,7 @@ if(build)
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
     PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${common_incs} ${impl_incs} ${common_impl_incs} ${vtk_incs})
-    
-    if(APPLE)
-      find_package(OpenGL)
-    endif(APPLE)
-    
+     
     if("${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}" VERSION_LESS "5.6")
       target_link_libraries(${LIB_NAME} pcl_common pcl_io pcl_kdtree vtkCommon vtkWidgets vtkHybrid vtkFiltering vtkRendering ${OPENGL_LIBRARIES})
     else()
