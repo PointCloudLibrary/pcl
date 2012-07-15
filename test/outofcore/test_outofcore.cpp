@@ -232,11 +232,18 @@ TEST(PCL, Outofcore_Bounding_Box)
 
   for(int i=0; i<3; i++)
   {
-    EXPECT_EQ (min_otreeA[i], min[i]);
-    EXPECT_EQ (max_otreeA[i], max[i]);
+    //octree adds an epsilon to bounding box
+    EXPECT_LE (min_otreeA[i], min[i]);
+    EXPECT_NEAR (min_otreeA[i], min[i], 1e4);
+    
+    EXPECT_GE (max_otreeA[i], max[i]);
+    EXPECT_NEAR (max_otreeA[i], max[i], 1e4);
 
-    EXPECT_EQ (min_otreeB[i], min[i]);
-    EXPECT_EQ (max_otreeB[i], max[i]);
+    EXPECT_LE (min_otreeB[i] , min[i]);
+    EXPECT_NEAR (min_otreeB[i], min[i], 1e4);
+
+    EXPECT_GE (max_otreeB[i] , max[i]);
+    EXPECT_NEAR (max_otreeB[i], max[i], 1e4);
   }
 }
 
@@ -805,8 +812,8 @@ TEST_F ( OutofcoreTest, PointCloud2_Query )
   ASSERT_EQ (points_added, dst_blob->width*dst_blob->height );
   ASSERT_EQ (LOD_points_added, dst_blob->width*dst_blob->height );
 
-  sensor_msgs::PointCloud2::Ptr query_result_a (new sensor_msgs::PointCloud2 () );
-  sensor_msgs::PointCloud2::Ptr query_result_b (new sensor_msgs::PointCloud2 () );
+  sensor_msgs::PointCloud2::Ptr query_result_a ( new sensor_msgs::PointCloud2 () );
+  sensor_msgs::PointCloud2::Ptr query_result_b ( new sensor_msgs::PointCloud2 () );
 
   octreeA.queryBBIncludes ( min, max, octreeA.getDepth (), query_result_a );
   
@@ -814,7 +821,7 @@ TEST_F ( OutofcoreTest, PointCloud2_Query )
 
   uint64_t total_octreeB_LOD_query = 0;
   
-  for( int i=0; i <= octreeB.getDepth (); i++ )
+  for ( int i=0; i <= octreeB.getDepth (); i++ )
   {
     octreeB.queryBBIncludes ( min, max, i, query_result_b );
     total_octreeB_LOD_query += query_result_b->width*query_result_b->height;
@@ -830,8 +837,6 @@ TEST_F ( OutofcoreTest, PointCloud2_Query )
 int
 main (int argc, char** argv)
 {
-//  pcl::console::setVerbosityLevel ( pcl::console::L_DEBUG );
-  
   testing::InitGoogleTest (&argc, argv);
   return (RUN_ALL_TESTS ());
 }
