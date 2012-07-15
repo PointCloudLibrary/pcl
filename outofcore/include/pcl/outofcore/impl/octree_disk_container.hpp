@@ -195,7 +195,7 @@ namespace pcl
         pcl::PCDWriter writer;
 
 
-//        PCL_INFO ( "[pcl::outofcore::octree_disk_container::%s] Flushing writebuffer in a dangerous way to file %s. This might overwrite data in destination file\n", __FUNCTION__, fileback_name_->c_str ());
+        PCL_WARN ( "[pcl::outofcore::octree_disk_container::%s] Flushing writebuffer in a dangerous way to file %s. This might overwrite data in destination file\n", __FUNCTION__, fileback_name_->c_str ());
         
         // Write ascii for now to debug
         int res = writer.writeBinaryCompressed (*fileback_name_, *cloud);

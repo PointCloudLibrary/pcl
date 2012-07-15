@@ -130,7 +130,7 @@ namespace pcl
             int res = reader.read (*fileback_name_, *tmp_cloud);
             assert (res == 0);
             pcl::PCDWriter writer;
-            PCL_INFO ("[pcl::outofcore::octree_disk_container::%s] Concatenating point cloud from %s to new cloud\n", __FUNCTION__, fileback_name_->c_str () );
+//            PCL_INFO ("[pcl::outofcore::octree_disk_container::%s] Concatenating point cloud from %s to new cloud\n", __FUNCTION__, fileback_name_->c_str () );
             pcl::concatenatePointCloud ( *tmp_cloud, *input_cloud, *tmp_cloud );
             writer.writeBinaryCompressed ( *fileback_name_, *input_cloud );
             

@@ -1161,7 +1161,7 @@ namespace pcl
     template<typename Container, typename PointT> void
     octree_base_node<Container, PointT>::queryBBIncludes (const double min_bb[3], const double max_bb[3], size_t query_depth, const sensor_msgs::PointCloud2::Ptr& dst_blob) 
     {
-//    uint64_t startingSize = dst_blob->width*dst_blob->height;
+      uint64_t startingSize = dst_blob->width*dst_blob->height;
 //      PCL_INFO ("[pcl::outofcore::octree_base_node::%s] Starting points in destination blob: %ul\n", __FUNCTION__, startingSize );
 
       //if the queried bounding box has any intersection with this node's bounding box
@@ -1246,18 +1246,34 @@ namespace pcl
             std::vector<int> indices;
 
             pcl::getPointsInBox ( *tmp_cloud, min_pt, max_pt, indices );
-//            PCL_INFO ( "[pcl::outofcore::octree_base_node::%s] Points in box: %d", __FUNCTION__, indices.size () );
-//            PCL_INFO ( "[pcl::outofcore::octree_base_node::%s] Points remaining: %d", __FUNCTION__, tmp_cloud->width*tmp_cloud->height - indices.size () );
+//            PCL_INFO ( "[pcl::outofcore::octree_base_node::%s] Points in box: %d\n", __FUNCTION__, indices.size () );
+//            PCL_INFO ( "[pcl::outofcore::octree_base_node::%s] Points remaining: %d\n", __FUNCTION__, tmp_cloud->width*tmp_cloud->height - indices.size () );
 
-            //need a new tmp destination with extracted points within BB
-            sensor_msgs::PointCloud2::Ptr tmp_blob_within_bb (new sensor_msgs::PointCloud2 ());
+            if ( indices.size () > 0 )
+            {
+              if( dst_blob->width*dst_blob->height > 0 )
+              {
+                //need a new tmp destination with extracted points within BB
+                sensor_msgs::PointCloud2::Ptr tmp_blob_within_bb (new sensor_msgs::PointCloud2 ());
                 
-            //copy just the points marked in indices
-            pcl::copyPointCloud ( *tmp_blob, indices, *tmp_blob_within_bb );
+                //copy just the points marked in indices
+                pcl::copyPointCloud ( *tmp_blob, indices, *tmp_blob_within_bb );
+                assert ( tmp_blob_within_bb->width*tmp_blob_within_bb->height == indices.size () );
+                assert ( tmp_blob->fields.size () == tmp_blob_within_bb->fields.size () );
+                //concatenate those points into the returned dst_blob
+//                PCL_INFO ("[pcl::outofcore::octree_base_node::%s] Concatenating point cloud in place\n", __FUNCTION__);
+                boost::uint64_t orig_points_in_destination = dst_blob->width*dst_blob->height;
+                int res = pcl::concatenatePointCloud ( *dst_blob, *tmp_blob_within_bb, *dst_blob );
+                assert (res == 1);
+                assert ( dst_blob->width*dst_blob->height == indices.size () + orig_points_in_destination );
 
-            //concatenate those points into the returned dst_blob
-//            PCL_INFO ("[pcl::outofcore::octree_base_node::%s] Concatenating point cloud in place\n", __FUNCTION__);
-            pcl::concatenatePointCloud ( *dst_blob, *tmp_blob_within_bb, *dst_blob );
+              }
+              else
+              {
+                pcl::copyPointCloud ( *tmp_blob, indices, *dst_blob );
+                assert ( dst_blob->width*dst_blob->height == indices.size () );
+              }
+            }
           }
         }
       }
