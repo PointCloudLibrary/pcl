@@ -219,6 +219,18 @@ pcl::concatenatePointCloud (const sensor_msgs::PointCloud2 &cloud1,
                             const sensor_msgs::PointCloud2 &cloud2, 
                             sensor_msgs::PointCloud2 &cloud_out)
 {
+  //if one cloud has no points, but the other does, return the cloud with points
+  if ( cloud1.width*cloud1.height == 0 && cloud2.width*cloud2.height > 0 )
+  {
+    cloud_out = cloud2;
+    return (true);
+  }
+  else if ( cloud1.width*cloud1.height > 0 && cloud2.width*cloud2.height == 0 )
+  {
+    cloud_out = cloud1;
+    return (true);
+  }
+
   if (cloud1.fields.size () != cloud2.fields.size ())
   {
     PCL_ERROR ("[pcl::concatenatePointCloud] Number of fields in cloud1 (%u) != Number of fields in cloud2 (%u)\n", cloud1.fields.size (), cloud2.fields.size ());
