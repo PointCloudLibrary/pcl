@@ -219,13 +219,13 @@ pcl::concatenatePointCloud (const sensor_msgs::PointCloud2 &cloud1,
                             const sensor_msgs::PointCloud2 &cloud2, 
                             sensor_msgs::PointCloud2 &cloud_out)
 {
-  //if one cloud has no points, but the other does, return the cloud with points
-  if ( cloud1.width*cloud1.height == 0 && cloud2.width*cloud2.height > 0 )
+  //if one input cloud has no points, but the other input does, just return the cloud with points
+  if (cloud1.width*cloud1.height == 0 && cloud2.width*cloud2.height > 0)
   {
     cloud_out = cloud2;
     return (true);
   }
-  else if ( cloud1.width*cloud1.height > 0 && cloud2.width*cloud2.height == 0 )
+  else if (cloud1.width*cloud1.height > 0 && cloud2.width*cloud2.height == 0)
   {
     cloud_out = cloud1;
     return (true);
@@ -240,7 +240,7 @@ pcl::concatenatePointCloud (const sensor_msgs::PointCloud2 &cloud1,
   for (size_t i = 0; i < cloud1.fields.size (); ++i)
     if (cloud1.fields[i].name != cloud2.fields[i].name)
     {
-      PCL_ERROR ("[pcl::concatenatePointCloud] Name of field %d in cloud1, %s, does not match name in cloud2, %s\n", i, cloud1.fields[i].name.c_str (), cloud2.fields[i].name.c_str () );      
+      PCL_ERROR ("[pcl::concatenatePointCloud] Name of field %d in cloud1, %s, does not match name in cloud2, %s\n", i, cloud1.fields[i].name.c_str (), cloud2.fields[i].name.c_str ());      
       return (false);
     }
   
