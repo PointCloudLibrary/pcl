@@ -4,6 +4,9 @@
 #include <pcl/gpu/containers/device_array.h>
 #include <pcl/gpu/utils/safe_call.hpp>
 
+#include <curand.h>
+#include <curand_kernel.h>
+
 namespace pcl
 {
 	namespace device
@@ -18,16 +21,17 @@ namespace pcl
 		
 		
 		void 
-			initParticles ( DeviceArray<float>& initial_noise_mean, DeviceArray<float>& initial_noise_covariance,
-					StateType& representative_state,
-					DeviceArray<StateType>& particles);
+			initParticles (PtrSz<curandState> rng_states,
+			DeviceArray<float>& initial_noise_mean, DeviceArray<float>& initial_noise_covariance,
+			const StateType& representative_state,
+			DeviceArray<StateType>& particles);
 
 		void 
 			computeTracking ( const DeviceArray2D<PointType>& ref, const DeviceArray2D<PixelRGB>& ref_color,
-					const DeviceArray2D<PointType>& input, const DeviceArray2D<PixelRGB>& input_color,
-					const DeviceArray<float>& step_noise_covariance,
-					DeviceArray<StateType>& particles,
-					StateType& representative_state, StateType& motion, float motion_ratio );
+			const DeviceArray2D<PointType>& input, const DeviceArray2D<PixelRGB>& input_color,
+			PtrSz<curandState> rng_states, const DeviceArray<float>& step_noise_covariance,
+			DeviceArray<StateType>& particles,
+			StateType& representative_state, StateType& motion, float motion_ratio );
 		
 		/*
 		void

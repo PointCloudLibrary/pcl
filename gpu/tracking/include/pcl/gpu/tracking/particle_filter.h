@@ -72,9 +72,12 @@ namespace pcl
 
 			}
 
-			virtual StateType
-				getResult();
+			virtual void
+				setMotion (StateType motion)
+			{ motion_ = motion; }
 						
+			virtual StateType
+				getResult();						
 
     protected:
 			std::string tracker_name_;
@@ -97,7 +100,8 @@ namespace pcl
 			{
 				particles_.create( particle_num_ );				
 
-				//input_normals_.create(rows_, cols_);
+				random_number_generator_.create( particle_num_ );
+				
 			}
 			
 			// reference point cloud
@@ -116,6 +120,9 @@ namespace pcl
 						
 			//StateCloud particles_;
 			DeviceArray<StateType> particles_;
+
+			// random number generate state
+			DeviceArray<curandState> rng_states;
 						
 			int particle_num_;
 
