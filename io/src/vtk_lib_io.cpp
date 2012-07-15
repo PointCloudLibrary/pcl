@@ -450,7 +450,7 @@ pcl::io::pointCloudTovtkPolyData(const sensor_msgs::PointCloud2Ptr& cloud, vtkSm
   {
     float point[3];
 
-    int point_offset = (point_idx * cloud->point_step);
+    int point_offset = (int (point_idx) * cloud->point_step);
     int offset = point_offset + cloud->fields[x_idx].offset;
     memcpy (&point, &cloud->data[offset], sizeof (float)*3);
 
@@ -476,7 +476,7 @@ pcl::io::pointCloudTovtkPolyData(const sensor_msgs::PointCloud2Ptr& cloud, vtkSm
     {
       unsigned char bgr[3];
 
-      int point_offset = (point_idx * cloud->point_step);
+      int point_offset = (int (point_idx) * cloud->point_step);
       int offset = point_offset + cloud->fields[rgb_idx].offset;
       memcpy (&bgr, &cloud->data[offset], sizeof (unsigned char)*3);
 
@@ -499,7 +499,7 @@ pcl::io::pointCloudTovtkPolyData(const sensor_msgs::PointCloud2Ptr& cloud, vtkSm
     {
       float intensity;
 
-      int point_offset = (point_idx * cloud->point_step);
+      int point_offset = (int (point_idx) * cloud->point_step);
       int offset = point_offset + cloud->fields[intensity_idx].offset;
       memcpy (&intensity, &cloud->data[offset], sizeof(float));
 
@@ -524,7 +524,7 @@ pcl::io::pointCloudTovtkPolyData(const sensor_msgs::PointCloud2Ptr& cloud, vtkSm
     {
       float normal[3];
 
-      int point_offset = (point_idx * cloud->point_step);
+      int point_offset = (int (point_idx) * cloud->point_step);
       int offset = point_offset + cloud->fields[normal_x_idx].offset;
       memcpy (&normal, &cloud->data[offset], sizeof (float)*3);
 

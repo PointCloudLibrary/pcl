@@ -40,10 +40,11 @@
 #include "../convolution_2d.h"
 #ifndef PCL_2D_EDGE_IMPL_HPP
 #define PCL_2D_EDGE_IMPL_HPP
-#include <pcl/common/common_headers.h> // rad2deg()
+#include <pcl/common/angles.h> // rad2deg()
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::pcl_2d::edge::sobelXY  (ImageType &Gx, ImageType &Gy, ImageType &input)
+pcl::pcl_2d::edge::sobelXY (ImageType &Gx, ImageType &Gy, ImageType &input)
 {
   ImageType kernelX;
   kernelX.resize (3); kernelX[0].resize (3); kernelX[1].resize (3); kernelX[2].resize (3);
@@ -51,7 +52,7 @@ pcl::pcl_2d::edge::sobelXY  (ImageType &Gx, ImageType &Gy, ImageType &input)
   kernelX[1][0] = -2; kernelX[1][1] = 0; kernelX[1][2] = 2;
   kernelX[2][0] = -1; kernelX[2][1] = 0; kernelX[2][2] = 1;
 
-  conv_2d->convolve  (Gx, kernelX, input);
+  conv_2d->convolve (Gx, kernelX, input);
 
   ImageType kernelY;
   kernelY.resize (3); kernelY[0].resize (3); kernelY[1].resize (3); kernelY[2].resize (3);
@@ -59,11 +60,12 @@ pcl::pcl_2d::edge::sobelXY  (ImageType &Gx, ImageType &Gy, ImageType &input)
   kernelY[1][0] =  0; kernelY[1][1] =  0; kernelY[1][2] =  0;
   kernelY[2][0] =  1; kernelY[2][1] =  2; kernelY[2][2] =  1;
 
-  conv_2d->convolve  (Gy, kernelY, input);
+  conv_2d->convolve (Gy, kernelY, input);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::pcl_2d::edge::sobelMagnitudeDirection  (ImageType &G, ImageType &thet, ImageType &input)
+pcl::pcl_2d::edge::sobelMagnitudeDirection (ImageType &G, ImageType &thet, ImageType &input)
 {
   ImageType Gx;
   ImageType Gy;
@@ -76,17 +78,18 @@ pcl::pcl_2d::edge::sobelMagnitudeDirection  (ImageType &G, ImageType &thet, Imag
     thet[i].resize (input[i].size ());
     for (unsigned int j = 0; j < input[i].size (); j++)
     {
-      G[i][j] = sqrt  (Gx[i][j] * Gx[i][j] + Gy[i][j] * Gy[i][j]);
-      thet[i][j] = atan2  (Gy[i][j], Gx[i][j]);
+      G[i][j] = sqrt (Gx[i][j] * Gx[i][j] + Gy[i][j] * Gy[i][j]);
+      thet[i][j] = atan2 (Gy[i][j], Gx[i][j]);
     }
   }
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::pcl_2d::edge::sobelMagnitudeDirection (ImageType &G, ImageType &thet, ImageType &input_x, ImageType &input_y)
 {
-  const int height = input_x.size();
-  const int width = input_x[0].size();
+  const int height = int (input_x.size ());
+  const int width = int (input_x[0].size ());
 
   ImageType Gx;
   ImageType Gy;
@@ -121,6 +124,7 @@ pcl::pcl_2d::edge::sobelMagnitudeDirection (ImageType &G, ImageType &thet, Image
   }
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::pcl_2d::edge::prewittXY  (ImageType &Gx, ImageType &Gy, ImageType &input)
 {
@@ -139,8 +143,9 @@ pcl::pcl_2d::edge::prewittXY  (ImageType &Gx, ImageType &Gy, ImageType &input)
   conv_2d->convolve (Gy, kernelY, input);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::pcl_2d::edge::prewittMagnitudeDirection  (ImageType &G, ImageType &thet, ImageType &input)
+pcl::pcl_2d::edge::prewittMagnitudeDirection (ImageType &G, ImageType &thet, ImageType &input)
 {
   ImageType Gx;
   ImageType Gy;
@@ -159,6 +164,7 @@ pcl::pcl_2d::edge::prewittMagnitudeDirection  (ImageType &G, ImageType &thet, Im
   }
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::pcl_2d::edge::robertsXY  (ImageType &Gx, ImageType &Gy, ImageType &input)
 {
@@ -195,6 +201,7 @@ pcl::pcl_2d::edge::robertsMagnitudeDirection  (ImageType &G, ImageType &thet, Im
   }
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::pcl_2d::edge::cannyTraceEdge (int rowOffset, int colOffset, int row, int col, ImageType &maxima)
 {
@@ -217,11 +224,12 @@ pcl::pcl_2d::edge::cannyTraceEdge (int rowOffset, int colOffset, int row, int co
   }
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::pcl_2d::edge::discretizeAngles (ImageType &thet)
 {
-  const int height = thet.size();
-  const int width = thet[0].size();
+  const int height = int (thet.size ());
+  const int width = int (thet[0].size ());
   float angle;
   for (int i = 0; i < height; i++)
   {
@@ -240,11 +248,12 @@ pcl::pcl_2d::edge::discretizeAngles (ImageType &thet)
   }
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::pcl_2d::edge::suppressNonMaxima (ImageType &G, ImageType &thet, ImageType &maxima, float tLow)
 {
-  const int height = G.size();
-  const int width = G[0].size();
+  const int height = int (G.size ());
+  const int width = int (G[0].size ());
 
   maxima.resize (height);
   for (int row=0; row<height; row++)
@@ -258,7 +267,7 @@ pcl::pcl_2d::edge::suppressNonMaxima (ImageType &G, ImageType &thet, ImageType &
       if (G[i][j] < tLow)
         continue;
 
-      switch ((int)thet[i][j])
+      switch (int (thet[i][j]))
       {
         case 0:
           if(G[i][j] >= G[i][j-1] && G[i][j] >= G[i][j+1])
@@ -281,13 +290,14 @@ pcl::pcl_2d::edge::suppressNonMaxima (ImageType &G, ImageType &thet, ImageType &
   }
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::pcl_2d::edge::canny (ImageType &output, ImageType &input, float t_low, float t_high)
 {
   float tHigh = t_high;
   float tLow = t_low;
-  const int height = input.size();
-  const int width = input[0].size();
+  const int height = int (input.size ());
+  const int width = int (input[0].size ());
 
   /*noise reduction using gaussian blurring*/
   ImageType gaussian_kernel;
@@ -341,6 +351,7 @@ pcl::pcl_2d::edge::canny (ImageType &output, ImageType &input, float t_low, floa
   }
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::pcl_2d::edge::canny (ImageType &output, ImageType &input)
 {
@@ -349,13 +360,14 @@ pcl::pcl_2d::edge::canny (ImageType &output, ImageType &input)
   canny (output, input, tLow, tHigh);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::pcl_2d::edge::canny (ImageType &output, ImageType &input_x, ImageType &input_y, float t_low, float t_high)
 {
   float tHigh = t_high;
   float tLow = t_low;
-  const int height = input_x.size();
-  const int width = input_x[0].size();
+  const int height = int (input_x.size ());
+  const int width = int (input_x[0].size ());
 
   /*noise reduction using gaussian blurring*/
   ImageType gaussian_kernel;
@@ -412,8 +424,9 @@ pcl::pcl_2d::edge::canny (ImageType &output, ImageType &input_x, ImageType &inpu
   }
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::pcl_2d::edge::LoGKernel  (ImageType &kernel, const int kernel_size, const float sigma)
+pcl::pcl_2d::edge::LoGKernel (ImageType &kernel, const int kernel_size, const float sigma)
 {
   float sum = 0;
   float temp = 0;
@@ -423,36 +436,35 @@ pcl::pcl_2d::edge::LoGKernel  (ImageType &kernel, const int kernel_size, const f
     kernel[i].resize (kernel_size);
     for (int j = 0; j < kernel_size; j++)
     {
-      temp = (((i - kernel_size / 2) * (i - kernel_size / 2) + (j - kernel_size / 2) * (j - kernel_size / 2)) / (2 * sigma * sigma));
+      temp = (((float (i - kernel_size) / 2.0f) * (float (i - kernel_size) / 2.0f) + (float (j - kernel_size) / 2.0f) * (float (j - kernel_size) / 2.0f)) / (2.0f * sigma * sigma));
       kernel[i][j] = (1 - temp) * exp (-temp);
       sum += kernel[i][j];
     }
   }
   for (int i = 0; i < kernel_size; i++)
-  {
     for (int j = 0; j < kernel_size; j++)
-    {
       kernel[i][j] /= sum;
-    }
-  }
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::pcl_2d::edge::LoG  (ImageType &output, const int kernel_size, const float sigma, ImageType &input)
+pcl::pcl_2d::edge::LoG (ImageType &output, const int kernel_size, const float sigma, ImageType &input)
 {
   ImageType kernel;
-  LoGKernel  (kernel, kernel_size, sigma);
-  conv_2d->convolve  (output, kernel, input);
+  LoGKernel (kernel, kernel_size, sigma);
+  conv_2d->convolve (output, kernel, input);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::pcl_2d::edge::LoG  (ImageType &output, ImageType &input)
+pcl::pcl_2d::edge::LoG (ImageType &output, ImageType &input)
 {
   ImageType kernel;
-  LoGKernel  (kernel, 9, 1.4f);
-  conv_2d->convolve  (output, kernel, input);
+  LoGKernel (kernel, 9, 1.4f);
+  conv_2d->convolve (output, kernel, input);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::pcl_2d::edge::ComputeDerivativeXCentral (ImageType &output, ImageType &input)
 {
@@ -460,9 +472,10 @@ pcl::pcl_2d::edge::ComputeDerivativeXCentral (ImageType &output, ImageType &inpu
   kernel.resize (1);
   kernel[0].resize (3);
   kernel[0][0] = -1; kernel[0][1] = 0; kernel[0][2] = 1;
-  conv_2d->convolve  (output, kernel, input);
+  conv_2d->convolve (output, kernel, input);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::pcl_2d::edge::ComputeDerivativeYCentral (ImageType &output, ImageType &input)
 {
@@ -470,7 +483,7 @@ pcl::pcl_2d::edge::ComputeDerivativeYCentral (ImageType &output, ImageType &inpu
   kernel.resize (3);
   kernel[0].resize (1); kernel[1].resize (1); kernel[2].resize (1);
   kernel[0][0] = -1; kernel[1][0] = 0; kernel[2][0] = 1;
-  conv_2d->convolve  (output, kernel, input);
+  conv_2d->convolve (output, kernel, input);
 }
 
 #endif
