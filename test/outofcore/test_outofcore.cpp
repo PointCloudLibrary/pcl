@@ -831,6 +831,8 @@ TEST_F ( OutofcoreTest, PointCloud2_Query )
   }
   
   EXPECT_EQ ( test_cloud->width*test_cloud->height, total_octreeB_LOD_query ) << "PointCloud2 Query number of points returned failed\n";
+  
+  cleanUpFilesystem ();
 }
 
 /* [--- */
