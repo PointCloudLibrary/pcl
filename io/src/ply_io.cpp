@@ -53,8 +53,12 @@ pcl::PLYReader::elementDefinitionCallback (const std::string& element_name, std:
   {
     cloud_->data.clear ();
     cloud_->fields.clear ();
-    cloud_->width = static_cast<uint32_t> (count);
-    cloud_->height = 1;
+	// Cloud dimensions may have already been set from obj_info fields
+	if (cloud_->width == 0 || cloud_->height == 0)
+	{
+	  cloud_->width = static_cast<uint32_t> (count);
+      cloud_->height = 1;
+	}
     cloud_->is_dense = false;
     cloud_->point_step = 0;
     cloud_->row_step = 0;
@@ -360,6 +364,7 @@ pcl::PLYReader::parse (const std::string& istream_filename)
   ply_parser.warning_callback (boost::bind (&pcl::PLYReader::warningCallback, this, boost::ref (istream_filename), _1, _2));
   ply_parser.error_callback (boost::bind (&pcl::PLYReader::errorCallback, this, boost::ref (istream_filename), _1, _2));
 
+  ply_parser.obj_info_callback (boost::bind (&pcl::PLYReader::objInfoCallback, this, _1));
   ply_parser.element_definition_callback (boost::bind (&pcl::PLYReader::elementDefinitionCallback, this, _1, _2));
   ply_parser.end_header_callback (boost::bind (&pcl::PLYReader::endHeaderCallback, this));
 
@@ -385,6 +390,7 @@ pcl::PLYReader::readHeader (const std::string &file_name, sensor_msgs::PointClou
   // Silence compiler warnings
   cloud_ = &cloud;
   range_grid_ = new std::vector<std::vector<int> >;
+  cloud_->width = cloud_->height = 0;
   if (!parse (file_name))
   {
     PCL_ERROR ("[pcl::PLYReader::read] problem parsing header!\n");
@@ -438,7 +444,6 @@ pcl::PLYReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
         memcpy (&data[r* cloud_->point_step], &cloud_->data[(*range_grid_)[r][0] * cloud_->point_step], cloud_->point_step);
     }
     cloud_->data.swap (data);
-    cloud_->is_dense = true;
   }
 
   orientation = Eigen::Quaternionf (orientation_);
@@ -584,7 +589,7 @@ pcl::PLYWriter::generateHeader (const sensor_msgs::PointCloud2 &cloud,
       "\nproperty float k1"
       "\nproperty float k2";
   }
-  else
+  else if (cloud.height > 1)
   {
     oss << "\nelement range_grid " << cloud.width * cloud.height;
     oss << "\nproperty list uchar int vertex_indices";
@@ -878,9 +883,10 @@ pcl::PLYWriter::writeContentWithRangeGridASCII (int nr_points,
             {
               float value;
               memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (float)], sizeof (float));
+			  // Test if x-coordinate is NaN, thus an invalid point
               if ("x" == cloud.fields[d].name)
               {
-                if (value != value)
+                if (!pcl_isfinite(value))
                   is_valid_line = false;
               }
               line << value;
@@ -926,16 +932,20 @@ pcl::PLYWriter::writeContentWithRangeGridASCII (int nr_points,
     }
   }
 
-  // Append range grid
-  for (int i = 0; i < nr_points; ++i)
+  // If point cloud is organized, then append range grid
+  if (cloud.height > 1)
   {
-    fs << grids [i].size ();
-    for (std::vector <int>::const_iterator it = grids [i].begin ();
-         it != grids [i].end ();
-         ++it)
-      fs << " " << *it;
-    fs << std::endl;
+    for (int i = 0; i < nr_points; ++i)
+    {
+      fs << grids [i].size ();
+      for (std::vector <int>::const_iterator it = grids [i].begin ();
+           it != grids [i].end ();
+           ++it)
+        fs << " " << *it;
+      fs << std::endl;
+    }
   }
+
   fs.flush ();
 }
 
