@@ -37,6 +37,7 @@
  *
  */
 
+#define SHOW_FPS 1
 #include <pcl/apps/timer.h>
 #include <pcl/common/common.h>
 #include <pcl/common/angles.h>
@@ -55,7 +56,6 @@ using namespace std;
 
 typedef PointXYZRGBA PointT;
 
-#define SHOW_FPS 1
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 class AGASTDemo
