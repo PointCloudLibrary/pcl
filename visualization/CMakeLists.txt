@@ -22,6 +22,10 @@ if (ANDROID_NDK)
 endif ()
 
 find_package(OpenGL)
+if (OPENGL_FOUND)
+  include_directories("${OPENGL_INCLUDE_DIR}")
+  add_definitions("${OPENGL_DEFINITIONS}")
+endif()
 
 PCL_ADD_DOC(${SUBSYS_NAME})
 
