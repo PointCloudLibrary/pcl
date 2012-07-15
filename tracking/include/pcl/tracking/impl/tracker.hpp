@@ -26,7 +26,6 @@ pcl::tracking::Tracker<PointInT, StateT>::initCompute ()
   return (true);
 }
 
-
 template <typename PointInT, typename StateT> void
 pcl::tracking::Tracker<PointInT, StateT>::compute ()
 {

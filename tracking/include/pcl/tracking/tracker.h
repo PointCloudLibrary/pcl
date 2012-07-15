@@ -45,7 +45,7 @@
 
 namespace pcl
 {
-  namespace tracking
+	namespace tracking
   {
     /** \brief @b Tracker represents the base tracker class.
       * \author Ryohei Ueda
@@ -99,7 +99,7 @@ namespace pcl
 
       /** \brief This method should get called before starting the actual computation. */
       virtual bool
-      initCompute ();
+				initCompute ();
 
       /** \brief Provide a pointer to a dataset to add additional information
        * to estimate the features for every point in the input dataset.  This
