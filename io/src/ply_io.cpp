@@ -53,12 +53,12 @@ pcl::PLYReader::elementDefinitionCallback (const std::string& element_name, std:
   {
     cloud_->data.clear ();
     cloud_->fields.clear ();
-	// Cloud dimensions may have already been set from obj_info fields
-	if (cloud_->width == 0 || cloud_->height == 0)
-	{
-	  cloud_->width = static_cast<uint32_t> (count);
+    // Cloud dimensions may have already been set from obj_info fields
+    if (cloud_->width == 0 || cloud_->height == 0)
+    {
+      cloud_->width = static_cast<uint32_t> (count);
       cloud_->height = 1;
-	}
+    }
     cloud_->is_dense = false;
     cloud_->point_step = 0;
     cloud_->row_step = 0;
@@ -883,7 +883,7 @@ pcl::PLYWriter::writeContentWithRangeGridASCII (int nr_points,
             {
               float value;
               memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (float)], sizeof (float));
-			  // Test if x-coordinate is NaN, thus an invalid point
+              // Test if x-coordinate is NaN, thus an invalid point
               if ("x" == cloud.fields[d].name)
               {
                 if (!pcl_isfinite(value))
