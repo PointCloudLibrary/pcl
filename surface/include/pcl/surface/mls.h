@@ -392,7 +392,8 @@ namespace pcl
               point[i] = static_cast<Eigen::Vector3f::Scalar> (index_3d[i]) * voxel_size_ + bounding_min_[i];
           }
 
-          typedef boost::unordered_map<uint64_t, Leaf> HashMap;//, boost::hash<uint64_t>, std::equal_to<uint64_t>, Eigen::aligned_allocator<uint64_t> > HashMap;
+//          typedef boost::unordered_map<uint64_t, Leaf> HashMap;//, boost::hash<uint64_t>, std::equal_to<uint64_t>, Eigen::aligned_allocator<uint64_t> > HashMap;
+          typedef std::map<uint64_t, Leaf> HashMap;
           HashMap voxel_grid_;
           Eigen::Vector4f bounding_min_, bounding_max_;
           uint64_t data_size_;
