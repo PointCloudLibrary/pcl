@@ -83,6 +83,9 @@ pcl::gpu::TsdfVolume::setTsdfTruncDist (float distance)
   float cz = size_(2) / resolution_(2);
 
   tranc_dist_ = std::max (distance, 2.1f * std::max (cx, std::max (cy, cz)));  
+
+  /*if (tranc_dist_ != distance)
+	  PCL_WARN ("Tsdf truncation distance can't be less than 2 * voxel_size. Passed value '%f', but setting minimal possible '%f'.\n", distance, tranc_dist_);*/
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -207,6 +207,10 @@ if(NOT PCL_SHARED_LIBS OR WIN32)
   set(QHULL_USE_STATIC ON)
 endif(NOT PCL_SHARED_LIBS OR WIN32)
 find_package(Qhull)
+
+# Cuda
+include(${PCL_SOURCE_DIR}/cmake/pcl_find_cuda.cmake)
+
 # Find ROS
 include(${PCL_SOURCE_DIR}/cmake/pcl_find_ros.cmake)
 # Find QT4
