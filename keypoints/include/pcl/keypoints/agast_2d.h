@@ -46,6 +46,97 @@
 
 namespace pcl
 {
+  /** \brief Detects AGAST corner points.
+    *        See: Elmar Mair, Gregory D. Hager, Darius Burschka, Michael Suppa, and Gerhard Hirzinger. 
+    *             Adaptive and generic corner detection based on the accelerated segment test. 
+    *             In Proceedings of the European Conference on Computer Vision (ECCV'10), September 2010.
+    *
+    * \author Stefan Holzer
+    * \ingroup keypoints
+    */
+  template <typename PointInT, typename IntensityT= pcl::common::IntensityFieldAccessor<PointInT> >
+  class AgastKeypoint2D : public Keypoint<PointInT, pcl::PointXY>
+  {
+    public:
+      typedef typename Keypoint<PointInT, pcl::PointXY>::PointCloudIn PointCloudIn;
+      typedef typename Keypoint<PointInT, pcl::PointXY>::PointCloudOut PointCloudOut;
+      typedef typename Keypoint<PointInT, pcl::PointXY>::KdTree KdTree;
+      typedef typename PointCloudIn::ConstPtr PointCloudInConstPtr;
+
+      using Keypoint<PointInT, pcl::PointXY>::name_;
+      using Keypoint<PointInT, pcl::PointXY>::input_;
+      using Keypoint<PointInT, pcl::PointXY>::indices_;
+      using Keypoint<PointInT, pcl::PointXY>::k_;
+
+      /** \brief Constructor */
+      AgastKeypoint2D ()
+        : threshold_ (10)
+        , apply_non_max_suppression_ (true)
+      {
+        k_ = 1;
+        name_ = "AgastKeypoint2D";
+      }
+
+      /** \brief Destructor. */
+      virtual ~AgastKeypoint2D ()
+      {
+      }
+
+      /** \brief Sets the threshold for corner detection.
+        * \param[in] threshold the threshold used for corner detection.
+        */
+      inline void
+      setThreshold (const int threshold)
+      {
+        threshold_ = threshold;
+      }
+
+      /** \brief Get the threshold for corner detection, as set by the user. */
+      inline size_t
+      getThreshold ()
+      {
+        return (threshold_);
+      }
+
+      /** \brief Sets whether non-max-suppression is applied or not.
+        * \param[in] enabled determines whether non-max-suppression is enabled.
+        */
+      inline void
+      setNonMaxSuppression (const bool enabled)
+      {
+        apply_non_max_suppression_ = enabled;
+      }
+
+      /** \brief Returns whether non-max-suppression is applied or not. */
+      inline bool
+      getNonMaxSuppression ()
+      {
+        return (apply_non_max_suppression_);
+      }
+
+    protected:
+      /** \brief Initializes everything and checks whether input data is fine. */
+      bool 
+      initCompute ();
+      
+      /** \brief Detects the keypoints. */
+      void 
+      detectKeypoints (PointCloudOut &output);
+
+    private:
+      /** \brief Intensity field accessor. */
+      IntensityT intensity_;
+      
+      /** \brief Threshold for corner detection. */
+      int threshold_;
+
+      /** \brief Determines whether non-max-suppression is activated. */
+      bool apply_non_max_suppression_;
+  };
+
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   namespace keypoints
   {
     namespace agast
@@ -62,6 +153,17 @@ namespace pcl
       class PCL_EXPORTS AbstractAgastDetector
       {
         public:
+          /** \brief Constructor. 
+            * \param[in] width the width of the image to process
+            * \param[in] height the height of the image to process
+            * \param[in] threshold the corner detection threshold
+            */
+          AbstractAgastDetector (const size_t width, 
+                                 const size_t height, 
+                                 const size_t threshold) 
+            : width_ (width), height_ (height), threshold_ (threshold)
+          {}
+
           /** \brief Destructor. */
           ~AbstractAgastDetector () {}
 
@@ -83,24 +185,40 @@ namespace pcl
                                   const pcl::PointCloud<pcl::PointXY> &input, 
                                   pcl::PointCloud<pcl::PointXY> &output);
 
-        protected:
-          /** \brief Initializes the sample pattern. */
-          virtual void
-          initPattern () = 0;
+          /** \brief Computes corner score. 
+            * \param[in] im the pixels to compute the score at
+            */
+          virtual int 
+          computeCornerScore (const unsigned char* im) const = 0;
 
-          /** \brief Detects corners. 
-            * \param im
-            * \oaram corners_all
+          /** \brief Sets the threshold for corner detection.
+            * \param[in] threshold the threshold used for corner detection.
+            */
+          inline void
+          setThreshold (const int threshold)
+          {
+            threshold_ = threshold;
+          }
+
+          /** \brief Get the threshold for corner detection, as set by the user. */
+          inline size_t
+          getThreshold ()
+          {
+            return (threshold_);
+          }
+
+          /** \brief Detects points of interest (i.e., keypoints) in the given image
+            * \param[in] im the image to detect keypoints in 
+            * \param[out] corners_all the resultant set of keypoints detected
             */
           virtual void 
           detect (const unsigned char* im, 
                   std::vector<pcl::PointXY, Eigen::aligned_allocator<pcl::PointXY> > &corners_all) const = 0;
 
-          /** \brief Computes corner score. 
-            * \param im 
-            */
-          virtual int 
-          computeCornerScore (const unsigned char* im) const = 0;
+        protected:
+          /** \brief Initializes the sample pattern. */
+          virtual void
+          initPattern () = 0;
 
           /** \brief Computes corner scores for the specified points. 
             * \param im
@@ -112,7 +230,6 @@ namespace pcl
                                const std::vector<pcl::PointXY, Eigen::aligned_allocator<pcl::PointXY> > & corners_all, 
                                std::vector<int> & scores);
 
-        private:
           /** \brief Width of the image to process. */
           size_t width_;
           /** \brief Height of the image to process. */
@@ -120,19 +237,6 @@ namespace pcl
 
           /** \brief Threshold for corner detection. */
           size_t threshold_;
-
-          /** \brief Border width. */
-          static const int border_width_ = 1;
-
-          // offsets defining the sample pattern
-          int_fast16_t s_offset0_;
-          int_fast16_t s_offset1_;
-          int_fast16_t s_offset2_;
-          int_fast16_t s_offset3_;
-          int_fast16_t s_offset4_;
-          int_fast16_t s_offset5_;
-          int_fast16_t s_offset6_;
-          int_fast16_t s_offset7_;
       };
 
       /** \brief Detector class for AGAST corner point detector (7_12s). 
@@ -149,9 +253,12 @@ namespace pcl
           /** \brief Constructor. 
             * \param[in] width the width of the image to process
             * \param[in] height the height of the image to process
-            * \param[in] threshold
+            * \param[in] threshold the corner detection threshold
             */
-          AgastDetector7_12s (const size_t width, const size_t height, const size_t threshold) : width_ (width), height_ (height), threshold_ (threshold) 
+          AgastDetector7_12s (const size_t width, 
+                              const size_t height, 
+                              const size_t threshold) 
+            : AbstractAgastDetector (width, height, threshold)
           {
             initPattern ();
           }
@@ -159,33 +266,25 @@ namespace pcl
           /** \brief Destructor. */
           ~AgastDetector7_12s () {}
 
-        protected:
-          /** \brief Initializes the sample pattern. */
-          void 
-          initPattern ();
-
-          /** \brief Detects corners. 
-            * \param im
-            * \oaram corners_all
-            */
-          void 
-          detect (const unsigned char* im, std::vector<pcl::PointXY, Eigen::aligned_allocator<pcl::PointXY> > &corners_all) const;
-
           /** \brief Computes corner score. 
             * \param im 
             */
           int 
           computeCornerScore (const unsigned char* im) const;
 
+          /** \brief Detects points of interest (i.e., keypoints) in the given image
+            * \param[in] im the image to detect keypoints in 
+            * \param[out] corners_all the resultant set of keypoints detected
+            */
+          void 
+          detect (const unsigned char* im, std::vector<pcl::PointXY, Eigen::aligned_allocator<pcl::PointXY> > &corners_all) const;
+
+        protected:
+          /** \brief Initializes the sample pattern. */
+          void 
+          initPattern ();
+
         private:
-          /** \brief Width of the image to process. */
-          size_t width_;
-          /** \brief Height of the image to process. */
-          size_t height_;
-
-          /** \brief Threshold for corner detection. */
-          size_t threshold_;
-
           /** \brief Border width. */
           static const int border_width_ = 2;
 
@@ -218,9 +317,12 @@ namespace pcl
           /** \brief Constructor. 
             * \param[in] width the width of the image to process
             * \param[in] height the height of the image to process
-            * \param[in] threshold
+            * \param[in] threshold the corner detection threshold
             */
-          AgastDetector5_8 (const size_t width, const size_t height, const size_t threshold) : width_ (width), height_ (height), threshold_ (threshold) 
+          AgastDetector5_8 (const size_t width, 
+                            const size_t height, 
+                            const size_t threshold) 
+            : AbstractAgastDetector (width, height, threshold)
           {
             initPattern ();
           }
@@ -228,33 +330,25 @@ namespace pcl
           /** \brief Destructor. */
           ~AgastDetector5_8 () {}
 
-        protected:
-          /** \brief Initializes the sample pattern. */
-          void 
-          initPattern ();
-
-          /** \brief Detects corners. 
-            * \param im
-            * \oaram corners_all
-            */
-          void 
-          detect (const unsigned char* im, std::vector<pcl::PointXY, Eigen::aligned_allocator<pcl::PointXY> > &corners_all) const;
-
           /** \brief Computes corner score. 
             * \param im 
             */
           int 
           computeCornerScore (const unsigned char* im) const;
 
+          /** \brief Detects points of interest (i.e., keypoints) in the given image
+            * \param[in] im the image to detect keypoints in 
+            * \param[out] corners_all the resultant set of keypoints detected
+            */
+          void 
+          detect (const unsigned char* im, std::vector<pcl::PointXY, Eigen::aligned_allocator<pcl::PointXY> > &corners_all) const;
+
+        protected:
+          /** \brief Initializes the sample pattern. */
+          void 
+          initPattern ();
+
         private:
-          /** \brief Width of the image to process. */
-          size_t width_;
-          /** \brief Height of the image to process. */
-          size_t height_;
-
-          /** \brief Threshold for corner detection. */
-          size_t threshold_;
-
           /** \brief Border width. */
           static const int border_width_ = 1;
 
@@ -283,9 +377,12 @@ namespace pcl
           /** \brief Constructor. 
             * \param[in] width the width of the image to process
             * \param[in] height the height of the image to process
-            * \param[in] threshold
+            * \param[in] threshold the corner detection threshold
             */
-          OastDetector9_16 (const size_t width, const size_t height, const size_t threshold) : width_ (width), height_ (height), threshold_ (threshold) 
+          OastDetector9_16 (const size_t width, 
+                            const size_t height, 
+                            const size_t threshold) 
+            : AbstractAgastDetector (width, height, threshold)
           {
             initPattern ();
           }
@@ -293,33 +390,25 @@ namespace pcl
           /** \brief Destructor. */
           ~OastDetector9_16 () {}
 
-        protected:
-          /** \brief Initializes the sample pattern. */
-          void 
-          initPattern ();
-
-          /** \brief Detects corners. 
-            * \param im
-            * \oaram corners_all
-            */
-          void 
-          detect (const unsigned char* im, std::vector<pcl::PointXY, Eigen::aligned_allocator<pcl::PointXY> > &corners_all) const;
-
           /** \brief Computes corner score. 
             * \param im 
             */
           int 
           computeCornerScore (const unsigned char* im) const;
 
+          /** \brief Detects points of interest (i.e., keypoints) in the given image
+            * \param[in] im the image to detect keypoints in 
+            * \param[out] corners_all the resultant set of keypoints detected
+            */
+          void 
+          detect (const unsigned char* im, std::vector<pcl::PointXY, Eigen::aligned_allocator<pcl::PointXY> > &corners_all) const;
+
+        protected:
+          /** \brief Initializes the sample pattern. */
+          void 
+          initPattern ();
+
         private:
-          /** \brief Width of the image to process. */
-          size_t width_;
-          /** \brief Height of the image to process. */
-          size_t height_;
-
-          /** \brief Threshold for corner detection. */
-          size_t threshold_;
-
           /** \brief Border width. */
           static const int border_width_ = 3;
 
@@ -343,78 +432,6 @@ namespace pcl
       };
     } // namespace agast
   } // namespace keypoints
-
-  /** \brief Detects AGAST corner points.
-    *        See: Elmar Mair, Gregory D. Hager, Darius Burschka, Michael Suppa, and Gerhard Hirzinger. 
-    *             Adaptive and generic corner detection based on the accelerated segment test. 
-    *             In Proceedings of the European Conference on Computer Vision (ECCV'10), September 2010.
-    *
-    * \author Stefan Holzer
-    * \ingroup keypoints
-    */
-  template <typename PointInT, typename IntensityT= pcl::common::IntensityFieldAccessor<PointInT> >
-  class AgastKeypoint2D : public Keypoint<PointInT, pcl::PointXY>
-  {
-    public:
-      typedef typename Keypoint<PointInT, pcl::PointXY>::PointCloudIn PointCloudIn;
-      typedef typename Keypoint<PointInT, pcl::PointXY>::PointCloudOut PointCloudOut;
-      typedef typename Keypoint<PointInT, pcl::PointXY>::KdTree KdTree;
-      typedef typename PointCloudIn::ConstPtr PointCloudInConstPtr;
-
-      using Keypoint<PointInT, pcl::PointXY>::name_;
-      using Keypoint<PointInT, pcl::PointXY>::input_;
-      using Keypoint<PointInT, pcl::PointXY>::indices_;
-
-      /** \brief Constructor */
-      AgastKeypoint2D ()
-        : threshold_ (10)
-        , apply_non_max_suppression_ (true)
-      {
-        name_ = "AgastKeypoint2D";
-      }
-
-      /** \brief Destructor. */
-      virtual ~AgastKeypoint2D ()
-      {
-      }
-
-      /** \brief Sets the threshold for corner detection.
-        * \param[in] threshold the threshold used for corner detection.
-        */
-      inline void
-      setThreshold (const int threshold)
-      {
-        threshold_ = threshold;
-      }
-
-      /** \brief Sets whether non-max-suppression is applied or not.
-        * \param[in] enabled determines whether non-max-suppression is enabled.
-        */
-      inline void
-      setNonMaxSuppression (const bool enabled)
-      {
-        apply_non_max_suppression_ = enabled;
-      }
-
-    protected:
-      /** \brief Initializes everything and checks whether input data is fine. */
-      bool 
-      initCompute ();
-      
-      /** \brief Detects the keypoints. */
-      void 
-      detectKeypoints (PointCloudOut &output);
-
-    private:
-      /** \brief Intensity field accessor. */
-      IntensityT intensity_;
-      
-      /** \brief Threshold for corner detection. */
-      int threshold_;
-
-      /** \brief Determines whether non-max-suppression is activated. */
-      bool apply_non_max_suppression_;
-  };
 }
 
 #include "pcl/keypoints/impl/agast_2d.hpp"

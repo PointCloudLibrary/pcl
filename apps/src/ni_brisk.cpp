@@ -56,20 +56,20 @@ using namespace pcl;
 using namespace std;
 
 typedef PointXYZRGBA PointT;
-typedef PointXY KeyPointT;
+typedef PointWithScale KeyPointT;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-class AGASTDemo
+class BRISKDemo
 {
   public:
     typedef PointCloud<PointT> Cloud;
     typedef Cloud::Ptr CloudPtr;
     typedef Cloud::ConstPtr CloudConstPtr;
 
-    AGASTDemo (Grabber& grabber)
-      : cloud_viewer_ ("AGAST 2D Keypoints -- PointCloud")
+    BRISKDemo (Grabber& grabber)
+      : cloud_viewer_ ("BRISK 2D Keypoints -- PointCloud")
       , grabber_ (grabber)
-      , image_viewer_ ("AGAST 2D Keypoints -- Image")
+      , image_viewer_ ("BRISK 2D Keypoints -- Image")
     {
     }
 
@@ -81,9 +81,10 @@ class AGASTDemo
       boost::mutex::scoped_lock lock (cloud_mutex_);
       cloud_ = cloud;
 
-      // Compute AGAST keypoints 
-      AgastKeypoint2D<PointT> agast;
-      agast.setThreshold (30);
+      // Compute BRISK keypoints 
+      BriskKeypoint2D<PointT> agast;
+      agast.setThreshold (60);
+      agast.setOctaves (4);
       agast.setInputCloud (cloud);
 
       keypoints_.reset (new PointCloud<KeyPointT>);
@@ -94,7 +95,7 @@ class AGASTDemo
     void
     init ()
     {
-      boost::function<void (const CloudConstPtr&) > cloud_cb = boost::bind (&AGASTDemo::cloud_callback, this, _1);
+      boost::function<void (const CloudConstPtr&) > cloud_cb = boost::bind (&BRISKDemo::cloud_callback, this, _1);
       cloud_connection = grabber_.registerCallback (cloud_cb);
     }
 
@@ -243,7 +244,7 @@ main (int, char**)
 {
   string device_id ("#1");
   OpenNIGrabber grabber (device_id);
-  AGASTDemo openni_viewer (grabber);
+  BRISKDemo openni_viewer (grabber);
 
   openni_viewer.init ();
   openni_viewer.run ();

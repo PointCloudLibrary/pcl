@@ -2,7 +2,6 @@
  * Software License Agreement (BSD License)
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
- *  Copyright (c) 2010-2011, Willow Garage, Inc.
  *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
@@ -17,7 +16,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -36,14 +35,14 @@
  *
  */
 
-#ifndef PCL_KEYPOINTS_AGAST_KEYPOINT_2D_IMPL_H_
-#define PCL_KEYPOINTS_AGAST_KEYPOINT_2D_IMPL_H_
+#ifndef PCL_KEYPOINTS_BRISK_KEYPOINT_2D_IMPL_H_
+#define PCL_KEYPOINTS_BRISK_KEYPOINT_2D_IMPL_H_
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename IntensityT> bool
-pcl::AgastKeypoint2D<PointInT, IntensityT>::initCompute ()
+pcl::BriskKeypoint2D<PointInT, IntensityT>::initCompute ()
 {
-  if (!pcl::Keypoint<PointInT, pcl::PointXY>::initCompute ())
+  if (!pcl::Keypoint<PointInT, pcl::PointWithScale>::initCompute ())
   {
     PCL_ERROR ("[pcl::%s::initCompute] init failed.!\n", name_.c_str ());
     return (false);
@@ -60,13 +59,13 @@ pcl::AgastKeypoint2D<PointInT, IntensityT>::initCompute ()
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename IntensityT> void
-pcl::AgastKeypoint2D<PointInT, IntensityT>::detectKeypoints (PointCloudOut &output)
+pcl::BriskKeypoint2D<PointInT, IntensityT>::detectKeypoints (PointCloudOut &output)
 {
   // image size
   const size_t width = input_->width;
   const size_t height = input_->height;
 
-  // destination for intensity data; will be forwarded to AGAST
+  // destination for intensity data; will be forwarded to BRISK
   std::vector<unsigned char> image_data (width*height);
 
   for (size_t row_index = 0; row_index < height; ++row_index)
@@ -77,25 +76,14 @@ pcl::AgastKeypoint2D<PointInT, IntensityT>::detectKeypoints (PointCloudOut &outp
     }
   }
 
-  if (apply_non_max_suppression_)
-  {
-    pcl::PointCloud<pcl::PointXY> tmp_cloud;
-
-    pcl::keypoints::agast::AgastDetector7_12s agast_helper (width, height, threshold_);
-    agast_helper.detectKeypoints (image_data, tmp_cloud);
-
-    agast_helper.applyNonMaxSuppression (image_data, tmp_cloud, output);
-  }
-  else
-  {
-    pcl::keypoints::agast::AgastDetector7_12s agast_helper (width, height, threshold_);
-    agast_helper.detectKeypoints (image_data, output);
-  }
+  pcl::keypoints::brisk::ScaleSpace brisk_scale_space (octaves_);
+  brisk_scale_space.constructPyramid (image_data, width, height);
+  brisk_scale_space.getKeypoints (threshold_, output.points);
 
   // we don not change the denseness
+  output.width = output.points.size ();
+  output.height = 1;
   output.is_dense = true;
 }
 
-
-#define AgastKeypoint2D(T,I) template class PCL_EXPORTS pcl::AgastKeypoint2D<T,I>;
 #endif 

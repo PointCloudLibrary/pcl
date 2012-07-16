@@ -278,7 +278,7 @@ namespace pcl
   template<int N>
   struct Histogram;
 
-  /** \brief Members: float x, y, z, scale
+  /** \brief Members: float x, y, z, scale, angle, response, octave
     * \ingroup common
     */
   struct PointWithScale;

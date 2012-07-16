@@ -1202,8 +1202,8 @@ namespace pcl
   }
 
   /** \brief A point structure representing an N-D histogram.
-   * \ingroup common
-   */
+    * \ingroup common
+    */
   template <int N>
   struct Histogram
   {
@@ -1218,12 +1218,26 @@ namespace pcl
   }
 
   /** \brief A point structure representing a 3-D position and scale.
-   * \ingroup common
-   */
+    * \ingroup common
+    */
   struct EIGEN_ALIGN16 _PointWithScale
   {
     PCL_ADD_POINT4D; // This adds the members x,y,z which can also be accessed using the point (which is float[4])
-    float scale;
+    
+    union
+    {
+      /** \brief Diameter of the meaningfull keypoint neighborhood. */
+      float scale;
+      float size;
+    };
+    
+    /** \brief Computed orientation of the keypoint (-1 if not applicable). */
+    float angle;
+    /** \brief The response by which the most strong keypoints have been selected. */
+    float response;
+    /** \brief octave (pyramid layer) from which the keypoint has been extracted. */
+    int   octave;
+
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 
@@ -1232,13 +1246,41 @@ namespace pcl
     inline PointWithScale ()
     {
       x = y = z = 0.0f;
-      data[3] = 1.0f;
       scale = 1.0f;
+      angle = -1.0f;
+      response = 0.0f;
+      octave = 0;
+      data[3] = 1.0f;
+    }
+
+    inline PointWithScale (float _x, float _y, float _z, float _scale)
+    {
+      x = _x;
+      y = _y;
+      z = _z;
+      scale = _scale;
+      angle = -1.0f;
+      response = 0.0f;
+      octave = 0;
+      data[3] = 1.0f;
+    }
+
+    inline PointWithScale (float _x, float _y, float _z, float _scale, float _angle, float _response, int _octave)
+    {
+      x = _x;
+      y = _y;
+      z = _z;
+      scale = _scale;
+      angle = _angle;
+      response = _response;
+      octave = _octave;
+      data[3] = 1.0f;
     }
   };
+
   inline std::ostream& operator << (std::ostream& os, const PointWithScale& p)
   {
-    os << "(" << p.x << "," << p.y << "," << p.z << " - " << p.scale << ")";
+    os << "(" << p.x << "," << p.y << "," << p.z << " - " << p.scale << "," << p.angle << "," << p.response << "," << p.octave << ")";
     return (os);
   }
 

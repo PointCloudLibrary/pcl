@@ -168,6 +168,9 @@ if(build)
       PCL_ADD_EXECUTABLE(pcl_ni_agast ${SUBSYS_NAME} src/ni_agast.cpp)
       target_link_libraries(pcl_ni_agast pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_features pcl_keypoints pcl_surface pcl_search)
 
+      PCL_ADD_EXECUTABLE(pcl_ni_brisk ${SUBSYS_NAME} src/ni_brisk.cpp)
+      target_link_libraries(pcl_ni_brisk pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_features pcl_keypoints pcl_surface pcl_search)
+
       PCL_ADD_EXECUTABLE(pcl_ni_linemod ${SUBSYS_NAME} src/ni_linemod.cpp)
       target_link_libraries(pcl_ni_linemod pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_features pcl_surface pcl_search)
 
