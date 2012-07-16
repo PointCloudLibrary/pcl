@@ -36,8 +36,8 @@
  * $Id$
  */
 
-#ifndef OCTREE_POINT_VECTOR_H
-#define OCTREE_POINT_VECTOR_H
+#ifndef PCL_OCTREE_POINT_VECTOR_H
+#define PCL_OCTREE_POINT_VECTOR_H
 
 #include "octree_pointcloud.h"
 

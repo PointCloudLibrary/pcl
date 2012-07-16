@@ -36,8 +36,8 @@
  * $Id$
  */
 
-#ifndef OCTREE_ITERATOR_H
-#define OCTREE_ITERATOR_H
+#ifndef PCL_OCTREE_ITERATOR_H
+#define PCL_OCTREE_ITERATOR_H
 
 #include <cstddef>
 #include <vector>

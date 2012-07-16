@@ -35,8 +35,8 @@
  *
  */
 
-#ifndef OCTREE_NODE_POOL_H
-#define OCTREE_NODE_POOL_H
+#ifndef PCL_OCTREE_NODE_POOL_H
+#define PCL_OCTREE_NODE_POOL_H
 
 #include <vector>
 

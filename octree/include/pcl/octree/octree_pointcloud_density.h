@@ -36,8 +36,8 @@
  * $Id$
  */
 
-#ifndef OCTREE_DENSITY_H
-#define OCTREE_DENSITY_H
+#ifndef PCL_OCTREE_DENSITY_H
+#define PCL_OCTREE_DENSITY_H
 
 #include "octree_pointcloud.h"
 

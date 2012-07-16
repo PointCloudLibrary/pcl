@@ -36,8 +36,8 @@
  * $Id$
  */
 
-#ifndef OCTREE_VOXELCENTROID_H
-#define OCTREE_VOXELCENTROID_H
+#ifndef PCL_OCTREE_VOXELCENTROID_H
+#define PCL_OCTREE_VOXELCENTROID_H
 
 #include "octree_pointcloud.h"
 

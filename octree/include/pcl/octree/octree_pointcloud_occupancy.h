@@ -36,8 +36,8 @@
  * $Id$
  */
 
-#ifndef OCTREE_OCCUPANCY_H
-#define OCTREE_OCCUPANCY_H
+#ifndef PCL_OCTREE_OCCUPANCY_H
+#define PCL_OCTREE_OCCUPANCY_H
 
 #include "octree_pointcloud.h"
 

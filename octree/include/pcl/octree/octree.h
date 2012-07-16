@@ -36,8 +36,8 @@
  * $Id$
  */
 
-#ifndef OCTREE_H
-#define OCTREE_H
+#ifndef PCL_OCTREE_H
+#define PCL_OCTREE_H
 
 
 #include <pcl/octree/octree_base.h>

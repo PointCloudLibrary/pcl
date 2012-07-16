@@ -35,8 +35,8 @@
  *
  */
 
-#ifndef OCTREE_KEY_H
-#define OCTREE_KEY_H
+#ifndef PCL_OCTREE_KEY_H
+#define PCL_OCTREE_KEY_H
 
 namespace pcl
 {

@@ -36,8 +36,8 @@
  * $Id: octree_nodes.h 5596 2012-04-17 15:09:31Z jkammerl $
  */
 
-#ifndef OCTREE_CONTAINER_H
-#define OCTREE_CONTAINER_H
+#ifndef PCL_OCTREE_CONTAINER_H
+#define PCL_OCTREE_CONTAINER_H
 
 #include <string.h>
 #include <vector>

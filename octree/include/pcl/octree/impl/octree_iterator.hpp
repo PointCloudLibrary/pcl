@@ -36,8 +36,8 @@
  * $Id$
  */
 
-#ifndef OCTREE_ITERATOR_HPP_
-#define OCTREE_ITERATOR_HPP_
+#ifndef PCL_OCTREE_ITERATOR_HPP_
+#define PCL_OCTREE_ITERATOR_HPP_
 
 #include <vector>
 #include <assert.h>

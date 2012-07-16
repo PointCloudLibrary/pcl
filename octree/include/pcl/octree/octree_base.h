@@ -36,8 +36,8 @@
  * $Id$
  */
 
-#ifndef OCTREE_TREE_BASE_H
-#define OCTREE_TREE_BASE_H
+#ifndef PCL_OCTREE_TREE_BASE_H
+#define PCL_OCTREE_TREE_BASE_H
 
 #include <cstddef>
 #include <vector>

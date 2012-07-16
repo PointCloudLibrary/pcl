@@ -36,8 +36,8 @@
  * $Id$
  */
 
-#ifndef OCTREE_NODE_H
-#define OCTREE_NODE_H
+#ifndef PCL_OCTREE_NODE_H
+#define PCL_OCTREE_NODE_H
 
 #include <string>
 #include <vector>

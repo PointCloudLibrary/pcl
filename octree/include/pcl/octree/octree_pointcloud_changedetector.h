@@ -36,8 +36,8 @@
  * $Id$
  */
 
-#ifndef OCTREE_CHANGEDETECTOR_H
-#define OCTREE_CHANGEDETECTOR_H
+#ifndef PCL_OCTREE_CHANGEDETECTOR_H
+#define PCL_OCTREE_CHANGEDETECTOR_H
 
 #include "octree_pointcloud.h"
 

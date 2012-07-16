@@ -36,8 +36,8 @@
  * $Id$
  */
 
-#ifndef OCTREE_2BUF_BASE_HPP
-#define OCTREE_2BUF_BASE_HPP
+#ifndef PCL_OCTREE_2BUF_BASE_HPP
+#define PCL_OCTREE_2BUF_BASE_HPP
 
 namespace pcl
 {

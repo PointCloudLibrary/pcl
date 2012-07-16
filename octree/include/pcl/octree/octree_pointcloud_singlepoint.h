@@ -36,8 +36,8 @@
  * $Id$
  */
 
-#ifndef OCTREE_SINGLE_POINT_H
-#define OCTREE_SINGLE_POINT_H
+#ifndef PCL_OCTREE_SINGLE_POINT_H
+#define PCL_OCTREE_SINGLE_POINT_H
 
 #include "octree_pointcloud.h"
 
