@@ -2,6 +2,8 @@
  * Software License Agreement (BSD License)
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (C) 2011, The Autonomous Systems Lab (ASL), ETH Zurich, 
+ *                      Stefan Leutenegger, Simon Lynen and Margarita Chli.
  *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
@@ -42,7 +44,24 @@
 
 namespace pcl
 {
-  /** \brief Detects BRISK interest points.
+  /** \brief Detects BRISK interest points based on the original code and paper reference by :
+    * 
+    * \note 
+    *   Stefan Leutenegger,Margarita Chli and Roland Siegwart, 
+    *   BRISK: Binary Robust Invariant Scalable Keypoints, 
+    *   in Proceedings of the IEEE International Conference on Computer Vision (ICCV2011).
+    *
+    * Code example
+    * \code
+    * pcl::PointCloud<pcl::PointXYZRGBA> cloud;
+    * pcl::BriskKeypoint2D<pcl::PointXYZRGBA> brisk;
+    * brisk.setThreshold (60);
+    * brisk.setOctaves (4);
+    * brisk.setInputCloud (cloud);
+    *
+    * PointCloud<pcl::PointWithScale> keypoints;
+    * brisk.compute (keypoints);
+    * \endcode
     *
     * \author Radu B. Rusu, Stefan Holzer
     * \ingroup keypoints
@@ -133,7 +152,7 @@ namespace pcl
   {
     namespace brisk
     {
-      /** A layer in the BRISK detector pyramid */
+      /** \brief A layer in the BRISK detector pyramid. */
       class PCL_EXPORTS Layer
       {
         public:
@@ -143,25 +162,110 @@ namespace pcl
             static const int HALFSAMPLE = 0;
             static const int TWOTHIRDSAMPLE = 1;
           };
-          // construct a base layer
+
+          /** \brief Constructor.
+            * \param[in] img input image
+            * \param[in] width image width
+            * \param[in] height image height
+            * \param[in] scale scale
+            * \param[in] offset offset
+            */
           Layer (const std::vector<unsigned char>& img, 
                  int width, int height, 
                  float scale = 1.0f, float offset = 0.0f);
-          // derive a layer
+        
+          /** \brief Copy constructor for deriving a layer.
+            * \param[in] layer layer to derive from
+            * \param[in] mode deriving mode
+            */
           Layer (const Layer& layer, int mode);
 
-          // Fast/Agast without non-max suppression
+          /** \brief AGAST keypoints without non-max suppression.
+            * \param[in] threshold the keypoints threshold
+            * \param[out] keypoints the AGAST keypoints
+            */
           void 
           getAgastPoints (uint8_t threshold, std::vector<pcl::PointXY, Eigen::aligned_allocator<pcl::PointXY> > &keypoints);
 
           // get scores - attention, this is in layer coordinates, not scale=1 coordinates!
+          /** \brief Get the AGAST keypoint score for a given pixel using a threshold
+            * \param[in] x the U coordinate of the pixel
+            * \param[in] y the V coordinate of the pixel
+            * \param[in] threshold the threshold to use for cutting the response
+            */
           inline uint8_t 
           getAgastScore (int x, int y, uint8_t threshold);
+          /** \brief Get the AGAST keypoint score for a given pixel using a threshold
+            * \param[in] x the U coordinate of the pixel
+            * \param[in] y the V coordinate of the pixel
+            * \param[in] threshold the threshold to use for cutting the response
+            */
           inline uint8_t 
           getAgastScore_5_8 (int x, int y, uint8_t threshold);
+          /** \brief Get the AGAST keypoint score for a given pixel using a threshold
+            * \param[in] xf the X coordinate of the pixel
+            * \param[in] yf the Y coordinate of the pixel
+            * \param[in] threshold the threshold to use for cutting the response
+            * \param[in] scale the scale
+            */
           inline uint8_t 
           getAgastScore (float xf, float yf, uint8_t threshold, float scale = 1.0f);
 
+          /** \brief Access gray values (smoothed/interpolated) 
+            * \param[in] mat the image
+            * \param[in] width the image width
+            * \param[in] height the image height
+            * \param[in] xf the x coordinate
+            * \param[in] yf the y coordinate
+            * \param[in] scale the scale
+            */
+          inline uint8_t 
+          getValue (const std::vector<unsigned char>& mat, 
+                    int width, int height, float xf, float yf, float scale);
+         
+          /** \brief Get the image used. */
+          inline const std::vector<unsigned char>&
+          getImage () const
+          {
+            return (img_);
+          }
+
+          /** \brief Get the width of the image used. */
+          inline int
+          getImageWidth () const
+          {
+            return (img_width_);
+          }
+
+          /** \brief Get the height of the image used. */
+          inline int
+          getImageHeight () const
+          {
+            return (img_height_);
+          }
+
+          /** \brief Get the scale used. */
+          inline float
+          getScale () const
+          {
+            return (scale_);
+          }
+
+          /** \brief Get the offset used. */
+          inline float
+          getOffset () const
+          {
+            return (offset_);
+          }
+
+          /** \brief Get the scores obtained. */
+          inline const std::vector<unsigned char>&
+          getScores () const
+          {
+            return (scores_);
+          }
+
+        private:
           // half sampling
           inline void 
           halfsample (const std::vector<unsigned char>& srcimg,
@@ -176,16 +280,11 @@ namespace pcl
                           std::vector<unsigned char>& dstimg,
                           int dstwidth, int dstheight);
 
-          /** access gray values (smoothed/interpolated) */
-          inline uint8_t 
-          getValue (const std::vector<unsigned char>& mat, 
-                    int width, int height, float xf, float yf, float scale);
-
           /** the image */
           std::vector<unsigned char> img_;
           int img_width_;
           int img_height_;
-          
+
           /** its Fast scores */
           std::vector<unsigned char> scores_;
 
@@ -193,29 +292,36 @@ namespace pcl
           float scale_;
           float offset_;
 
-        private:
           /** agast */
           boost::shared_ptr<pcl::keypoints::agast::OastDetector9_16> oast_detector_;
           boost::shared_ptr<pcl::keypoints::agast::AgastDetector5_8> agast_detector_5_8_;
       };
 
-      /** BRISK Scale Space helper.
-        */ 
+      /** BRISK Scale Space helper. */ 
       class PCL_EXPORTS ScaleSpace
       {
         public:
-          // construct telling the octaves number:
-          ScaleSpace (uint8_t octaves = 3);
+          /** \brief Constructor. Specify the number of octaves.
+            * \param[in] octaves the number of octaves (default: 3)
+            */
+          ScaleSpace (int octaves = 3);
           ~ScaleSpace ();
 
-          // construct the image pyramids
+          /** \brief Construct the image pyramids.
+            * \param[in] image the image to construct pyramids for
+            * \param[in] width the image width
+            * \param[in] height the image height
+            */ 
           void 
           constructPyramid (const std::vector<unsigned char>& image,
                             int width, int height);
 
-          // get Keypoints
+          /** \brief Get the keypoints for the associated image and threshold.
+            * \param[in] threshold the threshold for the keypoints
+            * \param[out] keypoints the resultant list of keypoints
+            */
           void 
-          getKeypoints (const uint8_t threshold, 
+          getKeypoints (const int threshold, 
                         std::vector<pcl::PointWithScale, Eigen::aligned_allocator<pcl::PointWithScale> >  &keypoints);
 
         protected:

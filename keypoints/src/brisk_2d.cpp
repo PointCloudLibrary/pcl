@@ -2,6 +2,8 @@
  * Software License Agreement (BSD License)
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (C) 2011, The Autonomous Systems Lab (ASL), ETH Zurich, 
+ *                      Stefan Leutenegger, Simon Lynen and Margarita Chli.
  *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
@@ -41,7 +43,7 @@
 
 /////////////////////////////////////////////////////////////////////////////////////////
 // construct telling the octaves number:
-pcl::keypoints::brisk::ScaleSpace::ScaleSpace (uint8_t octaves)
+pcl::keypoints::brisk::ScaleSpace::ScaleSpace (int octaves)
 {
   if (octaves == 0)
     layers_ = 1;
@@ -79,7 +81,7 @@ pcl::keypoints::brisk::ScaleSpace::constructPyramid (
 /////////////////////////////////////////////////////////////////////////////////////////
 void 
 pcl::keypoints::brisk::ScaleSpace::getKeypoints (
-    const uint8_t threshold, 
+    const int threshold, 
     std::vector<pcl::PointWithScale, Eigen::aligned_allocator<pcl::PointWithScale> >& keypoints)
 {
   // make sure keypoints is empty
@@ -87,7 +89,7 @@ pcl::keypoints::brisk::ScaleSpace::getKeypoints (
   keypoints.reserve (2000);
 
   // assign thresholds
-  threshold_ = threshold;
+  threshold_ = uint8_t (threshold);
   safe_threshold_ = uint8_t (threshold_ * safety_factor_);
   std::vector<std::vector<pcl::PointXY, Eigen::aligned_allocator<pcl::PointXY> > > agast_points;
   agast_points.resize (layers_);
@@ -174,10 +176,10 @@ pcl::keypoints::brisk::ScaleSpace::getKeypoints (
                                 delta_x, delta_y);
 
         // store:
-        keypoints.push_back (pcl::PointWithScale ((point.x + delta_x) * l.scale_ + l.offset_,     // x
-                                                  (point.y + delta_y) * l.scale_ + l.offset_,     // y
+        keypoints.push_back (pcl::PointWithScale ((point.x + delta_x) * l.getScale () + l.getOffset (),     // x
+                                                  (point.y + delta_y) * l.getScale () + l.getOffset (),     // y
                                                   0.0f,                                           // z
-                                                  basic_size_ * l.scale_,                         // size
+                                                  basic_size_ * l.getScale (),                         // size
                                                   -1,                                             // angle
                                                   max,                                            // response
                                                   i));                                            // octave
@@ -358,8 +360,8 @@ bool
 pcl::keypoints::brisk::ScaleSpace::isMax2D (
     const uint8_t layer, const int x_layer, const int y_layer)
 {
-  const std::vector<unsigned char>& scores = pyramid_[layer].scores_;
-  const int scorescols = pyramid_[layer].img_width_;
+  const std::vector<unsigned char>& scores = pyramid_[layer].getScores ();
+  const int scorescols = pyramid_[layer].getImageWidth ();
   const unsigned char* data = &scores[0] + y_layer * scorescols + x_layer;
 
   // decision tree:
@@ -561,9 +563,9 @@ pcl::keypoints::brisk::ScaleSpace::refine3D (
       const float r0 = (1.5f - scale) / .5f;
       const float r1 = 1.0f - r0;
       x = (r0 * delta_x_layer + r1 * delta_x_above + float (x_layer))
-          * this_layer.scale_ + this_layer.offset_;
+          * this_layer.getScale () + this_layer.getOffset ();
       y = (r0 * delta_y_layer + r1 * delta_y_above + float (y_layer))
-          * this_layer.scale_ + this_layer.offset_;
+          * this_layer.getScale () + this_layer.getOffset ();
     }
     else
     {
@@ -581,9 +583,9 @@ pcl::keypoints::brisk::ScaleSpace::refine3D (
         const float r0 = (scale - 0.75f) / 0.25f;
         const float r_1 = 1.0f -r0;
         x = (r0 * delta_x_layer + r_1 * delta_x_below + float (x_layer))
-            * this_layer.scale_ +this_layer.offset_;
+            * this_layer.getScale () +this_layer.getOffset ();
         y = (r0 * delta_y_layer + r_1 * delta_y_below + float (y_layer))
-            * this_layer.scale_ + this_layer.offset_;
+            * this_layer.getScale () + this_layer.getOffset ();
       }
     }
   }
@@ -621,9 +623,9 @@ pcl::keypoints::brisk::ScaleSpace::refine3D (
       const float r0 = 4.0f - scale * 3.0f;
       const float r1 = 1.0f - r0;
       x = (r0 * delta_x_layer + r1 * delta_x_above + float (x_layer))
-           * this_layer.scale_ + this_layer.offset_;
+           * this_layer.getScale () + this_layer.getOffset ();
       y = (r0 * delta_y_layer + r1 * delta_y_above + float (y_layer))
-          * this_layer.scale_ + this_layer.offset_;
+          * this_layer.getScale () + this_layer.getOffset ();
     }
     else
     {
@@ -631,14 +633,14 @@ pcl::keypoints::brisk::ScaleSpace::refine3D (
       const float r0 = scale * 3.0f - 2.0f;
       const float r_1 = 1.0f - r0;
       x = (r0 * delta_x_layer + r_1 * delta_x_below + float (x_layer))
-           * this_layer.scale_ + this_layer.offset_;
+           * this_layer.getScale () + this_layer.getOffset ();
       y = (r0 * delta_y_layer + r_1 * delta_y_below + float (y_layer))
-           * this_layer.scale_ + this_layer.offset_;
+           * this_layer.getScale () + this_layer.getOffset ();
     }
   }
 
   // calculate the absolute scale:
-  scale *= this_layer.scale_;
+  scale *= this_layer.getScale ();
 
   // that's it, return the refined maximum:
   return (max);

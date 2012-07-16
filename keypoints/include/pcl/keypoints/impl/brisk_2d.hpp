@@ -2,6 +2,8 @@
  * Software License Agreement (BSD License)
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (C) 2011, The Autonomous Systems Lab (ASL), ETH Zurich, 
+ *                      Stefan Leutenegger, Simon Lynen and Margarita Chli.
  *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
@@ -62,8 +64,8 @@ template <typename PointInT, typename IntensityT> void
 pcl::BriskKeypoint2D<PointInT, IntensityT>::detectKeypoints (PointCloudOut &output)
 {
   // image size
-  const size_t width = input_->width;
-  const size_t height = input_->height;
+  const int width = int (input_->width);
+  const int height = int (input_->height);
 
   // destination for intensity data; will be forwarded to BRISK
   std::vector<unsigned char> image_data (width*height);
@@ -81,7 +83,7 @@ pcl::BriskKeypoint2D<PointInT, IntensityT>::detectKeypoints (PointCloudOut &outp
   brisk_scale_space.getKeypoints (threshold_, output.points);
 
   // we don not change the denseness
-  output.width = output.points.size ();
+  output.width = int (output.points.size ());
   output.height = 1;
   output.is_dense = true;
 }

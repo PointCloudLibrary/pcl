@@ -44,7 +44,6 @@
 #include <pcl/io/openni_grabber.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/kdtree/kdtree_flann.h>
-#include <pcl/keypoints/agast_2d.h>
 #include <pcl/keypoints/brisk_2d.h>
 #include <pcl/filters/extract_indices.h>
 #include <pcl/visualization/pcl_visualizer.h>
@@ -82,13 +81,13 @@ class BRISKDemo
       cloud_ = cloud;
 
       // Compute BRISK keypoints 
-      BriskKeypoint2D<PointT> agast;
-      agast.setThreshold (60);
-      agast.setOctaves (4);
-      agast.setInputCloud (cloud);
+      BriskKeypoint2D<PointT> brisk;
+      brisk.setThreshold (60);
+      brisk.setOctaves (4);
+      brisk.setInputCloud (cloud);
 
       keypoints_.reset (new PointCloud<KeyPointT>);
-      agast.compute (*keypoints_);
+      brisk.compute (*keypoints_);
     }
 
     /////////////////////////////////////////////////////////////////////////
