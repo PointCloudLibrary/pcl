@@ -81,14 +81,14 @@ pcl::AgastKeypoint2D<PointInT, IntensityT>::detectKeypoints (PointCloudOut &outp
   {
     pcl::PointCloud<pcl::PointXY> tmp_cloud;
 
-    pcl::keypoints::agast::AgastHelper7_12 agast_helper (width, height, threshold_);
+    pcl::keypoints::agast::AgastDetector7_12s agast_helper (width, height, threshold_);
     agast_helper.detectKeypoints (image_data, tmp_cloud);
 
     agast_helper.applyNonMaxSuppression (image_data, tmp_cloud, output);
   }
   else
   {
-    pcl::keypoints::agast::AgastHelper7_12 agast_helper (width, height, threshold_);
+    pcl::keypoints::agast::AgastDetector7_12s agast_helper (width, height, threshold_);
     agast_helper.detectKeypoints (image_data, output);
   }
 

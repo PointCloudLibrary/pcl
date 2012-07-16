@@ -50,13 +50,100 @@ namespace pcl
   {
     namespace agast
     {
-      /** \brief Helper class for AGAST corner point detector.
-        *        Adapted from the C++ implementation of Elmar Mair (http://www6.in.tum.de/Main/ResearchAgast).
+
+      /** \brief Abstract detector class for AGAST corner point detectors.
+        *        
+        * Adapted from the C++ implementation of Elmar Mair 
+        * (http://www6.in.tum.de/Main/ResearchAgast).
         *
         * \author Stefan Holzer
         * \ingroup keypoints
         */
-      class PCL_EXPORTS AgastHelper7_12
+      class PCL_EXPORTS AbstractAgastDetector
+      {
+        public:
+          /** \brief Destructor. */
+          ~AbstractAgastDetector () {}
+
+          /** \brief Detects corner points. 
+            * \param intensity_data
+            * \param output
+            */
+          void 
+          detectKeypoints (const std::vector<unsigned char> &intensity_data, 
+                           pcl::PointCloud<pcl::PointXY> &output);
+
+          /** \brief Applies non-max-suppression. 
+            * \param intensity_data
+            * \param input
+            * \param output
+            */
+          void
+          applyNonMaxSuppression (const std::vector<unsigned char>& intensity_data, 
+                                  const pcl::PointCloud<pcl::PointXY> &input, 
+                                  pcl::PointCloud<pcl::PointXY> &output);
+
+        protected:
+          /** \brief Initializes the sample pattern. */
+          virtual void
+          initPattern () = 0;
+
+          /** \brief Detects corners. 
+            * \param im
+            * \oaram corners_all
+            */
+          virtual void 
+          detect (const unsigned char* im, 
+                  std::vector<pcl::PointXY, Eigen::aligned_allocator<pcl::PointXY> > &corners_all) const = 0;
+
+          /** \brief Computes corner score. 
+            * \param im 
+            */
+          virtual int 
+          computeCornerScore (const unsigned char* im) const = 0;
+
+          /** \brief Computes corner scores for the specified points. 
+            * \param im
+            * \param corners_all
+            * \param scores
+            */
+          void 
+          computeCornerScores (const unsigned char* im, 
+                               const std::vector<pcl::PointXY, Eigen::aligned_allocator<pcl::PointXY> > & corners_all, 
+                               std::vector<int> & scores);
+
+        private:
+          /** \brief Width of the image to process. */
+          size_t width_;
+          /** \brief Height of the image to process. */
+          size_t height_;
+
+          /** \brief Threshold for corner detection. */
+          size_t threshold_;
+
+          /** \brief Border width. */
+          static const int border_width_ = 1;
+
+          // offsets defining the sample pattern
+          int_fast16_t s_offset0_;
+          int_fast16_t s_offset1_;
+          int_fast16_t s_offset2_;
+          int_fast16_t s_offset3_;
+          int_fast16_t s_offset4_;
+          int_fast16_t s_offset5_;
+          int_fast16_t s_offset6_;
+          int_fast16_t s_offset7_;
+      };
+
+      /** \brief Detector class for AGAST corner point detector (7_12s). 
+        *        
+        * Adapted from the C++ implementation of Elmar Mair 
+        * (http://www6.in.tum.de/Main/ResearchAgast).
+        *
+        * \author Stefan Holzer
+        * \ingroup keypoints
+        */
+      class PCL_EXPORTS AgastDetector7_12s : public AbstractAgastDetector
       {
         public:
           /** \brief Constructor. 
@@ -64,47 +151,18 @@ namespace pcl
             * \param[in] height the height of the image to process
             * \param[in] threshold
             */
-          AgastHelper7_12 (const size_t width, const size_t height, const size_t threshold) : width_ (width), height_ (height), threshold_ (threshold) 
+          AgastDetector7_12s (const size_t width, const size_t height, const size_t threshold) : width_ (width), height_ (height), threshold_ (threshold) 
           {
             initPattern ();
           }
 
           /** \brief Destructor. */
-          ~AgastHelper7_12 () {}
-
-          /** \brief Detects corner points. 
-            * \param intensity_data
-            * \param output
-            */
-          void 
-          detectKeypoints (std::vector<unsigned char> &intensity_data, pcl::PointCloud<pcl::PointXY> &output);
-
-          /** \brief Applys non-max-suppression. 
-            * \param intensity_data
-            * \param input
-            * \param output
-            */
-          void
-          applyNonMaxSuppression (std::vector<unsigned char> & intensity_data, pcl::PointCloud<pcl::PointXY> &input, pcl::PointCloud<pcl::PointXY> &output);
+          ~AgastDetector7_12s () {}
 
         protected:
           /** \brief Initializes the sample pattern. */
           void 
-          initPattern ()
-          {
-            s_offset0  = static_cast<int_fast16_t> ((-2)+(0)*width_);
-            s_offset1  = static_cast<int_fast16_t> ((-2)+(-1)*width_);
-            s_offset2  = static_cast<int_fast16_t> ((-1)+(-2)*width_);
-            s_offset3  = static_cast<int_fast16_t> ((0)+(-2)*width_);
-            s_offset4  = static_cast<int_fast16_t> ((1)+(-2)*width_);
-            s_offset5  = static_cast<int_fast16_t> ((2)+(-1)*width_);
-            s_offset6  = static_cast<int_fast16_t> ((2)+(0)*width_);
-            s_offset7  = static_cast<int_fast16_t> ((2)+(1)*width_);
-            s_offset8  = static_cast<int_fast16_t> ((1)+(2)*width_);
-            s_offset9  = static_cast<int_fast16_t> ((0)+(2)*width_);
-            s_offset10 = static_cast<int_fast16_t> ((-1)+(2)*width_);
-            s_offset11 = static_cast<int_fast16_t> ((-2)+(1)*width_);
-          }
+          initPattern ();
 
           /** \brief Detects corners. 
             * \param im
@@ -119,13 +177,74 @@ namespace pcl
           int 
           computeCornerScore (const unsigned char* im) const;
 
-          /** \brief Computes corner scores for the specified points. 
+        private:
+          /** \brief Width of the image to process. */
+          size_t width_;
+          /** \brief Height of the image to process. */
+          size_t height_;
+
+          /** \brief Threshold for corner detection. */
+          size_t threshold_;
+
+          /** \brief Border width. */
+          static const int border_width_ = 2;
+
+          // offsets defining the sample pattern
+          int_fast16_t s_offset0_;
+          int_fast16_t s_offset1_;
+          int_fast16_t s_offset2_;
+          int_fast16_t s_offset3_;
+          int_fast16_t s_offset4_;
+          int_fast16_t s_offset5_;
+          int_fast16_t s_offset6_;
+          int_fast16_t s_offset7_;
+          int_fast16_t s_offset8_;
+          int_fast16_t s_offset9_;
+          int_fast16_t s_offset10_;
+          int_fast16_t s_offset11_;
+      };
+
+      /** \brief Detector class for AGAST corner point detector (5_8). 
+        *        
+        * Adapted from the C++ implementation of Elmar Mair 
+        * (http://www6.in.tum.de/Main/ResearchAgast).
+        *
+        * \author Stefan Holzer
+        * \ingroup keypoints
+        */
+      class PCL_EXPORTS AgastDetector5_8 : public AbstractAgastDetector
+      {
+        public:
+          /** \brief Constructor. 
+            * \param[in] width the width of the image to process
+            * \param[in] height the height of the image to process
+            * \param[in] threshold
+            */
+          AgastDetector5_8 (const size_t width, const size_t height, const size_t threshold) : width_ (width), height_ (height), threshold_ (threshold) 
+          {
+            initPattern ();
+          }
+
+          /** \brief Destructor. */
+          ~AgastDetector5_8 () {}
+
+        protected:
+          /** \brief Initializes the sample pattern. */
+          void 
+          initPattern ();
+
+          /** \brief Detects corners. 
             * \param im
-            * \param corners_all
-            * \param scores
+            * \oaram corners_all
             */
           void 
-          computeCornerScores (const unsigned char* im, std::vector<pcl::PointXY, Eigen::aligned_allocator<pcl::PointXY> > & corners_all, std::vector<int> & scores);
+          detect (const unsigned char* im, std::vector<pcl::PointXY, Eigen::aligned_allocator<pcl::PointXY> > &corners_all) const;
+
+          /** \brief Computes corner score. 
+            * \param im 
+            */
+          int 
+          computeCornerScore (const unsigned char* im) const;
 
         private:
           /** \brief Width of the image to process. */
@@ -137,21 +256,90 @@ namespace pcl
           size_t threshold_;
 
           /** \brief Border width. */
-          static const int borderWidth = 2;
+          static const int border_width_ = 1;
 
           // offsets defining the sample pattern
-          int_fast16_t s_offset0;
-          int_fast16_t s_offset1;
-          int_fast16_t s_offset2;
-          int_fast16_t s_offset3;
-          int_fast16_t s_offset4;
-          int_fast16_t s_offset5;
-          int_fast16_t s_offset6;
-          int_fast16_t s_offset7;
-          int_fast16_t s_offset8;
-          int_fast16_t s_offset9;
-          int_fast16_t s_offset10;
-          int_fast16_t s_offset11;
+          int_fast16_t s_offset0_;
+          int_fast16_t s_offset1_;
+          int_fast16_t s_offset2_;
+          int_fast16_t s_offset3_;
+          int_fast16_t s_offset4_;
+          int_fast16_t s_offset5_;
+          int_fast16_t s_offset6_;
+          int_fast16_t s_offset7_;
+      };
+
+      /** \brief Detector class for AGAST corner point detector (OAST 9_16). 
+        *        
+        * Adapted from the C++ implementation of Elmar Mair 
+        * (http://www6.in.tum.de/Main/ResearchAgast).
+        *
+        * \author Stefan Holzer
+        * \ingroup keypoints
+        */
+      class PCL_EXPORTS OastDetector9_16 : public AbstractAgastDetector
+      {
+        public:
+          /** \brief Constructor. 
+            * \param[in] width the width of the image to process
+            * \param[in] height the height of the image to process
+            * \param[in] threshold
+            */
+          OastDetector9_16 (const size_t width, const size_t height, const size_t threshold) : width_ (width), height_ (height), threshold_ (threshold) 
+          {
+            initPattern ();
+          }
+
+          /** \brief Destructor. */
+          ~OastDetector9_16 () {}
+
+        protected:
+          /** \brief Initializes the sample pattern. */
+          void 
+          initPattern ();
+
+          /** \brief Detects corners. 
+            * \param im
+            * \oaram corners_all
+            */
+          void 
+          detect (const unsigned char* im, std::vector<pcl::PointXY, Eigen::aligned_allocator<pcl::PointXY> > &corners_all) const;
+
+          /** \brief Computes corner score. 
+            * \param im 
+            */
+          int 
+          computeCornerScore (const unsigned char* im) const;
+
+        private:
+          /** \brief Width of the image to process. */
+          size_t width_;
+          /** \brief Height of the image to process. */
+          size_t height_;
+
+          /** \brief Threshold for corner detection. */
+          size_t threshold_;
+
+          /** \brief Border width. */
+          static const int border_width_ = 3;
+
+          // offsets defining the sample pattern
+          int_fast16_t s_offset0_;
+          int_fast16_t s_offset1_;
+          int_fast16_t s_offset2_;
+          int_fast16_t s_offset3_;
+          int_fast16_t s_offset4_;
+          int_fast16_t s_offset5_;
+          int_fast16_t s_offset6_;
+          int_fast16_t s_offset7_;
+          int_fast16_t s_offset8_;
+          int_fast16_t s_offset9_;
+          int_fast16_t s_offset10_;
+          int_fast16_t s_offset11_;
+          int_fast16_t s_offset12_;
+          int_fast16_t s_offset13_;
+          int_fast16_t s_offset14_;
+          int_fast16_t s_offset15_;
       };
     } // namespace agast
   } // namespace keypoints
