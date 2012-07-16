@@ -169,7 +169,7 @@ namespace pcl
     };
 
 
-    /////////////////////////////////The Main Painter Class begins here//////////////////////////////////////
+    ////////////////////////////////////The Main Painter Class begins here//////////////////////////////////////
     /** \brief PCL Painter2D main class. Class for drawing 2D figures
      * \author Kripasindhu Sarkar
      * \ingroup visualization
@@ -182,34 +182,98 @@ namespace pcl
       
       /** \brief Constructor of the class
        */
-      PCLPainter2D ();
+      PCLPainter2D (char const * name = "PCLPainter2D");
       vtkTypeRevisionMacro (PCLPainter2D, vtkContextItem);
 
       /** \brief Paint event for the chart, called whenever the chart needs to be drawn
+       *  \param[in] name Name of the window
        */
-      virtual bool Paint (vtkContext2D *painter);
+      virtual bool 
+      Paint (vtkContext2D *painter);
 
       /** \brief Draw a line between the specified points.
+       * \param[in] x1 X coordinate of the starting point of the line
+       * \param[in] y1 Y coordinate of the starting point of the line
+       * \param[in] x2 X coordinate of the ending point of the line
+       * \param[in] y2 Y coordinate of the ending point of the line
        */
-      void addLine (float x1, float y1, float x2, float y2);
-      void addLine (std::vector<float> p);
-
-      /** \brief Draw specified points.
-       */
-      void addPoint (float x, float y);
-      void addPoints (std::vector<float> points);
+      void 
+      addLine (float x1, float y1, float x2, float y2);
       
-      /** \brief Draw quads based on the given points
+      /** \brief Draw line(s) between the specified points 
+       *  \param[in] p a vector of size 2*n and the points are packed x1, y1, x2, y2 etc.
        */
-      void addRect (float x, float y, float width, float height);
-      void addQuad (std::vector<float> p);
+      void 
+      addLine (std::vector<float> p);
 
-      /** \brief Draw Elliptic curves based on the inputs
+      
+      /** \brief Draw specified point(s).
+       * \param[in] x X coordinate of the point
+       * \param[in] y Y coordinate of the point
+       */      
+      void 
+      addPoint (float x, float y);
+      /** \brief Draw specified point(s).
+       * \param[in] points a vector of size 2*n and the points are packed x1, y1, x2, y2 etc.
        */
-      void addEllipse (float x, float y, float rx, float ry);
-      void addCircle (float x, float y, float r);
-      void addEllipticArc (float x, float y, float rx, float ry, float start_angle, float end_angle);
-      void addArc (float x, float y, float r, float start_angle, float end_angle);
+      
+      void 
+      addPoints (std::vector<float> points);
+      
+      
+      /** \brief Draw a rectangle based on the given points
+       * \param[in] x X coordinate of the origin
+       * \param[in] y Y coordinate of the origin
+       * \param[in] width width of the rectangle
+       * \param[in] height height of the rectangle
+       */
+      void 
+      addRect (float x, float y, float width, float height);
+      
+      /** \brief Draw a quadrilateral based on the given points
+       * \param[in] p a vector of size 8 and the points are packed x1, y1, x2, y2, x3, y3 and x4, y4.
+       */
+      void 
+      addQuad (std::vector<float> p);
+
+      
+      /** \brief Draw an ellipse based on the inputs
+       * \param[in] x X coordinate of the origin
+       * \param[in] y Y coordinate of the origin
+       * \param[in] rx X radius of the ellipse
+       * \param[in] ry Y radius of the ellipse
+       */
+      void 
+      addEllipse (float x, float y, float rx, float ry);
+      
+      /** \brief Draw a circle based on the inputs
+       * \param[in] x X coordinate of the origin
+       * \param[in] y Y coordinate of the origin
+       * \param[in] r radius of the circle
+       */
+      void 
+      addCircle (float x, float y, float r);
+      
+      /** \brief Draw an elliptic arc based on the inputs
+       * \param[in] x X coordinate of the origin
+       * \param[in] y Y coordinate of the origin
+       * \param[in] rx X radius of the ellipse
+       * \param[in] ry Y radius of the ellipse
+       * \param[in] start_angle the starting angle of the arc expressed in degrees
+       * \param[in] end_angle the ending angle of the arc expressed in degrees
+       */
+      void 
+      addEllipticArc (float x, float y, float rx, float ry, float start_angle, float end_angle);
+      
+      /** \brief Draw an arc based on the inputs
+       * \param[in] x X coordinate of the origin
+       * \param[in] y Y coordinate of the origin
+       * \param[in] r radius of the circle
+       * \param[in] start_angle the starting angle of the arc expressed in degrees
+       * \param[in] end_angle the ending angle of the arc expressed in degrees
+       */
+      void 
+      addArc (float x, float y, float r, float start_angle, float end_angle);
 
       /** \brief set/get methods for current working vtkPen
        */

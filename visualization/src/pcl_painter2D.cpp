@@ -41,7 +41,7 @@
 vtkCxxRevisionMacro (pcl::visualization::PCLPainter2D, "$Revision: 1.2 $");
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-pcl::visualization::PCLPainter2D::PCLPainter2D()
+pcl::visualization::PCLPainter2D::PCLPainter2D(char const * name)
 {
   view_ = vtkContextView::New ();
   view_->GetScene ()->AddItem (this);
@@ -49,6 +49,9 @@ pcl::visualization::PCLPainter2D::PCLPainter2D()
   current_pen_ = vtkPen::New ();
   current_brush_ = vtkBrush::New ();
   
+  view_->GetRenderWindow ()->SetWindowName (name);
+  
+  //state variables
   win_width_ = 640;
   win_height_ = 480;
   bkg_color_[0] = 1; bkg_color_[1] = 1; bkg_color_[2] = 1;
@@ -202,16 +205,16 @@ vtkBrush * pcl::visualization::PCLPainter2D::getBrush ()
 {
   return current_brush_;
 }
-
 ///////////////////////////////////End of Pen and Brush functions//////////////////////////////////////////////
+
+
 void pcl::visualization::PCLPainter2D::display ()
 {
   view_->GetRenderer ()->SetBackground (bkg_color_[0], bkg_color_[1], bkg_color_[2]);
   view_->GetRenderWindow ()->SetSize (win_width_, win_height_);
   
-  vtkOpenGLContextDevice2D::SafeDownCast (view_->GetContext ()->GetDevice ())
-    ->SetStringRendererToFreeType ();
-  view_->GetRenderWindow ()->SetMultiSamples (0);
+  //vtkOpenGLContextDevice2D::SafeDownCast (view_->GetContext ()->GetDevice ())->SetStringRendererToFreeType ();
+  //view_->GetRenderWindow ()->SetMultiSamples (3);
   
   view_->GetRenderer ()->Render ();
   view_->GetInteractor ()->Start ();
