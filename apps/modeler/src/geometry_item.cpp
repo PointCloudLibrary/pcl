@@ -35,7 +35,7 @@
  */
 
 #include <pcl/apps/modeler/geometry_item.h>
-#include <pcl/apps/modeler/polymesh_item.h>
+#include <pcl/apps/modeler/cloud_item.h>
 #include <pcl/apps/modeler/tree_model.h>
 #include <pcl/apps/modeler/render_widget.h>
 #include <pcl/apps/modeler/main_window.h>
@@ -140,7 +140,7 @@ pcl::modeler::GeometryItem::handleDataChange()
 void
 pcl::modeler::GeometryItem::setColorHandler(double r, double g, double b)
 {
-  PointCloud2Ptr cloud = dynamic_cast<PolymeshItem*>(parent())->getCloud();
+  PointCloud2Ptr cloud = dynamic_cast<CloudItem*>(parent())->getCloud();
   color_handler_.reset(new pcl::visualization::PointCloudColorHandlerCustom<PointCloud2>(cloud, r, g, b));
 
   dynamic_cast<TreeModel*>(model())->emitItemChanged(this);
@@ -152,7 +152,7 @@ pcl::modeler::GeometryItem::setColorHandler(double r, double g, double b)
 void
 pcl::modeler::GeometryItem::setColorHandler(const std::string& field_name)
 {
-  PointCloud2Ptr cloud = dynamic_cast<PolymeshItem*>(parent())->getCloud();
+  PointCloud2Ptr cloud = dynamic_cast<CloudItem*>(parent())->getCloud();
   if (field_name == "rgb")
   {
     color_handler_.reset(new pcl::visualization::PointCloudColorHandlerRGBField<PointCloud2>(cloud));

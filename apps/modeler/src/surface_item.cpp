@@ -35,7 +35,7 @@
  */
 
 #include <pcl/apps/modeler/surface_item.h>
-#include <pcl/apps/modeler/polymesh_item.h>
+#include <pcl/apps/modeler/cloud_item.h>
 #include <pcl/apps/modeler/main_window.h>
 
 #include <QMenu>
@@ -57,7 +57,7 @@ pcl::modeler::SurfaceItem::~SurfaceItem ()
 void
 pcl::modeler::SurfaceItem::initHandlers()
 {
-  PointCloud2Ptr cloud = dynamic_cast<PolymeshItem*>(parent())->getCloud();
+  PointCloud2Ptr cloud = dynamic_cast<CloudItem*>(parent())->getCloud();
 
   geometry_handler_.reset(new pcl::visualization::PointCloudGeometryHandlerXYZ<PointCloud2>(cloud));
 

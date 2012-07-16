@@ -35,21 +35,25 @@
  */
 
 #include <pcl/apps/modeler/cloud_item.h>
-#include <pcl/apps/modeler/polymesh_item.h>
+#include <pcl/apps/modeler/points_item.h>
+#include <pcl/apps/modeler/normals_item.h>
 #include <pcl/apps/modeler/render_widget.h>
 #include <pcl/apps/modeler/main_window.h>
-#include <pcl/apps/modeler/abstract_worker.h>
+#include <pcl/apps/modeler/tree_model.h>
+#include <pcl/io/pcd_io.h>
 
+#include <vtkRenderer.h>
+#include <vtkCamera.h>
 #include <QMenu>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::modeler::CloudItem::CloudItem (MainWindow* main_window,
-  const Eigen::Vector4f& sensor_origin,
-  const Eigen::Quaternion<float>& sensor_orientation) : 
-  viewpoint_transformation_(vtkSmartPointer<vtkMatrix4x4>::New()),
-  GeometryItem(main_window, "Point Cloud")
+pcl::modeler::CloudItem::CloudItem (MainWindow* main_window, const std::string &filename): 
+  filename_(filename),
+  TreeItem(main_window, filename.c_str())
 {
-  convertToVtkMatrix (sensor_origin, sensor_orientation, viewpoint_transformation_);
+  setCheckable(true);
+
+  return;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -57,191 +61,202 @@ pcl::modeler::CloudItem::~CloudItem ()
 {
 }
 
+
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::modeler::CloudItem::initHandlers()
+pcl::modeler::CloudItem::updateOnInserted()
 {
-  PointCloud2Ptr cloud = dynamic_cast<PolymeshItem*>(parent())->getCloud();
-
-  geometry_handler_.reset(new pcl::visualization::PointCloudGeometryHandlerXYZ<PointCloud2>(cloud));
-
-  color_handler_.reset(new pcl::visualization::PointCloudColorHandlerRGBField<PointCloud2>(cloud));
-  if (!color_handler_->isCapable())
-    color_handler_.reset(new pcl::visualization::PointCloudColorHandlerRandom<PointCloud2>(cloud));
+  open();
+  return;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::modeler::CloudItem::updateOnAboutToBeRemoved()
+{
+  while (hasChildren())
+    removeRow(0);
+
+  return;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+pcl::modeler::RenderWidget*
+pcl::modeler::CloudItem::getParent()
+{
+  return (dynamic_cast<RenderWidget*>(TreeItem::parent()));
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::modeler::CloudItem::open()
+{
+  Eigen::Vector4f origin;
+  Eigen::Quaternionf orientation;
+  int version;
+
+  pcl::PCDReader pcd;
+  if (pcd.read (filename_, cloud, origin, orientation, version) < 0)
+    return;
+  if (cloud.width * cloud.height == 0)
+    return;
+
+  Eigen::Matrix3f rotation;
+  rotation = orientation;
+
+  vtkSmartPointer<vtkCamera> camera = getParent()->getRenderer()->GetActiveCamera();
+  camera->SetPosition(origin[0], origin[1], origin[2]);
+  camera->SetFocalPoint(origin [0] + rotation (0, 2), origin [1] + rotation (1, 2), origin [2] + rotation (2, 2));
+  camera->SetViewUp(rotation (0, 1), rotation (1, 1), rotation (2, 1));
+
+  PointsItem* points_item = new PointsItem(main_window_, origin, orientation);
+  appendRow(points_item);
+
+  //attachNormalItem();
+
+  return;
+}
+
+//////////////////////////////////////////////////////////////////////////
 bool
-pcl::modeler::CloudItem::createActor()
+pcl::modeler::CloudItem::concatenatePointCloud (const PointCloud2& cloud, PointCloud2& cloud_out)
 {
-  if (actor_.GetPointer() == NULL)
-    actor_ = vtkSmartPointer<vtkLODActor>::New ();
-  
-  vtkSmartPointer<vtkLODActor> actor = vtkSmartPointer<vtkLODActor>(dynamic_cast<vtkLODActor*>(actor_.GetPointer()));
-
-  vtkSmartPointer<vtkPolyData> polydata;
-  vtkSmartPointer<vtkIdTypeArray> initcells;
-  // Convert the PointCloud to VTK PolyData
-  convertPointCloudToVTKPolyData (getGeometryHandler(), polydata, initcells);
-  // use the given geometry handler
-  polydata->Update ();
-
-  // Get the colors from the handler
-  vtkSmartPointer<vtkDataArray> scalars;
-  getColorHandler()->getColor (scalars);
-  polydata->GetPointData ()->SetScalars (scalars);
-  double minmax[2];
-  scalars->GetRange (minmax);
-
-  // Create an Actor
-  createActorFromVTKDataSet (polydata, actor);
-  actor->GetMapper ()->SetScalarRange (minmax);
-
-  cells_ = reinterpret_cast<vtkPolyDataMapper*>(actor->GetMapper ())->GetInput ()->GetVerts ()->GetData ();
-
-  return (true);
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-void
-pcl::modeler::CloudItem::convertToVtkMatrix (
-  const Eigen::Vector4f &origin,
-  const Eigen::Quaternion<float> &orientation,
-  vtkSmartPointer<vtkMatrix4x4> &vtk_matrix)
-{
-  // set rotation
-  Eigen::Matrix3f rot = orientation.toRotationMatrix ();
-  for (int i = 0; i < 3; i++)
-    for (int k = 0; k < 3; k++)
-      vtk_matrix->SetElement (i, k, rot (i, k));
-
-  // set translation
-  vtk_matrix->SetElement (0, 3, origin (0));
-  vtk_matrix->SetElement (1, 3, origin (1));
-  vtk_matrix->SetElement (2, 3, origin (2));
-  vtk_matrix->SetElement (3, 3, 1.0f);
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////////
-void
-pcl::modeler::CloudItem::convertPointCloudToVTKPolyData (
-  const GeometryHandlerConstPtr &geometry_handler,
-  vtkSmartPointer<vtkPolyData> &polydata,
-  vtkSmartPointer<vtkIdTypeArray> &initcells)
-{
-  vtkSmartPointer<vtkCellArray> vertices;
-
-  if (!polydata)
+  if (cloud.fields.size () != cloud_out.fields.size ())
   {
-    polydata = vtkSmartPointer<vtkPolyData>::New ();
-    vertices = vtkSmartPointer<vtkCellArray>::New ();
-    polydata->SetVerts (vertices);
+    PCL_ERROR ("[pcl::concatenatePointCloud] Number of fields in cloud1 (%u) != Number of fields in cloud2 (%u)\n", cloud.fields.size (), cloud_out.fields.size ());
+    return (false);
   }
 
-  // Use the handler to obtain the geometry
-  vtkSmartPointer<vtkPoints> points;
-  geometry_handler->getGeometry (points);
-  polydata->SetPoints (points);
-
-  vtkIdType nr_points = points->GetNumberOfPoints ();
-
-  // Create the supporting structures
-  vertices = polydata->GetVerts ();
-  if (!vertices)
-    vertices = vtkSmartPointer<vtkCellArray>::New ();
-
-  vtkSmartPointer<vtkIdTypeArray> cells = vertices->GetData ();
-  updateCells (cells, initcells, nr_points);
-  // Set the cells and the vertices
-  vertices->SetCells (nr_points, cells);
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-void
-pcl::modeler::CloudItem::updateCells (vtkSmartPointer<vtkIdTypeArray> &cells,
-  vtkSmartPointer<vtkIdTypeArray> &initcells,
-  vtkIdType nr_points)
-{
-  // If no init cells and cells has not been initialized...
-  if (!cells)
-    cells = vtkSmartPointer<vtkIdTypeArray>::New ();
-
-  // If we have less values then we need to recreate the array
-  if (cells->GetNumberOfTuples () < nr_points)
-  {
-    cells = vtkSmartPointer<vtkIdTypeArray>::New ();
-
-    // If init cells is given, and there's enough data in it, use it
-    if (initcells && initcells->GetNumberOfTuples () >= nr_points)
+  for (size_t i = 0; i < cloud.fields.size (); ++i)
+    if (cloud.fields[i].name != cloud_out.fields[i].name)
     {
-      cells->DeepCopy (initcells);
-      cells->SetNumberOfComponents (2);
-      cells->SetNumberOfTuples (nr_points);
+      PCL_ERROR ("[pcl::concatenatePointCloud] Name of field %d in cloud1, %s, does not match name in cloud2, %s\n", i, cloud.fields[i].name.c_str (), cloud_out.fields[i].name.c_str () );      
+      return (false);
     }
+
+    size_t nrpts = cloud_out.data.size ();
+    cloud_out.data.resize (nrpts + cloud.data.size ());
+    memcpy (&cloud_out.data[nrpts], &cloud.data[0], cloud.data.size ());
+
+    // Height = 1 => no more organized
+    cloud_out.width    = cloud.width * cloud.height + cloud_out.width * cloud_out.height;
+    cloud_out.height   = 1;
+    if (!cloud.is_dense || !cloud_out.is_dense)
+      cloud_out.is_dense = false;
     else
-    {
-      // If the number of tuples is still too small, we need to recreate the array
-      cells->SetNumberOfComponents (2);
-      cells->SetNumberOfTuples (nr_points);
-      vtkIdType *cell = cells->GetPointer (0);
-      // Fill it with 1s
-      std::fill_n (cell, nr_points * 2, 1);
-      cell++;
-      for (vtkIdType i = 0; i < nr_points; ++i, cell += 2)
-        *cell = i;
-      // Save the results in initcells
-      initcells = vtkSmartPointer<vtkIdTypeArray>::New ();
-      initcells->DeepCopy (cells);
-    }
-  }
-  else
-  {
-    // The assumption here is that the current set of cells has more data than needed
-    cells->SetNumberOfComponents (2);
-    cells->SetNumberOfTuples (nr_points);
-  }
+      cloud_out.is_dense = true;
+
+    return (true);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::modeler::CloudItem::createActorFromVTKDataSet (const vtkSmartPointer<vtkDataSet> &data,
-  vtkSmartPointer<vtkLODActor> &actor,
-  bool use_scalars)
+pcl::modeler::CloudItem::save(const std::vector<CloudItem*>& cloud_items, const std::string& filename)
 {
-  vtkSmartPointer<vtkDataSetMapper> mapper = vtkSmartPointer<vtkDataSetMapper>::New ();
-  mapper->SetInput (data);
+  if (cloud_items.empty())
+    return;
+  
+  PointCloud2Ptr cloud = (cloud_items.size() == 1)?
+    (cloud_items[0]->getCloud()):(boost::shared_ptr<PointCloud2>(new PointCloud2()));
+  for (size_t i = 1, i_end = cloud_items.size(); i < i_end; ++ i)
+    concatenatePointCloud(cloud_items[i]->cloud, *cloud);
 
-  if (use_scalars)
-  {
-    vtkSmartPointer<vtkDataArray> scalars = data->GetPointData ()->GetScalars ();
-    double minmax[2];
-    if (scalars)
-    {
-      scalars->GetRange (minmax);
-      mapper->SetScalarRange (minmax);
+  pcl::PCDWriter pcd;
+  pcd.writeBinaryCompressed(filename, *cloud);
 
-      mapper->SetScalarModeToUsePointData ();
-      mapper->InterpolateScalarsBeforeMappingOn ();
-      mapper->ScalarVisibilityOn ();
-    }
-  }
-  mapper->ImmediateModeRenderingOff ();
-
-  actor->SetNumberOfCloudPoints (int (std::max<vtkIdType> (1, data->GetNumberOfPoints () / 10)));
-  actor->GetProperty ()->SetInterpolationToFlat ();
-
-  /// FIXME disabling backface culling due to known VTK bug: vtkTextActors are not
-  /// shown when there is a vtkActor with backface culling on present in the scene
-  /// Please see VTK bug tracker for more details: http://www.vtk.org/Bug/view.php?id=12588
-  // actor->GetProperty ()->BackfaceCullingOn ();
-
-  actor->SetMapper (mapper);
+  return;
 }
-
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::modeler::CloudItem::prepareContextMenu(QMenu* menu) const
 {
-  GeometryItem::prepareContextMenu(menu);
+  Ui::MainWindow* ui = main_window_->ui();
+  menu->addMenu(ui->menuPointCloudFilter);
+  menu->addMenu(ui->menuSurfaceReconstruction);
+  menu->addAction(ui->actionSavePointCloud);
+  menu->addAction(ui->actionClosePointCloud);
+
+  return;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+std::vector<std::string>
+pcl::modeler::CloudItem::getAvaiableFieldNames() const
+{
+  const std::vector< ::sensor_msgs::PointField >& fields = cloud.fields;
+
+  std::vector<std::string> field_names;
+  for (size_t i = 0, i_end = fields.size(); i < i_end; ++ i)
+  {
+    field_names.push_back(fields[i].name);
+  }
+
+  return (field_names);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::modeler::CloudItem::updateGeometryItems()
+{
+  for (int i  = 0, i_end = rowCount(); i < i_end; ++ i)
+    dynamic_cast<TreeModel*>(model())->emitItemChanged(child(i));
+  
+  return;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::modeler::CloudItem::attachNormalItem()
+{
+  NormalsItem* normals_item = new NormalsItem(main_window_);
+  appendRow(normals_item);
+  if (!normals_item->isCapable())
+  {
+    removeRow(normals_item->row());
+    delete normals_item;
+  }
+
+  return;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::modeler::CloudItem::setNormalField(pcl::PointCloud<pcl::Normal>::Ptr normals)
+{
+  //int field_normal_x_idx = pcl::getFieldIndex (cloud, "normal_x");
+  //int field_normal_y_idx = pcl::getFieldIndex (cloud, "normal_y");
+  //int field_normal_z_idx = pcl::getFieldIndex (cloud, "normal_z");
+
+  //// can not handle such case for now
+  //if (field_normal_x_idx+field_normal_y_idx+field_normal_z_idx != -3
+  //  || field_normal_x_idx+field_normal_y_idx+field_normal_z_idx != -3)
+  //  assert(false);
+
+  //if (field_normal_x_idx == -1)
+  //{
+  //  std::vector<pcl::uint8_t> old_data = cloud.data;
+  //  cloud.data.resize(old_data.size() + sizeof(float)*3*normals->size());
+  //  cloud.point_step = cloud.point_step + sizeof(float)*3;
+  //}
+
+  //for (size_t i = 0, i_end = normals->size(); i < i_end; ++ i)
+  //{
+
+  //}
+
+  //// Fill point cloud binary data (padding and all)
+  //size_t data_size = sizeof (PointT) * cloud.points.size ();
+  //msg.data.resize (data_size);
+  //memcpy (&msg.data[0], &cloud.points[0], data_size);
+
+  //// Fill fields metadata
+  //msg.fields.clear ();
+  //for_each_type<typename traits::fieldList<PointT>::type> (detail::FieldAdder<PointT>(msg.fields));
+
+  //msg.header     = cloud.header;
+  //msg.point_step = sizeof (PointT);
+  //msg.row_step   = static_cast<uint32_t> (sizeof (PointT) * msg.width);
+  //msg.is_dense   = cloud.is_dense;
+  ///// @todo msg.is_bigendian = ?;
 }

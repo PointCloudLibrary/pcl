@@ -39,7 +39,7 @@
 #include <pcl/apps/modeler/tree_model.h>
 #include <pcl/apps/modeler/render_widget.h>
 #include <pcl/apps/modeler/dock_widget.h>
-#include <pcl/apps/modeler/polymesh_item.h>
+#include <pcl/apps/modeler/points_item.h>
 #include <pcl/apps/modeler/color_handler_switcher.h>
 
 #include <QFileInfo>

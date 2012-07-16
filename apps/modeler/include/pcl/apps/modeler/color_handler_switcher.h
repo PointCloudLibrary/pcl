@@ -52,7 +52,7 @@ namespace pcl
 {
   namespace modeler
   {
-    class PolymeshItem;
+    class CloudItem;
 
     class ColorHandlerSwitcher : public QDialog
     {

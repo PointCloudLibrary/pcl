@@ -37,14 +37,14 @@
 #include <pcl/apps/modeler/normal_estimation_worker.h>
 #include <pcl/apps/modeler/parameter_dialog.h>
 #include <pcl/apps/modeler/parameter.h>
-#include <pcl/apps/modeler/polymesh_item.h>
-#include <pcl/apps/modeler/normal_item.h>
+#include <pcl/apps/modeler/cloud_item.h>
+#include <pcl/apps/modeler/normals_item.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/common/io.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::modeler::NormalEstimationWorker::NormalEstimationWorker(const std::vector<PolymeshItem*>& polymeshs, QWidget* parent) :
+pcl::modeler::NormalEstimationWorker::NormalEstimationWorker(const std::vector<CloudItem*>& polymeshs, QWidget* parent) :
   x_min_(std::numeric_limits<double>::max()), x_max_(std::numeric_limits<double>::min()),
   y_min_(std::numeric_limits<double>::max()), y_max_(std::numeric_limits<double>::min()),
   z_min_(std::numeric_limits<double>::max()), z_max_(std::numeric_limits<double>::min()),
@@ -104,7 +104,7 @@ pcl::modeler::NormalEstimationWorker::setupParameters()
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::modeler::NormalEstimationWorker::processImpl(PolymeshItem* polymesh) const
+pcl::modeler::NormalEstimationWorker::processImpl(CloudItem* polymesh) const
 {
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
   pcl::fromROSMsg(*(polymesh->getCloud()), *cloud);
@@ -133,7 +133,7 @@ pcl::modeler::NormalEstimationWorker::processImpl(PolymeshItem* polymesh) const
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::modeler::NormalEstimationWorker::postProcessImpl(PolymeshItem* polymesh) const
+pcl::modeler::NormalEstimationWorker::postProcessImpl(CloudItem* polymesh) const
 {
   polymesh->attachNormalItem();
 

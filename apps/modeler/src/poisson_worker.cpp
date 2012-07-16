@@ -37,12 +37,12 @@
 #include <pcl/apps/modeler/poisson_worker.h>
 #include <pcl/apps/modeler/parameter_dialog.h>
 #include <pcl/apps/modeler/parameter.h>
-#include <pcl/apps/modeler/polymesh_item.h>
+#include <pcl/apps/modeler/points_item.h>
 //#include <pcl/surface/poisson.h>
 #include <pcl/common/io.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::modeler::PoissonReconstructionWorker::PoissonReconstructionWorker(const std::vector<PolymeshItem*>& polymeshs, QWidget* parent) :
+pcl::modeler::PoissonReconstructionWorker::PoissonReconstructionWorker(const std::vector<CloudItem*>& polymeshs, QWidget* parent) :
   depth_(NULL), solver_divide_(NULL), iso_divide_(NULL), degree_(NULL), scale_(NULL), samples_per_node_(NULL),
   AbstractWorker(polymeshs, parent)
 {
@@ -116,7 +116,7 @@ pcl::modeler::PoissonReconstructionWorker::setupParameters()
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::modeler::PoissonReconstructionWorker::processImpl(PolymeshItem* polymesh) const
+pcl::modeler::PoissonReconstructionWorker::processImpl(CloudItem* polymesh) const
 {
   // FIXME:
   //pcl::Poisson<pcl::PointXYZINormal> poisson;
@@ -139,7 +139,7 @@ pcl::modeler::PoissonReconstructionWorker::processImpl(PolymeshItem* polymesh) c
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::modeler::PoissonReconstructionWorker::postProcessImpl(PolymeshItem* polymesh) const
+pcl::modeler::PoissonReconstructionWorker::postProcessImpl(CloudItem* polymesh) const
 {
   // FIXME:
   //pcl::Poisson<pcl::PointXYZINormal> poisson;

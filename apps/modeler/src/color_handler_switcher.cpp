@@ -41,7 +41,7 @@
 
 #include <ui_color_handler_switcher.h>
 #include <pcl/apps/modeler/color_handler_switcher.h>
-#include <pcl/apps/modeler/polymesh_item.h>
+#include <pcl/apps/modeler/cloud_item.h>
 #include <pcl/apps/modeler/geometry_item.h>
 #include <pcl/apps/modeler/main_window.h>
 
@@ -85,18 +85,18 @@ pcl::modeler::ColorHandlerSwitcher::setupAvaiableFieldNames()
   if (geometry_items.empty())
     return;
 
-  std::vector<PolymeshItem*> polymesh_items;
+  std::vector<CloudItem*> cloud_items;
   for (size_t i = 0, i_end = geometry_items.size(); i < i_end; ++ i)
   {
-    polymesh_items.push_back(dynamic_cast<PolymeshItem*>(geometry_items[i]->parent()));
+    cloud_items.push_back(dynamic_cast<CloudItem*>(geometry_items[i]->parent()));
   }
 
-  std::vector<std::string> intersection = polymesh_items[0]->getAvaiableFieldNames();
+  std::vector<std::string> intersection = cloud_items[0]->getAvaiableFieldNames();
   std::sort(intersection.begin(), intersection.end());
 
-  for (size_t i = 1, i_end = polymesh_items.size(); i < i_end; ++ i)
+  for (size_t i = 1, i_end = cloud_items.size(); i < i_end; ++ i)
   {
-    PolymeshItem* polymesh = polymesh_items[i];
+    CloudItem* polymesh = cloud_items[i];
     std::vector<std::string> field_names = polymesh->getAvaiableFieldNames();
     std::sort(field_names.begin(), field_names.end());
 

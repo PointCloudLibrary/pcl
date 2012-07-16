@@ -37,12 +37,12 @@
 #include <pcl/apps/modeler/downsample_worker.h>
 #include <pcl/apps/modeler/parameter_dialog.h>
 #include <pcl/apps/modeler/parameter.h>
-#include <pcl/apps/modeler/polymesh_item.h>
+#include <pcl/apps/modeler/cloud_item.h>
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/common/io.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::modeler::DownSampleWorker::DownSampleWorker(const std::vector<PolymeshItem*>& polymeshs, QWidget* parent) :
+pcl::modeler::DownSampleWorker::DownSampleWorker(const std::vector<CloudItem*>& polymeshs, QWidget* parent) :
   AbstractWorker(polymeshs, parent),
   x_min_(std::numeric_limits<double>::max()), x_max_(std::numeric_limits<double>::min()),
   y_min_(std::numeric_limits<double>::max()), y_max_(std::numeric_limits<double>::min()),
@@ -106,7 +106,7 @@ pcl::modeler::DownSampleWorker::setupParameters()
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::modeler::DownSampleWorker::processImpl(PolymeshItem* polymesh) const
+pcl::modeler::DownSampleWorker::processImpl(CloudItem* polymesh) const
 {
   sensor_msgs::PointCloud2::Ptr output_cloud(new sensor_msgs::PointCloud2);
 
@@ -122,7 +122,7 @@ pcl::modeler::DownSampleWorker::processImpl(PolymeshItem* polymesh) const
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::modeler::DownSampleWorker::postProcessImpl(PolymeshItem* polymesh) const
+pcl::modeler::DownSampleWorker::postProcessImpl(CloudItem* polymesh) const
 {
   polymesh->updateGeometryItems();
 

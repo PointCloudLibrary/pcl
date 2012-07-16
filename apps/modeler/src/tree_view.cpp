@@ -38,7 +38,7 @@
 #include <pcl/apps/modeler/tree_view.h>
 #include <pcl/apps/modeler/tree_model.h>
 #include <pcl/apps/modeler/tree_item.h>
-#include <pcl/apps/modeler/polymesh_item.h>
+#include <pcl/apps/modeler/cloud_item.h>
 #include <pcl/apps/modeler/main_window.h>
 #include <pcl/apps/modeler/render_widget.h>
 #include <pcl/apps/modeler/downsample_worker.h>
@@ -121,12 +121,12 @@ pcl::modeler::TreeView::contextMenuEvent(QContextMenuEvent *event)
 bool 
 pcl::modeler::TreeView::openPointCloud(const QString& filename)
 {
-  std::vector<RenderWidget*> polymesh_items = selectedItems<RenderWidget>();
-  if (polymesh_items.empty())
+  std::vector<RenderWidget*> cloud_items = selectedItems<RenderWidget>();
+  if (cloud_items.empty())
     return (false);
   
-  PolymeshItem* polymesh = new PolymeshItem(main_window_, filename.toStdString());
-  polymesh_items[0]->appendRow(polymesh);
+  CloudItem* polymesh = new CloudItem(main_window_, filename.toStdString());
+  cloud_items[0]->appendRow(polymesh);
   polymesh->setCheckState(Qt::Checked);
 
   main_window_->getRecentFiles().removeAll(filename);
@@ -201,8 +201,8 @@ pcl::modeler::TreeView::slotSavePointCloud()
   if (filename.isEmpty())
     return;
 
-  std::vector<PolymeshItem*> polymesh_items = selectedItems<PolymeshItem>();
-  PolymeshItem::save(polymesh_items, filename.toStdString());
+  std::vector<CloudItem*> cloud_items = selectedItems<CloudItem>();
+  CloudItem::save(cloud_items, filename.toStdString());
 
   return;
 }
@@ -211,9 +211,9 @@ pcl::modeler::TreeView::slotSavePointCloud()
 void 
 pcl::modeler::TreeView::slotClosePointCloud()
 {
-  std::vector<PolymeshItem*> polymesh_items = selectedItems<PolymeshItem>();
-  for (size_t i = 0, i_end = polymesh_items.size(); i < i_end; ++ i)
-    model()->removeRow(polymesh_items[i]->row(), model()->indexFromItem(polymesh_items[i]->parent()));
+  std::vector<CloudItem*> cloud_items = selectedItems<CloudItem>();
+  for (size_t i = 0, i_end = cloud_items.size(); i < i_end; ++ i)
+    model()->removeRow(cloud_items[i]->row(), model()->indexFromItem(cloud_items[i]->parent()));
 
   return;
 }
@@ -297,9 +297,9 @@ pcl::modeler::TreeView::executeWorker(AbstractWorker* worker)
 void
 pcl::modeler::TreeView::slotDownSampleFilter()
 {
-  std::vector<PolymeshItem*> polymesh_items = selectedItems<PolymeshItem>();
+  std::vector<CloudItem*> cloud_items = selectedItems<CloudItem>();
 
-  AbstractWorker* worker = new DownSampleWorker(polymesh_items, main_window_);
+  AbstractWorker* worker = new DownSampleWorker(cloud_items, main_window_);
 
   executeWorker(worker);
 
@@ -310,9 +310,9 @@ pcl::modeler::TreeView::slotDownSampleFilter()
 void
 pcl::modeler::TreeView::slotEstimateNormal()
 {
-  std::vector<PolymeshItem*> polymesh_items = selectedItems<PolymeshItem>();
+  std::vector<CloudItem*> cloud_items = selectedItems<CloudItem>();
 
-  AbstractWorker* worker = new NormalEstimationWorker(polymesh_items, main_window_);
+  AbstractWorker* worker = new NormalEstimationWorker(cloud_items, main_window_);
 
   executeWorker(worker);
 
@@ -323,9 +323,9 @@ pcl::modeler::TreeView::slotEstimateNormal()
 void
 pcl::modeler::TreeView::slotPoissonReconstruction()
 {
-  std::vector<PolymeshItem*> polymesh_items = selectedItems<PolymeshItem>();
+  std::vector<CloudItem*> cloud_items = selectedItems<CloudItem>();
 
-  AbstractWorker* worker = new PoissonReconstructionWorker(polymesh_items, main_window_);
+  AbstractWorker* worker = new PoissonReconstructionWorker(cloud_items, main_window_);
 
   executeWorker(worker);
 

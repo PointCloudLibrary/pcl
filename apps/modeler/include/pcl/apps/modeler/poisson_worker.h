@@ -49,7 +49,7 @@ namespace pcl
     class PoissonReconstructionWorker : public AbstractWorker 
     {
       public:
-        PoissonReconstructionWorker(const std::vector<PolymeshItem*>& polymeshs, QWidget* parent=0);
+        PoissonReconstructionWorker(const std::vector<CloudItem*>& polymeshs, QWidget* parent=0);
         ~PoissonReconstructionWorker(void);
 
       protected:
@@ -63,10 +63,10 @@ namespace pcl
         setupParameters();
 
         virtual void
-        processImpl(PolymeshItem* polymesh) const;
+        processImpl(CloudItem* polymesh) const;
 
         virtual void
-        postProcessImpl(PolymeshItem* polymesh) const;
+        postProcessImpl(CloudItem* polymesh) const;
 
       private:
         IntParameter*     depth_;

@@ -45,15 +45,15 @@ namespace pcl
   {
     class MainWindow;
 
-    class NormalItem : public GeometryItem
+    class NormalsItem : public GeometryItem
     {
       public:
 
-        typedef boost::shared_ptr<NormalItem> Ptr;
-        typedef boost::shared_ptr<const NormalItem> ConstPtr;
+        typedef boost::shared_ptr<NormalsItem> Ptr;
+        typedef boost::shared_ptr<const NormalsItem> ConstPtr;
 
-        NormalItem (MainWindow* main_window);
-        ~NormalItem ();
+        NormalsItem (MainWindow* main_window);
+        ~NormalsItem ();
 
       protected:
         virtual void

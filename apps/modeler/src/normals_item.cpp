@@ -34,30 +34,30 @@
  *
  */
 
-#include <pcl/apps/modeler/normal_item.h>
-#include <pcl/apps/modeler/polymesh_item.h>
+#include <pcl/apps/modeler/normals_item.h>
+#include <pcl/apps/modeler/cloud_item.h>
 #include <pcl/apps/modeler/main_window.h>
 
 #include <QMenu>
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::modeler::NormalItem::NormalItem (MainWindow* main_window) : 
+pcl::modeler::NormalsItem::NormalsItem (MainWindow* main_window) : 
   GeometryItem(main_window, "Normal Vector")
 {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::modeler::NormalItem::~NormalItem ()
+pcl::modeler::NormalsItem::~NormalsItem ()
 {
 
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::modeler::NormalItem::initHandlers()
+pcl::modeler::NormalsItem::initHandlers()
 {
-  PointCloud2Ptr cloud = dynamic_cast<PolymeshItem*>(parent())->getCloud();
+  PointCloud2Ptr cloud = dynamic_cast<CloudItem*>(parent())->getCloud();
 
   geometry_handler_.reset(new pcl::visualization::PointCloudGeometryHandlerSurfaceNormal<PointCloud2>(cloud));
 
@@ -68,14 +68,14 @@ pcl::modeler::NormalItem::initHandlers()
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl::modeler::NormalItem::createActor ()
+pcl::modeler::NormalsItem::createActor ()
 {
   if (actor_.GetPointer() == NULL)
     actor_ = vtkSmartPointer<vtkLODActor>::New ();
 
   vtkSmartPointer<vtkLODActor> actor = vtkSmartPointer<vtkLODActor>(dynamic_cast<vtkLODActor*>(actor_.GetPointer()));
 
-  PointCloud2Ptr cloud = dynamic_cast<PolymeshItem*>(parent())->getCloud();
+  PointCloud2Ptr cloud = dynamic_cast<CloudItem*>(parent())->getCloud();
 
   vtkSmartPointer<vtkPoints> points;
   pcl::visualization::PointCloudGeometryHandlerXYZ<PointCloud2> point_handler(cloud);
@@ -134,7 +134,7 @@ pcl::modeler::NormalItem::createActor ()
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::modeler::NormalItem::prepareContextMenu(QMenu* menu) const
+pcl::modeler::NormalsItem::prepareContextMenu(QMenu* menu) const
 {
   GeometryItem::prepareContextMenu(menu);
 }

@@ -37,9 +37,9 @@
 #include <pcl/apps/modeler/tree_model.h>
 #include <pcl/apps/modeler/dock_widget.h>
 #include <pcl/apps/modeler/render_widget.h>
-#include <pcl/apps/modeler/polymesh_item.h>
-#include <pcl/apps/modeler/cloud_item.h>
-#include <pcl/apps/modeler/normal_item.h>
+#include <pcl/apps/modeler/points_item.h>
+#include <pcl/apps/modeler/points_item.h>
+#include <pcl/apps/modeler/normals_item.h>
 #include <pcl/apps/modeler/surface_item.h>
 #include <pcl/apps/modeler/main_window.h>
 #include <pcl/common/io.h>

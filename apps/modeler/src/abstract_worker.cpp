@@ -36,13 +36,13 @@
 
 #include <pcl/apps/modeler/abstract_worker.h>
 #include <pcl/apps/modeler/parameter_dialog.h>
-#include <pcl/apps/modeler/polymesh_item.h>
+#include <pcl/apps/modeler/cloud_item.h>
 
 #include <QCoreApplication>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::modeler::AbstractWorker::AbstractWorker(const std::vector<PolymeshItem*>& polymeshs, QWidget* parent) :
-  polymeshs_(polymeshs),
+pcl::modeler::AbstractWorker::AbstractWorker(const std::vector<CloudItem*>& polymeshs, QWidget* parent) :
+  clouds_(polymeshs),
   parameter_dialog_(new ParameterDialog(getName(), parent))
 {
 }
@@ -57,8 +57,8 @@ pcl::modeler::AbstractWorker::~AbstractWorker(void)
 int
 pcl::modeler::AbstractWorker::exec()
 {
-  for (size_t i = 0, i_end = polymeshs_.size(); i < i_end; ++ i)
-    initParameters(polymeshs_[i]->getCloud());
+  for (size_t i = 0, i_end = clouds_.size(); i < i_end; ++ i)
+    initParameters(clouds_[i]->getCloud());
 
   setupParameters();
 
@@ -70,8 +70,8 @@ pcl::modeler::AbstractWorker::exec()
 void
 pcl::modeler::AbstractWorker::process()
 {
-  for (size_t i = 0, i_end = polymeshs_.size(); i < i_end; ++ i)
-    processImpl(polymeshs_[i]);
+  for (size_t i = 0, i_end = clouds_.size(); i < i_end; ++ i)
+    processImpl(clouds_[i]);
 
   emit processed();
 
@@ -85,8 +85,8 @@ pcl::modeler::AbstractWorker::postProcess()
 {
   moveToThread(QCoreApplication::instance()->thread());
 
-  for (size_t i = 0, i_end = polymeshs_.size(); i < i_end; ++ i)
-    postProcessImpl(polymeshs_[i]);
+  for (size_t i = 0, i_end = clouds_.size(); i < i_end; ++ i)
+    postProcessImpl(clouds_[i]);
 
   emit finished();
 

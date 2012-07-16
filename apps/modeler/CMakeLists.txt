@@ -45,9 +45,9 @@ if(build)
   set(incs ${moc_incs}
            include/pcl/apps/${SUBSYS_NAME}/qt.h
            include/pcl/apps/${SUBSYS_NAME}/geometry_item.h
-           include/pcl/apps/${SUBSYS_NAME}/polymesh_item.h
            include/pcl/apps/${SUBSYS_NAME}/cloud_item.h
-           include/pcl/apps/${SUBSYS_NAME}/normal_item.h
+           include/pcl/apps/${SUBSYS_NAME}/points_item.h
+           include/pcl/apps/${SUBSYS_NAME}/normals_item.h
            include/pcl/apps/${SUBSYS_NAME}/surface_item.h
 
            include/pcl/apps/${SUBSYS_NAME}/render_widget.h
@@ -68,9 +68,9 @@ if(build)
 
            src/tree_item.cpp
            src/geometry_item.cpp
-           src/polymesh_item.cpp
            src/cloud_item.cpp
-           src/normal_item.cpp
+           src/points_item.cpp
+           src/normals_item.cpp
            src/surface_item.cpp
 
            src/render_widget.cpp
