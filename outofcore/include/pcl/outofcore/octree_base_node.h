@@ -552,9 +552,6 @@ namespace pcl
 
         const static std::string pcd_extension;
 
-        //remove this; debug only
-        static uint64_t recursion_counter;
-
     };
   }//namespace outofcore
 }//namespace pcl

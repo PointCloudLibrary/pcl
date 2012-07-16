@@ -117,13 +117,13 @@ namespace pcl
         insertRange (const AlignedPointTVector& src);
 
         void
-        insertRange (const sensor_msgs::PointCloud2::Ptr input_cloud)
+        insertRange (const sensor_msgs::PointCloud2::Ptr& input_cloud)
         {
           //this needs to be stress tested; also does no delayed-write caching (for now)
           sensor_msgs::PointCloud2::Ptr tmp_cloud (new sensor_msgs::PointCloud2 ());
           
           //if there's a pcd file with data, read the data, concatenate, and resave
-          if ( boost::filesystem::exists ( *fileback_name_ ) )
+          if (boost::filesystem::exists ( *fileback_name_ ))
           {
             //open the existing file
             pcl::PCDReader reader;
@@ -378,6 +378,7 @@ namespace pcl
         static boost::mutex rng_mutex_;
         static boost::mt19937 rand_gen_;
         static boost::uuids::random_generator uuid_gen_;
+
     };
   } //namespace outofcore
 } //namespace pcl

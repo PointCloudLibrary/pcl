@@ -94,9 +94,6 @@ namespace pcl
     const std::string octree_base_node<Container, PointT>::pcd_extension = ".pcd";
 
     template<typename Container, typename PointT>
-    uint64_t octree_base_node<Container, PointT>::recursion_counter = 0;
-
-    template<typename Container, typename PointT>
     octree_base_node<Container, PointT>::octree_base_node (const boost::filesystem::path& path, octree_base_node<Container, PointT>* super, bool loadAll)
       : thisdir_ ()
       , thisnodeindex_ ()

@@ -70,13 +70,24 @@ namespace pcl
    *   Contact Jacob Schloss <jacob.schloss@urbanrobotics.net> with any questions. 
    *   http://www.urbanrobotics.net/
    *
-   *  The primary purpose of this class is recursive traversal of the
+   *  The primary purpose of this class is an interface to the
+   *  recursive traversal (recursion handled by \ref octree_base_node) of the
    *  in-memory/top-level octree structure. The metadata in each node
-   *  can be loaded entirely into main memory, and the tree traversed 
-   *  recursively in this state. This class provides an the interface for:
-   *      I. Point/Region INSERTION methods
-   *      II. Frustrum/box/region REQUESTS/QUERIES
-   *      III. Parameterization of compression, resolution, container type, etc...
+   *  can be loaded entirely into main memory, and the tree traversed
+   *  recursively in this state. This class provides an the interface
+   *  for: 
+   *               I. Point/Region INSERTION methods 
+   *               II. Frustrum/box/region REQUESTS/QUERIES 
+   *               III. Parameterization of compression,
+   *               resolution, container type, etc...
+   *
+   *
+            \todo downsampling of queries
+            \todo downsampling of octree during construction (or leave that to the user's own preprocessing)
+            \todo parameterize compression 
+            \todo parameterize container type (template?)
+            \todo adjust for varying densities at different LODs
+            \todo Re-implement buildLOD for PointCloud2 / pcd files
    */
     template<typename Container, typename PointT>
     class octree_base
@@ -130,7 +141,7 @@ namespace pcl
          * \param max Bounding box max
          * \param node_dim_meters
          * \param rootname must end in ".oct_idx" (THIS SHOULD CHANGE)
-         * \param coord_sys \todo put coordinate system into the templated PointT payload
+         * \param coord_sys 
          * \throws OctreeException(OCT_BAD_PATH) if file extension is not ".oct_idx"
          */
         octree_base (const double min[3], const double max[3], const double node_dim_meters, const boost::filesystem::path& rootname, const std::string& coord_sys);
@@ -142,7 +153,7 @@ namespace pcl
          * \param max_depth Specifies a fixed number of LODs to generate
          * \param min Bounding box min
          * \param max Bounding box max
-         * \param rootname must end in ".oct_idx" (THIS SHOULD CHANGE)
+         * \param rootname must end in ".oct_idx" 
          * \param coord_sys
          * \throws OctreeException(OCT_CHILD_EXISTS) if the parent directory has existing children (detects an existing tree)
          * \throws OctreeException(OCT_BAD_PATH) if file extension is not ".oct_idx"
@@ -153,6 +164,9 @@ namespace pcl
 
         // Point/Region INSERTION methods
         // --------------------------------------------------------------------------------
+        /** \brief Recursively add points to the tree 
+         *  \note shared read_write_mutex lock occurs
+         */
         boost::uint64_t
         addDataToLeaf (const AlignedPointTVector& p);
 
@@ -164,7 +178,13 @@ namespace pcl
          */
         boost::uint64_t
         addPointCloud (PointCloudConstPtr point_cloud);
-        
+
+        /** \brief Recursively copies points from input_cloud into the leaf nodes of the out-of-core octree, and stores them to disk.
+         *
+         * \param[in] input_cloud The cloud of points to be inserted into the out-of-core octree. Note if multiple PointCloud2 objects are added to the tree, this assumes that they all have exactly the same fields.
+         * \param[in] skip_bb_check (default=false) whether to skip the bounding box check on insertion. Note the bounding box check is never skipped in the current implementation.
+         * \return Number of poitns successfully copied from the point cloud to the octree
+         */
         boost::uint64_t
         addPointCloud (sensor_msgs::PointCloud2::Ptr input_cloud, const bool skip_bb_check = false)
         {
@@ -173,6 +193,23 @@ namespace pcl
           return (pt_added);
         }
 
+        /** \brief Recursively add poitns to the tree. 
+         *
+         * Recursive add points to the tree. 1/8 of the
+         * remaining points at each LOD are stored at each internal
+         * node of the octree until either (a) runs out of points, in
+         * which case the leaf is not at the \ref max_depth_ of the
+         * tree, or (b) a larger set of points falls in the leaf at
+         * \ref max_depth_. Note unlike the old implementation,
+         * multiple copies of the same point will \b not be added at
+         * multiple LODs. Once the point is added to the octree, it is
+         * no longer propagated further down the tree. 
+         *
+         *\param[in] input_cloud The input cloud of points which will
+         * be copied into the sorted nodes of the out-of-core octree
+         * \return The total number of points added to the out-of-core
+         * octree.
+         */
         boost::uint64_t
         addPointCloud_and_genLOD (sensor_msgs::PointCloud2::Ptr input_cloud);
 
@@ -182,7 +219,6 @@ namespace pcl
         /** \brief Recursively add points to the tree subsampling LODs on the way.
          *
          * shared read_write_mutex lock occurs
-         * \todo overload this to use shared point cloud pointer
          */
         boost::uint64_t
         addDataToLeaf_and_genLOD (AlignedPointTVector& p);
@@ -198,8 +234,10 @@ namespace pcl
 
         /** \brief Get bins at query_depth that intersect with your bin
          *
-         * query_depth == 0 is root
-         * query_depth == (this->depth) is full
+         * \param[in] min The minimum corner of the bounding box
+         * \param[in] max The maximum corner of the bounding box
+         * \param[in] query_depth 0 is root, (this->depth) is full
+         * \param[out] bin_name List of paths to point data files (PCD currently) which satisfy the query
          */
         void
         queryBBIntersects (const double min[3], const double max[3], const boost::uint32_t query_depth, std::list<std::string>& bin_name) const;
@@ -211,7 +249,13 @@ namespace pcl
         void
         queryBBIncludes (const double min[3], const double max[3], size_t query_depth, AlignedPointTVector& dst) const;
 
-        /** \brief get point in BB into a pointcloud2 blob */
+        /** \brief get point in BB into a pointcloud2 blob 
+         *
+         * \param[in] min The minimum corner of the bounding box to query
+         * \param[in] max The maximum corner of the bounding box to query
+         * \param[in] query_depth The query depth at which to search for points; only points at this depth are returned
+         * \param[out] dst_blob Container for the stoage to which the points are inserted. Note it must already be allocated, and empty when this method is called.
+         **/
         void
         queryBBIncludes (const double min[3], const double max[3], size_t query_depth, const sensor_msgs::PointCloud2::Ptr& dst_blob) const
         {
@@ -224,8 +268,14 @@ namespace pcl
           root_->queryBBIncludes ( min, max, query_depth, dst_blob );
         }
         
-        /** \brief random sample of points in BB includes
-         *  \todo adjust for varying densities at different LODs */
+        /** \brief Returns a random subsample of points within the given bounding box at \ref query_depth
+         *
+         * \param[in] min The minimum corner of the boudning box to query
+         * \param[out] max The maximum corner of the bounding box to query
+         * \param[in] query_depth The depth in the tree at which to look for the points. Only returns points within the given bounding box at the specified \ref query_depth
+         * \param[out] dst The destination in which to return the points.
+         * 
+         */
         void
         queryBBIncludes_subsample (const double min[3], const double max[3], size_t query_depth, const double percent, AlignedPointTVector& dst) const;
 
@@ -235,13 +285,6 @@ namespace pcl
 
         // Parameterization: getters and setters
         // --------------------------------------------------------------------------------
-        /** 
-            \todo downsampling of queries
-            \todo downsampling of octree during construction (or leave that to the user's own preprocessing)
-            \todo parameterize compression 
-            \todo parameterize container type (template?)
-        */
-
 
         /** \brief Copy the overall BB to min max */
         inline bool
@@ -327,14 +370,10 @@ namespace pcl
         // Mutators
         // -----------------------------------------------------------------------
 
-        /** \brief Generate LODs for the tree */
+        /** \brief Generate LODs for the tree 
+         */
         void
         buildLOD ();
-
-        /** \brief Recursively add points to the tree 
-         *  \note shared read_write_mutex lock occurs
-         *  \todo overload this to use shared point cloud pointer
-         */
 
         void
         printBBox(const size_t query_depth) const;

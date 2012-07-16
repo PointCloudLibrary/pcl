@@ -646,7 +646,7 @@ namespace pcl
         
         //open the file for appending binary
         FILE* f = fopen (fileback_name_->c_str (), "a+b");
-        assert ( f != NULL );
+        assert ( f != NULL ); 
 
         for (uint64_t pos = 0; pos < count; pos += WRITE_BUFF_MAX_)
         {
