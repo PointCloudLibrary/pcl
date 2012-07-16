@@ -385,8 +385,8 @@ namespace pcl
           uint8_t safe_threshold_;
 
           // some constant parameters
-          const float safety_factor_;
-          const float basic_size_;
+          float safety_factor_;
+          float basic_size_;
       };
     } // namespace brisk
   } // namespace keypoints
