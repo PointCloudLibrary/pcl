@@ -44,6 +44,8 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 // construct telling the octaves number:
 pcl::keypoints::brisk::ScaleSpace::ScaleSpace (int octaves)
+  : safety_factor_ (1.0)
+  , basic_size_ (12.0)
 {
   if (octaves == 0)
     layers_ = 1;
