@@ -46,14 +46,16 @@
 
 namespace pcl
 {
-  /** \brief Detects 2D AGAST corner points. Based on the original work and paper referece by:
+  /** \brief Detects 2D AGAST corner points. Based on the original work and
+    * paper reference by
     *
-    * \note
-    *   Elmar Mair, Gregory D. Hager, Darius Burschka, Michael Suppa, and Gerhard Hirzinger. 
-    *   Adaptive and generic corner detection based on the accelerated segment test. 
-    *   In Proceedings of the European Conference on Computer Vision (ECCV'10), September 2010.
+    * \par
+    * Elmar Mair, Gregory D. Hager, Darius Burschka, Michael Suppa, and Gerhard Hirzinger. 
+    * Adaptive and generic corner detection based on the accelerated segment test. 
+    * In Proceedings of the European Conference on Computer Vision (ECCV'10), September 2010.
     *
-    * Code example
+    * Code example:
+    *
     * \code
     * pcl::PointCloud<pcl::PointXYZRGBA> cloud;
     * pcl::BriskKeypoint2D<pcl::PointXYZRGBA> agast;

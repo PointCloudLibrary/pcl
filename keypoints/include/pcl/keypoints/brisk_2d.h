@@ -44,14 +44,16 @@
 
 namespace pcl
 {
-  /** \brief Detects BRISK interest points based on the original code and paper reference by :
+  /** \brief Detects BRISK interest points based on the original code and paper
+    * reference by
     * 
-    * \note 
-    *   Stefan Leutenegger,Margarita Chli and Roland Siegwart, 
-    *   BRISK: Binary Robust Invariant Scalable Keypoints, 
-    *   in Proceedings of the IEEE International Conference on Computer Vision (ICCV2011).
+    * \par
+    * Stefan Leutenegger,Margarita Chli and Roland Siegwart, 
+    * BRISK: Binary Robust Invariant Scalable Keypoints, 
+    * in Proceedings of the IEEE International Conference on Computer Vision (ICCV2011).
     *
-    * Code example
+    * Code example:
+    *
     * \code
     * pcl::PointCloud<pcl::PointXYZRGBA> cloud;
     * pcl::BriskKeypoint2D<pcl::PointXYZRGBA> brisk;
