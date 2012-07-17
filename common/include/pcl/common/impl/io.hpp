@@ -249,7 +249,7 @@ pcl::copyPointCloud (const pcl::PointCloud<PointInT> &cloud_in,
     // Iterate over each point
     for (size_t i = 0; i < indices.size (); ++i)
     {
-      cloud_out.points[i] = cloud_in.points[indices[i]];
+      memcpy (&cloud_out.points[i], &cloud_in.points[indices[i]], sizeof (PointInT));
       if (cloud_out.is_dense && !pcl::isFinite (cloud_out.points[i]))
         cloud_out.is_dense = false;
     }
@@ -293,7 +293,7 @@ pcl::copyPointCloud (const pcl::PointCloud<PointInT> &cloud_in,
     // Iterate over each point
     for (size_t i = 0; i < indices.size (); ++i)
     {
-      cloud_out.points[i] = cloud_in.points[indices[i]];
+      memcpy (&cloud_out.points[i], &cloud_in.points[indices[i]], sizeof (PointInT));
       if (cloud_out.is_dense && !pcl::isFinite (cloud_out.points[i]))
         cloud_out.is_dense = false;
     }
@@ -368,7 +368,7 @@ pcl::copyPointCloud (const pcl::PointCloud<PointInT> &cloud_in,
     // Iterate over each point
     for (size_t i = 0; i < indices.indices.size (); ++i)
     {
-      cloud_out.points[i] = cloud_in.points[indices.indices[i]];
+      memcpy (&cloud_out.points[i], &cloud_in.points[indices.indices[i]], sizeof (PointInT));
       if (cloud_out.is_dense && !pcl::isFinite (cloud_out.points[i]))
         cloud_out.is_dense = false;
     }
