@@ -481,7 +481,6 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::performProcessing (PointCloudOut &
       voxel_grid.dilate ();
     
     
-    //BOOST_FOREACH (typename MLSVoxelGrid::HashMap::value_type voxel, voxel_grid.voxel_grid_)
     for (typename MLSVoxelGrid::HashMap::iterator m_it = voxel_grid.voxel_grid_.begin (); m_it != voxel_grid.voxel_grid_.end (); ++m_it)
     {
 
@@ -582,7 +581,6 @@ template <typename PointInT, typename PointOutT> void
 pcl::MovingLeastSquares<PointInT, PointOutT>::MLSVoxelGrid::dilate ()
 {
   HashMap new_voxel_grid = voxel_grid_;
-//  BOOST_FOREACH (typename HashMap::value_type voxel, voxel_grid_)
   for (typename MLSVoxelGrid::HashMap::iterator m_it = voxel_grid_.begin (); m_it != voxel_grid_.end (); ++m_it)
   {
     Eigen::Vector3i index;
