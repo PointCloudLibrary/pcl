@@ -134,12 +134,12 @@ namespace pcl
       {}
 
       /** \brief Provide a pointer to a dataset to add additional information
-       * to estimate the features for every point in the input dataset.  This
-       * is optional, if this is not set, it will only use the data in the
-       * input cloud to estimate the features.  This is useful when you only
-       * need to compute the features for a downsampled cloud.
-       * \param[in] cloud a pointer to a PointCloud message
-       */
+        * to estimate the features for every point in the input dataset.  This
+        * is optional, if this is not set, it will only use the data in the
+        * input cloud to estimate the features.  This is useful when you only
+        * need to compute the features for a downsampled cloud.
+        * \param[in] cloud a pointer to a PointCloud message
+        */
       inline void
       setSearchSurface (const PointCloudInConstPtr &cloud)
       {

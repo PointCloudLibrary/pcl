@@ -57,6 +57,10 @@ namespace pcl
       typedef typename Keypoint<PointInT, PointOutT>::KdTree KdTree;
       typedef typename PointCloudIn::ConstPtr PointCloudInConstPtr;
 
+      typedef typename pcl::PointCloud<NormalT> PointCloudN;
+      typedef typename PointCloudN::Ptr PointCloudNPtr;
+      typedef typename PointCloudN::ConstPtr PointCloudNConstPtr;
+
       using Keypoint<PointInT, PointOutT>::name_;
       using Keypoint<PointInT, PointOutT>::input_;
       using Keypoint<PointInT, PointOutT>::indices_;
@@ -86,41 +90,52 @@ namespace pcl
         search_radius_ = radius;
       }
 
-      /** \brief set the method of the response to be calculated.
+      /** \brief Set the method of the response to be calculated.
         * \param[in] type
         */
-      void setMethod (ResponseMethod type);
+      void 
+      setMethod (ResponseMethod type);
 
-      /** \brief set the radius for normal estimation and non maxima supression.
+      /** \brief Set the radius for normal estimation and non maxima supression.
         * \param[in] radius
         */
-      void setRadius (float radius);
+      void 
+      setRadius (float radius);
 
-      /** \brief set the threshold value for detecting corners. This is only evaluated if non maxima suppression is turned on.
+      /** \brief Set the threshold value for detecting corners. This is only evaluated if non maxima suppression is turned on.
         * \brief note non maxima suppression needs to be activated in order to use this feature.
         * \param[in] threshold
         */
-      void setThreshold (float threshold);
+      void 
+      setThreshold (float threshold);
 
-      /** \brief whether non maxima suppression should be applied or the response for each point should be returned
+      /** \brief Whether non maxima suppression should be applied or the response for each point should be returned
         * \note this value needs to be turned on in order to apply thresholding and refinement
         * \param[in] nonmax default is false
         */
-      void setNonMaxSupression (bool = false);
+      void 
+      setNonMaxSupression (bool = false);
 
-      /** \brief whether the detected key points should be refined or not. If turned of, the key points are a subset of the original point cloud. Otherwise the key points may be arbitrary.
+      /** \brief Whether the detected key points should be refined or not. If turned of, the key points are a subset of the original point cloud. Otherwise the key points may be arbitrary.
         * \brief note non maxima supression needs to be on in order to use this feature.
         * \param[in] do_refine
         */
-      void setRefine (bool do_refine);
+      void 
+      setRefine (bool do_refine);
 
-      /**
-        * \brief set normals if precalculated normals are available.
+      /** \brief Set normals if precalculated normals are available.
         * \param normals
         */
-      void setNormals (boost::shared_ptr<pcl::PointCloud<NormalT> > normals ) const;
+      void 
+      setNormals (const PointCloudNPtr &normals);
 
-
+      /** \brief Provide a pointer to a dataset to add additional information
+        * to estimate the features for every point in the input dataset.  This
+        * is optional, if this is not set, it will only use the data in the
+        * input cloud to estimate the features.  This is useful when you only
+        * need to compute the features for a downsampled cloud.
+        * \param[in] cloud a pointer to a PointCloud message
+        */
       virtual void
       setSearchSurface (const PointCloudInConstPtr &cloud) { surface_ = cloud; normals_->clear (); }
 
@@ -152,7 +167,7 @@ namespace pcl
       bool refine_;
       bool nonmax_;
       ResponseMethod method_;
-      boost::shared_ptr<pcl::PointCloud<NormalT> > normals_;
+      PointCloudNPtr normals_;
       int threads_;
   };
 }
