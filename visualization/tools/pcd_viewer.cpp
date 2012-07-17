@@ -60,8 +60,8 @@ typedef pcl::visualization::PointCloudGeometryHandler<sensor_msgs::PointCloud2> 
 typedef GeometryHandler::Ptr GeometryHandlerPtr;
 typedef GeometryHandler::ConstPtr GeometryHandlerConstPtr;
 
-#define NORMALS_SCALE 0.01
-#define PC_SCALE 0.001
+#define NORMALS_SCALE 0.01f
+#define PC_SCALE 0.001f
 
 bool
 isValidFieldName (const std::string &field)
@@ -126,7 +126,7 @@ pp_callback (const pcl::visualization::PointPickingEvent& event, void* cookie)
 {
   if (event.getPointIndex () == -1)
     return;
-  sensor_msgs::PointCloud2::Ptr cloud = *(sensor_msgs::PointCloud2::Ptr*)cookie;
+  sensor_msgs::PointCloud2::Ptr cloud = *reinterpret_cast<sensor_msgs::PointCloud2::Ptr*> (cookie);
   if (!cloud)
     return;
 
@@ -163,7 +163,7 @@ pp_callback (const pcl::visualization::PointPickingEvent& event, void* cookie)
 int
 main (int argc, char** argv)
 {
-  srand (time (0));
+  srand (static_cast<unsigned int> (time (0)));
 
   print_info ("The viewer window provides interactive commands; for help, press 'h' or 'H' from within the window.\n");
 
@@ -191,12 +191,12 @@ main (int argc, char** argv)
 
   int normals = 0;
   pcl::console::parse_argument (argc, argv, "-normals", normals);
-  double normals_scale = NORMALS_SCALE;
+  float normals_scale = NORMALS_SCALE;
   pcl::console::parse_argument (argc, argv, "-normals_scale", normals_scale);
 
   int pc = 0;
   pcl::console::parse_argument (argc, argv, "-pc", pc);
-  double pc_scale = PC_SCALE;
+  float pc_scale = PC_SCALE;
   pcl::console::parse_argument (argc, argv, "-pc_scale", pc_scale);
 
   bool use_vbos = pcl::console::find_switch (argc, argv, "-use_vbos");
@@ -219,7 +219,7 @@ main (int argc, char** argv)
     print_highlight ("Multi-viewport rendering enabled.\n");
 
     y_s = static_cast<int>(floor (sqrt (static_cast<float>(p_file_indices.size () + vtk_file_indices.size ()))));
-    x_s = y_s + static_cast<int>(ceil (((p_file_indices.size () + vtk_file_indices.size ()) / static_cast<double>(y_s)) - y_s));
+    x_s = y_s + static_cast<int>(ceil (double (p_file_indices.size () + vtk_file_indices.size ()) / double (y_s) - y_s));
 
     if (p_file_indices.size () != 0)
     {
@@ -344,7 +344,7 @@ main (int argc, char** argv)
     if (!p)
     {
       p.reset (new pcl::visualization::PCLVisualizer (argc, argv, "PCD viewer"));
-      p->registerPointPickingCallback (&pp_callback, (void*)&cloud);
+      p->registerPointPickingCallback (&pp_callback, static_cast<void*> (&cloud));
       Eigen::Matrix3f rotation;
       rotation = orientation;
       p->setCameraPosition (origin [0]                  , origin [1]                  , origin [2],
@@ -369,7 +369,7 @@ main (int argc, char** argv)
       print_error ("[error: no points found!]\n");
       return (-1);
     }
-    print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", (int)cloud->width * cloud->height); print_info (" points]\n");
+    print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%u", cloud->width * cloud->height); print_info (" points]\n");
     print_info ("Available dimensions: "); print_value ("%s\n", pcl::getFieldsList (*cloud).c_str ());
 
     // Set whether or not we should be using the vtkVertexBufferObjectMapper
@@ -504,7 +504,7 @@ main (int argc, char** argv)
   pcl::console::parse_argument (argc, argv, "-ax", axes);
   if (axes != 0.0 && p)
   {
-    double ax_x = 0.0, ax_y = 0.0, ax_z = 0.0;
+    float ax_x = 0.0, ax_y = 0.0, ax_z = 0.0;
     pcl::console::parse_3x_arguments (argc, argv, "-ax_pos", ax_x, ax_y, ax_z, false);
     // Draw XYZ axes if command-line enabled
     p->addCoordinateSystem (axes, ax_x, ax_y, ax_z);
