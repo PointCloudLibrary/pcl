@@ -98,8 +98,8 @@ namespace pcl {
       static void SetVertex (const int& e, const double values[Square::CORNERS], const double& iso);
     public:
       const static int MAX_EDGES = 2;
-      static const int edgeMask (int idx);
-      static const int edges (int x, int y);
+      static int edgeMask (int idx);
+      static int edges (int x, int y);
       static double vertexList[Square::EDGES][2];
 
       static int GetIndex (const double values[Square::CORNERS], const double& iso);
@@ -121,9 +121,9 @@ namespace pcl {
       static int GetFaceIndex (const int& mcIndex, const int& faceIndex);
     public:
       const static int MAX_TRIANGLES=5;
-      static const int edgeMask (int idx);
+      static int edgeMask (int idx);
       static const int triangles[1<<Cube::CORNERS][3*MAX_TRIANGLES+1];
-      static const int cornerMap (int idx);
+      static int cornerMap (int idx);
       static double vertexList[Cube::EDGES][3];
 
       static int AddTriangleIndices (const int& mcIndex, int* triangles);

@@ -292,7 +292,7 @@ namespace pcl {
 3} // (0,0) -> (0,1)
      */
 
-    const int MarchingSquares::edgeMask (int idx)
+    int MarchingSquares::edgeMask (int idx)
     {
       static const int edgeMask_array[1<<Square::CORNERS]={
                                                              0, //  0 ->         ->                         ->
@@ -315,7 +315,7 @@ namespace pcl {
       return edgeMask_array[idx];
     }
 
-    const int MarchingSquares::edges(int x, int y)
+    int MarchingSquares::edges(int x, int y)
     {
       static const int edges_array[1<<Square::CORNERS][MAX_EDGES*2+1] = {
                                                                            { -1,  -1,  -1,  -1,  -1}, //
@@ -411,7 +411,7 @@ namespace pcl {
     ///////////////////
     // MarchingCubes //
     ///////////////////
-    const int MarchingCubes::edgeMask (int idx)
+    int MarchingCubes::edgeMask (int idx)
     {
       static const int edgeMask_array[1<<Cube::CORNERS]={
                                                          0,  273,  545,  816, 2082, 2355, 2563, 2834,
@@ -707,7 +707,7 @@ namespace pcl {
                                                                                {   8,   4,   0,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1},
                                                                                {  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1}
     };
-    const int MarchingCubes::cornerMap (int idx)
+    int MarchingCubes::cornerMap (int idx)
     {
       static const int cornerMap_array[Cube::CORNERS]={0,1,3,2,4,5,7,6};
       return (cornerMap_array[idx]);

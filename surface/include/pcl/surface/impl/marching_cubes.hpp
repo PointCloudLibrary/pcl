@@ -72,7 +72,7 @@ pcl::MarchingCubes<PointNT>::getBoundingBox ()
   double max_size =
       (std::max) ((std::max)(bounding_box_size.x (), bounding_box_size.y ()),
           bounding_box_size.z ());
-
+  (void)max_size;
   // ????
   //  data_size_ = static_cast<uint64_t> (max_size / leaf_size_);
   PCL_DEBUG ("[pcl::MarchingCubesHoppe::getBoundingBox] Lower left point is [%f, %f, %f]\n",
