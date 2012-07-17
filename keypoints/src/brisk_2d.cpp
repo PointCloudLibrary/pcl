@@ -1522,7 +1522,7 @@ pcl::keypoints::brisk::Layer::halfsample (
     const std::vector<unsigned char>& srcimg, 
     int srcwidth, int srcheight,
     std::vector<unsigned char>& dstimg,
-    int dstwidth, int)
+    int dstwidth, int dstheight)
 {
   const unsigned short leftoverCols = static_cast<unsigned short> ((srcwidth % 16) / 2); // take care with border...
   const bool noleftover = (srcwidth % 16) == 0; // note: leftoverCols can be zero but this still false...
@@ -1677,7 +1677,7 @@ pcl::keypoints::brisk::Layer::twothirdsample (
     const std::vector<unsigned char>& srcimg, 
     int srcwidth, int srcheight,
     std::vector<unsigned char>& dstimg,
-    int dstwidth, int)
+    int dstwidth, int dstheight)
 {
   const unsigned short leftoverCols = static_cast<unsigned short> (((srcwidth / 3) * 3) % 15);// take care with border...
 
