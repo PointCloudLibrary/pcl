@@ -66,9 +66,4 @@
 #include <QMessageBox>
 
 
-#include <pcl/apps/cloud_composer/items/cloud_composer_item.h>
-
-typedef QList<const pcl::cloud_composer::CloudComposerItem*> ConstItemList;
-
-
 #endif // CLOUD_COMPOSER_QT_H_

@@ -80,7 +80,7 @@ namespace pcl
       public slots:
       //Slots for File Menu Actions
         void
-        on_action_new_project__triggered (QString name = "unsaved project");
+        on_action_new_project__triggered (/*QString name = "unsaved project"*/);
         void
         on_action_open_cloud_as_new_project__triggered ();
         void

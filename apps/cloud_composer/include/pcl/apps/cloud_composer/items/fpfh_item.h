@@ -35,61 +35,49 @@
  *
  */
 
-#ifndef CLOUD_ITEM_H_
-#define CLOUD_ITEM_H_
+#ifndef FPFH_ITEM_H_
+#define FPFH_ITEM_H_
+
+#include <pcl/point_types.h>
+#include <pcl/features/fpfh.h>
 
 #include <pcl/apps/cloud_composer/items/cloud_composer_item.h>
-#include <pcl/visualization/pcl_visualizer.h>
+
+
 //Define user roles
-#ifndef CLOUD_USER_ROLES
-#define CLOUD_USER_ROLES
-enum CLOUD_ITEM_ROLES { 
-  CLOUD = Qt::UserRole + 1,
-  GEOMETRY, 
-  COLOR,
-  ORIGIN,
-  ORIENTATION
+#ifndef FPFH_USER_ROLES
+#define FPFH_USER_ROLES
+enum FPFH_ITEM_ROLES { 
+  FPFH_CLOUD = Qt::UserRole + 1
 };
 #endif
 
 
-//Typedefs to make things sane
-typedef pcl::visualization::PointCloudGeometryHandler<sensor_msgs::PointCloud2> GeometryHandler;
-typedef pcl::visualization::PointCloudColorHandler<sensor_msgs::PointCloud2> ColorHandler;
 
 namespace pcl
 {
   namespace cloud_composer
   {
     
-    class CloudItem : public CloudComposerItem
+    class FPFHItem : public CloudComposerItem
     {
       public:
-        //This is needed because we have members which are Vector4f and Quaternionf
-        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-        
-        CloudItem (const QString name,
-                   const sensor_msgs::PointCloud2::Ptr cloud_ptr, 
-                   const Eigen::Vector4f& origin,
-                   const Eigen::Quaternionf& orientation);
-        CloudItem (const CloudItem& to_copy);
-        virtual ~CloudItem ();
+
+        FPFHItem (QString name, 
+                     pcl::PointCloud<pcl::FPFHSignature33>::Ptr fpfh_ptr,
+                     double radius);
+        FPFHItem (const FPFHItem& to_copy);
+        virtual ~FPFHItem ();
         
         inline virtual int 
-        type () const { return CLOUD_ITEM; }
+        type () const { return FPFH_ITEM; }
 
-        virtual CloudItem*
+        virtual FPFHItem*
         clone () const;
         
       private:
-
-        sensor_msgs::PointCloud2::Ptr cloud_ptr_;
-        ColorHandler::ConstPtr color_handler_;
-        GeometryHandler::ConstPtr geometry_handler_;
-        Eigen::Vector4f origin_;
-        Eigen::Quaternionf orientation_;
-
-        
+        pcl::PointCloud<pcl::FPFHSignature33>::Ptr fpfh_ptr_;
+        double radius_;
     };
     
     
@@ -97,11 +85,7 @@ namespace pcl
   }
 }
 
-//Add PointCloud types to QT MetaType System
-Q_DECLARE_METATYPE (sensor_msgs::PointCloud2::Ptr);
-Q_DECLARE_METATYPE (sensor_msgs::PointCloud2::ConstPtr);
-Q_DECLARE_METATYPE (GeometryHandler::ConstPtr);
-Q_DECLARE_METATYPE (ColorHandler::ConstPtr);
-Q_DECLARE_METATYPE (Eigen::Vector4f);
-Q_DECLARE_METATYPE (Eigen::Quaternionf);
-#endif //CLOUD_ITEM_H_
+Q_DECLARE_METATYPE (pcl::PointCloud<pcl::FPFHSignature33>::Ptr);
+Q_DECLARE_METATYPE (pcl::PointCloud<pcl::FPFHSignature33>::ConstPtr);
+
+#endif //NORMALS_ITEM_H_

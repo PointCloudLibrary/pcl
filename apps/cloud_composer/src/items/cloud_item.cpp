@@ -3,8 +3,8 @@
 
 pcl::cloud_composer::CloudItem::CloudItem (QString name,
                                            sensor_msgs::PointCloud2::Ptr cloud_ptr, 
-                                           Eigen::Vector4f origin, 
-                                           Eigen::Quaternionf orientation)
+                                           const Eigen::Vector4f& origin, 
+                                           const Eigen::Quaternionf& orientation)
   : CloudComposerItem (name)
   , cloud_ptr_ (cloud_ptr)
   , origin_ (origin)

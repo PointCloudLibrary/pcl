@@ -39,6 +39,7 @@
 #define COMMANDS_H_
 
 #include "qt.h"
+#include <pcl/pcl_exports.h>
 #include <pcl/apps/cloud_composer/items/cloud_composer_item.h>
 
 namespace pcl
@@ -52,7 +53,7 @@ namespace pcl
       const CloudComposerItem* input_item_;
       QList <CloudComposerItem*> output_list_;
     };
-    class CloudCommand : public QUndoCommand
+    class PCL_EXPORTS CloudCommand : public QUndoCommand
     {
       public: 
         CloudCommand (ConstItemList input_data, QUndoCommand* parent = 0);
@@ -74,7 +75,7 @@ namespace pcl
         ProjectModel* project_model_;
     };
     
-    class ModifyCloudCommand : public CloudCommand
+    class PCL_EXPORTS ModifyCloudCommand : public CloudCommand
     {
       public: 
         ModifyCloudCommand (ConstItemList input_data, QUndoCommand* parent = 0);
@@ -92,7 +93,7 @@ namespace pcl
       
     };
     
-    class NewItemCloudCommand : public CloudCommand
+    class PCL_EXPORTS NewItemCloudCommand : public CloudCommand
     {
       public: 
         NewItemCloudCommand (ConstItemList input_data, QUndoCommand* parent = 0);

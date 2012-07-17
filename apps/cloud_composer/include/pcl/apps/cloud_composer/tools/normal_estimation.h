@@ -40,9 +40,6 @@
 
 #include <pcl/apps/cloud_composer/tool_interface/abstract_tool.h>
 #include <pcl/apps/cloud_composer/tool_interface/tool_factory.h>
-#include <pcl/apps/cloud_composer/items/cloud_item.h>
-#include <pcl/apps/cloud_composer/items/normals_item.h>
-
 
 
 namespace pcl

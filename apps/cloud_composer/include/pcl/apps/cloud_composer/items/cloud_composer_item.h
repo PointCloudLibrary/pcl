@@ -38,9 +38,10 @@
 #ifndef CLOUD_COMPOSER_ITEM_H_
 #define CLOUD_COMPOSER_ITEM_H_
 
-#include <QStandardItem>
-#include <boost/shared_ptr.hpp>
+#include <pcl/apps/cloud_composer/qt.h>
 #include <pcl/point_types.h>
+
+
 
 enum ITEM_ROLES { 
   PROPERTIES = Qt::UserRole
@@ -50,7 +51,8 @@ enum ITEM_ROLES {
 enum ITEM_TYPES { 
   CLOUD_COMPOSER_ITEM = QStandardItem::UserType,
   CLOUD_ITEM,
-  NORMALS_ITEM
+  NORMALS_ITEM,
+  FPFH_ITEM
 };
 
 namespace pcl
@@ -59,7 +61,7 @@ namespace pcl
   {
     class PropertyModel;
     
-    class CloudComposerItem : public QStandardItem
+    class PCL_EXPORTS CloudComposerItem : public QStandardItem
     {
       public:
         typedef boost::shared_ptr<pcl::cloud_composer::CloudComposerItem> Ptr;
@@ -124,6 +126,7 @@ namespace pcl
   }
 }
 
+typedef QList<const pcl::cloud_composer::CloudComposerItem*> ConstItemList;
 
 Q_DECLARE_METATYPE (pcl::cloud_composer::CloudComposerItem);
 

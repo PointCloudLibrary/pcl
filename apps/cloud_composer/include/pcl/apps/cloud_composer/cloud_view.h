@@ -38,8 +38,7 @@
 #ifndef CLOUD_VIEW_H_
 #define CLOUD_VIEW_H_
 
-#include "qt.h"
-
+#include <pcl/apps/cloud_composer/qt.h>
 #include <pcl/visualization/pcl_visualizer.h>
 
 namespace pcl
@@ -47,7 +46,8 @@ namespace pcl
   namespace cloud_composer
   {
     class ProjectModel;
-    
+    class CloudItem;
+    class NormalsItem;
     /** \brief View class for displaying ProjectModel data using PCLVisualizer
      * \author Jeremie Papon
      * \ingroup cloud_composer
@@ -103,6 +103,11 @@ namespace pcl
       void
       connectSignalsAndSlots ();
       
+      void 
+      addCloudToView (CloudItem *cloud_item);
+      
+      void 
+      addNormalsToView (NormalsItem *normals_item);
       
       boost::shared_ptr<pcl::visualization::PCLVisualizer> vis_;
       ProjectModel* model_;

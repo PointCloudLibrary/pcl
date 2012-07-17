@@ -44,7 +44,7 @@ pcl::cloud_composer::ToolBoxModel::addTool (ToolFactory* tool_factory)
 void
 pcl::cloud_composer::ToolBoxModel::setSelectionModel (QItemSelectionModel* selection_model)
 {
-  selection_model_ =selection_model;
+  selection_model_ = selection_model;
 }
   
 QStandardItem*

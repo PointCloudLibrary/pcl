@@ -41,23 +41,24 @@ set(DEFAULT FALSE)
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ${DEFAULT} ${REASON})
 PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} ${SUBSYS_DEPS})
 
+PCL_ADD_DOC(${SUBSYS_NAME})
+
 if(build)
 
   include_directories (${CMAKE_CURRENT_BINARY_DIR})
   include_directories (${CMAKE_CURRENT_SOURCE_DIR}/include)
   
-  
   if (VTK_FOUND AND QT4_FOUND AND VTK_USE_QVTK)
     #Sources & Headers for main application
-    set(incs #include/pcl/apps/${SUBSYS_NAME}/qt.h
+    set(incs include/pcl/apps/${SUBSYS_NAME}/qt.h
              include/pcl/apps/${SUBSYS_NAME}/cloud_composer.h
              include/pcl/apps/${SUBSYS_NAME}/project_model.h
              include/pcl/apps/${SUBSYS_NAME}/cloud_viewer.h
              include/pcl/apps/${SUBSYS_NAME}/cloud_view.h
              include/pcl/apps/${SUBSYS_NAME}/item_inspector.h
              include/pcl/apps/${SUBSYS_NAME}/tool_interface/abstract_tool.h
-             #include/pcl/apps/${SUBSYS_NAME}/tool_interface/tool_factory.h
-             #include/pcl/apps/${SUBSYS_NAME}/commands.h
+             include/pcl/apps/${SUBSYS_NAME}/tool_interface/tool_factory.h
+             include/pcl/apps/${SUBSYS_NAME}/commands.h
              include/pcl/apps/${SUBSYS_NAME}/work_queue.h
              include/pcl/apps/${SUBSYS_NAME}/toolbox_model.h)
           
@@ -72,14 +73,15 @@ if(build)
              src/toolbox_model.cpp)
           
     #Sources and headers for item types      
-    set(item_incs #include/pcl/apps/${SUBSYS_NAME}/items/cloud_composer_item.h
-                  #include/pcl/apps/${SUBSYS_NAME}/items/cloud_item.h
-                  #include/pcl/apps/${SUBSYS_NAME}/items/normals_item.h
-                  )
+    set(item_incs include/pcl/apps/${SUBSYS_NAME}/items/cloud_composer_item.h
+                  include/pcl/apps/${SUBSYS_NAME}/items/cloud_item.h
+                  include/pcl/apps/${SUBSYS_NAME}/items/normals_item.h
+                  include/pcl/apps/${SUBSYS_NAME}/items/fpfh_item.h)
            
     set(item_srcs src/items/cloud_composer_item.cpp
                   src/items/cloud_item.cpp
-                  src/items/normals_item.cpp)
+                  src/items/normals_item.cpp
+                  src/items/fpfh_item.cpp)
                   
     set(uis src/cloud_composer_main_window.ui)
     set(resources resources/resources.qrc)
@@ -104,19 +106,28 @@ if(build)
     set (CLOUD_COMPOSER_PLUGIN_DIR ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/cloud_composer_plugins)
     make_directory (${CLOUD_COMPOSER_PLUGIN_DIR})
 
-    set(INTERFACE_HEADERS 
-                          include/pcl/apps/${SUBSYS_NAME}/tool_interface/abstract_tool.h)
+    set(INTERFACE_HEADERS include/pcl/apps/${SUBSYS_NAME}/tool_interface/abstract_tool.h)
 
     QT4_WRAP_CPP(INTERFACE_HEADERS_MOC ${INTERFACE_HEADERS} OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)
     PCL_ADD_LIBRARY(pcl_cc_tool_interface ${SUBSYS_NAME} ${INTERFACE_HEADERS_MOC})
-
+    target_link_libraries(pcl_cc_tool_interface pcl_common ${QT_LIBRARIES})
+    
     include(ComposerTool.cmake REQUIRED)
     
-    set (DEPS pcl_features pcl_kdtree)
-    set (TOOL_SOURCES tools/normal_estimation.cpp)
-    set (TOOL_HEADERS include/pcl/apps/${SUBSYS_NAME}/tools/normal_estimation.h)
-    define_composer_tool (normal_estimation ${TOOL_SOURCES} ${TOOL_HEADERS} ${DEPS})
+    #FPFH Tool
+    set (FPFH_DEPS pcl_features pcl_kdtree)
+    set (FPFH_SOURCES tools/fpfh_estimation.cpp)
+    set (FPFH_HEADERS include/pcl/apps/${SUBSYS_NAME}/tools/fpfh_estimation.h)
+    define_composer_tool (fpfh_estimation ${FPFH_SOURCES} ${FPFH_HEADERS} ${FPFH_DEPS})
+    
+    #Normals Tool
+    set (NORMALS_DEPS pcl_features pcl_kdtree)
+    set (NORMALS_SOURCES tools/normal_estimation.cpp)
+    set (NORMALS_HEADERS include/pcl/apps/${SUBSYS_NAME}/tools/normal_estimation.h)
+    define_composer_tool (normal_estimation ${NORMALS_SOURCES} ${NORMALS_HEADERS} ${NORMALS_DEPS})
 
+    
+    
   endif ()  #VTK_FOUND AND QT4_FOUND AND VTK_USE_QVTK
 
 

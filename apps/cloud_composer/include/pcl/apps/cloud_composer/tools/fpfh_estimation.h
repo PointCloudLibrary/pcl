@@ -35,73 +35,66 @@
  *
  */
 
-#ifndef CLOUD_ITEM_H_
-#define CLOUD_ITEM_H_
+#ifndef FPFH_ESTIMATION_H_
+#define FPFH_ESTIMATION_H_
 
-#include <pcl/apps/cloud_composer/items/cloud_composer_item.h>
-#include <pcl/visualization/pcl_visualizer.h>
-//Define user roles
-#ifndef CLOUD_USER_ROLES
-#define CLOUD_USER_ROLES
-enum CLOUD_ITEM_ROLES { 
-  CLOUD = Qt::UserRole + 1,
-  GEOMETRY, 
-  COLOR,
-  ORIGIN,
-  ORIENTATION
-};
-#endif
+#include <pcl/apps/cloud_composer/tool_interface/abstract_tool.h>
+#include <pcl/apps/cloud_composer/tool_interface/tool_factory.h>
 
 
-//Typedefs to make things sane
-typedef pcl::visualization::PointCloudGeometryHandler<sensor_msgs::PointCloud2> GeometryHandler;
-typedef pcl::visualization::PointCloudColorHandler<sensor_msgs::PointCloud2> ColorHandler;
 
 namespace pcl
 {
   namespace cloud_composer
   {
     
-    class CloudItem : public CloudComposerItem
+    class FPFHEstimationTool : public NewItemTool
     {
+      Q_OBJECT
       public:
-        //This is needed because we have members which are Vector4f and Quaternionf
-        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+        FPFHEstimationTool (QStandardItemModel* parameter_model, QObject* parent);
+        virtual ~FPFHEstimationTool ();
         
-        CloudItem (const QString name,
-                   const sensor_msgs::PointCloud2::Ptr cloud_ptr, 
-                   const Eigen::Vector4f& origin,
-                   const Eigen::Quaternionf& orientation);
-        CloudItem (const CloudItem& to_copy);
-        virtual ~CloudItem ();
-        
-        inline virtual int 
-        type () const { return CLOUD_ITEM; }
-
-        virtual CloudItem*
-        clone () const;
-        
-      private:
-
-        sensor_msgs::PointCloud2::Ptr cloud_ptr_;
-        ColorHandler::ConstPtr color_handler_;
-        GeometryHandler::ConstPtr geometry_handler_;
-        Eigen::Vector4f origin_;
-        Eigen::Quaternionf orientation_;
-
-        
+        virtual QList <CloudComposerItem*>
+        performAction (ConstItemList input_data);
+      
+        inline virtual QString
+        getToolName () const { return "FPFH Estimation Tool";}
     };
+
     
-    
-    
+    class FPFHEstimationToolFactory : public QObject, public ToolFactory
+    {
+      Q_OBJECT
+      Q_INTERFACES (pcl::cloud_composer::ToolFactory)
+      public:
+        NewItemTool*
+        createTool (QStandardItemModel* parameter_model, QObject* parent = 0) 
+        {
+            return new FPFHEstimationTool(parameter_model, parent);
+        }
+        
+        QStandardItemModel*
+        createToolParameterModel (QObject* parent);
+        
+        inline virtual QString 
+        getPluginName () const { return "FPFH Estimation";}
+        
+        virtual QString 
+        getToolGroupName () const { return "Feature Estimation";}
+        
+        virtual QString
+        getIconName () const { return ":/fpfh_estimation.png"; }
+    };
+
+
+
   }
 }
 
-//Add PointCloud types to QT MetaType System
-Q_DECLARE_METATYPE (sensor_msgs::PointCloud2::Ptr);
-Q_DECLARE_METATYPE (sensor_msgs::PointCloud2::ConstPtr);
-Q_DECLARE_METATYPE (GeometryHandler::ConstPtr);
-Q_DECLARE_METATYPE (ColorHandler::ConstPtr);
-Q_DECLARE_METATYPE (Eigen::Vector4f);
-Q_DECLARE_METATYPE (Eigen::Quaternionf);
-#endif //CLOUD_ITEM_H_
+
+
+
+
+
+#endif //FPFH_ESTIMATION_H_

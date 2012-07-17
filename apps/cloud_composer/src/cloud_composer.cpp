@@ -132,12 +132,20 @@ pcl::cloud_composer::ComposerMainWindow::initializePlugins ()
 {
   QDir plugin_dir = QCoreApplication::applicationDirPath ();
   qDebug() << plugin_dir.path ()<< "   "<<QDir::cleanPath ("../lib/cloud_composer_plugins");
+#if _WIN32
+  if (!plugin_dir.cd (QDir::cleanPath ("cloud_composer_plugins")))
+#else
   if (!plugin_dir.cd (QDir::cleanPath ("../lib/cloud_composer_plugins")))
+#endif
   {
     qCritical () << "Could not find plugin tool directory!!!";
   }
   QStringList plugin_filter;
+#if _WIN32
+  plugin_filter << "pcl_cc_tool_*.dll";
+#else
   plugin_filter << "libpcl_cc_tool_*.so";
+#endif
   plugin_dir.setNameFilters (plugin_filter);
   foreach (QString filename, plugin_dir.entryList (QDir::Files))
   {
@@ -188,8 +196,10 @@ pcl::cloud_composer::ComposerMainWindow::enqueueToolAction (AbstractTool* tool)
 }
 ///////// FILE MENU SLOTS ///////////
 void
-pcl::cloud_composer::ComposerMainWindow::on_action_new_project__triggered (QString name)
+pcl::cloud_composer::ComposerMainWindow::on_action_new_project__triggered (/*QString name*/)
 {
+  QString name("unsaved project");
+
   qDebug () << "Creating New Project";
   ProjectModel* new_project_model = new ProjectModel (this);
   // Check if we have a project with this name already, append int if so

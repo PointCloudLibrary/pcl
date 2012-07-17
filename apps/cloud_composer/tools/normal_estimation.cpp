@@ -1,4 +1,5 @@
 #include <pcl/apps/cloud_composer/tools/normal_estimation.h>
+#include <pcl/apps/cloud_composer/items/normals_item.h>
 
 #include <pcl/features/normal_3d.h>
 #include <pcl/point_types.h>
