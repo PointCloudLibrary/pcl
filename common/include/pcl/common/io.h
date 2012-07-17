@@ -17,7 +17,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -224,15 +224,6 @@ namespace pcl
     }
   }
 
-  /** \brief Copy all the fields from a given point cloud into a new point cloud
-    * \param[in] cloud_in the input point cloud dataset
-    * \param[out] cloud_out the resultant output point cloud dataset
-    * \ingroup common
-    */
-  template <typename PointInT, typename PointOutT> void 
-  copyPointCloud (const pcl::PointCloud<PointInT> &cloud_in, 
-                  pcl::PointCloud<PointOutT> &cloud_out);
-
   /** \brief Concatenate two sensor_msgs::PointCloud2. 
     * \param[in] cloud1 the first input point cloud dataset
     * \param[in] cloud2 the second input point cloud dataset
@@ -249,6 +240,7 @@ namespace pcl
     * \param[in] cloud_in the input point cloud dataset
     * \param[in] indices the vector of indices representing the points to be copied from \a cloud_in
     * \param[out] cloud_out the resultant output point cloud dataset
+    * \note Assumes unique indices.
     * \ingroup common
     */
   PCL_EXPORTS void 
@@ -265,20 +257,27 @@ namespace pcl
   copyPointCloud (const sensor_msgs::PointCloud2 &cloud_in, 
                   sensor_msgs::PointCloud2 &cloud_out);
 
+  /** \brief Check if two given point types are the same or not. */
+  template <typename Point1T, typename Point2T> bool
+  isSamePointType ();
+
   /** \brief Extract the indices of a given point cloud as a new point cloud
     * \param[in] cloud_in the input point cloud dataset
     * \param[in] indices the vector of indices representing the points to be copied from \a cloud_in
     * \param[out] cloud_out the resultant output point cloud dataset
+    * \note Assumes unique indices.
     * \ingroup common
     */
   template <typename PointT> void 
   copyPointCloud (const pcl::PointCloud<PointT> &cloud_in, 
                   const std::vector<int> &indices, 
                   pcl::PointCloud<PointT> &cloud_out);
+ 
   /** \brief Extract the indices of a given point cloud as a new point cloud
     * \param[in] cloud_in the input point cloud dataset
     * \param[in] indices the vector of indices representing the points to be copied from \a cloud_in
     * \param[out] cloud_out the resultant output point cloud dataset
+    * \note Assumes unique indices.
     * \ingroup common
     */
   template <typename PointT> void 
@@ -288,30 +287,9 @@ namespace pcl
 
   /** \brief Extract the indices of a given point cloud as a new point cloud
     * \param[in] cloud_in the input point cloud dataset
-    * \param[in] indices the vector of indices representing the points to be copied from \a cloud_in
-    * \param[out] cloud_out the resultant output point cloud dataset
-    * \ingroup common
-    */
-  template <typename PointInT, typename PointOutT> void 
-  copyPointCloud (const pcl::PointCloud<PointInT> &cloud_in, 
-                  const std::vector<int> &indices, 
-                  pcl::PointCloud<PointOutT> &cloud_out);
-
-  /** \brief Extract the indices of a given point cloud as a new point cloud
-    * \param[in] cloud_in the input point cloud dataset
-    * \param[in] indices the vector of indices representing the points to be copied from \a cloud_in
-    * \param[out] cloud_out the resultant output point cloud dataset
-    * \ingroup common
-    */
-  template <typename PointInT, typename PointOutT> void 
-  copyPointCloud (const pcl::PointCloud<PointInT> &cloud_in, 
-                  const std::vector<int, Eigen::aligned_allocator<int> > &indices, 
-                  pcl::PointCloud<PointOutT> &cloud_out);
-
-  /** \brief Extract the indices of a given point cloud as a new point cloud
-    * \param[in] cloud_in the input point cloud dataset
     * \param[in] indices the PointIndices structure representing the points to be copied from cloud_in
     * \param[out] cloud_out the resultant output point cloud dataset
+    * \note Assumes unique indices.
     * \ingroup common
     */
   template <typename PointT> void 
@@ -321,19 +299,9 @@ namespace pcl
 
   /** \brief Extract the indices of a given point cloud as a new point cloud
     * \param[in] cloud_in the input point cloud dataset
-    * \param[in] indices the PointIndices structure representing the points to be copied from cloud_in
-    * \param[out] cloud_out the resultant output point cloud dataset
-    * \ingroup common
-    */
-  template <typename PointInT, typename PointOutT> void 
-  copyPointCloud (const pcl::PointCloud<PointInT> &cloud_in, 
-                  const PointIndices &indices, 
-                  pcl::PointCloud<PointOutT> &cloud_out);
-
-  /** \brief Extract the indices of a given point cloud as a new point cloud
-    * \param[in] cloud_in the input point cloud dataset
     * \param[in] indices the vector of indices representing the points to be copied from \a cloud_in
     * \param[out] cloud_out the resultant output point cloud dataset
+    * \note Assumes unique indices.
     * \ingroup common
     */
   template <typename PointT> void 
@@ -341,10 +309,56 @@ namespace pcl
                   const std::vector<pcl::PointIndices> &indices, 
                   pcl::PointCloud<PointT> &cloud_out);
 
+  /** \brief Copy all the fields from a given point cloud into a new point cloud
+    * \param[in] cloud_in the input point cloud dataset
+    * \param[out] cloud_out the resultant output point cloud dataset
+    * \ingroup common
+    */
+  template <typename PointInT, typename PointOutT> void 
+  copyPointCloud (const pcl::PointCloud<PointInT> &cloud_in, 
+                  pcl::PointCloud<PointOutT> &cloud_out);
+
+  /** \brief Extract the indices of a given point cloud as a new point cloud
+    * \param[in] cloud_in the input point cloud dataset
+    * \param[in] indices the vector of indices representing the points to be copied from \a cloud_in
+    * \param[out] cloud_out the resultant output point cloud dataset
+    * \note Assumes unique indices.
+    * \ingroup common
+    */
+  template <typename PointInT, typename PointOutT> void 
+  copyPointCloud (const pcl::PointCloud<PointInT> &cloud_in, 
+                  const std::vector<int> &indices, 
+                  pcl::PointCloud<PointOutT> &cloud_out);
+
+  /** \brief Extract the indices of a given point cloud as a new point cloud
+    * \param[in] cloud_in the input point cloud dataset
+    * \param[in] indices the vector of indices representing the points to be copied from \a cloud_in
+    * \param[out] cloud_out the resultant output point cloud dataset
+    * \note Assumes unique indices.
+    * \ingroup common
+    */
+  template <typename PointInT, typename PointOutT> void 
+  copyPointCloud (const pcl::PointCloud<PointInT> &cloud_in, 
+                  const std::vector<int, Eigen::aligned_allocator<int> > &indices, 
+                  pcl::PointCloud<PointOutT> &cloud_out);
+
+  /** \brief Extract the indices of a given point cloud as a new point cloud
+    * \param[in] cloud_in the input point cloud dataset
+    * \param[in] indices the PointIndices structure representing the points to be copied from cloud_in
+    * \param[out] cloud_out the resultant output point cloud dataset
+    * \note Assumes unique indices.
+    * \ingroup common
+    */
+  template <typename PointInT, typename PointOutT> void 
+  copyPointCloud (const pcl::PointCloud<PointInT> &cloud_in, 
+                  const PointIndices &indices, 
+                  pcl::PointCloud<PointOutT> &cloud_out);
+
   /** \brief Extract the indices of a given point cloud as a new point cloud
     * \param[in] cloud_in the input point cloud dataset
     * \param[in] indices the vector of indices representing the points to be copied from cloud_in
     * \param[out] cloud_out the resultant output point cloud dataset
+    * \note Assumes unique indices.
     * \ingroup common
     */
   template <typename PointInT, typename PointOutT> void 

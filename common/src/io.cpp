@@ -3,6 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -16,7 +17,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -353,7 +354,8 @@ pcl::getEigenAsPointCloud (Eigen::MatrixXf &in, sensor_msgs::PointCloud2 &out)
 //////////////////////////////////////////////////////////////////////////
 void 
 pcl::copyPointCloud (
-    const sensor_msgs::PointCloud2 &cloud_in, const std::vector<int> &indices, 
+    const sensor_msgs::PointCloud2 &cloud_in, 
+    const std::vector<int> &indices, 
     sensor_msgs::PointCloud2 &cloud_out)
 {
   cloud_out.header       = cloud_in.header;
@@ -383,9 +385,8 @@ pcl::copyPointCloud (
 
 ////////////////////////////////////////////////////////////////////////////////
 void 
-pcl::copyPointCloud (
-    const sensor_msgs::PointCloud2 &cloud_in, 
-    sensor_msgs::PointCloud2 &cloud_out)
+pcl::copyPointCloud (const sensor_msgs::PointCloud2 &cloud_in, 
+                     sensor_msgs::PointCloud2 &cloud_out)
 {
   cloud_out.header       = cloud_in.header;
   cloud_out.height       = cloud_in.height;
@@ -394,14 +395,7 @@ pcl::copyPointCloud (
   cloud_out.is_bigendian = cloud_in.is_bigendian;
   cloud_out.point_step   = cloud_in.point_step;
   cloud_out.row_step     = cloud_in.row_step;
-
-  if (cloud_in.is_dense)
-    cloud_out.is_dense = true;
-  else
-    cloud_out.is_dense = false;
-
-  cloud_out.data.resize (cloud_out.width * cloud_out.height * cloud_out.point_step);
-
-  //copy the data directly
-  memcpy ( &cloud_out.data[0], &cloud_in.data[0], cloud_in.point_step * cloud_in.width * cloud_in.height );
+  cloud_out.is_dense     = cloud_in.is_dense;
+  cloud_out.data         = cloud_in.data;
 }
+

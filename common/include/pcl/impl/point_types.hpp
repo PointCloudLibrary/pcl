@@ -1,7 +1,10 @@
 /*
  * Software License Agreement (BSD License)
  *
+ *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -14,7 +17,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -1331,24 +1334,10 @@ namespace pcl
     return (os);
   }
 
-  /** Tests if the 3D components of a point are all finite
-    * param[in] pt point to be tested
-    */
-  template <typename PointT> inline bool
-  isFinite (const PointT &pt)
-  {
-    return (pcl_isfinite (pt.x) && pcl_isfinite (pt.y) && pcl_isfinite (pt.z));
-  }
-
-  // specification for pcl::Normal
-  template <> inline bool
-  isFinite<pcl::Normal> (const pcl::Normal &n)
-  {
-    return (pcl_isfinite (n.normal_x) && pcl_isfinite (n.normal_y) && pcl_isfinite (n.normal_z));
-  }
 } // End namespace
 
 // Preserve API for PCL users < 1.4
 #include <pcl/common/distances.h>
+#include <pcl/common/point_tests.h>
 
 #endif

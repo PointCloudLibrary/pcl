@@ -239,10 +239,10 @@ namespace pcl
     * \ingroup common
     */
   struct ESFSignature640;
+
   /** \brief Members: float x, y, z, roll, pitch, yaw; float descriptor[36]
     * \ingroup common
     */
-
   struct Narf36;
 
   /** \brief Data type to store extended information about a transition from foreground to backgroundSpecification of the fields for BorderDescription::traits.
