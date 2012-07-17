@@ -376,7 +376,8 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::computeMLSPointNormal (int index,
   }
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+
+
 template <typename PointInT, typename PointOutT> void
 pcl::MovingLeastSquares<PointInT, PointOutT>::projectPointToMLSSurface (float &u_disp, float &v_disp,
                                                                         Eigen::Vector3d &u, Eigen::Vector3d &v,
@@ -483,7 +484,6 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::performProcessing (PointCloudOut &
     
     for (typename MLSVoxelGrid::HashMap::iterator m_it = voxel_grid.voxel_grid_.begin (); m_it != voxel_grid.voxel_grid_.end (); ++m_it)
     {
-
       // Get 3D position of point
       Eigen::Vector3f pos;
       voxel_grid.getPosition (m_it->first, pos);
@@ -536,6 +536,11 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::performProcessing (PointCloudOut &
     }
   }
 }
+
+
+
+
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT>
