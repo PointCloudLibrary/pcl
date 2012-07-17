@@ -69,19 +69,19 @@ namespace pcl
     * \author Stefan Holzer, Radu B. Rusu
     * \ingroup keypoints
     */
-  template <typename PointInT, typename IntensityT= pcl::common::IntensityFieldAccessor<PointInT> >
-  class AgastKeypoint2D : public Keypoint<PointInT, pcl::PointXY>
+  template <typename PointInT, typename PointOutT = pcl::PointXY, typename IntensityT = pcl::common::IntensityFieldAccessor<PointInT> >
+  class AgastKeypoint2D : public Keypoint<PointInT, PointOutT>
   {
     public:
-      typedef typename Keypoint<PointInT, pcl::PointXY>::PointCloudIn PointCloudIn;
-      typedef typename Keypoint<PointInT, pcl::PointXY>::PointCloudOut PointCloudOut;
-      typedef typename Keypoint<PointInT, pcl::PointXY>::KdTree KdTree;
+      typedef typename Keypoint<PointInT, PointOutT>::PointCloudIn PointCloudIn;
+      typedef typename Keypoint<PointInT, PointOutT>::PointCloudOut PointCloudOut;
+      typedef typename Keypoint<PointInT, PointOutT>::KdTree KdTree;
       typedef typename PointCloudIn::ConstPtr PointCloudInConstPtr;
 
-      using Keypoint<PointInT, pcl::PointXY>::name_;
-      using Keypoint<PointInT, pcl::PointXY>::input_;
-      using Keypoint<PointInT, pcl::PointXY>::indices_;
-      using Keypoint<PointInT, pcl::PointXY>::k_;
+      using Keypoint<PointInT, PointOutT>::name_;
+      using Keypoint<PointInT, PointOutT>::input_;
+      using Keypoint<PointInT, PointOutT>::indices_;
+      using Keypoint<PointInT, PointOutT>::k_;
 
       /** \brief Constructor */
       AgastKeypoint2D ()

@@ -68,19 +68,19 @@ namespace pcl
     * \author Radu B. Rusu, Stefan Holzer
     * \ingroup keypoints
     */
-  template <typename PointInT, typename IntensityT= pcl::common::IntensityFieldAccessor<PointInT> >
-  class BriskKeypoint2D: public Keypoint<PointInT, pcl::PointWithScale>
+  template <typename PointInT, typename PointOutT = pcl::PointWithScale, typename IntensityT = pcl::common::IntensityFieldAccessor<PointInT> >
+  class BriskKeypoint2D: public Keypoint<PointInT, PointOutT>
   {
     public:
-      typedef typename Keypoint<PointInT, pcl::PointWithScale>::PointCloudIn PointCloudIn;
-      typedef typename Keypoint<PointInT, pcl::PointWithScale>::PointCloudOut PointCloudOut;
-      typedef typename Keypoint<PointInT, pcl::PointWithScale>::KdTree KdTree;
+      typedef typename Keypoint<PointInT, PointOutT>::PointCloudIn PointCloudIn;
+      typedef typename Keypoint<PointInT, PointOutT>::PointCloudOut PointCloudOut;
+      typedef typename Keypoint<PointInT, PointOutT>::KdTree KdTree;
       typedef typename PointCloudIn::ConstPtr PointCloudInConstPtr;
 
-      using Keypoint<PointInT, pcl::PointWithScale>::name_;
-      using Keypoint<PointInT, pcl::PointWithScale>::input_;
-      using Keypoint<PointInT, pcl::PointWithScale>::indices_;
-      using Keypoint<PointInT, pcl::PointWithScale>::k_;
+      using Keypoint<PointInT, PointOutT>::name_;
+      using Keypoint<PointInT, PointOutT>::input_;
+      using Keypoint<PointInT, PointOutT>::indices_;
+      using Keypoint<PointInT, PointOutT>::k_;
 
       /** \brief Constructor */
       BriskKeypoint2D (int octaves = 4, int threshold = 60)

@@ -39,9 +39,11 @@
 #ifndef PCL_KEYPOINTS_AGAST_KEYPOINT_2D_IMPL_H_
 #define PCL_KEYPOINTS_AGAST_KEYPOINT_2D_IMPL_H_
 
+#include <pcl/common/io.h>
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointInT, typename IntensityT> bool
-pcl::AgastKeypoint2D<PointInT, IntensityT>::initCompute ()
+template <typename PointInT, typename PointOutT, typename IntensityT> bool
+pcl::AgastKeypoint2D<PointInT, PointOutT, IntensityT>::initCompute ()
 {
   if (!pcl::Keypoint<PointInT, pcl::PointXY>::initCompute ())
   {
@@ -59,8 +61,8 @@ pcl::AgastKeypoint2D<PointInT, IntensityT>::initCompute ()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointInT, typename IntensityT> void
-pcl::AgastKeypoint2D<PointInT, IntensityT>::detectKeypoints (PointCloudOut &output)
+template <typename PointInT, typename PointOutT, typename IntensityT> void
+pcl::AgastKeypoint2D<PointInT, PointOutT, IntensityT>::detectKeypoints (PointCloudOut &output)
 {
   // image size
   const size_t width = input_->width;
@@ -84,12 +86,31 @@ pcl::AgastKeypoint2D<PointInT, IntensityT>::detectKeypoints (PointCloudOut &outp
     pcl::keypoints::agast::AgastDetector7_12s agast_helper (width, height, threshold_);
     agast_helper.detectKeypoints (image_data, tmp_cloud);
 
-    agast_helper.applyNonMaxSuppression (image_data, tmp_cloud, output);
+    // Check if the template types are the same. If true, avoid a copy.
+    // The PointOutT MUST be registered using the POINT_CLOUD_REGISTER_POINT_STRUCT macro!
+    if (isSamePointType<PointOutT, pcl::PointXY> ())
+      agast_helper.applyNonMaxSuppression (image_data, tmp_cloud, output);
+    else
+    {
+      pcl::PointCloud<pcl::PointXY> output_temp;
+      agast_helper.applyNonMaxSuppression (image_data, tmp_cloud, output_temp);
+      pcl::copyPointCloud<pcl::PointXY, PointOutT> (output_temp, output);
+    }
   }
   else
   {
     pcl::keypoints::agast::AgastDetector7_12s agast_helper (width, height, threshold_);
-    agast_helper.detectKeypoints (image_data, output);
+
+    // Check if the template types are the same. If true, avoid a copy.
+    // The PointOutT MUST be registered using the POINT_CLOUD_REGISTER_POINT_STRUCT macro!
+    if (isSamePointType<PointOutT, pcl::PointXY> ())
+      agast_helper.detectKeypoints (image_data, output);
+    else
+    {
+      pcl::PointCloud<pcl::PointXY> output_temp;
+      agast_helper.detectKeypoints (image_data, output_temp);
+      pcl::copyPointCloud<pcl::PointXY, PointOutT> (output_temp, output);
+    }
   }
 
   // we don not change the denseness

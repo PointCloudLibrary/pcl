@@ -40,11 +40,13 @@
 #ifndef PCL_KEYPOINTS_BRISK_KEYPOINT_2D_IMPL_H_
 #define PCL_KEYPOINTS_BRISK_KEYPOINT_2D_IMPL_H_
 
+#include <pcl/common/io.h>
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointInT, typename IntensityT> bool
-pcl::BriskKeypoint2D<PointInT, IntensityT>::initCompute ()
+template <typename PointInT, typename PointOutT, typename IntensityT> bool
+pcl::BriskKeypoint2D<PointInT, PointOutT, IntensityT>::initCompute ()
 {
-  if (!pcl::Keypoint<PointInT, pcl::PointWithScale>::initCompute ())
+  if (!pcl::Keypoint<PointInT, PointOutT>::initCompute ())
   {
     PCL_ERROR ("[pcl::%s::initCompute] init failed.!\n", name_.c_str ());
     return (false);
@@ -60,8 +62,8 @@ pcl::BriskKeypoint2D<PointInT, IntensityT>::initCompute ()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointInT, typename IntensityT> void
-pcl::BriskKeypoint2D<PointInT, IntensityT>::detectKeypoints (PointCloudOut &output)
+template <typename PointInT, typename PointOutT, typename IntensityT> void
+pcl::BriskKeypoint2D<PointInT, PointOutT, IntensityT>::detectKeypoints (PointCloudOut &output)
 {
   // image size
   const int width = int (input_->width);
@@ -80,7 +82,16 @@ pcl::BriskKeypoint2D<PointInT, IntensityT>::detectKeypoints (PointCloudOut &outp
 
   pcl::keypoints::brisk::ScaleSpace brisk_scale_space (octaves_);
   brisk_scale_space.constructPyramid (image_data, width, height);
-  brisk_scale_space.getKeypoints (threshold_, output.points);
+  // Check if the template types are the same. If true, avoid a copy.
+  // The PointOutT MUST be registered using the POINT_CLOUD_REGISTER_POINT_STRUCT macro!
+  if (isSamePointType<PointOutT, pcl::PointWithScale> ())
+    brisk_scale_space.getKeypoints (threshold_, output.points);
+  else
+  {
+    pcl::PointCloud<pcl::PointWithScale> output_temp;
+    brisk_scale_space.getKeypoints (threshold_, output_temp.points);
+    pcl::copyPointCloud<pcl::PointWithScale, PointOutT> (output_temp, output);
+  }
 
   // we don not change the denseness
   output.width = int (output.points.size ());
