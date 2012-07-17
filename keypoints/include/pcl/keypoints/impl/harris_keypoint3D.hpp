@@ -89,7 +89,7 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::setNonMaxSupression (bool n
 template <typename PointInT, typename PointOutT, typename NormalT> void
 pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::setNormals (const PointCloudNPtr &normals)
 {
-  normals_ = normals;
+  normals_.reset (normals.get ());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
