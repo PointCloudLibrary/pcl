@@ -790,7 +790,8 @@ struct KinFuApp
         scene_cloud_view_.cloud_viewer_.spinOnce (3);
         //~ cout << "In main loop" << endl;                  
       } 
-      //~ cout << "Out of main loop, stopping capture" << endl;       
+      //~ cout << "Out of main loop, stopping capture" << endl;
+      boost::this_thread::sleep (boost::posix_time::millisec (100));
       capture_.stop ();
       //~ cout << "Capture stopped" << endl;       
     }
