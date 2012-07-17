@@ -70,7 +70,9 @@ namespace pcl
 
       /** \brief Constructor for OrganizedEdgeDetection */
       OrganizedEdgeDetection ()
-        : th_depth_discon_(0.02), max_search_neighbors_(50), detecting_edge_types_(EDGELABEL_NAN_BOUNDARY | EDGELABEL_OCCLUDING | EDGELABEL_OCCLUDED | EDGELABEL_HIGH_CURVATURE | EDGELABEL_RGB_CANNY)
+        : th_depth_discon_ (0.02f)
+        , max_search_neighbors_ (50)
+        , detecting_edge_types_ (EDGELABEL_NAN_BOUNDARY | EDGELABEL_OCCLUDING | EDGELABEL_OCCLUDED | EDGELABEL_HIGH_CURVATURE | EDGELABEL_RGB_CANNY)
       {
       }
 
