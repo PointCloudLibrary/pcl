@@ -72,6 +72,7 @@
   (pcl::FPFHSignature33)        \
   (pcl::VFHSignature308)        \
   (pcl::ESFSignature640)        \
+  (pcl::BRISKSignature512)      \
   (pcl::Narf36)                 \
   (pcl::IntensityGradient)      \
   (pcl::PointWithScale)         \
@@ -123,6 +124,7 @@
   (pcl::FPFHSignature33)        \
   (pcl::VFHSignature308)        \
   (pcl::ESFSignature640)        \
+  (pcl::BRISKSignature512)      \
   (pcl::Narf36)
 
 namespace pcl
@@ -1108,8 +1110,8 @@ namespace pcl
   }
 
   /** \brief A point structure representing the Viewpoint Feature Histogram (VFH).
-   * \ingroup common
-   */
+    * \ingroup common
+    */
   struct VFHSignature308
   {
     float histogram[308];
@@ -1118,6 +1120,23 @@ namespace pcl
   {
     for (int i = 0; i < 308; ++i)
     os << (i == 0 ? "(" : "") << p.histogram[i] << (i < 307 ? ", " : ")");
+    return (os);
+  }
+
+  /** \brief A point structure representing the Binary Robust Invariant Scalable Keypoints (BRISK).
+    * \ingroup common
+    */
+  struct BRISKSignature512
+  {
+    float scale;
+    float orientation;
+    unsigned char descriptor[64];
+  };
+  inline std::ostream& operator << (std::ostream& os, const BRISKSignature512& p)
+  {
+    os << p.scale << " " << p.orientation << " "; 
+    for (int i = 0; i < 64; ++i)
+    os << (i == 0 ? "(" : "") << p.descriptor[i] << (i < 63 ? ", " : ")");
     return (os);
   }
 

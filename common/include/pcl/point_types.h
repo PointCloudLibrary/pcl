@@ -235,14 +235,20 @@ namespace pcl
     * \ingroup common
     */
   struct VFHSignature308;
+  
   /** \brief Members: float esf[640]
     * \ingroup common
     */
   struct ESFSignature640;
 
-  /** \brief Members: float x, y, z, roll, pitch, yaw; float descriptor[36]
+  /** \brief Members: float scale; float orientation; uint8_t descriptor[64]
     * \ingroup common
     */
+  struct BRISKSignature512;
+
+   /** \brief Members: float x, y, z, roll, pitch, yaw; float descriptor[36]
+     * \ingroup common
+     */
   struct Narf36;
 
   /** \brief Data type to store extended information about a transition from foreground to backgroundSpecification of the fields for BorderDescription::traits.
@@ -508,12 +514,20 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::FPFHSignature33,
     (float[33], histogram, fpfh)
 )
 
+POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::BRISKSignature512,
+    (float, scale, brisk_scale)
+    (float, orientation, brisk_orientation)
+    (unsigned char[308], descriptor, brisk_descriptor)
+)
+
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::VFHSignature308,
     (float[308], histogram, vfh)
 )
+
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::ESFSignature640,
     (float[640], histogram, esf)
 )
+
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::Narf36,
     (float[36], descriptor, descriptor)
 )

@@ -71,6 +71,7 @@ namespace pcl
   template<> inline bool isFinite<pcl::VFHSignature308> (const pcl::VFHSignature308&) { return (true); }
   template<> inline bool isFinite<pcl::ESFSignature640> (const pcl::ESFSignature640&) { return (true); }
   template<> inline bool isFinite<pcl::IntensityGradient> (const pcl::IntensityGradient&) { return (true); }
+  template<> inline bool isFinite<pcl::BRISKSignature512> (const pcl::BRISKSignature512&) { return (true); }
 
   // specification for pcl::PointXY
   template <> inline bool
