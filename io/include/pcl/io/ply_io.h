@@ -522,11 +522,14 @@ namespace pcl
         * \param[in] cloud the point cloud data message
         * \param[in] origin the sensor data acquisition origin (translation)
         * \param[in] orientation the sensor data acquisition origin (rotation)
+        *.\param[in] use_camera if set to true then PLY file will use element camera else
+        * element range_grid will be used
         */
       int 
       writeBinary (const std::string &file_name, const sensor_msgs::PointCloud2 &cloud,
                    const Eigen::Vector4f &origin = Eigen::Vector4f::Zero (), 
-                   const Eigen::Quaternionf &orientation = Eigen::Quaternionf::Identity ());
+                   const Eigen::Quaternionf &orientation = Eigen::Quaternionf::Identity (),
+                   bool use_camera = true);
 
       /** \brief Save point cloud data to a PLY file containing n-D points
         * \param[in] file_name the output file name
@@ -543,7 +546,7 @@ namespace pcl
              const bool binary = false)
       {
         if (binary)
-          return (this->writeBinary (file_name, cloud, origin, orientation));
+          return (this->writeBinary (file_name, cloud, origin, orientation, true));
         else
           return (this->writeASCII (file_name, cloud, origin, orientation, 8, true));
       }
@@ -555,7 +558,7 @@ namespace pcl
         * \param[in] orientation the sensor acquisition orientation
         * \param[in] binary set to true if the file is to be written in a binary
         * PLY format, false (default) for ASCII
-        * \param[in] use_camera set to true to used camera element and false to
+        * \param[in] use_camera set to true to use camera element and false to
         * use range_grid element
         */
       inline int
@@ -566,7 +569,7 @@ namespace pcl
              bool use_camera = true)
       {
         if (binary)
-          return (this->writeBinary (file_name, cloud, origin, orientation));
+          return (this->writeBinary (file_name, cloud, origin, orientation, use_camera));
         else
           return (this->writeASCII (file_name, cloud, origin, orientation, 8, use_camera));
       }
@@ -578,7 +581,7 @@ namespace pcl
         * \param[in] orientation the sensor acquisition orientation
         * \param[in] binary set to true if the file is to be written in a binary
         * PLY format, false (default) for ASCII
-        * \param[in] use_camera set to true to used camera element and false to
+        * \param[in] use_camera set to true to use camera element and false to
         * use range_grid element
         */
       inline int
@@ -596,7 +599,7 @@ namespace pcl
         * \param[in] cloud the pcl::PointCloud data
         * \param[in] binary set to true if the file is to be written in a binary
         * PLY format, false (default) for ASCII
-        * \param[in] use_camera set to true to used camera element and false to
+        * \param[in] use_camera set to true to use camera element and false to
         * use range_grid element
         */
       template<typename PointT> inline int

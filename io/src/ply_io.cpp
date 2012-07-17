@@ -335,7 +335,7 @@ void
 pcl::PLYReader::objInfoCallback (const std::string& line)
 {
   std::vector<std::string> st;
-  boost::split (st, line, boost::is_any_of (std::string ( "\t\r ")), boost::token_compress_on);
+  boost::split (st, line, boost::is_any_of (std::string ( "\t ")), boost::token_compress_on);
   assert (st[0].substr (0, 8) == "obj_info");
   {
     assert (st.size () == 3);
@@ -954,7 +954,8 @@ int
 pcl::PLYWriter::writeBinary (const std::string &file_name,
                              const sensor_msgs::PointCloud2 &cloud,
                              const Eigen::Vector4f &origin,
-                             const Eigen::Quaternionf &orientation)
+                             const Eigen::Quaternionf &orientation,
+                             bool use_camera)
 {
   if (cloud.data.empty ())
   {
@@ -973,8 +974,53 @@ pcl::PLYWriter::writeBinary (const std::string &file_name,
   unsigned int nr_points  = cloud.width * cloud.height;
   unsigned int point_size = static_cast<unsigned int> (cloud.data.size () / nr_points);
 
-  // Write the header information if available
-  fs << generateHeader (cloud, origin, orientation, true, true, nr_points);
+  // Compute the range_grid, if necessary, and then write out the PLY header
+  bool doRangeGrid = !use_camera && cloud.height > 1;
+  std::vector<pcl::io::ply::int32> rangegrid (nr_points);
+  if (doRangeGrid)
+  {
+    int xfield = -1;
+    unsigned int valid_points = 0;
+
+    // Determine the field containing the x-coordinate
+    for (int i=0; i < cloud.fields.size(); ++i)
+    {
+      if ("x" == cloud.fields[i].name && cloud.fields[i].datatype == sensor_msgs::PointField::FLOAT32)
+      {
+        xfield = i;
+        break;
+      }
+    }
+    // If no x-coordinate field exists, then assume all points are valid
+    if (xfield < 0)
+    {
+      for (unsigned int i=0; i < nr_points; ++i)
+        rangegrid[i] = i;
+      valid_points = nr_points;
+    }
+    // Otherwise, look at their x-coordinates to determine if points are valid
+    else
+    {
+      for (size_t i=0; i < nr_points; ++i)
+      {
+        float value;
+        memcpy(&value, &cloud.data[i * point_size + cloud.fields[xfield].offset], sizeof(float));
+        if (pcl_isfinite(value))
+        {
+          rangegrid[i] = valid_points;
+          ++valid_points;
+        }
+        else
+          rangegrid[i] = -1;
+      }
+    }
+    fs << generateHeader (cloud, origin, orientation, true, use_camera, valid_points);
+  }
+  else
+  {
+    fs << generateHeader (cloud, origin, orientation, true, use_camera, nr_points);
+  }
+
   // Close the file
   fs.close ();
   // Open file in binary appendable
@@ -988,6 +1034,10 @@ pcl::PLYWriter::writeBinary (const std::string &file_name,
   // Iterate through the points
   for (unsigned int i = 0; i < nr_points; ++i)
   {
+    // Skip writing any invalid points from range_grid
+    if (doRangeGrid && rangegrid[i] < 0)
+      continue;
+
     size_t total = 0;
     for (size_t d = 0; d < cloud.fields.size (); ++d)
     {
@@ -1106,50 +1156,74 @@ pcl::PLYWriter::writeBinary (const std::string &file_name,
       }
     }
   }
-  // Append sensor information
-  float t;
-  for (int i = 0; i < 3; ++i)
+
+  if (use_camera)
   {
-    if (origin[3] != 0)
-      t = origin[i]/origin[3];
-    else
-      t = origin[i];
-    fpout.write (reinterpret_cast<const char*> (&t), sizeof (float));
+    // Append sensor information
+    float t;
+    for (int i = 0; i < 3; ++i)
+    {
+      if (origin[3] != 0)
+        t = origin[i]/origin[3];
+      else
+        t = origin[i];
+      fpout.write (reinterpret_cast<const char*> (&t), sizeof (float));
+    }
+    Eigen::Matrix3f R = orientation.toRotationMatrix ();
+    for (int i = 0; i < 3; ++i)
+      for (int j = 0; j < 3; ++j)
+    {
+      fpout.write (reinterpret_cast<const char*> (&R (i, j)),sizeof (float));
+    }
+
+    /////////////////////////////////////////////////////
+    // Append those properties directly.               //
+    // They are for perspective cameras so just put 0  //
+    //                                                 //
+    // property float focal                            //
+    // property float scalex                           //
+    // property float scaley                           //
+    // property float centerx                          //
+    // property float centery                          //
+    // and later on                                    //
+    // property float k1                               //
+    // property float k2                               //
+    /////////////////////////////////////////////////////
+
+    const float zerof = 0;
+    for (int i = 0; i < 5; ++i)
+      fpout.write (reinterpret_cast<const char*> (&zerof), sizeof (float));
+
+    // width and height
+    int width = cloud.width;
+    fpout.write (reinterpret_cast<const char*> (&width), sizeof (int));
+
+    int height = cloud.height;
+    fpout.write (reinterpret_cast<const char*> (&height), sizeof (int));
+
+    for (int i = 0; i < 2; ++i)
+      fpout.write (reinterpret_cast<const char*> (&zerof), sizeof (float));
   }
-  Eigen::Matrix3f R = orientation.toRotationMatrix ();
-  for (int i = 0; i < 3; ++i)
-    for (int j = 0; j < 3; ++j)
+  else if (doRangeGrid)
   {
-    fpout.write (reinterpret_cast<const char*> (&R (i, j)),sizeof (float));
+    // Write out range_grid
+    for (size_t i=0; i < nr_points; ++i)
+    {
+      pcl::io::ply::uint8 listlen;
+
+      if (rangegrid[i] >= 0)
+      {
+        listlen = 1;
+        fpout.write (reinterpret_cast<const char*> (&listlen), sizeof (pcl::io::ply::uint8));
+        fpout.write (reinterpret_cast<const char*> (&rangegrid[i]), sizeof (pcl::io::ply::int32));
+      }
+      else
+      {
+        listlen = 0;
+        fpout.write (reinterpret_cast<const char*> (&listlen), sizeof (pcl::io::ply::uint8));
+      }
+    }
   }
-
-/////////////////////////////////////////////////////
-// Append those properties directly.               //
-// They are for perspective cameras so just put 0  //
-//                                                 //
-// property float focal                            //
-// property float scalex                           //
-// property float scaley                           //
-// property float centerx                          //
-// property float centery                          //
-// and later on                                    //
-// property float k1                               //
-// property float k2                               //
-/////////////////////////////////////////////////////
-
-  const float zerof = 0;
-  for (int i = 0; i < 5; ++i)
-    fpout.write (reinterpret_cast<const char*> (&zerof), sizeof (float));
-
-  // width and height
-  int width = cloud.width;
-  fpout.write (reinterpret_cast<const char*> (&width), sizeof (int));
-
-  int height = cloud.height;
-  fpout.write (reinterpret_cast<const char*> (&height), sizeof (int));
-
-  for (int i = 0; i < 2; ++i)
-    fpout.write (reinterpret_cast<const char*> (&zerof), sizeof (float));
 
   // Close file
   fpout.close ();

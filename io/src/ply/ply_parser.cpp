@@ -57,9 +57,10 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
   std::vector< boost::shared_ptr<element> > elements;
 
   // magic
-  char magic[3];
-  istream.read (magic, 3);
-  istream.ignore (1);
+  char magic[4];
+  istream.read (magic, 4);
+  if (magic[3] == '\r') // Check if CR/LF
+    istream.ignore (1);
   ++line_number_;
   if (!istream)
   {
