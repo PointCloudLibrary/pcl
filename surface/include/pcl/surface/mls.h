@@ -42,15 +42,12 @@
 
 // PCL includes
 #include <pcl/pcl_base.h>
-#include <boost/bind.hpp>
-#include <boost/function.hpp>
-#include <boost/random.hpp>
-#include <boost/unordered_map.hpp>
 #include <pcl/search/pcl_search.h>
 #include <pcl/common/common.h>
-#include <pcl/surface/processing.h>
 
-#include <Eigen/SVD>
+#include <pcl/surface/boost.h>
+#include <pcl/surface/eigen.h>
+#include <pcl/surface/processing.h>
 
 namespace pcl
 {
@@ -325,7 +322,7 @@ namespace pcl
         */
       struct MLSResult
       {
-        MLSResult () : plane_normal (), u (), v (), c_vec (), num_neighbors (),  curvature (), valid (false) {}
+        MLSResult () : plane_normal (), u (), v (), c_vec (), num_neighbors (), curvature (), valid (false) {}
 
         MLSResult (Eigen::Vector3d &a_plane_normal,
                    Eigen::Vector3d &a_u,
@@ -395,7 +392,7 @@ namespace pcl
               point[i] = static_cast<Eigen::Vector3f::Scalar> (index_3d[i]) * voxel_size_ + bounding_min_[i];
           }
 
-          typedef boost::unordered_map<uint64_t, Leaf, boost::hash<uint64_t>, std::equal_to<uint64_t>, Eigen::aligned_allocator<uint64_t> > HashMap;
+          typedef std::map<uint64_t, Leaf> HashMap;
           HashMap voxel_grid_;
           Eigen::Vector4f bounding_min_, bounding_max_;
           uint64_t data_size_;

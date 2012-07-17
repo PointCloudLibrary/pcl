@@ -217,11 +217,11 @@ TEST (PCL, MovingLeastSquares)
   mls_upsampling.setDilationVoxelSize (0.005f);
   mls_normals->clear ();
   mls_upsampling.process (*mls_normals);
-  EXPECT_NEAR (mls_normals->points[10].x, 0.03079305961728096, 2e-3);
-  EXPECT_NEAR (mls_normals->points[10].y, 0.089299865067005157, 2e-3);
-  EXPECT_NEAR (mls_normals->points[10].z, 0.04994254931807518, 2e-3);
+  EXPECT_NEAR (mls_normals->points[10].x, -0.075887121260166168, 2e-3);
+  EXPECT_NEAR (mls_normals->points[10].y, 0.030984390527009964, 2e-3);
+  EXPECT_NEAR (mls_normals->points[10].z, 0.020856190472841263, 2e-3);
   EXPECT_NEAR (mls_normals->points[10].curvature, 0.107273, 1e-1);
-  EXPECT_NEAR (mls_normals->size (), 26266, 2);
+  EXPECT_NEAR (double (mls_normals->size ()), 26266, 2);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////

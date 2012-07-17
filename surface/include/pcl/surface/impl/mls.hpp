@@ -376,8 +376,7 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::computeMLSPointNormal (int index,
   }
 }
 
-
-
+//////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT> void
 pcl::MovingLeastSquares<PointInT, PointOutT>::projectPointToMLSSurface (float &u_disp, float &v_disp,
                                                                         Eigen::Vector3d &u, Eigen::Vector3d &v,
@@ -482,11 +481,12 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::performProcessing (PointCloudOut &
       voxel_grid.dilate ();
     
     
-    BOOST_FOREACH (typename MLSVoxelGrid::HashMap::value_type voxel, voxel_grid.voxel_grid_)
+    for (typename MLSVoxelGrid::HashMap::iterator m_it = voxel_grid.voxel_grid_.begin (); m_it != voxel_grid.voxel_grid_.end (); ++m_it)
     {
+
       // Get 3D position of point
       Eigen::Vector3f pos;
-      voxel_grid.getPosition (voxel.first, pos);
+      voxel_grid.getPosition (m_it->first, pos);
 
       PointInT p;
       p.x = pos[0];
@@ -537,11 +537,6 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::performProcessing (PointCloudOut &
   }
 }
 
-
-
-
-
-
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT>
 pcl::MovingLeastSquares<PointInT, PointOutT>::MLSResult::MLSResult (Eigen::Vector3d &a_plane_normal,
@@ -586,10 +581,10 @@ template <typename PointInT, typename PointOutT> void
 pcl::MovingLeastSquares<PointInT, PointOutT>::MLSVoxelGrid::dilate ()
 {
   HashMap new_voxel_grid = voxel_grid_;
-  BOOST_FOREACH (typename HashMap::value_type voxel, voxel_grid_)
+  for (typename MLSVoxelGrid::HashMap::iterator m_it = voxel_grid_.begin (); m_it != voxel_grid_.end (); ++m_it)
   {
     Eigen::Vector3i index;
-    getIndexIn3D (voxel.first, index);
+    getIndexIn3D (m_it->first, index);
 
     /// Now dilate all of its voxels
     for (int x = -1; x <= 1; ++x)
