@@ -46,8 +46,6 @@ namespace pcl
   namespace cloud_composer
   {
     class ProjectModel;
-    class CloudItem;
-    class NormalsItem;
     /** \brief View class for displaying ProjectModel data using PCLVisualizer
      * \author Jeremie Papon
      * \ingroup cloud_composer
@@ -71,12 +69,12 @@ namespace pcl
       refresh ();
       
     protected slots:
-      /** \brief Slot called when underlying model changes
+      /** \brief Slot called when an item in the model changes
        * \param topLeft 
        * \param bottomRight
        */
       void
-      dataChanged (const QModelIndex& topLeft, const QModelIndex& bottomRight);
+      itemChanged (QStandardItem* item);
       
       /** \brief Slot called when rows inserted to model
        * \param start Start of new rows (inclusive)
@@ -103,11 +101,6 @@ namespace pcl
       void
       connectSignalsAndSlots ();
       
-      void 
-      addCloudToView (CloudItem *cloud_item);
-      
-      void 
-      addNormalsToView (NormalsItem *normals_item);
       
       boost::shared_ptr<pcl::visualization::PCLVisualizer> vis_;
       ProjectModel* model_;

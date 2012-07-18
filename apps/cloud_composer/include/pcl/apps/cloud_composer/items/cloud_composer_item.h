@@ -38,13 +38,15 @@
 #ifndef CLOUD_COMPOSER_ITEM_H_
 #define CLOUD_COMPOSER_ITEM_H_
 
-#include <pcl/apps/cloud_composer/qt.h>
+
 #include <pcl/point_types.h>
-
-
+#include <pcl/visualization/pcl_visualizer.h>
+#include <pcl/apps/cloud_composer/qt.h>
+#include <pcl/apps/cloud_composer/properties_model.h>
 
 enum ITEM_ROLES { 
-  PROPERTIES = Qt::UserRole
+  PROPERTIES = Qt::UserRole,
+  ITEM_ID
 };
 
 //This currently isn't used for anything, it will probably be removed
@@ -59,7 +61,7 @@ namespace pcl
 {
   namespace cloud_composer
   {
-    class PropertyModel;
+    class PropertiesModel;
     
     class PCL_EXPORTS CloudComposerItem : public QStandardItem
     {
@@ -74,38 +76,55 @@ namespace pcl
         inline virtual int 
         type () const { return CLOUD_COMPOSER_ITEM; }
 
+        /** \brief  Getter function for getting unique internal ID*/
+        inline QString
+        getID () const { return item_id_; }
+        
         virtual CloudComposerItem*
         clone () const;
         
         inline void
-        setProperties (QStandardItemModel* new_props)
+        setProperties (PropertiesModel* new_props)
         {
           properties_ = new_props;
         }
         
-        inline QStandardItemModel* 
+        inline PropertiesModel* 
         getProperties () const 
         { 
           return properties_;
         }
         
+        /** \brief Paint View function - reimpliment in item subclass if it can be displayed in PCLVisualizer*/
+        virtual void
+        paintView (boost::shared_ptr<pcl::visualization::PCLVisualizer> vis) const;
+        
+        /** \brief Remove from View function - reimpliment in item subclass if it can be displayed in PCLVisualizer*/
+        virtual void
+        removeFromView (boost::shared_ptr<pcl::visualization::PCLVisualizer> vis) const;
+        
+        /** \brief Inspector Display function - reimpliment in item subclass if it can be displayed in Inspector*/
+        virtual QWidget*
+        paintInspector ();
+       
+        
         /** \brief Helper function to pull out a cloud from Item */
         bool
         getCloudConstPtr (sensor_msgs::PointCloud2::ConstPtr& const_ptr) const;
-       
-        /** \brief Helper function to get a property */
-        QVariant 
-        getProperty (const QString prop_name) const;
-      protected:
-        /** \brief Helper function for adding a new property */
-        void
-        addProperty (const QString prop_name, QVariant value, Qt::ItemFlags flags = Qt::ItemIsSelectable, QStandardItem* parent = 0);
-        
 
+        /** \brief The property model calls this when a property changes */
+        inline void 
+        propertyChanged ()
+        {
+          emitDataChanged ();
+        }
+      protected:
 
         /** \brief Model for storing the properties of the item   */
-        QStandardItemModel* properties_;
+        PropertiesModel* properties_;
         
+        /** \brief Internal ID used when referencing this object, mainly for PCLVisualizer */
+        QString item_id_;
     };
     
     /** \brief Templated helper class for converting QVariant to/from pointer classes   */

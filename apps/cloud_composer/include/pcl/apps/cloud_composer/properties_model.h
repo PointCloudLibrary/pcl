@@ -35,23 +35,13 @@
  *
  */
 
-#ifndef NORMALS_ITEM_H_
-#define NORMALS_ITEM_H_
-
-#include <pcl/pcl_exports.h>
-#include <pcl/point_types.h>
-#include <pcl/features/normal_3d.h>
-
-#include <pcl/apps/cloud_composer/items/cloud_composer_item.h>
+#ifndef PROPERTIES_MODEL_H_
+#define PROPERTIES_MODEL_H_
 
 
-//Define user roles
-#ifndef NORMALS_USER_ROLES
-#define NORMALS_USER_ROLES
-enum NORMALS_ITEM_ROLES { 
-  NORMALS_CLOUD = Qt::UserRole + 1
-};
-#endif
+
+
+#include <pcl/apps/cloud_composer/qt.h>
 
 
 
@@ -59,41 +49,42 @@ namespace pcl
 {
   namespace cloud_composer
   {
-    
-    class PCL_EXPORTS NormalsItem : public CloudComposerItem
+    class CloudComposerItem;
+    class PropertiesModel : public QStandardItemModel
     {
+        Q_OBJECT
       public:
-
-        NormalsItem (QString name, 
-                     pcl::PointCloud<pcl::Normal>::Ptr normals_ptr,
-                     double radius);
-        NormalsItem (const NormalsItem& to_copy);
-        virtual ~NormalsItem ();
+        PropertiesModel (CloudComposerItem* parent_item, QObject *parent = 0);
+        virtual ~PropertiesModel ();
         
-        inline virtual int 
-        type () const { return NORMALS_ITEM; }
-
-        virtual NormalsItem*
-        clone () const;
+        /** \brief Helper function for adding a new property */
+        void
+        addProperty (const QString prop_name, QVariant value, Qt::ItemFlags flags = Qt::ItemIsSelectable, QStandardItem* parent = 0);
         
-        virtual void 
-        paintView (boost::shared_ptr<pcl::visualization::PCLVisualizer> vis) const;
         
-        /** \brief Remove from View function - removes the normal cloud from a PCLVisualizer object*/
-        virtual void
-        removeFromView (boost::shared_ptr<pcl::visualization::PCLVisualizer> vis) const;
+        /** \brief Helper function to get a property */
+        QVariant 
+        getProperty (const QString prop_name) const;
+        
+        void 
+        copyProperties (const PropertiesModel* to_copy);
+        
+      public slots:
+        void
+        propertyChanged (QStandardItem* property_item);
+      
+      signals:
+        void 
+        propertyChanged (const QStandardItem* property_item, const CloudComposerItem* parent_item_);
+        
         
       private:
-        pcl::PointCloud<pcl::Normal>::Ptr normals_ptr_;
-
-    };
-    
-    
-    
+        CloudComposerItem* parent_item_;
+        
+     };
   }
 }
 
-Q_DECLARE_METATYPE (pcl::PointCloud<pcl::Normal>::Ptr);
-Q_DECLARE_METATYPE (pcl::PointCloud<pcl::Normal>::ConstPtr);
 
-#endif //NORMALS_ITEM_H_
+
+#endif //PROPERTIES_MODEL_H_

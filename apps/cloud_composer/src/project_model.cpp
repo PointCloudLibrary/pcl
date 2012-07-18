@@ -89,9 +89,10 @@ pcl::cloud_composer::ProjectModel::insertNewCloudFromFile (QString filename)
     }
     short_filename = short_filename+ tr ("-%1").arg (k);
   }
-  QStandardItem* new_item = new CloudItem (short_filename, cloud_blob, origin, orientation);
+  CloudItem* new_item = new CloudItem (short_filename, cloud_blob, origin, orientation);
    
-  invisibleRootItem ()->appendRow (new_item);
+  insertNewCloudComposerItem (new_item);
+  
 }
 
 void 
@@ -130,4 +131,16 @@ pcl::cloud_composer::ProjectModel::commandCompleted (CloudCommand* command)
   undo_stack_->push (command);
   
 }
+
+void
+pcl::cloud_composer::ProjectModel::insertNewCloudComposerItem (CloudComposerItem* new_item, QStandardItem* parent_item)
+{
+  if (!parent_item)
+    parent_item = invisibleRootItem ();
+  
+  parent_item->appendRow (new_item);
+  
+  
+}
+
 

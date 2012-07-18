@@ -55,12 +55,20 @@ pcl::cloud_composer::ItemInspector::selectionChanged (const QModelIndex &current
   if (current_project_model_)
   {
     QStandardItem* selected_item = current_project_model_->itemFromIndex (current);
-    qDebug () << "Current item = "<<selected_item->text ();
-    current_item_model_ = VPtr<QStandardItemModel>::asPtr (selected_item->data (PROPERTIES));
-    if (current_item_model_)
+    if (selected_item)
     {
-      this->setModel (current_item_model_);
-      restoreTreeState ();
+      qDebug () << "Current item = "<<selected_item->text ();
+      current_item_model_ = VPtr<QStandardItemModel>::asPtr (selected_item->data (PROPERTIES));
+      if (current_item_model_)
+      {
+        this->setModel (current_item_model_);
+        restoreTreeState ();
+      }
+    }
+    else
+    {
+      this->setModel (0);
+      current_item_model_ = 0;
     }
   }
   

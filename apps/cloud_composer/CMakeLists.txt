@@ -60,7 +60,8 @@ if(build)
              include/pcl/apps/${SUBSYS_NAME}/tool_interface/tool_factory.h
              include/pcl/apps/${SUBSYS_NAME}/commands.h
              include/pcl/apps/${SUBSYS_NAME}/work_queue.h
-             include/pcl/apps/${SUBSYS_NAME}/toolbox_model.h)
+             include/pcl/apps/${SUBSYS_NAME}/toolbox_model.h
+             include/pcl/apps/${SUBSYS_NAME}/properties_model.h)
           
     set(srcs src/main.cpp 
              src/cloud_composer.cpp
@@ -70,7 +71,8 @@ if(build)
              src/item_inspector.cpp
              src/commands.cpp
              src/work_queue.cpp
-             src/toolbox_model.cpp)
+             src/toolbox_model.cpp
+             src/properties_model.cpp)
           
     #Sources and headers for item types      
     set(item_incs include/pcl/apps/${SUBSYS_NAME}/items/cloud_composer_item.h

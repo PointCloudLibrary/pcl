@@ -38,13 +38,14 @@
 #ifndef PROJECT_MODEL_H_
 #define PROJECT_MODEL_H_
 
-#include "qt.h"
+
 #include <vtkSmartPointer.h>
 #include <vtkCamera.h>
 
 #include <pcl/io/pcd_io.h>
 
 #include <pcl/apps/cloud_composer/commands.h>
+#include <pcl/apps/cloud_composer/qt.h>
 
 
 class QItemSelectionModel;
@@ -93,9 +94,16 @@ namespace pcl
         /** \brief Takes tool object issues signal to work queue to take control of it */
         void
         enqueueToolAction (AbstractTool* tool);
+        
+        /** \brief Helper function which inserts the item into this model and makes connections for properties */
+        void 
+        insertNewCloudComposerItem (CloudComposerItem* new_item, QStandardItem* parent_item = 0);
+        
       public slots:
         void 
         commandCompleted (CloudCommand* command);
+        
+        
       signals:  
         void
         enqueueNewAction (AbstractTool* tool, ConstItemList data);

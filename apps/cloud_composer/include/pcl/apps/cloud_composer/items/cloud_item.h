@@ -81,6 +81,14 @@ namespace pcl
         virtual CloudItem*
         clone () const;
         
+        /** \brief Paint View function - puts this cloud item into a PCLVisualizer object*/
+        virtual void
+        paintView (boost::shared_ptr<pcl::visualization::PCLVisualizer> vis) const;
+        
+        /** \brief Remove from View function - removes this cloud from a PCLVisualizer object*/
+        virtual void
+        removeFromView (boost::shared_ptr<pcl::visualization::PCLVisualizer> vis) const;
+        
       private:
 
         sensor_msgs::PointCloud2::Ptr cloud_ptr_;
@@ -88,7 +96,6 @@ namespace pcl
         GeometryHandler::ConstPtr geometry_handler_;
         Eigen::Vector4f origin_;
         Eigen::Quaternionf orientation_;
-
         
     };
     
