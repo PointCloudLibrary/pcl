@@ -40,7 +40,6 @@ if(build)
         src/point_cloud_handlers.cpp
         src/pcl_visualizer.cpp
         src/pcl_plotter.cpp
-        src/pcl_painter2D.cpp
         src/histogram_visualizer.cpp
         src/common/common.cpp
         src/common/io.cpp
@@ -58,6 +57,11 @@ if(build)
         # A custom interactor is necessary on VTK 5.4 and below
         set(srcs ${srcs} src/interactor.cpp)
     endif("${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}" VERSION_LESS "5.6")
+    
+    if("${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}" VERSION_GREATER "5.6")
+        # PCLPainter2D uses some functions not present in vtk 5.6
+        set(srcs ${srcs} src/pcl_painter2D.cpp)
+    endif("${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}" VERSION_GREATER "5.6")
 
     set(incs 
         include/pcl/${SUBSYS_NAME}/eigen.h
