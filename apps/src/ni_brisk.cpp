@@ -125,39 +125,38 @@ class BRISKDemo
       float fx1 = 1.0f - fx, fy1 = 1.0f - fy;
 
       float w1 = fx1 * fy1, w2 = fx * fy1, w3 = fx1 * fy, w4 = fx * fy;
-      float weight = w1 + w2 + w3 + w4;
-
-      int i = 0;
+      float weight = 0;
+      
       if (isFinite (p1))
       {
         pt.x += p1.x * w1;
         pt.y += p1.y * w1;
         pt.z += p1.z * w1;
-        ++i;
+        weight += w1;
       }
       if (isFinite (p2))
       {
         pt.x += p2.x * w2;
         pt.y += p2.y * w2;
         pt.z += p2.z * w2;
-        ++i;
+        weight += w2;
       }
       if (isFinite (p3))
       {
         pt.x += p3.x * w3;
         pt.y += p3.y * w3;
         pt.z += p3.z * w3;
-        ++i;
+        weight += w3;
       }
       if (isFinite (p4))
       {
         pt.x += p4.x * w4;
         pt.y += p4.y * w4;
         pt.z += p4.z * w4;
-        ++i;
+        weight += w4;
       }
 
-      if (i == 0)
+      if (weight == 0)
         pt.x = pt.y = pt.z = std::numeric_limits<float>::quiet_NaN ();
       else
       {
