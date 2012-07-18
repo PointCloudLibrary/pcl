@@ -979,18 +979,13 @@ pcl::PLYWriter::writeBinary (const std::string &file_name,
   std::vector<pcl::io::ply::int32> rangegrid (nr_points);
   if (doRangeGrid)
   {
-    int xfield = -1;
     unsigned int valid_points = 0;
 
     // Determine the field containing the x-coordinate
-    for (int i=0; i < cloud.fields.size(); ++i)
-    {
-      if ("x" == cloud.fields[i].name && cloud.fields[i].datatype == sensor_msgs::PointField::FLOAT32)
-      {
-        xfield = i;
-        break;
-      }
-    }
+    int xfield = pcl::getFieldIndex (cloud, "x");
+    if (xfield >= 0 && cloud.fields[xfield].datatype != sensor_msgs::PointField::FLOAT32)
+      xfield = -1;
+
     // If no x-coordinate field exists, then assume all points are valid
     if (xfield < 0)
     {
@@ -1030,7 +1025,7 @@ pcl::PLYWriter::writeBinary (const std::string &file_name,
     PCL_ERROR ("[pcl::PLYWriter::writeBinary] Error during reopening (%s)!\n", file_name.c_str ());
     return (-1);
   }
-  // Unlike PCD format file, PLY doesn't like
+
   // Iterate through the points
   for (unsigned int i = 0; i < nr_points; ++i)
   {
