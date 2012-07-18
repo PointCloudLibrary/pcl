@@ -108,7 +108,7 @@ class BRISKDemo
 
     /////////////////////////////////////////////////////////////////////////
     inline PointT
-    bilateralInterpolation (const CloudConstPtr &cloud, float x, float y)
+    bilinearInterpolation (const CloudConstPtr &cloud, float x, float y)
     {
       int u = int (x);
       int v = int (y);
@@ -160,6 +160,7 @@ class BRISKDemo
         pt.x = pt.y = pt.z = std::numeric_limits<float>::quiet_NaN ();
       else
       {
+        weight = 1.0f / weight;
         pt.x *= weight; pt.y *= weight; pt.z *= weight;
       }
  
@@ -180,7 +181,7 @@ class BRISKDemo
       int j = 0;
       for (size_t i = 0; i < keypoints->size (); ++i)
       {
-        PointT pt = bilateralInterpolation (cloud, keypoints->points[i].x, keypoints->points[i].y);
+        PointT pt = bilinearInterpolation (cloud, keypoints->points[i].x, keypoints->points[i].y);
 
         keypoints3d.points[j].x = pt.x;
         keypoints3d.points[j].y = pt.y;
