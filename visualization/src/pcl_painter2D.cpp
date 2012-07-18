@@ -118,6 +118,13 @@ pcl::visualization::PCLPainter2D::addQuad (std::vector<float> p)
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void 
+pcl::visualization::PCLPainter2D::addPolygon (std::vector<float> p)
+{
+  figures_.push_back (new FPolygon2D(p, current_pen_, current_brush_));
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void 
 pcl::visualization::PCLPainter2D::addEllipse (float x, float y, float rx, float ry)
 { 
   figures_.push_back (new FEllipticArc2D(x, y, rx, ry, 0, 360, current_pen_, current_brush_));

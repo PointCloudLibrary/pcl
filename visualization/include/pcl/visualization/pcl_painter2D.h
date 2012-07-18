@@ -108,7 +108,7 @@ namespace pcl
       {
         painter->ApplyPen (pen_);
         painter->ApplyBrush (brush_);
-        painter->DrawPoly (&info_[0], info_.size ());
+        painter->DrawPoly (&info_[0], info_.size ()/2);
       }
     };
 
@@ -123,7 +123,7 @@ namespace pcl
       {
         painter->ApplyPen (pen_);
         painter->ApplyBrush (brush_);
-        painter->DrawPoints (&info_[0], info_.size ());
+        painter->DrawPoints (&info_[0], info_.size ()/2);
       }
     };
 
@@ -139,6 +139,21 @@ namespace pcl
         painter->ApplyPen (pen_);
         painter->ApplyBrush (brush_);
         painter->DrawQuad (&info_[0]);
+      }
+    };
+    
+    /** \brief Class for Polygon
+     */
+    struct FPolygon2D : public Figure2D
+    {
+
+      FPolygon2D (std::vector<float> info, vtkPen *p, vtkBrush * b) : Figure2D (info, p, b){}
+
+      void draw (vtkContext2D * painter)
+      {
+        painter->ApplyPen (pen_);
+        painter->ApplyBrush (brush_);
+        painter->DrawPolygon (&info_[0], info_.size ()/2);
       }
     };
     
@@ -235,6 +250,12 @@ namespace pcl
        */
       void 
       addQuad (std::vector<float> p);
+      
+        /** \brief Draw a polygon between the specified points 
+       *  \param[in] p a vector of size 2*n and the points are packed x1, y1, x2, y2 etc.
+       */
+      void 
+      addPolygon (std::vector<float> p);
 
       
       /** \brief Draw an ellipse based on the inputs
@@ -353,5 +374,4 @@ namespace pcl
 }
 
 #endif	/* PCL_VISUALUALIZATION_PCL_PAINTER2D_H_ */
-
 
