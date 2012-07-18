@@ -43,7 +43,6 @@
 #include <pcl/common/angles.h>
 #include <pcl/io/openni_grabber.h>
 #include <pcl/io/pcd_io.h>
-#include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/keypoints/brisk_2d.h>
 #include <pcl/filters/extract_indices.h>
 #include <pcl/visualization/pcl_visualizer.h>
@@ -108,6 +107,67 @@ class BRISKDemo
     }
 
     /////////////////////////////////////////////////////////////////////////
+    inline PointT
+    bilateralInterpolation (const CloudConstPtr &cloud, float x, float y)
+    {
+      int u = int (x);
+      int v = int (y);
+      
+      PointT pt;
+      pt.x = pt.y = pt.z = 0;
+
+      const PointT &p1 = (*cloud)(u,   v);
+      const PointT &p2 = (*cloud)(u+1, v);
+      const PointT &p3 = (*cloud)(u,   v+1);
+      const PointT &p4 = (*cloud)(u+1, v+1);
+      
+      float fx = x - float (u), fy = y - float (v);
+      float fx1 = 1.0f - fx, fy1 = 1.0f - fy;
+
+      float w1 = fx1 * fy1, w2 = fx * fy1, w3 = fx1 * fy, w4 = fx * fy;
+      float weight = w1 + w2 + w3 + w4;
+
+      int i = 0;
+      if (isFinite (p1))
+      {
+        pt.x += p1.x * w1;
+        pt.y += p1.y * w1;
+        pt.z += p1.z * w1;
+        ++i;
+      }
+      if (isFinite (p2))
+      {
+        pt.x += p2.x * w2;
+        pt.y += p2.y * w2;
+        pt.z += p2.z * w2;
+        ++i;
+      }
+      if (isFinite (p3))
+      {
+        pt.x += p3.x * w3;
+        pt.y += p3.y * w3;
+        pt.z += p3.z * w3;
+        ++i;
+      }
+      if (isFinite (p4))
+      {
+        pt.x += p4.x * w4;
+        pt.y += p4.y * w4;
+        pt.z += p4.z * w4;
+        ++i;
+      }
+
+      if (i == 0)
+        pt.x = pt.y = pt.z = std::numeric_limits<float>::quiet_NaN ();
+      else
+      {
+        pt.x *= weight; pt.y *= weight; pt.z *= weight;
+      }
+ 
+      return (pt);
+    }
+
+    /////////////////////////////////////////////////////////////////////////
     void
     get3DKeypoints (
         const CloudConstPtr &cloud,
@@ -116,33 +176,24 @@ class BRISKDemo
       keypoints3d.resize (keypoints->size ());
       keypoints3d.width = keypoints->width;
       keypoints3d.height = keypoints->height;
-      keypoints3d.is_dense = false;
+      keypoints3d.is_dense = true;
 
-      vector<int> indices (1);
-      vector<float> distances (1);
-
-      // Create a dummy XY cloud
-      PointCloud<KeyPointT>::Ptr cloudxy (new PointCloud<KeyPointT>);
-      copyPointCloud<PointT, KeyPointT> (*cloud, *cloudxy);
-      KdTreeFLANN<KeyPointT> tree;
-      tree.setInputCloud (cloudxy);
-
-      KeyPointT pt;
-      // Search for nearest neighbors
+      int j = 0;
       for (size_t i = 0; i < keypoints->size (); ++i)
       {
-        PointT pt3d = (*cloud)(static_cast<long unsigned int> (keypoints->points[i].x), 
-                               static_cast<long unsigned int> (keypoints->points[i].y));
-        pt.x = pt3d.x; pt.y = pt3d.y;
+        PointT pt = bilateralInterpolation (cloud, keypoints->points[i].x, keypoints->points[i].y);
 
-        if (!pcl_isfinite (pt.x) || !pcl_isfinite (pt.y))
-          continue;
+        keypoints3d.points[j].x = pt.x;
+        keypoints3d.points[j].y = pt.y;
+        keypoints3d.points[j].z = pt.z;
+        ++j;
+      }
 
-        tree.nearestKSearch (pt, 1, indices, distances);
-        
-        keypoints3d.points[i].x = pt.x;
-        keypoints3d.points[i].y = pt.y;
-        keypoints3d.points[i].z = cloud->points[indices[0]].z;
+      if (j != keypoints->size ())
+      {
+        keypoints3d.resize (j);
+        keypoints3d.width = j;
+        keypoints3d.height = 1;
       }
     }
     

@@ -119,6 +119,7 @@ class AGASTDemo
       keypoints3d.height = keypoints->height;
       keypoints3d.is_dense = true;
 
+      int j = 0;
       for (size_t i = 0; i < keypoints->size (); ++i)
       {
         const PointT &pt = (*cloud)(static_cast<long unsigned int> (keypoints->points[i].x), 
@@ -126,9 +127,17 @@ class AGASTDemo
         if (!pcl_isfinite (pt.x) || !pcl_isfinite (pt.y) || !pcl_isfinite (pt.z))
           continue;
 
-        keypoints3d.points[i].x = pt.x;
-        keypoints3d.points[i].y = pt.y;
-        keypoints3d.points[i].z = pt.z;
+        keypoints3d.points[j].x = pt.x;
+        keypoints3d.points[j].y = pt.y;
+        keypoints3d.points[j].z = pt.z;
+        ++j;
+      }
+
+      if (j != keypoints->size ())
+      {
+        keypoints3d.resize (j);
+        keypoints3d.width = j;
+        keypoints3d.height = 1;
       }
     }
     
