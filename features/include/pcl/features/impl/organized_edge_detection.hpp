@@ -62,21 +62,16 @@ using namespace pcl::pcl_2d;
 template<typename PointT, typename PointLT> void
 pcl::OrganizedEdgeDetection<PointT, PointLT>::compute (pcl::PointCloud<PointLT>& labels, std::vector<pcl::PointIndices>& label_indices) const
 {
-  const unsigned invalid_label = (unsigned)0;
+  const unsigned invalid_label = unsigned (0);
   pcl::Label invalid_pt;
-  invalid_pt.label = (unsigned)0;
+  invalid_pt.label = unsigned (0);
   labels.points.resize (input_->points.size (), invalid_pt);
   labels.width = input_->width;
   labels.height = input_->height;
-  unsigned int clust_id = 0;
-
-  std::cout << "width: " << labels.width << std::endl;
-  std::cout << "height: " << labels.height << std::endl;
-  std::cout << "OrganizedEdgeDetection::compute ()" << std::endl;
 
   if ((detecting_edge_types_ & EDGELABEL_NAN_BOUNDARY) || (detecting_edge_types_ & EDGELABEL_OCCLUDING) || (detecting_edge_types_ & EDGELABEL_OCCLUDED))
   {
-    print_info ("Detecting nan boundaries, occluding and occluded edges... ");
+    PCL_DEBUG ("Detecting nan boundaries, occluding and occluded edges... \n");
     TicToc tt;
     tt.tic ();
     // Fill lookup table for next points to visit
@@ -209,12 +204,12 @@ pcl::OrganizedEdgeDetection<PointT, PointLT>::compute (pcl::PointCloud<PointLT>&
         }
       }
     }
-    print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms]\n");
+    PCL_DEBUG ("[done, %g ms]\n", tt.toc ());
   }
 
   if ((detecting_edge_types_ & EDGELABEL_HIGH_CURVATURE))
   {
-    print_info ("Detecting high curvature edges... ");
+    PCL_DEBUG ("Detecting high curvature edges... \n");
     TicToc tt;
     tt.tic ();
 
@@ -244,7 +239,7 @@ pcl::OrganizedEdgeDetection<PointT, PointLT>::compute (pcl::PointCloud<PointLT>&
 
     ImageType img_edge;
     pcl::pcl_2d::edge edge;
-    edge.canny (img_edge, nx, ny, 0.4, 1.1);
+    edge.canny (img_edge, nx, ny, 0.4f, 1.1f);
 
     for (int r=0; r<labels.height; r++)
     {
@@ -254,12 +249,12 @@ pcl::OrganizedEdgeDetection<PointT, PointLT>::compute (pcl::PointCloud<PointLT>&
           labels[r*int(labels.width) + c].label |= EDGELABEL_HIGH_CURVATURE;
       }
     }
-    print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms]\n");
+    PCL_DEBUG ("[done, %g ms]\n", tt.toc ());
   }
 
   if ((detecting_edge_types_ & EDGELABEL_RGB_CANNY))
   {
-    print_info ("Detecting rgb edges... ");
+    PCL_DEBUG ("Detecting rgb edges... ");
     TicToc tt;
     tt.tic ();
 #if 1
@@ -273,7 +268,7 @@ pcl::OrganizedEdgeDetection<PointT, PointLT>::compute (pcl::PointCloud<PointLT>&
         int r = input_->points[row*int(input_->width) + col].r;
         int g = input_->points[row*int(input_->width) + col].g;
         int b = input_->points[row*int(input_->width) + col].b;
-        gray[row][col] = int((r+g+b)/3);
+        gray[row][col] = float ((r+g+b) / 3);
       }
     }
 
@@ -290,7 +285,7 @@ pcl::OrganizedEdgeDetection<PointT, PointLT>::compute (pcl::PointCloud<PointLT>&
       }
     }
 #endif
-    print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms]\n");
+    PCL_DEBUG ("[done, %g ms]\n", tt.toc ()); 
   }
 
   // Assign label indices
