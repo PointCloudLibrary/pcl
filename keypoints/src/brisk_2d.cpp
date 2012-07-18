@@ -40,6 +40,7 @@
 #include <pcl/keypoints/brisk_2d.h>
 #include <pcl/point_types.h>
 #include <pcl/impl/instantiate.hpp>
+#include <tmmintrin.h>
 
 /////////////////////////////////////////////////////////////////////////////////////////
 // construct telling the octaves number:
@@ -1714,7 +1715,7 @@ pcl::keypoints::brisk::Layer::twothirdsample (
       // upper row:
       __m128i upper = _mm_avg_epu8 (_mm_avg_epu8 (first,second),first);
       __m128i temp1_upper = _mm_or_si128 (_mm_shuffle_epi8 (upper,mask1), _mm_shuffle_epi8 (upper,mask2));
-      __m128i temp2_upper=_mm_shuffle_epi8 (upper,mask);
+      __m128i temp2_upper  = _mm_shuffle_epi8 (upper,mask);
       __m128i result_upper = _mm_avg_epu8 (_mm_avg_epu8 (temp2_upper, temp1_upper), temp2_upper);
 
       // lower row:

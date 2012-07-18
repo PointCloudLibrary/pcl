@@ -27,7 +27,7 @@
  *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  *  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ *  LOSS OF USE, DATA, O R PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
  *  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
  *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
@@ -43,7 +43,6 @@
 #include <pcl/common/angles.h>
 #include <pcl/io/openni_grabber.h>
 #include <pcl/io/pcd_io.h>
-#include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/keypoints/agast_2d.h>
 #include <pcl/filters/extract_indices.h>
 #include <pcl/visualization/pcl_visualizer.h>
@@ -112,36 +111,24 @@ class AGASTDemo
         const CloudConstPtr &cloud,
         const PointCloud<KeyPointT>::Ptr &keypoints, PointCloud<PointT> &keypoints3d)
     {
+      if (!cloud || !keypoints || cloud->points.empty () || keypoints->points.empty ())
+        return;
+
       keypoints3d.resize (keypoints->size ());
       keypoints3d.width = keypoints->width;
       keypoints3d.height = keypoints->height;
-      keypoints3d.is_dense = false;
+      keypoints3d.is_dense = true;
 
-      vector<int> indices (1);
-      vector<float> distances (1);
-
-      // Create a dummy XY cloud
-      PointCloud<KeyPointT>::Ptr cloudxy (new PointCloud<KeyPointT>);
-      copyPointCloud<PointT, KeyPointT> (*cloud, *cloudxy);
-      KdTreeFLANN<KeyPointT> tree;
-      tree.setInputCloud (cloudxy);
-
-      KeyPointT pt;
-      // Search for nearest neighbors
       for (size_t i = 0; i < keypoints->size (); ++i)
       {
-        PointT pt3d = (*cloud)(static_cast<long unsigned int> (keypoints->points[i].x), 
-                               static_cast<long unsigned int> (keypoints->points[i].y));
-        pt.x = pt3d.x; pt.y = pt3d.y;
-
-        if (!pcl_isfinite (pt.x) || !pcl_isfinite (pt.y))
+        const PointT &pt = (*cloud)(static_cast<long unsigned int> (keypoints->points[i].x), 
+                                    static_cast<long unsigned int> (keypoints->points[i].y));
+        if (!pcl_isfinite (pt.x) || !pcl_isfinite (pt.y) || !pcl_isfinite (pt.z))
           continue;
 
-        tree.nearestKSearch (pt, 1, indices, distances);
-        
         keypoints3d.points[i].x = pt.x;
         keypoints3d.points[i].y = pt.y;
-        keypoints3d.points[i].z = cloud->points[indices[0]].z;
+        keypoints3d.points[i].z = pt.z;
       }
     }
     
@@ -154,25 +141,23 @@ class AGASTDemo
       bool image_init = false, cloud_init = false;
       bool keypts = true;
 
-      PointCloud<KeyPointT>::Ptr keypoints;
-      CloudConstPtr cloud;
       CloudPtr keypoints3d (new Cloud);
 
       while (!cloud_viewer_.wasStopped () && !image_viewer_.wasStopped ())
       {
+        PointCloud<KeyPointT>::Ptr keypoints;
+        CloudConstPtr cloud;
+
         if (cloud_mutex_.try_lock ())
         {
-          if (cloud_)
-            cloud_.swap (cloud);
-
-          if (keypoints_)
-            keypoints_.swap (keypoints);
-
+          cloud_.swap (cloud);
+          keypoints_.swap (keypoints);
+        
           cloud_mutex_.unlock ();
+        }
 
-          if (!cloud)
-            continue;
-
+        if (cloud)
+        {
           if (!cloud_init)
           {
             cloud_viewer_.setPosition (0, 0);
@@ -193,24 +178,26 @@ class AGASTDemo
             image_init = !image_init;
           }
 
-          image_viewer_.showRGBImage<PointT> (cloud);
+          image_viewer_.addRGBImage<PointT> (cloud);
 
-          image_viewer_.removeLayer (getStrBool (keypts));
-          for (size_t i = 0; i < keypoints->size (); ++i)
+          if (keypoints && !keypoints->empty ())
           {
-            int u = int (keypoints->points[i].x);
-            int v = cloud->height - int (keypoints->points[i].y);
-            image_viewer_.markPoint (u, v, visualization::red_color, visualization::blue_color, 10, getStrBool (!keypts));
-          }
-          keypts = !keypts;
+            image_viewer_.removeLayer (getStrBool (keypts));
+            for (size_t i = 0; i < keypoints->size (); ++i)
+            {
+              int u = int (keypoints->points[i].x);
+              int v = cloud->height - int (keypoints->points[i].y);
+              image_viewer_.markPoint (u, v, visualization::red_color, visualization::blue_color, 10, getStrBool (!keypts));
+            }
+            keypts = !keypts;
 
-          
-          get3DKeypoints (cloud, keypoints, *keypoints3d);
-          visualization::PointCloudColorHandlerCustom<PointT> blue (keypoints3d, 0, 0, 255);
-          if (!cloud_viewer_.updatePointCloud (keypoints3d, blue, "keypoints"))
-            cloud_viewer_.addPointCloud (keypoints3d, blue, "keypoints");
-          cloud_viewer_.setPointCloudRenderingProperties (visualization::PCL_VISUALIZER_POINT_SIZE, 10, "keypoints");
-          cloud_viewer_.setPointCloudRenderingProperties (visualization::PCL_VISUALIZER_OPACITY, 0.5, "keypoints");
+            get3DKeypoints (cloud, keypoints, *keypoints3d);
+            visualization::PointCloudColorHandlerCustom<PointT> blue (keypoints3d, 0, 0, 255);
+            if (!cloud_viewer_.updatePointCloud (keypoints3d, blue, "keypoints"))
+              cloud_viewer_.addPointCloud (keypoints3d, blue, "keypoints");
+            cloud_viewer_.setPointCloudRenderingProperties (visualization::PCL_VISUALIZER_POINT_SIZE, 20, "keypoints");
+            cloud_viewer_.setPointCloudRenderingProperties (visualization::PCL_VISUALIZER_OPACITY, 0.5, "keypoints");
+          }
         }
 
         cloud_viewer_.spinOnce ();
@@ -219,7 +206,6 @@ class AGASTDemo
       }
 
       grabber_.stop ();
-      
       cloud_connection.disconnect ();
     }
     

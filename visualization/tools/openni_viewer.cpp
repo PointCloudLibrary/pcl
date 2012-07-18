@@ -190,23 +190,25 @@ class OpenNIViewer
       }
       
       bool image_init = false, cloud_init = false;
-      boost::shared_ptr<openni_wrapper::Image> image;
-      CloudConstPtr cloud;
       
       grabber_.start ();
 
       while (!cloud_viewer_->wasStopped () && (image_viewer_ && !image_viewer_->wasStopped ()))
       {
+        boost::shared_ptr<openni_wrapper::Image> image;
+        CloudConstPtr cloud;
+
         cloud_viewer_->spinOnce ();
 
         // See if we can get a cloud
         if (cloud_mutex_.try_lock ())
         {
-          if (cloud_)
-            cloud_.swap (cloud);
-
+          cloud_.swap (cloud);
           cloud_mutex_.unlock ();
+        }
 
+        if (cloud)
+        {
           FPS_CALC ("drawing cloud");
           
           if (!cloud_init)
@@ -226,11 +228,12 @@ class OpenNIViewer
         // See if we can get an image
         if (image_mutex_.try_lock ())
         {
-          if (image_)
-            image_.swap (image);
-        
+          image_.swap (image);
           image_mutex_.unlock ();
+        }
 
+        if (image)
+        {
           if (!image_init && cloud && cloud->width != 0)
           {
             image_viewer_->setPosition (cloud->width, 0);

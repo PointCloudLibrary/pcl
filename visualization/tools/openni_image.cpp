@@ -161,10 +161,10 @@ class SimpleOpenNIViewer
       
       grabber_.start ();
            
-      boost::shared_ptr<openni_wrapper::Image> image;
-      boost::shared_ptr<openni_wrapper::DepthImage> depth_image;
       while (!image_viewer_.wasStopped () && !depth_image_viewer_.wasStopped ())
       {
+        boost::shared_ptr<openni_wrapper::Image> image;
+        boost::shared_ptr<openni_wrapper::DepthImage> depth_image;
         if (!image_cld_init_)
         {
           image_viewer_.setPosition (0, 0);
@@ -174,34 +174,32 @@ class SimpleOpenNIViewer
         if (image_mutex_.try_lock ())
         {
           // Swap data
-          if (image_)
-            image_.swap (image);
-
-          if (depth_image_)
-            depth_image_.swap (depth_image);
+          image_.swap (image);
+          depth_image_.swap (depth_image);
 
           // Unlock
           image_mutex_.unlock ();
+        }
 
-          // Add to renderer
-          if (image)
-          {
-            if (image->getEncoding() == openni_wrapper::Image::RGB)
-              image_viewer_.addRGBImage (image->getMetaData ().Data (), image->getWidth (), image->getHeight ());
-            else
-              image_viewer_.addRGBImage (rgb_data_, image->getWidth (), image->getHeight ());
-          }
+        // Add to renderer
+        if (image)
+        {
+          if (image->getEncoding() == openni_wrapper::Image::RGB)
+            image_viewer_.addRGBImage (image->getMetaData ().Data (), image->getWidth (), image->getHeight ());
+          else
+            image_viewer_.addRGBImage (rgb_data_, image->getWidth (), image->getHeight ());
+        }
 
-          if (depth_image)
+        if (depth_image)
+        {
+          depth_image_viewer_.addRGBImage (depth_data_, depth_image->getWidth (), depth_image->getHeight ());
+          if (!depth_image_cld_init_)
           {
-            depth_image_viewer_.addRGBImage (depth_data_, depth_image->getWidth (), depth_image->getHeight ());
-            if (!depth_image_cld_init_)
-            {
-              depth_image_viewer_.setPosition (depth_image->getWidth (), 0);
-              depth_image_cld_init_ = !depth_image_cld_init_;
-            }
+            depth_image_viewer_.setPosition (depth_image->getWidth (), 0);
+            depth_image_cld_init_ = !depth_image_cld_init_;
           }
         }
+
         image_viewer_.spinOnce ();
         depth_image_viewer_.spinOnce ();
         
