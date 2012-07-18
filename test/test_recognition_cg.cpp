@@ -55,10 +55,10 @@ using namespace std;
 using namespace pcl;
 using namespace pcl::io;
 
-typedef PointXYZRGBA PointType;
+typedef PointXYZ PointType;
 typedef Normal NormalType;
 typedef ReferenceFrame RFType;
-typedef SHOT1344 DescriptorType;
+typedef SHOT352 DescriptorType;
 
 PointCloud<PointType>::Ptr model_ (new PointCloud<PointType> ());
 PointCloud<PointType>::Ptr model_downsampled_ (new PointCloud<PointType> ());
@@ -202,7 +202,7 @@ main (int argc, char** argv)
   copyPointCloud (*scene_, sampled_indices.points, *scene_downsampled_);
 
   //Descriptor
-  SHOTColorEstimationOMP<PointType, NormalType, DescriptorType> descr_est;
+  SHOTEstimationOMP<PointType, NormalType, DescriptorType> descr_est;
   descr_est.setRadiusSearch (0.015);
   descr_est.setInputCloud (model_downsampled_);
   descr_est.setInputNormals (model_normals_);
@@ -227,7 +227,7 @@ main (int argc, char** argv)
       int found_neighs = match_search.nearestKSearch (scene_descriptors_->at (i), 1, neigh_indices, neigh_sqr_dists);
       if(found_neighs == 1 && neigh_sqr_dists[0] < 0.25f)
       {
-        Correspondence corr (neigh_indices[0], i, neigh_sqr_dists[0]);
+        Correspondence corr (neigh_indices[0], static_cast<int> (i), neigh_sqr_dists[0]);
         model_scene_corrs_->push_back (corr);
       }
     }

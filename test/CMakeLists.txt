@@ -89,8 +89,8 @@ if(build)
                  LINK_WITH pcl_gtest pcl_common pcl_io pcl_sample_consensus pcl_segmentation
                  ARGUMENTS ${PCL_SOURCE_DIR}/test/noisy_slice_displaced.pcd)
 
-    #PCL_ADD_TEST(a_recognition_cg_test test_recognition_cg
-    #             FILES test_recognition_cg.cpp
-    #             LINK_WITH pcl_gtest pcl_common pcl_io pcl_kdtree pcl_features pcl_recognition pcl_keypoints
-    #             ARGUMENTS ${PCL_SOURCE_DIR}/test/milk.pcd ${PCL_SOURCE_DIR}/test/milk_cartoon_all_small_clorox.pcd)
+    PCL_ADD_TEST(a_recognition_cg_test test_recognition_cg
+                 FILES test_recognition_cg.cpp
+                 LINK_WITH pcl_gtest pcl_common pcl_io pcl_kdtree pcl_features pcl_recognition pcl_keypoints
+                 ARGUMENTS ${PCL_SOURCE_DIR}/test/milk.pcd ${PCL_SOURCE_DIR}/test/milk_cartoon_all_small_clorox.pcd)
 endif(build)
