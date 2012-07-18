@@ -40,6 +40,8 @@
 #ifndef PCL_COMMON_POINT_TESTS_H_
 #define PCL_COMMON_POINT_TESTS_H_
 
+#include <Eigen/src/StlSupport/details.h>
+
 namespace pcl
 {
   /** Tests if the 3D components of a point are all finite
@@ -50,6 +52,14 @@ namespace pcl
   {
     return (pcl_isfinite (pt.x) && pcl_isfinite (pt.y) && pcl_isfinite (pt.z));
   }
+
+#ifdef _MSC_VER
+  template <typename PointT> inline bool
+  isFinite (const Eigen::internal::workaround_msvc_stl_support<PointT> &pt)
+  {
+    return isFinite<PointT> (static_cast<const PointT&> (pt));
+  }
+#endif
 
   template<> inline bool isFinite<pcl::RGB> (const pcl::RGB&) { return (true); }
   template<> inline bool isFinite<pcl::Label> (const pcl::Label&) { return (true); }
