@@ -201,7 +201,9 @@ scaleInPlace (sensor_msgs::PointCloud2 &cloud, double* divider)
  
   for (uint32_t cp = 0; cp < cloud.width * cloud.height; ++cp)
   {
-    assert (cloud.fields[x_idx].datatype == cloud.fields[y_idx].datatype == cloud.fields[z_idx].datatype);  // Assume all 3 fields are the same (XYZ)
+    // Assume all 3 fields are the same (XYZ)
+    assert ((cloud.fields[x_idx].datatype == cloud.fields[y_idx].datatype));
+    assert ((cloud.fields[x_idx].datatype == cloud.fields[z_idx].datatype));
     switch (cloud.fields[x_idx].datatype)
     {
       case sensor_msgs::PointField::INT8:
