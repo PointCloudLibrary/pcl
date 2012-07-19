@@ -699,7 +699,7 @@ Registration
 
              Author: *Brian Okorn*
 
-             Compatibility: > PCL 1.5
+             Compatibility: > PCL 1.6
 
              This document demonstrates using the Normal Distributions Transform algorithm to register two large point clouds.
      ======  ======
