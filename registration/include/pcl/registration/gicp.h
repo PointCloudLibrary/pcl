@@ -214,7 +214,7 @@ namespace pcl
       int
       getMaximumOptimizerIterations () { return (max_inner_iterations_); }
 
-    private:
+    protected:
 
       /** \brief The number of neighbors used for covariances computation. 
         * \default 20
