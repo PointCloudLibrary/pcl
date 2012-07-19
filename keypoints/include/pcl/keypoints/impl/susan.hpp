@@ -104,7 +104,7 @@ template <typename PointInT, typename PointOutT, typename NormalT, typename Inte
 pcl::SUSAN<PointInT, PointOutT, NormalT, IntensityT>::setNumberOfThreads (int nr_threads)
 {
   if (nr_threads == 0)
-          nr_threads = 1;
+    nr_threads = 1;
   threads_ = nr_threads;
 }
 
@@ -277,7 +277,6 @@ pcl::SUSAN<PointInT, PointOutT, NormalT, IntensityT>::isWithinNucleusCentroid (c
 //                 intensity_ (surface_->points[neighbor])) <= intensity_threshold_);
 // }
 
-
 // template <typename PointInT, typename PointOutT, typename NormalT, typename IntensityT> bool
 // pcl::SUSAN<PointInT, PointOutT, NormalT, IntensityT>::isWithinSusan3D (int nucleus, int neighbor) const
 // {
@@ -299,7 +298,7 @@ pcl::SUSAN<PointInT, PointOutT, NormalT, IntensityT>::detectKeypoints (PointClou
 {
   boost::shared_ptr<pcl::PointCloud<PointOutT> > response (new pcl::PointCloud<PointOutT> ());
   response->reserve (surface_->size ());
-  const int surface_size = surface_->size ();
+  const int surface_size = static_cast<int> (surface_->size ());
 #if defined (HAVE_OPENMP) && (defined(_WIN32) || ((__GNUC__ > 4) && (__GNUC_MINOR__ > 2)))
 #pragma omp parallel for shared ((*response)) num_threads(threads_)
 #endif
@@ -316,7 +315,7 @@ pcl::SUSAN<PointInT, PointOutT, NormalT, IntensityT>::detectKeypoints (PointClou
       float nucleus_intensity = intensity_ (point_in);
       std::vector<int> nn_indices;
       std::vector<float> nn_dists;
-      int nb_neigbors = tree_->radiusSearch (point_in, search_radius_, nn_indices, nn_dists);
+      tree_->radiusSearch (point_in, search_radius_, nn_indices, nn_dists);
       float area = 0;
       Eigen::Vector3f centroid = Eigen::Vector3f::Zero ();
       // Exclude nucleus from the usan
@@ -336,7 +335,7 @@ pcl::SUSAN<PointInT, PointOutT, NormalT, IntensityT>::detectKeypoints (PointClou
         }
       }
 
-      float geometric_threshold = 0.5 * (nn_indices.size () - 1);
+      float geometric_threshold = 0.5f * (static_cast<float> (nn_indices.size () - 1));
       if ((area > 0) && (area < geometric_threshold))
       {
         // if no geometric validation required add the point to the response
