@@ -56,41 +56,41 @@ namespace pcl
   template <typename PointSource, typename PointTarget>
   class GeneralizedIterativeClosestPoint : public IterativeClosestPoint<PointSource, PointTarget>
   {
-    using IterativeClosestPoint<PointSource, PointTarget>::reg_name_;
-    using IterativeClosestPoint<PointSource, PointTarget>::getClassName;
-    using IterativeClosestPoint<PointSource, PointTarget>::indices_;
-    using IterativeClosestPoint<PointSource, PointTarget>::target_;
-    using IterativeClosestPoint<PointSource, PointTarget>::input_;
-    using IterativeClosestPoint<PointSource, PointTarget>::tree_;
-    using IterativeClosestPoint<PointSource, PointTarget>::nr_iterations_;
-    using IterativeClosestPoint<PointSource, PointTarget>::max_iterations_;
-    using IterativeClosestPoint<PointSource, PointTarget>::previous_transformation_;
-    using IterativeClosestPoint<PointSource, PointTarget>::final_transformation_;
-    using IterativeClosestPoint<PointSource, PointTarget>::transformation_;
-    using IterativeClosestPoint<PointSource, PointTarget>::transformation_epsilon_;
-    using IterativeClosestPoint<PointSource, PointTarget>::converged_;
-    using IterativeClosestPoint<PointSource, PointTarget>::corr_dist_threshold_;
-    using IterativeClosestPoint<PointSource, PointTarget>::inlier_threshold_;
-    using IterativeClosestPoint<PointSource, PointTarget>::min_number_correspondences_;
-    using IterativeClosestPoint<PointSource, PointTarget>::update_visualizer_;
-
-    typedef pcl::PointCloud<PointSource> PointCloudSource;
-    typedef typename PointCloudSource::Ptr PointCloudSourcePtr;
-    typedef typename PointCloudSource::ConstPtr PointCloudSourceConstPtr;
-
-    typedef pcl::PointCloud<PointTarget> PointCloudTarget;
-    typedef typename PointCloudTarget::Ptr PointCloudTargetPtr;
-    typedef typename PointCloudTarget::ConstPtr PointCloudTargetConstPtr;
-
-    typedef PointIndices::Ptr PointIndicesPtr;
-    typedef PointIndices::ConstPtr PointIndicesConstPtr;
-
-    typedef typename pcl::KdTree<PointSource> InputKdTree;
-    typedef typename pcl::KdTree<PointSource>::Ptr InputKdTreePtr;
-    
-    typedef Eigen::Matrix<double, 6, 1> Vector6d;
-
     public:
+      using IterativeClosestPoint<PointSource, PointTarget>::reg_name_;
+      using IterativeClosestPoint<PointSource, PointTarget>::getClassName;
+      using IterativeClosestPoint<PointSource, PointTarget>::indices_;
+      using IterativeClosestPoint<PointSource, PointTarget>::target_;
+      using IterativeClosestPoint<PointSource, PointTarget>::input_;
+      using IterativeClosestPoint<PointSource, PointTarget>::tree_;
+      using IterativeClosestPoint<PointSource, PointTarget>::nr_iterations_;
+      using IterativeClosestPoint<PointSource, PointTarget>::max_iterations_;
+      using IterativeClosestPoint<PointSource, PointTarget>::previous_transformation_;
+      using IterativeClosestPoint<PointSource, PointTarget>::final_transformation_;
+      using IterativeClosestPoint<PointSource, PointTarget>::transformation_;
+      using IterativeClosestPoint<PointSource, PointTarget>::transformation_epsilon_;
+      using IterativeClosestPoint<PointSource, PointTarget>::converged_;
+      using IterativeClosestPoint<PointSource, PointTarget>::corr_dist_threshold_;
+      using IterativeClosestPoint<PointSource, PointTarget>::inlier_threshold_;
+      using IterativeClosestPoint<PointSource, PointTarget>::min_number_correspondences_;
+      using IterativeClosestPoint<PointSource, PointTarget>::update_visualizer_;
+
+      typedef pcl::PointCloud<PointSource> PointCloudSource;
+      typedef typename PointCloudSource::Ptr PointCloudSourcePtr;
+      typedef typename PointCloudSource::ConstPtr PointCloudSourceConstPtr;
+
+      typedef pcl::PointCloud<PointTarget> PointCloudTarget;
+      typedef typename PointCloudTarget::Ptr PointCloudTargetPtr;
+      typedef typename PointCloudTarget::ConstPtr PointCloudTargetConstPtr;
+
+      typedef PointIndices::Ptr PointIndicesPtr;
+      typedef PointIndices::ConstPtr PointIndicesConstPtr;
+
+      typedef typename pcl::KdTree<PointSource> InputKdTree;
+      typedef typename pcl::KdTree<PointSource>::Ptr InputKdTreePtr;
+
+      typedef Eigen::Matrix<double, 6, 1> Vector6d;
+
       /** \brief Empty constructor. */
       GeneralizedIterativeClosestPoint () 
         : k_correspondences_(20)
@@ -326,7 +326,6 @@ namespace pcl
         const GeneralizedIterativeClosestPoint *gicp_;
       };
       
-    protected:
       boost::function<void(const pcl::PointCloud<PointSource> &cloud_src,
                            const std::vector<int> &src_indices,
                            const pcl::PointCloud<PointTarget> &cloud_tgt,
