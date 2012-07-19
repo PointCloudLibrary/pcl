@@ -5,7 +5,7 @@
 
 #include <boost/type_traits/integral_constant.hpp>
 
-#include <pcl/half_edge_mesh/impl/mesh_base.hpp>
+#include <pcl/geometry/impl/mesh_base.hpp>
 
 namespace pcl
 {
@@ -28,7 +28,6 @@ namespace pcl
       typedef typename Base::VertexIndex   VertexIndex;
       typedef typename Base::HalfEdgeIndex HalfEdgeIndex;
       typedef typename Base::FaceIndex     FaceIndex;
-      typedef typename Base::FaceIndexPair FaceIndexPair;
 
       typedef typename Base::VertexIndexes   VertexIndexes;
       typedef typename Base::HalfEdgeIndexes HalfEdgeIndexes;
@@ -143,7 +142,7 @@ namespace pcl
       {
         assert (Base::validateHalfEdgeIndex (idx_half_edge));
 
-        const HalfEdge& he = Base::getHalfEdge (idx_half_edge);
+        const HalfEdge& he = Base::getElement (idx_half_edge);
         this->deleteFace (he.getFaceIndex ());
         this->deleteFace (he.getOppositeFaceIndex (*this));
       }
@@ -217,9 +216,9 @@ namespace pcl
       // Returns true if addFace may be continued
       inline bool
       firstTopologyCheck (const VertexIndex& idx_v_a,
-                      const VertexIndex& idx_v_b,
-                      HalfEdgeIndex&     idx_he_a_out,
-                      bool&              is_new_ab) const
+                          const VertexIndex& idx_v_b,
+                          HalfEdgeIndex&     idx_he_a_out,
+                          bool&              is_new_ab) const
       {
         return (this->firstTopologyCheck (idx_v_a, idx_v_b, idx_he_a_out, is_new_ab, IsManifold ()));
       }
@@ -230,8 +229,8 @@ namespace pcl
 
       inline bool
       secondTopologyCheck (const bool is_new_ab,
-                      const bool is_new_bc,
-                      const bool is_isolated_b) const
+                           const bool is_new_bc,
+                           const bool is_isolated_b) const
       {
         return (this->secondTopologyCheck (is_new_ab, is_new_bc, is_isolated_b, IsManifold ()));
       }
@@ -252,17 +251,18 @@ namespace pcl
       //////////////////////////////////////////////////////////////////////////
 
       inline void
-      addHalfEdgePair (const HalfEdgeData& he_data,
-                       const VertexIndex&  idx_v_a,
+      addHalfEdgePair (const VertexIndex&  idx_v_a,
                        const VertexIndex&  idx_v_b,
+                       const HalfEdgeData& he_data_ab,
+                       const HalfEdgeData& he_data_ba,
                        HalfEdgeIndex&      idx_he_ab,
                        HalfEdgeIndex&      idx_he_ba)
       {
         // Only sets the unambiguous connections: OppositeHalfEdge and TerminatingVertex
-        idx_he_ab = Base::pushBackHalfEdge (he_data, idx_v_b);
-        idx_he_ba = Base::pushBackHalfEdge (he_data, idx_v_a, idx_he_ab);
+        idx_he_ab = Base::pushBackHalfEdge (he_data_ab, idx_v_b);
+        idx_he_ba = Base::pushBackHalfEdge (he_data_ba, idx_v_a, idx_he_ab);
 
-        Base::getHalfEdge (idx_he_ab).setOppositeHalfEdgeIndex (idx_he_ba);
+        Base::getElement (idx_he_ab).setOppositeHalfEdgeIndex (idx_he_ba);
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -273,8 +273,8 @@ namespace pcl
       connectPrevNext (const HalfEdgeIndex& idx_he_ab,
                        const HalfEdgeIndex& idx_he_bc)
       {
-        Base::getHalfEdge (idx_he_ab).setNextHalfEdgeIndex (idx_he_bc);
-        Base::getHalfEdge (idx_he_bc).setPrevHalfEdgeIndex (idx_he_ab);
+        Base::getElement (idx_he_ab).setNextHalfEdgeIndex (idx_he_bc);
+        Base::getElement (idx_he_bc).setPrevHalfEdgeIndex (idx_he_ab);
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -310,7 +310,7 @@ namespace pcl
 
         while (it!=it_end)
         {
-          Base::getHalfEdge (*it++).setFaceIndex (idx_face);
+          Base::getElement (*it++).setFaceIndex (idx_face);
         }
 
         return (idx_face);
@@ -372,7 +372,7 @@ namespace pcl
       {
         assert (Base::validateFaceIndex (idx_face));
 
-        Face& face = Base::getFace (idx_face);
+        Face& face = Base::getElement (idx_face);
 
         if (face.getDeleted ())
         {
@@ -417,7 +417,7 @@ namespace pcl
         it = ewbiv.begin ();
         while (it!=it_end)
         {
-          Base::getHalfEdge ((*it++).idx_he_ab_).getFaceIndex ().invalidate ();
+          Base::getElement ((*it++).idx_he_ab_).getFaceIndex ().invalidate ();
         }
       }
 
@@ -427,17 +427,17 @@ namespace pcl
 
       inline bool
       firstTopologyCheck (const VertexIndex& idx_v_a,
-                      const VertexIndex& idx_v_b,
-                      HalfEdgeIndex&     idx_he_a_out,
-                      bool&              is_new_ab,
-                      ManifoldMeshTag) const
+                          const VertexIndex& idx_v_b,
+                          HalfEdgeIndex&     idx_he_a_out,
+                          bool&              is_new_ab,
+                          ManifoldMeshTag) const
       {
-        const Vertex& v_a = Base::getVertex (idx_v_a);
+        const Vertex& v_a = Base::getElement (idx_v_a);
 
         if (v_a.isIsolated ()) return (true);
 
         idx_he_a_out          = v_a.getOutgoingHalfEdgeIndex ();
-        const HalfEdge& he_ab = Base::getHalfEdge (idx_he_a_out);
+        const HalfEdge& he_ab = Base::getElement (idx_he_a_out);
 
         if (!he_ab.isBoundary ())                          return (false);
         if (he_ab.getTerminatingVertexIndex () == idx_v_b) is_new_ab = false;
@@ -447,12 +447,12 @@ namespace pcl
 
       inline bool
       firstTopologyCheck (const VertexIndex& idx_v_a,
-                      const VertexIndex& idx_v_b,
-                      HalfEdgeIndex&     idx_he_a_out,
-                      bool&              is_new_ab,
-                      NonManifoldMeshTag) const
+                          const VertexIndex& idx_v_b,
+                          HalfEdgeIndex&     idx_he_a_out,
+                          bool&              is_new_ab,
+                          NonManifoldMeshTag) const
       {
-        const Vertex& v_a = Base::getVertex (idx_v_a);
+        const Vertex& v_a = Base::getElement (idx_v_a);
 
         if (v_a.isIsolated ())                              return (true);
         if (!v_a.getOutgoingHalfEdge (*this).isBoundary ()) return (false);
@@ -465,7 +465,7 @@ namespace pcl
           if (circ.getDereferencedIndex () == idx_v_b)
           {
             idx_he_a_out = circ.getCurrentHalfEdgeIndex ();
-            if (!Base::getHalfEdge (idx_he_a_out).isBoundary ())
+            if (!Base::getElement (idx_he_a_out).isBoundary ())
             {
               return (false);
             }
@@ -485,9 +485,9 @@ namespace pcl
 
       inline bool
       secondTopologyCheck (const bool is_new_ab,
-                      const bool is_new_bc,
-                      const bool is_isolated_b,
-                      ManifoldMeshTag) const
+                           const bool is_new_bc,
+                           const bool is_isolated_b,
+                           ManifoldMeshTag) const
       {
         if (is_new_ab && is_new_bc && !is_isolated_b) return (false);
         else                                          return (true);
@@ -495,9 +495,9 @@ namespace pcl
 
       inline bool
       secondTopologyCheck (const bool is_new_ab,
-                      const bool is_new_bc,
-                      const bool is_isolated_b,
-                      NonManifoldMeshTag) const
+                           const bool is_new_bc,
+                           const bool is_isolated_b,
+                           NonManifoldMeshTag) const
       {
         return (true);
       }
@@ -519,13 +519,13 @@ namespace pcl
                     const HalfEdgeIndex& idx_he_bc,
                     NonManifoldMeshTag)
       {
-        if (Base::getHalfEdge (idx_he_ab).getNextHalfEdgeIndex () == idx_he_bc)
+        if (Base::getElement (idx_he_ab).getNextHalfEdgeIndex () == idx_he_bc)
         {
           return; // already adjacent
         }
 
         // Find the next boundary half edge (counter-clockwise around vertex b)
-        OutgoingHalfEdgeAroundVertexConstCirculator circ = Base::getOutgoingHalfEdgeAroundVertexConstCirculator (Base::getHalfEdge (idx_he_ab).getOppositeHalfEdgeIndex ());
+        OutgoingHalfEdgeAroundVertexConstCirculator circ = Base::getOutgoingHalfEdgeAroundVertexConstCirculator (Base::getElement (idx_he_ab).getOppositeHalfEdgeIndex ());
 
         while (true)
         {
@@ -534,10 +534,10 @@ namespace pcl
           if (circ->isBoundary ())
           {
             // Re-link. No references!
-            const HalfEdgeIndex idx_he_ab_next       = Base::getHalfEdge (idx_he_ab).getNextHalfEdgeIndex ();
-            const HalfEdgeIndex idx_he_bc_prev       = Base::getHalfEdge (idx_he_bc).getPrevHalfEdgeIndex ();
+            const HalfEdgeIndex idx_he_ab_next       = Base::getElement (idx_he_ab).getNextHalfEdgeIndex ();
+            const HalfEdgeIndex idx_he_bc_prev       = Base::getElement (idx_he_bc).getPrevHalfEdgeIndex ();
             const HalfEdgeIndex idx_he_boundary      = circ.getDereferencedIndex ();
-            const HalfEdgeIndex idx_he_boundary_prev = Base::getHalfEdge (idx_he_boundary).getPrevHalfEdgeIndex ();
+            const HalfEdgeIndex idx_he_boundary_prev = Base::getElement (idx_he_boundary).getPrevHalfEdgeIndex ();
 
             this->connectPrevNext (idx_he_ab, idx_he_bc);
             this->connectPrevNext (idx_he_boundary_prev, idx_he_ab_next);
@@ -564,7 +564,7 @@ namespace pcl
         this->connectPrevNext (idx_he_ab, idx_he_bc);
         this->connectPrevNext (idx_he_cb, idx_he_ba);
 
-        Base::getVertex (idx_v_b).setOutgoingHalfEdgeIndex (idx_he_ba);
+        Base::getElement (idx_v_b).setOutgoingHalfEdgeIndex (idx_he_ba);
       }
 
       inline void
@@ -575,7 +575,7 @@ namespace pcl
                      const VertexIndex&   idx_v_b,
                      NonManifoldMeshTag)
       {
-        const Vertex& v_b = Base::getVertex (idx_v_b);
+        const Vertex& v_b = Base::getElement (idx_v_b);
 
         if (v_b.isIsolated ())
         {
@@ -585,7 +585,7 @@ namespace pcl
         {
           // No references!
           const HalfEdgeIndex idx_he_b_out      = v_b.getOutgoingHalfEdgeIndex ();
-          const HalfEdgeIndex idx_he_b_out_prev = Base::getHalfEdge (idx_he_b_out).getPrevHalfEdgeIndex ();
+          const HalfEdgeIndex idx_he_b_out_prev = Base::getElement (idx_he_b_out).getPrevHalfEdgeIndex ();
 
           this->connectPrevNext (idx_he_ab, idx_he_bc);
           this->connectPrevNext (idx_he_cb, idx_he_b_out);
@@ -604,12 +604,12 @@ namespace pcl
                      const HalfEdgeIndex& idx_he_cb,
                      const VertexIndex&   idx_v_b)
       {
-        const HalfEdgeIndex idx_he_bc_prev = Base::getHalfEdge (idx_he_bc).getPrevHalfEdgeIndex (); // No reference!
+        const HalfEdgeIndex idx_he_bc_prev = Base::getElement (idx_he_bc).getPrevHalfEdgeIndex (); // No reference!
 
         this->connectPrevNext (idx_he_ab, idx_he_bc);
         this->connectPrevNext (idx_he_bc_prev, idx_he_ba);
 
-        Base::getVertex (idx_v_b).setOutgoingHalfEdgeIndex (idx_he_ba);
+        Base::getElement (idx_v_b).setOutgoingHalfEdgeIndex (idx_he_ba);
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -623,12 +623,12 @@ namespace pcl
                      const HalfEdgeIndex& idx_he_cb,
                      const VertexIndex&   idx_v_b)
       {
-        const HalfEdgeIndex idx_he_ab_next = Base::getHalfEdge (idx_he_ab).getNextHalfEdgeIndex (); // No reference!
+        const HalfEdgeIndex idx_he_ab_next = Base::getElement (idx_he_ab).getNextHalfEdgeIndex (); // No reference!
 
         this->connectPrevNext (idx_he_ab, idx_he_bc);
         this->connectPrevNext (idx_he_cb, idx_he_ab_next);
 
-        Base::getVertex (idx_v_b).setOutgoingHalfEdgeIndex (idx_he_ab_next);
+        Base::getElement (idx_v_b).setOutgoingHalfEdgeIndex (idx_he_ab_next);
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -654,7 +654,7 @@ namespace pcl
                      const VertexIndex&   idx_v_b,
                      NonManifoldMeshTag)
       {
-        Vertex& v_b = Base::getVertex (idx_v_b);
+        Vertex& v_b = Base::getElement (idx_v_b);
 
         // The outgoing half edge MUST be a boundary half-edge (if there is one)
         if (v_b.getOutgoingHalfEdgeIndex () == idx_he_bc) // he_bc is no longer on the boundary
@@ -702,20 +702,20 @@ namespace pcl
                    const HalfEdgeIndex& idx_he_bc,
                    const HalfEdgeIndex& idx_he_cb)
       {
-        const HalfEdgeIndex& idx_he_cb_next = Base::getHalfEdge (idx_he_cb).getNextHalfEdgeIndex ();
+        const HalfEdgeIndex& idx_he_cb_next = Base::getElement (idx_he_cb).getNextHalfEdgeIndex ();
 
         if (idx_he_cb_next == idx_he_ba) // Vertex b is isolated
         {
-          Base::getHalfEdge (idx_he_ab).getTerminatingVertex (*this).setDeleted (true);
+          Base::getElement (idx_he_ab).getTerminatingVertex (*this).setDeleted (true);
         }
         else
         {
-          this->connectPrevNext (Base::getHalfEdge (idx_he_ba).getPrevHalfEdgeIndex (), idx_he_cb_next);
-          Base::getHalfEdge (idx_he_ab).getTerminatingVertex (*this).setOutgoingHalfEdgeIndex (idx_he_cb_next);
+          this->connectPrevNext (Base::getElement (idx_he_ba).getPrevHalfEdgeIndex (), idx_he_cb_next);
+          Base::getElement (idx_he_ab).getTerminatingVertex (*this).setOutgoingHalfEdgeIndex (idx_he_cb_next);
         }
 
-        Base::getHalfEdge (idx_he_ab).setDeleted (true);
-        Base::getHalfEdge (idx_he_ba).setDeleted (true);
+        Base::getElement (idx_he_ab).setDeleted (true);
+        Base::getElement (idx_he_ba).setDeleted (true);
         // he_bc.setDeleted (true); // already done in reconnectBNB or reconnectBB
         // he_cb.setDeleted (true);
       }
@@ -730,11 +730,11 @@ namespace pcl
                     const HalfEdgeIndex& idx_he_bc,
                     const HalfEdgeIndex& idx_he_cb)
       {
-        this->connectPrevNext (Base::getHalfEdge (idx_he_ba).getPrevHalfEdgeIndex (), idx_he_bc);
-        Base::getHalfEdge (idx_he_ab).getTerminatingVertex (*this).setOutgoingHalfEdgeIndex (idx_he_bc);
+        this->connectPrevNext (Base::getElement (idx_he_ba).getPrevHalfEdgeIndex (), idx_he_bc);
+        Base::getElement (idx_he_ab).getTerminatingVertex (*this).setOutgoingHalfEdgeIndex (idx_he_bc);
 
-        Base::getHalfEdge (idx_he_ab).setDeleted (true);
-        Base::getHalfEdge (idx_he_ba).setDeleted (true);
+        Base::getElement (idx_he_ab).setDeleted (true);
+        Base::getElement (idx_he_ba).setDeleted (true);
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -747,9 +747,9 @@ namespace pcl
                     const HalfEdgeIndex& idx_he_bc,
                     const HalfEdgeIndex& idx_he_cb)
       {
-        const HalfEdgeIndex& idx_he_cb_next = Base::getHalfEdge (idx_he_cb).getNextHalfEdgeIndex ();
+        const HalfEdgeIndex& idx_he_cb_next = Base::getElement (idx_he_cb).getNextHalfEdgeIndex ();
         this->connectPrevNext (idx_he_ab, idx_he_cb_next);
-        Base::getHalfEdge (idx_he_ab).getTerminatingVertex (*this).setOutgoingHalfEdgeIndex (idx_he_cb_next);
+        Base::getElement (idx_he_ab).getTerminatingVertex (*this).setOutgoingHalfEdgeIndex (idx_he_cb_next);
 
         // he_bc.setDeleted (true); // already done in reconnectBB
         // he_cb.setDeleted (true);
@@ -767,7 +767,7 @@ namespace pcl
                      std::stack<FaceIndex>& delete_faces,
                      ManifoldMeshTag)
       {
-        Vertex& v_b = Base::getHalfEdge (idx_he_ab).getTerminatingVertex (*this);
+        Vertex& v_b = Base::getElement (idx_he_ab).getTerminatingVertex (*this);
 
         if(v_b.isBoundary (*this))
         {
@@ -779,7 +779,6 @@ namespace pcl
 
           while (idx_face.isValid ())
           {
-            // TODO: maybe a queue is better suited than a stack here
             delete_faces.push (idx_face);
             idx_face = (circ++).getDereferencedIndex ();
           }
@@ -796,7 +795,7 @@ namespace pcl
                      std::stack<FaceIndex>& delete_faces,
                      NonManifoldMeshTag)
       {
-        Vertex& v_b = Base::getHalfEdge (idx_he_ab).getTerminatingVertex (*this);
+        Vertex& v_b = Base::getElement (idx_he_ab).getTerminatingVertex (*this);
 
         if(!v_b.isBoundary (*this))
         {

@@ -214,6 +214,29 @@ namespace pcl
 } // End namespace pcl
 
 ////////////////////////////////////////////////////////////////////////////////
+// EdgeIndex
+////////////////////////////////////////////////////////////////////////////////
+
+namespace pcl
+{
+
+  class EdgeIndex : public pcl::BaseMeshElementIndex <pcl::EdgeIndex>
+  {
+    public:
+
+      typedef pcl::BaseMeshElementIndex <pcl::EdgeIndex> Base;
+      typedef Base::Derived                              Self;
+
+    public:
+
+      EdgeIndex (const pcl::HalfEdgeIndex& idx_he);
+      EdgeIndex (const Self& other);
+
+  };
+
+} // End namespace pcl
+
+////////////////////////////////////////////////////////////////////////////////
 // FaceIndex
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -231,6 +254,29 @@ namespace pcl
 
       FaceIndex (const int idx = -1);
       FaceIndex (const Self& other);
+  };
+
+} // End namespace pcl
+
+////////////////////////////////////////////////////////////////////////////////
+// TriangleIndex
+////////////////////////////////////////////////////////////////////////////////
+
+namespace pcl
+{
+
+  class TriangleIndex : public pcl::FaceIndex
+  {
+    public:
+
+      typedef pcl::FaceIndex     Base;
+      typedef pcl::TriangleIndex Self;
+
+    public:
+
+      TriangleIndex (const int idx = -1);
+      TriangleIndex (const Self& other);
+      TriangleIndex (const Base& base);
   };
 
 } // End namespace pcl

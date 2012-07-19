@@ -103,13 +103,13 @@ namespace pcl
       const HalfEdge&
       getOutgoingHalfEdge (const Mesh& mesh) const
       {
-        return (mesh.getHalfEdge (this->getOutgoingHalfEdgeIndex ()));
+        return (mesh.getElement (this->getOutgoingHalfEdgeIndex ()));
       }
 
       HalfEdge&
       getOutgoingHalfEdge (Mesh& mesh)
       {
-        return (mesh.getHalfEdge (this->getOutgoingHalfEdgeIndex ()));
+        return (mesh.getElement (this->getOutgoingHalfEdgeIndex ()));
       }
 
       //////////////////////////////////////////////////////////////////////////

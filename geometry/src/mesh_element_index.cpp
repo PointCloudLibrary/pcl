@@ -39,7 +39,7 @@
  *
  */
 
-#include <pcl/half_edge_mesh/mesh_element_index.h>
+#include <pcl/geometry/mesh_element_index.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 // VertexIndex
@@ -70,6 +70,21 @@ pcl::HalfEdgeIndex::HalfEdgeIndex (const Self& other)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+// EdgeIndex
+////////////////////////////////////////////////////////////////////////////////
+
+pcl::EdgeIndex::EdgeIndex (const pcl::HalfEdgeIndex& idx_he)
+  : Base (idx_he.idx () / 2) // Floor
+{
+}
+
+pcl::EdgeIndex::EdgeIndex (const Self& other)
+  : Base (other.idx ())
+{
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
 // FaceIndex
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -81,6 +96,25 @@ pcl::FaceIndex::FaceIndex (const int idx)
 
 pcl::FaceIndex::FaceIndex (const Self& other)
   : Base (other.idx ())
+{
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// TriangleIndex
+////////////////////////////////////////////////////////////////////////////////
+
+pcl::TriangleIndex::TriangleIndex (const int idx)
+  : Base (idx)
+{
+}
+
+pcl::TriangleIndex::TriangleIndex (const Self& other)
+  : Base (other.idx ())
+{
+}
+
+pcl::TriangleIndex::TriangleIndex (const Base& base)
+  : Base (base.idx ())
 {
 }
 

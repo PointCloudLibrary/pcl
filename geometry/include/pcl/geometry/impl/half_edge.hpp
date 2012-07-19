@@ -117,13 +117,13 @@ namespace pcl
       const Vertex&
       getTerminatingVertex (const Mesh& mesh) const
       {
-        return (mesh.getVertex (this->getTerminatingVertexIndex ()));
+        return (mesh.getElement (this->getTerminatingVertexIndex ()));
       }
 
       Vertex&
       getTerminatingVertex (Mesh& mesh)
       {
-        return (mesh.getVertex (this->getTerminatingVertexIndex ()));
+        return (mesh.getElement (this->getTerminatingVertexIndex ()));
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -179,13 +179,13 @@ namespace pcl
       const HalfEdge&
       getOppositeHalfEdge (const Mesh& mesh) const
       {
-        return (mesh.getHalfEdge (this->getOppositeHalfEdgeIndex ()));
+        return (mesh.getElement (this->getOppositeHalfEdgeIndex ()));
       }
 
       HalfEdge&
       getOppositeHalfEdge (Mesh& mesh)
       {
-        return (mesh.getHalfEdge (this->getOppositeHalfEdgeIndex ()));
+        return (mesh.getElement (this->getOppositeHalfEdgeIndex ()));
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -213,13 +213,13 @@ namespace pcl
       const HalfEdge&
       getNextHalfEdge (const Mesh& mesh) const
       {
-        return (mesh.getHalfEdge (this->getNextHalfEdgeIndex ()));
+        return (mesh.getElement (this->getNextHalfEdgeIndex ()));
       }
 
       HalfEdge&
       getNextHalfEdge (Mesh& mesh)
       {
-        return (mesh.getHalfEdge (this->getNextHalfEdgeIndex ()));
+        return (mesh.getElement (this->getNextHalfEdgeIndex ()));
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -247,13 +247,13 @@ namespace pcl
       const HalfEdge&
       getPrevHalfEdge (const Mesh& mesh) const
       {
-        return (mesh.getHalfEdge (this->getPrevHalfEdgeIndex ()));
+        return (mesh.getElement (this->getPrevHalfEdgeIndex ()));
       }
 
       HalfEdge&
       getPrevHalfEdge (Mesh& mesh)
       {
-        return (mesh.getHalfEdge (this->getPrevHalfEdgeIndex ()));
+        return (mesh.getElement (this->getPrevHalfEdgeIndex ()));
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -279,15 +279,15 @@ namespace pcl
       }
 
       const Face&
-      getFace (const Mesh& mesh) const
+      getElement (const Mesh& mesh) const
       {
-        return (mesh.getFace (this->getFaceIndex ()));
+        return (mesh.getElement (this->getFaceIndex ()));
       }
 
       Face&
-      getFace (Mesh& mesh)
+      getElement (Mesh& mesh)
       {
-        return (mesh.getFace (this->getFaceIndex ()));
+        return (mesh.getElement (this->getFaceIndex ()));
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -309,13 +309,13 @@ namespace pcl
       const Face&
       getOppositeFace (const Mesh& mesh) const
       {
-        return (this->getOppositeHalfEdge (mesh).getFace (mesh));
+        return (this->getOppositeHalfEdge (mesh).getElement (mesh));
       }
 
       Face&
       getOppositeFace (Mesh& mesh)
       {
-        return (this->getOppositeHalfEdge (mesh).getFace (mesh));
+        return (this->getOppositeHalfEdge (mesh).getElement (mesh));
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -341,7 +341,11 @@ namespace pcl
       bool
       isIsolated () const
       {
-        return (!this->getTerminatingVertexIndex ().isValid ());
+        // Invalid face index is OK (== boundary)
+        return (!(this->getTerminatingVertexIndex ().isValid () &&
+                  this->getOppositeHalfEdgeIndex ().isValid ()  &&
+                  this->getNextHalfEdgeIndex ().isValid ()      &&
+                  this->getPrevHalfEdgeIndex ().isValid ()));
       }
 
       //////////////////////////////////////////////////////////////////////////

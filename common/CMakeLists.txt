@@ -23,24 +23,6 @@ if(build)
         src/range_image.cpp
         src/range_image_planar.cpp
         )
-        
-    set(half_edge_mesh_incs
-        include/pcl/half_edge_mesh/mesh_element_index.h
-        )
-        
-    set(half_edge_mesh_incs_impl
-        include/pcl/half_edge_mesh/impl/face.hpp
-        include/pcl/half_edge_mesh/impl/half_edge.hpp
-        include/pcl/half_edge_mesh/impl/mesh_base.hpp
-        include/pcl/half_edge_mesh/impl/mesh_circulators.hpp
-        include/pcl/half_edge_mesh/impl/mesh_topology.hpp
-        include/pcl/half_edge_mesh/impl/triangle_mesh.hpp
-        include/pcl/half_edge_mesh/impl/vertex.hpp
-        )
-        
-    set(half_edge_mesh_srcs
-        src/half_edge_mesh/mesh_element_index.cpp
-        )
 
     set(srcs 
         src/pcl_base.cpp
@@ -55,7 +37,6 @@ if(build)
         src/time_trigger.cpp
         src/gaussian.cpp
         ${range_image_srcs}
-        ${half_edge_mesh_srcs}
         )
 
     set(incs 
@@ -172,7 +153,7 @@ if(build)
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
-    PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${kissfft_srcs} ${incs} ${common_incs} ${impl_incs} ${ros_incs} ${tools_incs} ${kissfft_incs} ${common_incs_impl} ${sensor_msg_incs} ${std_msg_incs} ${range_image_incs} ${range_image_incs_impl} ${half_edge_mesh_incs} ${half_edge_mesh_incs_impl})
+    PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${kissfft_srcs} ${incs} ${common_incs} ${impl_incs} ${ros_incs} ${tools_incs} ${kissfft_incs} ${common_incs_impl} ${sensor_msg_incs} ${std_msg_incs} ${range_image_incs} ${range_image_incs_impl})
     #PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${common_incs} ${impl_incs} ${ros_incs} ${tools_incs} ${common_incs_impl} ${sensor_msg_incs} ${std_msg_incs} ${range_image_incs} ${range_image_incs_impl})
     link_ros_libs (${LIB_NAME})
     PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}" "" ""
@@ -192,7 +173,5 @@ if(build)
     PCL_ADD_INCLUDES(${SUBSYS_NAME} console ${tools_incs})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} range_image ${range_image_incs})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} range_image/impl ${range_image_incs_impl})
-    PCL_ADD_INCLUDES(${SUBSYS_NAME} half_edge_mesh ${half_edge_mesh_incs})
-    PCL_ADD_INCLUDES(${SUBSYS_NAME} half_edge_mesh/impl ${half_edge_mesh_incs_impl})
 
 endif(build)

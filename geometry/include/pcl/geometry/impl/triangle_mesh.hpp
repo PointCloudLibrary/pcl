@@ -42,7 +42,7 @@
 #ifndef TRIANGLE_MESH_HPP
 #define TRIANGLE_MESH_HPP
 
-#include <pcl/half_edge_mesh/impl/mesh_topology.hpp>
+#include <pcl/geometry/impl/mesh_topology.hpp>
 
 namespace pcl
 {
@@ -67,14 +67,14 @@ namespace pcl
       typedef typename Base::HalfEdgeData HalfEdgeData;
       typedef typename Base::FaceData     FaceData;
 
-      typedef typename Base::VertexIndex   VertexIndex;
-      typedef typename Base::HalfEdgeIndex HalfEdgeIndex;
-      typedef typename Base::FaceIndex     FaceIndex;
-      typedef typename Base::FaceIndexPair FaceIndexPair;
+      typedef typename Base::VertexIndex               VertexIndex;
+      typedef typename Base::HalfEdgeIndex             HalfEdgeIndex;
+      typedef pcl::TriangleIndex                       TriangleIndex;
+      typedef std::pair <TriangleIndex, TriangleIndex> TriangleIndexPair;
 
       typedef typename Base::VertexIndexes   VertexIndexes;
       typedef typename Base::HalfEdgeIndexes HalfEdgeIndexes;
-      typedef typename Base::FaceIndexes     FaceIndexes;
+      typedef std::vector <TriangleIndex>    TriangleIndexes;
 
       typedef typename Base::Vertex   Vertex;
       typedef typename Base::HalfEdge HalfEdge;
@@ -138,21 +138,20 @@ namespace pcl
       // addFace
       //////////////////////////////////////////////////////////////////////////
 
-      FaceIndex
+      TriangleIndex
       addFace (const VertexIndex&  idx_v_0,
                const VertexIndex&  idx_v_1,
                const VertexIndex&  idx_v_2,
-               const FaceData&     face_data = FaceData (),
-               const HalfEdgeData& he_data   = HalfEdgeData ())
+               const FaceData&     face_data = FaceData ())
       {
         HalfEdgeIndex idx_he_01, idx_he_12, idx_he_20;
         HalfEdgeIndex idx_he_10, idx_he_21, idx_he_02;
 
-        if (Base::getVertex (idx_v_0).isIsolated () && Base::getVertex (idx_v_1).isIsolated () && Base::getVertex (idx_v_2).isIsolated ())
+        if (Base::getElement (idx_v_0).isIsolated () && Base::getElement (idx_v_1).isIsolated () && Base::getElement (idx_v_2).isIsolated ())
         {
-          Base::addHalfEdgePair (he_data, idx_v_0, idx_v_1, idx_he_01, idx_he_10);
-          Base::addHalfEdgePair (he_data, idx_v_1, idx_v_2, idx_he_12, idx_he_21);
-          Base::addHalfEdgePair (he_data, idx_v_2, idx_v_0, idx_he_20, idx_he_02);
+          Base::addHalfEdgePair (idx_v_0,idx_v_1, HalfEdgeData (),HalfEdgeData (), idx_he_01,idx_he_10);
+          Base::addHalfEdgePair (idx_v_1,idx_v_2, HalfEdgeData (),HalfEdgeData (), idx_he_12,idx_he_21);
+          Base::addHalfEdgePair (idx_v_2,idx_v_0, HalfEdgeData (),HalfEdgeData (), idx_he_20,idx_he_02);
 
           Base::connectHalfEdges (true,true, idx_he_01,idx_he_10, idx_he_12,idx_he_21, idx_v_1);
           Base::connectHalfEdges (true,true, idx_he_12,idx_he_21, idx_he_20,idx_he_02, idx_v_2);
@@ -170,14 +169,14 @@ namespace pcl
             !Base::firstTopologyCheck (idx_v_1,idx_v_2, idx_he_12, is_new_12) ||
             !Base::firstTopologyCheck (idx_v_2,idx_v_0, idx_he_20, is_new_20))
         {
-          return (FaceIndex ());
+          return (TriangleIndex ());
         }
 
-        if (!Base::secondTopologyCheck (is_new_01,is_new_12, Base::getVertex (idx_v_1).isIsolated ()) ||
-            !Base::secondTopologyCheck (is_new_12,is_new_20, Base::getVertex (idx_v_2).isIsolated ()) ||
-            !Base::secondTopologyCheck (is_new_20,is_new_01, Base::getVertex (idx_v_0).isIsolated ()))
+        if (!Base::secondTopologyCheck (is_new_01,is_new_12, Base::getElement (idx_v_1).isIsolated ()) ||
+            !Base::secondTopologyCheck (is_new_12,is_new_20, Base::getElement (idx_v_2).isIsolated ()) ||
+            !Base::secondTopologyCheck (is_new_20,is_new_01, Base::getElement (idx_v_0).isIsolated ()))
         {
-          return (FaceIndex ());
+          return (TriangleIndex ());
         }
 
         // Reconnect the existing half-edges if necessary
@@ -186,14 +185,14 @@ namespace pcl
         if (!is_new_20 && !is_new_01) Base::makeAdjacent (idx_he_20, idx_he_01);
 
         // Add the new half-edges if needed
-        if (is_new_01) Base::addHalfEdgePair (he_data, idx_v_0,idx_v_1, idx_he_01,idx_he_10);
-        else           idx_he_10 = Base::getHalfEdge (idx_he_01).getOppositeHalfEdgeIndex ();
+        if (is_new_01) Base::addHalfEdgePair (idx_v_0,idx_v_1, HalfEdgeData (),HalfEdgeData (), idx_he_01,idx_he_10);
+        else           idx_he_10 = Base::getElement (idx_he_01).getOppositeHalfEdgeIndex ();
 
-        if (is_new_12) Base::addHalfEdgePair (he_data, idx_v_1,idx_v_2, idx_he_12,idx_he_21);
-        else           idx_he_21 = Base::getHalfEdge (idx_he_12).getOppositeHalfEdgeIndex ();
+        if (is_new_12) Base::addHalfEdgePair (idx_v_1,idx_v_2, HalfEdgeData (),HalfEdgeData (), idx_he_12,idx_he_21);
+        else           idx_he_21 = Base::getElement (idx_he_12).getOppositeHalfEdgeIndex ();
 
-        if (is_new_20) Base::addHalfEdgePair (he_data, idx_v_2,idx_v_0, idx_he_20,idx_he_02);
-        else           idx_he_02 = Base::getHalfEdge (idx_he_20).getOppositeHalfEdgeIndex ();
+        if (is_new_20) Base::addHalfEdgePair (idx_v_2,idx_v_0, HalfEdgeData (),HalfEdgeData (), idx_he_20,idx_he_02);
+        else           idx_he_02 = Base::getElement (idx_he_20).getOppositeHalfEdgeIndex ();
 
         // Connect the half-edges and vertexes
         Base::connectHalfEdges (is_new_01,is_new_12, idx_he_01,idx_he_10, idx_he_12,idx_he_21, idx_v_1);
@@ -211,20 +210,19 @@ namespace pcl
       // 3 - 2      3 - 2
       // | / |  or  | \ |
       // 0 - 1      0 - 1
-      FaceIndexPair
+      TriangleIndexPair
       addFace (const VertexIndex&  idx_v_0,
                const VertexIndex&  idx_v_1,
                const VertexIndex&  idx_v_2,
                const VertexIndex&  idx_v_3,
-               const FaceData&     face_data = FaceData (),
-               const HalfEdgeData& he_data   = HalfEdgeData ())
+               const FaceData&     face_data = FaceData ())
       {
         // Try to add two faces
         // 3 - 2
         // | / |
         // 0 - 1
-        FaceIndex idx_face_0 = this->addFace (idx_v_0, idx_v_1, idx_v_2, face_data, he_data);
-        FaceIndex idx_face_1 = this->addFace (idx_v_0, idx_v_2, idx_v_3, face_data, he_data);
+        TriangleIndex idx_face_0 = this->addFace (idx_v_0, idx_v_1, idx_v_2, face_data);
+        TriangleIndex idx_face_1 = this->addFace (idx_v_0, idx_v_2, idx_v_3, face_data);
 
         if (idx_face_0.isValid ())
         {
@@ -267,22 +265,22 @@ namespace pcl
             !Base::firstTopologyCheck (idx_v_2,idx_v_3, idx_he_23, is_new_23) ||
             !Base::firstTopologyCheck (idx_v_3,idx_v_0, idx_he_30, is_new_30))
         {
-          return (std::make_pair (FaceIndex (), FaceIndex ()));
+          return (std::make_pair (TriangleIndex (), TriangleIndex ()));
         }
 
         // Connect the triangle pair
         if (!is_new_01 && is_new_12 && !is_new_23 && is_new_30)
         {
-          return (this->connectTrianglePair (idx_he_01, idx_he_23, idx_v_0, idx_v_1, idx_v_2, idx_v_3, face_data, he_data));
+          return (this->connectTrianglePair (idx_he_01, idx_he_23, idx_v_0, idx_v_1, idx_v_2, idx_v_3, face_data));
         }
         else if (is_new_01 && !is_new_12 && is_new_23 && !is_new_30)
         {
-          return (this->connectTrianglePair (idx_he_12, idx_he_30, idx_v_1, idx_v_2, idx_v_3, idx_v_0, face_data, he_data));
+          return (this->connectTrianglePair (idx_he_12, idx_he_30, idx_v_1, idx_v_2, idx_v_3, idx_v_0, face_data));
         }
         else
         {
           assert (true); // This should not happen!
-          return (std::make_pair (FaceIndex (), FaceIndex ()));
+          return (std::make_pair (TriangleIndex (), TriangleIndex ()));
         }
       }
 
@@ -295,28 +293,27 @@ namespace pcl
       // d - c
       // | / |
       // a - b
-      inline FaceIndexPair
+      inline TriangleIndexPair
       connectTrianglePair (const HalfEdgeIndex& idx_he_ab,
                            const HalfEdgeIndex& idx_he_cd,
                            const VertexIndex&   idx_v_a,
                            const VertexIndex&   idx_v_b,
                            const VertexIndex&   idx_v_c,
                            const VertexIndex&   idx_v_d,
-                           const FaceData&      face_data,
-                           const HalfEdgeData&  he_data)
+                           const FaceData&      face_data)
       {
         // Add new half-edges
         HalfEdgeIndex idx_he_bc, idx_he_cb;
         HalfEdgeIndex idx_he_da, idx_he_ad;
         HalfEdgeIndex idx_he_ca, idx_he_ac;
 
-        Base::addHalfEdgePair (he_data, idx_v_b, idx_v_c, idx_he_bc, idx_he_cb);
-        Base::addHalfEdgePair (he_data, idx_v_d, idx_v_a, idx_he_da, idx_he_ad);
-        Base::addHalfEdgePair (he_data, idx_v_c, idx_v_a, idx_he_ca, idx_he_ac);
+        Base::addHalfEdgePair (idx_v_b,idx_v_c, HalfEdgeData (),HalfEdgeData (), idx_he_bc,idx_he_cb);
+        Base::addHalfEdgePair (idx_v_d,idx_v_a, HalfEdgeData (),HalfEdgeData (), idx_he_da,idx_he_ad);
+        Base::addHalfEdgePair (idx_v_c,idx_v_a, HalfEdgeData (),HalfEdgeData (), idx_he_ca,idx_he_ac);
 
         // Get the existing half-edges
-        HalfEdge& he_ab = Base::getHalfEdge (idx_he_ab);
-        HalfEdge& he_cd = Base::getHalfEdge (idx_he_cd);
+        HalfEdge& he_ab = Base::getElement (idx_he_ab);
+        HalfEdge& he_cd = Base::getElement (idx_he_cd);
 
         const HalfEdgeIndex idx_he_ab_boundary_prev = he_ab.getPrevHalfEdgeIndex (); // No reference!
         const HalfEdgeIndex idx_he_ab_boundary_next = he_ab.getNextHalfEdgeIndex (); // No reference!
@@ -340,10 +337,10 @@ namespace pcl
         Base::connectPrevNext (idx_he_da, idx_he_ac);
 
         // Connect the vertexes to the boundary half-edges
-        Base::getVertex (idx_v_a).setOutgoingHalfEdgeIndex (idx_he_ad);
-        Base::getVertex (idx_v_b).setOutgoingHalfEdgeIndex (idx_he_ab_boundary_next);
-        Base::getVertex (idx_v_c).setOutgoingHalfEdgeIndex (idx_he_cb);
-        Base::getVertex (idx_v_d).setOutgoingHalfEdgeIndex (idx_he_cd_boundary_next);
+        Base::getElement (idx_v_a).setOutgoingHalfEdgeIndex (idx_he_ad);
+        Base::getElement (idx_v_b).setOutgoingHalfEdgeIndex (idx_he_ab_boundary_next);
+        Base::getElement (idx_v_c).setOutgoingHalfEdgeIndex (idx_he_cb);
+        Base::getElement (idx_v_d).setOutgoingHalfEdgeIndex (idx_he_cd_boundary_next);
 
         // Add and connect the faces
         return (std::make_pair (this->connectFace (face_data, idx_he_ab, idx_he_bc, idx_he_ca),
@@ -354,18 +351,18 @@ namespace pcl
       // connectFace
       //////////////////////////////////////////////////////////////////////////
 
-      inline FaceIndex
+      inline TriangleIndex
       connectFace (const FaceData&      face_data,
                    const HalfEdgeIndex& idx_he_ab,
                    const HalfEdgeIndex& idx_he_bc,
                    const HalfEdgeIndex& idx_he_ca)
       {
         // Add and connect the face
-        const FaceIndex idx_face = Base::pushBackFace (face_data, idx_he_ca);
+        const TriangleIndex idx_face = Base::pushBackFace (face_data, idx_he_ca);
 
-        Base::getHalfEdge (idx_he_ab).setFaceIndex (idx_face);
-        Base::getHalfEdge (idx_he_bc).setFaceIndex (idx_face);
-        Base::getHalfEdge (idx_he_ca).setFaceIndex (idx_face);
+        Base::getElement (idx_he_ab).setFaceIndex (idx_face);
+        Base::getElement (idx_he_bc).setFaceIndex (idx_face);
+        Base::getElement (idx_he_ca).setFaceIndex (idx_face);
 
         return (idx_face);
       }

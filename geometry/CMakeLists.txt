@@ -14,14 +14,23 @@ if(build)
         include/pcl/${SUBSYS_NAME}/organized_index_iterator.h
         include/pcl/${SUBSYS_NAME}/line_iterator.h
         include/pcl/${SUBSYS_NAME}/polygon_operations.h
+        include/pcl/${SUBSYS_NAME}/mesh_element_index.h
         )
 
     set(impl_incs 
         include/pcl/${SUBSYS_NAME}/impl/polygon_operations.hpp
+        include/pcl/${SUBSYS_NAME}/impl/face.hpp
+        include/pcl/${SUBSYS_NAME}/impl/half_edge.hpp
+        include/pcl/${SUBSYS_NAME}/impl/mesh_base.hpp
+        include/pcl/${SUBSYS_NAME}/impl/mesh_circulators.hpp
+        include/pcl/${SUBSYS_NAME}/impl/mesh_topology.hpp
+        include/pcl/${SUBSYS_NAME}/impl/triangle_mesh.hpp
+        include/pcl/${SUBSYS_NAME}/impl/vertex.hpp
         )
 
     set(srcs
         src/geometry.cpp
+        src/mesh_element_index.cpp
         )
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
