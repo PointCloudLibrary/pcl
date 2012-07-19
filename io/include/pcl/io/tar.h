@@ -88,13 +88,14 @@ namespace pcl
       * \param[in] tar_filename the name of the TAR file to save the cloud to
       * \param[in] cloud the point cloud dataset to save
       * \param[in] pcd_filename the internal name of the PCD file that should be stored in the TAR header
+      * \remark till implemented will return FALSE
       */
     template <typename PointT> bool
     saveTARPointCloud (const std::string &tar_filename, 
                        const PointCloud<PointT> &cloud, 
                        const std::string &pcd_filename)
     {
-      
+      return (false);
     }
   }
 }
