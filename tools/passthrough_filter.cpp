@@ -68,6 +68,8 @@ printHelp (int, char **argv)
   print_value ("%f", default_max); print_info (")\n");
   print_info ("                     -inside X = keep the points inside the [min, max] interval or not (default: ");
   print_value ("%d", default_inside); print_info (")\n");
+  print_info ("                     -keep 0/1 = keep the points organized (1) or not (default: ");
+  print_value ("%d", default_keep_organized); print_info (")\n");
 }
 
 bool
