@@ -126,6 +126,14 @@ pcl::PassThrough<PointT>::applyFilterIndices (std::vector<int> &indices)
       float field_value = 0;
       memcpy (&field_value, pt_data + fields[distance_idx].offset, sizeof (float));
 
+      // Remove NAN/INF/-INF values. We expect passthrough to output clean valid data.
+      if (!pcl_isfinite (field_value))
+      {
+        if (extract_removed_indices_)
+          (*removed_indices_)[rii++] = (*indices_)[iii];
+        continue;
+      }
+
       // Outside of the field limits are passed to removed indices
       if (!negative_ && (field_value < filter_limit_min_ || field_value > filter_limit_max_))
       {

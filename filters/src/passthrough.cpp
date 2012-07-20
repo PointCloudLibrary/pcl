@@ -138,7 +138,7 @@ pcl::PassThrough<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
 
         // Get the distance value
         memcpy (&distance_value, &input_->data[cp * input_->point_step + input_->fields[distance_idx].offset],
-                sizeof(float));
+                sizeof (float));
 
         if (filter_limit_negative_)
         {
@@ -146,18 +146,15 @@ pcl::PassThrough<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
           if ((distance_value < filter_limit_max_) && (distance_value > filter_limit_min_))
           {
             // Unoptimized memcpys: assume fields x, y, z are in random order
-            memcpy (&output.data[xyz_offset[0]], &badpt, sizeof(float));
-            memcpy (&output.data[xyz_offset[1]], &badpt, sizeof(float));
-            memcpy (&output.data[xyz_offset[2]], &badpt, sizeof(float));
+            memcpy (&output.data[xyz_offset[0]], &badpt, sizeof (float));
+            memcpy (&output.data[xyz_offset[1]], &badpt, sizeof (float));
+            memcpy (&output.data[xyz_offset[2]], &badpt, sizeof (float));
             continue;
           }
           else
           {
             if (extract_removed_indices_)
-            {
-              (*removed_indices_)[nr_removed_p] = cp;
-              nr_removed_p++;
-            }
+              (*removed_indices_)[nr_removed_p++] = cp;
           }
         }
         else
@@ -166,18 +163,15 @@ pcl::PassThrough<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
           if ((distance_value > filter_limit_max_) || (distance_value < filter_limit_min_))
           {
             // Unoptimized memcpys: assume fields x, y, z are in random order
-            memcpy (&output.data[xyz_offset[0]], &badpt, sizeof(float));
-            memcpy (&output.data[xyz_offset[1]], &badpt, sizeof(float));
-            memcpy (&output.data[xyz_offset[2]], &badpt, sizeof(float));
+            memcpy (&output.data[xyz_offset[0]], &badpt, sizeof (float));
+            memcpy (&output.data[xyz_offset[1]], &badpt, sizeof (float));
+            memcpy (&output.data[xyz_offset[2]], &badpt, sizeof (float));
             continue;
           }
           else
           {
             if (extract_removed_indices_)
-            {
-              (*removed_indices_)[nr_removed_p] = cp;
-              nr_removed_p++;
-            }
+              (*removed_indices_)[nr_removed_p++] = cp;
           }
         }
       }
@@ -192,6 +186,14 @@ pcl::PassThrough<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
         // Get the distance value
         memcpy (&distance_value, &input_->data[cp * input_->point_step + input_->fields[distance_idx].offset],
                 sizeof(float));
+
+        // Remove NAN/INF/-INF values. We expect passthrough to output clean valid data.
+        if (!pcl_isfinite (distance_value))
+        {
+          if (extract_removed_indices_)
+            (*removed_indices_)[nr_removed_p++] = cp;
+          continue;
+        }
 
         if (filter_limit_negative_)
         {
