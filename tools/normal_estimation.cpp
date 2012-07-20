@@ -40,6 +40,7 @@
 #include <sensor_msgs/PointCloud2.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/features/normal_3d.h>
+#include <pcl/features/integral_image_normal.h>
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
 #include <pcl/console/time.h>
@@ -63,6 +64,7 @@ printHelp (int, char **argv)
   print_value ("%f", default_radius); print_info (")\n");
   print_info ("                     -k X      = use a fixed number of X-nearest neighbors around each point (default: "); 
   print_value ("%f", default_k); print_info (")\n");
+  print_info (" For organized datasets, an IntegralImageNormalEstimation approach will be used, with the RADIUS given value as SMOOTHING SIZE.\n");
 }
 
 bool
@@ -75,7 +77,7 @@ loadCloud (const std::string &filename, sensor_msgs::PointCloud2 &cloud)
   if (loadPCDFile (filename, cloud, translation, orientation) < 0)
     return (false);
   print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", cloud.width * cloud.height); print_info (" points]\n");
-  print_info ("Available dimensions: "); print_value ("%s\n", pcl::getFieldsList (cloud).c_str ());
+  print_info ("Available dimensions: "); print_value ("%s\n", getFieldsList (cloud).c_str ());
 
   return (true);
 }
@@ -94,21 +96,34 @@ compute (const sensor_msgs::PointCloud2::ConstPtr &input, sensor_msgs::PointClou
   
   print_highlight (stderr, "Computing ");
 
-  NormalEstimation<pcl::PointXYZ, pcl::Normal> ne;
-  ne.setInputCloud (xyz);
-//  ne.setSearchMethod (pcl::search::KdTree<pcl::PointXYZ>::Ptr (new pcl::search::KdTree<pcl::PointXYZ>));
-  ne.setKSearch (k);
-  ne.setRadiusSearch (radius);
-  
   PointCloud<Normal> normals;
-  ne.compute (normals);
+
+  // Try our luck with organized integral image based normal estimation
+  if (xyz->isOrganized ())
+  {
+    IntegralImageNormalEstimation<PointXYZ, Normal> ne;
+    ne.setInputCloud (xyz);
+    ne.setNormalEstimationMethod (IntegralImageNormalEstimation<PointXYZ, Normal>::COVARIANCE_MATRIX);
+    ne.setNormalSmoothingSize (float (radius));
+    ne.setDepthDependentSmoothing (true);
+    ne.compute (normals);
+  }
+  else
+  {
+    NormalEstimation<PointXYZ, Normal> ne;
+    ne.setInputCloud (xyz);
+    ne.setSearchMethod (search::KdTree<PointXYZ>::Ptr (new search::KdTree<PointXYZ>));
+    ne.setKSearch (k);
+    ne.setRadiusSearch (radius);
+    ne.compute (normals);
+  }
 
   print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", normals.width * normals.height); print_info (" points]\n");
 
   // Convert data back
   sensor_msgs::PointCloud2 output_normals;
   toROSMsg (normals, output_normals);
-  concatenateFields (*input, output_normals, output);
+  concatenateFields (output_normals, *input, output);
 }
 
 void
@@ -118,8 +133,9 @@ saveCloud (const std::string &filename, const sensor_msgs::PointCloud2 &output)
   tt.tic ();
 
   print_highlight ("Saving "); print_value ("%s ", filename.c_str ());
-  
-  pcl::io::savePCDFile (filename, output, translation, orientation, false);
+
+  PCDWriter w;
+  w.writeBinaryCompressed (filename, output, translation, orientation);
   
   print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", output.width * output.height); print_info (" points]\n");
 }
@@ -128,7 +144,7 @@ saveCloud (const std::string &filename, const sensor_msgs::PointCloud2 &output)
 int
 main (int argc, char** argv)
 {
-  print_info ("Estimate surface normals using pcl::NormalEstimation. For more information, use: %s -h\n", argv[0]);
+  print_info ("Estimate surface normals using NormalEstimation. For more information, use: %s -h\n", argv[0]);
 
   if (argc < 3)
   {
@@ -150,6 +166,8 @@ main (int argc, char** argv)
   double radius = default_radius;
   parse_argument (argc, argv, "-k", k);
   parse_argument (argc, argv, "-radius", radius);
+  print_info ("Estimating normals with a radius/k/smoothing size of: "); 
+  print_value ("%d / %f / %f\n", k, radius, radius); 
 
   // Load the first file
   sensor_msgs::PointCloud2::Ptr cloud (new sensor_msgs::PointCloud2);
