@@ -174,6 +174,9 @@ if(build)
       PCL_ADD_EXECUTABLE(pcl_ni_linemod ${SUBSYS_NAME} src/ni_linemod.cpp)
       target_link_libraries(pcl_ni_linemod pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_features pcl_surface pcl_search)
 
+      PCL_ADD_EXECUTABLE(pcl_ni_susan ${SUBSYS_NAME} src/ni_susan.cpp)
+      target_link_libraries(pcl_ni_susan pcl_common pcl_visualization pcl_features pcl_keypoints pcl_search)
+
     endif() # OPENNI_FOUND + BUILD_OPENNI
     
   endif() # VTK_FOUND
