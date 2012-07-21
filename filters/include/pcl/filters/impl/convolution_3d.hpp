@@ -223,7 +223,7 @@ pcl::filters::Convolution3D<PointInT, PointOutT, KernelT>::initCompute ()
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT, typename KernelT> void
-pcl::filters::Convolution3D<PointInT, PointOutT, KernelT>::convolve (PointCloud<PointOutT>& output)
+pcl::filters::Convolution3D<PointInT, PointOutT, KernelT>::convolve (PointCloudOut& output)
 {
   if (!initCompute ())
   {
