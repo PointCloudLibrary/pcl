@@ -158,6 +158,46 @@ namespace pcl
         set (p, intensity);
       }
     };
+
+    template<>
+    struct IntensityFieldAccessor<pcl::PointXYZRGBL>
+    {
+      inline float
+      operator () (const pcl::PointXYZRGBL &p) const
+      {
+        return (static_cast<float> (299*p.r + 587*p.g + 114*p.b) / 1000.0f);
+      }
+
+      inline void
+      get (const pcl::PointXYZRGBL &p, float& intensity) const
+      {
+        intensity = static_cast<float> (299*p.r + 587*p.g + 114*p.b) / 1000.0f;
+      }
+      
+      inline void
+      set (pcl::PointXYZRGBL &p, float intensity) const
+      {
+        p.r = static_cast<uint8_t> (1000 * intensity / 299);
+        p.g = static_cast<uint8_t> (1000 * intensity / 587);
+        p.b = static_cast<uint8_t> (1000 * intensity / 114);
+      }
+      
+      inline void
+      demean (pcl::PointXYZRGBL& p, float value) const
+      {
+        float intensity = this->operator () (p);
+        intensity -= value;
+        set (p, intensity);
+      }
+      
+      inline void
+      add (pcl::PointXYZRGBL& p, float value) const
+      {
+        float intensity = this->operator () (p);
+        intensity += value;
+        set (p, intensity);
+      }
+    };
   }
 }
 
