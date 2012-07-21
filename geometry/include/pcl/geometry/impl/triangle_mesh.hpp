@@ -67,14 +67,14 @@ namespace pcl
       typedef typename Base::HalfEdgeData HalfEdgeData;
       typedef typename Base::FaceData     FaceData;
 
-      typedef typename Base::VertexIndex               VertexIndex;
-      typedef typename Base::HalfEdgeIndex             HalfEdgeIndex;
-      typedef pcl::TriangleIndex                       TriangleIndex;
-      typedef std::pair <TriangleIndex, TriangleIndex> TriangleIndexPair;
+      typedef typename Base::VertexIndex       VertexIndex;
+      typedef typename Base::HalfEdgeIndex     HalfEdgeIndex;
+      typedef typename Base::FaceIndex         FaceIndex;
+      typedef std::pair <FaceIndex, FaceIndex> FaceIndexPair;
 
       typedef typename Base::VertexIndexes   VertexIndexes;
       typedef typename Base::HalfEdgeIndexes HalfEdgeIndexes;
-      typedef std::vector <TriangleIndex>    TriangleIndexes;
+      typedef typename Base::FaceIndexes     FaceIndexes;
 
       typedef typename Base::Vertex   Vertex;
       typedef typename Base::HalfEdge HalfEdge;
@@ -109,6 +109,7 @@ namespace pcl
       typedef typename Base::VertexAroundFaceCirculator             VertexAroundFaceCirculator;
       typedef typename Base::InnerHalfEdgeAroundFaceCirculator      InnerHalfEdgeAroundFaceCirculator;
       typedef typename Base::OuterHalfEdgeAroundFaceCirculator      OuterHalfEdgeAroundFaceCirculator;
+      typedef typename Base::FaceAroundFaceCirculator               FaceAroundFaceCirculator;
       typedef typename Base::HalfEdgeAroundBoundaryCirculator       HalfEdgeAroundBoundaryCirculator;
 
       typedef typename Base::VertexAroundVertexConstCirculator           VertexAroundVertexConstCirculator;
@@ -118,6 +119,7 @@ namespace pcl
       typedef typename Base::VertexAroundFaceConstCirculator             VertexAroundFaceConstCirculator;
       typedef typename Base::InnerHalfEdgeAroundFaceConstCirculator      InnerHalfEdgeAroundFaceConstCirculator;
       typedef typename Base::OuterHalfEdgeAroundFaceConstCirculator      OuterHalfEdgeAroundFaceConstCirculator;
+      typedef typename Base::FaceAroundFaceConstCirculator               FaceAroundFaceConstCirculator;
       typedef typename Base::HalfEdgeAroundBoundaryConstCirculator       HalfEdgeAroundBoundaryConstCirculator;
 
     public:
@@ -138,7 +140,7 @@ namespace pcl
       // addFace
       //////////////////////////////////////////////////////////////////////////
 
-      TriangleIndex
+      FaceIndex
       addFace (const VertexIndex&  idx_v_0,
                const VertexIndex&  idx_v_1,
                const VertexIndex&  idx_v_2,
@@ -169,14 +171,14 @@ namespace pcl
             !Base::firstTopologyCheck (idx_v_1,idx_v_2, idx_he_12, is_new_12) ||
             !Base::firstTopologyCheck (idx_v_2,idx_v_0, idx_he_20, is_new_20))
         {
-          return (TriangleIndex ());
+          return (FaceIndex ());
         }
 
         if (!Base::secondTopologyCheck (is_new_01,is_new_12, Base::getElement (idx_v_1).isIsolated ()) ||
             !Base::secondTopologyCheck (is_new_12,is_new_20, Base::getElement (idx_v_2).isIsolated ()) ||
             !Base::secondTopologyCheck (is_new_20,is_new_01, Base::getElement (idx_v_0).isIsolated ()))
         {
-          return (TriangleIndex ());
+          return (FaceIndex ());
         }
 
         // Reconnect the existing half-edges if necessary
@@ -210,7 +212,7 @@ namespace pcl
       // 3 - 2      3 - 2
       // | / |  or  | \ |
       // 0 - 1      0 - 1
-      TriangleIndexPair
+      FaceIndexPair
       addFace (const VertexIndex&  idx_v_0,
                const VertexIndex&  idx_v_1,
                const VertexIndex&  idx_v_2,
@@ -221,8 +223,8 @@ namespace pcl
         // 3 - 2
         // | / |
         // 0 - 1
-        TriangleIndex idx_face_0 = this->addFace (idx_v_0, idx_v_1, idx_v_2, face_data);
-        TriangleIndex idx_face_1 = this->addFace (idx_v_0, idx_v_2, idx_v_3, face_data);
+        FaceIndex idx_face_0 = this->addFace (idx_v_0, idx_v_1, idx_v_2, face_data);
+        FaceIndex idx_face_1 = this->addFace (idx_v_0, idx_v_2, idx_v_3, face_data);
 
         if (idx_face_0.isValid ())
         {
@@ -265,7 +267,7 @@ namespace pcl
             !Base::firstTopologyCheck (idx_v_2,idx_v_3, idx_he_23, is_new_23) ||
             !Base::firstTopologyCheck (idx_v_3,idx_v_0, idx_he_30, is_new_30))
         {
-          return (std::make_pair (TriangleIndex (), TriangleIndex ()));
+          return (std::make_pair (FaceIndex (), FaceIndex ()));
         }
 
         // Connect the triangle pair
@@ -280,7 +282,7 @@ namespace pcl
         else
         {
           assert (true); // This should not happen!
-          return (std::make_pair (TriangleIndex (), TriangleIndex ()));
+          return (std::make_pair (FaceIndex (), FaceIndex ()));
         }
       }
 
@@ -293,7 +295,7 @@ namespace pcl
       // d - c
       // | / |
       // a - b
-      inline TriangleIndexPair
+      inline FaceIndexPair
       connectTrianglePair (const HalfEdgeIndex& idx_he_ab,
                            const HalfEdgeIndex& idx_he_cd,
                            const VertexIndex&   idx_v_a,
@@ -351,14 +353,14 @@ namespace pcl
       // connectFace
       //////////////////////////////////////////////////////////////////////////
 
-      inline TriangleIndex
+      inline FaceIndex
       connectFace (const FaceData&      face_data,
                    const HalfEdgeIndex& idx_he_ab,
                    const HalfEdgeIndex& idx_he_bc,
                    const HalfEdgeIndex& idx_he_ca)
       {
         // Add and connect the face
-        const TriangleIndex idx_face = Base::pushBackFace (face_data, idx_he_ca);
+        const FaceIndex idx_face = Base::pushBackFace (face_data, idx_he_ca);
 
         Base::getElement (idx_he_ab).setFaceIndex (idx_face);
         Base::getElement (idx_he_bc).setFaceIndex (idx_face);

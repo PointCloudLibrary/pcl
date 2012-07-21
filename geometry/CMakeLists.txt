@@ -9,7 +9,8 @@ PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS})
 PCL_ADD_DOC(${SUBSYS_NAME})
 
 if(build)
-    set(incs 
+    set(incs
+        include/pcl/${SUBSYS_NAME}/eigen.h
         include/pcl/${SUBSYS_NAME}/planar_polygon.h
         include/pcl/${SUBSYS_NAME}/organized_index_iterator.h
         include/pcl/${SUBSYS_NAME}/line_iterator.h
@@ -17,7 +18,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/mesh_element_index.h
         )
 
-    set(impl_incs 
+    set(impl_incs
         include/pcl/${SUBSYS_NAME}/impl/polygon_operations.hpp
         include/pcl/${SUBSYS_NAME}/impl/face.hpp
         include/pcl/${SUBSYS_NAME}/impl/half_edge.hpp

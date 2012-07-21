@@ -58,11 +58,11 @@ namespace pcl
 
   template <class MeshT>
   class VertexAroundVertexCirculator
-      : public boost::iterator_facade<pcl::VertexAroundVertexCirculator<MeshT>, typename boost::conditional<boost::is_const<MeshT>::value, typename boost::add_const<typename MeshT::Vertex>::type, typename MeshT::Vertex>::type, boost::bidirectional_traversal_tag>
+      : public boost::iterator_facade <pcl::VertexAroundVertexCirculator <MeshT>, typename boost::conditional <boost::is_const <MeshT>::value, typename boost::add_const <typename MeshT::Vertex>::type, typename MeshT::Vertex>::type, boost::bidirectional_traversal_tag>
   {
     public:
 
-      typedef boost::iterator_facade<pcl::VertexAroundVertexCirculator<MeshT>, typename boost::conditional<boost::is_const<MeshT>::value, typename boost::add_const<typename MeshT::Vertex>::type, typename MeshT::Vertex>::type, boost::bidirectional_traversal_tag> Base;
+      typedef boost::iterator_facade <pcl::VertexAroundVertexCirculator <MeshT>, typename boost::conditional <boost::is_const <MeshT>::value, typename boost::add_const <typename MeshT::Vertex>::type, typename MeshT::Vertex>::type, boost::bidirectional_traversal_tag> Base;
 
       typedef typename Base::value_type        value_type;
       typedef typename Base::reference         reference;
@@ -71,9 +71,14 @@ namespace pcl
       typedef typename Base::iterator_category iterator_category;
 
       typedef MeshT                        Mesh;
+
       typedef typename Mesh::Vertex        Vertex;
+      typedef typename Mesh::HalfEdge      HalfEdge;
+      typedef typename Mesh::Face          Face;
+
       typedef typename Mesh::VertexIndex   VertexIndex;
       typedef typename Mesh::HalfEdgeIndex HalfEdgeIndex;
+      typedef typename Mesh::FaceIndex     FaceIndex;
 
     private:
 
@@ -103,7 +108,7 @@ namespace pcl
       }
 
       template <class OtherMeshT>
-      VertexAroundVertexCirculator (const pcl::VertexAroundVertexCirculator<OtherMeshT>& other,
+      VertexAroundVertexCirculator (const pcl::VertexAroundVertexCirculator <OtherMeshT>& other,
                                     typename boost::enable_if <boost::is_convertible <OtherMeshT*, Mesh*>, enabler>::type = enabler ())
         : p_mesh_                 (other.p_mesh_),
           idx_outgoing_half_edge_ (other.idx_outgoing_half_edge_)
@@ -136,7 +141,7 @@ namespace pcl
       template <class> friend class pcl::VertexAroundVertexCirculator;
 
       template <class OtherMeshT> bool
-      equal (const pcl::VertexAroundVertexCirculator<OtherMeshT>& other) const
+      equal (const pcl::VertexAroundVertexCirculator <OtherMeshT>& other) const
       {
         return (idx_outgoing_half_edge_ == other.idx_outgoing_half_edge_);
       }
@@ -176,11 +181,11 @@ namespace pcl
 
   template <class MeshT>
   class OutgoingHalfEdgeAroundVertexCirculator
-      : public boost::iterator_facade<pcl::OutgoingHalfEdgeAroundVertexCirculator<MeshT>, typename boost::conditional<boost::is_const<MeshT>::value, typename boost::add_const<typename MeshT::HalfEdge>::type, typename MeshT::HalfEdge>::type, boost::bidirectional_traversal_tag>
+      : public boost::iterator_facade <pcl::OutgoingHalfEdgeAroundVertexCirculator <MeshT>, typename boost::conditional <boost::is_const <MeshT>::value, typename boost::add_const <typename MeshT::HalfEdge>::type, typename MeshT::HalfEdge>::type, boost::bidirectional_traversal_tag>
   {
     public:
 
-      typedef boost::iterator_facade<pcl::OutgoingHalfEdgeAroundVertexCirculator<MeshT>, typename boost::conditional<boost::is_const<MeshT>::value, typename boost::add_const<typename MeshT::HalfEdge>::type, typename MeshT::HalfEdge>::type, boost::bidirectional_traversal_tag> Base;
+      typedef boost::iterator_facade <pcl::OutgoingHalfEdgeAroundVertexCirculator <MeshT>, typename boost::conditional <boost::is_const <MeshT>::value, typename boost::add_const <typename MeshT::HalfEdge>::type, typename MeshT::HalfEdge>::type, boost::bidirectional_traversal_tag> Base;
 
       typedef typename Base::value_type        value_type;
       typedef typename Base::reference         reference;
@@ -189,9 +194,14 @@ namespace pcl
       typedef typename Base::iterator_category iterator_category;
 
       typedef MeshT                        Mesh;
+
       typedef typename Mesh::Vertex        Vertex;
+      typedef typename Mesh::HalfEdge      HalfEdge;
+      typedef typename Mesh::Face          Face;
+
       typedef typename Mesh::VertexIndex   VertexIndex;
       typedef typename Mesh::HalfEdgeIndex HalfEdgeIndex;
+      typedef typename Mesh::FaceIndex     FaceIndex;
 
     private:
 
@@ -221,7 +231,7 @@ namespace pcl
       }
 
       template <class OtherMeshT>
-      OutgoingHalfEdgeAroundVertexCirculator (const pcl::OutgoingHalfEdgeAroundVertexCirculator<OtherMeshT>& other,
+      OutgoingHalfEdgeAroundVertexCirculator (const pcl::OutgoingHalfEdgeAroundVertexCirculator <OtherMeshT>& other,
                                               typename boost::enable_if <boost::is_convertible <OtherMeshT*, Mesh*>, enabler>::type = enabler ())
         : p_mesh_                 (other.p_mesh_),
           idx_outgoing_half_edge_ (other.idx_outgoing_half_edge_)
@@ -254,7 +264,7 @@ namespace pcl
       template <class> friend class pcl::OutgoingHalfEdgeAroundVertexCirculator;
 
       template <class OtherMeshT> bool
-      equal (const pcl::OutgoingHalfEdgeAroundVertexCirculator<OtherMeshT>& other) const
+      equal (const pcl::OutgoingHalfEdgeAroundVertexCirculator <OtherMeshT>& other) const
       {
         return (idx_outgoing_half_edge_ == other.idx_outgoing_half_edge_);
       }
@@ -294,11 +304,11 @@ namespace pcl
 
   template <class MeshT>
   class IncomingHalfEdgeAroundVertexCirculator
-      : public boost::iterator_facade<pcl::IncomingHalfEdgeAroundVertexCirculator<MeshT>, typename boost::conditional<boost::is_const<MeshT>::value, typename boost::add_const<typename MeshT::HalfEdge>::type, typename MeshT::HalfEdge>::type, boost::bidirectional_traversal_tag>
+      : public boost::iterator_facade <pcl::IncomingHalfEdgeAroundVertexCirculator <MeshT>, typename boost::conditional <boost::is_const <MeshT>::value, typename boost::add_const <typename MeshT::HalfEdge>::type, typename MeshT::HalfEdge>::type, boost::bidirectional_traversal_tag>
   {
     public:
 
-      typedef boost::iterator_facade<pcl::IncomingHalfEdgeAroundVertexCirculator<MeshT>, typename boost::conditional<boost::is_const<MeshT>::value, typename boost::add_const<typename MeshT::HalfEdge>::type, typename MeshT::HalfEdge>::type, boost::bidirectional_traversal_tag> Base;
+      typedef boost::iterator_facade <pcl::IncomingHalfEdgeAroundVertexCirculator <MeshT>, typename boost::conditional <boost::is_const <MeshT>::value, typename boost::add_const <typename MeshT::HalfEdge>::type, typename MeshT::HalfEdge>::type, boost::bidirectional_traversal_tag> Base;
 
       typedef typename Base::value_type        value_type;
       typedef typename Base::reference         reference;
@@ -307,9 +317,14 @@ namespace pcl
       typedef typename Base::iterator_category iterator_category;
 
       typedef MeshT                        Mesh;
+
       typedef typename Mesh::Vertex        Vertex;
+      typedef typename Mesh::HalfEdge      HalfEdge;
+      typedef typename Mesh::Face          Face;
+
       typedef typename Mesh::VertexIndex   VertexIndex;
       typedef typename Mesh::HalfEdgeIndex HalfEdgeIndex;
+      typedef typename Mesh::FaceIndex     FaceIndex;
 
     private:
 
@@ -339,7 +354,7 @@ namespace pcl
       }
 
       template <class OtherMeshT>
-      IncomingHalfEdgeAroundVertexCirculator (const pcl::IncomingHalfEdgeAroundVertexCirculator<OtherMeshT>& other,
+      IncomingHalfEdgeAroundVertexCirculator (const pcl::IncomingHalfEdgeAroundVertexCirculator <OtherMeshT>& other,
                                               typename boost::enable_if <boost::is_convertible <OtherMeshT*, Mesh*>, enabler>::type = enabler ())
         : p_mesh_                (other.p_mesh_),
           idx_incoming_half_edge (other.idx_incoming_half_edge)
@@ -372,7 +387,7 @@ namespace pcl
       template <class> friend class pcl::IncomingHalfEdgeAroundVertexCirculator;
 
       template <class OtherMeshT> bool
-      equal (const pcl::IncomingHalfEdgeAroundVertexCirculator<OtherMeshT>& other) const
+      equal (const pcl::IncomingHalfEdgeAroundVertexCirculator <OtherMeshT>& other) const
       {
         return (idx_incoming_half_edge == other.idx_incoming_half_edge);
       }
@@ -412,11 +427,11 @@ namespace pcl
 
   template <class MeshT>
   class FaceAroundVertexCirculator
-      : public boost::iterator_facade<pcl::FaceAroundVertexCirculator<MeshT>, typename boost::conditional<boost::is_const<MeshT>::value, typename boost::add_const<typename MeshT::Face>::type, typename MeshT::Face>::type, boost::bidirectional_traversal_tag>
+      : public boost::iterator_facade <pcl::FaceAroundVertexCirculator <MeshT>, typename boost::conditional <boost::is_const <MeshT>::value, typename boost::add_const <typename MeshT::Face>::type, typename MeshT::Face>::type, boost::bidirectional_traversal_tag>
   {
     public:
 
-      typedef boost::iterator_facade<pcl::FaceAroundVertexCirculator<MeshT>, typename boost::conditional<boost::is_const<MeshT>::value, typename boost::add_const<typename MeshT::Face>::type, typename MeshT::Face>::type, boost::bidirectional_traversal_tag> Base;
+      typedef boost::iterator_facade <pcl::FaceAroundVertexCirculator <MeshT>, typename boost::conditional <boost::is_const <MeshT>::value, typename boost::add_const <typename MeshT::Face>::type, typename MeshT::Face>::type, boost::bidirectional_traversal_tag> Base;
 
       typedef typename Base::value_type        value_type;
       typedef typename Base::reference         reference;
@@ -425,7 +440,11 @@ namespace pcl
       typedef typename Base::iterator_category iterator_category;
 
       typedef MeshT                        Mesh;
+
       typedef typename Mesh::Vertex        Vertex;
+      typedef typename Mesh::HalfEdge      HalfEdge;
+      typedef typename Mesh::Face          Face;
+
       typedef typename Mesh::VertexIndex   VertexIndex;
       typedef typename Mesh::HalfEdgeIndex HalfEdgeIndex;
       typedef typename Mesh::FaceIndex     FaceIndex;
@@ -458,7 +477,7 @@ namespace pcl
       }
 
       template <class OtherMeshT>
-      FaceAroundVertexCirculator (const pcl::FaceAroundVertexCirculator<OtherMeshT>& other,
+      FaceAroundVertexCirculator (const pcl::FaceAroundVertexCirculator <OtherMeshT>& other,
                                   typename boost::enable_if <boost::is_convertible <OtherMeshT*, Mesh*>, enabler>::type = enabler ())
         : p_mesh_                 (other.p_mesh_),
           idx_outgoing_half_edge_ (other.idx_outgoing_half_edge_)
@@ -491,7 +510,7 @@ namespace pcl
       template <class> friend class pcl::FaceAroundVertexCirculator;
 
       template <class OtherMeshT> bool
-      equal (const pcl::FaceAroundVertexCirculator<OtherMeshT>& other) const
+      equal (const pcl::FaceAroundVertexCirculator <OtherMeshT>& other) const
       {
         return (idx_outgoing_half_edge_ == other.idx_outgoing_half_edge_);
       }
@@ -531,11 +550,11 @@ namespace pcl
 
   template <class MeshT>
   class VertexAroundFaceCirculator
-      : public boost::iterator_facade<pcl::VertexAroundFaceCirculator<MeshT>, typename boost::conditional<boost::is_const<MeshT>::value, typename boost::add_const<typename MeshT::Vertex>::type, typename MeshT::Vertex>::type, boost::bidirectional_traversal_tag>
+      : public boost::iterator_facade <pcl::VertexAroundFaceCirculator <MeshT>, typename boost::conditional <boost::is_const <MeshT>::value, typename boost::add_const <typename MeshT::Vertex>::type, typename MeshT::Vertex>::type, boost::bidirectional_traversal_tag>
   {
     public:
 
-      typedef boost::iterator_facade<pcl::VertexAroundFaceCirculator<MeshT>, typename boost::conditional<boost::is_const<MeshT>::value, typename boost::add_const<typename MeshT::Vertex>::type, typename MeshT::Vertex>::type, boost::bidirectional_traversal_tag> Base;
+      typedef boost::iterator_facade <pcl::VertexAroundFaceCirculator <MeshT>, typename boost::conditional <boost::is_const <MeshT>::value, typename boost::add_const <typename MeshT::Vertex>::type, typename MeshT::Vertex>::type, boost::bidirectional_traversal_tag> Base;
 
       typedef typename Base::value_type        value_type;
       typedef typename Base::reference         reference;
@@ -544,9 +563,13 @@ namespace pcl
       typedef typename Base::iterator_category iterator_category;
 
       typedef MeshT                        Mesh;
+
+      typedef typename Mesh::Vertex        Vertex;
+      typedef typename Mesh::HalfEdge      HalfEdge;
+      typedef typename Mesh::Face          Face;
+
       typedef typename Mesh::VertexIndex   VertexIndex;
       typedef typename Mesh::HalfEdgeIndex HalfEdgeIndex;
-      typedef typename Mesh::Face          Face;
       typedef typename Mesh::FaceIndex     FaceIndex;
 
     private:
@@ -577,7 +600,7 @@ namespace pcl
       }
 
       template <class OtherMeshT>
-      VertexAroundFaceCirculator (const pcl::VertexAroundFaceCirculator<OtherMeshT>& other,
+      VertexAroundFaceCirculator (const pcl::VertexAroundFaceCirculator <OtherMeshT>& other,
                                   typename boost::enable_if <boost::is_convertible <OtherMeshT*, Mesh*>, enabler>::type = enabler ())
         : p_mesh_              (other.p_mesh_),
           idx_inner_half_edge_ (other.idx_inner_half_edge_)
@@ -610,7 +633,7 @@ namespace pcl
       template <class> friend class pcl::VertexAroundFaceCirculator;
 
       template <class OtherMeshT> bool
-      equal (const pcl::VertexAroundFaceCirculator<OtherMeshT>& other) const
+      equal (const pcl::VertexAroundFaceCirculator <OtherMeshT>& other) const
       {
         return (idx_inner_half_edge_ == other.idx_inner_half_edge_);
       }
@@ -650,11 +673,11 @@ namespace pcl
 
   template <class MeshT>
   class InnerHalfEdgeAroundFaceCirculator
-      : public boost::iterator_facade<pcl::InnerHalfEdgeAroundFaceCirculator<MeshT>, typename boost::conditional<boost::is_const<MeshT>::value, typename boost::add_const<typename MeshT::HalfEdge>::type, typename MeshT::HalfEdge>::type, boost::bidirectional_traversal_tag>
+      : public boost::iterator_facade <pcl::InnerHalfEdgeAroundFaceCirculator <MeshT>, typename boost::conditional <boost::is_const <MeshT>::value, typename boost::add_const <typename MeshT::HalfEdge>::type, typename MeshT::HalfEdge>::type, boost::bidirectional_traversal_tag>
   {
     public:
 
-      typedef boost::iterator_facade<pcl::InnerHalfEdgeAroundFaceCirculator<MeshT>, typename boost::conditional<boost::is_const<MeshT>::value, typename boost::add_const<typename MeshT::HalfEdge>::type, typename MeshT::HalfEdge>::type, boost::bidirectional_traversal_tag> Base;
+      typedef boost::iterator_facade <pcl::InnerHalfEdgeAroundFaceCirculator <MeshT>, typename boost::conditional <boost::is_const <MeshT>::value, typename boost::add_const <typename MeshT::HalfEdge>::type, typename MeshT::HalfEdge>::type, boost::bidirectional_traversal_tag> Base;
 
       typedef typename Base::value_type        value_type;
       typedef typename Base::reference         reference;
@@ -663,8 +686,13 @@ namespace pcl
       typedef typename Base::iterator_category iterator_category;
 
       typedef MeshT                        Mesh;
-      typedef typename Mesh::HalfEdgeIndex HalfEdgeIndex;
+
+      typedef typename Mesh::Vertex        Vertex;
+      typedef typename Mesh::HalfEdge      HalfEdge;
       typedef typename Mesh::Face          Face;
+
+      typedef typename Mesh::VertexIndex   VertexIndex;
+      typedef typename Mesh::HalfEdgeIndex HalfEdgeIndex;
       typedef typename Mesh::FaceIndex     FaceIndex;
 
     private:
@@ -695,7 +723,7 @@ namespace pcl
       }
 
       template <class OtherMeshT>
-      InnerHalfEdgeAroundFaceCirculator (const pcl::InnerHalfEdgeAroundFaceCirculator<OtherMeshT>& other,
+      InnerHalfEdgeAroundFaceCirculator (const pcl::InnerHalfEdgeAroundFaceCirculator <OtherMeshT>& other,
                                          typename boost::enable_if <boost::is_convertible <OtherMeshT*, Mesh*>, enabler>::type = enabler ())
         : p_mesh_              (other.p_mesh_),
           idx_inner_half_edge_ (other.idx_inner_half_edge_)
@@ -728,7 +756,7 @@ namespace pcl
       template <class> friend class pcl::InnerHalfEdgeAroundFaceCirculator;
 
       template <class OtherMeshT> bool
-      equal (const pcl::InnerHalfEdgeAroundFaceCirculator<OtherMeshT>& other) const
+      equal (const pcl::InnerHalfEdgeAroundFaceCirculator <OtherMeshT>& other) const
       {
         return (idx_inner_half_edge_ == other.idx_inner_half_edge_);
       }
@@ -768,11 +796,11 @@ namespace pcl
 
   template <class MeshT>
   class OuterHalfEdgeAroundFaceCirculator
-      : public boost::iterator_facade<pcl::OuterHalfEdgeAroundFaceCirculator<MeshT>, typename boost::conditional<boost::is_const<MeshT>::value, typename boost::add_const<typename MeshT::HalfEdge>::type, typename MeshT::HalfEdge>::type, boost::bidirectional_traversal_tag>
+      : public boost::iterator_facade <pcl::OuterHalfEdgeAroundFaceCirculator <MeshT>, typename boost::conditional <boost::is_const <MeshT>::value, typename boost::add_const <typename MeshT::HalfEdge>::type, typename MeshT::HalfEdge>::type, boost::bidirectional_traversal_tag>
   {
     public:
 
-      typedef boost::iterator_facade<pcl::OuterHalfEdgeAroundFaceCirculator<MeshT>, typename boost::conditional<boost::is_const<MeshT>::value, typename boost::add_const<typename MeshT::HalfEdge>::type, typename MeshT::HalfEdge>::type, boost::bidirectional_traversal_tag> Base;
+      typedef boost::iterator_facade <pcl::OuterHalfEdgeAroundFaceCirculator <MeshT>, typename boost::conditional <boost::is_const <MeshT>::value, typename boost::add_const <typename MeshT::HalfEdge>::type, typename MeshT::HalfEdge>::type, boost::bidirectional_traversal_tag> Base;
 
       typedef typename Base::value_type        value_type;
       typedef typename Base::reference         reference;
@@ -781,8 +809,13 @@ namespace pcl
       typedef typename Base::iterator_category iterator_category;
 
       typedef MeshT                        Mesh;
-      typedef typename Mesh::HalfEdgeIndex HalfEdgeIndex;
+
+      typedef typename Mesh::Vertex        Vertex;
+      typedef typename Mesh::HalfEdge      HalfEdge;
       typedef typename Mesh::Face          Face;
+
+      typedef typename Mesh::VertexIndex   VertexIndex;
+      typedef typename Mesh::HalfEdgeIndex HalfEdgeIndex;
       typedef typename Mesh::FaceIndex     FaceIndex;
 
     private:
@@ -813,9 +846,9 @@ namespace pcl
       }
 
       template <class OtherMeshT>
-      OuterHalfEdgeAroundFaceCirculator (const pcl::OuterHalfEdgeAroundFaceCirculator<OtherMeshT>& other,
+      OuterHalfEdgeAroundFaceCirculator (const pcl::OuterHalfEdgeAroundFaceCirculator <OtherMeshT>& other,
                                          typename boost::enable_if <boost::is_convertible <OtherMeshT*, Mesh*>, enabler>::type = enabler ())
-        : p_mesh_        (other.p_mesh_),
+        : p_mesh_              (other.p_mesh_),
           idx_inner_half_edge_ (other.idx_inner_half_edge_)
       {
       }
@@ -846,7 +879,7 @@ namespace pcl
       template <class> friend class pcl::OuterHalfEdgeAroundFaceCirculator;
 
       template <class OtherMeshT> bool
-      equal (const pcl::OuterHalfEdgeAroundFaceCirculator<OtherMeshT>& other) const
+      equal (const pcl::OuterHalfEdgeAroundFaceCirculator <OtherMeshT>& other) const
       {
         return (idx_inner_half_edge_ == other.idx_inner_half_edge_);
       }
@@ -867,6 +900,129 @@ namespace pcl
       dereference () const
       {
         return (p_mesh_->getElement (idx_inner_half_edge_).getOppositeHalfEdge (*p_mesh_));
+      }
+
+    private:
+
+      Mesh*         p_mesh_;
+      HalfEdgeIndex idx_inner_half_edge_;
+  };
+
+} // End namespace pcl
+
+////////////////////////////////////////////////////////////////////////////////
+// FaceAroundFaceCirculator
+////////////////////////////////////////////////////////////////////////////////
+
+namespace pcl
+{
+
+  template <class MeshT>
+  class FaceAroundFaceCirculator
+      : public boost::iterator_facade <pcl::FaceAroundFaceCirculator <MeshT>, typename boost::conditional <boost::is_const <MeshT>::value, typename boost::add_const <typename MeshT::Face>::type, typename MeshT::Face>::type, boost::bidirectional_traversal_tag>
+  {
+    public:
+
+      typedef boost::iterator_facade <pcl::FaceAroundFaceCirculator <MeshT>, typename boost::conditional <boost::is_const <MeshT>::value, typename boost::add_const <typename MeshT::Face>::type, typename MeshT::Face>::type, boost::bidirectional_traversal_tag> Base;
+
+      typedef typename Base::value_type        value_type;
+      typedef typename Base::reference         reference;
+      typedef typename Base::pointer           pointer;
+      typedef typename Base::difference_type   difference_type;
+      typedef typename Base::iterator_category iterator_category;
+
+      typedef MeshT                        Mesh;
+
+      typedef typename Mesh::Vertex        Vertex;
+      typedef typename Mesh::HalfEdge      HalfEdge;
+      typedef typename Mesh::Face          Face;
+
+      typedef typename Mesh::VertexIndex   VertexIndex;
+      typedef typename Mesh::HalfEdgeIndex HalfEdgeIndex;
+      typedef typename Mesh::FaceIndex     FaceIndex;
+
+    private:
+
+      struct enabler {};
+
+    public:
+
+      FaceAroundFaceCirculator (const Face& face,
+                                Mesh*const  p_mesh)
+        : p_mesh_              (p_mesh),
+          idx_inner_half_edge_ (face.getInnerHalfEdgeIndex ())
+      {
+      }
+
+      FaceAroundFaceCirculator (const FaceIndex& idx_face,
+                                Mesh*const       p_mesh)
+        : p_mesh_              (p_mesh),
+          idx_inner_half_edge_ (p_mesh->getElement (idx_face).getInnerHalfEdgeIndex ())
+      {
+      }
+
+      FaceAroundFaceCirculator (const HalfEdgeIndex& idx_inner_half_edge,
+                                Mesh*const           p_mesh)
+        : p_mesh_              (p_mesh),
+          idx_inner_half_edge_ (idx_inner_half_edge)
+      {
+      }
+
+      template <class OtherMeshT>
+      FaceAroundFaceCirculator (const pcl::FaceAroundFaceCirculator <OtherMeshT>& other,
+                                typename boost::enable_if <boost::is_convertible <OtherMeshT*, Mesh*>, enabler>::type = enabler ())
+        : p_mesh_              (other.p_mesh_),
+          idx_inner_half_edge_ (other.idx_inner_half_edge_)
+      {
+      }
+
+    public:
+
+      const HalfEdgeIndex&
+      getCurrentHalfEdgeIndex () const
+      {
+        return (idx_inner_half_edge_);
+      }
+
+      const FaceIndex&
+      getDereferencedIndex () const
+      {
+        return (p_mesh_->getElement (idx_inner_half_edge_).getOppositeFaceIndex (*p_mesh_));
+      }
+
+      bool
+      isValid () const
+      {
+        return (this->getDereferencedIndex ().isValid ());
+      }
+
+    private:
+
+      friend class boost::iterator_core_access;
+      template <class> friend class pcl::FaceAroundFaceCirculator;
+
+      template <class OtherMeshT> bool
+      equal (const pcl::FaceAroundFaceCirculator <OtherMeshT>& other) const
+      {
+        return (idx_inner_half_edge_ == other.idx_inner_half_edge_);
+      }
+
+      void
+      increment ()
+      {
+        idx_inner_half_edge_ = p_mesh_->getElement (idx_inner_half_edge_).getNextHalfEdgeIndex ();
+      }
+
+      void
+      decrement ()
+      {
+        idx_inner_half_edge_ = p_mesh_->getElement (idx_inner_half_edge_).getPrevHalfEdgeIndex ();
+      }
+
+      reference
+      dereference () const
+      {
+        return (p_mesh_->getElement (idx_inner_half_edge_).getOppositeFace (*p_mesh_));
       }
 
     private:

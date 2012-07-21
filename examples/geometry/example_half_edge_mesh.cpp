@@ -192,7 +192,7 @@ int main ()
   do
   {
     std::cout << "  "
-              << circ_oheav->getOriginatingVertex (mesh)
+              << circ_oheav->getOriginatingVertex (mesh) << " "
               << circ_oheav->getTerminatingVertex (mesh)
               << std::endl;
     ++circ_oheav;
@@ -210,7 +210,7 @@ int main ()
   do
   {
     std::cout << "  "
-              << circ_heab->getOriginatingVertex (mesh)
+              << circ_heab->getOriginatingVertex (mesh) << " "
               << circ_heab->getTerminatingVertex (mesh)
               << std::endl;
     ++circ_heab;
@@ -243,9 +243,12 @@ int main ()
     {
       printFace (mesh, *circ_fav);
     }
+    else
+    {
+      std::cout << "  invalid face -> boundary half-edge\n";
+    }
     ++circ_fav;
   } while (circ_fav!=circ_fav_end);
 
   return (0);
 }
-

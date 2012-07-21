@@ -107,6 +107,7 @@ namespace pcl
       typedef typename Base::VertexAroundFaceCirculator             VertexAroundFaceCirculator;
       typedef typename Base::InnerHalfEdgeAroundFaceCirculator      InnerHalfEdgeAroundFaceCirculator;
       typedef typename Base::OuterHalfEdgeAroundFaceCirculator      OuterHalfEdgeAroundFaceCirculator;
+      typedef typename Base::FaceAroundFaceCirculator               FaceAroundFaceCirculator;
       typedef typename Base::HalfEdgeAroundBoundaryCirculator       HalfEdgeAroundBoundaryCirculator;
 
       typedef typename Base::VertexAroundVertexConstCirculator           VertexAroundVertexConstCirculator;
@@ -116,6 +117,7 @@ namespace pcl
       typedef typename Base::VertexAroundFaceConstCirculator             VertexAroundFaceConstCirculator;
       typedef typename Base::InnerHalfEdgeAroundFaceConstCirculator      InnerHalfEdgeAroundFaceConstCirculator;
       typedef typename Base::OuterHalfEdgeAroundFaceConstCirculator      OuterHalfEdgeAroundFaceConstCirculator;
+      typedef typename Base::FaceAroundFaceConstCirculator               FaceAroundFaceConstCirculator;
       typedef typename Base::HalfEdgeAroundBoundaryConstCirculator       HalfEdgeAroundBoundaryConstCirculator;
 
     public:
@@ -548,8 +550,8 @@ namespace pcl
       //////////////////////////////////////////////////////////////////////////
 
       inline void
-      makeAdjacent (const HalfEdgeIndex& idx_he_ab,
-                    const HalfEdgeIndex& idx_he_bc,
+      makeAdjacent (const HalfEdgeIndex& /*idx_he_ab*/,
+                    const HalfEdgeIndex& /*idx_he_bc*/,
                     ManifoldMeshTag)
       {
         // Nothing to do here (manifold)
@@ -642,7 +644,7 @@ namespace pcl
       connectNewOld (const HalfEdgeIndex& idx_he_ab,
                      const HalfEdgeIndex& idx_he_ba,
                      const HalfEdgeIndex& idx_he_bc,
-                     const HalfEdgeIndex& idx_he_cb,
+                     const HalfEdgeIndex& /*idx_he_cb*/,
                      const VertexIndex&   idx_v_b)
       {
         const HalfEdgeIndex idx_he_bc_prev = Base::getElement (idx_he_bc).getPrevHalfEdgeIndex (); // No reference!
@@ -659,7 +661,7 @@ namespace pcl
 
       inline void
       connectOldNew (const HalfEdgeIndex& idx_he_ab,
-                     const HalfEdgeIndex& idx_he_ba,
+                     const HalfEdgeIndex& /*idx_he_ba*/,
                      const HalfEdgeIndex& idx_he_bc,
                      const HalfEdgeIndex& idx_he_cb,
                      const VertexIndex&   idx_v_b)
@@ -677,21 +679,21 @@ namespace pcl
       //////////////////////////////////////////////////////////////////////////
 
       inline void
-      connectOldOld (const HalfEdgeIndex& idx_he_ab,
-                     const HalfEdgeIndex& idx_he_ba,
-                     const HalfEdgeIndex& idx_he_bc,
-                     const HalfEdgeIndex& idx_he_cb,
-                     const VertexIndex&   idx_v_b,
+      connectOldOld (const HalfEdgeIndex& /*idx_he_ab*/,
+                     const HalfEdgeIndex& /*idx_he_ba*/,
+                     const HalfEdgeIndex& /*idx_he_bc*/,
+                     const HalfEdgeIndex& /*idx_he_cb*/,
+                     const VertexIndex&   /*idx_v_b*/,
                      ManifoldMeshTag)
       {
         // Nothing to do here (manifold)
       }
 
       inline void
-      connectOldOld (const HalfEdgeIndex& idx_he_ab,
-                     const HalfEdgeIndex& idx_he_ba,
+      connectOldOld (const HalfEdgeIndex& /*idx_he_ab*/,
+                     const HalfEdgeIndex& /*idx_he_ba*/,
                      const HalfEdgeIndex& idx_he_bc,
-                     const HalfEdgeIndex& idx_he_cb,
+                     const HalfEdgeIndex& /*idx_he_cb*/,
                      const VertexIndex&   idx_v_b,
                      NonManifoldMeshTag)
       {
@@ -740,7 +742,7 @@ namespace pcl
       inline void
       reconnectBB (const HalfEdgeIndex& idx_he_ab,
                    const HalfEdgeIndex& idx_he_ba,
-                   const HalfEdgeIndex& idx_he_bc,
+                   const HalfEdgeIndex& /*idx_he_bc*/,
                    const HalfEdgeIndex& idx_he_cb)
       {
         const HalfEdgeIndex& idx_he_cb_next = Base::getElement (idx_he_cb).getNextHalfEdgeIndex ();
@@ -769,7 +771,7 @@ namespace pcl
       reconnectBNB (const HalfEdgeIndex& idx_he_ab,
                     const HalfEdgeIndex& idx_he_ba,
                     const HalfEdgeIndex& idx_he_bc,
-                    const HalfEdgeIndex& idx_he_cb)
+                    const HalfEdgeIndex& /*idx_he_cb*/)
       {
         this->connectPrevNext (Base::getElement (idx_he_ba).getPrevHalfEdgeIndex (), idx_he_bc);
         Base::getElement (idx_he_ab).getTerminatingVertex (*this).setOutgoingHalfEdgeIndex (idx_he_bc);
@@ -784,8 +786,8 @@ namespace pcl
 
       inline void
       reconnectNBB (const HalfEdgeIndex& idx_he_ab,
-                    const HalfEdgeIndex& idx_he_ba,
-                    const HalfEdgeIndex& idx_he_bc,
+                    const HalfEdgeIndex& /*idx_he_ba*/,
+                    const HalfEdgeIndex& /*idx_he_bc*/,
                     const HalfEdgeIndex& idx_he_cb)
       {
         const HalfEdgeIndex& idx_he_cb_next = Base::getElement (idx_he_cb).getNextHalfEdgeIndex ();
@@ -804,7 +806,7 @@ namespace pcl
       reconnectNBNB (const HalfEdgeIndex&   idx_he_ab,
                      const HalfEdgeIndex&   idx_he_ba,
                      const HalfEdgeIndex&   idx_he_bc,
-                     const HalfEdgeIndex&   idx_he_cb,
+                     const HalfEdgeIndex&   /*idx_he_cb*/,
                      std::stack<FaceIndex>& delete_faces,
                      ManifoldMeshTag)
       {

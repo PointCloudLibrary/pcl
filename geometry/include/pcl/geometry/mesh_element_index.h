@@ -52,6 +52,7 @@
 
 namespace pcl
 {
+
   template <class DerivedT>
   class BaseMeshElementIndex
       : boost::totally_ordered <BaseMeshElementIndex <DerivedT> // < > <= >= == !=
@@ -262,24 +263,24 @@ namespace pcl
 // TriangleIndex
 ////////////////////////////////////////////////////////////////////////////////
 
-namespace pcl
-{
+//namespace pcl
+//{
 
-  class TriangleIndex : public pcl::FaceIndex
-  {
-    public:
+//  class TriangleIndex : public pcl::FaceIndex
+//  {
+//    public:
 
-      typedef pcl::FaceIndex     Base;
-      typedef pcl::TriangleIndex Self;
+//      typedef pcl::FaceIndex     Base;
+//      typedef pcl::TriangleIndex Self;
 
-    public:
+//    public:
 
-      TriangleIndex (const int idx = -1);
-      TriangleIndex (const Self& other);
-      TriangleIndex (const Base& base);
-  };
+//      TriangleIndex (const int idx = -1);
+//      TriangleIndex (const Self& other);
+//      TriangleIndex (const Base& base);
+//  };
 
-} // End namespace pcl
+//} // End namespace pcl
 
 #endif // MESH_ELEMENT_INDEX_H
 
