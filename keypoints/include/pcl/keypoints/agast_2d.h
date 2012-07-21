@@ -58,7 +58,7 @@ namespace pcl
     *
     * \code
     * pcl::PointCloud<pcl::PointXYZRGBA> cloud;
-    * pcl::BriskKeypoint2D<pcl::PointXYZRGBA> agast;
+    * pcl::AgastKeypoint2D<pcl::PointXYZRGBA> agast;
     * agast.setThreshold (30);
     * agast.setInputCloud (cloud);
     *
