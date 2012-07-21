@@ -87,6 +87,8 @@ namespace pcl
       , intensity_threshold_ (intensity_threshold)
       , normals_ (new pcl::PointCloud<NormalT>)
       , threads_ (1)
+      , label_idx_ (-1)
+      , out_fields_ ()
       {
         name_ = "SUSAN";
         search_radius_ = radius;
@@ -176,6 +178,13 @@ namespace pcl
       bool nonmax_;
       /// intensity field accessor
       IntensityT intensity_;
+      /** \brief Set to a value different than -1 if the output cloud has a "label" field and we have 
+        * to save the keypoints indices. 
+        */
+      int label_idx_;
+      /** \brief The list of fields present in the output point cloud data. */
+      std::vector<sensor_msgs::PointField> out_fields_;
+      pcl::common::IntensityFieldAccessor<PointOutT> intensity_out_;
   };
 }
 

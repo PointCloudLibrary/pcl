@@ -298,6 +298,10 @@ pcl::SUSAN<PointInT, PointOutT, NormalT, IntensityT>::detectKeypoints (PointClou
 {
   boost::shared_ptr<pcl::PointCloud<PointOutT> > response (new pcl::PointCloud<PointOutT> ());
   response->reserve (surface_->size ());
+
+  // Check if the output has a "label" field
+  label_idx_ = pcl::getFieldIndex<PointOutT> (output, "label", out_fields_);
+
   const int surface_size = static_cast<int> (surface_->size ());
 #if defined (HAVE_OPENMP) && (defined(_WIN32) || ((__GNUC__ > 4) && (__GNUC_MINOR__ > 2)))
 #pragma omp parallel for shared ((*response)) num_threads(threads_)
@@ -343,7 +347,16 @@ pcl::SUSAN<PointInT, PointOutT, NormalT, IntensityT>::detectKeypoints (PointClou
         {
           PointOutT point_out;
           point_out.getVector3fMap () = point_in.getVector3fMap ();
-          point_out.intensity = geometric_threshold - area; 
+          //point_out.intensity = geometric_threshold - area; 
+          intensity_out_.set (point_out, geometric_threshold - area);
+          // if a label field is found use it to save the index
+          if (label_idx_ != -1)
+          {
+            // save the index in the cloud
+            uint32_t label = static_cast<uint32_t> (point_index);
+            memcpy (reinterpret_cast<char*> (&point_out) + out_fields_[label_idx_].offset,
+                    &label, sizeof (uint32_t));
+          }
 #if defined (HAVE_OPENMP) && (defined(_WIN32) || ((__GNUC__ > 4) && (__GNUC_MINOR__ > 2)))        
 #pragma omp critical
 #endif
@@ -370,11 +383,20 @@ pcl::SUSAN<PointInT, PointOutT, NormalT, IntensityT>::detectKeypoints (PointClou
             {
               PointOutT point_out;
               point_out.getVector3fMap () = point_in.getVector3fMap ();
-              point_out.intensity = geometric_threshold - area; 
+              // point_out.intensity = geometric_threshold - area; 
+              intensity_out_.set (point_out, geometric_threshold - area);
+              // if a label field is found use it to save the index
+              if (label_idx_ != -1)
+              {
+                // save the index in the cloud
+                uint32_t label = static_cast<uint32_t> (point_index);
+                memcpy (reinterpret_cast<char*> (&point_out) + out_fields_[label_idx_].offset,
+                        &label, sizeof (uint32_t));
+              }
 #if defined (HAVE_OPENMP) && (defined(_WIN32) || ((__GNUC__ > 4) && (__GNUC_MINOR__ > 2)))        
 #pragma omp critical
 #endif
-              response->push_back (point_out);
+              response->push_back (point_out);              
             }
           }
         }
@@ -399,7 +421,8 @@ pcl::SUSAN<PointInT, PointOutT, NormalT, IntensityT>::detectKeypoints (PointClou
     {
       const PointOutT& point_in = response->points [idx];
       const NormalT& normal_in = normals_->points [idx];
-      const float intensity = response->points[idx].intensity;
+      //const float intensity = response->points[idx].intensity;
+      const float intensity = intensity_out_ (response->points[idx]);
       if (!isFinite (point_in) || !isFinite (normal_in) || (intensity == 0))
         continue;
       std::vector<int> nn_indices;
@@ -408,7 +431,8 @@ pcl::SUSAN<PointInT, PointOutT, NormalT, IntensityT>::detectKeypoints (PointClou
       bool is_minima = true;
       for (std::vector<int>::const_iterator nn_it = nn_indices.begin(); nn_it != nn_indices.end(); ++nn_it)
       {
-        if (intensity > response->points[*nn_it].intensity)
+//        if (intensity > response->points[*nn_it].intensity)
+        if (intensity > intensity_out_ (response->points[*nn_it]))
         {
           is_minima = false;
           break;
