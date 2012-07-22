@@ -48,7 +48,7 @@ pcl::visualization::PCLPainter2D::PCLPainter2D(char const * name)
   
   current_pen_ = vtkPen::New ();
   current_brush_ = vtkBrush::New ();
-  
+  current_transform_ = vtkTransform2D::New ();
   view_->GetRenderWindow ()->SetWindowName (name);
   
   //state variables
@@ -67,7 +67,7 @@ pcl::visualization::PCLPainter2D::addLine (float x1, float y1, float x2, float y
   line[2] = x2;
   line[3] = y2;
 
-  FPolyLine2D *pline = new FPolyLine2D(line, current_pen_, current_brush_);
+  FPolyLine2D *pline = new FPolyLine2D(line, current_pen_, current_brush_, current_transform_);
   figures_.push_back (pline);
 }
 
@@ -75,7 +75,7 @@ pcl::visualization::PCLPainter2D::addLine (float x1, float y1, float x2, float y
 void 
 pcl::visualization::PCLPainter2D::addLine (std::vector<float> p)
 {
-  figures_.push_back (new FPolyLine2D(p, current_pen_, current_brush_));
+  figures_.push_back (new FPolyLine2D(p, current_pen_, current_brush_, current_transform_));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -85,14 +85,14 @@ pcl::visualization::PCLPainter2D::addPoint (float x, float y)
   std::vector<float> points(2);
   points[0] = x; points[1] = y;
   
-  figures_.push_back (new FPoints2D(points, current_pen_, current_brush_));
+  figures_.push_back (new FPoints2D(points, current_pen_, current_brush_, current_transform_));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void 
 pcl::visualization::PCLPainter2D::addPoints (std::vector<float> p)
 {
-  figures_.push_back (new FPoints2D(p, current_pen_, current_brush_));
+  figures_.push_back (new FPoints2D(p, current_pen_, current_brush_, current_transform_));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -106,49 +106,49 @@ pcl::visualization::PCLPainter2D::addRect (float x, float y, float width, float 
   
   std::vector<float> quad (p, p+8);
   
-  figures_.push_back (new FQuad2D(quad, current_pen_, current_brush_));
+  figures_.push_back (new FQuad2D(quad, current_pen_, current_brush_, current_transform_));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void 
 pcl::visualization::PCLPainter2D::addQuad (std::vector<float> p)
 {
-  figures_.push_back (new FQuad2D(p, current_pen_, current_brush_));
+  figures_.push_back (new FQuad2D(p, current_pen_, current_brush_, current_transform_));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void 
 pcl::visualization::PCLPainter2D::addPolygon (std::vector<float> p)
 {
-  figures_.push_back (new FPolygon2D(p, current_pen_, current_brush_));
+  figures_.push_back (new FPolygon2D(p, current_pen_, current_brush_, current_transform_));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void 
 pcl::visualization::PCLPainter2D::addEllipse (float x, float y, float rx, float ry)
 { 
-  figures_.push_back (new FEllipticArc2D(x, y, rx, ry, 0, 360, current_pen_, current_brush_));
+  figures_.push_back (new FEllipticArc2D(x, y, rx, ry, 0, 360, current_pen_, current_brush_, current_transform_));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void 
 pcl::visualization::PCLPainter2D::addCircle (float x, float y, float r)
 {  
-  figures_.push_back (new FEllipticArc2D(x, y, r, r, 0, 360, current_pen_, current_brush_));
+  figures_.push_back (new FEllipticArc2D(x, y, r, r, 0, 360, current_pen_, current_brush_, current_transform_));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void 
 pcl::visualization::PCLPainter2D::addEllipticArc (float x, float y, float rx, float ry, float start_angle, float end_angle)
 { 
-  figures_.push_back (new FEllipticArc2D(x, y, rx, ry, start_angle, end_angle, current_pen_, current_brush_));
+  figures_.push_back (new FEllipticArc2D(x, y, rx, ry, start_angle, end_angle, current_pen_, current_brush_, current_transform_));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void 
 pcl::visualization::PCLPainter2D::addArc (float x, float y, float r, float start_angle, float end_angle)
 { 
-  figures_.push_back (new FEllipticArc2D(x, y, r, r, start_angle, end_angle, current_pen_, current_brush_));
+  figures_.push_back (new FEllipticArc2D(x, y, r, r, start_angle, end_angle, current_pen_, current_brush_, current_transform_));
 }
 
 
@@ -214,8 +214,38 @@ vtkBrush * pcl::visualization::PCLPainter2D::getBrush ()
 }
 ///////////////////////////////////End of Pen and Brush functions//////////////////////////////////////////////
 
+void 
+pcl::visualization::PCLPainter2D::translatePen (double x, double y)
+{
+  current_transform_->Translate(x, y);
+}
 
-void pcl::visualization::PCLPainter2D::display ()
+void 
+pcl::visualization::PCLPainter2D::rotatePen (double angle)
+{
+  current_transform_->Rotate(angle);
+}
+
+void 
+pcl::visualization::PCLPainter2D::scalePen (double x, double y)
+{
+  current_transform_->Scale(x, y);
+}
+
+void 
+pcl::visualization::PCLPainter2D::setTransform(vtkMatrix3x3 *matrix)
+{
+  current_transform_->SetMatrix(matrix);
+}
+
+void 
+pcl::visualization::PCLPainter2D::clearTransform()
+{
+  current_transform_->Identity();
+}
+
+void 
+pcl::visualization::PCLPainter2D::display ()
 {
   view_->GetRenderer ()->SetBackground (bkg_color_[0], bkg_color_[1], bkg_color_[2]);
   view_->GetRenderWindow ()->SetSize (win_width_, win_height_);

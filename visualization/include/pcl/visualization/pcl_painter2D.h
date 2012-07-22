@@ -74,26 +74,38 @@ namespace pcl
       std::vector<float> info_;     //information stored in a general form for every object
       vtkPen *pen_;                 //the corresponding pen and brush for the figure
       vtkBrush *brush_;
+      vtkTransform2D *transform_;
       
-      Figure2D (std::vector<float> info, vtkPen *p, vtkBrush * b)
+      Figure2D (std::vector<float> info, vtkPen *p, vtkBrush * b, vtkTransform2D *t)
       {
         this->pen_ = vtkPen::New ();
         this->brush_ = vtkBrush::New ();
+        this->transform_ = vtkTransform2D::New();
 
         this->pen_->DeepCopy (p);
         this->brush_->DeepCopy (b);
+        this->transform_->SetMatrix (t->GetMatrix());
         this->info_ = info; //note: it copies :-)
       }
 
-      Figure2D (vtkPen *p, vtkBrush * b)
+      Figure2D (vtkPen *p, vtkBrush * b, vtkTransform2D *t)
       {
         this->pen_ = vtkPen::New ();
         this->brush_ = vtkBrush::New ();
+        this->transform_ = vtkTransform2D::New();
 
         this->pen_->DeepCopy (p);
         this->brush_->DeepCopy (b);
+        this->transform_->SetMatrix (t->GetMatrix());
       }
-
+      
+      void applyInternals (vtkContext2D *painter)
+      {
+        painter->ApplyPen (pen_);
+        painter->ApplyBrush (brush_);
+        painter->GetDevice ()->SetMatrix (transform_->GetMatrix());
+      }
+		  
       virtual void draw (vtkContext2D * painter) {}
     };
     
@@ -102,12 +114,11 @@ namespace pcl
     struct FPolyLine2D : public Figure2D
     {
 
-      FPolyLine2D (std::vector<float> info, vtkPen *p, vtkBrush * b) : Figure2D (info, p, b){}
+      FPolyLine2D (std::vector<float> info, vtkPen *p, vtkBrush * b, vtkTransform2D *t) : Figure2D (info, p, b, t){}
 
       void draw (vtkContext2D * painter)
       {
-        painter->ApplyPen (pen_);
-        painter->ApplyBrush (brush_);
+        applyInternals(painter);  
         painter->DrawPoly (&info_[0], info_.size ()/2);
       }
     };
@@ -117,12 +128,11 @@ namespace pcl
     struct FPoints2D : public Figure2D
     {
 
-      FPoints2D (std::vector<float> info, vtkPen *p, vtkBrush * b) : Figure2D (info, p, b) {}
+      FPoints2D (std::vector<float> info, vtkPen *p, vtkBrush * b, vtkTransform2D *t) : Figure2D (info, p, b, t) {}
 
       void draw (vtkContext2D * painter)
       {
-        painter->ApplyPen (pen_);
-        painter->ApplyBrush (brush_);
+        applyInternals(painter);  
         painter->DrawPoints (&info_[0], info_.size ()/2);
       }
     };
@@ -132,12 +142,11 @@ namespace pcl
     struct FQuad2D : public Figure2D
     {
 
-      FQuad2D (std::vector<float> info, vtkPen *p, vtkBrush * b) : Figure2D (info, p, b) {}
+      FQuad2D (std::vector<float> info, vtkPen *p, vtkBrush * b, vtkTransform2D *t) : Figure2D (info, p, b, t) {}
 
       void draw (vtkContext2D * painter)
       {
-        painter->ApplyPen (pen_);
-        painter->ApplyBrush (brush_);
+        applyInternals(painter);  
         painter->DrawQuad (&info_[0]);
       }
     };
@@ -147,12 +156,11 @@ namespace pcl
     struct FPolygon2D : public Figure2D
     {
 
-      FPolygon2D (std::vector<float> info, vtkPen *p, vtkBrush * b) : Figure2D (info, p, b){}
+      FPolygon2D (std::vector<float> info, vtkPen *p, vtkBrush * b, vtkTransform2D *t) : Figure2D (info, p, b, t){}
 
       void draw (vtkContext2D * painter)
       {
-        painter->ApplyPen (pen_);
-        painter->ApplyBrush (brush_);
+        applyInternals(painter);  
         painter->DrawPolygon (&info_[0], info_.size ()/2);
       }
     };
@@ -162,9 +170,9 @@ namespace pcl
     struct FEllipticArc2D : public Figure2D
     {
 
-      FEllipticArc2D (std::vector<float> info, vtkPen *p, vtkBrush * b) : Figure2D (info, p, b) {}
+      FEllipticArc2D (std::vector<float> info, vtkPen *p, vtkBrush * b, vtkTransform2D *t) : Figure2D (info, p, b, t) {}
 
-      FEllipticArc2D (float x, float y, float rx, float ry, float sa, float ea, vtkPen *p, vtkBrush * b) : Figure2D (p, b)
+      FEllipticArc2D (float x, float y, float rx, float ry, float sa, float ea, vtkPen *p, vtkBrush * b, vtkTransform2D *t) : Figure2D (p, b, t)
       {
         info_.resize (6);
         info_[0] = x;
@@ -177,8 +185,7 @@ namespace pcl
 
       void draw (vtkContext2D * painter)
       {
-        painter->ApplyPen (pen_);
-        painter->ApplyBrush (brush_);
+        applyInternals(painter);  
         painter->DrawEllipticArc (info_[0], info_[1], info_[2], info_[3], info_[4], info_[5]);
       }
     };
@@ -296,6 +303,41 @@ namespace pcl
       void 
       addArc (float x, float y, float r, float start_angle, float end_angle);
 
+
+      /** \brief Create a translation matrix and concatenate it with the current transformation.
+       * \param[in] x translation along X axis
+       * \param[in] y translation along Y axis
+       */
+      void 
+      translatePen (double x, double y);
+      
+      /** \brief Create a rotation matrix and concatenate it with the current transformation.
+       * \param[in] angle angle in degrees
+       */
+      void 
+      rotatePen(double angle);
+      
+      /** \brief Create a scale matrix and concatenate it with the current transformation.
+       * \param[in] x translation along X axis
+       * \param[in] y translation along Y axis
+       */
+      void 
+      scalePen(double x, double y);
+      
+      /** \brief Create a translation matrix and concatenate it with the current transformation.
+       * \param[in] x translation along X axis
+       * \param[in] y translation along Y axis
+       */
+      void 
+      setTransform(vtkMatrix3x3 *matrix);
+      
+      /** \brief Create a translation matrix and concatenate it with the current transformation.
+       * \param[in] x translation along X axis
+       * \param[in] y translation along Y axis
+       */
+      void 
+      clearTransform();
+      
       /** \brief set/get methods for current working vtkPen
        */
       void setPenColor (unsigned char r, unsigned char g, unsigned char b, unsigned char a);
@@ -364,6 +406,7 @@ namespace pcl
       //state variables of the class
       vtkPen *current_pen_;
       vtkBrush *current_brush_;
+      vtkTransform2D *current_transform_;
       int win_width_, win_height_;
       double bkg_color_[3];
 
