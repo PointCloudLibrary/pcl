@@ -304,7 +304,7 @@ pcl::SUSAN<PointInT, PointOutT, NormalT, IntensityT>::detectKeypoints (PointClou
 
   const int surface_size = static_cast<int> (surface_->size ());
 #if defined (HAVE_OPENMP) && (!defined(_WIN32) || ((__GNUC__ > 4) && (__GNUC_MINOR__ > 2)))
-#pragma omp parallel for shared ((*response)) num_threads(threads_)
+#pragma omp parallel for shared (response) num_threads(threads_)
 #endif
   for (int point_index = 0; point_index < surface_size; ++point_index)
   {
