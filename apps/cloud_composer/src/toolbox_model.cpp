@@ -80,7 +80,7 @@ pcl::cloud_composer::ToolBoxModel::selectedToolChanged (const QModelIndex & curr
   }  
   QVariant parameter_model = current.data (PARAMETER_MODEL);
   parameter_view_->setModel ( parameter_model.value <QStandardItemModel*> ());
-  
+  parameter_view_->expandAll ();
 }
 
 

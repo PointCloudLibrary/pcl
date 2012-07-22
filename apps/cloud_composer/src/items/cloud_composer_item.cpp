@@ -69,8 +69,8 @@ pcl::cloud_composer::CloudComposerItem::removeFromView (boost::shared_ptr<pcl::v
   qDebug () << "Remove from View in Cloud Composer Item - doing nothing";
 }
 
-QWidget*
-pcl::cloud_composer::CloudComposerItem::paintInspector ()
+QMap <QString, QWidget*>
+pcl::cloud_composer::CloudComposerItem::getInspectorTabs ()
 {
-
+  return QMap <QString, QWidget*> ();
 }

@@ -42,6 +42,7 @@
 #include <pcl/features/fpfh.h>
 
 #include <pcl/apps/cloud_composer/items/cloud_composer_item.h>
+#include <pcl/visualization/pcl_plotter.h>
 
 
 //Define user roles
@@ -75,9 +76,16 @@ namespace pcl
         virtual FPFHItem*
         clone () const;
         
+        /** \brief Inspector additional tabs paint function - get the histogram plot widget*/
+        virtual QMap <QString, QWidget*>
+        getInspectorTabs ();
+        
       private:
         pcl::PointCloud<pcl::FPFHSignature33>::Ptr fpfh_ptr_;
         double radius_;
+        boost::shared_ptr<pcl::visualization::PCLPlotter> plot_;
+        QVTKWidget *qvtk_;
+        QWidget *hist_page_;
     };
     
     

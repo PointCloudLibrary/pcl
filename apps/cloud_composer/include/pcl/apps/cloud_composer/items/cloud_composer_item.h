@@ -103,11 +103,10 @@ namespace pcl
         virtual void
         removeFromView (boost::shared_ptr<pcl::visualization::PCLVisualizer> vis) const;
         
-        /** \brief Inspector Display function - reimpliment in item subclass if it can be displayed in Inspector*/
-        virtual QWidget*
-        paintInspector ();
-       
-        
+        /** \brief Inspector additional tabs paint function - reimpliment in item subclass if item has additional tabs to show in Inspector*/
+        virtual QMap <QString, QWidget*>
+        getInspectorTabs ();
+              
         /** \brief Helper function to pull out a cloud from Item */
         bool
         getCloudConstPtr (sensor_msgs::PointCloud2::ConstPtr& const_ptr) const;

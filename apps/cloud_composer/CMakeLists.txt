@@ -5,7 +5,7 @@
 
 set(SUBSYS_NAME cloud_composer)
 set(SUBSYS_DESC "Cloud Composer - Application for Manipulating Point Clouds")
-set(SUBSYS_DEPS common io visualization)
+set(SUBSYS_DEPS common io visualization filters)
 
 # Find VTK 
 if(NOT VTK_FOUND)
@@ -94,7 +94,7 @@ if(build)
     
     set(EXE_NAME pcl_${SUBSYS_NAME})
     PCL_ADD_EXECUTABLE(${EXE_NAME} ${SUBSYS_NAME} ${cloud_composer_ui} ${cloud_composer_moc} ${srcs} ${resource_srcs} ${item_srcs})
-    target_link_libraries(${EXE_NAME} pcl_common pcl_io pcl_visualization QVTK ${QT_LIBRARIES})
+    target_link_libraries(${EXE_NAME} pcl_common pcl_io pcl_visualization pcl_filters QVTK ${QT_LIBRARIES})
 
     # Install include files
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs} ${item_incs})
@@ -117,16 +117,16 @@ if(build)
     include(ComposerTool.cmake REQUIRED)
     
     #FPFH Tool
-    set (FPFH_DEPS pcl_features pcl_kdtree)
+    set (FPFH_DEPS pcl_features pcl_kdtree pcl_filters)
     set (FPFH_SOURCES tools/fpfh_estimation.cpp)
     set (FPFH_HEADERS include/pcl/apps/${SUBSYS_NAME}/tools/fpfh_estimation.h)
-    define_composer_tool (fpfh_estimation ${FPFH_SOURCES} ${FPFH_HEADERS} ${FPFH_DEPS})
+    define_composer_tool (fpfh_estimation "${FPFH_SOURCES}" "${FPFH_HEADERS}" "${FPFH_DEPS}")
     
     #Normals Tool
     set (NORMALS_DEPS pcl_features pcl_kdtree)
     set (NORMALS_SOURCES tools/normal_estimation.cpp)
     set (NORMALS_HEADERS include/pcl/apps/${SUBSYS_NAME}/tools/normal_estimation.h)
-    define_composer_tool (normal_estimation ${NORMALS_SOURCES} ${NORMALS_HEADERS} ${NORMALS_DEPS})
+    define_composer_tool (normal_estimation "${NORMALS_SOURCES}" "${NORMALS_HEADERS}" "${NORMALS_DEPS}")
 
     
     

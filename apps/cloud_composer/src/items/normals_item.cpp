@@ -2,13 +2,14 @@
 #include <pcl/apps/cloud_composer/items/normals_item.h>
 #include <pcl/apps/cloud_composer/items/cloud_item.h>
 
+
 pcl::cloud_composer::NormalsItem::NormalsItem (QString name, pcl::PointCloud<pcl::Normal>::Ptr normals_ptr, double radius)
   : CloudComposerItem (name)
   , normals_ptr_ (normals_ptr)
 
 {
   
-  this->setData (QVariant::fromValue (normals_ptr_), NORMALS_CLOUD);
+  this->setData (QVariant::fromValue (normals_ptr), NORMALS_CLOUD);
   
   properties_->addProperty ("Radius", QVariant (radius));
   properties_->addProperty ("Scale", QVariant (0.02), Qt::ItemIsEditable | Qt::ItemIsEnabled);

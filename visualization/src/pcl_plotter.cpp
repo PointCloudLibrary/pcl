@@ -356,6 +356,14 @@ pcl::visualization::PCLPlotter::getWindowSize ()
   return (sz);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::visualization::PCLPlotter::startInteractor ()
+{
+  view_->GetInteractor()->Initialize();
+  view_->GetInteractor()->Start();
+}
+        
 ///////////////////////IMPORTANT PRIVATE FUNCTIONS///////////////////////////////
 void
 pcl::visualization::PCLPlotter::computeHistogram (std::vector<double> const &data, int const nbins, std::vector<std::pair<double, double> > &histogram)

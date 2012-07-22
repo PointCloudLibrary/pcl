@@ -1,5 +1,6 @@
 #include <pcl/apps/cloud_composer/qt.h>
 #include <pcl/apps/cloud_composer/items/cloud_item.h>
+#include <pcl/filters/passthrough.h>
 
 pcl::cloud_composer::CloudItem::CloudItem (QString name,
                                            sensor_msgs::PointCloud2::Ptr cloud_ptr, 
@@ -11,9 +12,27 @@ pcl::cloud_composer::CloudItem::CloudItem (QString name,
   , orientation_ (orientation)
 {
   
+  //Sanitize the cloud data using passthrough
+ // pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZRGB>);
+ // pcl::fromROSMsg (*cloud_ptr, *cloud); 
+  qDebug () << "Cloud size before passthrough : "<<cloud_ptr->width<<"x"<<cloud_ptr->height;
+  sensor_msgs::PointCloud2::Ptr cloud_filtered (new sensor_msgs::PointCloud2);
+  pcl::PassThrough<sensor_msgs::PointCloud2> pass_filter;
+  pass_filter.setInputCloud (cloud_ptr);
+  pass_filter.setKeepOrganized (false);
+  pass_filter.filter (*cloud_filtered);
+  qDebug () << "Cloud size after passthrough : "<<cloud_filtered->width<<"x"<<cloud_filtered->height;
+  cloud_ptr_ = cloud_filtered;
+  //std::vector <int> indices;
+  //pcl::removeNaNFromPointCloud (*cloud, *cloud, indices);
+  //qDebug () << "Nans filtered size = "<<cloud->size ();
+  //Convert back to PointCloud2
+ // pcl::toROSMsg (*cloud, *cloud_ptr);
+    
   this->setData (QVariant::fromValue (cloud_ptr_), CLOUD);
   this->setData (QVariant::fromValue (origin_), ORIGIN);
   this->setData (QVariant::fromValue (orientation_), ORIENTATION);
+  
   
   //Create a color and geometry handler for this cloud
   color_handler_.reset (new pcl::visualization::PointCloudColorHandlerRGBField<sensor_msgs::PointCloud2> (cloud_ptr));

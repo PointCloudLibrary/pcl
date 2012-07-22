@@ -1,6 +1,7 @@
 
 #include <pcl/features/fpfh.h>
 #include <pcl/point_types.h>
+#include <pcl/filters/filter.h>
 
 #include <pcl/apps/cloud_composer/tools/fpfh_estimation.h>
 #include <pcl/apps/cloud_composer/items/cloud_item.h>
@@ -61,16 +62,20 @@ pcl::cloud_composer::FPFHEstimationTool::performAction (ConstItemList input_data
       return output;
     }
 
-    //Get the cloud in template form
+    
     pcl::FPFHEstimation<pcl::PointXYZ, pcl::Normal, pcl::FPFHSignature33> fpfh;
+    //Get the cloud in template form
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
     pcl::fromROSMsg (*input_cloud, *cloud); 
+ //   qDebug () << "Input cloud size = "<<cloud->size ();
+  //  std::vector <int> indices;
+  //  pcl::removeNaNFromPointCloud (*cloud, *cloud, indices);
+  //  qDebug () << "Nans filtered size = "<<cloud->size ();
     
     //Get the normals cloud from the item
     QVariant normals_variant = normals_item->data (NORMALS_CLOUD);
-    pcl::PointCloud<pcl::Normal>::ConstPtr input_normals = normals_variant.value<pcl::PointCloud<pcl::Normal>::ConstPtr> ();
-    
-    
+    pcl::PointCloud<pcl::Normal>::Ptr input_normals = normals_variant.value<pcl::PointCloud<pcl::Normal>::Ptr> ();
+
     //////////////// THE WORK - COMPUTING FPFH ///////////////////
     // Create the FPFH estimation class, and pass the input dataset+normals to it
     fpfh.setInputCloud (cloud);
@@ -79,7 +84,6 @@ pcl::cloud_composer::FPFHEstimationTool::performAction (ConstItemList input_data
     // Create an empty kdtree representation, and pass it to the FPFH estimation object.
     // Its content will be filled inside the object, based on the given input dataset (as no other search surface is given).
     pcl::search::KdTree<PointXYZ>::Ptr tree (new pcl::search::KdTree<PointXYZ>);
-
     fpfh.setSearchMethod (tree);
 
     // Output datasets
@@ -89,8 +93,9 @@ pcl::cloud_composer::FPFHEstimationTool::performAction (ConstItemList input_data
     // IMPORTANT: the radius used here has to be larger than the radius used to estimate the surface normals!!!
     fpfh.setRadiusSearch (radius);
 
-    // Compute the features
+        // Compute the features
     fpfh.compute (*fpfhs);
+    qDebug () << "Size of computed features ="<<fpfhs->width;
     //////////////////////////////////////////////////////////////////
     FPFHItem* fpfh_item = new FPFHItem (tr("FPFH r=%1").arg(radius),fpfhs,radius);
     output.append (fpfh_item);
@@ -116,7 +121,7 @@ pcl::cloud_composer::FPFHEstimationToolFactory::createToolParameterModel (QObjec
   new_property->setEditable (false);
   //new_row.append (new_property);
   QStandardItem* new_value = new QStandardItem ();
-  new_value->setData (0.02, Qt::EditRole);
+  new_value->setData (0.04, Qt::EditRole);
   new_property->appendRow (new_value);
   // ///////////////////////////////
   parameter_model->appendRow (new_property);

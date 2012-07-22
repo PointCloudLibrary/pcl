@@ -278,8 +278,26 @@ namespace pcl
           */
         int *
         getWindowSize ();
+
+        /** \brief Return a pointer to the underlying VTK RenderWindow used. */
+        vtkSmartPointer<vtkRenderWindow>
+        getRenderWindow ()
+        {
+          return (view_->GetRenderWindow ());
+        }
         
+        /** \brief Set the view's interactor. */
+        void
+        setViewInteractor (vtkSmartPointer<vtkRenderWindowInteractor> interactor)
+        {
+          view_->SetInteractor (interactor);
+        }
         
+        /** \brief Initialize and Start the view's interactor. */
+        void
+        startInteractor ();
+
+               
       private:
         vtkSmartPointer<vtkContextView> view_;  
         //vtkSmartPointer<vtkChartXY> chart_;
