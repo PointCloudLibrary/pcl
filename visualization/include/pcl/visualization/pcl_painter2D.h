@@ -331,6 +331,11 @@ namespace pcl
       void 
       setTransform(vtkMatrix3x3 *matrix);
       
+      /** \brief Returns the current transformation matrix.
+       */
+      vtkMatrix3x3 * 
+      getTransform();
+      
       /** \brief Create a translation matrix and concatenate it with the current transformation.
        * \param[in] x translation along X axis
        * \param[in] y translation along Y axis
