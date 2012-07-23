@@ -334,7 +334,6 @@ int main (int argc, char** argv)
   {
     PCL_ERROR ("Syntax is: %s <source.pcd> <target.pcd> [*]", argv[0]);
     PCL_ERROR ("[*] - multiple files can be added. The registration results of (i, i+1) will be registered against (i+2), etc");
-    PCL_INFO ("Example: %s `rospack find pcl`/test/bun0.pcd `rospack find pcl`/test/bun4.pcd", argv[0]);
     return (-1);
   }
   PCL_INFO ("Loaded %d datasets.", (int)data.size ());
