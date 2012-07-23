@@ -67,9 +67,7 @@ namespace pcl
 
       public:
         /** \brief Constructor. */
-        TransformationEstimationLM () : 
-          weights_ (), tmp_src_ (), tmp_tgt_ (), tmp_idx_src_ (), tmp_idx_tgt_ (), warp_point_ ()
-        {};
+        TransformationEstimationLM ();
 
         /** \brief Copy constructor. 
           * \param[in] src the TransformationEstimationLM object to copy into this 
@@ -109,7 +107,7 @@ namespace pcl
         estimateRigidTransformation (
             const pcl::PointCloud<PointSource> &cloud_src,
             const pcl::PointCloud<PointTarget> &cloud_tgt,
-            Eigen::Matrix4f &transformation_matrix);
+            Eigen::Matrix4f &transformation_matrix) const;
 
         /** \brief Estimate a rigid rotation transformation between a source and a target point cloud using LM.
           * \param[in] cloud_src the source point cloud dataset
@@ -122,7 +120,7 @@ namespace pcl
             const pcl::PointCloud<PointSource> &cloud_src,
             const std::vector<int> &indices_src,
             const pcl::PointCloud<PointTarget> &cloud_tgt,
-            Eigen::Matrix4f &transformation_matrix);
+            Eigen::Matrix4f &transformation_matrix) const;
 
         /** \brief Estimate a rigid rotation transformation between a source and a target point cloud using LM.
           * \param[in] cloud_src the source point cloud dataset
@@ -138,7 +136,7 @@ namespace pcl
             const std::vector<int> &indices_src,
             const pcl::PointCloud<PointTarget> &cloud_tgt,
             const std::vector<int> &indices_tgt,
-            Eigen::Matrix4f &transformation_matrix);
+            Eigen::Matrix4f &transformation_matrix) const;
 
         /** \brief Estimate a rigid rotation transformation between a source and a target point cloud using LM.
           * \param[in] cloud_src the source point cloud dataset
@@ -151,7 +149,7 @@ namespace pcl
             const pcl::PointCloud<PointSource> &cloud_src,
             const pcl::PointCloud<PointTarget> &cloud_tgt,
             const pcl::Correspondences &correspondences,
-            Eigen::Matrix4f &transformation_matrix);
+            Eigen::Matrix4f &transformation_matrix) const;
 
         /** \brief Set the function we use to warp points. Defaults to rigid 6D warp.
           * \param[in] warp_fcn a shared pointer to an object that warps points
@@ -172,7 +170,7 @@ namespace pcl
           * overriding this method. (See \a TransformationEstimationPointToPlane)
           */
         virtual double 
-        computeDistance (const PointSource &p_src, const PointTarget &p_tgt)
+        computeDistance (const PointSource &p_src, const PointTarget &p_tgt) const
         {
           Vector4fMapConst s = p_src.getVector4fMap ();
           Vector4fMapConst t = p_tgt.getVector4fMap ();
@@ -183,16 +181,16 @@ namespace pcl
         std::vector<double> weights_;
 
         /** \brief Temporary pointer to the source dataset. */
-        const PointCloudSource *tmp_src_;
+        mutable const PointCloudSource *tmp_src_;
 
         /** \brief Temporary pointer to the target dataset. */
-        const PointCloudTarget  *tmp_tgt_;
+        mutable const PointCloudTarget  *tmp_tgt_;
 
         /** \brief Temporary pointer to the source dataset indices. */
-        const std::vector<int> *tmp_idx_src_;
+        mutable const std::vector<int> *tmp_idx_src_;
 
         /** \brief Temporary pointer to the target dataset indices. */
-        const std::vector<int> *tmp_idx_tgt_;
+        mutable const std::vector<int> *tmp_idx_tgt_;
 
         /** \brief The parameterized function used to warp the source to the target. */
         boost::shared_ptr<WarpPointRigid<PointSource, PointTarget> > warp_point_;
@@ -241,7 +239,7 @@ namespace pcl
             * \param[in] m_data_points the number of data points to evaluate
             * \param[in,out] estimator pointer to the estimator object
             */
-          OptimizationFunctor (int m_data_points, TransformationEstimationLM<PointSource, PointTarget> *estimator) : 
+          OptimizationFunctor (int m_data_points, const TransformationEstimationLM<PointSource, PointTarget> *estimator) : 
             Functor<double> (m_data_points), estimator_ (estimator) {}
 
           /** Copy constructor
@@ -274,7 +272,7 @@ namespace pcl
           int 
           operator () (const Eigen::VectorXd &x, Eigen::VectorXd &fvec) const;
 
-          TransformationEstimationLM<PointSource, PointTarget> *estimator_;
+          const TransformationEstimationLM<PointSource, PointTarget> *estimator_;
         };
 
         struct OptimizationFunctorWithIndices : public Functor<double>
@@ -285,7 +283,7 @@ namespace pcl
             * \param[in] m_data_points the number of data points to evaluate
             * \param[in,out] estimator pointer to the estimator object
             */
-          OptimizationFunctorWithIndices (int m_data_points, TransformationEstimationLM *estimator) :
+          OptimizationFunctorWithIndices (int m_data_points, const TransformationEstimationLM *estimator) :
             Functor<double> (m_data_points), estimator_ (estimator) {}
 
           /** Copy constructor
@@ -318,7 +316,7 @@ namespace pcl
           int 
           operator () (const Eigen::VectorXd &x, Eigen::VectorXd &fvec) const;
 
-          TransformationEstimationLM<PointSource, PointTarget> *estimator_;
+          const TransformationEstimationLM<PointSource, PointTarget> *estimator_;
         };
       public:
         EIGEN_MAKE_ALIGNED_OPERATOR_NEW

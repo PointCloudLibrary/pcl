@@ -90,7 +90,7 @@ namespace pcl
         validateTransformation (
             const PointCloudSourceConstPtr &cloud_src,
             const PointCloudTargetConstPtr &cloud_tgt,
-            const Eigen::Matrix4f &transformation_matrix) = 0;
+            const Eigen::Matrix4f &transformation_matrix) const = 0;
 
 
         typedef boost::shared_ptr<TransformationValidation<PointSource, PointTarget> > Ptr;

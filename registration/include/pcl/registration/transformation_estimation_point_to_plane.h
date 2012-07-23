@@ -71,7 +71,7 @@ namespace pcl
 
       protected:
         virtual double
-        computeDistance (const PointSource &p_src, const PointTarget &p_tgt)
+        computeDistance (const PointSource &p_src, const PointTarget &p_tgt) const
         { 
           // Compute the point-to-plane distance
           Vector4fMapConst s = p_src.getVector4fMap ();

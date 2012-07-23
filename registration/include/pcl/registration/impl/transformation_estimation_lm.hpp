@@ -43,12 +43,26 @@
 #include <pcl/registration/warp_point_rigid_6d.h>
 #include <pcl/registration/distances.h>
 #include <unsupported/Eigen/NonLinearOptimization>
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointSource, typename PointTarget>
+pcl::registration::TransformationEstimationLM<PointSource, PointTarget>::TransformationEstimationLM ()
+  : weights_ ()
+  , tmp_src_ ()
+  , tmp_tgt_ ()
+  , tmp_idx_src_ ()
+  , tmp_idx_tgt_ ()
+  , warp_point_ (new WarpPointRigid6D<PointSource, PointTarget>)
+  {
+  };
+
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget> void
 pcl::registration::TransformationEstimationLM<PointSource, PointTarget>::estimateRigidTransformation (
     const pcl::PointCloud<PointSource> &cloud_src,
     const pcl::PointCloud<PointTarget> &cloud_tgt,
-    Eigen::Matrix4f &transformation_matrix)
+    Eigen::Matrix4f &transformation_matrix) const
 {
 
   // <cloud_src,cloud_src> is the source dataset
@@ -66,10 +80,6 @@ pcl::registration::TransformationEstimationLM<PointSource, PointTarget>::estimat
                cloud_src.points.size ());
     return;
   }
-
-  // If no warp function has been set, use the default (WarpPointRigid6D)
-  if (!warp_point_)
-    warp_point_.reset (new WarpPointRigid6D<PointSource, PointTarget>);
 
   int n_unknowns = warp_point_->getDimension ();
   Eigen::VectorXd x (n_unknowns);
@@ -107,7 +117,7 @@ pcl::registration::TransformationEstimationLM<PointSource, PointTarget>::estimat
     const pcl::PointCloud<PointSource> &cloud_src,
     const std::vector<int> &indices_src,
     const pcl::PointCloud<PointTarget> &cloud_tgt,
-    Eigen::Matrix4f &transformation_matrix)
+    Eigen::Matrix4f &transformation_matrix) const
 {
   if (indices_src.size () != cloud_tgt.points.size ())
   {
@@ -134,7 +144,7 @@ pcl::registration::TransformationEstimationLM<PointSource, PointTarget>::estimat
     const std::vector<int> &indices_src,
     const pcl::PointCloud<PointTarget> &cloud_tgt,
     const std::vector<int> &indices_tgt,
-    Eigen::Matrix4f &transformation_matrix)
+    Eigen::Matrix4f &transformation_matrix) const
 {
   if (indices_src.size () != indices_tgt.size ())
   {
@@ -149,10 +159,6 @@ pcl::registration::TransformationEstimationLM<PointSource, PointTarget>::estimat
                indices_src.size ());
     return;
   }
-
-  // If no warp function has been set, use the default (WarpPointRigid6D)
-  if (!warp_point_)
-    warp_point_.reset (new WarpPointRigid6D<PointSource, PointTarget>);
 
   int n_unknowns = warp_point_->getDimension ();  // get dimension of unknown space
   Eigen::VectorXd x (n_unknowns);
@@ -193,7 +199,7 @@ pcl::registration::TransformationEstimationLM<PointSource, PointTarget>::estimat
     const pcl::PointCloud<PointSource> &cloud_src,
     const pcl::PointCloud<PointTarget> &cloud_tgt,
     const pcl::Correspondences &correspondences,
-    Eigen::Matrix4f &transformation_matrix)
+    Eigen::Matrix4f &transformation_matrix) const
 {
   const int nr_correspondences = static_cast<const int> (correspondences.size ());
   std::vector<int> indices_src (nr_correspondences);

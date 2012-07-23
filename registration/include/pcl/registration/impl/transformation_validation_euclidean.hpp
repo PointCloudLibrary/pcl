@@ -46,7 +46,7 @@ template <typename PointSource, typename PointTarget> double
 pcl::registration::TransformationValidationEuclidean<PointSource, PointTarget>::validateTransformation (
   const PointCloudSourceConstPtr &cloud_src,
   const PointCloudTargetConstPtr &cloud_tgt,
-  const Eigen::Matrix4f &transformation_matrix)
+  const Eigen::Matrix4f &transformation_matrix) const
 {
   double fitness_score = 0.0;
 

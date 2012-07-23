@@ -117,7 +117,7 @@ namespace pcl
         validateTransformation (
             const PointCloudSourceConstPtr &cloud_src,
             const PointCloudTargetConstPtr &cloud_tgt,
-            const Eigen::Matrix4f &transformation_matrix);
+            const Eigen::Matrix4f &transformation_matrix) const;
 
       protected:
         /** \brief The maximum allowable distance between a point and its correspondence in the target 

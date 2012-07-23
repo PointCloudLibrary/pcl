@@ -67,7 +67,7 @@ namespace pcl
         estimateRigidTransformation (
             const pcl::PointCloud<PointSource> &cloud_src,
             const pcl::PointCloud<PointTarget> &cloud_tgt,
-            Eigen::Matrix4f &transformation_matrix);
+            Eigen::Matrix4f &transformation_matrix) const;
 
         /** \brief Estimate a rigid rotation transformation between a source and a target point cloud using SVD.
           * \param[in] cloud_src the source point cloud dataset
@@ -80,7 +80,7 @@ namespace pcl
             const pcl::PointCloud<PointSource> &cloud_src,
             const std::vector<int> &indices_src,
             const pcl::PointCloud<PointTarget> &cloud_tgt,
-            Eigen::Matrix4f &transformation_matrix);
+            Eigen::Matrix4f &transformation_matrix) const;
 
         /** \brief Estimate a rigid rotation transformation between a source and a target point cloud using SVD.
           * \param[in] cloud_src the source point cloud dataset
@@ -95,7 +95,7 @@ namespace pcl
             const std::vector<int> &indices_src,
             const pcl::PointCloud<PointTarget> &cloud_tgt,
             const std::vector<int> &indices_tgt,
-            Eigen::Matrix4f &transformation_matrix);
+            Eigen::Matrix4f &transformation_matrix) const;
 
         /** \brief Estimate a rigid rotation transformation between a source and a target point cloud using SVD.
           * \param[in] cloud_src the source point cloud dataset
@@ -108,7 +108,7 @@ namespace pcl
             const pcl::PointCloud<PointSource> &cloud_src,
             const pcl::PointCloud<PointTarget> &cloud_tgt,
             const pcl::Correspondences &correspondences,
-            Eigen::Matrix4f &transformation_matrix);
+            Eigen::Matrix4f &transformation_matrix) const;
 
       protected:
 
@@ -124,7 +124,7 @@ namespace pcl
                                           const Eigen::Vector4f &centroid_src,
                                           const Eigen::MatrixXf &cloud_tgt_demean,
                                           const Eigen::Vector4f &centroid_tgt,
-                                          Eigen::Matrix4f &transformation_matrix);
+                                          Eigen::Matrix4f &transformation_matrix) const;
     };
 
   }

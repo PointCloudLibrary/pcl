@@ -43,7 +43,7 @@ template <typename PointSource, typename PointTarget> inline void
 pcl::registration::TransformationEstimationSVD<PointSource, PointTarget>::estimateRigidTransformation (
     const pcl::PointCloud<PointSource> &cloud_src,
     const pcl::PointCloud<PointTarget> &cloud_tgt,
-    Eigen::Matrix4f &transformation_matrix)
+    Eigen::Matrix4f &transformation_matrix) const
 {
   // <cloud_src,cloud_src> is the source dataset
   transformation_matrix.setIdentity ();
@@ -69,7 +69,7 @@ pcl::registration::TransformationEstimationSVD<PointSource, PointTarget>::estima
     const pcl::PointCloud<PointSource> &cloud_src,
     const std::vector<int> &indices_src,
     const pcl::PointCloud<PointTarget> &cloud_tgt,
-    Eigen::Matrix4f &transformation_matrix)
+    Eigen::Matrix4f &transformation_matrix) const
 {
   if (indices_src.size () != cloud_tgt.points.size ())
   {
@@ -103,7 +103,7 @@ pcl::registration::TransformationEstimationSVD<PointSource, PointTarget>::estima
     const std::vector<int> &indices_src,
     const pcl::PointCloud<PointTarget> &cloud_tgt,
     const std::vector<int> &indices_tgt,
-    Eigen::Matrix4f &transformation_matrix)
+    Eigen::Matrix4f &transformation_matrix) const
 {
   if (indices_src.size () != indices_tgt.size ())
   {
@@ -135,7 +135,7 @@ pcl::registration::TransformationEstimationSVD<PointSource, PointTarget>::estima
     const pcl::PointCloud<PointSource> &cloud_src,
     const pcl::PointCloud<PointTarget> &cloud_tgt,
     const pcl::Correspondences &correspondences,
-    Eigen::Matrix4f &transformation_matrix)
+    Eigen::Matrix4f &transformation_matrix) const
 {
   std::vector<int> indices_src, indices_tgt;
   pcl::registration::getQueryIndices (correspondences, indices_src);
@@ -164,7 +164,7 @@ pcl::registration::TransformationEstimationSVD<PointSource, PointTarget>::getTra
     const Eigen::Vector4f &centroid_src,
     const Eigen::MatrixXf &cloud_tgt_demean,
     const Eigen::Vector4f &centroid_tgt,
-    Eigen::Matrix4f &transformation_matrix)
+    Eigen::Matrix4f &transformation_matrix) const
 {
   transformation_matrix.setIdentity ();
 
