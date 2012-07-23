@@ -303,9 +303,9 @@ pcl::SUSAN<PointInT, PointOutT, NormalT, IntensityT>::detectKeypoints (PointClou
   label_idx_ = pcl::getFieldIndex<PointOutT> (output, "label", out_fields_);
 
   const int surface_size = static_cast<int> (surface_->size ());
-#if defined (HAVE_OPENMP) && (!defined(_WIN32) || ((__GNUC__ > 4) && (__GNUC_MINOR__ >= 3)))
-#pragma omp parallel for shared (response) num_threads(threads_)
-#endif
+//#if defined (HAVE_OPENMP) && (!defined(_WIN32) || ((__GNUC__ > 4) && (__GNUC_MINOR__ >= 3)))
+//#pragma omp parallel for shared (response) num_threads(threads_)
+//#endif
   for (int point_index = 0; point_index < surface_size; ++point_index)
   {
     const PointInT& point_in = surface_->points [point_index];
@@ -357,9 +357,9 @@ pcl::SUSAN<PointInT, PointOutT, NormalT, IntensityT>::detectKeypoints (PointClou
             memcpy (reinterpret_cast<char*> (&point_out) + out_fields_[label_idx_].offset,
                     &label, sizeof (uint32_t));
           }
-#if defined (HAVE_OPENMP) && (!defined(_WIN32) || ((__GNUC__ > 4) && (__GNUC_MINOR__ >= 3)))
-#pragma omp critical
-#endif
+//#if defined (HAVE_OPENMP) && (!defined(_WIN32) || ((__GNUC__ > 4) && (__GNUC_MINOR__ >= 3)))
+//#pragma omp critical
+//#endif
           response->push_back (point_out);
         }
         else
@@ -393,9 +393,9 @@ pcl::SUSAN<PointInT, PointOutT, NormalT, IntensityT>::detectKeypoints (PointClou
                 memcpy (reinterpret_cast<char*> (&point_out) + out_fields_[label_idx_].offset,
                         &label, sizeof (uint32_t));
               }
-#if defined (HAVE_OPENMP) && (!defined(_WIN32) || ((__GNUC__ > 4) && (__GNUC_MINOR__ >= 3)))
-#pragma omp critical
-#endif
+//#if defined (HAVE_OPENMP) && (!defined(_WIN32) || ((__GNUC__ > 4) && (__GNUC_MINOR__ >= 3)))
+//#pragma omp critical
+//#endif
               response->push_back (point_out);              
             }
           }
@@ -414,9 +414,9 @@ pcl::SUSAN<PointInT, PointOutT, NormalT, IntensityT>::detectKeypoints (PointClou
     output.points.clear ();
     output.points.reserve (response->points.size());
     
-#if defined (HAVE_OPENMP) && (!defined(_WIN32) || ((__GNUC__ > 4) && (__GNUC_MINOR__ >= 3)))
-#pragma omp parallel for shared (output) num_threads(threads_)   
-#endif
+//#if defined (HAVE_OPENMP) && (!defined(_WIN32) || ((__GNUC__ > 4) && (__GNUC_MINOR__ >= 3)))
+//#pragma omp parallel for shared (output) num_threads(threads_)   
+//#endif
     for (int idx = 0; idx < static_cast<int> (response->points.size ()); ++idx)
     {
       const PointOutT& point_in = response->points [idx];
@@ -439,9 +439,9 @@ pcl::SUSAN<PointInT, PointOutT, NormalT, IntensityT>::detectKeypoints (PointClou
         }
       }
       if (is_minima)
-#if defined (HAVE_OPENMP) && (!defined(_WIN32) || ((__GNUC__ > 4) && (__GNUC_MINOR__ >= 3)))
-#pragma omp critical
-#endif
+//#if defined (HAVE_OPENMP) && (!defined(_WIN32) || ((__GNUC__ > 4) && (__GNUC_MINOR__ >= 3)))
+//#pragma omp critical
+//#endif
         output.points.push_back (response->points[idx]);
     }
     
