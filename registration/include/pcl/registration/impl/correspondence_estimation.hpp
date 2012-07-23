@@ -3,6 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -16,7 +17,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -42,7 +43,7 @@
 #include <pcl/registration/correspondence_estimation.h>
 #include <pcl/common/io.h>
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget> inline void
 pcl::registration::CorrespondenceEstimation<PointSource, PointTarget>::setInputTarget (
     const PointCloudTargetConstPtr &cloud)
@@ -53,7 +54,16 @@ pcl::registration::CorrespondenceEstimation<PointSource, PointTarget>::setInputT
     return;
   }
   target_ = cloud;
-  tree_->setInputCloud (target_);
+
+  // Set the internal point representation of choice
+  if (point_representation_)
+    tree_->setPointRepresentation (point_representation_);
+
+  // If the target indices have been given via setIndicesTarget
+  if (target_indices_)
+    tree_->setInputCloud (target_, target_indices_);
+  else
+    tree_->setInputCloud (target_);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -61,20 +71,20 @@ template <typename PointSource, typename PointTarget> void
 pcl::registration::CorrespondenceEstimation<PointSource, PointTarget>::determineCorrespondences (
     pcl::Correspondences &correspondences, double max_distance)
 {
-  typedef typename pcl::traits::fieldList<PointTarget>::type FieldListTarget;
-
-  if (!initCompute ())
-    return;
-
   if (!target_)
   {
     PCL_WARN ("[pcl::%s::compute] No input target dataset was given!\n", getClassName ().c_str ());
     return;
   }
 
+  if (!initCompute ())
+    return;
+
   double max_dist_sqr = max_distance * max_distance;
 
+  typedef typename pcl::traits::fieldList<PointTarget>::type FieldListTarget;
   correspondences.resize (indices_->size ());
+
   std::vector<int> index (1);
   std::vector<float> distance (1);
   pcl::Correspondence corr;
@@ -82,8 +92,9 @@ pcl::registration::CorrespondenceEstimation<PointSource, PointTarget>::determine
   
   // Check if the template types are the same. If true, avoid a copy.
   // Both point types MUST be registered using the POINT_CLOUD_REGISTER_POINT_STRUCT macro!
-  if (!isSamePointType<PointSource, PointTarget> ())
+  if (isSamePointType<PointSource, PointTarget> ())
   {
+    // Iterate over the input set of source indices
     for (size_t i = 0; i < indices_->size (); ++i)
     {
       if (!tree_->nearestKSearch (input_->points[(*indices_)[i]], 1, index, distance))
@@ -99,9 +110,11 @@ pcl::registration::CorrespondenceEstimation<PointSource, PointTarget>::determine
   }
   else
   {
+    PointTarget pt;
+    
+    // Iterate over the input set of source indices
     for (size_t i = 0; i < indices_->size (); ++i)
     {
-      PointTarget pt;
       // Copy the source data to a target PointTarget format so we can search in the tree
       pcl::for_each_type <FieldListTarget> (pcl::NdConcatenateFunctor <PointSource, PointTarget> (
             input_->points[(*indices_)[i]], 
@@ -123,26 +136,30 @@ pcl::registration::CorrespondenceEstimation<PointSource, PointTarget>::determine
   deinitCompute ();
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget> void
 pcl::registration::CorrespondenceEstimation<PointSource, PointTarget>::determineReciprocalCorrespondences (
     pcl::Correspondences &correspondences, double max_distance)
 {
-  typedef typename pcl::traits::fieldList<PointSource>::type FieldListSource;
-  typedef typename pcl::traits::fieldList<PointTarget>::type FieldListTarget;
-  typedef typename pcl::intersect<FieldListSource, FieldListTarget>::type FieldList;
-  
-  if (!initCompute ())
-    return;
-
   if (!target_)
   {
     PCL_WARN ("[pcl::%s::compute] No input target dataset was given!\n", getClassName ().c_str ());
     return;
   }
 
+  if (!initCompute ())
+    return;
+  
+  typedef typename pcl::traits::fieldList<PointSource>::type FieldListSource;
+  typedef typename pcl::traits::fieldList<PointTarget>::type FieldListTarget;
+  typedef typename pcl::intersect<FieldListSource, FieldListTarget>::type FieldList;
+  
   // setup tree for reciprocal search
   pcl::KdTreeFLANN<PointSource> tree_reciprocal;
+  // Set the internal point representation of choice
+  if (point_representation_)
+    tree_reciprocal.setPointRepresentation (point_representation_);
+
   tree_reciprocal.setInputCloud (input_, indices_);
 
   double max_dist_sqr = max_distance * max_distance;
@@ -157,15 +174,19 @@ pcl::registration::CorrespondenceEstimation<PointSource, PointTarget>::determine
 
   // Check if the template types are the same. If true, avoid a copy.
   // Both point types MUST be registered using the POINT_CLOUD_REGISTER_POINT_STRUCT macro!
-  if (!isSamePointType<PointSource, PointTarget> ())
+  if (isSamePointType<PointSource, PointTarget> ())
   {
+    // Iterate over the input set of source indices
     for (size_t i = 0; i < indices_->size (); ++i)
     {
       tree_->nearestKSearch (input_->points[(*indices_)[i]], 1, index, distance);
       if (distance[0] > max_dist_sqr)
         continue;
 
-      tree_reciprocal.nearestKSearch (target_->points[index[0]], 1, index_reciprocal, distance_reciprocal);
+      if (target_indices_)
+        tree_reciprocal.nearestKSearch (target_->points[(*target_indices_)[index[0]]], 1, index_reciprocal, distance_reciprocal);
+      else
+        tree_reciprocal.nearestKSearch (target_->points[index[0]], 1, index_reciprocal, distance_reciprocal);
       if (distance_reciprocal[0] > max_dist_sqr)
         continue;
 
@@ -180,10 +201,13 @@ pcl::registration::CorrespondenceEstimation<PointSource, PointTarget>::determine
   }
   else
   {
+    PointTarget pt_src;
+    PointSource pt_tgt;
+   
+    // Iterate over the input set of source indices
     for (size_t i = 0; i < indices_->size (); ++i)
     {
       // Copy the source data to a target PointTarget format so we can search in the tree
-      PointTarget pt_src;
       pcl::for_each_type <FieldList> (pcl::NdConcatenateFunctor <PointSource, PointTarget> (
             input_->points[(*indices_)[i]], 
             pt_src));
@@ -192,11 +216,16 @@ pcl::registration::CorrespondenceEstimation<PointSource, PointTarget>::determine
       if (distance[0] > max_dist_sqr)
         continue;
 
-      // Copy the target data to a target PointSource format so we can search in the tree_reciprocal
-      PointSource pt_tgt;
-      pcl::for_each_type <FieldList> (pcl::NdConcatenateFunctor <PointTarget, PointSource> (
-            target_->points[index[0]],
-            pt_tgt));
+      if (target_indices_)
+        // Copy the target data to a target PointSource format so we can search in the tree_reciprocal
+        pcl::for_each_type <FieldList> (pcl::NdConcatenateFunctor <PointTarget, PointSource> (
+              target_->points[(*target_indices_)[index[0]]],
+              pt_tgt));
+      else
+        // Copy the target data to a target PointSource format so we can search in the tree_reciprocal
+        pcl::for_each_type <FieldList> (pcl::NdConcatenateFunctor <PointTarget, PointSource> (
+              target_->points[index[0]],
+              pt_tgt));
 
       tree_reciprocal.nearestKSearch (pt_tgt, 1, index_reciprocal, distance_reciprocal);
       if (distance_reciprocal[0] > max_dist_sqr)

@@ -3,6 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2012, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -16,7 +17,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -40,66 +41,135 @@
 
 #include <pcl/registration/correspondence_estimation_normal_shooting.h>
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget, typename NormalT> void
 pcl::registration::CorrespondenceEstimationNormalShooting<PointSource, PointTarget, NormalT>::determineCorrespondences (
     pcl::Correspondences &correspondences, float max_distance)
 {
-  if (!initCompute ())
-    return;
-
   if (!target_)
   {
     PCL_WARN ("[pcl::%s::compute] No input target dataset was given!\n", getClassName ().c_str ());
     return;
   }
-  correspondences.resize (indices_->size ());
 
-  float min_dist = std::numeric_limits<float>::max ();
-  float dist = 0.0;
-  int min_index = 0;
-  tree_->setInputCloud (target_);
+  if (!initCompute ())
+    return;
+
+  typedef typename pcl::traits::fieldList<PointTarget>::type FieldListTarget;
+  
+  correspondences.resize (indices_->size ());
 
   std::vector<int> nn_indices (k_);
   std::vector<float> nn_dists (k_);
 
+  float min_dist = std::numeric_limits<float>::max ();
+  int min_index = 0;
+  
+  // Set the internal point representation of choice
+  if (point_representation_)
+    tree_->setPointRepresentation (point_representation_);
+
+  // If the target indices have been given via setIndicesTarget
+  if (target_indices_)
+    tree_->setInputCloud (target_, target_indices_);
+  else
+    tree_->setInputCloud (target_);
+
   pcl::Correspondence corr;
+  unsigned int nr_valid_correspondences = 0;
 
-  for (size_t i = 0; i < source_normals_->points.size (); i++)
+  // Check if the template types are the same. If true, avoid a copy.
+  // Both point types MUST be registered using the POINT_CLOUD_REGISTER_POINT_STRUCT macro!
+  if (isSamePointType<PointSource, PointTarget> ())
   {
-    float *normal = source_normals_->points[i].normal;
-
-    tree_->nearestKSearch (input_->points[i], k_, nn_indices, nn_dists);
-
-    // Among the K nearest neighbours find the one with minimum perpendicular distance to the normal
-    min_dist = std::numeric_limits<float>::max ();
-    for (size_t j = 0; j < nn_indices.size (); j++)
+    // Iterate over the input set of source indices
+    for (size_t i = 0; i < indices_->size (); ++i)
     {
-      int q = nn_indices[j];
-      // computing the distance between a point and a line in 3d. 
-      // Reference - http://mathworld.wolfram.com/Point-LineDistance3-Dimensional.html
+      if (!tree_->nearestKSearch (input_->points[(*indices_)[i]], k_, nn_indices, nn_dists))
+        continue;
+
+      // Among the K nearest neighbours find the one with minimum perpendicular distance to the normal
+      min_dist = std::numeric_limits<float>::max ();
       PointTarget pt;
-      pt.x = target_->points[q].x - input_->points[i].x;
-      pt.y = target_->points[q].y - input_->points[i].y;
-      pt.z = target_->points[q].z - input_->points[i].z;
-      Eigen::Vector3d N (normal[0], normal[1], normal[2]);
-      Eigen::Vector3d V (pt.x, pt.y, pt.z);
-      Eigen::Vector3d C = N.cross (V);
-      dist = C.dot (C);
-      if (dist < min_dist)
+      
+      for (size_t j = 0; j < nn_indices.size (); j++)
       {
-        min_dist = dist;
-        min_index = q;
+        // computing the distance between a point and a line in 3d. 
+        // Reference - http://mathworld.wolfram.com/Point-LineDistance3-Dimensional.html
+        pt.x = target_->points[nn_indices[j]].x - input_->points[(*indices_)[i]].x;
+        pt.y = target_->points[nn_indices[j]].y - input_->points[(*indices_)[i]].y;
+        pt.z = target_->points[nn_indices[j]].z - input_->points[(*indices_)[i]].z;
+
+        NormalT &normal = source_normals_->points[(*indices_)[i]].normal;
+        Eigen::Vector3d N (normal.normal_x, normal.normal_y, normal.normal_z);
+        Eigen::Vector3d V (pt.x, pt.y, pt.z);
+        Eigen::Vector3d C = N.cross (V);
+        
+        // Check if we have a better correspondence
+        float dist = C.dot (C);
+        if (dist < min_dist)
+        {
+          min_dist = dist;
+          min_index = nn_indices[j];
+        }
       }
+      if (min_dist > max_distance)
+        continue;
+      corr.index_query = i;
+      corr.index_match = min_index;
+      corr.distance = min_dist;
+      correspondences[nr_valid_correspondences++] = corr;
     }
-    if (min_dist > max_distance)
-      continue;
-    corr.index_query = i;
-    corr.index_match = min_index;
-    corr.distance = min_dist;
-    correspondences[i] = corr;
   }
+  else
+  {
+    PointTarget pt;
+    
+    // Iterate over the input set of source indices
+    for (size_t i = 0; i < indices_->size (); ++i)
+    {
+      if (!tree_->nearestKSearch (input_->points[(*indices_)[i]], k_, nn_indices, nn_dists))
+        continue;
+
+      // Among the K nearest neighbours find the one with minimum perpendicular distance to the normal
+      min_dist = std::numeric_limits<float>::max ();
+      for (size_t j = 0; j < nn_indices.size (); j++)
+      {
+        PointSource pt_src;
+        // Copy the source data to a target PointTarget format so we can search in the tree
+        pcl::for_each_type <FieldListTarget> (pcl::NdConcatenateFunctor <PointSource, PointTarget> (
+            input_->points[(*indices_)[i]], 
+            pt_src));
+
+        // computing the distance between a point and a line in 3d. 
+        // Reference - http://mathworld.wolfram.com/Point-LineDistance3-Dimensional.html
+        pt.x = target_->points[nn_indices[j]].x - pt_src.x;
+        pt.y = target_->points[nn_indices[j]].y - pt_src.y;
+        pt.z = target_->points[nn_indices[j]].z - pt_src.z;
+        
+        NormalT &normal = source_normals_->points[(*indices_)[i]].normal;
+        Eigen::Vector3d N (normal.normal_x, normal.normal_y, normal.normal_z);
+        Eigen::Vector3d V (pt.x, pt.y, pt.z);
+        Eigen::Vector3d C = N.cross (V);
+        
+        // Check if we have a better correspondence
+        float dist = C.dot (C);
+        if (dist < min_dist)
+        {
+          min_dist = dist;
+          min_index = nn_indices[j];
+        }
+      }
+      if (min_dist > max_distance)
+        continue;
+      corr.index_query = i;
+      corr.index_match = min_index;
+      corr.distance = min_dist;
+      correspondences[nr_valid_correspondences++] = corr;
+    }
+  }
+  correspondences.resize (nr_valid_correspondences);
   deinitCompute ();
 }
 
-#endif /* PCL_REGISTRATION_IMPL_CORRESPONDENCE_ESTIMATION_NORMAL_SHOOTING_H_ */
+#endif    // PCL_REGISTRATION_IMPL_CORRESPONDENCE_ESTIMATION_NORMAL_SHOOTING_H_

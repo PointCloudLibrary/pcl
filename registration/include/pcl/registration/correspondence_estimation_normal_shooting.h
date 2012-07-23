@@ -3,6 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -16,7 +17,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -46,9 +47,31 @@ namespace pcl
 {
   namespace registration
   {
-    /** \brief @b CorrespondenceEstimationNormalShooting computes correspondences as points in the target cloud which
-      *  have minimum distance to normals computed on the input cloud
-      * \author Aravindhan K Krishnan
+    /** \brief @b CorrespondenceEstimationNormalShooting computes
+      * correspondences as points in the target cloud which have minimum
+      * distance to normals computed on the input cloud
+      *
+      * Code example:
+      *
+      * \code
+      * pcl::PointCloud<pcl::PointNormal>::Ptr source, target;
+      * // ... read or fill in source and target
+      * pcl::CorrespondenceEstimationNormalShooting<pcl::PointNormal, pcl::PointNormal, pcl::PointNormal> est;
+      * est.setInputSource (source);
+      * est.setSourceNormals (source);
+      *
+      * est.setInputTarget (target);
+      * est.setTargetNormals (target);
+      *
+      * // Test the first 10 correspondences for each point in source, and return the best
+      * est.setKSearch (10);
+      *
+      * pcl::Correspondences all_correspondences;
+      * // Determine all correspondences
+      * est.determineCorrespondences (all_correspondences);
+      * \endcode
+      * 
+      * \author Aravindhan K. Krishnan, Radu B. Rusu
       * \ingroup registration
       */
     template <typename PointSource, typename PointTarget, typename NormalT>
@@ -60,6 +83,8 @@ namespace pcl
         using PCLBase<PointSource>::input_;
         using PCLBase<PointSource>::indices_;
         using CorrespondenceEstimation<PointSource, PointTarget>::getClassName;
+        using CorrespondenceEstimation<PointSource, PointTarget>::point_representation_;
+        using CorrespondenceEstimation<PointSource, PointTarget>::target_indices_;
 
         typedef typename pcl::KdTree<PointTarget> KdTree;
         typedef typename pcl::KdTree<PointTarget>::Ptr KdTreePtr;
@@ -72,25 +97,42 @@ namespace pcl
         typedef typename PointCloudTarget::Ptr PointCloudTargetPtr;
         typedef typename PointCloudTarget::ConstPtr PointCloudTargetConstPtr;
 
-        typedef typename KdTree::PointRepresentationConstPtr PointRepresentationConstPtr;
         typedef typename pcl::PointCloud<NormalT>::Ptr NormalsPtr;
 
-        /** \brief Empty constructor. */
+        /** \brief Empty constructor. 
+          *
+          * \note
+          * Sets the number of neighbors to be considered in the target point cloud (k_) to 10.
+          */
         CorrespondenceEstimationNormalShooting ()
+          : source_normals_ ()
+          , target_normals_ ()
+          , k_ (10)
         {
-          corr_name_ = "NormalShooting";
+          corr_name_ = "CorrespondenceEstimationNormalShooting";
         }
 
-        /** \brief Set the normals computed on the input point cloud
-          * \param[in] normals the normals computed for the input cloud
+        /** \brief Set the normals computed on the source point cloud
+          * \param[in] normals the normals computed for the source cloud
           */
         inline void
         setSourceNormals (const NormalsPtr &normals) { source_normals_ = normals; }
 
-        /** \brief Get the normals of the input point cloud
+        /** \brief Get the normals of the source point cloud
           */
         inline NormalsPtr
         getSourceNormals () const { return (source_normals_); }
+
+        /** \brief Set the normals computed on the target point cloud
+          * \param[in] normals the normals computed for the target cloud
+          */
+        inline void
+        setTargetNormals (const NormalsPtr &normals) { target_normals_ = normals; }
+
+        /** \brief Get the normals of the target point cloud
+          */
+        inline NormalsPtr
+        getTargetNormals () const { return (target_normals_); }
 
         /** \brief Determine the correspondences between input and target cloud.
           * \param[out] correspondences the found correspondences (index of query point, index of target point, distance)
@@ -101,13 +143,17 @@ namespace pcl
         determineCorrespondences (pcl::Correspondences &correspondences,
                                   float max_distance = std::numeric_limits<float>::max ());
 
-        /** \brief Set the number of nearest neighbours to be considered in the target point cloud
+        /** \brief Set the number of nearest neighbours to be considered in the target 
+          * point cloud. By default, we use k = 10 nearest neighbors.
+          *
           * \param[in] k the number of nearest neighbours to be considered
           */
         inline void
         setKSearch (unsigned int k) { k_ = k; }
 
-        /** \brief Get the number of nearest neighbours considered in the target point cloud for computing correspondence
+        /** \brief Get the number of nearest neighbours considered in the target point 
+          * cloud for computing correspondences. By default we use k = 10 nearest 
+          * neighbors.
           */
         inline void
         getKSearch () const { return (k_); }
@@ -120,8 +166,11 @@ namespace pcl
 
       private:
 
-        /** \brief The normals computed at each point in the input cloud */
+        /** \brief The normals computed at each point in the source cloud */
         NormalsPtr source_normals_; 
+
+        /** \brief The normals computed at each point in the target cloud */
+        NormalsPtr target_normals_; 
 
         /** \brief The number of neighbours to be considered in the target point cloud */
         unsigned int k_;

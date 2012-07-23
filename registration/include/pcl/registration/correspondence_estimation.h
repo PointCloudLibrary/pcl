@@ -3,6 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -16,7 +17,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -55,7 +56,22 @@ namespace pcl
     /** \brief @b CorrespondenceEstimation represents the base class for
       * determining correspondences between target and query point
       * sets/features.
-      * \author Radu Bogdan Rusu, Michael Dixon, Dirk Holz
+      *
+      * Code example:
+      *
+      * \code
+      * pcl::PointCloud<pcl::PointXYZRGBA>::Ptr source, target;
+      * // ... read or fill in source and target
+      * pcl::CorrespondenceEstimation<pcl::PointXYZ, pcl::PointXYZ> est;
+      * est.setInputSource (source);
+      * est.setInputTarget (target);
+      *
+      * pcl::Correspondences all_correspondences;
+      * // Determine all reciprocal correspondences
+      * est.determineReciprocalCorrespondences (all_correspondences);
+      * \endcode
+      *
+      * \author Radu B. Rusu, Michael Dixon, Dirk Holz
       * \ingroup registration
       */
     template <typename PointSource, typename PointTarget>
@@ -66,6 +82,7 @@ namespace pcl
         using PCLBase<PointSource>::deinitCompute;
         using PCLBase<PointSource>::input_;
         using PCLBase<PointSource>::indices_;
+        using PCLBase<PointSource>::setIndices;
 
         typedef typename pcl::KdTree<PointTarget> KdTree;
         typedef typename pcl::KdTree<PointTarget>::Ptr KdTreePtr;
@@ -81,33 +98,68 @@ namespace pcl
         typedef typename KdTree::PointRepresentationConstPtr PointRepresentationConstPtr;
 
         /** \brief Empty constructor. */
-        CorrespondenceEstimation () : 
-          corr_name_ (),
-          tree_ (new pcl::KdTreeFLANN<PointTarget>),
-          target_ (),
-          point_representation_ ()
+        CorrespondenceEstimation () 
+          : corr_name_ ("CorrespondenceEstimation")
+          , tree_ (new pcl::KdTreeFLANN<PointTarget>)
+          , target_ ()
+          , target_indices_ ()
+          , point_representation_ ()
         {
         }
 
-        /** \brief Provide a pointer to the input target (e.g., the point cloud that we want to align the 
-          * input source to)
+        /** \brief Provide a pointer to the input source 
+          * (e.g., the point cloud that we want to align to the target)
+          *
+          * \param[in] cloud the input point cloud source
+          */
+        inline void 
+        setInputSource (const PointCloudSourceConstPtr &cloud)
+        {
+          setInputCloud (cloud);
+        }
+
+        /** \brief Get a pointer to the input point cloud dataset target. */
+        inline PointCloudSourceConstPtr const 
+        getInputSource () { return (input_ ); }
+
+        /** \brief Provide a pointer to the input target 
+          * (e.g., the point cloud that we want to align the input source to)
           * \param[in] cloud the input point cloud target
           */
-        virtual inline void 
+        inline void 
         setInputTarget (const PointCloudTargetConstPtr &cloud);
 
         /** \brief Get a pointer to the input point cloud dataset target. */
         inline PointCloudTargetConstPtr const 
         getInputTarget () { return (target_ ); }
 
-        /** \brief Provide a boost shared pointer to the PointRepresentation to be used when comparing points
-          * \param[in] point_representation the PointRepresentation to be used by the k-D tree
+        /** \brief Provide a pointer to the vector of indices that represent the 
+          * input source point cloud.
+          * \param[in] indices a pointer to the vector of indices 
           */
         inline void
-        setPointRepresentation (const PointRepresentationConstPtr &point_representation)
+        setIndicesSource (const IndicesPtr &indices)
         {
-          point_representation_ = point_representation;
+          setIndices (indices);
         }
+
+        /** \brief Get a pointer to the vector of indices used for the source dataset. */
+        inline IndicesPtr const 
+        getIndicesSource () { return (indices_); }
+
+        /** \brief Provide a pointer to the vector of indices that represent the 
+          * input target point cloud.
+          * \param[in] indices a pointer to the vector of indices 
+          */
+        inline void
+        setIndicesTarget (const IndicesPtr &indices)
+        {
+          target_indices_ = indices;
+        }
+
+        /** \brief Get a pointer to the vector of indices used for the target dataset. */
+        inline IndicesPtr const 
+        getIndicesTarget () { return (target_indices_); }
 
         /** \brief Determine the correspondences between input and target cloud.
           * \param[out] correspondences the found correspondences (index of query point, index of target point, distance)
@@ -125,6 +177,18 @@ namespace pcl
         determineReciprocalCorrespondences (pcl::Correspondences &correspondences,
                                             double max_distance = std::numeric_limits<double>::max ());
 
+        /** \brief Provide a boost shared pointer to the PointRepresentation to be used 
+          * when searching for nearest neighbors.
+          *
+          * \param[in] point_representation the PointRepresentation to be used by the 
+          * k-D tree for nearest neighbor search
+          */
+        inline void
+        setPointRepresentation (const PointRepresentationConstPtr &point_representation)
+        {
+          point_representation_ = point_representation;
+        }
+
       protected:
         /** \brief The correspondence estimation method name. */
         std::string corr_name_;
@@ -135,11 +199,13 @@ namespace pcl
         /** \brief The input point cloud dataset target. */
         PointCloudTargetConstPtr target_;
 
+        /** \brief The target point cloud dataset indices. */
+        IndicesPtr target_indices_;
+
         /** \brief Abstract class get name method. */
         inline const std::string& 
         getClassName () const { return (corr_name_); }
 
-      private:
         /** \brief The point representation used (internal). */
         PointRepresentationConstPtr point_representation_;
      };
