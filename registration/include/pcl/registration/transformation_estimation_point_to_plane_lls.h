@@ -127,7 +127,7 @@ namespace pcl
         inline void
         constructTransformationMatrix (const float & alpha, const float & beta, const float & gamma,
                                        const float & tx, const float & ty, const float & tz,
-                                       Eigen::Matrix4f &transformation_matrix);
+                                       Eigen::Matrix4f &transformation_matrix) const;
 
     };
   }

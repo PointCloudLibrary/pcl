@@ -221,7 +221,7 @@ template <typename PointSource, typename PointTarget> inline void
 pcl::registration::TransformationEstimationPointToPlaneLLS<PointSource, PointTarget>::
 constructTransformationMatrix (const float & alpha, const float & beta, const float & gamma,
                                const float & tx, const float & ty, const float & tz,
-                               Eigen::Matrix4f &transformation_matrix)
+                               Eigen::Matrix4f &transformation_matrix) const
 {
 
   // Construct the transformation matrix from rotation and translation 
