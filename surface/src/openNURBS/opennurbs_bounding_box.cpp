@@ -2264,17 +2264,17 @@ bool ON_BeyondSinglePrecision( const ON_BoundingBox& bbox, ON_Xform* xform )
     const double too_big = 1048576.0; // MUST be a power of 2
     bool bTooFar = (    bbox.m_min.x >=  too_far 
                      || bbox.m_min.y >=  too_far 
-                     || bbox.m_min.x >=  too_far 
+                     || bbox.m_min.z >=  too_far
                      || bbox.m_max.x <= -too_far
                      || bbox.m_max.y <= -too_far
-                     || bbox.m_max.x <= -too_far
+                     || bbox.m_max.z <= -too_far
                    );
     bool bTooBig = (   bbox.m_min.x <= -too_big 
                      || bbox.m_min.y <= -too_big 
-                     || bbox.m_min.x <= -too_big 
+                     || bbox.m_min.z <= -too_big
                      || bbox.m_max.x >=  too_big
                      || bbox.m_max.y >=  too_big
-                     || bbox.m_max.x >=  too_big
+                     || bbox.m_max.z >=  too_big
                      );
     if ( bTooFar || bTooBig )
     {

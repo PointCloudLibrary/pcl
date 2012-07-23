@@ -959,7 +959,7 @@ int ON_Xform::IsSimilarity() const
       double sx = X.Length();
       double sy = Y.Length();
       double sz = Z.Length();
-      if (   sz == 0.0 || sy == 0.0 || sz == 0.0 
+      if (   sx == 0.0 || sy == 0.0 || sz == 0.0
           || fabs(sx-sy) > tol || fabs(sy-sz) > tol || fabs(sz-sx) > tol )
       {
         // non-uniform scale or worse
