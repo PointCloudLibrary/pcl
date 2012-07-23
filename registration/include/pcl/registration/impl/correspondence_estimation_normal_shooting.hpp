@@ -52,6 +52,12 @@ pcl::registration::CorrespondenceEstimationNormalShooting<PointSource, PointTarg
     return;
   }
 
+  if (!source_normals_ || !target_normals_)
+  {
+    PCL_WARN ("[pcl::%s::compute] Datasets containing normals for source/target have not been given!\n", getClassName ().c_str ());
+    return;
+  }
+
   if (!initCompute ())
     return;
 
