@@ -418,5 +418,7 @@ pcl::registration::LUM<PointT>::incidenceCorrection (Eigen::Vector6f pose)
   return (out);
 }
 
+#define PCL_INSTANTIATE_LUM(T) template class PCL_EXPORTS pcl::registration::LUM<T>;
+
 #endif  // PCL_REGISTRATION_IMPL_LUM_HPP_
 
