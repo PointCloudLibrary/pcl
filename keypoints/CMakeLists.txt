@@ -17,10 +17,8 @@ if(build)
         src/harris_3d.cpp
         src/harris_6d.cpp
         src/agast_2d.cpp
-        src/brisk_2d.cpp
         src/susan.cpp
         )
-
     set(incs
         include/pcl/${SUBSYS_NAME}/keypoint.h
         include/pcl/${SUBSYS_NAME}/narf_keypoint.h
@@ -28,23 +26,28 @@ if(build)
         include/pcl/${SUBSYS_NAME}/uniform_sampling.h
         include/pcl/${SUBSYS_NAME}/smoothed_surfaces_keypoint.h
         include/pcl/${SUBSYS_NAME}/agast_2d.h
-        include/pcl/${SUBSYS_NAME}/brisk_2d.h
         include/pcl/${SUBSYS_NAME}/harris_3d.h
         include/pcl/${SUBSYS_NAME}/harris_6d.h
         include/pcl/${SUBSYS_NAME}/susan.h
         )
-
     set(impl_incs
         include/pcl/${SUBSYS_NAME}/impl/keypoint.hpp
         include/pcl/${SUBSYS_NAME}/impl/sift_keypoint.hpp
         include/pcl/${SUBSYS_NAME}/impl/uniform_sampling.hpp
         include/pcl/${SUBSYS_NAME}/impl/smoothed_surfaces_keypoint.hpp
         include/pcl/${SUBSYS_NAME}/impl/agast_2d.hpp
-        include/pcl/${SUBSYS_NAME}/impl/brisk_2d.hpp
         include/pcl/${SUBSYS_NAME}/impl/harris_3d.hpp
         include/pcl/${SUBSYS_NAME}/impl/harris_6d.hpp
         include/pcl/${SUBSYS_NAME}/impl/susan.hpp
         )
+    
+    PCL_CHECK_FOR_SSE4_1()
+    if(HAVE_SSE4_1_EXTENSIONS)
+      message(STATUS "[pcl_keypoints] SSE 4.1 status: found. Enabling BriskKeypoint2D.")
+      set(srcs ${srcs} src/brisk_2d.cpp)
+      set(incs ${incs} include/pcl/${SUBSYS_NAME}/brisk_2d.h)
+      set(impl_incs ${impl_incs} include/pcl/${SUBSYS_NAME}/impl/brisk_2d.hpp)
+    endif()
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)

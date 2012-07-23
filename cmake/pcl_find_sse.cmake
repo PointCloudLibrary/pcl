@@ -143,3 +143,29 @@ macro(PCL_CHECK_FOR_SSE)
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${SSE_FLAGS}")
 
 endmacro(PCL_CHECK_FOR_SSE)
+
+###############################################################################
+# Check for the presence of SSE 4.1
+macro(PCL_CHECK_FOR_SSE4_1)
+  include(CheckCXXSourceRuns)
+  set(CMAKE_REQUIRED_FLAGS)
+
+  if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
+      set(CMAKE_REQUIRED_FLAGS "-msse4.1")
+  endif(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
+
+  check_cxx_source_runs("
+      #include <smmintrin.h>
+      int main()
+      {
+        __m128 a, b;
+        float vals[4] = {1, 2, 3, 4};
+        const int mask = 123;
+        a = _mm_loadu_ps(vals);
+        b = a;
+        b = _mm_dp_ps (a, a, mask);
+        _mm_storeu_ps(vals,b);
+        return 0;
+      }"
+      HAVE_SSE4_1_EXTENSIONS)
+endmacro(PCL_CHECK_FOR_SSE4_1)
