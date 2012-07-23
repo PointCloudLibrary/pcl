@@ -57,7 +57,12 @@ if(build)
             src/oni_grabber.cpp
             )
     endif(OPENNI_FOUND)
-
+    set(DINAST_GRABBER_INCLUDES
+	include/pcl/io/dinast_grabber.h
+	)
+    set(DINAST_GRABBER_SOURCES
+	src/dinast_grabber.cpp
+	)
     if (VTK_FOUND AND NOT ANDROID_NDK)
         set(VTK_USE_FILE ${VTK_USE_FILE} CACHE INTERNAL "VTK_USE_FILE")
         include (${VTK_USE_FILE})
@@ -93,6 +98,7 @@ if(build)
         src/obj_io.cpp
         ${VTK_IO_SOURCE}
         ${OPENNI_GRABBER_SOURCES}
+	${DINAST_GRABBER_SOURCES}
         )
 
     set(incs 
@@ -110,6 +116,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/obj_io.h 
         ${VTK_IO_INCLUDES}
         ${OPENNI_GRABBER_INCLUDES}
+	${DINAST_GRABBER_INCLUDES}
         )
 
     set(compression_incs
