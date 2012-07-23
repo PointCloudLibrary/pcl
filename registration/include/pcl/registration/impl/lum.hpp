@@ -179,9 +179,9 @@ pcl::registration::LUM<PointT>::setCorrespondences (Vertex source_vertex, Vertex
   }
   Edge e;
   bool present;
-  tie (e, present) = edge (source_vertex, target_vertex, *slam_graph_);
+  boost::tuples::tie (e, present) = edge (source_vertex, target_vertex, *slam_graph_);
   if (!present)
-    tie (e, present) = add_edge (source_vertex, target_vertex, *slam_graph_);
+    boost::tuples::tie (e, present) = add_edge (source_vertex, target_vertex, *slam_graph_);
   (*slam_graph_)[e].corrs_ = corrs;
 }
 
@@ -196,7 +196,7 @@ pcl::registration::LUM<PointT>::getCorrespondences (Vertex source_vertex, Vertex
   }
   Edge e;
   bool present;
-  tie (e, present) = edge (source_vertex, target_vertex, *slam_graph_);
+  boost::tuples::tie (e, present) = edge (source_vertex, target_vertex, *slam_graph_);
   if (!present)
   {
     PCL_ERROR("[pcl::registration::LUM::getCorrespondences] You are attempting to get a set of correspondences from a non-existing graph edge.\n");
@@ -219,7 +219,7 @@ pcl::registration::LUM<PointT>::compute ()
   {
     // Linearized computation of C^-1 and C^-1*D and convergence checking for all edges in the graph (results stored in slam_graph_)
     typename SLAMGraph::edge_iterator e, e_end;
-    for (tie (e, e_end) = edges (*slam_graph_); e != e_end; ++e)
+    for (boost::tuples::tie (e, e_end) = edges (*slam_graph_); e != e_end; ++e)
       computeEdge (*e);
 
     // Declare matrices G and B
@@ -234,10 +234,10 @@ pcl::registration::LUM<PointT>::compute ()
         // Attempt to use the forward edge, otherwise use backward edge, otherwise there was no edge
         Edge e;
         bool present1, present2;
-        tie (e, present1) = edge (vi, vj, *slam_graph_);
+        boost::tuples::tie (e, present1) = edge (vi, vj, *slam_graph_);
         if (!present1)
         {
-          tie (e, present2) = edge (vj, vi, *slam_graph_);
+          boost::tuples::tie (e, present2) = edge (vj, vi, *slam_graph_);
           if (!present2)
             continue;
         }
@@ -284,7 +284,7 @@ pcl::registration::LUM<PointT>::getConcatenatedCloud ()
 {
   PointCloudPtr out (new PointCloud);
   typename SLAMGraph::vertex_iterator v, v_end;
-  for (tie (v, v_end) = vertices (*slam_graph_); v != v_end; ++v)
+  for (boost::tuples::tie (v, v_end) = vertices (*slam_graph_); v != v_end; ++v)
   {
     PointCloud temp;
     pcl::transformPointCloud (*getPointCloud (*v), temp, getTransformation (*v));
