@@ -185,9 +185,15 @@ estimateRigidTransformation (const pcl::PointCloud<PointSource> &cloud_src,
 {
   size_t nr_points = correspondences.size ();
 
+  typedef Eigen::Matrix<double, 6, 1> Vector6d;
+  typedef Eigen::Matrix<double, 6, 6> Matrix6d;
+
+  Matrix6d ATA;
+  Vector6d ATb;
+  ATA.setZero ();
+  ATb.setZero ();
+
   // Approximate as a linear least squares problem
-  Eigen::MatrixXf A (nr_points, 6);
-  Eigen::MatrixXf b (nr_points, 1);
   for (size_t i = 0; i < nr_points; ++i)
   {
     const int & src_idx = correspondences[i].index_query;
@@ -201,22 +207,72 @@ estimateRigidTransformation (const pcl::PointCloud<PointSource> &cloud_src,
     const float & nx = cloud_tgt.points[tgt_idx].normal[0];
     const float & ny = cloud_tgt.points[tgt_idx].normal[1];
     const float & nz = cloud_tgt.points[tgt_idx].normal[2];
-    A (i, 0) = nz*sy - ny*sz;
-    A (i, 1) = nx*sz - nz*sx; 
-    A (i, 2) = ny*sx - nx*sy;
-    A (i, 3) = nx;
-    A (i, 4) = ny;
-    A (i, 5) = nz;
-    b (i, 0) = nx*dx + ny*dy + nz*dz - nx*sx - ny*sy - nz*sz;
+
+    double a = nz*sy - ny*sz;
+    double b = nx*sz - nz*sx; 
+    double c = ny*sx - nx*sy;
+   
+    //    0  1  2  3  4  5
+    //    6  7  8  9 10 11
+    //   12 13 14 15 16 17
+    //   18 19 20 21 22 23
+    //   24 25 26 27 28 29
+    //   30 31 32 33 34 35
+   
+    ATA.coeffRef (0) += a * a;
+    ATA.coeffRef (1) += a * b;
+    ATA.coeffRef (2) += a * c;
+    ATA.coeffRef (3) += a * nx;
+    ATA.coeffRef (4) += a * ny;
+    ATA.coeffRef (5) += a * nz;
+    ATA.coeffRef (7) += b * b;
+    ATA.coeffRef (8) += b * c;
+    ATA.coeffRef (9) += b * nx;
+    ATA.coeffRef (10) += b * ny;
+    ATA.coeffRef (11) += b * nz;
+    ATA.coeffRef (14) += c * c;
+    ATA.coeffRef (15) += c * nx;
+    ATA.coeffRef (16) += c * ny;
+    ATA.coeffRef (17) += c * nz;
+    ATA.coeffRef (21) += nx * nx;
+    ATA.coeffRef (22) += nx * ny;
+    ATA.coeffRef (23) += nx * nz;
+    ATA.coeffRef (28) += ny * ny;
+    ATA.coeffRef (29) += ny * nz;
+    ATA.coeffRef (35) += nz * nz;
+
+    double d = nx*dx + ny*dy + nz*dz - nx*sx - ny*sy - nz*sz;
+    ATb.coeffRef (0) += a * d;
+    ATb.coeffRef (1) += b * d;
+    ATb.coeffRef (2) += c * d;
+    ATb.coeffRef (3) += nx * d;
+    ATb.coeffRef (4) += ny * d;
+    ATb.coeffRef (5) += nz * d;
   }
+  ATA.coeffRef (6) = ATA.coeff (1);
+  ATA.coeffRef (12) = ATA.coeff (2);
+  ATA.coeffRef (13) = ATA.coeff (8);
+  ATA.coeffRef (18) = ATA.coeff (3);
+  ATA.coeffRef (19) = ATA.coeff (9);
+  ATA.coeffRef (20) = ATA.coeff (15);
+  ATA.coeffRef (24) = ATA.coeff (4);
+  ATA.coeffRef (25) = ATA.coeff (10);
+  ATA.coeffRef (26) = ATA.coeff (16);
+  ATA.coeffRef (27) = ATA.coeff (22);
+  ATA.coeffRef (30) = ATA.coeff (5);
+  ATA.coeffRef (31) = ATA.coeff (11);
+  ATA.coeffRef (32) = ATA.coeff (17);
+  ATA.coeffRef (33) = ATA.coeff (23);
+  ATA.coeffRef (34) = ATA.coeff (29);
 
   // Solve A*x = b
-  Eigen::VectorXf x = A.colPivHouseholderQr ().solve (b);
+  Vector6d x = ATA.inverse () * ATb;
   
   // Construct the transformation matrix from x
   constructTransformationMatrix (x (0), x (1), x (2), x (3), x (4), x (5), transformation_matrix);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget> inline void
 pcl::registration::TransformationEstimationPointToPlaneLLS<PointSource, PointTarget>::
 constructTransformationMatrix (const float & alpha, const float & beta, const float & gamma,
