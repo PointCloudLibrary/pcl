@@ -41,11 +41,14 @@
 #include <pcl/apps/cloud_composer/qt.h>
 #include <pcl/apps/cloud_composer/commands.h>
 #include <pcl/apps/cloud_composer/items/cloud_item.h>
+#include <pcl/apps/cloud_composer/properties_model.h>
 
 namespace pcl
 {
   namespace cloud_composer
   {
+       
+        
     class AbstractTool : public QObject
     {
       Q_OBJECT
@@ -53,10 +56,8 @@ namespace pcl
         typedef boost::shared_ptr<pcl::cloud_composer::AbstractTool> Ptr;
         typedef boost::shared_ptr<pcl::cloud_composer::AbstractTool> ConstPtr;
         
-        AbstractTool (QStandardItemModel* parameter_model = 0, QObject* parent = 0) 
-                      : QObject (parent) 
-                      , parameter_model_ (parameter_model)
-                      {}
+        AbstractTool (PropertiesModel* parameter_model = 0, QObject* parent = 0); 
+
         virtual ~AbstractTool () { qDebug() << "Tool Destructed"; }
         
         /**  \brief Function called which does work in plugin 
@@ -80,7 +81,10 @@ namespace pcl
         getToolName () const = 0;
         
      protected:
-        QStandardItemModel* parameter_model_;   
+       
+       
+       
+        PropertiesModel* parameter_model_;   
        
       private:
         QString action_text_;
@@ -91,7 +95,7 @@ namespace pcl
     {
       Q_OBJECT
       public:
-        ModifyTool (QStandardItemModel* parameter_model = 0, QObject* parent = 0) 
+        ModifyTool (PropertiesModel* parameter_model = 0, QObject* parent = 0) 
                       : AbstractTool (parameter_model, parent) 
                       {}
         
@@ -115,7 +119,7 @@ namespace pcl
     {
       Q_OBJECT
       public:
-        NewItemTool (QStandardItemModel* parameter_model = 0, QObject* parent = 0) 
+        NewItemTool (PropertiesModel* parameter_model = 0, QObject* parent = 0) 
                       : AbstractTool (parameter_model, parent)
                       {}
         

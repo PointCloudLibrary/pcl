@@ -38,9 +38,6 @@
 #ifndef PROPERTIES_MODEL_H_
 #define PROPERTIES_MODEL_H_
 
-
-
-
 #include <pcl/apps/cloud_composer/qt.h>
 
 
@@ -54,7 +51,11 @@ namespace pcl
     {
         Q_OBJECT
       public:
+        /** \brief Constructor used for tool parameters */
+        PropertiesModel (QObject *parent = 0);
+        /** \brief Constructor used for item parameters */
         PropertiesModel (CloudComposerItem* parent_item, QObject *parent = 0);
+        PropertiesModel (const PropertiesModel& to_copy);
         virtual ~PropertiesModel ();
         
         /** \brief Helper function for adding a new property */
@@ -85,6 +86,7 @@ namespace pcl
   }
 }
 
-
+Q_DECLARE_METATYPE (pcl::cloud_composer::PropertiesModel);
+Q_DECLARE_METATYPE (pcl::cloud_composer::PropertiesModel*);
 
 #endif //PROPERTIES_MODEL_H_

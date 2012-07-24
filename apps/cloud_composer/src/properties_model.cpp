@@ -1,6 +1,16 @@
 #include <pcl/apps/cloud_composer/properties_model.h>
 #include <pcl/apps/cloud_composer/items/cloud_composer_item.h>
 
+
+pcl::cloud_composer::PropertiesModel::PropertiesModel (QObject* parent)
+  : QStandardItemModel (parent)
+{
+  setHorizontalHeaderItem (0, new QStandardItem ("Name"));
+  setHorizontalHeaderItem (1, new QStandardItem ("Value"));
+
+  
+}
+
 pcl::cloud_composer::PropertiesModel::PropertiesModel (CloudComposerItem* parent_item, QObject* parent)
   : QStandardItemModel (parent)
   , parent_item_ (parent_item)
@@ -11,6 +21,23 @@ pcl::cloud_composer::PropertiesModel::PropertiesModel (CloudComposerItem* parent
   connect (this, SIGNAL (itemChanged (QStandardItem*)),
            this, SLOT (propertyChanged (QStandardItem*)));
   
+}
+
+pcl::cloud_composer::PropertiesModel::PropertiesModel (const PropertiesModel& to_copy)
+  : QStandardItemModel ()
+{
+  for (int i=0; i < to_copy.rowCount (); ++i){
+    QList <QStandardItem*> new_row;
+    QStandardItem* parent = to_copy.item(i,0);
+    QModelIndex parent_index = to_copy.index(i,0);
+    new_row.append (parent->clone ());
+    for (int j=0; j < to_copy.columnCount (parent_index); ++j)
+    {
+      if (to_copy.item (i,j))      
+        new_row.append (to_copy.item(i,j)->clone ());
+    }
+    appendRow (new_row);
+  }
 }
 
 pcl::cloud_composer::PropertiesModel::~PropertiesModel ()
@@ -52,6 +79,7 @@ pcl::cloud_composer::PropertiesModel::getProperty (const QString prop_name) cons
   {
     qWarning () << "Multiple properties found with name "<<prop_name<<" in "<<parent_item_->text ();
   }
+  
   QStandardItem* property = items.value (0);
   int row = property->row ();
   return item (row,1)->data (Qt::EditRole);
@@ -64,13 +92,17 @@ pcl::cloud_composer::PropertiesModel::copyProperties (const PropertiesModel* to_
     QList <QStandardItem*> new_row;
     QStandardItem* parent = to_copy->item(i,0);
     QModelIndex parent_index = to_copy->index(i,0);
+    qDebug () << "Copying "<<parent->text()<< " cols ="<<to_copy->columnCount ();
     new_row.append (parent->clone ());
-    for (int j=0; j < to_copy->columnCount (parent_index); ++j)
+    for (int j=1; j < to_copy->columnCount (); ++j)
     {
       if (to_copy->item (i,j))      
+      {
         new_row.append (to_copy->item(i,j)->clone ());
+      }
     }
     appendRow (new_row);
+    
   }
 }
 

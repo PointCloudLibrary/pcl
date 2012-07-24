@@ -50,7 +50,7 @@ namespace pcl
     {
       Q_OBJECT
       public:
-        NormalEstimationTool (QStandardItemModel* parameter_model, QObject* parent);
+        NormalEstimationTool (PropertiesModel* parameter_model, QObject* parent);
         virtual ~NormalEstimationTool ();
         
         virtual QList <CloudComposerItem*>
@@ -67,12 +67,12 @@ namespace pcl
       Q_INTERFACES (pcl::cloud_composer::ToolFactory)
       public:
         NewItemTool*
-        createTool (QStandardItemModel* parameter_model, QObject* parent = 0) 
+        createTool (PropertiesModel* parameter_model, QObject* parent = 0) 
         {
             return new NormalEstimationTool(parameter_model, parent);
         }
         
-        QStandardItemModel*
+        PropertiesModel*
         createToolParameterModel (QObject* parent);
         
         inline virtual QString 

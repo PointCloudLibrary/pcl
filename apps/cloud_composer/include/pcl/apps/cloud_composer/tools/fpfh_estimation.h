@@ -52,7 +52,7 @@ namespace pcl
     {
       Q_OBJECT
       public:
-        FPFHEstimationTool (QStandardItemModel* parameter_model, QObject* parent);
+        FPFHEstimationTool (PropertiesModel* parameter_model, QObject* parent);
         virtual ~FPFHEstimationTool ();
         
         virtual QList <CloudComposerItem*>
@@ -69,12 +69,12 @@ namespace pcl
       Q_INTERFACES (pcl::cloud_composer::ToolFactory)
       public:
         NewItemTool*
-        createTool (QStandardItemModel* parameter_model, QObject* parent = 0) 
+        createTool (PropertiesModel* parameter_model, QObject* parent = 0) 
         {
             return new FPFHEstimationTool(parameter_model, parent);
         }
         
-        QStandardItemModel*
+        PropertiesModel*
         createToolParameterModel (QObject* parent);
         
         inline virtual QString 

@@ -109,9 +109,10 @@ if(build)
     make_directory (${CLOUD_COMPOSER_PLUGIN_DIR})
 
     set(INTERFACE_HEADERS include/pcl/apps/${SUBSYS_NAME}/tool_interface/abstract_tool.h)
-
+    set(INTERFACE_SOURCES src/tool_interface/abstract_tool.cpp)
+    
     QT4_WRAP_CPP(INTERFACE_HEADERS_MOC ${INTERFACE_HEADERS} OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)
-    PCL_ADD_LIBRARY(pcl_cc_tool_interface ${SUBSYS_NAME} ${INTERFACE_HEADERS_MOC})
+    PCL_ADD_LIBRARY(pcl_cc_tool_interface ${SUBSYS_NAME} ${INTERFACE_SOURCES} ${INTERFACE_HEADERS_MOC})
     target_link_libraries(pcl_cc_tool_interface pcl_common ${QT_LIBRARIES})
     
     include(ComposerTool.cmake REQUIRED)
@@ -128,6 +129,11 @@ if(build)
     set (NORMALS_HEADERS include/pcl/apps/${SUBSYS_NAME}/tools/normal_estimation.h)
     define_composer_tool (normal_estimation "${NORMALS_SOURCES}" "${NORMALS_HEADERS}" "${NORMALS_DEPS}")
 
+    #Euclidean Clustering Tool
+    set (EC_DEPS pcl_segmentation pcl_kdtree)
+    set (EC_SOURCES tools/euclidean_clustering.cpp)
+    set (EC_HEADERS include/pcl/apps/${SUBSYS_NAME}/tools/euclidean_clustering.h)
+    define_composer_tool (euclidean_clustering "${EC_SOURCES}" "${EC_HEADERS}" "${EC_DEPS}")
     
     
   endif ()  #VTK_FOUND AND QT4_FOUND AND VTK_USE_QVTK

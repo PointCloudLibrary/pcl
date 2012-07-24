@@ -30,7 +30,7 @@ pcl::cloud_composer::ToolBoxModel::addTool (ToolFactory* tool_factory)
   new_tool_item->setEditable (false);
   
   new_tool_item->setData (QVariant::fromValue (tool_factory), FACTORY);
-  QStandardItemModel* new_tool_parameters= tool_factory->createToolParameterModel (this);  
+  PropertiesModel* new_tool_parameters= tool_factory->createToolParameterModel (this);  
   new_tool_item->setData (QVariant::fromValue (new_tool_parameters), PARAMETER_MODEL);
   
   QStandardItem* group_item = addToolGroup (tool_factory->getToolGroupName ());
@@ -79,7 +79,7 @@ pcl::cloud_composer::ToolBoxModel::selectedToolChanged (const QModelIndex & curr
     return;
   }  
   QVariant parameter_model = current.data (PARAMETER_MODEL);
-  parameter_view_->setModel ( parameter_model.value <QStandardItemModel*> ());
+  parameter_view_->setModel ( parameter_model.value <PropertiesModel*> ());
   parameter_view_->expandAll ();
 }
 
@@ -94,7 +94,8 @@ pcl::cloud_composer::ToolBoxModel::toolAction ()
     return;
   }
   ToolFactory* tool_factory = (current_index.data (FACTORY)).value <ToolFactory*> ();
-  QStandardItemModel* parameter_model = (current_index.data (PARAMETER_MODEL)).value <QStandardItemModel*> ();
+  PropertiesModel* parameter_model = (current_index.data (PARAMETER_MODEL)).value <PropertiesModel*> ();
+  //
   AbstractTool* tool = tool_factory->createTool (parameter_model);
   
   emit enqueueToolAction (tool);

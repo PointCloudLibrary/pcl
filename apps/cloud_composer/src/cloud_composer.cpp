@@ -18,7 +18,7 @@ pcl::cloud_composer::ComposerMainWindow::ComposerMainWindow (QWidget *parent)
   this->setCorner (Qt::BottomLeftCorner, Qt::LeftDockWidgetArea);
   this->setCorner (Qt::BottomRightCorner, Qt::RightDockWidgetArea);
 
-  //Register types in Qt
+   //Register types in Qt
   qRegisterMetaType<sensor_msgs::PointCloud2::Ptr> ("PointCloud2Ptr");
   qRegisterMetaType<GeometryHandler::ConstPtr> ("GeometryHandlerConstPtr");
   qRegisterMetaType<ColorHandler::ConstPtr> ("ColorHandlerConstPtr");
@@ -28,7 +28,6 @@ pcl::cloud_composer::ComposerMainWindow::ComposerMainWindow (QWidget *parent)
   qRegisterMetaType<CloudView> ("CloudView");
   qRegisterMetaType<ConstItemList> ("ConstComposerItemList");
   
-
   last_directory_ = QDir (".");
   current_model_ = 0;
   

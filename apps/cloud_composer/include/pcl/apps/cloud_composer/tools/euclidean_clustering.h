@@ -35,47 +35,64 @@
  *
  */
 
-#ifndef TOOL_FACTORY_H_
-#define TOOL_FACTORY_H_
+#ifndef EUCLIDEAN_CLUSTERING_H_
+#define EUCLIDEAN_CLUSTERING_H_
 
-#include <pcl/apps/cloud_composer/qt.h>
+#include <pcl/apps/cloud_composer/tool_interface/abstract_tool.h>
+#include <pcl/apps/cloud_composer/tool_interface/tool_factory.h>
 
-class QAction;
 
 namespace pcl
 {
   namespace cloud_composer
   {
-    
-    
-    class AbstractTool;
-    class AbstractCommand;
-    class PropertiesModel;
-    
-    class ToolFactory
+    class EuclideanClusteringTool : public NewItemTool
     {
+      Q_OBJECT
       public:
-        virtual AbstractTool*
-        createTool (PropertiesModel* parameter_model = 0, QObject* parent = 0) = 0;
-            
-        virtual PropertiesModel*
-        createToolParameterModel (QObject* parent) = 0;
+        EuclideanClusteringTool (PropertiesModel* parameter_model, QObject* parent);
+        virtual ~EuclideanClusteringTool ();
         
-        virtual QString
-        getPluginName () const = 0;
+        virtual QList <CloudComposerItem*>
+        performAction (ConstItemList input_data);
+      
+        inline virtual QString
+        getToolName () const { return "Euclidean Clustering Tool";}
+    };
+
+    
+    class EuclideanClusteringToolFactory : public QObject, public ToolFactory
+    {
+      Q_OBJECT
+      Q_INTERFACES (pcl::cloud_composer::ToolFactory)
+      public:
+        NewItemTool*
+        createTool (PropertiesModel* parameter_model, QObject* parent = 0) 
+        {
+            return new EuclideanClusteringTool(parameter_model, parent);
+        }
         
-        virtual QString
-        getToolGroupName () const = 0; 
+        PropertiesModel*
+        createToolParameterModel (QObject* parent);
+        
+        inline virtual QString 
+        getPluginName () const { return "Euclidean Clustering";}
         
         virtual QString 
-        getIconName () const = 0;
-
+        getToolGroupName () const { return "Segmentation";}
+        
+        virtual QString
+        getIconName () const { return ":/euclidean_clustering.png"; }
     };
+
+
 
   }
 }
 
-Q_DECLARE_INTERFACE(pcl::cloud_composer::ToolFactory,
-                    "cloud_composer.ToolFactory/1.0")
 
-#endif //TOOL_FACTORY_H_
+
+
+
+
+#endif //EUCLIDEAN_CLUSTERING_H_

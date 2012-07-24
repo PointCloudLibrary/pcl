@@ -1,17 +1,18 @@
-
-#include <pcl/features/fpfh.h>
-#include <pcl/point_types.h>
-#include <pcl/filters/filter.h>
-
 #include <pcl/apps/cloud_composer/tools/fpfh_estimation.h>
 #include <pcl/apps/cloud_composer/items/cloud_item.h>
 #include <pcl/apps/cloud_composer/items/normals_item.h>
 #include <pcl/apps/cloud_composer/items/fpfh_item.h>
 
+#include <pcl/features/fpfh.h>
+#include <pcl/point_types.h>
+#include <pcl/filters/filter.h>
+
+
+
 Q_EXPORT_PLUGIN2(cloud_composer_fpfh_estimation_tool, pcl::cloud_composer::FPFHEstimationToolFactory)
 
 
-pcl::cloud_composer::FPFHEstimationTool::FPFHEstimationTool (QStandardItemModel* parameter_model, QObject* parent)
+pcl::cloud_composer::FPFHEstimationTool::FPFHEstimationTool (PropertiesModel* parameter_model, QObject* parent)
   : NewItemTool (parameter_model, parent)
 {
 
@@ -43,14 +44,8 @@ pcl::cloud_composer::FPFHEstimationTool::performAction (ConstItemList input_data
   sensor_msgs::PointCloud2::ConstPtr input_cloud;
   if (input_item->getCloudConstPtr (input_cloud))
   {
-    //TODO: Helper function for extracting parameters
-    QList <QStandardItem*> radius_param = parameter_model_->findItems ("Radius");
-    double radius = 0;
-    if (radius_param.size () > 0)
-      if (radius_param.value (0)->hasChildren ())
-        radius = (radius_param.value (0)->child (0)->data (Qt::EditRole)).toDouble ();
-    qDebug () << "Received Radius = " <<radius;
-    
+    double radius = parameter_model_->getProperty("Radius").toDouble();;
+       
     //Check if this cloud already has normals computed!
     const QStandardItem* normals_item = 0;
     for (int i = 0; i < input_item->rowCount (); ++i)
@@ -83,6 +78,7 @@ pcl::cloud_composer::FPFHEstimationTool::performAction (ConstItemList input_data
 
     // Create an empty kdtree representation, and pass it to the FPFH estimation object.
     // Its content will be filled inside the object, based on the given input dataset (as no other search surface is given).
+    qDebug () << "Building KD Tree";
     pcl::search::KdTree<PointXYZ>::Ptr tree (new pcl::search::KdTree<PointXYZ>);
     fpfh.setSearchMethod (tree);
 
@@ -93,7 +89,8 @@ pcl::cloud_composer::FPFHEstimationTool::performAction (ConstItemList input_data
     // IMPORTANT: the radius used here has to be larger than the radius used to estimate the surface normals!!!
     fpfh.setRadiusSearch (radius);
 
-        // Compute the features
+    // Compute the features
+    qDebug () << "Computing FPFH features";
     fpfh.compute (*fpfhs);
     qDebug () << "Size of computed features ="<<fpfhs->width;
     //////////////////////////////////////////////////////////////////
@@ -110,21 +107,12 @@ pcl::cloud_composer::FPFHEstimationTool::performAction (ConstItemList input_data
 }
 
 /////////////////// PARAMETER MODEL /////////////////////////////////
-QStandardItemModel*
+pcl::cloud_composer::PropertiesModel*
 pcl::cloud_composer::FPFHEstimationToolFactory::createToolParameterModel (QObject* parent)
 {
-  QStandardItemModel* parameter_model = new QStandardItemModel(parent);
-
-  // TODO: Make a helper function that returns parameters like this
-  //QList <QStandardItem*> new_row;
-  QStandardItem* new_property = new QStandardItem ("Radius");
-  new_property->setEditable (false);
-  //new_row.append (new_property);
-  QStandardItem* new_value = new QStandardItem ();
-  new_value->setData (0.04, Qt::EditRole);
-  new_property->appendRow (new_value);
-  // ///////////////////////////////
-  parameter_model->appendRow (new_property);
+  PropertiesModel* parameter_model = new PropertiesModel(parent);
+  
+  parameter_model->addProperty ("Radius", 0.03,  Qt::ItemIsEditable | Qt::ItemIsEnabled);
   
   return parameter_model;
 }

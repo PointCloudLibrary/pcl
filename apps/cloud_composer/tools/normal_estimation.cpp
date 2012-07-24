@@ -8,7 +8,7 @@
 Q_EXPORT_PLUGIN2(cloud_composer_normal_estimation_tool, pcl::cloud_composer::NormalEstimationToolFactory)
 
 
-pcl::cloud_composer::NormalEstimationTool::NormalEstimationTool (QStandardItemModel* parameter_model, QObject* parent)
+pcl::cloud_composer::NormalEstimationTool::NormalEstimationTool (PropertiesModel* parameter_model, QObject* parent)
   : NewItemTool (parameter_model, parent)
 {
 
@@ -40,12 +40,7 @@ pcl::cloud_composer::NormalEstimationTool::performAction (ConstItemList input_da
   sensor_msgs::PointCloud2::ConstPtr input_cloud;
   if (input_item->getCloudConstPtr (input_cloud))
   {
-    //TODO: Helper function for extracting parameters
-    QList <QStandardItem*> radius_param = parameter_model_->findItems ("Radius");
-    double radius = 0;
-    if (radius_param.size () > 0)
-      if (radius_param.value (0)->hasChildren ())
-        radius = (radius_param.value (0)->child (0)->data (Qt::EditRole)).toDouble ();
+    double radius = parameter_model_->getProperty("Radius").toDouble();
     qDebug () << "Received Radius = " <<radius;
     
     //////////////// THE WORK - COMPUTING NORMALS ///////////////////
@@ -82,21 +77,12 @@ pcl::cloud_composer::NormalEstimationTool::performAction (ConstItemList input_da
 }
 
 /////////////////// PARAMETER MODEL /////////////////////////////////
-QStandardItemModel*
+pcl::cloud_composer::PropertiesModel*
 pcl::cloud_composer::NormalEstimationToolFactory::createToolParameterModel (QObject* parent)
 {
-  QStandardItemModel* parameter_model = new QStandardItemModel(parent);
-
-  // TODO: Make a helper function that returns parameters like this
-  //QList <QStandardItem*> new_row;
-  QStandardItem* new_property = new QStandardItem ("Radius");
-  new_property->setEditable (false);
-  //new_row.append (new_property);
-  QStandardItem* new_value = new QStandardItem ();
-  new_value->setData (0.02, Qt::EditRole);
-  new_property->appendRow (new_value);
-  // ///////////////////////////////
-  parameter_model->appendRow (new_property);
+  PropertiesModel* parameter_model = new PropertiesModel(parent);
+  
+  parameter_model->addProperty ("Radius", 0.02,  Qt::ItemIsEditable | Qt::ItemIsEnabled);
   
   return parameter_model;
 }
