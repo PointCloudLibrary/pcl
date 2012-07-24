@@ -46,6 +46,8 @@
 
 #include <boost/operators.hpp>
 
+#include <pcl/pcl_exports.h>
+
 ////////////////////////////////////////////////////////////////////////////////
 // BaseMeshElementIndex
 ////////////////////////////////////////////////////////////////////////////////
@@ -177,7 +179,7 @@ namespace pcl
 namespace pcl
 {
 
-  class VertexIndex : public pcl::BaseMeshElementIndex <pcl::VertexIndex>
+  class PCL_EXPORTS VertexIndex : public pcl::BaseMeshElementIndex <pcl::VertexIndex>
   {
     public:
 
@@ -199,7 +201,7 @@ namespace pcl
 namespace pcl
 {
 
-  class HalfEdgeIndex : public pcl::BaseMeshElementIndex <pcl::HalfEdgeIndex>
+  class PCL_EXPORTS HalfEdgeIndex : public pcl::BaseMeshElementIndex <pcl::HalfEdgeIndex>
   {
     public:
 
@@ -221,7 +223,7 @@ namespace pcl
 namespace pcl
 {
 
-  class EdgeIndex : public pcl::BaseMeshElementIndex <pcl::EdgeIndex>
+  class PCL_EXPORTS EdgeIndex : public pcl::BaseMeshElementIndex <pcl::EdgeIndex>
   {
     public:
 
@@ -244,7 +246,7 @@ namespace pcl
 namespace pcl
 {
 
-  class FaceIndex : public pcl::BaseMeshElementIndex <pcl::FaceIndex>
+  class PCL_EXPORTS FaceIndex : public pcl::BaseMeshElementIndex <pcl::FaceIndex>
   {
     public:
 
