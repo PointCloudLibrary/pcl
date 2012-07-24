@@ -66,8 +66,8 @@ namespace pcl
       public:
 
         /** \brief Empty constructor. */
-        CorrespondenceRejectorMedianDistance () : median_distance_(0), 
-                                            factor_(1.0),
+        CorrespondenceRejectorMedianDistance () : median_distance_ (0), 
+                                            factor_ (1.0),
                                             data_container_ ()
         {
           rejection_name_ = "CorrespondenceRejectorMedianDistance";
@@ -83,7 +83,7 @@ namespace pcl
 
         /** \brief Get the median distance used for thresholding in correspondence rejection. */
         inline double
-        getMedianDistance () const { return median_distance_; };
+        getMedianDistance () const { return (median_distance_); };
 
         /** \brief Provide a source point cloud dataset (must contain XYZ
           * data!), used to compute the correspondence distance.  

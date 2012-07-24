@@ -92,7 +92,7 @@ pcl::registration::CorrespondenceRejectorVarTrimmed::optimizeInlierRatio (std::v
   typedef Eigen::Array <double, Eigen::Dynamic, 1> LineArray;
   Eigen::Map<LineArray> sorted_dist (&dists[0], points_nbr);
 
-	 const LineArray trunk_sorted_dist = sorted_dist.segment (min_el, max_el-min_el);
+  const LineArray trunk_sorted_dist = sorted_dist.segment (min_el, max_el-min_el);
   const double lower_sum = sorted_dist.head (min_el).sum ();
   const LineArray ids = LineArray::LinSpaced (trunk_sorted_dist.rows (), min_el+1, max_el);
   const LineArray ratio = ids / points_nbr;
@@ -101,8 +101,8 @@ pcl::registration::CorrespondenceRejectorVarTrimmed::optimizeInlierRatio (std::v
   int min_index (0);
   FRMS.minCoeff (&min_index);
 
-	 const float opt_ratio = float (min_index + min_el) / float (points_nbr);
-	 return opt_ratio;
+  const float opt_ratio = float (min_index + min_el) / float (points_nbr);
+  return (opt_ratio);
 }
 
 #endif /* PCL_REGISTRATION_IMPL_CORRESPONDENCE_REJECTION_VAR_TRIMMED_HPP_ */

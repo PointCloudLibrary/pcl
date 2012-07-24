@@ -52,13 +52,9 @@ pcl::registration::CorrespondenceRejectorMedianDistance::getRemainingCorresponde
   for (size_t i = 0; i < original_correspondences.size (); ++i)
   {
     if (data_container_)
-    {
       dists[i] = data_container_->getCorrespondenceScore (original_correspondences[i]);
-    }
     else
-    {
       dists[i] = original_correspondences[i].distance;
-    }
   }
   nth_element (dists.begin (), dists.begin () + (dists.size () / 2), dists.end ());
   median_distance_ = dists [dists.size () / 2];
@@ -67,14 +63,9 @@ pcl::registration::CorrespondenceRejectorMedianDistance::getRemainingCorresponde
   remaining_correspondences.resize (original_correspondences.size ());
 
   for (size_t i = 0; i < original_correspondences.size (); ++i)
-  {
-    if ( dists[i] < median_distance_ * factor_)
-    {
-      remaining_correspondences[number_valid_correspondences] = original_correspondences[i];
-      ++number_valid_correspondences;
-    }
-  }
+    if (dists[i] <= median_distance_ * factor_)
+      remaining_correspondences[number_valid_correspondences++] = original_correspondences[i];
   remaining_correspondences.resize (number_valid_correspondences);
 }
 
-#endif /* PCL_REGISTRATION_IMPL_CORRESPONDENCE_REJECTION_MEDIAN_DISTANCE_HPP_ */
+#endif    // PCL_REGISTRATION_IMPL_CORRESPONDENCE_REJECTION_MEDIAN_DISTANCE_HPP_
