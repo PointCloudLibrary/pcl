@@ -78,6 +78,8 @@ namespace pcl
     class CorrespondenceEstimation : public PCLBase<PointSource>
     {
       public:
+        typedef boost::shared_ptr<CorrespondenceEstimation<PointSource, PointTarget> > Ptr;
+        typedef boost::shared_ptr<const CorrespondenceEstimation<PointSource, PointTarget> > ConstPtr;
         using PCLBase<PointSource>::initCompute;
         using PCLBase<PointSource>::deinitCompute;
         using PCLBase<PointSource>::input_;
