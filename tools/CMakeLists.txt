@@ -1,6 +1,6 @@
 set (SUBSYS_NAME tools)
 set (SUBSYS_DESC "Useful PCL-based command line tools")
-set (SUBSYS_DEPS common io filters sample_consensus segmentation search kdtree features surface octree registration visualization recognition geometry)
+set (SUBSYS_DEPS common io filters sample_consensus segmentation search kdtree features surface octree registration visualization recognition geometry keypoints)
 set (DEFAULT ON)
 set (REASON "")
 
@@ -14,6 +14,9 @@ if (build)
 
   PCL_ADD_EXECUTABLE (pcl_normal_estimation ${SUBSYS_NAME} normal_estimation.cpp)
   target_link_libraries (pcl_normal_estimation pcl_common pcl_io pcl_features pcl_kdtree)
+
+  PCL_ADD_EXECUTABLE (pcl_uniform_sampling ${SUBSYS_NAME} uniform_sampling.cpp)
+  target_link_libraries (pcl_uniform_sampling pcl_common pcl_io pcl_filters pcl_keypoints pcl_kdtree)
 
   PCL_ADD_EXECUTABLE (pcl_boundary_estimation ${SUBSYS_NAME} boundary_estimation.cpp)
   target_link_libraries (pcl_boundary_estimation pcl_common pcl_io pcl_features pcl_kdtree)

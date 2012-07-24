@@ -383,6 +383,38 @@ pcl::copyPointCloud (
   }
 }
 
+//////////////////////////////////////////////////////////////////////////
+void 
+pcl::copyPointCloud (
+    const sensor_msgs::PointCloud2 &cloud_in, 
+    const std::vector<int, Eigen::aligned_allocator<int> > &indices, 
+    sensor_msgs::PointCloud2 &cloud_out)
+{
+  cloud_out.header       = cloud_in.header;
+  cloud_out.height       = 1;
+  cloud_out.width        = static_cast<uint32_t> (indices.size ()); 
+  cloud_out.fields       = cloud_in.fields;
+  cloud_out.is_bigendian = cloud_in.is_bigendian;
+  cloud_out.point_step   = cloud_in.point_step;
+  cloud_out.row_step     = cloud_in.row_step;
+  if (cloud_in.is_dense)
+    cloud_out.is_dense = true;
+  else
+    // It's not necessarily true that is_dense is false if cloud_in.is_dense is false
+    // To verify this, we would need to iterate over all points and check for NaNs
+    cloud_out.is_dense = false;
+
+  cloud_out.data.resize (cloud_out.width * cloud_out.height * cloud_out.point_step);
+
+  // Iterate over each point
+  for (size_t i = 0; i < indices.size (); ++i)
+  {
+    memcpy (&cloud_out.data[i * cloud_out.point_step], &cloud_in.data[indices[i] * cloud_in.point_step], cloud_in.point_step);
+    // Check for NaNs, set is_dense to true/false based on this
+    // ...
+  }
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 void 
 pcl::copyPointCloud (const sensor_msgs::PointCloud2 &cloud_in, 
