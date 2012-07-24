@@ -1,23 +1,16 @@
 #include <pcl/apps/cloud_composer/tools/euclidean_clustering.h>
 #include <pcl/apps/cloud_composer/items/cloud_item.h>
-#include <pcl/apps/cloud_composer/items/normals_item.h>
 
 #include <pcl/point_types.h>
 #include <pcl/filters/extract_indices.h>
-#include <pcl/features/normal_3d.h>
 #include <pcl/kdtree/kdtree.h>
 #include <pcl/segmentation/extract_clusters.h>
 
-
-
-
 Q_EXPORT_PLUGIN2(cloud_composer_euclidean_clustering_tool, pcl::cloud_composer::EuclideanClusteringToolFactory)
 
-
 pcl::cloud_composer::EuclideanClusteringTool::EuclideanClusteringTool (PropertiesModel* parameter_model, QObject* parent)
-  : NewItemTool (parameter_model, parent)
+  : SplitItemTool (parameter_model, parent)
 {
-
   
 }
 
@@ -69,20 +62,45 @@ pcl::cloud_composer::EuclideanClusteringTool::performAction (ConstItemList input
     ec.setInputCloud (cloud);
     ec.extract (cluster_indices);
     //////////////////////////////////////////////////////////////////
+    //Get copies of the original origin and orientation
+    Eigen::Vector4f source_origin = input_item->data (ORIGIN).value<Eigen::Vector4f> ();
+    Eigen::Quaternionf source_orientation =  input_item->data (ORIENTATION).value<Eigen::Quaternionf> ();
+    //Vector to accumulate the extracted indices
+    pcl::IndicesPtr extracted_indices (new std::vector<int> ());
     //Put found clusters into new cloud_items!
     qDebug () << "Found "<<cluster_indices.size ()<<" clusters!";
+    int cluster_count = 0;
+    pcl::ExtractIndices<sensor_msgs::PointCloud2> filter;
     for (std::vector<pcl::PointIndices>::const_iterator it = cluster_indices.begin (); it != cluster_indices.end (); ++it)
     {
-      pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_cluster (new pcl::PointCloud<pcl::PointXYZ>);
-      for (std::vector<int>::const_iterator pit = it->indices.begin (); pit != it->indices.end (); pit++)
-        cloud_cluster->points.push_back (cloud->points[*pit]); //*
-      cloud_cluster->width = cloud_cluster->points.size ();
-      cloud_cluster->height = 1;
-      cloud_cluster->is_dense = true;
-      qDebug() << "Cluster has " << cloud_cluster->points.size () << " data points.";
-    }
-    //FPFHItem* fpfh_item = new FPFHItem (tr("FPFH r=%1").arg(radius),fpfhs,radius);
-   // output.append (fpfh_item);
+      filter.setInputCloud (input_cloud);
+      // It's annoying that I have to do this, but Euclidean returns a PointIndices struct
+      pcl::IndicesPtr indices_to_extract (new std::vector<int> (it->indices));
+      filter.setIndices (indices_to_extract);
+      extracted_indices->insert (extracted_indices->end (), it->indices.begin (), it->indices.end ());
+      //This means remove the other points
+      filter.setKeepOrganized (false);
+      sensor_msgs::PointCloud2::Ptr cloud_filtered (new sensor_msgs::PointCloud2);
+      filter.filter (*cloud_filtered);
+      qDebug() << "Cluster has " << cloud_filtered->width << " data points.";
+      CloudItem* cloud_item = new CloudItem (input_item->text ()+tr("-Clstr %1").arg(cluster_count)
+                                             , cloud_filtered
+                                             , source_origin
+                                             , source_orientation);
+      output.append (cloud_item);
+      ++cluster_count;
+    } 
+    //Now make a cloud containing all the remaining points
+    filter.setIndices (extracted_indices);
+    filter.setNegative (true);
+    sensor_msgs::PointCloud2::Ptr remainder_cloud (new sensor_msgs::PointCloud2);
+    filter.filter (*remainder_cloud);
+    qDebug() << "Cloud has " << remainder_cloud->width << " data points after clusters removed.";
+    CloudItem* cloud_item = new CloudItem (input_item->text ().arg(cluster_count)
+                                             , remainder_cloud
+                                             , source_origin
+                                             , source_orientation);
+    output.push_front (cloud_item);
   }
   else
   {

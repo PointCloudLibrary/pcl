@@ -13,21 +13,14 @@ pcl::cloud_composer::CloudItem::CloudItem (QString name,
 {
   
   //Sanitize the cloud data using passthrough
- // pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZRGB>);
- // pcl::fromROSMsg (*cloud_ptr, *cloud); 
-  qDebug () << "Cloud size before passthrough : "<<cloud_ptr->width<<"x"<<cloud_ptr->height;
+ // qDebug () << "Cloud size before passthrough : "<<cloud_ptr->width<<"x"<<cloud_ptr->height;
   sensor_msgs::PointCloud2::Ptr cloud_filtered (new sensor_msgs::PointCloud2);
   pcl::PassThrough<sensor_msgs::PointCloud2> pass_filter;
   pass_filter.setInputCloud (cloud_ptr);
   pass_filter.setKeepOrganized (false);
   pass_filter.filter (*cloud_filtered);
-  qDebug () << "Cloud size after passthrough : "<<cloud_filtered->width<<"x"<<cloud_filtered->height;
+//  qDebug () << "Cloud size after passthrough : "<<cloud_filtered->width<<"x"<<cloud_filtered->height;
   cloud_ptr_ = cloud_filtered;
-  //std::vector <int> indices;
-  //pcl::removeNaNFromPointCloud (*cloud, *cloud, indices);
-  //qDebug () << "Nans filtered size = "<<cloud->size ();
-  //Convert back to PointCloud2
- // pcl::toROSMsg (*cloud, *cloud_ptr);
     
   this->setData (QVariant::fromValue (cloud_ptr_), CLOUD);
   this->setData (QVariant::fromValue (origin_), ORIGIN);

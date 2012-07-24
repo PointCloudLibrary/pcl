@@ -46,7 +46,7 @@ namespace pcl
 {
   namespace cloud_composer
   {
-    class EuclideanClusteringTool : public NewItemTool
+    class EuclideanClusteringTool : public SplitItemTool
     {
       Q_OBJECT
       public:
@@ -66,7 +66,7 @@ namespace pcl
       Q_OBJECT
       Q_INTERFACES (pcl::cloud_composer::ToolFactory)
       public:
-        NewItemTool*
+        SplitItemTool*
         createTool (PropertiesModel* parameter_model, QObject* parent = 0) 
         {
             return new EuclideanClusteringTool(parameter_model, parent);

@@ -108,6 +108,23 @@ namespace pcl
         redo ();
 
     };
+    
+    class PCL_EXPORTS SplitCloudCommand : public CloudCommand
+    {
+      public: 
+        SplitCloudCommand (ConstItemList input_data, QUndoCommand* parent = 0);
+      
+        virtual bool
+        runCommand (AbstractTool* tool);
+        
+        virtual void
+        undo ();
+      
+        virtual void
+        redo ();
+      private:
+        QList <QStandardItem*> removed_items_;
+    };
   }
 } 
 

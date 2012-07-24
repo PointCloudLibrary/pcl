@@ -91,15 +91,15 @@ namespace pcl
         
     };
     
-    class ModifyTool : public AbstractTool
+    class ModifyItemTool : public AbstractTool
     {
       Q_OBJECT
       public:
-        ModifyTool (PropertiesModel* parameter_model = 0, QObject* parent = 0) 
+        ModifyItemTool (PropertiesModel* parameter_model = 0, QObject* parent = 0) 
                       : AbstractTool (parameter_model, parent) 
                       {}
         
-        virtual ~ModifyTool () { }
+        virtual ~ModifyItemTool () { }
         
         virtual QList <CloudComposerItem*>
         performAction (QList <const CloudComposerItem*> input_data) = 0;
@@ -111,7 +111,7 @@ namespace pcl
         }
         
         inline virtual QString
-        getToolName () const { return "ModifyTool";}
+        getToolName () const { return "ModifyItemTool";}
         
     };
     
@@ -139,7 +139,29 @@ namespace pcl
       
     };
     
-    
+    class SplitItemTool : public AbstractTool
+    {
+      Q_OBJECT
+      public:
+        SplitItemTool (PropertiesModel* parameter_model = 0, QObject* parent = 0) 
+                      : AbstractTool (parameter_model, parent) 
+                      {}
+        
+        virtual ~SplitItemTool () { }
+        
+        virtual QList <CloudComposerItem*>
+        performAction (QList <const CloudComposerItem*> input_data) = 0;
+        
+        inline virtual CloudCommand* 
+        createCommand (QList <const CloudComposerItem*> input_data) 
+        {
+          return new SplitCloudCommand (input_data);
+        }
+        
+        inline virtual QString
+        getToolName () const { return "SplitItemTool";}
+        
+    };
   }
 }
 

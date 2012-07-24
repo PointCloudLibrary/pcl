@@ -68,6 +68,10 @@ namespace pcl
       void 
       refresh ();
       
+      /** \brief Slot called when the item selected in cloud browser changes */
+      void 
+      selectedItemChanged (const QModelIndex &current, const QModelIndex &previous);
+      
     protected slots:
       /** \brief Slot called when an item in the model changes
        * \param topLeft 

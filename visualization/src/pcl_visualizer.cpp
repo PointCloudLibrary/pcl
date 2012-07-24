@@ -1241,6 +1241,36 @@ pcl::visualization::PCLVisualizer::setPointCloudRenderingProperties (
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 bool
+pcl::visualization::PCLVisualizer::setPointCloudSelected (const bool selected, const std::string &id)
+{
+   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
+  CloudActorMap::iterator am_it = cloud_actor_map_->find (id);
+
+  if (am_it == cloud_actor_map_->end ())
+  {
+    pcl::console::print_error ("[setPointCloudRenderingProperties] Could not find any PointCloud datasets with id <%s>!\n", id.c_str ());
+    return (false);
+  }
+  // Get the actor pointer
+  vtkLODActor* actor = vtkLODActor::SafeDownCast (am_it->second.actor);
+  
+  if (selected)
+  {
+    actor->GetProperty ()->EdgeVisibilityOn ();
+    actor->GetProperty ()->SetEdgeColor (1.0,0.0,0.0);
+    actor->Modified ();
+  }
+  else
+  {
+    actor->GetProperty ()->EdgeVisibilityOff ();
+    actor->Modified ();
+  }
+  
+  return (true);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+bool
 pcl::visualization::PCLVisualizer::setShapeRenderingProperties (
     int property, double val1, double val2, double val3, const std::string &id, int)
 {
