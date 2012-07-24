@@ -48,7 +48,7 @@
      <x>0</x>
      <y>0</y>
      <width>1063</width>
-     <height>21</height>
+     <height>18</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -84,7 +84,7 @@
     </property>
     <addaction name="separator"/>
     <addaction name="actionCreateRenderWindow"/>
-    <addaction name="actionChangeBackgroundColor"/>
+    <addaction name="actionToggleSceneExplorer"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -93,36 +93,17 @@
     <addaction name="actionHelp"/>
     <addaction name="actionAboutPCLModeler"/>
    </widget>
-   <widget class="QMenu" name="menuRender">
-    <property name="title">
-     <string>Render</string>
-    </property>
-    <addaction name="actionSwitchColorHandler"/>
-   </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
      <string>Edit</string>
     </property>
-    <widget class="QMenu" name="menuPointCloudFilter">
-     <property name="title">
-      <string>Point Cloud Filter</string>
-     </property>
-     <addaction name="actionDownSampleFilter"/>
-     <addaction name="actionEstimateNormal"/>
-    </widget>
-    <widget class="QMenu" name="menuSurfaceReconstruction">
-     <property name="title">
-      <string>Surface Reconstruction</string>
-     </property>
-     <addaction name="actionPoissonSurfaceReconstruction"/>
-    </widget>
-    <addaction name="menuPointCloudFilter"/>
-    <addaction name="menuSurfaceReconstruction"/>
+    <addaction name="actionDownSamplePoints"/>
+    <addaction name="actionEstimateNormals"/>
+    <addaction name="actionPoissonReconstruction"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
    <addaction name="menuView"/>
-   <addaction name="menuRender"/>
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
@@ -136,7 +117,7 @@
    <attribute name="dockWidgetArea">
     <number>1</number>
    </attribute>
-   <widget class="QWidget" name="dockWidgetContentsSceneExplorer">
+   <widget class="QWidget" name="dockWidgetContentsScene">
     <layout class="QVBoxLayout" name="verticalLayoutSceneExplorer">
      <property name="spacing">
       <number>0</number>
@@ -145,7 +126,16 @@
       <number>0</number>
      </property>
      <item>
-      <widget class="pcl::modeler::TreeView" name="treeViewSceneExplorer"/>
+      <widget class="pcl::modeler::SceneTree" name="scene_tree_">
+       <attribute name="headerVisible">
+        <bool>false</bool>
+       </attribute>
+       <column>
+        <property name="text">
+         <string notr="true">1</string>
+        </property>
+       </column>
+      </widget>
      </item>
     </layout>
    </widget>
@@ -226,37 +216,27 @@
     <string>Scene Explorer</string>
    </property>
   </action>
-  <action name="actionChangeBackgroundColor">
+  <action name="actionDownSamplePoints">
    <property name="text">
-    <string>Change Background Color</string>
+    <string>Down Sample Points</string>
    </property>
   </action>
-  <action name="actionSwitchColorHandler">
+  <action name="actionPoissonReconstruction">
    <property name="text">
-    <string>Switch Color Handler</string>
+    <string>Poisson Reconstruction</string>
    </property>
   </action>
-  <action name="actionDownSampleFilter">
+  <action name="actionEstimateNormals">
    <property name="text">
-    <string>Down Sample</string>
-   </property>
-  </action>
-  <action name="actionPoissonSurfaceReconstruction">
-   <property name="text">
-    <string>Poisson</string>
-   </property>
-  </action>
-  <action name="actionEstimateNormal">
-   <property name="text">
-    <string>Estimate Normal</string>
+    <string>Estimate Normals</string>
    </property>
   </action>
  </widget>
  <customwidgets>
   <customwidget>
-   <class>pcl::modeler::TreeView</class>
-   <extends>QTreeView</extends>
-   <header location="global">pcl/apps/modeler/tree_view.h</header>
+   <class>pcl::modeler::SceneTree</class>
+   <extends>QTreeWidget</extends>
+   <header location="global">pcl/apps/modeler/scene_tree.h</header>
   </customwidget>
  </customwidgets>
  <resources>

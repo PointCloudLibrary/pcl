@@ -37,19 +37,18 @@
 #include <pcl/apps/modeler/normal_estimation_worker.h>
 #include <pcl/apps/modeler/parameter_dialog.h>
 #include <pcl/apps/modeler/parameter.h>
-#include <pcl/apps/modeler/cloud_item.h>
-#include <pcl/apps/modeler/normals_item.h>
+#include <pcl/apps/modeler/cloud_mesh.h>
+#include <pcl/apps/modeler/cloud_mesh_item.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/filters/voxel_grid.h>
-#include <pcl/common/io.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::modeler::NormalEstimationWorker::NormalEstimationWorker(const std::vector<CloudItem*>& polymeshs, QWidget* parent) :
+pcl::modeler::NormalEstimationWorker::NormalEstimationWorker(const QList<CloudMeshItem*>& cloud_mesh_items, QWidget* parent) :
   x_min_(std::numeric_limits<double>::max()), x_max_(std::numeric_limits<double>::min()),
   y_min_(std::numeric_limits<double>::max()), y_max_(std::numeric_limits<double>::min()),
   z_min_(std::numeric_limits<double>::max()), z_max_(std::numeric_limits<double>::min()),
   search_radius_(NULL),
-  AbstractWorker(polymeshs, parent)
+  AbstractWorker(cloud_mesh_items, parent)
 {
 
 }
@@ -62,13 +61,10 @@ pcl::modeler::NormalEstimationWorker::~NormalEstimationWorker(void)
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::modeler::NormalEstimationWorker::initParameters(PointCloud2Ptr input_cloud)
+pcl::modeler::NormalEstimationWorker::initParameters(CloudMeshItem* cloud_mesh_item)
 {
   Eigen::Vector4f min_pt, max_pt;
-  int x_idx = pcl::getFieldIndex(*input_cloud, "x");
-  int y_idx = pcl::getFieldIndex(*input_cloud, "y");
-  int z_idx = pcl::getFieldIndex(*input_cloud, "z");
-  pcl::getMinMax3D(input_cloud, x_idx, y_idx, z_idx, min_pt, max_pt);
+  pcl::getMinMax3D(*(cloud_mesh_item->getCloudMesh()->getCloud()), min_pt, max_pt);
 
   x_min_ = std::min(double(min_pt.x()), x_min_);
   x_max_ = std::max(double(max_pt.x()), x_max_);
@@ -104,28 +100,25 @@ pcl::modeler::NormalEstimationWorker::setupParameters()
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::modeler::NormalEstimationWorker::processImpl(CloudItem* polymesh) const
+pcl::modeler::NormalEstimationWorker::processImpl(CloudMeshItem* cloud_mesh_item) const
 {
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
-  pcl::fromROSMsg(*(polymesh->getCloud()), *cloud);
-
   // Create the normal estimation class, and pass the input dataset to it
-  pcl::NormalEstimation<pcl::PointXYZ, pcl::Normal> ne;
-  ne.setInputCloud (cloud);
+  pcl::NormalEstimation<pcl::PointSurfel, pcl::PointSurfel> normal_estimator;
+  normal_estimator.setInputCloud (cloud_mesh_item->getCloudMesh()->getCloud());
 
   // Create an empty kdtree representation, and pass it to the normal estimation object.
   // Its content will be filled inside the object, based on the given input dataset (as no other search surface is given).
-  pcl::search::KdTree<pcl::PointXYZ>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZ> ());
-  ne.setSearchMethod (tree);
+  pcl::search::KdTree<pcl::PointSurfel>::Ptr tree (new pcl::search::KdTree<pcl::PointSurfel> ());
+  normal_estimator.setSearchMethod (tree);
 
   // Output datasets
   pcl::PointCloud<pcl::Normal>::Ptr cloud_normals (new pcl::PointCloud<pcl::Normal>);
 
   // Use all neighbors in a sphere of radius 3cm
-  ne.setRadiusSearch (*search_radius_);
+  normal_estimator.setRadiusSearch (*search_radius_);
 
   // Compute the features
-  ne.compute (*cloud_normals);
+  normal_estimator.compute(*(cloud_mesh_item->getCloudMesh()->getCloud()));
 
 
   return;
@@ -133,9 +126,9 @@ pcl::modeler::NormalEstimationWorker::processImpl(CloudItem* polymesh) const
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::modeler::NormalEstimationWorker::postProcessImpl(CloudItem* polymesh) const
+pcl::modeler::NormalEstimationWorker::postProcessImpl(CloudMeshItem* cloud_mesh_item) const
 {
-  polymesh->attachNormalItem();
+  cloud_mesh_item->updateChannels();
 
   return;
 }

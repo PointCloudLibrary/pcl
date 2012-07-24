@@ -1,7 +1,8 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2012, Willow Garage, Inc.
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -31,43 +32,40 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- *
  */
-#ifndef PCL_MODELER_SURFACE_ITEM_H_
-#define PCL_MODELER_SURFACE_ITEM_H_
 
-#include <pcl/apps/modeler/geometry_item.h>
+#include <pcl/apps/modeler/abstract_item.h>
+
+#include <pcl/apps/modeler/qt.h>
+#include <pcl/apps/modeler/main_window.h>
 
 
-namespace pcl
+//////////////////////////////////////////////////////////////////////////////////////////////
+pcl::modeler::AbstractItem::AbstractItem(void)
 {
-  namespace modeler
-  {
-    class MainWindow;
 
-    class SurfaceItem : public GeometryItem
-    {
-      public:
-
-        typedef boost::shared_ptr<SurfaceItem> Ptr;
-        typedef boost::shared_ptr<const SurfaceItem> ConstPtr;
-
-        SurfaceItem (MainWindow* main_window);
-        ~SurfaceItem ();
-
-      protected:
-        virtual void
-        prepareContextMenu(QMenu* menu) const;
-
-        virtual void
-        initHandlers();
-
-        virtual bool
-        createActor();
-
-      private:
-    };
-  }
 }
 
-#endif // PCL_MODELER_SURFACE_ITEM_H_
+//////////////////////////////////////////////////////////////////////////////////////////////
+pcl::modeler::AbstractItem::~AbstractItem(void)
+{
+
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::modeler::AbstractItem::showContextMenu(const QPoint* position)
+{
+  QMenu menu(&MainWindow::getInstance());
+  prepareContextMenu(&menu);
+  menu.exec(*position);
+
+  return;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+Ui::MainWindow*
+pcl::modeler::AbstractItem::ui() const
+{
+  return MainWindow::getInstance().ui_;
+}

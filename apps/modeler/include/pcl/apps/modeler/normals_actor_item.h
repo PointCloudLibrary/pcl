@@ -1,8 +1,7 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Point Cloud Library (PCL) - www.pointclouds.org
- *  Copyright (c) 2012, Willow Garage, Inc.
+ *  Copyright (c) 2010, Willow Garage, Inc.
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -32,74 +31,54 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
+ *
  */
+#ifndef PCL_MODELER_NORMALS_ACTOR_ITEM_H_
+#define PCL_MODELER_NORMALS_ACTOR_ITEM_H_
 
-#ifndef PCL_MODELER_PCLMODELER_H_
-#define PCL_MODELER_PCLMODELER_H_
-
-#include <pcl/apps/modeler/qt.h>
-#include <map>
-
-#include <vtkLODActor.h>
+#include <pcl/apps/modeler/channel_actor_item.h>
 #include <pcl/visualization/point_cloud_handlers.h>
+
+class vtkIdTypeArray;
 
 namespace pcl
 {
   namespace modeler
   {
-    class CloudActor;
-    class MainWindow;
-    class TreeItem;
-    class RenderWidget;
-
-    /** \brief PCL Modeler main class.
-      * \author Yangyan Li
-      * \ingroup apps
-      */
-    class PCL_EXPORTS PCLModeler : public QStandardItemModel
+    class NormalsActorItem : public ChannelActorItem
     {
-      Q_OBJECT
-
       public:
-        typedef pcl::visualization::PointCloudGeometryHandler<sensor_msgs::PointCloud2> GeometryHandler;
+        typedef pcl::visualization::PointCloudGeometryHandler<pcl::PointSurfel> GeometryHandler;
         typedef GeometryHandler::Ptr GeometryHandlerPtr;
         typedef GeometryHandler::ConstPtr GeometryHandlerConstPtr;
 
-        typedef pcl::visualization::PointCloudColorHandler<sensor_msgs::PointCloud2> ColorHandler;
+        typedef pcl::visualization::PointCloudColorHandler<pcl::PointSurfel> ColorHandler;
         typedef ColorHandler::Ptr ColorHandlerPtr;
         typedef ColorHandler::ConstPtr ColorHandlerConstPtr;
 
-        /** \brief PCL Modeler constructor.
-          * \param[in] main_window pointer to the MainWindow
-          */
-        PCLModeler (MainWindow* main_window);
+        NormalsActorItem(QTreeWidgetItem* parent,
+                        const boost::shared_ptr<CloudMesh>& cloud_mesh,
+                        const vtkSmartPointer<vtkRenderWindow>& render_window);
+        ~NormalsActorItem ();
 
-        /** \brief PCL Modeler destructor. */
-        virtual ~PCLModeler ();
-
-        bool
-        openPointCloud(const std::string& filename);
-
+      protected:
         void
-        closePointCloud();
+        createHandlers();
 
-        static bool
-        concatenatePointCloud (const sensor_msgs::PointCloud2 &cloud, sensor_msgs::PointCloud2 &cloud_out);
+        virtual void
+        createActorImpl();
 
-        bool
-        savePointCloud(const std::string& filename);
-
-      public slots:
-        void
-        slotUpdateRenderWidgetTitle();
+        virtual void
+        prepareContextMenu(QMenu* menu) const;
 
       private:
-        MainWindow*             main_window_;
+        /** \brief geometry handler that can be used for rendering the data. */
+        GeometryHandlerConstPtr   geometry_handler_;
 
+        /** \brief color handler that can be used for rendering the data. */
+        ColorHandlerConstPtr      color_handler_;
     };
   }
 }
 
-#include <pcl/apps/modeler/impl/pcl_modeler.hpp>
-
-#endif // PCL_MODELER_PCLMODELER_H_
+#endif // PCL_MODELER_NORMALS_ACTOR_ITEM_H_

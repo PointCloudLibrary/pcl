@@ -35,7 +35,7 @@
  */
 
 #include <pcl/apps/modeler/dock_widget.h>
-#include <pcl/apps/modeler/render_widget.h>
+#include <pcl/apps/modeler/render_window.h>
 #include <pcl/apps/modeler/main_window.h>
 
 
@@ -65,7 +65,6 @@ pcl::modeler::DockWidget::~DockWidget()
 void
 pcl::modeler::DockWidget::focusInEvent ( QFocusEvent * event )
 {
-  dynamic_cast<MainWindow*>(parent())->setActiveDockWidget(dynamic_cast<RenderWidget*>(widget()));
   QDockWidget::focusInEvent(event);
 }
 

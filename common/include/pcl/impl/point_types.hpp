@@ -76,7 +76,8 @@
   (pcl::Narf36)                 \
   (pcl::IntensityGradient)      \
   (pcl::PointWithScale)         \
-  (pcl::ReferenceFrame)
+  (pcl::ReferenceFrame)         \
+  (pcl::PointSurfel)
 
 // Define all point types that include RGB data
 #define PCL_RGB_POINT_TYPES     \
@@ -84,6 +85,7 @@
   (pcl::PointXYZRGB)            \
   (pcl::PointXYZRGBL)           \
   (pcl::PointXYZRGBNormal)      \
+  (pcl::PointSurfel)            \
 
 // Define all point types that include XYZ data
 #define PCL_XYZ_POINT_TYPES   \
@@ -100,7 +102,8 @@
   (pcl::PointXYZINormal)      \
   (pcl::PointWithRange)       \
   (pcl::PointWithViewpoint)   \
-  (pcl::PointWithScale)
+  (pcl::PointWithScale)       \
+  (pcl::PointSurfel)
 
 // Define all point types with XYZ and label
 #define PCL_XYZL_POINT_TYPES  \
@@ -112,7 +115,8 @@
   (pcl::Normal)                 \
   (pcl::PointNormal)            \
   (pcl::PointXYZRGBNormal)      \
-  (pcl::PointXYZINormal)
+  (pcl::PointXYZINormal)        \
+  (pcl::PointSurfel)
 
 // Define all point types that represent features
 #define PCL_FEATURE_POINT_TYPES \
@@ -1317,7 +1321,19 @@ namespace pcl
     {
       struct
       {
-        uint32_t rgba;
+        // RGB union
+        union
+        {
+          struct
+          {
+            uint8_t b;
+            uint8_t g;
+            uint8_t r;
+            uint8_t a;
+          };
+          float rgb;
+          uint32_t rgba;
+        };
         float radius;
         float confidence;
         float curvature;

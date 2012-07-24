@@ -34,50 +34,31 @@
  *
  */
 
-#ifndef PCL_MODELER_POISSON_WORKER_H_
-#define PCL_MODELER_POISSON_WORKER_H_
+#ifndef PCL_MODELER_RENDER_WINDOW_H_
+#define PCL_MODELER_RENDER_WINDOW_H_
 
-#include <pcl/apps/modeler/abstract_worker.h>
+#include <QVTKWidget.h>
 
 namespace pcl
 {
   namespace modeler
   {
-    class IntParameter;
-    class DoubleParameter;
-
-    class PoissonReconstructionWorker : public AbstractWorker 
+    class RenderWindow : public QVTKWidget
     {
       public:
-        PoissonReconstructionWorker(const QList<CloudMeshItem*>& cloud_mesh_items, QWidget* parent=0);
-        ~PoissonReconstructionWorker(void);
+        RenderWindow(QWidget *parent = 0, Qt::WFlags flags = 0);
+        ~RenderWindow();
+
+        virtual QSize
+        sizeHint() const {return QSize(512, 512);}
 
       protected:
-        virtual std::string
-        getName () const {return ("Poisson Reconstruction");}
-
-        virtual void
-        initParameters(CloudMeshItem* cloud_mesh_item) {}
-
-        virtual void
-        setupParameters();
-
-        virtual void
-        processImpl(CloudMeshItem* cloud_mesh_item) const;
-
-        virtual void
-        postProcessImpl(CloudMeshItem* cloud_mesh_item) const;
 
       private:
-        IntParameter*     depth_;
-        IntParameter*     solver_divide_;
-        IntParameter*     iso_divide_;
-        IntParameter*     degree_;
-        DoubleParameter*  scale_;
-        DoubleParameter*  samples_per_node_;
+        void
+        initRenderer();
     };
-
   }
 }
 
-#endif // PCL_MODELER_POISSON_WORKER_H_
+#endif // PCL_MODELER_RENDER_WINDOW_H_

@@ -33,91 +33,73 @@
  *
  *
  */
-#ifndef PCL_MODELER_CLOUD_ITEM_H_
-#define PCL_MODELER_CLOUD_ITEM_H_
+#ifndef PCL_MODELER_CHANNEL_ACTOR_ITEM_H_
+#define PCL_MODELER_CHANNEL_ACTOR_ITEM_H_
 
-#include <pcl/apps/modeler/tree_item.h>
-#include <pcl/PolygonMesh.h>
-#include <pcl/point_types.h>
+#include <vtkSmartPointer.h>
+#include <boost/shared_ptr.hpp>
+#include <pcl/common/eigen.h>
+#include <pcl/apps/modeler/qt.h>
+#include <pcl/apps/modeler/abstract_item.h>
+
+class vtkActor;
+class vtkMatrix4x4;
+class vtkRenderWindow;
 
 
 namespace pcl
 {
   namespace modeler
   {
-    class MainWindow;
-    class RenderWidget;
+    class CloudMesh;
 
-    class CloudItem : public TreeItem, private pcl::PolygonMesh
+    class ChannelActorItem : public QTreeWidgetItem, public AbstractItem
     {
       public:
-        typedef sensor_msgs::PointCloud2  PointCloud2;
-        typedef PointCloud2::Ptr          PointCloud2Ptr;
-        typedef PointCloud2::ConstPtr     PointCloud2ConstPtr;
-
-        typedef boost::shared_ptr<CloudItem> Ptr;
-        typedef boost::shared_ptr<const CloudItem> ConstPtr;
-
-        CloudItem (MainWindow* main_window, const std::string& id);
-        ~CloudItem ();
-
-        std::vector<std::string>
-        getAvaiableFieldNames() const;
-
-        PointCloud2Ptr
-        getCloud()
-        {return boost::shared_ptr<PointCloud2>(&cloud, NullDeleter());}
-        PointCloud2ConstPtr
-        getCloud() const
-        {return boost::shared_ptr<const PointCloud2>(&cloud, NullDeleter());}
-
-        std::vector<pcl::Vertices>&
-        getPolygons() {return polygons;}
-        const std::vector<pcl::Vertices>&
-        getPolygons() const {return polygons;}
+        ChannelActorItem(QTreeWidgetItem* parent,
+                         const boost::shared_ptr<CloudMesh>& cloud_mesh,
+                         const vtkSmartPointer<vtkRenderWindow>& render_window,
+                         const vtkSmartPointer<vtkActor>& actor,
+                         const std::string& channel_name);
+        ~ChannelActorItem();
 
         void
-        updateGeometryItems();
-
-        void
-        attachNormalItem();
-
-        void
-        setNormalField(pcl::PointCloud<pcl::Normal>::Ptr normals);
-
-        static void
-        save(const std::vector<CloudItem*>& cloud_items, const std::string& filename);
-
-        virtual void
-        updateOnInserted();
-
-        virtual void
-        updateOnAboutToBeRemoved();
+        createActor();
 
       protected:
+        void
+        attachActor();
+
+        void
+        detachActor();
+
+        virtual void
+        createActorImpl() = 0;
+
         virtual void
         prepareContextMenu(QMenu* menu) const;
 
+        boost::shared_ptr<CloudMesh>      cloud_mesh_;
+        vtkSmartPointer<vtkActor>         actor_;
+        vtkSmartPointer<vtkRenderWindow>  render_window_;
+        std::string                       color_scheme_;
+        double                            r_, g_, b_;
+
+        /** \brief Internal method. Convert origin and orientation to vtkMatrix4x4.
+          * \param[in] origin the point cloud origin
+          * \param[in] orientation the point cloud orientation
+          * \param[out] vtk_matrix the resultant VTK 4x4 matrix
+          */
+        static void
+        convertToVtkMatrix(const Eigen::Vector4f& origin,
+                           const Eigen::Quaternion<float>& orientation,
+                           vtkSmartPointer<vtkMatrix4x4> &vtk_matrix);
+        /** \brief The viewpoint transformation matrix. */
+        vtkSmartPointer<vtkMatrix4x4> viewpoint_transformation_;
+
       private:
-        void
-        open();
-
-        virtual RenderWidget*
-        getParent();
-
-        static bool
-        concatenatePointCloud (const PointCloud2& cloud, PointCloud2& cloud_out);
-
-      private:
-        std::string     filename_;
-
-        struct NullDeleter
-        {
-          void operator()(void const *) const
-          {}
-        };
     };
   }
 }
 
-#endif // PCL_MODELER_CLOUD_ITEM_H_
+#endif // PCL_MODELER_CHANNEL_ACTOR_ITEM_H_

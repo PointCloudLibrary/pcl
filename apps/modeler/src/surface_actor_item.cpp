@@ -34,49 +34,50 @@
  *
  */
 
-#include <pcl/apps/modeler/surface_item.h>
-#include <pcl/apps/modeler/cloud_item.h>
-#include <pcl/apps/modeler/main_window.h>
+#include <pcl/apps/modeler/surface_actor_item.h>
 
-#include <QMenu>
+#include <pcl/apps/modeler/cloud_mesh.h>
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::modeler::SurfaceItem::SurfaceItem (MainWindow* main_window) : 
-  GeometryItem(main_window, "Polygonal Surface")
+pcl::modeler::SurfaceActorItem::SurfaceActorItem(QTreeWidgetItem* parent,
+                                               const boost::shared_ptr<CloudMesh>& cloud_mesh,
+                                               const vtkSmartPointer<vtkRenderWindow>& render_window)
+  :ChannelActorItem(parent, cloud_mesh, render_window, vtkSmartPointer<vtkLODActor>::New(), "Surface")
 {
+  createActor();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::modeler::SurfaceItem::~SurfaceItem ()
+pcl::modeler::SurfaceActorItem::~SurfaceActorItem ()
 {
 
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::modeler::SurfaceItem::initHandlers()
+pcl::modeler::SurfaceActorItem::createHandlers()
 {
-  PointCloud2Ptr cloud = dynamic_cast<CloudItem*>(parent())->getCloud();
+  geometry_handler_.reset(new pcl::visualization::PointCloudGeometryHandlerXYZ<PointSurfel>(cloud_mesh_->getCloud()));
 
-  geometry_handler_.reset(new pcl::visualization::PointCloudGeometryHandlerXYZ<PointCloud2>(cloud));
-
-  color_handler_.reset(new pcl::visualization::PointCloudColorHandlerRGBField<PointCloud2>(cloud));
+  color_handler_.reset(new pcl::visualization::PointCloudColorHandlerRGBField<PointSurfel>(cloud_mesh_->getCloud()));
   if (!color_handler_->isCapable())
-    color_handler_.reset(new pcl::visualization::PointCloudColorHandlerRandom<PointCloud2>(cloud));
+    color_handler_.reset(new pcl::visualization::PointCloudColorHandlerRandom<PointSurfel>(cloud_mesh_->getCloud()));
 }
-
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-bool
-pcl::modeler::SurfaceItem::createActor ()
+void
+pcl::modeler::SurfaceActorItem::createActorImpl()
 {
-  return (true);
+  createHandlers();
+  // TODO:
+
+  return;
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::modeler::SurfaceItem::prepareContextMenu(QMenu* menu) const
+pcl::modeler::SurfaceActorItem::prepareContextMenu(QMenu* menu) const
 {
-  GeometryItem::prepareContextMenu(menu);
+
 }

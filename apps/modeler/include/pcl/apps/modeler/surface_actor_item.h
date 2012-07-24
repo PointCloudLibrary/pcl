@@ -33,91 +33,52 @@
  *
  *
  */
-#ifndef PCL_MODELER_GEOMETRY_ITEM_H_
-#define PCL_MODELER_GEOMETRY_ITEM_H_
+#ifndef PCL_MODELER_SURFACE_ACTOR_ITEM_H_
+#define PCL_MODELER_SURFACE_ACTOR_ITEM_H_
 
-#include <pcl/apps/modeler/tree_item.h>
+#include <pcl/apps/modeler/channel_actor_item.h>
 #include <pcl/visualization/point_cloud_handlers.h>
-#include <vtkSmartPointer.h>
 
-class vtkActor;
+class vtkIdTypeArray;
 
 namespace pcl
 {
   namespace modeler
   {
-    class RenderWidget;
-
-    class GeometryItem : public TreeItem
+    class SurfaceActorItem : public ChannelActorItem
     {
       public:
-        typedef sensor_msgs::PointCloud2  PointCloud2;
-        typedef PointCloud2::Ptr          PointCloud2Ptr;
-        typedef PointCloud2::ConstPtr     PointCloud2ConstPtr;
-
-        typedef pcl::visualization::PointCloudGeometryHandler<PointCloud2> GeometryHandler;
+        typedef pcl::visualization::PointCloudGeometryHandler<pcl::PointSurfel> GeometryHandler;
         typedef GeometryHandler::Ptr GeometryHandlerPtr;
         typedef GeometryHandler::ConstPtr GeometryHandlerConstPtr;
 
-        typedef pcl::visualization::PointCloudColorHandler<PointCloud2> ColorHandler;
+        typedef pcl::visualization::PointCloudColorHandler<pcl::PointSurfel> ColorHandler;
         typedef ColorHandler::Ptr ColorHandlerPtr;
         typedef ColorHandler::ConstPtr ColorHandlerConstPtr;
 
-        GeometryItem(MainWindow* main_window);
-        GeometryItem(MainWindow* main_window, const QString & text);
-        GeometryItem(MainWindow* main_window, const QIcon & icon, const QString & text);
-        ~GeometryItem ();
-
-        virtual void
-        updateOnInserted();
-
-        virtual void
-        updateOnAboutToBeRemoved();
-
-        void
-        setColorHandler(double r, double g, double b);
-        void
-        setColorHandler(const std::string& field_name);
-
-        GeometryHandlerConstPtr
-        getGeometryHandler() const {return geometry_handler_;}
-
-        ColorHandlerConstPtr
-        getColorHandler() const {return color_handler_;}
-
-        bool
-        isCapable();
+        SurfaceActorItem(QTreeWidgetItem* parent,
+                        const boost::shared_ptr<CloudMesh>& cloud_mesh,
+                        const vtkSmartPointer<vtkRenderWindow>& render_window);
+        ~SurfaceActorItem ();
 
       protected:
-        RenderWidget*
-        getRenderWidget();
+        void
+        createHandlers();
+
+        virtual void
+        createActorImpl();
 
         virtual void
         prepareContextMenu(QMenu* menu) const;
 
-        virtual void
-        initHandlers() = 0;
-
-        virtual bool
-        updateActor() { return (createActor());}
-
-        virtual bool
-        createActor() = 0;
-
-        virtual void
-        handleDataChange();
-
-      protected:
-        /** \brief The actor holding the data to render. */
-        vtkSmartPointer<vtkActor> actor_;
-
+      private:
         /** \brief geometry handler that can be used for rendering the data. */
-        GeometryHandlerConstPtr geometry_handler_;
+        GeometryHandlerConstPtr   geometry_handler_;
 
         /** \brief color handler that can be used for rendering the data. */
-        ColorHandlerConstPtr color_handler_;
+        ColorHandlerConstPtr      color_handler_;
     };
   }
 }
 
-#endif // PCL_MODELER_GEOMETRY_ITEM_H_
+#endif // PCL_MODELER_SURFACE_ACTOR_ITEM_H_

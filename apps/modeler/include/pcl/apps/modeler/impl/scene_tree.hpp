@@ -34,62 +34,34 @@
  *
  */
 
-#ifndef PCL_MODELER_TREE_MODEL_H_
-#define PCL_MODELER_TREE_MODEL_H_
+#ifndef PCL_MODELER_SCENE_TREE_IMPL_H_
+#define PCL_MODELER_SCENE_TREE_IMPL_H_
 
-#include <QStandardItemModel>
-
+#include <pcl/apps/modeler/scene_tree.h>
 
 namespace pcl
 {
   namespace modeler
   {
-    class TreeItem;
-    class MainWindow;
-
-    /** \brief The model class that holds the scene data.
-      * \author Yangyan Li
-      * \ingroup apps
-      */
-    class TreeModel : public QStandardItemModel
+    /////////////////////////////////////////////////////////////////////////////////////////////
+    template <class T> QList<T*>
+    pcl::modeler::SceneTree::selectedTypeItems() const
     {
-      Q_OBJECT
+       QList<QTreeWidgetItem*> selected_items = selectedItems();
+       QList<T*> selected_t_items;
+       for (QList<QTreeWidgetItem*>::iterator selected_items_it = selected_items.begin();
+         selected_items_it != selected_items.end();
+         ++ selected_items_it)
+       {
+         T* t_item = dynamic_cast<T*>(*selected_items_it);
+         if(t_item != NULL)
+           selected_t_items.push_back(t_item);
+       }
 
-      public:
-        TreeModel (QObject* parent);
-
-        virtual ~TreeModel ();
-
-        virtual MainWindow*
-        parent();
-
-        void
-        emitItemChanged(QStandardItem* item);
-
-      private:
-
-      private slots:
-        void
-        slotOnDataChanged(QStandardItem* item);
-
-        void
-        slotOnAboutToBeInserted(const QModelIndex& parent, int start, int end);
-
-        void
-        slotOnAboutToBeRemoved(const QModelIndex& parent, int start, int end);
-
-        void
-        slotOnInserted(const QModelIndex& parent, int start, int end);
-
-        void
-        slotOnRemoved(const QModelIndex& parent, int start, int end);
-
-      private:
-
-    };
+       return (selected_t_items);
+    }
   }
 }
 
-#include <pcl/apps/modeler/impl/tree_model.hpp>
 
-#endif // PCL_MODELER_TREE_MODEL_H_
+#endif // PCL_MODELER_SCENE_TREE_IMPL_H_

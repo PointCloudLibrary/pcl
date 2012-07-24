@@ -34,13 +34,12 @@
  *
  */
 
-#include <pcl/apps/modeler/qt.h>
 #include <pcl/apps/modeler/main_window.h>
-#include <pcl/apps/modeler/tree_model.h>
-#include <pcl/apps/modeler/render_widget.h>
+
+#include <pcl/apps/modeler/scene_tree.h>
 #include <pcl/apps/modeler/dock_widget.h>
-#include <pcl/apps/modeler/points_item.h>
-#include <pcl/apps/modeler/color_handler_switcher.h>
+#include <pcl/apps/modeler/render_window.h>
+#include <pcl/apps/modeler/render_window_item.h>
 
 #include <QFileInfo>
 #include <vtkActor.h>
@@ -48,25 +47,20 @@
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::modeler::MainWindow::MainWindow() :
-  ui_(new Ui::MainWindow),
-  scene_tree_(new pcl::modeler::TreeModel(this))
+pcl::modeler::MainWindow::MainWindow()
+  : ui_(new Ui::MainWindow)
 {
   ui_->setupUi(this);
-  ui_->treeViewSceneExplorer->setHeaderHidden(true);
-  ui_->treeViewSceneExplorer->setModel(scene_tree_.get());
-  ui_->treeViewSceneExplorer->setMainWindow(this);
 
-  connect(ui_->treeViewSceneExplorer->selectionModel(), SIGNAL(selectionChanged(QItemSelection, QItemSelection)),
-    ui_->treeViewSceneExplorer, SLOT(slotOnSelectionChange(QItemSelection, QItemSelection)));
+  RenderWindow* central_render_window = new RenderWindow(this);
+  setCentralWidget(central_render_window);
 
-  RenderWidget* main_render_widget = new RenderWidget(this, 0);
-  setCentralWidget(main_render_widget);
-  scene_tree_->appendRow(main_render_widget);
+  RenderWindowItem* central_render_window_item = new RenderWindowItem(ui_->scene_tree_, central_render_window);
+  central_render_window_item->setText(0, "Central Render Window");
+  ui_->scene_tree_->addTopLevelItem(central_render_window_item);
 
   connectFileMenuActions();
   connectViewMenuActions();
-  connectRenderMenuActions();
   connectEditMenuActions();
 
   loadGlobalSettings();
@@ -81,24 +75,14 @@ pcl::modeler::MainWindow::~MainWindow()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void
-pcl::modeler::MainWindow::setActiveDockWidget(RenderWidget* render_widget)
-{
-  ui_->treeViewSceneExplorer->selectionModel()->clearSelection();
-  ui_->treeViewSceneExplorer->selectionModel()->select(
-    scene_tree_->indexFromItem(render_widget), QItemSelectionModel::Select);
-
-  return;
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
 void 
 pcl::modeler::MainWindow::connectFileMenuActions()
 {
-  connect(ui_->actionOpenPointCloud, SIGNAL(triggered()), ui_->treeViewSceneExplorer, SLOT(slotOpenPointCloud()));
-  connect(ui_->actionImportPointCloud, SIGNAL(triggered()), ui_->treeViewSceneExplorer, SLOT(slotImportPointCloud()));
-  connect(ui_->actionSavePointCloud, SIGNAL(triggered()), ui_->treeViewSceneExplorer, SLOT(slotSavePointCloud()));
-  connect(ui_->actionClosePointCloud, SIGNAL(triggered()), ui_->treeViewSceneExplorer, SLOT(slotClosePointCloud()));
+  connect(ui_->actionOpenPointCloud, SIGNAL(triggered()), ui_->scene_tree_, SLOT(slotOpenPointCloud()));
+  connect(ui_->actionImportPointCloud, SIGNAL(triggered()), ui_->scene_tree_, SLOT(slotImportPointCloud()));
+  connect(ui_->actionSavePointCloud, SIGNAL(triggered()), ui_->scene_tree_, SLOT(slotSavePointCloud()));
+  connect(ui_->actionClosePointCloud, SIGNAL(triggered()), ui_->scene_tree_, SLOT(slotClosePointCloud()));
+  connect(ui_->scene_tree_, SIGNAL(fileOpened(QString)), this, SLOT(slotUpdateRecentFile(QString)));
   createRecentPointCloudActions();
 
   connect(ui_->actionOpenProject, SIGNAL(triggered()), this, SLOT(slotOpenProject()));
@@ -114,26 +98,15 @@ void
 pcl::modeler::MainWindow::connectViewMenuActions()
 {
   connect(ui_->actionCreateRenderWindow, SIGNAL(triggered()), this, SLOT(slotCreateRenderWindow()));
-  connect(ui_->actionChangeBackgroundColor, SIGNAL(triggered()), ui_->treeViewSceneExplorer, SLOT(slotChangeBackgroundColor()));
-
-  QList<QAction *> actions = ui_->menuView->actions();
-  ui_->menuView->insertAction(actions[actions.size()-2], ui_->dockWidgetSceneExplorer->toggleViewAction());
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-void 
-pcl::modeler::MainWindow::connectRenderMenuActions()
-{
-  connect(ui_->actionSwitchColorHandler, SIGNAL(triggered()), this, SLOT(slotSwitchColorHandler()));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void 
 pcl::modeler::MainWindow::connectEditMenuActions()
 {
-  connect(ui_->actionDownSampleFilter, SIGNAL(triggered()), ui_->treeViewSceneExplorer, SLOT(slotDownSampleFilter()));
-  connect(ui_->actionEstimateNormal, SIGNAL(triggered()), ui_->treeViewSceneExplorer, SLOT(slotEstimateNormal()));
-  connect(ui_->actionPoissonSurfaceReconstruction, SIGNAL(triggered()), ui_->treeViewSceneExplorer, SLOT(slotPoissonReconstruction()));
+  connect(ui_->actionDownSamplePoints, SIGNAL(triggered()), ui_->scene_tree_, SLOT(slotDownSampleFilter()));
+  connect(ui_->actionEstimateNormals, SIGNAL(triggered()), ui_->scene_tree_, SLOT(slotEstimateNormal()));
+  connect(ui_->actionPoissonReconstruction, SIGNAL(triggered()), ui_->scene_tree_, SLOT(slotPoissonReconstruction()));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -166,12 +139,20 @@ pcl::modeler::MainWindow::slotExit() {
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
+pcl::modeler::MainWindow::slotUpdateRecentFile(const QString& filename)
+{
+  recent_files_.removeAll(filename);
+  recent_files_.prepend(filename);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void
 pcl::modeler::MainWindow::slotCreateRenderWindow()
 {
   DockWidget* dock_widget = new DockWidget(this);
   dock_widget->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
 
-  RenderWidget* render_widget = new RenderWidget(this, dock_widget);
+  RenderWindow* render_widget = new RenderWindow(dock_widget);
 
   dock_widget->setWidget(render_widget);
   addDockWidget(Qt::RightDockWidgetArea, dock_widget);
@@ -181,9 +162,8 @@ pcl::modeler::MainWindow::slotCreateRenderWindow()
   ui_->menuView->insertAction(actions[actions.size()-2], dock_widget->toggleViewAction());
 
   // keep a track of the qvtk widget
-  scene_tree_->appendRow(render_widget);
-  render_widget->setCheckState(Qt::Checked);
-  setActiveDockWidget(render_widget);
+  //scene_tree_->appendRow(render_widget);
+  //render_widget->setCheckState(Qt::Checked);
 
   return;
 }
@@ -194,7 +174,7 @@ pcl::modeler::MainWindow::slotOpenRecentPointCloud()
 {
   QAction* action = qobject_cast<QAction*>(sender());
   if (action)
-    ui_->treeViewSceneExplorer->openPointCloud(action->data().toString());
+    ui_->scene_tree_->openPointCloud(action->data().toString());
 
   return;
 }
@@ -206,15 +186,6 @@ pcl::modeler::MainWindow::slotOpenRecentProject()
   QAction* action = qobject_cast<QAction*>(sender());
   if (action)
     openProjectImpl(action->data().toString());
-
-  return;
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////////
-void
-pcl::modeler::MainWindow::slotSwitchColorHandler()
-{
-  ColorHandlerSwitcher color_handler_switcher(this);
 
   return;
 }
@@ -316,13 +287,6 @@ pcl::modeler::MainWindow::getRecentFolder()
     return QFileInfo(recent_filename).path();
 
   return (QString("."));
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-QStringList&
-pcl::modeler::MainWindow::getRecentFiles()
-{
-  return (recent_files_);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

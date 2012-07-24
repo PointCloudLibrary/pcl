@@ -45,8 +45,7 @@ int main( int argc, char** argv )
 
   qInitResources_resources();
 
-  pcl::modeler::MainWindow main_window;
-  main_window.show();
+  pcl::modeler::MainWindow::getInstance().show();
 
   return app.exec();
 }

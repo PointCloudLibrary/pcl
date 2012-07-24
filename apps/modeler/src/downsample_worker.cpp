@@ -35,15 +35,16 @@
  */
 
 #include <pcl/apps/modeler/downsample_worker.h>
-#include <pcl/apps/modeler/parameter_dialog.h>
 #include <pcl/apps/modeler/parameter.h>
-#include <pcl/apps/modeler/cloud_item.h>
+#include <pcl/apps/modeler/parameter_dialog.h>
+#include <pcl/apps/modeler/cloud_mesh.h>
+#include <pcl/apps/modeler/cloud_mesh_item.h>
 #include <pcl/filters/voxel_grid.h>
-#include <pcl/common/io.h>
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::modeler::DownSampleWorker::DownSampleWorker(const std::vector<CloudItem*>& polymeshs, QWidget* parent) :
-  AbstractWorker(polymeshs, parent),
+pcl::modeler::DownSampleWorker::DownSampleWorker(const QList<CloudMeshItem*>& cloud_mesh_items, QWidget* parent) :
+  AbstractWorker(cloud_mesh_items, parent),
   x_min_(std::numeric_limits<double>::max()), x_max_(std::numeric_limits<double>::min()),
   y_min_(std::numeric_limits<double>::max()), y_max_(std::numeric_limits<double>::min()),
   z_min_(std::numeric_limits<double>::max()), z_max_(std::numeric_limits<double>::min()),
@@ -61,13 +62,10 @@ pcl::modeler::DownSampleWorker::~DownSampleWorker(void)
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::modeler::DownSampleWorker::initParameters(PointCloud2Ptr input_cloud)
+pcl::modeler::DownSampleWorker::initParameters(CloudMeshItem* cloud_mesh_item)
 {
   Eigen::Vector4f min_pt, max_pt;
-  int x_idx = pcl::getFieldIndex(*input_cloud, "x");
-  int y_idx = pcl::getFieldIndex(*input_cloud, "y");
-  int z_idx = pcl::getFieldIndex(*input_cloud, "z");
-  pcl::getMinMax3D(input_cloud, x_idx, y_idx, z_idx, min_pt, max_pt);
+  pcl::getMinMax3D(*(cloud_mesh_item->getCloudMesh()->getCloud()), min_pt, max_pt);
 
   x_min_ = std::min(double(min_pt.x()), x_min_);
   x_max_ = std::max(double(max_pt.x()), x_max_);
@@ -106,25 +104,25 @@ pcl::modeler::DownSampleWorker::setupParameters()
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::modeler::DownSampleWorker::processImpl(CloudItem* polymesh) const
+pcl::modeler::DownSampleWorker::processImpl(CloudMeshItem* cloud_mesh_item) const
 {
-  sensor_msgs::PointCloud2::Ptr output_cloud(new sensor_msgs::PointCloud2);
-
-  pcl::VoxelGrid<sensor_msgs::PointCloud2> voxel_grid;
-  voxel_grid.setInputCloud (polymesh->getCloud());
+  pcl::VoxelGrid<pcl::PointSurfel> voxel_grid;
+  voxel_grid.setInputCloud(cloud_mesh_item->getCloudMesh()->getCloud());
   voxel_grid.setLeafSize (float (*leaf_size_x_), float (*leaf_size_y_), float (*leaf_size_z_));
-  voxel_grid.filter (*output_cloud);
 
-  *(polymesh->getCloud()) = *output_cloud;
+  CloudMesh::PointCloudPtr cloud = CloudMesh::PointCloudPtr(new pcl::PointCloud<pcl::PointSurfel>());
+  voxel_grid.filter(*cloud);
+
+  cloud_mesh_item->getCloudMesh()->getCloud() = cloud;
 
   return;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::modeler::DownSampleWorker::postProcessImpl(CloudItem* polymesh) const
+pcl::modeler::DownSampleWorker::postProcessImpl(CloudMeshItem* cloud_mesh_item) const
 {
-  polymesh->updateGeometryItems();
+  cloud_mesh_item->updateChannels();
 
   return;
 }

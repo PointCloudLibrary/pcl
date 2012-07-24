@@ -39,10 +39,6 @@
 #include <pcl/apps/modeler/parameter.h>
 
 
-#include <QComboBox>
-#include <QStandardItemModel>
-
-
 namespace pcl
 {
   namespace modeler

@@ -43,32 +43,46 @@
 #endif
 
 #include <QObject>
-#include <QTreeView>
-#include <QDialog>
-#include <QDockWidget>
-#include <QMainWindow>
-#include <QItemSelection>
-#include <QModelIndex>
-#include <QStyledItemDelegate>
+
+#include <QList>
+#include <QStringList>
+#include <QVector>
+#include <QStack>
+
 #include <QPoint>
-#include <QMenu>
-#include <QApplication>
-#include <QColorDialog>
-#include <QFile>
 #include <QColor>
+#include <QVariant>
+
+#include <QFile>
 #include <QThread>
 #include <QSettings>
-#include <QMessageBox>
-#include <QFileDialog>
-#include <QColorDialog>
-#include <QStandardItem>
-#include <QStandardItemModel>
+#include <QContextMenuEvent>
+
+#include <QMenu>
+#include <QMainWindow>
+#include <QApplication>
+#include <QCoreApplication>
 #include <QWidget>
 #include <QSpinBox>
-#include <QTableView>
+#include <QComboBox>
 #include <QPushButton>
-#include <QHeaderView>
+#include <QMessageBox>
+
+#include <QDialog>
+#include <QColorDialog>
+#include <QFileDialog>
+
+#include <QDockWidget>
+
 #include <QGridLayout>
-#include <QContextMenuEvent>
+
+#include <QTableView>
+#include <QHeaderView>
+#include <QTreeWidget>
+#include <QTreeWidgetItem>
+#include <QModelIndex>
+#include <QItemSelection>
+#include <QStandardItemModel>
+#include <QStyledItemDelegate>
 
 #endif // PCL_MODELER_QT_H_

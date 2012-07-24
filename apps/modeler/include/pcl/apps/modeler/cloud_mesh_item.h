@@ -1,8 +1,7 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Point Cloud Library (PCL) - www.pointclouds.org
- *  Copyright (c) 2012, Willow Garage, Inc.
+ *  Copyright (c) 2010, Willow Garage, Inc.
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -32,10 +31,62 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
+ *
  */
+#ifndef PCL_MODELER_CLOUD_MESH_ITEM_H_
+#define PCL_MODELER_CLOUD_MESH_ITEM_H_
 
-#ifndef PCL_MODELER_TREE_MODEL_IMPL_H_
-#define PCL_MODELER_TREE_MODEL_IMPL_H_
+#include <pcl/apps/modeler/qt.h>
+#include <boost/shared_ptr.hpp>
+#include <pcl/apps/modeler/abstract_item.h>
 
+namespace pcl
+{
+  namespace modeler
+  {
+    class CloudMesh;
 
-#endif // PCL_MODELER_TREE_MODEL_IMPL_H_
+    class CloudMeshItem : public QTreeWidgetItem, public AbstractItem
+    {
+      public:
+        CloudMeshItem (QTreeWidgetItem* parent, const std::string& filename);
+        ~CloudMeshItem ();
+
+        inline boost::shared_ptr<CloudMesh>&
+        getCloudMesh()
+        {
+          return cloud_mesh_;
+        }
+        inline const boost::shared_ptr<CloudMesh>&
+        getCloudMesh() const
+        {
+          return cloud_mesh_;
+        }
+
+        static bool
+        savePointCloud(const QList<CloudMeshItem*>& items, const QString& filename);
+
+        bool
+        open();
+
+        void
+        close();
+
+        void
+        createChannels();
+
+        void
+        updateChannels();
+
+      protected:
+        virtual void
+        prepareContextMenu(QMenu* menu) const;
+
+      private:
+        std::string                           filename_;
+        boost::shared_ptr<CloudMesh>          cloud_mesh_;
+    };
+  }
+}
+
+#endif // PCL_MODELER_CLOUD_MESH_ITEM_H_

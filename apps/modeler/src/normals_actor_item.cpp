@@ -34,74 +34,51 @@
  *
  */
 
-#ifndef PCL_MODELER_TREE_ITEM_H_
-#define PCL_MODELER_TREE_ITEM_H_
+#include <pcl/apps/modeler/normals_actor_item.h>
 
-<<<<<<< .mine
-#include <QStandardItem>
-=======
-#include <pcl/apps/modeler/qt.h>
->>>>>>> .r6350
+#include <pcl/apps/modeler/cloud_mesh.h>
 
-class QMenu;
-class QPoint;
 
-namespace pcl
+//////////////////////////////////////////////////////////////////////////////////////////////
+pcl::modeler::NormalsActorItem::NormalsActorItem(QTreeWidgetItem* parent,
+                                               const boost::shared_ptr<CloudMesh>& cloud_mesh,
+                                               const vtkSmartPointer<vtkRenderWindow>& render_window)
+  :ChannelActorItem(parent, cloud_mesh, render_window, vtkSmartPointer<vtkLODActor>::New(), "Normals")
 {
-  namespace modeler
-  {
-    class MainWindow;
-
-    class TreeItem : public QStandardItem
-    {
-      public:
-        TreeItem(MainWindow* main_window);
-        TreeItem(MainWindow* main_window, const QString & text);
-        TreeItem(MainWindow* main_window, const QIcon & icon, const QString & text);
-        virtual ~TreeItem();
-
-        virtual TreeItem*
-        parent();
-
-        void
-        updateOnDataChanged();
-
-        virtual void
-        updateOnAboutToBeInserted();
-
-        virtual void
-        updateOnAboutToBeRemoved();
-
-        virtual void
-        updateOnInserted();
-
-        virtual void
-        updateOnRemoved();
-
-        virtual void
-        updateOnSelectionChange(bool selected);
-
-        void
-        showContextMenu(const QPoint* position);
-
-      protected:
-        virtual void
-        handleDataChange();
-
-        virtual void
-        prepareContextMenu(QMenu* menu) const;
-
-        void
-        forceChildCheckState(Qt::CheckState check_state);
-
-        void
-        updateParentCheckState();
-
-      protected:
-        MainWindow*     main_window_;
-        QStandardItem*  old_state_;
-    };
-  }
+  createActor();
 }
 
-#endif // PCL_MODELER_TREE_ITEM_H_
+//////////////////////////////////////////////////////////////////////////////////////////////
+pcl::modeler::NormalsActorItem::~NormalsActorItem ()
+{
+
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::modeler::NormalsActorItem::createHandlers()
+{
+  geometry_handler_.reset(new pcl::visualization::PointCloudGeometryHandlerXYZ<PointSurfel>(cloud_mesh_->getCloud()));
+
+  color_handler_.reset(new pcl::visualization::PointCloudColorHandlerRGBField<PointSurfel>(cloud_mesh_->getCloud()));
+  if (!color_handler_->isCapable())
+    color_handler_.reset(new pcl::visualization::PointCloudColorHandlerRandom<PointSurfel>(cloud_mesh_->getCloud()));
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::modeler::NormalsActorItem::createActorImpl()
+{
+  createHandlers();
+
+  // TODO:
+
+  return;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::modeler::NormalsActorItem::prepareContextMenu(QMenu* menu) const
+{
+
+}

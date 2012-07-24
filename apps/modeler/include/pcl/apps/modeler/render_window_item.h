@@ -1,7 +1,8 @@
-/*
+ /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2012, Willow Garage, Inc.
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -31,43 +32,48 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- *
  */
-#ifndef PCL_MODELER_NORMAL_ITEM_H_
-#define PCL_MODELER_NORMAL_ITEM_H_
 
-#include <pcl/apps/modeler/geometry_item.h>
+#ifndef PCL_MODELER_RENDER_WINDOW_ITEM_H_
+#define PCL_MODELER_RENDER_WINDOW_ITEM_H_
 
+#include <pcl/apps/modeler/qt.h>
+#include <pcl/apps/modeler/abstract_item.h>
 
 namespace pcl
 {
   namespace modeler
   {
-    class MainWindow;
+    class RenderWindow;
 
-    class NormalsItem : public GeometryItem
+    class RenderWindowItem : public QTreeWidgetItem, public AbstractItem
     {
       public:
+        RenderWindowItem(QTreeWidget * parent, RenderWindow* render_window);
+        ~RenderWindowItem();
 
-        typedef boost::shared_ptr<NormalsItem> Ptr;
-        typedef boost::shared_ptr<const NormalsItem> ConstPtr;
+        inline RenderWindow*
+        getRenderWindow()
+        {
+          return render_window_;
+        }
+        inline const RenderWindow*
+        getRenderWindow() const
+        {
+          return render_window_;
+        }
 
-        NormalsItem (MainWindow* main_window);
-        ~NormalsItem ();
+        bool
+        openPointCloud(const QString& filename);
 
       protected:
         virtual void
         prepareContextMenu(QMenu* menu) const;
 
-        virtual void
-        initHandlers();
-
-        virtual bool
-        createActor();
-
       private:
+        RenderWindow*     render_window_;
     };
   }
 }
 
-#endif // PCL_MODELER_NORMAL_ITEM_H_
+#endif // PCL_MODELER_RENDER_WINDOW_ITEM_H_

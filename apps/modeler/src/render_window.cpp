@@ -34,95 +34,30 @@
  *
  */
 
-#include <pcl/apps/modeler/qt.h>
-#include <pcl/apps/modeler/render_widget.h>
-#include <pcl/apps/modeler/dock_widget.h>
-#include <pcl/apps/modeler/main_window.h>
-#include <pcl/visualization/common/common.h>
+#include <pcl/apps/modeler/render_window.h>
 
-#include <vtkTextActor.h>
 #include <vtkRenderer.h>
-#include <vtkRendererCollection.h>
+#include <vtkSmartPointer.h>
 #include <vtkRenderWindow.h>
+#include <vtkRendererCollection.h>
 
-#include <QColor>
-#include <QColorDialog>
+
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::modeler::RenderWidget::RenderWidget(MainWindow* main_window, QWidget *parent, Qt::WFlags flags) : 
-  QVTKWidget(parent, flags),
-  TreeItem(main_window, QObject::tr("Render Window"))
+pcl::modeler::RenderWindow::RenderWindow(QWidget *parent, Qt::WFlags flags) : 
+  QVTKWidget(parent, flags)
 {
-  if (parent != NULL)
-    setCheckable(true);
-
   setFocusPolicy(Qt::StrongFocus);
   initRenderer();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::modeler::RenderWidget::~RenderWidget()
+pcl::modeler::RenderWindow::~RenderWindow()
 {
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-void
-pcl::modeler::RenderWidget::updateOnInserted()
-{
-  setText((row() == 0)?(QObject::tr("Main Render Window")):(QObject::tr("Render Window %1").arg(row())));
-
-  DockWidget* dock_widget = dynamic_cast<DockWidget*>(QVTKWidget::parent());
-  if (dock_widget != NULL)
-     dock_widget->setWindowTitle(tr("Render Window %1").arg(row()));
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-void
-pcl::modeler::RenderWidget::updateOnSelectionChange(bool selected)
-{
-  DockWidget* dock_widget = dynamic_cast<DockWidget*>(QVTKWidget::parent());
-  if (dock_widget != NULL)
-    dock_widget->setFocusBasedStyle(selected);
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-void
-pcl::modeler::RenderWidget::changeBackgroundColor()
-{
-  double r, g, b;
-  vtkRenderer* renderer = getRenderer();
-  renderer->GetBackground(r, g, b);
-  QColor color = QColorDialog::getColor(QColor(r, g, b), this);
-
-  if (color.isValid()) {
-    r = color.red();
-    g = color.green();
-    b = color.blue();
-    renderer->SetBackground(r, g, b);
-  }
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-void
-pcl::modeler::RenderWidget::focusInEvent ( QFocusEvent * event )
-{
-  main_window_->setActiveDockWidget(this);
-  QVTKWidget::focusInEvent(event);
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-void
-pcl::modeler::RenderWidget::contextMenuEvent(QContextMenuEvent *event)
-{
-  if (event->modifiers()&Qt::ControlModifier) {
-    showContextMenu(&(event->globalPos()));
-  }
-
-  return;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::modeler::RenderWidget::initRenderer()
+pcl::modeler::RenderWindow::initRenderer()
 {
   vtkSmartPointer<vtkRenderWindow> win = GetRenderWindow();
   vtkSmartPointer<vtkRenderer> renderer = vtkSmartPointer<vtkRenderer>::New();
@@ -146,22 +81,4 @@ pcl::modeler::RenderWidget::initRenderer()
   win->GetInteractor()->SetDesiredUpdateRate (30.0);
 
   return;
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////////
-void
-pcl::modeler::RenderWidget::prepareContextMenu(QMenu* menu) const
-{
-  Ui::MainWindow* ui = main_window_->ui();
-  menu->addAction(ui->actionOpenPointCloud);
-  menu->addAction(ui->actionChangeBackgroundColor);
-
-  return;
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////////
-vtkSmartPointer<vtkRenderer>
-pcl::modeler::RenderWidget::getRenderer()
-{
-  return (GetRenderWindow()->GetRenderers()->GetFirstRenderer());
 }

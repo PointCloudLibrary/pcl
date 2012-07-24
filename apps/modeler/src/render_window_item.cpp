@@ -34,70 +34,47 @@
  *
  */
 
-#ifndef PCL_MODELER_TREE_ITEM_H_
-#define PCL_MODELER_TREE_ITEM_H_
+#include <pcl/apps/modeler/render_window_item.h>
 
-#include <pcl/apps/modeler/qt.h>
+#include <pcl/apps/modeler/cloud_mesh_item.h>
+#include <pcl/apps/modeler/main_window.h>
 
-class QMenu;
-class QPoint;
 
-namespace pcl
+//////////////////////////////////////////////////////////////////////////////////////////////
+pcl::modeler::RenderWindowItem::RenderWindowItem(QTreeWidget * parent, RenderWindow* render_window)
+  : QTreeWidgetItem(parent),
+  AbstractItem(),
+  render_window_(render_window)
 {
-  namespace modeler
-  {
-    class MainWindow;
-
-    class TreeItem : public QStandardItem
-    {
-      public:
-        TreeItem(MainWindow* main_window);
-        TreeItem(MainWindow* main_window, const QString & text);
-        TreeItem(MainWindow* main_window, const QIcon & icon, const QString & text);
-        virtual ~TreeItem();
-
-        virtual TreeItem*
-        parent();
-
-        void
-        updateOnDataChanged();
-
-        virtual void
-        updateOnAboutToBeInserted();
-
-        virtual void
-        updateOnAboutToBeRemoved();
-
-        virtual void
-        updateOnInserted();
-
-        virtual void
-        updateOnRemoved();
-
-        virtual void
-        updateOnSelectionChange(bool selected);
-
-        void
-        showContextMenu(const QPoint* position);
-
-      protected:
-        virtual void
-        handleDataChange();
-
-        virtual void
-        prepareContextMenu(QMenu* menu) const;
-
-        void
-        forceChildCheckState(Qt::CheckState check_state);
-
-        void
-        updateParentCheckState();
-
-      protected:
-        MainWindow*     main_window_;
-        QStandardItem*  old_state_;
-    };
-  }
 }
 
-#endif // PCL_MODELER_TREE_ITEM_H_
+//////////////////////////////////////////////////////////////////////////////////////////////
+pcl::modeler::RenderWindowItem::~RenderWindowItem()
+{
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+bool
+pcl::modeler::RenderWindowItem::openPointCloud(const QString& filename)
+{
+  CloudMeshItem* cloud_mesh_item = new CloudMeshItem(this, filename.toStdString());
+  addChild(cloud_mesh_item);
+
+  if (!cloud_mesh_item->open())
+  {
+    removeChild(cloud_mesh_item);
+    delete cloud_mesh_item;
+    return (false);
+  }
+
+  treeWidget()->setCurrentItem(cloud_mesh_item);
+
+  return (true);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::modeler::RenderWindowItem::prepareContextMenu(QMenu* menu) const
+{
+  menu->addAction(ui()->actionOpenPointCloud);
+}

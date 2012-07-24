@@ -34,59 +34,46 @@
  *
  */
 
-#ifndef PCL_MODELER_RENDER_WIDGET_H_
-#define PCL_MODELER_RENDER_WIDGET_H_
+#include <pcl/apps/modeler/cloud_mesh.h>
 
-#include <QVTKWidget.h>
-#include <vtkSmartPointer.h>
-#include <pcl/apps/modeler/tree_item.h>
+#include <pcl/io/pcd_io.h>
 
-class vtkRenderer;
-class QContextMenuEvent;
-
-namespace pcl
+//////////////////////////////////////////////////////////////////////////////////////////////
+pcl::modeler::CloudMesh::CloudMesh()
 {
-  namespace modeler
-  {
-    class MainWindow;
-
-    class RenderWidget : public QVTKWidget, public TreeItem
-    {
-      public:
-        RenderWidget(MainWindow* main_window, QWidget *parent = 0, Qt::WFlags flags = 0);
-        ~RenderWidget();
-
-        virtual void
-        updateOnInserted();
-
-        virtual void
-        updateOnSelectionChange(bool selected);
-
-        void
-        changeBackgroundColor();
-
-        virtual QSize
-        sizeHint() const {return QSize(512, 512);}
-
-        virtual void
-        focusInEvent ( QFocusEvent * event );
-        virtual void
-        contextMenuEvent(QContextMenuEvent *event);
-
-        vtkSmartPointer<vtkRenderer>
-        getRenderer();
-
-      protected:
-        virtual void
-        prepareContextMenu(QMenu* menu) const;
-
-      private:
-        void
-        initRenderer();
-    };
-  }
+  cloud_.reset(new pcl::PointCloud<pcl::PointSurfel>());
 }
 
-#include <pcl/apps/modeler/impl/parameter.hpp>
+//////////////////////////////////////////////////////////////////////////////////////////////
+pcl::modeler::CloudMesh::~CloudMesh ()
+{
+}
 
-#endif // PCL_MODELER_RENDER_WIDGET_H_
+//////////////////////////////////////////////////////////////////////////////////////////////
+std::vector<std::string>
+pcl::modeler::CloudMesh::getAvaiableFieldNames() const
+{
+  // TODO:
+  return (std::vector<std::string>());
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+bool
+pcl::modeler::CloudMesh::open(const std::string& filename)
+{
+  return (pcl::io::loadPCDFile(filename, *cloud_) == 0);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+bool
+pcl::modeler::CloudMesh::save(const std::string& filename) const
+{
+  return (save(*cloud_, filename));
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+bool
+pcl::modeler::CloudMesh::save(const pcl::PointCloud<pcl::PointSurfel>& cloud, const std::string& filename)
+{
+  return (pcl::io::savePCDFile(filename, cloud, true) == 0);
+}

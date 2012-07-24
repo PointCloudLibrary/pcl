@@ -39,47 +39,32 @@
 
 #include <pcl/apps/modeler/qt.h>
 #include <boost/shared_ptr.hpp>
-#include <vtkSmartPointer.h>
 
 #include <ui_main_window.h>
 
-class QMenu;
-class vtkActor;
-class vtkRenderer;
-class vtkRenderWindow;
 
 namespace pcl
 {
   namespace modeler
   {
-    class TreeItem;
-    class TreeModel;
-    class RenderWidget;
+    class SceneTree;
+    class AbstractItem;
 
     class MainWindow : public QMainWindow
     {
       Q_OBJECT
 
       public:
-        MainWindow();
-        ~MainWindow();
-
-        void
-        setActiveDockWidget(RenderWidget* render_widget);
-
-        Ui::MainWindow*
-        ui() {return ui_;}
-
-        void
-        triggerRender(vtkActor* actor);
+        static MainWindow& getInstance() {
+          static MainWindow theSingleton;
+          return theSingleton;
+        }
 
         QString 
         getRecentFolder();
 
-        QStringList&
-        getRecentFiles();
-
       public slots:
+        // slots for file menu
         void 
         slotOpenProject();
         void 
@@ -88,14 +73,12 @@ namespace pcl
         slotCloseProject();
         void 
         slotExit();
+        void
+        slotUpdateRecentFile(const QString& filename);
 
         // slots for view menu
         void
         slotCreateRenderWindow();
-
-        // slots for render menu
-        void
-        slotSwitchColorHandler();
 
       private:
         // methods for file Menu
@@ -118,10 +101,6 @@ namespace pcl
         void 
         connectViewMenuActions();
 
-        // methods for render menu
-        void 
-        connectRenderMenuActions();
-
         // methods for edit menu
         void 
         connectEditMenuActions();
@@ -139,6 +118,13 @@ namespace pcl
         slotOpenRecentProject();
 
       private:
+        friend class AbstractItem;
+
+        MainWindow();
+        MainWindow(const MainWindow &){}            // copy ctor hidden
+        MainWindow& operator=(const MainWindow &){} // assign op. hidden
+        ~MainWindow();
+
         Ui::MainWindow                    *ui_; // Designer form
 
         // shortcuts for recent point clouds/projects
@@ -147,9 +133,6 @@ namespace pcl
         static const size_t               MAX_RECENT_NUMBER = 8;
         std::vector<boost::shared_ptr<QAction> >  recent_pointcloud_actions_;
         std::vector<boost::shared_ptr<QAction> >  recent_project_actions_;
-
-        // data
-        boost::shared_ptr<TreeModel>    scene_tree_;
     };
   }
 }

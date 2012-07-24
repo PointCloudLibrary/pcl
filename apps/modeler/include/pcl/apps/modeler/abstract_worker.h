@@ -36,14 +36,14 @@
 
 #ifndef PCL_MODELER_ABSTRACT_WORKER_H_
 #define PCL_MODELER_ABSTRACT_WORKER_H_
+
 #include <pcl/apps/modeler/qt.h>
-#include <sensor_msgs/PointCloud2.h>
 
 namespace pcl
 {
   namespace modeler
   {
-    class CloudItem;
+    class CloudMeshItem;
     class ParameterDialog;
 
     class AbstractWorker : public QObject
@@ -51,15 +51,11 @@ namespace pcl
       Q_OBJECT
 
       public:
-        typedef sensor_msgs::PointCloud2  PointCloud2;
-        typedef PointCloud2::Ptr          PointCloud2Ptr;
-        typedef PointCloud2::ConstPtr     PointCloud2ConstPtr;
-
-        AbstractWorker(const std::vector<CloudItem*>& polymeshs, QWidget* parent=0);
+        AbstractWorker(const QList<CloudMeshItem*>& cloud_mesh_items, QWidget* parent=0);
         ~AbstractWorker(void);
 
-        virtual int
-        exec();
+        bool
+        run();
 
       public slots:
         void
@@ -80,20 +76,20 @@ namespace pcl
         getName () const {return ("");}
 
         virtual void
-        initParameters(PointCloud2Ptr cloud) = 0;
+        initParameters(CloudMeshItem* cloud_mesh_item) = 0;
 
         virtual void
         setupParameters() = 0;
 
         virtual void
-        processImpl(CloudItem* polymesh) const = 0;
+        processImpl(CloudMeshItem* cloud_mesh_item) const = 0;
 
         virtual void
-        postProcessImpl(CloudItem* polymesh) const = 0;
+        postProcessImpl(CloudMeshItem* cloud_mesh_item) const = 0;
 
       protected:
-        std::vector<CloudItem*>  clouds_;
-        ParameterDialog*          parameter_dialog_;
+        QList<CloudMeshItem*>       cloud_mesh_items_;
+        ParameterDialog*            parameter_dialog_;
     };
 
   }

@@ -34,8 +34,77 @@
  *
  */
 
-#ifndef PCL_MODELER_PCLMODELER_IMPL_H_
-#define PCL_MODELER_PCLMODELER_IMPL_H_
+#ifndef PCL_MODELER_SCENE_TREE_H_
+#define PCL_MODELER_SCENE_TREE_H_
 
+#include <pcl/apps/modeler/qt.h>
 
-#endif // PCL_MODELER_PCLMODELER_IMPL_H_
+namespace pcl
+{
+  namespace modeler
+  {
+    class CloudMeshItem;
+    class RenderWindowItem;
+
+    class SceneTree : public QTreeWidget
+    {
+      Q_OBJECT
+
+      public:
+        SceneTree(QWidget * parent = 0);
+        ~SceneTree();
+
+        virtual QSize
+        sizeHint() const;
+
+        bool 
+        openPointCloud(const QString& filename);
+
+        bool 
+        savePointCloud(const QString& filename);
+
+      public slots:
+        // slots for file menu
+        void 
+        slotOpenPointCloud();
+
+        void 
+        slotImportPointCloud();
+
+        void
+        slotSavePointCloud();
+
+        void
+        slotClosePointCloud();
+
+        // slots for edit menu
+        void
+        slotDownSampleFilter();
+        void
+        slotEstimateNormal();
+        void
+        slotPoissonReconstruction();
+
+      signals:
+        void
+        fileOpened(const QString& filename);
+
+      private:
+        template <class T> QList<T*>
+        selectedTypeItems() const;
+
+        QList<RenderWindowItem*>
+        selectedRenderWindowItems() const;
+
+        static void
+        closePointCloud(const QList<CloudMeshItem*>& items);
+
+        virtual void
+        contextMenuEvent(QContextMenuEvent *event);
+    };
+  }
+}
+
+#include <pcl/apps/modeler/impl/scene_tree.hpp>
+
+#endif // PCL_MODELER_SCENE_TREE_H_

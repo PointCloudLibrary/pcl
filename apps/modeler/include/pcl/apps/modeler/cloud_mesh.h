@@ -1,8 +1,7 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Point Cloud Library (PCL) - www.pointclouds.org
- *  Copyright (c) 2012, Willow Garage, Inc.
+ *  Copyright (c) 2010, Willow Garage, Inc.
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -32,50 +31,57 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
+ *
  */
+#ifndef PCL_MODELER_CLOUD_MESH_H_
+#define PCL_MODELER_CLOUD_MESH_H_
 
-#ifndef PCL_MODELER_COLOR_HANDLER_SWITCHER_H_
-#define PCL_MODELER_COLOR_HANDLER_SWITCHER_H_
+#include <pcl/point_types.h>
+#include <pcl/Vertices.h>
 
-#include <pcl/apps/modeler/qt.h>
-#include <pcl/visualization/point_cloud_handlers.h>
-
-class QColorDialog;
-
-// Forward Qt class declarations
-namespace Ui
-{
-  class ColorHandlerSwitcher;
-}
 
 namespace pcl
 {
   namespace modeler
   {
-    class CloudItem;
-
-    class ColorHandlerSwitcher : public QDialog
+    class CloudMesh
     {
-      Q_OBJECT
+    public:
+      typedef pcl::PointSurfel                    PointSurfel;
+      typedef pcl::PointCloud<PointSurfel>        PointCloud;
+      typedef PointCloud::Ptr                     PointCloudPtr;
+      typedef PointCloud::ConstPtr                PointCloudConstPtr;
 
-      public:
-        ColorHandlerSwitcher(QWidget * parent = 0, Qt::WindowFlags f = 0);
-        ~ColorHandlerSwitcher();
+      CloudMesh ();
+      ~CloudMesh ();
 
-      private:
-        Ui::ColorHandlerSwitcher            *ui_; // Designer form
-        QColorDialog*                       color_picker_;
+      PointCloudPtr& 
+      getCloud() {return cloud_;}
+      PointCloudConstPtr
+      getCloud() const {return cloud_;}
 
-        void
-        setupAvaiableFieldNames();
+      std::vector<pcl::Vertices>&
+      getPolygons() {return polygons_;}
+      const std::vector<pcl::Vertices>&
+      getPolygons() const {return polygons_;}
 
-      private slots:
-        void
-        slotSwitchColorHandler();
-        void
-        slotToggleColorPicker(const QString &text);
+      std::vector<std::string>
+      getAvaiableFieldNames() const;
+
+      bool
+      open(const std::string& filename);
+
+      bool
+      save(const std::string& filename) const;
+
+      static bool
+      save(const pcl::PointCloud<pcl::PointSurfel>& cloud, const std::string& filename);
+
+    private:
+      PointCloudPtr               cloud_;
+      std::vector<pcl::Vertices>  polygons_;
     };
   }
 }
 
-#endif // PCL_MODELER_COLOR_HANDLER_SWITCHER_H_
+#endif // PCL_MODELER_CLOUD_MESH_H_

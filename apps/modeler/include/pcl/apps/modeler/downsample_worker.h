@@ -48,7 +48,7 @@ namespace pcl
     class DownSampleWorker : public AbstractWorker 
     {
       public:
-        DownSampleWorker(const std::vector<CloudItem*>& polymeshs, QWidget* parent=0);
+        DownSampleWorker(const QList<CloudMeshItem*>& cloud_mesh_items, QWidget* parent=0);
         ~DownSampleWorker(void);
 
       protected:
@@ -56,16 +56,16 @@ namespace pcl
         getName () const {return ("Down Sample");}
 
         virtual void
-        initParameters(PointCloud2Ptr input_cloud);
+        initParameters(CloudMeshItem* cloud_mesh_item);
 
         virtual void
         setupParameters();
 
         virtual void
-        processImpl(CloudItem* polymesh) const;
+        processImpl(CloudMeshItem* cloud_mesh_item) const;
 
         virtual void
-        postProcessImpl(CloudItem* polymesh) const;
+        postProcessImpl(CloudMeshItem* cloud_mesh_item) const;
 
       private:
         double x_min_, x_max_;

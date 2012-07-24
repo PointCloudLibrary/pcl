@@ -33,50 +33,45 @@
  *
  *
  */
-#ifndef PCL_MODELER_POINTS_ITEM_H_
-#define PCL_MODELER_POINTS_ITEM_H_
+#ifndef PCL_MODELER_POINTS_ACTOR_ITEM_H_
+#define PCL_MODELER_POINTS_ACTOR_ITEM_H_
 
-#include <pcl/apps/modeler/geometry_item.h>
+#include <pcl/apps/modeler/channel_actor_item.h>
 #include <pcl/visualization/point_cloud_handlers.h>
+
+class vtkIdTypeArray;
 
 namespace pcl
 {
   namespace modeler
   {
-    class MainWindow;
-
-    class PointsItem : public GeometryItem
+    class PointsActorItem : public ChannelActorItem
     {
       public:
-        typedef boost::shared_ptr<PointsItem> Ptr;
-        typedef boost::shared_ptr<const PointsItem> ConstPtr;
+        typedef pcl::visualization::PointCloudGeometryHandler<pcl::PointSurfel> GeometryHandler;
+        typedef GeometryHandler::Ptr GeometryHandlerPtr;
+        typedef GeometryHandler::ConstPtr GeometryHandlerConstPtr;
 
-        PointsItem (MainWindow* main_window, const Eigen::Vector4f& sensor_origin = Eigen::Vector4f (0, 0, 0, 0),
-          const Eigen::Quaternion<float>& sensor_orientation = Eigen::Quaternion<float> (1, 0, 0 ,0));
+        typedef pcl::visualization::PointCloudColorHandler<pcl::PointSurfel> ColorHandler;
+        typedef ColorHandler::Ptr ColorHandlerPtr;
+        typedef ColorHandler::ConstPtr ColorHandlerConstPtr;
 
-        virtual ~PointsItem ();
+        PointsActorItem(QTreeWidgetItem* parent,
+                        const boost::shared_ptr<CloudMesh>& cloud_mesh,
+                        const vtkSmartPointer<vtkRenderWindow>& render_window);
+        ~PointsActorItem ();
 
       protected:
+        void
+        createHandlers();
+
+        virtual void
+        createActorImpl();
+
         virtual void
         prepareContextMenu(QMenu* menu) const;
 
-        virtual void
-        initHandlers();
-
-        virtual bool
-        createActor();
-
       private:
-        /** \brief Internal method. Convert origin and orientation to vtkMatrix4x4.
-          * \param[in] origin the point cloud origin
-          * \param[in] orientation the point cloud orientation
-          * \param[out] vtk_matrix the resultant VTK 4x4 matrix
-          */
-        static void
-        convertToVtkMatrix (const Eigen::Vector4f &origin,
-                            const Eigen::Quaternion<float> &orientation,
-                            vtkSmartPointer<vtkMatrix4x4> &vtk_matrix);
-
         /** \brief Internal method. Converts a PCL templated PointCloud object to a vtk polydata object.
           * \param[in] geometry_handler the geometry handler object used to extract the XYZ data
           * \param[out] polydata the resultant polydata containing the cloud
@@ -84,9 +79,9 @@ namespace pcl
           * around to speed up the conversion.
           */
         static void
-        convertPointCloudToVTKPolyData (const GeometryHandlerConstPtr &geometry_handler,
-                                        vtkSmartPointer<vtkPolyData> &polydata,
-                                        vtkSmartPointer<vtkIdTypeArray> &initcells);
+        convertPointCloudToVTKPolyData(const GeometryHandlerConstPtr &geometry_handler,
+                                       vtkSmartPointer<vtkPolyData> &polydata,
+                                       vtkSmartPointer<vtkIdTypeArray> &initcells);
 
         /** \brief Internal method. Updates a set of cells (vtkIdTypeArray) if the number of points in a cloud changes
           * \param[out] cells the vtkIdTypeArray object (set of cells) to update
@@ -97,9 +92,9 @@ namespace pcl
           * generate
           */
         static void
-        updateCells (vtkSmartPointer<vtkIdTypeArray> &cells,
-                     vtkSmartPointer<vtkIdTypeArray> &initcells,
-                     vtkIdType nr_points);
+        updateCells(vtkSmartPointer<vtkIdTypeArray> &cells,
+                    vtkSmartPointer<vtkIdTypeArray> &initcells,
+                    vtkIdType nr_points);
 
         /** \brief Internal method. Creates a vtk actor from a vtk polydata object.
           * \param[in] data the vtk polydata object to create an actor for
@@ -107,17 +102,17 @@ namespace pcl
           * \param[in] use_scalars set scalar properties to the mapper if it exists in the data. Default: true.
           */
         static void
-        createActorFromVTKDataSet (const vtkSmartPointer<vtkDataSet> &data,
-                                   vtkSmartPointer<vtkLODActor> &actor,
-                                   bool use_scalars = true);
-      private:
-        /** \brief The viewpoint transformation matrix. */
-        vtkSmartPointer<vtkMatrix4x4> viewpoint_transformation_;
+        createActorFromVTKDataSet(const vtkSmartPointer<vtkDataSet> &data,
+                                  vtkSmartPointer<vtkLODActor> &actor,
+                                  bool use_scalars = true);
 
-        /** \brief Internal cell array. Used for optimizing updatePointCloud. */
-        vtkSmartPointer<vtkIdTypeArray> cells_;
+        /** \brief geometry handler that can be used for rendering the data. */
+        GeometryHandlerConstPtr   geometry_handler_;
+
+        /** \brief color handler that can be used for rendering the data. */
+        ColorHandlerConstPtr      color_handler_;
     };
   }
 }
 
-#endif // PCL_MODELER_POINTS_ITEM_H_
+#endif // PCL_MODELER_POINTS_ACTOR_ITEM_H_

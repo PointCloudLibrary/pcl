@@ -37,14 +37,14 @@
 #include <pcl/apps/modeler/poisson_worker.h>
 #include <pcl/apps/modeler/parameter_dialog.h>
 #include <pcl/apps/modeler/parameter.h>
-#include <pcl/apps/modeler/points_item.h>
-//#include <pcl/surface/poisson.h>
-#include <pcl/common/io.h>
+#include <pcl/apps/modeler/cloud_mesh.h>
+#include <pcl/apps/modeler/cloud_mesh_item.h>
+#include <pcl/surface/poisson.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::modeler::PoissonReconstructionWorker::PoissonReconstructionWorker(const std::vector<CloudItem*>& polymeshs, QWidget* parent) :
+pcl::modeler::PoissonReconstructionWorker::PoissonReconstructionWorker(const QList<CloudMeshItem*>& cloud_mesh_items, QWidget* parent) :
   depth_(NULL), solver_divide_(NULL), iso_divide_(NULL), degree_(NULL), scale_(NULL), samples_per_node_(NULL),
-  AbstractWorker(polymeshs, parent)
+  AbstractWorker(cloud_mesh_items, parent)
 {
 
 }
@@ -64,98 +64,80 @@ pcl::modeler::PoissonReconstructionWorker::~PoissonReconstructionWorker(void)
 void
 pcl::modeler::PoissonReconstructionWorker::setupParameters()
 {
-  // FIXME:
-//  pcl::Poisson<pcl::PointXYZINormal> poisson;
-//  depth_ = new IntParameter("Maximum Tree Depth",
-//    "Maximum depth of the tree that will be used for surface reconstruction. \
-//Running at depth d corresponds to solving on a voxel grid whose resolution \
-//is no larger than 2^d x 2^d x 2^d. Note that since the reconstructor adapts \
-//the octree to the sampling density, the specified reconstruction depth \
-//is only an upper bound.",
-//    poisson.getDepth(), 2, 16);
-//
-//  solver_divide_ = new IntParameter("Solver Divide",
-//    "The depth at which a block Gauss-Seidel solver is used to solve the Laplacian \
-//equation. Using this parameter helps reduce the memory overhead at the cost of \
-//a small increase in reconstruction time. (In practice, we have found that for \
-//reconstructions of depth 9 or higher a subdivide depth of 7 or 8 can greatly \
-//reduce the memory usage.)",
-//    poisson.getSolverDivide(), 2, 16);
-//
-//  iso_divide_ = new IntParameter("Iso Divide",
-//    "Depth at which a block iso-surface extractor should be used to extract the \
-//iso-surface. Using this parameter helps reduce the memory overhead at the cost \
-//of a small increase in extraction time. (In practice, we have found that for \
-//reconstructions of depth 9 or higher a subdivide depth of 7 or 8 can greatly \
-//reduce the memory usage.)",
-//    poisson.getIsoDivide(), 2, 16);
-//
-//  degree_ = new IntParameter("Degree", "Degree", poisson.getDegree(), 1, 5);
-//
-//  scale_ = new DoubleParameter("Scale",
-//    "The ratio between the diameter of the cube used for reconstruction and the \
-//diameter of the samples' bounding cube.",
-//    poisson.getScale(), 0.1, 10.0, 0.01);
-//
-//  samples_per_node_ = new DoubleParameter("Samples Per Node",
-//    "The minimum number of sample points that should fall within an octree node as \
-//the octree construction is adapted to sampling density. For noise-free samples, small \
-//values in the range [1.0 - 5.0] can be used. For more noisy samples, larger values in \
-//the range [15.0 - 20.0] may be needed to provide a smoother, noise-reduced, reconstruction.",
-//    poisson.getScale(), 0.1, 10.0, 0.01);
-//
-//  parameter_dialog_->addParameter(depth_);
-//  parameter_dialog_->addParameter(solver_divide_);
-//  parameter_dialog_->addParameter(iso_divide_);
-//  parameter_dialog_->addParameter(degree_);
-//  parameter_dialog_->addParameter(scale_);
-//  parameter_dialog_->addParameter(samples_per_node_);
+  pcl::Poisson<pcl::PointSurfel> poisson;
+  depth_ = new IntParameter("Maximum Tree Depth",
+    "Maximum depth of the tree that will be used for surface reconstruction. \
+    Running at depth d corresponds to solving on a voxel grid whose resolution \
+    is no larger than 2^d x 2^d x 2^d. Note that since the reconstructor adapts \
+    the octree to the sampling density, the specified reconstruction depth \
+    is only an upper bound.",
+    poisson.getDepth(), 2, 16);
+
+  solver_divide_ = new IntParameter("Solver Divide",
+    "The depth at which a block Gauss-Seidel solver is used to solve the Laplacian \
+    equation. Using this parameter helps reduce the memory overhead at the cost of \
+    a small increase in reconstruction time. (In practice, we have found that for \
+    reconstructions of depth 9 or higher a subdivide depth of 7 or 8 can greatly \
+    reduce the memory usage.)",
+    poisson.getSolverDivide(), 2, 16);
+
+  iso_divide_ = new IntParameter("Iso Divide",
+    "Depth at which a block iso-surface extractor should be used to extract the \
+    iso-surface. Using this parameter helps reduce the memory overhead at the cost \
+    of a small increase in extraction time. (In practice, we have found that for \
+    reconstructions of depth 9 or higher a subdivide depth of 7 or 8 can greatly \
+    reduce the memory usage.)",
+    poisson.getIsoDivide(), 2, 16);
+
+  degree_ = new IntParameter("Degree", "Degree", poisson.getDegree(), 1, 5);
+
+  scale_ = new DoubleParameter("Scale",
+    "The ratio between the diameter of the cube used for reconstruction and the \
+    diameter of the samples' bounding cube.",
+    poisson.getScale(), 0.1, 10.0, 0.01);
+
+  samples_per_node_ = new DoubleParameter("Samples Per Node",
+    "The minimum number of sample points that should fall within an octree node as \
+    the octree construction is adapted to sampling density. For noise-free samples, small \
+    values in the range [1.0 - 5.0] can be used. For more noisy samples, larger values in \
+    the range [15.0 - 20.0] may be needed to provide a smoother, noise-reduced, reconstruction.",
+    poisson.getScale(), 0.1, 10.0, 0.01);
+
+  parameter_dialog_->addParameter(depth_);
+  parameter_dialog_->addParameter(solver_divide_);
+  parameter_dialog_->addParameter(iso_divide_);
+  parameter_dialog_->addParameter(degree_);
+  parameter_dialog_->addParameter(scale_);
+  parameter_dialog_->addParameter(samples_per_node_);
 
   return;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::modeler::PoissonReconstructionWorker::processImpl(CloudItem* polymesh) const
+pcl::modeler::PoissonReconstructionWorker::processImpl(CloudMeshItem* cloud_mesh_item) const
 {
-  // FIXME:
-  //pcl::Poisson<pcl::PointXYZINormal> poisson;
-  //poisson.setDegree(*depth_);
-  //poisson.setSolverDivide(*solver_divide_);
-  //poisson.setIsoDivide(*iso_divide_);
-  //poisson.setDegree(*degree_);
-  //poisson.setScale(*scale_);
-  //poisson.setScale(*samples_per_node_);
+  pcl::Poisson<pcl::PointSurfel> poisson;
+  poisson.setDegree(*depth_);
+  poisson.setSolverDivide(*solver_divide_);
+  poisson.setIsoDivide(*iso_divide_);
+  poisson.setDegree(*degree_);
+  poisson.setScale(*scale_);
+  poisson.setScale(*samples_per_node_);
 
-  //poisson.setConfidence(true);
-  //poisson.setManifold(true);
+  poisson.setConfidence(true);
+  poisson.setManifold(true);
 
-  //pcl::PointCloud<pcl::PointXYZINormal> cloud;
-  //pcl::fromROSMsg(*(polymesh->getCloud()), cloud);
-  //poisson.reconstruct(cloud, polymesh->getPolygons());
+  poisson.reconstruct(*(cloud_mesh_item->getCloudMesh()->getCloud()), cloud_mesh_item->getCloudMesh()->getPolygons());
 
   return;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::modeler::PoissonReconstructionWorker::postProcessImpl(CloudItem* polymesh) const
+pcl::modeler::PoissonReconstructionWorker::postProcessImpl(CloudMeshItem* cloud_mesh_item) const
 {
-  // FIXME:
-  //pcl::Poisson<pcl::PointXYZINormal> poisson;
-  //poisson.setDegree(*depth_);
-  //poisson.setSolverDivide(*solver_divide_);
-  //poisson.setIsoDivide(*iso_divide_);
-  //poisson.setDegree(*degree_);
-  //poisson.setScale(*scale_);
-  //poisson.setScale(*samples_per_node_);
-
-  //poisson.setConfidence(true);
-  //poisson.setManifold(true);
-
-  //pcl::PointCloud<pcl::PointXYZINormal> cloud;
-  //pcl::fromROSMsg(*(polymesh->getCloud()), cloud);
-  //poisson.reconstruct(cloud, polymesh->getPolygons());
+  cloud_mesh_item->updateChannels();
 
   return;
 }
