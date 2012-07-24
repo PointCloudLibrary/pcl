@@ -47,6 +47,7 @@ pcl::activeSegmentation (const pcl::PointCloud<PointT> &cloud_in,
     const boost::shared_ptr<pcl::search::Search<PointT> > &tree,
     int fp_index,
     float search_radius,
+    double eps_angle,
     pcl::PointIndices &indices_out)
 {
   if (fp_index > cloud_in.points.size () || fp_index <0)
@@ -72,69 +73,72 @@ pcl::activeSegmentation (const pcl::PointCloud<PointT> &cloud_in,
         normals.points.size (), cloud_in.points.size ());
     return;
   }
-
-  std::queue<int> seed_queue;
+  std::vector<int> seed_queue;
   std::vector<bool> processed (cloud_in.size(), false);
-  seed_queue.push (fp_index);
+  seed_queue.push_back (fp_index);
   indices_out.indices.push_back (fp_index);
-
   processed[fp_index] = true;
-  int num_pts_in_segment = 1;
-
   std::vector<int> nn_indices;
   std::vector<float> nn_distances;
-
   //process while there are valid seed points
-  while (!seed_queue.empty ())
+
+  for(size_t seed_idx = 0; seed_idx < seed_queue.size();++seed_idx)
   {
+
     int curr_seed;
-    curr_seed = seed_queue.front ();
-    seed_queue.pop();
+    curr_seed = seed_queue[seed_idx];
+
     // Search for seeds
     if (!tree->radiusSearch (curr_seed, search_radius, nn_indices, nn_distances))
       continue;
     //process all points found in the neighborhood
-    for (unsigned int i = 0; i < nn_indices.size (); ++i)
+    bool stop_growing = false;
+    size_t indices_old_size = indices_out.indices.size();
+    for (size_t i=1; i < nn_indices.size (); ++i)
     {
-      if (processed[nn_indices[i]])
-      {
+      if (processed[nn_indices.at (i)])
         continue;
+      if (boundary.points[nn_indices.at (i)].boundary_point != 0)
+      {
+        stop_growing=true;
+        indices_out.indices.push_back (nn_indices.at (i));
+        processed[nn_indices.at (i)] = true;
+        break;
       }
-      bool is_seed (false), is_boundary (false), is_valid (false);
-      double dot_p1 = normals.points[nn_indices[i]].normal[0] * normals.points[fp_index].normal[0] +
-          normals.points[nn_indices[i]].normal[1] * normals.points[fp_index].normal[1] +
-          normals.points[nn_indices[i]].normal[2] * normals.points[fp_index].normal[2];
 
+      bool is_convex = false;
       PointT temp;
-      temp.x = cloud_in.points[fp_index].x - cloud_in.points[nn_indices[i]].x;
-      temp.y = cloud_in.points[fp_index].y - cloud_in.points[nn_indices[i]].y;
-      temp.z = cloud_in.points[fp_index].z - cloud_in.points[nn_indices[i]].z;
+      temp.x = cloud_in.points[fp_index].x - cloud_in.points[nn_indices.at (i)].x;
+      temp.y = cloud_in.points[fp_index].y - cloud_in.points[nn_indices.at (i)].y;
+      temp.z = cloud_in.points[fp_index].z - cloud_in.points[nn_indices.at (i)].z;
 
-      double dot_p2 = normals.points[nn_indices[i]].normal[0] * temp.x
-          + normals.points[nn_indices[i]].normal[1] * temp.y
-          + normals.points[nn_indices[i]].normal[2] * temp.z;
+      double dot_p = normals.points[nn_indices.at (i)].normal[0] * temp.x
+          + normals.points[nn_indices.at (i)].normal[1] * temp.y
+          + normals.points[nn_indices.at (i)].normal[2] * temp.z;
 
-      if ((fabs (acos (dot_p1)) < 45 * M_PI / 180) || (fabs (acos (dot_p2)) > 90 * M_PI / 180))
+      dot_p = dot_p>1? 1:dot_p;
+      dot_p = dot_p<-1 ? -1:dot_p;
+
+      if ((acos (dot_p) > eps_angle*M_PI / 180))
+        is_convex = true;
+
+
+      if (is_convex)
       {
-        if (boundary.points[nn_indices[i]].boundary_point != 0)
-          is_boundary = true;
-        else
-          is_seed = true;
-        is_valid = true;
+        indices_out.indices.push_back (nn_indices.at (i));
+        processed[nn_indices.at (i)] = true;
       }
-      if ((is_valid && is_seed) || is_boundary)
-      {
-        indices_out.indices.push_back (nn_indices[i]);
-        num_pts_in_segment++;
-        seed_queue.push (nn_indices[i]);
-        processed[nn_indices[i]] = true;
-        if (is_boundary)
-          break;
-      }
+      else
+        break;
+    }//new neighbor
 
-    } //new neighbor
+    if(!stop_growing && (indices_old_size != indices_out.indices.size()))
+    {
+      for (size_t j = indices_old_size-1; j < indices_out.indices.size(); ++j)
+        seed_queue.push_back(indices_out.indices.at (j));
+    }
+  }//new seed point
 
-  } //new seed point
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -185,91 +189,90 @@ pcl::ActiveSegmentation<PointT, NormalT>::segment (PointIndices &indices_out)
         normals_->points.size (), input_->points.size ());
     return;
   }
-  std::queue<int> seed_queue;
+  std::vector<int> seed_queue;
   std::vector<bool> processed (input_->size(), false);
-  seed_queue.push (fp_index_);
+  seed_queue.push_back (fp_index_);
   indices_out.indices.push_back (fp_index_);
-
   processed[fp_index_] = true;
-  int num_pts_in_segment = 1;
-
   std::vector<int> nn_indices;
   std::vector<float> nn_distances;
-
   //process while there are valid seed points
-  while (!seed_queue.empty ())
+
+  for(size_t seed_idx = 0; seed_idx < seed_queue.size();++seed_idx)
   {
+
     int curr_seed;
-    curr_seed = seed_queue.front ();
-    seed_queue.pop();
+    curr_seed = seed_queue[seed_idx];
 
     // Search for seeds
     if (!tree_->radiusSearch (curr_seed, search_radius_, nn_indices, nn_distances))
       continue;
-
     //process all points found in the neighborhood
-    for (unsigned int i = 0; i < nn_indices.size (); ++i)
+    bool stop_growing = false;
+    size_t indices_old_size = indices_out.indices.size();
+    for (size_t i=1; i < nn_indices.size (); ++i)
     {
-      if (processed[nn_indices[i]])
+      if (processed[nn_indices.at (i)])
         continue;
-      bool is_seed, is_boundary;
-      bool is_valid = isPointValid (nn_indices[i], curr_seed, is_seed, is_boundary);
-
-      if ((is_valid && is_seed) || is_boundary)
+      if (boundary_->points[nn_indices.at (i)].boundary_point != 0)
       {
-        indices_out.indices.push_back (nn_indices[i]);
-        num_pts_in_segment++;
-        seed_queue.push (nn_indices[i]);
-        processed[nn_indices[i]] = true;
-        if (is_boundary)
-          break;
+        stop_growing=true;
+        indices_out.indices.push_back (nn_indices.at (i));
+        processed[nn_indices.at (i)] = true;
+        break;
       }
-
+      if (isPointValid (nn_indices.at (i)))
+      {
+        indices_out.indices.push_back (nn_indices.at (i));
+        processed[nn_indices.at (i)] = true;
+      }
+      else
+        break;
     } //new neighbor
-
-  } //new seed point
+    if(!stop_growing && (indices_old_size != indices_out.indices.size()))
+    {
+      for (size_t j = indices_old_size-1; j < indices_out.indices.size(); ++j)
+        seed_queue.push_back(indices_out.indices.at (j));
+    }
+  }//new seed point
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename NormalT> bool 
-pcl::ActiveSegmentation<PointT, NormalT>::isPointValid (
-    int v_point,
-    int, bool &is_seed,
-    bool &is_boundary
-)
+pcl::ActiveSegmentation<PointT, NormalT>::isPointValid (int v_point)
 {
-  double dot_p1 = normals_->points[v_point].normal[0] * normals_->points[fp_index_].normal[0] +
-      normals_->points[v_point].normal[1] * normals_->points[fp_index_].normal[1] +
-      normals_->points[v_point].normal[2] * normals_->points[fp_index_].normal[2];
-
   PointT temp;
   temp.x = input_->points[fp_index_].x - input_->points[v_point].x;
   temp.y = input_->points[fp_index_].y - input_->points[v_point].y;
   temp.z = input_->points[fp_index_].z - input_->points[v_point].z;
 
-  double dot_p2 = normals_->points[v_point].normal[0] * temp.x
+  double dot_p = normals_->points[v_point].normal[0] * temp.x
       + normals_->points[v_point].normal[1] * temp.y
       + normals_->points[v_point].normal[2] * temp.z;
 
-  if ((fabs (acos (dot_p1)) < 45 * M_PI / 180) || (fabs (acos (dot_p2)) > 90 * M_PI / 180))
-  {
-    if (boundary_->points[v_point].boundary_point != 0)
-    {
-      is_boundary = true;
-      is_seed = false;
-    }
-    else
-    {
-      is_boundary = false;
-      is_seed = true;
-    }
+  dot_p = dot_p>1? 1:dot_p;
+  dot_p = dot_p<-1 ? -1:dot_p;
+
+  if ((acos (dot_p) > eps_angle_))
     return (true);
-  }
   else
     return (false);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT, typename NormalT> bool
+pcl::ActiveSegmentation<PointT, NormalT>::hasBoundaryPoint (std::vector<int> nn_indices)
+{
+  for (std::vector<int>::const_iterator vect_it = nn_indices.begin();
+      vect_it!=nn_indices.end(); ++vect_it)
+  {
+    if (boundary_->points[*vect_it].boundary_point != 0)
+      return (false);
+  }
+  return (true);
+}
+
 #define PCL_INSTANTIATE_ActiveSegmentation(T,NT) template class PCL_EXPORTS pcl::ActiveSegmentation<T,NT>;
-#define PCL_INSTANTIATE_activeSegmentation(T) template PCL_EXPORTS void pcl::activeSegmentation<T>(const pcl::PointCloud<T> &,const pcl::PointCloud<pcl::Boundary> &, const pcl::PointCloud<pcl::Normal> &, const boost::shared_ptr<pcl::search::Search<T> > &, int, float, pcl::PointIndices &);
+#define PCL_INSTANTIATE_activeSegmentation(T) template PCL_EXPORTS void pcl::activeSegmentation<T>(const pcl::PointCloud<T> &,const pcl::PointCloud<pcl::Boundary> &, const pcl::PointCloud<pcl::Normal> &, const boost::shared_ptr<pcl::search::Search<T> > &, int, float,double, pcl::PointIndices &);
 
 #endif /* ACTIVE_SEGMENTATION_HPP_ */

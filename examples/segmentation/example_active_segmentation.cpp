@@ -107,9 +107,10 @@ main (int argc, char** argv)
   as.setFixationPoint (fp_index);
   as.setBoundaryMap (boundary);
   as.setSearchRadius (0.01);
+  as.setAngleThreshold(89.00);
   //as.segment (indices_out);
 
-  pcl::activeSegmentation<PointType>(*cloud,*boundary,*cloud_normals,tree_as,fp_index,0.01f,indices_out);
+  pcl::activeSegmentation<PointType>(*cloud,*boundary,*cloud_normals,tree_as,fp_index,0.01f,89,indices_out);
 
   //save segment to pcd file if it contains more points the a certain threshold
   if (indices_out.indices.size() > min_segment_size)
@@ -126,5 +127,4 @@ main (int argc, char** argv)
   }
   else
     PCL_INFO ("NO Segment found.\n");
-
 }

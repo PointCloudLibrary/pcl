@@ -58,6 +58,7 @@ namespace pcl
     * \param[in] tree the spatial locator used for radius search
     * \param[in] index of the fixation point
     * \param[in] search_radius radius of search
+    * \param[in] angle threshold for convexity check in degrees
     * \param[out] indices_out the resulting segment as indices of the input cloud
     */
   template <typename PointT> void
@@ -67,6 +68,7 @@ namespace pcl
                       const boost::shared_ptr<pcl::search::Search<PointT> > &tree,
                       int                                                   fp_index,
                       float                                                 search_radius,
+                      double                                                eps_angle,
                       pcl::PointIndices                                     &indices_out);
 
   /**
@@ -102,7 +104,7 @@ namespace pcl
     public:
       /* \brief empty constructor */
       ActiveSegmentation () :
-          tree_ (), normals_ (), boundary_ (), fixation_point_ (), fp_index_ (), search_radius_ (0.02)
+          tree_ (), normals_ (), boundary_ (), fixation_point_ (), fp_index_ (), search_radius_ (0.02),eps_angle_(89)
       {
       }
 
@@ -206,6 +208,22 @@ namespace pcl
         normals_ = norm;
       }
 
+      /** \brief Set the angle threshold for convexity check in the region growing
+       *  \param[in] eps_angle angle in degrees
+       */
+      inline void
+      setAngleThreshold (double eps_angle)
+      {
+        eps_angle_ = eps_angle *M_PI / 180;
+      }
+
+      /* \brief returns angle threshold in degrees  */
+      inline double
+      getAngleThreshold () const
+      {
+        return (eps_angle_* 180/M_PI);
+      }
+
       /** \brief returns a pointer to the normals */
       inline NormalPtr
       getInputNormals ()
@@ -213,8 +231,7 @@ namespace pcl
         return normals_;
       }
 
-      /**
-        * \brief Method for segmenting the object that contains the fixation point
+      /** \brief Method for segmenting the object that contains the fixation point
         * \param[out] indices_out
         */
       void
@@ -237,18 +254,26 @@ namespace pcl
       /** \brief fixation point as an index*/
       int fp_index_;
 
-      /**radius of search for region growing*/
+      /**\brief radius of search for region growing*/
       double search_radius_;
 
-      /** \brief Checks if a point should be added to the segment
+      /** \brief angle threshold for convexity check in the region growing*/
+      double eps_angle_;
+
+      /** \brief Checks if the angle between the vector connecting the fixation point and current point
+        *  and the current points normal is greater then the set threshold
         * \return true if point can be added to segment
         * \param[in] index of point to be verified
-        * \param[in] seed point index
-        * \param[out] output var true if point can be a seed
-        * \param[out] output var true if point belongs to a boundary
         */
       bool
-      isPointValid (int v_point, int seed, bool &is_seed, bool &is_boundary);
+      isPointValid (int v_point);
+
+      /** \brief verifies the existence of a boundary point among the indices returned by knn. Used to determine if point found can be seed candidates
+        * \return true if there is a boundary point
+        * \param[in] vector of indices
+        */
+      bool
+      hasBoundaryPoint (std::vector<int>);
   };
 
 }
