@@ -95,6 +95,7 @@ compute (const sensor_msgs::PointCloud2::ConstPtr &input, sensor_msgs::PointClou
   us.setRadiusSearch (radius);
   PointCloud<int> subsampled_indices;
   us.compute (subsampled_indices);
+  std::sort (subsampled_indices.points.begin (), subsampled_indices.points.end ());
 
   print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", subsampled_indices.width * subsampled_indices.height); print_info (" points]\n");
 
