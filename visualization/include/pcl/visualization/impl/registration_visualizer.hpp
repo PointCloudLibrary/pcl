@@ -115,7 +115,7 @@ template<typename PointSource, typename PointTarget> void
       viewer_->removePointCloud ("cloud intermediate v2", v2);
 
       // Add the new point cloud
-      viewer_->addPointCloud<pcl::PointXYZ> (cloud_intermediate_.makeShared (), cloud_intermediate_handler_,
+      viewer_->addPointCloud<PointSource> (cloud_intermediate_.makeShared (), cloud_intermediate_handler_,
                                              "cloud intermediate v2", v2);
 
       // Updating the correspondece lines
