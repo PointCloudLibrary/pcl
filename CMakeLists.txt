@@ -202,7 +202,11 @@ find_package(FLANN 1.7.0 REQUIRED)
 include_directories(SYSTEM ${FLANN_INCLUDE_DIRS})
 # OpenNI
 find_package(OpenNI)
-include_directories(SYSTEM ${OPENNI_INCLUDE_DIRS})
+if (OPENNI_FOUND)
+  set(HAVE_OPENNI ON)
+  include_directories(SYSTEM ${OPENNI_INCLUDE_DIRS})
+endif()
+
 # Qhull
 if(NOT PCL_SHARED_LIBS OR WIN32)
   set(QHULL_USE_STATIC ON)
@@ -237,10 +241,12 @@ if(VTK_FOUND)
   endif ()
 endif(VTK_FOUND)
 # Find MPI
-find_package(MPI)
-if(MPI_CXX_FOUND)
-  include_directories(SYSTEM ${MPI_INCLUDE_PATH})
-endif(MPI_CXX_FOUND)
+if (WITH_MPI) # this script searches for MPI 10 sec under windows, annoying especially if you do this often
+  find_package(MPI)
+  if(MPI_CXX_FOUND)
+    include_directories(SYSTEM ${MPI_INCLUDE_PATH})
+  endif(MPI_CXX_FOUND)
+endif()
 #Find Doxygen and html help compiler if any
 find_package(Doxygen)
 if(DOXYGEN_FOUND)
@@ -268,7 +274,7 @@ set(PCL_MODULES_NAMES_UNSORTED ${PCL_MODULES_NAMES})
 topological_sort(PCL_MODULES_NAMES PCL_ _DEPENDS)
 sort_relative(PCL_MODULES_NAMES_UNSORTED PCL_MODULES_NAMES PCL_MODULES_DIRS)
 foreach(subdir ${PCL_MODULES_DIRS})
-  add_subdirectory(${PCL_SOURCE_DIR}/${subdir})
+  add_subdirectory(${PCL_SOURCE_DIR}/${subdir})  
 endforeach(subdir)
 
 ### ---[ Documentation

@@ -11,7 +11,7 @@ if(OPENNI_FOUND)
 	endif(NOT VTK_FOUND)
 
 	FILE(GLOB hdrs "*.h*")
-	include_directories(${VTK_INCLUDE_DIRS})
+	include_directories(${VTK_INCLUDE_DIRS} ${OPENNI_INCLUDE_DIRS})       
 
 	## KINECT FUSION
 	set(the_target kinfu_app)
