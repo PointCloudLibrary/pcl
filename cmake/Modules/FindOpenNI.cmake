@@ -9,7 +9,8 @@
 # 
 # For libusb-1.0, add USB_10_ROOT if not found
 
-find_package(PkgConfig)
+find_package(PkgConfig QUIET)
+
 # Find LibUSB
 if(NOT WIN32)
   pkg_check_modules(PC_USB_10 libusb-1.0)
@@ -21,15 +22,16 @@ if(NOT WIN32)
                NAMES usb-1.0 
                HINTS ${PC_USB_10_LIBDIR} ${PC_USB_10_LIBRARY_DIRS} "${USB_10_ROOT}" "$ENV{USB_10_ROOT}"
                PATH_SUFFIXES lib)
-   include(FindPackageHandleStandardArgs)
-   find_package_handle_standard_args(USB_10 DEFAULT_MSG USB_10_LIBRARY USB_10_INCLUDE_DIR)
-   if(NOT USB_10_FOUND)
-     message(STATUS "OpeNI disabled because libusb-1.0 not found.")
-     set(HAVE_OPENNI OFF)
-     return()
-   else(NOT USB_10_FOUND)
-     include_directories(SYSTEM ${USB_10_INCLUDE_DIR})
-   endif(NOT USB_10_FOUND)
+               
+  include(FindPackageHandleStandardArgs)
+  find_package_handle_standard_args(USB_10 DEFAULT_MSG USB_10_LIBRARY USB_10_INCLUDE_DIR)
+   
+  if(NOT USB_10_FOUND)
+    message(STATUS "OpeNI disabled because libusb-1.0 not found.")     
+    return()
+  else()
+    include_directories(SYSTEM ${USB_10_INCLUDE_DIR})
+  endif()
 endif(NOT WIN32)
  
 if(${CMAKE_VERSION} VERSION_LESS 2.8.2)
@@ -57,7 +59,6 @@ find_library(OPENNI_LIBRARY
              PATHS "$ENV{OPEN_NI_LIB${OPENNI_SUFFIX}}"
              PATH_SUFFIXES lib Lib Lib64)
 
-set(OPENNI_INCLUDE_DIRS ${OPENNI_INCLUDE_DIR})
 if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
   set(OPENNI_LIBRARIES ${OPENNI_LIBRARY} ${LIBUSB_1_LIBRARIES})
 else()
@@ -65,16 +66,13 @@ else()
 endif()
 
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(OpenNI DEFAULT_MSG
-    OPENNI_LIBRARY OPENNI_INCLUDE_DIR)
+find_package_handle_standard_args(OpenNI DEFAULT_MSG OPENNI_LIBRARY OPENNI_INCLUDE_DIR)
     
 mark_as_advanced(OPENNI_LIBRARY OPENNI_INCLUDE_DIR)
 
-if(OPENNI_FOUND)
-  set(HAVE_OPENNI ON)
+if(OPENNI_FOUND)  
   # Add the include directories
-  set(OPENNI_INCLUDE_DIRS ${OPENNI_INCLUDE_DIRS})
-  include_directories(SYSTEM ${OPENNI_INCLUDE_DIRS})
+  set(OPENNI_INCLUDE_DIRS ${OPENNI_INCLUDE_DIR})  
   message(STATUS "OpenNI found (include: ${OPENNI_INCLUDE_DIRS}, lib: ${OPENNI_LIBRARY})")
 endif(OPENNI_FOUND)
 

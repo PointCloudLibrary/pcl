@@ -388,7 +388,7 @@ else(PCL_FIND_QUIETLY)
   set(QUIET_)
 endif(PCL_FIND_QUIETLY)
 
-find_package(PkgConfig)
+find_package(PkgConfig QUIET)
 
 file(TO_CMAKE_PATH "${PCL_DIR}" PCL_DIR)
 if(WIN32)

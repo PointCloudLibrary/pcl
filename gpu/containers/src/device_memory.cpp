@@ -295,11 +295,13 @@ void pcl::gpu::DeviceMemory2D::upload(const void *host_ptr_arg, size_t host_step
 {
     create(rows_arg, colsBytes_arg);
     cudaSafeCall( cudaMemcpy2D(data_, step_, host_ptr_arg, host_step_arg, colsBytes_, rows_, cudaMemcpyHostToDevice) );        
+    cudaSafeCall( cudaDeviceSynchronize() );
 }
 
 void pcl::gpu::DeviceMemory2D::download(void *host_ptr_arg, size_t host_step_arg) const
 {    
     cudaSafeCall( cudaMemcpy2D(host_ptr_arg, host_step_arg, data_, step_, colsBytes_, rows_, cudaMemcpyDeviceToHost) );
+    cudaSafeCall( cudaDeviceSynchronize() );
 }      
 
 void pcl::gpu::DeviceMemory2D::swap(DeviceMemory2D& other_arg)

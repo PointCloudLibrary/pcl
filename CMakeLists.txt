@@ -202,6 +202,7 @@ find_package(FLANN 1.7.0 REQUIRED)
 include_directories(SYSTEM ${FLANN_INCLUDE_DIRS})
 # OpenNI
 find_package(OpenNI)
+include_directories(SYSTEM ${OPENNI_INCLUDE_DIRS})
 # Qhull
 if(NOT PCL_SHARED_LIBS OR WIN32)
   set(QHULL_USE_STATIC ON)

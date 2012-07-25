@@ -6,7 +6,7 @@
 # EIGEN_INCLUDE_DIRS - Directories containing the Eigen include files.
 # EIGEN_DEFINITIONS - Compiler flags for Eigen.
 
-find_package(PkgConfig)
+find_package(PkgConfig QUIET)
 pkg_check_modules(PC_EIGEN eigen3)
 set(EIGEN_DEFINITIONS ${PC_EIGEN_CFLAGS_OTHER})
 

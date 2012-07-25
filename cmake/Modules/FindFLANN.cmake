@@ -17,7 +17,7 @@ else(FLANN_USE_STATIC)
   set(FLANN_DEBUG_NAME flann_cpp-gd)
 endif(FLANN_USE_STATIC)
 
-find_package(PkgConfig)
+find_package(PkgConfig QUIET)
 if (FLANN_FIND_VERSION)
     pkg_check_modules(PC_FLANN flann>=${FLANN_FIND_VERSION})
 else(FLANN_FIND_VERSION)

@@ -229,7 +229,7 @@ namespace pcl
             int rows() const;
 
             /** \brief Returns stride between two consecutive rows in bytes for internal buffer. Step is stored always and everywhere in bytes!!! */
-            size_t step() const;                               
+            size_t step() const;
         private:
             /** \brief Device pointer. */
             void *data_;
