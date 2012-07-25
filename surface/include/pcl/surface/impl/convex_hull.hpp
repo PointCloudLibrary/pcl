@@ -405,22 +405,22 @@ pcl::ConvexHull<PointInT>::performReconstruction (PointCloud &hull, std::vector<
 
 //////////////////////////////////////////////////////////////////////////
 template <typename PointInT> void
-pcl::ConvexHull<PointInT>::reconstruct (PointCloud &output)
+pcl::ConvexHull<PointInT>::reconstruct (PointCloud &points)
 {
-  output.header = input_->header;
+  points.header = input_->header;
   if (!initCompute () || input_->points.empty () || indices_->empty ())
   {
-    output.points.clear ();
+    points.points.clear ();
     return;
   }
 
   // Perform the actual surface reconstruction
   std::vector<pcl::Vertices> polygons;
-  performReconstruction (output, polygons, false);
+  performReconstruction (points, polygons, false);
 
-  output.width = static_cast<uint32_t> (output.points.size ());
-  output.height = 1;
-  output.is_dense = true;
+  points.width = static_cast<uint32_t> (points.points.size ());
+  points.height = 1;
+  points.is_dense = true;
 
   deinitCompute ();
 }

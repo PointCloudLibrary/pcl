@@ -92,7 +92,12 @@ namespace pcl
       };
 
       /** \brief Compute a convex hull for all points given 
-        *
+        * 
+	* \note In 2D case (i.e. if the input points belong to one plane,
+	* see calculateInputDimension()) the \a polygons vector will have a
+	* single item, whereas in 3D case it will contain one item for each
+	* hull facet.
+	*
         * \param[out] points the resultant points lying on the convex hull 
         * \param[out] polygons the resultant convex hull polygons, as a set of
         * vertices. The Vertices structure contains an array of point indices.
@@ -102,10 +107,10 @@ namespace pcl
                    std::vector<pcl::Vertices> &polygons);
 
       /** \brief Compute a convex hull for all points given 
-        * \param[out] output the resultant convex hull vertices
+        * \param[out] points the resultant points lying on the convex hull
         */
       void
-      reconstruct (PointCloud &output);
+      reconstruct (PointCloud &points);
 
       /** \brief If set to true, the qhull library is called to compute the total area and volume of the convex hull.
         * NOTE: When this option is activated, the qhull library produces output to the console.
