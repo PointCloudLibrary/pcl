@@ -88,6 +88,7 @@ if(build)
 
     set(srcs
         src/registration.cpp
+        src/default_convergence_criteria.cpp
         src/correspondence_estimation.cpp
         src/correspondence_estimation_normal_shooting.cpp
         src/correspondence_rejection_distance.cpp
