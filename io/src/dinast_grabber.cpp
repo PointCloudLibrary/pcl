@@ -36,11 +36,9 @@
  */
 
 #include <pcl/pcl_config.h>
-#ifdef HAVE_DINAST
+//#ifdef HAVE_DINAST
 
 #include <pcl/io/dinast_grabber.h>
-
-#include "dinast_grabber.h"
 #include <iostream>
 
 // From http://libusb.sourceforge.net/api-1.0/structlibusb__control__setup.html#a39b148c231d675492ccd2383196926bf
@@ -57,15 +55,18 @@
 #define SYNC_PACKET     512
 #define RGB16_LENGTH    IMAGE_WIDTH*2*IMAGE_HEIGHT
 
+///////////////////////////////////////////////////////////////////////////////////////////
 pcl::DinastGrabber::DinastGrabber ()
-	:second_image(false)
-	,running_(false)
+	: second_image (false)
+	, running_ (false)
 {
 	bulk_ep = -1;
 }
-pcl::DinastGrabber::~DinastGrabber () throw ();
+
+///////////////////////////////////////////////////////////////////////////////////////////
+pcl::DinastGrabber::~DinastGrabber () throw ()
 {
-	 try
+	try
   {
     stop ();
 
@@ -83,31 +84,36 @@ pcl::DinastGrabber::~DinastGrabber () throw ();
   }
 }
 
+///////////////////////////////////////////////////////////////////////////////////////////
 std::string
 pcl::DinastGrabber::getName () const
 {
-  return std::string ("DinastGrabber");
+  return (std::string ("DinastGrabber"));
 }
 
+///////////////////////////////////////////////////////////////////////////////////////////
 bool
 pcl::DinastGrabber::isRunning () const
 {
-	return running_;
+	return (running_);
 }
 
-int
+///////////////////////////////////////////////////////////////////////////////////////////
+float
 pcl::DinastGrabber::getFramesPerSecond () const
 {
 	//figure this out!!
-	return 0;
+	return (0);
 }
 	
+///////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::DinastGrabber::setDevice (struct libusb_device_handle* device_handle)
 {
-	this->device_handle=device_handle;
+	this->device_handle = device_handle;
 }
 
+///////////////////////////////////////////////////////////////////////////////////////////
 struct libusb_device_handle*
 pcl::DinastGrabber::findDevice (libusb_context *ctx, const int id_vendor, const int id_product)
 {
@@ -180,6 +186,7 @@ pcl::DinastGrabber::findDevice (libusb_context *ctx, const int id_vendor, const 
   return (device);
 }
 
+///////////////////////////////////////////////////////////////////////////////////////////
 struct libusb_device_handle*
 pcl::DinastGrabber::openDevice (struct libusb_context *ctx, int idx)
 {
@@ -201,6 +208,7 @@ pcl::DinastGrabber::openDevice (struct libusb_context *ctx, int idx)
   return (device_handle);
 }
 
+///////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::DinastGrabber::closeDevice (struct libusb_device_handle* device_handle, int index)
 {
@@ -210,11 +218,12 @@ pcl::DinastGrabber::closeDevice (struct libusb_device_handle* device_handle, int
   libusb_close (device_handle);
 }
 
+///////////////////////////////////////////////////////////////////////////////////////////
 bool
 pcl::DinastGrabber::USBRxControlData (struct libusb_device_handle* device_handle, 
-                  const unsigned char req_code,
-                  unsigned char *buffer,
-                  int length)
+                                      const unsigned char req_code,
+                                      unsigned char *buffer,
+                                      int length)
 {
   // the direction of the transfer is inferred from the requesttype field of the setup packet.
   unsigned char requesttype = CTRL_TO_HOST;
@@ -237,11 +246,12 @@ pcl::DinastGrabber::USBRxControlData (struct libusb_device_handle* device_handle
   return (true);
 }
 
+///////////////////////////////////////////////////////////////////////////////////////////
 bool
 pcl::DinastGrabber::USBTxControlData (struct libusb_device_handle* device_handle, 
-                  const unsigned char req_code,
-                  unsigned char *buffer,
-                  int length)
+                                      const unsigned char req_code,
+                                      unsigned char *buffer,
+                                      int length)
 {
   // the direction of the transfer is inferred from the requesttype field of the setup packet.
   unsigned char requesttype = CTRL_TO_DEVICE;
@@ -264,6 +274,7 @@ pcl::DinastGrabber::USBTxControlData (struct libusb_device_handle* device_handle
   return (true);
 }
 
+///////////////////////////////////////////////////////////////////////////////////////////
 std::string
 pcl::DinastGrabber::getDeviceVersion (struct libusb_device_handle* device_handle)
 {
@@ -279,24 +290,28 @@ pcl::DinastGrabber::getDeviceVersion (struct libusb_device_handle* device_handle
   return (std::string ((const char*)data));
 }
 
+///////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::DinastGrabber::start ()
 {
   unsigned char ctrl_buf[3];
   if (!USBTxControlData (device_handle, CMD_READ_START, ctrl_buf, 1))
     return;
-	running_=true;
+	running_ = true;
 }
 
+///////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::DinastGrabber::stop (struct libusb_device_handle* device_handle)
+//pcl::DinastGrabber::stop (struct libusb_device_handle* device_handle)
+pcl::DinastGrabber::stop ()
 {
   unsigned char ctrl_buf[3];
-  if (!USBTxControlData (device_handle, CMD_READ_STOP, ctrl_buf, 1))
-    return;
+//  if (!USBTxControlData (device_handle, CMD_READ_STOP, ctrl_buf, 1))
+//    return;
 	running_=false;
 }
 
+///////////////////////////////////////////////////////////////////////////////////////////
 int
 pcl::DinastGrabber::checkHeader ()
 {
@@ -322,9 +337,10 @@ pcl::DinastGrabber::checkHeader ()
   return (data_ptr);
 }
 
+///////////////////////////////////////////////////////////////////////////////////////////
 int
 pcl::DinastGrabber::readImage (struct libusb_device_handle* device_handle,
-           unsigned char *image)
+                               unsigned char *image)
 {
   // Do we have enough data in the buffer for the second image?
   if (second_image)
@@ -410,9 +426,11 @@ pcl::DinastGrabber::readImage (struct libusb_device_handle* device_handle,
   return (IMAGE_SIZE);
 }
 
+///////////////////////////////////////////////////////////////////////////////////////////
 int
-pcl::DinastGrabber::readImage (struct libusb_device_handle* device_handle,
-           unsigned char *image1, unsigned char *image2)
+pcl::DinastGrabber::readImage (
+    struct libusb_device_handle* device_handle,
+    unsigned char *image1, unsigned char *image2)
 {
   // Read data in two image blocks until we get a header
   int data_adr = -1;
@@ -448,4 +466,4 @@ pcl::DinastGrabber::readImage (struct libusb_device_handle* device_handle,
   return (IMAGE_SIZE);
 }
 
-#endif
+//#endif

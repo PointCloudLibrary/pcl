@@ -63,9 +63,9 @@
 namespace pcl
 {
 	/** \brief Grabber for DINAST devices (i.e., IPA-1002, IPA-1110, IPA-2001)
-	* \author Marco A. Gutierrez <marcog@unex.es>
-	* \ingroup io
-	*/
+    * \author Marco A. Gutierrez <marcog@unex.es>
+    * \ingroup io
+    */
 	class PCL_EXPORTS DinastGrabber: public Grabber
 	{
 		
@@ -78,14 +78,14 @@ namespace pcl
 			~DinastGrabber () throw ();
 			
 			/** \brief returns the name of the concrete subclass, DinastGrabber.
-      * \return DinastGrabber.
-      */
+        * \return DinastGrabber.
+        */
 			std::string
 			getName() const;
 			
 			/** \brief Check if the grabber is running
-      * \return true if grabber is running / streaming. False otherwise.
-      */
+        * \return true if grabber is running / streaming. False otherwise.
+        */
       bool 
       isRunning () const;
 			
@@ -96,8 +96,8 @@ namespace pcl
 			/** \brief Sets the device. */
 			void
 			setDevice (struct libusb_device_handle* device_handle);
-					//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-			/** \brief Find a Dinast 3D camera device
+		
+      /** \brief Find a Dinast 3D camera device
 				* \param[out] ctx the libusb context
 				* \param[in] id_vendor the ID of the camera vendor (should be 0x18d1)
 				* \param[in] id_product the ID of the product (should be 0x1402)
@@ -108,7 +108,6 @@ namespace pcl
 									const int id_vendor = 0x18d1, 
 									const int id_product = 0x1402);
 
-			//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			/** \brief Open a given USB device
 				* \param[in] ctx the libusb context
 				* \param[in] idx the USB device index to open
@@ -117,7 +116,6 @@ namespace pcl
 			struct libusb_device_handle*
 			openDevice (struct libusb_context *ctx, int idx);
 
-			//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			/** \brief Close the given USB device
 				* \param[in] device_handle the USB device handle to close
 				* \param[in] index the index of the device to close
@@ -125,7 +123,6 @@ namespace pcl
 			void
 			closeDevice (struct libusb_device_handle* device_handle, int index = 0);
 
-			//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			/** \brief Send a RX data packet request
 				* \param[in] device_handle the USB device handle to close
 				* \param[in] req_code the request to send (the request field for the setup packet)
@@ -137,7 +134,6 @@ namespace pcl
 												unsigned char *buffer,
 												int length);
 
-			//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			/** \brief Send a TX data packet request
 				* \param[in] device_handle the USB device handle to close
 				* \param[in] req_code the request to send (the request field for the setup packet)
@@ -149,28 +145,24 @@ namespace pcl
 												unsigned char *buffer,
 												int length);
 
-			//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			/** \brief Get the version number of the currently opened device
 				* \param[in] device_handle the device to get the version number from
 				*/
 			std::string
 			getDeviceVersion (struct libusb_device_handle* device_handle);
 
-			//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			/** \brief Start the data acquisition process.
 				* \param[in] device_handle the USB device to start acquisiton from
 				*/
 			void
 			start ();
 
-			//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			/** \brief Stop the data acquisition process.
 				* \param[in] device_handle the USB device to stop acquisiton from
 				*/
 			void
 			stop ();
 
-			//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			/** \brief Check if we have a header in the global buffer, and return the position of the next valid image.
 				* \note If the image in the buffer is partial, return -1, as we have to wait until we add more data to it.
 				* \return the position of the next valid image (i.e., right after a valid header) or -1 in case the buffer 
@@ -179,7 +171,6 @@ namespace pcl
 			int
 			checkHeader ();
 
-			//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			/** \brief Read image data
 				* \param[in] device_handle the USB device handle to close
 				* \param[out] the image data in unsigned short format
@@ -188,7 +179,6 @@ namespace pcl
 			readImage (struct libusb_device_handle* device_handle,
 								unsigned char *image);
 
-			//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			/** \brief Read image data
 				* \param[in] device_handle the USB device handle to close
 				* \param[out] the image data in unsigned short format
