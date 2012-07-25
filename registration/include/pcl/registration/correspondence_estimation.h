@@ -171,7 +171,10 @@ namespace pcl
         determineCorrespondences (pcl::Correspondences &correspondences,
                                   double max_distance = std::numeric_limits<double>::max ());
 
-        /** \brief Determine the correspondences between input and target cloud.
+        /** \brief Determine the reciprocal correspondences between input and target cloud.
+          * A correspondence is considered reciprocal if both Src_i has Tgt_i as a 
+          * correspondence, and Tgt_i has Src_i as one.
+          *
           * \param[out] correspondences the found correspondences (index of query and target point, distance)
           * \param[in] max_distance maximum allowed distance between correspondences
           */
@@ -204,12 +207,16 @@ namespace pcl
         /** \brief The target point cloud dataset indices. */
         IndicesPtr target_indices_;
 
+        /** \brief The point representation used (internal). */
+        PointRepresentationConstPtr point_representation_;
+
         /** \brief Abstract class get name method. */
         inline const std::string& 
         getClassName () const { return (corr_name_); }
 
-        /** \brief The point representation used (internal). */
-        PointRepresentationConstPtr point_representation_;
+        /** \brief Internal computation initalization. */
+        bool
+        initCompute ();
      };
   }
 }

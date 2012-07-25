@@ -69,7 +69,7 @@ namespace pcl
           *  * the maximum number of iterations to 1000
           *  * the rotation threshold to 0.256 degrees (0.99999)
           *  * the translation threshold to 0.0003 meters (3e-4^2)
-          *  * the MSE relative / absolute thresholds to 0.001% and 1e-6
+          *  * the MSE relative / absolute thresholds to 0.001% and 1e-12
           *
           * \param[in] iterations a reference to the number of iterations the loop has ran so far
           * \param[in] transform a reference to the current transformation obtained by the transformation evaluation
@@ -84,8 +84,8 @@ namespace pcl
           , max_iterations_ (100)                 // 100 iterations
           , rotation_threshold_ (0.99999)         // 0.256 degrees
           , translation_threshold_ (3e-4 * 3e-4)  // 0.0003 meters
-          , mse_threshold_relative_ (0.001)       // 0.001% of the previous MSE (relative error)
-          , mse_threshold_absolute_ (1e-6)        // MSE (absolute error)
+          , mse_threshold_relative_ (0.00001)     // 0.001% of the previous MSE (relative error)
+          , mse_threshold_absolute_ (1e-12)       // MSE (absolute error)
         {
         }
 
@@ -128,7 +128,7 @@ namespace pcl
         setRelativeMSE (double mse_relative) { mse_threshold_relative_ = mse_relative; }
 
         /** \brief Get the relative MSE between two consecutive sets of correspondences. */
-        inline int 
+        inline double 
         getRelativeMSE () { return (mse_threshold_relative_); }
 
         /** \brief Set the absolute MSE between two consecutive sets of correspondences.
@@ -138,7 +138,7 @@ namespace pcl
         setAbsoluteMSE (double mse_absolute) { mse_threshold_absolute_ = mse_absolute; }
 
         /** \brief Get the absolute MSE between two consecutive sets of correspondences. */
-        inline int 
+        inline double
         getAbsoluteMSE () { return (mse_threshold_absolute_); }
 
 
@@ -157,7 +157,7 @@ namespace pcl
           double mse = 0;
           for (size_t i = 0; i < correspondences.size (); ++i)
             mse += correspondences[i].distance;
-          mse /= correspondences.size ();
+          mse /= double (correspondences.size ());
           return (mse);
         }
 

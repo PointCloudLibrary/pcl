@@ -248,15 +248,14 @@ namespace pcl
         * set before using this function
         * \param[in] corr Correspondent points
         */
-      double
+      inline double
       getCorrespondenceScoreFromNormals (const pcl::Correspondence &corr)
       {
         //assert ( (input_normals_->points.size () != 0) && (target_normals_->points.size () != 0) && "Normals are not set for the input and target point clouds");
         assert ( input_normals_ && target_normals_ && "Normals are not set for the input and target point clouds");
         const NormalT &src = input_normals_->points[corr.index_query];
         const NormalT &tgt = target_normals_->points[corr.index_match];
-        double score = (src.normal[0] * tgt.normal[0]) + (src.normal[1] * tgt.normal[1]) + (src.normal[2] * tgt.normal[2]);
-        return score;
+        return (double ((src.normal[0] * tgt.normal[0]) + (src.normal[1] * tgt.normal[1]) + (src.normal[2] * tgt.normal[2])));
       }
       private:
 

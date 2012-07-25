@@ -78,7 +78,7 @@ namespace pcl
     class CorrespondenceEstimationNormalShooting : public CorrespondenceEstimation <PointSource, PointTarget>
     {
       public:
-        using PCLBase<PointSource>::initCompute;
+        using CorrespondenceEstimation<PointSource, PointTarget>::initCompute;
         using PCLBase<PointSource>::deinitCompute;
         using PCLBase<PointSource>::input_;
         using PCLBase<PointSource>::indices_;
@@ -141,7 +141,18 @@ namespace pcl
           */
         void 
         determineCorrespondences (pcl::Correspondences &correspondences,
-                                  float max_distance = std::numeric_limits<float>::max ());
+                                  double max_distance = std::numeric_limits<double>::max ());
+
+        /** \brief Determine the reciprocal correspondences between input and target cloud.
+          * A correspondence is considered reciprocal if both Src_i has Tgt_i as a 
+          * correspondence, and Tgt_i has Src_i as one.
+          *
+          * \param[out] correspondences the found correspondences (index of query and target point, distance)
+          * \param[in] max_distance maximum allowed distance between correspondences
+          */
+        virtual void 
+        determineReciprocalCorrespondences (pcl::Correspondences &correspondences,
+                                            double max_distance = std::numeric_limits<double>::max ());
 
         /** \brief Set the number of nearest neighbours to be considered in the target 
           * point cloud. By default, we use k = 10 nearest neighbors.
@@ -164,7 +175,11 @@ namespace pcl
         using CorrespondenceEstimation<PointSource, PointTarget>::tree_;
         using CorrespondenceEstimation<PointSource, PointTarget>::target_;
 
-      private:
+        /** \brief Internal computation initalization. */
+        bool
+        initCompute ();
+
+       private:
 
         /** \brief The normals computed at each point in the source cloud */
         NormalsPtr source_normals_; 

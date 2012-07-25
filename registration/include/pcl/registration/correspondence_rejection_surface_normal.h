@@ -2,7 +2,7 @@
  * Software License Agreement (BSD License)
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
- *  Copyright (c) 2012, Open Perception, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -16,7 +16,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Open Perception, Inc. nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -53,7 +53,7 @@ namespace pcl
       * distances between correspondences will be estimated using the given XYZ
       * data, and not read from the set of input correspondences.
       *
-      * \author Aravindhan K Krishnan. This code is ported from libpointmatcher (https://github.com/ethz-asl/libpointmatcher)
+      * \author Aravindhan K Krishnan (original code from libpointmatcher: https://github.com/ethz-asl/libpointmatcher)
       * \ingroup registration
       */
     class CorrespondenceRejectorSurfaceNormal : public CorrespondenceRejector
@@ -64,9 +64,10 @@ namespace pcl
 
       public:
 
-        /** \brief Empty constructor. */
-        CorrespondenceRejectorSurfaceNormal () : threshold_ (1.0), 
-                                            data_container_ ()
+        /** \brief Empty constructor. Sets the threshold to 1.0. */
+        CorrespondenceRejectorSurfaceNormal () 
+          : threshold_ (1.0)
+          , data_container_ ()
         {
           rejection_name_ = "CorrespondenceRejectorSurfaceNormal";
         }
@@ -89,13 +90,13 @@ namespace pcl
         inline double
         getThreshold () const { return threshold_; };
 
-        /** \brief Initialize the data container object for the point type and the normal type
-          */
+        /** \brief Initialize the data container object for the point type and the normal type. */
         template <typename PointT, typename NormalT> inline void 
         initializeDataContainer ()
         {
-            data_container_.reset (new DataContainer<PointT, NormalT>);
+          data_container_.reset (new DataContainer<PointT, NormalT>);
         }
+
         /** \brief Provide a source point cloud dataset (must contain XYZ
           * data!), used to compute the correspondence distance.  
           * \param[in] cloud a cloud containing XYZ data
@@ -103,7 +104,8 @@ namespace pcl
         template <typename PointT> inline void 
         setInputCloud (const typename pcl::PointCloud<PointT>::ConstPtr &input)
         {
-          assert (data_container_ && "Initilize the data container object by calling intializeDataContainer () before using this function");
+          if (!data_container_)
+            PCL_ERROR ("[pcl::%s::setInputCloud] Initilize the data container object by calling intializeDataContainer () before using this function.\n", getClassName ().c_str ());
           boost::static_pointer_cast<DataContainer<PointT> > (data_container_)->setInputCloud (input);
         }
 
@@ -114,7 +116,8 @@ namespace pcl
         template <typename PointT> inline void 
         setInputTarget (const typename pcl::PointCloud<PointT>::ConstPtr &target)
         {
-          assert (data_container_ && "Initilize the data container object by calling intializeDataContainer () before using this function");
+          if (!data_container_)
+            PCL_ERROR ("[pcl::%s::setInputCloud] Initilize the data container object by calling intializeDataContainer () before using this function.\n", getClassName ().c_str ());
           boost::static_pointer_cast<DataContainer<PointT> > (data_container_)->setInputTarget (target);
         }
 
@@ -124,7 +127,8 @@ namespace pcl
         template <typename PointT, typename NormalT> inline void 
         setInputNormals (const typename pcl::PointCloud<NormalT>::ConstPtr &normals)
         {
-          assert (data_container_ && "Initilize the data container object by calling intializeDataContainer () before using this function");
+          if (!data_container_)
+            PCL_ERROR ("[pcl::%s::setInputCloud] Initilize the data container object by calling intializeDataContainer () before using this function.\n", getClassName ().c_str ());
           boost::static_pointer_cast<DataContainer<PointT, NormalT> > (data_container_)->setInputNormals (normals);
         }
 
@@ -134,17 +138,28 @@ namespace pcl
         template <typename PointT, typename NormalT> inline void 
         setTargetNormals (const typename pcl::PointCloud<NormalT>::ConstPtr &normals)
         {
-          assert (data_container_ && "Initilize the data container object by calling intializeDataContainer () before using this function");
+          if (!data_container_)
+            PCL_ERROR ("[pcl::%s::setInputCloud] Initilize the data container object by calling intializeDataContainer () before using this function.\n", getClassName ().c_str ());
           boost::static_pointer_cast<DataContainer<PointT, NormalT> > (data_container_)->setTargetNormals (normals);
         }
 
         /** \brief Get the normals computed on the input point cloud */
         template <typename NormalT> inline typename pcl::PointCloud<NormalT>::Ptr
-        getInputNormals () const { return boost::static_pointer_cast<DataContainer<pcl::PointXYZ, NormalT> > (data_container_)->getInputNormals (); }
+        getInputNormals () const 
+        { 
+          if (!data_container_)
+            PCL_ERROR ("[pcl::%s::setInputCloud] Initilize the data container object by calling intializeDataContainer () before using this function.\n", getClassName ().c_str ());
+          return (boost::static_pointer_cast<DataContainer<pcl::PointXYZ, NormalT> > (data_container_)->getInputNormals ());
+        }
 
         /** \brief Get the normals computed on the target point cloud */
         template <typename NormalT> inline typename pcl::PointCloud<NormalT>::Ptr
-        getTargetNormals () const { return boost::static_pointer_cast<DataContainer<pcl::PointXYZ, NormalT> > (data_container_)->getTargetNormals (); }
+        getTargetNormals () const 
+        { 
+          if (!data_container_)
+            PCL_ERROR ("[pcl::%s::setInputCloud] Initilize the data container object by calling intializeDataContainer () before using this function.\n", getClassName ().c_str ());
+          return (boost::static_pointer_cast<DataContainer<pcl::PointXYZ, NormalT> > (data_container_)->getTargetNormals ());
+        }
 
       protected:
 
@@ -157,12 +172,10 @@ namespace pcl
           getRemainingCorrespondences (*input_correspondences_, correspondences);
         }
 
-        /** \brief The median distance threshold between two correspondent points in source <-> target.
-          */
+        /** \brief The median distance threshold between two correspondent points in source <-> target. */
         double threshold_;
 
         typedef boost::shared_ptr<DataContainerInterface> DataContainerPtr;
-
         /** \brief A pointer to the DataContainer object containing the input and target point clouds */
         DataContainerPtr data_container_;
     };
