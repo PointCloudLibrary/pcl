@@ -287,6 +287,14 @@ namespace pcl
   /**\brief A comparison whether the (x,y,z) components of a given point satisfy (p'Ap + 2v'p + c [OP] 0).
    * Here [OP] stands for the defined pcl::ComparisonOps, i.e. for GT, GE, LT, LE or EQ;
    * p = (x,y,z) is a point of the point cloud; A is 3x3 matrix; v is the 3x1 vector; c is a scalar.
+   *  
+   * One can also use TfQuadraticXYZComparison for simpler geometric shapes by defining the
+   * quadratic parts (i.e. the matrix A) to be zero. By combining different instances of
+   * TfQuadraticXYZComparison one can get more complex shapes. For example, to have a simple
+   * cylinder (along the x-axis) of specific length one needs three comparisons combined as AND condition:
+   *   1. The cylinder: A = [0 0 0, 0 1 0, 0 0 1]; v = [0, 0, 0]; c = radius²; OP = LT (meaning "<")
+   *   2. X-min limit: A = 0; v = [1, 0, 0]; c = x_min; OP = GT
+   *   3. X-max ...
    *
    * \author Julian Löchner
    */

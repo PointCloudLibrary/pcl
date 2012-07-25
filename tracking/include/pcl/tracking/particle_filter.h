@@ -196,7 +196,11 @@ namespace pcl
         /** \brief get the transformation from the world coordinates to the frame of the particles. */
         inline Eigen::Affine3f getTrans () const { return trans_; }
         
-        /** \brief Get an instance of the result of tracking. */
+	/** \brief Get an instance of the result of tracking.
+	    This function returns the particle that represents the transform between the reference
+	    point cloud at the beginning and the best guess about its location in the most recent
+	    frame.
+	  */
         virtual inline StateT getResult () const { return representative_state_; }
         
         /** \brief convert a state to affine transformation from the world coordinates frame.
