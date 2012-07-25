@@ -3,6 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -16,7 +17,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -40,7 +41,6 @@
 #define PCL_OCTREE_VOXELCENTROID_H
 
 #include "octree_pointcloud.h"
-
 #include "octree_base.h"
 #include "octree2buf_base.h"
 
@@ -48,30 +48,22 @@ namespace pcl
 {
   namespace octree
   {
-
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /** \brief @b Octree pointcloud voxel centroid class
-     *  \note This class generate an octrees from a point cloud (zero-copy). It provides a vector of centroids for all occupied voxels. .
-     *  \note The octree pointcloud is initialized with its voxel resolution. Its bounding box is automatically adjusted or can be predefined.
-     *  \note
-     *  \note typename: PointT: type of point used in pointcloud
-     *  \ingroup octree
-     *  \author Julius Kammerl (julius@kammerl.de)
-     */
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      * \note This class generate an octrees from a point cloud (zero-copy). It provides a vector of centroids for all occupied voxels.
+      * \note The octree pointcloud is initialized with its voxel resolution. Its bounding box is automatically adjusted or can be predefined.
+      * \note
+      * \note typename: PointT: type of point used in pointcloud
+      *
+      * \ingroup octree
+      * \author Julius Kammerl (julius@kammerl.de)
+      */
     template<typename PointT, typename LeafT = OctreeContainerDataTVector<int> , typename BranchT = OctreeContainerEmpty<int> >
-      class OctreePointCloudVoxelCentroid : public OctreePointCloud<PointT, LeafT, BranchT>
-      {
-
+    class OctreePointCloudVoxelCentroid : public OctreePointCloud<PointT, LeafT, BranchT>
+    {
       public:
-        // public typedefs for single/double buffering
-
-        // Eigen aligned allocator
-        typedef typename OctreePointCloud<PointT, LeafT, BranchT>::AlignedPointTVector AlignedPointTVector;
-
         /** \brief OctreePointCloudVoxelCentroids class constructor.
-         *  \param resolution_arg:  octree resolution at lowest octree level
-         * */
+          * \param[in] resolution_arg octree resolution at lowest octree level
+          */
         OctreePointCloudVoxelCentroid (const double resolution_arg) :
           OctreePointCloud<PointT, LeafT, BranchT> (resolution_arg)
         {
@@ -84,155 +76,36 @@ namespace pcl
         }
 
         /** \brief Get PointT vector of centroids for all occupied voxels.
-         * \param voxelCentroidList_arg: results are written to this vector of PointT elements
-         * \return number of occupied voxels
-         */
+          * \param[out] voxel_centroid_list_arg results are written to this vector of PointT elements
+          * \return number of occupied voxels
+          */
         unsigned int
-        getVoxelCentroids (AlignedPointTVector &voxelCentroidList_arg)
-        {
-
-          size_t i;
-          unsigned int pointCounter;
-          OctreeKey keyC, keyP;
-          PointT meanPoint;
-          PointT idxPoint;
-
-          std::vector<int> indicesVector;
-
-          voxelCentroidList_arg.clear();
-          voxelCentroidList_arg.reserve(this->leafCount_);
-
-          // serialize leafs - this returns a list of point indices. Points indices from the same voxel are locates next to each other within this vector.
-          this->serializeLeafs (indicesVector);
-
-          // initializing
-          keyP.x = keyP.y = keyP.z = std::numeric_limits<unsigned int>::max ();
-          meanPoint.x = meanPoint.y = meanPoint.z = 0.0;
-          pointCounter = 0;
-
-          // iterate over all point indices
-          for (i = 0; i < indicesVector.size (); i++)
-          {
-            idxPoint = this->input_->points[indicesVector[i]];
-
-            // get octree key for point (key specifies octree voxel)
-            this->genOctreeKeyforPoint (idxPoint, keyC);
-
-            if (keyC == keyP)
-            {
-              // key addresses same voxel - add point
-              meanPoint.x += idxPoint.x;
-              meanPoint.y += idxPoint.y;
-              meanPoint.z += idxPoint.z;
-
-              pointCounter++;
-            }
-            else
-            {
-              // voxel key did change - calculate centroid and push it to result vector
-              if (pointCounter > 0)
-              {
-                meanPoint.x /= static_cast<float> (pointCounter);
-                meanPoint.y /= static_cast<float> (pointCounter);
-                meanPoint.z /= static_cast<float> (pointCounter);
-
-                voxelCentroidList_arg.push_back (meanPoint);
-              }
-
-              // reset centroid to current input point
-              meanPoint.x = idxPoint.x;
-              meanPoint.y = idxPoint.y;
-              meanPoint.z = idxPoint.z;
-              pointCounter = 1;
-
-              keyP = keyC;
-            }
-          }
-
-          // push last centroid to result vector if necessary
-          if (pointCounter > 0)
-          {
-            meanPoint.x /= static_cast<float> (pointCounter);
-            meanPoint.y /= static_cast<float> (pointCounter);
-            meanPoint.z /= static_cast<float> (pointCounter);
-
-            voxelCentroidList_arg.push_back (meanPoint);
-          }
-
-          // return size of centroid vector
-          return (static_cast<unsigned int> (voxelCentroidList_arg.size ()));
-        }
+        getVoxelCentroids (typename pcl::octree::OctreePointCloud<PointT, LeafT, BranchT>::AlignedPointTVector &voxel_centroid_list_arg);
 
         /** \brief Get centroid for a single voxel addressed by a PointT point.
-          * \param point_arg: point addressing a voxel in octree
-          * \param voxelCentroid_arg: centroid is written to this PointT reference
+          * \param[in] point_arg point addressing a voxel in octree
+          * \param[out] voxel_centroid_arg centroid is written to this PointT reference
           * \return "true" if voxel is found; "false" otherwise
           */
         bool
-        getVoxelCentroidAtPoint (const PointT& point_arg, PointT& voxelCentroid_arg)
-        {
-
-          size_t i;
-          unsigned int pointCounter;
-          std::vector<int> indicesVector;
-          PointT meanPoint;
-          PointT idxPoint;
-
-          bool bResult;
-
-          // get all point indixes from voxel at point point_arg
-          bResult = this->voxelSearch (point_arg, indicesVector);
-
-          if (bResult)
-          {
-            meanPoint.x = meanPoint.y = meanPoint.z = 0.0;
-            pointCounter = 0;
-
-            // iterate over all point indices
-            for (i = 0; i < indicesVector.size (); i++)
-            {
-              idxPoint = this->input_->points[indicesVector[i]];
-
-              meanPoint.x += idxPoint.x;
-              meanPoint.y += idxPoint.y;
-              meanPoint.z += idxPoint.z;
-
-              pointCounter++;
-            }
-
-            // calculate centroid
-            voxelCentroid_arg.x = meanPoint.x / static_cast<float> (pointCounter);
-            voxelCentroid_arg.y = meanPoint.y / static_cast<float> (pointCounter);
-            voxelCentroid_arg.z = meanPoint.z / static_cast<float> (pointCounter);
-          }
-
-          return (bResult);
-        }
+        getVoxelCentroidAtPoint (const PointT& point_arg, PointT& voxel_centroid_arg);
 
         /** \brief Get centroid for a single voxel addressed by a PointT point from input cloud.
-         * \param pointIdx_arg: point index from input cloud addressing a voxel in octree
-         * \param voxelCentroid_arg: centroid is written to this PointT reference
-         * \return "true" if voxel is found; "false" otherwise
-         */
+          * \param[in] point_idx_arg point index from input cloud addressing a voxel in octree
+          * \param[out] voxel_centroid_arg centroid is written to this PointT reference
+          * \return "true" if voxel is found; "false" otherwise
+          */
         inline bool
-        getVoxelCentroidAtPoint (const int& pointIdx_arg, PointT& voxelCentroid_arg)
+        getVoxelCentroidAtPoint (const int& point_idx_arg, PointT& voxel_centroid_arg)
         {
-
-          // retrieve point from input cloud
-          const PointT& point = this->input_->points[pointIdx_arg];
-
           // get centroid at point
-          return this->getVoxelCentroidAtPoint (point, voxelCentroid_arg);
-
+          return (this->getVoxelCentroidAtPoint (this->input_->points[point_idx_arg], voxel_centroid_arg));
         }
-
-      };
-
+    };
   }
-
 }
 
-#define PCL_INSTANTIATE_OctreePointCloudVoxelCentroid(T) template class PCL_EXPORTS pcl::octree::OctreePointCloudVoxelCentroid<T>;
+#include <pcl/octree/impl/octree_pointcloud_voxelcentroid.hpp>
 
 #endif
 

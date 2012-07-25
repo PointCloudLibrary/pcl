@@ -38,6 +38,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/octree2buf_base.hpp   
         include/pcl/${SUBSYS_NAME}/impl/octree_iterator.hpp      
         include/pcl/${SUBSYS_NAME}/impl/octree_search.hpp        
+        include/pcl/${SUBSYS_NAME}/impl/octree_pointcloud_voxelcentroid.hpp
         )
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
