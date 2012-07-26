@@ -41,6 +41,7 @@
 #include <pcl/common/common.h>
 #include <pcl/common/distances.h>
 #include <pcl/common/intersections.h>
+#include <pcl/common/io.h>
 #include <pcl/common/eigen.h>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
@@ -960,6 +961,29 @@ TEST (PCL, SetIfFieldExists)
 //
 //  pcl::PFHSignature125 p2;
 //  pcl::for_each_type<pcl::traits::fieldList<pcl::PFHSignature125>::type> (pcl::SetIfFieldExists<pcl::PFHSignature125, float*> (p2, "intensity", 3.0));
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, IsSamePointType)
+{
+  bool status = isSamePointType<PointXYZ, PointXYZ> ();
+  EXPECT_TRUE (status);
+  status = isSamePointType<PointXYZ, PointXY> ();
+  EXPECT_FALSE (status);
+  status = isSamePointType<PointXY, PointXYZ> ();
+  EXPECT_FALSE (status);
+  status = isSamePointType<PointNormal, PointNormal> ();
+  EXPECT_TRUE (status);
+  status = isSamePointType<PointNormal, PointXYZRGBNormal> ();
+  EXPECT_FALSE (status);
+  status = isSamePointType<PointXYZRGB, PointXYZRGB> ();
+  EXPECT_TRUE (status);
+  
+  // Even though it's the "same" type, rgb != rgba
+  status = isSamePointType<PointXYZRGB, PointXYZRGBA> ();
+  EXPECT_FALSE (status);
+  status = isSamePointType<PointXYZRGBA, PointXYZRGB> ();
+  EXPECT_FALSE (status);
 }
 
 //* ---[ */
