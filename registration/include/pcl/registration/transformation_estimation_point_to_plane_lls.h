@@ -41,6 +41,7 @@
 
 #include <pcl/registration/transformation_estimation.h>
 #include <pcl/registration/warp_point_rigid.h>
+#include <pcl/cloud_iterator.h>
 
 namespace pcl
 {
@@ -115,6 +116,7 @@ namespace pcl
             Eigen::Matrix4f &transformation_matrix) const;
 
       protected:
+        void estimateRigidTransformation (ConstCloudIterator<PointSource>& sourceIt, ConstCloudIterator<PointTarget>& targetIt, Eigen::Matrix4f &transformation_matrix) const;
         /** \brief Construct a 4 by 4 tranformation matrix from the provided rotation and translation.
           * \param[in] alpha the rotation about the x-axis
           * \param[in] beta the rotation about the y-axis

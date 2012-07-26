@@ -37,6 +37,7 @@
  */
 #ifndef PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_POINT_TO_PLANE_LLS_HPP_
 #define PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_POINT_TO_PLANE_LLS_HPP_
+#include <pcl/cloud_iterator.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget> inline void
@@ -52,34 +53,9 @@ estimateRigidTransformation (const pcl::PointCloud<PointSource> &cloud_src,
     return;
   }
 
-  // Approximate as a linear least squares problem
-  Eigen::MatrixXf A (nr_points, 6);
-  Eigen::MatrixXf b (nr_points, 1);
-  for (size_t i = 0; i < nr_points; ++i)
-  {
-    const float & sx = cloud_src.points[i].x;
-    const float & sy = cloud_src.points[i].y;
-    const float & sz = cloud_src.points[i].z;
-    const float & dx = cloud_tgt.points[i].x;
-    const float & dy = cloud_tgt.points[i].y;
-    const float & dz = cloud_tgt.points[i].z;
-    const float & nx = cloud_tgt.points[i].normal[0];
-    const float & ny = cloud_tgt.points[i].normal[1];
-    const float & nz = cloud_tgt.points[i].normal[2];
-    A (i, 0) = nz*sy - ny*sz;
-    A (i, 1) = nx*sz - nz*sx; 
-    A (i, 2) = ny*sx - nx*sy;
-    A (i, 3) = nx;
-    A (i, 4) = ny;
-    A (i, 5) = nz;
-    b (i, 0) = nx*dx + ny*dy + nz*dz - nx*sx - ny*sy - nz*sz;
-  }
-
-  // Solve A*x = b
-  Eigen::VectorXf x = A.colPivHouseholderQr ().solve (b);
-  
-  // Construct the transformation matrix from x
-  constructTransformationMatrix (x (0), x (1), x (2), x (3), x (4), x (5), transformation_matrix);
+  ConstCloudIterator<PointSource> sourceIt (cloud_src);
+  ConstCloudIterator<PointTarget> targetIt (cloud_tgt);
+  estimateRigidTransformation (sourceIt, targetIt, transformation_matrix);  
  
 }
 
@@ -98,34 +74,9 @@ estimateRigidTransformation (const pcl::PointCloud<PointSource> &cloud_src,
     return;
   }
 
-  // Approximate as a linear least squares problem
-  Eigen::MatrixXf A (nr_points, 6);
-  Eigen::MatrixXf b (nr_points, 1);
-  for (size_t i = 0; i < nr_points; ++i)
-  {
-    const float & sx = cloud_src.points[indices_src[i]].x;
-    const float & sy = cloud_src.points[indices_src[i]].y;
-    const float & sz = cloud_src.points[indices_src[i]].z;
-    const float & dx = cloud_tgt.points[i].x;
-    const float & dy = cloud_tgt.points[i].y;
-    const float & dz = cloud_tgt.points[i].z;
-    const float & nx = cloud_tgt.points[i].normal[0];
-    const float & ny = cloud_tgt.points[i].normal[1];
-    const float & nz = cloud_tgt.points[i].normal[2];
-    A (i, 0) = nz*sy - ny*sz;
-    A (i, 1) = nx*sz - nz*sx; 
-    A (i, 2) = ny*sx - nx*sy;
-    A (i, 3) = nx;
-    A (i, 4) = ny;
-    A (i, 5) = nz;
-    b (i, 0) = nx*dx + ny*dy + nz*dz - nx*sx - ny*sy - nz*sz;
-  }
-
-  // Solve A*x = b
-  Eigen::VectorXf x = A.colPivHouseholderQr ().solve (b);
-  
-  // Construct the transformation matrix from x
-  constructTransformationMatrix (x (0), x (1), x (2), x (3), x (4), x (5), transformation_matrix);
+  ConstCloudIterator<PointSource> sourceIt (cloud_src, indices_src);
+  ConstCloudIterator<PointTarget> targetIt (cloud_tgt);
+  estimateRigidTransformation (sourceIt, targetIt, transformation_matrix);  
 }
 
 
@@ -145,34 +96,9 @@ estimateRigidTransformation (const pcl::PointCloud<PointSource> &cloud_src,
     return;
   }
 
-  // Approximate as a linear least squares problem
-  Eigen::MatrixXf A (nr_points, 6);
-  Eigen::MatrixXf b (nr_points, 1);
-  for (size_t i = 0; i < nr_points; ++i)
-  {
-    const float & sx = cloud_src.points[indices_src[i]].x;
-    const float & sy = cloud_src.points[indices_src[i]].y;
-    const float & sz = cloud_src.points[indices_src[i]].z;
-    const float & dx = cloud_tgt.points[indices_tgt[i]].x;
-    const float & dy = cloud_tgt.points[indices_tgt[i]].y;
-    const float & dz = cloud_tgt.points[indices_tgt[i]].z;
-    const float & nx = cloud_tgt.points[indices_tgt[i]].normal[0];
-    const float & ny = cloud_tgt.points[indices_tgt[i]].normal[1];
-    const float & nz = cloud_tgt.points[indices_tgt[i]].normal[2];
-    A (i, 0) = nz*sy - ny*sz;
-    A (i, 1) = nx*sz - nz*sx; 
-    A (i, 2) = ny*sx - nx*sy;
-    A (i, 3) = nx;
-    A (i, 4) = ny;
-    A (i, 5) = nz;
-    b (i, 0) = nx*dx + ny*dy + nz*dz - nx*sx - ny*sy - nz*sz;
-  }
-
-  // Solve A*x = b
-  Eigen::VectorXf x = A.colPivHouseholderQr ().solve (b);
-  
-  // Construct the transformation matrix from x
-  constructTransformationMatrix (x (0), x (1), x (2), x (3), x (4), x (5), transformation_matrix);
+  ConstCloudIterator<PointSource> sourceIt (cloud_src, indices_src);
+  ConstCloudIterator<PointTarget> targetIt (cloud_tgt, indices_tgt);
+  estimateRigidTransformation (sourceIt, targetIt, transformation_matrix);  
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -183,8 +109,42 @@ estimateRigidTransformation (const pcl::PointCloud<PointSource> &cloud_src,
                              const pcl::Correspondences &correspondences,
                              Eigen::Matrix4f &transformation_matrix) const
 {
-  size_t nr_points = correspondences.size ();
+  ConstCloudIterator<PointSource> sourceIt (cloud_src, correspondences, true);
+  ConstCloudIterator<PointTarget> targetIt (cloud_tgt, correspondences, false);
+  estimateRigidTransformation (sourceIt, targetIt, transformation_matrix);
+}
 
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointSource, typename PointTarget> inline void
+pcl::registration::TransformationEstimationPointToPlaneLLS<PointSource, PointTarget>::
+constructTransformationMatrix (const float & alpha, const float & beta, const float & gamma,
+                               const float & tx, const float & ty, const float & tz,
+                               Eigen::Matrix4f &transformation_matrix) const
+{
+
+  // Construct the transformation matrix from rotation and translation 
+  transformation_matrix = Eigen::Matrix4f::Zero ();
+  transformation_matrix (0, 0) =  cosf (gamma) * cosf (beta);
+  transformation_matrix (0, 1) = -sinf (gamma) * cosf (alpha) + cosf (gamma) * sinf (beta) * sinf (alpha);
+  transformation_matrix (0, 2) =  sinf (gamma) * sinf (alpha) + cosf (gamma) * sinf (beta) * cosf (alpha);
+  transformation_matrix (1, 0) =  sinf (gamma) * cosf (beta);
+  transformation_matrix (1, 1) =  cosf (gamma) * cosf (alpha) + sinf (gamma) * sinf (beta) * sinf (alpha);
+  transformation_matrix (1, 2) = -cosf (gamma) * sinf (alpha) + sinf (gamma) * sinf (beta) * cosf (alpha);
+  transformation_matrix (2, 0) = -sinf (beta);
+  transformation_matrix (2, 1) =  cosf (beta) * sinf (alpha);
+  transformation_matrix (2, 2) =  cosf (beta) * cosf (alpha);
+
+  transformation_matrix (0, 3) = tx;
+  transformation_matrix (1, 3) = ty;
+  transformation_matrix (2, 3) = tz;
+  transformation_matrix (3, 3) = 1;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointSource, typename PointTarget> inline void
+pcl::registration::TransformationEstimationPointToPlaneLLS<PointSource, PointTarget>::
+estimateRigidTransformation (ConstCloudIterator<PointSource>& sourceIt, ConstCloudIterator<PointTarget>& targetIt, Eigen::Matrix4f &transformation_matrix) const
+{
   typedef Eigen::Matrix<double, 6, 1> Vector6d;
   typedef Eigen::Matrix<double, 6, 6> Matrix6d;
 
@@ -194,19 +154,17 @@ estimateRigidTransformation (const pcl::PointCloud<PointSource> &cloud_src,
   ATb.setZero ();
 
   // Approximate as a linear least squares problem
-  for (size_t i = 0; i < nr_points; ++i)
+  while (sourceIt.isValid () && targetIt.isValid ())
   {
-    const int & src_idx = correspondences[i].index_query;
-    const int & tgt_idx = correspondences[i].index_match;
-    const float & sx = cloud_src.points[src_idx].x;
-    const float & sy = cloud_src.points[src_idx].y;
-    const float & sz = cloud_src.points[src_idx].z;
-    const float & dx = cloud_tgt.points[tgt_idx].x;
-    const float & dy = cloud_tgt.points[tgt_idx].y;
-    const float & dz = cloud_tgt.points[tgt_idx].z;
-    const float & nx = cloud_tgt.points[tgt_idx].normal[0];
-    const float & ny = cloud_tgt.points[tgt_idx].normal[1];
-    const float & nz = cloud_tgt.points[tgt_idx].normal[2];
+    const float & sx = sourceIt->x;
+    const float & sy = sourceIt->y;
+    const float & sz = sourceIt->z;
+    const float & dx = targetIt->x;
+    const float & dy = targetIt->y;
+    const float & dz = targetIt->z;
+    const float & nx = targetIt->normal[0];
+    const float & ny = targetIt->normal[1];
+    const float & nz = targetIt->normal[2];
 
     double a = nz*sy - ny*sz;
     double b = nx*sz - nz*sx; 
@@ -248,6 +206,9 @@ estimateRigidTransformation (const pcl::PointCloud<PointSource> &cloud_src,
     ATb.coeffRef (3) += nx * d;
     ATb.coeffRef (4) += ny * d;
     ATb.coeffRef (5) += nz * d;
+
+    ++targetIt;
+    ++sourceIt;    
   }
   ATA.coeffRef (6) = ATA.coeff (1);
   ATA.coeffRef (12) = ATA.coeff (2);
@@ -271,31 +232,4 @@ estimateRigidTransformation (const pcl::PointCloud<PointSource> &cloud_src,
   // Construct the transformation matrix from x
   constructTransformationMatrix (x (0), x (1), x (2), x (3), x (4), x (5), transformation_matrix);
 }
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointSource, typename PointTarget> inline void
-pcl::registration::TransformationEstimationPointToPlaneLLS<PointSource, PointTarget>::
-constructTransformationMatrix (const float & alpha, const float & beta, const float & gamma,
-                               const float & tx, const float & ty, const float & tz,
-                               Eigen::Matrix4f &transformation_matrix) const
-{
-
-  // Construct the transformation matrix from rotation and translation 
-  transformation_matrix = Eigen::Matrix4f::Zero ();
-  transformation_matrix (0, 0) =  cosf (gamma) * cosf (beta);
-  transformation_matrix (0, 1) = -sinf (gamma) * cosf (alpha) + cosf (gamma) * sinf (beta) * sinf (alpha);
-  transformation_matrix (0, 2) =  sinf (gamma) * sinf (alpha) + cosf (gamma) * sinf (beta) * cosf (alpha);
-  transformation_matrix (1, 0) =  sinf (gamma) * cosf (beta);
-  transformation_matrix (1, 1) =  cosf (gamma) * cosf (alpha) + sinf (gamma) * sinf (beta) * sinf (alpha);
-  transformation_matrix (1, 2) = -cosf (gamma) * sinf (alpha) + sinf (gamma) * sinf (beta) * cosf (alpha);
-  transformation_matrix (2, 0) = -sinf (beta);
-  transformation_matrix (2, 1) =  cosf (beta) * sinf (alpha);
-  transformation_matrix (2, 2) =  cosf (beta) * cosf (alpha);
-
-  transformation_matrix (0, 3) = tx;
-  transformation_matrix (1, 3) = ty;
-  transformation_matrix (2, 3) = tz;
-  transformation_matrix (3, 3) = 1;
-}
-
 #endif /* PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_POINT_TO_PLANE_LLS_HPP_ */
