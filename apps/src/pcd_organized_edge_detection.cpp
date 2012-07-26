@@ -51,7 +51,7 @@ using namespace pcl;
 using namespace pcl::io;
 using namespace pcl::console;
 
-float default_th_dd = 0.02;
+float default_th_dd = 0.02f;
 int   default_max_search = 50;
 
 typedef pcl::PointCloud<pcl::PointXYZRGBA> Cloud;
@@ -153,9 +153,9 @@ compute (const sensor_msgs::PointCloud2::ConstPtr &input, sensor_msgs::PointClou
   print_info ("Detecting all edges... [done, "); print_value ("%g", tt.toc ()); print_info (" ms]\n");
 
   // Make gray point clouds
-  for (int idx = 0; idx < (int)cloud->points.size (); idx++)
+  for (int idx = 0; idx < int (cloud->points.size ()); idx++)
   {
-    uint8_t gray = (cloud->points[idx].r + cloud->points[idx].g + cloud->points[idx].b)/3;
+    uint8_t gray = uint8_t ((cloud->points[idx].r + cloud->points[idx].g + cloud->points[idx].b) / 3);
     cloud->points[idx].r = cloud->points[idx].g = cloud->points[idx].b = gray;
   }
 
@@ -171,7 +171,7 @@ compute (const sensor_msgs::PointCloud2::ConstPtr &input, sensor_msgs::PointClou
     high_curvature_edges (new pcl::PointCloud<pcl::PointXYZRGBA>),
     rgb_edges (new pcl::PointCloud<pcl::PointXYZRGBA>);
 
-  for (int idx = 0; idx < (int)cloud->points.size (); idx++)
+  for (int idx = 0; idx < int (cloud->points.size ()); idx++)
   {
     if (labels.points[idx].label & oed.EDGELABEL_NAN_BOUNDARY)
       nan_boundary_edges->points.push_back (cloud->points[idx]);
@@ -209,7 +209,7 @@ compute (const sensor_msgs::PointCloud2::ConstPtr &input, sensor_msgs::PointClou
   while (!viewer.wasStopped ())
   {
     viewer.spinOnce ();
-    pcl_sleep(0.1);
+    boost::this_thread::sleep (boost::posix_time::microseconds (100));
   }
 
   // Combine point clouds and edge labels
