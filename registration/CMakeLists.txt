@@ -60,6 +60,7 @@ if(build)
         )
 
     set(impl_incs 
+        include/pcl/${SUBSYS_NAME}/impl/default_convergence_criteria.hpp
         include/pcl/${SUBSYS_NAME}/impl/correspondence_estimation.hpp
         include/pcl/${SUBSYS_NAME}/impl/correspondence_estimation_normal_shooting.hpp
         include/pcl/${SUBSYS_NAME}/impl/correspondence_estimation_backprojection.hpp
@@ -92,7 +93,6 @@ if(build)
 
     set(srcs
         src/registration.cpp
-        src/default_convergence_criteria.cpp
         src/correspondence_estimation.cpp
         src/correspondence_estimation_normal_shooting.cpp
         src/correspondence_estimation_backprojection.cpp

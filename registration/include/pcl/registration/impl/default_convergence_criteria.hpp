@@ -36,12 +36,15 @@
  *
  */
 
+#ifndef PCL_REGISTRATION_DEFAULT_CONVERGENCE_CRITERIA_HPP_
+#define PCL_REGISTRATION_DEFAULT_CONVERGENCE_CRITERIA_HPP_
+
 #include <pcl/registration/default_convergence_criteria.h>
 #include <pcl/console/print.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-bool
-pcl::registration::DefaultConvergenceCriteria::hasConverged ()
+template <typename Scalar> bool
+pcl::registration::DefaultConvergenceCriteria<Scalar>::hasConverged ()
 {
   PCL_DEBUG ("[pcl::DefaultConvergenceCriteria::hasConverged] Iteration %d out of %d.\n", iterations_, max_iterations_);
   // 1. Number of iterations has reached the maximum user imposed number of iterations
@@ -70,3 +73,4 @@ pcl::registration::DefaultConvergenceCriteria::hasConverged ()
   return (false);
 }
 
+#endif    // PCL_REGISTRATION_DEFAULT_CONVERGENCE_CRITERIA_HPP_

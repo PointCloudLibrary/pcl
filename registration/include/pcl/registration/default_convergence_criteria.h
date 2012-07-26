@@ -60,9 +60,11 @@ namespace pcl
       * \author Radu B. Rusu
       * \ingroup registration
       */
-    class PCL_EXPORTS DefaultConvergenceCriteria : public ConvergenceCriteria
+    template <typename Scalar = float>
+    class DefaultConvergenceCriteria : public ConvergenceCriteria
     {
       public:
+        typedef Eigen::Matrix<Scalar, 4, 4> Matrix4;
 
         /** \brief Empty constructor. 
           * Sets:
@@ -75,7 +77,7 @@ namespace pcl
           * \param[in] transform a reference to the current transformation obtained by the transformation evaluation
           * \param[in] correspondences a reference to the current set of point correspondences between source and target
           */
-        DefaultConvergenceCriteria (const int &iterations, const Eigen::Matrix4f &transform, const pcl::Correspondences &correspondences)
+        DefaultConvergenceCriteria (const int &iterations, const Matrix4 &transform, const pcl::Correspondences &correspondences)
           : iterations_ (iterations)
           , transformation_ (transform)
           , correspondences_ (correspondences)
@@ -165,7 +167,7 @@ namespace pcl
         const int &iterations_;
 
         /** \brief The current transformation obtained by the transformation estimation method. */
-        const Eigen::Matrix4f &transformation_;
+        const Matrix4 &transformation_;
 
         /** \brief The current set of point correspondences between the source and the target. */
         const pcl::Correspondences &correspondences_;
@@ -196,6 +198,8 @@ namespace pcl
      };
   }
 }
+
+#include <pcl/registration/impl/default_convergence_criteria.hpp>
 
 #endif    // PCL_REGISTRATION_DEFAULT_CONVERGENCE_CRITERIA_H_
 
