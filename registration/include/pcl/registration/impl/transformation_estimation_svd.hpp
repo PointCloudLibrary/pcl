@@ -39,11 +39,11 @@
 #define PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_SVD_HPP_
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointSource, typename PointTarget> inline void
-pcl::registration::TransformationEstimationSVD<PointSource, PointTarget>::estimateRigidTransformation (
+template <typename PointSource, typename PointTarget, typename Scalar> inline void
+pcl::registration::TransformationEstimationSVD<PointSource, PointTarget, Scalar>::estimateRigidTransformation (
     const pcl::PointCloud<PointSource> &cloud_src,
     const pcl::PointCloud<PointTarget> &cloud_tgt,
-    Eigen::Matrix4f &transformation_matrix) const
+    Matrix4 &transformation_matrix) const
 {
   // <cloud_src,cloud_src> is the source dataset
   transformation_matrix.setIdentity ();
@@ -64,12 +64,12 @@ pcl::registration::TransformationEstimationSVD<PointSource, PointTarget>::estima
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointSource, typename PointTarget> void
-pcl::registration::TransformationEstimationSVD<PointSource, PointTarget>::estimateRigidTransformation (
+template <typename PointSource, typename PointTarget, typename Scalar> void
+pcl::registration::TransformationEstimationSVD<PointSource, PointTarget, Scalar>::estimateRigidTransformation (
     const pcl::PointCloud<PointSource> &cloud_src,
     const std::vector<int> &indices_src,
     const pcl::PointCloud<PointTarget> &cloud_tgt,
-    Eigen::Matrix4f &transformation_matrix) const
+    Matrix4 &transformation_matrix) const
 {
   if (indices_src.size () != cloud_tgt.points.size ())
   {
@@ -97,13 +97,13 @@ pcl::registration::TransformationEstimationSVD<PointSource, PointTarget>::estima
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointSource, typename PointTarget> inline void
-pcl::registration::TransformationEstimationSVD<PointSource, PointTarget>::estimateRigidTransformation (
+template <typename PointSource, typename PointTarget, typename Scalar> inline void
+pcl::registration::TransformationEstimationSVD<PointSource, PointTarget, Scalar>::estimateRigidTransformation (
     const pcl::PointCloud<PointSource> &cloud_src,
     const std::vector<int> &indices_src,
     const pcl::PointCloud<PointTarget> &cloud_tgt,
     const std::vector<int> &indices_tgt,
-    Eigen::Matrix4f &transformation_matrix) const
+    Matrix4 &transformation_matrix) const
 {
   if (indices_src.size () != indices_tgt.size ())
   {
@@ -130,12 +130,12 @@ pcl::registration::TransformationEstimationSVD<PointSource, PointTarget>::estima
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointSource, typename PointTarget> void
-pcl::registration::TransformationEstimationSVD<PointSource, PointTarget>::estimateRigidTransformation (
+template <typename PointSource, typename PointTarget, typename Scalar> void
+pcl::registration::TransformationEstimationSVD<PointSource, PointTarget, Scalar>::estimateRigidTransformation (
     const pcl::PointCloud<PointSource> &cloud_src,
     const pcl::PointCloud<PointTarget> &cloud_tgt,
     const pcl::Correspondences &correspondences,
-    Eigen::Matrix4f &transformation_matrix) const
+    Matrix4 &transformation_matrix) const
 {
   std::vector<int> indices_src, indices_tgt;
   pcl::registration::getQueryIndices (correspondences, indices_src);
@@ -158,23 +158,23 @@ pcl::registration::TransformationEstimationSVD<PointSource, PointTarget>::estima
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointSource, typename PointTarget> void
-pcl::registration::TransformationEstimationSVD<PointSource, PointTarget>::getTransformationFromCorrelation (
+template <typename PointSource, typename PointTarget, typename Scalar> void
+pcl::registration::TransformationEstimationSVD<PointSource, PointTarget, Scalar>::getTransformationFromCorrelation (
     const Eigen::MatrixXf &cloud_src_demean,
     const Eigen::Vector4f &centroid_src,
     const Eigen::MatrixXf &cloud_tgt_demean,
     const Eigen::Vector4f &centroid_tgt,
-    Eigen::Matrix4f &transformation_matrix) const
+    Matrix4 &transformation_matrix) const
 {
   transformation_matrix.setIdentity ();
 
   // Assemble the correlation matrix H = source * target'
-  Eigen::Matrix3f H = (cloud_src_demean * cloud_tgt_demean.transpose ()).topLeftCorner<3, 3>();
+  Eigen::Matrix<Scalar, 3, 3> H = (cloud_src_demean.cast<Scalar> () * cloud_tgt_demean.cast<Scalar> ().transpose ()).topLeftCorner (3, 3);
 
   // Compute the Singular Value Decomposition
-  Eigen::JacobiSVD<Eigen::Matrix3f> svd (H, Eigen::ComputeFullU | Eigen::ComputeFullV);
-  Eigen::Matrix3f u = svd.matrixU ();
-  Eigen::Matrix3f v = svd.matrixV ();
+  Eigen::JacobiSVD<Eigen::Matrix<Scalar, 3, 3> > svd (H, Eigen::ComputeFullU | Eigen::ComputeFullV);
+  Eigen::Matrix<Scalar, 3, 3> u = svd.matrixU ();
+  Eigen::Matrix<Scalar, 3, 3> v = svd.matrixV ();
 
   // Compute R = V * U'
   if (u.determinant () * v.determinant () < 0)
@@ -183,12 +183,12 @@ pcl::registration::TransformationEstimationSVD<PointSource, PointTarget>::getTra
       v (x, 2) *= -1;
   }
 
-  Eigen::Matrix3f R = v * u.transpose ();
+  Eigen::Matrix<Scalar, 3, 3> R = v * u.transpose ();
 
   // Return the correct transformation
-  transformation_matrix.topLeftCorner<3, 3> () = R;
-  const Eigen::Vector3f Rc (R * centroid_src.head<3> ());
-  transformation_matrix.block <3, 1> (0, 3) = centroid_tgt.head<3> () - Rc;
+  transformation_matrix.topLeftCorner (3, 3) = R;
+  const Eigen::Matrix<Scalar, 3, 1> Rc (R * centroid_src.cast<Scalar> ().head (3));
+  transformation_matrix.block (0, 3, 3, 1) = centroid_tgt.cast<Scalar> (). head (3) - Rc;
 }
 
 //#define PCL_INSTANTIATE_TransformationEstimationSVD(T,U) template class PCL_EXPORTS pcl::registration::TransformationEstimationSVD<T,U>;

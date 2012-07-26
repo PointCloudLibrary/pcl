@@ -53,13 +53,16 @@ namespace pcl
       * For additional details, see 
       *   "Linear Least-Squares Optimization for Point-to-Plane ICP Surface Registration", Kok-Lim Low, 2004
       *
+      * \note The class is templated on the source and target point types as well as on the output scalar of the transformation matrix (i.e., float or double). Default: float.
       * \author Michael Dixon
       * \ingroup registration
       */
-    template <typename PointSource, typename PointTarget>
-    class TransformationEstimationPointToPlaneLLS : public TransformationEstimation<PointSource, PointTarget>
+    template <typename PointSource, typename PointTarget, typename Scalar = float>
+    class TransformationEstimationPointToPlaneLLS : public TransformationEstimation<PointSource, PointTarget, Scalar>
     {
       public:
+        typedef typename TransformationEstimation<PointSource, PointTarget, Scalar>::Matrix4 Matrix4;
+        
         TransformationEstimationPointToPlaneLLS () {};
         virtual ~TransformationEstimationPointToPlaneLLS () {};
 
@@ -72,7 +75,7 @@ namespace pcl
         estimateRigidTransformation (
             const pcl::PointCloud<PointSource> &cloud_src,
             const pcl::PointCloud<PointTarget> &cloud_tgt,
-            Eigen::Matrix4f &transformation_matrix) const;
+            Matrix4 &transformation_matrix) const;
 
         /** \brief Estimate a rigid rotation transformation between a source and a target point cloud using SVD.
           * \param[in] cloud_src the source point cloud dataset
@@ -85,7 +88,7 @@ namespace pcl
             const pcl::PointCloud<PointSource> &cloud_src,
             const std::vector<int> &indices_src,
             const pcl::PointCloud<PointTarget> &cloud_tgt,
-            Eigen::Matrix4f &transformation_matrix) const;
+            Matrix4 &transformation_matrix) const;
 
         /** \brief Estimate a rigid rotation transformation between a source and a target point cloud using SVD.
           * \param[in] cloud_src the source point cloud dataset
@@ -100,7 +103,7 @@ namespace pcl
             const std::vector<int> &indices_src,
             const pcl::PointCloud<PointTarget> &cloud_tgt,
             const std::vector<int> &indices_tgt,
-            Eigen::Matrix4f &transformation_matrix) const;
+            Matrix4 &transformation_matrix) const;
 
         /** \brief Estimate a rigid rotation transformation between a source and a target point cloud using SVD.
           * \param[in] cloud_src the source point cloud dataset
@@ -113,10 +116,20 @@ namespace pcl
             const pcl::PointCloud<PointSource> &cloud_src,
             const pcl::PointCloud<PointTarget> &cloud_tgt,
             const pcl::Correspondences &correspondences,
-            Eigen::Matrix4f &transformation_matrix) const;
+            Matrix4 &transformation_matrix) const;
 
       protected:
-        void estimateRigidTransformation (ConstCloudIterator<PointSource>& sourceIt, ConstCloudIterator<PointTarget>& targetIt, Eigen::Matrix4f &transformation_matrix) const;
+        
+        /** \brief Estimate a rigid rotation transformation between a source and a target point cloud using SVD.
+          * \param[in] source_it an iterator over the source point cloud dataset
+          * \param[in] target_it an iterator over the target point cloud dataset
+          * \param[out] transformation_matrix the resultant transformation matrix
+          */
+        void 
+        estimateRigidTransformation (ConstCloudIterator<PointSource>& source_it, 
+                                     ConstCloudIterator<PointTarget>& target_it, 
+                                     Matrix4 &transformation_matrix) const;
+
         /** \brief Construct a 4 by 4 tranformation matrix from the provided rotation and translation.
           * \param[in] alpha the rotation about the x-axis
           * \param[in] beta the rotation about the y-axis
@@ -127,9 +140,9 @@ namespace pcl
           * \param[out] transformation the resultant transformation matrix
           */
         inline void
-        constructTransformationMatrix (const float & alpha, const float & beta, const float & gamma,
-                                       const float & tx, const float & ty, const float & tz,
-                                       Eigen::Matrix4f &transformation_matrix) const;
+        constructTransformationMatrix (const double & alpha, const double & beta, const double & gamma,
+                                       const double & tx,    const double & ty,   const double & tz,
+                                       Matrix4 &transformation_matrix) const;
 
     };
   }

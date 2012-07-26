@@ -48,13 +48,16 @@ namespace pcl
     /** @b TransformationEstimationSVD implements SVD-based estimation of
       * the transformation aligning the given correspondences.
       *
+      * \note The class is templated on the source and target point types as well as on the output scalar of the transformation matrix (i.e., float or double). Default: float.
       * \author Dirk Holz, Radu B. Rusu
       * \ingroup registration
       */
-    template <typename PointSource, typename PointTarget>
-    class TransformationEstimationSVD : public TransformationEstimation<PointSource, PointTarget>
+    template <typename PointSource, typename PointTarget, typename Scalar = float>
+    class TransformationEstimationSVD : public TransformationEstimation<PointSource, PointTarget, Scalar>
     {
       public:
+        typedef typename TransformationEstimation<PointSource, PointTarget, Scalar>::Matrix4 Matrix4;
+        
         TransformationEstimationSVD () {};
         virtual ~TransformationEstimationSVD () {};
 
@@ -67,7 +70,7 @@ namespace pcl
         estimateRigidTransformation (
             const pcl::PointCloud<PointSource> &cloud_src,
             const pcl::PointCloud<PointTarget> &cloud_tgt,
-            Eigen::Matrix4f &transformation_matrix) const;
+            Matrix4 &transformation_matrix) const;
 
         /** \brief Estimate a rigid rotation transformation between a source and a target point cloud using SVD.
           * \param[in] cloud_src the source point cloud dataset
@@ -80,7 +83,7 @@ namespace pcl
             const pcl::PointCloud<PointSource> &cloud_src,
             const std::vector<int> &indices_src,
             const pcl::PointCloud<PointTarget> &cloud_tgt,
-            Eigen::Matrix4f &transformation_matrix) const;
+            Matrix4 &transformation_matrix) const;
 
         /** \brief Estimate a rigid rotation transformation between a source and a target point cloud using SVD.
           * \param[in] cloud_src the source point cloud dataset
@@ -95,7 +98,7 @@ namespace pcl
             const std::vector<int> &indices_src,
             const pcl::PointCloud<PointTarget> &cloud_tgt,
             const std::vector<int> &indices_tgt,
-            Eigen::Matrix4f &transformation_matrix) const;
+            Matrix4 &transformation_matrix) const;
 
         /** \brief Estimate a rigid rotation transformation between a source and a target point cloud using SVD.
           * \param[in] cloud_src the source point cloud dataset
@@ -108,7 +111,7 @@ namespace pcl
             const pcl::PointCloud<PointSource> &cloud_src,
             const pcl::PointCloud<PointTarget> &cloud_tgt,
             const pcl::Correspondences &correspondences,
-            Eigen::Matrix4f &transformation_matrix) const;
+            Matrix4 &transformation_matrix) const;
 
       protected:
 
@@ -124,7 +127,7 @@ namespace pcl
                                           const Eigen::Vector4f &centroid_src,
                                           const Eigen::MatrixXf &cloud_tgt_demean,
                                           const Eigen::Vector4f &centroid_tgt,
-                                          Eigen::Matrix4f &transformation_matrix) const;
+                                          Matrix4 &transformation_matrix) const;
     };
 
   }

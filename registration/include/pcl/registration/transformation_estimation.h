@@ -54,13 +54,16 @@ namespace pcl
       *   - a point cloud with a set of indices (source), and another point cloud (target)
       *   - two point clouds with two sets of indices (source and target) of the same size
       *
+      * \note The class is templated on the source and target point types as well as on the output scalar of the transformation matrix (i.e., float or double). Default: float.
       * \author Dirk Holz, Radu B. Rusu
       * \ingroup registration
       */
-    template <typename PointSource, typename PointTarget>
+    template <typename PointSource, typename PointTarget, typename Scalar = float>
     class TransformationEstimation
     {
       public:
+        typedef Eigen::Matrix<Scalar, 4, 4> Matrix4;
+
         TransformationEstimation () {};
         virtual ~TransformationEstimation () {};
 
@@ -73,7 +76,7 @@ namespace pcl
         estimateRigidTransformation (
             const pcl::PointCloud<PointSource> &cloud_src,
             const pcl::PointCloud<PointTarget> &cloud_tgt,
-            Eigen::Matrix4f &transformation_matrix) const = 0;
+            Matrix4 &transformation_matrix) const = 0;
 
         /** \brief Estimate a rigid rotation transformation between a source and a target point cloud.
           * \param[in] cloud_src the source point cloud dataset
@@ -86,7 +89,7 @@ namespace pcl
             const pcl::PointCloud<PointSource> &cloud_src,
             const std::vector<int> &indices_src,
             const pcl::PointCloud<PointTarget> &cloud_tgt,
-            Eigen::Matrix4f &transformation_matrix) const = 0;
+            Matrix4 &transformation_matrix) const = 0;
 
         /** \brief Estimate a rigid rotation transformation between a source and a target point cloud.
           * \param[in] cloud_src the source point cloud dataset
@@ -101,7 +104,7 @@ namespace pcl
             const std::vector<int> &indices_src,
             const pcl::PointCloud<PointTarget> &cloud_tgt,
             const std::vector<int> &indices_tgt,
-            Eigen::Matrix4f &transformation_matrix) const = 0;
+            Matrix4 &transformation_matrix) const = 0;
 
         /** \brief Estimate a rigid rotation transformation between a source and a target point cloud.
           * \param[in] cloud_src the source point cloud dataset
@@ -114,7 +117,7 @@ namespace pcl
             const pcl::PointCloud<PointSource> &cloud_src,
             const pcl::PointCloud<PointTarget> &cloud_tgt,
             const pcl::Correspondences &correspondences,
-            Eigen::Matrix4f &transformation_matrix) const = 0;
+            Matrix4 &transformation_matrix) const = 0;
 
 
         typedef boost::shared_ptr<TransformationEstimation<PointSource, PointTarget> > Ptr;
