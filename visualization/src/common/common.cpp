@@ -55,6 +55,27 @@ pcl::visualization::getRandomColors (double &r, double &g, double &b, double min
   while (sum <= min || sum >= max);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::visualization::getRandomColors (pcl::RGB &rgb, double min, double max)
+{
+  double sum;
+  static unsigned stepRGBA = 100;
+  double r, g, b;
+  do
+  {
+    sum = 0;
+    r = (rand () % stepRGBA) / static_cast<double> (stepRGBA);
+    while ((g = (rand () % stepRGBA) / static_cast<double> (stepRGBA)) == r) {}
+    while (((b = (rand () % stepRGBA) / static_cast<double> (stepRGBA)) == r) && (b == g)) {}
+    sum = r + g + b;
+  }
+  while (sum <= min || sum >= max);
+  rgb.r = uint8_t (r * 255.0);
+  rgb.g = uint8_t (g * 255.0);
+  rgb.b = uint8_t (b * 255.0);
+}
+
 /////////////////////////////////////////////////////////////////////////////////////////////
 
 void

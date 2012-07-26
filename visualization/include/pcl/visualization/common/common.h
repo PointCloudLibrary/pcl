@@ -40,6 +40,7 @@
 #include <pcl/visualization/vtk.h>
 
 #include <pcl/pcl_macros.h>
+#include <pcl/point_types.h>
 #include <pcl/visualization/eigen.h>
 
 namespace pcl
@@ -55,6 +56,14 @@ namespace pcl
       */
     PCL_EXPORTS void
     getRandomColors (double &r, double &g, double &b, double min = 0.2, double max = 2.8);
+
+    /** \brief Get (good) random values for R/G/B.
+      * \param rgb the resultant RGB color value
+      * \param min minimum value for the colors
+      * \param max maximum value for the colors
+      */
+    PCL_EXPORTS void
+    getRandomColors (pcl::RGB &rgb, double min = 0.2, double max = 2.8);
 
     enum RenderingProperties
     {
