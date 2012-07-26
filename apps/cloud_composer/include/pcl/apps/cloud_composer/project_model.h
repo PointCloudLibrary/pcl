@@ -95,10 +95,14 @@ namespace pcl
         void
         enqueueToolAction (AbstractTool* tool);
         
+        /** \brief Executes a command directly in this thread */
+        void
+        doCommand (CloudCommand* command);
+        
         /** \brief Helper function which inserts the item into this model and makes connections for properties */
         void 
-        insertNewCloudComposerItem (CloudComposerItem* new_item, QStandardItem* parent_item = 0);
-        
+        insertNewCloudComposerItem (CloudComposerItem* new_item, QStandardItem* parent_item);
+                
       public slots:
         void 
         commandCompleted (CloudCommand* command);
@@ -109,6 +113,7 @@ namespace pcl
         enqueueNewAction (AbstractTool* tool, ConstItemList data);
         
       private:
+        
         QItemSelectionModel* selection_model_;
         vtkSmartPointer<vtkCamera> camera_; 
         QMap <QString, int> name_to_type_map_;

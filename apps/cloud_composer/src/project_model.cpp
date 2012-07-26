@@ -91,7 +91,7 @@ pcl::cloud_composer::ProjectModel::insertNewCloudFromFile (QString filename)
   }
   CloudItem* new_item = new CloudItem (short_filename, cloud_blob, origin, orientation);
    
-  insertNewCloudComposerItem (new_item);
+  insertNewCloudComposerItem (new_item, invisibleRootItem());
   
 }
 
@@ -122,6 +122,31 @@ pcl::cloud_composer::ProjectModel::enqueueToolAction (AbstractTool* tool)
 }
 
 void
+pcl::cloud_composer::ProjectModel::doCommand (CloudCommand* command)
+{
+  ConstItemList input_data;
+  QModelIndexList selected_indexes = selection_model_->selectedIndexes ();
+  if (selected_indexes.size () == 0)
+  {
+    QMessageBox::warning (qobject_cast<QWidget *>(this->parent ()), "No Items Selected", "Cannot execute command, no item is selected in the browser or cloud view");
+    return;
+  }    
+  foreach (QModelIndex index, selected_indexes)
+  {
+    QStandardItem* item = this->itemFromIndex (index);
+    qDebug () << item->text () << " selected!";
+    if ( dynamic_cast <CloudComposerItem*> (item))
+      input_data.append (dynamic_cast <CloudComposerItem*> (item));
+  }
+  qDebug () << "Input for command is "<<input_data.size () << " element(s)";
+  command->setInputData (input_data);
+  if (command->runCommand (0))
+    commandCompleted(command);
+  else
+    qCritical () << "Execution of command failed!";
+}
+
+void
 pcl::cloud_composer::ProjectModel::commandCompleted (CloudCommand* command)
 {
   //We set the project model here - this wasn't done earlier so model is never exposed to plugins
@@ -135,12 +160,7 @@ pcl::cloud_composer::ProjectModel::commandCompleted (CloudCommand* command)
 void
 pcl::cloud_composer::ProjectModel::insertNewCloudComposerItem (CloudComposerItem* new_item, QStandardItem* parent_item)
 {
-  if (!parent_item)
-    parent_item = invisibleRootItem ();
-  
-  parent_item->appendRow (new_item);
-  
-  
+  parent_item->appendRow (new_item);  
 }
 
 

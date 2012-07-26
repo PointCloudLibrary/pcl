@@ -58,5 +58,6 @@ pcl::cloud_composer::NormalsItem::paintView (boost::shared_ptr<pcl::visualizatio
 void
 pcl::cloud_composer::NormalsItem::removeFromView (boost::shared_ptr<pcl::visualization::PCLVisualizer> vis) const
 {  
+  qDebug () << "Removing Normals "<<item_id_;
   vis->removePointCloud (item_id_.toStdString ());
 }

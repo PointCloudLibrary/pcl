@@ -1,4 +1,3 @@
-#include <pcl/apps/cloud_composer/qt.h>
 #include <pcl/apps/cloud_composer/commands.h>
 #include <pcl/apps/cloud_composer/tool_interface/abstract_tool.h>
 #include <pcl/apps/cloud_composer/project_model.h>
@@ -200,15 +199,26 @@ pcl::cloud_composer::SplitCloudCommand::undo ()
       QModelIndex output_index = project_model_->indexFromItem (output_item);
       project_model_->takeRow (output_index.row ());
     }
-    //Add the original item back into the model
-    if (removed_items_.size() > 0)
-    {
-      foreach (QStandardItem* removed_item, removed_items_)
-        project_model_->appendRow (removed_item);
-    }
-    else
-      qCritical () << "Original item is empty, can't reinsert it back into project in SplitCloudCommand::undo!!";
+    
   }
+  //Add the original items back into the model
+  if (removed_item_parent_pairs_.size() > 0)
+  {
+    foreach (RemovedPair removed_pair, removed_item_parent_pairs_)
+    {
+      QModelIndex parent_index = removed_pair.second;
+      QStandardItem* parent_item;
+      if ( !parent_index.isValid ())
+        parent_item = project_model_->invisibleRootItem ();
+      else
+        parent_item = project_model_->itemFromIndex (parent_index);
+      //Add the item back into the model
+      qDebug () << "Parent item = "<<parent_item;
+      parent_item->appendRow (removed_pair.first);
+    }
+  }
+  else
+    qCritical () << "Original item is empty, can't reinsert it back into project in SplitCloudCommand::undo!!";
 }
 
 void
@@ -218,20 +228,113 @@ pcl::cloud_composer::SplitCloudCommand::redo ()
   foreach (OutputPair output_pair, output_data_)
   {
     const CloudComposerItem* input_item = output_pair.input_item_;
-    QList <CloudComposerItem*> output_items = output_pair.output_list_;
     //Find the input_item index in the project_model_
     QPersistentModelIndex input_index = QPersistentModelIndex(project_model_->indexFromItem (input_item));
-    
     if (!input_index.isValid ())
     {
       qCritical () << "Index of input cloud item is no longer valid upon command completion!";
       return;
     }
-    //Remove the original item from the model, store it
-    removed_items_ = project_model_->takeRow (input_index.row ());
+    
+    //Find the original item's parent
+    // If parent returns 0, it's parent is invisiblerootitem (That's how Qt defines it... boo!)
+    QStandardItem* parent_item = input_item->parent ();
+    if (parent_item == 0)
+      parent_item = project_model_->invisibleRootItem ();
+    QPersistentModelIndex parent_index;
+    parent_index = QPersistentModelIndex (parent_item->index ());
+    //Remove the item from the model, store it
+    QList <QStandardItem*> removed_items = parent_item->takeRow (input_index.row ());
+    if (removed_items.size () > 1)
+      qCritical () << "Deleted row with more than one column! This isn't supported!!";
+    else
+      removed_item_parent_pairs_.append (qMakePair (removed_items.at (0), parent_index));
+    
+    //Add the output items into the model
+    QList <CloudComposerItem*> output_items = output_pair.output_list_;
     foreach (CloudComposerItem* output_item, output_items)
     {
       project_model_->appendRow (output_item);
     }
+  }
+}
+
+
+//////////// Delete CLOUD COMMAND ///////////////////////////////////////////////////////////////////////////
+
+pcl::cloud_composer::DeleteItemCommand::DeleteItemCommand (QList <const CloudComposerItem*> input_data, QUndoCommand* parent)
+  : CloudCommand (input_data, parent)
+{
+  
+}
+
+bool
+pcl::cloud_composer::DeleteItemCommand::runCommand (AbstractTool* tool)
+{
+  
+  //For new item cloud command, each selected item should be processed separately
+  //e.g. calculate normals for every selected cloud
+  int num_new_items = 0;
+  foreach (const CloudComposerItem *item, original_data_)
+  {
+    QList <CloudComposerItem*> output;
+    OutputPair output_pair = {item, output};
+    output_data_.append (output_pair);
+    this->setText ("Delete "+item->text ());
+  }
+  return true;
+}
+
+void
+pcl::cloud_composer::DeleteItemCommand::undo ()
+{
+  //Add the original items back into the model
+  if (removed_item_parent_pairs_.size() > 0)
+  {
+    foreach (RemovedPair removed_pair, removed_item_parent_pairs_)
+    {
+      QModelIndex parent_index = removed_pair.second;
+      QStandardItem* parent_item;
+      if ( !parent_index.isValid ())
+        parent_item = project_model_->invisibleRootItem ();
+      else
+        parent_item = project_model_->itemFromIndex (parent_index);
+      //Add the item back into the model
+      qDebug () << "Parent item = "<<parent_item;
+      parent_item->appendRow (removed_pair.first);
+    }
+  }
+}
+
+void
+pcl::cloud_composer::DeleteItemCommand::redo ()
+{
+  qDebug () << "Redo in DeleteItemCommand - num items to delete="<<output_data_.size ();
+  foreach (OutputPair output_pair, output_data_)
+  {
+    const CloudComposerItem* input_item = output_pair.input_item_;
+    //Find the input_item index in the project_model_
+    QPersistentModelIndex input_index = QPersistentModelIndex(project_model_->indexFromItem (input_item));
+    if (!input_index.isValid ())
+    {
+      qCritical () << "Index of item to delete is not valid!";
+      return;
+    }
+    //Find the deleted item's parent
+    // If parent returns 0, it's parent is invisiblerootitem (That's how Qt defines it... boo!)
+    QStandardItem* parent_item = input_item->parent ();
+    if (parent_item == 0)
+      parent_item = project_model_->invisibleRootItem ();
+    QPersistentModelIndex parent_index;
+    parent_index = QPersistentModelIndex (parent_item->index ());
+    //Remove the item from the model, store it
+    QList <QStandardItem*> removed_items = parent_item->takeRow (input_index.row ());
+    
+    if (removed_items.size () > 1)
+      qCritical () << "Deleted row with more than one column! This isn't supported!!";
+    else
+      removed_item_parent_pairs_.append (qMakePair (removed_items.at (0), parent_index));  
+    
+
   }
 }

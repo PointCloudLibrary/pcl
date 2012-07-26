@@ -26,7 +26,7 @@
      <x>0</x>
      <y>0</y>
      <width>1280</width>
-     <height>22</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -345,6 +345,9 @@
   <action name="action_delete_">
    <property name="text">
     <string>&amp;Delete</string>
+   </property>
+   <property name="shortcut">
+    <string>Del</string>
    </property>
   </action>
   <action name="action_preferences_">

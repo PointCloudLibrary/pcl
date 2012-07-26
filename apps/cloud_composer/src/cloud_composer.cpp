@@ -252,6 +252,19 @@ pcl::cloud_composer::ComposerMainWindow::on_action_exit__triggered ()
   qDebug () << "Exiting...";
 }
 
+void
+pcl::cloud_composer::ComposerMainWindow::on_action_delete__triggered ()
+{
+  if (!current_model_)
+  {
+    qCritical () << "Cannot delete - no model active!";
+    return;
+  }
+    
+  DeleteItemCommand* delete_command = new DeleteItemCommand (ConstItemList ());
+  current_model_->doCommand (delete_command);
+}
+
 ///////// EDIT MENU SLOTS ////////////
 void
 pcl::cloud_composer::ComposerMainWindow::on_action_insert_from_file__triggered ()

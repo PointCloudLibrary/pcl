@@ -38,7 +38,7 @@
 #ifndef COMMANDS_H_
 #define COMMANDS_H_
 
-#include "qt.h"
+#include <pcl/apps/cloud_composer/qt.h>
 #include <pcl/pcl_exports.h>
 #include <pcl/apps/cloud_composer/items/cloud_composer_item.h>
 
@@ -69,6 +69,12 @@ namespace pcl
         
         void 
         setProjectModel (ProjectModel* model);
+        
+        inline void
+        setInputData (ConstItemList input_data)
+        {
+          original_data_ = input_data;
+        }
       protected:
         ConstItemList original_data_;
         QList <OutputPair> output_data_;
@@ -109,6 +115,7 @@ namespace pcl
 
     };
     
+    typedef QPair<QStandardItem*, QPersistentModelIndex> RemovedPair;
     class PCL_EXPORTS SplitCloudCommand : public CloudCommand
     {
       public: 
@@ -123,7 +130,24 @@ namespace pcl
         virtual void
         redo ();
       private:
-        QList <QStandardItem*> removed_items_;
+        QList < RemovedPair > removed_item_parent_pairs_;
+    };  
+    
+    class PCL_EXPORTS DeleteItemCommand : public CloudCommand
+    {
+      public: 
+        DeleteItemCommand (ConstItemList input_data, QUndoCommand* parent = 0);
+      
+        virtual bool
+        runCommand (AbstractTool* tool);
+        
+        virtual void
+        undo ();
+      
+        virtual void
+        redo ();
+      private:
+        QList < RemovedPair > removed_item_parent_pairs_;
     };
   }
 } 

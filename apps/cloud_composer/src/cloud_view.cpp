@@ -87,25 +87,25 @@ pcl::cloud_composer::CloudView::itemChanged (QStandardItem* changed_item)
 void
 pcl::cloud_composer::CloudView::rowsInserted (const QModelIndex& parent, int start, int end)
 {
+  QStandardItem* parent_item;
+  //If the parent is invisibleRootItem this will be true (parent is not valid)
+  if (!parent.isValid())
+    parent_item = model_->invisibleRootItem();
+  else
+    parent_item = model_->itemFromIndex (parent);
   QString project_name = model_->getName ();
   for (int row = start; row <= end; ++row)
   {
-    
-    QStandardItem* parent_item =  dynamic_cast<QStandardItemModel*>(model_)->itemFromIndex (parent);
-    QStandardItem* new_item;
-    if(parent_item == 0)
-      new_item = model_->invisibleRootItem ()->child (row);
-    else
-      new_item = parent_item->child(row);
-    CloudComposerItem* item;
-    if (dynamic_cast<CloudComposerItem*> (new_item))
+    QStandardItem* new_item = parent_item->child(row);
+    CloudComposerItem* item = dynamic_cast<CloudComposerItem*> (new_item);
       item = dynamic_cast<CloudComposerItem*> (new_item);
-    else
-    {
-      qCritical () << "Item for display in CloudView is not a CloudComposerItem!";
-      continue;
-    }
-    item->paintView (vis_);
+    if (item)
+      item->paintView (vis_);
+    
+    //Recursive call, need to paint all children as well
+  //  qDebug () << "Making recursive call, start =0, end="<<new_item->rowCount ()-1;
+    if (new_item->rowCount () > 0)  
+      rowsInserted(new_item->index(),0,new_item->rowCount ()-1);
   }
   
   qvtk_->update ();
@@ -115,24 +115,27 @@ pcl::cloud_composer::CloudView::rowsInserted (const QModelIndex& parent, int sta
 void
 pcl::cloud_composer::CloudView::rowsAboutToBeRemoved (const QModelIndex& parent, int start, int end)
 {
+  QStandardItem* parent_item;
+  //If the parent is invisibleRootItem this will be true (parent is not valid)
+  if (!parent.isValid())
+    parent_item = model_->invisibleRootItem();
+  else
+    parent_item = model_->itemFromIndex (parent);
   QString project_name = model_->getName ();
-  QStandardItem* parent_item =  dynamic_cast<QStandardItemModel*>(model_)->itemFromIndex (parent);
+  qDebug () << "Rows about to be removed, parent = "<<parent_item->text ()<<" start="<<start<<" end="<<end;
   for (int row = start; row <= end; ++row)
   {
-    QStandardItem* item_to_remove;
-    if(parent_item == 0)
-      item_to_remove = model_->invisibleRootItem ()->child (row);
-    else
-      item_to_remove = parent_item->child(row);
-    CloudComposerItem* item;
-    if (dynamic_cast<CloudComposerItem*> (item_to_remove))
-      item = dynamic_cast<CloudComposerItem*> (item_to_remove);
-    else
-    {
-      qCritical () << "Item for display in CloudView is not a CloudComposerItem!";
-      continue;
-    }
-    item->removeFromView (vis_);
+    QStandardItem* item_to_remove = parent_item->child(row);
+    if (item_to_remove)
+      qDebug () << "Removing "<<item_to_remove->text ();
+    CloudComposerItem* item = dynamic_cast<CloudComposerItem*> (item_to_remove);
+    if (item )
+      item->removeFromView (vis_);
+    
+    //Recursive call, need to remove all children as well
+  //  qDebug () << "Making recursive call, start =0, end="<<item_to_remove->rowCount ()-1;
+    if (item_to_remove->rowCount () > 0) 
+      rowsAboutToBeRemoved(item_to_remove->index(),0,item_to_remove->rowCount ()-1);
   }
   qvtk_->update ();
 }

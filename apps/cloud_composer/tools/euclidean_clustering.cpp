@@ -96,7 +96,7 @@ pcl::cloud_composer::EuclideanClusteringTool::performAction (ConstItemList input
     sensor_msgs::PointCloud2::Ptr remainder_cloud (new sensor_msgs::PointCloud2);
     filter.filter (*remainder_cloud);
     qDebug() << "Cloud has " << remainder_cloud->width << " data points after clusters removed.";
-    CloudItem* cloud_item = new CloudItem (input_item->text ().arg(cluster_count)
+    CloudItem* cloud_item = new CloudItem (input_item->text ()+ " unclustered"
                                              , remainder_cloud
                                              , source_origin
                                              , source_orientation);

@@ -97,7 +97,9 @@ namespace pcl
         on_action_insert_from_file__triggered ();
         void
         on_action_insert_from_openNi_source__triggered ();
-
+        void 
+        on_action_delete__triggered ();
+        
         void 
         setCurrentModel (ProjectModel* model);
         
