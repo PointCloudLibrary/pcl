@@ -1289,6 +1289,7 @@ pcl::visualization::PCLVisualizer::setShapeRenderingProperties (
   {
     case PCL_VISUALIZER_COLOR:
     {
+      actor->GetMapper ()->ScalarVisibilityOff ();
       actor->GetProperty ()->SetColor (val1, val2, val3);
       actor->GetProperty ()->SetEdgeColor (val1, val2, val3);
       // The following 3 are set by SetColor automatically according to the VTK docs
@@ -2594,7 +2595,7 @@ pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
                                                                int yres,
                                                                pcl::PointCloud<pcl::PointXYZ>::CloudVectorType &clouds,
                                                                std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<
-                                                                   Eigen::Matrix4f> > & poses,
+                                                               Eigen::Matrix4f> > & poses,
                                                                std::vector<float> & enthropies, int tesselation_level,
                                                                float view_angle, float radius_sphere, bool use_vertices)
 {
