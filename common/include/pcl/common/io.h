@@ -270,8 +270,11 @@ namespace pcl
                   sensor_msgs::PointCloud2 &cloud_out);
 
   /** \brief Check if two given point types are the same or not. */
-  template <typename Point1T, typename Point2T> bool
-  isSamePointType ();
+  template <typename Point1T, typename Point2T> inline bool
+  isSamePointType ()
+  {
+    return (typeid (Point1T) == typeid (Point2T));
+  }
 
   /** \brief Extract the indices of a given point cloud as a new point cloud
     * \param[in] cloud_in the input point cloud dataset

@@ -106,29 +106,6 @@ pcl::getFieldsList (const pcl::PointCloud<PointT> &)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename Point1T, typename Point2T> bool
-pcl::isSamePointType ()
-{
-  // Get the fields list
-  std::vector<sensor_msgs::PointField> fields1, fields2;
-  pcl::for_each_type<typename pcl::traits::fieldList<Point1T>::type> (pcl::detail::FieldAdder<Point1T> (fields1));
-  pcl::for_each_type<typename pcl::traits::fieldList<Point2T>::type> (pcl::detail::FieldAdder<Point2T> (fields2));
-
-  if (fields1.size () != fields2.size ())
-    return (false);
-
-  for (size_t i = 0; i < fields1.size (); ++i)
-  {
-    if (fields1[i].name     != fields2[i].name     ||
-        fields1[i].offset   != fields2[i].offset   ||
-        fields1[i].datatype != fields2[i].datatype ||
-        fields1[i].count    != fields2[i].count)
-       return (false);
-  }
-  return (true);
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT> void
 pcl::copyPointCloud (const pcl::PointCloud<PointInT> &cloud_in, pcl::PointCloud<PointOutT> &cloud_out)
 {
