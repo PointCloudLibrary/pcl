@@ -1134,6 +1134,32 @@ TEST (PCL, Octree_Pointcloud_Voxel_Centroid_Test)
     EXPECT_NEAR(voxelCentroids[i].z, static_cast<float> (i)+0.4, 1e-4);
   }
 
+  // ADDING AN ADDITIONAL POINT CLOUD TO OctreePointCloudVoxelCentroid
+
+  // generate new point data
+  for (i = 0; i < 10; i++)
+  {
+    // these three points should always be assigned to the same voxel in the octree
+    cloudIn->points[i * 3 + 0] = PointXYZ (static_cast<float> (i) + 0.1f, static_cast<float> (i) + 0.1f, static_cast<float> (i) + 0.1f);
+    cloudIn->points[i * 3 + 1] = PointXYZ (static_cast<float> (i) + 0.4f, static_cast<float> (i) + 0.4f, static_cast<float> (i) + 0.4f);
+    cloudIn->points[i * 3 + 2] = PointXYZ (static_cast<float> (i) + 0.7f, static_cast<float> (i) + 0.7f, static_cast<float> (i) + 0.7f);
+  }
+
+  // add points from new cloud to octree
+  octree.setInputCloud (cloudIn);
+  octree.addPointsFromInputCloud ();
+
+  voxelCentroids.clear();
+  octree.getVoxelCentroids (voxelCentroids);
+
+  // check centroid calculation
+  for (i = 0; i < 10; i++)
+  {
+    EXPECT_NEAR(voxelCentroids[i].x, static_cast<float> (i)+0.4, 1e-4);
+    EXPECT_NEAR(voxelCentroids[i].y, static_cast<float> (i)+0.4, 1e-4);
+    EXPECT_NEAR(voxelCentroids[i].z, static_cast<float> (i)+0.4, 1e-4);
+  }
+
 }
 
 // helper class for priority queue
