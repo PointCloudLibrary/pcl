@@ -16,6 +16,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/default_convergence_criteria.h
         include/pcl/${SUBSYS_NAME}/correspondence_estimation.h
         include/pcl/${SUBSYS_NAME}/correspondence_estimation_normal_shooting.h
+        include/pcl/${SUBSYS_NAME}/correspondence_estimation_backprojection.h
         include/pcl/${SUBSYS_NAME}/correspondence_rejection.h
         include/pcl/${SUBSYS_NAME}/correspondence_rejection_distance.h
         include/pcl/${SUBSYS_NAME}/correspondence_rejection_median_distance.h
@@ -43,6 +44,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/transforms.h
         include/pcl/${SUBSYS_NAME}/transformation_estimation.h
         include/pcl/${SUBSYS_NAME}/transformation_estimation_svd.h
+        include/pcl/${SUBSYS_NAME}/transformation_estimation_svd_scale.h
         include/pcl/${SUBSYS_NAME}/transformation_estimation_lm.h
         include/pcl/${SUBSYS_NAME}/transformation_estimation_point_to_plane.h
         include/pcl/${SUBSYS_NAME}/transformation_estimation_point_to_plane_lls.h
@@ -60,6 +62,7 @@ if(build)
     set(impl_incs 
         include/pcl/${SUBSYS_NAME}/impl/correspondence_estimation.hpp
         include/pcl/${SUBSYS_NAME}/impl/correspondence_estimation_normal_shooting.hpp
+        include/pcl/${SUBSYS_NAME}/impl/correspondence_estimation_backprojection.hpp
         include/pcl/${SUBSYS_NAME}/impl/correspondence_rejection_distance.hpp
         include/pcl/${SUBSYS_NAME}/impl/correspondence_rejection_median_distance.hpp
         include/pcl/${SUBSYS_NAME}/impl/correspondence_rejection_surface_normal.hpp
@@ -80,6 +83,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/pyramid_feature_matching.hpp
         include/pcl/${SUBSYS_NAME}/impl/registration.hpp
         include/pcl/${SUBSYS_NAME}/impl/transformation_estimation_svd.hpp
+        include/pcl/${SUBSYS_NAME}/impl/transformation_estimation_svd_scale.hpp
         include/pcl/${SUBSYS_NAME}/impl/transformation_estimation_lm.hpp
         include/pcl/${SUBSYS_NAME}/impl/transformation_estimation_point_to_plane_lls.hpp
         include/pcl/${SUBSYS_NAME}/impl/transformation_validation_euclidean.hpp
@@ -91,6 +95,7 @@ if(build)
         src/default_convergence_criteria.cpp
         src/correspondence_estimation.cpp
         src/correspondence_estimation_normal_shooting.cpp
+        src/correspondence_estimation_backprojection.cpp
         src/correspondence_rejection_distance.cpp
         src/correspondence_rejection_median_distance.cpp
         src/correspondence_rejection_surface_normal.cpp
@@ -112,6 +117,7 @@ if(build)
         src/ndt.cpp
         src/ndt_2d.cpp
         src/transformation_estimation_svd.cpp
+        src/transformation_estimation_svd_scale.cpp
         src/transformation_estimation_lm.cpp
         src/transformation_estimation_point_to_plane_lls.cpp
         src/transformation_validation_euclidean.cpp
