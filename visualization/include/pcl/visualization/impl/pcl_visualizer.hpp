@@ -865,7 +865,7 @@ pcl::visualization::PCLVisualizer::addCorrespondences (
     return (false);
   }
 
-  int n_corr = correspondences.size ();
+  int n_corr = int (correspondences.size ());
   vtkSmartPointer<vtkPolyData> line_data = vtkSmartPointer<vtkPolyData>::New ();
 
   // Prepare colors
@@ -970,7 +970,7 @@ pcl::visualization::PCLVisualizer::addCorrespondences (
     return (false);
   }
 
-  int n_corr = correspondences.size () / nth + 1;
+  int n_corr = int (correspondences.size () / nth + 1);
   vtkSmartPointer<vtkPolyData> line_data = vtkSmartPointer<vtkPolyData>::New ();
 
   // Prepare colors
