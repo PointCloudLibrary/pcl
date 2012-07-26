@@ -117,7 +117,7 @@ namespace pcl
         }
 
         /** \brief Empty reset leaf node implementation as this leaf node does not store any data. */
-        void
+        virtual void
         reset ()
         {
         }
@@ -199,7 +199,7 @@ namespace pcl
         }
 
         /** \brief Reset leaf node memory to zero. */
-        void
+        virtual void
         reset ()
         {
           isEmpty_ = true;
@@ -293,7 +293,7 @@ namespace pcl
         }
 
         /** \brief Reset leaf node. Clear DataT vector.*/
-        void
+        virtual void
         reset ()
         {
           leafDataTVector_.clear ();

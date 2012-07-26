@@ -130,6 +130,7 @@ namespace pcl
 
         // Eigen aligned allocator
         typedef std::vector<PointT, Eigen::aligned_allocator<PointT> > AlignedPointTVector;
+        typedef std::vector<PointXYZ, Eigen::aligned_allocator<PointXYZ> > AlignedPointXYZVector;
 
         /** \brief Provide a pointer to the input data set.
          * \param[in] cloud_arg the const boost shared pointer to a PointCloud message
@@ -138,8 +139,6 @@ namespace pcl
         inline void setInputCloud (const PointCloudConstPtr &cloud_arg,
             const IndicesConstPtr &indices_arg = IndicesConstPtr ())
         {
-          assert(this->leafCount_==0);
-
           input_ = cloud_arg;
           indices_ = indices_arg;
         }

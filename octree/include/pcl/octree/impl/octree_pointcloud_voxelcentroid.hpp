@@ -43,123 +43,97 @@
 #include <pcl/octree/octree_pointcloud_voxelcentroid.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template<typename PointT, typename LeafT, typename BranchT> unsigned int
-pcl::octree::OctreePointCloudVoxelCentroid<PointT, LeafT, BranchT>::getVoxelCentroids (
-    typename pcl::octree::OctreePointCloud<PointT, LeafT, BranchT>::AlignedPointTVector &voxel_centroid_list_arg)
+template<typename PointT, typename LeafT, typename BranchT> bool
+pcl::octree::OctreePointCloudVoxelCentroid<PointT, LeafT, BranchT>::getVoxelCentroidAtPoint (
+    const PointT& point_arg, PointXYZ& voxel_centroid_arg) const
 {
-  size_t i;
-  unsigned int point_counter;
-  OctreeKey key_c, key_p;
-  PointT mean_point;
-  PointT idx_point;
 
-  std::vector<int> indices_vector;
+  OctreeKey key;
+  LeafNode* leaf = 0;
 
-  voxel_centroid_list_arg.clear ();
-  voxel_centroid_list_arg.reserve (this->leafCount_);
+  // generate key
+  genOctreeKeyforPoint (point_arg, key);
 
-  // serialize leafs - this returns a list of point indices. Points indices from the same voxel are locates next to each other within this vector.
-  this->serializeLeafs (indices_vector);
+  leaf = this->findLeaf (key);
 
-  // initializing
-  key_p.x = key_p.y = key_p.z = std::numeric_limits<unsigned int>::max ();
-  mean_point.x = mean_point.y = mean_point.z = 0.0;
-  point_counter = 0;
-
-  // iterate over all point indices
-  for (i = 0; i < indices_vector.size (); i++)
+  if (leaf)
   {
-    idx_point = this->input_->points[indices_vector[i]];
-
-    // get octree key for point (key specifies octree voxel)
-    this->genOctreeKeyforPoint (idx_point, key_c);
-
-    if (key_c == key_p)
-    {
-      // key addresses same voxel - add point
-      mean_point.x += idx_point.x;
-      mean_point.y += idx_point.y;
-      mean_point.z += idx_point.z;
-
-      point_counter++;
-    }
-    else
-    {
-      // voxel key did change - calculate centroid and push it to result vector
-      if (point_counter > 0)
-      {
-        mean_point.x /= float (point_counter);
-        mean_point.y /= float (point_counter);
-        mean_point.z /= float (point_counter);
-
-        voxel_centroid_list_arg.push_back (mean_point);
-      }
-
-      // reset centroid to current input point
-      mean_point.x = idx_point.x;
-      mean_point.y = idx_point.y;
-      mean_point.z = idx_point.z;
-      point_counter = 1;
-
-      key_p = key_c;
-    }
+    LeafT* container = leaf;
+    container->getCentroid (voxel_centroid_arg);
   }
 
-  // push last centroid to result vector if necessary
-  if (point_counter > 0)
-  {
-    mean_point.x /= float (point_counter);
-    mean_point.y /= float (point_counter);
-    mean_point.z /= float (point_counter);
-
-    voxel_centroid_list_arg.push_back (mean_point);
-  }
-
-  // return size of centroid vector
-  return (static_cast<unsigned int> (voxel_centroid_list_arg.size ()));
+  return (leaf!=0);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template<typename PointT, typename LeafT, typename BranchT> bool
-pcl::octree::OctreePointCloudVoxelCentroid<PointT, LeafT, BranchT>::getVoxelCentroidAtPoint (
-    const PointT& point_arg, PointT& voxel_centroid_arg)
+template<typename PointT, typename LeafT, typename BranchT> size_t
+pcl::octree::OctreePointCloudVoxelCentroid<PointT, LeafT, BranchT>::getVoxelCentroids (
+    typename OctreeT::AlignedPointXYZVector &voxel_centroid_list_arg) const
 {
-  size_t i;
-  unsigned int point_counter;
-  std::vector<int> indices_vector;
-  PointT mean_point;
-  PointT idx_point;
 
-  bool b_result;
+  OctreeKey newKey;
 
-  // get all point indixes from voxel at point point_arg
-  b_result = this->voxelSearch (point_arg, indices_vector);
+  // reset output vector
+  voxel_centroid_list_arg.clear ();
+  voxel_centroid_list_arg.reserve (this->leafCount_);
 
-  if (b_result)
+  getVoxelCentroidsRecursive (this->rootNode_, newKey, voxel_centroid_list_arg );
+
+  // return size of centroid vector
+  return (voxel_centroid_list_arg.size ());
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template<typename PointT, typename LeafT, typename BranchT> void
+pcl::octree::OctreePointCloudVoxelCentroid<PointT, LeafT, BranchT>::getVoxelCentroidsRecursive (
+    const BranchNode* branch_arg, OctreeKey& key_arg,
+    typename OctreeT::AlignedPointXYZVector &voxel_centroid_list_arg) const
+{
+
+  // child iterator
+  unsigned char childIdx;
+
+  // iterate over all children
+  for (childIdx = 0; childIdx < 8; childIdx++)
   {
-    mean_point.x = mean_point.y = mean_point.z = 0.0;
-    point_counter = 0;
 
-    // iterate over all point indices
-    for (i = 0; i < indices_vector.size (); i++)
+    // if child exist
+    if (branch_arg->hasChild(childIdx))
     {
-      idx_point = this->input_->points[indices_vector[i]];
+      // add current branch voxel to key
+      key_arg.pushBranch(childIdx);
 
-      mean_point.x += idx_point.x;
-      mean_point.y += idx_point.y;
-      mean_point.z += idx_point.z;
+      const OctreeNode *childNode = branch_arg->getChildPtr(childIdx);
 
-      point_counter++;
+      switch (childNode->getNodeType ())
+      {
+        case BRANCH_NODE:
+        {
+          // recursively proceed with indexed child branch
+          getVoxelCentroidsRecursive (static_cast<const BranchNode*> (childNode), key_arg, voxel_centroid_list_arg);
+          break;
+        }
+        case LEAF_NODE:
+        {
+          const LeafT* container = static_cast<const LeafNode*> (childNode);
+
+          PointXYZ newCentroid;
+          container->getCentroid(newCentroid);
+
+          voxel_centroid_list_arg.push_back(newCentroid);
+          break;
+        }
+        default:
+          break;
+       }
+
+      // pop current branch voxel from key
+      key_arg.popBranch();
     }
-
-    // calculate centroid
-    voxel_centroid_arg.x = mean_point.x / float (point_counter);
-    voxel_centroid_arg.y = mean_point.y / float (point_counter);
-    voxel_centroid_arg.z = mean_point.z / float (point_counter);
   }
 
-  return (b_result);
 }
+
 
 #define PCL_INSTANTIATE_OctreePointCloudVoxelCentroid(T) template class PCL_EXPORTS pcl::octree::OctreePointCloudVoxelCentroid<T>;
 

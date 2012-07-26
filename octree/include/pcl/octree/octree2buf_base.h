@@ -424,7 +424,7 @@ namespace pcl
          *  \param key_arg: octree key addressing a leaf node.
          *  \param data_arg: DataT object to be added.
          * */
-        inline void addData (const OctreeKey& key_arg, const DataT& data_arg)
+        virtual void addData (const OctreeKey& key_arg, const DataT& data_arg)
         {
           // request a (new) leaf from tree
           LeafT* leaf = createLeaf (key_arg);

@@ -297,9 +297,9 @@ namespace pcl
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename DataT, typename LeafT, typename BranchT> void OctreeBase<
-        DataT, LeafT, BranchT>::addDataToLeafRecursive (
+        DataT, LeafT, BranchT>::createLeafRecursive (
         const OctreeKey& key_arg, unsigned int depthMask_arg,
-        const DataT& data_arg, BranchNode* branch_arg)
+        const DataT& data_arg, BranchNode* branch_arg, LeafNode*& returnLeaf_arg)
     {
       // index to branch child
       unsigned char childIdx;
@@ -322,7 +322,7 @@ namespace pcl
           branchCount_++;
 
           // recursively proceed with indexed child branch
-          addDataToLeafRecursive (key_arg, depthMask_arg / 2, data_arg, childBranch);
+          createLeafRecursive (key_arg, depthMask_arg / 2, data_arg, childBranch, returnLeaf_arg);
 
         } else {
           LeafNode* childLeaf;
@@ -331,9 +331,7 @@ namespace pcl
           createLeafChild (*branch_arg, childIdx, childLeaf);
           leafCount_++;
 
-          // add data to leaf
-          childLeaf->setData (data_arg);
-          objectCount_++;
+          returnLeaf_arg = childLeaf;
         }
       } else {
 
@@ -341,7 +339,7 @@ namespace pcl
         switch (childNode->getNodeType()) {
           case BRANCH_NODE:
             // recursively proceed with indexed child branch
-            addDataToLeafRecursive (key_arg, depthMask_arg / 2, data_arg, static_cast<BranchNode*> (childNode));
+            createLeafRecursive (key_arg, depthMask_arg / 2, data_arg, static_cast<BranchNode*> (childNode), returnLeaf_arg);
             break;
 
           case LEAF_NODE:
@@ -349,16 +347,12 @@ namespace pcl
 
             if ( (!maxObjsPerLeaf_) || (!depthMask_arg) )
             {
-              // add data to leaf
-              childLeaf->setData (data_arg);
-              objectCount_++;
+              returnLeaf_arg = childLeaf;
             } else {
               size_t leafObjCount = childLeaf->getSize();
 
               if (leafObjCount<maxObjsPerLeaf_) {
-                // add data to leaf
-                childLeaf->setData (data_arg);
-                objectCount_++;
+                returnLeaf_arg = childLeaf;
               } else {
                 // leaf node needs to be expanded
 
@@ -382,18 +376,25 @@ namespace pcl
 
                 // add data to new branch
                 OctreeKey dataKey;
+
                 while (lData!=lDataEnd) {
                   // get data object
-                  const DataT& data = *lData++;
+                  const DataT& data = *lData;
+                  ++lData;
 
                   // generate new key for data object
                   if (this->genOctreeKeyForDataT(data, dataKey)) {
-                    addDataToLeafRecursive (dataKey, depthMask_arg / 2, data, childBranch);
+                    LeafNode* newLeaf;
+
+                    createLeafRecursive (dataKey, depthMask_arg / 2, data, childBranch, newLeaf);
+                    // add data to leaf
+                    newLeaf->setData (data);
+                    objectCount_++;
                   }
                 }
 
-                // and add new DataT object
-                addDataToLeafRecursive (key_arg, depthMask_arg / 2, data_arg, childBranch);
+                // and return new leaf node
+                createLeafRecursive (key_arg, depthMask_arg / 2, data_arg, childBranch, returnLeaf_arg);
 
                 // correct object counter
                 objectCount_ -= leafObjCount;
@@ -550,8 +551,6 @@ namespace pcl
         }
       }
     }
-
-
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename DataT, typename LeafT, typename BranchT> void

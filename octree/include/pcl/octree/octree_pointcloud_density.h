@@ -53,7 +53,7 @@ namespace pcl
       * \author Julius Kammerl (julius@kammerl.de)
       */
     template<typename DataT>
-    class OctreePointCloudDensityContainer
+    class OctreePointCloudDensityContainer : public OctreeContainerEmpty<DataT>
     {
       public:
         /** \brief Class initialization. */
@@ -73,15 +73,6 @@ namespace pcl
           return (new OctreePointCloudDensityContainer (*this));
         }
 
-        /** \brief Get size of container (number of DataT objects)
-         * \return number of DataT elements in leaf node container.
-         */
-        size_t
-        getSize () const
-        {
-          return 0;
-        }
-
         /** \brief Read input data. Only an internal counter is increased.
           */
         void
@@ -90,24 +81,8 @@ namespace pcl
           pointCounter_++;
         }
 
-        /** \brief Returns a null pointer as this leaf node does not store any data.
-          * \param[out] data_arg: reference to return pointer of leaf node DataT element (will be set to 0).
-          */
-        void
-        getData (const DataT*& data_arg) const
-        {
-          data_arg = 0;
-        }
-
-        /** \brief Empty getData data vector implementation as this leaf node does not store any data. \
-          */
-        void
-        getData (std::vector<DataT>&) const
-        {
-        }
-
         /** \brief Return point counter.
-          * \return Amaount of points
+          * \return Amount of points
           */
         unsigned int
         getPointCounter ()
@@ -115,8 +90,8 @@ namespace pcl
           return (pointCounter_);
         }
 
-        /** \brief Empty reset leaf node implementation as this leaf node does not store any data. */
-        void
+        /** \brief Reset leaf node. */
+        virtual void
         reset ()
         {
           pointCounter_ = 0;
