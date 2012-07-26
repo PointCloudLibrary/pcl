@@ -55,6 +55,7 @@ if(build)
         include/pcl/channel_properties.h
         include/pcl/for_each_type.h
         include/pcl/pcl_tests.h
+        include/pcl/cloud_iterator.h
         )
         
     if(NOT USE_ROS)
