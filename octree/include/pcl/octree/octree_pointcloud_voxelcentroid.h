@@ -54,7 +54,7 @@ namespace pcl
      * \author Julius Kammerl (julius@kammerl.de)
      */
     template<typename DataT>
-    class OctreePointCloudVoxelCentroidContainer : public OctreeContainerEmpty<DataT>
+    class OctreePointCloudVoxelCentroidContainer : public OctreeContainerBase<DataT>
     {
       public:
         /** \brief Class initialization. */

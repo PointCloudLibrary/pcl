@@ -325,13 +325,9 @@ namespace pcl
           createLeafRecursive (key_arg, depthMask_arg / 2, data_arg, childBranch, returnLeaf_arg);
 
         } else {
-          LeafNode* childLeaf;
-
           // if leaf node at childIdx does not exist
-          createLeafChild (*branch_arg, childIdx, childLeaf);
+          createLeafChild (*branch_arg, childIdx, returnLeaf_arg);
           leafCount_++;
-
-          returnLeaf_arg = childLeaf;
         }
       } else {
 
@@ -344,61 +340,57 @@ namespace pcl
 
           case LEAF_NODE:
             LeafNode* childLeaf = static_cast<LeafNode*> (childNode);
+            returnLeaf_arg = childLeaf;
 
-            if ( (!maxObjsPerLeaf_) || (!depthMask_arg) )
+            // get amount of objects in leaf container
+            size_t leafObjCount = childLeaf->getSize ();
+
+            if (! ( (!maxObjsPerLeaf_) || (!depthMask_arg) ) && (leafObjCount >= maxObjsPerLeaf_) )
             {
-              returnLeaf_arg = childLeaf;
-            } else {
-              size_t leafObjCount = childLeaf->getSize();
+              // leaf node needs to be expanded
 
-              if (leafObjCount<maxObjsPerLeaf_) {
-                returnLeaf_arg = childLeaf;
-              } else {
-                // leaf node needs to be expanded
+              // copy leaf data
+              std::vector<DataT> leafData;
+              leafData.reserve(leafObjCount);
 
-                // copy leaf data
-                std::vector<DataT> leafData;
-                leafData.reserve(leafObjCount);
+              childLeaf->getData (leafData);
 
-                childLeaf->getData (leafData);
+              // delete current leaf node
+              deleteBranchChild(*branch_arg,childIdx);
+              leafCount_ --;
 
-                // delete current leaf node
-                deleteBranchChild(*branch_arg,childIdx);
-                leafCount_ --;
+              // create new branch node
+              BranchNode* childBranch;
+              createBranchChild (*branch_arg, childIdx, childBranch);
+              branchCount_ ++;
 
-                // create new branch node
-                BranchNode* childBranch;
-                createBranchChild (*branch_arg, childIdx, childBranch);
-                branchCount_ ++;
+              typename std::vector<DataT>::const_iterator lData = leafData.begin();
+              typename std::vector<DataT>::const_iterator lDataEnd = leafData.end();
 
-                typename std::vector<DataT>::const_iterator lData = leafData.begin();
-                typename std::vector<DataT>::const_iterator lDataEnd = leafData.end();
+              // add data to new branch
+              OctreeKey dataKey;
 
-                // add data to new branch
-                OctreeKey dataKey;
+              while (lData!=lDataEnd) {
+                // get data object
+                const DataT& data = *lData;
+                ++lData;
 
-                while (lData!=lDataEnd) {
-                  // get data object
-                  const DataT& data = *lData;
-                  ++lData;
+                // generate new key for data object
+                if (this->genOctreeKeyForDataT(data, dataKey)) {
+                  LeafNode* newLeaf;
 
-                  // generate new key for data object
-                  if (this->genOctreeKeyForDataT(data, dataKey)) {
-                    LeafNode* newLeaf;
-
-                    createLeafRecursive (dataKey, depthMask_arg / 2, data, childBranch, newLeaf);
-                    // add data to leaf
-                    newLeaf->setData (data);
-                    objectCount_++;
-                  }
+                  createLeafRecursive (dataKey, depthMask_arg / 2, data, childBranch, newLeaf);
+                  // add data to leaf
+                  newLeaf->setData (data);
+                  objectCount_++;
                 }
-
-                // and return new leaf node
-                createLeafRecursive (key_arg, depthMask_arg / 2, data_arg, childBranch, returnLeaf_arg);
-
-                // correct object counter
-                objectCount_ -= leafObjCount;
               }
+
+              // and return new leaf node
+              createLeafRecursive (key_arg, depthMask_arg / 2, data_arg, childBranch, returnLeaf_arg);
+
+              // correct object counter
+              objectCount_ -= leafObjCount;
             }
             break;
         }

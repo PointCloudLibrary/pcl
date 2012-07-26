@@ -52,7 +52,71 @@ namespace pcl
   namespace octree
   {
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /** \brief @b Octree leaf class that does not store any information.
+       /** \brief @b Octree container class that can serve as a base to construct own leaf node container classes.
+        *  \author Julius Kammerl (julius@kammerl.de)
+        */
+       template<typename DataT>
+         class OctreeContainerBase
+         {
+         public:
+           /** \brief Empty constructor. */
+           OctreeContainerBase ()
+           {
+           }
+
+           /** \brief Empty constructor. */
+           OctreeContainerBase (const OctreeContainerBase&)
+           {
+           }
+
+           /** \brief Empty deconstructor. */
+           virtual
+           ~OctreeContainerBase ()
+           {
+           }
+
+           /** \brief Octree deep copy method */
+           virtual OctreeContainerBase *
+           deepCopy () const
+           {
+             return (new OctreeContainerBase (*this));
+           }
+
+           /** \brief Empty setData data implementation.
+            */
+
+           void
+           setData (const DataT&)
+           {
+           }
+
+           /** \brief Empty getData data vector implementation.
+            */
+           void
+           getData (DataT&) const
+           {
+           }
+
+
+           /** \brief Empty getData data vector implementation
+            */
+           void
+           getData (std::vector<DataT>&) const
+           {
+           }
+
+           /** \brief Get size of container
+            * \return number of elements in leaf node container.
+            */
+           size_t
+           getSize () const
+           {
+             return 0;
+           }
+         };
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /** \brief @b Octree container class that does not store any information.
      * \note Can be used for occupancy trees that are used for checking only the existence of leaf nodes in the tree
      * \author Julius Kammerl (julius@kammerl.de)
      */
@@ -100,7 +164,6 @@ namespace pcl
 
 
         /** \brief Empty getData data vector implementation as this leaf node does not store any data. \
-        * \param[in] dataVector_arg reference to dummy DataT vector that is extended with leaf node DataT elements.
          */
         void
         getData (std::vector<DataT>&) const
@@ -124,7 +187,7 @@ namespace pcl
       };
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /** \brief @b Octree leaf class that does store a single DataT element.
+    /** \brief @b Octree container class that does store a single DataT element.
      * \note Enables the octree to store a single DataT element within its leaf nodes.
      * \author Julius Kammerl (julius@kammerl.de)
      */
@@ -213,7 +276,7 @@ namespace pcl
       };
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /** \brief @b Octree leaf class that does store a vector of DataT elements.
+    /** \brief @b Octree container class that does store a vector of DataT elements.
      * \note Enables the octree to store multiple DataT elements within its leaf nodes.
      * \author Julius Kammerl (julius@kammerl.de)
      */

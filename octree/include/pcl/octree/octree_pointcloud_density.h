@@ -53,7 +53,7 @@ namespace pcl
       * \author Julius Kammerl (julius@kammerl.de)
       */
     template<typename DataT>
-    class OctreePointCloudDensityContainer : public OctreeContainerEmpty<DataT>
+    class OctreePointCloudDensityContainer : public OctreeContainerBase<DataT>
     {
       public:
         /** \brief Class initialization. */
