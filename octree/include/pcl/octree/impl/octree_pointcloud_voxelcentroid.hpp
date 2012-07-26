@@ -68,7 +68,7 @@ pcl::octree::OctreePointCloudVoxelCentroid<PointT, LeafT, BranchT>::getVoxelCent
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT, typename LeafT, typename BranchT> size_t
 pcl::octree::OctreePointCloudVoxelCentroid<PointT, LeafT, BranchT>::getVoxelCentroids (
-    typename OctreeT::AlignedPointXYZVector &voxel_centroid_list_arg) const
+    typename OctreePointCloud<PointT, LeafT, BranchT>::AlignedPointXYZVector &voxel_centroid_list_arg) const
 {
 
   OctreeKey newKey;
@@ -87,7 +87,7 @@ pcl::octree::OctreePointCloudVoxelCentroid<PointT, LeafT, BranchT>::getVoxelCent
 template<typename PointT, typename LeafT, typename BranchT> void
 pcl::octree::OctreePointCloudVoxelCentroid<PointT, LeafT, BranchT>::getVoxelCentroidsRecursive (
     const BranchNode* branch_arg, OctreeKey& key_arg,
-    typename OctreeT::AlignedPointXYZVector &voxel_centroid_list_arg) const
+    typename OctreePointCloud<PointT, LeafT, BranchT>::AlignedPointXYZVector &voxel_centroid_list_arg) const
 {
 
   // child iterator

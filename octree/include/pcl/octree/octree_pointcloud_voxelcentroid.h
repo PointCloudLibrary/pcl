@@ -193,7 +193,7 @@ namespace pcl
           * \return number of occupied voxels
           */
         size_t
-        getVoxelCentroids (typename OctreeT::AlignedPointXYZVector &voxel_centroid_list_arg) const;
+        getVoxelCentroids (typename OctreePointCloud<PointT, LeafT, BranchT>::AlignedPointXYZVector &voxel_centroid_list_arg) const;
 
         /** \brief Recursively explore the octree and output a PointT vector of centroids for all occupied voxels.
          ** \param[in] binaryTreeOut_arg: binary output vector
@@ -202,7 +202,7 @@ namespace pcl
           * \return number of occupied voxels
           */
         void
-        getVoxelCentroidsRecursive (const BranchNode* branch_arg, OctreeKey& key_arg, typename OctreeT::AlignedPointXYZVector &voxel_centroid_list_arg) const;
+        getVoxelCentroidsRecursive (const BranchNode* branch_arg, OctreeKey& key_arg, typename OctreePointCloud<PointT, LeafT, BranchT>::AlignedPointXYZVector &voxel_centroid_list_arg) const;
 
     };
   }
