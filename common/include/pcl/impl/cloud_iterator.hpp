@@ -212,12 +212,12 @@ namespace pcl
 
       unsigned getCurrentPointIndex () const
       {
-        return (iterator_ - cloud_.begin ());
+        return (unsigned (iterator_ - cloud_.begin ()));
       }
 
       unsigned getCurrentIndex () const
       {
-        return (iterator_ - cloud_.begin ());
+        return (unsigned (iterator_ - cloud_.begin ()));
       }
 
       void reset ()
