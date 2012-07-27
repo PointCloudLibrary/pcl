@@ -1,0 +1,226 @@
+/*
+ * Software License Agreement (BSD License)
+ *
+ *  Copyright (c) 2010, Willow Garage, Inc.
+ *  All rights reserved.
+ *
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions
+ *  are met:
+ *
+ *   * Redistributions of source code must retain the above copyright
+ *     notice, this list of conditions and the following disclaimer.
+ *   * Redistributions in binary form must reproduce the above
+ *     copyright notice, this list of conditions and the following
+ *     disclaimer in the documentation and/or other materials provided
+ *     with the distribution.
+ *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *     contributors may be used to endorse or promote products derived
+ *     from this software without specific prior written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ *  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ *  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ *  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ *  POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
+
+#ifndef PCL_ISS_3D_H_
+#define PCL_ISS_3D_H_
+
+#include <pcl/keypoints/keypoint.h>
+
+namespace pcl
+{
+  /** \brief ISSKeypoint3D detects the Intrinsic Shape Signatures keypoints for a given
+    * point cloud. This class is based on a particular implementation made by Federico
+    * Tombari and Samuele Salti and it has been explicitly adapted to PCL.
+    *
+    * For more information about the original ISS detector, see:
+    *
+    *	Yu Zhong, “Intrinsic shape signatures: A shape descriptor for 3D object recognition,”
+    *	Computer Vision Workshops (ICCV Workshops), 2009 IEEE 12th International Conference on ,
+    *	vol., no., pp.689-696, Sept. 27 2009-Oct. 4 2009
+    *
+    * \author Gioia Ballin
+    * \ingroup keypoints
+    */
+
+  template <typename PointInT, typename PointOutT, typename NormalT = pcl::Normal>
+  class ISSKeypoint3D : public Keypoint<PointInT, PointOutT>
+  {
+    public:
+      typedef typename Keypoint<PointInT, PointOutT>::PointCloudIn PointCloudIn;
+      typedef typename Keypoint<PointInT, PointOutT>::PointCloudOut PointCloudOut;
+
+      typedef typename pcl::PointCloud<NormalT> PointCloudN;
+      typedef typename PointCloudN::Ptr PointCloudNPtr;
+
+      typedef typename pcl::octree::OctreePointCloudSearch<PointInT> OctreeSearchIn;
+      typedef typename OctreeSearchIn::Ptr OctreeSearchInPtr;
+
+      using Keypoint<PointInT, PointOutT>::name_;
+      using Keypoint<PointInT, PointOutT>::input_;
+      using Keypoint<PointInT, PointOutT>::surface_;
+      using Keypoint<PointInT, PointOutT>::tree_;
+      using Keypoint<PointInT, PointOutT>::search_radius_;
+      using Keypoint<PointInT, PointOutT>::search_parameter_;
+
+      /** \brief Constructor.
+        */
+      ISSKeypoint3D (double salient_radius = 0.0001)
+      : salient_radius_ (salient_radius)
+      , non_max_radius_ (0.0)
+      , normal_radius_ (0.0)
+      , border_radius_ (0.0)
+      , gamma_21_ (0.975)
+      , gamma_32_ (0.975)
+      , third_eigen_value_ (0)
+      , edge_points_ (0)
+      , min_neighbors_ (5)
+      , normals_ (new pcl::PointCloud<NormalT>)
+      , threads_ (1)
+      {
+	name_ = "ISSKeypoint3D";
+	search_radius_ = salient_radius_;
+      }
+
+      /** \brief Set the radius of the spherical neighborhood used to compute the scatter matrix.
+        * \param[in] salient_radius the radius of the spherical neighborhood
+        */
+      void
+      setSalientRadius (double salient_radius);
+
+      /** \brief Set the radius for the application of the non maxima supression algorithm.
+        * \param[in] non_max_radius the non maxima suppression radius
+        */
+      void
+      setNonMaxRadius (double non_max_radius);
+
+      /** \brief Set the radius used for the estimation of the surface normals of the input cloud. If the radius is
+	* too large, the temporal performances of the detector may degrade significantly.
+        * \param[in] normals_radius the radius used to estimate normals
+        */
+      void
+      setNormalRadius (double normal_radius);
+
+      /** \brief Set the radius used for the estimation of the boundary points. If the radius is too large,
+	* the temporal performances of the detector may degrade significantly.
+        * \param[in] border_radius the radius used to compute the boundary points
+        */
+      void
+      setBorderRadius (double border_radius);
+
+      /** \brief Set the upper bound on the ratio between the second and the first eigenvalue.
+        * \param[in] gamma_21 the upper bound on the ratio between the second and the first eigenvalue
+        */
+      void
+      setThreshold21 (double gamma_21);
+
+      /** \brief Set the upper bound on the ratio between the third and the second eigenvalue.
+        * \param[in] gamma_32 the upper bound on the ratio between the third and the second eigenvalue
+        */
+      void
+      setThreshold32 (double gamma_32);
+
+      /** \brief Set the minimum number of neighbors that has to be found while applying the non maxima suppression algorithm.
+        * \param[in] min_neighbors the minimum number of neighbors required
+        */
+      void
+      setMinNeighbors (int min_neighbors);
+
+      /** \brief Set the normals if pre-calculated normals are available.
+        * \param[in] normals the given cloud of normals.
+        */
+      void
+      setNormals (const PointCloudNPtr &normals);
+
+      /** \brief Initialize the scheduler and set the number of threads to use.
+        * \param nr_threads the number of hardware threads to use (-1 sets the value back to automatic)
+        */
+      inline void
+      setNumberOfThreads (int nr_threads)
+      {
+        if (nr_threads > 0)
+          threads_ = nr_threads;
+        else
+          threads_ = 1;
+      }
+
+    protected:
+
+      /** \brief Compute the boundary points for the given input cloud.
+        * \param[in] input the input cloud
+        * \param[in] border_radius the radius used to compute the boundary points
+        * \return the vector of boolean values in which the information about the boundary points is stored
+        */
+      bool*
+      getBoundaryPoints (PointCloudIn &input, double border_radius);
+
+      /** \brief Compute the scatter matrix for a point index.
+        * \param[in] index the index of the point
+        * \param[out] cov_m the point scatter matrix
+        */
+      void
+      getScatterMatrix (const int &current_index, Eigen::Matrix3d &cov_m);
+
+      /** \brief Perform the initial checks before computing the keypoints.
+        */
+      bool
+      initCompute ();
+
+      /** \brief
+        * \param[out] output the resultant cloud of keypoints
+	*/
+      void
+      detectKeypoints (PointCloudOut &output);
+
+
+      /** \brief The radius of the spherical neighborhood used to compute the scatter matrix.*/
+      double salient_radius_;
+
+      /** \brief The non maxima suppression radius. */
+      double non_max_radius_;
+
+      /** \brief The radius used to compute the normals of the input cloud. */
+      double normal_radius_;
+
+      /** \brief The radius used to compute the boundary points of the input cloud. */
+      double border_radius_;
+
+      /** \brief The upper bound on the ratio between the second and the first eigenvalue returned by the EVD. */
+      double gamma_21_;
+
+      /** \brief the upper bound on the ratio between the third and the second eigenvalue returned by the EVD. */
+      double gamma_32_;
+
+      /** \brief Store the third eigen value associated to each point in the input cloud. */
+      double *third_eigen_value_;
+
+      /** \brief Store the information about the boundary points of the input cloud. */
+      bool *edge_points_;
+
+      /** \brief Minimum number of neighbors that has to be found while applying the non maxima suppression algorithm. */
+      int min_neighbors_;
+
+      /** \brief The cloud of normals related to the input surface. */
+      PointCloudNPtr normals_;
+
+      /** \brief The number of threads that has to be used by the scheduler. */
+      int threads_;
+
+  };
+
+}
+
+#include <pcl/keypoints/impl/iss_3d.hpp>
+
+#endif /* PCL_ISS_3D_H_ */
