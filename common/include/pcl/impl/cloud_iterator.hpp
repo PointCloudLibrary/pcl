@@ -416,7 +416,7 @@ pcl::CloudIterator<PointT>::isValid () const
 //////////////////////////////////////////////////////////////////////////////
 template <class PointT>
 pcl::ConstCloudIterator<PointT>::ConstCloudIterator (const PointCloud<PointT>& cloud)
-  : iterator_ (new pcl::ConstCloudIterator<PointT>::DefaultConstIterator (cloud))
+  : iterator_ (new typename pcl::ConstCloudIterator<PointT>::DefaultConstIterator (cloud))
 {
 }
 
@@ -424,7 +424,7 @@ pcl::ConstCloudIterator<PointT>::ConstCloudIterator (const PointCloud<PointT>& c
 template <class PointT>
 pcl::ConstCloudIterator<PointT>::ConstCloudIterator (
     const PointCloud<PointT>& cloud, const std::vector<int>& indices)
-  : iterator_ (new pcl::ConstCloudIterator<PointT>::ConstIteratorIdx (cloud, indices))
+  : iterator_ (new typename pcl::ConstCloudIterator<PointT>::ConstIteratorIdx (cloud, indices))
 {
 }
 
@@ -432,7 +432,7 @@ pcl::ConstCloudIterator<PointT>::ConstCloudIterator (
 template <class PointT>
 pcl::ConstCloudIterator<PointT>::ConstCloudIterator (
     const PointCloud<PointT>& cloud, const PointIndices& indices)
-  : iterator_ (new pcl::ConstCloudIterator<PointT>::ConstIteratorIdx (cloud, indices))
+  : iterator_ (new typename pcl::ConstCloudIterator<PointT>::ConstIteratorIdx (cloud, indices))
 {
 }
 
@@ -453,7 +453,7 @@ pcl::ConstCloudIterator<PointT>::ConstCloudIterator (
     for (typename Correspondences::const_iterator indexIt = corrs.begin (); indexIt != corrs.end (); ++indexIt)
       indices.push_back (indexIt->index_match);
   }
-  iterator_ = new pcl::ConstCloudIterator<PointT>::ConstIteratorIdx (cloud, indices);
+  iterator_ = new typename pcl::ConstCloudIterator<PointT>::ConstIteratorIdx (cloud, indices);
 }
 
 //////////////////////////////////////////////////////////////////////////////
