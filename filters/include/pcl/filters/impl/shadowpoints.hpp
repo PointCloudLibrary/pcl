@@ -47,23 +47,19 @@ template<typename PointT, typename NormalT> void
 pcl::ShadowPoints<PointT, NormalT>::applyFilter (PointCloud &output)
 {
   assert (input_normals_ != NULL);
+  output.points.resize (input_->points.size ());
 
+  unsigned int cp = 0;
   for (unsigned int i = 0; i < input_->points.size (); i++)
   {
-    float *normal = input_normals_->points[(*indices_)[i]].normal;
-    PointT pt = input_->points[i];
-    if (!normal)
-    {
-      continue;
-    }
+    const NormalT &normal = input_normals_->points[i];
+    const PointT &pt = input_->points[i];
+    float val = fabsf (normal.normal_x * pt.x + normal.normal_y * pt.y + normal.normal_z * pt.z);
 
-    float val = fabsf (normal[0] * pt.x + normal[1] * pt.y + normal[2] * pt.z);
-
-    if (val > threshold_)
-    {
-      output.points.push_back (pt);
-    }
+    if (val >= threshold_)
+      output.points[cp++] = pt;
   }
+  output.points.resize (cp);
   output.width = 1;
   output.height = static_cast<uint32_t> (output.points.size ());
 }
@@ -78,26 +74,17 @@ pcl::ShadowPoints<PointT, NormalT>::applyFilter (std::vector<int> &indices)
 
   unsigned int k = 0;
   unsigned int z = 0;
-  for (unsigned int i = 0; i < (*indices_).size (); i++)
+  for (std::vector<int>::const_iterator idx = indices_->begin (); idx != indices_->end (); ++idx)
   {
-    float *normal = input_normals_->points[(*indices_)[i]].normal;
-    PointT pt = input_->points[(*indices_)[i]];
+    const NormalT &normal = input_normals_->points[*idx];
+    const PointT &pt = input_->points[*idx];
+    
+    float val = fabsf (normal.normal_x * pt.x + normal.normal_y * pt.y + normal.normal_z * pt.z);
 
-    if (!normal)
-    {
-      continue;
-    }
-
-    float val = fabsf (normal[0] * pt.x + normal[1] * pt.y + normal[2] * pt.z);
-
-    if (val > threshold_)
-    {
-      indices[k++] = (*indices_)[i];
-    }
+    if (val >= threshold_)
+      indices[k++] = *idx;
     else
-    {
-      (*removed_indices_)[z++] = (*indices_)[i];
-    }
+      (*removed_indices_)[z++] = *idx;
   }
   indices.resize (k);
   removed_indices_->resize (z);
