@@ -180,12 +180,8 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::getScatterMatrix (const int& c
     neigh_point[2] = n_point.z;
 
     for (int i = 0; i < 3; i++)
-    {
       for (int j = 0; j < 3; j++)
-      {
-	cov[i*3+j] += (neigh_point[i] - central_point[i]) * (neigh_point[j] - central_point[j]);
-      }
-    }
+        cov[i*3+j] += (neigh_point[i] - central_point[i]) * (neigh_point[j] - central_point[j]);
   }
 
   cov_m << cov[0], cov[1], cov[2],
@@ -301,11 +297,11 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloudOut
 
       for (size_t j = 0 ; j < nn_indices.size (); j++)
       {
-	if (edge_points_[nn_indices[j]])
-	{
-	  borders[index] = true;
-	  break;
-	}
+        if (edge_points_[nn_indices[j]])
+        {
+          borders[index] = true;
+          break;
+        }
       }
     }
   }
@@ -368,9 +364,9 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloudOut
     {
       if (prg_mem[index][2] < 0.0)
       {
-	PCL_ERROR ("[pcl::%s::detectKeypoints] : compute failed! The third eigenvalue (%f) must be strict positive.\n",
-		    name_.c_str (), prg_mem[index][2]);
-	return;
+        PCL_ERROR ("[pcl::%s::detectKeypoints] : compute failed! The third eigenvalue (%f) must be strict positive.\n",
+              name_.c_str (), prg_mem[index][2]);
+        return;
       }
 
       third_eigen_value_[index] = prg_mem[index][2];
@@ -398,19 +394,15 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloudOut
       n_neighbors = nn_indices.size();
 
       if (n_neighbors < min_neighbors_)
-	continue;
+        continue;
 
       is_max = true;
 
       for (size_t j = 0 ; j < n_neighbors; j++)
-      {
-	if (third_eigen_value_[index] < third_eigen_value_[nn_indices[j]])
-	{
-	  is_max = false;
-	}
-      }
+        if (third_eigen_value_[index] < third_eigen_value_[nn_indices[j]])
+          is_max = false;
       if (is_max)
-	feat_max[index] = true;
+        feat_max[index] = true;
     }
   }
 

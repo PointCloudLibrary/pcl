@@ -89,8 +89,8 @@ namespace pcl
       , normals_ (new pcl::PointCloud<NormalT>)
       , threads_ (1)
       {
-	name_ = "ISSKeypoint3D";
-	search_radius_ = salient_radius_;
+        name_ = "ISSKeypoint3D";
+        search_radius_ = salient_radius_;
       }
 
       /** \brief Set the radius of the spherical neighborhood used to compute the scatter matrix.
@@ -179,7 +179,7 @@ namespace pcl
 
       /** \brief
         * \param[out] output the resultant cloud of keypoints
-	*/
+        */
       void
       detectKeypoints (PointCloudOut &output);
 
