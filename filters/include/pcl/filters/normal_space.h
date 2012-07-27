@@ -67,6 +67,7 @@ namespace pcl
         sample_ (UINT_MAX), seed_ (static_cast<unsigned int> (time (NULL))), binsx_ (), binsy_ (), binsz_ (), input_normals_ ()
       {
         filter_name_ = "NormalSpaceSampling";
+        std::srand (seed_);
       }
 
       /** \brief Set number of indices to be sampled.
@@ -92,6 +93,7 @@ namespace pcl
       setSeed (unsigned int seed)
       {
         seed_ = seed;
+        std::srand (seed_);
       }
 
       /** \brief Get the value of the internal \a seed parameter. */
