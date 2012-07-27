@@ -3,6 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -16,7 +17,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -59,13 +60,16 @@ namespace pcl
       *
       * The output is in the form of a score or a confidence measure.
       *
+      * \note The class is templated on the source and target point types as well as on the output scalar of the transformation matrix (i.e., float or double). Default: float.
       * \author Radu B. Rusu
       * \ingroup registration
       */
-    template <typename PointSource, typename PointTarget>
+    template <typename PointSource, typename PointTarget, typename Scalar = float>
     class TransformationValidation
     {
       public:
+        typedef Eigen::Matrix<Scalar, 4, 4> Matrix4;
+        
         typedef pcl::PointCloud<PointSource> PointCloudSource;
         typedef typename PointCloudSource::Ptr PointCloudSourcePtr;
         typedef typename PointCloudSource::ConstPtr PointCloudSourceConstPtr;
@@ -90,13 +94,12 @@ namespace pcl
         validateTransformation (
             const PointCloudSourceConstPtr &cloud_src,
             const PointCloudTargetConstPtr &cloud_tgt,
-            const Eigen::Matrix4f &transformation_matrix) const = 0;
+            const Matrix4 &transformation_matrix) const = 0;
 
-
-        typedef boost::shared_ptr<TransformationValidation<PointSource, PointTarget> > Ptr;
-        typedef boost::shared_ptr<const TransformationValidation<PointSource, PointTarget> > ConstPtr;
+        typedef boost::shared_ptr<TransformationValidation<PointSource, PointTarget, Scalar> > Ptr;
+        typedef boost::shared_ptr<const TransformationValidation<PointSource, PointTarget, Scalar> > ConstPtr;
     };
   }
 }
 
-#endif /* PCL_REGISTRATION_TRANSFORMATION_VALIDATION_H_ */
+#endif    // PCL_REGISTRATION_TRANSFORMATION_VALIDATION_H_

@@ -64,15 +64,18 @@ namespace pcl
       * double score = tve.validateTransformation (source, target, transformation);
       * \endcode
       *
+      * \note The class is templated on the source and target point types as well as on the output scalar of the transformation matrix (i.e., float or double). Default: float.
       * \author Radu B. Rusu
       * \ingroup registration
       */
-    template <typename PointSource, typename PointTarget>
+    template <typename PointSource, typename PointTarget, typename Scalar = float>
     class TransformationValidationEuclidean
     {
       public:
-        typedef boost::shared_ptr<TransformationValidation<PointSource, PointTarget> > Ptr;
-        typedef boost::shared_ptr<const TransformationValidation<PointSource, PointTarget> > ConstPtr;
+        typedef typename TransformationValidation<PointSource, PointTarget, Scalar>::Matrix4 Matrix4;
+        
+        typedef boost::shared_ptr<TransformationValidation<PointSource, PointTarget, Scalar> > Ptr;
+        typedef boost::shared_ptr<const TransformationValidation<PointSource, PointTarget, Scalar> > ConstPtr;
 
         typedef typename pcl::KdTree<PointTarget> KdTree;
         typedef typename pcl::KdTree<PointTarget>::Ptr KdTreePtr;
@@ -117,7 +120,7 @@ namespace pcl
         validateTransformation (
             const PointCloudSourceConstPtr &cloud_src,
             const PointCloudTargetConstPtr &cloud_tgt,
-            const Eigen::Matrix4f &transformation_matrix) const;
+            const Matrix4 &transformation_matrix) const;
 
       protected:
         /** \brief The maximum allowable distance between a point and its correspondence in the target 
@@ -136,4 +139,5 @@ namespace pcl
 
 #include <pcl/registration/impl/transformation_validation_euclidean.hpp>
 
-#endif /* PCL_REGISTRATION_TRANSFORMATION_VALIDATION_EUCLIDEAN_H_ */
+#endif    // PCL_REGISTRATION_TRANSFORMATION_VALIDATION_EUCLIDEAN_H_
+

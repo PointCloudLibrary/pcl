@@ -3,6 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -16,7 +17,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -42,17 +43,26 @@
 #include <pcl/registration/transformation_validation_euclidean.h>
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointSource, typename PointTarget> double
-pcl::registration::TransformationValidationEuclidean<PointSource, PointTarget>::validateTransformation (
+template <typename PointSource, typename PointTarget, typename Scalar> double
+pcl::registration::TransformationValidationEuclidean<PointSource, PointTarget, Scalar>::validateTransformation (
   const PointCloudSourceConstPtr &cloud_src,
   const PointCloudTargetConstPtr &cloud_tgt,
-  const Eigen::Matrix4f &transformation_matrix) const
+  const Matrix4 &transformation_matrix) const
 {
   double fitness_score = 0.0;
 
   // Transform the input dataset using the final transformation
   pcl::PointCloud<PointSource> input_transformed;
-  transformPointCloud (*cloud_src, input_transformed, transformation_matrix);
+  //transformPointCloud (*cloud_src, input_transformed, transformation_matrix);
+  input_transformed.resize (cloud_src->size ());
+  for (size_t i = 0; i < cloud_src->size (); ++i)
+  {
+    const PointSource &src = cloud_src->points[i];
+    PointTarget &tgt = cloud_tgt->points[i];
+    tgt.x = static_cast<float> (transformation_matrix (0, 0) * src.x + transformation_matrix (0, 1) * src.y + transformation_matrix (0, 2) * src.z + transformation_matrix (0, 3));
+    tgt.y = static_cast<float> (transformation_matrix (1, 0) * src.x + transformation_matrix (1, 1) * src.y + transformation_matrix (1, 2) * src.z + transformation_matrix (1, 3));
+    tgt.z = static_cast<float> (transformation_matrix (2, 0) * src.x + transformation_matrix (2, 1) * src.y + transformation_matrix (2, 2) * src.z + transformation_matrix (2, 3));
+   }
 
   // Just in case
   if (!tree_)
@@ -92,4 +102,5 @@ pcl::registration::TransformationValidationEuclidean<PointSource, PointTarget>::
     return (std::numeric_limits<double>::max ());
 }
 
-#endif /* PCL_REGISTRATION_TRANSFORMATION_VALIDATION_EUCLIDEAN_IMPL_H_ */
+#endif    // PCL_REGISTRATION_TRANSFORMATION_VALIDATION_EUCLIDEAN_IMPL_H_
+
