@@ -1,7 +1,10 @@
 /*
  * Software License Agreement (BSD License)
  *
+ *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -14,7 +17,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -44,30 +47,47 @@
 
 namespace pcl
 {
-  template <class PointSourceT, class PointTargetT>
-  class WarpPointRigid3D : public WarpPointRigid<PointSourceT, PointTargetT>
+  namespace registration
   {
-  public:
-    WarpPointRigid3D ()
-      : WarpPointRigid<PointSourceT, PointTargetT> (3) {}
-
-    virtual void setParam (const Eigen::VectorXf & p)
+    /** \brief @b WarpPointRigid3D enables 3D (1D rotation + 2D translation) 
+      * transformations for points.
+      * 
+      * \note The class is templated on the source and target point types as well as on the output scalar of the transformation matrix (i.e., float or double). Default: float.
+      * \author Radu B. Rusu
+      * \ingroup registration
+      */
+    template <typename PointSourceT, typename PointTargetT, typename Scalar = float>
+    class WarpPointRigid3D : public WarpPointRigid<PointSourceT, PointTargetT, Scalar>
     {
-      assert(p.rows () == this->getDimension ());
-      Eigen::Matrix4f &trans = this->transform_matrix_;
+      public:
+        typedef typename WarpPointRigid<PointSourceT, PointTargetT, Scalar>::Matrix4 Matrix4;
+        typedef typename WarpPointRigid<PointSourceT, PointTargetT, Scalar>::VectorX VectorX;
 
-      trans = Eigen::Matrix4f::Zero ();
-      trans (3, 3) = 1;
-      trans (2, 2) = 1; // Rotation around the Z-axis
+        /** \brief Constructor. */
+        WarpPointRigid3D () : WarpPointRigid<PointSourceT, PointTargetT, Scalar> (3) {}
 
-      // Copy the rotation and translation components
-      trans.block <4, 1> (0, 3) = Eigen::Vector4f (p[0], p[1], 0, 1.0);
+        /** \brief Set warp parameters. 
+          * \param[in] p warp parameters (tx ty rz)
+          */
+        virtual void 
+        setParam (const VectorX & p)
+        {
+          assert (p.rows () == this->getDimension ());
+          Matrix4 &trans = this->transform_matrix_;
 
-      // Compute w from the unit quaternion
-      Eigen::Rotation2D<float> r (p[2]);
-      trans.topLeftCorner<2, 2> () = r.toRotationMatrix ();
-    }
-  };
+          trans = Matrix4::Zero ();
+          trans (3, 3) = 1;
+          trans (2, 2) = 1; // Rotation around the Z-axis
+
+          // Copy the rotation and translation components
+          trans.block (0, 3, 4, 1) = Eigen::Matrix<Scalar, 4, 1> (p[0], p[1], 0, 1.0);
+
+          // Compute w from the unit quaternion
+          Eigen::Rotation2D<Scalar> r (p[2]);
+          trans.topLeftCorner (2, 2) = r.toRotationMatrix ();
+        }
+    };
+  }
 }
 
 #endif

@@ -1,7 +1,10 @@
 /*
  * Software License Agreement (BSD License)
  *
+ *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -14,7 +17,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -42,43 +45,73 @@
 
 namespace pcl
 {
-  template <class PointSourceT, class PointTargetT>
-  class WarpPointRigid
+  namespace registration
   {
-  public:
-
-    WarpPointRigid (int nr_dim): nr_dim_ (nr_dim), transform_matrix_ (Eigen::Matrix4f::Zero ())
+    /** \brief @b WarpPointRigid3D enables 6D (3D rotation + 3D translation) 
+      * transformations for points.
+      * 
+      * \note The class is templated on the source and target point types as well as on the output scalar of the transformation matrix (i.e., float or double). Default: float.
+      * \author Radu B. Rusu
+      * \ingroup registration
+      */
+    template <typename PointSourceT, typename PointTargetT, typename Scalar = float>
+    class WarpPointRigid
     {
-      transform_matrix_ (3,3) = 1.0;
+      public:
+        typedef Eigen::Matrix<Scalar, 4, 4> Matrix4;
+        typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1> VectorX;
+
+        /** \brief Constructor
+          * \param[in] nr_dim the number of dimensions
+          */
+        WarpPointRigid (int nr_dim)
+          : nr_dim_ (nr_dim)
+          , transform_matrix_ (Matrix4::Zero ())
+        {
+          transform_matrix_ (3, 3) = 1.0;
+        };
+
+        /** \brief Destructor. */
+        virtual ~WarpPointRigid () {};
+
+        /** \brief Set warp parameters. Pure virtual.
+          * \param[in] p warp parameters 
+          */
+        virtual void 
+        setParam (const VectorX& p) = 0;
+
+        /** \brief Warp a point given a transformation matrix
+          * \param[in] pnt_in the point to warp (transform)
+          * \param[out] pnt_out the warped (transformed) point
+          */
+        void 
+        warpPoint (const PointSourceT& pnt_in, PointSourceT& pnt_out) const
+        {
+          pnt_out.x = static_cast<float> (transform_matrix_ (0, 0) * pnt_in.x + transform_matrix_ (0, 1) * pnt_in.y + transform_matrix_ (0, 2) * pnt_in.z + transform_matrix_ (0, 3));
+          pnt_out.y = static_cast<float> (transform_matrix_ (1, 0) * pnt_in.x + transform_matrix_ (1, 1) * pnt_in.y + transform_matrix_ (1, 2) * pnt_in.z + transform_matrix_ (1, 3));
+          pnt_out.z = static_cast<float> (transform_matrix_ (2, 0) * pnt_in.x + transform_matrix_ (2, 1) * pnt_in.y + transform_matrix_ (2, 2) * pnt_in.z + transform_matrix_ (2, 3));
+          //pnt_out.getVector3fMap () = transform_matrix_.topLeftCorner (3, 3) * 
+          //                            pnt_in.getVector3fMap () + 
+          //                            transform_matrix_.block (0, 3, 3, 1);
+          pnt_out.data[3] = pnt_in.data[3];
+        }
+
+        /** \brief Get the number of dimensions. */
+        inline int 
+        getDimension () const { return (nr_dim_); }
+
+        /** \brief Get the Transform used. */
+        inline const Matrix4& 
+        getTransform () const { return (transform_matrix_); }
+        
+      public:
+        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
+      protected:
+        int nr_dim_;
+        Matrix4 transform_matrix_;
     };
-
-    virtual ~WarpPointRigid () {};
-
-    virtual void 
-    setParam (const Eigen::VectorXf& p) = 0;
-
-    void 
-    warpPoint (const PointSourceT& pnt_in, PointSourceT& pnt_out) const
-    {
-      pnt_out.getVector3fMap () = transform_matrix_.topLeftCorner<3, 3> () * pnt_in.getVector3fMap() + 
-        transform_matrix_.block<3,1> (0, 3);
-      pnt_out.data [3] = pnt_in.data [3];
-    }
-
-    int 
-    getDimension () const {return nr_dim_;}
-
-    const Eigen::Matrix4f& 
-    getTransform () const { return transform_matrix_; }
-    
-  public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-
-  protected:
-    int nr_dim_;
-    Eigen::Matrix4f transform_matrix_;
-  };
-
-}
+  } // namespace registration
+} // namespace pcl
 
 #endif
