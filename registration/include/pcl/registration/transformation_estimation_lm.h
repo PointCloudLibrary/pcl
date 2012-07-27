@@ -3,6 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -16,7 +17,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -50,11 +51,12 @@ namespace pcl
     /** @b TransformationEstimationLM implements Levenberg Marquardt-based
       * estimation of the transformation aligning the given correspondences.
       *
+      * \note The class is templated on the source and target point types as well as on the output scalar of the transformation matrix (i.e., float or double). Default: float.
       * \author Radu B. Rusu
       * \ingroup registration
       */
-    template <typename PointSource, typename PointTarget>
-    class TransformationEstimationLM : public TransformationEstimation<PointSource, PointTarget>
+    template <typename PointSource, typename PointTarget, typename MatScalar = float>
+    class TransformationEstimationLM : public TransformationEstimation<PointSource, PointTarget, MatScalar>
     {
       typedef pcl::PointCloud<PointSource> PointCloudSource;
       typedef typename PointCloudSource::Ptr PointCloudSourcePtr;
@@ -66,6 +68,9 @@ namespace pcl
       typedef PointIndices::ConstPtr PointIndicesConstPtr;
 
       public:
+        typedef Eigen::Matrix<MatScalar, Eigen::Dynamic, 1> VectorX;
+        typedef typename TransformationEstimation<PointSource, PointTarget, MatScalar>::Matrix4 Matrix4;
+        
         /** \brief Constructor. */
         TransformationEstimationLM ();
 
@@ -107,7 +112,7 @@ namespace pcl
         estimateRigidTransformation (
             const pcl::PointCloud<PointSource> &cloud_src,
             const pcl::PointCloud<PointTarget> &cloud_tgt,
-            Eigen::Matrix4f &transformation_matrix) const;
+            Matrix4 &transformation_matrix) const;
 
         /** \brief Estimate a rigid rotation transformation between a source and a target point cloud using LM.
           * \param[in] cloud_src the source point cloud dataset
@@ -120,7 +125,7 @@ namespace pcl
             const pcl::PointCloud<PointSource> &cloud_src,
             const std::vector<int> &indices_src,
             const pcl::PointCloud<PointTarget> &cloud_tgt,
-            Eigen::Matrix4f &transformation_matrix) const;
+            Matrix4 &transformation_matrix) const;
 
         /** \brief Estimate a rigid rotation transformation between a source and a target point cloud using LM.
           * \param[in] cloud_src the source point cloud dataset
@@ -136,7 +141,7 @@ namespace pcl
             const std::vector<int> &indices_src,
             const pcl::PointCloud<PointTarget> &cloud_tgt,
             const std::vector<int> &indices_tgt,
-            Eigen::Matrix4f &transformation_matrix) const;
+            Matrix4 &transformation_matrix) const;
 
         /** \brief Estimate a rigid rotation transformation between a source and a target point cloud using LM.
           * \param[in] cloud_src the source point cloud dataset
@@ -149,7 +154,7 @@ namespace pcl
             const pcl::PointCloud<PointSource> &cloud_src,
             const pcl::PointCloud<PointTarget> &cloud_tgt,
             const pcl::Correspondences &correspondences,
-            Eigen::Matrix4f &transformation_matrix) const;
+            Matrix4 &transformation_matrix) const;
 
         /** \brief Set the function we use to warp points. Defaults to rigid 6D warp.
           * \param[in] warp_fcn a shared pointer to an object that warps points
@@ -193,7 +198,7 @@ namespace pcl
         mutable const std::vector<int> *tmp_idx_tgt_;
 
         /** \brief The parameterized function used to warp the source to the target. */
-        boost::shared_ptr<WarpPointRigid<PointSource, PointTarget> > warp_point_;
+        boost::shared_ptr<pcl::registration::WarpPointRigid<PointSource, PointTarget, MatScalar> > warp_point_;
         
         /** Base functor all the models that need non linear optimization must
           * define their own one and implement operator() (const Eigen::VectorXd& x, Eigen::VectorXd& fvec)
@@ -208,9 +213,9 @@ namespace pcl
             InputsAtCompileTime = NX,
             ValuesAtCompileTime = NY
           };
-          typedef Eigen::Matrix<Scalar,InputsAtCompileTime,1> InputType;
-          typedef Eigen::Matrix<Scalar,ValuesAtCompileTime,1> ValueType;
-          typedef Eigen::Matrix<Scalar,ValuesAtCompileTime,InputsAtCompileTime> JacobianType;
+          typedef Eigen::Matrix<_Scalar,InputsAtCompileTime,1> InputType;
+          typedef Eigen::Matrix<_Scalar,ValuesAtCompileTime,1> ValueType;
+          typedef Eigen::Matrix<_Scalar,ValuesAtCompileTime,InputsAtCompileTime> JacobianType;
 
           /** \brief Empty Construtor. */
           Functor () : m_data_points_ (ValuesAtCompileTime) {}
@@ -239,7 +244,7 @@ namespace pcl
             * \param[in] m_data_points the number of data points to evaluate
             * \param[in,out] estimator pointer to the estimator object
             */
-          OptimizationFunctor (int m_data_points, const TransformationEstimationLM<PointSource, PointTarget> *estimator) : 
+          OptimizationFunctor (int m_data_points, const TransformationEstimationLM *estimator) : 
             Functor<double> (m_data_points), estimator_ (estimator) {}
 
           /** Copy constructor
@@ -272,7 +277,7 @@ namespace pcl
           int 
           operator () (const Eigen::VectorXd &x, Eigen::VectorXd &fvec) const;
 
-          const TransformationEstimationLM<PointSource, PointTarget> *estimator_;
+          const TransformationEstimationLM<PointSource, PointTarget, MatScalar> *estimator_;
         };
 
         struct OptimizationFunctorWithIndices : public Functor<double>
@@ -316,7 +321,7 @@ namespace pcl
           int 
           operator () (const Eigen::VectorXd &x, Eigen::VectorXd &fvec) const;
 
-          const TransformationEstimationLM<PointSource, PointTarget> *estimator_;
+          const TransformationEstimationLM<PointSource, PointTarget, MatScalar> *estimator_;
         };
       public:
         EIGEN_MAKE_ALIGNED_OPERATOR_NEW
