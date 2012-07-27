@@ -1,5 +1,5 @@
 set(SUBSYS_NAME stereo)
-set(SUBSYS_DESC "Point cloud geometry library")
+set(SUBSYS_DESC "Point cloud stereo library")
 set(SUBSYS_DEPS common)
 
 set(build TRUE)

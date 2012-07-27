@@ -34,7 +34,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: stereo.h 4696 2012-02-23 06:12:55Z fede $
+ * $Id: stereo.h 4696 2012-07-27 fede $
  *
  */
 
