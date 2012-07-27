@@ -58,9 +58,9 @@ PCL_ADD_TEST(feature_shot_lrf_estimation test_shot_lrf_estimation
              FILES test_shot_lrf_estimation.cpp
              LINK_WITH pcl_gtest pcl_features pcl_io
              ARGUMENTS ${PCL_SOURCE_DIR}/test/bun0.pcd)
-PCL_ADD_TEST(features_brisk test_brisk
-             FILES test_brisk.cpp
-             LINK_WITH pcl_gtest pcl_features)
+#PCL_ADD_TEST(features_brisk test_brisk
+#             FILES test_brisk.cpp
+#             LINK_WITH pcl_gtest pcl_features)
 PCL_ADD_TEST(features_narf test_narf
              FILES test_narf.cpp
              LINK_WITH pcl_gtest pcl_features ${FLANN_LIBRARIES})
