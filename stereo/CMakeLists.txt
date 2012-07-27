@@ -1,6 +1,6 @@
 set(SUBSYS_NAME stereo)
 set(SUBSYS_DESC "Point cloud stereo library")
-set(SUBSYS_DEPS common)
+set(SUBSYS_DEPS common io)
 
 set(build TRUE)
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
@@ -10,14 +10,14 @@ PCL_ADD_DOC(${SUBSYS_NAME})
 
 if(build)
     set(incs
-        include/pcl/${SUBSYS_NAME}/stereo.h
+        include/pcl/${SUBSYS_NAME}/stereo_grabber.h
         )
 
     set(impl_incs
         )
 
     set(srcs
-        src/stereo.cpp
+        src/stereo_grabber.cpp
         )
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
