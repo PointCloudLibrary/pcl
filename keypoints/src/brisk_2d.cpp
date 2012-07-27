@@ -1525,6 +1525,7 @@ pcl::keypoints::brisk::Layer::halfsample (
     std::vector<unsigned char>& dstimg,
     int dstwidth, int dstheight)
 {
+#ifdef __SSE3__
   const unsigned short leftoverCols = static_cast<unsigned short> ((srcwidth % 16) / 2); // take care with border...
   const bool noleftover = (srcwidth % 16) == 0; // note: leftoverCols can be zero but this still false...
 
@@ -1670,6 +1671,9 @@ pcl::keypoints::brisk::Layer::halfsample (
       p2 = reinterpret_cast<const __m128i*> (&srcimg[0] + (2 * row + 1) * srcwidth);
     }
   }
+#else
+  PCL_ERROR("brisk without SSE3 support not implemented");
+#endif
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -1680,6 +1684,7 @@ pcl::keypoints::brisk::Layer::twothirdsample (
     std::vector<unsigned char>& dstimg,
     int dstwidth, int dstheight)
 {
+#ifdef __SSE3__
   const unsigned short leftoverCols = static_cast<unsigned short> (((srcwidth / 3) * 3) % 15);// take care with border...
 
   // make sure the destination image is of the right size:
@@ -1774,5 +1779,8 @@ pcl::keypoints::brisk::Layer::twothirdsample (
     p_dest1 = &dstimg[0] + row_dest * dstwidth;
     p_dest2 = p_dest1 + dstwidth;
   }
+#else
+  PCL_ERROR("brisk without SSE3 support not implemented");
+#endif
 }
 
