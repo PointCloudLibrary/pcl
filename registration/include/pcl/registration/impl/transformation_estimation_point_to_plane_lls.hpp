@@ -226,7 +226,7 @@ estimateRigidTransformation (ConstCloudIterator<PointSource>& source_it, ConstCl
   ATA.coeffRef (34) = ATA.coeff (29);
 
   // Solve A*x = b
-  Vector6d x = ATA.inverse () * ATb;
+  Vector6d x = static_cast<Vector6d> (ATA.inverse () * ATb);
   
   // Construct the transformation matrix from x
   constructTransformationMatrix (x (0), x (1), x (2), x (3), x (4), x (5), transformation_matrix);
