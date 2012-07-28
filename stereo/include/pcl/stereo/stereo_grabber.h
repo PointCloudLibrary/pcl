@@ -41,6 +41,7 @@
 #include <pcl/io/grabber.h>
 #include <pcl/common/time_trigger.h>
 #include <pcl/ros/conversions.h>
+#include <pcl/stereo/stereo_matching.h>
 
 namespace pcl
 {

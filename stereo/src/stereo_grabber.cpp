@@ -106,7 +106,7 @@ pcl::StereoGrabberBase::StereoGrabberImpl::readAhead ()
   {
     // read next image pair and produce a cloud
     //valid_ = //(reader.read (*pair_iterator_, next_cloud_, origin_, orientation_, pcd_version) == 0);
-
+	
     if (++pair_iterator_ == pair_files_.end () && repeat_)
       pair_iterator_ = pair_files_.begin ();
   }

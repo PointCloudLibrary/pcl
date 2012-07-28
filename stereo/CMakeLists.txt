@@ -11,6 +11,7 @@ PCL_ADD_DOC(${SUBSYS_NAME})
 if(build)
     set(incs
         include/pcl/${SUBSYS_NAME}/stereo_grabber.h
+		include/pcl/${SUBSYS_NAME}/stereo_matching.h
         )
 
     set(impl_incs
@@ -18,6 +19,7 @@ if(build)
 
     set(srcs
         src/stereo_grabber.cpp
+		src/stereo_matching.cpp
         )
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
