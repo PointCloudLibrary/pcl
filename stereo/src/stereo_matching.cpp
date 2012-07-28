@@ -46,6 +46,7 @@ pcl::StereoMatching::StereoMatching(void)
 
 	width_ = -1; 
 	height_ = -1;
+
 }
 
 pcl::StereoMatching::~StereoMatching(void)
@@ -77,14 +78,6 @@ void pcl::StereoMatching::leftRightCheck(float* map_ref, float* map_trg)
 
 }
 
-pcl::PointCloud<pcl::PointXYZRGBA>* pcl::StereoMatching::getPointCloud(float uC, float vC, float focal, float baseline)
-{
-	//TODO: compute cloud from disparity map
-	// implement correct handling of the point cloud
-	// also include a check that the disparity maps has been computed already (at least once..)
-
-	return NULL;
-}
 
 pcl::GrayStereoMatching::GrayStereoMatching()
 {
@@ -139,6 +132,55 @@ void pcl::GrayStereoMatching::compute(unsigned char* ref_img, unsigned char* trg
 }
 
 
+//const pcl::PointCloud<pcl::PointXYZRGBA>::Ptr pcl::StereoMatching::getPointCloud(float uC, float vC, float focal, float baseline)
+void pcl::GrayStereoMatching::getPointCloud(float u_c, float v_c, float focal, float baseline, pcl::PointCloud<pcl::PointXYZI> &cloud, unsigned char *ref_img) 
+{
+	//TODO: compute cloud from disparity map
+	
+	//disp map has not been computed yet..
+	if ( disp_map_ == NULL)
+	{
+		//Add a pcl warning
+		return;
+	}
+
+	//TODOcheck that ref img, if it exists, has same size as disp map
+
+	//cloud needs to be re-allocated
+	if (cloud.width != width_ || cloud.height != height_)
+	{
+		//cloud.reset(new pcl::PointCloud<pcl::PointXYZRGBA>(width_, height_) );
+		cloud.resize(width_*height_);
+		cloud.width = width_;
+		cloud.height = height_;
+
+	}
+
+	//Loop
+	pcl::PointXYZI temp_point;
+	for ( int j=0; j<height_; j++)
+	{
+		for ( int i=0; i<width_; i++)
+		{
+			if ( disp_map_[ j*width_ + i] > 0 )
+			{
+
+				temp_point.z = ( baseline * focal ) / disp_map_[ j*width_ + i];
+				temp_point.x = ( (i-u_c) * temp_point.z) / focal;
+				temp_point.y = ( (j-v_c) * temp_point.z) / focal;
+
+				if ( ref_img != NULL)
+					temp_point.intensity = ref_img[ j*width_ + i];
+				else
+					temp_point.intensity = 255;
+
+				cloud[ j*width_ + i] = temp_point;
+			}
+		}
+	}
+
+	return;
+}
 
 
 pcl::AdaptiveCostSOStereoMatching::AdaptiveCostSOStereoMatching()

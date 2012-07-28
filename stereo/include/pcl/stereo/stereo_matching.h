@@ -72,7 +72,8 @@ namespace pcl
 		void medianFilter(int radius);
 
 		//should the cloud be handled by the StereoMatching class or should it be left to the user?
-		pcl::PointCloud<pcl::PointXYZRGBA>* getPointCloud(float uC, float vC, float focal, float baseline);
+		//const pcl::PointCloud<pcl::PointXYZRGBA>::Ptr getPointCloud(float uC, float vC, float focal, float baseline);
+		virtual void pcl::StereoMatching::getPointCloud(float u_c, float v_c, float focal, float baseline, pcl::PointCloud<pcl::PointXYZI> &cloud, unsigned char *ref_img = NULL) = 0;
 
 	protected:
 
@@ -90,6 +91,8 @@ namespace pcl
 		bool is_pre_proc_;
 		bool is_lr_check_;
 
+		//pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud_; 
+
 		virtual void compute_impl(unsigned char* ref_img, unsigned char* trg_img) = 0;
 
 		void leftRightCheck(float* map_ref, float* map_trg);
@@ -104,6 +107,8 @@ namespace pcl
 		virtual ~GrayStereoMatching(void);
 
 		virtual void compute(unsigned char* ref_img, unsigned char* trg_img, int width, int height);
+
+		virtual void pcl::StereoMatching::getPointCloud(float u_c, float v_c, float focal, float baseline, pcl::PointCloud<pcl::PointXYZI> &cloud, unsigned char *ref_img = NULL);
 
 	protected:
 
