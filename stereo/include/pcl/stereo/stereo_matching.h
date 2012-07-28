@@ -54,80 +54,97 @@ namespace pcl
 {
 	class PCL_EXPORTS StereoMatching
 	{
-	public:
-		
-		StereoMatching(void);
-		virtual ~StereoMatching(void);
+    public:
+      
+      StereoMatching (void);
+      virtual ~StereoMatching (void);
 
-		void setMaxDisparity(int max_disp){ max_disp_ = max_disp;};
-		void setXOffset(int x_off){ x_off_ = x_off; };
+      void 
+      setMaxDisparity (int max_disp) { max_disp_ = max_disp; }
+      
+      void 
+      setXOffset (int x_off) { x_off_ = x_off; }
 
-		void setPreProcessing(bool is_pre_proc){ is_pre_proc_ = is_pre_proc;};
-		void setLeftRightCheck(bool is_lr_check){ is_lr_check_ = is_lr_check;};
+      void 
+      setPreProcessing (bool is_pre_proc) { is_pre_proc_ = is_pre_proc; }
+      void 
+      setLeftRightCheck (bool is_lr_check) { is_lr_check_ = is_lr_check; }
 
-		virtual void preProcessing(unsigned char *ref, unsigned char *right) = 0;
+      virtual void 
+      preProcessing (unsigned char *ref, unsigned char *right) = 0;
 
-		virtual void compute(unsigned char* ref_img, unsigned char* trg_img, int width, int height) = 0;
+      virtual void 
+      compute (unsigned char* ref_img, unsigned char* trg_img, int width, int height) = 0;
 
-		void medianFilter(int radius);
+      void 
+      medianFilter (int radius);
 
-		//should the cloud be handled by the StereoMatching class or should it be left to the user?
-		//const pcl::PointCloud<pcl::PointXYZRGBA>::Ptr getPointCloud(float uC, float vC, float focal, float baseline);
-		virtual void pcl::StereoMatching::getPointCloud(float u_c, float v_c, float focal, float baseline, pcl::PointCloud<pcl::PointXYZI> &cloud, unsigned char *ref_img = NULL) = 0;
+      //should the cloud be handled by the StereoMatching class or should it be left to the user?
+      //const pcl::PointCloud<pcl::PointXYZRGBA>::Ptr getPointCloud(float uC, float vC, float focal, float baseline);
+      virtual void 
+      getPointCloud (float u_c, float v_c, float focal, float baseline, pcl::PointCloud<pcl::PointXYZI> &cloud, unsigned char *ref_img = NULL) = 0;
 
-	protected:
+    protected:
 
-		float *disp_map_;
-		float *disp_map_trg_;
+      float *disp_map_;
+      float *disp_map_trg_;
 
-		int width_;
-		int height_;
+      int width_;
+      int height_;
 
-		int max_disp_;
-		int x_off_;
+      int max_disp_;
+      int x_off_;
 
-		int ratio_filter_;
+      int ratio_filter_;
 
-		bool is_pre_proc_;
-		bool is_lr_check_;
+      bool is_pre_proc_;
+      bool is_lr_check_;
 
-		//pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud_; 
+      //pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud_; 
 
-		virtual void compute_impl(unsigned char* ref_img, unsigned char* trg_img) = 0;
+      virtual void 
+      compute_impl (unsigned char* ref_img, unsigned char* trg_img) = 0;
 
-		void leftRightCheck(float* map_ref, float* map_trg);
+      void 
+      leftRightCheck (float* map_ref, float* map_trg);
 
 	};
 
 	class PCL_EXPORTS GrayStereoMatching : public StereoMatching
 	{
-	public:
+    public:
 
-		GrayStereoMatching(void);
-		virtual ~GrayStereoMatching(void);
+      GrayStereoMatching(void);
+      virtual ~GrayStereoMatching(void);
 
-		virtual void compute(unsigned char* ref_img, unsigned char* trg_img, int width, int height);
+      virtual void 
+      compute (unsigned char* ref_img, unsigned char* trg_img, int width, int height);
 
-		virtual void pcl::StereoMatching::getPointCloud(float u_c, float v_c, float focal, float baseline, pcl::PointCloud<pcl::PointXYZI> &cloud, unsigned char *ref_img = NULL);
+      virtual void 
+      getPointCloud (float u_c, float v_c, float focal, float baseline, pcl::PointCloud<pcl::PointXYZI> &cloud, unsigned char *ref_img = NULL);
 
-	protected:
+    protected:
 
-		virtual void compute_impl(unsigned char* ref_img, unsigned char* trg_img) = 0;
-		virtual void preProcessing(unsigned char *ref, unsigned char *right);
+      virtual void 
+      compute_impl (unsigned char* ref_img, unsigned char* trg_img) = 0;
+      
+      virtual void 
+      preProcessing (unsigned char *ref, unsigned char *right);
 
 	};
 
 	class PCL_EXPORTS AdaptiveCostSOStereoMatching : public GrayStereoMatching
 	{
-	public:
+    public:
 
-		AdaptiveCostSOStereoMatching(void);
+      AdaptiveCostSOStereoMatching(void);
 
-		virtual ~AdaptiveCostSOStereoMatching(void) {};
+      virtual ~AdaptiveCostSOStereoMatching(void) {};
 
-	protected:
+    protected:
 
-		virtual void compute_impl(unsigned char* ref_img, unsigned char* trg_img);
+      virtual void 
+      compute_impl (unsigned char* ref_img, unsigned char* trg_img);
 	};
 }
 
