@@ -48,73 +48,198 @@ namespace pcl
     template<typename PointT>
     class kernel
     {
-public:
+      public:
 
-    enum KERNEL_ENUM
-    {
-      SOBEL_X,
-      SOBEL_Y,
-      PREWITT_X,
-      PREWITT_Y,
-      ROBERTS_X,
-      ROBERTS_Y,
-      LOG,
-      DERIVATIVE_CENTRAL_X,
-      DERIVATIVE_FORWARD_X,
-      DERIVATIVE_BACKWARD_X,
-      DERIVATIVE_CENTRAL_Y,
-      DERIVATIVE_FORWARD_Y,
-      DERIVATIVE_BACKWARD_Y,
-      GAUSSIAN
-    };
+        /**
+         * enumerates the different types of kernels available.
+         */
+        enum KERNEL_ENUM
+        {
+          SOBEL_X,              //!< SOBEL_X
+          SOBEL_Y,              //!< SOBEL_Y
+          PREWITT_X,            //!< PREWITT_X
+          PREWITT_Y,            //!< PREWITT_Y
+          ROBERTS_X,            //!< ROBERTS_X
+          ROBERTS_Y,            //!< ROBERTS_Y
+          LOG,                  //!< LOG
+          DERIVATIVE_CENTRAL_X, //!< DERIVATIVE_CENTRAL_X
+          DERIVATIVE_FORWARD_X, //!< DERIVATIVE_FORWARD_X
+          DERIVATIVE_BACKWARD_X,//!< DERIVATIVE_BACKWARD_X
+          DERIVATIVE_CENTRAL_Y, //!< DERIVATIVE_CENTRAL_Y
+          DERIVATIVE_FORWARD_Y, //!< DERIVATIVE_FORWARD_Y
+          DERIVATIVE_BACKWARD_Y,//!< DERIVATIVE_BACKWARD_Y
+          GAUSSIAN              //!< GAUSSIAN
+        };
 
-    int kernel_size_;
-    float sigma_;
-    KERNEL_ENUM kernel_type_;
+        int kernel_size_;
+        float sigma_;
+        KERNEL_ENUM kernel_type_;
 
-    kernel () :
-      kernel_size_ (3),
-      sigma_ (1.0),
-      kernel_type_ (GAUSSIAN)
-    {
+        kernel () :
+          kernel_size_ (3),
+          sigma_ (1.0),
+          kernel_type_ (GAUSSIAN)
+        {
 
-    }
+        }
 
-    void fetchKernel (PointCloud<PointT> &kernel);
+        /**
+         *
+         * @param kernel Kernel point cloud passed by reference
+         *
+         * Helper function which returns the kernel selected by the kernel_type_ enum
+         */
+        void fetchKernel (PointCloud<PointT> &kernel);
 
-    void gaussianKernel (PointCloud<PointT> &kernel);
+        /**
+         *
+         * @param kernel Kernel point cloud passed by reference
+         *
+         * Gaussian kernel with size (kernel_size_ x kernel_size_) and variance sigma_
+         */
 
-    void loGKernel (PointCloud<PointT> &kernel);
+        void gaussianKernel (PointCloud<PointT> &kernel);
 
-    void sobelKernelX (PointCloud<PointT> &Kernel);
+        /**
+         *
+         * @param kernel Kernel point cloud passed by reference
+         *
+         * Laplacian of Gaussian kernel with size (kernel_size_ x kernel_size_) and variance sigma_
+         */
 
-    void prewittKernelX (PointCloud<PointT> &Kernel);
+        void loGKernel (PointCloud<PointT> &kernel);
 
-    void robertsKernelX (PointCloud<PointT> &kernel);
+        /**
+         *
+         * @param kernel Kernel point cloud passed by reference
+         *
+         * 3x3 Sobel kernel in the X direction
+         */
 
-    void sobelKernelY (PointCloud<PointT> &Kernel);
+        void sobelKernelX (PointCloud<PointT> &Kernel);
 
-    void prewittKernelY (PointCloud<PointT> &Kernel);
+        /**
+         *
+         * @param kernel Kernel point cloud passed by reference
+         *
+         * 3x3 Prewitt kernel in the X direction
+         */
 
-    void robertsKernelY (PointCloud<PointT> &kernel);
+        void prewittKernelX (PointCloud<PointT> &Kernel);
 
-    void derivativeXCentralKernel (PointCloud<PointT> &kernel);
+        /**
+         *
+         * @param kernel Kernel point cloud passed by reference
+         *
+         * 2x2 Roberts kernel in the X direction
+         */
 
-    void derivativeYCentralKernel (PointCloud<PointT> &kernel);
+        void robertsKernelX (PointCloud<PointT> &kernel);
 
-    void derivativeXForwardKernel (PointCloud<PointT> &kernel);
+        /**
+         *
+         * @param kernel Kernel point cloud passed by reference
+         *
+         * 3x3 Sobel kernel in the Y direction
+         */
 
-    void derivativeYForwardKernel (PointCloud<PointT> &kernel);
+        void sobelKernelY (PointCloud<PointT> &Kernel);
 
-    void derivativeXBackwardKernel (PointCloud<PointT> &kernel);
+        /**
+         *
+         * @param kernel Kernel point cloud passed by reference
+         *
+         * 3x3 Prewitt kernel in the Y direction
+         */
 
-    void derivativeYBackwardKernel (PointCloud<PointT> &kernel);
+        void prewittKernelY (PointCloud<PointT> &Kernel);
 
-    void setKernelType (KERNEL_ENUM kernel_type);
+        /**
+         *
+         * @param kernel Kernel point cloud passed by reference
+         *
+         * 2x2 Roberts kernel in the Y direction
+         */
 
-    void setKernelSize (int kernel_size);
+        void robertsKernelY (PointCloud<PointT> &kernel);
 
-    void setKernelSigma (float kernel_sigma);
+        /**
+         *
+         * @param kernel Kernel point cloud passed by reference
+         *
+         * kernel [-1 0 1]
+         */
+
+        void derivativeXCentralKernel (PointCloud<PointT> &kernel);
+
+        /**
+         *
+         * @param kernel Kernel point cloud passed by reference
+         *
+         * kernel [-1 0 1]'
+         */
+
+        void derivativeYCentralKernel (PointCloud<PointT> &kernel);
+
+        /**
+         *
+         * @param kernel Kernel point cloud passed by reference
+         *
+         * kernel [0 -1 1]
+         */
+
+        void derivativeXForwardKernel (PointCloud<PointT> &kernel);
+
+        /**
+         *
+         * @param kernel Kernel point cloud passed by reference
+         *
+         * kernel [0 -1 1]'
+         */
+
+        void derivativeYForwardKernel (PointCloud<PointT> &kernel);
+
+        /**
+         *
+         * @param kernel Kernel point cloud passed by reference
+         *
+         * kernel [-1 1 0]
+         */
+
+        void derivativeXBackwardKernel (PointCloud<PointT> &kernel);
+
+        /**
+         *
+         * @param kernel Kernel point cloud passed by reference
+         *
+         * kernel [-1 1 0]'
+         */
+
+        void derivativeYBackwardKernel (PointCloud<PointT> &kernel);
+
+        /**
+         *
+         * @param kernel_type enum indicating the kernel type wanted
+         *
+         * select the kernel type.
+         */
+        void setKernelType (KERNEL_ENUM kernel_type);
+
+        /**
+         *
+         * @param kernel_size kernel of size kernel_size x kernel_size is created(LoG and Gaussian only)
+         *
+         * Setter function for kernel_size_
+         */
+        void setKernelSize (int kernel_size);
+
+        /**
+         *
+         * @param kernel_sigma variance of the Gaussian or LoG kernels.
+         *
+         * Setter function for kernel_sigma_
+         */
+        void setKernelSigma (float kernel_sigma);
     };
   }
 }

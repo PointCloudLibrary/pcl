@@ -53,14 +53,36 @@ pcl::pcl_2d::convolution<PointT>::convolve (PointCloud<PointT> &output)
   int input_col = 0;
   /*default boundary option : zero padding*/
   output = *input_;
+  typedef pcl::PointCloud<PointT> CloudT;
 
+  typedef typename pcl::traits::fieldList<typename CloudT::PointType>::type FieldList;
+
+  typename CloudT::PointType test_point = input_->points[0];
+
+  bool has_intensity;
+  bool has_rgb;
+  float output_intensity, output_r, output_g, output_b;
+  float input_intensity, input_r, input_g, input_b;
+  float kernel_intensity, kernel_r, kernel_g, kernel_b;
+  pcl::for_each_type<FieldList> (pcl::CopyIfFieldExists<typename CloudT::PointType, float> (test_point, "intensity", has_intensity, output_intensity));
+  pcl::for_each_type<FieldList> (pcl::CopyIfFieldExists<typename CloudT::PointType, float> (test_point, "r", has_intensity, output_r));
+  pcl::for_each_type<FieldList> (pcl::CopyIfFieldExists<typename CloudT::PointType, float> (test_point, "g", has_intensity, output_g));
+  pcl::for_each_type<FieldList> (pcl::CopyIfFieldExists<typename CloudT::PointType, float> (test_point, "b", has_intensity, output_b));
   if (boundary_options_ == BOUNDARY_OPTION_CLAMP)
   {
     for (int i = 0; i < rows; i++)
     {
       for (int j = 0; j < cols; j++)
       {
-        output (j, i).intensity = 0;
+        //output (j, i).intensity = 0;
+        if(image_channel_ == IMAGE_CHANNEL_INTENSITY){
+          output_intensity = 0;
+        }
+        if(image_channel_ == IMAGE_CHANNEL_RGB){
+          output_r = 0;
+          output_g = 0;
+          output_b = 0;
+        }
         for (int k = 0; k < k_rows; k++)
         {
           for (int l = 0; l < k_cols; l++)
@@ -68,86 +90,174 @@ pcl::pcl_2d::convolution<PointT>::convolve (PointCloud<PointT> &output)
             if ((i + k - k_rows / 2) < 0)
               input_row = 0;
             else
-            if ((i + k - k_rows / 2) >= rows)
-            {
-              input_row = rows - 1;
-            }
-            else
-              input_row = i + k - k_rows / 2;
+              if ((i + k - k_rows / 2) >= rows)
+              {
+                input_row = rows - 1;
+              }
+              else
+                input_row = i + k - k_rows / 2;
             if ((j + l - k_cols / 2) < 0)
               input_col = 0;
             else
-            if ((j + l - k_cols / 2) >= cols)
-              input_col = cols - 1;
-            else
-              input_col = j + l - k_cols / 2;
-            output (j, i).intensity += kernel_ (l, k).intensity * ((*input_)(input_col, input_row).intensity);
+              if ((j + l - k_cols / 2) >= cols)
+                input_col = cols - 1;
+              else
+                input_col = j + l - k_cols / 2;
+            if(image_channel_ == IMAGE_CHANNEL_INTENSITY){
+              pcl::for_each_type<FieldList> (pcl::CopyIfFieldExists<typename CloudT::PointType, float> ((*input_)(input_col, input_row), "intensity", has_intensity, input_intensity));
+              pcl::for_each_type<FieldList> (pcl::CopyIfFieldExists<typename CloudT::PointType, float> (kernel_ (l, k), "intensity", has_intensity, kernel_intensity));
+              output_intensity += kernel_intensity*input_intensity;
+            }
+            if(image_channel_ == IMAGE_CHANNEL_RGB){
+              pcl::for_each_type<FieldList> (pcl::CopyIfFieldExists<typename CloudT::PointType, float> ((*input_)(input_col, input_row), "r", has_intensity, input_r));
+              pcl::for_each_type<FieldList> (pcl::CopyIfFieldExists<typename CloudT::PointType, float> (kernel_ (l, k), "r", has_intensity, kernel_r));
+              output_r += kernel_r*input_r;
+              pcl::for_each_type<FieldList> (pcl::CopyIfFieldExists<typename CloudT::PointType, float> ((*input_)(input_col, input_row), "g", has_intensity, input_g));
+              pcl::for_each_type<FieldList> (pcl::CopyIfFieldExists<typename CloudT::PointType, float> (kernel_ (l, k), "g", has_intensity, kernel_g));
+              output_g += kernel_r*input_g;
+              pcl::for_each_type<FieldList> (pcl::CopyIfFieldExists<typename CloudT::PointType, float> ((*input_)(input_col, input_row), "b", has_intensity, input_b));
+              pcl::for_each_type<FieldList> (pcl::CopyIfFieldExists<typename CloudT::PointType, float> (kernel_ (l, k), "b", has_intensity, kernel_b));
+              output_b += kernel_r*input_b;
+            }
+            //output (j, i).intensity += kernel_ (l, k).intensity * ((*input_)(input_col, input_row).intensity);
           }
+        }
+        if(image_channel_ == IMAGE_CHANNEL_INTENSITY){
+          pcl::for_each_type<FieldList> (pcl::SetIfFieldExists<typename CloudT::PointType, float> (output (j, i), "intensity", output_intensity));
+        }
+        if(image_channel_ == IMAGE_CHANNEL_RGB){
+          pcl::for_each_type<FieldList> (pcl::SetIfFieldExists<typename CloudT::PointType, float> (output (j, i), "r", output_r));
+          pcl::for_each_type<FieldList> (pcl::SetIfFieldExists<typename CloudT::PointType, float> (output (j, i), "g", output_g));
+          pcl::for_each_type<FieldList> (pcl::SetIfFieldExists<typename CloudT::PointType, float> (output (j, i), "b", output_b));
         }
       }
     }
   }
   else
-  if (boundary_options_ == BOUNDARY_OPTION_MIRROR)
-  {
-    for (int i = 0; i < rows; i++)
+    if (boundary_options_ == BOUNDARY_OPTION_MIRROR)
     {
-      for (int j = 0; j < cols; j++)
+      for (int i = 0; i < rows; i++)
       {
-        output (j, i).intensity = 0;
-        for (int k = 0; k < k_rows; k++)
+        for (int j = 0; j < cols; j++)
         {
-          for (int l = 0; l < k_cols; l++)
+          //output (j, i).intensity = 0;
+          if(image_channel_ == IMAGE_CHANNEL_INTENSITY){
+            output_intensity = 0;
+          }
+          if(image_channel_ == IMAGE_CHANNEL_RGB){
+            output_r = 0;
+            output_g = 0;
+            output_b = 0;
+          }
+          for (int k = 0; k < k_rows; k++)
           {
-            if ((i + k - (k_rows / 2)) < 0)
-              input_row = -(i + k - (k_rows / 2)) - 1;
-            else
-            if ((i + k - (k_rows / 2)) >= rows)
+            for (int l = 0; l < k_cols; l++)
             {
-              input_row = 2 * rows - 1 - (i + k - (k_rows / 2));
+              if ((i + k - (k_rows / 2)) < 0)
+                input_row = -(i + k - (k_rows / 2)) - 1;
+              else
+                if ((i + k - (k_rows / 2)) >= rows)
+                {
+                  input_row = 2 * rows - 1 - (i + k - (k_rows / 2));
+                }
+                else
+                  input_row = i + k - (k_rows / 2);
+
+              if ((j + l - (k_cols / 2)) < 0)
+                input_col = -(j + l - (k_cols / 2)) - 1;
+              else
+                if ((j + l - (k_cols / 2)) >= cols)
+                  input_col = 2 * cols - 1 - (j + l - (k_cols / 2));
+                else
+                  input_col = j + l - (k_cols / 2);
+
+              //output (j, i).intensity += kernel_ (l, k).intensity * ((*input_)(input_col, input_row).intensity);
+              if(image_channel_ == IMAGE_CHANNEL_INTENSITY){
+                pcl::for_each_type<FieldList> (pcl::CopyIfFieldExists<typename CloudT::PointType, float> ((*input_)(input_col, input_row), "intensity", has_intensity, input_intensity));
+                pcl::for_each_type<FieldList> (pcl::CopyIfFieldExists<typename CloudT::PointType, float> (kernel_ (l, k), "intensity", has_intensity, kernel_intensity));
+                output_intensity += kernel_intensity*input_intensity;
+              }
+              if(image_channel_ == IMAGE_CHANNEL_RGB){
+                pcl::for_each_type<FieldList> (pcl::CopyIfFieldExists<typename CloudT::PointType, float> ((*input_)(input_col, input_row), "r", has_intensity, input_r));
+                pcl::for_each_type<FieldList> (pcl::CopyIfFieldExists<typename CloudT::PointType, float> (kernel_ (l, k), "r", has_intensity, kernel_r));
+                output_r += kernel_r*input_r;
+                pcl::for_each_type<FieldList> (pcl::CopyIfFieldExists<typename CloudT::PointType, float> ((*input_)(input_col, input_row), "g", has_intensity, input_g));
+                pcl::for_each_type<FieldList> (pcl::CopyIfFieldExists<typename CloudT::PointType, float> (kernel_ (l, k), "g", has_intensity, kernel_g));
+                output_g += kernel_r*input_g;
+                pcl::for_each_type<FieldList> (pcl::CopyIfFieldExists<typename CloudT::PointType, float> ((*input_)(input_col, input_row), "b", has_intensity, input_b));
+                pcl::for_each_type<FieldList> (pcl::CopyIfFieldExists<typename CloudT::PointType, float> (kernel_ (l, k), "b", has_intensity, kernel_b));
+                output_b += kernel_r*input_b;
+              }
             }
-            else
-              input_row = i + k - (k_rows / 2);
-
-            if ((j + l - (k_cols / 2)) < 0)
-              input_col = -(j + l - (k_cols / 2)) - 1;
-            else
-            if ((j + l - (k_cols / 2)) >= cols)
-              input_col = 2 * cols - 1 - (j + l - (k_cols / 2));
-            else
-              input_col = j + l - (k_cols / 2);
-
-            output (j, i).intensity += kernel_ (l, k).intensity * ((*input_)(input_col, input_row).intensity);
+          }
+          if(image_channel_ == IMAGE_CHANNEL_INTENSITY){
+            pcl::for_each_type<FieldList> (pcl::SetIfFieldExists<typename CloudT::PointType, float> (output (j, i), "intensity", output_intensity));
+          }
+          if(image_channel_ == IMAGE_CHANNEL_RGB){
+            pcl::for_each_type<FieldList> (pcl::SetIfFieldExists<typename CloudT::PointType, float> (output (j, i), "r", output_r));
+            pcl::for_each_type<FieldList> (pcl::SetIfFieldExists<typename CloudT::PointType, float> (output (j, i), "g", output_g));
+            pcl::for_each_type<FieldList> (pcl::SetIfFieldExists<typename CloudT::PointType, float> (output (j, i), "b", output_b));
           }
         }
       }
     }
-  }
-  else
-  if (boundary_options_ == BOUNDARY_OPTION_ZERO_PADDING)
-  {
-    for (int i = 0; i < rows; i++)
-    {
-      for (int j = 0; j < cols; j++)
+    else
+      if (boundary_options_ == BOUNDARY_OPTION_ZERO_PADDING)
       {
-        output (j, i).intensity = 0;
-        for (int k = 0; k < k_rows; k++)
+        for (int i = 0; i < rows; i++)
         {
-          for (int l = 0; l < k_cols; l++)
+          for (int j = 0; j < cols; j++)
           {
-            if ((i + k - k_rows / 2) < 0 || (i + k - k_rows / 2) >= rows || (j + l - k_cols / 2) < 0 || (j + l - k_cols / 2) >= cols)
-            {
-              continue;
+            //output (j, i).intensity = 0;
+            if(image_channel_ == IMAGE_CHANNEL_INTENSITY){
+              output_intensity = 0;
             }
-            else
+            if(image_channel_ == IMAGE_CHANNEL_RGB){
+              output_r = 0;
+              output_g = 0;
+              output_b = 0;
+            }
+            for (int k = 0; k < k_rows; k++)
             {
-              output (j, i).intensity += kernel_ (l, k).intensity * ((*input_)(j + l - k_cols / 2, i + k - k_rows / 2).intensity);
+              for (int l = 0; l < k_cols; l++)
+              {
+                if ((i + k - k_rows / 2) < 0 || (i + k - k_rows / 2) >= rows || (j + l - k_cols / 2) < 0 || (j + l - k_cols / 2) >= cols)
+                {
+                  continue;
+                }
+                else
+                {
+                  //output (j, i).intensity += kernel_ (l, k).intensity * ((*input_)(j + l - k_cols / 2, i + k - k_rows / 2).intensity);
+                  if(image_channel_ == IMAGE_CHANNEL_INTENSITY){
+                    pcl::for_each_type<FieldList> (pcl::CopyIfFieldExists<typename CloudT::PointType, float> ((*input_)(input_col, input_row), "intensity", has_intensity, input_intensity));
+                    pcl::for_each_type<FieldList> (pcl::CopyIfFieldExists<typename CloudT::PointType, float> (kernel_ (l, k), "intensity", has_intensity, kernel_intensity));
+                    output_intensity += kernel_intensity*input_intensity;
+                  }
+                  if(image_channel_ == IMAGE_CHANNEL_RGB){
+                    pcl::for_each_type<FieldList> (pcl::CopyIfFieldExists<typename CloudT::PointType, float> ((*input_)(input_col, input_row), "r", has_intensity, input_r));
+                    pcl::for_each_type<FieldList> (pcl::CopyIfFieldExists<typename CloudT::PointType, float> (kernel_ (l, k), "r", has_intensity, kernel_r));
+                    output_r += kernel_r*input_r;
+                    pcl::for_each_type<FieldList> (pcl::CopyIfFieldExists<typename CloudT::PointType, float> ((*input_)(input_col, input_row), "g", has_intensity, input_g));
+                    pcl::for_each_type<FieldList> (pcl::CopyIfFieldExists<typename CloudT::PointType, float> (kernel_ (l, k), "g", has_intensity, kernel_g));
+                    output_g += kernel_r*input_g;
+                    pcl::for_each_type<FieldList> (pcl::CopyIfFieldExists<typename CloudT::PointType, float> ((*input_)(input_col, input_row), "b", has_intensity, input_b));
+                    pcl::for_each_type<FieldList> (pcl::CopyIfFieldExists<typename CloudT::PointType, float> (kernel_ (l, k), "b", has_intensity, kernel_b));
+                    output_b += kernel_r*input_b;
+                  }
+                }
+              }
+            }
+            if(image_channel_ == IMAGE_CHANNEL_INTENSITY){
+              pcl::for_each_type<FieldList> (pcl::SetIfFieldExists<typename CloudT::PointType, float> (output (j, i), "intensity", output_intensity));
+            }
+            if(image_channel_ == IMAGE_CHANNEL_RGB){
+              pcl::for_each_type<FieldList> (pcl::SetIfFieldExists<typename CloudT::PointType, float> (output (j, i), "r", output_r));
+              pcl::for_each_type<FieldList> (pcl::SetIfFieldExists<typename CloudT::PointType, float> (output (j, i), "g", output_g));
+              pcl::for_each_type<FieldList> (pcl::SetIfFieldExists<typename CloudT::PointType, float> (output (j, i), "b", output_b));
             }
           }
         }
       }
-    }
-  }
 }
 
 template<typename PointT>
@@ -169,5 +279,11 @@ void
 pcl::pcl_2d::convolution<PointT>::setKernel (PointCloud<PointT> &kernel)
 {
   kernel_ = kernel;
+}
+
+template<typename PointT>
+void
+pcl::pcl_2d::convolution<PointT>::setImageChannel(IMAGE_CHANNEL image_channel){
+  image_channel_ = image_channel;
 }
 #endif

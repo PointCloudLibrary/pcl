@@ -127,6 +127,7 @@ public:
      * Uses clamp as the default boundary option.
      */
     void convolve (PointCloud<PointT> &output);
+
     /**
      *
      * @param output Output point cloud passed by reference
@@ -134,6 +135,7 @@ public:
      * This is an over-ride function for the pcl::Filter interface
      */
     void applyFilter (PointCloud<PointT> &output);
+
     /**
      *
      * @param kernel convolution kernel passed by reference
@@ -141,11 +143,18 @@ public:
      * Sets the kernel to be used for convolution
      */
     void setKernel (PointCloud<PointT> &kernel);
+
     /**
      *
      * @param boundary_options enum indicating the boundary options to be used for convolution
      */
     void setBoundaryOptions (BOUNDARY_OPTIONS_ENUM boundary_options);
+
+    /**
+     *
+     * @param image_channel image channel to be used for the convolution
+     */
+    void setImageChannel(IMAGE_CHANNEL image_channel);
 
 private:
     BOUNDARY_OPTIONS_ENUM boundary_options_;
