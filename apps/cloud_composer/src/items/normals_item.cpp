@@ -10,10 +10,11 @@ pcl::cloud_composer::NormalsItem::NormalsItem (QString name, pcl::PointCloud<pcl
 {
   
   this->setData (QVariant::fromValue (normals_ptr), NORMALS_CLOUD);
-  
-  properties_->addProperty ("Radius", QVariant (radius));
-  properties_->addProperty ("Scale", QVariant (0.02), Qt::ItemIsEditable | Qt::ItemIsEnabled);
-  properties_->addProperty ("Level", QVariant (100), Qt::ItemIsEditable | Qt::ItemIsEnabled);
+  properties_->addCategory ("Core Properties");
+  properties_->addProperty ("Radius", QVariant (radius), Qt::ItemIsSelectable, "Core Properties");
+  properties_->addCategory ("Display Properties");
+  properties_->addProperty ("Scale", QVariant (0.02), Qt::ItemIsEditable | Qt::ItemIsEnabled, "Display Properties");
+  properties_->addProperty ("Level", QVariant (100), Qt::ItemIsEditable | Qt::ItemIsEnabled, "Display Properties");
 }
 
 pcl::cloud_composer::NormalsItem*

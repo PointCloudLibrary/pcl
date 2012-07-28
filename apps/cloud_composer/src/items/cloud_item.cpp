@@ -33,13 +33,14 @@ pcl::cloud_composer::CloudItem::CloudItem (QString name,
   geometry_handler_.reset (new pcl::visualization::PointCloudGeometryHandlerXYZ<sensor_msgs::PointCloud2> (cloud_ptr));
   this->setData (QVariant::fromValue (geometry_handler_), GEOMETRY);
   
-  
-  QStandardItem* core = new QStandardItem ("Core Properties");
-  properties_->appendRow (core);
-  properties_->addProperty ("Name", QVariant (this->text ()), Qt::NoItemFlags, core);
-  properties_->addProperty ("Height", QVariant (cloud_ptr_->height), Qt::NoItemFlags, core);
-  properties_->addProperty ("Width", QVariant (cloud_ptr_->width), Qt::NoItemFlags,core);
-
+  properties_->addCategory ("Core Properties");
+  properties_->addProperty ("Name", QVariant (this->text ()), Qt::NoItemFlags, "Core Properties");
+  properties_->addProperty ("Height", QVariant (cloud_ptr_->height), Qt::NoItemFlags, "Core Properties");
+  properties_->addProperty ("Width", QVariant (cloud_ptr_->width), Qt::NoItemFlags,"Core Properties");
+  properties_->addCategory ("Display Properties");
+  properties_->addProperty ("Point Size", QVariant (1.0), Qt::ItemIsEditable | Qt::ItemIsEnabled, "Display Properties");
+  properties_->addProperty ("Opacity", QVariant (1.0), Qt::ItemIsEditable | Qt::ItemIsEnabled, "Display Properties");
+ 
 }
 
 pcl::cloud_composer::CloudItem*
@@ -64,7 +65,10 @@ pcl::cloud_composer::CloudItem::~CloudItem ()
 void
 pcl::cloud_composer::CloudItem::paintView (boost::shared_ptr<pcl::visualization::PCLVisualizer> vis) const
 {
-   vis->addPointCloud (cloud_ptr_, geometry_handler_, color_handler_, origin_, orientation_, item_id_.toStdString ());
+  vis->addPointCloud (cloud_ptr_, geometry_handler_, color_handler_, origin_, orientation_, item_id_.toStdString ());
+  vis->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, properties_->getProperty ("Point Size").toDouble (), item_id_.toStdString ());
+  vis->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_OPACITY, properties_->getProperty ("Opacity").toDouble (), item_id_.toStdString ());
+ 
 }
 
 void

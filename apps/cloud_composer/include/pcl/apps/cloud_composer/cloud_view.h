@@ -70,7 +70,7 @@ namespace pcl
       
       /** \brief Slot called when the item selected in cloud browser changes */
       void 
-      selectedItemChanged (const QModelIndex &current, const QModelIndex &previous);
+      selectedItemChanged (const QItemSelection & selected, const QItemSelection & deselected);
       
     protected slots:
       /** \brief Slot called when an item in the model changes

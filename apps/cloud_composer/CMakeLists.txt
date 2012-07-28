@@ -135,6 +135,18 @@ if(build)
     set (EC_HEADERS include/pcl/apps/${SUBSYS_NAME}/tools/euclidean_clustering.h)
     define_composer_tool (euclidean_clustering "${EC_SOURCES}" "${EC_HEADERS}" "${EC_DEPS}")
     
+    #Statistical Outlier Removal Tool
+    set (SOR_DEPS pcl_filters)
+    set (SOR_SOURCES tools/statistical_outlier_removal.cpp)
+    set (SOR_HEADERS include/pcl/apps/${SUBSYS_NAME}/tools/statistical_outlier_removal.h)
+    define_composer_tool (statistical_outlier_removal "${SOR_SOURCES}" "${SOR_HEADERS}" "${SOR_DEPS}")
+    
+    #Vox Grid Downsample Tool
+    set (VOXDS_DEPS pcl_filters)
+    set (VOXDS_SOURCES tools/voxel_grid_downsample.cpp)
+    set (VOXDS_HEADERS include/pcl/apps/${SUBSYS_NAME}/tools/voxel_grid_downsample.h)
+    define_composer_tool (voxel_grid_downsample "${VOXDS_SOURCES}" "${VOXDS_HEADERS}" "${VOXDS_DEPS}")
+    
     
   endif ()  #VTK_FOUND AND QT4_FOUND AND VTK_USE_QVTK
 

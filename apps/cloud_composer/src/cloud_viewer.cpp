@@ -20,8 +20,8 @@ void
 pcl::cloud_composer::CloudViewer::addModel (ProjectModel* new_model)
 {
   CloudView* new_view = new CloudView (new_model);
-  connect (new_model->getSelectionModel (), SIGNAL (currentChanged (QModelIndex,QModelIndex)),
-           new_view, SLOT (selectedItemChanged (QModelIndex,QModelIndex)));
+  connect (new_model->getSelectionModel (), SIGNAL (selectionChanged (QItemSelection,QItemSelection)),
+           new_view, SLOT (selectedItemChanged (QItemSelection,QItemSelection)));
   
   QStandardItem* title = new_model->horizontalHeaderItem (0);
   this->addTab (new_view, title->text ());

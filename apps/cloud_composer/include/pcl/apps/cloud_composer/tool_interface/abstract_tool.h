@@ -107,7 +107,7 @@ namespace pcl
         inline virtual CloudCommand* 
         createCommand (QList <const CloudComposerItem*> input_data) 
         {
-          return new ModifyCloudCommand (input_data);
+          return new ModifyItemCommand (input_data);
         }
         
         inline virtual QString

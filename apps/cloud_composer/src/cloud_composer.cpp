@@ -81,7 +81,7 @@ pcl::cloud_composer::ComposerMainWindow::connectEditActionsToSlots ()
 void
 pcl::cloud_composer::ComposerMainWindow::initializeCloudBrowser ()
 {
-  
+  cloud_browser_->setSelectionMode (QAbstractItemView::ExtendedSelection);
 }
 
 void
@@ -252,19 +252,6 @@ pcl::cloud_composer::ComposerMainWindow::on_action_exit__triggered ()
   qDebug () << "Exiting...";
 }
 
-void
-pcl::cloud_composer::ComposerMainWindow::on_action_delete__triggered ()
-{
-  if (!current_model_)
-  {
-    qCritical () << "Cannot delete - no model active!";
-    return;
-  }
-    
-  DeleteItemCommand* delete_command = new DeleteItemCommand (ConstItemList ());
-  current_model_->doCommand (delete_command);
-}
-
 ///////// EDIT MENU SLOTS ////////////
 void
 pcl::cloud_composer::ComposerMainWindow::on_action_insert_from_file__triggered ()
@@ -292,7 +279,29 @@ pcl::cloud_composer::ComposerMainWindow::on_action_insert_from_openNi_source__tr
   qDebug () << "Inserting cloud from OpenNi Source...";
 }
 
+void
+pcl::cloud_composer::ComposerMainWindow::on_action_delete__triggered ()
+{
+  if (!current_model_)
+  {
+    qCritical () << "Cannot delete - no model active!";
+    return;
+  }
+    
+  DeleteItemCommand* delete_command = new DeleteItemCommand (ConstItemList ());
+  current_model_->doCommand (delete_command);
+}
 
+void
+pcl::cloud_composer::ComposerMainWindow::on_action_clear_selection__triggered () 
+{
+  if (!current_model_)
+  {
+    qCritical () << "Cannot clear selection - no model active!";
+    return;
+  }
+  current_model_->getSelectionModel ()->clearSelection ();
+}
 
 
 

@@ -46,13 +46,21 @@ pcl::cloud_composer::PropertiesModel::~PropertiesModel ()
 }
 
 void
-pcl::cloud_composer::PropertiesModel::addProperty (const QString prop_name, QVariant value,  Qt::ItemFlags flags, QStandardItem* parent)
+pcl::cloud_composer::PropertiesModel::addProperty (const QString prop_name, QVariant value,  Qt::ItemFlags flags, QString category)
 {
-  QStandardItem* parent_item = parent;
-  if (!parent_item)
-    parent_item = invisibleRootItem ();
+  QStandardItem* parent_item = invisibleRootItem ();
+  if (category.size () > 0)
+  {
+    QList<QStandardItem*> items = findItems (category);
+    if (items.size () == 0)
+      qWarning () << "No category named "<<prop_name<<" found in "<<parent_item_->text ()<<" adding to root";
+    else if (items.size () > 1)
+      qCritical () << "Multiple categories with same name found!! This is not good...";
+    else
+      parent_item = items.at (0);
+  }
+
   QList <QStandardItem*> new_row;
-  
   QStandardItem* new_property = new QStandardItem (prop_name);
   new_property->setFlags (Qt::ItemIsSelectable);
   new_row.append (new_property);
@@ -63,13 +71,20 @@ pcl::cloud_composer::PropertiesModel::addProperty (const QString prop_name, QVar
   new_row.append (new_value);
  
   parent_item->appendRow (new_row);
-  
+}
+
+void
+pcl::cloud_composer::PropertiesModel::addCategory (const QString category_name)
+{
+  QStandardItem* new_category = new QStandardItem (category_name);
+  appendRow (new_category);
 }
 
 QVariant 
 pcl::cloud_composer::PropertiesModel::getProperty (const QString prop_name) const
 {
-  QList<QStandardItem*> items = findItems (prop_name);
+  qDebug () << "Searching for property " << prop_name;
+  QList<QStandardItem*> items = findItems (prop_name, Qt::MatchExactly | Qt::MatchRecursive, 0);
   if (items.size () == 0)
   {
     qWarning () << "No property named "<<prop_name<<" found in "<<parent_item_->text ();
@@ -79,10 +94,15 @@ pcl::cloud_composer::PropertiesModel::getProperty (const QString prop_name) cons
   {
     qWarning () << "Multiple properties found with name "<<prop_name<<" in "<<parent_item_->text ();
   }
+  qDebug () << "Found properties size ="<<items.size ();
   
   QStandardItem* property = items.value (0);
+  qDebug () << "Prop name="<<prop_name<<" row="<<property->row ()<<" col="<<property->column();
   int row = property->row ();
-  return item (row,1)->data (Qt::EditRole);
+  QStandardItem* parent_item = property->parent ();
+  if (parent_item == 0)
+    parent_item = invisibleRootItem ();
+  return parent_item->child (row,1)->data (Qt::EditRole);
 }
 
 void

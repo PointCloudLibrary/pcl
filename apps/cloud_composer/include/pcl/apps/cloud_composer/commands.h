@@ -53,6 +53,8 @@ namespace pcl
       const CloudComposerItem* input_item_;
       QList <CloudComposerItem*> output_list_;
     };
+    typedef QPair<QStandardItem*, QPersistentModelIndex> RemovedPair;
+    
     class PCL_EXPORTS CloudCommand : public QUndoCommand
     {
       public: 
@@ -81,10 +83,10 @@ namespace pcl
         ProjectModel* project_model_;
     };
     
-    class PCL_EXPORTS ModifyCloudCommand : public CloudCommand
+    class PCL_EXPORTS ModifyItemCommand : public CloudCommand
     {
       public: 
-        ModifyCloudCommand (ConstItemList input_data, QUndoCommand* parent = 0);
+        ModifyItemCommand (ConstItemList input_data, QUndoCommand* parent = 0);
     
         virtual bool
         runCommand (AbstractTool* tool);
@@ -94,7 +96,8 @@ namespace pcl
       
         virtual void
         redo ();
-      
+      private: 
+        QList < RemovedPair > original_item_parent_pairs_;
       
       
     };
@@ -115,7 +118,7 @@ namespace pcl
 
     };
     
-    typedef QPair<QStandardItem*, QPersistentModelIndex> RemovedPair;
+
     class PCL_EXPORTS SplitCloudCommand : public CloudCommand
     {
       public: 

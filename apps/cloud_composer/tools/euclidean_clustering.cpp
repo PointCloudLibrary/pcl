@@ -90,11 +90,15 @@ pcl::cloud_composer::EuclideanClusteringTool::performAction (ConstItemList input
       output.append (cloud_item);
       ++cluster_count;
     } 
-    //Now make a cloud containing all the remaining points
-    filter.setIndices (extracted_indices);
-    filter.setNegative (true);
-    sensor_msgs::PointCloud2::Ptr remainder_cloud (new sensor_msgs::PointCloud2);
-    filter.filter (*remainder_cloud);
+    //We copy input cloud over for special case that no clusters found, since ExtractIndices doesn't work for 0 length vectors
+    sensor_msgs::PointCloud2::Ptr remainder_cloud (new sensor_msgs::PointCloud2(*input_cloud));
+    if (cluster_indices.size () > 0)
+    {
+      //make a cloud containing all the remaining points
+      filter.setIndices (extracted_indices);
+      filter.setNegative (true);
+      filter.filter (*remainder_cloud);
+    }
     qDebug() << "Cloud has " << remainder_cloud->width << " data points after clusters removed.";
     CloudItem* cloud_item = new CloudItem (input_item->text ()+ " unclustered"
                                              , remainder_cloud

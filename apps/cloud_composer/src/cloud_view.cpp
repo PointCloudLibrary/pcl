@@ -154,26 +154,33 @@ pcl::cloud_composer::CloudView::resizeEvent (QResizeEvent*)
 }
 
 void
-pcl::cloud_composer::CloudView::selectedItemChanged (const QModelIndex &current, const QModelIndex &previous)
+pcl::cloud_composer::CloudView::selectedItemChanged (const QItemSelection & selected, const QItemSelection & deselected)
 {
-  
-  if (previous.isValid ())
+  QModelIndexList current_indices = selected.indexes ();
+  QModelIndexList previous_indices = deselected.indexes ();
+  foreach (QModelIndex previous, previous_indices)
   {
-    QStandardItem* previous_item = model_->itemFromIndex (previous);
-    if (previous_item->type () == CLOUD_ITEM || previous_item->type () == NORMALS_ITEM)
+    if (previous.isValid ())
     {
-      CloudComposerItem* cc_item = dynamic_cast <CloudComposerItem*> (previous_item);
-      vis_->setPointCloudSelected (false, cc_item->getID ().toStdString ());
+      QStandardItem* previous_item = model_->itemFromIndex (previous);
+      if (previous_item->type () == CLOUD_ITEM || previous_item->type () == NORMALS_ITEM)
+      {
+        CloudComposerItem* cc_item = dynamic_cast <CloudComposerItem*> (previous_item);
+        vis_->setPointCloudSelected (false, cc_item->getID ().toStdString ());
+      }
     }
   }
-  if (current.isValid ())
+  foreach (QModelIndex current, current_indices)
   {
-    QStandardItem* current_item = model_->itemFromIndex (current);
-    if (current_item->type () == CLOUD_ITEM || current_item->type () == NORMALS_ITEM)
+    if (current.isValid ())
     {
-      CloudComposerItem* cc_item = dynamic_cast <CloudComposerItem*> (current_item);
-      qDebug () << "Setting point cloud to selected";
-      vis_->setPointCloudSelected (true, cc_item->getID ().toStdString ());
+      QStandardItem* current_item = model_->itemFromIndex (current);
+      if (current_item->type () == CLOUD_ITEM || current_item->type () == NORMALS_ITEM)
+      {
+        CloudComposerItem* cc_item = dynamic_cast <CloudComposerItem*> (current_item);
+        qDebug () << "Setting point cloud to selected";
+        vis_->setPointCloudSelected (true, cc_item->getID ().toStdString ());
+      }
     }
   }
   qvtk_->update ();

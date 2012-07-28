@@ -35,61 +35,64 @@
  *
  */
 
-#ifndef PROPERTIES_MODEL_H_
-#define PROPERTIES_MODEL_H_
+#ifndef STATISTICAL_OUTLIER_REMOVAL_H_
+#define STATISTICAL_OUTLIER_REMOVAL_H_
 
-#include <pcl/apps/cloud_composer/qt.h>
-
+#include <pcl/apps/cloud_composer/tool_interface/abstract_tool.h>
+#include <pcl/apps/cloud_composer/tool_interface/tool_factory.h>
 
 
 namespace pcl
 {
   namespace cloud_composer
   {
-    class CloudComposerItem;
-    class PropertiesModel : public QStandardItemModel
+    class StatisticalOutlierRemovalTool : public ModifyItemTool
     {
-        Q_OBJECT
+      Q_OBJECT
       public:
-        /** \brief Constructor used for tool parameters */
-        PropertiesModel (QObject *parent = 0);
-        /** \brief Constructor used for item parameters */
-        PropertiesModel (CloudComposerItem* parent_item, QObject *parent = 0);
-        PropertiesModel (const PropertiesModel& to_copy);
-        virtual ~PropertiesModel ();
+        StatisticalOutlierRemovalTool (PropertiesModel* parameter_model, QObject* parent);
+        virtual ~StatisticalOutlierRemovalTool ();
         
-        /** \brief Helper function for adding a new property */
-        void
-        addProperty (const QString prop_name, const QVariant value, const Qt::ItemFlags flags = Qt::ItemIsSelectable, const QString category = "");
-        
-        /** \brief Helper function for adding a new property category */
-        void
-        addCategory (const QString category_name);
-        
-        /** \brief Helper function to get a property */
-        QVariant 
-        getProperty (const QString prop_name) const;
-        
-        void 
-        copyProperties (const PropertiesModel* to_copy);
-        
-      public slots:
-        void
-        propertyChanged (QStandardItem* property_item);
+        virtual QList <CloudComposerItem*>
+        performAction (ConstItemList input_data);
       
-      signals:
-        void 
-        propertyChanged (const QStandardItem* property_item, const CloudComposerItem* parent_item_);
+        inline virtual QString
+        getToolName () const { return "Statistical Outlier Removal Tool";}
+    };
+
+    
+    class StatisticalOutlierRemovalToolFactory : public QObject, public ToolFactory
+    {
+      Q_OBJECT
+      Q_INTERFACES (pcl::cloud_composer::ToolFactory)
+      public:
+        ModifyItemTool*
+        createTool (PropertiesModel* parameter_model, QObject* parent = 0) 
+        {
+            return new StatisticalOutlierRemovalTool(parameter_model, parent);
+        }
         
+        PropertiesModel*
+        createToolParameterModel (QObject* parent);
         
-      private:
-        CloudComposerItem* parent_item_;
+        inline virtual QString 
+        getPluginName () const { return "Statistical Outlier Removal";}
         
-     };
+        virtual QString 
+        getToolGroupName () const { return "Filters";}
+        
+        virtual QString
+        getIconName () const { return ":/statistical_outlier_removal.png"; }
+    };
+
+
+
   }
 }
 
-Q_DECLARE_METATYPE (pcl::cloud_composer::PropertiesModel);
-Q_DECLARE_METATYPE (pcl::cloud_composer::PropertiesModel*);
 
-#endif //PROPERTIES_MODEL_H_
+
+
+
+
+#endif //STATISTICAL_OUTLIER_REMOVAL_H_

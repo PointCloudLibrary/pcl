@@ -120,7 +120,8 @@ pcl::cloud_composer::ItemInspector::updateView ()
     if (cloud_item)
     {
       current_item_properties_model_ = cloud_item->getProperties ();
-      restoreTreeState ();
+     // restoreTreeState ();
+      parameter_view_->expandAll ();
       //Display any additional graphical data if this item has any
       QMap <QString, QWidget*> tabs = cloud_item->getInspectorTabs ();
       foreach (QString tab_name, tabs.keys ())

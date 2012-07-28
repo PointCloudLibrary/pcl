@@ -61,6 +61,7 @@
     <addaction name="action_camera_undo_"/>
     <addaction name="action_camera_redo_"/>
     <addaction name="separator"/>
+    <addaction name="action_clear_selection_"/>
     <addaction name="action_select_all_"/>
     <addaction name="action_invert_selection_"/>
     <addaction name="separator"/>
@@ -179,8 +180,11 @@
      </item>
      <item row="2" column="0">
       <widget class="QTreeView" name="tool_parameter_view_">
+       <property name="rootIsDecorated">
+        <bool>false</bool>
+       </property>
        <property name="headerHidden">
-        <bool>true</bool>
+        <bool>false</bool>
        </property>
       </widget>
      </item>
@@ -384,6 +388,17 @@
   <action name="action_invert_selection_">
    <property name="text">
     <string>Invert Selection</string>
+   </property>
+  </action>
+  <action name="action_clear_selection_">
+   <property name="text">
+    <string>Clear Selection (Esc)</string>
+   </property>
+   <property name="toolTip">
+    <string>Clear Selection</string>
+   </property>
+   <property name="shortcut">
+    <string>Esc</string>
    </property>
   </action>
  </widget>
