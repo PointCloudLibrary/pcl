@@ -77,13 +77,13 @@ pcl::OrganizedEdgeDetection<PointT, PointLT>::compute (pcl::PointCloud<PointLT>&
     // Fill lookup table for next points to visit
     const int num_of_ngbr = 8;
     Neighbor directions [num_of_ngbr] = {Neighbor(-1, 0, -1),
-      Neighbor(-1, -1, -labels.width - 1), 
-      Neighbor( 0, -1, -labels.width    ),
-      Neighbor( 1, -1, -labels.width + 1),
-      Neighbor( 1,  0,                 1),
-      Neighbor( 1,  1,  labels.width + 1),
-      Neighbor( 0,  1,  labels.width    ),
-      Neighbor(-1,  1,  labels.width - 1)};
+        Neighbor(-1, -1, -labels.width - 1),
+        Neighbor( 0, -1, -labels.width    ),
+        Neighbor( 1, -1, -labels.width + 1),
+        Neighbor( 1,  0,                 1),
+        Neighbor( 1,  1,  labels.width + 1),
+        Neighbor( 0,  1,  labels.width    ),
+        Neighbor(-1,  1,  labels.width - 1)};
 
     for (int row = 1; row < int(input_->height) - 1; row++)
     {
@@ -222,30 +222,33 @@ pcl::OrganizedEdgeDetection<PointT, PointLT>::compute (pcl::PointCloud<PointLT>&
     ne.setInputCloud (input_);
     ne.compute (*normal);
 
-    ImageType nx, ny;
-    nx.resize (normal->height);
-    ny.resize (normal->height);
+    pcl::PointCloud<PointXYZI> nx, ny;
+    nx.width = normal->width;
+    nx.height = normal->height;
+    nx.resize (normal->height*normal->width);
+
+    ny.width = normal->width;
+    ny.height = normal->height;
+    ny.resize (normal->height*normal->width);
 
     for (int r=0; r<normal->height; r++)
     {
-      nx[r].resize (normal->width);
-      ny[r].resize (normal->width);
       for (int c=0; c<normal->width; c++)
       {
-        nx[r][c] = normal->points[r*normal->width + c].normal_x;
-        ny[r][c] = normal->points[r*normal->width + c].normal_y;
+        nx(c,r).intensity = normal->points[r*normal->width + c].normal_x;
+        ny(c,r).intensity = normal->points[r*normal->width + c].normal_y;
       }
     }
 
-    ImageType img_edge;
-    pcl::pcl_2d::edge edge;
-    edge.canny (img_edge, nx, ny, 0.4f, 1.1f);
+    pcl::PointCloud<PointXYZIEdge> img_edge;
+    edge<PointXYZI, PointXYZIEdge> edge;
+    edge.canny (img_edge, nx, ny);//, 0.4f, 1.1f);
 
     for (int r=0; r<labels.height; r++)
     {
       for (int c=0; c<labels.width; c++)
       {
-        if (img_edge[r][c] == 255.f)
+        if (img_edge(c,r).magnitude == 255.f)
           labels[r*int(labels.width) + c].label |= EDGELABEL_HIGH_CURVATURE;
       }
     }
@@ -258,34 +261,38 @@ pcl::OrganizedEdgeDetection<PointT, PointLT>::compute (pcl::PointCloud<PointLT>&
     TicToc tt;
     tt.tic ();
 #if 1
-    ImageType gray;
-    gray.resize (input_->height);
+    pcl::PointCloud<PointXYZI> gray;
+    gray.width = input_->width;
+    gray.height = input_->height;
+    gray.resize (input_->height*input_->width);
     for (int row = 0; row < int(input_->height); row++)
     {
-      gray[row].resize (input_->width);
       for (int col = 0; col < int(input_->width); col++)
       {
         int r = input_->points[row*int(input_->width) + col].r;
         int g = input_->points[row*int(input_->width) + col].g;
         int b = input_->points[row*int(input_->width) + col].b;
-        gray[row][col] = float ((r+g+b) / 3);
+        gray(col, row).intensity = float ((r+g+b) / 3);
       }
     }
 
-    ImageType img_edge_rgb;
-    pcl::pcl_2d::edge edge;
-    edge.canny (img_edge_rgb, gray, 40, 100);
+    pcl::PointCloud<PointXYZIEdge> img_edge_rgb;
+    edge<PointXYZI, PointXYZIEdge> edge;
+    edge.setInputCloud(gray.makeShared());
+    edge.setHysteresisThresholdLow(40);
+    edge.setHysteresisThresholdHigh(100);
+    edge.detectEdgeCanny(img_edge_rgb);
 
     for (int r=0; r<labels.height; r++)
     {
       for (int c=0; c<labels.width; c++)
       {
-        if (img_edge_rgb[r][c] == 255.f)
+        if (img_edge_rgb(c,r).magnitude == 255.f)
           labels[r*int(labels.width) + c].label |= EDGELABEL_RGB_CANNY;
       }
     }
 #endif
-    PCL_DEBUG ("[done, %g ms]\n", tt.toc ()); 
+PCL_DEBUG ("[done, %g ms]\n", tt.toc ());
   }
 
   // Assign label indices

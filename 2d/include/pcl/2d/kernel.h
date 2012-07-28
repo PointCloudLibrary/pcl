@@ -46,53 +46,77 @@ namespace pcl
   namespace pcl_2d
   {
     template<typename PointT>
-    class Kernel
+    class kernel
     {
-      public:
+public:
 
-        enum KERNEL_ENUM
-        {
-          SOBEL,
-          PREWITT,
-          ROBERTS,
-          LOG,
-          DERIVATIVE_CENTRAL_X,
-          DERIVATIVE_FORWARD_X,
-          DERIVATIVE_BACKWARD_X,
-          DERIVATIVE_CENTRAL_Y,
-          DERIVATIVE_FORWARD_Y,
-          DERIVATIVE_BACKWARD_Y,
-          GAUSSIAN
-        };
+    enum KERNEL_ENUM
+    {
+      SOBEL_X,
+      SOBEL_Y,
+      PREWITT_X,
+      PREWITT_Y,
+      ROBERTS_X,
+      ROBERTS_Y,
+      LOG,
+      DERIVATIVE_CENTRAL_X,
+      DERIVATIVE_FORWARD_X,
+      DERIVATIVE_BACKWARD_X,
+      DERIVATIVE_CENTRAL_Y,
+      DERIVATIVE_FORWARD_Y,
+      DERIVATIVE_BACKWARD_Y,
+      GAUSSIAN
+    };
 
-        int kernel_size_;
-        float sigma_;
-        KERNEL_ENUM kernel_type_;
+    int kernel_size_;
+    float sigma_;
+    KERNEL_ENUM kernel_type_;
 
-        Kernel () :
-          kernel_size_ (3),
-          sigma_ (1.0),
-          kernel_type_ (GAUSSIAN)
-        {
+    kernel () :
+      kernel_size_ (3),
+      sigma_ (1.0),
+      kernel_type_ (GAUSSIAN)
+    {
 
-        }
+    }
 
-        void fetchKernel (PointCloud<PointT> &kernel);
+    void fetchKernel (PointCloud<PointT> &kernel);
 
-        void gaussianKernel (PointCloud<PointT> &kernel);
+    void gaussianKernel (PointCloud<PointT> &kernel);
 
-        void loGKernel (PointCloud<PointT> &kernel);
+    void loGKernel (PointCloud<PointT> &kernel);
 
-        void sobelKernel (PointCloud<PointT> &Kernel);
+    void sobelKernelX (PointCloud<PointT> &Kernel);
 
-        void prewittKernel (PointCloud<PointT> &Kernel);
+    void prewittKernelX (PointCloud<PointT> &Kernel);
 
-        void robertsKernel (PointCloud<PointT> &kernel);
+    void robertsKernelX (PointCloud<PointT> &kernel);
 
-        void derivativeXCentralKernel (PointCloud<PointT> &kernel);
+    void sobelKernelY (PointCloud<PointT> &Kernel);
 
-        void derivativeYCentralKernel (PointCloud<PointT> &kernel);
+    void prewittKernelY (PointCloud<PointT> &Kernel);
+
+    void robertsKernelY (PointCloud<PointT> &kernel);
+
+    void derivativeXCentralKernel (PointCloud<PointT> &kernel);
+
+    void derivativeYCentralKernel (PointCloud<PointT> &kernel);
+
+    void derivativeXForwardKernel (PointCloud<PointT> &kernel);
+
+    void derivativeYForwardKernel (PointCloud<PointT> &kernel);
+
+    void derivativeXBackwardKernel (PointCloud<PointT> &kernel);
+
+    void derivativeYBackwardKernel (PointCloud<PointT> &kernel);
+
+    void setKernelType (KERNEL_ENUM kernel_type);
+
+    void setKernelSize (int kernel_size);
+
+    void setKernelSigma (float kernel_sigma);
     };
   }
 }
+#include <pcl/2d/impl/kernel.hpp>
 #endif /* KERNEL_H_ */

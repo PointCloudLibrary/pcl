@@ -37,118 +37,134 @@
  *
  */
 
-#ifndef PCL_2D_CONVOLUTION_2D_H
-#define PCL_2D_CONVOLUTION_2D_H
+#ifndef PCL_2D_CONVOLUTION_H
+#define PCL_2D_CONVOLUTION_H
 
 #include <pcl/pcl_base.h>
+#include <pcl/filters/filter.h>
+#include <pcl/point_types.h>
 namespace pcl
 {
   namespace pcl_2d
   {
     /**
-     * This typedef is used to represent a single channel 2D image.     *
+     * This typedef is used to represent a point cloud containing edge information
      */
-    typedef std::vector<std::vector< float> > ImageType;
-    class convolution
+    struct PointXYZIEdge
+    {
+      PCL_ADD_POINT4D;                    // preferred way of adding a XYZ+padding
+      float magnitude;
+      float direction;
+      float magnitude_x;
+      float magnitude_y;
+      EIGEN_MAKE_ALIGNED_OPERATOR_NEW     // make sure our new allocators are aligned
+    } EIGEN_ALIGN16;                    // enforce SSE padding for correct memory alignment
+
+    template<typename PointT>
+    class convolution : public Filter<PointT>
     {
 
-      public:
+    using Filter<PointT>::input_;
 
-        /**
-         * Extra pixels are added to the input image so that convolution can be performed over the entire image.
-         *
-         * (kernel_height/2) rows are added before the first row and after the last row
-         * (kernel_width/2) columns are added before the first column and after the last column
-         * border options define what values are set for these extra rows and columns
-         *
-         * Assume that the three rows of right edge of the image looks like this:
-         *    .. 3 2 1
-         *    .. 6 5 4
-         *    .. 9 8 7
-         *
-         * BOUNDARY_OPTION_CLAMP : the extra pixels are set to the pixel value of the boundary pixel
-         *    This option makes it seem as if it were:
-         *    .. 3 2 1| 1 1 1 ..
-         *    .. 6 5 4| 4 4 4 ..
-         *    .. 9 8 7| 7 7 7 ..
-         *
-         * BOUNDARY_OPTION_MIRROR : the input image is mirrored at the boundary.
-         *    This option makes it seem as if it were:
-         *    .. 3 2 1| 1 2 3 ..
-         *    .. 6 5 4| 4 5 6 ..
-         *    .. 9 8 7| 7 8 9 ..
-         *
-         * BOUNDARY_OPTION_ZERO_PADDING : the extra pixels are simply set to 0
-         *    This option makes it seem as if it were:
-         *    .. 3 2 1| 0 0 0 ..
-         *    .. 6 5 4| 0 0 0 ..
-         *    .. 9 8 7| 0 0 0 ..
-         *
-         * Note that the input image is not actually extended in size. Instead, based on these options,
-         * the convolution is performed differently at the border pixels.
-         */
-        typedef enum BOUNDARY_OPTIONS_ENUM{
-          BOUNDARY_OPTION_CLAMP,
-          BOUNDARY_OPTION_MIRROR,
-          BOUNDARY_OPTION_ZERO_PADDING
-        };
-
-        convolution  ()
-        {
-
-        }
-
-        /**
-         * \param output The output image passed by reference
-         * \param kernel The kernel for convolution
-         * \param input The input image passed by reference
-         *
-         * Performs 2D convolution of the input image with the kernel.
-         * Uses zero padding as the default boundary option.
-         */
-        void convolve  (ImageType &output, ImageType &kernel, ImageType &input);
-
-        /**
-         * \param output The output image passed by reference
-         * \param kernel The kernel for convolution
-         * \param input The input image passed by reference
-         * \param boundary_options Boundary options are available as ENUM's
-         *
-         * Performs 2D convolution of the input image with the kernel.
-         */
-        void convolve  (ImageType &output, ImageType &kernel, ImageType &input, BOUNDARY_OPTIONS_ENUM boundary_options);
-
-        /**
-         * \param kernel_size The kernel is of size kernel_size x kernel_size.
-         * \param kernel The output kernel passed by reference.
-         * \param sigma This is the variance of the kernel.
-         *
-         * This function creates a normalized Gaussian kernel.
-         */
-        void gaussianKernel  (const int kernel_size, const float sigma, ImageType &kernel);
-
-        /**
-         * \param output The output image passed by reference
-         * \param input The input image passed by reference
-         * This function applies Gaussian smoothing to the input image.
-         * A normalized Gaussian kernel of size kernel_size x kernel_size and variance sigma is used.         *
-         */
-        void gaussianSmooth  (ImageType &input, ImageType &output, const int kernel_size, const float sigma);
-
-        BOUNDARY_OPTIONS_ENUM boundary_options;
-        ImageType kernel;
-        /**
-         * \param output The output image passed by reference
-         * \param kernel The kernel for convolution
-         * \param input The input image passed by reference
-         *
-         * Performs 2D convolution of the input image with the kernel.
-         * Uses zero padding as the default boundary option.
-         */
-        template<typename PointT>
-        void convolve  (PointCloud<PointT> &output, PointCloud<PointT> &input);
+public:
+    /**
+     * Extra pixels are added to the input image so that convolution can be performed over the entire image.
+     *
+     * (kernel_height/2) rows are added before the first row and after the last row
+     * (kernel_width/2) columns are added before the first column and after the last column
+     * border options define what values are set for these extra rows and columns
+     *
+     * Assume that the three rows of right edge of the image looks like this:
+     *    .. 3 2 1
+     *    .. 6 5 4
+     *    .. 9 8 7
+     *
+     * BOUNDARY_OPTION_CLAMP : the extra pixels are set to the pixel value of the boundary pixel
+     *    This option makes it seem as if it were:
+     *    .. 3 2 1| 1 1 1 ..
+     *    .. 6 5 4| 4 4 4 ..
+     *    .. 9 8 7| 7 7 7 ..
+     *
+     * BOUNDARY_OPTION_MIRROR : the input image is mirrored at the boundary.
+     *    This option makes it seem as if it were:
+     *    .. 3 2 1| 1 2 3 ..
+     *    .. 6 5 4| 4 5 6 ..
+     *    .. 9 8 7| 7 8 9 ..
+     *
+     * BOUNDARY_OPTION_ZERO_PADDING : the extra pixels are simply set to 0
+     *    This option makes it seem as if it were:
+     *    .. 3 2 1| 0 0 0 ..
+     *    .. 6 5 4| 0 0 0 ..
+     *    .. 9 8 7| 0 0 0 ..
+     *
+     * Note that the input image is not actually extended in size. Instead, based on these options,
+     * the convolution is performed differently at the border pixels.
+     */
+    enum BOUNDARY_OPTIONS_ENUM
+    {
+      BOUNDARY_OPTION_CLAMP,
+      BOUNDARY_OPTION_MIRROR,
+      BOUNDARY_OPTION_ZERO_PADDING
     };
+
+    enum IMAGE_CHANNEL
+    {
+      IMAGE_CHANNEL_RGB,
+      IMAGE_CHANNEL_INTENSITY
+    };
+
+
+    convolution ()
+    {
+      image_channel_ = IMAGE_CHANNEL_RGB;
+      boundary_options_ = BOUNDARY_OPTION_CLAMP;
+    }
+
+    /**
+     * @param output Output point cloud passed by reference
+
+     * Performs 2D convolution of the input point cloud with the kernel.
+     * Uses clamp as the default boundary option.
+     */
+    void convolve (PointCloud<PointT> &output);
+    /**
+     *
+     * @param output Output point cloud passed by reference
+     *
+     * This is an over-ride function for the pcl::Filter interface
+     */
+    void applyFilter (PointCloud<PointT> &output);
+    /**
+     *
+     * @param kernel convolution kernel passed by reference
+     *
+     * Sets the kernel to be used for convolution
+     */
+    void setKernel (PointCloud<PointT> &kernel);
+    /**
+     *
+     * @param boundary_options enum indicating the boundary options to be used for convolution
+     */
+    void setBoundaryOptions (BOUNDARY_OPTIONS_ENUM boundary_options);
+
+private:
+    BOUNDARY_OPTIONS_ENUM boundary_options_;
+    PointCloud<PointT> kernel_;
+    IMAGE_CHANNEL image_channel_;
+
+    };
+
+
   }
 }
 #include <pcl/2d/impl/convolution.hpp>
+POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::pcl_2d::PointXYZIEdge,
+    (float, x, x)
+    (float, y, y)
+    (float, z, z)
+    (float, magnitude, magnitude)
+    (float, direction, direction)
+    (float, magnitude_x, magnitude_x)
+    (float, magnitude_y, magnitude_y)
+)
 #endif // PCL_2D_CONVOLUTION_2D_H

@@ -1,6 +1,6 @@
 set(SUBSYS_NAME features)
 set(SUBSYS_DESC "Point cloud features library")
-set(SUBSYS_DEPS common search kdtree octree 2d)
+set(SUBSYS_DEPS common search kdtree octree 2d filters)
 
 set(build TRUE)
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
@@ -144,7 +144,7 @@ if(build)
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
     PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${impl_incs})
-    target_link_libraries(${LIB_NAME} pcl_common pcl_search pcl_kdtree pcl_octree)
+    target_link_libraries(${LIB_NAME} pcl_common pcl_search pcl_kdtree pcl_octree pcl_2d pcl_filters)
     PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}" "${SUBSYS_DEPS}" "" "" "" "")
     # Install headers
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs})

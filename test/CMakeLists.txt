@@ -25,7 +25,7 @@ if(build)
     enable_testing()
     include_directories(${PCL_INCLUDE_DIRS})
 
-    #add_subdirectory(2d)
+    add_subdirectory(2d)
     add_subdirectory(common)
     add_subdirectory(features)
     add_subdirectory(filters)

@@ -33,237 +33,290 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: edge.h nsomani $
+ * $Id$
  *
  */
 
-#ifndef PCL_2D_EDGE_H
-#define PCL_2D_EDGE_H
+#ifndef EDGE_H
+#define EDGE_H
 
 #include <vector>
-#include "convolution_2d.h"
+#include "pcl/2d/convolution.h"
+#include "pcl/2d/kernel.h"
 namespace pcl
 {
   namespace pcl_2d
   {
+    template<typename PointInT, typename PointOutT>
     class edge
     {
-      private:
-        convolution_2d *conv_2d;
-        /**
-         * \param rowOffset
-         * \param colOffset
-         * \param row
-         * \param col
-         * \param maxima
-         *
-         * This function performs edge tracing for Canny Edge detector.
-         * This is used in the hysteresis thresholding step.
-         */
-        void
-        cannyTraceEdge (int rowOffset, int colOffset, int row, int col, ImageType &maxima);
 
-        /** 
-        * \param thet angle image passed by reference
-        * 
-        * Discretize the direction of gradient.
-        */
-        void 
-        discretizeAngles (ImageType &thet);
+private:
+    typedef typename pcl::PointCloud<PointInT> PointCloudIn;
+    typedef typename PointCloudIn::Ptr PointCloudInPtr;
 
-        /** 
-        * \param[in] G gradient image passed by reference
-        * \param[in] thet angle image passed by reference
-        * \param[out] maxima local maxima image passed by reference
-        * \param[in] tLow lower threshold for edges
-        * Suppress non maxima
-        */
-        void
-        suppressNonMaxima (ImageType &G, ImageType &thet, ImageType &maxima, float tLow);
+    PointCloudInPtr input_;
+    convolution<PointInT> *convolution_;
+    kernel<PointInT>  *kernel_;
 
-      public:
-        edge  ()
-        {
-          conv_2d = new convolution_2d ();
-        }
 
-        /**
-         *
-         * \param output Output image passed by reference
-         * \param input Input image passed by reference
-         *
-         * This is a convenience function which calls
-         * canny(ImageType &output, ImageType &input, float t_low, float t_high)
-         * with parameters t_low = 20 and t_high = 50.
-         * These values were chosen because they seem to work well on a number of images which were used
-         * in our experiments.
-         */
-        void canny  (ImageType &output, ImageType &input);
+    /**
+     *
+     * @param rowOffset row offset for direction in which the edge is to be traced
+     * @param colOffset column offset for direction in which the edge is to be traced
+     * @param row row location of the edge point
+     * @param col column location of the edge point
+     * @param maxima point cloud containing the edge information in the magnitude channel
+     *
+     * This function performs edge tracing for Canny Edge detector.
+     */
+    void
+    cannyTraceEdge (int rowOffset, int colOffset, int row, int col, PointCloud<pcl::PointXYZI> &maxima);
 
-        /**
-         * \param output Output image passed by reference
-         * \param input Input image passed by reference
-         * \param t_low lower threshold for edges
-         * \param t_higher higher threshold for edges
-         *
-         * All edges of magnitude above t_high are always classified as edges. All edges below t_low are discarded.
-         * Edge values between t_low and t_high are classified as edges only if they are connected to edges having magnitude > t_high
-         * and are located in a direction perpendicular to that strong edge.
-         */
-        void canny  (ImageType &output, ImageType &input, float t_low, float t_high);
+    /**
+     *
+     * @param thet point cloud containing the edge information in the direction channel
+     *
+     * This function discretizes the edge directions in steps of 22.5 degrees.
+     */
+    void
+    discretizeAngles (PointCloud<PointOutT> &thet);
 
-        /**
-         * \param output Output image passed by reference
-         * \param input_x Input image passed by reference for the first derivative in the horizontal direction
-         * \param input_y Input image passed by reference for the first derivative in the vertical direction
-         * \param t_low lower threshold for edges
-         * \param t_higher higher threshold for edges
-         *
-         * Perform Canny edge detection with two separated input images for horizontal and vertical derivatives.
-         * All edges of magnitude above t_high are always classified as edges. All edges below t_low are discarded.
-         * Edge values between t_low and t_high are classified as edges only if they are connected to edges having magnitude > t_high
-         * and are located in a direction perpendicular to that strong edge.
-         */
-        void
-        canny (ImageType &output, ImageType &input_x, ImageType &input_y, float t_low, float t_high);
+    /**
+     *
+     * @param edges point cloud containing all the edges
+     * @param maxima point cloud containing the non-max supressed edges
+     * @param tLow
+     *
+     * This function suppresses the edges which don't form a local maximum in the edge direction.
+     */
+    void
+    suppressNonMaxima (PointCloud<PointXYZIEdge> &edges, PointCloud<pcl::PointXYZI> &maxima, float tLow);
 
-        /**
-         * \param Gx Returns the gradients in x direction.
-         * \param Gy Returns the gradients in y direction.
-         * \param input Input image passed by reference
-         *
-         * Uses the Sobel kernel for edge detection.
-         * This function does NOT include a smoothing step.
-         * The image should be smoothed before using this function to reduce noise.
-         *
-         */
-        void sobelXY  (ImageType &Gx, ImageType &Gy, ImageType &input);
 
-        /**
-         * \param G Returns the gradients magnitude.
-         * \param thet Returns the gradients direction.
-         * \param input Input image passed by reference
-         * 
-         * Uses the Sobel kernel for edge detection.
-         * This function does NOT include a smoothing step.
-         * The image should be smoothed before using this function to reduce noise.
-         *
-         */
-        void sobelMagnitudeDirection  (ImageType &G, ImageType &thet, ImageType &input);
-
-        /**
-         * \param G Returns the gradients magnitude.
-         * \param thet Returns the gradients direction.
-         * \param input_x Input image passed by reference for the first derivative in the horizontal direction
-         * \param input_y Input image passed by reference for the first derivative in the vertical direction
-         * 
-         * Uses the Sobel kernel for edge detection.
-         * This function does NOT include a smoothing step.
-         * The image should be smoothed before using this function to reduce noise.
-         *
-         */
-        void
-        sobelMagnitudeDirection (ImageType &G, ImageType &thet, ImageType &input_x, ImageType &input_y);
-
-        /**
-         * \param Gx Returns the gradients in x direction.
-         * \param Gy Returns the gradients in y direction.
-         * \param input Input image passed by reference
-         *
-         * Uses the Sobel kernel for edge detection.
-         * This function does NOT include a smoothing step.
-         * The image should be smoothed before using this function to reduce noise.
-         *
-         */
-        void prewittXY  (ImageType &Gx, ImageType &Gy, ImageType &input);
-
-        /**
-         * \param G Returns the gradients magnitude.
-         * \param thet Returns the gradients direction.
-         * \param input Input image passed by reference
-         *
-         * Uses the Sobel kernel for edge detection.
-         * This function does NOT include a smoothing step.
-         * The image should be smoothed before using this function to reduce noise.
-         *
-         */
-        void prewittMagnitudeDirection  (ImageType &G, ImageType &thet, ImageType &input);
-
-        /**
-         * \param Gx Returns the gradients in x direction.
-         * \param Gy Returns the gradients in y direction.
-         * \param input Input image passed by reference
-         *
-         * Uses the Sobel kernel for edge detection.
-         * This function does NOT include a smoothing step.
-         * The image should be smoothed before using this function to reduce noise.
-         *
-         */
-
-        void robertsXY  (ImageType &Gx, ImageType &Gy, ImageType &input);
-
-        /**
-         * \param G Returns the gradients magnitude.
-         * \param thet Returns the gradients direction.
-         * \param input Input image passed by reference
-         *
-         * Uses the Sobel kernel for edge detection.
-         * This function does NOT include a smoothing step.
-         * The image should be smoothed before using this function to reduce noise.
-         *
-         */
-        void robertsMagnitudeDirection  (ImageType &G, ImageType &thet, ImageType &input);
-
-        /**
-         * \param kernel_size The kernel is of size kernel_size x kernel_size.
-         * \param sigma This is the variance of the Gaussian smoothing.
-         * \param input Input image passed by reference
-         *
-         * creates Laplcian of Gausian Kernel. This kernel is useful for detecting edges.     *
-         */
-        void LoGKernel  (ImageType &kernel, const int kernel_size, const float sigma);
-
-        /**
-         * \param kernel_size The kernel is of size kernel_size x kernel_size.
-         * \param sigma This is the variance of the Gaussian smoothing.
-         * \param input Input image passed by reference
-         * \param output Output image passed by reference
-         *
-         * Uses the LoGKernel to apply LoG on the input image.
-         * Zero crossings of the Laplacian operator applied on an image indicate edges.
-         * Gaussian kernel is used to smoothen the image prior to the Laplacian. This is because Laplacian uses the
-         * second order derivative of the image and hence, is very sensitive to noise.
-         * The implementation is not two-step but rather applies the LoG kernel directly.
-         */
-        void LoG  (ImageType &output, const int kernel_size, const float sigma, ImageType &input);
-
-        /**
-         * \param output Output image passed by reference
-         * \param input Input image passed by reference
-         *
-         * This is a convenience function which calls LoG(output, 9, 1.4, input);
-         * These values were chosen because they seem to work well on a number of images which were used
-         * in our experiments.
-         */
-        void LoG  (ImageType &output, ImageType &input);
-
-        /**
-         * \param output Output image passed by reference
-         * \param input Input image passed by reference
-         *
-         * Computes the image derivative in x direction using central differences
-         */
-        void ComputeDerivativeXCentral  (ImageType &output, ImageType &input);
-
-        /**
-         * \param output Output image passed by reference
-         * \param input Input image passed by reference
-         *
-         * Computes the image derivative in y direction using central differences
-         */
-        void ComputeDerivativeYCentral  (ImageType &output, ImageType &input);
+public:
+    enum OUTPUT_TYPE
+    {
+      OUTPUT_Y,
+      OUTPUT_X,
+      OUTPUT_X_Y,
+      OUTPUT_MAGNITUDE,
+      OUTPUT_DIRECTION,
+      OUTPUT_MAGNITUDE_DIRECTION,
+      OUTPUT_ALL
     };
+
+    enum DETECTOR_KERNEL_TYPE
+    {
+      CANNY,
+      SOBEL,
+      PREWITT,
+      ROBERTS,
+      LOG,
+      DERIVATIVE_CENTRAL,
+      DERIVATIVE_FORWARD,
+      DERIVATIVE_BACKWARD
+    };
+
+    OUTPUT_TYPE output_type_;
+    DETECTOR_KERNEL_TYPE detector_kernel_type_;
+    bool non_maximal_suppression_;
+    bool hysteresis_thresholding_;
+
+    float hysteresis_threshold_low_;
+    float hysteresis_threshold_high_;
+    float non_max_suppression_radius_x_;
+    float non_max_suppression_radius_y_;
+
+    edge () :
+      output_type_ (OUTPUT_X),
+      detector_kernel_type_ (SOBEL),
+      non_maximal_suppression_ (false),
+      hysteresis_thresholding_ (false),
+      hysteresis_threshold_low_ (20),
+      hysteresis_threshold_high_ (80),
+      non_max_suppression_radius_x_ (3),
+      non_max_suppression_radius_y_ (3)
+    {
+      convolution_ = new convolution<PointInT> ();
+      kernel_ = new kernel<PointXYZI>();
+    }
+
+    /**
+     *
+     * @param output
+     * @param input_x
+     * @param input_y
+     */
+    void sobelMagnitudeDirection (PointCloud<PointOutT> &output, PointCloud<PointInT> &input_x, PointCloud<PointInT> &input_y);
+
+    /**
+     *
+     * @param output Output point cloud passed by reference
+     * @param input_x Input point cloud passed by reference for the first derivative in the horizontal direction
+     * @param input_y Input point cloud passed by reference for the first derivative in the vertical direction
+     *
+     * Perform Canny edge detection with two separated input images for horizontal and vertical derivatives.
+     * All edges of magnitude above t_high are always classified as edges. All edges below t_low are discarded.
+     * Edge values between t_low and t_high are classified as edges only if they are connected to edges having magnitude > t_high
+     * and are located in a direction perpendicular to that strong edge.
+     *
+     */
+    void canny (PointCloud<PointOutT> &output, PointCloud<PointInT> &input_x, PointCloud<PointInT> &input_y);
+
+    /**
+     *
+     * @param output
+     *
+     * This is a convenience function which performs edge detection based on the variable detector_kernel_type_
+     */
+    void detectEdge (PointCloud<PointOutT> &output);
+
+    /**
+     *
+     * @param output Output point cloud passed by reference
+     *
+     * All edges of magnitude above t_high are always classified as edges. All edges below t_low are discarded.
+     * Edge values between t_low and t_high are classified as edges only if they are connected to edges having magnitude > t_high
+     * and are located in a direction perpendicular to that strong edge.
+     */
+    void detectEdgeCanny (PointCloud<PointOutT> &output);
+
+    /**
+     *
+     * @param output Output point cloud passed by reference
+     *
+     * Uses the Sobel kernel for edge detection.
+     * This function does NOT include a smoothing step.
+     * The image should be smoothed before using this function to reduce noise.
+     *
+     */
+    void detectEdgeSobel (PointCloud<PointOutT> &output);
+
+    /**
+     *
+     * @param output Output point cloud passed by reference
+     *
+     * Uses the Prewitt kernel for edge detection.
+     * This function does NOT include a smoothing step.
+     * The image should be smoothed before using this function to reduce noise.
+     *
+     */
+    void detectEdgePrewitt (PointCloud<PointOutT> &output);
+
+    /**
+     *
+     * @param output Output point cloud passed by reference
+     *
+     * Uses the Roberts kernel for edge detection.
+     * This function does NOT include a smoothing step.
+     * The image should be smoothed before using this function to reduce noise.
+     *
+     */
+    void detectEdgeRoberts (PointCloud<PointOutT> &output);
+
+    /**
+     *
+     * @param output Output point cloud passed by reference.
+     * @param kernel_sigma variance of the LoG kernel used.
+     * @param kernel_size a LoG kernel of dimensions kernel_size x kernel_size is used.
+     *
+     * Uses the LoG kernel for edge detection.
+     * Zero crossings of the Laplacian operator applied on an image indicate edges.
+     * Gaussian kernel is used to smoothen the image prior to the Laplacian.
+     * This is because Laplacian uses the second order derivative of the image and hence, is very sensitive to noise.
+     * The implementation is not two-step but rather applies the LoG kernel directly.
+     */
+    void detectEdgeLoG  (PointCloud<PointOutT> &output, const float kernel_sigma, const float kernel_size);
+
+    /**
+     *
+     * @param output Output point cloud passed by reference
+     *
+     * Computes the image derivatives in X direction using the kernel kernel::derivativeYCentralKernel.
+     * This function does NOT include a smoothing step.
+     * The image should be smoothed before using this function to reduce noise.
+     *
+     */
+    void computeDerivativeXCentral (PointCloud<PointOutT> &output);
+
+    /**
+     *
+     * @param output Output point cloud passed by reference
+     *
+     * Computes the image derivatives in Y direction using the kernel kernel::derivativeYCentralKernel.
+     * This function does NOT include a smoothing step.
+     * The image should be smoothed before using this function to reduce noise.
+     *
+     */
+    void computeDerivativeYCentral (PointCloud<PointOutT> &output);
+
+    /**
+     *
+     * @param output Output point cloud passed by reference
+     *
+     * Computes the image derivatives in X direction using the kernel kernel::derivativeYForwardKernel.
+     * This function does NOT include a smoothing step.
+     * The image should be smoothed before using this function to reduce noise.
+     *
+     */
+    void computeDerivativeXForward (PointCloud<PointOutT> &output);
+
+    /**
+     *
+     * @param output Output point cloud passed by reference
+     *
+     * Computes the image derivatives in Y direction using the kernel kernel::derivativeYForwardKernel.
+     * This function does NOT include a smoothing step.
+     * The image should be smoothed before using this function to reduce noise.
+     *
+     */
+    void computeDerivativeYForward (PointCloud<PointOutT> &output);
+
+    /**
+     *
+     * @param output Output point cloud passed by reference
+     *
+     * Computes the image derivatives in X direction using the kernel kernel::derivativeXBackwardKernel.
+     * This function does NOT include a smoothing step.
+     * The image should be smoothed before using this function to reduce noise.
+     *
+     */
+    void computeDerivativeXBackward (PointCloud<PointOutT> &output);
+
+    /**
+     *
+     * @param output Output point cloud passed by reference
+     *
+     * Computes the image derivatives in Y direction using the kernel kernel::derivativeYBackwardKernel.
+     * This function does NOT include a smoothing step.
+     * The image should be smoothed before using this function to reduce noise.
+     *
+     */
+    void computeDerivativeYBackward (PointCloud<PointOutT> &output);
+
+    /**
+     *
+     * @param output Output point cloud passed by reference
+     *
+     * Override function to implement the pcl::Filter interface
+     */
+    void applyFilter (PointCloud<PointOutT> &output);
+
+    /**
+     *
+     * @param input pointer to input point cloud
+     *
+     *
+     */
+    void setInputCloud (PointCloudInPtr input);
+    void setHysteresisThresholdLow(float t_low);
+    void setHysteresisThresholdHigh(float t_high);
+
+    };
+
   }
 }
 #include <pcl/2d/impl/edge.hpp>
-#endif // PCL_FILTERS_CONVOLUTION_3D_H
+#endif
+
