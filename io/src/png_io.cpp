@@ -60,32 +60,18 @@ namespace
 };
 
 
+
+
 void 
-pcl::io::saveRgbPNGFile (const std::string &file_name, const unsigned char *rgb_data, int width, int height)
+pcl::io::saveCharPNGFile (const std::string &file_name, const unsigned char *char_data, int width, int height, int channels)
 {
   vtkSmartPointer<vtkImageImport> importer = vtkSmartPointer<vtkImageImport>::New ();
-  importer->SetNumberOfScalarComponents (3);
+  importer->SetNumberOfScalarComponents (channels);
   importer->SetDataScalarTypeToUnsignedChar ();
   importer->SetWholeExtent (0, width - 1, 0, height - 1, 0, 0);
   importer->SetDataExtentToWholeExtent ();
 
-  void* data = const_cast<void*> (reinterpret_cast<const void*> (rgb_data));
-  importer->SetImportVoidPointer (data, 1);
-  importer->Update ();
-
-  flipAndWritePng(file_name, importer);  
-}
-
-void 
-pcl::io::saveMonoPNGFile (const std::string &file_name, const unsigned char *mono_image, int width, int height)
-{
-  vtkSmartPointer<vtkImageImport> importer = vtkSmartPointer<vtkImageImport>::New ();
-  importer->SetNumberOfScalarComponents (1);
-  importer->SetDataScalarTypeToUnsignedChar ();
-  importer->SetWholeExtent (0, width - 1, 0, height - 1, 0, 0);
-  importer->SetDataExtentToWholeExtent ();
-
-  void* data = const_cast<void*> (reinterpret_cast<const void*> (mono_image));
+  void* data = const_cast<void*> (reinterpret_cast<const void*> (char_data));
   importer->SetImportVoidPointer (data, 1);
   importer->Update ();
 
@@ -93,10 +79,10 @@ pcl::io::saveMonoPNGFile (const std::string &file_name, const unsigned char *mon
 }
 
 void 
-pcl::io::saveShortPNGFile (const std::string &file_name, const unsigned short *short_image, int width, int height)
+pcl::io::saveShortPNGFile (const std::string &file_name, const unsigned short *short_image, int width, int height, int channels)
 {
   vtkSmartPointer<vtkImageImport> importer = vtkSmartPointer<vtkImageImport>::New ();
-  importer->SetNumberOfScalarComponents (1);
+  importer->SetNumberOfScalarComponents (channels);
   importer->SetDataScalarTypeToUnsignedShort ();
   importer->SetWholeExtent (0, width - 1, 0, height - 1, 0, 0);
   importer->SetDataExtentToWholeExtent ();
