@@ -35,6 +35,7 @@ if(build)
   set(moc_incs include/pcl/apps/${SUBSYS_NAME}/main_window.h
            include/pcl/apps/${SUBSYS_NAME}/scene_tree.h
            include/pcl/apps/${SUBSYS_NAME}/parameter_dialog.h
+           include/pcl/apps/${SUBSYS_NAME}/thread_controller.h
            include/pcl/apps/${SUBSYS_NAME}/abstract_worker.h)
 
   set(resources resources/resources.qrc)
@@ -80,6 +81,7 @@ if(build)
            src/normals_actor_item.cpp
            src/surface_actor_item.cpp
 
+           src/thread_controller.cpp
            src/abstract_worker.cpp
            src/downsample_worker.cpp
            src/normal_estimation_worker.cpp

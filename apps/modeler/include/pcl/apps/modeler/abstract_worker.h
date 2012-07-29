@@ -54,19 +54,16 @@ namespace pcl
         AbstractWorker(const QList<CloudMeshItem*>& cloud_mesh_items, QWidget* parent=0);
         ~AbstractWorker(void);
 
-        bool
-        run();
+        int
+        exec();
 
       public slots:
         void
         process();
 
-        void
-        postProcess();
-
       signals:
         void
-        processed();
+        processed(CloudMeshItem* cloud_mesh_item);
 
         void
         finished();
@@ -83,9 +80,6 @@ namespace pcl
 
         virtual void
         processImpl(CloudMeshItem* cloud_mesh_item) const = 0;
-
-        virtual void
-        postProcessImpl(CloudMeshItem* cloud_mesh_item) const = 0;
 
       protected:
         QList<CloudMeshItem*>       cloud_mesh_items_;

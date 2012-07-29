@@ -38,7 +38,11 @@
 
 #include <pcl/point_types.h>
 #include <pcl/Vertices.h>
+#include <vtkSmartPointer.h>
 
+class vtkPoints;
+class vtkCellArray;
+class vtkDataArray;
 
 namespace pcl
 {
@@ -47,8 +51,8 @@ namespace pcl
     class CloudMesh
     {
     public:
-      typedef pcl::PointSurfel                    PointSurfel;
-      typedef pcl::PointCloud<PointSurfel>        PointCloud;
+      typedef pcl::PointSurfel                    PointT;
+      typedef pcl::PointCloud<PointT>             PointCloud;
       typedef PointCloud::Ptr                     PointCloudPtr;
       typedef PointCloud::ConstPtr                PointCloudConstPtr;
 
@@ -65,6 +69,16 @@ namespace pcl
       const std::vector<pcl::Vertices>&
       getPolygons() const {return polygons_;}
 
+      vtkSmartPointer<vtkPoints>&
+      getVtkPoints() {return vtk_points_;}
+      const vtkSmartPointer<vtkPoints>&
+      getVtkPoints() const {return vtk_points_;}
+
+      vtkSmartPointer<vtkCellArray>&
+      getVtkPolygons() {return vtk_polygons_;}
+      const vtkSmartPointer<vtkCellArray>&
+      getVtkPolygons() const {return vtk_polygons_;}
+
       std::vector<std::string>
       getAvaiableFieldNames() const;
 
@@ -77,9 +91,24 @@ namespace pcl
       static bool
       save(const pcl::PointCloud<pcl::PointSurfel>& cloud, const std::string& filename);
 
+      void
+      getColorScalarsFromField(vtkSmartPointer<vtkDataArray> &scalars, const std::string& field) const;
+
+      void
+      updateVtkPoints();
+
+      void
+      updateVtkPolygons();
+
+    protected:
+
+
     private:
       PointCloudPtr               cloud_;
       std::vector<pcl::Vertices>  polygons_;
+
+      vtkSmartPointer<vtkPoints>            vtk_points_;
+      vtkSmartPointer<vtkCellArray>         vtk_polygons_;
     };
   }
 }

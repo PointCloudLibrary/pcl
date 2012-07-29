@@ -40,6 +40,7 @@
 #include <boost/shared_ptr.hpp>
 #include <pcl/apps/modeler/abstract_item.h>
 
+
 namespace pcl
 {
   namespace modeler

@@ -48,14 +48,6 @@ namespace pcl
     class NormalsActorItem : public ChannelActorItem
     {
       public:
-        typedef pcl::visualization::PointCloudGeometryHandler<pcl::PointSurfel> GeometryHandler;
-        typedef GeometryHandler::Ptr GeometryHandlerPtr;
-        typedef GeometryHandler::ConstPtr GeometryHandlerConstPtr;
-
-        typedef pcl::visualization::PointCloudColorHandler<pcl::PointSurfel> ColorHandler;
-        typedef ColorHandler::Ptr ColorHandlerPtr;
-        typedef ColorHandler::ConstPtr ColorHandlerConstPtr;
-
         NormalsActorItem(QTreeWidgetItem* parent,
                         const boost::shared_ptr<CloudMesh>& cloud_mesh,
                         const vtkSmartPointer<vtkRenderWindow>& render_window);
@@ -63,20 +55,20 @@ namespace pcl
 
       protected:
         void
-        createHandlers();
+        createNormalLines();
 
         virtual void
-        createActorImpl();
+        initImpl();
+
+        virtual void
+        updateImpl();
 
         virtual void
         prepareContextMenu(QMenu* menu) const;
 
       private:
-        /** \brief geometry handler that can be used for rendering the data. */
-        GeometryHandlerConstPtr   geometry_handler_;
-
-        /** \brief color handler that can be used for rendering the data. */
-        ColorHandlerConstPtr      color_handler_;
+        double    level_;
+        double    scale_;
     };
   }
 }

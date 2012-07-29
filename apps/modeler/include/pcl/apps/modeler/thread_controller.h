@@ -34,46 +34,39 @@
  *
  */
 
-#ifndef PCL_MODELER_NORMAL_ESTIMATION_WORKER_H_
-#define PCL_MODELER_NORMAL_ESTIMATION_WORKER_H_
+#ifndef PCL_MODELER_THREAD_CONTROLLER_H_
+#define PCL_MODELER_THREAD_CONTROLLER_H_
 
-#include <pcl/apps/modeler/abstract_worker.h>
+#include <pcl/apps/modeler/qt.h>
 
 namespace pcl
 {
   namespace modeler
   {
-    class DoubleParameter;
+    class CloudMeshItem;
+    class AbstractWorker;
 
-    class NormalEstimationWorker : public AbstractWorker 
+    class ThreadController : public QObject
     {
+      Q_OBJECT
+
       public:
-        NormalEstimationWorker(const QList<CloudMeshItem*>& cloud_mesh_items, QWidget* parent=0);
-        ~NormalEstimationWorker(void);
+        ThreadController();
+        ~ThreadController(void);
 
-      protected:
-        virtual std::string
-        getName () const {return ("Normal Estimation");}
+        bool
+        runWorker(AbstractWorker* worker);
 
-        virtual void
-        initParameters(CloudMeshItem* cloud_mesh_item);
+      signals:
+        void
+        prepared();
 
-        virtual void
-        setupParameters();
-
-        virtual void
-        processImpl(CloudMeshItem* cloud_mesh_item) const;
-
-      private:
-        double x_min_, x_max_;
-        double y_min_, y_max_;
-        double z_min_, z_max_;
-
-        DoubleParameter* search_radius_;
-
+      private slots:
+        void
+        postProcess(CloudMeshItem* cloud_mesh_item);
     };
 
   }
 }
 
-#endif // PCL_MODELER_NORMAL_ESTIMATION_WORKER_H_
+#endif // PCL_MODELER_THREAD_CONTROLLER_H_

@@ -105,6 +105,8 @@ void
 pcl::modeler::CloudMeshItem::prepareContextMenu(QMenu* menu) const
 {
   menu->addAction(ui()->actionDownSamplePoints);
+  menu->addAction(ui()->actionEstimateNormals);
+  menu->addAction(ui()->actionPoissonReconstruction);
   menu->addAction(ui()->actionSavePointCloud);
   menu->addAction(ui()->actionClosePointCloud);
 }
@@ -117,6 +119,11 @@ pcl::modeler::CloudMeshItem::createChannels()
   addChild(new PointsActorItem(this, cloud_mesh_, render_window_item->getRenderWindow()->GetRenderWindow()));
   addChild(new NormalsActorItem(this, cloud_mesh_, render_window_item->getRenderWindow()->GetRenderWindow()));
   addChild(new SurfaceActorItem(this, cloud_mesh_, render_window_item->getRenderWindow()->GetRenderWindow()));
+  for (int i = 0, i_end = childCount(); i < i_end; ++ i)
+  {
+    ChannelActorItem* child_item = dynamic_cast<ChannelActorItem*>(child(i));
+    child_item->init();
+  }
 
   return;
 }
@@ -126,10 +133,13 @@ pcl::modeler::CloudMeshItem::createChannels()
 void
 pcl::modeler::CloudMeshItem::updateChannels()
 {
+  cloud_mesh_->updateVtkPoints();
+  cloud_mesh_->updateVtkPolygons();
+
   for (int i = 0, i_end = childCount(); i < i_end; ++ i)
   {
     ChannelActorItem* child_item = dynamic_cast<ChannelActorItem*>(child(i));
-    child_item->createActor();
+    child_item->update();
   }
 
   return;

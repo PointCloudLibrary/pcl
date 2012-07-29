@@ -40,6 +40,7 @@
 #include <pcl/apps/modeler/render_window.h>
 #include <pcl/apps/modeler/render_window_item.h>
 #include <pcl/apps/modeler/cloud_mesh_item.h>
+#include <pcl/apps/modeler/thread_controller.h>
 #include <pcl/apps/modeler/downsample_worker.h>
 #include <pcl/apps/modeler/normal_estimation_worker.h>
 #include <pcl/apps/modeler/poisson_worker.h>
@@ -269,8 +270,9 @@ void
 pcl::modeler::SceneTree::slotDownSampleFilter()
 {
   QList<CloudMeshItem*> selected_cloud_mesh_items = selectedTypeItems<CloudMeshItem>();
-  AbstractWorker* down_sample_filter = new DownSampleWorker(selected_cloud_mesh_items,&MainWindow::getInstance());
-  down_sample_filter->run();
+  AbstractWorker* worker = new DownSampleWorker(selected_cloud_mesh_items,&MainWindow::getInstance());
+  ThreadController* thread_controller = new ThreadController();
+  thread_controller->runWorker(worker);
 
   return;
 }
@@ -280,8 +282,9 @@ void
 pcl::modeler::SceneTree::slotEstimateNormal()
 {
   QList<CloudMeshItem*> selected_cloud_mesh_items = selectedTypeItems<CloudMeshItem>();
-  AbstractWorker* normal_estimation_worker = new NormalEstimationWorker(selected_cloud_mesh_items,&MainWindow::getInstance());
-  normal_estimation_worker->run();
+  AbstractWorker* worker = new NormalEstimationWorker(selected_cloud_mesh_items,&MainWindow::getInstance());
+  ThreadController* thread_controller = new ThreadController();
+  thread_controller->runWorker(worker);
 
   return;
 }
@@ -291,8 +294,9 @@ void
 pcl::modeler::SceneTree::slotPoissonReconstruction()
 {
   QList<CloudMeshItem*> selected_cloud_mesh_items = selectedTypeItems<CloudMeshItem>();
-  AbstractWorker* poisson_reconstruction_worker = new PoissonReconstructionWorker(selected_cloud_mesh_items,&MainWindow::getInstance());
-  poisson_reconstruction_worker->run();
+  AbstractWorker* worker = new PoissonReconstructionWorker(selected_cloud_mesh_items,&MainWindow::getInstance());
+  ThreadController* thread_controller = new ThreadController();
+  thread_controller->runWorker(worker);
 
   return;
 }

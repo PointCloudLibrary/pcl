@@ -64,9 +64,6 @@ namespace pcl
         virtual void
         processImpl(CloudMeshItem* cloud_mesh_item) const;
 
-        virtual void
-        postProcessImpl(CloudMeshItem* cloud_mesh_item) const;
-
       private:
         double x_min_, x_max_;
         double y_min_, y_max_;

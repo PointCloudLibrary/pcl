@@ -43,6 +43,7 @@
 #include <pcl/apps/modeler/abstract_item.h>
 
 class vtkActor;
+class vtkPolyData;
 class vtkMatrix4x4;
 class vtkRenderWindow;
 
@@ -64,7 +65,10 @@ namespace pcl
         ~ChannelActorItem();
 
         void
-        createActor();
+        init();
+
+        void
+        update();
 
       protected:
         void
@@ -74,12 +78,16 @@ namespace pcl
         detachActor();
 
         virtual void
-        createActorImpl() = 0;
+        initImpl() = 0;
+
+        virtual void
+        updateImpl() = 0;
 
         virtual void
         prepareContextMenu(QMenu* menu) const;
 
         boost::shared_ptr<CloudMesh>      cloud_mesh_;
+        vtkSmartPointer<vtkPolyData>      poly_data_;
         vtkSmartPointer<vtkActor>         actor_;
         vtkSmartPointer<vtkRenderWindow>  render_window_;
         std::string                       color_scheme_;
@@ -94,8 +102,14 @@ namespace pcl
         convertToVtkMatrix(const Eigen::Vector4f& origin,
                            const Eigen::Quaternion<float>& orientation,
                            vtkSmartPointer<vtkMatrix4x4> &vtk_matrix);
+
         /** \brief The viewpoint transformation matrix. */
         vtkSmartPointer<vtkMatrix4x4> viewpoint_transformation_;
+
+        static void
+        createActorFromVTKDataSet(const vtkSmartPointer<vtkPolyData> &data,
+                                  vtkSmartPointer<vtkActor> &actor,
+                                  bool use_scalars);
 
       private:
     };

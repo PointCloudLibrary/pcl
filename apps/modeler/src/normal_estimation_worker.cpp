@@ -39,6 +39,7 @@
 #include <pcl/apps/modeler/parameter.h>
 #include <pcl/apps/modeler/cloud_mesh.h>
 #include <pcl/apps/modeler/cloud_mesh_item.h>
+#include <pcl/filters/filter_indices.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/filters/voxel_grid.h>
 
@@ -102,33 +103,34 @@ pcl::modeler::NormalEstimationWorker::setupParameters()
 void
 pcl::modeler::NormalEstimationWorker::processImpl(CloudMeshItem* cloud_mesh_item) const
 {
+  CloudMesh::PointCloudPtr cloud = cloud_mesh_item->getCloudMesh()->getCloud();
+
   // Create the normal estimation class, and pass the input dataset to it
-  pcl::NormalEstimation<pcl::PointSurfel, pcl::PointSurfel> normal_estimator;
-  normal_estimator.setInputCloud (cloud_mesh_item->getCloudMesh()->getCloud());
+  pcl::NormalEstimation<pcl::PointSurfel, pcl::PointNormal> normal_estimator;
+  normal_estimator.setInputCloud(cloud);
+
+  pcl::IndicesPtr indices(new std::vector<int>());
+  pcl::removeNaNFromPointCloud(*cloud, *indices);
+  normal_estimator.setIndices(indices);
 
   // Create an empty kdtree representation, and pass it to the normal estimation object.
   // Its content will be filled inside the object, based on the given input dataset (as no other search surface is given).
   pcl::search::KdTree<pcl::PointSurfel>::Ptr tree (new pcl::search::KdTree<pcl::PointSurfel> ());
   normal_estimator.setSearchMethod (tree);
 
-  // Output datasets
-  pcl::PointCloud<pcl::Normal>::Ptr cloud_normals (new pcl::PointCloud<pcl::Normal>);
-
-  // Use all neighbors in a sphere of radius 3cm
+  // Use all neighbors in a sphere of the search radius
   normal_estimator.setRadiusSearch (*search_radius_);
 
-  // Compute the features
-  normal_estimator.compute(*(cloud_mesh_item->getCloudMesh()->getCloud()));
+  pcl::PointCloud<pcl::PointNormal> normals;
+  normal_estimator.compute(normals);
 
-
-  return;
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-void
-pcl::modeler::NormalEstimationWorker::postProcessImpl(CloudMeshItem* cloud_mesh_item) const
-{
-  cloud_mesh_item->updateChannels();
+  for (size_t i = 0, i_end = indices->size(); i < i_end; ++ i)
+  {
+    size_t dest = (*indices)[i];
+    cloud->points[dest].normal_x = normals.points[i].normal_x;
+    cloud->points[dest].normal_y = normals.points[i].normal_y;
+    cloud->points[dest].normal_z = normals.points[i].normal_z;
+  }
 
   return;
 }

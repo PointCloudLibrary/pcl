@@ -38,6 +38,8 @@
 
 #include <pcl/apps/modeler/cloud_mesh.h>
 
+#include <vtkVertexGlyphFilter.h>
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::modeler::PointsActorItem::PointsActorItem(QTreeWidgetItem* parent,
@@ -45,7 +47,6 @@ pcl::modeler::PointsActorItem::PointsActorItem(QTreeWidgetItem* parent,
                                                const vtkSmartPointer<vtkRenderWindow>& render_window)
   :ChannelActorItem(parent, cloud_mesh, render_window, vtkSmartPointer<vtkLODActor>::New(), "Points")
 {
-  createActor();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -56,157 +57,59 @@ pcl::modeler::PointsActorItem::~PointsActorItem ()
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::modeler::PointsActorItem::createHandlers()
+pcl::modeler::PointsActorItem::initImpl()
 {
-  geometry_handler_.reset(new pcl::visualization::PointCloudGeometryHandlerXYZ<PointSurfel>(cloud_mesh_->getCloud()));
+  poly_data_->SetPoints(cloud_mesh_->getVtkPoints());
+  poly_data_->Update();
 
-  color_handler_.reset(new pcl::visualization::PointCloudColorHandlerRGBField<PointSurfel>(cloud_mesh_->getCloud()));
-  if (!color_handler_->isCapable())
-    color_handler_.reset(new pcl::visualization::PointCloudColorHandlerRandom<PointSurfel>(cloud_mesh_->getCloud()));
+  vtkSmartPointer<vtkVertexGlyphFilter> vertex_glyph_filter = vtkSmartPointer<vtkVertexGlyphFilter>::New();
+#if VTK_MAJOR_VERSION <= 5
+  vertex_glyph_filter->AddInput(poly_data_);
+#else
+  vertex_glyph_filter->AddInputData(polydata);
+#endif
+  vertex_glyph_filter->Update();
+
+  vtkSmartPointer<vtkDataSetMapper> mapper = vtkSmartPointer<vtkDataSetMapper>::New();
+  mapper->SetInputConnection(vertex_glyph_filter->GetOutputPort());
+
+  vtkSmartPointer<vtkDataArray> scalars;
+  cloud_mesh_->getColorScalarsFromField(scalars, color_scheme_);
+  poly_data_->GetPointData ()->SetScalars (scalars);
+
+  double minmax[2];
+  scalars->GetRange(minmax);
+  mapper->SetScalarRange(minmax);
+
+  mapper->SetScalarModeToUsePointData();
+  mapper->InterpolateScalarsBeforeMappingOn();
+  mapper->ScalarVisibilityOn();
+  mapper->ImmediateModeRenderingOff();
+
+  vtkSmartPointer<vtkLODActor> actor = vtkSmartPointer<vtkLODActor>(dynamic_cast<vtkLODActor*>(actor_.GetPointer()));
+  actor->SetMapper(mapper);
+
+  actor->SetNumberOfCloudPoints(int(std::max<vtkIdType> (1, poly_data_->GetNumberOfPoints () / 10)));
+  actor->GetProperty()->SetInterpolationToFlat();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::modeler::PointsActorItem::createActorImpl()
+pcl::modeler::PointsActorItem::updateImpl()
 {
-  createHandlers();
-
-  vtkSmartPointer<vtkLODActor> actor = vtkSmartPointer<vtkLODActor>(dynamic_cast<vtkLODActor*>(actor_.GetPointer()));
-
-  vtkSmartPointer<vtkPolyData> polydata;
-  vtkSmartPointer<vtkIdTypeArray> initcells;
-  // Convert the PointCloud to VTK PolyData
-  convertPointCloudToVTKPolyData (geometry_handler_, polydata, initcells);
-  // use the given geometry handler
-  polydata->Update ();
-
-  // Get the colors from the handler
   vtkSmartPointer<vtkDataArray> scalars;
-  color_handler_->getColor (scalars);
-  polydata->GetPointData ()->SetScalars (scalars);
-  double minmax[2];
-  scalars->GetRange (minmax);
+  cloud_mesh_->getColorScalarsFromField(scalars, color_scheme_);
+  poly_data_->GetPointData ()->SetScalars (scalars);
 
-  // Create an Actor
-  createActorFromVTKDataSet(polydata, actor);
-  actor->GetMapper ()->SetScalarRange (minmax);
+  double minmax[2];
+  scalars->GetRange(minmax);
+  actor_->GetMapper()->SetScalarRange(minmax);
+
+  poly_data_->Update();
 
   return;
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////////
-void
-pcl::modeler::PointsActorItem::convertPointCloudToVTKPolyData(const GeometryHandlerConstPtr &geometry_handler,
-                                                              vtkSmartPointer<vtkPolyData> &polydata,
-                                                              vtkSmartPointer<vtkIdTypeArray> &initcells)
-{
-  vtkSmartPointer<vtkCellArray> vertices;
-
-  if (!polydata)
-  {
-    polydata = vtkSmartPointer<vtkPolyData>::New ();
-    vertices = vtkSmartPointer<vtkCellArray>::New ();
-    polydata->SetVerts (vertices);
-  }
-
-  // Use the handler to obtain the geometry
-  vtkSmartPointer<vtkPoints> points;
-  geometry_handler->getGeometry (points);
-  polydata->SetPoints (points);
-
-  vtkIdType nr_points = points->GetNumberOfPoints ();
-
-  // Create the supporting structures
-  vertices = polydata->GetVerts ();
-  if (!vertices)
-    vertices = vtkSmartPointer<vtkCellArray>::New ();
-
-  vtkSmartPointer<vtkIdTypeArray> cells = vertices->GetData ();
-  updateCells (cells, initcells, nr_points);
-  // Set the cells and the vertices
-  vertices->SetCells (nr_points, cells);
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-void
-pcl::modeler::PointsActorItem::updateCells (vtkSmartPointer<vtkIdTypeArray> &cells,
-                                            vtkSmartPointer<vtkIdTypeArray> &initcells,
-                                            vtkIdType nr_points)
-{
-  // If no init cells and cells has not been initialized...
-  if (!cells)
-    cells = vtkSmartPointer<vtkIdTypeArray>::New ();
-
-  // If we have less values then we need to recreate the array
-  if (cells->GetNumberOfTuples () < nr_points)
-  {
-    cells = vtkSmartPointer<vtkIdTypeArray>::New ();
-
-    // If init cells is given, and there's enough data in it, use it
-    if (initcells && initcells->GetNumberOfTuples () >= nr_points)
-    {
-      cells->DeepCopy (initcells);
-      cells->SetNumberOfComponents (2);
-      cells->SetNumberOfTuples (nr_points);
-    }
-    else
-    {
-      // If the number of tuples is still too small, we need to recreate the array
-      cells->SetNumberOfComponents (2);
-      cells->SetNumberOfTuples (nr_points);
-      vtkIdType *cell = cells->GetPointer (0);
-      // Fill it with 1s
-      std::fill_n (cell, nr_points * 2, 1);
-      cell++;
-      for (vtkIdType i = 0; i < nr_points; ++i, cell += 2)
-        *cell = i;
-      // Save the results in initcells
-      initcells = vtkSmartPointer<vtkIdTypeArray>::New ();
-      initcells->DeepCopy (cells);
-    }
-  }
-  else
-  {
-    // The assumption here is that the current set of cells has more data than needed
-    cells->SetNumberOfComponents (2);
-    cells->SetNumberOfTuples (nr_points);
-  }
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////////
-void
-pcl::modeler::PointsActorItem::createActorFromVTKDataSet(const vtkSmartPointer<vtkDataSet> &data,
-                                                         vtkSmartPointer<vtkLODActor> &actor,
-                                                         bool use_scalars)
-{
-  vtkSmartPointer<vtkDataSetMapper> mapper = vtkSmartPointer<vtkDataSetMapper>::New ();
-  mapper->SetInput (data);
-
-  if (use_scalars)
-  {
-    vtkSmartPointer<vtkDataArray> scalars = data->GetPointData ()->GetScalars ();
-    double minmax[2];
-    if (scalars)
-    {
-      scalars->GetRange (minmax);
-      mapper->SetScalarRange (minmax);
-
-      mapper->SetScalarModeToUsePointData ();
-      mapper->InterpolateScalarsBeforeMappingOn ();
-      mapper->ScalarVisibilityOn ();
-    }
-  }
-  mapper->ImmediateModeRenderingOff ();
-
-  actor->SetNumberOfCloudPoints(int(std::max<vtkIdType> (1, data->GetNumberOfPoints () / 10)));
-  actor->GetProperty ()->SetInterpolationToFlat ();
-
-  /// FIXME disabling backface culling due to known VTK bug: vtkTextActors are not
-  /// shown when there is a vtkActor with backkface culling on present in the scene
-  /// Please see VTK bug tracker for more details: http://www.vtk.org/Bug/view.php?id=12588
-  // actor->GetProperty ()->BackfaceCullingOn ();
-  actor->SetMapper(mapper);
-}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void

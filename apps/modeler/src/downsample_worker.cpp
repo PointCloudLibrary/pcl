@@ -110,19 +110,10 @@ pcl::modeler::DownSampleWorker::processImpl(CloudMeshItem* cloud_mesh_item) cons
   voxel_grid.setInputCloud(cloud_mesh_item->getCloudMesh()->getCloud());
   voxel_grid.setLeafSize (float (*leaf_size_x_), float (*leaf_size_y_), float (*leaf_size_z_));
 
-  CloudMesh::PointCloudPtr cloud = CloudMesh::PointCloudPtr(new pcl::PointCloud<pcl::PointSurfel>());
+  CloudMesh::PointCloudPtr cloud(new CloudMesh::PointCloud());
   voxel_grid.filter(*cloud);
 
   cloud_mesh_item->getCloudMesh()->getCloud() = cloud;
-
-  return;
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-void
-pcl::modeler::DownSampleWorker::postProcessImpl(CloudMeshItem* cloud_mesh_item) const
-{
-  cloud_mesh_item->updateChannels();
 
   return;
 }

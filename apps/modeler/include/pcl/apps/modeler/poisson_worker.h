@@ -65,9 +65,6 @@ namespace pcl
         virtual void
         processImpl(CloudMeshItem* cloud_mesh_item) const;
 
-        virtual void
-        postProcessImpl(CloudMeshItem* cloud_mesh_item) const;
-
       private:
         IntParameter*     depth_;
         IntParameter*     solver_divide_;

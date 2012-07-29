@@ -34,46 +34,58 @@
  *
  */
 
-#ifndef PCL_MODELER_NORMAL_ESTIMATION_WORKER_H_
-#define PCL_MODELER_NORMAL_ESTIMATION_WORKER_H_
+#include <pcl/apps/modeler/thread_controller.h>
 
 #include <pcl/apps/modeler/abstract_worker.h>
+#include <pcl/apps/modeler/cloud_mesh_item.h>
 
-namespace pcl
+//////////////////////////////////////////////////////////////////////////////////////////////
+pcl::modeler::ThreadController::ThreadController()
 {
-  namespace modeler
-  {
-    class DoubleParameter;
 
-    class NormalEstimationWorker : public AbstractWorker 
-    {
-      public:
-        NormalEstimationWorker(const QList<CloudMeshItem*>& cloud_mesh_items, QWidget* parent=0);
-        ~NormalEstimationWorker(void);
-
-      protected:
-        virtual std::string
-        getName () const {return ("Normal Estimation");}
-
-        virtual void
-        initParameters(CloudMeshItem* cloud_mesh_item);
-
-        virtual void
-        setupParameters();
-
-        virtual void
-        processImpl(CloudMeshItem* cloud_mesh_item) const;
-
-      private:
-        double x_min_, x_max_;
-        double y_min_, y_max_;
-        double z_min_, z_max_;
-
-        DoubleParameter* search_radius_;
-
-    };
-
-  }
 }
 
-#endif // PCL_MODELER_NORMAL_ESTIMATION_WORKER_H_
+//////////////////////////////////////////////////////////////////////////////////////////////
+pcl::modeler::ThreadController::~ThreadController(void)
+{
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+bool
+pcl::modeler::ThreadController::runWorker(AbstractWorker* worker)
+{
+  if (worker->exec() != QDialog::Accepted)
+  {
+    delete worker;
+    deleteLater();
+
+    return (false);
+  }
+  
+  QThread* thread = new QThread;
+
+  connect(this, SIGNAL(prepared()), worker, SLOT(process()), Qt::QueuedConnection);
+
+  connect(worker, SIGNAL(processed(CloudMeshItem*)), this, SLOT(postProcess(CloudMeshItem*)), Qt::QueuedConnection);
+
+  connect(worker, SIGNAL(finished()), worker, SLOT(deleteLater()));
+
+  connect(worker, SIGNAL(finished()), thread, SLOT(quit()));
+  connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
+
+  connect(worker, SIGNAL(finished()), this, SLOT(deleteLater()), Qt::QueuedConnection);
+
+  worker->moveToThread(thread);
+  thread->start();
+
+  emit prepared();
+
+   return (true);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::modeler::ThreadController::postProcess(CloudMeshItem* cloud_mesh_item)
+{
+  cloud_mesh_item->updateChannels();
+}

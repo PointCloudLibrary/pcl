@@ -37,6 +37,7 @@
 #include <pcl/apps/modeler/channel_actor_item.h>
 
 #include <vtkCamera.h>
+#include <vtkPolyData.h>
 #include <vtkRenderer.h>
 #include <vtkMatrix4x4.h>
 #include <vtkRenderWindow.h>
@@ -53,7 +54,9 @@ pcl::modeler::ChannelActorItem::ChannelActorItem(QTreeWidgetItem* parent,
   :QTreeWidgetItem(parent),
   AbstractItem(),
   cloud_mesh_(cloud_mesh),
+  poly_data_(vtkSmartPointer<vtkPolyData>::New()),
   render_window_(render_window),
+  color_scheme_("rgb"),
   actor_(actor),
   viewpoint_transformation_(vtkSmartPointer<vtkMatrix4x4>::New())
 {
@@ -71,9 +74,6 @@ pcl::modeler::ChannelActorItem::ChannelActorItem(QTreeWidgetItem* parent,
   camera->SetPosition(origin[0], origin[1], origin[2]);
   camera->SetFocalPoint(origin [0] + rotation (0, 2), origin [1] + rotation (1, 2), origin [2] + rotation (2, 2));
   camera->SetViewUp(rotation (0, 1), rotation (1, 1), rotation (2, 1));
-
-  attachActor();
-  render_window_->Render();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -103,9 +103,20 @@ pcl::modeler::ChannelActorItem::convertToVtkMatrix(const Eigen::Vector4f &origin
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::modeler::ChannelActorItem::createActor()
+pcl::modeler::ChannelActorItem::init()
 {
-  createActorImpl();
+  initImpl();
+
+  attachActor();
+  render_window_->Render();
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::modeler::ChannelActorItem::update()
+{
+  updateImpl();
+
   render_window_->Render();
 }
 

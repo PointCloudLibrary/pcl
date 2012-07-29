@@ -128,16 +128,11 @@ pcl::modeler::PoissonReconstructionWorker::processImpl(CloudMeshItem* cloud_mesh
   poisson.setConfidence(true);
   poisson.setManifold(true);
 
-  poisson.reconstruct(*(cloud_mesh_item->getCloudMesh()->getCloud()), cloud_mesh_item->getCloudMesh()->getPolygons());
+  poisson.setInputCloud(cloud_mesh_item->getCloudMesh()->getCloud());
 
-  return;
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-void
-pcl::modeler::PoissonReconstructionWorker::postProcessImpl(CloudMeshItem* cloud_mesh_item) const
-{
-  cloud_mesh_item->updateChannels();
+  CloudMesh::PointCloudPtr cloud(new CloudMesh::PointCloud());
+  poisson.reconstruct(*cloud, cloud_mesh_item->getCloudMesh()->getPolygons());
+  cloud_mesh_item->getCloudMesh()->getCloud() = cloud;
 
   return;
 }

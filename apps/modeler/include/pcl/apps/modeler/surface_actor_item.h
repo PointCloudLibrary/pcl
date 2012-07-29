@@ -62,21 +62,16 @@ namespace pcl
         ~SurfaceActorItem ();
 
       protected:
-        void
-        createHandlers();
+        virtual void
+        initImpl();
 
         virtual void
-        createActorImpl();
+        updateImpl();
 
         virtual void
         prepareContextMenu(QMenu* menu) const;
 
       private:
-        /** \brief geometry handler that can be used for rendering the data. */
-        GeometryHandlerConstPtr   geometry_handler_;
-
-        /** \brief color handler that can be used for rendering the data. */
-        ColorHandlerConstPtr      color_handler_;
     };
   }
 }

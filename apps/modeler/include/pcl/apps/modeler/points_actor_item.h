@@ -48,69 +48,23 @@ namespace pcl
     class PointsActorItem : public ChannelActorItem
     {
       public:
-        typedef pcl::visualization::PointCloudGeometryHandler<pcl::PointSurfel> GeometryHandler;
-        typedef GeometryHandler::Ptr GeometryHandlerPtr;
-        typedef GeometryHandler::ConstPtr GeometryHandlerConstPtr;
-
-        typedef pcl::visualization::PointCloudColorHandler<pcl::PointSurfel> ColorHandler;
-        typedef ColorHandler::Ptr ColorHandlerPtr;
-        typedef ColorHandler::ConstPtr ColorHandlerConstPtr;
-
         PointsActorItem(QTreeWidgetItem* parent,
                         const boost::shared_ptr<CloudMesh>& cloud_mesh,
                         const vtkSmartPointer<vtkRenderWindow>& render_window);
         ~PointsActorItem ();
 
       protected:
-        void
-        createHandlers();
+        virtual void
+        initImpl();
 
         virtual void
-        createActorImpl();
+        updateImpl();
 
         virtual void
         prepareContextMenu(QMenu* menu) const;
 
       private:
-        /** \brief Internal method. Converts a PCL templated PointCloud object to a vtk polydata object.
-          * \param[in] geometry_handler the geometry handler object used to extract the XYZ data
-          * \param[out] polydata the resultant polydata containing the cloud
-          * \param[out] initcells a list of cell indices used for the conversion. This can be set once and then passed
-          * around to speed up the conversion.
-          */
-        static void
-        convertPointCloudToVTKPolyData(const GeometryHandlerConstPtr &geometry_handler,
-                                       vtkSmartPointer<vtkPolyData> &polydata,
-                                       vtkSmartPointer<vtkIdTypeArray> &initcells);
 
-        /** \brief Internal method. Updates a set of cells (vtkIdTypeArray) if the number of points in a cloud changes
-          * \param[out] cells the vtkIdTypeArray object (set of cells) to update
-          * \param[out] initcells a previously saved set of cells. If the number of points in the current cloud is
-          * higher than the number of cells in \a cells, and initcells contains enough data, then a copy from it
-          * will be made instead of regenerating the entire array.
-          * \param[in] nr_points the number of points in the new cloud. This dictates how many cells we need to
-          * generate
-          */
-        static void
-        updateCells(vtkSmartPointer<vtkIdTypeArray> &cells,
-                    vtkSmartPointer<vtkIdTypeArray> &initcells,
-                    vtkIdType nr_points);
-
-        /** \brief Internal method. Creates a vtk actor from a vtk polydata object.
-          * \param[in] data the vtk polydata object to create an actor for
-          * \param[out] actor the resultant vtk actor object
-          * \param[in] use_scalars set scalar properties to the mapper if it exists in the data. Default: true.
-          */
-        static void
-        createActorFromVTKDataSet(const vtkSmartPointer<vtkDataSet> &data,
-                                  vtkSmartPointer<vtkLODActor> &actor,
-                                  bool use_scalars = true);
-
-        /** \brief geometry handler that can be used for rendering the data. */
-        GeometryHandlerConstPtr   geometry_handler_;
-
-        /** \brief color handler that can be used for rendering the data. */
-        ColorHandlerConstPtr      color_handler_;
     };
   }
 }

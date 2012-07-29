@@ -51,36 +51,22 @@ pcl::modeler::AbstractWorker::AbstractWorker(const QList<CloudMeshItem*>& cloud_
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::modeler::AbstractWorker::~AbstractWorker(void)
 {
-  delete parameter_dialog_;
+  parameter_dialog_->deleteLater();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-bool
-pcl::modeler::AbstractWorker::run()
+int
+pcl::modeler::AbstractWorker::exec()
 {
-  for (size_t i = 0, i_end = cloud_mesh_items_.size(); i < i_end; ++ i)
-    initParameters(cloud_mesh_items_[i]);
+  for (QList<CloudMeshItem*>::iterator cloud_mesh_items_it = cloud_mesh_items_.begin();
+    cloud_mesh_items_it != cloud_mesh_items_.end();
+    ++ cloud_mesh_items_it)
+    initParameters(*cloud_mesh_items_it);
 
   setupParameters();
 
-  if (parameter_dialog_->exec() == QDialog::Accepted)
-  {
-    QThread* thread = new QThread;
-    moveToThread(thread);
-    connect(thread, SIGNAL(started()), this, SLOT(process()));
-    connect(this, SIGNAL(processed()), this, SLOT(postProcess()));
-    connect(this, SIGNAL(finished()), this, SLOT(deleteLater()));
-    connect(this, SIGNAL(finished()), thread, SLOT(quit()));
-    connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
-
-    thread->start();
-  }
-  else
-    deleteLater();
-
-  return (true);
+  return (parameter_dialog_->exec());
 }
-
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
@@ -89,24 +75,10 @@ pcl::modeler::AbstractWorker::process()
   for (QList<CloudMeshItem*>::iterator cloud_mesh_items_it = cloud_mesh_items_.begin();
     cloud_mesh_items_it != cloud_mesh_items_.end();
     ++ cloud_mesh_items_it)
+  {
     processImpl(*cloud_mesh_items_it);
-
-  emit processed();
-
-  return;
-}
-
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-void
-pcl::modeler::AbstractWorker::postProcess()
-{
-  moveToThread(QCoreApplication::instance()->thread());
-
-  for (QList<CloudMeshItem*>::iterator cloud_mesh_items_it = cloud_mesh_items_.begin();
-    cloud_mesh_items_it != cloud_mesh_items_.end();
-    ++ cloud_mesh_items_it)
-    postProcessImpl(*cloud_mesh_items_it);
+    emit processed(*cloud_mesh_items_it);
+  }
 
   emit finished();
 
