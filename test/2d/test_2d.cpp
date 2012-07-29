@@ -74,8 +74,7 @@ TEST (Convolution, borderOptions)
   pcl::PointCloud<pcl::PointXYZI>::Ptr kernel_cloud (new pcl::PointCloud<pcl::PointXYZI>);
   pcl::PointCloud<pcl::PointXYZI>::Ptr output_cloud (new pcl::PointCloud<pcl::PointXYZI>);
 
-  std::string lena_str(lena);
-  pcl::io::loadPCDFile(lena_str, *input_cloud);
+  pcl::io::loadPCDFile(lena, *input_cloud);
 
   int height = input_cloud->height;
   int width = input_cloud->width;
