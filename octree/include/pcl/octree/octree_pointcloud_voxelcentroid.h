@@ -151,7 +151,7 @@ namespace pcl
         virtual void addData (const OctreeKey& key_arg, const int& data_arg)
         {
           LeafNode* newLeaf = 0;
-          createLeafRecursive (key_arg, this->depthMask_, data_arg, this->rootNode_, newLeaf);
+          this->createLeafRecursive (key_arg, this->depthMask_, data_arg, this->rootNode_, newLeaf);
 
           if (newLeaf)
           {
