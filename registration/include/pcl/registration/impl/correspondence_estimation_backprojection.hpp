@@ -159,6 +159,134 @@ template <typename PointSource, typename PointTarget, typename NormalT> void
 pcl::registration::CorrespondenceEstimationBackProjection<PointSource, PointTarget, NormalT>::determineReciprocalCorrespondences (
     pcl::Correspondences &correspondences, double max_distance)
 {
+  if (!initCompute ())
+    return;
+
+  typedef typename pcl::traits::fieldList<PointSource>::type FieldListSource;
+  typedef typename pcl::traits::fieldList<PointTarget>::type FieldListTarget;
+  typedef typename pcl::intersect<FieldListSource, FieldListTarget>::type FieldList;
+  
+  // setup tree for reciprocal search
+  pcl::KdTreeFLANN<PointSource> tree_reciprocal;
+  // Set the internal point representation of choice
+  if (point_representation_)
+    tree_reciprocal.setPointRepresentation (point_representation_);
+
+  tree_reciprocal.setInputCloud (input_, indices_);
+
+  correspondences.resize (indices_->size ());
+
+  std::vector<int> nn_indices (k_);
+  std::vector<float> nn_dists (k_);
+  std::vector<int> index_reciprocal (1);
+  std::vector<float> distance_reciprocal (1);
+
+  float min_dist = std::numeric_limits<float>::max ();
+  int min_index = 0;
+  
+  pcl::Correspondence corr;
+  unsigned int nr_valid_correspondences = 0;
+  int target_idx = 0;
+
+  // Check if the template types are the same. If true, avoid a copy.
+  // Both point types MUST be registered using the POINT_CLOUD_REGISTER_POINT_STRUCT macro!
+  if (isSamePointType<PointSource, PointTarget> ())
+  {
+    PointTarget pt;
+    // Iterate over the input set of source indices
+    for (std::vector<int>::const_iterator idx_i = indices_->begin (); idx_i != indices_->end (); ++idx_i)
+    {
+      tree_->nearestKSearch (input_->points[*idx_i], k_, nn_indices, nn_dists);
+
+      // Among the K nearest neighbours find the one with minimum perpendicular distance to the normal
+      min_dist = std::numeric_limits<float>::max ();
+      
+      // Find the best correspondence
+      for (size_t j = 0; j < nn_indices.size (); j++)
+      {
+        float cos_angle = source_normals_->points[*idx_i].normal_x * target_normals_->points[nn_indices[j]].normal_x +
+                          source_normals_->points[*idx_i].normal_y * target_normals_->points[nn_indices[j]].normal_y +
+                          source_normals_->points[*idx_i].normal_z * target_normals_->points[nn_indices[j]].normal_z ;
+        float dist = nn_dists[min_index] * (2.0f - cos_angle * cos_angle);
+        
+        if (dist < min_dist)
+        {
+          min_dist = dist;
+          min_index = j;
+        }
+      }
+      if (min_dist > max_distance)
+        continue;
+
+      // Check if the correspondence is reciprocal
+      if (target_indices_)
+        target_idx = (*target_indices_)[nn_indices[min_index]];
+      else
+        target_idx = nn_indices[min_index];
+      tree_reciprocal.nearestKSearch (target_->points[target_idx], 1, index_reciprocal, distance_reciprocal);
+
+      if (*idx_i != index_reciprocal[0])
+        continue;
+
+      corr.index_query = *idx_i;
+      corr.index_match = nn_indices[min_index];
+      corr.distance = nn_dists[min_index];//min_dist;
+      correspondences[nr_valid_correspondences++] = corr;
+    }
+  }
+  else
+  {
+    PointTarget pt;
+    
+    // Iterate over the input set of source indices
+    for (std::vector<int>::const_iterator idx_i = indices_->begin (); idx_i != indices_->end (); ++idx_i)
+    {
+      tree_->nearestKSearch (input_->points[*idx_i], k_, nn_indices, nn_dists);
+ 
+      // Among the K nearest neighbours find the one with minimum perpendicular distance to the normal
+      min_dist = std::numeric_limits<float>::max ();
+      
+      // Find the best correspondence
+      for (size_t j = 0; j < nn_indices.size (); j++)
+      {
+        PointSource pt_src;
+        // Copy the source data to a target PointTarget format so we can search in the tree
+        pcl::for_each_type <FieldListTarget> (pcl::NdConcatenateFunctor <PointSource, PointTarget> (
+            input_->points[*idx_i], 
+            pt_src));
+
+        float cos_angle = source_normals_->points[*idx_i].normal_x * target_normals_->points[nn_indices[j]].normal_x +
+                          source_normals_->points[*idx_i].normal_y * target_normals_->points[nn_indices[j]].normal_y +
+                          source_normals_->points[*idx_i].normal_z * target_normals_->points[nn_indices[j]].normal_z ;
+        float dist = nn_dists[min_index] * (2.0f - cos_angle * cos_angle);
+        
+        if (dist < min_dist)
+        {
+          min_dist = dist;
+          min_index = j;
+        }
+      }
+      if (min_dist > max_distance)
+        continue;
+      
+      // Check if the correspondence is reciprocal
+      if (target_indices_)
+        target_idx = (*target_indices_)[nn_indices[min_index]];
+      else
+        target_idx = nn_indices[min_index];
+      tree_reciprocal.nearestKSearch (target_->points[target_idx], 1, index_reciprocal, distance_reciprocal);
+
+      if (*idx_i != index_reciprocal[0])
+        continue;
+
+      corr.index_query = *idx_i;
+      corr.index_match = nn_indices[min_index];
+      corr.distance = nn_dists[min_index];//min_dist;
+      correspondences[nr_valid_correspondences++] = corr;
+    }
+  }
+  correspondences.resize (nr_valid_correspondences);
+  deinitCompute ();
 }
 
 #endif    // PCL_REGISTRATION_IMPL_CORRESPONDENCE_ESTIMATION_BACK_PROJECTION_HPP_

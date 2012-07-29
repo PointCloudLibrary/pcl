@@ -56,6 +56,9 @@ namespace pcl
     class CorrespondenceRejector
     {
       public:
+        typedef boost::shared_ptr<CorrespondenceRejector> Ptr;
+        typedef boost::shared_ptr<const CorrespondenceRejector> ConstPtr;
+
         /** \brief Empty constructor. */
         CorrespondenceRejector () : rejection_name_ (), input_correspondences_ () {};
 
