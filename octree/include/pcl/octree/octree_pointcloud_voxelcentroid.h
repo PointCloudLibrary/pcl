@@ -114,7 +114,7 @@ namespace pcl
         reset ()
         {
           point_counter_ = 0;
-          point_sum_.x = point_sum_.y = point_sum_.z = 0.0f;
+          point_sum_ *= 0.0f;
         }
 
       private:
