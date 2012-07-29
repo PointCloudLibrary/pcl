@@ -85,6 +85,7 @@ TEST (Convolution, borderOptions)
 
   conv->setKernel(*kernel_cloud);
   conv->setInputCloud(input_cloud);
+  conv->setImageChannel(convolution<pcl::PointXYZI>::IMAGE_CHANNEL_INTENSITY);
 
   conv->setBoundaryOptions(convolution<pcl::PointXYZI>::BOUNDARY_OPTION_MIRROR);
   conv->convolve (*output_cloud);
@@ -147,6 +148,7 @@ TEST (Convolution, gaussianSmooth)
 
   conv->setKernel(*kernel_cloud);
   conv->setInputCloud(input_cloud);
+  conv->setImageChannel(convolution<pcl::PointXYZI>::IMAGE_CHANNEL_INTENSITY);
 
   conv->setBoundaryOptions(convolution<pcl::PointXYZI>::BOUNDARY_OPTION_MIRROR);
   conv->convolve (*output_cloud);

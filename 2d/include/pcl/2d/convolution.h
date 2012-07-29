@@ -116,7 +116,7 @@ public:
 
     convolution ()
     {
-      image_channel_ = IMAGE_CHANNEL_RGB;
+      image_channel_ = IMAGE_CHANNEL_INTENSITY;
       boundary_options_ = BOUNDARY_OPTION_CLAMP;
     }
 
