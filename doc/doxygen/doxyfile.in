@@ -1,10 +1,11 @@
-
 #---------------------------------------------------------------------------
 # Project related configuration options
 #---------------------------------------------------------------------------
 DOXYFILE_ENCODING      = UTF-8
 PROJECT_NAME           = "Point Cloud Library (PCL)"
 PROJECT_NUMBER         = @PCL_VERSION@
+PROJECT_BRIEF          =
+PROJECT_LOGO           =
 OUTPUT_DIRECTORY       = "@CMAKE_CURRENT_BINARY_DIR@"
 CREATE_SUBDIRS         = NO
 OUTPUT_LANGUAGE        = English
@@ -22,7 +23,7 @@ ABBREVIATE_BRIEF       = "The $name class" \
                          an \
                          the
 ALWAYS_DETAILED_SEC    = NO
-INLINE_INHERITED_MEMB  = YES
+INLINE_INHERITED_MEMB  = NO
 FULL_PATH_NAMES        = YES
 STRIP_FROM_PATH        = 
 STRIP_FROM_INC_PATH    = @STRIPPED_HEADERS@
@@ -34,26 +35,32 @@ INHERIT_DOCS           = YES
 SEPARATE_MEMBER_PAGES  = NO
 TAB_SIZE               = 2
 ALIASES                = 
+TCL_SUBST              =
 OPTIMIZE_OUTPUT_FOR_C  = NO
 OPTIMIZE_OUTPUT_JAVA   = NO
 OPTIMIZE_FOR_FORTRAN   = NO
 OPTIMIZE_OUTPUT_VHDL   = NO
 EXTENSION_MAPPING      = 
+MARKDOWN_SUPPORT       = YES
 BUILTIN_STL_SUPPORT    = NO
 CPP_CLI_SUPPORT        = NO
 SIP_SUPPORT            = NO
 IDL_PROPERTY_SUPPORT   = YES
 DISTRIBUTE_GROUP_DOC   = NO
 SUBGROUPING            = YES
+INLINE_GROUPED_CLASSES = NO
+INLINE_SIMPLE_STRUCTS  = NO
 TYPEDEF_HIDES_STRUCT   = NO
 SYMBOL_CACHE_SIZE      = 0
+LOOKUP_CACHE_SIZE      = 0
 
 #---------------------------------------------------------------------------
 # Build related configuration options
 #---------------------------------------------------------------------------
 EXTRACT_ALL            = YES
 EXTRACT_PRIVATE        = NO
-EXTRACT_STATIC         = NO
+EXTRACT_PACKAGE        = NO
+EXTRACT_STATIC         = YES
 EXTRACT_LOCAL_CLASSES  = NO
 EXTRACT_LOCAL_METHODS  = NO
 EXTRACT_ANON_NSPACES   = NO
@@ -72,6 +79,7 @@ SORT_BRIEF_DOCS        = NO
 SORT_MEMBERS_CTORS_1ST = NO
 SORT_GROUP_NAMES       = NO
 SORT_BY_SCOPE_NAME     = NO
+STRICT_PROTO_MATCHING  = NO
 GENERATE_TODOLIST      = NO
 GENERATE_TESTLIST      = NO
 GENERATE_BUGLIST       = NO
@@ -79,11 +87,12 @@ GENERATE_DEPRECATEDLIST= NO
 ENABLED_SECTIONS       = 
 MAX_INITIALIZER_LINES  = 30
 SHOW_USED_FILES        = YES
-SHOW_DIRECTORIES       = YES
-SHOW_FILES             = YES
+SHOW_FILES             = NO
+SHOW_DIRECTORIES       = NO
 SHOW_NAMESPACES        = YES
 FILE_VERSION_FILTER    = 
 LAYOUT_FILE            = "@PCL_SOURCE_DIR@/doc/doxygen/doxygen_layout.xml"
+CITE_BIB_FILES         =
 
 #---------------------------------------------------------------------------
 # configuration options related to warning and progress messages
@@ -93,14 +102,14 @@ WARNINGS               = YES
 WARN_IF_UNDOCUMENTED   = YES
 WARN_IF_DOC_ERROR      = YES
 WARN_NO_PARAMDOC       = NO
-WARN_FORMAT            = "$file:$line: $text"
+WARN_FORMAT            = "$file:$line: $text "
 WARN_LOGFILE           = 
 
 #---------------------------------------------------------------------------
 # configuration options related to the input files
 #---------------------------------------------------------------------------
-INPUT                  = @DOC_SOURCE_DIR@
- 												 "@PCL_SOURCE_DIR@/doc/doxygen"
+INPUT                  = "@PCL_SOURCE_DIR@" \
+                         "@PCL_SOURCE_DIR@/doc/doxygen"
 INPUT_ENCODING         = UTF-8
 FILE_PATTERNS          = *.h \
                          *.hpp \
@@ -110,16 +119,17 @@ EXCLUDE                = */.svn \
                          "@PCL_SOURCE_DIR@/cmake" \
                          "@PCL_SOURCE_DIR@/3rdparty" \
                          "@PCL_SOURCE_DIR@/test" \
-                         "@PCL_SOURCE_DIR@/cuda" \
-                         "@PCL_SOURCE_DIR@/surface/include/pcl/surface/impl/poisson/" \
-                         "@PCL_SOURCE_DIR@/surface/include/pcl/surface/poisson/" \
+                         "@PCL_SOURCE_DIR@/android" \
                          "@PCL_SOURCE_DIR@/apps" \
                          "@PCL_SOURCE_DIR@/tools" \
-                         "@PCL_SOURCE_DIR@/proctor" \
+                         "@PCL_SOURCE_DIR@/gpu/people" \
+                         "@PCL_SOURCE_DIR@/surface/include/pcl/surface/poisson" \
+                         "@PCL_SOURCE_DIR@/surface/include/pcl/surface/impl/poisson" \
+                         "@PCL_SOURCE_DIR@/surface/include/pcl/surface/on_nurbs" \
+                         "@PCL_SOURCE_DIR@/surface/include/pcl/surface/openNURBS" \
+                         "@PCL_SOURCE_DIR@/surface/include/pcl/surface/impl/nurbs" \
                          "@PCL_SOURCE_DIR@/simulation" \
-                         "@PCL_SOURCE_DIR@/android" \
-                         "@PCL_SOURCE_DIR@/people" \
-                         "@PCL_SOURCE_DIR@/tracking"
+                         "@PCL_SOURCE_DIR@/test/gtest-1.6.0"
 EXCLUDE_SYMLINKS       = YES
 EXCLUDE_PATTERNS       = 
 EXCLUDE_SYMBOLS        = 
@@ -130,6 +140,7 @@ IMAGE_PATH             =
 INPUT_FILTER           = 
 FILTER_PATTERNS        = 
 FILTER_SOURCE_FILES    = NO
+FILTER_SOURCE_PATTERNS =
 
 #---------------------------------------------------------------------------
 # configuration options related to source browsing
@@ -137,8 +148,8 @@ FILTER_SOURCE_FILES    = NO
 SOURCE_BROWSER         = YES
 INLINE_SOURCES         = NO
 STRIP_CODE_COMMENTS    = YES
-REFERENCED_BY_RELATION = NO
-REFERENCES_RELATION    = NO
+REFERENCED_BY_RELATION = YES
+REFERENCES_RELATION    = YES
 REFERENCES_LINK_SOURCE = YES
 USE_HTAGS              = NO
 VERBATIM_HEADERS       = YES
@@ -157,14 +168,14 @@ GENERATE_HTML          = YES
 HTML_OUTPUT            = html
 HTML_FILE_EXTENSION    = .html
 HTML_HEADER            = 
-HTML_FOOTER            =
+HTML_FOOTER            = @PCL_SOURCE_DIR@/doc/doxygen/footer.html
 HTML_STYLESHEET        = 
+HTML_EXTRA_FILES       =
 HTML_COLORSTYLE_HUE    = 220
 HTML_COLORSTYLE_SAT    = 100
 HTML_COLORSTYLE_GAMMA  = 80
 HTML_TIMESTAMP         = YES
-HTML_ALIGN_MEMBERS     = YES
-HTML_DYNAMIC_SECTIONS  = NO
+HTML_DYNAMIC_SECTIONS  = YES
 GENERATE_DOCSET        = YES
 DOCSET_FEEDNAME        = "Doxygen generated docs"
 DOCSET_BUNDLE_ID       = pointclouds.org
@@ -188,15 +199,17 @@ QHG_LOCATION           =
 GENERATE_ECLIPSEHELP   = NO
 ECLIPSE_DOC_ID         = pointclouds.org.Project
 DISABLE_INDEX          = NO
-ENUM_VALUES_PER_LINE   = 4
 GENERATE_TREEVIEW      = NO
-USE_INLINE_TREES       = NO
+ENUM_VALUES_PER_LINE   = 4
 TREEVIEW_WIDTH         = 250
 EXT_LINKS_IN_WINDOW    = NO
 FORMULA_FONTSIZE       = 10
 FORMULA_TRANSPARENT    = YES
+USE_MATHJAX            = NO
+MATHJAX_RELPATH        = http://cdn.mathjax.org/mathjax/latest
+MATHJAX_EXTENSIONS     =
 SEARCHENGINE           = YES
-SERVER_BASED_SEARCH    = NO
+SERVER_BASED_SEARCH    = YES
 
 #---------------------------------------------------------------------------
 # configuration options related to the LaTeX output
@@ -209,11 +222,13 @@ COMPACT_LATEX          = NO
 PAPER_TYPE             = a4wide
 EXTRA_PACKAGES         = 
 LATEX_HEADER           = 
+LATEX_FOOTER           =
 PDF_HYPERLINKS         = YES
 USE_PDFLATEX           = YES
 LATEX_BATCHMODE        = NO
 LATEX_HIDE_INDICES     = NO
 LATEX_SOURCE_CODE      = NO
+LATEX_BIB_STYLE        = plain
 
 #---------------------------------------------------------------------------
 # configuration options related to the RTF output
@@ -264,8 +279,8 @@ EXPAND_ONLY_PREDEF     = YES
 SEARCH_INCLUDES        = YES
 INCLUDE_PATH           = 
 INCLUDE_FILE_PATTERNS  = *.h
-#PREDEFINED             = "HAVE_QHULL=1"
-PREDEFINED             = protected=private
+PREDEFINED             = protected=private \
+                         "HAVE_QHULL=1"
 EXPAND_AS_DEFINED      = 
 SKIP_FUNCTION_MACROS   = YES
 
@@ -273,6 +288,7 @@ SKIP_FUNCTION_MACROS   = YES
 # Configuration::additions related to external references
 #---------------------------------------------------------------------------
 TAGFILES               = 
+#TAGFILES               = qtools_docs/qtools.tag=../../qtools_docs/html
 GENERATE_TAGFILE       = pcl.tag
 ALLEXTERNALS           = NO
 EXTERNAL_GROUPS        = YES
@@ -286,14 +302,15 @@ MSCGEN_PATH            =
 HIDE_UNDOC_RELATIONS   = YES
 HAVE_DOT               = @HAVE_DOT@
 DOT_NUM_THREADS        = 0
-DOT_FONTNAME           = FreeSans.ttf
+DOT_FONTNAME           = Helvetica
 DOT_FONTSIZE           = 10
 DOT_FONTPATH           = 
 CLASS_GRAPH            = YES
 COLLABORATION_GRAPH    = YES
 GROUP_GRAPHS           = YES
 UML_LOOK               = NO
-TEMPLATE_RELATIONS     = NO
+UML_LIMIT_NUM_FIELDS   = 10
+TEMPLATE_RELATIONS     = YES
 INCLUDE_GRAPH          = YES
 INCLUDED_BY_GRAPH      = YES
 CALL_GRAPH             = NO
@@ -301,11 +318,13 @@ CALLER_GRAPH           = NO
 GRAPHICAL_HIERARCHY    = YES
 DIRECTORY_GRAPH        = YES
 DOT_IMAGE_FORMAT       = png
+INTERACTIVE_SVG        = YES
 DOT_PATH               = 
 DOTFILE_DIRS           = 
+MSCFILE_DIRS           =
 DOT_GRAPH_MAX_NODES    = 50
 MAX_DOT_GRAPH_DEPTH    = 0
-DOT_TRANSPARENT        = NO
+DOT_TRANSPARENT        = YES
 DOT_MULTI_TARGETS      = NO
 GENERATE_LEGEND        = YES
 DOT_CLEANUP            = YES
