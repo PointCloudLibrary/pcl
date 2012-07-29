@@ -52,9 +52,9 @@ namespace pcl
   namespace octree
   {
     /** \brief @b Octree pointcloud voxel centroid leaf node class
-     * \note This class implements a leaf node that calculates the mean centroid of all points added this octree container.
-     * \author Julius Kammerl (julius@kammerl.de)
-     */
+      * \note This class implements a leaf node that calculates the mean centroid of all points added this octree container.
+      * \author Julius Kammerl (julius@kammerl.de)
+      */
     template<typename DataT, typename PointT>
     class OctreePointCloudVoxelCentroidContainer : public OctreeContainerBase<DataT>
     {
@@ -78,26 +78,30 @@ namespace pcl
         }
 
         /** \brief Add new point to voxel.
-         */
-        void addPoint (const PointT& newPoint_arg)
+          * \param[in] new_point the new point to add  
+          */
+        void 
+        addPoint (const PointT& new_point)
         {
           using namespace pcl::common;
 
-          ++pointCounter_;
+          ++point_counter_;
 
-          pointSum += newPoint_arg;
+          point_sum_ += new_point;
         }
 
         /** \brief Calculate centroid of voxel.
-         */
-        void getCentroid (PointT& centroid_arg) const
+          * \param[out] centroid_arg the resultant centroid of the voxel 
+          */
+        void 
+        getCentroid (PointT& centroid_arg) const
         {
           using namespace pcl::common;
 
-          if (pointCounter_)
+          if (point_counter_)
           {
-            centroid_arg = pointSum;
-            centroid_arg /= static_cast<float> (pointCounter_);
+            centroid_arg = point_sum_;
+            centroid_arg /= static_cast<float> (point_counter_);
           }
           else
           {
@@ -106,19 +110,20 @@ namespace pcl
         }
 
         /** \brief Reset leaf container. */
-        virtual void reset ()
+        virtual void 
+        reset ()
         {
-          pointCounter_ = 0;
-          pointSum.x = pointSum.y = pointSum.z = 0.0f;
+          point_counter_ = 0;
+          point_sum_.x = point_sum_.y = point_sum_.z = 0.0f;
         }
 
       private:
-        unsigned int pointCounter_;
-        PointT pointSum;
+        unsigned int point_counter_;
+        PointT point_sum_;
     };
 
     /** \brief @b Octree pointcloud voxel centroid class
-     * \note This class generate an octrees from a point cloud (zero-copy). It provides a vector of centroids for all occupied voxels.
+      * \note This class generate an octrees from a point cloud (zero-copy). It provides a vector of centroids for all occupied voxels.
       * \note The octree pointcloud is initialized with its voxel resolution. Its bounding box is automatically adjusted or can be predefined.
       * \note
       * \note typename: PointT: type of point used in pointcloud
@@ -149,20 +154,21 @@ namespace pcl
         }
 
         /** \brief Add DataT object to leaf node at octree key.
-         *  \param key_arg: octree key addressing a leaf node.
-         *  \param data_arg: DataT object to be added.
-         * */
-        virtual void addData (const OctreeKey& key_arg, const int& data_arg)
+          * \param[in] key_arg octree key addressing a leaf node.
+          * \param[in] data_arg DataT object to be added.
+          */
+        virtual void 
+        addData (const OctreeKey& key_arg, const int& data_arg)
         {
-          LeafNode* newLeaf = 0;
-          this->createLeafRecursive (key_arg, this->depthMask_, data_arg, this->rootNode_, newLeaf);
+          LeafNode* new_leaf = 0;
+          this->createLeafRecursive (key_arg, this->depthMask_, data_arg, this->rootNode_, new_leaf);
 
-          if (newLeaf)
+          if (new_leaf)
           {
-            const PointT& cloudPoint = this->getPointByIndex(data_arg);
+            const PointT& cloudPoint = this->getPointByIndex (data_arg);
 
             // add data to leaf
-            LeafT* container = newLeaf;
+            LeafT* container = new_leaf;
             container->addPoint (cloudPoint);
             this->objectCount_++;
           }
@@ -202,7 +208,9 @@ namespace pcl
           * \return number of occupied voxels
           */
         void
-        getVoxelCentroidsRecursive (const BranchNode* branch_arg, OctreeKey& key_arg, typename OctreePointCloud<PointT, LeafT, BranchT>::AlignedPointTVector &voxel_centroid_list_arg) const;
+        getVoxelCentroidsRecursive (const BranchNode* branch_arg, 
+                                    OctreeKey& key_arg, 
+                                    typename OctreePointCloud<PointT, LeafT, BranchT>::AlignedPointTVector &voxel_centroid_list_arg) const;
 
     };
   }
