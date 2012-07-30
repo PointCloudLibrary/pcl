@@ -42,7 +42,7 @@
 
 template<typename PointT>
 void
-pcl::pcl_2d::kernel<PointT>::fetchKernel (PointCloud<PointT> &kernel)
+pcl::pcl_2d::kernel<PointT>::fetchKernel (pcl::PointCloud<PointT> &kernel)
 {
   switch (kernel_type_)
   {
@@ -92,7 +92,7 @@ pcl::pcl_2d::kernel<PointT>::fetchKernel (PointCloud<PointT> &kernel)
 
 template<typename PointT>
 void
-pcl::pcl_2d::kernel<PointT>::gaussianKernel (PointCloud<PointT> &kernel)
+pcl::pcl_2d::kernel<PointT>::gaussianKernel (pcl::PointCloud<PointT> &kernel)
 {
   float sum = 0;
   kernel.resize (kernel_size_ * kernel_size_);
@@ -118,7 +118,7 @@ pcl::pcl_2d::kernel<PointT>::gaussianKernel (PointCloud<PointT> &kernel)
 
 template<typename PointT>
 void
-pcl::pcl_2d::kernel<PointT>::loGKernel (PointCloud<PointT> &kernel)
+pcl::pcl_2d::kernel<PointT>::loGKernel (pcl::PointCloud<PointT> &kernel)
 {
   float sum = 0;
   float temp = 0;
@@ -145,7 +145,7 @@ pcl::pcl_2d::kernel<PointT>::loGKernel (PointCloud<PointT> &kernel)
 
 template<typename PointT>
 void
-pcl::pcl_2d::kernel<PointT>::sobelKernelX (PointCloud<PointT> &kernel)
+pcl::pcl_2d::kernel<PointT>::sobelKernelX (pcl::PointCloud<PointT> &kernel)
 {
   kernel.resize (9);
   kernel.height = 3;
@@ -157,7 +157,7 @@ pcl::pcl_2d::kernel<PointT>::sobelKernelX (PointCloud<PointT> &kernel)
 
 template<typename PointT>
 void
-pcl::pcl_2d::kernel<PointT>::prewittKernelX (PointCloud<PointT> &kernel)
+pcl::pcl_2d::kernel<PointT>::prewittKernelX (pcl::PointCloud<PointT> &kernel)
 {
   kernel.resize (9);
   kernel.height = 3;
@@ -169,7 +169,7 @@ pcl::pcl_2d::kernel<PointT>::prewittKernelX (PointCloud<PointT> &kernel)
 
 template<typename PointT>
 void
-pcl::pcl_2d::kernel<PointT>::robertsKernelX (PointCloud<PointT> &kernel)
+pcl::pcl_2d::kernel<PointT>::robertsKernelX (pcl::PointCloud<PointT> &kernel)
 {
   kernel.resize (4);
   kernel.height = 2;
@@ -180,7 +180,7 @@ pcl::pcl_2d::kernel<PointT>::robertsKernelX (PointCloud<PointT> &kernel)
 
 template<typename PointT>
 void
-pcl::pcl_2d::kernel<PointT>::sobelKernelY (PointCloud<PointT> &kernel)
+pcl::pcl_2d::kernel<PointT>::sobelKernelY (pcl::PointCloud<PointT> &kernel)
 {
   kernel.resize (9);
   kernel.height = 3;
@@ -192,7 +192,7 @@ pcl::pcl_2d::kernel<PointT>::sobelKernelY (PointCloud<PointT> &kernel)
 
 template<typename PointT>
 void
-pcl::pcl_2d::kernel<PointT>::prewittKernelY (PointCloud<PointT> &kernel)
+pcl::pcl_2d::kernel<PointT>::prewittKernelY (pcl::PointCloud<PointT> &kernel)
 {
   kernel.resize (9);
   kernel.height = 3;
@@ -204,7 +204,7 @@ pcl::pcl_2d::kernel<PointT>::prewittKernelY (PointCloud<PointT> &kernel)
 
 template<typename PointT>
 void
-pcl::pcl_2d::kernel<PointT>::robertsKernelY (PointCloud<PointT> &kernel)
+pcl::pcl_2d::kernel<PointT>::robertsKernelY (pcl::PointCloud<PointT> &kernel)
 {
   kernel.resize (4);
   kernel.height = 2;
@@ -215,7 +215,7 @@ pcl::pcl_2d::kernel<PointT>::robertsKernelY (PointCloud<PointT> &kernel)
 
 template<typename PointT>
 void
-pcl::pcl_2d::kernel<PointT>::derivativeXCentralKernel (PointCloud<PointT> &kernel)
+pcl::pcl_2d::kernel<PointT>::derivativeXCentralKernel (pcl::PointCloud<PointT> &kernel)
 {
   kernel.resize (3);
   kernel.height = 1;
@@ -225,7 +225,7 @@ pcl::pcl_2d::kernel<PointT>::derivativeXCentralKernel (PointCloud<PointT> &kerne
 
 template<typename PointT>
 void
-pcl::pcl_2d::kernel<PointT>::derivativeXForwardKernel (PointCloud<PointT> &kernel)
+pcl::pcl_2d::kernel<PointT>::derivativeXForwardKernel (pcl::PointCloud<PointT> &kernel)
 {
   kernel.resize (3);
   kernel.height = 1;
@@ -235,7 +235,7 @@ pcl::pcl_2d::kernel<PointT>::derivativeXForwardKernel (PointCloud<PointT> &kerne
 
 template<typename PointT>
 void
-pcl::pcl_2d::kernel<PointT>::derivativeXBackwardKernel (PointCloud<PointT> &kernel)
+pcl::pcl_2d::kernel<PointT>::derivativeXBackwardKernel (pcl::PointCloud<PointT> &kernel)
 {
   kernel.resize (3);
   kernel.height = 1;
@@ -245,7 +245,7 @@ pcl::pcl_2d::kernel<PointT>::derivativeXBackwardKernel (PointCloud<PointT> &kern
 
 template<typename PointT>
 void
-pcl::pcl_2d::kernel<PointT>::derivativeYCentralKernel (PointCloud<PointT> &kernel)
+pcl::pcl_2d::kernel<PointT>::derivativeYCentralKernel (pcl::PointCloud<PointT> &kernel)
 {
   kernel.resize (3);
   kernel.height = 3;
@@ -256,7 +256,7 @@ pcl::pcl_2d::kernel<PointT>::derivativeYCentralKernel (PointCloud<PointT> &kerne
 
 template<typename PointT>
 void
-pcl::pcl_2d::kernel<PointT>::derivativeYForwardKernel (PointCloud<PointT> &kernel)
+pcl::pcl_2d::kernel<PointT>::derivativeYForwardKernel (pcl::PointCloud<PointT> &kernel)
 {
   kernel.resize (3);
   kernel.height = 3;
@@ -266,7 +266,7 @@ pcl::pcl_2d::kernel<PointT>::derivativeYForwardKernel (PointCloud<PointT> &kerne
 
 template<typename PointT>
 void
-pcl::pcl_2d::kernel<PointT>::derivativeYBackwardKernel (PointCloud<PointT> &kernel)
+pcl::pcl_2d::kernel<PointT>::derivativeYBackwardKernel (pcl::PointCloud<PointT> &kernel)
 {
   kernel.resize (3);
   kernel.height = 3;

@@ -402,7 +402,6 @@ int
 main (int argc, char** argv)
 {
   testing::InitGoogleTest (&argc, argv);
-  printf("%d", argc);
   lena = argv[1]; //lena.pcd
   gaus = argv[2]; //gauss_smooth.pcd
   erosion_ref = argv[3];

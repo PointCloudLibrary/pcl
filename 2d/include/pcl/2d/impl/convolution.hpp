@@ -42,7 +42,7 @@
 
 template<typename PointT>
 void
-pcl::pcl_2d::convolution<PointT>::convolve (PointCloud<PointT> &output)
+pcl::pcl_2d::convolution<PointT>::convolve (pcl::PointCloud<PointT> &output)
 {
   int rows = input_->height;
   int cols = input_->width;
@@ -229,18 +229,18 @@ pcl::pcl_2d::convolution<PointT>::convolve (PointCloud<PointT> &output)
                 {
                   //output (j, i).intensity += kernel_ (l, k).intensity * ((*input_)(j + l - k_cols / 2, i + k - k_rows / 2).intensity);
                   if(image_channel_ == IMAGE_CHANNEL_INTENSITY){
-                    pcl::for_each_type<FieldList> (pcl::CopyIfFieldExists<typename CloudT::PointType, float> ((*input_)(l, k), "intensity", has_intensity, input_intensity));
+                    pcl::for_each_type<FieldList> (pcl::CopyIfFieldExists<typename CloudT::PointType, float> ((*input_)(j + l - k_cols / 2, i + k - k_rows / 2), "intensity", has_intensity, input_intensity));
                     pcl::for_each_type<FieldList> (pcl::CopyIfFieldExists<typename CloudT::PointType, float> (kernel_ (l, k), "intensity", has_intensity, kernel_intensity));
                     output_intensity += kernel_intensity*input_intensity;
                   }
                   if(image_channel_ == IMAGE_CHANNEL_RGB){
-                    pcl::for_each_type<FieldList> (pcl::CopyIfFieldExists<typename CloudT::PointType, float> ((*input_)(l, k), "r", has_intensity, input_r));
+                    pcl::for_each_type<FieldList> (pcl::CopyIfFieldExists<typename CloudT::PointType, float> ((*input_)(j + l - k_cols / 2, i + k - k_rows / 2), "r", has_intensity, input_r));
                     pcl::for_each_type<FieldList> (pcl::CopyIfFieldExists<typename CloudT::PointType, float> (kernel_ (l, k), "r", has_intensity, kernel_r));
                     output_r += kernel_r*input_r;
-                    pcl::for_each_type<FieldList> (pcl::CopyIfFieldExists<typename CloudT::PointType, float> ((*input_)(l, k), "g", has_intensity, input_g));
+                    pcl::for_each_type<FieldList> (pcl::CopyIfFieldExists<typename CloudT::PointType, float> ((*input_)(j + l - k_cols / 2, i + k - k_rows / 2), "g", has_intensity, input_g));
                     pcl::for_each_type<FieldList> (pcl::CopyIfFieldExists<typename CloudT::PointType, float> (kernel_ (l, k), "g", has_intensity, kernel_g));
                     output_g += kernel_r*input_g;
-                    pcl::for_each_type<FieldList> (pcl::CopyIfFieldExists<typename CloudT::PointType, float> ((*input_)(l, k), "b", has_intensity, input_b));
+                    pcl::for_each_type<FieldList> (pcl::CopyIfFieldExists<typename CloudT::PointType, float> ((*input_)(j + l - k_cols / 2, i + k - k_rows / 2), "b", has_intensity, input_b));
                     pcl::for_each_type<FieldList> (pcl::CopyIfFieldExists<typename CloudT::PointType, float> (kernel_ (l, k), "b", has_intensity, kernel_b));
                     output_b += kernel_r*input_b;
                   }
@@ -262,7 +262,7 @@ pcl::pcl_2d::convolution<PointT>::convolve (PointCloud<PointT> &output)
 
 template<typename PointT>
 void
-pcl::pcl_2d::convolution<PointT>::applyFilter (PointCloud<PointT> &output)
+pcl::pcl_2d::convolution<PointT>::applyFilter (pcl::PointCloud<PointT> &output)
 {
   convolve (output);
 }
@@ -276,7 +276,7 @@ pcl::pcl_2d::convolution<PointT>::setBoundaryOptions (BOUNDARY_OPTIONS_ENUM boun
 
 template<typename PointT>
 void
-pcl::pcl_2d::convolution<PointT>::setKernel (PointCloud<PointT> &kernel)
+pcl::pcl_2d::convolution<PointT>::setKernel (pcl::PointCloud<PointT> &kernel)
 {
   kernel_ = kernel;
 }

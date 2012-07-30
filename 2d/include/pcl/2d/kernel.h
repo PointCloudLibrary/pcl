@@ -89,7 +89,7 @@ namespace pcl
          *
          * Helper function which returns the kernel selected by the kernel_type_ enum
          */
-        void fetchKernel (PointCloud<PointT> &kernel);
+        void fetchKernel (pcl::PointCloud<PointT> &kernel);
 
         /**
          *
@@ -98,7 +98,7 @@ namespace pcl
          * Gaussian kernel with size (kernel_size_ x kernel_size_) and variance sigma_
          */
 
-        void gaussianKernel (PointCloud<PointT> &kernel);
+        void gaussianKernel (pcl::PointCloud<PointT> &kernel);
 
         /**
          *
@@ -107,7 +107,7 @@ namespace pcl
          * Laplacian of Gaussian kernel with size (kernel_size_ x kernel_size_) and variance sigma_
          */
 
-        void loGKernel (PointCloud<PointT> &kernel);
+        void loGKernel (pcl::PointCloudpcl::PointCloudkernel);
 
         /**
          *
@@ -116,7 +116,7 @@ namespace pcl
          * 3x3 Sobel kernel in the X direction
          */
 
-        void sobelKernelX (PointCloud<PointT> &Kernel);
+        void sobelKernelX (pcl::PointCloud<PointT> &Kernel);
 
         /**
          *
@@ -125,7 +125,7 @@ namespace pcl
          * 3x3 Prewitt kernel in the X direction
          */
 
-        void prewittKernelX (PointCloud<PointT> &Kernel);
+        void prewittKernelX (pcl::PointCloud<PointT> &Kernel);
 
         /**
          *
@@ -134,7 +134,7 @@ namespace pcl
          * 2x2 Roberts kernel in the X direction
          */
 
-        void robertsKernelX (PointCloud<PointT> &kernel);
+        void robertsKernelX (pcl::PointCloud<PointT> &kernel);
 
         /**
          *
@@ -143,7 +143,7 @@ namespace pcl
          * 3x3 Sobel kernel in the Y direction
          */
 
-        void sobelKernelY (PointCloud<PointT> &Kernel);
+        void sobelKernelY (pcl::PointCloud<PointT> &Kernel);
 
         /**
          *
@@ -152,7 +152,7 @@ namespace pcl
          * 3x3 Prewitt kernel in the Y direction
          */
 
-        void prewittKernelY (PointCloud<PointT> &Kernel);
+        void prewittKernelY (pcl::PointCloud<PointT> &Kernel);
 
         /**
          *
@@ -161,7 +161,7 @@ namespace pcl
          * 2x2 Roberts kernel in the Y direction
          */
 
-        void robertsKernelY (PointCloud<PointT> &kernel);
+        void robertsKernelY (pcl::PointCloud<PointT> &kernel);
 
         /**
          *
@@ -170,7 +170,7 @@ namespace pcl
          * kernel [-1 0 1]
          */
 
-        void derivativeXCentralKernel (PointCloud<PointT> &kernel);
+        void derivativeXCentralKernel (pcl::PointCloud<PointT> &kernel);
 
         /**
          *
@@ -179,7 +179,7 @@ namespace pcl
          * kernel [-1 0 1]'
          */
 
-        void derivativeYCentralKernel (PointCloud<PointT> &kernel);
+        void derivativeYCentralKernel (pcl::PointCloud<PointT> &kernel);
 
         /**
          *
@@ -188,7 +188,7 @@ namespace pcl
          * kernel [0 -1 1]
          */
 
-        void derivativeXForwardKernel (PointCloud<PointT> &kernel);
+        void derivativeXForwardKernel (pcl::PointCloud<PointT> &kernel);
 
         /**
          *
@@ -197,7 +197,7 @@ namespace pcl
          * kernel [0 -1 1]'
          */
 
-        void derivativeYForwardKernel (PointCloud<PointT> &kernel);
+        void derivativeYForwardKernel (pcl::PointCloud<PointT> &kernel);
 
         /**
          *
@@ -206,7 +206,7 @@ namespace pcl
          * kernel [-1 1 0]
          */
 
-        void derivativeXBackwardKernel (PointCloud<PointT> &kernel);
+        void derivativeXBackwardKernel (pcl::PointCloud<PointT> &kernel);
 
         /**
          *

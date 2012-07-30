@@ -19,13 +19,13 @@ if(build)
         include/pcl/${SUBSYS_NAME}/kernel.h
         include/pcl/${SUBSYS_NAME}/edge.h
         include/pcl/${SUBSYS_NAME}/morphology.h
+        
         )
 
     set(impl_incs
         #include/pcl/${SUBSYS_NAME}/convolution.hpp
         #include/pcl/${SUBSYS_NAME}/edge.hpp
-        #include/pcl/${SUBSYS_NAME}/morphology.hpp
-        #include/pcl/${SUBSYS_NAME}/keypoint.hpp
+        #include/pcl/${SUBSYS_NAME}/morphology.hpp        
         )
 
     set(LIB_NAME pcl_${SUBSYS_NAME})

@@ -126,7 +126,7 @@ public:
      * Performs 2D convolution of the input point cloud with the kernel.
      * Uses clamp as the default boundary option.
      */
-    void convolve (PointCloud<PointT> &output);
+    void convolve (pcl::PointCloud<PointT> &output);
 
     /**
      *
@@ -134,7 +134,7 @@ public:
      *
      * This is an over-ride function for the pcl::Filter interface
      */
-    void applyFilter (PointCloud<PointT> &output);
+    void applyFilter (pcl::PointCloud<PointT> &output);
 
     /**
      *
@@ -142,7 +142,7 @@ public:
      *
      * Sets the kernel to be used for convolution
      */
-    void setKernel (PointCloud<PointT> &kernel);
+    void setKernel (pcl::PointCloud<PointT> &kernel);
 
     /**
      *
@@ -158,7 +158,7 @@ public:
 
 private:
     BOUNDARY_OPTIONS_ENUM boundary_options_;
-    PointCloud<PointT> kernel_;
+    pcl::PointCloud<PointT> kernel_;
     IMAGE_CHANNEL image_channel_;
 
     };
