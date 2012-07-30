@@ -78,6 +78,9 @@ if (build)
   PCL_ADD_EXECUTABLE(pcl_elch ${SUBSYS_NAME} elch.cpp)
   target_link_libraries(pcl_elch pcl_common pcl_io pcl_registration)
 
+  PCL_ADD_EXECUTABLE(pcl_lum ${SUBSYS_NAME} lum.cpp)
+  target_link_libraries(pcl_lum pcl_common pcl_io pcl_registration)
+
   PCL_ADD_EXECUTABLE(pcl_ndt2d ${SUBSYS_NAME} ndt2d.cpp)
   target_link_libraries(pcl_ndt2d pcl_common pcl_io pcl_registration)
     
