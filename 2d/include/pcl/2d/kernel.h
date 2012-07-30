@@ -107,7 +107,7 @@ namespace pcl
          * Laplacian of Gaussian kernel with size (kernel_size_ x kernel_size_) and variance sigma_
          */
 
-        void loGKernel (pcl::PointCloudpcl::PointCloudkernel);
+        void loGKernel (pcl::PointCloud<PointT> &kernel);
 
         /**
          *
