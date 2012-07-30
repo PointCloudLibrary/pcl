@@ -58,6 +58,8 @@ namespace pcl
     * pcl::PointCloud<pcl::PointXYZRGBA>::Ptr model_keypoints (new pcl::PointCloud<pcl::PointXYZRGBA> ());
     * pcl::search::KdTree<pcl::PointXYZRGBA>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZRGBA> ());
     *
+    * pcl::ISSKeypoint3D<pcl::PointXYZRGBA, pcl::PointXYZRGBA> iss_detector;
+    *
     * iss_detector.setSearchMethod (tree);
     * iss_detector.setSalientRadius (6 * model_resolution);
     * iss_detector.setNonMaxRadius (4 * model_resolution);
