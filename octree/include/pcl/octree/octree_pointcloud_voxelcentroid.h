@@ -55,8 +55,8 @@ namespace pcl
       * \note This class implements a leaf node that calculates the mean centroid of all points added this octree container.
       * \author Julius Kammerl (julius@kammerl.de)
       */
-    template<typename DataT, typename PointT>
-    class OctreePointCloudVoxelCentroidContainer : public OctreeContainerBase<DataT>
+    template<typename PointT>
+    class OctreePointCloudVoxelCentroidContainer : public OctreeContainerBase<int>
     {
       public:
         /** \brief Class initialization. */
@@ -113,6 +113,8 @@ namespace pcl
         virtual void 
         reset ()
         {
+          using namespace pcl::common;
+
           point_counter_ = 0;
           point_sum_ *= 0.0f;
         }
@@ -131,7 +133,7 @@ namespace pcl
       * \ingroup octree
       * \author Julius Kammerl (julius@kammerl.de)
       */
-    template<typename PointT, typename LeafT = OctreePointCloudVoxelCentroidContainer<int, PointT> , typename BranchT = OctreeContainerEmpty<int> >
+    template<typename PointT, typename LeafT = OctreePointCloudVoxelCentroidContainer<PointT> , typename BranchT = OctreeContainerEmpty<int> >
     class OctreePointCloudVoxelCentroid : public OctreePointCloud<PointT, LeafT, BranchT>
     {
       public:
