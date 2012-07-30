@@ -42,15 +42,18 @@
 
 #include <pcl/point_types.h>
 
+/**
+  * \file pcl/common/point_operators.h
+  * Define a set of operator on PCL point types.
+  * 
+  * \ingroup common
+  */
 namespace pcl
 {
   namespace common
   {
-    /** \brief Define a set of operator on PCL point types.
-      * 
-      * Default behaviour is to consider only XYZ component but several specializations
-      * are added.
-      */
+    //////////////////////////////////////////////////////////////////////////////////////
+    // +++
     template <typename PointT> inline PointT
     operator+ (const PointT& lhs, const PointT& rhs)
     {
@@ -73,8 +76,8 @@ namespace pcl
       return (result);
     }
 
-
-    ///subtraction operator for PointT
+    //////////////////////////////////////////////////////////////////////////////////////
+    // ---
     template <typename PointT> inline PointT
     operator- (const PointT& lhs, const PointT& rhs)
     {
@@ -82,7 +85,30 @@ namespace pcl
       result.getVector3fMap () -= rhs.getVector3fMap ();
       return (result);
     }
-    ///multiplication operator for PointT and a scalar
+    template <typename PointT> inline PointT
+    operator- (const float& scalar, const PointT& p)
+    {
+      PointT result = p;
+      result.getVector3fMap () -= scalar;
+      return (result);
+    }
+    template <typename PointT> inline PointT
+    operator- (const PointT& p, const float& scalar)
+    {
+      PointT result = p;
+      result.getVector3fMap () -= scalar;
+      return (result);
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////////
+    // ***
+    template <typename PointT> inline PointT
+    operator* (const PointT& lhs, const PointT& rhs)
+    {
+      PointT result = lhs;
+      result.getVector3fMap () *= rhs.getVector3fMap ();
+      return (result);
+    }
     template <typename PointT> inline PointT
     operator* (const float& scalar, const PointT& p)
     {
@@ -90,7 +116,6 @@ namespace pcl
       result.getVector3fMap () *= scalar;
       return (result);
     }
-    ///multiplication operator for PointT and a scalar
     template <typename PointT> inline PointT
     operator* (const PointT& p, const float& scalar)
     {
@@ -98,7 +123,16 @@ namespace pcl
       result.getVector3fMap () *= scalar;
       return (result);
     }
-    ///division operator for PointT and a scalar
+
+    //////////////////////////////////////////////////////////////////////////////////////
+    // ///
+    template <typename PointT> inline PointT
+    operator/ (const PointT& lhs, const PointT& rhs)
+    {
+      PointT result = lhs;
+      result.getVector3fMap () /= rhs.getVector3fMap ();
+      return (result);
+    }
     template <typename PointT> inline PointT
     operator/ (const float& scalar, const PointT& p)
     {
@@ -106,7 +140,6 @@ namespace pcl
       result.getVector3fMap () /= scalar;
       return (result);
     }
-    ///division operator for PointT and a scalar
     template <typename PointT> inline PointT
     operator/ (const PointT& p, const float& scalar)
     {
@@ -114,34 +147,220 @@ namespace pcl
       result.getVector3fMap () /= scalar;
       return (result);
     }
-    ///plus assign operator for PointT
+
+    //////////////////////////////////////////////////////////////////////////////////////
+    // +=
     template <typename PointT> inline PointT&
     operator+= (PointT& lhs, const PointT& rhs)
     {
       lhs.getVector3fMap () += rhs.getVector3fMap ();
       return (lhs);
     }
-    ///minus assign operator for PointT
+    template <typename PointT> inline PointT
+    operator+= (PointT& p, const float& scalar)
+    {
+      p.getVector3fMap () += scalar;
+      return (p);
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////////
+    // -=
     template <typename PointT> inline PointT&
     operator-= (PointT& lhs, const PointT& rhs)
     {
       lhs.getVector3fMap () -= rhs.getVector3fMap ();
       return (lhs);
     }
-    ///multiply assign operator for PointT
+    template <typename PointT> inline PointT
+    operator-= (PointT& p, const float& scalar)
+    {
+      p.getVector3fMap () -= scalar;
+      return (p);
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////////
+    // *=
+    template <typename PointT> inline PointT&
+    operator*= (PointT& lhs, const PointT& rhs)
+    {
+      lhs.getVector3fMap () *= rhs.getVector3fMap ();
+      return (lhs);
+    }
     template <typename PointT> inline PointT&
     operator*= (PointT& p, const float& scalar)
     {
       p.getVector3fMap () *= scalar;
       return (p);
     }
-    ///divide assign operator for PointT
+
+    //////////////////////////////////////////////////////////////////////////////////////
+    // /=
+    template <typename PointT> inline PointT&
+    operator/= (PointT& lhs, const PointT& rhs)
+    {
+      lhs.getVector3fMap () /= rhs.getVector3fMap ();
+      return (lhs);
+    }
     template <typename PointT> inline PointT&
     operator/= (PointT& p, const float& scalar)
     {
       p.getVector3fMap () /= scalar;
       return (p);
     }
+    //////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////
+
+    // --[ PointXYZ
+      // +++
+      template <> inline pcl::PointXYZ
+      operator+ (const pcl::PointXYZ& lhs, const pcl::PointXYZ& rhs)
+      {
+        pcl::PointXYZ result (lhs.x, lhs.y, lhs.z);
+        result.x += rhs.x; result.y += rhs.y; result.z += rhs.z;
+        return (result);
+      }
+      template <> inline pcl::PointXYZ
+      operator+ (const float& scalar, const pcl::PointXYZ& p)
+      {
+        pcl::PointXYZ result (p.x, p.y, p.z);
+        result.x += scalar; result.y += scalar; result.z += scalar;
+        return (result);
+      }
+      template <> inline pcl::PointXYZ
+      operator+ (const pcl::PointXYZ& p, const float& scalar)
+      {
+        pcl::PointXYZ result (p.x, p.y, p.z);
+        result.x += scalar; result.y += scalar; result.z += scalar;
+        return (result);
+      }
+
+      // ---
+      template <> inline pcl::PointXYZ
+      operator- (const pcl::PointXYZ& lhs, const pcl::PointXYZ& rhs)
+      {
+        pcl::PointXYZ result (lhs.x, lhs.y, lhs.z);
+        result.x -= rhs.x; result.y -= rhs.y; result.z -= rhs.z;
+        return (result);
+      }
+      template <> inline pcl::PointXYZ
+      operator- (const float& scalar, const pcl::PointXYZ& p)
+      {
+        pcl::PointXYZ result (p.x, p.y, p.z);
+        result.x -= scalar; result.y -= scalar; result.z -= scalar;
+        return (result);
+      }
+      template <> inline pcl::PointXYZ
+      operator- (const pcl::PointXYZ& p, const float& scalar)
+      {
+        pcl::PointXYZ result (p.x, p.y, p.z);
+        result.x -= scalar; result.y -= scalar; result.z -= scalar;
+        return (result);
+      }
+
+      // ***
+      template <> inline pcl::PointXYZ
+      operator* (const pcl::PointXYZ& lhs, const pcl::PointXYZ& rhs)
+      {
+        pcl::PointXYZ result (lhs.x, lhs.y, lhs.z);
+        result.x *= rhs.x; result.y *= rhs.y; result.z *= rhs.z;
+        return (result);
+      }
+      template <> inline pcl::PointXYZ
+      operator* (const float& scalar, const pcl::PointXYZ& p)
+      {
+        pcl::PointXYZ result (p.x, p.y, p.z);
+        result.x *= scalar; result.y *= scalar; result.z *= scalar;
+        return (result);
+      }
+      template <> inline pcl::PointXYZ
+      operator* (const pcl::PointXYZ& p, const float& scalar)
+      {
+        pcl::PointXYZ result (p.x, p.y, p.z);
+        result.x *= scalar; result.y *= scalar; result.z *= scalar;
+        return (result);
+      }
+
+      // ///
+      template <> inline pcl::PointXYZ
+      operator/ (const pcl::PointXYZ& lhs, const pcl::PointXYZ& rhs)
+      {
+        pcl::PointXYZ result (lhs.x, lhs.y, lhs.z);
+        result.x /= rhs.x; result.y /= rhs.y; result.z /= rhs.z;
+        return (result);
+      }
+      template <> inline pcl::PointXYZ
+      operator/ (const float& scalar, const pcl::PointXYZ& p)
+      {
+        pcl::PointXYZ result (p.x, p.y, p.z);
+        result.x /= scalar; result.y /= scalar; result.z /= scalar;
+        return (result);
+      }
+      template <> inline pcl::PointXYZ
+      operator/ (const pcl::PointXYZ& p, const float& scalar)
+      {
+        pcl::PointXYZ result (p.x, p.y, p.z);
+        result.x /= scalar; result.y /= scalar; result.z /= scalar;
+        return (result);
+      }
+
+      // +=
+      template <> inline pcl::PointXYZ&
+      operator+= (pcl::PointXYZ& lhs, const pcl::PointXYZ& rhs)
+      {
+        lhs.x += rhs.x; lhs.y += rhs.y; lhs.z += rhs.z;
+        return (lhs);
+      }
+      template <> inline pcl::PointXYZ
+      operator+= (pcl::PointXYZ& p, const float& scalar)
+      {
+        p.x += scalar; p.y += scalar; p.z += scalar;
+        return (p);
+      }
+
+      // -=
+      template <> inline pcl::PointXYZ&
+      operator-= (pcl::PointXYZ& lhs, const pcl::PointXYZ& rhs)
+      {
+        lhs.x -= rhs.x; lhs.y -= rhs.y; lhs.z -= rhs.z;
+        return (lhs);
+      }
+      template <> inline pcl::PointXYZ
+      operator-= (pcl::PointXYZ& p, const float& scalar)
+      {
+        p.x -= scalar; p.y -= scalar; p.z -= scalar;
+        return (p);
+      }
+
+      // *=
+      template <> inline pcl::PointXYZ&
+      operator*= (pcl::PointXYZ& lhs, const pcl::PointXYZ& rhs)
+      {
+        lhs.x *= rhs.x; lhs.y *= rhs.y; lhs.z *= rhs.z;
+        return (lhs);
+      }
+      template <> inline pcl::PointXYZ&
+      operator*= (pcl::PointXYZ& p, const float& scalar)
+      {
+        p.x *= scalar; p.y *= scalar; p.z *= scalar;
+        return (p);
+      }
+
+      // /=
+      template <> inline pcl::PointXYZ&
+      operator/= (pcl::PointXYZ& lhs, const pcl::PointXYZ& rhs)
+      {
+        lhs.x /= rhs.x; lhs.y /= rhs.y; lhs.z /= rhs.z;
+        return (lhs);
+      }
+      template <> inline pcl::PointXYZ&
+      operator/= (pcl::PointXYZ& p, const float& scalar)
+      {
+        p.x /= scalar; p.y /= scalar; p.z /= scalar;
+        return (p);
+      }
+    // ]---
+    //////////////////////////////////////////////////////////////////////////////////////
 
     ///addition operator for PointXYZI
     template <> inline pcl::PointXYZI
