@@ -176,6 +176,18 @@ namespace pcl
     float diff_x = p2.x - p1.x, diff_y = p2.y - p1.y, diff_z = p2.z - p1.z;
     return (diff_x*diff_x + diff_y*diff_y + diff_z*diff_z);
   }
+
+  /** \brief Calculate the squared euclidean distance between the two given points.
+    * \param[in] p1 the first point
+    * \param[in] p2 the second point
+    */
+  template<> inline float
+  squaredEuclideanDistance (const PointXY& p1, const PointXY& p2)
+  {
+    float diff_x = p2.x - p1.x, diff_y = p2.y - p1.y;
+    return (diff_x*diff_x + diff_y*diff_y);
+  }
+
    /** \brief Calculate the euclidean distance between the two given points.
     * \param[in] p1 the first point
     * \param[in] p2 the second point
