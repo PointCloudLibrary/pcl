@@ -222,6 +222,12 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::initCompute ()
 		name_.c_str (), min_neighbors_);
     return (false);
   }
+  if (normal_radius_ < 0)
+  {
+    PCL_ERROR ("[pcl::%s::initCompute] : the radius used to estimate surface normals (%f) must be positive!\n",
+		name_.c_str (), normal_radius_);
+    return (false);
+  }
 
   if (third_eigen_value_)
     delete[] third_eigen_value_;

@@ -46,9 +46,29 @@ namespace pcl
     *
     * For more information about the original ISS detector, see:
     *
-    *	Yu Zhong, “Intrinsic shape signatures: A shape descriptor for 3D object recognition,”
-    *	Computer Vision Workshops (ICCV Workshops), 2009 IEEE 12th International Conference on ,
-    *	vol., no., pp.689-696, Sept. 27 2009-Oct. 4 2009
+    *\par
+    * Yu Zhong, “Intrinsic shape signatures: A shape descriptor for 3D object recognition,”
+    * Computer Vision Workshops (ICCV Workshops), 2009 IEEE 12th International Conference on ,
+    * vol., no., pp.689-696, Sept. 27 2009-Oct. 4 2009
+    *
+    * Code example:
+    *
+    * \code
+    * pcl::PointCloud<pcl::PointXYZRGBA>::Ptr model (new pcl::PointCloud<pcl::PointXYZRGBA> ());;
+    * pcl::PointCloud<pcl::PointXYZRGBA>::Ptr model_keypoints (new pcl::PointCloud<pcl::PointXYZRGBA> ());
+    * pcl::search::KdTree<pcl::PointXYZRGBA>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZRGBA> ());
+    *
+    * iss_detector.setSearchMethod (tree);
+    * iss_detector.setSalientRadius (6 * model_resolution);
+    * iss_detector.setNonMaxRadius (4 * model_resolution);
+    * iss_detector.setNormalRadius (0.5 * model_resolution);
+    * iss_detector.setThreshold21 (0.975);
+    * iss_detector.setThreshold32 (0.975);
+    * iss_detector.setMinNeighbors (5);
+    * iss_detector.setNumberOfThreads (4);
+    * iss_detector.setInputCloud (model);
+    * iss_detector.compute (*model_keypoints);
+    * \endcode
     *
     * \author Gioia Ballin
     * \ingroup keypoints
