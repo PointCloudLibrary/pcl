@@ -46,11 +46,11 @@ namespace pcl
 {
   namespace common
   {
-    /** \brief provide a set of operator on points
+    /** \brief Define a set of operator on PCL point types.
+      * 
       * Default behaviour is to consider only XYZ component but several specializations
       * are added.
       */
-    ///addition operator for PointT
     template <typename PointT> inline PointT
     operator+ (const PointT& lhs, const PointT& rhs)
     {
@@ -58,6 +58,22 @@ namespace pcl
       result.getVector3fMap () += rhs.getVector3fMap ();
       return (result);
     }
+    template <typename PointT> inline PointT
+    operator+ (const float& scalar, const PointT& p)
+    {
+      PointT result = p;
+      result.getVector3fMap () += scalar;
+      return (result);
+    }
+    template <typename PointT> inline PointT
+    operator+ (const PointT& p, const float& scalar)
+    {
+      PointT result = p;
+      result.getVector3fMap () += scalar;
+      return (result);
+    }
+
+
     ///subtraction operator for PointT
     template <typename PointT> inline PointT
     operator- (const PointT& lhs, const PointT& rhs)
@@ -117,7 +133,7 @@ namespace pcl
     operator*= (PointT& p, const float& scalar)
     {
       p.getVector3fMap () *= scalar;
-      return (PointT ());
+      return (p);
     }
     ///divide assign operator for PointT
     template <typename PointT> inline PointT&
@@ -255,6 +271,127 @@ namespace pcl
     {
       return (operator* (scalar, p));
     }
+
+    // ---[ PointNormal
+      template <> inline pcl::PointNormal
+      operator+ (const pcl::PointNormal& lhs, const pcl::PointNormal& rhs)
+      {
+        pcl::PointNormal result = lhs;
+        result.getVector3fMap () += rhs.getVector3fMap ();
+        result.getNormalVector3fMap () += rhs.getNormalVector3fMap ();
+        result.curvature += rhs.curvature;
+        return (result);
+      }
+
+      template <> inline pcl::PointNormal
+      operator+ (const float& scalar, const pcl::PointNormal& p)
+      {
+        pcl::PointNormal result = p;
+        result.x += scalar;
+        result.y += scalar;
+        result.z += scalar;
+        result.normal_x += scalar;
+        result.normal_y += scalar;
+        result.normal_z += scalar;
+        result.curvature += scalar;
+        return (result);
+      }
+
+      template <> inline pcl::PointNormal
+      operator+ (const pcl::PointNormal& p, const float& scalar)
+      {
+        pcl::PointNormal result = p;
+        result.x += scalar;
+        result.y += scalar;
+        result.z += scalar;
+        result.normal_x += scalar;
+        result.normal_y += scalar;
+        result.normal_z += scalar;
+        result.curvature += scalar;
+        return (result);
+      }
+
+      template <> inline pcl::PointNormal&
+      operator+= (pcl::PointNormal& lhs, const pcl::PointNormal& rhs)
+      {
+        lhs.getVector3fMap () += rhs.getVector3fMap ();
+        lhs.getNormalVector3fMap () += rhs.getNormalVector3fMap ();
+        lhs.curvature += rhs.curvature;
+        return (lhs);
+      }
+
+      template <> inline pcl::PointNormal
+      operator- (const pcl::PointNormal& lhs, const pcl::PointNormal& rhs)
+      {
+        pcl::PointNormal result = lhs;
+        result.getVector3fMap () -= rhs.getVector3fMap ();
+        result.getNormalVector3fMap () -= rhs.getNormalVector3fMap ();
+        result.curvature -= rhs.curvature;
+        return (result);
+      }
+
+      template <> inline pcl::PointNormal&
+      operator-= (pcl::PointNormal& lhs, const pcl::PointNormal& rhs)
+      {
+        lhs.getVector3fMap () -= rhs.getVector3fMap ();
+        lhs.getNormalVector3fMap () -= rhs.getNormalVector3fMap ();
+        lhs.curvature-= rhs.curvature;
+        return (lhs);
+      }
+
+      template <> inline pcl::PointNormal
+      operator* (const float& scalar, const pcl::PointNormal& p)
+      {
+        pcl::PointNormal result = p;
+        result.getVector3fMap () *= scalar;
+        result.getNormalVector3fMap () *= scalar;
+        result.curvature *= scalar;
+        return (result);
+      }
+
+      template <> inline pcl::PointNormal
+      operator* (const pcl::PointNormal& p, const float& scalar)
+      {
+        return (operator* (scalar, p));
+      }
+
+      template <> inline pcl::PointNormal&
+      operator*= (pcl::PointNormal& p, const float& scalar)
+      {
+        p.getVector3fMap () *= scalar;
+        p.getNormalVector3fMap () *= scalar;
+        p.curvature *= scalar;
+        return (p);
+      }
+
+      template <> inline pcl::PointNormal
+      operator/ (const float& scalar, const pcl::PointNormal& p)
+      {
+        pcl::PointNormal result = p;
+        result.getVector3fMap () /= scalar;
+        result.getNormalVector3fMap () /= scalar;
+        result.curvature /= scalar;
+        return (result);
+      }
+      ///division operator for PointT and a scalar
+      template <> inline pcl::PointNormal
+      operator/ (const pcl::PointNormal& p, const float& scalar)
+      {
+        pcl::PointNormal result = p;
+        result.getVector3fMap () /= scalar;
+        result.getNormalVector3fMap () /= scalar;
+        result.curvature /= scalar;
+        return (result);
+      }
+      template <> inline pcl::PointNormal&
+      operator/= (pcl::PointNormal& p, const float& scalar)
+      {
+        p.getVector3fMap () /= scalar;
+        p.getNormalVector3fMap () /= scalar;
+        p.curvature /= scalar;
+        return (p);
+      }
+    // ]---
 
     ///addition operator for Normal
     template <> inline pcl::Normal
