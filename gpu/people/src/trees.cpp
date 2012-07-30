@@ -132,7 +132,7 @@ pcl::gpu::people::trees::loadTree ( const std::string&        filename,
 {
   std::ifstream fin(filename.c_str() );
   if( !fin.is_open() ) 
-    throw std::runtime_error(std::string("(E) could not open") + filename );
+    throw std::runtime_error(std::string("(E) could not open ") + filename );
   return loadTree(fin, tree, leaves);
 }
 

@@ -203,7 +203,7 @@ namespace pcl
                                    double               gain,
                                    const HistogramPair& HP){
           std::ofstream fout(filename.c_str() );
-          if( !fout.is_open() ) throw std::runtime_error(std::string("(E) could not open") + filename );
+          if( !fout.is_open() ) throw std::runtime_error(std::string("(E) could not open ") + filename );
 
           fout<<int(attribId)<<" "<<int(threshold)<<"\n";
           fout<<gain<<"\n";
