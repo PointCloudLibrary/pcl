@@ -105,7 +105,7 @@ namespace pcl
           }
           else
           {
-            centroid_arg.x = centroid_arg.y = centroid_arg.z = 0.0f;
+            point_sum_ *= 0.0f;
           }
         }
 
