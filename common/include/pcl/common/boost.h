@@ -57,5 +57,10 @@
 #include <boost/signals2.hpp>
 #include <boost/signals2/slot.hpp>
 #include <boost/algorithm/string.hpp>
+#include <boost/random/mersenne_twister.hpp>
+#include <boost/random/uniform_real.hpp>
+#include <boost/random/uniform_int.hpp>
+#include <boost/random/normal_distribution.hpp>
+#include <boost/random/variate_generator.hpp>
 
 #endif    // PCL_COMMON_BOOST_H_

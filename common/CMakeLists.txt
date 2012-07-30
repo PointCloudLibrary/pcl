@@ -107,6 +107,8 @@ if(build)
         include/pcl/common/point_operators.h
         include/pcl/common/spring.h
         include/pcl/common/intensity.h
+        include/pcl/common/random.h
+        include/pcl/common/generate.h
         )
 
     set(common_incs_impl
@@ -127,6 +129,8 @@ if(build)
         include/pcl/common/impl/gaussian.hpp
         include/pcl/common/impl/spring.hpp
         include/pcl/common/impl/intensity.hpp
+        include/pcl/common/impl/random.hpp
+        include/pcl/common/impl/generate.hpp
         )
 
     set(impl_incs include/pcl/impl/instantiate.hpp
