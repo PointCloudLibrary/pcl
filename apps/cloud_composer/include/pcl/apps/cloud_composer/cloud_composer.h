@@ -76,7 +76,9 @@ namespace pcl
         ~ComposerMainWindow ();
   
       signals:
-
+        /** \brief Signal emitted when the active project is switched - ie a different project tab is selected */
+        void
+        activeProjectChanged (ProjectModel* new_model, ProjectModel* previous_model);
       public slots:
       //Slots for File Menu Actions
         void

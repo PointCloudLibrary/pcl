@@ -20,6 +20,11 @@ pcl::cloud_composer::ProjectModel::ProjectModel (QObject* parent)
   connect (work_queue_, SIGNAL (commandComplete (CloudCommand*)),
            this, SLOT (commandCompleted (CloudCommand*)));
   work_thread_->start ();
+  
+  connect (this, SIGNAL (rowsInserted ( const QModelIndex, int, int)),
+           this, SIGNAL (modelChanged ()));
+  connect (this, SIGNAL (rowsRemoved  ( const QModelIndex, int, int)),
+           this, SIGNAL (modelChanged ()));
 }
 
 pcl::cloud_composer::ProjectModel::ProjectModel (const ProjectModel&)

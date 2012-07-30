@@ -38,13 +38,13 @@ pcl::cloud_composer::VoxelGridDownsampleTool::performAction (ConstItemList input
   }
   input_item = input_data.value (0);
     
-  sensor_msgs::PointCloud2::ConstPtr input_cloud;
-  if (input_item->getCloudConstPtr (input_cloud))
+  if (input_item->type () == CLOUD_ITEM)
   {
     double leaf_x = parameter_model_->getProperty("Leaf Size x").toDouble ();
     double leaf_y = parameter_model_->getProperty("Leaf Size y").toDouble ();
     double leaf_z = parameter_model_->getProperty("Leaf Size z").toDouble ();
-
+    
+    sensor_msgs::PointCloud2::ConstPtr input_cloud = input_item->data (CLOUD_CONSTPTR).value <sensor_msgs::PointCloud2::ConstPtr> ();
     
     //////////////// THE WORK - FILTERING OUTLIERS ///////////////////
     // Create the filtering object

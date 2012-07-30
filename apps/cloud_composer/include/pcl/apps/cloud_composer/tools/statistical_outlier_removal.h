@@ -83,6 +83,18 @@ namespace pcl
         
         virtual QString
         getIconName () const { return ":/statistical_outlier_removal.png"; }
+        
+        inline virtual ITEM_TYPES
+        getInputItemType () const
+        {
+          return CLOUD_ITEM;
+        }
+        
+        inline virtual QList <ITEM_TYPES>
+        getRequiredInputChildrenTypes () const 
+        {
+          return QList <ITEM_TYPES> ();
+        }
     };
 
 

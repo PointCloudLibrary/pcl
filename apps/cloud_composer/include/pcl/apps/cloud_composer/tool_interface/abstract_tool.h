@@ -53,10 +53,8 @@ namespace pcl
     {
       Q_OBJECT
       public:
-        typedef boost::shared_ptr<pcl::cloud_composer::AbstractTool> Ptr;
-        typedef boost::shared_ptr<pcl::cloud_composer::AbstractTool> ConstPtr;
-        
-        AbstractTool (PropertiesModel* parameter_model = 0, QObject* parent = 0); 
+
+        AbstractTool (PropertiesModel* parameter_model, QObject* parent); 
 
         virtual ~AbstractTool () { qDebug() << "Tool Destructed"; }
         
@@ -95,7 +93,7 @@ namespace pcl
     {
       Q_OBJECT
       public:
-        ModifyItemTool (PropertiesModel* parameter_model = 0, QObject* parent = 0) 
+        ModifyItemTool (PropertiesModel* parameter_model, QObject* parent) 
                       : AbstractTool (parameter_model, parent) 
                       {}
         
@@ -119,7 +117,7 @@ namespace pcl
     {
       Q_OBJECT
       public:
-        NewItemTool (PropertiesModel* parameter_model = 0, QObject* parent = 0) 
+        NewItemTool (PropertiesModel* parameter_model, QObject* parent) 
                       : AbstractTool (parameter_model, parent)
                       {}
         
@@ -143,7 +141,7 @@ namespace pcl
     {
       Q_OBJECT
       public:
-        SplitItemTool (PropertiesModel* parameter_model = 0, QObject* parent = 0) 
+        SplitItemTool (PropertiesModel* parameter_model, QObject* parent) 
                       : AbstractTool (parameter_model, parent) 
                       {}
         

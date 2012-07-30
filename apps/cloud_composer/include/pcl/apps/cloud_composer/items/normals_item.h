@@ -44,17 +44,6 @@
 
 #include <pcl/apps/cloud_composer/items/cloud_composer_item.h>
 
-
-//Define user roles
-#ifndef NORMALS_USER_ROLES
-#define NORMALS_USER_ROLES
-enum NORMALS_ITEM_ROLES { 
-  NORMALS_CLOUD = Qt::UserRole + 1
-};
-#endif
-
-
-
 namespace pcl
 {
   namespace cloud_composer

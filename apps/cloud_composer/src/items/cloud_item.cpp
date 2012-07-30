@@ -21,25 +21,24 @@ pcl::cloud_composer::CloudItem::CloudItem (QString name,
   pass_filter.filter (*cloud_filtered);
 //  qDebug () << "Cloud size after passthrough : "<<cloud_filtered->width<<"x"<<cloud_filtered->height;
   cloud_ptr_ = cloud_filtered;
-    
-  this->setData (QVariant::fromValue (cloud_ptr_), CLOUD);
+  sensor_msgs::PointCloud2::ConstPtr const_cloud_ptr = cloud_filtered;  
+  this->setData (QVariant::fromValue (const_cloud_ptr), CLOUD_CONSTPTR);
   this->setData (QVariant::fromValue (origin_), ORIGIN);
   this->setData (QVariant::fromValue (orientation_), ORIENTATION);
-  
-  
+   
   //Create a color and geometry handler for this cloud
   color_handler_.reset (new pcl::visualization::PointCloudColorHandlerRGBField<sensor_msgs::PointCloud2> (cloud_ptr));
-  this->setData (QVariant::fromValue (color_handler_), COLOR);
+  this->setData (QVariant::fromValue (color_handler_), COLOR_HANDLER);
   geometry_handler_.reset (new pcl::visualization::PointCloudGeometryHandlerXYZ<sensor_msgs::PointCloud2> (cloud_ptr));
-  this->setData (QVariant::fromValue (geometry_handler_), GEOMETRY);
+  this->setData (QVariant::fromValue (geometry_handler_), GEOMETRY_HANDLER);
   
   properties_->addCategory ("Core Properties");
   properties_->addProperty ("Name", QVariant (this->text ()), Qt::NoItemFlags, "Core Properties");
   properties_->addProperty ("Height", QVariant (cloud_ptr_->height), Qt::NoItemFlags, "Core Properties");
   properties_->addProperty ("Width", QVariant (cloud_ptr_->width), Qt::NoItemFlags,"Core Properties");
-  properties_->addCategory ("Display Properties");
-  properties_->addProperty ("Point Size", QVariant (1.0), Qt::ItemIsEditable | Qt::ItemIsEnabled, "Display Properties");
-  properties_->addProperty ("Opacity", QVariant (1.0), Qt::ItemIsEditable | Qt::ItemIsEnabled, "Display Properties");
+  properties_->addCategory ("Display Variables");
+  properties_->addProperty ("Point Size", QVariant (1.0), Qt::ItemIsEditable | Qt::ItemIsEnabled, "Display Variables");
+  properties_->addProperty ("Opacity", QVariant (1.0), Qt::ItemIsEditable | Qt::ItemIsEnabled, "Display Variables");
  
 }
 
@@ -47,10 +46,10 @@ pcl::cloud_composer::CloudItem*
 pcl::cloud_composer::CloudItem::clone () const
 {
   sensor_msgs::PointCloud2::Ptr cloud_copy (new sensor_msgs::PointCloud2 (*cloud_ptr_));
-  //Vector4f and Quaternionf do deep copies using copy constructor
+  //Vector4f and Quaternionf do deep copies using constructor
   CloudItem* new_item = new CloudItem (this->text (), cloud_copy, origin_,orientation_);
   
-  PropertiesModel* new_item_properties = new_item->getProperties ();
+  PropertiesModel* new_item_properties = new_item->getPropertiesModel ();
   new_item_properties->copyProperties (properties_);
   
   return new_item;  
@@ -65,14 +64,14 @@ pcl::cloud_composer::CloudItem::~CloudItem ()
 void
 pcl::cloud_composer::CloudItem::paintView (boost::shared_ptr<pcl::visualization::PCLVisualizer> vis) const
 {
-  vis->addPointCloud (cloud_ptr_, geometry_handler_, color_handler_, origin_, orientation_, item_id_.toStdString ());
-  vis->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, properties_->getProperty ("Point Size").toDouble (), item_id_.toStdString ());
-  vis->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_OPACITY, properties_->getProperty ("Opacity").toDouble (), item_id_.toStdString ());
+  vis->addPointCloud (cloud_ptr_, geometry_handler_, color_handler_, origin_, orientation_, getId ().toStdString ());
+  vis->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, properties_->getProperty ("Point Size").toDouble (), getId ().toStdString ());
+  vis->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_OPACITY, properties_->getProperty ("Opacity").toDouble (), getId ().toStdString ());
  
 }
 
 void
 pcl::cloud_composer::CloudItem::removeFromView (boost::shared_ptr<pcl::visualization::PCLVisualizer> vis) const
 {  
-  vis->removePointCloud (item_id_.toStdString ());
+  vis->removePointCloud (getId ().toStdString ());
 }

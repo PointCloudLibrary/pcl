@@ -112,6 +112,9 @@ namespace pcl
         void
         enqueueNewAction (AbstractTool* tool, ConstItemList data);
         
+        /** \brief Catch-all signal emitted whenever the model changes */
+        void
+        modelChanged ();
       private:
         
         QItemSelectionModel* selection_model_;

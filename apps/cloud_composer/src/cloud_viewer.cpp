@@ -44,7 +44,7 @@ pcl::cloud_composer::CloudViewer::getModel() const
 }
 
 void
-pcl::cloud_composer::CloudViewer::setModel (ProjectModel* new_model)
+pcl::cloud_composer::CloudViewer::activeProjectChanged(ProjectModel* new_model, ProjectModel* previous_model)
 {
   //If we're already there, abort
   if (new_model == getModel ())

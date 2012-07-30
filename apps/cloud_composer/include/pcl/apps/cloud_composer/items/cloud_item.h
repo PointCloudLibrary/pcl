@@ -40,18 +40,6 @@
 
 #include <pcl/apps/cloud_composer/items/cloud_composer_item.h>
 #include <pcl/visualization/pcl_visualizer.h>
-//Define user roles
-#ifndef CLOUD_USER_ROLES
-#define CLOUD_USER_ROLES
-enum CLOUD_ITEM_ROLES { 
-  CLOUD = Qt::UserRole + 1,
-  GEOMETRY, 
-  COLOR,
-  ORIGIN,
-  ORIENTATION
-};
-#endif
-
 
 //Typedefs to make things sane
 typedef pcl::visualization::PointCloudGeometryHandler<sensor_msgs::PointCloud2> GeometryHandler;
@@ -90,10 +78,12 @@ namespace pcl
         removeFromView (boost::shared_ptr<pcl::visualization::PCLVisualizer> vis) const;
         
       private:
-
+        
+        //These are just stored for convenience 
         sensor_msgs::PointCloud2::Ptr cloud_ptr_;
         ColorHandler::ConstPtr color_handler_;
         GeometryHandler::ConstPtr geometry_handler_;
+        //We keep actual local copies of these.
         Eigen::Vector4f origin_;
         Eigen::Quaternionf orientation_;
         
@@ -105,7 +95,6 @@ namespace pcl
 }
 
 //Add PointCloud types to QT MetaType System
-Q_DECLARE_METATYPE (sensor_msgs::PointCloud2::Ptr);
 Q_DECLARE_METATYPE (sensor_msgs::PointCloud2::ConstPtr);
 Q_DECLARE_METATYPE (GeometryHandler::ConstPtr);
 Q_DECLARE_METATYPE (ColorHandler::ConstPtr);

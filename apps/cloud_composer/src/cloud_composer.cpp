@@ -8,6 +8,7 @@
 #include <pcl/apps/cloud_composer/tool_interface/tool_factory.h>
 #include <pcl/apps/cloud_composer/tool_interface/abstract_tool.h>
 #include <pcl/apps/cloud_composer/toolbox_model.h>
+#include <complex>
 
 /////////////////////////////////////////////////////////////
 pcl::cloud_composer::ComposerMainWindow::ComposerMainWindow (QWidget *parent)
@@ -90,6 +91,8 @@ pcl::cloud_composer::ComposerMainWindow::initializeCloudViewer ()
   //Signal emitted when user selects new tab (ie different project) in the viewer
   connect (cloud_viewer_, SIGNAL (newModelSelected (ProjectModel*)),
            this, SLOT (setCurrentModel (ProjectModel*)));
+  connect (this, SIGNAL (activeProjectChanged (ProjectModel*,ProjectModel*)),
+           cloud_viewer_, SLOT (activeProjectChanged (ProjectModel*,ProjectModel*)));
 }
 
 void
@@ -115,6 +118,9 @@ pcl::cloud_composer::ComposerMainWindow::initializeToolBox ()
   
   connect ( tool_box_model_, SIGNAL (enqueueToolAction (AbstractTool*)),
             this, SLOT (enqueueToolAction (AbstractTool*)));
+  
+  connect (this, SIGNAL (activeProjectChanged (ProjectModel*,ProjectModel*)),
+           tool_box_model_, SLOT (activeProjectChanged (ProjectModel*,ProjectModel*)));
   
   //TODO : Remove this, tools should have a better way of being run
   connect ( action_run_tool_, SIGNAL (clicked ()),
@@ -172,17 +178,17 @@ pcl::cloud_composer::ComposerMainWindow::initializePlugins ()
 void 
 pcl::cloud_composer::ComposerMainWindow::setCurrentModel (ProjectModel* model)
 {
+  emit activeProjectChanged (model, current_model_);
   current_model_ = model;
   //qDebug () << "Setting cloud browser model";
   cloud_browser_->setModel (current_model_);
   //qDebug () << "Setting cloud browser selection model";
   cloud_browser_->setSelectionModel (current_model_->getSelectionModel ());
-  //qDebug () << "Setting cloud viewer model";
-  cloud_viewer_->setModel (current_model_);
   //qDebug () << "Item inspector setting project and selection models";
   item_inspector_->setProjectAndSelectionModels (current_model_, current_model_->getSelectionModel ());
   //qDebug () << "Setting active stack in undo group";
   undo_group_->setActiveStack (current_model_->getUndoStack ());
+  //qDebug () << "
 }
 
 void

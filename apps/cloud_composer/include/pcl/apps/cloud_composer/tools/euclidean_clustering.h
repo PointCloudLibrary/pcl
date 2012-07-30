@@ -78,11 +78,23 @@ namespace pcl
         inline virtual QString 
         getPluginName () const { return "Euclidean Clustering";}
         
-        virtual QString 
+        inline virtual QString 
         getToolGroupName () const { return "Segmentation";}
         
-        virtual QString
+        inline virtual QString
         getIconName () const { return ":/euclidean_clustering.png"; }
+        
+        inline virtual ITEM_TYPES
+        getInputItemType () const
+        {
+          return CLOUD_ITEM;
+        }
+        
+        inline virtual QList <ITEM_TYPES>
+        getRequiredInputChildrenTypes () const 
+        {
+          return QList <ITEM_TYPES> ();
+        }
     };
 
 

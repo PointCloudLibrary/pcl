@@ -4,7 +4,7 @@ pcl::cloud_composer::AbstractTool::AbstractTool (PropertiesModel* parameter_mode
                       : QObject (parent) 
                       
 {
-  parameter_model_ = new PropertiesModel(this);
+  parameter_model_ = new PropertiesModel (this);
   //If there's a model copy it into the local copy
   if (parameter_model)
   {

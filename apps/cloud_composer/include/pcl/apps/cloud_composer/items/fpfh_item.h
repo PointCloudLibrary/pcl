@@ -45,16 +45,6 @@
 #include <pcl/visualization/pcl_plotter.h>
 
 
-//Define user roles
-#ifndef FPFH_USER_ROLES
-#define FPFH_USER_ROLES
-enum FPFH_ITEM_ROLES { 
-  FPFH_CLOUD = Qt::UserRole + 1
-};
-#endif
-
-
-
 namespace pcl
 {
   namespace cloud_composer

@@ -39,7 +39,7 @@
 #define PROPERTIES_MODEL_H_
 
 #include <pcl/apps/cloud_composer/qt.h>
-
+#include <pcl/common/boost.h> 
 
 
 namespace pcl
@@ -49,8 +49,9 @@ namespace pcl
     class CloudComposerItem;
     class PropertiesModel : public QStandardItemModel
     {
-        Q_OBJECT
+      Q_OBJECT
       public:
+        
         /** \brief Constructor used for tool parameters */
         PropertiesModel (QObject *parent = 0);
         /** \brief Constructor used for item parameters */

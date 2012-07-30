@@ -36,14 +36,13 @@ pcl::cloud_composer::EuclideanClusteringTool::performAction (ConstItemList input
   }
   input_item = input_data.value (0);
   
-  sensor_msgs::PointCloud2::ConstPtr input_cloud;
-  if (input_item->getCloudConstPtr (input_cloud))
+  if (input_item->type () == CLOUD_ITEM)
   {
     double cluster_tolerance = parameter_model_->getProperty ("Cluster Tolerance").toDouble();
     int min_cluster_size = parameter_model_->getProperty ("Min Cluster Size").toInt();
     int max_cluster_size = parameter_model_->getProperty ("Max Cluster Size").toInt();
    
-
+    sensor_msgs::PointCloud2::ConstPtr input_cloud = input_item->data (CLOUD_CONSTPTR).value <sensor_msgs::PointCloud2::ConstPtr> ();
     //Get the cloud in template form
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
     pcl::fromROSMsg (*input_cloud, *cloud); 

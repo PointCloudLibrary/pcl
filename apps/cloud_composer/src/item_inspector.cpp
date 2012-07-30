@@ -24,9 +24,10 @@ pcl::cloud_composer::ItemInspector::~ItemInspector ()
 void
 pcl::cloud_composer::ItemInspector::setProjectAndSelectionModels (ProjectModel* new_model, const QItemSelectionModel* new_selection_model)
 {
-    //If we have a model loaded, save its tree state 
-  if (current_item_properties_model_)
-    storeTreeState ();
+  // DISABLED: JUST KEEP TREES ALWAYS EXPANDED
+   //If we have a model loaded, save its tree state 
+  //if (current_item_properties_model_)
+  //  storeTreeState ();
   
   current_project_model_ = new_model;
   
@@ -34,7 +35,8 @@ pcl::cloud_composer::ItemInspector::setProjectAndSelectionModels (ProjectModel* 
   {
     disconnect (current_selection_model_, SIGNAL (currentChanged (const QModelIndex, const QModelIndex)),
                 this, SLOT (selectionChanged (const QModelIndex, const QModelIndex)));
-                
+    removeTabs ();
+    
   }
   current_selection_model_ = new_selection_model;
   connect (current_selection_model_, SIGNAL (currentChanged (const QModelIndex, const QModelIndex)),
@@ -48,8 +50,8 @@ void
 pcl::cloud_composer::ItemInspector::selectionChanged (const QModelIndex &current, const QModelIndex &)
 {
   //If we have a model loaded, save its tree state 
-  if (current_item_properties_model_)
-    storeTreeState ();
+ // if (current_item_properties_model_)
+ //   storeTreeState ();
   if (current_project_model_)
     updateView ();
   
@@ -99,7 +101,7 @@ pcl::cloud_composer::ItemInspector::itemChanged (QStandardItem *)
 void
 pcl::cloud_composer::ItemInspector::removeTabs ()
 {
-  removeTabs ();
+  clear ();
   addTab (parameter_view_, "Parameters");
 }
 
@@ -119,9 +121,7 @@ pcl::cloud_composer::ItemInspector::updateView ()
     cloud_item = dynamic_cast<CloudComposerItem*> (model->itemFromIndex (current_item));
     if (cloud_item)
     {
-      current_item_properties_model_ = cloud_item->getProperties ();
-     // restoreTreeState ();
-      parameter_view_->expandAll ();
+      current_item_properties_model_ = cloud_item->data (PROPERTIES).value <PropertiesModel*> ();
       //Display any additional graphical data if this item has any
       QMap <QString, QWidget*> tabs = cloud_item->getInspectorTabs ();
       foreach (QString tab_name, tabs.keys ())
@@ -134,4 +134,7 @@ pcl::cloud_composer::ItemInspector::updateView ()
       
   
   parameter_view_->setModel (current_item_properties_model_);
+  parameter_view_->resizeColumnToContents (0);
+  // restoreTreeState ();
+  parameter_view_->expandAll ();
 }

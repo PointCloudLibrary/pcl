@@ -8,13 +8,13 @@ pcl::cloud_composer::NormalsItem::NormalsItem (QString name, pcl::PointCloud<pcl
   , normals_ptr_ (normals_ptr)
 
 {
-  
-  this->setData (QVariant::fromValue (normals_ptr), NORMALS_CLOUD);
+  pcl::PointCloud<pcl::Normal>::ConstPtr normals_const = normals_ptr;
+  this->setData (QVariant::fromValue (normals_const), CLOUD_CONSTPTR);
   properties_->addCategory ("Core Properties");
   properties_->addProperty ("Radius", QVariant (radius), Qt::ItemIsSelectable, "Core Properties");
-  properties_->addCategory ("Display Properties");
-  properties_->addProperty ("Scale", QVariant (0.02), Qt::ItemIsEditable | Qt::ItemIsEnabled, "Display Properties");
-  properties_->addProperty ("Level", QVariant (100), Qt::ItemIsEditable | Qt::ItemIsEnabled, "Display Properties");
+  properties_->addCategory ("Display Variables");
+  properties_->addProperty ("Scale", QVariant (0.02), Qt::ItemIsEditable | Qt::ItemIsEnabled, "Display Variables");
+  properties_->addProperty ("Level", QVariant (100), Qt::ItemIsEditable | Qt::ItemIsEnabled, "Display Variables");
 }
 
 pcl::cloud_composer::NormalsItem*
@@ -24,7 +24,7 @@ pcl::cloud_composer::NormalsItem::clone () const
   //Vector4f and Quaternionf do deep copies using copy constructor
   NormalsItem* new_item = new NormalsItem (this->text (), normals_copy, 0);
   
-  PropertiesModel* new_item_properties = new_item->getProperties ();
+  PropertiesModel* new_item_properties = new_item->getPropertiesModel ();
   new_item_properties->copyProperties (properties_);
   
   return new_item;  
@@ -41,16 +41,16 @@ pcl::cloud_composer::NormalsItem::paintView (boost::shared_ptr<pcl::visualizatio
   //Get the parent cloud, convert to XYZ 
   if (parent ()->type () == CLOUD_ITEM)
   {
-    QVariant cloud_ptr = parent ()->data (CLOUD);
-    sensor_msgs::PointCloud2::Ptr cloud_blob = cloud_ptr.value<sensor_msgs::PointCloud2::Ptr> ();
+    QVariant cloud_ptr = parent ()->data (CLOUD_CONSTPTR);
+    sensor_msgs::PointCloud2::ConstPtr cloud_blob = cloud_ptr.value<sensor_msgs::PointCloud2::ConstPtr> ();
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
     pcl::fromROSMsg (*cloud_blob, *cloud); 
     double scale = properties_->getProperty ("Scale").toDouble ();
     int level = properties_->getProperty ("Level").toInt ();
     qDebug () << "Removing old normals...";
-    vis->removePointCloud (item_id_.toStdString ());
+    vis->removePointCloud (getId ().toStdString ());
     qDebug () << QString("Adding point cloud normals, level=%1, scale=%2").arg(level).arg(scale);
-    vis->addPointCloudNormals<pcl::PointXYZ, pcl::Normal> (cloud, normals_ptr_, level, scale, item_id_.toStdString ());
+    vis->addPointCloudNormals<pcl::PointXYZ, pcl::Normal> (cloud, normals_ptr_, level, scale, getId ().toStdString ());
   }
   else
     qWarning () << "Normal item inserted, but parent not a cloud. Don't know how to draw that!";
@@ -59,6 +59,6 @@ pcl::cloud_composer::NormalsItem::paintView (boost::shared_ptr<pcl::visualizatio
 void
 pcl::cloud_composer::NormalsItem::removeFromView (boost::shared_ptr<pcl::visualization::PCLVisualizer> vis) const
 {  
-  qDebug () << "Removing Normals "<<item_id_;
-  vis->removePointCloud (item_id_.toStdString ());
+  //qDebug () << "Removing Normals "<<item_id_;
+  vis->removePointCloud (getId ().toStdString ());
 }

@@ -39,6 +39,7 @@
 #define TOOL_FACTORY_H_
 
 #include <pcl/apps/cloud_composer/qt.h>
+#include <pcl/apps/cloud_composer/items/cloud_composer_item.h>
 
 class QAction;
 
@@ -69,6 +70,21 @@ namespace pcl
         
         virtual QString 
         getIconName () const = 0;
+        
+        /** \brief Reimpliment this function to return the proper number if tool requires more than one input item */
+        inline virtual int
+        getNumInputItems () const 
+        { 
+          return 1;
+        }
+        
+        /** \brief Returns a list of allowed input item types. Implement in tools so GUI can prevent impossible actions */
+        virtual ITEM_TYPES
+        getInputItemType () const = 0;
+        
+        /** \brief Returns a list of required input children. Implement in tools so GUI can prevent impossible actions */
+        virtual QList <ITEM_TYPES>
+        getRequiredInputChildrenTypes () const = 0;
 
     };
 

@@ -41,35 +41,30 @@ pcl::cloud_composer::FPFHEstimationTool::performAction (ConstItemList input_data
   }
   input_item = input_data.value (0);
   
-  sensor_msgs::PointCloud2::ConstPtr input_cloud;
-  if (input_item->getCloudConstPtr (input_cloud))
+  
+  if (input_item->type () == CLOUD_ITEM)
   {
-    double radius = parameter_model_->getProperty("Radius").toDouble();;
-       
-    //Check if this cloud already has normals computed!
-    const QStandardItem* normals_item = 0;
-    for (int i = 0; i < input_item->rowCount (); ++i)
-      if ( input_item->child (i)->type () == NORMALS_ITEM )
-        normals_item = input_item->child (i);
-    if ( !normals_item )
+    //Check if this cloud has normals computed!
+    QList <CloudComposerItem*> normals_list = input_item->getChildren (NORMALS_ITEM);
+    if ( normals_list.size () == 0 )
     {
-      qCritical () << "No normals item found in this cloud (TODO: automatically do it now)";
+      qCritical () << "No normals item child found in this cloud item";
       return output;
     }
+    qDebug () << "Found item text="<<normals_list.at(0)->text();
 
+    double radius = parameter_model_->getProperty("Radius").toDouble();
     
-    pcl::FPFHEstimation<pcl::PointXYZ, pcl::Normal, pcl::FPFHSignature33> fpfh;
+    sensor_msgs::PointCloud2::ConstPtr input_cloud = input_item->data (CLOUD_CONSTPTR).value <sensor_msgs::PointCloud2::ConstPtr> ();
     //Get the cloud in template form
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
     pcl::fromROSMsg (*input_cloud, *cloud); 
- //   qDebug () << "Input cloud size = "<<cloud->size ();
-  //  std::vector <int> indices;
-  //  pcl::removeNaNFromPointCloud (*cloud, *cloud, indices);
-  //  qDebug () << "Nans filtered size = "<<cloud->size ();
     
-    //Get the normals cloud from the item
-    QVariant normals_variant = normals_item->data (NORMALS_CLOUD);
-    pcl::PointCloud<pcl::Normal>::Ptr input_normals = normals_variant.value<pcl::PointCloud<pcl::Normal>::Ptr> ();
+    //Get the normals cloud, we just use the first normals that were found if there are more than one
+    pcl::PointCloud<pcl::Normal>::ConstPtr input_normals = normals_list.value(0)->data(CLOUD_CONSTPTR).value <pcl::PointCloud<pcl::Normal>::ConstPtr> ();
+    
+    pcl::FPFHEstimation<pcl::PointXYZ, pcl::Normal, pcl::FPFHSignature33> fpfh;
+ //   qDebug () << "Input cloud size = "<<cloud->size ();
 
     //////////////// THE WORK - COMPUTING FPFH ///////////////////
     // Create the FPFH estimation class, and pass the input dataset+normals to it

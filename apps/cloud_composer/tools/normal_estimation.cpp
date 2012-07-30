@@ -38,11 +38,12 @@ pcl::cloud_composer::NormalEstimationTool::performAction (ConstItemList input_da
   input_item = input_data.value (0);
     
   sensor_msgs::PointCloud2::ConstPtr input_cloud;
-  if (input_item->getCloudConstPtr (input_cloud))
+  if (input_item->type () == CLOUD_ITEM)
   {
     double radius = parameter_model_->getProperty("Radius").toDouble();
     qDebug () << "Received Radius = " <<radius;
-    
+    sensor_msgs::PointCloud2::ConstPtr input_cloud = input_item->data (CLOUD_CONSTPTR).value <sensor_msgs::PointCloud2::ConstPtr> ();
+    qDebug () << "Got cloud size = "<<input_cloud->width;
     //////////////// THE WORK - COMPUTING NORMALS ///////////////////
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
     pcl::fromROSMsg (*input_cloud, *cloud); 
@@ -66,6 +67,7 @@ pcl::cloud_composer::NormalEstimationTool::performAction (ConstItemList input_da
     //////////////////////////////////////////////////////////////////
     NormalsItem* normals_item = new NormalsItem (tr("Normals r=%1").arg(radius),cloud_normals,radius);
     output.append (normals_item);
+    qDebug () << "Calced normals";
   }
   else
   {

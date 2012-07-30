@@ -85,6 +85,19 @@ namespace pcl
         
         virtual QString
         getIconName () const { return ":/fpfh_estimation.png"; }
+        
+        inline virtual ITEM_TYPES
+        getInputItemType () const
+        {
+          return CLOUD_ITEM;
+        }
+        
+        inline virtual QList <ITEM_TYPES>
+        getRequiredInputChildrenTypes () const 
+        {
+          QList <ITEM_TYPES> input_types;
+          return (input_types << NORMALS_ITEM);
+        }
     };
 
 

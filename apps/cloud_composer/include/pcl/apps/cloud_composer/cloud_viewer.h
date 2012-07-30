@@ -66,10 +66,9 @@ namespace pcl
         void 
         addModel (ProjectModel* new_model);
         void 
-        setModel (ProjectModel* new_model);
-        void 
         modelChanged (int index);
-        
+        void
+        activeProjectChanged(ProjectModel* new_model, ProjectModel* previous_model);
       signals:
         void
         newModelSelected (ProjectModel *new_model);

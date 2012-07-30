@@ -72,6 +72,10 @@ namespace pcl
       void 
       selectedItemChanged (const QItemSelection & selected, const QItemSelection & deselected);
       
+      /** \brief Slot called when the data in model changes */
+      void 
+      dataChanged ( const QModelIndex & topLeft, const QModelIndex & bottomRight );
+      
     protected slots:
       /** \brief Slot called when an item in the model changes
        * \param topLeft 

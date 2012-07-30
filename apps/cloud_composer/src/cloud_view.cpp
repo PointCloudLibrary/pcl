@@ -73,10 +73,9 @@ void
 pcl::cloud_composer::CloudView::itemChanged (QStandardItem* changed_item)
 {
   qDebug () << "Item Changed - Redrawing!";
-  CloudComposerItem* item;
-  if (dynamic_cast<CloudComposerItem*> (changed_item))
+  CloudComposerItem* item = dynamic_cast<CloudComposerItem*> (changed_item);
+  if (item)
   {
-    item = dynamic_cast<CloudComposerItem*> (changed_item);
     item->paintView (vis_);
   }
   qvtk_->update ();
@@ -165,8 +164,7 @@ pcl::cloud_composer::CloudView::selectedItemChanged (const QItemSelection & sele
       QStandardItem* previous_item = model_->itemFromIndex (previous);
       if (previous_item->type () == CLOUD_ITEM || previous_item->type () == NORMALS_ITEM)
       {
-        CloudComposerItem* cc_item = dynamic_cast <CloudComposerItem*> (previous_item);
-        vis_->setPointCloudSelected (false, cc_item->getID ().toStdString ());
+        vis_->setPointCloudSelected (false, previous_item->data (ITEM_ID).toString ().toStdString ());
       }
     }
   }
@@ -177,11 +175,16 @@ pcl::cloud_composer::CloudView::selectedItemChanged (const QItemSelection & sele
       QStandardItem* current_item = model_->itemFromIndex (current);
       if (current_item->type () == CLOUD_ITEM || current_item->type () == NORMALS_ITEM)
       {
-        CloudComposerItem* cc_item = dynamic_cast <CloudComposerItem*> (current_item);
-        qDebug () << "Setting point cloud to selected";
-        vis_->setPointCloudSelected (true, cc_item->getID ().toStdString ());
+        vis_->setPointCloudSelected (true, current_item->data (ITEM_ID).toString ().toStdString ());
       }
     }
   }
   qvtk_->update ();
+}
+
+void
+pcl::cloud_composer::CloudView::dataChanged (const QModelIndex & topLeft, const QModelIndex & bottomRight)
+{
+    
+  
 }

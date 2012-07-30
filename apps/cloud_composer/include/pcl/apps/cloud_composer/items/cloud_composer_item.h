@@ -46,16 +46,26 @@
 
 enum ITEM_ROLES { 
   PROPERTIES = Qt::UserRole,
-  ITEM_ID
+  ITEM_ID,
+  CLOUD_CONSTPTR, 
+  GEOMETRY_HANDLER, 
+  COLOR_HANDLER,
+  ORIGIN,
+  ORIENTATION
 };
 
-//This currently isn't used for anything, it will probably be removed
 enum ITEM_TYPES { 
   CLOUD_COMPOSER_ITEM = QStandardItem::UserType,
   CLOUD_ITEM,
   NORMALS_ITEM,
   FPFH_ITEM
 };
+
+static QStringList ITEM_TYPES_STRINGS(QStringList() 
+      << "Cloud Composer Item"
+      << "Cloud Item"
+      << "Normals Item"
+      << "FPFH Item");
 
 namespace pcl
 {
@@ -65,35 +75,33 @@ namespace pcl
     
     class PCL_EXPORTS CloudComposerItem : public QStandardItem
     {
-      public:
-        typedef boost::shared_ptr<pcl::cloud_composer::CloudComposerItem> Ptr;
-        typedef boost::shared_ptr<pcl::cloud_composer::CloudComposerItem> ConstPtr;
-        
+      public:  
         CloudComposerItem (const QString name = "default item");
         CloudComposerItem (const CloudComposerItem& to_copy);
         virtual ~CloudComposerItem ();
         
         inline virtual int 
         type () const { return CLOUD_COMPOSER_ITEM; }
-
-        /** \brief  Getter function for getting unique internal ID*/
+      
+        /** \brief Convenience function to get Item's ID String */
         inline QString
-        getID () const { return item_id_; }
+        getId () const { return data (ITEM_ID).toString (); }
+        
+        /** \brief Convenience function to get Item's Property Pointer */
+        inline PropertiesModel*
+        getPropertiesModel () const { return properties_; }
+        
+        /** \brief Returns all children of item type type*/
+        QList <CloudComposerItem*>
+        getChildren (ITEM_TYPES type) const;
         
         virtual CloudComposerItem*
         clone () const;
-        
-        inline void
-        setProperties (PropertiesModel* new_props)
-        {
-          properties_ = new_props;
-        }
-        
-        inline PropertiesModel* 
-        getProperties () const 
-        { 
-          return properties_;
-        }
+
+     //   /** \brief Convenience function which pulls out a cloud Ptr of type CloudPtrT */
+    //    template <typename CloudPtrT>
+    //    CloudPtrT
+    //    getCloudPtr () const;
         
         /** \brief Paint View function - reimpliment in item subclass if it can be displayed in PCLVisualizer*/
         virtual void
@@ -107,10 +115,6 @@ namespace pcl
         virtual QMap <QString, QWidget*>
         getInspectorTabs ();
               
-        /** \brief Helper function to pull out a cloud from Item */
-        bool
-        getCloudConstPtr (sensor_msgs::PointCloud2::ConstPtr& const_ptr) const;
-
         /** \brief The property model calls this when a property changes */
         inline void 
         propertyChanged ()
@@ -119,13 +123,13 @@ namespace pcl
         }
       protected:
 
-        /** \brief Model for storing the properties of the item   */
+        /** \brief Model for storing the properties of the item - pointer kept for convenience   */
         PropertiesModel* properties_;
         
-        /** \brief Internal ID used when referencing this object, mainly for PCLVisualizer */
-        QString item_id_;
     };
     
+    
+   
     /** \brief Templated helper class for converting QVariant to/from pointer classes   */
     template <class T> class VPtr
     {

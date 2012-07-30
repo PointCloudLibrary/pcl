@@ -37,9 +37,11 @@ pcl::cloud_composer::StatisticalOutlierRemovalTool::performAction (ConstItemList
   }
   input_item = input_data.value (0);
     
-  sensor_msgs::PointCloud2::ConstPtr input_cloud;
-  if (input_item->getCloudConstPtr (input_cloud))
+  
+  if (input_item->type () ==  CLOUD_ITEM )
   {
+    sensor_msgs::PointCloud2::ConstPtr input_cloud = input_item->data (CLOUD_CONSTPTR).value <sensor_msgs::PointCloud2::ConstPtr> ();
+    
     int mean_k = parameter_model_->getProperty("Mean K").toInt ();
     double std_dev_thresh = parameter_model_->getProperty ("Std Dev Thresh").toDouble ();
     
