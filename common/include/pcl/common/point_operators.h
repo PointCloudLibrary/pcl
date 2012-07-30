@@ -193,6 +193,14 @@ namespace pcl
       return (p);
     }
 
+    template <typename PointT> inline PointT
+    operator*= (const PointT& p, const float& scalar)
+    {
+      PointT result = p;
+      result.x *= scalar; result.y *= scalar; result.z *= scalar;
+      return (result);
+    }
+
     //////////////////////////////////////////////////////////////////////////////////////
     // /=
     template <typename PointT> inline PointT&
