@@ -67,7 +67,7 @@ main (int argc, char** argv)
   wm.getWorldAsCubes (512.0, clouds, transforms, 0.025); // 2.5% overlapp (12 cells with a 512-wide cube)
 
   //Creating the standalone marching cubes instance
-  pcl::gpu::StandaloneMarchingCubes<pcl::PointXYZI> m_cubes;
+  pcl::gpu::StandaloneMarchingCubes<pcl::PointXYZI> m_cubes/*(512,512,512,5.0f)*/;
 
   //Creating the output
   boost::shared_ptr<pcl::PolygonMesh> mesh_ptr_;

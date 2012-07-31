@@ -57,6 +57,10 @@ namespace pcl
 
     //Tsdf fixed point divisor (if old format is enabled)
     const int DIVISOR = 32767;     // SHRT_MAX;
+    
+    //RGB images resolution
+    const float  HEIGHT = 480.0f;
+    const float  WIDTH = 640.0f;
 
 	//should be multiple of 32
     enum { VOLUME_X = 512, VOLUME_Y = 512, VOLUME_Z = 512 };
@@ -66,7 +70,7 @@ namespace pcl
     const float FOCAL_LENGTH = 575.816f;
   
     const float VOLUME_SIZE = 3.0f; // in meters
-    const float DISTANCE_THRESHOLD = 1.0f; // in meters
+    const float DISTANCE_THRESHOLD = 0.5f; // in meters
 
     /** \brief Camera intrinsics structure
       */ 

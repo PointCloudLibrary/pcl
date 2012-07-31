@@ -104,6 +104,7 @@ pcl::gpu::KinfuTracker::KinfuTracker (int rows, int cols) : rows_(rows), cols_(c
   
   // initialize cyclical buffer
   cyclical_.initBuffer(tsdf_volume_);
+
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -178,6 +179,15 @@ pcl::gpu::KinfuTracker::reset ()
 {
   if (global_time_)
     PCL_WARN ("Reset\n");
+    
+  // dump current world to a pcd file
+  if (global_time_)
+  {
+    PCL_INFO ("Saving current world to current_world.pcd\n");
+    pcl::io::savePCDFile<pcl::PointXYZI> ("current_world.pcd", *(cyclical_.getWorldModel ()->getWorld ()), true);
+    // clear world model
+    cyclical_.getWorldModel ()->reset ();
+  }
    
   global_time_ = 0;
   rmats_.clear ();
@@ -191,14 +201,7 @@ pcl::gpu::KinfuTracker::reset ()
   // reset cyclical buffer as well
   cyclical_.resetBuffer (tsdf_volume_);
   
-  // dump current world to a pcd file
-  if (global_time_)
-  {
-    PCL_INFO ("Saving current world to current_world.pcd\n");
-    pcl::io::savePCDFile<pcl::PointXYZI> ("current_world.pcd", *(cyclical_.getWorldModel ()->getWorld ()), true);
-    // clear world model
-    cyclical_.getWorldModel ()->reset ();
-  }
+
    
 
     
@@ -427,7 +430,7 @@ pcl::gpu::KinfuTracker::operator() (const DepthMap& depth_raw)
         {
           if (pcl_isnan (det)) cout << "qnan" << endl;
           
-          PCL_ERROR ("LOST!\n");
+          PCL_ERROR ("LOST...\n");
           reset ();
           return (false);
         }
@@ -464,9 +467,8 @@ pcl::gpu::KinfuTracker::operator() (const DepthMap& depth_raw)
   //check for shift
   bool has_shifted = cyclical_.checkForShift(tsdf_volume_, getCameraPose (), 0.6 * VOLUME_SIZE, true, perform_last_scan_);
 
-  if(has_shifted)
-    PCL_WARN ("WE ARE SHIFTING\n");
-    
+    if(has_shifted)
+      PCL_WARN ("WE ARE SHIFTING\n");    
     
   // get NEW local rotation 
   Matrix3frm cam_rot_local_curr_inv = cam_rot_global_curr.inverse ();

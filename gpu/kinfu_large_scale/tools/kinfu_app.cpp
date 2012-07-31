@@ -791,6 +791,7 @@ struct KinFuApp
         //~ cout << "In main loop" << endl;                  
       } 
       //~ cout << "Out of main loop, stopping capture" << endl;
+      exit_ = true;
       boost::this_thread::sleep (boost::posix_time::millisec (100));
       capture_.stop ();
       //~ cout << "Capture stopped" << endl;       
