@@ -114,42 +114,13 @@ namespace pcl
 
       // Compress color information
       if (CompressionPointTraits<PointT>::hasColor && doColorEncoding)
-        encodeRGBImageToPNG (rgbData, cloud_width, cloud_height, compressedRGB, pngLevel_arg);
+        encodeRGBImageToPNG (rgbData, cloud_width, cloud_height, compressedRGB, 1 /*Z_BEST_SPEED*/);
 
       compressedRGBSize = static_cast<uint32_t>(compressedRGB.size ());
       // Encode size of compressed RGB image data
       compressedDataOut_arg.write (reinterpret_cast<const char*> (&compressedRGBSize), sizeof (compressedRGBSize));
       // Output compressed disparity to ostream
       compressedDataOut_arg.write (reinterpret_cast<const char*> (&compressedRGB[0]), compressedRGB.size () * sizeof(uint8_t));
-
-      /*
-       // PNG decoding
-       size_t png_width;
-       size_t png_height;
-       unsigned int png_channels;
-       unsigned int png_bitDepth;
-       std::vector<uint16_t> imageDataRec;
-       decodePNGImage(compressedImage, imageDataRec, png_width, png_height, png_channels, png_bitDepth);
-
-       size_t i;
-       for (i=0; i<imageData.size(); ++i)
-       {
-       assert (imageData[i]==imageDataRec[i]);
-       }
-       assert (imageData.size()==imageDataRec.size());
-
-       pcl::PointCloud<PointT> cloudTest;
-
-       // reconstruct point cloud
-       OrganizedConversion<PointT>::convert(imageDataRec, cloud_width, cloud_height, maxDepth, vocalLength, cloudTest);
-
-       for (i=0; i<cloudTest.points.size(); ++i)
-       {
-       if (pcl::isFinite(cloud_arg->points[i]))
-       assert (cloud_arg->points[i].rgb==cloudTest.points[i].rgb);
-       }
-       assert (cloud_arg->points.size()==cloudTest.points.size());
-       */
 
       if (bShowStatistics_arg)
       {
