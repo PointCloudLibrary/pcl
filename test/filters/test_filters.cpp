@@ -64,7 +64,6 @@ using namespace std;
 using namespace sensor_msgs;
 using namespace Eigen;
 
-const float PI = 3.141592f;
 
 PointCloud2::Ptr cloud_blob (new PointCloud2);
 PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>);
@@ -774,6 +773,198 @@ TEST (VoxelGrid_RGB, Filters)
   }
 }
 
+#if 0
+////////////////////////////////////////////////////////////////////////////////
+float getRandomNumber (float max = 1.0, float min = 0.0)
+{
+  return (max - min) * float(rand ()) / float (RAND_MAX) + min;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (VoxelGrid_XYZNormal, Filters)
+{
+  PointCloud2 cloud_blob_;
+  PointCloud2::Ptr cloud_blob_ptr_;
+
+  PointCloud<PointNormal>::Ptr input (new PointCloud<PointNormal>);
+  PointCloud<PointNormal> output;
+  input->reserve (16);
+  input->is_dense = false;
+  
+  PointNormal point;
+  PointNormal ground_truth[2][2][2];
+  for (unsigned zIdx = 0; zIdx < 2; ++zIdx)
+  {
+    // x = 0 -> same two positions
+    for (unsigned yIdx = 0; yIdx < 2; ++yIdx)
+    {
+      for (unsigned xIdx = 0; xIdx < 2; ++xIdx)
+      {
+        // y = 0, z = 0 -> parallel normals opposite direction
+        // y = 0, z = 1 -> one normal is NaN
+        // y = 1, z = 0 -> orthogonal normals
+        // y = 1, z = 1 -> random normals
+        PointNormal& voxel = ground_truth [xIdx][yIdx][zIdx];
+        
+        point.x = xIdx * 1.99;
+        point.y = yIdx * 1.99;
+        point.z = zIdx * 1.99;
+        point.normal_x = getRandomNumber (1.0, -1.0);
+        point.normal_y = getRandomNumber (1.0, -1.0);
+        point.normal_z = getRandomNumber (1.0, -1.0);
+        
+        float norm = 1.0f / sqrt (point.normal_x * point.normal_x + point.normal_y * point.normal_y + point.normal_z * point.normal_z );
+        point.normal_x *= norm;
+        point.normal_y *= norm;
+        point.normal_z *= norm;
+        
+//        std::cout << "adding point: " << point.x << " , " << point.y << " , " << point.z
+//                  << " -- " << point.normal_x << " , " << point.normal_y << " , " << point.normal_z << std::endl;
+        input->push_back (point);
+        
+        voxel = point;
+        
+        if (xIdx != 0)
+        {
+          point.x = getRandomNumber (0.99) + float (xIdx);
+          point.y = getRandomNumber (0.99) + float (yIdx);
+          point.z = getRandomNumber (0.99) + float (zIdx);
+        }
+        if (yIdx == 0 && zIdx == 0) // opposite normals
+        {
+          point.normal_x *= -1.0;
+          point.normal_y *= -1.0;
+          point.normal_z *= -1.0;
+        }
+        else if (yIdx == 0 && zIdx == 1) // second normal is nan
+        {
+          point.normal_x = std::numeric_limits<float>::quiet_NaN ();
+          point.normal_y = std::numeric_limits<float>::quiet_NaN ();
+          point.normal_z = std::numeric_limits<float>::quiet_NaN ();
+        }
+        else if (yIdx == 1 && zIdx == 0) // orthogonal
+        {
+          point.normal_x = voxel.normal_y - voxel.normal_z;
+          point.normal_y = voxel.normal_z - voxel.normal_x;
+          point.normal_z = voxel.normal_x - voxel.normal_y;
+        }
+        else if (yIdx == 1 && zIdx == 1) // random
+        {
+          point.normal_x = getRandomNumber (1.0, -1.0);
+          point.normal_y = getRandomNumber (1.0, -1.0);
+          point.normal_z = getRandomNumber (1.0, -1.0);
+        }
+
+        voxel.x += point.x;
+        voxel.y += point.y;
+        voxel.z += point.z;
+        
+        voxel.x *= 0.5;
+        voxel.y *= 0.5;
+        voxel.z *= 0.5;
+        
+        if (yIdx == 0 && zIdx == 0)
+        {
+          voxel.normal_x = std::numeric_limits<float>::quiet_NaN ();
+          voxel.normal_y = std::numeric_limits<float>::quiet_NaN ();
+          voxel.normal_z = std::numeric_limits<float>::quiet_NaN ();
+        }
+        else if (pcl_isfinite (point.normal_x))
+        {
+          float norm = 1.0f / sqrt (point.normal_x * point.normal_x + point.normal_y * point.normal_y + point.normal_z * point.normal_z );
+          point.normal_x *= norm;
+          point.normal_y *= norm;
+          point.normal_z *= norm;
+          
+          voxel.normal_x += point.normal_x;
+          voxel.normal_y += point.normal_y;
+          voxel.normal_z += point.normal_z;
+          
+          norm = 1.0f / sqrt (voxel.normal_x * voxel.normal_x + voxel.normal_y * voxel.normal_y + voxel.normal_z * voxel.normal_z );
+          
+          voxel.normal_x *= norm;
+          voxel.normal_y *= norm;
+          voxel.normal_z *= norm;
+        }
+//        std::cout << "adding point: " << point.x << " , " << point.y << " , " << point.z
+//                  << " -- " << point.normal_x << " , " << point.normal_y << " , " << point.normal_z << std::endl;
+        input->push_back (point);
+//        std::cout << "voxel: " << voxel.x << " , " << voxel.y << " , " << voxel.z
+//                  << " -- " << voxel.normal_x << " , " << voxel.normal_y << " , " << voxel.normal_z << std::endl;
+        
+      }
+    }
+  }
+    
+  VoxelGrid<PointNormal> grid;
+  grid.setLeafSize (1.0f, 1.0f, 1.0f);
+  grid.setFilterLimits (0.0, 2.0);
+  grid.setInputCloud (input);
+  grid.filter (output);
+  
+  // check the output
+  for (unsigned idx = 0, zIdx = 0; zIdx < 2; ++zIdx)
+  {
+    for (unsigned yIdx = 0; yIdx < 2; ++yIdx)
+    {
+      for (unsigned xIdx = 0; xIdx < 2; ++xIdx, ++idx)
+      {
+        PointNormal& voxel = ground_truth [xIdx][yIdx][zIdx];
+        PointNormal& point = output.points [idx];
+        // check for point equalities
+        EXPECT_EQ (voxel.x, point.x);
+        EXPECT_EQ (voxel.y, point.y);
+        EXPECT_EQ (voxel.z, point.z);
+        
+        if (pcl_isfinite(voxel.normal_x) || pcl_isfinite (point.normal_x))
+        {
+          EXPECT_EQ (voxel.normal_x, point.normal_x);
+          EXPECT_EQ (voxel.normal_y, point.normal_y);
+          EXPECT_EQ (voxel.normal_z, point.normal_z);
+        }
+      }
+    }
+  }
+  
+  toROSMsg (*input, cloud_blob_);
+  cloud_blob_ptr_.reset (new PointCloud2 (cloud_blob_));
+  
+  VoxelGrid<PointCloud2> grid2;
+  PointCloud2 output_blob;
+
+  grid2.setLeafSize (1.0f, 1.0f, 1.0f);
+  grid2.setFilterLimits (0.0f, 2.0f);
+  grid2.setInputCloud (cloud_blob_ptr_);
+  grid2.filter (output_blob);
+
+  fromROSMsg (output_blob, output);
+  // check the output
+  for (unsigned idx = 0, zIdx = 0; zIdx < 2; ++zIdx)
+  {
+    for (unsigned yIdx = 0; yIdx < 2; ++yIdx)
+    {
+      for (unsigned xIdx = 0; xIdx < 2; ++xIdx, ++idx)
+      {
+        PointNormal& voxel = ground_truth [xIdx][yIdx][zIdx];
+        PointNormal& point = output.points [idx];
+        // check for point equalities
+        EXPECT_EQ (voxel.x, point.x);
+        EXPECT_EQ (voxel.y, point.y);
+        EXPECT_EQ (voxel.z, point.z);
+        
+        if (pcl_isfinite(voxel.normal_x) || pcl_isfinite (point.normal_x))
+        {
+          EXPECT_EQ (voxel.normal_x, point.normal_x);
+          EXPECT_EQ (voxel.normal_y, point.normal_y);
+          EXPECT_EQ (voxel.normal_z, point.normal_z);
+        }
+      }
+    }
+  }
+}
+
+#endif
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (VoxelGridCovariance, Filters)
 {
@@ -1082,7 +1273,7 @@ TEST (CropBox, Filters)
   EXPECT_EQ (int (cloud_out.size ()), 5);
 
   // Rotate crop box up by 45
-  cropBoxFilter.setRotation(Eigen::Vector3f(0, 45*PI/180, 0));
+  cropBoxFilter.setRotation(Eigen::Vector3f(0, 45.0 * M_PI / 180.0, 0));
   cropBoxFilter.filter (indices);
   cropBoxFilter.filter (cloud_out);
 
@@ -1092,7 +1283,7 @@ TEST (CropBox, Filters)
   EXPECT_EQ (int (cloud_out.height), 1);
 
   // Rotate point cloud by -45
-  cropBoxFilter.setTransform(getTransformation(0, 0, 0, 0, 0, -45*PI/180));
+  cropBoxFilter.setTransform(getTransformation(0, 0, 0, 0, 0, -45.0 * M_PI / 180.0));
   cropBoxFilter.filter (indices);
   cropBoxFilter.filter (cloud_out);
 
@@ -1102,7 +1293,7 @@ TEST (CropBox, Filters)
   EXPECT_EQ (int (cloud_out.height), 1);
 
   // Translate point cloud down by -1
-  cropBoxFilter.setTransform (getTransformation(0, -1, 0, 0, 0, -45*PI/180));
+  cropBoxFilter.setTransform (getTransformation(0, -1, 0, 0, 0, -45.0 * M_PI / 180.0));
   cropBoxFilter.filter (indices);
   cropBoxFilter.filter (cloud_out);
 
@@ -1157,7 +1348,7 @@ TEST (CropBox, Filters)
   EXPECT_EQ (int (indices2.size ()), int (cloud_out2.width * cloud_out2.height));
 
   // Rotate crop box up by 45
-  cropBoxFilter2.setRotation (Eigen::Vector3f(0, 45*PI/180, 0));
+  cropBoxFilter2.setRotation (Eigen::Vector3f(0, 45.0 * M_PI / 180.0, 0));
   cropBoxFilter2.filter (indices2);
   cropBoxFilter2.filter (cloud_out2);
 
@@ -1165,7 +1356,7 @@ TEST (CropBox, Filters)
   EXPECT_EQ (int (indices2.size ()), int (cloud_out2.width * cloud_out2.height));
 
   // Rotate point cloud by -45
-  cropBoxFilter2.setTransform (getTransformation(0, 0, 0, 0, 0, -45*PI/180));
+  cropBoxFilter2.setTransform (getTransformation(0, 0, 0, 0, 0, -45.0 * M_PI / 180.0));
   cropBoxFilter2.filter (indices2);
   cropBoxFilter2.filter (cloud_out2);
 
@@ -1173,7 +1364,7 @@ TEST (CropBox, Filters)
   EXPECT_EQ (int (cloud_out2.width * cloud_out2.height), 3);
 
   // Translate point cloud down by -1
-  cropBoxFilter2.setTransform (getTransformation(0, -1, 0, 0, 0, -45*PI/180));
+  cropBoxFilter2.setTransform (getTransformation(0, -1, 0, 0, 0, -45.0 * M_PI / 180.0));
   cropBoxFilter2.filter (indices2);
   cropBoxFilter2.filter (cloud_out2);
 
@@ -1632,7 +1823,7 @@ TEST (ConditionalRemovalTfQuadraticXYZComparison, Filters)
   EXPECT_EQ (input->points[9].z, output.points[9].z);
 
   // rotate cylinder comparison along z-axis by PI/2
-  cyl_comp->transformComparison (getTransformation (0, 0, 0, 0, 0, PI / 2).inverse ());
+  cyl_comp->transformComparison (getTransformation (0, 0, 0, 0, 0, M_PI / 2.0).inverse ());
 
   condrem.filter (output);
 
