@@ -112,6 +112,7 @@ namespace pcl
       setPointRepresentation (const PointRepresentationConstPtr &point_representation)
       {
         point_representation_ = point_representation;
+        if (!input_) return;
         setInputCloud (input_, indices_);  // Makes sense in derived classes to reinitialize the tree
       }
 
