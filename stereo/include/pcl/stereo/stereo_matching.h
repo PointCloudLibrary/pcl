@@ -51,17 +51,17 @@ namespace pcl
 	/** \brief Stereo Matching abstract class 
 	*
 	* The class performs stereo matching on a rectified stereo pair 
-	* Include the following functionalities:
-	*	* preprocessing of the image pair, to improve robustness against photometric distortion
+	* Includes the following functionalities:
+	*	* preprocessing of the image pair, to improve robustness against photometric distortions
 	*		(wrt. to a spatially constant additive photometric factor)
-	*	* postprocessing: filtering of wrong disparities via Peak Filter (eliminating ambiguities due to low textured regions) 
-	*		and Ratio Filter (eliminating generic matching ambiguities, similar to OpenCV Block Matching Stereo)
+	*	* postprocessing: filtering of wrong disparities via Peak Filter (eliminating ambiguities due to low-textured regions) 
+	*		and Ratio Filter (eliminating generic matching ambiguities, similar to that present in OpenCV Block Matching Stereo)
 	*	* postprocessing: Left-Right consistency check (eliminates wrong disparities at the cost of twice the stereo matching 
-	*		computation
+	*		computation)
 	*	* postprocessing: subpixel refinement of computed disparities, to reduce the depth quantization effect
 	*	* postprocessing: smoothing of the disparity map via median filter
-	*	* after stereo matching a PCL point cloud can be computed, given the stereo intrinsic (focal, principal point) 
-	*		and extrinsic (baseline) calibration parameters
+	*	* after stereo matching a PCL point cloud can be computed, given the stereo intrinsic (focal, principal point  
+	*		coordinates) and extrinsic (baseline) calibration parameters
 	*
     * \author Federico Tombari (federico.tombari@unibo.it)
     * \ingroup stereo
@@ -240,8 +240,10 @@ namespace pcl
 
 	/** \brief Block based (or fixed window) Stereo Matching class
 	*
-	* This class implements the baseline Block-based - aka Fixed Window stereo matching algorithm
-	* The algorithm is based on running box filter and Summed of Absolute Differences (SAD) matching function
+	* This class implements the baseline Block-based - aka Fixed Window -  stereo matching algorithm.
+	* The algorithm includes a running box filter so that the computational complexity is independent of 
+	*	the size of the window ( O(1) wrt. to the size of window)
+	* The algorithm is based on the Sum of Absolute Differences (SAD) matching function
 	* Only works with grayscale (single channel) rectified images
 	*
     * \author Federico Tombari (federico.tombari@unibo.it)
