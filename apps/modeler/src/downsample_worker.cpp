@@ -104,7 +104,7 @@ pcl::modeler::DownSampleWorker::setupParameters()
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::modeler::DownSampleWorker::processImpl(CloudMeshItem* cloud_mesh_item) const
+pcl::modeler::DownSampleWorker::processImpl(CloudMeshItem* cloud_mesh_item)
 {
   pcl::VoxelGrid<pcl::PointSurfel> voxel_grid;
   voxel_grid.setInputCloud(cloud_mesh_item->getCloudMesh()->getCloud());
@@ -114,6 +114,8 @@ pcl::modeler::DownSampleWorker::processImpl(CloudMeshItem* cloud_mesh_item) cons
   voxel_grid.filter(*cloud);
 
   cloud_mesh_item->getCloudMesh()->getCloud() = cloud;
+
+  emitDataUpdated(cloud_mesh_item);
 
   return;
 }

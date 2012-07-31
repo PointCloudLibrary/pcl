@@ -115,7 +115,7 @@ pcl::modeler::PoissonReconstructionWorker::setupParameters()
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::modeler::PoissonReconstructionWorker::processImpl(CloudMeshItem* cloud_mesh_item) const
+pcl::modeler::PoissonReconstructionWorker::processImpl(CloudMeshItem* cloud_mesh_item)
 {
   pcl::Poisson<pcl::PointSurfel> poisson;
   poisson.setDegree(*depth_);

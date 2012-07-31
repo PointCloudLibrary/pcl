@@ -80,6 +80,12 @@ namespace pcl
         void
         slotCreateRenderWindow();
 
+        void
+        slotOnWorkerStarted();
+
+        void
+        slotOnWorkerFinished();
+
       private:
         // methods for file Menu
         void 

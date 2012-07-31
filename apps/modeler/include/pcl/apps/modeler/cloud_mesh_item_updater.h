@@ -1,9 +1,7 @@
 /*
- * Software License Agreement  (BSD License)
+ * Software License Agreement (BSD License)
  *
- *  Point Cloud Library  (PCL) - www.pointclouds.org
- *  Copyright (c) 2012-, Open Perception, Inc.
- *
+ *  Copyright (c) 2010, Willow Garage, Inc.
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -16,7 +14,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of the copyright holder(s) nor the names of its
+ *   * Neither the name of Willow Garage, Inc. nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -25,65 +23,43 @@
  *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
  *  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
  *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
- *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES  (INCLUDING,
+ *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  *  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
  *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
  *  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- *  LIABILITY, OR TORT  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
+ *
  */
+#ifndef PCL_MODELER_CLOUD_MESH_ITEM_UPDATER_H_
+#define PCL_MODELER_CLOUD_MESH_ITEM_UPDATER_H_
 
-#ifndef PCL_MODELER_QT_H_
-#define PCL_MODELER_QT_H_
+#include <pcl/apps/modeler/qt.h>
 
-#ifdef __GNUC__
-#pragma GCC system_header
-#endif
+namespace pcl
+{
+  namespace modeler
+  {
+    class CloudMeshItem;
 
-#include <QObject>
+    class CloudMeshItemUpdater : public QObject
+    {
+      Q_OBJECT
 
-#include <QList>
-#include <QStringList>
-#include <QVector>
-#include <QStack>
+      public:
+        CloudMeshItemUpdater (CloudMeshItem* cloud_mesh_item);
+        ~CloudMeshItemUpdater ();
 
-#include <QPoint>
-#include <QColor>
-#include <QVariant>
+      public slots:
+        void
+        updateCloudMeshItem();
 
-#include <QFile>
-#include <QThread>
-#include <QSettings>
-#include <QContextMenuEvent>
+      private:
+        CloudMeshItem*      cloud_mesh_item_;
+    };
+  }
+}
 
-#include <QMenu>
-#include <QMainWindow>
-#include <QApplication>
-#include <QCoreApplication>
-#include <QWidget>
-#include <QSpinBox>
-#include <QComboBox>
-#include <QPushButton>
-#include <QMessageBox>
-
-#include <QDialog>
-#include <QColorDialog>
-#include <QFileDialog>
-
-#include <QDockWidget>
-
-#include <QGridLayout>
-
-#include <QTableView>
-#include <QHeaderView>
-#include <QTreeWidget>
-#include <QTreeWidgetItem>
-#include <QModelIndex>
-#include <QItemSelection>
-#include <QItemSelectionModel>
-#include <QStandardItemModel>
-#include <QStyledItemDelegate>
-
-#endif // PCL_MODELER_QT_H_
+#endif // PCL_MODELER_CLOUD_MESH_ITEM_UPDATER_H_

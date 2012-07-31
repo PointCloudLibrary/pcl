@@ -52,11 +52,9 @@ pcl::modeler::MainWindow::MainWindow()
 {
   ui_->setupUi(this);
 
-  RenderWindow* central_render_window = new RenderWindow(this);
-  setCentralWidget(central_render_window);
-
-  RenderWindowItem* central_render_window_item = new RenderWindowItem(ui_->scene_tree_, central_render_window);
-  central_render_window_item->setText(0, "Central Render Window");
+  RenderWindowItem* central_render_window_item = new RenderWindowItem(ui_->scene_tree_);
+  central_render_window_item->getRenderWindow()->setParent(this);
+  setCentralWidget(central_render_window_item->getRenderWindow());
   ui_->scene_tree_->addTopLevelItem(central_render_window_item);
 
   connectFileMenuActions();
@@ -98,12 +96,14 @@ void
 pcl::modeler::MainWindow::connectViewMenuActions()
 {
   connect(ui_->actionCreateRenderWindow, SIGNAL(triggered()), this, SLOT(slotCreateRenderWindow()));
+  connect(ui_->actionCloseRenderWindow, SIGNAL(triggered()), ui_->scene_tree_, SLOT(slotCloseRenderWindow()));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void 
 pcl::modeler::MainWindow::connectEditMenuActions()
 {
+  connect(ui_->actionICPRegistration, SIGNAL(triggered()), ui_->scene_tree_, SLOT(slotICPRegistration()));
   connect(ui_->actionDownSamplePoints, SIGNAL(triggered()), ui_->scene_tree_, SLOT(slotDownSampleFilter()));
   connect(ui_->actionEstimateNormals, SIGNAL(triggered()), ui_->scene_tree_, SLOT(slotEstimateNormal()));
   connect(ui_->actionPoissonReconstruction, SIGNAL(triggered()), ui_->scene_tree_, SLOT(slotPoissonReconstruction()));
@@ -150,20 +150,17 @@ void
 pcl::modeler::MainWindow::slotCreateRenderWindow()
 {
   DockWidget* dock_widget = new DockWidget(this);
+  addDockWidget(Qt::RightDockWidgetArea, dock_widget);
   dock_widget->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
 
-  RenderWindow* render_widget = new RenderWindow(dock_widget);
-
-  dock_widget->setWidget(render_widget);
-  addDockWidget(Qt::RightDockWidgetArea, dock_widget);
+  RenderWindowItem* render_window_item = new RenderWindowItem(ui_->scene_tree_);
+  render_window_item->getRenderWindow()->setParent(dock_widget);
+  dock_widget->setWidget(render_window_item->getRenderWindow());
+  ui_->scene_tree_->addTopLevelItem(render_window_item);
 
   // add the toggle action to view menu
   QList<QAction *> actions = ui_->menuView->actions();
   ui_->menuView->insertAction(actions[actions.size()-2], dock_widget->toggleViewAction());
-
-  // keep a track of the qvtk widget
-  //scene_tree_->appendRow(render_widget);
-  //render_widget->setCheckState(Qt::Checked);
 
   return;
 }
@@ -315,4 +312,18 @@ pcl::modeler::MainWindow::saveGlobalSettings()
   global_settings.setValue("recent_projects", recent_projects_);
 
   return;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void 
+pcl::modeler::MainWindow::slotOnWorkerStarted()
+{
+  statusBar()->showMessage(QString("Working thread running..."));
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void 
+pcl::modeler::MainWindow::slotOnWorkerFinished()
+{
+  statusBar()->showMessage(QString("Working thread finished..."));
 }

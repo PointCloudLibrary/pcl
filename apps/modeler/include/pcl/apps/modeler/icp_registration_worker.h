@@ -1,9 +1,8 @@
 /*
- * Software License Agreement  (BSD License)
+ * Software License Agreement (BSD License)
  *
- *  Point Cloud Library  (PCL) - www.pointclouds.org
- *  Copyright (c) 2012-, Open Perception, Inc.
- *
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2012, Willow Garage, Inc.
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -16,7 +15,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of the copyright holder(s) nor the names of its
+ *   * Neither the name of Willow Garage, Inc. nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -25,65 +24,52 @@
  *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
  *  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
  *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
- *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES  (INCLUDING,
+ *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
  *  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
  *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
  *  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- *  LIABILITY, OR TORT  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
 
-#ifndef PCL_MODELER_QT_H_
-#define PCL_MODELER_QT_H_
+#ifndef PCL_MODELER_ICP_REGISTRATION_WORKER_H_
+#define PCL_MODELER_ICP_REGISTRATION_WORKER_H_
 
-#ifdef __GNUC__
-#pragma GCC system_header
-#endif
+#include <pcl/apps/modeler/abstract_worker.h>
+#include <pcl/apps/modeler/cloud_mesh.h>
 
-#include <QObject>
+namespace pcl
+{
+  namespace modeler
+  {
+    class DoubleParameter;
 
-#include <QList>
-#include <QStringList>
-#include <QVector>
-#include <QStack>
+    class ICPRegistrationWorker : public AbstractWorker 
+    {
+      public:
+        ICPRegistrationWorker(CloudMesh::PointCloudPtr cloud, const QList<CloudMeshItem*>& cloud_mesh_items, QWidget* parent=0);
+        ~ICPRegistrationWorker(void);
 
-#include <QPoint>
-#include <QColor>
-#include <QVariant>
+      protected:
+        virtual std::string
+        getName () const {return ("Normal Estimation");}
 
-#include <QFile>
-#include <QThread>
-#include <QSettings>
-#include <QContextMenuEvent>
+        virtual void
+        initParameters(CloudMeshItem* cloud_mesh_item);
 
-#include <QMenu>
-#include <QMainWindow>
-#include <QApplication>
-#include <QCoreApplication>
-#include <QWidget>
-#include <QSpinBox>
-#include <QComboBox>
-#include <QPushButton>
-#include <QMessageBox>
+        virtual void
+        setupParameters();
 
-#include <QDialog>
-#include <QColorDialog>
-#include <QFileDialog>
+        virtual void
+        processImpl(CloudMeshItem* cloud_mesh_item);
 
-#include <QDockWidget>
+      private:
+        CloudMesh::PointCloudPtr    cloud_;
+    };
 
-#include <QGridLayout>
+  }
+}
 
-#include <QTableView>
-#include <QHeaderView>
-#include <QTreeWidget>
-#include <QTreeWidgetItem>
-#include <QModelIndex>
-#include <QItemSelection>
-#include <QItemSelectionModel>
-#include <QStandardItemModel>
-#include <QStyledItemDelegate>
-
-#endif // PCL_MODELER_QT_H_
+#endif // PCL_MODELER_ICP_REGISTRATION_WORKER_H_

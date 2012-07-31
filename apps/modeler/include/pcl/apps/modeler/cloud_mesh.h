@@ -57,6 +57,7 @@ namespace pcl
       typedef PointCloud::ConstPtr                PointCloudConstPtr;
 
       CloudMesh ();
+      CloudMesh (PointCloudPtr cloud);
       ~CloudMesh ();
 
       PointCloudPtr& 

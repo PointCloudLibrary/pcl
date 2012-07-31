@@ -63,7 +63,7 @@ namespace pcl
         setupParameters();
 
         virtual void
-        processImpl(CloudMeshItem* cloud_mesh_item) const;
+        processImpl(CloudMeshItem* cloud_mesh_item);
 
       private:
         IntParameter*     depth_;

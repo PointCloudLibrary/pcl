@@ -63,12 +63,15 @@ namespace pcl
 
       signals:
         void
-        processed(CloudMeshItem* cloud_mesh_item);
+        dataUpdated(CloudMeshItem* cloud_mesh_item);
 
         void
         finished();
 
       protected:
+        void
+        emitDataUpdated(CloudMeshItem* cloud_mesh_item);
+
         virtual std::string
         getName () const {return ("");}
 
@@ -79,7 +82,7 @@ namespace pcl
         setupParameters() = 0;
 
         virtual void
-        processImpl(CloudMeshItem* cloud_mesh_item) const = 0;
+        processImpl(CloudMeshItem* cloud_mesh_item) = 0;
 
       protected:
         QList<CloudMeshItem*>       cloud_mesh_items_;

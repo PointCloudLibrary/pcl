@@ -39,17 +39,19 @@
 
 #include <pcl/apps/modeler/qt.h>
 #include <pcl/apps/modeler/abstract_item.h>
+#include <pcl/apps/modeler/cloud_mesh.h>
 
 namespace pcl
 {
   namespace modeler
   {
     class RenderWindow;
+    class CloudMeshItem;
 
     class RenderWindowItem : public QTreeWidgetItem, public AbstractItem
     {
       public:
-        RenderWindowItem(QTreeWidget * parent, RenderWindow* render_window);
+        RenderWindowItem(QTreeWidget * parent);
         ~RenderWindowItem();
 
         inline RenderWindow*
@@ -65,6 +67,9 @@ namespace pcl
 
         bool
         openPointCloud(const QString& filename);
+
+        CloudMeshItem*
+        addPointCloud(CloudMesh::PointCloudPtr cloud);
 
       protected:
         virtual void

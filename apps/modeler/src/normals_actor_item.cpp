@@ -63,6 +63,8 @@ pcl::modeler::NormalsActorItem::createNormalLines()
   lines->Reset();
 
   CloudMesh::PointCloudConstPtr cloud = cloud_mesh_->getCloud();
+  if (cloud->empty())
+    return;
 
   if (points->GetData() == NULL)
     points->SetData(vtkSmartPointer<vtkFloatArray>::New ());

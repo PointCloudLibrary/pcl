@@ -84,6 +84,7 @@
     </property>
     <addaction name="separator"/>
     <addaction name="actionCreateRenderWindow"/>
+    <addaction name="actionCloseRenderWindow"/>
     <addaction name="actionToggleSceneExplorer"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
@@ -97,6 +98,7 @@
     <property name="title">
      <string>Edit</string>
     </property>
+    <addaction name="actionICPRegistration"/>
     <addaction name="actionDownSamplePoints"/>
     <addaction name="actionEstimateNormals"/>
     <addaction name="actionPoissonReconstruction"/>
@@ -229,6 +231,16 @@
   <action name="actionEstimateNormals">
    <property name="text">
     <string>Estimate Normals</string>
+   </property>
+  </action>
+  <action name="actionICPRegistration">
+   <property name="text">
+    <string>ICP Registration</string>
+   </property>
+  </action>
+  <action name="actionCloseRenderWindow">
+   <property name="text">
+    <string>Close Render Window</string>
    </property>
   </action>
  </widget>

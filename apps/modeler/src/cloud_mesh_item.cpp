@@ -55,6 +55,20 @@ pcl::modeler::CloudMeshItem::CloudMeshItem (QTreeWidgetItem* parent, const std::
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
+pcl::modeler::CloudMeshItem::CloudMeshItem (QTreeWidgetItem* parent, CloudMesh::PointCloudPtr cloud)
+  :QTreeWidgetItem(parent),
+  AbstractItem(),
+  filename_("unnamed point cloud"),
+  cloud_mesh_(boost::shared_ptr<CloudMesh>(new CloudMesh(cloud)))
+{
+  setText(0, QString(filename_.c_str()));
+
+  createChannels();
+
+  treeWidget()->expandItem(this);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
 pcl::modeler::CloudMeshItem::~CloudMeshItem ()
 {
 }
@@ -93,17 +107,13 @@ pcl::modeler::CloudMeshItem::open()
   return (true);
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////
-void
-pcl::modeler::CloudMeshItem::close()
-{
-  parent()->removeChild(this);
-}
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::modeler::CloudMeshItem::prepareContextMenu(QMenu* menu) const
 {
+  menu->addAction(ui()->actionICPRegistration);
   menu->addAction(ui()->actionDownSamplePoints);
   menu->addAction(ui()->actionEstimateNormals);
   menu->addAction(ui()->actionPoissonReconstruction);

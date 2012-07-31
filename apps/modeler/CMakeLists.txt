@@ -36,7 +36,8 @@ if(build)
            include/pcl/apps/${SUBSYS_NAME}/scene_tree.h
            include/pcl/apps/${SUBSYS_NAME}/parameter_dialog.h
            include/pcl/apps/${SUBSYS_NAME}/thread_controller.h
-           include/pcl/apps/${SUBSYS_NAME}/abstract_worker.h)
+           include/pcl/apps/${SUBSYS_NAME}/abstract_worker.h
+           include/pcl/apps/${SUBSYS_NAME}/cloud_mesh_item_updater.h)
 
   set(resources resources/resources.qrc)
 
@@ -57,6 +58,7 @@ if(build)
            include/pcl/apps/${SUBSYS_NAME}/normals_actor_item.h
            include/pcl/apps/${SUBSYS_NAME}/surface_actor_item.h
 
+           include/pcl/apps/${SUBSYS_NAME}/icp_registration_worker.h
            include/pcl/apps/${SUBSYS_NAME}/downsample_worker.h
            include/pcl/apps/${SUBSYS_NAME}/normal_estimation_worker.h
            include/pcl/apps/${SUBSYS_NAME}/poisson_worker.h)
@@ -76,6 +78,7 @@ if(build)
 
            src/cloud_mesh.cpp
            src/cloud_mesh_item.cpp
+           src/cloud_mesh_item_updater.cpp
            src/channel_actor_item.cpp
            src/points_actor_item.cpp
            src/normals_actor_item.cpp
@@ -83,6 +86,7 @@ if(build)
 
            src/thread_controller.cpp
            src/abstract_worker.cpp
+           src/icp_registration_worker.cpp
            src/downsample_worker.cpp
            src/normal_estimation_worker.cpp
            src/poisson_worker.cpp)

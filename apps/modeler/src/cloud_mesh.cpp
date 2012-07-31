@@ -51,6 +51,16 @@ pcl::modeler::CloudMesh::CloudMesh()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
+pcl::modeler::CloudMesh::CloudMesh(PointCloudPtr cloud)
+  :cloud_(cloud),
+  vtk_points_(vtkSmartPointer<vtkPoints>::New()),
+  vtk_polygons_(vtkSmartPointer<vtkCellArray>::New())
+{
+  vtk_points_->SetDataTypeToFloat ();
+  updateVtkPoints();
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
 pcl::modeler::CloudMesh::~CloudMesh ()
 {
 }
@@ -186,8 +196,6 @@ pcl::modeler::CloudMesh::updateVtkPolygons()
         vtk_polygons_->InsertCellPoint ((*indices)[polygons_[i].vertices[j]]);
     }
   }
-
-  std::cout << polygons_.size() << std::endl;
 
   return;
 }

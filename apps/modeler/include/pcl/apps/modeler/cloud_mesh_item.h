@@ -39,7 +39,7 @@
 #include <pcl/apps/modeler/qt.h>
 #include <boost/shared_ptr.hpp>
 #include <pcl/apps/modeler/abstract_item.h>
-
+#include <pcl/apps/modeler/cloud_mesh.h>
 
 namespace pcl
 {
@@ -51,6 +51,7 @@ namespace pcl
     {
       public:
         CloudMeshItem (QTreeWidgetItem* parent, const std::string& filename);
+        CloudMeshItem (QTreeWidgetItem* parent, CloudMesh::PointCloudPtr cloud);
         ~CloudMeshItem ();
 
         inline boost::shared_ptr<CloudMesh>&
@@ -69,9 +70,6 @@ namespace pcl
 
         bool
         open();
-
-        void
-        close();
 
         void
         createChannels();

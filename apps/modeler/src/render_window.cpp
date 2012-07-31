@@ -35,7 +35,10 @@
  */
 
 #include <pcl/apps/modeler/render_window.h>
-
+#include <pcl/apps/modeler/render_window_item.h>
+#include <pcl/apps/modeler/scene_tree.h>
+#include <pcl/apps/modeler/dock_widget.h>
+#include <pcl/apps/modeler/main_window.h>
 #include <vtkRenderer.h>
 #include <vtkSmartPointer.h>
 #include <vtkRenderWindow.h>
@@ -43,8 +46,9 @@
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::modeler::RenderWindow::RenderWindow(QWidget *parent, Qt::WFlags flags) : 
-  QVTKWidget(parent, flags)
+pcl::modeler::RenderWindow::RenderWindow(RenderWindowItem* render_window_item, QWidget *parent, Qt::WFlags flags)
+  : QVTKWidget(parent, flags),
+  render_window_item_(render_window_item)
 {
   setFocusPolicy(Qt::StrongFocus);
   initRenderer();
@@ -53,6 +57,14 @@ pcl::modeler::RenderWindow::RenderWindow(QWidget *parent, Qt::WFlags flags) :
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::modeler::RenderWindow::~RenderWindow()
 {
+  DockWidget* dock_widget = dynamic_cast<DockWidget*>(parent());
+  if (dock_widget != NULL)
+  {
+    MainWindow::getInstance().removeDockWidget(dock_widget);
+    dock_widget->deleteLater();
+  }
+
+  return;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -81,4 +93,42 @@ pcl::modeler::RenderWindow::initRenderer()
   win->GetInteractor()->SetDesiredUpdateRate (30.0);
 
   return;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::modeler::RenderWindow::focusInEvent(QFocusEvent * event)
+{
+  dynamic_cast<SceneTree*>(render_window_item_->treeWidget())->selectRenderWindowItem(render_window_item_);
+
+  QVTKWidget::focusInEvent(event);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::modeler::RenderWindow::setActive(bool flag)
+{
+  DockWidget* dock_widget = dynamic_cast<DockWidget*>(parent());
+  if (dock_widget != NULL)
+    dock_widget->setFocusBasedStyle(flag);
+
+  return;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::modeler::RenderWindow::setTitle(const QString& title)
+{
+  DockWidget* dock_widget = dynamic_cast<DockWidget*>(parent());
+  if (dock_widget != NULL)
+    dock_widget->setWindowTitle(title);
+
+  return;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::modeler::RenderWindow::render()
+{
+  GetRenderWindow()->GetRenderers()->GetFirstRenderer()->Render();
 }

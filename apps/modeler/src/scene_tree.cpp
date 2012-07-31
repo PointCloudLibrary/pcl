@@ -40,9 +40,11 @@
 #include <pcl/apps/modeler/render_window.h>
 #include <pcl/apps/modeler/render_window_item.h>
 #include <pcl/apps/modeler/cloud_mesh_item.h>
+#include <pcl/apps/modeler/cloud_mesh_item_updater.h>
 #include <pcl/apps/modeler/thread_controller.h>
 #include <pcl/apps/modeler/downsample_worker.h>
 #include <pcl/apps/modeler/normal_estimation_worker.h>
+#include <pcl/apps/modeler/icp_registration_worker.h>
 #include <pcl/apps/modeler/poisson_worker.h>
 #include <pcl/io/pcd_io.h>
 
@@ -51,6 +53,12 @@
 pcl::modeler::SceneTree::SceneTree(QWidget * parent)
   : QTreeWidget(parent)
 {
+  setSelectionMode(QAbstractItemView::ExtendedSelection);
+
+  connect(selectionModel(), SIGNAL(selectionChanged(QItemSelection, QItemSelection)),
+    this, SLOT(slotUpdateOnSelectionChange(QItemSelection, const QItemSelection)));
+
+  connect(this, SIGNAL(itemInsertedOrRemoved()),this, SLOT(slotUpdateOnInsertOrRemove()));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -233,15 +241,29 @@ pcl::modeler::SceneTree::slotSavePointCloud()
 void 
 pcl::modeler::SceneTree::closePointCloud(const QList<CloudMeshItem*>& items)
 {
+  QList<RenderWindowItem*> render_window_items;
+
   for (QList<CloudMeshItem*>::const_iterator items_it = items.begin();
     items_it != items.end();
     ++ items_it)
   {
     CloudMeshItem* item = *items_it;
+
+    RenderWindowItem* render_window_item = dynamic_cast<RenderWindowItem*>(item->parent());
+    if (render_window_item != NULL)
+      render_window_items.push_back(render_window_item);
+
     item->parent()->removeChild(item);
     delete item;
   }
 
+  for (QList<RenderWindowItem*>::const_iterator render_window_items_it = render_window_items.begin();
+    render_window_items_it != render_window_items.end();
+    ++ render_window_items_it)
+  {
+    (*render_window_items_it)->getRenderWindow()->render();
+  }
+  
   return;
 }
 
@@ -267,11 +289,37 @@ pcl::modeler::SceneTree::slotClosePointCloud()
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 void
+pcl::modeler::SceneTree::slotICPRegistration()
+{
+  QList<CloudMeshItem*> selected_cloud_mesh_items = selectedTypeItems<CloudMeshItem>();
+  CloudMesh::PointCloudPtr result(new CloudMesh::PointCloud());
+
+  AbstractWorker* worker = new ICPRegistrationWorker(result, selected_cloud_mesh_items,&MainWindow::getInstance());
+  ThreadController* thread_controller = new ThreadController();
+
+  QList<RenderWindowItem*> selected_render_window_items = selectedRenderWindowItems();
+  for (QList<RenderWindowItem*>::iterator selected_render_window_items_it = selected_render_window_items.begin();
+    selected_render_window_items_it != selected_render_window_items.end();
+    ++ selected_render_window_items_it)
+  {
+    CloudMeshItem* cloud_mesh_item = (*selected_render_window_items_it)->addPointCloud(result);
+    expandItem(*selected_render_window_items_it);
+    connect(worker, SIGNAL(finished()), new CloudMeshItemUpdater(cloud_mesh_item), SLOT(updateCloudMeshItem()));
+  }
+  
+  thread_controller->runWorker(worker);
+
+  return;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+void
 pcl::modeler::SceneTree::slotDownSampleFilter()
 {
   QList<CloudMeshItem*> selected_cloud_mesh_items = selectedTypeItems<CloudMeshItem>();
   AbstractWorker* worker = new DownSampleWorker(selected_cloud_mesh_items,&MainWindow::getInstance());
   ThreadController* thread_controller = new ThreadController();
+  connect(worker, SIGNAL(dataUpdated(CloudMeshItem*)), thread_controller, SLOT(slotOnCloudMeshItemUpdate(CloudMeshItem*)));
   thread_controller->runWorker(worker);
 
   return;
@@ -284,6 +332,7 @@ pcl::modeler::SceneTree::slotEstimateNormal()
   QList<CloudMeshItem*> selected_cloud_mesh_items = selectedTypeItems<CloudMeshItem>();
   AbstractWorker* worker = new NormalEstimationWorker(selected_cloud_mesh_items,&MainWindow::getInstance());
   ThreadController* thread_controller = new ThreadController();
+  connect(worker, SIGNAL(dataUpdated(CloudMeshItem*)), thread_controller, SLOT(slotOnCloudMeshItemUpdate(CloudMeshItem*)));
   thread_controller->runWorker(worker);
 
   return;
@@ -296,7 +345,98 @@ pcl::modeler::SceneTree::slotPoissonReconstruction()
   QList<CloudMeshItem*> selected_cloud_mesh_items = selectedTypeItems<CloudMeshItem>();
   AbstractWorker* worker = new PoissonReconstructionWorker(selected_cloud_mesh_items,&MainWindow::getInstance());
   ThreadController* thread_controller = new ThreadController();
+  connect(worker, SIGNAL(dataUpdated(CloudMeshItem*)), thread_controller, SLOT(slotOnCloudMeshItemUpdate(CloudMeshItem*)));
   thread_controller->runWorker(worker);
+
+  return;
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::modeler::SceneTree::selectRenderWindowItem(RenderWindowItem* render_window_item)
+{
+  selectionModel()->clearSelection();
+  selectionModel()->select(indexFromItem(render_window_item), QItemSelectionModel::SelectCurrent);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::modeler::SceneTree::slotUpdateOnSelectionChange(const QItemSelection & selected, const QItemSelection & deselected)
+{
+  QModelIndexList selected_indices = selected.indexes();
+  for (QModelIndexList::const_iterator selected_indices_it = selected_indices.begin();
+    selected_indices_it != selected_indices.end();
+    ++ selected_indices_it)
+  {
+    QTreeWidgetItem* item = itemFromIndex(*selected_indices_it);
+    RenderWindowItem* render_window_item = dynamic_cast<RenderWindowItem*>(item);
+    if (render_window_item != NULL)
+    {
+      render_window_item->getRenderWindow()->setActive(true);
+    }
+  }
+
+  QModelIndexList deselected_indices = deselected.indexes();
+  for (QModelIndexList::const_iterator deselected_indices_it = deselected_indices.begin();
+    deselected_indices_it != deselected_indices.end();
+    ++ deselected_indices_it)
+  {
+    QTreeWidgetItem* item = itemFromIndex(*deselected_indices_it);
+    RenderWindowItem* render_window_item = dynamic_cast<RenderWindowItem*>(item);
+    if (render_window_item != NULL)
+    {
+      render_window_item->getRenderWindow()->setActive(false);
+    }
+  }
+
+  return;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::modeler::SceneTree::slotUpdateOnInsertOrRemove()
+{
+  for (int i = 0, i_end = topLevelItemCount(); i < i_end; ++ i)
+  {
+    RenderWindowItem* render_window_item = dynamic_cast<RenderWindowItem*>(topLevelItem(i));
+    if (render_window_item == NULL)
+      continue;
+
+    QString title = (i == 0)?("Central Render Window"):(QString("Render Window #%1").arg(i));
+    render_window_item->setText(0, title);
+
+    render_window_item->getRenderWindow()->setTitle(title);
+  }
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::modeler::SceneTree::addTopLevelItem(RenderWindowItem* render_window_item)
+{
+  QTreeWidget::addTopLevelItem(render_window_item);
+
+  selectionModel()->clearSelection();
+  selectionModel()->select(indexFromItem(render_window_item), QItemSelectionModel::SelectCurrent);
+
+  emit itemInsertedOrRemoved();
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::modeler::SceneTree::slotCloseRenderWindow()
+{
+  QList<RenderWindowItem*> selected_render_window_items = selectedTypeItems<RenderWindowItem>();
+
+  for (QList<RenderWindowItem*>::iterator selected_render_window_items_it = selected_render_window_items.begin();
+    selected_render_window_items_it != selected_render_window_items.end();
+    ++ selected_render_window_items_it)
+  {
+    removeItemWidget((*selected_render_window_items_it), 0);
+    delete (*selected_render_window_items_it);
+  }
+
+  emit itemInsertedOrRemoved();
 
   return;
 }

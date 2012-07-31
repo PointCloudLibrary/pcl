@@ -35,22 +35,24 @@
  */
 
 #include <pcl/apps/modeler/render_window_item.h>
-
+#include <pcl/apps/modeler/render_window.h>
 #include <pcl/apps/modeler/cloud_mesh_item.h>
 #include <pcl/apps/modeler/main_window.h>
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::modeler::RenderWindowItem::RenderWindowItem(QTreeWidget * parent, RenderWindow* render_window)
+pcl::modeler::RenderWindowItem::RenderWindowItem(QTreeWidget * parent)
   : QTreeWidgetItem(parent),
   AbstractItem(),
-  render_window_(render_window)
+  render_window_(new RenderWindow(this))
 {
+
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::modeler::RenderWindowItem::~RenderWindowItem()
 {
+  render_window_->deleteLater();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -73,8 +75,22 @@ pcl::modeler::RenderWindowItem::openPointCloud(const QString& filename)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
+pcl::modeler::CloudMeshItem*
+pcl::modeler::RenderWindowItem::addPointCloud(CloudMesh::PointCloudPtr cloud)
+{
+  CloudMeshItem* cloud_mesh_item = new CloudMeshItem(this, cloud);
+  addChild(cloud_mesh_item);
+
+  treeWidget()->setCurrentItem(cloud_mesh_item);
+
+  return (cloud_mesh_item);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::modeler::RenderWindowItem::prepareContextMenu(QMenu* menu) const
 {
   menu->addAction(ui()->actionOpenPointCloud);
+  if (treeWidget()->topLevelItem(0) != this && childCount() == 0)
+    menu->addAction(ui()->actionCloseRenderWindow);
 }

@@ -34,61 +34,62 @@
  *
  */
 
-#include <pcl/apps/modeler/thread_controller.h>
-
-#include <pcl/apps/modeler/abstract_worker.h>
+#include <pcl/apps/modeler/icp_registration_worker.h>
+#include <pcl/apps/modeler/parameter_dialog.h>
+#include <pcl/apps/modeler/parameter.h>
+#include <pcl/apps/modeler/cloud_mesh.h>
 #include <pcl/apps/modeler/cloud_mesh_item.h>
-#include <pcl/apps/modeler/main_window.h>
-
+#include <pcl/registration/icp.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::modeler::ThreadController::ThreadController()
+pcl::modeler::ICPRegistrationWorker::ICPRegistrationWorker(CloudMesh::PointCloudPtr cloud, const QList<CloudMeshItem*>& cloud_mesh_items, QWidget* parent)
+  : AbstractWorker(cloud_mesh_items, parent),
+  cloud_(cloud)
 {
 
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::modeler::ThreadController::~ThreadController(void)
+pcl::modeler::ICPRegistrationWorker::~ICPRegistrationWorker(void)
 {
-  MainWindow::getInstance().slotOnWorkerFinished();
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-bool
-pcl::modeler::ThreadController::runWorker(AbstractWorker* worker)
-{
-  if (worker->exec() != QDialog::Accepted)
-  {
-    delete worker;
-    deleteLater();
-
-    return (false);
-  }
-  
-  QThread* thread = new QThread;
-
-  connect(this, SIGNAL(prepared()), worker, SLOT(process()));
-
-  connect(worker, SIGNAL(finished()), worker, SLOT(deleteLater()));
-
-  connect(worker, SIGNAL(finished()), thread, SLOT(quit()));
-  connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
-
-  connect(worker, SIGNAL(finished()), this, SLOT(deleteLater()));
-
-  worker->moveToThread(thread);
-  thread->start();
-
-  MainWindow::getInstance().slotOnWorkerStarted();
-
-  emit prepared();
-
-   return (true);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::modeler::ThreadController::slotOnCloudMeshItemUpdate(CloudMeshItem* cloud_mesh_item)
+pcl::modeler::ICPRegistrationWorker::initParameters(CloudMeshItem* cloud_mesh_item)
 {
-  cloud_mesh_item->updateChannels();
+  cloud_->clear();
+
+  return;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::modeler::ICPRegistrationWorker::setupParameters()
+{
+  return;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::modeler::ICPRegistrationWorker::processImpl(CloudMeshItem* cloud_mesh_item)
+{
+  if (cloud_->empty())
+  {
+    *cloud_ = *(cloud_mesh_item->getCloudMesh()->getCloud());
+    return;
+  }
+
+  pcl::IterativeClosestPoint<CloudMesh::PointT, CloudMesh::PointT> icp;
+  icp.setInputCloud(cloud_);
+  icp.setInputTarget(cloud_mesh_item->getCloudMesh()->getCloud());
+  pcl::PointCloud<CloudMesh::PointT> result;
+  icp.align(result);
+
+  result.sensor_origin_ = cloud_mesh_item->getCloudMesh()->getCloud()->sensor_origin_;
+  result.sensor_orientation_ = cloud_mesh_item->getCloudMesh()->getCloud()->sensor_orientation_;
+
+  *cloud_ = result;
+
+  return;
 }

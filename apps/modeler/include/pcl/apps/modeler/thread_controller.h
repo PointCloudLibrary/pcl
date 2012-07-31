@@ -63,7 +63,7 @@ namespace pcl
 
       private slots:
         void
-        postProcess(CloudMeshItem* cloud_mesh_item);
+        slotOnCloudMeshItemUpdate(CloudMeshItem* cloud_mesh_item);
     };
 
   }

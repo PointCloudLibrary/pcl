@@ -77,10 +77,16 @@ pcl::modeler::AbstractWorker::process()
     ++ cloud_mesh_items_it)
   {
     processImpl(*cloud_mesh_items_it);
-    emit processed(*cloud_mesh_items_it);
   }
 
   emit finished();
 
   return;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::modeler::AbstractWorker::emitDataUpdated(CloudMeshItem* cloud_mesh_item)
+{
+  emit dataUpdated(cloud_mesh_item);
 }

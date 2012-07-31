@@ -63,6 +63,12 @@ namespace pcl
         bool 
         savePointCloud(const QString& filename);
 
+        void
+        selectRenderWindowItem(RenderWindowItem* render_window_item);
+
+        void
+        addTopLevelItem(RenderWindowItem* render_window_item);
+
       public slots:
         // slots for file menu
         void 
@@ -79,16 +85,31 @@ namespace pcl
 
         // slots for edit menu
         void
+        slotICPRegistration();
+        void
         slotDownSampleFilter();
         void
         slotEstimateNormal();
         void
         slotPoissonReconstruction();
 
+        // slots for view menu
+        void
+        slotCloseRenderWindow();
+
       signals:
         void
         fileOpened(const QString& filename);
 
+        void
+        itemInsertedOrRemoved();
+
+      private slots:
+        void
+        slotUpdateOnSelectionChange(const QItemSelection& selected, const QItemSelection& deselected);
+
+        void
+        slotUpdateOnInsertOrRemove();
       private:
         template <class T> QList<T*>
         selectedTypeItems() const;

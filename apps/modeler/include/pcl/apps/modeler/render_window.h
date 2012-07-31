@@ -43,20 +43,35 @@ namespace pcl
 {
   namespace modeler
   {
+    class RenderWindowItem;
+
     class RenderWindow : public QVTKWidget
     {
       public:
-        RenderWindow(QWidget *parent = 0, Qt::WFlags flags = 0);
+        RenderWindow(RenderWindowItem* render_window_item, QWidget *parent = 0, Qt::WFlags flags = 0);
         ~RenderWindow();
 
         virtual QSize
         sizeHint() const {return QSize(512, 512);}
 
+        void
+        setActive(bool flag);
+
+        void
+        setTitle(const QString& title);
+
+        void
+        render();
+
       protected:
+        void
+        focusInEvent(QFocusEvent * event);
 
       private:
         void
         initRenderer();
+
+        RenderWindowItem*     render_window_item_;
     };
   }
 }

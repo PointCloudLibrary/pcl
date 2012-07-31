@@ -101,7 +101,7 @@ pcl::modeler::NormalEstimationWorker::setupParameters()
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::modeler::NormalEstimationWorker::processImpl(CloudMeshItem* cloud_mesh_item) const
+pcl::modeler::NormalEstimationWorker::processImpl(CloudMeshItem* cloud_mesh_item)
 {
   CloudMesh::PointCloudPtr cloud = cloud_mesh_item->getCloudMesh()->getCloud();
 

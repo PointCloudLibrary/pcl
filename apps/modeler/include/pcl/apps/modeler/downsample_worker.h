@@ -62,7 +62,7 @@ namespace pcl
         setupParameters();
 
         virtual void
-        processImpl(CloudMeshItem* cloud_mesh_item) const;
+        processImpl(CloudMeshItem* cloud_mesh_item);
 
       private:
         double x_min_, x_max_;
