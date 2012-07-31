@@ -53,8 +53,8 @@ public:
     pcl::octree::compression_Profiles_e compressionProfile = pcl::octree::MED_RES_ONLINE_COMPRESSION_WITH_COLOR;
 
     // instantiate point cloud compression for encoding and decoding
-    PointCloudEncoder = new pcl::octree::PointCloudCompression<pcl::PointXYZRGBA> (compressionProfile, showStatistics);
-    PointCloudDecoder = new pcl::octree::PointCloudCompression<pcl::PointXYZRGBA> ();
+    PointCloudEncoder = new pcl::io::OctreePointCloudCompression<pcl::PointXYZRGBA> (compressionProfile, showStatistics);
+    PointCloudDecoder = new pcl::io::OctreePointCloudCompression<pcl::PointXYZRGBA> ();
 
     // create a new grabber for OpenNI devices
     pcl::Grabber* interface = new pcl::OpenNIGrabber ();
@@ -84,8 +84,8 @@ public:
 
   pcl::visualization::CloudViewer viewer;
 
-  pcl::octree::PointCloudCompression<pcl::PointXYZRGBA>* PointCloudEncoder;
-  pcl::octree::PointCloudCompression<pcl::PointXYZRGBA>* PointCloudDecoder;
+  pcl::io::OctreePointCloudCompression<pcl::PointXYZRGBA>* PointCloudEncoder;
+  pcl::io::OctreePointCloudCompression<pcl::PointXYZRGBA>* PointCloudDecoder;
 
 };
 
