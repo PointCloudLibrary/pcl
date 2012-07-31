@@ -20,6 +20,7 @@ if(build)
     set(srcs
         src/stereo_grabber.cpp
 		src/stereo_matching.cpp
+		src/stereo_block_based.cpp
         )
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
