@@ -50,7 +50,7 @@ namespace pcl
       * \param[in] width_arg image width
       * \param[in] height_arg image height
       * \param[out] pngData PNG compressed image data
-      * \param[in] png_level_arg zLib compression level
+      * \param[in] png_level_arg zLib compression level (default level: -1)
       * \ingroup io
       */
     PCL_EXPORTS void
@@ -65,7 +65,7 @@ namespace pcl
       * \param[in] width_arg image width
       * \param[in] height_arg image height
       * \param[out] pngData PNG compressed image data
-      * \param[in] png_level_arg zLib compression level
+      * \param[in] png_level_arg zLib compression level (default level: -1)
       * \ingroup io
       */
     PCL_EXPORTS void
@@ -80,7 +80,7 @@ namespace pcl
       * \param[in] width_arg image width
       * \param[in] height_arg image height
       * \param[out] pngData PNG compressed image data
-      * \param[in] png_level_arg zLib compression level
+      * \param[in] png_level_arg zLib compression level (default level: -1)
       * \ingroup io
       */
     PCL_EXPORTS void
@@ -95,7 +95,7 @@ namespace pcl
       * \param[in] width_arg image width
       * \param[in] height_arg image height
       * \param[out] pngData PNG compressed image data
-      * \param[in] png_level_arg zLib compression level
+      * \param[in] png_level_arg zLib compression level (default level: -1)
       * \ingroup io
       */
     PCL_EXPORTS void
@@ -111,7 +111,6 @@ namespace pcl
       * \param[out] width image width
       * \param[out] height image height
       * \param[out] channels number of channels
-      * \param[out] bitDepth bit depth
       * \ingroup io
       */
     PCL_EXPORTS void
@@ -119,8 +118,7 @@ namespace pcl
                      typename std::vector<uint8_t>& imageData_arg,
                      size_t& width_arg,
                      size_t& heigh_argt,
-                     unsigned int& channels_arg,
-                     unsigned int& bitDepth_arg);
+                     unsigned int& channels_arg);
 
     /** \brief Decode compressed PNG to 16-bit image
       * \param[in] pngData PNG compressed input data
@@ -128,7 +126,6 @@ namespace pcl
       * \param[out] width image width
       * \param[out] height image height
       * \param[out] channels number of channels
-      * \param[out] bitDepth bit depth
       * \ingroup io
       */
     PCL_EXPORTS void
@@ -136,8 +133,7 @@ namespace pcl
                      typename std::vector<uint16_t>& imageData_arg,
                      size_t& width_arg,
                      size_t& heigh_argt,
-                     unsigned int& channels_arg,
-                     unsigned int& bitDepth_arg);
+                     unsigned int& channels_arg);
   }
 }
 

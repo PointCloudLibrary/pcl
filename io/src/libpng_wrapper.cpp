@@ -88,6 +88,9 @@ namespace pcl
       png_infop info_ptr;
       int channels;
 
+      if (image_arg.size()==0)
+        return;
+
       // Get amount of channels
       switch (image_format_arg)
        {
@@ -168,8 +171,7 @@ namespace pcl
                    typename std::vector<T>& imageData_arg,
                    size_t& width_arg,
                    size_t& height_arg,
-                   unsigned int& channels_arg,
-                   unsigned int& bitDepth_arg)
+                   unsigned int& channels_arg)
     {
       int y;
       png_structp png_ptr;
@@ -179,6 +181,9 @@ namespace pcl
       int png_bit_depth, png_color_type, png_interlace_type;
 
       png_bytep * row_pointers;
+
+      if (pngData_arg.size()==0)
+        return;
 
       png_ptr = png_create_read_struct (PNG_LIBPNG_VER_STRING, 0, 0, 0);
       assert(png_ptr && "creating png_create_write_structpng_create_write_struct failed");
@@ -227,8 +232,6 @@ namespace pcl
       width_arg = png_width;
       height_arg = png_height;
       channels_arg = png_channels;
-
-      bitDepth_arg = png_bit_depth;
 
       imageData_arg.clear ();
       imageData_arg.resize (png_height * png_width * png_channels);
@@ -298,10 +301,9 @@ namespace pcl
                      typename std::vector<uint8_t>& imageData_arg,
                      size_t& width_arg,
                      size_t& height_arg,
-                     unsigned int& channels_arg,
-                     unsigned int& bitDepth_arg)
+                     unsigned int& channels_arg)
     {
-      decodePNGImage<uint8_t> (pngData_arg, imageData_arg, width_arg, height_arg, channels_arg, bitDepth_arg);
+      decodePNGImage<uint8_t> (pngData_arg, imageData_arg, width_arg, height_arg, channels_arg);
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
@@ -310,10 +312,9 @@ namespace pcl
                      typename std::vector<uint16_t>& imageData_arg,
                      size_t& width_arg,
                      size_t& height_arg,
-                     unsigned int& channels_arg,
-                     unsigned int& bitDepth_arg)
+                     unsigned int& channels_arg)
     {
-      decodePNGImage<uint16_t> (pngData_arg, imageData_arg, width_arg, height_arg, channels_arg, bitDepth_arg);
+      decodePNGImage<uint16_t> (pngData_arg, imageData_arg, width_arg, height_arg, channels_arg);
     }
 
   }
