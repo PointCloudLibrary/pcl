@@ -39,13 +39,13 @@ Now, let's discuss the code in detail. Let's start at the main() function: First
    :language: cpp
    :lines: 92-99
 
-In the run() function, we create instances of the PointCloudCompression class for encoding and decoding.
+In the run() function, we create instances of the OctreePointCloudCompression class for encoding and decoding.
 They can take compression profiles as an arguments for configuring the compression algorithm. The provided compression profiles predefine 
 common parameter sets for point clouds captured by openNI devices. In this example, we use the **MED_RES_ONLINE_COMPRESSION_WITH_COLOR** profile which 
 applies a coordinate encoding precision of 5 cubic millimeter and enables color component encoding. It is further optimized for fast online compression. 
 A full list of compression profiles including their configuration can be found in the file 
 "/io/include/pcl/compression/compression_profiles.h". 
-A full parametrization of the compression algorithm is also possible in the PointCloudCompression constructor using the MANUAL_CONFIGURATION profile. 
+A full parametrization of the compression algorithm is also possible in the OctreePointCloudCompression constructor using the MANUAL_CONFIGURATION profile. 
 For further details on advanced parametrization, please have a look at section "Advanced Parametrization".
 
 .. literalinclude:: sources/point_cloud_compression/point_cloud_compression.cpp
@@ -170,20 +170,20 @@ The following compression profiles are available:
 Advanced parametrization:
 --------------------------------------------------------	
 
-In order to have full access to all compression related parameters, the constructor of the PointCloudCompression class can initialized with additional 
+In order to have full access to all compression related parameters, the constructor of the OctreePointCloudCompression class can initialized with additional 
 compression parameters. Please note, that for enabling advanced parametrization, the compressionProfile_arg argument **needs** to be set to **MANUAL_CONFIGURATION**. 
 
 .. code-block:: cpp
 
-        PointCloudCompression (compression_Profiles_e compressionProfile_arg,
-                               bool showStatistics_arg,
-                               const double pointResolution_arg,
-                               const double octreeResolution_arg,
-                               bool doVoxelGridDownDownSampling_arg,
-                               const unsigned int iFrameRate_arg,
-                               bool doColorEncoding_arg,
-                               const unsigned char colorBitResolution_arg
-                               ) 
+        OctreePointCloudCompression (compression_Profiles_e compressionProfile_arg,
+                                     bool showStatistics_arg,
+                                     const double pointResolution_arg,
+                                     const double octreeResolution_arg,
+                                     bool doVoxelGridDownDownSampling_arg,
+                                     const unsigned int iFrameRate_arg,
+                                     bool doColorEncoding_arg,
+                                     const unsigned char colorBitResolution_arg
+                                    ) 
                                
 
 The advanced parametrization is explained in the following: 
