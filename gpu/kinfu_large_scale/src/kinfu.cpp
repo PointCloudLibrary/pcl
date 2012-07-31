@@ -181,6 +181,7 @@ pcl::gpu::KinfuTracker::reset ()
     PCL_WARN ("Reset\n");
     
   // dump current world to a pcd file
+  /*
   if (global_time_)
   {
     PCL_INFO ("Saving current world to current_world.pcd\n");
@@ -188,6 +189,7 @@ pcl::gpu::KinfuTracker::reset ()
     // clear world model
     cyclical_.getWorldModel ()->reset ();
   }
+  */
    
   global_time_ = 0;
   rmats_.clear ();
