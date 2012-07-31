@@ -260,8 +260,9 @@ void pcl::GrayStereoMatching::compute(unsigned char* ref_img, unsigned char* trg
 	//Check that a suitable value of max_disp has been selected
 	if ( max_disp_ <= 0)
 	{
-		//TODO: add pcl_warning 
-		std::cout << "A positive max_disparity value has not be correctly inserted; aborting.." << std::endl;
+		PCL_ERROR(
+			"[pcl::StereoMatching::compute] Error. A positive max_disparity value has not be correctly inserted. Aborting..\n"
+		);
 		return;
 	}
 
@@ -377,7 +378,11 @@ void pcl::GrayStereoMatching::getPointCloud(float u_c, float v_c, float focal, f
 	//disp map has not been computed yet..
 	if ( disp_map_ == NULL)
 	{
-		//Add a pcl warning
+
+		PCL_WARN(
+			"[pcl::StereoMatching::getPointCloud] Warning: a disparity map has not been computed yet. The resulting cloud will be empty..\n"
+		);
+
 		return;
 	}
 

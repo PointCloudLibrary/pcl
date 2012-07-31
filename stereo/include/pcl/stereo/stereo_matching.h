@@ -174,7 +174,7 @@ namespace pcl
 		doStereoRatioFilter(int *acc, short int dbest, int sad_min, int ratio_filter, int maxdisp, int precision=100)
 		{
 
-			int sad_second_min = INT_MAX;
+			int sad_second_min = std::numeric_limits<int>::max();
 
 			for(int d=0; d<dbest-1; d++)
 				if(acc[d]<sad_second_min)

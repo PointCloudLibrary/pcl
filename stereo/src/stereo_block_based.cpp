@@ -18,7 +18,7 @@ void pcl::BlockBasedStereoMatching::compute_impl(unsigned char* ref_img, unsigne
 	int sad_min;
 	int dbest=0;
 
-	int sad_max = INT_MAX;
+	int sad_max = std::numeric_limits<int>::max();
 
 	int *acc = new int[max_disp_];
 	memset ( acc, 0, sizeof(int)*max_disp_);
