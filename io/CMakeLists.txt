@@ -97,6 +97,7 @@ if(build)
         src/vtk_io.cpp
         src/ply_io.cpp
         src/compression.cpp
+  #      src/libpng_wrapper.cpp
         src/lzf.cpp
         src/obj_io.cpp
         ${VTK_IO_SOURCE}
@@ -124,6 +125,9 @@ if(build)
 
     set(compression_incs
         include/pcl/compression/octree_pointcloud_compression.h
+ #       include/pcl/compression/organized_pointcloud_compression.h
+ #       include/pcl/compression/organized_pointcloud_conversion.h
+ #       include/pcl/compression/libpng_wrapper.h
         include/pcl/compression/color_coding.h
         include/pcl/compression/compression_profiles.h
         include/pcl/compression/entropy_range_coder.h
@@ -134,6 +138,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/pcd_io.hpp
         include/pcl/compression/impl/entropy_range_coder.hpp
         include/pcl/compression/impl/octree_pointcloud_compression.hpp
+ #       include/pcl/compression/impl/organized_pointcloud_compression.hpp
        )
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
@@ -142,6 +147,7 @@ if(build)
     PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${compression_incs} ${impl_incs} ${OPENNI_INCLUDES})
     link_directories(${VTK_LINK_DIRECTORIES})
     target_link_libraries(${LIB_NAME} pcl_common pcl_io_ply ${VTK_IO_TARGET_LINK_LIBRARIES})
+ #   target_link_libraries(${LIB_NAME} pcl_common pcl_io_ply ${VTK_IO_TARGET_LINK_LIBRARIES} png)
 
     if(OPENNI_FOUND)
       target_link_libraries(${LIB_NAME} ${OPENNI_LIBRARIES})

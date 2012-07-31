@@ -65,9 +65,9 @@ namespace pcl
     OrganizedPointCloudCompression<PointT>::encodePointCloud (const PointCloudConstPtr &cloud_arg,
                                                               std::ostream& compressedDataOut_arg,
                                                               bool doColorEncoding,
-                                                              float depthQuantization_arg,
+                                                              bool bShowStatistics_arg,
                                                               int pngLevel_arg,
-                                                              bool bShowStatistics_arg)
+                                                              float depthQuantization_arg)
     {
       uint32_t cloud_width = cloud_arg->width;
       uint32_t cloud_height = cloud_arg->height;

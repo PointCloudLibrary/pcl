@@ -83,9 +83,9 @@ namespace pcl
         void encodePointCloud (const PointCloudConstPtr &cloud_arg,
                                std::ostream& compressedDataOut_arg,
                                bool doColorEncoding = false,
-                               float depthQuantization_arg = 150.0f,
+                               bool bShowStatistics_arg = true,
                                int pngLevel_arg = -1,
-                               bool bShowStatistics_arg = true);
+                               float depthQuantization_arg = 150.0f);
 
         /** \brief Decode point cloud from input stream
          * \param[in] compressedDataIn_arg: binary input stream containing compressed data

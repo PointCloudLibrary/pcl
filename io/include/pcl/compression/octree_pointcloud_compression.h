@@ -55,9 +55,11 @@
 #include <stdio.h>
 #include <string.h>
 
+using namespace pcl::octree;
+
 namespace pcl
 {
-  namespace octree
+  namespace io
   {
     /** \brief @b Octree pointcloud compression class
      *  \note This class enables compression and decompression of point cloud data based on octree data structures.
@@ -68,7 +70,7 @@ namespace pcl
     template<typename PointT, typename LeafT = OctreeContainerDataTVector<int>,
         typename BranchT = OctreeContainerEmpty<int>,
         typename OctreeT = Octree2BufBase<int, LeafT, BranchT> >
-    class PointCloudCompression : public OctreePointCloud<PointT, LeafT,
+    class OctreePointCloudCompression : public OctreePointCloud<PointT, LeafT,
         BranchT, OctreeT>
     {
       public:
@@ -80,8 +82,8 @@ namespace pcl
         typedef typename OctreeT::LeafNode LeafNode;
         typedef typename OctreeT::BranchNode BranchNode;
 
-        typedef PointCloudCompression<PointT, LeafT, BranchT, Octree2BufBase<int, LeafT, BranchT> > RealTimeStreamCompression;
-        typedef PointCloudCompression<PointT, LeafT, BranchT, OctreeBase<int, LeafT, BranchT> > SinglePointCloudCompressionLowMemory;
+        typedef OctreePointCloudCompression<PointT, LeafT, BranchT, Octree2BufBase<int, LeafT, BranchT> > RealTimeStreamCompression;
+        typedef OctreePointCloudCompression<PointT, LeafT, BranchT, OctreeBase<int, LeafT, BranchT> > SinglePointCloudCompressionLowMemory;
 
 
         /** \brief Constructor
@@ -94,7 +96,7 @@ namespace pcl
           * \param colorBitResolution_arg:  color bit depth
           * \param showStatistics_arg:  output compression statistics
           */
-        PointCloudCompression (compression_Profiles_e compressionProfile_arg = MED_RES_ONLINE_COMPRESSION_WITH_COLOR,
+        OctreePointCloudCompression (compression_Profiles_e compressionProfile_arg = MED_RES_ONLINE_COMPRESSION_WITH_COLOR,
                                bool showStatistics_arg = false,
                                const double pointResolution_arg = 0.001,
                                const double octreeResolution_arg = 0.01,
@@ -123,7 +125,7 @@ namespace pcl
 
         /** \brief Empty deconstructor. */
         virtual
-        ~PointCloudCompression ()
+        ~OctreePointCloudCompression ()
         {
         }
 
@@ -291,9 +293,9 @@ namespace pcl
 
       };
 
-    // define frame header initialization
+    // define frame identifier
     template<typename PointT, typename LeafT, typename BranchT, typename OctreeT>
-      const char* PointCloudCompression<PointT, LeafT, BranchT, OctreeT>::frameHeaderIdentifier_ = "<PCL-COMPRESSED>";
+      const char* OctreePointCloudCompression<PointT, LeafT, BranchT, OctreeT>::frameHeaderIdentifier_ = "<PCL-OCT-COMPRESSED>";
   }
 
 }

@@ -60,14 +60,14 @@
 using boost::asio::ip::tcp;
 
 using namespace pcl;
-using namespace pcl::octree;
+using namespace pcl::io;
 
 using namespace std;
 
 char usage[] = "\n"
-  "  PCL point cloud stream compression\n"
+  "  PCL octree point cloud compression\n"
   "\n"
-  "  usage: ./pcl_stream_compression [mode] [profile] [parameters]\n"
+  "  usage: ./pcl_openni_octree_compression [mode] [profile] [parameters]\n"
   "\n"
   "  I/O: \n"
   "      -f file  : file name \n"
@@ -103,7 +103,7 @@ char usage[] = "\n"
   "      -field  X        :: set the PassThrough field/dimension 'X' to filter data on (default: 'z')\n"
   "\n"
   "  example:\n"
-  "      ./pcl_stream_compression -x -p highC -t -f pc_compressed.pcc \n"
+  "      ./pcl_openni_octree_compression -x -p highC -t -f pc_compressed.pcc \n"
   "\n";
 
 #define FPS_CALC(_WHAT_) \
@@ -131,7 +131,7 @@ print_usage (std::string msg)
 class SimpleOpenNIViewer
 {
   public:
-    SimpleOpenNIViewer (ostream& outputFile_arg, PointCloudCompression<PointXYZRGBA>* octreeEncoder_arg) :
+    SimpleOpenNIViewer (ostream& outputFile_arg, OctreePointCloudCompression<PointXYZRGBA>* octreeEncoder_arg) :
       viewer ("Input Point Cloud - PCL Compression Viewer"),
       outputFile_(outputFile_arg), octreeEncoder_(octreeEncoder_arg)
     {
@@ -176,12 +176,12 @@ class SimpleOpenNIViewer
 
     pcl::visualization::CloudViewer viewer;
     ostream& outputFile_;
-    PointCloudCompression<PointXYZRGBA>* octreeEncoder_;
+    OctreePointCloudCompression<PointXYZRGBA>* octreeEncoder_;
 };
 
 struct EventHelper
 {
-  EventHelper (ostream& outputFile_arg, PointCloudCompression<PointXYZRGBA>* octreeEncoder_arg,
+  EventHelper (ostream& outputFile_arg, OctreePointCloudCompression<PointXYZRGBA>* octreeEncoder_arg,
                const std::string& field_name = "z", float min_v = 0, float max_v = 3.0) :
     outputFile_ (outputFile_arg), octreeEncoder_ (octreeEncoder_arg)
   {
@@ -230,13 +230,13 @@ struct EventHelper
 
   pcl::PassThrough<PointXYZRGBA> pass_;
   ostream& outputFile_;
-  PointCloudCompression<PointXYZRGBA>* octreeEncoder_;
+  OctreePointCloudCompression<PointXYZRGBA>* octreeEncoder_;
 };
 
 int
 main (int argc, char **argv)
 {
-  PointCloudCompression<PointXYZRGBA>* octreeCoder;
+  OctreePointCloudCompression<PointXYZRGBA>* octreeCoder;
 
   pcl::octree::compression_Profiles_e compressionProfile;
 
@@ -379,9 +379,9 @@ main (int argc, char **argv)
     return -1;
   }
 
-  octreeCoder = new PointCloudCompression<PointXYZRGBA> (compressionProfile, showStatistics, pointResolution,
-                                                         octreeResolution, doVoxelGridDownDownSampling, iFrameRate,
-                                                         doColorEncoding, static_cast<unsigned char> (colorBitResolution));
+  octreeCoder = new OctreePointCloudCompression<PointXYZRGBA> (compressionProfile, showStatistics, pointResolution,
+                                                               octreeResolution, doVoxelGridDownDownSampling, iFrameRate,
+                                                               doColorEncoding, static_cast<unsigned char> (colorBitResolution));
 
 
   if (!bServerFileMode) 
