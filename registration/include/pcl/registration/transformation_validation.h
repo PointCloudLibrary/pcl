@@ -69,7 +69,9 @@ namespace pcl
     {
       public:
         typedef Eigen::Matrix<Scalar, 4, 4> Matrix4;
-        
+        typedef boost::shared_ptr<TransformationValidation<PointSource, PointTarget, Scalar> > Ptr;
+        typedef boost::shared_ptr<const TransformationValidation<PointSource, PointTarget, Scalar> > ConstPtr;
+
         typedef pcl::PointCloud<PointSource> PointCloudSource;
         typedef typename PointCloudSource::Ptr PointCloudSourcePtr;
         typedef typename PointCloudSource::ConstPtr PointCloudSourceConstPtr;
@@ -81,11 +83,11 @@ namespace pcl
         TransformationValidation () {};
         virtual ~TransformationValidation () {};
 
-        /** \brief Validate the given transformation with respect to the input cloud data, and return a score.
+        /** \brief Validate the given transformation with respect to the input cloud data, and return a score. Pure virtual.
           *
           * \param[in] cloud_src the source point cloud dataset
           * \param[in] cloud_tgt the target point cloud dataset
-          * \param[out] transformation_matrix the resultant transformation matrix
+          * \param[out] transformation_matrix the transformation matrix
           *
           * \return the score or confidence measure for the given
           * transformation_matrix with respect to the input data
@@ -96,8 +98,32 @@ namespace pcl
             const PointCloudTargetConstPtr &cloud_tgt,
             const Matrix4 &transformation_matrix) const = 0;
 
-        typedef boost::shared_ptr<TransformationValidation<PointSource, PointTarget, Scalar> > Ptr;
-        typedef boost::shared_ptr<const TransformationValidation<PointSource, PointTarget, Scalar> > ConstPtr;
+        /** \brief Comparator function for deciding which score is better after running the 
+          * validation on multiple transforms. Pure virtual.
+          *
+          * \note For example, for Euclidean distances smaller is better, for inliers the oposite.
+          *
+          * \param[in] score1 the first value
+          * \param[in] score2 the second value
+          *
+          * \return true if score1 is better than score2
+          */
+        virtual bool
+        operator() (const double &score1, const double &score2) const = 0;
+
+        /** \brief Check if the score is valid for a specific transformation. Pure virtual.
+          *
+          * \param[in] cloud_src the source point cloud dataset
+          * \param[in] cloud_tgt the target point cloud dataset
+          * \param[out] transformation_matrix the transformation matrix
+          *
+          * \return true if the transformation is valid, false otherwise.
+          */
+        virtual bool
+        isValid (
+            const PointCloudSourceConstPtr &cloud_src,
+            const PointCloudTargetConstPtr &cloud_tgt,
+            const Matrix4 &transformation_matrix) const = 0;
     };
   }
 }

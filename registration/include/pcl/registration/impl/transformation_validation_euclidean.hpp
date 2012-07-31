@@ -58,16 +58,14 @@ pcl::registration::TransformationValidationEuclidean<PointSource, PointTarget, S
   for (size_t i = 0; i < cloud_src->size (); ++i)
   {
     const PointSource &src = cloud_src->points[i];
-    PointTarget &tgt = cloud_tgt->points[i];
+    PointTarget &tgt = input_transformed.points[i];
     tgt.x = static_cast<float> (transformation_matrix (0, 0) * src.x + transformation_matrix (0, 1) * src.y + transformation_matrix (0, 2) * src.z + transformation_matrix (0, 3));
     tgt.y = static_cast<float> (transformation_matrix (1, 0) * src.x + transformation_matrix (1, 1) * src.y + transformation_matrix (1, 2) * src.z + transformation_matrix (1, 3));
     tgt.z = static_cast<float> (transformation_matrix (2, 0) * src.x + transformation_matrix (2, 1) * src.y + transformation_matrix (2, 2) * src.z + transformation_matrix (2, 3));
    }
 
-  // Just in case
-  if (!tree_)
-    tree_.reset (new pcl::KdTreeFLANN<PointTarget>);
-
+  typename MyPointRepresentation::ConstPtr point_rep (new MyPointRepresentation);
+  tree_->setPointRepresentation (point_rep);
   tree_->setInputCloud (cloud_tgt);
 
   std::vector<int> nn_indices (1);
@@ -84,16 +82,9 @@ pcl::registration::TransformationValidationEuclidean<PointSource, PointTarget, S
     if (nn_dists[0] > max_range_)
       continue;
 
-    // Optimization: use getVector4fMap instead, but make sure that the last coordinate is 0!
-    Eigen::Vector4f p1 (input_transformed.points[i].x,
-                        input_transformed.points[i].y,
-                        input_transformed.points[i].z, 0);
-    Eigen::Vector4f p2 (cloud_tgt->points[nn_indices[0]].x,
-                        cloud_tgt->points[nn_indices[0]].y,
-                        cloud_tgt->points[nn_indices[0]].z, 0);
     // Calculate the fitness score
-    fitness_score += fabs ((p1-p2).squaredNorm ());
-    nr++;
+    fitness_score += nn_dists[0];
+    ++nr;
   }
 
   if (nr > 0)
