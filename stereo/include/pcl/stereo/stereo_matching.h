@@ -123,7 +123,7 @@ namespace pcl
 		//should the cloud be handled by the StereoMatching class or should it be left to the user?
 		//const pcl::PointCloud<pcl::PointXYZRGBA>::Ptr getPointCloud(float uC, float vC, float focal, float baseline);
 		virtual void 
-		pcl::StereoMatching::getPointCloud(float u_c, float v_c, float focal, float baseline, pcl::PointCloud<pcl::PointXYZI> &cloud, unsigned char *ref_img = NULL) = 0;
+		getPointCloud(float u_c, float v_c, float focal, float baseline, pcl::PointCloud<pcl::PointXYZI> &cloud, unsigned char *ref_img = NULL) = 0;
 
 		void 
 		getVisualMap(unsigned char *&map);
@@ -165,9 +165,9 @@ namespace pcl
 		{
 			int den = (s1+s3-2*s2);
 			if(den!=0)
-				return 16*dbest + (((s1 - s3)*8) / den);
+				return (short int) (16*dbest + (((s1 - s3)*8) / den));
 			else
-				return dbest*16;
+				return (short int)(dbest*16);
 		}
 
 		inline short int 
@@ -223,7 +223,7 @@ namespace pcl
 		compute(unsigned char* ref_img, unsigned char* trg_img, int width, int height);
 
 		virtual void 
-		pcl::StereoMatching::getPointCloud(float u_c, float v_c, float focal, float baseline, pcl::PointCloud<pcl::PointXYZI> &cloud, unsigned char *ref_img = NULL);
+		getPointCloud(float u_c, float v_c, float focal, float baseline, pcl::PointCloud<pcl::PointXYZI> &cloud, unsigned char *ref_img = NULL);
 
 	protected:
 
