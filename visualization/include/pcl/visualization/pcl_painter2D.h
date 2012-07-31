@@ -57,6 +57,7 @@
 #include "vtkTextProperty.h"
 #include "vtkOpenGLContextDevice2D.h"
 #include "vtkPoints2D.h"
+#include "vtkCommand.h"
 
 #include "vtkRegressionTestImage.h"
 
@@ -401,6 +402,15 @@ namespace pcl
       /** \brief displays all the figures added in a window.
        */    
       void display ();
+      
+      /** \brief spins (runs the event loop) the interactor for spin_time amount of time. The name is confusing and will be probably obsolete in the future release with a single overloaded spin()/display() function.
+         *  \param[in] spin_time - How long (in ms) should the visualization loop be allowed to run.
+         */
+        void spinOnce ( const int spin_time = 0 );
+        
+        /** \brief spins (runs the event loop) the interactor indefinitely. Same as display() - added to retain the similarity between other existing visualization classes
+         */
+        void spin ();
 
     private:
       //std::map< int, std::vector< std::vector<float> > > figures_; //FIG_TYPE -> vector<array>
@@ -416,6 +426,41 @@ namespace pcl
       double bkg_color_[3];
 
       vtkContextView *view_;
+      
+      //####event callback class####
+        struct ExitMainLoopTimerCallback : public vtkCommand
+        {
+          static ExitMainLoopTimerCallback* New ()
+          {
+            return (new ExitMainLoopTimerCallback);
+          }
+          virtual void 
+          Execute (vtkObject* vtkNotUsed (caller), unsigned long event_id, void* call_data)
+          {
+            if (event_id != vtkCommand::TimerEvent)
+              return;
+            int timer_id = *(reinterpret_cast<int*> (call_data));
+
+            if (timer_id != right_timer_id)
+              return;
+
+            // Stop vtk loop and send notification to app to wake it up
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
+            interactor->stopLoop ();
+#else
+            interactor->TerminateApp ();
+#endif
+          }
+          int right_timer_id;
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
+          PCLVisualizerInteractor *interactor;
+#else
+          vtkRenderWindowInteractor *interactor;
+#endif
+        };
+        
+        /** \brief Callback object enabling us to leave the main loop, when a timer fires. */
+        vtkSmartPointer<ExitMainLoopTimerCallback> exit_loop_timer_;
     };
 
   }

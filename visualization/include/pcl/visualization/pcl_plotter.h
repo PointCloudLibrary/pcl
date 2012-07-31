@@ -118,6 +118,7 @@ namespace pcl
           * \param[in] x_max the right boundary of the range for displaying the plot
           * \param[in] name name of the plot which appears in the legend when toggled on
           * \param[in] num_points Number of points plotted to show the graph. More this number, more is the resolution.
+          * \param[in] type type of the graph plotted. vtkChart::LINE for line plot, vtkChart::BAR for bar plot, and vtkChart::POINTS for a scattered point plot
           * \param[in] color a character array of 4 fields denoting the R,G,B and A component of the color of the plot ranging from 0 to 255. If this argument is not passed (or NULL is passed) the plot is colored based on a color scheme 
           */
         void
@@ -134,6 +135,7 @@ namespace pcl
           * \param[in] x_max the right boundary of the range for displaying the plot
           * \param[in] name name of the plot which appears in the legend when toggled on
           * \param[in] num_points Number of points plotted to show the graph. More this number, more is the resolution.
+          * \param[in] type type of the graph plotted. vtkChart::LINE for line plot, vtkChart::BAR for bar plot, and vtkChart::POINTS for a scattered point plot
           * \param[in] color a character array of 4 fields denoting the R,G,B and A component of the color of the plot ranging from 0 to 255. If this argument is not passed (or NULL is passed) the plot is colored based on a color scheme 
           */
         void
@@ -150,6 +152,7 @@ namespace pcl
           * \param[in] x_max the right boundary of the range for displaying the plot
           * \param[in] name name of the plot which appears in the legend when toggled on
           * \param[in] num_points Number of points plotted to show the graph. More this number, more is the resolution.
+          * \param[in] type type of the graph plotted. vtkChart::LINE for line plot, vtkChart::BAR for bar plot, and vtkChart::POINTS for a scattered point plot
           * \param[in] color a character array of 4 fields denoting the R,G,B and A component of the color of the plot ranging from 0 to 255. If this argument is not passed (or NULL is passed) the plot is colored based on a color scheme 
           */
         void
@@ -160,6 +163,14 @@ namespace pcl
                     int type = LINE,
                     std::vector<char> const &color = std::vector<char>());
         
+        /** \brief adds a plot based on a space/tab delimited table provided in a file
+          * \param[in] filename name of the file containing the table. 1st column represents the values of X-Axis. Rest of the columns represent the corresponding values in Y-Axes. First row of the file is concidered for naming/labling of the plot. The plot-names should not contain any space in between.
+          * \param[in] type type of the graph plotted. vtkChart::LINE for line plot, vtkChart::BAR for bar plot, and vtkChart::POINTS for a scattered point plot
+          */
+        void
+        addPlotData (char const * filename,
+                    int type = LINE);
+                    
         /** \brief bins the elements in vector data into nbins equally spaced containers and plots the resulted histogram 
           * \param[in] data the raw data 
           * \param[in] nbins the number of bins for the histogram
@@ -232,7 +243,15 @@ namespace pcl
         */
         void 
         plot ();
-	
+        
+        /** \brief spins (runs the event loop) the interactor for spin_time amount of time. The name is confusing and will be probably obsolete in the future release with a single overloaded spin()/display() function.
+         *  \param[in] spin_time - How long (in ms) should the visualization loop be allowed to run.
+         */
+        void spinOnce ( const int spin_time = 0 );
+        
+        /** \brief spins (runs the event loop) the interactor indefinitely. Same as plot() - added to retain the similarity between other existing visualization classes
+         */
+        void spin ();
         
         /** \brief set method for the color scheme of the plot. The plots gets autocolored differently based on the color scheme.
           * \param[in] scheme the color scheme. Possible values are vtkColorSeries::WARM, vtkColorSeries::COOL, vtkColorSeries::BLUES, vtkColorSeries::WILD_FLOWER, vtkColorSeries::CITRUS
@@ -264,6 +283,20 @@ namespace pcl
          */
         double *
         getBackgroundColor ();
+        
+        /** \brief Set logical range of the X-Axis in plot coordinates 
+         * \param[in] min the left boundary of the range
+         * \param[in] max the right boundary of the range
+         * */
+        void 
+        setXRange (double min, double max);
+        
+        /** \brief Set logical range of the Y-Axis in plot coordinates 
+         * \param[in] min the left boundary of the range
+         * \param[in] max the right boundary of the range
+         */
+        void
+        setYRange (double min, double max);
         
         
         /** \brief set/get method for the window size.
@@ -309,6 +342,43 @@ namespace pcl
         double bkg_color_[3];
         
         
+        //####event callback class####
+        struct ExitMainLoopTimerCallback : public vtkCommand
+        {
+          static ExitMainLoopTimerCallback* New ()
+          {
+            return (new ExitMainLoopTimerCallback);
+          }
+          virtual void 
+          Execute (vtkObject* vtkNotUsed (caller), unsigned long event_id, void* call_data)
+          {
+            if (event_id != vtkCommand::TimerEvent)
+              return;
+            int timer_id = *(reinterpret_cast<int*> (call_data));
+
+            if (timer_id != right_timer_id)
+              return;
+
+            // Stop vtk loop and send notification to app to wake it up
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
+            interactor->stopLoop ();
+#else
+            interactor->TerminateApp ();
+#endif
+          }
+          int right_timer_id;
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
+          PCLVisualizerInteractor *interactor;
+#else
+          vtkRenderWindowInteractor *interactor;
+#endif
+        };
+        
+        /** \brief Callback object enabling us to leave the main loop, when a timer fires. */
+        vtkSmartPointer<ExitMainLoopTimerCallback> exit_loop_timer_;
+        
+        
+        ////////////////////////////////////IMPORTANT PRIVATE COMPUTING FUNCTIONS////////////////////////////////////////////////////
         /** \brief computes the value of the polynomial function at val
           * \param[in] p_function polynomial function
           * \param[in] value the value at which the function is to be computed

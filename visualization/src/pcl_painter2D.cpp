@@ -43,15 +43,22 @@ vtkCxxRevisionMacro (pcl::visualization::PCLPainter2D, "$Revision: 1.2 $");
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 pcl::visualization::PCLPainter2D::PCLPainter2D(char const * name)
 {
+  //construct
   view_ = vtkContextView::New ();
-  view_->GetScene ()->AddItem (this);
-  
   current_pen_ = vtkPen::New ();
   current_brush_ = vtkBrush::New ();
   current_transform_ = vtkTransform2D::New ();
+  exit_loop_timer_ = vtkSmartPointer<ExitMainLoopTimerCallback>::New ();
+  
+  //connect
+  view_->GetInteractor ()->Initialize ();
+  view_->GetScene ()->AddItem (this);
   view_->GetRenderWindow ()->SetWindowName (name);
   
-  //state variables
+  exit_loop_timer_->interactor = view_->GetInteractor ();
+	view_->GetInteractor ()->AddObserver ( vtkCommand::TimerEvent, exit_loop_timer_ );
+  
+  //defaulat state
   win_width_ = 640;
   win_height_ = 480;
   bkg_color_[0] = 1; bkg_color_[1] = 1; bkg_color_[2] = 1;
@@ -267,6 +274,29 @@ pcl::visualization::PCLPainter2D::display ()
   
   view_->GetRenderer ()->Render ();
   view_->GetInteractor ()->Start ();
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void 
+pcl::visualization::PCLPainter2D::spinOnce( const int spin_time )
+{
+  //apply current states
+  view_->GetRenderer ()->SetBackground (bkg_color_[0], bkg_color_[1], bkg_color_[2]);
+  view_->GetRenderWindow ()->SetSize (win_width_, win_height_);
+  
+  //start timer to spin
+  exit_loop_timer_->right_timer_id = view_->GetInteractor()->CreateOneShotTimer( spin_time );
+  
+  //start spinning
+  view_->GetRenderer ()->Render ();
+	view_->GetInteractor()->Start();
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void 
+pcl::visualization::PCLPainter2D::spin()
+{
+  this->display();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

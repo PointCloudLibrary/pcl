@@ -35,6 +35,9 @@
  *
  */
 
+#include <fstream>
+#include <sstream>
+
 #include <pcl/visualization/pcl_plotter.h>
 #include <pcl/common/common_headers.h>
 
@@ -44,14 +47,21 @@
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 pcl::visualization::PCLPlotter::PCLPlotter (char const *name)
 {
+  //constructing
   view_ = vtkSmartPointer<vtkContextView>::New ();
   //chart_=vtkSmartPointer<vtkChartXY>::New();
   color_series_ = vtkSmartPointer<vtkColorSeries>::New ();
+  exit_loop_timer_ = vtkSmartPointer<ExitMainLoopTimerCallback>::New ();
   
+  //connecting and mandatory bookkeeping
+  view_->GetInteractor ()->Initialize ();
   view_->GetScene ()->AddItem (this);
+  view_->GetRenderWindow ()->SetWindowName (name);
+  
+  exit_loop_timer_->interactor = view_->GetInteractor ();
+	view_->GetInteractor ()->AddObserver ( vtkCommand::TimerEvent, exit_loop_timer_ );
   
   //initializing default state values
-  view_->GetRenderWindow ()->SetWindowName (name);
   win_width_ = 640;
   win_height_ = 480;
   bkg_color_[0] = 1; bkg_color_[1] = 1; bkg_color_[2] = 1;
@@ -196,6 +206,51 @@ pcl::visualization::PCLPlotter::addPlotData (double (*function)(double),
   this->addPlotData (array_x, array_y, name, type, color);
 }
 
+void
+pcl::visualization::PCLPlotter::addPlotData (char const * filename,
+                    int type)
+{
+  using namespace std;
+  ifstream fin(filename);
+  
+  //getting the no of column
+  string line;
+  getline (fin, line);
+  stringstream ss(line);
+  
+  vector<string> pnames;       //plot names
+  string xname, temp;         //plot name of X axis
+  
+  //checking X axis name
+  ss >> xname;
+  //getting Y axis names
+  while (ss >> temp)
+    pnames.push_back(temp);
+    
+  int nop = pnames.size();    // number of plots (y coordinate vectors)  
+  
+  vector<double> xarray;      //array of X coordinates
+  vector< vector<double> > yarrays(nop); //a set of array of Y coordinates
+  
+  //reading the entire table
+  double x, y;
+  while (fin >> x)
+  {
+    xarray.push_back(x);
+    
+    for (int i = 0; i < nop; i++)
+    {
+      fin >> y;
+      yarrays[i].push_back(y);
+    }
+  }
+  
+  //adding nop plot data
+  for (int i = 0; i < nop; i++)
+    this->addPlotData(xarray, yarrays[i], pnames[i].c_str(), type);
+    
+  }
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::visualization::PCLPlotter::addHistogramData (std::vector<double> const& data, int const nbins, char const * name, std::vector<char> const &color)
@@ -310,6 +365,28 @@ pcl::visualization::PCLPlotter::plot ()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void 
+pcl::visualization::PCLPlotter::spinOnce( const int spin_time )
+{
+  //apply current states
+  view_->GetRenderer ()->SetBackground (bkg_color_[0], bkg_color_[1], bkg_color_[2]);
+  view_->GetRenderWindow ()->SetSize (win_width_, win_height_);
+  
+  //start timer to spin
+  exit_loop_timer_->right_timer_id = view_->GetInteractor()->CreateOneShotTimer( spin_time );
+  
+  //start spinning
+	view_->GetInteractor()->Start();
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void 
+pcl::visualization::PCLPlotter::spin()
+{
+  this->plot();
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::visualization::PCLPlotter::setBackgroundColor (const double r, const double g, const double b)
 {
@@ -336,6 +413,22 @@ pcl::visualization::PCLPlotter::getBackgroundColor ()
   bc[1] = bkg_color_[1];
   bc[2] = bkg_color_[2];
   return (bc);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void 
+pcl::visualization::PCLPlotter::setYRange (double min, double max)
+{
+  this->GetAxis (vtkAxis::LEFT)->SetRange (min, max);
+  this->GetAxis (vtkAxis::LEFT)->SetBehavior (vtkAxis::FIXED);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void 
+pcl::visualization::PCLPlotter::setXRange (double min, double max)
+{
+  this->GetAxis (vtkAxis::BOTTOM)->SetRange (min, max);
+  this->GetAxis (vtkAxis::BOTTOM)->SetBehavior (vtkAxis::FIXED);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

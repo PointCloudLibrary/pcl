@@ -144,6 +144,7 @@
 #  include <vtkContextView.h>
 #  include <vtkContextScene.h>
 #  include <vtkColorSeries.h>
+#  include <vtkAxis.h>
 #endif
 #include <vtkSelection.h>
 #include <vtkVisibleCellSelector.h>
