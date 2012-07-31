@@ -204,11 +204,7 @@ pcl::VoxelGrid<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
     output.fields[2] = input_->fields[z_idx_];
     output.fields[2].offset = 8;
 
-    output.fields[3].name = "rgba";
-    output.fields[3].offset = 12;
-    output.fields[3].datatype = sensor_msgs::PointField::FLOAT32;
-
-    output.point_step = 16;
+    output.point_step = 12;
   }
   output.is_bigendian = input_->is_bigendian;
   output.row_step     = input_->row_step;
@@ -483,7 +479,7 @@ pcl::VoxelGrid<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
         // Copy all the fields
         for (unsigned int d = 0; d < input_->fields.size (); ++d)
           memcpy (&temporary[d], &input_->data[point_offset + input_->fields[d].offset], field_sizes_[d]);
-        centroid+=temporary;
+        centroid += temporary;
       }
       ++i;
     }
