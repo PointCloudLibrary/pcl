@@ -8,7 +8,7 @@
 #include <pcl/apps/cloud_composer/tool_interface/tool_factory.h>
 #include <pcl/apps/cloud_composer/tool_interface/abstract_tool.h>
 #include <pcl/apps/cloud_composer/toolbox_model.h>
-#include <complex>
+#include <pcl/apps/cloud_composer/signal_multiplexer.h>
 
 /////////////////////////////////////////////////////////////
 pcl::cloud_composer::ComposerMainWindow::ComposerMainWindow (QWidget *parent)
@@ -29,8 +29,9 @@ pcl::cloud_composer::ComposerMainWindow::ComposerMainWindow (QWidget *parent)
   qRegisterMetaType<CloudView> ("CloudView");
   qRegisterMetaType<ConstItemList> ("ConstComposerItemList");
   
-  last_directory_ = QDir (".");
   current_model_ = 0;
+  
+  multiplexer_ = new SignalMultiplexer (this);
   
   initializeCloudBrowser ();
   initializeCloudViewer ();
@@ -43,8 +44,10 @@ pcl::cloud_composer::ComposerMainWindow::ComposerMainWindow (QWidget *parent)
   
   //Auto connect signals and slots
   // QMetaObject::connectSlotsByName(this);
-  this->connectFileActionsToSlots ();
-  this->connectEditActionsToSlots ();
+  connectFileActions ();
+  connectEditActions ();
+  connectViewActions ();
+  
 }
 
 pcl::cloud_composer::ComposerMainWindow::~ComposerMainWindow ()
@@ -54,14 +57,14 @@ pcl::cloud_composer::ComposerMainWindow::~ComposerMainWindow ()
 }
 
 void
-pcl::cloud_composer::ComposerMainWindow::connectFileActionsToSlots ()
+pcl::cloud_composer::ComposerMainWindow::connectFileActions ()
 {
 
   
 }
 
 void
-pcl::cloud_composer::ComposerMainWindow::connectEditActionsToSlots ()
+pcl::cloud_composer::ComposerMainWindow::connectEditActions ()
 {
   //Replace the actions in the menu with undo actions created using the undo group
   QAction* action_temp = undo_group_->createUndoAction (this);
@@ -76,7 +79,21 @@ pcl::cloud_composer::ComposerMainWindow::connectEditActionsToSlots ()
   menuEdit->removeAction (action_redo_);
   action_redo_ = action_temp;
   
+  multiplexer_->connect (action_clear_selection_, SIGNAL (triggered ()), SLOT (clearSelection ()));
+  
+  multiplexer_->connect (action_delete_, SIGNAL (triggered ()), SLOT (deleteSelectedItems ()));
+  multiplexer_->connect (SIGNAL (deleteAvailable (bool)), action_delete_, SLOT (setEnabled (bool)));
+  
+  multiplexer_->connect (this, SIGNAL (insertNewCloudFromFile()), SLOT (insertNewCloudFromFile()));
+  
+}
 
+void
+pcl::cloud_composer::ComposerMainWindow::connectViewActions ()
+{
+  multiplexer_->connect (action_show_axes_, SIGNAL (toggled (bool)), SLOT (setAxisVisibility (bool)));
+  multiplexer_->connect (SIGNAL (axisVisible (bool)), action_show_axes_, SLOT (setChecked (bool)));
+  
 }
 
 void
@@ -91,8 +108,7 @@ pcl::cloud_composer::ComposerMainWindow::initializeCloudViewer ()
   //Signal emitted when user selects new tab (ie different project) in the viewer
   connect (cloud_viewer_, SIGNAL (newModelSelected (ProjectModel*)),
            this, SLOT (setCurrentModel (ProjectModel*)));
-  connect (this, SIGNAL (activeProjectChanged (ProjectModel*,ProjectModel*)),
-           cloud_viewer_, SLOT (activeProjectChanged (ProjectModel*,ProjectModel*)));
+  
 }
 
 void
@@ -184,11 +200,12 @@ pcl::cloud_composer::ComposerMainWindow::setCurrentModel (ProjectModel* model)
   cloud_browser_->setModel (current_model_);
   //qDebug () << "Setting cloud browser selection model";
   cloud_browser_->setSelectionModel (current_model_->getSelectionModel ());
-  //qDebug () << "Item inspector setting project and selection models";
-  item_inspector_->setProjectAndSelectionModels (current_model_, current_model_->getSelectionModel ());
+  //qDebug () << "Item inspector setting model";
+  item_inspector_->setModel (current_model_);
   //qDebug () << "Setting active stack in undo group";
   undo_group_->setActiveStack (current_model_->getUndoStack ());
-  //qDebug () << "
+  
+  multiplexer_->setCurrentObject (current_model_);
 }
 
 void
@@ -222,6 +239,8 @@ pcl::cloud_composer::ComposerMainWindow::on_action_new_project__triggered (/*QSt
   //qDebug () << "Adding to undo group";
   undo_group_->addStack (new_project_model->getUndoStack ());
   //qDebug () << "Setting current model";
+  cloud_viewer_->addNewProject (new_project_model);
+  
   setCurrentModel (new_project_model);
   //qDebug () << "Project " <<name<<" created!";
   
@@ -262,51 +281,16 @@ pcl::cloud_composer::ComposerMainWindow::on_action_exit__triggered ()
 void
 pcl::cloud_composer::ComposerMainWindow::on_action_insert_from_file__triggered ()
 {
-  qDebug () << "Inserting cloud from file...";
-  QString filename = QFileDialog::getOpenFileName (0,tr ("Select cloud to open"), last_directory_.absolutePath (), tr ("PointCloud(*.pcd)"));
-  if ( !filename.isNull ())
-  {
-    QFileInfo file_info (filename);
-    last_directory_ = file_info.absoluteDir ();
-
+  if (!current_model_)
+    action_new_project_->trigger ();
     
-    if (!current_model_)
-      action_new_project_->trigger ();
-    
-    current_model_->insertNewCloudFromFile (filename);
-    
-  }
-      
+  emit insertNewCloudFromFile ();   
 }
 
 void
 pcl::cloud_composer::ComposerMainWindow::on_action_insert_from_openNi_source__triggered ()
 {
   qDebug () << "Inserting cloud from OpenNi Source...";
-}
-
-void
-pcl::cloud_composer::ComposerMainWindow::on_action_delete__triggered ()
-{
-  if (!current_model_)
-  {
-    qCritical () << "Cannot delete - no model active!";
-    return;
-  }
-    
-  DeleteItemCommand* delete_command = new DeleteItemCommand (ConstItemList ());
-  current_model_->doCommand (delete_command);
-}
-
-void
-pcl::cloud_composer::ComposerMainWindow::on_action_clear_selection__triggered () 
-{
-  if (!current_model_)
-  {
-    qCritical () << "Cannot clear selection - no model active!";
-    return;
-  }
-  current_model_->getSelectionModel ()->clearSelection ();
 }
 
 

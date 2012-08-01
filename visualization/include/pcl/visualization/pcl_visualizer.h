@@ -227,6 +227,16 @@ namespace pcl
         void
         spinOnce (int time = 1, bool force_redraw = false);
 
+        /** \brief Adds a widget which shows an interactive axes display for orientation
+         *  \param[in] interactor - Pointer to the vtk interactor object used by the PCLVisualizer window 
+         */
+        void
+        addOrientationMarkerWidgetAxes (vtkRenderWindowInteractor* interactor);
+        
+        /** \brief Disables the Orientatation Marker Widget so it is removed from the renderer */
+        void
+        removeOrientationMarkerWidgetAxes ();
+        
         /** \brief Adds 3D axes describing a coordinate system to screen at 0,0,0.
           * \param[in] scale the scale of the axes (default: 1)
           * \param[in] viewport the view port where the 3D axes should be added (default: all)
@@ -1672,6 +1682,9 @@ namespace pcl
         /** \brief Internal list with actor pointers and viewpoint for coordinates. */
         CoordinateActorMap coordinate_actor_map_;
 
+        /** \brief Internal pointer to widget which contains a set of axes */
+        vtkSmartPointer<vtkOrientationMarkerWidget> axes_widget_;
+        
         /** \brief Boolean that holds whether or not the camera parameters were manually initialized*/
         bool camera_set_;
 

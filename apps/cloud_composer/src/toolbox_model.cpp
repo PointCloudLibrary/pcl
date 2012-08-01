@@ -169,24 +169,28 @@ pcl::cloud_composer::ToolBoxModel::updateEnabledTools (const QItemSelection curr
   QList <QStandardItem*> enabled_tools = tool_items.toList (); 
   QMap <QStandardItem*,QString> disabled_tools;
   QMutableListIterator<QStandardItem*> enabled_itr(enabled_tools);
+  //Go through tools, removing from enabled list if they fail to pass tests
   while (enabled_itr.hasNext()) 
   {
     QStandardItem* tool_item = enabled_itr.next ();
     ToolFactory* tool_factory = (tool_item->data (FACTORY)).value <ToolFactory*> ();
     ITEM_TYPES input_type = tool_factory->getInputItemType ();
     QList <ITEM_TYPES> required_children_types = tool_factory->getRequiredInputChildrenTypes();
+    //Check if enough items for tool are selected
     if ( tool_factory-> getNumInputItems() > current_indices.size() )
     {
         enabled_itr.remove ();
         disabled_tools.insert (tool_item, tr("Tool Requires %1 Items (%2 Selected)").arg(tool_factory-> getNumInputItems()).arg(current_indices.size ()));
     }
+    //Check if selection includes at least one item with correct input type
     else if ( ! type_items_map.keys ().contains (input_type))
     {
       enabled_itr.remove ();
       disabled_tools.insert (tool_item, tr("Tool Requires item type %1 selected").arg (ITEM_TYPES_STRINGS.value (input_type - QStandardItem::UserType)));
     }
+    //Check if any of selected items have required children
     else if ( required_children_types.size () > 0)
-    {  //Check if any of selected items have required children
+    {  
       QList <QStandardItem*> matching_selected_items = type_items_map.values (input_type);
       bool found_valid_items = false;
       QList <ITEM_TYPES> missing_children = required_children_types;
@@ -195,22 +199,27 @@ pcl::cloud_composer::ToolBoxModel::updateEnabledTools (const QItemSelection curr
         QList <ITEM_TYPES> found_children_types;
         if (!item->hasChildren ())
           continue;
+        
         //Find types of all children
         for (int i = 0; i < item->rowCount(); ++i)
           found_children_types.append ( static_cast<ITEM_TYPES>(item->child (i)->type ()));
+        //Make temporary copy, remove type from it if is present as child
         QList <ITEM_TYPES> req_children_temp = required_children_types;
         foreach (ITEM_TYPES type, found_children_types)
           req_children_temp.removeAll (type);
+        //If temporary is empty, we found all required children
         if (req_children_temp.isEmpty ())
         {
           found_valid_items = true;
           break;
         }
+        //Otherwise, set missing children list
         if (req_children_temp.size () < missing_children.size ())
           missing_children = req_children_temp;
 
 
       }
+      //If we didn't find all required children
       if (!found_valid_items)
       {
         enabled_itr.remove ();

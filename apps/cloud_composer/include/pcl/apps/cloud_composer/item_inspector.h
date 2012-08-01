@@ -60,7 +60,7 @@ namespace pcl
       
       public slots:
         void 
-        setProjectAndSelectionModels (ProjectModel* new_model, const QItemSelectionModel* new_selection_model);
+        setModel (ProjectModel* new_model);
         void 
         selectionChanged (const QModelIndex &current, const QModelIndex &previous);
         void 

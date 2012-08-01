@@ -38,7 +38,7 @@
 #ifndef CLOUD_COMPOSER_H_
 #define CLOUD_COMPOSER_H_
 
-#include "qt.h"
+#include <pcl/apps/cloud_composer/qt.h>
 
 //PCL
 #include <pcl/point_cloud.h>
@@ -56,6 +56,7 @@ namespace pcl
     class CloudCommand;
     class ToolFactory;
     class ToolBoxModel;
+    class SignalMultiplexer;
     
     /** \brief MainWindow of cloud_composer application
      * \author Jeremie Papon
@@ -79,6 +80,11 @@ namespace pcl
         /** \brief Signal emitted when the active project is switched - ie a different project tab is selected */
         void
         activeProjectChanged (ProjectModel* new_model, ProjectModel* previous_model);
+        
+        /** \brief This project specific signal gets a slot and signal so we can one-click create project and insert from file */
+        void 
+        insertNewCloudFromFile ();
+        
       public slots:
       //Slots for File Menu Actions
         void
@@ -99,10 +105,8 @@ namespace pcl
         on_action_insert_from_file__triggered ();
         void
         on_action_insert_from_openNi_source__triggered ();
-        void 
-        on_action_delete__triggered ();
-        void 
-        on_action_clear_selection__triggered ();
+
+          
         
         void 
         setCurrentModel (ProjectModel* model);
@@ -112,9 +116,12 @@ namespace pcl
        
       private:
         void
-        connectFileActionsToSlots ();
+        connectFileActions ();
         void
-        connectEditActionsToSlots ();
+        connectEditActions ();
+        
+        void 
+        connectViewActions ();
         
         void 
         initializeCloudBrowser ();
@@ -132,12 +139,15 @@ namespace pcl
         /** \brief Pointer to the model which is currently being viewed  */
         ProjectModel* current_model_;
         QItemSelectionModel* current_selection_model_;
-        QDir last_directory_;
+
         QMap <QString, ProjectModel*> name_model_map_;
+        
         QUndoGroup *undo_group_;
         
         QItemSelectionModel* tool_selection_model_;
         ToolBoxModel* tool_box_model_;
+        
+        SignalMultiplexer* multiplexer_;
     };
     
   }

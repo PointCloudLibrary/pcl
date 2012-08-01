@@ -58,6 +58,7 @@ namespace pcl
     class AbstractTool;
     class WorkQueue;
     class CloudComposerItem;
+    class CloudView;
     
     class ProjectModel : public QStandardItemModel
     {
@@ -87,9 +88,7 @@ namespace pcl
           return selection_model_;
         }
         
-        /** \brief Loads from file and inserts a new pointcloud into the model   */
-        void 
-        insertNewCloudFromFile (const QString filename);
+        
         
         /** \brief Takes tool object issues signal to work queue to take control of it */
         void
@@ -102,12 +101,33 @@ namespace pcl
         /** \brief Helper function which inserts the item into this model and makes connections for properties */
         void 
         insertNewCloudComposerItem (CloudComposerItem* new_item, QStandardItem* parent_item);
-                
+        
+        /** \brief Sets the CloudView that this project is rendering in */
+        void
+        setCloudView (CloudView* view);
+        
+        
       public slots:
         void 
         commandCompleted (CloudCommand* command);
         
+        void
+        clearSelection ();
         
+        void 
+        deleteSelectedItems ();
+        
+        /** \brief Loads from file and inserts a new pointcloud into the model   */
+        void 
+        insertNewCloudFromFile ();
+        
+        /** \brief This emits all the state signals, which updates the GUI action button status (enabled/disabled)" */
+        void
+        emitAllStateSignals ();
+        
+        /** \brief This sets whether the CloudView for this project shows axes */
+        void
+        setAxisVisibility (bool visible);
       signals:  
         void
         enqueueNewAction (AbstractTool* tool, ConstItemList data);
@@ -115,14 +135,29 @@ namespace pcl
         /** \brief Catch-all signal emitted whenever the model changes */
         void
         modelChanged ();
+        
+        void 
+        axisVisible (const bool axis_visible);
+        
+        void
+        deleteAvailable (bool can_delete);
+        
+
+        
       private:
         
         QItemSelectionModel* selection_model_;
-        vtkSmartPointer<vtkCamera> camera_; 
         QMap <QString, int> name_to_type_map_;
         QUndoStack* undo_stack_;
         WorkQueue* work_queue_; 
         QThread* work_thread_;
+        CloudView* cloud_view_;
+        
+        /** \brief Stores last directory used in file read/write operations */
+        QDir last_directory_;
+                
+        //Variables for toggle action status
+        bool axis_visible_;
 
     };
   }

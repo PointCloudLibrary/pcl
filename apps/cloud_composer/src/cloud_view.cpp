@@ -50,6 +50,8 @@ pcl::cloud_composer::CloudView::setModel (ProjectModel* new_model)
   //Refresh the view
   qvtk_->show();
   qvtk_->update ();
+  
+ // vis_->addOrientationMarkerWidgetAxes (qvtk_->GetInteractor ());
 }
 
 void
@@ -186,5 +188,60 @@ void
 pcl::cloud_composer::CloudView::dataChanged (const QModelIndex & topLeft, const QModelIndex & bottomRight)
 {
     
+  
+}
+
+void
+pcl::cloud_composer::CloudView::setAxisVisibility (bool visible)
+{
+  if (visible)
+  {
+    qDebug () << "Adding coordinate system!";
+    //vis_->addCoordinateSystem (0.5,0);
+    vis_->addOrientationMarkerWidgetAxes ( qvtk_->GetInteractor() );
+  }
+  else
+  {
+   //bool success = vis_->removeCoordinateSystem (); 
+   // qDebug () << "Removing coord. first, success ="<<success;
+   // success = vis_->removeCoordinateSystem (0); 
+   // qDebug () << "Removing coord. second, success ="<<success;
+   vis_->removeOrientationMarkerWidgetAxes ();
+  }
+
+  qvtk_->update ();
+}
+
+void
+pcl::cloud_composer::CloudView::addOrientationMarkerWidgetAxes ()
+{
+  if (!axes_widget_)
+  {
+    vtkSmartPointer<vtkAxesActor> axes = vtkSmartPointer<vtkAxesActor>::New ();
+   
+    axes_widget_ = vtkSmartPointer<vtkOrientationMarkerWidget>::New ();
+    axes_widget_->SetOutlineColor ( 0.9300, 0.5700, 0.1300 );
+    axes_widget_->SetOrientationMarker( axes );
+    axes_widget_->SetInteractor( qvtk_->GetInteractor () );
+    axes_widget_->SetViewport( 0.0, 0.0, 0.4, 0.4 );
+    axes_widget_->SetEnabled( 1 );
+    axes_widget_->InteractiveOn();
+  }
+  else
+  {
+    axes_widget_->SetEnabled (true);
+  }
+
+}
+
+
+void
+pcl::cloud_composer::CloudView::removeOrientationMarkerWidgetAxes ()
+{
+  if (axes_widget_)
+  {
+    axes_widget_->SetEnabled (false);
+  }
+  
   
 }

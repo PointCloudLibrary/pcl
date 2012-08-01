@@ -76,6 +76,7 @@
     <property name="title">
      <string>&amp;View</string>
     </property>
+    <addaction name="action_show_axes_"/>
    </widget>
    <widget class="QMenu" name="menuTools">
     <property name="title">
@@ -119,6 +120,9 @@
    <addaction name="separator"/>
    <addaction name="action_insert_from_file_"/>
    <addaction name="action_insert_from_openNi_source_"/>
+   <addaction name="action_delete_"/>
+   <addaction name="separator"/>
+   <addaction name="action_show_axes_"/>
   </widget>
   <widget class="QDockWidget" name="dockCloudBrowser">
    <property name="windowTitle">
@@ -274,6 +278,9 @@
    <property name="text">
     <string>From &amp;File...</string>
    </property>
+   <property name="toolTip">
+    <string>Insert Cloud From File</string>
+   </property>
    <property name="shortcut">
     <string>Ctrl+I</string>
    </property>
@@ -285,6 +292,9 @@
    </property>
    <property name="text">
     <string>From &amp;OpenNi Source</string>
+   </property>
+   <property name="toolTip">
+    <string>Insert Cloud From OpenNi Source</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+P</string>
@@ -347,6 +357,13 @@
    </property>
   </action>
   <action name="action_delete_">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../resources/resources.qrc">
+     <normaloff>:/delete.png</normaloff>:/delete.png</iconset>
+   </property>
    <property name="text">
     <string>&amp;Delete</string>
    </property>
@@ -399,6 +416,21 @@
    </property>
    <property name="shortcut">
     <string>Esc</string>
+   </property>
+  </action>
+  <action name="action_show_axes_">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../resources/resources.qrc">
+     <normaloff>:/show_axes.png</normaloff>:/show_axes.png</iconset>
+   </property>
+   <property name="text">
+    <string>Show Axes</string>
+   </property>
+   <property name="toolTip">
+    <string>Toggle Showing Axes</string>
    </property>
   </action>
  </widget>

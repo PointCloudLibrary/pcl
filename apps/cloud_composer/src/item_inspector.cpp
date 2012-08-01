@@ -22,13 +22,13 @@ pcl::cloud_composer::ItemInspector::~ItemInspector ()
 }
 
 void
-pcl::cloud_composer::ItemInspector::setProjectAndSelectionModels (ProjectModel* new_model, const QItemSelectionModel* new_selection_model)
+pcl::cloud_composer::ItemInspector::setModel (ProjectModel* new_model)
 {
   // DISABLED: JUST KEEP TREES ALWAYS EXPANDED
    //If we have a model loaded, save its tree state 
   //if (current_item_properties_model_)
   //  storeTreeState ();
-  
+  QItemSelectionModel* new_selection_model = new_model->getSelectionModel ();
   current_project_model_ = new_model;
   
   if (current_selection_model_)

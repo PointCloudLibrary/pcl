@@ -38,10 +38,10 @@
 #ifndef CLOUD_VIEWER_H_
 #define CLOUD_VIEWER_H_
 
-#include "qt.h"
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/apps/cloud_composer/project_model.h>
 #include <pcl/apps/cloud_composer/cloud_view.h>
+#include <pcl/apps/cloud_composer/qt.h>
 
 namespace pcl
 {
@@ -65,10 +65,13 @@ namespace pcl
       public slots:
         void 
         addModel (ProjectModel* new_model);
+        
         void 
         modelChanged (int index);
+        
         void
-        activeProjectChanged(ProjectModel* new_model, ProjectModel* previous_model);
+        addNewProject (ProjectModel* new_model);
+        
       signals:
         void
         newModelSelected (ProjectModel *new_model);

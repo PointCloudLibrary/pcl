@@ -4,10 +4,14 @@
 #include <pcl/apps/cloud_composer/commands.h>
 #include <pcl/apps/cloud_composer/work_queue.h>
 #include <pcl/apps/cloud_composer/items/cloud_item.h>
+#include <pcl/apps/cloud_composer/cloud_view.h>
 
 pcl::cloud_composer::ProjectModel::ProjectModel (QObject* parent)
   : QStandardItemModel (parent)
 {
+  
+  last_directory_ = QDir (".");
+    
   selection_model_ = new QItemSelectionModel (this);
   undo_stack_ = new QUndoStack (this);
   
@@ -25,6 +29,11 @@ pcl::cloud_composer::ProjectModel::ProjectModel (QObject* parent)
            this, SIGNAL (modelChanged ()));
   connect (this, SIGNAL (rowsRemoved  ( const QModelIndex, int, int)),
            this, SIGNAL (modelChanged ()));
+  
+  connect (selection_model_, SIGNAL (selectionChanged(QItemSelection,QItemSelection)),
+           this, SLOT (emitAllStateSignals ()));
+  
+  
 }
 
 pcl::cloud_composer::ProjectModel::ProjectModel (const ProjectModel&)
@@ -60,8 +69,29 @@ pcl::cloud_composer::ProjectModel::setName (QString new_name)
 }
 
 void
-pcl::cloud_composer::ProjectModel::insertNewCloudFromFile (QString filename)
+pcl::cloud_composer::ProjectModel::setCloudView (CloudView* view)
 {
+  cloud_view_ = view;
+  // Initialize status variables tied to the view
+  setAxisVisibility (true);
+}
+
+void
+pcl::cloud_composer::ProjectModel::insertNewCloudFromFile ()
+{
+  qDebug () << "Inserting cloud from file...";
+  QString filename = QFileDialog::getOpenFileName (0,tr ("Select cloud to open"), last_directory_.absolutePath (), tr ("PointCloud(*.pcd)"));
+  if ( filename.isNull ())
+  {
+    qWarning () << "No file selected, no cloud loaded";
+    return;
+  }
+  else
+  {
+    QFileInfo file_info (filename);
+    last_directory_ = file_info.absoluteDir ();
+  }
+    
   sensor_msgs::PointCloud2::Ptr cloud_blob (new sensor_msgs::PointCloud2);
   Eigen::Vector4f origin;
   Eigen::Quaternionf orientation;
@@ -167,6 +197,39 @@ pcl::cloud_composer::ProjectModel::insertNewCloudComposerItem (CloudComposerItem
 {
   parent_item->appendRow (new_item);  
 }
+
+//Slots for commands arriving from GUI
+void
+pcl::cloud_composer::ProjectModel::clearSelection ()
+{
+  getSelectionModel ()->clearSelection ();
+}
+
+void
+pcl::cloud_composer::ProjectModel::deleteSelectedItems ()
+{
+  DeleteItemCommand* delete_command = new DeleteItemCommand (ConstItemList ());
+  doCommand (delete_command);
+}
+
+void
+pcl::cloud_composer::ProjectModel::setAxisVisibility (bool visible)
+{
+  //qDebug () << "Setting axis visibility to "<<visible;
+  axis_visible_ = visible;
+  cloud_view_->setAxisVisibility (axis_visible_);
+}
+
+
+//Slots for Model State
+void
+pcl::cloud_composer::ProjectModel::emitAllStateSignals ()
+{
+  emit axisVisible (axis_visible_);
+  emit deleteAvailable (selection_model_->hasSelection ());
+    
+}
+
 
 
 

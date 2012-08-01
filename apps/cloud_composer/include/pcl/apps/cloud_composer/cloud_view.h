@@ -59,11 +59,21 @@ namespace pcl
       CloudView (const CloudView& to_copy);
       CloudView (ProjectModel* model, QWidget* parent = 0);
       virtual ~CloudView ();
+      
       void 
       setModel (ProjectModel* new_model);
-      ProjectModel* getModel () const { return model_; }
-      QVTKWidget* getQVTK() const {return qvtk_; }
-    
+      ProjectModel* 
+      getModel () const { return model_; }
+      
+      QVTKWidget* 
+      getQVTK() const {return qvtk_; }
+      
+      boost::shared_ptr<pcl::visualization::PCLVisualizer>
+      getPCLVisualizer () const { return vis_; }
+      
+      void 
+      setAxisVisibility (bool visible);
+      
     public slots:
       void 
       refresh ();
@@ -109,12 +119,17 @@ namespace pcl
       void
       connectSignalsAndSlots ();
       
+      void
+      addOrientationMarkerWidgetAxes ();
+      void
+      removeOrientationMarkerWidgetAxes ();
       
       boost::shared_ptr<pcl::visualization::PCLVisualizer> vis_;
       ProjectModel* model_;
       QVTKWidget* qvtk_;
       
-      
+      vtkSmartPointer<vtkOrientationMarkerWidget> axes_widget_;
+      vtkSmartPointer<vtkAxesActor> axes_;
     };
   }
 }
