@@ -107,15 +107,16 @@ FittingCurve2dSDM::assemble (const FittingCurve2d::Parameter &parameter)
   }
 }
 
-void
+double
 FittingCurve2dSDM::solve (double damp)
 {
   clock_t time_start, time_end;
+  double cps_diff(0.0);
   if (!m_quiet)
     time_start = clock ();
 
   if (m_solver.solve ())
-    updateCurve (damp);
+    cps_diff = updateCurve (damp);
 
   if (!m_quiet)
   {
@@ -123,13 +124,16 @@ FittingCurve2dSDM::solve (double damp)
     double solve_time = (double)(time_end - time_start) / (double)(CLOCKS_PER_SEC);
     printf ("[FittingPatch::solve()] (%f sec)\n", solve_time);
   }
+  return cps_diff;
 }
 
-void
+double
 FittingCurve2dSDM::updateCurve (double damp)
 {
   int cp_red = m_nurbs.m_order - 2;
   int ncp = m_nurbs.m_cv_count - 2 * cp_red;
+
+  double cps_diff(0.0);
 
   for (int j = 0; j < ncp; j++)
   {
@@ -137,9 +141,14 @@ FittingCurve2dSDM::updateCurve (double damp)
     ON_3dPoint cp_prev;
     m_nurbs.GetCV (j + cp_red, cp_prev);
 
+    double x = m_solver.x (2 * j + 0, 0);
+    double y = m_solver.x (2 * j + 1, 0);
+
+    cps_diff += sqrt((x-cp_prev.x) * (x-cp_prev.x) + (y-cp_prev.y) * (y-cp_prev.y));
+
     ON_3dPoint cp;
-    cp.x = cp_prev.x + damp * (m_solver.x (2 * j + 0, 0) - cp_prev.x);
-    cp.y = cp_prev.y + damp * (m_solver.x (2 * j + 1, 0) - cp_prev.y);
+    cp.x = cp_prev.x + damp * (x - cp_prev.x);
+    cp.y = cp_prev.y + damp * (y - cp_prev.y);
     cp.z = 0.0;
 
     m_nurbs.SetCV (j + cp_red, cp);
@@ -155,6 +164,7 @@ FittingCurve2dSDM::updateCurve (double damp)
     m_nurbs.GetCV (cp_red - j, cp);
     m_nurbs.SetCV (m_nurbs.m_cv_count - 1 - j, cp);
   }
+  return cps_diff / ncp;
 }
 
 void

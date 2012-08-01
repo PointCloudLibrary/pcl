@@ -128,12 +128,12 @@ namespace pcl
 
       /** \brief Solve system of equations using Eigen or UmfPack (can be defined in on_nurbs.cmake),
        *  and updates B-Spline curve if a solution can be obtained. */
-      virtual void
+      virtual double
       solve (double damp = 1.0);
 
       /** \brief Update curve according to the current system of equations.
        *  \param[in] damp damping factor from one iteration to the other. */
-      virtual void
+      virtual double
       updateCurve (double damp);
 
       /** \brief Adds control points in the middle and of elements,
@@ -204,6 +204,14 @@ namespace pcl
       {
         m_quiet = val;
         m_solver.setQuiet (val);
+      }
+
+      /** \brief Set parameters for inverse mapping. */
+      inline void
+      setInverseParams(int max_steps, double accuracy)
+      {
+        in_max_steps = max_steps;
+        in_accuracy = accuracy;
       }
 
     protected:

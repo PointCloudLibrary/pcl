@@ -82,6 +82,10 @@ namespace pcl
       std::vector<unsigned> common_boundary_idx;
       vector_vec2d common_boundary_param;
 
+      std::vector<unsigned> common_idx;
+      vector_vec2d common_param1;
+      vector_vec2d common_param2;
+
       /** \brief Clear all interior data */
       inline void
       clear_interior ()
@@ -106,6 +110,14 @@ namespace pcl
         boundary_line_start.clear ();
         boundary_line_end.clear ();
         boundary_normals.clear ();
+      }
+
+      inline void
+      clear_common()
+      {
+        common_idx.clear();
+        common_param1.clear();
+        common_param2.clear();
       }
 
       /** \brief Clear all common data */

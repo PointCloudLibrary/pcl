@@ -143,12 +143,13 @@ GlobalOptimizationTDM::assemble (ParameterTDM params)
   // determine number of rows of matrix
   m_ncols = 0;
   unsigned nnurbs = m_nurbs.size ();
-  unsigned nInt (0), nBnd (0), nCageRegInt (0), nCageRegBnd (0), nCommonBnd (0);
+  unsigned nInt (0), nBnd (0), nCageRegInt (0), nCageRegBnd (0), nCommonBnd (0), nCommonPar (0);
   for (unsigned i = 0; i < nnurbs; i++)
   {
     nInt += m_data[i]->interior.size ();
     nBnd += m_data[i]->boundary.size ();
     nCommonBnd += m_data[i]->common_boundary_point.size ();
+    nCommonPar += m_data[i]->common_idx.size ();
     nCageRegInt += (m_nurbs[i]->m_cv_count[0] - 2) * (m_nurbs[i]->m_cv_count[1] - 2);
     nCageRegBnd += 2 * (m_nurbs[i]->m_cv_count[0] - 1) + 2 * (m_nurbs[i]->m_cv_count[1] - 1);
     m_ncols += m_nurbs[i]->CVCount ();
@@ -171,15 +172,18 @@ GlobalOptimizationTDM::assemble (ParameterTDM params)
       m_nrows += nBnd;
   }
   if (params.common_weight > 0.0)
+  {
     m_nrows += nCommonBnd;
+    m_nrows += nCommonPar;
+  }
 
   m_nrows *= 3;
   m_ncols *= 3;
 
   m_solver.assign (m_nrows, m_ncols, 1);
 
-  for (unsigned i = 0; i < m_data.size (); i++)
-    m_data[i]->common_boundary_param.clear ();
+  //  for (unsigned i = 0; i < m_data.size (); i++)
+  //    m_data[i]->common_boundary_param.clear ();
 
   // assemble matrix
   unsigned row (0);
@@ -202,7 +206,9 @@ GlobalOptimizationTDM::assemble (ParameterTDM params)
                                  params.closing_weight, row);
 
     // common boundaries
-    assembleCommonBoundaries (id, params.common_weight, row);
+    //    assembleCommonBoundaries (id, params.common_weight, row);
+
+    assembleCommonParams (id, params.common_weight, row);
 
     ncps += m_nurbs[id]->CVCount ();
   }
@@ -256,6 +262,31 @@ GlobalOptimizationTDM::updateSurf (double damp)
 }
 
 void
+GlobalOptimizationTDM::assembleCommonParams (unsigned id1, double weight, unsigned &row)
+{
+  if (weight <= 0.0)
+    return;
+
+  NurbsDataSurface *data = m_data[id1];
+  ON_NurbsSurface *nurbs = this->m_nurbs[id1];
+
+  for (size_t i = 0; i < data->common_idx.size (); i++)
+  {
+    //    Eigen::Vector3d n, tu, tv;
+    //    Eigen::Vector2d &param1 = data->common_param1[i];
+    //    double pt[9];
+    //    nurbs->Evaluate(param1(0),param1(1), 1, 3, pt);
+    //    tu = Eigen::Vector3d(pt[3], pt[4], pt[5]);
+    //    tv = Eigen::Vector3d(pt[6], pt[7], pt[8]);
+    //    tu.normalize();
+    //    tv.normalize();
+    //    n = tu.cross(tv);
+    addParamConstraint (Eigen::Vector2i (id1, data->common_idx[i]), data->common_param1[i], data->common_param2[i],
+                        weight, row);
+  }
+}
+
+void
 GlobalOptimizationTDM::assembleCommonBoundaries (unsigned id1, double weight, unsigned &row)
 {
   if (weight <= 0.0)
@@ -290,9 +321,9 @@ GlobalOptimizationTDM::assembleCommonBoundaries (unsigned id1, double weight, un
     if (nurbs1->m_order[0] == nurbs2->m_order[0])
     {
       params1 = FittingSurface::inverseMappingBoundary (*m_nurbs[id (0)], p0, error1, p1, tu1, tv1, im_max_steps,
-                                                      im_accuracy, true);
+                                                        im_accuracy, true);
       params2 = FittingSurface::inverseMappingBoundary (*m_nurbs[id (1)], p0, error2, p2, tu2, tv2, im_max_steps,
-                                                      im_accuracy, true);
+                                                        im_accuracy, true);
 
       if (params1 (0) == 0.0 || params1 (0) == 1.0)
         t1 = tv1;
@@ -318,17 +349,17 @@ GlobalOptimizationTDM::assembleCommonBoundaries (unsigned id1, double weight, un
       {
         params1 = FittingSurface::findClosestElementMidPoint (*m_nurbs[id (0)], p0);
         params1 = FittingSurface::inverseMapping (*m_nurbs[id (0)], p0, params1, error1, p1, tu1, tv1, im_max_steps,
-                                                im_accuracy, true);
+                                                  im_accuracy, true);
         params2 = FittingSurface::inverseMappingBoundary (*m_nurbs[id (1)], p0, error2, p2, tu2, tv2, im_max_steps,
-                                                        im_accuracy, true);
+                                                          im_accuracy, true);
       }
       else
       {
         params1 = FittingSurface::inverseMappingBoundary (*m_nurbs[id (0)], p0, error1, p1, tu1, tv1, im_max_steps,
-                                                        im_accuracy, true);
+                                                          im_accuracy, true);
         params2 = FittingSurface::findClosestElementMidPoint (*m_nurbs[id (1)], p0);
         params2 = FittingSurface::inverseMapping (*m_nurbs[id (1)], p0, params2, error2, p2, tu2, tv2, im_max_steps,
-                                                im_accuracy);
+                                                  im_accuracy);
       }
 
     }
@@ -470,7 +501,7 @@ GlobalOptimizationTDM::assembleInteriorPoints (unsigned id, int ncps, double wei
     if (p < data->interior_param.size ())
     {
       params = FittingSurface::inverseMapping (*nurbs, pcp, data->interior_param[p], error, pt, tu, tv, im_max_steps,
-                                             im_accuracy);
+                                               im_accuracy);
       data->interior_param[p] = params;
     }
     else
@@ -523,7 +554,7 @@ GlobalOptimizationTDM::assembleInteriorPointsTD (unsigned id, int ncps, double w
     if (p < data->interior_param.size ())
     {
       params = FittingSurface::inverseMapping (*nurbs, pcp, data->interior_param[p], error, pt, tu, tv, im_max_steps,
-                                             im_accuracy);
+                                               im_accuracy);
       data->interior_param[p] = params;
     }
     else
@@ -574,7 +605,8 @@ GlobalOptimizationTDM::assembleBoundaryPoints (unsigned id, int ncps, double wei
     Vector3d pt, tu, tv, n;
     double error;
 
-    Vector2d params = FittingSurface::inverseMappingBoundary (*nurbs, pcp, error, pt, tu, tv, im_max_steps, im_accuracy);
+    Vector2d params =
+        FittingSurface::inverseMappingBoundary (*nurbs, pcp, error, pt, tu, tv, im_max_steps, im_accuracy);
     data->boundary_error.push_back (error);
 
     if (p < data->boundary_param.size ())
@@ -730,8 +762,8 @@ GlobalOptimizationTDM::addParamConstraintTD (const Eigen::Vector2i &id, const Ei
 
   row += 3;
 
-  //  if (!m_quiet && row % 100)
-  //    printf("[GlobalOptimizationTDM::addParamConstraint] row: %d / %d\n", row, m_nrows);
+//  if (!m_quiet && row % 100)
+//    printf ("[GlobalOptimizationTDM::addParamConstraintTD] row: %d / %d\n", row, m_nrows);
 }
 
 void

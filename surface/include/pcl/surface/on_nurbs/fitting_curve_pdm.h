@@ -79,6 +79,13 @@ namespace pcl
        * \param[in] nc B-Spline curve used for fitting.        */
       FittingCurve (NurbsDataCurve *data, const ON_NurbsCurve &ns);
 
+      /** \brief Find the element in which the parameter xi lies.
+       * \param[in] xi value in parameter domain of the B-Spline curve.
+       * \param[in] elements the vector of elements of the curve.
+       * \return index of the element with respect to elements. */
+      static int
+      findElement (double xi, const std::vector<double> &elements);
+
       /** \brief Refines curve by inserting a knot in the middle of each element. */
       void
       refine ();

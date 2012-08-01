@@ -51,8 +51,8 @@ FittingCurve2d::FittingCurve2d (int order, NurbsDataCurve2d *data)
   m_data = data;
   m_nurbs = initNurbsCurve2D (order, m_data->interior);
 
-  in_max_steps = 100;
-  in_accuracy = 1e-4;
+  in_max_steps = 200;
+  in_accuracy = 1e-6;
   m_quiet = true;
 }
 
@@ -63,8 +63,8 @@ FittingCurve2d::FittingCurve2d (NurbsDataCurve2d *data, const ON_NurbsCurve &nc)
   m_nurbs = ON_NurbsCurve (nc);
   m_data = data;
 
-  in_max_steps = 100;
-  in_accuracy = 1e-4;
+  in_max_steps = 200;
+  in_accuracy = 1e-6;
   m_quiet = true;
 }
 
@@ -214,15 +214,16 @@ FittingCurve2d::assemble (const Parameter &parameter)
   }
 }
 
-void
+double
 FittingCurve2d::solve (double damp)
 {
   clock_t time_start, time_end;
+  double cps_diff(0.0);
   if (!m_quiet)
     time_start = clock ();
 
   if (m_solver.solve ())
-    updateCurve (damp);
+    cps_diff = updateCurve (damp);
 
   if (!m_quiet)
   {
@@ -230,13 +231,17 @@ FittingCurve2d::solve (double damp)
     double solve_time = (double)(time_end - time_start) / (double)(CLOCKS_PER_SEC);
     printf ("[FittingCurve2d::solve()] (%f sec)\n", solve_time);
   }
+  return cps_diff;
 }
 
-void
+double
 FittingCurve2d::updateCurve (double damp)
 {
   int cp_red = m_nurbs.m_order - 2;
   int ncp = m_nurbs.m_cv_count - 2 * cp_red;
+
+  double cps_diff(0.0);
+  double cps_diff_max(0.0);
 
   for (int j = 0; j < ncp; j++)
   {
@@ -244,9 +249,17 @@ FittingCurve2d::updateCurve (double damp)
     ON_3dPoint cp_prev;
     m_nurbs.GetCV (j + cp_red, cp_prev);
 
+    double x = m_solver.x (j, 0);
+    double y = m_solver.x (j, 1);
+
+    cps_diff = sqrt((x-cp_prev.x) * (x-cp_prev.x) + (y-cp_prev.y) * (y-cp_prev.y));
+
+    if(cps_diff > cps_diff_max)
+      cps_diff_max = cps_diff;
+
     ON_3dPoint cp;
-    cp.x = cp_prev.x + damp * (m_solver.x (j, 0) - cp_prev.x);
-    cp.y = cp_prev.y + damp * (m_solver.x (j, 1) - cp_prev.y);
+    cp.x = cp_prev.x + damp * (x - cp_prev.x);
+    cp.y = cp_prev.y + damp * (y - cp_prev.y);
     cp.z = 0.0;
 
     m_nurbs.SetCV (j + cp_red, cp);
@@ -262,14 +275,16 @@ FittingCurve2d::updateCurve (double damp)
     m_nurbs.GetCV (cp_red - j, cp);
     m_nurbs.SetCV (m_nurbs.m_cv_count - 1 - j, cp);
   }
+
+  return cps_diff_max;
 }
 
 void
 FittingCurve2d::addCPsOnClosestPointViolation (double max_error)
 {
   std::vector<double> elements = getElementVector (m_nurbs);
-  m_data->interior_line_start.clear ();
-  m_data->interior_line_end.clear ();
+  //  m_data->interior_line_start.clear ();
+  //  m_data->interior_line_end.clear ();
 
   int nknots (0);
 
@@ -295,8 +310,8 @@ FittingCurve2d::addCPsOnClosestPointViolation (double max_error)
       if (d > (max_error * max_error))
       {
         m_nurbs.InsertKnot (xi + 0.5 * dxi, 1);
-        m_data->interior_line_start.push_back (p2);
-        m_data->interior_line_end.push_back (p1);
+        //        m_data->interior_line_start.push_back (p2);
+        //        m_data->interior_line_end.push_back (p1);
         nknots++;
         inserted = true;
       }
@@ -319,8 +334,8 @@ FittingCurve2d::addCPsOnClosestPointViolation (double max_error)
       if (d > (max_error * max_error))
       {
         m_nurbs.InsertKnot (xi, 1);
-        m_data->interior_line_start.push_back (p2);
-        m_data->interior_line_end.push_back (p1);
+        //        m_data->interior_line_start.push_back (p2);
+        //        m_data->interior_line_end.push_back (p1);
         nknots++;
       }
     }
@@ -532,14 +547,14 @@ FittingCurve2d::addCageRegularisation (double weight, unsigned &row, const std::
 ON_NurbsCurve
 FittingCurve2d::initCPsNurbsCurve2D (int order, const vector_vec2d &cps)
 {
+  int cp_red = order - 2;
   ON_NurbsCurve nurbs;
-  if ((int)cps.size () < (2 * order))
+  if (cps.size () < 3 || cps.size () < (2 * cp_red + 1))
   {
     printf ("[FittingCurve2d::initCPsNurbsCurve2D] Warning, number of control points too low.\n");
     return nurbs;
   }
 
-  int cp_red = order - 2;
   int ncps = cps.size () + 2 * cp_red + 1; // +2*cp_red for smoothness and +1 for closing
   nurbs = ON_NurbsCurve (2, false, order, ncps);
   nurbs.MakePeriodicUniformKnotVector (1.0 / (ncps - order));
@@ -686,13 +701,14 @@ FittingCurve2d::assembleInterior (double wInt, double sigma2, unsigned &row)
     double error;
     if (p < (int)m_data->interior_param.size ())
     {
-      param = inverseMapping (m_nurbs, pcp, m_data->interior_param[p], error, pt, t, in_max_steps, in_accuracy);
+      param
+          = inverseMapping (m_nurbs, pcp, m_data->interior_param[p], error, pt, t, in_max_steps, in_accuracy, m_quiet);
       m_data->interior_param[p] = param;
     }
     else
     {
       param = findClosestElementMidPoint (m_nurbs, pcp);
-      param = inverseMapping (m_nurbs, pcp, param, error, pt, t, in_max_steps, in_accuracy);
+      param = inverseMapping (m_nurbs, pcp, param, error, pt, t, in_max_steps, in_accuracy, m_quiet);
       m_data->interior_param.push_back (param);
     }
 
@@ -714,7 +730,7 @@ FittingCurve2d::assembleInterior (double wInt, double sigma2, unsigned &row)
     {
       w = wInt * exp (-(error * error) * ds);
     }
-    else
+
     {
       m_data->interior_line_start.push_back (pcp);
       m_data->interior_line_end.push_back (pt);
@@ -889,7 +905,11 @@ FittingCurve2d::inverseMapping (const ON_NurbsCurve &nurbs, const Eigen::Vector2
 
     r = p - pt;
 
-    delta = -(1.0 / ncpj) * r.dot (t) / t.norm (); //  A.ldlt().solve(b);
+    // step width control
+    int E = findElement (current, elements);
+    double e = elements[E + 1] - elements[E];
+
+    delta = -(0.5 * e) * r.dot (t) / t.norm (); //  A.ldlt().solve(b);
 
     if (std::fabs (delta) < accuracy)
     {
@@ -1015,12 +1035,12 @@ FittingCurve2d::inverseMappingO2 (const ON_NurbsCurve &nurbs, const Eigen::Vecto
     double pt1[4];
     nurbs.Evaluate (param1, 1, 2, pt1);
     Eigen::Vector2d t1 (pt1[2], pt1[3]);
-    t1.normalize();
+    t1.normalize ();
 
     double pt2[4];
     nurbs.Evaluate (param2, 1, 2, pt2);
     Eigen::Vector2d t2 (pt2[2], pt2[3]);
-    t2.normalize();
+    t2.normalize ();
 
     t = 0.5 * (t1 + t2);
   }

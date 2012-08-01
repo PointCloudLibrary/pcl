@@ -105,6 +105,10 @@ namespace pcl
       updateSurf (double damp);
 
     private:
+
+      virtual void
+      assembleCommonParams (unsigned id1, double weight, unsigned &row);
+
       /**\brief Assemble closing-constraint of boundaries using data.boundary for getting closest points */
       virtual void
       assembleCommonBoundaries (unsigned id1, double weight, unsigned &row);

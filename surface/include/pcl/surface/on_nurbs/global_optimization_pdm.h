@@ -130,6 +130,9 @@ namespace pcl
       std::vector<NurbsDataSurface*> m_data;
       std::vector<ON_NurbsSurface*> m_nurbs;
 
+      void
+      assembleCommonParams (unsigned id1, double weight, unsigned &row);
+
       /** \brief Assemble closing-constraint of boundaries using data.boundary for getting closest points */
       virtual void
       assembleCommonBoundaries (unsigned id1, double weight, unsigned &row);

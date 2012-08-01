@@ -75,12 +75,12 @@ namespace pcl
 
       /** \brief Solve system of equations using Eigen or UmfPack (can be defined in on_nurbs.cmake),
        *  and updates B-Spline curve if a solution can be obtained. */
-      void
+      virtual double
       solve (double damp = 1.0);
 
       /** \brief Update curve according to the current system of equations.
        *  \param[in] damp damping factor from one iteration to the other. */
-      void
+      virtual double
       updateCurve (double damp);
 
     protected:

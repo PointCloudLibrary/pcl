@@ -68,6 +68,25 @@ FittingCurve::FittingCurve (NurbsDataCurve *data, const ON_NurbsCurve &ns)
   m_quiet = true;
 }
 
+int
+FittingCurve::findElement (double xi, const std::vector<double> &elements)
+{
+  if (xi >= elements.back ())
+    return (elements.size () - 2);
+
+  for (unsigned i = 0; i < elements.size () - 1; i++)
+  {
+    if (xi >= elements[i] && xi < elements[i + 1])
+    {
+      return i;
+    }
+  }
+
+  //  xi < elements.front()
+  return 0;
+
+}
+
 void
 FittingCurve::refine ()
 {
@@ -376,7 +395,11 @@ FittingCurve::inverseMapping (const ON_NurbsCurve &nurbs, const Eigen::Vector3d 
 
     r = p - pt;
 
-    delta = -(1.0 / ncpj) * r.dot (t) / t.norm (); //  A.ldlt().solve(b);
+    // step width control
+    int E = findElement (current, elements);
+    double e = elements[E + 1] - elements[E];
+
+    delta = -(0.5 * e) * r.dot (t) / t.norm (); //  A.ldlt().solve(b);
 
     if (std::fabs (delta) < accuracy)
     {
