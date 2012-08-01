@@ -58,12 +58,17 @@ namespace pcl
     * pcl::PointCloud<pcl::PointXYZRGBA>::Ptr model_keypoints (new pcl::PointCloud<pcl::PointXYZRGBA> ());
     * pcl::search::KdTree<pcl::PointXYZRGBA>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZRGBA> ());
     *
+    * // Fill in the model cloud
+    *
+    * double model_resolution;
+    *
+    * // Compute model_resolution
+    *
     * pcl::ISSKeypoint3D<pcl::PointXYZRGBA, pcl::PointXYZRGBA> iss_detector;
     *
     * iss_detector.setSearchMethod (tree);
     * iss_detector.setSalientRadius (6 * model_resolution);
     * iss_detector.setNonMaxRadius (4 * model_resolution);
-    * iss_detector.setNormalRadius (0.5 * model_resolution);
     * iss_detector.setThreshold21 (0.975);
     * iss_detector.setThreshold32 (0.975);
     * iss_detector.setMinNeighbors (5);
@@ -97,6 +102,7 @@ namespace pcl
       using Keypoint<PointInT, PointOutT>::search_parameter_;
 
       /** \brief Constructor.
+        * \param[in] salient radius the radius of the spherical neighborhood used to compute the scatter matrix.
         */
       ISSKeypoint3D (double salient_radius = 0.0001)
       : salient_radius_ (salient_radius)
@@ -129,7 +135,7 @@ namespace pcl
 
       /** \brief Set the radius used for the estimation of the surface normals of the input cloud. If the radius is
 	* too large, the temporal performances of the detector may degrade significantly.
-        * \param[in] normals_radius the radius used to estimate normals
+        * \param[in] normals_radius the radius used to estimate surface normals
         */
       void
       setNormalRadius (double normal_radius);
@@ -160,13 +166,13 @@ namespace pcl
       setMinNeighbors (int min_neighbors);
 
       /** \brief Set the normals if pre-calculated normals are available.
-        * \param[in] normals the given cloud of normals.
+        * \param[in] normals the given cloud of normals
         */
       void
       setNormals (const PointCloudNPtr &normals);
 
       /** \brief Initialize the scheduler and set the number of threads to use.
-        * \param nr_threads the number of hardware threads to use (-1 sets the value back to automatic)
+        * \param[in] nr_threads the number of hardware threads to use (-1 sets the value back to automatic)
         */
       inline void
       setNumberOfThreads (int nr_threads)
@@ -195,11 +201,12 @@ namespace pcl
       getScatterMatrix (const int &current_index, Eigen::Matrix3d &cov_m);
 
       /** \brief Perform the initial checks before computing the keypoints.
+       *  \return true if all the checks are passed, false otherwise
         */
       bool
       initCompute ();
 
-      /** \brief
+      /** \brief Detect the keypoints by performing the EVD of the scatter matrix.
         * \param[out] output the resultant cloud of keypoints
         */
       void
@@ -221,7 +228,7 @@ namespace pcl
       /** \brief The upper bound on the ratio between the second and the first eigenvalue returned by the EVD. */
       double gamma_21_;
 
-      /** \brief the upper bound on the ratio between the third and the second eigenvalue returned by the EVD. */
+      /** \brief The upper bound on the ratio between the third and the second eigenvalue returned by the EVD. */
       double gamma_32_;
 
       /** \brief Store the third eigen value associated to each point in the input cloud. */

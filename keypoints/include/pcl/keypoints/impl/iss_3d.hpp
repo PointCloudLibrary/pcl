@@ -198,6 +198,12 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::initCompute ()
     PCL_ERROR ("[pcl::%s::initCompute] init failed!\n", name_.c_str ());
     return (false);
   }
+  if (salient_radius_ <= 0)
+  {
+    PCL_ERROR ("[pcl::%s::initCompute] : the salient radius (%f) must be strict positive!\n",
+		name_.c_str (), salient_radius_);
+    return (false);
+  }
   if (non_max_radius_ <= 0)
   {
     PCL_ERROR ("[pcl::%s::initCompute] : the non maxima radius (%f) must be strict positive!\n",
@@ -269,6 +275,12 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::initCompute ()
         }
       }
     }
+  }
+  else if (border_radius_ < 0.0)
+  {
+    PCL_ERROR ("[pcl::%s::initCompute] : the border radius used to estimate boundary points (%f) must be positive!\n",
+		name_.c_str (), border_radius_);
+    return (false);
   }
 
   return (true);
