@@ -21,9 +21,9 @@ if(build)
         src/organized_connected_component_segmentation.cpp
         src/organized_multi_plane_segmentation.cpp
         src/planar_polygon_fusion.cpp
-	src/crf_segmentation.cpp
-	src/crf_normal_segmentation.cpp
-        src/active_segmentation.cpp
+	      src/crf_segmentation.cpp
+	      src/crf_normal_segmentation.cpp
+        #src/active_segmentation.cpp
        )
 
     set(incs 
@@ -49,8 +49,8 @@ if(build)
         include/pcl/${SUBSYS_NAME}/region_3d.h
         include/pcl/${SUBSYS_NAME}/planar_region.h
         include/pcl/${SUBSYS_NAME}/planar_polygon_fusion.h
-	include/pcl/${SUBSYS_NAME}/crf_segmentation.h
-	include/pcl/${SUBSYS_NAME}/crf_normal_segmentation.h
+	      include/pcl/${SUBSYS_NAME}/crf_segmentation.h
+	      include/pcl/${SUBSYS_NAME}/crf_normal_segmentation.h
         include/pcl/${SUBSYS_NAME}/active_segmentation.h
         )
 
