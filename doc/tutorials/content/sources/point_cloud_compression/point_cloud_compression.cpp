@@ -50,7 +50,7 @@ public:
     bool showStatistics = true;
 
     // for a full list of profiles see: /io/include/pcl/compression/compression_profiles.h
-    pcl::octree::compression_Profiles_e compressionProfile = pcl::octree::MED_RES_ONLINE_COMPRESSION_WITH_COLOR;
+    pcl::io::compression_Profiles_e compressionProfile = pcl::io::MED_RES_ONLINE_COMPRESSION_WITH_COLOR;
 
     // instantiate point cloud compression for encoding and decoding
     PointCloudEncoder = new pcl::io::OctreePointCloudCompression<pcl::PointXYZRGBA> (compressionProfile, showStatistics);

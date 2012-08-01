@@ -238,7 +238,7 @@ main (int argc, char **argv)
 {
   OctreePointCloudCompression<PointXYZRGBA>* octreeCoder;
 
-  pcl::octree::compression_Profiles_e compressionProfile;
+  pcl::io::compression_Profiles_e compressionProfile;
 
   bool showStatistics;
   double pointResolution;
@@ -258,7 +258,7 @@ main (int argc, char **argv)
   iFrameRate = 30;
   doColorEncoding = false;
   colorBitResolution = 6;
-  compressionProfile = pcl::octree::MED_RES_OFFLINE_COMPRESSION_WITHOUT_COLOR;
+  compressionProfile = pcl::io::MED_RES_OFFLINE_COMPRESSION_WITHOUT_COLOR;
 
   bShowInputCloud = false;
 
@@ -315,13 +315,13 @@ main (int argc, char **argv)
   if (pcl::console::find_argument (argc, argv, "-a")>0) 
   {
     doColorEncoding = true;
-    compressionProfile = pcl::octree::MANUAL_CONFIGURATION;
+    compressionProfile = pcl::io::MANUAL_CONFIGURATION;
   }
 
   if (pcl::console::find_argument (argc, argv, "-v")>0) 
   {
     doVoxelGridDownDownSampling = true;
-    compressionProfile = pcl::octree::MANUAL_CONFIGURATION;
+    compressionProfile = pcl::io::MANUAL_CONFIGURATION;
   }
 
   pcl::console::parse_argument (argc, argv, "-f", fileName);
@@ -334,17 +334,17 @@ main (int argc, char **argv)
   if (pcl::console::parse_argument (argc, argv, "-p", profile)>0)
   {
     if (profile == "lowC")
-      compressionProfile = pcl::octree::LOW_RES_OFFLINE_COMPRESSION_WITH_COLOR;
+      compressionProfile = pcl::io::LOW_RES_OFFLINE_COMPRESSION_WITH_COLOR;
     else if (profile == "lowNC")
-      compressionProfile = pcl::octree::LOW_RES_OFFLINE_COMPRESSION_WITHOUT_COLOR;
+      compressionProfile = pcl::io::LOW_RES_OFFLINE_COMPRESSION_WITHOUT_COLOR;
     else if (profile == "medC")
-      compressionProfile = pcl::octree::MED_RES_OFFLINE_COMPRESSION_WITH_COLOR;
+      compressionProfile = pcl::io::MED_RES_OFFLINE_COMPRESSION_WITH_COLOR;
     else if (profile =="medNC")
-      compressionProfile = pcl::octree::MED_RES_OFFLINE_COMPRESSION_WITHOUT_COLOR;
+      compressionProfile = pcl::io::MED_RES_OFFLINE_COMPRESSION_WITHOUT_COLOR;
     else if (profile == "highC")
-      compressionProfile = pcl::octree::HIGH_RES_OFFLINE_COMPRESSION_WITH_COLOR;
+      compressionProfile = pcl::io::HIGH_RES_OFFLINE_COMPRESSION_WITH_COLOR;
     else if (profile == "highNC")
-      compressionProfile = pcl::octree::HIGH_RES_OFFLINE_COMPRESSION_WITHOUT_COLOR;
+      compressionProfile = pcl::io::HIGH_RES_OFFLINE_COMPRESSION_WITHOUT_COLOR;
     else
     {
       print_usage ("Unknown profile parameter..\n");
@@ -355,7 +355,7 @@ main (int argc, char **argv)
     {
       // apply selected compression profile
       // retrieve profile settings
-      const pcl::octree::configurationProfile_t selectedProfile = pcl::octree::compressionProfiles_[compressionProfile];
+      const pcl::io::configurationProfile_t selectedProfile = pcl::io::compressionProfiles_[compressionProfile];
 
       // apply profile settings
       pointResolution = selectedProfile.pointResolution;
@@ -423,18 +423,18 @@ main (int argc, char **argv)
   } else
   {
     // switch to ONLINE profiles
-    if (compressionProfile == pcl::octree::LOW_RES_OFFLINE_COMPRESSION_WITH_COLOR)
-      compressionProfile = pcl::octree::LOW_RES_ONLINE_COMPRESSION_WITH_COLOR;
-    else if (compressionProfile == pcl::octree::LOW_RES_OFFLINE_COMPRESSION_WITHOUT_COLOR)
-      compressionProfile = pcl::octree::LOW_RES_ONLINE_COMPRESSION_WITHOUT_COLOR;
-    else if (compressionProfile == pcl::octree::MED_RES_OFFLINE_COMPRESSION_WITH_COLOR)
-      compressionProfile = pcl::octree::MED_RES_ONLINE_COMPRESSION_WITH_COLOR;
-    else if (compressionProfile == pcl::octree::MED_RES_OFFLINE_COMPRESSION_WITHOUT_COLOR)
-      compressionProfile = pcl::octree::MED_RES_ONLINE_COMPRESSION_WITHOUT_COLOR;
-    else if (compressionProfile == pcl::octree::HIGH_RES_OFFLINE_COMPRESSION_WITH_COLOR)
-      compressionProfile = pcl::octree::HIGH_RES_ONLINE_COMPRESSION_WITH_COLOR;
-    else if (compressionProfile == pcl::octree::HIGH_RES_OFFLINE_COMPRESSION_WITHOUT_COLOR)
-      compressionProfile = pcl::octree::HIGH_RES_ONLINE_COMPRESSION_WITHOUT_COLOR;
+    if (compressionProfile == pcl::io::LOW_RES_OFFLINE_COMPRESSION_WITH_COLOR)
+      compressionProfile = pcl::io::LOW_RES_ONLINE_COMPRESSION_WITH_COLOR;
+    else if (compressionProfile == pcl::io::LOW_RES_OFFLINE_COMPRESSION_WITHOUT_COLOR)
+      compressionProfile = pcl::io::LOW_RES_ONLINE_COMPRESSION_WITHOUT_COLOR;
+    else if (compressionProfile == pcl::io::MED_RES_OFFLINE_COMPRESSION_WITH_COLOR)
+      compressionProfile = pcl::io::MED_RES_ONLINE_COMPRESSION_WITH_COLOR;
+    else if (compressionProfile == pcl::io::MED_RES_OFFLINE_COMPRESSION_WITHOUT_COLOR)
+      compressionProfile = pcl::io::MED_RES_ONLINE_COMPRESSION_WITHOUT_COLOR;
+    else if (compressionProfile == pcl::io::HIGH_RES_OFFLINE_COMPRESSION_WITH_COLOR)
+      compressionProfile = pcl::io::HIGH_RES_ONLINE_COMPRESSION_WITH_COLOR;
+    else if (compressionProfile == pcl::io::HIGH_RES_OFFLINE_COMPRESSION_WITHOUT_COLOR)
+      compressionProfile = pcl::io::HIGH_RES_ONLINE_COMPRESSION_WITHOUT_COLOR;
 
     if (bEnDecode)
     {
