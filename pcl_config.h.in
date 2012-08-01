@@ -33,6 +33,7 @@
 #cmakedefine HAVE_SSE_EXTENSIONS
 
 #cmakedefine HAVE_OPENMP
+#cmakedefine HAVE_PNG
 
 /* Precompile for a minimal set of point types instead of all. */
 #cmakedefine PCL_ONLY_CORE_POINT_TYPES

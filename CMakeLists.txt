@@ -206,6 +206,12 @@ if (OPENNI_FOUND)
   set(HAVE_OPENNI ON)
   include_directories(SYSTEM ${OPENNI_INCLUDE_DIRS})
 endif()
+# LibPNG
+find_package(PNG)
+if (PNG_FOUND)
+  set (HAVE_PNG ON)
+  include_directories(${PNG_INCLUDE_DIR})
+endif(PNG_FOUND)
 
 # Qhull
 if(NOT PCL_SHARED_LIBS OR WIN32)
