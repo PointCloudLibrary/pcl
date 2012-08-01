@@ -100,8 +100,8 @@ pcl::pcl_2d::edge<PointInT, PointOutT>::sobelMagnitudeDirection (pcl::PointCloud
   convolution_->setKernel (*kernel_y);
   convolution_->convolve (*magnitude_y);
 
-  const int height = input_->height;
-  const int width = input_->width;
+  const int height = input_x.height;
+  const int width = input_x.width;
 
   output.resize (height * width);
   output.height = height;
@@ -258,9 +258,16 @@ pcl::pcl_2d::edge<PointInT, PointOutT>::suppressNonMaxima (pcl::PointCloud<Point
   maxima.width = width;
   maxima.resize (height * width);
 
+  for (int i=0; i<height; i++)
+  {
+    for (int j=0; j<width; j++)
+    {
+      maxima (j, i).intensity = 0.0f;
+    }
+  }
 
-  //  for (int row=0; row<height; row++)
-    //    maxima[row].resize (width, 0.0f);
+  //for (int row=0; row<height; row++)
+  //  maxima[row].resize (width, 0.0f);
 
   /*tHigh and non-maximal supression*/
   for (int i = 1; i < height - 1; i++)
@@ -269,7 +276,7 @@ pcl::pcl_2d::edge<PointInT, PointOutT>::suppressNonMaxima (pcl::PointCloud<Point
     {
       if (edges (j, i).magnitude < tLow)
         continue;
-      maxima (j, i).intensity = 0;
+      //maxima (j, i).intensity = 0;
       switch ((int)(edges (j, i).direction))
       {
         case 0:
@@ -368,8 +375,8 @@ pcl::pcl_2d::edge<PointInT, PointOutT>::canny (pcl::PointCloud<PointOutT> &outpu
 {
   float tHigh = hysteresis_threshold_high_;
   float tLow = hysteresis_threshold_low_;
-  const int height = input_->height;
-  const int width = input_->width;
+  const int height = input_x.height;
+  const int width = input_x.width;
 
   output.resize (height * width);
   output.height = height;

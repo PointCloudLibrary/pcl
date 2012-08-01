@@ -45,44 +45,48 @@
 
 namespace pcl
 {
-  /** \brief OrganizedEdgeDetection finds 3D edges from organized point cloud data.
+  /** \brief OrganizedEdgeBase, OrganizedEdgeFromRGB, OrganizedEdgeFromNormals, and OrganizedEdgeFromRGBNormals find 3D edges from an organized point cloud data.
     * Given an organized point cloud, it will output a PointCloud of edge labels
     * and a vector of PointIndices.
+    * OrganizedEdgeBase accepts PCL_XYZ_POINT_TYPES and returns EDGELABEL_NAN_BOUNDARY, EDGELABEL_OCCLUDING, and EDGELABEL_OCCLUDED.
+    * OrganizedEdgeFromRGB accepts PCL_RGB_POINT_TYPES and returns EDGELABEL_NAN_BOUNDARY, EDGELABEL_OCCLUDING, EDGELABEL_OCCLUDED, and EDGELABEL_RGB_CANNY.
+    * OrganizedEdgeFromNormals accepts PCL_XYZ_POINT_TYPES with PCL_NORMAL_POINT_TYPES and returns EDGELABEL_NAN_BOUNDARY, EDGELABEL_OCCLUDING, EDGELABEL_OCCLUDED, and EDGELABEL_HIGH_CURVATURE.
+    * OrganizedEdgeFromRGBNormals accepts PCL_RGB_POINT_TYPES with PCL_NORMAL_POINT_TYPES and returns EDGELABEL_NAN_BOUNDARY, EDGELABEL_OCCLUDING, EDGELABEL_OCCLUDED, EDGELABEL_HIGH_CURVATURE, and EDGELABEL_RGB_CANNY.
     *
     * \author Changhyun Choi
     */
   template <typename PointT, typename PointLT>
-  class OrganizedEdgeDetection : public PCLBase<PointT>
+  class OrganizedEdgeBase : public PCLBase<PointT>
   {
-    using PCLBase<PointT>::input_;
-    using PCLBase<PointT>::indices_;
-    using PCLBase<PointT>::initCompute;
-    using PCLBase<PointT>::deinitCompute;
+    typedef typename pcl::PointCloud<PointT> PointCloud;
+    typedef typename PointCloud::Ptr PointCloudPtr;
+    typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+      
+    typedef typename pcl::PointCloud<PointLT> PointCloudL;
+    typedef typename PointCloudL::Ptr PointCloudLPtr;
+    typedef typename PointCloudL::ConstPtr PointCloudLConstPtr;
 
     public:
-      typedef typename pcl::PointCloud<PointT> PointCloud;
-      typedef typename PointCloud::Ptr PointCloudPtr;
-      typedef typename PointCloud::ConstPtr PointCloudConstPtr;
-      
-      typedef typename pcl::PointCloud<PointLT> PointCloudL;
-      typedef typename PointCloudL::Ptr PointCloudLPtr;
-      typedef typename PointCloudL::ConstPtr PointCloudLConstPtr;
+      using PCLBase<PointT>::input_;
+      using PCLBase<PointT>::indices_;
+      using PCLBase<PointT>::initCompute;
+      using PCLBase<PointT>::deinitCompute;
 
-      /** \brief Constructor for OrganizedEdgeDetection */
-      OrganizedEdgeDetection ()
+      /** \brief Constructor for OrganizedEdgeBase */
+      OrganizedEdgeBase ()
         : th_depth_discon_ (0.02f)
         , max_search_neighbors_ (50)
-        , detecting_edge_types_ (EDGELABEL_NAN_BOUNDARY | EDGELABEL_OCCLUDING | EDGELABEL_OCCLUDED | EDGELABEL_HIGH_CURVATURE | EDGELABEL_RGB_CANNY)
+        , detecting_edge_types_ (EDGELABEL_NAN_BOUNDARY | EDGELABEL_OCCLUDING | EDGELABEL_OCCLUDED)
       {
       }
 
-      /** \brief Destructor for OrganizedEdgeDetection */
+      /** \brief Destructor for OrganizedEdgeBase */
       virtual
-      ~OrganizedEdgeDetection ()
+      ~OrganizedEdgeBase ()
       {
       }
 
-      /** \brief Perform the 3D edge detection
+      /** \brief Perform the 3D edge detection (edges from depth discontinuities)
         * \param[out] labels a PointCloud of edge labels
         * \param[out] label_indices a vector of PointIndices corresponding to each edge label
         */
@@ -134,7 +138,20 @@ namespace pcl
       enum {EDGELABEL_NAN_BOUNDARY=1, EDGELABEL_OCCLUDING=2, EDGELABEL_OCCLUDED=4, EDGELABEL_HIGH_CURVATURE=8, EDGELABEL_RGB_CANNY=16};
       static const int num_of_edgetype_ = 5;
 
-    private:
+    protected:
+      /** \brief Perform the 3D edge detection (edges from depth discontinuities) and assign point indices for each edge label
+        * \param[out] labels a PointCloud of edge labels
+        */
+      void
+      extractEdges (pcl::PointCloud<PointLT>& labels) const;
+      
+      /** \brief Assign point indices for each edge label
+        * \param[out] labels a PointCloud of edge labels
+        * \param[out] label_indices a vector of PointIndices corresponding to each edge label
+        */
+      void
+      assignLabelIndices (pcl::PointCloud<PointLT>& labels, std::vector<pcl::PointIndices>& label_indices) const;
+      
       struct Neighbor
       {
         Neighbor (int dx, int dy, int didx)
@@ -159,6 +176,238 @@ namespace pcl
 
       /** \brief The bit encoded value that represents edge types to detect */
       int detecting_edge_types_;
+  };
+
+  template <typename PointT, typename PointLT>
+  class OrganizedEdgeFromRGB : virtual public OrganizedEdgeBase<PointT, PointLT>
+  {
+    typedef typename pcl::PointCloud<PointT> PointCloud;
+    typedef typename PointCloud::Ptr PointCloudPtr;
+    typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+      
+    typedef typename pcl::PointCloud<PointLT> PointCloudL;
+    typedef typename PointCloudL::Ptr PointCloudLPtr;
+    typedef typename PointCloudL::ConstPtr PointCloudLConstPtr;
+
+    public:
+      using OrganizedEdgeBase<PointT, PointLT>::input_;
+      using OrganizedEdgeBase<PointT, PointLT>::indices_;
+      using OrganizedEdgeBase<PointT, PointLT>::initCompute;
+      using OrganizedEdgeBase<PointT, PointLT>::deinitCompute;
+      using OrganizedEdgeBase<PointT, PointLT>::detecting_edge_types_;
+
+      /** \brief Constructor for OrganizedEdgeFromRGB */
+      OrganizedEdgeFromRGB ()
+        : OrganizedEdgeBase<PointT, PointLT> ()
+        , th_rgb_canny_low_ (40.0)
+        , th_rgb_canny_high_ (100.0)
+      {
+        setEdgeType (EDGELABEL_NAN_BOUNDARY | EDGELABEL_OCCLUDING | EDGELABEL_OCCLUDED | EDGELABEL_RGB_CANNY);
+      }
+
+      /** \brief Destructor for OrganizedEdgeFromRGB */
+      virtual
+      ~OrganizedEdgeFromRGB ()
+      {
+      }
+
+      /** \brief Perform the 3D edge detection (edges from depth discontinuities and RGB Canny edge) and assign point indices for each edge label
+        * \param[out] labels a PointCloud of edge labels
+        * \param[out] label_indices a vector of PointIndices corresponding to each edge label
+        */
+      void
+      compute (pcl::PointCloud<PointLT>& labels, std::vector<pcl::PointIndices>& label_indices) const;
+      
+      /** \brief Set the low threshold value for RGB Canny edge detection */
+      inline void
+      setRGBCannyLowThreshold (const float th)
+      {
+        th_rgb_canny_low_ = th;
+      }
+
+      /** \brief Get the low threshold value for RGB Canny edge detection */
+      inline float
+      getRGBCannyLowThreshold () const
+      {
+        return (th_rgb_canny_low_);
+      }
+
+      /** \brief Set the high threshold value for RGB Canny edge detection */
+      inline void
+      setRGBCannyHighThreshold (const float th)
+      {
+        th_rgb_canny_high_ = th;
+      }
+
+      /** \brief Get the high threshold value for RGB Canny edge detection */
+      inline float
+      getRGBCannyHighThreshold () const
+      {
+        return (th_rgb_canny_high_);
+      }
+
+    protected:
+      /** \brief Perform the 3D edge detection (edges from depth discontinuities and RGB Canny edge)
+        * \param[out] labels a PointCloud of edge labels
+        */
+      void
+      extractEdges (pcl::PointCloud<PointLT>& labels) const;
+
+      /** \brief The low threshold value for RGB Canny edge detection (default: 40.0) */
+      float th_rgb_canny_low_;
+
+      /** \brief The high threshold value for RGB Canny edge detection (default: 100.0) */
+      float th_rgb_canny_high_;
+  };
+
+  template <typename PointT, typename PointNT, typename PointLT>
+  class OrganizedEdgeFromNormals : virtual public OrganizedEdgeBase<PointT, PointLT>
+  {
+    typedef typename pcl::PointCloud<PointT> PointCloud;
+    typedef typename PointCloud::Ptr PointCloudPtr;
+    typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+      
+    typedef typename pcl::PointCloud<PointNT> PointCloudN;
+    typedef typename PointCloudN::Ptr PointCloudNPtr;
+    typedef typename PointCloudN::ConstPtr PointCloudNConstPtr;
+
+    typedef typename pcl::PointCloud<PointLT> PointCloudL;
+    typedef typename PointCloudL::Ptr PointCloudLPtr;
+    typedef typename PointCloudL::ConstPtr PointCloudLConstPtr;
+
+    public:
+      using OrganizedEdgeBase<PointT, PointLT>::input_;
+      using OrganizedEdgeBase<PointT, PointLT>::indices_;
+      using OrganizedEdgeBase<PointT, PointLT>::initCompute;
+      using OrganizedEdgeBase<PointT, PointLT>::deinitCompute;
+      using OrganizedEdgeBase<PointT, PointLT>::detecting_edge_types_;
+
+      /** \brief Constructor for OrganizedEdgeFromNormals */
+      OrganizedEdgeFromNormals () 
+        : OrganizedEdgeBase<PointT, PointLT> ()
+        , normals_ ()
+        , th_hc_canny_low_ (0.4f)
+        , th_hc_canny_high_ (1.1f)
+      {
+        setEdgeType (EDGELABEL_NAN_BOUNDARY | EDGELABEL_OCCLUDING | EDGELABEL_OCCLUDED | EDGELABEL_HIGH_CURVATURE);
+      }
+
+      /** \brief Destructor for OrganizedEdgeFromNormals */
+      virtual
+      ~OrganizedEdgeFromNormals ()
+      {
+      }
+
+      /** \brief Perform the 3D edge detection (edges from depth discontinuities and high curvature regions) and assign point indices for each edge label
+        * \param[out] labels a PointCloud of edge labels
+        * \param[out] label_indices a vector of PointIndices corresponding to each edge label
+        */
+      void
+      compute (pcl::PointCloud<PointLT>& labels, std::vector<pcl::PointIndices>& label_indices) const;
+
+      /** \brief Provide a pointer to the input normals.
+        * \param[in] normals the input normal cloud
+        */
+      inline void
+      setInputNormals (const PointCloudNConstPtr &normals) 
+      {
+        normals_ = normals;
+      }
+
+      /** \brief Get the input normals. */
+      inline PointCloudNConstPtr
+      getInputNormals () const
+      {
+        return (normals_);
+      }
+
+      /** \brief Set the low threshold value for high curvature Canny edge detection */
+      inline void
+      setHCCannyLowThreshold (const float th)
+      {
+        th_hc_canny_low_ = th;
+      }
+
+      /** \brief Get the low threshold value for high curvature Canny edge detection */
+      inline float
+      getHCCannyLowThreshold () const
+      {
+        return (th_hc_canny_low_);
+      }
+
+      /** \brief Set the high threshold value for high curvature Canny edge detection */
+      inline void
+      setHCCannyHighThreshold (const float th)
+      {
+        th_hc_canny_high_ = th;
+      }
+
+      /** \brief Get the high threshold value for high curvature Canny edge detection */
+      inline float
+      getHCCannyHighThreshold () const
+      {
+        return (th_hc_canny_high_);
+      }
+      
+    protected:
+      /** \brief Perform the 3D edge detection (edges from depth discontinuities and high curvature regions)
+        * \param[out] labels a PointCloud of edge labels
+        */
+      void
+      extractEdges (pcl::PointCloud<PointLT>& labels) const;
+
+      /** \brief A pointer to the input normals */
+      PointCloudNConstPtr normals_;
+
+      /** \brief The low threshold value for high curvature Canny edge detection (default: 0.4) */
+      float th_hc_canny_low_;
+
+      /** \brief The high threshold value for high curvature Canny edge detection (default: 1.1) */
+      float th_hc_canny_high_;
+  };
+
+  template <typename PointT, typename PointNT, typename PointLT>
+  class OrganizedEdgeFromRGBNormals : public OrganizedEdgeFromRGB<PointT, PointLT>, public OrganizedEdgeFromNormals<PointT, PointNT, PointLT>
+  {
+    typedef typename pcl::PointCloud<PointT> PointCloud;
+    typedef typename PointCloud::Ptr PointCloudPtr;
+    typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+      
+    typedef typename pcl::PointCloud<PointNT> PointCloudN;
+    typedef typename PointCloudN::Ptr PointCloudNPtr;
+    typedef typename PointCloudN::ConstPtr PointCloudNConstPtr;
+
+    typedef typename pcl::PointCloud<PointLT> PointCloudL;
+    typedef typename PointCloudL::Ptr PointCloudLPtr;
+    typedef typename PointCloudL::ConstPtr PointCloudLConstPtr;
+
+    public:
+      using OrganizedEdgeFromNormals<PointT, PointNT, PointLT>::input_;
+      using OrganizedEdgeFromNormals<PointT, PointNT, PointLT>::indices_;
+      using OrganizedEdgeFromNormals<PointT, PointNT, PointLT>::initCompute;
+      using OrganizedEdgeFromNormals<PointT, PointNT, PointLT>::deinitCompute;
+      using OrganizedEdgeFromNormals<PointT, PointNT, PointLT>::detecting_edge_types_;
+
+      /** \brief Constructor for OrganizedEdgeFromRGBNormals */
+      OrganizedEdgeFromRGBNormals () 
+        : OrganizedEdgeFromRGB<PointT, PointLT> ()
+        , OrganizedEdgeFromNormals<PointT, PointNT, PointLT> ()
+      {
+        setEdgeType (EDGELABEL_NAN_BOUNDARY | EDGELABEL_OCCLUDING | EDGELABEL_OCCLUDED | EDGELABEL_RGB_CANNY | EDGELABEL_HIGH_CURVATURE);
+      }
+
+      /** \brief Destructor for OrganizedEdgeFromRGBNormals */
+      virtual
+      ~OrganizedEdgeFromRGBNormals ()
+      {
+      }
+
+      /** \brief Perform the 3D edge detection (edges from depth discontinuities, RGB Canny edge, and high curvature regions) and assign point indices for each edge label
+        * \param[out] labels a PointCloud of edge labels
+        * \param[out] label_indices a vector of PointIndices corresponding to each edge label
+        */
+      void
+      compute (pcl::PointCloud<PointLT>& labels, std::vector<pcl::PointIndices>& label_indices) const;
   };
 }
 

@@ -41,14 +41,12 @@
 #define PCL_FEATURES_IMPL_ORGANIZED_EDGE_DETECTION_H_
 
 #include <pcl/features/organized_edge_detection.h>
-#include <pcl/features/integral_image_normal.h>
 #include <pcl/point_types.h>
 #include <pcl/2d/edge.h>
 #include <pcl/console/print.h>
 #include <pcl/console/time.h>
 
 using namespace pcl;
-using namespace pcl::io;
 using namespace pcl::console;
 using namespace pcl::pcl_2d;
 
@@ -60,15 +58,40 @@ using namespace pcl::pcl_2d;
  */
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT, typename PointLT> void
-pcl::OrganizedEdgeDetection<PointT, PointLT>::compute (pcl::PointCloud<PointLT>& labels, std::vector<pcl::PointIndices>& label_indices) const
+pcl::OrganizedEdgeBase<PointT, PointLT>::compute (pcl::PointCloud<PointLT>& labels, std::vector<pcl::PointIndices>& label_indices) const
 {
-  const unsigned invalid_label = unsigned (0);
   pcl::Label invalid_pt;
   invalid_pt.label = unsigned (0);
   labels.points.resize (input_->points.size (), invalid_pt);
   labels.width = input_->width;
   labels.height = input_->height;
+  
+  extractEdges (labels);
 
+  assignLabelIndices (labels, label_indices);
+}
+
+template<typename PointT, typename PointLT> void
+pcl::OrganizedEdgeBase<PointT, PointLT>::assignLabelIndices (pcl::PointCloud<PointLT>& labels, std::vector<pcl::PointIndices>& label_indices) const
+{
+  const unsigned invalid_label = unsigned (0);
+  label_indices.resize (num_of_edgetype_);
+  for (unsigned idx = 0; idx < input_->points.size (); idx++)
+  {
+    if (labels[idx].label != invalid_label)
+    {
+      for (int edge_type = 0; edge_type < num_of_edgetype_; edge_type++)
+      {
+        if ((labels[idx].label >> edge_type) & 1)
+          label_indices[edge_type].indices.push_back (idx);
+      }
+    }
+  }
+}
+
+template<typename PointT, typename PointLT> void
+pcl::OrganizedEdgeBase<PointT, PointLT>::extractEdges (pcl::PointCloud<PointLT>& labels) const
+{
   if ((detecting_edge_types_ & EDGELABEL_NAN_BOUNDARY) || (detecting_edge_types_ & EDGELABEL_OCCLUDING) || (detecting_edge_types_ & EDGELABEL_OCCLUDED))
   {
     PCL_DEBUG ("Detecting nan boundaries, occluding and occluded edges... \n");
@@ -77,13 +100,13 @@ pcl::OrganizedEdgeDetection<PointT, PointLT>::compute (pcl::PointCloud<PointLT>&
     // Fill lookup table for next points to visit
     const int num_of_ngbr = 8;
     Neighbor directions [num_of_ngbr] = {Neighbor(-1, 0, -1),
-        Neighbor(-1, -1, -labels.width - 1),
-        Neighbor( 0, -1, -labels.width    ),
-        Neighbor( 1, -1, -labels.width + 1),
-        Neighbor( 1,  0,                 1),
-        Neighbor( 1,  1,  labels.width + 1),
-        Neighbor( 0,  1,  labels.width    ),
-        Neighbor(-1,  1,  labels.width - 1)};
+      Neighbor(-1, -1, -labels.width - 1), 
+      Neighbor( 0, -1, -labels.width    ),
+      Neighbor( 1, -1, -labels.width + 1),
+      Neighbor( 1,  0,                 1),
+      Neighbor( 1,  1,  labels.width + 1),
+      Neighbor( 0,  1,  labels.width    ),
+      Neighbor(-1,  1,  labels.width - 1)};
 
     for (int row = 1; row < int(input_->height) - 1; row++)
     {
@@ -206,65 +229,38 @@ pcl::OrganizedEdgeDetection<PointT, PointLT>::compute (pcl::PointCloud<PointLT>&
     }
     PCL_DEBUG ("[done, %g ms]\n", tt.toc ());
   }
+}
 
-  if ((detecting_edge_types_ & EDGELABEL_HIGH_CURVATURE))
-  {
-    PCL_DEBUG ("Detecting high curvature edges... \n");
-    TicToc tt;
-    tt.tic ();
 
-    pcl::PointCloud<pcl::Normal>::Ptr normal (new pcl::PointCloud<pcl::Normal>);
-    pcl::IntegralImageNormalEstimation<PointT, pcl::Normal> ne;
-    //ne.setNormalEstimationMethod (ne.AVERAGE_3D_GRADIENT);
-    ne.setNormalEstimationMethod (ne.COVARIANCE_MATRIX);
-    ne.setNormalSmoothingSize (10.0f);
-    ne.setBorderPolicy (ne.BORDER_POLICY_MIRROR);
-    ne.setInputCloud (input_);
-    ne.compute (*normal);
+template<typename PointT, typename PointLT> void
+pcl::OrganizedEdgeFromRGB<PointT, PointLT>::compute (pcl::PointCloud<PointLT>& labels, std::vector<pcl::PointIndices>& label_indices) const
+{
+  pcl::Label invalid_pt;
+  invalid_pt.label = unsigned (0);
+  labels.points.resize (input_->points.size (), invalid_pt);
+  labels.width = input_->width;
+  labels.height = input_->height;
 
-    pcl::PointCloud<PointXYZI> nx, ny;
-    nx.width = normal->width;
-    nx.height = normal->height;
-    nx.resize (normal->height*normal->width);
+  OrganizedEdgeBase<PointT, PointLT>::extractEdges (labels);
+  extractEdges (labels);
 
-    ny.width = normal->width;
-    ny.height = normal->height;
-    ny.resize (normal->height*normal->width);
+  assignLabelIndices (labels, label_indices);
+}
 
-    for (int r=0; r<normal->height; r++)
-    {
-      for (int c=0; c<normal->width; c++)
-      {
-        nx(c,r).intensity = normal->points[r*normal->width + c].normal_x;
-        ny(c,r).intensity = normal->points[r*normal->width + c].normal_y;
-      }
-    }
-
-    pcl::PointCloud<PointXYZIEdge> img_edge;
-    edge<PointXYZI, PointXYZIEdge> edge;
-    edge.canny (img_edge, nx, ny);//, 0.4f, 1.1f);
-
-    for (int r=0; r<labels.height; r++)
-    {
-      for (int c=0; c<labels.width; c++)
-      {
-        if (img_edge(c,r).magnitude == 255.f)
-          labels[r*int(labels.width) + c].label |= EDGELABEL_HIGH_CURVATURE;
-      }
-    }
-    PCL_DEBUG ("[done, %g ms]\n", tt.toc ());
-  }
-
+template<typename PointT, typename PointLT> void
+pcl::OrganizedEdgeFromRGB<PointT, PointLT>::extractEdges (pcl::PointCloud<PointLT>& labels) const
+{
   if ((detecting_edge_types_ & EDGELABEL_RGB_CANNY))
   {
     PCL_DEBUG ("Detecting rgb edges... ");
     TicToc tt;
     tt.tic ();
-#if 1
+
     pcl::PointCloud<PointXYZI> gray;
     gray.width = input_->width;
     gray.height = input_->height;
     gray.resize (input_->height*input_->width);
+
     for (int row = 0; row < int(input_->height); row++)
     {
       for (int col = 0; col < int(input_->width); col++)
@@ -272,44 +268,109 @@ pcl::OrganizedEdgeDetection<PointT, PointLT>::compute (pcl::PointCloud<PointLT>&
         int r = input_->points[row*int(input_->width) + col].r;
         int g = input_->points[row*int(input_->width) + col].g;
         int b = input_->points[row*int(input_->width) + col].b;
-        gray(col, row).intensity = float ((r+g+b) / 3);
+        gray (col, row).intensity = float ((r+g+b) / 3);
       }
     }
 
     pcl::PointCloud<PointXYZIEdge> img_edge_rgb;
     edge<PointXYZI, PointXYZIEdge> edge;
-    edge.setInputCloud(gray.makeShared());
-    edge.setHysteresisThresholdLow(40);
-    edge.setHysteresisThresholdHigh(100);
-    edge.detectEdgeCanny(img_edge_rgb);
-
-    for (int r=0; r<labels.height; r++)
+    edge.setInputCloud (gray.makeShared ());
+    edge.setHysteresisThresholdLow (th_rgb_canny_low_);
+    edge.setHysteresisThresholdHigh (th_rgb_canny_high_);
+    edge.detectEdgeCanny (img_edge_rgb);
+    
+    for (int row=0; row<labels.height; row++)
     {
-      for (int c=0; c<labels.width; c++)
+      for (int col=0; col<labels.width; col++)
       {
-        if (img_edge_rgb(c,r).magnitude == 255.f)
-          labels[r*int(labels.width) + c].label |= EDGELABEL_RGB_CANNY;
+        if (img_edge_rgb (col, row).magnitude == 255.f)
+          labels[row*int(labels.width) + col].label |= EDGELABEL_RGB_CANNY;
       }
     }
-#endif
-PCL_DEBUG ("[done, %g ms]\n", tt.toc ());
-  }
-
-  // Assign label indices
-  label_indices.resize (num_of_edgetype_);
-  for (unsigned idx = 0; idx < input_->points.size (); idx++)
-  {
-    if (labels[idx].label != invalid_label)
-    {
-      for (int edge_type = 0; edge_type < num_of_edgetype_; edge_type++)
-      {
-        if ((labels[idx].label >> edge_type) & 1)
-          label_indices[edge_type].indices.push_back (idx);
-      }
-    }
+    PCL_DEBUG ("[done, %g ms]\n", tt.toc ()); 
   }
 }
 
-#define PCL_INSTANTIATE_OrganizedEdgeDetection(T,LT) template class PCL_EXPORTS pcl::OrganizedEdgeDetection<T,LT>;
+template<typename PointT, typename PointNT, typename PointLT> void
+pcl::OrganizedEdgeFromNormals<PointT, PointNT, PointLT>::compute (pcl::PointCloud<PointLT>& labels, std::vector<pcl::PointIndices>& label_indices) const
+{
+  pcl::Label invalid_pt;
+  invalid_pt.label = unsigned (0);
+  labels.points.resize (input_->points.size (), invalid_pt);
+  labels.width = input_->width;
+  labels.height = input_->height;
+  
+  OrganizedEdgeBase<PointT, PointLT>::extractEdges (labels);
+  extractEdges (labels);
+
+  assignLabelIndices (labels, label_indices);
+}
+
+template<typename PointT, typename PointNT, typename PointLT> void
+pcl::OrganizedEdgeFromNormals<PointT, PointNT, PointLT>::extractEdges (pcl::PointCloud<PointLT>& labels) const
+{
+  if ((detecting_edge_types_ & EDGELABEL_HIGH_CURVATURE))
+  {
+    PCL_DEBUG ("Detecting high curvature edges... \n");
+    TicToc tt;
+    tt.tic ();
+
+    pcl::PointCloud<PointXYZI> nx, ny;
+    nx.width = normals_->width;
+    nx.height = normals_->height;
+    nx.resize (normals_->height*normals_->width);
+
+    ny.width = normals_->width;
+    ny.height = normals_->height;
+    ny.resize (normals_->height*normals_->width);
+
+    for (int row=0; row<normals_->height; row++)
+    {
+      for (int col=0; col<normals_->width; col++)
+      {
+        nx (col, row).intensity = normals_->points[row*normals_->width + col].normal_x;
+        ny (col, row).intensity = normals_->points[row*normals_->width + col].normal_y;
+      }
+    }
+
+    pcl::PointCloud<PointXYZIEdge> img_edge;
+    edge<PointXYZI, PointXYZIEdge> edge;
+    edge.setHysteresisThresholdLow (th_hc_canny_low_);
+    edge.setHysteresisThresholdHigh (th_hc_canny_high_);
+    edge.canny (img_edge, nx, ny);
+
+    for (int row=0; row<labels.height; row++)
+    {
+      for (int col=0; col<labels.width; col++)
+      {
+        if (img_edge (col, row).magnitude == 255.f)
+          labels[row*int(labels.width) + col].label |= EDGELABEL_HIGH_CURVATURE;
+      }
+    }
+
+    PCL_DEBUG ("[done, %g ms]\n", tt.toc ());
+  }
+}
+
+template<typename PointT, typename PointNT, typename PointLT> void
+pcl::OrganizedEdgeFromRGBNormals<PointT, PointNT, PointLT>::compute (pcl::PointCloud<PointLT>& labels, std::vector<pcl::PointIndices>& label_indices) const
+{
+  pcl::Label invalid_pt;
+  invalid_pt.label = unsigned (0);
+  labels.points.resize (input_->points.size (), invalid_pt);
+  labels.width = input_->width;
+  labels.height = input_->height;
+  
+  OrganizedEdgeBase<PointT, PointLT>::extractEdges (labels);
+  OrganizedEdgeFromNormals<PointT, PointNT, PointLT>::extractEdges (labels);
+  OrganizedEdgeFromRGB<PointT, PointLT>::extractEdges (labels);
+
+  assignLabelIndices (labels, label_indices);
+}
+
+#define PCL_INSTANTIATE_OrganizedEdgeBase(T,LT)               template class PCL_EXPORTS pcl::OrganizedEdgeBase<T,LT>;
+#define PCL_INSTANTIATE_OrganizedEdgeFromRGB(T,LT)            template class PCL_EXPORTS pcl::OrganizedEdgeFromRGB<T,LT>;
+#define PCL_INSTANTIATE_OrganizedEdgeFromNormals(T,NT,LT)     template class PCL_EXPORTS pcl::OrganizedEdgeFromNormals<T,NT,LT>;
+#define PCL_INSTANTIATE_OrganizedEdgeFromRGBNormals(T,NT,LT)  template class PCL_EXPORTS pcl::OrganizedEdgeFromRGBNormals<T,NT,LT>;
 
 #endif //#ifndef PCL_FEATURES_IMPL_ORGANIZED_EDGE_DETECTION_H_
