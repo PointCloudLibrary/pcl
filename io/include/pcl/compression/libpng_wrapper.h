@@ -132,7 +132,7 @@ namespace pcl
     decodePNGToImage (std::vector<uint8_t>& pngData_arg,
                       std::vector<uint16_t>& imageData_arg,
                       size_t& width_arg,
-                      size_t& heigh_argt,
+                      size_t& height_arg,
                       unsigned int& channels_arg);
   }
 }

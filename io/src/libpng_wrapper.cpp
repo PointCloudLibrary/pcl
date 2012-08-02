@@ -242,7 +242,7 @@ namespace pcl
       imageData_arg.clear ();
       imageData_arg.resize (png_height * png_width * png_channels);
 
-      row_pointers = reinterpret_cast<png_bytep*> (malloc (sizeof(png_bytep) * png_height * png_channels));
+      row_pointers = reinterpret_cast<png_bytep*> (malloc (sizeof(png_bytep) * png_height));
 
       for (y = 0; y < png_height; y++)
         row_pointers[y] = reinterpret_cast<png_byte*> (&imageData_arg[y * png_width * png_channels]);
