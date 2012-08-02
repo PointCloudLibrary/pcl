@@ -114,11 +114,11 @@ namespace pcl
       * \ingroup io
       */
     PCL_EXPORTS void
-    decodePNGToImage(std::vector<uint8_t>& pngData_arg,
-                     std::vector<uint8_t>& imageData_arg,
-                     size_t& width_arg,
-                     size_t& heigh_argt,
-                     unsigned int& channels_arg);
+    decodePNGToImage (std::vector<uint8_t>& pngData_arg,
+                      std::vector<uint8_t>& imageData_arg,
+                      size_t& width_arg,
+                      size_t& heigh_argt,
+                      unsigned int& channels_arg);
 
     /** \brief Decode compressed PNG to 16-bit image
       * \param[in] pngData PNG compressed input data
@@ -129,11 +129,11 @@ namespace pcl
       * \ingroup io
       */
     PCL_EXPORTS void
-    decodePNGToImage(std::vector<uint8_t>& pngData_arg,
-                     std::vector<uint16_t>& imageData_arg,
-                     size_t& width_arg,
-                     size_t& heigh_argt,
-                     unsigned int& channels_arg);
+    decodePNGToImage (std::vector<uint8_t>& pngData_arg,
+                      std::vector<uint16_t>& imageData_arg,
+                      size_t& width_arg,
+                      size_t& heigh_argt,
+                      unsigned int& channels_arg);
   }
 }
 
