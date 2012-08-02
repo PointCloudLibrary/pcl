@@ -257,10 +257,10 @@ namespace pcl
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     void
-    encodeMonoImageToPNG (typename std::vector<uint8_t>& image_arg,
+    encodeMonoImageToPNG (std::vector<uint8_t>& image_arg,
                           size_t width_arg,
                           size_t height_arg,
-                          typename std::vector<uint8_t>& pngData_arg,
+                          std::vector<uint8_t>& pngData_arg,
                           int png_level_arg)
     {
       encodeImageToPNG<uint8_t>(image_arg, width_arg, height_arg, PNG_COLOR_TYPE_GRAY, pngData_arg, png_level_arg);
@@ -268,10 +268,10 @@ namespace pcl
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     void
-    encodeMonoImageToPNG (typename std::vector<uint16_t>& image_arg,
+    encodeMonoImageToPNG (std::vector<uint16_t>& image_arg,
                           size_t width_arg,
                           size_t height_arg,
-                          typename std::vector<uint8_t>& pngData_arg,
+                          std::vector<uint8_t>& pngData_arg,
                           int png_level_arg)
     {
       encodeImageToPNG<uint16_t>(image_arg, width_arg, height_arg, PNG_COLOR_TYPE_GRAY, pngData_arg, png_level_arg);
@@ -279,10 +279,10 @@ namespace pcl
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     void
-    encodeRGBImageToPNG (typename std::vector<uint8_t>& image_arg,
+    encodeRGBImageToPNG (std::vector<uint8_t>& image_arg,
                          size_t width_arg,
                          size_t height_arg,
-                         typename std::vector<uint8_t>& pngData_arg,
+                         std::vector<uint8_t>& pngData_arg,
                          int png_level_arg)
     {
       encodeImageToPNG<uint8_t>(image_arg, width_arg, height_arg, PNG_COLOR_TYPE_RGB, pngData_arg, png_level_arg);
@@ -290,10 +290,10 @@ namespace pcl
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     void
-    encodeRGBImageToPNG (typename std::vector<uint16_t>& image_arg,
+    encodeRGBImageToPNG (std::vector<uint16_t>& image_arg,
                          size_t width_arg,
                          size_t height_arg,
-                         typename std::vector<uint8_t>& pngData_arg,
+                         std::vector<uint8_t>& pngData_arg,
                          int png_level_arg)
     {
       encodeImageToPNG<uint16_t>(image_arg, width_arg, height_arg, PNG_COLOR_TYPE_RGB, pngData_arg, png_level_arg);
@@ -301,8 +301,8 @@ namespace pcl
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     void
-    decodePNGToImage(typename std::vector<uint8_t>& pngData_arg,
-                     typename std::vector<uint8_t>& imageData_arg,
+    decodePNGToImage(std::vector<uint8_t>& pngData_arg,
+                     std::vector<uint8_t>& imageData_arg,
                      size_t& width_arg,
                      size_t& height_arg,
                      unsigned int& channels_arg)
@@ -312,8 +312,8 @@ namespace pcl
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     void
-    decodePNGToImage(typename std::vector<uint8_t>& pngData_arg,
-                     typename std::vector<uint16_t>& imageData_arg,
+    decodePNGToImage(std::vector<uint8_t>& pngData_arg,
+                     std::vector<uint16_t>& imageData_arg,
                      size_t& width_arg,
                      size_t& height_arg,
                      unsigned int& channels_arg)
