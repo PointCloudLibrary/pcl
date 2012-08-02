@@ -46,10 +46,10 @@
  * \param n_arg: some value
  * \return binary logarithm (log2) of argument n_arg
  */
-__inline double
-Log2 (double n_arg)
+__inline float
+Log2 (float n_arg)
 {
-  return log (n_arg) / M_LN2;
+  return std::log (n_arg) / float (M_LN2);
 }
 
 
@@ -184,7 +184,7 @@ pcl::PyramidFeatureHistogram<PointFeature>::initializeHistogram ()
     D += aux * aux;
   }
   D = sqrtf (D);
-  nr_levels = static_cast<size_t> (ceilf (log2f (D)));
+  nr_levels = static_cast<size_t> (ceilf (Log2 (D)));
   PCL_DEBUG ("[pcl::PyramidFeatureHistogram::initializeHistogram] Pyramid will have %u levels with a hyper-parallelepiped diagonal size of %f\n", nr_levels, D);
 
 
