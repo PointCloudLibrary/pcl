@@ -86,7 +86,7 @@ namespace pcl
     {
       png_structp png_ptr;
       png_infop info_ptr;
-      int channels;
+      volatile int channels;
 
       if (image_arg.size()==0)
         return;
