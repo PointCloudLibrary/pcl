@@ -50,7 +50,7 @@ SET(CMAKE_BUILD_TYPE "${CMAKE_BUILD_TYPE}" CACHE STRING
     FORCE)
 
 # ---[ Android check
-if (ANDROID_NDK)
+if (ANDROID)
   set (PCL_SHARED_LIBS OFF)
   message ("PCL shared libs on Android must be: ${PCL_SHARED_LIBS}")
 endif()
@@ -74,9 +74,9 @@ if(CMAKE_COMPILER_IS_GNUCXX)
   endif ()
 
 
-  if(NOT ANDROID_NDK)
+  if(NOT ANDROID)
     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
-  endif(NOT ANDROID_NDK)
+  endif(NOT ANDROID)
   if(WIN32)
     if(PCL_SHARED_LIBS)
       SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--export-all-symbols -Wl,--enable-auto-import")

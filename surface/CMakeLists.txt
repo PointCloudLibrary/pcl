@@ -26,7 +26,7 @@ if(build)
             )
     endif(QHULL_FOUND)
     
-    if (VTK_FOUND AND NOT ANDROID_NDK)
+    if (VTK_FOUND AND NOT ANDROID)
         set(VTK_USE_FILE ${VTK_USE_FILE} CACHE INTERNAL "VTK_USE_FILE")
         include (${VTK_USE_FILE})
         
@@ -169,7 +169,7 @@ if(build)
       PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/on_nurbs ${ON_NURBS_INCLUDES})
     endif(BUILD_surface_on_nurbs)
 
-    if (VTK_FOUND AND NOT ANDROID_NDK)
+    if (VTK_FOUND AND NOT ANDROID)
       PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/vtk_smoothing ${VTK_SMOOTHING_INCLUDES})
-    endif (VTK_FOUND AND NOT ANDROID_NDK)
+    endif (VTK_FOUND AND NOT ANDROID)
 endif(build)

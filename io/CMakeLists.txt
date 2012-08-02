@@ -66,7 +66,7 @@ if(build)
         #src/dinast_grabber.cpp
        )
 
-    if (VTK_FOUND AND NOT ANDROID_NDK)
+    if (VTK_FOUND AND NOT ANDROID)
         set(VTK_USE_FILE ${VTK_USE_FILE} CACHE INTERNAL "VTK_USE_FILE")
         include (${VTK_USE_FILE})
         set(VTK_IO_INCLUDES 

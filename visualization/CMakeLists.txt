@@ -16,7 +16,7 @@ endif(NOT VTK_FOUND)
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ${DEFAULT} ${REASON})
 PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} EXT_DEPS vtk OPT_DEPS openni)
 
-if (ANDROID_NDK)
+if (ANDROID)
   set (build FALSE)
   message("VTK was found, but cannot be compiled for Android. Please use VES instead.")
 endif ()
