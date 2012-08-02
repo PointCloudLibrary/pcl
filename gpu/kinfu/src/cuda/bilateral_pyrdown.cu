@@ -89,6 +89,47 @@ namespace pcl
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     __global__ void
+    pyrDownGaussKernel (const PtrStepSz<ushort> src, PtrStepSz<ushort> dst, float sigma_color)
+    {
+      int x = blockIdx.x * blockDim.x + threadIdx.x;
+      int y = blockIdx.y * blockDim.y + threadIdx.y;
+
+      if (x >= dst.cols || y >= dst.rows)
+        return;
+
+      const int D = 5;
+
+      int center = src.ptr (2 * y)[2 * x];
+
+      int x_mi = max(0, 2*x - D/2) - 2*x;
+      int y_mi = max(0, 2*y - D/2) - 2*y;
+
+      int x_ma = min(src.cols, 2*x -D/2+D) - 2*x;
+      int y_ma = min(src.rows, 2*y -D/2+D) - 2*y;
+            
+      float sum = 0;
+      float wall = 0;
+      
+      float weights[] = {0.375f, 0.25f, 0.0625f} ;
+
+      for(int yi = y_mi; yi < y_ma; ++yi)
+          for(int xi = x_mi; xi < x_ma; ++xi)
+          {
+              int val = src.ptr (2*y + yi)[2*x + xi];
+
+              if (abs (val - center) < 3 * sigma_color)
+              {                                 
+                sum += val * weights[abs(xi)] * weights[abs(yi)];
+                wall += weights[abs(xi)] * weights[abs(yi)];
+              }
+          }
+
+
+      dst.ptr (y)[x] = static_cast<int>(sum /wall);
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    __global__ void
     pyrDownKernel (const PtrStepSz<ushort> src, PtrStepSz<ushort> dst, float sigma_color)
     {
       int x = blockIdx.x * blockDim.x + threadIdx.x;
@@ -156,6 +197,7 @@ pcl::device::pyrDown (const DepthMap& src, DepthMap& dst)
   dim3 block (32, 8);
   dim3 grid (divUp (dst.cols (), block.x), divUp (dst.rows (), block.y));
 
+  //pyrDownGaussKernel<<<grid, block>>>(src, dst, sigma_color);
   pyrDownKernel<<<grid, block>>>(src, dst, sigma_color);
   cudaSafeCall ( cudaGetLastError () );
 };
