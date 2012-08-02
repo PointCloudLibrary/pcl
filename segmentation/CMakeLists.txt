@@ -21,9 +21,9 @@ if(build)
         src/organized_connected_component_segmentation.cpp
         src/organized_multi_plane_segmentation.cpp
         src/planar_polygon_fusion.cpp
-	      src/crf_segmentation.cpp
-	      src/crf_normal_segmentation.cpp
-        #src/active_segmentation.cpp
+	src/crf_segmentation.cpp
+	src/crf_normal_segmentation.cpp
+        src/active_segmentation.cpp
        )
 
     set(incs 

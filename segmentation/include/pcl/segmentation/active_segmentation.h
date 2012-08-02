@@ -43,7 +43,6 @@
 
 #include <pcl/features/boundary.h>
 #include <pcl/features/normal_3d.h>
-#include <pcl/features/organized_edge_detection.h>
 
 #include <Eigen/Core>
 
