@@ -39,7 +39,6 @@ if(build)
         src/interactor_style.cpp
         src/point_cloud_handlers.cpp
         src/pcl_visualizer.cpp
-        src/pcl_plotter.cpp
         src/histogram_visualizer.cpp
         src/common/common.cpp
         src/common/io.cpp
@@ -60,7 +59,11 @@ if(build)
     
     if("${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}" VERSION_GREATER "5.6")
         # PCLPainter2D uses some functions not present in vtk 5.6
-        set(srcs ${srcs} src/pcl_painter2D.cpp)
+        set(srcs 
+            ${srcs} 
+            src/pcl_painter2D.cpp
+            src/pcl_plotter.cpp
+            )
     endif("${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}" VERSION_GREATER "5.6")
 
     set(incs 
@@ -71,7 +74,6 @@ if(build)
         include/pcl/${SUBSYS_NAME}/image_viewer.h
         include/pcl/${SUBSYS_NAME}/interactor_style.h
         include/pcl/${SUBSYS_NAME}/pcl_visualizer.h
-        include/pcl/${SUBSYS_NAME}/pcl_plotter.h
         include/pcl/${SUBSYS_NAME}/pcl_painter2D.h
         include/pcl/${SUBSYS_NAME}/registration_visualizer.h
         include/pcl/${SUBSYS_NAME}/point_cloud_handlers.h
@@ -83,6 +85,12 @@ if(build)
         include/pcl/${SUBSYS_NAME}/interactor.h
         include/pcl/${SUBSYS_NAME}/vtk.h
         )
+    if("${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}" VERSION_GREATER "5.6")
+        set(incs
+            ${incs} 
+            include/pcl/${SUBSYS_NAME}/pcl_plotter.h
+            )
+    endif("${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}" VERSION_GREATER "5.6")
 
     set(common_incs 
         include/pcl/${SUBSYS_NAME}/common/actor_map.h
@@ -95,12 +103,18 @@ if(build)
 
     set(impl_incs 
         include/pcl/${SUBSYS_NAME}/impl/histogram_visualizer.hpp
-        include/pcl/${SUBSYS_NAME}/impl/pcl_plotter.hpp
         include/pcl/${SUBSYS_NAME}/impl/pcl_visualizer.hpp
         include/pcl/${SUBSYS_NAME}/impl/image_viewer.hpp
         include/pcl/${SUBSYS_NAME}/impl/registration_visualizer.hpp
         include/pcl/${SUBSYS_NAME}/impl/point_cloud_handlers.hpp
         )
+    if("${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}" VERSION_GREATER "5.6")
+        set(impl_incs
+            ${impl_incs} 
+            include/pcl/${SUBSYS_NAME}/impl/pcl_plotter.hpp
+            )
+    endif("${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}" VERSION_GREATER "5.6")
+
 
     set(common_impl_incs include/pcl/${SUBSYS_NAME}/common/impl/shapes.hpp)
 
