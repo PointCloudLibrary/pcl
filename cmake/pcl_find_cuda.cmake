@@ -1,6 +1,6 @@
 # Find CUDA
 set(CUDA_FIND_QUIETLY TRUE)
-find_package(CUDA 4.1)
+find_package(CUDA 4)
 
 if(CUDA_FOUND)
 	message(STATUS "Found CUDA Toolkit v${CUDA_VERSION_STRING}")
