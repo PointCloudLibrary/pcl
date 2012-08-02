@@ -128,6 +128,10 @@ namespace pcl
         assert("Error during png compression");
       }
 
+      // reserve memory for output data (300kB)
+      pngData_arg.clear ();
+      pngData_arg.reserve (300 * 1024);
+
       // Define I/O methods
       png_set_write_fn (png_ptr, reinterpret_cast<void*> (&pngData_arg),
           user_write_data, user_flush_data);
