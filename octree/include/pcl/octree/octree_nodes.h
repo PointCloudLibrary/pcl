@@ -160,7 +160,7 @@ namespace pcl
 
         /** \brief Empty constructor. */
         OctreeBranchNode () :
-            ContainerT ()
+            OctreeNode(), ContainerT ()
         {
           // reset pointer to child node vectors
           memset (childNodeArray_, 0, sizeof(childNodeArray_));
@@ -168,7 +168,7 @@ namespace pcl
 
         /** \brief Empty constructor. */
         OctreeBranchNode (const OctreeBranchNode& source) :
-            ContainerT (source)
+            OctreeNode(), ContainerT (source)
         {
           unsigned char i;
 
