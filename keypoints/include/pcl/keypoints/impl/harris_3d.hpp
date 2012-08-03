@@ -87,9 +87,9 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::setNonMaxSupression (bool n
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT, typename NormalT> void
-pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::setNormals (const PointCloudNPtr &normals)
+pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::setNormals (const PointCloudNConstPtr &normals)
 {
-  normals_.reset (normals.get ());
+  normals_ = normals;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -197,24 +197,31 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::initCompute ()
     return (false);
   }
 
-  if (normals_->empty ())
+  if (!normals_)
   {
-    normals_->reserve (surface_->size ());
+    PointCloudNPtr normals (new PointCloudN ());
+    normals->reserve (normals->size ());
     if (input_->height == 1 ) // not organized
     {
       pcl::NormalEstimation<PointInT, NormalT> normal_estimation;
-      normal_estimation.setInputCloud(surface_);
-      normal_estimation.setRadiusSearch(search_radius_);
-      normal_estimation.compute (*normals_);
+      normal_estimation.setInputCloud (surface_);
+      normal_estimation.setRadiusSearch (search_radius_);
+      normal_estimation.compute (*normals);
     }
     else
     {
       IntegralImageNormalEstimation<PointInT, NormalT> normal_estimation;
       normal_estimation.setNormalEstimationMethod (pcl::IntegralImageNormalEstimation<PointInT, NormalT>::SIMPLE_3D_GRADIENT);
-      normal_estimation.setInputCloud(surface_);
+      normal_estimation.setInputCloud (surface_);
       normal_estimation.setNormalSmoothingSize (5.0);
-      normal_estimation.compute (*normals_);
+      normal_estimation.compute (*normals);
     }
+    normals_ = normals;
+  }
+  if (normals_->size () != surface_->size ())
+  {
+    PCL_ERROR ("[pcl::%s::initCompute] normals given, but the number of normals does not match the number of input points!\n", name_.c_str (), method_);
+    return (false);
   }
   return (true);
 }

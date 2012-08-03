@@ -83,7 +83,6 @@ namespace pcl
       , refine_ (true)
       , nonmax_ (true)
       , method_ (method)
-      , normals_ (new pcl::PointCloud<NormalT>)
       , threads_ (1)
       {
         name_ = "HarrisKeypoint3D";
@@ -127,7 +126,7 @@ namespace pcl
         * \param normals
         */
       void 
-      setNormals (const PointCloudNPtr &normals);
+      setNormals (const PointCloudNConstPtr &normals);
 
       /** \brief Provide a pointer to a dataset to add additional information
         * to estimate the features for every point in the input dataset.  This
@@ -137,7 +136,7 @@ namespace pcl
         * \param[in] cloud a pointer to a PointCloud message
         */
       virtual void
-      setSearchSurface (const PointCloudInConstPtr &cloud) { surface_ = cloud; normals_->clear (); }
+      setSearchSurface (const PointCloudInConstPtr &cloud) { surface_ = cloud; normals_.reset(); }
 
       /** \brief Initialize the scheduler and set the number of threads to use.
         * \param nr_threads the number of hardware threads to use (-1 sets the value back to automatic)
@@ -167,7 +166,7 @@ namespace pcl
       bool refine_;
       bool nonmax_;
       ResponseMethod method_;
-      PointCloudNPtr normals_;
+      PointCloudNConstPtr normals_;
       int threads_;
   };
 }
