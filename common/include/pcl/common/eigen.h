@@ -81,6 +81,8 @@
 #  pragma warning(push, 1)
 #endif
 
+#include <cmath>
+
 #include <Eigen/StdVector>
 #include <Eigen/Core>
 #include <Eigen/Eigenvalues>
@@ -92,28 +94,7 @@
 
 namespace pcl
 {
-  template <typename Scalar> inline Scalar
-  sqrt (const Scalar &val)
-  {
-  }
-
-  template<> inline double
-  sqrt<double> (const double &val)
-  {
-    return (::sqrt (val));
-  }
-
-  template<> inline float
-  sqrt<float> (const float &val)
-  {
-    return (::sqrtf (val));
-  }
-
-  template<> inline long double
-  sqrt<long double> (const long double &val)
-  {
-    return (::sqrtl (val));
-  }
+  using ::std::sqrt;
 
   /** \brief Compute the roots of a quadratic polynom x^2 + b*x + c = 0
     * \param[in] b linear parameter

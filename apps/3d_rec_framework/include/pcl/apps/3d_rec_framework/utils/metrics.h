@@ -8,42 +8,12 @@
 #ifndef REC_FRAMEWORK_METRICS_H_
 #define REC_FRAMEWORK_METRICS_H_
 
+#include <cmath>
+#include <cstdlib>
+
 namespace Metrics
 {
-  template<typename T>
-    inline T
-    abs (T x)
-    {
-      return (x < 0) ? -x : x;
-    }
-
-  template<>
-    inline int
-    abs<int> (int x)
-    {
-      return ::abs (x);
-    }
-
-  template<>
-    inline float
-    abs<float> (float x)
-    {
-      return fabsf (x);
-    }
-
-  template<>
-    inline double
-    abs<double> (double x)
-    {
-      return fabs (x);
-    }
-
-  template<>
-    inline long double
-    abs<long double> (long double x)
-    {
-      return fabsl (x);
-    }
+  using ::std::abs;
 
   template<typename T>
     struct Accumulator
