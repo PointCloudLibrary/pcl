@@ -43,7 +43,7 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT, typename IntensityT> bool
-pcl::AgastKeypoint2D<PointInT, PointOutT, IntensityT>::initCompute ()
+pcl::AgastKeypoint2DBase<PointInT, PointOutT, IntensityT>::initCompute ()
 {
   if (!pcl::Keypoint<PointInT, pcl::PointXY>::initCompute ())
   {
@@ -61,8 +61,8 @@ pcl::AgastKeypoint2D<PointInT, PointOutT, IntensityT>::initCompute ()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointInT, typename PointOutT, typename IntensityT> void
-pcl::AgastKeypoint2D<PointInT, PointOutT, IntensityT>::detectKeypoints (PointCloudOut &output)
+template <typename PointInT, typename PointOutT> void
+pcl::AgastKeypoint2D<PointInT, PointOutT>::detectKeypoints (PointCloudOut &output)
 {
   // image size
   const size_t width = input_->width;
@@ -72,43 +72,39 @@ pcl::AgastKeypoint2D<PointInT, PointOutT, IntensityT>::detectKeypoints (PointClo
   std::vector<unsigned char> image_data (width*height);
 
   for (size_t row_index = 0; row_index < height; ++row_index)
-  {
     for (size_t col_index = 0; col_index < width; ++col_index)
-    {
       image_data[row_index*width + col_index] = static_cast<unsigned char> (intensity_ ((*input_) (col_index, row_index)));
-    }
-  }
+
+  if (!detector_)
+    detector_.reset (new pcl::keypoints::agast::AgastDetector7_12s (width, height, threshold_, bmax_));
 
   if (apply_non_max_suppression_)
   {
     pcl::PointCloud<pcl::PointXY> tmp_cloud;
 
-    pcl::keypoints::agast::AgastDetector7_12s agast_helper (width, height, threshold_);
-    agast_helper.detectKeypoints (image_data, tmp_cloud);
+    detector_->detectKeypoints (image_data, tmp_cloud);
 
     // Check if the template types are the same. If true, avoid a copy.
     // The PointOutT MUST be registered using the POINT_CLOUD_REGISTER_POINT_STRUCT macro!
     if (isSamePointType<PointOutT, pcl::PointXY> ())
-      agast_helper.applyNonMaxSuppression (image_data, tmp_cloud, output);
+      detector_->applyNonMaxSuppression (image_data, tmp_cloud, output);
     else
     {
       pcl::PointCloud<pcl::PointXY> output_temp;
-      agast_helper.applyNonMaxSuppression (image_data, tmp_cloud, output_temp);
+      detector_->applyNonMaxSuppression (image_data, tmp_cloud, output_temp);
       pcl::copyPointCloud<pcl::PointXY, PointOutT> (output_temp, output);
     }
   }
   else
   {
-    pcl::keypoints::agast::AgastDetector7_12s agast_helper (width, height, threshold_);
-
     // Check if the template types are the same. If true, avoid a copy.
     // The PointOutT MUST be registered using the POINT_CLOUD_REGISTER_POINT_STRUCT macro!
     if (isSamePointType<PointOutT, pcl::PointXY> ())
-      agast_helper.detectKeypoints (image_data, output);
+      detector_->detectKeypoints (image_data, output);
     else
     {
       pcl::PointCloud<pcl::PointXY> output_temp;
-      agast_helper.detectKeypoints (image_data, output_temp);
+      detector_->detectKeypoints (image_data, output_temp);
       pcl::copyPointCloud<pcl::PointXY, PointOutT> (output_temp, output);
     }
   }

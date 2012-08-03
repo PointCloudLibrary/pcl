@@ -41,6 +41,7 @@
 #include <pcl/apps/timer.h>
 #include <pcl/common/common.h>
 #include <pcl/common/angles.h>
+#include <pcl/common/time.h>
 #include <pcl/io/openni_grabber.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/keypoints/agast_2d.h>
@@ -68,6 +69,9 @@ class AGASTDemo
       : cloud_viewer_ ("AGAST 2D Keypoints -- PointCloud")
       , grabber_ (grabber)
       , image_viewer_ ("AGAST 2D Keypoints -- Image")
+      , bmax_ (255)
+      , threshold_ (30)
+      , detector_type_ (0)
     {
     }
 
@@ -77,15 +81,104 @@ class AGASTDemo
     {
       FPS_CALC ("cloud callback");
       boost::mutex::scoped_lock lock (cloud_mutex_);
-      cloud_ = cloud;
 
       // Compute AGAST keypoints 
       AgastKeypoint2D<PointT> agast;
-      agast.setThreshold (30);
+      agast.setNonMaxSuppression (true);
+      agast.setThreshold (threshold_);
+      agast.setMaxDataValue (bmax_);
       agast.setInputCloud (cloud);
 
       keypoints_.reset (new PointCloud<KeyPointT>);
-      agast.compute (*keypoints_);
+
+      // Select the detector type
+      switch (detector_type_)
+      {
+        case 1:
+        default:
+        {
+          ScopeTime t ("AGAST 7_12s computation");
+          pcl::keypoints::agast::AgastDetector7_12s::Ptr detector (new pcl::keypoints::agast::AgastDetector7_12s (cloud->width, cloud->height, threshold_, bmax_));
+          agast.setAgastDetector (detector);
+          agast.compute (*keypoints_);
+          break;
+        }
+        case 2:
+        {
+          ScopeTime t ("AGAST 5_8 computation");
+          pcl::keypoints::agast::AgastDetector5_8::Ptr detector (new pcl::keypoints::agast::AgastDetector5_8 (cloud->width, cloud->height, threshold_, bmax_));
+          agast.setAgastDetector (detector);
+          agast.compute (*keypoints_);
+          break;
+        }
+        case 3:
+        {
+          ScopeTime t ("OAST 9_16 computation");
+          pcl::keypoints::agast::OastDetector9_16::Ptr detector (new pcl::keypoints::agast::OastDetector9_16 (cloud->width, cloud->height, threshold_, bmax_));
+          agast.setAgastDetector (detector);
+          agast.compute (*keypoints_);
+          break;
+        }
+      }
+      cloud_ = cloud;
+    }
+
+    /////////////////////////////////////////////////////////////////////////
+    void 
+    keyboard_callback (const pcl::visualization::KeyboardEvent& event, void* cookie)
+    {
+      AGASTDemo* obj = static_cast<AGASTDemo*> (cookie);
+      
+      if (event.getKeyCode ())
+      {
+        std::stringstream ss; ss << event.getKeyCode ();
+        obj->detector_type_ = atoi (ss.str ().c_str ());
+        return;
+      }
+
+      if (event.getKeySym () == "Up")
+      {
+        if (obj->threshold_ <= 0.9)
+        {
+          PCL_INFO ("[keyboard_callback] Increase AGAST threshold from %f to %f.\n", obj->threshold_, obj->threshold_ + 0.01);
+          obj->threshold_ += 0.01;
+          return;
+        }
+        PCL_INFO ("[keyboard_callback] Increase AGAST threshold from %f to %f.\n", obj->threshold_, obj->threshold_ + 1);
+        obj->threshold_ += 1;
+        return;
+      }
+
+      if (event.getKeySym () == "Down")
+      {
+        if (obj->threshold_ <= 0)
+          return;
+        if (obj->threshold_ <= 1)
+        {
+          PCL_INFO ("[keyboard_callback] Decrease AGAST threshold from %f to %f.\n", obj->threshold_, obj->threshold_ - 0.01);
+          obj->threshold_ -= 0.01;
+          return;
+        }
+        PCL_INFO ("[keyboard_callback] Decrease AGAST threshold from %f to %f.\n", obj->threshold_, obj->threshold_ - 1);
+        obj->threshold_ -= 1;
+        return;
+      }
+
+      if (event.getKeySym () == "Right")
+      {
+        PCL_INFO ("[keyboard_callback] Increase AGAST BMAX from %f to %f.\n", obj->bmax_, obj->bmax_ + 1);
+        obj->bmax_ += 1;
+        return;
+      }
+
+      if (event.getKeySym () == "Left")
+      {
+        if (obj->bmax_ <= 0)
+          return;
+        PCL_INFO ("[keyboard_callback] Decrease AGAST BMAX from %f to %f.\n", obj->bmax_, obj->bmax_ - 1);
+        obj->bmax_ -= 1;
+        return;
+      }
     }
 
     /////////////////////////////////////////////////////////////////////////
@@ -93,7 +186,7 @@ class AGASTDemo
     init ()
     {
       boost::function<void (const CloudConstPtr&) > cloud_cb = boost::bind (&AGASTDemo::cloud_callback, this, _1);
-      cloud_connection = grabber_.registerCallback (cloud_cb);
+      cloud_connection = grabber_.registerCallback (cloud_cb);      
     }
 
     /////////////////////////////////////////////////////////////////////////
@@ -145,6 +238,9 @@ class AGASTDemo
     void
     run ()
     {
+      cloud_viewer_.registerKeyboardCallback (&AGASTDemo::keyboard_callback, *this, static_cast<AGASTDemo*> (this));
+      image_viewer_.registerKeyboardCallback (&AGASTDemo::keyboard_callback, *this, static_cast<AGASTDemo*> (this));
+
       grabber_.start ();
       
       bool image_init = false, cloud_init = false;
@@ -226,7 +322,10 @@ class AGASTDemo
     visualization::ImageViewer image_viewer_;
 
     PointCloud<KeyPointT>::Ptr keypoints_;
-        
+
+    double bmax_;
+    double threshold_;
+    int detector_type_;
   private:
     boost::signals2::connection cloud_connection;
 };
