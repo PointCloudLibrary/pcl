@@ -90,6 +90,7 @@ namespace pcl
 
       typedef typename pcl::PointCloud<NormalT> PointCloudN;
       typedef typename PointCloudN::Ptr PointCloudNPtr;
+      typedef typename PointCloudN::ConstPtr PointCloudNConstPtr;
 
       typedef typename pcl::octree::OctreePointCloudSearch<PointInT> OctreeSearchIn;
       typedef typename OctreeSearchIn::Ptr OctreeSearchInPtr;
@@ -169,7 +170,7 @@ namespace pcl
         * \param[in] normals the given cloud of normals
         */
       void
-      setNormals (const PointCloudNPtr &normals);
+      setNormals (const PointCloudNConstPtr &normals);
 
       /** \brief Initialize the scheduler and set the number of threads to use.
         * \param[in] nr_threads the number of hardware threads to use (-1 sets the value back to automatic)
@@ -241,7 +242,7 @@ namespace pcl
       int min_neighbors_;
 
       /** \brief The cloud of normals related to the input surface. */
-      PointCloudNPtr normals_;
+      PointCloudNConstPtr normals_;
 
       /** \brief The number of threads that has to be used by the scheduler. */
       int threads_;

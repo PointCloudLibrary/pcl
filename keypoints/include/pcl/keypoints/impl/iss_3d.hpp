@@ -95,9 +95,9 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::setMinNeighbors (int min_neigh
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointInT, typename PointOutT, typename NormalT> void
-pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::setNormals (const PointCloudNPtr &normals)
+pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::setNormals (const PointCloudNConstPtr &normals)
 {
-  normals_.reset (normals.get ());
+  normals_ = normals;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -256,14 +256,15 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::initCompute ()
     {
       if (normals_->empty ())
       {
-        normals_->reserve (surface_->size ());
+	PointCloudNPtr normals (new PointCloudN ());
+        normals->reserve (surface_->size ());
 
         if (input_->height == 1 )
         {
           pcl::NormalEstimation<PointInT, NormalT> normal_estimation;
           normal_estimation.setInputCloud(surface_);
           normal_estimation.setRadiusSearch(normal_radius_);
-          normal_estimation.compute (*normals_);
+          normal_estimation.compute (*normals);
         }
         else
         {
@@ -271,8 +272,10 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::initCompute ()
           normal_estimation.setNormalEstimationMethod (pcl::IntegralImageNormalEstimation<PointInT, NormalT>::SIMPLE_3D_GRADIENT);
           normal_estimation.setInputCloud(surface_);
           normal_estimation.setNormalSmoothingSize (5.0);
-          normal_estimation.compute (*normals_);
+          normal_estimation.compute (*normals);
         }
+
+        normals_ = normals;
       }
     }
   }
