@@ -38,13 +38,15 @@
 #include <pcl/apps/modeler/render_window.h>
 #include <pcl/apps/modeler/cloud_mesh_item.h>
 #include <pcl/apps/modeler/main_window.h>
-
+#include <pcl/apps/modeler/parameter.h>
+#include <pcl/apps/modeler/parameter_dialog.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::modeler::RenderWindowItem::RenderWindowItem(QTreeWidget * parent)
   : QTreeWidgetItem(parent),
   AbstractItem(),
-  render_window_(new RenderWindow(this))
+  render_window_(new RenderWindow(this)),
+  background_color_(new ColorParameter("Background Color", "The background color of the render window", QColor(0, 0, 0)))
 {
 
 }
@@ -93,4 +95,23 @@ pcl::modeler::RenderWindowItem::prepareContextMenu(QMenu* menu) const
   menu->addAction(ui()->actionOpenPointCloud);
   if (treeWidget()->topLevelItem(0) != this && childCount() == 0)
     menu->addAction(ui()->actionCloseRenderWindow);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::modeler::RenderWindowItem::prepareProperties(ParameterDialog* parameter_dialog)
+{
+  double r, g, b;
+  render_window_->getBackground(r, g, b);
+  QColor color(r*255, g*255, b*255);
+  background_color_->setDefaultValue(color);
+  parameter_dialog->addParameter(background_color_);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::modeler::RenderWindowItem::setProperties()
+{
+  QColor color = *background_color_;
+  render_window_->setBackground(color.red()/255.0, color.green()/255.0, color.blue()/255.0);
 }

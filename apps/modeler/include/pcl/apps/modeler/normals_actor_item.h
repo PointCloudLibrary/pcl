@@ -53,6 +53,9 @@ namespace pcl
                         const vtkSmartPointer<vtkRenderWindow>& render_window);
         ~NormalsActorItem ();
 
+        virtual std::string
+        getItemName() const {return "Points Actor Item";}
+
       protected:
         void
         createNormalLines();
@@ -65,6 +68,12 @@ namespace pcl
 
         virtual void
         prepareContextMenu(QMenu* menu) const;
+
+        virtual void
+        prepareProperties(ParameterDialog* parameter_dialog);
+
+        virtual void
+        setProperties();
 
       private:
         double    level_;

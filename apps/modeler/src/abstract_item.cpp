@@ -38,6 +38,7 @@
 
 #include <pcl/apps/modeler/qt.h>
 #include <pcl/apps/modeler/main_window.h>
+#include <pcl/apps/modeler/parameter_dialog.h>
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -68,4 +69,17 @@ Ui::MainWindow*
 pcl::modeler::AbstractItem::ui() const
 {
   return MainWindow::getInstance().ui_;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::modeler::AbstractItem::showPropertyEditor()
+{
+  ParameterDialog* parameter_dialog = new ParameterDialog(getItemName() + " Properties", &MainWindow::getInstance());
+  prepareProperties(parameter_dialog);
+
+  if (parameter_dialog->exec() == QDialog::Accepted)
+    setProperties();
+
+  parameter_dialog->deleteLater();
 }

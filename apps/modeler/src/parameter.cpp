@@ -41,6 +41,16 @@
 #include <iomanip>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::modeler::Parameter::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index)
+{
+  getEditorData(editor);
+  std::pair<QVariant, int> model_data = toModelData();
+  model->setData(index, model_data.first, model_data.second);
+}
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////
 std::string
 pcl::modeler::IntParameter::valueTip() 
 {
@@ -72,28 +82,21 @@ pcl::modeler::IntParameter::setEditorData(QWidget *editor)
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::modeler::IntParameter::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index)
+pcl::modeler::IntParameter::getEditorData(QWidget *editor)
 {
   QSpinBox *spinBox = static_cast<QSpinBox*>(editor);
   int value = spinBox->text().toInt();
   current_value_ = value;
-  model->setData(index, value, Qt::EditRole);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-QString
-pcl::modeler::IntParameter::toString()
+std::pair<QVariant, int>
+pcl::modeler::IntParameter::toModelData()
 {
-  int value = int (*this);
-  return QString("%1").arg(value);
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-void
-pcl::modeler::IntParameter::loadValue(const std::string& valueString)
-{
-  int value = QString(valueString.c_str()).toInt();
-  current_value_ = value;
+  std::pair<QVariant, int> model_data;
+  model_data.first = int (*this);
+  model_data.second = Qt::EditRole;
+  return (model_data);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -129,26 +132,67 @@ pcl::modeler::DoubleParameter::setEditorData(QWidget *editor)
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::modeler::DoubleParameter::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index)
+pcl::modeler::DoubleParameter::getEditorData(QWidget *editor)
 {
   QDoubleSpinBox *spinBox = static_cast<QDoubleSpinBox*>(editor);
   double value = spinBox->text().toDouble();
   current_value_ = value;
-  model->setData(index, value, Qt::EditRole);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-QString
-pcl::modeler::DoubleParameter::toString()
+std::pair<QVariant, int>
+pcl::modeler::DoubleParameter::toModelData()
 {
-  double value = double (*this);
-  return QString("%1").arg(value);
+  std::pair<QVariant, int> model_data;
+  model_data.first = double (*this);
+  model_data.second = Qt::EditRole;
+  return (model_data);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+std::string
+pcl::modeler::ColorParameter::valueTip() 
+{
+  return ("Color");
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+QWidget *
+pcl::modeler::ColorParameter::createEditor(QWidget *parent)
+{
+  QColorDialog *editor = new QColorDialog(parent);
+
+  return editor;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::modeler::DoubleParameter::loadValue(const std::string& valueString)
+pcl::modeler::ColorParameter::setEditorData(QWidget *editor)
 {
-  double value = QString(valueString.c_str()).toDouble();
+  QColorDialog *color_dialog = static_cast<QColorDialog*>(editor);
+
+  QColor value = QColor (*this);
+  color_dialog->setCurrentColor(value);
+
+  return;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::modeler::ColorParameter::getEditorData(QWidget *editor)
+{
+  QColorDialog *color_dialog = static_cast<QColorDialog*>(editor);
+
+  QColor value = color_dialog->currentColor();
   current_value_ = value;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+std::pair<QVariant, int>
+pcl::modeler::ColorParameter::toModelData()
+{
+  std::pair<QVariant, int> model_data;
+  model_data.first = QBrush(QColor(*this));
+  model_data.second = Qt::BackgroundRole;
+  return (model_data);
 }

@@ -86,7 +86,8 @@ pcl::modeler::ParameterDialog::exec()
     parameterModel.setData(name, QVariant(it->first.c_str()));
 
     QModelIndex value = parameterModel.index(int (currentRow), 1, QModelIndex());
-    parameterModel.setData(value, QVariant(it->second->toString()));
+    std::pair<QVariant, int> model_data = it->second->toModelData();
+    parameterModel.setData(value, model_data.first, model_data.second);
 
     currentRow ++;
   }
@@ -136,7 +137,8 @@ pcl::modeler::ParameterDialog::reset()
     it->second->reset();
 
     QModelIndex value = parameter_model_->index(int (currentRow), 1, QModelIndex());
-    parameter_model_->setData(value, QVariant(it->second->toString()));
+    std::pair<QVariant, int> model_data = it->second->toModelData();
+    parameter_model_->setData(value, model_data.first, model_data.second);
 
     currentRow ++;
   }

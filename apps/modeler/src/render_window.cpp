@@ -132,3 +132,17 @@ pcl::modeler::RenderWindow::render()
 {
   GetRenderWindow()->GetRenderers()->GetFirstRenderer()->Render();
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::modeler::RenderWindow::getBackground(double& r, double& g, double& b)
+{
+  GetRenderWindow()->GetRenderers()->GetFirstRenderer()->GetBackground(r, g, b);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::modeler::RenderWindow::setBackground(double r, double g, double b)
+{
+  GetRenderWindow()->GetRenderers()->GetFirstRenderer()->SetBackground(r, g, b);
+}

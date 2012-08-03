@@ -63,6 +63,12 @@ namespace pcl
         void
         render();
 
+        void
+        getBackground(double& r, double& g, double& b);
+
+        void
+        setBackground(double r, double g, double b);
+
       protected:
         void
         focusInEvent(QFocusEvent * event);

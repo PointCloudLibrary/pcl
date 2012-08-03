@@ -37,6 +37,8 @@
 #ifndef PCL_MODELER_ABSTRACT_ITEM_H_
 #define PCL_MODELER_ABSTRACT_ITEM_H_
 
+#include <string>
+
 class QMenu;
 class QPoint;
 namespace Ui
@@ -48,6 +50,8 @@ namespace pcl
 {
   namespace modeler
   {
+    class ParameterDialog;
+
     class AbstractItem
     {
       public:
@@ -57,11 +61,23 @@ namespace pcl
         void
         showContextMenu(const QPoint* position);
 
+        virtual std::string
+        getItemName() const = 0;
+
+        void
+        showPropertyEditor();
+
       protected:
         Ui::MainWindow* ui() const;
 
         virtual void
         prepareContextMenu(QMenu* menu) const = 0;
+
+        virtual void
+        prepareProperties(ParameterDialog* parameter_dialog) = 0;
+
+        virtual void
+        setProperties() = 0;
     };
 
   }

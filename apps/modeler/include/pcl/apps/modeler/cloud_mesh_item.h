@@ -77,9 +77,18 @@ namespace pcl
         void
         updateChannels();
 
+        virtual std::string
+        getItemName() const {return "Cloud Mesh Item";}
+
       protected:
         virtual void
         prepareContextMenu(QMenu* menu) const;
+
+        virtual void
+        prepareProperties(ParameterDialog* parameter_dialog);
+
+        virtual void
+        setProperties();
 
       private:
         std::string                           filename_;

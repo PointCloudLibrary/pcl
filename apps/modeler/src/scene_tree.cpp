@@ -59,6 +59,8 @@ pcl::modeler::SceneTree::SceneTree(QWidget * parent)
     this, SLOT(slotUpdateOnSelectionChange(QItemSelection, const QItemSelection)));
 
   connect(this, SIGNAL(itemInsertedOrRemoved()),this, SLOT(slotUpdateOnInsertOrRemove()));
+
+  connect(this, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)),this, SLOT(slotOnItemDoubleClicked(QTreeWidgetItem*)));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -94,6 +96,14 @@ pcl::modeler::SceneTree::contextMenuEvent(QContextMenuEvent *event)
   item->showContextMenu(&(event->globalPos()));
 
   return;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::modeler::SceneTree::slotOnItemDoubleClicked(QTreeWidgetItem * item)
+{
+  AbstractItem* abstract_item = dynamic_cast<AbstractItem*>(item);
+  abstract_item->showPropertyEditor();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

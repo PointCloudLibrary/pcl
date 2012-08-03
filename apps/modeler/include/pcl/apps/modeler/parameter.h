@@ -42,8 +42,6 @@
 #include <boost/any.hpp>
 #include <pcl/apps/modeler/qt.h>
 
-class QWidget;
-class QAbstractItemModel;
 
 namespace pcl
 {
@@ -63,6 +61,12 @@ namespace pcl
         getDescription()const {return description_;}
 
         void
+        setDefaultValue(const boost::any& value)
+        {
+          default_value_ = value;
+        }
+
+        void
         reset() {current_value_ = default_value_;}
 
         virtual std::string
@@ -75,15 +79,15 @@ namespace pcl
         setEditorData(QWidget *editor) = 0;
 
         virtual void
-        setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) = 0;
+        setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index);
 
-        virtual QString
-        toString() = 0;
-
-        virtual void
-        loadValue(const std::string& valueString) = 0;
+        virtual std::pair<QVariant, int>
+        toModelData() = 0;
 
       protected:
+        virtual void
+        getEditorData(QWidget *editor) = 0;
+
         std::string     name_;
         std::string     description_;
         boost::any      default_value_;
@@ -108,15 +112,13 @@ namespace pcl
         virtual void
         setEditorData(QWidget *editor);
 
-        virtual void
-        setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index);
+        virtual std::pair<QVariant, int>
+        toModelData();
 
-        virtual QString
-        toString();
-
-        virtual void
-        loadValue(const std::string& valueString);
       protected:
+        virtual void
+        getEditorData(QWidget *editor);
+
         int     low_;
         int     high_;
         int     step_;
@@ -141,16 +143,13 @@ namespace pcl
         virtual void
         setEditorData(QWidget *editor);
 
-        virtual void
-        setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index);
-
-        virtual QString
-        toString();
-
-        virtual void
-        loadValue(const std::string& valueString);
+        virtual std::pair<QVariant, int>
+        toModelData();
 
       protected:
+        virtual void
+        getEditorData(QWidget *editor);
+
         const std::map<T, std::string> candidates_;
     };
 
@@ -172,21 +171,44 @@ namespace pcl
         virtual void
         setEditorData(QWidget *editor);
 
-        virtual void
-        setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index);
-
-        virtual QString
-        toString();
-
-        virtual void
-        loadValue(const std::string& valueString);
+        virtual std::pair<QVariant, int>
+          toModelData();
 
       protected:
+        virtual void
+        getEditorData(QWidget *editor);
+
         double  low_;
         double  high_;
         double  step_;
     };
 
+    class ColorParameter : public Parameter
+    {
+      public:
+        ColorParameter(const std::string& name, const std::string& description, QColor value):
+          Parameter(name, description, value){}
+        ~ColorParameter(){}
+
+        operator QColor() const {return boost::any_cast<QColor>(current_value_);}
+
+        virtual std::string
+        valueTip();
+
+        virtual QWidget*
+        createEditor(QWidget *parent);
+
+        virtual void
+        setEditorData(QWidget *editor);
+
+        virtual std::pair<QVariant, int>
+        toModelData();
+
+      protected:
+        virtual void
+        getEditorData(QWidget *editor);
+
+    };
   }
 }
 

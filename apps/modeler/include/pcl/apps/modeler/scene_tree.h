@@ -110,6 +110,10 @@ namespace pcl
 
         void
         slotUpdateOnInsertOrRemove();
+
+        void
+        slotOnItemDoubleClicked(QTreeWidgetItem * item);
+
       private:
         template <class T> QList<T*>
         selectedTypeItems() const;

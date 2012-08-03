@@ -88,51 +88,32 @@ namespace pcl
 
 //////////////////////////////////////////////////////////////////////////////////////////////
     template <class T> void
-    EnumParameter<T>::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index)
+    EnumParameter<T>::getEditorData(QWidget *editor)
     {
       QComboBox *comboBox = static_cast<QComboBox*>(editor);
       T value = T (comboBox->currentIndex());
       current_value_ = value;
-      model->setData(index, toString(), Qt::EditRole);
     }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-    template <class T> QString
-    EnumParameter<T>::toString()
+    template <class T> std::pair<QVariant, int>
+    EnumParameter<T>::toModelData()
     {
-      T value = T (*this);
-      std::string valueString = "should not see this";
+      std::pair<QVariant, int> model_data;
       for (typename std::map<T, std::string>::const_iterator it = candidates_.begin();
         it != candidates_.end();
         ++ it) 
       {
-          if (it->first == value)
-          {
-            valueString = it->second;
-            break;
-          }
+        if (it->first == value)
+        {
+          model_data.first = it->second;
+          break;
+        }
       }
+      model_data.second = Qt::EditRole;
 
-      return QString(valueString.c_str());
+      return (model_data);
     }
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-    template <class T> void
-    EnumParameter<T>::loadValue(const std::string& valueString)
-    {
-      for (typename std::map<T, std::string>::const_iterator it = candidates_.begin();
-        it != candidates_.end();
-        ++ it)
-      {
-          if (it->second == valueString)
-          {
-            current_value_ = it->first;
-            break;
-          }
-      }
-      return;
-    }
-
   }
 }
 

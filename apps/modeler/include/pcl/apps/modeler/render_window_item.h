@@ -47,6 +47,7 @@ namespace pcl
   {
     class RenderWindow;
     class CloudMeshItem;
+    class ColorParameter;
 
     class RenderWindowItem : public QTreeWidgetItem, public AbstractItem
     {
@@ -71,12 +72,23 @@ namespace pcl
         CloudMeshItem*
         addPointCloud(CloudMesh::PointCloudPtr cloud);
 
+        virtual std::string
+        getItemName() const {return "Render Window Item";}
+
       protected:
         virtual void
         prepareContextMenu(QMenu* menu) const;
 
+        virtual void
+        prepareProperties(ParameterDialog* parameter_dialog);
+
+        virtual void
+        setProperties();
+
       private:
         RenderWindow*     render_window_;
+
+        ColorParameter*   background_color_;
     };
   }
 }
