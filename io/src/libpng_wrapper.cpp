@@ -38,6 +38,8 @@
 #include <pcl/compression/libpng_wrapper.h>
 
 #include <png.h>
+#include <zlib.h>
+
 #include <vector>
 #include <stdlib.h>
 #include <stdio.h>
