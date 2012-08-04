@@ -354,47 +354,6 @@ pcl::visualization::PCLVisualizer::spinOnce (int time, bool force_redraw)
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::visualization::PCLVisualizer::addOrientationMarkerWidgetAxes (vtkRenderWindowInteractor* interactor)
-{
-  if ( !axes_widget_ )
-  {
-    vtkSmartPointer<vtkAxesActor> axes = vtkSmartPointer<vtkAxesActor>::New ();
-    
-    axes_widget_ = vtkSmartPointer<vtkOrientationMarkerWidget>::New ();
-    axes_widget_->SetOutlineColor (0.9300, 0.5700, 0.1300);
-    axes_widget_->SetOrientationMarker (axes);
-    axes_widget_->SetInteractor (interactor);
-    axes_widget_->SetViewport (0.0, 0.0, 0.4, 0.4);
-    axes_widget_->SetEnabled (true);
-    axes_widget_->InteractiveOn ();
-  }
-  else
-  {
-    axes_widget_->SetEnabled (true);
-    pcl::console::print_warn ("Orientation Widget Axes already exists, just enabling it");
-  }
-  
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////
-void
-pcl::visualization::PCLVisualizer::removeOrientationMarkerWidgetAxes ()
-{
-  if (axes_widget_)
-  {
-    if (axes_widget_->GetEnabled ())
-      axes_widget_->SetEnabled (false);
-    else
-      pcl::console::print_warn ("Orientation Widget Axes was already disabled, doing nothing.");
-  }
-  else
-  {
-    pcl::console::print_error ("Attempted to delete Orientation Widget Axes which does not exist!\n");
-  }
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////////
-void
 pcl::visualization::PCLVisualizer::addCoordinateSystem (double scale, int viewport)
 {
   vtkSmartPointer<vtkAxes> axes = vtkSmartPointer<vtkAxes>::New ();
