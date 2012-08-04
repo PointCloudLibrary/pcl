@@ -83,6 +83,7 @@ main (int argc, char** argv)
   vtkSmartPointer<vtkPolyDataWriter> writer = vtkSmartPointer<vtkPolyDataWriter>::New ();
   writer->SetInput (polydata);
   writer->SetFileName (argv[vtk_file_indices[0]]);
+  writer->SetFileTypeToBinary ();
   writer->Write ();
 }
 
