@@ -70,17 +70,19 @@ namespace pcl
     template<typename Container, typename PointT>
     class octree_base;
 
+    /** \brief document */
     template<typename Container, typename PointT> octree_base_node<Container, PointT>*
     makenode_norec (const boost::filesystem::path& path, octree_base_node<Container, PointT>* super);
 
-//read from specified level
+    /** \brief document */
     template<typename Container, typename PointT> void
-    queryBBIntersects_noload (const boost::filesystem::path& rootnode, const double min[3], const double max[3], const boost::uint32_t query_depth, std::list<std::string>& bin_name);
+    queryBBIntersects_noload (const boost::filesystem::path& root_node, const double min[3], const double max[3], const boost::uint32_t query_depth, std::list<std::string>& bin_name);
 
     template<typename Container, typename PointT> void
     queryBBIntersects_noload (octree_base_node<Container, PointT>* current, const double min[3], const double max[3], const boost::uint32_t query_depth, std::list<std::string>& bin_name);
 
 /** \class octree_base_node
+    Document this class
  */
     template<typename Container, typename PointT>
     class octree_base_node
@@ -197,20 +199,25 @@ namespace pcl
         void
         queryBBIntersects (const double min_bb[3], const double max_bb[3], const boost::uint32_t query_depth, std::list<std::string>& file_names);
 
+        /** \brief document */
         void
         printBBox(const size_t query_depth) const;
 
         //bb check
         //checks if 
+        /** \brief document */
         inline bool
         intersectsWithBB (const double min_bb[3], const double max_bb[3]) const;
 
+        /** \brief document */
         inline bool
         withinBB (const double min[3], const double max[3]) const;
 
+        /** \brief document */
         static inline bool
         pointWithinBB (const double min_bb[3], const double max_bb[3], const PointT& p);
 
+        /** \brief document */
         static inline bool
         pointWithinBB ( const double min_bb[3], const double max_bb[3], const double x, const double y, const double z );
 
@@ -241,6 +248,11 @@ namespace pcl
         void
         addPointToLeaf (const PointT& p);
 
+        /** \brief document 
+         *
+         * \param[in] input_cloud
+         * \param[in] skip_bb_check (default = false)
+         */
         boost::uint64_t
         addPointCloud ( sensor_msgs::PointCloud2::Ptr input_cloud, const bool skip_bb_check = false )
         {
@@ -327,6 +339,7 @@ namespace pcl
           return 0;
         }
 
+
         boost::uint64_t
         addPointCloud_and_genLOD (const sensor_msgs::PointCloud2::Ptr input_cloud); //, const bool skip_bb_check);
         
@@ -403,13 +416,15 @@ namespace pcl
       protected:
         /** \brief Load from disk 
          * If creating root, path is full name. If creating any other
-         * node, path is dir; throws OCT_MISSING_DIR and OCT_MISSING_IDX
+         * node, path is dir; throws exception if directory or metadata not found
          *
          * \param[in] path
          * \param[in] super
          * \param[in] loadAll
+         * \throws PCLException if directory is missing
+         * \throws PCLException if node index is missing
          */
-        octree_base_node (const boost::filesystem::path& path, octree_base_node<Container, PointT>* super, bool loadAll);
+        octree_base_node (const boost::filesystem::path& path, octree_base_node<Container, PointT>* super, bool load_all);
 
         /** \brief Create root node and directory
          *
@@ -420,11 +435,13 @@ namespace pcl
          * \param bb_max triple of x,y,z maxima for bounding box
          * \param tree adress of the tree data structure that will hold this initial root node
          * \param rootname Root directory for location of on-disk octree storage; if directory 
-         * doesn't exist, it is created; if "rootname" is an existing file, throws 
-         * OctreeException::OCT_BAD_PATH
+         * doesn't exist, it is created; if "rootname" is an existing file, 
+         * 
+         * \throws PCLException if the specified path already exists
          */
         void init_root_node (const double bb_min[3], const double bb_max[3], octree_base<Container, PointT> * const tree, const boost::filesystem::path& rootname);
 
+        /** \brief document */
         void
         createChild (const int idx);
 
@@ -432,12 +449,15 @@ namespace pcl
         void
         saveMetadataToFile (const boost::filesystem::path& path);
 
+        /** \brief document */
         int
         calcDepthForDim (const double min_bb[3], const double max_bb[3], const double dim);
 
+        /** \brief document */
         void
         freeChildren ();
 
+        /** \brief document */
         void
         recFreeChildren ();
 
@@ -459,12 +479,15 @@ namespace pcl
         void
         flushToDisk ();
 
+        /** \brief Document or deprecate */
         void
         flushToDiskLazy ();
 
+        /** \brief Document */
         void
         flush_DeAlloc_this_only ();
 
+        /** \brief document */
         void
         loadFromFile (const boost::filesystem::path& path, octree_base_node* super);
 
@@ -475,18 +498,21 @@ namespace pcl
         void
         saveIdx (bool recursive);
 
+        /** \brief document */
         void
         convertToXYZ ();
 
-        //no copy construction right now
+        /** \brief no copy construction right now */
         octree_base_node (const octree_base_node& rval);
 
+        /** \brief document */
         octree_base_node&
         operator= (const octree_base_node& rval);
 
-        //empty node in tree
+        /** \brief document */
         octree_base_node (const double bb_min[3], const double bb_max[3], const char* dir, octree_base_node<Container, PointT>* super);
 
+        /** \brief document */
         void
         copyAllCurrentAndChildPointsRec (std::list<PointT>& v);
 
@@ -501,15 +527,26 @@ namespace pcl
         void
         loadChildren (bool recursive);
 
+        /** \brief document 
+         * \param[out] voxel_centers
+         * \param[in] query_depth
+         */
         void
         getVoxelCenters(AlignedPointTVector &voxel_centers, const size_t query_depth);
 
+        /** \brief document 
+         * \param[out] voxel_centers
+         * \param[in] query_depth
+         */
         void
         getVoxelCenters(std::vector<Eigen::Vector3f> &voxel_centers, const size_t query_depth);
 
-        boost::filesystem::path thisdir_;//the dir containing the node's data and its children
-        boost::filesystem::path thisnodeindex_;//the node's index file, node.idx
-        boost::filesystem::path thisnodestorage_;//the node's storage file, node.dat
+        /** \brief the dir containing the node's data and its children */
+        boost::filesystem::path thisdir_;
+        /** \brief the node's index file, node.idx */
+        boost::filesystem::path thisnodeindex_;
+        /** \brief the node's storage file, node.pcd */
+        boost::filesystem::path thisnodestorage_;
 
         /** \brief The tree we belong to */
         octree_base<Container, PointT>* m_tree_;//
@@ -549,7 +586,7 @@ namespace pcl
 
         /** \brief Random number generator seed */
         const static boost::uint32_t rngseed = 0xAABBCCDD;
-
+        /** \brief document */
         const static std::string pcd_extension;
 
     };

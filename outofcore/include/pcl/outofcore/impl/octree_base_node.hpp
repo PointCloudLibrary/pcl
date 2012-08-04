@@ -57,7 +57,6 @@
 
 // PCL (Urban Robotics)
 #include <pcl/outofcore/octree_base_node.h>
-#include <pcl/outofcore/octree_exceptions.h>
 
 #include <pcl/filters/random_sample.h>
 #include <pcl/filters/extract_indices.h>
@@ -94,7 +93,7 @@ namespace pcl
     const std::string octree_base_node<Container, PointT>::pcd_extension = ".pcd";
 
     template<typename Container, typename PointT>
-    octree_base_node<Container, PointT>::octree_base_node (const boost::filesystem::path& path, octree_base_node<Container, PointT>* super, bool loadAll)
+    octree_base_node<Container, PointT>::octree_base_node (const boost::filesystem::path& path, octree_base_node<Container, PointT>* super, bool load_all)
       : thisdir_ ()
       , thisnodeindex_ ()
       , thisnodestorage_ ()
@@ -158,7 +157,7 @@ namespace pcl
 
       loadFromFile (thisnodeindex_, super);
 
-      if (loadAll)
+      if (load_all)
       {
         loadChildren (true);
       }
@@ -1840,11 +1839,11 @@ namespace pcl
 
 //accelerate search
     template<typename Container, typename PointT> void
-    queryBBIntersects_noload2 (const boost::filesystem::path& rootnode, const double min[3], const double max[3], const boost::uint32_t query_depth, std::list<std::string>& bin_name)
+    queryBBIntersects_noload (const boost::filesystem::path& root_node, const double min[3], const double max[3], const boost::uint32_t query_depth, std::list<std::string>& bin_name)
     {
       ///\todo this class already has a private "root" member
       //it also has min[3] and max[3] members
-      octree_base_node<Container, PointT>* root = makenode_norec<Container, PointT> (rootnode, NULL);
+      octree_base_node<Container, PointT>* root = makenode_norec<Container, PointT> (root_node, NULL);
       if (root == NULL)
       {
         std::cout << "test";
@@ -1862,11 +1861,11 @@ namespace pcl
 
         for (int i = 0; i < 8; i++)
         {
-          boost::filesystem::path childdir = root->thisdir_
+          boost::filesystem::path child_dir = root->thisdir_
           / boost::filesystem::path (boost::lexical_cast<std::string> (i));
-          if (boost::filesystem::exists (childdir))
+          if (boost::filesystem::exists (child_dir))
           {
-            root->children_[i] = makenode_norec (childdir, root);
+            root->children_[i] = makenode_norec (child_dir, root);
             root->num_child_++;
             queryBBIntersects_noload (root->children_[i], min, max, root->max_depth_ - query_depth, bin_name);
           }
@@ -1892,10 +1891,10 @@ namespace pcl
         {
           for (int i = 0; i < 8; i++)
           {
-            boost::filesystem::path childdir = current->thisdir_ / boost::filesystem::path (boost::lexical_cast<std::string> (i));
-            if (boost::filesystem::exists (childdir))
+            boost::filesystem::path child_dir = current->thisdir_ / boost::filesystem::path (boost::lexical_cast<std::string> (i));
+            if (boost::filesystem::exists (child_dir))
             {
-              current->children_[i] = makenode_norec<Container, PointT> (childdir, current);
+              current->children_[i] = makenode_norec<Container, PointT> (child_dir, current);
               current->num_child_++;
               queryBBIntersects_noload (current->children_[i], min, max, query_depth, bin_name);
             }

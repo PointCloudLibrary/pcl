@@ -46,7 +46,6 @@
 
 // PCL (Urban Robotics)
 #include <pcl/outofcore/octree_base.h>
-#include <pcl/outofcore/octree_exceptions.h>
 
 // JSON
 #include <pcl/outofcore/cJSON.h>

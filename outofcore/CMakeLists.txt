@@ -16,11 +16,9 @@ if(build)
     set(incs
         include/pcl/${SUBSYS_NAME}/octree_base.h
         include/pcl/${SUBSYS_NAME}/octree_base_node.h
-        include/pcl/${SUBSYS_NAME}/octree_exceptions.h
-	    include/pcl/${SUBSYS_NAME}/octree_abstract_node_container.h
-	    include/pcl/${SUBSYS_NAME}/octree_disk_container.h
-	    include/pcl/${SUBSYS_NAME}/octree_ram_container.h
-        include/pcl/${SUBSYS_NAME}/point_cloud_tools.h
+	include/pcl/${SUBSYS_NAME}/octree_abstract_node_container.h
+	include/pcl/${SUBSYS_NAME}/octree_disk_container.h
+	include/pcl/${SUBSYS_NAME}/octree_ram_container.h
         include/pcl/${SUBSYS_NAME}/cJSON.h
         )
 
