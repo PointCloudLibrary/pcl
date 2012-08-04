@@ -45,9 +45,10 @@
 
 namespace pcl
 {
-  /** \brief OrganizedEdgeBase, OrganizedEdgeFromRGB, OrganizedEdgeFromNormals, and OrganizedEdgeFromRGBNormals find 3D edges from an organized point cloud data.
-    * Given an organized point cloud, it will output a PointCloud of edge labels
-    * and a vector of PointIndices.
+  /** \brief OrganizedEdgeBase, OrganizedEdgeFromRGB, OrganizedEdgeFromNormals, 
+    * and OrganizedEdgeFromRGBNormals find 3D edges from an organized point 
+    * cloud data. Given an organized point cloud, they will output a PointCloud 
+    * of edge labels and a vector of PointIndices.
     * OrganizedEdgeBase accepts PCL_XYZ_POINT_TYPES and returns EDGELABEL_NAN_BOUNDARY, EDGELABEL_OCCLUDING, and EDGELABEL_OCCLUDED.
     * OrganizedEdgeFromRGB accepts PCL_RGB_POINT_TYPES and returns EDGELABEL_NAN_BOUNDARY, EDGELABEL_OCCLUDING, EDGELABEL_OCCLUDED, and EDGELABEL_RGB_CANNY.
     * OrganizedEdgeFromNormals accepts PCL_XYZ_POINT_TYPES with PCL_NORMAL_POINT_TYPES and returns EDGELABEL_NAN_BOUNDARY, EDGELABEL_OCCLUDING, EDGELABEL_OCCLUDED, and EDGELABEL_HIGH_CURVATURE.
@@ -195,6 +196,10 @@ namespace pcl
       using OrganizedEdgeBase<PointT, PointLT>::initCompute;
       using OrganizedEdgeBase<PointT, PointLT>::deinitCompute;
       using OrganizedEdgeBase<PointT, PointLT>::detecting_edge_types_;
+      using OrganizedEdgeBase<PointT, PointLT>::EDGELABEL_NAN_BOUNDARY;
+      using OrganizedEdgeBase<PointT, PointLT>::EDGELABEL_OCCLUDING;
+      using OrganizedEdgeBase<PointT, PointLT>::EDGELABEL_OCCLUDED;
+      using OrganizedEdgeBase<PointT, PointLT>::EDGELABEL_RGB_CANNY;
 
       /** \brief Constructor for OrganizedEdgeFromRGB */
       OrganizedEdgeFromRGB ()
@@ -281,6 +286,10 @@ namespace pcl
       using OrganizedEdgeBase<PointT, PointLT>::initCompute;
       using OrganizedEdgeBase<PointT, PointLT>::deinitCompute;
       using OrganizedEdgeBase<PointT, PointLT>::detecting_edge_types_;
+      using OrganizedEdgeBase<PointT, PointLT>::EDGELABEL_NAN_BOUNDARY;
+      using OrganizedEdgeBase<PointT, PointLT>::EDGELABEL_OCCLUDING;
+      using OrganizedEdgeBase<PointT, PointLT>::EDGELABEL_OCCLUDED;
+      using OrganizedEdgeBase<PointT, PointLT>::EDGELABEL_HIGH_CURVATURE;
 
       /** \brief Constructor for OrganizedEdgeFromNormals */
       OrganizedEdgeFromNormals () 
@@ -387,7 +396,12 @@ namespace pcl
       using OrganizedEdgeFromNormals<PointT, PointNT, PointLT>::initCompute;
       using OrganizedEdgeFromNormals<PointT, PointNT, PointLT>::deinitCompute;
       using OrganizedEdgeFromNormals<PointT, PointNT, PointLT>::detecting_edge_types_;
-
+      using OrganizedEdgeBase<PointT, PointLT>::EDGELABEL_NAN_BOUNDARY;
+      using OrganizedEdgeBase<PointT, PointLT>::EDGELABEL_OCCLUDING;
+      using OrganizedEdgeBase<PointT, PointLT>::EDGELABEL_OCCLUDED;
+      using OrganizedEdgeBase<PointT, PointLT>::EDGELABEL_HIGH_CURVATURE;
+      using OrganizedEdgeBase<PointT, PointLT>::EDGELABEL_RGB_CANNY;
+      
       /** \brief Constructor for OrganizedEdgeFromRGBNormals */
       OrganizedEdgeFromRGBNormals () 
         : OrganizedEdgeFromRGB<PointT, PointLT> ()

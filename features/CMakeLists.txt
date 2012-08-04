@@ -121,7 +121,7 @@ if(build)
         src/normal_3d.cpp
         src/normal_3d_omp.cpp
         src/normal_based_signature.cpp
-        #src/organized_edge_detection.cpp
+        src/organized_edge_detection.cpp
         src/pfh.cpp
         src/pfhrgb.cpp
         src/ppf.cpp

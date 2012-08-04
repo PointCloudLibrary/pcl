@@ -116,7 +116,7 @@ pcl::OrganizedEdgeBase<PointT, PointLT>::extractEdges (pcl::PointCloud<PointLT>&
         if (!pcl_isfinite (input_->points[curr_idx].z))
           continue;
 
-        float curr_depth = fabs (input_->points[curr_idx].z);
+        float curr_depth = fabsf (input_->points[curr_idx].z);
 
         // Calculate depth distances between current point and neighboring points
         std::vector<float> nghr_dist;
@@ -131,7 +131,7 @@ pcl::OrganizedEdgeBase<PointT, PointLT>::extractEdges (pcl::PointCloud<PointLT>&
             found_invalid_neighbor = true;
             break;
           }
-          nghr_dist[d_idx] = curr_depth - fabs (input_->points[nghr_idx].z);
+          nghr_dist[d_idx] = curr_depth - fabsf (input_->points[nghr_idx].z);
         }
 
         if (!found_invalid_neighbor)
@@ -141,8 +141,8 @@ pcl::OrganizedEdgeBase<PointT, PointLT>::extractEdges (pcl::PointCloud<PointLT>&
           std::vector<float>::iterator max_itr = std::max_element (nghr_dist.begin (), nghr_dist.end ());
           float nghr_dist_min = *min_itr;
           float nghr_dist_max = *max_itr;
-          float dist_dominant = fabs (nghr_dist_min) > fabs (nghr_dist_max) ? nghr_dist_min : nghr_dist_max;
-          if (fabs (dist_dominant) > th_depth_discon_*fabs (curr_depth))
+          float dist_dominant = fabsf (nghr_dist_min) > fabsf (nghr_dist_max) ? nghr_dist_min : nghr_dist_max;
+          if (fabsf (dist_dominant) > th_depth_discon_*fabsf (curr_depth))
           {
             // Found a depth discontinuity
             if (dist_dominant > 0.f)
@@ -194,7 +194,7 @@ pcl::OrganizedEdgeBase<PointT, PointLT>::extractEdges (pcl::PointCloud<PointLT>&
 
             if (pcl_isfinite (input_->points[s_row*int(input_->width)+s_col].z))
             {
-              corr_depth = fabs (input_->points[s_row*int(input_->width)+s_col].z);
+              corr_depth = fabsf (input_->points[s_row*int(input_->width)+s_col].z);
               break;
             }
           }
@@ -203,7 +203,7 @@ pcl::OrganizedEdgeBase<PointT, PointLT>::extractEdges (pcl::PointCloud<PointLT>&
           {
             // Found a corresponding point
             float dist = curr_depth - corr_depth;
-            if (fabs (dist) > th_depth_discon_*fabs (curr_depth))
+            if (fabsf (dist) > th_depth_discon_*fabsf (curr_depth))
             {
               // Found a depth discontinuity
               if (dist > 0.f)
