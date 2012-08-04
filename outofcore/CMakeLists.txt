@@ -1,6 +1,6 @@
 set(SUBSYS_NAME outofcore)
 set(SUBSYS_DESC "Point cloud outofcore library")
-set(SUBSYS_DEPS common octree io visualization filters)
+set(SUBSYS_DEPS common io visualization filters)
 
 set(build TRUE)
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
