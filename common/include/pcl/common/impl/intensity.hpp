@@ -3,6 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2012, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -16,7 +17,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -51,7 +52,7 @@ namespace pcl
       inline float
       operator () (const pcl::PointNormal &p) const
       {
-        return p.curvature;
+        return (p.curvature);
       }
 
       inline void
@@ -76,6 +77,40 @@ namespace pcl
       add (pcl::PointNormal& p, float value) const
       {
         p.curvature += value;
+      }
+    };
+    
+    template<>
+    struct IntensityFieldAccessor<pcl::PointXYZ>
+    {
+      inline float
+      operator () (const pcl::PointXYZ &p) const
+      {
+        return (p.z);
+      }
+
+      inline void
+      get (const pcl::PointXYZ &p, float &intensity) const
+      {
+        intensity = p.z;
+      }
+
+      inline void
+      set (pcl::PointXYZ &p, float intensity) const
+      {
+        p.z = intensity;
+      }
+
+      inline void
+      demean (pcl::PointXYZ& p, float value) const
+      {
+        p.z -= value;
+      }
+
+      inline void
+      add (pcl::PointXYZ& p, float value) const
+      {
+        p.z += value;
       }
     };
 
