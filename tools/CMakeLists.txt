@@ -124,6 +124,12 @@ if (build)
       include (${VTK_USE_FILE})
       include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
       
+      PCL_ADD_EXECUTABLE(pcl_ply2vtk ${SUBSYS_NAME} ply2vtk.cpp)
+      target_link_libraries(pcl_ply2vtk pcl_common pcl_io)
+
+      PCL_ADD_EXECUTABLE(pcl_obj2vtk ${SUBSYS_NAME} obj2vtk.cpp)
+      target_link_libraries(pcl_obj2vtk pcl_common pcl_io)
+
       PCL_ADD_EXECUTABLE(pcl_registration_visualizer ${SUBSYS_NAME} registration_visualizer.cpp)
       target_link_libraries(pcl_registration_visualizer pcl_common pcl_io pcl_kdtree pcl_filters pcl_registration pcl_visualization)
 
