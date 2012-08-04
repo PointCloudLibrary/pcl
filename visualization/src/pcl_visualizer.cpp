@@ -55,7 +55,7 @@
 #include <pcl/visualization/vtk/vtkVertexBufferObjectMapper.h>
 
 /////////////////////////////////////////////////////////////////////////////////////////////
-pcl::visualization::PCLVisualizer::PCLVisualizer (const std::string &name, const bool create_interactor) 
+pcl::visualization::PCLVisualizer::PCLVisualizer (const std::string &name, const bool create_interactor)
   : camera_ ()
   , interactor_ ()
 #if !((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
@@ -796,7 +796,7 @@ bool
 pcl::visualization::PCLVisualizer::removeActorFromRenderer (const vtkSmartPointer<vtkLODActor> &actor, int viewport)
 {
   vtkLODActor* actor_to_remove = vtkLODActor::SafeDownCast (actor);
-  
+
   // Add it to all renderers
   rens_->InitTraversal ();
   vtkRenderer* renderer = NULL;
@@ -836,7 +836,7 @@ bool
 pcl::visualization::PCLVisualizer::removeActorFromRenderer (const vtkSmartPointer<vtkActor> &actor, int viewport)
 {
   vtkActor* actor_to_remove = vtkActor::SafeDownCast (actor);
-  
+
   // Add it to all renderers
   rens_->InitTraversal ();
   vtkRenderer* renderer = NULL;
@@ -901,7 +901,7 @@ bool
 pcl::visualization::PCLVisualizer::removeActorFromRenderer (const vtkSmartPointer<vtkProp> &actor, int viewport)
 {
   vtkProp* actor_to_remove = vtkProp::SafeDownCast (actor);
-  
+
   // Initialize traversal
   rens_->InitTraversal ();
   vtkRenderer* renderer = NULL;
@@ -1294,7 +1294,7 @@ pcl::visualization::PCLVisualizer::setPointCloudSelected (const bool selected, c
   }
   // Get the actor pointer
   vtkLODActor* actor = vtkLODActor::SafeDownCast (am_it->second.actor);
-  
+
   if (selected)
   {
     actor->GetProperty ()->EdgeVisibilityOn ();
@@ -1306,7 +1306,7 @@ pcl::visualization::PCLVisualizer::setPointCloudSelected (const bool selected, c
     actor->GetProperty ()->EdgeVisibilityOff ();
     actor->Modified ();
   }
-  
+
   return (true);
 }
 
@@ -1475,11 +1475,11 @@ pcl::visualization::PCLVisualizer::updateShapePose (const std::string &id, const
 
   if (am_it == shape_actor_map_->end ())
     return (false);
-  else 
+  else
     actor = vtkLODActor::SafeDownCast (am_it->second);
 
   vtkSmartPointer<vtkMatrix4x4> matrix = vtkSmartPointer<vtkMatrix4x4>::New ();
-  
+
   convertToVtkMatrix (pose.matrix (), matrix);
 
   actor->SetUserMatrix (matrix);
@@ -1556,7 +1556,7 @@ void
 pcl::visualization::PCLVisualizer::setCameraPosition (
     double pos_x, double pos_y, double pos_z,
     double view_x, double view_y, double view_z,
-    double up_x, double up_y, double up_z, 
+    double up_x, double up_y, double up_z,
     int viewport)
 {
   rens_->InitTraversal ();
@@ -2259,82 +2259,82 @@ pcl::visualization::PCLVisualizer::addText (const std::string &text, int xpos, i
 bool
 pcl::visualization::PCLVisualizer::updateText (const std::string &text, int xpos, int ypos, const std::string &id)
 {
-	std::string tid;
-	if (id.empty ())
+  std::string tid;
+  if (id.empty ())
     tid = text;
-	else
+  else
     tid = id;
 
-	// Check to see if this ID entry already exists (has it been already added to the visualizer?)
-	ShapeActorMap::iterator am_it = shape_actor_map_->find (tid);
-	if (am_it == shape_actor_map_->end ())
+  // Check to see if this ID entry already exists (has it been already added to the visualizer?)
+  ShapeActorMap::iterator am_it = shape_actor_map_->find (tid);
+  if (am_it == shape_actor_map_->end ())
     return (false);
 
-	// Retrieve the Actor
-	vtkTextActor* actor = vtkTextActor::SafeDownCast (am_it->second); 
-	actor->SetPosition (xpos, ypos);
-	actor->SetInput (text.c_str ());
+  // Retrieve the Actor
+  vtkTextActor* actor = vtkTextActor::SafeDownCast (am_it->second);
+  actor->SetPosition (xpos, ypos);
+  actor->SetInput (text.c_str ());
 
-	actor->Modified ();
+  actor->Modified ();
 
-	return (true);
+  return (true);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
 bool
 pcl::visualization::PCLVisualizer::updateText (const std::string &text, int xpos, int ypos, double r, double g, double b, const std::string &id)
 {
-	std::string tid;
-	if (id.empty ())
+  std::string tid;
+  if (id.empty ())
     tid = text;
-	else
+  else
     tid = id;
 
-	// Check to see if this ID entry already exists (has it been already added to the visualizer?)
-	ShapeActorMap::iterator am_it = shape_actor_map_->find (tid);
-	if (am_it == shape_actor_map_->end ())
+  // Check to see if this ID entry already exists (has it been already added to the visualizer?)
+  ShapeActorMap::iterator am_it = shape_actor_map_->find (tid);
+  if (am_it == shape_actor_map_->end ())
     return (false);
 
-	// Create the Actor
-	vtkTextActor* actor = vtkTextActor::SafeDownCast (am_it->second); 
-	actor->SetPosition (xpos, ypos);
-	actor->SetInput (text.c_str ());
+  // Create the Actor
+  vtkTextActor* actor = vtkTextActor::SafeDownCast (am_it->second);
+  actor->SetPosition (xpos, ypos);
+  actor->SetInput (text.c_str ());
 
-	vtkSmartPointer<vtkTextProperty> tprop = actor->GetTextProperty ();
-	tprop->SetColor (r, g, b);
-	actor->Modified ();
+  vtkSmartPointer<vtkTextProperty> tprop = actor->GetTextProperty ();
+  tprop->SetColor (r, g, b);
+  actor->Modified ();
 
-	return (true);
+  return (true);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
 bool
 pcl::visualization::PCLVisualizer::updateText (const std::string &text, int xpos, int ypos, int fontsize, double r, double g, double b, const std::string &id)
 {
-	std::string tid;
-	if (id.empty ())
+  std::string tid;
+  if (id.empty ())
     tid = text;
-	else
+  else
     tid = id;
 
-	// Check to see if this ID entry already exists (has it been already added to the visualizer?)
-	ShapeActorMap::iterator am_it = shape_actor_map_->find (tid);
-	if (am_it == shape_actor_map_->end ())
+  // Check to see if this ID entry already exists (has it been already added to the visualizer?)
+  ShapeActorMap::iterator am_it = shape_actor_map_->find (tid);
+  if (am_it == shape_actor_map_->end ())
     return (false);
 
-	// Retrieve the Actor
-	vtkTextActor *actor = vtkTextActor::SafeDownCast (am_it->second);
-	
-	actor->SetPosition (xpos, ypos);
-	actor->SetInput (text.c_str ());
+  // Retrieve the Actor
+  vtkTextActor *actor = vtkTextActor::SafeDownCast (am_it->second);
 
-	vtkTextProperty* tprop = actor->GetTextProperty ();
-	tprop->SetFontSize (fontsize);
-	tprop->SetColor (r, g, b);
+  actor->SetPosition (xpos, ypos);
+  actor->SetInput (text.c_str ());
 
-	actor->Modified ();
+  vtkTextProperty* tprop = actor->GetTextProperty ();
+  tprop->SetFontSize (fontsize);
+  tprop->SetColor (r, g, b);
 
-	return (true);
+  actor->Modified ();
+
+  return (true);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////

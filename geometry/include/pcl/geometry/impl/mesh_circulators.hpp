@@ -530,7 +530,7 @@ namespace pcl
       reference
       dereference () const
       {
-        return (p_mesh_->getElement (idx_outgoing_half_edge_).getElement (*p_mesh_));
+        return (p_mesh_->getElement (idx_outgoing_half_edge_).getFace (*p_mesh_));
       }
 
     private:

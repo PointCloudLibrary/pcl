@@ -160,14 +160,9 @@ namespace pcl
     public:
 
       MeshBase ()
-        : vertexes_ (), half_edges_ (), faces_ ()
-      {
-      }
-
-      MeshBase (const Self& other)
-        : vertexes_   (other.beginVertexes  (), other.endVertexes ()),
-          half_edges_ (other.beginHalfEdges (), other.endHalfEdges ()),
-          faces_      (other.beginFaces     (), other.endFaces ())
+        : vertexes_ (),
+          half_edges_ (),
+          faces_ ()
       {
       }
 
@@ -177,73 +172,73 @@ namespace pcl
       // Begin / End
       //////////////////////////////////////////////////////////////////////////
 
-      inline VertexIterator        beginVertexes ()        {return (vertexes_.begin ());}
-      inline VertexConstIterator   beginVertexes () const  {return (vertexes_.begin ());}
+      VertexIterator        beginVertexes ()        {return (vertexes_.begin ());}
+      VertexConstIterator   beginVertexes () const  {return (vertexes_.begin ());}
 
-      inline VertexIterator        endVertexes ()          {return (vertexes_.end ());}
-      inline VertexConstIterator   endVertexes () const    {return (vertexes_.end ());}
+      VertexIterator        endVertexes ()          {return (vertexes_.end ());}
+      VertexConstIterator   endVertexes () const    {return (vertexes_.end ());}
 
-      inline HalfEdgeIterator      beginHalfEdges ()       {return (half_edges_.begin ());}
-      inline HalfEdgeConstIterator beginHalfEdges () const {return (half_edges_.begin ());}
+      HalfEdgeIterator      beginHalfEdges ()       {return (half_edges_.begin ());}
+      HalfEdgeConstIterator beginHalfEdges () const {return (half_edges_.begin ());}
 
-      inline HalfEdgeIterator      endHalfEdges ()         {return (half_edges_.end ());}
-      inline HalfEdgeConstIterator endHalfEdges () const   {return (half_edges_.end ());}
+      HalfEdgeIterator      endHalfEdges ()         {return (half_edges_.end ());}
+      HalfEdgeConstIterator endHalfEdges () const   {return (half_edges_.end ());}
 
-      inline FaceIterator          beginFaces ()           {return (faces_.begin ());}
-      inline FaceConstIterator     beginFaces () const     {return (faces_.begin ());}
+      FaceIterator          beginFaces ()           {return (faces_.begin ());}
+      FaceConstIterator     beginFaces () const     {return (faces_.begin ());}
 
-      inline FaceIterator          endFaces ()             {return (faces_.end ());}
-      inline FaceConstIterator     endFaces () const       {return (faces_.end ());}
+      FaceIterator          endFaces ()             {return (faces_.end ());}
+      FaceConstIterator     endFaces () const       {return (faces_.end ());}
 
       //////////////////////////////////////////////////////////////////////////
       // Front / Back
       //////////////////////////////////////////////////////////////////////////
 
-      inline Vertex&         frontVertexes ()        {return (vertexes_.front ());}
-      inline const Vertex&   frontVertexes () const  {return (vertexes_.front ());}
+      Vertex&         frontVertexes ()        {return (vertexes_.front ());}
+      const Vertex&   frontVertexes () const  {return (vertexes_.front ());}
 
-      inline Vertex&         backVertexes ()         {return (vertexes_.back ());}
-      inline const Vertex&   backVertexes () const   {return (vertexes_.back ());}
+      Vertex&         backVertexes ()         {return (vertexes_.back ());}
+      const Vertex&   backVertexes () const   {return (vertexes_.back ());}
 
-      inline HalfEdge&       frontHalfEdges ()       {return (half_edges_.front ());}
-      inline const HalfEdge& frontHalfEdges () const {return (half_edges_.front ());}
+      HalfEdge&       frontHalfEdges ()       {return (half_edges_.front ());}
+      const HalfEdge& frontHalfEdges () const {return (half_edges_.front ());}
 
-      inline HalfEdge&       backHalfEdges ()        {return (half_edges_.back ());}
-      inline const HalfEdge& backHalfEdges () const  {return (half_edges_.back ());}
+      HalfEdge&       backHalfEdges ()        {return (half_edges_.back ());}
+      const HalfEdge& backHalfEdges () const  {return (half_edges_.back ());}
 
-      inline Face&           frontFaces ()           {return (faces_.front ());}
-      inline const Face&     frontFaces () const     {return (faces_.front ());}
+      Face&           frontFaces ()           {return (faces_.front ());}
+      const Face&     frontFaces () const     {return (faces_.front ());}
 
-      inline Face&           backFaces ()            {return (faces_.back ());}
-      inline const Face&     backFaces () const      {return (faces_.back ());}
+      Face&           backFaces ()            {return (faces_.back ());}
+      const Face&     backFaces () const      {return (faces_.back ());}
 
       //////////////////////////////////////////////////////////////////////////
       // Size
       //////////////////////////////////////////////////////////////////////////
 
-      inline SizeType sizeVertexes () const  {return (vertexes_.size ());}
-      inline SizeType sizeHalfEdges () const {return (half_edges_.size ());}
-      inline SizeType sizeFaces () const     {return (faces_.size ());}
+      SizeType sizeVertexes () const  {return (vertexes_.size ());}
+      SizeType sizeHalfEdges () const {return (half_edges_.size ());}
+      SizeType sizeFaces () const     {return (faces_.size ());}
 
       //////////////////////////////////////////////////////////////////////////
       // empty
       //////////////////////////////////////////////////////////////////////////
 
-      inline bool empty () {return (vertexes_.empty () && half_edges_.empty () && faces_.empty ());}
+      bool empty () {return (vertexes_.empty () && half_edges_.empty () && faces_.empty ());}
 
       //////////////////////////////////////////////////////////////////////////
       // Reserve
       //////////////////////////////////////////////////////////////////////////
 
-      inline void reserveVertexes (const SizeType n)  {vertexes_.reserve (n);}
-      inline void reserveHalfEdges (const SizeType n) {half_edges_.reserve (n);}
-      inline void reserveFaces (const SizeType n)     {faces_.reserve (n);}
+      void reserveVertexes (const SizeType n)  {vertexes_.reserve (n);}
+      void reserveHalfEdges (const SizeType n) {half_edges_.reserve (n);}
+      void reserveFaces (const SizeType n)     {faces_.reserve (n);}
 
       //////////////////////////////////////////////////////////////////////////
       // Clear
       //////////////////////////////////////////////////////////////////////////
 
-      inline void clear ()
+      void clear ()
       {
         vertexes_.clear ();
         half_edges_.clear ();
@@ -254,93 +249,93 @@ namespace pcl
       // Get the mesh elements
       //////////////////////////////////////////////////////////////////////////
 
-      inline const Vertex&
+      const Vertex&
       getElement (const VertexIndex& idx_vertex) const
       {
-        assert (this->validateVertexIndex (idx_vertex));
-        return (vertexes_ [idx_vertex.idx ()]);
+        assert (this->validateMeshElementIndex (idx_vertex));
+        return (vertexes_ [idx_vertex.getIndex ()]);
       }
 
-      inline Vertex&
+      Vertex&
       getElement (const VertexIndex& idx_vertex)
       {
-        assert (this->validateVertexIndex (idx_vertex));
-        return (vertexes_ [idx_vertex.idx ()]);
+        assert (this->validateMeshElementIndex (idx_vertex));
+        return (vertexes_ [idx_vertex.getIndex ()]);
       }
 
-      inline const HalfEdge&
+      const HalfEdge&
       getElement (const HalfEdgeIndex& idx_half_edge) const
       {
-        assert (this->validateHalfEdgeIndex (idx_half_edge));
-        return (half_edges_ [idx_half_edge.idx ()]);
+        assert (this->validateMeshElementIndex (idx_half_edge));
+        return (half_edges_ [idx_half_edge.getIndex ()]);
       }
 
-      inline HalfEdge&
+      HalfEdge&
       getElement (const HalfEdgeIndex& idx_half_edge)
       {
-        assert (this->validateHalfEdgeIndex (idx_half_edge));
-        return (half_edges_ [idx_half_edge.idx ()]);
+        assert (this->validateMeshElementIndex (idx_half_edge));
+        return (half_edges_ [idx_half_edge.getIndex ()]);
       }
 
-      inline const Face&
+      const Face&
       getElement (const FaceIndex& idx_face) const
       {
-        assert (this->validateFaceIndex (idx_face));
-        return (faces_ [idx_face.idx ()]);
+        assert (this->validateMeshElementIndex (idx_face));
+        return (faces_ [idx_face.getIndex ()]);
       }
 
-      inline Face&
+      Face&
       getElement (const FaceIndex& idx_face)
       {
-        assert (this->validateFaceIndex (idx_face));
-        return (faces_ [idx_face.idx ()]);
+        assert (this->validateMeshElementIndex (idx_face));
+        return (faces_ [idx_face.getIndex ()]);
       }
 
       //////////////////////////////////////////////////////////////////////////
       // VertexAroundVertexCirculator
       //////////////////////////////////////////////////////////////////////////
 
-      inline VertexAroundVertexCirculator
+      VertexAroundVertexCirculator
       getVertexAroundVertexCirculator (const Vertex& vertex)
       {
-        assert (this->validateVertex (vertex));
+        assert (this->validateMeshElement (vertex));
         return (VertexAroundVertexCirculator (vertex, this));
       }
 
-      inline VertexAroundVertexConstCirculator
+      VertexAroundVertexConstCirculator
       getVertexAroundVertexConstCirculator (const Vertex& vertex) const
       {
-        assert (this->validateVertex (vertex));
+        assert (this->validateMeshElement (vertex));
         return (VertexAroundVertexConstCirculator (vertex, this));
       }
 
-      inline VertexAroundVertexCirculator
+      VertexAroundVertexCirculator
       getVertexAroundVertexCirculator (const VertexIndex& idx_vertex)
       {
-        assert (this->validateVertexIndex (idx_vertex));
-        assert (this->validateVertex (this->getElement (idx_vertex)));
+        assert (this->validateMeshElementIndex (idx_vertex));
+        assert (this->validateMeshElement (this->getElement (idx_vertex)));
         return (VertexAroundVertexCirculator (idx_vertex, this));
       }
 
-      inline VertexAroundVertexConstCirculator
+      VertexAroundVertexConstCirculator
       getVertexAroundVertexConstCirculator (const VertexIndex& idx_vertex) const
       {
-        assert (this->validateVertexIndex (idx_vertex));
-        assert (this->validateVertex (this->getElement (idx_vertex)));
+        assert (this->validateMeshElementIndex (idx_vertex));
+        assert (this->validateMeshElement (this->getElement (idx_vertex)));
         return (VertexAroundVertexConstCirculator (idx_vertex, this));
       }
 
-      inline VertexAroundVertexCirculator
+      VertexAroundVertexCirculator
       getVertexAroundVertexCirculator (const HalfEdgeIndex& idx_outgoing_half_edge)
       {
-        assert (this->validateHalfEdgeIndex (idx_outgoing_half_edge));
+        assert (this->validateMeshElementIndex (idx_outgoing_half_edge));
         return (VertexAroundVertexCirculator (idx_outgoing_half_edge, this));
       }
 
-      inline VertexAroundVertexConstCirculator
+      VertexAroundVertexConstCirculator
       getVertexAroundVertexConstCirculator (const HalfEdgeIndex& idx_outgoing_half_edge) const
       {
-        assert (this->validateHalfEdgeIndex (idx_outgoing_half_edge));
+        assert (this->validateMeshElementIndex (idx_outgoing_half_edge));
         return (VertexAroundVertexConstCirculator (idx_outgoing_half_edge, this));
       }
 
@@ -348,47 +343,47 @@ namespace pcl
       // OutgoingHalfEdgeAroundVertexCirculator
       //////////////////////////////////////////////////////////////////////////
 
-      inline OutgoingHalfEdgeAroundVertexCirculator
+      OutgoingHalfEdgeAroundVertexCirculator
       getOutgoingHalfEdgeAroundVertexCirculator (const Vertex& vertex)
       {
-        assert (this->validateVertex (vertex));
+        assert (this->validateMeshElement (vertex));
         return (OutgoingHalfEdgeAroundVertexCirculator (vertex, this));
       }
 
-      inline OutgoingHalfEdgeAroundVertexConstCirculator
+      OutgoingHalfEdgeAroundVertexConstCirculator
       getOutgoingHalfEdgeAroundVertexConstCirculator (const Vertex& vertex) const
       {
-        assert (this->validateVertex (vertex));
+        assert (this->validateMeshElement (vertex));
         return (OutgoingHalfEdgeAroundVertexConstCirculator (vertex, this));
       }
 
-      inline OutgoingHalfEdgeAroundVertexCirculator
+      OutgoingHalfEdgeAroundVertexCirculator
       getOutgoingHalfEdgeAroundVertexCirculator (const VertexIndex& idx_vertex)
       {
-        assert (this->validateVertexIndex (idx_vertex));
-        assert (this->validateVertex (this->getElement (idx_vertex)));
+        assert (this->validateMeshElementIndex (idx_vertex));
+        assert (this->validateMeshElement (this->getElement (idx_vertex)));
         return (OutgoingHalfEdgeAroundVertexCirculator (idx_vertex, this));
       }
 
-      inline OutgoingHalfEdgeAroundVertexConstCirculator
+      OutgoingHalfEdgeAroundVertexConstCirculator
       getOutgoingHalfEdgeAroundVertexConstCirculator (const VertexIndex& idx_vertex) const
       {
-        assert (this->validateVertexIndex (idx_vertex));
-        assert (this->validateVertex (this->getElement (idx_vertex)));
+        assert (this->validateMeshElementIndex (idx_vertex));
+        assert (this->validateMeshElement (this->getElement (idx_vertex)));
         return (OutgoingHalfEdgeAroundVertexConstCirculator (idx_vertex, this));
       }
 
-      inline OutgoingHalfEdgeAroundVertexCirculator
+      OutgoingHalfEdgeAroundVertexCirculator
       getOutgoingHalfEdgeAroundVertexCirculator (const HalfEdgeIndex& idx_outgoing_half_edge)
       {
-        assert (this->validateHalfEdgeIndex (idx_outgoing_half_edge));
+        assert (this->validateMeshElementIndex (idx_outgoing_half_edge));
         return (OutgoingHalfEdgeAroundVertexCirculator (idx_outgoing_half_edge, this));
       }
 
-      inline OutgoingHalfEdgeAroundVertexConstCirculator
+      OutgoingHalfEdgeAroundVertexConstCirculator
       getOutgoingHalfEdgeAroundVertexConstCirculator (const HalfEdgeIndex& idx_outgoing_half_edge) const
       {
-        assert (this->validateHalfEdgeIndex (idx_outgoing_half_edge));
+        assert (this->validateMeshElementIndex (idx_outgoing_half_edge));
         return (OutgoingHalfEdgeAroundVertexConstCirculator (idx_outgoing_half_edge, this));
       }
 
@@ -396,47 +391,47 @@ namespace pcl
       // IncomingHalfEdgeAroundVertexCirculator
       //////////////////////////////////////////////////////////////////////////
 
-      inline IncomingHalfEdgeAroundVertexCirculator
+      IncomingHalfEdgeAroundVertexCirculator
       getIncomingHalfEdgeAroundVertexCirculator (const Vertex& vertex)
       {
-        assert (this->validateVertex (vertex));
+        assert (this->validateMeshElement (vertex));
         return (IncomingHalfEdgeAroundVertexCirculator (vertex, this));
       }
 
-      inline IncomingHalfEdgeAroundVertexConstCirculator
+      IncomingHalfEdgeAroundVertexConstCirculator
       getIncomingHalfEdgeAroundVertexConstCirculator (const Vertex& vertex) const
       {
-        assert (this->validateVertex (vertex));
+        assert (this->validateMeshElement (vertex));
         return (IncomingHalfEdgeAroundVertexConstCirculator (vertex, this));
       }
 
-      inline IncomingHalfEdgeAroundVertexCirculator
+      IncomingHalfEdgeAroundVertexCirculator
       getIncomingHalfEdgeAroundVertexCirculator (const VertexIndex& idx_vertex)
       {
-        assert (this->validateVertexIndex (idx_vertex));
-        assert (this->validateVertex (this->getElement (idx_vertex)));
+        assert (this->validateMeshElementIndex (idx_vertex));
+        assert (this->validateMeshElement (this->getElement (idx_vertex)));
         return (IncomingHalfEdgeAroundVertexCirculator (idx_vertex, this));
       }
 
-      inline IncomingHalfEdgeAroundVertexConstCirculator
+      IncomingHalfEdgeAroundVertexConstCirculator
       getIncomingHalfEdgeAroundVertexConstCirculator (const VertexIndex& idx_vertex) const
       {
-        assert (this->validateVertexIndex (idx_vertex));
-        assert (this->validateVertex (this->getElement (idx_vertex)));
+        assert (this->validateMeshElementIndex (idx_vertex));
+        assert (this->validateMeshElement (this->getElement (idx_vertex)));
         return (IncomingHalfEdgeAroundVertexConstCirculator (idx_vertex, this));
       }
 
-      inline IncomingHalfEdgeAroundVertexCirculator
+      IncomingHalfEdgeAroundVertexCirculator
       getIncomingHalfEdgeAroundVertexCirculator (const HalfEdgeIndex& idx_incoming_half_edge)
       {
-        assert (this->validateHalfEdgeIndex (idx_incoming_half_edge));
+        assert (this->validateMeshElementIndex (idx_incoming_half_edge));
         return (IncomingHalfEdgeAroundVertexCirculator (idx_incoming_half_edge, this));
       }
 
-      inline IncomingHalfEdgeAroundVertexConstCirculator
+      IncomingHalfEdgeAroundVertexConstCirculator
       getIncomingHalfEdgeAroundVertexConstCirculator (const HalfEdgeIndex& idx_incoming_half_edge) const
       {
-        assert (this->validateHalfEdgeIndex (idx_incoming_half_edge));
+        assert (this->validateMeshElementIndex (idx_incoming_half_edge));
         return (IncomingHalfEdgeAroundVertexConstCirculator (idx_incoming_half_edge, this));
       }
 
@@ -444,47 +439,47 @@ namespace pcl
       // FaceAroundVertexCirculator
       //////////////////////////////////////////////////////////////////////////
 
-      inline FaceAroundVertexCirculator
+      FaceAroundVertexCirculator
       getFaceAroundVertexCirculator (const Vertex& vertex)
       {
-        assert (this->validateVertex (vertex));
+        assert (this->validateMeshElement (vertex));
         return (FaceAroundVertexCirculator (vertex, this));
       }
 
-      inline FaceAroundVertexConstCirculator
+      FaceAroundVertexConstCirculator
       getFaceAroundVertexConstCirculator (const Vertex& vertex) const
       {
-        assert (this->validateVertex (vertex));
+        assert (this->validateMeshElement (vertex));
         return (FaceAroundVertexConstCirculator (vertex, this));
       }
 
-      inline FaceAroundVertexCirculator
+      FaceAroundVertexCirculator
       getFaceAroundVertexCirculator (const VertexIndex& idx_vertex)
       {
-        assert (this->validateVertexIndex (idx_vertex));
-        assert (this->validateVertex (this->getElement (idx_vertex)));
+        assert (this->validateMeshElementIndex (idx_vertex));
+        assert (this->validateMeshElement (this->getElement (idx_vertex)));
         return (FaceAroundVertexCirculator (idx_vertex, this));
       }
 
-      inline FaceAroundVertexConstCirculator
+      FaceAroundVertexConstCirculator
       getFaceAroundVertexConstCirculator (const VertexIndex& idx_vertex) const
       {
-        assert (this->validateVertexIndex (idx_vertex));
-        assert (this->validateVertex (this->getElement (idx_vertex)));
+        assert (this->validateMeshElementIndex (idx_vertex));
+        assert (this->validateMeshElement (this->getElement (idx_vertex)));
         return (FaceAroundVertexConstCirculator (idx_vertex, this));
       }
 
-      inline FaceAroundVertexCirculator
+      FaceAroundVertexCirculator
       getFaceAroundVertexCirculator (const HalfEdgeIndex& idx_outgoing_half_edge)
       {
-        assert (this->validateHalfEdgeIndex (idx_outgoing_half_edge));
+        assert (this->validateMeshElementIndex (idx_outgoing_half_edge));
         return (FaceAroundVertexCirculator (idx_outgoing_half_edge, this));
       }
 
-      inline FaceAroundVertexConstCirculator
+      FaceAroundVertexConstCirculator
       getFaceAroundVertexConstCirculator (const HalfEdgeIndex& idx_outgoing_half_edge) const
       {
-        assert (this->validateHalfEdgeIndex (idx_outgoing_half_edge));
+        assert (this->validateMeshElementIndex (idx_outgoing_half_edge));
         return (FaceAroundVertexConstCirculator (idx_outgoing_half_edge, this));
       }
 
@@ -492,47 +487,47 @@ namespace pcl
       // VertexAroundFaceCirculator
       //////////////////////////////////////////////////////////////////////////
 
-      inline VertexAroundFaceCirculator
+      VertexAroundFaceCirculator
       getVertexAroundFaceCirculator (const Face& face)
       {
-        assert (this->validateFace (face));
+        assert (this->validateMeshElement (face));
         return (VertexAroundFaceCirculator (face, this));
       }
 
-      inline VertexAroundFaceConstCirculator
+      VertexAroundFaceConstCirculator
       getVertexAroundFaceConstCirculator (const Face& face) const
       {
-        assert (this->validateFace (face));
+        assert (this->validateMeshElement (face));
         return (VertexAroundFaceConstCirculator (face, this));
       }
 
-      inline VertexAroundFaceCirculator
+      VertexAroundFaceCirculator
       getVertexAroundFaceCirculator (const FaceIndex& idx_face)
       {
-        assert (this->validateFaceIndex (idx_face));
-        assert (this->validateFace (this->getElement (idx_face)));
+        assert (this->validateMeshElementIndex (idx_face));
+        assert (this->validateMeshElement (this->getElement (idx_face)));
         return (VertexAroundFaceCirculator (idx_face, this));
       }
 
-      inline VertexAroundFaceConstCirculator
+      VertexAroundFaceConstCirculator
       getVertexAroundFaceConstCirculator (const FaceIndex& idx_face) const
       {
-        assert (this->validateFaceIndex (idx_face));
-        assert (this->validateFace (this->getElement (idx_face)));
+        assert (this->validateMeshElementIndex (idx_face));
+        assert (this->validateMeshElement (this->getElement (idx_face)));
         return (VertexAroundFaceConstCirculator (idx_face, this));
       }
 
-      inline VertexAroundFaceCirculator
+      VertexAroundFaceCirculator
       getVertexAroundFaceCirculator (const HalfEdgeIndex& idx_inner_half_edge)
       {
-        assert (this->validateHalfEdgeIndex (idx_inner_half_edge));
+        assert (this->validateMeshElementIndex (idx_inner_half_edge));
         return (VertexAroundFaceCirculator (idx_inner_half_edge, this));
       }
 
-      inline VertexAroundFaceConstCirculator
+      VertexAroundFaceConstCirculator
       getVertexAroundFaceConstCirculator (const HalfEdgeIndex& idx_inner_half_edge) const
       {
-        assert (this->validateHalfEdgeIndex (idx_inner_half_edge));
+        assert (this->validateMeshElementIndex (idx_inner_half_edge));
         return (VertexAroundFaceConstCirculator (idx_inner_half_edge, this));
       }
 
@@ -540,47 +535,47 @@ namespace pcl
       // InnerHalfEdgeAroundFaceCirculator
       //////////////////////////////////////////////////////////////////////////
 
-      inline InnerHalfEdgeAroundFaceCirculator
+      InnerHalfEdgeAroundFaceCirculator
       getInnerHalfEdgeAroundFaceCirculator (const Face& face)
       {
-        assert (this->validateFace (face));
+        assert (this->validateMeshElement (face));
         return (InnerHalfEdgeAroundFaceCirculator (face, this));
       }
 
-      inline InnerHalfEdgeAroundFaceConstCirculator
+      InnerHalfEdgeAroundFaceConstCirculator
       getInnerHalfEdgeAroundFaceConstCirculator (const Face& face) const
       {
-        assert (this->validateFace (face));
+        assert (this->validateMeshElement (face));
         return (InnerHalfEdgeAroundFaceConstCirculator (face, this));
       }
 
-      inline InnerHalfEdgeAroundFaceCirculator
+      InnerHalfEdgeAroundFaceCirculator
       getInnerHalfEdgeAroundFaceCirculator (const FaceIndex& idx_face)
       {
-        assert (this->validateFaceIndex (idx_face));
-        assert (this->validateFace (this->getElement (idx_face)));
+        assert (this->validateMeshElementIndex (idx_face));
+        assert (this->validateMeshElement (this->getElement (idx_face)));
         return (InnerHalfEdgeAroundFaceCirculator (idx_face, this));
       }
 
-      inline InnerHalfEdgeAroundFaceConstCirculator
+      InnerHalfEdgeAroundFaceConstCirculator
       getInnerHalfEdgeAroundFaceConstCirculator (const FaceIndex& idx_face) const
       {
-        assert (this->validateFaceIndex (idx_face));
-        assert (this->validateFace (this->getElement (idx_face)));
+        assert (this->validateMeshElementIndex (idx_face));
+        assert (this->validateMeshElement (this->getElement (idx_face)));
         return (InnerHalfEdgeAroundFaceConstCirculator (idx_face, this));
       }
 
-      inline InnerHalfEdgeAroundFaceCirculator
+      InnerHalfEdgeAroundFaceCirculator
       getInnerHalfEdgeAroundFaceCirculator (const HalfEdgeIndex& idx_inner_half_edge)
       {
-        assert (this->validateHalfEdgeIndex (idx_inner_half_edge));
+        assert (this->validateMeshElementIndex (idx_inner_half_edge));
         return (InnerHalfEdgeAroundFaceCirculator (idx_inner_half_edge, this));
       }
 
-      inline InnerHalfEdgeAroundFaceConstCirculator
+      InnerHalfEdgeAroundFaceConstCirculator
       getInnerHalfEdgeAroundFaceConstCirculator (const HalfEdgeIndex& idx_inner_half_edge) const
       {
-        assert (this->validateHalfEdgeIndex (idx_inner_half_edge));
+        assert (this->validateMeshElementIndex (idx_inner_half_edge));
         return (InnerHalfEdgeAroundFaceConstCirculator (idx_inner_half_edge, this));
       }
 
@@ -588,47 +583,47 @@ namespace pcl
       // OuterHalfEdgeAroundFaceCirculator
       //////////////////////////////////////////////////////////////////////////
 
-      inline OuterHalfEdgeAroundFaceCirculator
+      OuterHalfEdgeAroundFaceCirculator
       getOuterHalfEdgeAroundFaceCirculator (const Face& face)
       {
-        assert (this->validateFace (face));
+        assert (this->validateMeshElement (face));
         return (OuterHalfEdgeAroundFaceCirculator (face, this));
       }
 
-      inline OuterHalfEdgeAroundFaceConstCirculator
+      OuterHalfEdgeAroundFaceConstCirculator
       getOuterHalfEdgeAroundFaceConstCirculator (const Face& face) const
       {
-        assert (this->validateFace (face));
+        assert (this->validateMeshElement (face));
         return (OuterHalfEdgeAroundFaceConstCirculator (face, this));
       }
 
-      inline OuterHalfEdgeAroundFaceCirculator
+      OuterHalfEdgeAroundFaceCirculator
       getOuterHalfEdgeAroundFaceCirculator (const FaceIndex& idx_face)
       {
-        assert (this->validateFaceIndex (idx_face));
-        assert (this->validateFace (this->getElement (idx_face)));
+        assert (this->validateMeshElementIndex (idx_face));
+        assert (this->validateMeshElement (this->getElement (idx_face)));
         return (OuterHalfEdgeAroundFaceCirculator (idx_face, this));
       }
 
-      inline OuterHalfEdgeAroundFaceConstCirculator
+      OuterHalfEdgeAroundFaceConstCirculator
       getOuterHalfEdgeAroundFaceConstCirculator (const FaceIndex& idx_face) const
       {
-        assert (this->validateFaceIndex (idx_face));
-        assert (this->validateFace (this->getElement (idx_face)));
+        assert (this->validateMeshElementIndex (idx_face));
+        assert (this->validateMeshElement (this->getElement (idx_face)));
         return (OuterHalfEdgeAroundFaceConstCirculator (idx_face, this));
       }
 
-      inline OuterHalfEdgeAroundFaceCirculator
+      OuterHalfEdgeAroundFaceCirculator
       getOuterHalfEdgeAroundFaceCirculator (const HalfEdgeIndex& idx_inner_half_edge)
       {
-        assert (this->validateHalfEdgeIndex (idx_inner_half_edge));
+        assert (this->validateMeshElementIndex (idx_inner_half_edge));
         return (OuterHalfEdgeAroundFaceCirculator (idx_inner_half_edge, this));
       }
 
-      inline OuterHalfEdgeAroundFaceConstCirculator
+      OuterHalfEdgeAroundFaceConstCirculator
       getOuterHalfEdgeAroundFaceConstCirculator (const HalfEdgeIndex& idx_inner_half_edge) const
       {
-        assert (this->validateHalfEdgeIndex (idx_inner_half_edge));
+        assert (this->validateMeshElementIndex (idx_inner_half_edge));
         return (OuterHalfEdgeAroundFaceConstCirculator (idx_inner_half_edge, this));
       }
 
@@ -636,47 +631,47 @@ namespace pcl
       // FaceAroundFaceCirculator
       //////////////////////////////////////////////////////////////////////////
 
-      inline FaceAroundFaceCirculator
+      FaceAroundFaceCirculator
       getFaceAroundFaceCirculator (const Face& face)
       {
-        assert (this->validateFace (face));
+        assert (this->validateMeshElement (face));
         return (FaceAroundFaceCirculator (face, this));
       }
 
-      inline FaceAroundFaceConstCirculator
+      FaceAroundFaceConstCirculator
       getFaceAroundFaceConstCirculator (const Face& face) const
       {
-        assert (this->validateFace (face));
+        assert (this->validateMeshElement (face));
         return (FaceAroundFaceConstCirculator (face, this));
       }
 
-      inline FaceAroundFaceCirculator
+      FaceAroundFaceCirculator
       getFaceAroundFaceCirculator (const FaceIndex& idx_face)
       {
-        assert (this->validateFaceIndex (idx_face));
-        assert (this->validateFace (this->getElement (idx_face)));
+        assert (this->validateMeshElementIndex (idx_face));
+        assert (this->validateMeshElement (this->getElement (idx_face)));
         return (FaceAroundFaceCirculator (idx_face, this));
       }
 
-      inline FaceAroundFaceConstCirculator
+      FaceAroundFaceConstCirculator
       getFaceAroundFaceConstCirculator (const FaceIndex& idx_face) const
       {
-        assert (this->validateFaceIndex (idx_face));
-        assert (this->validateFace (this->getElement (idx_face)));
+        assert (this->validateMeshElementIndex (idx_face));
+        assert (this->validateMeshElement (this->getElement (idx_face)));
         return (FaceAroundFaceConstCirculator (idx_face, this));
       }
 
-      inline FaceAroundFaceCirculator
+      FaceAroundFaceCirculator
       getFaceAroundFaceCirculator (const HalfEdgeIndex& idx_inner_half_edge)
       {
-        assert (this->validateHalfEdgeIndex (idx_inner_half_edge));
+        assert (this->validateMeshElementIndex (idx_inner_half_edge));
         return (FaceAroundFaceCirculator (idx_inner_half_edge, this));
       }
 
-      inline FaceAroundFaceConstCirculator
+      FaceAroundFaceConstCirculator
       getFaceAroundFaceConstCirculator (const HalfEdgeIndex& idx_inner_half_edge) const
       {
-        assert (this->validateHalfEdgeIndex (idx_inner_half_edge));
+        assert (this->validateMeshElementIndex (idx_inner_half_edge));
         return (FaceAroundFaceConstCirculator (idx_inner_half_edge, this));
       }
 
@@ -684,17 +679,17 @@ namespace pcl
       // HalfEdgeAroundBoundaryCirculator
       //////////////////////////////////////////////////////////////////////////
 
-      inline HalfEdgeAroundBoundaryCirculator
+      HalfEdgeAroundBoundaryCirculator
       getHalfEdgeAroundBoundaryCirculator (const HalfEdgeIndex& idx_boundary_half_edge)
       {
-        assert (this->validateHalfEdgeIndex (idx_boundary_half_edge));
+        assert (this->validateMeshElementIndex (idx_boundary_half_edge));
         return (this->getInnerHalfEdgeAroundFaceCirculator (idx_boundary_half_edge));
       }
 
-      inline HalfEdgeAroundBoundaryConstCirculator
+      HalfEdgeAroundBoundaryConstCirculator
       getHalfEdgeAroundBoundaryConstCirculator (const HalfEdgeIndex& idx_boundary_half_edge) const
       {
-        assert (this->validateHalfEdgeIndex (idx_boundary_half_edge));
+        assert (this->validateMeshElementIndex (idx_boundary_half_edge));
         return (this->getInnerHalfEdgeAroundFaceConstCirculator (idx_boundary_half_edge));
       }
 
@@ -704,29 +699,29 @@ namespace pcl
       // Push back
       //////////////////////////////////////////////////////////////////////////
 
-      inline VertexIndex
+      VertexIndex
       pushBackVertex (const Vertex& vertex)
       {
         vertexes_.push_back (vertex);
-        return (VertexIndex (this->sizeVertexes ()-1));
+        return (VertexIndex (static_cast<int> (this->sizeVertexes ()) - 1));
       }
 
-      inline VertexIndex
+      VertexIndex
       pushBackVertex (const VertexData&    vertex_data             = VertexData (),
                       const HalfEdgeIndex& idx_outgoing_half_edge_ = HalfEdgeIndex ())
       {
         vertexes_.push_back (Vertex (vertex_data, idx_outgoing_half_edge_));
-        return (VertexIndex (this->sizeVertexes ()-1));
+        return (VertexIndex (static_cast<int> (this->sizeVertexes ()) - 1));
       }
 
-      inline HalfEdgeIndex
+      HalfEdgeIndex
       pushBackHalfEdge (const HalfEdge& half_edge)
       {
         half_edges_.push_back (half_edge);
-        return (HalfEdgeIndex (this->sizeHalfEdges ()-1));
+        return (HalfEdgeIndex (static_cast<int> (this->sizeHalfEdges ()) - 1));
       }
 
-      inline HalfEdgeIndex
+      HalfEdgeIndex
       pushBackHalfEdge (const HalfEdgeData&  half_edge_data         = HalfEdgeData  (),
                         const VertexIndex&   idx_terminating_vertex = VertexIndex   (),
                         const HalfEdgeIndex& idx_opposite_half_edge = HalfEdgeIndex (),
@@ -735,58 +730,58 @@ namespace pcl
                         const FaceIndex&     idx_face               = FaceIndex     ())
       {
         half_edges_.push_back (HalfEdge (half_edge_data, idx_terminating_vertex, idx_opposite_half_edge, idx_next_half_edge, idx_prev_half_edge, idx_face));
-        return (HalfEdgeIndex (this->sizeHalfEdges ()-1));
+        return (HalfEdgeIndex (static_cast<int> (this->sizeHalfEdges ()) - 1));
       }
 
-      inline FaceIndex
+      FaceIndex
       pushBackFace (const Face& face)
       {
         faces_.push_back (face);
-        return (FaceIndex (this->sizeFaces ()-1));
+        return (FaceIndex (static_cast<int> (this->sizeFaces ()) - 1));
       }
 
-      inline FaceIndex
+      FaceIndex
       pushBackFace (const FaceData&          face_data           = FaceData (),
                     const HalfEdgeIndex& idx_inner_half_edge = HalfEdgeIndex ())
       {
         faces_.push_back (Face (face_data, idx_inner_half_edge));
-        return (FaceIndex (this->sizeFaces ()-1));
+        return (FaceIndex (static_cast<int> (this->sizeFaces ()) - 1));
       }
 
       //////////////////////////////////////////////////////////////////////////
       // For the assertions
       //////////////////////////////////////////////////////////////////////////
 
-      inline bool
-      validateVertex (const Vertex& vertex) const
+      bool
+      validateMeshElement (const Vertex& vertex) const
       {
-        return (this->validateHalfEdgeIndex (vertex.getOutgoingHalfEdgeIndex ()));
+        return (this->validateMeshElementIndex (vertex.getOutgoingHalfEdgeIndex ()));
       }
 
-      inline bool
-      validateVertexIndex (const VertexIndex& idx_vertex) const
+      bool
+      validateMeshElementIndex (const VertexIndex& idx_vertex) const
       {
         if (!idx_vertex.isValid ())              return (false);
         if (idx_vertex >= this->sizeVertexes ()) return (false);
         return (true);
       }
 
-      inline bool
-      validateHalfEdgeIndex (const HalfEdgeIndex& idx_half_edge) const
+      bool
+      validateMeshElementIndex (const HalfEdgeIndex& idx_half_edge) const
       {
         if (!idx_half_edge.isValid ())               return (false);
         if (idx_half_edge >= this->sizeHalfEdges ()) return (false);
         return (true);
       }
 
-      inline bool
-      validateFace (const Face& face) const
+      bool
+      validateMeshElement (const Face& face) const
       {
-        return (this->validateHalfEdgeIndex (face.getInnerHalfEdgeIndex ()));
+        return (this->validateMeshElementIndex (face.getInnerHalfEdgeIndex ()));
       }
 
-      inline bool
-      validateFaceIndex (const FaceIndex& idx_face) const
+      bool
+      validateMeshElementIndex (const FaceIndex& idx_face) const
       {
         if (!idx_face.isValid ())           return (false);
         if (idx_face >= this->sizeFaces ()) return (false);

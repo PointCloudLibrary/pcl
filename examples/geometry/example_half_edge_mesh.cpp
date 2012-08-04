@@ -219,7 +219,7 @@ int main ()
   //////////////////////////////////////////////////////////////////////////////
 
   std::cout << std::endl << "Deleting face 1 and 4 ...\n";
-  std::cout << "(If the mesh is manifold further faces are removed automatically)\n\n";
+  std::cout << "(If the mesh is set to manifold further faces are removed automatically)\n\n";
   mesh.deleteFace (FaceIndex (1));
   mesh.deleteFace (4); // Converted to FaceIndex
 

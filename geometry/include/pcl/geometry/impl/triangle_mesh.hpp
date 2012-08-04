@@ -129,11 +129,6 @@ namespace pcl
       {
       }
 
-      TriangleMesh (const Self& other)
-        : Base (other)
-      {
-      }
-
     public:
 
       //////////////////////////////////////////////////////////////////////////
@@ -295,7 +290,7 @@ namespace pcl
       // d - c
       // | / |
       // a - b
-      inline FaceIndexPair
+      FaceIndexPair
       connectTrianglePair (const HalfEdgeIndex& idx_he_ab,
                            const HalfEdgeIndex& idx_he_cd,
                            const VertexIndex&   idx_v_a,
@@ -353,7 +348,7 @@ namespace pcl
       // connectFace
       //////////////////////////////////////////////////////////////////////////
 
-      inline FaceIndex
+      FaceIndex
       connectFace (const FaceData&      face_data,
                    const HalfEdgeIndex& idx_he_ab,
                    const HalfEdgeIndex& idx_he_bc,

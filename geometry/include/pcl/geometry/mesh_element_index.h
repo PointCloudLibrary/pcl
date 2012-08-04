@@ -55,6 +55,17 @@
 namespace pcl
 {
 
+  /** \brief Base class for the mesh element indexes.
+    *
+    * \tparam DerivedT VertexIndex, HalfEdgeIndex, FaceIndex
+    *
+    * The mesh class stores mesh elements which in turn store indexes to other mesh elements. The corresponding mesh element to a given index can be accessed by the MeshBase::getElement method in the mesh.
+    *
+    * BaseMeshElementIndex serves as a base class for these indexes. Basically it is just a wrapper around an integer index with a few additional methods.
+    *
+    * \author Martin Saelzle
+    * \ingroup geometry
+    */
   template <class DerivedT>
   class BaseMeshElementIndex
       : boost::totally_ordered <BaseMeshElementIndex <DerivedT> // < > <= >= == !=
@@ -62,115 +73,160 @@ namespace pcl
       , boost::additive        <BaseMeshElementIndex <DerivedT> // += + -= -
       > > >
   {
+      //////////////////////////////////////////////////////////////////////////
+      // Types
+      //////////////////////////////////////////////////////////////////////////
+
     public:
 
       typedef pcl::BaseMeshElementIndex <DerivedT> Self;
       typedef DerivedT                             Derived;
 
+      //////////////////////////////////////////////////////////////////////////
+      // Constructor
+      //////////////////////////////////////////////////////////////////////////
+
     public:
 
+      /** \brief Constructor
+        * \param idx (optional) The integer index; defaults to -1 (invalid index)
+        */
       BaseMeshElementIndex (const int idx = -1)
         : idx_ (idx)
       {
       }
 
-      BaseMeshElementIndex (const Self& other)
-        : idx_ (other.idx ())
-      {
-      }
+      //////////////////////////////////////////////////////////////////////////
+      // Access the stored index
+      //////////////////////////////////////////////////////////////////////////
 
     public:
 
-      inline int&
-      idx ()
+      /** \brief Returns the index (non-const) */
+      int&
+      getIndex ()
       {
         return (idx_);
       }
 
-      inline int
-      idx () const
+      /** \brief Returns the index (const) */
+      int
+      getIndex () const
       {
         return (idx_);
       }
 
-      inline bool
+      /** \brief Set the index */
+      void
+      setIndex (const int idx)
+      {
+        idx_ = idx;
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      // Valid
+      //////////////////////////////////////////////////////////////////////////
+
+    public:
+
+      /** \brief Returns true if the index is valid */
+      bool
       isValid () const
       {
-        return (this->idx () >= 0);
+        return (this->getIndex () >= 0);
       }
 
-      inline void
+      /** \brief Invalidate the index (set it to -1) */
+      void
       invalidate ()
       {
-        this->idx () = -1;
+        this->setIndex (-1);
       }
+
+      //////////////////////////////////////////////////////////////////////////
+      // Operators
+      //////////////////////////////////////////////////////////////////////////
 
     public:
 
-      inline bool
+      /** \brief Comparison operators (with boost::operators): < > <= >= */
+      bool
       operator < (const Self& other) const
       {
-        return (this->idx () < other.idx ());
+        return (this->getIndex () < other.getIndex ());
       }
 
-      inline bool
+      /** \brief Comparison operators (with boost::operators): == != */
+      bool
       operator == (const Self& other) const
       {
-        return (this->idx () == other.idx ());
+        return (this->getIndex () == other.getIndex ());
       }
 
-      inline Self&
+      /** \brief Increment operators (with boost::operators): ++ (pre and post) */
+      Self&
       operator ++ ()
       {
-        ++this->idx ();
+        ++this->getIndex ();
         return (*this);
       }
 
-      inline Self&
+      /** \brief Decrement operators (with boost::operators): \-\- (pre and post) */
+      Self&
       operator -- ()
       {
-        --this->idx ();
+        --this->getIndex ();
         return (*this);
       }
 
-      inline Self&
+      /** \brief Addition operators (with boost::operators): + += */
+      Self&
       operator += (const Self& other)
       {
-        this->idx () += other.idx ();
+        this->getIndex () += other.getIndex ();
         return (*this);
       }
 
-      inline Self&
+      /** \brief Subtraction operators (with boost::operators): - -= */
+      Self&
       operator -= (const Self& other)
       {
-        this->idx () -= other.idx ();
+        this->getIndex () -= other.getIndex ();
         return (*this);
       }
 
-      inline Self&
+      /** \brief Assignment operator */
+      Self&
       operator = (const Self& other)
       {
-        this->idx () = other.idx ();
+        this->setIndex (other.getIndex ());
         return (*this);
       }
 
+      /** \brief Conversion operator to the derived class */
       operator Derived () const
       {
-        return Derived (this->idx ());
+        return Derived (this->getIndex ());
       }
+
+      //////////////////////////////////////////////////////////////////////////
+      // Members
+      //////////////////////////////////////////////////////////////////////////
 
     private:
 
+      /** \brief Stored index */
       int idx_;
   };
 
-  template <class DerivedT> inline std::ostream&
-  operator << (std::ostream& os, const BaseMeshElementIndex <DerivedT>& idx)
-  {
-    return (os << idx.idx ());
-  }
-
 } // End namespace pcl
+
+/** \brief ostream operator */
+template <class DerivedT>  std::ostream&
+operator << (std::ostream& os, const pcl::BaseMeshElementIndex <DerivedT>& idx)
+{
+  return (os << idx.getIndex ());
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // VertexIndex
@@ -179,6 +235,11 @@ namespace pcl
 namespace pcl
 {
 
+  /** \brief VertexIndex for accessing a Vertex.
+    * \see BaseMeshElementIndex
+    * \author Martin Saelzle
+    * \ingroup geometry
+    */
   class PCL_EXPORTS VertexIndex : public pcl::BaseMeshElementIndex <pcl::VertexIndex>
   {
     public:
@@ -188,8 +249,10 @@ namespace pcl
 
     public:
 
+      /** \brief Constructor
+        * \param idx (optional) The integer index; defaults to -1 (invalid index)
+        */
       VertexIndex (const int idx = -1);
-      VertexIndex (const Self& other);
   };
 
 } // End namespace pcl
@@ -201,6 +264,11 @@ namespace pcl
 namespace pcl
 {
 
+  /** \brief HalfEdgeIndex for accessing a HalfEdge.
+    * \see BaseMeshElementIndex
+    * \author Martin Saelzle
+    * \ingroup geometry
+    */
   class PCL_EXPORTS HalfEdgeIndex : public pcl::BaseMeshElementIndex <pcl::HalfEdgeIndex>
   {
     public:
@@ -210,8 +278,10 @@ namespace pcl
 
     public:
 
+      /** \brief Constructor
+        * \param idx (optional) The integer index; defaults to -1 (invalid index)
+        */
       HalfEdgeIndex (const int idx = -1);
-      HalfEdgeIndex (const Self& other);
   };
 
 } // End namespace pcl
@@ -220,24 +290,23 @@ namespace pcl
 // EdgeIndex
 ////////////////////////////////////////////////////////////////////////////////
 
-namespace pcl
-{
+//namespace pcl
+//{
 
-  class PCL_EXPORTS EdgeIndex : public pcl::BaseMeshElementIndex <pcl::EdgeIndex>
-  {
-    public:
+//  class PCL_EXPORTS EdgeIndex : public pcl::BaseMeshElementIndex <pcl::EdgeIndex>
+//  {
+//    public:
 
-      typedef pcl::BaseMeshElementIndex <pcl::EdgeIndex> Base;
-      typedef Base::Derived                              Self;
+//      typedef pcl::BaseMeshElementIndex <pcl::EdgeIndex> Base;
+//      typedef Base::Derived                              Self;
 
-    public:
+//    public:
 
-      EdgeIndex (const pcl::HalfEdgeIndex& idx_he);
-      EdgeIndex (const Self& other);
+//      EdgeIndex (const pcl::HalfEdgeIndex& idx_he);
 
-  };
+//  };
 
-} // End namespace pcl
+//} // End namespace pcl
 
 ////////////////////////////////////////////////////////////////////////////////
 // FaceIndex
@@ -246,6 +315,11 @@ namespace pcl
 namespace pcl
 {
 
+  /** \brief FaceIndex for accessing Face.
+    * \see BaseMeshElementIndex
+    * \author Martin Saelzle
+    * \ingroup geometry
+    */
   class PCL_EXPORTS FaceIndex : public pcl::BaseMeshElementIndex <pcl::FaceIndex>
   {
     public:
@@ -255,34 +329,13 @@ namespace pcl
 
     public:
 
+      /** \brief Constructor
+        * \param idx (optional) The integer index; defaults to -1 (invalid index)
+        */
       FaceIndex (const int idx = -1);
-      FaceIndex (const Self& other);
   };
 
 } // End namespace pcl
-
-////////////////////////////////////////////////////////////////////////////////
-// TriangleIndex
-////////////////////////////////////////////////////////////////////////////////
-
-//namespace pcl
-//{
-
-//  class TriangleIndex : public pcl::FaceIndex
-//  {
-//    public:
-
-//      typedef pcl::FaceIndex     Base;
-//      typedef pcl::TriangleIndex Self;
-
-//    public:
-
-//      TriangleIndex (const int idx = -1);
-//      TriangleIndex (const Self& other);
-//      TriangleIndex (const Base& base);
-//  };
-
-//} // End namespace pcl
 
 #endif // MESH_ELEMENT_INDEX_H
 

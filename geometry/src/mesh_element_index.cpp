@@ -50,11 +50,6 @@ pcl::VertexIndex::VertexIndex (const int idx)
 {
 }
 
-pcl::VertexIndex::VertexIndex (const Self& other)
-  : Base (other.idx ())
-{
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 // HalfEdgeIndex
 ////////////////////////////////////////////////////////////////////////////////
@@ -64,25 +59,14 @@ pcl::HalfEdgeIndex::HalfEdgeIndex (const int idx)
 {
 }
 
-pcl::HalfEdgeIndex::HalfEdgeIndex (const Self& other)
-  : Base (other.idx ())
-{
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 // EdgeIndex
 ////////////////////////////////////////////////////////////////////////////////
 
-pcl::EdgeIndex::EdgeIndex (const pcl::HalfEdgeIndex& idx_he)
-  : Base (idx_he.idx () / 2) // Floor
-{
-}
-
-pcl::EdgeIndex::EdgeIndex (const Self& other)
-  : Base (other.idx ())
-{
-}
-
+//pcl::EdgeIndex::EdgeIndex (const pcl::HalfEdgeIndex& idx_he)
+//  : Base (idx_he.getIndex () / 2) // Floor
+//{
+//}
 
 ////////////////////////////////////////////////////////////////////////////////
 // FaceIndex
@@ -93,28 +77,3 @@ pcl::FaceIndex::FaceIndex (const int idx)
   : Base (idx)
 {
 }
-
-pcl::FaceIndex::FaceIndex (const Self& other)
-  : Base (other.idx ())
-{
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// TriangleIndex
-////////////////////////////////////////////////////////////////////////////////
-
-//pcl::TriangleIndex::TriangleIndex (const int idx)
-//  : Base (idx)
-//{
-//}
-
-//pcl::TriangleIndex::TriangleIndex (const Self& other)
-//  : Base (other.idx ())
-//{
-//}
-
-//pcl::TriangleIndex::TriangleIndex (const Base& base)
-//  : Base (base.idx ())
-//{
-//}
-

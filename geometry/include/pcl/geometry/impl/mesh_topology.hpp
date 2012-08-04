@@ -127,18 +127,13 @@ namespace pcl
       {
       }
 
-      MeshTopology (const Self& other)
-        : Base (other)
-      {
-      }
-
     public:
 
       //////////////////////////////////////////////////////////////////////////
       // isManifold
       //////////////////////////////////////////////////////////////////////////
 
-      inline bool
+      bool
       isManifold () const
       {
         return (this->isManifold (IsManifold ()));
@@ -148,7 +143,7 @@ namespace pcl
       // addVertex
       //////////////////////////////////////////////////////////////////////////
 
-      inline VertexIndex
+      VertexIndex
       addVertex (const VertexData& vertex_data)
       {
         return (Base::pushBackVertex (vertex_data));
@@ -161,7 +156,7 @@ namespace pcl
       void
       deleteVertex (const VertexIndex& idx_vertex)
       {
-        assert (Base::validateVertexIndex (idx_vertex));
+        assert (Base::validateMeshElementIndex (idx_vertex));
 
         FaceAroundVertexConstCirculator       circ     = Base::getFaceAroundVertexConstCirculator (idx_vertex);
         const FaceAroundVertexConstCirculator circ_end = circ;
@@ -183,7 +178,7 @@ namespace pcl
       void
       deleteEdge (const HalfEdgeIndex& idx_half_edge)
       {
-        assert (Base::validateHalfEdgeIndex (idx_half_edge));
+        assert (Base::validateMeshElementIndex (idx_half_edge));
 
         const HalfEdge& he = Base::getElement (idx_half_edge);
         this->deleteFace (he.getFaceIndex ());
@@ -194,10 +189,10 @@ namespace pcl
       // deleteFace
       //////////////////////////////////////////////////////////////////////////
 
-      inline void
+      void
       deleteFace (const FaceIndex &idx_face)
       {
-        assert (Base::validateFaceIndex (idx_face));
+        assert (Base::validateMeshElementIndex (idx_face));
 
         std::stack<FaceIndex> delete_faces; // This is only needed for a manifold mesh. It should be removed by the compiler during the optimization for a non-manifold mesh.
 
@@ -227,25 +222,25 @@ namespace pcl
         {
           if (!it_v->isIsolated ())
           {
-            it_v->setOutgoingHalfEdgeIndex (new_half_edge_indexes [it_v->getOutgoingHalfEdgeIndex ().idx ()]);
+            it_v->setOutgoingHalfEdgeIndex (new_half_edge_indexes [it_v->getOutgoingHalfEdgeIndex ().getIndex ()]);
           }
         }
 
         for (; it_he!=it_he_end; ++it_he)
         {
-          it_he->setTerminatingVertexIndex (new_vertex_indexes [it_he->getTerminatingVertexIndex ().idx ()]);
-          it_he->setOppositeHalfEdgeIndex (new_half_edge_indexes [it_he->getOppositeHalfEdgeIndex ().idx ()]);
-          it_he->setNextHalfEdgeIndex (new_half_edge_indexes [it_he->getNextHalfEdgeIndex ().idx ()]);
-          it_he->setPrevHalfEdgeIndex (new_half_edge_indexes [it_he->getPrevHalfEdgeIndex ().idx ()]);
+          it_he->setTerminatingVertexIndex (new_vertex_indexes [it_he->getTerminatingVertexIndex ().getIndex ()]);
+          it_he->setOppositeHalfEdgeIndex (new_half_edge_indexes [it_he->getOppositeHalfEdgeIndex ().getIndex ()]);
+          it_he->setNextHalfEdgeIndex (new_half_edge_indexes [it_he->getNextHalfEdgeIndex ().getIndex ()]);
+          it_he->setPrevHalfEdgeIndex (new_half_edge_indexes [it_he->getPrevHalfEdgeIndex ().getIndex ()]);
           if (!it_he->isBoundary ())
           {
-            it_he->setFaceIndex (new_face_indexes [it_he->getFaceIndex ().idx ()]);
+            it_he->setFaceIndex (new_face_indexes [it_he->getFaceIndex ().getIndex ()]);
           }
         }
 
         for (; it_f!=it_f_end; ++it_f)
         {
-          it_f->setInnerHalfEdgeIndex (new_half_edge_indexes [it_f->getInnerHalfEdgeIndex ().idx ()]);
+          it_f->setInnerHalfEdgeIndex (new_half_edge_indexes [it_f->getInnerHalfEdgeIndex ().getIndex ()]);
         }
       }
 
@@ -257,7 +252,7 @@ namespace pcl
 
       // is_new must be initialized with true!
       // Returns true if addFace may be continued
-      inline bool
+      bool
       firstTopologyCheck (const VertexIndex& idx_v_a,
                           const VertexIndex& idx_v_b,
                           HalfEdgeIndex&     idx_he_a_out,
@@ -270,7 +265,7 @@ namespace pcl
       // secondTopologyCheck
       //////////////////////////////////////////////////////////////////////////
 
-      inline bool
+      bool
       secondTopologyCheck (const bool is_new_ab,
                            const bool is_new_bc,
                            const bool is_isolated_b) const
@@ -282,7 +277,7 @@ namespace pcl
       // makeAdjacent
       //////////////////////////////////////////////////////////////////////////
 
-      inline void
+      void
       makeAdjacent (const HalfEdgeIndex& idx_he_ab,
                     const HalfEdgeIndex& idx_he_bc)
       {
@@ -293,7 +288,7 @@ namespace pcl
       // addHalfEdgePair
       //////////////////////////////////////////////////////////////////////////
 
-      inline void
+      void
       addHalfEdgePair (const VertexIndex&  idx_v_a,
                        const VertexIndex&  idx_v_b,
                        const HalfEdgeData& he_data_ab,
@@ -312,7 +307,7 @@ namespace pcl
       // connectPrevNext
       //////////////////////////////////////////////////////////////////////////
 
-      inline void
+      void
       connectPrevNext (const HalfEdgeIndex& idx_he_ab,
                        const HalfEdgeIndex& idx_he_bc)
       {
@@ -324,7 +319,7 @@ namespace pcl
       // connect
       //////////////////////////////////////////////////////////////////////////
 
-      inline void
+      void
       connectHalfEdges (const bool           is_new_ab,
                         const bool           is_new_bc,
                         const HalfEdgeIndex& idx_he_ab,
@@ -343,7 +338,7 @@ namespace pcl
       // connectFace
       //////////////////////////////////////////////////////////////////////////
 
-      inline FaceIndex
+      FaceIndex
       connectFace (const FaceData&                  face_data,
                    HalfEdgeIndexConstIterator       it,
                    const HalfEdgeIndexConstIterator it_end)
@@ -365,13 +360,13 @@ namespace pcl
       // isManifold
       //////////////////////////////////////////////////////////////////////////
 
-      inline bool
+      bool
       isManifold (ManifoldMeshTag) const
       {
         return (true);
       }
 
-      inline bool
+      bool
       isManifold (NonManifoldMeshTag) const
       {
         VertexConstIterator       it     = Base::beginVertexes ();
@@ -413,7 +408,7 @@ namespace pcl
                   std::stack<FaceIndex>& delete_faces,
                   NonManifoldMeshTag)
       {
-        assert (Base::validateFaceIndex (idx_face));
+        assert (Base::validateMeshElementIndex (idx_face));
 
         Face& face = Base::getElement (idx_face);
 
@@ -468,7 +463,7 @@ namespace pcl
       // firstTopologyCheck
       //////////////////////////////////////////////////////////////////////////
 
-      inline bool
+      bool
       firstTopologyCheck (const VertexIndex& idx_v_a,
                           const VertexIndex& idx_v_b,
                           HalfEdgeIndex&     idx_he_a_out,
@@ -488,7 +483,7 @@ namespace pcl
         return (true);
       }
 
-      inline bool
+      bool
       firstTopologyCheck (const VertexIndex& idx_v_a,
                           const VertexIndex& idx_v_b,
                           HalfEdgeIndex&     idx_he_a_out,
@@ -526,7 +521,7 @@ namespace pcl
       // secondTopologyCheck
       //////////////////////////////////////////////////////////////////////////
 
-      inline bool
+      bool
       secondTopologyCheck (const bool is_new_ab,
                            const bool is_new_bc,
                            const bool is_isolated_b,
@@ -536,7 +531,7 @@ namespace pcl
         else                                          return (true);
       }
 
-      inline bool
+      bool
       secondTopologyCheck (const bool is_new_ab,
                            const bool is_new_bc,
                            const bool is_isolated_b,
@@ -549,7 +544,7 @@ namespace pcl
       // makeAdjacent
       //////////////////////////////////////////////////////////////////////////
 
-      inline void
+      void
       makeAdjacent (const HalfEdgeIndex& /*idx_he_ab*/,
                     const HalfEdgeIndex& /*idx_he_bc*/,
                     ManifoldMeshTag)
@@ -557,7 +552,7 @@ namespace pcl
         // Nothing to do here (manifold)
       }
 
-      inline void
+      void
       makeAdjacent (const HalfEdgeIndex& idx_he_ab,
                     const HalfEdgeIndex& idx_he_bc,
                     NonManifoldMeshTag)
@@ -596,7 +591,7 @@ namespace pcl
       // connectNewNEw
       //////////////////////////////////////////////////////////////////////////
 
-      inline void
+      void
       connectNewNew (const HalfEdgeIndex& idx_he_ab,
                      const HalfEdgeIndex& idx_he_ba,
                      const HalfEdgeIndex& idx_he_bc,
@@ -610,7 +605,7 @@ namespace pcl
         Base::getElement (idx_v_b).setOutgoingHalfEdgeIndex (idx_he_ba);
       }
 
-      inline void
+      void
       connectNewNew (const HalfEdgeIndex& idx_he_ab,
                      const HalfEdgeIndex& idx_he_ba,
                      const HalfEdgeIndex& idx_he_bc,
@@ -640,7 +635,7 @@ namespace pcl
       // connectNewOld
       //////////////////////////////////////////////////////////////////////////
 
-      inline void
+      void
       connectNewOld (const HalfEdgeIndex& idx_he_ab,
                      const HalfEdgeIndex& idx_he_ba,
                      const HalfEdgeIndex& idx_he_bc,
@@ -659,7 +654,7 @@ namespace pcl
       // connectOldNew
       //////////////////////////////////////////////////////////////////////////
 
-      inline void
+      void
       connectOldNew (const HalfEdgeIndex& idx_he_ab,
                      const HalfEdgeIndex& /*idx_he_ba*/,
                      const HalfEdgeIndex& idx_he_bc,
@@ -678,7 +673,7 @@ namespace pcl
       // connectOldOld
       //////////////////////////////////////////////////////////////////////////
 
-      inline void
+      void
       connectOldOld (const HalfEdgeIndex& /*idx_he_ab*/,
                      const HalfEdgeIndex& /*idx_he_ba*/,
                      const HalfEdgeIndex& /*idx_he_bc*/,
@@ -689,7 +684,7 @@ namespace pcl
         // Nothing to do here (manifold)
       }
 
-      inline void
+      void
       connectOldOld (const HalfEdgeIndex& /*idx_he_ab*/,
                      const HalfEdgeIndex& /*idx_he_ba*/,
                      const HalfEdgeIndex& idx_he_bc,
@@ -720,7 +715,7 @@ namespace pcl
       // reconnect
       //////////////////////////////////////////////////////////////////////////
 
-      inline void
+      void
       reconnect (const bool             is_boundary_ba,
                  const bool             is_boundary_cb,
                  const HalfEdgeIndex&   idx_he_ab,
@@ -739,7 +734,7 @@ namespace pcl
       // reconnectBB (BoundaryBoundary)
       //////////////////////////////////////////////////////////////////////////
 
-      inline void
+      void
       reconnectBB (const HalfEdgeIndex& idx_he_ab,
                    const HalfEdgeIndex& idx_he_ba,
                    const HalfEdgeIndex& /*idx_he_bc*/,
@@ -767,7 +762,7 @@ namespace pcl
       // reconnectBNB (BoundaryNoBoundary)
       //////////////////////////////////////////////////////////////////////////
 
-      inline void
+      void
       reconnectBNB (const HalfEdgeIndex& idx_he_ab,
                     const HalfEdgeIndex& idx_he_ba,
                     const HalfEdgeIndex& idx_he_bc,
@@ -784,7 +779,7 @@ namespace pcl
       // reconnectNBB (NoBoundaryBoundary)
       //////////////////////////////////////////////////////////////////////////
 
-      inline void
+      void
       reconnectNBB (const HalfEdgeIndex& idx_he_ab,
                     const HalfEdgeIndex& /*idx_he_ba*/,
                     const HalfEdgeIndex& /*idx_he_bc*/,
@@ -802,7 +797,7 @@ namespace pcl
       // reconnectNBNB (NoBoundaryNoBoundary)
       //////////////////////////////////////////////////////////////////////////
 
-      inline void
+      void
       reconnectNBNB (const HalfEdgeIndex&   idx_he_ab,
                      const HalfEdgeIndex&   idx_he_ba,
                      const HalfEdgeIndex&   idx_he_bc,
@@ -830,7 +825,7 @@ namespace pcl
         v_b.setOutgoingHalfEdgeIndex (idx_he_bc);
       }
 
-      inline void
+      void
       reconnectNBNB (const HalfEdgeIndex&   idx_he_ab,
                      const HalfEdgeIndex&   idx_he_ba,
                      const HalfEdgeIndex&   idx_he_bc,
@@ -850,7 +845,7 @@ namespace pcl
       // removeMeshElements
       //////////////////////////////////////////////////////////////////////////
 
-      template <class MeshElementsT, class MeshElementIndexesT> inline MeshElementIndexesT
+      template <class MeshElementsT, class MeshElementIndexesT> MeshElementIndexesT
       removeMeshElements (MeshElementsT& mesh_elements,
                           const bool     remove_isolated) const
       {
@@ -868,20 +863,20 @@ namespace pcl
 
         for (; it_mei_new!=it_mei_new_end; ++it_mei_new, ++ind_old)
         {
-          MeshElement& me_old = mesh_elements [ind_old.idx ()];
+          MeshElement& me_old = mesh_elements [ind_old.getIndex ()];
 
           if (!(me_old.getDeleted () || (remove_isolated && me_old.isIsolated ())))
           {
             if (ind_new != ind_old) // avoid self assignment
             {
-              mesh_elements [ind_new.idx ()] = me_old;
+              mesh_elements [ind_new.getIndex ()] = me_old;
             }
 
             *it_mei_new = ind_new++;
           }
         }
 
-        mesh_elements.resize (ind_new.idx ());
+        mesh_elements.resize (ind_new.getIndex ());
 
         return (new_mesh_element_indexes);
       }
