@@ -98,9 +98,9 @@ namespace pcl
                            pcl::PointCloud<pcl::PointXY> &output);
 
           /** \brief Applies non-max-suppression. 
-            * \param intensity_data
-            * \param input
-            * \param output
+            * \param[in] intensity_data the image data
+            * \param[in] input the keypoint positions
+            * \param[out] output the resultant keypoints after non-max-supression
             */
           void
           applyNonMaxSuppression (const std::vector<unsigned char>& intensity_data, 
@@ -108,9 +108,9 @@ namespace pcl
                                   pcl::PointCloud<pcl::PointXY> &output);
 
           /** \brief Applies non-max-suppression. 
-            * \param intensity_data
-            * \param input
-            * \param output
+            * \param[in] intensity_data the image data
+            * \param[in] input the keypoint positions
+            * \param[out] output the resultant keypoints after non-max-supression
             */
           void
           applyNonMaxSuppression (const std::vector<float>& intensity_data, 
@@ -166,6 +166,16 @@ namespace pcl
           /** \brief Initializes the sample pattern. */
           virtual void
           initPattern () = 0;
+
+          /** \brief Non-max-suppression helper method.
+            * \param[in] input the keypoint positions
+            * \param[in] scores the keypoint scores computed on the image data
+            * \param[out] output the resultant keypoints after non-max-supression
+            */
+          void
+          applyNonMaxSuppression (const pcl::PointCloud<pcl::PointXY> &input, 
+                                  const std::vector<int>& scores, 
+                                  pcl::PointCloud<pcl::PointXY> &output);
 
           /** \brief Computes corner scores for the specified points. 
             * \param im
