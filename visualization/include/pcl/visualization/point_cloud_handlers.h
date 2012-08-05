@@ -620,6 +620,35 @@ namespace pcl
     };
 
     //////////////////////////////////////////////////////////////////////////////////////
+    /** \brief RGB handler class for colors. Uses the data present in the "rgb" or "rgba"
+      * fields of additional cloud as the color at each point.
+      * \ingroup visualization
+      */
+
+    template <typename PointT>
+    class PointCloudColorHandlerRGBCloud : public PointCloudColorHandler<PointT>
+    {
+      using PointCloudColorHandler<PointT>::capable_;
+      using PointCloudColorHandler<PointT>::cloud_;
+
+      typedef typename PointCloudColorHandler<PointT>::PointCloud::ConstPtr PointCloudConstPtr;
+      typedef typename pcl::PointCloud<RGB>::ConstPtr RgbCloudConstPtr;
+
+    public:
+      typedef boost::shared_ptr<PointCloudColorHandlerRGBCloud<PointT> > Ptr;
+      typedef boost::shared_ptr<const PointCloudColorHandlerRGBCloud<PointT> > ConstPtr;
+      
+      /** \brief Constructor. */
+      PointCloudColorHandlerRGBCloud (const PointCloudConstPtr& cloud, const RgbCloudConstPtr& colors);
+            
+      virtual void getColor (vtkSmartPointer<vtkDataArray> &scalars) const;  
+    private:
+      virtual std::string getFieldName () const { return ("additional rgb"); }
+      virtual inline std::string getName () const { return ("PointCloudColorHandlerRGBCloud"); }
+      RgbCloudConstPtr rgb_;
+    };
+
+    //////////////////////////////////////////////////////////////////////////////////////
     /** \brief HSV handler class for colors. Uses the data present in the "h", "s", "v"
       * fields as the color at each point.
       * \ingroup visualization

@@ -34,6 +34,7 @@
  *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
  */
 
+
 #define _CRT_SECURE_NO_DEPRECATE
 
 #include <iostream>
@@ -61,7 +62,7 @@
 #include <pcl/exceptions.h>
 
 #include "openni_capture.h"
-#include "color_handler.h"
+#include <pcl/visualization/point_cloud_handlers.h>
 #include "evaluation.h"
 
 #include <pcl/common/angles.h>
@@ -449,13 +450,13 @@ struct SceneCloudView
     cloud_viewer_.removeAllPointClouds ();    
     if (valid_combined_)
     {
-      visualization::PointCloudColorHandlerRGBHack<PointNormal> rgb(combined_ptr_, point_colors_ptr_);
+      visualization::PointCloudColorHandlerRGBCloud<PointNormal> rgb(combined_ptr_, point_colors_ptr_);
       cloud_viewer_.addPointCloud<PointNormal> (combined_ptr_, rgb, "Cloud");
       cloud_viewer_.addPointCloudNormals<PointNormal>(combined_ptr_, 50);
     }
     else
     {
-      visualization::PointCloudColorHandlerRGBHack<PointXYZ> rgb(cloud_ptr_, point_colors_ptr_);
+      visualization::PointCloudColorHandlerRGBCloud<PointXYZ> rgb(cloud_ptr_, point_colors_ptr_);
       cloud_viewer_.addPointCloud<PointXYZ> (cloud_ptr_, rgb);
     }    
   }
