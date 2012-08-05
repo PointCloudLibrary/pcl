@@ -34,13 +34,8 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
+ *  $Id$
  */
-
-/*
-  This code defines the octree used for point storage at Urban Robotics. Please
-  contact Jacob Schloss <jacob.schloss@urbanrobotics.net> with any questions.
-  http://www.urbanrobotics.net/
-*/
 
 #ifndef PCL_OUTOFCORE_OCTREE_BASE_H_
 #define PCL_OUTOFCORE_OCTREE_BASE_H_
@@ -103,8 +98,6 @@ namespace pcl
         typedef octree_base<octree_ram_container< PointT> , PointT> octree_ram;
         typedef octree_base_node< octree_ram_container<PointT> , PointT> octree_ram_node;
 
-        //typedef octree_disk octree;
-        //typedef octree_disk_node octree_node;
         typedef pcl::PointCloud<PointT> PointCloud;
         typedef boost::shared_ptr<std::vector<int> > IndicesPtr;
         typedef boost::shared_ptr<const std::vector<int> > IndicesConstPtr;
@@ -125,8 +118,9 @@ namespace pcl
          *
          * \param rootname boost::filesystem::path to existing tree
          * \param load_all Load entire tree
+         * \throws PCLException for bad extension (root node metadata must be .oct_idx extension)
          */
-        octree_base (const boost::filesystem::path& rootname, const bool load_all);
+        octree_base (const boost::filesystem::path& root_name, const bool load_all);
 
         /** \brief Create a new tree
          *
@@ -139,18 +133,18 @@ namespace pcl
          *
          * \param min Bounding box min
          * \param max Bounding box max
-         * \param node_dim_meters
-         * \param rootname must end in ".oct_idx" (THIS SHOULD CHANGE)
+         * \param node_dim_meters Node dimension in meters (assuming your point data is in meters)
+         * \param root_name must end in ".oct_idx" 
          * \param coord_sys 
-         * \throws OctreeException(OCT_BAD_PATH) if file extension is not ".oct_idx"
+         * \throws PCLException if root file extension does not match \ref octree_base_node::node_index_extension
          */
-        octree_base (const double min[3], const double max[3], const double node_dim_meters, const boost::filesystem::path& rootname, const std::string& coord_sys);
+        octree_base (const Eigen::Vector3f&, const Eigen::Vector3f&, const double node_dim_meters, const boost::filesystem::path& root_name, const std::string& coord_sys);
 
         /** \brief Create a new tree; will not overwrite existing tree of same name
          *
          * Create a new tree rootname with specified bounding box; will not overwrite an existing tree
          *
-         * \param max_depth Specifies a fixed number of LODs to generate
+         * \param max_depth Specifies a fixed number of LODs to generate, which is the depth of the tree
          * \param min Bounding box min
          * \param max Bounding box max
          * \param rootname must end in ".oct_idx" 
@@ -158,7 +152,7 @@ namespace pcl
          * \throws OctreeException(OCT_CHILD_EXISTS) if the parent directory has existing children (detects an existing tree)
          * \throws OctreeException(OCT_BAD_PATH) if file extension is not ".oct_idx"
          */
-        octree_base (const int max_depth, const double min[3], const double max[3], const boost::filesystem::path& rootname, const std::string& coord_sys);
+        octree_base (const int max_depth, const Eigen::Vector3f& min, const Eigen::Vector3f& max, const boost::filesystem::path& rootname, const std::string& coord_sys);
 
         ~octree_base ();
 
@@ -232,7 +226,7 @@ namespace pcl
         //templated PointT methods
         //--------------------------------------------------------------------------------
 
-        /** \brief Get bins at query_depth that intersect with your bin
+        /** \brief Get a list of file paths at query_depth that intersect with your bounding box specified by \ref min and \ref max. When querying with this method, you may be stuck with extra data (some outside of your query bounds) that reside in the files.
          *
          * \param[in] min The minimum corner of the bounding box
          * \param[in] max The maximum corner of the bounding box
@@ -240,24 +234,31 @@ namespace pcl
          * \param[out] bin_name List of paths to point data files (PCD currently) which satisfy the query
          */
         void
-        queryBBIntersects (const double min[3], const double max[3], const boost::uint32_t query_depth, std::list<std::string>& bin_name) const;
+        queryBBIntersects (const Eigen::Vector3f& min, const Eigen::Vector3f& max, const boost::uint32_t query_depth, std::list<std::string>& bin_name) const;
 
-        //get Points in BB, returning all possible matches, including just BB intersect
-        //bool queryBBInterects(const double min[3], const double max[3]);
-
-        /** \brief get Points in BB, only points inside BB */
+        /** \brief Get Points in BB, only points inside BB. The query
+         * processes the data at each node, filtering points that fall
+         * out of the query bounds, and returns a single, concatenated
+         * point cloud.
+         *
+         * \param[in] min The minimum corner of the bounding box for querying
+         * \param[in] max The maximum corner of the bounding box for querying
+         * \param[in] query_depth The depth from which point data will be taken
+         *   \note If the LODs of the tree have not been built, you must specify the \ref max_depth_ in order to retrieve any data
+         * \param[out] dst The destination vector of points
+         */
         void
-        queryBBIncludes (const double min[3], const double max[3], size_t query_depth, AlignedPointTVector& dst) const;
+        queryBBIncludes (const Eigen::Vector3f& min, const Eigen::Vector3f& max, const size_t query_depth, AlignedPointTVector& dst) const;
 
         /** \brief get point in BB into a pointcloud2 blob 
          *
          * \param[in] min The minimum corner of the bounding box to query
          * \param[in] max The maximum corner of the bounding box to query
          * \param[in] query_depth The query depth at which to search for points; only points at this depth are returned
-         * \param[out] dst_blob Container for the stoage to which the points are inserted. Note it must already be allocated, and empty when this method is called.
+         * \param[out] dst_blob Container for the storage to which the points are inserted. Note it must already be allocated, and empty when this method is called.
          **/
         void
-        queryBBIncludes (const double min[3], const double max[3], size_t query_depth, const sensor_msgs::PointCloud2::Ptr& dst_blob) const
+        queryBBIncludes (const Eigen::Vector3f& min, const Eigen::Vector3f& max, const int query_depth, const sensor_msgs::PointCloud2::Ptr& dst_blob) const
         {
           boost::shared_lock < boost::shared_mutex > lock (read_write_mutex_);
 
@@ -277,7 +278,7 @@ namespace pcl
          * 
          */
         void
-        queryBBIncludes_subsample (const double min[3], const double max[3], size_t query_depth, const double percent, AlignedPointTVector& dst) const;
+        queryBBIncludes_subsample (const Eigen::Vector3f& min, const Eigen::Vector3f& max, size_t query_depth, const double percent, AlignedPointTVector& dst) const;
 
         //--------------------------------------------------------------------------------
         //PointCloud2 methods
@@ -288,7 +289,7 @@ namespace pcl
 
         /** \brief Copy the overall BB to min max */
         inline bool
-        getBB (double min[3], double max[3]) const
+        getBB (Eigen::Vector3f& min, Eigen::Vector3f& max) const
         {
           if (root_ != NULL)
           {
@@ -310,17 +311,16 @@ namespace pcl
           return lodPoints_[depth];
         }
 
-        /** \brief Get number of points at each LOD */
+        /** \brief Get number of points at each LOD 
+         * \return std::vector of number of points in each LOD indexed by each level of depth, 0 to \ref max_depth_
+         */
         inline const std::vector<boost::uint64_t>&
         getNumPointsVector () const
         {
           return lodPoints_;
         }
 
-        /** \brief Get number of LODs
-         *
-         * Assume fully balanced tree -- all nodes have 8 children, and all branches
-         * are same depth
+        /** \brief Get number of LODs, which is the height of the tree
          */
         inline boost::uint64_t
         getDepth () const
@@ -348,19 +348,33 @@ namespace pcl
           return true;
         }
 
+        /** \brief gets the side length of an (assumed) perfect cubic voxel.
+         *  \note If the initial bounding box specified in constructing the octree is not square, then this method does not return a sensible value 
+         *  \return the side length of the cubic voxel size at the specified depth
+         */
         double
         getVoxelSideLength (const boost::uint64_t depth) const
         {
           return (root_->max_[0] - root_->min_[0]) * pow (.5, double (max_depth_)) * double (1 << (max_depth_ - depth));
         }
 
+        /** \brief Gets the smallest (assumed) cubic voxel side lengths. The smallest voxels are located at the max depth of the tree.
+         * \return The side length of a the cubic voxel located at \ref max_depth_
+         */
         double
         getVoxelSideLength () const
         {
           return getVoxelSideLength (max_depth_);
         }
 
-        /** \brief Get coord system tag in the metadata */
+        /** \brief Get coord system tag in the metadata 
+         *  
+         *  \note This was part of the original Urban Robotics
+         *  implementation, and can be stored in the metadata of the
+         *  tree. If you have additional payload, we recommend 
+         *  using a custom field of the PointCloud2 input upon
+         *  construction of the tree.
+         */
         const std::string&
         getCoordSystem ()
         {
@@ -371,31 +385,49 @@ namespace pcl
         // -----------------------------------------------------------------------
 
         /** \brief Generate LODs for the tree 
+         *  \note This is not implemented for PointCloud2 yet
+         *  \throws PCLException, not implemented
          */
         void
         buildLOD ();
 
+        /** \brief Prints size of BBox to stdout
+         */ 
         void
         printBBox(const size_t query_depth) const;
 
+        /** \brief Prints size of BBoxes to stdout
+         */
         void
         printBBox() const
         {
           printBBox(max_depth_);
         }
 
+        /** \brief Returns the voxel centers of all existing voxels at \ref query_depth
+            \param[in] query_depth: the depth of the tree at which to retrieve occupied/existing voxels
+            \param[out] vector of PointXYZ voxel centers for nodes that exist at that depth
+         */
         void
         getVoxelCenters(AlignedPointTVector &voxel_centers, size_t query_depth) const;
 
+        /** \brief Returns the voxel centers of all existing voxels at \ref query_depth
+            \param[in] query_depth: the depth of the tree at which to retrieve occupied/existing voxels
+            \param[out] vector of PointXYZ voxel centers for nodes that exist at that depth
+         */
         void
         getVoxelCenters(std::vector<Eigen::Vector3f> &voxel_centers, size_t query_depth) const;
 
+        /** \brief Gets the voxel centers of all occupied/existing leaves of the tree */
         void
         getVoxelCenters(AlignedPointTVector &voxel_centers) const
         {
           getVoxelCenters(voxel_centers, max_depth_);
         }
 
+        /** \brief Returns the voxel centers of all occupied/existing leaves of the tree 
+         *  \param[out] voxel_centers std::vector of the centers of all occupied leaves of the octree
+         */
         void
         getVoxelCenters(std::vector<Eigen::Vector3f> &voxel_centers) const
         {
@@ -419,22 +451,26 @@ namespace pcl
         /** \brief Write a python script using the vpython module containing all
          * the bounding boxes */
         void
-        writeVPythonVisual (const char* file);
+        writeVPythonVisual (const boost::filesystem::path filename);
 
         // (note from UR) The following are DEPRECATED since I found that writeback caches did not
         // scale well, and they are currently disabled in the backend
 
         /** \brief DEPRECATED - Flush all nodes' cache 
-         *  \note this was moved to the octree_node class
+         *  \deprecated this was moved to the octree_node class
          */
         void
         flushToDisk ();
 
-        /** \brief DEPRECATED - Flush all non leaf nodes' cache */
+        /** \brief DEPRECATED - Flush all non leaf nodes' cache 
+         *  \deprecated
+         */
         void
         flushToDiskLazy ();
 
-        /** \brief DEPRECATED - Flush empty nodes only */
+        /** \brief DEPRECATED - Flush empty nodes only 
+         *  \deprecated
+         */
         void
         DeAllocEmptyNodeCache ();
 
@@ -488,16 +524,16 @@ namespace pcl
         /** \brief boost::filesystem::path to the location of the root of
          *  the tree on disk relative to execution directory*/
         boost::filesystem::path treepath_;
+
         /** \brief string representing the coordinate system
          *
-         *  \note Goal is to support: WGS84 (World Geodetic System), UTM
+         *  \note (from Urban Robotics) Goal is to support: WGS84 (World Geodetic System), UTM
          *  (Universal Transverse Mercator), ECEF (Earth Centered Earth
          *  Fixed) and more. Currently nothing special is done for each
          *  coordinate system.
          */
         std::string coord_system_;
         /** \brief defined as ".octree" to append to treepath files
-         * 
          *  \note this might change
          */
         const static std::string TREE_EXTENSION_;
@@ -506,6 +542,8 @@ namespace pcl
         /** \todo @b loadcount mystery constant 2e9 points at a time to subsample; should parameterize; use mmap */
         const static uint64_t LOAD_COUNT_ = static_cast<uint64_t>(2e9);
 
+        /** \brief Minimum dimension of the smallest voxel represented by the tree in the leaves.
+         */
         double resolution_;
 
     };

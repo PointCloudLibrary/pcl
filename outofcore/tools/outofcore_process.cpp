@@ -139,8 +139,8 @@ outofcoreProcess (std::vector<boost::filesystem::path> pcd_paths, boost::filesys
   std::cout << "Bounds: " << min_pt << " - " << max_pt << std::endl;
 
   // The bounding box of the root node of the out-of-core octree must be specified
-  const double bounding_box_min[3] = {min_pt.x, min_pt.y, min_pt.z};
-  const double bounding_box_max[3] = {max_pt.x, max_pt.y, max_pt.z};
+  const Eigen::Vector3f bounding_box_min (min_pt.x, min_pt.y, min_pt.z);
+  const Eigen::Vector3f bounding_box_max (max_pt.x, max_pt.y, max_pt.z);
 
   //specify the directory and the root node's meta data file with a
   //".oct_idx" extension (currently it must be this extension)

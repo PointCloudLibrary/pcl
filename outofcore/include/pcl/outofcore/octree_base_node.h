@@ -34,12 +34,8 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
+ *  $Id$
  */
-/*
-  This code defines the octree used for point storage at Urban Robotics. Please
-  contact Jacob Schloss <jacob.schloss@urbanrobotics.net> with any questions.
-  http://www.urbanrobotics.net/
-*/
 
 #ifndef PCL_OUTOFCORE_OCTREE_BASE_NODE_H_
 #define PCL_OUTOFCORE_OCTREE_BASE_NODE_H_
@@ -76,10 +72,11 @@ namespace pcl
 
     /** \brief document */
     template<typename Container, typename PointT> void
-    queryBBIntersects_noload (const boost::filesystem::path& root_node, const double min[3], const double max[3], const boost::uint32_t query_depth, std::list<std::string>& bin_name);
+    queryBBIntersects_noload (const boost::filesystem::path& root_node, const Eigen::Vector3f& min, const Eigen::Vector3f& max, const boost::uint32_t query_depth, std::list<std::string>& bin_name);
 
+    /** \brief document */
     template<typename Container, typename PointT> void
-    queryBBIntersects_noload (octree_base_node<Container, PointT>* current, const double min[3], const double max[3], const boost::uint32_t query_depth, std::list<std::string>& bin_name);
+    queryBBIntersects_noload (octree_base_node<Container, PointT>* current, const Eigen::Vector3f&, const Eigen::Vector3f& max, const boost::uint32_t query_depth, std::list<std::string>& bin_name);
 
 /** \class octree_base_node
     Document this class
@@ -93,19 +90,16 @@ namespace pcl
       makenode_norec<Container, PointT> (const boost::filesystem::path& path, octree_base_node<Container, PointT>* super);
   
       friend void
-      queryBBIntersects_noload<Container, PointT> (const boost::filesystem::path& rootnode, const double min[3], const double max[3], const boost::uint32_t query_depth, std::list<std::string>& bin_name);
+      queryBBIntersects_noload<Container, PointT> (const boost::filesystem::path& rootnode, const Eigen::Vector3f& min, const Eigen::Vector3f& max, const boost::uint32_t query_depth, std::list<std::string>& bin_name);
 
       friend void
-      queryBBIntersects_noload<Container, PointT> (octree_base_node<Container, PointT>* current, const double min[3], const double max[3], const boost::uint32_t query_depth, std::list<std::string>& bin_name);
+      queryBBIntersects_noload<Container, PointT> (octree_base_node<Container, PointT>* current, const Eigen::Vector3f& min, const Eigen::Vector3f& max, const boost::uint32_t query_depth, std::list<std::string>& bin_name);
   
       public:
         typedef octree_base<octree_disk_container < PointT > , PointT > octree_disk;
         typedef octree_base_node<octree_disk_container < PointT > , PointT > octree_disk_node;
 
         typedef std::vector<PointT, Eigen::aligned_allocator<PointT> > AlignedPointTVector;
-
-//    typedef octree_base<octree_ram_container< PointT> , PointT> octree_ram;
-//    typedef octree_base_node< octree_ram_container<PointT> , PointT> octree_ram_node;
 
         const static std::string node_index_basename;
         const static std::string node_container_basename;
@@ -115,28 +109,23 @@ namespace pcl
 
         /** \brief Empty constructor; sets pointers for children and for bounding boxes to 0
          */
-        octree_base_node ()
+        octree_base_node () 
+          : parent_ (NULL),
+            root_ (NULL),
+            depth_ (0),
+            num_child_ (0),
+            mid_xyz_ (Eigen::Vector3f (0, 0, 0)),
+            min_ (Eigen::Vector3f (0, 0, 0)),
+            max_ (Eigen::Vector3f (0, 0, 0))
         {
-          parent_ = NULL;
-          root_ = NULL;
-          depth_ = 0;
-
           memset (children_, 0, 8 * sizeof(octree_base_node<Container, PointT>*));
-          num_child_ = 0;
-      
-          midx_ = 0;
-          midy_ = 0;
-          midz_ = 0;
-          memset (min_, 0, 3 * sizeof(double));
-          memset (max_, 0, 3 * sizeof(double));
-
         }
 
         /** \brief Create root node and directory setting voxel size*/
-        octree_base_node (const double bb_min[3], const double bb_max[3], const double node_dim_meters, octree_base<Container, PointT> * const tree, const boost::filesystem::path& rootname);
+        octree_base_node (const Eigen::Vector3f& bb_min, const Eigen::Vector3f& bb_max, const double node_dim_meters, octree_base<Container, PointT> * const tree, const boost::filesystem::path& root_name);
 
         /** \brief Create root node and directory setting setting max depth*/
-        octree_base_node (const int max_depth, const double bb_min[3], const double bb_max[3], octree_base<Container, PointT> * const tree, const boost::filesystem::path& rootname);
+        octree_base_node (const int max_depth, const Eigen::Vector3f& bb_min, const Eigen::Vector3f& bb_max, octree_base<Container, PointT> * const tree, const boost::filesystem::path& root_name);
 
         /** \brief Will recursively delete all children calling recFreeChildrein */
         ~octree_base_node ();
@@ -147,10 +136,10 @@ namespace pcl
          * \param[out] maxCoord returns the maximum corner of the bounding box indexed by 0-->X, 1-->Y, 2-->Z 
          */
         inline void
-        getBB (double minCoord[3], double maxCoord[3]) const
+        getBB (Eigen::Vector3f& minCoord, Eigen::Vector3f& maxCoord) const
         {
-          memcpy (minCoord, min_, 3 * sizeof(double));
-          memcpy (maxCoord, max_, 3 * sizeof(double));
+          minCoord = min_;
+          maxCoord = max_;
         }
     
 
@@ -164,7 +153,7 @@ namespace pcl
          *  \todo benchmark queryBBIncludes
          */
         void
-        queryBBIncludes (const double min_bb[3], const double max_bb[3], size_t query_depth, AlignedPointTVector& dst);
+        queryBBIncludes (const Eigen::Vector3f& min_bb, const Eigen::Vector3f& max_bb, size_t query_depth, AlignedPointTVector& dst);
 
         /** \brief Recursively add points that fall into the queried bounding box up to the \b query_depth
          *
@@ -176,7 +165,7 @@ namespace pcl
          *  \todo use this as wrapper for queryBBIncludes into AlignedPointTVector
          */
         void
-        queryBBIncludes (const double min_bb[3], const double max_bb[3], size_t query_depth, const sensor_msgs::PointCloud2::Ptr& dst_blob);
+        queryBBIncludes (const Eigen::Vector3f& min_bb, const Eigen::Vector3f& max_bb, size_t query_depth, const sensor_msgs::PointCloud2::Ptr& dst_blob);
 
         /** \brief Recursively add points that fall into the queried bounding box up to the \b query_depth 
          *
@@ -188,7 +177,7 @@ namespace pcl
          *  \todo clean up the interface and standardize the parameters to these functions
          */
         void
-        queryBBIncludes_subsample (const double min_bb[3], const double max_bb[3], int query_depth, const double percent, AlignedPointTVector& v);
+        queryBBIncludes_subsample (const Eigen::Vector3f& min_bb, const Eigen::Vector3f& max_bb, int query_depth, const double percent, AlignedPointTVector& v);
 
         //bin extraction
         //query_depth == 0 is root
@@ -197,9 +186,11 @@ namespace pcl
          * boundaries of the bounding box, inclusively
          */
         void
-        queryBBIntersects (const double min_bb[3], const double max_bb[3], const boost::uint32_t query_depth, std::list<std::string>& file_names);
+        queryBBIntersects (const Eigen::Vector3f& min_bb, const Eigen::Vector3f& max_bb, const boost::uint32_t query_depth, std::list<std::string>& file_names);
 
-        /** \brief document */
+        /** \brief Write the voxel size to stdout at \ref query_depth 
+         * \param[in] query_depth The depth at which to print the size of the voxel/bounding boxes
+         */
         void
         printBBox(const size_t query_depth) const;
 
@@ -207,19 +198,23 @@ namespace pcl
         //checks if 
         /** \brief document */
         inline bool
-        intersectsWithBB (const double min_bb[3], const double max_bb[3]) const;
+        intersectsWithBB (const Eigen::Vector3f& min_bb, const Eigen::Vector3f& max_bb) const;
 
         /** \brief document */
         inline bool
-        withinBB (const double min[3], const double max[3]) const;
+        withinBB (const Eigen::Vector3f& min, const Eigen::Vector3f& max) const;
+        
+        bool
+        pointWithinBB (const Eigen::Vector3f& min_bb, const Eigen::Vector3f& max_bb, const Eigen::Vector3f& point);
+        
 
         /** \brief document */
         static inline bool
-        pointWithinBB (const double min_bb[3], const double max_bb[3], const PointT& p);
+        pointWithinBB (const Eigen::Vector3f& min_bb, const Eigen::Vector3f& max_bb, const PointT& p);
 
         /** \brief document */
         static inline bool
-        pointWithinBB ( const double min_bb[3], const double max_bb[3], const double x, const double y, const double z );
+        pointWithinBB ( const Eigen::Vector3f& min_bb, const Eigen::Vector3f& max_bb, const double x, const double y, const double z );
 
         /** \brief Check whether specified point is within bounds of current node */
         inline bool
@@ -248,13 +243,13 @@ namespace pcl
         void
         addPointToLeaf (const PointT& p);
 
-        /** \brief document 
+        /** \brief Add a single PointCloud2 object into the octree.
          *
          * \param[in] input_cloud
          * \param[in] skip_bb_check (default = false)
          */
         boost::uint64_t
-        addPointCloud ( sensor_msgs::PointCloud2::Ptr input_cloud, const bool skip_bb_check = false )
+        addPointCloud ( const sensor_msgs::PointCloud2::Ptr& input_cloud, const bool skip_bb_check = false )
         {
       
           if ( input_cloud->height*input_cloud->width == 0)
@@ -300,7 +295,7 @@ namespace pcl
 
               //compute the box we are in
               size_t box = 0;
-              box = ((local_pt.z >= midz_) << 2) | ((local_pt.y >= midy_) << 1) | ((local_pt.x >= midx_) << 0);
+              box = ((local_pt.z >= mid_xyz_[2]) << 2) | ((local_pt.y >= mid_xyz_[1]) << 1) | ((local_pt.x >= mid_xyz_[0]) << 0);
               assert ( box < 8 );
               
               //insert to the vector of indices
@@ -339,7 +334,7 @@ namespace pcl
           return 0;
         }
 
-
+        /** \brief Add a single PointCloud2 into the octree and build the subsampled LOD during construction */
         boost::uint64_t
         addPointCloud_and_genLOD (const sensor_msgs::PointCloud2::Ptr input_cloud); //, const bool skip_bb_check);
         
@@ -371,6 +366,18 @@ namespace pcl
         boost::uint64_t
         addDataAtMaxDepth (const AlignedPointTVector& p, const bool skip_bb_check);
 
+        /** \brief Add data to the leaf when at max depth of tree. If
+         *   \ref skip_bb_check is true, adds to the node regardless of the
+         *   bounding box it represents; otherwise only adds points that
+         *   fall within the bounding box 
+         *
+         *  \param[in] input_cloud PointCloud2 points to attempt to add to the tree; 
+         *  \warning PointCloud2 inserted into the tree must have x,y,z fields, and must be of same type of any other points inserted in the tree
+         *  \param[in] skip_bb_check (default true) if @b true, doesn't check that points
+         *  are in the proper bounding box; if @b false, only adds the
+         *  points that fall into the bounding box to this node 
+         *  \return number of points successfully added
+         */
         boost::uint64_t
         addDataAtMaxDepth ( const sensor_msgs::PointCloud2::Ptr input_cloud, const bool skip_bb_check = true )
         {
@@ -390,6 +397,7 @@ namespace pcl
           }
         }
         
+        /** \brief document */
         void 
         randomSample ( const typename PointCloud<PointT>::Ptr input_cloud, 
                        typename PointCloud<PointT>::Ptr output_cloud, 
@@ -439,7 +447,7 @@ namespace pcl
          * 
          * \throws PCLException if the specified path already exists
          */
-        void init_root_node (const double bb_min[3], const double bb_max[3], octree_base<Container, PointT> * const tree, const boost::filesystem::path& rootname);
+        void init_root_node (const Eigen::Vector3f& bb_min, const Eigen::Vector3f& bb_max, octree_base<Container, PointT> * const tree, const boost::filesystem::path& rootname);
 
         /** \brief document */
         void
@@ -451,7 +459,7 @@ namespace pcl
 
         /** \brief document */
         int
-        calcDepthForDim (const double min_bb[3], const double max_bb[3], const double dim);
+        calcDepthForDim (const Eigen::Vector3f& min_bb, const Eigen::Vector3f& max_bb, const double dim);
 
         /** \brief document */
         void
@@ -510,7 +518,7 @@ namespace pcl
         operator= (const octree_base_node& rval);
 
         /** \brief document */
-        octree_base_node (const double bb_min[3], const double bb_max[3], const char* dir, octree_base_node<Container, PointT>* super);
+        octree_base_node (const Eigen::Vector3f& bb_min, const Eigen::Vector3f& bb_max, const char* dir, octree_base_node<Container, PointT>* super);
 
         /** \brief document */
         void
@@ -567,15 +575,12 @@ namespace pcl
         Container* payload_;
 
         /** \brief The X,Y,Z axes-aligned minima for the bounding box*/
-        double min_[3];
+        Eigen::Vector3f min_;
         /** \brief The X,Y,Z axes-aligned maxima for the bounding box*/
-        double max_[3];
-        /** \brief The midpoint of the X-axis side of the bounding box */
-        double midx_;
-        /** \brief The midpoint of the Y-axis side of the bounding box */
-        double midy_;
-        /** \brief The midpoint of the Z-axis side of the bounding box */
-        double midz_;
+        Eigen::Vector3f max_;
+
+        /** \brief The midpoints of the X, Y and Z sides of the bounding boxes */
+        Eigen::Vector3f mid_xyz_;
 
         /** \brief Random number generator mutex */
         static boost::mutex rng_mutex_;
