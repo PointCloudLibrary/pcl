@@ -51,15 +51,41 @@ TEST (PointOperators, PointXYZ)
   PointXYZ p1; p1.x = 0.05f; p1.y = 0.05f; p1.z = 0.05f;
   PointXYZ p2 = p0;
   p2 += p1;
-  PointXYZ p3 = p0 - p1;
+  EXPECT_EQ (p2.x, p0.x + p1.x);
+  EXPECT_EQ (p2.y, p0.y + p1.y);
+  EXPECT_EQ (p2.z, p0.z + p1.z);
+
+  p2 = p0 + p1;
 
   EXPECT_EQ (p2.x, p0.x + p1.x);
   EXPECT_EQ (p2.y, p0.y + p1.y);
   EXPECT_EQ (p2.z, p0.z + p1.z);
 
+  PointXYZ p3 = p0 - p1;
+
   EXPECT_EQ (p3.x, p0.x - p1.x);
   EXPECT_EQ (p3.y, p0.y - p1.y);
   EXPECT_EQ (p3.z, p0.z - p1.z);
+
+  p3 = p0;
+  p3 -= p1;
+
+  EXPECT_EQ (p3.x, p0.x - p1.x);
+  EXPECT_EQ (p3.y, p0.y - p1.y);
+  EXPECT_EQ (p3.z, p0.z - p1.z);
+
+  float scalar = 4;
+  p2 *= scalar;
+
+  EXPECT_EQ (p2.x, scalar * p0.x + scalar * p1.x);
+  EXPECT_EQ (p2.y, scalar * p0.y + scalar * p1.y);
+  EXPECT_EQ (p2.z, scalar * p0.z + scalar * p1.z);
+
+  p2 /= 2;
+
+  EXPECT_EQ (p2.x, scalar / 2.0f * p0.x + scalar / 2.0f * p1.x);
+  EXPECT_EQ (p2.y, scalar / 2.0f * p0.y + scalar / 2.0f * p1.y);
+  EXPECT_EQ (p2.z, scalar / 2.0f * p0.z + scalar / 2.0f * p1.z);
 }
 
 //////////////////////////////////////////////////////////////////////////////
