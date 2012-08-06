@@ -17,6 +17,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/board.h
         include/pcl/${SUBSYS_NAME}/brisk_2d.h
         include/pcl/${SUBSYS_NAME}/cvfh.h
+        include/pcl/${SUBSYS_NAME}/our_cvfh.h
         include/pcl/${SUBSYS_NAME}/crh.h
         include/pcl/${SUBSYS_NAME}/feature.h
         include/pcl/${SUBSYS_NAME}/fpfh.h
@@ -61,6 +62,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/board.hpp
         include/pcl/${SUBSYS_NAME}/impl/brisk_2d.hpp
         include/pcl/${SUBSYS_NAME}/impl/cvfh.hpp
+        include/pcl/${SUBSYS_NAME}/impl/our_cvfh.hpp
         include/pcl/${SUBSYS_NAME}/impl/crh.hpp
         include/pcl/${SUBSYS_NAME}/impl/feature.hpp
         include/pcl/${SUBSYS_NAME}/impl/fpfh.hpp
@@ -105,6 +107,7 @@ if(build)
         src/brisk_2d.cpp
         src/boundary.cpp
         src/cvfh.cpp
+        src/our_cvfh.cpp
         src/crh.cpp
         src/fpfh.cpp
         src/fpfh_omp.cpp
