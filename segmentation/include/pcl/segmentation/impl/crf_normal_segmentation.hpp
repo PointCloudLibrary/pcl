@@ -59,7 +59,7 @@ pcl::CrfNormalSegmentation<PointT>::~CrfNormalSegmentation ()
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
-pcl::CrfNormalSegmentation<PointT>::setCloud (typename pcl::PointCloud<PointT>::Ptr input_cloud)
+pcl::CrfNormalSegmentation<PointT>::setCloud (typename pcl::PointCloud<PointT>::Ptr )
 {
 /*
   if (cloud_for_segmentation_ != 0)
