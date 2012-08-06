@@ -16,7 +16,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -566,17 +566,11 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::_ReferenceFrame,
     (float[3], x_axis, x_axis)
     (float[3], y_axis, y_axis)
     (float[3], z_axis, z_axis)
-    //(float, confidence, confidence)
 )
 POINT_CLOUD_REGISTER_POINT_WRAPPER(pcl::ReferenceFrame, pcl::_ReferenceFrame)
 
-//POINT_CLOUD_REGISTER_POINT_STRUCT(pcl::BorderDescription,
-//                                  (int, x, x)
-//                                  (int, y, y)
-//                                  (uint32_t, traits, traits)
-//)
-
-namespace pcl {
+namespace pcl 
+{
   // Allow float 'rgb' data to match to the newer uint32 'rgba' tag. This is so
   // you can load old 'rgb' PCD files into e.g. a PointCloud<PointXYZRGBA>.
   template<typename PointT>

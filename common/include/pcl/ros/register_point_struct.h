@@ -3,6 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2012, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -16,7 +17,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -45,7 +46,6 @@
 #endif
 
 #include <pcl/point_traits.h>
-
 #include <boost/mpl/vector.hpp>
 #include <boost/mpl/for_each.hpp>
 #include <boost/mpl/assert.hpp>
@@ -53,8 +53,13 @@
 #include <boost/preprocessor/seq/for_each.hpp>
 #include <boost/preprocessor/seq/transform.hpp>
 #include <boost/preprocessor/cat.hpp>
+#include <boost/preprocessor/comparison.hpp>
+#include <boost/preprocessor/if.hpp>
+#include <boost/preprocessor/tuple/eat.hpp>
+#include <boost/preprocessor/list/adt.hpp>
 #include <boost/preprocessor/repetition/repeat_from_to.hpp>
-#include <boost/type_traits/is_pod.hpp>
+#include <boost/utility.hpp>
+#include <boost/type_traits.hpp>
 #include <stddef.h> //offsetof
 
 // Must be used in global namespace with name fully qualified
@@ -81,6 +86,205 @@
 #define POINT_CLOUD_REGISTER_POINT_STRUCT_X0
 #define POINT_CLOUD_REGISTER_POINT_STRUCT_Y0
 
+// Point operators
+namespace pcl
+{
+  // Define a set of operator on PCL point types.
+  namespace common
+  {
+    //////////////////////////////////////////////////////////////////////////////////////
+    // +++
+    template <typename PointT> inline PointT
+    operator+ (const PointT& lhs, const PointT& rhs)
+    { PointT result = lhs; result += rhs; return (result); }
+    template <typename PointT> inline PointT
+    operator+ (const float& scalar, const PointT& p)
+    { PointT result = p; result += scalar; return (result); }
+    template <typename PointT> inline PointT
+    operator+ (const PointT& p, const float& scalar)
+    { PointT result = p; result += scalar; return (result); }
+
+    //////////////////////////////////////////////////////////////////////////////////////
+    // ---
+    template <typename PointT> inline PointT
+    operator- (const PointT& lhs, const PointT& rhs)
+    { PointT result = lhs; result -= rhs; return (result); }
+    template <typename PointT> inline PointT
+    operator- (const float& scalar, const PointT& p)
+    { PointT result = p; result -= scalar; return (result); }
+    template <typename PointT> inline PointT
+    operator- (const PointT& p, const float& scalar)
+    { PointT result = p; result -= scalar; return (result); }
+
+    //////////////////////////////////////////////////////////////////////////////////////
+    // ***
+    template <typename PointT> inline PointT
+    operator* (const float& scalar, const PointT& p)
+    { PointT result = p; result *= scalar; return (result); }
+    template <typename PointT> inline PointT
+    operator* (const PointT& p, const float& scalar)
+    { PointT result = p; result *= scalar; return (result); }
+
+    //////////////////////////////////////////////////////////////////////////////////////
+    // ///
+    template <typename PointT> inline PointT
+    operator/ (const float& scalar, const PointT& p)
+    { PointT result = p; result /= scalar; return (result); }
+    template <typename PointT> inline PointT
+    operator/ (const PointT& p, const float& scalar)
+    { PointT result = p; result /= scalar; return (result); }
+  }
+  namespace traits
+  {
+    template<typename T> inline
+    typename boost::disable_if_c<boost::is_array<T>::value>::type
+    plus (T &l, const T &r)
+    {
+      using namespace pcl::common; 
+      l += r;
+    }
+
+    template<typename T> inline
+    typename boost::enable_if_c<boost::is_array<T>::value>::type
+    plus (T &l, const T &r)
+    {
+      using namespace pcl::common; 
+      typedef typename boost::remove_all_extents<T>::type type;
+      static const uint32_t count = sizeof (T) / sizeof (type);
+      for (int i = 0; i < count; ++i)
+        l[i] += r[i];
+    }
+
+    template<typename T1, typename T2> inline
+    typename boost::disable_if_c<boost::is_array<T1>::value>::type
+    plusscalar (T1 &p, const T2 &scalar)
+    {
+      using namespace pcl::common; 
+      p += scalar;
+    }
+
+    template<typename T1, typename T2> inline
+    typename boost::enable_if_c<boost::is_array<T1>::value>::type
+    plusscalar (T1 &p, const T2 &scalar)
+    {
+      using namespace pcl::common; 
+      typedef typename boost::remove_all_extents<T1>::type type;
+      static const uint32_t count = sizeof (T1) / sizeof (type);
+      for (int i = 0; i < count; ++i)
+        p[i] += scalar;
+    }
+
+    template<typename T> inline
+    typename boost::disable_if_c<boost::is_array<T>::value>::type
+    minus (T &l, const T &r)
+    {
+      using namespace pcl::common; 
+      l -= r;
+    }
+
+    template<typename T> inline
+    typename boost::enable_if_c<boost::is_array<T>::value>::type
+    minus (T &l, const T &r)
+    {
+      using namespace pcl::common; 
+      typedef typename boost::remove_all_extents<T>::type type;
+      static const uint32_t count = sizeof (T) / sizeof (type);
+      for (int i = 0; i < count; ++i)
+        l[i] -= r[i];
+    }
+
+    template<typename T1, typename T2> inline
+    typename boost::disable_if_c<boost::is_array<T1>::value>::type
+    minusscalar (T1 &p, const T2 &scalar)
+    {
+      using namespace pcl::common; 
+      p -= scalar;
+    }
+
+    template<typename T1, typename T2> inline
+    typename boost::enable_if_c<boost::is_array<T1>::value>::type
+    minusscalar (T1 &p, const T2 &scalar)
+    {
+      using namespace pcl::common; 
+      typedef typename boost::remove_all_extents<T1>::type type;
+      static const uint32_t count = sizeof (T1) / sizeof (type);
+      for (int i = 0; i < count; ++i)
+        p[i] -= scalar;
+    }
+
+    template<typename T1, typename T2> inline
+    typename boost::disable_if_c<boost::is_array<T1>::value>::type
+    mulscalar (T1 &p, const T2 &scalar)
+    {
+      using namespace pcl::common; 
+      p *= scalar;
+    }
+
+    template<typename T1, typename T2> inline
+    typename boost::enable_if_c<boost::is_array<T1>::value>::type
+    mulscalar (T1 &p, const T2 &scalar)
+    {
+      using namespace pcl::common; 
+      typedef typename boost::remove_all_extents<T1>::type type;
+      static const uint32_t count = sizeof (T1) / sizeof (type);
+      for (int i = 0; i < count; ++i)
+        p[i] *= scalar;
+    }
+
+    template<typename T1, typename T2> inline
+    typename boost::disable_if_c<boost::is_array<T1>::value>::type
+    divscalar (T1 &p, const T2 &scalar)
+    {
+      using namespace pcl::common; 
+      p /= scalar;
+    }
+
+    template<typename T1, typename T2> inline
+    typename boost::enable_if_c<boost::is_array<T1>::value>::type
+    divscalar (T1 &p, const T2 &scalar)
+    {
+      using namespace pcl::common; 
+      typedef typename boost::remove_all_extents<T1>::type type;
+      static const uint32_t count = sizeof (T1) / sizeof (type);
+      for (int i = 0; i < count; ++i)
+        p[i] /= scalar;
+    }
+  }
+}
+
+// Point operators
+#define PCL_PLUSEQ_POINT_TAG(r, data, elem)                \
+  pcl::traits::plus (lhs.BOOST_PP_TUPLE_ELEM(3, 1, elem),  \
+                     rhs.BOOST_PP_TUPLE_ELEM(3, 1, elem)); \
+  /***/
+
+#define PCL_PLUSEQSC_POINT_TAG(r, data, elem)                 \
+  pcl::traits::plusscalar (p.BOOST_PP_TUPLE_ELEM(3, 1, elem), \
+                           scalar);                           \
+  /***/
+   //p.BOOST_PP_TUPLE_ELEM(3, 1, elem) += scalar;  \
+
+#define PCL_MINUSEQ_POINT_TAG(r, data, elem)                \
+  pcl::traits::minus (lhs.BOOST_PP_TUPLE_ELEM(3, 1, elem),  \
+                      rhs.BOOST_PP_TUPLE_ELEM(3, 1, elem)); \
+  /***/
+
+#define PCL_MINUSEQSC_POINT_TAG(r, data, elem)                 \
+  pcl::traits::minusscalar (p.BOOST_PP_TUPLE_ELEM(3, 1, elem), \
+                            scalar);                           \
+  /***/
+   //p.BOOST_PP_TUPLE_ELEM(3, 1, elem) -= scalar;   \
+
+#define PCL_MULEQSC_POINT_TAG(r, data, elem)                 \
+  pcl::traits::mulscalar (p.BOOST_PP_TUPLE_ELEM(3, 1, elem), \
+                            scalar);                         \
+  /***/
+
+#define PCL_DIVEQSC_POINT_TAG(r, data, elem)   \
+  pcl::traits::divscalar (p.BOOST_PP_TUPLE_ELEM(3, 1, elem), \
+                            scalar);                         \
+  /***/
+
 // Construct type traits given full sequence of (type, name, tag) triples
 //  BOOST_MPL_ASSERT_MSG(boost::is_pod<name>::value,                    
 //                       REGISTERED_POINT_TYPE_MUST_BE_PLAIN_OLD_DATA, (name)); 
@@ -98,7 +302,46 @@
       BOOST_PP_SEQ_FOR_EACH(POINT_CLOUD_REGISTER_FIELD_DATATYPE, name, seq)      \
       POINT_CLOUD_REGISTER_POINT_FIELD_LIST(name, POINT_CLOUD_EXTRACT_TAGS(seq)) \
     }                                                                            \
-  }                                                                              \
+    namespace common                                           \
+    {                                                          \
+      inline const name&                                       \
+      operator+= (name& lhs, const name& rhs)                  \
+      {                                                        \
+        BOOST_PP_SEQ_FOR_EACH(PCL_PLUSEQ_POINT_TAG, _, seq)    \
+        return (lhs);                                          \
+      }                                                        \
+      inline const name&                                       \
+      operator+= (name& p, const float& scalar)                \
+      {                                                        \
+        BOOST_PP_SEQ_FOR_EACH(PCL_PLUSEQSC_POINT_TAG, _, seq)  \
+        return (p);                                            \
+      }                                                        \
+      inline const name&                                       \
+      operator-= (name& lhs, const name& rhs)                  \
+      {                                                        \
+        BOOST_PP_SEQ_FOR_EACH(PCL_MINUSEQ_POINT_TAG, _, seq)   \
+        return (lhs);                                          \
+      }                                                        \
+      inline const name&                                       \
+      operator-= (name& p, const float& scalar)                \
+      {                                                        \
+        BOOST_PP_SEQ_FOR_EACH(PCL_MINUSEQSC_POINT_TAG, _, seq) \
+        return (p);                                            \
+      }                                                        \
+      inline const name&                                       \
+      operator*= (name& p, const float& scalar)                \
+      {                                                        \
+        BOOST_PP_SEQ_FOR_EACH(PCL_MULEQSC_POINT_TAG, _, seq)   \
+        return (p);                                            \
+      }                                                        \
+      inline const name&                                       \
+      operator/= (name& p, const float& scalar)                \
+      {                                                        \
+        BOOST_PP_SEQ_FOR_EACH(PCL_DIVEQSC_POINT_TAG, _, seq)   \
+        return (p);                                            \
+      }                                                        \
+    }                                                          \
+  }                                                            \
   /***/
 
 #define POINT_CLOUD_REGISTER_FIELD_TAG(r, name, elem)   \

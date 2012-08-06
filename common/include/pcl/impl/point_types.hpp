@@ -1062,14 +1062,6 @@ namespace pcl
       };
       float rf[12];
     };
-    //union
-    //{
-      //struct
-      //{
-        //float confidence;
-      //};
-      //float data_c[4];
-    //};
 
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
