@@ -57,7 +57,7 @@ if(build)
         include/pcl/pcl_tests.h
         include/pcl/cloud_iterator.h
         )
-        
+
     if(NOT USE_ROS)
         set(incs ${incs}
           include/pcl/ModelCoefficients.h
@@ -135,6 +135,7 @@ if(build)
 
     set(impl_incs include/pcl/impl/instantiate.hpp
         include/pcl/impl/point_types.hpp
+        include/pcl/impl/cloud_iterator.hpp
         )
 
     set(ros_incs include/pcl/ros/conversions.h
