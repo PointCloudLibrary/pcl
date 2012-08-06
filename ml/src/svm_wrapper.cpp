@@ -812,7 +812,7 @@ pcl::SVMClassify::classification (pcl::SVMData in)
 
   int i = 0;
 
-  for (i; i < in.SV.size(); i++)
+  for (i = 0; i < in.SV.size (); i++)
   {
     buff[i].index = in.SV[i].idx;
 
