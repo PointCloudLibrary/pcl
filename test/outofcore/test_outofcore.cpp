@@ -115,8 +115,8 @@ TEST (PCL, Outofcore_Octree_Build)
   boost::filesystem::remove_all (filename_otreeA.parent_path ());
   boost::filesystem::remove_all (filename_otreeB.parent_path ());
 
-  double min[3] = {-32, -32, -32};
-  double max[3] = {32, 32, 32};
+  Eigen::Vector3f min (-32.0f, -32.0f, -32.0f);
+  Eigen::Vector3f max (32.0f, 32.0f, 32.0f);
 
   // Build two trees using each constructor
   // depth of treeA will be same as B because 1/2^3 > .1 and 1/2^4 < .1
@@ -168,8 +168,8 @@ TEST (PCL, Outofcore_Octree_Build_LOD)
   boost::filesystem::remove_all (filename_otreeA_LOD.parent_path ());
   boost::filesystem::remove_all (filename_otreeB_LOD.parent_path ());
 
-  double min[3] = {0, 0, 0};
-  double max[3] = {1, 1, 1};
+  Eigen::Vector3f min (0.0f, 0.0f, 0.0f);
+  Eigen::Vector3f max (1.0f, 1.0f, 1.0f);
 
   // Build two trees using each constructor
   octree_disk treeA (min, max, .1, filename_otreeA_LOD, "ECEF");
@@ -222,12 +222,12 @@ TEST(PCL, Outofcore_Bounding_Box)
   octree_disk treeA (filename_otreeA, false);
   octree_disk treeB (filename_otreeB, false);
 
-  double min_otreeA[3];
-  double max_otreeA[3];
+  Eigen::Vector3f min_otreeA;
+  Eigen::Vector3f max_otreeA;
   treeA.getBB (min_otreeA, max_otreeA);
 
-  double min_otreeB[3];
-  double max_otreeB[3];
+  Eigen::Vector3f min_otreeB;
+  Eigen::Vector3f max_otreeB;
   treeB.getBB (min_otreeB, max_otreeB);
 
   for(int i=0; i<3; i++)
@@ -247,13 +247,14 @@ TEST(PCL, Outofcore_Bounding_Box)
   }
 }
 
-void point_test(octree_disk& t)
+void 
+point_test (octree_disk& t)
 {
   boost::mt19937 rng(rngseed);
   boost::uniform_real<float> dist(0,1);
 
-  double query_box_min[3];
-  double qboxmax[3];
+  Eigen::Vector3f query_box_min;
+  Eigen::Vector3f qboxmax;
 
   for(int i = 0; i < 10; i++)
   {
@@ -453,9 +454,9 @@ TEST_F (OutofcoreTest, Outofcore_Constructors)
   cleanUpFilesystem ();
 
   //Specify the lower corner of the axis-aligned bounding box
-  const double min[3] = { -1024, -1024, -1024 };
+  const Eigen::Vector3f min (-1024.0f, -1024.0f, -1024.0f);
   //Specify the upper corner of the axis-aligned bounding box
-  const double max[3] = { 1024, 1024, 1024 };
+  const Eigen::Vector3f max (1024.0f, 1024.0f, 1024.0f);
 
   AlignedPointTVector some_points;
   for(unsigned int i=0; i< numPts; i++)
@@ -481,9 +482,9 @@ TEST_F (OutofcoreTest, Outofcore_Constructors)
 TEST_F (OutofcoreTest, Outofcore_ConstructorSafety)
 {
   //Specify the lower corner of the axis-aligned bounding box
-  const double min[3] = { -1024, -1024, -1024 };
+  const Eigen::Vector3f min (-1024.0f, -1024.0f, -1024.0f);
   //Specify the upper corner of the axis-aligned bounding box
-  const double max[3] = { 1024, 1024, 1024 };
+  const Eigen::Vector3f max (1024.0f, 1024.0f, 1024.0f);
   int depth = 2;
   
   //(Case 3) Constructor Safety. These should throw OCT_CHILD_EXISTS exceptions and write an error
@@ -524,10 +525,10 @@ TEST_F (OutofcoreTest, Outofcore_PointcloudConstructor)
   cleanUpFilesystem ();
   
   //Specify the lower corner of the axis-aligned bounding box
-  const double min[3] = { -1, -1, -1 };
+  const Eigen::Vector3f min (-1.0f, -1.0f, -1.0f);
   
   //Specify the upper corner of the axis-aligned bounding box
-  const double max[3] = { 1024, 1024, 1024 };
+  const Eigen::Vector3f max (1024.0f, 1024.0f, 1024.0f);
 
   //create a point cloud
   PointCloud<PointT>::Ptr test_cloud (new PointCloud<PointT> () );
@@ -561,8 +562,8 @@ TEST_F (OutofcoreTest, Outofcore_PointsOnBoundaries)
 {
   cleanUpFilesystem ();
   
-  const double min[3] = { -1.0, -1.0, -1.0 };
-  const double max[3] = { 1.0, 1.0, 1.0 };
+  const Eigen::Vector3f min (-1.0f, -1.0f, -1.0f);
+  const Eigen::Vector3f max (1.0f, 1.0f, 1.0f);
   
   PointCloud<PointT>::Ptr cloud (new PointCloud<PointT> ());
   cloud->width = 8;
@@ -605,10 +606,10 @@ TEST_F (OutofcoreTest, Outofcore_MultiplePointClouds)
   cleanUpFilesystem ();
 
   //Specify the lower corner of the axis-aligned bounding box
-  const double min[3] = { -1024, -1024, -1024 };
+  const Eigen::Vector3f min (-1024.0f, -1024.0f, -1024.0f);
   
   //Specify the upper corner of the axis-aligned bounding box
-  const double max[3] = { 1024, 1024, 1024 };
+  const Eigen::Vector3f max (1024.0f, 1024.0f, 1024.0f);
   
   //create a point cloud
   PointCloud<PointT>::Ptr test_cloud (new PointCloud<PointT> () );
@@ -658,10 +659,10 @@ TEST_F (OutofcoreTest, Outofcore_PointCloudInput_LOD )
   cleanUpFilesystem ();
 
   //Specify the lower corner of the axis-aligned bounding box
-  const double min[3] = { -1024, -1024, -1024 };
+  const Eigen::Vector3f min (-1024.0f, -1024.0f, -1024.0f);
   
   //Specify the upper corner of the axis-aligned bounding box
-  const double max[3] = { 1024, 1024, 1024 };
+  const Eigen::Vector3f max (1024.0f, 1024.0f, 1024.0f);
   
   //create a point cloud
   PointCloud<PointT>::Ptr test_cloud (new PointCloud<PointT> () );
@@ -707,8 +708,8 @@ TEST_F ( OutofcoreTest, PointCloud2_Constructors )
   cleanUpFilesystem ();
   
   //Specify the bounding box of the point clouds
-  const double min[3] = { -100.1, -100.1, -100.1 };
-  const double max[3] = { 100.1, 100.1, 100.1 };
+  const Eigen::Vector3f min (-100.1f, -100.1f, -100.1f);
+  const Eigen::Vector3f max (100.1f, 100.1f, 100.1f);
   const boost::uint64_t depth = 2;
   
   //create a point cloud
@@ -744,8 +745,8 @@ TEST_F ( OutofcoreTest, PointCloud2_Insertion )
 {
   cleanUpFilesystem ();
   
-  const double min[3] = { -11, -11, -11 };  
-  const double max[3] = {11,11,11};
+  const Eigen::Vector3f min (-11.0f, -11.0f, -11.0f);
+  const Eigen::Vector3f max (11.0f, 11.0f, 11.0f);
 
   pcl::PointCloud<pcl::PointXYZ> point_cloud;
 
@@ -778,8 +779,8 @@ TEST_F ( OutofcoreTest, PointCloud2_Query )
   cleanUpFilesystem ();
 
   //Specify the bounding box of the point clouds
-  const double min[3] = { -100.1, -100.1, -100.1 };
-  const double max[3] = { 100.1, 100.1, 100.1 };
+  const Eigen::Vector3f min (-100.1f, -100.1f, -100.1f);
+  const Eigen::Vector3f max (100.1f, 100.1f, 100.1f);
   const boost::uint64_t depth = 2;
   
   //create a point cloud
@@ -815,7 +816,7 @@ TEST_F ( OutofcoreTest, PointCloud2_Query )
   sensor_msgs::PointCloud2::Ptr query_result_a ( new sensor_msgs::PointCloud2 () );
   sensor_msgs::PointCloud2::Ptr query_result_b ( new sensor_msgs::PointCloud2 () );
 
-  octreeA.queryBBIncludes ( min, max, octreeA.getDepth (), query_result_a );
+  octreeA.queryBBIncludes (min, max, int (octreeA.getDepth ()), query_result_a);
   
   EXPECT_EQ ( test_cloud->width*test_cloud->height, query_result_a->width*query_result_a->height ) << "PointCloud2 Query number of points returned failed\n";
 
