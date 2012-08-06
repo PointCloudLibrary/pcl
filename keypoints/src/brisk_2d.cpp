@@ -40,7 +40,9 @@
 #include <pcl/keypoints/brisk_2d.h>
 #include <pcl/point_types.h>
 #include <pcl/impl/instantiate.hpp>
+#ifdef __SSE3__
 #include <tmmintrin.h>
+#endif
 
 /////////////////////////////////////////////////////////////////////////////////////////
 // construct telling the octaves number:
