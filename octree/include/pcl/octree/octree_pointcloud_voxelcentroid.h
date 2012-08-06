@@ -103,10 +103,10 @@ namespace pcl
             centroid_arg = point_sum_;
             centroid_arg /= static_cast<float> (point_counter_);
           }
-          else
-          {
-            point_sum_ *= 0.0f;
-          }
+          //else
+          //{
+          //  point_sum_ *= 0.0f;
+          //}
         }
 
         /** \brief Reset leaf container. */
