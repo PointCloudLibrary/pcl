@@ -41,6 +41,7 @@
 #include <pcl/apps/cloud_composer/qt.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/apps/cloud_composer/point_selectors/interactor_style_switch.h>
+#include <vtkEventQtSlotConnect.h>
 
 namespace pcl
 {
