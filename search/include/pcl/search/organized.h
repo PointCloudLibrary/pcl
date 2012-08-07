@@ -48,6 +48,7 @@
 #include <algorithm>
 #include <queue>
 #include <vector>
+#include <pcl/common/projection_matrix.h>
 
 namespace pcl
 {
@@ -249,10 +250,6 @@ namespace pcl
         getProjectedRadiusSearchBox (const PointT& point, float squared_radius, unsigned& minX, unsigned& minY,
                                      unsigned& maxX, unsigned& maxY) const;
 
-
-        /** \brief copys upper or lower triangular part of the matrix to the other one */
-        template <typename MatrixType> void
-        makeSymmetric (MatrixType& matrix, bool use_upper_triangular = true) const;
 
         /** \brief the projection matrix. Either set by user or calculated by the first / each input cloud */
         Eigen::Matrix<float, 3, 4, Eigen::RowMajor> projection_matrix_;
