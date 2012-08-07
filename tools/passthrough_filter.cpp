@@ -45,6 +45,7 @@
 #include <pcl/filters/passthrough.h>
 
 
+using namespace std;
 using namespace pcl;
 using namespace pcl::io;
 using namespace pcl::console;
@@ -122,6 +123,36 @@ saveCloud (const std::string &filename, const sensor_msgs::PointCloud2 &output)
   print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", output.width * output.height); print_info (" points]\n");
 }
 
+int
+batchProcess (const vector<string> &pcd_files, string &output_dir,
+              std::string field_name, float min, float max, bool inside, bool keep_organized)
+{
+  vector<string> st;
+  for (size_t i = 0; i < pcd_files.size (); ++i)
+  {
+    // Load the first file
+    sensor_msgs::PointCloud2::Ptr cloud (new sensor_msgs::PointCloud2);
+    if (!loadCloud (pcd_files[i], *cloud)) 
+      return (-1);
+
+    // Perform the feature estimation
+    sensor_msgs::PointCloud2 output;
+    compute (cloud, output, field_name, min, max, inside, keep_organized);
+
+    // Prepare output file name
+    string filename = pcd_files[i];
+    boost::trim (filename);
+    boost::split (st, filename, boost::is_any_of ("/"), boost::token_compress_on);
+    
+    // Save into the second file
+    stringstream ss;
+    ss << output_dir << "/" << st.at (st.size () - 1);
+    saveCloud (ss.str (), output);
+  }
+  return (0);
+}
+
+
 /* ---[ */
 int
 main (int argc, char** argv)
@@ -134,14 +165,7 @@ main (int argc, char** argv)
     return (-1);
   }
 
-  // Parse the command line arguments for .pcd files
-  std::vector<int> p_file_indices;
-  p_file_indices = parse_file_extension_argument (argc, argv, ".pcd");
-  if (p_file_indices.size () != 2)
-  {
-    print_error ("Need one input PCD file and one output PCD file to continue.\n");
-    return (-1);
-  }
+  bool batch_mode = false;
 
   // Command line parsing
   float min = default_min, max = default_max;
@@ -153,16 +177,64 @@ main (int argc, char** argv)
   parse_argument (argc, argv, "-inside", inside);
   parse_argument (argc, argv, "-field", field_name);
   parse_argument (argc, argv, "-keep", keep_organized);
+  string input_dir, output_dir;
+  if (parse_argument (argc, argv, "-input_dir", input_dir) != -1)
+  {
+    PCL_INFO ("Input directory given as %s. Batch process mode on.\n", input_dir.c_str ());
+    if (parse_argument (argc, argv, "-output_dir", output_dir) == -1)
+    {
+      PCL_ERROR ("Need an output directory! Please use -output_dir to continue.\n");
+      return (-1);
+    }
 
-  // Load the first file
-  sensor_msgs::PointCloud2::Ptr cloud (new sensor_msgs::PointCloud2);
-  if (!loadCloud (argv[p_file_indices[0]], *cloud))
-    return (-1);
+    // Both input dir and output dir given, switch into batch processing mode
+    batch_mode = true;
+  }
 
-  // Perform the feature estimation
-  sensor_msgs::PointCloud2 output;
-  compute (cloud, output, field_name, min, max, inside, keep_organized);
+  if (!batch_mode)
+  {
+    // Parse the command line arguments for .pcd files
+    std::vector<int> p_file_indices;
+    p_file_indices = parse_file_extension_argument (argc, argv, ".pcd");
+    if (p_file_indices.size () != 2)
+    {
+      print_error ("Need one input PCD file and one output PCD file to continue.\n");
+      return (-1);
+    }
 
-  // Save into the second file
-  saveCloud (argv[p_file_indices[1]], output);
+    // Load the first file
+    sensor_msgs::PointCloud2::Ptr cloud (new sensor_msgs::PointCloud2);
+    if (!loadCloud (argv[p_file_indices[0]], *cloud))
+      return (-1);
+
+    // Perform the feature estimation
+    sensor_msgs::PointCloud2 output;
+    compute (cloud, output, field_name, min, max, inside, keep_organized);
+
+    // Save into the second file
+    saveCloud (argv[p_file_indices[1]], output);
+  }
+  else
+  {
+    if (input_dir != "" && boost::filesystem::exists (input_dir))
+    {
+      vector<string> pcd_files;
+      boost::filesystem::directory_iterator end_itr;
+      for (boost::filesystem::directory_iterator itr (input_dir); itr != end_itr; ++itr)
+      {
+        // Only add PCD files
+        if (!is_directory (itr->status ()) && boost::algorithm::to_upper_copy (boost::filesystem::extension (itr->path ())) == ".PCD" )
+        {
+          pcd_files.push_back (itr->path ().string ());
+          PCL_INFO ("[Batch processing mode] Added %s for processing.\n", itr->path ().string ().c_str ());
+        }
+      }
+      batchProcess (pcd_files, output_dir, field_name, min, max, inside, keep_organized);
+    }
+    else
+    {
+      PCL_ERROR ("Batch processing mode enabled, but invalid input directory (%s) given!\n", input_dir.c_str ());
+      return (-1);
+    }
+  }
 }
