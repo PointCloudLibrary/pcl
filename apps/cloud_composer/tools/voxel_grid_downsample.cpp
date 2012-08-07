@@ -50,7 +50,7 @@ pcl::cloud_composer::VoxelGridDownsampleTool::performAction (ConstItemList input
     // Create the filtering object
     pcl::VoxelGrid<sensor_msgs::PointCloud2> vox_grid;
     vox_grid.setInputCloud (input_cloud);
-    vox_grid.setLeafSize (leaf_x, leaf_y, leaf_z);
+    vox_grid.setLeafSize (float (leaf_x), float (leaf_y), float (leaf_z));
     
     
     //Create output cloud
