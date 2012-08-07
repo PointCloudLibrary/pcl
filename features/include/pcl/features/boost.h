@@ -51,7 +51,7 @@
 #include <boost/random.hpp>
 #include <boost/multi_array.hpp>
 #include <boost/property_map/property_map.hpp>
-#include <boost/graph/adjacency_list.hpp>
-#include <boost/graph/johnson_all_pairs_shortest.hpp>
+//#include <boost/graph/adjacency_list.hpp>
+//#include <boost/graph/johnson_all_pairs_shortest.hpp>
 
 #endif    // PCL_FEATURES_BOOST_H_

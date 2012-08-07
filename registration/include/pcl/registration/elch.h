@@ -47,6 +47,7 @@
 #include <pcl/registration/boost.h>
 #include <pcl/registration/eigen.h>
 #include <pcl/registration/icp.h>
+#include <boost/graph/adjacency_list.hpp>
 
 namespace pcl
 {

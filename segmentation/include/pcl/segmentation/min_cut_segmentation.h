@@ -45,11 +45,11 @@
 #include <pcl/segmentation/boost.h>
 #include <string>
 #include <set>
+#include <boost/graph/adjacency_list.hpp>
 
 namespace pcl
 {
-  /** \brief
-    * This class implements the segmentation algorithm based on minimal cut of the graph.
+  /** \brief This class implements the segmentation algorithm based on minimal cut of the graph.
     * Description can be found in the article
     * "Min-Cut Based Segmentation of Point Clouds"
     * \author: Aleksey Golovinskiy (mine_all_mine@bk.ru) and Thomas Funkhouser.

@@ -45,6 +45,7 @@
 #include <pcl/registration/boost.h>
 #include <pcl/common/transforms.h>
 #include <pcl/correspondence.h>
+#include <boost/graph/adjacency_list.hpp>
 
 namespace Eigen
 {

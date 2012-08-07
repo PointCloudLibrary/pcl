@@ -42,6 +42,9 @@
 #include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/common/distances.h>
 #include <pcl/features/boost.h>
+#include <boost/graph/adjacency_list.hpp>
+#include <boost/graph/johnson_all_pairs_shortest.hpp>
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
