@@ -293,3 +293,26 @@ pcl::transformPoint (const PointT &point, const Eigen::Affine3f &transform)
   ret.getVector3fMap () = transform * point.getVector3fMap ();
   return ret;
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT> double
+pcl::getPrincipalTransformation (const pcl::PointCloud<PointT> &cloud, Eigen::Affine3f &transform)
+{
+  EIGEN_ALIGN16 Eigen::Matrix3f covariance_matrix;
+  Eigen::Vector4f centroid;
+  
+  pcl::computeMeanAndCovarianceMatrix (cloud, covariance_matrix, centroid);
+
+  EIGEN_ALIGN16 Eigen::Matrix3f eigen_vects;
+  Eigen::Vector3f eigen_vals;
+  pcl::eigen33 (covariance_matrix, eigen_vects, eigen_vals);
+
+  double rel1 = eigen_vals.coeff (0) / eigen_vals.coeff (1);
+  double rel2 = eigen_vals.coeff (1) / eigen_vals.coeff (2);
+  
+  transform.translation () = centroid.head<3> ();
+  transform.linear () = eigen_vects;
+  
+  return std::min (rel1, rel2);
+}
+

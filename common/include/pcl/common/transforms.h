@@ -138,6 +138,16 @@ namespace pcl
   template <typename PointT> inline PointT
   transformPoint (const PointT &point, const Eigen::Affine3f &transform);
   
+  /**
+   * \brief calculates the principal (PCA-based) alignment of the point cloud
+   * \param[in] cloud
+   * \param[out] transform
+   * \return the ratio lambda1/lambda2 or lambda2/lambda3, whatever is closer to 1.
+   * \note If the return value is close to one then the transformation might be not unique -> two principal directions have
+   * almost same variance (extend)
+   */
+  template <typename PointT> inline double
+  getPrincipalTransformation (const pcl::PointCloud<PointT> &cloud, Eigen::Affine3f &transform);
 }
 
 #include <pcl/common/impl/transforms.hpp>

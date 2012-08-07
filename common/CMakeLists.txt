@@ -109,6 +109,7 @@ if(build)
         include/pcl/common/intensity.h
         include/pcl/common/random.h
         include/pcl/common/generate.h
+        include/pcl/common/projection_matrix.h
         )
 
     set(common_incs_impl
@@ -131,6 +132,7 @@ if(build)
         include/pcl/common/impl/intensity.hpp
         include/pcl/common/impl/random.hpp
         include/pcl/common/impl/generate.hpp
+        include/pcl/common/impl/projection_matrix.hpp
         )
 
     set(impl_incs include/pcl/impl/instantiate.hpp

@@ -77,6 +77,11 @@ namespace pcl
       void reset ();
 
       bool isValid () const;
+      
+      operator bool () const
+      {
+        return isValid ();
+      }
     private:
 
       class Iterator
@@ -135,6 +140,11 @@ namespace pcl
       void reset ();
 
       bool isValid () const;
+      
+      operator bool () const
+      {
+        return isValid ();
+      }
     private:
 
       class Iterator
