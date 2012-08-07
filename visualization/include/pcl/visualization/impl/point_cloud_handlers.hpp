@@ -193,13 +193,13 @@ pcl::visualization::PointCloudColorHandlerRGBCloud<PointT>::getColor (vtkSmartPo
     scalars = vtkSmartPointer<vtkUnsignedCharArray>::New ();
   scalars->SetNumberOfComponents (3);
     
-  vtkIdType nr_points = (int)cloud_->points.size ();
+  vtkIdType nr_points = vtkIdType (cloud_->points.size ());
   reinterpret_cast<vtkUnsignedCharArray*>(&(*scalars))->SetNumberOfTuples (nr_points);
   unsigned char* colors = reinterpret_cast<vtkUnsignedCharArray*>(&(*scalars))->GetPointer (0);
     
   // Color every point
-  if (nr_points != (int)rgb_->points.size ())
-    std::fill(colors, colors + nr_points * 3, (unsigned char)0xFF);
+  if (nr_points != int (rgb_->points.size ()))
+    std::fill (colors, colors + nr_points * 3, static_cast<unsigned char> (0xFF));
   else
     for (vtkIdType cp = 0; cp < nr_points; ++cp)
     {
