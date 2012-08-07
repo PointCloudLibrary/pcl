@@ -54,16 +54,16 @@
 using namespace pcl;
 using namespace std;
 
-typedef PointXYZRGBA PointT;
-typedef PointXY KeyPointT;
+typedef PointUV KeyPointT;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT>
 class AGASTDemo
 {
   public:
     typedef PointCloud<PointT> Cloud;
-    typedef Cloud::Ptr CloudPtr;
-    typedef Cloud::ConstPtr CloudConstPtr;
+    typedef typename Cloud::Ptr CloudPtr;
+    typedef typename Cloud::ConstPtr CloudConstPtr;
 
     AGASTDemo (Grabber& grabber)
       : cloud_viewer_ ("AGAST 2D Keypoints -- PointCloud")
@@ -215,8 +215,8 @@ class AGASTDemo
       int j = 0;
       for (size_t i = 0; i < keypoints->size (); ++i)
       {
-        const PointT &pt = (*cloud)(static_cast<long unsigned int> (keypoints->points[i].x), 
-                                    static_cast<long unsigned int> (keypoints->points[i].y));
+        const PointT &pt = (*cloud)(static_cast<long unsigned int> (keypoints->points[i].u), 
+                                    static_cast<long unsigned int> (keypoints->points[i].v));
         if (!pcl_isfinite (pt.x) || !pcl_isfinite (pt.y) || !pcl_isfinite (pt.z))
           continue;
 
@@ -290,8 +290,8 @@ class AGASTDemo
             image_viewer_.removeLayer (getStrBool (keypts));
             for (size_t i = 0; i < keypoints->size (); ++i)
             {
-              int u = int (keypoints->points[i].x);
-              int v = cloud->height - int (keypoints->points[i].y);
+              int u = int (keypoints->points[i].u);
+              int v = cloud->height - int (keypoints->points[i].v);
               image_viewer_.markPoint (u, v, visualization::red_color, visualization::blue_color, 10, getStrBool (!keypts));
             }
             keypts = !keypts;
@@ -336,7 +336,7 @@ main (int, char**)
 {
   string device_id ("#1");
   OpenNIGrabber grabber (device_id);
-  AGASTDemo openni_viewer (grabber);
+  AGASTDemo<PointXYZRGBA> openni_viewer (grabber);
 
   openni_viewer.init ();
   openni_viewer.run ();

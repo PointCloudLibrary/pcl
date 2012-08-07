@@ -42,7 +42,7 @@
 
 /////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::AgastKeypoint2D<pcl::PointXYZ, pcl::PointXY>::detectKeypoints (pcl::PointCloud<pcl::PointXY> &output)
+pcl::AgastKeypoint2D<pcl::PointXYZ, pcl::PointUV>::detectKeypoints (pcl::PointCloud<pcl::PointUV> &output)
 {
   // image size
   const size_t width = input_->width;
@@ -60,7 +60,7 @@ pcl::AgastKeypoint2D<pcl::PointXYZ, pcl::PointXY>::detectKeypoints (pcl::PointCl
 
   if (apply_non_max_suppression_)
   {
-    pcl::PointCloud<pcl::PointXY> tmp_cloud;
+    pcl::PointCloud<pcl::PointUV> tmp_cloud;
 
     detector_->detectKeypoints (image_data, tmp_cloud);
     detector_->applyNonMaxSuppression (image_data, tmp_cloud, output);
@@ -78,7 +78,7 @@ pcl::AgastKeypoint2D<pcl::PointXYZ, pcl::PointXY>::detectKeypoints (pcl::PointCl
 void
 pcl::keypoints::agast::AbstractAgastDetector::detectKeypoints (
     const std::vector<unsigned char> & intensity_data, 
-    pcl::PointCloud<pcl::PointXY> &output)
+    pcl::PointCloud<pcl::PointUV> &output)
 {
   detect (&(intensity_data[0]), output.points);
 
@@ -90,7 +90,7 @@ pcl::keypoints::agast::AbstractAgastDetector::detectKeypoints (
 void
 pcl::keypoints::agast::AbstractAgastDetector::detectKeypoints (
     const std::vector<float> & intensity_data, 
-    pcl::PointCloud<pcl::PointXY> &output)
+    pcl::PointCloud<pcl::PointUV> &output)
 {
   detect (&(intensity_data[0]), output.points);
 
@@ -101,21 +101,21 @@ pcl::keypoints::agast::AbstractAgastDetector::detectKeypoints (
 /////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::keypoints::agast::AbstractAgastDetector::applyNonMaxSuppression (
-    const pcl::PointCloud<pcl::PointXY> &input,
+    const pcl::PointCloud<pcl::PointUV> &input,
     const std::vector<int> &scores,
-    pcl::PointCloud<pcl::PointXY> &output)
+    pcl::PointCloud<pcl::PointUV> &output)
 {
   std::vector<int> nms_flags;
 
-  const std::vector<pcl::PointXY, Eigen::aligned_allocator<pcl::PointXY> > & corners_all = input.points;
-  std::vector<pcl::PointXY, Eigen::aligned_allocator<pcl::PointXY> > & corners_nms = output.points;
+  const std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV> > & corners_all = input.points;
+  std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV> > & corners_nms = output.points;
 
   int curr_corner_ind;
   int lastRow = 0, next_lastRow = 0;
-  std::vector<pcl::PointXY, Eigen::aligned_allocator<pcl::PointXY> >::const_iterator curr_corner;
+  std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV> >::const_iterator curr_corner;
   int lastRowCorner_ind = 0, next_lastRowCorner_ind = 0;
   std::vector<int>::iterator nms_flags_p;
-  std::vector<pcl::PointXY, Eigen::aligned_allocator<pcl::PointXY> >::iterator curr_corner_nms;
+  std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV> >::iterator curr_corner_nms;
   int j;
   int numCorners_all = int (corners_all.size ());
   int nMaxCorners = int (corners_nms.capacity ());
@@ -155,23 +155,23 @@ pcl::keypoints::agast::AbstractAgastDetector::applyNonMaxSuppression (
     int t;
 
     // check above
-    if (lastRow + 1 < curr_corner->y)
+    if (lastRow + 1 < curr_corner->v)
     {
       lastRow=next_lastRow;
       lastRowCorner_ind=next_lastRowCorner_ind;
     }
-    if (next_lastRow != curr_corner->y)
+    if (next_lastRow != curr_corner->v)
     {
-      next_lastRow = int (curr_corner->y);
+      next_lastRow = int (curr_corner->v);
       next_lastRowCorner_ind = curr_corner_ind;
     }
-    if (lastRow+1 == curr_corner->y)
+    if (lastRow+1 == curr_corner->v)
     {
       //find the corner above the current one
-      while ((corners_all[lastRowCorner_ind].x < curr_corner->x) && (corners_all[lastRowCorner_ind].y == lastRow))
+      while ((corners_all[lastRowCorner_ind].u < curr_corner->u) && (corners_all[lastRowCorner_ind].v == lastRow))
         lastRowCorner_ind++;
 
-      if ((corners_all[lastRowCorner_ind].x == curr_corner->x) && (lastRowCorner_ind!=curr_corner_ind))
+      if ((corners_all[lastRowCorner_ind].u == curr_corner->u) && (lastRowCorner_ind!=curr_corner_ind))
       {
         int t = lastRowCorner_ind;
         while (nms_flags[t] != -1) //find the maximum in this block
@@ -188,7 +188,7 @@ pcl::keypoints::agast::AbstractAgastDetector::applyNonMaxSuppression (
 
     //check left
     t = curr_corner_ind - 1;
-    if ((curr_corner_ind!=0) && (corners_all[t].y == curr_corner->y) && (corners_all[t].x+1 == curr_corner->x))
+    if ((curr_corner_ind!=0) && (corners_all[t].v == curr_corner->v) && (corners_all[t].u+1 == curr_corner->u))
     {
       int curr_cornerMaxAbove_ind = nms_flags[curr_corner_ind];
 
@@ -243,8 +243,8 @@ pcl::keypoints::agast::AbstractAgastDetector::applyNonMaxSuppression (
 void
 pcl::keypoints::agast::AbstractAgastDetector::applyNonMaxSuppression (
   const std::vector<unsigned char>& intensity_data, 
-  const pcl::PointCloud<pcl::PointXY> &input,
-  pcl::PointCloud<pcl::PointXY> &output)
+  const pcl::PointCloud<pcl::PointUV> &input,
+  pcl::PointCloud<pcl::PointUV> &output)
 {
   std::vector<int> scores;
   computeCornerScores (&(intensity_data[0]), input.points, scores);
@@ -256,8 +256,8 @@ pcl::keypoints::agast::AbstractAgastDetector::applyNonMaxSuppression (
 void
 pcl::keypoints::agast::AbstractAgastDetector::applyNonMaxSuppression (
   const std::vector<float>& intensity_data, 
-  const pcl::PointCloud<pcl::PointXY> &input,
-  pcl::PointCloud<pcl::PointXY> &output)
+  const pcl::PointCloud<pcl::PointUV> &input,
+  pcl::PointCloud<pcl::PointUV> &output)
 {
   std::vector<int> scores;
   computeCornerScores (&(intensity_data[0]), input.points, scores);
@@ -269,7 +269,7 @@ pcl::keypoints::agast::AbstractAgastDetector::applyNonMaxSuppression (
 void
 pcl::keypoints::agast::AbstractAgastDetector::computeCornerScores (
   const unsigned char* im,
-  const std::vector<pcl::PointXY, Eigen::aligned_allocator<pcl::PointXY> > &corners_all, 
+  const std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV> > &corners_all, 
   std::vector<int> & scores)
 {
   unsigned int n = 0;
@@ -290,14 +290,14 @@ pcl::keypoints::agast::AbstractAgastDetector::computeCornerScores (
   scores.resize (num_corners);
 
   for (; n < num_corners; n++)
-    scores[n] = computeCornerScore (im + static_cast<size_t> (corners_all[n].y) * width_ + static_cast<size_t> (corners_all[n].x));
+    scores[n] = computeCornerScore (im + static_cast<size_t> (corners_all[n].v) * width_ + static_cast<size_t> (corners_all[n].u));
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::keypoints::agast::AbstractAgastDetector::computeCornerScores (
   const float* im,
-  const std::vector<pcl::PointXY, Eigen::aligned_allocator<pcl::PointXY> > &corners_all, 
+  const std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV> > &corners_all, 
   std::vector<int> & scores)
 {
   unsigned int n = 0;
@@ -318,7 +318,7 @@ pcl::keypoints::agast::AbstractAgastDetector::computeCornerScores (
   scores.resize (num_corners);
 
   for (; n < num_corners; n++)
-    scores[n] = computeCornerScore (im + static_cast<size_t> (corners_all[n].y) * width_ + static_cast<size_t> (corners_all[n].x));
+    scores[n] = computeCornerScore (im + static_cast<size_t> (corners_all[n].v) * width_ + static_cast<size_t> (corners_all[n].u));
 }
 
 
@@ -350,11 +350,11 @@ namespace pcl
           int_fast16_t s_offset9,
           int_fast16_t s_offset10,
           int_fast16_t s_offset11,
-          std::vector<pcl::PointXY, Eigen::aligned_allocator<pcl::PointXY> >& corners)
+          std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV> >& corners)
       {
         int total = 0;
         int n_expected_corners = int (corners.capacity ());
-        pcl::PointXY h;
+        pcl::PointUV h;
         register int x, y;
         register int width_b  = img_width - 3; //2, +1 due to faster test x>width_b
         register int height_b = img_height - 2;
@@ -2397,8 +2397,8 @@ namespace pcl
                 corners.reserve (n_expected_corners);
               }
             }
-            h.x = float (x);
-            h.y = float (y);
+            h.u = float (x);
+            h.v = float (y);
             corners.push_back (h);
             total++;
             goto homogeneous;
@@ -2416,8 +2416,8 @@ namespace pcl
                 corners.reserve (n_expected_corners);
               }
             }
-            h.x = float (x);
-            h.y = float (y);
+            h.u = float (x);
+            h.v = float (y);
             corners.push_back (h);
             total++;            
             goto structured;        
@@ -8100,7 +8100,7 @@ pcl::keypoints::agast::AgastDetector7_12s::initPattern ()
 
 /////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::keypoints::agast::AgastDetector7_12s::detect (const unsigned char* im, std::vector<pcl::PointXY, Eigen::aligned_allocator<pcl::PointXY> > & corners) const
+pcl::keypoints::agast::AgastDetector7_12s::detect (const unsigned char* im, std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV> > & corners) const
 {
   return (pcl::keypoints::agast::AgastDetector7_12s_detect<unsigned char, int> (
         im, int (width_), int (height_), threshold_, 
@@ -8121,7 +8121,7 @@ pcl::keypoints::agast::AgastDetector7_12s::detect (const unsigned char* im, std:
 
 /////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::keypoints::agast::AgastDetector7_12s::detect (const float* im, std::vector<pcl::PointXY, Eigen::aligned_allocator<pcl::PointXY> > & corners) const
+pcl::keypoints::agast::AgastDetector7_12s::detect (const float* im, std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV> > & corners) const
 {
   return (pcl::keypoints::agast::AgastDetector7_12s_detect<float, float> (
         im, int (width_), int (height_), threshold_, 
@@ -8204,11 +8204,11 @@ namespace pcl
           int_fast16_t s_offset5,
           int_fast16_t s_offset6,
           int_fast16_t s_offset7,
-          std::vector<pcl::PointXY, Eigen::aligned_allocator<pcl::PointXY> >& corners)
+          std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV> >& corners)
       {
         int total = 0;
         int n_expected_corners = int (corners.capacity ());
-        pcl::PointXY h;
+        pcl::PointUV h;
         register int x, y;
         register int xsize_b = int (img_width) - 2;
         register int ysize_b = int (img_height) - 1;
@@ -8930,8 +8930,8 @@ namespace pcl
                 corners.reserve (n_expected_corners);
               }
             }
-            h.x = float (x);
-            h.y = float (y);
+            h.u = float (x);
+            h.v = float (y);
             corners.push_back (h);
             total++;
             goto homogeneous;
@@ -8949,8 +8949,8 @@ namespace pcl
                 corners.reserve (n_expected_corners);
               }
             }
-            h.x = float (x);
-            h.y = float (y);
+            h.u = float (x);
+            h.v = float (y);
             corners.push_back (h);
             total++;
             goto structured;
@@ -9352,7 +9352,7 @@ pcl::keypoints::agast::AgastDetector5_8::initPattern ()
 
 /////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::keypoints::agast::AgastDetector5_8::detect (const unsigned char* im, std::vector<pcl::PointXY, Eigen::aligned_allocator<pcl::PointXY> > & corners) const
+pcl::keypoints::agast::AgastDetector5_8::detect (const unsigned char* im, std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV> > & corners) const
 {
   return (pcl::keypoints::agast::AgastDetector5_8_detect<unsigned char, int> (
         im, int (width_), int (height_), threshold_, 
@@ -9369,7 +9369,7 @@ pcl::keypoints::agast::AgastDetector5_8::detect (const unsigned char* im, std::v
 
 /////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::keypoints::agast::AgastDetector5_8::detect (const float* im, std::vector<pcl::PointXY, Eigen::aligned_allocator<pcl::PointXY> > & corners) const
+pcl::keypoints::agast::AgastDetector5_8::detect (const float* im, std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV> > & corners) const
 {
   return (pcl::keypoints::agast::AgastDetector5_8_detect<float, float> (
         im, int (width_), int (height_), threshold_, 
@@ -9448,11 +9448,11 @@ namespace pcl
           int_fast16_t s_offset13,
           int_fast16_t s_offset14,
           int_fast16_t s_offset15,
-          std::vector<pcl::PointXY, Eigen::aligned_allocator<pcl::PointXY> >& corners)
+          std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV> >& corners)
       {
         int total = 0;
         int n_expected_corners = int (corners.capacity ());
-        pcl::PointXY h;
+        pcl::PointUV h;
         register int x, y;
         register int xsize_b = int (img_width) - 4;
         register int ysize_b = int (img_height) - 3;
@@ -11535,8 +11535,8 @@ namespace pcl
                 corners.reserve (n_expected_corners);
               }
             }
-            h.x = float (x);
-            h.y = float (y);
+            h.u = float (x);
+            h.v = float (y);
             corners.push_back (h);
             total++;
           }
@@ -13667,7 +13667,7 @@ pcl::keypoints::agast::OastDetector9_16::initPattern ()
 
 /////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::keypoints::agast::OastDetector9_16::detect (const unsigned char* im, std::vector<pcl::PointXY, Eigen::aligned_allocator<pcl::PointXY> > & corners) const
+pcl::keypoints::agast::OastDetector9_16::detect (const unsigned char* im, std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV> > & corners) const
 {
   return (pcl::keypoints::agast::OastDetector9_16_detect<unsigned char, int> (
         im, int (width_), int (height_), threshold_, 
@@ -13692,7 +13692,7 @@ pcl::keypoints::agast::OastDetector9_16::detect (const unsigned char* im, std::v
 
 /////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::keypoints::agast::OastDetector9_16::detect (const float* im, std::vector<pcl::PointXY, Eigen::aligned_allocator<pcl::PointXY> > & corners) const
+pcl::keypoints::agast::OastDetector9_16::detect (const float* im, std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV> > & corners) const
 {
   return (pcl::keypoints::agast::OastDetector9_16_detect<float, float> (
         im, int (width_), int (height_), threshold_, 

@@ -96,7 +96,7 @@ pcl::keypoints::brisk::ScaleSpace::getKeypoints (
   // assign thresholds
   threshold_ = uint8_t (threshold);
   safe_threshold_ = uint8_t (threshold_ * safety_factor_);
-  std::vector<std::vector<pcl::PointXY, Eigen::aligned_allocator<pcl::PointXY> > > agast_points;
+  std::vector<std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV> > > agast_points;
   agast_points.resize (layers_);
 
   // go through the octaves and intra layers and calculate fast corner scores:
@@ -113,22 +113,22 @@ pcl::keypoints::brisk::ScaleSpace::getKeypoints (
     const int num = int (agast_points[0].size ());
     for (int n = 0; n < num; n++)
     {
-      const pcl::PointXY& point = agast_points.at (0)[n];
+      const pcl::PointUV& point = agast_points.at (0)[n];
       // first check if it is a maximum:
-      if (!isMax2D (0, int (point.x), int (point.y)))
+      if (!isMax2D (0, int (point.u), int (point.v)))
         continue;
 
       // let's do the subpixel and float scale refinement:
       pcl::keypoints::brisk::Layer& l = pyramid_[0];
-      register int s_0_0 = l.getAgastScore (point.x-1, point.y-1, 1);
-      register int s_1_0 = l.getAgastScore (point.x,   point.y-1, 1);
-      register int s_2_0 = l.getAgastScore (point.x+1, point.y-1, 1);
-      register int s_2_1 = l.getAgastScore (point.x+1, point.y,   1);
-      register int s_1_1 = l.getAgastScore (point.x,   point.y,   1);
-      register int s_0_1 = l.getAgastScore (point.x-1, point.y,   1);
-      register int s_0_2 = l.getAgastScore (point.x-1, point.y+1, 1);
-      register int s_1_2 = l.getAgastScore (point.x,   point.y+1, 1);
-      register int s_2_2 = l.getAgastScore (point.x+1, point.y+1, 1);
+      register int s_0_0 = l.getAgastScore (point.u-1, point.v-1, 1);
+      register int s_1_0 = l.getAgastScore (point.u,   point.v-1, 1);
+      register int s_2_0 = l.getAgastScore (point.u+1, point.v-1, 1);
+      register int s_2_1 = l.getAgastScore (point.u+1, point.v,   1);
+      register int s_1_1 = l.getAgastScore (point.u,   point.v,   1);
+      register int s_0_1 = l.getAgastScore (point.u-1, point.v,   1);
+      register int s_0_2 = l.getAgastScore (point.u-1, point.v+1, 1);
+      register int s_1_2 = l.getAgastScore (point.u,   point.v+1, 1);
+      register int s_2_2 = l.getAgastScore (point.u+1, point.v+1, 1);
       float delta_x, delta_y;
       float max = subpixel2D (s_0_0, s_0_1, s_0_2,
                               s_1_0, s_1_1, s_1_2,
@@ -136,7 +136,7 @@ pcl::keypoints::brisk::ScaleSpace::getKeypoints (
                               delta_x, delta_y);
 
       // store:
-      keypoints.push_back (pcl::PointWithScale (point.x + delta_x, point.y + delta_y, 0.0f, basic_size_, -1, max, 0));
+      keypoints.push_back (pcl::PointWithScale (point.u + delta_x, point.v + delta_y, 0.0f, basic_size_, -1, max, 0));
     }
     return;
   }
@@ -151,29 +151,29 @@ pcl::keypoints::brisk::ScaleSpace::getKeypoints (
     {
       for (int n = 0; n < num; n++)
       {
-        const pcl::PointXY& point = agast_points.at (i)[n];
+        const pcl::PointUV& point = agast_points.at (i)[n];
         // consider only 2D maxima...
-        if (!isMax2D (i, int (point.x), int (point.y)))
+        if (!isMax2D (i, int (point.u), int (point.v)))
           continue;
 
         bool ismax;
         float dx, dy;
-        getScoreMaxBelow (i, int (point.x), int (point.y),
-                          l.getAgastScore (point.x, point.y, safe_threshold_), ismax,
+        getScoreMaxBelow (i, int (point.u), int (point.v),
+                          l.getAgastScore (point.u, point.v, safe_threshold_), ismax,
                           dx, dy);
         if (!ismax)
           continue;
 
         // get the patch on this layer:
-        register int s_0_0 = l.getAgastScore (point.x-1, point.y-1, 1);
-        register int s_1_0 = l.getAgastScore (point.x,   point.y-1, 1);
-        register int s_2_0 = l.getAgastScore (point.x+1, point.y-1, 1);
-        register int s_2_1 = l.getAgastScore (point.x+1, point.y,   1);
-        register int s_1_1 = l.getAgastScore (point.x,   point.y,   1);
-        register int s_0_1 = l.getAgastScore (point.x-1, point.y,   1);
-        register int s_0_2 = l.getAgastScore (point.x-1, point.y+1, 1);
-        register int s_1_2 = l.getAgastScore (point.x,   point.y+1, 1);
-        register int s_2_2 = l.getAgastScore (point.x+1, point.y+1, 1);
+        register int s_0_0 = l.getAgastScore (point.u-1, point.v-1, 1);
+        register int s_1_0 = l.getAgastScore (point.u,   point.v-1, 1);
+        register int s_2_0 = l.getAgastScore (point.u+1, point.v-1, 1);
+        register int s_2_1 = l.getAgastScore (point.u+1, point.v,   1);
+        register int s_1_1 = l.getAgastScore (point.u,   point.v,   1);
+        register int s_0_1 = l.getAgastScore (point.u-1, point.v,   1);
+        register int s_0_2 = l.getAgastScore (point.u-1, point.v+1, 1);
+        register int s_1_2 = l.getAgastScore (point.u,   point.v+1, 1);
+        register int s_2_2 = l.getAgastScore (point.u+1, point.v+1, 1);
         float delta_x, delta_y;
         float max = subpixel2D (s_0_0, s_0_1, s_0_2,
                                 s_1_0, s_1_1, s_1_2,
@@ -181,8 +181,8 @@ pcl::keypoints::brisk::ScaleSpace::getKeypoints (
                                 delta_x, delta_y);
 
         // store:
-        keypoints.push_back (pcl::PointWithScale ((point.x + delta_x) * l.getScale () + l.getOffset (),     // x
-                                                  (point.y + delta_y) * l.getScale () + l.getOffset (),     // y
+        keypoints.push_back (pcl::PointWithScale ((point.u + delta_x) * l.getScale () + l.getOffset (),     // x
+                                                  (point.v + delta_y) * l.getScale () + l.getOffset (),     // y
                                                   0.0f,                                           // z
                                                   basic_size_ * l.getScale (),                         // size
                                                   -1,                                             // angle
@@ -195,15 +195,15 @@ pcl::keypoints::brisk::ScaleSpace::getKeypoints (
       // not the last layer:
       for (int n = 0; n < num; n++)
       {
-        const pcl::PointXY& point = agast_points.at (i)[n];
+        const pcl::PointUV& point = agast_points.at (i)[n];
 
         // first check if it is a maximum:
-        if (!isMax2D (i, int (point.x), int (point.y)))
+        if (!isMax2D (i, int (point.u), int (point.v)))
           continue;
 
         // let's do the subpixel and float scale refinement:
         bool ismax;
-        score = refine3D (i, int (point.x), int (point.y), x, y, scale, ismax);
+        score = refine3D (i, int (point.u), int (point.v), x, y, scale, ismax);
         if (!ismax)
           continue;
 
@@ -1330,7 +1330,7 @@ pcl::keypoints::brisk::Layer::Layer (const pcl::keypoints::brisk::Layer& layer, 
 // wraps the agast class
 void 
 pcl::keypoints::brisk::Layer::getAgastPoints (
-    uint8_t threshold, std::vector<pcl::PointXY, Eigen::aligned_allocator<pcl::PointXY> > &keypoints)
+    uint8_t threshold, std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV> > &keypoints)
 {
   oast_detector_->setThreshold (threshold);
   oast_detector_->detect (&img_[0], keypoints);
@@ -1341,7 +1341,7 @@ pcl::keypoints::brisk::Layer::getAgastPoints (
 
   for (int i = 0; i < num; i++)
   {
-    const int offs = int (keypoints[i].x + keypoints[i].y * float (imcols));
+    const int offs = int (keypoints[i].u + keypoints[i].v * float (imcols));
     *(&scores_[0] + offs) = static_cast<unsigned char> (oast_detector_->computeCornerScore (&img_[0] + offs));
   }
 }

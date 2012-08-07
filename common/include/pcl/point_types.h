@@ -121,6 +121,11 @@ namespace pcl
     */
   struct PointXY;
 
+  /** \brief Members: float u, v
+    * \ingroup common
+    */
+  struct PointUV;
+
   /** \brief Members: float x, y, z, strength
     * \ingroup common
     */
@@ -351,6 +356,11 @@ POINT_CLOUD_REGISTER_POINT_WRAPPER(pcl::PointXYZHSV, pcl::_PointXYZHSV)
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::PointXY,
     (float, x, x)
     (float, y, y)
+)
+
+POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::PointUV,
+    (float, u, u)
+    (float, v, v)
 )
 
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::InterestPoint,

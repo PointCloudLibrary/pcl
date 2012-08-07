@@ -45,7 +45,7 @@
 template <typename PointInT, typename PointOutT, typename IntensityT> bool
 pcl::AgastKeypoint2DBase<PointInT, PointOutT, IntensityT>::initCompute ()
 {
-  if (!pcl::Keypoint<PointInT, pcl::PointXY>::initCompute ())
+  if (!pcl::Keypoint<PointInT, PointOutT>::initCompute ())
   {
     PCL_ERROR ("[pcl::%s::initCompute] init failed.!\n", name_.c_str ());
     return (false);
@@ -80,36 +80,19 @@ pcl::AgastKeypoint2D<PointInT, PointOutT>::detectKeypoints (PointCloudOut &outpu
 
   if (apply_non_max_suppression_)
   {
-    pcl::PointCloud<pcl::PointXY> tmp_cloud;
-
+    pcl::PointCloud<pcl::PointUV> tmp_cloud;
     detector_->detectKeypoints (image_data, tmp_cloud);
 
-    // Check if the template types are the same. If true, avoid a copy.
-    // The PointOutT MUST be registered using the POINT_CLOUD_REGISTER_POINT_STRUCT macro!
-    if (isSamePointType<PointOutT, pcl::PointXY> ())
-      detector_->applyNonMaxSuppression (image_data, tmp_cloud, output);
-    else
-    {
-      pcl::PointCloud<pcl::PointXY> output_temp;
-      detector_->applyNonMaxSuppression (image_data, tmp_cloud, output_temp);
-      pcl::copyPointCloud<pcl::PointXY, PointOutT> (output_temp, output);
-    }
+    pcl::keypoints::internal::AgastApplyNonMaxSuppresion<PointOutT> anms (
+        image_data, tmp_cloud, detector_, output);
   }
   else
   {
-    // Check if the template types are the same. If true, avoid a copy.
-    // The PointOutT MUST be registered using the POINT_CLOUD_REGISTER_POINT_STRUCT macro!
-    if (isSamePointType<PointOutT, pcl::PointXY> ())
-      detector_->detectKeypoints (image_data, output);
-    else
-    {
-      pcl::PointCloud<pcl::PointXY> output_temp;
-      detector_->detectKeypoints (image_data, output_temp);
-      pcl::copyPointCloud<pcl::PointXY, PointOutT> (output_temp, output);
-    }
+    pcl::keypoints::internal::AgastDetector<PointOutT> dec (
+        image_data, detector_, output);
   }
 
-  // we don not change the denseness
+  // we do not change the denseness
   output.is_dense = true;
 }
 

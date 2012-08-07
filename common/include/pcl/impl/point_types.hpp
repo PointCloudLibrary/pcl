@@ -532,8 +532,8 @@ namespace pcl
 
 
   /** \brief A 2D point structure representing Euclidean xy coordinates.
-   * \ingroup common
-   */
+    * \ingroup common
+    */
   struct PointXY
   {
     float x;
@@ -542,6 +542,21 @@ namespace pcl
   inline std::ostream& operator << (std::ostream& os, const PointXY& p)
   {
     os << "(" << p.x << "," << p.y << ")";
+    return (os);
+  }
+
+  /** \brief A 2D point structure representing pixel image coordinates. 
+    * \note We use float to be able to represent subpixels.
+    * \ingroup common
+    */
+  struct PointUV
+  {
+    float u;
+    float v;
+  };
+  inline std::ostream& operator << (std::ostream& os, const PointUV& p)
+  {
+    os << "(" << p.u << "," << p.v << ")";
     return (os);
   }
 
