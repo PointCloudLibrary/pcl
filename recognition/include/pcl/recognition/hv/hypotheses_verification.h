@@ -67,6 +67,11 @@ namespace pcl
     typename pcl::PointCloud<SceneT>::ConstPtr scene_cloud_;
 
     /*
+     * \brief Scene point cloud
+     */
+    typename pcl::PointCloud<SceneT>::ConstPtr occlusion_cloud_;
+
+    /*
      * \brief Downsampled scene point cloud
      */
      typename pcl::PointCloud<SceneT>::Ptr scene_cloud_downsampled_;
@@ -150,7 +155,7 @@ namespace pcl
      */
 
     void
-    addCompleteModels (std::vector<const typename pcl::PointCloud<ModelT>::Ptr> & complete_models)
+    addCompleteModels (std::vector<typename pcl::PointCloud<ModelT>::ConstPtr> & complete_models)
     {
       complete_models_ = complete_models;
     }
@@ -164,6 +169,8 @@ namespace pcl
     {
 
       mask_.clear();
+      if(occlusion_cloud_ == 0)
+        occlusion_cloud_ = scene_cloud_;
 
       if (!occlusion_reasoning)
         visible_models_ = models;
@@ -176,9 +183,9 @@ namespace pcl
         }
 
         pcl::occlusion_reasoning::ZBuffering<ModelT, SceneT> zbuffer_scene (zbuffer_scene_resolution_, zbuffer_scene_resolution_, 1.f);
-        if (!scene_cloud_->isOrganized ())
+        if (!occlusion_cloud_->isOrganized ())
         {
-          zbuffer_scene.computeDepthMap (scene_cloud_, true);
+          zbuffer_scene.computeDepthMap (occlusion_cloud_, true);
         }
 
         for (size_t i = 0; i < models.size (); i++)
@@ -186,19 +193,20 @@ namespace pcl
 
           //self-occlusions
           typename pcl::PointCloud<ModelT>::Ptr filtered (new pcl::PointCloud<ModelT> ());
-          typename pcl::occlusion_reasoning::ZBuffering<ModelT, SceneT> zbuffer_self_occlusion (150, 150, 1.f);
+          typename pcl::occlusion_reasoning::ZBuffering<ModelT, SceneT> zbuffer_self_occlusion (75, 75, 1.f);
           zbuffer_self_occlusion.computeDepthMap (models[i], true);
           zbuffer_self_occlusion.filter (models[i], filtered, 0.005f);
 
           typename pcl::PointCloud<ModelT>::ConstPtr const_filtered(new pcl::PointCloud<ModelT> (*filtered));
-
+          //typename pcl::PointCloud<ModelT>::ConstPtr const_filtered(new pcl::PointCloud<ModelT> (*models[i]));
           //scene-occlusions
-          if (scene_cloud_->isOrganized ())
+          if (occlusion_cloud_->isOrganized ())
           {
-            filtered = pcl::occlusion_reasoning::filter<ModelT,SceneT> (scene_cloud_, const_filtered, 525.f, 0.01f);
+            filtered = pcl::occlusion_reasoning::filter<ModelT,SceneT> (occlusion_cloud_, const_filtered, 525.f, 0.01f);
           }
           else
           {
+            PCL_WARN("Scene not organized... filtering using computed depth buffer\n");
             zbuffer_scene.filter (const_filtered, filtered, 0.01f);
           }
 
@@ -227,11 +235,16 @@ namespace pcl
       pcl::VoxelGrid<SceneT> voxel_grid;
       voxel_grid.setInputCloud (scene_cloud);
       voxel_grid.setLeafSize (resolution_, resolution_, resolution_);
+      voxel_grid.setDownsampleAllData(true);
       voxel_grid.filter (*scene_cloud_downsampled_);
 
       //initialize kdtree for search
       scene_downsampled_tree_.reset (new pcl::search::KdTree<SceneT>);
       scene_downsampled_tree_->setInputCloud(scene_cloud_downsampled_);
+    }
+
+    void setOcclusionCloud (const typename pcl::PointCloud<SceneT>::Ptr & occ_cloud) {
+      occlusion_cloud_ = occ_cloud;
     }
 
     /*

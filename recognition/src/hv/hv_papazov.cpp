@@ -39,5 +39,7 @@
 #include <pcl/recognition/hv/hv_papazov.h>
 #include <pcl/recognition/impl/hv/hv_papazov.hpp>
 
-template class PCL_EXPORTS pcl::PapazovHV<pcl::PointXYZ, pcl::PointXYZ>;
-//template class PCL_EXPORTS pcl::PapazovHV<pcl::PointXYZ, pcl::PointXYZRGB>;
+// Instantiations of specific point types
+PCL_INSTANTIATE_PRODUCT(PapazovHV, ((pcl::PointXYZ))((pcl::PointXYZ)))
+PCL_INSTANTIATE_PRODUCT(PapazovHV, ((pcl::PointXYZRGB))((pcl::PointXYZRGB)))
+PCL_INSTANTIATE_PRODUCT(PapazovHV, ((pcl::PointXYZRGBA))((pcl::PointXYZRGBA)))

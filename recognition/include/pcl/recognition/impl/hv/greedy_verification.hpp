@@ -138,3 +138,5 @@ template<typename ModelT, typename SceneT>
       }
     }
   }
+
+#define PCL_INSTANTIATE_GreedyVerification(T1,T2) template class PCL_EXPORTS pcl::GreedyVerification<T1,T2>;

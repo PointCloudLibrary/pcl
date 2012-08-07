@@ -229,3 +229,4 @@ template<typename ModelT, typename SceneT>
     nonMaximaSuppresion ();
   }
 
+#define PCL_INSTANTIATE_PapazovHV(T1,T2) template class PCL_EXPORTS pcl::PapazovHV<T1,T2>;
