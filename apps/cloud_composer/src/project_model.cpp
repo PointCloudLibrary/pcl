@@ -5,6 +5,8 @@
 #include <pcl/apps/cloud_composer/work_queue.h>
 #include <pcl/apps/cloud_composer/items/cloud_item.h>
 #include <pcl/apps/cloud_composer/cloud_view.h>
+#include <pcl/apps/cloud_composer/point_selectors/interactor_style_switch.h>
+
 
 pcl::cloud_composer::ProjectModel::ProjectModel (QObject* parent)
   : QStandardItemModel (parent)
@@ -30,9 +32,12 @@ pcl::cloud_composer::ProjectModel::ProjectModel (QObject* parent)
   connect (this, SIGNAL (rowsRemoved  ( const QModelIndex, int, int)),
            this, SIGNAL (modelChanged ()));
   
+  connect (this, SIGNAL (rowsAboutToBeRemoved  ( const QModelIndex, int, int)),
+           this, SLOT (clearSelection()));
   connect (selection_model_, SIGNAL (selectionChanged(QItemSelection,QItemSelection)),
            this, SLOT (emitAllStateSignals ()));
-  
+  connect (selection_model_, SIGNAL (selectionChanged(QItemSelection,QItemSelection)),
+           this, SLOT (itemSelectionChanged (QItemSelection,QItemSelection)));
   
 }
 
@@ -74,6 +79,36 @@ pcl::cloud_composer::ProjectModel::setCloudView (CloudView* view)
   cloud_view_ = view;
   // Initialize status variables tied to the view
   setAxisVisibility (true);
+   
+}
+
+void
+pcl::cloud_composer::ProjectModel::setPointSelection (boost::shared_ptr<SelectionEvent> selected_event)
+{
+  selection_event_ = selected_event;
+  //Get all the items in this project that are clouds
+  QList <CloudItem*> project_clouds;
+  for (int i = 0; i < this->rowCount (); ++i)
+  {
+    CloudItem* cloud_item = dynamic_cast <CloudItem*> (this->item (i));
+    if ( cloud_item )
+      project_clouds.append ( cloud_item );
+  }
+  
+  item_index_map_.clear ();
+  // Find all indices in the selected points which are present in the clouds
+  foreach (CloudItem* cloud_item, project_clouds)
+  {
+    pcl::PointIndices::Ptr found_indices = boost::make_shared<pcl::PointIndices>();
+    selected_event->findIndicesInItem (cloud_item, found_indices);
+    if (found_indices->indices.size () > 0)
+    {
+      qDebug () << "Found "<<found_indices->indices.size ()<<" points in "<<cloud_item->text ();
+      item_index_map_. insert (cloud_item, found_indices);
+      cloud_item->setForeground (QBrush (Qt::green));
+    }
+  }
+    
 }
 
 void
@@ -198,11 +233,25 @@ pcl::cloud_composer::ProjectModel::insertNewCloudComposerItem (CloudComposerItem
   parent_item->appendRow (new_item);  
 }
 
+///////////////////////////////////////////////////////////////
 //Slots for commands arriving from GUI
+///////////////////////////////////////////////////////////////
 void
 pcl::cloud_composer::ProjectModel::clearSelection ()
 {
   getSelectionModel ()->clearSelection ();
+  
+  //Clear the point selector as well if it has an active selection
+  if (selection_event_)
+    selection_event_.reset ();
+  
+  foreach (CloudItem* selected_item, item_index_map_.keys())
+  {
+    qDebug () << "Setting item color back to black";
+    selected_item->setForeground (QBrush (Qt::black));;
+  }
+  
+  item_index_map_.clear ();
 }
 
 void
@@ -220,8 +269,20 @@ pcl::cloud_composer::ProjectModel::setAxisVisibility (bool visible)
   cloud_view_->setAxisVisibility (axis_visible_);
 }
 
+void
+pcl::cloud_composer::ProjectModel::selectRectangularFrustum ()
+{
+  qDebug () << "Rectangule Frustum select!";
+  if (cloud_view_)
+    cloud_view_->setInteractorStyle (RECTANGULAR_FRUSTUM);
+  else
+    qWarning () << "No Cloud View active, can't change interactor style!";
+      
+}
 
+/////////////////////////////////////////////////////////
 //Slots for Model State
+////////////////////////////////////////////////////////
 void
 pcl::cloud_composer::ProjectModel::emitAllStateSignals ()
 {
@@ -230,7 +291,16 @@ pcl::cloud_composer::ProjectModel::emitAllStateSignals ()
     
 }
 
-
+void
+pcl::cloud_composer::ProjectModel::itemSelectionChanged ( const QItemSelection & selected, const QItemSelection & deselected )
+{
+  qDebug () << "Item selection changed!";
+  //Set all point selected cloud items back to green text, since if they are selected they get changed to white
+  foreach (CloudItem* selected_item, item_index_map_.keys())
+  {
+    selected_item->setForeground (QBrush (Qt::green));;
+  }
+}
 
 
 

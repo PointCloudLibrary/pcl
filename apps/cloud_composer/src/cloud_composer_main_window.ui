@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1280</width>
-    <height>768</height>
+    <height>741</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -64,6 +64,7 @@
     <addaction name="action_clear_selection_"/>
     <addaction name="action_select_all_"/>
     <addaction name="action_invert_selection_"/>
+    <addaction name="action_rectangular_frustum_select_"/>
     <addaction name="separator"/>
     <addaction name="action_copy_"/>
     <addaction name="action_paste_"/>
@@ -123,6 +124,8 @@
    <addaction name="action_delete_"/>
    <addaction name="separator"/>
    <addaction name="action_show_axes_"/>
+   <addaction name="separator"/>
+   <addaction name="action_rectangular_frustum_select_"/>
   </widget>
   <widget class="QDockWidget" name="dockCloudBrowser">
    <property name="windowTitle">
@@ -134,7 +137,7 @@
    <widget class="QWidget" name="dockWidgetContentsCloudBrowser">
     <layout class="QGridLayout" name="cloud_browser_layout_">
      <item row="0" column="0">
-      <widget class="QTreeView" name="cloud_browser_"/>
+      <widget class="pcl::cloud_composer::CloudBrowser" name="cloud_browser_"/>
      </item>
     </layout>
    </widget>
@@ -433,6 +436,21 @@
     <string>Toggle Showing Axes</string>
    </property>
   </action>
+  <action name="action_rectangular_frustum_select_">
+   <property name="icon">
+    <iconset resource="../resources/resources.qrc">
+     <normaloff>:/frustum_selection.png</normaloff>:/frustum_selection.png</iconset>
+   </property>
+   <property name="text">
+    <string>Rectangular &amp;Frustum</string>
+   </property>
+   <property name="toolTip">
+    <string>Select a Rectangular Frustum</string>
+   </property>
+   <property name="shortcut">
+    <string>F</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
@@ -451,6 +469,12 @@
    <class>QUndoView</class>
    <extends>QWidget</extends>
    <header>qundoview.h</header>
+  </customwidget>
+  <customwidget>
+   <class>pcl::cloud_composer::CloudBrowser</class>
+   <extends>QTreeView</extends>
+   <header>pcl/apps/cloud_composer/cloud_browser.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources>

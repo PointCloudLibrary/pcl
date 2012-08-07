@@ -7,17 +7,31 @@ pcl::cloud_composer::CloudView::CloudView (QWidget* parent)
   : QWidget (parent)
 {
   vis_.reset (new pcl::visualization::PCLVisualizer ("", false));
-  vis_->getInteractorStyle ()->setKeyboardModifier (pcl::visualization::INTERACTOR_KB_MOD_SHIFT);
+ // vis_->getInteractorStyle ()->setKeyboardModifier (pcl::visualization::INTERACTOR_KB_MOD_SHIFT);
+  //Create the QVTKWidget
+  qvtk_ = new QVTKWidget (this);
+  qvtk_->SetRenderWindow (vis_->getRenderWindow ());
+  initializeInteractorSwitch ();
+  vis_->setupInteractor (qvtk_->GetInteractor (), qvtk_->GetRenderWindow (), style_switch_);
   
+  QGridLayout *mainLayout = new QGridLayout (this);
+  mainLayout-> addWidget (qvtk_,0,0);
 }
 
 pcl::cloud_composer::CloudView::CloudView (ProjectModel* model, QWidget* parent)
   : QWidget (parent)
 {
   vis_.reset (new pcl::visualization::PCLVisualizer ("", false));
-  vis_->getInteractorStyle ()->setKeyboardModifier (pcl::visualization::INTERACTOR_KB_MOD_SHIFT);
+ // vis_->getInteractorStyle ()->setKeyboardModifier (pcl::visualization::INTERACTOR_KB_MOD_SHIFT);
+  //Create the QVTKWidget
+  qvtk_ = new QVTKWidget (this);
+  qvtk_->SetRenderWindow (vis_->getRenderWindow ());
+  initializeInteractorSwitch ();
+  vis_->setupInteractor (qvtk_->GetInteractor (), qvtk_->GetRenderWindow (), style_switch_);
   setModel(model);
   
+  QGridLayout *mainLayout = new QGridLayout (this);
+  mainLayout-> addWidget (qvtk_,0,0);
 }
 
 pcl::cloud_composer::CloudView::CloudView (const CloudView& to_copy)
@@ -36,14 +50,6 @@ pcl::cloud_composer::CloudView::~CloudView ()
 void
 pcl::cloud_composer::CloudView::setModel (ProjectModel* new_model)
 {
-  //Create the QVTKWidget
-  qvtk_ = new QVTKWidget ();
-  qvtk_->SetRenderWindow (vis_->getRenderWindow ());
-  vis_->setupInteractor (qvtk_->GetInteractor (), qvtk_->GetRenderWindow ());
- 
-  QGridLayout *mainLayout = new QGridLayout (this);
-  mainLayout-> addWidget (qvtk_,0,0);
-  
   model_ = new_model;
   //Make Connections!
   connectSignalsAndSlots();
@@ -191,22 +197,19 @@ pcl::cloud_composer::CloudView::dataChanged (const QModelIndex & topLeft, const 
   
 }
 
+////// Axis Functions
+////////////////////////////////////////////////////////////////////
 void
 pcl::cloud_composer::CloudView::setAxisVisibility (bool visible)
 {
   if (visible)
   {
     qDebug () << "Adding coordinate system!";
-    //vis_->addCoordinateSystem (0.5,0);
     vis_->addOrientationMarkerWidgetAxes ( qvtk_->GetInteractor() );
   }
   else
   {
-   //bool success = vis_->removeCoordinateSystem (); 
-   // qDebug () << "Removing coord. first, success ="<<success;
-   // success = vis_->removeCoordinateSystem (0); 
-   // qDebug () << "Removing coord. second, success ="<<success;
-   vis_->removeOrientationMarkerWidgetAxes ();
+    vis_->removeOrientationMarkerWidgetAxes ();
   }
 
   qvtk_->update ();
@@ -244,4 +247,43 @@ pcl::cloud_composer::CloudView::removeOrientationMarkerWidgetAxes ()
   }
   
   
+}
+
+////////  Interactor Functions
+/////////////////////////////////////////////////////////////////////////////
+void
+pcl::cloud_composer::CloudView::initializeInteractorSwitch ()
+{
+  style_switch_ = InteractorStyleSwitch::New();
+  style_switch_->initializeInteractorStyles (vis_);
+  style_switch_->SetInteractor (qvtk_->GetInteractor ());
+  style_switch_->setCurrentInteractorStyle (PCL_VISUALIZER);
+  
+  //Connect the events!
+  connections_ = vtkSmartPointer<vtkEventQtSlotConnect>::New();
+  connections_->Connect (style_switch_->getInteractorStyle (RECTANGULAR_FRUSTUM),
+                         SELECTION_COMPLETE_EVENT,
+                         this,
+                         SLOT (selectionCompleted (vtkObject*, unsigned long, void*, void*)));
+
+  
+}
+
+void
+pcl::cloud_composer::CloudView::setInteractorStyle (INTERACTOR_STYLES style)
+{
+  style_switch_->setCurrentInteractorStyle (style);
+}
+
+void
+pcl::cloud_composer::CloudView::selectionCompleted (vtkObject* caller, unsigned long event_id, void* client_data, void* call_data)
+{
+  boost::shared_ptr<SelectionEvent> selected (static_cast<SelectionEvent*> (call_data));
+  
+  if (selected)
+  {
+    qDebug () << "Selection Complete! - Num points="<<selected->getNumPoints();
+    model_->setPointSelection (selected);
+    style_switch_->setCurrentInteractorStyle (PCL_VISUALIZER);
+  }
 }

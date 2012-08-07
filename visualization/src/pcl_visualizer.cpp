@@ -110,7 +110,7 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (const std::string &name, const
   style_->setCloudActorMap (cloud_actor_map_);
   style_->UseTimersOn ();
   style_->setUseVbos(use_vbos_);
-
+  
   if (create_interactor)
     createInteractor ();
 
@@ -282,6 +282,50 @@ pcl::visualization::PCLVisualizer::setupInteractor (
   resetStoppedFlag ();
 }
 
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::visualization::PCLVisualizer::setupInteractor (
+  vtkRenderWindowInteractor *iren,
+  vtkRenderWindow *win,
+  vtkInteractorStyle *style)
+{
+  win->AlphaBitPlanesOff ();
+  win->PointSmoothingOff ();
+  win->LineSmoothingOff ();
+  win->PolygonSmoothingOff ();
+  win->SwapBuffersOn ();
+  win->SetStereoTypeToAnaglyph ();
+
+  iren->SetRenderWindow (win);
+  iren->SetInteractorStyle (style);
+  //iren->SetStillUpdateRate (30.0);
+  iren->SetDesiredUpdateRate (30.0);
+
+  // Initialize and create timer, also create window
+  iren->Initialize ();
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
+#else
+  timer_id_ = iren->CreateRepeatingTimer (5000L);
+#endif
+
+  // Set a simple PointPicker
+  //vtkSmartPointer<vtkPointPicker> pp = vtkSmartPointer<vtkPointPicker>::New ();
+ // pp->SetTolerance (pp->GetTolerance () * 2);
+ // iren->SetPicker (pp);
+
+  exit_main_loop_timer_callback_ = vtkSmartPointer<ExitMainLoopTimerCallback>::New ();
+  exit_main_loop_timer_callback_->pcl_visualizer = this;
+  exit_main_loop_timer_callback_->right_timer_id = -1;
+  iren->AddObserver (vtkCommand::TimerEvent, exit_main_loop_timer_callback_);
+
+  exit_callback_ = vtkSmartPointer<ExitCallback>::New ();
+  exit_callback_->pcl_visualizer = this;
+  iren->AddObserver (vtkCommand::ExitEvent, exit_callback_);
+
+  resetStoppedFlag ();
+}
+
 /////////////////////////////////////////////////////////////////////////////////////////////
 pcl::visualization::PCLVisualizer::~PCLVisualizer ()
 {
@@ -350,6 +394,47 @@ pcl::visualization::PCLVisualizer::spinOnce (int time, bool force_redraw)
     interactor_->Start ();
     interactor_->DestroyTimer (exit_main_loop_timer_callback_->right_timer_id);
   );
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::visualization::PCLVisualizer::addOrientationMarkerWidgetAxes (vtkRenderWindowInteractor* interactor)
+{
+  if ( !axes_widget_ )
+  {
+    vtkSmartPointer<vtkAxesActor> axes = vtkSmartPointer<vtkAxesActor>::New ();
+    
+    axes_widget_ = vtkSmartPointer<vtkOrientationMarkerWidget>::New ();
+    axes_widget_->SetOutlineColor (0.9300, 0.5700, 0.1300);
+    axes_widget_->SetOrientationMarker (axes);
+    axes_widget_->SetInteractor (interactor);
+    axes_widget_->SetViewport (0.0, 0.0, 0.4, 0.4);
+    axes_widget_->SetEnabled (true);
+    axes_widget_->InteractiveOn ();
+  }
+  else
+  {
+    axes_widget_->SetEnabled (true);
+    pcl::console::print_warn ("Orientation Widget Axes already exists, just enabling it");
+  }
+  
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::visualization::PCLVisualizer::removeOrientationMarkerWidgetAxes ()
+{
+  if (axes_widget_)
+  {
+    if (axes_widget_->GetEnabled ())
+      axes_widget_->SetEnabled (false);
+    else
+      pcl::console::print_warn ("Orientation Widget Axes was already disabled, doing nothing.");
+  }
+  else
+  {
+    pcl::console::print_error ("Attempted to delete Orientation Widget Axes which does not exist!\n");
+  }
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////

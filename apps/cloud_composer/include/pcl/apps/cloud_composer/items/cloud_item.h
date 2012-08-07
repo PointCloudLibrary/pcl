@@ -40,6 +40,7 @@
 
 #include <pcl/apps/cloud_composer/items/cloud_composer_item.h>
 #include <pcl/visualization/pcl_visualizer.h>
+#include <pcl/search/kdtree.h>
 
 //Typedefs to make things sane
 typedef pcl::visualization::PointCloudGeometryHandler<sensor_msgs::PointCloud2> GeometryHandler;
@@ -83,6 +84,10 @@ namespace pcl
         sensor_msgs::PointCloud2::Ptr cloud_ptr_;
         ColorHandler::ConstPtr color_handler_;
         GeometryHandler::ConstPtr geometry_handler_;
+        
+        pcl::PointCloud<pcl::PointXYZ>::Ptr xyz_cloud_ptr;
+        pcl::search::KdTree<pcl::PointXYZ>::Ptr search_;
+
         //We keep actual local copies of these.
         Eigen::Vector4f origin_;
         Eigen::Quaternionf orientation_;
@@ -100,4 +105,6 @@ Q_DECLARE_METATYPE (GeometryHandler::ConstPtr);
 Q_DECLARE_METATYPE (ColorHandler::ConstPtr);
 Q_DECLARE_METATYPE (Eigen::Vector4f);
 Q_DECLARE_METATYPE (Eigen::Quaternionf);
+Q_DECLARE_METATYPE (pcl::search::KdTree<pcl::PointXYZ>::Ptr);
+Q_DECLARE_METATYPE (pcl::PointCloud <pcl::PointXYZ>::ConstPtr);
 #endif //CLOUD_ITEM_H_

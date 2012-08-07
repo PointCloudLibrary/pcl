@@ -55,6 +55,7 @@ if(build)
              include/pcl/apps/${SUBSYS_NAME}/project_model.h
              include/pcl/apps/${SUBSYS_NAME}/cloud_viewer.h
              include/pcl/apps/${SUBSYS_NAME}/cloud_view.h
+             include/pcl/apps/${SUBSYS_NAME}/cloud_browser.h
              include/pcl/apps/${SUBSYS_NAME}/item_inspector.h
              include/pcl/apps/${SUBSYS_NAME}/tool_interface/abstract_tool.h
              include/pcl/apps/${SUBSYS_NAME}/tool_interface/tool_factory.h
@@ -70,6 +71,7 @@ if(build)
              src/cloud_viewer.cpp
              src/cloud_view.cpp
              src/item_inspector.cpp
+             src/cloud_browser.cpp
              src/commands.cpp
              src/work_queue.cpp
              src/toolbox_model.cpp
@@ -87,19 +89,27 @@ if(build)
                   src/items/normals_item.cpp
                   src/items/fpfh_item.cpp)
                   
+    #Sources and headers for point selectors
+    set (selector_incs include/pcl/apps/${SUBSYS_NAME}/point_selectors/interactor_style_switch.h
+                       include/pcl/apps/${SUBSYS_NAME}/point_selectors/rectangular_frustum_selector.h)
+                       
+    set (selector_srcs src/point_selectors/interactor_style_switch.cpp
+                       src/point_selectors/selection_event.cpp
+                       src/point_selectors/rectangular_frustum_selector.cpp)
+                       
     set(uis src/cloud_composer_main_window.ui)
     set(resources resources/resources.qrc)
 
     QT4_WRAP_UI(cloud_composer_ui ${uis})
-    QT4_WRAP_CPP(cloud_composer_moc ${incs} ${item_incs} OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)
+    QT4_WRAP_CPP(cloud_composer_moc ${incs} OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)
     QT4_ADD_RESOURCES(resource_srcs ${resources})
     
     set(EXE_NAME pcl_${SUBSYS_NAME})
-    PCL_ADD_EXECUTABLE(${EXE_NAME} ${SUBSYS_NAME} ${cloud_composer_ui} ${cloud_composer_moc} ${srcs} ${resource_srcs} ${item_srcs})
+    PCL_ADD_EXECUTABLE(${EXE_NAME} ${SUBSYS_NAME} ${cloud_composer_ui} ${cloud_composer_moc} ${srcs} ${resource_srcs} ${item_srcs} ${selector_srcs})
     target_link_libraries(${EXE_NAME} pcl_common pcl_io pcl_visualization pcl_filters QVTK ${QT_LIBRARIES})
 
     # Install include files
-    PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs} ${item_incs})
+    PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs} ${item_incs} ${selector_incs})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${impl_incs})
     
     PCL_MAKE_PKGCONFIG(${EXE_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}" "" "" "" "" "")

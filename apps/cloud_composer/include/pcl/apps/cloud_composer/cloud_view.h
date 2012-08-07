@@ -40,6 +40,7 @@
 
 #include <pcl/apps/cloud_composer/qt.h>
 #include <pcl/visualization/pcl_visualizer.h>
+#include <pcl/apps/cloud_composer/point_selectors/interactor_style_switch.h>
 
 namespace pcl
 {
@@ -74,6 +75,8 @@ namespace pcl
       void 
       setAxisVisibility (bool visible);
       
+      void 
+      setInteractorStyle (INTERACTOR_STYLES style);
     public slots:
       void 
       refresh ();
@@ -104,7 +107,8 @@ namespace pcl
       void
       rowsAboutToBeRemoved (const QModelIndex& parent, int start, int end);
       
-      
+      void
+      selectionCompleted (vtkObject* caller, unsigned long event_id, void* client_data, void* call_data);
       
     protected:
       void
@@ -119,6 +123,10 @@ namespace pcl
       void
       connectSignalsAndSlots ();
       
+      /** \brief Internal function for setting up the style_switch_ */
+      void 
+      initializeInteractorSwitch ();
+      
       void
       addOrientationMarkerWidgetAxes ();
       void
@@ -127,9 +135,13 @@ namespace pcl
       boost::shared_ptr<pcl::visualization::PCLVisualizer> vis_;
       ProjectModel* model_;
       QVTKWidget* qvtk_;
+      vtkSmartPointer<InteractorStyleSwitch> style_switch_;
       
       vtkSmartPointer<vtkOrientationMarkerWidget> axes_widget_;
       vtkSmartPointer<vtkAxesActor> axes_;
+      
+      /** \brief Manages VTK events by connecting them to QT slots */
+      vtkSmartPointer<vtkEventQtSlotConnect> connections_;
     };
   }
 }

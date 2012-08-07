@@ -32,6 +32,17 @@ pcl::cloud_composer::CloudItem::CloudItem (QString name,
   geometry_handler_.reset (new pcl::visualization::PointCloudGeometryHandlerXYZ<sensor_msgs::PointCloud2> (cloud_ptr));
   this->setData (QVariant::fromValue (geometry_handler_), GEOMETRY_HANDLER);
   
+  //Create an XYZ cloud from the sensor_msgs cloud
+  xyz_cloud_ptr.reset (new pcl::PointCloud<pcl::PointXYZ>);
+  pcl::fromROSMsg (*cloud_ptr_, *xyz_cloud_ptr); 
+  pcl::PointCloud <PointXYZ>::ConstPtr xyz_cloud_constptr = xyz_cloud_ptr;
+  this->setData (QVariant::fromValue (xyz_cloud_constptr), XYZ_CLOUD_CONSTPTR);
+  
+  //Initialize the search kd-tree for this cloud
+  search_.reset (new search::KdTree<pcl::PointXYZ>);
+  search_->setInputCloud (xyz_cloud_ptr);
+  this->setData (QVariant::fromValue (search_), KD_TREE_SEARCH);
+  
   properties_->addCategory ("Core Properties");
   properties_->addProperty ("Name", QVariant (this->text ()), Qt::NoItemFlags, "Core Properties");
   properties_->addProperty ("Height", QVariant (cloud_ptr_->height), Qt::NoItemFlags, "Core Properties");

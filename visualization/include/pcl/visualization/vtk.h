@@ -134,6 +134,7 @@
 #include <vtkImageCanvasSource2D.h>
 #include <vtkImageBlend.h>
 #include <vtkImageStencilData.h>
+#include <vtkEventQtSlotConnect.h>
 #if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
 #  include <pcl/visualization/interactor.h>
 #else
@@ -150,6 +151,15 @@
 #include <vtkVisibleCellSelector.h>
 #include <vtkTriangle.h>
 #include <vtkWorldPointPicker.h>
+
+#include <vtkInteractorStyleRubberBandPick.h>
+#include <vtkAreaPicker.h>
+#include <vtkExtractGeometry.h>
+#include <vtkExtractPolyDataGeometry.h>
+#include <vtkVertexGlyphFilter.h>
+#include <vtkIdFilter.h>
+#include <vtkIdTypeArray.h>
+
 
 #if defined __GNUC__ && defined __DEPRECATED_DISABLED__
 #define __DEPRECATED

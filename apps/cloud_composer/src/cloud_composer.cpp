@@ -86,6 +86,7 @@ pcl::cloud_composer::ComposerMainWindow::connectEditActions ()
   
   multiplexer_->connect (this, SIGNAL (insertNewCloudFromFile()), SLOT (insertNewCloudFromFile()));
   
+  multiplexer_->connect (action_rectangular_frustum_select_, SIGNAL (triggered ()), SLOT (selectRectangularFrustum ()));
 }
 
 void
@@ -100,6 +101,9 @@ void
 pcl::cloud_composer::ComposerMainWindow::initializeCloudBrowser ()
 {
   cloud_browser_->setSelectionMode (QAbstractItemView::ExtendedSelection);
+  
+  cloud_browser_->setStyleSheet("selection-background-color: red;");
+  
 }
 
 void

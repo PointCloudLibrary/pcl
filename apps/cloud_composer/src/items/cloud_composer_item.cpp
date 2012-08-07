@@ -16,6 +16,7 @@ pcl::cloud_composer::CloudComposerItem::CloudComposerItem (QString name)
   this->setData (QVariant::fromValue (properties_), PROPERTIES); 
   this->setData (QVariant (item_id), ITEM_ID);
   
+  this->setForeground (QBrush (Qt::black));
   
 }
 

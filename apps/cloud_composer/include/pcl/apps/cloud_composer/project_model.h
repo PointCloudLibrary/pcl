@@ -46,7 +46,7 @@
 
 #include <pcl/apps/cloud_composer/commands.h>
 #include <pcl/apps/cloud_composer/qt.h>
-
+#include <pcl/apps/cloud_composer/point_selectors/selection_event.h> 
 
 class QItemSelectionModel;
 
@@ -59,6 +59,7 @@ namespace pcl
     class WorkQueue;
     class CloudComposerItem;
     class CloudView;
+    class InteractorStyleSwitch;
     
     class ProjectModel : public QStandardItemModel
     {
@@ -106,6 +107,9 @@ namespace pcl
         void
         setCloudView (CloudView* view);
         
+        /** \brief This sets the selection for points which have been selected in the QVTKWindow */
+        void 
+        setPointSelection (boost::shared_ptr<SelectionEvent> selected_event);
         
       public slots:
         void 
@@ -128,6 +132,14 @@ namespace pcl
         /** \brief This sets whether the CloudView for this project shows axes */
         void
         setAxisVisibility (bool visible);
+        
+        /** \brief This allows the user to choose a rectangular region, and selects all points in the frustum from it */
+        void
+        selectRectangularFrustum ();
+        
+        /** \brief Slot Called whenever the item selection_model_ changes */
+        void
+        itemSelectionChanged ( const QItemSelection & selected, const QItemSelection & deselected );
       signals:  
         void
         enqueueNewAction (AbstractTool* tool, ConstItemList data);
@@ -159,6 +171,10 @@ namespace pcl
         //Variables for toggle action status
         bool axis_visible_;
 
+        /** \brief Internal pointer storing the last selection event arriving from vtk */
+        boost::shared_ptr<SelectionEvent> selection_event_;
+        /** \brief Map which stores which cloud items and indices were selected in the selection_event_ */
+        QMap <CloudItem*, pcl::PointIndices::Ptr > item_index_map_;
     };
   }
 }

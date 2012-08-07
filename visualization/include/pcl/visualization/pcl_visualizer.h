@@ -1530,6 +1530,21 @@ namespace pcl
         {
           return (win_);
         }
+        
+        /** \brief Return a pointer to the underlying VTK Renderer Collection. */
+        vtkSmartPointer<vtkRendererCollection>
+        getRendererCollection ()
+        {
+          return (rens_);
+        }
+        
+        /** \brief Return a pointer to the CloudActorMap this visualizer uses. */
+        CloudActorMapPtr
+        getCloudActorMap ()
+        {
+          return (cloud_actor_map_);
+        }
+        
 
         /** \brief Set the position in screen coordinates.
           * \param[in] x where to move the window to (X)
@@ -1575,6 +1590,17 @@ namespace pcl
         setupInteractor (vtkRenderWindowInteractor *iren,
                          vtkRenderWindow *win);
 
+        /** \brief Set up PCLVisualizer with custom interactor style for a given vtkRenderWindowInteractor object
+          * attached to a given vtkRenderWindow
+          * \param[in,out] iren the vtkRenderWindowInteractor object to set up
+          * \param[in,out] win a vtkRenderWindow object that the interactor is attached to
+          * \param[in,out] style a vtkInteractorStyle object 
+          */
+        void
+        setupInteractor (vtkRenderWindowInteractor *iren,
+                         vtkRenderWindow *win,
+                         vtkInteractorStyle *style);
+        
         /** \brief Get a pointer to the current interactor style used. */
         inline vtkSmartPointer<PCLVisualizerInteractorStyle>
         getInteractorStyle ()
