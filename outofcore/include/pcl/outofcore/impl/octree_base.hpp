@@ -105,7 +105,7 @@ namespace pcl
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename Container, typename PointT>
-    octree_base<Container, PointT>::octree_base (const Eigen::Vector3f& min, const Eigen::Vector3f& max, const double node_dim_meters, const boost::filesystem::path& root_name, const std::string& coord_sys)
+    octree_base<Container, PointT>::octree_base (const Eigen::Vector3d& min, const Eigen::Vector3d& max, const double node_dim_meters, const boost::filesystem::path& root_name, const std::string& coord_sys)
       : root_ ()
       , read_write_mutex_ ()
       , lodPoints_ ()
@@ -150,7 +150,7 @@ namespace pcl
 
 // todo: Both constructs share the same code except for a single line
     template<typename Container, typename PointT>
-    octree_base<Container, PointT>::octree_base (const int max_depth, const Eigen::Vector3f& min, const Eigen::Vector3f& max, const boost::filesystem::path& root_name, const std::string& coord_sys)
+    octree_base<Container, PointT>::octree_base (const int max_depth, const Eigen::Vector3d& min, const Eigen::Vector3d& max, const boost::filesystem::path& root_name, const std::string& coord_sys)
       : root_ ()
       , read_write_mutex_ ()
       , lodPoints_ ()
@@ -375,7 +375,7 @@ namespace pcl
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename Container, typename PointT> void
-    octree_base<Container, PointT>::queryBBIncludes (const Eigen::Vector3f& min, const Eigen::Vector3f& max, const size_t query_depth, AlignedPointTVector& dst) const
+    octree_base<Container, PointT>::queryBBIncludes (const Eigen::Vector3d& min, const Eigen::Vector3d& max, const size_t query_depth, AlignedPointTVector& dst) const
     {
       boost::shared_lock < boost::shared_mutex > lock (read_write_mutex_);
       dst.clear ();
@@ -384,7 +384,7 @@ namespace pcl
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename Container, typename PointT> void
-    octree_base<Container, PointT>::queryBBIncludes_subsample (const Eigen::Vector3f& min, const Eigen::Vector3f& max, const size_t query_depth, const double percent, AlignedPointTVector& dst) const
+    octree_base<Container, PointT>::queryBBIncludes_subsample (const Eigen::Vector3d& min, const Eigen::Vector3d& max, const size_t query_depth, const double percent, AlignedPointTVector& dst) const
     {
       boost::shared_lock < boost::shared_mutex > lock (read_write_mutex_);
       dst.clear ();
@@ -417,7 +417,7 @@ namespace pcl
     }
 
     template<typename Container, typename PointT> void
-    octree_base<Container, PointT>::getVoxelCenters(std::vector<Eigen::Vector3f> &voxel_centers, const size_t query_depth) const
+    octree_base<Container, PointT>::getVoxelCenters(std::vector<Eigen::Vector3d> &voxel_centers, const size_t query_depth) const
     {
       boost::shared_lock < boost::shared_mutex > lock (read_write_mutex_);
       if (query_depth > max_depth_)
@@ -433,7 +433,7 @@ namespace pcl
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename Container, typename PointT> void
-    octree_base<Container, PointT>::queryBBIntersects (const Eigen::Vector3f& min, const Eigen::Vector3f& max, const boost::uint32_t query_depth, std::list<std::string>& bin_name) const
+    octree_base<Container, PointT>::queryBBIntersects (const Eigen::Vector3d& min, const Eigen::Vector3d& max, const boost::uint32_t query_depth, std::list<std::string>& bin_name) const
     {
       boost::shared_lock < boost::shared_mutex > lock (read_write_mutex_);
       bin_name.clear ();

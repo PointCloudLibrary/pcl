@@ -138,7 +138,7 @@ namespace pcl
          * \param coord_sys 
          * \throws PCLException if root file extension does not match \ref octree_base_node::node_index_extension
          */
-        octree_base (const Eigen::Vector3f&, const Eigen::Vector3f&, const double node_dim_meters, const boost::filesystem::path& root_name, const std::string& coord_sys);
+        octree_base (const Eigen::Vector3d&, const Eigen::Vector3d&, const double node_dim_meters, const boost::filesystem::path& root_name, const std::string& coord_sys);
 
         /** \brief Create a new tree; will not overwrite existing tree of same name
          *
@@ -152,7 +152,7 @@ namespace pcl
          * \throws OctreeException(OCT_CHILD_EXISTS) if the parent directory has existing children (detects an existing tree)
          * \throws OctreeException(OCT_BAD_PATH) if file extension is not ".oct_idx"
          */
-        octree_base (const int max_depth, const Eigen::Vector3f& min, const Eigen::Vector3f& max, const boost::filesystem::path& rootname, const std::string& coord_sys);
+        octree_base (const int max_depth, const Eigen::Vector3d& min, const Eigen::Vector3d& max, const boost::filesystem::path& rootname, const std::string& coord_sys);
 
         ~octree_base ();
 
@@ -234,7 +234,7 @@ namespace pcl
          * \param[out] bin_name List of paths to point data files (PCD currently) which satisfy the query
          */
         void
-        queryBBIntersects (const Eigen::Vector3f& min, const Eigen::Vector3f& max, const boost::uint32_t query_depth, std::list<std::string>& bin_name) const;
+        queryBBIntersects (const Eigen::Vector3d& min, const Eigen::Vector3d& max, const boost::uint32_t query_depth, std::list<std::string>& bin_name) const;
 
         /** \brief Get Points in BB, only points inside BB. The query
          * processes the data at each node, filtering points that fall
@@ -248,7 +248,7 @@ namespace pcl
          * \param[out] dst The destination vector of points
          */
         void
-        queryBBIncludes (const Eigen::Vector3f& min, const Eigen::Vector3f& max, const size_t query_depth, AlignedPointTVector& dst) const;
+        queryBBIncludes (const Eigen::Vector3d& min, const Eigen::Vector3d& max, const size_t query_depth, AlignedPointTVector& dst) const;
 
         /** \brief get point in BB into a pointcloud2 blob 
          *
@@ -258,7 +258,7 @@ namespace pcl
          * \param[out] dst_blob Container for the storage to which the points are inserted. Note it must already be allocated, and empty when this method is called.
          **/
         void
-        queryBBIncludes (const Eigen::Vector3f& min, const Eigen::Vector3f& max, const int query_depth, const sensor_msgs::PointCloud2::Ptr& dst_blob) const
+        queryBBIncludes (const Eigen::Vector3d& min, const Eigen::Vector3d& max, const int query_depth, const sensor_msgs::PointCloud2::Ptr& dst_blob) const
         {
           boost::shared_lock < boost::shared_mutex > lock (read_write_mutex_);
 
@@ -278,7 +278,7 @@ namespace pcl
          * 
          */
         void
-        queryBBIncludes_subsample (const Eigen::Vector3f& min, const Eigen::Vector3f& max, size_t query_depth, const double percent, AlignedPointTVector& dst) const;
+        queryBBIncludes_subsample (const Eigen::Vector3d& min, const Eigen::Vector3d& max, size_t query_depth, const double percent, AlignedPointTVector& dst) const;
 
         //--------------------------------------------------------------------------------
         //PointCloud2 methods
@@ -289,7 +289,7 @@ namespace pcl
 
         /** \brief Copy the overall BB to min max */
         inline bool
-        getBB (Eigen::Vector3f& min, Eigen::Vector3f& max) const
+        getBB (Eigen::Vector3d& min, Eigen::Vector3d& max) const
         {
           if (root_ != NULL)
           {
@@ -416,7 +416,7 @@ namespace pcl
             \param[out] vector of PointXYZ voxel centers for nodes that exist at that depth
          */
         void
-        getVoxelCenters(std::vector<Eigen::Vector3f> &voxel_centers, size_t query_depth) const;
+        getVoxelCenters(std::vector<Eigen::Vector3d> &voxel_centers, size_t query_depth) const;
 
         /** \brief Gets the voxel centers of all occupied/existing leaves of the tree */
         void
@@ -429,7 +429,7 @@ namespace pcl
          *  \param[out] voxel_centers std::vector of the centers of all occupied leaves of the octree
          */
         void
-        getVoxelCenters(std::vector<Eigen::Vector3f> &voxel_centers) const
+        getVoxelCenters(std::vector<Eigen::Vector3d> &voxel_centers) const
         {
           getVoxelCenters(voxel_centers, max_depth_);
         }
