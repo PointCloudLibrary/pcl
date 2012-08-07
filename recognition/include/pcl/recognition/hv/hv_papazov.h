@@ -37,19 +37,19 @@
 #ifndef PCL_RECOGNITION_HV_PAPAZOV_H_
 #define PCL_RECOGNITION_HV_PAPAZOV_H_
 
-#include <pcl/pcl_macros.h>
-#include <pcl/recognition/hv/hypotheses_verification.h>
-#include <pcl/common/common.h>
 #include <pcl/recognition/boost.h>
+#include <pcl/pcl_macros.h>
+#include <pcl/common/common.h>
+#include <pcl/recognition/hv/hypotheses_verification.h>
+#include <boost/graph/adjacency_list.hpp>
 
 namespace pcl
 {
 
-  /**
-   * \brief hypothesis verification method proposed in
-   * "An Efficient RANSAC for 3D Object Recognition in Noisy and Occluded Scenes", C. Papazov and D. Burschka, ACCV 2010
-   * \author Aitor Aldoma, Federico Tombari
-   */
+  /** \brief A hypothesis verification method proposed in
+    * "An Efficient RANSAC for 3D Object Recognition in Noisy and Occluded Scenes", C. Papazov and D. Burschka, ACCV 2010
+    * \author Aitor Aldoma, Federico Tombari
+    */
 
   template<typename ModelT, typename SceneT>
   class PCL_EXPORTS PapazovHV : public HypothesisVerification<ModelT, SceneT>
@@ -66,7 +66,8 @@ namespace pcl
     float penalty_threshold_;
     float support_threshold_;
 
-    class RecognitionModel {
+    class RecognitionModel 
+    {
       public:
         std::vector<int> explained_; //indices vector referencing explained_by_RM_
         typename pcl::PointCloud<ModelT>::Ptr cloud_;

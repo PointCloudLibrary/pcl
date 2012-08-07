@@ -4,21 +4,20 @@
  *  Created on: Mar 24, 2012
  *      Author: aitor
  */
-
-#include <pcl/apps/3d_rec_framework/pipeline/local_recognizer.h>
+#include <pcl/recognition/hv/hv_papazov.h>
 #include <pcl/console/parse.h>
+#include <pcl/apps/3d_rec_framework/pipeline/local_recognizer.h>
 #include <pcl/apps/3d_rec_framework/pc_source/mesh_source.h>
-#include <pcl/apps/3d_rec_framework/feature_wrapper/normal_estimator.h>
+#include <pcl/recognition/cg/geometric_consistency.h>
+#include <pcl/recognition/cg/hough_3d.h>
 #include <pcl/apps/3d_rec_framework/feature_wrapper/local/shot_local_estimator.h>
 #include <pcl/apps/3d_rec_framework/feature_wrapper/local/shot_local_estimator_omp.h>
 #include <pcl/apps/3d_rec_framework/feature_wrapper/local/fpfh_local_estimator.h>
-#include <pcl/keypoints/uniform_sampling.h>
-#include <pcl/visualization/pcl_visualizer.h>
-#include <pcl/recognition/cg/correspondence_grouping.h>
-#include <pcl/recognition/cg/geometric_consistency.h>
-#include <pcl/recognition/cg/hough_3d.h>
-#include <pcl/recognition/hv/hv_papazov.h>
-#include <pcl/features/board.h>
+//#include <pcl/apps/3d_rec_framework/feature_wrapper/normal_estimator.h>
+//#include <pcl/keypoints/uniform_sampling.h>
+//#include <pcl/visualization/pcl_visualizer.h>
+//#include <pcl/recognition/cg/correspondence_grouping.h>
+//#include <pcl/features/board.h>
 
 void
 getScenesInDirectory (bf::path & dir, std::string & rel_path_so_far, std::vector<std::string> & relative_paths)

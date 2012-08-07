@@ -1077,6 +1077,9 @@ namespace pcl
 
         /** \brief Add a planar polygon that represents the input point cloud (connects all points in order)
           * \param[in] polygon the polygon to draw
+          * \param[in] r the red channel of the color that the polygon should be rendered with
+          * \param[in] g the green channel of the color that the polygon should be rendered with
+          * \param[in] b the blue channel of the color that the polygon should be rendered with
           * \param[in] id the polygon id/name (default: "polygon")
           * \param[in] viewport (optional) the id of the new viewport (default: 0)
           */
@@ -1566,15 +1569,14 @@ namespace pcl
           win_->SetSize (xw, yw);
         }
 
-        /** \brief Set the window size in screen coordinates.
-          * \param[in] xw window size in horizontal (pixels)
-          * \param[in] yw window size in vertical (pixels)
+        /** \brief Use Vertex Buffer Objects renderers.
+          * \param[in] use_vbos set to true to use VBOs 
           */
         void
         setUseVbos (bool use_vbos)
         {
           use_vbos_ = use_vbos;
-          style_->setUseVbos(use_vbos_);
+          style_->setUseVbos (use_vbos_);
         }
 
         /** \brief Create the internal Interactor object. */
