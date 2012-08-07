@@ -356,7 +356,7 @@ pcl::search::OrganizedNeighbor<PointT>::estimateProjectionMatrix ()
 
   double residual_sqr = pcl::estimateProjectionMatrix<PointT> (input_, projection_matrix_, indices);
   
-  if ( fabs (residual_sqr) > eps_ * indices.size ())
+  if (fabs (residual_sqr) > eps_ * float (indices.size ()))
   {
     PCL_ERROR ("[pcl::%s::radiusSearch] Input dataset is not from a projective device!\nResidual (MSE) %f, using %d valid points\n", this->getName ().c_str (), residual_sqr / double (indices.size()), indices.size ());
     return;
