@@ -86,7 +86,7 @@ pcl::getPointsInBox (const pcl::PointCloud<PointT> &cloud,
         continue;
       if (cloud.points[i].x > max_pt[0] || cloud.points[i].y > max_pt[1] || cloud.points[i].z > max_pt[2])
         continue;
-      indices[l++] = i;
+      indices[l++] = int (i);
     }
   }
   // NaN or Inf values could exist => check for them
@@ -104,7 +104,7 @@ pcl::getPointsInBox (const pcl::PointCloud<PointT> &cloud,
         continue;
       if (cloud.points[i].x > max_pt[0] || cloud.points[i].y > max_pt[1] || cloud.points[i].z > max_pt[2])
         continue;
-      indices[l++] = i;
+      indices[l++] = int (i);
     }
   }
   indices.resize (l);
