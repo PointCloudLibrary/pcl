@@ -54,12 +54,11 @@ pcl::visualization::PCLPlotter::PCLPlotter (char const *name)
   exit_loop_timer_ = vtkSmartPointer<ExitMainLoopTimerCallback>::New ();
   
   //connecting and mandatory bookkeeping
-  view_->GetInteractor ()->Initialize ();
   view_->GetScene ()->AddItem (this);
   view_->GetRenderWindow ()->SetWindowName (name);
   
+  //###WARNING: hardcoding logic ;) :-/.. please see plot() and spin*() functions for the logic
   exit_loop_timer_->interactor = view_->GetInteractor ();
-	view_->GetInteractor ()->AddObserver ( vtkCommand::TimerEvent, exit_loop_timer_ );
   
   //initializing default state values
   win_width_ = 640;
@@ -359,8 +358,12 @@ pcl::visualization::PCLPlotter::getColorScheme ()
 void
 pcl::visualization::PCLPlotter::plot ()
 {
+  //apply current states
   view_->GetRenderer ()->SetBackground (bkg_color_[0], bkg_color_[1], bkg_color_[2]);
   view_->GetRenderWindow ()->SetSize (win_width_, win_height_);
+  
+  view_->GetInteractor ()->Initialize ();
+  view_->GetRenderWindow ()->Render();
   view_->GetInteractor ()->Start ();
 }
 
@@ -373,9 +376,15 @@ pcl::visualization::PCLPlotter::spinOnce( const int spin_time )
   view_->GetRenderWindow ()->SetSize (win_width_, win_height_);
   
   //start timer to spin
+  if (!view_->GetInteractor ()->GetEnabled ())
+  {
+    view_->GetInteractor ()->Initialize ();
+    view_->GetInteractor ()->AddObserver ( vtkCommand::TimerEvent, exit_loop_timer_ );
+  }
   exit_loop_timer_->right_timer_id = view_->GetInteractor()->CreateOneShotTimer( spin_time );
   
   //start spinning
+  view_->GetRenderWindow ()->Render();
 	view_->GetInteractor()->Start();
 }
 
@@ -383,7 +392,13 @@ pcl::visualization::PCLPlotter::spinOnce( const int spin_time )
 void 
 pcl::visualization::PCLPlotter::spin()
 {
-  this->plot();
+  plot();
+  /*do
+  {
+    spinOnce ();
+    boost::this_thread::sleep (boost::posix_time::seconds (1));
+  }
+  while (true);*/
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -429,6 +444,37 @@ pcl::visualization::PCLPlotter::setXRange (double min, double max)
 {
   this->GetAxis (vtkAxis::BOTTOM)->SetRange (min, max);
   this->GetAxis (vtkAxis::BOTTOM)->SetBehavior (vtkAxis::FIXED);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void 
+pcl::visualization::PCLPlotter::setTitle( const char * title )
+{
+	this->SetTitle( title );
+	this->SetShowLegend( true );
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void 
+pcl::visualization::PCLPlotter::setXTitle( const char * title )
+{
+  this->GetAxis (vtkAxis::BOTTOM)->SetTitle (title);
+	this->SetShowLegend( true );
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void 
+pcl::visualization::PCLPlotter::setYTitle( const char * title )
+{
+  this->GetAxis (vtkAxis::LEFT)->SetTitle (title);
+	this->SetShowLegend (true);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::visualization::PCLPlotter::setShowLegend (bool flag)
+{
+  this->SetShowLegend (flag);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -247,7 +247,7 @@ namespace pcl
         /** \brief spins (runs the event loop) the interactor for spin_time amount of time. The name is confusing and will be probably obsolete in the future release with a single overloaded spin()/display() function.
          *  \param[in] spin_time - How long (in ms) should the visualization loop be allowed to run.
          */
-        void spinOnce ( const int spin_time = 0 );
+        void spinOnce ( const int spin_time = 1 );
         
         /** \brief spins (runs the event loop) the interactor indefinitely. Same as plot() - added to retain the similarity between other existing visualization classes
          */
@@ -298,6 +298,26 @@ namespace pcl
         void
         setYRange (double min, double max);
         
+        /** \brief Set the main title of the plot
+         */
+        void 
+        setTitle (const char * title);
+        
+        /** \brief Set the title of the X-Axis
+         */
+        void 
+        setXTitle (const char * title);
+        
+        /** \brief Set the title of the Y-Axis
+         */
+        void 
+        setYTitle (const char * title);
+        
+        /** \brief Shows the legend of the graph
+         * \param[in] flag pass flag = true for the display of the legend of the graph
+         */
+        void 
+        setShowLegend(bool flag);
         
         /** \brief set/get method for the window size.
           * \param[in] w the width of the window

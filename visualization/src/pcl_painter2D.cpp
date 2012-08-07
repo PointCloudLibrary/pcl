@@ -51,12 +51,10 @@ pcl::visualization::PCLPainter2D::PCLPainter2D(char const * name)
   exit_loop_timer_ = vtkSmartPointer<ExitMainLoopTimerCallback>::New ();
   
   //connect
-  view_->GetInteractor ()->Initialize ();
   view_->GetScene ()->AddItem (this);
   view_->GetRenderWindow ()->SetWindowName (name);
   
   exit_loop_timer_->interactor = view_->GetInteractor ();
-	view_->GetInteractor ()->AddObserver ( vtkCommand::TimerEvent, exit_loop_timer_ );
   
   //defaulat state
   win_width_ = 640;
@@ -272,6 +270,7 @@ pcl::visualization::PCLPainter2D::display ()
   //vtkOpenGLContextDevice2D::SafeDownCast (view_->GetContext ()->GetDevice ())->SetStringRendererToFreeType ();
   //view_->GetRenderWindow ()->SetMultiSamples (3);
   
+  view_->GetInteractor ()->Initialize ();
   view_->GetRenderer ()->Render ();
   view_->GetInteractor ()->Start ();
 }
@@ -285,6 +284,11 @@ pcl::visualization::PCLPainter2D::spinOnce( const int spin_time )
   view_->GetRenderWindow ()->SetSize (win_width_, win_height_);
   
   //start timer to spin
+  if (!view_->GetInteractor ()->GetEnabled ())
+  {
+    view_->GetInteractor ()->Initialize ();
+    view_->GetInteractor ()->AddObserver ( vtkCommand::TimerEvent, exit_loop_timer_ );
+  }
   exit_loop_timer_->right_timer_id = view_->GetInteractor()->CreateOneShotTimer( spin_time );
   
   //start spinning
