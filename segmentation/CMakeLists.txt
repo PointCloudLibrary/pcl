@@ -17,7 +17,6 @@ if(build)
         src/segment_differences.cpp
         src/region_growing.cpp
         src/region_growing_rgb.cpp
-        src/min_cut_segmentation.cpp
         src/organized_connected_component_segmentation.cpp
         src/organized_multi_plane_segmentation.cpp
         src/planar_polygon_fusion.cpp
@@ -25,6 +24,13 @@ if(build)
 	src/crf_normal_segmentation.cpp
         src/active_segmentation.cpp
        )
+    # NOTE: boost/graph/boykov_kolmogorov_max_flow.hpp only exists for versions > 1.43
+    if(Boost_MAJOR_VERSION GREATER 1 OR Boost_MINOR_VERSION GREATER 43)
+    set(srcs
+        ${srcs}
+        src/min_cut_segmentation.cpp
+       )
+    endif()
 
     set(incs 
         include/pcl/${SUBSYS_NAME}/boost.h
@@ -36,7 +42,6 @@ if(build)
         include/pcl/${SUBSYS_NAME}/segment_differences.h
         include/pcl/${SUBSYS_NAME}/region_growing.h
         include/pcl/${SUBSYS_NAME}/region_growing_rgb.h
-        include/pcl/${SUBSYS_NAME}/min_cut_segmentation.h
         include/pcl/${SUBSYS_NAME}/comparator.h
         include/pcl/${SUBSYS_NAME}/plane_coefficient_comparator.h
         include/pcl/${SUBSYS_NAME}/euclidean_plane_coefficient_comparator.h
@@ -49,10 +54,17 @@ if(build)
         include/pcl/${SUBSYS_NAME}/region_3d.h
         include/pcl/${SUBSYS_NAME}/planar_region.h
         include/pcl/${SUBSYS_NAME}/planar_polygon_fusion.h
-	      include/pcl/${SUBSYS_NAME}/crf_segmentation.h
-	      include/pcl/${SUBSYS_NAME}/crf_normal_segmentation.h
+        include/pcl/${SUBSYS_NAME}/crf_segmentation.h
+        include/pcl/${SUBSYS_NAME}/crf_normal_segmentation.h
         include/pcl/${SUBSYS_NAME}/active_segmentation.h
         )
+    # NOTE: boost/graph/boykov_kolmogorov_max_flow.hpp only exists for versions > 1.43
+    if(Boost_MAJOR_VERSION GREATER 1 OR Boost_MINOR_VERSION GREATER 43)
+    set(incs
+        ${incs}
+        include/pcl/${SUBSYS_NAME}/min_cut_segmentation.h
+       )
+    endif()
 
     set(impl_incs 
         include/pcl/${SUBSYS_NAME}/impl/extract_clusters.hpp
@@ -63,7 +75,6 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/segment_differences.hpp
         include/pcl/${SUBSYS_NAME}/impl/region_growing.hpp
         include/pcl/${SUBSYS_NAME}/impl/region_growing_rgb.hpp
-        include/pcl/${SUBSYS_NAME}/impl/min_cut_segmentation.hpp
         include/pcl/${SUBSYS_NAME}/impl/organized_connected_component_segmentation.hpp
         include/pcl/${SUBSYS_NAME}/impl/organized_multi_plane_segmentation.hpp
         include/pcl/${SUBSYS_NAME}/impl/planar_polygon_fusion.hpp
@@ -71,6 +82,13 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/crf_normal_segmentation.hpp
         include/pcl/${SUBSYS_NAME}/impl/active_segmentation.hpp
         )
+    # NOTE: boost/graph/boykov_kolmogorov_max_flow.hpp only exists for versions > 1.43
+    if(Boost_MAJOR_VERSION GREATER 1 OR Boost_MINOR_VERSION GREATER 43)
+    set(impl_incs
+        ${impl_incs}
+        include/pcl/${SUBSYS_NAME}/impl/min_cut_segmentation.hpp
+       )
+    endif()
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
