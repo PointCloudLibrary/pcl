@@ -1,6 +1,6 @@
 set (SUBSYS_NAME tools)
 set (SUBSYS_DESC "Useful PCL-based command line tools")
-set (SUBSYS_DEPS common io filters sample_consensus segmentation search kdtree features surface octree registration visualization recognition geometry keypoints)
+set (SUBSYS_DEPS common io filters sample_consensus segmentation search kdtree features surface octree registration recognition geometry keypoints)
 set (DEFAULT ON)
 set (REASON "")
 
@@ -105,10 +105,6 @@ if (build)
   PCL_ADD_EXECUTABLE(pcl_linemod_detection ${SUBSYS_NAME} linemod_detection.cpp)
   target_link_libraries(pcl_linemod_detection pcl_common pcl_io pcl_recognition)
 
-  PCL_ADD_EXECUTABLE(pcl_visualize_obj_rec_ransac_hash_table ${SUBSYS_NAME} visualize_obj_rec_ransac_hash_table.cpp)
-  target_link_libraries(pcl_visualize_obj_rec_ransac_hash_table pcl_common pcl_visualization pcl_io pcl_recognition)
-
-
   if (QHULL_FOUND)
     PCL_ADD_EXECUTABLE(pcl_crop_to_hull ${SUBSYS_NAME} crop_to_hull.cpp)
     target_link_libraries(pcl_crop_to_hull pcl_common pcl_io pcl_filters pcl_surface)
@@ -130,25 +126,31 @@ if (build)
       PCL_ADD_EXECUTABLE(pcl_obj2vtk ${SUBSYS_NAME} obj2vtk.cpp)
       target_link_libraries(pcl_obj2vtk pcl_common pcl_io)
 
-      PCL_ADD_EXECUTABLE(pcl_registration_visualizer ${SUBSYS_NAME} registration_visualizer.cpp)
-      target_link_libraries(pcl_registration_visualizer pcl_common pcl_io pcl_kdtree pcl_filters pcl_registration pcl_visualization)
+      if(BUILD_visualization)
 
-      PCL_ADD_EXECUTABLE(pcl_octree_viewer ${SUBSYS_NAME} octree_viewer.cpp)
-      target_link_libraries(pcl_octree_viewer pcl_common pcl_io pcl_octree pcl_visualization pcl_kdtree pcl_filters)
+        PCL_ADD_EXECUTABLE(pcl_visualize_obj_rec_ransac_hash_table ${SUBSYS_NAME} visualize_obj_rec_ransac_hash_table.cpp)
+        target_link_libraries(pcl_visualize_obj_rec_ransac_hash_table pcl_common pcl_visualization pcl_io pcl_recognition)
 
-      PCL_ADD_EXECUTABLE(pcl_mesh2pcd ${SUBSYS_NAME} mesh2pcd.cpp)
-      target_link_libraries(pcl_mesh2pcd pcl_common pcl_io pcl_visualization pcl_filters vtkCommon)
-      
-      PCL_ADD_EXECUTABLE(pcl_mesh_sampling ${SUBSYS_NAME} mesh_sampling.cpp)
-      target_link_libraries(pcl_mesh_sampling pcl_common pcl_io pcl_visualization pcl_filters vtkCommon)
-      
-      PCL_ADD_EXECUTABLE(pcl_virtual_scanner ${SUBSYS_NAME} virtual_scanner.cpp)
-      target_link_libraries(pcl_virtual_scanner pcl_common pcl_io pcl_filters pcl_visualization vtkCommon vtkGraphics)
-      
-      if(BUILD_OPENNI AND OPENNI_FOUND)
-        PCL_ADD_EXECUTABLE(pcl_openni_save_image ${SUBSYS_NAME} openni_save_image.cpp)
-        target_link_libraries(pcl_openni_save_image pcl_common pcl_io pcl_visualization)  
-      endif(BUILD_OPENNI AND OPENNI_FOUND)
+        PCL_ADD_EXECUTABLE(pcl_registration_visualizer ${SUBSYS_NAME} registration_visualizer.cpp)
+        target_link_libraries(pcl_registration_visualizer pcl_common pcl_io pcl_kdtree pcl_filters pcl_registration pcl_visualization)
+
+        PCL_ADD_EXECUTABLE(pcl_octree_viewer ${SUBSYS_NAME} octree_viewer.cpp)
+        target_link_libraries(pcl_octree_viewer pcl_common pcl_io pcl_octree pcl_visualization pcl_kdtree pcl_filters)
+
+        PCL_ADD_EXECUTABLE(pcl_mesh2pcd ${SUBSYS_NAME} mesh2pcd.cpp)
+        target_link_libraries(pcl_mesh2pcd pcl_common pcl_io pcl_visualization pcl_filters vtkCommon)
+        
+        PCL_ADD_EXECUTABLE(pcl_mesh_sampling ${SUBSYS_NAME} mesh_sampling.cpp)
+        target_link_libraries(pcl_mesh_sampling pcl_common pcl_io pcl_visualization pcl_filters vtkCommon)
+        
+        PCL_ADD_EXECUTABLE(pcl_virtual_scanner ${SUBSYS_NAME} virtual_scanner.cpp)
+        target_link_libraries(pcl_virtual_scanner pcl_common pcl_io pcl_filters pcl_visualization vtkCommon vtkGraphics)
+        
+        if(BUILD_OPENNI AND OPENNI_FOUND)
+          PCL_ADD_EXECUTABLE(pcl_openni_save_image ${SUBSYS_NAME} openni_save_image.cpp)
+          target_link_libraries(pcl_openni_save_image pcl_common pcl_io pcl_visualization)  
+        endif(BUILD_OPENNI AND OPENNI_FOUND)
+      endif(BUILD_visualization)
   endif(NOT VTK_FOUND)
 
   PCL_ADD_EXECUTABLE (pcl_transform_point_cloud ${SUBSYS_NAME} transform_point_cloud.cpp)
@@ -165,5 +167,6 @@ if (build)
       target_link_libraries(pcl_video pcl_common pcl_io pcl_visualization
           ${Tide_LIBRARIES})
   endif(Tide_FOUND)
+  
 
 endif ()
