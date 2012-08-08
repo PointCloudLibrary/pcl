@@ -127,6 +127,8 @@ if (build)
       target_link_libraries(pcl_obj2vtk pcl_common pcl_io)
 
       if(BUILD_visualization)
+  
+        PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS visualization)
 
         PCL_ADD_EXECUTABLE(pcl_visualize_obj_rec_ransac_hash_table ${SUBSYS_NAME} visualize_obj_rec_ransac_hash_table.cpp)
         target_link_libraries(pcl_visualize_obj_rec_ransac_hash_table pcl_common pcl_visualization pcl_io pcl_recognition)
