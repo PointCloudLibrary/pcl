@@ -8,7 +8,7 @@ debian : ../openni_drivers
 	rename "s|ros-||" ros-*
 
 ../openni_drivers:
-	hg clone https://kforge.ros.org/openni/drivers ../openni_drivers
+	hg clone https://kforge.ros.org/openni/drivers -r 12111edd3b15 ../openni_drivers
 	
 clean:
 	rm -rf *.deb
