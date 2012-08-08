@@ -601,6 +601,24 @@ namespace pcl
       }
     }
   };
+  template<typename PointT>
+  struct FieldMatches<PointT, fields::rgb>
+  {
+    bool operator() (const sensor_msgs::PointField& field)
+    {
+      if (field.name == "rgba")
+      {
+        return (field.datatype == sensor_msgs::PointField::UINT32 &&
+                field.count == 1);
+      }
+      else
+      {
+        return (field.name == traits::name<PointT, fields::rgb>::value &&
+                field.datatype == traits::datatype<PointT, fields::rgb>::value &&
+                field.count == traits::datatype<PointT, fields::rgb>::size);
+      }
+    }
+  };
 } // namespace pcl
 
 #pragma warning(default: 4201)
