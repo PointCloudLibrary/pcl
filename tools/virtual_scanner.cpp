@@ -378,7 +378,7 @@ main (int argc, char** argv)
     // Saves the point cloud data to disk
     sprintf (seq, "%d", i);
     boost::trim (filename);
-    boost::split (st, filename, boost::is_any_of ("/"), boost::token_compress_on);
+    boost::split (st, filename, boost::is_any_of ("/\\"), boost::token_compress_on);
 
     std::stringstream ss;
     std::string output_dir = st.at (st.size () - 1);

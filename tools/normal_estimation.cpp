@@ -162,7 +162,7 @@ batchProcess (const vector<string> &pcd_files, string &output_dir, int k, double
     // Prepare output file name
     string filename = pcd_files[i];
     boost::trim (filename);
-    boost::split (st, filename, boost::is_any_of ("/"), boost::token_compress_on);
+    boost::split (st, filename, boost::is_any_of ("/\\"), boost::token_compress_on);
     
     // Save into the second file
     stringstream ss;
