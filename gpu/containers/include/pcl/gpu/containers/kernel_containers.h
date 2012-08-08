@@ -84,6 +84,9 @@ namespace pcl
 
             __PCL_GPU_HOST_DEVICE__       T* ptr(int y = 0)       { return (      T*)( (      char*)DevPtr<T>::data + y * step); }
             __PCL_GPU_HOST_DEVICE__ const T* ptr(int y = 0) const { return (const T*)( (const char*)DevPtr<T>::data + y * step); }
+
+            __PCL_GPU_HOST_DEVICE__       T& operator()(int y, int x)       { return ptr(y)[x]; }
+            __PCL_GPU_HOST_DEVICE__ const T& operator()(int y, int x) const { return ptr(y)[x]; }
         };
 
         template <typename T> struct PtrStepSz : public PtrStep<T>
