@@ -22,26 +22,26 @@ pcl::cloud_composer::CloudItem::CloudItem (QString name,
 //  qDebug () << "Cloud size after passthrough : "<<cloud_filtered->width<<"x"<<cloud_filtered->height;
   cloud_ptr_ = cloud_filtered;
   sensor_msgs::PointCloud2::ConstPtr const_cloud_ptr = cloud_filtered;  
-  this->setData (QVariant::fromValue (const_cloud_ptr), CLOUD_CONSTPTR);
-  this->setData (QVariant::fromValue (origin_), ORIGIN);
-  this->setData (QVariant::fromValue (orientation_), ORIENTATION);
+  this->setData (QVariant::fromValue (const_cloud_ptr), ItemDataRole::CLOUD_CONSTPTR);
+  this->setData (QVariant::fromValue (origin_), ItemDataRole::ORIGIN);
+  this->setData (QVariant::fromValue (orientation_), ItemDataRole::ORIENTATION);
    
   //Create a color and geometry handler for this cloud
   color_handler_.reset (new pcl::visualization::PointCloudColorHandlerRGBField<sensor_msgs::PointCloud2> (cloud_ptr));
-  this->setData (QVariant::fromValue (color_handler_), COLOR_HANDLER);
+  this->setData (QVariant::fromValue (color_handler_), ItemDataRole::COLOR_HANDLER);
   geometry_handler_.reset (new pcl::visualization::PointCloudGeometryHandlerXYZ<sensor_msgs::PointCloud2> (cloud_ptr));
-  this->setData (QVariant::fromValue (geometry_handler_), GEOMETRY_HANDLER);
+  this->setData (QVariant::fromValue (geometry_handler_), ItemDataRole::GEOMETRY_HANDLER);
   
   //Create an XYZ cloud from the sensor_msgs cloud
   xyz_cloud_ptr.reset (new pcl::PointCloud<pcl::PointXYZ>);
   pcl::fromROSMsg (*cloud_ptr_, *xyz_cloud_ptr); 
   pcl::PointCloud <PointXYZ>::ConstPtr xyz_cloud_constptr = xyz_cloud_ptr;
-  this->setData (QVariant::fromValue (xyz_cloud_constptr), XYZ_CLOUD_CONSTPTR);
+  this->setData (QVariant::fromValue (xyz_cloud_constptr), ItemDataRole::XYZ_CLOUD_CONSTPTR);
   
   //Initialize the search kd-tree for this cloud
   search_.reset (new search::KdTree<pcl::PointXYZ>);
   search_->setInputCloud (xyz_cloud_ptr);
-  this->setData (QVariant::fromValue (search_), KD_TREE_SEARCH);
+  this->setData (QVariant::fromValue (search_), ItemDataRole::KD_TREE_SEARCH);
   
   properties_->addCategory ("Core Properties");
   properties_->addProperty ("Name", QVariant (this->text ()), Qt::NoItemFlags, "Core Properties");

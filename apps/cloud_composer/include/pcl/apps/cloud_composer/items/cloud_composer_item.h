@@ -44,24 +44,8 @@
 #include <pcl/apps/cloud_composer/qt.h>
 #include <pcl/apps/cloud_composer/properties_model.h>
 
-enum ITEM_ROLES { 
-  PROPERTIES = Qt::UserRole,
-  ITEM_ID,
-  CLOUD_CONSTPTR,
-  XYZ_CLOUD_CONSTPTR,
-  GEOMETRY_HANDLER, 
-  COLOR_HANDLER,
-  ORIGIN,
-  ORIENTATION,
-  KD_TREE_SEARCH
-};
 
-enum ITEM_TYPES { 
-  CLOUD_COMPOSER_ITEM = QStandardItem::UserType,
-  CLOUD_ITEM,
-  NORMALS_ITEM,
-  FPFH_ITEM
-};
+
 
 static QStringList ITEM_TYPES_STRINGS(QStringList() 
       << "Cloud Composer Item"
@@ -74,10 +58,34 @@ namespace pcl
   namespace cloud_composer
   {
     class PropertiesModel;
-    
+    namespace ItemDataRole 
+    { 
+      enum
+      { 
+        PROPERTIES = Qt::UserRole,
+        ITEM_ID,
+        CLOUD_CONSTPTR,
+        XYZ_CLOUD_CONSTPTR,
+        GEOMETRY_HANDLER, 
+        COLOR_HANDLER,
+        ORIGIN,
+        ORIENTATION,
+        KD_TREE_SEARCH
+      };
+    };
     class PCL_EXPORTS CloudComposerItem : public QStandardItem
     {
       public:  
+        
+  
+        enum ItemType 
+        { 
+          CLOUD_COMPOSER_ITEM = QStandardItem::UserType,
+          CLOUD_ITEM,
+          NORMALS_ITEM,
+          FPFH_ITEM
+        };
+
         CloudComposerItem (const QString name = "default item");
         CloudComposerItem (const CloudComposerItem& to_copy);
         virtual ~CloudComposerItem ();
@@ -87,7 +95,7 @@ namespace pcl
       
         /** \brief Convenience function to get Item's ID String */
         inline QString
-        getId () const { return data (ITEM_ID).toString (); }
+        getId () const { return data (ItemDataRole::ITEM_ID).toString (); }
         
         /** \brief Convenience function to get Item's Property Pointer */
         inline PropertiesModel*
@@ -95,7 +103,7 @@ namespace pcl
         
         /** \brief Returns all children of item type type*/
         QList <CloudComposerItem*>
-        getChildren (ITEM_TYPES type) const;
+        getChildren (ItemType type) const;
         
         virtual CloudComposerItem*
         clone () const;

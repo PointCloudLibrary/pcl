@@ -84,16 +84,16 @@ namespace pcl
         virtual QString
         getIconName () const { return ":/statistical_outlier_removal.png"; }
         
-        inline virtual ITEM_TYPES
+        inline virtual CloudComposerItem::ItemType
         getInputItemType () const
         {
-          return CLOUD_ITEM;
+          return CloudComposerItem::CLOUD_ITEM;
         }
         
-        inline virtual QList <ITEM_TYPES>
+        inline virtual QList <CloudComposerItem::ItemType>
         getRequiredInputChildrenTypes () const 
         {
-          return QList <ITEM_TYPES> ();
+          return QList <CloudComposerItem::ItemType> ();
         }
     };
 

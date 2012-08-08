@@ -170,9 +170,9 @@ pcl::cloud_composer::CloudView::selectedItemChanged (const QItemSelection & sele
     if (previous.isValid ())
     {
       QStandardItem* previous_item = model_->itemFromIndex (previous);
-      if (previous_item->type () == CLOUD_ITEM || previous_item->type () == NORMALS_ITEM)
+      if (previous_item->type () == CloudComposerItem::CLOUD_ITEM || previous_item->type () == CloudComposerItem::NORMALS_ITEM)
       {
-        vis_->setPointCloudSelected (false, previous_item->data (ITEM_ID).toString ().toStdString ());
+        vis_->setPointCloudSelected (false, previous_item->data (ItemDataRole::ITEM_ID).toString ().toStdString ());
       }
     }
   }
@@ -181,9 +181,9 @@ pcl::cloud_composer::CloudView::selectedItemChanged (const QItemSelection & sele
     if (current.isValid ())
     {
       QStandardItem* current_item = model_->itemFromIndex (current);
-      if (current_item->type () == CLOUD_ITEM || current_item->type () == NORMALS_ITEM)
+      if (current_item->type () == CloudComposerItem::CLOUD_ITEM || current_item->type () == CloudComposerItem::NORMALS_ITEM)
       {
-        vis_->setPointCloudSelected (true, current_item->data (ITEM_ID).toString ().toStdString ());
+        vis_->setPointCloudSelected (true, current_item->data (ItemDataRole::ITEM_ID).toString ().toStdString ());
       }
     }
   }

@@ -5,7 +5,6 @@
 pcl::cloud_composer::CloudBrowser::CloudBrowser (QWidget* parent)
   : QTreeView (parent)
 {
-   this->setRootIsDecorated (false);
    this->setItemDelegate (new BackgroundDelegate (this));
 }
 

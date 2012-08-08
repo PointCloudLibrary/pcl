@@ -79,11 +79,11 @@ namespace pcl
         }
         
         /** \brief Returns a list of allowed input item types. Implement in tools so GUI can prevent impossible actions */
-        virtual ITEM_TYPES
+        virtual CloudComposerItem::ItemType
         getInputItemType () const = 0;
         
         /** \brief Returns a list of required input children. Implement in tools so GUI can prevent impossible actions */
-        virtual QList <ITEM_TYPES>
+        virtual QList <CloudComposerItem::ItemType>
         getRequiredInputChildrenTypes () const = 0;
 
     };

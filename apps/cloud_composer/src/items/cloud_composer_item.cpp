@@ -13,8 +13,8 @@ pcl::cloud_composer::CloudComposerItem::CloudComposerItem (QString name)
   QString item_id = name + QString ("%1").arg ((long)this);  
   
   
-  this->setData (QVariant::fromValue (properties_), PROPERTIES); 
-  this->setData (QVariant (item_id), ITEM_ID);
+  this->setData (QVariant::fromValue (properties_), ItemDataRole::PROPERTIES); 
+  this->setData (QVariant (item_id), ItemDataRole::ITEM_ID);
   
   this->setForeground (QBrush (Qt::black));
   
@@ -38,7 +38,7 @@ pcl::cloud_composer::CloudComposerItem::clone () const
 }
 
 QList <pcl::cloud_composer::CloudComposerItem*>
-pcl::cloud_composer::CloudComposerItem::getChildren (ITEM_TYPES type) const
+pcl::cloud_composer::CloudComposerItem::getChildren (CloudComposerItem::ItemType type) const
 {
   QList <CloudComposerItem*> items;
   for (int i = 0; i < this->rowCount (); ++i)

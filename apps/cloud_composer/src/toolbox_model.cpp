@@ -174,8 +174,8 @@ pcl::cloud_composer::ToolBoxModel::updateEnabledTools (const QItemSelection curr
   {
     QStandardItem* tool_item = enabled_itr.next ();
     ToolFactory* tool_factory = (tool_item->data (FACTORY)).value <ToolFactory*> ();
-    ITEM_TYPES input_type = tool_factory->getInputItemType ();
-    QList <ITEM_TYPES> required_children_types = tool_factory->getRequiredInputChildrenTypes();
+    CloudComposerItem::ItemType input_type = tool_factory->getInputItemType ();
+    QList <CloudComposerItem::ItemType> required_children_types = tool_factory->getRequiredInputChildrenTypes();
     //Check if enough items for tool are selected
     if ( tool_factory-> getNumInputItems() > current_indices.size() )
     {
@@ -193,19 +193,19 @@ pcl::cloud_composer::ToolBoxModel::updateEnabledTools (const QItemSelection curr
     {  
       QList <QStandardItem*> matching_selected_items = type_items_map.values (input_type);
       bool found_valid_items = false;
-      QList <ITEM_TYPES> missing_children = required_children_types;
+      QList <CloudComposerItem::ItemType> missing_children = required_children_types;
       foreach (QStandardItem* item, matching_selected_items)
       {
-        QList <ITEM_TYPES> found_children_types;
+        QList <CloudComposerItem::ItemType> found_children_types;
         if (!item->hasChildren ())
           continue;
         
         //Find types of all children
         for (int i = 0; i < item->rowCount(); ++i)
-          found_children_types.append ( static_cast<ITEM_TYPES>(item->child (i)->type ()));
+          found_children_types.append ( static_cast<CloudComposerItem::ItemType>(item->child (i)->type ()));
         //Make temporary copy, remove type from it if is present as child
-        QList <ITEM_TYPES> req_children_temp = required_children_types;
-        foreach (ITEM_TYPES type, found_children_types)
+        QList <CloudComposerItem::ItemType> req_children_temp = required_children_types;
+        foreach (CloudComposerItem::ItemType type, found_children_types)
           req_children_temp.removeAll (type);
         //If temporary is empty, we found all required children
         if (req_children_temp.isEmpty ())
@@ -224,7 +224,7 @@ pcl::cloud_composer::ToolBoxModel::updateEnabledTools (const QItemSelection curr
       {
         enabled_itr.remove ();
         QString missing_children_string;
-        foreach (ITEM_TYPES type, missing_children)
+        foreach (CloudComposerItem::ItemType type, missing_children)
           missing_children_string.append (" "+ITEM_TYPES_STRINGS.value (type - QStandardItem::UserType));
         disabled_tools.insert (tool_item, tr ("Tool Requires child item of type(s) %1").arg (missing_children_string));
       }

@@ -160,6 +160,30 @@ namespace pcl
         getToolName () const { return "SplitItemTool";}
         
     };
+    
+    class MergeCloudTool : public AbstractTool
+    {
+      Q_OBJECT
+      public:
+        MergeCloudTool (PropertiesModel* parameter_model, QObject* parent) 
+                      : AbstractTool (parameter_model, parent) 
+                      {}
+        
+        virtual ~MergeCloudTool () { }
+        
+        virtual QList <CloudComposerItem*>
+        performAction (QList <const CloudComposerItem*> input_data) = 0;
+        
+        inline virtual CloudCommand* 
+        createCommand (QList <const CloudComposerItem*> input_data) 
+        {
+          return new MergeCloudCommand (input_data);
+        }
+        
+        inline virtual QString
+        getToolName () const { return "MergeCloudTool";}
+        
+    };
   }
 }
 

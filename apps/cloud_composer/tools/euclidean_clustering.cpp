@@ -36,13 +36,13 @@ pcl::cloud_composer::EuclideanClusteringTool::performAction (ConstItemList input
   }
   input_item = input_data.value (0);
   
-  if (input_item->type () == CLOUD_ITEM)
+  if (input_item->type () == CloudComposerItem::CLOUD_ITEM)
   {
     double cluster_tolerance = parameter_model_->getProperty ("Cluster Tolerance").toDouble();
     int min_cluster_size = parameter_model_->getProperty ("Min Cluster Size").toInt();
     int max_cluster_size = parameter_model_->getProperty ("Max Cluster Size").toInt();
    
-    sensor_msgs::PointCloud2::ConstPtr input_cloud = input_item->data (CLOUD_CONSTPTR).value <sensor_msgs::PointCloud2::ConstPtr> ();
+    sensor_msgs::PointCloud2::ConstPtr input_cloud = input_item->data (ItemDataRole::CLOUD_CONSTPTR).value <sensor_msgs::PointCloud2::ConstPtr> ();
     //Get the cloud in template form
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
     pcl::fromROSMsg (*input_cloud, *cloud); 
@@ -62,8 +62,8 @@ pcl::cloud_composer::EuclideanClusteringTool::performAction (ConstItemList input
     ec.extract (cluster_indices);
     //////////////////////////////////////////////////////////////////
     //Get copies of the original origin and orientation
-    Eigen::Vector4f source_origin = input_item->data (ORIGIN).value<Eigen::Vector4f> ();
-    Eigen::Quaternionf source_orientation =  input_item->data (ORIENTATION).value<Eigen::Quaternionf> ();
+    Eigen::Vector4f source_origin = input_item->data (ItemDataRole::ORIGIN).value<Eigen::Vector4f> ();
+    Eigen::Quaternionf source_orientation =  input_item->data (ItemDataRole::ORIENTATION).value<Eigen::Quaternionf> ();
     //Vector to accumulate the extracted indices
     pcl::IndicesPtr extracted_indices (new std::vector<int> ());
     //Put found clusters into new cloud_items!
@@ -74,13 +74,14 @@ pcl::cloud_composer::EuclideanClusteringTool::performAction (ConstItemList input
     {
       filter.setInputCloud (input_cloud);
       // It's annoying that I have to do this, but Euclidean returns a PointIndices struct
-      pcl::IndicesPtr indices_to_extract (new std::vector<int> (it->indices));
-      filter.setIndices (indices_to_extract);
+      pcl::PointIndices::ConstPtr indices_ptr = boost::make_shared<pcl::PointIndices>(*it);
+      filter.setIndices (indices_ptr);
       extracted_indices->insert (extracted_indices->end (), it->indices.begin (), it->indices.end ());
       //This means remove the other points
       filter.setKeepOrganized (false);
       sensor_msgs::PointCloud2::Ptr cloud_filtered (new sensor_msgs::PointCloud2);
       filter.filter (*cloud_filtered);
+     
       qDebug() << "Cluster has " << cloud_filtered->width << " data points.";
       CloudItem* cloud_item = new CloudItem (input_item->text ()+tr("-Clstr %1").arg(cluster_count)
                                              , cloud_filtered

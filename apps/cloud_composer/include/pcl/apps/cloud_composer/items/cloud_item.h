@@ -59,8 +59,8 @@ namespace pcl
         
         CloudItem (const QString name,
                    const sensor_msgs::PointCloud2::Ptr cloud_ptr, 
-                   const Eigen::Vector4f& origin,
-                   const Eigen::Quaternionf& orientation);
+                   const Eigen::Vector4f& origin = Eigen::Vector4f (),
+                   const Eigen::Quaternionf& orientation = Eigen::Quaternionf ());
         CloudItem (const CloudItem& to_copy);
         virtual ~CloudItem ();
         

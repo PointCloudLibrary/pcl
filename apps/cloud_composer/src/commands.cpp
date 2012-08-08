@@ -1,6 +1,7 @@
 #include <pcl/apps/cloud_composer/commands.h>
 #include <pcl/apps/cloud_composer/tool_interface/abstract_tool.h>
 #include <pcl/apps/cloud_composer/project_model.h>
+#include <pcl/apps/cloud_composer/merge_selection.h>
 
 pcl::cloud_composer::CloudCommand::CloudCommand (QList <const CloudComposerItem*> input_data, QUndoCommand* parent)
   : QUndoCommand (parent)
@@ -240,7 +241,7 @@ bool
 pcl::cloud_composer::SplitCloudCommand::runCommand (AbstractTool* tool)
 {
   this->setText (tool->getToolName ());
-  //For new item cloud command, each selected item should be processed separately
+  //For split cloud command, each selected item should be processed separately
   //e.g. calculate normals for every selected cloud
   int num_new_items = 0;
   foreach (const CloudComposerItem *item, original_data_)
@@ -360,8 +361,8 @@ bool
 pcl::cloud_composer::DeleteItemCommand::runCommand (AbstractTool* tool)
 {
   
-  //For new item cloud command, each selected item should be processed separately
-  //e.g. calculate normals for every selected cloud
+  //For delete item command, each selected item should be processed separately
+  //e.g. delete every selected item
   int num_new_items = 0;
   foreach (const CloudComposerItem *item, original_data_)
   {
@@ -426,5 +427,78 @@ pcl::cloud_composer::DeleteItemCommand::redo ()
       removed_item_parent_pairs_.append (qMakePair (removed_items.at (0), parent_index));  
     
 
+  }
+}
+
+
+//////////// MERGE CLOUD COMMAND ///////////////////////////////////////////////////////////////////////////
+
+pcl::cloud_composer::MergeCloudCommand::MergeCloudCommand (ConstItemList input_data, QUndoCommand* parent)
+  : CloudCommand (input_data, parent)
+{
+  
+}
+
+bool
+pcl::cloud_composer::MergeCloudCommand::runCommand (AbstractTool* tool)
+{
+ 
+  output_items_ = tool->performAction (original_data_);
+  MergeSelection* merge_selection = dynamic_cast <MergeSelection*> (tool);
+  // If this is a merge selection we need to put the original items into the list too!
+  if (merge_selection)
+  {
+    QList <const CloudItem*> selected_items = merge_selection->getSelectedItems();
+    foreach (const CloudItem* item, selected_items)
+      original_data_.append (item);
+  }
+  if (output_items_.size () == 0)
+  {
+    qWarning () << "Warning: Tool " << tool->getToolName () << "returned no item in a MergeCloudCommand";
+    return false;
+  }
+  this->setText ("Merge Clouds");
+  return true;
+}
+
+void
+pcl::cloud_composer::MergeCloudCommand::undo ()
+{
+  foreach (CloudComposerItem* output_item, output_items_)
+  {
+    QModelIndex output_index = project_model_->indexFromItem (output_item);
+    project_model_->takeRow (output_index.row ());
+  }
+    
+  //Add the original items back into the model
+  foreach ( QStandardItem* removed_item, removed_items_)
+  {
+    project_model_->appendRow (removed_item);
+  }
+}
+
+void
+pcl::cloud_composer::MergeCloudCommand::redo ()
+{
+  qDebug () << "Redo in MergeCloudCommand ";
+  removed_items_.clear ();
+  foreach ( const CloudComposerItem* input_item, original_data_)
+  {
+    QPersistentModelIndex input_index = QPersistentModelIndex(project_model_->indexFromItem (input_item));
+    if (!input_index.isValid ())
+    {
+      qCritical () << "Index of input cloud item is no longer valid upon command completion!";
+      return;
+    }
+    
+    QList <QStandardItem*> removed_items = project_model_->takeRow (input_index.row ());
+    if (removed_items.size () > 1)
+      qCritical () << "Deleted row with more than one column! This isn't supported!!";
+    removed_items_.append (removed_items.value (0));
+  }
+  
+  foreach (CloudComposerItem* output_item, output_items_)
+  {
+    project_model_->appendRow (output_item);
   }
 }

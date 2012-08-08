@@ -63,7 +63,8 @@ if(build)
              include/pcl/apps/${SUBSYS_NAME}/work_queue.h
              include/pcl/apps/${SUBSYS_NAME}/toolbox_model.h
              include/pcl/apps/${SUBSYS_NAME}/properties_model.h
-             include/pcl/apps/${SUBSYS_NAME}/signal_multiplexer.h)
+             include/pcl/apps/${SUBSYS_NAME}/signal_multiplexer.h
+             include/pcl/apps/${SUBSYS_NAME}/merge_selection.h)
           
     set(srcs src/main.cpp 
              src/cloud_composer.cpp
@@ -76,7 +77,9 @@ if(build)
              src/work_queue.cpp
              src/toolbox_model.cpp
              src/properties_model.cpp
-             src/signal_multiplexer.cpp)
+             src/signal_multiplexer.cpp
+             src/merge_selection.cpp
+             src/tool_interface/abstract_tool.cpp)
           
     #Sources and headers for item types      
     set(item_incs include/pcl/apps/${SUBSYS_NAME}/items/cloud_composer_item.h

@@ -65,6 +65,7 @@
     <addaction name="action_select_all_"/>
     <addaction name="action_invert_selection_"/>
     <addaction name="action_rectangular_frustum_select_"/>
+    <addaction name="action_new_cloud_from_selection_"/>
     <addaction name="separator"/>
     <addaction name="action_copy_"/>
     <addaction name="action_paste_"/>
@@ -79,11 +80,6 @@
     </property>
     <addaction name="action_show_axes_"/>
    </widget>
-   <widget class="QMenu" name="menuTools">
-    <property name="title">
-     <string>&amp;Tools</string>
-    </property>
-   </widget>
    <widget class="QMenu" name="menu_Help">
     <property name="title">
      <string>&amp;Help</string>
@@ -94,7 +90,6 @@
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
    <addaction name="menuView"/>
-   <addaction name="menuTools"/>
    <addaction name="menu_Help"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
@@ -126,6 +121,8 @@
    <addaction name="action_show_axes_"/>
    <addaction name="separator"/>
    <addaction name="action_rectangular_frustum_select_"/>
+   <addaction name="separator"/>
+   <addaction name="action_new_cloud_from_selection_"/>
   </widget>
   <widget class="QDockWidget" name="dockCloudBrowser">
    <property name="windowTitle">
@@ -449,6 +446,21 @@
    </property>
    <property name="shortcut">
     <string>F</string>
+   </property>
+  </action>
+  <action name="action_new_cloud_from_selection_">
+   <property name="icon">
+    <iconset resource="../resources/resources.qrc">
+     <normaloff>:/new_cloud_from_selection.png</normaloff>:/new_cloud_from_selection.png</iconset>
+   </property>
+   <property name="text">
+    <string>Create New Cloud from Selection</string>
+   </property>
+   <property name="toolTip">
+    <string>Creates a new cloud from selection (Selection must only be clouds/points)</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+X</string>
    </property>
   </action>
  </widget>

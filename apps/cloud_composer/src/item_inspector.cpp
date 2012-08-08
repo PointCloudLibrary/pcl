@@ -121,7 +121,7 @@ pcl::cloud_composer::ItemInspector::updateView ()
     cloud_item = dynamic_cast<CloudComposerItem*> (model->itemFromIndex (current_item));
     if (cloud_item)
     {
-      current_item_properties_model_ = cloud_item->data (PROPERTIES).value <PropertiesModel*> ();
+      current_item_properties_model_ = cloud_item->data (ItemDataRole::PROPERTIES).value <PropertiesModel*> ();
       //Display any additional graphical data if this item has any
       QMap <QString, QWidget*> tabs = cloud_item->getInspectorTabs ();
       foreach (QString tab_name, tabs.keys ())

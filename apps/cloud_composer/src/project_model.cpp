@@ -6,7 +6,7 @@
 #include <pcl/apps/cloud_composer/items/cloud_item.h>
 #include <pcl/apps/cloud_composer/cloud_view.h>
 #include <pcl/apps/cloud_composer/point_selectors/interactor_style_switch.h>
-
+#include <pcl/apps/cloud_composer/merge_selection.h>
 
 pcl::cloud_composer::ProjectModel::ProjectModel (QObject* parent)
   : QStandardItemModel (parent)
@@ -95,7 +95,7 @@ pcl::cloud_composer::ProjectModel::setPointSelection (boost::shared_ptr<Selectio
       project_clouds.append ( cloud_item );
   }
   
-  item_index_map_.clear ();
+  selected_item_index_map_.clear ();
   // Find all indices in the selected points which are present in the clouds
   foreach (CloudItem* cloud_item, project_clouds)
   {
@@ -104,7 +104,7 @@ pcl::cloud_composer::ProjectModel::setPointSelection (boost::shared_ptr<Selectio
     if (found_indices->indices.size () > 0)
     {
       qDebug () << "Found "<<found_indices->indices.size ()<<" points in "<<cloud_item->text ();
-      item_index_map_. insert (cloud_item, found_indices);
+      selected_item_index_map_. insert (cloud_item, found_indices);
       cloud_item->setForeground (QBrush (Qt::green));
     }
   }
@@ -191,30 +191,6 @@ pcl::cloud_composer::ProjectModel::enqueueToolAction (AbstractTool* tool)
   emit enqueueNewAction (tool, input_data);
 }
 
-void
-pcl::cloud_composer::ProjectModel::doCommand (CloudCommand* command)
-{
-  ConstItemList input_data;
-  QModelIndexList selected_indexes = selection_model_->selectedIndexes ();
-  if (selected_indexes.size () == 0)
-  {
-    QMessageBox::warning (qobject_cast<QWidget *>(this->parent ()), "No Items Selected", "Cannot execute command, no item is selected in the browser or cloud view");
-    return;
-  }    
-  foreach (QModelIndex index, selected_indexes)
-  {
-    QStandardItem* item = this->itemFromIndex (index);
-    qDebug () << item->text () << " selected!";
-    if ( dynamic_cast <CloudComposerItem*> (item))
-      input_data.append (dynamic_cast <CloudComposerItem*> (item));
-  }
-  qDebug () << "Input for command is "<<input_data.size () << " element(s)";
-  command->setInputData (input_data);
-  if (command->runCommand (0))
-    commandCompleted(command);
-  else
-    qCritical () << "Execution of command failed!";
-}
 
 void
 pcl::cloud_composer::ProjectModel::commandCompleted (CloudCommand* command)
@@ -245,20 +221,41 @@ pcl::cloud_composer::ProjectModel::clearSelection ()
   if (selection_event_)
     selection_event_.reset ();
   
-  foreach (CloudItem* selected_item, item_index_map_.keys())
+  foreach (CloudItem* selected_item, selected_item_index_map_.keys())
   {
     qDebug () << "Setting item color back to black";
     selected_item->setForeground (QBrush (Qt::black));;
   }
   
-  item_index_map_.clear ();
+  selected_item_index_map_.clear ();
 }
 
 void
 pcl::cloud_composer::ProjectModel::deleteSelectedItems ()
 {
+  
+  QModelIndexList selected_indexes = selection_model_->selectedIndexes ();
+  if (selected_indexes.size () == 0)
+  {
+    QMessageBox::warning (qobject_cast<QWidget *>(this->parent ()), "No Items Selected", "Cannot execute delete command, no item is selected in the browser or cloud view");
+    return;
+  }    
+  
+  ConstItemList input_data;
+  foreach (QModelIndex index, selected_indexes)
+  {
+    QStandardItem* item = this->itemFromIndex (index);
+    //qDebug () << item->text () << " selected!";
+    if ( dynamic_cast <CloudComposerItem*> (item))
+      input_data.append (dynamic_cast <CloudComposerItem*> (item));
+  }
+ // qDebug () << "Input for command is "<<input_data.size () << " element(s)";
   DeleteItemCommand* delete_command = new DeleteItemCommand (ConstItemList ());
-  doCommand (delete_command);
+  delete_command->setInputData (input_data);
+  if (delete_command->runCommand (0))
+    commandCompleted(delete_command);
+  else
+    qCritical () << "Execution of delete command failed!";
 }
 
 void
@@ -280,6 +277,53 @@ pcl::cloud_composer::ProjectModel::selectRectangularFrustum ()
       
 }
 
+void
+pcl::cloud_composer::ProjectModel::createNewCloudFromSelection ()
+{
+  // We need only clouds to be selected
+  if (!onlyCloudItemsSelected ())
+  {
+    qCritical () << "Only Clouds Selected = False -- Cannot create a new cloud from non-cloud selection";
+    return;
+  }
+  //Add selected items into input data list
+  QModelIndexList selected_indexes = selection_model_->selectedIndexes ();
+  ConstItemList input_data;
+  foreach (QModelIndex index, selected_indexes)
+  {
+    QStandardItem* item = this->itemFromIndex (index);
+    //qDebug () << item->text () << " selected!";
+    if ( dynamic_cast <CloudComposerItem*> (item))
+      input_data.append (dynamic_cast <CloudComposerItem*> (item));
+  }
+ 
+  QMap <const CloudItem*, pcl::PointIndices::ConstPtr> selected_const_map;
+  foreach ( CloudItem* item, selected_item_index_map_.keys ())
+    selected_const_map.insert (item, selected_item_index_map_.value (item));
+  MergeSelection* merge_tool = new MergeSelection (selected_const_map);
+  
+  enqueueToolAction (merge_tool);
+  
+}
+
+void
+pcl::cloud_composer::ProjectModel::selectAllItems (QStandardItem* item)
+{
+ 
+  int num_rows;
+  if (!item)
+    item = this->invisibleRootItem ();
+  else
+   selection_model_->select (item->index (), QItemSelectionModel::Select);
+  //qDebug () << "Select all!"<< item->rowCount();
+  for (int i = 0; i < item->rowCount (); ++i)
+  {
+    if (item->child (i))
+      selectAllItems(item->child (i));
+  }
+  
+}
+
 /////////////////////////////////////////////////////////
 //Slots for Model State
 ////////////////////////////////////////////////////////
@@ -288,19 +332,40 @@ pcl::cloud_composer::ProjectModel::emitAllStateSignals ()
 {
   emit axisVisible (axis_visible_);
   emit deleteAvailable (selection_model_->hasSelection ());
-    
+  emit newCloudFromSelectionAvailable (onlyCloudItemsSelected ());  
 }
 
 void
 pcl::cloud_composer::ProjectModel::itemSelectionChanged ( const QItemSelection & selected, const QItemSelection & deselected )
 {
-  qDebug () << "Item selection changed!";
+  //qDebug () << "Item selection changed!";
   //Set all point selected cloud items back to green text, since if they are selected they get changed to white
-  foreach (CloudItem* selected_item, item_index_map_.keys())
+  foreach (CloudItem* selected_item, selected_item_index_map_.keys())
   {
     selected_item->setForeground (QBrush (Qt::green));;
   }
 }
+
+
+//////////////////////////////////////////////////////
+//  Private Support Functions
+//////////////////////////////////////////////////////
+
+
+bool
+pcl::cloud_composer::ProjectModel::onlyCloudItemsSelected ()
+{
+  QModelIndexList selected_indexes = selection_model_->selectedIndexes();
+  foreach (QModelIndex model_index, selected_indexes)
+  {
+    if (this->itemFromIndex (model_index)->type () != CloudComposerItem::CLOUD_ITEM )
+    {
+      return false;
+    }
+  }
+  return true;
+}
+
 
 
 

@@ -40,7 +40,7 @@
 
 #include <pcl/apps/cloud_composer/qt.h>
 #include <pcl/pcl_exports.h>
-#include <pcl/apps/cloud_composer/items/cloud_composer_item.h>
+#include <pcl/apps/cloud_composer/items/cloud_item.h>
 
 namespace pcl
 {
@@ -151,6 +151,36 @@ namespace pcl
         redo ();
       private:
         QList < RemovedPair > removed_item_parent_pairs_;
+    };
+    
+    class PCL_EXPORTS MergeCloudCommand : public CloudCommand
+    {
+      public: 
+        /** \brief Construct for a merge command
+         *  \param[in] input_data Input list of CloudItem s from the project model which will be merged
+         *  \param[in] temporary_clouds Input list of CloudItems which 
+         */
+        MergeCloudCommand (ConstItemList input_data, QUndoCommand* parent = 0);
+      
+        virtual bool
+        runCommand (AbstractTool* tool);
+        
+        virtual void
+        undo ();
+      
+        virtual void
+        redo ();
+        
+        inline void
+        setSelectedIndicesMap( const QMap <CloudItem*, pcl::PointIndices::Ptr > selected_item_index_map)
+        {
+          selected_item_index_map_ = selected_item_index_map;
+        }
+          
+      private:
+        QList < QStandardItem* > removed_items_;
+        QList <CloudComposerItem*> output_items_;
+        QMap <CloudItem*, pcl::PointIndices::Ptr > selected_item_index_map_;
     };
   }
 } 

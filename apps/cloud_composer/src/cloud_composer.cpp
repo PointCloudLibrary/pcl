@@ -87,6 +87,11 @@ pcl::cloud_composer::ComposerMainWindow::connectEditActions ()
   multiplexer_->connect (this, SIGNAL (insertNewCloudFromFile()), SLOT (insertNewCloudFromFile()));
   
   multiplexer_->connect (action_rectangular_frustum_select_, SIGNAL (triggered ()), SLOT (selectRectangularFrustum ()));
+
+  multiplexer_->connect (action_new_cloud_from_selection_, SIGNAL (triggered ()), SLOT (createNewCloudFromSelection ()));
+  multiplexer_->connect (SIGNAL (newCloudFromSelectionAvailable (bool)), action_new_cloud_from_selection_, SLOT (setEnabled (bool)));
+  
+  multiplexer_->connect (action_select_all_, SIGNAL (triggered ()), SLOT (selectAllItems ()));
 }
 
 void

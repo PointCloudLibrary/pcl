@@ -94,11 +94,7 @@ namespace pcl
         /** \brief Takes tool object issues signal to work queue to take control of it */
         void
         enqueueToolAction (AbstractTool* tool);
-        
-        /** \brief Executes a command directly in this thread */
-        void
-        doCommand (CloudCommand* command);
-        
+               
         /** \brief Helper function which inserts the item into this model and makes connections for properties */
         void 
         insertNewCloudComposerItem (CloudComposerItem* new_item, QStandardItem* parent_item);
@@ -140,6 +136,14 @@ namespace pcl
         /** \brief Slot Called whenever the item selection_model_ changes */
         void
         itemSelectionChanged ( const QItemSelection & selected, const QItemSelection & deselected );
+        
+        /** \brief Creates a new cloud from the selected items and points */
+        void 
+        createNewCloudFromSelection ();
+        
+        /** \brief Selects all items in the model */
+        void 
+        selectAllItems (QStandardItem* item = 0 );
       signals:  
         void
         enqueueNewAction (AbstractTool* tool, ConstItemList data);
@@ -154,9 +158,14 @@ namespace pcl
         void
         deleteAvailable (bool can_delete);
         
-
+        void
+        newCloudFromSelectionAvailable (bool can_create);
+        
         
       private:
+        /** \brief Checks to see if selection contains only CloudItem s */
+        bool
+        onlyCloudItemsSelected ();
         
         QItemSelectionModel* selection_model_;
         QMap <QString, int> name_to_type_map_;
@@ -174,7 +183,7 @@ namespace pcl
         /** \brief Internal pointer storing the last selection event arriving from vtk */
         boost::shared_ptr<SelectionEvent> selection_event_;
         /** \brief Map which stores which cloud items and indices were selected in the selection_event_ */
-        QMap <CloudItem*, pcl::PointIndices::Ptr > item_index_map_;
+        QMap <CloudItem*, pcl::PointIndices::Ptr > selected_item_index_map_;
     };
   }
 }
