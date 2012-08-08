@@ -44,12 +44,14 @@ if(build)
       src/mesh_element_index.cpp
      )
 
-  # NOTE: mesh_circulators.hpp currently uses boost::conditional which only exists for versions > 44
-  if(Boost_MAJOR_VERSION GREATER 44)
-    set(BUILD_pcl_half_edge_mesh "TRUE")
+  # NOTE: mesh_circulators.hpp currently uses boost::conditional which only exists for versions > 1.44
+  if(Boost_MAJOR_VERSION GREATER 1 OR Boost_MINOR_VERSION GREATER 44)
+    set(BUILD_pcl_half_edge_mesh TRUE)
     set(incs ${incs} ${half_edge_mesh_incs})
     set(srcs ${srcs} ${half_edge_mesh_srcs})
     set(impl_incs ${impl_incs} ${half_edge_mesh_impl_incs})
+  else()
+    set(BUILD_pcl_half_edge_mesh FALSE)
   endif()
 
   set(LIB_NAME pcl_${SUBSYS_NAME})
