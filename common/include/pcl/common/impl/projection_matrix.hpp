@@ -170,7 +170,7 @@ pcl::estimateProjectionMatrix(typename pcl::PointCloud<PointT>::ConstPtr cloud, 
   return residual;
 }
 
-void pcl::getCameraMatrixFromProjectionMatrix (const Eigen::Matrix<float, 3, 4, Eigen::RowMajor> projection_matrix, Eigen::Matrix3f& camera_matrix)
+void pcl::getCameraMatrixFromProjectionMatrix (const Eigen::Matrix<float, 3, 4, Eigen::RowMajor>& projection_matrix, Eigen::Matrix3f& camera_matrix)
 {
   Eigen::Matrix3f KR = projection_matrix.topLeftCorner <3, 3> ();
 

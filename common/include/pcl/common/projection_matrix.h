@@ -31,7 +31,7 @@ namespace pcl
     * \param[out] camera_matrix
     */
   PCL_EXPORTS inline void
-  getCameraMatrixFromProjectionMatrix (const Eigen::Matrix<float, 3, 4, Eigen::RowMajor> projection_matrix, Eigen::Matrix3f& camera_matrix);  
+  getCameraMatrixFromProjectionMatrix (const Eigen::Matrix<float, 3, 4, Eigen::RowMajor>& projection_matrix, Eigen::Matrix3f& camera_matrix);  
 }
 
 #include "impl/projection_matrix.hpp"

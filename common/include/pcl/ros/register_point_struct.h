@@ -146,7 +146,7 @@ namespace pcl
 
     template<typename T> inline
     typename boost::enable_if_c<boost::is_array<T>::value>::type
-    plus (T &l, const T &r)
+    plus (typename boost::remove_const<T>::type &l, const T &r)
     {
       using namespace pcl::common; 
       typedef typename boost::remove_all_extents<T>::type type;
@@ -184,7 +184,7 @@ namespace pcl
 
     template<typename T> inline
     typename boost::enable_if_c<boost::is_array<T>::value>::type
-    minus (T &l, const T &r)
+    minus (typename boost::remove_const<T>::type &l, const T &r)
     {
       using namespace pcl::common; 
       typedef typename boost::remove_all_extents<T>::type type;

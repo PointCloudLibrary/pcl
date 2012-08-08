@@ -95,7 +95,7 @@ if(MSVC)
   SET(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /LTCG")
   # /MANIFEST:NO") # please, don't disable manifest generation, otherwise crash at start for vs2008
   if(MSVC90 OR MSVC10)
-    option(ENABLE_MULTI_PROCESSOR_COMPILATION "Enable multi-processor compilation." ON)
+    option(ENABLE_MULTI_PROCESSOR_COMPILATION "Enable multi-processor compilation." OFF)
     mark_as_advanced(ENABLE_MULTI_PROCESSOR_COMPILATION)
     if(ENABLE_MULTI_PROCESSOR_COMPILATION)
       SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
