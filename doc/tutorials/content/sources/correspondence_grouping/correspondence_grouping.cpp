@@ -16,7 +16,7 @@
 typedef pcl::PointXYZRGBA PointType;
 typedef pcl::Normal NormalType;
 typedef pcl::ReferenceFrame RFType;
-typedef pcl::SHOT1344 DescriptorType;
+typedef pcl::SHOT352 DescriptorType;
 
 std::string model_filename_;
 std::string scene_filename_;
@@ -240,7 +240,7 @@ main (int argc, char *argv[])
   //
   //  Compute Descriptor for keypoints
   //
-  pcl::SHOTColorEstimationOMP<PointType, NormalType, DescriptorType> descr_est;
+  pcl::SHOTEstimationOMP<PointType, NormalType, DescriptorType> descr_est;
   descr_est.setRadiusSearch (descr_rad_);
 
   descr_est.setInputCloud (model_keypoints);
