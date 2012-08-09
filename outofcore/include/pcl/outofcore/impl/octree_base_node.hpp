@@ -810,7 +810,7 @@ namespace pcl
       //iterate over all of the points, compute the octant/child to which it belongs, and pass it down
       for ( size_t point_idx = 0; point_idx < remaining_points->data.size (); point_idx += remaining_points->point_step )
       {
-        PointXYZ local_pt;
+        PointT local_pt;
         //copy the point data into our local point; does anyone know if you can assume that XYZ are contiguous and in order for PointCloud2?
         local_pt.x = * (reinterpret_cast<float*>(&remaining_points->data[point_idx + x_offset]));
         local_pt.y = * (reinterpret_cast<float*>(&remaining_points->data[point_idx + y_offset]));
