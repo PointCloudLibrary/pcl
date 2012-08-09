@@ -35,11 +35,6 @@ namespace sensor_msgs
 #      error
 #endif
     }
-    
-    virtual ~PointCloud2 ()
-    { 
-      printf ("PointCloud2 Destructor\n");
-    }
 
 #undef PCL_BIG_ENDIAN
 #undef PCL_LITTLE_ENDIAN
