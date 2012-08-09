@@ -15,7 +15,9 @@ pcl::cloud_composer::ProjectModel::ProjectModel (QObject* parent)
   last_directory_ = QDir (".");
     
   selection_model_ = new QItemSelectionModel (this);
+  
   undo_stack_ = new QUndoStack (this);
+  undo_stack_->setUndoLimit (10);
   
   work_thread_ = new QThread();
   work_queue_ = new WorkQueue ();

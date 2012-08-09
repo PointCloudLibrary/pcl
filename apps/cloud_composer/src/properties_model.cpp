@@ -83,7 +83,7 @@ pcl::cloud_composer::PropertiesModel::addCategory (const QString category_name)
 QVariant 
 pcl::cloud_composer::PropertiesModel::getProperty (const QString prop_name) const
 {
-  qDebug () << "Searching for property " << prop_name;
+  //qDebug () << "Searching for property " << prop_name;
   QList<QStandardItem*> items = findItems (prop_name, Qt::MatchExactly | Qt::MatchRecursive, 0);
   if (items.size () == 0)
   {
@@ -94,10 +94,10 @@ pcl::cloud_composer::PropertiesModel::getProperty (const QString prop_name) cons
   {
     qWarning () << "Multiple properties found with name "<<prop_name<<" in "<<parent_item_->text ();
   }
-  qDebug () << "Found properties size ="<<items.size ();
+ // qDebug () << "Found properties size ="<<items.size ();
   
   QStandardItem* property = items.value (0);
-  qDebug () << "Prop name="<<prop_name<<" row="<<property->row ()<<" col="<<property->column();
+ // qDebug () << "Prop name="<<prop_name<<" row="<<property->row ()<<" col="<<property->column();
   int row = property->row ();
   QStandardItem* parent_item = property->parent ();
   if (parent_item == 0)

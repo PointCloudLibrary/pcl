@@ -68,7 +68,7 @@ pcl::cloud_composer::CloudItem::clone () const
 
 pcl::cloud_composer::CloudItem::~CloudItem ()
 {
-  
+  qDebug () << "Cloud item destructor";
 }
 
 

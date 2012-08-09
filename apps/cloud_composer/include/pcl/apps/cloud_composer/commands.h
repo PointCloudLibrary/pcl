@@ -50,15 +50,19 @@ namespace pcl
     class ProjectModel;
     struct OutputPair
     {
-      const CloudComposerItem* input_item_;
-      QList <CloudComposerItem*> output_list_;
+      QList <const CloudComposerItem*> input_items_;
+      QList <CloudComposerItem*> output_items_;
     };
-    typedef QPair<QStandardItem*, QPersistentModelIndex> RemovedPair;
+
+
     
     class PCL_EXPORTS CloudCommand : public QUndoCommand
     {
       public: 
         CloudCommand (ConstItemList input_data, QUndoCommand* parent = 0);
+        
+        virtual
+        ~CloudCommand ();
         
         virtual bool
         runCommand (AbstractTool* tool) = 0;
@@ -68,6 +72,18 @@ namespace pcl
         
         virtual void
         redo () = 0;
+        
+        /** \brief Removes the original item(s) from the model and replaces with the replacement(s)
+         *  Replacements are only inserted once, original items must have same parent
+         *  This stores the removed items in removed_items_
+         */
+        bool 
+        replaceOriginalWithNew (QList <const CloudComposerItem*> originals, QList <CloudComposerItem*> new_items);
+        
+        /** \brief This removes new_items from the model and restores originals */
+        bool
+        restoreOriginalRemoveNew (QList <const CloudComposerItem*> originals, QList <CloudComposerItem*> new_items);
+        
         
         void 
         setProjectModel (ProjectModel* model);
@@ -79,8 +95,17 @@ namespace pcl
         }
       protected:
         ConstItemList original_data_;
+        
+        QMap <QStandardItem*, QStandardItem*> removed_to_parent_map_;
         QList <OutputPair> output_data_;
         ProjectModel* project_model_;
+       
+        /** \brief This determines if we delete original items or not on destruction 
+         * If the command is being deleted because stack is at limit, then we want
+         * to only delete the originals, since the command is staying for good (new items shouldn't be deleted)
+         * On the other hand, if we destruct after an undo, then we want to delete the new items (but not the originals)
+         */
+        bool last_was_undo_;
     };
     
     class PCL_EXPORTS ModifyItemCommand : public CloudCommand
@@ -97,7 +122,7 @@ namespace pcl
         virtual void
         redo ();
       private: 
-        QList < RemovedPair > original_item_parent_pairs_;
+        
       
       
     };
@@ -133,7 +158,7 @@ namespace pcl
         virtual void
         redo ();
       private:
-        QList < RemovedPair > removed_item_parent_pairs_;
+
     };  
     
     class PCL_EXPORTS DeleteItemCommand : public CloudCommand
@@ -150,7 +175,6 @@ namespace pcl
         virtual void
         redo ();
       private:
-        QList < RemovedPair > removed_item_parent_pairs_;
     };
     
     class PCL_EXPORTS MergeCloudCommand : public CloudCommand
@@ -178,8 +202,6 @@ namespace pcl
         }
           
       private:
-        QList < QStandardItem* > removed_items_;
-        QList <CloudComposerItem*> output_items_;
         QMap <CloudItem*, pcl::PointIndices::Ptr > selected_item_index_map_;
     };
   }
