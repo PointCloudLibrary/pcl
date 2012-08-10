@@ -504,10 +504,17 @@ bool pcl::GrayStereoMatching::getPointCloud(float u_c, float v_c, float focal, f
 		cloud->resize(width_*height_);
 		cloud->width = width_;
 		cloud->height = height_;
+		cloud->is_dense = false;
 	}
 
 	//Loop
 	pcl::PointXYZI temp_point;
+	pcl::PointXYZI nan_point;
+	nan_point.x = std::numeric_limits<float>::quiet_NaN();
+	nan_point.y = std::numeric_limits<float>::quiet_NaN();
+	nan_point.z = std::numeric_limits<float>::quiet_NaN();
+	nan_point.intensity = std::numeric_limits<float>::quiet_NaN();
+
 	for ( int j=0; j<height_; j++)
 	{
 		for ( int i=0; i<width_; i++)
@@ -521,6 +528,11 @@ bool pcl::GrayStereoMatching::getPointCloud(float u_c, float v_c, float focal, f
 				temp_point.intensity = ( texture->at(j*width_+i).r +texture->at(j*width_+i).g + texture->at(j*width_+i).b) / 3.0f;
 			
 				cloud->at( j*width_ + i ) = temp_point;
+			}
+			//adding NaN value
+			else
+			{
+				cloud->at( j*width_ + i ) = nan_point;
 			}
 		}
 	}
@@ -549,10 +561,17 @@ bool pcl::GrayStereoMatching::getPointCloud(float u_c, float v_c, float focal, f
 		cloud->resize(width_*height_);
 		cloud->width = width_;
 		cloud->height = height_;
+		cloud->is_dense = false;
 	}
 
 	//Loop
 	pcl::PointXYZI temp_point;
+	pcl::PointXYZI nan_point;
+	nan_point.x = std::numeric_limits<float>::quiet_NaN();
+	nan_point.y = std::numeric_limits<float>::quiet_NaN();
+	nan_point.z = std::numeric_limits<float>::quiet_NaN();
+	nan_point.intensity = std::numeric_limits<float>::quiet_NaN();
+
 	for ( int j=0; j<height_; j++)
 	{
 		for ( int i=0; i<width_; i++)
@@ -566,6 +585,11 @@ bool pcl::GrayStereoMatching::getPointCloud(float u_c, float v_c, float focal, f
 				temp_point.intensity = 255;
 
 				cloud->at(j*width_ + i) = temp_point;
+			}
+			//adding NaN value
+			else
+			{
+				cloud->at( j*width_ + i ) = nan_point;
 			}
 		}
 	}

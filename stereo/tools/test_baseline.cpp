@@ -1,11 +1,20 @@
 
-#include "pcl\stereo\stereo_matching.h"
-#include "pcl\visualization\pcl_visualizer.h"
-#include <pcl\visualization\image_viewer.h>
+#include <pcl/stereo/stereo_matching.h>
+#include <pcl/visualization/pcl_visualizer.h>
+#include <pcl/visualization/image_viewer.h>
 
-#include <pcl\io\pcd_io.h>
+#include <pcl/io/pcd_io.h>
 
-//#include "opencv2\opencv.hpp"
+/** \brief Stereo Matching demo
+	*
+	* This demo loads a stereo image pair and computes the disparity map and related organized point cloud
+	* using the PCL BlockBased Stereo Matching algorithm. 
+	* Input pcds should be "stereo_left.pcd" and "stereo_right.pcd" which can be found in the test subfolder within trunk.
+	* A rescaled version of the disparity map is displayed, as well as the point cloud.
+	*
+    * \author Federico Tombari (federico.tombari@unibo.it)
+    * \ingroup stereo
+    */
 
 int 
 main(int argc, char **argv)
@@ -60,13 +69,8 @@ main(int argc, char **argv)
 	pcl::PointCloud<pcl::RGB>::Ptr vmap( new pcl::PointCloud<pcl::RGB> );
 	stereo.getVisualMap(vmap);
 
-	/*cv::Mat vmapMat( img[0]->height, img[0]->width, CV_8UC1, vmap);
-
-	cv::imshow("DMap", vmapMat);
-	cv::waitKey(0);*/
-
 	pcl::visualization::ImageViewer iv ("My viewer");
-	iv.addRGBImage<pcl::RGB> (vmap); // add a RGB image from a point cloud dataset in an "rgb_image" default layer
+	iv.addRGBImage<pcl::RGB> (vmap); 
 	//iv.addRGBImage<pcl::RGB> (left_cloud);
 	//iv.spin (); // press 'q' to exit
 
