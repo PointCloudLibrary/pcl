@@ -308,9 +308,11 @@ namespace pcl
 // =====POINT_CLOUD_REGISTER=====
 // ==============================
 
-POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::RGB,
+POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::_RGB,
     (uint32_t, rgba, rgba)
 )
+POINT_CLOUD_REGISTER_POINT_WRAPPER(pcl::RGB, pcl::_RGB)
+
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::_PointXYZ,
     (float, x, x)
     (float, y, y)

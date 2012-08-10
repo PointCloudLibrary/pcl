@@ -250,11 +250,28 @@ namespace pcl
     * \endcode
     *
     */
-  struct RGB
+  struct _RGB
   {
     PCL_ADD_RGB;
   };
-
+  struct RGB: public _RGB
+  {
+    inline RGB ()
+    {
+      r = g = b = 0;
+      a = 255;
+    }
+  };
+  inline std::ostream&
+  operator << (std::ostream& os, const RGB& p)
+  {
+    os << "(" 
+      << static_cast<int>(p.r) << ","
+      << static_cast<int>(p.g) << ","
+      << static_cast<int>(p.b) << ","
+      << static_cast<int>(p.a) << ")";
+    return (os);
+  }
 
   /** \brief A point structure representing Euclidean xyz coordinates, and the intensity value.
     * \ingroup common
@@ -288,13 +305,12 @@ namespace pcl
       intensity = _intensity;
     }
   };
-
-  inline std::ostream& operator << (std::ostream& os, const PointXYZI& p)
+  inline std::ostream& 
+  operator << (std::ostream& os, const PointXYZI& p)
   {
     os << "(" << p.x << "," << p.y << "," << p.z << " - " << p.intensity << ")";
     return (os);
   }
-
 
   struct EIGEN_ALIGN16 _PointXYZL
   {
@@ -364,7 +380,8 @@ namespace pcl
     {
       x = y = z = 0.0f;
       data[3] = 1.0f;
-      r = g = b = a = 0;
+      r = g = b = 0;
+      a = 255;
     }
     inline Eigen::Vector3i getRGBVector3i () { return (Eigen::Vector3i (r, g, b)); }
     inline const Eigen::Vector3i getRGBVector3i () const { return (Eigen::Vector3i (r, g, b)); }
@@ -375,12 +392,11 @@ namespace pcl
   inline std::ostream&
   operator << (std::ostream& os, const PointXYZRGBA& p)
   {
-    const unsigned char* rgba_ptr = reinterpret_cast<const unsigned char*>(&p.rgba);
     os << "(" << p.x << "," << p.y << "," << p.z << " - "
-      << static_cast<int>(*rgba_ptr) << ","
-      << static_cast<int>(*(rgba_ptr+1)) << ","
-      << static_cast<int>(*(rgba_ptr+2)) << ","
-      << static_cast<int>(*(rgba_ptr+3)) << ")";
+      << static_cast<int>(p.r) << ","
+      << static_cast<int>(p.g) << ","
+      << static_cast<int>(p.b) << ","
+      << static_cast<int>(p.a) << ")";
     return (os);
   }
 
@@ -437,7 +453,8 @@ namespace pcl
     {
       x = y = z = 0.0f;
       data[3] = 1.0f;
-      r = g = b = a = 0;
+      r = g = b = a;
+      a = 255;
     }
     inline PointXYZRGB (uint8_t _r, uint8_t _g, uint8_t _b)
     {
@@ -446,7 +463,7 @@ namespace pcl
       r = _r;
       g = _g;
       b = _b;
-      a = 0;
+      a = 255;
     }
 
     inline Eigen::Vector3i getRGBVector3i () { return (Eigen::Vector3i (r, g, b)); }
@@ -472,6 +489,7 @@ namespace pcl
       x = y = z = 0.0f;
       data[3] = 1.0f;
       r = g = b = 0;
+      a = 255;
       label = 255;
     }
     inline PointXYZRGBL (uint8_t _r, uint8_t _g, uint8_t _b, uint32_t _label)
@@ -481,6 +499,7 @@ namespace pcl
       r = _r;
       g = _g;
       b = _b;
+      a = 255;
       label = _label;
     }
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
@@ -754,7 +773,8 @@ namespace pcl
     {
       x = y = z = 0.0f;
       data[3] = 1.0f;
-      r = g = b = a = 0;
+      r = g = b = 0;
+      a = 255;
       normal_x = normal_y = normal_z = data_n[3] = 0.0f;
     }
 
