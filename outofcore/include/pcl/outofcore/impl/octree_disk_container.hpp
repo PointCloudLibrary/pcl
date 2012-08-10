@@ -181,10 +181,10 @@ namespace pcl
     {
       int outofcore_v = 3;
       
-      if ( outofcore_v >= 3 && writebuff_.size () > 0 )
+      if (outofcore_v >= 3 && writebuff_.size () > 0)
       {
         //construct the point cloud for this node
-        typename pcl::PointCloud<PointT>::Ptr cloud ( new pcl::PointCloud<PointT> );
+        typename pcl::PointCloud<PointT>::Ptr cloud (new pcl::PointCloud<PointT>);
         
         cloud->width = static_cast<uint32_t> (writebuff_.size ());
         cloud->height = 1;
@@ -199,10 +199,11 @@ namespace pcl
         
         // Write ascii for now to debug
         int res = writer.writeBinaryCompressed (*fileback_name_, *cloud);
+        (void)res;
         assert (res == 0);
       }
       
-      if ( outofcore_v < 3 )
+      if (outofcore_v < 3)
       {
         if (writebuff_.size () > 0)
         {
@@ -216,6 +217,7 @@ namespace pcl
           assert (w == len);
 
           int res = fclose (f);
+          (void)res;
           assert (res ==  0);
 
           filelen_ += writebuff_.size ();
@@ -244,12 +246,15 @@ namespace pcl
 
         //seek the right length; 
         int seekret = _fseeki64 (f, idx * sizeof(PointT), SEEK_SET);
+        (void)seekret;
         assert (seekret == 0);
 
         size_t readlen = fread (&temp, 1, sizeof(PointT), f);
+        (void)readlen;
         assert (readlen == sizeof (PointT));
 
         int res = fclose (f);
+        (void)res;
         assert (res == 0);
 
         return (temp);
@@ -282,12 +287,13 @@ namespace pcl
       }
 
       pcl::PCDReader reader;
-      typename pcl::PointCloud<PointT>::Ptr cloud ( new pcl::PointCloud<PointT>() );
+      typename pcl::PointCloud<PointT>::Ptr cloud (new pcl::PointCloud<PointT> ());
       
       int res = reader.read (*fileback_name_ , *cloud);
+      (void)res;
       assert (res == 0);
       
-      for(size_t i=0; i < cloud->points.size (); i++)
+      for (size_t i=0; i < cloud->points.size (); i++)
         dst.push_back (cloud->points[i]);
       
 /* //reinsert this when adding backward compatability (version <= 2)
@@ -424,8 +430,10 @@ namespace pcl
         for (uint64_t i = 0; i < filesamp; i++)
         {
           int seekret = _fseeki64 (f, offsets[i] * static_cast<uint64_t>(sizeof(PointT)), SEEK_SET);
+          (void)seekret;
           assert (seekret == 0);
           size_t readlen = fread (loc, sizeof(PointT), 1, f);
+          (void)readlen;
           assert (readlen == 1);
 
           dst.push_back (p);
@@ -519,13 +527,16 @@ namespace pcl
         for (uint64_t i = 0; i < filesamp; i++)
         {
           int seekret = _fseeki64 (f, offsets[i] * static_cast<uint64_t> (sizeof(PointT)), SEEK_SET);
+          (void)seekret;
           assert (seekret == 0);
           size_t readlen = fread (loc, sizeof(PointT), 1, f);
+          (void)readlen;
           assert (readlen == 1);
 
           dst.push_back (p);
         }
         int res = fclose (f);
+        (void)res;
         assert (res == 0);
       }
     }
@@ -556,6 +567,7 @@ namespace pcl
         // Open the existing file
         pcl::PCDReader reader;
         int res = reader.read (*fileback_name_, *tmp_cloud);
+        (void)res;
         assert (res == 0);
       }
       // Otherwise create the point cloud which will be saved to the pcd file for the first time
@@ -582,6 +594,7 @@ namespace pcl
       
       /// \todo allow appending to pcd file without loading all of the point data into memory
       int res = writer.writeBinaryCompressed (*fileback_name_, *tmp_cloud);
+      (void)res;
       assert (res == 0);
     }
   
@@ -598,7 +611,7 @@ namespace pcl
       //only flush the write buffer if there are enough points for it
       //to be worth the seek the tradeoff here is RAM; sorting first,
       //then dumping to nodes would be more efficient for disk I/O
-      int flush_size = 1000;
+      //int flush_size = 1000;
 
       if (outofcore_v >= 3)
       {
@@ -610,6 +623,7 @@ namespace pcl
           pcl::PCDReader reader;
           // Open it
           int res = reader.read (fileback_name_->c_str (), *tmp_cloud);
+          (void)res; 
           assert (res == 0 );
         }
         else //otherwise create the pcd file
@@ -638,8 +652,8 @@ namespace pcl
 
         /// \todo allow appending to pcd file without loading all of the point data into memory
         int res = writer.writeBinaryCompressed (*fileback_name_, *tmp_cloud);
+        (void)res;
         assert (res == 0);
-        
       }
       else //less than version 3
       {
@@ -653,18 +667,21 @@ namespace pcl
           const PointT* loc = start + pos;
           if ((pos + WRITE_BUFF_MAX_) < count)
           {
-            int res = fwrite (loc, sizeof (PointT), WRITE_BUFF_MAX_, f);
+            size_t res = fwrite (loc, sizeof (PointT), WRITE_BUFF_MAX_, f);
+            (void)res;
             assert (res == WRITE_BUFF_MAX_);
           }
           else
           {
-            int res = fwrite (loc, sizeof(PointT), static_cast<size_t> (count - pos), f);
+            size_t res = fwrite (loc, sizeof(PointT), static_cast<size_t> (count - pos), f);
+            (void)res;
             assert (res == count - pos);
           }
         }
 
         //	int closeret = fclose(f);
         int res = fclose (f);
+        (void)res;
         assert (res == 0 );
       }
       

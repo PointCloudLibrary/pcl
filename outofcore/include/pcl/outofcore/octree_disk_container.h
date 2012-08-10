@@ -128,6 +128,7 @@ namespace pcl
             //open the existing file
             pcl::PCDReader reader;
             int res = reader.read (*fileback_name_, *tmp_cloud);
+            (void)res;
             assert (res == 0);
             pcl::PCDWriter writer;
 //            PCL_INFO ("[pcl::outofcore::octree_disk_container::%s] Concatenating point cloud from %s to new cloud\n", __FUNCTION__, fileback_name_->c_str () );
@@ -139,6 +140,7 @@ namespace pcl
           {
             pcl::PCDWriter writer;
             int res = writer.writeBinaryCompressed (*fileback_name_, *input_cloud);
+            (void)res;
             assert (res == 0);
           }            
 
@@ -198,7 +200,7 @@ namespace pcl
 
         /// \todo refactor \ref readRange and strip start & count parameters and replace with array of indices
         void
-        readRange (const uint64_t start, const uint64_t count, sensor_msgs::PointCloud2::Ptr& dst)
+        readRange (const uint64_t, const uint64_t, sensor_msgs::PointCloud2::Ptr& dst)
         {
           pcl::PCDReader reader;
 
@@ -210,6 +212,7 @@ namespace pcl
           {
 //            PCL_INFO ( "[pcl::outofcore::octree_disk_container::%s] Reading points from disk from %s.\n", __FUNCTION__ , fileback_name_->c_str () );
             int res = reader.read (*fileback_name_, *dst, origin, orientation, pcd_version);
+            (void)res;
             assert (res != -1);
           }
           else
@@ -308,9 +311,11 @@ namespace pcl
 
             for (uint64_t i = 0; i < num; i++)
             {
-              int seekret = _fseeki64 (f, i * sizeof(PointT), SEEK_SET);
+              int seekret = _fseeki64 (f, i * sizeof (PointT), SEEK_SET);
+              (void)seekret;
               assert (seekret == 0);
-              size_t readlen = fread (loc, sizeof(PointT), 1, f);
+              size_t readlen = fread (loc, sizeof (PointT), 1, f);
+              (void)readlen;
               assert (readlen == 1);
 
               //of << p.x << "\t" << p.y << "\t" << p.z << "\n";
@@ -322,6 +327,7 @@ namespace pcl
               fwrite (ss.str ().c_str (), 1, ss.str ().size (), fxyz);
             }
             int res = fclose (f);
+            (void)res;
             assert (res == 0);
             res = fclose (fxyz);
             assert (res == 0);
