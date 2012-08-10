@@ -156,7 +156,7 @@ pcl::occlusion_reasoning::ZBuffering<ModelT, SceneT>::computeDepthMap (typename 
   {
     //Dilate and smooth the depth map
     int ws = wsize;
-    int ws2 = std::floor (static_cast<float> (ws) / 2.f);
+    int ws2 = int (std::floor (static_cast<float> (ws) / 2.f));
     float * depth_smooth = new float[cx_ * cy_];
     for (int i = 0; i < (cx_ * cy_); i++)
       depth_smooth[i] = std::numeric_limits<float>::quiet_NaN ();
