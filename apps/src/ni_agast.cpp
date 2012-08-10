@@ -72,6 +72,7 @@ class AGASTDemo
       , bmax_ (255)
       , threshold_ (30)
       , detector_type_ (0)
+      , timer_ ()
     {
     }
 
@@ -97,26 +98,29 @@ class AGASTDemo
         case 1:
         default:
         {
-          ScopeTime t ("AGAST 7_12s computation");
+          timer_.reset ();
           pcl::keypoints::agast::AgastDetector7_12s::Ptr detector (new pcl::keypoints::agast::AgastDetector7_12s (cloud->width, cloud->height, threshold_, bmax_));
           agast.setAgastDetector (detector);
           agast.compute (*keypoints_);
+          PCL_DEBUG ("AGAST 7_12s computation took %f ms.\n", timer_.getTime ());
           break;
         }
         case 2:
         {
-          ScopeTime t ("AGAST 5_8 computation");
+          timer_.reset ();
           pcl::keypoints::agast::AgastDetector5_8::Ptr detector (new pcl::keypoints::agast::AgastDetector5_8 (cloud->width, cloud->height, threshold_, bmax_));
           agast.setAgastDetector (detector);
           agast.compute (*keypoints_);
+          PCL_DEBUG ("AGAST 5_8 computation took %f ms.\n", timer_.getTime ());
           break;
         }
         case 3:
         {
-          ScopeTime t ("OAST 9_16 computation");
+          timer_.reset ();
           pcl::keypoints::agast::OastDetector9_16::Ptr detector (new pcl::keypoints::agast::OastDetector9_16 (cloud->width, cloud->height, threshold_, bmax_));
           agast.setAgastDetector (detector);
           agast.compute (*keypoints_);
+          PCL_DEBUG ("OAST 9_6 computation took %f ms.\n", timer_.getTime ());
           break;
         }
       }
@@ -291,7 +295,7 @@ class AGASTDemo
             for (size_t i = 0; i < keypoints->size (); ++i)
             {
               int u = int (keypoints->points[i].u);
-              int v = cloud->height - int (keypoints->points[i].v);
+              int v = int (keypoints->points[i].v);
               image_viewer_.markPoint (u, v, visualization::red_color, visualization::blue_color, 10, getStrBool (!keypts));
             }
             keypts = !keypts;
@@ -328,12 +332,20 @@ class AGASTDemo
     int detector_type_;
   private:
     boost::signals2::connection cloud_connection;
+    StopWatch timer_;
 };
 
 /* ---[ */
 int
-main (int, char**)
+main (int argc, char** argv)
 {
+  bool debug = false;
+  pcl::console::parse_argument (argc, argv, "-debug", debug);
+  if (debug)
+    pcl::console::setVerbosityLevel (pcl::console::L_DEBUG);
+  else
+    pcl::console::setVerbosityLevel (pcl::console::L_INFO);
+
   string device_id ("#1");
   OpenNIGrabber grabber (device_id);
   AGASTDemo<PointXYZRGBA> openni_viewer (grabber);
