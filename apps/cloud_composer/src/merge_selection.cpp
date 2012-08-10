@@ -23,7 +23,7 @@ pcl::cloud_composer::MergeSelection::performAction (ConstItemList input_data)
   QList <CloudComposerItem*> output;
 
   // Check input data length
-  if ( input_data.size () == 0)
+  if ( input_data.size () == 0 && selected_item_index_map_.isEmpty() )
   {
     qCritical () << "Empty input in MergeSelection!";
     return output;
@@ -47,7 +47,7 @@ pcl::cloud_composer::MergeSelection::performAction (ConstItemList input_data)
     if (!input_data.contains (input_cloud_item))
     {
       sensor_msgs::PointCloud2::ConstPtr input_cloud = input_cloud_item->data (ItemDataRole::CLOUD_CONSTPTR).value <sensor_msgs::PointCloud2::ConstPtr> ();
-    
+      qDebug () << "Extracting "<<selected_item_index_map_.value(input_cloud_item)->indices.size() << " points out of "<<input_cloud->width;
       filter.setInputCloud (input_cloud);
       filter.setIndices (selected_item_index_map_.value (input_cloud_item));
       sensor_msgs::PointCloud2::Ptr original_minus_indices (new sensor_msgs::PointCloud2);
@@ -57,6 +57,7 @@ pcl::cloud_composer::MergeSelection::performAction (ConstItemList input_data)
       sensor_msgs::PointCloud2::Ptr selected_points (new sensor_msgs::PointCloud2);
       filter.filter (*selected_points);
       
+      qDebug () << "Original minus indices is "<<original_minus_indices->width;
       Eigen::Vector4f source_origin = input_cloud_item->data (ItemDataRole::ORIGIN).value<Eigen::Vector4f> ();
       Eigen::Quaternionf source_orientation =  input_cloud_item->data (ItemDataRole::ORIENTATION).value<Eigen::Quaternionf> ();
       CloudItem* new_cloud_item = new CloudItem (input_cloud_item->text ()
@@ -69,7 +70,7 @@ pcl::cloud_composer::MergeSelection::performAction (ConstItemList input_data)
       merged_cloud = temp_cloud;
     }
     //Append the input item to the original list
-    input_data.append (input_cloud_item);
+    //input_data.append (input_cloud_item);
   }
   //Just concatenate for all fully selected clouds
   foreach (const CloudComposerItem* input_item, input_data)
@@ -81,7 +82,7 @@ pcl::cloud_composer::MergeSelection::performAction (ConstItemList input_data)
     merged_cloud = temp_cloud;
   }
   
-  CloudItem* cloud_item = new CloudItem ("Merged Cloud"
+  CloudItem* cloud_item = new CloudItem ("Cloud from Selection"
                                          , merged_cloud);
 
   output.append (cloud_item);

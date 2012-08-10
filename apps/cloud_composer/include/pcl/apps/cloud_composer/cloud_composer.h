@@ -111,6 +111,9 @@ namespace pcl
         void 
         setCurrentModel (ProjectModel* model);
         
+        void 
+        setMouseStyleAction (interactor_styles::INTERACTOR_STYLES selected_style);
+        
         void
         enqueueToolAction (AbstractTool* tool);
        
@@ -148,6 +151,8 @@ namespace pcl
         ToolBoxModel* tool_box_model_;
         
         SignalMultiplexer* multiplexer_;
+        
+        QActionGroup* mouse_style_group_;
     };
     
   }

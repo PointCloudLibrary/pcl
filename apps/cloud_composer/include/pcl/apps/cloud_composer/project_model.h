@@ -47,6 +47,7 @@
 #include <pcl/apps/cloud_composer/commands.h>
 #include <pcl/apps/cloud_composer/qt.h>
 #include <pcl/apps/cloud_composer/point_selectors/selection_event.h> 
+#include <pcl/apps/cloud_composer/point_selectors/interactor_style_switch.h>
 
 class QItemSelectionModel;
 
@@ -128,10 +129,10 @@ namespace pcl
         /** \brief This sets whether the CloudView for this project shows axes */
         void
         setAxisVisibility (bool visible);
-        
-        /** \brief This allows the user to choose a rectangular region, and selects all points in the frustum from it */
-        void
-        selectRectangularFrustum ();
+              
+        /** \brief Slot called when the mouse style selected in the GUI changes */
+        void 
+        mouseStyleChanged (QAction* new_style_action);
         
         /** \brief Slot Called whenever the item selection_model_ changes */
         void
@@ -161,6 +162,8 @@ namespace pcl
         void
         newCloudFromSelectionAvailable (bool can_create);
         
+        void
+        mouseStyleState (interactor_styles::INTERACTOR_STYLES);
         
       private:
         /** \brief Checks to see if selection contains only CloudItem s */
@@ -179,7 +182,11 @@ namespace pcl
                 
         //Variables for toggle action status
         bool axis_visible_;
-
+        QMap <interactor_styles::INTERACTOR_STYLES, bool> selected_style_map_; 
+        /** \brief Internal helper function for updating map */
+        void
+        setSelectedStyle (interactor_styles::INTERACTOR_STYLES style);
+        
         /** \brief Internal pointer storing the last selection event arriving from vtk */
         boost::shared_ptr<SelectionEvent> selection_event_;
         /** \brief Map which stores which cloud items and indices were selected in the selection_event_ */
@@ -189,7 +196,7 @@ namespace pcl
 }
 
 Q_DECLARE_METATYPE (pcl::cloud_composer::ProjectModel);
-
+Q_DECLARE_METATYPE (pcl::cloud_composer::interactor_styles::INTERACTOR_STYLES);
 
 #endif //PROJECT_MODEL_H
 

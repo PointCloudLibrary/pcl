@@ -77,7 +77,7 @@ namespace pcl
       setAxisVisibility (bool visible);
       
       void 
-      setInteractorStyle (INTERACTOR_STYLES style);
+      setInteractorStyle (interactor_styles::INTERACTOR_STYLES style);
     public slots:
       void 
       refresh ();

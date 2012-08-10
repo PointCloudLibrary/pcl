@@ -152,6 +152,7 @@
 #include <vtkWorldPointPicker.h>
 
 #include <vtkInteractorStyleRubberBandPick.h>
+#include <vtkInteractorStyleTrackballActor.h>
 #include <vtkAreaPicker.h>
 #include <vtkExtractGeometry.h>
 #include <vtkExtractPolyDataGeometry.h>

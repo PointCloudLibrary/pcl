@@ -5,7 +5,6 @@
 #include <pcl/apps/cloud_composer/work_queue.h>
 #include <pcl/apps/cloud_composer/items/cloud_item.h>
 #include <pcl/apps/cloud_composer/cloud_view.h>
-#include <pcl/apps/cloud_composer/point_selectors/interactor_style_switch.h>
 #include <pcl/apps/cloud_composer/merge_selection.h>
 
 pcl::cloud_composer::ProjectModel::ProjectModel (QObject* parent)
@@ -41,6 +40,10 @@ pcl::cloud_composer::ProjectModel::ProjectModel (QObject* parent)
   connect (selection_model_, SIGNAL (selectionChanged(QItemSelection,QItemSelection)),
            this, SLOT (itemSelectionChanged (QItemSelection,QItemSelection)));
   
+  selected_style_map_.insert (interactor_styles::PCL_VISUALIZER, true);
+  selected_style_map_.insert (interactor_styles::CLICK_TRACKBALL, false);
+  selected_style_map_.insert (interactor_styles::RECTANGULAR_FRUSTUM, false);
+  selected_style_map_.insert (interactor_styles::SELECTED_TRACKBALL, false);
 }
 
 pcl::cloud_composer::ProjectModel::ProjectModel (const ProjectModel&)
@@ -110,8 +113,11 @@ pcl::cloud_composer::ProjectModel::setPointSelection (boost::shared_ptr<Selectio
       cloud_item->setForeground (QBrush (Qt::green));
     }
   }
-    
+  setSelectedStyle (interactor_styles::PCL_VISUALIZER);
+  emit mouseStyleState (interactor_styles::PCL_VISUALIZER);
 }
+
+
 
 void
 pcl::cloud_composer::ProjectModel::insertNewCloudFromFile ()
@@ -269,14 +275,19 @@ pcl::cloud_composer::ProjectModel::setAxisVisibility (bool visible)
 }
 
 void
-pcl::cloud_composer::ProjectModel::selectRectangularFrustum ()
+pcl::cloud_composer::ProjectModel::mouseStyleChanged (QAction* new_style_action)
 {
-  qDebug () << "Rectangule Frustum select!";
+  interactor_styles::INTERACTOR_STYLES selected_style = new_style_action->data ().value<interactor_styles::INTERACTOR_STYLES> ();
+  qDebug () << "Selected style ="<<selected_style;
+  setSelectedStyle (selected_style);  
+  
+  // Now set the correct interactor
   if (cloud_view_)
-    cloud_view_->setInteractorStyle (RECTANGULAR_FRUSTUM);
+    cloud_view_->setInteractorStyle (selected_style);
   else
     qWarning () << "No Cloud View active, can't change interactor style!";
-      
+
+    
 }
 
 void
@@ -304,7 +315,12 @@ pcl::cloud_composer::ProjectModel::createNewCloudFromSelection ()
     selected_const_map.insert (item, selected_item_index_map_.value (item));
   MergeSelection* merge_tool = new MergeSelection (selected_const_map);
   
-  enqueueToolAction (merge_tool);
+  //We don't call the enqueueToolAction function since that would abort if we only have a green selection
+  //Move the tool object to the work queue thread
+  merge_tool->moveToThread (work_thread_);
+  //Emit signal which tells work queue to enqueue this new action
+  emit enqueueNewAction (merge_tool, input_data);
+  
   
 }
 
@@ -335,6 +351,19 @@ pcl::cloud_composer::ProjectModel::emitAllStateSignals ()
   emit axisVisible (axis_visible_);
   emit deleteAvailable (selection_model_->hasSelection ());
   emit newCloudFromSelectionAvailable (onlyCloudItemsSelected ());  
+  
+  //Find out which style is active, emit the signal 
+  QMap<interactor_styles::INTERACTOR_STYLES, bool>::iterator itr = selected_style_map_.begin();
+  while (itr != selected_style_map_.end ())
+  {
+    if (itr.value ())
+    {
+      emit mouseStyleState (itr.key ());
+      break;
+    }
+  }
+  
+  
 }
 
 void
@@ -368,6 +397,17 @@ pcl::cloud_composer::ProjectModel::onlyCloudItemsSelected ()
   return true;
 }
 
-
+void 
+pcl::cloud_composer::ProjectModel::setSelectedStyle (interactor_styles::INTERACTOR_STYLES style)
+{
+  QMap<interactor_styles::INTERACTOR_STYLES, bool>::iterator itr = selected_style_map_.begin();
+  while (itr != selected_style_map_.end ())
+  {
+    itr.value() = false;
+    ++itr;
+  }
+  selected_style_map_[style] = true;
+  
+}
 
 

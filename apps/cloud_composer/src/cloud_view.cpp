@@ -21,6 +21,7 @@ pcl::cloud_composer::CloudView::CloudView (QWidget* parent)
 pcl::cloud_composer::CloudView::CloudView (ProjectModel* model, QWidget* parent)
   : QWidget (parent)
 {
+  model_ = model;
   vis_.reset (new pcl::visualization::PCLVisualizer ("", false));
  // vis_->getInteractorStyle ()->setKeyboardModifier (pcl::visualization::INTERACTOR_KB_MOD_SHIFT);
   //Create the QVTKWidget
@@ -254,15 +255,15 @@ pcl::cloud_composer::CloudView::removeOrientationMarkerWidgetAxes ()
 void
 pcl::cloud_composer::CloudView::initializeInteractorSwitch ()
 {
-  style_switch_ = InteractorStyleSwitch::New();
-  style_switch_->initializeInteractorStyles (vis_);
+  style_switch_ = vtkSmartPointer<InteractorStyleSwitch>::New();
+  style_switch_->initializeInteractorStyles (vis_, model_);
   style_switch_->SetInteractor (qvtk_->GetInteractor ());
-  style_switch_->setCurrentInteractorStyle (PCL_VISUALIZER);
+  style_switch_->setCurrentInteractorStyle (interactor_styles::PCL_VISUALIZER);
   
   //Connect the events!
   connections_ = vtkSmartPointer<vtkEventQtSlotConnect>::New();
-  connections_->Connect (style_switch_->getInteractorStyle (RECTANGULAR_FRUSTUM),
-                         SELECTION_COMPLETE_EVENT,
+  connections_->Connect (style_switch_->getInteractorStyle (interactor_styles::RECTANGULAR_FRUSTUM),
+                         interactor_events::SELECTION_COMPLETE_EVENT,
                          this,
                          SLOT (selectionCompleted (vtkObject*, unsigned long, void*, void*)));
 
@@ -270,7 +271,7 @@ pcl::cloud_composer::CloudView::initializeInteractorSwitch ()
 }
 
 void
-pcl::cloud_composer::CloudView::setInteractorStyle (INTERACTOR_STYLES style)
+pcl::cloud_composer::CloudView::setInteractorStyle (interactor_styles::INTERACTOR_STYLES style)
 {
   style_switch_->setCurrentInteractorStyle (style);
 }
@@ -284,6 +285,6 @@ pcl::cloud_composer::CloudView::selectionCompleted (vtkObject* caller, unsigned 
   {
     qDebug () << "Selection Complete! - Num points="<<selected->getNumPoints();
     model_->setPointSelection (selected);
-    style_switch_->setCurrentInteractorStyle (PCL_VISUALIZER);
+    style_switch_->setCurrentInteractorStyle (interactor_styles::PCL_VISUALIZER);
   }
 }

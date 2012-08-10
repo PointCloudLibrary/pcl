@@ -12,7 +12,7 @@ namespace pcl
 pcl::cloud_composer::RectangularFrustumSelector::RectangularFrustumSelector ()
   : vtkInteractorStyleRubberBandPick ()
 {
-  selection_complete_event_ = SELECTION_COMPLETE_EVENT;
+  selection_complete_event_ = interactor_events::SELECTION_COMPLETE_EVENT;
 }
 
 pcl::cloud_composer::RectangularFrustumSelector::~RectangularFrustumSelector ()

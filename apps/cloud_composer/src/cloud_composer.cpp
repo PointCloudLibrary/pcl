@@ -9,6 +9,7 @@
 #include <pcl/apps/cloud_composer/tool_interface/abstract_tool.h>
 #include <pcl/apps/cloud_composer/toolbox_model.h>
 #include <pcl/apps/cloud_composer/signal_multiplexer.h>
+#include <pcl/apps/cloud_composer/point_selectors/interactor_style_switch.h>
 
 /////////////////////////////////////////////////////////////
 pcl::cloud_composer::ComposerMainWindow::ComposerMainWindow (QWidget *parent)
@@ -86,12 +87,54 @@ pcl::cloud_composer::ComposerMainWindow::connectEditActions ()
   
   multiplexer_->connect (this, SIGNAL (insertNewCloudFromFile()), SLOT (insertNewCloudFromFile()));
   
-  multiplexer_->connect (action_rectangular_frustum_select_, SIGNAL (triggered ()), SLOT (selectRectangularFrustum ()));
+  
+  mouse_style_group_ = new QActionGroup (this);
+  mouse_style_group_->addAction (action_trackball_camera_style_);
+  mouse_style_group_->addAction (action_manipulate_clicked_);
+  mouse_style_group_->addAction (action_manipulate_selected_);
+  mouse_style_group_->addAction (action_rectangular_frustum_select_);
+  mouse_style_group_->setExclusive (true);
+  multiplexer_->connect (mouse_style_group_, SIGNAL (triggered (QAction*)), SLOT (mouseStyleChanged (QAction*)));
+  multiplexer_->connect(SIGNAL (mouseStyleState (interactor_styles::INTERACTOR_STYLES)), this, SLOT(setMouseStyleAction(interactor_styles::INTERACTOR_STYLES)));
+  action_trackball_camera_style_->setData (QVariant::fromValue (interactor_styles::PCL_VISUALIZER));
+  action_rectangular_frustum_select_->setData (QVariant::fromValue (interactor_styles::RECTANGULAR_FRUSTUM));
+  action_manipulate_selected_->setData (QVariant::fromValue (interactor_styles::SELECTED_TRACKBALL));
+  action_manipulate_clicked_->setData (QVariant::fromValue (interactor_styles::CLICK_TRACKBALL));
+  //multiplexer_->connect (action_manipulate_selected_, SIGNAL (triggered ()), SLOT (selectedTrackballInteractorStyle ()));
 
+  
   multiplexer_->connect (action_new_cloud_from_selection_, SIGNAL (triggered ()), SLOT (createNewCloudFromSelection ()));
   multiplexer_->connect (SIGNAL (newCloudFromSelectionAvailable (bool)), action_new_cloud_from_selection_, SLOT (setEnabled (bool)));
   
   multiplexer_->connect (action_select_all_, SIGNAL (triggered ()), SLOT (selectAllItems ()));
+}
+
+void
+pcl::cloud_composer::ComposerMainWindow::setMouseStyleAction (interactor_styles::INTERACTOR_STYLES selected_style)
+{
+  action_trackball_camera_style_->setChecked (false);
+  action_rectangular_frustum_select_->setChecked (false);
+  action_manipulate_selected_->setChecked (false);
+  action_manipulate_clicked_->setChecked (false);
+ 
+  switch (selected_style)
+  {
+    case interactor_styles::PCL_VISUALIZER :
+      action_trackball_camera_style_->setChecked (true);
+      break;
+    case interactor_styles::CLICK_TRACKBALL :
+      action_manipulate_clicked_->setChecked (true);
+      break;
+    case interactor_styles::RECTANGULAR_FRUSTUM :
+      action_rectangular_frustum_select_->setChecked (true);
+      break;
+    case interactor_styles::SELECTED_TRACKBALL :
+      action_manipulate_selected_->setChecked (true);
+      break;
+    default :
+      action_trackball_camera_style_->setChecked (true);
+    
+  }
 }
 
 void

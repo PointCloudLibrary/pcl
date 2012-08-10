@@ -1,5 +1,7 @@
 #include <pcl/apps/cloud_composer/point_selectors/interactor_style_switch.h>
 #include <pcl/apps/cloud_composer/point_selectors/rectangular_frustum_selector.h>
+#include <pcl/apps/cloud_composer/point_selectors/selected_trackball_interactor_style.h>
+#include <pcl/apps/cloud_composer/point_selectors/click_trackball_interactor_style.h>
 #include <pcl/visualization/interactor_style.h>
 
 namespace pcl
@@ -13,9 +15,16 @@ namespace pcl
 pcl::cloud_composer::InteractorStyleSwitch::InteractorStyleSwitch ()
 {
   pcl_vis_style_ = vtkSmartPointer<pcl::visualization::PCLVisualizerInteractorStyle>::New ();
-  name_to_style_map_.insert (PCL_VISUALIZER, pcl_vis_style_);
+  name_to_style_map_.insert (interactor_styles::PCL_VISUALIZER, pcl_vis_style_);
+  
   rectangular_frustum_selector_ = vtkSmartPointer<RectangularFrustumSelector>::New ();
-  name_to_style_map_.insert (RECTANGULAR_FRUSTUM, rectangular_frustum_selector_);
+  name_to_style_map_.insert (interactor_styles::RECTANGULAR_FRUSTUM, rectangular_frustum_selector_);
+  
+  selected_trackball_interactor_style_ = vtkSmartPointer <SelectedTrackballStyleInteractor>::New ();
+  name_to_style_map_.insert (interactor_styles::SELECTED_TRACKBALL, selected_trackball_interactor_style_);
+  
+  click_trackball_interactor_style_ = vtkSmartPointer <ClickTrackballStyleInteractor>::New ();
+  name_to_style_map_.insert (interactor_styles::CLICK_TRACKBALL, click_trackball_interactor_style_);
   
   area_picker_ = vtkSmartPointer<vtkAreaPicker>::New();
   point_picker_ = vtkSmartPointer<vtkPointPicker>::New ();
@@ -30,21 +39,28 @@ pcl::cloud_composer::InteractorStyleSwitch::~InteractorStyleSwitch ()
 }
 
 void
-pcl::cloud_composer::InteractorStyleSwitch::initializeInteractorStyles (boost::shared_ptr<pcl::visualization::PCLVisualizer> vis)
+pcl::cloud_composer::InteractorStyleSwitch::initializeInteractorStyles (boost::shared_ptr<pcl::visualization::PCLVisualizer> vis, ProjectModel* model)
 {
   qDebug () << "Initializing Interactor Styles";
   vis_ = vis;
- 
+  project_model_ = model;
+  
   pcl_vis_style_->Initialize ();
   rens_ = vis_->getRendererCollection ();
   pcl_vis_style_->setRendererCollection (rens_);
   pcl_vis_style_->setCloudActorMap (vis_->getCloudActorMap ());
   
   rectangular_frustum_selector_->setCloudActorMap (vis_->getCloudActorMap ());
+  
+  selected_trackball_interactor_style_->setCloudActorMap (vis_->getCloudActorMap ());
+  selected_trackball_interactor_style_->setProjectModel (project_model_);
+  
+  click_trackball_interactor_style_->setCloudActorMap (vis_->getCloudActorMap ());
+  click_trackball_interactor_style_->setProjectModel (project_model_);
 }
 
 void
-pcl::cloud_composer::InteractorStyleSwitch::setCurrentInteractorStyle (INTERACTOR_STYLES interactor_style)
+pcl::cloud_composer::InteractorStyleSwitch::setCurrentInteractorStyle (interactor_styles::INTERACTOR_STYLES interactor_style)
 {
   qDebug () << "Setting interactor style";
   vtkSmartPointer <vtkInteractorStyle> style_ptr = name_to_style_map_.value (interactor_style);
@@ -57,15 +73,19 @@ pcl::cloud_composer::InteractorStyleSwitch::setCurrentInteractorStyle (INTERACTO
     qDebug () << "Modifying current interactor of style!";
     current_style_->SetInteractor (this->Interactor);
     current_style_->SetTDxStyle (this->TDxStyle);
-    vtkInteractorStyleRubberBandPick* rubber_band_style = vtkInteractorStyleRubberBandPick::SafeDownCast (current_style_);
-    if (rubber_band_style)
+    
+    if (interactor_style == interactor_styles::RECTANGULAR_FRUSTUM)
     {
-      vis_->getRenderWindow ()->GetInteractor ()->SetPicker (area_picker_);
-      rubber_band_style->StartSelect ();
-        
+      vtkInteractorStyleRubberBandPick* rubber_band_style = vtkInteractorStyleRubberBandPick::SafeDownCast (current_style_);
+      if (rubber_band_style)
+      {
+        vis_->getRenderWindow ()->GetInteractor ()->SetPicker (area_picker_);
+        rubber_band_style->StartSelect ();
+      }
     }
+    
+    
   }
-  
   
       
  

@@ -120,6 +120,9 @@
    <addaction name="separator"/>
    <addaction name="action_show_axes_"/>
    <addaction name="separator"/>
+   <addaction name="action_trackball_camera_style_"/>
+   <addaction name="action_manipulate_clicked_"/>
+   <addaction name="action_manipulate_selected_"/>
    <addaction name="action_rectangular_frustum_select_"/>
    <addaction name="separator"/>
    <addaction name="action_new_cloud_from_selection_"/>
@@ -434,6 +437,9 @@
    </property>
   </action>
   <action name="action_rectangular_frustum_select_">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="icon">
     <iconset resource="../resources/resources.qrc">
      <normaloff>:/frustum_selection.png</normaloff>:/frustum_selection.png</iconset>
@@ -461,6 +467,51 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+X</string>
+   </property>
+  </action>
+  <action name="action_manipulate_selected_">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../resources/resources.qrc">
+     <normaloff>:/selection_move.png</normaloff>:/selection_move.png</iconset>
+   </property>
+   <property name="text">
+    <string>Manipulate Selected Items</string>
+   </property>
+   <property name="toolTip">
+    <string>Rotate/Pan/etc the selected items</string>
+   </property>
+  </action>
+  <action name="action_trackball_camera_style_">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../resources/resources.qrc">
+     <normaloff>:/camera_move.png</normaloff>:/camera_move.png</iconset>
+   </property>
+   <property name="text">
+    <string>Trackball Camera Style</string>
+   </property>
+   <property name="toolTip">
+    <string>Set to move camera</string>
+   </property>
+  </action>
+  <action name="action_manipulate_clicked_">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../resources/resources.qrc">
+     <normaloff>:/click_move.png</normaloff>:/click_move.png</iconset>
+   </property>
+   <property name="text">
+    <string>Manipulate Clicked Item</string>
+   </property>
+   <property name="toolTip">
+    <string>Move clicked item</string>
    </property>
   </action>
  </widget>

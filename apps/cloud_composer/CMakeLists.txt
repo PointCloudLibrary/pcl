@@ -94,11 +94,15 @@ if(build)
                   
     #Sources and headers for point selectors
     set (selector_incs include/pcl/apps/${SUBSYS_NAME}/point_selectors/interactor_style_switch.h
-                       include/pcl/apps/${SUBSYS_NAME}/point_selectors/rectangular_frustum_selector.h)
+                       include/pcl/apps/${SUBSYS_NAME}/point_selectors/rectangular_frustum_selector.h
+                       include/pcl/apps/${SUBSYS_NAME}/point_selectors/selected_trackball_interactor_style.h
+                       include/pcl/apps/${SUBSYS_NAME}/point_selectors/click_trackball_interactor_style.h)
                        
     set (selector_srcs src/point_selectors/interactor_style_switch.cpp
                        src/point_selectors/selection_event.cpp
-                       src/point_selectors/rectangular_frustum_selector.cpp)
+                       src/point_selectors/rectangular_frustum_selector.cpp
+                       src/point_selectors/selected_trackball_interactor_style.cpp
+                       src/point_selectors/click_trackball_interactor_style.cpp)
                        
     set(uis src/cloud_composer_main_window.ui)
     set(resources resources/resources.qrc)
