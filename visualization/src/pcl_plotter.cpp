@@ -226,7 +226,7 @@ pcl::visualization::PCLPlotter::addPlotData (char const * filename,
   while (ss >> temp)
     pnames.push_back(temp);
     
-  int nop = pnames.size();    // number of plots (y coordinate vectors)  
+  int nop = int (pnames.size ());// number of plots (y coordinate vectors)  
   
   vector<double> xarray;      //array of X coordinates
   vector< vector<double> > yarrays(nop); //a set of array of Y coordinates
