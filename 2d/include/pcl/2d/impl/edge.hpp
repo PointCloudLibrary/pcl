@@ -75,7 +75,7 @@ pcl::pcl_2d::edge<PointInT, PointOutT>::detectEdgeSobel (pcl::PointCloud<PointOu
       output (j, i).magnitude_x = (*magnitude_x)(j, i).intensity;
       output (j, i).magnitude_y = (*magnitude_y)(j, i).intensity;
       output (j, i).magnitude = sqrt  ((*magnitude_x)(j, i).intensity * (*magnitude_x)(j, i).intensity + (*magnitude_y)(j, i).intensity * (*magnitude_y)(j, i).intensity);
-      output (j, i).direction = atan2  ((*magnitude_y)(j, i).intensity, (*magnitude_x)(j, i).intensity);
+      output (j, i).direction = atan2f ((*magnitude_y)(j, i).intensity, (*magnitude_x)(j, i).intensity);
     }
   }
 }
@@ -114,7 +114,7 @@ pcl::pcl_2d::edge<PointInT, PointOutT>::sobelMagnitudeDirection (pcl::PointCloud
       output (j, i).magnitude_x = (*magnitude_x)(j, i).intensity;
       output (j, i).magnitude_y = (*magnitude_y)(j, i).intensity;
       output (j, i).magnitude = sqrt  ((*magnitude_x)(j, i).intensity * (*magnitude_x)(j, i).intensity + (*magnitude_y)(j, i).intensity * (*magnitude_y)(j, i).intensity);
-      output (j, i).direction = atan2  ((*magnitude_y)(j, i).intensity, (*magnitude_x)(j, i).intensity);
+      output (j, i).direction = atan2f ((*magnitude_y)(j, i).intensity, (*magnitude_x)(j, i).intensity);
     }
   }
 }
@@ -153,7 +153,7 @@ pcl::pcl_2d::edge<PointInT, PointOutT>::detectEdgePrewitt (pcl::PointCloud<Point
       output (j, i).magnitude_x = (*magnitude_x)(j, i).intensity;
       output (j, i).magnitude_y = (*magnitude_y)(j, i).intensity;
       output (j, i).magnitude = sqrt  ((*magnitude_x)(j, i).intensity * (*magnitude_x)(j, i).intensity + (*magnitude_y)(j, i).intensity * (*magnitude_y)(j, i).intensity);
-      output (j, i).direction = atan2  ((*magnitude_y)(j, i).intensity, (*magnitude_x)(j, i).intensity);
+      output (j, i).direction = atan2f ((*magnitude_y)(j, i).intensity, (*magnitude_x)(j, i).intensity);
     }
   }
 }
@@ -277,7 +277,7 @@ pcl::pcl_2d::edge<PointInT, PointOutT>::suppressNonMaxima (pcl::PointCloud<Point
       if (edges (j, i).magnitude < tLow)
         continue;
       //maxima (j, i).intensity = 0;
-      switch ((int)(edges (j, i).direction))
+      switch (int (edges (j, i).direction))
       {
         case 0:
           if (edges (j, i).magnitude >= edges (j - 1, i).magnitude && edges (j, i).magnitude >= edges (j + 1, i).magnitude)

@@ -98,12 +98,17 @@ pcl::pcl_2d::kernel<PointT>::gaussianKernel (pcl::PointCloud<PointT> &kernel)
   kernel.resize (kernel_size_ * kernel_size_);
   kernel.height = kernel_size_;
   kernel.width = kernel_size_;
+
+  double sigma_sqr = 2 * sigma_ * sigma_;
+
   for (int i = 0; i < kernel_size_; i++)
   {
     for (int j = 0; j < kernel_size_; j++)
     {
-      kernel (j, i).intensity = exp (-(((i - kernel_size_ / 2) * (i - kernel_size_ / 2) + (j - kernel_size_ / 2) * (j - kernel_size_ / 2)) / (2 * sigma_ * sigma_)));
-      sum += kernel (j, i).intensity;
+      int iks = (i - kernel_size_ / 2);
+      int jks = (j - kernel_size_ / 2);
+      kernel (j, i).intensity = expf (float (- double (iks * iks + jks * jks) / sigma_sqr));
+      sum += float (kernel (j, i).intensity);
     }
   }
   /*normalizing the kernel*/
@@ -111,13 +116,12 @@ pcl::pcl_2d::kernel<PointT>::gaussianKernel (pcl::PointCloud<PointT> &kernel)
   {
     for (int j = 0; j < kernel_size_; j++)
     {
-      kernel (j, i).intensity /= sum;
+      kernel (j, i).intensity /= float (sum);
     }
   }
 }
 
-template<typename PointT>
-void
+template<typename PointT> void
 pcl::pcl_2d::kernel<PointT>::loGKernel (pcl::PointCloud<PointT> &kernel)
 {
   float sum = 0;
@@ -125,12 +129,17 @@ pcl::pcl_2d::kernel<PointT>::loGKernel (pcl::PointCloud<PointT> &kernel)
   kernel.resize (kernel_size_ * kernel_size_);
   kernel.height = kernel_size_;
   kernel.width = kernel_size_;
+
+  double sigma_sqr = 2 * sigma_ * sigma_;
+  
   for (int i = 0; i < kernel_size_; i++)
   {
     for (int j = 0; j < kernel_size_; j++)
     {
-      temp = (((i - kernel_size_ / 2) * (i - kernel_size_ / 2) + (j - kernel_size_ / 2) * (j - kernel_size_ / 2)) / (2 * sigma_ * sigma_));
-      kernel (j, i).intensity = (1 - temp) * exp (-temp);
+      int iks = (i - kernel_size_ / 2); 
+      int jks = (j - kernel_size_ / 2); 
+      temp = float (double (iks * iks  + jks * jks) / sigma_sqr);
+      kernel (j, i).intensity = (1.0f - temp) * expf (-temp);
       sum += kernel (j, i).intensity;
     }
   }

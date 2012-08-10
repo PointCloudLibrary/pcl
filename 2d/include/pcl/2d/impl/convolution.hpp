@@ -60,7 +60,7 @@ pcl::pcl_2d::convolution<PointT>::convolve (pcl::PointCloud<PointT> &output)
   typename CloudT::PointType test_point = input_->points[0];
 
   bool has_intensity;
-  bool has_rgb;
+  //bool has_rgb;
   float output_intensity, output_r, output_g, output_b;
   float input_intensity, input_r, input_g, input_b;
   float kernel_intensity, kernel_r, kernel_g, kernel_b;
