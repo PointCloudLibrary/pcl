@@ -207,7 +207,7 @@ namespace pcl
         , th_rgb_canny_low_ (40.0)
         , th_rgb_canny_high_ (100.0)
       {
-        setEdgeType (EDGELABEL_NAN_BOUNDARY | EDGELABEL_OCCLUDING | EDGELABEL_OCCLUDED | EDGELABEL_RGB_CANNY);
+        this->setEdgeType (EDGELABEL_NAN_BOUNDARY | EDGELABEL_OCCLUDING | EDGELABEL_OCCLUDED | EDGELABEL_RGB_CANNY);
       }
 
       /** \brief Destructor for OrganizedEdgeFromRGB */
@@ -298,7 +298,7 @@ namespace pcl
         , th_hc_canny_low_ (0.4f)
         , th_hc_canny_high_ (1.1f)
       {
-        setEdgeType (EDGELABEL_NAN_BOUNDARY | EDGELABEL_OCCLUDING | EDGELABEL_OCCLUDED | EDGELABEL_HIGH_CURVATURE);
+        this->setEdgeType (EDGELABEL_NAN_BOUNDARY | EDGELABEL_OCCLUDING | EDGELABEL_OCCLUDED | EDGELABEL_HIGH_CURVATURE);
       }
 
       /** \brief Destructor for OrganizedEdgeFromNormals */
@@ -407,7 +407,7 @@ namespace pcl
         : OrganizedEdgeFromRGB<PointT, PointLT> ()
         , OrganizedEdgeFromNormals<PointT, PointNT, PointLT> ()
       {
-        setEdgeType (EDGELABEL_NAN_BOUNDARY | EDGELABEL_OCCLUDING | EDGELABEL_OCCLUDED | EDGELABEL_RGB_CANNY | EDGELABEL_HIGH_CURVATURE);
+        this->setEdgeType (EDGELABEL_NAN_BOUNDARY | EDGELABEL_OCCLUDING | EDGELABEL_OCCLUDED | EDGELABEL_RGB_CANNY | EDGELABEL_HIGH_CURVATURE);
       }
 
       /** \brief Destructor for OrganizedEdgeFromRGBNormals */

@@ -244,7 +244,7 @@ pcl::OrganizedEdgeFromRGB<PointT, PointLT>::compute (pcl::PointCloud<PointLT>& l
   OrganizedEdgeBase<PointT, PointLT>::extractEdges (labels);
   extractEdges (labels);
 
-  assignLabelIndices (labels, label_indices);
+  this->assignLabelIndices (labels, label_indices);
 }
 
 template<typename PointT, typename PointLT> void
@@ -303,7 +303,7 @@ pcl::OrganizedEdgeFromNormals<PointT, PointNT, PointLT>::compute (pcl::PointClou
   OrganizedEdgeBase<PointT, PointLT>::extractEdges (labels);
   extractEdges (labels);
 
-  assignLabelIndices (labels, label_indices);
+  this->assignLabelIndices (labels, label_indices);
 }
 
 template<typename PointT, typename PointNT, typename PointLT> void
@@ -365,7 +365,7 @@ pcl::OrganizedEdgeFromRGBNormals<PointT, PointNT, PointLT>::compute (pcl::PointC
   OrganizedEdgeFromNormals<PointT, PointNT, PointLT>::extractEdges (labels);
   OrganizedEdgeFromRGB<PointT, PointLT>::extractEdges (labels);
 
-  assignLabelIndices (labels, label_indices);
+  this->assignLabelIndices (labels, label_indices);
 }
 
 #define PCL_INSTANTIATE_OrganizedEdgeBase(T,LT)               template class PCL_EXPORTS pcl::OrganizedEdgeBase<T,LT>;
