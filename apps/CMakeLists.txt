@@ -124,6 +124,9 @@ if(build)
       PCL_ADD_EXECUTABLE(pcl_openni_boundary_estimation ${SUBSYS_NAME} src/openni_boundary_estimation.cpp)
       target_link_libraries(pcl_openni_boundary_estimation pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_features pcl_surface)
 
+      PCL_ADD_EXECUTABLE(pcl_openni_organized_edge_detection ${SUBSYS_NAME} src/openni_organized_edge_detection.cpp)
+      target_link_libraries(pcl_openni_organized_edge_detection pcl_common pcl_io pcl_features pcl_visualization)
+
       if (QT4_FOUND AND VTK_USE_QVTK)
         # OpenNI Passthrough application demo
         QT4_WRAP_UI(openni_passthrough_ui src/openni_passthrough.ui)
