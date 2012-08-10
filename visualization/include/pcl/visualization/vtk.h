@@ -74,6 +74,7 @@
 #include <vtkDiskSource.h>
 #include <vtkPlaneSource.h>
 #include <vtkSphereSource.h>
+#include <vtkIdentityTransform.h>
 #include <vtkTransform.h>
 #include <vtkTransformPolyDataFilter.h>
 #include <vtkTubeFilter.h>
@@ -111,6 +112,12 @@
 #include <vtkPlanes.h>
 #include <vtkImageImport.h>
 #include <vtkImageViewer.h>
+#include <vtkInteractorStyleImage.h>
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION >= 10))
+#include <vtkImageSlice.h>
+#include <vtkImageProperty.h>
+#include <vtkImageSliceMapper.h>
+#endif
 #include <vtkImageFlip.h>
 #include <vtkTIFFWriter.h>
 #include <vtkBMPWriter.h>
