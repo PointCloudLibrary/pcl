@@ -766,7 +766,7 @@ namespace pcl
 
       //set sample size to 1/8 of total points (12.5%)
       uint64_t sample_size = input_cloud->width*input_cloud->height / 8;
-      random_sampler.setSample ( sample_size );
+      random_sampler.setSample (static_cast<unsigned int> (sample_size));
       
       //create our destination
       sensor_msgs::PointCloud2::Ptr downsampled_cloud ( new sensor_msgs::PointCloud2 () );
@@ -1161,19 +1161,17 @@ namespace pcl
     octree_base_node<Container, PointT>::queryBBIncludes (const Eigen::Vector3d& min_bb, const Eigen::Vector3d& max_bb, size_t query_depth, const sensor_msgs::PointCloud2::Ptr& dst_blob) 
     {
       uint64_t startingSize = dst_blob->width*dst_blob->height;
-//      PCL_INFO ("[pcl::outofcore::octree_base_node::%s] Starting points in destination blob: %ul\n", __FUNCTION__, startingSize );
+      PCL_DEBUG ("[pcl::outofcore::octree_base_node::%s] Starting points in destination blob: %ul\n", __FUNCTION__, startingSize );
 
-      //if the queried bounding box has any intersection with this node's bounding box
+      // If the queried bounding box has any intersection with this node's bounding box
       if (intersectsWithBB (min_bb, max_bb))
       {
-        //if we aren't at the max desired depth
+        // If we aren't at the max desired depth
         if (this->depth_ < query_depth)
         {
           //if this node doesn't have any children, we are at the max depth for this query
           if ((num_child_ == 0) && (hasUnloadedChildren ()))
-          {
             loadChildren (false);
-          }
 
           //if this node has children
           if (num_child_ > 0)
@@ -1213,6 +1211,7 @@ namespace pcl
               //can this be done in place?
 //              PCL_INFO ("[pcl::outofcore::octree_base_node::%s] Concatenating point cloud\n", __FUNCTION__);
               int res = pcl::concatenatePointCloud (*dst_blob, *tmp_blob, *dst_blob);
+              (void)res;
               assert (res == 1);
 
 //              PCL_INFO ("[pcl::outofocre::octree_base_node::%s] Size of cloud after: %lu\n", __FUNCTION__, dst_blob->width*dst_blob->height );
@@ -1262,9 +1261,11 @@ namespace pcl
                 //concatenate those points into the returned dst_blob
 //                PCL_INFO ("[pcl::outofcore::octree_base_node::%s] Concatenating point cloud in place\n", __FUNCTION__);
                 boost::uint64_t orig_points_in_destination = dst_blob->width*dst_blob->height;
-                int res = pcl::concatenatePointCloud ( *dst_blob, *tmp_blob_within_bb, *dst_blob );
+                (void)orig_points_in_destination;
+                int res = pcl::concatenatePointCloud (*dst_blob, *tmp_blob_within_bb, *dst_blob);
+                (void)res;
                 assert (res == 1);
-                assert ( dst_blob->width*dst_blob->height == indices.size () + orig_points_in_destination );
+                assert (dst_blob->width*dst_blob->height == indices.size () + orig_points_in_destination);
 
               }
               else
