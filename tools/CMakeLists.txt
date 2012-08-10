@@ -122,7 +122,10 @@ if (build)
       set(VTK_USE_FILE ${VTK_USE_FILE} CACHE INTERNAL "VTK_USE_FILE")
       include (${VTK_USE_FILE})
       include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
-      
+  
+      PCL_ADD_EXECUTABLE(pcl_png2pcd ${SUBSYS_NAME} png2pcd.cpp)
+      target_link_libraries(pcl_png2pcd pcl_common pcl_io pcl_visualization)
+          
       PCL_ADD_EXECUTABLE(pcl_ply2vtk ${SUBSYS_NAME} ply2vtk.cpp)
       target_link_libraries(pcl_ply2vtk pcl_common pcl_io)
 

@@ -68,6 +68,8 @@
 #include <vtkOBJReader.h>
 #include <vtkSTLReader.h>
 #include <vtkSTLWriter.h>
+#include <vtkPNGReader.h>
+#include <vtkImageData.h>
 
 namespace pcl
 {
