@@ -61,6 +61,40 @@
 # define pcl_close(fd)               close(fd)
 # define pcl_lseek(fd,offset,origin) lseek(fd,offset,origin)
 #endif
+#include <boost/version.hpp>
+
+///////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::PCDWriter::setLockingPermissions (const std::string &file_name,
+                                       boost::interprocess::file_lock &lock)
+{
+  // Attempt to lock the file. 
+  // For mandatory locking, the filesystem must be mounted with the "mand" option in Linux (see http://www.hackinglinuxexposed.com/articles/20030623.html)
+  lock = boost::interprocess::file_lock (file_name.c_str ());
+  if (lock.try_lock ())
+    PCL_DEBUG ("[pcl::PCDWriter::setLockingPermissions] File %s locked succesfully.\n", file_name.c_str ());
+  else
+    PCL_DEBUG ("[pcl::PCDWriter::setLockingPermissions] File %s could not be locked!\n", file_name.c_str ());
+
+  // Boost version 1.49 introduced permissions
+#if BOOST_VERSION >= 104900
+  namespace fs = boost::filesystem3;
+  fs::permissions (fs::path (file_name), fs::add_perms | fs::set_gid_on_exe);
+#endif
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::PCDWriter::resetLockingPermissions (const std::string &file_name,
+                                         boost::interprocess::file_lock &lock)
+{
+// Boost version 1.49 introduced permissions
+#if BOOST_VERSION >= 104900
+  namespace fs = boost::filesystem3;
+  fs::permissions (fs::path (file_name), fs::remove_perms | fs::set_gid_on_exe);
+#endif
+  lock.unlock ();
+}
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 int
@@ -91,6 +125,7 @@ pcl::PCDReader::readHeader (const std::string &file_name, sensor_msgs::PointClou
     PCL_ERROR ("[pcl::PCDReader::readHeader] Could not find file '%s'.\n", file_name.c_str ());
     return (-1);
   }
+
   // Open file in binary mode to avoid problem of 
   // std::getline() corrupting the result of ifstream::tellg()
   fs.open (file_name.c_str (), std::ios::binary);
@@ -307,6 +342,7 @@ pcl::PCDReader::readHeader (const std::string &file_name, sensor_msgs::PointClou
   if (nr_points == 0)
   {
     PCL_ERROR ("[pcl::PCDReader::readHeader] No points to read\n");
+    fs.close ();
     return (-1);
   }
   
@@ -372,6 +408,7 @@ pcl::PCDReader::readHeader (const std::string &file_name, sensor_msgs::PointClou
     PCL_ERROR ("[pcl::PCDReader::readHeader] Could not find file '%s'.\n", file_name.c_str ());
     return (-1);
   }
+
   // Open file in binary mode to avoid problem of 
   // std::getline() corrupting the result of ifstream::tellg()
   fs.open (file_name.c_str (), std::ios::binary);
@@ -569,6 +606,7 @@ pcl::PCDReader::readHeader (const std::string &file_name, sensor_msgs::PointClou
   if (nr_points == 0)
   {
     PCL_ERROR ("[pcl::PCDReader::readHeader] No points to read\n");
+    fs.close ();
     return (-1);
   }
   
@@ -640,6 +678,7 @@ pcl::PCDReader::readHeaderEigen (const std::string &file_name, pcl::PointCloud<E
     PCL_ERROR ("[pcl::PCDReader::readHeader] Could not find file '%s'.\n", file_name.c_str ());
     return (-1);
   }
+  
   // Open file in binary mode to avoid problem of 
   // std::getline() corrupting the result of ifstream::tellg()
   fs.open (file_name.c_str (), std::ios::binary);
@@ -896,6 +935,12 @@ pcl::PCDReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
   // Setting the is_dense property to true by default
   cloud.is_dense = true;
 
+  if (file_name == "" || !boost::filesystem::exists (file_name))
+  {
+    PCL_ERROR ("[pcl::PCDReader::read] Could not find file '%s'.\n", file_name.c_str ());
+    return (-1);
+  }
+  
   // if ascii
   if (data_type == 0)
   {
@@ -1008,12 +1053,12 @@ pcl::PCDReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
     catch (const char *exception)
     {
       PCL_ERROR ("[pcl::PCDReader::read] %s\n", exception);
+      fs.close ();
       return (-1);
     }
 
     // Close file
     fs.close ();
-
   }
   else 
   /// ---[ Binary mode only
@@ -1257,6 +1302,12 @@ pcl::PCDReader::readEigen (const std::string &file_name, pcl::PointCloud<Eigen::
   // Setting the is_dense property to true by default
   cloud.is_dense = true;
 
+  if (file_name == "" || !boost::filesystem::exists (file_name))
+  {
+    PCL_ERROR ("[pcl::PCDReader::readEigen] Could not find file '%s'.\n", file_name.c_str ());
+    return (-1);
+  }
+  
   // if ascii
   if (data_type == 0)
   {
@@ -1305,6 +1356,7 @@ pcl::PCDReader::readEigen (const std::string &file_name, pcl::PointCloud<Eigen::
     catch (const char *exception)
     {
       PCL_ERROR ("[pcl::PCDReader::readEigen] %s\n", exception);
+      fs.close ();
       return (-1);
     }
 
@@ -1691,6 +1743,9 @@ pcl::PCDWriter::writeASCII (const std::string &file_name, const sensor_msgs::Poi
     PCL_ERROR("[pcl::PCDWriter::writeASCII] Could not open file '%s' for writing! Error : %s\n", file_name.c_str (), strerror(errno)); 
     return (-1);
   }
+  // Mandatory lock file
+  boost::interprocess::file_lock file_lock;
+  setLockingPermissions (file_name, file_lock);
 
   int nr_points  = cloud.width * cloud.height;
   int point_size = static_cast<int> (cloud.data.size () / nr_points);
@@ -1775,6 +1830,7 @@ pcl::PCDWriter::writeASCII (const std::string &file_name, const sensor_msgs::Poi
     fs << result << "\n";
   }
   fs.close ();              // Close file
+  resetLockingPermissions (file_name, file_lock);
   return (0);
 }
 
@@ -1798,7 +1854,7 @@ pcl::PCDWriter::writeBinary (const std::string &file_name, const sensor_msgs::Po
 
 #if _WIN32
   HANDLE h_native_file = CreateFile (file_name.c_str (), GENERIC_READ | GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-  if(h_native_file == INVALID_HANDLE_VALUE)
+  if (h_native_file == INVALID_HANDLE_VALUE)
   {
     PCL_ERROR ("[pcl::PCDWriter::writeBinary] Error during CreateFile (%s)!\n", file_name.c_str());
     return (-1);
@@ -1810,11 +1866,16 @@ pcl::PCDWriter::writeBinary (const std::string &file_name, const sensor_msgs::Po
     PCL_ERROR ("[pcl::PCDWriter::writeBinary] Error during open (%s)!\n", file_name.c_str());
     return (-1);
   }
+  // Mandatory lock file
+  boost::interprocess::file_lock file_lock;
+  setLockingPermissions (file_name, file_lock);
+
   // Stretch the file size to the size of the data
   int result = static_cast<int> (pcl_lseek (fd, getpagesize () + cloud.data.size () - 1, SEEK_SET));
   if (result < 0)
   {
     pcl_close (fd);
+    resetLockingPermissions (file_name, file_lock);
     PCL_ERROR ("[pcl::PCDWriter::writeBinary] Error during lseek ()!\n");
     return (-1);
   }
@@ -1823,6 +1884,7 @@ pcl::PCDWriter::writeBinary (const std::string &file_name, const sensor_msgs::Po
   if (result != 1)
   {
     pcl_close (fd);
+    resetLockingPermissions (file_name, file_lock);
     PCL_ERROR ("[pcl::PCDWriter::writeBinary] Error during write ()!\n");
     return (-1);
   }
@@ -1838,6 +1900,7 @@ pcl::PCDWriter::writeBinary (const std::string &file_name, const sensor_msgs::Po
   if (map == reinterpret_cast<char*> (-1))    // MAP_FAILED
   {
     pcl_close (fd);
+    resetLockingPermissions (file_name, file_lock);
     PCL_ERROR ("[pcl::PCDWriter::writeBinary] Error during mmap ()!\n");
     return (-1);
   }
@@ -1862,6 +1925,7 @@ pcl::PCDWriter::writeBinary (const std::string &file_name, const sensor_msgs::Po
   if (munmap (map, static_cast<size_t> (data_idx + cloud.data.size ())) == -1)
   {
     pcl_close (fd);
+    resetLockingPermissions (file_name, file_lock);
     PCL_ERROR ("[pcl::PCDWriter::writeBinary] Error during munmap ()!\n");
     return (-1);
   }
@@ -1872,6 +1936,7 @@ pcl::PCDWriter::writeBinary (const std::string &file_name, const sensor_msgs::Po
 #else
   pcl_close (fd);
 #endif
+  resetLockingPermissions (file_name, file_lock);
   return (0);
 }
 
@@ -1895,9 +1960,9 @@ pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name, const senso
 
 #if _WIN32
   HANDLE h_native_file = CreateFile (file_name.c_str (), GENERIC_READ | GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-  if(h_native_file == INVALID_HANDLE_VALUE)
+  if (h_native_file == INVALID_HANDLE_VALUE)
   {
-    PCL_ERROR ("[pcl::PCDWriter::writeBinaryCompressed] Error during CreateFile (%s)!\n", file_name.c_str());
+    PCL_ERROR ("[pcl::PCDWriter::writeBinaryCompressed] Error during CreateFile (%s)!\n", file_name.c_str ());
     return (-1);
   }
 #else
@@ -1908,6 +1973,9 @@ pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name, const senso
     return (-1);
   }
 #endif
+  // Mandatory lock file
+  boost::interprocess::file_lock file_lock;
+  setLockingPermissions (file_name, file_lock);
 
   size_t fsize = 0;
   size_t data_size = 0;
@@ -1986,6 +2054,7 @@ pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name, const senso
 #if !_WIN32
     pcl_close (fd);
 #endif
+    resetLockingPermissions (file_name, file_lock);
     throw pcl::IOException ("[pcl::PCDWriter::writeBinaryCompressed] Error during compression!");
     return (-1);
   }
@@ -1996,6 +2065,7 @@ pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name, const senso
   if (result < 0)
   {
     pcl_close (fd);
+    resetLockingPermissions (file_name, file_lock);
     PCL_ERROR ("[pcl::PCDWriter::writeBinaryCompressed] Error during lseek ()!\n");
     return (-1);
   }
@@ -2004,6 +2074,7 @@ pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name, const senso
   if (result != 1)
   {
     pcl_close (fd);
+    resetLockingPermissions (file_name, file_lock);
     PCL_ERROR ("[pcl::PCDWriter::writeBinaryCompressed] Error during write ()!\n");
     return (-1);
   }
@@ -2020,6 +2091,7 @@ pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name, const senso
   if (map == reinterpret_cast<char*> (-1))    // MAP_FAILED
   {
     pcl_close (fd);
+    resetLockingPermissions (file_name, file_lock);
     PCL_ERROR ("[pcl::PCDWriter::writeBinaryCompressed] Error during mmap ()!\n");
     return (-1);
   }
@@ -2043,6 +2115,7 @@ pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name, const senso
   if (munmap (map, (compressed_final_size)) == -1)
   {
     pcl_close (fd);
+    resetLockingPermissions (file_name, file_lock);
     PCL_ERROR ("[pcl::PCDWriter::writeBinaryCompressed] Error during munmap ()!\n");
     return (-1);
   }
@@ -2053,6 +2126,7 @@ pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name, const senso
 #else
   pcl_close (fd);
 #endif
+  resetLockingPermissions (file_name, file_lock);
 
   free (only_valid_data);
   free (temp_buf);
@@ -2138,7 +2212,10 @@ pcl::PCDWriter::writeASCIIEigen (const std::string &file_name, const pcl::PointC
     throw pcl::IOException ("[pcl::PCDWriter::writeASCII] Could not open file for writing!");
     return (-1);
   }
-  
+  // Mandatory lock file
+  boost::interprocess::file_lock file_lock;
+  setLockingPermissions (file_name, file_lock);
+
   fs.precision (precision);
   fs.imbue (std::locale::classic ());
 
@@ -2164,6 +2241,7 @@ pcl::PCDWriter::writeASCIIEigen (const std::string &file_name, const pcl::PointC
     fs << result << "\n";
   }
   fs.close ();              // Close file
+  resetLockingPermissions (file_name, file_lock);
   return (0);
 }
 
@@ -2186,7 +2264,7 @@ pcl::PCDWriter::writeBinaryEigen (const std::string &file_name,
 
 #if _WIN32
   HANDLE h_native_file = CreateFileA (file_name.c_str (), GENERIC_READ | GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-  if(h_native_file == INVALID_HANDLE_VALUE)
+  if (h_native_file == INVALID_HANDLE_VALUE)
   {
     throw pcl::IOException ("[pcl::PCDWriter::writeBinary] Error during CreateFile!");
     return (-1);
@@ -2199,6 +2277,9 @@ pcl::PCDWriter::writeBinaryEigen (const std::string &file_name,
     return (-1);
   }
 #endif
+  // Mandatory lock file
+  boost::interprocess::file_lock file_lock;
+  setLockingPermissions (file_name, file_lock);
 
   size_t data_size = cloud.points.rows () * cloud.points.cols () * sizeof (float);
 
@@ -2214,6 +2295,7 @@ pcl::PCDWriter::writeBinaryEigen (const std::string &file_name,
   if (result < 0)
   {
     pcl_close (fd);
+    resetLockingPermissions (file_name, file_lock);
     throw pcl::IOException ("[pcl::PCDWriter::writeBinary] Error during lseek ()!");
     return (-1);
   }
@@ -2222,6 +2304,7 @@ pcl::PCDWriter::writeBinaryEigen (const std::string &file_name,
   if (result != 1)
   {
     pcl_close (fd);
+    resetLockingPermissions (file_name, file_lock);
     throw pcl::IOException ("[pcl::PCDWriter::writeBinary] Error during write ()!");
     return (-1);
   }
@@ -2230,6 +2313,7 @@ pcl::PCDWriter::writeBinaryEigen (const std::string &file_name,
   if (map == reinterpret_cast<char*> (-1))    // MAP_FAILED
   {
     pcl_close (fd);
+    resetLockingPermissions (file_name, file_lock);
     throw pcl::IOException ("[pcl::PCDWriter::writeBinary] Error during mmap ()!");
     return (-1);
   }
@@ -2260,6 +2344,7 @@ pcl::PCDWriter::writeBinaryEigen (const std::string &file_name,
   if (munmap (map, (data_idx + data_size)) == -1)
   {
     pcl_close (fd);
+    resetLockingPermissions (file_name, file_lock);
     throw pcl::IOException ("[pcl::PCDWriter::writeBinary] Error during munmap ()!");
     return (-1);
   }
@@ -2270,6 +2355,7 @@ pcl::PCDWriter::writeBinaryEigen (const std::string &file_name,
 #else
   pcl_close (fd);
 #endif
+  resetLockingPermissions (file_name, file_lock);
   return (0);
 }
 
@@ -2292,7 +2378,7 @@ pcl::PCDWriter::writeBinaryCompressedEigen (
 
 #if _WIN32
   HANDLE h_native_file = CreateFileA (file_name.c_str (), GENERIC_READ | GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-  if(h_native_file == INVALID_HANDLE_VALUE)
+  if (h_native_file == INVALID_HANDLE_VALUE)
   {
     throw pcl::IOException ("[pcl::PCDWriter::writeBinaryCompressed] Error during CreateFile!");
     return (-1);
@@ -2305,6 +2391,9 @@ pcl::PCDWriter::writeBinaryCompressedEigen (
     return (-1);
   }
 #endif
+  // Mandatory lock file
+  boost::interprocess::file_lock file_lock;
+  setLockingPermissions (file_name, file_lock);
 
   Eigen::MatrixXf pts;
   // Check if the matrix is row or column major
@@ -2337,6 +2426,7 @@ pcl::PCDWriter::writeBinaryCompressedEigen (
 #if !_WIN32
     pcl_close (fd);
 #endif
+    resetLockingPermissions (file_name, file_lock);
     throw pcl::IOException ("[pcl::PCDWriter::writeBinaryCompressed] Error during compression!");
     return (-1);
   }
@@ -2347,6 +2437,7 @@ pcl::PCDWriter::writeBinaryCompressedEigen (
   if (result < 0)
   {
     pcl_close (fd);
+    resetLockingPermissions (file_name, file_lock);
     throw pcl::IOException ("[pcl::PCDWriter::writeBinaryCompressed] Error during lseek ()!");
     return (-1);
   }
@@ -2355,6 +2446,7 @@ pcl::PCDWriter::writeBinaryCompressedEigen (
   if (result != 1)
   {
     pcl_close (fd);
+    resetLockingPermissions (file_name, file_lock);
     throw pcl::IOException ("[pcl::PCDWriter::writeBinaryCompressed] Error during write ()!");
     return (-1);
   }
@@ -2371,6 +2463,7 @@ pcl::PCDWriter::writeBinaryCompressedEigen (
   if (map == reinterpret_cast<char*> (-1))    // MAP_FAILED
   {
     pcl_close (fd);
+    resetLockingPermissions (file_name, file_lock);
     throw pcl::IOException ("[pcl::PCDWriter::writeBinaryCompressed] Error during mmap ()!");
     return (-1);
   }
@@ -2394,6 +2487,7 @@ pcl::PCDWriter::writeBinaryCompressedEigen (
   if (munmap (map, (compressed_final_size)) == -1)
   {
     pcl_close (fd);
+    resetLockingPermissions (file_name, file_lock);
     throw pcl::IOException ("[pcl::PCDWriter::writeBinaryCompressed] Error during munmap ()!");
     return (-1);
   }
@@ -2404,9 +2498,9 @@ pcl::PCDWriter::writeBinaryCompressedEigen (
 #else
   pcl_close (fd);
 #endif
+  resetLockingPermissions (file_name, file_lock);
 
   free (temp_buf);
   return (0);
 }
-
 

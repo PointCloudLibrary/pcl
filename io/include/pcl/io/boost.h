@@ -67,6 +67,8 @@
 #include <boost/tokenizer.hpp>
 #include <boost/foreach.hpp>
 #include <boost/shared_array.hpp>
+#include <boost/interprocess/sync/file_lock.hpp>
+#include <boost/interprocess/permissions.hpp>
 
 #endif    // _PCL_IO_BOOST_H_
 

@@ -573,6 +573,23 @@ namespace pcl
           return (writeASCII<PointT> (file_name, cloud, indices));
       }
 
+    protected:
+      /** \brief Set permissions for file locking (Boost 1.49+).
+        * \param[in] file_name the file name to set permission for file locking
+        * \param[in,out] lock the file lock
+        */
+      void
+      setLockingPermissions (const std::string &file_name,
+                             boost::interprocess::file_lock &lock);
+
+      /** \brief Reset permissions for file locking (Boost 1.49+).
+        * \param[in] file_name the file name to reset permission for file locking
+        * \param[in,out] lock the file lock
+        */
+      void
+      resetLockingPermissions (const std::string &file_name,
+                               boost::interprocess::file_lock &lock);
+
     private:
       /** \brief Set to true if msync() should be called before munmap(). Prevents data loss on NFS systems. */
       bool map_synchronization_;
