@@ -269,7 +269,6 @@ namespace pcl
         InteractorKeyboardModifier modifier_;
 
         friend class PointPickingCallback;
-       vtkSmartPointer<vtkPolyData> full_data_; 
     };
 
     /** \brief PCL histogram visualizer interactory style class.
