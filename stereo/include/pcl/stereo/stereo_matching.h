@@ -116,23 +116,34 @@ namespace pcl
 
 		virtual void 
 		compute(unsigned char* ref_img, unsigned char* trg_img, int width, int height) = 0;
+		
+		virtual void
+		compute(pcl::PointCloud<pcl::RGB> &ref, pcl::PointCloud<pcl::RGB> &trg) = 0;
 
 		void 
 		medianFilter(int radius);
 
 		//should the cloud be handled by the StereoMatching class or should it be left to the user?
 		//const pcl::PointCloud<pcl::PointXYZRGBA>::Ptr getPointCloud(float uC, float vC, float focal, float baseline);
-		virtual void 
-		getPointCloud(float u_c, float v_c, float focal, float baseline, pcl::PointCloud<pcl::PointXYZI> &cloud, unsigned char *ref_img = NULL) = 0;
+		virtual bool 
+		getPointCloud(float u_c, float v_c, float focal, float baseline, pcl::PointCloud<pcl::PointXYZI>::Ptr cloud) = 0;
+
+		virtual bool 
+		getPointCloud(float u_c, float v_c, float focal, float baseline, pcl::PointCloud<pcl::PointXYZI>::Ptr cloud,  pcl::PointCloud<pcl::RGB>::Ptr texture) = 0;
 
 		void 
-		getVisualMap(unsigned char *&map);
+		getVisualMap(pcl::PointCloud<pcl::RGB>::Ptr vMap);
 
 	protected:
 
+		//disparity map
 		short int *disp_map_;
+		
+		//local aligned copies of the cloud data
+		unsigned char* ref_img_;
+		unsigned char* trg_img_;
 
-		//used for lr check
+		//disparity map used for lr check
 		short int *disp_map_trg_;
 
 		//used for pre processing
@@ -222,8 +233,14 @@ namespace pcl
 		virtual void 
 		compute(unsigned char* ref_img, unsigned char* trg_img, int width, int height);
 
-		virtual void 
-		getPointCloud(float u_c, float v_c, float focal, float baseline, pcl::PointCloud<pcl::PointXYZI> &cloud, unsigned char *ref_img = NULL);
+		virtual void
+		compute(pcl::PointCloud<pcl::RGB> &ref, pcl::PointCloud<pcl::RGB> &trg);
+
+		virtual bool 
+		getPointCloud(float u_c, float v_c, float focal, float baseline, pcl::PointCloud<pcl::PointXYZI>::Ptr cloud);
+
+		virtual bool 
+		getPointCloud(float u_c, float v_c, float focal, float baseline, pcl::PointCloud<pcl::PointXYZI>::Ptr cloud, pcl::PointCloud<pcl::RGB>::Ptr texture);
 
 	protected:
 
