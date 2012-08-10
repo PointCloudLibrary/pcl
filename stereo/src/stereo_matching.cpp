@@ -97,7 +97,47 @@ void pcl::StereoMatching::medianFilter(int radius)
 {
 
 	//TODO: do median filter
+	int side = radius*2+1;
 
+	short int *out = new short int [width_*height_];
+	memset(out, 0, width_*height_*sizeof(short int));
+
+	short int *v = new short int [side*side];
+
+	for(int y=radius; y<height_-radius; y++)
+	{
+		for(int x=radius; x<width_-radius; x++){
+
+			if(disp_map_[y*width_+x] <= 0)
+				out[y*width_+x] = disp_map_[y*width_+x];
+			else
+			{
+
+				int n=0;
+				for(int j=-radius; j<=radius; j++)
+				{
+					for(int i=-radius; i<=radius; i++)
+					{
+						if(disp_map_[(y+j)*width_ + x+i] > 0)
+						{
+							v[n] = disp_map_[(y+j)*width_ + x+i];
+							n++;
+						}
+					}
+				}
+
+				std::sort(v, v+n);
+				out[y*width_+x] = v[n/2];
+			}
+		}
+	}
+
+	short int* temp_ptr = out;
+	out = disp_map_;
+	disp_map_ = temp_ptr;
+
+	delete [] out;
+	delete [] v;
 }
 
 void pcl::StereoMatching::getVisualMap(pcl::PointCloud<pcl::RGB>::Ptr vMap)

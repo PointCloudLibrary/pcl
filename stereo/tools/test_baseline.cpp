@@ -51,6 +51,8 @@ main(int argc, char **argv)
 
 	stereo.compute(*left_cloud,  *right_cloud);
 
+	stereo.medianFilter(4);
+
 	pcl::PointCloud<pcl::PointXYZI>::Ptr out_cloud( new pcl::PointCloud<pcl::PointXYZI> );
 
 	stereo.getPointCloud(318.112200, 224.334900, 368.534700, 0.8387445, out_cloud, left_cloud);
