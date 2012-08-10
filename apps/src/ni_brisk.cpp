@@ -41,6 +41,7 @@
 #include <pcl/apps/timer.h>
 #include <pcl/common/common.h>
 #include <pcl/common/angles.h>
+#include <pcl/common/time.h>
 #include <pcl/io/openni_grabber.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/keypoints/brisk_2d.h>
@@ -251,7 +252,7 @@ class BRISKDemo
           for (size_t i = 0; i < keypoints->size (); ++i)
           {
             int u = int (keypoints->points[i].x);
-            int v = cloud->height - int (keypoints->points[i].y);
+            int v = int (keypoints->points[i].y);
             image_viewer_.markPoint (u, v, visualization::red_color, visualization::blue_color, 10, getStrBool (!keypts));
           }
           keypts = !keypts;
