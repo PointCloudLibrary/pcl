@@ -34,7 +34,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
+#include "../src/internal.h"
 #include <pcl/gpu/kinfu_large_scale/standalone_marching_cubes.h>
 #include <pcl/gpu/kinfu_large_scale/impl/standalone_marching_cubes.hpp>
 #include <pcl/gpu/kinfu_large_scale/world_model.h>
@@ -67,7 +67,7 @@ main (int argc, char** argv)
   wm.getWorldAsCubes (512.0, clouds, transforms, 0.025); // 2.5% overlapp (12 cells with a 512-wide cube)
 
   //Creating the standalone marching cubes instance
-  pcl::gpu::StandaloneMarchingCubes<pcl::PointXYZI> m_cubes/*(512,512,512,5.0f)*/;
+  pcl::gpu::StandaloneMarchingCubes<pcl::PointXYZI> m_cubes(512,512,512,pcl::device::VOLUME_SIZE);
 
   //Creating the output
   boost::shared_ptr<pcl::PolygonMesh> mesh_ptr_;

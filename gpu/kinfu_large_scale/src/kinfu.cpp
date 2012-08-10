@@ -490,7 +490,11 @@ pcl::gpu::KinfuTracker::operator() (const DepthMap& depth_raw)
   float rnorm = rodrigues2(cam_rot_global_curr.inverse() * cam_rot_global_prev).norm();
   float tnorm = (cam_trans_global_curr - cam_trans_global_prev).norm();    
   const float alpha = 1.f;
-  bool integrate = (rnorm + alpha * tnorm)/2 >= integration_metric_threshold_;  
+  bool integrate = (rnorm + alpha * tnorm)/2 >= integration_metric_threshold_;
+  //~ if(integrate)
+    //~ std::cout << "\tCamera movement since previous frame was " << (rnorm + alpha * tnorm)/2 << " integrate is set to " << integrate << std::endl;
+  //~ else
+    //~ std::cout << "Camera movement since previous frame was " << (rnorm + alpha * tnorm)/2 << " integrate is set to " << integrate << std::endl;
 
   ///////////////////////////////////////////////////////////////////////////////////////////
   // Volume integration

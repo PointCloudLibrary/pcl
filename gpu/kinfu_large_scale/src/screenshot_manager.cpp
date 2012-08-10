@@ -40,7 +40,7 @@
 
 #ifndef PCL_SCREENSHOT_MANAGER_CPP_
 #define PCL_SCREENSHOT_MANAGER_CPP_
-
+#include <unistd.h>
 #include <pcl/gpu/kinfu_large_scale/screenshot_manager.h>
 
 namespace pcl
@@ -49,8 +49,8 @@ namespace pcl
   {
      ScreenshotManager::ScreenshotManager()
      {
-       boost::filesystem::path p("KinFuSnapshots"); 
-       boost::filesystem::create_directory(p);
+       boost::filesystem::path p ("KinFuSnapshots"); 
+       boost::filesystem::create_directory (p);
        screenshot_counter = 0;
        setCameraIntrinsics();
      }
@@ -60,26 +60,41 @@ namespace pcl
      void
      ScreenshotManager::saveImage(const Eigen::Affine3f &camPose, PtrStepSz<const PixelRGB> rgb24)
      {
+       //~ srand ( time(NULL) );
+       //~ 
+       //~ int msSleep = rand() % 2500000 + 500000;
+       
+       //~ std::cout << "=====================> Sleeping for " << msSleep << " milliseconds" << std::endl;
+       
+       std::cout << "[o] [o] [o] [o] Saving screenshot [o] [o] [o] [o]" << std::endl;
+       //~ 
+       //~ int a = 0;
+       //~ for(int i = 0 ; i < 1000000 ; ++i)
+       //~ {
+         //~ sleep(1)
+       //~ }
+       //~ usleep(msSleep);
+       //~ 
        std::string file_extension_image = ".png";
        std::string file_extension_pose = ".txt";
        std::string filename_image = "KinFuSnapshots/";
        std::string filename_pose = "KinFuSnapshots/";
 
-       //Get Pose
-		    Eigen::Matrix<float, 3, 3, Eigen::RowMajor> erreMats = camPose.linear();
-		    Eigen::Vector3f teVecs = camPose.translation();
+       // Get Pose
+       Eigen::Matrix<float, 3, 3, Eigen::RowMajor> erreMats = camPose.linear ();
+		   Eigen::Vector3f teVecs = camPose.translation ();
 
-		    //Create filenames
-		    filename_pose = filename_pose + boost::lexical_cast<std::string>(screenshot_counter) + file_extension_pose;
-		    filename_image = filename_image + boost::lexical_cast<std::string>(screenshot_counter) + file_extension_image;
+		   // Create filenames
+		   filename_pose = filename_pose + boost::lexical_cast<std::string> (screenshot_counter) + file_extension_pose;
+		   filename_image = filename_image + boost::lexical_cast<std::string> (screenshot_counter) + file_extension_image;
 
-		    //Write files
-		    writePose(filename_pose, teVecs, erreMats);
+		   // Write files
+		   writePose (filename_pose, teVecs, erreMats);
         
-        //Save Image
-        pcl::io::saveRgbPNGFile(filename_image, (unsigned char*)rgb24.data, 640,480);
+       // Save Image
+       pcl::io::saveRgbPNGFile (filename_image, (unsigned char*)rgb24.data, 640,480);
         
-        screenshot_counter++;
+       screenshot_counter++;
      }
      
      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -105,7 +120,7 @@ namespace pcl
           poseFile << "TVector" << std::endl << teVecs << std::endl << std::endl 
                    << "RMatrix" << std::endl << erreMats << std::endl << std::endl 
                    << "Camera Intrinsics: focal height width" << std::endl << focal_ << " " << height_ << " " << width_ << std::endl << std::endl;
-          poseFile.close();
+          poseFile.close ();
         }
         else
         {

@@ -42,7 +42,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-pcl::gpu::StandaloneMarchingCubes<PointT>::StandaloneMarchingCubes (int new_voxels_x, int new_voxels_y, int new_voxels_z, int new_volume_size)
+pcl::gpu::StandaloneMarchingCubes<PointT>::StandaloneMarchingCubes (int new_voxels_x, int new_voxels_y, int new_voxels_z, float new_volume_size)
 {
   VOXELS_X = new_voxels_x;
   VOXELS_Y = new_voxels_y;
@@ -51,6 +51,7 @@ pcl::gpu::StandaloneMarchingCubes<PointT>::StandaloneMarchingCubes (int new_voxe
   
   ///Creating GPU TSDF Volume instance
   const Eigen::Vector3f volume_size = Eigen::Vector3f::Constant (VOLUME_SIZE);
+  std::cout << "VOLUME SIZE IS " << VOLUME_SIZE << std::endl;
   const Eigen::Vector3i volume_resolution (VOXELS_X, VOXELS_Y, VOXELS_Z);
   tsdf_volume_gpu_ = pcl::gpu::TsdfVolume::Ptr ( new pcl::gpu::TsdfVolume (volume_resolution) );
   tsdf_volume_gpu_->setSize (volume_size);
@@ -70,6 +71,7 @@ pcl::gpu::StandaloneMarchingCubes<PointT>::getMeshFromTSDFCloud (const PointClou
 
   //Clearing TSDF GPU and cPU
   const Eigen::Vector3f volume_size = Eigen::Vector3f::Constant (VOLUME_SIZE);
+    std::cout << "VOLUME SIZE IS " << VOLUME_SIZE << std::endl;
   const Eigen::Vector3i volume_resolution (VOXELS_X, VOXELS_Y, VOXELS_Z);
 
   //Clear values in TSDF Volume GPU

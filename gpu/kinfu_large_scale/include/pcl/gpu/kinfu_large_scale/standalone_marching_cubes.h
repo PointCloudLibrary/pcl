@@ -80,7 +80,7 @@ namespace pcl
 
     /** \brief Constructor        
       */
-    StandaloneMarchingCubes (int voxels_x = 512, int voxels_y = 512, int voxels_z = 512, int volume_size = 3.0f);
+    StandaloneMarchingCubes (int voxels_x = 512, int voxels_y = 512, int voxels_z = 512, float volume_size = 3.0f);
     
     /** \brief Destructor
       */

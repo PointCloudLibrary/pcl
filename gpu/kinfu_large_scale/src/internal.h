@@ -70,7 +70,7 @@ namespace pcl
     const float FOCAL_LENGTH = 575.816f;
   
     const float VOLUME_SIZE = 3.0f; // in meters
-    const float DISTANCE_THRESHOLD = 0.5f; // in meters
+    const float DISTANCE_THRESHOLD = 1.75f; // in meters
 
     /** \brief Camera intrinsics structure
       */ 
