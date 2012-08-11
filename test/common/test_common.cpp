@@ -911,7 +911,7 @@ TEST (PCL, CopyIfFieldExists)
   pcl::for_each_type<FieldList> (CopyIfFieldExists<PointXYZRGBNormal, float> (p, "rgb", is_rgb, rgb_val));
   EXPECT_EQ (is_rgb, true);
   int rgb = *reinterpret_cast<int*>(&rgb_val);
-  EXPECT_EQ (rgb, 8339710);
+  EXPECT_EQ (rgb, -8437506);      // alpha is 255
   pcl::for_each_type<FieldList> (CopyIfFieldExists<PointXYZRGBNormal, float> (p, "normal_x", is_normal_x, normal_x_val));
   EXPECT_EQ (is_normal_x, true);
   EXPECT_EQ (normal_x_val, 1.0);
