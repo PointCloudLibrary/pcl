@@ -453,7 +453,7 @@ namespace pcl
     {
       x = y = z = 0.0f;
       data[3] = 1.0f;
-      r = g = b = a;
+      r = g = b = 0;
       a = 255;
     }
     inline PointXYZRGB (uint8_t _r, uint8_t _g, uint8_t _b)
