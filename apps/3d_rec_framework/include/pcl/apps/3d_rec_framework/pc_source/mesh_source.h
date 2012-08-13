@@ -13,7 +13,7 @@
 #include <pcl/io/io.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/apps/3d_rec_framework/utils/vtk_model_sampling.h>
-//#include <pcl/visualization/pcl_visualizer.h>
+#include <boost/function.hpp>
 
 namespace pcl
 {
@@ -36,16 +36,36 @@ namespace pcl
         using SourceT::createTrainingDir;
         using SourceT::getModelsInDirectory;
         using SourceT::model_scale_;
+
         int tes_level_;
         int resolution_;
         float radius_sphere_;
         float view_angle_;
+        bool gen_organized_;
+        boost::function<bool
+        (const Eigen::Vector3f &)> campos_constraints_func_;
+
       public:
+
+        using SourceT::setFilterDuplicateViews;
+
+        MeshSource () :
+        SourceT ()
+        {
+          gen_organized_ = false;
+        }
 
         void
         setTesselationLevel (int lev)
         {
           tes_level_ = lev;
+        }
+
+        void
+        setCamPosConstraints (boost::function<bool
+        (const Eigen::Vector3f &)> & bb)
+        {
+          campos_constraints_func_ = bb;
         }
 
         void
@@ -187,11 +207,28 @@ namespace pcl
             render_views.setTesselationLevel (tes_level_);
             render_views.setViewAngle (view_angle_);
             render_views.addModelFromPolyData (mapper->GetInput ());
+            render_views.setGenOrganized(gen_organized_);
+            render_views.setCamPosConstraints(campos_constraints_func_);
             render_views.generateViews ();
 
-            render_views.getViews (*(model.views_));
-            render_views.getPoses (*(model.poses_));
-            render_views.getEntropies (*(model.self_occlusions_));
+            std::vector<typename PointCloud<PointInT>::Ptr> views_xyz_orig;
+            std::vector < Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f> > poses;
+            std::vector<float> entropies;
+
+            render_views.getViews (views_xyz_orig);
+            render_views.getPoses (poses);
+            render_views.getEntropies (entropies);
+
+            model.views_.reset (new std::vector<typename PointCloud<PointInT>::Ptr> ());
+            model.poses_.reset (new std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f> > ());
+            model.self_occlusions_.reset (new std::vector<float> ());
+
+            for (size_t i = 0; i < views_xyz_orig.size (); i++)
+            {
+              model.views_->push_back (views_xyz_orig[i]);
+              model.poses_->push_back (poses[i]);
+              model.self_occlusions_->push_back (entropies[i]);
+            }
 
             std::stringstream direc;
             direc << dir << "/" << model.class_ << "/" << model.id_;
@@ -214,7 +251,7 @@ namespace pcl
               pcl::rec_3d_framework::PersistenceUtils::writeFloatToFile (path_entropy.str (), model.self_occlusions_->at (i));
             }
 
-            loadOrGenerate(dir, model_path, model);
+            loadOrGenerate (dir, model_path, model);
 
           }
         }
@@ -246,13 +283,13 @@ namespace pcl
             //check which of them have been trained using training_dir and the model_id_
             //load views, poses and self-occlusions for those that exist
             //generate otherwise
+            std::cout << files[i] << std::endl;
             std::stringstream model_path;
             model_path << path_ << "/" << files[i];
             std::string path_model = model_path.str ();
             loadOrGenerate (training_dir, path_model, m);
 
             models_->push_back (m);
-            std::cout << files[i] << std::endl;
           }
         }
       };
