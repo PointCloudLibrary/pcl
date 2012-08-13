@@ -1,6 +1,6 @@
 set(SUBSYS_NAME 3d_rec_framework)
 set(SUBSYS_DESC "3D recognition framework")
-set(SUBSYS_DEPS common geometry io filters sample_consensus segmentation visualization kdtree features surface octree registration keypoints tracking search recognition)
+set(SUBSYS_DEPS common geometry io filters sample_consensus segmentation visualization kdtree features surface octree registration keypoints tracking search recognition ml)
 
 set(DEFAULT FALSE)
 
@@ -41,23 +41,29 @@ if(build)
            include/pcl/apps/${SUBSYS_NAME}/pc_source/source.h
            include/pcl/apps/${SUBSYS_NAME}/pc_source/mesh_source.h
            include/pcl/apps/${SUBSYS_NAME}/tools/openni_frame_source.h
-           include/pcl/apps/${SUBSYS_NAME}/pipeline/global_nn_classifier.h 
+           include/pcl/apps/${SUBSYS_NAME}/pipeline/global_nn_classifier.h
+           include/pcl/apps/${SUBSYS_NAME}/pipeline/global_nn_recognizer_crh.h 
+           include/pcl/apps/${SUBSYS_NAME}/pipeline/global_nn_recognizer_cvfh.h
            include/pcl/apps/${SUBSYS_NAME}/pipeline/local_recognizer.h
            include/pcl/apps/${SUBSYS_NAME}/utils/metrics.h
            include/pcl/apps/${SUBSYS_NAME}/utils/persistence_utils.h
            include/pcl/apps/${SUBSYS_NAME}/utils/vtk_model_sampling.h)
              
   set(srcs src/pipeline/global_nn_classifier.cpp
+           src/pipeline/global_nn_recognizer_crh.cpp
+           src/pipeline/global_nn_recognizer_cvfh.cpp
            src/pipeline/local_recognizer.cpp 
            src/tools/openni_frame_source.cpp)
            
   set(impl_incs include/pcl/apps/${SUBSYS_NAME}/pipeline/impl/global_nn_classifier.hpp
+                include/pcl/apps/${SUBSYS_NAME}/pipeline/impl/global_nn_recognizer_crh.hpp
+                include/pcl/apps/${SUBSYS_NAME}/pipeline/impl/global_nn_recognizer_cvfh.hpp
                 include/pcl/apps/${SUBSYS_NAME}/pipeline/impl/local_recognizer.hpp)
       
   # Install include files
   PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs})
   PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${impl_incs})
-    
+       
   set(LIB_NAME pcl_${SUBSYS_NAME})
   PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${impl_incs} ${incs})
   target_link_libraries(${LIB_NAME} pcl_apps pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_surface pcl_features pcl_sample_consensus pcl_search)
