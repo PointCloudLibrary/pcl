@@ -44,11 +44,13 @@
 #include <pcl/visualization/point_cloud_handlers.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/visualization/histogram_visualizer.h>
+#include <pcl/visualization/pcl_plotter.h>
 #include <pcl/visualization/point_picking_event.h>
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
 #include <pcl/console/time.h>
 #include <vtkPolyDataReader.h>
+
 
 using namespace pcl::console;
 
@@ -118,7 +120,7 @@ printHelp (int, char **argv)
 }
 
 // Global visualizer object
-pcl::visualization::PCLHistogramVisualizer ph_global;
+pcl::visualization::PCLPlotter ph_global;
 boost::shared_ptr<pcl::visualization::PCLVisualizer> p;
 
 void
@@ -157,6 +159,7 @@ pp_callback (const pcl::visualization::PointPickingEvent& event, void* cookie)
     p->addText3D<pcl::PointXYZ> (ss.str (), pos, 0.0005, 1.0, 1.0, 1.0, ss.str ());
   }
   ph_global.spinOnce ();
+  
 }
 
 /* ---[ */
@@ -247,7 +250,8 @@ main (int argc, char** argv)
       opaque.push_back (1.0);
 
   // Create the PCLVisualizer object
-  boost::shared_ptr<pcl::visualization::PCLHistogramVisualizer> ph;
+  boost::shared_ptr<pcl::visualization::PCLPlotter> ph;
+  
 
   // Using min_p, max_p to set the global Y min/max range for the histogram
   float min_p = FLT_MAX; float max_p = -FLT_MAX;
@@ -330,7 +334,7 @@ main (int argc, char** argv)
       cloud_name << argv[p_file_indices.at (i)];
 
       if (!ph)
-        ph.reset (new pcl::visualization::PCLHistogramVisualizer);
+        ph.reset (new pcl::visualization::PCLPlotter);
       print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", cloud->fields[0].count); print_info (" points]\n");
 
       pcl::getMinMax (*cloud, 0, cloud->fields[0].name, min_p, max_p);
@@ -516,13 +520,15 @@ main (int argc, char** argv)
 
   if (ph)
   {
-    print_highlight ("Setting the global Y range for all histograms to: "); print_value ("%f -> %f\n", min_p, max_p);
-    ph->setGlobalYRange (min_p, max_p);
-    ph->updateWindowPositions ();
+    //print_highlight ("Setting the global Y range for all histograms to: "); print_value ("%f -> %f\n", min_p, max_p);
+    //ph->setGlobalYRange (min_p, max_p);
+    //ph->updateWindowPositions ();
     if (p)
       p->spin ();
     else
+    {
       ph->spin ();
+    }
   }
   else if (p)
     p->spin ();
