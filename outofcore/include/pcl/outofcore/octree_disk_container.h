@@ -34,13 +34,9 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
+ *  $Id$
  */
 
-/*
-  This code defines the octree used for point storage at Urban Robotics. Please
-  contact Jacob Schloss <jacob.schloss@urbanrobotics.net> with any questions.
-  http://www.urbanrobotics.net/
-*/
 #ifndef PCL_OUTOFCORE_OCTREE_DISK_CONTAINER_H_
 #define PCL_OUTOFCORE_OCTREE_DISK_CONTAINER_H_
 
@@ -69,20 +65,19 @@
 #define _fseeki64 fseeko
 #endif
 
-/* todo (from original UR code): consider using per-node RNG (it is
- *  currently a shared static rng, which is mutexed. I did i this way
- *  to be sure that none of the nodes had RNGs seeded to the same
- *  value). the mutex could effect performance though 
- *
- */
-
 namespace pcl
 {
   namespace outofcore
   {
-/** \class octree_disk_container
- *  \brief Class responsible for serialization and deserialization of out of core point data
- */
+  /** \class octree_disk_container
+   *  \note Code was adapted from the Urban Robotics out of core octree implementation. 
+   *  Contact Jacob Schloss <jacob.schloss@urbanrobotics.net> with any questions. 
+   *  http://www.urbanrobotics.net/
+   *
+   *  \brief Class responsible for serialization and deserialization of out of core point data
+   *  \ingroup outofcore
+   *  \author Jacob Schloss (jacob.schloss@urbanrobotics.net)
+   */
     template<typename PointT>
     class octree_disk_container : public OutofcoreAbstractNodeContainer<PointT>
     {
@@ -95,9 +90,12 @@ namespace pcl
 
         /** \brief Creates uuid named file or loads existing file
          * 
-         * If dir is a directory, constructor will create new
-         * uuid named file; if dir is an existing file, it will load the
-         * file
+         * If \ref dir is a directory, this constructor will create a new
+         * uuid named file; if \ref dir is an existing file, it will load the
+         * file metadata for accessing the tree.
+         *
+         * \param[in] dir Path to the tree. If it is a directory, it
+         * will create the metadata. If it is a file, it will load the metadata into memory.
          */
         octree_disk_container (const boost::filesystem::path& dir);
 
@@ -105,17 +103,19 @@ namespace pcl
         ~octree_disk_container ();
 
         /** \brief provides random access to points based on a linear index
-         *  \todo benchmark this; compare to Julius' octree
          */
         inline PointT
         operator[] (uint64_t idx) const;
 
+        /** \brief Adds a single point to the buffer to be written to disk when the buffer grows sufficiently large, the object is destroyed, or the write buffer is manually flushed */
         inline void
         push_back (const PointT& p);
 
+        /** \brief Inserts a vector of points into the disk data structure */
         void
         insertRange (const AlignedPointTVector& src);
 
+        /** \brief Inserts a PointCloud2 object directly into the disk container */
         void
         insertRange (const sensor_msgs::PointCloud2::Ptr& input_cloud)
         {
@@ -267,12 +267,14 @@ namespace pcl
           return ((filelen_ == 0) && writebuff_.empty ());
         }
 
+        /** \brief Exposed functionality for manually flushing the write buffer during tree creation */
         void
         flush (const bool force_cache_dealloc)
         {
           flushWritebuff (force_cache_dealloc);
         }
 
+        /** \brief Returns this objects path name */
         inline std::string&
         path ()
         {

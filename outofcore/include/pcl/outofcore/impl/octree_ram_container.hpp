@@ -34,14 +34,9 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id$
+ *  $Id$
  */
 
-/*
-  This code defines the octree used for point storage at Urban Robotics. Please
-  contact Jacob Schloss <jacob.schloss@urbanrobotics.net> with any questions.
-  http://www.urbanrobotics.net/
-*/
 #ifndef PCL_OUTOFCORE_RAM_CONTAINER_IMPL_H_
 #define PCL_OUTOFCORE_RAM_CONTAINER_IMPL_H_
 
@@ -53,10 +48,6 @@
 
 // PCL (Urban Robotics)
 #include <pcl/outofcore/octree_ram_container.h>
-
-//todo - Consider using per-node RNG (it is currently a shared static rng,
-//       which is mutexed. I did i this way to be sure that node of the nodes
-//       had RNGs seeded to the same value). the mutex could effect performance
 
 namespace pcl
 {

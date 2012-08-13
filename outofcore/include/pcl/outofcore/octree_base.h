@@ -52,18 +52,17 @@
 #include <sensor_msgs/PointCloud2.h>
 
 /** 
- *  \todo Add support for an array of input clouds or locations of pcd files on disk
- *  \todo clean up access specifiers to streamline public interface
- *  \todo add PCL macro into templated hpp files
  */
 namespace pcl
 {
   namespace outofcore
   {
-  /** \class octree_base This code defines the octree used for point storage at Urban Robotics. 
-   *   \note Code was adapted from the Urban Robotics out of core octree implementation. 
-   *   Contact Jacob Schloss <jacob.schloss@urbanrobotics.net> with any questions. 
-   *   http://www.urbanrobotics.net/
+  /** \class octree_base 
+   *  \brief This code defines the octree used for point storage at Urban Robotics. 
+   *
+   *  \note Code was adapted from the Urban Robotics out of core octree implementation. 
+   *  Contact Jacob Schloss <jacob.schloss@urbanrobotics.net> with any questions. 
+   *  http://www.urbanrobotics.net/
    *
    *  The primary purpose of this class is an interface to the
    *  recursive traversal (recursion handled by \ref octree_base_node) of the
@@ -71,18 +70,24 @@ namespace pcl
    *  can be loaded entirely into main memory, and the tree traversed
    *  recursively in this state. This class provides an the interface
    *  for: 
-   *               I. Point/Region INSERTION methods 
-   *               II. Frustrum/box/region REQUESTS/QUERIES 
-   *               III. Parameterization of compression,
-   *               resolution, container type, etc...
+   *               -# Point/Region INSERTION methods 
+   *               -# Frustrum/box/region REQUESTS/QUERIES 
+   *               -# Parameterization of compression, resolution, container type, etc...
    *
    *
-            \todo downsampling of queries
-            \todo downsampling of octree during construction (or leave that to the user's own preprocessing)
-            \todo parameterize compression 
-            \todo parameterize container type (template?)
-            \todo adjust for varying densities at different LODs
-            \todo Re-implement buildLOD for PointCloud2 / pcd files
+   *  \todo downsampling of queries
+   *  \todo downsampling of octree during construction (or leave that to the user's own preprocessing)
+   *  \todo parameterize compression 
+   *  \todo parameterize container type (template?)
+   *  \todo adjust for varying densities at different LODs
+   *  \todo Re-implement buildLOD for PointCloud2 / pcd files
+   *  \todo Add support for an array of input clouds or locations of pcd files on disk
+   *  \todo clean up access specifiers to streamline public interface
+   *  \todo add PCL macro into templated hpp files
+   *
+   *  \ingroup outofcore
+   *  \author Jacob Schloss (jacob.schloss@urbanrobotics.net)
+   *
    */
     template<typename Container, typename PointT>
     class octree_base
@@ -187,17 +192,17 @@ namespace pcl
           return (pt_added);
         }
 
-        /** \brief Recursively add poitns to the tree. 
+        /** \brief Recursively add points to the tree. 
          *
-         * Recursive add points to the tree. 1/8 of the
-         * remaining points at each LOD are stored at each internal
-         * node of the octree until either (a) runs out of points, in
-         * which case the leaf is not at the \ref max_depth_ of the
-         * tree, or (b) a larger set of points falls in the leaf at
-         * \ref max_depth_. Note unlike the old implementation,
-         * multiple copies of the same point will \b not be added at
-         * multiple LODs. Once the point is added to the octree, it is
-         * no longer propagated further down the tree. 
+         * Recursively add points to the tree. 1/8 of the remaining
+         * points at each LOD are stored at each internal node of the
+         * octree until either (a) runs out of points, in which case
+         * the leaf is not at the \ref max_depth_ of the tree, or (b)
+         * a larger set of points falls in the leaf at \ref
+         * max_depth_. Note unlike the old implementation, multiple
+         * copies of the same point will \b not be added at multiple
+         * LODs as it walks the tree. Once the point is added to the
+         * octree, it is no longer propagated further down the tree.
          *
          *\param[in] input_cloud The input cloud of points which will
          * be copied into the sorted nodes of the out-of-core octree

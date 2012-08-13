@@ -35,14 +35,8 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  *  $Id$
- *
  */
 
-/*
-  This code defines the octree used for point storage at Urban Robotics. Please
-  contact Jacob Schloss <jacob.schloss@urbanrobotics.net> with any questions.
-  http://www.urbanrobotics.net/
-*/
 #ifndef PCL_OCTREE_DISK_CONTAINER_IMPL_H_
 #define PCL_OCTREE_DISK_CONTAINER_IMPL_H_
 
@@ -78,7 +72,6 @@ namespace pcl
 {
   namespace outofcore
   {
-
     template<typename PointT>
     boost::mutex octree_disk_container<PointT>::rng_mutex_;
 

@@ -1,0 +1,19 @@
+/**
+  \addtogroup outofcore Module outofcore
+
+  \section secOutofcoreOctree Overview
+  
+  The <b>pcl_outofcore</b> library provides an octree data structure
+  for point clouds that are too large to be stored in primary
+  memory. The data are located instead in an octree directory-based
+  hierary on secondary storage (i.e. disk). 
+    
+  \section secOutofcore Example Usage
+
+	\section secOutofcoreRequirements Requirements
+	- \ref common "common"
+	- \ref io "io"
+	- \ref visualization "visualization" (for pcl_outofcore_viewer)
+	- \ref filters "filters"
+
+*/

@@ -59,6 +59,22 @@ namespace pcl
 {
   namespace outofcore
   {
+    /** \class octree_base_node 
+     *
+     *  \note Code was adapted from the Urban Robotics out of core octree implementation. 
+     *  Contact Jacob Schloss <jacob.schloss@urbanrobotics.net> with any questions. 
+     *  http://www.urbanrobotics.net/
+     *
+     *  \brief octree_base_node Class internally representing nodes of an
+     *  outofcore octree, with accessors to its data via the \ref
+     *  octree_disk_container class or \ref octree_ram_container class,
+     *  whichever it is templated against.  
+     * 
+     *  \ingroup outofcore
+     *  \author Jacob Schloss (jacob.schloss@urbanrobotics.net)
+     *
+     */
+
 // Forward Declarations
     template<typename Container, typename PointT>
     class octree_base_node;
@@ -66,21 +82,18 @@ namespace pcl
     template<typename Container, typename PointT>
     class octree_base;
 
-    /** \brief document */
+    /** \brief Non-class function which creates a single child leaf; used with \ref queryBBIntersects_noload to avoid loading the data from disk */
     template<typename Container, typename PointT> octree_base_node<Container, PointT>*
     makenode_norec (const boost::filesystem::path& path, octree_base_node<Container, PointT>* super);
 
-    /** \brief document */
+    /** \brief Non-class method which performs a bounding box query without loading any of the point cloud data from disk */
     template<typename Container, typename PointT> void
     queryBBIntersects_noload (const boost::filesystem::path& root_node, const Eigen::Vector3d& min, const Eigen::Vector3d& max, const boost::uint32_t query_depth, std::list<std::string>& bin_name);
 
-    /** \brief document */
+    /** \brief Non-class method overload */
     template<typename Container, typename PointT> void
     queryBBIntersects_noload (octree_base_node<Container, PointT>* current, const Eigen::Vector3d&, const Eigen::Vector3d& max, const boost::uint32_t query_depth, std::list<std::string>& bin_name);
 
-/** \class octree_base_node
-    Document this class
- */
     template<typename Container, typename PointT>
     class octree_base_node
     {
@@ -179,11 +192,7 @@ namespace pcl
         void
         queryBBIncludes_subsample (const Eigen::Vector3d& min_bb, const Eigen::Vector3d& max_bb, int query_depth, const double percent, AlignedPointTVector& v);
 
-        //bin extraction
-        //query_depth == 0 is root
-        //query_depth == tree->depth is leaf
-        /** \brief Tests if the coordinate falls within the
-         * boundaries of the bounding box, inclusively
+        /** \brief Tests if the coordinate falls within the boundaries of the bounding box, inclusively
          */
         void
         queryBBIntersects (const Eigen::Vector3d& min_bb, const Eigen::Vector3d& max_bb, const boost::uint32_t query_depth, std::list<std::string>& file_names);
@@ -194,37 +203,46 @@ namespace pcl
         void
         printBBox(const size_t query_depth) const;
 
-        //bb check
-        //checks if 
-        /** \brief document */
+        /** \brief Tests whether the input bounding box intersects with the current node's bounding box 
+         *  \param[in] min_bb The minimum corner of the input bounding box
+         *  \param[in] min_bb The maximum corner of the input bounding box
+         *  \return bool True if any portion of the bounding box intersects with this node's bounding box; false otherwise
+         */
         inline bool
         intersectsWithBB (const Eigen::Vector3d& min_bb, const Eigen::Vector3d& max_bb) const;
 
-        /** \brief document */
+        /** \brief Tests whether the input bounding box falls inclusively within this node's bounding box
+         *  \param[in] min_bb The minimum corner of the input bounding box
+         *  \param[in] max_bb The maximum corner of the input bounding box
+         *  \return bool True if the input bounding box falls inclusively within the boundaries of this node's bounding box
+         **/
         inline bool
-        withinBB (const Eigen::Vector3d& min, const Eigen::Vector3d& max) const;
-        
+        withinBB (const Eigen::Vector3d& min_bb, const Eigen::Vector3d& max_bb) const;
+
+        /** \brief Tests whether \ref point falls within the input bounding box
+         *  \param[in] min_bb The minimum corner of the input bounding box
+         *  \param[in] max_bb The maximum corner of the input bounding box
+         */
         bool
         pointWithinBB (const Eigen::Vector3d& min_bb, const Eigen::Vector3d& max_bb, const Eigen::Vector3d& point);
-        
 
-        /** \brief document */
+        /** \brief Tests whether \ref p falls within the input bounding box
+         *  \param[in] min_bb The minimum corner of the input bounding box
+         *  \param[in] max_bb The maximum corner of the input bounding box
+         **/
         static inline bool
         pointWithinBB (const Eigen::Vector3d& min_bb, const Eigen::Vector3d& max_bb, const PointT& p);
 
-        /** \brief document */
+        /** \brief Tests whether \ref x, \ref y, and \ref z fall within the input bounding box
+         *  \param[in] min_bb The minimum corner of the input bounding box
+         *  \param[in] max_bb The maximum corner of the input bounding box
+         **/
         static inline bool
         pointWithinBB ( const Eigen::Vector3d& min_bb, const Eigen::Vector3d& max_bb, const double x, const double y, const double z );
 
-        /** \brief Check whether specified point is within bounds of current node */
+        /** \brief Tests if specified point is within bounds of current node's bounding box */
         inline bool
         pointWithinBB (const PointT& p) const;
-
-        /** \todo: All of the add data methods check whether the point being added is
-         *       within the bounds of the octree created.  This requires a traversal
-         *       of the cloud to find the min/max before proceeding to adding the
-         *       points.
-         */
 
         /** \brief add point to this node if we are a leaf, or find the leaf below us that is supposed to take the point 
          *  \param[in] p vector of points to add to the leaf
@@ -397,13 +415,10 @@ namespace pcl
           }
         }
         
-        /** \brief document */
-        void 
-        randomSample ( const typename PointCloud<PointT>::Ptr input_cloud, 
-                       typename PointCloud<PointT>::Ptr output_cloud, 
-                                         const bool skip_bb_check);
-
-        /** \brief Randomly sample point data */
+        /** \brief Randomly sample point data 
+         *  \todo This needs to be deprecated; random sampling has its own class
+         *  \todo Parameterize random sampling, uniform downsampling, etc...
+         */
         void
         randomSample(const AlignedPointTVector& p, AlignedPointTVector& insertBuff, const bool skip_bb_check);
 
@@ -449,7 +464,9 @@ namespace pcl
          */
         void init_root_node (const Eigen::Vector3d& bb_min, const Eigen::Vector3d& bb_max, octree_base<Container, PointT> * const tree, const boost::filesystem::path& rootname);
 
-        /** \brief document */
+        /** \brief Creates child node \ref idx
+         *  \param[in] idx Index (0-7) of the child node
+         */
         void
         createChild (const int idx);
 
@@ -457,15 +474,14 @@ namespace pcl
         void
         saveMetadataToFile (const boost::filesystem::path& path);
 
-        /** \brief document */
+        /** \brief Auxiliary method which computes the depth of the tree based on the dimension of the smallest voxel.
+         *  \param[in] min_bb The minimum corner of t
+         */
         int
         calcDepthForDim (const Eigen::Vector3d& min_bb, const Eigen::Vector3d& max_bb, const double dim);
 
-        /** \brief document */
-        void
-        freeChildren ();
-
-        /** \brief document */
+        /** \brief Method which recursively free children of this node 
+         */
         void
         recFreeChildren ();
 
@@ -483,19 +499,11 @@ namespace pcl
           return num_child_;
         }
 
-        /** \brief Flush payload's cache to disk */
         void
         flushToDisk ();
 
-        /** \brief Document or deprecate */
-        void
-        flushToDiskLazy ();
-
-        /** \brief Document */
-        void
-        flush_DeAlloc_this_only ();
-
-        /** \brief document */
+        /** \brief Loads the nodes metadata from the JSON file 
+         */
         void
         loadFromFile (const boost::filesystem::path& path, octree_base_node* super);
 
@@ -506,21 +514,25 @@ namespace pcl
         void
         saveIdx (bool recursive);
 
-        /** \brief document */
+        /** \brief Recursively converts data files to ascii XZY files
+         *  \note This will be deprecated soon
+         */
         void
         convertToXYZ ();
 
         /** \brief no copy construction right now */
         octree_base_node (const octree_base_node& rval);
 
-        /** \brief document */
+        /** \brief Operator= is not implemented */
         octree_base_node&
         operator= (const octree_base_node& rval);
 
-        /** \brief document */
+        /** \brief Private constructor used for children 
+         */
         octree_base_node (const Eigen::Vector3d& bb_min, const Eigen::Vector3d& bb_max, const char* dir, octree_base_node<Container, PointT>* super);
 
-        /** \brief document */
+        /** \brief Copies points from this and all children into a single point container (std::list)
+         */
         void
         copyAllCurrentAndChildPointsRec (std::list<PointT>& v);
 
@@ -535,14 +547,14 @@ namespace pcl
         void
         loadChildren (bool recursive);
 
-        /** \brief document 
+        /** \brief Gets a vector of occupied voxel centers
          * \param[out] voxel_centers
          * \param[in] query_depth
          */
         void
         getVoxelCenters(AlignedPointTVector &voxel_centers, const size_t query_depth);
 
-        /** \brief document 
+        /** \brief Gets a vector of occupied voxel centers
          * \param[out] voxel_centers
          * \param[in] query_depth
          */
@@ -591,7 +603,7 @@ namespace pcl
 
         /** \brief Random number generator seed */
         const static boost::uint32_t rngseed = 0xAABBCCDD;
-        /** \brief document */
+        /** \brief Extension for this class to find the pcd files on disk */
         const static std::string pcd_extension;
 
     };

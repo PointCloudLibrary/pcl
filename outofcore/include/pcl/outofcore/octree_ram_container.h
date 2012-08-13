@@ -34,13 +34,8 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
+ *  $Id$
  */
-
-/*
-  This code defines the octree used for point storage at Urban Robotics. Please
-  contact Jacob Schloss <jacob.schloss@urbanrobotics.net> with any questions.
-  http://www.urbanrobotics.net/
-*/
 
 #ifndef PCL_OUTOFCORE_OCTREE_RAM_CONTAINER_H_
 #define PCL_OUTOFCORE_OCTREE_RAM_CONTAINER_H_
@@ -59,6 +54,12 @@ namespace pcl
 {
   namespace outofcore
   {
+    /** \class octree_ram_container class
+     *  \brief Storage container class which the outofcore octree base is templated against
+     * 
+     *  \ingroup outofcore
+     *  \author Jacob Schloss (jacob.scloss@urbanrobotics.net)
+     */
     template<typename PointT>
     class octree_ram_container : public OutofcoreAbstractNodeContainer<PointT>
     {
@@ -69,8 +70,7 @@ namespace pcl
          */
         octree_ram_container (const boost::filesystem::path&) : container_ () { }
         
-        /** \brief inserts "count" number of points into container; uses the container_ type's insert 
-         *  function
+        /** \brief inserts \ref count number of points into container; uses the container_ type's insert         *  function
          * \param[in] start - address of first point in array
          * \param[in] count - the maximum offset from start of points inserted 
          **/

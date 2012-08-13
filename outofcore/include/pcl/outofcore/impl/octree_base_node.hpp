@@ -35,6 +35,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  *  $Id$
+ *
  */
 
 #ifndef PCL_OUTOFCORE_OCTREE_BASE_NODE_IMPL_H_
@@ -536,16 +537,6 @@ namespace pcl
     }
 ////////////////////////////////////////////////////////////////////////////////
 
-    //template safe for pointcloud 2    
-    template<typename Container, typename PointT> void
-    octree_base_node<Container, PointT>::randomSample ( const typename PointCloud<PointT>::Ptr input_cloud,
-                                                        typename PointCloud<PointT>::Ptr output_cloud,
-                                                        const bool skip_bb_check)
-    {
-
-    }
-    
-/** todo: This seems like a lot of work to get a random uniform sample? */
 /** todo: Need to refactor this further as to not pass in a BBCheck */
     template<typename Container, typename PointT> void
     octree_base_node<Container, PointT>::randomSample(const AlignedPointTVector& p, AlignedPointTVector& insertBuff, const bool skip_bb_check)
@@ -827,7 +818,7 @@ namespace pcl
         assert (box < 8);
         
         //store the point into vector of indices
-        indices[box].push_back ( point_idx / remaining_points->point_step );
+        indices[box].push_back ( static_cast<int> (point_idx / remaining_points->point_step) );
       }
 
       //pass each set of points to the appropriate child octant
@@ -985,24 +976,11 @@ namespace pcl
       }
       else
       {
-        double zstart = min_bb[2];
-        double ystart = min_bb[1];
-        double xstart = min_bb[0];
-
-        double zstep = (max_bb[2] - min_bb[2]) / double (2);
-        double ystep = (max_bb[1] - min_bb[1]) / double (2);
-        double xstep = (max_bb[0] - min_bb[0]) / double (2);
-
-        Eigen::Vector3d childbb_min;
-        Eigen::Vector3d childbb_max;
-
-        childbb_min[0] = xstart;
-        childbb_min[1] = ystart;
-        childbb_min[2] = zstart;
-
-        childbb_max[0] = xstart + double (1) * xstep;
-        childbb_max[1] = ystart + double (1) * ystep;
-        childbb_max[2] = zstart + double (1) * zstep;
+        Eigen::Vector3d start = min_bb;
+        Eigen::Vector3d step = (max_bb - min_bb) / static_cast<double> (2.0);
+        
+        Eigen::Vector3d childbb_min = start;
+        Eigen::Vector3d childbb_max = start + step;
 
         return (1 + calcDepthForDim (childbb_min, childbb_max, dim));
       }
@@ -1607,36 +1585,6 @@ namespace pcl
       }
     }
 
-    template<typename Container, typename PointT> void
-    octree_base_node<Container, PointT>::flush_DeAlloc_this_only ()
-    {
-      payload_->flush (true);
-    }
-
-    template<typename Container, typename PointT> void
-    octree_base_node<Container, PointT>::flushToDisk ()
-    {
-      for (size_t i = 0; i < 8; i++)
-      {
-        if (children_[i])
-          children_[i]->flushToDisk ();
-      }
-    }
-////////////////////////////////////////////////////////////////////////////////
-
-    template<typename Container, typename PointT> void
-    octree_base_node<Container, PointT>::flushToDiskLazy ()
-    {
-      if (num_child_ > 0)//only flush if not leaf
-      {
-        payload_->flush (true);
-        for (size_t i = 0; i < num_child_; i++)
-        {
-          if (children_[i])
-            children_[i]->flushToDiskLazy ();
-        }
-      }
-    }
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename Container, typename PointT> void
@@ -1720,9 +1668,7 @@ namespace pcl
       thisnodestorage_ = thisdir_ / bin->valuestring;
       this->payload_ = new Container (thisnodestorage_);
 
-      mid_xyz_[0] = (max_[0] + min_[0]) / static_cast<double> (2);
-      mid_xyz_[1] = (max_[1] + min_[1]) / static_cast<double> (2);
-      mid_xyz_[2] = (max_[2] + min_[2]) / static_cast<double> (2);
+      mid_xyz_ = (max_+min_)/static_cast<double>(2);
 
       this->parent_ = super;
       memset (children_, 0, 8 * sizeof(octree_base_node<Container, PointT>*));
@@ -1766,6 +1712,16 @@ namespace pcl
     }
 ////////////////////////////////////////////////////////////////////////////////
 
+    template<typename Container, typename PointT> void
+    octree_base_node<Container, PointT>::flushToDisk ()
+    {
+      for (size_t i = 0; i < 8; i++)
+      {
+        if (children_[i])
+          children_[i]->flushToDisk ();
+      }
+    }
+////////////////////////////////////////////////////////////////////////////////
     template<typename Container, typename PointT> octree_base_node<Container, PointT>*
     makenode_norec (const boost::filesystem::path& path, octree_base_node<Container, PointT>* super)
     {

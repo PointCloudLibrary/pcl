@@ -127,6 +127,7 @@ namespace pcl
         PCL_THROW_EXCEPTION (PCLException, "[pcl::outofcore::octree_base] Root file extension does not match .oct_idx\n");
       }
 
+      ///\todo Incorporate arbitrary optional metadata for the tree (new PCD file type might be useful here)
       coord_system_ = coord_sys;
 
       // Get fullpath and recreate directories

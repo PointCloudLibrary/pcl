@@ -33,13 +33,13 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- *
+ *  $Id$
  */
 
 /* \author
  *      Jacob Schloss (jacob.schloss@urbanrobotics.net),
  *      Justin Rosen (jmylesrosen@gmail.com),
- *      Stephen Fox (stfox88@gmail.com)
+ *      Stephen Fox (foxstephend@gmail.com)
  */
 
 #include <gtest/gtest.h>
@@ -731,7 +731,7 @@ TEST_F ( OutofcoreTest, PointCloud2_Constructors )
   octree_disk octreeA ( depth, min, max, filename_otreeA, "ECEF" );
   octree_disk octreeB ( depth, min, max, filename_otreeB, "ECEF" );
 
-  EXPECT_EQ ( octreeA.addPointCloud (point_cloud) , point_cloud->width*point_cloud->height );
+  EXPECT_EQ ( octreeA.addPointCloud (point_cloud) , point_cloud->width*point_cloud->height ) << "Numer of points returned by constructor indicates some points were not properly inserted to the outofcore cloud\n";
 
   EXPECT_EQ (octreeB.addPointCloud_and_genLOD (point_cloud), point_cloud->width*point_cloud->height ) << "Number of points inserted when generating LOD does not match the size of the point cloud\n";
 }
@@ -806,8 +806,8 @@ TEST_F ( OutofcoreTest, PointCloud2_Query )
   uint64_t points_added = octreeA.addPointCloud ( dst_blob );
   uint64_t LOD_points_added = octreeB.addPointCloud_and_genLOD ( dst_blob );
 
-  ASSERT_EQ (points_added, dst_blob->width*dst_blob->height );
-  ASSERT_EQ (LOD_points_added, dst_blob->width*dst_blob->height );
+  ASSERT_EQ (points_added, dst_blob->width*dst_blob->height ) << "Number of points returned by addPointCloud does not match the number of poitns in the input point cloud\n";
+  ASSERT_EQ (LOD_points_added, dst_blob->width*dst_blob->height ) << "Number of points returned by addPointCloud_and_genLOD does not match the number of points in the input point cloud\n";
 
   sensor_msgs::PointCloud2::Ptr query_result_a ( new sensor_msgs::PointCloud2 () );
   sensor_msgs::PointCloud2::Ptr query_result_b ( new sensor_msgs::PointCloud2 () );
