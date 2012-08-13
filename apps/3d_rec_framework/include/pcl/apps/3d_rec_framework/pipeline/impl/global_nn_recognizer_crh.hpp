@@ -10,7 +10,6 @@
 #include <pcl/registration/icp.h>
 #include <boost/random.hpp>
 #include <boost/random/normal_distribution.hpp>
-#include <sys/time.h>
 #include <pcl/common/time.h>
 
 template<template<class > class Distance, typename PointInT, typename FeatureT>

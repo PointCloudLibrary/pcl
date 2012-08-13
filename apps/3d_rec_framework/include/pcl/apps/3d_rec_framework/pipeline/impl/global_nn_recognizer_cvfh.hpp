@@ -9,7 +9,6 @@
 #include <pcl/registration/icp.h>
 #include <boost/random.hpp>
 #include <boost/random/normal_distribution.hpp>
-#include <sys/time.h>
 #include <pcl/common/time.h>
 #include <pcl/visualization/pcl_visualizer.h>
 
