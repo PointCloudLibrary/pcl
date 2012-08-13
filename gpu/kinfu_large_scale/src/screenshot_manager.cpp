@@ -40,7 +40,6 @@
 
 #ifndef PCL_SCREENSHOT_MANAGER_CPP_
 #define PCL_SCREENSHOT_MANAGER_CPP_
-#include <unistd.h>
 #include <pcl/gpu/kinfu_large_scale/screenshot_manager.h>
 
 namespace pcl
