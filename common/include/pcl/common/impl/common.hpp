@@ -115,7 +115,7 @@ template<typename PointT> inline void
 pcl::getMaxDistance (const pcl::PointCloud<PointT> &cloud, const Eigen::Vector4f &pivot_pt, Eigen::Vector4f &max_pt)
 {
   float max_dist = -FLT_MAX;
-  float max_idx = -1;
+  int max_idx = -1;
   float dist;
 
   // If the data is dense, we don't need to check for NaN
@@ -150,7 +150,10 @@ pcl::getMaxDistance (const pcl::PointCloud<PointT> &cloud, const Eigen::Vector4f
     }
   }
 
-  max_pt = cloud.points[max_idx].getVector4fMap ();
+  if(max_idx != -1)
+    max_pt = cloud.points[max_idx].getVector4fMap ();
+  else
+    max_pt = Eigen::Vector4f(std::numeric_limits<float>::quiet_NaN(),std::numeric_limits<float>::quiet_NaN(),std::numeric_limits<float>::quiet_NaN(),std::numeric_limits<float>::quiet_NaN());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -197,7 +200,10 @@ pcl::getMaxDistance (const pcl::PointCloud<PointT> &cloud, const std::vector<int
     }
   }
 
-  max_pt = cloud.points[indices[max_idx]].getVector4fMap ();
+  if(max_idx != -1)
+    max_pt = cloud.points[max_idx].getVector4fMap ();
+  else
+    max_pt = Eigen::Vector4f(std::numeric_limits<float>::quiet_NaN(),std::numeric_limits<float>::quiet_NaN(),std::numeric_limits<float>::quiet_NaN(),std::numeric_limits<float>::quiet_NaN());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
