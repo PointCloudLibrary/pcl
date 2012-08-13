@@ -11,6 +11,7 @@
 #include <vtkSmartPointer.h>
 #include <vtkPolyData.h>
 #include <pcl/common/common.h>
+#include <boost/function.hpp>
 
 namespace pcl
 {
@@ -36,6 +37,19 @@ namespace pcl
       float radius_sphere_;
       bool compute_entropy_;
       vtkSmartPointer<vtkPolyData> polydata_;
+      bool gen_organized_;
+      boost::function<bool
+      (const Eigen::Vector3f &)> campos_constraints_func_;
+
+      struct camPosConstraintsAllTrue
+      {
+        bool
+        operator() (const Eigen::Vector3f & /*pos*/) const
+        {
+          return true;
+        }
+        ;
+      };
 
     public:
       RenderViewsTesselatedSphere ()
@@ -46,6 +60,23 @@ namespace pcl
         view_angle_ = 57;
         radius_sphere_ = 1.f;
         compute_entropy_ = false;
+        gen_organized_ = false;
+        campos_constraints_func_ = camPosConstraintsAllTrue ();
+      }
+
+      void
+      setCamPosConstraints (boost::function<bool (const Eigen::Vector3f &)> & bb)
+      {
+        campos_constraints_func_ = bb;
+      }
+
+      /* \brief Indicates wether to generate organized or unorganized data
+       * \param b organized/unorganized
+       */
+      void
+      setGenOrganized (bool b)
+      {
+        gen_organized_ = b;
       }
 
       /* \brief Sets the size of the render window
