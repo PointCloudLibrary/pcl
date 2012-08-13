@@ -38,5 +38,8 @@
 #include <pcl/apps/dominant_plane_segmentation.h>
 #include <pcl/apps/impl/dominant_plane_segmentation.hpp>
 
-// Instantiations of specific point types
-PCL_INSTANTIATE(DominantPlaneSegmentation, PCL_XYZ_POINT_TYPES)
+#ifdef PCL_ONLY_CORE_POINT_TYPES
+  PCL_INSTANTIATE(DominantPlaneSegmentation, (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGB))
+#else
+  PCL_INSTANTIATE(DominantPlaneSegmentation, PCL_XYZ_POINT_TYPES)
+#endif
