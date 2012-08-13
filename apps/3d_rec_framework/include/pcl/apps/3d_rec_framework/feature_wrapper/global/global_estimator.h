@@ -23,6 +23,8 @@ namespace pcl
 
         typename boost::shared_ptr<PreProcessorAndNormalEstimator<PointInT, pcl::Normal> > normal_estimator_;
 
+        pcl::PointCloud<pcl::Normal>::Ptr normals_;
+
       public:
         virtual void
         estimate (PointInTPtr & in, PointInTPtr & processed, std::vector<pcl::PointCloud<FeatureT>, Eigen::aligned_allocator<
@@ -32,6 +34,10 @@ namespace pcl
 
         void setNormalEstimator(boost::shared_ptr<PreProcessorAndNormalEstimator<PointInT, pcl::Normal> > & ne) {
           normal_estimator_ = ne;
+        }
+
+        void getNormals(pcl::PointCloud<pcl::Normal>::Ptr & normals) {
+          normals = normals_;
         }
 
     };

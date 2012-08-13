@@ -22,6 +22,7 @@ namespace pcl
 
         typedef typename pcl::PointCloud<PointInT>::Ptr PointInTPtr;
         using GlobalEstimator<PointInT, FeatureT>::normal_estimator_;
+        using GlobalEstimator<PointInT, FeatureT>::normals_;
 
       public:
         void
@@ -36,8 +37,8 @@ namespace pcl
             return;
           }
 
-          pcl::PointCloud<pcl::Normal>::Ptr normals (new pcl::PointCloud<pcl::Normal>);
-          normal_estimator_->estimate (in, processed, normals);
+          normals_.reset(new pcl::PointCloud<pcl::Normal>);
+          normal_estimator_->estimate (in, processed, normals_);
 
           typedef typename pcl::VFHEstimation<PointInT, pcl::Normal, FeatureT> VFHEstimation;
           pcl::PointCloud<FeatureT> vfh_signature;
@@ -46,7 +47,7 @@ namespace pcl
           typename pcl::search::KdTree<PointInT>::Ptr vfh_tree (new pcl::search::KdTree<PointInT>);
           vfh.setSearchMethod (vfh_tree);
           vfh.setInputCloud (processed);
-          vfh.setInputNormals (normals);
+          vfh.setInputNormals (normals_);
           vfh.setNormalizeBins (true);
           vfh.setNormalizeDistance (true);
           vfh.compute (vfh_signature);

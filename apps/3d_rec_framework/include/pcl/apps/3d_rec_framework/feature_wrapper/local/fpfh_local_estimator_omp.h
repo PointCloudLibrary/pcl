@@ -5,19 +5,19 @@
  *      Author: aitor
  */
 
-#ifndef REC_FRAMEWORK_FPFH_LOCAL_ESTIMATOR_H_
-#define REC_FRAMEWORK_FPFH_LOCAL_ESTIMATOR_H_
+#ifndef REC_FRAMEWORK_FPFH_LOCAL_ESTIMATOR_OMP_H_
+#define REC_FRAMEWORK_FPFH_LOCAL_ESTIMATOR_OMP_H_
 
 #include <pcl/apps/3d_rec_framework/feature_wrapper/local/local_estimator.h>
 #include <pcl/apps/3d_rec_framework/feature_wrapper/normal_estimator.h>
-#include <pcl/features/fpfh.h>
+#include <pcl/features/fpfh_omp.h>
 
 namespace pcl
 {
   namespace rec_3d_framework
   {
     template<typename PointInT, typename FeatureT>
-      class FPFHLocalEstimation : public LocalEstimator<PointInT, FeatureT>
+      class FPFHLocalEstimationOMP : public LocalEstimator<PointInT, FeatureT>
       {
 
         typedef typename pcl::PointCloud<PointInT>::Ptr PointInTPtr;
@@ -49,6 +49,7 @@ namespace pcl
           pcl::PointCloud<pcl::Normal>::Ptr normals (new pcl::PointCloud<pcl::Normal>);
           normal_estimator_->estimate (in, processed, normals);
 
+          //compute keypoints
           computeKeypoints(processed, keypoints, normals);
           std::cout << " " << normals->points.size() << " " << processed->points.size() << std::endl;
 
@@ -61,11 +62,12 @@ namespace pcl
           assert (processed->points.size () == normals->points.size ());
 
           //compute signatures
-          typedef typename pcl::FPFHEstimation<PointInT, pcl::Normal, pcl::FPFHSignature33> FPFHEstimator;
+          typedef typename pcl::FPFHEstimationOMP<PointInT, pcl::Normal, pcl::FPFHSignature33> FPFHEstimator;
           typename pcl::search::KdTree<PointInT>::Ptr tree (new pcl::search::KdTree<PointInT>);
 
           pcl::PointCloud<pcl::FPFHSignature33>::Ptr fpfhs (new pcl::PointCloud<pcl::FPFHSignature33>);
           FPFHEstimator fpfh_estimate;
+          fpfh_estimate.setNumberOfThreads(8);
           fpfh_estimate.setSearchMethod (tree);
           fpfh_estimate.setInputCloud (keypoints);
           fpfh_estimate.setSearchSurface(processed);

@@ -5,8 +5,8 @@
  *      Author: aitor
  */
 
-#ifndef REC_FRAMEWORK_SHOT_LOCAL_ESTIMATOR_H_
-#define REC_FRAMEWORK_SHOT_LOCAL_ESTIMATOR_H_
+#ifndef REC_FRAMEWORK_COLORSHOT_LOCAL_ESTIMATOR_H_
+#define REC_FRAMEWORK_COLORSHOT_LOCAL_ESTIMATOR_H_
 
 #include <pcl/apps/3d_rec_framework/feature_wrapper/local/local_estimator.h>
 #include <pcl/apps/3d_rec_framework/feature_wrapper/normal_estimator.h>
@@ -18,7 +18,7 @@ namespace pcl
   namespace rec_3d_framework
   {
     template<typename PointInT, typename FeatureT>
-      class SHOTLocalEstimation : public LocalEstimator<PointInT, FeatureT>
+      class ColorSHOTLocalEstimation : public LocalEstimator<PointInT, FeatureT>
       {
 
         typedef typename pcl::PointCloud<PointInT>::Ptr PointInTPtr;
@@ -27,7 +27,6 @@ namespace pcl
         using LocalEstimator<PointInT, FeatureT>::support_radius_;
         using LocalEstimator<PointInT, FeatureT>::normal_estimator_;
         using LocalEstimator<PointInT, FeatureT>::keypoint_extractor_;
-        using LocalEstimator<PointInT, FeatureT>::adaptative_MLS_;
 
       public:
         bool
@@ -47,77 +46,31 @@ namespace pcl
           }
 
           pcl::PointCloud<pcl::Normal>::Ptr normals (new pcl::PointCloud<pcl::Normal>);
-          pcl::MovingLeastSquares<PointInT, PointInT> mls;
-          if(adaptative_MLS_) {
-            typename search::KdTree<PointInT>::Ptr tree;
-            Eigen::Vector4f centroid_cluster;
-            pcl::compute3DCentroid (*in, centroid_cluster);
-            float dist_to_sensor = centroid_cluster.norm();
-            float sigma = dist_to_sensor * 0.01f;
-            mls.setSearchMethod(tree);
-            mls.setSearchRadius (sigma);
-            mls.setUpsamplingMethod (mls.SAMPLE_LOCAL_PLANE);
-            mls.setUpsamplingRadius (0.002);
-            mls.setUpsamplingStepSize (0.001);
-          }
-
           normals.reset (new pcl::PointCloud<pcl::Normal>);
           {
             pcl::ScopeTime t ("Compute normals");
             normal_estimator_->estimate (in, processed, normals);
           }
 
-          if(adaptative_MLS_) {
-            mls.setInputCloud(processed);
-
-            PointInTPtr filtered(new pcl::PointCloud<PointInT>);
-            mls.process(*filtered);
-
-            processed.reset(new pcl::PointCloud<PointInT>);
-            normals.reset (new pcl::PointCloud<pcl::Normal>);
-            {
-              pcl::ScopeTime t ("Compute normals after MLS");
-              filtered->is_dense = false;
-              normal_estimator_->estimate (filtered, processed, normals);
-            }
-          }
-
-          //compute normals
-          //pcl::PointCloud<pcl::Normal>::Ptr normals (new pcl::PointCloud<pcl::Normal>);
-          //normal_estimator_->estimate (in, processed, normals);
-
           //compute keypoints
           computeKeypoints(processed, keypoints, normals);
-          std::cout << " " << normals->points.size() << " " << processed->points.size() << std::endl;
-
-          //compute keypoints
-          /*keypoint_extractor_->setInputCloud (processed);
-          if(keypoint_extractor_->needNormals())
-            keypoint_extractor_->setNormals(normals);
-
-          std::cout << " " << normals->points.size() << " " << processed->points.size() << std::endl;
-
-          keypoint_extractor_->setSupportRadius(support_radius_);
-          keypoint_extractor_->compute (keypoints);*/
 
           if (keypoints->points.size () == 0)
           {
-            PCL_WARN("SHOTLocalEstimation :: No keypoints were found\n");
+            PCL_WARN("ColorSHOTLocalEstimation :: No keypoints were found\n");
             return false;
           }
 
-          std::cout << keypoints->points.size() << " " << normals->points.size() << " " << processed->points.size() << std::endl;
           //compute signatures
-          typedef typename pcl::SHOTEstimation<PointInT, pcl::Normal, pcl::SHOT352> SHOTEstimator;
+          typedef typename pcl::SHOTColorEstimation<PointInT, pcl::Normal, pcl::SHOT1344> SHOTEstimator;
           typename pcl::search::KdTree<PointInT>::Ptr tree (new pcl::search::KdTree<PointInT>);
 
-          pcl::PointCloud<pcl::SHOT352>::Ptr shots (new pcl::PointCloud<pcl::SHOT352>);
-
+          pcl::PointCloud<pcl::SHOT1344>::Ptr shots (new pcl::PointCloud<pcl::SHOT1344>);
           SHOTEstimator shot_estimate;
           shot_estimate.setSearchMethod (tree);
+          shot_estimate.setInputNormals (normals);
           shot_estimate.setInputCloud (keypoints);
           shot_estimate.setSearchSurface(processed);
-          shot_estimate.setInputNormals (normals);
           shot_estimate.setRadiusSearch (support_radius_);
           shot_estimate.compute (*shots);
           signatures->resize (shots->points.size ());
@@ -134,11 +87,8 @@ namespace pcl
 
         }
 
-      private:
-
-
       };
   }
 }
 
-#endif /* REC_FRAMEWORK_SHOT_LOCAL_ESTIMATOR_H_ */
+#endif /* REC_FRAMEWORK_COLORSHOT_LOCAL_ESTIMATOR_H_ */
