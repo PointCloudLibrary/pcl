@@ -174,17 +174,11 @@ pcl::visualization::ImageViewer::addRGBImage (
 #  if (VTK_MINOR_VERSION <= 6)
     image_viewer_->SetInput (algo_->GetOutput ());
 #  else
-    am_it->canvas->SetNumberOfScalarComponents (3);
-    am_it->canvas->DrawImage (algo_->GetOutput ());
-
-    blend_->ReplaceNthInputConnection (int (am_it - layer_map_.begin ()), am_it->canvas->GetOutputPort ());
+    blend_->ReplaceNthInputConnection (int (am_it - layer_map_.begin ()), algo_->GetOutputPort ());
     image_viewer_->SetInputConnection (blend_->GetOutputPort ());
 #  endif
 #else
-  am_it->canvas->SetNumberOfScalarComponents (3);
-  am_it->canvas->DrawImage (image);
-
-  blend_->ReplaceNthInputConnection (int (am_it - layer_map_.begin ()), am_it->canvas->GetOutputPort ());
+  blend_->ReplaceNthInputConnection (int (am_it - layer_map_.begin ()), image->GetProducerPort ());
   slice_->GetMapper ()->SetInput (blend_->GetOutput ());
 
   interactor_style_->adjustCamera (image, ren_);
@@ -220,41 +214,25 @@ pcl::visualization::ImageViewer::addMonoImage (
   }
 
   void* data = const_cast<void*> (reinterpret_cast<const void*> (rgb_data));
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION < 10))
-  vtkSmartPointer<vtkImageImport> importer = vtkSmartPointer<vtkImageImport>::New ();
-  importer->SetNumberOfScalarComponents (1);
-  importer->SetWholeExtent (0, width - 1, 0, height - 1, 0, 0);
-  importer->SetDataScalarTypeToUnsignedChar ();
-  importer->SetDataExtentToWholeExtent ();
-  importer->SetImportVoidPointer (data, 1);
-  importer->Update ();
-
-  // Now create filter and set previously created transformation
-  algo_->SetInput (importer->GetOutput ());
-  algo_->SetInformationInput (importer->GetOutput ());
-  algo_->Update ();
-  // If we already have other layers, then it makes sense to use a blender
-#  if ((VTK_MAJOR_VERSION == 5)&&(VTK_MINOR_VERSION <= 6))
-    image_viewer_->SetInput (algo_->GetOutput ());
-#  else
-    am_it->canvas->SetNumberOfScalarComponents (1);
-    am_it->canvas->DrawImage (algo_->GetOutput ());
-
-    blend_->ReplaceNthInputConnection (int (am_it - layer_map_.begin ()), am_it->canvas->GetOutputPort ());
-    image_viewer_->SetInputConnection (blend_->GetOutputPort ());
-#  endif
-#else
+  
   vtkSmartPointer<vtkImageData> image = vtkSmartPointer<vtkImageData>::New ();
-  image->SetDimensions (width, height, 1);
+  image->SetExtent (0, width - 1, 0, height - 1, 0, 0);
   image->SetScalarTypeToUnsignedChar ();
   image->SetNumberOfScalarComponents (1);
   image->AllocateScalars ();
   image->GetPointData ()->GetScalars ()->SetVoidArray (data, width * height, 1);
-
-  am_it->canvas->SetNumberOfScalarComponents (1);
-  am_it->canvas->DrawImage (image);
-
-  blend_->ReplaceNthInputConnection (int (am_it - layer_map_.begin ()), am_it->canvas->GetOutputPort ());
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION < 10))
+  // Now create filter and set previously created transformation
+  algo_->SetInput (image);
+  algo_->Update ();
+#  if ((VTK_MAJOR_VERSION == 5)&&(VTK_MINOR_VERSION <= 6))
+    image_viewer_->SetInput (algo_->GetOutput ());
+#  else
+    blend_->ReplaceNthInputConnection (int (am_it - layer_map_.begin ()), algo_->GetOutputPort ());
+    image_viewer_->SetInputConnection (blend_->GetOutputPort ());
+#  endif
+#else
+  blend_->ReplaceNthInputConnection (int (am_it - layer_map_.begin ()), image->GetProducerPort ());
   slice_->GetMapper ()->SetInput (blend_->GetOutput ());
   
   interactor_style_->adjustCamera (image, ren_);
