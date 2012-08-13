@@ -250,6 +250,9 @@ namespace pcl
     * \endcode
     *
     */
+#ifdef RGB
+#undef RGB
+#endif
   struct _RGB
   {
     PCL_ADD_RGB;
