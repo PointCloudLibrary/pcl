@@ -1,7 +1,6 @@
 #include <fstream>
 #include <boost/filesystem.hpp>
 #include <boost/algorithm/string.hpp>
-//#include <opencv2/opencv.hpp>
 #include <pcl/io/pcd_io.h>
 
 namespace pcl
@@ -28,41 +27,10 @@ namespace pcl
       }
 
       inline bool
-      getCentroidFromFile (std::string dir, std::string file, Eigen::Vector3f & centroid)
+      getCentroidFromFile (std::string file, Eigen::Vector3f & centroid)
       {
-        //get the descriptor name from dir
-        std::vector < std::string > path;
-        boost::split (path, dir, boost::is_any_of ("/"));
-
-        std::string dname = path[path.size () - 1];
-        std::string file_replaced;
-        for (size_t i = 0; i < (path.size () - 1); i++)
-        {
-          file_replaced += path[i] + "/";
-        }
-
-        boost::split (path, file, boost::is_any_of ("/"));
-        std::string id;
-
-        for (size_t i = 0; i < (path.size () - 1); i++)
-        {
-          id += path[i];
-          if (i < (path.size () - 1))
-          {
-            id += "/";
-          }
-        }
-
-        boost::split (path, file, boost::is_any_of ("/"));
-        std::string filename = path[path.size () - 1];
-        std::string file_replaced1 (filename);
-        boost::replace_all (file_replaced1, "descriptor", "centroid");
-
-        std::stringstream centroid_file;
-        centroid_file << file_replaced << id << "/" << dname << "/" << file_replaced1 << ".txt";
-
         std::ifstream in;
-        in.open (centroid_file.str ().c_str (), std::ifstream::in);
+        in.open (file.c_str (), std::ifstream::in);
 
         char linebuf[256];
         in.getline (linebuf, 256);
@@ -243,80 +211,26 @@ namespace pcl
         return true;
       }
 
-      /*inline bool
-      writeCvMat1DToFile (std::string file, cv::Mat & matrix)
+      inline bool
+      readMatrixFromFile2 (std::string file, Eigen::Matrix4f & matrix)
       {
-        std::ofstream out (file.c_str ());
-        if (!out)
-        {
-          std::cout << "Cannot open file.\n";
-          return false;
-        }
 
-        for (int i = 0; i < matrix.rows; i++)
+        std::ifstream in;
+        in.open (file.c_str (), std::ifstream::in);
+
+        char linebuf[1024];
+        in.getline (linebuf, 1024);
+        std::string line (linebuf);
+        std::vector < std::string > strs_2;
+        boost::split (strs_2, line, boost::is_any_of (" "));
+
+        for (int i = 0; i < 16; i++)
         {
-          out << matrix.at<float> (i);
-          if (i != (matrix.rows - 1))
-            out << " ";
+          matrix (i / 4, i % 4) = static_cast<float> (atof (strs_2[i].c_str ()));
         }
-        out.close ();
 
         return true;
       }
-
-      inline bool
-      readCvMat1DFromFile (std::string dir, std::string file, cv::Mat & matrix)
-      {
-        //get the descriptor name from dir
-        std::vector < std::string > path;
-        boost::split (path, dir, boost::is_any_of ("/"));
-
-        std::string dname = path[path.size () - 1];
-        std::string file_replaced;
-        for (size_t i = 0; i < (path.size () - 1); i++)
-        {
-          file_replaced += path[i] + "/";
-        }
-
-        boost::split (path, file, boost::is_any_of ("/"));
-        std::string id;
-
-        for (size_t i = 0; i < (path.size () - 1); i++)
-        {
-          id += path[i];
-          if (i < (path.size () - 1))
-          {
-            id += "/";
-          }
-        }
-
-        boost::split (path, file, boost::is_any_of ("/"));
-        std::string filename = path[path.size () - 1];
-        std::string file_replaced1 (filename);
-        boost::replace_all (file_replaced1, "descriptor", "roll_histogram");
-
-        std::stringstream roll_file;
-        roll_file << file_replaced << id << "/" << dname << "/" << file_replaced1 << ".txt";
-
-        std::ifstream in;
-        in.open (roll_file.str ().c_str (), std::ifstream::in);
-
-        char linebuf[4096];
-        in.getline (linebuf, 4096);
-        std::string line (linebuf);
-        std::vector < std::string > strs;
-        boost::split (strs, line, boost::is_any_of (" "));
-
-        cv::Mat_<float> hist (static_cast<int> (strs.size ()), 1);
-        for (int i = 0; i < hist.rows; i++)
-        {
-          hist.at<float> (i) = static_cast<float> (atof (strs[i].c_str ()));
-        }
-
-        hist.copyTo (matrix);
-        //matrix = hist;
-        return true;
-      }*/
 
       template<typename PointInT>
         inline

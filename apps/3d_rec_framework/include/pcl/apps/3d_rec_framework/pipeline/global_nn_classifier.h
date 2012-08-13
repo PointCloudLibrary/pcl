@@ -8,7 +8,6 @@
 #ifndef REC_FRAMEWORK_GLOBAL_PIPELINE_H_
 #define REC_FRAMEWORK_GLOBAL_PIPELINE_H_
 
-//#include <opencv2/opencv.hpp>
 #include <flann/flann.h>
 #include <pcl/common/common.h>
 #include <pcl/apps/3d_rec_framework/pc_source/source.h>
@@ -40,12 +39,6 @@ namespace pcl
           int idx_input_;
           double score_;
         };
-
-        inline bool
-        sortIndexScores (const index_score& d1, const index_score& d2)
-        {
-          return d1.score_ < d2.score_;
-        }
 
         struct sortIndexScores
         {
