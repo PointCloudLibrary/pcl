@@ -64,7 +64,7 @@ namespace pcl
          *  the input_data, since undo works by switching back and forth
          */ 
         virtual QList <CloudComposerItem*>
-        performAction (QList <const CloudComposerItem*> input_data) = 0;
+        performAction (QList <const CloudComposerItem*> input_data, PointTypeFlags::PointType type = PointTypeFlags::NONE) = 0;
         
         virtual CloudCommand*
         createCommand (QList <const CloudComposerItem*> input_data) = 0;
@@ -78,10 +78,8 @@ namespace pcl
         virtual QString
         getToolName () const = 0;
         
-     protected:
-       
-       
-       
+      protected:
+             
         PropertiesModel* parameter_model_;   
        
       private:
@@ -100,7 +98,7 @@ namespace pcl
         virtual ~ModifyItemTool () { }
         
         virtual QList <CloudComposerItem*>
-        performAction (QList <const CloudComposerItem*> input_data) = 0;
+        performAction (QList <const CloudComposerItem*> input_data, PointTypeFlags::PointType type = PointTypeFlags::NONE) = 0;
         
         inline virtual CloudCommand* 
         createCommand (QList <const CloudComposerItem*> input_data) 
@@ -124,7 +122,7 @@ namespace pcl
         virtual ~NewItemTool () { }
         
         virtual QList <CloudComposerItem*>
-        performAction (QList <const CloudComposerItem*> input_data) = 0;
+        performAction (QList <const CloudComposerItem*> input_data, PointTypeFlags::PointType type = PointTypeFlags::NONE) = 0;
         
         inline virtual CloudCommand*
         createCommand (QList <const CloudComposerItem*> input_data) 
@@ -148,7 +146,7 @@ namespace pcl
         virtual ~SplitItemTool () { }
         
         virtual QList <CloudComposerItem*>
-        performAction (QList <const CloudComposerItem*> input_data) = 0;
+        performAction (QList <const CloudComposerItem*> input_data, PointTypeFlags::PointType type = PointTypeFlags::NONE) = 0;
         
         inline virtual CloudCommand* 
         createCommand (QList <const CloudComposerItem*> input_data) 
@@ -172,7 +170,7 @@ namespace pcl
         virtual ~MergeCloudTool () { }
         
         virtual QList <CloudComposerItem*>
-        performAction (QList <const CloudComposerItem*> input_data) = 0;
+        performAction (QList <const CloudComposerItem*> input_data, PointTypeFlags::PointType type = PointTypeFlags::NONE) = 0;
         
         inline virtual CloudCommand* 
         createCommand (QList <const CloudComposerItem*> input_data) 

@@ -20,7 +20,7 @@ pcl::cloud_composer::EuclideanClusteringTool::~EuclideanClusteringTool ()
 }
 
 QList <pcl::cloud_composer::CloudComposerItem*>
-pcl::cloud_composer::EuclideanClusteringTool::performAction (ConstItemList input_data)
+pcl::cloud_composer::EuclideanClusteringTool::performAction (ConstItemList input_data, PointTypeFlags::PointType type)
 {
   QList <CloudComposerItem*> output;
   const CloudComposerItem* input_item;
@@ -42,7 +42,7 @@ pcl::cloud_composer::EuclideanClusteringTool::performAction (ConstItemList input
     int min_cluster_size = parameter_model_->getProperty ("Min Cluster Size").toInt();
     int max_cluster_size = parameter_model_->getProperty ("Max Cluster Size").toInt();
    
-    sensor_msgs::PointCloud2::ConstPtr input_cloud = input_item->data (ItemDataRole::CLOUD_CONSTPTR).value <sensor_msgs::PointCloud2::ConstPtr> ();
+    sensor_msgs::PointCloud2::ConstPtr input_cloud = input_item->data (ItemDataRole::CLOUD_BLOB).value <sensor_msgs::PointCloud2::ConstPtr> ();
     //Get the cloud in template form
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
     pcl::fromROSMsg (*input_cloud, *cloud); 

@@ -9,7 +9,7 @@ pcl::cloud_composer::FPFHItem::FPFHItem (QString name, pcl::PointCloud<pcl::FPFH
 
 {
   pcl::PointCloud<pcl::FPFHSignature33>::ConstPtr fpfh_const = fpfh_ptr;
-  this->setData (QVariant::fromValue (fpfh_const), ItemDataRole::CLOUD_CONSTPTR);
+  this->setData (QVariant::fromValue (fpfh_const), ItemDataRole::CLOUD_TEMPLATED);
   properties_->addCategory ("Core Properties");
   properties_->addProperty ("Radius", QVariant (radius_), Qt::ItemIsEnabled, "Core Properties");
   

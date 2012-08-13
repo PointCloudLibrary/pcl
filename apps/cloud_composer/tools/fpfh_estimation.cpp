@@ -25,7 +25,7 @@ pcl::cloud_composer::FPFHEstimationTool::~FPFHEstimationTool ()
 }
 
 QList <pcl::cloud_composer::CloudComposerItem*>
-pcl::cloud_composer::FPFHEstimationTool::performAction (ConstItemList input_data)
+pcl::cloud_composer::FPFHEstimationTool::performAction (ConstItemList input_data, PointTypeFlags::PointType type)
 {
   QList <CloudComposerItem*> output;
   const CloudComposerItem* input_item;
@@ -55,13 +55,13 @@ pcl::cloud_composer::FPFHEstimationTool::performAction (ConstItemList input_data
 
     double radius = parameter_model_->getProperty("Radius").toDouble();
     
-    sensor_msgs::PointCloud2::ConstPtr input_cloud = input_item->data (ItemDataRole::CLOUD_CONSTPTR).value <sensor_msgs::PointCloud2::ConstPtr> ();
+    sensor_msgs::PointCloud2::ConstPtr input_cloud = input_item->data (ItemDataRole::CLOUD_BLOB).value <sensor_msgs::PointCloud2::ConstPtr> ();
     //Get the cloud in template form
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
     pcl::fromROSMsg (*input_cloud, *cloud); 
     
     //Get the normals cloud, we just use the first normals that were found if there are more than one
-    pcl::PointCloud<pcl::Normal>::ConstPtr input_normals = normals_list.value(0)->data(ItemDataRole::CLOUD_CONSTPTR).value <pcl::PointCloud<pcl::Normal>::ConstPtr> ();
+    pcl::PointCloud<pcl::Normal>::ConstPtr input_normals = normals_list.value(0)->data(ItemDataRole::CLOUD_TEMPLATED).value <pcl::PointCloud<pcl::Normal>::ConstPtr> ();
     
     pcl::FPFHEstimation<pcl::PointXYZ, pcl::Normal, pcl::FPFHSignature33> fpfh;
  //   qDebug () << "Input cloud size = "<<cloud->size ();

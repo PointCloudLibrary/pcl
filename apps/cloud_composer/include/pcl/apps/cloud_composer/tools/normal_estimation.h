@@ -53,8 +53,8 @@ namespace pcl
         NormalEstimationTool (PropertiesModel* parameter_model, QObject* parent);
         virtual ~NormalEstimationTool ();
         
-        virtual QList <CloudComposerItem*>
-        performAction (ConstItemList input_data);
+       virtual QList <CloudComposerItem*>
+        performAction (QList <const CloudComposerItem*> input_data, PointTypeFlags::PointType type = PointTypeFlags::NONE);
       
         inline virtual QString
         getToolName () const { return "Normal Estimation Tool";}

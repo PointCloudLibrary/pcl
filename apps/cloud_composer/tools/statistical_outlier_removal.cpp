@@ -21,7 +21,7 @@ pcl::cloud_composer::StatisticalOutlierRemovalTool::~StatisticalOutlierRemovalTo
 }
 
 QList <pcl::cloud_composer::CloudComposerItem*>
-pcl::cloud_composer::StatisticalOutlierRemovalTool::performAction (ConstItemList input_data)
+pcl::cloud_composer::StatisticalOutlierRemovalTool::performAction (ConstItemList input_data, PointTypeFlags::PointType type)
 {
   QList <CloudComposerItem*> output;
   const CloudComposerItem* input_item;
@@ -40,7 +40,7 @@ pcl::cloud_composer::StatisticalOutlierRemovalTool::performAction (ConstItemList
   
   if (input_item->type () ==  CloudComposerItem::CLOUD_ITEM )
   {
-    sensor_msgs::PointCloud2::ConstPtr input_cloud = input_item->data (ItemDataRole::CLOUD_CONSTPTR).value <sensor_msgs::PointCloud2::ConstPtr> ();
+    sensor_msgs::PointCloud2::ConstPtr input_cloud = input_item->data (ItemDataRole::CLOUD_BLOB).value <sensor_msgs::PointCloud2::ConstPtr> ();
     
     int mean_k = parameter_model_->getProperty("Mean K").toInt ();
     double std_dev_thresh = parameter_model_->getProperty ("Std Dev Thresh").toDouble ();

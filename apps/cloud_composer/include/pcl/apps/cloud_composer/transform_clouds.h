@@ -35,76 +35,37 @@
  *
  */
 
-#ifndef VOXEL_GRID_DOWNSAMPLE_H_
-#define VOXEL_GRID_DOWNSAMPLE_H_
+#ifndef TRANSFORM_CLOUDS_H_
+#define TRANSFORM_CLOUDS_H_
 
 #include <pcl/apps/cloud_composer/tool_interface/abstract_tool.h>
-#include <pcl/apps/cloud_composer/tool_interface/tool_factory.h>
 
 
 namespace pcl
 {
   namespace cloud_composer
   {
-    class VoxelGridDownsampleTool : public ModifyItemTool
+    class TransformClouds : public ModifyItemTool
     {
       Q_OBJECT
       public:
-        VoxelGridDownsampleTool (PropertiesModel* parameter_model, QObject* parent);
-        virtual ~VoxelGridDownsampleTool ();
+        TransformClouds (QMap <QString, vtkSmartPointer<vtkMatrix4x4> > transform_map, QObject* parent = 0);
+        virtual ~TransformClouds ();
         
         virtual QList <CloudComposerItem*>
         performAction (QList <const CloudComposerItem*> input_data, PointTypeFlags::PointType type = PointTypeFlags::NONE);
-      
+        
         inline virtual QString
-        getToolName () const { return "Voxel Grid Downsample Tool";}
+        getToolName () const { return "Transform Clouds Tool";}
+       
+        template <typename PointT> QList <CloudComposerItem*>
+        performTemplatedAction (QList <const CloudComposerItem*> input_data);
+        
+      private:
+        QMap <QString, vtkSmartPointer<vtkMatrix4x4> > transform_map_;
     };
-
-    
-    class VoxelGridDownsampleToolFactory : public QObject, public ToolFactory
-    {
-      Q_OBJECT
-      Q_INTERFACES (pcl::cloud_composer::ToolFactory)
-      public:
-        ModifyItemTool*
-        createTool (PropertiesModel* parameter_model, QObject* parent = 0) 
-        {
-            return new VoxelGridDownsampleTool(parameter_model, parent);
-        }
-        
-        PropertiesModel*
-        createToolParameterModel (QObject* parent);
-        
-        inline virtual QString 
-        getPluginName () const { return "Voxel Grid Downsample";}
-        
-        virtual QString 
-        getToolGroupName () const { return "Filters";}
-        
-        virtual QString
-        getIconName () const { return ":/voxel_grid_downsample.png"; }
-        
-        inline virtual CloudComposerItem::ItemType
-        getInputItemType () const
-        {
-          return CloudComposerItem::CLOUD_ITEM;
-        }
-        
-        inline virtual QList <CloudComposerItem::ItemType>
-        getRequiredInputChildrenTypes () const 
-        {
-          return QList <CloudComposerItem::ItemType> ();
-        }
-    };
-
-
 
   }
 }
 
-
-
-
-
-
-#endif //VOXEL_GRID_DOWNSAMPLE_H_
+#endif

@@ -9,7 +9,7 @@ pcl::cloud_composer::NormalsItem::NormalsItem (QString name, pcl::PointCloud<pcl
 
 {
   pcl::PointCloud<pcl::Normal>::ConstPtr normals_const = normals_ptr;
-  this->setData (QVariant::fromValue (normals_const), ItemDataRole::CLOUD_CONSTPTR);
+  this->setData (QVariant::fromValue (normals_const), ItemDataRole::CLOUD_TEMPLATED);
   properties_->addCategory ("Core Properties");
   properties_->addProperty ("Radius", QVariant (radius), Qt::ItemIsSelectable, "Core Properties");
   properties_->addCategory ("Display Variables");
@@ -41,7 +41,7 @@ pcl::cloud_composer::NormalsItem::paintView (boost::shared_ptr<pcl::visualizatio
   //Get the parent cloud, convert to XYZ 
   if (parent ()->type () == CLOUD_ITEM)
   {
-    QVariant cloud_ptr = parent ()->data (ItemDataRole::CLOUD_CONSTPTR);
+    QVariant cloud_ptr = parent ()->data (ItemDataRole::CLOUD_BLOB);
     sensor_msgs::PointCloud2::ConstPtr cloud_blob = cloud_ptr.value<sensor_msgs::PointCloud2::ConstPtr> ();
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
     pcl::fromROSMsg (*cloud_blob, *cloud); 

@@ -64,7 +64,8 @@ if(build)
              include/pcl/apps/${SUBSYS_NAME}/toolbox_model.h
              include/pcl/apps/${SUBSYS_NAME}/properties_model.h
              include/pcl/apps/${SUBSYS_NAME}/signal_multiplexer.h
-             include/pcl/apps/${SUBSYS_NAME}/merge_selection.h)
+             include/pcl/apps/${SUBSYS_NAME}/merge_selection.h
+             include/pcl/apps/${SUBSYS_NAME}/transform_clouds.h)
           
     set(srcs src/main.cpp 
              src/cloud_composer.cpp
@@ -79,8 +80,13 @@ if(build)
              src/properties_model.cpp
              src/signal_multiplexer.cpp
              src/merge_selection.cpp
-             src/tool_interface/abstract_tool.cpp)
+             src/tool_interface/abstract_tool.cpp
+             src/transform_clouds.cpp)
           
+    set(impl_incs include/pcl/apps/${SUBSYS_NAME}/impl/cloud_item.hpp
+                  include/pcl/apps/${SUBSYS_NAME}/impl/merge_selection.hpp
+                  include/pcl/apps/${SUBSYS_NAME}/impl/transform_clouds.hpp)
+              
     #Sources and headers for item types      
     set(item_incs include/pcl/apps/${SUBSYS_NAME}/items/cloud_composer_item.h
                   include/pcl/apps/${SUBSYS_NAME}/items/cloud_item.h
@@ -102,7 +108,8 @@ if(build)
                        src/point_selectors/selection_event.cpp
                        src/point_selectors/rectangular_frustum_selector.cpp
                        src/point_selectors/selected_trackball_interactor_style.cpp
-                       src/point_selectors/click_trackball_interactor_style.cpp)
+                       src/point_selectors/click_trackball_interactor_style.cpp
+                       src/point_selectors/manipulation_event.cpp)
                        
     set(uis src/cloud_composer_main_window.ui)
     set(resources resources/resources.qrc)
@@ -112,7 +119,7 @@ if(build)
     QT4_ADD_RESOURCES(resource_srcs ${resources})
     
     set(EXE_NAME pcl_${SUBSYS_NAME})
-    PCL_ADD_EXECUTABLE(${EXE_NAME} ${SUBSYS_NAME} ${cloud_composer_ui} ${cloud_composer_moc} ${srcs} ${resource_srcs} ${item_srcs} ${selector_srcs})
+    PCL_ADD_EXECUTABLE(${EXE_NAME} ${SUBSYS_NAME} ${cloud_composer_ui} ${cloud_composer_moc} ${srcs} ${resource_srcs} ${item_srcs} ${selector_srcs} ${impl_incs})
     target_link_libraries(${EXE_NAME} pcl_common pcl_io pcl_visualization pcl_filters QVTK ${QT_LIBRARIES})
 
     # Install include files

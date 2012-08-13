@@ -37,6 +37,7 @@ pcl::cloud_composer::CloudCommand::~CloudCommand ()
     
   }
 }
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 pcl::cloud_composer::CloudCommand::setProjectModel (ProjectModel* model)
@@ -44,6 +45,50 @@ pcl::cloud_composer::CloudCommand::setProjectModel (ProjectModel* model)
   project_model_ = model;
 }
 
+
+QList <pcl::cloud_composer::CloudComposerItem*> 
+pcl::cloud_composer::CloudCommand::executeToolOnTemplateCloud (AbstractTool* tool, ConstItemList input_data)
+{
+  QList <CloudComposerItem*> output;
+  //Make sure the input list isn't empty
+  if (input_data.size () == 0)
+  {
+    qCritical () << "Cannot call a templated tool on an empty input in CloudCommand::executeToolOnTemplateCloud!";
+    return output;
+  }
+  //Make sure all input items are clouds
+  QList <const CloudItem*> cloud_items;
+  foreach (const CloudComposerItem* item, input_data)
+  {
+    const CloudItem* cloud_item = dynamic_cast<const CloudItem*> (item);
+    if (cloud_item)
+      cloud_items.append (cloud_item);
+  }
+  if (cloud_items.size () != input_data.size ())
+  {
+    qCritical () << "All input items are not clouds in CloudCommand::executeToolOnTemplateCloud!";
+    return output;
+  }
+  
+  // Now make sure all input clouds have the same templated type
+  int type = cloud_items.value (0)->getPointType ();
+  foreach (const CloudItem* cloud_item, cloud_items)
+  {
+    if (cloud_item->getPointType () != type)
+    {
+      qCritical () << "All input point cloud template types in CloudCommand::executeToolOnTemplateCloud are not the same!";
+      qCritical () << cloud_item->text () << "'s type does not match "<<cloud_items.value (0)->type ();
+      return output;
+    }
+  }
+  
+  //Everything looks good, use the type to call the appropriate tool function
+  output = tool->performAction( input_data, static_cast<PointTypeFlags::PointType> (type));
+  
+  return output;
+  
+}
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 bool 
 pcl::cloud_composer::CloudCommand::replaceOriginalWithNew (QList <const CloudComposerItem*> originals, QList <CloudComposerItem*> new_items)
@@ -89,6 +134,7 @@ pcl::cloud_composer::CloudCommand::replaceOriginalWithNew (QList <const CloudCom
 
   return true;
 }
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 bool 
 pcl::cloud_composer::CloudCommand::restoreOriginalRemoveNew (QList <const CloudComposerItem*> originals, QList <CloudComposerItem*> new_items)
@@ -130,6 +176,8 @@ pcl::cloud_composer::CloudCommand::restoreOriginalRemoveNew (QList <const CloudC
 
   return true;
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////// MODIFY CLOUD COMMAND
 
 pcl::cloud_composer::ModifyItemCommand::ModifyItemCommand (QList <const CloudComposerItem*> input_data, QUndoCommand* parent)
@@ -174,6 +222,7 @@ pcl::cloud_composer::ModifyItemCommand::runCommand (AbstractTool* tool)
     return true;
   }
 }
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 pcl::cloud_composer::ModifyItemCommand::undo ()
@@ -188,6 +237,7 @@ pcl::cloud_composer::ModifyItemCommand::undo ()
   
   
 }
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 pcl::cloud_composer::ModifyItemCommand::redo ()
@@ -202,6 +252,7 @@ pcl::cloud_composer::ModifyItemCommand::redo ()
 
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////// New Item CLOUD COMMAND ///////////////////////////////////////////////////////////////////////////
 
 pcl::cloud_composer::NewItemCloudCommand::NewItemCloudCommand (QList <const CloudComposerItem*> input_data, QUndoCommand* parent)
@@ -244,6 +295,7 @@ pcl::cloud_composer::NewItemCloudCommand::runCommand (AbstractTool* tool)
   }
    
 }
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 pcl::cloud_composer::NewItemCloudCommand::undo ()
@@ -273,6 +325,7 @@ pcl::cloud_composer::NewItemCloudCommand::undo ()
     
   }
 }
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 pcl::cloud_composer::NewItemCloudCommand::redo ()
@@ -302,6 +355,7 @@ pcl::cloud_composer::NewItemCloudCommand::redo ()
 }
 
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////// Split CLOUD COMMAND ///////////////////////////////////////////////////////////////////////////
 
 pcl::cloud_composer::SplitCloudCommand::SplitCloudCommand (QList <const CloudComposerItem*> input_data, QUndoCommand* parent)
@@ -345,6 +399,7 @@ pcl::cloud_composer::SplitCloudCommand::runCommand (AbstractTool* tool)
   }
 
 }
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 pcl::cloud_composer::SplitCloudCommand::undo ()
@@ -358,6 +413,7 @@ pcl::cloud_composer::SplitCloudCommand::undo ()
   }
   
 }
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 pcl::cloud_composer::SplitCloudCommand::redo ()
@@ -374,6 +430,7 @@ pcl::cloud_composer::SplitCloudCommand::redo ()
 }
 
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////// Delete CLOUD COMMAND ///////////////////////////////////////////////////////////////////////////
 
 pcl::cloud_composer::DeleteItemCommand::DeleteItemCommand (QList <const CloudComposerItem*> input_data, QUndoCommand* parent)
@@ -402,6 +459,7 @@ pcl::cloud_composer::DeleteItemCommand::runCommand (AbstractTool* tool)
     this->setText ("Delete multiple items");
   return true;
 }
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 pcl::cloud_composer::DeleteItemCommand::undo ()
@@ -414,6 +472,7 @@ pcl::cloud_composer::DeleteItemCommand::undo ()
       qCritical () << "Failed to restore items in DeleteItemCommand::undo!";
   }
 }
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 pcl::cloud_composer::DeleteItemCommand::redo ()
@@ -430,6 +489,7 @@ pcl::cloud_composer::DeleteItemCommand::redo ()
 }
 
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////// MERGE CLOUD COMMAND ///////////////////////////////////////////////////////////////////////////
 
 pcl::cloud_composer::MergeCloudCommand::MergeCloudCommand (ConstItemList input_data, QUndoCommand* parent)
@@ -464,6 +524,7 @@ pcl::cloud_composer::MergeCloudCommand::runCommand (AbstractTool* tool)
   this->setText ("Merge Clouds");
   return true;
 }
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 pcl::cloud_composer::MergeCloudCommand::undo ()
@@ -476,6 +537,7 @@ pcl::cloud_composer::MergeCloudCommand::undo ()
       qCritical () << "Failed to restore original clouds in MergeCloudCommand::undo!";
   }
 }
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 pcl::cloud_composer::MergeCloudCommand::redo ()

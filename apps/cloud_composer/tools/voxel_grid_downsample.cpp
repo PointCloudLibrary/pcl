@@ -22,7 +22,7 @@ pcl::cloud_composer::VoxelGridDownsampleTool::~VoxelGridDownsampleTool ()
 }
 
 QList <pcl::cloud_composer::CloudComposerItem*>
-pcl::cloud_composer::VoxelGridDownsampleTool::performAction (ConstItemList input_data)
+pcl::cloud_composer::VoxelGridDownsampleTool::performAction (ConstItemList input_data, PointTypeFlags::PointType type)
 {
   QList <CloudComposerItem*> output;
   const CloudComposerItem* input_item;
@@ -44,7 +44,7 @@ pcl::cloud_composer::VoxelGridDownsampleTool::performAction (ConstItemList input
     double leaf_y = parameter_model_->getProperty("Leaf Size y").toDouble ();
     double leaf_z = parameter_model_->getProperty("Leaf Size z").toDouble ();
     
-    sensor_msgs::PointCloud2::ConstPtr input_cloud = input_item->data (ItemDataRole::CLOUD_CONSTPTR).value <sensor_msgs::PointCloud2::ConstPtr> ();
+    sensor_msgs::PointCloud2::ConstPtr input_cloud = input_item->data (ItemDataRole::CLOUD_BLOB).value <sensor_msgs::PointCloud2::ConstPtr> ();
     
     //////////////// THE WORK - FILTERING OUTLIERS ///////////////////
     // Create the filtering object

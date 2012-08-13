@@ -35,76 +35,48 @@
  *
  */
 
-#ifndef VOXEL_GRID_DOWNSAMPLE_H_
-#define VOXEL_GRID_DOWNSAMPLE_H_
+#ifndef MANIPULATION_EVENT_H_
+#define MANIPULATION_EVENT_H_
 
-#include <pcl/apps/cloud_composer/tool_interface/abstract_tool.h>
-#include <pcl/apps/cloud_composer/tool_interface/tool_factory.h>
-
+#include <pcl/visualization/vtk.h>
+#include <pcl/apps/cloud_composer/items/cloud_item.h>
+#include <pcl/apps/cloud_composer/qt.h>
 
 namespace pcl
 {
   namespace cloud_composer
   {
-    class VoxelGridDownsampleTool : public ModifyItemTool
-    {
-      Q_OBJECT
-      public:
-        VoxelGridDownsampleTool (PropertiesModel* parameter_model, QObject* parent);
-        virtual ~VoxelGridDownsampleTool ();
-        
-        virtual QList <CloudComposerItem*>
-        performAction (QList <const CloudComposerItem*> input_data, PointTypeFlags::PointType type = PointTypeFlags::NONE);
       
-        inline virtual QString
-        getToolName () const { return "Voxel Grid Downsample Tool";}
-    };
-
     
-    class VoxelGridDownsampleToolFactory : public QObject, public ToolFactory
+    class PCL_EXPORTS ManipulationEvent
     {
-      Q_OBJECT
-      Q_INTERFACES (pcl::cloud_composer::ToolFactory)
+      
       public:
-        ModifyItemTool*
-        createTool (PropertiesModel* parameter_model, QObject* parent = 0) 
-        {
-            return new VoxelGridDownsampleTool(parameter_model, parent);
-        }
+        ManipulationEvent () 
+        {}
         
-        PropertiesModel*
-        createToolParameterModel (QObject* parent);
+        ~ManipulationEvent ();
         
-        inline virtual QString 
-        getPluginName () const { return "Voxel Grid Downsample";}
+        void
+        addManipulation (QString id, vtkSmartPointer<vtkMatrix4x4> start, vtkSmartPointer<vtkMatrix4x4> end);
         
-        virtual QString 
-        getToolGroupName () const { return "Filters";}
+        inline QMap <QString, vtkSmartPointer<vtkMatrix4x4> >
+        getStartMap () const { return id_start_map_;}
         
-        virtual QString
-        getIconName () const { return ":/voxel_grid_downsample.png"; }
+        inline QMap <QString, vtkSmartPointer<vtkMatrix4x4> >
+        getEndMap () const { return id_end_map_;}
         
-        inline virtual CloudComposerItem::ItemType
-        getInputItemType () const
-        {
-          return CloudComposerItem::CLOUD_ITEM;
-        }
         
-        inline virtual QList <CloudComposerItem::ItemType>
-        getRequiredInputChildrenTypes () const 
-        {
-          return QList <CloudComposerItem::ItemType> ();
-        }
+      private:
+        QMap <QString, vtkSmartPointer<vtkMatrix4x4> > id_start_map_;
+        QMap <QString, vtkSmartPointer<vtkMatrix4x4> > id_end_map_;
+       
     };
-
-
-
+    
   }
+  
 }
 
-
-
-
-
-
-#endif //VOXEL_GRID_DOWNSAMPLE_H_
+#endif // MANIPULATION_EVENT_H_
+        
+        

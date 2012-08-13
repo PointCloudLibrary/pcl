@@ -47,6 +47,7 @@
 #include <pcl/apps/cloud_composer/commands.h>
 #include <pcl/apps/cloud_composer/qt.h>
 #include <pcl/apps/cloud_composer/point_selectors/selection_event.h> 
+#include <pcl/apps/cloud_composer/point_selectors/manipulation_event.h>
 #include <pcl/apps/cloud_composer/point_selectors/interactor_style_switch.h>
 
 class QItemSelectionModel;
@@ -108,6 +109,9 @@ namespace pcl
         void 
         setPointSelection (boost::shared_ptr<SelectionEvent> selected_event);
         
+        /** \brief This is invoked to perform the manipulations specified on the model */
+        void
+        manipulateClouds (boost::shared_ptr<ManipulationEvent> manip_event);
       public slots:
         void 
         commandCompleted (CloudCommand* command);

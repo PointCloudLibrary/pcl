@@ -64,8 +64,8 @@ namespace pcl
       { 
         PROPERTIES = Qt::UserRole,
         ITEM_ID,
-        CLOUD_CONSTPTR,
-        XYZ_CLOUD_CONSTPTR,
+        CLOUD_BLOB,
+        CLOUD_TEMPLATED,
         GEOMETRY_HANDLER, 
         COLOR_HANDLER,
         ORIGIN,

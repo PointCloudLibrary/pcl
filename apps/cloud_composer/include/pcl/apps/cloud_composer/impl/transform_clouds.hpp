@@ -1,4 +1,4 @@
-/*
+ /*
  * Software License Agreement  (BSD License)
  *
  *  Point Cloud Library  (PCL) - www.pointclouds.org
@@ -35,40 +35,47 @@
  *
  */
 
-#ifndef MERGE_SELECTION_H_
-#define MERGE_SELECTION_H_
+#ifndef IMPL_TRANSFORM_CLOUDS_HPP_
+#define IMPL_TRANSFORM_CLOUDS_HPP_
 
-#include <pcl/apps/cloud_composer/tool_interface/abstract_tool.h>
+#include <pcl/apps/cloud_composer/transform_clouds.h>
+#include <pcl/point_cloud.h>
+#include <pcl/apps/cloud_composer/impl/cloud_item.hpp>
 
-
-namespace pcl
+template <typename PointT> QList <pcl::cloud_composer::CloudComposerItem*>
+pcl::cloud_composer::TransformClouds::performTemplatedAction (QList <const CloudComposerItem*> input_data)
 {
-  namespace cloud_composer
+  QList <CloudComposerItem*> output;  
+  
+  foreach (const CloudComposerItem* input_item, input_data)
   {
-    class MergeSelection : public MergeCloudTool
-    {
-      Q_OBJECT
-      public:
-        MergeSelection (QMap <const CloudItem*, pcl::PointIndices::ConstPtr > selected_item_index_map, QObject* parent = 0);
-        virtual ~MergeSelection ();
-        
-        virtual QList <CloudComposerItem*>
-        performAction (QList <const CloudComposerItem*> input_data, PointTypeFlags::PointType type = PointTypeFlags::NONE);
-        
-        inline virtual QString
-        getToolName () const { return "Merge Selection Tool";}
-        
-        QList <const CloudItem*>
-        getSelectedItems () { return selected_item_index_map_.keys ();}
-        
-        template <typename PointT> QList <CloudComposerItem*>
-        performTemplatedAction (QList <const CloudComposerItem*> input_data);
-        
-      private:
-        QMap <const CloudItem*, pcl::PointIndices::ConstPtr > selected_item_index_map_;
-    };
-
+    QVariant variant = input_item->data (ItemDataRole::CLOUD_TEMPLATED);
+    if ( ! variant.canConvert <typename PointCloud<PointT>::Ptr> () )
+    {  
+      qWarning () << "Attempted to cast to template type which does not exist in this item! (input list)";
+      return output;
+    }
   }
+  foreach (const CloudComposerItem* input_item, input_data)
+  {
+    QVariant variant = input_item->data (ItemDataRole::CLOUD_TEMPLATED);
+    if ( ! variant.canConvert <typename PointCloud<PointT>::Ptr> () )
+    {  
+      qWarning () << "Attempted to cast to template type which does not exist in this item! (selected list)";
+      return output;
+    }
+  }  
+
+  
+
+
+  return output;
+  
 }
 
-#endif
+
+#define PCL_INSTANTIATE_performTemplatedAction(T) template PCL_EXPORTS void pcl::cloud_composer::TransformClouds::performTemplatedAction<T> (QList <const CloudComposerItem*>);
+
+
+
+#endif //IMPL_TRANSFORM_CLOUDS_HPP_

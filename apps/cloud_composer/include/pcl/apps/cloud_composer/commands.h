@@ -73,6 +73,18 @@ namespace pcl
         virtual void
         redo () = 0;
         
+        QList <CloudComposerItem*> 
+        executeToolOnTemplateCloud (AbstractTool* tool, ConstItemList input_data);
+        
+        void 
+        setProjectModel (ProjectModel* model);
+        
+        inline void
+        setInputData (ConstItemList input_data)
+        {
+          original_data_ = input_data;
+        }
+      protected:
         /** \brief Removes the original item(s) from the model and replaces with the replacement(s)
          *  Replacements are only inserted once, original items must have same parent
          *  This stores the removed items in removed_items_
@@ -84,16 +96,6 @@ namespace pcl
         bool
         restoreOriginalRemoveNew (QList <const CloudComposerItem*> originals, QList <CloudComposerItem*> new_items);
         
-        
-        void 
-        setProjectModel (ProjectModel* model);
-        
-        inline void
-        setInputData (ConstItemList input_data)
-        {
-          original_data_ = input_data;
-        }
-      protected:
         ConstItemList original_data_;
         
         QMap <QStandardItem*, QStandardItem*> removed_to_parent_map_;

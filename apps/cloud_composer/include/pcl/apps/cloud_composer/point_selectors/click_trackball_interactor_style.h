@@ -99,6 +99,12 @@ namespace pcl
         
         /** \brief Internal Pointer to Project Model */
         ProjectModel* model_;
+        
+        vtkSmartPointer<vtkMatrix4x4> start_matrix_;
+        vtkSmartPointer<vtkMatrix4x4> end_matrix_;
+        
+        vtkSmartPointer<vtkTransform> transform_;
+          
     };
     
   }

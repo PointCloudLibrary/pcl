@@ -45,7 +45,7 @@
 #include <pcl/visualization/pcl_visualizer.h>
 
 #include <pcl/apps/cloud_composer/qt.h>
-#include <pcl/apps/cloud_composer/point_selectors/selection_event.h>
+
 
 
 

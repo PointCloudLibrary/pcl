@@ -3,6 +3,9 @@
 #include <pcl/apps/cloud_composer/cloud_composer.h>
 #include <pcl/apps/cloud_composer/project_model.h>
 
+#include <pcl/apps/cloud_composer/point_selectors/selection_event.h>
+#include <pcl/apps/cloud_composer/point_selectors/manipulation_event.h>
+
 pcl::cloud_composer::CloudView::CloudView (QWidget* parent)
   : QWidget (parent)
 {
@@ -266,8 +269,11 @@ pcl::cloud_composer::CloudView::initializeInteractorSwitch ()
                          interactor_events::SELECTION_COMPLETE_EVENT,
                          this,
                          SLOT (selectionCompleted (vtkObject*, unsigned long, void*, void*)));
-
-  
+ 
+  connections_->Connect (style_switch_->getInteractorStyle (interactor_styles::CLICK_TRACKBALL),
+                         interactor_events::MANIPULATION_COMPLETE_EVENT,
+                         this,
+                         SLOT (manipulationCompleted (vtkObject*, unsigned long, void*, void*)));
 }
 
 void
@@ -286,5 +292,19 @@ pcl::cloud_composer::CloudView::selectionCompleted (vtkObject* caller, unsigned 
     qDebug () << "Selection Complete! - Num points="<<selected->getNumPoints();
     model_->setPointSelection (selected);
     style_switch_->setCurrentInteractorStyle (interactor_styles::PCL_VISUALIZER);
+  }
+}
+
+
+void
+pcl::cloud_composer::CloudView::manipulationCompleted (vtkObject* caller, unsigned long event_id, void* client_data, void* call_data)
+{
+  boost::shared_ptr<ManipulationEvent> manip_event (static_cast<ManipulationEvent*> (call_data));
+  
+  if (manip_event)
+  {
+    qDebug () << "Manipulation event received in cloud view!";
+    model_->manipulateClouds (manip_event);
+   
   }
 }

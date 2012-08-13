@@ -21,7 +21,7 @@ pcl::cloud_composer::NormalEstimationTool::~NormalEstimationTool ()
 }
 
 QList <pcl::cloud_composer::CloudComposerItem*>
-pcl::cloud_composer::NormalEstimationTool::performAction (ConstItemList input_data)
+pcl::cloud_composer::NormalEstimationTool::performAction (ConstItemList input_data, PointTypeFlags::PointType type)
 {
   QList <CloudComposerItem*> output;
   const CloudComposerItem* input_item;
@@ -42,7 +42,7 @@ pcl::cloud_composer::NormalEstimationTool::performAction (ConstItemList input_da
   {
     double radius = parameter_model_->getProperty("Radius").toDouble();
     qDebug () << "Received Radius = " <<radius;
-    sensor_msgs::PointCloud2::ConstPtr input_cloud = input_item->data (ItemDataRole::CLOUD_CONSTPTR).value <sensor_msgs::PointCloud2::ConstPtr> ();
+    sensor_msgs::PointCloud2::ConstPtr input_cloud = input_item->data (ItemDataRole::CLOUD_BLOB).value <sensor_msgs::PointCloud2::ConstPtr> ();
     qDebug () << "Got cloud size = "<<input_cloud->width;
     //////////////// THE WORK - COMPUTING NORMALS ///////////////////
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);

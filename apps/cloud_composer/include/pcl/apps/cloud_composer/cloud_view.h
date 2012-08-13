@@ -111,6 +111,9 @@ namespace pcl
       void
       selectionCompleted (vtkObject* caller, unsigned long event_id, void* client_data, void* call_data);
       
+      void
+      manipulationCompleted (vtkObject* caller, unsigned long event_id, void* client_data, void* call_data);
+      
     protected:
       void
       paintEvent (QPaintEvent* event);

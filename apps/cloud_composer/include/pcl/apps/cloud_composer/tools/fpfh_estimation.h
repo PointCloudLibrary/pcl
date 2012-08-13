@@ -56,7 +56,7 @@ namespace pcl
         virtual ~FPFHEstimationTool ();
         
         virtual QList <CloudComposerItem*>
-        performAction (ConstItemList input_data);
+        performAction (QList <const CloudComposerItem*> input_data, PointTypeFlags::PointType type = PointTypeFlags::NONE);
       
         inline virtual QString
         getToolName () const { return "FPFH Estimation Tool";}

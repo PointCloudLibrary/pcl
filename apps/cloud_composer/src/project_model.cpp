@@ -6,6 +6,7 @@
 #include <pcl/apps/cloud_composer/items/cloud_item.h>
 #include <pcl/apps/cloud_composer/cloud_view.h>
 #include <pcl/apps/cloud_composer/merge_selection.h>
+#include <pcl/apps/cloud_composer/transform_clouds.h>
 
 pcl::cloud_composer::ProjectModel::ProjectModel (QObject* parent)
   : QStandardItemModel (parent)
@@ -117,7 +118,40 @@ pcl::cloud_composer::ProjectModel::setPointSelection (boost::shared_ptr<Selectio
   emit mouseStyleState (interactor_styles::PCL_VISUALIZER);
 }
 
+void
+pcl::cloud_composer::ProjectModel::manipulateClouds (boost::shared_ptr<ManipulationEvent> manip_event)
+{
+  
+  //Get all the items in this project that are clouds
+  QList <CloudItem*> project_clouds;
+  for (int i = 0; i < this->rowCount (); ++i)
+  {
+    CloudItem* cloud_item = dynamic_cast <CloudItem*> (this->item (i));
+    if ( cloud_item )
+      project_clouds.append ( cloud_item );
+  }
+  
+  QMap <QString, vtkSmartPointer<vtkMatrix4x4> > transform_map = manip_event->getEndMap ();
+  QList <QString> ids = transform_map.keys ();
+  ConstItemList input_data;
+  // Find the cloud_items which match the manipulated actors
+  foreach (CloudItem* cloud_item, project_clouds)
+  {
+    if (ids.contains (cloud_item->getId ()))
+    {
+      qDebug () << "Found matching item for actor "<<cloud_item->getId ();
+      input_data.append (cloud_item);
+    }
+  }
 
+  TransformClouds* transform_tool = new TransformClouds (transform_map);
+  
+  //We don't call the enqueueToolAction function since that would abort if we only have a green selection
+  //Move the tool object to the work queue thread
+  transform_tool->moveToThread (work_thread_);
+  //Emit signal which tells work queue to enqueue this new action
+  emit enqueueNewAction (transform_tool, input_data);
+}
 
 void
 pcl::cloud_composer::ProjectModel::insertNewCloudFromFile ()
