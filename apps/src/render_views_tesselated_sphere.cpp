@@ -145,7 +145,7 @@ pcl::apps::RenderViewsTesselatedSphere::generateViews() {
     }
   }
 
-  int valid = 0;
+  /*int valid = 0;
   for (size_t i = 0; i < cam_positions.size (); i++)
   {
     if (campos_constraints_func_ (cam_positions[i]))
@@ -155,7 +155,7 @@ pcl::apps::RenderViewsTesselatedSphere::generateViews() {
     }
   }
 
-  cam_positions.resize (valid);
+  cam_positions.resize (valid);*/
 
   double camera_radius = radius_sphere_;
   double cam_pos[3];
