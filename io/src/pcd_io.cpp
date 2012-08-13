@@ -78,7 +78,7 @@ pcl::PCDWriter::setLockingPermissions (const std::string &file_name,
 
   // Boost version 1.49 introduced permissions
 #if BOOST_VERSION >= 104900
-  namespace fs = boost::filesystem3;
+  namespace fs = boost::filesystem;
   fs::permissions (fs::path (file_name), fs::add_perms | fs::set_gid_on_exe);
 #endif
 }
@@ -90,7 +90,7 @@ pcl::PCDWriter::resetLockingPermissions (const std::string &file_name,
 {
 // Boost version 1.49 introduced permissions
 #if BOOST_VERSION >= 104900
-  namespace fs = boost::filesystem3;
+  namespace fs = boost::filesystem;
   fs::permissions (fs::path (file_name), fs::remove_perms | fs::set_gid_on_exe);
 #endif
   lock.unlock ();
