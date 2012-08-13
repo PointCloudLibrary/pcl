@@ -13,6 +13,13 @@
 #include <pcl/apps/3d_rec_framework/feature_wrapper/local/shot_local_estimator.h>
 #include <pcl/apps/3d_rec_framework/feature_wrapper/local/shot_local_estimator_omp.h>
 #include <pcl/apps/3d_rec_framework/feature_wrapper/local/fpfh_local_estimator.h>
+#include <pcl/keypoints/uniform_sampling.h>
+#include <pcl/visualization/pcl_visualizer.h>
+#include <pcl/recognition/cg/correspondence_grouping.h>
+#include <pcl/recognition/cg/geometric_consistency.h>
+#include <pcl/recognition/cg/hough_3d.h>
+#include <pcl/recognition/hv/hv_papazov.h>
+//#include <pcl/recognition/hv/hv_go.h>
 //#include <pcl/apps/3d_rec_framework/feature_wrapper/normal_estimator.h>
 //#include <pcl/keypoints/uniform_sampling.h>
 //#include <pcl/visualization/pcl_visualizer.h>
@@ -92,7 +99,8 @@ sortFiles (const std::string & file1, const std::string & file2)
 
 template<template<class > class DistT, typename PointT, typename FeatureT>
   void
-  recognizeAndVisualize (typename pcl::rec_3d_framework::LocalRecognitionPipeline<DistT, PointT, FeatureT> & local, std::string & scenes_dir)
+  recognizeAndVisualize (typename pcl::rec_3d_framework::LocalRecognitionPipeline<DistT, PointT, FeatureT> & local, std::string & scenes_dir,
+                         int scene = -1, bool single_model = false)
   {
 
     //read mians scenes
@@ -107,52 +115,115 @@ template<template<class > class DistT, typename PointT, typename FeatureT>
     typedef typename pcl::PointCloud<PointT>::ConstPtr ConstPointInTPtr;
     typedef pcl::rec_3d_framework::Model<PointT> ModelT;
 
-    pcl::visualization::PCLVisualizer vis ("Mians dataset");
-
-    for (size_t i = 0; i < files.size (); i++)
+    if (!single_model)
     {
-      std::cout << files[i] << std::endl;
+      pcl::visualization::PCLVisualizer vis ("Mians dataset");
 
-      std::stringstream file;
-      file << ply_files_dir.string () << files[i];
-
-      typename pcl::PointCloud<PointT>::Ptr scene (new pcl::PointCloud<PointT> ());
-      pcl::io::loadPCDFile (file.str (), *scene);
-
-      local.setInputCloud (scene);
-      local.recognize ();
-
-      std::stringstream scene_name;
-      scene_name << "Scene " << (i + 1);
-      vis.addPointCloud<PointT> (scene, "scene_cloud");
-      vis.addText (scene_name.str (), 1, 30, 24, 1, 0, 0, "scene_text");
-
-      //visualize results
-      boost::shared_ptr < std::vector<ModelT> > models = local.getModels ();
-      boost::shared_ptr < std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f> > > transforms = local.getTransforms ();
-
-      for (size_t j = 0; j < models->size (); j++)
+      for (size_t i = 0; i < files.size (); i++)
       {
-        std::stringstream name;
-        name << "cloud_" << j;
+        std::cout << files[i] << std::endl;
+        if (scene != -1)
+          if (scene != i)
+            continue;
 
-        ConstPointInTPtr model_cloud = models->at (j).getAssembled (0.0025f);
-        typename pcl::PointCloud<PointT>::Ptr model_aligned (new pcl::PointCloud<PointT>);
-        pcl::transformPointCloud (*model_cloud, *model_aligned, transforms->at (j));
+        std::stringstream file;
+        file << ply_files_dir.string () << files[i];
 
-        pcl::visualization::PointCloudColorHandlerCustom<PointT> random_handler (model_aligned, 255, 0, 0);
-        vis.addPointCloud<PointT> (model_aligned, random_handler, name.str ());
+        typename pcl::PointCloud<PointT>::Ptr scene (new pcl::PointCloud<PointT> ());
+        pcl::io::loadPCDFile (file.str (), *scene);
+
+        local.setInputCloud (scene);
+        {
+          pcl::ScopeTime ttt ("Recognition");
+          local.recognize ();
+        }
+
+        std::stringstream scene_name;
+        scene_name << "Scene " << (i + 1);
+        vis.addPointCloud<PointT> (scene, "scene_cloud");
+        vis.addText (scene_name.str (), 1, 30, 24, 1, 0, 0, "scene_text");
+
+        //visualize results
+        boost::shared_ptr < std::vector<ModelT> > models = local.getModels ();
+        boost::shared_ptr < std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f> > > transforms = local.getTransforms ();
+
+        for (size_t j = 0; j < models->size (); j++)
+        {
+          std::stringstream name;
+          name << "cloud_" << j;
+
+          ConstPointInTPtr model_cloud = models->at (j).getAssembled (0.0025f);
+          typename pcl::PointCloud<PointT>::Ptr model_aligned (new pcl::PointCloud<PointT>);
+          pcl::transformPointCloud (*model_cloud, *model_aligned, transforms->at (j));
+
+          pcl::visualization::PointCloudColorHandlerRandom<PointT> random_handler (model_aligned);
+          vis.addPointCloud<PointT> (model_aligned, random_handler, name.str ());
+        }
+
+        vis.spin ();
+
+        vis.removePointCloud ("scene_cloud");
+        vis.removeShape ("scene_text");
+        for (size_t j = 0; j < models->size (); j++)
+        {
+          std::stringstream name;
+          name << "cloud_" << j;
+          vis.removePointCloud (name.str ());
+        }
       }
+    }
 
-      vis.spin ();
+    if (single_model)
+    {
+      //some applications prefer to search for a single object only
+      std::string id = "chicken_high";
+      pcl::visualization::PCLVisualizer vis ("Single model - chicken");
+      local.setSearchModel (id);
+      local.initialize ();
 
-      vis.removePointCloud ("scene_cloud");
-      vis.removeShape ("scene_text");
-      for (size_t j = 0; j < models->size (); j++)
+      for (size_t i = 0; i < files.size (); i++)
       {
-        std::stringstream name;
-        name << "cloud_" << j;
-        vis.removePointCloud (name.str ());
+        std::stringstream file;
+        file << ply_files_dir.string () << files[i];
+
+        typename pcl::PointCloud<PointT>::Ptr scene (new pcl::PointCloud<PointT> ());
+        pcl::io::loadPCDFile (file.str (), *scene);
+
+        local.setInputCloud (scene);
+        local.recognize ();
+
+        std::stringstream scene_name;
+        scene_name << "Scene " << (i + 1);
+        vis.addPointCloud<PointT> (scene, "scene_cloud");
+        vis.addText (scene_name.str (), 1, 30, 24, 1, 0, 0, "scene_text");
+
+        //visualize results
+        boost::shared_ptr < std::vector<ModelT> > models = local.getModels ();
+        boost::shared_ptr < std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f> > > transforms = local.getTransforms ();
+
+        for (size_t j = 0; j < models->size (); j++)
+        {
+          std::stringstream name;
+          name << "cloud_" << j;
+
+          ConstPointInTPtr model_cloud = models->at (j).getAssembled (0.0025f);
+          typename pcl::PointCloud<PointT>::Ptr model_aligned (new pcl::PointCloud<PointT>);
+          pcl::transformPointCloud (*model_cloud, *model_aligned, transforms->at (j));
+
+          pcl::visualization::PointCloudColorHandlerRandom<PointT> random_handler (model_aligned);
+          vis.addPointCloud<PointT> (model_aligned, random_handler, name.str ());
+        }
+
+        vis.spin ();
+
+        vis.removePointCloud ("scene_cloud");
+        vis.removeShape ("scene_text");
+        for (size_t j = 0; j < models->size (); j++)
+        {
+          std::stringstream name;
+          name << "cloud_" << j;
+          vis.removePointCloud (name.str ());
+        }
       }
     }
   }
@@ -208,6 +279,8 @@ int CG_SIZE_ = 9;
 float CG_THRESHOLD_ = 0.005f;
 int CG_ALG = 0;
 
+//./bin/pcl_local_or_mian -models_dir /home/aitor/data/Mians_dataset/models/ -mians_scenes_dir /home/aitor/data/Mians_dataset/scenes/pcl_scenes/ -training_dir trained_models2/ -icp_iterations 0 -descriptor_name shot_omp -gc_size 3 -use_cache 1 -scene -1
+
 int
 main (int argc, char ** argv)
 {
@@ -219,6 +292,9 @@ main (int argc, char ** argv)
   int icp_iterations = 10;
   int use_cache = 0;
   int splits = 512;
+  int scene = -1;
+  int detect_clutter = 1;
+  int split_opt = 1;
 
   pcl::console::parse_argument (argc, argv, "-models_dir", path);
   pcl::console::parse_argument (argc, argv, "-training_dir", training_dir);
@@ -229,6 +305,9 @@ main (int argc, char ** argv)
   pcl::console::parse_argument (argc, argv, "-use_cache", use_cache);
   pcl::console::parse_argument (argc, argv, "-splits", splits);
   pcl::console::parse_argument (argc, argv, "-gc_size", CG_SIZE_);
+  pcl::console::parse_argument (argc, argv, "-scene", scene);
+  pcl::console::parse_argument (argc, argv, "-detect_clutter", detect_clutter);
+  pcl::console::parse_argument (argc, argv, "-split_opt", split_opt);
 
   if (mians_scenes.compare ("") == 0)
   {
@@ -241,13 +320,15 @@ main (int argc, char ** argv)
   {
     PCL_ERROR("Models dir path %s does not exist, use -models_dir [dir] option\n", path.c_str());
     return -1;
-  } else {
+  }
+  else
+  {
     std::vector < std::string > files;
     std::string start = "";
     std::string ext = std::string ("ply");
     bf::path dir = models_dir_path;
     getModelsInDirectory (dir, start, files, ext);
-    assert(files.size() == 4);
+    assert (files.size () == 4);
   }
 
   //configure mesh source
@@ -272,8 +353,14 @@ main (int argc, char ** argv)
   normal_estimator->setValuesForCMRFalse (0.005f, 0.015f);
 
   //configure keypoint extractor
-  boost::shared_ptr<pcl::UniformSampling<pcl::PointXYZ> > keypoint_extractor (new pcl::UniformSampling<pcl::PointXYZ>);
-  keypoint_extractor->setRadiusSearch (0.01f);
+  boost::shared_ptr<pcl::rec_3d_framework::UniformSamplingExtractor<pcl::PointXYZ> >
+                                                                                     uniform_keypoint_extractor (
+                                                                                                                 new pcl::rec_3d_framework::UniformSamplingExtractor<
+                                                                                                                     pcl::PointXYZ>);
+  uniform_keypoint_extractor->setSamplingDensity (0.01f);
+
+  boost::shared_ptr<pcl::rec_3d_framework::KeypointExtractor<pcl::PointXYZ> > keypoint_extractor;
+  keypoint_extractor = boost::static_pointer_cast<pcl::rec_3d_framework::KeypointExtractor<pcl::PointXYZ> > (uniform_keypoint_extractor);
 
   //configure cg algorithm (geometric consistency grouping)
   boost::shared_ptr<pcl::CorrespondenceGrouping<pcl::PointXYZ, pcl::PointXYZ> > cast_cg_alg;
@@ -302,16 +389,33 @@ main (int argc, char ** argv)
   boost::shared_ptr<pcl::PapazovHV<pcl::PointXYZ, pcl::PointXYZ> > papazov (new pcl::PapazovHV<pcl::PointXYZ, pcl::PointXYZ>);
   papazov->setResolution (0.005f);
   papazov->setInlierThreshold (0.005f);
+  papazov->setSupportThreshold (0.08f);
+  papazov->setPenaltyThreshold (0.05f);
+  papazov->setConflictThreshold (0.02f);
 
   boost::shared_ptr<pcl::HypothesisVerification<pcl::PointXYZ, pcl::PointXYZ> > cast_hv_alg;
   cast_hv_alg = boost::static_pointer_cast<pcl::HypothesisVerification<pcl::PointXYZ, pcl::PointXYZ> > (papazov);
+
+  /*boost::shared_ptr<pcl::GlobalHypothesesVerification<pcl::PointXYZ, pcl::PointXYZ> > go (
+                                                                                          new pcl::GlobalHypothesesVerification<pcl::PointXYZ,
+                                                                                              pcl::PointXYZ>);
+  go->setResolution (0.005f);
+  go->setMaxIterations (7000);
+  go->setInlierThreshold (0.005f);
+  go->setRadiusClutter (0.035f);
+  go->setRegularizer (3.f);
+  go->setClutterRegularizer (5.f);
+  go->setDetectClutter (detect_clutter);
+  go->setUseConflictGraph (split_opt);
+
+  cast_hv_alg = boost::static_pointer_cast<pcl::HypothesisVerification<pcl::PointXYZ, pcl::PointXYZ> > (go);*/
 
   if (desc_name.compare ("shot") == 0)
   {
     boost::shared_ptr<pcl::rec_3d_framework::SHOTLocalEstimation<pcl::PointXYZ, pcl::Histogram<352> > > estimator;
     estimator.reset (new pcl::rec_3d_framework::SHOTLocalEstimation<pcl::PointXYZ, pcl::Histogram<352> >);
     estimator->setNormalEstimator (normal_estimator);
-    estimator->setKeypointExtractor (keypoint_extractor);
+    estimator->addKeypointExtractor (keypoint_extractor);
     estimator->setSupportRadius (0.04f);
 
     boost::shared_ptr<pcl::rec_3d_framework::LocalEstimator<pcl::PointXYZ, pcl::Histogram<352> > > cast_estimator;
@@ -327,9 +431,9 @@ main (int argc, char ** argv)
     local.setUseCache (static_cast<bool> (use_cache));
     local.initialize (static_cast<bool> (force_retrain));
 
-    keypoint_extractor->setRadiusSearch (0.005f);
+    uniform_keypoint_extractor->setSamplingDensity (0.005f);
     local.setICPIterations (icp_iterations);
-    local.setKdtreeSplits(splits);
+    local.setKdtreeSplits (splits);
 
     recognizeAndVisualize<flann::L1, pcl::PointXYZ, pcl::Histogram<352> > (local, mians_scenes);
 
@@ -337,11 +441,11 @@ main (int argc, char ** argv)
 
   if (desc_name.compare ("shot_omp") == 0)
   {
-    desc_name = std::string("shot");
+    desc_name = std::string ("shot");
     boost::shared_ptr<pcl::rec_3d_framework::SHOTLocalEstimationOMP<pcl::PointXYZ, pcl::Histogram<352> > > estimator;
     estimator.reset (new pcl::rec_3d_framework::SHOTLocalEstimationOMP<pcl::PointXYZ, pcl::Histogram<352> >);
     estimator->setNormalEstimator (normal_estimator);
-    estimator->setKeypointExtractor (keypoint_extractor);
+    estimator->addKeypointExtractor (keypoint_extractor);
     estimator->setSupportRadius (0.04f);
 
     boost::shared_ptr<pcl::rec_3d_framework::LocalEstimator<pcl::PointXYZ, pcl::Histogram<352> > > cast_estimator;
@@ -356,12 +460,13 @@ main (int argc, char ** argv)
     local.setHVAlgorithm (cast_hv_alg);
     local.setUseCache (static_cast<bool> (use_cache));
     local.initialize (static_cast<bool> (force_retrain));
+    local.setThresholdAcceptHyp (0.2f);
 
-    keypoint_extractor->setRadiusSearch (0.005f);
+    uniform_keypoint_extractor->setSamplingDensity (0.005f);
     local.setICPIterations (icp_iterations);
-    local.setKdtreeSplits(splits);
+    local.setKdtreeSplits (splits);
 
-    recognizeAndVisualize<flann::L1, pcl::PointXYZ, pcl::Histogram<352> > (local, mians_scenes);
+    recognizeAndVisualize<flann::L1, pcl::PointXYZ, pcl::Histogram<352> > (local, mians_scenes, scene);
 
   }
 
@@ -370,7 +475,7 @@ main (int argc, char ** argv)
     boost::shared_ptr<pcl::rec_3d_framework::FPFHLocalEstimation<pcl::PointXYZ, pcl::FPFHSignature33> > estimator;
     estimator.reset (new pcl::rec_3d_framework::FPFHLocalEstimation<pcl::PointXYZ, pcl::FPFHSignature33>);
     estimator->setNormalEstimator (normal_estimator);
-    estimator->setKeypointExtractor (keypoint_extractor);
+    estimator->addKeypointExtractor (keypoint_extractor);
     estimator->setSupportRadius (0.04f);
 
     boost::shared_ptr<pcl::rec_3d_framework::LocalEstimator<pcl::PointXYZ, pcl::FPFHSignature33> > cast_estimator;
@@ -386,9 +491,9 @@ main (int argc, char ** argv)
     local.setUseCache (static_cast<bool> (use_cache));
     local.initialize (static_cast<bool> (force_retrain));
 
-    keypoint_extractor->setRadiusSearch (0.005f);
+    uniform_keypoint_extractor->setSamplingDensity (0.005f);
     local.setICPIterations (icp_iterations);
-    local.setKdtreeSplits(splits);
+    local.setKdtreeSplits (splits);
 
     recognizeAndVisualize<flann::L1, pcl::PointXYZ, pcl::FPFHSignature33> (local, mians_scenes);
   }
