@@ -40,6 +40,7 @@
 #ifndef PCL_VISUALIZATION_IMAGE_VISUALIZER_HPP_
 #define	PCL_VISUALIZATION_IMAGE_VISUALIZER_HPP_
 
+#include <pcl/visualization/common/common.h>
 #include <pcl/search/organized.h>
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -607,21 +608,58 @@ pcl::visualization::ImageViewer::showCorrespondences (
     }
   }
 
+  void* data = const_cast<void*> (reinterpret_cast<const void*> (data_.get ()));
+  
   vtkSmartPointer<vtkImageData> image = vtkSmartPointer<vtkImageData>::New ();
   image->SetDimensions (source_img.width + target_img.width, std::max (source_img.height, target_img.height), 1);
   image->SetScalarTypeToUnsignedChar ();
   image->SetNumberOfScalarComponents (3);
   image->AllocateScalars ();
-  void* data = const_cast<void*> (reinterpret_cast<const void*> (data_.get ()));
   image->GetPointData ()->GetScalars ()->SetVoidArray (data, data_size_, 1);
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION < 10))
+  // Now create filter and set previously created transformation
+  algo_->SetInput (image);
+  algo_->Update ();
+#  if (VTK_MINOR_VERSION <= 6)
+    image_viewer_->SetInput (algo_->GetOutput ());
+#  else
+    am_it->canvas->SetNumberOfScalarComponents (3);
+    am_it->canvas->DrawImage (algo_->GetOutput ());
 
+    blend_->ReplaceNthInputConnection (int (am_it - layer_map_.begin ()), am_it->canvas->GetOutputPort ());
+    image_viewer_->SetInputConnection (blend_->GetOutputPort ());
+#  endif
+#else
   am_it->canvas->SetNumberOfScalarComponents (3);
   am_it->canvas->DrawImage (image);
 
   blend_->ReplaceNthInputConnection (int (am_it - layer_map_.begin ()), am_it->canvas->GetOutputPort ());
-  //slice_->GetMapper ()->SetInput (blend_->GetOutput ());
+  slice_->GetMapper ()->SetInput (blend_->GetOutput ());
 
   interactor_style_->adjustCamera (image, ren_);
+#endif
+
+  double r = 1.0 , g, b;
+  // Draw lines between the best corresponding points
+  for (size_t i = 0; i < correspondences.size (); i += nth)
+  {
+    int v_src = correspondences[i].index_query / source_img.width,
+        u_src = correspondences[i].index_query % source_img.width,
+        v_tgt = correspondences[i].index_match / target_img.width,
+        u_tgt = correspondences[i].index_match % target_img.width;
+    getRandomColors (r, g, b);
+    am_it->canvas->SetDrawColor (r * 255.0, g * 255.0, b * 255.0, 255.0);
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION >= 10))
+    am_it->canvas->DrawSegment (u_src, v_src, source_img.width + u_tgt, v_tgt);
+    am_it->canvas->DrawCircle (u_src, v_src, 3);
+    am_it->canvas->DrawCircle (source_img.width + u_tgt, v_tgt, 3);
+#else
+    am_it->canvas->DrawSegment (u_src, getSize ()[1] - v_src, source_img.width + u_tgt, getSize ()[1] - v_tgt);
+    am_it->canvas->DrawCircle (u_src, getSize ()[1] - v_src, 3);
+    am_it->canvas->DrawCircle (source_img.width + u_tgt, getSize ()[1] - v_tgt, 3);
+#endif
+  }
+
   return (true);
 }
 
