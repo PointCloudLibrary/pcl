@@ -86,7 +86,7 @@ namespace pcl
             }
           }
 
-          computeKeypoints(processed, keypoints, normals);
+          this->computeKeypoints(processed, keypoints, normals);
           std::cout << " " << normals->points.size() << " " << processed->points.size() << std::endl;
 
           if (keypoints->points.size () == 0)

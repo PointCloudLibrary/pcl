@@ -49,7 +49,7 @@ namespace pcl
           pcl::PointCloud<pcl::Normal>::Ptr normals (new pcl::PointCloud<pcl::Normal>);
           normal_estimator_->estimate (in, processed, normals);
 
-          computeKeypoints(processed, keypoints, normals);
+          this->computeKeypoints(processed, keypoints, normals);
           std::cout << " " << normals->points.size() << " " << processed->points.size() << std::endl;
 
           if (keypoints->points.size () == 0)

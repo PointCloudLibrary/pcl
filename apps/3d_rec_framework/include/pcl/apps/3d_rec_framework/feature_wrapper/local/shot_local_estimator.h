@@ -87,7 +87,7 @@ namespace pcl
           //normal_estimator_->estimate (in, processed, normals);
 
           //compute keypoints
-          computeKeypoints(processed, keypoints, normals);
+          this->computeKeypoints(processed, keypoints, normals);
           std::cout << " " << normals->points.size() << " " << processed->points.size() << std::endl;
 
           //compute keypoints
