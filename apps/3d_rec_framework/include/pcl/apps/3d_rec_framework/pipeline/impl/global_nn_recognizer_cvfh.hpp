@@ -655,10 +655,11 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
           if (noisify_)
           {
             double noise_std = noise_;
-            struct timeval start;
-            gettimeofday (&start, NULL);
+            //struct timeval start;
+            pcl::ScopeTime t;
+            //gettimeofday (&start, NULL);
             boost::mt19937 rng;
-            rng.seed (static_cast<unsigned int> (start.tv_usec));
+            rng.seed (static_cast<unsigned int> (t.getTime ()));
             boost::normal_distribution<> nd (0.0, noise_std);
             boost::variate_generator<boost::mt19937&, boost::normal_distribution<> > var_nor (rng, nd);
             // Noisify each point in the dataset
