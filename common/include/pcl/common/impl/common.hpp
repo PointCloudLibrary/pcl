@@ -127,7 +127,7 @@ pcl::getMaxDistance (const pcl::PointCloud<PointT> &cloud, const Eigen::Vector4f
       dist = (pivot_pt - pt).norm ();
       if (dist > max_dist)
       {
-        max_idx = i;
+        max_idx = int (i);
         max_dist = dist;
       }
     }
@@ -144,7 +144,7 @@ pcl::getMaxDistance (const pcl::PointCloud<PointT> &cloud, const Eigen::Vector4f
       dist = (pivot_pt - pt).norm ();
       if (dist > max_dist)
       {
-        max_idx = i;
+        max_idx = int (i);
         max_dist = dist;
       }
     }
