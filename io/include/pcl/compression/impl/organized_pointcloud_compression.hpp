@@ -143,27 +143,10 @@ namespace pcl
                                                               PointCloudPtr &cloud_arg,
                                                               bool bShowStatistics_arg)
     {
-      // sync to frame header
-      unsigned int headerIdPos = 0;
-      while (headerIdPos < strlen (frameHeaderIdentifier_))
-      {
-        char readChar;
-        compressedDataIn_arg.read (static_cast<char*> (&readChar), sizeof (readChar));
-        if (readChar != frameHeaderIdentifier_[headerIdPos++])
-          headerIdPos = (frameHeaderIdentifier_[0] == readChar) ? 1 : 0;
-      }
-
       uint32_t cloud_width;
       uint32_t cloud_height;
       float maxDepth, vocalLength;
       float depthQuantization;
-
-      // reading frame header
-      compressedDataIn_arg.read (reinterpret_cast<char*> (&cloud_width), sizeof (cloud_width));
-      compressedDataIn_arg.read (reinterpret_cast<char*> (&cloud_height), sizeof (cloud_height));
-      compressedDataIn_arg.read (reinterpret_cast<char*> (&maxDepth), sizeof (maxDepth));
-      compressedDataIn_arg.read (reinterpret_cast<char*> (&vocalLength), sizeof (vocalLength));
-      compressedDataIn_arg.read (reinterpret_cast<char*> (&depthQuantization), sizeof (depthQuantization));
 
       // disparity and rgb image data
       std::vector<uint16_t> disparityData;
@@ -176,26 +159,49 @@ namespace pcl
       uint32_t compressedDisparitySize;
       uint32_t compressedRGBSize;
 
-      // reading compressed disparity data
-      compressedDataIn_arg.read (reinterpret_cast<char*> (&compressedDisparitySize), sizeof (compressedDisparitySize));
-      compressedDisparity.resize (compressedDisparitySize);
-      compressedDataIn_arg.read (reinterpret_cast<char*> (&compressedDisparity[0]), compressedDisparitySize * sizeof(uint8_t));
-
-      // reading compressed rgb data
-      compressedDataIn_arg.read (reinterpret_cast<char*> (&compressedRGBSize), sizeof (compressedRGBSize));
-      compressedRGB.resize (compressedRGBSize);
-      compressedDataIn_arg.read (reinterpret_cast<char*> (&compressedRGB[0]), compressedRGBSize * sizeof(uint8_t));
-
       // PNG decoded parameters
-      size_t png_width;
-      size_t png_height;
-      unsigned int png_channels;
+      size_t png_width = 0;
+      size_t png_height = 0;
+      unsigned int png_channels = 1;
 
-      // decode PNG compressed disparity data
-      decodePNGToImage (compressedDisparity, disparityData, png_width, png_height, png_channels);
+      // sync to frame header
+      unsigned int headerIdPos = 0;
+      bool valid_stream = true;
+      while (valid_stream && (headerIdPos < strlen (frameHeaderIdentifier_)))
+      {
+        char readChar;
+        compressedDataIn_arg.read (static_cast<char*> (&readChar), sizeof (readChar));
+        if (readChar != frameHeaderIdentifier_[headerIdPos++])
+          headerIdPos = (frameHeaderIdentifier_[0] == readChar) ? 1 : 0;
 
-      // decode PNG compressed rgb data
-      decodePNGToImage (compressedRGB, rgbData, png_width, png_height, png_channels);
+        valid_stream=compressedDataIn_arg.good ();
+      }
+
+      if (valid_stream) {
+
+        // reading frame header
+        compressedDataIn_arg.read (reinterpret_cast<char*> (&cloud_width), sizeof (cloud_width));
+        compressedDataIn_arg.read (reinterpret_cast<char*> (&cloud_height), sizeof (cloud_height));
+        compressedDataIn_arg.read (reinterpret_cast<char*> (&maxDepth), sizeof (maxDepth));
+        compressedDataIn_arg.read (reinterpret_cast<char*> (&vocalLength), sizeof (vocalLength));
+        compressedDataIn_arg.read (reinterpret_cast<char*> (&depthQuantization), sizeof (depthQuantization));
+
+        // reading compressed disparity data
+        compressedDataIn_arg.read (reinterpret_cast<char*> (&compressedDisparitySize), sizeof (compressedDisparitySize));
+        compressedDisparity.resize (compressedDisparitySize);
+        compressedDataIn_arg.read (reinterpret_cast<char*> (&compressedDisparity[0]), compressedDisparitySize * sizeof(uint8_t));
+
+        // reading compressed rgb data
+        compressedDataIn_arg.read (reinterpret_cast<char*> (&compressedRGBSize), sizeof (compressedRGBSize));
+        compressedRGB.resize (compressedRGBSize);
+        compressedDataIn_arg.read (reinterpret_cast<char*> (&compressedRGB[0]), compressedRGBSize * sizeof(uint8_t));
+
+        // decode PNG compressed disparity data
+        decodePNGToImage (compressedDisparity, disparityData, png_width, png_height, png_channels);
+
+        // decode PNG compressed rgb data
+        decodePNGToImage (compressedRGB, rgbData, png_width, png_height, png_channels);
+      }
 
       // reconstruct point cloud
       OrganizedConversion<PointT>::convert (disparityData, rgbData, cloud_width, cloud_height, maxDepth, depthQuantization, vocalLength, *cloud_arg);
