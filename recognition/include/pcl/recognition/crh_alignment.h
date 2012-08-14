@@ -248,7 +248,7 @@ namespace pcl
 
             for (size_t j = 0; j < peaks_indices.size (); j++)
             { //check inserted peaks, first pick always inserted
-              if (fabs (peaks_indices[j] - scored_peaks[i].second) <= peak_distance || fabs (
+              if (std::abs (peaks_indices[j] - scored_peaks[i].second) <= peak_distance || std::abs (
                                                                                              peaks_indices[j] - (scored_peaks[i].second
                                                                                                  - nr_bins_after_padding)) <= peak_distance)
               {
