@@ -138,7 +138,7 @@ namespace pcl
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename PointT> void
+    template<typename PointT> bool
     OrganizedPointCloudCompression<PointT>::decodePointCloud (std::istream& compressedDataIn_arg,
                                                               PointCloudPtr &cloud_arg,
                                                               bool bShowStatistics_arg)
@@ -219,6 +219,8 @@ namespace pcl
         PCL_INFO("Total compression percentage: %.4f%%\n", (bytesPerPoint) / (CompressionPointTraits<PointT>::bytesPerPoint) * 100.0f);
         PCL_INFO("Compression ratio: %.2f\n\n", static_cast<float> (CompressionPointTraits<PointT>::bytesPerPoint) / bytesPerPoint);
       }
+
+      return valid_stream;
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////

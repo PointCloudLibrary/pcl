@@ -91,8 +91,9 @@ namespace pcl
          * \param[in] compressedDataIn_arg: binary input stream containing compressed data
          * \param[out] cloud_arg: reference to decoded point cloud
          * \param[in] bShowStatistics_arg: show compression statistics during decoding
+         * \return false if an I/O error occured.
          */
-        void decodePointCloud (std::istream& compressedDataIn_arg,
+        bool decodePointCloud (std::istream& compressedDataIn_arg,
                                PointCloudPtr &cloud_arg,
                                bool bShowStatistics_arg = true);
 
