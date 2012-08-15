@@ -101,6 +101,9 @@ namespace pcl
       void
       updateVtkPolygons();
 
+      void
+      transform(double tx, double ty, double tz, double rx, double ry, double rz);
+
     protected:
 
 

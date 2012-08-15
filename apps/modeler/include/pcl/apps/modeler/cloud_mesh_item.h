@@ -46,6 +46,7 @@ namespace pcl
   namespace modeler
   {
     class CloudMesh;
+    class DoubleParameter;
 
     class CloudMeshItem : public QTreeWidgetItem, public AbstractItem
     {
@@ -93,6 +94,13 @@ namespace pcl
       private:
         std::string                           filename_;
         boost::shared_ptr<CloudMesh>          cloud_mesh_;
+
+        DoubleParameter*                      translation_x_;
+        DoubleParameter*                      translation_y_;
+        DoubleParameter*                      translation_z_;
+        DoubleParameter*                      rotation_x_;
+        DoubleParameter*                      rotation_y_;
+        DoubleParameter*                      rotation_z_;
     };
   }
 }

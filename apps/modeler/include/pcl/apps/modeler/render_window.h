@@ -38,6 +38,9 @@
 #define PCL_MODELER_RENDER_WINDOW_H_
 
 #include <QVTKWidget.h>
+#include <vtkSmartPointer.h>
+
+class vtkCubeAxesActor;
 
 namespace pcl
 {
@@ -64,10 +67,16 @@ namespace pcl
         render();
 
         void
+        updateAxes();
+
+        void
         getBackground(double& r, double& g, double& b);
 
         void
         setBackground(double r, double g, double b);
+
+        void
+        setShowAxes(bool flag);
 
       protected:
         void
@@ -77,6 +86,7 @@ namespace pcl
         void
         initRenderer();
 
+        vtkSmartPointer<vtkCubeAxesActor>   axes_;
         RenderWindowItem*     render_window_item_;
     };
   }

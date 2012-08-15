@@ -38,6 +38,7 @@
 
 #include <pcl/visualization/point_cloud_handlers.h>
 #include <pcl/filters/filter_indices.h>
+#include <pcl/common/transforms.h>
 #include <pcl/io/pcd_io.h>
 #include <vtkDataArray.h>
 
@@ -196,6 +197,28 @@ pcl::modeler::CloudMesh::updateVtkPolygons()
         vtk_polygons_->InsertCellPoint ((*indices)[polygons_[i].vertices[j]]);
     }
   }
+
+  return;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::modeler::CloudMesh::transform(double tx, double ty, double tz, double rx, double ry, double rz)
+{
+  Eigen::Vector4f centroid;
+  pcl::compute3DCentroid(*cloud_, centroid);
+
+  CloudMesh::PointCloud mean_cloud = *cloud_;
+  pcl::demeanPointCloud(*cloud_, centroid, mean_cloud);
+
+  rx *= M_PI/180;
+  ry *= M_PI/180;
+  rz *= M_PI/180;
+  Eigen::Affine3f affine_transform = pcl::getTransformation(tx, ty, tz, rx, ry, rz);
+  CloudMesh::PointCloud transform_cloud = mean_cloud;
+  pcl::transformPointCloudWithNormals(mean_cloud, transform_cloud, affine_transform.matrix());
+
+  pcl::demeanPointCloud(transform_cloud, -centroid, *cloud_);
 
   return;
 }

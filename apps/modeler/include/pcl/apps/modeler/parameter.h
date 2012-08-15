@@ -94,6 +94,32 @@ namespace pcl
         boost::any      current_value_;
     };
 
+    class BoolParameter : public Parameter
+    {
+      public:
+        BoolParameter(const std::string& name, const std::string& description, bool value):
+            Parameter(name, description, value){}
+        ~BoolParameter(){}
+
+        operator bool() const {return boost::any_cast<bool>(current_value_);}
+
+        virtual std::string
+        valueTip();
+
+        virtual QWidget*
+        createEditor(QWidget *parent);
+
+        virtual void
+        setEditorData(QWidget *editor);
+
+        virtual std::pair<QVariant, int>
+        toModelData();
+
+      protected:
+        virtual void
+        getEditorData(QWidget *editor);
+    };
+
     class IntParameter : public Parameter
     {
       public:
@@ -114,6 +140,24 @@ namespace pcl
 
         virtual std::pair<QVariant, int>
         toModelData();
+
+        void
+        setLow(int low)
+        {
+          low_ = low;
+        }
+
+        void
+        setHigh(int high)
+        {
+          high_ = high;
+        }
+
+        void
+        setStep(int step)
+        {
+          step_ = step;
+        }
 
       protected:
         virtual void
@@ -172,7 +216,25 @@ namespace pcl
         setEditorData(QWidget *editor);
 
         virtual std::pair<QVariant, int>
-          toModelData();
+        toModelData();
+
+        void
+        setLow(double low)
+        {
+          low_ = low;
+        }
+
+        void
+        setHigh(double high)
+        {
+          high_ = high;
+        }
+
+        void
+        setStep(double step)
+        {
+          step_ = step;
+        }
 
       protected:
         virtual void

@@ -101,6 +101,51 @@ pcl::modeler::IntParameter::toModelData()
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 std::string
+pcl::modeler::BoolParameter::valueTip() 
+{
+  return QString("bool value").toStdString();
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+QWidget *
+pcl::modeler::BoolParameter::createEditor(QWidget *parent)
+{
+  QCheckBox *editor = new QCheckBox(parent);
+
+  return editor;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::modeler::BoolParameter::setEditorData(QWidget *editor)
+{
+  QCheckBox *checkBox = static_cast<QCheckBox*>(editor);
+
+  bool value = bool (*this);
+  checkBox->setCheckState(value?(Qt::Checked):(Qt::Unchecked));
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void
+  pcl::modeler::BoolParameter::getEditorData(QWidget *editor)
+{
+  QCheckBox *checkBox = static_cast<QCheckBox*>(editor);
+  bool value = (checkBox->checkState() == Qt::Checked);
+  current_value_ = value;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+std::pair<QVariant, int>
+pcl::modeler::BoolParameter::toModelData()
+{
+  std::pair<QVariant, int> model_data;
+  model_data.first = bool (*this);
+  model_data.second = Qt::EditRole;
+  return (model_data);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+std::string
 pcl::modeler::DoubleParameter::valueTip() 
 {
   return QString("value range: [%1, %3]").arg(low_).arg(high_).toStdString();

@@ -64,6 +64,7 @@
 #include <QCoreApplication>
 #include <QWidget>
 #include <QSpinBox>
+#include <QCheckBox>
 #include <QComboBox>
 #include <QPushButton>
 #include <QMessageBox>

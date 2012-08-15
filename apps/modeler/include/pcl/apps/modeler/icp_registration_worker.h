@@ -44,6 +44,7 @@ namespace pcl
 {
   namespace modeler
   {
+    class IntParameter;
     class DoubleParameter;
 
     class ICPRegistrationWorker : public AbstractWorker 
@@ -67,6 +68,15 @@ namespace pcl
 
       private:
         CloudMesh::PointCloudPtr    cloud_;
+
+        double x_min_, x_max_;
+        double y_min_, y_max_;
+        double z_min_, z_max_;
+
+        DoubleParameter*  max_correspondence_distance_;
+        IntParameter*     max_iterations_;
+        DoubleParameter*  transformation_epsilon_;
+        DoubleParameter*  euclidean_fitness_epsilon_;
     };
 
   }

@@ -41,14 +41,15 @@
 #include <pcl/apps/modeler/parameter.h>
 #include <pcl/apps/modeler/parameter_dialog.h>
 
+
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::modeler::RenderWindowItem::RenderWindowItem(QTreeWidget * parent)
   : QTreeWidgetItem(parent),
   AbstractItem(),
   render_window_(new RenderWindow(this)),
-  background_color_(new ColorParameter("Background Color", "The background color of the render window", QColor(0, 0, 0)))
+  background_color_(new ColorParameter("Background Color", "The background color of the render window", QColor(0, 0, 0))),
+  show_axes_(new BoolParameter("Show Axes", "Show Axes", true))
 {
-
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -106,6 +107,7 @@ pcl::modeler::RenderWindowItem::prepareProperties(ParameterDialog* parameter_dia
   QColor color(r*255, g*255, b*255);
   background_color_->setDefaultValue(color);
   parameter_dialog->addParameter(background_color_);
+  parameter_dialog->addParameter(show_axes_);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -114,4 +116,8 @@ pcl::modeler::RenderWindowItem::setProperties()
 {
   QColor color = *background_color_;
   render_window_->setBackground(color.red()/255.0, color.green()/255.0, color.blue()/255.0);
+
+  render_window_->setShowAxes(*show_axes_);
+
+  return;
 }

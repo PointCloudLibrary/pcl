@@ -39,19 +39,25 @@
 #include <pcl/apps/modeler/scene_tree.h>
 #include <pcl/apps/modeler/dock_widget.h>
 #include <pcl/apps/modeler/main_window.h>
+#include <vtkProp.h>
 #include <vtkRenderer.h>
+#include <vtkBoundingBox.h>
 #include <vtkSmartPointer.h>
 #include <vtkRenderWindow.h>
+#include <vtkCubeAxesActor.h>
 #include <vtkRendererCollection.h>
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::modeler::RenderWindow::RenderWindow(RenderWindowItem* render_window_item, QWidget *parent, Qt::WFlags flags)
   : QVTKWidget(parent, flags),
+  axes_(vtkSmartPointer<vtkCubeAxesActor>::New()),
   render_window_item_(render_window_item)
 {
   setFocusPolicy(Qt::StrongFocus);
   initRenderer();
+  updateAxes();
+  setShowAxes(true);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -145,4 +151,43 @@ void
 pcl::modeler::RenderWindow::setBackground(double r, double g, double b)
 {
   GetRenderWindow()->GetRenderers()->GetFirstRenderer()->SetBackground(r, g, b);
+}
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::modeler::RenderWindow::updateAxes()
+{
+  vtkBoundingBox bb;
+  vtkActorCollection* actors = GetRenderWindow()->GetRenderers()->GetFirstRenderer()->GetActors();
+
+  actors->InitTraversal();
+  for (int i = 0, i_end = actors->GetNumberOfItems(); i < i_end; ++ i)
+  {
+    vtkActor* actor = actors->GetNextActor();
+    if (actor == axes_.GetPointer())
+      continue;
+
+    double actor_bounds[6];
+    actor->GetBounds(actor_bounds);
+    bb.AddBounds(actor_bounds);
+  }
+  
+
+  double bounds[6];
+  bb.GetBounds(bounds);
+  axes_->SetBounds(bounds);
+  axes_->SetCamera(GetRenderWindow()->GetRenderers()->GetFirstRenderer()->GetActiveCamera());
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::modeler::RenderWindow::setShowAxes(bool flag)
+{
+  if (flag)
+    GetRenderWindow()->GetRenderers()->GetFirstRenderer()->AddActor(axes_);
+  else
+    GetRenderWindow()->GetRenderers()->GetFirstRenderer()->RemoveActor(axes_);
+
+  return;
 }

@@ -41,6 +41,7 @@
 #include <pcl/apps/modeler/abstract_item.h>
 #include <pcl/apps/modeler/cloud_mesh.h>
 
+
 namespace pcl
 {
   namespace modeler
@@ -48,6 +49,7 @@ namespace pcl
     class RenderWindow;
     class CloudMeshItem;
     class ColorParameter;
+    class BoolParameter;
 
     class RenderWindowItem : public QTreeWidgetItem, public AbstractItem
     {
@@ -87,8 +89,8 @@ namespace pcl
 
       private:
         RenderWindow*     render_window_;
-
         ColorParameter*   background_color_;
+        BoolParameter*    show_axes_;
     };
   }
 }

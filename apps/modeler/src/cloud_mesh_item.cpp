@@ -42,6 +42,8 @@
 #include <pcl/apps/modeler/surface_actor_item.h>
 #include <pcl/apps/modeler/cloud_mesh.h>
 #include <pcl/apps/modeler/main_window.h>
+#include <pcl/apps/modeler/parameter.h>
+#include <pcl/apps/modeler/parameter_dialog.h>
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -49,7 +51,13 @@ pcl::modeler::CloudMeshItem::CloudMeshItem (QTreeWidgetItem* parent, const std::
   :QTreeWidgetItem(parent),
   AbstractItem(),
   filename_(filename),
-  cloud_mesh_(boost::shared_ptr<CloudMesh>(new CloudMesh()))
+  cloud_mesh_(boost::shared_ptr<CloudMesh>(new CloudMesh())),
+  translation_x_(new DoubleParameter("Translation X", "Translation X", 0.0, -1.0, 1.0)),
+  translation_y_(new DoubleParameter("Translation Y", "Translation Y", 0.0, -1.0, 1.0)),
+  translation_z_(new DoubleParameter("Translation Z", "Translation Z", 0.0, -1.0, 1.0)),
+  rotation_x_(new DoubleParameter("Rotation X", "Rotation X", 0.0, -180.0, 180.0)),
+  rotation_y_(new DoubleParameter("Rotation Y", "Rotation Y", 0.0, -180.0, 180.0)),
+  rotation_z_(new DoubleParameter("Rotation Z", "Rotation Z", 0.0, -180.0, 180.0))
 {
   setText(0, QString(filename.c_str()));
 }
@@ -59,7 +67,13 @@ pcl::modeler::CloudMeshItem::CloudMeshItem (QTreeWidgetItem* parent, CloudMesh::
   :QTreeWidgetItem(parent),
   AbstractItem(),
   filename_("unnamed point cloud"),
-  cloud_mesh_(boost::shared_ptr<CloudMesh>(new CloudMesh(cloud)))
+  cloud_mesh_(boost::shared_ptr<CloudMesh>(new CloudMesh(cloud))),
+  translation_x_(new DoubleParameter("Translation X", "Translation X", 0.0, -1.0, 1.0)),
+  translation_y_(new DoubleParameter("Translation Y", "Translation Y", 0.0, -1.0, 1.0)),
+  translation_z_(new DoubleParameter("Translation Z", "Translation Z", 0.0, -1.0, 1.0)),
+  rotation_x_(new DoubleParameter("Rotation X", "Rotation X", 0.0, -180.0, 180.0)),
+  rotation_y_(new DoubleParameter("Rotation Y", "Rotation Y", 0.0, -180.0, 180.0)),
+  rotation_z_(new DoubleParameter("Rotation Z", "Rotation Z", 0.0, -180.0, 180.0))
 {
   setText(0, QString(filename_.c_str()));
 
@@ -135,6 +149,8 @@ pcl::modeler::CloudMeshItem::createChannels()
     child_item->init();
   }
 
+  render_window_item->getRenderWindow()->updateAxes();
+
   return;
 }
 
@@ -152,6 +168,9 @@ pcl::modeler::CloudMeshItem::updateChannels()
     child_item->update();
   }
 
+  RenderWindowItem* render_window_item = dynamic_cast<RenderWindowItem*>(parent());
+  render_window_item->getRenderWindow()->updateAxes();
+
   return;
 }
 
@@ -159,12 +178,41 @@ pcl::modeler::CloudMeshItem::updateChannels()
 void
 pcl::modeler::CloudMeshItem::prepareProperties(ParameterDialog* parameter_dialog)
 {
+  translation_x_->reset();
+  translation_y_->reset();
+  translation_z_->reset();
+  rotation_x_->reset();
+  rotation_y_->reset();
+  rotation_z_->reset();
+  parameter_dialog->addParameter(translation_x_);
+  parameter_dialog->addParameter(translation_y_);
+  parameter_dialog->addParameter(translation_z_);
+  parameter_dialog->addParameter(rotation_x_);
+  parameter_dialog->addParameter(rotation_y_);
+  parameter_dialog->addParameter(rotation_z_);
 
+  Eigen::Vector4f min_pt, max_pt;
+  pcl::getMinMax3D(*(cloud_mesh_->getCloud()), min_pt, max_pt);
+  double x_range = max_pt.x() - min_pt.x();
+  double y_range = max_pt.y() - min_pt.y();
+  double z_range = max_pt.z() - min_pt.z();
+  translation_x_->setLow(-x_range/2);
+  translation_x_->setHigh(x_range/2);
+  translation_x_->setStep(x_range/1000);
+  translation_y_->setLow(-y_range/2);
+  translation_y_->setHigh(y_range/2);
+  translation_y_->setStep(y_range/1000);
+  translation_z_->setLow(-z_range/2);
+  translation_z_->setHigh(z_range/2);
+  translation_z_->setStep(z_range/1000);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::modeler::CloudMeshItem::setProperties()
 {
+  cloud_mesh_->transform(*translation_x_, *translation_y_, *translation_z_,
+    *rotation_x_, *rotation_y_, *rotation_z_);
 
+  updateChannels();
 }
