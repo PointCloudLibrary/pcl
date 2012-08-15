@@ -112,6 +112,7 @@ pcl::InHandScanner::draw ()
     p_temp_cloud.swap (p_drawn_cloud_);
   }
 
+  p_visualizer_->setBackgroundColor (1.0, 1.0, 1.0);
   if (!p_visualizer_->updatePointCloud (p_temp_cloud, "cloud"))
   {
     p_visualizer_->addPointCloud (p_temp_cloud, "cloud");
@@ -141,8 +142,8 @@ pcl::InHandScanner::grabbedDataCallback (const CloudConstPtr& p_cloud_in)
 
   // Set the cloud for visualization
   p_drawn_cloud_.reset (new Cloud ());
-  //  pcl::copyPointCloud (*p_cloud_with_normals, *p_drawn_cloud_); // Adding '<PointWithNormal, Point>' does not help
-  pcl::copyPointCloud (*p_cloud_in, *p_drawn_cloud_); // works
+  pcl::copyPointCloud (*p_cloud_with_normals, *p_drawn_cloud_); // Adding '<PointWithNormal, Point>' does not help
+  //pcl::copyPointCloud (*p_cloud_in, *p_drawn_cloud_); // works
   this->showFPS ("computation");
 }
 
