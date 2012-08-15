@@ -129,7 +129,6 @@ if(build)
     if(APPLE)
       list(APPEND srcs
         include/pcl/visualization/vtk/vtkRenderWindowInteractorFix.mm)
-      set(LINKING_STUFF ${LINKING_STUFF} "-framework Cocoa")
     endif()
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
