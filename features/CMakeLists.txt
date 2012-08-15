@@ -19,6 +19,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/cvfh.h
         include/pcl/${SUBSYS_NAME}/our_cvfh.h
         include/pcl/${SUBSYS_NAME}/crh.h
+        include/pcl/${SUBSYS_NAME}/don.h
         include/pcl/${SUBSYS_NAME}/feature.h
         include/pcl/${SUBSYS_NAME}/fpfh.h
         include/pcl/${SUBSYS_NAME}/fpfh_omp.h
@@ -64,6 +65,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/cvfh.hpp
         include/pcl/${SUBSYS_NAME}/impl/our_cvfh.hpp
         include/pcl/${SUBSYS_NAME}/impl/crh.hpp
+        include/pcl/${SUBSYS_NAME}/impl/don.hpp
         include/pcl/${SUBSYS_NAME}/impl/feature.hpp
         include/pcl/${SUBSYS_NAME}/impl/fpfh.hpp
         include/pcl/${SUBSYS_NAME}/impl/fpfh_omp.hpp
@@ -109,6 +111,7 @@ if(build)
         src/cvfh.cpp
         src/our_cvfh.cpp
         src/crh.cpp
+        src/don.cpp
         src/fpfh.cpp
         src/fpfh_omp.cpp
         src/gfpfh.cpp
