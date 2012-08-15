@@ -53,6 +53,7 @@
 
 #include <pcl/visualization/boost.h>
 #include <pcl/visualization/vtk/vtkVertexBufferObjectMapper.h>
+#include <pcl/visualization/vtk/vtkRenderWindowInteractorFix.h>
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 pcl::visualization::PCLVisualizer::PCLVisualizer (const std::string &name, const bool create_interactor)
@@ -198,7 +199,8 @@ pcl::visualization::PCLVisualizer::createInteractor ()
 #if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
   interactor_ = vtkSmartPointer<PCLVisualizerInteractor>::New ();
 #else
-  interactor_ = vtkSmartPointer<vtkRenderWindowInteractor>::New ();
+  //interactor_ = vtkSmartPointer<vtkRenderWindowInteractor>::New ();
+  interactor_ = vtkSmartPointer <vtkRenderWindowInteractor>::Take (vtkRenderWindowInteractorFixNew ());
 #endif
 
   //win_->PointSmoothingOn ();

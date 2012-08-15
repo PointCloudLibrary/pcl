@@ -121,6 +121,7 @@ if(build)
     set(vtk_incs 
         include/pcl/${SUBSYS_NAME}/vtk/pcl_image_canvas_source_2d.h
         include/pcl/${SUBSYS_NAME}/vtk/vtkVertexBufferObject.h
+        include/pcl/${SUBSYS_NAME}/vtk/vtkRenderWindowInteractorFix.h
         include/pcl/${SUBSYS_NAME}/vtk/vtkVertexBufferObjectMapper.h
         )
 
@@ -131,6 +132,13 @@ if(build)
       target_link_libraries(${LIB_NAME} pcl_common pcl_io pcl_kdtree vtkCommon vtkWidgets vtkHybrid vtkFiltering vtkRendering ${OPENGL_LIBRARIES})
     else()
       target_link_libraries(${LIB_NAME} pcl_common pcl_io pcl_kdtree vtkCommon vtkWidgets vtkHybrid vtkCharts vtkFiltering vtkRendering ${OPENGL_LIBRARIES})
+    endif()
+
+    # on apple, a workaround is used for the cocoa render window interactor
+    if(APPLE)
+      list(APPEND SOURCE
+           include/pcl/visualization/vtk/vtkRenderWindowInteractorFix.mm)
+      set(LINKING_STUFF ${LINKING_STUFF} "-framework Cocoa")
     endif()
 
     set(EXT_DEPS "")
