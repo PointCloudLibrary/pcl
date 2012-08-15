@@ -3,6 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -16,7 +17,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -40,6 +41,7 @@
 #define PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_SVD_H_
 
 #include <pcl/registration/transformation_estimation.h>
+#include <pcl/cloud_iterator.h>
 
 namespace pcl
 {
@@ -115,6 +117,16 @@ namespace pcl
 
       protected:
 
+        /** \brief Estimate a rigid rotation transformation between a source and a target
+          * \param[in] source_it an iterator over the source point cloud dataset
+          * \param[in] target_it an iterator over the target point cloud dataset
+          * \param[out] transformation_matrix the resultant transformation matrix
+          */
+        void 
+        estimateRigidTransformation (ConstCloudIterator<PointSource>& source_it, 
+                                     ConstCloudIterator<PointTarget>& target_it, 
+                                     Matrix4 &transformation_matrix) const;
+
         /** \brief Obtain a 4x4 rigid transformation matrix from a correlation matrix H = src * tgt'
           * \param[in] cloud_src_demean the input source cloud, demeaned, in Eigen format
           * \param[in] centroid_src the input source centroid, in Eigen format
@@ -123,12 +135,13 @@ namespace pcl
           * \param[out] transformation_matrix the resultant 4x4 rigid transformation matrix
           */ 
         void
-        getTransformationFromCorrelation (const Eigen::MatrixXf &cloud_src_demean,
-                                          const Eigen::Vector4f &centroid_src,
-                                          const Eigen::MatrixXf &cloud_tgt_demean,
-                                          const Eigen::Vector4f &centroid_tgt,
-                                          Matrix4 &transformation_matrix) const;
-    };
+        getTransformationFromCorrelation (
+            const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> &cloud_src_demean,
+            const Eigen::Matrix<Scalar, 4, 1> &centroid_src,
+            const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> &cloud_tgt_demean,
+            const Eigen::Matrix<Scalar, 4, 1> &centroid_tgt,
+            Matrix4 &transformation_matrix) const;
+     };
 
   }
 }
