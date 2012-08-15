@@ -218,7 +218,7 @@ pcl::modeler::CloudMesh::transform(double tx, double ty, double tz, double rx, d
   CloudMesh::PointCloud transform_cloud = mean_cloud;
   pcl::transformPointCloudWithNormals(mean_cloud, transform_cloud, affine_transform.matrix());
 
-  pcl::demeanPointCloud(transform_cloud, -centroid, *cloud_);
+  //////! Broke the build: http://build.pointclouds.org/viewLog.html?buildId=22423&buildTypeId=bt2&tab=buildLog pcl::demeanPointCloud(transform_cloud, -centroid, *cloud_);
 
   return;
 }
