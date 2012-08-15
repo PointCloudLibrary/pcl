@@ -4,7 +4,6 @@
  * Point Cloud Library (PCL) - www.pointclouds.org
  * Copyright (c) 2009-2012, Willow Garage, Inc.
  * Copyright (c) 2012-, Open Perception, Inc.
- * Copyright (c) Martin Saelzle, respective authors.
  *
  * All rights reserved.
  *
@@ -39,8 +38,8 @@
  *
  */
 
-#ifndef p_mesh_CIRCULATORS_HPP
-#define p_mesh_CIRCULATORS_HPP
+#ifndef PCL_GEOMETRY_MESH_CIRCULATORS_HPP
+#define PCL_GEOMETRY_MESH_CIRCULATORS_HPP
 
 #include <boost/iterator/iterator_facade.hpp>
 #include <boost/utility/enable_if.hpp>
@@ -1033,5 +1032,5 @@ namespace pcl
 
 } // End namespace pcl
 
-#endif // p_mesh_CIRCULATORS_HPP
+#endif // PCL_GEOMETRY_MESH_CIRCULATORS_HPP
 

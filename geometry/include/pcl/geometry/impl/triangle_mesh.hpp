@@ -4,7 +4,6 @@
  * Point Cloud Library (PCL) - www.pointclouds.org
  * Copyright (c) 2009-2012, Willow Garage, Inc.
  * Copyright (c) 2012-, Open Perception, Inc.
- * Copyright (c) Martin Saelzle, respective authors.
  *
  * All rights reserved.
  *
@@ -39,8 +38,8 @@
  *
  */
 
-#ifndef TRIANGLE_MESH_HPP
-#define TRIANGLE_MESH_HPP
+#ifndef PCL_GEOMETRY_TRIANGLE_MESH_HPP
+#define PCL_GEOMETRY_TRIANGLE_MESH_HPP
 
 #include <pcl/geometry/impl/mesh_topology.hpp>
 
@@ -367,5 +366,4 @@ namespace pcl
 
 } // End namespace pcl
 
-#endif // TRIANGLE_MESH_HPP
-
+#endif // PCL_GEOMETRY_TRIANGLE_MESH_HPP

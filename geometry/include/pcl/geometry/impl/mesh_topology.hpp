@@ -4,7 +4,6 @@
  * Point Cloud Library (PCL) - www.pointclouds.org
  * Copyright (c) 2009-2012, Willow Garage, Inc.
  * Copyright (c) 2012-, Open Perception, Inc.
- * Copyright (c) Martin Saelzle, respective authors.
  *
  * All rights reserved.
  *
@@ -39,8 +38,8 @@
  *
  */
 
-#ifndef MESH_TOPOLOGY_HPP
-#define MESH_TOPOLOGY_HPP
+#ifndef PCL_GEOMETRY_MESH_TOPOLOGY_HPP
+#define PCL_GEOMETRY_MESH_TOPOLOGY_HPP
 
 #include <stack>
 
@@ -58,9 +57,9 @@ namespace pcl
       typedef pcl::MeshTopology <is_manifold, VertexDataT, FaceDataT, HalfEdgeDataT> Self;
       typedef pcl::MeshBase     <             VertexDataT, FaceDataT, HalfEdgeDataT> Base;
 
-      typedef boost::integral_constant<bool, true>        ManifoldMeshTag;
-      typedef boost::integral_constant<bool, false>       NonManifoldMeshTag;
-      typedef boost::integral_constant<bool, is_manifold> IsManifold;
+      typedef boost::integral_constant <bool, true>        ManifoldMeshTag;
+      typedef boost::integral_constant <bool, false>       NonManifoldMeshTag;
+      typedef boost::integral_constant <bool, is_manifold> IsManifold;
 
       typedef typename Base::VertexData   VertexData;
       typedef typename Base::HalfEdgeData HalfEdgeData;
@@ -903,4 +902,4 @@ namespace pcl
 
 } // End namespace pcl
 
-#endif // MESH_TOPOLOGY_HPP
+#endif // PCL_GEOMETRY_MESH_TOPOLOGY_HPP

@@ -4,7 +4,6 @@
  * Point Cloud Library (PCL) - www.pointclouds.org
  * Copyright (c) 2009-2012, Willow Garage, Inc.
  * Copyright (c) 2012-, Open Perception, Inc.
- * Copyright (c) Martin Saelzle, respective authors.
  *
  * All rights reserved.
  *
@@ -39,8 +38,8 @@
  *
  */
 
-#ifndef FACE_HPP
-#define FACE_HPP
+#ifndef PCL_GEOMETRY_FACE_HPP
+#define PCL_GEOMETRY_FACE_HPP
 
 namespace pcl
 {
@@ -303,5 +302,5 @@ namespace pcl
 
 } // End namespace pcl
 
-#endif // FACE_HPP
+#endif // PCL_GEOMETRY_FACE_HPP
 

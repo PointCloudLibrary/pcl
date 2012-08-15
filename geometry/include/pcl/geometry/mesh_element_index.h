@@ -4,7 +4,6 @@
  * Point Cloud Library (PCL) - www.pointclouds.org
  * Copyright (c) 2009-2012, Willow Garage, Inc.
  * Copyright (c) 2012-, Open Perception, Inc.
- * Copyright (c) Martin Saelzle, respective authors.
  *
  * All rights reserved.
  *
@@ -39,8 +38,8 @@
  *
  */
 
-#ifndef MESH_ELEMENT_INDEX_H
-#define MESH_ELEMENT_INDEX_H
+#ifndef PCL_GEOMETRY_MESH_ELEMENT_INDEX_H
+#define PCL_GEOMETRY_MESH_ELEMENT_INDEX_H
 
 #include <ostream>
 
@@ -337,5 +336,5 @@ namespace pcl
 
 } // End namespace pcl
 
-#endif // MESH_ELEMENT_INDEX_H
+#endif // PCL_GEOMETRY_MESH_ELEMENT_INDEX_H
 

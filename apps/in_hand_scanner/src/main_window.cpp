@@ -38,14 +38,58 @@
  *
  */
 
-#ifndef PCL_GEOMETRY_EIGEN_H
-#define PCL_GEOMETRY_EIGEN_H
+#include <pcl/apps/in_hand_scanner/main_window.h>
 
-#ifdef __GNUC__
-  #pragma GCC system_header
-#endif
+#include <ostream>
+#include <sstream>
 
-#include <Eigen/Core>
-#include <Eigen/StdVector>
+#include <QTimer>
 
-#endif // PCL_GEOMETRY_EIGEN_H
+#include <pcl/visualization/pcl_visualizer.h>
+#include <pcl/apps/in_hand_scanner/in_hand_scanner.h>
+
+////////////////////////////////////////////////////////////////////////////////
+
+pcl::InHandScannerMainWindow::InHandScannerMainWindow (QWidget* p_parent)
+  : QMainWindow        (p_parent),
+
+    p_ui_              (new Ui::MainWindow),
+    p_timer_           (new QTimer (this)),
+
+    p_visualizer_      (new PCLVisualizer ("", false)),
+    p_in_hand_scanner_ (new InHandScanner ())
+{
+  p_ui_->setupUi (this);
+  this->setWindowTitle ("PCL in-hand scanner");
+
+  // Timer
+  p_timer_->start (5); // ms
+  connect (p_timer_.get (), SIGNAL (timeout ()), this, SLOT (visualizationSlot ()));
+
+  // Visualization
+  p_ui_->qvtkWidget->SetRenderWindow (p_visualizer_->getRenderWindow ());
+  p_visualizer_->setupInteractor (p_ui_->qvtkWidget->GetInteractor (), p_ui_->qvtkWidget->GetRenderWindow ());
+  p_visualizer_->getInteractorStyle ()->setKeyboardModifier (pcl::visualization::INTERACTOR_KB_MOD_SHIFT);
+  p_ui_->qvtkWidget->update ();
+
+  // Scanner
+  p_in_hand_scanner_->setVisualizer (p_visualizer_);
+  p_in_hand_scanner_->start ();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+pcl::InHandScannerMainWindow::~InHandScannerMainWindow ()
+{
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+void
+pcl::InHandScannerMainWindow::visualizationSlot ()
+{
+  p_in_hand_scanner_->draw ();
+  p_ui_->qvtkWidget->update ();
+}
+
+////////////////////////////////////////////////////////////////////////////////

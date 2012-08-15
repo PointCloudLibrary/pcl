@@ -38,14 +38,16 @@
  *
  */
 
-#ifndef PCL_GEOMETRY_EIGEN_H
-#define PCL_GEOMETRY_EIGEN_H
+#include <QApplication>
 
-#ifdef __GNUC__
-  #pragma GCC system_header
-#endif
+#include <pcl/apps/in_hand_scanner/main_window.h>
 
-#include <Eigen/Core>
-#include <Eigen/StdVector>
+int main(int argc, char *argv[])
+{
+  QApplication app (argc, argv);
 
-#endif // PCL_GEOMETRY_EIGEN_H
+  pcl::InHandScannerMainWindow w;
+  w.show();
+
+  return app.exec();
+}

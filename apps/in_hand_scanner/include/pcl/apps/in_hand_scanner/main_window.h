@@ -38,14 +38,74 @@
  *
  */
 
-#ifndef PCL_GEOMETRY_EIGEN_H
-#define PCL_GEOMETRY_EIGEN_H
+#ifndef PCL_IN_HAND_SCANNER_MAIN_WINDOW_H
+#define PCL_IN_HAND_SCANNER_MAIN_WINDOW_H
 
-#ifdef __GNUC__
-  #pragma GCC system_header
-#endif
 
-#include <Eigen/Core>
-#include <Eigen/StdVector>
+#include <boost/shared_ptr.hpp>
 
-#endif // PCL_GEOMETRY_EIGEN_H
+#include <QMainWindow>
+#include <ui_main_window.h>
+
+////////////////////////////////////////////////////////////////////////////////
+// Forward declarations
+////////////////////////////////////////////////////////////////////////////////
+
+class QTimer;
+
+namespace pcl
+{
+  class InHandScanner;
+
+  namespace visualization
+  {
+    class PCLVisualizer;
+  } // End namespace visualization
+
+} // End namespace pcl
+
+////////////////////////////////////////////////////////////////////////////////
+// InHandScannerMainWindow
+////////////////////////////////////////////////////////////////////////////////
+
+namespace pcl
+{
+
+  class InHandScannerMainWindow : public QMainWindow
+  {
+      Q_OBJECT
+
+    private:
+
+      typedef boost::shared_ptr<Ui::MainWindow> MainWindowPtr;
+      typedef boost::shared_ptr<QTimer>         QTimerPtr;
+
+      typedef pcl::InHandScanner               InHandScanner;
+      typedef boost::shared_ptr<InHandScanner> InHandScannerPtr;
+
+      typedef pcl::visualization::PCLVisualizer PCLVisualizer;
+      typedef boost::shared_ptr<PCLVisualizer>  PCLVisualizerPtr;
+
+    public:
+
+      explicit InHandScannerMainWindow (QWidget* p_parent = 0);
+      ~InHandScannerMainWindow ();
+
+    private slots:
+
+      void
+      visualizationSlot ();
+
+    private:
+
+      MainWindowPtr    p_ui_;
+      QTimerPtr        p_timer_;
+
+      PCLVisualizerPtr p_visualizer_;
+      InHandScannerPtr p_in_hand_scanner_;
+  };
+
+} // End namespace pcl
+
+#endif // PCL_IN_HAND_SCANNER_MAIN_WINDOW_H
+
