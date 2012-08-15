@@ -54,10 +54,6 @@
 
 #include <pcl/io/ply_io.h>
 
-//REMOVE ME
-#include <pcl/io/pcd_io.h>
-#include <iostream>
-#include <fstream>
 
 namespace pcl
 {

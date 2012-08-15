@@ -72,7 +72,7 @@ namespace pcl
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-pcl::gpu::KinfuTracker::KinfuTracker (int rows, int cols) : rows_(rows), cols_(cols), global_time_(0), max_icp_distance_(0), integration_metric_threshold_(0.f), cyclical_( DISTANCE_THRESHOLD, VOLUME_SIZE, VOLUME_X), perform_last_scan_ (false), finished_(false)
+pcl::gpu::KinfuTracker::KinfuTracker (int rows, int cols) : rows_(rows), cols_(cols), global_time_(0), max_icp_distance_(0), integration_metric_threshold_(0.f), cyclical_( DISTANCE_THRESHOLD, pcl::device::VOLUME_SIZE, VOLUME_X), perform_last_scan_ (false), finished_(false)
 {
   const Vector3f volume_size = Vector3f::Constant (VOLUME_SIZE);
   const Vector3i volume_resolution(VOLUME_X, VOLUME_Y, VOLUME_Z);

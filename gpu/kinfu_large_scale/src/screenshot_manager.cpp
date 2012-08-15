@@ -59,21 +59,9 @@ namespace pcl
      void
      ScreenshotManager::saveImage(const Eigen::Affine3f &camPose, PtrStepSz<const PixelRGB> rgb24)
      {
-       //~ srand ( time(NULL) );
-       //~ 
-       //~ int msSleep = rand() % 2500000 + 500000;
-       
-       //~ std::cout << "=====================> Sleeping for " << msSleep << " milliseconds" << std::endl;
-       
-       std::cout << "[o] [o] [o] [o] Saving screenshot [o] [o] [o] [o]" << std::endl;
-       //~ 
-       //~ int a = 0;
-       //~ for(int i = 0 ; i < 1000000 ; ++i)
-       //~ {
-         //~ sleep(1)
-       //~ }
-       //~ usleep(msSleep);
-       //~ 
+
+       PCL_INFO ("[o] [o] [o] [o] Saving screenshot [o] [o] [o] [o]\n");
+
        std::string file_extension_image = ".png";
        std::string file_extension_pose = ".txt";
        std::string filename_image = "KinFuSnapshots/";
@@ -123,7 +111,7 @@ namespace pcl
         }
         else
         {
-          std::cout << "unable to open output pose file!" << std::endl;
+          PCL_WARN ("Unable to open/create output file for camera pose!\n");
         }
       }  
 

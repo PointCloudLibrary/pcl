@@ -720,8 +720,8 @@ struct KinFuApp
   void source_cb1(const boost::shared_ptr<openni_wrapper::DepthImage>& depth_wrapper)  
   {        
     {
-      boost::mutex::scoped_lock lock(data_ready_mutex_);
-      if (exit_)
+      boost::mutex::scoped_try_lock lock(data_ready_mutex_);
+      if (exit_ || !lock)
           return;
       
       depth_.cols = depth_wrapper->getWidth();
@@ -738,11 +738,12 @@ struct KinFuApp
   void source_cb2(const boost::shared_ptr<openni_wrapper::Image>& image_wrapper, const boost::shared_ptr<openni_wrapper::DepthImage>& depth_wrapper, float)
   {
     {
-      //~ cout << "[CB] CB at lock" << endl;
-      //~ boost::mutex::scoped_lock lock(data_ready_mutex_);
-      //~ cout << "[CB] CB after lock" << endl;
-      if (exit_)
-          return;
+      boost::mutex::scoped_try_lock lock(data_ready_mutex_);
+
+      if (exit_ || !lock)
+      {
+        return;
+      }
                   
       depth_.cols = depth_wrapper->getWidth();
       depth_.rows = depth_wrapper->getHeight();
@@ -761,7 +762,6 @@ struct KinFuApp
       rgb24_.data = &source_image_data_[0];    
       
     }
-    
     data_ready_cond_.notify_one();
   }
 
@@ -786,23 +786,22 @@ struct KinFuApp
       while (!exit_ && !scene_cloud_view_.cloud_viewer_.wasStopped () && !image_view_.viewerScene_.wasStopped () && !this->kinfu_.isFinished ())
       { 
         bool has_data = data_ready_cond_.timed_wait (lock, boost::posix_time::millisec(100));
-                       
+
         try { this->execute (depth_, rgb24_, has_data); }
         catch (const std::bad_alloc& /*e*/) { cout << "Bad alloc" << endl; break; }
         catch (const std::exception& /*e*/) { cout << "Exception" << endl; break; }
         
         scene_cloud_view_.cloud_viewer_.spinOnce (3);
-        //~ cout << "In main loop" << endl;                  
       } 
-      //~ cout << "Out of main loop, stopping capture" << endl;
+
       exit_ = true;
       boost::this_thread::sleep (boost::posix_time::millisec (100));
       capture_.stop ();
-      //~ cout << "Capture stopped" << endl;       
+
     }
-    //~ cout << "Disconnecting from signal" << endl;       
+
     c.disconnect();
-    //~ cout << "Disconnected from signal" << endl;  
+
   }
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

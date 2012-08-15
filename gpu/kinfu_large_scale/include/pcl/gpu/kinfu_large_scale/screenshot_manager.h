@@ -54,6 +54,8 @@
 
 #include <pcl/io/png_io.h>
 
+#include <pcl/console/print.h>
+
 
 namespace pcl
 {
