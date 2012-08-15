@@ -131,7 +131,8 @@ namespace pcl
         * \param[out] output the output point cloud
         */
       void
-      compute (PointCloudOut &output) {}
+      compute (PointCloudOut &) {}
+
       ///The smallest radius (scale) used in the DoN filter.
       PointCloudNConstPtr input_normals_small_;
       ///The largest radius (scale) used in the DoN filter.
