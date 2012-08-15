@@ -631,7 +631,7 @@ template <typename PointT, typename Scalar> void
 pcl::demeanPointCloud (ConstCloudIterator<PointT> &cloud_iterator,
                        const Eigen::Matrix<Scalar, 4, 1> &centroid,
                        pcl::PointCloud<PointT> &cloud_out,
-                       int npts = 0)
+                       int npts)
 {
   // Calculate the number of points if not given
   if (npts == 0)
@@ -721,7 +721,7 @@ template <typename PointT, typename Scalar> void
 pcl::demeanPointCloud (ConstCloudIterator<PointT> &cloud_iterator,
                        const Eigen::Matrix<Scalar, 4, 1> &centroid,
                        Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> &cloud_out,
-                       int npts = 0)
+                       int npts)
 {
   // Calculate the number of points if not given
   if (npts == 0)
