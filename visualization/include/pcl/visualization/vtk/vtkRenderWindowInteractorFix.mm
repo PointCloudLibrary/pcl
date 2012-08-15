@@ -38,7 +38,7 @@
 #import <Cocoa/Cocoa.h>
 //#import <vtkCocoaMacOSXSDKCompatibility.h> // Needed to support old SDKs
 
-#include <vtkRenderWindowInteractorFix.h>
+#include <pcl/visualization/vtk/vtkRenderWindowInteractorFix.h>
 #include <vtkCocoaRenderWindow.h>
 #include <vtkCocoaRenderWindowInteractor.h>
 #include <vtkObjectFactory.h>
