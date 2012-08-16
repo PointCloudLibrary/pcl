@@ -18,6 +18,30 @@ namespace pcl
   namespace rec_3d_framework
   {
 
+    template<typename PointInT>
+    class PCL_EXPORTS GlobalClassifier {
+      public:
+      typedef typename pcl::PointCloud<PointInT>::Ptr PointInTPtr;
+
+      virtual void
+      setNN (int nn) = 0;
+
+      virtual void
+      getCategory (std::vector<std::string> & categories) = 0;
+
+      virtual void
+      getConfidence (std::vector<float> & conf) = 0;
+
+      virtual void
+      classify () = 0;
+
+      virtual void
+      setIndices (std::vector<int> & indices) = 0;
+
+      virtual void
+      setInputCloud (const PointInTPtr & cloud) = 0;
+    };
+
     /**
      * \brief Nearest neighbor search based classification of PCL point type features.
      * FLANN is used to identify a neighborhood, based on which different scoring schemes
@@ -28,7 +52,7 @@ namespace pcl
      */
 
     template<template<class > class Distance, typename PointInT, typename FeatureT>
-      class PCL_EXPORTS GlobalNNPipeline
+      class PCL_EXPORTS GlobalNNPipeline : public pcl::rec_3d_framework::GlobalClassifier<PointInT>
       {
 
       protected:
