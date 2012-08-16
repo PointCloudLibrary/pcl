@@ -247,14 +247,21 @@ namespace pcl
         /** \brief spins (runs the event loop) the interactor for spin_time amount of time. The name is confusing and will be probably obsolete in the future release with a single overloaded spin()/display() function.
          *  \param[in] spin_time - How long (in ms) should the visualization loop be allowed to run.
          */
-        void spinOnce ( const int spin_time = 1 );
+        void 
+        spinOnce ( const int spin_time = 1 );
         
         /** \brief spins (runs the event loop) the interactor indefinitely. Same as plot() - added to retain the similarity between other existing visualization classes
          */
-        void spin ();
+        void 
+        spin ();
+        
+        /** \brief remove all plots from the window
+         */
+        void
+        clearPlots();
         
         /** \brief set method for the color scheme of the plot. The plots gets autocolored differently based on the color scheme.
-          * \param[in] scheme the color scheme. Possible values are vtkColorSeries::WARM, vtkColorSeries::COOL, vtkColorSeries::BLUES, vtkColorSeries::WILD_FLOWER, vtkColorSeries::CITRUS
+          * \param[in] scheme the color scheme. Possible values are vtkColorSeries::SPECTRUM, vtkColorSeries::WARM, vtkColorSeries::COOL, vtkColorSeries::BLUES, vtkColorSeries::WILD_FLOWER, vtkColorSeries::CITRUS
           */       
         void
         setColorScheme (int scheme);
@@ -350,7 +357,20 @@ namespace pcl
         void
         startInteractor ();
 
-               
+        /** \brief Returns true when the user tried to close the window */
+        bool
+        wasStopped () const { if (view_->GetInteractor() != NULL) return (stopped_); else return (true); }
+        
+        /** \brief Stop the interaction and close the visualizaton window. */
+        void
+        close ()
+        {
+          stopped_ = true;
+          // This tends to close the window...
+          view_->GetInteractor()->TerminateApp ();
+        }
+      
+      
       private:
         vtkSmartPointer<vtkContextView> view_;  
         //vtkSmartPointer<vtkChartXY> chart_;
@@ -394,9 +414,27 @@ namespace pcl
 #endif
         };
         
+        struct ExitCallback : public vtkCommand
+        {
+          static ExitCallback* New ()
+          {
+            return new ExitCallback;
+          }
+          virtual void Execute (vtkObject*, unsigned long event_id, void*)
+          {
+            if (event_id != vtkCommand::ExitEvent)
+              return;
+            plotter->stopped_ = true;
+          }
+          PCLPlotter *plotter;
+        };
+        
+         /** \brief Set to false if the interaction loop is running. */
+        bool stopped_;
+        
         /** \brief Callback object enabling us to leave the main loop, when a timer fires. */
         vtkSmartPointer<ExitMainLoopTimerCallback> exit_loop_timer_;
-        
+        vtkSmartPointer<ExitCallback> exit_callback_;
         
         ////////////////////////////////////IMPORTANT PRIVATE COMPUTING FUNCTIONS////////////////////////////////////////////////////
         /** \brief computes the value of the polynomial function at val

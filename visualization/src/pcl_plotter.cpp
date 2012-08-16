@@ -52,6 +52,7 @@ pcl::visualization::PCLPlotter::PCLPlotter (char const *name)
   //chart_=vtkSmartPointer<vtkChartXY>::New();
   color_series_ = vtkSmartPointer<vtkColorSeries>::New ();
   exit_loop_timer_ = vtkSmartPointer<ExitMainLoopTimerCallback>::New ();
+  exit_callback_ = vtkSmartPointer<ExitCallback>::New ();
   
   //connecting and mandatory bookkeeping
   view_->GetScene ()->AddItem (this);
@@ -59,6 +60,7 @@ pcl::visualization::PCLPlotter::PCLPlotter (char const *name)
   
   //###WARNING: hardcoding logic ;) :-/.. please see plot() and spin*() functions for the logic
   exit_loop_timer_->interactor = view_->GetInteractor ();
+  exit_callback_->plotter = this;
   
   //initializing default state values
   win_width_ = 640;
@@ -380,6 +382,7 @@ pcl::visualization::PCLPlotter::spinOnce( const int spin_time )
   {
     view_->GetInteractor ()->Initialize ();
     view_->GetInteractor ()->AddObserver ( vtkCommand::TimerEvent, exit_loop_timer_ );
+    view_->GetInteractor ()->AddObserver (vtkCommand::ExitEvent, exit_callback_);
   }
   exit_loop_timer_->right_timer_id = view_->GetInteractor()->CreateOneShotTimer( spin_time );
   
@@ -392,13 +395,23 @@ pcl::visualization::PCLPlotter::spinOnce( const int spin_time )
 void 
 pcl::visualization::PCLPlotter::spin()
 {
-  plot();
-  /*do
+  stopped_ = false;
+  do
   {
     spinOnce ();
+    if (stopped_)
+      break;
     boost::this_thread::sleep (boost::posix_time::seconds (1));
   }
-  while (true);*/
+  while (true);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::visualization::PCLPlotter::clearPlots ()
+{
+  this->ClearPlots ();
+  current_plot_ = 0;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -459,7 +472,7 @@ void
 pcl::visualization::PCLPlotter::setXTitle( const char * title )
 {
   this->GetAxis (vtkAxis::BOTTOM)->SetTitle (title);
-	this->SetShowLegend( true );
+  this->SetShowLegend( true );
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -467,7 +480,7 @@ void
 pcl::visualization::PCLPlotter::setYTitle( const char * title )
 {
   this->GetAxis (vtkAxis::LEFT)->SetTitle (title);
-	this->SetShowLegend (true);
+  this->SetShowLegend (true);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
