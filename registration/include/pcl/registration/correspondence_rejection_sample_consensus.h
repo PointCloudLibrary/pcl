@@ -68,7 +68,7 @@ namespace pcl
         /** \brief Empty constructor. */
         CorrespondenceRejectorSampleConsensus () :
           inlier_threshold_ (0.05),
-          max_iterations_ (0),
+          max_iterations_ (std::numeric_limits<int>::max ()),
           input_ (),
           target_ (),
           best_transformation_ ()
