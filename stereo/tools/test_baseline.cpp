@@ -8,7 +8,7 @@
 /** \brief Stereo Matching demo
 	*
 	* This demo loads a stereo image pair and computes the disparity map and related organized point cloud
-	* using the PCL BlockBased Stereo Matching algorithm. 
+	* using the PCL AdaptiveCost-2SO Stereo Matching algorithm. 
 	* Input pcds should be "stereo_left.pcd" and "stereo_right.pcd" which can be found in the test subfolder within trunk.
 	* A rescaled version of the disparity map is displayed, as well as the point cloud.
 	*
@@ -44,13 +44,18 @@ main(int argc, char **argv)
 		return 0;
 	}
 
-	pcl::BlockBasedStereoMatching stereo;
+	pcl::AdaptiveCostSOStereoMatching stereo;
 
 	stereo.setMaxDisparity(60);
 	stereo.setXOffset(0);
-	stereo.setRadius(7);
+	stereo.setRadius(5);
 
-	stereo.setRatioFilter(10);
+	stereo.setSmoothWeak(20);
+	stereo.setSmoothStrong(100);
+	stereo.setGammaC(25);
+	stereo.setGammaS(10);
+
+	stereo.setRatioFilter(20);
 	stereo.setPeakFilter(0);
 
 	stereo.setLeftRightCheck(true);
@@ -62,7 +67,7 @@ main(int argc, char **argv)
 
 	stereo.medianFilter(4);
 
-	pcl::PointCloud<pcl::PointXYZI>::Ptr out_cloud( new pcl::PointCloud<pcl::PointXYZI> );
+	pcl::PointCloud<pcl::PointXYZRGB>::Ptr out_cloud( new pcl::PointCloud<pcl::PointXYZRGB> );
 
 	stereo.getPointCloud(318.112200, 224.334900, 368.534700, 0.8387445, out_cloud, left_cloud);
 
@@ -76,10 +81,11 @@ main(int argc, char **argv)
 
 	boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer (new pcl::visualization::PCLVisualizer ("3D Viewer"));
 	viewer->setBackgroundColor (0, 0, 0);
-	viewer->addPointCloud<pcl::PointXYZI> (out_cloud, "stereo");
 	
-	//pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZI> intensity(cloud);
-	//viewer->addPointCloud<pcl::PointXYZI> (cloud, intensity, "stereo");
+	//viewer->addPointCloud<pcl::PointXYZRGB> (out_cloud, "stereo");
+	pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGB> intensity(out_cloud);
+	viewer->addPointCloud<pcl::PointXYZRGB> (out_cloud, intensity, "stereo");
+
 	//viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1, "stereo");
 	viewer->initCameraParameters ();
 	//viewer->spin();

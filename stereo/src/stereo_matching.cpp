@@ -36,6 +36,13 @@
  *
  */
 
+
+/** \brief please see related documentation on stereo/stereo_matching.h
+	*
+    * \author Federico Tombari (federico.tombari@unibo.it)
+    * \ingroup stereo
+    */
+
 #include "pcl/stereo/stereo_matching.h"
 
 pcl::StereoMatching::StereoMatching(void)
@@ -205,6 +212,136 @@ void pcl::StereoMatching::leftRightCheck()
 }
 
 
+bool pcl::StereoMatching::getPointCloud(float u_c, float v_c, float focal, float baseline, pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud, pcl::PointCloud<pcl::RGB>::Ptr texture) 
+{
+
+	//disp map has not been computed yet..
+	if ( disp_map_ == NULL)
+	{
+
+		PCL_ERROR(
+			"[pcl::StereoMatching::getPointCloud] Error: a disparity map has not been computed yet. The resulting cloud can not be computed..\n"
+		);
+
+		return false;
+	}
+
+	
+	if ( texture->width != width_ || texture->height != height_)
+	{
+		PCL_ERROR(
+			"[pcl::StereoMatching::getPointCloud] Error: the size of the texture cloud does not match that of the computed range map. The resulting cloud can not be computed..\n"
+		);
+
+			return false;
+		}
+
+	//cloud needs to be re-allocated
+	if (cloud->width != width_ || cloud->height != height_)
+	{
+		//cloud.reset(new pcl::PointCloud<pcl::PointXYZRGBA>(width_, height_) );
+		cloud->resize(width_*height_);
+		cloud->width = width_;
+		cloud->height = height_;
+		cloud->is_dense = false;
+	}
+
+	//Loop
+	pcl::PointXYZRGB temp_point;
+	pcl::PointXYZRGB nan_point;
+	nan_point.x = std::numeric_limits<float>::quiet_NaN();
+	nan_point.y = std::numeric_limits<float>::quiet_NaN();
+	nan_point.z = std::numeric_limits<float>::quiet_NaN();
+	nan_point.r = std::numeric_limits<unsigned char>::quiet_NaN();
+	nan_point.g = std::numeric_limits<unsigned char>::quiet_NaN();
+	nan_point.b = std::numeric_limits<unsigned char>::quiet_NaN();
+
+	for ( int j=0; j<height_; j++)
+	{
+		for ( int i=0; i<width_; i++)
+		{
+			if ( disp_map_[ j*width_ + i] > 0 )
+			{
+				temp_point.z = ( baseline * focal ) / disp_map_[ j*width_ + i];
+				temp_point.x = ( (i-u_c) * temp_point.z) / focal;
+				temp_point.y = ( (j-v_c) * temp_point.z) / focal;
+				
+				//temp_point.intensity = ( texture->at(j*width_+i).r +texture->at(j*width_+i).g + texture->at(j*width_+i).b) / 3.0f;
+				temp_point.r = texture->at(j*width_+i).r;
+				temp_point.g = texture->at(j*width_+i).g; 
+				temp_point.b = texture->at(j*width_+i).b; 
+
+				cloud->at( j*width_ + i ) = temp_point;
+			}
+			//adding NaN value
+			else
+			{
+				cloud->at( j*width_ + i ) = nan_point;
+			}
+		}
+	}
+
+	return true;
+}
+
+//const pcl::PointCloud<pcl::PointXYZRGBA>::Ptr pcl::StereoMatching::getPointCloud(float uC, float vC, float focal, float baseline)
+bool pcl::StereoMatching::getPointCloud(float u_c, float v_c, float focal, float baseline, pcl::PointCloud<pcl::PointXYZ>::Ptr cloud)
+{
+	
+	//disp map has not been computed yet..
+	if ( disp_map_ == NULL)
+	{
+
+		PCL_ERROR(
+			"[pcl::StereoMatching::getPointCloud] Error: a disparity map has not been computed yet. The resulting cloud can not be computed..\n"
+		);
+
+		return false;
+	}
+
+	//cloud needs to be re-allocated
+	if (cloud->width != width_ || cloud->height != height_)
+	{
+		cloud->resize(width_*height_);
+		cloud->width = width_;
+		cloud->height = height_;
+		cloud->is_dense = false;
+	}
+
+	//Loop
+	pcl::PointXYZ temp_point;
+	pcl::PointXYZ nan_point;
+	nan_point.x = std::numeric_limits<float>::quiet_NaN();
+	nan_point.y = std::numeric_limits<float>::quiet_NaN();
+	nan_point.z = std::numeric_limits<float>::quiet_NaN();
+	//nan_point.intensity = std::numeric_limits<float>::quiet_NaN();
+
+	for ( int j=0; j<height_; j++)
+	{
+		for ( int i=0; i<width_; i++)
+		{
+			if ( disp_map_[ j*width_ + i] > 0 )
+			{
+
+				temp_point.z = ( baseline * focal ) / disp_map_[ j*width_ + i];
+				temp_point.x = ( (i-u_c) * temp_point.z) / focal;
+				temp_point.y = ( (j-v_c) * temp_point.z) / focal;
+				//temp_point.intensity = 255;
+
+				cloud->at(j*width_ + i) = temp_point;
+			}
+			//adding NaN value
+			else
+			{
+				cloud->at( j*width_ + i ) = nan_point;
+			}
+		}
+	}
+
+	return true;
+}
+
+
 pcl::GrayStereoMatching::GrayStereoMatching()
 {
 
@@ -217,11 +354,10 @@ pcl::GrayStereoMatching::~GrayStereoMatching()
 
 void pcl::GrayStereoMatching::preProcessing(unsigned char *img, unsigned char *pp_img)
 {
-	//TODO: grayscale pre processing for stereo pairs
 	int radius = 4;							//default value, could be exported
 	int n = 2*radius+1;
 	int area = n*n;
-	int threshold = 127;
+	int threshold = 31;
 
 	int sum=0; 
 	int *v = new int[width_];
@@ -473,138 +609,4 @@ void pcl::GrayStereoMatching::compute(unsigned char* ref_img, unsigned char* trg
 
 }
 
-bool pcl::GrayStereoMatching::getPointCloud(float u_c, float v_c, float focal, float baseline, pcl::PointCloud<pcl::PointXYZI>::Ptr cloud, pcl::PointCloud<pcl::RGB>::Ptr texture) 
-{
 
-	//disp map has not been computed yet..
-	if ( disp_map_ == NULL)
-	{
-
-		PCL_ERROR(
-			"[pcl::StereoMatching::getPointCloud] Error: a disparity map has not been computed yet. The resulting cloud can not be computed..\n"
-		);
-
-		return false;
-	}
-
-	
-	if ( texture->width != width_ || texture->height != height_)
-	{
-		PCL_ERROR(
-			"[pcl::StereoMatching::getPointCloud] Error: the size of the texture cloud does not match that of the computed range map. The resulting cloud can not be computed..\n"
-		);
-
-			return false;
-		}
-
-	//cloud needs to be re-allocated
-	if (cloud->width != width_ || cloud->height != height_)
-	{
-		//cloud.reset(new pcl::PointCloud<pcl::PointXYZRGBA>(width_, height_) );
-		cloud->resize(width_*height_);
-		cloud->width = width_;
-		cloud->height = height_;
-		cloud->is_dense = false;
-	}
-
-	//Loop
-	pcl::PointXYZI temp_point;
-	pcl::PointXYZI nan_point;
-	nan_point.x = std::numeric_limits<float>::quiet_NaN();
-	nan_point.y = std::numeric_limits<float>::quiet_NaN();
-	nan_point.z = std::numeric_limits<float>::quiet_NaN();
-	nan_point.intensity = std::numeric_limits<float>::quiet_NaN();
-
-	for ( int j=0; j<height_; j++)
-	{
-		for ( int i=0; i<width_; i++)
-		{
-			if ( disp_map_[ j*width_ + i] > 0 )
-			{
-				temp_point.z = ( baseline * focal ) / disp_map_[ j*width_ + i];
-				temp_point.x = ( (i-u_c) * temp_point.z) / focal;
-				temp_point.y = ( (j-v_c) * temp_point.z) / focal;
-				
-				temp_point.intensity = ( texture->at(j*width_+i).r +texture->at(j*width_+i).g + texture->at(j*width_+i).b) / 3.0f;
-			
-				cloud->at( j*width_ + i ) = temp_point;
-			}
-			//adding NaN value
-			else
-			{
-				cloud->at( j*width_ + i ) = nan_point;
-			}
-		}
-	}
-
-}
-
-//const pcl::PointCloud<pcl::PointXYZRGBA>::Ptr pcl::StereoMatching::getPointCloud(float uC, float vC, float focal, float baseline)
-bool pcl::GrayStereoMatching::getPointCloud(float u_c, float v_c, float focal, float baseline, pcl::PointCloud<pcl::PointXYZI>::Ptr cloud)
-{
-	
-	//disp map has not been computed yet..
-	if ( disp_map_ == NULL)
-	{
-
-		PCL_ERROR(
-			"[pcl::StereoMatching::getPointCloud] Error: a disparity map has not been computed yet. The resulting cloud can not be computed..\n"
-		);
-
-		return false;
-	}
-
-	//cloud needs to be re-allocated
-	if (cloud->width != width_ || cloud->height != height_)
-	{
-		//cloud.reset(new pcl::PointCloud<pcl::PointXYZRGBA>(width_, height_) );
-		cloud->resize(width_*height_);
-		cloud->width = width_;
-		cloud->height = height_;
-		cloud->is_dense = false;
-	}
-
-	//Loop
-	pcl::PointXYZI temp_point;
-	pcl::PointXYZI nan_point;
-	nan_point.x = std::numeric_limits<float>::quiet_NaN();
-	nan_point.y = std::numeric_limits<float>::quiet_NaN();
-	nan_point.z = std::numeric_limits<float>::quiet_NaN();
-	nan_point.intensity = std::numeric_limits<float>::quiet_NaN();
-
-	for ( int j=0; j<height_; j++)
-	{
-		for ( int i=0; i<width_; i++)
-		{
-			if ( disp_map_[ j*width_ + i] > 0 )
-			{
-
-				temp_point.z = ( baseline * focal ) / disp_map_[ j*width_ + i];
-				temp_point.x = ( (i-u_c) * temp_point.z) / focal;
-				temp_point.y = ( (j-v_c) * temp_point.z) / focal;
-				temp_point.intensity = 255;
-
-				cloud->at(j*width_ + i) = temp_point;
-			}
-			//adding NaN value
-			else
-			{
-				cloud->at( j*width_ + i ) = nan_point;
-			}
-		}
-	}
-
-	return true;
-}
-
-//TODO
-//pcl::AdaptiveCostSOStereoMatching::AdaptiveCostSOStereoMatching()
-//{
-//
-//}
-//
-//void pcl::AdaptiveCostSOStereoMatching::compute_impl(unsigned char* ref_img, unsigned char* trg_img)
-//{
-//
-//	//TODO: body of the specific stereo matching algorithm
-//}

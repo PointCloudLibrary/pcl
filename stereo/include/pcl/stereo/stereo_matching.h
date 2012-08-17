@@ -126,10 +126,10 @@ namespace pcl
 		//should the cloud be handled by the StereoMatching class or should it be left to the user?
 		//const pcl::PointCloud<pcl::PointXYZRGBA>::Ptr getPointCloud(float uC, float vC, float focal, float baseline);
 		virtual bool 
-		getPointCloud(float u_c, float v_c, float focal, float baseline, pcl::PointCloud<pcl::PointXYZI>::Ptr cloud) = 0;
+		getPointCloud(float u_c, float v_c, float focal, float baseline, pcl::PointCloud<pcl::PointXYZ>::Ptr cloud);
 
 		virtual bool 
-		getPointCloud(float u_c, float v_c, float focal, float baseline, pcl::PointCloud<pcl::PointXYZI>::Ptr cloud,  pcl::PointCloud<pcl::RGB>::Ptr texture) = 0;
+		getPointCloud(float u_c, float v_c, float focal, float baseline, pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud,  pcl::PointCloud<pcl::RGB>::Ptr texture);
 
 		void 
 		getVisualMap(pcl::PointCloud<pcl::RGB>::Ptr vMap);
@@ -182,10 +182,40 @@ namespace pcl
 		}
 
 		inline short int 
+		computeStereoSubpixel(int dbest, float s1, float s2, float s3)
+		{
+			float den = (s1+s3-2*s2);
+			if(den != 0)
+				return (short int) (16*dbest + floor(.5 + (((s1 - s3)*8) / den)));
+			else
+				return (short int) (dbest*16);
+		}
+
+		inline short int 
 		doStereoRatioFilter(int *acc, short int dbest, int sad_min, int ratio_filter, int maxdisp, int precision=100)
 		{
 
 			int sad_second_min = std::numeric_limits<int>::max();
+
+			for(int d=0; d<dbest-1; d++)
+				if(acc[d]<sad_second_min)
+					sad_second_min = acc[d];
+
+			for(int d=dbest+2; d<maxdisp; d++)
+				if(acc[d]<sad_second_min)
+					sad_second_min = acc[d];
+
+			if(sad_min*precision  > (precision-ratio_filter)*sad_second_min)
+				return -2;
+			else	
+				return dbest;
+		}
+
+		inline short int 
+		doStereoRatioFilter(float *acc, short int dbest, float sad_min, int ratio_filter, int maxdisp, int precision=100)
+		{
+
+			float sad_second_min = std::numeric_limits<float>::max();
 
 			for(int d=0; d<dbest-1; d++)
 				if(acc[d]<sad_second_min)
@@ -213,11 +243,24 @@ namespace pcl
 				return dbest;
 		}
 
+		inline short int 
+		doStereoPeakFilter(float *acc, short int dbest, int peak_filter, int maxdisp)
+		{
+			float da = (dbest>1) ? ( acc[dbest-2] - acc[dbest] ) : (acc[dbest+2] - acc[dbest]);
+			float db =  (dbest<maxdisp-2) ? (acc[dbest+2] - acc[dbest]) : (acc[dbest-2] - acc[dbest]);	
+
+			if(da + db < peak_filter)
+				return -4;
+			else
+				return dbest;
+		}
+
 	};
 
 	/** \brief Stereo Matching abstract class for Grayscale images 
 	*
-	* The class implements some functionalities of pcl::StereoMatching specific for grayscale stereo processing
+	* The class implements some functionalities of pcl::StereoMatching specific for grayscale stereo processing,
+	* such as image pre-processing and left
 	*
     * \author Federico Tombari (federico.tombari@unibo.it)
     * \ingroup stereo
@@ -235,12 +278,6 @@ namespace pcl
 
 		virtual void
 		compute(pcl::PointCloud<pcl::RGB> &ref, pcl::PointCloud<pcl::RGB> &trg);
-
-		virtual bool 
-		getPointCloud(float u_c, float v_c, float focal, float baseline, pcl::PointCloud<pcl::PointXYZI>::Ptr cloud);
-
-		virtual bool 
-		getPointCloud(float u_c, float v_c, float focal, float baseline, pcl::PointCloud<pcl::PointXYZI>::Ptr cloud, pcl::PointCloud<pcl::RGB>::Ptr texture);
 
 	protected:
 
@@ -293,19 +330,77 @@ namespace pcl
 
 	};
 
-	// TODO
-	//class PCL_EXPORTS AdaptiveCostSOStereoMatching : public GrayStereoMatching
-	//{
-	//public:
+	/** \brief Adaptive Cost 2-pass Scanline Optimization Stereo Matching class
+	*
+	* This class implements an adaptive-cost stereo matching algorithm based on 2-pass Scanline Optimization. 
+	* The algorithm is inspired by the paper:
+	* [1] L. Wang et al., "High Quality Real-time Stereo using Adaptive Cost Aggregation and Dynamic Programming", 3DPVT 2006
+	* Cost aggregation is performed using adaptive weigths computed on a single column as proposed in [1].
+	* Instead of using Dynamic Programming as in [1], the optimization is performed via 2-pass Scanline Optimization. 
+	* The algorithm is based on the Sum of Absolute Differences (SAD) matching function
+	* Only works with grayscale (single channel) rectified images
+	*
+    * \author Federico Tombari (federico.tombari@unibo.it)
+    * \ingroup stereo
+    */
+	
+	class PCL_EXPORTS AdaptiveCostSOStereoMatching : public GrayStereoMatching
+	{
+	public:
 
-	//	AdaptiveCostSOStereoMatching(void);
+		AdaptiveCostSOStereoMatching(void);
 
-	//	virtual ~AdaptiveCostSOStereoMatching(void) {};
+		virtual ~AdaptiveCostSOStereoMatching(void) 
+		{
+		};
 
-	//private:
+		void 
+		setRadius(int radius)
+		{
+			radius_=radius;
+		};
 
-	//	virtual void compute_impl(unsigned char* ref_img, unsigned char* trg_img);
-	//};
+		void 
+		setGammaS(int gamma_s)
+		{
+			gamma_s_=gamma_s;
+		};
+
+		void 
+		setGammaC(int gamma_c)
+		{
+			gamma_c_ = gamma_c;
+		};
+
+		void 
+		setSmoothWeak(int smoothness_weak)
+		{
+			smoothness_weak_=smoothness_weak;
+		};
+
+		void 
+		setSmoothStrong(int smoothness_strong)
+		{
+			smoothness_strong_=smoothness_strong;
+		};
+
+	private:
+
+		virtual void 
+		compute_impl(unsigned char* ref_img, unsigned char* trg_img);
+
+		int radius_;
+
+		//parameters for adaptive weight cost aggregation
+		double gamma_c_;
+		double gamma_s_;
+
+		//Parameters for 2-pass SO optimization
+		int smoothness_strong_;
+		int	smoothness_weak_;
+
+		double lut_[256];
+	};
 
 }
 
