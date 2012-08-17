@@ -876,6 +876,21 @@ Visualization
 
      .. |vi_3| image:: images/pcl_visualizer_viewports.png
                :height: 100px
+ 
+  * :ref:`pcl_plotter`
+
+     ======  ======
+     |vi_4|  Title: **PCLPlotter**
+
+             Author: *Kripasindhu Sarkar*
+
+             Compatibility: > PCL 1.7
+
+             This tutorial demonstrates how to use the PCLPlotter class for powerful visualisation of plots, charts and histograms of raw data and explicit functions.
+     ======  ======
+
+     .. |vi_4| image:: images/pcl_plotter_comprational.png
+               :height: 100px               
 
 .. _applications_tutorial:
 
