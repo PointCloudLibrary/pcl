@@ -40,17 +40,45 @@
 #include <pcl/gpu/kinfu_large_scale/world_model.h>
 #include <pcl/gpu/kinfu_large_scale/impl/world_model.hpp>
 
+#include <pcl/console/parse.h>
+
+int
+print_help ()
+{
+
+  std::cout << "\nUsage:" << std::endl;
+  std::cout << "    pcl_kinfu_largeScale_mesh_output <tsdf_world.pcd> [options]" << std::endl << std::endl ;
+
+  std::cout << "\nAvailable options:" << std::endl;
+  std::cout << "    --help, -h                      : print this message" << std::endl;
+  std::cout << "    --volume_size <in_meters>       : define integration volume size. MUST match the size used when scanning." << std::endl << std::endl;
+
+  return 0;
+}
+
+
 int
 main (int argc, char** argv)
 {
+
+  if (pcl::console::find_switch (argc, argv, "--help") || pcl::console::find_switch (argc, argv, "-h"))
+    return print_help ();
+
+
   //Reading input cloud
   pcl::PointCloud<pcl::PointXYZI>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZI>);
 
-  if(argc < 2) {PCL_ERROR("No pcd to read... Exiting...\n");  return (-1); }
+  if(argc < 2)
+  {
+    PCL_ERROR ("No pcd file to read... Exiting...\n");
+    print_help ();
+    return (-1);
+  }
 
   if (pcl::io::loadPCDFile<pcl::PointXYZI> (argv[1], *cloud) == -1) //* load the file
   {
     PCL_ERROR ("Couldn't read file %s \n", argv[1]);
+    print_help ();
     return (-1);
   }
   
@@ -64,10 +92,15 @@ main (int argc, char** argv)
   std::vector<Eigen::Vector3f> transforms;
   
   //Get world as a vector of cubes 
-  wm.getWorldAsCubes (512.0, clouds, transforms, 0.025); // 2.5% overlapp (12 cells with a 512-wide cube)
+  wm.getWorldAsCubes (pcl::device::VOLUME_X, clouds, transforms, 0.025); // 2.5% overlapp (12 cells with a 512-wide cube)
 
   //Creating the standalone marching cubes instance
-  pcl::gpu::StandaloneMarchingCubes<pcl::PointXYZI> m_cubes(512,512,512,pcl::device::VOLUME_SIZE);
+  float volume_size = pcl::device::VOLUME_SIZE;
+  pcl::console::parse_argument (argc, argv, "--volume_size", volume_size);
+
+  PCL_WARN("Processing world with volume size set to %.2f meters\n", volume_size);
+
+  pcl::gpu::StandaloneMarchingCubes<pcl::PointXYZI> m_cubes(pcl::device::VOLUME_X,pcl::device::VOLUME_Y,pcl::device::VOLUME_Z,volume_size);
 
   //Creating the output
   boost::shared_ptr<pcl::PolygonMesh> mesh_ptr_;

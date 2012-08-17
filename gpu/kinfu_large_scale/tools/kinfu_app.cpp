@@ -550,29 +550,41 @@ struct KinFuApp
 {
   enum { PCD_BIN = 1, PCD_ASCII = 2, PLY = 3, MESH_PLY = 7, MESH_VTK = 8 };
   
-  KinFuApp(pcl::Grabber& source, float vsz) : exit_ (false), scan_ (false), scan_mesh_(false), scan_volume_ (false), independent_camera_ (false),
+  KinFuApp(pcl::Grabber& source, float vsz, float shiftDistance) : exit_ (false), scan_ (false), scan_mesh_(false), scan_volume_ (false), independent_camera_ (false),
     registration_ (false), integrate_colors_ (false), focal_length_(-1.f), capture_ (source), time_ms_(0)
   {    
     //Init Kinfu Tracker
     Eigen::Vector3f volume_size = Vector3f::Constant (vsz/*meters*/);    
-    kinfu_.volume().setSize (volume_size);
+
+    PCL_WARN ("--- CURRENT SETTINGS ---\n");
+    PCL_INFO ("Volume size is set to %.2f meters\n", vsz);
+    PCL_INFO ("Volume will shift when the camera target point is farther than %.2f meters from the volume center\n", shiftDistance);
+    PCL_INFO ("The target point is located at [0, 0, %.2f] in camera coordinates\n", 0.6*vsz);
+    PCL_WARN ("------------------------\n");
+
+    // warning message if shifting distance is abnormally big compared to volume size
+    if(shiftDistance > 2.5 * vsz)
+      PCL_WARN ("WARNING Shifting distance (%.2f) is very large compared to the volume size (%.2f).\nYou can modify it using --shifting_distance.\n", shiftDistance, vsz);
+
+    kinfu_ = new pcl::gpu::KinfuTracker(volume_size, shiftDistance);
 
     Eigen::Matrix3f R = Eigen::Matrix3f::Identity ();   // * AngleAxisf( pcl::deg2rad(-30.f), Vector3f::UnitX());
     Eigen::Vector3f t = volume_size * 0.5f - Vector3f (0, 0, volume_size (2) / 2 * 1.2f);
 
     Eigen::Affine3f pose = Eigen::Translation3f (t) * Eigen::AngleAxisf (R);
 
-    kinfu_.setInitalCameraPose (pose);
-    kinfu_.volume().setTsdfTruncDist (0.030f/*meters*/);    
-    kinfu_.setIcpCorespFilteringParams (0.1f/*meters*/, sin ( pcl::deg2rad(20.f) ));
 
-    //kinfu_.setDepthTruncationForICP(3.f/*meters*/);
-    
-    kinfu_.setCameraMovementThreshold(0.001f);
+
+
+    kinfu_->setInitalCameraPose (pose);
+    kinfu_->volume().setTsdfTruncDist (0.030f/*meters*/);
+    kinfu_->setIcpCorespFilteringParams (0.1f/*meters*/, sin ( pcl::deg2rad(20.f) ));
+    //kinfu_->setDepthTruncationForICP(3.f/*meters*/);
+    kinfu_->setCameraMovementThreshold(0.001f);
     
     //Init KinfuApp            
     tsdf_cloud_ptr_ = pcl::PointCloud<pcl::PointXYZI>::Ptr (new pcl::PointCloud<pcl::PointXYZI>);
-    image_view_.raycaster_ptr_ = RayCaster::Ptr( new RayCaster(kinfu_.rows (), kinfu_.cols ()) );
+    image_view_.raycaster_ptr_ = RayCaster::Ptr( new RayCaster(kinfu_->rows (), kinfu_->cols ()) );
 
     scene_cloud_view_.cloud_viewer_.registerKeyboardCallback (keyboard_callback, (void*)this);
     image_view_.viewerScene_.registerKeyboardCallback (keyboard_callback, (void*)this);
@@ -584,7 +596,7 @@ struct KinFuApp
     
     //~ float fx, fy, cx, cy;
     //~ boost::shared_ptr<openni_wrapper::OpenNIDevice> d = ((pcl::OpenNIGrabber)source).getDevice ();
-    //~ kinfu_.getDepthIntrinsics (fx, fy, cx, cy);
+    //~ kinfu_->getDepthIntrinsics (fx, fy, cx, cy);
     
     float height = 480.0f;
     float width = 640.0f;
@@ -596,7 +608,7 @@ struct KinFuApp
   ~KinFuApp()
   {
     if (evaluation_ptr_)
-      evaluation_ptr_->saveAllPoses(kinfu_);
+      evaluation_ptr_->saveAllPoses(*kinfu_);
   }
 
   void
@@ -604,7 +616,7 @@ struct KinFuApp
   {
     current_frame_cloud_view_ = boost::shared_ptr<CurrentFrameCloudView>(new CurrentFrameCloudView ());
     current_frame_cloud_view_->cloud_viewer_.registerKeyboardCallback (keyboard_callback, (void*)this);
-    current_frame_cloud_view_->setViewerPose (kinfu_.getCameraPose ());
+    current_frame_cloud_view_->setViewerPose (kinfu_->getCameraPose ());
   }
 
   void
@@ -620,7 +632,7 @@ struct KinFuApp
     if(registration_)
     {
       const int max_color_integration_weight = 2;
-      kinfu_.initColorIntegration(max_color_integration_weight);
+      kinfu_->initColorIntegration(max_color_integration_weight);
       integrate_colors_ = true;      
     }    
     cout << "Color integration: " << (integrate_colors_ ? "On" : "Off ( requires registration mode )") << endl;
@@ -640,8 +652,8 @@ struct KinFuApp
     if (!match_file.empty())
         evaluation_ptr_->setMatchFile(match_file);
 
-    kinfu_.setDepthIntrinsics (evaluation_ptr_->fx, evaluation_ptr_->fy, evaluation_ptr_->cx, evaluation_ptr_->cy);
-    image_view_.raycaster_ptr_ = RayCaster::Ptr( new RayCaster(kinfu_.rows (), kinfu_.cols (), 
+    kinfu_->setDepthIntrinsics (evaluation_ptr_->fx, evaluation_ptr_->fy, evaluation_ptr_->cx, evaluation_ptr_->cy);
+    image_view_.raycaster_ptr_ = RayCaster::Ptr( new RayCaster(kinfu_->rows (), kinfu_->cols (),
         evaluation_ptr_->fx, evaluation_ptr_->fy, evaluation_ptr_->cx, evaluation_ptr_->cy) );
   }
   
@@ -661,25 +673,25 @@ struct KinFuApp
     
         //run kinfu algorithm
         if (integrate_colors_)
-          has_image = kinfu_ (depth_device_, image_view_.colors_device_);
+          has_image = (*kinfu_) (depth_device_, image_view_.colors_device_);
         else
-          has_image = kinfu_ (depth_device_);                  
+          has_image = (*kinfu_) (depth_device_);
       }
             
       image_view_.showDepth (depth_);
-      //image_view_.showGeneratedDepth(kinfu_, kinfu_.getCameraPose());
+      //image_view_.showGeneratedDepth(kinfu_, kinfu_->getCameraPose());
     }
 
     if (scan_)
     {
       scan_ = false;
-      scene_cloud_view_.show (kinfu_, integrate_colors_);
+      scene_cloud_view_.show (*kinfu_, integrate_colors_);
                     
       if (scan_volume_)
       {                
         cout << "Downloading TSDF volume from device ... " << flush;
-        kinfu_.volume().downloadTsdfAndWeighs (tsdf_volume_.volumeWriteable (), tsdf_volume_.weightsWriteable ());
-        tsdf_volume_.setHeader (Eigen::Vector3i (pcl::device::VOLUME_X, pcl::device::VOLUME_Y, pcl::device::VOLUME_Z), kinfu_.volume().getSize ());
+        kinfu_->volume().downloadTsdfAndWeighs (tsdf_volume_.volumeWriteable (), tsdf_volume_.weightsWriteable ());
+        tsdf_volume_.setHeader (Eigen::Vector3i (pcl::device::VOLUME_X, pcl::device::VOLUME_Y, pcl::device::VOLUME_Z), kinfu_->volume().getSize ());
         cout << "done [" << tsdf_volume_.size () << " voxels]" << endl << endl;
                 
         cout << "Converting volume to TSDF cloud ... " << flush;
@@ -693,26 +705,26 @@ struct KinFuApp
     if (scan_mesh_)
     {
         scan_mesh_ = false;
-        scene_cloud_view_.showMesh(kinfu_, integrate_colors_);
+        scene_cloud_view_.showMesh(*kinfu_, integrate_colors_);
     }
      
     if (has_image)
     {
       Eigen::Affine3f viewer_pose = getViewerPose(scene_cloud_view_.cloud_viewer_);
-      image_view_.showScene (kinfu_, rgb24, registration_, independent_camera_ ? &viewer_pose : 0);
+      image_view_.showScene (*kinfu_, rgb24, registration_, independent_camera_ ? &viewer_pose : 0);
     }    
 
     if (current_frame_cloud_view_)
-      current_frame_cloud_view_->show (kinfu_);    
+      current_frame_cloud_view_->show (*kinfu_);
       
     if (!independent_camera_)
-      setViewerPose (scene_cloud_view_.cloud_viewer_, kinfu_.getCameraPose());
+      setViewerPose (scene_cloud_view_.cloud_viewer_, kinfu_->getCameraPose());
     
     if (enable_texture_extraction_)
     {
       if ( (frame_counter_  % 45) == 0 )
       {
-        screenshot_manager_.saveImage (kinfu_.getCameraPose(), rgb24); 
+        screenshot_manager_.saveImage (kinfu_->getCameraPose(), rgb24);
       }
     }
   }
@@ -783,7 +795,7 @@ struct KinFuApp
       boost::unique_lock<boost::mutex> lock(data_ready_mutex_);
 
       capture_.start ();
-      while (!exit_ && !scene_cloud_view_.cloud_viewer_.wasStopped () && !image_view_.viewerScene_.wasStopped () && !this->kinfu_.isFinished ())
+      while (!exit_ && !scene_cloud_view_.cloud_viewer_.wasStopped () && !image_view_.viewerScene_.wasStopped () && !this->kinfu_->isFinished ())
       { 
         bool has_data = data_ready_cond_.timed_wait (lock, boost::posix_time::millisec(100));
 
@@ -873,7 +885,7 @@ struct KinFuApp
   float focal_length_;
   
   pcl::Grabber& capture_;
-  KinfuTracker kinfu_;
+  KinfuTracker *kinfu_;
 
   SceneCloudView scene_cloud_view_;
   ImageView image_view_;
@@ -915,8 +927,8 @@ struct KinFuApp
       case (int)'n': case (int)'N': app->scene_cloud_view_.toggleNormals (); break;      
       case (int)'c': case (int)'C': app->scene_cloud_view_.clearClouds (true); break;
       case (int)'i': case (int)'I': app->toggleIndependentCamera (); break;
-      case (int)'b': case (int)'B': app->scene_cloud_view_.toggleCube(app->kinfu_.volume().getSize()); break;
-      case (int)'l': case (int)'L': app->kinfu_.performLastScan (); break;
+      case (int)'b': case (int)'B': app->scene_cloud_view_.toggleCube(app->kinfu_->volume().getSize()); break;
+      case (int)'l': case (int)'L': app->kinfu_->performLastScan (); break;
       case (int)'7': case (int)'8': app->writeMesh (key - (int)'0'); break;  
       case (int)'1': case (int)'2': case (int)'3': app->writeCloud (key - (int)'0'); break;      
       case '*': app->image_view_.toggleImagePaint (); break;
@@ -994,13 +1006,15 @@ print_cli_help ()
   cout << "    --save-views, -sv               : accumulate scene view and save in the end ( Requires OpenCV. Will cause 'bad_alloc' after some time )" << endl;  
   cout << "    --registration, -r              : enable registration mode" << endl; 
   cout << "    --integrate-colors, -ic         : enable color integration mode (allows to get cloud with colors)" << endl;
-  cout << "    --extract-textures, -et         : (experimental) extract RGB PNG images to KinFuSnapshots folder. Causes flicker in viewer. Use with smooth Kinect movements to avoid tracking lost." << endl;   
-  cout << "    -volume_size <size_in_meters>   : define integration volume size" << endl;
+  cout << "    --extract-textures, -et         : extract RGB PNG images to KinFuSnapshots folder." << endl;
+  cout << "    --volume_size <in_meters>       : define integration volume size" << endl;
+  cout << "    --shifting_distance <in_meters> : define shifting threshold (distance target-point / cube center)" << endl;
+  cout << endl << "";
   cout << "Valid depth data sources:" << endl; 
   cout << "    -dev <device> (default), -oni <oni_file>, -pcd <pcd_file or directory>" << endl;
-  cout << "";
+  cout << endl << "";
   cout << " For RGBD benchmark (Requires OpenCV):" << endl; 
-  cout << "    -eval <eval_folder> [-match_file <associations_file_in_the_folder>]" << endl;
+  cout << "    -eval <eval_folder> [-match_file <associations_file_in_the_folder>]" << endl << endl;
     
   return 0;
 }
@@ -1064,9 +1078,12 @@ main (int argc, char* argv[])
   catch (const pcl::PCLException& /*e*/) { return cout << "Can't open depth source" << endl, -1; }
 
   float volume_size = pcl::device::VOLUME_SIZE;
-  pc::parse_argument (argc, argv, "-volume_size", volume_size);
-        
-  KinFuApp app (*capture, volume_size);
+  pc::parse_argument (argc, argv, "--volume_size", volume_size);
+
+  float shift_distance = pcl::device::DISTANCE_THRESHOLD;
+  pc::parse_argument (argc, argv, "--shifting_distance", shift_distance);
+
+  KinFuApp app (*capture, volume_size, shift_distance);
 
   
   if (pc::parse_argument (argc, argv, "-eval", eval_folder) > 0)

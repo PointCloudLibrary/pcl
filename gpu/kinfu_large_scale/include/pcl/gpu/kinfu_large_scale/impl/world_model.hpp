@@ -154,8 +154,10 @@ pcl::WorldModel<PointT>::getWorldAsCubes (const double size, std::vector<typenam
   if (cubeSide <= 0.0f)
   {
     PCL_ERROR ("Size of the cube must be positive and non null (%f given). Setting it to 3.0 meters.\n", cubeSide);
-    cubeSide = 3.0f;
+    cubeSide = 512.0f;
   }
+
+  std::cout << "cube size is set to " << cubeSide << std::endl;
 
   // check overlap value
   double step_increment = 1.0f - overlap;

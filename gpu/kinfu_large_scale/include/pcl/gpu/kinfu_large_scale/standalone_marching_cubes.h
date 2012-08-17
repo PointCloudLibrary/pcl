@@ -150,12 +150,12 @@ namespace pcl
      std::vector<int> tsdf_volume_cpu_;
      
      /** Number of voxels in the grid for each axis */
-     int VOXELS_X;
-     int VOXELS_Y;
-     int VOXELS_Z;
+     int voxels_x_;
+     int voxels_y_;
+     int voxels_z_;
 
      /** Tsdf volume size in meters. Should match the ones in internal.h */
-     float VOLUME_SIZE;
+     float volume_size_;
      
      /** Mesh counter used to name the output meshes */
      int mesh_counter_;

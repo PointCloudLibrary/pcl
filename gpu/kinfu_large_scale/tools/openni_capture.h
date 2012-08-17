@@ -51,7 +51,7 @@ namespace pcl
     class CaptureOpenNI
     {
 public:
-    typedef KinfuTracker::PixelRGB RGB;
+    typedef pcl::gpu::PixelRGB RGB;
 
     enum { PROP_OPENNI_REGISTRATION_ON  = 104 };
 

@@ -133,7 +133,7 @@ namespace pcl
         void setDistanceThreshold (const double threshold) 
         { 
           distance_threshold_ = threshold; 
-          PCL_INFO ("Shifting threshold set to %f meters.\n", distance_threshold_);
+          // PCL_INFO ("Shifting threshold set to %f meters.\n", distance_threshold_);
         }
 
         /** \brief Returns the distance threshold between cube's center and target point that triggers a shift. */
@@ -149,7 +149,22 @@ namespace pcl
          * \param[in] size_y size of the volume on Y axis, in meters.
          * \param[in] size_z size of the volume on Z axis, in meters.
          */ 
-        void setVolumeSize (const double size_x, const double size_y, const double size_z);
+        void setVolumeSize (const double size_x, const double size_y, const double size_z)
+        {
+          buffer_.volume_size.x = size_x;
+          buffer_.volume_size.y = size_y;
+          buffer_.volume_size.z = size_z;
+        }
+
+        /** \brief Set the physical size represented by the default TSDF volume.
+         * \param[in] size size of the volume on all axis, in meters.
+         */
+        void setVolumeSize (const double size)
+        {
+          buffer_.volume_size.x = size;
+          buffer_.volume_size.y = size;
+          buffer_.volume_size.z = size;
+        }
 
         /** \brief Computes and set the origin of the new cube (relative to the world), centered around a the target point.
           * \param[in] target_point the target point around which the new cube will be centered.

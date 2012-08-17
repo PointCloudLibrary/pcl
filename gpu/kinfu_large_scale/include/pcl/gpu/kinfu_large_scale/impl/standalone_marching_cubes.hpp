@@ -44,20 +44,20 @@
 template <typename PointT>
 pcl::gpu::StandaloneMarchingCubes<PointT>::StandaloneMarchingCubes (int new_voxels_x, int new_voxels_y, int new_voxels_z, float new_volume_size)
 {
-  VOXELS_X = new_voxels_x;
-  VOXELS_Y = new_voxels_y;
-  VOXELS_Z = new_voxels_z;
-  VOLUME_SIZE = new_volume_size;  
+  voxels_x_ = new_voxels_x;
+  voxels_y_ = new_voxels_y;
+  voxels_z_ = new_voxels_z;
+  volume_size_ = new_volume_size;  
   
   ///Creating GPU TSDF Volume instance
-  const Eigen::Vector3f volume_size = Eigen::Vector3f::Constant (VOLUME_SIZE);
-  std::cout << "VOLUME SIZE IS " << VOLUME_SIZE << std::endl;
-  const Eigen::Vector3i volume_resolution (VOXELS_X, VOXELS_Y, VOXELS_Z);
+  const Eigen::Vector3f volume_size = Eigen::Vector3f::Constant (volume_size_);
+  // std::cout << "VOLUME SIZE IS " << volume_size_ << std::endl;
+  const Eigen::Vector3i volume_resolution (voxels_x_, voxels_y_, voxels_z_);
   tsdf_volume_gpu_ = pcl::gpu::TsdfVolume::Ptr ( new pcl::gpu::TsdfVolume (volume_resolution) );
   tsdf_volume_gpu_->setSize (volume_size);
   
   ///Creating CPU TSDF Volume instance
-  int tsdf_total_size = VOXELS_X * VOXELS_Y * VOXELS_Z;
+  int tsdf_total_size = voxels_x_ * voxels_y_ * voxels_z_;
   tsdf_volume_cpu_= std::vector<int> (tsdf_total_size,0);
   
   mesh_counter_ = 0;
@@ -70,15 +70,15 @@ pcl::gpu::StandaloneMarchingCubes<PointT>::getMeshFromTSDFCloud (const PointClou
 {
 
   //Clearing TSDF GPU and cPU
-  const Eigen::Vector3f volume_size = Eigen::Vector3f::Constant (VOLUME_SIZE);
-    std::cout << "VOLUME SIZE IS " << VOLUME_SIZE << std::endl;
-  const Eigen::Vector3i volume_resolution (VOXELS_X, VOXELS_Y, VOXELS_Z);
+  const Eigen::Vector3f volume_size = Eigen::Vector3f::Constant (volume_size_);
+    std::cout << "VOLUME SIZE IS " << volume_size_ << std::endl;
+  const Eigen::Vector3i volume_resolution (voxels_x_, voxels_y_, voxels_z_);
 
   //Clear values in TSDF Volume GPU
   tsdf_volume_gpu_->reset (); // This one uses the same tsdf volume but clears it before loading new values. This one is our friend.
 
   //Clear values in TSDF Volume CPU
-  int tsdf_total_size = VOXELS_X * VOXELS_Y * VOXELS_Z;
+  int tsdf_total_size = voxels_x_ * voxels_y_ * voxels_z_;
   tsdf_volume_cpu_= std::vector<int> (tsdf_total_size,0);
   
   //Loading values to GPU
@@ -98,7 +98,7 @@ pcl::gpu::StandaloneMarchingCubes<PointT>::getMeshesFromTSDFVector (const std::v
   
   int max_iterations = std::min( tsdf_clouds.size (), tsdf_offsets.size () ); //Safety check
   PCL_INFO ("There are %d cubes to be processed \n", max_iterations);
-  float cell_size = VOLUME_SIZE / VOXELS_X;
+  float cell_size = volume_size_ / voxels_x_;
   
   for(int i = 0; i < max_iterations; ++i)
   {
@@ -172,7 +172,7 @@ pcl::gpu::StandaloneMarchingCubes<PointT>::loadTsdfCloudToGPU (const PointCloud 
   convertTsdfVectors (cloud, tsdf_volume_cpu_);
   
   //Uploading data to GPU
-	int cubeColumns = VOXELS_X;
+	int cubeColumns = voxels_x_;
   tsdf_volume_gpu_->data ().upload (tsdf_volume_cpu_, cubeColumns);
 }
 
@@ -192,10 +192,10 @@ pcl::gpu::StandaloneMarchingCubes<PointT>::convertTsdfVectors (const PointCloud 
 	  int y = cloud.points[i].y;
 	  int z = cloud.points[i].z;
 	  
-	  if(x > 0  && x < VOXELS_X && y > 0 && y < VOXELS_Y && z > 0 && z < VOXELS_Z)
+	  if(x > 0  && x < voxels_x_ && y > 0 && y < voxels_y_ && z > 0 && z < voxels_z_)
 	  {
 	  ///Calculate the index to write to
-	  int dst_index = x + VOXELS_X * y + VOXELS_Y * VOXELS_X * z;
+	  int dst_index = x + voxels_x_ * y + voxels_y_ * voxels_x_ * z;
 	        
 	    short2& elem = *reinterpret_cast<short2*> (&output[dst_index]);
 	    elem.x = static_cast<short> (cloud.points[i].intensity * DIVISOR);

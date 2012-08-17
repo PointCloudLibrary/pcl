@@ -75,16 +75,19 @@ namespace pcl
         typedef pcl::Normal NormalType;
 
         void 
-        performLastScan (){perform_last_scan_ = true;}
+        performLastScan (){perform_last_scan_ = true; PCL_WARN ("Kinfu will exit after next shift\n");}
         
         bool
         isFinished (){return (finished_);}
 
         /** \brief Constructor
+          * \param[in] volumeSize physical size of the volume represented by the tdsf volume. In meters.
+          * \param[in] shiftingDistance when the camera target point is farther than shiftingDistance from the center of the volume, shiting occurs. In meters.
+          * \note The target point is located at (0, 0, 0.6*volumeSize) in camera coordinates.
           * \param[in] rows height of depth image
-          * \param[in] cols width of depth image          
+          * \param[in] cols width of depth image
           */
-        KinfuTracker (int rows = 480, int cols = 640);
+        KinfuTracker (const Eigen::Vector3f &volumeSize, const float shiftingDistance, int rows = 480, int cols = 640);
 
         /** \brief Sets Depth camera intrinsics
           * \param[in] fx focal length x 
@@ -306,6 +309,12 @@ namespace pcl
         
         /** \brief When set to true, KinFu notifies that it is finished scanning and can be stopped. */
         bool finished_;
+
+        /** \brief // when the camera target point is farther than DISTANCE_THRESHOLD from the current cube's center, shifting occurs. In meters . */
+        float shifting_distance_;
+
+        /** \brief Size of the TSDF volume in meters. */
+        float volume_size_;
 
     };
   }

@@ -72,14 +72,22 @@ namespace pcl
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-pcl::gpu::KinfuTracker::KinfuTracker (int rows, int cols) : rows_(rows), cols_(cols), global_time_(0), max_icp_distance_(0), integration_metric_threshold_(0.f), cyclical_( DISTANCE_THRESHOLD, pcl::device::VOLUME_SIZE, VOLUME_X), perform_last_scan_ (false), finished_(false)
+pcl::gpu::KinfuTracker::KinfuTracker (const Eigen::Vector3f &volume_size, const float shiftingDistance, int rows, int cols) : rows_(rows), cols_(cols), global_time_(0), max_icp_distance_(0), integration_metric_threshold_(0.f), cyclical_( DISTANCE_THRESHOLD, pcl::device::VOLUME_SIZE, VOLUME_X), perform_last_scan_ (false), finished_(false)
 {
-  const Vector3f volume_size = Vector3f::Constant (VOLUME_SIZE);
-  const Vector3i volume_resolution(VOLUME_X, VOLUME_Y, VOLUME_Z);
-   
-  tsdf_volume_ = TsdfVolume::Ptr( new TsdfVolume(volume_resolution) );
-  tsdf_volume_->setSize(volume_size);
+  //const Vector3f volume_size = Vector3f::Constant (VOLUME_SIZE);
+  const Vector3i volume_resolution (VOLUME_X, VOLUME_Y, VOLUME_Z);
+
+  volume_size_ = volume_size(0);
+
+  tsdf_volume_ = TsdfVolume::Ptr ( new TsdfVolume(volume_resolution) );
+  tsdf_volume_->setSize (volume_size);
   
+  shifting_distance_ = shiftingDistance;
+
+  // set cyclical buffer values
+  cyclical_.setDistanceThreshold (shifting_distance_);
+  cyclical_.setVolumeSize (volume_size_, volume_size_, volume_size_);
+
   setDepthIntrinsics (FOCAL_LENGTH, FOCAL_LENGTH); // default values, can be overwritten
   
   init_Rcam_ = Eigen::Matrix3f::Identity ();// * AngleAxisf(-30.f/180*3.1415926, Vector3f::UnitX());
@@ -170,7 +178,7 @@ pcl::gpu::KinfuTracker::extractAndMeshWorld ()
   PCL_INFO ("Saving current world to world.pcd\n");
   pcl::io::savePCDFile<pcl::PointXYZI> ("world.pcd", *(cyclical_.getWorldModel ()->getWorld ()), true);
   
-  PCL_INFO ("KinFu is finished, please kill the process\n");
+  //PCL_INFO ("KinFu is finished, please kill the process\n");
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -467,10 +475,10 @@ pcl::gpu::KinfuTracker::operator() (const DepthMap& depth_raw)
   */
   
   //check for shift
-  bool has_shifted = cyclical_.checkForShift(tsdf_volume_, getCameraPose (), 0.6 * VOLUME_SIZE, true, perform_last_scan_);
+  bool has_shifted = cyclical_.checkForShift(tsdf_volume_, getCameraPose (), 0.6 * volume_size_, true, perform_last_scan_);
 
-    if(has_shifted)
-      PCL_WARN ("WE ARE SHIFTING\n");    
+  if(has_shifted)
+    PCL_WARN ("WE ARE SHIFTING\n");
     
   // get NEW local rotation 
   Matrix3frm cam_rot_local_curr_inv = cam_rot_global_curr.inverse ();
@@ -515,7 +523,7 @@ pcl::gpu::KinfuTracker::operator() (const DepthMap& depth_raw)
   {          
     raycast (intr, device_cam_rot_local_curr, device_cam_trans_local_curr, tsdf_volume_->getTsdfTruncDist (), device_volume_size, tsdf_volume_->data (), getCyclicalBufferStructure (), vmaps_g_prev_[0], nmaps_g_prev_[0]);
     
-    // POST-PROCESSING: We need to transform the nwely raycasted maps into the global space.    
+    // POST-PROCESSING: We need to transform the newly raycasted maps into the global space.
     Mat33&  rotation_id = device_cast<Mat33> (rmats_[0]); /// Identity Rotation Matrix. Because we only need translation
     float3 cube_origin = (getCyclicalBufferStructure ())->origin_metric;
     

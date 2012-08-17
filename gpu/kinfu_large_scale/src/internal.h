@@ -69,8 +69,9 @@ namespace pcl
     // temprary constant (until we make it automatic) that holds the Kinect's focal lenght
     const float FOCAL_LENGTH = 575.816f;
   
-    const float VOLUME_SIZE = 3.0f; // in meters
-    const float DISTANCE_THRESHOLD = 1.75f; // in meters
+    const float VOLUME_SIZE = 3.0f; // physical size represented by the TSDF volume. In meters
+    const float DISTANCE_THRESHOLD = 1.5f; // when the camera target point is farther than DISTANCE_THRESHOLD from the current cube's center, shifting occurs. In meters
+
 
     /** \brief Camera intrinsics structure
       */ 
