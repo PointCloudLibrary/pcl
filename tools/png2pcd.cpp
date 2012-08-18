@@ -53,8 +53,6 @@
 #include <pcl/console/parse.h>
 #include <pcl/io/vtk_lib_io.h>
 
-#include <pcl/visualization/image_viewer.h>
-
 #define RED_MULTIPLIER 0.299
 #define GREEN_MULTIPLIER 0.587
 #define BLUE_MULTIPLIER 0.114
