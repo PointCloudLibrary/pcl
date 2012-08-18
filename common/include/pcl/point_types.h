@@ -81,6 +81,11 @@ namespace pcl
     */
   struct RGB;
 
+  /** \brief Members: intensity
+    * \ingroup common
+    */
+  struct Intensity;
+
   /** \brief Members: float x, y, z, intensity
     * \ingroup common
     */
@@ -312,6 +317,11 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::_RGB,
     (uint32_t, rgba, rgba)
 )
 POINT_CLOUD_REGISTER_POINT_WRAPPER(pcl::RGB, pcl::_RGB)
+
+POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::_Intensity,
+    (uint8_t, intensity, intensity)
+)
+POINT_CLOUD_REGISTER_POINT_WRAPPER(pcl::Intensity, pcl::_Intensity)
 
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::_PointXYZ,
     (float, x, x)

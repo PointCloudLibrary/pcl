@@ -186,6 +186,13 @@ namespace pcl
     uint32_t rgba; \
   };
 
+#define PCL_ADD_INTENSITY \
+    struct \
+    { \
+      uint8_t intensity; \
+    }; \
+
+
   typedef Eigen::Map<Eigen::Array3f> Array3fMap;
   typedef const Eigen::Map<const Eigen::Array3f> Array3fMapConst;
   typedef Eigen::Map<Eigen::Array4f, Eigen::Aligned> Array4fMap;
@@ -273,6 +280,27 @@ namespace pcl
       << static_cast<int>(p.g) << ","
       << static_cast<int>(p.b) << ","
       << static_cast<int>(p.a) << ")";
+    return (os);
+  }
+
+  /** \brief A point structure representing the grayscale intensity in single-channel images.
+    * \ingroup common
+    */
+  struct _Intensity
+  {
+    PCL_ADD_INTENSITY;
+  };
+  struct Intensity: public _Intensity
+  {
+    inline Intensity ()
+    {
+      intensity = 0;
+    }
+  };
+  inline std::ostream&
+  operator << (std::ostream& os, const Intensity& p)
+  {
+    os << "( " << static_cast<int>(p.intensity) << " )";
     return (os);
   }
 

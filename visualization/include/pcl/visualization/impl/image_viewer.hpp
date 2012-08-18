@@ -71,7 +71,7 @@ pcl::visualization::ImageViewer::addRGBImage (const pcl::PointCloud<T> &cloud,
   }
 
   convertRGBCloudToUChar (cloud, data_);
-  
+
   return (addRGBImage (data_.get (), cloud.width, cloud.height, layer_id, opacity));
 }
 
