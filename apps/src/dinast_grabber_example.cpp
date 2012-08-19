@@ -4,13 +4,14 @@
 #include <iostream>
 #include <cstdio>
 
-#include <pcl/io/dinast_grabber.h>
-
+#include <Eigen/Core>
+#include <pcl/common/transforms.h>
 #include <pcl/common/time.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/visualization/image_viewer.h>
 #include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
+#include <pcl/io/dinast_grabber.h>
 
 #define FPS_CALC(_WHAT_) \
 do \
@@ -172,56 +173,35 @@ int
 main (int argc, char** argv) 
 {
 
-	pcl::DinastGrabber grabber;
-	
-  libusb_context *ctx = NULL;
-  struct libusb_device_handle* device = grabber.findDevice (ctx);
-	grabber.setDevice(device);
-	
-  if (device == NULL)
-  {
-    std::cerr << "Couldn't find any Dinast devices attached!" << std::endl;
-    return (-1);
-  }
-
-  device = grabber.openDevice (ctx, 0);
-  if (device == NULL)
-  {
-    std::cerr << "Could not open or claim the USB device!" << std::endl;
-    return (-1);
-  }
-
-  std::cerr << "Device version/revision number: " << grabber.getDeviceVersion (device) << std::endl;
+  pcl::DinastGrabber grabber;
   
-	grabber.start ();
-    //std::cerr << "Could not start device!" << std::endl;
+  grabber.findDevice (1);
+  
+  grabber.openDevice();
 
-//  if (USBRxSyncSearch (device))
-//    std::cerr << "Synchronization succesful." << std::endl;
+  std::cerr << "Device version/revision number: " << grabber.getDeviceVersion () << std::endl;
+  
+  grabber.start ();
 
   pcl::visualization::ImageViewer vis_img ("Dinast Image Viewer");
   pcl::visualization::PCLVisualizer vis_cld (argc, argv, "Dinast Cloud Viewer");
 
-  pcl::visualization::ImageViewer vis2 ("Dinast Viewer");
   unsigned char *img1 = (unsigned char*)malloc (IMAGE_SIZE);
   unsigned char *img2 = (unsigned char*)malloc (IMAGE_SIZE);
+
   pcl::PointCloud<pcl::PointXYZI>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZI>);
-
-  vis_img.registerKeyboardCallback (keyboardEventOccurred, (void*)img1);
-
+  
   while (true)
   {
-    //if (readImage (device, img1) == 0)
-    if (grabber.readImage (device, img1, img2) == 0)
+    if (grabber.readImage ( img1, img2) == 0)
       continue;
 
-    convertImageToCloud (img1, *cloud);
-
+     convertImageToCloud (img1, *cloud);
+    
+    
     FPS_CALC ("grabber + visualization");
     vis_img.showMonoImage (img1, IMAGE_WIDTH, IMAGE_HEIGHT);
-    vis2.showMonoImage (img2, IMAGE_WIDTH, IMAGE_HEIGHT);
-    //
-
+    
     pcl::visualization::PointCloudColorHandlerGenericField<pcl::PointXYZI> handler (cloud, "intensity");
     if (!vis_cld.updatePointCloud (cloud, handler, "DinastCloud"))
     {
@@ -231,14 +211,10 @@ main (int argc, char** argv)
 
     vis_img.spinOnce ();
     vis_cld.spinOnce ();
-    vis2.spinOnce ();
+    
   }
   
   grabber.stop ();
-  grabber.closeDevice (device);
-  libusb_exit (ctx);
-
-  //free (img);
+  grabber.closeDevice ();
 
 }
-/* ]-- */

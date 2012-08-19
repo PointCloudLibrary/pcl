@@ -36,7 +36,6 @@
  */
 
 #include <pcl/pcl_config.h>
-//#ifdef HAVE_DINAST
 
 #include <pcl/io/dinast_grabber.h>
 #include <iostream>
@@ -55,21 +54,20 @@
 #define SYNC_PACKET     512
 #define RGB16_LENGTH    IMAGE_WIDTH*2*IMAGE_HEIGHT
 
-///////////////////////////////////////////////////////////////////////////////////////////
 pcl::DinastGrabber::DinastGrabber ()
-	: second_image (false)
-	, running_ (false)
+  : second_image (false)
+  , running_ (false)
 {
-	bulk_ep = -1;
+  bulk_ep = -1;
+  ctx = NULL;
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////
 pcl::DinastGrabber::~DinastGrabber () throw ()
 {
-	try
+  try
   {
     stop ();
-
+    libusb_exit (ctx);
     // unregister callbacks
 
     // release the pointer to the device object
@@ -84,62 +82,53 @@ pcl::DinastGrabber::~DinastGrabber () throw ()
   }
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////
 std::string
 pcl::DinastGrabber::getName () const
 {
-  return (std::string ("DinastGrabber"));
+    return (std::string ("DinastGrabber"));
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////
 bool
 pcl::DinastGrabber::isRunning () const
 {
-	return (running_);
+  return (running_);
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////
 float
 pcl::DinastGrabber::getFramesPerSecond () const
 {
-	//figure this out!!
-	return (0);
-}
-	
-///////////////////////////////////////////////////////////////////////////////////////////
-void
-pcl::DinastGrabber::setDevice (struct libusb_device_handle* device_handle)
-{
-	this->device_handle = device_handle;
+  //figure this out!!
+  return (0);
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////
-struct libusb_device_handle*
-pcl::DinastGrabber::findDevice (libusb_context *ctx, const int id_vendor, const int id_product)
+void
+pcl::DinastGrabber::findDevice ( int device_position, const int id_vendor, const int id_product)
 {
+  int device_position_counter=0;
   if (libusb_init (&ctx) != 0)
-    return (NULL);
+    return;
   
   libusb_set_debug (ctx, 3);
 
   libusb_device **devs = NULL;
   // Get the list of USB devices
   ssize_t cnt = libusb_get_device_list (ctx, &devs);
+
   if (cnt < 0)
     //throw PCLIOException ();
-    return (NULL);
+    return;
   
   // Iterate over all devices
   for (ssize_t i = 0; i < cnt; ++i)
   {
     libusb_device_descriptor desc;
-    // Get the device descriptor information
+
     if (libusb_get_device_descriptor (devs[i], &desc) < 0)
     {
       // Free the list
       libusb_free_device_list (devs, 1);
       // Return a NULL device
-      return (NULL);
+      return;
     }
 
     if (desc.idVendor != id_vendor || desc.idProduct != id_product)
@@ -166,62 +155,55 @@ pcl::DinastGrabber::findDevice (libusb_context *ctx, const int id_vendor, const 
         }
       }
     }
-    
+    device_position_counter++;
+    if (device_position_counter==device_position)
+      libusb_open(devs[i], &device_handle);
     // Free the configuration descriptor
     libusb_free_config_descriptor (config);
   }
+  
   // Free the list
   libusb_free_device_list (devs, 1);
+  
+  //Check if device founded if not notify
+  if (device_handle==NULL)
+    cout<<"Failed to find any DINAST device"<<endl;
   
   // No bulk endpoint was found
   if (bulk_ep == -1)
     //throw PCLIOException ();
-    return (NULL);
+    return;
 
-  struct libusb_device_handle *device = libusb_open_device_with_vid_pid (ctx, id_vendor, id_product);
-  
-  if (device != NULL)
-    libusb_close (device);
-
-  return (device);
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////
-struct libusb_device_handle*
-pcl::DinastGrabber::openDevice (struct libusb_context *ctx, int idx)
+void
+pcl::DinastGrabber::openDevice ()
 {
-  libusb_device_handle *device_handle = libusb_open_device_with_vid_pid (ctx, 0x18d1, 0x1402);
 
   if (device_handle == NULL)
   {
-//     thrown PCLIOException ();
-    return (NULL);
+    cout<<"device not found"<<endl; //expection
+    return;
   }
 
-  // Claim the interface
-  if (libusb_claim_interface (device_handle, idx) != 0)
-  {
-    //thrown PCLIOException ();
-    return (NULL);
-  }
-
-  return (device_handle);
+  if(libusb_claim_interface(device_handle, 0) < 0)
+     cout<<"Failed to Claim interface on device"<<endl;  //Throw PCLIOException
+  else
+    cout<<"Interface Claimed properly"<<endl;
+  
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::DinastGrabber::closeDevice (struct libusb_device_handle* device_handle, int index)
+pcl::DinastGrabber::closeDevice ()
 {
   // Release the interface
-  libusb_release_interface (device_handle, index);
+  libusb_release_interface (device_handle, 0);
   // Close it
   libusb_close (device_handle);
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl::DinastGrabber::USBRxControlData (struct libusb_device_handle* device_handle, 
-                                      const unsigned char req_code,
+pcl::DinastGrabber::USBRxControlData (const unsigned char req_code,
                                       unsigned char *buffer,
                                       int length)
 {
@@ -246,10 +228,8 @@ pcl::DinastGrabber::USBRxControlData (struct libusb_device_handle* device_handle
   return (true);
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl::DinastGrabber::USBTxControlData (struct libusb_device_handle* device_handle, 
-                                      const unsigned char req_code,
+pcl::DinastGrabber::USBTxControlData (const unsigned char req_code,
                                       unsigned char *buffer,
                                       int length)
 {
@@ -274,12 +254,11 @@ pcl::DinastGrabber::USBTxControlData (struct libusb_device_handle* device_handle
   return (true);
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////
 std::string
-pcl::DinastGrabber::getDeviceVersion (struct libusb_device_handle* device_handle)
+pcl::DinastGrabber::getDeviceVersion ()
 {
   unsigned char data[30];
-  if (!USBRxControlData (device_handle, CMD_GET_VERSION, data, 21))
+  if (!USBRxControlData (CMD_GET_VERSION, data, 21))
   {
     //throw PCLIOException ();
     return ("");
@@ -290,19 +269,16 @@ pcl::DinastGrabber::getDeviceVersion (struct libusb_device_handle* device_handle
   return (std::string ((const char*)data));
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::DinastGrabber::start ()
 {
   unsigned char ctrl_buf[3];
-  if (!USBTxControlData (device_handle, CMD_READ_START, ctrl_buf, 1))
+  if (!USBTxControlData (CMD_READ_START, ctrl_buf, 1))
     return;
 	running_ = true;
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////
 void
-//pcl::DinastGrabber::stop (struct libusb_device_handle* device_handle)
 pcl::DinastGrabber::stop ()
 {
   unsigned char ctrl_buf[3];
@@ -311,7 +287,6 @@ pcl::DinastGrabber::stop ()
 	running_=false;
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////
 int
 pcl::DinastGrabber::checkHeader ()
 {
@@ -337,29 +312,20 @@ pcl::DinastGrabber::checkHeader ()
   return (data_ptr);
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////
 int
-pcl::DinastGrabber::readImage (struct libusb_device_handle* device_handle,
-                               unsigned char *image)
+pcl::DinastGrabber::readImage (unsigned char *image)
 {
   // Do we have enough data in the buffer for the second image?
   if (second_image)
   {
-    //std::cerr << "second image copy buf size: " << g_buffer.size () << std::endl;
-    // Second image exists. Copy it from the buffer into the user given buffer
-    //if (!g_buffer.is_linearized ())
-    //  g_buffer.linearize ();
-    //memcpy (&image[0], &g_buffer[0], IMAGE_SIZE);
+
     for (int i = 0; i < IMAGE_SIZE; ++i)
       image[i] = g_buffer[i];
 
-    // Pop the data from the global buffer. 
-    //g_buffer.erase_begin (IMAGE_SIZE); // In boost >= 1.42
     g_buffer.rerase (g_buffer.begin(), g_buffer.begin() + IMAGE_SIZE);
-    //std::cerr << "second image copy buf size2: " << g_buffer.size () << std::endl;
 
     second_image = false;
-    // Don't do any USB reads, just return
+    
     return (IMAGE_SIZE);
   }
 
@@ -403,22 +369,16 @@ pcl::DinastGrabber::readImage (struct libusb_device_handle* device_handle,
     if (!first_image && (g_buffer.size () >= IMAGE_SIZE + data_adr) && data_adr != -1)
     {
       // An image found. Copy it from the buffer into the user given buffer
-      //if (!g_buffer.is_linearized ())
-      //  g_buffer.linearize ();
-      //memcpy (&image[0], &g_buffer[data_adr], IMAGE_SIZE);
+
       for (int i = 0; i < IMAGE_SIZE; ++i)
         image[i] = g_buffer[data_adr + i];
       // Pop the data from the global buffer. 
-      //g_buffer.erase_begin (data_adr + IMAGE_SIZE); // in boost >= 1.42
       g_buffer.rerase (g_buffer.begin(), g_buffer.begin() + data_adr + IMAGE_SIZE);
       first_image = true;
-      //std::cerr << "first image copy buf size: " << g_buffer.size () << std::endl;
     }
 
     if (first_image && g_buffer.size () >= IMAGE_SIZE)
     {
-      //second_image = true;
-      //std::cerr << "buf size: " << g_buffer.size () << std::endl;
       break;
      }
   }
@@ -426,11 +386,8 @@ pcl::DinastGrabber::readImage (struct libusb_device_handle* device_handle,
   return (IMAGE_SIZE);
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////
 int
-pcl::DinastGrabber::readImage (
-    struct libusb_device_handle* device_handle,
-    unsigned char *image1, unsigned char *image2)
+pcl::DinastGrabber::readImage (unsigned char *image1, unsigned char *image2)
 {
   // Read data in two image blocks until we get a header
   int data_adr = -1;
@@ -466,4 +423,3 @@ pcl::DinastGrabber::readImage (
   return (IMAGE_SIZE);
 }
 
-//#endif
