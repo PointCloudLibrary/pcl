@@ -629,7 +629,7 @@ namespace pcl
         return (points_added);
       }
       
-      PCL_ERROR ("[pcl::outofcore::octree_base_node] Skipped bb check. Points not inserted\n");
+      PCL_ERROR ("[pcl::outofcore::octree_base_node] Skipped bounding box check. Points not inserted\n");
       
       return 0;
     }
@@ -640,7 +640,6 @@ namespace pcl
     template<typename ContainerT, typename PointT> void
     octree_base_node<ContainerT, PointT>::randomSample(const AlignedPointTVector& p, AlignedPointTVector& insertBuff, const bool skip_bb_check)
     {
-
       AlignedPointTVector sampleBuff;
       if (!skip_bb_check)
       {
@@ -1160,7 +1159,7 @@ namespace pcl
 
 ////////////////////////////////////////////////////////////////////////////////
     template<typename ContainerT, typename PointT> void
-    octree_base_node<ContainerT, PointT>::getVoxelCenters(AlignedPointTVector &voxel_centers, const size_t query_depth)
+    octree_base_node<ContainerT, PointT>::getVoxelCentersRecursive (AlignedPointTVector &voxel_centers, const size_t query_depth)
     {
       if (this->depth_ < query_depth){
         if (num_child_ > 0)
@@ -1185,7 +1184,7 @@ namespace pcl
 
 ////////////////////////////////////////////////////////////////////////////////
     template<typename ContainerT, typename PointT> void
-    octree_base_node<ContainerT, PointT>::getVoxelCenters(std::vector<Eigen::Vector3d> &voxel_centers, const size_t query_depth)
+    octree_base_node<ContainerT, PointT>::getVoxelCentersRecursive (std::vector<Eigen::Vector3d, Eigen::aligned_allocator<Eigen::Vector3d> > &voxel_centers, const size_t query_depth)
     {
       if (this->depth_ < query_depth){
         if (num_child_ > 0)

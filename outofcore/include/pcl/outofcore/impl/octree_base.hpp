@@ -434,11 +434,11 @@ namespace pcl
       boost::shared_lock < boost::shared_mutex > lock (read_write_mutex_);
       if (query_depth > max_depth_) 
       {
-        root_->getVoxelCenters (voxel_centers, max_depth_);
+        root_->getVoxelCentersRecursive (voxel_centers, max_depth_);
       }
       else
       {
-        root_->getVoxelCenters (voxel_centers, query_depth);
+        root_->getVoxelCentersRecursive (voxel_centers, query_depth);
       }
     }
 
@@ -448,11 +448,11 @@ namespace pcl
       boost::shared_lock < boost::shared_mutex > lock (read_write_mutex_);
       if (query_depth > max_depth_)
       {
-        root_->getVoxelCenters (voxel_centers, max_depth_);
+        root_->getVoxelCentersRecursive (voxel_centers, max_depth_);
       }
       else
       {
-        root_->getVoxelCenters (voxel_centers, query_depth);
+        root_->getVoxelCentersRecursive (voxel_centers, query_depth);
       }
     }
 

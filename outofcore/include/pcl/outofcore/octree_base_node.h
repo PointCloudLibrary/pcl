@@ -426,14 +426,14 @@ namespace pcl
          * \param[in] query_depth
          */
         void
-        getVoxelCenters (AlignedPointTVector &voxel_centers, const size_t query_depth);
+        getVoxelCentersRecursive (AlignedPointTVector &voxel_centers, const size_t query_depth);
 
         /** \brief Gets a vector of occupied voxel centers
          * \param[out] voxel_centers
          * \param[in] query_depth
          */
         void
-        getVoxelCenters (std::vector<Eigen::Vector3d> &voxel_centers, const size_t query_depth);
+        getVoxelCentersRecursive (std::vector<Eigen::Vector3d, Eigen::aligned_allocator<Eigen::Vector3d> > &voxel_centers, const size_t query_depth);
 
         /** \brief the dir containing the node's data and its children */
         boost::filesystem::path thisdir_;
@@ -459,7 +459,7 @@ namespace pcl
          * you could use an stl container if you rewrote some of this class. I used
          * to use deques for this... */
         boost::shared_ptr<ContainerT> payload_;
-        
+
         /** \brief The X,Y,Z axes-aligned minima for the bounding box*/
         Eigen::Vector3d min_;
         /** \brief The X,Y,Z axes-aligned maxima for the bounding box*/
