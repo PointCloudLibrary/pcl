@@ -301,7 +301,7 @@ namespace pcl
         AlignedPointTVector writebuff_;
 
         //std::fstream fileback;//elements [0,...,filelen-1]
-        boost::shared_ptr<string> fileback_name_;
+        boost::shared_ptr<std::string> fileback_name_;
 
         //number of elements in file
         /// \todo This value was originally computed by the number of bytes in the binary dump to disk. Now, since we are using binary compressed, it needs to be computed in a different way (!). This is causing Unit Tests: PCL.Outofcore_Point_Query, OutofcoreTest.PointCloud2_Query and OutofcoreTest.PointCloud2_Insert( on post-insert query test) to fail as of 4 July 2012. SDF

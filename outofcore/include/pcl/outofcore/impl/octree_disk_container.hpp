@@ -105,7 +105,7 @@ namespace pcl
     octree_disk_container<PointT>::octree_disk_container ()
     {
       std::string temp = getRandomUUIDString ();
-      fileback_name_ = boost::shared_ptr<string> (new std::string (temp));
+      fileback_name_ = boost::shared_ptr<std::string> (new std::string (temp));
       filelen_ = 0;
     }
 ////////////////////////////////////////////////////////////////////////////////
@@ -125,14 +125,14 @@ namespace pcl
           boost::filesystem::path filename (uuid);
           boost::filesystem::path file = path / filename;
 
-          fileback_name_ = boost::shared_ptr<string> (new std::string (file.string ()));
+          fileback_name_ = boost::shared_ptr<std::string> (new std::string (file.string ()));
           filelen_ = 0;
         }
         else
         {
           uint64_t len = boost::filesystem::file_size (path);
 
-          fileback_name_ = boost::shared_ptr<string> (new std::string (path.string ()));
+          fileback_name_ = boost::shared_ptr<std::string> (new std::string (path.string ()));
 
           filelen_ = len / sizeof(PointT);
 
@@ -152,7 +152,7 @@ namespace pcl
       }
       else
       {
-        fileback_name_ = boost::shared_ptr<string> (new std::string (path.string ()));
+        fileback_name_ = boost::shared_ptr<std::string> (new std::string (path.string ()));
         filelen_ = 0;
       }
     }
