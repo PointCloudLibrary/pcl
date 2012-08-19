@@ -66,16 +66,16 @@ namespace pcl
 
     //Static constants
     // --------------------------------------------------------------------------------
-    template<typename Container, typename PointT>
-    const std::string octree_base<Container, PointT>::TREE_EXTENSION_ = ".octree";
+    template<typename ContainerT, typename PointT>
+    const std::string octree_base<ContainerT, PointT>::TREE_EXTENSION_ = ".octree";
 
-    template<typename Container, typename PointT>
-    const int octree_base<Container, PointT>::OUTOFCORE_VERSION_ = static_cast<int>(3);
+    template<typename ContainerT, typename PointT>
+    const int octree_base<ContainerT, PointT>::OUTOFCORE_VERSION_ = static_cast<int>(3);
 
 // Constructors
 // ---------------------------------------------------------------------------
-    template<typename Container, typename PointT>
-    octree_base<Container, PointT>::octree_base (const boost::filesystem::path& root_name, const bool load_all)
+    template<typename ContainerT, typename PointT>
+    octree_base<ContainerT, PointT>::octree_base (const boost::filesystem::path& root_name, const bool load_all)
       : root_ ()
       , read_write_mutex_ ()
       , lodPoints_ ()
@@ -85,14 +85,14 @@ namespace pcl
       , resolution_ ()
     {
       // Check file extension
-      if (boost::filesystem::extension (root_name) != octree_base_node<Container, PointT>::node_index_extension)
+      if (boost::filesystem::extension (root_name) != octree_base_node<ContainerT, PointT>::node_index_extension)
       {
-        PCL_ERROR ( "[pcl::outofcore::octree_base] Wrong root node file extension: %s. The tree must have a root node ending in %s\n", boost::filesystem::extension (root_name).c_str (), octree_base_node<Container, PointT>::node_index_extension.c_str () );
+        PCL_ERROR ( "[pcl::outofcore::octree_base] Wrong root node file extension: %s. The tree must have a root node ending in %s\n", boost::filesystem::extension (root_name).c_str (), octree_base_node<ContainerT, PointT>::node_index_extension.c_str () );
         PCL_THROW_EXCEPTION (PCLException, "[pcl::outofcore::octree_base] Bad extension. Tree must have a root node ending in .oct_idx\n");
       }
 
       // Create root_ node
-      root_ = new octree_base_node<Container, PointT> (root_name, NULL, load_all);
+      root_ = new octree_base_node<ContainerT, PointT> (root_name, NULL, load_all);
 
       // Set root_ nodes tree to the newly created tree
       root_->m_tree_ = this;
@@ -104,8 +104,8 @@ namespace pcl
     }
 ////////////////////////////////////////////////////////////////////////////////
 
-    template<typename Container, typename PointT>
-    octree_base<Container, PointT>::octree_base (const Eigen::Vector3d& min, const Eigen::Vector3d& max, const double node_dim_meters, const boost::filesystem::path& root_name, const std::string& coord_sys)
+    template<typename ContainerT, typename PointT>
+    octree_base<ContainerT, PointT>::octree_base (const Eigen::Vector3d& min, const Eigen::Vector3d& max, const double node_dim_meters, const boost::filesystem::path& root_name, const std::string& coord_sys)
       : root_ ()
       , read_write_mutex_ ()
       , lodPoints_ ()
@@ -121,7 +121,7 @@ namespace pcl
       }
 
      // Check file extension
-      if (boost::filesystem::extension (root_name) != octree_base_node<Container, PointT>::node_index_extension)
+      if (boost::filesystem::extension (root_name) != octree_base_node<ContainerT, PointT>::node_index_extension)
       {
         PCL_ERROR ( "[pcl::outofcore::octree_base] The tree must be created with a root node ending in .oct_idx\n" );
         PCL_THROW_EXCEPTION (PCLException, "[pcl::outofcore::octree_base] Root file extension does not match .oct_idx\n");
@@ -136,7 +136,7 @@ namespace pcl
       boost::filesystem::create_directory (dir);
 
       // Create root_ node
-      root_ = new octree_base_node<Container, PointT> (min, max, node_dim_meters, this, root_name);
+      root_ = new octree_base_node<ContainerT, PointT> (min, max, node_dim_meters, this, root_name);
       root_->m_tree_ = this;
       root_->saveIdx (false);
 
@@ -150,8 +150,8 @@ namespace pcl
 ////////////////////////////////////////////////////////////////////////////////
 
 // todo: Both constructs share the same code except for a single line
-    template<typename Container, typename PointT>
-    octree_base<Container, PointT>::octree_base (const int max_depth, const Eigen::Vector3d& min, const Eigen::Vector3d& max, const boost::filesystem::path& root_name, const std::string& coord_sys)
+    template<typename ContainerT, typename PointT>
+    octree_base<ContainerT, PointT>::octree_base (const int max_depth, const Eigen::Vector3d& min, const Eigen::Vector3d& max, const boost::filesystem::path& root_name, const std::string& coord_sys)
       : root_ ()
       , read_write_mutex_ ()
       , lodPoints_ ()
@@ -161,7 +161,7 @@ namespace pcl
       , resolution_ ()
     {
       // Check file extension
-      if (boost::filesystem::extension (root_name) != octree_base_node<Container, PointT>::node_index_extension)
+      if (boost::filesystem::extension (root_name) != octree_base_node<ContainerT, PointT>::node_index_extension)
       {
         PCL_ERROR ( "[pcl::outofcore::octree_base] the tree must be created with a root_ node ending in .oct_idx\n" );
         PCL_THROW_EXCEPTION (PCLException, "[pcl::outofcore::octree_base] Bad extension. Tree must be created with node ending in .oct_idx\n");
@@ -190,7 +190,7 @@ namespace pcl
       }
 
       // Create root node
-      root_ = new octree_base_node<Container, PointT> (max_depth, min, max, this, root_name);
+      root_ = new octree_base_node<ContainerT, PointT> (max_depth, min, max, this, root_name);
       root_->saveIdx (false);
 
       // max_depth_ is set when creating the root_ node
@@ -202,8 +202,8 @@ namespace pcl
     }
 ////////////////////////////////////////////////////////////////////////////////
 
-    template<typename Container, typename PointT>
-    octree_base<Container, PointT>::~octree_base ()
+    template<typename ContainerT, typename PointT>
+    octree_base<ContainerT, PointT>::~octree_base ()
     {
       root_->flushToDisk ();
       root_->saveIdx (false);
@@ -212,8 +212,8 @@ namespace pcl
     }
 ////////////////////////////////////////////////////////////////////////////////
 
-    template<typename Container, typename PointT> void
-    octree_base<Container, PointT>::saveToFile ()
+    template<typename ContainerT, typename PointT> void
+    octree_base<ContainerT, PointT>::saveToFile ()
     {
       // Create JSON object
       boost::shared_ptr<cJSON> idx (cJSON_CreateObject (), cJSON_Delete);
@@ -247,8 +247,8 @@ namespace pcl
     }
 ////////////////////////////////////////////////////////////////////////////////
 
-    template<typename Container, typename PointT> void
-    octree_base<Container, PointT>::loadFromFile ()
+    template<typename ContainerT, typename PointT> void
+    octree_base<ContainerT, PointT>::loadFromFile ()
     {
       // Open JSON
       std::vector<char> idx_input;
@@ -304,8 +304,8 @@ namespace pcl
     }
 ////////////////////////////////////////////////////////////////////////////////
 
-    template<typename Container, typename PointT> boost::uint64_t
-    octree_base<Container, PointT>::addDataToLeaf (const AlignedPointTVector& p)
+    template<typename ContainerT, typename PointT> boost::uint64_t
+    octree_base<ContainerT, PointT>::addDataToLeaf (const AlignedPointTVector& p)
     {
       boost::unique_lock < boost::shared_mutex > lock (read_write_mutex_);
 
@@ -319,16 +319,16 @@ namespace pcl
     }
 ////////////////////////////////////////////////////////////////////////////////
 
-    template<typename Container, typename PointT> boost::uint64_t
-    octree_base<Container, PointT>::addPointCloud (PointCloudConstPtr point_cloud)
+    template<typename ContainerT, typename PointT> boost::uint64_t
+    octree_base<ContainerT, PointT>::addPointCloud (PointCloudConstPtr point_cloud)
     {
       return addDataToLeaf (point_cloud->points);
     }
     
 ////////////////////////////////////////////////////////////////////////////////
 
-    template<typename Container, typename PointT> boost::uint64_t
-    octree_base<Container, PointT>::addPointCloud (sensor_msgs::PointCloud2::Ptr input_cloud, const bool skip_bb_check = false)
+    template<typename ContainerT, typename PointT> boost::uint64_t
+    octree_base<ContainerT, PointT>::addPointCloud (sensor_msgs::PointCloud2::Ptr input_cloud, const bool skip_bb_check = false)
     {
       uint64_t pt_added = this->root_->addPointCloud ( input_cloud, skip_bb_check ) ;
       assert ( input_cloud->width*input_cloud->height == pt_added );
@@ -338,8 +338,8 @@ namespace pcl
     
 ////////////////////////////////////////////////////////////////////////////////
 
-    template<typename Container, typename PointT> boost::uint64_t
-    octree_base<Container, PointT>::addPointCloud_and_genLOD (PointCloudConstPtr point_cloud)
+    template<typename ContainerT, typename PointT> boost::uint64_t
+    octree_base<ContainerT, PointT>::addPointCloud_and_genLOD (PointCloudConstPtr point_cloud)
     {
       // Lock the tree while writing
       boost::unique_lock < boost::shared_mutex > lock (read_write_mutex_);
@@ -348,8 +348,8 @@ namespace pcl
     }
 
 ////////////////////////////////////////////////////////////////////////////////
-    template<typename Container, typename PointT> boost::uint64_t
-    octree_base<Container, PointT>::addPointCloud_and_genLOD (sensor_msgs::PointCloud2::Ptr input_cloud)
+    template<typename ContainerT, typename PointT> boost::uint64_t
+    octree_base<ContainerT, PointT>::addPointCloud_and_genLOD (sensor_msgs::PointCloud2::Ptr input_cloud)
     {
       // Lock the tree while writing
       boost::unique_lock < boost::shared_mutex > lock (read_write_mutex_);
@@ -366,8 +366,8 @@ namespace pcl
 
 ////////////////////////////////////////////////////////////////////////////////
 #if 0
-    template<typename Container, typename PointT> void
-    octree_base<Container, PointT>::addPointToLeaf (const PointT& src)
+    template<typename ContainerT, typename PointT> void
+    octree_base<ContainerT, PointT>::addPointToLeaf (const PointT& src)
     {
       boost::unique_lock < boost::shared_mutex > lock (read_write_mutex_);
       root_->addPointToLeaf (src, false);
@@ -376,8 +376,8 @@ namespace pcl
 
 ////////////////////////////////////////////////////////////////////////////////
 
-    template<typename Container, typename PointT> boost::uint64_t
-    octree_base<Container, PointT>::addDataToLeaf_and_genLOD (AlignedPointTVector& src)
+    template<typename ContainerT, typename PointT> boost::uint64_t
+    octree_base<ContainerT, PointT>::addDataToLeaf_and_genLOD (AlignedPointTVector& src)
     {
       // Lock the tree while writing
       boost::unique_lock < boost::shared_mutex > lock (read_write_mutex_);
@@ -386,8 +386,8 @@ namespace pcl
     }
 ////////////////////////////////////////////////////////////////////////////////
 
-    template<typename Container, typename PointT> void
-    octree_base<Container, PointT>::queryBBIncludes (const Eigen::Vector3d& min, const Eigen::Vector3d& max, const size_t query_depth, AlignedPointTVector& dst) const
+    template<typename ContainerT, typename PointT> void
+    octree_base<ContainerT, PointT>::queryBBIncludes (const Eigen::Vector3d& min, const Eigen::Vector3d& max, const size_t query_depth, AlignedPointTVector& dst) const
     {
       boost::shared_lock < boost::shared_mutex > lock (read_write_mutex_);
       dst.clear ();
@@ -395,8 +395,8 @@ namespace pcl
     }
 ////////////////////////////////////////////////////////////////////////////////
 
-    template<typename Container, typename PointT> void
-    octree_base<Container, PointT>::queryBBIncludes_subsample (const Eigen::Vector3d& min, const Eigen::Vector3d& max, const size_t query_depth, const double percent, AlignedPointTVector& dst) const
+    template<typename ContainerT, typename PointT> void
+    octree_base<ContainerT, PointT>::queryBBIncludes_subsample (const Eigen::Vector3d& min, const Eigen::Vector3d& max, const size_t query_depth, const double percent, AlignedPointTVector& dst) const
     {
       boost::shared_lock < boost::shared_mutex > lock (read_write_mutex_);
       dst.clear ();
@@ -405,8 +405,8 @@ namespace pcl
 
 ////////////////////////////////////////////////////////////////////////////////
 
-    template<typename Container, typename PointT> void
-    octree_base<Container, PointT>::printBBox(const size_t query_depth) const
+    template<typename ContainerT, typename PointT> void
+    octree_base<ContainerT, PointT>::printBBox(const size_t query_depth) const
     {
       boost::shared_lock < boost::shared_mutex > lock (read_write_mutex_);
       root_->printBBox (query_depth);
@@ -414,8 +414,8 @@ namespace pcl
 
 ////////////////////////////////////////////////////////////////////////////////
 
-    template<typename Container, typename PointT> void
-    octree_base<Container, PointT>::getVoxelCenters(AlignedPointTVector &voxel_centers, const size_t query_depth) const
+    template<typename ContainerT, typename PointT> void
+    octree_base<ContainerT, PointT>::getVoxelCenters(AlignedPointTVector &voxel_centers, const size_t query_depth) const
     {
       boost::shared_lock < boost::shared_mutex > lock (read_write_mutex_);
       if (query_depth > max_depth_) 
@@ -428,8 +428,8 @@ namespace pcl
       }
     }
 
-    template<typename Container, typename PointT> void
-    octree_base<Container, PointT>::getVoxelCenters(std::vector<Eigen::Vector3d> &voxel_centers, const size_t query_depth) const
+    template<typename ContainerT, typename PointT> void
+    octree_base<ContainerT, PointT>::getVoxelCenters(std::vector<Eigen::Vector3d> &voxel_centers, const size_t query_depth) const
     {
       boost::shared_lock < boost::shared_mutex > lock (read_write_mutex_);
       if (query_depth > max_depth_)
@@ -444,8 +444,8 @@ namespace pcl
 
 ////////////////////////////////////////////////////////////////////////////////
 
-    template<typename Container, typename PointT> void
-    octree_base<Container, PointT>::queryBBIntersects (const Eigen::Vector3d& min, const Eigen::Vector3d& max, const boost::uint32_t query_depth, std::list<std::string>& bin_name) const
+    template<typename ContainerT, typename PointT> void
+    octree_base<ContainerT, PointT>::queryBBIntersects (const Eigen::Vector3d& min, const Eigen::Vector3d& max, const boost::uint32_t query_depth, std::list<std::string>& bin_name) const
     {
       boost::shared_lock < boost::shared_mutex > lock (read_write_mutex_);
       bin_name.clear ();
@@ -456,8 +456,8 @@ namespace pcl
     }
 ////////////////////////////////////////////////////////////////////////////////
 
-    template<typename Container, typename PointT> void
-    octree_base<Container, PointT>::writeVPythonVisual (const boost::filesystem::path filename)
+    template<typename ContainerT, typename PointT> void
+    octree_base<ContainerT, PointT>::writeVPythonVisual (const boost::filesystem::path filename)
     {
       std::ofstream f (filename.c_str ());
 
@@ -467,44 +467,44 @@ namespace pcl
     }
 ////////////////////////////////////////////////////////////////////////////////
 
-    template<typename Container, typename PointT> void
-    octree_base<Container, PointT>::flushToDisk ()
+    template<typename ContainerT, typename PointT> void
+    octree_base<ContainerT, PointT>::flushToDisk ()
     {
       root_->flushToDisk ();
     }
 ////////////////////////////////////////////////////////////////////////////////
 
-    template<typename Container, typename PointT> void
-    octree_base<Container, PointT>::flushToDiskLazy ()
+    template<typename ContainerT, typename PointT> void
+    octree_base<ContainerT, PointT>::flushToDiskLazy ()
     {
       root_->flushToDiskLazy ();
     }
 ////////////////////////////////////////////////////////////////////////////////
 
-    template<typename Container, typename PointT> void
-    octree_base<Container, PointT>::saveIdx ()
+    template<typename ContainerT, typename PointT> void
+    octree_base<ContainerT, PointT>::saveIdx ()
     {
       root_->saveIdx (true);
     }
 ////////////////////////////////////////////////////////////////////////////////
 
-    template<typename Container, typename PointT> void
-    octree_base<Container, PointT>::convertToXYZ ()
+    template<typename ContainerT, typename PointT> void
+    octree_base<ContainerT, PointT>::convertToXYZ ()
     {
       saveToFile ();
       root_->convertToXYZ ();
     }
 ////////////////////////////////////////////////////////////////////////////////
 
-    template<typename Container, typename PointT> void
-    octree_base<Container, PointT>::DeAllocEmptyNodeCache ()
+    template<typename ContainerT, typename PointT> void
+    octree_base<ContainerT, PointT>::DeAllocEmptyNodeCache ()
     {
       DeAllocEmptyNodeCache (root_ );
     }
 ////////////////////////////////////////////////////////////////////////////////
 
-    template<typename Container, typename PointT> void
-    octree_base<Container, PointT>::DeAllocEmptyNodeCache (octree_base_node<Container, PointT>* current)
+    template<typename ContainerT, typename PointT> void
+    octree_base<ContainerT, PointT>::DeAllocEmptyNodeCache (octree_base_node<ContainerT, PointT>* current)
     {
       if (current->size () == 0)
       {
@@ -519,8 +519,8 @@ namespace pcl
     }
 ////////////////////////////////////////////////////////////////////////////////
 
-    template<typename Container, typename PointT> void
-    octree_base<Container, PointT>::buildLOD ()
+    template<typename ContainerT, typename PointT> void
+    octree_base<ContainerT, PointT>::buildLOD ()
     {
       if (root_ == NULL)
       {
@@ -530,15 +530,15 @@ namespace pcl
       boost::unique_lock < boost::shared_mutex > lock (read_write_mutex_);
 
       const int current_dims = 1;
-      octree_base_node<Container, PointT>* current_branch[current_dims] = {root_};
+      octree_base_node<ContainerT, PointT>* current_branch[current_dims] = {root_};
       this->buildLOD (current_branch, current_dims);
     }
 ////////////////////////////////////////////////////////////////////////////////
 
 //loads chunks of up to 2e9 pts at a time; this is a completely arbitrary number
 //TODO rewrite for new point container (PointCloud2) support
-    template<typename Container, typename PointT> void
-    octree_base<Container, PointT>::buildLOD (octree_base_node<Container, PointT>** current_branch, const int current_dims)
+    template<typename ContainerT, typename PointT> void
+    octree_base<ContainerT, PointT>::buildLOD (octree_base_node<ContainerT, PointT>** current_branch, const int current_dims)
     {
       //stop if this brach DNE
       if (!current_branch[current_dims - 1])
@@ -550,7 +550,7 @@ namespace pcl
           && (!current_branch[current_dims - 1]->hasUnloadedChildren ()))//at leaf: subsample, remove, and copy to higher nodes
       {
         //this node's idx is (current_dims-1)
-        octree_base_node<Container, PointT>* leaf = current_branch[current_dims - 1];
+        octree_base_node<ContainerT, PointT>* leaf = current_branch[current_dims - 1];
 
         boost::uint64_t leaf_start_size = leaf->payload->size ();
         if (leaf_start_size > 0)//skip empty
@@ -561,11 +561,11 @@ namespace pcl
             for (size_t level = (current_dims - 1); level >= 1; level--)
             {
               //the target
-              octree_base_node<Container, PointT>* target_parent = current_branch[level - 1];
+              octree_base_node<ContainerT, PointT>* target_parent = current_branch[level - 1];
 
               //the percent to copy
               //each level up the chain gets sample_precent^l of the leaf's data
-              double percent = pow (double (octree_base_node<Container, PointT>::sample_precent), double (current_dims - level));
+              double percent = pow (double (octree_base_node<ContainerT, PointT>::sample_precent), double (current_dims - level));
 
               //read in percent of node
               AlignedPointTVector v;
@@ -596,8 +596,8 @@ namespace pcl
         current_branch[current_dims - 1]->payload->clear ();
 
         const int next_dims = current_dims + 1;
-        octree_base_node<Container, PointT>** next_branch = new octree_base_node<Container, PointT>*[next_dims];
-        memcpy (next_branch, current_branch, current_dims * sizeof(octree_base_node<Container, PointT>**));
+        octree_base_node<ContainerT, PointT>** next_branch = new octree_base_node<ContainerT, PointT>*[next_dims];
+        memcpy (next_branch, current_branch, current_dims * sizeof(octree_base_node<ContainerT, PointT>**));
 
         size_t numchild = current_branch[current_dims - 1]->numchildren ();
         if ((numchild != 8) && (current_branch[current_dims - 1]->hasUnloadedChildren ()))

@@ -60,25 +60,25 @@ namespace pcl
   namespace outofcore
   {
 // Forward Declarations
-    template<typename Container, typename PointT>
+    template<typename ContainerT, typename PointT>
     class octree_base_node;
 
-    template<typename Container, typename PointT>
+    template<typename ContainerT, typename PointT>
     class octree_base;
 
     /** \todo Move non-class functions to an octree accessor class */
 
     /** \brief Non-class function which creates a single child leaf; used with \ref queryBBIntersects_noload to avoid loading the data from disk */
-    template<typename Container, typename PointT> octree_base_node<Container, PointT>*
-    makenode_norec (const boost::filesystem::path& path, octree_base_node<Container, PointT>* super);
+    template<typename ContainerT, typename PointT> octree_base_node<ContainerT, PointT>*
+    makenode_norec (const boost::filesystem::path& path, octree_base_node<ContainerT, PointT>* super);
 
     /** \brief Non-class method which performs a bounding box query without loading any of the point cloud data from disk */
-    template<typename Container, typename PointT> void
+    template<typename ContainerT, typename PointT> void
     queryBBIntersects_noload (const boost::filesystem::path& root_node, const Eigen::Vector3d& min, const Eigen::Vector3d& max, const boost::uint32_t query_depth, std::list<std::string>& bin_name);
 
     /** \brief Non-class method overload */
-    template<typename Container, typename PointT> void
-    queryBBIntersects_noload (octree_base_node<Container, PointT>* current, const Eigen::Vector3d&, const Eigen::Vector3d& max, const boost::uint32_t query_depth, std::list<std::string>& bin_name);
+    template<typename ContainerT, typename PointT> void
+    queryBBIntersects_noload (octree_base_node<ContainerT, PointT>* current, const Eigen::Vector3d&, const Eigen::Vector3d& max, const boost::uint32_t query_depth, std::list<std::string>& bin_name);
 
     /** \class octree_base_node 
      *
@@ -95,19 +95,19 @@ namespace pcl
      *  \author Jacob Schloss (jacob.schloss@urbanrobotics.net)
      *
      */
-    template<typename Container, typename PointT>
+    template<typename ContainerT, typename PointT>
     class octree_base_node
     {
-      friend class octree_base<Container, PointT> ;
+      friend class octree_base<ContainerT, PointT> ;
   
-      friend octree_base_node<Container, PointT>*
-      makenode_norec<Container, PointT> (const boost::filesystem::path& path, octree_base_node<Container, PointT>* super);
+      friend octree_base_node<ContainerT, PointT>*
+      makenode_norec<ContainerT, PointT> (const boost::filesystem::path& path, octree_base_node<ContainerT, PointT>* super);
   
       friend void
-      queryBBIntersects_noload<Container, PointT> (const boost::filesystem::path& rootnode, const Eigen::Vector3d& min, const Eigen::Vector3d& max, const boost::uint32_t query_depth, std::list<std::string>& bin_name);
+      queryBBIntersects_noload<ContainerT, PointT> (const boost::filesystem::path& rootnode, const Eigen::Vector3d& min, const Eigen::Vector3d& max, const boost::uint32_t query_depth, std::list<std::string>& bin_name);
 
       friend void
-      queryBBIntersects_noload<Container, PointT> (octree_base_node<Container, PointT>* current, const Eigen::Vector3d& min, const Eigen::Vector3d& max, const boost::uint32_t query_depth, std::list<std::string>& bin_name);
+      queryBBIntersects_noload<ContainerT, PointT> (octree_base_node<ContainerT, PointT>* current, const Eigen::Vector3d& min, const Eigen::Vector3d& max, const boost::uint32_t query_depth, std::list<std::string>& bin_name);
   
       public:
         typedef octree_base<octree_disk_container < PointT > , PointT > octree_disk;
@@ -132,14 +132,14 @@ namespace pcl
             min_ (Eigen::Vector3d (0, 0, 0)),
             max_ (Eigen::Vector3d (0, 0, 0))
         {
-          memset (children_, 0, 8 * sizeof(octree_base_node<Container, PointT>*));
+          memset (children_, 0, 8 * sizeof(octree_base_node<ContainerT, PointT>*));
         }
 
         /** \brief Create root node and directory setting voxel size*/
-        octree_base_node (const Eigen::Vector3d& bb_min, const Eigen::Vector3d& bb_max, const double node_dim_meters, octree_base<Container, PointT> * const tree, const boost::filesystem::path& root_name);
+        octree_base_node (const Eigen::Vector3d& bb_min, const Eigen::Vector3d& bb_max, const double node_dim_meters, octree_base<ContainerT, PointT> * const tree, const boost::filesystem::path& root_name);
 
         /** \brief Create root node and directory setting setting max depth*/
-        octree_base_node (const int max_depth, const Eigen::Vector3d& bb_min, const Eigen::Vector3d& bb_max, octree_base<Container, PointT> * const tree, const boost::filesystem::path& root_name);
+        octree_base_node (const int max_depth, const Eigen::Vector3d& bb_min, const Eigen::Vector3d& bb_max, octree_base<ContainerT, PointT> * const tree, const boost::filesystem::path& root_name);
 
         /** \brief Will recursively delete all children calling recFreeChildrein */
         ~octree_base_node ();
@@ -421,7 +421,7 @@ namespace pcl
          * \throws PCLException if directory is missing
          * \throws PCLException if node index is missing
          */
-        octree_base_node (const boost::filesystem::path& path, octree_base_node<Container, PointT>* super, bool load_all);
+        octree_base_node (const boost::filesystem::path& path, octree_base_node<ContainerT, PointT>* super, bool load_all);
 
         /** \brief Create root node and directory
          *
@@ -436,7 +436,7 @@ namespace pcl
          * 
          * \throws PCLException if the specified path already exists
          */
-        void init_root_node (const Eigen::Vector3d& bb_min, const Eigen::Vector3d& bb_max, octree_base<Container, PointT> * const tree, const boost::filesystem::path& rootname);
+        void init_root_node (const Eigen::Vector3d& bb_min, const Eigen::Vector3d& bb_max, octree_base<ContainerT, PointT> * const tree, const boost::filesystem::path& rootname);
 
         /** \brief Creates child node \ref idx
          *  \param[in] idx Index (0-7) of the child node
@@ -503,7 +503,7 @@ namespace pcl
 
         /** \brief Private constructor used for children 
          */
-        octree_base_node (const Eigen::Vector3d& bb_min, const Eigen::Vector3d& bb_max, const char* dir, octree_base_node<Container, PointT>* super);
+        octree_base_node (const Eigen::Vector3d& bb_min, const Eigen::Vector3d& bb_max, const char* dir, octree_base_node<ContainerT, PointT>* super);
 
         /** \brief Copies points from this and all children into a single point container (std::list)
          */
@@ -543,7 +543,7 @@ namespace pcl
         boost::filesystem::path thisnodestorage_;
 
         /** \brief The tree we belong to */
-        octree_base<Container, PointT>* m_tree_;//
+        octree_base<ContainerT, PointT>* m_tree_;//
         /** \brief The root node of the tree we belong to */
         octree_base_node* root_;//
         /** \brief super-node */
@@ -558,15 +558,12 @@ namespace pcl
         /** \brief what holds the points. currently a custom class, but in theory
          * you could use an stl container if you rewrote some of this class. I used
          * to use deques for this... */
-        boost::shared_ptr<Container> payload_;
+        boost::shared_ptr<ContainerT> payload_;
         
-//        Container* payload_;
-
         /** \brief The X,Y,Z axes-aligned minima for the bounding box*/
         Eigen::Vector3d min_;
         /** \brief The X,Y,Z axes-aligned maxima for the bounding box*/
         Eigen::Vector3d max_;
-
         /** \brief The midpoints of the X, Y and Z sides of the bounding boxes */
         Eigen::Vector3d mid_xyz_;
 

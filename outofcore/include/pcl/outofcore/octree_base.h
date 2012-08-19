@@ -89,10 +89,10 @@ namespace pcl
    *  \author Jacob Schloss (jacob.schloss@urbanrobotics.net)
    *
    */
-    template<typename Container, typename PointT>
+    template<typename ContainerT, typename PointT>
     class octree_base
     {
-      friend class octree_base_node<Container, PointT> ;
+      friend class octree_base_node<ContainerT, PointT> ;
 
       public:
         // public typedefs
@@ -255,7 +255,7 @@ namespace pcl
          * \param[in] min The minimum corner of the bounding box to query
          * \param[in] max The maximum corner of the bounding box to query
          * \param[in] query_depth The query depth at which to search for points; only points at this depth are returned
-         * \param[out] dst_blob Container for the storage to which the points are inserted. Note it must already be allocated, and empty when this method is called.
+         * \param[out] dst_blob ContainerT for the storage to which the points are inserted. Note it must already be allocated, and empty when this method is called.
          **/
         void
         queryBBIncludes (const Eigen::Vector3d& min, const Eigen::Vector3d& max, const int query_depth, const sensor_msgs::PointCloud2::Ptr& dst_blob) const
@@ -487,7 +487,7 @@ namespace pcl
 
         /** \brief flush empty nodes only */
         void
-        DeAllocEmptyNodeCache (octree_base_node<Container, PointT>* current);
+        DeAllocEmptyNodeCache (octree_base_node<ContainerT, PointT>* current);
 
         /** \brief Write octree definition ".octree" (defined by octree_extension_) to disk */
         void
@@ -499,7 +499,7 @@ namespace pcl
         /** \brief recursive portion of lod builder
          * \todo does this need to be public? */
         void
-        buildLOD (octree_base_node<Container, PointT>** current_branch, const int current_dims);
+        buildLOD (octree_base_node<ContainerT, PointT>** current_branch, const int current_dims);
 
         /** \brief Increment current depths (LOD for branch nodes) point count; called by addDataAtMaxDepth in octree_base_node
          * \todo rename count_point to something more informative
@@ -514,7 +514,7 @@ namespace pcl
         }
     
         /** \brief Pointer to the root node of the octree data structure */
-        octree_base_node<Container, PointT>* root_;
+        octree_base_node<ContainerT, PointT>* root_;
         /** \brief shared mutex for controlling read/write access to disk */
         mutable boost::shared_mutex read_write_mutex_;
         /** \brief vector indexed by depth containing number of points at each level of detail */
