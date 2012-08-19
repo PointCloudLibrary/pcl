@@ -123,17 +123,7 @@ namespace pcl
 
         /** \brief Empty constructor; sets pointers for children and for bounding boxes to 0
          */
-        octree_base_node () 
-          : parent_ (NULL),
-            root_ (NULL),
-            depth_ (0),
-            num_child_ (0),
-            mid_xyz_ (Eigen::Vector3d (0, 0, 0)),
-            min_ (Eigen::Vector3d (0, 0, 0)),
-            max_ (Eigen::Vector3d (0, 0, 0))
-        {
-          memset (children_, 0, 8 * sizeof(octree_base_node<ContainerT, PointT>*));
-        }
+        octree_base_node ();
 
         /** \brief Create root node and directory setting voxel size*/
         octree_base_node (const Eigen::Vector3d& bb_min, const Eigen::Vector3d& bb_max, const double node_dim_meters, octree_base<ContainerT, PointT> * const tree, const boost::filesystem::path& root_name);
@@ -197,7 +187,7 @@ namespace pcl
          * \param[in] query_depth The depth at which to print the size of the voxel/bounding boxes
          */
         void
-        printBBox(const size_t query_depth) const;
+        printBBox (const size_t query_depth) const;
 
         /** \brief Tests whether the input bounding box intersects with the current node's bounding box 
          *  \param[in] min_bb The minimum corner of the input bounding box
@@ -234,7 +224,7 @@ namespace pcl
          *  \param[in] max_bb The maximum corner of the input bounding box
          **/
         static inline bool
-        pointWithinBB ( const Eigen::Vector3d& min_bb, const Eigen::Vector3d& max_bb, const double x, const double y, const double z );
+        pointWithinBB (const Eigen::Vector3d& min_bb, const Eigen::Vector3d& max_bb, const double x, const double y, const double z);
 
         /** \brief Tests if specified point is within bounds of current node's bounding box */
         inline bool
@@ -250,103 +240,13 @@ namespace pcl
         boost::uint64_t
         addDataToLeaf (const std::vector<const PointT*>& p, const bool skip_bb_check);
 
-        /** \brief Add a single point to the octree
-         * 
-         * \param[in] p The point (templated) to add to the tree
-         */
-        void
-        addPointToLeaf (const PointT& p);
-
         /** \brief Add a single PointCloud2 object into the octree.
          *
          * \param[in] input_cloud
          * \param[in] skip_bb_check (default = false)
          */
         boost::uint64_t
-        addPointCloud ( const sensor_msgs::PointCloud2::Ptr& input_cloud, const bool skip_bb_check = false )
-        {
-      
-          if ( input_cloud->height*input_cloud->width == 0)
-            return (0);
-      
-
-          if( this->depth_ == root_->m_tree_->max_depth_)
-            return (addDataAtMaxDepth (input_cloud, true));
-      
-          if( num_child_ < 8 )
-            if(hasUnloadedChildren ())
-              loadChildren (false);
-
-          if( skip_bb_check == false )
-          {
-
-            //indices to store the points for each bin
-            //these lists will be used to copy data to new point clouds and pass down recursively
-            std::vector < std::vector<int> > indices;
-            indices.resize (8);
-
-            int x_idx = pcl::getFieldIndex (*input_cloud , std::string ("x") );
-            int y_idx = pcl::getFieldIndex (*input_cloud, std::string ("y") );
-            int z_idx = pcl::getFieldIndex (*input_cloud, std::string ("z") );
-
-            int x_offset = input_cloud->fields[x_idx].offset;
-            int y_offset = input_cloud->fields[y_idx].offset;
-            int z_offset = input_cloud->fields[z_idx].offset;
-      
-            for ( size_t point_idx =0; point_idx < input_cloud->data.size (); point_idx +=input_cloud->point_step )
-            {
-              PointXYZ local_pt;
-
-              local_pt.x = * (reinterpret_cast<float*>(&input_cloud->data[point_idx + x_offset]));
-              local_pt.y = * (reinterpret_cast<float*>(&input_cloud->data[point_idx + y_offset]));
-              local_pt.z = * (reinterpret_cast<float*>(&input_cloud->data[point_idx + z_offset]));
-
-              if( !this->pointWithinBB (local_pt) )
-              {
-                PCL_ERROR ( "[pcl::outofcore::octree_base_node::%s] Failed to place point ( %.2f,%.2f,%.2f) within bounding box\n", __FUNCTION__, local_pt.x, local_pt.y, local_pt.z );
-                continue;
-              }
-
-              //compute the box we are in
-              size_t box = 0;
-              box = ((local_pt.z >= mid_xyz_[2]) << 2) | ((local_pt.y >= mid_xyz_[1]) << 1) | ((local_pt.x >= mid_xyz_[0]) << 0);
-              assert ( box < 8 );
-              
-              //insert to the vector of indices
-              indices[box].push_back ( static_cast<int> ( point_idx / input_cloud->point_step ) );
-            }
-
-            boost::uint64_t points_added = 0;
-
-            for(int i=0; i<8; i++)
-            {
-              if ( indices[i].empty () )
-                continue;
-
-              if ( children_[i] == false )
-              {
-                createChild (i);
-              }
-
-              sensor_msgs::PointCloud2::Ptr dst_cloud (new sensor_msgs::PointCloud2 () );
-
-//              PCL_INFO ( "[pcl::outofcore::octree_base_node::%s] Extracting indices to bins\n", __FUNCTION__);
-              
-              //copy the points from extracted indices from input cloud to destination cloud
-              pcl::copyPointCloud ( *input_cloud, indices[i], *dst_cloud ) ;
-          
-              //recursively add the new cloud to the data
-              points_added += children_[i]->addPointCloud ( dst_cloud );
-              indices[i].clear ();
-            }
-        
-            return (points_added);
-          }
-      
-          PCL_ERROR ("[pcl::outofcore::octree_base_node] Skipped bb check. Points not inserted\n");
-      
-          return 0;
-        }
+        addPointCloud (const sensor_msgs::PointCloud2::Ptr& input_cloud, const bool skip_bb_check);
 
         /** \brief Add a single PointCloud2 into the octree and build the subsampled LOD during construction */
         boost::uint64_t
@@ -387,14 +287,14 @@ namespace pcl
          *  \return number of points successfully added
          */
         boost::uint64_t
-        addDataAtMaxDepth ( const sensor_msgs::PointCloud2::Ptr input_cloud, const bool skip_bb_check);
+        addDataAtMaxDepth (const sensor_msgs::PointCloud2::Ptr input_cloud, const bool skip_bb_check);
         
         /** \brief Randomly sample point data 
          *  \todo This needs to be deprecated; random sampling has its own class
          *  \todo Parameterize random sampling, uniform downsampling, etc...
          */
         void
-        randomSample(const AlignedPointTVector& p, AlignedPointTVector& insertBuff, const bool skip_bb_check);
+        randomSample (const AlignedPointTVector& p, AlignedPointTVector& insertBuff, const bool skip_bb_check);
 
         /** \brief Subdivide points to pass to child nodes */
         void
@@ -526,14 +426,14 @@ namespace pcl
          * \param[in] query_depth
          */
         void
-        getVoxelCenters(AlignedPointTVector &voxel_centers, const size_t query_depth);
+        getVoxelCenters (AlignedPointTVector &voxel_centers, const size_t query_depth);
 
         /** \brief Gets a vector of occupied voxel centers
          * \param[out] voxel_centers
          * \param[in] query_depth
          */
         void
-        getVoxelCenters(std::vector<Eigen::Vector3d> &voxel_centers, const size_t query_depth);
+        getVoxelCenters (std::vector<Eigen::Vector3d> &voxel_centers, const size_t query_depth);
 
         /** \brief the dir containing the node's data and its children */
         boost::filesystem::path thisdir_;
