@@ -216,8 +216,6 @@ namespace pcl
          */
         boost::uint64_t
         addDataToLeaf_and_genLOD (AlignedPointTVector& p);
-        
-        
 
         // Frustrum/Box/Region REQUESTS/QUERIES: DB Accessors
         // -----------------------------------------------------------------------
@@ -258,16 +256,7 @@ namespace pcl
          * \param[out] dst_blob ContainerT for the storage to which the points are inserted. Note it must already be allocated, and empty when this method is called.
          **/
         void
-        queryBBIncludes (const Eigen::Vector3d& min, const Eigen::Vector3d& max, const int query_depth, const sensor_msgs::PointCloud2::Ptr& dst_blob) const
-        {
-          boost::shared_lock < boost::shared_mutex > lock (read_write_mutex_);
-
-          dst_blob->data.clear ();
-          dst_blob->width = 0;
-          dst_blob->height =1;
-
-          root_->queryBBIncludes ( min, max, query_depth, dst_blob );
-        }
+        queryBBIncludes (const Eigen::Vector3d& min, const Eigen::Vector3d& max, const int query_depth, const sensor_msgs::PointCloud2::Ptr& dst_blob) const;
         
         /** \brief Returns a random subsample of points within the given bounding box at \ref query_depth
          *

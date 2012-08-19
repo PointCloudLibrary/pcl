@@ -393,6 +393,20 @@ namespace pcl
       dst.clear ();
       root_->queryBBIncludes (min, max, query_depth, dst);
     }
+
+////////////////////////////////////////////////////////////////////////////////
+    template<typename ContainerT, typename PointT> void
+    octree_base<ContainerT, PointT>::queryBBIncludes (const Eigen::Vector3d& min, const Eigen::Vector3d& max, const int query_depth, const sensor_msgs::PointCloud2::Ptr& dst_blob) const
+    {
+      boost::shared_lock < boost::shared_mutex > lock (read_write_mutex_);
+
+      dst_blob->data.clear ();
+      dst_blob->width = 0;
+      dst_blob->height =1;
+
+      root_->queryBBIncludes ( min, max, query_depth, dst_blob );
+    }
+
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> void
