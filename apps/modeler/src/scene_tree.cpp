@@ -36,13 +36,15 @@
 
 #include <pcl/apps/modeler/scene_tree.h>
 
+#include <set>
 #include <pcl/apps/modeler/main_window.h>
 #include <pcl/apps/modeler/render_window.h>
 #include <pcl/apps/modeler/render_window_item.h>
 #include <pcl/apps/modeler/cloud_mesh_item.h>
 #include <pcl/apps/modeler/cloud_mesh_item_updater.h>
 #include <pcl/apps/modeler/thread_controller.h>
-#include <pcl/apps/modeler/downsample_worker.h>
+#include <pcl/apps/modeler/voxel_grid_downsample_worker.h>
+#include <pcl/apps/modeler/statistical_outlier_removal_worker.h>
 #include <pcl/apps/modeler/normal_estimation_worker.h>
 #include <pcl/apps/modeler/icp_registration_worker.h>
 #include <pcl/apps/modeler/poisson_worker.h>
@@ -53,6 +55,11 @@
 pcl::modeler::SceneTree::SceneTree(QWidget * parent)
   : QTreeWidget(parent)
 {
+  setDragEnabled(true);
+  setAcceptDrops(true);
+  setDropIndicatorShown(true);
+  setDragDropMode(QAbstractItemView::DragDrop);
+
   setSelectionMode(QAbstractItemView::ExtendedSelection);
 
   connect(selectionModel(), SIGNAL(selectionChanged(QItemSelection, QItemSelection)),
@@ -324,10 +331,23 @@ pcl::modeler::SceneTree::slotICPRegistration()
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::modeler::SceneTree::slotDownSampleFilter()
+pcl::modeler::SceneTree::slotVoxelGridDownsampleFilter()
 {
   QList<CloudMeshItem*> selected_cloud_mesh_items = selectedTypeItems<CloudMeshItem>();
-  AbstractWorker* worker = new DownSampleWorker(selected_cloud_mesh_items,&MainWindow::getInstance());
+  AbstractWorker* worker = new VoxelGridDownampleWorker(selected_cloud_mesh_items,&MainWindow::getInstance());
+  ThreadController* thread_controller = new ThreadController();
+  connect(worker, SIGNAL(dataUpdated(CloudMeshItem*)), thread_controller, SLOT(slotOnCloudMeshItemUpdate(CloudMeshItem*)));
+  thread_controller->runWorker(worker);
+
+  return;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::modeler::SceneTree::slotStatisticalOutlierRemovalFilter()
+{
+  QList<CloudMeshItem*> selected_cloud_mesh_items = selectedTypeItems<CloudMeshItem>();
+  AbstractWorker* worker = new StatisticalOutlierRemovalWorker(selected_cloud_mesh_items,&MainWindow::getInstance());
   ThreadController* thread_controller = new ThreadController();
   connect(worker, SIGNAL(dataUpdated(CloudMeshItem*)), thread_controller, SLOT(slotOnCloudMeshItemUpdate(CloudMeshItem*)));
   thread_controller->runWorker(worker);
@@ -449,4 +469,79 @@ pcl::modeler::SceneTree::slotCloseRenderWindow()
   emit itemInsertedOrRemoved();
 
   return;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::modeler::SceneTree::dropEvent(QDropEvent * event)
+{
+  QList<CloudMeshItem*> selected_cloud_meshes = selectedTypeItems<CloudMeshItem>();
+
+  std::set<RenderWindowItem*> previous_parents;
+  for (QList<CloudMeshItem*>::iterator selected_cloud_meshes_it = selected_cloud_meshes.begin();
+    selected_cloud_meshes_it != selected_cloud_meshes.end();
+    selected_cloud_meshes_it ++)
+  {
+    CloudMeshItem* cloud_mesh_item = *selected_cloud_meshes_it;
+    RenderWindowItem* render_window_item = dynamic_cast<RenderWindowItem*>(cloud_mesh_item->parent());
+    if (render_window_item != NULL)
+      previous_parents.insert(render_window_item);
+  }
+
+  QTreeWidget::dropEvent(event);
+
+  std::vector<CloudMeshItem*> cloud_mesh_items;
+  for (QList<CloudMeshItem*>::iterator selected_cloud_meshes_it = selected_cloud_meshes.begin();
+    selected_cloud_meshes_it != selected_cloud_meshes.end();
+    selected_cloud_meshes_it ++)
+  {
+    CloudMeshItem* cloud_mesh_item = *selected_cloud_meshes_it;
+    if (dynamic_cast<RenderWindowItem*>(cloud_mesh_item->parent()) == NULL)
+      cloud_mesh_items.push_back(cloud_mesh_item);
+    else
+      cloud_mesh_item->updateRenderWindow();
+  }
+
+  // put the cloud mesh items in a new render window
+  if (!cloud_mesh_items.empty())
+  {
+    for (size_t i = 0, i_end = cloud_mesh_items.size(); i < i_end; ++ i)
+      takeTopLevelItem(indexFromItem(cloud_mesh_items[i]).row());
+    RenderWindowItem* render_window_item = MainWindow::getInstance().createRenderWindow();
+    for (size_t i = 0, i_end = cloud_mesh_items.size(); i < i_end; ++ i)
+      render_window_item->addChild(cloud_mesh_items[i]);
+    render_window_item->setExpanded(true);
+  }
+
+  for (std::set<RenderWindowItem*>::iterator previous_parents_it = previous_parents.begin();
+    previous_parents_it != previous_parents.end();
+    previous_parents_it ++)
+  {
+    (*previous_parents_it)->getRenderWindow()->updateAxes();
+    (*previous_parents_it)->getRenderWindow()->render();
+  }
+
+  return;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+bool
+pcl::modeler::SceneTree::dropMimeData(QTreeWidgetItem * parent, int index, const QMimeData * data, Qt::DropAction action)
+{
+  QList<CloudMeshItem*> selected_cloud_meshes = selectedTypeItems<CloudMeshItem>();
+
+  RenderWindowItem* render_window_item =
+    (parent == NULL)?(MainWindow::getInstance().createRenderWindow()):(dynamic_cast<RenderWindowItem*>(parent));
+
+  for (QList<CloudMeshItem*>::iterator selected_cloud_meshes_it = selected_cloud_meshes.begin();
+    selected_cloud_meshes_it != selected_cloud_meshes.end();
+    selected_cloud_meshes_it ++)
+  {
+    CloudMeshItem* cloud_mesh_item_copy = new CloudMeshItem(render_window_item, *(*selected_cloud_meshes_it));
+    render_window_item->addChild(cloud_mesh_item_copy);
+    setCurrentItem(cloud_mesh_item_copy);
+  }
+  render_window_item->setExpanded(true);
+
+  return true;
 }

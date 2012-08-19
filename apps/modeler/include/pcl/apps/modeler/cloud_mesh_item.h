@@ -51,9 +51,10 @@ namespace pcl
     class CloudMeshItem : public QTreeWidgetItem, public AbstractItem
     {
       public:
-        CloudMeshItem (QTreeWidgetItem* parent, const std::string& filename);
-        CloudMeshItem (QTreeWidgetItem* parent, CloudMesh::PointCloudPtr cloud);
-        ~CloudMeshItem ();
+        CloudMeshItem(QTreeWidgetItem* parent, const std::string& filename);
+        CloudMeshItem(QTreeWidgetItem* parent, CloudMesh::PointCloudPtr cloud);
+        CloudMeshItem(QTreeWidgetItem* parent, const CloudMeshItem& cloud_mesh_item);
+        ~CloudMeshItem();
 
         inline boost::shared_ptr<CloudMesh>&
         getCloudMesh()
@@ -80,6 +81,9 @@ namespace pcl
 
         virtual std::string
         getItemName() const {return "Cloud Mesh Item";}
+
+        void
+        updateRenderWindow();
 
       protected:
         virtual void

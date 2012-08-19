@@ -146,7 +146,7 @@ pcl::modeler::ICPRegistrationWorker::processImpl(CloudMeshItem* cloud_mesh_item)
   result.sensor_orientation_ = cloud_mesh_item->getCloudMesh()->getCloud()->sensor_orientation_;
 
   *(cloud_mesh_item->getCloudMesh()->getCloud()) = result;
-  *cloud_ = *cloud_ + result;
+  *cloud_ += result;
 
   return;
 }

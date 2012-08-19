@@ -34,8 +34,8 @@
  *
  */
 
-#ifndef PCL_MODELER_DOWNSAMPLE_WORKER_H_
-#define PCL_MODELER_DOWNSAMPLE_WORKER_H_
+#ifndef PCL_MODELER_STATISTICAL_OUTLIER_REMOVAL_WORKER_H_
+#define PCL_MODELER_STATISTICAL_OUTLIER_REMOVAL_WORKER_H_
 
 #include <pcl/apps/modeler/abstract_worker.h>
 
@@ -43,17 +43,18 @@ namespace pcl
 {
   namespace modeler
   {
+    class IntParameter;
     class DoubleParameter;
 
-    class DownSampleWorker : public AbstractWorker 
+    class StatisticalOutlierRemovalWorker : public AbstractWorker 
     {
       public:
-        DownSampleWorker(const QList<CloudMeshItem*>& cloud_mesh_items, QWidget* parent=0);
-        ~DownSampleWorker(void);
+        StatisticalOutlierRemovalWorker(const QList<CloudMeshItem*>& cloud_mesh_items, QWidget* parent=0);
+        ~StatisticalOutlierRemovalWorker(void);
 
       protected:
         virtual std::string
-        getName () const {return ("Down Sample");}
+        getName () const {return ("Statistical Outlier Removal");}
 
         virtual void
         initParameters(CloudMeshItem* cloud_mesh_item);
@@ -65,17 +66,12 @@ namespace pcl
         processImpl(CloudMeshItem* cloud_mesh_item);
 
       private:
-        double x_min_, x_max_;
-        double y_min_, y_max_;
-        double z_min_, z_max_;
-
-        DoubleParameter* leaf_size_x_;
-        DoubleParameter* leaf_size_y_;
-        DoubleParameter* leaf_size_z_;
+        IntParameter* mean_k_;
+        DoubleParameter* stddev_mul_thresh_;
 
     };
 
   }
 }
 
-#endif // PCL_MODELER_DOWNSAMPLE_WORKER_H_
+#endif // PCL_MODELER_STATISTICAL_OUTLIER_REMOVAL_WORKER_H_

@@ -34,90 +34,63 @@
  *
  */
 
-#include <pcl/apps/modeler/channel_actor_item.h>
-
-#include <vtkCamera.h>
-#include <vtkPolyData.h>
-#include <vtkRenderer.h>
-#include <vtkMatrix4x4.h>
-#include <vtkRenderWindow.h>
-#include <vtkRendererCollection.h>
-#include <pcl/point_cloud.h>
+#include <pcl/apps/modeler/statistical_outlier_removal_worker.h>
+#include <pcl/apps/modeler/parameter.h>
+#include <pcl/apps/modeler/parameter_dialog.h>
 #include <pcl/apps/modeler/cloud_mesh.h>
+#include <pcl/apps/modeler/cloud_mesh_item.h>
+#include <pcl/filters/statistical_outlier_removal.h>
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::modeler::ChannelActorItem::ChannelActorItem(QTreeWidgetItem* parent,
-  const boost::shared_ptr<CloudMesh>& cloud_mesh,
-  const vtkSmartPointer<vtkRenderWindow>& render_window,
-  const vtkSmartPointer<vtkActor>& actor,
-  const std::string& channel_name)
-  :QTreeWidgetItem(parent),
-  AbstractItem(),
-  cloud_mesh_(cloud_mesh),
-  poly_data_(vtkSmartPointer<vtkPolyData>::New()),
-  render_window_(render_window),
-  color_scheme_("rgb"),
-  actor_(actor)
+pcl::modeler::StatisticalOutlierRemovalWorker::StatisticalOutlierRemovalWorker(const QList<CloudMeshItem*>& cloud_mesh_items, QWidget* parent) :
+  AbstractWorker(cloud_mesh_items, parent),
+  mean_k_(NULL), stddev_mul_thresh_(NULL)
 {
-  setFlags(flags()&(~Qt::ItemIsDragEnabled));
-  setFlags(flags()&(~Qt::ItemIsDropEnabled));
-
-  setText(0, QString(channel_name.c_str()));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::modeler::ChannelActorItem::~ChannelActorItem ()
+pcl::modeler::StatisticalOutlierRemovalWorker::~StatisticalOutlierRemovalWorker(void)
 {
-  detachActor();
+  delete mean_k_;
+  delete stddev_mul_thresh_;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::modeler::ChannelActorItem::init()
+pcl::modeler::StatisticalOutlierRemovalWorker::initParameters(CloudMeshItem* cloud_mesh_item)
 {
-  initImpl();
-
-  attachActor();
-  render_window_->Render();
+  return;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::modeler::ChannelActorItem::update()
+pcl::modeler::StatisticalOutlierRemovalWorker::setupParameters()
 {
-  updateImpl();
+  mean_k_ = new IntParameter("Mean K", "The number of nearest neighbors to use for mean distance estimation", 8, 1, 1024, 1);
+  stddev_mul_thresh_ = new DoubleParameter("Standard Deviation Multiplier", "The distance threshold will be equal to: mean + stddev_mult * stddev. Points will be classified as inlier or outlier if their average neighbor distance is below or above this threshold respectively.", 1.0, 0.1, 10, 0.1);
 
-  render_window_->Render();
+  parameter_dialog_->addParameter(mean_k_);
+  parameter_dialog_->addParameter(stddev_mul_thresh_);
+
+  return;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::modeler::ChannelActorItem::attachActor()
+pcl::modeler::StatisticalOutlierRemovalWorker::processImpl(CloudMeshItem* cloud_mesh_item)
 {
-  render_window_->GetRenderers()->GetFirstRenderer()->AddActor(actor_);
-}
+  pcl::StatisticalOutlierRemoval<pcl::PointSurfel> sor;
+  sor.setInputCloud(cloud_mesh_item->getCloudMesh()->getCloud());
+  sor.setMeanK(*mean_k_);
+  sor.setStddevMulThresh(*stddev_mul_thresh_);
 
-//////////////////////////////////////////////////////////////////////////////////////////////
-void
-pcl::modeler::ChannelActorItem::detachActor()
-{
-  render_window_->GetRenderers()->GetFirstRenderer()->RemoveActor(actor_);
-}
+  CloudMesh::PointCloudPtr cloud(new CloudMesh::PointCloud());
+  sor.filter(*cloud);
 
-//////////////////////////////////////////////////////////////////////////////////////////////
-void
-pcl::modeler::ChannelActorItem::prepareContextMenu(QMenu* menu) const
-{
+  cloud_mesh_item->getCloudMesh()->getCloud() = cloud;
 
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-void
-pcl::modeler::ChannelActorItem::switchRenderWindow(vtkRenderWindow* render_window)
-{
-  detachActor();
-  render_window_ = vtkSmartPointer<vtkRenderWindow>(render_window);
-  attachActor();
+  emitDataUpdated(cloud_mesh_item);
 
   return;
 }

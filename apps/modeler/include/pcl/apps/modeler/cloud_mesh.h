@@ -90,7 +90,7 @@ namespace pcl
       save(const std::string& filename) const;
 
       static bool
-      save(const pcl::PointCloud<pcl::PointSurfel>& cloud, const std::string& filename);
+      save(const std::vector<const CloudMesh*>& cloud_meshes, const std::string& filename);
 
       void
       getColorScalarsFromField(vtkSmartPointer<vtkDataArray> &scalars, const std::string& field) const;

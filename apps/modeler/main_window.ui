@@ -98,10 +98,29 @@
     <property name="title">
      <string>Edit</string>
     </property>
-    <addaction name="actionICPRegistration"/>
-    <addaction name="actionDownSamplePoints"/>
-    <addaction name="actionEstimateNormals"/>
-    <addaction name="actionPoissonReconstruction"/>
+    <widget class="QMenu" name="menuFilters">
+     <property name="title">
+      <string>Filters</string>
+     </property>
+     <addaction name="actionEstimateNormals"/>
+     <addaction name="actionVoxelGridDownsample"/>
+     <addaction name="actionStatisticalOutlierRemoval"/>
+    </widget>
+    <widget class="QMenu" name="menuRegistration">
+     <property name="title">
+      <string>Registration</string>
+     </property>
+     <addaction name="actionICPRegistration"/>
+    </widget>
+    <widget class="QMenu" name="menuSurfaceReconstruction">
+     <property name="title">
+      <string>Surface Reconstration</string>
+     </property>
+     <addaction name="actionPoissonReconstruction"/>
+    </widget>
+    <addaction name="menuFilters"/>
+    <addaction name="menuRegistration"/>
+    <addaction name="menuSurfaceReconstruction"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -218,9 +237,9 @@
     <string>Scene Explorer</string>
    </property>
   </action>
-  <action name="actionDownSamplePoints">
+  <action name="actionVoxelGridDownsample">
    <property name="text">
-    <string>Down Sample Points</string>
+    <string>Voxel Grid Downsample</string>
    </property>
   </action>
   <action name="actionPoissonReconstruction">
@@ -241,6 +260,11 @@
   <action name="actionCloseRenderWindow">
    <property name="text">
     <string>Close Render Window</string>
+   </property>
+  </action>
+  <action name="actionStatisticalOutlierRemoval">
+   <property name="text">
+    <string>Statistical Ourlier Removal</string>
    </property>
   </action>
  </widget>

@@ -50,6 +50,7 @@ pcl::modeler::RenderWindowItem::RenderWindowItem(QTreeWidget * parent)
   background_color_(new ColorParameter("Background Color", "The background color of the render window", QColor(0, 0, 0))),
   show_axes_(new BoolParameter("Show Axes", "Show Axes", true))
 {
+  setFlags(flags()&(~Qt::ItemIsDragEnabled));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -94,6 +95,7 @@ void
 pcl::modeler::RenderWindowItem::prepareContextMenu(QMenu* menu) const
 {
   menu->addAction(ui()->actionOpenPointCloud);
+  menu->addAction(ui()->actionImportPointCloud);
   if (treeWidget()->topLevelItem(0) != this && childCount() == 0)
     menu->addAction(ui()->actionCloseRenderWindow);
 }

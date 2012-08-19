@@ -34,7 +34,7 @@
  *
  */
 
-#include <pcl/apps/modeler/downsample_worker.h>
+#include <pcl/apps/modeler/voxel_grid_downsample_worker.h>
 #include <pcl/apps/modeler/parameter.h>
 #include <pcl/apps/modeler/parameter_dialog.h>
 #include <pcl/apps/modeler/cloud_mesh.h>
@@ -43,7 +43,7 @@
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::modeler::DownSampleWorker::DownSampleWorker(const QList<CloudMeshItem*>& cloud_mesh_items, QWidget* parent) :
+pcl::modeler::VoxelGridDownampleWorker::VoxelGridDownampleWorker(const QList<CloudMeshItem*>& cloud_mesh_items, QWidget* parent) :
   AbstractWorker(cloud_mesh_items, parent),
   x_min_(std::numeric_limits<double>::max()), x_max_(std::numeric_limits<double>::min()),
   y_min_(std::numeric_limits<double>::max()), y_max_(std::numeric_limits<double>::min()),
@@ -53,7 +53,7 @@ pcl::modeler::DownSampleWorker::DownSampleWorker(const QList<CloudMeshItem*>& cl
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::modeler::DownSampleWorker::~DownSampleWorker(void)
+pcl::modeler::VoxelGridDownampleWorker::~VoxelGridDownampleWorker(void)
 {
   delete leaf_size_x_;
   delete leaf_size_y_;
@@ -62,7 +62,7 @@ pcl::modeler::DownSampleWorker::~DownSampleWorker(void)
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::modeler::DownSampleWorker::initParameters(CloudMeshItem* cloud_mesh_item)
+pcl::modeler::VoxelGridDownampleWorker::initParameters(CloudMeshItem* cloud_mesh_item)
 {
   Eigen::Vector4f min_pt, max_pt;
   pcl::getMinMax3D(*(cloud_mesh_item->getCloudMesh()->getCloud()), min_pt, max_pt);
@@ -81,7 +81,7 @@ pcl::modeler::DownSampleWorker::initParameters(CloudMeshItem* cloud_mesh_item)
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::modeler::DownSampleWorker::setupParameters()
+pcl::modeler::VoxelGridDownampleWorker::setupParameters()
 {
   double x_range = x_max_ - x_min_;
   double y_range = y_max_ - y_min_;
@@ -104,7 +104,7 @@ pcl::modeler::DownSampleWorker::setupParameters()
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::modeler::DownSampleWorker::processImpl(CloudMeshItem* cloud_mesh_item)
+pcl::modeler::VoxelGridDownampleWorker::processImpl(CloudMeshItem* cloud_mesh_item)
 {
   pcl::VoxelGrid<pcl::PointSurfel> voxel_grid;
   voxel_grid.setInputCloud(cloud_mesh_item->getCloudMesh()->getCloud());

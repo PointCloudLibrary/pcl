@@ -59,7 +59,8 @@ if(build)
            include/pcl/apps/${SUBSYS_NAME}/surface_actor_item.h
 
            include/pcl/apps/${SUBSYS_NAME}/icp_registration_worker.h
-           include/pcl/apps/${SUBSYS_NAME}/downsample_worker.h
+           include/pcl/apps/${SUBSYS_NAME}/voxel_grid_downsample_worker.h
+           include/pcl/apps/${SUBSYS_NAME}/statistical_outlier_removal_worker.h
            include/pcl/apps/${SUBSYS_NAME}/normal_estimation_worker.h
            include/pcl/apps/${SUBSYS_NAME}/poisson_worker.h)
 
@@ -87,7 +88,8 @@ if(build)
            src/thread_controller.cpp
            src/abstract_worker.cpp
            src/icp_registration_worker.cpp
-           src/downsample_worker.cpp
+           src/voxel_grid_downsample_worker.cpp
+           src/statistical_outlier_removal_worker.cpp
            src/normal_estimation_worker.cpp
            src/poisson_worker.cpp)
 

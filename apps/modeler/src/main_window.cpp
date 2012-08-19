@@ -104,7 +104,8 @@ void
 pcl::modeler::MainWindow::connectEditMenuActions()
 {
   connect(ui_->actionICPRegistration, SIGNAL(triggered()), ui_->scene_tree_, SLOT(slotICPRegistration()));
-  connect(ui_->actionDownSamplePoints, SIGNAL(triggered()), ui_->scene_tree_, SLOT(slotDownSampleFilter()));
+  connect(ui_->actionVoxelGridDownsample, SIGNAL(triggered()), ui_->scene_tree_, SLOT(slotVoxelGridDownsampleFilter()));
+  connect(ui_->actionStatisticalOutlierRemoval, SIGNAL(triggered()), ui_->scene_tree_, SLOT(slotStatisticalOutlierRemovalFilter()));
   connect(ui_->actionEstimateNormals, SIGNAL(triggered()), ui_->scene_tree_, SLOT(slotEstimateNormal()));
   connect(ui_->actionPoissonReconstruction, SIGNAL(triggered()), ui_->scene_tree_, SLOT(slotPoissonReconstruction()));
 }
@@ -146,8 +147,8 @@ pcl::modeler::MainWindow::slotUpdateRecentFile(const QString& filename)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void
-pcl::modeler::MainWindow::slotCreateRenderWindow()
+pcl::modeler::RenderWindowItem*
+pcl::modeler::MainWindow::createRenderWindow()
 {
   DockWidget* dock_widget = new DockWidget(this);
   addDockWidget(Qt::RightDockWidgetArea, dock_widget);
@@ -161,6 +162,15 @@ pcl::modeler::MainWindow::slotCreateRenderWindow()
   // add the toggle action to view menu
   QList<QAction *> actions = ui_->menuView->actions();
   ui_->menuView->insertAction(actions[actions.size()-2], dock_widget->toggleViewAction());
+
+  return render_window_item;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::modeler::MainWindow::slotCreateRenderWindow()
+{
+  createRenderWindow();
 
   return;
 }

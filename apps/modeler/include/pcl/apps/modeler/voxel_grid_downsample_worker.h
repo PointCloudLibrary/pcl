@@ -1,7 +1,8 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2012, Willow Garage, Inc.
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -31,74 +32,50 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- *
  */
-#ifndef PCL_MODELER_CHANNEL_ACTOR_ITEM_H_
-#define PCL_MODELER_CHANNEL_ACTOR_ITEM_H_
 
-#include <vtkSmartPointer.h>
-#include <boost/shared_ptr.hpp>
-#include <pcl/common/eigen.h>
-#include <pcl/apps/modeler/qt.h>
-#include <pcl/apps/modeler/abstract_item.h>
+#ifndef PCL_MODELER_DOWNSAMPLE_WORKER_H_
+#define PCL_MODELER_DOWNSAMPLE_WORKER_H_
 
-class vtkActor;
-class vtkPolyData;
-class vtkMatrix4x4;
-class vtkRenderWindow;
-
+#include <pcl/apps/modeler/abstract_worker.h>
 
 namespace pcl
 {
   namespace modeler
   {
-    class CloudMesh;
+    class DoubleParameter;
 
-    class ChannelActorItem : public QTreeWidgetItem, public AbstractItem
+    class VoxelGridDownampleWorker : public AbstractWorker 
     {
       public:
-        ChannelActorItem(QTreeWidgetItem* parent,
-                         const boost::shared_ptr<CloudMesh>& cloud_mesh,
-                         const vtkSmartPointer<vtkRenderWindow>& render_window,
-                         const vtkSmartPointer<vtkActor>& actor,
-                         const std::string& channel_name);
-        ~ChannelActorItem();
-
-        void
-        init();
-
-        void
-        update();
-
-        void
-        switchRenderWindow(vtkRenderWindow* render_window);
+        VoxelGridDownampleWorker(const QList<CloudMeshItem*>& cloud_mesh_items, QWidget* parent=0);
+        ~VoxelGridDownampleWorker(void);
 
       protected:
-        void
-        attachActor();
-
-        void
-        detachActor();
+        virtual std::string
+        getName () const {return ("Down Sample");}
 
         virtual void
-        initImpl() = 0;
+        initParameters(CloudMeshItem* cloud_mesh_item);
 
         virtual void
-        updateImpl() = 0;
+        setupParameters();
 
         virtual void
-        prepareContextMenu(QMenu* menu) const;
-
-        boost::shared_ptr<CloudMesh>      cloud_mesh_;
-        vtkSmartPointer<vtkPolyData>      poly_data_;
-        vtkSmartPointer<vtkActor>         actor_;
-        vtkSmartPointer<vtkRenderWindow>  render_window_;
-        std::string                       color_scheme_;
-        double                            r_, g_, b_;
+        processImpl(CloudMeshItem* cloud_mesh_item);
 
       private:
+        double x_min_, x_max_;
+        double y_min_, y_max_;
+        double z_min_, z_max_;
+
+        DoubleParameter* leaf_size_x_;
+        DoubleParameter* leaf_size_y_;
+        DoubleParameter* leaf_size_z_;
+
     };
+
   }
 }
 
-#endif // PCL_MODELER_CHANNEL_ACTOR_ITEM_H_
+#endif // PCL_MODELER_DOWNSAMPLE_WORKER_H_

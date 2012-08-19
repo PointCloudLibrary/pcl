@@ -136,7 +136,17 @@ pcl::modeler::RenderWindow::setTitle(const QString& title)
 void
 pcl::modeler::RenderWindow::render()
 {
-  GetRenderWindow()->GetRenderers()->GetFirstRenderer()->Render();
+  GetRenderWindow()->Render();
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::modeler::RenderWindow::resetCamera()
+{
+  double bounds[6];
+  GetRenderWindow()->GetRenderers()->GetFirstRenderer()->ComputeVisiblePropBounds(bounds);
+  GetRenderWindow()->GetRenderers()->GetFirstRenderer()->ResetCamera(bounds);
+  render();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -159,6 +169,7 @@ void
 pcl::modeler::RenderWindow::updateAxes()
 {
   vtkBoundingBox bb;
+
   vtkActorCollection* actors = GetRenderWindow()->GetRenderers()->GetFirstRenderer()->GetActors();
 
   actors->InitTraversal();
@@ -172,7 +183,6 @@ pcl::modeler::RenderWindow::updateAxes()
     actor->GetBounds(actor_bounds);
     bb.AddBounds(actor_bounds);
   }
-  
 
   double bounds[6];
   bb.GetBounds(bounds);

@@ -39,7 +39,9 @@
 #include <pcl/visualization/point_cloud_handlers.h>
 #include <pcl/filters/filter_indices.h>
 #include <pcl/common/transforms.h>
+#include <pcl/PolygonMesh.h>
 #include <pcl/io/pcd_io.h>
+#include <pcl/io/obj_io.h>
 #include <vtkDataArray.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -90,14 +92,47 @@ pcl::modeler::CloudMesh::open(const std::string& filename)
 bool
 pcl::modeler::CloudMesh::save(const std::string& filename) const
 {
-  return (save(*cloud_, filename));
+  if (filename.rfind(".obj") == (filename.length()-4))
+  {
+    pcl::PolygonMesh polygon_mesh;
+    pcl::toROSMsg(*cloud_, polygon_mesh.cloud);
+    polygon_mesh.polygons = polygons_;
+    return (pcl::io::saveOBJFile(filename, polygon_mesh, true) == 0);
+  }
+
+  return (pcl::io::savePCDFile(filename, *cloud_, true) == 0);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl::modeler::CloudMesh::save(const pcl::PointCloud<pcl::PointSurfel>& cloud, const std::string& filename)
+pcl::modeler::CloudMesh::save(const std::vector<const CloudMesh*>& cloud_meshes, const std::string& filename)
 {
-  return (pcl::io::savePCDFile(filename, cloud, true) == 0);
+  if (cloud_meshes.empty())
+    return false;
+
+  if (cloud_meshes.size() == 1)
+    return (cloud_meshes[0]->save(filename));
+
+  CloudMesh cloud_mesh;
+  for (size_t i = 0, i_end = cloud_meshes.size(); i < i_end; ++ i)
+  {
+    if (filename.rfind(".obj") == (filename.length()-4))
+    {
+      size_t delta = cloud_mesh.cloud_->size();
+      const std::vector<pcl::Vertices>& polygons = cloud_meshes[i]->polygons_;
+      for (size_t j = 0, j_end = polygons.size(); j < j_end; ++ j)
+      {
+        pcl::Vertices polygon = polygons[j];
+        for (size_t k = 0, k_end = polygon.vertices.size(); k < k_end; ++ k)
+          polygon.vertices[k] += delta;
+        cloud_mesh.polygons_.push_back(polygon);
+      }
+    }
+
+    *cloud_mesh.cloud_ += *(cloud_meshes[i]->cloud_);
+  }
+
+  return (cloud_mesh.save(filename));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

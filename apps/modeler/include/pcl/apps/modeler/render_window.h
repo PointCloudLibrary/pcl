@@ -67,6 +67,9 @@ namespace pcl
         render();
 
         void
+        resetCamera();
+
+        void
         updateAxes();
 
         void

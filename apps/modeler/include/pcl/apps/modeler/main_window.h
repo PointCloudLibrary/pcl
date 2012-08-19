@@ -63,6 +63,9 @@ namespace pcl
         QString 
         getRecentFolder();
 
+        RenderWindowItem*
+        createRenderWindow();
+
       public slots:
         // slots for file menu
         void 

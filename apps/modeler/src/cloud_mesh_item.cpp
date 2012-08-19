@@ -59,6 +59,7 @@ pcl::modeler::CloudMeshItem::CloudMeshItem (QTreeWidgetItem* parent, const std::
   rotation_y_(new DoubleParameter("Rotation Y", "Rotation Y", 0.0, -180.0, 180.0)),
   rotation_z_(new DoubleParameter("Rotation Z", "Rotation Z", 0.0, -180.0, 180.0))
 {
+  setFlags(flags()&(~Qt::ItemIsDropEnabled));
   setText(0, QString(filename.c_str()));
 }
 
@@ -75,6 +76,28 @@ pcl::modeler::CloudMeshItem::CloudMeshItem (QTreeWidgetItem* parent, CloudMesh::
   rotation_y_(new DoubleParameter("Rotation Y", "Rotation Y", 0.0, -180.0, 180.0)),
   rotation_z_(new DoubleParameter("Rotation Z", "Rotation Z", 0.0, -180.0, 180.0))
 {
+  setFlags(flags()&(~Qt::ItemIsDropEnabled));
+  setText(0, QString(filename_.c_str()));
+
+  createChannels();
+
+  treeWidget()->expandItem(this);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+pcl::modeler::CloudMeshItem::CloudMeshItem(QTreeWidgetItem* parent,  const CloudMeshItem& cloud_mesh_item)
+  :QTreeWidgetItem(parent),
+  AbstractItem(),
+  filename_(cloud_mesh_item.filename_),
+  cloud_mesh_(cloud_mesh_item.cloud_mesh_),
+  translation_x_(new DoubleParameter("Translation X", "Translation X", 0.0, -1.0, 1.0)),
+  translation_y_(new DoubleParameter("Translation Y", "Translation Y", 0.0, -1.0, 1.0)),
+  translation_z_(new DoubleParameter("Translation Z", "Translation Z", 0.0, -1.0, 1.0)),
+  rotation_x_(new DoubleParameter("Rotation X", "Rotation X", 0.0, -180.0, 180.0)),
+  rotation_y_(new DoubleParameter("Rotation Y", "Rotation Y", 0.0, -180.0, 180.0)),
+  rotation_z_(new DoubleParameter("Rotation Z", "Rotation Z", 0.0, -180.0, 180.0))
+{
+  setFlags(flags()&(~Qt::ItemIsDropEnabled));
   setText(0, QString(filename_.c_str()));
 
   createChannels();
@@ -92,19 +115,17 @@ bool
 pcl::modeler::CloudMeshItem::savePointCloud(const QList<CloudMeshItem*>& items, const QString& filename)
 {
   if (items.size() == 1)
-    return (CloudMesh::save(*items.first()->getCloudMesh()->getCloud(), filename.toStdString()));
-  
-  QList<CloudMeshItem*>::const_iterator items_it = items.begin();
-  pcl::PointCloud<pcl::PointSurfel> cloud = *(*items_it)->getCloudMesh()->getCloud();
-  ++ items_it;
+    return (items.first()->getCloudMesh()->save(filename.toStdString()));
 
-  while (items_it != items.end())
+  std::vector<const CloudMesh*> cloud_meshes;
+  for (QList<CloudMeshItem*>::const_iterator items_it = items.begin();
+    items_it != items.end();
+    ++ items_it)
   {
-    cloud += *(*items_it)->getCloudMesh()->getCloud();
-    ++ items_it;
+    cloud_meshes.push_back((*items_it)->getCloudMesh().get());
   }
 
-  return (CloudMesh::save(cloud, filename.toStdString()));
+  return (CloudMesh::save(cloud_meshes, filename.toStdString()));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -121,16 +142,13 @@ pcl::modeler::CloudMeshItem::open()
   return (true);
 }
 
-
-
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::modeler::CloudMeshItem::prepareContextMenu(QMenu* menu) const
 {
-  menu->addAction(ui()->actionICPRegistration);
-  menu->addAction(ui()->actionDownSamplePoints);
-  menu->addAction(ui()->actionEstimateNormals);
-  menu->addAction(ui()->actionPoissonReconstruction);
+  menu->addMenu(ui()->menuFilters);
+  menu->addMenu(ui()->menuRegistration);
+  menu->addMenu(ui()->menuSurfaceReconstruction);
   menu->addAction(ui()->actionSavePointCloud);
   menu->addAction(ui()->actionClosePointCloud);
 }
@@ -150,6 +168,7 @@ pcl::modeler::CloudMeshItem::createChannels()
   }
 
   render_window_item->getRenderWindow()->updateAxes();
+  render_window_item->getRenderWindow()->resetCamera();
 
   return;
 }
@@ -215,4 +234,21 @@ pcl::modeler::CloudMeshItem::setProperties()
     *rotation_x_, *rotation_y_, *rotation_z_);
 
   updateChannels();
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::modeler::CloudMeshItem::updateRenderWindow()
+{
+  RenderWindowItem* render_window_item = dynamic_cast<RenderWindowItem*>(parent());
+  for (int i = 0, i_end = childCount(); i < i_end; ++ i)
+  {
+    ChannelActorItem* child_item = dynamic_cast<ChannelActorItem*>(child(i));
+    child_item->switchRenderWindow(render_window_item->getRenderWindow()->GetRenderWindow());
+  }
+
+  render_window_item->getRenderWindow()->updateAxes();
+  render_window_item->getRenderWindow()->resetCamera();
+
+  return;
 }

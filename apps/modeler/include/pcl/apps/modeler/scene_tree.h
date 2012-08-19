@@ -87,7 +87,9 @@ namespace pcl
         void
         slotICPRegistration();
         void
-        slotDownSampleFilter();
+        slotVoxelGridDownsampleFilter();
+        void
+        slotStatisticalOutlierRemovalFilter();
         void
         slotEstimateNormal();
         void
@@ -103,6 +105,13 @@ namespace pcl
 
         void
         itemInsertedOrRemoved();
+
+      protected:
+        virtual void
+        dropEvent(QDropEvent * event);
+
+        virtual bool
+        dropMimeData(QTreeWidgetItem * parent, int index, const QMimeData * data, Qt::DropAction action);
 
       private slots:
         void
