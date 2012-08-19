@@ -105,7 +105,7 @@ namespace pcl
     octree_disk_container<PointT>::octree_disk_container ()
     {
       std::string temp = getRandomUUIDString ();
-      fileback_name_ = boost::shared_ptr<std::string> (new std::string (temp));
+      disk_storage_filename_ = boost::shared_ptr<std::string> (new std::string (temp));
       filelen_ = 0;
     }
 ////////////////////////////////////////////////////////////////////////////////
@@ -113,7 +113,7 @@ namespace pcl
     template<typename PointT>
     octree_disk_container<PointT>::octree_disk_container (const boost::filesystem::path& path)
       : writebuff_ ()
-      , fileback_name_ ()
+      , disk_storage_filename_ ()
       , filelen_ ()
     {
       if (boost::filesystem::exists (path))
@@ -125,14 +125,14 @@ namespace pcl
           boost::filesystem::path filename (uuid);
           boost::filesystem::path file = path / filename;
 
-          fileback_name_ = boost::shared_ptr<std::string> (new std::string (file.string ()));
+         disk_storage_filename_ = boost::shared_ptr<std::string> (new std::string (file.string ()));
           filelen_ = 0;
         }
         else
         {
           uint64_t len = boost::filesystem::file_size (path);
 
-          fileback_name_ = boost::shared_ptr<std::string> (new std::string (path.string ()));
+          disk_storage_filename_ = boost::shared_ptr<std::string> (new std::string (path.string ()));
 
           filelen_ = len / sizeof(PointT);
 
@@ -145,14 +145,14 @@ namespace pcl
           
           //read the header of the pcd file and get the number of points
           PCDReader reader;
-          reader.readHeader (*fileback_name_, cloud_info, origin, orientation, pcd_version, data_type, data_index, 0);
+          reader.readHeader (*disk_storage_filename_, cloud_info, origin, orientation, pcd_version, data_type, data_index, 0);
           
           filelen_ = cloud_info.width * cloud_info.height;
         }
       }
       else
       {
-        fileback_name_ = boost::shared_ptr<std::string> (new std::string (path.string ()));
+        disk_storage_filename_ = boost::shared_ptr<std::string> (new std::string (path.string ()));
         filelen_ = 0;
       }
     }
@@ -185,10 +185,10 @@ namespace pcl
         pcl::PCDWriter writer;
 
 
-        PCL_WARN ( "[pcl::outofcore::octree_disk_container::%s] Flushing writebuffer in a dangerous way to file %s. This might overwrite data in destination file\n", __FUNCTION__, fileback_name_->c_str ());
+        PCL_WARN ( "[pcl::outofcore::octree_disk_container::%s] Flushing writebuffer in a dangerous way to file %s. This might overwrite data in destination file\n", __FUNCTION__, disk_storage_filename_->c_str ());
         
         // Write ascii for now to debug
-        int res = writer.writeBinaryCompressed (*fileback_name_, *cloud);
+        int res = writer.writeBinaryCompressed (*disk_storage_filename_, *cloud);
         (void)res;
         assert (res == 0);
       }
@@ -197,7 +197,7 @@ namespace pcl
       {
         if (writebuff_.size () > 0)
         {
-          FILE* f = fopen (fileback_name_->c_str (), "a+b");
+          FILE* f = fopen (disk_storage_filename_->c_str (), "a+b");
 
           size_t len = writebuff_.size () * sizeof(PointT);
           /** \todo study and optimize the serialization to disk */
@@ -231,7 +231,7 @@ namespace pcl
 
         PointT temp;
         //open our file
-        FILE* f = fopen (fileback_name_->c_str (), "rb");
+        FILE* f = fopen (disk_storage_filename_->c_str (), "rb");
         assert (f != NULL);
 
         //seek the right length; 
@@ -279,7 +279,7 @@ namespace pcl
       pcl::PCDReader reader;
       typename pcl::PointCloud<PointT>::Ptr cloud (new pcl::PointCloud<PointT> ());
       
-      int res = reader.read (*fileback_name_ , *cloud);
+      int res = reader.read (*disk_storage_filename_ , *cloud);
       (void)res;
       assert (res == 0);
       
@@ -315,7 +315,7 @@ namespace pcl
       loc = reinterpret_cast<PointT*> (&(v.front ()));
 
       //do the read
-      FILE* f = fopen (fileback_name_->c_str (), "rb");
+      FILE* f = fopen (disk_storage_filename_->c_str (), "rb");
       assert (f != NULL);
 
       int seekret = _fseeki64 (f, filestart * static_cast<uint64_t>(sizeof(PointT)), SEEK_SET);
@@ -411,7 +411,7 @@ namespace pcl
         }
         std::sort (offsets.begin (), offsets.end ());
 
-        FILE* f = fopen (fileback_name_->c_str (), "rb");
+        FILE* f = fopen (disk_storage_filename_->c_str (), "rb");
         assert (f != NULL);
         PointT p;
         char* loc = reinterpret_cast<char*> ( &p );
@@ -510,7 +510,7 @@ namespace pcl
         }
         std::sort (offsets.begin (), offsets.end ());
 
-        FILE* f = fopen (fileback_name_->c_str (), "rb");
+        FILE* f = fopen (disk_storage_filename_->c_str (), "rb");
         assert (f != NULL);
         PointT p;
         char* loc = reinterpret_cast<char*> ( &p );
@@ -552,11 +552,11 @@ namespace pcl
       typename pcl::PointCloud<PointT>::Ptr tmp_cloud (new pcl::PointCloud<PointT> () );
       
       // If there's a pcd file with data          
-      if ( boost::filesystem::exists ( *fileback_name_ ) )
+      if ( boost::filesystem::exists ( *disk_storage_filename_ ) )
       {
         // Open the existing file
         pcl::PCDReader reader;
-        int res = reader.read (*fileback_name_, *tmp_cloud);
+        int res = reader.read (*disk_storage_filename_, *tmp_cloud);
         (void)res;
         assert (res == 0);
       }
@@ -583,7 +583,7 @@ namespace pcl
       PCDWriter writer;
       
       /// \todo allow appending to pcd file without loading all of the point data into memory
-      int res = writer.writeBinaryCompressed (*fileback_name_, *tmp_cloud);
+      int res = writer.writeBinaryCompressed (*disk_storage_filename_, *tmp_cloud);
       (void)res;
       assert (res == 0);
     }
@@ -597,23 +597,23 @@ namespace pcl
       sensor_msgs::PointCloud2::Ptr tmp_cloud (new sensor_msgs::PointCloud2 ());
           
       //if there's a pcd file with data, read the data, concatenate, and resave
-      if (boost::filesystem::exists ( *fileback_name_ ))
+      if (boost::filesystem::exists ( *disk_storage_filename_ ))
       {
         //open the existing file
         pcl::PCDReader reader;
-        int res = reader.read (*fileback_name_, *tmp_cloud);
+        int res = reader.read (*disk_storage_filename_, *tmp_cloud);
         (void)res;
         assert (res == 0);
         pcl::PCDWriter writer;
-//            PCL_INFO ("[pcl::outofcore::octree_disk_container::%s] Concatenating point cloud from %s to new cloud\n", __FUNCTION__, fileback_name_->c_str () );
+//            PCL_INFO ("[pcl::outofcore::octree_disk_container::%s] Concatenating point cloud from %s to new cloud\n", __FUNCTION__, disk_storage_filename_->c_str () );
         pcl::concatenatePointCloud ( *tmp_cloud, *input_cloud, *tmp_cloud );
-        writer.writeBinaryCompressed ( *fileback_name_, *input_cloud );
+        writer.writeBinaryCompressed ( *disk_storage_filename_, *input_cloud );
             
       }
       else //otherwise create the point cloud which will be saved to the pcd file for the first time
       {
         pcl::PCDWriter writer;
-        int res = writer.writeBinaryCompressed (*fileback_name_, *input_cloud);
+        int res = writer.writeBinaryCompressed (*disk_storage_filename_, *input_cloud);
         (void)res;
         assert (res == 0);
       }            
@@ -631,16 +631,16 @@ namespace pcl
       Eigen::Quaternionf  orientation;
       int  pcd_version;
           
-      if (boost::filesystem::exists (*fileback_name_))
+      if (boost::filesystem::exists (*disk_storage_filename_))
       {
-//            PCL_INFO ( "[pcl::outofcore::octree_disk_container::%s] Reading points from disk from %s.\n", __FUNCTION__ , fileback_name_->c_str () );
-        int res = reader.read (*fileback_name_, *dst, origin, orientation, pcd_version);
+//            PCL_INFO ( "[pcl::outofcore::octree_disk_container::%s] Reading points from disk from %s.\n", __FUNCTION__ , disk_storage_filename_->c_str () );
+        int res = reader.read (*disk_storage_filename_, *dst, origin, orientation, pcd_version);
         (void)res;
         assert (res != -1);
       }
       else
       {
-        PCL_ERROR ("[pcl::outofcore::octree_disk_container::%s] File %s does not exist in node.\n", __FUNCTION__, fileback_name_->c_str () );
+        PCL_ERROR ("[pcl::outofcore::octree_disk_container::%s] File %s does not exist in node.\n", __FUNCTION__, disk_storage_filename_->c_str () );
       }
     }
 
@@ -682,11 +682,11 @@ namespace pcl
         typename pcl::PointCloud<PointT>::Ptr tmp_cloud (new pcl::PointCloud<PointT> () );
 
         // If there's a pcd file with data          
-        if (boost::filesystem::exists (*fileback_name_))
+        if (boost::filesystem::exists (*disk_storage_filename_))
         {
           pcl::PCDReader reader;
           // Open it
-          int res = reader.read (fileback_name_->c_str (), *tmp_cloud);
+          int res = reader.read (disk_storage_filename_->c_str (), *tmp_cloud);
           (void)res; 
           assert (res == 0 );
         }
@@ -715,7 +715,7 @@ namespace pcl
         PCDWriter writer;
 
         /// \todo allow appending to pcd file without loading all of the point data into memory
-        int res = writer.writeBinaryCompressed (*fileback_name_, *tmp_cloud);
+        int res = writer.writeBinaryCompressed (*disk_storage_filename_, *tmp_cloud);
         (void)res;
         assert (res == 0);
       }
@@ -723,7 +723,7 @@ namespace pcl
       {
         
         //open the file for appending binary
-        FILE* f = fopen (fileback_name_->c_str (), "a+b");
+        FILE* f = fopen (disk_storage_filename_->c_str (), "a+b");
         assert ( f != NULL ); 
 
         for (uint64_t pos = 0; pos < count; pos += WRITE_BUFF_MAX_)

@@ -216,7 +216,7 @@ namespace pcl
         inline std::string&
         path ()
         {
-          return *fileback_name_;
+          return *disk_storage_filename_;
         }
 
         inline void
@@ -225,8 +225,8 @@ namespace pcl
           //clear elements that have not yet been written to disk
           writebuff_.clear ();
           //remove the binary data in the directory
-          PCL_DEBUG ("[Octree Disk Container] Removing the point data from disk, in file %s\n",fileback_name_->c_str ());
-          boost::filesystem::remove (boost::filesystem::path (fileback_name_->c_str ()));
+          PCL_DEBUG ("[Octree Disk Container] Removing the point data from disk, in file %s\n",disk_storage_filename_->c_str ());
+          boost::filesystem::remove (boost::filesystem::path (disk_storage_filename_->c_str ()));
           //reset the size-of-file counter
           filelen_ = 0;
         }
@@ -238,11 +238,11 @@ namespace pcl
         void
         convertToXYZ (const boost::filesystem::path& path)
         {
-          if (boost::filesystem::exists (*fileback_name_))
+          if (boost::filesystem::exists (*disk_storage_filename_))
           {
             FILE* fxyz = fopen (path.string ().c_str (), "w");
 
-            FILE* f = fopen (fileback_name_->c_str (), "rb");
+            FILE* f = fopen (disk_storage_filename_->c_str (), "rb");
             assert (f != NULL);
 
             uint64_t num = size ();
@@ -301,7 +301,8 @@ namespace pcl
         AlignedPointTVector writebuff_;
 
         //std::fstream fileback;//elements [0,...,filelen-1]
-        boost::shared_ptr<std::string> fileback_name_;
+        /** \brief Name of the storage file on disk (i.e., the PCD file) */
+        boost::shared_ptr<std::string> disk_storage_filename_;
 
         //number of elements in file
         /// \todo This value was originally computed by the number of bytes in the binary dump to disk. Now, since we are using binary compressed, it needs to be computed in a different way (!). This is causing Unit Tests: PCL.Outofcore_Point_Query, OutofcoreTest.PointCloud2_Query and OutofcoreTest.PointCloud2_Insert( on post-insert query test) to fail as of 4 July 2012. SDF
