@@ -82,9 +82,9 @@ namespace pcl
     boost::uuids::random_generator octree_disk_container<PointT>::uuid_gen_ (&rand_gen_);
 
     template<typename PointT>
-    const uint64_t octree_disk_container<PointT>::READ_BLOCK_SIZE_ = static_cast<uint64_t>(2e12);
+    const uint64_t octree_disk_container<PointT>::READ_BLOCK_SIZE_ = static_cast<uint64_t> (2e12);
     template<typename PointT>
-    const uint64_t octree_disk_container<PointT>::WRITE_BUFF_MAX_ = static_cast<uint64_t>(2e12);
+    const uint64_t octree_disk_container<PointT>::WRITE_BUFF_MAX_ = static_cast<uint64_t> (2e12);
 
     template<typename PointT> void
     octree_disk_container<PointT>::getRandomUUIDString (std::string& s)
@@ -105,8 +105,7 @@ namespace pcl
     octree_disk_container<PointT>::octree_disk_container ()
     {
       std::string temp = getRandomUUIDString ();
-      fileback_name_ = new std::string ();
-      *fileback_name_ = temp;
+      fileback_name_ = boost::shared_ptr<string> (new std::string (temp));
       filelen_ = 0;
     }
 ////////////////////////////////////////////////////////////////////////////////
@@ -126,15 +125,14 @@ namespace pcl
           boost::filesystem::path filename (uuid);
           boost::filesystem::path file = path / filename;
 
-          fileback_name_ = new std::string (file.string ());
-
+          fileback_name_ = boost::shared_ptr<string> (new std::string (file.string ()));
           filelen_ = 0;
         }
         else
         {
           uint64_t len = boost::filesystem::file_size (path);
 
-          fileback_name_ = new std::string (path.string ());
+          fileback_name_ = boost::shared_ptr<string> (new std::string (path.string ()));
 
           filelen_ = len / sizeof(PointT);
 
@@ -154,7 +152,7 @@ namespace pcl
       }
       else
       {
-        fileback_name_ = new std::string (path.string ());
+        fileback_name_ = boost::shared_ptr<string> (new std::string (path.string ()));
         filelen_ = 0;
       }
     }
@@ -164,7 +162,6 @@ namespace pcl
     octree_disk_container<PointT>::~octree_disk_container ()
     {
       flushWritebuff (true);
-      delete fileback_name_;
     }
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -385,7 +382,7 @@ namespace pcl
           boost::bernoulli_distribution<double> buffdist (percent);
           boost::variate_generator<boost::mt19937&, boost::bernoulli_distribution<double> > buffcoin (rand_gen_, buffdist);
 
-          for (size_t i = buffstart; i < static_cast<uint64_t>(buffcount); i++)
+          for (size_t i = buffstart; i < static_cast<uint64_t> (buffcount); i++)
           {
             if (buffcoin ())
             {
@@ -422,7 +419,7 @@ namespace pcl
         uint64_t filesamp = offsets.size ();
         for (uint64_t i = 0; i < filesamp; i++)
         {
-          int seekret = _fseeki64 (f, offsets[i] * static_cast<uint64_t>(sizeof(PointT)), SEEK_SET);
+          int seekret = _fseeki64 (f, offsets[i] * static_cast<uint64_t> (sizeof(PointT)), SEEK_SET);
           (void)seekret;
           assert (seekret == 0);
           size_t readlen = fread (loc, sizeof(PointT), 1, f);
@@ -468,9 +465,9 @@ namespace pcl
         buffcount = count - filecount;
       }
 
-      uint64_t filesamp = static_cast<uint64_t> (percent * static_cast<double>(filecount));
+      uint64_t filesamp = static_cast<uint64_t> (percent * static_cast<double> (filecount));
       
-      uint64_t buffsamp = (buffcount > 0) ? (static_cast<uint64_t > (percent * static_cast<double>(buffcount))) : 0;
+      uint64_t buffsamp = (buffcount > 0) ? (static_cast<uint64_t > (percent * static_cast<double> (buffcount))) : 0;
 
       if ((filesamp == 0) && (buffsamp == 0) && (size () > 0))
       {
@@ -594,6 +591,80 @@ namespace pcl
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename PointT> void
+    octree_disk_container<PointT>::insertRange (const sensor_msgs::PointCloud2::Ptr& input_cloud)
+    {
+      //this needs to be stress tested; also does no delayed-write caching (for now)
+      sensor_msgs::PointCloud2::Ptr tmp_cloud (new sensor_msgs::PointCloud2 ());
+          
+      //if there's a pcd file with data, read the data, concatenate, and resave
+      if (boost::filesystem::exists ( *fileback_name_ ))
+      {
+        //open the existing file
+        pcl::PCDReader reader;
+        int res = reader.read (*fileback_name_, *tmp_cloud);
+        (void)res;
+        assert (res == 0);
+        pcl::PCDWriter writer;
+//            PCL_INFO ("[pcl::outofcore::octree_disk_container::%s] Concatenating point cloud from %s to new cloud\n", __FUNCTION__, fileback_name_->c_str () );
+        pcl::concatenatePointCloud ( *tmp_cloud, *input_cloud, *tmp_cloud );
+        writer.writeBinaryCompressed ( *fileback_name_, *input_cloud );
+            
+      }
+      else //otherwise create the point cloud which will be saved to the pcd file for the first time
+      {
+        pcl::PCDWriter writer;
+        int res = writer.writeBinaryCompressed (*fileback_name_, *input_cloud);
+        (void)res;
+        assert (res == 0);
+      }            
+
+    }
+
+////////////////////////////////////////////////////////////////////////////////
+
+    template<typename PointT> void
+    octree_disk_container<PointT>::readRange (const uint64_t, const uint64_t, sensor_msgs::PointCloud2::Ptr& dst)
+    {
+      pcl::PCDReader reader;
+
+      Eigen::Vector4f  origin;
+      Eigen::Quaternionf  orientation;
+      int  pcd_version;
+          
+      if (boost::filesystem::exists (*fileback_name_))
+      {
+//            PCL_INFO ( "[pcl::outofcore::octree_disk_container::%s] Reading points from disk from %s.\n", __FUNCTION__ , fileback_name_->c_str () );
+        int res = reader.read (*fileback_name_, *dst, origin, orientation, pcd_version);
+        (void)res;
+        assert (res != -1);
+      }
+      else
+      {
+        PCL_ERROR ("[pcl::outofcore::octree_disk_container::%s] File %s does not exist in node.\n", __FUNCTION__, fileback_name_->c_str () );
+      }
+    }
+
+////////////////////////////////////////////////////////////////////////////////
+
+    template<typename PointT> void
+    octree_disk_container<PointT>::insertRange (const PointT* const * start, const uint64_t count)
+    {
+      //copy the handles to a continuous block
+      PointT* arr = new PointT[count];
+
+      //copy from start of array, element by element
+      for (size_t i = 0; i < count; i++)
+      {
+        arr[i] = *(start[i]);
+      }
+
+      insertRange (arr, count);
+      delete[] arr;
+    }
+    
+////////////////////////////////////////////////////////////////////////////////
+
+    template<typename PointT> void
     octree_disk_container<PointT>::insertRange (const PointT* start, const uint64_t count)
     {
       ///\todo standardize the interface for writing points to disk with this class; this method may not work properly
@@ -621,7 +692,7 @@ namespace pcl
         }
         else //otherwise create the pcd file
         {
-          tmp_cloud->width = static_cast<uint32_t>( count ) + static_cast<uint32_t> (writebuff_.size ());
+          tmp_cloud->width = static_cast<uint32_t> ( count ) + static_cast<uint32_t> (writebuff_.size ());
           tmp_cloud->height = 1;
         }            
 

@@ -207,14 +207,10 @@ namespace pcl
 
       // Need to make the bounding box slightly bigger so points that fall on the max side aren't excluded
       double epsilon = 1e-8;
-      max_[0] += epsilon;
-      max_[1] += epsilon;
-      max_[2] += epsilon;
+      max_ = max_ + epsilon*Eigen::Vector3d (1.0, 1.0, 1.0);
 
-      mid_xyz_[0] = static_cast<double>((max_[0] + min_[0]) / static_cast<double> (2));
-      mid_xyz_[1] = static_cast<double>((max_[1] + min_[1]) / static_cast<double> (2));
-      mid_xyz_[2] = static_cast<double>((max_[2] + min_[2]) / static_cast<double> (2));
-
+      mid_xyz_ = (max_ + min_)/static_cast<double>(2);
+      
       // Get root path
       const boost::filesystem::path dir = root_name.parent_path ();
 
@@ -253,7 +249,7 @@ namespace pcl
       boost::filesystem::create_directory (thisdir_);
 
       // Create data container, ie octree_disk_container, octree_ram_container
-      payload_ = new Container (thisnodestorage_);
+      payload_ = boost::shared_ptr<Container> (new Container (thisnodestorage_));
     }
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -311,7 +307,6 @@ namespace pcl
     {
       // Recursively delete all children and this nodes data
       recFreeChildren ();
-      delete payload_;
     }
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -774,7 +769,7 @@ namespace pcl
       extractor.setNegative (true);
       extractor.filter ( *remaining_points );
 
-//      PCL_INFO ( "[pcl::outofcore::octree_base_node::%s] Random sampled: %lu of %lu\n", __FUNCTION__, downsampled_cloud->width * downsampled_cloud->height, input_cloud->width * input_cloud->height );
+      PCL_INFO ( "[pcl::outofcore::octree_base_node::%s] Random sampled: %lu of %lu\n", __FUNCTION__, downsampled_cloud->width * downsampled_cloud->height, input_cloud->width * input_cloud->height );
       
       //insert subsampled data to the node's disk container payload
       if ( downsampled_cloud->width * downsampled_cloud->height != 0 )
@@ -784,7 +779,7 @@ namespace pcl
         points_added += downsampled_cloud->width*downsampled_cloud->height ;
       }
 
-//      PCL_INFO ("[pcl::outofcore::octree_base_node::%s] Remaining points are %u\n",__FUNCTION__, remaining_points->width*remaining_points->height);
+      PCL_INFO ("[pcl::outofcore::octree_base_node::%s] Remaining points are %u\n",__FUNCTION__, remaining_points->width*remaining_points->height);
 
       //subdivide remaining data by destination octant
       std::vector<std::vector<int> > indices;
@@ -837,7 +832,7 @@ namespace pcl
 
         //recursively add points and keep track of how many were successfully added to the tree
         points_added += children_[i]->addPointCloud_and_genLOD ( tmp_local_point_cloud );
-//        PCL_INFO ("[pcl::outofcore::octree_base_node::%s] points_added: %lu, indices[i].size: %lu, tmp_local_point_cloud size: %lu\n", __FUNCTION__, points_added, indices[i].size (), tmp_local_point_cloud->width*tmp_local_point_cloud->height);
+        PCL_INFO ("[pcl::outofcore::octree_base_node::%s] points_added: %lu, indices[i].size: %lu, tmp_local_point_cloud size: %lu\n", __FUNCTION__, points_added, indices[i].size (), tmp_local_point_cloud->width*tmp_local_point_cloud->height);
 
       }
       assert (points_added == input_cloud->width*input_cloud->height);
@@ -1460,7 +1455,7 @@ namespace pcl
 
       boost::filesystem::create_directory (thisdir_);
 
-      payload_ = new Container (thisnodestorage_);
+      payload_ = boost::shared_ptr<Container> (new Container (thisnodestorage_));
       saveIdx (false);
     }
 ////////////////////////////////////////////////////////////////////////////////
@@ -1666,7 +1661,7 @@ namespace pcl
       }
 
       thisnodestorage_ = thisdir_ / bin->valuestring;
-      this->payload_ = new Container (thisnodestorage_);
+      this->payload_ = boost::shared_ptr<Container> (new Container (thisnodestorage_));
 
       mid_xyz_ = (max_+min_)/static_cast<double>(2);
 
@@ -1795,7 +1790,7 @@ namespace pcl
 
         f.close ();
 
-        thisnode->payload_ = new Container (thisnode->thisnodestorage_);
+        thisnode->payload_ = boost::shared_ptr<Container> (new Container (thisnode->thisnodestorage_));
       }
 
       thisnode->parent_ = super;

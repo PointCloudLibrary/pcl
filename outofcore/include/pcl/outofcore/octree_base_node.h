@@ -59,6 +59,27 @@ namespace pcl
 {
   namespace outofcore
   {
+// Forward Declarations
+    template<typename Container, typename PointT>
+    class octree_base_node;
+
+    template<typename Container, typename PointT>
+    class octree_base;
+
+    /** \todo Move non-class functions to an octree accessor class */
+
+    /** \brief Non-class function which creates a single child leaf; used with \ref queryBBIntersects_noload to avoid loading the data from disk */
+    template<typename Container, typename PointT> octree_base_node<Container, PointT>*
+    makenode_norec (const boost::filesystem::path& path, octree_base_node<Container, PointT>* super);
+
+    /** \brief Non-class method which performs a bounding box query without loading any of the point cloud data from disk */
+    template<typename Container, typename PointT> void
+    queryBBIntersects_noload (const boost::filesystem::path& root_node, const Eigen::Vector3d& min, const Eigen::Vector3d& max, const boost::uint32_t query_depth, std::list<std::string>& bin_name);
+
+    /** \brief Non-class method overload */
+    template<typename Container, typename PointT> void
+    queryBBIntersects_noload (octree_base_node<Container, PointT>* current, const Eigen::Vector3d&, const Eigen::Vector3d& max, const boost::uint32_t query_depth, std::list<std::string>& bin_name);
+
     /** \class octree_base_node 
      *
      *  \note Code was adapted from the Urban Robotics out of core octree implementation. 
@@ -74,26 +95,6 @@ namespace pcl
      *  \author Jacob Schloss (jacob.schloss@urbanrobotics.net)
      *
      */
-
-// Forward Declarations
-    template<typename Container, typename PointT>
-    class octree_base_node;
-
-    template<typename Container, typename PointT>
-    class octree_base;
-
-    /** \brief Non-class function which creates a single child leaf; used with \ref queryBBIntersects_noload to avoid loading the data from disk */
-    template<typename Container, typename PointT> octree_base_node<Container, PointT>*
-    makenode_norec (const boost::filesystem::path& path, octree_base_node<Container, PointT>* super);
-
-    /** \brief Non-class method which performs a bounding box query without loading any of the point cloud data from disk */
-    template<typename Container, typename PointT> void
-    queryBBIntersects_noload (const boost::filesystem::path& root_node, const Eigen::Vector3d& min, const Eigen::Vector3d& max, const boost::uint32_t query_depth, std::list<std::string>& bin_name);
-
-    /** \brief Non-class method overload */
-    template<typename Container, typename PointT> void
-    queryBBIntersects_noload (octree_base_node<Container, PointT>* current, const Eigen::Vector3d&, const Eigen::Vector3d& max, const boost::uint32_t query_depth, std::list<std::string>& bin_name);
-
     template<typename Container, typename PointT>
     class octree_base_node
     {
@@ -163,7 +164,6 @@ namespace pcl
          *  \param[in] max_bb the maximum corner of the bounding box, indexed by X,Y,Z coordinates
          *  \param[in] query_depth the maximum depth to query in the octree for points within the bounding box
          *  \param[out] dst destion of points returned by the queries
-         *  \todo benchmark queryBBIncludes
          */
         void
         queryBBIncludes (const Eigen::Vector3d& min_bb, const Eigen::Vector3d& max_bb, size_t query_depth, AlignedPointTVector& dst);
@@ -174,8 +174,6 @@ namespace pcl
          *  \param[in] max_bb the maximum corner of the bounding box, indexed by X,Y,Z coordinates
          *  \param[in] query_depth the maximum depth to query in the octree for points within the bounding box
          *  \param[out] dst_blob destion of points returned by the queries
-         *  \todo benchmark queryBBIncludes
-         *  \todo use this as wrapper for queryBBIncludes into AlignedPointTVector
          */
         void
         queryBBIncludes (const Eigen::Vector3d& min_bb, const Eigen::Vector3d& max_bb, size_t query_depth, const sensor_msgs::PointCloud2::Ptr& dst_blob);
@@ -186,8 +184,6 @@ namespace pcl
          *  \param[in] max_bb the maximum corner of the bounding box, indexed by X,Y,Z coordinates
          *  \param[in] query_depth
          *  \param[out] v std::list of points returned by the query
-         *
-         *  \todo clean up the interface and standardize the parameters to these functions
          */
         void
         queryBBIncludes_subsample (const Eigen::Vector3d& min_bb, const Eigen::Vector3d& max_bb, int query_depth, const double percent, AlignedPointTVector& v);
@@ -363,12 +359,6 @@ namespace pcl
          */
         boost::uint64_t
         addDataToLeaf_and_genLOD (const AlignedPointTVector& p, const bool skip_bb_check);
-
-        /** \todo Do we need to support std::vector<PointT*>?
-         *
-         * boost::uint64_t
-         * addDataToLeaf_and_genLOD (const std::vector<PointT*>& p, const bool skip_bb_check);
-         */
 
         /** \brief Add data to the leaf when at max depth of tree. If
          *   skip_bb_check is true, adds to the node regardless of the
@@ -584,7 +574,9 @@ namespace pcl
         /** \brief what holds the points. currently a custom class, but in theory
          * you could use an stl container if you rewrote some of this class. I used
          * to use deques for this... */
-        Container* payload_;
+        boost::shared_ptr<Container> payload_;
+        
+//        Container* payload_;
 
         /** \brief The X,Y,Z axes-aligned minima for the bounding box*/
         Eigen::Vector3d min_;

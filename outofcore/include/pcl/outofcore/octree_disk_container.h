@@ -117,52 +117,11 @@ namespace pcl
 
         /** \brief Inserts a PointCloud2 object directly into the disk container */
         void
-        insertRange (const sensor_msgs::PointCloud2::Ptr& input_cloud)
-        {
-          //this needs to be stress tested; also does no delayed-write caching (for now)
-          sensor_msgs::PointCloud2::Ptr tmp_cloud (new sensor_msgs::PointCloud2 ());
-          
-          //if there's a pcd file with data, read the data, concatenate, and resave
-          if (boost::filesystem::exists ( *fileback_name_ ))
-          {
-            //open the existing file
-            pcl::PCDReader reader;
-            int res = reader.read (*fileback_name_, *tmp_cloud);
-            (void)res;
-            assert (res == 0);
-            pcl::PCDWriter writer;
-//            PCL_INFO ("[pcl::outofcore::octree_disk_container::%s] Concatenating point cloud from %s to new cloud\n", __FUNCTION__, fileback_name_->c_str () );
-            pcl::concatenatePointCloud ( *tmp_cloud, *input_cloud, *tmp_cloud );
-            writer.writeBinaryCompressed ( *fileback_name_, *input_cloud );
-            
-          }
-          else //otherwise create the point cloud which will be saved to the pcd file for the first time
-          {
-            pcl::PCDWriter writer;
-            int res = writer.writeBinaryCompressed (*fileback_name_, *input_cloud);
-            (void)res;
-            assert (res == 0);
-          }            
-
-        }
-        
+        insertRange (const sensor_msgs::PointCloud2::Ptr& input_cloud);
 
         /** \todo standardize the interface for writing binary data to the files .oct_dat files */
         void
-        insertRange (const PointT* const * start, const uint64_t count)
-        {
-          //copy the handles to a continuous block
-          PointT* arr = new PointT[count];
-
-          //copy from start of array, element by element
-          for (size_t i = 0; i < count; i++)
-          {
-            arr[i] = *(start[i]);
-          }
-
-          insertRange (arr, count);
-          delete[] arr;
-        }
+        insertRange (const PointT* const * start, const uint64_t count);
     
         /** \brief This is the primary method for serialization of
          * blocks of point data. This is called by the outofcore
@@ -189,7 +148,6 @@ namespace pcl
         /** \brief Reads \b count points into memory from the disk container
          *
          * Reads \b count points into memory from the disk container, reading at most 2 million elements at a time
-         * \todo Investigate most efficient ways to read in points v. block size
          *
          * \param[in] start index of first point to read from disk
          * \param[in] count offset of last point to read from disk
@@ -200,27 +158,7 @@ namespace pcl
 
         /// \todo refactor \ref readRange and strip start & count parameters and replace with array of indices
         void
-        readRange (const uint64_t, const uint64_t, sensor_msgs::PointCloud2::Ptr& dst)
-        {
-          pcl::PCDReader reader;
-
-          Eigen::Vector4f  origin;
-          Eigen::Quaternionf  orientation;
-          int  pcd_version;
-          
-          if (boost::filesystem::exists (*fileback_name_))
-          {
-//            PCL_INFO ( "[pcl::outofcore::octree_disk_container::%s] Reading points from disk from %s.\n", __FUNCTION__ , fileback_name_->c_str () );
-            int res = reader.read (*fileback_name_, *dst, origin, orientation, pcd_version);
-            (void)res;
-            assert (res != -1);
-          }
-          else
-          {
-            PCL_ERROR ("[pcl::outofcore::octree_disk_container::%s] File %s does not exist in node.\n", __FUNCTION__, fileback_name_->c_str () );
-          }
-        }
-
+        readRange (const uint64_t, const uint64_t, sensor_msgs::PointCloud2::Ptr& dst);
 
         /** \brief  grab percent*count random points. points are \b not guaranteed to be
          * unique (could have multiple identical points!)
@@ -363,7 +301,7 @@ namespace pcl
         AlignedPointTVector writebuff_;
 
         //std::fstream fileback;//elements [0,...,filelen-1]
-        std::string *fileback_name_;
+        boost::shared_ptr<string> fileback_name_;
 
         //number of elements in file
         /// \todo This value was originally computed by the number of bytes in the binary dump to disk. Now, since we are using binary compressed, it needs to be computed in a different way (!). This is causing Unit Tests: PCL.Outofcore_Point_Query, OutofcoreTest.PointCloud2_Query and OutofcoreTest.PointCloud2_Insert( on post-insert query test) to fail as of 4 July 2012. SDF
@@ -380,8 +318,7 @@ namespace pcl
          *  maximum number of points allowed to exist in \b writebuff_
          *  at any given time.
          */
-        static const uint64_t
-        WRITE_BUFF_MAX_;
+        static const uint64_t WRITE_BUFF_MAX_;
 
         static boost::mutex rng_mutex_;
         static boost::mt19937 rand_gen_;

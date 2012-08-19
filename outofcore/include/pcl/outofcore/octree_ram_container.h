@@ -54,8 +54,11 @@ namespace pcl
 {
   namespace outofcore
   {
-    /** \class octree_ram_container class
+    /** \class octree_ram_container
      *  \brief Storage container class which the outofcore octree base is templated against
+     *  \note Code was adapted from the Urban Robotics out of core octree implementation. 
+     *  Contact Jacob Schloss <jacob.schloss@urbanrobotics.net> with any questions. 
+     *  http://www.urbanrobotics.net/
      * 
      *  \ingroup outofcore
      *  \author Jacob Schloss (jacob.scloss@urbanrobotics.net)

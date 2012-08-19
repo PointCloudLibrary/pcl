@@ -185,12 +185,7 @@ namespace pcl
          * \return Number of poitns successfully copied from the point cloud to the octree
          */
         boost::uint64_t
-        addPointCloud (sensor_msgs::PointCloud2::Ptr input_cloud, const bool skip_bb_check = false)
-        {
-          uint64_t pt_added = this->root_->addPointCloud ( input_cloud, skip_bb_check ) ;
-          assert ( input_cloud->width*input_cloud->height == pt_added );
-          return (pt_added);
-        }
+        addPointCloud (sensor_msgs::PointCloud2::Ptr input_cloud, const bool skip_bb_check);
 
         /** \brief Recursively add points to the tree. 
          *
