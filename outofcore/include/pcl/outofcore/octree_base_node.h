@@ -387,23 +387,7 @@ namespace pcl
          *  \return number of points successfully added
          */
         boost::uint64_t
-        addDataAtMaxDepth ( const sensor_msgs::PointCloud2::Ptr input_cloud, const bool skip_bb_check = true )
-        {
-          //this assumes data is already in the correct bin
-          if(skip_bb_check == true)
-          {
-//            PCL_INFO ("[pcl::outofcore::octree_base_node::%s] Adding %u points at max depth, %u\n",__FUNCTION__, input_cloud->width*input_cloud->height, this->depth_);
-            
-            root_->m_tree_->incrementPointsInLOD (this->depth_, input_cloud->width * input_cloud->height );
-            payload_->insertRange (input_cloud);            
-            return (input_cloud->width * input_cloud->height);
-          }
-          else
-          {
-            PCL_ERROR ("[pcl::outofcore::octree_base_node] Not implemented\n");
-            return (0);
-          }
-        }
+        addDataAtMaxDepth ( const sensor_msgs::PointCloud2::Ptr input_cloud, const bool skip_bb_check);
         
         /** \brief Randomly sample point data 
          *  \todo This needs to be deprecated; random sampling has its own class

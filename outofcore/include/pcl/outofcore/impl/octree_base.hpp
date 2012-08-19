@@ -531,7 +531,7 @@ namespace pcl
 
       const int current_dims = 1;
       octree_base_node<Container, PointT>* current_branch[current_dims] = {root_};
-      buildLOD (current_branch, current_dims);
+      this->buildLOD (current_branch, current_dims);
     }
 ////////////////////////////////////////////////////////////////////////////////
 
