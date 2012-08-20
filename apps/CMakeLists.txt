@@ -41,8 +41,10 @@ if(build)
   PCL_ADD_EXECUTABLE(pcl_statistical_multiscale_interest_region_extraction_example ${SUBSYS_NAME} src/statistical_multiscale_interest_region_extraction_example.cpp)
   target_link_libraries(pcl_statistical_multiscale_interest_region_extraction_example pcl_common pcl_io pcl_features pcl_filters)
 
-  PCL_ADD_EXECUTABLE(pcl_dinast_grabber ${SUBSYS_NAME} src/dinast_grabber_example.cpp)
-  target_link_libraries(pcl_dinast_grabber pcl_common pcl_visualization pcl_io)
+  if(NOT WIN32)
+    PCL_ADD_EXECUTABLE(pcl_dinast_grabber ${SUBSYS_NAME} src/dinast_grabber_example.cpp)
+    target_link_libraries(pcl_dinast_grabber pcl_common pcl_visualization pcl_io)
+  endif(NOT WIN32)
 
   if (VTK_FOUND)
     PCL_ADD_EXECUTABLE(pcl_ppf_object_recognition ${SUBSYS_NAME} src/ppf_object_recognition.cpp)

@@ -58,13 +58,14 @@ if(build)
             )
     endif(OPENNI_FOUND)
     
-    set(DINAST_GRABBER_INCLUDES
-        include/pcl/io/dinast_grabber.h
-       )
-
-    set(DINAST_GRABBER_SOURCES
-        src/dinast_grabber.cpp
-       )
+    if(NOT WIN32)
+        set(DINAST_GRABBER_INCLUDES
+            include/pcl/io/dinast_grabber.h
+           )
+        set(DINAST_GRABBER_SOURCES
+            src/dinast_grabber.cpp
+           )
+    endif(NOT WIN32)
 
     if (VTK_FOUND AND NOT ANDROID)
         set(VTK_USE_FILE ${VTK_USE_FILE} CACHE INTERNAL "VTK_USE_FILE")
