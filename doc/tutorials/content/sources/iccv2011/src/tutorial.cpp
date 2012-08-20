@@ -630,10 +630,10 @@ main (int argc, char ** argv)
     
     case 2:
     {
-      pcl::SHOTEstimationOMP<pcl::PointXYZRGB, pcl::Normal, pcl::SHOT>* shot = new pcl::SHOTEstimationOMP<pcl::PointXYZRGB, pcl::Normal, pcl::SHOT>;
+      pcl::SHOTColorEstimationOMP<pcl::PointXYZRGB, pcl::Normal, pcl::SHOT1344>* shot = new pcl::SHOTColorEstimationOMP<pcl::PointXYZRGB, pcl::Normal, pcl::SHOT1344>;
       shot->setRadiusSearch (0.04);
-      pcl::Feature<pcl::PointXYZRGB, pcl::SHOT>::Ptr feature_extractor (shot);
-      ICCVTutorial<pcl::SHOT> tutorial (keypoint_detector, feature_extractor, surface_reconstruction, source, target);
+      pcl::Feature<pcl::PointXYZRGB, pcl::SHOT1344>::Ptr feature_extractor (shot);
+      ICCVTutorial<pcl::SHOT1344> tutorial (keypoint_detector, feature_extractor, surface_reconstruction, source, target);
       tutorial.run ();
     }
     break;

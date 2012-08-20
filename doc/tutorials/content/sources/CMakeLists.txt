@@ -49,7 +49,7 @@ foreach(subdir
           normal_distributions_transform
           # Additional/Complex tutorials presented at PCL events
           iros2011
-          #iccv2011
+          iccv2011
 		  normal_estimation_using_integral_images
        )
 
