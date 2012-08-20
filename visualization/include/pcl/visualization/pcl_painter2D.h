@@ -337,13 +337,16 @@ namespace pcl
       vtkMatrix3x3 * 
       getTransform();
       
-      /** \brief Create a translation matrix and concatenate it with the current transformation.
-       * \param[in] x translation along X axis
-       * \param[in] y translation along Y axis
+      /** \brief Clears all the transformation applied. Sets the transformation matrix to Identity
        */
       void 
       clearTransform();
       
+      /** \brief remove all the figures from the window
+       */
+       void
+       clearFigures();
+
       /** \brief set/get methods for current working vtkPen
        */
       void setPenColor (unsigned char r, unsigned char g, unsigned char b, unsigned char a);
@@ -404,13 +407,13 @@ namespace pcl
       void display ();
       
       /** \brief spins (runs the event loop) the interactor for spin_time amount of time. The name is confusing and will be probably obsolete in the future release with a single overloaded spin()/display() function.
-         *  \param[in] spin_time - How long (in ms) should the visualization loop be allowed to run.
-         */
-        void spinOnce ( const int spin_time = 0 );
+        *  \param[in] spin_time - How long (in ms) should the visualization loop be allowed to run.
+        */
+      void spinOnce ( const int spin_time = 0 );
         
-        /** \brief spins (runs the event loop) the interactor indefinitely. Same as display() - added to retain the similarity between other existing visualization classes
-         */
-        void spin ();
+      /** \brief spins (runs the event loop) the interactor indefinitely. Same as display() - added to retain the similarity between other existing visualization classes
+       */
+      void spin ();
 
     private:
       //std::map< int, std::vector< std::vector<float> > > figures_; //FIG_TYPE -> vector<array>

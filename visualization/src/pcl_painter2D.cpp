@@ -262,6 +262,14 @@ pcl::visualization::PCLPainter2D::clearTransform()
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void 
+pcl::visualization::PCLPainter2D::clearFigures()
+{
+  figures_.clear();
+  view_->GetScene()->SetDirty(true);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void
 pcl::visualization::PCLPainter2D::display ()
 {
   view_->GetRenderer ()->SetBackground (bkg_color_[0], bkg_color_[1], bkg_color_[2]);
@@ -292,6 +300,7 @@ pcl::visualization::PCLPainter2D::spinOnce( const int spin_time )
   exit_loop_timer_->right_timer_id = view_->GetInteractor()->CreateOneShotTimer( spin_time );
   
   //start spinning
+  this->Update();
   view_->GetRenderer ()->Render ();
 	view_->GetInteractor()->Start();
 }
@@ -357,7 +366,7 @@ pcl::visualization::PCLPainter2D::Paint (vtkContext2D *painter)
   //draw every figures
   for (size_t i = 0; i < figures_.size (); i++)
   {
-    figures_[i]->draw (painter);
+    figures_[i]->draw (painter); 	//thats it ;-)
   }
   
   return true;
