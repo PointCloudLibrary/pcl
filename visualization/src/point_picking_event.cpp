@@ -52,9 +52,12 @@ pcl::visualization::PointPickingCallback::Execute (vtkObject *caller, unsigned l
   {
     float x = 0, y = 0, z = 0;
     int idx = performSinglePick (iren, x, y, z);
-    // Create a PointPickingEvent
-    PointPickingEvent event (idx, x, y, z);
-    reinterpret_cast<pcl::visualization::PCLVisualizerInteractorStyle*>(caller)->point_picking_signal_ (event);
+    // Create a PointPickingEvent if a point was selected
+    if (idx != -1)
+    {
+      PointPickingEvent event (idx, x, y, z);
+      reinterpret_cast<pcl::visualization::PCLVisualizerInteractorStyle*>(caller)->point_picking_signal_ (event);
+    }
   }
   else if ((eventid == vtkCommand::LeftButtonPressEvent) && (iren->GetAltKey () == 1))
   {
@@ -78,7 +81,14 @@ int
 pcl::visualization::PointPickingCallback::performSinglePick (vtkRenderWindowInteractor *iren)
 {
   int mouse_x, mouse_y;
-  vtkPointPicker *picker = reinterpret_cast<vtkPointPicker*> (iren->GetPicker ());
+  //vtkPointPicker *picker = reinterpret_cast<vtkPointPicker*> (iren->GetPicker ());
+  vtkPointPicker *picker = vtkPointPicker::SafeDownCast (iren->GetPicker ());
+
+  if (!picker)
+  {
+    pcl::console::print_error ("Point picker not available, not selecting any points!\n");  
+    return -1;
+  }
   //iren->GetMousePosition (&mouse_x, &mouse_y);
   mouse_x = iren->GetEventPosition ()[0];
   mouse_y = iren->GetEventPosition ()[1];
@@ -96,7 +106,14 @@ pcl::visualization::PointPickingCallback::performSinglePick (
     float &x, float &y, float &z)
 {
   int mouse_x, mouse_y;
-  vtkPointPicker *picker = reinterpret_cast<vtkPointPicker*> (iren->GetPicker ());
+ // vtkPointPicker *picker = reinterpret_cast<vtkPointPicker*> (iren->GetPicker ());
+  vtkPointPicker *picker = vtkPointPicker::SafeDownCast (iren->GetPicker ());
+  
+  if (!picker)
+  {
+    pcl::console::print_error ("Point picker not available, not selecting any points!\n");  
+    return -1;
+  }
   //iren->GetMousePosition (&mouse_x, &mouse_y);
   mouse_x = iren->GetEventPosition ()[0];
   mouse_y = iren->GetEventPosition ()[1];

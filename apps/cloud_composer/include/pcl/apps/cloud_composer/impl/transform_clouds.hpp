@@ -39,8 +39,9 @@
 #define IMPL_TRANSFORM_CLOUDS_HPP_
 
 #include <pcl/apps/cloud_composer/transform_clouds.h>
-#include <pcl/point_cloud.h>
 #include <pcl/apps/cloud_composer/impl/cloud_item.hpp>
+#include <pcl/point_cloud.h>
+#include <pcl/common/transforms.h>
 
 template <typename PointT> QList <pcl::cloud_composer::CloudComposerItem*>
 pcl::cloud_composer::TransformClouds::performTemplatedAction (QList <const CloudComposerItem*> input_data)
@@ -55,16 +56,29 @@ pcl::cloud_composer::TransformClouds::performTemplatedAction (QList <const Cloud
       qWarning () << "Attempted to cast to template type which does not exist in this item! (input list)";
       return output;
     }
-  }
-  foreach (const CloudComposerItem* input_item, input_data)
-  {
-    QVariant variant = input_item->data (ItemDataRole::CLOUD_TEMPLATED);
-    if ( ! variant.canConvert <typename PointCloud<PointT>::Ptr> () )
-    {  
-      qWarning () << "Attempted to cast to template type which does not exist in this item! (selected list)";
+    if (!transform_map_.contains (input_item->getId ()))
+    {
+      qCritical () << "No transform found for id "<<input_item->getId ()<<" in TransformClouds::performTemplatedAction";
       return output;
     }
-  }  
+  }
+  
+  foreach (const CloudComposerItem* input_item, input_data)
+  {
+    qDebug () << "Transforming cloud "<<input_item->getId ();
+    QVariant variant = input_item->data (ItemDataRole::CLOUD_TEMPLATED);
+    typename PointCloud <PointT>::Ptr input_cloud = variant.value <typename PointCloud<PointT>::Ptr> ();
+    
+    Eigen::Matrix4f transform;
+    pcl::visualization::PCLVisualizer::convertToEigenMatrix(transform_map_.value (input_item->getId ()), transform);
+    
+    typename PointCloud<PointT>::Ptr transformed_cloud = boost::make_shared<PointCloud<PointT> > ();
+    
+    transformPointCloud<PointT> (*input_cloud, *transformed_cloud, transform);
+    CloudItem*  new_cloud_item = CloudItem::createCloudItemFromTemplate<PointT>(input_item->text (),transformed_cloud);
+    
+    output.append (new_cloud_item);
+  }
 
   
 

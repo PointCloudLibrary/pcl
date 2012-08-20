@@ -3354,6 +3354,17 @@ pcl::visualization::PCLVisualizer::convertToVtkMatrix (
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::visualization::PCLVisualizer::convertToEigenMatrix (
+    const vtkSmartPointer<vtkMatrix4x4> &vtk_matrix,
+    Eigen::Matrix4f &m)
+{
+  for (int i = 0; i < 4; i++)
+    for (int k = 0; k < 4; k++)
+      m (i,k) = vtk_matrix->GetElement (i, k);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
 bool
 pcl::visualization::PCLVisualizer::addPointCloud (
     const sensor_msgs::PointCloud2::ConstPtr &,

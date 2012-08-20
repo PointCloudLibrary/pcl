@@ -6,6 +6,8 @@
 pcl::cloud_composer::CloudCommand::CloudCommand (QList <const CloudComposerItem*> input_data, QUndoCommand* parent)
   : QUndoCommand (parent)
   , original_data_ (input_data)
+  , can_use_templates_(false)
+  , template_type_ (-1)
 {
 
 }
@@ -45,16 +47,15 @@ pcl::cloud_composer::CloudCommand::setProjectModel (ProjectModel* model)
   project_model_ = model;
 }
 
-
-QList <pcl::cloud_composer::CloudComposerItem*> 
-pcl::cloud_composer::CloudCommand::executeToolOnTemplateCloud (AbstractTool* tool, ConstItemList input_data)
+bool
+pcl::cloud_composer::CloudCommand::canUseTemplates (ConstItemList &input_data)
 {
-  QList <CloudComposerItem*> output;
   //Make sure the input list isn't empty
   if (input_data.size () == 0)
   {
     qCritical () << "Cannot call a templated tool on an empty input in CloudCommand::executeToolOnTemplateCloud!";
-    return output;
+    template_type_ = -2;
+    return false;
   }
   //Make sure all input items are clouds
   QList <const CloudItem*> cloud_items;
@@ -67,7 +68,8 @@ pcl::cloud_composer::CloudCommand::executeToolOnTemplateCloud (AbstractTool* too
   if (cloud_items.size () != input_data.size ())
   {
     qCritical () << "All input items are not clouds in CloudCommand::executeToolOnTemplateCloud!";
-    return output;
+    template_type_ = -3;
+    return false;
   }
   
   // Now make sure all input clouds have the same templated type
@@ -78,16 +80,38 @@ pcl::cloud_composer::CloudCommand::executeToolOnTemplateCloud (AbstractTool* too
     {
       qCritical () << "All input point cloud template types in CloudCommand::executeToolOnTemplateCloud are not the same!";
       qCritical () << cloud_item->text () << "'s type does not match "<<cloud_items.value (0)->type ();
-      return output;
+      template_type_ = -3;
+      return false;
     }
   }
+  template_type_ = type;
+  can_use_templates_ = true;
+  return true;
+}
+
+/*
+QList <pcl::cloud_composer::CloudComposerItem*> 
+pcl::cloud_composer::CloudCommand::executeToolOnTemplateCloud (AbstractTool* tool, ConstItemList &input_data)
+{
+  QList <CloudComposerItem*> output;
+  // If can_use_templates_ is false and type is -1 we haven't checked if we can yet
+  if (!can_use_templates_ && template_type_ == -1)
+    this->canUseTemplates (input_data);
   
-  //Everything looks good, use the type to call the appropriate tool function
-  output = tool->performAction( input_data, static_cast<PointTypeFlags::PointType> (type));
   
+  //If this is true now, we can go ahead and run it
+  if (can_use_templates_ && template_type_ >= 0)
+  {
+    output = tool->performAction( input_data, static_cast<PointTypeFlags::PointType> (template_type_));
+  }
+  else
+  {
+    qDebug () << "Tried CloudCommand::executeToolOnTemplateCloud but input data was not templated clouds!";
+  }
   return output;
   
 }
+*/
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 bool 
@@ -194,10 +218,13 @@ pcl::cloud_composer::ModifyItemCommand::runCommand (AbstractTool* tool)
   int num_items_returned = 0;
   foreach (const CloudComposerItem *item, original_data_)
   {
-    //Check to see if this is a cloud
     QList <const CloudComposerItem*> input_list;
     input_list.append (item);
-    QList <CloudComposerItem*> output = tool->performAction (input_list);
+    QList <CloudComposerItem*> output;
+    if (canUseTemplates(input_list))
+      output = tool->performAction (input_list, static_cast<PointTypeFlags::PointType> (template_type_));
+    else
+      output = tool->performAction (input_list);
     if (output.size () == 0)
       qWarning () << "Warning: Tool " << tool->getToolName () << "returned no item in a ModifyItemCommand";
     else 
@@ -272,7 +299,11 @@ pcl::cloud_composer::NewItemCloudCommand::runCommand (AbstractTool* tool)
   {
     QList <const CloudComposerItem*> input_list;
     input_list.append (item);
-    QList <CloudComposerItem*> output = tool->performAction (input_list);
+    QList <CloudComposerItem*> output;
+    if (canUseTemplates(input_list))
+      output = tool->performAction (input_list, static_cast<PointTypeFlags::PointType> (template_type_));
+    else
+      output = tool->performAction (input_list);
     if (output.size () == 0)
       qWarning () << "Warning: Tool " << tool->getToolName () << "returned no item in a NewItemCloudCommand";
     else 
@@ -374,15 +405,19 @@ pcl::cloud_composer::SplitCloudCommand::runCommand (AbstractTool* tool)
   foreach (const CloudComposerItem *item, original_data_)
   {
     //Check to see if this is a cloud
-    QList <const CloudComposerItem*> input_items;
-    input_items.append (item);
-    QList <CloudComposerItem*> output = tool->performAction (input_items);
+    QList <const CloudComposerItem*> input_list;
+    input_list.append (item);
+    QList <CloudComposerItem*> output;
+    if (canUseTemplates(input_list))
+      output = tool->performAction (input_list, static_cast<PointTypeFlags::PointType> (template_type_));
+    else
+      output = tool->performAction (input_list);
     if (output.size () == 0)
       qWarning () << "Warning: Tool " << tool->getToolName () << "returned no item in a SplitCloudCommand";
     else 
     {
       qDebug () << "Split command returned "<<output.size ()<<" items";
-      OutputPair output_pair = {input_items, output};
+      OutputPair output_pair = {input_list, output};
       output_data_.append (output_pair);
       num_new_items += output.size ();
     }
@@ -502,7 +537,11 @@ bool
 pcl::cloud_composer::MergeCloudCommand::runCommand (AbstractTool* tool)
 {
   //In merge command, input clouds will be combined, so send them to tool together
-  QList <CloudComposerItem*> output_items = tool->performAction (original_data_);
+  QList <CloudComposerItem*> output_items;
+  if (canUseTemplates(original_data_))
+    output_items = tool->performAction (original_data_, static_cast<PointTypeFlags::PointType> (template_type_));
+  else
+    output_items = tool->performAction (original_data_);
   MergeSelection* merge_selection = dynamic_cast <MergeSelection*> (tool);
   // If this is a merge selection we need to put the partially selected items into the original data list too!
   // We didn't send them before because merge selection already knows about them (and needs to tree input list differently from selected items)

@@ -73,8 +73,8 @@ namespace pcl
         virtual void
         redo () = 0;
         
-        QList <CloudComposerItem*> 
-        executeToolOnTemplateCloud (AbstractTool* tool, ConstItemList input_data);
+        //QList <CloudComposerItem*> 
+       // executeToolOnTemplateCloud (AbstractTool* tool, ConstItemList &input_data);
         
         void 
         setProjectModel (ProjectModel* model);
@@ -108,6 +108,15 @@ namespace pcl
          * On the other hand, if we destruct after an undo, then we want to delete the new items (but not the originals)
          */
         bool last_was_undo_;
+        
+        /** \brief This is used to check if a templated version of a tool can be used
+         *  For this to return true, all items must be clouds, and must have the same template type 
+         */
+        bool 
+        canUseTemplates (ConstItemList &input_data);
+        
+        bool can_use_templates_;
+        int template_type_;
     };
     
     class PCL_EXPORTS ModifyItemCommand : public CloudCommand

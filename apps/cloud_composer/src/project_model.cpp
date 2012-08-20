@@ -146,7 +146,6 @@ pcl::cloud_composer::ProjectModel::manipulateClouds (boost::shared_ptr<Manipulat
 
   TransformClouds* transform_tool = new TransformClouds (transform_map);
   
-  //We don't call the enqueueToolAction function since that would abort if we only have a green selection
   //Move the tool object to the work queue thread
   transform_tool->moveToThread (work_thread_);
   //Emit signal which tells work queue to enqueue this new action
@@ -201,7 +200,7 @@ pcl::cloud_composer::ProjectModel::insertNewCloudFromFile ()
     }
     short_filename = short_filename+ tr ("-%1").arg (k);
   }
-  CloudItem* new_item = new CloudItem (short_filename, cloud_blob, origin, orientation);
+  CloudItem* new_item = new CloudItem (short_filename, cloud_blob, origin, orientation, true);
    
   insertNewCloudComposerItem (new_item, invisibleRootItem());
   

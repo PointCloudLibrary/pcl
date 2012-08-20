@@ -1920,11 +1920,13 @@ namespace pcl
                                  const Eigen::Quaternion<float> &orientation,
                                  Eigen::Matrix4f &transformation);
 
+        //There's no reason these conversion functions shouldn't be public and static so others can use them.
+      public:
         /** \brief Convert Eigen::Matrix4f to vtkMatrix4x4
           * \param[in] m the input Eigen matrix
           * \param[out] vtk_matrix the resultant VTK matrix
           */
-        void
+        static void
         convertToVtkMatrix (const Eigen::Matrix4f &m,
                             vtkSmartPointer<vtkMatrix4x4> &vtk_matrix);
 
@@ -1933,10 +1935,18 @@ namespace pcl
           * \param[in] orientation the point cloud orientation
           * \param[out] vtk_matrix the resultant VTK 4x4 matrix
           */
-        void
+        static void
         convertToVtkMatrix (const Eigen::Vector4f &origin,
                             const Eigen::Quaternion<float> &orientation,
                             vtkSmartPointer<vtkMatrix4x4> &vtk_matrix);
+        
+        /** \brief Convert vtkMatrix4x4 to an Eigen4f
+          * \param[in] vtk_matrix the original VTK 4x4 matrix
+          * \param[out] m the resultant Eigen 4x4 matrix
+          */
+        static void
+        convertToEigenMatrix (const vtkSmartPointer<vtkMatrix4x4> &vtk_matrix,
+                              Eigen::Matrix4f &m);
 
     };
   }
