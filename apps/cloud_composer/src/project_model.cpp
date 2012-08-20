@@ -387,11 +387,11 @@ pcl::cloud_composer::ProjectModel::emitAllStateSignals ()
   
   //Find out which style is active, emit the signal 
   QMap<interactor_styles::INTERACTOR_STYLES, bool>::iterator itr = selected_style_map_.begin();
-  while (itr != selected_style_map_.end ())
+  foreach (interactor_styles::INTERACTOR_STYLES style, selected_style_map_.keys())
   {
-    if (itr.value ())
+    if (selected_style_map_.value (style))
     {
-      emit mouseStyleState (itr.key ());
+      emit mouseStyleState (style);
       break;
     }
   }
