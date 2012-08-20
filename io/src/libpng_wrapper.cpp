@@ -120,17 +120,14 @@ namespace pcl
 
       // Initialize write structure
       png_ptr = png_create_write_struct (PNG_LIBPNG_VER_STRING, 0, 0, 0);
-      assert(png_ptr && "creating png_create_write_structpng_create_write_struct failed");
+      assert (png_ptr && "creating png_create_write_structpng_create_write_struct failed");
 
       // Initialize info structure
       info_ptr = png_create_info_struct (png_ptr);
-      assert(info_ptr && "Could not allocate info struct");
+      assert (info_ptr && "Could not allocate info struct");
 
       // Setup Exception handling
-      if (setjmp(png_jmpbuf(png_ptr)))
-      {
-        assert("Error during png compression");
-      }
+      assert (setjmp(png_jmpbuf(png_ptr)) && "Error during png compression");
 
       // reserve memory for output data (300kB)
       pngData_arg.clear ();
@@ -201,10 +198,7 @@ namespace pcl
       assert(info_ptr && "Could not allocate info struct");
 
       // Setup Exception handling
-      if (setjmp(png_jmpbuf(png_ptr)))
-      {
-        assert("Error during png compression");
-      }
+      assert (setjmp (png_jmpbuf(png_ptr)) && "Error during png compression");
 
       uint8_t* input_pointer = &pngData_arg[0];
       png_set_read_fn (png_ptr, reinterpret_cast<void*> (&input_pointer), user_read_data);
