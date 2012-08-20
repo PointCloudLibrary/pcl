@@ -129,7 +129,7 @@ namespace pcl
           * It is very inefficient to use this for every point in the point cloud!
           */
         template<typename PointT> void 
-        cvtWindowCoordinates (const PointT& pt, Eigen::Vector4d& window_cord);
+        cvtWindowCoordinates (const PointT& pt, Eigen::Vector4d& window_cord) const;
 
         /** \brief converts point to window coordiantes
           * \param[in] pt xyz point to be converted
@@ -142,9 +142,11 @@ namespace pcl
           * matrices like a camera disortion matrix can also be added.
           */
         template<typename PointT> void 
-        cvtWindowCoordinates (const PointT& pt, Eigen::Vector4d& window_cord, const Eigen::Matrix4d& composite_mat);
+        cvtWindowCoordinates (const PointT& pt, Eigen::Vector4d& window_cord, const Eigen::Matrix4d& composite_mat) const;
     };
   }
 }
+
+#include <pcl/visualization/common/impl/common.hpp>
 
 #endif

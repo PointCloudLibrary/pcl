@@ -116,7 +116,8 @@ if(build)
     endif("${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}" VERSION_GREATER "5.6")
 
 
-    set(common_impl_incs include/pcl/${SUBSYS_NAME}/common/impl/shapes.hpp)
+    set(common_impl_incs include/pcl/${SUBSYS_NAME}/common/impl/shapes.hpp
+                         include/pcl/${SUBSYS_NAME}/common/impl/common.hpp)
 
     set(vtk_incs 
         include/pcl/${SUBSYS_NAME}/vtk/pcl_image_canvas_source_2d.h
