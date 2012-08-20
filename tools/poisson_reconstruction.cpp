@@ -50,21 +50,21 @@ using namespace pcl::console;
 #include <fstream>
 using namespace std;
 
-float default_leaf_size = 0.01f;
-float default_iso_level = 0.0f;
-int   default_use_dot = 1;
+int default_depth = 8;
+int default_solver_divide = 8;
+int default_iso_divide = 8;
 
 void
 printHelp (int, char **argv)
 {
   print_error ("Syntax is: %s input.pcd output.vtk <options>\n", argv[0]);
   print_info ("  where options are:\n");
-  print_info ("                     -leaf X    = the voxel size (default: ");
-  print_value ("%f", default_leaf_size); print_info (")\n");
-  print_info ("                     -iso X     = the iso level (default: ");
-  print_value ("%f", default_iso_level); print_info (")\n");
-  print_info ("                     -dot X     = use the voxelization algorithm combined with a dot product (i.e. MarchingCubesGreedy vs. MarchingCubesGreedyDot) (default: ");
-  print_value ("%d", default_use_dot); print_info (")\n");
+  print_info ("                     -depth X          = set the maximum depth of the tree that will be used for surface reconstruction (default: ");
+  print_value ("%d", default_depth); print_info (")\n");
+  print_info ("                     -solver_divide X  = set the the depth at which a block Gauss-Seidel solver is used to solve the Laplacian equation (default: ");
+  print_value ("%d", default_solver_divide); print_info (")\n");
+  print_info ("                     -iso_divide X     = Set the depth at which a block iso-surface extractor should be used to extract the iso-surface (default: ");
+  print_value ("%d", default_iso_divide); print_info (")\n");
 }
 
 bool
@@ -84,25 +84,15 @@ loadCloud (const std::string &filename, sensor_msgs::PointCloud2 &cloud)
 
 void
 compute (const sensor_msgs::PointCloud2::ConstPtr &input, PolygonMesh &output,
-         float /*leaf_size*/, float /*iso_level*/, int /*use_dot*/)
+         int depth, int solver_divide, int iso_divide)
 {
   PointCloud<PointNormal>::Ptr xyz_cloud (new pcl::PointCloud<PointNormal> ());
   fromROSMsg (*input, *xyz_cloud);
 
-	/* PointCloud<PointNormal>::Ptr cloud_clean (new pcl::PointCloud<PointNormal> ());
-  for (int i = 0; i < xyz_cloud->size (); ++i)
-    if (pcl_isfinite (xyz_cloud->points[i].x))
-    {
-      cloud_clean->push_back (xyz_cloud->points[i]);
-    }
-  cloud_clean->width = cloud_clean->size ();
-  cloud_clean->height = 1;
-
-	io::savePCDFileASCII ("cloud_clean.pcd", *cloud_clean);
-	*/
-  Poisson<PointNormal> poisson;
-  poisson.setDepth (10);
-  poisson.setSolverDivide (8);
+	Poisson<PointNormal> poisson;
+	poisson.setDepth (depth);
+	poisson.setSolverDivide (solver_divide);
+	poisson.setIsoDivide (iso_divide);
   poisson.setInputCloud (xyz_cloud);
 
 
@@ -155,22 +145,19 @@ main (int argc, char** argv)
     return (-1);
   }
 
-
   // Command line parsing
-  float leaf_size = default_leaf_size;
-  parse_argument (argc, argv, "-leaf", leaf_size);
-  print_info ("Using a leaf size of: "); print_value ("%f\n", leaf_size);
+  int depth = default_depth;
+  parse_argument (argc, argv, "-depth", depth);
+  print_info ("Using a depth of: "); print_value ("%d\n", depth);
 
-  float  iso_level = default_iso_level;
-  parse_argument (argc, argv, "-iso", iso_level);
-  print_info ("Setting an iso level of: "); print_value ("%f\n", iso_level);
+  int solver_divide = default_solver_divide;
+  parse_argument (argc, argv, "-solver_divide", solver_divide);
+  print_info ("Setting solver_divide to: "); print_value ("%d\n", solver_divide);
 
-  int use_dot = default_use_dot;
-  parse_argument (argc, argv, "-dot", use_dot);
-  if (use_dot)
-    print_info ("Selected algorithm: MarchingCubesGreedyDot\n");
-  else
-    print_info ("Selected algorithm: MarchingCubesGreedy\n");
+  int iso_divide = default_iso_divide;
+  parse_argument (argc, argv, "-iso_divide", iso_divide);
+  print_info ("Setting iso_divide to: "); print_value ("%d\n", iso_divide);
+
 
   // Load the first file
   sensor_msgs::PointCloud2::Ptr cloud (new sensor_msgs::PointCloud2);
@@ -179,7 +166,7 @@ main (int argc, char** argv)
 
   // Apply the marching cubes algorithm
   PolygonMesh output;
-  compute (cloud, output, leaf_size, iso_level, use_dot);
+  compute (cloud, output, depth, solver_divide, iso_divide);
 
   // Save into the second file
   saveCloud (argv[vtk_file_indices[0]], output);
