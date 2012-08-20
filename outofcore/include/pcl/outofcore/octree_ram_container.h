@@ -88,14 +88,14 @@ namespace pcl
         insertRange (const PointT* const * start, const uint64_t count);
 
         inline void
-        insertRange ( AlignedPointTVector& p )
+        insertRange (AlignedPointTVector &p)
         {
           PCL_ERROR ("[pcl::outofcore::octree_ram_container] Inserting eigen-aligned point vectors is not implemented using the ram containers\n");
           //insertRange (&(p.begin ()), p.size ());
         }
 
         inline void
-        insertRange (const AlignedPointTVector& p)
+        insertRange (const AlignedPointTVector &p)
         {
           PCL_ERROR ("[pcl::outofcore::octree_ram_container] Inserting eigen-aligned point vectors is not implemented using the ram containers\n");
         }
@@ -106,7 +106,7 @@ namespace pcl
          * \param[out] v Array of points read from the input range
          */
         void
-        readRange (const uint64_t start, const uint64_t count, AlignedPointTVector& v);
+        readRange (const uint64_t start, const uint64_t count, AlignedPointTVector &v);
 
         /** \brief grab percent*count random points. points are NOT
          *   guaranteed to be unique (could have multiple identical points!)
@@ -118,7 +118,7 @@ namespace pcl
          * points from given input rangerange
          */
         void
-        readRangeSubSample (const uint64_t start, const uint64_t count, const double percent, AlignedPointTVector& v);
+        readRangeSubSample (const uint64_t start, const uint64_t count, const double percent, AlignedPointTVector &v);
 
         /** \brief returns the size of the vector of points stored in this class */
         inline uint64_t
@@ -146,7 +146,7 @@ namespace pcl
          *  \param path The path/filename destination of the ascii xyz data
          */
         void
-        convertToXYZ (const boost::filesystem::path& path);
+        convertToXYZ (const boost::filesystem::path &path);
 
         inline PointT
         operator[] (uint64_t index) const
@@ -158,7 +158,7 @@ namespace pcl
 
       protected:
         //no copy construction
-        octree_ram_container (const octree_ram_container& rval) { }
+        octree_ram_container (const octree_ram_container &rval) { }
 
         octree_ram_container&
         operator= (const octree_ram_container& rval) { }

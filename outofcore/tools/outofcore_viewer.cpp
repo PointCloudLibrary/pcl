@@ -118,7 +118,7 @@ getCuboid (double x_min, double x_max, double y_min, double y_max, double z_min,
 }
 
 vtkSmartPointer<vtkActor>
-getOctreeActor (std::vector<Eigen::Vector3d> &voxel_centers, double voxel_side_length)
+getOctreeActor (std::vector<Eigen::Vector3d, Eigen::aligned_allocator<Eigen::Vector3d> > &voxel_centers, double voxel_side_length)
 {
   vtkSmartPointer<vtkAppendPolyData> treeWireframe = vtkSmartPointer<vtkAppendPolyData>::New ();
 
@@ -367,7 +367,7 @@ outofcoreViewer (boost::filesystem::path tree_root, size_t depth, bool display_o
 
   // Print voxel count
   //std::vector<PointT, AlignedPointT> voxel_centers;
-  std::vector<Eigen::Vector3d> voxel_centers;
+  std::vector<Eigen::Vector3d, Eigen::aligned_allocator<Eigen::Vector3d> > voxel_centers;
   octree.getVoxelCenters (voxel_centers, depth);
   cout << " Voxel Count: " << voxel_centers.size () << endl;
 

@@ -97,7 +97,7 @@ namespace pcl
          * \param[in] dir Path to the tree. If it is a directory, it
          * will create the metadata. If it is a file, it will load the metadata into memory.
          */
-        octree_disk_container (const boost::filesystem::path& dir);
+        octree_disk_container (const boost::filesystem::path &dir);
 
         /** \brief flushes write buffer, then frees memory */
         ~octree_disk_container ();
@@ -117,7 +117,7 @@ namespace pcl
 
         /** \brief Inserts a PointCloud2 object directly into the disk container */
         void
-        insertRange (const sensor_msgs::PointCloud2::Ptr& input_cloud);
+        insertRange (const sensor_msgs::PointCloud2::Ptr &input_cloud);
 
         /** \todo standardize the interface for writing binary data to the files .oct_dat files */
         void
@@ -154,11 +154,11 @@ namespace pcl
          * \param[out] v std::vector as destination for points read from disk into memory
          */
         void
-        readRange (const uint64_t start, const uint64_t count, AlignedPointTVector& dst);
+        readRange (const uint64_t start, const uint64_t count, AlignedPointTVector &dst);
 
         /// \todo refactor \ref readRange and strip start & count parameters and replace with array of indices
         void
-        readRange (const uint64_t, const uint64_t, sensor_msgs::PointCloud2::Ptr& dst);
+        readRange (const uint64_t, const uint64_t, sensor_msgs::PointCloud2::Ptr &dst);
 
         /** \brief  grab percent*count random points. points are \b not guaranteed to be
          * unique (could have multiple identical points!)
@@ -174,7 +174,7 @@ namespace pcl
          */
         void
         readRangeSubSample (const uint64_t start, const uint64_t count, const double percent,
-                            AlignedPointTVector& dst);
+                            AlignedPointTVector &dst);
 
         /** \brief Use bernoulli trials to select points. All points selected will be unique.
          *
@@ -236,7 +236,7 @@ namespace pcl
          * \param[in] path
          */
         void
-        convertToXYZ (const boost::filesystem::path& path)
+        convertToXYZ (const boost::filesystem::path &path)
         {
           if (boost::filesystem::exists (*disk_storage_filename_))
           {
@@ -284,15 +284,15 @@ namespace pcl
          *
          */
         static void
-        getRandomUUIDString (std::string& s);
+        getRandomUUIDString (std::string &s);
 
       private:
         //no copy construction
-        octree_disk_container (const octree_disk_container& rval) { }
+        octree_disk_container (const octree_disk_container &rval) { }
 
 
         octree_disk_container&
-        operator= (const octree_disk_container& rval) { }
+        operator= (const octree_disk_container &rval) { }
 
         void
         flushWritebuff (const bool force_cache_dealloc);

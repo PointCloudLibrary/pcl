@@ -405,7 +405,7 @@ namespace pcl
             \param[out] vector of PointXYZ voxel centers for nodes that exist at that depth
          */
         void
-        getVoxelCenters(std::vector<Eigen::Vector3d> &voxel_centers, size_t query_depth) const;
+        getVoxelCenters(std::vector<Eigen::Vector3d, Eigen::aligned_allocator<Eigen::Vector3d> > &voxel_centers, size_t query_depth) const;
 
         /** \brief Gets the voxel centers of all occupied/existing leaves of the tree */
         void
@@ -418,7 +418,7 @@ namespace pcl
          *  \param[out] voxel_centers std::vector of the centers of all occupied leaves of the octree
          */
         void
-        getVoxelCenters(std::vector<Eigen::Vector3d> &voxel_centers) const
+        getVoxelCenters(std::vector<Eigen::Vector3d, Eigen::aligned_allocator<Eigen::Vector3d> > &voxel_centers) const
         {
           getVoxelCenters(voxel_centers, max_depth_);
         }
@@ -486,9 +486,11 @@ namespace pcl
         loadFromFile ();
 
         /** \brief recursive portion of lod builder
-         * \todo does this need to be public? */
+         * \todo does this need to be public? 
+         * loads chunks of up to 2e9 pts at a time; this is a completely arbitrary number, and should be parameterized.
+         * TODO rewrite for new point container (PointCloud2) support */
         void
-        buildLOD (octree_base_node<ContainerT, PointT>** current_branch, const int current_dims);
+        buildLODRecursive (octree_base_node<ContainerT, PointT>** current_branch, const int current_dims);
 
         /** \brief Increment current depths (LOD for branch nodes) point count; called by addDataAtMaxDepth in octree_base_node
          * \todo rename count_point to something more informative

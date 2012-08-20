@@ -189,7 +189,8 @@ namespace pcl
 
       min_ = bb_min;
       max_ = bb_max;
-      
+
+      //?? Should this be done in octree_base ??
       // Make the bounding box square based on the largest axis
       double xdiff = max_[0] - min_[0];
       double ydiff = max_[1] - min_[1];
@@ -1135,7 +1136,7 @@ namespace pcl
 
 ////////////////////////////////////////////////////////////////////////////////
     template<typename ContainerT, typename PointT> void
-    octree_base_node<ContainerT, PointT>::printBBox(const size_t query_depth) const
+    octree_base_node<ContainerT, PointT>::printBBox (const size_t query_depth) const
     {
       if (this->depth_ < query_depth){
         for (size_t i = 0; i < this->depth_; i++)
@@ -1192,7 +1193,7 @@ namespace pcl
           for (size_t i = 0; i < 8; i++)
           {
             if (children_[i])
-              children_[i]->getVoxelCenters (voxel_centers, query_depth);
+              children_[i]->getVoxelCentersRecursive (voxel_centers, query_depth);
           }
         }
       }
@@ -1580,8 +1581,7 @@ namespace pcl
     }
 ////////////////////////////////////////////////////////////////////////////////
 
-    template<typename ContainerT, typename PointT>
-    void
+    template<typename ContainerT, typename PointT> void
     octree_base_node<ContainerT, PointT>::copyAllCurrentAndChildPointsRec (std::list<PointT>& v)
     {
       if ((num_child_ == 0) && (hasUnloadedChildren ()))
@@ -1808,7 +1808,7 @@ namespace pcl
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> void
-    octree_base_node<ContainerT, PointT>::convertToXYZ ()
+    octree_base_node<ContainerT, PointT>::convertToXYZRecursive ()
     {
       std::string fname = boost::filesystem::basename (thisnodestorage_) + std::string (".dat.xyz");
       boost::filesystem::path xyzfile = thisdir_ / fname;
@@ -1828,12 +1828,12 @@ namespace pcl
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> void
-    octree_base_node<ContainerT, PointT>::flushToDisk ()
+    octree_base_node<ContainerT, PointT>::flushToDiskRecursive ()
     {
       for (size_t i = 0; i < 8; i++)
       {
         if (children_[i])
-          children_[i]->flushToDisk ();
+          children_[i]->flushToDiskRecursive ();
       }
     }
 ////////////////////////////////////////////////////////////////////////////////

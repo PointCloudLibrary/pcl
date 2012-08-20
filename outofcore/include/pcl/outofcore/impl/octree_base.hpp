@@ -100,7 +100,7 @@ namespace pcl
       // Set root_ nodes file path
       treepath_ = root_name.parent_path () / (boost::filesystem::basename (root_name) + TREE_EXTENSION_);
 
-      loadFromFile ();
+      this->loadFromFile ();
     }
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -205,7 +205,7 @@ namespace pcl
     template<typename ContainerT, typename PointT>
     octree_base<ContainerT, PointT>::~octree_base ()
     {
-      root_->flushToDisk ();
+      root_->flushToDiskRecursive ();
       root_->saveIdx (false);
       saveToFile ();
       delete root_;
@@ -429,7 +429,7 @@ namespace pcl
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> void
-    octree_base<ContainerT, PointT>::getVoxelCenters(AlignedPointTVector &voxel_centers, const size_t query_depth) const
+    octree_base<ContainerT, PointT>::getVoxelCenters (AlignedPointTVector &voxel_centers, const size_t query_depth) const
     {
       boost::shared_lock < boost::shared_mutex > lock (read_write_mutex_);
       if (query_depth > max_depth_) 
@@ -443,7 +443,7 @@ namespace pcl
     }
 
     template<typename ContainerT, typename PointT> void
-    octree_base<ContainerT, PointT>::getVoxelCenters(std::vector<Eigen::Vector3d> &voxel_centers, const size_t query_depth) const
+    octree_base<ContainerT, PointT>::getVoxelCenters (std::vector<Eigen::Vector3d, Eigen::aligned_allocator<Eigen::Vector3d> > &voxel_centers, const size_t query_depth) const
     {
       boost::shared_lock < boost::shared_mutex > lock (read_write_mutex_);
       if (query_depth > max_depth_)
@@ -538,7 +538,7 @@ namespace pcl
     {
       if (root_ == NULL)
       {
-        PCL_ERROR ( "root is null, aborting buildLOD\n" );
+        PCL_ERROR ("Root node is null; aborting buildLOD.\n");
         return;
       }
       boost::unique_lock < boost::shared_mutex > lock (read_write_mutex_);
@@ -549,12 +549,10 @@ namespace pcl
     }
 ////////////////////////////////////////////////////////////////////////////////
 
-//loads chunks of up to 2e9 pts at a time; this is a completely arbitrary number
-//TODO rewrite for new point container (PointCloud2) support
     template<typename ContainerT, typename PointT> void
-    octree_base<ContainerT, PointT>::buildLOD (octree_base_node<ContainerT, PointT>** current_branch, const int current_dims)
+    octree_base<ContainerT, PointT>::buildLODRecursive (octree_base_node<ContainerT, PointT>** current_branch, const int current_dims)
     {
-      //stop if this brach DNE
+      //stop if this brach does not exist
       if (!current_branch[current_dims - 1])
       {
         return;
