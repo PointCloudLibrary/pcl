@@ -72,96 +72,191 @@ namespace pcl
 
 	public:
 		
+
 		StereoMatching(void);
 
 		virtual ~StereoMatching(void);
 
+		/** \brief setter for number of disparity candidates (disparity range)
+        *
+        * \param[in] max_disp number of disparity candidates (disparity range); has to be > 0
+        */
 		void 
 		setMaxDisparity(int max_disp){ 
 			max_disp_ = max_disp;
 		};
 		
+		/** \brief setter for horizontal offset, i.e. number of pixels to shift the disparity range over the target image 
+        * 
+        * \param[in] x_off horizontal offset value; has to be >= 0
+        */
 		void 
 		setXOffset(int x_off){ 
 			x_off_ = x_off; 
 		};
 
+		/** \brief setter for the value of the ratio filter
+        *
+        * \param[in] ratio_filter value of the ratio filter; it is a number in the range [0, 100]
+		* (0: no filtering action; 100: all disparities are filtered)
+        */
 		void 
 		setRatioFilter(int ratio_filter){ 
 			ratio_filter_ = ratio_filter;
 		};
 		
+		/** \brief setter for the value of the peak filter
+        *
+        * \param[in] peak_filter value of the peak filter; it is a number in the range [0, inf]
+		* (0: no filtering action)
+        */
 		void 
 		setPeakFilter(int peak_filter){ 
 			peak_filter_ = peak_filter;
 		};
 
+		/** \brief setter for the pre processing step
+        *
+        * \param[in] is_pre_proc setting the boolean to true activates the pre-processing step for both stereo images
+        */
 		void 
 		setPreProcessing(bool is_pre_proc){ 
 			is_pre_proc_ = is_pre_proc;
 		};
 		
+		/** \brief setter for the left-right consistency check stage, that eliminates inconsistent/wrong disparity 
+		* values from the disparity map at approx. twice the processing cost of the selected stereo algorithm
+        *
+        * \param[in] is_lr_check setting the boolean to true activates the left-right consistency check
+        */
 		void 
 		setLeftRightCheck(bool is_lr_check){ 
 			is_lr_check_ = is_lr_check;
 		};
 		
+		/** \brief setter for the left-right consistency check threshold
+        *
+        * \param[in] lr_check_th sets the value of the left-right consistency check threshold
+		* only has some influence if the left-right check is active 
+		* typically has either the value 0 ("strong" consistency check, more points being filtered) or 1 ("weak" 
+		* consistency check, less points being filtered)
+        */
 		void 
 		setLeftRightCheckThreshold(int lr_check_th){ 
 			lr_check_th_ = lr_check_th;
 		};
 
-		virtual void 
-		preProcessing(unsigned char *img, unsigned char *pp_img) = 0;
-
+		/** \brief stereo processing, it computes a disparity map stored internally by the class
+		*
+        * \param[in] ref_img reference array of image pixels (left image)
+		* \param[in] trg_img target array of image pixels (right image)
+		* \param[in] width number of elements per row for both input arrays
+		* \param[in] height number of elements per column for both input arrays
+        */
 		virtual void 
 		compute(unsigned char* ref_img, unsigned char* trg_img, int width, int height) = 0;
 		
+		/** \brief stereo processing, it computes a disparity map stored internally by the class
+		*
+        * \param[in] ref point cloud of pcl::RGB type containing the pixels of the reference image (left image)
+		* \param[in] trg point cloud of pcl::RGB type containing the pixels of the target image (right image)
+        */
 		virtual void
 		compute(pcl::PointCloud<pcl::RGB> &ref, pcl::PointCloud<pcl::RGB> &trg) = 0;
 
+		/** \brief median filter applied on the previously computed disparity map
+		* Note: the "compute" method must have been previously called at least once in order for this function
+		* to have any effect
+        * \param[in] radius radius of the squared window used to compute the median filter; the window side is
+		* equal to 2*radius + 1
+        */
 		void 
 		medianFilter(int radius);
 
-		//should the cloud be handled by the StereoMatching class or should it be left to the user?
-		//const pcl::PointCloud<pcl::PointXYZRGBA>::Ptr getPointCloud(float uC, float vC, float focal, float baseline);
+		/** \brief computation of the 3D point cloud from the previously computed disparity map without color information
+		* Note: the "compute" method must have been previously called at least once in order for this function
+		* to have any effect
+        * \param[in] u_c horizontal coordinate of the principal point (calibration parameter)
+		* \param[in] v_c vertical coordinate of the principal point (calibration parameter)
+		* \param[in] focal focal length in pixels (calibration parameter)
+		* \param[in] baseline distance between the two cameras (calibration parameter); the measure unit used to 
+		* specify this parameter will be the same as the 3D points in the output point cloud
+		* \param[out] cloud output 3D point cloud; it is organized and non-dense, with NaNs where 3D points are invalid
+        */
 		virtual bool 
 		getPointCloud(float u_c, float v_c, float focal, float baseline, pcl::PointCloud<pcl::PointXYZ>::Ptr cloud);
 
+		/** \brief computation of the 3D point cloud from the previously computed disparity map including color information
+		* Note: the "compute" method must have been previously called at least once in order for this function
+		* to have any effect
+        * \param[in] u_c horizontal coordinate of the principal point (calibration parameter)
+		* \param[in] v_c vertical coordinate of the principal point (calibration parameter)
+		* \param[in] focal focal length in pixels (calibration parameter)
+		* \param[in] baseline distance between the two cameras (calibration parameter); the measure unit used to 
+		* specify this parameter will be the same as the 3D points in the output point cloud
+		* \param[out] cloud output 3D point cloud; it is organized and non-dense, with NaNs where 3D points are invalid
+		* \param[in] input 3D cloud (same size of the output cloud) used to associate to each 3D point of the
+		* output cloud a color triplet
+        */
 		virtual bool 
 		getPointCloud(float u_c, float v_c, float focal, float baseline, pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud,  pcl::PointCloud<pcl::RGB>::Ptr texture);
 
+		/** \brief computation of a pcl::RGB cloud with scaled disparity values
+		* it can be used to display a rescaled version of the disparity map by means of the pcl::ImageViewer
+		* invalid disparity values are shown in green
+		* Note: the "compute" method must have been previously called at least once in order for this function
+		* to have any effect
+        * \param[out] vMap output cloud
+        */
 		void 
 		getVisualMap(pcl::PointCloud<pcl::RGB>::Ptr vMap);
 
 	protected:
 
-		//disparity map
+	
+		/** \brief The internal disparity map. */
 		short int *disp_map_;
 		
-		//local aligned copies of the cloud data
+		/** \brief Local aligned copies of the cloud data. */
 		unsigned char* ref_img_;
 		unsigned char* trg_img_;
 
-		//disparity map used for lr check
+		/** \brief Disparity map used for left-right check. */
 		short int *disp_map_trg_;
 
-		//used for pre processing
+		/** \brief Local aligned copies used for pre processing. */
 		unsigned char* pp_ref_img_;
 		unsigned char* pp_trg_img_;
 
+		/** \brief number of pixels per column of the input stereo pair . */
 		int width_;
+
+		/** \brief number of pixels per row of the input stereo pair . */
 		int height_;
 
+		/** \brief Disparity range used for stereo processing. */
 		int max_disp_;
+
+		/** \brief Horizontal displacemente (x offset) used for stereo processing */
 		int x_off_;
 
+		/** \brief Threshold for the ratio filter, \in [0 100] */
 		int ratio_filter_;
+
+		/** \brief Threshold for the peak filter, \in [0 inf] */
 		int peak_filter_;
 
+		/** \brief toggle for the activation of the pre-processing stage */
 		bool is_pre_proc_;
+
+		/** \brief toggle for the activation of the left-right consistency check stage */
 		bool is_lr_check_;
+
+		/** \brief Threshold for the left-right consistency check, typically either 0 or 1 */
 		int lr_check_th_;
+
+		virtual void 
+		preProcessing(unsigned char *img, unsigned char *pp_img) = 0;
 
 		virtual void 
 		imgFlip(unsigned char * & img) = 0;
@@ -273,9 +368,23 @@ namespace pcl
 		GrayStereoMatching(void);
 		virtual ~GrayStereoMatching(void);
 
+		/** \brief stereo processing, it computes a disparity map stored internally by the class
+		*
+        * \param[in] ref_img reference array of image pixels (left image), has to be grayscale single channel
+		* \param[in] trg_img target array of image pixels (right image), has to be grayscale single channel
+		* \param[in] width number of elements per row for both input arrays
+		* \param[in] height number of elements per column for both input arrays
+        */
 		virtual void 
 		compute(unsigned char* ref_img, unsigned char* trg_img, int width, int height);
 
+		/** \brief stereo processing, it computes a disparity map stored internally by the class
+		*
+        * \param[in] ref point cloud of pcl::RGB type containing the pixels of the reference image (left image)
+		* the pcl::RGB triplets are automatically converted to grayscale upon call of the method
+		* \param[in] trg point cloud of pcl::RGB type containing the pixels of the target image (right image)
+		* the pcl::RGB triplets are automatically converted to grayscale upon call of the method
+        */
 		virtual void
 		compute(pcl::PointCloud<pcl::RGB> &ref, pcl::PointCloud<pcl::RGB> &trg);
 
@@ -314,6 +423,10 @@ namespace pcl
 		{
 		};
 
+		/** \brief setter for the radius of the squared window 
+        * \param[in] radius radius of the squared window used to compute the block-based stereo algorithm
+		* the window side is equal to 2*radius + 1
+        */
 		void 
 		setRadius(int radius)
 		{
@@ -354,30 +467,46 @@ namespace pcl
 		{
 		};
 
+		/** \brief setter for the radius (half length) of the column used for cost aggregation
+        * \param[in] radius radius (half length) of the column used for cost aggregation; the total column length
+		* is equal to 2*radius + 1
+        */
 		void 
 		setRadius(int radius)
 		{
 			radius_=radius;
 		};
 
+		/** \brief setter for the spatial bandwith used for cost aggregation based on adaptive weights
+        * \param[in] gamma_s spatial bandwith used for cost aggregation based on adaptive weights
+        */
 		void 
 		setGammaS(int gamma_s)
 		{
 			gamma_s_=gamma_s;
 		};
 
+		/** \brief setter for the color bandwith used for cost aggregation based on adaptive weights
+        * \param[in] gamma_c color bandwith used for cost aggregation based on adaptive weights
+        */
 		void 
 		setGammaC(int gamma_c)
 		{
 			gamma_c_ = gamma_c;
 		};
 
+		/** \brief "weak" smoothness penalty used within 2-pass Scanline Optimization
+        * \param[in] smoothness_weak "weak" smoothness penalty cost
+        */
 		void 
 		setSmoothWeak(int smoothness_weak)
 		{
 			smoothness_weak_=smoothness_weak;
 		};
 
+		/** \brief "strong" smoothness penalty used within 2-pass Scanline Optimization
+        * \param[in] smoothness_strong "strong" smoothness penalty cost
+        */
 		void 
 		setSmoothStrong(int smoothness_strong)
 		{
