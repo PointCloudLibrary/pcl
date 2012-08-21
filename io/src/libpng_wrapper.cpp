@@ -127,7 +127,7 @@ namespace pcl
       assert (info_ptr && "Could not allocate info struct");
 
       // Setup Exception handling
-      assert (setjmp(png_jmpbuf(png_ptr)) && "Error during png compression");
+      setjmp(png_jmpbuf(png_ptr));
 
       // reserve memory for output data (300kB)
       pngData_arg.clear ();
@@ -198,7 +198,7 @@ namespace pcl
       assert(info_ptr && "Could not allocate info struct");
 
       // Setup Exception handling
-      assert (setjmp (png_jmpbuf(png_ptr)) && "Error during png compression");
+      setjmp (png_jmpbuf(png_ptr));
 
       uint8_t* input_pointer = &pngData_arg[0];
       png_set_read_fn (png_ptr, reinterpret_cast<void*> (&input_pointer), user_read_data);
