@@ -633,7 +633,7 @@ Recognition
 
              Author: *Tommaso Cavallari, Federico Tombari*
 
-             Compatibility: > PCL 1.5
+             Compatibility: > PCL 1.6
 
              This tutorial aims at explaining how to perform 3D Object Recognition based on the pcl_recognition module.
      ======  ======
