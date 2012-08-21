@@ -57,15 +57,16 @@ if(build)
             src/oni_grabber.cpp
             )
     endif(OPENNI_FOUND)
-    
-    if(NOT WIN32)
+   
+    find_package(libusb-1.0)
+    if(LIBUSB_1_FOUND)
         set(DINAST_GRABBER_INCLUDES
             include/pcl/io/dinast_grabber.h
            )
         set(DINAST_GRABBER_SOURCES
             src/dinast_grabber.cpp
            )
-    endif(NOT WIN32)
+    endif(LIBUSB_1_FOUND)
 
     if (VTK_FOUND AND NOT ANDROID)
         set(VTK_USE_FILE ${VTK_USE_FILE} CACHE INTERNAL "VTK_USE_FILE")
