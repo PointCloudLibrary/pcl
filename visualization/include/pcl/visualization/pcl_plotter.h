@@ -60,7 +60,7 @@ namespace pcl
       * \author Kripasindhu Sarkar
       * \ingroup visualization
       */
-    class PCL_EXPORTS PCLPlotter: public vtkChartXY 
+    class PCL_EXPORTS PCLPlotter
     {
       
       public:
@@ -87,12 +87,15 @@ namespace pcl
           * \param[in] type type of the graph plotted. vtkChart::LINE for line plot, vtkChart::BAR for bar plot, and vtkChart::POINTS for a scattered point plot
           * \param[in] color a character array of 4 fields denoting the R,G,B and A component of the color of the plot ranging from 0 to 255. If this argument is not passed (or NULL is passed) the plot is colored based on a color scheme 
           */
+
+        ~PCLPlotter();
+
         void 
         addPlotData (double const *array_X, 
                     double const *array_Y, 
                     unsigned long size, 
                     char const * name = "Y Axis", 
-                    int type  = LINE , 
+                    int type  = vtkChart::LINE ,
                     char const *color=NULL);
 	
          /** \brief adds a plot with correspondences in vectors arrayX and arrayY. This is the vector version of the addPlotData function. Parameters mean same as before
@@ -101,7 +104,7 @@ namespace pcl
         addPlotData (std::vector<double> const &array_X, 
                     std::vector<double>const &array_Y, 
                     char const * name = "Y Axis", 
-                    int type = LINE,
+                    int type = vtkChart::LINE,
                     std::vector<char> const &color = std::vector<char>());
         
         /** \brief adds a plot with correspondences in vector of pairs. The the first and second field of the pairs of the vector forms the correspondence. Rest parameters mean same as before
@@ -109,7 +112,7 @@ namespace pcl
         void
         addPlotData (std::vector<std::pair<double, double> > const &plot_data, 
                     char const * name = "Y Axis",
-                    int type = LINE,
+                    int type = vtkChart::LINE,
                     std::vector<char> const &color = std::vector<char>());
         
         /** \brief adds a plot based on the given polynomial function and the range in X axis. 
@@ -126,7 +129,7 @@ namespace pcl
                     double x_min, double x_max,
                     char const *name = "Y Axis",
                     int num_points = 100,
-                    int type = LINE,
+                    int type = vtkChart::LINE,
                     std::vector<char> const &color = std::vector<char>());
         
         /** \brief adds a plot based on the given rational function and the range in X axis. 
@@ -143,7 +146,7 @@ namespace pcl
                     double x_min, double x_max,
                     char const *name = "Y Axis",
                     int num_points = 100,
-                    int type = LINE,
+                    int type = vtkChart::LINE,
                     std::vector<char> const &color = std::vector<char>());
         
         /** \brief adds a plot based on a user defined callback function representing the function to plot
@@ -160,7 +163,7 @@ namespace pcl
                     double x_min, double x_max,
                     char const *name = "Y Axis",
                     int num_points = 100,
-                    int type = LINE,
+                    int type = vtkChart::LINE,
                     std::vector<char> const &color = std::vector<char>());
         
         /** \brief adds a plot based on a space/tab delimited table provided in a file
@@ -169,7 +172,7 @@ namespace pcl
           */
         void
         addPlotData (char const * filename,
-                    int type = LINE);
+                    int type = vtkChart::LINE);
                     
         /** \brief bins the elements in vector data into nbins equally spaced containers and plots the resulted histogram 
           * \param[in] data the raw data 
@@ -373,7 +376,7 @@ namespace pcl
       
       private:
         vtkSmartPointer<vtkContextView> view_;  
-        //vtkSmartPointer<vtkChartXY> chart_;
+        vtkSmartPointer<vtkChartXY> chart_;
         vtkSmartPointer<vtkColorSeries> color_series_;   //for automatic coloring
         
         //extra state variables
@@ -425,6 +428,7 @@ namespace pcl
             if (event_id != vtkCommand::ExitEvent)
               return;
             plotter->stopped_ = true;
+            plotter->view_->GetInteractor()->TerminateApp();
           }
           PCLPlotter *plotter;
         };

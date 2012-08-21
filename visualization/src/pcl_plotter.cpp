@@ -49,13 +49,13 @@ pcl::visualization::PCLPlotter::PCLPlotter (char const *name)
 {
   //constructing
   view_ = vtkSmartPointer<vtkContextView>::New ();
-  //chart_=vtkSmartPointer<vtkChartXY>::New();
+  chart_=vtkSmartPointer<vtkChartXY>::New();
   color_series_ = vtkSmartPointer<vtkColorSeries>::New ();
   exit_loop_timer_ = vtkSmartPointer<ExitMainLoopTimerCallback>::New ();
   exit_callback_ = vtkSmartPointer<ExitCallback>::New ();
   
   //connecting and mandatory bookkeeping
-  view_->GetScene ()->AddItem (this);
+  view_->GetScene ()->AddItem (chart_);
   view_->GetRenderWindow ()->SetWindowName (name);
   
   //###WARNING: hardcoding logic ;) :-/.. please see plot() and spin*() functions for the logic
@@ -71,6 +71,7 @@ pcl::visualization::PCLPlotter::PCLPlotter (char const *name)
   
 }
 
+pcl::visualization::PCLPlotter::~PCLPlotter() {}
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::visualization::PCLPlotter::addPlotData (
@@ -102,7 +103,7 @@ pcl::visualization::PCLPlotter::addPlotData (
 
   //adding to chart
   //vtkPlot *line = chart_->AddPlot(vtkChart::LINE);
-  vtkPlot *line = this->AddPlot (type);
+  vtkPlot *line = chart_->AddPlot (type);
   line->SetInput (table, 0, 1);
   line->SetWidth (1);
 
@@ -395,7 +396,8 @@ pcl::visualization::PCLPlotter::spinOnce( const int spin_time )
 void 
 pcl::visualization::PCLPlotter::spin()
 {
-  stopped_ = false;
+  this->plot();
+  /*stopped_ = false;
   do
   {
     spinOnce ();
@@ -404,13 +406,14 @@ pcl::visualization::PCLPlotter::spin()
     boost::this_thread::sleep (boost::posix_time::seconds (1));
   }
   while (true);
+  */
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::visualization::PCLPlotter::clearPlots ()
 {
-  this->ClearPlots ();
+  chart_->ClearPlots ();
   current_plot_ = 0;
 }
 
@@ -447,47 +450,47 @@ pcl::visualization::PCLPlotter::getBackgroundColor ()
 void 
 pcl::visualization::PCLPlotter::setYRange (double min, double max)
 {
-  this->GetAxis (vtkAxis::LEFT)->SetRange (min, max);
-  this->GetAxis (vtkAxis::LEFT)->SetBehavior (vtkAxis::FIXED);
+  chart_->GetAxis (vtkAxis::LEFT)->SetRange (min, max);
+  chart_->GetAxis (vtkAxis::LEFT)->SetBehavior (vtkAxis::FIXED);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void 
 pcl::visualization::PCLPlotter::setXRange (double min, double max)
 {
-  this->GetAxis (vtkAxis::BOTTOM)->SetRange (min, max);
-  this->GetAxis (vtkAxis::BOTTOM)->SetBehavior (vtkAxis::FIXED);
+  chart_->GetAxis (vtkAxis::BOTTOM)->SetRange (min, max);
+  chart_->GetAxis (vtkAxis::BOTTOM)->SetBehavior (vtkAxis::FIXED);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void 
 pcl::visualization::PCLPlotter::setTitle( const char * title )
 {
-	this->SetTitle( title );
-	this->SetShowLegend( true );
+	chart_->SetTitle( title );
+	chart_->SetShowLegend( true );
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void 
 pcl::visualization::PCLPlotter::setXTitle( const char * title )
 {
-  this->GetAxis (vtkAxis::BOTTOM)->SetTitle (title);
-  this->SetShowLegend( true );
+  chart_->GetAxis (vtkAxis::BOTTOM)->SetTitle (title);
+  chart_->SetShowLegend( true );
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void 
 pcl::visualization::PCLPlotter::setYTitle( const char * title )
 {
-  this->GetAxis (vtkAxis::LEFT)->SetTitle (title);
-  this->SetShowLegend (true);
+  chart_->GetAxis (vtkAxis::LEFT)->SetTitle (title);
+  chart_->SetShowLegend (true);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::visualization::PCLPlotter::setShowLegend (bool flag)
 {
-  this->SetShowLegend (flag);
+  chart_->SetShowLegend (flag);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
