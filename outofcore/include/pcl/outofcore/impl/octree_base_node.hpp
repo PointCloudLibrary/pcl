@@ -96,66 +96,74 @@ namespace pcl
         root_ (NULL),
         depth_ (0),
         num_child_ (0),
-        mid_xyz_ (Eigen::Vector3d (0, 0, 0)),
-        min_ (Eigen::Vector3d (0, 0, 0)),
-        max_ (Eigen::Vector3d (0, 0, 0))
+        node_metadata_ ()
     {
+      node_metadata_ = boost::shared_ptr<OutofcoreOctreeNodeMetadata> (new OutofcoreOctreeNodeMetadata ());
+      node_metadata_->setOutofcoreVersion (3);
       memset (children_, 0, 8 * sizeof(octree_base_node<ContainerT, PointT>*));
     }
 
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT>
-    octree_base_node<ContainerT, PointT>::octree_base_node (const boost::filesystem::path& path, octree_base_node<ContainerT, PointT>* super, bool load_all)
-      : thisdir_ ()
-      , thisnodeindex_ ()
-      , thisnodestorage_ ()
-      , m_tree_ ()
+    octree_base_node<ContainerT, PointT>::octree_base_node (const boost::filesystem::path& directory_path, octree_base_node<ContainerT, PointT>* super, bool load_all)
+      : m_tree_ ()
       , root_ ()
       , parent_ ()
       , depth_ ()
       , children_ ()
       , num_child_ ()
       , payload_ ()
-      , min_ (Eigen::Vector3d (0,0,0))
-      , max_ (Eigen::Vector3d (0,0,0))
-      , mid_xyz_ (Eigen::Vector3d (0,0,0))
+      , node_metadata_ ()
     {
+      node_metadata_ = boost::shared_ptr<OutofcoreOctreeNodeMetadata> (new OutofcoreOctreeNodeMetadata ());
+      node_metadata_->setOutofcoreVersion (3);
+
+      //Check if this is the first node created (this is true if super, i.e. node's parent is NULL)
       if (super == NULL)
       {
-        thisdir_ = path.parent_path ();
+        node_metadata_->setDirectoryPathname (directory_path.parent_path ());
+        
+//        PCL_THROW_EXCEPTION (PCLException, "[pcl::outofcore::octree_base_node] Case not implemented\n");
 
-        if (!boost::filesystem::exists (thisdir_))
+        node_metadata_->setMetadataFilename (directory_path);
+
+        //Check if the specified directly currently exists, and if not, don't continue
+        if (!boost::filesystem::exists (node_metadata_->getDirectoryPathname ()))
         {
-          PCL_ERROR ("[pcl::outofcore::octree_base_node] Could not find dir %s\n",thisdir_.c_str ());
-          PCL_THROW_EXCEPTION (PCLException, "[pcl::outofcore::octree_base_node] Outofcore Exception: missing directory")
-          }
-
-        thisnodeindex_ = path;
-
+          PCL_ERROR ("[pcl::outofcore::octree_base_node] Could not find dir %s\n", node_metadata_->getDirectoryPathname ().c_str ());
+          PCL_THROW_EXCEPTION (PCLException, "[pcl::outofcore::octree_base_node] Outofcore Exception: missing directory");
+        }
+        
         depth_ = 0;
         root_ = this;
       }
       else
       {
-        thisdir_ = path;
+        node_metadata_->setDirectoryPathname (directory_path);
+
         depth_ = super->depth_ + 1;
         root_ = super->root_;
 
-        boost::filesystem::directory_iterator diterend;
-        bool loaded = false;
-        for (boost::filesystem::directory_iterator diter (thisdir_); diter != diterend; ++diter)
+        //empty constructor creates end of iterator
+        boost::filesystem::directory_iterator directory_it_end;
+
+        int loaded = 0;
+
+        for (boost::filesystem::directory_iterator directory_it (node_metadata_->getDirectoryPathname ()); directory_it != directory_it_end; ++directory_it)
         {
-          const boost::filesystem::path& file = *diter;
+          const boost::filesystem::path& file = *directory_it;
+
           if (!boost::filesystem::is_directory (file))
           {
             if (boost::filesystem::extension (file) == node_index_extension)
             {
-              thisnodeindex_ = file;
-              loaded = true;
+//              PCL_INFO ("[pcl:outofcore::octree_base_node] Loading metadata from %s\n", file.c_str ());
+              loaded = node_metadata_->loadMetadataFromDisk (file);
               break;
             }
           }
+
         }
 
         if (!loaded)
@@ -165,8 +173,9 @@ namespace pcl
         }
 
       }
+      
 
-      loadFromFile (thisnodeindex_, super);
+      loadFromFile (node_metadata_->getMetadataFilename (), super);
 
       if (load_all)
       {
@@ -187,58 +196,29 @@ namespace pcl
       memset (children_, 0, 8 * sizeof(octree_base_node<ContainerT, PointT>*));
       num_child_ = 0;
 
-      min_ = bb_min;
-      max_ = bb_max;
-
       //?? Should this be done in octree_base ??
       // Make the bounding box square based on the largest axis
-      double xdiff = max_[0] - min_[0];
-      double ydiff = max_[1] - min_[1];
-      double zdiff = max_[2] - min_[2];
-
-      // X is largest, increase y/z in both +/- directions
-      if (xdiff > ydiff && xdiff > zdiff)
-      {
-        min_[1] -= (xdiff - ydiff)/2.0;
-        max_[1] += (xdiff - ydiff)/2.0;
-        min_[2] -= (xdiff - zdiff)/2.0;
-        max_[2] += (xdiff - zdiff)/2.0;
-        // Y is largest, increase y/z in both +/- directions
-      }
-      else if (ydiff > xdiff && ydiff > zdiff)
-      {
-        min_[0] -= (ydiff - xdiff)/2.0;
-        max_[0] += (ydiff - xdiff)/2.0;
-        min_[2] -= (ydiff - zdiff)/2.0;
-        max_[2] += (ydiff - zdiff)/2.0;
-        // Z is largest, increase y/z in both +/- directions
-      }
-      else if (zdiff > xdiff && zdiff > ydiff)
-      {
-        min_[0] -= (zdiff - xdiff)/2.0;
-        max_[0] += (zdiff - xdiff)/2.0;
-        min_[1] -= (zdiff - ydiff)/2.0;
-        max_[1] += (zdiff - ydiff)/2.0;
-      }
+      Eigen::Vector3d tmp_max = bb_max;
+      Eigen::Vector3d tmp_min = bb_min;
+      enlargeToCube (tmp_min, tmp_max);
 
       // Need to make the bounding box slightly bigger so points that fall on the max side aren't excluded
       double epsilon = 1e-8;
-      max_ = max_ + epsilon*Eigen::Vector3d (1.0, 1.0, 1.0);
+      tmp_max = tmp_max + epsilon*Eigen::Vector3d (1.0, 1.0, 1.0);
 
-      mid_xyz_ = (max_ + min_)/static_cast<double>(2);
-      
-      // Get root path
-      const boost::filesystem::path dir = root_name.parent_path ();
+      node_metadata_->setBoundingBox (tmp_min, tmp_max);
+      node_metadata_->setDirectoryPathname (root_name.parent_path ());
+      node_metadata_->setOutofcoreVersion (3);
 
       // If the root directory doesn't exist create it
-      if (!boost::filesystem::exists (dir))
+      if (!boost::filesystem::exists (node_metadata_->getDirectoryPathname ()))
       {
-        boost::filesystem::create_directory (dir);
+        boost::filesystem::create_directory (node_metadata_->getDirectoryPathname ());
       }
       // If the root directory is a file
-      else if (!boost::filesystem::is_directory (dir))
+      else if (!boost::filesystem::is_directory (node_metadata_->getDirectoryPathname ()))
       {
-        PCL_ERROR ("[pcl::outofcore::octree_base_node] Need empty directory structure. Dir %s exists and is a file.\n",dir.c_str ());
+        PCL_ERROR ("[pcl::outofcore::octree_base_node] Need empty directory structure. Dir %s exists and is a file.\n",node_metadata_->getDirectoryPathname ().c_str ());
         PCL_THROW_EXCEPTION (PCLException, "[pcl::outofcore::octree_base_node] Bad Path: Directory Already Exists");
       }
 
@@ -249,72 +229,75 @@ namespace pcl
       octree_disk_container<PointT>::getRandomUUIDString (uuid);
 
       std::string node_container_name;
-      if( true )//OUTOFCORE_VERSION_ >= 3 )
-      {
-        node_container_name = uuid + std::string ("_") + node_container_basename + pcd_extension;
-      }
-      else
-      {
-        node_container_name = uuid + std::string ("_") + node_container_basename + node_container_extension;
-      }
-      
-      // Setup all file paths related to this node
-      thisdir_ = boost::filesystem::path (dir);
-      thisnodeindex_ = thisdir_ / root_name.filename ();
-      thisnodestorage_ = thisdir_ / boost::filesystem::path (node_container_name);
-      boost::filesystem::create_directory (thisdir_);
+
+      node_container_name = uuid + std::string ("_") + node_container_basename + pcd_extension;
+
+      node_metadata_->setMetadataFilename (node_metadata_->getDirectoryPathname () / root_name.filename ());
+      node_metadata_->setPCDFilename (node_metadata_->getDirectoryPathname () / boost::filesystem::path (node_container_name));
+
+      boost::filesystem::create_directory (node_metadata_->getDirectoryPathname ());
+      node_metadata_->serializeMetadataToDisk ();
 
       // Create data container, ie octree_disk_container, octree_ram_container
-      payload_ = boost::shared_ptr<ContainerT> (new ContainerT (thisnodestorage_));
+      payload_ = boost::shared_ptr<ContainerT> (new ContainerT (node_metadata_->getPCDFilename ()));
+    }
+////////////////////////////////////////////////////////////////////////////////
+
+    template<typename ContainerT, typename PointT> void
+    octree_base_node<ContainerT, PointT>::saveIdx (bool recursive)
+    {
+      node_metadata_->serializeMetadataToDisk ();
+
+      if (recursive)
+      {
+        for (size_t i = 0; i < 8; i++)
+        {
+          if (children_[i])
+            children_[i]->saveIdx (true);
+        }
+      }
     }
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT>
     octree_base_node<ContainerT, PointT>::octree_base_node (const Eigen::Vector3d& bb_min, const Eigen::Vector3d& bb_max, const double node_dim_meters, octree_base<ContainerT, PointT> * const tree, const boost::filesystem::path& root_name)
-      : thisdir_ ()
-      , thisnodeindex_ ()
-      , thisnodestorage_ ()
-      , m_tree_ ()
+      : m_tree_ ()
       , root_ ()
       , parent_ ()
       , depth_ ()
       , children_ ()
       , num_child_ ()
       , payload_ ()
-      , min_ ()
-      , max_ ()
-      , mid_xyz_ ()
+      , node_metadata_ ()
     {
-      init_root_node(bb_min, bb_max, tree, root_name);
+      node_metadata_ = boost::shared_ptr<OutofcoreOctreeNodeMetadata> (new OutofcoreOctreeNodeMetadata ());
+      node_metadata_->setOutofcoreVersion (3);
+      
+      init_root_node (bb_min, bb_max, tree, root_name);
 
       // Calculate the max depth but don't create nodes
       tree->max_depth_ = calcDepthForDim (bb_min, bb_max, node_dim_meters);
-      saveIdx (false);
-      //createChildrenToDim(node_dim_meters);
     }
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT>
     octree_base_node<ContainerT, PointT>::octree_base_node (const int max_depth, const Eigen::Vector3d& bb_min, const Eigen::Vector3d& bb_max, octree_base<ContainerT, PointT> * const tree, const boost::filesystem::path& root_name)
-      : thisdir_ ()
-      , thisnodeindex_ ()
-      , thisnodestorage_ ()
-      , m_tree_ ()
+      : m_tree_ ()
       , root_ ()
       , parent_ ()
       , depth_ ()
       , children_ ()
       , num_child_ ()
       , payload_ ()
-      , min_ ()
-      , max_ ()
-      , mid_xyz_ ()
+      , node_metadata_ ()
     {
+      node_metadata_ = boost::shared_ptr<OutofcoreOctreeNodeMetadata> (new OutofcoreOctreeNodeMetadata ());
+      node_metadata_->setOutofcoreVersion (3);
+
       init_root_node(bb_min, bb_max, tree, root_name);
 
       // Set max depth but don't create nodes
       tree->max_depth_ = max_depth;
-      saveIdx (false);
     }
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -333,7 +316,7 @@ namespace pcl
       // Check nodes directory for children directories 0-7
       for (int i = 0; i < 8; i++)
       {
-        boost::filesystem::path child_dir = thisdir_ / boost::filesystem::path (boost::lexical_cast<std::string> (i));
+        boost::filesystem::path child_dir = node_metadata_->getDirectoryPathname () / boost::filesystem::path (boost::lexical_cast<std::string> (i));
         if (boost::filesystem::exists (child_dir))
         {
           num_child_dirs++;
@@ -362,7 +345,7 @@ namespace pcl
       // Create a new node for each child directory that exists
       for (int i = 0; i < 8; i++)
       {
-        boost::filesystem::path child_dir = thisdir_ / boost::filesystem::path (boost::lexical_cast<std::string> (i));
+        boost::filesystem::path child_dir = node_metadata_->getDirectoryPathname () / boost::filesystem::path (boost::lexical_cast<std::string> (i));
         if (boost::filesystem::exists (child_dir))
         {
           this->children_[i] = new octree_base_node<ContainerT, PointT> (child_dir, this, recursive);
@@ -426,7 +409,7 @@ namespace pcl
 
         if (!skip_bb_check)
         {
-          if (!this->pointWithinBB (pt))
+          if (!this->pointInBoundingBox (pt))
           {
             PCL_ERROR ( "[pcl::outofcore::octree_base_node::%s] Failed to place point within bounding box\n", __FUNCTION__ );
             continue;
@@ -434,7 +417,9 @@ namespace pcl
         }
 
         uint8_t box = 0;
-        box = static_cast<uint8_t>(((pt.z >= mid_xyz_[2]) << 2) | ((pt.y >= mid_xyz_[1]) << 1) | ((pt.x >= mid_xyz_[0]) << 0));
+        Eigen::Vector3d mid_xyz = node_metadata_->getVoxelCenter ();
+        
+        box = static_cast<uint8_t>(((pt.z >= mid_xyz[2]) << 2) | ((pt.y >= mid_xyz[1]) << 1) | ((pt.x >= mid_xyz[0]) << 0));
         c[static_cast<size_t>(box)].push_back (&pt);
       }
       
@@ -478,7 +463,7 @@ namespace pcl
           std::vector<const PointT*> buff;
           BOOST_FOREACH(const PointT* pt, p)
           {
-            if(pointWithinBB(*pt))
+            if(pointInBoundingBox(*pt))
             {
               buff.push_back(pt);
             }
@@ -517,7 +502,7 @@ namespace pcl
           //const PointT& pt = p[i];
           if (!skip_bb_check)
           {
-            if (!this->pointWithinBB (*p[i]))
+            if (!this->pointInBoundingBox (*p[i]))
             {
               //	std::cerr << "failed to place point!!!" << std::endl;
               continue;
@@ -525,8 +510,9 @@ namespace pcl
           }
 
           uint8_t box = 00;
+          Eigen::Vector3d mid_xyz = node_metadata_->getVoxelCenter ();
           //hash each coordinate to the appropriate octant
-          box = static_cast<uint8_t> (((p[i]->z >= mid_xyz_[2]) << 2) | ((p[i]->y >= mid_xyz_[1]) << 1) | ((p[i]->x >= mid_xyz_[0] )));
+          box = static_cast<uint8_t> (((p[i]->z >= mid_xyz[2]) << 2) | ((p[i]->y >= mid_xyz[1]) << 1) | ((p[i]->x >= mid_xyz[0] )));
           //3 bit, 8 octants
           c[box].push_back (p[i]);
         }
@@ -550,14 +536,13 @@ namespace pcl
 
 
     template<typename ContainerT, typename PointT> boost::uint64_t
-    octree_base_node<ContainerT, PointT>::addPointCloud ( const sensor_msgs::PointCloud2::Ptr& input_cloud, const bool skip_bb_check = false )
+    octree_base_node<ContainerT, PointT>::addPointCloud (const sensor_msgs::PointCloud2::Ptr& input_cloud, const bool skip_bb_check = false)
     {
       
-      if ( input_cloud->height*input_cloud->width == 0)
+      if (input_cloud->height*input_cloud->width == 0)
         return (0);
       
-
-      if( this->depth_ == root_->m_tree_->max_depth_)
+      if (this->depth_ == root_->m_tree_->max_depth_)
         return (addDataAtMaxDepth (input_cloud, true));
       
       if( num_child_ < 8 )
@@ -571,36 +556,12 @@ namespace pcl
         //these lists will be used to copy data to new point clouds and pass down recursively
         std::vector < std::vector<int> > indices;
         indices.resize (8);
+        
+        this->sortOctantIndices (input_cloud, indices, node_metadata_->getVoxelCenter ());
 
-        int x_idx = pcl::getFieldIndex (*input_cloud , std::string ("x") );
-        int y_idx = pcl::getFieldIndex (*input_cloud, std::string ("y") );
-        int z_idx = pcl::getFieldIndex (*input_cloud, std::string ("z") );
-
-        int x_offset = input_cloud->fields[x_idx].offset;
-        int y_offset = input_cloud->fields[y_idx].offset;
-        int z_offset = input_cloud->fields[z_idx].offset;
-      
-        for ( size_t point_idx =0; point_idx < input_cloud->data.size (); point_idx +=input_cloud->point_step )
+        for(int k=0; k<indices.size (); k++)
         {
-          PointXYZ local_pt;
-
-          local_pt.x = * (reinterpret_cast<float*>(&input_cloud->data[point_idx + x_offset]));
-          local_pt.y = * (reinterpret_cast<float*>(&input_cloud->data[point_idx + y_offset]));
-          local_pt.z = * (reinterpret_cast<float*>(&input_cloud->data[point_idx + z_offset]));
-
-          if( !this->pointWithinBB (local_pt) )
-          {
-            PCL_ERROR ( "[pcl::outofcore::octree_base_node::%s] Failed to place point ( %.2f,%.2f,%.2f) within bounding box\n", __FUNCTION__, local_pt.x, local_pt.y, local_pt.z );
-            continue;
-          }
-
-          //compute the box we are in
-          size_t box = 0;
-          box = ((local_pt.z >= mid_xyz_[2]) << 2) | ((local_pt.y >= mid_xyz_[1]) << 1) | ((local_pt.x >= mid_xyz_[0]) << 0);
-          assert ( box < 8 );
-              
-          //insert to the vector of indices
-          indices[box].push_back ( static_cast<int> ( point_idx / input_cloud->point_step ) );
+//          PCL_INFO ("[pcl::outofcore::octree_base_node::%s] Computed %d indices in octact %d\n", __FUNCTION__, indices[k].size (), k);
         }
 
         boost::uint64_t points_added = 0;
@@ -645,7 +606,7 @@ namespace pcl
       if (!skip_bb_check)
       {
         BOOST_FOREACH (const PointT& pt, p)
-        if(pointWithinBB(pt))
+        if(pointInBoundingBox(pt))
           sampleBuff.push_back(pt);
       }
       else
@@ -714,7 +675,7 @@ namespace pcl
 
         for (size_t i = 0; i < len; i++)
         {
-          if (pointWithinBB (p[i]))
+          if (pointInBoundingBox (p[i]))
           {
             buff.push_back (p[i]);
           }
@@ -765,7 +726,7 @@ namespace pcl
         const PointT& pt = p[i];
 
         if(!skip_bb_check)
-          if(!this->pointWithinBB(pt))
+          if(!this->pointInBoundingBox(pt))
             continue;
 
         subdividePoint(pt, c);
@@ -777,11 +738,13 @@ namespace pcl
     template<typename ContainerT, typename PointT> void
     octree_base_node<ContainerT, PointT>::subdividePoint (const PointT& pt, std::vector< AlignedPointTVector >& c)
     {
-      if((pt.z >= mid_xyz_[2]))
+      Eigen::Vector3d mid_xyz = node_metadata_->getVoxelCenter ();
+
+      if((pt.z >= mid_xyz[2]))
       {
-        if((pt.y >= mid_xyz_[1]))
+        if((pt.y >= mid_xyz[1]))
         {
-          if((pt.x >= mid_xyz_[0]))
+          if((pt.x >= mid_xyz[0]))
           {
             c[7].push_back(pt);
             return;
@@ -794,7 +757,7 @@ namespace pcl
         }
         else
         {
-          if((pt.x >= mid_xyz_[0]))
+          if((pt.x >= mid_xyz[0]))
           {
             c[5].push_back(pt);
             return;
@@ -808,9 +771,9 @@ namespace pcl
       }
       else
       {
-        if((pt.y >= mid_xyz_[1]))
+        if((pt.y >= mid_xyz[1]))
         {
-          if((pt.x >= mid_xyz_[0]))
+          if((pt.x >= mid_xyz[0]))
           {
             c[3].push_back(pt);
             return;
@@ -823,7 +786,7 @@ namespace pcl
         }
         else
         {
-          if((pt.x >= mid_xyz_[0]))
+          if((pt.x >= mid_xyz[0]))
           {
             c[1].push_back(pt);
             return;
@@ -890,7 +853,7 @@ namespace pcl
       extractor.setNegative (true);
       extractor.filter ( *remaining_points );
 
-      PCL_INFO ( "[pcl::outofcore::octree_base_node::%s] Random sampled: %lu of %lu\n", __FUNCTION__, downsampled_cloud->width * downsampled_cloud->height, input_cloud->width * input_cloud->height );
+//      PCL_INFO ( "[pcl::outofcore::octree_base_node::%s] Random sampled: %lu of %lu\n", __FUNCTION__, downsampled_cloud->width * downsampled_cloud->height, input_cloud->width * input_cloud->height );
       
       //insert subsampled data to the node's disk container payload
       if ( downsampled_cloud->width * downsampled_cloud->height != 0 )
@@ -900,42 +863,13 @@ namespace pcl
         points_added += downsampled_cloud->width*downsampled_cloud->height ;
       }
 
-      PCL_INFO ("[pcl::outofcore::octree_base_node::%s] Remaining points are %u\n",__FUNCTION__, remaining_points->width*remaining_points->height);
+//      PCL_INFO ("[pcl::outofcore::octree_base_node::%s] Remaining points are %u\n",__FUNCTION__, remaining_points->width*remaining_points->height);
 
       //subdivide remaining data by destination octant
       std::vector<std::vector<int> > indices;
       indices.resize (8);
-      //get the location of the fields in the PointCloud2 blob
-      int x_idx = pcl::getFieldIndex (*remaining_points , std::string ("x") );
-      int y_idx = pcl::getFieldIndex (*remaining_points, std::string ("y") );
-      int z_idx = pcl::getFieldIndex (*remaining_points, std::string ("z") );
-      //compute the offset
-      int x_offset = remaining_points->fields[x_idx].offset;
-      int y_offset = remaining_points->fields[y_idx].offset;
-      int z_offset = remaining_points->fields[z_idx].offset;
-      
-      //iterate over all of the points, compute the octant/child to which it belongs, and pass it down
-      for ( size_t point_idx = 0; point_idx < remaining_points->data.size (); point_idx += remaining_points->point_step )
-      {
-        PointT local_pt;
-        //copy the point data into our local point; does anyone know if you can assume that XYZ are contiguous and in order for PointCloud2?
-        local_pt.x = * (reinterpret_cast<float*>(&remaining_points->data[point_idx + x_offset]));
-        local_pt.y = * (reinterpret_cast<float*>(&remaining_points->data[point_idx + y_offset]));
-        local_pt.z = * (reinterpret_cast<float*>(&remaining_points->data[point_idx + z_offset]));
 
-        if( !this->pointWithinBB (local_pt) )
-        {
-//          PCL_ERROR ( "[pcl::outofcore::octree_base_node::%s] Failed to place point within bounding box\n", __FUNCTION__ );
-          continue;
-        }
-        size_t box = 0;
-        //hash each coordinate to the appropriate octant
-        box = ((local_pt.z >= mid_xyz_[2]) << 2) | ((local_pt.y >= mid_xyz_[1]) << 1) | ((local_pt.x >= mid_xyz_[0]) << 0);
-        assert (box < 8);
-        
-        //store the point into vector of indices
-        indices[box].push_back ( static_cast<int> (point_idx / remaining_points->point_step) );
-      }
+      this->sortOctantIndices (remaining_points, indices, node_metadata_->getVoxelCenter ());
 
       //pass each set of points to the appropriate child octant
       for(int i=0; i<8; i++)
@@ -953,7 +887,7 @@ namespace pcl
 
         //recursively add points and keep track of how many were successfully added to the tree
         points_added += children_[i]->addPointCloud_and_genLOD ( tmp_local_point_cloud );
-        PCL_INFO ("[pcl::outofcore::octree_base_node::%s] points_added: %lu, indices[i].size: %lu, tmp_local_point_cloud size: %lu\n", __FUNCTION__, points_added, indices[i].size (), tmp_local_point_cloud->width*tmp_local_point_cloud->height);
+//        PCL_INFO ("[pcl::outofcore::octree_base_node::%s] points_added: %lu, indices[i].size: %lu, tmp_local_point_cloud size: %lu\n", __FUNCTION__, points_added, indices[i].size (), tmp_local_point_cloud->width*tmp_local_point_cloud->height);
 
       }
       assert (points_added == input_cloud->width*input_cloud->height);
@@ -989,7 +923,7 @@ namespace pcl
         root_->m_tree_->incrementPointsInLOD (this->depth_, insertBuff.size());
         // Insert sampled point data
 //        payload_->insertRange ( &(insertBuff.front ()), insertBuff.size());
-        payload_->insertRange ( insertBuff );
+        payload_->insertRange (insertBuff);
         
       }
 
@@ -1030,16 +964,13 @@ namespace pcl
       if (children_[idx] || (num_child_ == 8))
         return;
 
-      const double zstart = min_[2];
-      const double ystart = min_[1];
-      const double xstart = min_[0];
+      Eigen::Vector3d start = node_metadata_->getBoundingBoxMin ();
 
-      const double zstep = (max_[2] - min_[2]) / double (2);
-      const double ystep = (max_[1] - min_[1]) / double (2);
-      const double xstep = (max_[0] - min_[0]) / double (2);
+      Eigen::Vector3d step = (node_metadata_->getBoundingBoxMax () - start)/static_cast<double>(2.0);
 
       Eigen::Vector3d childbb_min;
       Eigen::Vector3d childbb_max;
+
       int x, y, z;
       if (idx > 3)
       {
@@ -1054,16 +985,16 @@ namespace pcl
         z = 0;
       }
 
-      childbb_min[2] = zstart + double (z) * zstep;
-      childbb_max[2] = zstart + double (z + 1) * zstep;
+      childbb_min[2] = start[2] + static_cast<double> (z) * step[2];
+      childbb_max[2] = start[2] + static_cast<double> (z + 1) * step[2];
 
-      childbb_min[1] = ystart + double (y) * ystep;
-      childbb_max[1] = ystart + double (y + 1) * ystep;
+      childbb_min[1] = start[1] + static_cast<double> (y) * step[1];
+      childbb_max[1] = start[1] + static_cast<double> (y + 1) * step[1];
 
-      childbb_min[0] = xstart + double (x) * xstep;
-      childbb_max[0] = xstart + double (x + 1) * xstep;
+      childbb_min[0] = start[0] + static_cast<double> (x) * step[0];
+      childbb_max[0] = start[0] + static_cast<double> (x + 1) * step[0];
 
-      boost::filesystem::path childdir = thisdir_ / boost::filesystem::path (boost::lexical_cast<std::string> (idx));
+      boost::filesystem::path childdir = node_metadata_->getDirectoryPathname () / boost::filesystem::path (boost::lexical_cast<std::string> (idx));
       children_[idx] = new octree_base_node<ContainerT, PointT> (childbb_min, childbb_max, childdir.string ().c_str (), this);
 
       num_child_++;
@@ -1104,7 +1035,7 @@ namespace pcl
     }
 ////////////////////////////////////////////////////////////////////////////////
     template<typename ContainerT, typename PointT> bool
-    pointWithinBB (const Eigen::Vector3d& min_bb, const Eigen::Vector3d& max_bb, const Eigen::Vector3d& point)
+    pointInBoundingBox (const Eigen::Vector3d& min_bb, const Eigen::Vector3d& max_bb, const Eigen::Vector3d& point)
     {
       // won't <= lead to points being added to more than one voxel?
       if (((min_bb[0] <= point[0]) && (point[0] < max_bb[0])) &&
@@ -1121,12 +1052,17 @@ namespace pcl
 
 ////////////////////////////////////////////////////////////////////////////////
     template<typename ContainerT, typename PointT> inline bool
-    octree_base_node<ContainerT, PointT>::pointWithinBB (const PointT& p) const
+    octree_base_node<ContainerT, PointT>::pointInBoundingBox (const PointT& p) const
     {
+      Eigen::Vector3d min; 
+      Eigen::Vector3d max;
+
+      node_metadata_->getBoundingBox (min, max);
+      
       // won't <= lead to points being added to more than one voxel?
-      if (((min_[0] <= p.x) && (p.x < max_[0])) &&
-          ((min_[1] <= p.y) && (p.y < max_[1])) &&
-          ((min_[2] <= p.z) && (p.z < max_[2])))
+      if (((min[0] <= p.x) && (p.x < max[0])) &&
+          ((min[1] <= p.y) && (p.y < max[1])) &&
+          ((min[2] <= p.z) && (p.z < max[2])))
       {
         return (true);
     
@@ -1136,23 +1072,28 @@ namespace pcl
 
 ////////////////////////////////////////////////////////////////////////////////
     template<typename ContainerT, typename PointT> void
-    octree_base_node<ContainerT, PointT>::printBBox (const size_t query_depth) const
+    octree_base_node<ContainerT, PointT>::printBoundingBox (const size_t query_depth) const
     {
+      Eigen::Vector3d min;
+      Eigen::Vector3d max;
+      node_metadata_->getBoundingBox (min, max);
+
+      ///\todo move \ref printBoundingBox to node_metadata_ file
       if (this->depth_ < query_depth){
         for (size_t i = 0; i < this->depth_; i++)
           std::cout << "  ";
 
-        std::cout << "[" << min_[0] << ", " << min_[1] << ", " << min_[2] << "] - ";
-        std::cout << "[" << max_[0] << ", " << max_[1] << ", " << max_[2] << "] - ";
-        std::cout <<  "[" << max_[0] - min_[0] << ", " << max_[1] - min_[1];
-        std::cout << ", " << max_[2] - min_[2] << "]" << std::endl;
+        std::cout << "[" << min[0] << ", " << min[1] << ", " << min[2] << "] - ";
+        std::cout << "[" << max[0] << ", " << max[1] << ", " << max[2] << "] - ";
+        std::cout <<  "[" << max[0] - min[0] << ", " << max[1] - min[1];
+        std::cout << ", " << max[2] - min[2] << "]" << std::endl;
 
         if (num_child_ > 0)
         {
           for (size_t i = 0; i < 8; i++)
           {
             if (children_[i])
-              children_[i]->printBBox (query_depth);
+              children_[i]->printBoundingBox (query_depth);
           }
         }
       }
@@ -1175,9 +1116,10 @@ namespace pcl
       else
       {
         PointT voxel_center;
-        voxel_center.x = static_cast<float>(mid_xyz_[0]);
-        voxel_center.y = static_cast<float>(mid_xyz_[1]);
-        voxel_center.z = static_cast<float>(mid_xyz_[2]);
+        Eigen::Vector3d mid_xyz = node_metadata_->getVoxelCenter ();
+        voxel_center.x = static_cast<float>(mid_xyz[0]);
+        voxel_center.y = static_cast<float>(mid_xyz[1]);
+        voxel_center.z = static_cast<float>(mid_xyz[2]);
 
         voxel_centers.push_back(voxel_center);
       }
@@ -1199,11 +1141,7 @@ namespace pcl
       }
       else
       {
-        Eigen::Vector3d voxel_center;
-        voxel_center.x () = static_cast<double>(mid_xyz_[0]);
-        voxel_center.y () = static_cast<double>(mid_xyz_[1]);
-        voxel_center.z () = static_cast<double>(mid_xyz_[2]);
-	
+        Eigen::Vector3d voxel_center = node_metadata_->getVoxelCenter ();
         voxel_centers.push_back(voxel_center);
       }
     }
@@ -1218,7 +1156,7 @@ namespace pcl
       Eigen::Vector3d my_min = min_bb;
       Eigen::Vector3d my_max = max_bb;
       
-      if (intersectsWithBB (my_min, my_max))
+      if (intersectsWithBoundingBox (my_min, my_max))
       {
         if (this->depth_ < query_depth)
         {
@@ -1258,7 +1196,7 @@ namespace pcl
       PCL_DEBUG ("[pcl::outofcore::octree_base_node::%s] Starting points in destination blob: %ul\n", __FUNCTION__, startingSize );
 
       // If the queried bounding box has any intersection with this node's bounding box
-      if (intersectsWithBB (min_bb, max_bb))
+      if (intersectsWithBoundingBox (min_bb, max_bb))
       {
         // If we aren't at the max desired depth
         if (this->depth_ < query_depth)
@@ -1292,7 +1230,7 @@ namespace pcl
             return;
 
           //if this node's bounding box falls completely within the queried bounding box, keep all the points
-          if (withinBB (min_bb, max_bb))
+          if (inBoundingBox (min_bb, max_bb))
           {
             //concatenate all of what was just read into the main dst_blob
             //(is it safe to do in place?)
@@ -1380,7 +1318,7 @@ namespace pcl
     {
 
       //if the queried bounding box has any intersection with this node's bounding box
-      if (intersectsWithBB (min_bb, max_bb))
+      if (intersectsWithBoundingBox (min_bb, max_bb))
       {
         //if we aren't at the max desired depth
         if (this->depth_ < query_depth)
@@ -1407,7 +1345,7 @@ namespace pcl
         else
         {
           //if this node's bounding box falls completely within the queried bounding box
-          if (withinBB (min_bb, max_bb))
+          if (inBoundingBox (min_bb, max_bb))
           {
             //get all the points from the payload and return
             AlignedPointTVector payload_cache;
@@ -1430,7 +1368,7 @@ namespace pcl
             {
               const PointT& p = payload_cache[i];
               //if it falls within this bounding box
-              if (pointWithinBB (min_bb, max_bb, p))
+              if (pointInBoundingBox (min_bb, max_bb, p))
               {
                 //store it in the list
                 v.push_back (p);
@@ -1447,7 +1385,7 @@ namespace pcl
     octree_base_node<ContainerT, PointT>::queryBBIncludes_subsample (const Eigen::Vector3d& min_bb, const Eigen::Vector3d& max_bb, int query_depth, const double percent, AlignedPointTVector& dst)
     {
       //check if the queried bounding box has any intersection with this node's bounding box
-      if (intersectsWithBB (min_bb, max_bb))
+      if (intersectsWithBoundingBox (min_bb, max_bb))
       {
         //if we are not at the max depth for queried nodes
         if (this->depth_ < query_depth)
@@ -1473,7 +1411,7 @@ namespace pcl
         else
         {
           //if this node's bounding box falls completely within the queried bounding box
-          if (withinBB (min_bb, max_bb))
+          if (inBoundingBox (min_bb, max_bb))
           {
             //add a random sample of all the points
             AlignedPointTVector payload_cache;
@@ -1492,7 +1430,7 @@ namespace pcl
               for (size_t i = 0; i < payload_->size (); i++)
               {
                 const PointT& p = payload_cache[i];
-                if (pointWithinBB (min_bb, max_bb, p))
+                if (pointInBoundingBox (min_bb, max_bb, p))
                 {
                   payload_cache_within_region.push_back (p);
                 }
@@ -1518,20 +1456,18 @@ namespace pcl
 //dir is current level. we put this nodes files into it
     template<typename ContainerT, typename PointT>
     octree_base_node<ContainerT, PointT>::octree_base_node (const Eigen::Vector3d& bb_min, const Eigen::Vector3d& bb_max, const char* dir, octree_base_node<ContainerT,PointT>* super)
-      : thisdir_ ()
-      , thisnodeindex_ ()
-      , thisnodestorage_ ()
-      , m_tree_ ()
+      : m_tree_ ()
       , root_ ()
       , parent_ ()
       , depth_ ()
       , children_ ()
       , num_child_ ()
       , payload_ ()
-      , min_ ()
-      , max_ ()
-      , mid_xyz_ ()
+      , node_metadata_ ()
     {
+      node_metadata_ = boost::shared_ptr<OutofcoreOctreeNodeMetadata> (new OutofcoreOctreeNodeMetadata ());
+      node_metadata_->setOutofcoreVersion (3);
+      
       if (super == NULL)
       {
         PCL_ERROR ( "[pc::outofcore::octree_base_node] Super is null - don't make a root node this way!\n" );
@@ -1541,18 +1477,11 @@ namespace pcl
       this->parent_ = super;
       root_ = super->root_;
       depth_ = super->depth_ + 1;
-
       memset (children_, 0, 8 * sizeof(octree_base_node<ContainerT, PointT>*));
-
       num_child_ = 0;
-      
-      min_ = bb_min;
-      max_ = bb_max;
 
-      mid_xyz_[0] = (max_[0] + min_[0]) / double (2);
-      mid_xyz_[1] = (max_[1] + min_[1]) / double (2);
-      mid_xyz_[2] = (max_[2] + min_[2]) / double (2);
-      
+      node_metadata_->setBoundingBox (bb_min, bb_max);
+
       std::string uuid_idx;
       std::string uuid_cont;
       octree_disk_container<PointT>::getRandomUUIDString (uuid_idx);
@@ -1570,13 +1499,13 @@ namespace pcl
         node_container_name = uuid_cont + std::string ("_") + node_container_basename + node_container_extension;
       }
 
-      thisdir_ = boost::filesystem::path (dir);
-      thisnodeindex_ = thisdir_ / boost::filesystem::path (node_index_name);
-      thisnodestorage_ = thisdir_ / boost::filesystem::path (node_container_name);
+      node_metadata_->setDirectoryPathname (boost::filesystem::path (dir));
+      node_metadata_->setPCDFilename (node_metadata_->getDirectoryPathname () / boost::filesystem::path (node_container_name));
+      node_metadata_->setMetadataFilename ( node_metadata_->getDirectoryPathname ()/boost::filesystem::path (node_index_name));
 
-      boost::filesystem::create_directory (thisdir_);
+      boost::filesystem::create_directory (node_metadata_->getDirectoryPathname ());
 
-      payload_ = boost::shared_ptr<ContainerT> (new ContainerT (thisnodestorage_));
+      payload_ = boost::shared_ptr<ContainerT> (new ContainerT (node_metadata_->getPCDFilename ()));
       saveIdx (false);
     }
 ////////////////////////////////////////////////////////////////////////////////
@@ -1629,13 +1558,16 @@ namespace pcl
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> inline bool
-    octree_base_node<ContainerT, PointT>::intersectsWithBB (const Eigen::Vector3d& min_bb, const Eigen::Vector3d& max_bb) const
+    octree_base_node<ContainerT, PointT>::intersectsWithBoundingBox (const Eigen::Vector3d& min_bb, const Eigen::Vector3d& max_bb) const
     {
-      if (((min_[0] <= min_bb[0]) && (min_bb[0] <= max_[0])) || ((min_bb[0] <= min_[0]) && (min_[0] <= max_bb[0])))
+      Eigen::Vector3d min, max;
+      node_metadata_->getBoundingBox (min, max);
+      
+      if (((min[0] <= min_bb[0]) && (min_bb[0] <= max[0])) || ((min_bb[0] <= min[0]) && (min[0] <= max_bb[0])))
       {
-        if (((min_[1] <= min_bb[1]) && (min_bb[1] <= max_[1])) || ((min_bb[1] <= min_[1]) && (min_[1] <= max_bb[1])))
+        if (((min[1] <= min_bb[1]) && (min_bb[1] <= max[1])) || ((min_bb[1] <= min[1]) && (min[1] <= max_bb[1])))
         {
-          if (((min_[2] <= min_bb[2]) && (min_bb[2] <= max_[2])) || ((min_bb[2] <= min_[2]) && (min_[2] <= max_bb[2])))
+          if (((min[2] <= min_bb[2]) && (min_bb[2] <= max[2])) || ((min_bb[2] <= min[2]) && (min[2] <= max_bb[2])))
           {
             return (true);
           }
@@ -1647,14 +1579,17 @@ namespace pcl
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> inline bool
-    octree_base_node<ContainerT, PointT>::withinBB (const Eigen::Vector3d& min_bb, const Eigen::Vector3d& max_bb) const
+    octree_base_node<ContainerT, PointT>::inBoundingBox (const Eigen::Vector3d& min_bb, const Eigen::Vector3d& max_bb) const
     {
+      Eigen::Vector3d min, max;
 
-      if ((min_bb[0] <= min_[0]) && (max_[0] <= max_bb[0]))
+      node_metadata_->getBoundingBox (min, max);
+
+      if ((min_bb[0] <= min[0]) && (max[0] <= max_bb[0]))
       {
-        if ((min_bb[1] <= min_[1]) && (max_[1] <= max_bb[1]))
+        if ((min_bb[1] <= min[1]) && (max[1] <= max_bb[1]))
         {
-          if ((min_bb[2] <= min_[2]) && (max_[2] <= max_bb[2]))
+          if ((min_bb[2] <= min[2]) && (max[2] <= max_bb[2]))
           {
             return (true);
           }
@@ -1666,7 +1601,7 @@ namespace pcl
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> inline bool
-    octree_base_node<ContainerT, PointT>::pointWithinBB (const Eigen::Vector3d& min_bb, const Eigen::Vector3d& max_bb,
+    octree_base_node<ContainerT, PointT>::pointInBoundingBox (const Eigen::Vector3d& min_bb, const Eigen::Vector3d& max_bb,
                                                          const PointT& p)
     {
       //by convention, minimum boundary is included; maximum boundary is not
@@ -1688,10 +1623,14 @@ namespace pcl
     template<typename ContainerT, typename PointT> void
     octree_base_node<ContainerT, PointT>::writeVPythonVisual (std::ofstream& file)
     {
-      double l = max_[0] - min_[0];
-      double h = max_[1] - min_[1];
-      double w = max_[2] - min_[2];
-      file << "box( pos=(" << min_[0] << ", " << min_[1] << ", " << min_[2] << "), length=" << l << ", height=" << h
+      Eigen::Vector3d min;
+      Eigen::Vector3d max;
+      node_metadata_->getBoundingBox (min, max);
+
+      double l = max[0] - min[0];
+      double h = max[1] - min[1];
+      double w = max[2] - min[2];
+      file << "box( pos=(" << min[0] << ", " << min[1] << ", " << min[2] << "), length=" << l << ", height=" << h
            << ", width=" << w << " )\n";
 
       for (size_t i = 0; i < num_child_; i++)
@@ -1703,60 +1642,13 @@ namespace pcl
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> void
-    octree_base_node<ContainerT, PointT>::saveMetadataToFile (const boost::filesystem::path& path)
-    {
-      boost::shared_ptr<cJSON> idx (cJSON_CreateObject (), cJSON_Delete);
-
-      cJSON* version = cJSON_CreateNumber ( octree_base<ContainerT,PointT>::OUTOFCORE_VERSION_ );
-      double min_array[3];
-      double max_array[3];
-
-      for(int i=0; i<3; i++)
-      {
-        min_array[i] = min_[i];
-        max_array[i] = max_[i];
-      }
-      
-      cJSON* bb_min = cJSON_CreateDoubleArray (min_array, 3);
-      cJSON* bb_max = cJSON_CreateDoubleArray (max_array, 3);
-
-      cJSON* bin = cJSON_CreateString (thisnodestorage_.filename ().string ().c_str ());
-
-      cJSON_AddItemToObject (idx.get (), "version", version);
-      cJSON_AddItemToObject (idx.get (), "bb_min", bb_min);
-      cJSON_AddItemToObject (idx.get (), "bb_max", bb_max);
-      cJSON_AddItemToObject (idx.get (), "bin", bin);
-
-      char* idx_txt = cJSON_Print (idx.get ());
-
-      std::ofstream f (path.string ().c_str (), std::ios::out | std::ios::trunc);
-      f << idx_txt;
-      f.close ();
-
-      free (idx_txt);
-    }
-////////////////////////////////////////////////////////////////////////////////
-
-    template<typename ContainerT, typename PointT> void
     octree_base_node<ContainerT, PointT>::loadFromFile (const boost::filesystem::path& path, octree_base_node<ContainerT, PointT>* super)
     {
-      //load CJSON
-      std::vector<char> idx_input;
-      boost::uintmax_t len = boost::filesystem::file_size (path);
-      idx_input.resize (len + 1);
-
-      std::ifstream f (thisnodeindex_.string ().c_str (), std::ios::in);
-      f.read (&(idx_input.front ()), len);
-      idx_input.back () = '\0';
-
-      //Parse
-      boost::shared_ptr<cJSON> idx (cJSON_Parse (&(idx_input.front ())), cJSON_Delete);
-      cJSON* version = cJSON_GetObjectItem (idx.get (), "version");
-      cJSON* bb_min = cJSON_GetObjectItem (idx.get (), "bb_min");
-      cJSON* bb_max = cJSON_GetObjectItem (idx.get (), "bb_max");
-      cJSON* bin = cJSON_GetObjectItem (idx.get (), "bin");
+      node_metadata_->loadMetadataFromDisk (path);
 
       //Validate
+      /* //Ignore for now
+
       if (!((version) && (bb_min) && (bb_max) && (bin)))
       {
         PCL_ERROR ( "[pcl::outofcore::octree_base_node] index %s failed to parse! Doesn't contain all attributes\n", path.c_str () );
@@ -1774,17 +1666,8 @@ namespace pcl
       }
 
       //	version->valuedouble;
-      for (int i = 0; i < 3; i++)
-      {
-        min_[i] = cJSON_GetArrayItem (bb_min, i)->valuedouble;
-        max_[i] = cJSON_GetArrayItem (bb_max, i)->valuedouble;
-      }
-
-      thisnodestorage_ = thisdir_ / bin->valuestring;
-      this->payload_ = boost::shared_ptr<ContainerT> (new ContainerT (thisnodestorage_));
-
-      mid_xyz_ = (max_+min_)/static_cast<double>(2);
-
+      */
+      //this shouldn't be part of 'loadFromFile'
       this->parent_ = super;
       memset (children_, 0, 8 * sizeof(octree_base_node<ContainerT, PointT>*));
       this->num_child_ = 0;
@@ -1792,26 +1675,10 @@ namespace pcl
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> void
-    octree_base_node<ContainerT, PointT>::saveIdx (bool recursive)
-    {
-      saveMetadataToFile(thisnodeindex_);
-
-      if (recursive)
-      {
-        for (size_t i = 0; i < 8; i++)
-        {
-          if (children_[i])
-            children_[i]->saveIdx (true);
-        }
-      }
-    }
-////////////////////////////////////////////////////////////////////////////////
-
-    template<typename ContainerT, typename PointT> void
     octree_base_node<ContainerT, PointT>::convertToXYZRecursive ()
     {
-      std::string fname = boost::filesystem::basename (thisnodestorage_) + std::string (".dat.xyz");
-      boost::filesystem::path xyzfile = thisdir_ / fname;
+      std::string fname = boost::filesystem::basename (node_metadata_->getPCDFilename ()) + std::string (".dat.xyz");
+      boost::filesystem::path xyzfile = node_metadata_->getDirectoryPathname () / fname;
       payload_->convertToXYZ (xyzfile);
 
       if (hasUnloadedChildren ())
@@ -1932,7 +1799,7 @@ namespace pcl
       {
         std::cout << "test";
       }
-      if (root->intersectsWithBB (min, max))
+      if (root->intersectsWithBoundingBox (min, max))
       {
         if (query_depth == root->max_depth_)
         {
@@ -1962,7 +1829,7 @@ namespace pcl
     template<typename ContainerT, typename PointT> void
     queryBBIntersects_noload (octree_base_node<ContainerT, PointT>* current, const Eigen::Vector3d& min, const Eigen::Vector3d& max, const boost::uint32_t query_depth, std::list<std::string>& bin_name)
     {
-      if (current->intersectsWithBB (min, max))
+      if (current->intersectsWithBoundingBox (min, max))
       {
         if (current->depth_ == query_depth)
         {
@@ -1986,7 +1853,77 @@ namespace pcl
         }
       }
     }
-    
+////////////////////////////////////////////////////////////////////////////////
+
+    template<typename ContainerT, typename PointT> void
+    octree_base_node<ContainerT, PointT>::sortOctantIndices (const sensor_msgs::PointCloud2::Ptr &input_cloud, std::vector< std::vector<int> > &indices, const Eigen::Vector3d &mid_xyz)
+    {
+      if (indices.size () < 8)
+        indices.resize (8);
+
+      int x_idx = pcl::getFieldIndex (*input_cloud , std::string ("x") );
+      int y_idx = pcl::getFieldIndex (*input_cloud, std::string ("y") );
+      int z_idx = pcl::getFieldIndex (*input_cloud, std::string ("z") );
+
+      int x_offset = input_cloud->fields[x_idx].offset;
+      int y_offset = input_cloud->fields[y_idx].offset;
+      int z_offset = input_cloud->fields[z_idx].offset;
+      
+      for ( size_t point_idx =0; point_idx < input_cloud->data.size (); point_idx +=input_cloud->point_step )
+      {
+        PointXYZ local_pt;
+
+        local_pt.x = * (reinterpret_cast<float*>(&input_cloud->data[point_idx + x_offset]));
+        local_pt.y = * (reinterpret_cast<float*>(&input_cloud->data[point_idx + y_offset]));
+        local_pt.z = * (reinterpret_cast<float*>(&input_cloud->data[point_idx + z_offset]));
+
+        if( !this->pointInBoundingBox (local_pt) )
+        {
+          PCL_ERROR ( "[pcl::outofcore::octree_base_node::%s] Failed to place point ( %.2f,%.2f,%.2f) within bounding box\n", __FUNCTION__, local_pt.x, local_pt.y, local_pt.z );
+          continue;
+        }
+
+        //compute the box we are in
+        size_t box = 0;
+        box = ((local_pt.z >= mid_xyz[2]) << 2) | ((local_pt.y >= mid_xyz[1]) << 1) | ((local_pt.x >= mid_xyz[0]) << 0);
+        assert ( box < 8 );
+              
+        //insert to the vector of indices
+        indices[box].push_back ( static_cast<int> ( point_idx / input_cloud->point_step ) );
+      }
+    }
+
+////////////////////////////////////////////////////////////////////////////////
+    template<typename ContainerT, typename PointT> void
+    octree_base_node<ContainerT, PointT>::enlargeToCube (Eigen::Vector3d &bb_min, Eigen::Vector3d &bb_max)
+    {
+      Eigen::Vector3d diff = bb_max - bb_min;
+      
+      // X is largest, increase y/z in both +/- directions
+      if (diff[0] > diff[1] && diff[0] > diff[2])
+      {
+        bb_min[1] -= (diff[0] - diff[1])/2.0;
+        bb_max[1] += (diff[0] - diff[1])/2.0;
+        bb_min[2] -= (diff[0] - diff[2])/2.0;
+        bb_max[2] += (diff[0] - diff[2])/2.0;
+        // Y is largest, increase y/z in both +/- directions
+      }
+      else if (diff[1] > diff[0] && diff[1] > diff[2])
+      {
+        bb_min[0] -= (diff[1] - diff[0])/2.0;
+        bb_max[0] += (diff[1] - diff[0])/2.0;
+        bb_min[2] -= (diff[1] - diff[2])/2.0;
+        bb_max[2] += (diff[1] - diff[2])/2.0;
+        // Z is largest, increase y/z in both +/- directions
+      }
+      else if (diff[2] > diff[0] && diff[2] > diff[1])
+      {
+        bb_min[0] -= (diff[2] - diff[0])/2.0;
+        bb_max[0] += (diff[2] - diff[0])/2.0;
+        bb_min[1] -= (diff[2] - diff[1])/2.0;
+        bb_max[1] += (diff[2] - diff[1])/2.0;
+      }
+    }
 ////////////////////////////////////////////////////////////////////////////////
   }//namespace outofcore
 }//namespace pcl

@@ -344,7 +344,7 @@ outofcoreViewer (boost::filesystem::path tree_root, size_t depth, bool display_o
   octree_disk octree (tree_root, true);
 
   Eigen::Vector3d min, max;
-  octree.getBB (min, max);
+  octree.getBoundingBox (min, max);
   cout << " Bounds: (" << min[0] << ", " << min[1] << ", " << min[2] << ") - " << max[0] << ", " << max[1] << ", "
       << max[2] << ")" << endl;
 

@@ -53,13 +53,15 @@
 #include <pcl/outofcore/octree_base.h>
 #include <pcl/outofcore/octree_disk_container.h>
 
+#include <pcl/outofcore/outofcore_node_data.h>
+
 #include <sensor_msgs/PointCloud2.h>
 
 namespace pcl
 {
   namespace outofcore
   {
-// Forward Declarations
+    // Forward Declarations
     template<typename ContainerT, typename PointT>
     class octree_base_node;
 
@@ -140,12 +142,10 @@ namespace pcl
          * \param[out] maxCoord returns the maximum corner of the bounding box indexed by 0-->X, 1-->Y, 2-->Z 
          */
         inline void
-        getBB (Eigen::Vector3d &minCoord, Eigen::Vector3d &maxCoord) const
+        getBoundingBox (Eigen::Vector3d &min_bb, Eigen::Vector3d &max_bb) const
         {
-          minCoord = min_;
-          maxCoord = max_;
+          node_metadata_->getBoundingBox (min_bb, max_bb);
         }
-    
 
         //point extraction
         /** \brief Recursively add points that fall into the queried bounding box up to the \b query_depth 
@@ -187,48 +187,7 @@ namespace pcl
          * \param[in] query_depth The depth at which to print the size of the voxel/bounding boxes
          */
         void
-        printBBox (const size_t query_depth) const;
-
-        /** \brief Tests whether the input bounding box intersects with the current node's bounding box 
-         *  \param[in] min_bb The minimum corner of the input bounding box
-         *  \param[in] min_bb The maximum corner of the input bounding box
-         *  \return bool True if any portion of the bounding box intersects with this node's bounding box; false otherwise
-         */
-        inline bool
-        intersectsWithBB (const Eigen::Vector3d &min_bb, const Eigen::Vector3d &max_bb) const;
-
-        /** \brief Tests whether the input bounding box falls inclusively within this node's bounding box
-         *  \param[in] min_bb The minimum corner of the input bounding box
-         *  \param[in] max_bb The maximum corner of the input bounding box
-         *  \return bool True if the input bounding box falls inclusively within the boundaries of this node's bounding box
-         **/
-        inline bool
-        withinBB (const Eigen::Vector3d &min_bb, const Eigen::Vector3d &max_bb) const;
-
-        /** \brief Tests whether \ref point falls within the input bounding box
-         *  \param[in] min_bb The minimum corner of the input bounding box
-         *  \param[in] max_bb The maximum corner of the input bounding box
-         */
-        bool
-        pointWithinBB (const Eigen::Vector3d &min_bb, const Eigen::Vector3d &max_bb, const Eigen::Vector3d &point);
-
-        /** \brief Tests whether \ref p falls within the input bounding box
-         *  \param[in] min_bb The minimum corner of the input bounding box
-         *  \param[in] max_bb The maximum corner of the input bounding box
-         **/
-        static inline bool
-        pointWithinBB (const Eigen::Vector3d &min_bb, const Eigen::Vector3d &max_bb, const PointT &p);
-
-        /** \brief Tests whether \ref x, \ref y, and \ref z fall within the input bounding box
-         *  \param[in] min_bb The minimum corner of the input bounding box
-         *  \param[in] max_bb The maximum corner of the input bounding box
-         **/
-        static inline bool
-        pointWithinBB (const Eigen::Vector3d &min_bb, const Eigen::Vector3d &max_bb, const double x, const double y, const double z);
-
-        /** \brief Tests if specified point is within bounds of current node's bounding box */
-        inline bool
-        pointWithinBB (const PointT &p) const;
+        printBoundingBox (const size_t query_depth) const;
 
         /** \brief add point to this node if we are a leaf, or find the leaf below us that is supposed to take the point 
          *  \param[in] p vector of points to add to the leaf
@@ -260,6 +219,61 @@ namespace pcl
         boost::uint64_t
         addDataToLeaf_and_genLOD (const AlignedPointTVector &p, const bool skip_bb_check);
 
+        /** \brief Write a python visual script to @b file
+         * \param[in] file output file stream to write the python visual script
+         */
+        void
+        writeVPythonVisual (std::ofstream &file);
+
+      protected:
+        /** \brief Load from disk 
+         * If creating root, path is full name. If creating any other
+         * node, path is dir; throws exception if directory or metadata not found
+         *
+         * \param[in] Directory pathname
+         * \param[in] super
+         * \param[in] loadAll
+         * \throws PCLException if directory is missing
+         * \throws PCLException if node index is missing
+         */
+        octree_base_node (const boost::filesystem::path &directory_path, octree_base_node<ContainerT, PointT>* super, bool load_all);
+
+        /** \brief Create root node and directory
+         *
+         * Initializes the root node and performs initial filesystem checks for the octree; 
+         * throws OctreeException::OCT_BAD_PATH if root directory is an existing file
+         *
+         * \param bb_min triple of x,y,z minima for bounding box
+         * \param bb_max triple of x,y,z maxima for bounding box
+         * \param tree adress of the tree data structure that will hold this initial root node
+         * \param rootname Root directory for location of on-disk octree storage; if directory 
+         * doesn't exist, it is created; if "rootname" is an existing file, 
+         * 
+         * \throws PCLException if the specified path already exists
+         */
+        void init_root_node (const Eigen::Vector3d &bb_min, const Eigen::Vector3d &bb_max, octree_base<ContainerT, PointT> * const tree, const boost::filesystem::path &rootname);
+
+        /** \brief Save node's metadata to file
+         * \param[in] recursive: if false, save only this node's metadata to file; if true, recursively
+         * save all children's metadata to files as well
+         */
+        void
+        saveIdx (bool recursive);
+
+        /** \brief Randomly sample point data 
+         *  \todo This needs to be deprecated; random sampling has its own class
+         *  \todo Parameterize random sampling, uniform downsampling, etc...
+         */
+        void
+        randomSample (const AlignedPointTVector &p, AlignedPointTVector &insertBuff, const bool skip_bb_check);
+
+        /** \brief Subdivide points to pass to child nodes */
+        void
+        subdividePoints (const AlignedPointTVector &p, std::vector< AlignedPointTVector > &c, const bool skip_bb_check);
+        /** \brief Subdivide a single point into a specific child node */
+        void
+        subdividePoint (const PointT &pt, std::vector< AlignedPointTVector > &c);
+
         /** \brief Add data to the leaf when at max depth of tree. If
          *   skip_bb_check is true, adds to the node regardless of the
          *   bounding box it represents; otherwise only adds points that
@@ -289,54 +303,46 @@ namespace pcl
         boost::uint64_t
         addDataAtMaxDepth (const sensor_msgs::PointCloud2::Ptr input_cloud, const bool skip_bb_check);
         
-        /** \brief Randomly sample point data 
-         *  \todo This needs to be deprecated; random sampling has its own class
-         *  \todo Parameterize random sampling, uniform downsampling, etc...
+        /** \brief Tests whether the input bounding box intersects with the current node's bounding box 
+         *  \param[in] min_bb The minimum corner of the input bounding box
+         *  \param[in] min_bb The maximum corner of the input bounding box
+         *  \return bool True if any portion of the bounding box intersects with this node's bounding box; false otherwise
          */
-        void
-        randomSample (const AlignedPointTVector &p, AlignedPointTVector &insertBuff, const bool skip_bb_check);
+        inline bool
+        intersectsWithBoundingBox (const Eigen::Vector3d &min_bb, const Eigen::Vector3d &max_bb) const;
 
-        /** \brief Subdivide points to pass to child nodes */
-        void
-        subdividePoints (const AlignedPointTVector &p, std::vector< AlignedPointTVector > &c, const bool skip_bb_check);
+        /** \brief Tests whether the input bounding box falls inclusively within this node's bounding box
+         *  \param[in] min_bb The minimum corner of the input bounding box
+         *  \param[in] max_bb The maximum corner of the input bounding box
+         *  \return bool True if the input bounding box falls inclusively within the boundaries of this node's bounding box
+         **/
+        inline bool
+        inBoundingBox (const Eigen::Vector3d &min_bb, const Eigen::Vector3d &max_bb) const;
 
-        /** \brief Subdivide a single point into a specific child node */
-        void
-        subdividePoint (const PointT &pt, std::vector< AlignedPointTVector > &c);
-
-        /** \brief Write a python visual script to @b file
-         * \param[in] file output file stream to write the python visual script
+        /** \brief Tests whether \ref point falls within the input bounding box
+         *  \param[in] min_bb The minimum corner of the input bounding box
+         *  \param[in] max_bb The maximum corner of the input bounding box
          */
-        void
-        writeVPythonVisual (std::ofstream &file);
+        bool
+        pointInBoundingBox (const Eigen::Vector3d &min_bb, const Eigen::Vector3d &max_bb, const Eigen::Vector3d &point);
 
-      protected:
-        /** \brief Load from disk 
-         * If creating root, path is full name. If creating any other
-         * node, path is dir; throws exception if directory or metadata not found
-         *
-         * \param[in] path
-         * \param[in] super
-         * \param[in] loadAll
-         * \throws PCLException if directory is missing
-         * \throws PCLException if node index is missing
-         */
-        octree_base_node (const boost::filesystem::path &path, octree_base_node<ContainerT, PointT>* super, bool load_all);
+        /** \brief Tests whether \ref p falls within the input bounding box
+         *  \param[in] min_bb The minimum corner of the input bounding box
+         *  \param[in] max_bb The maximum corner of the input bounding box
+         **/
+        static inline bool
+        pointInBoundingBox (const Eigen::Vector3d &min_bb, const Eigen::Vector3d &max_bb, const PointT &p);
 
-        /** \brief Create root node and directory
-         *
-         * Initializes the root node and performs initial filesystem checks for the octree; 
-         * throws OctreeException::OCT_BAD_PATH if root directory is an existing file
-         *
-         * \param bb_min triple of x,y,z minima for bounding box
-         * \param bb_max triple of x,y,z maxima for bounding box
-         * \param tree adress of the tree data structure that will hold this initial root node
-         * \param rootname Root directory for location of on-disk octree storage; if directory 
-         * doesn't exist, it is created; if "rootname" is an existing file, 
-         * 
-         * \throws PCLException if the specified path already exists
-         */
-        void init_root_node (const Eigen::Vector3d &bb_min, const Eigen::Vector3d &bb_max, octree_base<ContainerT, PointT> * const tree, const boost::filesystem::path &rootname);
+        /** \brief Tests whether \ref x, \ref y, and \ref z fall within the input bounding box
+         *  \param[in] min_bb The minimum corner of the input bounding box
+         *  \param[in] max_bb The maximum corner of the input bounding box
+         **/
+        static inline bool
+        pointInBoundingBox (const Eigen::Vector3d &min_bb, const Eigen::Vector3d &max_bb, const double x, const double y, const double z);
+
+        /** \brief Tests if specified point is within bounds of current node's bounding box */
+        inline bool
+        pointInBoundingBox (const PointT &p) const;
 
         /** \brief Creates child node \ref idx
          *  \param[in] idx Index (0-7) of the child node
@@ -380,13 +386,6 @@ namespace pcl
          */
         void
         loadFromFile (const boost::filesystem::path &path, octree_base_node* super);
-
-        /** \brief Save node's metadata to file
-         * \param[in] recursive: if false, save only this node's metadata to file; if true, recursively
-         * save all children's metadata to files as well
-         */
-        void
-        saveIdx (bool recursive);
 
         /** \brief Recursively converts data files to ascii XZY files
          *  \note This will be deprecated soon
@@ -435,12 +434,18 @@ namespace pcl
         void
         getVoxelCentersRecursive (std::vector<Eigen::Vector3d, Eigen::aligned_allocator<Eigen::Vector3d> > &voxel_centers, const size_t query_depth);
 
-        /** \brief the dir containing the node's data and its children */
-        boost::filesystem::path thisdir_;
-        /** \brief the node's index file, node.idx */
-        boost::filesystem::path thisnodeindex_;
-        /** \brief the node's storage file, node.pcd */
-        boost::filesystem::path thisnodestorage_;
+        /** \brief Sorts the indices based on x,y,z fields and pushes the index into the proper octant's vector;
+         *  This could be overloaded with a parallelized implementation
+         */
+        void
+        sortOctantIndices (const sensor_msgs::PointCloud2::Ptr &input_cloud, std::vector< std::vector<int> > &indices, const Eigen::Vector3d &mid_xyz);
+
+        /** \brief Enlarges the shortest two sidelengths of the
+         *  bounding box to a cubic shape; operation is done in
+         *  place.
+        */
+        void
+        enlargeToCube (Eigen::Vector3d &bb_min, Eigen::Vector3d &bb_max);
 
         /** \brief The tree we belong to */
         octree_base<ContainerT, PointT>* m_tree_;//
@@ -460,13 +465,6 @@ namespace pcl
          * to use deques for this... */
         boost::shared_ptr<ContainerT> payload_;
 
-        /** \brief The X,Y,Z axes-aligned minima for the bounding box*/
-        Eigen::Vector3d min_;
-        /** \brief The X,Y,Z axes-aligned maxima for the bounding box*/
-        Eigen::Vector3d max_;
-        /** \brief The midpoints of the X, Y and Z sides of the bounding boxes */
-        Eigen::Vector3d mid_xyz_;
-
         /** \brief Random number generator mutex */
         static boost::mutex rng_mutex_;
 
@@ -478,6 +476,8 @@ namespace pcl
         const static boost::uint32_t rngseed = 0xAABBCCDD;
         /** \brief Extension for this class to find the pcd files on disk */
         const static std::string pcd_extension;
+
+        boost::shared_ptr<OutofcoreOctreeNodeMetadata> node_metadata_;
 
     };
   }//namespace outofcore

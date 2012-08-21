@@ -138,7 +138,6 @@ namespace pcl
       // Create root_ node
       root_ = new octree_base_node<ContainerT, PointT> (min, max, node_dim_meters, this, root_name);
       root_->m_tree_ = this;
-      root_->saveIdx (false);
 
       // max_depth_ is set when creating the root_ node
       lodPoints_.resize (max_depth_ + 1);
@@ -191,7 +190,6 @@ namespace pcl
 
       // Create root node
       root_ = new octree_base_node<ContainerT, PointT> (max_depth, min, max, this, root_name);
-      root_->saveIdx (false);
 
       // max_depth_ is set when creating the root_ node
       lodPoints_.resize (max_depth_ + 1);
@@ -206,7 +204,7 @@ namespace pcl
     octree_base<ContainerT, PointT>::~octree_base ()
     {
       root_->flushToDiskRecursive ();
-      root_->saveIdx (false);
+
       saveToFile ();
       delete root_;
     }
@@ -330,8 +328,8 @@ namespace pcl
     template<typename ContainerT, typename PointT> boost::uint64_t
     octree_base<ContainerT, PointT>::addPointCloud (sensor_msgs::PointCloud2::Ptr input_cloud, const bool skip_bb_check = false)
     {
-      uint64_t pt_added = this->root_->addPointCloud ( input_cloud, skip_bb_check ) ;
-      assert ( input_cloud->width*input_cloud->height == pt_added );
+      uint64_t pt_added = this->root_->addPointCloud (input_cloud, skip_bb_check) ;
+      assert (input_cloud->width*input_cloud->height == pt_added);
       return (pt_added);
     }
 

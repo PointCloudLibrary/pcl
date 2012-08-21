@@ -11,15 +11,17 @@ PCL_ADD_DOC(${SUBSYS_NAME})
 if(build)
     set(srcs
         src/cJSON.cpp
+	src/outofcore_node_data.cpp
         )
 
     set(incs
+	include/pcl/${SUBSYS_NAME}/outofcore_node_data.h
+        include/pcl/${SUBSYS_NAME}/cJSON.h
         include/pcl/${SUBSYS_NAME}/octree_base.h
         include/pcl/${SUBSYS_NAME}/octree_base_node.h
 	include/pcl/${SUBSYS_NAME}/octree_abstract_node_container.h
 	include/pcl/${SUBSYS_NAME}/octree_disk_container.h
 	include/pcl/${SUBSYS_NAME}/octree_ram_container.h
-        include/pcl/${SUBSYS_NAME}/cJSON.h
         )
 
     set(impl_incs

@@ -681,7 +681,7 @@ namespace pcl
       {
         typename pcl::PointCloud<PointT>::Ptr tmp_cloud (new pcl::PointCloud<PointT> () );
 
-        // If there's a pcd file with data          
+        // If there's a pcd file with data, read it in from disk for appending
         if (boost::filesystem::exists (*disk_storage_filename_))
         {
           pcl::PCDReader reader;

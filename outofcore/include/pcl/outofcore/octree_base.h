@@ -276,13 +276,14 @@ namespace pcl
         // Parameterization: getters and setters
         // --------------------------------------------------------------------------------
 
-        /** \brief Copy the overall BB to min max */
+        /** \brief Get the overall bounding box of the outofcore
+         *  octree; this is the same as the bounding box of the \ref root_ node */
         inline bool
-        getBB (Eigen::Vector3d& min, Eigen::Vector3d& max) const
+        getBoundingBox (Eigen::Vector3d& min, Eigen::Vector3d& max) const
         {
           if (root_ != NULL)
           {
-            root_->getBB (min, max);
+            root_->getBoundingBox (min, max);
             return true;
           }
           return false;
@@ -317,7 +318,8 @@ namespace pcl
           return max_depth_;
         }
 
-        /** \brief Assume fully balanced tree -- all nodes have same dim */
+        /** \brief Computes the expected voxel dimensions at the leaves (at \ref max_depth_)
+         */
         bool
         getBinDimension (double& x, double& y) const
         {
@@ -328,11 +330,13 @@ namespace pcl
             return false;
           }
 
-          double y_len = root_->max_[1] - root_->min_[1];
-          double x_len = root_->max_[0] - root_->min_[0];
+          Eigen::Vector3d min, max;
+          this->getBoundingBox (min, max);
 
-          y = y_len * pow (.5, double (max_depth_));
-          x = x_len * pow (.5, double (max_depth_));
+          Eigen::Vector3d diff = max-min;
+
+          y = diff[1] * pow (.5, double (max_depth_));
+          x = diff[0] * pow (.5, double (max_depth_));
 
           return true;
         }
@@ -344,7 +348,10 @@ namespace pcl
         double
         getVoxelSideLength (const boost::uint64_t depth) const
         {
-          return (root_->max_[0] - root_->min_[0]) * pow (.5, double (max_depth_)) * double (1 << (max_depth_ - depth));
+          Eigen::Vector3d min, max;
+          getBoundingBox (min, max);
+          
+          return (max[0] - min[0]) * pow (.5, double (max_depth_)) * double (1 << (max_depth_ - depth));
         }
 
         /** \brief Gets the smallest (assumed) cubic voxel side lengths. The smallest voxels are located at the max depth of the tree.
