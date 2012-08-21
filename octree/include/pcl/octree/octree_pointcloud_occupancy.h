@@ -104,7 +104,7 @@ namespace pcl
             genOctreeKeyforPoint (point_arg, key);
 
             // add point to octree at key
-            this->add (key, 0);
+            this->addData (key, 0);
         }
 
         /** \brief Set occupied voxels at all points from point cloud.
