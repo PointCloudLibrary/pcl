@@ -74,14 +74,14 @@ typedef octree_base<octree_disk_container<PointT> , PointT> octree_disk;
 const int OCTREE_DEPTH (0);
 const int OCTREE_RESOLUTION (1);
 
-PointCloud2Ptr
+PointCloud2::Ptr
 getCloudFromFile (boost::filesystem::path pcd_path)
 {
   print_info ("Reading: %s ", pcd_path.c_str ());
 
 
   // Read PCD file
-  PointCloud2Ptr cloud(new PointCloud2);
+  PointCloud2::Ptr cloud(new PointCloud2);
 
   if (io::loadPCDFile (pcd_path.string (), *cloud) == -1)
   {
@@ -105,7 +105,7 @@ outofcoreProcess (std::vector<boost::filesystem::path> pcd_paths, boost::filesys
   {
 
     // Get cloud
-    PointCloud2Ptr cloud = getCloudFromFile (pcd_paths[i]);
+    PointCloud2::Ptr cloud = getCloudFromFile (pcd_paths[i]);
     PointCloud<PointXYZ>::Ptr cloudXYZ (new PointCloud<PointXYZ>);
 
     fromROSMsg (*cloud, *cloudXYZ);
@@ -182,7 +182,7 @@ outofcoreProcess (std::vector<boost::filesystem::path> pcd_paths, boost::filesys
   for (size_t i = 0; i < pcd_paths.size (); i++)
   {
 
-    PointCloud2Ptr cloud = getCloudFromFile (pcd_paths[i]);
+    PointCloud2::Ptr cloud = getCloudFromFile (pcd_paths[i]);
 
     boost::uint64_t pts = 0;
     
