@@ -61,6 +61,9 @@ namespace pcl
     /** \brief PCL Visualizer main class.
       * \author Radu Bogdan Rusu
       * \ingroup visualization
+      * \note This class can NOT be used across multiple threads. Only call functions of objects of this class
+      * from the same thread that they were created in! Some methods, e.g. addPointCloud, will crash if called
+      * from other threads.
       */
     class PCL_EXPORTS PCLVisualizer
     {
