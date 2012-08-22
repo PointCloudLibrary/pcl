@@ -154,7 +154,13 @@
 #  include <vtkAxis.h>
 #endif
 #include <vtkSelection.h>
+
+#if VTK_MAJOR_VERSION==6 || (VTK_MAJOR_VERSION==5 && VTK_MINOR_VERSION>4)
+#include <vtkHardwareSelector.h>
+#else 
 #include <vtkVisibleCellSelector.h>
+#endif
+
 #include <vtkTriangle.h>
 #include <vtkWorldPointPicker.h>
 

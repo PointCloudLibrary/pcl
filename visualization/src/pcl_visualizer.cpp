@@ -47,7 +47,14 @@
 #include <vtkLoopSubdivisionFilter.h>
 #include <vtkTriangle.h>
 #include <vtkTransform.h>
+
+#if VTK_MAJOR_VERSION==6 || (VTK_MAJOR_VERSION==5 && VTK_MINOR_VERSION>4)
+#include <vtkHardwareSelector.h>
+#include <vtkSelectionNode.h>
+#else 
 #include <vtkVisibleCellSelector.h>
+#endif
+
 #include <vtkSelection.h>
 #include <vtkPointPicker.h>
 
@@ -3000,6 +3007,8 @@ pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
     /////////////////////////////////////
     // * Select visible cells (triangles)
     /////////////////////////////////////
+#if  (VTK_MAJOR_VERSION==5 && VTK_MINOR_VERSION<6)
+
     vtkSmartPointer<vtkVisibleCellSelector> selector = vtkSmartPointer<vtkVisibleCellSelector>::New ();
     vtkSmartPointer<vtkIdTypeArray> selection = vtkSmartPointer<vtkIdTypeArray>::New ();
 
@@ -3027,9 +3036,10 @@ pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
       triangle->GetPoints ()->GetPoint (2, p2);
       visible_area += vtkTriangle::TriangleArea (p0, p1, p2);
     }
-
+    
+#else 
     //THIS CAN BE USED WHEN VTK >= 5.4 IS REQUIRED... vtkVisibleCellSelector is deprecated from VTK5.4
-    /*vtkSmartPointer<vtkHardwareSelector> hardware_selector = vtkSmartPointer<vtkHardwareSelector>::New ();
+    vtkSmartPointer<vtkHardwareSelector> hardware_selector = vtkSmartPointer<vtkHardwareSelector>::New ();
      hardware_selector->ClearBuffers();
      vtkSmartPointer<vtkSelection> hdw_selection = vtkSmartPointer<vtkSelection>::New ();
      hardware_selector->SetRenderer (renderer);
@@ -3041,7 +3051,7 @@ pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
      double visible_area = 0;
      for (int sel_id = 0; sel_id < (ids->GetNumberOfTuples ()); sel_id++)
      {
-     int id_mesh = selection->GetValue (sel_id);
+     int id_mesh = ids->GetValue (sel_id);
      vtkCell * cell = polydata->GetCell (id_mesh);
      vtkTriangle* triangle = dynamic_cast<vtkTriangle*> (cell);
      double p0[3];
@@ -3052,7 +3062,8 @@ pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
      triangle->GetPoints ()->GetPoint (2, p2);
      area = vtkTriangle::TriangleArea (p0, p1, p2);
      visible_area += area;
-     }*/
+     }
+#endif
 
     enthropies.push_back (visible_area / totalArea);
 

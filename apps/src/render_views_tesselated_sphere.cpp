@@ -13,7 +13,12 @@
 #include <vtkLoopSubdivisionFilter.h>
 #include <vtkTriangle.h>
 #include <vtkTransform.h>
+#if VTK_MAJOR_VERSION==6 || (VTK_MAJOR_VERSION==5 && VTK_MINOR_VERSION>4)
+#include <vtkHardwareSelector.h>
+#include <vtkSelectionNode.h>
+#else 
 #include <vtkVisibleCellSelector.h>
+#endif
 #include <vtkSelection.h>
 #include <vtkCellArray.h>
 #include <vtkTransformFilter.h>
@@ -22,9 +27,6 @@
 #include <vtkRenderWindow.h>
 #include <vtkRenderer.h>
 #include <vtkPolyDataMapper.h>
-// Only available in older versions of VTK
-//#include <vtkHardwareSelector.h>
-//#include <vtkSelectionNode.h>
 #include <vtkPointPicker.h>
 
 void
@@ -375,6 +377,7 @@ pcl::apps::RenderViewsTesselatedSphere::generateViews() {
       /////////////////////////////////////
       // * Select visible cells (triangles)
       /////////////////////////////////////
+#if (VTK_MAJOR_VERSION==5 && VTK_MINOR_VERSION<6)
       vtkSmartPointer<vtkVisibleCellSelector> selector = vtkSmartPointer<vtkVisibleCellSelector>::New ();
       vtkSmartPointer<vtkIdTypeArray> selection = vtkSmartPointer<vtkIdTypeArray>::New ();
 
@@ -403,31 +406,32 @@ pcl::apps::RenderViewsTesselatedSphere::generateViews() {
         visible_area += vtkTriangle::TriangleArea (p0, p1, p2);
       }
 
-      //THIS CAN BE USED WHEN VTK >= 5.4 IS REQUIRED... vtkVisibleCellSelector is deprecated from VTK5.4
-      /*vtkSmartPointer<vtkHardwareSelector> hardware_selector = vtkSmartPointer<vtkHardwareSelector>::New ();
-       hardware_selector->ClearBuffers();
-       vtkSmartPointer<vtkSelection> hdw_selection = vtkSmartPointer<vtkSelection>::New ();
-       hardware_selector->SetRenderer (renderer);
-       hardware_selector->SetArea (0, 0, xres - 1, yres - 1);
-       hardware_selector->SetFieldAssociation(vtkDataObject::FIELD_ASSOCIATION_CELLS);
-       hdw_selection = hardware_selector->Select ();
-       vtkSmartPointer<vtkIdTypeArray> ids = vtkSmartPointer<vtkIdTypeArray>::New ();
-       ids = vtkIdTypeArray::SafeDownCast(hdw_selection->GetNode(0)->GetSelectionList());
-       double visible_area = 0;
-       for (int sel_id = 0; sel_id < (ids->GetNumberOfTuples ()); sel_id++)
-       {
-       int id_mesh = selection->GetValue (sel_id);
-       vtkCell * cell = polydata->GetCell (id_mesh);
-       vtkTriangle* triangle = dynamic_cast<vtkTriangle*> (cell);
-       double p0[3];
-       double p1[3];
-       double p2[3];
-       triangle->GetPoints ()->GetPoint (0, p0);
-       triangle->GetPoints ()->GetPoint (1, p1);
-       triangle->GetPoints ()->GetPoint (2, p2);
-       area = vtkTriangle::TriangleArea (p0, p1, p2);
-       visible_area += area;
-       }*/
+#else 
+      vtkSmartPointer<vtkHardwareSelector> hardware_selector = vtkSmartPointer<vtkHardwareSelector>::New ();
+      hardware_selector->ClearBuffers();
+      vtkSmartPointer<vtkSelection> hdw_selection = vtkSmartPointer<vtkSelection>::New ();
+      hardware_selector->SetRenderer (renderer);
+      hardware_selector->SetArea (0, 0, resolution_ - 1, resolution_ - 1);
+      hardware_selector->SetFieldAssociation(vtkDataObject::FIELD_ASSOCIATION_CELLS);
+      hdw_selection = hardware_selector->Select ();
+      vtkSmartPointer<vtkIdTypeArray> ids = vtkSmartPointer<vtkIdTypeArray>::New ();
+      ids = vtkIdTypeArray::SafeDownCast(hdw_selection->GetNode(0)->GetSelectionList());
+      double visible_area = 0;
+      for (int sel_id = 0; sel_id < (ids->GetNumberOfTuples ()); sel_id++)
+      {
+        int id_mesh = ids->GetValue (sel_id);
+        vtkCell * cell = polydata->GetCell (id_mesh);
+        vtkTriangle* triangle = dynamic_cast<vtkTriangle*> (cell);
+        double p0[3];
+        double p1[3];
+        double p2[3];
+        triangle->GetPoints ()->GetPoint (0, p0);
+        triangle->GetPoints ()->GetPoint (1, p1);
+        triangle->GetPoints ()->GetPoint (2, p2);
+        area = vtkTriangle::TriangleArea (p0, p1, p2);
+        visible_area += area;
+      }
+#endif
 
       entropies_.push_back (float (visible_area / totalArea));
     }
