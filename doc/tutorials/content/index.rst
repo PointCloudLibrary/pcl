@@ -777,6 +777,51 @@ Segmentation
      .. |se_3| image:: images/cluster_extraction.jpg
                :height: 100px
 
+  * :ref:`region_growing_segmentation`
+
+     ======  ======
+     |se_4|  Title: **Region Growing Segmentation**
+
+             Author: *Sergey Ushakov*
+
+             Compatibility: > PCL 1.6
+
+             In this tutorial we will learn how to use region growing segmentation algorithm.
+     ======  ======
+
+     .. |se_4| image:: images/region_growing_segmentation.jpg
+               :height: 100px
+
+  * :ref:`region_growing_rgb_segmentation`
+
+     ======  ======
+     |se_5|  Title: **Colore-based Region Growing Segmentation**
+
+             Author: *Sergey Ushakov*
+
+             Compatibility: > PCL 1.6
+
+             In this tutorial we will learn how to use color-based region growing segmentation algorithm.
+     ======  ======
+
+     .. |se_5| image:: images/region_growing_rgb_segmentation.jpg
+               :height: 100px
+
+  * :ref:`min_cut_segmentation`
+
+     ======  ======
+     |se_6|  Title: **Min-Cut Based Segmentation**
+
+             Author: *Sergey Ushakov*
+
+             Compatibility: > PCL 1.6
+
+             In this tutorial we will learn how to use min-cut based segmentation algorithm.
+     ======  ======
+
+     .. |se_6| image:: images/min_cut_segmentation.jpg
+               :height: 100px
+
 .. _surface_tutorial:
 
 Surface
