@@ -39,7 +39,7 @@ foreach(subdir
           range_image_border_extraction
           range_image_creation
           range_image_visualization
-          region_growing_rgb_segmentation
+#          region_growing_rgb_segmentation
           region_growing_segmentation
           registration_api
           remove_outliers
