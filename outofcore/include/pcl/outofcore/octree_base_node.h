@@ -205,7 +205,7 @@ namespace pcl
          * \param[in] skip_bb_check (default = false)
          */
         boost::uint64_t
-        addPointCloud (const sensor_msgs::PointCloud2::Ptr &input_cloud, const bool skip_bb_check);
+        addPointCloud (const sensor_msgs::PointCloud2::Ptr &input_cloud, const bool skip_bb_check = false);
 
         /** \brief Add a single PointCloud2 into the octree and build the subsampled LOD during construction */
         boost::uint64_t
@@ -286,7 +286,7 @@ namespace pcl
          *  \return number of points successfully added
          */
         boost::uint64_t
-        addDataAtMaxDepth (const AlignedPointTVector &p, const bool skip_bb_check);
+        addDataAtMaxDepth (const AlignedPointTVector &p, const bool skip_bb_check = true);
 
         /** \brief Add data to the leaf when at max depth of tree. If
          *   \ref skip_bb_check is true, adds to the node regardless of the
@@ -301,7 +301,7 @@ namespace pcl
          *  \return number of points successfully added
          */
         boost::uint64_t
-        addDataAtMaxDepth (const sensor_msgs::PointCloud2::Ptr input_cloud, const bool skip_bb_check);
+        addDataAtMaxDepth (const sensor_msgs::PointCloud2::Ptr input_cloud, const bool skip_bb_check = true);
         
         /** \brief Tests whether the input bounding box intersects with the current node's bounding box 
          *  \param[in] min_bb The minimum corner of the input bounding box

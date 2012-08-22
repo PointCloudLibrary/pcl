@@ -532,7 +532,7 @@ namespace pcl
 
 
     template<typename ContainerT, typename PointT> boost::uint64_t
-    octree_base_node<ContainerT, PointT>::addPointCloud (const sensor_msgs::PointCloud2::Ptr& input_cloud, const bool skip_bb_check = false)
+    octree_base_node<ContainerT, PointT>::addPointCloud (const sensor_msgs::PointCloud2::Ptr& input_cloud, const bool skip_bb_check)
     {
       
       if (input_cloud->height*input_cloud->width == 0)
@@ -580,7 +580,7 @@ namespace pcl
           pcl::copyPointCloud ( *input_cloud, indices[i], *dst_cloud ) ;
           
           //recursively add the new cloud to the data
-          points_added += children_[i]->addPointCloud ( dst_cloud );
+          points_added += children_[i]->addPointCloud (dst_cloud, false);
           indices[i].clear ();
         }
         
@@ -688,7 +688,7 @@ namespace pcl
     }
 ////////////////////////////////////////////////////////////////////////////////
     template<typename ContainerT, typename PointT> boost::uint64_t
-    octree_base_node<ContainerT, PointT>::addDataAtMaxDepth ( const sensor_msgs::PointCloud2::Ptr input_cloud, const bool skip_bb_check = true )
+    octree_base_node<ContainerT, PointT>::addDataAtMaxDepth ( const sensor_msgs::PointCloud2::Ptr input_cloud, const bool skip_bb_check)
     {
       //this assumes data is already in the correct bin
       if(skip_bb_check == true)
@@ -753,7 +753,7 @@ namespace pcl
       
       if ( this->depth_ == root_->m_tree_->max_depth_ || input_cloud->width*input_cloud->height < 8 )
       {
-        uint64_t points_added = addDataAtMaxDepth (input_cloud);
+        uint64_t points_added = addDataAtMaxDepth (input_cloud, true);
         assert (points_added > 0);
         return (points_added);        
       }
