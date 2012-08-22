@@ -195,7 +195,7 @@ outofcoreProcess (std::vector<boost::filesystem::path> pcd_paths, boost::filesys
     }
     else
     {
-      pts = outofcore_octree->addPointCloud (cloud);
+      pts = outofcore_octree->addPointCloud (cloud, false);
     }
 
     print_info ("Successfully added %lu points\n", pts);

@@ -728,7 +728,7 @@ TEST_F (OutofcoreTest, PointCloud2_Constructors)
   octree_disk octreeA (depth, min, max, filename_otreeA, "ECEF");
   octree_disk octreeB (depth, min, max, filename_otreeB, "ECEF");
 
-  EXPECT_EQ (octreeA.addPointCloud (point_cloud) , point_cloud->width*point_cloud->height) << "Numer of points returned by constructor indicates some points were not properly inserted to the outofcore cloud\n";
+  EXPECT_EQ (octreeA.addPointCloud (point_cloud, false) , point_cloud->width*point_cloud->height) << "Number of points returned by constructor indicates some points were not properly inserted to the outofcore cloud\n";
 
   EXPECT_EQ (octreeB.addPointCloud_and_genLOD (point_cloud), point_cloud->width*point_cloud->height) << "Number of points inserted when generating LOD does not match the size of the point cloud\n";
 }
