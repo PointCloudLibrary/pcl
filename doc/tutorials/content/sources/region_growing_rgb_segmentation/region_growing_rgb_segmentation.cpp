@@ -21,7 +21,7 @@ main (int argc, char** argv)
   }
 
   pcl::IndicesPtr indices (new std::vector <int>);
-  pcl::PassThrough<pcl::PointXYZ> pass;
+  pcl::PassThrough<pcl::PointXYZRGB> pass;
   pass.setInputCloud (cloud);
   pass.setFilterFieldName ("z");
   pass.setFilterLimits (0.0, 1.0);
@@ -41,9 +41,10 @@ main (int argc, char** argv)
 
   pcl::PointCloud <pcl::PointXYZRGB>::Ptr colored_cloud = reg.getColoredCloud ();
   pcl::visualization::CloudViewer viewer ("Cluster viewer");
-  viewer.showCloud(colored_cloud);
+  viewer.showCloud (colored_cloud);
   while (!viewer.wasStopped ())
   {
+    boost::this_thread::sleep (boost::posix_time::microseconds (100));
   }
 
   return (0);
