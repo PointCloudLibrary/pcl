@@ -48,10 +48,6 @@
 #include <string>
 #include <exception>
 
-// Boost
-#include <boost/thread.hpp>
-#include <boost/filesystem.hpp>
-
 // PCL (Urban Robotics)
 #include <pcl/outofcore/octree_base_node.h>
 

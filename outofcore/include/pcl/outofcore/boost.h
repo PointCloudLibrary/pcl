@@ -3,7 +3,6 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2012, Willow Garage, Inc.
- *  Copyright (c) 2012, Urban Robotics, Inc.
  *
  *  All rights reserved.
  *
@@ -33,21 +32,27 @@
  *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
- *  
+ *
  *  $Id$
  */
 
-#ifndef OUTOFCORE_H_
-#define OUTOFCORE_H_
+#ifndef PCL_OUTOFCORE_BOOST_H_
+#define PCL_OUTOFCORE_BOOST_H_
 
-#include <pcl/outofcore/octree_base.h>
-#include <pcl/outofcore/octree_base_node.h>
+#if defined __GNUC__
+#  pragma GCC system_header 
+#endif
 
-#include <pcl/outofcore/octree_abstract_node_container.h>
+#include <boost/filesystem.hpp>
+#include <boost/thread.hpp>
+#include <boost/random/uniform_int.hpp>
+#include <boost/uuid/uuid.hpp>
+#include <boost/uuid/uuid_generators.hpp>
+#include <boost/uuid/uuid_io.hpp>
+#include <boost/random/mersenne_twister.hpp>
+#include <boost/random/uniform_int.hpp>
+#include <boost/random/bernoulli_distribution.hpp>
+#include <boost/foreach.hpp>
+#include <boost/lexical_cast.hpp>
 
-#include <pcl/outofcore/octree_disk_container.h>
-#include <pcl/outofcore/octree_ram_container.h>
-
-#include <pcl/outofcore/outofcore_node_data.h>
-
-#endif // OUTOFCORE_H_
+#endif //PCL_OUTOFCORE_BOOST_H_

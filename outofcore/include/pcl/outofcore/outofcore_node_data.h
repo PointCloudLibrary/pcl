@@ -40,8 +40,7 @@
 #ifndef PCL_OUTOFCORE_OCTREE_NODE_METADATA_H_
 #define PCL_OUTOFCORE_OCTREE_NODE_METADATA_H_
 
-#include <boost/filesystem.hpp>
-
+#include <pcl/outofcore/boost.h>
 #include <pcl/outofcore/cJSON.h>
 
 #include <pcl/common/eigen.h>

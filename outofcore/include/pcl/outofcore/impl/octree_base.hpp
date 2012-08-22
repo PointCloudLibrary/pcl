@@ -40,7 +40,7 @@
 #ifndef PCL_OUTOFCORE_OCTREE_BASE_IMPL_H_
 #define PCL_OUTOFCORE_OCTREE_BASE_IMPL_H_
 
-// PCL (Urban Robotics)
+
 #include <pcl/outofcore/octree_base.h>
 
 // JSON
@@ -52,12 +52,6 @@
 #include <sstream>
 #include <string>
 #include <exception>
-
-// Boost
-#include <boost/thread.hpp>
-#include <boost/filesystem.hpp>
-#include <boost/foreach.hpp>
-#include <boost/lexical_cast.hpp>
 
 namespace pcl
 {

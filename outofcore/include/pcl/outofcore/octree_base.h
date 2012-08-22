@@ -40,9 +40,7 @@
 #ifndef PCL_OUTOFCORE_OCTREE_BASE_H_
 #define PCL_OUTOFCORE_OCTREE_BASE_H_
 
-// Boost
-#include <boost/filesystem.hpp>
-#include <boost/thread.hpp>
+#include <pcl/outofcore/boost.h>
 
 // PCL (Urban Robotics)
 #include <pcl/outofcore/octree_base_node.h>

@@ -43,9 +43,6 @@
 // C++
 #include <sstream>
 
-// Boost
-#include <boost/random/uniform_int.hpp>
-
 // PCL (Urban Robotics)
 #include <pcl/outofcore/octree_ram_container.h>
 

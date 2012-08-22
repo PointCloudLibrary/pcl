@@ -15,6 +15,7 @@ if(build)
         )
 
     set(incs
+	include/pcl/${SUBSYS_NAME}/boost.h
 	include/pcl/${SUBSYS_NAME}/outofcore_node_data.h
         include/pcl/${SUBSYS_NAME}/cJSON.h
         include/pcl/${SUBSYS_NAME}/octree_base.h

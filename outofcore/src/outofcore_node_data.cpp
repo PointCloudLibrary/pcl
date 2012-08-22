@@ -161,21 +161,24 @@ namespace pcl
     
 ////////////////////////////////////////////////////////////////////////////////
 
-    void OutofcoreOctreeNodeMetadata::setOutofcoreVersion (const int version)
+    void 
+    OutofcoreOctreeNodeMetadata::setOutofcoreVersion (const int version)
     {
       outofcore_version_ = version;
     }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-    boost::filesystem::path OutofcoreOctreeNodeMetadata::getMetadataFilename () const
+    boost::filesystem::path 
+    OutofcoreOctreeNodeMetadata::getMetadataFilename () const
     {
       return (metadata_filename_);
     }
     
 ////////////////////////////////////////////////////////////////////////////////
 
-    void OutofcoreOctreeNodeMetadata::setMetadataFilename (const boost::filesystem::path path_to_metadata)
+    void 
+    OutofcoreOctreeNodeMetadata::setMetadataFilename (const boost::filesystem::path path_to_metadata)
     {
       directory_ = path_to_metadata.parent_path ();
       metadata_filename_ = path_to_metadata;
@@ -183,14 +186,16 @@ namespace pcl
 
 ////////////////////////////////////////////////////////////////////////////////
 
-    Eigen::Vector3d OutofcoreOctreeNodeMetadata::getVoxelCenter () const
+    Eigen::Vector3d 
+    OutofcoreOctreeNodeMetadata::getVoxelCenter () const
     {
       return (midpoint_xyz_);
     }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-    void OutofcoreOctreeNodeMetadata::serializeMetadataToDisk ()
+    void 
+    OutofcoreOctreeNodeMetadata::serializeMetadataToDisk ()
     {
       boost::shared_ptr<cJSON> idx (cJSON_CreateObject (), cJSON_Delete);
 
@@ -227,7 +232,8 @@ namespace pcl
 
 ////////////////////////////////////////////////////////////////////////////////
 
-    int OutofcoreOctreeNodeMetadata::loadMetadataFromDisk ()
+    int 
+    OutofcoreOctreeNodeMetadata::loadMetadataFromDisk ()
     {
       if(directory_ != metadata_filename_.parent_path ())
       {
@@ -279,7 +285,8 @@ namespace pcl
     
 ////////////////////////////////////////////////////////////////////////////////
 
-    int OutofcoreOctreeNodeMetadata::loadMetadataFromDisk (const boost::filesystem::path path_to_metadata)
+    int 
+    OutofcoreOctreeNodeMetadata::loadMetadataFromDisk (const boost::filesystem::path path_to_metadata)
     {
       this->setMetadataFilename (path_to_metadata);
       this->setDirectoryPathname (path_to_metadata.parent_path ());
@@ -288,7 +295,8 @@ namespace pcl
 
 ////////////////////////////////////////////////////////////////////////////////
 
-    void OutofcoreOctreeNodeMetadata::updateVoxelCenter ()
+    void 
+    OutofcoreOctreeNodeMetadata::updateVoxelCenter ()
     {
       midpoint_xyz_ = (this->max_bb_ + this->min_bb_)/static_cast<double>(2.0);
     }
