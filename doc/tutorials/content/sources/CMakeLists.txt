@@ -18,6 +18,7 @@ foreach(subdir
           greedy_projection
           iterative_closest_point
           kdtree_search
+          min_cut_segmentation
           #narf_descriptor_visualization
           narf_feature_extraction
           narf_keypoint_extraction
@@ -38,6 +39,8 @@ foreach(subdir
           range_image_border_extraction
           range_image_creation
           range_image_visualization
+          region_growing_rgb_segmentation
+          region_growing_segmentation
           registration_api
           remove_outliers
           resampling
