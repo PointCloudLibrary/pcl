@@ -800,7 +800,7 @@ TEST_F (OutofcoreTest, PointCloud2_Query)
   octree_disk octreeA (depth, min, max, filename_otreeA, "ECEF");
   octree_disk octreeB (depth, min, max, filename_otreeB, "ECEF");
 
-  uint64_t points_added = octreeA.addPointCloud (static_cast<sensor_msgs::PointCloud2::Ptr> (dst_blob), false);
+  uint64_t points_added = octreeA.addPointCloud (dst_blob, false);
   uint64_t LOD_points_added = octreeB.addPointCloud_and_genLOD (dst_blob);
 
   ASSERT_EQ (points_added, dst_blob->width*dst_blob->height) << "Number of points returned by addPointCloud does not match the number of poitns in the input point cloud\n";

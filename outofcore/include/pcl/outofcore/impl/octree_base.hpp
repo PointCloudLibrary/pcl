@@ -326,7 +326,7 @@ namespace pcl
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> boost::uint64_t
-    octree_base<ContainerT, PointT>::addPointCloud (sensor_msgs::PointCloud2::Ptr input_cloud, const bool skip_bb_check = false)
+    octree_base<ContainerT, PointT>::addPointCloud (sensor_msgs::PointCloud2::Ptr &input_cloud, const bool skip_bb_check = false)
     {
       uint64_t pt_added = this->root_->addPointCloud (input_cloud, skip_bb_check) ;
       assert (input_cloud->width*input_cloud->height == pt_added);
@@ -347,7 +347,7 @@ namespace pcl
 
 ////////////////////////////////////////////////////////////////////////////////
     template<typename ContainerT, typename PointT> boost::uint64_t
-    octree_base<ContainerT, PointT>::addPointCloud_and_genLOD (sensor_msgs::PointCloud2::Ptr input_cloud)
+    octree_base<ContainerT, PointT>::addPointCloud_and_genLOD (sensor_msgs::PointCloud2::Ptr &input_cloud)
     {
       // Lock the tree while writing
       boost::unique_lock < boost::shared_mutex > lock (read_write_mutex_);
