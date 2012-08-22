@@ -56,7 +56,7 @@ pcl::cloud_composer::TransformClouds::performTemplatedAction (QList <const Cloud
       qWarning () << "Attempted to cast to template type which does not exist in this item! (input list)";
       return output;
     }
-    if (!transform_map_.contains (input_item->getId ()))
+    if (!transform_map_.contains ("AllSelectedClouds") && !transform_map_.contains (input_item->getId ()))
     {
       qCritical () << "No transform found for id "<<input_item->getId ()<<" in TransformClouds::performTemplatedAction";
       return output;
@@ -70,7 +70,10 @@ pcl::cloud_composer::TransformClouds::performTemplatedAction (QList <const Cloud
     typename PointCloud <PointT>::Ptr input_cloud = variant.value <typename PointCloud<PointT>::Ptr> ();
     
     Eigen::Matrix4f transform;
-    pcl::visualization::PCLVisualizer::convertToEigenMatrix(transform_map_.value (input_item->getId ()), transform);
+    if (transform_map_.contains ("AllSelectedClouds"))
+      pcl::visualization::PCLVisualizer::convertToEigenMatrix (transform_map_.value ("AllSelectedClouds"), transform);
+    else
+      pcl::visualization::PCLVisualizer::convertToEigenMatrix (transform_map_.value (input_item->getId ()), transform);
     
     typename PointCloud<PointT>::Ptr transformed_cloud = boost::make_shared<PointCloud<PointT> > ();
     

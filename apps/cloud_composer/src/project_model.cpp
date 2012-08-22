@@ -134,7 +134,8 @@ pcl::cloud_composer::ProjectModel::manipulateClouds (boost::shared_ptr<Manipulat
   QMap <QString, vtkSmartPointer<vtkMatrix4x4> > transform_map = manip_event->getEndMap ();
   QList <QString> ids = transform_map.keys ();
   ConstItemList input_data;
-  // Find the cloud_items which match the manipulated actors
+  
+  TransformClouds* transform_tool = new TransformClouds (transform_map);
   foreach (CloudItem* cloud_item, project_clouds)
   {
     if (ids.contains (cloud_item->getId ()))
@@ -143,13 +144,13 @@ pcl::cloud_composer::ProjectModel::manipulateClouds (boost::shared_ptr<Manipulat
       input_data.append (cloud_item);
     }
   }
-
-  TransformClouds* transform_tool = new TransformClouds (transform_map);
   
   //Move the tool object to the work queue thread
   transform_tool->moveToThread (work_thread_);
   //Emit signal which tells work queue to enqueue this new action
   emit enqueueNewAction (transform_tool, input_data);
+  
+
 }
 
 void

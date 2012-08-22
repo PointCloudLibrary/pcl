@@ -28,16 +28,28 @@ pcl::cloud_composer::ClickTrackballStyleInteractor::~ClickTrackballStyleInteract
 void
 pcl::cloud_composer::ClickTrackballStyleInteractor::OnLeftButtonDown ()
 {
+  vtkInteractorStyleTrackballActor::OnLeftButtonDown();
+  
   vtkActor* selected_actor = vtkActor::SafeDownCast(this->InteractionProp);
   if (selected_actor)
     selected_actor->GetMatrix (start_matrix_);
-  vtkInteractorStyleTrackballActor::OnLeftButtonDown();
+  
+}
+
+void
+pcl::cloud_composer::ClickTrackballStyleInteractor::OnRightButtonDown ()
+{
+  vtkInteractorStyleTrackballActor::OnRightButtonDown();
+  
+  vtkActor* selected_actor = vtkActor::SafeDownCast(this->InteractionProp);
+  if (selected_actor)
+    selected_actor->GetMatrix (start_matrix_);
+  
 }
 
 void
 pcl::cloud_composer::ClickTrackballStyleInteractor::OnLeftButtonUp ()
 {
-           
   vtkInteractorStyleTrackballActor::OnLeftButtonUp();
   vtkActor* selected_actor = vtkActor::SafeDownCast(this->InteractionProp);
   if (selected_actor)
@@ -70,6 +82,40 @@ pcl::cloud_composer::ClickTrackballStyleInteractor::OnLeftButtonUp ()
   }
 }
 
-
+void
+pcl::cloud_composer::ClickTrackballStyleInteractor::OnRightButtonUp ()
+{
+  vtkInteractorStyleTrackballActor::OnRightButtonUp();
+  vtkActor* selected_actor = vtkActor::SafeDownCast(this->InteractionProp);
+  if (selected_actor)
+  {
+    ManipulationEvent* manip_event = new ManipulationEvent ();
+    //Fetch the actor we manipulated
+    
+    selected_actor->GetMatrix (end_matrix_);
+    // Find the id of the actor we manipulated
+    pcl::visualization::CloudActorMap::const_iterator end = actors_->end ();
+    QString manipulated_id;
+    for( pcl::visualization::CloudActorMap::const_iterator itr = actors_->begin (); itr != end; ++itr)
+    {
+      //qDebug () << "Id = "<<QString::fromStdString (itr->first);
+      if ( (itr->second).actor == selected_actor)
+      {
+        manipulated_id = (QString::fromStdString (itr->first));
+        
+      }
+    }
+    if ( !manipulated_id.isEmpty() )
+    {
+      manip_event->addManipulation (manipulated_id, start_matrix_, end_matrix_);
+      this->InvokeEvent (this->manipulation_complete_event_, manip_event);
+    }
+    else
+    {
+      qWarning () << "Could not find actor which matches manipulated actor in ClickTrackballStyleInteractor::OnRightButtonUp!!!";
+    }
+  }
+   
+}
 
 

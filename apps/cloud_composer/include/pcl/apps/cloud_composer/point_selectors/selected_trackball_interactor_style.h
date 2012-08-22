@@ -75,14 +75,29 @@ namespace pcl
         void 
         setRendererCollection (vtkSmartPointer<vtkRendererCollection> &rens) { renderers_ = rens; }
 
-        /** \brief Function called on left mouse button release, ie, end of rectangular drag */
+        /** \brief Function called on left mouse button click, ie, beginning of trackball */
         virtual void
         OnLeftButtonDown ();
         
-        /** \brief Function called on left mouse button release, ie, end of rectangular drag */
+        virtual void
+        OnRightButtonDown ();
+        
+        /** \brief Function called on left mouse button release, ie, end of trackball*/
         virtual void
         OnLeftButtonUp ();
+        
+        virtual void
+        OnRightButtonUp ();
 
+        virtual void 
+        Rotate();
+        virtual void 
+        Spin();
+        virtual void 
+        Pan();
+        virtual void 
+        UniformScale();
+        
         /** \brief Event emitted once a valid selection has been made */
         int manipulation_complete_event_;
         
@@ -90,6 +105,8 @@ namespace pcl
         setProjectModel (ProjectModel* model) { model_ = model; }
       private:
 
+        void
+        setSelectedActors ();
         
         /** \brief Actor map stored internally. */
         pcl::visualization::CloudActorMapPtr actors_;
@@ -99,6 +116,10 @@ namespace pcl
         
         /** \brief Internal Pointer to Project Model */
         ProjectModel* model_;
+        
+        QMap <QString, vtkSmartPointer<vtkMatrix4x4> > start_matrix_map_;
+        QMap <QString, vtkLODActor*> selected_actors_map_;
+        
     };
     
   }

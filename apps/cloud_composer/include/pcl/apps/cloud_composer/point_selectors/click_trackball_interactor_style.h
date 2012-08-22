@@ -82,6 +82,12 @@ namespace pcl
         /** \brief Function called on left mouse button release, ie, end of rectangular drag */
         virtual void
         OnLeftButtonUp ();
+        
+        virtual void
+        OnRightButtonDown ();
+        
+        virtual void
+        OnRightButtonUp ();
 
         /** \brief Event emitted once a valid selection has been made */
         int manipulation_complete_event_;
