@@ -203,7 +203,7 @@ namespace pcl
       getMaxFlow () const;
 
       /** \brief Returns the graph that was build for finding the minimum cut. */
-      typename boost::shared_ptr<pcl::MinCutSegmentation<PointT>::mGraph>
+      typename boost::shared_ptr<typename pcl::MinCutSegmentation<PointT>::mGraph>
       getGraph () const;
 
       /** \brief Returns the colored cloud. Points that belong to the object have the same color. */
