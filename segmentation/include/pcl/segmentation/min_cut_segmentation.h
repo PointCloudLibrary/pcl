@@ -39,24 +39,37 @@
 #ifndef PCL_MIN_CUT_SEGMENTATION_H_
 #define PCL_MIN_CUT_SEGMENTATION_H_
 
+#include <pcl/pcl_base.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/search/search.h>
 #include <pcl/segmentation/boost.h>
 #include <string>
 #include <set>
-#include <boost/graph/adjacency_list.hpp>
 
 namespace pcl
 {
-  /** \brief This class implements the segmentation algorithm based on minimal cut of the graph.
+  /** \brief
+    * This class implements the segmentation algorithm based on minimal cut of the graph.
     * Description can be found in the article
     * "Min-Cut Based Segmentation of Point Clouds"
-    * \author: Aleksey Golovinskiy (mine_all_mine@bk.ru) and Thomas Funkhouser.
+    * \author: Aleksey Golovinskiy and Thomas Funkhouser.
     */
   template <typename PointT>
-  class PCL_EXPORTS MinCutSegmentation
+  class PCL_EXPORTS MinCutSegmentation : public pcl::PCLBase<PointT>
   {
+    public:
+
+      typedef pcl::search::Search <PointT> KdTree;
+      typedef typename KdTree::Ptr KdTreePtr;
+      typedef pcl::PointCloud< PointT > PointCloud;
+      typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+
+      using PCLBase <PointT>::input_;
+      using PCLBase <PointT>::indices_;
+      using PCLBase <PointT>::initCompute;
+      using PCLBase <PointT>::deinitCompute;
+
     public:
 
       typedef boost::adjacency_list_traits< boost::vecS, boost::vecS, boost::directedS > Traits;
@@ -73,19 +86,19 @@ namespace pcl
 
       typedef boost::property_map< mGraph, boost::edge_capacity_t >::type CapacityMap;
 
-      typedef boost::property_map< mGraph, boost::edge_residual_capacity_t >::type ResidualCapacityMap;
-
       typedef boost::property_map< mGraph, boost::edge_reverse_t>::type ReverseEdgeMap;
-
-      typedef boost::property_map< mGraph, boost::vertex_index_t >::type IndexMap;
 
       typedef Traits::vertex_descriptor VertexDescriptor;
 
       typedef boost::graph_traits< mGraph >::edge_descriptor EdgeDescriptor;
 
+      typedef boost::graph_traits< mGraph >::out_edge_iterator OutEdgeIterator;
+
       typedef boost::graph_traits< mGraph >::vertex_iterator VertexIterator;
 
-      typedef boost::graph_traits< mGraph >::out_edge_iterator OutEdgeIterator;
+      typedef boost::property_map< mGraph, boost::edge_residual_capacity_t >::type ResidualCapacityMap;
+
+      typedef boost::property_map< mGraph, boost::vertex_index_t >::type IndexMap;
 
       typedef boost::graph_traits< mGraph >::in_edge_iterator InEdgeIterator;
 
@@ -98,63 +111,15 @@ namespace pcl
       virtual
       ~MinCutSegmentation ();
 
-      /** \brief Returns the cloud that was passed through setInputCloud(). */
-      typename pcl::PointCloud<PointT>::Ptr
-      getInputCloud () const;
+      /** \brief This method simply sets the input point cloud.
+        * \param[in] cloud the const boost shared pointer to a PointCloud
+        */
+      virtual void
+      setInputCloud (const PointCloudConstPtr &cloud);
 
       /** \brief Returns normalization value for binary potentials. For more information see the article. */
       double
       getSigma () const;
-
-      /** \brief Returns radius to the background. */
-      double
-      getRadius () const;
-
-      /** \brief Returns weight that every edge from the source point has. */
-      double
-      getSourceWeight () const;
-
-      /** \brief Returns search method that is used for finding KNN.
-        * The graph is build such way that it contains the edges that connect point and its KNN.
-        */
-      typename pcl::search::Search<PointT>::Ptr
-      getSearchMethod () const;
-
-      /** \brief Returns the number of neighbours to find. */
-      unsigned int
-      getNeighbourNumber () const;
-
-      /** \brief Returns the points that must belong to foreground. */
-      std::vector<PointT, Eigen::aligned_allocator<PointT> >
-      getForegroundPoints () const;
-
-      /** \brief Returns the points that must belong to background. */
-      std::vector<PointT, Eigen::aligned_allocator<PointT> >
-      getBackgroundPoints () const;
-
-      /** \brief Returns that flow value that was calculated during the segmentation. */
-      double
-      getMaxFlow () const;
-
-      /** \brief Returns the colored cloud. Points that belong to the object have the same color. */
-      pcl::PointCloud<pcl::PointXYZRGB>::Ptr
-      getColoredCloud ();
-
-      /** \brief Returns the graph that was build for finding the minimum cut. */
-      typename boost::shared_ptr<typename pcl::MinCutSegmentation<PointT>::mGraph>
-      getGraph () const;
-
-      /** \brief This method returns the vector of labels. It contains label for every point in the cloud.
-        * If point belongs to object then it has a label equal 1. Otherwise label is 0.
-        */
-      std::vector<int>
-      getSegments () const;
-
-      /** \brief This method sets the cloud that must be segmented.
-        * \param[in] input_cloud point cloud that must be segmented
-        */
-      void
-      setInputCloud (typename pcl::PointCloud<PointT>::Ptr input_cloud);
 
       /** \brief Allows to set the normalization value for the binary potentials as described in the article.
         * \param[in] sigma new normalization value
@@ -162,11 +127,19 @@ namespace pcl
       void
       setSigma (double sigma);
 
+      /** \brief Returns radius to the background. */
+      double
+      getRadius () const;
+
       /** \brief Allows to set the radius to the background.
         * \param[in] radius new radius to the background
         */
       void
       setRadius (double radius);
+
+      /** \brief Returns weight that every edge from the source point has. */
+      double
+      getSourceWeight () const;
 
       /** \brief Allows to set weight for source edges. Every edge that comes from the source point will have that weight.
         * \param[in] weight new weight
@@ -174,18 +147,32 @@ namespace pcl
       void
       setSourceWeight (double weight);
 
+      /** \brief Returns search method that is used for finding KNN.
+        * The graph is build such way that it contains the edges that connect point and its KNN.
+        */
+      KdTreePtr
+      getSearchMethod () const;
+
       /** \brief Allows to set search method for finding KNN.
         * The graph is build such way that it contains the edges that connect point and its KNN.
         * \param[in] search search method that will be used for finding KNN.
         */
       void
-      setSearchMethod (typename pcl::search::Search<PointT>::Ptr search);
+      setSearchMethod (const KdTreePtr& tree);
+
+      /** \brief Returns the number of neighbours to find. */
+      unsigned int
+      getNumberOfNeighbours () const;
 
       /** \brief Allows to set the number of neighbours to find.
         * \param[in] number_of_neighbours new number of neighbours
         */
       void
-      setNeighbourNumber (unsigned int number_of_neighbours);
+      setNumberOfNeighbours (unsigned int neighbour_number);
+
+      /** \brief Returns the points that must belong to foreground. */
+      std::vector<PointT, Eigen::aligned_allocator<PointT> >
+      getForegroundPoints () const;
 
       /** \brief Allows to specify points which are known to be the points of the object.
         * \param[in] foreground_points point cloud that contains foreground points. At least one point must be specified.
@@ -193,12 +180,9 @@ namespace pcl
       void
       setForegroundPoints (typename pcl::PointCloud<PointT>::Ptr foreground_points);
 
-      /** \brief Allows to specify points which are known to be the points of the object.
-        * \param[in] foreground_points_indices vector of indices of points that belong to the foreground.
-        * At least one point must be specified.
-        */
-      void
-      setForegroundPoints (std::vector<int>& foreground_points_indices);
+      /** \brief Returns the points that must belong to background. */
+      std::vector<PointT, Eigen::aligned_allocator<PointT> >
+      getBackgroundPoints () const;
 
       /** \brief Allows to specify points which are known to be the points of the background.
         * \param[in] background_points point cloud that contains background points.
@@ -206,31 +190,31 @@ namespace pcl
       void
       setBackgroundPoints (typename pcl::PointCloud<PointT>::Ptr background_points);
 
-      /** \brief Allows to specify points which are known to be the points of the background.
-        * \param[in] background_points_indices vector of indices of points that belong to the background.
+      /** \brief This method launches the segmentation algorithm and returns the clusters that were
+        * obtained during the segmentation. The indices of points that belong to the object will be stored
+        * in the cluster with index 1, other indices will be stored in the cluster with index 0.
+        * \param[out] clusters clusters that were obtained. Each cluster is an array of point indices.
         */
       void
-      setBackgroundPoints (std::vector<int>& background_points_indices);
+      extract (std::vector <pcl::PointIndices>& clusters);
 
-      /** \brief This method simply launches the segmentation algorithm. It returns number of points
-        * that belong to the object.
-        */
-      bool
-      segmentPoints ();
+      /** \brief Returns that flow value that was calculated during the segmentation. */
+      double
+      getMaxFlow () const;
+
+      /** \brief Returns the graph that was build for finding the minimum cut. */
+      typename boost::shared_ptr<pcl::MinCutSegmentation<PointT>::mGraph>
+      getGraph () const;
+
+      /** \brief Returns the colored cloud. Points that belong to the object have the same color. */
+      pcl::PointCloud<pcl::PointXYZRGB>::Ptr
+      getColoredCloud ();
 
     protected:
 
       /** \brief This method simply builds the graph that will be used during the segmentation. */
       bool
       buildGraph ();
-
-      /** \brief Returns the binary potential(smooth cost) for the given indices of points.
-        * In other words it returns weight that must be assigned to the edge from source to target point.
-        * \param[in] source index of the source point of the edge
-        * \param[in] target index of the target point of the edge
-        */
-      double
-      calculateBinaryPotential (int source, int target) const;
 
       /** \brief Returns unary potential(data cost) for the given point index.
         * In other words it calculates weights for (source, point) and (point, sink) edges.
@@ -249,6 +233,14 @@ namespace pcl
       bool
       addEdge (int source, int target, double weight);
 
+      /** \brief Returns the binary potential(smooth cost) for the given indices of points.
+        * In other words it returns weight that must be assigned to the edge from source to target point.
+        * \param[in] source index of the source point of the edge
+        * \param[in] target index of the target point of the edge
+        */
+      double
+      calculateBinaryPotential (int source, int target) const;
+
       /** \brief This method recalculates unary potentials(data cost) if some changes were made, instead of creating new graph. */
       bool
       recalculateUnaryPotentials ();
@@ -265,41 +257,44 @@ namespace pcl
 
     protected:
 
-      /** \brief Stores the cloud that need to be segmented. */
-      typename pcl::PointCloud<PointT>::Ptr input_cloud_;
-
-      /** \brief Stores the search method that will be used for finding K nearest neighbors. Neighbours are used for building the graph. */
-      typename pcl::search::Search<PointT>::Ptr search_;
-
-      /** \brief Stores the number of neighbors to find. */
-      unsigned int number_of_neighbours_;
-
-      /** \brief Stores the number of points in the cloud. */
-      int number_of_points_;
-
-      /** \brief Signalizes if the graph is valid. */
-      bool graph_is_valid_;
-
-      /** \brief Signalizes if the unary potentials are valid. */
-      bool unary_potentials_are_valid_;
+      /** \brief Stores the sigma coefficient. It is used for finding smooth costs. More information can be found in the article. */
+      double inverse_sigma_;
 
       /** \brief Signalizes if the binary potentials are valid. */
       bool binary_potentials_are_valid_;
 
+      /** \brief Used for comparison of the floating point numbers. */
+      double epsilon_;
+
+      /** \brief Stores the distance to the background. */
+      double radius_;
+
+      /** \brief Signalizes if the unary potentials are valid. */
+      bool unary_potentials_are_valid_;
+
+      /** \brief Stores the weight for every edge that comes from source point. */
+      double source_weight_;
+
+      /** \brief Stores the search method that will be used for finding K nearest neighbors. Neighbours are used for building the graph. */
+      KdTreePtr search_;
+
+      /** \brief Stores the number of neighbors to find. */
+      unsigned int number_of_neighbours_;
+
+      /** \brief Signalizes if the graph is valid. */
+      bool graph_is_valid_;
+
+      /** \brief Stores the points that are known to be in the foreground. */
+      std::vector<PointT, Eigen::aligned_allocator<PointT> > foreground_points_;
+
+      /** \brief Stores the points that are known to be in the background. */
+      std::vector<PointT, Eigen::aligned_allocator<PointT> > background_points_;
+
+      /** \brief After the segmentation it will contain the segments. */
+      std::vector <pcl::PointIndices> clusters_;
+
       /** \brief Stores the graph for finding the maximum flow. */
       boost::shared_ptr<mGraph> graph_;
-
-      /** \brief Stores the vertex that serves as source. */
-      VertexDescriptor source_;
-
-      /** \brief Stores the vertex that serves as sink. */
-      VertexDescriptor sink_;
-
-      /** \brief Stores the vertices of the graph. */
-      std::vector< VertexDescriptor > vertices_;
-
-      /** \brief Stores the information about the edges that were added to the graph. It is used to avoid the duplicate edges. */
-      std::vector< std::set<int> > edge_marker_;
 
       /** \brief Stores the capacity of every edge in the graph. */
       boost::shared_ptr<CapacityMap> capacity_;
@@ -307,29 +302,20 @@ namespace pcl
       /** \brief Stores reverse edges for every edge in the graph. */
       boost::shared_ptr<ReverseEdgeMap> reverse_edges_;
 
-      /** \brief Stores the sigma coefficient. It is used for finding smooth costs. More information can be found in the article. */
-      double inverse_sigma_;
+      /** \brief Stores the vertices of the graph. */
+      std::vector< VertexDescriptor > vertices_;
 
-      /** \brief Stores the distance to the background. */
-      double radius_;
+      /** \brief Stores the information about the edges that were added to the graph. It is used to avoid the duplicate edges. */
+      std::vector< std::set<int> > edge_marker_;
 
-      /** \brief Stores the weight for every edge that comes from source point. */
-      double source_weight_;
+      /** \brief Stores the vertex that serves as source. */
+      VertexDescriptor source_;
+
+      /** \brief Stores the vertex that serves as sink. */
+      VertexDescriptor sink_;
 
       /** \brief Stores the maximum flow value that was calculated during the segmentation. */
       double max_flow_;
-
-      /** \brief Used for comparison of the floating point numbers. */
-      double epsilon_;
-
-      /** \brief Stores the labels for each point that were obtained during the segmentation. */
-      std::vector<int> labels_;
-
-      /** \brief Stores the points that are known to be in the foreground. */
-      std::vector<PointT, Eigen::aligned_allocator<PointT> > foreground_points_;
-
-      /** \brief Stores the points that are known to be in the background. */
-      std::vector<PointT, Eigen::aligned_allocator<PointT> > background_points_;
 
     public:
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
