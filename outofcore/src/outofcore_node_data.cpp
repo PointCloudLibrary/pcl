@@ -208,7 +208,8 @@ namespace pcl
       cJSON* cjson_bb_min = cJSON_CreateDoubleArray (min_array, 3);
       cJSON* cjson_bb_max = cJSON_CreateDoubleArray (max_array, 3);
 
-      cJSON* cjson_bin_point_filename = cJSON_CreateString (static_cast<const char*>(binary_point_filename_.filename ().c_str ()));
+      std::string binary_point_filename_string = binary_point_filename_.filename ().generic_string ();
+      cJSON* cjson_bin_point_filename = cJSON_CreateString (binary_point_filename_string.c_str ());
 
       cJSON_AddItemToObject (idx.get (), "version", cjson_outofcore_version);
       cJSON_AddItemToObject (idx.get (), "bb_min", cjson_bb_min);
