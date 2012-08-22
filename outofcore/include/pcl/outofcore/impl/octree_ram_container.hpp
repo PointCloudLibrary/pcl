@@ -84,14 +84,14 @@ namespace pcl
       }
     }
 ////////////////////////////////////////////////////////////////////////////////
-    template<typename PointT> inline void
+    template<typename PointT> void
     octree_ram_container<PointT>::insertRange (const PointT* start, const boost::uint64_t count)
     {
       container_.insert (container_.end (), start, start + count);
     }
 
 ////////////////////////////////////////////////////////////////////////////////
-    template<typename PointT> inline void
+    template<typename PointT> void
     octree_ram_container<PointT>::insertRange (const PointT* const * start, const boost::uint64_t count)
     {
       AlignedPointTVector temp;

@@ -417,6 +417,19 @@ namespace pcl
 
 ////////////////////////////////////////////////////////////////////////////////
 
+    template<typename ContainerT, typename PointT> bool
+    octree_base<ContainerT, PointT>::getBoundingBox (Eigen::Vector3d &min, Eigen::Vector3d &max) const
+    {
+      if (root_ != NULL)
+      {
+        root_->getBoundingBox (min, max);
+        return true;
+      }
+      return false;
+    }
+
+////////////////////////////////////////////////////////////////////////////////
+
     template<typename ContainerT, typename PointT> void
     octree_base<ContainerT, PointT>::printBBox(const size_t query_depth) const
     {
@@ -529,6 +542,41 @@ namespace pcl
       }
 
     }
+
+////////////////////////////////////////////////////////////////////////////////
+
+    template<typename ContainerT, typename PointT> bool
+    octree_base<ContainerT, PointT>::getBinDimension (double& x, double& y) const
+    {
+      if (root_ == NULL)
+      {
+        x = 0;
+        y = 0;
+        return (false);
+      }
+
+      Eigen::Vector3d min, max;
+      this->getBoundingBox (min, max);
+
+      Eigen::Vector3d diff = max-min;
+
+      y = diff[1] * pow (.5, double (max_depth_));
+      x = diff[0] * pow (.5, double (max_depth_));
+
+      return (true);
+    }
+
+////////////////////////////////////////////////////////////////////////////////
+
+    template<typename ContainerT, typename PointT> double
+    octree_base<ContainerT, PointT>::getVoxelSideLength (const boost::uint64_t depth) const
+    {
+      Eigen::Vector3d min, max;
+      this->getBoundingBox (min, max);
+      double result = (max[0] - min[0]) * pow (.5, static_cast<double> (max_depth_)) * static_cast<double> (1 << (max_depth_ - depth));
+      return (result);
+    }
+
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> void

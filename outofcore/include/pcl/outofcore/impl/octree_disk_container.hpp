@@ -76,7 +76,7 @@ namespace pcl
     boost::mutex octree_disk_container<PointT>::rng_mutex_;
 
     template<typename PointT> boost::mt19937
-    octree_disk_container<PointT>::rand_gen_ ( static_cast<unsigned int> ( std::time( NULL ) ) );
+    octree_disk_container<PointT>::rand_gen_ (static_cast<unsigned int> (std::time(NULL)));
 
     template<typename PointT>
     boost::uuids::random_generator octree_disk_container<PointT>::uuid_gen_ (&rand_gen_);
@@ -150,7 +150,7 @@ namespace pcl
           filelen_ = cloud_info.width * cloud_info.height;
         }
       }
-      else
+      else //path doesn't exist
       {
         disk_storage_filename_ = boost::shared_ptr<std::string> (new std::string (path.string ()));
         filelen_ = 0;
@@ -185,7 +185,7 @@ namespace pcl
         pcl::PCDWriter writer;
 
 
-        PCL_WARN ( "[pcl::outofcore::octree_disk_container::%s] Flushing writebuffer in a dangerous way to file %s. This might overwrite data in destination file\n", __FUNCTION__, disk_storage_filename_->c_str ());
+        PCL_WARN ("[pcl::outofcore::octree_disk_container::%s] Flushing writebuffer in a dangerous way to file %s. This might overwrite data in destination file\n", __FUNCTION__, disk_storage_filename_->c_str ());
         
         // Write ascii for now to debug
         int res = writer.writeBinaryCompressed (*disk_storage_filename_, *cloud);
@@ -201,7 +201,7 @@ namespace pcl
 
           size_t len = writebuff_.size () * sizeof(PointT);
           /** \todo study and optimize the serialization to disk */
-          char* loc = reinterpret_cast<char*> ( & (writebuff_.front ()) );
+          char* loc = reinterpret_cast<char*> (& (writebuff_.front ()));
           size_t w = fwrite (loc, 1, len, f);
           (void)w;
           assert (w == len);
@@ -266,13 +266,13 @@ namespace pcl
     {
       if (count == 0)
       {
-//        PCL_DEBUG ( "[pcl::outofcore::octree_disk_container] No points requested for reading\n" );
+//        PCL_DEBUG ("[pcl::outofcore::octree_disk_container] No points requested for reading\n");
         return;
       }
 
       if ((start + count) > size ())
       {
-        PCL_ERROR ( "[pcl::outofcore::octree_disk_container] Indicies out of range; start + count exceeds the size of the stored points\n" );
+        PCL_ERROR ("[pcl::outofcore::octree_disk_container] Indicies out of range; start + count exceeds the size of the stored points\n");
         PCL_THROW_EXCEPTION (PCLException, "[pcl::outofcore::octree_disk_container] Outofcore Octree Exception: Read indices exceed range");
       }
 
@@ -414,7 +414,7 @@ namespace pcl
         FILE* f = fopen (disk_storage_filename_->c_str (), "rb");
         assert (f != NULL);
         PointT p;
-        char* loc = reinterpret_cast<char*> ( &p );
+        char* loc = reinterpret_cast<char*> (&p);
         
         uint64_t filesamp = offsets.size ();
         for (uint64_t i = 0; i < filesamp; i++)
@@ -513,7 +513,7 @@ namespace pcl
         FILE* f = fopen (disk_storage_filename_->c_str (), "rb");
         assert (f != NULL);
         PointT p;
-        char* loc = reinterpret_cast<char*> ( &p );
+        char* loc = reinterpret_cast<char*> (&p);
         for (uint64_t i = 0; i < filesamp; i++)
         {
           int seekret = _fseeki64 (f, offsets[i] * static_cast<uint64_t> (sizeof(PointT)), SEEK_SET);
@@ -549,10 +549,10 @@ namespace pcl
     {
       const uint64_t count = src.size ();
       
-      typename pcl::PointCloud<PointT>::Ptr tmp_cloud (new pcl::PointCloud<PointT> () );
+      typename pcl::PointCloud<PointT>::Ptr tmp_cloud (new pcl::PointCloud<PointT> ());
       
       // If there's a pcd file with data          
-      if ( boost::filesystem::exists ( *disk_storage_filename_ ) )
+      if (boost::filesystem::exists (*disk_storage_filename_))
       {
         // Open the existing file
         pcl::PCDReader reader;
@@ -597,7 +597,7 @@ namespace pcl
       sensor_msgs::PointCloud2::Ptr tmp_cloud (new sensor_msgs::PointCloud2 ());
           
       //if there's a pcd file with data, read the data, concatenate, and resave
-      if (boost::filesystem::exists ( *disk_storage_filename_ ))
+      if (boost::filesystem::exists (*disk_storage_filename_))
       {
         //open the existing file
         pcl::PCDReader reader;
@@ -605,9 +605,9 @@ namespace pcl
         (void)res;
         assert (res == 0);
         pcl::PCDWriter writer;
-//            PCL_INFO ("[pcl::outofcore::octree_disk_container::%s] Concatenating point cloud from %s to new cloud\n", __FUNCTION__, disk_storage_filename_->c_str () );
-        pcl::concatenatePointCloud ( *tmp_cloud, *input_cloud, *tmp_cloud );
-        writer.writeBinaryCompressed ( *disk_storage_filename_, *input_cloud );
+//            PCL_INFO ("[pcl::outofcore::octree_disk_container::%s] Concatenating point cloud from %s to new cloud\n", __FUNCTION__, disk_storage_filename_->c_str ());
+        pcl::concatenatePointCloud (*tmp_cloud, *input_cloud, *tmp_cloud);
+        writer.writeBinaryCompressed (*disk_storage_filename_, *input_cloud);
             
       }
       else //otherwise create the point cloud which will be saved to the pcd file for the first time
@@ -633,14 +633,14 @@ namespace pcl
           
       if (boost::filesystem::exists (*disk_storage_filename_))
       {
-//            PCL_INFO ( "[pcl::outofcore::octree_disk_container::%s] Reading points from disk from %s.\n", __FUNCTION__ , disk_storage_filename_->c_str () );
+//            PCL_INFO ("[pcl::outofcore::octree_disk_container::%s] Reading points from disk from %s.\n", __FUNCTION__ , disk_storage_filename_->c_str ());
         int res = reader.read (*disk_storage_filename_, *dst, origin, orientation, pcd_version);
         (void)res;
         assert (res != -1);
       }
       else
       {
-        PCL_ERROR ("[pcl::outofcore::octree_disk_container::%s] File %s does not exist in node.\n", __FUNCTION__, disk_storage_filename_->c_str () );
+        PCL_ERROR ("[pcl::outofcore::octree_disk_container::%s] File %s does not exist in node.\n", __FUNCTION__, disk_storage_filename_->c_str ());
       }
     }
 
@@ -679,7 +679,7 @@ namespace pcl
 
       if (outofcore_v >= 3)
       {
-        typename pcl::PointCloud<PointT>::Ptr tmp_cloud (new pcl::PointCloud<PointT> () );
+        typename pcl::PointCloud<PointT>::Ptr tmp_cloud (new pcl::PointCloud<PointT> ());
 
         // If there's a pcd file with data, read it in from disk for appending
         if (boost::filesystem::exists (*disk_storage_filename_))
@@ -688,11 +688,11 @@ namespace pcl
           // Open it
           int res = reader.read (disk_storage_filename_->c_str (), *tmp_cloud);
           (void)res; 
-          assert (res == 0 );
+          assert (res == 0);
         }
         else //otherwise create the pcd file
         {
-          tmp_cloud->width = static_cast<uint32_t> ( count ) + static_cast<uint32_t> (writebuff_.size ());
+          tmp_cloud->width = static_cast<uint32_t> (count) + static_cast<uint32_t> (writebuff_.size ());
           tmp_cloud->height = 1;
         }            
 
@@ -724,7 +724,7 @@ namespace pcl
         
         //open the file for appending binary
         FILE* f = fopen (disk_storage_filename_->c_str (), "a+b");
-        assert ( f != NULL ); 
+        assert (f != NULL); 
 
         for (uint64_t pos = 0; pos < count; pos += WRITE_BUFF_MAX_)
         {
@@ -746,7 +746,7 @@ namespace pcl
         //	int closeret = fclose(f);
         int res = fclose (f);
         (void)res;
-        assert (res == 0 );
+        assert (res == 0);
       }
       
       filelen_ += count;

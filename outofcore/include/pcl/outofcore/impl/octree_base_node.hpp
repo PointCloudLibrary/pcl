@@ -729,76 +729,20 @@ namespace pcl
           if(!this->pointInBoundingBox(pt))
             continue;
 
-        subdividePoint(pt, c);
+        subdividePoint (pt, c);
       }
     }
 ////////////////////////////////////////////////////////////////////////////////
 
-
     template<typename ContainerT, typename PointT> void
-    octree_base_node<ContainerT, PointT>::subdividePoint (const PointT& pt, std::vector< AlignedPointTVector >& c)
+    octree_base_node<ContainerT, PointT>::subdividePoint (const PointT& point, std::vector< AlignedPointTVector >& c)
     {
       Eigen::Vector3d mid_xyz = node_metadata_->getVoxelCenter ();
-
-      if((pt.z >= mid_xyz[2]))
-      {
-        if((pt.y >= mid_xyz[1]))
-        {
-          if((pt.x >= mid_xyz[0]))
-          {
-            c[7].push_back(pt);
-            return;
-          }
-          else
-          {
-            c[6].push_back(pt);
-            return;
-          }
-        }
-        else
-        {
-          if((pt.x >= mid_xyz[0]))
-          {
-            c[5].push_back(pt);
-            return;
-          }
-          else
-          {
-            c[4].push_back(pt);
-            return;
-          }
-        }
-      }
-      else
-      {
-        if((pt.y >= mid_xyz[1]))
-        {
-          if((pt.x >= mid_xyz[0]))
-          {
-            c[3].push_back(pt);
-            return;
-          }
-          else
-          {
-            c[2].push_back(pt);
-            return;
-          }
-        }
-        else
-        {
-          if((pt.x >= mid_xyz[0]))
-          {
-            c[1].push_back(pt);
-            return;
-          }
-          else
-          {
-            c[0].push_back(pt);
-            return;
-          }
-        }
-      }
+      size_t octant = 0;
+      octant = ((point.z >= mid_xyz[2]) << 2) | ((point.y >= mid_xyz[1]) << 1) | ((point.x >= mid_xyz[0]) << 0);
+      c[octant].push_back (point);
     }
+
 ////////////////////////////////////////////////////////////////////////////////
     template<typename ContainerT, typename PointT> boost::uint64_t
     octree_base_node<ContainerT, PointT>::addPointCloud_and_genLOD (const sensor_msgs::PointCloud2::Ptr input_cloud) //, const bool skip_bb_check = false )

@@ -77,24 +77,24 @@ namespace pcl
          * \param[in] start - address of first point in array
          * \param[in] count - the maximum offset from start of points inserted 
          **/
-        inline void
+        void
         insertRange (const PointT* start, const uint64_t count);
 
         /** \brief inserts count points into container 
          * \param[in] start - address of first point in array
          * \param[in] count - the maximum offset from start of points inserted 
          **/
-        inline void
+        void
         insertRange (const PointT* const * start, const uint64_t count);
 
-        inline void
+        void
         insertRange (AlignedPointTVector &p)
         {
           PCL_ERROR ("[pcl::outofcore::octree_ram_container] Inserting eigen-aligned point vectors is not implemented using the ram containers\n");
           //insertRange (&(p.begin ()), p.size ());
         }
 
-        inline void
+        void
         insertRange (const AlignedPointTVector &p)
         {
           PCL_ERROR ("[pcl::outofcore::octree_ram_container] Inserting eigen-aligned point vectors is not implemented using the ram containers\n");

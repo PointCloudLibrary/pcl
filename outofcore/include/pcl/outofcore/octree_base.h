@@ -59,7 +59,7 @@ namespace pcl
   {
   /** \class octree_base 
    *  \brief This code defines the octree used for point storage at Urban Robotics. 
-   *
+   * 
    *  \note Code was adapted from the Urban Robotics out of core octree implementation. 
    *  Contact Jacob Schloss <jacob.schloss@urbanrobotics.net> with any questions. 
    *  http://www.urbanrobotics.net/
@@ -278,16 +278,8 @@ namespace pcl
 
         /** \brief Get the overall bounding box of the outofcore
          *  octree; this is the same as the bounding box of the \ref root_ node */
-        inline bool
-        getBoundingBox (Eigen::Vector3d& min, Eigen::Vector3d& max) const
-        {
-          if (root_ != NULL)
-          {
-            root_->getBoundingBox (min, max);
-            return true;
-          }
-          return false;
-        }
+        bool
+        getBoundingBox (Eigen::Vector3d& min, Eigen::Vector3d& max) const;
 
         /** \brief Get number of points at specified LOD 
          * \param[in] depth the level of detail at which we want the number of points (0 is root, 1, 2,...)
@@ -298,7 +290,7 @@ namespace pcl
         {
           assert ( depth < lodPoints_.size () );
           
-          return lodPoints_[depth];
+          return (lodPoints_[depth]);
         }
 
         /** \brief Get number of points at each LOD 
@@ -307,7 +299,7 @@ namespace pcl
         inline const std::vector<boost::uint64_t>&
         getNumPointsVector () const
         {
-          return lodPoints_;
+          return (lodPoints_);
         }
 
         /** \brief Get number of LODs, which is the height of the tree
@@ -315,44 +307,20 @@ namespace pcl
         inline boost::uint64_t
         getDepth () const
         {
-          return max_depth_;
+          return (max_depth_);
         }
 
         /** \brief Computes the expected voxel dimensions at the leaves (at \ref max_depth_)
          */
         bool
-        getBinDimension (double& x, double& y) const
-        {
-          if (root_ == NULL)
-          {
-            x = 0;
-            y = 0;
-            return false;
-          }
-
-          Eigen::Vector3d min, max;
-          this->getBoundingBox (min, max);
-
-          Eigen::Vector3d diff = max-min;
-
-          y = diff[1] * pow (.5, double (max_depth_));
-          x = diff[0] * pow (.5, double (max_depth_));
-
-          return true;
-        }
+        getBinDimension (double& x, double& y) const;
 
         /** \brief gets the side length of an (assumed) perfect cubic voxel.
          *  \note If the initial bounding box specified in constructing the octree is not square, then this method does not return a sensible value 
          *  \return the side length of the cubic voxel size at the specified depth
          */
         double
-        getVoxelSideLength (const boost::uint64_t depth) const
-        {
-          Eigen::Vector3d min, max;
-          getBoundingBox (min, max);
-          
-          return (max[0] - min[0]) * pow (.5, double (max_depth_)) * double (1 << (max_depth_ - depth));
-        }
+        getVoxelSideLength (const boost::uint64_t depth) const;
 
         /** \brief Gets the smallest (assumed) cubic voxel side lengths. The smallest voxels are located at the max depth of the tree.
          * \return The side length of a the cubic voxel located at \ref max_depth_
@@ -360,7 +328,7 @@ namespace pcl
         double
         getVoxelSideLength () const
         {
-          return getVoxelSideLength (max_depth_);
+          return (this->getVoxelSideLength (max_depth_));
         }
 
         /** \brief Get coord system tag in the metadata 
@@ -374,7 +342,7 @@ namespace pcl
         const std::string&
         getCoordSystem ()
         {
-          return coord_system_;
+          return (coord_system_);
         }
 
         // Mutators

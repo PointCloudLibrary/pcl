@@ -272,7 +272,7 @@ namespace pcl
         subdividePoints (const AlignedPointTVector &p, std::vector< AlignedPointTVector > &c, const bool skip_bb_check);
         /** \brief Subdivide a single point into a specific child node */
         void
-        subdividePoint (const PointT &pt, std::vector< AlignedPointTVector > &c);
+        subdividePoint (const PointT &point, std::vector< AlignedPointTVector > &c);
 
         /** \brief Add data to the leaf when at max depth of tree. If
          *   skip_bb_check is true, adds to the node regardless of the
