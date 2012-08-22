@@ -40,6 +40,7 @@
 #ifndef PCL_OUTOFCORE_OCTREE_NODE_METADATA_H_
 #define PCL_OUTOFCORE_OCTREE_NODE_METADATA_H_
 
+#include <pcl/pcl_macros.h>
 #include <pcl/outofcore/boost.h>
 #include <pcl/outofcore/cJSON.h>
 
@@ -76,7 +77,7 @@ namespace pcl
      *  \ingroup outofcore
      *  \author Stephen Fox (foxstephend@gmail.com)
      */
-    class OutofcoreOctreeNodeMetadata
+    class PCL_EXPORTS OutofcoreOctreeNodeMetadata
     {
       public:
         /** \brief Empty constructor */
