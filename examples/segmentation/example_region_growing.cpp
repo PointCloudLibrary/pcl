@@ -84,15 +84,18 @@ main (int, char** av)
   std::cout << "Normals are computed and size is " << cloud_normals->points.size () << std::endl;
 
   // Region growing
-  pcl::RegionGrowing<pcl::PointXYZ> rg;
-  rg.setSmoothMode (false); // Depends on the cloud being processed
-  rg.setCloud (cloud_no_nans);
-  rg.setNormals (cloud_normals);
-  rg.segmentPoints ();
+  pcl::RegionGrowing<pcl::PointXYZ, pcl::Normal> rg;
+  rg.setSmoothModeFlag (false); // Depends on the cloud being processed
+  rg.setInputCloud (cloud_no_nans);
+  rg.setInputNormals (cloud_normals);
+
+  std::vector <pcl::PointIndices> clusters;
+  rg.extract (clusters);
+
   cloud_segmented = rg.getColoredCloud ();
 
   // Writing the resulting cloud into a pcd file
-  std::cout << "No of segments done is " << rg.getSegments ().size () << std::endl;
+  std::cout << "No of segments done is " << clusters.size () << std::endl;
   writer.write<pcl::PointXYZRGB> ("segment_result.pcd", *cloud_segmented, false);
 
   return (0);
