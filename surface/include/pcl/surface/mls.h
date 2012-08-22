@@ -85,11 +85,12 @@ namespace pcl
 
       typedef boost::function<int (int, double, std::vector<int> &, std::vector<float> &)> SearchMethod;
 
-      enum UpsamplingMethod { NONE, SAMPLE_LOCAL_PLANE, RANDOM_UNIFORM_DENSITY, VOXEL_GRID_DILATION };
+      enum UpsamplingMethod {NONE, DISTINCT_CLOUD, SAMPLE_LOCAL_PLANE, RANDOM_UNIFORM_DENSITY, VOXEL_GRID_DILATION};
 
       /** \brief Empty constructor. */
       MovingLeastSquares () : CloudSurfaceProcessing<PointInT, PointOutT> (),
                               normals_ (),
+                              distinct_cloud_ (),
                               search_method_ (),
                               tree_ (),
                               order_ (2),
@@ -176,6 +177,8 @@ namespace pcl
       /** \brief Set the upsampling method to be used
         * \note Options are: * NONE - no upsampling will be done, only the input points will be projected to their own
         *                             MLS surfaces
+        *                    * DISTINCT_CLOUD - will project the points of the distinct cloud to the closest point on
+        *                                       the MLS surface
         *                    * SAMPLE_LOCAL_PLANE - the local plane of each input point will be sampled in a circular
         *                                           fashion using the \ref upsampling_radius_ and the \ref upsampling_step_
         *                                           parameters
@@ -191,6 +194,14 @@ namespace pcl
         */
       inline void
       setUpsamplingMethod (UpsamplingMethod method) { upsample_method_ = method; }
+
+      /** \brief Set the distinct cloud used for the DISTINCT_CLOUD upsampling method. */
+      inline void
+      setDistinctCloud (PointCloudInConstPtr distinct_cloud) { distinct_cloud_ = distinct_cloud; }
+
+      /** \brief Get the distinct cloud used for the DISTINCT_CLOUD upsampling method. */
+      inline PointCloudInConstPtr
+      getDistinctCloud () { return distinct_cloud_; }
 
 
       /** \brief Set the radius of the circle in the local point plane that will be sampled
@@ -271,6 +282,9 @@ namespace pcl
     protected:
       /** \brief The point cloud that will hold the estimated normals, if set. */
       NormalCloudPtr normals_;
+
+      /** \brief The distinct point cloud that will be projected to the MLS surface. */
+      PointCloudInConstPtr distinct_cloud_;
 
       /** \brief The search method template for indices. */
       SearchMethod search_method_;
