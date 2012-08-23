@@ -67,7 +67,7 @@ using namespace pcl::outofcore;
 #include <boost/random/normal_distribution.hpp>
 #include <boost/foreach.hpp>
 
-/** \brief Unit tests for UR out of core octree code which test public interface of octree_base 
+/** \brief Unit tests for UR out of core octree code which test public interface of OutofcoreOctreeBase 
  */
 
 // For doing exhaustive checks this is set low remove those, and this can be
@@ -88,11 +88,11 @@ const static  boost::filesystem::path outofcore_path ("point_cloud_octree/tree_t
 typedef pcl::PointXYZ PointT;
 
 // UR Typedefs
-typedef octree_base<octree_disk_container < PointT > , PointT > octree_disk;
-typedef octree_base_node<octree_disk_container < PointT > , PointT > octree_disk_node;
+typedef OutofcoreOctreeBase<OutofcoreOctreeDiskContainer < PointT > , PointT > octree_disk;
+typedef OutofcoreOctreeBaseNode<OutofcoreOctreeDiskContainer < PointT > , PointT > octree_disk_node;
 
-typedef octree_base<octree_ram_container< PointT> , PointT> octree_ram;
-typedef octree_base_node< octree_ram_container<PointT> , PointT> octree_ram_node;
+typedef OutofcoreOctreeBase<OutofcoreOctreeRamContainer< PointT> , PointT> octree_ram;
+typedef OutofcoreOctreeBaseNode<OutofcoreOctreeRamContainer<PointT> , PointT> octree_ram_node;
 
 typedef std::vector<PointT, Eigen::aligned_allocator<PointT> > AlignedPointTVector;
 
@@ -307,7 +307,6 @@ point_test (octree_disk& t)
   }
 }
 
-/*
 TEST (PCL, Outofcore_Point_Query)
 {
   octree_disk treeA(filename_otreeA, false);
@@ -316,7 +315,6 @@ TEST (PCL, Outofcore_Point_Query)
   point_test(treeA);
   point_test(treeB);
 }
-*/
 
 #if 0 //this class will be deprecated soon.
 TEST (PCL, Outofcore_Ram_Tree)
@@ -721,7 +719,7 @@ TEST_F (OutofcoreTest, PointCloud2_Constructors)
     test_cloud->points.push_back (tmp);
   }
 
-  boost::shared_ptr<sensor_msgs::PointCloud2> point_cloud (new sensor_msgs::PointCloud2 ());
+  boost::shared_ptr<typename sensor_msgs::PointCloud2> point_cloud (new sensor_msgs::PointCloud2 ());
   
   pcl::toROSMsg (*test_cloud, *point_cloud);
 

@@ -80,8 +80,8 @@ using pcl::console::print_info;
 
 typedef PointXYZ PointT;
 //typedef PointCloud2 PointT;
-typedef octree_base<octree_disk_container<PointT> , PointT> octree_disk;
-typedef octree_base_node<octree_disk_container<PointT> , PointT> octree_disk_node;
+typedef OutofcoreOctreeBase<OutofcoreOctreeDiskContainer<PointT> , PointT> octree_disk;
+typedef OutofcoreOctreeBaseNode<OutofcoreOctreeDiskContainer<PointT> , PointT> octree_disk_node;
 typedef Eigen::aligned_allocator<PointT> AlignedPointT;
 
 // VTK
@@ -155,7 +155,7 @@ getGridActor(int size=10, double spacing=1.0){
 
   vtkSmartPointer<vtkDoubleArray> array = vtkSmartPointer<vtkDoubleArray>::New();
   for (int i=-size/2; i <= size/2; i++){
-    array->InsertNextValue((double)i*spacing);
+    array->InsertNextValue (static_cast<double> (i)*spacing);
   }
 
 //  vtkSmartPointer<vtkDoubleArray> yArray =

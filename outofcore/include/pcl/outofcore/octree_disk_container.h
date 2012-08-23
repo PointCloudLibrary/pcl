@@ -44,21 +44,10 @@
 #include <vector>
 #include <string>
 
-// Boost
-#include <boost/filesystem.hpp>
-#include <boost/thread.hpp>
-#include <boost/uuid/uuid.hpp>
-#include <boost/uuid/uuid_generators.hpp>
-#include <boost/uuid/uuid_io.hpp>
-#include <boost/random/mersenne_twister.hpp>
-#include <boost/random/uniform_int.hpp>
-#include <boost/random/bernoulli_distribution.hpp>
-
+#include <pcl/outofcore/boost.h>
 #include <pcl/outofcore/octree_abstract_node_container.h>
-
-#include <sensor_msgs/PointCloud2.h>
-
 #include <pcl/io/pcd_io.h>
+#include <sensor_msgs/PointCloud2.h>
 
 //allows operation on POSIX
 #ifndef WIN32
@@ -69,7 +58,7 @@ namespace pcl
 {
   namespace outofcore
   {
-  /** \class octree_disk_container
+  /** \class OutofcoreOctreeDiskContainer
    *  \note Code was adapted from the Urban Robotics out of core octree implementation. 
    *  Contact Jacob Schloss <jacob.schloss@urbanrobotics.net> with any questions. 
    *  http://www.urbanrobotics.net/
@@ -79,14 +68,14 @@ namespace pcl
    *  \author Jacob Schloss (jacob.schloss@urbanrobotics.net)
    */
     template<typename PointT>
-    class octree_disk_container : public OutofcoreAbstractNodeContainer<PointT>
+    class OutofcoreOctreeDiskContainer : public OutofcoreAbstractNodeContainer<PointT>
     {
   
       public:
         typedef typename OutofcoreAbstractNodeContainer<PointT>::AlignedPointTVector AlignedPointTVector;
         
         /** \brief Empty constructor creates disk container and sets filename from random uuid string*/
-        octree_disk_container ();
+        OutofcoreOctreeDiskContainer ();
 
         /** \brief Creates uuid named file or loads existing file
          * 
@@ -97,10 +86,10 @@ namespace pcl
          * \param[in] dir Path to the tree. If it is a directory, it
          * will create the metadata. If it is a file, it will load the metadata into memory.
          */
-        octree_disk_container (const boost::filesystem::path &dir);
+        OutofcoreOctreeDiskContainer (const boost::filesystem::path &dir);
 
         /** \brief flushes write buffer, then frees memory */
-        ~octree_disk_container ();
+        ~OutofcoreOctreeDiskContainer ();
 
         /** \brief provides random access to points based on a linear index
          */
@@ -194,7 +183,7 @@ namespace pcl
         uint64_t
         size () const
         {
-          return filelen_ + writebuff_.size ();
+          return (filelen_ + writebuff_.size ());
         }
 
         /** \brief STL-like empty test
@@ -216,7 +205,7 @@ namespace pcl
         inline std::string&
         path ()
         {
-          return *disk_storage_filename_;
+          return (*disk_storage_filename_);
         }
 
         inline void
@@ -288,11 +277,11 @@ namespace pcl
 
       private:
         //no copy construction
-        octree_disk_container (const octree_disk_container &rval) { }
+        OutofcoreOctreeDiskContainer (const OutofcoreOctreeDiskContainer &rval) { }
 
 
-        octree_disk_container&
-        operator= (const octree_disk_container &rval) { }
+        OutofcoreOctreeDiskContainer&
+        operator= (const OutofcoreOctreeDiskContainer &rval) { }
 
         void
         flushWritebuff (const bool force_cache_dealloc);

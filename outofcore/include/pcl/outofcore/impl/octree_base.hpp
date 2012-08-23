@@ -61,15 +61,15 @@ namespace pcl
     //Static constants
     // --------------------------------------------------------------------------------
     template<typename ContainerT, typename PointT>
-    const std::string octree_base<ContainerT, PointT>::TREE_EXTENSION_ = ".octree";
+    const std::string OutofcoreOctreeBase<ContainerT, PointT>::TREE_EXTENSION_ = ".octree";
 
     template<typename ContainerT, typename PointT>
-    const int octree_base<ContainerT, PointT>::OUTOFCORE_VERSION_ = static_cast<int>(3);
+    const int OutofcoreOctreeBase<ContainerT, PointT>::OUTOFCORE_VERSION_ = static_cast<int>(3);
 
 // Constructors
 // ---------------------------------------------------------------------------
     template<typename ContainerT, typename PointT>
-    octree_base<ContainerT, PointT>::octree_base (const boost::filesystem::path& root_name, const bool load_all)
+    OutofcoreOctreeBase<ContainerT, PointT>::OutofcoreOctreeBase (const boost::filesystem::path& root_name, const bool load_all)
       : root_ ()
       , read_write_mutex_ ()
       , lodPoints_ ()
@@ -79,14 +79,14 @@ namespace pcl
       , resolution_ ()
     {
       // Check file extension
-      if (boost::filesystem::extension (root_name) != octree_base_node<ContainerT, PointT>::node_index_extension)
+      if (boost::filesystem::extension (root_name) != OutofcoreOctreeBaseNode<ContainerT, PointT>::node_index_extension)
       {
-        PCL_ERROR ( "[pcl::outofcore::octree_base] Wrong root node file extension: %s. The tree must have a root node ending in %s\n", boost::filesystem::extension (root_name).c_str (), octree_base_node<ContainerT, PointT>::node_index_extension.c_str () );
-        PCL_THROW_EXCEPTION (PCLException, "[pcl::outofcore::octree_base] Bad extension. Tree must have a root node ending in .oct_idx\n");
+        PCL_ERROR ( "[pcl::outofcore::OutofcoreOctreeBase] Wrong root node file extension: %s. The tree must have a root node ending in %s\n", boost::filesystem::extension (root_name).c_str (), OutofcoreOctreeBaseNode<ContainerT, PointT>::node_index_extension.c_str () );
+        PCL_THROW_EXCEPTION (PCLException, "[pcl::outofcore::OutofcoreOctreeBase] Bad extension. Tree must have a root node ending in .oct_idx\n");
       }
 
       // Create root_ node
-      root_ = new octree_base_node<ContainerT, PointT> (root_name, NULL, load_all);
+      root_ = new OutofcoreOctreeBaseNode<ContainerT, PointT> (root_name, NULL, load_all);
 
       // Set root_ nodes tree to the newly created tree
       root_->m_tree_ = this;
@@ -99,7 +99,7 @@ namespace pcl
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT>
-    octree_base<ContainerT, PointT>::octree_base (const Eigen::Vector3d& min, const Eigen::Vector3d& max, const double node_dim_meters, const boost::filesystem::path& root_name, const std::string& coord_sys)
+    OutofcoreOctreeBase<ContainerT, PointT>::OutofcoreOctreeBase (const Eigen::Vector3d& min, const Eigen::Vector3d& max, const double node_dim_meters, const boost::filesystem::path& root_name, const std::string& coord_sys)
       : root_ ()
       , read_write_mutex_ ()
       , lodPoints_ ()
@@ -110,15 +110,15 @@ namespace pcl
     {
       if (boost::filesystem::exists (root_name.parent_path ()))
       {
-        PCL_ERROR ("[pcl::outofcore::octree_base] A dir named %s already exists. Overwriting an existing tree is not supported.\n", root_name.parent_path ().c_str () );
-        PCL_THROW_EXCEPTION ( PCLException, "[pcl::outofcore::octree_base] Directory exists; Overwriting an existing tree is not supported\n");
+        PCL_ERROR ("[pcl::outofcore::OutofcoreOctreeBase] A dir named %s already exists. Overwriting an existing tree is not supported.\n", root_name.parent_path ().c_str () );
+        PCL_THROW_EXCEPTION ( PCLException, "[pcl::outofcore::OutofcoreOctreeBase] Directory exists; Overwriting an existing tree is not supported\n");
       }
 
      // Check file extension
-      if (boost::filesystem::extension (root_name) != octree_base_node<ContainerT, PointT>::node_index_extension)
+      if (boost::filesystem::extension (root_name) != OutofcoreOctreeBaseNode<ContainerT, PointT>::node_index_extension)
       {
-        PCL_ERROR ( "[pcl::outofcore::octree_base] The tree must be created with a root node ending in .oct_idx\n" );
-        PCL_THROW_EXCEPTION (PCLException, "[pcl::outofcore::octree_base] Root file extension does not match .oct_idx\n");
+        PCL_ERROR ( "[pcl::outofcore::OutofcoreOctreeBase] The tree must be created with a root node ending in .oct_idx\n" );
+        PCL_THROW_EXCEPTION (PCLException, "[pcl::outofcore::OutofcoreOctreeBase] Root file extension does not match .oct_idx\n");
       }
 
       ///\todo Incorporate arbitrary optional metadata for the tree (new PCD file type might be useful here)
@@ -130,7 +130,7 @@ namespace pcl
       boost::filesystem::create_directory (dir);
 
       // Create root_ node
-      root_ = new octree_base_node<ContainerT, PointT> (min, max, node_dim_meters, this, root_name);
+      root_ = new OutofcoreOctreeBaseNode<ContainerT, PointT> (min, max, node_dim_meters, this, root_name);
       root_->m_tree_ = this;
 
       // max_depth_ is set when creating the root_ node
@@ -144,7 +144,7 @@ namespace pcl
 
 // todo: Both constructs share the same code except for a single line
     template<typename ContainerT, typename PointT>
-    octree_base<ContainerT, PointT>::octree_base (const int max_depth, const Eigen::Vector3d& min, const Eigen::Vector3d& max, const boost::filesystem::path& root_name, const std::string& coord_sys)
+    OutofcoreOctreeBase<ContainerT, PointT>::OutofcoreOctreeBase (const int max_depth, const Eigen::Vector3d& min, const Eigen::Vector3d& max, const boost::filesystem::path& root_name, const std::string& coord_sys)
       : root_ ()
       , read_write_mutex_ ()
       , lodPoints_ ()
@@ -154,10 +154,10 @@ namespace pcl
       , resolution_ ()
     {
       // Check file extension
-      if (boost::filesystem::extension (root_name) != octree_base_node<ContainerT, PointT>::node_index_extension)
+      if (boost::filesystem::extension (root_name) != OutofcoreOctreeBaseNode<ContainerT, PointT>::node_index_extension)
       {
-        PCL_ERROR ( "[pcl::outofcore::octree_base] the tree must be created with a root_ node ending in .oct_idx\n" );
-        PCL_THROW_EXCEPTION (PCLException, "[pcl::outofcore::octree_base] Bad extension. Tree must be created with node ending in .oct_idx\n");
+        PCL_ERROR ( "[pcl::outofcore::OutofcoreOctreeBase] the tree must be created with a root_ node ending in .oct_idx\n" );
+        PCL_THROW_EXCEPTION (PCLException, "[pcl::outofcore::OutofcoreOctreeBase] Bad extension. Tree must be created with node ending in .oct_idx\n");
       }
 
       coord_system_ = coord_sys;
@@ -177,13 +177,13 @@ namespace pcl
         boost::filesystem::path childdir = dir / boost::lexical_cast<std::string> (i);
         if (boost::filesystem::exists (childdir))
         {
-          PCL_ERROR ("[pcl::outofcore::octree_base] A dir named %d exists under the root node. Overwriting an existing tree is not supported.\n", i);
-          PCL_THROW_EXCEPTION ( PCLException, "[pcl::outofcore::octree_base] Directory exists; Overwriting an existing tree is not supported\n");
+          PCL_ERROR ("[pcl::outofcore::OutofcoreOctreeBase] A dir named %d exists under the root node. Overwriting an existing tree is not supported.\n", i);
+          PCL_THROW_EXCEPTION ( PCLException, "[pcl::outofcore::OutofcoreOctreeBase] Directory exists; Overwriting an existing tree is not supported\n");
         }
       }
 
       // Create root node
-      root_ = new octree_base_node<ContainerT, PointT> (max_depth, min, max, this, root_name);
+      root_ = new OutofcoreOctreeBaseNode<ContainerT, PointT> (max_depth, min, max, this, root_name);
 
       // max_depth_ is set when creating the root_ node
       lodPoints_.resize (max_depth_ + 1);
@@ -195,7 +195,7 @@ namespace pcl
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT>
-    octree_base<ContainerT, PointT>::~octree_base ()
+    OutofcoreOctreeBase<ContainerT, PointT>::~OutofcoreOctreeBase ()
     {
       root_->flushToDiskRecursive ();
 
@@ -205,7 +205,7 @@ namespace pcl
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> void
-    octree_base<ContainerT, PointT>::saveToFile ()
+    OutofcoreOctreeBase<ContainerT, PointT>::saveToFile ()
     {
       // Create JSON object
       boost::shared_ptr<cJSON> idx (cJSON_CreateObject (), cJSON_Delete);
@@ -240,7 +240,7 @@ namespace pcl
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> void
-    octree_base<ContainerT, PointT>::loadFromFile ()
+    OutofcoreOctreeBase<ContainerT, PointT>::loadFromFile ()
     {
       // Open JSON
       std::vector<char> idx_input;
@@ -280,7 +280,7 @@ namespace pcl
       }
       if ((lod->valueint + 1) != cJSON_GetArraySize (numpts))
       {
-        PCL_ERROR ( "[pcl::outofcore::octree_base] Index failed to parse: %s\n",treepath_.c_str ());
+        PCL_ERROR ( "[pcl::outofcore::OutofcoreOctreeBase] Index failed to parse: %s\n",treepath_.c_str ());
         PCL_THROW_EXCEPTION (PCLException, "Outofcore Octree Prase Failure: LOD and array size of points is not valid\n");
       }
 
@@ -297,7 +297,7 @@ namespace pcl
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> boost::uint64_t
-    octree_base<ContainerT, PointT>::addDataToLeaf (const AlignedPointTVector& p)
+    OutofcoreOctreeBase<ContainerT, PointT>::addDataToLeaf (const AlignedPointTVector& p)
     {
       boost::unique_lock < boost::shared_mutex > lock (read_write_mutex_);
 
@@ -312,7 +312,7 @@ namespace pcl
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> boost::uint64_t
-    octree_base<ContainerT, PointT>::addPointCloud (PointCloudConstPtr point_cloud)
+    OutofcoreOctreeBase<ContainerT, PointT>::addPointCloud (PointCloudConstPtr point_cloud)
     {
       return addDataToLeaf (point_cloud->points);
     }
@@ -320,7 +320,7 @@ namespace pcl
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> boost::uint64_t
-    octree_base<ContainerT, PointT>::addPointCloud (sensor_msgs::PointCloud2::Ptr &input_cloud, const bool skip_bb_check = false)
+    OutofcoreOctreeBase<ContainerT, PointT>::addPointCloud (sensor_msgs::PointCloud2::Ptr &input_cloud, const bool skip_bb_check = false)
     {
       uint64_t pt_added = this->root_->addPointCloud (input_cloud, skip_bb_check) ;
       assert (input_cloud->width*input_cloud->height == pt_added);
@@ -331,7 +331,7 @@ namespace pcl
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> boost::uint64_t
-    octree_base<ContainerT, PointT>::addPointCloud_and_genLOD (PointCloudConstPtr point_cloud)
+    OutofcoreOctreeBase<ContainerT, PointT>::addPointCloud_and_genLOD (PointCloudConstPtr point_cloud)
     {
       // Lock the tree while writing
       boost::unique_lock < boost::shared_mutex > lock (read_write_mutex_);
@@ -341,13 +341,13 @@ namespace pcl
 
 ////////////////////////////////////////////////////////////////////////////////
     template<typename ContainerT, typename PointT> boost::uint64_t
-    octree_base<ContainerT, PointT>::addPointCloud_and_genLOD (sensor_msgs::PointCloud2::Ptr &input_cloud)
+    OutofcoreOctreeBase<ContainerT, PointT>::addPointCloud_and_genLOD (sensor_msgs::PointCloud2::Ptr &input_cloud)
     {
       // Lock the tree while writing
       boost::unique_lock < boost::shared_mutex > lock (read_write_mutex_);
       boost::uint64_t pt_added = root_->addPointCloud_and_genLOD ( input_cloud );
       
-//      PCL_INFO ("[pcl::outofcore::octree_base::%s] Points added %lu, points in input cloud, %lu\n",__FUNCTION__, pt_added, input_cloud->width*input_cloud->height );
+//      PCL_INFO ("[pcl::outofcore::OutofcoreOctreeBase::%s] Points added %lu, points in input cloud, %lu\n",__FUNCTION__, pt_added, input_cloud->width*input_cloud->height );
  
       assert ( input_cloud->width*input_cloud->height == pt_added );
 
@@ -359,7 +359,7 @@ namespace pcl
 ////////////////////////////////////////////////////////////////////////////////
 #if 0
     template<typename ContainerT, typename PointT> void
-    octree_base<ContainerT, PointT>::addPointToLeaf (const PointT& src)
+    OutofcoreOctreeBase<ContainerT, PointT>::addPointToLeaf (const PointT& src)
     {
       boost::unique_lock < boost::shared_mutex > lock (read_write_mutex_);
       root_->addPointToLeaf (src, false);
@@ -369,7 +369,7 @@ namespace pcl
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> boost::uint64_t
-    octree_base<ContainerT, PointT>::addDataToLeaf_and_genLOD (AlignedPointTVector& src)
+    OutofcoreOctreeBase<ContainerT, PointT>::addDataToLeaf_and_genLOD (AlignedPointTVector& src)
     {
       // Lock the tree while writing
       boost::unique_lock < boost::shared_mutex > lock (read_write_mutex_);
@@ -379,7 +379,7 @@ namespace pcl
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> void
-    octree_base<ContainerT, PointT>::queryBBIncludes (const Eigen::Vector3d& min, const Eigen::Vector3d& max, const size_t query_depth, AlignedPointTVector& dst) const
+    OutofcoreOctreeBase<ContainerT, PointT>::queryBBIncludes (const Eigen::Vector3d& min, const Eigen::Vector3d& max, const size_t query_depth, AlignedPointTVector& dst) const
     {
       boost::shared_lock < boost::shared_mutex > lock (read_write_mutex_);
       dst.clear ();
@@ -388,7 +388,7 @@ namespace pcl
 
 ////////////////////////////////////////////////////////////////////////////////
     template<typename ContainerT, typename PointT> void
-    octree_base<ContainerT, PointT>::queryBBIncludes (const Eigen::Vector3d& min, const Eigen::Vector3d& max, const int query_depth, const sensor_msgs::PointCloud2::Ptr& dst_blob) const
+    OutofcoreOctreeBase<ContainerT, PointT>::queryBBIncludes (const Eigen::Vector3d& min, const Eigen::Vector3d& max, const int query_depth, const sensor_msgs::PointCloud2::Ptr& dst_blob) const
     {
       boost::shared_lock < boost::shared_mutex > lock (read_write_mutex_);
 
@@ -402,7 +402,7 @@ namespace pcl
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> void
-    octree_base<ContainerT, PointT>::queryBBIncludes_subsample (const Eigen::Vector3d& min, const Eigen::Vector3d& max, const size_t query_depth, const double percent, AlignedPointTVector& dst) const
+    OutofcoreOctreeBase<ContainerT, PointT>::queryBBIncludes_subsample (const Eigen::Vector3d& min, const Eigen::Vector3d& max, const size_t query_depth, const double percent, AlignedPointTVector& dst) const
     {
       boost::shared_lock < boost::shared_mutex > lock (read_write_mutex_);
       dst.clear ();
@@ -412,7 +412,7 @@ namespace pcl
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> bool
-    octree_base<ContainerT, PointT>::getBoundingBox (Eigen::Vector3d &min, Eigen::Vector3d &max) const
+    OutofcoreOctreeBase<ContainerT, PointT>::getBoundingBox (Eigen::Vector3d &min, Eigen::Vector3d &max) const
     {
       if (root_ != NULL)
       {
@@ -425,7 +425,7 @@ namespace pcl
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> void
-    octree_base<ContainerT, PointT>::printBBox(const size_t query_depth) const
+    OutofcoreOctreeBase<ContainerT, PointT>::printBBox(const size_t query_depth) const
     {
       boost::shared_lock < boost::shared_mutex > lock (read_write_mutex_);
       root_->printBBox (query_depth);
@@ -434,7 +434,7 @@ namespace pcl
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> void
-    octree_base<ContainerT, PointT>::getVoxelCenters (AlignedPointTVector &voxel_centers, const size_t query_depth) const
+    OutofcoreOctreeBase<ContainerT, PointT>::getVoxelCenters (AlignedPointTVector &voxel_centers, const size_t query_depth) const
     {
       boost::shared_lock < boost::shared_mutex > lock (read_write_mutex_);
       if (query_depth > max_depth_) 
@@ -448,7 +448,7 @@ namespace pcl
     }
 
     template<typename ContainerT, typename PointT> void
-    octree_base<ContainerT, PointT>::getVoxelCenters (std::vector<Eigen::Vector3d, Eigen::aligned_allocator<Eigen::Vector3d> > &voxel_centers, const size_t query_depth) const
+    OutofcoreOctreeBase<ContainerT, PointT>::getVoxelCenters (std::vector<Eigen::Vector3d, Eigen::aligned_allocator<Eigen::Vector3d> > &voxel_centers, const size_t query_depth) const
     {
       boost::shared_lock < boost::shared_mutex > lock (read_write_mutex_);
       if (query_depth > max_depth_)
@@ -464,7 +464,7 @@ namespace pcl
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> void
-    octree_base<ContainerT, PointT>::queryBBIntersects (const Eigen::Vector3d& min, const Eigen::Vector3d& max, const boost::uint32_t query_depth, std::list<std::string>& bin_name) const
+    OutofcoreOctreeBase<ContainerT, PointT>::queryBBIntersects (const Eigen::Vector3d& min, const Eigen::Vector3d& max, const boost::uint32_t query_depth, std::list<std::string>& bin_name) const
     {
       boost::shared_lock < boost::shared_mutex > lock (read_write_mutex_);
       bin_name.clear ();
@@ -476,7 +476,7 @@ namespace pcl
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> void
-    octree_base<ContainerT, PointT>::writeVPythonVisual (const boost::filesystem::path filename)
+    OutofcoreOctreeBase<ContainerT, PointT>::writeVPythonVisual (const boost::filesystem::path filename)
     {
       std::ofstream f (filename.c_str ());
 
@@ -487,28 +487,28 @@ namespace pcl
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> void
-    octree_base<ContainerT, PointT>::flushToDisk ()
+    OutofcoreOctreeBase<ContainerT, PointT>::flushToDisk ()
     {
       root_->flushToDisk ();
     }
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> void
-    octree_base<ContainerT, PointT>::flushToDiskLazy ()
+    OutofcoreOctreeBase<ContainerT, PointT>::flushToDiskLazy ()
     {
       root_->flushToDiskLazy ();
     }
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> void
-    octree_base<ContainerT, PointT>::saveIdx ()
+    OutofcoreOctreeBase<ContainerT, PointT>::saveIdx ()
     {
       root_->saveIdx (true);
     }
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> void
-    octree_base<ContainerT, PointT>::convertToXYZ ()
+    OutofcoreOctreeBase<ContainerT, PointT>::convertToXYZ ()
     {
       saveToFile ();
       root_->convertToXYZ ();
@@ -516,14 +516,14 @@ namespace pcl
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> void
-    octree_base<ContainerT, PointT>::DeAllocEmptyNodeCache ()
+    OutofcoreOctreeBase<ContainerT, PointT>::DeAllocEmptyNodeCache ()
     {
       DeAllocEmptyNodeCache (root_ );
     }
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> void
-    octree_base<ContainerT, PointT>::DeAllocEmptyNodeCache (octree_base_node<ContainerT, PointT>* current)
+    OutofcoreOctreeBase<ContainerT, PointT>::DeAllocEmptyNodeCache (OutofcoreOctreeBaseNode<ContainerT, PointT>* current)
     {
       if (current->size () == 0)
       {
@@ -540,7 +540,7 @@ namespace pcl
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> bool
-    octree_base<ContainerT, PointT>::getBinDimension (double& x, double& y) const
+    OutofcoreOctreeBase<ContainerT, PointT>::getBinDimension (double& x, double& y) const
     {
       if (root_ == NULL)
       {
@@ -563,7 +563,7 @@ namespace pcl
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> double
-    octree_base<ContainerT, PointT>::getVoxelSideLength (const boost::uint64_t depth) const
+    OutofcoreOctreeBase<ContainerT, PointT>::getVoxelSideLength (const boost::uint64_t depth) const
     {
       Eigen::Vector3d min, max;
       this->getBoundingBox (min, max);
@@ -574,7 +574,7 @@ namespace pcl
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> void
-    octree_base<ContainerT, PointT>::buildLOD ()
+    OutofcoreOctreeBase<ContainerT, PointT>::buildLOD ()
     {
       if (root_ == NULL)
       {
@@ -584,13 +584,13 @@ namespace pcl
       boost::unique_lock < boost::shared_mutex > lock (read_write_mutex_);
 
       const int current_dims = 1;
-      octree_base_node<ContainerT, PointT>* current_branch[current_dims] = {root_};
-      this->buildLOD (current_branch, current_dims);
+      OutofcoreOctreeBaseNode<ContainerT, PointT>* current_branch[current_dims] = {root_};
+      this->buildLODRecursive (current_branch, current_dims);
     }
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> void
-    octree_base<ContainerT, PointT>::buildLODRecursive (octree_base_node<ContainerT, PointT>** current_branch, const int current_dims)
+    OutofcoreOctreeBase<ContainerT, PointT>::buildLODRecursive (OutofcoreOctreeBaseNode<ContainerT, PointT>** current_branch, const int current_dims)
     {
       //stop if this brach does not exist
       if (!current_branch[current_dims - 1])
@@ -602,7 +602,7 @@ namespace pcl
           && (!current_branch[current_dims - 1]->hasUnloadedChildren ()))//at leaf: subsample, remove, and copy to higher nodes
       {
         //this node's idx is (current_dims-1)
-        octree_base_node<ContainerT, PointT>* leaf = current_branch[current_dims - 1];
+        OutofcoreOctreeBaseNode<ContainerT, PointT>* leaf = current_branch[current_dims - 1];
 
         boost::uint64_t leaf_start_size = leaf->payload->size ();
         if (leaf_start_size > 0)//skip empty
@@ -613,11 +613,11 @@ namespace pcl
             for (size_t level = (current_dims - 1); level >= 1; level--)
             {
               //the target
-              octree_base_node<ContainerT, PointT>* target_parent = current_branch[level - 1];
+              OutofcoreOctreeBaseNode<ContainerT, PointT>* target_parent = current_branch[level - 1];
 
               //the percent to copy
               //each level up the chain gets sample_precent^l of the leaf's data
-              double percent = pow (double (octree_base_node<ContainerT, PointT>::sample_precent), double (current_dims - level));
+              double percent = pow (double (OutofcoreOctreeBaseNode<ContainerT, PointT>::sample_precent), double (current_dims - level));
 
               //read in percent of node
               AlignedPointTVector v;
@@ -648,8 +648,8 @@ namespace pcl
         current_branch[current_dims - 1]->payload->clear ();
 
         const int next_dims = current_dims + 1;
-        octree_base_node<ContainerT, PointT>** next_branch = new octree_base_node<ContainerT, PointT>*[next_dims];
-        memcpy (next_branch, current_branch, current_dims * sizeof(octree_base_node<ContainerT, PointT>**));
+        OutofcoreOctreeBaseNode<ContainerT, PointT>** next_branch = new OutofcoreOctreeBaseNode<ContainerT, PointT>*[next_dims];
+        memcpy (next_branch, current_branch, current_dims * sizeof(OutofcoreOctreeBaseNode<ContainerT, PointT>**));
 
         size_t numchild = current_branch[current_dims - 1]->numchildren ();
         if ((numchild != 8) && (current_branch[current_dims - 1]->hasUnloadedChildren ()))
@@ -661,7 +661,7 @@ namespace pcl
         for (size_t i = 0; i < numchild; i++)
         {
           next_branch[next_dims - 1] = next_branch[current_dims - 1]->children[i];
-          buildLOD (next_branch, next_dims);
+          buildLODRecursive (next_branch, next_dims);
         }
 
         delete[] next_branch;

@@ -52,13 +52,13 @@ namespace pcl
   {
 
     template<typename PointT>
-    boost::mutex octree_ram_container<PointT>::rng_mutex_;
+    boost::mutex OutofcoreOctreeRamContainer<PointT>::rng_mutex_;
 
     template<typename PointT> 
-    boost::mt19937 octree_ram_container<PointT>::rand_gen_ (static_cast<unsigned int>(std::time( NULL)));
+    boost::mt19937 OutofcoreOctreeRamContainer<PointT>::rand_gen_ (static_cast<unsigned int>(std::time( NULL)));
 
     template<typename PointT> void
-    octree_ram_container<PointT>::convertToXYZ (const boost::filesystem::path& path)
+    OutofcoreOctreeRamContainer<PointT>::convertToXYZ (const boost::filesystem::path& path)
     {
       if (!container_.empty ())
       {
@@ -82,14 +82,14 @@ namespace pcl
     }
 ////////////////////////////////////////////////////////////////////////////////
     template<typename PointT> void
-    octree_ram_container<PointT>::insertRange (const PointT* start, const boost::uint64_t count)
+    OutofcoreOctreeRamContainer<PointT>::insertRange (const PointT* start, const boost::uint64_t count)
     {
       container_.insert (container_.end (), start, start + count);
     }
 
 ////////////////////////////////////////////////////////////////////////////////
     template<typename PointT> void
-    octree_ram_container<PointT>::insertRange (const PointT* const * start, const boost::uint64_t count)
+    OutofcoreOctreeRamContainer<PointT>::insertRange (const PointT* const * start, const boost::uint64_t count)
     {
       AlignedPointTVector temp;
       temp.resize (count);
@@ -102,7 +102,7 @@ namespace pcl
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename PointT> void
-    octree_ram_container<PointT>::readRange (const boost::uint64_t start, const boost::uint64_t count,
+    OutofcoreOctreeRamContainer<PointT>::readRange (const boost::uint64_t start, const boost::uint64_t count,
                                              AlignedPointTVector& v)
     {
       v.resize (count);
@@ -111,7 +111,7 @@ namespace pcl
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename PointT> void
-    octree_ram_container<PointT>::readRangeSubSample (const boost::uint64_t start, 
+    OutofcoreOctreeRamContainer<PointT>::readRangeSubSample (const boost::uint64_t start, 
                                                       const boost::uint64_t count,
                                                       const double percent, 
                                                       AlignedPointTVector& v)

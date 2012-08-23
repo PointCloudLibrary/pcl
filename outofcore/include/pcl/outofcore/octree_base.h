@@ -37,25 +37,22 @@
  *  $Id$
  */
 
-#ifndef PCL_OUTOFCORE_OCTREE_BASE_H_
-#define PCL_OUTOFCORE_OCTREE_BASE_H_
+#ifndef PCL_OUTOFCORE_OUTOFCOREOCTREEBASE_H_
+#define PCL_OUTOFCORE_OUTOFCOREOCTREEBASE_H_
 
 #include <pcl/outofcore/boost.h>
 
-// PCL (Urban Robotics)
 #include <pcl/outofcore/octree_base_node.h>
 #include <pcl/outofcore/octree_disk_container.h>
 #include <pcl/outofcore/octree_ram_container.h>
 
 #include <sensor_msgs/PointCloud2.h>
 
-/** 
- */
 namespace pcl
 {
   namespace outofcore
   {
-  /** \class octree_base 
+  /** \class OutofcoreOctreeBase 
    *  \brief This code defines the octree used for point storage at Urban Robotics. 
    * 
    *  \note Code was adapted from the Urban Robotics out of core octree implementation. 
@@ -63,13 +60,13 @@ namespace pcl
    *  http://www.urbanrobotics.net/
    *
    *  The primary purpose of this class is an interface to the
-   *  recursive traversal (recursion handled by \ref octree_base_node) of the
+   *  recursive traversal (recursion handled by \ref OutofcoreOctreeBaseNode) of the
    *  in-memory/top-level octree structure. The metadata in each node
    *  can be loaded entirely into main memory, and the tree traversed
    *  recursively in this state. This class provides an the interface
    *  for: 
-   *               -# Point/Region INSERTION methods 
-   *               -# Frustrum/box/region REQUESTS/QUERIES 
+   *               -# Point/Region insertion methods 
+   *               -# Frustrum/box/region queries
    *               -# Parameterization of compression, resolution, container type, etc...
    *
    *
@@ -88,18 +85,18 @@ namespace pcl
    *
    */
     template<typename ContainerT, typename PointT>
-    class octree_base
+    class OutofcoreOctreeBase
     {
-      friend class octree_base_node<ContainerT, PointT> ;
+      friend class OutofcoreOctreeBaseNode<ContainerT, PointT> ;
 
       public:
         // public typedefs
         // UR Typedefs
-        typedef octree_base<octree_disk_container < PointT > , PointT > octree_disk;
-        typedef octree_base_node<octree_disk_container < PointT > , PointT > octree_disk_node;
+        typedef OutofcoreOctreeBase<OutofcoreOctreeDiskContainer < PointT > , PointT > octree_disk;
+        typedef OutofcoreOctreeBaseNode<OutofcoreOctreeDiskContainer < PointT > , PointT > octree_disk_node;
 
-        typedef octree_base<octree_ram_container< PointT> , PointT> octree_ram;
-        typedef octree_base_node< octree_ram_container<PointT> , PointT> octree_ram_node;
+        typedef OutofcoreOctreeBase<OutofcoreOctreeRamContainer< PointT> , PointT> octree_ram;
+        typedef OutofcoreOctreeBaseNode< OutofcoreOctreeRamContainer<PointT> , PointT> octree_ram_node;
 
         typedef pcl::PointCloud<PointT> PointCloud;
         typedef boost::shared_ptr<std::vector<int> > IndicesPtr;
@@ -119,11 +116,11 @@ namespace pcl
          * otherwise only the root node is actually created, and the rest will be
          * generated on insertion or query.
          *
-         * \param rootname boost::filesystem::path to existing tree
-         * \param load_all Load entire tree
+         * \param Path to the top-level tree/tree.oct_idx metadata file
+         * \param load_all Load entire tree metadata (does not load any points from disk)
          * \throws PCLException for bad extension (root node metadata must be .oct_idx extension)
          */
-        octree_base (const boost::filesystem::path& root_name, const bool load_all);
+        OutofcoreOctreeBase (const boost::filesystem::path& root_name, const bool load_all);
 
         /** \brief Create a new tree
          *
@@ -139,9 +136,9 @@ namespace pcl
          * \param node_dim_meters Node dimension in meters (assuming your point data is in meters)
          * \param root_name must end in ".oct_idx" 
          * \param coord_sys 
-         * \throws PCLException if root file extension does not match \ref octree_base_node::node_index_extension
+         * \throws PCLException if root file extension does not match \ref OutofcoreOctreeBaseNode::node_index_extension
          */
-        octree_base (const Eigen::Vector3d&, const Eigen::Vector3d&, const double node_dim_meters, const boost::filesystem::path& root_name, const std::string& coord_sys);
+        OutofcoreOctreeBase (const Eigen::Vector3d&, const Eigen::Vector3d&, const double node_dim_meters, const boost::filesystem::path& root_name, const std::string& coord_sys);
 
         /** \brief Create a new tree; will not overwrite existing tree of same name
          *
@@ -155,9 +152,9 @@ namespace pcl
          * \throws OctreeException(OCT_CHILD_EXISTS) if the parent directory has existing children (detects an existing tree)
          * \throws OctreeException(OCT_BAD_PATH) if file extension is not ".oct_idx"
          */
-        octree_base (const int max_depth, const Eigen::Vector3d& min, const Eigen::Vector3d& max, const boost::filesystem::path& rootname, const std::string& coord_sys);
+        OutofcoreOctreeBase (const int max_depth, const Eigen::Vector3d& min, const Eigen::Vector3d& max, const boost::filesystem::path& rootname, const std::string& coord_sys);
 
-        ~octree_base ();
+        ~OutofcoreOctreeBase ();
 
         // Point/Region INSERTION methods
         // --------------------------------------------------------------------------------
@@ -438,18 +435,18 @@ namespace pcl
 
       protected:
 
-        octree_base (octree_base& rval);
-        octree_base (const octree_base& rval);
+        OutofcoreOctreeBase (OutofcoreOctreeBase& rval);
+        OutofcoreOctreeBase (const OutofcoreOctreeBase& rval);
 
-        octree_base&
-        operator= (octree_base& rval);
+        OutofcoreOctreeBase&
+        operator= (OutofcoreOctreeBase& rval);
 
-        octree_base&
-        operator= (const octree_base& rval);
+        OutofcoreOctreeBase&
+        operator= (const OutofcoreOctreeBase& rval);
 
         /** \brief flush empty nodes only */
         void
-        DeAllocEmptyNodeCache (octree_base_node<ContainerT, PointT>* current);
+        DeAllocEmptyNodeCache (OutofcoreOctreeBaseNode<ContainerT, PointT>* current);
 
         /** \brief Write octree definition ".octree" (defined by octree_extension_) to disk */
         void
@@ -463,9 +460,9 @@ namespace pcl
          * loads chunks of up to 2e9 pts at a time; this is a completely arbitrary number, and should be parameterized.
          * TODO rewrite for new point container (PointCloud2) support */
         void
-        buildLODRecursive (octree_base_node<ContainerT, PointT>** current_branch, const int current_dims);
+        buildLODRecursive (OutofcoreOctreeBaseNode<ContainerT, PointT>** current_branch, const int current_dims);
 
-        /** \brief Increment current depths (LOD for branch nodes) point count; called by addDataAtMaxDepth in octree_base_node
+        /** \brief Increment current depths (LOD for branch nodes) point count; called by addDataAtMaxDepth in OutofcoreOctreeBaseNode
          * \todo rename count_point to something more informative
          */
         inline void
@@ -478,7 +475,7 @@ namespace pcl
         }
     
         /** \brief Pointer to the root node of the octree data structure */
-        octree_base_node<ContainerT, PointT>* root_;
+        OutofcoreOctreeBaseNode<ContainerT, PointT>* root_;
         /** \brief shared mutex for controlling read/write access to disk */
         mutable boost::shared_mutex read_write_mutex_;
         /** \brief vector indexed by depth containing number of points at each level of detail */
@@ -515,4 +512,4 @@ namespace pcl
 }
 
   
-#endif // PCL_OUTOFCORE_OCTREE_BASE_H_
+#endif // PCL_OUTOFCORE_OUTOFCOREOCTREEBASE_H_

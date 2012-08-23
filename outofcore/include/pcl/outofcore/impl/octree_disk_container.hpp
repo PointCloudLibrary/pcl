@@ -37,8 +37,8 @@
  *  $Id$
  */
 
-#ifndef PCL_OCTREE_DISK_CONTAINER_IMPL_H_
-#define PCL_OCTREE_DISK_CONTAINER_IMPL_H_
+#ifndef PCL_OUTOFCORE_OCTREE_DISK_CONTAINER_IMPL_H_
+#define PCL_OUTOFCORE_OCTREE_DISK_CONTAINER_IMPL_H_
 
 // C++
 #include <sstream>
@@ -66,21 +66,21 @@ namespace pcl
   namespace outofcore
   {
     template<typename PointT>
-    boost::mutex octree_disk_container<PointT>::rng_mutex_;
+    boost::mutex OutofcoreOctreeDiskContainer<PointT>::rng_mutex_;
 
     template<typename PointT> boost::mt19937
-    octree_disk_container<PointT>::rand_gen_ (static_cast<unsigned int> (std::time(NULL)));
+    OutofcoreOctreeDiskContainer<PointT>::rand_gen_ (static_cast<unsigned int> (std::time(NULL)));
 
     template<typename PointT>
-    boost::uuids::random_generator octree_disk_container<PointT>::uuid_gen_ (&rand_gen_);
+    boost::uuids::random_generator OutofcoreOctreeDiskContainer<PointT>::uuid_gen_ (&rand_gen_);
 
     template<typename PointT>
-    const uint64_t octree_disk_container<PointT>::READ_BLOCK_SIZE_ = static_cast<uint64_t> (2e12);
+    const uint64_t OutofcoreOctreeDiskContainer<PointT>::READ_BLOCK_SIZE_ = static_cast<uint64_t> (2e12);
     template<typename PointT>
-    const uint64_t octree_disk_container<PointT>::WRITE_BUFF_MAX_ = static_cast<uint64_t> (2e12);
+    const uint64_t OutofcoreOctreeDiskContainer<PointT>::WRITE_BUFF_MAX_ = static_cast<uint64_t> (2e12);
 
     template<typename PointT> void
-    octree_disk_container<PointT>::getRandomUUIDString (std::string& s)
+    OutofcoreOctreeDiskContainer<PointT>::getRandomUUIDString (std::string& s)
     {
       boost::uuids::uuid u;
       {
@@ -95,7 +95,7 @@ namespace pcl
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename PointT>
-    octree_disk_container<PointT>::octree_disk_container ()
+    OutofcoreOctreeDiskContainer<PointT>::OutofcoreOctreeDiskContainer ()
     {
       std::string temp = getRandomUUIDString ();
       disk_storage_filename_ = boost::shared_ptr<std::string> (new std::string (temp));
@@ -104,7 +104,7 @@ namespace pcl
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename PointT>
-    octree_disk_container<PointT>::octree_disk_container (const boost::filesystem::path& path)
+    OutofcoreOctreeDiskContainer<PointT>::OutofcoreOctreeDiskContainer (const boost::filesystem::path& path)
       : writebuff_ ()
       , disk_storage_filename_ ()
       , filelen_ ()
@@ -152,7 +152,7 @@ namespace pcl
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename PointT>
-    octree_disk_container<PointT>::~octree_disk_container ()
+    OutofcoreOctreeDiskContainer<PointT>::~OutofcoreOctreeDiskContainer ()
     {
       flushWritebuff (true);
     }
@@ -160,7 +160,7 @@ namespace pcl
 
     /// \todo deprecate flushWritebuff ? unused? 
     template<typename PointT> void
-    octree_disk_container<PointT>::flushWritebuff (const bool force_cache_dealloc)
+    OutofcoreOctreeDiskContainer<PointT>::flushWritebuff (const bool force_cache_dealloc)
     {
       int outofcore_v = 3;
       
@@ -178,7 +178,7 @@ namespace pcl
         pcl::PCDWriter writer;
 
 
-        PCL_WARN ("[pcl::outofcore::octree_disk_container::%s] Flushing writebuffer in a dangerous way to file %s. This might overwrite data in destination file\n", __FUNCTION__, disk_storage_filename_->c_str ());
+        PCL_WARN ("[pcl::outofcore::OutofcoreOctreeDiskContainer::%s] Flushing writebuffer in a dangerous way to file %s. This might overwrite data in destination file\n", __FUNCTION__, disk_storage_filename_->c_str ());
         
         // Write ascii for now to debug
         int res = writer.writeBinaryCompressed (*disk_storage_filename_, *cloud);
@@ -216,7 +216,7 @@ namespace pcl
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename PointT> PointT
-    octree_disk_container<PointT>::operator[] (uint64_t idx) const
+    OutofcoreOctreeDiskContainer<PointT>::operator[] (uint64_t idx) const
     {
       //if the index is on disk
       if (idx < filelen_)
@@ -246,33 +246,33 @@ namespace pcl
       if (idx < (filelen_ + writebuff_.size ()))
       {
         idx -= filelen_;
-        return writebuff_[idx];
+        return (writebuff_[idx]);
       }
 
       //else, throw out of range exception
-      PCL_THROW_EXCEPTION (PCLException, "[pcl::outofcore::octree_disk_container] Index is out of range");
+      PCL_THROW_EXCEPTION (PCLException, "[pcl::outofcore:OutofcoreOctreeDiskContainer] Index is out of range");
     }
     
     ////////////////////////////////////////////////////////////////////////////////
     template<typename PointT> void
-    octree_disk_container<PointT>::readRange (const uint64_t start, const uint64_t count, AlignedPointTVector& dst)
+    OutofcoreOctreeDiskContainer<PointT>::readRange (const uint64_t start, const uint64_t count, AlignedPointTVector& dst)
     {
       if (count == 0)
       {
-//        PCL_DEBUG ("[pcl::outofcore::octree_disk_container] No points requested for reading\n");
+//        PCL_DEBUG ("[pcl::outofcore::OutofcoreOctreeDiskContainer] No points requested for reading\n");
         return;
       }
 
       if ((start + count) > size ())
       {
-        PCL_ERROR ("[pcl::outofcore::octree_disk_container] Indicies out of range; start + count exceeds the size of the stored points\n");
-        PCL_THROW_EXCEPTION (PCLException, "[pcl::outofcore::octree_disk_container] Outofcore Octree Exception: Read indices exceed range");
+        PCL_ERROR ("[pcl::outofcore::OutofcoreOctreeDiskContainer::%s] Indicies out of range; start + count exceeds the size of the stored points\n", __FUNCTION__);
+        PCL_THROW_EXCEPTION (PCLException, "[pcl::outofcore::OutofcoreOctreeDiskContainer] Outofcore Octree Exception: Read indices exceed range");
       }
 
       pcl::PCDReader reader;
       typename pcl::PointCloud<PointT>::Ptr cloud (new pcl::PointCloud<PointT> ());
       
-      int res = reader.read (*disk_storage_filename_ , *cloud);
+      int res = reader.read (*disk_storage_filename_, *cloud);
       (void)res;
       assert (res == 0);
       
@@ -336,7 +336,7 @@ namespace pcl
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename PointT> void
-    octree_disk_container<PointT>::readRangeSubSample_bernoulli (const uint64_t start, const uint64_t count, const double percent, AlignedPointTVector& dst)
+    OutofcoreOctreeDiskContainer<PointT>::readRangeSubSample_bernoulli (const uint64_t start, const uint64_t count, const double percent, AlignedPointTVector& dst)
     {
       if (count == 0)
       {
@@ -429,7 +429,7 @@ namespace pcl
 
 //change this to use a weighted coin flip, to allow sparse sampling of small clouds (eg the bernoulli above)
     template<typename PointT> void
-    octree_disk_container<PointT>::readRangeSubSample (const uint64_t start, const uint64_t count, const double percent, AlignedPointTVector& dst)
+    OutofcoreOctreeDiskContainer<PointT>::readRangeSubSample (const uint64_t start, const uint64_t count, const double percent, AlignedPointTVector& dst)
     {
       if (count == 0)
       {
@@ -526,7 +526,7 @@ namespace pcl
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename PointT> void
-    octree_disk_container<PointT>::push_back (const PointT& p)
+    OutofcoreOctreeDiskContainer<PointT>::push_back (const PointT& p)
     {
       ///\todo modfiy this method & delayed write cache for construction
       writebuff_.push_back (p);
@@ -538,7 +538,7 @@ namespace pcl
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename PointT> void
-    octree_disk_container<PointT>::insertRange (const AlignedPointTVector& src)
+    OutofcoreOctreeDiskContainer<PointT>::insertRange (const AlignedPointTVector& src)
     {
       const uint64_t count = src.size ();
       
@@ -584,7 +584,7 @@ namespace pcl
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename PointT> void
-    octree_disk_container<PointT>::insertRange (const sensor_msgs::PointCloud2::Ptr& input_cloud)
+    OutofcoreOctreeDiskContainer<PointT>::insertRange (const sensor_msgs::PointCloud2::Ptr& input_cloud)
     {
       //this needs to be stress tested; also does no delayed-write caching (for now)
       sensor_msgs::PointCloud2::Ptr tmp_cloud (new sensor_msgs::PointCloud2 ());
@@ -598,7 +598,7 @@ namespace pcl
         (void)res;
         assert (res == 0);
         pcl::PCDWriter writer;
-//            PCL_INFO ("[pcl::outofcore::octree_disk_container::%s] Concatenating point cloud from %s to new cloud\n", __FUNCTION__, disk_storage_filename_->c_str ());
+//            PCL_INFO ("[pcl::outofcore::OutofcoreOctreeDiskContainer::%s] Concatenating point cloud from %s to new cloud\n", __FUNCTION__, disk_storage_filename_->c_str ());
         pcl::concatenatePointCloud (*tmp_cloud, *input_cloud, *tmp_cloud);
         writer.writeBinaryCompressed (*disk_storage_filename_, *input_cloud);
             
@@ -616,7 +616,7 @@ namespace pcl
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename PointT> void
-    octree_disk_container<PointT>::readRange (const uint64_t, const uint64_t, sensor_msgs::PointCloud2::Ptr& dst)
+    OutofcoreOctreeDiskContainer<PointT>::readRange (const uint64_t, const uint64_t, sensor_msgs::PointCloud2::Ptr& dst)
     {
       pcl::PCDReader reader;
 
@@ -626,21 +626,21 @@ namespace pcl
           
       if (boost::filesystem::exists (*disk_storage_filename_))
       {
-//            PCL_INFO ("[pcl::outofcore::octree_disk_container::%s] Reading points from disk from %s.\n", __FUNCTION__ , disk_storage_filename_->c_str ());
+//            PCL_INFO ("[pcl::outofcore::OutofcoreOctreeDiskContainer::%s] Reading points from disk from %s.\n", __FUNCTION__ , disk_storage_filename_->c_str ());
         int res = reader.read (*disk_storage_filename_, *dst, origin, orientation, pcd_version);
         (void)res;
         assert (res != -1);
       }
       else
       {
-        PCL_ERROR ("[pcl::outofcore::octree_disk_container::%s] File %s does not exist in node.\n", __FUNCTION__, disk_storage_filename_->c_str ());
+        PCL_ERROR ("[pcl::outofcore::OutofcoreOctreeDiskContainer::%s] File %s does not exist in node.\n", __FUNCTION__, disk_storage_filename_->c_str ());
       }
     }
 
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename PointT> void
-    octree_disk_container<PointT>::insertRange (const PointT* const * start, const uint64_t count)
+    OutofcoreOctreeDiskContainer<PointT>::insertRange (const PointT* const * start, const uint64_t count)
     {
       //copy the handles to a continuous block
       PointT* arr = new PointT[count];
@@ -658,7 +658,7 @@ namespace pcl
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename PointT> void
-    octree_disk_container<PointT>::insertRange (const PointT* start, const uint64_t count)
+    OutofcoreOctreeDiskContainer<PointT>::insertRange (const PointT* start, const uint64_t count)
     {
       ///\todo standardize the interface for writing points to disk with this class; this method may not work properly
       ///\todo deprecate this method
@@ -748,4 +748,4 @@ namespace pcl
   }//namespace outofcore
 }//namespace pcl
 
-#endif //PCL_OCTREE_DISK_CONTAINER_IMPL_H_
+#endif //PCL_OUTOFCORE_OCTREE_DISK_CONTAINER_IMPL_H_

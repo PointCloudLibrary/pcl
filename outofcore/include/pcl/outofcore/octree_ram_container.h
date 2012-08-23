@@ -43,18 +43,14 @@
 // C++
 #include <vector>
 
-// Boost
-#include <boost/filesystem.hpp>
-#include <boost/thread.hpp>
-#include <boost/random/mersenne_twister.hpp>
-
+#include <pcl/outofcore/boost.h>
 #include <pcl/outofcore/octree_abstract_node_container.h>
 
 namespace pcl
 {
   namespace outofcore
   {
-    /** \class octree_ram_container
+    /** \class OutofcoreOctreeRamContainer
      *  \brief Storage container class which the outofcore octree base is templated against
      *  \note Code was adapted from the Urban Robotics out of core octree implementation. 
      *  Contact Jacob Schloss <jacob.schloss@urbanrobotics.net> with any questions. 
@@ -64,14 +60,14 @@ namespace pcl
      *  \author Jacob Schloss (jacob.scloss@urbanrobotics.net)
      */
     template<typename PointT>
-    class octree_ram_container : public OutofcoreAbstractNodeContainer<PointT>
+    class OutofcoreOctreeRamContainer : public OutofcoreAbstractNodeContainer<PointT>
     {
       public:
         typedef typename OutofcoreAbstractNodeContainer<PointT>::AlignedPointTVector AlignedPointTVector;
 
         /** \brief empty contructor (with a path parameter?)
          */
-        octree_ram_container (const boost::filesystem::path&) : container_ () { }
+        OutofcoreOctreeRamContainer (const boost::filesystem::path&) : container_ () { }
         
         /** \brief inserts \ref count number of points into container; uses the container_ type's insert         *  function
          * \param[in] start - address of first point in array
@@ -90,14 +86,14 @@ namespace pcl
         void
         insertRange (AlignedPointTVector &p)
         {
-          PCL_ERROR ("[pcl::outofcore::octree_ram_container] Inserting eigen-aligned point vectors is not implemented using the ram containers\n");
+          PCL_ERROR ("[pcl::outofcore::OutofcoreOctreeRamContainer] Inserting eigen-aligned point vectors is not implemented using the ram containers\n");
           //insertRange (&(p.begin ()), p.size ());
         }
 
         void
         insertRange (const AlignedPointTVector &p)
         {
-          PCL_ERROR ("[pcl::outofcore::octree_ram_container] Inserting eigen-aligned point vectors is not implemented using the ram containers\n");
+          PCL_ERROR ("[pcl::outofcore::OutofcoreOctreeRamContainer] Inserting eigen-aligned point vectors is not implemented using the ram containers\n");
         }
         
         /** \brief 
@@ -158,10 +154,10 @@ namespace pcl
 
       protected:
         //no copy construction
-        octree_ram_container (const octree_ram_container &rval) { }
+        OutofcoreOctreeRamContainer (const OutofcoreOctreeRamContainer &rval) { }
 
-        octree_ram_container&
-        operator= (const octree_ram_container& rval) { }
+        OutofcoreOctreeRamContainer&
+        operator= (const OutofcoreOctreeRamContainer& rval) { }
 
         //the actual container
         //std::deque<PointT> container;
