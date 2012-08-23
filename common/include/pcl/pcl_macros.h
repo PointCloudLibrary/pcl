@@ -286,7 +286,7 @@ log2f (float x)
 
 // gcc supports this starting from 4.5 : http://gcc.gnu.org/bugzilla/show_bug.cgi?id=43666
 #ifdef __GNUC__
-#if PCL_LINEAR_VERSION(__GNUC__,__GNUC_MINOR__,__GNUC_PATCHLEVEL__) < PCL_LINEAR_VERSION(4,5,0)
+#if PCL_LINEAR_VERSION(__GNUC__,__GNUC_MINOR__,__GNUC_PATCHLEVEL__) < PCL_LINEAR_VERSION(4,5,0) || defined(__INTEL_COMPILER)
 #define PCL_DEPRECATED(func, message) func __attribute__ ((deprecated))
 #else
 #define PCL_DEPRECATED(func, message) func __attribute__ ((deprecated(message)))
@@ -317,7 +317,8 @@ log2f (float x)
 
 // gcc supports this starting from 4.5 : http://gcc.gnu.org/bugzilla/show_bug.cgi?id=43666
 #ifdef __GNUC__
-#if PCL_LINEAR_VERSION (__GNUC__, __GNU_MINOR__, __GNU_PATCHLEVEL__) < PCL_LINEAR_VERSION (4, 5, 0)
+#if PCL_LINEAR_VERSION (__GNUC__, __GNU_MINOR__, __GNU_PATCHLEVEL__) < PCL_LINEAR_VERSION (4, 5, 0) || defined(__INTEL_COMPILER)
+
 #define PCL_DEPRECATED_CLASS(func, message) __attribute__ ((deprecated)) func
 #else
 #define PCL_DEPRECATED_CLASS(func, message) __attribute__ ((deprecated(message))) func
