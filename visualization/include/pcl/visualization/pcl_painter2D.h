@@ -42,24 +42,24 @@
 #include <iostream>
 #include <map>
 #include <vector>
-#include "vtkRenderer.h"
-#include "vtkRenderWindow.h"
-#include "vtkRenderWindowInteractor.h"
-#include "vtkSmartPointer.h"
-#include "vtkObjectFactory.h"
-#include "vtkContext2D.h"
-#include "vtkTransform2D.h"
-#include "vtkContextItem.h"
-#include "vtkContextView.h"
-#include "vtkContextScene.h"
-#include "vtkPen.h"
-#include "vtkBrush.h"
-#include "vtkTextProperty.h"
-#include "vtkOpenGLContextDevice2D.h"
-#include "vtkPoints2D.h"
+#include <vtkRenderer.h>
+#include <vtkRenderWindow.h>
+#include <vtkRenderWindowInteractor.h>
+#include <vtkSmartPointer.h>
+#include <vtkObjectFactory.h>
+#include <vtkContext2D.h>
+#include <vtkTransform2D.h>
+#include <vtkContextItem.h>
+#include <vtkContextView.h>
+#include <vtkContextScene.h>
+#include <vtkPen.h>
+#include <vtkBrush.h>
+#include <vtkTextProperty.h>
+#include <vtkOpenGLContextDevice2D.h>
+#include <vtkPoints2D.h>
 #include "vtkCommand.h"
 
-#include "vtkRegressionTestImage.h"
+#include <vtkRegressionTestImage.h>
 
 namespace pcl
 {

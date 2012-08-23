@@ -17,11 +17,11 @@ Following is the usual way of using PCLPainter2D class.
     PCLPainter2D painter;
 	
     //2. add figures to the canvas by simple add*() methods. Use transform*() functions if required.
-    painter.addCircle(0,0,5);
-    painter.addLine(0,0, 5,0);
+    painter.addCircle (0,0,5);
+    painter.addLine (0,0, 5,0);
 	
-    //3. call a display*() (display(), spin(), spinOnce()) method for the display of the canvas
-    painter.display();
+    //3. call a display*() (display (), spin (), spinOnce ()) method for the display of the canvas
+    painter.display ();
 	
   
 Discussions
@@ -32,7 +32,7 @@ I am keeping this discussion here so that the design decision gets highlighted a
 So, Lets see how 2D drawing works in VTK! The VTK user needs to first:
 	
 1) Make a subclass of vtkContextItem
-2) Re-implement (override) Paint() of vtkContextItem. (shown in the figure)
+2) Re-implement (override) Paint () of vtkContextItem. (shown in the figure)
 		
 .. image:: images/pcl_painter2D_contextItem.png
   :width: 350px
@@ -66,3 +66,12 @@ Compile and run the code by the following commands ::
   $ ./pcl_painter2D_demo
   
   
+Video
+-----
+
+The following video shows the the output of the demo.  
+
+
+.. raw:: html
+    
+    <iframe width="420" height="315" src="http://www.youtube.com/embed/0kPwTds7HSk" frameborder="0" allowfullscreen></iframe>

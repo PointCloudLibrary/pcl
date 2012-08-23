@@ -25,17 +25,17 @@ The code for the visualization of a plot are usually as simple as the following 
     main ()
     {
       //defining a plotter
-      pcl::visualization::PCLPlotter * plotter = new PCLPlotter();      
+      pcl::visualization::PCLPlotter * plotter = new PCLPlotter ();      
       
       //defining the polynomial function, y = x^2. Index of x^2 is 1, rest is 0
-      vector<double> func1(3,0);
+      vector<double> func1 (3,0);
       func1[2] = 1; 
   
       //adding the polynomial func1 to the plotter with [-10, 10] as the range in X axis and "y = x^2" as title
-      plotter->addPlotData(func1, -10, 10, "y = x^2");
+      plotter->addPlotData (func1, -10, 10, "y = x^2");
       
       //display the plot, DONE!
-      plotter->plot();
+      plotter->plot ();
       
       return 0;
     }
@@ -55,20 +55,20 @@ The following snippet shows the basic structure of code for using PCLPlotter
     
     ...
     //1. define a plotter. Change the colorscheme if you want some different colorscheme in auto-coloring.
-    pcl::visualization::PCLPlotter *plotter = new PCLPlotter("My Plotter");
+    pcl::visualization::PCLPlotter *plotter = new PCLPlotter ("My Plotter");
     
     ...
-    //2. add data to be plotted using addPlotData*() functions
-    plotter->addPlotData*();
+    //2. add data to be plotted using addPlotData* () functions
+    plotter->addPlotData* ();
     
     ...
     //3. add some properties if required
     plotter->setWindowSize (900, 600);
-    plotter->setYTitle("this is my own function");
+    plotter->setYTitle ("this is my own function");
     
     ...
     //4. display the plot
-    plotter->plot()
+    plotter->plot ()
     
 All the subsequent sections will elaborate the above concept in detail.    
 
@@ -91,8 +91,8 @@ This the most fundamental way of providing input. Provide the point corresponden
 
     ...
     vector<pair<double, double> > data;
-    populateData(data);
-    plotter->addPlotData(data,"cos");
+    populateData (data);
+    plotter->addPlotData (data,"cos");
     ...
     
 The other ways of input for point correspondences are two arrays of same length denoting the X and Y values of the correspondences.
@@ -103,12 +103,14 @@ This is same as the previous one except the fact that the user stores the corres
 
 .. code-block:: cpp
 
-    #include<pcl/visualization/pcl_plotter.h>     
-    int main (int argc, char ** argv)
+    #include<pcl/visualization/pcl_plotter.h> 
+    
+    int 
+    main (int argc, char ** argv)
     {
-      pcl::visualization::PCLPlotter * plotter = new PCLPlotter();      
+      pcl::visualization::PCLPlotter * plotter = new PCLPlotter ();      
       plotter->addPlotData (argv[1]);
-      plotter->plot();
+      plotter->plot ();
       
       return 0;
     }
@@ -121,12 +123,12 @@ Polynomial are defined in terms of vector of coefficients and Rational functions
 .. code-block:: cpp
 
     ...
-    vector<double> func1(1,0);
+    vector<double> func1 (1,0);
     func1[0] = 1; 
-    vector<double> func2(2,0);
+    vector<double> func2 (2,0);
     func1[1] = 1; 
     
-    plotter->addPlotData(std::make_pair (func1, func2),-10, 10, "y = 1/x");
+    plotter->addPlotData (std::make_pair (func1, func2),-10, 10, "y = 1/x");
     ...
 
 A custom explicit function
@@ -137,14 +139,15 @@ User can specify a custom function, *f* depicting the relation: *Y = f(X)* in th
 .. code-block:: cpp
 
     ...
-    double identity(double val)
+    double 
+    identity (double val)
     {
       return val;
     }
     ...
     
     ...
-    plotter->addPlotData(identity,-10, 10,"identity");
+    plotter->addPlotData (identity,-10, 10,"identity");
     ...
 
 
@@ -156,12 +159,12 @@ One can add other properties of the plot like *title*, *legends*, *background co
 .. code-block:: cpp
     
     ...
-    plotter->setTitle("My plot"); //global title
-    plotter->setXTitle("degrees");
-    plotter->setYTitle("cos");
-    plotter->setShowLegend(true); //show legends
+    plotter->setTitle ("My plot"); //global title
+    plotter->setXTitle ("degrees");
+    plotter->setYTitle ("cos");
+    plotter->setShowLegend (true); //show legends
     ...
-    plotter->plot();
+    plotter->plot ();
     ...
     
     
@@ -177,11 +180,11 @@ PCLPlotter provides a very convenient MATLAB like histogram plotting function (`
     
     ...
     
-    vector<double> freqdata = generateNomalDistData();
+    vector<double> freqdata = generateNomalDistData ();
     
-    plotter->addHistogramData(freqdata,10); //number of bins are 10
+    plotter->addHistogramData (freqdata,10); //number of bins are 10
     
-    plotter->plot();
+    plotter->plot ();
     ...
 
 
@@ -201,15 +204,15 @@ The following snippet shows the functionality.
     //data and callback defined here
     ...
     
-    plotter->addPlotData(func1, -10, 10, "y = x^2");
-    plotter->spinOnce(2000);    //display the plot for 2 seconds
+    plotter->addPlotData (func1, -10, 10, "y = x^2");
+    plotter->spinOnce (2000);    //display the plot for 2 seconds
            
-    plotter->clearPlots();
-    plotter->addPlotData(identity,-10, 10,"identity");
+    plotter->clearPlots ();
+    plotter->addPlotData (identity,-10, 10,"identity");
     plotter->spinOnce (2000);
     
-    plotter->clearPlots();
-    plotter->addPlotData(abs,-5, 5,"abs");
+    plotter->clearPlots ();
+    plotter->addPlotData (abs,-5, 5,"abs");
     plotter->spinOnce (2000);
     ...
 
@@ -245,3 +248,5 @@ The following video shows the the output of the demo.
 .. raw:: html
     
     <iframe width="480" height="270" src="http://www.youtube.com/embed/2Xgd67nkwzs" frameborder="0" allowfullscreen></iframe>
+
+    

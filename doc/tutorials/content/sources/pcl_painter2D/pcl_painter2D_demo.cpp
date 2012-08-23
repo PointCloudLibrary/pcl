@@ -38,7 +38,7 @@ int main (int argc, char * argv [])
     if (r < winw-R) r = winw + R;
 
     painter->setBrushColor (255,0,0,100);
-    painter->addRect ((xpos += 5) % winw, 100, 100, 100);
+    painter->addRect ((xpos += inc) % winw, 100, 100, 100);
 
     //display
     painter->spinOnce ();
