@@ -139,91 +139,97 @@ namespace pcl
       std::vector<std::pair<int, XnMapOutputMode> >
       getAvailableImageModes () const;
 
-    private:
-      /** \brief ... */
+    protected:
+      /** \brief On initialization processing. */
       void
       onInit (const std::string& device_id, const Mode& depth_mode, const Mode& image_mode);
 
-      /** \brief ... */
+      /** \brief Sets up an OpenNI device. */
       void
       setupDevice (const std::string& device_id, const Mode& depth_mode, const Mode& image_mode);
 
-      /** \brief ... */
+      /** \brief Update mode maps. */
       void
       updateModeMaps ();
 
-      /** \brief ... */
+      /** \brief Start synchronization. */
       void
       startSynchronization ();
 
-      /** \brief ... */
+      /** \brief Stop synchronization. */
       void
       stopSynchronization ();
 
-      /** \brief ... */
+      /** \brief Map config modes. */
       bool
       mapConfigMode2XnMode (int mode, XnMapOutputMode &xnmode) const;
 
       // callback methods
-      /** \brief ... */
+      /** \brief RGB image callback. */
       void
       imageCallback (boost::shared_ptr<openni_wrapper::Image> image, void* cookie);
 
-      /** \brief ... */
+      /** \brief Depth image callback. */
       void
       depthCallback (boost::shared_ptr<openni_wrapper::DepthImage> depth_image, void* cookie);
 
-      /** \brief ... */
+      /** \brief IR image callback. */
       void
       irCallback (boost::shared_ptr<openni_wrapper::IRImage> ir_image, void* cookie);
 
-      /** \brief ... */
+      /** \brief RGB + Depth image callback. */
       void
       imageDepthImageCallback (const boost::shared_ptr<openni_wrapper::Image> &image,
                                const boost::shared_ptr<openni_wrapper::DepthImage> &depth_image);
 
-      /** \brief ... */
+      /** \brief IR + Depth image callback. */
       void
       irDepthImageCallback (const boost::shared_ptr<openni_wrapper::IRImage> &image,
                             const boost::shared_ptr<openni_wrapper::DepthImage> &depth_image);
 
-      /** \brief ... */
+      /** \brief Process changed signals. */
       virtual void
       signalsChanged ();
 
       // helper methods
 
-      /** \brief ... */
+      /** \brief Check if the RGB and Depth images are required to be synchronized or not. */
       virtual inline void
       checkImageAndDepthSynchronizationRequired ();
 
-      /** \brief ... */
+      /** \brief Check if the RGB image stream is required or not. */
       virtual inline void
       checkImageStreamRequired ();
 
-      /** \brief ... */
+      /** \brief Check if the depth stream is required or not. */
       virtual inline void
       checkDepthStreamRequired ();
 
-      /** \brief ... */
+      /** \brief Check if the IR image stream is required or not. */
       virtual inline void
       checkIRStreamRequired ();
 
-      /** \brief ... */
+      /** \brief Convert a Depth image to a pcl::PointCloud<pcl::PointXYZ>
+        * \param[in] depth the depth image to convert 
+        */
       boost::shared_ptr<pcl::PointCloud<pcl::PointXYZ> >
       convertToXYZPointCloud (const boost::shared_ptr<openni_wrapper::DepthImage> &depth) const;
 
-      /** \brief ... */
+      /** \brief Convert a Depth + RGB image pair to a pcl::PointCloud<PointT>
+        * \param[in] image the RGB image to convert 
+        * \param[in] depth_image the depth image to convert 
+        */
       template <typename PointT> typename pcl::PointCloud<PointT>::Ptr
       convertToXYZRGBPointCloud (const boost::shared_ptr<openni_wrapper::Image> &image,
-                                 const boost::shared_ptr<openni_wrapper::DepthImage> &depth_image) const;      
-      /** \brief ... */
+                                 const boost::shared_ptr<openni_wrapper::DepthImage> &depth_image) const;
+
+      /** \brief Convert a Depth + Intensity image pair to a pcl::PointCloud<pcl::PointXYZI>
+        * \param[in] image the IR image to convert 
+        * \param[in] depth_image the depth image to convert 
+        */
       boost::shared_ptr<pcl::PointCloud<pcl::PointXYZI> >
       convertToXYZIPointCloud (const boost::shared_ptr<openni_wrapper::IRImage> &image,
                                const boost::shared_ptr<openni_wrapper::DepthImage> &depth_image) const;
-
-      Synchronizer<boost::shared_ptr<openni_wrapper::Image>, boost::shared_ptr<openni_wrapper::DepthImage> > rgb_sync_;
-      Synchronizer<boost::shared_ptr<openni_wrapper::IRImage>, boost::shared_ptr<openni_wrapper::DepthImage> > ir_sync_;
 
       /** \brief Convert a pair of depth + RGB images to a PointCloud<MatrixXf> dataset.
         * \param[in] image the RGB image
@@ -234,7 +240,10 @@ namespace pcl
       convertToEigenPointCloud (const boost::shared_ptr<openni_wrapper::Image> &image,
                                 const boost::shared_ptr<openni_wrapper::DepthImage> &depth_image) const;
       
-      /** \brief the actual openni device*/
+      Synchronizer<boost::shared_ptr<openni_wrapper::Image>, boost::shared_ptr<openni_wrapper::DepthImage> > rgb_sync_;
+      Synchronizer<boost::shared_ptr<openni_wrapper::IRImage>, boost::shared_ptr<openni_wrapper::DepthImage> > ir_sync_;
+
+      /** \brief The actual openni device. */
       boost::shared_ptr<openni_wrapper::OpenNIDevice> device_;
 
       std::string rgb_frame_id_;
