@@ -719,7 +719,7 @@ TEST_F (OutofcoreTest, PointCloud2_Constructors)
     test_cloud->points.push_back (tmp);
   }
 
-  boost::shared_ptr<typename sensor_msgs::PointCloud2> point_cloud (new sensor_msgs::PointCloud2 ());
+  boost::shared_ptr<sensor_msgs::PointCloud2> point_cloud (new sensor_msgs::PointCloud2 ());
   
   pcl::toROSMsg (*test_cloud, *point_cloud);
 
