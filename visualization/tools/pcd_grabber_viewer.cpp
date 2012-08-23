@@ -86,7 +86,6 @@ struct EventHelper
   {
     if (mutex_.try_lock ())
     {
-      std::cout << "new cloud with points: " << cloud->size () << std::endl;
       cloud_ = cloud;
       mutex_.unlock ();
     }
