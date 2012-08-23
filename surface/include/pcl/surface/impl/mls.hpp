@@ -488,8 +488,7 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::performProcessing (PointCloudOut &
         continue;
 
       // Get 3D position of point
-      Eigen::Vector3f pos = distinct_cloud_->points[dp_i].getVector3fMap ();
-
+      //Eigen::Vector3f pos = distinct_cloud_->points[dp_i].getVector3fMap ();
       std::vector<int> nn_indices;
       std::vector<float> nn_dists;
       tree_->nearestKSearch (distinct_cloud_->points[dp_i], 1, nn_indices, nn_dists);
