@@ -111,7 +111,7 @@ pcl::registration::LUM<PointT>::addPointCloud (PointCloudPtr cloud, Eigen::Vecto
 template<typename PointT> inline void
 pcl::registration::LUM<PointT>::setPointCloud (Vertex vertex, PointCloudPtr cloud)
 {
-  if (vertex < 0 || vertex >= getNumVertices ())
+  if (vertex >= getNumVertices ())
   {
     PCL_ERROR("[pcl::registration::LUM::setPointCloud] You are attempting to set a point cloud to a non-existing graph vertex.\n");
     return;
@@ -123,7 +123,7 @@ pcl::registration::LUM<PointT>::setPointCloud (Vertex vertex, PointCloudPtr clou
 template<typename PointT> inline typename pcl::registration::LUM<PointT>::PointCloudPtr
 pcl::registration::LUM<PointT>::getPointCloud (Vertex vertex)
 {
-  if (vertex < 0 || vertex >= getNumVertices ())
+  if (vertex >= getNumVertices ())
   {
     PCL_ERROR("[pcl::registration::LUM::getPointCloud] You are attempting to get a point cloud from a non-existing graph vertex.\n");
     return (PointCloudPtr ());
@@ -135,7 +135,7 @@ pcl::registration::LUM<PointT>::getPointCloud (Vertex vertex)
 template<typename PointT> inline void
 pcl::registration::LUM<PointT>::setPose (Vertex vertex, Eigen::Vector6f pose)
 {
-  if (vertex < 0 || vertex >= getNumVertices ())
+  if (vertex >= getNumVertices ())
   {
     PCL_ERROR("[pcl::registration::LUM::setPose] You are attempting to set a pose estimate to a non-existing graph vertex.\n");
     return;
@@ -152,7 +152,7 @@ pcl::registration::LUM<PointT>::setPose (Vertex vertex, Eigen::Vector6f pose)
 template<typename PointT> inline Eigen::Vector6f
 pcl::registration::LUM<PointT>::getPose (Vertex vertex)
 {
-  if (vertex < 0 || vertex >= getNumVertices ())
+  if (vertex >= getNumVertices ())
   {
     PCL_ERROR("[pcl::registration::LUM::getPose] You are attempting to get a pose estimate from a non-existing graph vertex.\n");
     return (Eigen::Vector6f::Zero ());
@@ -172,7 +172,7 @@ pcl::registration::LUM<PointT>::getTransformation (Vertex vertex)
 template<typename PointT> inline void
 pcl::registration::LUM<PointT>::setCorrespondences (Vertex source_vertex, Vertex target_vertex, pcl::CorrespondencesPtr corrs)
 {
-  if (source_vertex < 0 || source_vertex >= getNumVertices () || target_vertex < 0 || target_vertex >= getNumVertices () || source_vertex == target_vertex)
+  if (source_vertex >= getNumVertices () || target_vertex >= getNumVertices () || source_vertex == target_vertex)
   {
     PCL_ERROR("[pcl::registration::LUM::setCorrespondences] You are attempting to set a set of correspondences between non-existing or identical graph vertices.\n");
     return;
@@ -189,7 +189,7 @@ pcl::registration::LUM<PointT>::setCorrespondences (Vertex source_vertex, Vertex
 template<typename PointT> inline pcl::CorrespondencesPtr
 pcl::registration::LUM<PointT>::getCorrespondences (Vertex source_vertex, Vertex target_vertex)
 {
-  if (source_vertex < 0 || source_vertex >= getNumVertices () || target_vertex < 0 || target_vertex >= getNumVertices ())
+  if (source_vertex >= getNumVertices () || target_vertex >= getNumVertices ())
   {
     PCL_ERROR("[pcl::registration::LUM::getCorrespondences] You are attempting to get a set of correspondences between non-existing graph vertices.\n");
     return (pcl::CorrespondencesPtr ());
@@ -258,13 +258,13 @@ pcl::registration::LUM<PointT>::compute ()
     float sum = 0.0;
     for (int vi = 1; vi != n; ++vi)
     {
-      Eigen::Vector6f difference_pose = -incidenceCorrection (getPose (vi)).inverse () * X.segment (6 * (vi - 1), 6);
+      Eigen::Vector6f difference_pose = static_cast<Eigen::Vector6f> (-incidenceCorrection (getPose (vi)).inverse () * X.segment (6 * (vi - 1), 6));
       sum += difference_pose.norm ();
       setPose (vi, getPose (vi) + difference_pose);
     }
 
     // Convergence check
-    if (sum <= convergence_threshold_ * (n - 1))
+    if (sum <= convergence_threshold_ * static_cast<float> (n - 1))
       return;
   }
 }
@@ -363,7 +363,7 @@ pcl::registration::LUM<PointT>::computeEdge (Edge e)
     MZ (5) += corrs_aver[ci] (2) * corrs_diff[ci] (0) - corrs_aver[ci] (0) * corrs_diff[ci] (2);
   }
   // Remaining elements of M'M
-  MM (0, 0) = MM (1, 1) = MM (2, 2) = oci;
+  MM (0, 0) = MM (1, 1) = MM (2, 2) = static_cast<float> (oci);
   MM (4, 0) = MM (0, 4);
   MM (5, 0) = MM (0, 5);
   MM (3, 1) = MM (1, 3);
@@ -375,13 +375,14 @@ pcl::registration::LUM<PointT>::computeEdge (Edge e)
   MM (5, 4) = MM (4, 5);
 
   // Compute pose difference estimation
-  Eigen::Vector6f D = MM.inverse () * MZ;
+  Eigen::Vector6f D = static_cast<Eigen::Vector6f> (MM.inverse () * MZ);
 
   // Compute s^2
-  float ss = 0;
+  float ss = 0.0f;
   for (int ci = 0; ci != oci; ++ci)  // ci = correspondence iterator
-    ss += pow (corrs_diff[ci] (0) - (D (0) + corrs_aver[ci] (2) * D (5) - corrs_aver[ci] (1) * D (4)), 2) + pow (corrs_diff[ci] (1) - (D (1) + corrs_aver[ci] (0) * D (4) - corrs_aver[ci] (2) * D (3)), 2)
-        + pow (corrs_diff[ci] (2) - (D (2) + corrs_aver[ci] (1) * D (3) - corrs_aver[ci] (0) * D (5)), 2);
+    ss += static_cast<float> (pow (corrs_diff[ci] (0) - (D (0) + corrs_aver[ci] (2) * D (5) - corrs_aver[ci] (1) * D (4)), 2.0f)
+                            + pow (corrs_diff[ci] (1) - (D (1) + corrs_aver[ci] (0) * D (4) - corrs_aver[ci] (2) * D (3)), 2.0f)
+                            + pow (corrs_diff[ci] (2) - (D (2) + corrs_aver[ci] (1) * D (3) - corrs_aver[ci] (0) * D (5)), 2.0f));
 
   // When reaching the limitations of computation due to linearization
   if (ss < 0.0000000000001 || !pcl_isfinite (ss))
@@ -392,8 +393,8 @@ pcl::registration::LUM<PointT>::computeEdge (Edge e)
   }
 
   // Store the results in the slam graph
-  (*slam_graph_)[e].cinv_ = MM * (1 / ss);
-  (*slam_graph_)[e].cinvd_ = MZ * (1 / ss);
+  (*slam_graph_)[e].cinv_ = MM * (1.0f / ss);
+  (*slam_graph_)[e].cinvd_ = MZ * (1.0f / ss);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
