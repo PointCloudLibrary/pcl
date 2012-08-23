@@ -166,24 +166,24 @@ namespace pcl
 
       // callback methods
       /** \brief RGB image callback. */
-      void
+      virtual void
       imageCallback (boost::shared_ptr<openni_wrapper::Image> image, void* cookie);
 
       /** \brief Depth image callback. */
-      void
+      virtual void
       depthCallback (boost::shared_ptr<openni_wrapper::DepthImage> depth_image, void* cookie);
 
       /** \brief IR image callback. */
-      void
+      virtual void
       irCallback (boost::shared_ptr<openni_wrapper::IRImage> ir_image, void* cookie);
 
       /** \brief RGB + Depth image callback. */
-      void
+      virtual void
       imageDepthImageCallback (const boost::shared_ptr<openni_wrapper::Image> &image,
                                const boost::shared_ptr<openni_wrapper::DepthImage> &depth_image);
 
       /** \brief IR + Depth image callback. */
-      void
+      virtual void
       irDepthImageCallback (const boost::shared_ptr<openni_wrapper::IRImage> &image,
                             const boost::shared_ptr<openni_wrapper::DepthImage> &depth_image);
 
