@@ -20,10 +20,9 @@ if(build)
         src/organized_connected_component_segmentation.cpp
         src/organized_multi_plane_segmentation.cpp
         src/planar_polygon_fusion.cpp
-	src/crf_segmentation.cpp
-	src/crf_normal_segmentation.cpp
-        src/active_segmentation.cpp
-	src/unary_classifier.cpp
+        src/crf_segmentation.cpp
+        src/crf_normal_segmentation.cpp
+        src/unary_classifier.cpp
        )
     # NOTE: boost/graph/boykov_kolmogorov_max_flow.hpp only exists for versions > 1.43
     if(Boost_MAJOR_VERSION GREATER 1 OR Boost_MINOR_VERSION GREATER 43)
@@ -57,7 +56,6 @@ if(build)
         include/pcl/${SUBSYS_NAME}/planar_polygon_fusion.h
         include/pcl/${SUBSYS_NAME}/crf_segmentation.h
         include/pcl/${SUBSYS_NAME}/crf_normal_segmentation.h
-        include/pcl/${SUBSYS_NAME}/active_segmentation.h
         include/pcl/${SUBSYS_NAME}/unary_classifier.h
         )
     # NOTE: boost/graph/boykov_kolmogorov_max_flow.hpp only exists for versions > 1.43
@@ -82,7 +80,6 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/planar_polygon_fusion.hpp
         include/pcl/${SUBSYS_NAME}/impl/crf_segmentation.hpp
         include/pcl/${SUBSYS_NAME}/impl/crf_normal_segmentation.hpp
-        include/pcl/${SUBSYS_NAME}/impl/active_segmentation.hpp
         include/pcl/${SUBSYS_NAME}/impl/unary_classifier.hpp
         )
     # NOTE: boost/graph/boykov_kolmogorov_max_flow.hpp only exists for versions > 1.43

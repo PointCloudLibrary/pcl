@@ -7,6 +7,3 @@ if(BUILD_visualization)
   PCL_ADD_EXAMPLE(pcl_example_region_growing FILES example_region_growing.cpp
 		                LINK_WITH pcl_common pcl_keypoints pcl_io pcl_segmentation)
 endif(BUILD_visualization)
-
-#PCL_ADD_EXAMPLE(pcl_example_active_segmentation FILES example_active_segmentation.cpp
-#		                LINK_WITH pcl_segmentation pcl_io pcl_features)
