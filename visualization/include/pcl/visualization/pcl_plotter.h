@@ -56,13 +56,18 @@ namespace pcl
 {
   namespace visualization
   {
-    /** \brief PCL Plotter main class. Given point correspondences this class can be used to plot the data one against the other and display it on the screen. It also has methods for providing plot for important functions like histogram etc. Important functions of PCLHistogramVisualizer are redefined here so that this single class can take responsibility of all plotting related functionalities.
+    /** \brief PCL Plotter main class. Given point correspondences this class
+      * can be used to plot the data one against the other and display it on the
+      * screen. It also has methods for providing plot for important functions
+      * like histogram etc. Important functions of PCLHistogramVisualizer are
+      * redefined here so that this single class can take responsibility of all
+      * plotting related functionalities.
+      *
       * \author Kripasindhu Sarkar
       * \ingroup visualization
       */
     class PCL_EXPORTS PCLPlotter
     {
-      
       public:
 	
         /**\brief A representation of polynomial function. i'th element of the vector denotes the coefficient of x^i of the polynomial in variable x. 
@@ -73,13 +78,15 @@ namespace pcl
          */
         typedef std::pair<PolynomialFunction, PolynomialFunction> RationalFunction;
         
-        
         /** \brief PCL Plotter constructor.  
-         *  \param[in] name Name of the window
-         */
+          * \param[in] name Name of the window
+          */
         PCLPlotter (char const * name = "PCL Plotter");
-        
-         /** \brief adds a plot with correspondences in the arrays arrayX and arrayY
+
+        /** \brief Destructor. */
+        ~PCLPlotter();
+
+        /** \brief Adds a plot with correspondences in the arrays arrayX and arrayY
           * \param[in] array_X X coordinates of point correspondence array
           * \param[in] array_Y Y coordinates of point correspondence array
           * \param[in] size length of the array arrayX and arrayY
@@ -87,27 +94,33 @@ namespace pcl
           * \param[in] type type of the graph plotted. vtkChart::LINE for line plot, vtkChart::BAR for bar plot, and vtkChart::POINTS for a scattered point plot
           * \param[in] color a character array of 4 fields denoting the R,G,B and A component of the color of the plot ranging from 0 to 255. If this argument is not passed (or NULL is passed) the plot is colored based on a color scheme 
           */
-
-        ~PCLPlotter();
-
         void 
         addPlotData (double const *array_X, 
-                    double const *array_Y, 
-                    unsigned long size, 
-                    char const * name = "Y Axis", 
-                    int type  = vtkChart::LINE ,
-                    char const *color=NULL);
+                     double const *array_Y, 
+                     unsigned long size, 
+                     char const * name = "Y Axis", 
+                     int type  = vtkChart::LINE ,
+                     char const *color=NULL);
 	
-         /** \brief adds a plot with correspondences in vectors arrayX and arrayY. This is the vector version of the addPlotData function. Parameters mean same as before
-          */
+        /** \brief Adds a plot with correspondences in vectors arrayX and arrayY. This is the vector version of the addPlotData function. 
+          * \param[in] array_X X coordinates of point correspondence array
+          * \param[in] array_Y Y coordinates of point correspondence array
+          * \param[in] size length of the array arrayX and arrayY
+          * \param[in] name name of the plot which appears in the legend when toggled on
+          * \param[in] type type of the graph plotted. vtkChart::LINE for line plot, vtkChart::BAR for bar plot, and vtkChart::POINTS for a scattered point plot
+          * \param[in] color a character array of 4 fields denoting the R,G,B and A component of the color of the plot ranging from 0 to 255. If this argument is not passed (or NULL is passed) the plot is colored based on a color scheme 
+         */
         void 
         addPlotData (std::vector<double> const &array_X, 
-                    std::vector<double>const &array_Y, 
-                    char const * name = "Y Axis", 
-                    int type = vtkChart::LINE,
-                    std::vector<char> const &color = std::vector<char>());
+                     std::vector<double>const &array_Y, 
+                     char const * name = "Y Axis", 
+                     int type = vtkChart::LINE,
+                     std::vector<char> const &color = std::vector<char> ());
         
-        /** \brief adds a plot with correspondences in vector of pairs. The the first and second field of the pairs of the vector forms the correspondence. Rest parameters mean same as before
+        /** \brief Adds a plot with correspondences in vector of pairs. The the first and second field of the pairs of the vector forms the correspondence. 
+          * \param[in] name name of the plot which appears in the legend when toggled on
+          * \param[in] type type of the graph plotted. vtkChart::LINE for line plot, vtkChart::BAR for bar plot, and vtkChart::POINTS for a scattered point plot
+          * \param[in] color a character array of 4 fields denoting the R,G,B and A component of the color of the plot ranging from 0 to 255. If this argument is not passed (or NULL is passed) the plot is colored based on a color scheme 
           */
         void
         addPlotData (std::vector<std::pair<double, double> > const &plot_data, 
@@ -115,7 +128,7 @@ namespace pcl
                     int type = vtkChart::LINE,
                     std::vector<char> const &color = std::vector<char>());
         
-        /** \brief adds a plot based on the given polynomial function and the range in X axis. 
+        /** \brief Adds a plot based on the given polynomial function and the range in X axis. 
           * \param[in] p_function A polynomial function which is represented by a vector which stores the coefficients. See description on the  typedef.   
           * \param[in] x_min the left boundary of the range for displaying the plot
           * \param[in] x_max the right boundary of the range for displaying the plot
@@ -125,14 +138,14 @@ namespace pcl
           * \param[in] color a character array of 4 fields denoting the R,G,B and A component of the color of the plot ranging from 0 to 255. If this argument is not passed (or NULL is passed) the plot is colored based on a color scheme 
           */
         void
-        addPlotData(PolynomialFunction const & p_function,
-                    double x_min, double x_max,
-                    char const *name = "Y Axis",
-                    int num_points = 100,
-                    int type = vtkChart::LINE,
-                    std::vector<char> const &color = std::vector<char>());
+        addPlotData (PolynomialFunction const & p_function,
+                     double x_min, double x_max,
+                     char const *name = "Y Axis",
+                     int num_points = 100,
+                     int type = vtkChart::LINE,
+                     std::vector<char> const &color = std::vector<char>());
         
-        /** \brief adds a plot based on the given rational function and the range in X axis. 
+        /** \brief Adds a plot based on the given rational function and the range in X axis. 
           * \param[in] r_function A rational function which is represented by the ratio of two polynomial functions. See description on the  typedef for more details.
           * \param[in] x_min the left boundary of the range for displaying the plot
           * \param[in] x_max the right boundary of the range for displaying the plot
@@ -143,13 +156,13 @@ namespace pcl
           */
         void
         addPlotData (RationalFunction const & r_function,
-                    double x_min, double x_max,
-                    char const *name = "Y Axis",
-                    int num_points = 100,
-                    int type = vtkChart::LINE,
-                    std::vector<char> const &color = std::vector<char>());
+                     double x_min, double x_max,
+                     char const *name = "Y Axis",
+                     int num_points = 100,
+                     int type = vtkChart::LINE,
+                     std::vector<char> const &color = std::vector<char>());
         
-        /** \brief adds a plot based on a user defined callback function representing the function to plot
+        /** \brief Adds a plot based on a user defined callback function representing the function to plot
           * \param[in] function a user defined callback function representing the relation y = function(x)
           * \param[in] x_min the left boundary of the range for displaying the plot
           * \param[in] x_max the right boundary of the range for displaying the plot
@@ -160,21 +173,21 @@ namespace pcl
           */
         void
         addPlotData (double (*function)(double),
-                    double x_min, double x_max,
-                    char const *name = "Y Axis",
-                    int num_points = 100,
-                    int type = vtkChart::LINE,
-                    std::vector<char> const &color = std::vector<char>());
+                     double x_min, double x_max,
+                     char const *name = "Y Axis",
+                     int num_points = 100,
+                     int type = vtkChart::LINE,
+                     std::vector<char> const &color = std::vector<char>());
         
-        /** \brief adds a plot based on a space/tab delimited table provided in a file
+        /** \brief Adds a plot based on a space/tab delimited table provided in a file
           * \param[in] filename name of the file containing the table. 1st column represents the values of X-Axis. Rest of the columns represent the corresponding values in Y-Axes. First row of the file is concidered for naming/labling of the plot. The plot-names should not contain any space in between.
           * \param[in] type type of the graph plotted. vtkChart::LINE for line plot, vtkChart::BAR for bar plot, and vtkChart::POINTS for a scattered point plot
           */
         void
         addPlotData (char const * filename,
-                    int type = vtkChart::LINE);
+                     int type = vtkChart::LINE);
                     
-        /** \brief bins the elements in vector data into nbins equally spaced containers and plots the resulted histogram 
+        /** \brief Bins the elements in vector data into nbins equally spaced containers and plots the resulted histogram 
           * \param[in] data the raw data 
           * \param[in] nbins the number of bins for the histogram
           * \param[in] name name of this histogram which will appear on legends if toggled on
@@ -185,7 +198,6 @@ namespace pcl
                           int const nbins = 10, 
                           char const * name = "Histogram", 
                           std::vector<char> const &color = std::vector<char>());
-	
         
         //##PCLHistogramVisulizer methods##
         /** \brief Add a histogram feature to screen as a separate window, from a cloud containing a single histogram.
@@ -240,30 +252,25 @@ namespace pcl
                              const int index,
                              const std::string &id = "cloud", int win_width = 640, int win_height = 200);
         
-        
-        
-        /** \brief draws all the plots added by addPlotData() or addHistogramData() till now 
-        */
+        /** \brief Draws all the plots added by addPlotData() or addHistogramData() till now */
         void 
         plot ();
         
-        /** \brief spins (runs the event loop) the interactor for spin_time amount of time. The name is confusing and will be probably obsolete in the future release with a single overloaded spin()/display() function.
-         *  \param[in] spin_time - How long (in ms) should the visualization loop be allowed to run.
-         */
+        /** \brief Spins (runs the event loop) the interactor for spin_time amount of time. The name is confusing and will be probably obsolete in the future release with a single overloaded spin()/display() function.
+          *  \param[in] spin_time - How long (in ms) should the visualization loop be allowed to run.
+          */
         void 
-        spinOnce ( const int spin_time = 1 );
+        spinOnce (const int spin_time = 1);
         
-        /** \brief spins (runs the event loop) the interactor indefinitely. Same as plot() - added to retain the similarity between other existing visualization classes
-         */
+        /** \brief Spins (runs the event loop) the interactor indefinitely. Same as plot() - added to retain the similarity between other existing visualization classes. */
         void 
         spin ();
         
-        /** \brief remove all plots from the window
-         */
+        /** \brief Remove all plots from the window. */
         void
         clearPlots();
         
-        /** \brief set method for the color scheme of the plot. The plots gets autocolored differently based on the color scheme.
+        /** \brief Set method for the color scheme of the plot. The plots gets autocolored differently based on the color scheme.
           * \param[in] scheme the color scheme. Possible values are vtkColorSeries::SPECTRUM, vtkColorSeries::WARM, vtkColorSeries::COOL, vtkColorSeries::BLUES, vtkColorSeries::WILD_FLOWER, vtkColorSeries::CITRUS
           */       
         void
@@ -272,7 +279,8 @@ namespace pcl
         /** \brief get the currently used color scheme
           * \return[out] the currently used color scheme. Values include WARM, COOL, BLUES, WILD_FLOWER, CITRUS, CUSTOM
           */  
-        int getColorScheme ();
+        int 
+        getColorScheme ();
         
         /** \brief set/get method for the viewport's background color.
           * \param[in] r the red component of the RGB color
@@ -295,39 +303,42 @@ namespace pcl
         getBackgroundColor ();
         
         /** \brief Set logical range of the X-Axis in plot coordinates 
-         * \param[in] min the left boundary of the range
-         * \param[in] max the right boundary of the range
-         * */
+          * \param[in] min the left boundary of the range
+          * \param[in] max the right boundary of the range
+          */
         void 
         setXRange (double min, double max);
         
         /** \brief Set logical range of the Y-Axis in plot coordinates 
-         * \param[in] min the left boundary of the range
-         * \param[in] max the right boundary of the range
-         */
+          * \param[in] min the left boundary of the range
+          * \param[in] max the right boundary of the range
+          */
         void
         setYRange (double min, double max);
         
         /** \brief Set the main title of the plot
-         */
+          * \param[in] title the title to set 
+          */
         void 
-        setTitle (const char * title);
+        setTitle (const char *title);
         
         /** \brief Set the title of the X-Axis
-         */
+          * \param[in] title the title to set 
+          */
         void 
-        setXTitle (const char * title);
+        setXTitle (const char *title);
         
         /** \brief Set the title of the Y-Axis
-         */
+          * \param[in] title the title to set 
+          */
         void 
-        setYTitle (const char * title);
+        setYTitle (const char *title);
         
         /** \brief Shows the legend of the graph
-         * \param[in] flag pass flag = true for the display of the legend of the graph
-         */
+          * \param[in] flag pass flag = true for the display of the legend of the graph
+          */
         void 
-        setShowLegend(bool flag);
+        setShowLegend (bool flag);
         
         /** \brief set/get method for the window size.
           * \param[in] w the width of the window
@@ -339,7 +350,7 @@ namespace pcl
         /** \brief set/get method for the window size.
           * \return[in] array containing the width and height of the window
           */
-        int *
+        int*
         getWindowSize ();
 
         /** \brief Return a pointer to the underlying VTK RenderWindow used. */
@@ -373,7 +384,6 @@ namespace pcl
           view_->GetInteractor()->TerminateApp ();
         }
       
-      
       private:
         vtkSmartPointer<vtkContextView> view_;  
         vtkSmartPointer<vtkChartXY> chart_;
@@ -383,8 +393,7 @@ namespace pcl
         int current_plot_;          //stores the id of the current (most recent) plot, used in automatic coloring and other state change schemes 
         int win_width_, win_height_;
         double bkg_color_[3];
-        
-        
+          
         //####event callback class####
         struct ExitMainLoopTimerCallback : public vtkCommand
         {
@@ -404,9 +413,9 @@ namespace pcl
 
             // Stop vtk loop and send notification to app to wake it up
 #if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
-            interactor->stopLoop ();
+            //interactor->stopLoop ();
 #else
-            interactor->TerminateApp ();
+            //interactor->TerminateApp ();
 #endif
           }
           int right_timer_id;
@@ -428,7 +437,7 @@ namespace pcl
             if (event_id != vtkCommand::ExitEvent)
               return;
             plotter->stopped_ = true;
-            plotter->view_->GetInteractor()->TerminateApp();
+            plotter->view_->GetInteractor ()->TerminateApp ();
           }
           PCLPlotter *plotter;
         };
@@ -462,7 +471,6 @@ namespace pcl
           */
         void 
         computeHistogram (std::vector<double> const & data, int const nbins, std::vector<std::pair<double, double> > &histogram);
-
     };
   }
 }
