@@ -145,8 +145,7 @@ pcl::PCDGrabberBase::PCDGrabberImpl::readAhead ()
   // Check if we're still reading files from a TAR file
   if (tar_fd_ != -1)
   {
-    if (!readTARHeader ())
-      closeTARFile ();
+    readTARHeader ();
     valid_ = (reader.read (tar_file_, next_cloud_, origin_, orientation_, pcd_version, tar_offset_) == 0);
     if (!valid_)
       closeTARFile ();
@@ -171,8 +170,7 @@ pcl::PCDGrabberBase::PCDGrabberImpl::readAhead ()
       {
         if (openTARFile (*pcd_iterator_) >= 0)
         {
-          if (!readTARHeader ())
-            closeTARFile ();
+          readTARHeader ();
           tar_file_ = *pcd_iterator_;
           valid_ = (reader.read (tar_file_, next_cloud_, origin_, orientation_, pcd_version, tar_offset_) == 0);
           if (!valid_)
