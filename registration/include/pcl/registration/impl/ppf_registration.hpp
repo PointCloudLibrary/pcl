@@ -146,7 +146,7 @@ pcl::PPFRegistration<PointSource, PointTarget>::computeTransformation (PointClou
 
     Eigen::AngleAxisf rotation_sg (acosf (scene_reference_normal.dot (Eigen::Vector3f::UnitX ())),
                                    scene_reference_normal.cross (Eigen::Vector3f::UnitX ()). normalized());
-    Eigen::Affine3f transform_sg = Eigen::Translation3f ( rotation_sg* ((-1)*scene_reference_point)) * rotation_sg;
+    Eigen::Affine3f transform_sg (Eigen::Translation3f (rotation_sg * ((-1) * scene_reference_point)) * rotation_sg);
 
     // For every other point in the scene => now have pair (s_r, s_i) fixed
     std::vector<int> indices;
