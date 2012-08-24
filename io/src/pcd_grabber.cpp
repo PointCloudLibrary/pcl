@@ -87,6 +87,8 @@ struct pcl::PCDGrabberBase::PCDGrabberImpl
   int tar_offset_;
   std::string tar_file_;
   pcl::io::TARHeader tar_header_;
+
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW 
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////
