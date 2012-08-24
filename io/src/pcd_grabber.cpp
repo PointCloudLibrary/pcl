@@ -145,7 +145,8 @@ pcl::PCDGrabberBase::PCDGrabberImpl::readAhead ()
   // Check if we're still reading files from a TAR file
   if (tar_fd_ != -1)
   {
-    readTARHeader ();
+    if (!readTARHeader ())
+      return;
     valid_ = (reader.read (tar_file_, next_cloud_, origin_, orientation_, pcd_version, tar_offset_) == 0);
     if (!valid_)
       closeTARFile ();
@@ -166,22 +167,18 @@ pcl::PCDGrabberBase::PCDGrabberImpl::readAhead ()
       valid_ = (reader.read (*pcd_iterator_, next_cloud_, origin_, orientation_, pcd_version) == 0);
 
       // Has an error occured? Check if we can interpret the file as a TAR file first before going onto the next
-      if (!valid_)
+      if (!valid_ && openTARFile (*pcd_iterator_) >= 0 && readTARHeader ())
       {
-        if (openTARFile (*pcd_iterator_) >= 0)
+        tar_file_ = *pcd_iterator_;
+        valid_ = (reader.read (tar_file_, next_cloud_, origin_, orientation_, pcd_version, tar_offset_) == 0);
+        if (!valid_)
+          closeTARFile ();
+        else
         {
-          readTARHeader ();
-          tar_file_ = *pcd_iterator_;
-          valid_ = (reader.read (tar_file_, next_cloud_, origin_, orientation_, pcd_version, tar_offset_) == 0);
-          if (!valid_)
+          tar_offset_ += (tar_header_.getFileSize ()) + (512 - tar_header_.getFileSize () % 512);
+          int result = static_cast<int> (pcl_lseek (tar_fd_, tar_offset_, SEEK_SET));
+          if (result < 0)
             closeTARFile ();
-          else
-          {
-            tar_offset_ += (tar_header_.getFileSize ()) + (512 - tar_header_.getFileSize () % 512);
-            int result = static_cast<int> (pcl_lseek (tar_fd_, tar_offset_, SEEK_SET));
-            if (result < 0)
-              closeTARFile ();
-          }
         }
       }
 
