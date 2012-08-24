@@ -3,6 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2009-2012, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -16,7 +17,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -37,10 +38,11 @@
  *
  */
 // PCL
-#include <Eigen/Geometry>
 #include <pcl/common/common.h>
 #include <pcl/io/pcd_io.h>
 #include <cfloat>
+#include <pcl/visualization/eigen.h>
+#include <pcl/visualization/vtk.h>
 #include <pcl/visualization/point_cloud_handlers.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/visualization/histogram_visualizer.h>
@@ -49,8 +51,7 @@
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
 #include <pcl/console/time.h>
-#include <vtkPolyDataReader.h>
-
+#include <pcl/search/kdtree.h>
 
 using namespace pcl::console;
 
@@ -122,16 +123,36 @@ printHelp (int, char **argv)
 // Global visualizer object
 pcl::visualization::PCLPlotter ph_global;
 boost::shared_ptr<pcl::visualization::PCLVisualizer> p;
+pcl::search::KdTree<pcl::PointXYZ> search;
+sensor_msgs::PointCloud2::Ptr cloud;
+pcl::PointCloud<pcl::PointXYZ>::Ptr xyzcloud;
 
 void
 pp_callback (const pcl::visualization::PointPickingEvent& event, void* cookie)
 {
-  if (event.getPointIndex () == -1)
-    return;
-  sensor_msgs::PointCloud2::Ptr cloud = *reinterpret_cast<sensor_msgs::PointCloud2::Ptr*> (cookie);
-  if (!cloud)
+  int idx = event.getPointIndex ();
+  if (idx == -1)
     return;
 
+  if (!cloud)
+  {
+    cloud = *reinterpret_cast<sensor_msgs::PointCloud2::Ptr*> (cookie);
+    xyzcloud.reset (new pcl::PointCloud<pcl::PointXYZ>);
+    pcl::fromROSMsg (*cloud, *xyzcloud);
+    search.setInputCloud (xyzcloud);
+  }
+  // Return the correct index in the cloud instead of the index on the screen
+  std::vector<int> indices (1);
+  std::vector<float> distances (1);
+
+  // Because VTK/OpenGL stores data without NaN, we lose the 1-1 correspondence, so we must search for the real point
+  pcl::PointXYZ picked_pt;
+  event.getPoint (picked_pt.x, picked_pt.y, picked_pt.z);
+  search.nearestKSearch (picked_pt, 1, indices, distances);
+
+  PCL_INFO ("Point index picked: %d (real: %d)\n", idx, indices[0]);
+
+  idx = indices[0];
   // If two points were selected, draw an arrow between them
   pcl::PointXYZ p1, p2;
   if (event.getPoints (p1.x, p1.y, p1.z, p2.x, p2.y, p2.z) && p)
@@ -144,13 +165,15 @@ pp_callback (const pcl::visualization::PointPickingEvent& event, void* cookie)
 
   // Else, if a single point has been selected
   std::stringstream ss;
-  ss << event.getPointIndex ();
+  ss << idx;
   // Get the cloud's fields
   for (size_t i = 0; i < cloud->fields.size (); ++i)
   {
     if (!isMultiDimensionalFeatureField (cloud->fields[i]))
       continue;
-    ph_global.addFeatureHistogram (*cloud, cloud->fields[i].name, event.getPointIndex (), ss.str ());
+    PCL_INFO ("Multidimensional field found: %s\n", cloud->fields[i].name.c_str ());
+    ph_global.addFeatureHistogram (*cloud, cloud->fields[i].name, idx, ss.str ());
+    ph_global.spinOnce ();
   }
   if (p)
   {
@@ -158,8 +181,6 @@ pp_callback (const pcl::visualization::PointPickingEvent& event, void* cookie)
     event.getPoint (pos.x, pos.y, pos.z);
     p->addText3D<pcl::PointXYZ> (ss.str (), pos, 0.0005, 1.0, 1.0, 1.0, ss.str ());
   }
-  ph_global.spinOnce ();
-  
 }
 
 /* ---[ */
