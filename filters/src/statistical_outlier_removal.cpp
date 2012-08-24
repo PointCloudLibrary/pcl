@@ -82,11 +82,12 @@ pcl::StatisticalOutlierRemoval<sensor_msgs::PointCloud2>::applyFilter (PointClou
   std::vector<float> nn_dists (mean_k_);
 
   std::vector<float> distances (indices_->size ());
+  int valid_distances = 0;
   // Go over all the points and calculate the mean or smallest distance
   for (size_t cp = 0; cp < indices_->size (); ++cp)
   {
-    if (!pcl_isfinite (cloud->points[(*indices_)[cp]].x) || !pcl_isfinite (cloud->points[(*indices_)[cp]].y)
-        ||
+    if (!pcl_isfinite (cloud->points[(*indices_)[cp]].x) || 
+        !pcl_isfinite (cloud->points[(*indices_)[cp]].y) ||
         !pcl_isfinite (cloud->points[(*indices_)[cp]].z))
     {
       distances[cp] = 0;
@@ -105,11 +106,21 @@ pcl::StatisticalOutlierRemoval<sensor_msgs::PointCloud2>::applyFilter (PointClou
     for (int j = 1; j < mean_k_; ++j)
       dist_sum += sqrt (nn_dists[j]);
     distances[cp] = static_cast<float> (dist_sum / (mean_k_ - 1));
+    valid_distances++;
   }
 
   // Estimate the mean and the standard deviation of the distance vector
-  double mean, stddev;
-  getMeanStd (distances, mean, stddev);
+  double sum = 0, sq_sum = 0;
+  for (size_t i = 0; i < distances.size (); ++i)
+  {
+    sum += distances[i];
+    sq_sum += distances[i] * distances[i];
+  }
+  double mean = sum / static_cast<double>(valid_distances);
+  double variance = (sq_sum - sum * sum / static_cast<double>(valid_distances)) / (static_cast<double>(valid_distances) - 1);
+  double stddev = sqrt (variance);
+  //getMeanStd (distances, mean, stddev);
+
   double distance_threshold = mean + std_mul_ * stddev; // a distance that is bigger than this signals an outlier
 
   // Copy the common fields

@@ -91,6 +91,7 @@ pcl::StatisticalOutlierRemoval<PointT>::applyFilterIndices (std::vector<int> &in
   int oii = 0, rii = 0;  // oii = output indices iterator, rii = removed indices iterator
 
   // First pass: Compute the mean distances for all points with respect to their k nearest neighbors
+  int valid_distances = 0;
   for (int iii = 0; iii < static_cast<int> (indices_->size ()); ++iii)  // iii = input indices iterator
   {
     if (!pcl_isfinite (input_->points[(*indices_)[iii]].x) ||
@@ -114,11 +115,21 @@ pcl::StatisticalOutlierRemoval<PointT>::applyFilterIndices (std::vector<int> &in
     for (int k = 1; k < mean_k_ + 1; ++k)  // k = 0 is the query point
       dist_sum += sqrt (nn_dists[k]);
     distances[iii] = static_cast<float> (dist_sum / mean_k_);
+    valid_distances++;
   }
 
   // Estimate the mean and the standard deviation of the distance vector
-  double mean, stddev;
-  getMeanStd (distances, mean, stddev);
+  double sum = 0, sq_sum = 0;
+  for (size_t i = 0; i < distances.size (); ++i)
+  {
+    sum += distances[i];
+    sq_sum += distances[i] * distances[i];
+  }
+  double mean = sum / static_cast<double>(valid_distances);
+  double variance = (sq_sum - sum * sum / static_cast<double>(valid_distances)) / (static_cast<double>(valid_distances) - 1);
+  double stddev = sqrt (variance);
+  //getMeanStd (distances, mean, stddev);
+
   double distance_threshold = mean + std_mul_ * stddev;
 
   // Second pass: Classify the points on the computed distance threshold
