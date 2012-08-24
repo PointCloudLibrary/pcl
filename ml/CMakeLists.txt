@@ -38,6 +38,7 @@ if(build)
 	#include/pcl/${SUBSYS_NAME}/densecrfORI.h
         include/pcl/${SUBSYS_NAME}/svm_wrapper.h
         include/pcl/${SUBSYS_NAME}/svm.h
+	include/pcl/${SUBSYS_NAME}/kmeans.h
         )
 
     set(impl_incs 
@@ -48,6 +49,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/ferns/fern_evaluator.hpp
         include/pcl/${SUBSYS_NAME}/impl/ferns/fern_trainer.hpp
         include/pcl/${SUBSYS_NAME}/impl/svm/svm_wrapper.hpp
+	#include/pcl/${SUBSYS_NAME}/impl/kmeans.hpp
         )
 
     set(srcs
@@ -62,6 +64,7 @@ if(build)
 		#src/densecrfORI.cpp		
 		src/svm_wrapper.cpp
 		src/svm.cpp
+		src/kmeans.cpp
         )
 
     set(LIB_NAME pcl_${SUBSYS_NAME})

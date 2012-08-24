@@ -282,7 +282,7 @@ pcl::CrfSegmentation<PointT>::createDataVectorFromVoxelGrid ()
 */
 
   // fill the data vector
-  for (size_t i = 0; i < filtered_anno_->points.size (); i++)
+  for (size_t i = 0; i < filtered_cloud_->points.size (); i++)
   {
     Eigen::Vector3f p (filtered_anno_->points[i].x,
                        filtered_anno_->points[i].y,
@@ -292,7 +292,7 @@ pcl::CrfSegmentation<PointT>::createDataVectorFromVoxelGrid ()
 
     if (color_data)
     {    
-      uint32_t rgb = *reinterpret_cast<int*>(&filtered_anno_->points[i].rgba);
+      uint32_t rgb = *reinterpret_cast<int*>(&filtered_cloud_->points[i].rgba);
       uint8_t r = (rgb >> 16) & 0x0000ff;
       uint8_t g = (rgb >> 8)  & 0x0000ff;
       uint8_t b = (rgb)       & 0x0000ff;
@@ -333,7 +333,7 @@ pcl::CrfSegmentation<PointT>::createUnaryPotentials (std::vector<float> &unary,
   //srand ( time (NULL) );
 
   // Certainty that the groundtruth is correct
-  const float GT_PROB = 0.3f;
+  const float GT_PROB = 0.9f;
   const float u_energy = -logf ( 1.0f / static_cast<float> (n_labels) );
   const float n_energy = -logf ( (1.0f - GT_PROB) / static_cast<float>(n_labels - 1) );
   const float p_energy = -logf ( GT_PROB );
@@ -362,13 +362,14 @@ pcl::CrfSegmentation<PointT>::createUnaryPotentials (std::vector<float> &unary,
     }
 
    /* generate secret number: */
-    double iSecret = static_cast<double> (rand ())  / static_cast<double> (RAND_MAX);
+    //double iSecret = static_cast<double> (rand ())  / static_cast<double> (RAND_MAX);
    
     /* 
     if (k < 100)
       std::cout << iSecret << std::endl;
     */
 
+/*
     int gg = 5; //static_cast<int> (labels.size ());
     if (iSecret < 0.5)
     {
@@ -379,7 +380,8 @@ pcl::CrfSegmentation<PointT>::createUnaryPotentials (std::vector<float> &unary,
         r = 0;
       c_idx = r;      
     }
-    
+*/
+  
     // set the engeries for the labels
     size_t u_idx = k * n_labels;
     if (label > 0)
@@ -387,6 +389,18 @@ pcl::CrfSegmentation<PointT>::createUnaryPotentials (std::vector<float> &unary,
       for (size_t i = 0; i < n_labels; i++)
         unary[u_idx + i] = n_energy;
       unary[u_idx + c_idx] = p_energy;
+
+      if (label == 1)
+      {
+        const float PROB = 0.2f;
+        const float n_energy2 = -logf ( (1.0f - PROB) / static_cast<float>(n_labels - 1) );
+        const float p_energy2 = -logf ( PROB );
+
+        for (size_t i = 0; i < n_labels; i++)
+          unary[u_idx + i] = n_energy2;
+        unary[u_idx + c_idx] = p_energy2;
+      }
+    
     }
     else
     {
@@ -421,13 +435,13 @@ pcl::CrfSegmentation<PointT>::segmentPoints (pcl::PointCloud<pcl::PointXYZRGBL> 
     unary.resize (N * n_labels);
     createUnaryPotentials (unary, labels, n_labels);
 
-/*    
+
     std::cout << "labels size: " << labels.size () << std::endl;
     for (size_t i = 0; i < labels.size (); i++)
     {
       std::cout << labels[i] << std::endl;
     }
-*/  
+
   }
   std::cout << "create unary potentials - DONE" << std::endl;
 

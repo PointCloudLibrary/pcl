@@ -1,6 +1,6 @@
 set (SUBSYS_NAME tools)
 set (SUBSYS_DESC "Useful PCL-based command line tools")
-set (SUBSYS_DEPS common io filters sample_consensus segmentation search kdtree features surface octree registration recognition geometry keypoints)
+set (SUBSYS_DEPS common io filters sample_consensus segmentation search kdtree features surface octree registration recognition geometry keypoints ml)
 set (DEFAULT ON)
 set (REASON "")
 
@@ -53,6 +53,15 @@ if (build)
   
   PCL_ADD_EXECUTABLE (pcl_compute_cloud_error ${SUBSYS_NAME} compute_cloud_error.cpp)
   target_link_libraries (pcl_compute_cloud_error pcl_common pcl_io pcl_kdtree)
+
+  PCL_ADD_EXECUTABLE (pcl_train_unary_classifier ${SUBSYS_NAME} train_unary_classifier.cpp)
+  target_link_libraries (pcl_train_unary_classifier pcl_common pcl_io pcl_segmentation)
+
+  PCL_ADD_EXECUTABLE (pcl_unary_classifier_segment ${SUBSYS_NAME} unary_classifier_segment.cpp)
+  target_link_libraries (pcl_unary_classifier_segment pcl_common pcl_io pcl_segmentation)
+
+  PCL_ADD_EXECUTABLE (pcl_crf_segmentation ${SUBSYS_NAME} crf_segmentation.cpp)
+  target_link_libraries (pcl_crf_segmentation pcl_common pcl_io pcl_segmentation)
   
   # NOTE: boost/uuid/uuid.hpp only exists for versions > 1.41
   if(Boost_MAJOR_VERSION GREATER 1 OR Boost_MINOR_VERSION GREATER 41)
@@ -124,7 +133,7 @@ if (build)
       include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
   
       PCL_ADD_EXECUTABLE(pcl_png2pcd ${SUBSYS_NAME} png2pcd.cpp)
-      target_link_libraries(pcl_png2pcd pcl_common pcl_io)
+      target_link_libraries(pcl_png2pcd pcl_common pcl_io pcl_visualization)
           
       PCL_ADD_EXECUTABLE(pcl_ply2vtk ${SUBSYS_NAME} ply2vtk.cpp)
       target_link_libraries(pcl_ply2vtk pcl_common pcl_io)

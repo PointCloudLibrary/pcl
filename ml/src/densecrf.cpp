@@ -150,7 +150,7 @@ pcl::DenseCrf::addPairwiseNormals (std::vector<Eigen::Vector3i> &coord,
   // fill the feature vector
   for (size_t i = 0; i < coord.size (); i++)
   {
-    if (pcl_isnan (normals[i].x ()))
+    if (isnan (normals[i].x ()))
     {
       if (i > 0)
       {
@@ -158,8 +158,6 @@ pcl::DenseCrf::addPairwiseNormals (std::vector<Eigen::Vector3i> &coord,
         normals[i].y () = normals[i-1].y ();
         normals[i].z () = normals[i-1].z ();
       }
-      
-        
 
       //std::cout << "NaN" << std::endl;
       

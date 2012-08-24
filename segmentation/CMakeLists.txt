@@ -23,6 +23,7 @@ if(build)
 	src/crf_segmentation.cpp
 	src/crf_normal_segmentation.cpp
         src/active_segmentation.cpp
+	src/unary_classifier.cpp
        )
     # NOTE: boost/graph/boykov_kolmogorov_max_flow.hpp only exists for versions > 1.43
     if(Boost_MAJOR_VERSION GREATER 1 OR Boost_MINOR_VERSION GREATER 43)
@@ -57,6 +58,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/crf_segmentation.h
         include/pcl/${SUBSYS_NAME}/crf_normal_segmentation.h
         include/pcl/${SUBSYS_NAME}/active_segmentation.h
+        include/pcl/${SUBSYS_NAME}/unary_classifier.h
         )
     # NOTE: boost/graph/boykov_kolmogorov_max_flow.hpp only exists for versions > 1.43
     if(Boost_MAJOR_VERSION GREATER 1 OR Boost_MINOR_VERSION GREATER 43)
@@ -81,6 +83,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/crf_segmentation.hpp
         include/pcl/${SUBSYS_NAME}/impl/crf_normal_segmentation.hpp
         include/pcl/${SUBSYS_NAME}/impl/active_segmentation.hpp
+        include/pcl/${SUBSYS_NAME}/impl/unary_classifier.hpp
         )
     # NOTE: boost/graph/boykov_kolmogorov_max_flow.hpp only exists for versions > 1.43
     if(Boost_MAJOR_VERSION GREATER 1 OR Boost_MINOR_VERSION GREATER 43)
@@ -93,7 +96,7 @@ if(build)
     set(LIB_NAME pcl_${SUBSYS_NAME})
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
     PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${impl_incs})
-    target_link_libraries(${LIB_NAME} pcl_search pcl_sample_consensus pcl_filters pcl_ml)
+    target_link_libraries(${LIB_NAME} pcl_search pcl_sample_consensus pcl_filters pcl_ml pcl_features)
     PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}" "${SUBSYS_DEPS}" "" "" "" "")
 
     # Install include files
