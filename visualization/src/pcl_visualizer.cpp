@@ -4,6 +4,7 @@
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010, Willow Garage, Inc.
  *  Copyright (c) 2012-, Open Perception, Inc.
+ * 
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -426,7 +427,7 @@ pcl::visualization::PCLVisualizer::addOrientationMarkerWidgetAxes (vtkRenderWind
   else
   {
     axes_widget_->SetEnabled (true);
-    pcl::console::print_warn ("Orientation Widget Axes already exists, just enabling it");
+    pcl::console::print_warn (stderr, "Orientation Widget Axes already exists, just enabling it");
   }
   
 }
@@ -440,7 +441,7 @@ pcl::visualization::PCLVisualizer::removeOrientationMarkerWidgetAxes ()
     if (axes_widget_->GetEnabled ())
       axes_widget_->SetEnabled (false);
     else
-      pcl::console::print_warn ("Orientation Widget Axes was already disabled, doing nothing.");
+      pcl::console::print_warn (stderr, "Orientation Widget Axes was already disabled, doing nothing.");
   }
   else
   {
@@ -698,7 +699,7 @@ pcl::visualization::PCLVisualizer::removeText3D (const std::string &id, int view
 
   if (am_it == shape_actor_map_->end ())
   {
-    //pcl::console::print_warn ("[removeSape] Could not find any shape with id <%s>!\n", id.c_str ());
+    //pcl::console::print_warn (stderr, "[removeSape] Could not find any shape with id <%s>!\n", id.c_str ());
     return (false);
   }
 
@@ -709,6 +710,7 @@ pcl::visualization::PCLVisualizer::removeText3D (const std::string &id, int view
     shape_actor_map_->erase (am_it);
     return (true);
   }
+  return (false);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -761,7 +763,7 @@ pcl::visualization::PCLVisualizer::addPointCloudPrincipalCurvatures (const pcl::
 
   if (am_it != cloud_actor_map_->end ())
   {
-    pcl::console::print_warn ("[addPointCloudPrincipalCurvatures] A PointCloud with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
+    pcl::console::print_warn (stderr, "[addPointCloudPrincipalCurvatures] A PointCloud with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
     return (false);
   }
 
@@ -1829,7 +1831,7 @@ pcl::visualization::PCLVisualizer::addCylinder (const pcl::ModelCoefficients &co
   ShapeActorMap::iterator am_it = shape_actor_map_->find (id);
   if (am_it != shape_actor_map_->end ())
   {
-    pcl::console::print_warn ("[addCylinder] A shape with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
+    pcl::console::print_warn (stderr, "[addCylinder] A shape with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
     return (false);
   }
 
@@ -1855,7 +1857,7 @@ pcl::visualization::PCLVisualizer::addCube (const pcl::ModelCoefficients &coeffi
   ShapeActorMap::iterator am_it = shape_actor_map_->find (id);
   if (am_it != shape_actor_map_->end ())
   {
-    pcl::console::print_warn ("[addCube] A shape with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
+    pcl::console::print_warn (stderr, "[addCube] A shape with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
     return (false);
   }
 
@@ -1883,7 +1885,7 @@ pcl::visualization::PCLVisualizer::addCube (
   ShapeActorMap::iterator am_it = shape_actor_map_->find (id);
   if (am_it != shape_actor_map_->end ())
   {
-    pcl::console::print_warn ("[addCube] A shape with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
+    pcl::console::print_warn (stderr, "[addCube] A shape with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
     return (false);
   }
 
@@ -1912,7 +1914,7 @@ pcl::visualization::PCLVisualizer::addCube (float x_min, float x_max,
   ShapeActorMap::iterator am_it = shape_actor_map_->find (id);
   if (am_it != shape_actor_map_->end ())
   {
-    pcl::console::print_warn ("[addCube] A shape with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
+    pcl::console::print_warn (stderr, "[addCube] A shape with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
     return (false);
   }
 
@@ -1939,7 +1941,7 @@ pcl::visualization::PCLVisualizer::addSphere (const pcl::ModelCoefficients &coef
   ShapeActorMap::iterator am_it = shape_actor_map_->find (id);
   if (am_it != shape_actor_map_->end ())
   {
-    pcl::console::print_warn ("[addSphere] A shape with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
+    pcl::console::print_warn (stderr, "[addSphere] A shape with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
     return (false);
   }
 
@@ -1964,7 +1966,7 @@ pcl::visualization::PCLVisualizer::addModelFromPolyData (
   ShapeActorMap::iterator am_it = shape_actor_map_->find (id);
   if (am_it != shape_actor_map_->end ())
   {
-    pcl::console::print_warn (
+    pcl::console::print_warn (stderr, 
                                 "[addModelFromPolyData] A shape with id <%s> already exists! Please choose a different id and retry.\n",
                                 id.c_str ());
     return (false);
@@ -1988,7 +1990,7 @@ pcl::visualization::PCLVisualizer::addModelFromPolyData (
   ShapeActorMap::iterator am_it = shape_actor_map_->find (id);
   if (am_it != shape_actor_map_->end ())
   {
-    pcl::console::print_warn (
+    pcl::console::print_warn (stderr, 
                                 "[addModelFromPolyData] A shape with id <%s> already exists! Please choose a different id and retry.\n",
                                 id.c_str ());
     return (false);
@@ -2019,7 +2021,7 @@ pcl::visualization::PCLVisualizer::addModelFromPLYFile (const std::string &filen
   ShapeActorMap::iterator am_it = shape_actor_map_->find (id);
   if (am_it != shape_actor_map_->end ())
   {
-    pcl::console::print_warn (
+    pcl::console::print_warn (stderr, 
                                 "[addModelFromPLYFile] A shape with id <%s> already exists! Please choose a different id and retry.\n",
                                 id.c_str ());
     return (false);
@@ -2048,7 +2050,7 @@ pcl::visualization::PCLVisualizer::addModelFromPLYFile (const std::string &filen
   ShapeActorMap::iterator am_it = shape_actor_map_->find (id);
   if (am_it != shape_actor_map_->end ())
   {
-    pcl::console::print_warn (
+    pcl::console::print_warn (stderr, 
                                 "[addModelFromPLYFile] A shape with id <%s> already exists! Please choose a different id and retry.\n",
                                 id.c_str ());
     return (false);
@@ -2081,7 +2083,7 @@ pcl::visualization::PCLVisualizer::addLine (const pcl::ModelCoefficients &coeffi
   ShapeActorMap::iterator am_it = shape_actor_map_->find (id);
   if (am_it != shape_actor_map_->end ())
   {
-    pcl::console::print_warn ("[addLine] A shape with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
+    pcl::console::print_warn (stderr, "[addLine] A shape with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
     return (false);
   }
 
@@ -2111,7 +2113,7 @@ bool
   ShapeActorMap::iterator am_it = shape_actor_map_->find (id);
   if (am_it != shape_actor_map_->end ())
   {
-    pcl::console::print_warn ("[addPlane] A shape with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
+    pcl::console::print_warn (stderr, "[addPlane] A shape with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
     return (false);
   }
 
@@ -2136,7 +2138,7 @@ pcl::visualization::PCLVisualizer::addCircle (const pcl::ModelCoefficients &coef
   ShapeActorMap::iterator am_it = shape_actor_map_->find (id);
   if (am_it != shape_actor_map_->end ())
   {
-    pcl::console::print_warn ("[addCircle] A shape with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
+    pcl::console::print_warn (stderr, "[addCircle] A shape with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
     return (false);
   }
 
@@ -2161,7 +2163,7 @@ pcl::visualization::PCLVisualizer::addCone (const pcl::ModelCoefficients &coeffi
   ShapeActorMap::iterator am_it = shape_actor_map_->find (id);
   if (am_it != shape_actor_map_->end ())
   {
-    pcl::console::print_warn ("[addCone] A shape with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
+    pcl::console::print_warn (stderr, "[addCone] A shape with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
     return (false);
   }
 
@@ -2216,7 +2218,7 @@ pcl::visualization::PCLVisualizer::addText (const std::string &text, int xpos, i
   ShapeActorMap::iterator am_it = shape_actor_map_->find (tid);
   if (am_it != shape_actor_map_->end ())
   {
-    pcl::console::print_warn ("[addText] A text with id <%s> already exists! Please choose a different id and retry.\n", tid.c_str ());
+    pcl::console::print_warn (stderr, "[addText] A text with id <%s> already exists! Please choose a different id and retry.\n", tid.c_str ());
     return (false);
   }
 
@@ -2252,7 +2254,7 @@ pcl::visualization::PCLVisualizer::addText (const std::string &text, int xpos, i
   ShapeActorMap::iterator am_it = shape_actor_map_->find (tid);
   if (am_it != shape_actor_map_->end ())
   {
-    pcl::console::print_warn ("[addText] A text with id <%s> already exists! Please choose a different id and retry.\n", tid.c_str ());
+    pcl::console::print_warn (stderr, "[addText] A text with id <%s> already exists! Please choose a different id and retry.\n", tid.c_str ());
     return (false);
   }
 
@@ -2288,7 +2290,7 @@ pcl::visualization::PCLVisualizer::addText (const std::string &text, int xpos, i
   ShapeActorMap::iterator am_it = shape_actor_map_->find (tid);
   if (am_it != shape_actor_map_->end ())
   {
-    pcl::console::print_warn ("[addText] A text with id <%s> already exists! Please choose a different id and retry.\n", tid.c_str ());
+    pcl::console::print_warn (stderr, "[addText] A text with id <%s> already exists! Please choose a different id and retry.\n", tid.c_str ());
     return (false);
   }
 
@@ -2399,14 +2401,14 @@ pcl::visualization::PCLVisualizer::updateColorHandlerIndex (const std::string &i
   CloudActorMap::iterator am_it = cloud_actor_map_->find (id);
   if (am_it == cloud_actor_map_->end ())
   {
-    pcl::console::print_warn ("[updateColorHandlerIndex] PointCloud with id <%s> doesn't exist!\n", id.c_str ());
+    pcl::console::print_warn (stderr, "[updateColorHandlerIndex] PointCloud with id <%s> doesn't exist!\n", id.c_str ());
     return (false);
   }
 
   int color_handler_size (am_it->second.color_handlers.size ());
   if (index >= color_handler_size)
   {
-    pcl::console::print_warn ("[updateColorHandlerIndex] Invalid index <%d> given! Maximum range is: 0-%lu.\n", index, static_cast<unsigned long> (am_it->second.color_handlers.size ()));
+    pcl::console::print_warn (stderr, "[updateColorHandlerIndex] Invalid index <%d> given! Maximum range is: 0-%lu.\n", index, static_cast<unsigned long> (am_it->second.color_handlers.size ()));
     return (false);
   }
   // Get the handler
@@ -2462,7 +2464,7 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (const pcl::PolygonMesh &poly_
   CloudActorMap::iterator am_it = cloud_actor_map_->find (id);
   if (am_it != cloud_actor_map_->end ())
   {
-    pcl::console::print_warn (
+    pcl::console::print_warn (stderr, 
                                 "[addPolygonMesh] A shape with id <%s> already exists! Please choose a different id and retry.\n",
                                 id.c_str ());
     return (false);
@@ -2572,7 +2574,7 @@ pcl::visualization::PCLVisualizer::addPolylineFromPolygonMesh (
   ShapeActorMap::iterator am_it = shape_actor_map_->find (id);
   if (am_it != shape_actor_map_->end ())
   {
-    pcl::console::print_warn (
+    pcl::console::print_warn (stderr, 
                                 "[addPolylineFromPolygonMesh] A shape with id <%s> already exists! Please choose a different id and retry.\n",
                                 id.c_str ());
     return (false);

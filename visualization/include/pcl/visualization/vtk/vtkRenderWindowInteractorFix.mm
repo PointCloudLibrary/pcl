@@ -35,13 +35,7 @@
   *
   */
 
-#if defined __GNUC__
-#pragma GCC system_header 
-#endif
-
 #import <Cocoa/Cocoa.h>
-//#import <vtkCocoaMacOSXSDKCompatibility.h> // Needed to support old SDKs
-
 #include <pcl/visualization/vtk/vtkRenderWindowInteractorFix.h>
 #include <vtkCocoaRenderWindow.h>
 #include <vtkCocoaRenderWindowInteractor.h>
