@@ -156,17 +156,13 @@ pcl::copyPointCloud (const pcl::PointCloud<PointT> &cloud_in,
   cloud_out.header   = cloud_in.header;
   cloud_out.width    = static_cast<uint32_t>(indices.size ());
   cloud_out.height   = 1;
-  cloud_out.is_dense = true;
+  cloud_out.is_dense = cloud_in.is_dense;
   cloud_out.sensor_orientation_ = cloud_in.sensor_orientation_;
   cloud_out.sensor_origin_ = cloud_in.sensor_origin_;
 
   // Iterate over each point
   for (size_t i = 0; i < indices.size (); ++i)
-  {
     cloud_out.points[i] = cloud_in.points[indices[i]];
-    if (cloud_out.is_dense && !pcl::isFinite (cloud_out.points[i]))
-      cloud_out.is_dense = false;
-  }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -187,17 +183,13 @@ pcl::copyPointCloud (const pcl::PointCloud<PointT> &cloud_in,
   cloud_out.header   = cloud_in.header;
   cloud_out.width    = static_cast<uint32_t> (indices.size ());
   cloud_out.height   = 1;
-  cloud_out.is_dense = true;
+  cloud_out.is_dense = cloud_in.is_dense;
   cloud_out.sensor_orientation_ = cloud_in.sensor_orientation_;
   cloud_out.sensor_origin_ = cloud_in.sensor_origin_;
 
   // Iterate over each point
   for (size_t i = 0; i < indices.size (); ++i)
-  {
     cloud_out.points[i] = cloud_in.points[indices[i]];
-    if (cloud_out.is_dense && !pcl::isFinite (cloud_out.points[i]))
-      cloud_out.is_dense = false;
-  }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -211,7 +203,7 @@ pcl::copyPointCloud (const pcl::PointCloud<PointInT> &cloud_in,
   cloud_out.header   = cloud_in.header;
   cloud_out.width    = indices.size ();
   cloud_out.height   = 1;
-  cloud_out.is_dense = true;
+  cloud_out.is_dense = cloud_in.is_dense;
   cloud_out.sensor_orientation_ = cloud_in.sensor_orientation_;
   cloud_out.sensor_origin_ = cloud_in.sensor_origin_;
 
@@ -225,22 +217,14 @@ pcl::copyPointCloud (const pcl::PointCloud<PointInT> &cloud_in,
   {
     // Iterate over each point
     for (size_t i = 0; i < indices.size (); ++i)
-    {
       memcpy (&cloud_out.points[i], &cloud_in.points[indices[i]], sizeof (PointInT));
-      if (cloud_out.is_dense && !pcl::isFinite (cloud_out.points[i]))
-        cloud_out.is_dense = false;
-    }
   }
   else
   {
     // Iterate over each point
     for (size_t i = 0; i < indices.size (); ++i)
-    {
       // Iterate over each dimension
       pcl::for_each_type <FieldList> (pcl::NdConcatenateFunctor <PointInT, PointOutT> (cloud_in.points[indices[i]], cloud_out.points[i]));
-      if (cloud_out.is_dense && !pcl::isFinite (cloud_out.points[i]))
-        cloud_out.is_dense = false;
-    }
   }
 }
 
@@ -255,7 +239,7 @@ pcl::copyPointCloud (const pcl::PointCloud<PointInT> &cloud_in,
   cloud_out.header   = cloud_in.header;
   cloud_out.width    = static_cast<uint32_t> (indices.size ());
   cloud_out.height   = 1;
-  cloud_out.is_dense = true;
+  cloud_out.is_dense = cloud_in.is_dense;
   cloud_out.sensor_orientation_ = cloud_in.sensor_orientation_;
   cloud_out.sensor_origin_ = cloud_in.sensor_origin_;
 
@@ -269,22 +253,14 @@ pcl::copyPointCloud (const pcl::PointCloud<PointInT> &cloud_in,
   {
     // Iterate over each point
     for (size_t i = 0; i < indices.size (); ++i)
-    {
       memcpy (&cloud_out.points[i], &cloud_in.points[indices[i]], sizeof (PointInT));
-      if (cloud_out.is_dense && !pcl::isFinite (cloud_out.points[i]))
-        cloud_out.is_dense = false;
-    }
   }
   else
   {
     // Iterate over each point
     for (size_t i = 0; i < indices.size (); ++i)
-    {
       // Iterate over each dimension
       pcl::for_each_type <FieldList> (pcl::NdConcatenateFunctor <PointInT, PointOutT> (cloud_in.points[indices[i]], cloud_out.points[i]));
-      if (cloud_out.is_dense && !pcl::isFinite (cloud_out.points[i]))
-        cloud_out.is_dense = false;
-    }
   }
 }
 
@@ -306,17 +282,13 @@ pcl::copyPointCloud (const pcl::PointCloud<PointT> &cloud_in,
   cloud_out.header   = cloud_in.header;
   cloud_out.width    = indices.indices.size ();
   cloud_out.height   = 1;
-  cloud_out.is_dense = true;
+  cloud_out.is_dense = cloud_in.is_dense;
   cloud_out.sensor_orientation_ = cloud_in.sensor_orientation_;
   cloud_out.sensor_origin_ = cloud_in.sensor_origin_;
 
   // Iterate over each point
   for (size_t i = 0; i < indices.indices.size (); ++i)
-  {
     cloud_out.points[i] = cloud_in.points[indices.indices[i]];
-    if (cloud_out.is_dense && !pcl::isFinite (cloud_out.points[i]))
-      cloud_out.is_dense = false;
-  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -330,7 +302,7 @@ pcl::copyPointCloud (const pcl::PointCloud<PointInT> &cloud_in,
   cloud_out.header   = cloud_in.header;
   cloud_out.width    = indices.indices.size ();
   cloud_out.height   = 1;
-  cloud_out.is_dense = true;
+  cloud_out.is_dense = cloud_in.is_dense;
   cloud_out.sensor_orientation_ = cloud_in.sensor_orientation_;
   cloud_out.sensor_origin_ = cloud_in.sensor_origin_;
 
@@ -344,22 +316,14 @@ pcl::copyPointCloud (const pcl::PointCloud<PointInT> &cloud_in,
   {
     // Iterate over each point
     for (size_t i = 0; i < indices.indices.size (); ++i)
-    {
       memcpy (&cloud_out.points[i], &cloud_in.points[indices.indices[i]], sizeof (PointInT));
-      if (cloud_out.is_dense && !pcl::isFinite (cloud_out.points[i]))
-        cloud_out.is_dense = false;
-    }
   }
   else
   {
     // Iterate over each point
     for (size_t i = 0; i < indices.indices.size (); ++i)
-    {
       // Iterate over each dimension
       pcl::for_each_type <FieldList> (pcl::NdConcatenateFunctor <PointInT, PointOutT> (cloud_in.points[indices.indices[i]], cloud_out.points[i]));
-      if (cloud_out.is_dense && !pcl::isFinite (cloud_out.points[i]))
-        cloud_out.is_dense = false;
-    }
   }
 }
 
@@ -385,7 +349,7 @@ pcl::copyPointCloud (const pcl::PointCloud<PointT> &cloud_in,
   cloud_out.header   = cloud_in.header;
   cloud_out.width    = nr_p;
   cloud_out.height   = 1;
-  cloud_out.is_dense = true;
+  cloud_out.is_dense = cloud_in.is_dense;
   cloud_out.sensor_orientation_ = cloud_in.sensor_orientation_;
   cloud_out.sensor_origin_ = cloud_in.sensor_origin_;
 
@@ -398,8 +362,6 @@ pcl::copyPointCloud (const pcl::PointCloud<PointT> &cloud_in,
     {
       // Iterate over each dimension
       cloud_out.points[cp] = cloud_in.points[indices[cc].indices[i]];
-      if (cloud_out.is_dense && !pcl::isFinite (cloud_out.points[cp]))
-        cloud_out.is_dense = false;
       cp++;
     }
   }
@@ -427,7 +389,7 @@ pcl::copyPointCloud (const pcl::PointCloud<PointInT> &cloud_in,
   cloud_out.header   = cloud_in.header;
   cloud_out.width    = nr_p;
   cloud_out.height   = 1;
-  cloud_out.is_dense = true;
+  cloud_out.is_dense = cloud_in.is_dense;
   cloud_out.sensor_orientation_ = cloud_in.sensor_orientation_;
   cloud_out.sensor_origin_ = cloud_in.sensor_origin_;
 
@@ -447,8 +409,6 @@ pcl::copyPointCloud (const pcl::PointCloud<PointInT> &cloud_in,
       for (size_t i = 0; i < indices[cc].indices.size (); ++i)
       {
         cloud_out.points[cp] = cloud_in.points[indices[cc].indices[i]];
-        if (cloud_out.is_dense && !pcl::isFinite (cloud_out.points[cp]))
-          cloud_out.is_dense = false;
         ++cp;
       }
     }
@@ -464,8 +424,6 @@ pcl::copyPointCloud (const pcl::PointCloud<PointInT> &cloud_in,
       {
         // Iterate over each dimension
         pcl::for_each_type <FieldList> (pcl::NdConcatenateFunctor <PointInT, PointOutT> (cloud_in.points[indices[cc].indices[i]], cloud_out.points[cp]));
-        if (cloud_out.is_dense && !pcl::isFinite (cloud_out.points[cp]))
-          cloud_out.is_dense = false;
         ++cp;
       }
     }

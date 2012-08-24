@@ -58,7 +58,7 @@ namespace pcl
     */
   //template <typename PointT>
   //class Kmeans : public PCLBase<PointT>
-  class Kmeans
+  class PCL_EXPORTS Kmeans
   {
 /*
     typedef PCLBase<PointT> BasePCLBase;

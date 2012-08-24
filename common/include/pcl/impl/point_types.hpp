@@ -77,7 +77,11 @@
   (pcl::IntensityGradient)      \
   (pcl::PointWithScale)         \
   (pcl::ReferenceFrame)         \
-  (pcl::PointSurfel)
+  (pcl::PointSurfel)            \
+  (pcl::ShapeContext1980)       \
+  (pcl::SHOT352)                \
+  (pcl::SHOT1344)               \
+  (pcl::PointUV)
 
 // Define all point types that include RGB data
 #define PCL_RGB_POINT_TYPES     \
@@ -807,6 +811,7 @@ namespace pcl
       r = g = b = 0;
       a = 255;
       normal_x = normal_y = normal_z = data_n[3] = 0.0f;
+      curvature = 0;
     }
 
     inline Eigen::Vector3i getRGBVector3i () { return (Eigen::Vector3i (r, g, b)); }
