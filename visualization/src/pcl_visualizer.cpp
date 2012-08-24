@@ -1066,7 +1066,7 @@ pcl::visualization::PCLVisualizer::createActorFromVTKDataSet (const vtkSmartPoin
     actor->SetMapper (mapper);
   }
 
-  actor->SetNumberOfCloudPoints (std::max<vtkIdType> (1, data->GetNumberOfPoints () / 10));
+  actor->SetNumberOfCloudPoints (static_cast<int> (std::max<vtkIdType> (1, data->GetNumberOfPoints () / 10)));
   actor->GetProperty ()->SetInterpolationToFlat ();
 }
 
@@ -2405,7 +2405,7 @@ pcl::visualization::PCLVisualizer::updateColorHandlerIndex (const std::string &i
     return (false);
   }
 
-  int color_handler_size (am_it->second.color_handlers.size ());
+  int color_handler_size = int (am_it->second.color_handlers.size ());
   if (index >= color_handler_size)
   {
     pcl::console::print_warn (stderr, "[updateColorHandlerIndex] Invalid index <%d> given! Maximum range is: 0-%lu.\n", index, static_cast<unsigned long> (am_it->second.color_handlers.size ()));
@@ -2817,7 +2817,7 @@ pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
       sphere->GetPoint (ptIds_com[1], p2_com);
       sphere->GetPoint (ptIds_com[2], p3_com);
       vtkTriangle::TriangleCenter (p1_com, p2_com, p3_com, center);
-      cam_positions[i] = Eigen::Vector3f (center[0], center[1], center[2]);
+      cam_positions[i] = Eigen::Vector3f (float (center[0]), float (center[1]), float (center[2]));
       i++;
     }
 
@@ -2829,7 +2829,7 @@ pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
     {
       double cam_pos[3];
       sphere->GetPoint (i, cam_pos);
-      cam_positions[i] = Eigen::Vector3f (cam_pos[0], cam_pos[1], cam_pos[2]);
+      cam_positions[i] = Eigen::Vector3f (float (cam_pos[0]), float (cam_pos[1]), float (cam_pos[2]));
     }
   }
 
@@ -2873,7 +2873,7 @@ pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
     vtkSmartPointer<vtkCamera> cam_tmp = vtkSmartPointer<vtkCamera>::New ();
     cam_tmp->SetViewAngle (view_angle);
 
-    Eigen::Vector3f cam_pos_3f (cam_pos[0], cam_pos[1], cam_pos[2]);
+    Eigen::Vector3f cam_pos_3f (static_cast<float> (cam_pos[0]), static_cast<float> (cam_pos[1]), static_cast<float> (cam_pos[2]));
     cam_pos_3f = cam_pos_3f.normalized ();
     Eigen::Vector3f test = Eigen::Vector3f::UnitY ();
 
@@ -2950,9 +2950,9 @@ pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
     Eigen::Matrix4f backToRealScale_eigen;
     backToRealScale_eigen.setIdentity ();
 
-    for (size_t x = 0; x < 4; x++)
-      for (size_t y = 0; y < 4; y++)
-        backToRealScale_eigen (x, y) = backToRealScale->GetMatrix ()->GetElement (x, y);
+    for (int x = 0; x < 4; x++)
+      for (int y = 0; y < 4; y++)
+        backToRealScale_eigen (x, y) = static_cast<float> (backToRealScale->GetMatrix ()->GetElement (x, y));
 
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
 
@@ -2975,11 +2975,11 @@ pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
         if (value == 1.0)
           continue;
 
-        worldPicker->Pick (x, y, value, renderer);
+        worldPicker->Pick (static_cast<double> (x), static_cast<double> (y), value, renderer);
         worldPicker->GetPickPosition (coords);
-        cloud->points[count_valid_depth_pixels].x = coords[0];
-        cloud->points[count_valid_depth_pixels].y = coords[1];
-        cloud->points[count_valid_depth_pixels].z = coords[2];
+        cloud->points[count_valid_depth_pixels].x = static_cast<float> (coords[0]);
+        cloud->points[count_valid_depth_pixels].y = static_cast<float> (coords[1]);
+        cloud->points[count_valid_depth_pixels].z = static_cast<float> (coords[2]);
         cloud->points[count_valid_depth_pixels].getVector4fMap () = backToRealScale_eigen
             * cloud->points[count_valid_depth_pixels].getVector4fMap ();
         count_valid_depth_pixels++;
@@ -3055,21 +3055,21 @@ pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
      double visible_area = 0;
      for (int sel_id = 0; sel_id < (ids->GetNumberOfTuples ()); sel_id++)
      {
-     int id_mesh = ids->GetValue (sel_id);
-     vtkCell * cell = polydata->GetCell (id_mesh);
-     vtkTriangle* triangle = dynamic_cast<vtkTriangle*> (cell);
-     double p0[3];
-     double p1[3];
-     double p2[3];
-     triangle->GetPoints ()->GetPoint (0, p0);
-     triangle->GetPoints ()->GetPoint (1, p1);
-     triangle->GetPoints ()->GetPoint (2, p2);
-     area = vtkTriangle::TriangleArea (p0, p1, p2);
-     visible_area += area;
+       int id_mesh = static_cast<int> (ids->GetValue (sel_id));
+       vtkCell * cell = polydata->GetCell (id_mesh);
+       vtkTriangle* triangle = dynamic_cast<vtkTriangle*> (cell);
+       double p0[3];
+       double p1[3];
+       double p2[3];
+       triangle->GetPoints ()->GetPoint (0, p0);
+       triangle->GetPoints ()->GetPoint (1, p1);
+       triangle->GetPoints ()->GetPoint (2, p2);
+       area = vtkTriangle::TriangleArea (p0, p1, p2);
+       visible_area += area;
      }
 #endif
 
-    enthropies.push_back (visible_area / totalArea);
+    enthropies.push_back (static_cast<float> (visible_area / totalArea));
 
     cloud->points.resize (count_valid_depth_pixels);
     cloud->width = count_valid_depth_pixels;
@@ -3079,17 +3079,17 @@ pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
     Eigen::Matrix4f trans_view;
     trans_view.setIdentity ();
 
-    for (size_t x = 0; x < 4; x++)
-      for (size_t y = 0; y < 4; y++)
-        trans_view (x, y) = view_transform->GetElement (x, y);
+    for (int x = 0; x < 4; x++)
+      for (int y = 0; y < 4; y++)
+        trans_view (x, y) = static_cast<float> (view_transform->GetElement (x, y));
 
     //NOTE: vtk view coordinate system is different than the standard camera coordinates (z forward, y down, x right)
     //thus, the fliping in y and z
     for (size_t i = 0; i < cloud->points.size (); i++)
     {
       cloud->points[i].getVector4fMap () = trans_view * cloud->points[i].getVector4fMap ();
-      cloud->points[i].y *= -1.0;
-      cloud->points[i].z *= -1.0;
+      cloud->points[i].y *= -1.0f;
+      cloud->points[i].z *= -1.0f;
     }
 
     renderer->RemoveActor (actor_view);
@@ -3119,9 +3119,9 @@ pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
     Eigen::Matrix4f pose_view;
     pose_view.setIdentity ();
 
-    for (size_t x = 0; x < 4; x++)
-      for (size_t y = 0; y < 4; y++)
-        pose_view (x, y) = transOCtoCC->GetMatrix ()->GetElement (x, y);
+    for (int x = 0; x < 4; x++)
+      for (int y = 0; y < 4; y++)
+        pose_view (x, y) = static_cast<float> (transOCtoCC->GetMatrix ()->GetElement (x, y));
 
     poses.push_back (pose_view);
 
@@ -3168,11 +3168,11 @@ pcl::visualization::PCLVisualizer::renderView (int xres, int yres, pcl::PointClo
       if (value == 1.0)
         continue;
 
-      worldPicker->Pick (x, y, value, renderer);
+      worldPicker->Pick (static_cast<double> (x), static_cast<double> (y), value, renderer);
       worldPicker->GetPickPosition (coords);
-      cloud->points[count_valid_depth_pixels].x = coords[0];
-      cloud->points[count_valid_depth_pixels].y = coords[1];
-      cloud->points[count_valid_depth_pixels].z = coords[2];
+      cloud->points[count_valid_depth_pixels].x = static_cast<float> (coords[0]);
+      cloud->points[count_valid_depth_pixels].y = static_cast<float> (coords[1]);
+      cloud->points[count_valid_depth_pixels].z = static_cast<float> (coords[2]);
       count_valid_depth_pixels++;
     }
   }
@@ -3188,17 +3188,17 @@ pcl::visualization::PCLVisualizer::renderView (int xres, int yres, pcl::PointClo
   Eigen::Matrix4f trans_view;
   trans_view.setIdentity ();
 
-  for (size_t x = 0; x < 4; x++)
-    for (size_t y = 0; y < 4; y++)
-      trans_view (x, y) = view_transform->GetElement (x, y);
+  for (int x = 0; x < 4; x++)
+    for (int y = 0; y < 4; y++)
+      trans_view (x, y) = static_cast<float> (view_transform->GetElement (x, y));
 
   //NOTE: vtk view coordinate system is different than the standard camera coordinates (z forward, y down, x right)
   //thus, the fliping in y and z
   for (size_t i = 0; i < cloud->points.size (); i++)
   {
     cloud->points[i].getVector4fMap () = trans_view * cloud->points[i].getVector4fMap ();
-    cloud->points[i].y *= -1.0;
-    cloud->points[i].z *= -1.0;
+    cloud->points[i].y *= -1.0f;
+    cloud->points[i].z *= -1.0f;
   }
 }
 
@@ -3376,7 +3376,7 @@ pcl::visualization::PCLVisualizer::convertToEigenMatrix (
 {
   for (int i = 0; i < 4; i++)
     for (int k = 0; k < 4; k++)
-      m (i,k) = vtk_matrix->GetElement (i, k);
+      m (i,k) = static_cast<float> (vtk_matrix->GetElement (i, k));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -3458,7 +3458,7 @@ pcl::visualization::PCLVisualizer::FPSCallback::Execute (
     vtkObject* caller, unsigned long, void*)
 {
   vtkRenderer *ren = reinterpret_cast<vtkRenderer *> (caller);
-  float fps = 1.0 / ren->GetLastRenderTimeInSeconds ();
+  float fps = 1.0f / static_cast<float> (ren->GetLastRenderTimeInSeconds ());
   char buf[128];
   sprintf (buf, "%.1f FPS", fps);
   actor->SetInput (buf);
