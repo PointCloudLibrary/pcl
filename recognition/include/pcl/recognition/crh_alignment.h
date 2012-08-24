@@ -170,7 +170,7 @@ namespace pcl
           translation2 (1, 3) = centroid_input_[1] - centr[1];
           translation2 (2, 3) = centroid_input_[2] - centr[2];
 
-          Eigen::Matrix4f resultHom = translation2 * rollHomMatrix;
+          Eigen::Matrix4f resultHom (translation2 * rollHomMatrix);
           transforms_.push_back(resultHom.inverse());
         }
 
