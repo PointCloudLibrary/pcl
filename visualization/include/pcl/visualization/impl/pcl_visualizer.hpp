@@ -645,7 +645,7 @@ pcl::visualization::PCLVisualizer::addText3D (
   ShapeActorMap::iterator am_it = shape_actor_map_->find (tid);
   if (am_it != shape_actor_map_->end ())
   {
-    pcl::console::print_warn ("[addText3d] A text with id <%s> already exists! Please choose a different id and retry.\n", tid.c_str ());
+    pcl::console::print_warn (stderr, "[addText3d] A text with id <%s> already exists! Please choose a different id and retry.\n", tid.c_str ());
     return (false);
   }
 
@@ -1469,7 +1469,7 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (
   CloudActorMap::iterator am_it = cloud_actor_map_->find (id);
   if (am_it != cloud_actor_map_->end ())
   {
-    pcl::console::print_warn (
+    pcl::console::print_warn (stderr, 
                                 "[addPolygonMesh] A shape with id <%s> already exists! Please choose a different id and retry.\n",
                                 id.c_str ());
     return (false);
