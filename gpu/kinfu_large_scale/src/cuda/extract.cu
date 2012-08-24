@@ -36,9 +36,6 @@
  */
 
 #include "device.hpp"
-//#include <pcl/gpu/utils/device/funcattrib.hpp>
-//include <pcl/gpu/utils/device/block.hpp>
-//#include <pcl/gpu/utils/device/warp.hpp>
 #include <iostream>
 
 
@@ -59,7 +56,7 @@ namespace pcl
     };
 
     __device__ int global_count = 0;
-    __device__ int output_xyz_count;
+    __device__ int output_xyz_count = 0;                                       // *************************************************
     __device__ unsigned int blocks_done = 0;
 
     __shared__ float storage_X[CTA_SIZE * MAX_LOCAL_POINTS];
@@ -348,7 +345,7 @@ namespace pcl
                storage_I[storage_index + offset + l] = points[l].w;// Intensity values of the points we found in STORAGE_I
              }
 
-             // Retreive Zero-crossings as 3D points
+             // Retrieve Zero-crossings as 3D points
              int offset_storage = old_global_count + lane;
              for (int idx = lane; idx < total_warp; idx += Warp::STRIDE, offset_storage += Warp::STRIDE)
              {
@@ -439,10 +436,11 @@ pcl::device::extractCloud (const PtrStep<short2>& volume, const float3& volume_s
 
   extractKernel<<<grid, block>>>(fs);
   cudaSafeCall ( cudaGetLastError () );
-  cudaSafeCall (cudaDeviceSynchronize ());
+  cudaSafeCall ( cudaDeviceSynchronize () );
 
   int size;
   cudaSafeCall ( cudaMemcpyFromSymbol (&size, output_xyz_count, sizeof (size)) );
+//  cudaSafeCall ( cudaMemcpyFromSymbol (&size, "output_xyz_count", sizeof (size)) );
   return ((size_t)size);
 }
 
@@ -453,7 +451,6 @@ pcl::device::extractSliceAsCloud (const PtrStep<short2>& volume, const float3& v
                                   const int shiftX, const int shiftY, const int shiftZ, 
                                   PtrSz<PointType> output_xyz, PtrSz<float> output_intensities)
 {
-  
   FullScan6 fs;
   fs.volume = volume;
   fs.cell_size.x = volume_size.x / buffer->voxels_size.x;
@@ -548,10 +545,10 @@ pcl::device::extractSliceAsCloud (const PtrStep<short2>& volume, const float3& v
   extractSliceKernel<<<grid, block>>>(fs, *buffer, minBounds, maxBounds);
 
   cudaSafeCall ( cudaGetLastError () );
-  cudaSafeCall (cudaDeviceSynchronize ());
+  cudaSafeCall ( cudaDeviceSynchronize () );
 
   int size;
-  cudaSafeCall ( cudaMemcpyFromSymbol (&size, output_xyz_count, sizeof(size)) );
+  cudaSafeCall ( cudaMemcpyFromSymbol (&size, output_xyz_count, sizeof(size)) );  
   return (size_t)size;
 }
 
@@ -657,26 +654,40 @@ namespace pcl
       {
         int3 g = getVoxel (point);
 
+/*
+        //OLD CODE
         float vx = (g.x + 0.5f) * cell_size.x;
         float vy = (g.y + 0.5f) * cell_size.y;
         float vz = (g.z + 0.5f) * cell_size.z;
 
-        g.x = (point.x < vx) ? (g.x - 1) : g.x;
-        g.y = (point.y < vy) ? (g.y - 1) : g.y;
-        g.z = (point.z < vz) ? (g.z - 1) : g.z;
+        if (point.x < vx) g.x--;
+        if (point.y < vy) g.y--;
+        if (point.z < vz) g.z--;
 
-        float a = (point.x - (g.x + 0.5f) * cell_size.x) / cell_size.x;
-        float b = (point.y - (g.y + 0.5f) * cell_size.y) / cell_size.y;
-        float c = (point.z - (g.z + 0.5f) * cell_size.z) / cell_size.z;
+        //float a = (point.x - (g.x + 0.5f) * cell_size.x) / cell_size.x;
+        //float b = (point.y - (g.y + 0.5f) * cell_size.y) / cell_size.y;
+        //float c = (point.z - (g.z + 0.5f) * cell_size.z) / cell_size.z;
+        float a =  point.x/ cell_size.x - (g.x + 0.5f);
+        float b =  point.y/ cell_size.y - (g.y + 0.5f);
+        float c =  point.z/ cell_size.z - (g.z + 0.5f);
+*/
+        //NEW CODE
+		float a = point.x/ cell_size.x - (g.x + 0.5f); if (a<0) { g.x--; a+=1.0f; };
+        float b = point.y/ cell_size.y - (g.y + 0.5f); if (b<0) { g.y--; b+=1.0f; };
+        float c = point.z/ cell_size.z - (g.z + 0.5f); if (c<0) { g.z--; c+=1.0f; };
 
-        float res = readTsdf (g.x + 0, g.y + 0, g.z + 0) * (1 - a) * (1 - b) * (1 - c) +
-                    readTsdf (g.x + 0, g.y + 0, g.z + 1) * (1 - a) * (1 - b) * c +
-                    readTsdf (g.x + 0, g.y + 1, g.z + 0) * (1 - a) * b * (1 - c) +
-                    readTsdf (g.x + 0, g.y + 1, g.z + 1) * (1 - a) * b * c +
-                    readTsdf (g.x + 1, g.y + 0, g.z + 0) * a * (1 - b) * (1 - c) +
-                    readTsdf (g.x + 1, g.y + 0, g.z + 1) * a * (1 - b) * c +
-                    readTsdf (g.x + 1, g.y + 1, g.z + 0) * a * b * (1 - c) +
-                    readTsdf (g.x + 1, g.y + 1, g.z + 1) * a * b * c;
+        float res = (1 - a) * ( 
+						(1 - b) * ( readTsdf (g.x + 0, g.y + 0, g.z + 0) * (1 - c) +
+								    readTsdf (g.x + 0, g.y + 0, g.z + 1) *    c  )
+							+ b * (	readTsdf (g.x + 0, g.y + 1, g.z + 0) * (1 - c) +
+									readTsdf (g.x + 0, g.y + 1, g.z + 1) *    c  )
+					) + a * (
+						(1 - b) * ( readTsdf (g.x + 1, g.y + 0, g.z + 0) * (1 - c) +
+									readTsdf (g.x + 1, g.y + 0, g.z + 1) *    c  )
+							+ b * (	readTsdf (g.x + 1, g.y + 1, g.z + 0) * (1 - c) +
+									readTsdf (g.x + 1, g.y + 1, g.z + 1) *    c  )
+					);
+
         return res;
       }
     };

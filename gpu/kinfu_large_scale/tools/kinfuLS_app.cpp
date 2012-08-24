@@ -1,4 +1,15 @@
 /*
+  Work in progress: patch by Marco (AUG,19th 2012)
+  > oni fixed
+  > pcl added: mostly to include rgb treatment while grabbing from PCD files obtained by pcl_openni_grab_frame -noend 
+  > sync issue fixed
+  > volume_size issue fixed
+  > world.pcd write exception on windows fixed on new trunk version
+
+  + minor changes
+*/
+
+/*
  * Software License Agreement (BSD License)
  *
  *  Copyright (c) 2011, Willow Garage, Inc.
@@ -290,7 +301,7 @@ struct ImageView
   }
 
   void
-  showScene (KinfuTracker& kinfu, const PtrStepSz<const KinfuTracker::PixelRGB>& rgb24, bool registration, Eigen::Affine3f* pose_ptr = 0)
+  showScene (KinfuTracker& kinfu, const PtrStepSz<const pcl::gpu::PixelRGB>& rgb24, bool registration, Eigen::Affine3f* pose_ptr = 0)
   {
     if (pose_ptr)
     {
@@ -358,7 +369,7 @@ struct ImageView
 
   KinfuTracker::View view_device_;
   KinfuTracker::View colors_device_;
-  vector<KinfuTracker::PixelRGB> view_host_;
+  vector<pcl::gpu::PixelRGB> view_host_;
 
   RayCaster::Ptr raycaster_ptr_;
 
@@ -474,9 +485,9 @@ struct SceneCloudView
 
     switch (extraction_mode_)
     {
-    case 0: cout << "Cloud exctraction mode: GPU, Connected-6" << endl; break;
-    case 1: cout << "Cloud exctraction mode: CPU, Connected-6    (requires a lot of memory)" << endl; break;
-    case 2: cout << "Cloud exctraction mode: CPU, Connected-26   (requires a lot of memory)" << endl; break;
+    case 0: cout << "Cloud extraction mode: GPU, Connected-6" << endl; break;
+    case 1: cout << "Cloud extraction mode: CPU, Connected-6    (requires a lot of memory)" << endl; break;
+    case 2: cout << "Cloud extraction mode: CPU, Connected-26   (requires a lot of memory)" << endl; break;
     }
     ;
   }
@@ -546,12 +557,12 @@ struct SceneCloudView
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-struct KinFuApp
+struct KinFuLSApp
 {
   enum { PCD_BIN = 1, PCD_ASCII = 2, PLY = 3, MESH_PLY = 7, MESH_VTK = 8 };
   
-  KinFuApp(pcl::Grabber& source, float vsz, float shiftDistance) : exit_ (false), scan_ (false), scan_mesh_(false), scan_volume_ (false), independent_camera_ (false),
-    registration_ (false), integrate_colors_ (false), focal_length_(-1.f), capture_ (source), time_ms_(0)
+  KinFuLSApp(pcl::Grabber& source, float vsz, float shiftDistance, int snapshotRate) : exit_ (false), scan_ (false), scan_mesh_(false), scan_volume_ (false), independent_camera_ (false),
+    registration_ (false), integrate_colors_ (false), pcd_source_ (false), focal_length_(-1.f), capture_ (source), time_ms_(0)
   {    
     //Init Kinfu Tracker
     Eigen::Vector3f volume_size = Vector3f::Constant (vsz/*meters*/);    
@@ -573,16 +584,13 @@ struct KinFuApp
 
     Eigen::Affine3f pose = Eigen::Translation3f (t) * Eigen::AngleAxisf (R);
 
-
-
-
-    kinfu_->setInitalCameraPose (pose);
+    kinfu_->setInitialCameraPose (pose);
     kinfu_->volume().setTsdfTruncDist (0.030f/*meters*/);
     kinfu_->setIcpCorespFilteringParams (0.1f/*meters*/, sin ( pcl::deg2rad(20.f) ));
     //kinfu_->setDepthTruncationForICP(3.f/*meters*/);
     kinfu_->setCameraMovementThreshold(0.001f);
     
-    //Init KinfuApp            
+    //Init KinFuLSApp            
     tsdf_cloud_ptr_ = pcl::PointCloud<pcl::PointXYZI>::Ptr (new pcl::PointCloud<pcl::PointXYZI>);
     image_view_.raycaster_ptr_ = RayCaster::Ptr( new RayCaster(kinfu_->rows (), kinfu_->cols ()) );
 
@@ -601,11 +609,10 @@ struct KinFuApp
     float height = 480.0f;
     float width = 640.0f;
     screenshot_manager_.setCameraIntrinsics (pcl::device::FOCAL_LENGTH, height, width);
-    
-    
+    snapshot_rate_ = snapshotRate;
   }
 
-  ~KinFuApp()
+  ~KinFuLSApp()
   {
     if (evaluation_ptr_)
       evaluation_ptr_->saveAllPoses(*kinfu_);
@@ -657,7 +664,7 @@ struct KinFuApp
         evaluation_ptr_->fx, evaluation_ptr_->fy, evaluation_ptr_->cx, evaluation_ptr_->cy) );
   }
   
-  void execute(const PtrStepSz<const unsigned short>& depth, const PtrStepSz<const KinfuTracker::PixelRGB>& rgb24, bool has_data)
+  void execute(const PtrStepSz<const unsigned short>& depth, const PtrStepSz<const pcl::gpu::PixelRGB>& rgb24, bool has_data)
   {        
     bool has_image = false;
     frame_counter_++;
@@ -720,9 +727,8 @@ struct KinFuApp
     if (!independent_camera_)
       setViewerPose (scene_cloud_view_.cloud_viewer_, kinfu_->getCameraPose());
     
-    if (enable_texture_extraction_)
-    {
-      if ( (frame_counter_  % 45) == 0 )
+    if (enable_texture_extraction_) {
+      if ( (frame_counter_  % snapshot_rate_) == 0 )   // Should be defined as a parameter. Done.
       {
         screenshot_manager_.saveImage (kinfu_->getCameraPose(), rgb24);
       }
@@ -777,44 +783,93 @@ struct KinFuApp
     data_ready_cond_.notify_one();
   }
 
-  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  void
-  startMainLoop ()
-  {   
-    using namespace openni_wrapper;
-    typedef boost::shared_ptr<DepthImage> DepthImagePtr;
-    typedef boost::shared_ptr<Image> ImagePtr;
-        
-    boost::function<void (const ImagePtr&, const DepthImagePtr&, float constant)> func1 = boost::bind (&KinFuApp::source_cb2, this, _1, _2, _3);
-    boost::function<void (const DepthImagePtr&)> func2 = boost::bind (&KinFuApp::source_cb1, this, _1);
+	void source_cb3(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr & DC3)
+	{
+		{
+            //std::cout << "Giving colors1\n";
+			boost::mutex::scoped_try_lock lock(data_ready_mutex_);
+			std::cout << lock << std::endl;
+			if (exit_ || !lock)
+				return;
+            //std::cout << "Giving colors2\n";
+			int width  = DC3->width;
+			int height = DC3->height;
+			depth_.cols = width;
+			depth_.rows = height;
+			depth_.step = depth_.cols * depth_.elemSize();
+			source_depth_data_.resize(depth_.cols * depth_.rows);   
 
-    bool need_colors = integrate_colors_ || registration_;
-    boost::signals2::connection c = need_colors ? capture_.registerCallback (func1) : capture_.registerCallback (func2);
-    {
+			rgb24_.cols = width;
+			rgb24_.rows = height;
+			rgb24_.step = rgb24_.cols * rgb24_.elemSize(); 
+			source_image_data_.resize(rgb24_.cols * rgb24_.rows);
 
-      boost::unique_lock<boost::mutex> lock(data_ready_mutex_);
+			unsigned char *rgb    = (unsigned char *)  &source_image_data_[0];
+			unsigned short *depth = (unsigned short *) &source_depth_data_[0];  
 
-      capture_.start ();
-      while (!exit_ && !scene_cloud_view_.cloud_viewer_.wasStopped () && !image_view_.viewerScene_.wasStopped () && !this->kinfu_->isFinished ())
-      { 
-        bool has_data = data_ready_cond_.timed_wait (lock, boost::posix_time::millisec(100));
+            //std::cout << "Giving colors3\n";
+			for (int i=0; i<width*height; i++) {
+				PointXYZRGBA pt = DC3->at(i);
+				rgb[3*i +0] = pt.r;
+				rgb[3*i +1] = pt.g;
+				rgb[3*i +2] = pt.b;
+				depth[i]    = pt.z/0.001;
+			}
+            //std::cout << "Giving colors4\n";
+			rgb24_.data = &source_image_data_[0];   
+			depth_.data = &source_depth_data_[0];      
+		}	
+		data_ready_cond_.notify_one();
+	}
 
-        try { this->execute (depth_, rgb24_, has_data); }
-        catch (const std::bad_alloc& /*e*/) { cout << "Bad alloc" << endl; break; }
-        catch (const std::exception& /*e*/) { cout << "Exception" << endl; break; }
-        
-        scene_cloud_view_.cloud_viewer_.spinOnce (3);
-      } 
+	void
+	startMainLoop (bool triggered_capture)
+	{   
+		using namespace openni_wrapper;
+		typedef boost::shared_ptr<DepthImage> DepthImagePtr;
+		typedef boost::shared_ptr<Image>      ImagePtr;
 
-      exit_ = true;
-      boost::this_thread::sleep (boost::posix_time::millisec (100));
-      capture_.stop ();
+		boost::function<void (const ImagePtr&, const DepthImagePtr&, float constant)> func1 = boost::bind (&KinFuLSApp::source_cb2, this, _1, _2, _3);
+	 	boost::function<void (const DepthImagePtr&)> func2 = boost::bind (&KinFuLSApp::source_cb1, this, _1);
+		boost::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&) > func3 = boost::bind (&KinFuLSApp::source_cb3, this, _1);
 
-    }
+		bool need_colors = integrate_colors_ || registration_;
 
-    c.disconnect();
+		if ( pcd_source_ && !capture_.providesCallback<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)>() ) {
+			std::cout << "grabber doesn't provide pcl::PointCloud<pcl::PointXYZRGBA> callback !\n";
+		}
 
-  }
+		boost::signals2::connection c = 
+			pcd_source_? capture_.registerCallback (func3) : need_colors ? capture_.registerCallback (func1) : capture_.registerCallback (func2);
+
+		{
+			boost::unique_lock<boost::mutex> lock(data_ready_mutex_);
+
+			if (!triggered_capture) 
+				capture_.start ();
+
+			while (!exit_ && !scene_cloud_view_.cloud_viewer_.wasStopped () && !image_view_.viewerScene_.wasStopped () && !this->kinfu_->isFinished ())
+			{ 
+				if (triggered_capture)
+					capture_.start(); // Triggers new frame
+
+				bool has_data = data_ready_cond_.timed_wait (lock, boost::posix_time::millisec(100));
+
+				try { this->execute (depth_, rgb24_, has_data); }
+				catch (const std::bad_alloc& /*e*/) { cout << "Bad alloc" << endl; break; }
+				catch (const std::exception& /*e*/) { cout << "Exception" << endl; break; }
+
+				scene_cloud_view_.cloud_viewer_.spinOnce (3);
+				//~ cout << "In main loop" << endl;                  
+			} 
+			exit_ = true;
+			boost::this_thread::sleep (boost::posix_time::millisec (100));
+
+			if (!triggered_capture)     
+				capture_.stop (); // Stop stream
+		}
+		c.disconnect();
+	}
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   void
@@ -866,7 +921,8 @@ struct KinFuApp
     cout << "   1,2,3 : save cloud to PCD(binary), PCD(ASCII), PLY(ASCII)" << endl;
     cout << "    7,8  : save mesh to PLY, VTK" << endl;
     cout << "   X, V  : TSDF volume utility" << endl;
-    cout << "   L, l  : On the next shift, KinFu will extract the whole current cube, extract the world, mesh the world, and stop" << endl;
+    cout << "   L, l  : On the next shift, KinFu will extract the whole current cube, extract the world and stop" << endl;
+    cout << "   S, s  : On the next shift, KinFu will extract the world and stop" << endl;
     cout << endl;
   }  
 
@@ -879,9 +935,11 @@ struct KinFuApp
   int frame_counter_;
   bool enable_texture_extraction_;
   pcl::gpu::ScreenshotManager screenshot_manager_;
+  int snapshot_rate_;
 
   bool registration_;
-  bool integrate_colors_;  
+  bool integrate_colors_;
+  bool pcd_source_;
   float focal_length_;
   
   pcl::Grabber& capture_;
@@ -901,10 +959,10 @@ struct KinFuApp
   boost::mutex data_ready_mutex_;
   boost::condition_variable data_ready_cond_;
  
-  std::vector<KinfuTracker::PixelRGB> source_image_data_;
+  std::vector<pcl::gpu::PixelRGB> source_image_data_;
   std::vector<unsigned short> source_depth_data_;
   PtrStepSz<const unsigned short> depth_;
-  PtrStepSz<const KinfuTracker::PixelRGB> rgb24_;  
+  PtrStepSz<const pcl::gpu::PixelRGB> rgb24_;  
 
   int time_ms_;
 
@@ -912,7 +970,7 @@ struct KinFuApp
   static void
   keyboard_callback (const visualization::KeyboardEvent &e, void *cookie)
   {
-    KinFuApp* app = reinterpret_cast<KinFuApp*> (cookie);
+    KinFuLSApp* app = reinterpret_cast<KinFuLSApp*> (cookie);
 
     int key = e.getKeyCode ();
 
@@ -929,6 +987,7 @@ struct KinFuApp
       case (int)'i': case (int)'I': app->toggleIndependentCamera (); break;
       case (int)'b': case (int)'B': app->scene_cloud_view_.toggleCube(app->kinfu_->volume().getSize()); break;
       case (int)'l': case (int)'L': app->kinfu_->performLastScan (); break;
+	  case (int)'s': case (int)'S': app->kinfu_->extractAndMeshWorld (); break;
       case (int)'7': case (int)'8': app->writeMesh (key - (int)'0'); break;  
       case (int)'1': case (int)'2': case (int)'3': app->writeCloud (key - (int)'0'); break;      
       case '*': app->image_view_.toggleImagePaint (); break;
@@ -950,24 +1009,25 @@ struct KinFuApp
         break;
       }    
   }
+
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<typename CloudPtr> void
 writeCloudFile (int format, const CloudPtr& cloud_prt)
 {
-  if (format == KinFuApp::PCD_BIN)
+  if (format == KinFuLSApp::PCD_BIN)
   {
     cout << "Saving point cloud to 'cloud_bin.pcd' (binary)... " << flush;
     pcl::io::savePCDFile ("cloud_bin.pcd", *cloud_prt, true);
   }
   else
-  if (format == KinFuApp::PCD_ASCII)
+  if (format == KinFuLSApp::PCD_ASCII)
   {
     cout << "Saving point cloud to 'cloud.pcd' (ASCII)... " << flush;
     pcl::io::savePCDFile ("cloud.pcd", *cloud_prt, false);
   }
-  else   /* if (format == KinFuApp::PLY) */
+  else   /* if (format == KinFuLSApp::PLY) */
   {
     cout << "Saving point cloud to 'cloud.ply' (ASCII)... " << flush;
     pcl::io::savePLYFileASCII ("cloud.ply", *cloud_prt);
@@ -981,12 +1041,12 @@ writeCloudFile (int format, const CloudPtr& cloud_prt)
 void
 writePoligonMeshFile (int format, const pcl::PolygonMesh& mesh)
 {
-  if (format == KinFuApp::MESH_PLY)
+  if (format == KinFuLSApp::MESH_PLY)
   {
     cout << "Saving mesh to to 'mesh.ply'... " << flush;
     pcl::io::savePLYFile("mesh.ply", mesh);		
   }
-  else /* if (format == KinFuApp::MESH_VTK) */
+  else /* if (format == KinFuLSApp::MESH_VTK) */
   {
     cout << "Saving mesh to to 'mesh.vtk'... " << flush;
     pcl::io::saveVTKFile("mesh.vtk", mesh);    
@@ -1000,15 +1060,16 @@ int
 print_cli_help ()
 {
   cout << "\nKinFu parameters:" << endl;
-  cout << "    --help, -h                      : print this message" << endl;  
-  cout << "    --registration, -r              : try to enable registration (source needs to support this)" << endl;
-  cout << "    --current-cloud, -cc            : show current frame cloud" << endl;
-  cout << "    --save-views, -sv               : accumulate scene view and save in the end ( Requires OpenCV. Will cause 'bad_alloc' after some time )" << endl;  
-  cout << "    --registration, -r              : enable registration mode" << endl; 
-  cout << "    --integrate-colors, -ic         : enable color integration mode (allows to get cloud with colors)" << endl;
-  cout << "    --extract-textures, -et         : extract RGB PNG images to KinFuSnapshots folder." << endl;
-  cout << "    --volume_size <in_meters>       : define integration volume size" << endl;
-  cout << "    --shifting_distance <in_meters> : define shifting threshold (distance target-point / cube center)" << endl;
+  cout << "    --help, -h                          : print this message" << endl;  
+  cout << "    --registration, -r                  : try to enable registration (source needs to support this)" << endl;
+  cout << "    --current-cloud, -cc                : show current frame cloud" << endl;
+  cout << "    --save-views, -sv                   : accumulate scene view and save in the end ( Requires OpenCV. Will cause 'bad_alloc' after some time )" << endl;  
+  cout << "    --registration, -r                  : enable registration mode" << endl; 
+  cout << "    --integrate-colors, -ic             : enable color integration mode (allows to get cloud with colors)" << endl;
+  cout << "    --extract-textures, -et             : extract RGB PNG images to KinFuSnapshots folder." << endl;
+  cout << "    --volume_size <in_meters>, -vs      : define integration volume size" << endl;
+  cout << "    --shifting_distance <in_meters>, -sd : define shifting threshold (distance target-point / cube center)" << endl;
+  cout << "    --snapshot_rate <X_frames>, -sr     : Extract RGB textures every <X_frames>. Default: 45  " << endl;
   cout << endl << "";
   cout << "Valid depth data sources:" << endl; 
   cout << "    -dev <device> (default), -oni <oni_file>, -pcd <pcd_file or directory>" << endl;
@@ -1036,6 +1097,8 @@ main (int argc, char* argv[])
 //    return cout << endl << "Kinfu is supported only for Fermi and Kepler arhitectures. It is not even compiled for pre-Fermi by default. Exiting..." << endl, 1;
   
   boost::shared_ptr<pcl::Grabber> capture;
+  bool triggered_capture = false;
+  bool pcd_input = false;
   
   std::string eval_folder, match_file, openni_device, oni_file, pcd_dir;
   try
@@ -1046,18 +1109,21 @@ main (int argc, char* argv[])
     }
     else if (pc::parse_argument (argc, argv, "-oni", oni_file) > 0)
     {
-      capture.reset (new pcl::ONIGrabber (oni_file, true, true));
+		triggered_capture = true;
+		bool repeat = false; // Only run ONI file once
+		capture.reset (new pcl::ONIGrabber (oni_file, repeat, !triggered_capture));
     }
     else if (pc::parse_argument (argc, argv, "-pcd", pcd_dir) > 0)
     {
-      float fps_pcd = 15.0f;
-      pc::parse_argument (argc, argv, "-pcd_fps", fps_pcd);
+       float fps_pcd = 0.0f;
+  //   pc::parse_argument (argc, argv, "-pcd_fps", fps_pcd);
 
-      vector<string> pcd_files = getPcdFilesInDir(pcd_dir);    
-
-      // Sort the read files by name
-      sort (pcd_files.begin (), pcd_files.end ());
-      capture.reset (new pcl::PCDGrabber<pcl::PointXYZ> (pcd_files, fps_pcd, false));
+		vector<string> pcd_files = getPcdFilesInDir(pcd_dir);    
+		// Sort the read files by name
+		sort (pcd_files.begin (), pcd_files.end ());
+		capture.reset (new pcl::PCDGrabber<pcl::PointXYZRGBA> (pcd_files, fps_pcd, false));
+		triggered_capture = true;
+		pcd_input = true;
     }
     else if (pc::parse_argument (argc, argv, "-eval", eval_folder) > 0)
     {
@@ -1079,12 +1145,17 @@ main (int argc, char* argv[])
 
   float volume_size = pcl::device::VOLUME_SIZE;
   pc::parse_argument (argc, argv, "--volume_size", volume_size);
+  pc::parse_argument (argc, argv, "-vs", volume_size);
 
   float shift_distance = pcl::device::DISTANCE_THRESHOLD;
   pc::parse_argument (argc, argv, "--shifting_distance", shift_distance);
+  pc::parse_argument (argc, argv, "-sd", shift_distance);
+  
+  int snapshot_rate = pcl::device::SNAPSHOT_RATE; // defined in internal.h
+  pc::parse_argument (argc, argv, "--snapshot_rate", snapshot_rate);
+  pc::parse_argument (argc, argv, "-sr", snapshot_rate);
 
-  KinFuApp app (*capture, volume_size, shift_distance);
-
+  KinFuLSApp app (*capture, volume_size, shift_distance, snapshot_rate);
   
   if (pc::parse_argument (argc, argv, "-eval", eval_folder) > 0)
     app.toggleEvaluationMode(eval_folder, match_file);
@@ -1095,8 +1166,14 @@ main (int argc, char* argv[])
   if (pc::find_switch (argc, argv, "--save-views") || pc::find_switch (argc, argv, "-sv"))
     app.image_view_.accumulate_views_ = true;  //will cause bad alloc after some time  
   
-  if (pc::find_switch (argc, argv, "--registration") || pc::find_switch (argc, argv, "-r"))  
-    app.initRegistration();
+  if (pc::find_switch (argc, argv, "--registration") || pc::find_switch (argc, argv, "-r"))  {
+	if (pcd_input) {
+		app.pcd_source_   = true;
+		app.registration_ = true; // since pcd provides registered rgbd
+	} else {
+		app.initRegistration();
+	}
+  }
       
   if (pc::find_switch (argc, argv, "--integrate-colors") || pc::find_switch (argc, argv, "-ic"))      
     app.toggleColorIntegration();
@@ -1105,7 +1182,12 @@ main (int argc, char* argv[])
     app.enable_texture_extraction_ = true;
 
   // executing
-  try { app.startMainLoop (); }  
+  if (triggered_capture) std::cout << "Capture mode: triggered\n";
+  else				     std::cout << "Capture mode: stream\n";
+  
+  // set verbosity level
+  pcl::console::setVerbosityLevel(pcl::console::L_VERBOSE);
+  try { app.startMainLoop (triggered_capture); }  
   catch (const pcl::PCLException& /*e*/) { cout << "PCLException" << endl; }
   catch (const std::bad_alloc& /*e*/) { cout << "Bad alloc" << endl; }
   catch (const std::exception& /*e*/) { cout << "Exception" << endl; }
@@ -1125,6 +1207,6 @@ main (int argc, char* argv[])
     //~ printf ("writing: %s\n", buf);
   //~ }
 //~ #endif
-
+  std::cout << "pcl_kinfu_largeScale exiting\n";
   return 0;
 }

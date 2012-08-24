@@ -65,6 +65,7 @@ namespace pcl
     class PCL_EXPORTS KinfuTracker
     {
       public:
+
         /** \brief Pixel type for rendered image. */
         typedef pcl::gpu::PixelRGB PixelRGB;
 
@@ -102,7 +103,7 @@ namespace pcl
           * \param[in] pose Initial camera pose
           */
         void
-        setInitalCameraPose (const Eigen::Affine3f& pose);
+        setInitialCameraPose (const Eigen::Affine3f& pose);
                         
 		/** \brief Sets truncation threshold for depth image for ICP step only! This helps 
 		  *  to filter measurements that are outside tsdf volume. Pass zero to disable the truncation.
@@ -209,7 +210,7 @@ namespace pcl
 
       private:
         
-        /** \brief Cycical buffer object */
+        /** \brief Cyclical buffer object */
         pcl::gpu::CyclicalBuffer cyclical_;
         
         
@@ -315,6 +316,9 @@ namespace pcl
 
         /** \brief Size of the TSDF volume in meters. */
         float volume_size_;
+        
+      public:
+		EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     };
   }

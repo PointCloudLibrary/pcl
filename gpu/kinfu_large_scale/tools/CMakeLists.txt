@@ -25,7 +25,7 @@ if(OPENNI_FOUND)
 
 	## KINECT FUSION
 	set(the_target pcl_kinfu_largeScale)
-	set(srcs kinfu_app.cpp capture.cpp evaluation.cpp)
+	set(srcs kinfuLS_app.cpp capture.cpp evaluation.cpp)
 
 	source_group("Source Files" FILES ${srcs} )
 

@@ -57,7 +57,7 @@ namespace pcl
     */
   class PCL_EXPORTS PCDGrabberBase : public Grabber
   {
-    public:
+    public:   
       /** \brief Constructor taking just one PCD file or one TAR file containing multiple PCD files.
         * \param[in] pcd_file path to the PCD file
         * \param[in] frames_per_second frames per second. If 0, start() functions like a trigger, publishing the next PCD in the list.

@@ -262,6 +262,10 @@ namespace pcl
         */
       int
       readEigen (const std::string &file_name, pcl::PointCloud<Eigen::MatrixXf> &cloud, const int offset = 0);
+      
+    
+      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
   };
 
   /** \brief Point Cloud Data (PCD) file format writer.

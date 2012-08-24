@@ -91,7 +91,8 @@ pcl::gpu::StandaloneMarchingCubes<PointT>::getMeshFromTSDFCloud (const PointClou
 
 ///////////////////////////////////////////////////////////////////////////////
 
-template <typename PointT> std::vector< typename pcl::gpu::StandaloneMarchingCubes<PointT>::MeshPtr >
+//template <typename PointT> std::vector< typename pcl::gpu::StandaloneMarchingCubes<PointT>::MeshPtr >
+template <typename PointT> void
 pcl::gpu::StandaloneMarchingCubes<PointT>::getMeshesFromTSDFVector (const std::vector<PointCloudPtr> &tsdf_clouds, const std::vector<Eigen::Vector3f> &tsdf_offsets)
 {
   std::vector< MeshPtr > meshes_vector;
@@ -99,6 +100,8 @@ pcl::gpu::StandaloneMarchingCubes<PointT>::getMeshesFromTSDFVector (const std::v
   int max_iterations = std::min( tsdf_clouds.size (), tsdf_offsets.size () ); //Safety check
   PCL_INFO ("There are %d cubes to be processed \n", max_iterations);
   float cell_size = volume_size_ / voxels_x_;
+
+  int mesh_counter = 0;
   
   for(int i = 0; i < max_iterations; ++i)
   {
@@ -124,6 +127,7 @@ pcl::gpu::StandaloneMarchingCubes<PointT>::getMeshesFromTSDFVector (const std::v
     if(tmp != 0)
     {
        meshes_vector.push_back (tmp);
+       mesh_counter++;
     }
     else
     {
@@ -142,9 +146,14 @@ pcl::gpu::StandaloneMarchingCubes<PointT>::getMeshesFromTSDFVector (const std::v
     transformPointCloud (*cloud_tmp_ptr, *cloud_tmp_ptr, cloud_transform);
     
     toROSMsg (*cloud_tmp_ptr, (meshes_vector.back () )->cloud);
+    
+    std::stringstream name;
+    name << "mesh_" << mesh_counter << ".ply";
+    PCL_INFO ("Saving mesh...%d \n", mesh_counter);
+    pcl::io::savePLYFile (name.str (), *(meshes_vector.back ()));
+    
   }
-  
-  return (meshes_vector);
+  return;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

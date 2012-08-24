@@ -135,6 +135,7 @@ namespace pcl
         if (g.z <= 0 || g.z >= buffer.voxels_size.z - 1)
           return numeric_limits<float>::quiet_NaN ();
 
+/*      //OLD CODE
         float vx = (g.x + 0.5f) * cell_size.x;
         float vy = (g.y + 0.5f) * cell_size.y;
         float vz = (g.z + 0.5f) * cell_size.z;
@@ -155,8 +156,37 @@ namespace pcl
                     readTsdf (g.x + 1, g.y + 0, g.z + 1, buffer) * a * (1 - b) * c +
                     readTsdf (g.x + 1, g.y + 1, g.z + 0, buffer) * a * b * (1 - c) +
                     readTsdf (g.x + 1, g.y + 1, g.z + 1, buffer) * a * b * c;
+*/
+        //NEW CODE
+		float a = point.x/ cell_size.x - (g.x + 0.5f); if (a<0) { g.x--; a+=1.0f; };
+        float b = point.y/ cell_size.y - (g.y + 0.5f); if (b<0) { g.y--; b+=1.0f; };
+        float c = point.z/ cell_size.z - (g.z + 0.5f); if (c<0) { g.z--; c+=1.0f; };
+
+        float res = (1 - a) * (
+						(1 - b) * (
+							readTsdf (g.x + 0, g.y + 0, g.z + 0, buffer) * (1 - c) +
+							readTsdf (g.x + 0, g.y + 0, g.z + 1, buffer) *      c 
+							)
+						+ b * (
+							readTsdf (g.x + 0, g.y + 1, g.z + 0, buffer) * (1 - c) +
+							readTsdf (g.x + 0, g.y + 1, g.z + 1, buffer) *      c  
+							)
+						)
+					+ a * (
+						(1 - b) * (
+							readTsdf (g.x + 1, g.y + 0, g.z + 0, buffer) * (1 - c) +
+							readTsdf (g.x + 1, g.y + 0, g.z + 1, buffer) *      c 
+							)
+						+ b * (
+							readTsdf (g.x + 1, g.y + 1, g.z + 0, buffer) * (1 - c) +
+							readTsdf (g.x + 1, g.y + 1, g.z + 1, buffer) *      c 
+							)
+						)
+					;
         return res;
       }
+
+
       __device__ __forceinline__ void
       operator () (pcl::gpu::tsdf_buffer buffer) const
       {

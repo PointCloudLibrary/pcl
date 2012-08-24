@@ -127,7 +127,7 @@ pcl::gpu::KinfuTracker::setDepthIntrinsics (float fx, float fy, float cx, float 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::gpu::KinfuTracker::setInitalCameraPose (const Eigen::Affine3f& pose)
+pcl::gpu::KinfuTracker::setInitialCameraPose (const Eigen::Affine3f& pose)
 {
   init_Rcam_ = pose.rotation ();
   init_tcam_ = pose.translation ();
@@ -174,11 +174,21 @@ void
 pcl::gpu::KinfuTracker::extractAndMeshWorld ()
 {
   finished_ = true;
+  int cloud_size = 0;
+  cloud_size = cyclical_.getWorldModel ()->getWorld ()->points.size();
   
-  PCL_INFO ("Saving current world to world.pcd\n");
-  pcl::io::savePCDFile<pcl::PointXYZI> ("world.pcd", *(cyclical_.getWorldModel ()->getWorld ()), true);
+  if (cloud_size <= 0)
+  {
+	PCL_WARN ("World model currently has no points. Skipping save procedure.\n");
+	return;
+  }
+  else
+  {
+	PCL_INFO ("Saving current world to world.pcd with %d points.\n", cloud_size);
+	pcl::io::savePCDFile<pcl::PointXYZI> ("world.pcd", *(cyclical_.getWorldModel ()->getWorld ()), true);
+	return;
+  }
   
-  //PCL_INFO ("KinFu is finished, please kill the process\n");
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -478,7 +488,7 @@ pcl::gpu::KinfuTracker::operator() (const DepthMap& depth_raw)
   bool has_shifted = cyclical_.checkForShift(tsdf_volume_, getCameraPose (), 0.6 * volume_size_, true, perform_last_scan_);
 
   if(has_shifted)
-    PCL_WARN ("WE ARE SHIFTING\n");
+    PCL_WARN ("SHIFTING\n");
     
   // get NEW local rotation 
   Matrix3frm cam_rot_local_curr_inv = cam_rot_global_curr.inverse ();

@@ -35,10 +35,8 @@
  *
  */
 
-
 #ifndef PCL_CYCLICAL_BUFFER_IMPL_HPP_
 #define PCL_CYCLICAL_BUFFER_IMPL_HPP_
-
 
 #include <pcl/gpu/kinfu_large_scale/cyclical_buffer.h>
 
@@ -52,7 +50,7 @@ pcl::gpu::CyclicalBuffer::checkForShift (const pcl::gpu::TsdfVolume::Ptr volume,
   pcl::PointXYZ targetPoint;
   targetPoint.x = 0.0f;
   targetPoint.y = 0.0f;
-  targetPoint.z += distance_camera_target; // place the point at camera position + distance_camera_target on Z
+  targetPoint.z = distance_camera_target; // place the point at camera position + distance_camera_target on Z
   targetPoint = pcl::transformPoint (targetPoint, cam_pose);
   
   // check distance from the cube's center  
@@ -73,7 +71,6 @@ pcl::gpu::CyclicalBuffer::checkForShift (const pcl::gpu::TsdfVolume::Ptr volume,
 
   return (result);
 }
-
 
 
 void
@@ -102,12 +99,12 @@ pcl::gpu::CyclicalBuffer::performShift (const pcl::gpu::TsdfVolume::Ptr volume, 
   PointCloud<PointXYZ>::Ptr current_slice_xyz (new PointCloud<PointXYZ>);
   PointCloud<PointIntensity>::Ptr current_slice_intensities (new PointCloud<PointIntensity>);
 
-  // Retreiving XYZ 
+  // Retrieving XYZ 
   points.download (current_slice_xyz->points);
   current_slice_xyz->width = (int) current_slice_xyz->points.size ();
   current_slice_xyz->height = 1;
 
-  // Retreiving intensities
+  // Retrieving intensities
   // TODO change this mechanism by using PointIntensity directly (in spite of float)
   // when tried, this lead to wrong intenisty values being extracted by fetchSliceAsCloud () (padding pbls?)
   std::vector<float , Eigen::aligned_allocator<float> > intensities_vector;
@@ -132,11 +129,9 @@ pcl::gpu::CyclicalBuffer::performShift (const pcl::gpu::TsdfVolume::Ptr volume, 
   global_cloud_transformation.linear () = Eigen::Matrix3f::Identity ();
   transformPointCloud (*current_slice, *current_slice, global_cloud_transformation);
 
-
-
-  // retreive existing data from the world model
+  // retrieve existing data from the world model
   PointCloud<PointXYZI>::Ptr previously_existing_slice (new  PointCloud<PointXYZI>);
-  double min_bound_x = buffer_.origin_GRID_global.x + buffer_.voxels_size.x - 1;
+  double min_bound_x  = buffer_.origin_GRID_global.x + buffer_.voxels_size.x - 1;
   double new_origin_x = buffer_.origin_GRID_global.x + offset_x;
   double new_origin_y = buffer_.origin_GRID_global.y + offset_y;
   double new_origin_z = buffer_.origin_GRID_global.z + offset_z;
@@ -160,8 +155,7 @@ pcl::gpu::CyclicalBuffer::performShift (const pcl::gpu::TsdfVolume::Ptr volume, 
   pcl::device::clearTSDFSlice (volume->data (), &buffer_, offset_x, offset_y, offset_z);
 
   // insert current slice in the world if it contains any points
-  if (current_slice->points.size () != 0)
-  {
+  if (current_slice->points.size () != 0) {
     world_model_.addSlice(current_slice);
   }
 
@@ -169,8 +163,7 @@ pcl::gpu::CyclicalBuffer::performShift (const pcl::gpu::TsdfVolume::Ptr volume, 
   shiftOrigin (volume, offset_x, offset_y, offset_z);
   
   // push existing data in the TSDF buffer
-  if (previously_existing_slice->points.size () != 0 )
-  {
+  if (previously_existing_slice->points.size () != 0 ) {
     volume->pushSlice(previously_existing_slice, getBuffer () );
   }
 }
@@ -194,7 +187,5 @@ pcl::gpu::CyclicalBuffer::computeAndSetNewCubeMetricOrigin (const pcl::PointXYZ 
   // update the cube's metric origin 
   buffer_.origin_metric = new_cube_origin_meters;
 }
-
-
 
 #endif // PCL_CYCLICAL_BUFFER_IMPL_HPP_

@@ -327,8 +327,7 @@ pcl::gpu::TsdfVolume::fetchSliceAsCloud (DeviceArray<PointType>& cloud_buffer_xy
   if (cloud_buffer_xyz.empty ())
     cloud_buffer_xyz.create (DEFAULT_CLOUD_BUFFER_SIZE/2);
 
-  //if (cloud_buffer_intensity.empty ())
-  {
+  if (cloud_buffer_intensity.empty ()) {
     cloud_buffer_intensity.create (DEFAULT_CLOUD_BUFFER_SIZE/2);  
   }
 
