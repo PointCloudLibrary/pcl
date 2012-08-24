@@ -96,7 +96,7 @@ int main (int argc, char *argv[])
 
 	  // Create downsampled point cloud for DoN NN search with small scale
 	  small_cloud_downsampled = PointCloud<PointT>::Ptr(new pcl::PointCloud<PointT>);
-	  float smalldownsample = (float)scale1/decimation;
+	  float smalldownsample = static_cast<float> (scale1 / decimation);
 	  sor.setLeafSize (smalldownsample, smalldownsample, smalldownsample);
 	  sor.filter (*small_cloud_downsampled);
 	  cout << "Using leaf size of " << smalldownsample << " for small scale, " << small_cloud_downsampled->size() << " points" << endl;
