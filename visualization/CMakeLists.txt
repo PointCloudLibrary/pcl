@@ -51,6 +51,7 @@ if(build)
         src/vtk/pcl_image_canvas_source_2d.cpp
         src/vtk/vtkVertexBufferObject.cxx
         src/vtk/vtkVertexBufferObjectMapper.cxx
+        src/vtk/vtkRenderWindowInteractorFix.cpp
         )
     if("${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}" VERSION_LESS "5.6")
         # A custom interactor is necessary on VTK 5.4 and below

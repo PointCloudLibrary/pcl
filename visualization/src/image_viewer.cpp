@@ -42,10 +42,11 @@
 #include <pcl/visualization/keyboard_event.h>
 #include <pcl/visualization/mouse_event.h>
 #include <pcl/common/time.h>
+#include <pcl/visualization/vtk/vtkRenderWindowInteractorFix.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////
 pcl::visualization::ImageViewer::ImageViewer (const std::string& window_title)
-  : interactor_ (vtkSmartPointer<vtkRenderWindowInteractor>::New ())
+  : interactor_ ()
   , mouse_command_ (vtkSmartPointer<vtkCallbackCommand>::New ())
   , keyboard_command_ (vtkSmartPointer<vtkCallbackCommand>::New ())
   , exit_main_loop_timer_callback_ ()
@@ -66,6 +67,7 @@ pcl::visualization::ImageViewer::ImageViewer (const std::string& window_title)
   , layer_map_ ()
   , algo_ (vtkSmartPointer<vtkImageFlip>::New ())
 {
+  interactor_ = vtkSmartPointer <vtkRenderWindowInteractor>::Take (vtkRenderWindowInteractorFixNew ());
   // Prepare for image flip
   algo_->SetInterpolationModeToCubic ();
   algo_->PreserveImageExtentOn ();

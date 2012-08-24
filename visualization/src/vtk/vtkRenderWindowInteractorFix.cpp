@@ -34,12 +34,13 @@
   *  POSSIBILITY OF SUCH DAMAGE.
   *
   */
-#ifndef PCL_VISUALIZATION_VTK_RENDER_WINDOW_FIX_H_
-#define PCL_VISUALIZATION_VTK_RENDER_WINDOW_FIX_H_
+#include <pcl/visualization/vtk/vtkRenderWindowInteractorFix.h>
 
-#include <vtkRenderWindowInteractor.h>
+#ifndef __APPLE__
+vtkRenderWindowInteractor* vtkRenderWindowInteractorFixNew ()
+{
+  return (vtkRenderWindowInteractor::New ());
+}
+#endif
 
-vtkRenderWindowInteractor* vtkRenderWindowInteractorFixNew ();
-
-#endif    // PCL_VISUALIZATION_VTK_RENDER_WINDOW_FIX_H_
 
