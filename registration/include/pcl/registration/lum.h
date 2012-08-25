@@ -161,14 +161,14 @@ namespace pcl
         /** \brief Get the number of vertices in the SLAM graph.
           * \return The current number of vertices in the SLAM graph.
           */
-        inline typename SLAMGraph::vertices_size_type
+        typename SLAMGraph::vertices_size_type
         getNumVertices ();
 
         /** \brief Set the maximum number of iterations for the compute() method.
           * \details The compute() method finishes when max_iterations are met or when the convergence criteria is met.
           * \param[in] max_iterations The new maximum number of iterations (default = 5).
           */
-        inline void
+        void
         setMaxIterations (int max_iterations);
 
         /** \brief Get the maximum number of iterations for the compute() method.
@@ -183,7 +183,7 @@ namespace pcl
           * When the average length of all difference vectors becomes less than the convergence_threshold the convergence is assumed to be met.
           * \param[in] convergence_threshold The new convergence threshold (default = 0.0).
           */
-        inline void
+        void
         setConvergenceThreshold (float convergence_threshold);
 
         /** \brief Get the convergence threshold for the compute() method.
@@ -205,7 +205,7 @@ namespace pcl
           * \param[in] pose (optional) The pose estimate relative to the reference pose (first point cloud that was added).
           * \return The vertex descriptor of the newly created vertex.
           */
-        inline Vertex
+        Vertex
         addPointCloud (PointCloudPtr cloud, Eigen::Vector6f pose = Eigen::Vector6f::Zero ());
 
         /** \brief Change a point cloud on one of the SLAM graph's vertices.
@@ -264,7 +264,7 @@ namespace pcl
           * \param[in] target_vertex The vertex descriptor of the correspondences' target point cloud.
           * \param[in] corrs The new set of correspondences for that edge.
           */
-        inline void
+        void
         setCorrespondences (Vertex source_vertex, Vertex target_vertex, pcl::CorrespondencesPtr corrs);
 
         /** \brief Return a set of correspondences from one of the SLAM graph's edges.

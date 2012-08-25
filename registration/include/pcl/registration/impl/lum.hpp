@@ -57,14 +57,14 @@ pcl::registration::LUM<PointT>::getLoopGraph ()
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template<typename PointT> inline typename pcl::registration::LUM<PointT>::SLAMGraph::vertices_size_type
+template<typename PointT> typename pcl::registration::LUM<PointT>::SLAMGraph::vertices_size_type
 pcl::registration::LUM<PointT>::getNumVertices ()
 {
   return (num_vertices (*slam_graph_));
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template<typename PointT> inline void
+template<typename PointT> void
 pcl::registration::LUM<PointT>::setMaxIterations (int max_iterations)
 {
   max_iterations_ = max_iterations;
@@ -78,7 +78,7 @@ pcl::registration::LUM<PointT>::getMaxIterations ()
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template<typename PointT> inline void
+template<typename PointT> void
 pcl::registration::LUM<PointT>::setConvergenceThreshold (float convergence_threshold)
 {
   convergence_threshold_ = convergence_threshold;
@@ -92,7 +92,7 @@ pcl::registration::LUM<PointT>::getConvergenceThreshold ()
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template<typename PointT> inline typename pcl::registration::LUM<PointT>::Vertex
+template<typename PointT> typename pcl::registration::LUM<PointT>::Vertex
 pcl::registration::LUM<PointT>::addPointCloud (PointCloudPtr cloud, Eigen::Vector6f pose)
 {
   Vertex v = add_vertex (*slam_graph_);
@@ -169,7 +169,7 @@ pcl::registration::LUM<PointT>::getTransformation (Vertex vertex)
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template<typename PointT> inline void
+template<typename PointT> void
 pcl::registration::LUM<PointT>::setCorrespondences (Vertex source_vertex, Vertex target_vertex, pcl::CorrespondencesPtr corrs)
 {
   if (source_vertex >= getNumVertices () || target_vertex >= getNumVertices () || source_vertex == target_vertex)
