@@ -59,7 +59,9 @@ pcl::NormalEstimationOMP<PointInT, Eigen::MatrixXf>::computeFeatureEigen (pcl::P
   std::vector<float> nn_dists (k_);
 
 #ifdef _OPENMP
+#  if __GNUC_MINOR__ >= 3
 #pragma omp parallel for shared (output) private (nn_indices, nn_dists) num_threads(threads_)
+#  endif
 #endif
   // Iterating over the entire index vector
   for (int idx = 0; idx < static_cast<int> (indices_->size ()); ++idx)
@@ -107,7 +109,9 @@ pcl::NormalEstimationOMP<PointInT, PointOutT>::computeFeature (PointCloudOut &ou
 
   // Iterating over the entire index vector
 #ifdef _OPENMP
+#  if __GNUC_MINOR__ >= 3
 #pragma omp parallel for shared (output) private (nn_indices, nn_dists) num_threads(threads_)
+#  endif
 #endif
   for (int idx = 0; idx < static_cast<int> (indices_->size ()); ++idx)
   {
