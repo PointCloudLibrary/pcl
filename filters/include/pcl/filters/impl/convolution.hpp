@@ -411,7 +411,9 @@ pcl::filters::Convolution<PointIn, PointOut>::convolve_rows (PointCloudOut& outp
   if (input_->is_dense)
   {
 #ifdef _OPENMP
+#  if __GNUC_MINOR__ >= 3
 #pragma omp parallel for shared (output, last) num_threads (threads_)
+#  endif
 #endif
     for(int j = 0; j < height; ++j)
     {
@@ -428,7 +430,9 @@ pcl::filters::Convolution<PointIn, PointOut>::convolve_rows (PointCloudOut& outp
   else
   {
 #ifdef _OPENMP
+#  if __GNUC_MINOR__ >= 3
 #pragma omp parallel for shared (output, last) num_threads (threads_)
+#  endif
 #endif
     for(int j = 0; j < height; ++j)
     {
@@ -456,7 +460,9 @@ pcl::filters::Convolution<PointIn, PointOut>::convolve_rows_duplicate (PointClou
   if (input_->is_dense)
   {
 #ifdef _OPENMP
+#  if __GNUC_MINOR__ >= 3
 #pragma omp parallel for shared (output, last) num_threads (threads_)
+#  endif
 #endif
     for(int j = 0; j < height; ++j)
     {
@@ -473,7 +479,9 @@ pcl::filters::Convolution<PointIn, PointOut>::convolve_rows_duplicate (PointClou
   else
   {
 #ifdef _OPENMP
+#  if __GNUC_MINOR__ >= 3
 #pragma omp parallel for shared (output, last) num_threads (threads_)
+#  endif
 #endif
     for(int j = 0; j < height; ++j)
     {
@@ -501,7 +509,9 @@ pcl::filters::Convolution<PointIn, PointOut>::convolve_rows_mirror (PointCloudOu
   if (input_->is_dense)
   {
 #ifdef _OPENMP
+#  if __GNUC_MINOR__ >= 3
 #pragma omp parallel for shared (output, last) num_threads (threads_)
+#  endif
 #endif
     for(int j = 0; j < height; ++j)
     {
@@ -518,7 +528,9 @@ pcl::filters::Convolution<PointIn, PointOut>::convolve_rows_mirror (PointCloudOu
   else
   {
 #ifdef _OPENMP
+#  if __GNUC_MINOR__ >= 3
 #pragma omp parallel for shared (output, last) num_threads (threads_)
+#  endif
 #endif
     for(int j = 0; j < height; ++j)
     {
@@ -545,7 +557,9 @@ pcl::filters::Convolution<PointIn, PointOut>::convolve_cols (PointCloudOut& outp
   if (input_->is_dense)
   {
 #ifdef _OPENMP
+#  if __GNUC_MINOR__ >= 3
 #pragma omp parallel for shared (output, last) num_threads (threads_)
+#  endif
 #endif
     for(int i = 0; i < width; ++i)
     {
@@ -562,7 +576,9 @@ pcl::filters::Convolution<PointIn, PointOut>::convolve_cols (PointCloudOut& outp
   else
   {
 #ifdef _OPENMP
+#  if __GNUC_MINOR__ >= 3
 #pragma omp parallel for shared (output, last) num_threads (threads_)
+#  endif
 #endif
     for(int i = 0; i < width; ++i)
     {
@@ -590,7 +606,9 @@ pcl::filters::Convolution<PointIn, PointOut>::convolve_cols_duplicate (PointClou
   if (input_->is_dense)
   {
 #ifdef _OPENMP
+#  if __GNUC_MINOR__ >= 3
 #pragma omp parallel for shared (output, last) num_threads (threads_)
+#  endif
 #endif
     for(int i = 0; i < width; ++i)
     {
@@ -607,7 +625,9 @@ pcl::filters::Convolution<PointIn, PointOut>::convolve_cols_duplicate (PointClou
   else
   {
 #ifdef _OPENMP
+#  if __GNUC_MINOR__ >= 3
 #pragma omp parallel for shared (output, last) num_threads (threads_)
+#  endif
 #endif
     for(int i = 0; i < width; ++i)
     {
@@ -635,7 +655,9 @@ pcl::filters::Convolution<PointIn, PointOut>::convolve_cols_mirror (PointCloudOu
   if (input_->is_dense)
   {
 #ifdef _OPENMP
+#  if __GNUC_MINOR__ >= 3
 #pragma omp parallel for shared (output, last) num_threads (threads_)
+#  endif
 #endif
     for(int i = 0; i < width; ++i)
     {
@@ -652,7 +674,9 @@ pcl::filters::Convolution<PointIn, PointOut>::convolve_cols_mirror (PointCloudOu
   else
   {
 #ifdef _OPENMP
+#  if __GNUC_MINOR__ >= 3
 #pragma omp parallel for shared (output, last) num_threads (threads_)
+#  endif
 #endif
     for(int i = 0; i < width; ++i)
     {
