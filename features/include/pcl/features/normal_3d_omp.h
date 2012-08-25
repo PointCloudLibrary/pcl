@@ -65,32 +65,19 @@ namespace pcl
       typedef typename NormalEstimation<PointInT, PointOutT>::PointCloudOut PointCloudOut;
 
     public:
-      /** \brief Empty constructor. */
-      NormalEstimationOMP () : threads_ (1) 
-      {
-        feature_name_ = "NormalEstimationOMP";
-      };
-
       /** \brief Initialize the scheduler and set the number of threads to use.
         * \param nr_threads the number of hardware threads to use (-1 sets the value back to automatic)
         */
-      NormalEstimationOMP (unsigned int nr_threads) : threads_ (1)
+      NormalEstimationOMP (unsigned int nr_threads = 0) : threads_ (nr_threads)
       {
-        setNumberOfThreads (nr_threads);
         feature_name_ = "NormalEstimationOMP";
       }
 
       /** \brief Initialize the scheduler and set the number of threads to use.
-        * \param nr_threads the number of hardware threads to use (-1 sets the value back to automatic)
+        * \param nr_threads the number of hardware threads to use (0 sets the value back to automatic)
         */
       inline void 
-      setNumberOfThreads (unsigned int nr_threads)
-      { 
-        if (nr_threads == 0)
-          nr_threads = 1;
-        threads_ = nr_threads; 
-      }
-
+      setNumberOfThreads (unsigned int nr_threads = 0) { threads_ = nr_threads; }
 
     protected:
       /** \brief The number of threads the scheduler should use. */

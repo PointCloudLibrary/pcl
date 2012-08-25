@@ -165,7 +165,7 @@ pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloud
 
   pcl::PointCloud<pcl::PointXYZI>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZI>);
   cloud->resize (surface_->size ());
-#if !defined __APPLE__ && defined HAVE_OPENMP
+#ifdef _OPENMP
   #pragma omp parallel for num_threads(threads_) default(shared)
 #endif  
   for (unsigned idx = 0; idx < surface_->size (); ++idx)
@@ -185,7 +185,7 @@ pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloud
   grad_est.setRadiusSearch (search_radius_);
   grad_est.compute (*intensity_gradients_);
   
-#if !defined __APPLE__ && defined HAVE_OPENMP
+#ifdef _OPENMP
   #pragma omp parallel for num_threads(threads_) default (shared)
 #endif    
   for (unsigned idx = 0; idx < intensity_gradients_->size (); ++idx)
@@ -222,7 +222,7 @@ pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloud
     output.points.clear ();
     output.points.reserve (response->points.size());
 
-#if !defined __APPLE__ && defined HAVE_OPENMP
+#ifdef _OPENMP
   #pragma omp parallel for num_threads(threads_) default(shared)
 #endif  
     for (size_t idx = 0; idx < response->points.size (); ++idx)
@@ -242,7 +242,7 @@ pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloud
         }
       }
       if (is_maxima)
-#if !defined __APPLE__ && defined HAVE_OPENMP
+#ifdef _OPENMP
         #pragma omp critical
 #endif
         output.points.push_back (response->points[idx]);
@@ -266,7 +266,7 @@ pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::responseTomasi (PointCloudO
   Eigen::SelfAdjointEigenSolver <Eigen::Matrix<float, 6, 6> > solver;
   Eigen::Matrix<float, 6, 6> covariance;
 
-#if !defined __APPLE__ && defined HAVE_OPENMP
+#ifdef _OPENMP
   #pragma omp parallel for default (shared) private (pointOut, covar, covariance, solver) num_threads(threads_)
 #endif  
   for (unsigned pIdx = 0; pIdx < input_->size (); ++pIdx)
@@ -338,7 +338,7 @@ pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::responseTomasi (PointCloudO
     pointOut.x = pointIn.x;
     pointOut.y = pointIn.y;
     pointOut.z = pointIn.z;
-#if !defined __APPLE__ && defined HAVE_OPENMP
+#ifdef _OPENMP
     #pragma omp critical
 #endif
 

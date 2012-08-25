@@ -75,7 +75,7 @@ namespace pcl
       , refine_ (false)
       , nonmax_ (true)
       , method_ (method)
-      , threads_ (1)
+      , threads_ (0)
       , response_ (new pcl::PointCloud<PointOutT> ())
       , window_width_ (window_width)
       , window_height_ (window_height)
@@ -122,15 +122,10 @@ namespace pcl
       void setRefine (bool do_refine);
 
       /** \brief Initialize the scheduler and set the number of threads to use.
-        * \param nr_threads the number of hardware threads to use (-1 sets the value back to automatic)
+        * \param nr_threads the number of hardware threads to use (0 sets the value back to automatic)
         */
       inline void
-      setNumberOfThreads (int nr_threads)
-      {
-        if (nr_threads == 0)
-          nr_threads = 1;
-        threads_ = nr_threads;
-      }
+      setNumberOfThreads (unsigned int nr_threads = 0) { threads_ = nr_threads; }
 
     protected:
       bool 
@@ -162,7 +157,7 @@ namespace pcl
       /// cornerness computation methode
       ResponseMethod method_;
       /// number of threads to be used
-      int threads_;      
+      unsigned int threads_;      
 
     private:
       Eigen::MatrixXf derivatives_rows_;

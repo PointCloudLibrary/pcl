@@ -842,7 +842,7 @@ TEST (PCL,SHOTShapeAndColorEstimationOpenMP)
 */
 
   // SHOT1344
-  SHOTColorEstimationOMP<PointXYZRGBA, Normal, SHOT1344> shot1344 (true, true, -1);
+  SHOTColorEstimationOMP<PointXYZRGBA, Normal, SHOT1344> shot1344 (true, true);
   shot1344.setInputNormals (normals);
 
   EXPECT_EQ (shot1344.getInputNormals (), normals);

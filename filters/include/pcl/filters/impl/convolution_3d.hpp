@@ -237,7 +237,7 @@ pcl::filters::Convolution3D<PointInT, PointOutT, KernelT>::convolve (PointCloudO
   std::vector<int> nn_indices;
   std::vector<float> nn_distances;
 
-#if !defined __APPLE__ && defined HAVE_OPENMP
+#ifdef _OPENMP
 #pragma omp parallel for shared (output) private (nn_indices, nn_distances) num_threads (threads_)
 #endif
   for (std::size_t point_idx = 0; point_idx < surface_->size (); ++point_idx)

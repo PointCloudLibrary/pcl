@@ -184,7 +184,7 @@ pcl::HarrisKeypoint2D<PointInT, PointOutT, IntensityT>::detectKeypoints (PointCl
   derivatives_cols_(0,0) = (intensity_ ((*input_) (0,1)) - intensity_ ((*input_) (0,0))) * 0.5;
   derivatives_rows_(0,0) = (intensity_ ((*input_) (1,0)) - intensity_ ((*input_) (0,0))) * 0.5;
 
-// #if !defined __APPLE__ && defined HAVE_OPENMP
+// #ifdef _OPENMP
 // //#pragma omp parallel for shared (derivatives_cols_, input_) num_threads (threads_)
 // #pragma omp parallel for num_threads (threads_)
 // #endif
@@ -196,7 +196,7 @@ pcl::HarrisKeypoint2D<PointInT, PointOutT, IntensityT>::detectKeypoints (PointCl
   derivatives_rows_(w,0) = (intensity_ ((*input_) (w,0)) - intensity_ ((*input_) (w-1,0))) * 0.5;
   derivatives_cols_(w,0) = (intensity_ ((*input_) (w,1)) - intensity_ ((*input_) (w,0))) * 0.5;
 
-// #if !defined __APPLE__ && defined HAVE_OPENMP
+// #ifdef _OPENMP
 // //#pragma omp parallel for shared (derivatives_cols_, derivatives_rows_, input_) num_threads (threads_)
 // #pragma omp parallel for num_threads (threads_)
 // #endif
@@ -220,7 +220,7 @@ pcl::HarrisKeypoint2D<PointInT, PointOutT, IntensityT>::detectKeypoints (PointCl
   derivatives_cols_(0,h) = (intensity_ ((*input_) (0,h)) - intensity_ ((*input_) (0,h-1))) * 0.5;
   derivatives_rows_(0,h) = (intensity_ ((*input_) (1,h)) - intensity_ ((*input_) (0,h))) * 0.5;
 
-// #if !defined __APPLE__ && defined HAVE_OPENMP
+// #ifdef _OPENMP
 // //#pragma omp parallel for shared (derivatives_cols_, input_) num_threads (threads_)
 // #pragma omp parallel for num_threads (threads_)
 // #endif
@@ -265,7 +265,7 @@ pcl::HarrisKeypoint2D<PointInT, PointOutT, IntensityT>::detectKeypoints (PointCl
     const int height (response_->height);
     const int occupency_map_size (occupency_map.size ());
 
-#if defined (HAVE_OPENMP) && (defined(_WIN32) || ((__GNUC__ > 4) && (__GNUC_MINOR__ > 2)))
+#ifdef _OPENMP
 #pragma omp parallel for shared (output, occupency_map) private (width, height) num_threads(threads_)   
 #endif
     for (int idx = 0; idx < occupency_map_size; ++idx)
@@ -273,7 +273,7 @@ pcl::HarrisKeypoint2D<PointInT, PointOutT, IntensityT>::detectKeypoints (PointCl
       if (occupency_map[idx] || response_->points [indices_->at (idx)].intensity < threshold_ || !isFinite (response_->points[idx]))
         continue;
         
-#if defined (HAVE_OPENMP) && (defined(_WIN32) || ((__GNUC__ > 4) && (__GNUC_MINOR__ > 2)))
+#ifdef _OPENMP
 #pragma omp critical
 #endif
       output.push_back (response_->at (indices_->at (idx)));
@@ -306,7 +306,7 @@ pcl::HarrisKeypoint2D<PointInT, PointOutT, IntensityT>::responseHarris (PointClo
   highest_response = - std::numeric_limits<float>::max ();
   const int output_size (output.size ());
 
-#if defined (HAVE_OPENMP) && (defined(_WIN32) || ((__GNUC__ > 4) && (__GNUC_MINOR__ > 2)))
+#ifdef _OPENMP
 #pragma omp parallel for shared (output, highest_response) private (covar) num_threads(threads_)
 #endif
   for (int index = 0; index < output_size; ++index)
@@ -326,7 +326,7 @@ pcl::HarrisKeypoint2D<PointInT, PointOutT, IntensityT>::responseHarris (PointClo
         float det = covar[0] * covar[2] - covar[1] * covar[1];
         out_point.intensity = 0.04f + det - 0.04f * trace * trace;
 
-#if defined (HAVE_OPENMP) && (defined(_WIN32) || ((__GNUC__ > 4) && (__GNUC_MINOR__ > 2)))
+#ifdef _OPENMP
 #pragma omp critical
 #endif
         highest_response =  (out_point.intensity > highest_response) ? out_point.intensity : highest_response;
@@ -348,7 +348,7 @@ pcl::HarrisKeypoint2D<PointInT, PointOutT, IntensityT>::responseNoble (PointClou
   highest_response = - std::numeric_limits<float>::max ();
   const int output_size (output.size ());
 
-#if defined (HAVE_OPENMP) && (defined(_WIN32) || ((__GNUC__ > 4) && (__GNUC_MINOR__ > 2)))
+#ifdef _OPENMP
 #pragma omp parallel for shared (output, highest_response) private (covar) num_threads(threads_)
 #endif
   for (size_t index = 0; index < output_size; ++index)
@@ -368,7 +368,7 @@ pcl::HarrisKeypoint2D<PointInT, PointOutT, IntensityT>::responseNoble (PointClou
         float det = covar[0] * covar[2] - covar[1] * covar[1];
         out_point.intensity = det / trace;
 
-#if defined (HAVE_OPENMP) && (defined(_WIN32) || ((__GNUC__ > 4) && (__GNUC_MINOR__ > 2)))
+#ifdef _OPENMP
 #pragma omp critical
 #endif
         highest_response =  (out_point.intensity > highest_response) ? out_point.intensity : highest_response;
@@ -390,7 +390,7 @@ pcl::HarrisKeypoint2D<PointInT, PointOutT, IntensityT>::responseLowe (PointCloud
   highest_response = -std::numeric_limits<float>::max ();
   const int output_size (output.size ());
 
-#if defined (HAVE_OPENMP) && (defined(_WIN32) || ((__GNUC__ > 4) && (__GNUC_MINOR__ > 2)))
+#ifdef _OPENMP
 #pragma omp parallel for shared (output, highest_response) private (covar) num_threads(threads_)
 #endif
   for (size_t index = 0; index < output_size; ++index)      
@@ -410,7 +410,7 @@ pcl::HarrisKeypoint2D<PointInT, PointOutT, IntensityT>::responseLowe (PointCloud
         float det = covar[0] * covar[2] - covar[1] * covar[1];
         out_point.intensity = det / (trace * trace);
 
-#if defined (HAVE_OPENMP) && (defined(_WIN32) || ((__GNUC__ > 4) && (__GNUC_MINOR__ > 2)))
+#ifdef _OPENMP
 #pragma omp critical
 #endif
         highest_response =  (out_point.intensity > highest_response) ? out_point.intensity : highest_response;
@@ -432,7 +432,7 @@ pcl::HarrisKeypoint2D<PointInT, PointOutT, IntensityT>::responseTomasi (PointClo
   highest_response = -std::numeric_limits<float>::max ();
   const int output_size (output.size ());
 
-#if defined (HAVE_OPENMP) && (defined(_WIN32) || ((__GNUC__ > 4) && (__GNUC_MINOR__ > 2)))
+#ifdef _OPENMP
 #pragma omp parallel for shared (output, highest_response) private (covar) num_threads(threads_)
 #endif
   for (size_t index = 0; index < output_size; ++index)
@@ -449,7 +449,7 @@ pcl::HarrisKeypoint2D<PointInT, PointOutT, IntensityT>::responseTomasi (PointClo
       // min egenvalue
       out_point.intensity = ((covar[0] + covar[2] - sqrt((covar[0] - covar[2])*(covar[0] - covar[2]) + 4 * covar[1] * covar[1])) /2.0f);
 
-#if defined (HAVE_OPENMP) && (defined(_WIN32) || ((__GNUC__ > 4) && (__GNUC_MINOR__ > 2)))
+#ifdef _OPENMP
 #pragma omp critical
 #endif
       highest_response =  (out_point.intensity > highest_response) ? out_point.intensity : highest_response;
@@ -473,7 +473,7 @@ pcl::HarrisKeypoint2D<PointInT, PointOutT, IntensityT>::responseTomasi (PointClo
 //   Eigen::Vector2f NNTp;
 //   float diff;
 //   const unsigned max_iterations = 10;
-// #if !defined __APPLE__ && defined HAVE_OPENMP
+// #ifdef _OPENMP
 //   #pragma omp parallel for shared (corners) private (nnT, NNT, NNTInv, NNTp, diff, nn_indices, nn_dists) num_threads(threads_)
 // #endif
 //   for (int cIdx = 0; cIdx < static_cast<int> (corners.size ()); ++cIdx)

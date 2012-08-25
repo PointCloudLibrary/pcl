@@ -120,10 +120,6 @@ pcl::SHOTColorEstimationOMP<PointInT, PointNT, PointOutT, PointRFT>::initCompute
 template<typename PointInT, typename PointNT, typename PointOutT, typename PointRFT> void
 pcl::SHOTEstimationOMP<PointInT, PointNT, PointOutT, PointRFT>::computeFeature (PointCloudOut &output)
 {
-
-  if (threads_ < 0)
-    threads_ = 1;
-
   descLength_ = nr_grid_sector_ * (nr_shape_bins_ + 1);
 
   sqradius_ = search_radius_ * search_radius_;
@@ -134,21 +130,17 @@ pcl::SHOTEstimationOMP<PointInT, PointNT, PointOutT, PointRFT>::computeFeature (
   assert(descLength_ == 352);
 
   int data_size = static_cast<int> (indices_->size ());
-  Eigen::VectorXf *shot = new Eigen::VectorXf[threads_];
-
-  for (int i = 0; i < threads_; i++)
-    shot[i].setZero (descLength_);
 
   output.is_dense = true;
   // Iterating over the entire index vector
-  #pragma omp parallel for num_threads(threads_)
+#ifdef _OPENMP
+#pragma omp parallel for num_threads(threads_)
+#endif
   for (int idx = 0; idx < data_size; ++idx)
   {
-#ifdef _OPENMP
-    int tid = omp_get_thread_num ();
-#else
-    int tid = 0;
-#endif
+
+    Eigen::VectorXf shot;
+    shot.setZero (descLength_);
 
     bool lrf_is_nan = false;
     const PointRFT& current_frame = (*frames_)[idx];
@@ -170,7 +162,7 @@ pcl::SHOTEstimationOMP<PointInT, PointNT, PointOutT, PointRFT>::computeFeature (
                                                                                            nn_dists) == 0)
     {
       // Copy into the resultant cloud
-      for (int d = 0; d < shot[tid].size (); ++d)
+      for (int d = 0; d < shot.size (); ++d)
         output.points[idx].descriptor[d] = std::numeric_limits<float>::quiet_NaN ();
       for (int d = 0; d < 9; ++d)
         output.points[idx].rf[d] = std::numeric_limits<float>::quiet_NaN ();
@@ -180,24 +172,20 @@ pcl::SHOTEstimationOMP<PointInT, PointNT, PointOutT, PointRFT>::computeFeature (
     }
 
     // Estimate the SHOT at each patch
-    this->computePointSHOT (idx, nn_indices, nn_dists, shot[tid]);
+    this->computePointSHOT (idx, nn_indices, nn_dists, shot);
 
     // Copy into the resultant cloud
-    for (int d = 0; d < shot[tid].size (); ++d)
-      output.points[idx].descriptor[d] = shot[tid][d];
+    for (int d = 0; d < shot.size (); ++d)
+      output.points[idx].descriptor[d] = shot[d];
     for (int d = 0; d < 9; ++d)
       output.points[idx].rf[d] = frames_->points[idx].rf[(4 * (d / 3) + (d % 3))];
   }
-  delete[] shot;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT, typename PointOutT, typename PointRFT> void
 pcl::SHOTColorEstimationOMP<PointInT, PointNT, PointOutT, PointRFT>::computeFeature (PointCloudOut &output)
 {
-  if (threads_ < 0)
-    threads_ = 1;
-
   descLength_ = (b_describe_shape_) ? nr_grid_sector_ * (nr_shape_bins_ + 1) : 0;
   descLength_ += (b_describe_color_) ? nr_grid_sector_ * (nr_color_bins_ + 1) : 0;
 
@@ -212,21 +200,17 @@ pcl::SHOTColorEstimationOMP<PointInT, PointNT, PointOutT, PointRFT>::computeFeat
   radius1_2_ = search_radius_ / 2;
 
   int data_size = static_cast<int> (indices_->size ());
-  Eigen::VectorXf *shot = new Eigen::VectorXf[threads_];
-
-  for (int i = 0; i < threads_; i++)
-    shot[i].setZero (descLength_);
 
   output.is_dense = true;
   // Iterating over the entire index vector
+#ifdef _OPENMP
 #pragma omp parallel for num_threads(threads_)
+#endif
   for (int idx = 0; idx < data_size; ++idx)
   {
-#ifdef _OPENMP
-    int tid = omp_get_thread_num ();
-#else
-    int tid = 0;
-#endif
+    Eigen::VectorXf shot;
+    shot.setZero (descLength_);
+
     // Allocate enough space to hold the results
     // \note This resize is irrelevant for a radiusSearch ().
     std::vector<int> nn_indices (k_);
@@ -248,7 +232,7 @@ pcl::SHOTColorEstimationOMP<PointInT, PointNT, PointOutT, PointRFT>::computeFeat
         this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0)
     {
       // Copy into the resultant cloud
-      for (int d = 0; d < shot[tid].size (); ++d)
+      for (int d = 0; d < shot.size (); ++d)
         output.points[idx].descriptor[d] = std::numeric_limits<float>::quiet_NaN ();
       for (int d = 0; d < 9; ++d)
         output.points[idx].rf[d] = std::numeric_limits<float>::quiet_NaN ();
@@ -258,16 +242,14 @@ pcl::SHOTColorEstimationOMP<PointInT, PointNT, PointOutT, PointRFT>::computeFeat
     }
 
     // Estimate the SHOT at each patch
-    this->computePointSHOT (idx, nn_indices, nn_dists, shot[tid]);
+    this->computePointSHOT (idx, nn_indices, nn_dists, shot);
 
     // Copy into the resultant cloud
-    for (int d = 0; d < shot[tid].size (); ++d)
-      output.points[idx].descriptor[d] = shot[tid][d];
+    for (int d = 0; d < shot.size (); ++d)
+      output.points[idx].descriptor[d] = shot[d];
     for (int d = 0; d < 9; ++d)
       output.points[idx].rf[d] = frames_->points[idx].rf[ (4*(d/3) + (d%3)) ];
   }
-
-  delete[] shot;
 }
 
 #define PCL_INSTANTIATE_SHOTEstimationOMP(T,NT,OutT,RFT) template class PCL_EXPORTS pcl::SHOTEstimationOMP<T,NT,OutT,RFT>;

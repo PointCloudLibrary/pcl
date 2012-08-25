@@ -87,30 +87,19 @@ namespace pcl
 
       typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
 
-      /** \brief Empty constructor. */
-      FPFHEstimationOMP () : nr_bins_f1_ (11), nr_bins_f2_ (11), nr_bins_f3_ (11), threads_ (1) 
+      /** \brief Initialize the scheduler and set the number of threads to use.
+        * \param[in] nr_threads the number of hardware threads to use (0 sets the value back to automatic)
+        */
+      FPFHEstimationOMP (unsigned int nr_threads = 0) : nr_bins_f1_ (11), nr_bins_f2_ (11), nr_bins_f3_ (11), threads_ (nr_threads)
       {
         feature_name_ = "FPFHEstimationOMP";
-      };
-
-      /** \brief Initialize the scheduler and set the number of threads to use.
-        * \param[in] nr_threads the number of hardware threads to use (-1 sets the value back to automatic)
-        */
-      FPFHEstimationOMP (unsigned int nr_threads) : nr_bins_f1_ (11), nr_bins_f2_ (11), nr_bins_f3_ (11), threads_ (0)
-      {
-        setNumberOfThreads (nr_threads);
       }
 
       /** \brief Initialize the scheduler and set the number of threads to use.
-        * \param[in] nr_threads the number of hardware threads to use (-1 sets the value back to automatic)
+        * \param[in] nr_threads the number of hardware threads to use (0 sets the value back to automatic)
         */
       inline void 
-      setNumberOfThreads (unsigned int nr_threads) 
-      { 
-        if (nr_threads == 0)
-          nr_threads = 1;
-        threads_ = nr_threads; 
-      }
+      setNumberOfThreads (unsigned int nr_threads = 0) { threads_ = nr_threads; }
 
     private:
       /** \brief Estimate the Fast Point Feature Histograms (FPFH) descriptors at a set of points given by

@@ -90,21 +90,13 @@ namespace pcl
       typedef typename Feature<PointInT, PointOutT>::PointCloudIn PointCloudIn;
 
       /** \brief Empty constructor. */
-      SHOTEstimationOMP (unsigned int nr_threads = - 1) : SHOTEstimation<PointInT, PointNT, PointOutT, PointRFT> (), threads_ ()
-      {
-        setNumberOfThreads (nr_threads);
-      }
-
+      SHOTEstimationOMP (unsigned int nr_threads = 0) : SHOTEstimation<PointInT, PointNT, PointOutT, PointRFT> (), threads_ (nr_threads)
+      { };
       /** \brief Initialize the scheduler and set the number of threads to use.
-        * \param nr_threads the number of hardware threads to use (-1 sets the value back to automatic)
+        * \param nr_threads the number of hardware threads to use (0 sets the value back to automatic)
         */
       inline void
-      setNumberOfThreads (unsigned int nr_threads)
-      {
-        if (nr_threads == 0)
-          nr_threads = 1;
-        threads_ = nr_threads;
-      }
+      setNumberOfThreads (unsigned int nr_threads = 0) { threads_ = nr_threads; }
 
     protected:
 
@@ -121,7 +113,7 @@ namespace pcl
       initCompute ();
 
       /** \brief The number of threads the scheduler should use. */
-      int threads_;
+      unsigned int threads_;
   };
 
   /** \brief SHOTColorEstimationOMP estimates the Signature of Histograms of OrienTations (SHOT) descriptor for a given point cloud dataset
@@ -176,22 +168,16 @@ namespace pcl
       /** \brief Empty constructor. */
       SHOTColorEstimationOMP (bool describe_shape = true,
                               bool describe_color = true,
-                              unsigned int nr_threads = - 1)
-        : SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT> (describe_shape, describe_color), threads_ ()
+                              unsigned int nr_threads = 0)
+        : SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT> (describe_shape, describe_color), threads_ (nr_threads)
       {
-        setNumberOfThreads (nr_threads);
       }
 
       /** \brief Initialize the scheduler and set the number of threads to use.
-        * \param nr_threads the number of hardware threads to use (-1 sets the value back to automatic)
+        * \param nr_threads the number of hardware threads to use (0 sets the value back to automatic)
         */
       inline void
-      setNumberOfThreads (unsigned int nr_threads)
-      {
-        if (nr_threads == 0)
-          nr_threads = 1;
-        threads_ = nr_threads;
-      }
+      setNumberOfThreads (unsigned int nr_threads = 0) { threads_ = nr_threads; }
 
     protected:
 
@@ -208,7 +194,7 @@ namespace pcl
       initCompute ();
 
       /** \brief The number of threads the scheduler should use. */
-      int threads_;
+      unsigned int threads_;
   };
 
 }

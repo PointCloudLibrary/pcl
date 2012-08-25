@@ -66,19 +66,16 @@ namespace pcl
       typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
 
       /** \brief Empty constructor. */
-      IntensityGradientEstimation () : intensity_ (), threads_ (1)
+      IntensityGradientEstimation () : intensity_ (), threads_ (0)
       {
         feature_name_ = "IntensityGradientEstimation";
       };
 
       /** \brief Initialize the scheduler and set the number of threads to use.
-        * \param nr_threads the number of hardware threads to use (-1 sets the value back to automatic)
+        * \param nr_threads the number of hardware threads to use (0 sets the value back to automatic)
         */
       inline void
-      setNumberOfThreads (int nr_threads)
-      {
-        threads_ = nr_threads == 0 ? 1 : nr_threads;
-      }
+      setNumberOfThreads (unsigned int nr_threads = 0) { threads_ = nr_threads; }
 
     protected:
       /** \brief Estimate the intensity gradients for a set of points given in <setInputCloud (), setIndices ()> using
@@ -113,8 +110,8 @@ namespace pcl
     protected:
       ///intensity field accessor structure
       IntensitySelectorT intensity_;
-      ///number of threads to be used, default 1
-      int threads_;
+      ///number of threads to be used, default 0 (auto)
+      unsigned int threads_;
   };
 
   /** \brief IntensityGradientEstimation estimates the intensity gradient for a point cloud that contains position

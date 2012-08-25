@@ -86,7 +86,7 @@ namespace pcl
       , angular_threshold_ (angular_threshold)
       , intensity_threshold_ (intensity_threshold)
       , normals_ (new pcl::PointCloud<NormalT>)
-      , threads_ (1)
+      , threads_ (0)
       , label_idx_ (-1)
       , out_fields_ ()
       {
@@ -129,10 +129,10 @@ namespace pcl
       setSearchSurface (const PointCloudInConstPtr &cloud);
 
       /** \brief Initialize the scheduler and set the number of threads to use.
-        * \param nr_threads the number of hardware threads to use (-1 sets the value back to automatic)
+        * \param nr_threads the number of hardware threads to use (0 sets the value back to automatic)
         */
       void
-      setNumberOfThreads (int nr_threads);
+      setNumberOfThreads (unsigned int nr_threads);
 
       /** \brief Apply non maxima suppression to the responses to keep strongest corners.
         * \note in SUSAN points with less response or stronger corners
@@ -173,7 +173,7 @@ namespace pcl
       float intensity_threshold_;
       float tolerance_;
       boost::shared_ptr<pcl::PointCloud<NormalT> > normals_;
-      int threads_;
+      unsigned int threads_;
       bool geometric_validation_;
       bool nonmax_;
       /// intensity field accessor

@@ -74,7 +74,7 @@ namespace pcl
     : threshold_ (threshold)
     , refine_ (true)
     , nonmax_ (true)
-    , threads_ (1)
+    , threads_ (0)
     , normals_ (new pcl::PointCloud<NormalT>)
     , intensity_gradients_ (new pcl::PointCloud<pcl::IntensityGradient>)
     {
@@ -113,16 +113,10 @@ namespace pcl
     setSearchSurface (const PointCloudInConstPtr &cloud) { surface_ = cloud; normals_->clear (); intensity_gradients_->clear ();}
 
     /** \brief Initialize the scheduler and set the number of threads to use.
-      * \param nr_threads the number of hardware threads to use (-1 sets the value back to automatic)
+      * \param nr_threads the number of hardware threads to use (0 sets the value back to automatic)
       */
     inline void
-    setNumberOfThreads (int nr_threads)
-    {
-      if (nr_threads == 0)
-        nr_threads = 1;
-      threads_ = nr_threads;
-    }
-
+    setNumberOfThreads (unsigned int nr_threads = 0) { threads_ = nr_threads; }
   protected:
     void detectKeypoints (PointCloudOut &output);
     void responseTomasi (PointCloudOut &output) const;
@@ -132,7 +126,7 @@ namespace pcl
     float threshold_;
     bool refine_;
     bool nonmax_;
-    unsigned threads_;    
+    unsigned int threads_;    
     boost::shared_ptr<pcl::PointCloud<NormalT> > normals_;
     boost::shared_ptr<pcl::PointCloud<pcl::IntensityGradient> > intensity_gradients_;
   } ;

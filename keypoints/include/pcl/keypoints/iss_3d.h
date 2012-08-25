@@ -116,7 +116,7 @@ namespace pcl
       , edge_points_ (0)
       , min_neighbors_ (5)
       , normals_ (new pcl::PointCloud<NormalT>)
-      , threads_ (1)
+      , threads_ (0)
       {
         name_ = "ISSKeypoint3D";
         search_radius_ = salient_radius_;
@@ -173,16 +173,10 @@ namespace pcl
       setNormals (const PointCloudNConstPtr &normals);
 
       /** \brief Initialize the scheduler and set the number of threads to use.
-        * \param[in] nr_threads the number of hardware threads to use (-1 sets the value back to automatic)
+        * \param[in] nr_threads the number of hardware threads to use (0 sets the value back to automatic)
         */
       inline void
-      setNumberOfThreads (int nr_threads)
-      {
-        if (nr_threads > 0)
-          threads_ = nr_threads;
-        else
-          threads_ = 1;
-      }
+      setNumberOfThreads (unsigned int nr_threads = 0) { threads_ = nr_threads; }
 
     protected:
 
@@ -245,7 +239,7 @@ namespace pcl
       PointCloudNConstPtr normals_;
 
       /** \brief The number of threads that has to be used by the scheduler. */
-      int threads_;
+      unsigned int threads_;
 
   };
 

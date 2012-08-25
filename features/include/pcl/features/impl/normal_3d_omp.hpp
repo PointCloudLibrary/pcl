@@ -53,18 +53,17 @@ pcl::NormalEstimationOMP<PointInT, Eigen::MatrixXf>::computeFeatureEigen (pcl::P
   // Resize the output dataset
   output.points.resize (indices_->size (), 4);
 
-  // GCC 4.2.x seems to segfault with "internal compiler error" on MacOS X here
-#if defined(_WIN32) || ((__GNUC__ > 4) && (__GNUC_MINOR__ > 2)) 
-#pragma omp parallel for schedule (dynamic, threads_)
+  // Allocate enough space to hold the results
+  // \note This resize is irrelevant for a radiusSearch ().
+  std::vector<int> nn_indices (k_);
+  std::vector<float> nn_dists (k_);
+
+#ifdef _OPENMP
+#pragma omp parallel for shared (output) private (nn_indices, nn_dists) num_threads(threads_)
 #endif
   // Iterating over the entire index vector
   for (int idx = 0; idx < static_cast<int> (indices_->size ()); ++idx)
   {
-    // Allocate enough space to hold the results
-    // \note This resize is irrelevant for a radiusSearch ().
-    std::vector<int> nn_indices (k_);
-    std::vector<float> nn_dists (k_);
-
     if (!isFinite ((*input_)[(*indices_)[idx]]) ||
         this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0)
     {
@@ -100,15 +99,18 @@ pcl::NormalEstimationOMP<PointInT, PointOutT>::computeFeature (PointCloudOut &ou
   getViewPoint (vpx, vpy, vpz);
 
   output.is_dense = true;
+
+  // Allocate enough space to hold the results
+  // \note This resize is irrelevant for a radiusSearch ().
+  std::vector<int> nn_indices (k_);
+  std::vector<float> nn_dists (k_);
+
   // Iterating over the entire index vector
-#pragma omp parallel for schedule (dynamic, threads_)
+#ifdef _OPENMP
+#pragma omp parallel for shared (output) private (nn_indices, nn_dists) num_threads(threads_)
+#endif
   for (int idx = 0; idx < static_cast<int> (indices_->size ()); ++idx)
   {
-    // Allocate enough space to hold the results
-    // \note This resize is irrelevant for a radiusSearch ().
-    std::vector<int> nn_indices (k_);
-    std::vector<float> nn_dists (k_);
-
     if (!isFinite ((*input_)[(*indices_)[idx]]) ||
         this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0)
     {

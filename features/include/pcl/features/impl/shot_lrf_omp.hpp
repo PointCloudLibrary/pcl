@@ -45,9 +45,6 @@ template<typename PointInT, typename PointOutT>
 void
 pcl::SHOTLocalReferenceFrameEstimationOMP<PointInT, PointOutT>::computeFeature (PointCloudOut &output)
 {
-  if (threads_ < 0)
-    threads_ = 1;
-
   //check whether used with search radius or search k-neighbors
   if (this->getKSearch () != 0)
   {
@@ -59,7 +56,9 @@ pcl::SHOTLocalReferenceFrameEstimationOMP<PointInT, PointOutT>::computeFeature (
   tree_->setSortedResults (true);
 
   int data_size = static_cast<int> (indices_->size ());
+#ifdef _OPENMP
 #pragma omp parallel for num_threads(threads_)
+#endif
   for (int i = 0; i < data_size; ++i)
   {
     // point result
@@ -88,9 +87,6 @@ template<typename PointInT, typename PointOutT>
 void
 pcl::SHOTLocalReferenceFrameEstimationOMP<PointInT, PointOutT>::computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &output)
 {
-  if (threads_ < 0)
-     threads_ = 1;
-
   //check whether used with search radius or search k-neighbors
   if (this->getKSearch () != 0)
   {
@@ -113,7 +109,9 @@ pcl::SHOTLocalReferenceFrameEstimationOMP<PointInT, PointOutT>::computeFeatureEi
   //output.points.resize (indices_->size (), 10);
   output.points.resize (data_size, 9);
 
+#ifdef _OPENMP
 #pragma omp parallel for num_threads(threads_)
+#endif
   for (int i = 0; i < data_size; ++i)
   {
     // point result

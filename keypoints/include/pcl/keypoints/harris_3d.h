@@ -83,7 +83,7 @@ namespace pcl
       , refine_ (true)
       , nonmax_ (true)
       , method_ (method)
-      , threads_ (1)
+      , threads_ (0)
       {
         name_ = "HarrisKeypoint3D";
         search_radius_ = radius;
@@ -139,15 +139,10 @@ namespace pcl
       setSearchSurface (const PointCloudInConstPtr &cloud) { surface_ = cloud; normals_.reset(); }
 
       /** \brief Initialize the scheduler and set the number of threads to use.
-        * \param nr_threads the number of hardware threads to use (-1 sets the value back to automatic)
+        * \param nr_threads the number of hardware threads to use (0 sets the value back to automatic)
         */
       inline void
-      setNumberOfThreads (int nr_threads)
-      {
-        if (nr_threads == 0)
-          nr_threads = 1;
-        threads_ = nr_threads;
-      }
+      setNumberOfThreads (unsigned int nr_threads = 0) { threads_ = nr_threads; }
     protected:
       bool
       initCompute ();
@@ -167,7 +162,7 @@ namespace pcl
       bool nonmax_;
       ResponseMethod method_;
       PointCloudNConstPtr normals_;
-      int threads_;
+      unsigned int threads_;
   };
 }
 

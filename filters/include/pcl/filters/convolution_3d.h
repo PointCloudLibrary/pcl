@@ -217,10 +217,10 @@ namespace pcl
         ~Convolution3D () {}
 
         /** \brief Initialize the scheduler and set the number of threads to use.
-          * \param nr_threads the number of hardware threads to use (-1 sets the value back to automatic)
+          * \param nr_threads the number of hardware threads to use (0 sets the value back to automatic)
           */
         inline void
-        setNumberOfThreads (unsigned int nr_threads) { threads_ = (nr_threads == 0) ? 1 : nr_threads; }
+        setNumberOfThreads (unsigned int nr_threads = 0) { threads_ = nr_threads; }
 
         /** \brief Set convolving kernel
           * \param[in] kernel convolving element
@@ -278,7 +278,7 @@ namespace pcl
         double search_radius_;
 
         /** \brief number of threads */
-        int threads_;
+        unsigned int threads_;
 
         /** \brief convlving kernel */
         KernelT kernel_;
