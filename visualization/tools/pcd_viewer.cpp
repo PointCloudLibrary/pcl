@@ -150,7 +150,7 @@ pp_callback (const pcl::visualization::PointPickingEvent& event, void* cookie)
   event.getPoint (picked_pt.x, picked_pt.y, picked_pt.z);
   search.nearestKSearch (picked_pt, 1, indices, distances);
 
-  PCL_INFO ("Point index picked: %d (real: %d)\n", idx, indices[0]);
+  PCL_INFO ("Point index picked: %d (real: %d) - [%f, %f, %f]\n", idx, indices[0], picked_pt.x, picked_pt.y, picked_pt.z);
 
   idx = indices[0];
   // If two points were selected, draw an arrow between them
