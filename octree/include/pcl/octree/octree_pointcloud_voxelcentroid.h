@@ -137,6 +137,9 @@ namespace pcl
     class OctreePointCloudVoxelCentroid : public OctreePointCloud<PointT, LeafT, BranchT>
     {
       public:
+        typedef boost::shared_ptr<OctreePointCloudVoxelCentroid<PointT, LeafT> > Ptr;
+        typedef boost::shared_ptr<const OctreePointCloudVoxelCentroid<PointT, LeafT> > ConstPtr;
+
         typedef OctreePointCloud<PointT, LeafT, BranchT> OctreeT;
         typedef typename OctreeT::LeafNode LeafNode;
         typedef typename OctreeT::BranchNode BranchNode;
