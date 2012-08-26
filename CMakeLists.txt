@@ -171,7 +171,10 @@ SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${LIB_INSTALL_DIR}")
 ENDIF("${is_system_dir}" STREQUAL "-1")
 
 ### ---[ Find universal dependencies
-find_package(OpenMP)
+# the gcc-4.2.1 coming with MacOS X is not compatible with the OpenMP pragmas we use, so disabling OpenMP for it
+if(NOT APPLE OR (CMAKE_COMPILER_IS_GNUCXX AND GCC_VERSION VERSION_GREATER 4.2.1))
+  find_package(OpenMP)
+endif()
 if(OPENMP_FOUND)
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
