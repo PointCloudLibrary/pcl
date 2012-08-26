@@ -682,7 +682,11 @@ TEST (PCL, SHOTShapeEstimationOpenMP)
 {
   // Estimate normals first
   double mr = 0.002;
+#ifdef _OPENMP
   NormalEstimationOMP<PointXYZ, Normal> n (omp_get_max_threads ());
+#else
+  NormalEstimationOMP<PointXYZ, Normal> n;
+#endif
   PointCloud<Normal>::Ptr normals (new PointCloud<Normal> ());
   // set parameters
   n.setInputCloud (cloud.makeShared ());
