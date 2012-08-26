@@ -89,9 +89,7 @@ pcl::FPFHEstimationOMP<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
   // Compute SPFH signatures for every point that needs them
 
 #ifdef _OPENMP
-#  if __GNUC_MINOR__ >= 3
 #pragma omp parallel for shared (spfh_hist_lookup) private (nn_indices, nn_dists) num_threads(threads_)
-#  endif
 #endif
   for (int i = 0; i < static_cast<int> (spfh_indices_vec.size ()); ++i)
   {
@@ -117,9 +115,7 @@ pcl::FPFHEstimationOMP<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
 
   // Iterate over the entire index vector
 #ifdef _OPENMP
-#  if __GNUC_MINOR__ >= 3
 #pragma omp parallel for shared (output) private (nn_indices, nn_dists) num_threads(threads_)
-#  endif
 #endif
   for (int idx = 0; idx < static_cast<int> (indices_->size ()); ++idx)
   {

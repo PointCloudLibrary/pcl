@@ -152,9 +152,7 @@ pcl::IntensityGradientEstimation<PointInT, PointNT, PointOutT, IntensitySelector
   if (surface_->is_dense)
   {
 #ifdef _OPENMP
-#  if __GNUC_MINOR__ >= 3
 #pragma omp parallel for shared (output) private (nn_indices, nn_dists) num_threads(threads_)
-#  endif
 #endif
     // Iterating over the entire index vector
     for (int idx = 0; idx < static_cast<int> (indices_->size ()); ++idx)
@@ -192,9 +190,7 @@ pcl::IntensityGradientEstimation<PointInT, PointNT, PointOutT, IntensitySelector
   else
   {
 #ifdef _OPENMP
-#  if __GNUC_MINOR__ >= 3
 #pragma omp parallel for shared (output) private (nn_indices, nn_dists) num_threads(threads_)
-#  endif
 #endif
     // Iterating over the entire index vector
     for (int idx = 0; idx < static_cast<int> (indices_->size ()); ++idx)
