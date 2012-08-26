@@ -439,7 +439,7 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::projectPointToMLSSurface (float &u
   result_normal.normal_y = static_cast<float> (normal[1]);
   result_normal.normal_z = static_cast<float> (normal[2]);
   result_normal.curvature = curvature;
-    }
+}
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -453,6 +453,9 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::performProcessing (PointCloudOut &
   // \note resize is irrelevant for a radiusSearch ().
   std::vector<int> nn_indices;
   std::vector<float> nn_sqr_dists;
+
+  typedef typename pcl::traits::fieldList<typename PointCloudIn::PointType>::type FieldListInput;
+  typedef typename pcl::traits::fieldList<typename PointCloudOut::PointType>::type FieldListOutput;
 
   // For all points
   for (size_t cp = 0; cp < indices_->size (); ++cp)
@@ -471,6 +474,20 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::performProcessing (PointCloudOut &
     NormalCloud projected_points_normals;
     // Get a plane approximating the local surface's tangent and project point onto it
     computeMLSPointNormal (int (cp), *input_, nn_indices, nn_sqr_dists, projected_points, projected_points_normals);
+
+
+    /// Copy RGB information if available
+    float rgb_input;
+    bool rgb_exists_input;
+    pcl::for_each_type<FieldListInput> (pcl::CopyIfFieldExists<typename PointCloudIn::PointType, float> (
+        input_->points[(*indices_)[cp]], "rgb", rgb_exists_input, rgb_input));
+
+    if (rgb_exists_input)
+    {
+      for (size_t pp = 0; pp < projected_points.size (); ++pp)
+        pcl::for_each_type<FieldListOutput> (pcl::SetIfFieldExists<typename PointCloudOut::PointType, float> (
+            projected_points.points[pp], "rgb", rgb_input));
+    }
 
     // Append projected points to output
     output.insert (output.end (), projected_points.begin (), projected_points.end ());
@@ -521,11 +538,17 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::performProcessing (PointCloudOut &
                                 mls_results_[input_index].num_neighbors,
                                 result_point, result_normal);
 
-      /// TODO need to to do this?
-//      float d_before = (pos - input_point).norm (),
-//            d_after = (result_point.getVector3fMap () - input_point). norm();
-//      if (d_after > d_before)
-//        continue;
+      /// Copy RGB information if available
+      float rgb_input;
+      bool rgb_exists_input;
+      pcl::for_each_type<FieldListInput> (pcl::CopyIfFieldExists<typename PointCloudIn::PointType, float> (
+          input_->points[input_index], "rgb", rgb_exists_input, rgb_input));
+
+      if (rgb_exists_input)
+      {
+          pcl::for_each_type<FieldListOutput> (pcl::SetIfFieldExists<typename PointCloudOut::PointType, float> (
+              result_point, "rgb", rgb_input));
+      }
 
       output.push_back (result_point);
       if (compute_normals_)
@@ -539,14 +562,11 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::performProcessing (PointCloudOut &
   if (upsample_method_ == VOXEL_GRID_DILATION)
   {
     MLSVoxelGrid voxel_grid (input_, indices_, voxel_size_);
-
     for (int iteration = 0; iteration < dilation_iteration_num_; ++iteration)
       voxel_grid.dilate ();
 
-
     for (typename MLSVoxelGrid::HashMap::iterator m_it = voxel_grid.voxel_grid_.begin (); m_it != voxel_grid.voxel_grid_.end (); ++m_it)
     {
-
       // Get 3D position of point
       Eigen::Vector3f pos;
       voxel_grid.getPosition (m_it->first, pos);
@@ -592,6 +612,18 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::performProcessing (PointCloudOut &
             d_after = (result_point.getVector3fMap () - input_point). norm();
       if (d_after > d_before)
         continue;
+
+      /// Copy RGB information if available
+      float rgb_input;
+      bool rgb_exists_input;
+      pcl::for_each_type<FieldListInput> (pcl::CopyIfFieldExists<typename PointCloudIn::PointType, float> (
+          input_->points[input_index], "rgb", rgb_exists_input, rgb_input));
+
+      if (rgb_exists_input)
+      {
+          pcl::for_each_type<FieldListOutput> (pcl::SetIfFieldExists<typename PointCloudOut::PointType, float> (
+              result_point, "rgb", rgb_input));
+      }
 
       output.push_back (result_point);
       if (compute_normals_)
