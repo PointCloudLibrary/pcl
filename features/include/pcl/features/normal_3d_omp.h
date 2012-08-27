@@ -66,7 +66,7 @@ namespace pcl
 
     public:
       /** \brief Initialize the scheduler and set the number of threads to use.
-        * \param nr_threads the number of hardware threads to use (-1 sets the value back to automatic)
+        * \param nr_threads the number of hardware threads to use (0 sets the value back to automatic)
         */
       NormalEstimationOMP (unsigned int nr_threads = 0) : threads_ (nr_threads)
       {
