@@ -61,8 +61,8 @@ FittingSurfaceTDM::assemble (ParameterTDM param)
   int nInt = m_data->interior.size ();
   int nCurInt = param.regularisation_resU * param.regularisation_resV;
   int nCurBnd = 2 * param.regularisation_resU + 2 * param.regularisation_resV;
-  int nCageReg = (m_nurbs.m_cv_count[0] - 2) * (m_nurbs.m_cv_count[1] - 2);
-  int nCageRegBnd = 2 * (m_nurbs.m_cv_count[0] - 1) + 2 * (m_nurbs.m_cv_count[1] - 1);
+  int nCageReg = (m_nurbs.CVCount (0) - 2) * (m_nurbs.CVCount (1) - 2);
+  int nCageRegBnd = 2 * (m_nurbs.CVCount (0) - 1) + 2 * (m_nurbs.CVCount (1) - 1);
 
   if (param.boundary_weight <= 0.0)
     nBnd = 0;
@@ -77,7 +77,7 @@ FittingSurfaceTDM::assemble (ParameterTDM param)
   if (param.boundary_smoothness <= 0.0)
     nCageRegBnd = 0;
 
-  int ncp = m_nurbs.m_cv_count[0] * m_nurbs.m_cv_count[1];
+  int ncp = m_nurbs.CVCount (0) * m_nurbs.CVCount (1);
   int nrows = nBnd + nInt + nCurInt + nCurBnd + nCageReg + nCageRegBnd;
 
   m_solver.assign (3 * nrows, 3 * ncp, 1);
@@ -123,7 +123,7 @@ FittingSurfaceTDM::solve (double damp)
 void
 FittingSurfaceTDM::updateSurf (double damp)
 {
-  int ncp = m_nurbs.m_cv_count[0] * m_nurbs.m_cv_count[1];
+  int ncp = m_nurbs.CVCount (0) * m_nurbs.CVCount (1);
 
   for (int A = 0; A < ncp; A++)
   {
@@ -233,15 +233,15 @@ FittingSurfaceTDM::assembleBoundary (double wBnd, double wTangent, unsigned &row
 }
 
 void
-FittingSurfaceTDM::addPointConstraint (const Eigen::Vector2d &params, const Eigen::Vector3d &p, const Eigen::Vector3d &n,
-                                     const Eigen::Vector3d &tu, const Eigen::Vector3d &tv, double tangent_weight,
-                                     double weight, unsigned &row)
+FittingSurfaceTDM::addPointConstraint (const Eigen::Vector2d &params, const Eigen::Vector3d &p,
+                                       const Eigen::Vector3d &n, const Eigen::Vector3d &tu, const Eigen::Vector3d &tv,
+                                       double tangent_weight, double weight, unsigned &row)
 {
   double N0[m_nurbs.Order (0) * m_nurbs.Order (0)];
   double N1[m_nurbs.Order (1) * m_nurbs.Order (1)];
 
-  int E = ON_NurbsSpanIndex (m_nurbs.m_order[0], m_nurbs.m_cv_count[0], m_nurbs.m_knot[0], params (0), 0, 0);
-  int F = ON_NurbsSpanIndex (m_nurbs.m_order[1], m_nurbs.m_cv_count[1], m_nurbs.m_knot[1], params (1), 0, 0);
+  int E = ON_NurbsSpanIndex (m_nurbs.Order(0), m_nurbs.CVCount (0), m_nurbs.m_knot[0], params (0), 0, 0);
+  int F = ON_NurbsSpanIndex (m_nurbs.Order(1), m_nurbs.CVCount (1), m_nurbs.m_knot[1], params (1), 0, 0);
 
   ON_EvaluateNurbsBasis (m_nurbs.Order (0), m_nurbs.m_knot[0] + E, params (0), N0);
   ON_EvaluateNurbsBasis (m_nurbs.Order (1), m_nurbs.m_knot[1] + F, params (1), N1);
@@ -274,9 +274,9 @@ FittingSurfaceTDM::addPointConstraint (const Eigen::Vector2d &params, const Eige
 void
 FittingSurfaceTDM::addCageInteriorRegularisation (double weight, unsigned &row)
 {
-  for (int i = 1; i < (m_nurbs.m_cv_count[0] - 1); i++)
+  for (int i = 1; i < (m_nurbs.CVCount (0) - 1); i++)
   {
-    for (int j = 1; j < (m_nurbs.m_cv_count[1] - 1); j++)
+    for (int j = 1; j < (m_nurbs.CVCount (1) - 1); j++)
     {
 
       //      m_solver.f(row + 0, 0, 0.0);
@@ -295,11 +295,11 @@ FittingSurfaceTDM::addCageInteriorRegularisation (double weight, unsigned &row)
       m_solver.K (row + 1, 3 * grc2gl (i - 1, j + 0) + 1, 1.0 * weight);
       m_solver.K (row + 1, 3 * grc2gl (i + 1, j + 0) + 1, 1.0 * weight);
 
-      m_solver.K (row + 2, 3 * grc2gl (i + 0, j + 0) + 1, -4.0 * weight);
-      m_solver.K (row + 2, 3 * grc2gl (i + 0, j - 1) + 1, 1.0 * weight);
-      m_solver.K (row + 2, 3 * grc2gl (i + 0, j + 1) + 1, 1.0 * weight);
-      m_solver.K (row + 2, 3 * grc2gl (i - 1, j + 0) + 1, 1.0 * weight);
-      m_solver.K (row + 2, 3 * grc2gl (i + 1, j + 0) + 1, 1.0 * weight);
+      m_solver.K (row + 2, 3 * grc2gl (i + 0, j + 0) + 2, -4.0 * weight);
+      m_solver.K (row + 2, 3 * grc2gl (i + 0, j - 1) + 2, 1.0 * weight);
+      m_solver.K (row + 2, 3 * grc2gl (i + 0, j + 1) + 2, 1.0 * weight);
+      m_solver.K (row + 2, 3 * grc2gl (i - 1, j + 0) + 2, 1.0 * weight);
+      m_solver.K (row + 2, 3 * grc2gl (i + 1, j + 0) + 2, 1.0 * weight);
 
       row += 3;
     }
@@ -315,9 +315,9 @@ FittingSurfaceTDM::addCageBoundaryRegularisation (double weight, int side, unsig
   switch (side)
   {
     case SOUTH:
-      j = m_nurbs.m_cv_count[1] - 1;
+      j = m_nurbs.CVCount (1) - 1;
     case NORTH:
-      for (i = 1; i < (m_nurbs.m_cv_count[0] - 1); i++)
+      for (i = 1; i < (m_nurbs.CVCount (0) - 1); i++)
       {
 
         //      m_solver.f(row + 0, 0, 0.0);
@@ -341,9 +341,9 @@ FittingSurfaceTDM::addCageBoundaryRegularisation (double weight, int side, unsig
       break;
 
     case EAST:
-      i = m_nurbs.m_cv_count[0] - 1;
+      i = m_nurbs.CVCount (0) - 1;
     case WEST:
-      for (j = 1; j < (m_nurbs.m_cv_count[1] - 1); j++)
+      for (j = 1; j < (m_nurbs.CVCount (1) - 1); j++)
       {
 
         //      m_solver.f(row + 0, 0, 0.0);
@@ -396,7 +396,7 @@ FittingSurfaceTDM::addCageCornerRegularisation (double weight, unsigned &row)
   }
 
   { // NORTH-EAST
-    int i = m_nurbs.m_cv_count[0] - 1;
+    int i = m_nurbs.CVCount (0) - 1;
     int j = 0;
 
     //    m_solver.f(row + 0, 0, 0.0);
@@ -419,8 +419,8 @@ FittingSurfaceTDM::addCageCornerRegularisation (double weight, unsigned &row)
   }
 
   { // SOUTH-EAST
-    int i = m_nurbs.m_cv_count[0] - 1;
-    int j = m_nurbs.m_cv_count[1] - 1;
+    int i = m_nurbs.CVCount (0) - 1;
+    int j = m_nurbs.CVCount (1) - 1;
 
     //    m_solver.f(row + 0, 0, 0.0);
     //    m_solver.f(row + 1, 0, 0.0);
@@ -443,7 +443,7 @@ FittingSurfaceTDM::addCageCornerRegularisation (double weight, unsigned &row)
 
   { // SOUTH-WEST
     int i = 0;
-    int j = m_nurbs.m_cv_count[1] - 1;
+    int j = m_nurbs.CVCount (1) - 1;
 
     //    m_solver.f(row + 0, 0, 0.0);
     //    m_solver.f(row + 1, 0, 0.0);
