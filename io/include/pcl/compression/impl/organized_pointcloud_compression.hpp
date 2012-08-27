@@ -171,10 +171,12 @@ namespace pcl
       {
         char readChar;
         compressedDataIn_arg.read (static_cast<char*> (&readChar), sizeof (readChar));
+        if (compressedDataIn_arg.gcount()!= sizeof (readChar))
+          valid_stream = false;
         if (readChar != frameHeaderIdentifier_[headerIdPos++])
           headerIdPos = (frameHeaderIdentifier_[0] == readChar) ? 1 : 0;
 
-        valid_stream=compressedDataIn_arg.good ();
+        valid_stream &= compressedDataIn_arg.good ();
       }
 
       if (valid_stream) {
