@@ -73,8 +73,10 @@ if(build)
         include (${VTK_USE_FILE})
         set(VTK_IO_INCLUDES 
             include/pcl/${SUBSYS_NAME}/vtk_lib_io.h
-            include/pcl/${SUBSYS_NAME}/impl/vtk_lib_io.hpp
             include/pcl/${SUBSYS_NAME}/png_io.h 
+           )
+        set(VTK_IO_INCLUDES_IMPL
+            include/pcl/${SUBSYS_NAME}/impl/vtk_lib_io.hpp
            )
         set(VTK_IO_SOURCE 
             src/vtk_lib_io.cpp
@@ -150,6 +152,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/pcd_io.hpp
         include/pcl/compression/impl/entropy_range_coder.hpp
         include/pcl/compression/impl/octree_pointcloud_compression.hpp
+        ${VTK_IO_INCLUDES_IMPL}
        )
     if(PNG_FOUND)
       set(impl_incs
