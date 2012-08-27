@@ -1260,16 +1260,16 @@ bool Intersect( ON_Interval A, ON_Interval B, ON_Interval& AB){
 	if(B.IsDecreasing()) B.Swap();
 
 	bool NotEmpty=true;
-	if( A.m_t[0] <= B.m_t[0] && B.m_t[0]<=A.m_t[1] &&  A.m_t[1]<= B.m_t[1]){
+	if( A.m_t[0] <= B.m_t[0] && B.m_t[0] <= A.m_t[1] &&  A.m_t[1] <= B.m_t[1]){
 		AB.Set(B.m_t[0], A.m_t[1]);
-	} else if( B.m_t[0] <= A.m_t[0] && A.m_t[0]<=B.m_t[1] && B.m_t[1]<=A.m_t[1]){
+	} else if( B.m_t[0] <= A.m_t[0] && A.m_t[0] <= B.m_t[1] && B.m_t[1] <=A.m_t[1]){
 		AB.Set(A.m_t[0], B.m_t[1]);
-	} else if( A.m_t[0] <=  B.m_t[0] && B.m_t[0] <= B.m_t[1] && B.m_t[1]<= A.m_t[1]){
+	} else if( A.m_t[0] <= B.m_t[0] && B.m_t[0] <= B.m_t[1] && B.m_t[1] <= A.m_t[1]){
 		AB.Set(B.m_t[0], B.m_t[1]);
-	} else if( B.m_t[0] <= A.m_t[0] && A.m_t[0] <= A.m_t[1] && A.m_t[1]<= B.m_t[1]){
+	} else if( B.m_t[0] <= A.m_t[0] && A.m_t[0] <= A.m_t[1] && A.m_t[1] <= B.m_t[1]){
 		AB.Set(A.m_t[0], A.m_t[1]);
-	} else if( B.m_t[0] <= A.m_t[0]  && A.m_t[0] <= A.m_t[1]  && A.m_t[1]<= B.m_t[1]){
-		AB.Set(A.m_t[0], A.m_t[1]);
+//	} else if( B.m_t[0] <= A.m_t[0] && A.m_t[0] <= A.m_t[1] && A.m_t[1] <= B.m_t[1]){
+//		AB.Set(A.m_t[0], A.m_t[1]);
 	} else if(A.m_t[1] < B.m_t[0] || B.m_t[1] < A.m_t[0] ){
 		AB.Destroy();
 		NotEmpty = false;

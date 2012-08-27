@@ -176,7 +176,7 @@ bool ON_Circle::Transform( const ON_Xform& xform )
     }
     if (    0.0 == b 
          && 0.0 == c 
-         && fabs(r1-r1) <= ON_SQRT_EPSILON*(r1+r2) 
+         && fabs(r1-r2) <= ON_SQRT_EPSILON*(r1+r2)
        )
     {
       // transform is a similarity

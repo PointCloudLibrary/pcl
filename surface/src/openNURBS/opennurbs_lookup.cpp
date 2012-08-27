@@ -960,7 +960,7 @@ size_t ON_SerialNumberMap::GetElements(
     else 
     {
       if ( ek->m_sn_active )
-        elements.Append(*ei);
+        elements.Append(*ek); // elements.Append(*ei); // changed by thomas.moerwald
       if ( --k )
       {
         if ( (++ek)->m_sn > sn1 )
