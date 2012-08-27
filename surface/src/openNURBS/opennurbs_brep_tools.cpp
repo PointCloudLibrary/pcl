@@ -1279,10 +1279,9 @@ ON_Brep* ON_BrepRevSurface(
       bCapEnd = false;
     }
 
-    if ( !brep->Create(pRevSurface) )
+    if ( brep && !brep->Create(pRevSurface) )
     {
-      if (!brep)
-        delete brep;
+      delete brep;
       brep = 0;
     }
     else if ( bCapStart || bCapEnd )
