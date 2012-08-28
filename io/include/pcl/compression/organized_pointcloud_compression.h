@@ -34,7 +34,6 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  * $Id$
- * Authors: Julius Kammerl (julius@kammerl.de)
  */
 
 #ifndef PCL_ORGANIZED_POINT_COMPRESSION_H_
@@ -54,6 +53,8 @@ namespace pcl
 {
   namespace io
   {
+    /** \author Julius Kammerl (julius@kammerl.de)
+     */
     template<typename PointT>
     class OrganizedPointCloudCompression
     {
