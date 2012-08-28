@@ -84,25 +84,27 @@ class PCDOrganizedMultiPlaneSegmentation
           case 'B':
             if (threshold_ < 0.1f)
               threshold_ += 0.001f;
+            process ();
             break;
           case 'v':
           case 'V':
             if (threshold_ > 0.001f)
               threshold_ -= 0.001f;
+            process ();
             break;
             
           case 'n':
           case 'N':
             depth_dependent_ = !depth_dependent_;
+            process ();
             break;
             
           case 'm':
           case 'M':
             polygon_refinement_ = !polygon_refinement_;
+            process ();
             break;
         }
-        
-        process ();
       }
     }
     
