@@ -331,7 +331,7 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::projectPoints (
       float k = (p.dot (line_dir) - ptdotdir) * dirdotdir;
 
       pcl::Vector4fMap pp = projected_points.points[inliers[i]].getVector4fMap ();
-      pp = line_pt + k * line_dir;
+      pp.matrix () = line_pt + k * line_dir;
 
       Eigen::Vector4f dir = p - pp;
       dir.normalize ();
@@ -361,7 +361,7 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::projectPoints (
 
       float k = (p.dot (line_dir) - ptdotdir) * dirdotdir;
       // Calculate the projection of the point on the line
-      pp = line_pt + k * line_dir;
+      pp.matrix () = line_pt + k * line_dir;
 
       Eigen::Vector4f dir = p - pp;
       dir.normalize ();

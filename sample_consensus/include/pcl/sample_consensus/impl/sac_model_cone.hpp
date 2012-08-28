@@ -378,7 +378,7 @@ pcl::SampleConsensusModelCone<PointT, PointNT>::projectPoints (
       float k = (pt.dot (axis_dir) - apexdotdir) * dirdotdir;
 
       pcl::Vector4fMap pp = projected_points.points[inliers[i]].getVector4fMap ();
-      pp = apex + k * axis_dir;
+      pp.matrix () = apex + k * axis_dir;
 
       Eigen::Vector4f dir = pt - pp;
       dir.normalize ();
@@ -412,7 +412,7 @@ pcl::SampleConsensusModelCone<PointT, PointNT>::projectPoints (
 
       float k = (pt.dot (axis_dir) - apexdotdir) * dirdotdir;
       // Calculate the projection of the point on the line
-      pp = apex + k * axis_dir;
+      pp.matrix () = apex + k * axis_dir;
 
       Eigen::Vector4f dir = pt - pp;
       dir.normalize ();

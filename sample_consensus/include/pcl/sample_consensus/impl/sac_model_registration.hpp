@@ -48,6 +48,7 @@ template <typename PointT> bool
 pcl::SampleConsensusModelRegistration<PointT>::isSampleGood (const std::vector<int> &samples) const
 {
   using namespace pcl::common;
+  using namespace pcl::traits;
 
   PointT p10 = input_->points[samples[1]] - input_->points[samples[0]];
   PointT p20 = input_->points[samples[2]] - input_->points[samples[0]];
@@ -104,10 +105,10 @@ pcl::SampleConsensusModelRegistration<PointT>::getDistancesToModel (const Eigen:
 
   // Get the 4x4 transformation
   Eigen::Matrix4f transform;
-  transform.row (0) = model_coefficients.segment<4>(0);
-  transform.row (1) = model_coefficients.segment<4>(4);
-  transform.row (2) = model_coefficients.segment<4>(8);
-  transform.row (3) = model_coefficients.segment<4>(12);
+  transform.row (0).matrix () = model_coefficients.segment<4>(0);
+  transform.row (1).matrix () = model_coefficients.segment<4>(4);
+  transform.row (2).matrix () = model_coefficients.segment<4>(8);
+  transform.row (3).matrix () = model_coefficients.segment<4>(12);
 
   for (size_t i = 0; i < indices_->size (); ++i)
   {
@@ -153,10 +154,10 @@ pcl::SampleConsensusModelRegistration<PointT>::selectWithinDistance (const Eigen
   inliers.resize (indices_->size ());
 
   Eigen::Matrix4f transform;
-  transform.row (0) = model_coefficients.segment<4>(0);
-  transform.row (1) = model_coefficients.segment<4>(4);
-  transform.row (2) = model_coefficients.segment<4>(8);
-  transform.row (3) = model_coefficients.segment<4>(12);
+  transform.row (0).matrix () = model_coefficients.segment<4>(0);
+  transform.row (1).matrix () = model_coefficients.segment<4>(4);
+  transform.row (2).matrix () = model_coefficients.segment<4>(8);
+  transform.row (3).matrix () = model_coefficients.segment<4>(12);
 
   int nr_p = 0; 
   for (size_t i = 0; i < indices_->size (); ++i)
@@ -199,10 +200,10 @@ pcl::SampleConsensusModelRegistration<PointT>::countWithinDistance (
     return (0);
   
   Eigen::Matrix4f transform;
-  transform.row (0) = model_coefficients.segment<4>(0);
-  transform.row (1) = model_coefficients.segment<4>(4);
-  transform.row (2) = model_coefficients.segment<4>(8);
-  transform.row (3) = model_coefficients.segment<4>(12);
+  transform.row (0).matrix () = model_coefficients.segment<4>(0);
+  transform.row (1).matrix () = model_coefficients.segment<4>(4);
+  transform.row (2).matrix () = model_coefficients.segment<4>(8);
+  transform.row (3).matrix () = model_coefficients.segment<4>(12);
 
   int nr_p = 0; 
   for (size_t i = 0; i < indices_->size (); ++i)
@@ -292,9 +293,9 @@ pcl::SampleConsensusModelRegistration<PointT>::estimateRigidTransformationSVD (
   Eigen::Matrix3f R = v * u.transpose ();
 
   // Return the correct transformation
-  transform.segment<3> (0) = R.row (0); transform[12]  = 0;
-  transform.segment<3> (4) = R.row (1); transform[13]  = 0;
-  transform.segment<3> (8) = R.row (2); transform[14] = 0;
+  transform.segment<3> (0).matrix () = R.row (0); transform[12]  = 0;
+  transform.segment<3> (4).matrix () = R.row (1); transform[13]  = 0;
+  transform.segment<3> (8).matrix () = R.row (2); transform[14] = 0;
 
   Eigen::Vector3f t = centroid_tgt.head<3> () - R * centroid_src.head<3> ();
   transform[3] = t[0]; transform[7] = t[1]; transform[11] = t[2]; transform[15] = 1.0;
