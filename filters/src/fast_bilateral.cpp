@@ -45,7 +45,7 @@
 #include <pcl/filters/fast_bilateral.h>
 #include <pcl/filters/impl/fast_bilateral.hpp>
 
-PCL_INSTANTIATE (FastBilateralFilter, (pcl::PointXYZ)(pcl::PointXYZRGBA))
+PCL_INSTANTIATE (FastBilateralFilter, (pcl::PointXYZ)(pcl::PointXYZRGB)(pcl::PointXYZRGBA))
 
 
 
