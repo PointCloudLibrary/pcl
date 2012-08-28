@@ -211,13 +211,13 @@ namespace pcl
     template <int Degree> double
     PPolynomial<Degree>::integral (const double &tMin,const double &tMax) const
     {
-      int m=1;
+      int m = 1;
       double start,end,s,v=0;
       start=tMin;
       end=tMax;
       if (tMin>tMax)
       {
-        m=- 1;
+        m = -1;
         start=tMax;
         end=tMin;
       }
@@ -244,7 +244,7 @@ namespace pcl
       int i,j;
       size_t idx=0;
       q.set (polyCount+p.polyCount);
-      i=j=- 1;
+      i = j = -1;
 
       while (idx<q.polyCount)
       {
@@ -277,7 +277,7 @@ namespace pcl
       int i,j;
       size_t idx=0;
       q.set (polyCount+p.polyCount);
-      i=j=- 1;
+      i = j = -1;
 
       while (idx<q.polyCount)
       {
@@ -312,7 +312,7 @@ namespace pcl
       polyCount=0;
       polys=NULL;
       set (oldPolyCount+p.polyCount);
-      i=j=- 1;
+      i = j = -1;
       while (cnt<polyCount)
       {
         if    (j>=int(p.polyCount)-1)
@@ -536,11 +536,11 @@ namespace pcl
       PPolynomial q;
       q.set (2);
 
-      q.polys[0].start=- radius;
-      q.polys[1].start= radius;
+      q.polys[0].start = -radius;
+      q.polys[1].start = radius;
 
-      q.polys[0].p.coefficients[0]= 1.0;
-      q.polys[1].p.coefficients[0]=- 1.0;
+      q.polys[0].p.coefficients[0]=  1.0;
+      q.polys[1].p.coefficients[0] = -1.0;
       return (q);
     }
 
