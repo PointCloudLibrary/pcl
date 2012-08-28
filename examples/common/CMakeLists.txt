@@ -1,6 +1,6 @@
 PCL_ADD_EXAMPLE(pcl_example_copy_point_cloud FILES example_copy_point_cloud.cpp LINK_WITH pcl_common)
 
-PCL_ADD_EXAMPLE(pcl_example_scope_time FILES example_scope_time.cpp LINK_WITH pcl_common stdc++)
+PCL_ADD_EXAMPLE(pcl_example_scope_time FILES example_scope_time.cpp LINK_WITH pcl_common)
 
 PCL_ADD_EXAMPLE(pcl_example_organized_point_cloud FILES example_organized_point_cloud.cpp LINK_WITH pcl_common)
 
