@@ -51,10 +51,10 @@
 # include <io.h>
 # ifndef WIN32_LEAN_AND_MEAN
 #  define WIN32_LEAN_AND_MEAN
-# endif WIN32_LEAN_AND_MEAN
+# endif // WIN32_LEAN_AND_MEAN
 # ifndef NOMINMAX
 #  define NOMINMAX
-# endif NOMINMAX
+# endif // NOMINMAX
 # include <windows.h>
 # define pcl_open                    _open
 # define pcl_close(fd)               _close(fd)
