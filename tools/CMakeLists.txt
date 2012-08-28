@@ -116,6 +116,9 @@ if (build)
 
   PCL_ADD_EXECUTABLE(pcl_linemod_detection ${SUBSYS_NAME} linemod_detection.cpp)
   target_link_libraries(pcl_linemod_detection pcl_common pcl_io pcl_recognition)
+  
+  PCL_ADD_EXECUTABLE(pcl_fast_bilateral_filter ${SUBSYS_NAME} fast_bilateral_filter.cpp)
+  target_link_libraries(pcl_fast_bilateral_filter pcl_common pcl_io pcl_filters)
 
   if (QHULL_FOUND)
     PCL_ADD_EXECUTABLE(pcl_crop_to_hull ${SUBSYS_NAME} crop_to_hull.cpp)
