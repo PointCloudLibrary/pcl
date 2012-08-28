@@ -320,16 +320,15 @@ private:
   {
     displayCloud->points.clear();
 
-    pcl::octree::OctreePointCloudVoxelCentroid<pcl::PointXYZ>::Iterator tree_it(octree);
+    pcl::octree::OctreePointCloudVoxelCentroid<pcl::PointXYZ>::Iterator tree_it;
+    pcl::octree::OctreePointCloudVoxelCentroid<pcl::PointXYZ>::Iterator tree_it_end = octree.end();
 
     pcl::PointXYZ pt;
     std::cout << "===== Extracting data at depth " << depth << "... " << std::flush;
     double start = pcl::getTime ();
-    while (*tree_it++)
-    {
-      if (static_cast<int> (tree_it.getCurrentOctreeDepth ()) != depth)
-        continue;
 
+    for (tree_it = octree.begin(depth); tree_it!=tree_it_end; ++tree_it)
+    {
       Eigen::Vector3f voxel_min, voxel_max;
       octree.getVoxelBounds(tree_it, voxel_min, voxel_max);
 
@@ -337,9 +336,6 @@ private:
       pt.y = (voxel_min.y() + voxel_max.y()) / 2.0f;
       pt.z = (voxel_min.z() + voxel_max.z()) / 2.0f;
       displayCloud->points.push_back(pt);
-
-      //we are already the desired depth, there is no reason to go deeper.
-      tree_it.skipChildVoxels();
     }
 
     double end = pcl::getTime ();

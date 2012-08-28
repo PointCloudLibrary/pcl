@@ -91,15 +91,19 @@ namespace pcl
         typedef typename OctreeT::LeafNode LeafNode;
         typedef typename OctreeT::BranchNode BranchNode;
 
-        // Octree iterators
+        // Octree default iterators
         typedef OctreeDepthFirstIterator<int, OctreeT> Iterator;
         typedef const OctreeDepthFirstIterator<int, OctreeT> ConstIterator;
 
+        // Octree leaf node iterators
         typedef OctreeLeafNodeIterator<int, OctreeT> LeafNodeIterator;
         typedef const OctreeLeafNodeIterator<int, OctreeT> ConstLeafNodeIterator;
 
+        // Octree depth-first iterators
         typedef OctreeDepthFirstIterator<int, OctreeT> DepthFirstIterator;
         typedef const OctreeDepthFirstIterator<int, OctreeT> ConstDepthFirstIterator;
+
+        // Octree breadth-first iterators
         typedef OctreeBreadthFirstIterator<int, OctreeT> BreadthFirstIterator;
         typedef const OctreeBreadthFirstIterator<int, OctreeT> ConstBreadthFirstIterator;
 

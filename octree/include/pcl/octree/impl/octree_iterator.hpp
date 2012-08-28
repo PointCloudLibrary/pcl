@@ -50,15 +50,20 @@ namespace pcl
   {
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename DataT, typename OctreeT>
-    OctreeDepthFirstIterator<DataT, OctreeT>::OctreeDepthFirstIterator (
-        OctreeT& octree_arg) :
-        OctreeIteratorBase<DataT, OctreeT> (octree_arg), currentChildIdx_ (0), stack_ ()
+    OctreeDepthFirstIterator<DataT, OctreeT>::OctreeDepthFirstIterator (unsigned int maxDepth_arg) :
+        OctreeIteratorBase<DataT, OctreeT> (maxDepth_arg), stack_ ()
     {
-      // allocate stack
-      stack_.reserve (this->octree_.getTreeDepth ());
-
       // initialize iterator
-      reset ();
+      this->reset ();
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename DataT, typename OctreeT>
+    OctreeDepthFirstIterator<DataT, OctreeT>::OctreeDepthFirstIterator (OctreeT* octree_arg, unsigned int maxDepth_arg) :
+        OctreeIteratorBase<DataT, OctreeT> (octree_arg, maxDepth_arg), stack_ ()
+    {
+      // initialize iterator
+      this->reset ();
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
@@ -73,40 +78,50 @@ namespace pcl
     {
       OctreeIteratorBase<DataT, OctreeT>::reset ();
 
-      // empty stack
-      stack_.clear ();
+      if (this->octree_)
+      {
+        // allocate stack
+        stack_.reserve (this->maxOctreeDepth_);
+
+        // empty stack
+        stack_.clear ();
+
+        // pushing root node to stack
+        IteratorState stackEntry;
+        stackEntry.node_ = this->octree_->getRootNode ();
+        stackEntry.depth_ = 0;
+        stackEntry.key_.x = stackEntry.key_.y = stackEntry.key_.z = 0;
+
+        stack_.push_back(stackEntry);
+
+        this->currentState_ = &stack_.back();
+      }
+
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename DataT, typename OctreeT>
     void OctreeDepthFirstIterator<DataT, OctreeT>::skipChildVoxels ()
     {
-      if (!this->currentNode_)
-        return;
 
-      // make sure, we are not at the root node
-      if (stack_.size () > 0)
+      if (stack_.size ())
       {
-        // pop stack
-        std::pair<OctreeNode*, unsigned char>& stackEntry =
-            stack_.back ();
-        stack_.pop_back ();
+        // current depth
+        unsigned char current_depth = stack_.back ().depth_;
 
-        // assign parent node and child index
-        this->currentNode_ = stackEntry.first;
-        currentChildIdx_ = stackEntry.second;
+        // pop from stack as long as we find stack elements with depth >= current depth
+        while (stack_.size () && (stack_.back ().depth_ >= current_depth))
+          stack_.pop_back ();
 
-        // update octree key
-        this->currentOctreeKey_.x = (this->currentOctreeKey_.x >> 1);
-        this->currentOctreeKey_.y = (this->currentOctreeKey_.y >> 1);
-        this->currentOctreeKey_.z = (this->currentOctreeKey_.z >> 1);
-
-        // update octree depth
-        this->currentOctreeDepth_--;
+        if (stack_.size ())
+        {
+          this->currentState_ = &stack_.back();
+        } else
+        {
+          this->currentState_ = 0;
+        }
       }
-      else
-        // we are at root node level - finish
-        this->currentNode_ = NULL;
+
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
@@ -114,108 +129,53 @@ namespace pcl
     OctreeDepthFirstIterator<DataT, OctreeT>&
     OctreeDepthFirstIterator<DataT, OctreeT>::operator++ ()
     {
-      if (this->currentNode_)
+
+      if (stack_.size ())
       {
+        // get stack element
+        IteratorState stackEntry = stack_.back ();
+        stack_.pop_back ();
 
-        bool bTreeUp = false;
-        OctreeNode* itNode = 0;
+        stackEntry.depth_ ++;
+        OctreeKey& currentKey = stackEntry.key_;
 
-        if (this->currentNode_->getNodeType () == BRANCH_NODE)
+        if ( (this->maxOctreeDepth_>=stackEntry.depth_) &&
+             (stackEntry.node_->getNodeType () == BRANCH_NODE) )
         {
+          char childIdx;
+
           // current node is a branch node
           BranchNode* currentBranch =
-              static_cast<BranchNode*> (this->currentNode_);
+              static_cast<BranchNode*> (stackEntry.node_);
 
-          if (currentChildIdx_ < 8)
+          // add all children to stack
+          for (childIdx = 7; childIdx >=0 ; --childIdx)
           {
-            itNode = this->octree_.getBranchChildPtr (*currentBranch,
-                currentChildIdx_);
 
-            while ( (currentChildIdx_ < 7) && ! (itNode))
+            unsigned char idx = static_cast<unsigned char> (childIdx);
+
+            // if child exist
+
+            if (this->octree_->branchHasChild(*currentBranch, idx))
             {
+              // add child to stack
+              currentKey.pushBranch (idx);
 
-              // find next existing child node
-              currentChildIdx_++;
-              itNode = this->octree_.getBranchChildPtr (*currentBranch,
-                  currentChildIdx_);
-            }
+              stackEntry.node_ = this->octree_->getBranchChildPtr(*currentBranch, idx);
 
-            if (!itNode)
-            {
-              // all childs traversed -> back to parent node
-              bTreeUp = true;
+              stack_.push_back(stackEntry);
+
+              currentKey.popBranch();
             }
           }
-          else
-          {
-            bTreeUp = true;
-          }
-
-        }
-        else
-        {
-          // at leaf node level, we need to return to parent node
-          bTreeUp = true;
         }
 
-        if (bTreeUp)
+        if (stack_.size ())
         {
-          // return to parent node
-
-          if (stack_.size () > 0)
-          {
-            // pop the stack
-            std::pair<OctreeNode*, unsigned char>& stackEntry = stack_.back ();
-            stack_.pop_back ();
-
-            // assign parent node and child index
-            this->currentNode_ = stackEntry.first;
-            currentChildIdx_ = stackEntry.second;
-
-            // update octree key
-            this->currentOctreeKey_.x = (this->currentOctreeKey_.x >> 1);
-            this->currentOctreeKey_.y = (this->currentOctreeKey_.y >> 1);
-            this->currentOctreeKey_.z = (this->currentOctreeKey_.z >> 1);
-
-            // update octree depth
-            this->currentOctreeDepth_--;
-          }
-          else
-          {
-            // root level -> finish
-            this->currentNode_ = NULL;
-          }
-
-        }
-        else
+          this->currentState_ = &stack_.back();
+        } else
         {
-          // traverse child node
-
-          // new stack entry
-          std::pair<OctreeNode*, unsigned char> newStackEntry;
-
-          // assign current node and child index to stack entry
-          newStackEntry.first = this->currentNode_;
-          newStackEntry.second = static_cast<unsigned char> (currentChildIdx_
-              + 1);
-
-          // push stack entry to stack
-          stack_.push_back (newStackEntry);
-
-          // update octree key
-          this->currentOctreeKey_.x = (this->currentOctreeKey_.x << 1)
-              | (!! (currentChildIdx_ & (1 << 2)));
-          this->currentOctreeKey_.y = (this->currentOctreeKey_.y << 1)
-              | (!! (currentChildIdx_ & (1 << 1)));
-          this->currentOctreeKey_.z = (this->currentOctreeKey_.z << 1)
-              | (!! (currentChildIdx_ & (1 << 0)));
-
-          // update octree depth
-          this->currentOctreeDepth_++;
-
-          // traverse to child node
-          currentChildIdx_ = 0;
-          this->currentNode_ = itNode;
+          this->currentState_ = 0;
         }
       }
 
@@ -224,14 +184,24 @@ namespace pcl
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename DataT, typename OctreeT>
-    OctreeBreadthFirstIterator<DataT, OctreeT>::OctreeBreadthFirstIterator (
-        OctreeT& octree_arg) :
-        OctreeIteratorBase<DataT, OctreeT> (octree_arg), FIFO_ ()
+    OctreeBreadthFirstIterator<DataT, OctreeT>::OctreeBreadthFirstIterator (unsigned int maxDepth_arg) :
+        OctreeIteratorBase<DataT, OctreeT> (maxDepth_arg), FIFO_ ()
     {
       OctreeIteratorBase<DataT, OctreeT>::reset ();
 
       // initialize iterator
-      reset ();
+      this->reset ();
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename DataT, typename OctreeT>
+    OctreeBreadthFirstIterator<DataT, OctreeT>::OctreeBreadthFirstIterator (OctreeT* octree_arg, unsigned int maxDepth_arg) :
+        OctreeIteratorBase<DataT, OctreeT> (octree_arg, maxDepth_arg), FIFO_ ()
+    {
+      OctreeIteratorBase<DataT, OctreeT>::reset ();
+
+      // initialize iterator
+      this->reset ();
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
@@ -242,53 +212,25 @@ namespace pcl
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename DataT, typename OctreeT>
-    void OctreeBreadthFirstIterator<DataT, OctreeT>::addChildNodesToFIFO (
-        const OctreeNode* node)
-    {
-      unsigned char i;
-
-      if (node && (node->getNodeType () == BRANCH_NODE))
-      {
-
-        for (i = 0; i < 8; i++)
-        {
-          // current node is a branch node
-          BranchNode* currentBranch =
-              static_cast<BranchNode*> (this->currentNode_);
-
-          OctreeNode* itNode =
-              static_cast<OctreeNode*> (this->octree_.getBranchChildPtr (
-                  *currentBranch, i));
-
-          // if node exist, push it to FIFO
-          if (itNode)
-          {
-            OctreeKey newKey;
-
-            // generate octree key
-            newKey.x = (this->currentOctreeKey_.x << 1) | (!! (i & (1 << 2)));
-            newKey.y = (this->currentOctreeKey_.y << 1) | (!! (i & (1 << 1)));
-            newKey.z = (this->currentOctreeKey_.z << 1) | (!! (i & (1 << 0)));
-
-            FIFOElement newListElement;
-            newListElement.node = itNode;
-            newListElement.key = newKey;
-            newListElement.depth = this->currentOctreeDepth_ + 1;
-
-            FIFO_.push_back (newListElement);
-          }
-        }
-      }
-    }
-
-    //////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename DataT, typename OctreeT>
     void OctreeBreadthFirstIterator<DataT, OctreeT>::reset ()
     {
       OctreeIteratorBase<DataT, OctreeT>::reset ();
 
       // init FIFO
       FIFO_.clear ();
+
+      if (this->octree_)
+      {
+        // pushing root node to stack
+        IteratorState FIFOEntry;
+        FIFOEntry.node_ = this->octree_->getRootNode ();
+        FIFOEntry.depth_ = 0;
+        FIFOEntry.key_.x = FIFOEntry.key_.y = FIFOEntry.key_.z = 0;
+
+        FIFO_.push_back(FIFOEntry);
+
+        this->currentState_ = &FIFO_.front();
+      }
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
@@ -296,30 +238,54 @@ namespace pcl
     OctreeBreadthFirstIterator<DataT, OctreeT>&
     OctreeBreadthFirstIterator<DataT, OctreeT>::operator++ ()
     {
-      if (this->currentNode_)
+
+      if (FIFO_.size ())
       {
+        // get stack element
+        IteratorState FIFOEntry = FIFO_.front ();
+        FIFO_.pop_front ();
 
-        // add childs of current node to FIFO
-        addChildNodesToFIFO (this->currentNode_);
+        FIFOEntry.depth_ ++;
+        OctreeKey& currentKey = FIFOEntry.key_;
 
-        if (FIFO_.size () > 0)
+        if ( (this->maxOctreeDepth_>=FIFOEntry.depth_) &&
+             (FIFOEntry.node_->getNodeType () == BRANCH_NODE) )
         {
-          FIFOElement FIFOElement;
+          char childIdx;
 
-          // get FIFO front element
-          FIFOElement = FIFO_.front ();
-          FIFO_.pop_front ();
+          // current node is a branch node
+          BranchNode* currentBranch =
+              static_cast<BranchNode*> (FIFOEntry.node_);
 
-          // update iterator variables
-          this->currentNode_ = FIFOElement.node;
-          this->currentOctreeKey_ = FIFOElement.key;
-          this->currentOctreeDepth_ = FIFOElement.depth;
+          // iterate over all children
+          for (childIdx = 7; childIdx >=0 ; --childIdx)
+          {
+
+            unsigned char idx = static_cast<unsigned char> (childIdx);
+
+            // if child exist
+            if (this->octree_->branchHasChild(*currentBranch, idx))
+            {
+              // add child to stack
+              currentKey.pushBranch (static_cast<unsigned char> (idx));
+
+              FIFOEntry.node_ = this->octree_->getBranchChildPtr(*currentBranch, idx);
+
+              FIFO_.push_back(FIFOEntry);
+
+              currentKey.popBranch();
+            }
+          }
         }
-        else
+
+        if (FIFO_.size ())
         {
-          // last node reached
-          this->currentNode_ = NULL;
+          this->currentState_ = &FIFO_.front();
+        } else
+        {
+          this->currentState_ = 0;
         }
+
       }
 
       return (*this);

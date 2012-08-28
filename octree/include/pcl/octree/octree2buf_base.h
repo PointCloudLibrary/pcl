@@ -64,7 +64,7 @@ namespace pcl
 
       public:
         /** \brief Empty constructor. */
-        BufferedBranchNode () : OctreeNode(), ContainerT(),  preBuf(0xFFFFFF), postBuf(0xFFFFFF)
+        BufferedBranchNode () : OctreeNode(), ContainerT()
         {
           reset ();
         }
@@ -154,10 +154,7 @@ namespace pcl
         }
 
       protected:
-        int preBuf;
         OctreeNode* childNodeArray_[2][8];
-        int postBuf;
-
     };
 
     /** \brief @b Octree double buffer class
@@ -191,17 +188,29 @@ namespace pcl
         typedef BufferedBranchNode<BranchT> BranchNode;
         typedef OctreeLeafNode<LeafT> LeafNode;
 
-        // Octree iterators
-        typedef OctreeDepthFirstIterator<DataT, OctreeT> Iterator;
-         typedef const OctreeDepthFirstIterator<DataT, OctreeT> ConstIterator;
+        // Octree default iterators
+        typedef OctreeDepthFirstIterator<int, OctreeT> Iterator;
+        typedef const OctreeDepthFirstIterator<int, OctreeT> ConstIterator;
+        Iterator begin(unsigned int maxDepth_arg = 0) {return Iterator(this, maxDepth_arg);};
+        const Iterator end() {return Iterator();};
 
-         typedef OctreeLeafNodeIterator<DataT, OctreeT> LeafNodeIterator;
-         typedef const OctreeLeafNodeIterator<DataT, OctreeT> ConstLeafNodeIterator;
+        // Octree leaf node iterators
+        typedef OctreeLeafNodeIterator<int, OctreeT> LeafNodeIterator;
+        typedef const OctreeLeafNodeIterator<int, OctreeT> ConstLeafNodeIterator;
+        LeafNodeIterator leaf_begin(unsigned int maxDepth_arg = 0) {return LeafNodeIterator(this, maxDepth_arg);};
+        const LeafNodeIterator leaf_end() {return LeafNodeIterator();};
 
-         typedef OctreeDepthFirstIterator<DataT, OctreeT> DepthFirstIterator;
-         typedef const OctreeDepthFirstIterator<DataT, OctreeT> ConstDepthFirstIterator;
-         typedef OctreeBreadthFirstIterator<DataT, OctreeT> BreadthFirstIterator;
-         typedef const OctreeBreadthFirstIterator<DataT, OctreeT> ConstBreadthFirstIterator;
+        // Octree depth-first iterators
+        typedef OctreeDepthFirstIterator<int, OctreeT> DepthFirstIterator;
+        typedef const OctreeDepthFirstIterator<int, OctreeT> ConstDepthFirstIterator;
+        DepthFirstIterator depth_begin(unsigned int maxDepth_arg = 0) {return DepthFirstIterator(this, maxDepth_arg);};
+        const DepthFirstIterator depth_end() {return DepthFirstIterator();};
+
+        // Octree breadth-first iterators
+        typedef OctreeBreadthFirstIterator<int, OctreeT> BreadthFirstIterator;
+        typedef const OctreeBreadthFirstIterator<int, OctreeT> ConstBreadthFirstIterator;
+        BreadthFirstIterator breadth_begin(unsigned int maxDepth_arg = 0) {return BreadthFirstIterator(this, maxDepth_arg);};
+        const BreadthFirstIterator breadth_end() {return BreadthFirstIterator();};
 
         /** \brief Empty constructor. */
         Octree2BufBase ();

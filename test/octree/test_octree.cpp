@@ -213,13 +213,15 @@ TEST (PCL, Octree_Test)
 
   //  test iterator
 
-  OctreeBase<int>::Iterator a_it (octreeA);
+  OctreeBase<int>::Iterator a_it;
+  OctreeBase<int>::Iterator a_it_end = octreeA.end();
+
   unsigned int node_count = 0;
   unsigned int branch_count = 0;
   unsigned int leaf_count = 0;
 
   // iterate over tree
-  while (*++a_it)
+  for (a_it=octreeA.begin(); a_it!=a_it_end; ++a_it)
   {
     // depth should always be less than tree depth
     unsigned int depth = a_it.getCurrentOctreeDepth ();
@@ -289,14 +291,14 @@ TEST (PCL, Octree_Dynamic_Depth_Test)
     octree.addPointsFromInputCloud ();
 
     //  test iterator
-    OctreePointCloudPointVector<PointXYZ>::LeafNodeIterator it (octree);
+    OctreePointCloudPointVector<PointXYZ>::LeafNodeIterator it;
+    const OctreePointCloudPointVector<PointXYZ>::LeafNodeIterator it_end = octree.leaf_end();
     unsigned int leaf_count = 0;
-
 
     std::vector<int> indexVector;
 
     // iterate over tree
-    while (*++it)
+    for (it = octree.leaf_begin(); it != it_end; ++it)
     {
       OctreeNode* node = it.getCurrentOctreeNode ();
 
@@ -738,7 +740,11 @@ TEST (PCL, Octree_Pointcloud_Test)
     octreeB.addPointsFromInputCloud ();
 
     //  test iterator
-    OctreePointCloudSearch<PointXYZ>::Iterator b_it (octreeB);
+    OctreePointCloudPointVector<PointXYZ>::Iterator b_it;
+    OctreePointCloudPointVector<PointXYZ>::Iterator b_it_end = octreeB.end();
+
+    // iterate over tree
+
     unsigned int node_count = 0;
     unsigned int branch_count = 0;
     unsigned int leaf_count = 0;
@@ -747,7 +753,7 @@ TEST (PCL, Octree_Pointcloud_Test)
     octreeB.getBoundingBox (minx, miny, minz, maxx, maxy, maxz);
 
     // iterate over tree
-    while (*++b_it)
+    for (b_it = octreeB.begin(); b_it != b_it_end; ++b_it)
     {
       // depth should always be less than tree depth
       unsigned int depth = b_it.getCurrentOctreeDepth ();
@@ -909,22 +915,13 @@ TEST (PCL, Octree_Pointcloud_Iterator_Test)
   octreeA.addPointsFromInputCloud ();
 
   // instantiate iterator for octreeA
-  OctreePointCloud<PointXYZ>::LeafNodeIterator it1 (octreeA);
+  OctreePointCloud<PointXYZ>::LeafNodeIterator it1;
+  OctreePointCloud<PointXYZ>::LeafNodeIterator it1_end = octreeA.leaf_end();
 
   std::vector<int> indexVector;
   unsigned int leafNodeCounter = 0;
 
-  // test preincrement
-  ++it1;
-  it1.getData (indexVector);
-  leafNodeCounter++;
-
-  // test postincrement
-  it1++;
-  it1.getData (indexVector);
-  leafNodeCounter++;
-
-  while (*++it1)
+  for (it1 = octreeA.leaf_begin(); it1 != it1_end; ++it1)
   {
     it1.getData (indexVector);
     leafNodeCounter++;
@@ -933,27 +930,29 @@ TEST (PCL, Octree_Pointcloud_Iterator_Test)
   ASSERT_EQ(indexVector.size(), cloudIn->points.size ());
   ASSERT_EQ(leafNodeCounter, octreeA.getLeafCount());
 
-  OctreePointCloud<PointXYZ>::Iterator it2 (octreeA);
+  OctreePointCloud<PointXYZ>::Iterator it2;
+  OctreePointCloud<PointXYZ>::Iterator it2_end = octreeA.end();
 
   unsigned int traversCounter = 0;
-  while (*++it2)
+  for (it2 = octreeA.begin(); it2 != it2_end; ++it2)
   {
     traversCounter++;
   }
 
-  ASSERT_EQ(traversCounter > octreeA.getLeafCount() + octreeA.getBranchCount(), true);
+  ASSERT_EQ(octreeA.getLeafCount() + octreeA.getBranchCount(), traversCounter);
 
   // breadth-first iterator test
 
-  OctreePointCloud<PointXYZ>::BreadthFirstIterator bfIt (octreeA);
-
   unsigned int lastDepth = 0;
-  unsigned int branchNodeCount = 1;
+  unsigned int branchNodeCount = 0;
   unsigned int leafNodeCount = 0;
 
   bool leafNodeVisited = false;
 
-  while (*++bfIt)
+  OctreePointCloud<PointXYZ>::BreadthFirstIterator bfIt;
+  const OctreePointCloud<PointXYZ>::BreadthFirstIterator bfIt_end = octreeA.breadth_end();
+
+  for (bfIt = octreeA.breadth_begin(); bfIt != bfIt_end; ++bfIt)
   {
     // tree depth of visited nodes must grow
     ASSERT_EQ( bfIt.getCurrentOctreeDepth()>=lastDepth, true);
