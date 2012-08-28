@@ -1118,6 +1118,36 @@ openni_wrapper::OpenNIDevice::setDepthOutputMode (const XnMapOutputMode& output_
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void 
+openni_wrapper::OpenNIDevice::setDepthOutputFormat (const DepthMode& depth_mode)
+{
+  if (hasDepthStream ())
+  {
+    boost::lock_guard<boost::mutex> depth_lock (depth_mutex_);
+    XnStatus status = depth_generator_.SetIntProperty ("OutputFormat", depth_mode);
+    if (status != 0)
+      THROW_OPENNI_EXCEPTION ("Error setting the depth output format. Reason: %s", xnGetStatusString (status));
+  }
+  else
+    THROW_OPENNI_EXCEPTION ("Device does not provide a depth stream");
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+XnUInt64 
+openni_wrapper::OpenNIDevice::getDepthOutputFormat () const
+{
+  if (!hasDepthStream () )
+    THROW_OPENNI_EXCEPTION ("Device does not provide a depth stream");
+
+  boost::lock_guard<boost::mutex> depth_lock (depth_mutex_);
+  XnUInt64 mode;
+  XnStatus status = depth_generator_.GetIntProperty ("OutputFormat", mode);
+  if (status != XN_STATUS_OK)
+    THROW_OPENNI_EXCEPTION ("Could not get depth output format. Reason: %s", xnGetStatusString (status));
+  return (mode);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void 
 openni_wrapper::OpenNIDevice::setIROutputMode (const XnMapOutputMode& output_mode)
 {
   if (hasIRStream ())
