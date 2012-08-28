@@ -34,6 +34,7 @@ if(build)
         src/parse.cpp
         src/poses_from_matches.cpp
         src/print.cpp
+        src/projection_matrix.cpp
         src/time_trigger.cpp
         src/gaussian.cpp
         ${range_image_srcs}

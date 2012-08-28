@@ -124,9 +124,9 @@ pcl::SHOTLocalReferenceFrameEstimationOMP<PointInT, PointOutT>::computeFeatureEi
       output.is_dense = false;
     }
 
-    output.points.block<1, 3> (i, 0) = rf.row (0);
-    output.points.block<1, 3> (i, 3) = rf.row (1);
-    output.points.block<1, 3> (i, 6) = rf.row (2);
+    output.points.block<1, 3> (i, 0).matrix () = rf.row (0);
+    output.points.block<1, 3> (i, 3).matrix () = rf.row (1);
+    output.points.block<1, 3> (i, 6).matrix () = rf.row (2);
   }
 
 }

@@ -67,7 +67,7 @@ pcl::SHOTLocalReferenceFrameEstimation<PointInT, PointOutT>::getLocalRF (const i
 		  continue;
 
     // Difference between current point and origin
-    vij.row (valid_nn_points) = (pt - central_point).cast<double> ();
+    vij.row (valid_nn_points).matrix () = (pt - central_point).cast<double> ();
     vij (valid_nn_points, 3) = 0;
 
     distance = search_parameter_ - sqrt (n_sqr_distances[i_idx]);
@@ -106,8 +106,8 @@ pcl::SHOTLocalReferenceFrameEstimation<PointInT, PointOutT>::getLocalRF (const i
   // Disambiguation
   Eigen::Vector4d v1 = Eigen::Vector4d::Zero ();
   Eigen::Vector4d v3 = Eigen::Vector4d::Zero ();
-  v1.head<3> () = solver.eigenvectors ().col (2);
-  v3.head<3> () = solver.eigenvectors ().col (0);
+  v1.head<3> ().matrix () = solver.eigenvectors ().col (2);
+  v3.head<3> ().matrix () = solver.eigenvectors ().col (0);
 
   int plusNormal = 0, plusTangentDirection1=0;
   for (int ne = 0; ne < valid_nn_points; ne++)
@@ -153,9 +153,9 @@ pcl::SHOTLocalReferenceFrameEstimation<PointInT, PointOutT>::getLocalRF (const i
 	} else if (plusNormal < 0)
     v3 *= - 1;
 
-  rf.row (0) = v1.head<3> ().cast<float> ();
-  rf.row (2) = v3.head<3> ().cast<float> ();
-  rf.row (1) = rf.row (2).cross (rf.row (0));
+  rf.row (0).matrix () = v1.head<3> ().cast<float> ();
+  rf.row (2).matrix () = v3.head<3> ().cast<float> ();
+  rf.row (1).matrix () = rf.row (2).cross (rf.row (0));
 
   return (0.0f);
 }
@@ -227,9 +227,9 @@ pcl::SHOTLocalReferenceFrameEstimation<PointInT, PointOutT>::computeFeatureEigen
       output.is_dense = false;
     }
 
-    output.points.block<1, 3> (i, 0) = rf.row (0);
-    output.points.block<1, 3> (i, 3) = rf.row (1);
-    output.points.block<1, 3> (i, 6) = rf.row (2);
+    output.points.block<1, 3> (i, 0).matrix () = rf.row (0);
+    output.points.block<1, 3> (i, 3).matrix () = rf.row (1);
+    output.points.block<1, 3> (i, 6).matrix () = rf.row (2);
   }
 
 }

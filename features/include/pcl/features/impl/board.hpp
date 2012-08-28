@@ -233,7 +233,7 @@ pcl::BOARDLocalReferenceFrameEstimation<PointInT, PointNT, PointOutT>::computePo
   normalDisambiguation (*normals_, neighbours_indices, fitted_normal);
 
   //setting LRF Z axis
-  lrf.row (2) = fitted_normal;
+  lrf.row (2).matrix () = fitted_normal;
 
   /////////////////////////////////////////////////////////////////////////////////////////
   //find X axis
@@ -263,7 +263,7 @@ pcl::BOARDLocalReferenceFrameEstimation<PointInT, PointNT, PointOutT>::computePo
   {
     randomOrthogonalAxis (fitted_normal, x_axis);
 
-    lrf.row (0) = x_axis;
+    lrf.row (0).matrix () = x_axis;
 
     for (int i = 0; i < check_margin_array_size_; i++)
     {
@@ -350,8 +350,8 @@ pcl::BOARDLocalReferenceFrameEstimation<PointInT, PointNT, PointOutT>::computePo
                             surface_->at (min_normal_index).getVector3fMap (), x_axis);
     y_axis = fitted_normal.cross (x_axis);
 
-    lrf.row (0) = x_axis;
-    lrf.row (1) = y_axis;
+    lrf.row (0).matrix () = x_axis;
+    lrf.row (1).matrix () = y_axis;
     //z axis already set
 
 
@@ -366,8 +366,8 @@ pcl::BOARDLocalReferenceFrameEstimation<PointInT, PointNT, PointOutT>::computePo
       directedOrthogonalAxis (fitted_normal, input_->at (index).getVector3fMap (), best_margin_point, x_axis);
       y_axis = fitted_normal.cross (x_axis);
 
-      lrf.row (0) = x_axis;
-      lrf.row (1) = y_axis;
+      lrf.row (0).matrix () = x_axis;
+      lrf.row (1).matrix () = y_axis;
       //z axis already set
 
       return (min_normal_cos);
@@ -377,8 +377,8 @@ pcl::BOARDLocalReferenceFrameEstimation<PointInT, PointNT, PointOutT>::computePo
                             surface_->at (min_normal_index).getVector3fMap (), x_axis);
     y_axis = fitted_normal.cross (x_axis);
 
-    lrf.row (0) = x_axis;
-    lrf.row (1) = y_axis;
+    lrf.row (0).matrix () = x_axis;
+    lrf.row (1).matrix () = y_axis;
     //z axis already set
 
     return (min_normal_cos);
@@ -403,8 +403,8 @@ pcl::BOARDLocalReferenceFrameEstimation<PointInT, PointNT, PointOutT>::computePo
       directedOrthogonalAxis (fitted_normal, input_->at (index).getVector3fMap (), best_margin_point, x_axis);
       y_axis = fitted_normal.cross (x_axis);
 
-      lrf.row (0) = x_axis;
-      lrf.row (1) = y_axis;
+      lrf.row (0).matrix () = x_axis;
+      lrf.row (1).matrix () = y_axis;
       //z axis already set
 
       return (min_normal_cos);
@@ -415,8 +415,8 @@ pcl::BOARDLocalReferenceFrameEstimation<PointInT, PointNT, PointOutT>::computePo
                             surface_->at (min_normal_index).getVector3fMap (), x_axis);
     y_axis = fitted_normal.cross (x_axis);
 
-    lrf.row (0) = x_axis;
-    lrf.row (1) = y_axis;
+    lrf.row (0).matrix () = x_axis;
+    lrf.row (1).matrix () = y_axis;
     //z axis already set
 
     return (min_normal_cos);
@@ -556,8 +556,8 @@ pcl::BOARDLocalReferenceFrameEstimation<PointInT, PointNT, PointOutT>::computePo
 
   y_axis = fitted_normal.cross (x_axis);
 
-  lrf.row (0) = x_axis;
-  lrf.row (1) = y_axis;
+  lrf.row (0).matrix () = x_axis;
+  lrf.row (1).matrix () = y_axis;
   //z axis already set
 
   return (min_normal_cos);
@@ -631,9 +631,9 @@ pcl::BOARDLocalReferenceFrameEstimation<PointInT, PointNT, Eigen::MatrixXf>::com
       output.is_dense = false;
     }
 
-    output.points.block<1, 3> (point_idx, 0) = currentLrf.row (0);
-    output.points.block<1, 3> (point_idx, 3) = currentLrf.row (1);
-    output.points.block<1, 3> (point_idx, 6) = currentLrf.row (2);
+    output.points.block<1, 3> (point_idx, 0).matrix () = currentLrf.row (0);
+    output.points.block<1, 3> (point_idx, 3).matrix () = currentLrf.row (1);
+    output.points.block<1, 3> (point_idx, 6).matrix () = currentLrf.row (2);
   }
 }
 

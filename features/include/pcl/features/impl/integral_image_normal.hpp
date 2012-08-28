@@ -225,7 +225,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormal (
     EIGEN_ALIGN16 Eigen::Matrix3f covariance_matrix;
     Eigen::Vector3f center;
     typename IntegralImage2D<float, 3>::SecondOrderType so_elements;
-    center = integral_image_XYZ_.getFirstOrderSum(pos_x - rect_width_2_, pos_y - rect_height_2_, rect_width_, rect_height_).cast<float> ();
+    center = integral_image_XYZ_.getFirstOrderSum(pos_x - rect_width_2_, pos_y - rect_height_2_, rect_width_, rect_height_).template cast<float> ();
     so_elements = integral_image_XYZ_.getSecondOrderSum(pos_x - rect_width_2_, pos_y - rect_height_2_, rect_width_, rect_height_);
 
     covariance_matrix.coeffRef (0) = static_cast<float> (so_elements [0]);

@@ -148,7 +148,7 @@ pcl::NormalBasedSignatureEstimation<PointT, PointNT, PointFeature>::computeFeatu
         dct_row[m] = Xk;
       }
       s_row = dct_row;
-      s_matrix.row (k) = dct_row;
+      s_matrix.row (k).matrix () = dct_row;
     }
 
     // do DFT on the s_matrix column-wise
@@ -166,7 +166,7 @@ pcl::NormalBasedSignatureEstimation<PointT, PointNT, PointFeature>::computeFeatu
         }
         dft_col[k] = sqrt (Xk_real*Xk_real + Xk_imag*Xk_imag);
       }
-      dft_matrix.col (column_i) = dft_col;
+      dft_matrix.col (column_i).matrix () = dft_col;
     }
 
     Eigen::MatrixXf final_matrix = dft_matrix.block (0, 0, N_prime_, M_prime_);

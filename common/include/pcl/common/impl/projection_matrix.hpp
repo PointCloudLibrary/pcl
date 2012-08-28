@@ -1,8 +1,46 @@
+/*
+ * Software License Agreement (BSD License)
+ *
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2012-, Open Perception, Inc.
+ *
+ *  All rights reserved.
+ *
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions
+ *  are met:
+ *
+ *   * Redistributions of source code must retain the above copyright
+ *     notice, this list of conditions and the following disclaimer.
+ *   * Redistributions in binary form must reproduce the above
+ *     copyright notice, this list of conditions and the following
+ *     disclaimer in the documentation and/or other materials provided
+ *     with the distribution.
+ *   * Neither the name of the copyright holder(s) nor the names of its
+ *     contributors may be used to endorse or promote products derived
+ *     from this software without specific prior written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ *  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ *  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ *  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ *  POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
+
 #ifndef __PCL_ORGANIZED_PROJECTION_MATRIX_HPP__
 #define __PCL_ORGANIZED_PROJECTION_MATRIX_HPP__
 
 #include <pcl/cloud_iterator.h>
-//////////////////////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////////////////////
 namespace pcl
 {
   namespace common
@@ -35,8 +73,12 @@ namespace pcl
   }
 }
 
+//////////////////////////////////////////////////////////////////////////////
 template <typename PointT> double 
-pcl::estimateProjectionMatrix(typename pcl::PointCloud<PointT>::ConstPtr cloud, Eigen::Matrix<float, 3, 4, Eigen::RowMajor>& projection_matrix, const std::vector<int>& indices)
+pcl::estimateProjectionMatrix (
+    typename pcl::PointCloud<PointT>::ConstPtr cloud, 
+    Eigen::Matrix<float, 3, 4, Eigen::RowMajor>& projection_matrix, 
+    const std::vector<int>& indices)
 {
   // internally we calculate with double but store the result into float matrices.
   typedef double Scalar;
@@ -44,7 +86,7 @@ pcl::estimateProjectionMatrix(typename pcl::PointCloud<PointT>::ConstPtr cloud, 
   if (cloud->height == 1 || cloud->width == 1)
   {
     PCL_ERROR ("[pcl::estimateProjectionMatrix] Input dataset is not organized!\n");
-    return -1.0;
+    return (-1.0);
   }
   
   Eigen::Matrix<Scalar, 4, 4, Eigen::RowMajor> A = Eigen::Matrix<Scalar, 4, 4, Eigen::RowMajor>::Zero ();
@@ -129,22 +171,22 @@ pcl::estimateProjectionMatrix(typename pcl::PointCloud<PointT>::ConstPtr cloud, 
     ++pointIt;
   } // while  
   
-  pcl::common::internal::makeSymmetric(A);
-  pcl::common::internal::makeSymmetric(B);
-  pcl::common::internal::makeSymmetric(C);
-  pcl::common::internal::makeSymmetric(D);
+  pcl::common::internal::makeSymmetric (A);
+  pcl::common::internal::makeSymmetric (B);
+  pcl::common::internal::makeSymmetric (C);
+  pcl::common::internal::makeSymmetric (D);
 
   Eigen::Matrix<Scalar, 12, 12, Eigen::RowMajor> X = Eigen::Matrix<Scalar, 12, 12, Eigen::RowMajor>::Zero ();
-  X.topLeftCorner<4,4> () = A;
-  X.block<4,4> (0, 8) = B;
-  X.block<4,4> (8, 0) = B;
-  X.block<4,4> (4, 4) = A;
-  X.block<4,4> (4, 8) = C;
-  X.block<4,4> (8, 4) = C;
-  X.block<4,4> (8, 8) = D;
+  X.topLeftCorner<4,4> ().matrix () = A;
+  X.block<4,4> (0, 8).matrix () = B;
+  X.block<4,4> (8, 0).matrix () = B;
+  X.block<4,4> (4, 4).matrix () = A;
+  X.block<4,4> (4, 8).matrix () = C;
+  X.block<4,4> (8, 4).matrix () = C;
+  X.block<4,4> (8, 8).matrix () = D;
 
-  Eigen::SelfAdjointEigenSolver<Eigen::Matrix<Scalar, 12, 12, Eigen::RowMajor> > ei_symm(X);
-  Eigen::Matrix<Scalar, 12, 12, Eigen::RowMajor> eigen_vectors = ei_symm.eigenvectors();
+  Eigen::SelfAdjointEigenSolver<Eigen::Matrix<Scalar, 12, 12, Eigen::RowMajor> > ei_symm (X);
+  Eigen::Matrix<Scalar, 12, 12, Eigen::RowMajor> eigen_vectors = ei_symm.eigenvectors ();
 
   // check whether the residual MSE is low. If its high, the cloud was not captured from a projective device.
   Eigen::Matrix<Scalar, 1, 1> residual_sqr = eigen_vectors.col (0).transpose () * X *  eigen_vectors.col (0);
@@ -167,35 +209,7 @@ pcl::estimateProjectionMatrix(typename pcl::PointCloud<PointT>::ConstPtr cloud, 
   if (projection_matrix.coeff (0) < 0)
     projection_matrix *= -1.0;
 
-  return residual;
+  return (residual);
 }
 
-void pcl::getCameraMatrixFromProjectionMatrix (const Eigen::Matrix<float, 3, 4, Eigen::RowMajor>& projection_matrix, Eigen::Matrix3f& camera_matrix)
-{
-  Eigen::Matrix3f KR = projection_matrix.topLeftCorner <3, 3> ();
-
-  Eigen::Matrix3f KR_KRT = KR * KR.transpose ();
-  
-  Eigen::Matrix3f cam = KR_KRT / KR_KRT.coeff (8);
-
-  memset (&(camera_matrix.coeffRef (0)), 0, sizeof (Eigen::Matrix3f::Scalar) * 9);
-  camera_matrix.coeffRef (8) = 1.0;
-  
-  if (camera_matrix.Flags & Eigen::RowMajorBit)
-  {
-    camera_matrix.coeffRef (2) = cam.coeff (2);
-    camera_matrix.coeffRef (5) = cam.coeff (5);
-    camera_matrix.coeffRef (4) = sqrt (cam.coeff (4) - cam.coeff (5) * cam.coeff (5));
-    camera_matrix.coeffRef (1) = (cam.coeff (1) - cam.coeff (2) * cam.coeff (5)) / camera_matrix.coeff (4);
-    camera_matrix.coeffRef (0) = sqrt (cam.coeff (0) - camera_matrix.coeff (1) * camera_matrix.coeff (1) - cam.coeff (2) * cam.coeff (2));
-  }
-  else
-  {
-    camera_matrix.coeffRef (6) = cam.coeff (2);
-    camera_matrix.coeffRef (7) = cam.coeff (5);
-    camera_matrix.coeffRef (4) = sqrt (cam.coeff (4) - cam.coeff (5) * cam.coeff (5));
-    camera_matrix.coeffRef (3) = (cam.coeff (1) - cam.coeff (2) * cam.coeff (5)) / camera_matrix.coeff (4);
-    camera_matrix.coeffRef (0) = sqrt (cam.coeff (0) - camera_matrix.coeff (3) * camera_matrix.coeff (3) - cam.coeff (2) * cam.coeff (2));
-  }
-}
 #endif

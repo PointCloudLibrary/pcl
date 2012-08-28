@@ -183,7 +183,7 @@ pcl::ShapeContext3DEstimation<PointInT, PointNT, PointOutT>::computePoint (
   assert (pcl::utils::equal (x_axis[0]*normal[0] + x_axis[1]*normal[1] + x_axis[2]*normal[2], 0.0f, 1E-6f));
 
   // Store the 3rd frame vector
-  y_axis = normal.cross (x_axis);
+  y_axis.matrix () = normal.cross (x_axis);
 
   // For each point within radius
   for (size_t ne = 0; ne < neighb_cnt; ne++)
