@@ -45,7 +45,7 @@ namespace pcl
         bool
         operator== (const Model &other) const
         {
-          return (this.id_ == other.id_) && (this.class_ == other.class_);
+          return (id_ == other.id_) && (class_ == other.class_);
         }
 
       PointTPtrConst

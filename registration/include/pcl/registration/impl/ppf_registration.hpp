@@ -130,9 +130,11 @@ pcl::PPFRegistration<PointSource, PointTarget>::computeTransformation (PointClou
   PoseWithVotesList voted_poses;
   std::vector <std::vector <unsigned int> > accumulator_array;
   accumulator_array.resize (input_->points.size ());
+
+  size_t aux_size = static_cast<size_t> (floor (2 * M_PI / search_method_->getAngleDiscretizationStep ()));
   for (size_t i = 0; i < input_->points.size (); ++i)
   {
-    std::vector <unsigned int> aux (static_cast<size_t> (floor(2*M_PI / search_method_->getAngleDiscretizationStep ()), 0));
+    std::vector<unsigned int> aux (aux_size);
     accumulator_array[i] = aux;
   }
   PCL_INFO ("Accumulator array size: %u x %u.\n", accumulator_array.size (), accumulator_array.back ().size ());
@@ -302,8 +304,8 @@ pcl::PPFRegistration<PointSource, PointTarget>::clusterPoses (typename pcl::PPFR
     rotation_average /= static_cast<float> (clusters[cluster_votes[cluster_i].first].size ());
 
     Eigen::Affine3f transform_average;
-    transform_average.translation () = translation_average;
-    transform_average.linear () = Eigen::Quaternionf (rotation_average).normalized().toRotationMatrix ();
+    transform_average.translation ().matrix () = translation_average;
+    transform_average.linear ().matrix () = Eigen::Quaternionf (rotation_average).normalized().toRotationMatrix ();
 
     result.push_back (PoseWithVotes (transform_average, cluster_votes[cluster_i].second));
   }

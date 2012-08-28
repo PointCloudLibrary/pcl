@@ -220,7 +220,8 @@ namespace pcl
 
         // TODO: compute transform from detection
         // TODO: transform template points
-        return (0);
+        std::vector<size_t> vec;
+        return (vec);
       }
 
 
@@ -238,7 +239,8 @@ namespace pcl
 
         // TODO: compute transform from detection
         // TODO: transform template points
-        return (0);
+        std::vector<size_t> vec;
+        return (vec);
       }
 
       /** \brief Refines the found detections along the depth. */

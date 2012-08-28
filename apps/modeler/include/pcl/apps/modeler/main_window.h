@@ -131,7 +131,7 @@ namespace pcl
 
         MainWindow();
         MainWindow(const MainWindow &){}            // copy ctor hidden
-        MainWindow& operator=(const MainWindow &){} // assign op. hidden
+        MainWindow& operator=(const MainWindow &) { return (*this); } // assign op. hidden
         ~MainWindow();
 
         Ui::MainWindow                    *ui_; // Designer form

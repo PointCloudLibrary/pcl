@@ -101,7 +101,7 @@ pcl::SUSAN<PointInT, PointOutT, NormalT, IntensityT>::setSearchSurface (const Po
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT, typename NormalT, typename IntensityT> void
-pcl::SUSAN<PointInT, PointOutT, NormalT, IntensityT>::setNumberOfThreads (unsigned int nr_threads = 0)
+pcl::SUSAN<PointInT, PointOutT, NormalT, IntensityT>::setNumberOfThreads (unsigned int nr_threads)
 {
   threads_ = nr_threads;
 }

@@ -245,7 +245,7 @@ pcl::approximatePolygon2D (const typename pcl::PointCloud<PointT>::VectorType &p
       if (direction [0] * normal [1] < direction [1] * normal [0])
         normal *= -1.0;
       
-      lines [rIdx].head<2> () = normal;
+      lines [rIdx].head<2> ().matrix () = normal;
       lines [rIdx] [2] = -normal.dot (centroid);
     }
     
