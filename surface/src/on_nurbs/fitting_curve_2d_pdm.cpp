@@ -53,6 +53,7 @@ FittingCurve2d::FittingCurve2d (int order, NurbsDataCurve2d *data)
 
   in_max_steps = 200;
   in_accuracy = 1e-6;
+  in_samples = 1;
   m_quiet = true;
 }
 
@@ -65,6 +66,7 @@ FittingCurve2d::FittingCurve2d (NurbsDataCurve2d *data, const ON_NurbsCurve &nc)
 
   in_max_steps = 200;
   in_accuracy = 1e-6;
+  in_samples = 1;
   m_quiet = true;
 }
 
@@ -167,15 +169,14 @@ FittingCurve2d::assemble (const Parameter &parameter)
   if (!m_quiet)
     time_start = clock ();
 
+  std::vector<double> elements = getElementVector (m_nurbs);
+  unsigned cp_res = std::max<unsigned>(1, parameter.closest_point_resolution);
+
   int cp_red = m_nurbs.m_order - 2;
   int ncp = m_nurbs.m_cv_count - 2 * cp_red;
   int nCageReg = m_nurbs.m_cv_count - 2 * cp_red;
   int nInt = m_data->interior.size ();
-  //  int nCommon = m_data->common.size();
-  //  int nClosestP = parameter.closest_point_resolution;
-
-  std::vector<double> elements = getElementVector (m_nurbs);
-  int nClosestP = elements.size ();
+  int nClosestP = elements.size () * cp_res;
 
   double wInt = 1.0;
   if (!m_data->interior_weight.empty ())
@@ -194,7 +195,8 @@ FittingCurve2d::assemble (const Parameter &parameter)
   if (wInt > 0.0)
     assembleInterior (wInt, parameter.interior_sigma2, row);
 
-  assembleClosestPoints (elements, parameter.closest_point_weight, parameter.closest_point_sigma2, row);
+  assembleClosestPoints (elements, parameter.closest_point_weight, parameter.closest_point_sigma2,
+                         cp_res, row);
 
   if (wCageReg > 0.0)
     addCageRegularisation (wCageReg, row, elements, parameter.smooth_concavity);
@@ -218,7 +220,7 @@ double
 FittingCurve2d::solve (double damp)
 {
   clock_t time_start, time_end;
-  double cps_diff(0.0);
+  double cps_diff (0.0);
   if (!m_quiet)
     time_start = clock ();
 
@@ -240,8 +242,8 @@ FittingCurve2d::updateCurve (double damp)
   int cp_red = m_nurbs.m_order - 2;
   int ncp = m_nurbs.m_cv_count - 2 * cp_red;
 
-  double cps_diff(0.0);
-  double cps_diff_max(0.0);
+  double cps_diff (0.0);
+  double cps_diff_max (0.0);
 
   for (int j = 0; j < ncp; j++)
   {
@@ -252,9 +254,9 @@ FittingCurve2d::updateCurve (double damp)
     double x = m_solver.x (j, 0);
     double y = m_solver.x (j, 1);
 
-    cps_diff = sqrt((x-cp_prev.x) * (x-cp_prev.x) + (y-cp_prev.y) * (y-cp_prev.y));
+    cps_diff = sqrt ((x - cp_prev.x) * (x - cp_prev.x) + (y - cp_prev.y) * (y - cp_prev.y));
 
-    if(cps_diff > cps_diff_max)
+    if (cps_diff > cps_diff_max)
       cps_diff_max = cps_diff;
 
     ON_3dPoint cp;
@@ -707,7 +709,7 @@ FittingCurve2d::assembleInterior (double wInt, double sigma2, unsigned &row)
     }
     else
     {
-      param = findClosestElementMidPoint (m_nurbs, pcp);
+      param = findClosestElementMidPoint (m_nurbs, pcp, in_samples);
       param = inverseMapping (m_nurbs, pcp, param, error, pt, t, in_max_steps, in_accuracy, m_quiet);
       m_data->interior_param.push_back (param);
     }
@@ -776,7 +778,8 @@ FittingCurve2d::assembleInterior (double wInt, double sigma2, unsigned &row)
 //}
 
 void
-FittingCurve2d::assembleClosestPoints (const std::vector<double> &elements, double weight, double sigma2, unsigned &row)
+FittingCurve2d::assembleClosestPoints (const std::vector<double> &elements, double weight, double sigma2,
+                                       unsigned samples_per_element, unsigned &row)
 {
   m_data->closest_points.clear ();
   m_data->closest_points_param.clear ();
@@ -784,91 +787,59 @@ FittingCurve2d::assembleClosestPoints (const std::vector<double> &elements, doub
   //  m_data->interior_line_start.clear();
   //  m_data->interior_line_end.clear();
 
+  if (samples_per_element <= 0)
+    samples_per_element = 1;
+
   double ds = 1.0 / (2.0 * sigma2);
+  double seg = 1.0 / (samples_per_element + 1);
 
   for (unsigned i = 0; i < elements.size (); i++)
   {
+    int k = i % elements.size ();
+    double xi0 = elements[i];
+    double dxi = elements[k] - xi0;
 
-    int j = i % elements.size ();
-
-    double dxi = elements[j] - elements[i];
-    double xi = elements[i] + 0.5 * dxi;
-
-    double points[4];
-    Eigen::Vector2d p1, p2, p3, t, in;
-    m_nurbs.Evaluate (xi, 1, 2, points);
-    p1 (0) = points[0];
-    p1 (1) = points[1];
-    t (0) = points[2];
-    t (1) = points[3];
-    in (0) = t (1);
-    in (1) = -t (0);
-    in.normalize ();
-
-    unsigned idxcp;
-    unsigned idx = NurbsTools::getClosestPoint (p1, in, m_data->interior, idxcp);
-    p2 = m_data->interior[idx];
-    p3 = m_data->interior[idxcp];
-
-    //    double xi2 = m_data->interior_param[idx];
-
-    double error2_2 = (p2 - p1).squaredNorm ();
-    double error2_3 = (p3 - p1).squaredNorm ();
-
-    m_data->closest_points.push_back (p3);
-    m_data->closest_points_param.push_back (xi);
-    m_data->closest_points_error.push_back (error2_3);
-
-    double w (weight);
-    w = 0.5 * weight * exp (-(error2_2) * ds);
-    //    w = weight * std::fabs(in.dot(p2-p1));
-
-    //    if (weight > 0.0 && (std::fabs(xi2 - xi) < std::fabs(dxi)))
-    if (w > 0.0)
+    for (unsigned j = 0; j < samples_per_element; j++)
     {
-      addPointConstraint (xi, p2, w, row);
-      //      m_data->interior_line_start.push_back(p1);
-      //      m_data->interior_line_end.push_back(p2);
+      double xi = xi0 + (seg * (j + 1)) * dxi;
+
+      double points[4];
+      Eigen::Vector2d p1, p2, p3, t, in;
+      m_nurbs.Evaluate (xi, 1, 2, points);
+      p1 (0) = points[0];
+      p1 (1) = points[1];
+      t (0) = points[2];
+      t (1) = points[3];
+      in (0) = t (1);
+      in (1) = -t (0);
+      in.normalize ();
+
+      unsigned idxcp;
+      unsigned idx = NurbsTools::getClosestPoint (p1, in, m_data->interior, idxcp);
+      p2 = m_data->interior[idx];
+      p3 = m_data->interior[idxcp];
+
+      //    double xi2 = m_data->interior_param[idx];
+
+      double error2_2 = (p2 - p1).squaredNorm ();
+      double error2_3 = (p3 - p1).squaredNorm ();
+
+      m_data->closest_points.push_back (p3);
+      m_data->closest_points_param.push_back (xi);
+      m_data->closest_points_error.push_back (error2_3);
+
+      double w (weight);
+      w = 0.5 * weight * exp (-(error2_2) * ds);
+      //    w = weight * std::fabs(in.dot(p2-p1));
+
+      //    if (weight > 0.0 && (std::fabs(xi2 - xi) < std::fabs(dxi)))
+      if (w > 0.0)
+      {
+        addPointConstraint (xi, p2, w, row);
+        //      m_data->interior_line_start.push_back(p1);
+        //      m_data->interior_line_end.push_back(p2);
+      }
     }
-
-  }
-}
-
-void
-FittingCurve2d::assembleClosestPoints (int res, double weight, unsigned &row)
-{
-  std::vector<double> elements = FittingCurve2d::getElementVector (m_nurbs);
-  double xi_min = elements.front ();
-  double xi_max = elements.back ();
-
-  double step = (xi_max - xi_min) / res;
-
-  //  m_data->interior_line_start.clear();
-  //  m_data->interior_line_end.clear();
-  m_data->closest_points.clear ();
-  m_data->closest_points_param.clear ();
-  m_data->closest_points_error.clear ();
-  for (int i = 0; i < res; i++)
-  {
-    double xi = xi_min + i * step;
-
-    double points[2];
-    Eigen::Vector2d p1, p2;
-    m_nurbs.Evaluate (xi, 0, 2, points);
-    p1 (0) = points[0];
-    p1 (1) = points[1];
-
-    unsigned idx = NurbsTools::getClosestPoint (p1, m_data->interior);
-    p2 = m_data->interior[idx];
-
-    m_data->closest_points.push_back (p2);
-    m_data->closest_points_param.push_back (xi);
-    m_data->closest_points_error.push_back ((p2 - p1).squaredNorm ());
-    //    m_data->interior_line_start.push_back(p1);
-    //    m_data->interior_line_end.push_back(p2);
-
-    addPointConstraint (xi, p2, weight, row);
-
   }
 }
 
@@ -1119,17 +1090,15 @@ FittingCurve2d::findClosestElementMidPoint (const ON_NurbsCurve &nurbs, const Ei
     printf (" %f", elements[0]);
   }
 
-  for (unsigned i = 0; i < elements.size () - 1; i++)
+  for (unsigned i = 0; i < elements.size (); i++)
   {
+    int k = i % elements.size ();
     double xi0 = elements[i];
-    double xi1 = elements[i + 1];
-
-    if (!quiet)
-      printf (" %f", elements[i + 1]);
+    double dxi = elements[k] - xi0;
 
     for (unsigned j = 0; j < samples_per_element; j++)
     {
-      double xi = xi0 + (seg * (j + 1)) * (xi1 - xi0);
+      double xi = xi0 + (seg * (j + 1)) * dxi;
 
       nurbs.Evaluate (xi, 0, 2, points);
       p (0) = points[0];

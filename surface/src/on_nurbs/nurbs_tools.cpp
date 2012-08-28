@@ -211,13 +211,47 @@ NurbsTools::computeMean (const vector_vec2d &data)
 {
   Eigen::Vector2d u (0.0, 0.0);
 
-  unsigned s = data.size ();
+  size_t s = data.size ();
   double ds = 1.0 / s;
 
-  for (unsigned i = 0; i < s; i++)
+  for (size_t i = 0; i < s; i++)
     u += (data[i] * ds);
 
   return u;
+}
+
+Eigen::Vector3d
+NurbsTools::computeVariance (const Eigen::Vector3d &mean, const vector_vec3d &data)
+{
+  Eigen::Vector3d var (0.0, 0.0);
+
+  size_t s = data.size ();
+  double ds = 1.0 / s;
+
+  for (size_t i = 0; i < s; i++)
+  {
+    Eigen::Vector3d v = data[i] - mean;
+    var += Eigen::Vector3d (v (0) * v (0) * ds, v (1) * v (1) * ds, v (2) * v (2) * ds);
+  }
+
+  return var;
+}
+
+Eigen::Vector2d
+NurbsTools::computeVariance (const Eigen::Vector2d &mean, const vector_vec2d &data)
+{
+  Eigen::Vector2d var (0.0, 0.0);
+
+  size_t s = data.size ();
+  double ds = 1.0 / s;
+
+  for (size_t i = 0; i < s; i++)
+  {
+    Eigen::Vector2d v = data[i] - mean;
+    var += Eigen::Vector2d (v (0) * v (0) * ds, v (1) * v (1) * ds);
+  }
+
+  return var;
 }
 
 void
@@ -241,7 +275,7 @@ NurbsTools::pca (const vector_vec3d &data, Eigen::Vector3d &mean, Eigen::Matrix3
 
   Eigen::Matrix3d C = Q * Q.transpose ();
 
-  Eigen::SelfAdjointEigenSolver < Eigen::Matrix3d > eigensolver (C);
+  Eigen::SelfAdjointEigenSolver<Eigen::Matrix3d> eigensolver (C);
   if (eigensolver.info () != Success)
   {
     printf ("[NurbsTools::pca] Can not find eigenvalues.\n");

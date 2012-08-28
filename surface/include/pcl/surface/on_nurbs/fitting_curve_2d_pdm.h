@@ -208,10 +208,11 @@ namespace pcl
 
       /** \brief Set parameters for inverse mapping. */
       inline void
-      setInverseParams(int max_steps, double accuracy)
+      setInverseParams (int max_steps = 200, double accuracy = 1e-6, int samples = 1)
       {
         in_max_steps = max_steps;
         in_accuracy = accuracy;
+        in_samples = samples;
       }
 
     protected:
@@ -230,17 +231,13 @@ namespace pcl
       /** \brief Assemble closest points constraints. At each midpoint of the curve elements the closest data points
        * are computed and point-to-curve constraints are added. */
       virtual void
-      assembleClosestPoints (const std::vector<double> &elements, double weight, double sigma2, unsigned &row);
-
-      /** \brief Assemble closest points constraints. Samples curve and searches for close data points,
-       * and adds point-to-curve constraint. */
-      virtual void
-      assembleClosestPoints (int res, double weight, unsigned &row);
+      assembleClosestPoints (const std::vector<double> &elements, double weight, double sigma2, unsigned samples_per_element, unsigned &row);
 
       NurbsSolve m_solver;
       bool m_quiet;
       int in_max_steps;
       double in_accuracy;
+      int in_samples;
 
     };
   }

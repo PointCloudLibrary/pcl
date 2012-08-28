@@ -94,6 +94,15 @@ namespace pcl
       static Eigen::Vector2d
       computeMean (const vector_vec2d &data);
 
+      /** \brief Compute the variance of a set of points
+       *  \param[in] data Set of points       */
+      static Eigen::Vector3d
+      computeVariance (const Eigen::Vector3d &mean, const vector_vec3d &data);
+      /** \brief Compute the variance of a set of points
+       *  \param[in] data Set of points       */
+      static Eigen::Vector2d
+      computeVariance (const Eigen::Vector2d &mean, const vector_vec2d &data);
+
       /** \brief PCA - principal-component-analysis
        *  \param[in] data Set of points.
        *  \param[out] mean The mean of the set of points.
