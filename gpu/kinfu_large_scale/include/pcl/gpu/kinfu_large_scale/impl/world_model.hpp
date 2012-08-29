@@ -120,7 +120,7 @@ pcl::WorldModel<PointT>::getExistingData(const double previous_origin_x, const d
     transformation.translation ()[1] = newOriginY;
     transformation.translation ()[2] = newOriginZ;
         
-    transformation.linear () = Eigen::Matrix3f::Identity ();
+    transformation.linear ().setIdentity ();
 
     transformPointCloud (existing_slice, existing_slice, transformation.inverse ());
     

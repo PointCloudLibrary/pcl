@@ -114,7 +114,7 @@ pcl::gpu::StandaloneMarchingCubes<PointT>::getMeshesFromTSDFVector (const std::v
     float originY = (tsdf_offsets[i]).y();
     float originZ = (tsdf_offsets[i]).z();
     
-    cloud_transform.linear () = Eigen::Matrix3f::Identity ();
+    cloud_transform.linear ().setIdentity ();
     cloud_transform.translation ()[0] = -originX;
     cloud_transform.translation ()[1] = -originY;
     cloud_transform.translation ()[2] = -originZ;
