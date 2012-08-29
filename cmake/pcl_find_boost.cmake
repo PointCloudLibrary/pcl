@@ -25,8 +25,12 @@ endif(Boost_SERIALIZATION_FOUND)
 
 # Required boost modules
 find_package(Boost 1.40.0 REQUIRED COMPONENTS system filesystem thread date_time iostreams)
+
+# Starting with Boost 1.50, boost_thread depends on chrono. As this is not
+# taken care of automatically on Windows, we add an explicit dependency as a
+# workaround.
 if(WIN32 AND Boost_VERSION VERSION_GREATER "1.49")
-  find_package(Boost 1.40.0 REQUIRED COMPONENTS chrono)
+  find_package(Boost 1.50.0 REQUIRED COMPONENTS chrono)
 endif(WIN32 AND Boost_VERSION VERSION_GREATER "1.49")
 
 if(Boost_FOUND)
