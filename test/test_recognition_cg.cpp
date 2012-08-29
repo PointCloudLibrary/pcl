@@ -96,7 +96,7 @@ computeRmsE (const PointCloud<PointType>::ConstPtr &model, const PointCloud<Poin
   }
 
   if (found_points > 0)
-    return sqrt (sqr_norm_sum / transformed_model.size ());
+    return sqrt (sqr_norm_sum / double (transformed_model.size ()));
 
   return numeric_limits<double>::max ();
 }
