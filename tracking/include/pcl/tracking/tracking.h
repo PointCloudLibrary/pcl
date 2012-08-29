@@ -59,7 +59,8 @@ namespace pcl
     struct ParticleXYR;
 
     /* \brief return the value of normal distribution */
-    double sampleNormal (double mean, double sigma);
+    PCL_EXPORTS double
+    sampleNormal (double mean, double sigma);
   }
 }
 

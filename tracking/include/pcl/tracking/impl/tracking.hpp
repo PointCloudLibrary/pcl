@@ -4,6 +4,7 @@
 #include <pcl/common/eigen.h>
 #include <ctime>
 #include <pcl/tracking/boost.h>
+#include <pcl/tracking/tracking.h>
 
 namespace pcl
 {
