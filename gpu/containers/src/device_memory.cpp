@@ -146,8 +146,8 @@ void pcl::gpu::DeviceMemory::create(size_t sizeBytes_arg)
 
         sizeBytes_ = sizeBytes_arg;
                         
-        cudaSafeCall( cudaMalloc(&data_, sizeBytes_) );        
-
+        cudaSafeCall( cudaMalloc(&data_, sizeBytes_) );
+        
         //refcount_ = (int*)cv::fastMalloc(sizeof(*refcount_));
         refcount_ = new int;
         *refcount_ = 1;
@@ -182,12 +182,14 @@ void pcl::gpu::DeviceMemory::release()
 void pcl::gpu::DeviceMemory::upload(const void *host_ptr_arg, size_t sizeBytes_arg)
 {
     create(sizeBytes_arg);
-    cudaSafeCall( cudaMemcpy(data_, host_ptr_arg, sizeBytes_, cudaMemcpyHostToDevice) );        
+    cudaSafeCall( cudaMemcpy(data_, host_ptr_arg, sizeBytes_, cudaMemcpyHostToDevice) );
+    cudaSafeCall( cudaDeviceSynchronize() );
 }
 
 void pcl::gpu::DeviceMemory::download(void *host_ptr_arg) const
 {    
     cudaSafeCall( cudaMemcpy(host_ptr_arg, data_, sizeBytes_, cudaMemcpyDeviceToHost) );
+    cudaSafeCall( cudaDeviceSynchronize() );
 }          
 
 void pcl::gpu::DeviceMemory::swap(DeviceMemory& other_arg)
