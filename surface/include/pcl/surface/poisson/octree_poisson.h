@@ -273,38 +273,42 @@ namespace pcl
         int read (const char* fileName);
         int read (FILE* fp);
 
-        class Neighbors{
-        public:
-          OctNode* neighbors[3][3][3];
-          Neighbors (void);
-          void clear (void);
+        class Neighbors
+        {
+          public:
+            OctNode* neighbors[3][3][3];
+            Neighbors (void);
+            void clear (void);
         };
-        class NeighborKey{
-        public:
-          Neighbors* neighbors;
+        class NeighborKey
+        {
+          public:
+            Neighbors* neighbors;
 
-          NeighborKey (void);
-          ~NeighborKey (void);
+            NeighborKey (void);
+            ~NeighborKey (void);
 
-          void set (const int& depth);
-          Neighbors& setNeighbors (OctNode* node);
-          Neighbors& getNeighbors (OctNode* node);
+            void set (const int& depth);
+            Neighbors& setNeighbors (OctNode* node);
+            Neighbors& getNeighbors (OctNode* node);
         };
-        class Neighbors2{
-        public:
-          const OctNode* neighbors[3][3][3];
-          Neighbors2 (void);
-          void clear (void);
+        class Neighbors2
+        {
+          public:
+            const OctNode* neighbors[3][3][3];
+            Neighbors2 (void);
+            void clear (void);
         };
-        class NeighborKey2{
-        public:
-          Neighbors2* neighbors;
+        class NeighborKey2
+        {
+          public:
+            Neighbors2* neighbors;
 
-          NeighborKey2 (void);
-          ~NeighborKey2 (void);
+            NeighborKey2 (void);
+            ~NeighborKey2 (void);
 
-          void set (const int& depth);
-          Neighbors2& getNeighbors (const OctNode* node);
+            void set (const int& depth);
+            Neighbors2& getNeighbors (const OctNode* node);
         };
 
         void centerIndex (const int& maxDepth, int index[DIMENSION]) const;
