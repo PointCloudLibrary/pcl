@@ -1493,8 +1493,7 @@ namespace pcl
       }
       children = NULL;
 
-      //depth = node.depth;
-      d= node.d;
+      d = node.d;
       for (i = 0; i < DIMENSION; i++)
       {
         this->offset[i] = node.offset[i];

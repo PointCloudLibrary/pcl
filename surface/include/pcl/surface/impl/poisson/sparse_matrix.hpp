@@ -519,7 +519,7 @@ namespace pcl
             temp += m_ppElements[i][ii].Value[jj] * V.m_pV[m_ppElements[i][ii].N][jj];
           }
         }
-        R(i)  =temp;
+        R(i) = temp;
       }
       return (R);
     }
