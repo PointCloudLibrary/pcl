@@ -25,8 +25,9 @@ endif(Boost_SERIALIZATION_FOUND)
 
 # Required boost modules
 find_package(Boost 1.40.0 REQUIRED COMPONENTS system filesystem thread date_time iostreams)
-# Chrono doesn't seem to be available in < 1.47
-#find_package(Boost 1.40.0 REQUIRED COMPONENTS system filesystem thread date_time chrono iostreams)
+if(WIN32 AND Boost_VERSION VERSION_GREATER "1.49")
+  find_package(Boost 1.40.0 REQUIRED COMPONENTS chrono)
+endif(WIN32 AND Boost_VERSION VERSION_GREATER "1.49")
 
 if(Boost_FOUND)
   set(BOOST_FOUND TRUE)
