@@ -311,7 +311,7 @@ macro(PCL_ADD_TEST _name _exename)
       set_target_properties(${_exename} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
     endif(NOT WIN32)
     #target_link_libraries(${_exename} ${GTEST_BOTH_LIBRARIES} ${PCL_ADD_TEST_LINK_WITH})
-    target_link_libraries(${_exename} ${PCL_ADD_TEST_LINK_WITH})
+    target_link_libraries(${_exename} ${PCL_ADD_TEST_LINK_WITH} ${CLANG_LIBRARIES})
     #
     # Only link if needed
     if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
