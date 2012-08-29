@@ -40,6 +40,8 @@
 #ifndef PCL_IO_PLY_BYTE_ORDER_H
 #define PCL_IO_PLY_BYTE_ORDER_H
 
+#include <boost/detail/endian.hpp>
+
 namespace pcl
 {
   namespace io
@@ -52,35 +54,19 @@ namespace pcl
         * \ingroup io
         */
 
-#if defined (PLY_BIG_ENDIAN) || defined (PLY_LITTLE_ENDIAN)
-#  error
-#endif
-
-#if (defined (__powerpc) || defined (__powerpc__) || defined (__POWERPC__) || defined (__ppc__) || defined (_M_PPC) || defined (__ARCH_PPC))
-#  define PLY_BIG_ENDIAN
-#elif (defined (i386) || defined (__i386__) || defined (__i386) || defined (_M_IX86) || defined (_X86_) || defined (__THW_INTEL__) || defined (__I86__) || defined (__INTEL__)) \
-  || (defined (__amd64__) || defined (__amd64) || defined (__x86_64__) || defined (__x86_64) || defined (_M_X64) || defined (ANDROID))
-#  define PLY_LITTLE_ENDIAN
-#else
-#  error
-#endif
-
       enum byte_order
       {
         little_endian_byte_order,
         big_endian_byte_order,
-#if defined (PLY_BIG_ENDIAN)
+#if defined(BOOST_BIG_ENDIAN)
         host_byte_order = big_endian_byte_order,
-#elif defined (PLY_LITTLE_ENDIAN)
+#elif defined(BOOST_LITTLE_ENDIAN)
         host_byte_order = little_endian_byte_order,
 #else
-#  error
+#error "unable to determine system endianness"
 #endif
         network_byte_order = big_endian_byte_order
       };
-      
-#undef PLY_BIG_ENDIAN
-#undef PLY_LITTLE_ENDIAN
       
       template <std::size_t N>
       void swap_byte_order (char* bytes);

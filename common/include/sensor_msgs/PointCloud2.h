@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <ostream>
+#include <boost/detail/endian.hpp>
 
 // Include the correct Header path here
 #include "std_msgs/Header.h"
@@ -11,33 +12,20 @@
 namespace sensor_msgs
 {
 
-#if (defined(__powerpc) || defined(__powerpc__) || defined(__POWERPC__) || defined(__ppc__) || defined(_M_PPC) || defined(__ARCH_PPC))
-#  define PCL_BIG_ENDIAN
-#elif (defined(i386) || defined(__i386__) || defined(__i386) || defined(_M_IX86) || defined(_X86_) || defined(__THW_INTEL__) || defined(__I86__) || defined(__INTEL__)) \
-  || (defined(__amd64__) || defined(__amd64) || defined(__x86_64__) || defined(__x86_64) || defined(_M_X64)) \
-	|| (defined(__ANDROID__))
-#  define PCL_LITTLE_ENDIAN
-#else
-#  error
-#endif
-
   struct PointCloud2
   {
     PointCloud2 () : header (), height (0), width (0), fields (),
                      is_bigendian (false), point_step (0), row_step (0),
                      data (), is_dense (false)
     {
-#ifdef PCL_BIG_ENDIAN
+#if defined(BOOST_BIG_ENDIAN)
       is_bigendian = true;
-#elif defined(PCL_LITTLE_ENDIAN)
+#elif defined(BOOST_LITTLE_ENDIAN)
       is_bigendian = false;
 #else
-#      error
+#error "unable to determine system endianness"
 #endif
     }
-
-#undef PCL_BIG_ENDIAN
-#undef PCL_LITTLE_ENDIAN
 
     ::std_msgs::Header header;
 
