@@ -64,8 +64,8 @@ namespace pcl
 
     public:
       FastBilateralFilter ()
-        :  sigma_s_ (15)
-         , sigma_r_ (0.05)
+        :  sigma_s_ (15.0f)
+         , sigma_r_ (0.05f)
          , early_division_ (false)
       {
       }
@@ -143,9 +143,9 @@ namespace pcl
                  const size_t max_value,
                  const size_t x);
 
-          const size_t x_size () const { return x_dim_; }
-          const size_t y_size () const { return y_dim_; }
-          const size_t z_size () const { return z_dim_; }
+          size_t x_size () const { return x_dim_; }
+          size_t y_size () const { return y_dim_; }
+          size_t z_size () const { return z_dim_; }
 
           std::vector<Eigen::Vector2f >::iterator begin () { return v_.begin (); }
           std::vector<Eigen::Vector2f >::iterator end () { return v_.end (); }
