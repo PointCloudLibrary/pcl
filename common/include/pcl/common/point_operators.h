@@ -55,35 +55,35 @@ namespace pcl
   {
     // Ugly hack: override the automatic template declaration for PointXYZRGB
     // note: must deal with overflow
-    inline const pcl::PointXYZRGB& 
-    operator+= (pcl::PointXYZRGB& lhs, const pcl::PointXYZRGB& rhs)
-    {
-      lhs.x += rhs.x; lhs.y += rhs.y; lhs.z += rhs.z;
-      lhs.r = static_cast<uint8_t> (lhs.r + rhs.r);
-      lhs.g = static_cast<uint8_t> (lhs.g + rhs.g);
-      lhs.b = static_cast<uint8_t> (lhs.b + rhs.b);
-      return (lhs);
-    }
- 
-    inline const pcl::PointXYZRGB&
-    operator-= (pcl::PointXYZRGB& lhs, const pcl::PointXYZRGB& rhs)
-    {
-      lhs.x -= rhs.x; lhs.y -= rhs.y; lhs.z -= rhs.z;
-      lhs.r = static_cast<uint8_t> (lhs.r - rhs.r);
-      lhs.g = static_cast<uint8_t> (lhs.g - rhs.g);
-      lhs.b = static_cast<uint8_t> (lhs.b - rhs.b);
-      return (lhs);
-    }
- 
-    inline const pcl::PointXYZRGB&
-    operator*= (pcl::PointXYZRGB& lhs, const float& scalar)
-    {
-      lhs.x *= scalar; lhs.y *= scalar; lhs.z *= scalar;
-      lhs.r = static_cast<uint8_t> (lhs.r * scalar);
-      lhs.g = static_cast<uint8_t> (lhs.g * scalar);
-      lhs.b = static_cast<uint8_t> (lhs.b * scalar);
-      return (lhs);
-    }
+//    inline const pcl::PointXYZRGB& 
+//    operator+= (pcl::PointXYZRGB& lhs, const pcl::PointXYZRGB& rhs)
+//    {
+//      lhs.x += rhs.x; lhs.y += rhs.y; lhs.z += rhs.z;
+//      lhs.r = static_cast<uint8_t> (lhs.r + rhs.r);
+//      lhs.g = static_cast<uint8_t> (lhs.g + rhs.g);
+//      lhs.b = static_cast<uint8_t> (lhs.b + rhs.b);
+//      return (lhs);
+//    }
+// 
+//    inline const pcl::PointXYZRGB&
+//    operator-= (pcl::PointXYZRGB& lhs, const pcl::PointXYZRGB& rhs)
+//    {
+//      lhs.x -= rhs.x; lhs.y -= rhs.y; lhs.z -= rhs.z;
+//      lhs.r = static_cast<uint8_t> (lhs.r - rhs.r);
+//      lhs.g = static_cast<uint8_t> (lhs.g - rhs.g);
+//      lhs.b = static_cast<uint8_t> (lhs.b - rhs.b);
+//      return (lhs);
+//    }
+// 
+//    inline const pcl::PointXYZRGB&
+//    operator*= (pcl::PointXYZRGB& lhs, const float& scalar)
+//    {
+//      lhs.x *= scalar; lhs.y *= scalar; lhs.z *= scalar;
+//      lhs.r = static_cast<uint8_t> (lhs.r * scalar);
+//      lhs.g = static_cast<uint8_t> (lhs.g * scalar);
+//      lhs.b = static_cast<uint8_t> (lhs.b * scalar);
+//      return (lhs);
+//    }
  
  //   // ///addition operator for PointXYZRGBAA
  //   // template <> inline pcl::PointXYZRGBA

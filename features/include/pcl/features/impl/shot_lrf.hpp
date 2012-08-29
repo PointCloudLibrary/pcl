@@ -134,7 +134,8 @@ pcl::SHOTLocalReferenceFrameEstimation<PointInT, PointOutT>::getLocalRF (const i
 
 		if (plusTangentDirection1 < points/2+1)
 			v1 *= - 1;
-	} else if (plusTangentDirection1 < 0)
+	} 
+  else if (plusTangentDirection1 < 0)
     v1 *= - 1;
 
   //Normal
@@ -160,6 +161,7 @@ pcl::SHOTLocalReferenceFrameEstimation<PointInT, PointOutT>::getLocalRF (const i
   return (0.0f);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT> void
 pcl::SHOTLocalReferenceFrameEstimation<PointInT, PointOutT>::computeFeature (PointCloudOut &output)
 {
@@ -186,13 +188,16 @@ pcl::SHOTLocalReferenceFrameEstimation<PointInT, PointOutT>::computeFeature (Poi
       output.is_dense = false;
     }
 
-    output_rf.x_axis.getNormalVector3fMap () = rf.row (0);
-    output_rf.y_axis.getNormalVector3fMap () = rf.row (1);
-    output_rf.z_axis.getNormalVector3fMap () = rf.row (2);
+    for (int d = 0; d < 3; ++d)
+    {
+      output_rf.x_axis[d] = rf.row (0)[d];
+      output_rf.y_axis[d] = rf.row (1)[d];
+      output_rf.z_axis[d] = rf.row (2)[d];
+    }
   }
-
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT> void
 pcl::SHOTLocalReferenceFrameEstimation<PointInT, PointOutT>::computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &output)
 {

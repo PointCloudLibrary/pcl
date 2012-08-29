@@ -144,9 +144,13 @@ pcl::UniqueShapeContext<PointInT, PointOutT, PointRFT>::computePointDescriptor (
 {
   pcl::Vector3fMapConst origin = input_->points[(*indices_)[index]].getVector3fMap ();
 
-  const Eigen::Vector3f& x_axis = frames_->points[index].x_axis.getNormalVector3fMap ();
+  const Eigen::Vector3f x_axis (frames_->points[index].x_axis[0],
+                                frames_->points[index].x_axis[1],
+                                frames_->points[index].x_axis[2]);
   //const Eigen::Vector3f& y_axis = frames_->points[index].y_axis.getNormalVector3fMap ();
-  const Eigen::Vector3f& normal = frames_->points[index].z_axis.getNormalVector3fMap ();
+  const Eigen::Vector3f normal (frames_->points[index].z_axis[0],
+                                frames_->points[index].z_axis[1],
+                                frames_->points[index].z_axis[2]);
 
   // Find every point within specified search_radius_
   std::vector<int> nn_indices;
@@ -252,9 +256,9 @@ pcl::UniqueShapeContext<PointInT, PointOutT, PointRFT>::computeFeature (PointClo
     // If the point is not finite, set the descriptor to NaN and continue
     const PointRFT& current_frame = (*frames_)[point_index];
     if (!isFinite ((*input_)[(*indices_)[point_index]]) ||
-        !pcl_isfinite (current_frame.rf[0]) ||
-        !pcl_isfinite (current_frame.rf[4]) ||
-        !pcl_isfinite (current_frame.rf[11])  )
+        !pcl_isfinite (current_frame.x_axis[0]) ||
+        !pcl_isfinite (current_frame.y_axis[0]) ||
+        !pcl_isfinite (current_frame.z_axis[0])  )
     {
       for (size_t i = 0; i < descriptor_length_; ++i)
         output[point_index].descriptor[i] = std::numeric_limits<float>::quiet_NaN ();
@@ -264,8 +268,12 @@ pcl::UniqueShapeContext<PointInT, PointOutT, PointRFT>::computeFeature (PointClo
       continue;
     }
 
-    for (int d = 0; d < 9; ++d)
-      output.points[point_index].rf[d] = current_frame.rf[ (4*(d/3) + (d%3)) ];
+    for (int d = 0; d < 3; ++d)
+    {
+      output.points[point_index].rf[0 + d] = current_frame.x_axis[d];
+      output.points[point_index].rf[3 + d] = current_frame.y_axis[d];
+      output.points[point_index].rf[6 + d] = current_frame.z_axis[d];
+    }
 
     std::vector<float> descriptor (descriptor_length_);
     computePointDescriptor (point_index, descriptor);
@@ -293,17 +301,21 @@ pcl::UniqueShapeContext<PointInT, Eigen::MatrixXf, PointRFT>::computeFeatureEige
     // If the point is not finite, set the descriptor to NaN and continue
     const PointRFT& current_frame = (*frames_)[point_index];
     if (!isFinite ((*input_)[(*indices_)[point_index]]) ||
-        !pcl_isfinite (current_frame.rf[0]) ||
-        !pcl_isfinite (current_frame.rf[4]) ||
-        !pcl_isfinite (current_frame.rf[11])  )
+        !pcl_isfinite (current_frame.x_axis[0]) ||
+        !pcl_isfinite (current_frame.y_axis[0]) ||
+        !pcl_isfinite (current_frame.z_axis[0])  )
     {
       output.points.row (point_index).setConstant (std::numeric_limits<float>::quiet_NaN ());
       output.is_dense = false;
       continue;
     }
 
-    for (int d = 0; d < 9; ++d)
-      output.points (point_index, d) = current_frame.rf[ (4*(d/3) + (d%3)) ];
+    for (int d = 0; d < 3; ++d)
+    {
+      output.points (point_index, 0 + d) = current_frame.x_axis[d];
+      output.points (point_index, 3 + d) = current_frame.y_axis[d];
+      output.points (point_index, 6 + d) = current_frame.z_axis[d];
+    }
 
     std::vector<float> descriptor (descriptor_length_);
     computePointDescriptor (point_index, descriptor);

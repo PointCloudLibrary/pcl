@@ -86,61 +86,14 @@
 #define POINT_CLOUD_REGISTER_POINT_STRUCT_X0
 #define POINT_CLOUD_REGISTER_POINT_STRUCT_Y0
 
-// Point operators
 namespace pcl
 {
-  // Define a set of operator on PCL point types.
-  namespace common
-  {
-    //////////////////////////////////////////////////////////////////////////////////////
-    // +++
-    template <typename PointT> inline PointT
-    operator+ (const PointT& lhs, const PointT& rhs)
-    { PointT result = lhs; result += rhs; return (result); }
-    template <typename PointT> inline PointT
-    operator+ (const float& scalar, const PointT& p)
-    { PointT result = p; result += scalar; return (result); }
-    template <typename PointT> inline PointT
-    operator+ (const PointT& p, const float& scalar)
-    { PointT result = p; result += scalar; return (result); }
-
-    //////////////////////////////////////////////////////////////////////////////////////
-    // ---
-    template <typename PointT> inline PointT
-    operator- (const PointT& lhs, const PointT& rhs)
-    { PointT result = lhs; result -= rhs; return (result); }
-    template <typename PointT> inline PointT
-    operator- (const float& scalar, const PointT& p)
-    { PointT result = p; result -= scalar; return (result); }
-    template <typename PointT> inline PointT
-    operator- (const PointT& p, const float& scalar)
-    { PointT result = p; result -= scalar; return (result); }
-
-    //////////////////////////////////////////////////////////////////////////////////////
-    // ***
-    template <typename PointT> inline PointT
-    operator* (const float& scalar, const PointT& p)
-    { PointT result = p; result *= scalar; return (result); }
-    template <typename PointT> inline PointT
-    operator* (const PointT& p, const float& scalar)
-    { PointT result = p; result *= scalar; return (result); }
-
-    //////////////////////////////////////////////////////////////////////////////////////
-    // ///
-    template <typename PointT> inline PointT
-    operator/ (const float& scalar, const PointT& p)
-    { PointT result = p; result /= scalar; return (result); }
-    template <typename PointT> inline PointT
-    operator/ (const PointT& p, const float& scalar)
-    { PointT result = p; result /= scalar; return (result); }
-  }
   namespace traits
   {
     template<typename T> inline
     typename boost::disable_if_c<boost::is_array<T>::value>::type
     plus (T &l, const T &r)
     {
-      using namespace pcl::common; 
       l += r;
     }
 
@@ -148,7 +101,6 @@ namespace pcl
     typename boost::enable_if_c<boost::is_array<T>::value>::type
     plus (typename boost::remove_const<T>::type &l, const T &r)
     {
-      using namespace pcl::common; 
       typedef typename boost::remove_all_extents<T>::type type;
       static const uint32_t count = sizeof (T) / sizeof (type);
       for (int i = 0; i < count; ++i)
@@ -159,7 +111,6 @@ namespace pcl
     typename boost::disable_if_c<boost::is_array<T1>::value>::type
     plusscalar (T1 &p, const T2 &scalar)
     {
-      using namespace pcl::common; 
       p += scalar;
     }
 
@@ -167,7 +118,6 @@ namespace pcl
     typename boost::enable_if_c<boost::is_array<T1>::value>::type
     plusscalar (T1 &p, const T2 &scalar)
     {
-      using namespace pcl::common; 
       typedef typename boost::remove_all_extents<T1>::type type;
       static const uint32_t count = sizeof (T1) / sizeof (type);
       for (int i = 0; i < count; ++i)
@@ -178,7 +128,6 @@ namespace pcl
     typename boost::disable_if_c<boost::is_array<T>::value>::type
     minus (T &l, const T &r)
     {
-      using namespace pcl::common; 
       l -= r;
     }
 
@@ -186,7 +135,6 @@ namespace pcl
     typename boost::enable_if_c<boost::is_array<T>::value>::type
     minus (typename boost::remove_const<T>::type &l, const T &r)
     {
-      using namespace pcl::common; 
       typedef typename boost::remove_all_extents<T>::type type;
       static const uint32_t count = sizeof (T) / sizeof (type);
       for (int i = 0; i < count; ++i)
@@ -197,7 +145,6 @@ namespace pcl
     typename boost::disable_if_c<boost::is_array<T1>::value>::type
     minusscalar (T1 &p, const T2 &scalar)
     {
-      using namespace pcl::common; 
       p -= scalar;
     }
 
@@ -205,7 +152,6 @@ namespace pcl
     typename boost::enable_if_c<boost::is_array<T1>::value>::type
     minusscalar (T1 &p, const T2 &scalar)
     {
-      using namespace pcl::common; 
       typedef typename boost::remove_all_extents<T1>::type type;
       static const uint32_t count = sizeof (T1) / sizeof (type);
       for (int i = 0; i < count; ++i)
@@ -216,7 +162,6 @@ namespace pcl
     typename boost::disable_if_c<boost::is_array<T1>::value>::type
     mulscalar (T1 &p, const T2 &scalar)
     {
-      using namespace pcl::common; 
       p *= scalar;
     }
 
@@ -224,7 +169,6 @@ namespace pcl
     typename boost::enable_if_c<boost::is_array<T1>::value>::type
     mulscalar (T1 &p, const T2 &scalar)
     {
-      using namespace pcl::common; 
       typedef typename boost::remove_all_extents<T1>::type type;
       static const uint32_t count = sizeof (T1) / sizeof (type);
       for (int i = 0; i < count; ++i)
@@ -235,7 +179,6 @@ namespace pcl
     typename boost::disable_if_c<boost::is_array<T1>::value>::type
     divscalar (T1 &p, const T2 &scalar)
     {
-      using namespace pcl::common; 
       p /= scalar;
     }
 
@@ -243,7 +186,6 @@ namespace pcl
     typename boost::enable_if_c<boost::is_array<T1>::value>::type
     divscalar (T1 &p, const T2 &scalar)
     {
-      using namespace pcl::common; 
       typedef typename boost::remove_all_extents<T1>::type type;
       static const uint32_t count = sizeof (T1) / sizeof (type);
       for (int i = 0; i < count; ++i)
@@ -316,6 +258,12 @@ namespace pcl
         BOOST_PP_SEQ_FOR_EACH(PCL_PLUSEQSC_POINT_TAG, _, seq)  \
         return (p);                                            \
       }                                                        \
+      inline const name operator+ (const name& lhs, const name& rhs)   \
+      { name result = lhs; result += rhs; return (result); }           \
+      inline const name operator+ (const float& scalar, const name& p) \
+      { name result = p; result += scalar; return (result); }          \
+      inline const name operator+ (const name& p, const float& scalar) \
+      { name result = p; result += scalar; return (result); }          \
       inline const name&                                       \
       operator-= (name& lhs, const name& rhs)                  \
       {                                                        \
@@ -328,18 +276,32 @@ namespace pcl
         BOOST_PP_SEQ_FOR_EACH(PCL_MINUSEQSC_POINT_TAG, _, seq) \
         return (p);                                            \
       }                                                        \
+      inline const name operator- (const name& lhs, const name& rhs)   \
+      { name result = lhs; result -= rhs; return (result); }           \
+      inline const name operator- (const float& scalar, const name& p) \
+      { name result = p; result -= scalar; return (result); }          \
+      inline const name operator- (const name& p, const float& scalar) \
+      { name result = p; result -= scalar; return (result); }          \
       inline const name&                                       \
       operator*= (name& p, const float& scalar)                \
       {                                                        \
         BOOST_PP_SEQ_FOR_EACH(PCL_MULEQSC_POINT_TAG, _, seq)   \
         return (p);                                            \
       }                                                        \
+      inline const name operator* (const float& scalar, const name& p) \
+      { name result = p; result *= scalar; return (result); }          \
+      inline const name operator* (const name& p, const float& scalar) \
+      { name result = p; result *= scalar; return (result); }          \
       inline const name&                                       \
       operator/= (name& p, const float& scalar)                \
       {                                                        \
         BOOST_PP_SEQ_FOR_EACH(PCL_DIVEQSC_POINT_TAG, _, seq)   \
         return (p);                                            \
       }                                                        \
+      inline const name operator/ (const float& scalar, const name& p) \
+      { name result = p; result /= scalar; return (result); }          \
+      inline const name operator/ (const name& p, const float& scalar) \
+      { name result = p; result /= scalar; return (result); }          \
     }                                                          \
   }                                                            \
   /***/
@@ -408,5 +370,55 @@ namespace pcl
   BOOST_FUSION_ADAPT_ASSOC_STRUCT_I(name, POINT_CLOUD_EXPAND_TAGS(seq)) \
   /***/
 #endif
+
+// Point operators
+//namespace pcl
+//{
+//  // Define a set of operator on PCL point types.
+//  namespace common
+//  {
+//    //////////////////////////////////////////////////////////////////////////////////////
+//    // +++
+//    template <typename PointT> inline PointT
+//    operator+ (const PointT& lhs, const PointT& rhs)
+//    { PointT result = lhs; result += rhs; return (result); }
+//    template <typename PointT> inline PointT
+//    operator+ (const float& scalar, const PointT& p)
+//    { PointT result = p; result += scalar; return (result); }
+//    template <typename PointT> inline PointT
+//    operator+ (const PointT& p, const float& scalar)
+//    { PointT result = p; result += scalar; return (result); }
+//
+//    //////////////////////////////////////////////////////////////////////////////////////
+//    // ---
+//    template <typename PointT> inline PointT
+//    operator- (const PointT& lhs, const PointT& rhs)
+//    { PointT result = lhs; result -= rhs; return (result); }
+//    template <typename PointT> inline PointT
+//    operator- (const float& scalar, const PointT& p)
+//    { PointT result = p; result -= scalar; return (result); }
+//    template <typename PointT> inline PointT
+//    operator- (const PointT& p, const float& scalar)
+//    { PointT result = p; result -= scalar; return (result); }
+//
+//    //////////////////////////////////////////////////////////////////////////////////////
+//    // ***
+//    template <typename PointT> inline PointT
+//    operator* (const float& scalar, const PointT& p)
+//    { PointT result = p; result *= scalar; return (result); }
+//    template <typename PointT> inline PointT
+//    operator* (const PointT& p, const float& scalar)
+//    { PointT result = p; result *= scalar; return (result); }
+//
+//    //////////////////////////////////////////////////////////////////////////////////////
+//    // ///
+//    template <typename PointT> inline PointT
+//    operator/ (const float& scalar, const PointT& p)
+//    { PointT result = p; result /= scalar; return (result); }
+//    template <typename PointT> inline PointT
+//    operator/ (const PointT& p, const float& scalar)
+//    { PointT result = p; result /= scalar; return (result); }
+//  }
+//}
 
 #endif  //#ifndef PCL_REGISTER_POINT_STRUCT_H_

@@ -76,12 +76,12 @@
   (pcl::Narf36)                 \
   (pcl::IntensityGradient)      \
   (pcl::PointWithScale)         \
-  (pcl::ReferenceFrame)         \
   (pcl::PointSurfel)            \
   (pcl::ShapeContext1980)       \
   (pcl::SHOT352)                \
   (pcl::SHOT1344)               \
-  (pcl::PointUV)
+  (pcl::PointUV)                \
+  (pcl::ReferenceFrame)
 
 // Define all point types that include RGB data
 #define PCL_RGB_POINT_TYPES     \
@@ -220,6 +220,11 @@ namespace pcl
    */
   struct EIGEN_ALIGN16 PointXYZ : public _PointXYZ
   {
+    inline PointXYZ (const _PointXYZ &p)
+    {
+      x = p.x; y = p.y; z = p.z; data[3] = 1.0f;
+    }
+
     inline PointXYZ ()
     {
       x = y = z = 0.0f;
@@ -270,6 +275,11 @@ namespace pcl
   };
   struct RGB: public _RGB
   {
+    inline RGB (const _RGB &p)
+    {
+      rgba = p.rgba;
+    }
+
     inline RGB ()
     {
       r = g = b = 0;
@@ -296,6 +306,11 @@ namespace pcl
   };
   struct Intensity: public _Intensity
   {
+    inline Intensity (const _Intensity &p)
+    {
+      intensity = p.intensity;
+    }
+
     inline Intensity ()
     {
       intensity = 0;
@@ -327,6 +342,12 @@ namespace pcl
 
   struct PointXYZI : public _PointXYZI
   {
+    inline PointXYZI (const _PointXYZI &p)
+    {
+      x = p.x; y = p.y; z = p.z; data[3] = 1.0f;
+      intensity = p.intensity;
+    }
+
     inline PointXYZI ()
     {
       x = y = z = 0.0f;
@@ -356,6 +377,12 @@ namespace pcl
 
   struct PointXYZL : public _PointXYZL
   {
+    inline PointXYZL (const _PointXYZL &p)
+    {
+      x = p.x; y = p.y; z = p.z; data[3] = 1.0f;
+      label = p.label;
+    }
+
     inline PointXYZL ()
     {
       x = y = z = 0.0f;
@@ -411,6 +438,12 @@ namespace pcl
 
   struct EIGEN_ALIGN16 PointXYZRGBA : public _PointXYZRGBA
   {
+    inline PointXYZRGBA (const _PointXYZRGBA &p)
+    {
+      x = p.x; y = p.y; z = p.z; data[3] = 1.0f;
+      rgba = p.rgba;
+    }
+
     inline PointXYZRGBA ()
     {
       x = y = z = 0.0f;
@@ -484,6 +517,12 @@ namespace pcl
    */
   struct EIGEN_ALIGN16 PointXYZRGB : public _PointXYZRGB
   {
+    inline PointXYZRGB (const _PointXYZRGB &p)
+    {
+      x = p.x; y = p.y; z = p.z; data[3] = 1.0f;
+      rgb = p.rgb;
+    }
+
     inline PointXYZRGB ()
     {
       x = y = z = 0.0f;
@@ -519,6 +558,13 @@ namespace pcl
 
   struct EIGEN_ALIGN16 PointXYZRGBL : public _PointXYZRGBL
   {
+    inline PointXYZRGBL (const _PointXYZRGBL &p)
+    {
+      x = p.x; y = p.y; z = p.z; data[3] = 1.0f;
+      rgba = p.rgba;
+      label = p.label;
+    }
+
     inline PointXYZRGBL ()
     {
       x = y = z = 0.0f;
@@ -563,6 +609,12 @@ namespace pcl
 
   struct EIGEN_ALIGN16 PointXYZHSV : public _PointXYZHSV
   {
+    inline PointXYZHSV (const _PointXYZHSV &p)
+    {
+      x = p.x; y = p.y; z = p.z; data[3] = 1.0f;
+      h = p.h; s = p.s; v = p.v;
+    }
+
     inline PointXYZHSV ()
     {
       x = y = z = 0.0f;
@@ -655,14 +707,23 @@ namespace pcl
 
   struct Normal : public _Normal
   {
+    inline Normal (const _Normal &p)
+    {
+      normal_x = p.normal_x; normal_y = p.normal_y; normal_z = p.normal_z;
+      data_n[3] = 0.0f;
+      curvature = p.curvature;
+    }
+
     inline Normal ()
     {
       normal_x = normal_y = normal_z = data_n[3] = 0.0f;
+      curvature = 0;
     }
 
     inline Normal (float n_x, float n_y, float n_z)
     {
       normal_x = n_x; normal_y = n_y; normal_z = n_z;
+      curvature = 0;
       data_n[3] = 0.0f;
     }
 
@@ -686,6 +747,12 @@ namespace pcl
 
   struct EIGEN_ALIGN16 Axis : public _Axis
   {
+    inline Axis (const _Axis &p)
+    {
+      normal_x = p.normal_x; normal_y = p.normal_y; normal_z = p.normal_z;
+      data_n[3] = 0.0f;
+    }
+
     inline Axis ()
     {
       normal_x = normal_y = normal_z = data_n[3] = 0.0f;
@@ -732,6 +799,13 @@ namespace pcl
 
   struct PointNormal : public _PointNormal
   {
+    inline PointNormal (const _PointNormal &p)
+    {
+      x = p.x; y = p.y; z = p.z; data[3] = 1.0f;
+      normal_x = p.normal_x; normal_y = p.normal_y; z = p.normal_z; data_n[3] = 0.0f;
+      curvature = p.curvature;
+    }
+
     inline PointNormal ()
     {
       x = y = z = 0.0f;
@@ -804,6 +878,14 @@ namespace pcl
   };
   struct PointXYZRGBNormal : public _PointXYZRGBNormal
   {
+    inline PointXYZRGBNormal (const _PointXYZRGBNormal &p)
+    {
+      x = p.x; y = p.y; z = p.z; data[3] = 1.0f;
+      normal_x = p.normal_x; normal_y = p.normal_y; z = p.normal_z; data_n[3] = 0.0f;
+      curvature = p.curvature;
+      rgba = p.rgba;
+    }
+
     inline PointXYZRGBNormal ()
     {
       x = y = z = 0.0f;
@@ -846,6 +928,14 @@ namespace pcl
 
   struct PointXYZINormal : public _PointXYZINormal
   {
+    inline PointXYZINormal (const _PointXYZINormal &p)
+    {
+      x = p.x; y = p.y; z = p.z; data[3] = 1.0f;
+      normal_x = p.normal_x; normal_y = p.normal_y; z = p.normal_z; data_n[3] = 0.0f;
+      curvature = p.curvature;
+      intensity = p.intensity;
+    }
+
     inline PointXYZINormal ()
     {
       x = y = z = 0.0f;
@@ -880,6 +970,12 @@ namespace pcl
 
   struct PointWithRange : public _PointWithRange
   {
+    inline PointWithRange (const _PointWithRange &p)
+    {
+      x = p.x; y = p.y; z = p.z; data[3] = 1.0f;
+      range = p.range;
+    }
+
     inline PointWithRange ()
     {
       x = y = z = 0.0f;
@@ -915,11 +1011,18 @@ namespace pcl
    */
   struct EIGEN_ALIGN16 PointWithViewpoint : public _PointWithViewpoint
   {
-    PointWithViewpoint(float _x=0.0f, float _y=0.0f, float _z=0.0f, float _vp_x=0.0f, float _vp_y=0.0f, float _vp_z=0.0f)
+    inline PointWithViewpoint (const _PointWithViewpoint &p)
     {
-      x=_x; y=_y; z=_z;
+      x = p.x; y = p.y; z = p.z; data[3] = 1.0f;
+      vp_x = p.vp_x; vp_y = p.vp_y; vp_z = p.vp_z;
+    }
+
+    inline PointWithViewpoint (float _x = 0.0f, float _y = 0.0f, float _z = 0.0f, 
+                               float _vp_x = 0.0f, float _vp_y = 0.0f, float _vp_z = 0.0f)
+    {
+      x = _x; y = _y; z = _z;
       data[3] = 1.0f;
-      vp_x=_vp_x; vp_y=_vp_y; vp_z=_vp_z;
+      vp_x = _vp_x; vp_y = _vp_y; vp_z = _vp_z;
     }
   };
   inline std::ostream& operator << (std::ostream& os, const PointWithViewpoint& p)
@@ -1125,13 +1228,13 @@ namespace pcl
   {
     union
     {
+      float rf[9];
       struct
       {
-        _Axis x_axis;
-        _Axis y_axis;
-        _Axis z_axis;
+        float x_axis[3];
+        float y_axis[3];
+        float z_axis[3];
       };
-      float rf[12];
     };
 
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
@@ -1139,18 +1242,16 @@ namespace pcl
 
   struct EIGEN_ALIGN16 ReferenceFrame : public _ReferenceFrame
   {
-    ReferenceFrame ()
+    inline ReferenceFrame (const _ReferenceFrame &p)
     {
-      x_axis = y_axis = z_axis = Axis();
-      //confidence = 0.;
+      for (int d = 0; d < 9; ++d)
+        rf[d] = p.rf[d];
     }
 
-    ReferenceFrame (Axis const &x, Axis const &y, Axis const &z/*, float c = 1.0*/)
+    inline ReferenceFrame ()
     {
-      x_axis = x;
-      y_axis = y;
-      z_axis = z;
-      //confidence = c;
+      for (int d = 0; d < 3; ++d)
+        x_axis[d] = y_axis[d] = z_axis[d] = 0;
     }
 
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
@@ -1158,7 +1259,10 @@ namespace pcl
 
   inline std::ostream& operator << (std::ostream& os, const ReferenceFrame& p)
   {
-    os << "(" << p.x_axis << "," << p.y_axis << "," << p.z_axis /*<< " - " << p.confidence*/ << ")";
+    os << "(" 
+       << p.x_axis[0] << " " << p.x_axis[1] << " " << p.x_axis[2] << "," 
+       << p.y_axis[0] << " " << p.y_axis[1] << " " << p.y_axis[2] << "," 
+       << p.z_axis[0] << " " << p.z_axis[1] << " " << p.z_axis[2] << ")";
     return (os);
   }
 
@@ -1332,6 +1436,15 @@ namespace pcl
 
   struct PointWithScale : public _PointWithScale
   {
+    inline PointWithScale (const _PointWithScale &p)
+    {
+      x = p.x; y = p.y; z = p.z; data[3] = 1.0f;
+      scale = p.scale;
+      angle = p.angle;
+      response = p.response;
+      octave = p.octave;
+    }
+
     inline PointWithScale ()
     {
       x = y = z = 0.0f;
@@ -1408,6 +1521,15 @@ namespace pcl
 
   struct PointSurfel : public _PointSurfel
   {
+    inline PointSurfel (const _PointSurfel &p)
+    {
+      x = p.x; y = p.y; z = p.z; data[3] = 1.0f;
+      rgba = p.rgba;
+      radius = p.radius;
+      confidence = p.confidence;
+      curvature = p.curvature;
+    }
+
     inline PointSurfel ()
     {
       x = y = z = 0.0f;

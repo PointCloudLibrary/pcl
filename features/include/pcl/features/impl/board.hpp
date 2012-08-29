@@ -589,9 +589,12 @@ pcl::BOARDLocalReferenceFrameEstimation<PointInT, PointNT, PointOutT>::computeFe
       output.is_dense = false;
     }
 
-    rf.x_axis.getNormalVector3fMap () = currentLrf.row (0);
-    rf.y_axis.getNormalVector3fMap () = currentLrf.row (1);
-    rf.z_axis.getNormalVector3fMap () = currentLrf.row (2);
+    for (int d = 0; d < 3; ++d)
+    {
+      rf.x_axis[d] = currentLrf (0, d);
+      rf.y_axis[d] = currentLrf (1, d);
+      rf.z_axis[d] = currentLrf (2, d);
+    }
   }
 }
 

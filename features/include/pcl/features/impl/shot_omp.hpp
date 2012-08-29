@@ -144,9 +144,9 @@ pcl::SHOTEstimationOMP<PointInT, PointNT, PointOutT, PointRFT>::computeFeature (
 
     bool lrf_is_nan = false;
     const PointRFT& current_frame = (*frames_)[idx];
-    if (!pcl_isfinite (current_frame.rf[0]) ||
-        !pcl_isfinite (current_frame.rf[4]) ||
-        !pcl_isfinite (current_frame.rf[11]))
+    if (!pcl_isfinite (current_frame.x_axis[0]) ||
+        !pcl_isfinite (current_frame.y_axis[0]) ||
+        !pcl_isfinite (current_frame.z_axis[0]))
     {
       PCL_WARN ("[pcl::%s::computeFeature] The local reference frame is not valid! Aborting description of point with index %d\n",
         getClassName ().c_str (), (*indices_)[idx]);
@@ -177,8 +177,12 @@ pcl::SHOTEstimationOMP<PointInT, PointNT, PointOutT, PointRFT>::computeFeature (
     // Copy into the resultant cloud
     for (int d = 0; d < shot.size (); ++d)
       output.points[idx].descriptor[d] = shot[d];
-    for (int d = 0; d < 9; ++d)
-      output.points[idx].rf[d] = frames_->points[idx].rf[(4 * (d / 3) + (d % 3))];
+    for (int d = 0; d < 3; ++d)
+    {
+      output.points[idx].rf[d + 0] = frames_->points[idx].x_axis[d];
+      output.points[idx].rf[d + 3] = frames_->points[idx].y_axis[d];
+      output.points[idx].rf[d + 6] = frames_->points[idx].z_axis[d];
+    }
   }
 }
 
@@ -218,9 +222,9 @@ pcl::SHOTColorEstimationOMP<PointInT, PointNT, PointOutT, PointRFT>::computeFeat
 
     bool lrf_is_nan = false;
     const PointRFT& current_frame = (*frames_)[idx];
-    if (!pcl_isfinite (current_frame.rf[0]) ||
-        !pcl_isfinite (current_frame.rf[4]) ||
-        !pcl_isfinite (current_frame.rf[11]))
+    if (!pcl_isfinite (current_frame.x_axis[0]) ||
+        !pcl_isfinite (current_frame.y_axis[0]) ||
+        !pcl_isfinite (current_frame.z_axis[0]))
     {
       PCL_WARN ("[pcl::%s::computeFeature] The local reference frame is not valid! Aborting description of point with index %d\n",
         getClassName ().c_str (), (*indices_)[idx]);
@@ -247,8 +251,12 @@ pcl::SHOTColorEstimationOMP<PointInT, PointNT, PointOutT, PointRFT>::computeFeat
     // Copy into the resultant cloud
     for (int d = 0; d < shot.size (); ++d)
       output.points[idx].descriptor[d] = shot[d];
-    for (int d = 0; d < 9; ++d)
-      output.points[idx].rf[d] = frames_->points[idx].rf[ (4*(d/3) + (d%3)) ];
+    for (int d = 0; d < 3; ++d)
+    {
+      output.points[idx].rf[d + 0] = frames_->points[idx].x_axis[d];
+      output.points[idx].rf[d + 3] = frames_->points[idx].y_axis[d];
+      output.points[idx].rf[d + 6] = frames_->points[idx].z_axis[d];
+    }
   }
 }
 

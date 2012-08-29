@@ -76,9 +76,12 @@ pcl::SHOTLocalReferenceFrameEstimationOMP<PointInT, PointOutT>::computeFeature (
       output.is_dense = false;
     }
 
-    output_rf.x_axis.getNormalVector3fMap () = rf.row (0);
-    output_rf.y_axis.getNormalVector3fMap () = rf.row (1);
-    output_rf.z_axis.getNormalVector3fMap () = rf.row (2);
+    for (int d = 0; d < 3; ++d)
+    {
+      output_rf.x_axis[d] = rf.row (0)[d];
+      output_rf.y_axis[d] = rf.row (1)[d];
+      output_rf.z_axis[d] = rf.row (2)[d];
+    }
   }
 
 }

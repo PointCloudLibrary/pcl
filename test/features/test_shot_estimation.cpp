@@ -386,10 +386,10 @@ testSHOTLocalReferenceFrame (const typename PointCloud<PointT>::Ptr & points,
   ASSERT_EQ (f2->points.size (), f->points.size ());
   for (int i = 0; i < static_cast<int> (frames->points.size ()); ++i)
   {
-    for (unsigned j = 0; j < 12; ++j)
+    for (unsigned j = 0; j < 9; ++j)
       ASSERT_EQ (frames->points[i].rf[j], f->points[i].rf[j]);
 
-    for (unsigned j = 0; j < 12; ++j)
+    for (unsigned j = 0; j < 9; ++j)
       ASSERT_EQ (frames->points[i].rf[j], f2->points[i].rf[j]);
   }
 
@@ -1178,10 +1178,10 @@ TEST (PCL, USCEstimation)
     ASSERT_EQ (f2->points.size (), f->points.size ());
     for (int i = 0; i < static_cast<int> (frames->points.size ()); ++i)
     {
-      for (unsigned j = 0; j < 12; ++j)
+      for (unsigned j = 0; j < 9; ++j)
         ASSERT_EQ (frames->points[i].rf[j], f->points[i].rf[j]);
 
-      for (unsigned j = 0; j < 12; ++j)
+      for (unsigned j = 0; j < 9; ++j)
         ASSERT_EQ (frames->points[i].rf[j], f2->points[i].rf[j]);
     }
 

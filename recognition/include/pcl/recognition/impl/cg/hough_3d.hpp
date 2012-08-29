@@ -121,9 +121,13 @@ pcl::Hough3DGrouping<PointModelT, PointSceneT, PointModelRfT, PointSceneRfT>::tr
   // compute model votes
   for (size_t i = 0; i < input_->size (); ++i)
   {
-    model_votes_[i].x () = input_rf_->at (i).x_axis.getNormalVector3fMap ().dot (centroid - input_->at (i).getVector3fMap ());
-    model_votes_[i].y () = input_rf_->at (i).y_axis.getNormalVector3fMap ().dot (centroid - input_->at (i).getVector3fMap ());
-    model_votes_[i].z () = input_rf_->at (i).z_axis.getNormalVector3fMap ().dot (centroid - input_->at (i).getVector3fMap ());
+    Eigen::Vector3f x_ax ((*input_rf_)[i].x_axis[0], (*input_rf_)[i].x_axis[1], (*input_rf_)[i].x_axis[2]);
+    Eigen::Vector3f y_ax ((*input_rf_)[i].y_axis[0], (*input_rf_)[i].y_axis[1], (*input_rf_)[i].y_axis[2]);
+    Eigen::Vector3f z_ax ((*input_rf_)[i].z_axis[0], (*input_rf_)[i].z_axis[1], (*input_rf_)[i].z_axis[2]);
+
+    model_votes_[i].x () = x_ax.dot (centroid - input_->at (i).getVector3fMap ());
+    model_votes_[i].y () = y_ax.dot (centroid - input_->at (i).getVector3fMap ());
+    model_votes_[i].z () = z_ax.dot (centroid - input_->at (i).getVector3fMap ());
   }
 
   needs_training_ = false;
@@ -195,12 +199,16 @@ pcl::Hough3DGrouping<PointModelT, PointSceneT, PointModelRfT, PointSceneRfT>::ho
     const Eigen::Vector3f& scene_point = scene_->at (scene_index).getVector3fMap ();
     const PointSceneRfT&   scene_point_rf = scene_rf_->at (scene_index);
     
+    Eigen::Vector3f scene_point_rf_x (scene_point_rf.x_axis[0], scene_point_rf.x_axis[1], scene_point_rf.x_axis[2]);
+    Eigen::Vector3f scene_point_rf_y (scene_point_rf.y_axis[0], scene_point_rf.y_axis[1], scene_point_rf.y_axis[2]);
+    Eigen::Vector3f scene_point_rf_z (scene_point_rf.z_axis[0], scene_point_rf.z_axis[1], scene_point_rf.z_axis[2]);
+
     //const Eigen::Vector3f& model_point = input_->at (model_index).getVector3fMap ();
     const Eigen::Vector3f& model_point_vote = model_votes_[model_index];
 
-    scene_votes[i].x () = scene_point_rf.x_axis.normal_x * model_point_vote.x () + scene_point_rf.y_axis.normal_x * model_point_vote.y () + scene_point_rf.z_axis.normal_x * model_point_vote.z () + scene_point.x ();
-    scene_votes[i].y () = scene_point_rf.x_axis.normal_y * model_point_vote.x () + scene_point_rf.y_axis.normal_y * model_point_vote.y () + scene_point_rf.z_axis.normal_y * model_point_vote.z () + scene_point.y ();
-    scene_votes[i].z () = scene_point_rf.x_axis.normal_z * model_point_vote.x () + scene_point_rf.y_axis.normal_z * model_point_vote.y () + scene_point_rf.z_axis.normal_z * model_point_vote.z () + scene_point.z ();
+    scene_votes[i].x () = scene_point_rf_x[0] * model_point_vote.x () + scene_point_rf_y[0] * model_point_vote.y () + scene_point_rf_z[0] * model_point_vote.z () + scene_point.x ();
+    scene_votes[i].y () = scene_point_rf_x[1] * model_point_vote.x () + scene_point_rf_y[1] * model_point_vote.y () + scene_point_rf_z[1] * model_point_vote.z () + scene_point.y ();
+    scene_votes[i].z () = scene_point_rf_x[2] * model_point_vote.x () + scene_point_rf_y[2] * model_point_vote.y () + scene_point_rf_z[2] * model_point_vote.z () + scene_point.z ();
 
     if (scene_votes[i].x () < d_min.x ()) 
       d_min.x () = scene_votes[i].x (); 

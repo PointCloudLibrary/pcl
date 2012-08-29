@@ -87,7 +87,7 @@ namespace pcl
     template<typename T> struct decomposeArray
     {
       typedef typename boost::remove_all_extents<T>::type type;
-      static const uint32_t value = sizeof(T) / sizeof(type);
+      static const uint32_t value = sizeof (T) / sizeof (type);
     };
 
     // For non-POD point types, this is specialized to return the corresponding POD type.

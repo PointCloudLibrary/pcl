@@ -201,10 +201,12 @@ pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT>::createBinDistan
   //if (!pcl_isfinite (current_frame.rf[0]) || !pcl_isfinite (current_frame.rf[4]) || !pcl_isfinite (current_frame.rf[11]))
     //return;
 
+  Eigen::Vector4f current_frame_z (current_frame.z_axis[0], current_frame.z_axis[1], current_frame.z_axis[2], 0);
+
   for (size_t i_idx = 0; i_idx < indices.size (); ++i_idx)
   {
     //double cosineDesc = feat[i].rf[6]*normal[0] + feat[i].rf[7]*normal[1] + feat[i].rf[8]*normal[2];
-    double cosineDesc = normals_->points[indices[i_idx]].getNormalVector4fMap ().dot (current_frame.z_axis.getNormalVector4fMap ());
+    double cosineDesc = normals_->points[indices[i_idx]].getNormalVector4fMap ().dot (current_frame_z);
 
     if (cosineDesc > 1.0)
       cosineDesc = 1.0;
@@ -241,6 +243,10 @@ pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT>::interpolateSing
   const Eigen::Vector4f& central_point = (*input_)[(*indices_)[index]].getVector4fMap ();
   const PointRFT& current_frame = (*frames_)[index];
 
+  Eigen::Vector4f current_frame_x (current_frame.x_axis[0], current_frame.x_axis[1], current_frame.x_axis[2], 0);
+  Eigen::Vector4f current_frame_y (current_frame.y_axis[0], current_frame.y_axis[1], current_frame.y_axis[2], 0);
+  Eigen::Vector4f current_frame_z (current_frame.z_axis[0], current_frame.z_axis[1], current_frame.z_axis[2], 0);
+
   for (size_t i_idx = 0; i_idx < indices.size (); ++i_idx)
   {
     Eigen::Vector4f delta = surface_->points[indices[i_idx]].getVector4fMap () - central_point;
@@ -252,9 +258,9 @@ pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT>::interpolateSing
     if (areEquals (distance, 0.0))
       continue;
 
-    double xInFeatRef = delta.dot (current_frame.x_axis.getNormalVector4fMap ());
-    double yInFeatRef = delta.dot (current_frame.y_axis.getNormalVector4fMap ());
-    double zInFeatRef = delta.dot (current_frame.z_axis.getNormalVector4fMap ());
+    double xInFeatRef = delta.dot (current_frame_x);
+    double yInFeatRef = delta.dot (current_frame_y);
+    double zInFeatRef = delta.dot (current_frame_z);
 
     // To avoid numerical problems afterwards
     if (fabs (yInFeatRef) < 1E-30)
@@ -413,6 +419,10 @@ pcl::SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::interpolateDou
 
   int shapeToColorStride = nr_grid_sector_*(nr_bins_shape+1);
 
+  Eigen::Vector4f current_frame_x (current_frame.x_axis[0], current_frame.x_axis[1], current_frame.x_axis[2], 0);
+  Eigen::Vector4f current_frame_y (current_frame.y_axis[0], current_frame.y_axis[1], current_frame.y_axis[2], 0);
+  Eigen::Vector4f current_frame_z (current_frame.z_axis[0], current_frame.z_axis[1], current_frame.z_axis[2], 0);
+
   for (size_t i_idx = 0; i_idx < indices.size (); ++i_idx)
   {
     Eigen::Vector4f delta = surface_->points[indices[i_idx]].getVector4fMap () - central_point;
@@ -424,9 +434,9 @@ pcl::SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::interpolateDou
     if (areEquals (distance, 0.0))
       continue;
 
-    double xInFeatRef = delta.dot (current_frame.x_axis.getNormalVector4fMap ());
-    double yInFeatRef = delta.dot (current_frame.y_axis.getNormalVector4fMap ());
-    double zInFeatRef = delta.dot (current_frame.z_axis.getNormalVector4fMap ());
+    double xInFeatRef = delta.dot (current_frame_x);
+    double yInFeatRef = delta.dot (current_frame_y);
+    double zInFeatRef = delta.dot (current_frame_z);
 
     // To avoid numerical problems afterwards
     if (fabs (yInFeatRef) < 1E-30)
@@ -635,10 +645,12 @@ pcl::SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::computePointSH
   {
     binDistanceShape.resize (nNeighbors);
 
+    Eigen::Vector4f current_frame_z (current_frame.z_axis[0], current_frame.z_axis[1], current_frame.z_axis[2], 0); 
+        
     for (size_t i_idx = 0; i_idx < indices.size (); ++i_idx)
     {
       //feat[i].rf[6]*normal[0] + feat[i].rf[7]*normal[1] + feat[i].rf[8]*normal[2];
-      double cosineDesc = normals_->points[indices[i_idx]].getNormalVector4fMap ().dot (current_frame.z_axis.getNormalVector4fMap ());
+      double cosineDesc = normals_->points[indices[i_idx]].getNormalVector4fMap ().dot (current_frame_z);
 
       if (cosineDesc > 1.0)
         cosineDesc = 1.0;
@@ -766,9 +778,9 @@ pcl::SHOTEstimation<PointInT, PointNT, PointOutT, PointRFT>::computeFeature (pcl
   {
     bool lrf_is_nan = false;
     const PointRFT& current_frame = (*frames_)[idx];
-    if (!pcl_isfinite (current_frame.rf[0]) ||
-        !pcl_isfinite (current_frame.rf[4]) ||
-        !pcl_isfinite (current_frame.rf[11]))
+    if (!pcl_isfinite (current_frame.x_axis[0]) ||
+        !pcl_isfinite (current_frame.y_axis[0]) ||
+        !pcl_isfinite (current_frame.z_axis[0]))
     {
       PCL_WARN ("[pcl::%s::computeFeature] The local reference frame is not valid! Aborting description of point with index %d\n",
         getClassName ().c_str (), (*indices_)[idx]);
@@ -795,8 +807,12 @@ pcl::SHOTEstimation<PointInT, PointNT, PointOutT, PointRFT>::computeFeature (pcl
     // Copy into the resultant cloud
     for (int d = 0; d < descLength_; ++d)
       output.points[idx].descriptor[d] = shot_[d];
-    for (int d = 0; d < 9; ++d)
-      output.points[idx].rf[d] = frames_->points[idx].rf[ (4*(d/3) + (d%3)) ];
+    for (int d = 0; d < 3; ++d)
+    {
+      output.points[idx].rf[d + 0] = frames_->points[idx].x_axis[d];
+      output.points[idx].rf[d + 3] = frames_->points[idx].y_axis[d];
+      output.points[idx].rf[d + 6] = frames_->points[idx].z_axis[d];
+    }
   }
 }
 
@@ -835,9 +851,9 @@ pcl::SHOTEstimation<PointInT, PointNT, Eigen::MatrixXf, PointRFT>::computeFeatur
   {
     bool lrf_is_nan = false;
     const PointRFT& current_frame = (*frames_)[idx];
-    if (!pcl_isfinite (current_frame.rf[0]) ||
-        !pcl_isfinite (current_frame.rf[4]) ||
-        !pcl_isfinite (current_frame.rf[11]))
+    if (!pcl_isfinite (current_frame.x_axis[0]) ||
+        !pcl_isfinite (current_frame.y_axis[0]) ||
+        !pcl_isfinite (current_frame.z_axis[0]))
     {
       PCL_WARN ("[pcl::%s::computeFeature] The local reference frame is not valid! Aborting description of point with index %d\n",
         getClassName ().c_str (), (*indices_)[idx]);
@@ -860,8 +876,12 @@ pcl::SHOTEstimation<PointInT, PointNT, Eigen::MatrixXf, PointRFT>::computeFeatur
     // Copy into the resultant cloud
     for (int d = 0; d < descLength_; ++d)
       output.points (idx, d) = shot_[d];
-    for (int d = 0; d < 9; ++d)
-      output.points (idx, shot_.size () + d) = frames_->points[idx].rf[ (4*(d/3) + (d%3)) ];
+    for (int d = 0; d < 3; ++d)
+    {
+      output.points (idx, shot_.size () + 0 + d) = frames_->points[idx].x_axis[d];
+      output.points (idx, shot_.size () + 3 + d) = frames_->points[idx].y_axis[d];
+      output.points (idx, shot_.size () + 6 + d) = frames_->points[idx].z_axis[d];
+    }
   }
 }
 
@@ -899,9 +919,9 @@ pcl::SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::computeFeature
   {
     bool lrf_is_nan = false;
     const PointRFT& current_frame = (*frames_)[idx];
-    if (!pcl_isfinite (current_frame.rf[0]) ||
-        !pcl_isfinite (current_frame.rf[4]) ||
-        !pcl_isfinite (current_frame.rf[11]))
+    if (!pcl_isfinite (current_frame.x_axis[0]) ||
+        !pcl_isfinite (current_frame.y_axis[0]) ||
+        !pcl_isfinite (current_frame.z_axis[0]))
     {
       PCL_WARN ("[pcl::%s::computeFeature] The local reference frame is not valid! Aborting description of point with index %d\n",
         getClassName ().c_str (), (*indices_)[idx]);
@@ -928,8 +948,12 @@ pcl::SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::computeFeature
     // Copy into the resultant cloud
     for (int d = 0; d < descLength_; ++d)
       output.points[idx].descriptor[d] = shot_[d];
-    for (int d = 0; d < 9; ++d)
-      output.points[idx].rf[d] = frames_->points[idx].rf[ (4*(d/3) + (d%3)) ];
+    for (int d = 0; d < 3; ++d)
+    {
+      output.points[idx].rf[d + 0] = frames_->points[idx].x_axis[d];
+      output.points[idx].rf[d + 3] = frames_->points[idx].y_axis[d];
+      output.points[idx].rf[d + 6] = frames_->points[idx].z_axis[d];
+    }
   }
 }
 
@@ -971,9 +995,9 @@ pcl::SHOTColorEstimation<PointInT, PointNT, Eigen::MatrixXf, PointRFT>::computeF
   {
     bool lrf_is_nan = false;
     const PointRFT& current_frame = (*frames_)[idx];
-    if (!pcl_isfinite (current_frame.rf[0]) ||
-        !pcl_isfinite (current_frame.rf[4]) ||
-        !pcl_isfinite (current_frame.rf[11]))
+    if (!pcl_isfinite (current_frame.x_axis[0]) ||
+        !pcl_isfinite (current_frame.y_axis[0]) ||
+        !pcl_isfinite (current_frame.z_axis[0]))
     {
       PCL_WARN ("[pcl::%s::computeFeature] The local reference frame is not valid! Aborting description of point with index %d\n",
         getClassName ().c_str (), (*indices_)[idx]);
@@ -996,8 +1020,12 @@ pcl::SHOTColorEstimation<PointInT, PointNT, Eigen::MatrixXf, PointRFT>::computeF
     // Copy into the resultant cloud
     for (int d = 0; d < descLength_; ++d)
       output.points (idx, d) = shot_[d];
-    for (int d = 0; d < 9; ++d)
-      output.points (idx, shot_.size () + d) = frames_->points[idx].rf[ (4*(d/3) + (d%3)) ];
+    for (int d = 0; d < 3; ++d)
+    {
+      output.points (idx, shot_.size () + 0 + d) = frames_->points[idx].x_axis[d];
+      output.points (idx, shot_.size () + 3 + d) = frames_->points[idx].y_axis[d];
+      output.points (idx, shot_.size () + 6 + d) = frames_->points[idx].z_axis[d];
+    }
   }
 }
 
