@@ -182,10 +182,7 @@ pcl::registration::CorrespondenceEstimation<PointSource, PointTarget>::determine
       if (distance[0] > max_dist_sqr)
         continue;
 
-      if (target_indices_)
-        target_idx = (*target_indices_)[index[0]];
-      else
-        target_idx = index[0];
+      target_idx = index[0];
 
       tree_reciprocal.nearestKSearch (target_->points[target_idx], 1, index_reciprocal, distance_reciprocal);
       if (distance_reciprocal[0] > max_dist_sqr || *idx != index_reciprocal[0])
@@ -214,10 +211,7 @@ pcl::registration::CorrespondenceEstimation<PointSource, PointTarget>::determine
       if (distance[0] > max_dist_sqr)
         continue;
 
-      if (target_indices_)
-        target_idx = (*target_indices_)[index[0]];
-      else
-        target_idx = index[0];
+      target_idx = index[0];
 
       // Copy the target data to a target PointSource format so we can search in the tree_reciprocal
       pcl::for_each_type<FieldList> (pcl::NdConcatenateFunctor <PointTarget, PointSource> (

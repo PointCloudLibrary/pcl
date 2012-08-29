@@ -244,10 +244,7 @@ pcl::registration::CorrespondenceEstimationNormalShooting<PointSource, PointTarg
         continue;
 
       // Check if the correspondence is reciprocal
-      if (target_indices_)
-        target_idx = (*target_indices_)[nn_indices[min_index]];
-      else
-        target_idx = nn_indices[min_index];
+      target_idx = nn_indices[min_index];
       tree_reciprocal.nearestKSearch (target_->points[target_idx], 1, index_reciprocal, distance_reciprocal);
 
       if (*idx_i != index_reciprocal[0])
@@ -304,10 +301,7 @@ pcl::registration::CorrespondenceEstimationNormalShooting<PointSource, PointTarg
         continue;
 
       // Check if the correspondence is reciprocal
-      if (target_indices_)
-        target_idx = (*target_indices_)[nn_indices[min_index]];
-      else
-        target_idx = nn_indices[min_index];
+      target_idx = nn_indices[min_index];
       tree_reciprocal.nearestKSearch (target_->points[target_idx], 1, index_reciprocal, distance_reciprocal);
 
       if (*idx_i != index_reciprocal[0])
