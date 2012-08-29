@@ -58,7 +58,6 @@ if(build)
             )
     endif(OPENNI_FOUND)
    
-    find_package(libusb-1.0)
     if(LIBUSB_1_FOUND)
         set(DINAST_GRABBER_INCLUDES
             include/pcl/io/dinast_grabber.h
@@ -171,13 +170,12 @@ if(build)
       target_link_libraries(${LIB_NAME} ${PNG_LIBRARY})
     endif(PNG_FOUND)
 
+    if(LIBUSB_1_FOUND)
+      target_link_libraries(${LIB_NAME} ${LIBUSB_1_LIBRARIES})
+    endif(LIBUSB_1_FOUND)
+
     if(OPENNI_FOUND)
       target_link_libraries(${LIB_NAME} ${OPENNI_LIBRARIES})
-      if(NOT WIN32)
-        find_package(libusb-1.0 REQUIRED)
-        target_link_libraries(${LIB_NAME} ${LIBUSB_1_LIBRARIES})
-        include_directories(${LIBUSB_1_INCLUDE_DIR})
-      endif()
     endif(OPENNI_FOUND)
 
     set(EXT_DEPS eigen3)

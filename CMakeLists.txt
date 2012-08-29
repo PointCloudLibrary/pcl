@@ -205,6 +205,13 @@ if(NOT PCL_SHARED_LIBS OR WIN32)
 endif(NOT PCL_SHARED_LIBS OR WIN32)
 find_package(FLANN 1.7.0 REQUIRED)
 include_directories(SYSTEM ${FLANN_INCLUDE_DIRS})
+
+# libusb-1.0
+find_package(libusb-1.0)
+if(LIBUSB_1_FOUND)
+  include_directories(${LIBUSB_1_INCLUDE_DIR})
+endif(LIBUSB_1_FOUND)
+
 # OpenNI
 find_package(OpenNI)
 if (OPENNI_FOUND)
