@@ -8,16 +8,16 @@ This algorithm is based on the same concept as the ``pcl::RegionGrowing`` that i
 If you are interested in the understanding of the base idea, please refer to the mentioned tutorial.
 
 There are two main differences in the color-based algorithm. The first one is that it uses color instead of normals.
-The second is that it uses the merging mechanism for over- and under- segmentation control.
+The second is that it uses the merging algorithm for over- and under- segmentation control.
 Let's take a look at how it is done. After the segmentation, an attempt for merging clusters with close colors is made.
 Two neighbouring clusters with a small difference between average color are merged together.
 Then the second merging step takes place. During this step every single cluster is verified by the number of points that it contains.
-If this number is less than the user-defined number than current cluster is merged with the closest neighbouring cluster.
+If this number is less than the user-defined value than current cluster is merged with the closest neighbouring cluster.
 
 The code
 --------
 
-This tutorial requires colored cloud. You can use `this one <http://svn.pointclouds.org/data/tutorials/region_growing__rgb_tutorial.pcd>`_.
+This tutorial requires colored cloud. You can use `this one <http://svn.pointclouds.org/data/tutorials/region_growing_rgb_tutorial.pcd>`_.
 Next what you need to do is to create a file ``region_growing_rgb_segmentation.cpp`` in any editor you prefer and copy the following code inside of it:
 
 .. literalinclude:: sources/region_growing_rgb_segmentation/region_growing_rgb_segmentation.cpp

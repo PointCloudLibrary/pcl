@@ -5,7 +5,7 @@ Region growing segmentation
 
 In this tutorial we will learn how to use the region growing algorithm implemented in the ``pcl::RegionGrowing`` class.
 The purpose of the said algorithm is to merge the points that are close enough in terms of the smoothness constraint.
-Thereby, the output of this algorihm is the set of clusters,
+Thereby, the output of this algorithm is the set of clusters,
 were each cluster is a set of points that are considered to be a part of the same smooth surface.
 The work of this algorithm is based on the comparison of the angles between the points normals.
 
@@ -27,7 +27,7 @@ So we have the sorted cloud. Until there are unlabeled points in the cloud, algo
      * After that every neighbour is tested for the curvature value. If the curvature is less than threshold value then this point is added to the seeds.
      * Current seed is removed from the seeds.
 
-If the seeds set becomes empty this means that the algorithm has grown the region and the process is repeated from the begining.
+If the seeds set becomes empty this means that the algorithm has grown the region and the process is repeated from the beginning.
 You can find the pseudocode for the said algorithm below.
 
 Inputs:
@@ -180,3 +180,9 @@ After the segmentation the cloud viewer window will be opened and you will see s
 
 .. image:: images/region_growing_segmentation_2.jpg
    :height: 200px
+
+On the last image you can see that the colored cloud has many red points. This means that these points belong to the clusters
+that were rejected, because they had too much/little points.
+
+.. image:: images/region_growing_segmentation_3.jpg
+   :height: 300px

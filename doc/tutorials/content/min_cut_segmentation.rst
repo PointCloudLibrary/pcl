@@ -14,7 +14,7 @@ The idea of this algorithm is as follows:
 
  #. For the given point cloud algorithm constructs the graph that contains every single point of the cloud as a set of vertices and two more vertices
     called source and sink. Every vertex of the graph that corresponds to the point is connected with source and sink with the edges.
-    In addition to these, every vertex(except source and sink) has edges that connect the corresponding point with its nearest neighbours.
+    In addition to these, every vertex (except source and sink) has edges that connect the corresponding point with its nearest neighbours.
  #. Algorithm assigns weights for every edge. There are three different types of weight. Let's examine them:
      * First of all it assigns weight to the edges between clouds points. This weight is called smooth cost and is calculated by the formula:
 
