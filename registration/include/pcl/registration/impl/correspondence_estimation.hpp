@@ -53,6 +53,12 @@ pcl::registration::CorrespondenceEstimation<PointSource, PointTarget>::initCompu
     return (false);
   }
 
+  // If the target indices have been given via setIndicesTarget
+  if (target_indices_)
+    tree_->setInputCloud (target_, target_indices_);
+  else
+    tree_->setInputCloud (target_);
+
   return (PCLBase<PointSource>::initCompute ());
 }
 
@@ -71,12 +77,6 @@ pcl::registration::CorrespondenceEstimation<PointSource, PointTarget>::setInputT
   // Set the internal point representation of choice
   if (point_representation_)
     tree_->setPointRepresentation (point_representation_);
-
-  // If the target indices have been given via setIndicesTarget
-  if (target_indices_)
-    tree_->setInputCloud (target_, target_indices_);
-  else
-    tree_->setInputCloud (target_);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
