@@ -338,7 +338,7 @@ getCloudActor (const PointCloud2Ptr &cloud)
 }
 
 int
-outofcoreViewer (boost::filesystem::path tree_root, size_t depth, bool display_octree=true)
+outofcoreViewer (boost::filesystem::path tree_root, int depth, bool display_octree=true)
 {
   cout << boost::filesystem::absolute (tree_root) << endl;
   octree_disk octree (tree_root, true);
@@ -402,11 +402,8 @@ outofcoreViewer (boost::filesystem::path tree_root, size_t depth, bool display_o
 }
 
 void
-print_help (int argc, char **argv)
+print_help (char **argv)
 {
-  //suppress unused parameter warning
-  assert (argc == argc);
-
   print_info ("This program is used to visualize outofcore data structure");
   print_info ("%s <options> <input_tree_dir> \n", argv[0]);
   print_info ("\n");
@@ -429,7 +426,7 @@ main (int argc, char* argv[])
   {
     if (find_switch (argc, argv, "-h"))
     {
-      print_help (argc, argv);
+      print_help (argv);
       return (-1);
     }
   }
@@ -437,7 +434,7 @@ main (int argc, char* argv[])
   // If no arguments specified
   if (argc - 1 < 1)
   {
-    print_help (argc, argv);
+    print_help (argv);
     return (-1);
   }
 

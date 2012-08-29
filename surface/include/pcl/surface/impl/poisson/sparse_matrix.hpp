@@ -511,7 +511,7 @@ namespace pcl
 
       for (int i=0; i<rows; i++)
       {
-        T2 temp ();
+        T2 temp;
         for (int ii = 0; ii < rowSizes[i]; ii++)
         {
           for (int jj = 0; jj < Dim; jj++)
