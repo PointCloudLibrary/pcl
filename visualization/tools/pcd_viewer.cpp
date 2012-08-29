@@ -417,6 +417,11 @@ main (int argc, char** argv)
     //p->addPointCloud<pcl::PointXYZ> (cloud_xyz, geometry_handler, color_handler, cloud_name.str (), viewport);
     p->addPointCloud (cloud, geometry_handler, color_handler, origin, orientation, cloud_name.str (), viewport);
 
+    if (mview)
+      // Add text with file name
+      p->addText (argv[p_file_indices.at (i)], 5, 5, 10, 1.0, 1.0, 1.0, "text_" + std::string (argv[p_file_indices.at (i)]), viewport);
+
+
     // If normal lines are enabled
     if (normals != 0)
     {
@@ -520,6 +525,15 @@ main (int argc, char** argv)
     // Reset camera viewpoint to center of cloud if camera parameters were not passed manually and this is the first loaded cloud
     if (i == 0 && !p->cameraParamsSet ())
       p->resetCameraViewpoint (cloud_name.str ());
+  }
+
+  if (!mview)
+  {
+    std::string str (argv[p_file_indices.at (0)]);
+    for (size_t i = 01; i < p_file_indices.size (); ++i)
+      str += ", " + std::string (argv[p_file_indices.at (i)]);
+
+    p->addText (str, 5, 5, 10, 1.0, 1.0, 1.0, "text_allnames");
   }
 
   if (p)
