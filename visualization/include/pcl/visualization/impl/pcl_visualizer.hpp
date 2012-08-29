@@ -1581,11 +1581,13 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (
 
     createActorFromVTKDataSet (poly_grid, actor, false);
   }
+  addActorToRenderer (actor, viewport);
   actor->GetProperty ()->SetRepresentationToSurface ();
-  actor->GetProperty ()->BackfaceCullingOn ();
+  // Backface culling renders the visualization slower, but guarantees that we see all triangles
+  actor->GetProperty ()->BackfaceCullingOff ();
+  actor->GetProperty ()->SetInterpolationToFlat ();
   actor->GetProperty ()->EdgeVisibilityOff ();
   actor->GetProperty ()->ShadingOff ();
-  addActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
   (*cloud_actor_map_)[id].actor = actor;
@@ -1719,10 +1721,10 @@ pcl::visualization::PCLVisualizer::updatePolygonMesh (
   //vtkSmartPointer<vtkDataArray> scalars;
   //color_handler.getColor (scalars);
   //polydata->GetPointData ()->SetScalars (scalars);
-//  polydata->Update ();
+  //polydata->Update ();
 
-  am_it->second.actor->GetProperty ()->BackfaceCullingOn ();
-//  am_it->second.actor->Modified ();
+  //am_it->second.actor->GetProperty ()->BackfaceCullingOn ();
+  //am_it->second.actor->Modified ();
 
   return (true);
 }
