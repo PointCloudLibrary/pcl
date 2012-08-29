@@ -230,7 +230,7 @@ class SimpleOpenNIViewer
 void
 usage (char ** argv)
 {
-  cout << "usage: " << argv[0] << " [((<device_id> | <path-to-oni-file>) [-imagemode <mode>] | -l [<device_id>]| -h | --help)]" << endl;
+  cout << "usage: " << argv[0] << " [((<device_id> | <path-to-oni-file>) [-imagemode <mode>] | [-depthformat <format>] | -l [<device_id>]| -h | --help)]" << endl;
   cout << argv[0] << " -h | --help : shows this help" << endl;
   cout << argv[0] << " -l : list all available devices" << endl;
   cout << argv[0] << " -l <device-id> : list all available modes for specified device" << endl;
@@ -323,7 +323,13 @@ main (int argc, char ** argv)
   if (pcl::console::parse (argc, argv, "-imagemode", mode) != -1)
     image_mode = static_cast<pcl::OpenNIGrabber::Mode> (mode);
   
+  int depthformat = openni_wrapper::OpenNIDevice::OpenNI_12_bit_depth;
+  pcl::console::parse_argument (argc, argv, "-depthformat", depthformat);
+
   pcl::OpenNIGrabber grabber (device_id, pcl::OpenNIGrabber::OpenNI_Default_Mode, image_mode);
+  // Set the depth output format
+  grabber.getDevice ()->setDepthOutputFormat (static_cast<openni_wrapper::OpenNIDevice::DepthMode> (depthformat));
+
   SimpleOpenNIViewer v (grabber);
   v.run ();
 
