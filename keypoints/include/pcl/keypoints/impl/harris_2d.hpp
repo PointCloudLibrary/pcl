@@ -261,8 +261,8 @@ pcl::HarrisKeypoint2D<PointInT, PointOutT, IntensityT>::detectKeypoints (PointCl
     output.clear ();
     output.reserve (response_->size());
     std::vector<bool> occupency_map (response_->size (), false);    
-    const int width (response_->width);
-    const int height (response_->height);
+    int width (response_->width);
+    int height (response_->height);
     const int occupency_map_size (occupency_map.size ());
 
 #ifdef _OPENMP
