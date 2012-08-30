@@ -173,7 +173,7 @@ pp_callback (const pcl::visualization::PointPickingEvent& event, void* cookie)
       continue;
     PCL_INFO ("Multidimensional field found: %s\n", cloud->fields[i].name.c_str ());
     ph_global.addFeatureHistogram (*cloud, cloud->fields[i].name, idx, ss.str ());
-    ph_global.spinOnce ();
+    ph_global.renderOnce ();
   }
   if (p)
   {
@@ -181,6 +181,7 @@ pp_callback (const pcl::visualization::PointPickingEvent& event, void* cookie)
     event.getPoint (pos.x, pos.y, pos.z);
     p->addText3D<pcl::PointXYZ> (ss.str (), pos, 0.0005, 1.0, 1.0, 1.0, ss.str ());
   }
+  
 }
 
 /* ---[ */
@@ -273,7 +274,6 @@ main (int argc, char** argv)
   // Create the PCLVisualizer object
   boost::shared_ptr<pcl::visualization::PCLPlotter> ph;
   
-
   // Using min_p, max_p to set the global Y min/max range for the histogram
   float min_p = FLT_MAX; float max_p = -FLT_MAX;
 

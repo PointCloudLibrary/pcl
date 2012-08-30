@@ -392,7 +392,6 @@ pcl::visualization::PCLPlotter::spinOnce (const int spin_time)
 {
   //apply current states
   view_->GetRenderer ()->SetBackground (bkg_color_[0], bkg_color_[1], bkg_color_[2]);
-  //int *scr_size = view_->GetRenderWindow ()->GetScreenSize ();
   view_->GetRenderWindow ()->SetSize (win_width_, win_height_);
   
   //start timer to spin
@@ -404,9 +403,22 @@ pcl::visualization::PCLPlotter::spinOnce (const int spin_time)
   }
   exit_loop_timer_->right_timer_id = view_->GetInteractor()->CreateOneShotTimer (spin_time);
   
-  view_->GetRenderWindow ()->Render ();
   // Start spinning
-	//view_->GetInteractor()->Start();
+  view_->GetRenderWindow ()->Render ();
+	view_->GetInteractor()->Start();
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void 
+pcl::visualization::PCLPlotter::renderOnce ()
+{
+  //apply current states
+  view_->GetRenderer ()->SetBackground (bkg_color_[0], bkg_color_[1], bkg_color_[2]);
+  view_->GetRenderWindow ()->SetSize (win_width_, win_height_);
+  
+  //render
+  view_->GetInteractor ()->Initialize ();
+  view_->GetRenderWindow ()->Render();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

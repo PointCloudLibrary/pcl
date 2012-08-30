@@ -370,6 +370,9 @@ namespace pcl
         /** \brief Initialize and Start the view's interactor. */
         void
         startInteractor ();
+        
+        /** \brief Render the vtkWindow once. */
+        void renderOnce();
 
         /** \brief Returns true when the user tried to close the window */
         bool
@@ -413,9 +416,9 @@ namespace pcl
 
             // Stop vtk loop and send notification to app to wake it up
 #if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
-            //interactor->stopLoop ();
+            interactor->stopLoop ();
 #else
-            //interactor->TerminateApp ();
+            interactor->TerminateApp ();
 #endif
           }
           int right_timer_id;
