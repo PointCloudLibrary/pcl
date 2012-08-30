@@ -61,14 +61,14 @@ RangeImage::createLookupTables ()
   
   asin_lookup_table.resize (lookup_table_size);
   for (int i=0; i<lookup_table_size; ++i) {
-    float value = static_cast<float> (i-lookup_table_size/2)/static_cast<float> (lookup_table_size/2);
+    float value = static_cast<float> (i-(lookup_table_size-1)/2)/static_cast<float> ((lookup_table_size-1)/2);
     asin_lookup_table[i] = asinf (value);
   }
   
   atan_lookup_table.resize (lookup_table_size);
   for (int i=0; i<lookup_table_size; ++i) 
   {
-    float value = static_cast<float> (i-lookup_table_size/2)/static_cast<float> (lookup_table_size/2);
+    float value = static_cast<float> (i-(lookup_table_size-1)/2)/static_cast<float> ((lookup_table_size-1)/2);
     atan_lookup_table[i] = atanf (value);
   }
   
@@ -76,7 +76,7 @@ RangeImage::createLookupTables ()
   
   for (int i = 0; i < lookup_table_size; ++i) 
   {
-    float value = static_cast<float> (i) * 2.0f * static_cast<float> (M_PI) / static_cast<float> (lookup_table_size - 1);
+    float value = static_cast<float> (i) * 2.0f * static_cast<float> (M_PI) / static_cast<float> (lookup_table_size-1);
     cos_lookup_table[i] = cosf (value);
   }
 }

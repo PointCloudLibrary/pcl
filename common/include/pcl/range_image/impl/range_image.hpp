@@ -47,28 +47,30 @@ RangeImage::asinLookUp (float value)
 {
   return (asin_lookup_table[
       static_cast<int> (
-        static_cast<float> (pcl_lrintf ( (static_cast<float> (lookup_table_size) / 2.0f) * value)) + 
-        static_cast<float> (lookup_table_size) / 2.0f)]);
+        static_cast<float> (pcl_lrintf ( (static_cast<float> (lookup_table_size-1) / 2.0f) * value)) + 
+        static_cast<float> (lookup_table_size-1) / 2.0f)]);
 }
 
 /////////////////////////////////////////////////////////////////////////
 inline float
 RangeImage::atan2LookUp (float y, float x)
 {
+  if (x==0 && y==0)
+    return 0;
   float ret;
   if (fabsf (x) < fabsf (y)) 
   {
     ret = atan_lookup_table[
       static_cast<int> (
-          static_cast<float> (pcl_lrintf ( (static_cast<float> (lookup_table_size) / 2.0f) * (x / y))) + 
-          static_cast<float> (lookup_table_size) / 2.0f)];
+          static_cast<float> (pcl_lrintf ( (static_cast<float> (lookup_table_size-1) / 2.0f) * (x / y))) + 
+          static_cast<float> (lookup_table_size-1) / 2.0f)];
     ret = static_cast<float> (x*y > 0 ? M_PI/2-ret : -M_PI/2-ret);
   }
   else
     ret = atan_lookup_table[
       static_cast<int> (
-          static_cast<float> (pcl_lrintf ( (static_cast<float> (lookup_table_size) / 2.0f) * (y / x))) + 
-          static_cast<float> (lookup_table_size)/2.0f)];
+          static_cast<float> (pcl_lrintf ( (static_cast<float> (lookup_table_size-1) / 2.0f) * (y / x))) + 
+          static_cast<float> (lookup_table_size-1)/2.0f)];
   if (x < 0)
     ret = static_cast<float> (y < 0 ? ret-M_PI : ret+M_PI);
   
