@@ -102,11 +102,11 @@ namespace pcl
         /** \brief Analyze input point cloud and calculate the maximum depth and focal length
          * \param[in] cloud_arg: input point cloud
          * \param[out] maxDepth_arg: calculated maximum depth
-         * \param[out] vocalLength_arg: estimated vocal length
+         * \param[out] focalLength_arg: estimated focal length
          */
         void analyzeOrganizedCloud (PointCloudConstPtr cloud_arg,
                                     float& maxDepth_arg,
-                                    float& vocalLength_arg) const;
+                                    float& focalLength_arg) const;
 
       private:
         // frame header identifier

@@ -72,9 +72,9 @@ namespace pcl
       uint32_t cloud_width = cloud_arg->width;
       uint32_t cloud_height = cloud_arg->height;
 
-      float maxDepth, vocalLength;
+      float maxDepth, focalLength;
 
-      analyzeOrganizedCloud (cloud_arg, maxDepth, vocalLength);
+      analyzeOrganizedCloud (cloud_arg, maxDepth, focalLength);
 
       // encode header identifier
       compressedDataOut_arg.write (reinterpret_cast<const char*> (frameHeaderIdentifier_), strlen (frameHeaderIdentifier_));
@@ -85,7 +85,7 @@ namespace pcl
       // encode frame max depth
       compressedDataOut_arg.write (reinterpret_cast<const char*> (&maxDepth), sizeof (maxDepth));
       // encode frame focal lenght
-      compressedDataOut_arg.write (reinterpret_cast<const char*> (&vocalLength), sizeof (vocalLength));
+      compressedDataOut_arg.write (reinterpret_cast<const char*> (&focalLength), sizeof (focalLength));
       // encode frame depth quantization
       compressedDataOut_arg.write (reinterpret_cast<const char*> (&depthQuantization_arg), sizeof (depthQuantization_arg));
 
@@ -145,7 +145,7 @@ namespace pcl
     {
       uint32_t cloud_width;
       uint32_t cloud_height;
-      float maxDepth, vocalLength;
+      float maxDepth, focalLength;
       float depthQuantization;
 
       // disparity and rgb image data
@@ -185,7 +185,7 @@ namespace pcl
         compressedDataIn_arg.read (reinterpret_cast<char*> (&cloud_width), sizeof (cloud_width));
         compressedDataIn_arg.read (reinterpret_cast<char*> (&cloud_height), sizeof (cloud_height));
         compressedDataIn_arg.read (reinterpret_cast<char*> (&maxDepth), sizeof (maxDepth));
-        compressedDataIn_arg.read (reinterpret_cast<char*> (&vocalLength), sizeof (vocalLength));
+        compressedDataIn_arg.read (reinterpret_cast<char*> (&focalLength), sizeof (focalLength));
         compressedDataIn_arg.read (reinterpret_cast<char*> (&depthQuantization), sizeof (depthQuantization));
 
         // reading compressed disparity data
@@ -206,7 +206,7 @@ namespace pcl
       }
 
       // reconstruct point cloud
-      OrganizedConversion<PointT>::convert (disparityData, rgbData, cloud_width, cloud_height, maxDepth, depthQuantization, vocalLength, *cloud_arg);
+      OrganizedConversion<PointT>::convert (disparityData, rgbData, cloud_width, cloud_height, maxDepth, depthQuantization, focalLength, *cloud_arg);
 
       if (bShowStatistics_arg)
       {
@@ -229,7 +229,7 @@ namespace pcl
     template<typename PointT> void
     OrganizedPointCloudCompression<PointT>::analyzeOrganizedCloud (PointCloudConstPtr cloud_arg,
                                                                    float& maxDepth_arg,
-                                                                   float& vocalLength_arg) const
+                                                                   float& focalLength_arg) const
     {
       size_t width, height, it;
       int centerX, centerY;
@@ -272,7 +272,7 @@ namespace pcl
 
       // Update return values
       maxDepth_arg = maxDepth;
-      vocalLength_arg = focalLength;
+      focalLength_arg = focalLength;
     }
 
   }
