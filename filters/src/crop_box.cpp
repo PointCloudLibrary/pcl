@@ -47,6 +47,7 @@ pcl::CropBox<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
 {
   // Resize output cloud to sample size
   output.data.resize (input_->data.size ());
+  removed_indices_->resize (input_->data.size ());
 
   // Copy the common fields
   output.fields = input_->fields;
@@ -55,7 +56,8 @@ pcl::CropBox<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
   output.point_step = input_->point_step;
   output.height = 1;
 
-  int indice_count = 0;
+  int indices_count = 0;
+  int removed_indices_count = 0;
 
   Eigen::Affine3f transform = Eigen::Affine3f::Identity();
   Eigen::Affine3f inverse_transform = Eigen::Affine3f::Identity();
@@ -99,18 +101,38 @@ pcl::CropBox<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
     if (!(inverse_transform.matrix ().isIdentity ()))
       local_pt = inverse_transform * local_pt;
 
-    if (local_pt.x () < min_pt_[0] || local_pt.y () < min_pt_[1] || local_pt.z () < min_pt_[2])
-      continue;
-    if (local_pt.x () > max_pt_[0] || local_pt.y () > max_pt_[1] || local_pt.z () > max_pt_[2])
-      continue;
-
-    memcpy (&output.data[indice_count++ * output.point_step],
-            &input_->data[index * output.point_step], output.point_step);
+    // If outside the cropbox
+    if ( (local_pt.x () < min_pt_[0] || local_pt.y () < min_pt_[1] || local_pt.z () < min_pt_[2]) ||
+         (local_pt.x () > max_pt_[0] || local_pt.y () > max_pt_[1] || local_pt.z () > max_pt_[2]))
+    {
+      if (negative_)
+      {
+        memcpy (&output.data[indices_count++ * output.point_step],
+                &input_->data[index * output.point_step], output.point_step);
+      }
+      else if (extract_removed_indices_)
+      {
+        (*removed_indices_)[removed_indices_count++] = index;
+      }
+    }
+    // If inside the cropbox
+    else
+    {
+      if (negative_ && extract_removed_indices_)
+      {
+        (*removed_indices_)[removed_indices_count++] = index;
+      }
+      else if (!negative_) {
+        memcpy (&output.data[indices_count++ * output.point_step],
+                &input_->data[index * output.point_step], output.point_step);
+      }
+    }
   }
-
-  output.width = indice_count;
+  output.width = indices_count;
   output.row_step = output.point_step * output.width;
   output.data.resize (output.width * output.height * output.point_step);
+
+  removed_indices_->resize (removed_indices_count);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -118,7 +140,10 @@ void
 pcl::CropBox<sensor_msgs::PointCloud2>::applyFilter (std::vector<int> &indices)
 {
   indices.resize (input_->width * input_->height);
-  int indice_count = 0;
+  removed_indices_->resize (input_->width * input_->height);
+
+  int indices_count = 0;
+  int removed_indices_count = 0;
 
   Eigen::Affine3f transform = Eigen::Affine3f::Identity();
   Eigen::Affine3f inverse_transform = Eigen::Affine3f::Identity();
@@ -156,15 +181,34 @@ pcl::CropBox<sensor_msgs::PointCloud2>::applyFilter (std::vector<int> &indices)
     if (!(inverse_transform.matrix().isIdentity()))
       local_pt = inverse_transform * local_pt;
 
-    if (local_pt.x () < min_pt_[0] || local_pt.y () < min_pt_[1] || local_pt.z () < min_pt_[2])
-      continue;
-    if (local_pt.x () > max_pt_[0] || local_pt.y () > max_pt_[1] || local_pt.z () > max_pt_[2])
-      continue;
-
-    indices[indice_count++] = (*indices_)[index];
+    // If outside the cropbox
+    if ( (local_pt.x () < min_pt_[0] || local_pt.y () < min_pt_[1] || local_pt.z () < min_pt_[2]) ||
+         (local_pt.x () > max_pt_[0] || local_pt.y () > max_pt_[1] || local_pt.z () > max_pt_[2]))
+    {
+      if (negative_)
+      {
+        indices[indices_count++] = (*indices_)[index];
+      }
+      else if (extract_removed_indices_)
+      {
+        (*removed_indices_)[removed_indices_count++] = index;
+      }
+    }
+    // If inside the cropbox
+    else
+    {
+      if (negative_ && extract_removed_indices_)
+      {
+        (*removed_indices_)[removed_indices_count++] = index;
+      }
+      else if (!negative_) {
+        indices[indices_count++] = (*indices_)[index];
+      }
+    }
   }
 
-  indices.resize (indice_count);
+  indices.resize (indices_count);
+  removed_indices_->resize (removed_indices_count);
 }
 
 PCL_INSTANTIATE(CropBox, PCL_XYZ_POINT_TYPES)

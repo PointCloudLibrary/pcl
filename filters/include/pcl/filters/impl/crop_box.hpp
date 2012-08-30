@@ -49,7 +49,9 @@ void
 pcl::CropBox<PointT>::applyFilter (PointCloud &output)
 {
   output.resize (input_->points.size ());
-  int indice_count = 0;
+  removed_indices_->resize (input_->points.size ());
+  int indices_count = 0;
+  int removed_indices_count = 0;
 
   // We filter out invalid points
   output.is_dense = true;
@@ -90,16 +92,37 @@ pcl::CropBox<PointT>::applyFilter (PointCloud &output)
     if (!(inverse_transform.matrix ().isIdentity ()))
       local_pt = pcl::transformPoint<PointT> (local_pt, inverse_transform);
 
-    if (local_pt.x < min_pt_[0] || local_pt.y < min_pt_[1] || local_pt.z < min_pt_[2])
-      continue;
-    if (local_pt.x > max_pt_[0] || local_pt.y > max_pt_[1] || local_pt.z > max_pt_[2])
-      continue;
+    // If outside the cropbox
+    if ( (local_pt.x < min_pt_[0] || local_pt.y < min_pt_[1] || local_pt.z < min_pt_[2]) ||
+         (local_pt.x > max_pt_[0] || local_pt.y > max_pt_[1] || local_pt.z > max_pt_[2]))
+    {
+      if (negative_)
+      {
+        output.points[indices_count++] = input_->points[(*indices_)[index]];
+      }
+      else if (extract_removed_indices_)
+      {
+        (*removed_indices_)[removed_indices_count++] = index;
+      }
+    }
+    // If inside the cropbox
+    else
+    {
+      if (negative_ && extract_removed_indices_)
+      {
+        (*removed_indices_)[removed_indices_count++] = index;
+      }
+      else if (!negative_) {
+        output.points[indices_count++] = input_->points[(*indices_)[index]];
+      }
+    }
 
-    output.points[indice_count++] = input_->points[(*indices_)[index]];
+
   }
-  output.width = indice_count;
+  output.width = indices_count;
   output.height = 1;
   output.resize (output.width * output.height);
+  removed_indices_->resize (removed_indices_count);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -107,7 +130,9 @@ template<typename PointT> void
 pcl::CropBox<PointT>::applyFilter (std::vector<int> &indices)
 {
   indices.resize (input_->points.size ());
-  int indice_count = 0;
+  removed_indices_->resize (input_->points.size ());
+  int indices_count = 0;
+  int removed_indices_count = 0;
 
   Eigen::Affine3f transform = Eigen::Affine3f::Identity ();
   Eigen::Affine3f inverse_transform = Eigen::Affine3f::Identity ();
@@ -145,14 +170,33 @@ pcl::CropBox<PointT>::applyFilter (std::vector<int> &indices)
     if (!(inverse_transform.matrix ().isIdentity ()))
       local_pt = pcl::transformPoint<PointT> (local_pt, inverse_transform);
 
-    if (local_pt.x < min_pt_[0] || local_pt.y < min_pt_[1] || local_pt.z < min_pt_[2])
-      continue;
-    if (local_pt.x > max_pt_[0] || local_pt.y > max_pt_[1] || local_pt.z > max_pt_[2])
-      continue;
-
-    indices[indice_count++] = (*indices_)[index];
+    // If outside the cropbox
+    if ( (local_pt.x < min_pt_[0] || local_pt.y < min_pt_[1] || local_pt.z < min_pt_[2]) ||
+         (local_pt.x > max_pt_[0] || local_pt.y > max_pt_[1] || local_pt.z > max_pt_[2]))
+    {
+      if (negative_)
+      {
+        indices[indices_count++] = (*indices_)[index];
+      }
+      else if (extract_removed_indices_)
+      {
+        (*removed_indices_)[removed_indices_count++] = index;
+      }
+    }
+    // If inside the cropbox
+    else
+    {
+      if (negative_ && extract_removed_indices_)
+      {
+        (*removed_indices_)[removed_indices_count++] = index;
+      }
+      else if (!negative_) {
+        indices[indices_count++] = (*indices_)[index];
+      }
+    }
   }
-  indices.resize (indice_count);
+  indices.resize (indices_count);
+  removed_indices_->resize (removed_indices_count);
 }
 
 #define PCL_INSTANTIATE_CropBox(T) template class PCL_EXPORTS pcl::CropBox<T>;

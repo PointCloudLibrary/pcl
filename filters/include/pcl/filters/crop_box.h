@@ -56,18 +56,18 @@ namespace pcl
   template<typename PointT>
   class CropBox : public FilterIndices<PointT>
   {
-    using Filter<PointT>::filter_name_;
     using Filter<PointT>::getClassName;
-    using Filter<PointT>::indices_;
-    using Filter<PointT>::input_;
 
     typedef typename Filter<PointT>::PointCloud PointCloud;
     typedef typename PointCloud::Ptr PointCloudPtr;
     typedef typename PointCloud::ConstPtr PointCloudConstPtr;
 
     public:
-      /** \brief Empty constructor. */
-      CropBox () :
+      /** \brief Constructor.
+        * \param[in] extract_removed_indices Set to true if you want to be able to extract the indices of points being removed (default = false).
+        */
+      CropBox (bool extract_removed_indices = false) :
+        FilterIndices<PointT>::FilterIndices (extract_removed_indices),
         min_pt_ (Eigen::Vector4f (-1, -1, -1, 1)),
         max_pt_ (Eigen::Vector4f (1, 1, 1, 1)),
         rotation_ (Eigen::Vector3f::Zero ()),
@@ -162,6 +162,15 @@ namespace pcl
       }
 
     protected:
+      using PCLBase<PointT>::input_;
+      using PCLBase<PointT>::indices_;
+      using Filter<PointT>::filter_name_;
+      using FilterIndices<PointT>::negative_;
+      using FilterIndices<PointT>::keep_organized_;
+      using FilterIndices<PointT>::user_filter_value_;
+      using FilterIndices<PointT>::extract_removed_indices_;
+      using FilterIndices<PointT>::removed_indices_;
+
       /** \brief Sample of point indices into a separate PointCloud
         * \param[out] output the resultant point cloud
         */
@@ -205,8 +214,11 @@ namespace pcl
     typedef PointCloud2::ConstPtr PointCloud2ConstPtr;
 
     public:
-    /** \brief Empty constructor. */
-      CropBox () :
+      /** \brief Constructor.
+        * \param[in] extract_removed_indices Set to true if you want to be able to extract the indices of points being removed (default = false).
+        */
+       CropBox (bool extract_removed_indices = false) :
+        FilterIndices<sensor_msgs::PointCloud2>::FilterIndices (extract_removed_indices),
         min_pt_(Eigen::Vector4f (-1, -1, -1, 1)),
         max_pt_(Eigen::Vector4f (1, 1, 1, 1)),
         translation_ (Eigen::Vector3f::Zero ()),
