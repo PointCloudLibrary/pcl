@@ -66,13 +66,16 @@ namespace pcl
                                                               std::ostream& compressedDataOut_arg,
                                                               bool doColorEncoding,
                                                               bool bShowStatistics_arg,
-                                                              int pngLevel_arg,
-                                                              float depthQuantization_arg)
+                                                              int pngLevel_arg)
     {
       uint32_t cloud_width = cloud_arg->width;
       uint32_t cloud_height = cloud_arg->height;
 
-      float maxDepth, focalLength;
+      float maxDepth, focalLength, disparityShift, disparityScale;
+
+      // no disparity scaling/shifting required during decoding
+      disparityScale = 1.0f;
+      disparityShift = 0.0f;
 
       analyzeOrganizedCloud (cloud_arg, maxDepth, focalLength);
 
@@ -86,8 +89,10 @@ namespace pcl
       compressedDataOut_arg.write (reinterpret_cast<const char*> (&maxDepth), sizeof (maxDepth));
       // encode frame focal lenght
       compressedDataOut_arg.write (reinterpret_cast<const char*> (&focalLength), sizeof (focalLength));
-      // encode frame depth quantization
-      compressedDataOut_arg.write (reinterpret_cast<const char*> (&depthQuantization_arg), sizeof (depthQuantization_arg));
+      // encode frame focal lenght
+      compressedDataOut_arg.write (reinterpret_cast<const char*> (&disparityScale), sizeof (disparityScale));
+      // encode frame focal lenght
+      compressedDataOut_arg.write (reinterpret_cast<const char*> (&disparityShift), sizeof (disparityShift));
 
       // disparity and rgb image data
       std::vector<uint16_t> disparityData;
@@ -101,7 +106,7 @@ namespace pcl
       uint32_t compressedRGBSize = 0;
 
       // Convert point cloud to disparity and rgb image
-      OrganizedConversion<PointT>::convert (*cloud_arg, maxDepth,  depthQuantization_arg, disparityData, rgbData);
+      OrganizedConversion<PointT>::convert (*cloud_arg, focalLength, disparityShift, disparityScale, disparityData, rgbData);
 
       // Compress disparity information
       encodeMonoImageToPNG (disparityData, cloud_width, cloud_height, compressedDisparity, pngLevel_arg);
@@ -145,8 +150,7 @@ namespace pcl
     {
       uint32_t cloud_width;
       uint32_t cloud_height;
-      float maxDepth, focalLength;
-      float depthQuantization;
+      float maxDepth, focalLength, disparityShift, disparityScale;
 
       // disparity and rgb image data
       std::vector<uint16_t> disparityData;
@@ -181,12 +185,14 @@ namespace pcl
 
       if (valid_stream) {
 
+        //////////////
         // reading frame header
         compressedDataIn_arg.read (reinterpret_cast<char*> (&cloud_width), sizeof (cloud_width));
         compressedDataIn_arg.read (reinterpret_cast<char*> (&cloud_height), sizeof (cloud_height));
         compressedDataIn_arg.read (reinterpret_cast<char*> (&maxDepth), sizeof (maxDepth));
         compressedDataIn_arg.read (reinterpret_cast<char*> (&focalLength), sizeof (focalLength));
-        compressedDataIn_arg.read (reinterpret_cast<char*> (&depthQuantization), sizeof (depthQuantization));
+        compressedDataIn_arg.read (reinterpret_cast<char*> (&disparityScale), sizeof (disparityScale));
+        compressedDataIn_arg.read (reinterpret_cast<char*> (&disparityShift), sizeof (disparityShift));
 
         // reading compressed disparity data
         compressedDataIn_arg.read (reinterpret_cast<char*> (&compressedDisparitySize), sizeof (compressedDisparitySize));
@@ -206,7 +212,14 @@ namespace pcl
       }
 
       // reconstruct point cloud
-      OrganizedConversion<PointT>::convert (disparityData, rgbData, cloud_width, cloud_height, maxDepth, depthQuantization, focalLength, *cloud_arg);
+      OrganizedConversion<PointT>::convert (disparityData,
+                                            rgbData,
+                                            cloud_width,
+                                            cloud_height,
+                                            focalLength,
+                                            disparityShift,
+                                            disparityScale,
+                                            *cloud_arg);
 
       if (bShowStatistics_arg)
       {

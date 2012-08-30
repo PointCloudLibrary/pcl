@@ -77,7 +77,6 @@ namespace pcl
          * \param[in] cloud_arg:  point cloud to be compressed
          * \param[out] compressedDataOut_arg:  binary output stream containing compressed data
          * \param[in] doColorEncoding: encode color information (if available)
-         * \param[in] depthQuantization_arg:  quantization parameter of inverse depth coding
          * \param[in] pngLevel_arg: png compression level (default compression: -1)
          * \param[in] bShowStatistics_arg:  show statistics
          */
@@ -85,8 +84,7 @@ namespace pcl
                                std::ostream& compressedDataOut_arg,
                                bool doColorEncoding = false,
                                bool bShowStatistics_arg = true,
-                               int pngLevel_arg = -1,
-                               float depthQuantization_arg = 150.0f);
+                               int pngLevel_arg = -1);
 
         /** \brief Decode point cloud from input stream
          * \param[in] compressedDataIn_arg: binary input stream containing compressed data
