@@ -161,6 +161,13 @@ namespace pcl
     {
        float maxDepth = -1;
 
+       size_t cloud_size = width_arg*height_arg;
+       assert (disparityMap_arg.size()==cloud_size);
+       if (colorImage_arg.size())
+       {
+         assert (colorImage_arg.size()==cloud_size*3);
+       }
+
        // encode header identifier
        compressedDataOut_arg.write (reinterpret_cast<const char*> (frameHeaderIdentifier_), strlen (frameHeaderIdentifier_));
        // encode point cloud width
@@ -182,6 +189,17 @@ namespace pcl
 
        uint32_t compressedDisparitySize = 0;
        uint32_t compressedRGBSize = 0;
+
+       // Remove color information of invalid points
+       uint16_t* depth_ptr = &disparityMap_arg[0];
+       uint8_t* color_ptr = &colorImage_arg[0];
+
+       size_t i;
+       for (i=0; i<cloud_size; ++i, ++depth_ptr, color_ptr+=sizeof(uint8_t)*3)
+       {
+         if (!(*depth_ptr) || (*depth_ptr==0x7FF))
+           memset(color_ptr, 0, sizeof(uint8_t)*3);
+       }
 
        // Compress disparity information
        encodeMonoImageToPNG (disparityMap_arg, width_arg, height_arg, compressedDisparity, pngLevel_arg);

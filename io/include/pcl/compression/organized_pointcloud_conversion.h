@@ -109,10 +109,6 @@ namespace pcl
 
         disparityData_arg.reserve (cloud_size);
 
-        // Inverse depth quantization parameters
-       // float depthQuantA = depthQuantization_arg * (depthQuantization_arg + 1.0f);
-       // float depthQuantB = 1.0f - depthQuantA / maxDepth_arg;
-
         for (i = 0; i < cloud_size; ++i)
         {
           // Get point from cloud
@@ -121,7 +117,6 @@ namespace pcl
           if (pcl::isFinite (point))
           {
             // Inverse depth quantization
-            //uint16_t disparity = static_cast<uint16_t> (depthQuantA / point.z + depthQuantB);
             uint16_t disparity = static_cast<uint16_t> ( focalLength_arg / (disparityScale_arg * point.z) + disparityShift_arg / disparityScale_arg);
             disparityData_arg.push_back (disparity);
           }
@@ -174,10 +169,6 @@ namespace pcl
         const float fl_const = 1.0f / focalLength_arg;
         static const float bad_point = std::numeric_limits<float>::quiet_NaN ();
 
-        // Inverse depth quantization parameters
-        //float depthQuantA = depthQuantization_arg * (depthQuantization_arg + 1.0f);
-        //float depthQuantB = 1.0f - depthQuantA / maxDepth_arg;
-
         i = 0;
         for (y = -centerY; y < +centerY; ++y)
           for (x = -centerX; x < +centerX; ++x)
@@ -189,7 +180,6 @@ namespace pcl
             if (pixel_disparity)
             {
               // Inverse depth decoding
-              //float depth = depthQuantA / (static_cast<float> (pixel_depth) - depthQuantB);
               float depth = focalLength_arg / (static_cast<float> (pixel_disparity) * disparityScale_arg + disparityShift_arg);
 
               // Generate new points
@@ -245,11 +235,6 @@ namespace pcl
         disparityData_arg.reserve (cloud_size);
         rgbData_arg.reserve (cloud_size * 3);
 
-        // Inverse depth quantization parameters
-        //float depthQuantA = depthQuantization_arg
-        //    * (depthQuantization_arg + 1.0f);
-        //float depthQuantB = 1.0f - depthQuantA / maxDepth_arg;
-
         for (i = 0; i < cloud_size; ++i)
         {
           const PointT& point = cloud_arg.points[i];
@@ -264,7 +249,6 @@ namespace pcl
             rgbData_arg.push_back ( (rgb >> 0) & 0x0000ff);
 
             // Inverse depth quantization
-            //uint16_t depth = static_cast<uint16_t> (depthQuantA / point.z + depthQuantB);
             uint16_t disparity = static_cast<uint16_t> (focalLength_arg / (disparityScale_arg * point.z) + disparityShift_arg / disparityScale_arg);
 
             // Encode disparity
@@ -332,10 +316,6 @@ namespace pcl
 
         const float fl_const = 1.0f/focalLength_arg;
         static const float bad_point = std::numeric_limits<float>::quiet_NaN ();
-
-        // Inverse depth quantization parameters
- //       float depthQuantA = depthQuantization_arg * (depthQuantization_arg + 1.0f);
- //       float depthQuantB = 1.0f - depthQuantA / maxDepth_arg;
 
         i = 0;
         for (y=-centerY; y<+centerY; ++y )
