@@ -86,6 +86,32 @@ namespace pcl
                                bool bShowStatistics_arg = true,
                                int pngLevel_arg = -1);
 
+        /** \brief Encode raw disparity map and color image.
+         * \note Default values are configured according to the kinect/asus device specifications
+         * \param[in] disparityMap_arg:  pointer to raw 16-bit disparity map
+         * \param[in] disparityMap_arg:  pointer to raw 8-bit rgb color image
+         * \param[in] width_arg:  width of disparity map/color image
+         * \param[in] height_arg:  height of disparity map/color image
+         * \param[out] compressedDataOut_arg:  binary output stream containing compressed data
+         * \param[in] doColorEncoding: encode color information (if available)
+         * \param[in] pngLevel_arg: png compression level (default compression: -1)
+         * \param[in] bShowStatistics_arg:  show statistics
+         * \param[in] focalLength_arg focal length
+         * \param[in] disparityShift_arg disparity shift
+         * \param[in] disparityScale_arg disparity scaling
+         */
+        void encodeRawDisparityMapWithColorImage ( const uint16_t* disparityMap_arg,
+                                                   const uint8_t* colorImage_arg,
+                                                   uint32_t width_arg,
+                                                   uint32_t height_arg,
+                                                   std::ostream& compressedDataOut_arg,
+                                                   bool doColorEncoding = false,
+                                                   bool bShowStatistics_arg = true,
+                                                   int pngLevel_arg = -1,
+                                                   float focalLength_arg = 10.0f,
+                                                   float disparityShift_arg = 3.33f,
+                                                   float disparityScale_arg = -0.00307f);
+
         /** \brief Decode point cloud from input stream
          * \param[in] compressedDataIn_arg: binary input stream containing compressed data
          * \param[out] cloud_arg: reference to decoded point cloud

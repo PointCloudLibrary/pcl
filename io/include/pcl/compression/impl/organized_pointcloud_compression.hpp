@@ -89,9 +89,9 @@ namespace pcl
       compressedDataOut_arg.write (reinterpret_cast<const char*> (&maxDepth), sizeof (maxDepth));
       // encode frame focal lenght
       compressedDataOut_arg.write (reinterpret_cast<const char*> (&focalLength), sizeof (focalLength));
-      // encode frame focal lenght
+      // encode frame disparity scale
       compressedDataOut_arg.write (reinterpret_cast<const char*> (&disparityScale), sizeof (disparityScale));
-      // encode frame focal lenght
+      // encode frame disparity shift
       compressedDataOut_arg.write (reinterpret_cast<const char*> (&disparityShift), sizeof (disparityShift));
 
       // disparity and rgb image data
@@ -140,6 +140,99 @@ namespace pcl
         PCL_INFO("Total compression percentage: %.4f%%\n", (bytesPerPoint) / (CompressionPointTraits<PointT>::bytesPerPoint) * 100.0f);
         PCL_INFO("Compression ratio: %.2f\n\n", static_cast<float> (CompressionPointTraits<PointT>::bytesPerPoint) / bytesPerPoint);
       }
+
+      // flush output stream
+      compressedDataOut_arg.flush();
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename PointT> void
+    OrganizedPointCloudCompression<PointT>::encodeRawDisparityMapWithColorImage ( const uint16_t* disparityMap_arg,
+                                                                                  const uint8_t* colorImage_arg,
+                                                                                  uint32_t width_arg,
+                                                                                  uint32_t height_arg,
+                                                                                  std::ostream& compressedDataOut_arg,
+                                                                                  bool doColorEncoding,
+                                                                                  bool bShowStatistics_arg,
+                                                                                  int pngLevel_arg,
+                                                                                  float focalLength_arg,
+                                                                                  float disparityShift_arg,
+                                                                                  float disparityScale_arg)
+    {
+       float maxDepth = -1;
+
+       // encode header identifier
+       compressedDataOut_arg.write (reinterpret_cast<const char*> (frameHeaderIdentifier_), strlen (frameHeaderIdentifier_));
+       // encode point cloud width
+       compressedDataOut_arg.write (reinterpret_cast<const char*> (&width_arg), sizeof (width_arg));
+       // encode frame type height
+       compressedDataOut_arg.write (reinterpret_cast<const char*> (&height_arg), sizeof (height_arg));
+       // encode frame max depth
+       compressedDataOut_arg.write (reinterpret_cast<const char*> (&maxDepth), sizeof (maxDepth));
+       // encode frame focal lenght
+       compressedDataOut_arg.write (reinterpret_cast<const char*> (&focalLength_arg), sizeof (focalLength_arg));
+       // encode frame disparity scale
+       compressedDataOut_arg.write (reinterpret_cast<const char*> (&disparityScale_arg), sizeof (disparityScale_arg));
+       // encode frame disparity shift
+       compressedDataOut_arg.write (reinterpret_cast<const char*> (&disparityShift_arg), sizeof (disparityShift_arg));
+
+       // disparity and rgb image data
+       std::vector<uint16_t> disparityData;
+       std::vector<uint8_t> rgbData;
+
+       // copy input data to input vector
+       disparityData.resize(width_arg*height_arg);
+       memcpy(&disparityData[0], disparityMap_arg, sizeof(uint16_t)*width_arg*height_arg);
+
+       // compressed disparity and rgb image data
+       std::vector<uint8_t> compressedDisparity;
+       std::vector<uint8_t> compressedRGB;
+
+       uint32_t compressedDisparitySize = 0;
+       uint32_t compressedRGBSize = 0;
+
+       // Compress disparity information
+       encodeMonoImageToPNG (disparityData, width_arg, height_arg, compressedDisparity, pngLevel_arg);
+
+       compressedDisparitySize = static_cast<uint32_t>(compressedDisparity.size());
+       // Encode size of compressed disparity image data
+       compressedDataOut_arg.write (reinterpret_cast<const char*> (&compressedDisparitySize), sizeof (compressedDisparitySize));
+       // Output compressed disparity to ostream
+       compressedDataOut_arg.write (reinterpret_cast<const char*> (&compressedDisparity[0]), compressedDisparity.size () * sizeof(uint8_t));
+
+       // Compress color information
+       if (colorImage_arg && doColorEncoding)
+       {
+         // copy input data to input vector
+         rgbData.resize(width_arg*height_arg*3);
+         memcpy(&rgbData[0], colorImage_arg, sizeof(uint8_t)*width_arg*height_arg*3);
+
+         encodeRGBImageToPNG (rgbData, width_arg, height_arg, compressedRGB, 1 /*Z_BEST_SPEED*/);
+
+       }
+
+       compressedRGBSize = static_cast<uint32_t>(compressedRGB.size ());
+       // Encode size of compressed RGB image data
+       compressedDataOut_arg.write (reinterpret_cast<const char*> (&compressedRGBSize), sizeof (compressedRGBSize));
+       // Output compressed disparity to ostream
+       compressedDataOut_arg.write (reinterpret_cast<const char*> (&compressedRGB[0]), compressedRGB.size () * sizeof(uint8_t));
+
+       if (bShowStatistics_arg)
+       {
+         uint64_t pointCount = width_arg * height_arg;
+         float bytesPerPoint = static_cast<float> (compressedDisparitySize+compressedRGBSize) / static_cast<float> (pointCount);
+
+         PCL_INFO("*** POINTCLOUD ENCODING ***\n");
+         PCL_INFO("Number of encoded points: %ld\n", pointCount);
+         PCL_INFO("Size of uncompressed disparity map+color image: %.2f kBytes\n", (static_cast<float> (pointCount) * (sizeof(uint8_t)*3+sizeof(uint16_t))) / 1024.0f);
+         PCL_INFO("Size of compressed point cloud: %.2f kBytes\n", static_cast<float> (compressedDisparitySize+compressedRGBSize) / 1024.0f);
+         PCL_INFO("Total bytes per point: %.4f bytes\n", static_cast<float> (bytesPerPoint));
+         PCL_INFO("Total compression percentage: %.4f%%\n", (bytesPerPoint) / (sizeof(uint8_t)*3+sizeof(uint16_t)) * 100.0f);
+         PCL_INFO("Compression ratio: %.2f\n\n", static_cast<float> (CompressionPointTraits<PointT>::bytesPerPoint) / bytesPerPoint);
+       }
+
+       // flush output stream
+       compressedDataOut_arg.flush();
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
