@@ -78,17 +78,17 @@ namespace pcl
         * \param[in] angular_threshold to test if normals are parallel
         * \param[in] intensity_threshold to test if points are of same color
         */
-    SUSAN (float radius = 0.01, 
-           float distance_threshold = 0.001, 
-           float angular_threshold = 0.0001, 
-           float intensity_threshold = 7)
-      : distance_threshold_ (distance_threshold)
-      , angular_threshold_ (angular_threshold)
-      , intensity_threshold_ (intensity_threshold)
-      , normals_ (new pcl::PointCloud<NormalT>)
-      , threads_ (0)
-      , label_idx_ (-1)
-      , out_fields_ ()
+      SUSAN (float radius = 0.01f, 
+             float distance_threshold = 0.001f, 
+             float angular_threshold = 0.0001f, 
+             float intensity_threshold = 7.0f)
+        : distance_threshold_ (distance_threshold)
+        , angular_threshold_ (angular_threshold)
+        , intensity_threshold_ (intensity_threshold)
+        , normals_ (new pcl::PointCloud<NormalT>)
+        , threads_ (0)
+        , label_idx_ (-1)
+        , out_fields_ ()
       {
         name_ = "SUSAN";
         search_radius_ = radius;

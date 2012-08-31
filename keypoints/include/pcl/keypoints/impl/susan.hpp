@@ -88,7 +88,7 @@ pcl::SUSAN<PointInT, PointOutT, NormalT, IntensityT>::setIntensityThreshold (flo
 template <typename PointInT, typename PointOutT, typename NormalT, typename IntensityT> void 
 pcl::SUSAN<PointInT, PointOutT, NormalT, IntensityT>::setNormals (boost::shared_ptr<pcl::PointCloud<NormalT> > normals ) const 
 { 
-  normals_.reset (normals); 
+  normals_ = normals;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
