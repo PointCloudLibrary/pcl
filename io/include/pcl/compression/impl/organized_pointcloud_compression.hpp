@@ -147,8 +147,8 @@ namespace pcl
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename PointT> void
-    OrganizedPointCloudCompression<PointT>::encodeRawDisparityMapWithColorImage ( const uint16_t* disparityMap_arg,
-                                                                                  const uint8_t* colorImage_arg,
+    OrganizedPointCloudCompression<PointT>::encodeRawDisparityMapWithColorImage ( std::vector<uint16_t>& disparityMap_arg,
+                                                                                  std::vector<uint8_t>& colorImage_arg,
                                                                                   uint32_t width_arg,
                                                                                   uint32_t height_arg,
                                                                                   std::ostream& compressedDataOut_arg,
@@ -176,14 +176,6 @@ namespace pcl
        // encode frame disparity shift
        compressedDataOut_arg.write (reinterpret_cast<const char*> (&disparityShift_arg), sizeof (disparityShift_arg));
 
-       // disparity and rgb image data
-       std::vector<uint16_t> disparityData;
-       std::vector<uint8_t> rgbData;
-
-       // copy input data to input vector
-       disparityData.resize(width_arg*height_arg);
-       memcpy(&disparityData[0], disparityMap_arg, sizeof(uint16_t)*width_arg*height_arg);
-
        // compressed disparity and rgb image data
        std::vector<uint8_t> compressedDisparity;
        std::vector<uint8_t> compressedRGB;
@@ -192,7 +184,7 @@ namespace pcl
        uint32_t compressedRGBSize = 0;
 
        // Compress disparity information
-       encodeMonoImageToPNG (disparityData, width_arg, height_arg, compressedDisparity, pngLevel_arg);
+       encodeMonoImageToPNG (disparityMap_arg, width_arg, height_arg, compressedDisparity, pngLevel_arg);
 
        compressedDisparitySize = static_cast<uint32_t>(compressedDisparity.size());
        // Encode size of compressed disparity image data
@@ -201,13 +193,9 @@ namespace pcl
        compressedDataOut_arg.write (reinterpret_cast<const char*> (&compressedDisparity[0]), compressedDisparity.size () * sizeof(uint8_t));
 
        // Compress color information
-       if (colorImage_arg && doColorEncoding)
+       if (colorImage_arg.size() && doColorEncoding)
        {
-         // copy input data to input vector
-         rgbData.resize(width_arg*height_arg*3);
-         memcpy(&rgbData[0], colorImage_arg, sizeof(uint8_t)*width_arg*height_arg*3);
-
-         encodeRGBImageToPNG (rgbData, width_arg, height_arg, compressedRGB, 1 /*Z_BEST_SPEED*/);
+         encodeRGBImageToPNG (colorImage_arg, width_arg, height_arg, compressedRGB, 1 /*Z_BEST_SPEED*/);
 
        }
 

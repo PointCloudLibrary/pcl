@@ -100,17 +100,17 @@ namespace pcl
          * \param[in] disparityShift_arg disparity shift
          * \param[in] disparityScale_arg disparity scaling
          */
-        void encodeRawDisparityMapWithColorImage ( const uint16_t* disparityMap_arg,
-                                                   const uint8_t* colorImage_arg,
+        void encodeRawDisparityMapWithColorImage ( std::vector<uint16_t>& disparityMap_arg,
+                                                   std::vector<uint8_t>& colorImage_arg,
                                                    uint32_t width_arg,
                                                    uint32_t height_arg,
                                                    std::ostream& compressedDataOut_arg,
                                                    bool doColorEncoding = false,
                                                    bool bShowStatistics_arg = true,
                                                    int pngLevel_arg = -1,
-                                                   float focalLength_arg = 10.0f,
-                                                   float disparityShift_arg = 3.33f,
-                                                   float disparityScale_arg = -0.00307f);
+                                                   float focalLength_arg = 525.0f,
+                                                   float disparityShift_arg = 174.825f,
+                                                   float disparityScale_arg = -0.161175f);
 
         /** \brief Decode point cloud from input stream
          * \param[in] compressedDataIn_arg: binary input stream containing compressed data

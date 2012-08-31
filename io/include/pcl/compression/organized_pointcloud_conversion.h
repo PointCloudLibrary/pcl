@@ -345,7 +345,7 @@ namespace pcl
 
             const uint16_t& pixel_disparity = disparityData_arg[i];
 
-            if (pixel_disparity)
+            if (pixel_disparity && (pixel_disparity!=0x7FF))
             {
               float depth = focalLength_arg / (static_cast<float> (pixel_disparity) * disparityScale_arg + disparityShift_arg);
 
