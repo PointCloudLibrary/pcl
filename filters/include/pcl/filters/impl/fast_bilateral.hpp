@@ -51,7 +51,7 @@
 template <typename PointT> void
 pcl::FastBilateralFilter<PointT>::applyFilter (PointCloud &output)
 {
-  if (!output.isOrganized ())
+  if (!input_->isOrganized ())
   {
     PCL_ERROR ("[pcl::FastBilateralFilter] Input cloud needs to be organized.\n");
     return;
