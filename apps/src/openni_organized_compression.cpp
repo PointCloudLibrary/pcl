@@ -81,6 +81,7 @@ char usage[] = "\n"
   "      -a       : enable color coding\n"
   "      -t       : output statistics\n"
   "      -e       : show input cloud during encoding\n"
+  "      -r       : raw encoding of disparity maps\n"
 
   "\n"
   "  example:\n"
@@ -116,12 +117,14 @@ class SimpleOpenNIViewer
                         OrganizedPointCloudCompression<PointXYZRGBA>* octreeEncoder_arg,
                         bool doColorEncoding_arg,
                         bool bShowStatistics_arg,
+                        bool bRawImageEncoding_arg,
                         int pngLevel_arg = -1) :
     viewer ("Input Point Cloud - PCL Compression Viewer"),
     outputFile_ (outputFile_arg),
     organizedEncoder_ (octreeEncoder_arg),
     doColorEncoding_ (doColorEncoding_arg),
     bShowStatistics_ (bShowStatistics_arg),
+    bRawImageEncoding_ (bRawImageEncoding_arg),
     pngLevel_ (pngLevel_arg)
     {
     }
@@ -136,29 +139,35 @@ class SimpleOpenNIViewer
       }
     }
 
+
+
     void run ()
     {
 
-      // create a new grabber for OpenNI devices
-      pcl::Grabber* interface = new pcl::OpenNIGrabber();
-
-      // make callback function from member function
-      boost::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> f =
-        boost::bind (&SimpleOpenNIViewer::cloud_cb_, this, _1);
-
-      // connect callback function for desired signal. In this case its a point cloud with color values
-      boost::signals2::connection c = interface->registerCallback (f);
-
-      // start receiving point clouds
-      interface->start ();
-
-
-      while (!outputFile_.fail())
+      if (!bRawImageEncoding_)
       {
-        boost::this_thread::sleep(boost::posix_time::seconds(1));
+        // create a new grabber for OpenNI devices
+        pcl::Grabber* interface = new pcl::OpenNIGrabber();
+
+        // make callback function from member function
+        boost::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> f =
+          boost::bind (&SimpleOpenNIViewer::cloud_cb_, this, _1);
+
+        // connect callback function for desired signal. In this case its a point cloud with color values
+        boost::signals2::connection c = interface->registerCallback (f);
+
+        // start receiving point clouds
+        interface->start ();
+
+
+        while (!outputFile_.fail())
+        {
+          boost::this_thread::sleep(boost::posix_time::seconds(1));
+        }
+
+        interface->stop ();
       }
 
-      interface->stop ();
     }
 
     pcl::visualization::CloudViewer viewer;
@@ -166,6 +175,7 @@ class SimpleOpenNIViewer
     OrganizedPointCloudCompression<PointXYZRGBA>* organizedEncoder_;
     bool doColorEncoding_;
     bool bShowStatistics_;
+    bool bRawImageEncoding_;
     int pngLevel_;
 };
 
@@ -175,11 +185,13 @@ struct EventHelper
                OrganizedPointCloudCompression<PointXYZRGBA>* octreeEncoder_arg,
                bool doColorEncoding_arg,
                bool bShowStatistics_arg,
+               bool bRawImageEncoding_arg,
                int pngLevel_arg = -1) :
   outputFile_ (outputFile_arg),
   organizedEncoder_ (octreeEncoder_arg),
   doColorEncoding_ (doColorEncoding_arg),
   bShowStatistics_ (bShowStatistics_arg),
+  bRawImageEncoding_ (bRawImageEncoding_arg),
   pngLevel_ (pngLevel_arg)
   {
   }
@@ -194,33 +206,81 @@ struct EventHelper
   }
 
   void
-  run ()
+  image_callback (const boost::shared_ptr<openni_wrapper::Image> &image,
+                  const boost::shared_ptr<openni_wrapper::DepthImage> &depth_image, float)
   {
-    // create a new grabber for OpenNI devices
-    pcl::Grabber* interface = new pcl::OpenNIGrabber ();
 
-    // make callback function from member function
-    boost::function<void
-    (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> f = boost::bind (&EventHelper::cloud_cb_, this, _1);
+    vector<uint16_t> disparity_data;
+    vector<uint8_t> rgb_data;
 
-    // connect callback function for desired signal. In this case its a point cloud with color values
-    boost::signals2::connection c = interface->registerCallback (f);
+    uint32_t width=depth_image->getWidth ();
+    uint32_t height=depth_image->getHeight ();
 
-    // start receiving point clouds
-    interface->start ();
+    disparity_data.resize(width*height);
+    depth_image->fillDepthImageRaw(width, height, &disparity_data[0], width*sizeof(uint16_t));
 
-    while (!outputFile_.fail ())
+    if (image->getEncoding() != openni_wrapper::Image::RGB)
     {
-      boost::this_thread::sleep(boost::posix_time::seconds(1));
+      rgb_data.resize(width*height*3);
+      image->fillRGB(width, height, &rgb_data[0], width*sizeof(uint8_t)*3);
     }
 
-    interface->stop ();
+    organizedEncoder_->encodeRawDisparityMapWithColorImage (disparity_data, rgb_data, width, height, outputFile_, doColorEncoding_, bShowStatistics_, pngLevel_);
+
+  }
+
+  void
+  run ()
+  {
+    if (!bRawImageEncoding_)
+    {
+      // create a new grabber for OpenNI devices
+      pcl::Grabber* interface = new pcl::OpenNIGrabber ();
+
+      // make callback function from member function
+      boost::function<void
+      (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> f = boost::bind (&EventHelper::cloud_cb_, this, _1);
+
+      // connect callback function for desired signal. In this case its a point cloud with color values
+      boost::signals2::connection c = interface->registerCallback (f);
+
+      // start receiving point clouds
+      interface->start ();
+
+      while (!outputFile_.fail ())
+      {
+        boost::this_thread::sleep(boost::posix_time::seconds(1));
+      }
+
+      interface->stop ();
+    } else
+    {
+      pcl::OpenNIGrabber::Mode image_mode = pcl::OpenNIGrabber::OpenNI_Default_Mode;
+      int depthformat = openni_wrapper::OpenNIDevice::OpenNI_shift_values;
+
+      pcl::OpenNIGrabber grabber ("", pcl::OpenNIGrabber::OpenNI_Default_Mode, image_mode);
+
+      // Set the depth output format
+      grabber.getDevice ()->setDepthOutputFormat (static_cast<openni_wrapper::OpenNIDevice::DepthMode> (depthformat));
+
+      boost::function<void (const boost::shared_ptr<openni_wrapper::Image>&, const boost::shared_ptr<openni_wrapper::DepthImage>&, float) > image_cb = boost::bind (&EventHelper::image_callback, this, _1, _2, _3);
+      boost::signals2::connection image_connection = grabber.registerCallback (image_cb);
+
+      grabber.start ();
+      while (!outputFile_.fail())
+      {
+        boost::this_thread::sleep(boost::posix_time::seconds(1));
+      }
+      grabber.stop ();
+
+    }
   }
 
   ostream& outputFile_;
   OrganizedPointCloudCompression<PointXYZRGBA>* organizedEncoder_;
   bool doColorEncoding_;
   bool bShowStatistics_;
+  bool bRawImageEncoding_;
   int pngLevel_;
 };
 
@@ -232,6 +292,7 @@ main (int argc, char **argv)
   bool showStatistics;
   bool doColorEncoding;
   bool bShowInputCloud;
+  bool bRawImageEncoding;
 
   std::string fileName = "pc_compressed.pcc";
   std::string hostName = "localhost";
@@ -247,9 +308,13 @@ main (int argc, char **argv)
   showStatistics = false;
   doColorEncoding = false;
   bShowInputCloud = false;
+  bRawImageEncoding = false;
 
   if (pcl::console::find_argument (argc, argv, "-e")>0) 
     bShowInputCloud = true;
+
+  if (pcl::console::find_argument (argc, argv, "-r")>0)
+    bRawImageEncoding = true;
 
   if (pcl::console::find_argument (argc, argv, "-s")>0) 
   {
@@ -315,12 +380,12 @@ main (int argc, char **argv)
 
       if (!bShowInputCloud) 
       {
-        EventHelper v (compressedPCFile, organizedCoder, doColorEncoding, showStatistics);
+        EventHelper v (compressedPCFile, organizedCoder, doColorEncoding, showStatistics, bRawImageEncoding);
         v.run ();
       } 
       else
       {
-        SimpleOpenNIViewer v (compressedPCFile, organizedCoder, doColorEncoding, showStatistics);
+        SimpleOpenNIViewer v (compressedPCFile, organizedCoder, doColorEncoding, showStatistics, bRawImageEncoding);
         v.run ();
       }
 
@@ -362,12 +427,12 @@ main (int argc, char **argv)
 
         if (!bShowInputCloud) 
         {
-          EventHelper v (socketStream, organizedCoder, doColorEncoding, showStatistics);
+          EventHelper v (socketStream, organizedCoder, doColorEncoding, showStatistics, bRawImageEncoding);
           v.run ();
         } 
         else
         {
-          SimpleOpenNIViewer v (socketStream, organizedCoder, doColorEncoding, showStatistics);
+          SimpleOpenNIViewer v (socketStream, organizedCoder, doColorEncoding, showStatistics, bRawImageEncoding);
           v.run ();
         }
 
