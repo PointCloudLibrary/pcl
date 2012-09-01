@@ -1303,7 +1303,7 @@ TEST (CropBox, Filters)
   cropBoxFilter.filter (cloud_out);
 
   // Rotate crop box up by 45
-  cropBoxFilter.setRotation(Eigen::Vector3f(0, 45.0 * M_PI / 180.0, 0));
+  cropBoxFilter.setRotation (Eigen::Vector3f (0.0f, 45.0f * float (M_PI) / 180.0f, 0.0f));
   cropBoxFilter.filter (indices);
   cropBoxFilter.filter (cloud_out);
 
@@ -1327,7 +1327,7 @@ TEST (CropBox, Filters)
   cropBoxFilter.filter (cloud_out);
 
   // Rotate point cloud by -45
-  cropBoxFilter.setTransform(getTransformation(0, 0, 0, 0, 0, -45.0 * M_PI / 180.0));
+  cropBoxFilter.setTransform (getTransformation (0.0f, 0.0f, 0.0f, 0.0f, 0.0f, -45.0f * float (M_PI) / 180.0f));
   cropBoxFilter.filter (indices);
   cropBoxFilter.filter (cloud_out);
 
@@ -1351,7 +1351,7 @@ TEST (CropBox, Filters)
   cropBoxFilter.filter (cloud_out);
 
   // Translate point cloud down by -1
-  cropBoxFilter.setTransform (getTransformation(0, -1, 0, 0, 0, -45.0 * M_PI / 180.0));
+  cropBoxFilter.setTransform (getTransformation(0, -1, 0, 0, 0, -45.0 * float (M_PI) / 180.0));
   cropBoxFilter.filter (indices);
   cropBoxFilter.filter (cloud_out);
 
@@ -1461,7 +1461,7 @@ TEST (CropBox, Filters)
   cropBoxFilter2.filter (cloud_out2);
 
   // Rotate crop box up by 45
-  cropBoxFilter2.setRotation (Eigen::Vector3f(0, 45.0 * M_PI / 180.0, 0));
+  cropBoxFilter2.setRotation (Eigen::Vector3f (0.0f, 45.0f * float (M_PI) / 180.0f, 0.0f));
   cropBoxFilter2.filter (indices2);
   cropBoxFilter2.filter (cloud_out2);
 
@@ -1469,7 +1469,7 @@ TEST (CropBox, Filters)
   EXPECT_EQ (int (indices2.size ()), int (cloud_out2.width * cloud_out2.height));
 
   // Rotate point cloud by -45
-  cropBoxFilter2.setTransform (getTransformation(0, 0, 0, 0, 0, -45.0 * M_PI / 180.0));
+  cropBoxFilter2.setTransform (getTransformation (0.0f, 0.0f, 0.0f, 0.0f, 0.0f, -45.0f * float (M_PI) / 180.0f));
   cropBoxFilter2.filter (indices2);
   cropBoxFilter2.filter (cloud_out2);
 
@@ -1491,7 +1491,7 @@ TEST (CropBox, Filters)
   cropBoxFilter2.filter (cloud_out2);
 
   // Translate point cloud down by -1
-  cropBoxFilter2.setTransform (getTransformation(0, -1, 0, 0, 0, -45.0 * M_PI / 180.0));
+  cropBoxFilter2.setTransform (getTransformation (0.0f, -1.0f, 0.0f, 0.0f, 0.0f, -45.0f * float (M_PI) / 180.0f));
   cropBoxFilter2.filter (indices2);
   cropBoxFilter2.filter (cloud_out2);
 
@@ -1978,7 +1978,7 @@ TEST (ConditionalRemovalTfQuadraticXYZComparison, Filters)
   EXPECT_EQ (input->points[9].z, output.points[9].z);
 
   // rotate cylinder comparison along z-axis by PI/2
-  cyl_comp->transformComparison (getTransformation (0, 0, 0, 0, 0, M_PI / 2.0).inverse ());
+  cyl_comp->transformComparison (getTransformation (0.0f, 0.0f, 0.0f, 0.0f, 0.0f, float (M_PI) / 2.0f).inverse ());
 
   condrem.filter (output);
 

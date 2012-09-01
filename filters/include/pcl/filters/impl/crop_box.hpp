@@ -102,7 +102,7 @@ pcl::CropBox<PointT>::applyFilter (PointCloud &output)
       }
       else if (extract_removed_indices_)
       {
-        (*removed_indices_)[removed_indices_count++] = index;
+        (*removed_indices_)[removed_indices_count++] = static_cast<int> (index);
       }
     }
     // If inside the cropbox
@@ -110,7 +110,7 @@ pcl::CropBox<PointT>::applyFilter (PointCloud &output)
     {
       if (negative_ && extract_removed_indices_)
       {
-        (*removed_indices_)[removed_indices_count++] = index;
+        (*removed_indices_)[removed_indices_count++] = static_cast<int> (index);
       }
       else if (!negative_) {
         output.points[indices_count++] = input_->points[(*indices_)[index]];
@@ -180,7 +180,7 @@ pcl::CropBox<PointT>::applyFilter (std::vector<int> &indices)
       }
       else if (extract_removed_indices_)
       {
-        (*removed_indices_)[removed_indices_count++] = index;
+        (*removed_indices_)[removed_indices_count++] = static_cast<int> (index);
       }
     }
     // If inside the cropbox
@@ -188,7 +188,7 @@ pcl::CropBox<PointT>::applyFilter (std::vector<int> &indices)
     {
       if (negative_ && extract_removed_indices_)
       {
-        (*removed_indices_)[removed_indices_count++] = index;
+        (*removed_indices_)[removed_indices_count++] = static_cast<int> (index);
       }
       else if (!negative_) {
         indices[indices_count++] = (*indices_)[index];

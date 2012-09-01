@@ -112,7 +112,7 @@ pcl::CropBox<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
       }
       else if (extract_removed_indices_)
       {
-        (*removed_indices_)[removed_indices_count++] = index;
+        (*removed_indices_)[removed_indices_count++] = static_cast<int> (index);
       }
     }
     // If inside the cropbox
@@ -120,7 +120,7 @@ pcl::CropBox<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
     {
       if (negative_ && extract_removed_indices_)
       {
-        (*removed_indices_)[removed_indices_count++] = index;
+        (*removed_indices_)[removed_indices_count++] = static_cast<int> (index);
       }
       else if (!negative_) {
         memcpy (&output.data[indices_count++ * output.point_step],
@@ -191,7 +191,7 @@ pcl::CropBox<sensor_msgs::PointCloud2>::applyFilter (std::vector<int> &indices)
       }
       else if (extract_removed_indices_)
       {
-        (*removed_indices_)[removed_indices_count++] = index;
+        (*removed_indices_)[removed_indices_count++] = static_cast<int> (index);
       }
     }
     // If inside the cropbox
@@ -199,7 +199,7 @@ pcl::CropBox<sensor_msgs::PointCloud2>::applyFilter (std::vector<int> &indices)
     {
       if (negative_ && extract_removed_indices_)
       {
-        (*removed_indices_)[removed_indices_count++] = index;
+        (*removed_indices_)[removed_indices_count++] = static_cast<int> (index);
       }
       else if (!negative_) {
         indices[indices_count++] = (*indices_)[index];
