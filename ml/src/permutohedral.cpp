@@ -2,6 +2,7 @@
  * Software License Agreement (BSD License)
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -15,7 +16,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -32,17 +33,14 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * Author : Christian Potthast
- * Email  : potthast@usc.edu
- *
  */
 
 #include <pcl/ml/permutohedral.h>
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////
 pcl::Permutohedral::Permutohedral () :
   N_ (0), M_ (0), d_ (0),
-  blur_neighborsOLD_( NULL ), offsetOLD_ (NULL), barycentricOLD_ (NULL) 
+  blur_neighborsOLD_(NULL), offsetOLD_ (NULL), barycentricOLD_ (NULL) 
 {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -54,7 +52,7 @@ pcl::Permutohedral::init (const std::vector<float> &feature, const int feature_d
   
   // Create hash table
   std::vector<std::vector<short> > keys;
-  keys.reserve ( (d_+1) * N_ );
+  keys.reserve ((d_+1) * N_);
   std::multimap<size_t, int> hash_table;
 
   // reserve class memory
@@ -90,19 +88,19 @@ pcl::Permutohedral::init (const std::vector<float> &feature, const int feature_d
   float inv_std_dev = sqrt (2.0f / 3.0f) * static_cast<float> (d_ + 1);
   
   // Compute the diagonal part of E (p.5 in [Adams etal 2010])
-  for( int i = 0; i < d_; i++ )
-    scale_factor (i) = 1.0f / sqrt( static_cast<float> (i + 2) * static_cast<float> (i + 1) ) * inv_std_dev;
+  for (int i = 0; i < d_; i++)
+    scale_factor (i) = 1.0f / sqrt (static_cast<float> (i + 2) * static_cast<float> (i + 1)) * inv_std_dev;
 
   // Compute the simplex each feature lies in
-  for( int k = 0; k < N_; k++ )
-    //for( int k = 0; k < 5; k++ )
+  for (int k = 0; k < N_; k++)
+    //for (int k = 0; k < 5; k++)
   {
 
-    // Elevate the feature ( y = Ep, see p.5 in [Adams etal 2010])
+    // Elevate the feature  (y = Ep, see p.5 in [Adams etal 2010])
     int index = k * feature_dimension;
     // sm contains the sum of 1..n of our faeture vector
     float sm = 0;
-    for( int j = d_; j > 0; j-- )
+    for (int j = d_; j > 0; j--)
     {
       float cf = feature[index + j-1] * scale_factor (j-1);      
       elevated (j) = sm - static_cast<float> (j) * cf;
@@ -114,8 +112,8 @@ pcl::Permutohedral::init (const std::vector<float> &feature, const int feature_d
     float down_factor = 1.0f / static_cast<float>(d_+1);
     float up_factor = static_cast<float>(d_+1);
     int sum = 0;
-    for( int j = 0; j <= d_; j++ ){
-      float rd = floorf ( 0.5f + ( down_factor * elevated (j) ) ) ;
+    for (int j = 0; j <= d_; j++){
+      float rd = floorf (0.5f + (down_factor * elevated (j))) ;
       rem0 (j) = rd * up_factor;
       sum += static_cast<int> (rd);
     }
@@ -124,22 +122,22 @@ pcl::Permutohedral::init (const std::vector<float> &feature, const int feature_d
     // (See pg. 3-4 in paper.)    
     rank.setZero ();
     Eigen::VectorXf tmp = elevated - rem0;
-    for( int i = 0; i < d_; i++ ){
-      for( int j = i+1; j <= d_; j++ )
-        if ( tmp (i) < tmp (j) )
+    for (int i = 0; i < d_; i++){
+      for (int j = i+1; j <= d_; j++)
+        if (tmp (i) < tmp (j))
           rank (i)++;
         else
           rank (j)++;
     }
 
     // If the point doesn't lie on the plane (sum != 0) bring it back
-    for( int j = 0; j <= d_; j++ ){
+    for (int j = 0; j <= d_; j++){
       rank (j) += sum;
-      if ( rank (j) < 0 ){
+      if (rank (j) < 0){
         rank (j) += d_+1;
         rem0 (j) += static_cast<float> (d_ + 1);
       }
-      else if ( rank (j) > d_ ){
+      else if (rank (j) > d_){
         rank (j) -= d_+1;
         rem0 (j) -= static_cast<float> (d_ + 1);
       }
@@ -148,24 +146,24 @@ pcl::Permutohedral::init (const std::vector<float> &feature, const int feature_d
     // Compute the barycentric coordinates (p.10 in [Adams etal 2010])
     barycentric.setZero ();
     Eigen::VectorXf v = (elevated - rem0) * down_factor;
-    for( int j = 0; j <= d_; j++ ){
-      barycentric (d_ - rank (j)     ) += v (j);
-      barycentric (d_ + 1 - rank (j) ) -= v (j);
+    for (int j = 0; j <= d_; j++){
+      barycentric (d_ - rank (j)    ) += v (j);
+      barycentric (d_ + 1 - rank (j)) -= v (j);
     }
     // Wrap around
     barycentric (0) += 1.0f + barycentric (d_+1);
 
     // Compute all vertices and their offset
-    for( int remainder = 0; remainder <= d_; remainder++ )
+    for (int remainder = 0; remainder <= d_; remainder++)
     {
-      for( int j = 0; j < d_; j++ )
-        key[j] = static_cast<short> (rem0 (j) + static_cast<float> (canonical (  rank (j), remainder ) ));
+      for (int j = 0; j < d_; j++)
+        key[j] = static_cast<short> (rem0 (j) + static_cast<float> (canonical ( rank (j), remainder)));
 
       // insert key in hash table      
       size_t hash_key = generateHashKey (key);
       std::multimap<size_t ,int>::iterator it = hash_table.find (hash_key);
       int key_index = -1;
-      if ( it != hash_table.end () )
+      if (it != hash_table.end ())
       {
         key_index = it->second;
         
@@ -197,24 +195,21 @@ pcl::Permutohedral::init (const std::vector<float> &feature, const int feature_d
         {
           key_index = static_cast<int> (keys.size ());
           keys.push_back (key);
-          hash_table.insert ( std::pair<size_t, int> (hash_key, key_index ) );
+          hash_table.insert (std::pair<size_t, int> (hash_key, key_index));
         }
         else
           key_index = tmp_key_index;
-        
-        
-
       }
       
       else
       {  
         key_index = static_cast<int> (keys.size ());
         keys.push_back (key);
-        hash_table.insert ( std::pair<size_t, int> (hash_key, key_index ) );
+        hash_table.insert (std::pair<size_t, int> (hash_key, key_index));
       }
       offset_[ k * (d_ + 1) + remainder ] = static_cast<float> (key_index);
       
-      barycentric_[ k * (d_ + 1) + remainder ] = barycentric ( remainder );
+      barycentric_[ k * (d_ + 1) + remainder ] = barycentric (remainder);
     }
   }
 
@@ -226,19 +221,19 @@ pcl::Permutohedral::init (const std::vector<float> &feature, const int feature_d
   // Create the neighborhood structure
   if (blur_neighbors_.size () > 0) 
     blur_neighbors_.clear ();
-  blur_neighbors_.resize ( (d_+1)*M_ );
+  blur_neighbors_.resize ((d_+1)*M_);
 
   std::vector<short> n1 (d_+1);
   std::vector<short> n2 (d_+1);
 
   // For each of d+1 axes,
-  for( int j = 0; j <= d_; j++ )
+  for (int j = 0; j <= d_; j++)
   {
-    for( int i = 0; i < M_; i++ )
+    for (int i = 0; i < M_; i++)
     {
       std::vector<short> key = keys[i];
 
-      for( int k=0; k<d_; k++ ){
+      for (int k=0; k<d_; k++){
         n1[k] = static_cast<short> (key[k] - 1);
         n2[k] = static_cast<short> (key[k] + 1);
       }
@@ -250,14 +245,14 @@ pcl::Permutohedral::init (const std::vector<float> &feature, const int feature_d
       int key_index = -1;      
       hash_key = generateHashKey (n1);
       it = hash_table.find (hash_key);
-      if ( it != hash_table.end () )
+      if (it != hash_table.end ())
         key_index = it->second;
       blur_neighbors_[j*M_+i].n1 = key_index;
 
       key_index = -1;
       hash_key = generateHashKey (n2);
       it = hash_table.find (hash_key);
-      if ( it != hash_table.end () )
+      if (it != hash_table.end ())
         key_index = it->second;
       blur_neighbors_[j*M_+i].n2 = key_index;
     }
@@ -266,12 +261,12 @@ pcl::Permutohedral::init (const std::vector<float> &feature, const int feature_d
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void 
-pcl::Permutohedral::compute ( std::vector<float> &out, const std::vector<float> &in, 
-                              int value_size,
-                              int in_offset, int out_offset,
-                              int in_size, int out_size ) const
+pcl::Permutohedral::compute (std::vector<float> &out, const std::vector<float> &in, 
+                             int value_size,
+                             int in_offset, int out_offset,
+                             int in_size, int out_size) const
 {
-  if ( in_size == -1)  in_size = N_ -  in_offset;
+  if (in_size == -1)  in_size = N_ -  in_offset;
   if (out_size == -1) out_size = N_ - out_offset;
 		
   // Shift all values by 1 such that -1 -> 0 (used for blurring)
@@ -279,20 +274,20 @@ pcl::Permutohedral::compute ( std::vector<float> &out, const std::vector<float> 
   std::vector<float> new_values ((M_+2)*value_size, 0.0f);
 	
   // Splatting
-  for( int i = 0;  i < in_size; i++ )
+  for (int i = 0;  i < in_size; i++)
   {
-    for( int j = 0; j <= d_; j++ )
+    for (int j = 0; j <= d_; j++)
     {
       int o = static_cast<int> (offset_[(in_offset + i) * (d_ + 1) + j]) + 1;
       float w = barycentric_[(in_offset + i) * (d_ + 1) + j];
-      for( int k = 0; k < value_size; k++ )
+      for (int k = 0; k < value_size; k++)
         values[ o * value_size + k ] += w * in[ i * value_size + k ];
     }
   }
 		
-  for( int j = 0; j <= d_; j++ )
+  for (int j = 0; j <= d_; j++)
   {
-    for( int i = 0; i < M_; i++ )
+    for (int i = 0; i < M_; i++)
     {
       int old_val_idx = (i+1) * value_size;
       int new_val_idx = (i+1) * value_size;
@@ -313,13 +308,13 @@ pcl::Permutohedral::compute ( std::vector<float> &out, const std::vector<float> 
   float alpha = 1.0f / (1.0f + static_cast<float> (pow(2.0f, -d_)));
 		
   // Slicing
-  for( int i = 0; i < out_size; i++ ){
-    for( int k = 0; k < value_size; k++ )
+  for (int i = 0; i < out_size; i++){
+    for (int k = 0; k < value_size; k++)
       out[i * value_size + k] = 0;
-    for( int j = 0; j <= d_; j++ ){
+    for (int j = 0; j <= d_; j++){
       int o = static_cast<int> (offset_[(out_offset + i) * (d_ + 1) + j]) + 1;
       float w = barycentric_[(out_offset + i) * (d_ + 1) + j];
-      for( int k = 0; k <value_size; k++ )
+      for (int k = 0; k <value_size; k++)
         out[ i* value_size + k ] += w * values[ o * value_size + k ] * alpha;
     }
   }		
@@ -332,7 +327,7 @@ pcl::Permutohedral::initOLD (const std::vector<float> &feature, const int featur
   // Compute the lattice coordinates for each feature [there is going to be a lot of magic here
   N_ = N;
   d_ = feature_dimension;
-  HashTableOLD hash_table( d_, N_*(d_+1) );
+  HashTableOLD hash_table(d_, N_*(d_+1));
 
   // Allocate the class memory
   if (offsetOLD_) delete [] offsetOLD_;
@@ -350,30 +345,32 @@ pcl::Permutohedral::initOLD (const std::vector<float> &feature, const int featur
   short * key = new short[d_+1];
 		
   // Compute the canonical simplex
-  for( int i=0; i<=d_; i++ ){
-    for( int j=0; j<=d_-i; j++ )
+  for (int i=0; i<=d_; i++){
+    for (int j=0; j<=d_-i; j++)
       canonical[i*(d_+1)+j] = static_cast<short> (i);
-    for( int j=d_-i+1; j<=d_; j++ )
+    for (int j=d_-i+1; j<=d_; j++)
       canonical[i*(d_+1)+j] = static_cast<short> (i - (d_+1));
   }
 		
   // Expected standard deviation of our filter (p.6 in [Adams etal 2010])
-  float inv_std_dev = sqrt(2.0f / 3.0f)* static_cast<float>(d_+1);
+  float inv_std_dev = sqrt (2.0f / 3.0f)* static_cast<float>(d_+1);
   // Compute the diagonal part of E (p.5 in [Adams etal 2010])
-  for( int i=0; i<d_; i++ )
-    scale_factor[i] = 1.0f / sqrt( static_cast<float>(i+2)*static_cast<float>(i+1) ) * inv_std_dev;
+  for (int i=0; i<d_; i++)
+    scale_factor[i] = 1.0f / sqrt (static_cast<float>(i+2)*static_cast<float>(i+1)) * inv_std_dev;
 		
   // Compute the simplex each feature lies in
-  for( int k=0; k<N_; k++ ){
-  //for( int k = 0; k < 500; k++ ){
-    // Elevate the feature ( y = Ep, see p.5 in [Adams etal 2010])
+  for (int k=0; k<N_; k++)
+  {
+  //for (int k = 0; k < 500; k++){
+    // Elevate the feature (y = Ep, see p.5 in [Adams etal 2010])
     //const float * f = feature + k*feature_size;
     int index = k * feature_dimension;
 
 
     // sm contains the sum of 1..n of our faeture vector
     float sm = 0;
-    for( int j=d_; j>0; j-- ){
+    for (int j = d_; j > 0; j--)
+    {
       //float cf = f[j-1]*scale_factor[j-1];
       float cf = feature[index + j-1] * scale_factor[j-1];
       elevated[j] = sm - static_cast<float>(j)*cf;
@@ -385,41 +382,42 @@ pcl::Permutohedral::initOLD (const std::vector<float> &feature, const int featur
     float down_factor = 1.0f / static_cast<float>(d_+1);
     float up_factor = static_cast<float>(d_+1);
     int sum = 0;
-    for( int i=0; i<=d_; i++ ){
-      int rd = static_cast<int> (pcl_round( down_factor * elevated[i]));
-      rem0[i] = static_cast<float>(rd)*up_factor;
+    for (int i=0; i<=d_; i++){
+      int rd = static_cast<int> (pcl_round (down_factor * elevated[i]));
+      rem0[i] = static_cast<float >(rd) * up_factor;
       sum += rd;
     }
 			
     // Find the simplex we are in and store it in rank (where rank describes what position coorinate i has in the sorted order of the features values)
-    for( int i=0; i<=d_; i++ )
+    for (int i=0; i<=d_; i++)
       rank[i] = 0;
-    for( int i=0; i<d_; i++ ){
+    for (int i=0; i<d_; i++)
+    {
       double di = elevated[i] - rem0[i];
-      for( int j=i+1; j<=d_; j++ )
-        if ( di < elevated[j] - rem0[j])
+      for (int j=i+1; j<=d_; j++)
+        if (di < elevated[j] - rem0[j])
           rank[i]++;
         else
           rank[j]++;
     }
 
     // If the point doesn't lie on the plane (sum != 0) bring it back
-    for( int i=0; i<=d_; i++ ){
+    for (int i=0; i<=d_; i++){
       rank[i] += sum;
-      if ( rank[i] < 0 ){
+      if (rank[i] < 0){
         rank[i] += d_+1;
         rem0[i] += static_cast<float> (d_+1);
       }
-      else if ( rank[i] > d_ ){
+      else if (rank[i] > d_){
         rank[i] -= d_+1;
         rem0[i] -= static_cast<float> (d_+1);
       }
     }
 
     // Compute the barycentric coordinates (p.10 in [Adams etal 2010])
-    for( int i=0; i<=d_+1; i++ )
+    for (int i=0; i<=d_+1; i++)
       barycentric[i] = 0;
-    for( int i=0; i<=d_; i++ ){
+    for (int i=0; i<=d_; i++){
       float v = (elevated[i] - rem0[i])*down_factor;
       barycentric[d_-rank[i]  ] += v;
       barycentric[d_-rank[i]+1] -= v;
@@ -428,15 +426,14 @@ pcl::Permutohedral::initOLD (const std::vector<float> &feature, const int featur
     barycentric[0] += 1.0f + barycentric[d_+1];
 			
     // Compute all vertices and their offset
-    for( int remainder=0; remainder<=d_; remainder++ ){
-      for( int i=0; i<d_; i++ )
-        key[i] = rem0[i] + canonical[ remainder*(d_+1) + rank[i] ];
-      offsetOLD_[ k*(d_+1)+remainder ] = hash_table.find( key, true );
-      barycentricOLD_[ k*(d_+1)+remainder ] = barycentric[ remainder ];
-      baryOLD_.push_back (barycentric[ remainder ]);
-      
+    for (int remainder = 0; remainder <= d_; remainder++)
+    {
+      for (int i = 0; i < d_; i++)
+        key[i] = static_cast<short int> (rem0[i] + canonical[remainder * (d_ + 1) + rank[i]]);
+      offsetOLD_[k*(d_+1)+remainder] = hash_table.find (key, true);
+      barycentricOLD_[k*(d_+1)+remainder] = barycentric[remainder];
+      baryOLD_.push_back (barycentric[remainder]);
     }
-
   }
 
 
@@ -463,24 +460,24 @@ pcl::Permutohedral::initOLD (const std::vector<float> &feature, const int featur
   short * n2 = new short[d_+1];
 		
   // For each of d+1 axes,
-  for( int j = 0; j <= d_; j++ ){
-    for( int i=0; i<M_; i++ ){
-      const short * key = hash_table.getKey( i );
+  for (int j = 0; j <= d_; j++){
+    for (int i=0; i<M_; i++){
+      const short * key = hash_table.getKey(i);
       //std::cout << *key << std::endl;
-      for( int k=0; k<d_; k++ ){
-        n1[k] = key[k] - 1;
-        n2[k] = key[k] + 1;
+      for (int k=0; k<d_; k++){
+        n1[k] = static_cast<short int> (key[k] - 1);
+        n2[k] = static_cast<short int> (key[k] + 1);
       }
-      n1[j] = key[j] + d_;
-      n2[j] = key[j] - d_;
+      n1[j] = static_cast<short int> (key[j] + d_);
+      n2[j] = static_cast<short int> (key[j] - d_);
 
       //std::cout << *n1 << "  |  " << *n2 << std::endl;
 				
-      blur_neighborsOLD_[j*M_+i].n1 = hash_table.find( n1 );
-      blur_neighborsOLD_[j*M_+i].n2 = hash_table.find( n2 );
+      blur_neighborsOLD_[j*M_+i].n1 = hash_table.find(n1);
+      blur_neighborsOLD_[j*M_+i].n2 = hash_table.find(n2);
 /*
-      std::cout << hash_table.find( n1 ) << "  |  " <<
-      hash_table.find( n2 ) << std::endl;
+      std::cout << hash_table.find(n1) << "  |  " <<
+      hash_table.find(n2) << std::endl;
 */    
 
     }
@@ -494,33 +491,33 @@ pcl::Permutohedral::initOLD (const std::vector<float> &feature, const int featur
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void 
-pcl::Permutohedral::computeOLD ( std::vector<float> &out, const std::vector<float> &in, 
-                                 int value_size,
-                                 int in_offset, int out_offset,
-                                 int in_size, int out_size ) const
+pcl::Permutohedral::computeOLD (std::vector<float> &out, const std::vector<float> &in, 
+                                int value_size,
+                                int in_offset, int out_offset,
+                                int in_size, int out_size) const
 {
-  if ( in_size == -1)  in_size = N_ -  in_offset;
+  if (in_size == -1)  in_size = N_ -  in_offset;
   if (out_size == -1) out_size = N_ - out_offset;
 		
   // Shift all values by 1 such that -1 -> 0 (used for blurring)
   float * values = new float[ (M_+2)*value_size ];
   float * new_values = new float[ (M_+2)*value_size ];
 		
-  for( int i=0; i<(M_+2)*value_size; i++ )
+  for (int i=0; i<(M_+2)*value_size; i++)
     values[i] = new_values[i] = 0;
 		
   // Splatting
-  for( int i=0;  i<in_size; i++ ){
-    for( int j=0; j<=d_; j++ ){
+  for (int i=0;  i<in_size; i++){
+    for (int j=0; j<=d_; j++){
       int o = static_cast<int> (offsetOLD_[(in_offset+i)*(d_+1)+j]) + 1;
       float w = barycentricOLD_[(in_offset+i)*(d_+1)+j];
-      for( int k=0; k<value_size; k++ )
+      for (int k=0; k<value_size; k++)
         values[ o*value_size+k ] += w * in[ i*value_size+k ];
     }
   }
 		
-  for( int j=0; j<=d_; j++ ){
-    for( int i=0; i<M_; i++ ){
+  for (int j=0; j<=d_; j++){
+    for (int i=0; i<M_; i++){
       float * old_val = values + (i+1)*value_size;
       float * new_val = new_values + (i+1)*value_size;
 				
@@ -528,7 +525,7 @@ pcl::Permutohedral::computeOLD ( std::vector<float> &out, const std::vector<floa
       int n2 = blur_neighborsOLD_[j*M_+i].n2+1;
       float * n1_val = values + n1*value_size;
       float * n2_val = values + n2*value_size;
-      for( int k=0; k<value_size; k++ )
+      for (int k=0; k<value_size; k++)
         new_val[k] = old_val[k]+0.5f * (n1_val[k] + n2_val[k]);
     }
     float * tmp = values;
@@ -536,16 +533,17 @@ pcl::Permutohedral::computeOLD ( std::vector<float> &out, const std::vector<floa
     new_values = tmp;
   }
   // Alpha is a magic scaling constant (write Andrew if you really wanna understand this)
-  float alpha = 1.0f / (1.0f + powf(2, -d_));
+  float alpha = 1.0f / (1.0f + powf (2.0f, - float (d_)));
 		
   // Slicing
-  for( int i=0; i<out_size; i++ ){
-    for( int k=0; k<value_size; k++ )
+  for (int i=0; i<out_size; i++)
+  {
+    for (int k=0; k<value_size; k++)
       out[i*value_size+k] = 0;
-    for( int j=0; j<=d_; j++ ){
+    for (int j=0; j<=d_; j++){
       int o = static_cast<int> (offsetOLD_[(out_offset+i)*(d_+1)+j]) + 1;
       float w = barycentricOLD_[(out_offset+i)*(d_+1)+j];
-      for( int k=0; k<value_size; k++ )
+      for (int k=0; k<value_size; k++)
         out[ i*value_size+k ] += w * values[ o*value_size+k ] * alpha;
     }
   }
