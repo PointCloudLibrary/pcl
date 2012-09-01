@@ -23,9 +23,9 @@ if(build)
         )
 
     set(impl_incs
-        #include/pcl/${SUBSYS_NAME}/convolution.hpp
-        #include/pcl/${SUBSYS_NAME}/edge.hpp
-        #include/pcl/${SUBSYS_NAME}/morphology.hpp        
+        include/pcl/${SUBSYS_NAME}/impl/convolution.hpp
+        include/pcl/${SUBSYS_NAME}/impl/edge.hpp
+        include/pcl/${SUBSYS_NAME}/impl/morphology.hpp        
         )
 
     set(LIB_NAME pcl_${SUBSYS_NAME})

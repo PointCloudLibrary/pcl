@@ -71,8 +71,8 @@ if(build)
 #    PCL_ADD_EXECUTABLE(pcl_convolve ${SUBSYS_NAME} src/convolve.cpp)
 #    target_link_libraries(pcl_convolve pcl_common pcl_io pcl_visualization)
 
-    PCL_ADD_EXECUTABLE(pcl_pcd_organized_edge_detection ${SUBSYS_NAME} src/pcd_organized_edge_detection.cpp)
-    target_link_libraries(pcl_pcd_organized_edge_detection pcl_common pcl_io pcl_features pcl_visualization)
+#PCL_ADD_EXECUTABLE(pcl_pcd_organized_edge_detection ${SUBSYS_NAME} src/pcd_organized_edge_detection.cpp)
+#target_link_libraries(pcl_pcd_organized_edge_detection pcl_common pcl_io pcl_features pcl_visualization)
 
     if (OPENNI_FOUND AND BUILD_OPENNI)
 
@@ -123,8 +123,8 @@ if(build)
       PCL_ADD_EXECUTABLE(pcl_openni_boundary_estimation ${SUBSYS_NAME} src/openni_boundary_estimation.cpp)
       target_link_libraries(pcl_openni_boundary_estimation pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_features pcl_surface)
 
-      PCL_ADD_EXECUTABLE(pcl_openni_organized_edge_detection ${SUBSYS_NAME} src/openni_organized_edge_detection.cpp)
-      target_link_libraries(pcl_openni_organized_edge_detection pcl_common pcl_io pcl_features pcl_visualization)
+#PCL_ADD_EXECUTABLE(pcl_openni_organized_edge_detection ${SUBSYS_NAME} src/openni_organized_edge_detection.cpp)
+#target_link_libraries(pcl_openni_organized_edge_detection pcl_common pcl_io pcl_features pcl_visualization)
 
       if (QT4_FOUND AND VTK_USE_QVTK)
         # OpenNI Passthrough application demo

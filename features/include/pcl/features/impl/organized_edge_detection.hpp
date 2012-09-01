@@ -2,7 +2,7 @@
  * Software License Agreement (BSD License)
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
- *  Copyright (c) 2010-2012, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -16,7 +16,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -33,8 +33,6 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- *
- *
  */
 
 #ifndef PCL_FEATURES_IMPL_ORGANIZED_EDGE_DETECTION_H_
@@ -42,13 +40,9 @@
 
 #include <pcl/features/organized_edge_detection.h>
 #include <pcl/point_types.h>
-#include <pcl/2d/edge.h>
+//#include <pcl/2d/edge.h>
 #include <pcl/console/print.h>
 #include <pcl/console/time.h>
-
-using namespace pcl;
-using namespace pcl::console;
-using namespace pcl::pcl_2d;
 
 /**
  *  Directions: 1 2 3
@@ -56,7 +50,7 @@ using namespace pcl::pcl_2d;
  *              7 6 5
  * e.g. direction y means we came from pixel with label y to the center pixel x
  */
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 template<typename PointT, typename PointLT> void
 pcl::OrganizedEdgeBase<PointT, PointLT>::compute (pcl::PointCloud<PointLT>& labels, std::vector<pcl::PointIndices>& label_indices) const
 {
@@ -71,6 +65,7 @@ pcl::OrganizedEdgeBase<PointT, PointLT>::compute (pcl::PointCloud<PointLT>& labe
   assignLabelIndices (labels, label_indices);
 }
 
+//////////////////////////////////////////////////////////////////////////////
 template<typename PointT, typename PointLT> void
 pcl::OrganizedEdgeBase<PointT, PointLT>::assignLabelIndices (pcl::PointCloud<PointLT>& labels, std::vector<pcl::PointIndices>& label_indices) const
 {
@@ -89,14 +84,12 @@ pcl::OrganizedEdgeBase<PointT, PointLT>::assignLabelIndices (pcl::PointCloud<Poi
   }
 }
 
+//////////////////////////////////////////////////////////////////////////////
 template<typename PointT, typename PointLT> void
 pcl::OrganizedEdgeBase<PointT, PointLT>::extractEdges (pcl::PointCloud<PointLT>& labels) const
 {
   if ((detecting_edge_types_ & EDGELABEL_NAN_BOUNDARY) || (detecting_edge_types_ & EDGELABEL_OCCLUDING) || (detecting_edge_types_ & EDGELABEL_OCCLUDED))
   {
-    PCL_DEBUG ("Detecting nan boundaries, occluding and occluded edges... \n");
-    TicToc tt;
-    tt.tic ();
     // Fill lookup table for next points to visit
     const int num_of_ngbr = 8;
     Neighbor directions [num_of_ngbr] = {Neighbor(-1, 0, -1),
@@ -227,11 +220,11 @@ pcl::OrganizedEdgeBase<PointT, PointLT>::extractEdges (pcl::PointCloud<PointLT>&
         }
       }
     }
-    PCL_DEBUG ("[done, %g ms]\n", tt.toc ());
   }
 }
 
 
+//////////////////////////////////////////////////////////////////////////////
 template<typename PointT, typename PointLT> void
 pcl::OrganizedEdgeFromRGB<PointT, PointLT>::compute (pcl::PointCloud<PointLT>& labels, std::vector<pcl::PointIndices>& label_indices) const
 {
@@ -247,15 +240,12 @@ pcl::OrganizedEdgeFromRGB<PointT, PointLT>::compute (pcl::PointCloud<PointLT>& l
   this->assignLabelIndices (labels, label_indices);
 }
 
+//////////////////////////////////////////////////////////////////////////////
 template<typename PointT, typename PointLT> void
 pcl::OrganizedEdgeFromRGB<PointT, PointLT>::extractEdges (pcl::PointCloud<PointLT>& labels) const
 {
   if ((detecting_edge_types_ & EDGELABEL_RGB_CANNY))
   {
-    PCL_DEBUG ("Detecting rgb edges... ");
-    TicToc tt;
-    tt.tic ();
-
     pcl::PointCloud<PointXYZI> gray;
     gray.width = input_->width;
     gray.height = input_->height;
@@ -287,10 +277,10 @@ pcl::OrganizedEdgeFromRGB<PointT, PointLT>::extractEdges (pcl::PointCloud<PointL
           labels[row*int(labels.width) + col].label |= EDGELABEL_RGB_CANNY;
       }
     }
-    PCL_DEBUG ("[done, %g ms]\n", tt.toc ()); 
   }
 }
 
+//////////////////////////////////////////////////////////////////////////////
 template<typename PointT, typename PointNT, typename PointLT> void
 pcl::OrganizedEdgeFromNormals<PointT, PointNT, PointLT>::compute (pcl::PointCloud<PointLT>& labels, std::vector<pcl::PointIndices>& label_indices) const
 {
@@ -306,14 +296,12 @@ pcl::OrganizedEdgeFromNormals<PointT, PointNT, PointLT>::compute (pcl::PointClou
   this->assignLabelIndices (labels, label_indices);
 }
 
+//////////////////////////////////////////////////////////////////////////////
 template<typename PointT, typename PointNT, typename PointLT> void
 pcl::OrganizedEdgeFromNormals<PointT, PointNT, PointLT>::extractEdges (pcl::PointCloud<PointLT>& labels) const
 {
   if ((detecting_edge_types_ & EDGELABEL_HIGH_CURVATURE))
   {
-    PCL_DEBUG ("Detecting high curvature edges... \n");
-    TicToc tt;
-    tt.tic ();
 
     pcl::PointCloud<PointXYZI> nx, ny;
     nx.width = normals_->width;
@@ -347,11 +335,10 @@ pcl::OrganizedEdgeFromNormals<PointT, PointNT, PointLT>::extractEdges (pcl::Poin
           labels[row*int(labels.width) + col].label |= EDGELABEL_HIGH_CURVATURE;
       }
     }
-
-    PCL_DEBUG ("[done, %g ms]\n", tt.toc ());
   }
 }
 
+//////////////////////////////////////////////////////////////////////////////
 template<typename PointT, typename PointNT, typename PointLT> void
 pcl::OrganizedEdgeFromRGBNormals<PointT, PointNT, PointLT>::compute (pcl::PointCloud<PointLT>& labels, std::vector<pcl::PointIndices>& label_indices) const
 {

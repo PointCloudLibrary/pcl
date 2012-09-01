@@ -1,6 +1,6 @@
 set(SUBSYS_NAME features)
 set(SUBSYS_DESC "Point cloud features library")
-set(SUBSYS_DEPS common search kdtree octree 2d filters)
+set(SUBSYS_DEPS common search kdtree octree filters)
 
 set(build TRUE)
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
@@ -37,7 +37,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/normal_3d.h
         include/pcl/${SUBSYS_NAME}/normal_3d_omp.h
         include/pcl/${SUBSYS_NAME}/normal_based_signature.h
-        include/pcl/${SUBSYS_NAME}/organized_edge_detection.h
+        #include/pcl/${SUBSYS_NAME}/organized_edge_detection.h
         include/pcl/${SUBSYS_NAME}/pfh.h
         include/pcl/${SUBSYS_NAME}/pfhrgb.h
         include/pcl/${SUBSYS_NAME}/ppf.h
@@ -82,7 +82,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/normal_3d.hpp
         include/pcl/${SUBSYS_NAME}/impl/normal_3d_omp.hpp
         include/pcl/${SUBSYS_NAME}/impl/normal_based_signature.hpp
-        include/pcl/${SUBSYS_NAME}/impl/organized_edge_detection.hpp
+        #include/pcl/${SUBSYS_NAME}/impl/organized_edge_detection.hpp
         include/pcl/${SUBSYS_NAME}/impl/pfh.hpp
         include/pcl/${SUBSYS_NAME}/impl/pfhrgb.hpp
         include/pcl/${SUBSYS_NAME}/impl/ppf.hpp
@@ -127,7 +127,7 @@ if(build)
         src/normal_3d.cpp
         src/normal_3d_omp.cpp
         src/normal_based_signature.cpp
-        src/organized_edge_detection.cpp
+        #src/organized_edge_detection.cpp
         src/pfh.cpp
         src/pfhrgb.cpp
         src/ppf.cpp
