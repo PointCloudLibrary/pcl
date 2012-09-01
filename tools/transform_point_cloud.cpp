@@ -186,7 +186,7 @@ divide (sensor_msgs::PointCloud2 &cloud, int field_offset, double divider)
 {
   T val;
   memcpy (&val, &cloud.data[field_offset], sizeof (T));
-  val /= T (divider);
+  val = static_cast<T> (val / static_cast<T> (divider));
   memcpy (&cloud.data[field_offset], &val, sizeof (T));
 }
 
