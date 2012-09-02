@@ -138,18 +138,18 @@ pcl::DinastGrabber::findDevice ( int device_position, const int id_vendor, const
     libusb_get_config_descriptor (devs[i], 0, &config);
 
     // Iterate over all interfaces available
-    for (int i = 0; i < (int)config->bNumInterfaces; ++i)
+    for (int f = 0; f < (int)config->bNumInterfaces; ++f)
     {
       // Iterate over the number of alternate settings
-      for (int j = 0; j < config->interface[i].num_altsetting; ++j)
+      for (int j = 0; j < config->interface[f].num_altsetting; ++j)
       {
         // Iterate over the number of end points present
-        for (int k = 0; k < (int)config->interface[i].altsetting[j].bNumEndpoints; ++k) 
+        for (int k = 0; k < (int)config->interface[f].altsetting[j].bNumEndpoints; ++k) 
         {
-          if (config->interface[i].altsetting[j].endpoint[k].bmAttributes == LIBUSB_TRANSFER_TYPE_BULK)
+          if (config->interface[f].altsetting[j].endpoint[k].bmAttributes == LIBUSB_TRANSFER_TYPE_BULK)
           {
             // Initialize the bulk end point
-            bulk_ep = config->interface[i].altsetting[j].endpoint[k].bEndpointAddress;
+            bulk_ep = config->interface[f].altsetting[j].endpoint[k].bEndpointAddress;
             break;
           }
         }
