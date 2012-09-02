@@ -557,7 +557,7 @@ SequentialFitter::grow (float max_dist, float max_angle, unsigned min_length, un
       unsigned idx = row * m_cloud->width + col;
 
       pcl::PointXYZRGB &pt = m_cloud->at (idx);
-      if (!isnan (pt.x) && !isnan (pt.y) && !isnan (pt.z))
+      if (!pcl_isnan (pt.x) && !pcl_isnan (pt.y) && !pcl_isnan (pt.z))
       {
 
         // distance requirement
@@ -612,7 +612,7 @@ SequentialFitter::PCL2ON (pcl::PointCloud<pcl::PointXYZRGB>::Ptr &pcl_cloud, con
 
     pcl::PointXYZRGB &pt = pcl_cloud->at (indices[i]);
 
-    if (!isnan (pt.x) && !isnan (pt.y) && !isnan (pt.z))
+    if (!pcl_isnan (pt.x) && !pcl_isnan (pt.y) && !pcl_isnan (pt.z))
     {
       on_cloud.push_back (Eigen::Vector3d (pt.x, pt.y, pt.z));
       numPoints++;
