@@ -138,13 +138,13 @@ pcl::DinastGrabber::findDevice ( int device_position, const int id_vendor, const
     libusb_get_config_descriptor (devs[i], 0, &config);
 
     // Iterate over all interfaces available
-    for (int f = 0; f < (int)config->bNumInterfaces; ++f)
+    for (int f = 0; f < int (config->bNumInterfaces); ++f)
     {
       // Iterate over the number of alternate settings
       for (int j = 0; j < config->interface[f].num_altsetting; ++j)
       {
         // Iterate over the number of end points present
-        for (int k = 0; k < (int)config->interface[f].altsetting[j].bNumEndpoints; ++k) 
+        for (int k = 0; k < int (config->interface[f].altsetting[j].bNumEndpoints); ++k) 
         {
           if (config->interface[f].altsetting[j].endpoint[k].bmAttributes == LIBUSB_TRANSFER_TYPE_BULK)
           {
@@ -170,9 +170,10 @@ pcl::DinastGrabber::findDevice ( int device_position, const int id_vendor, const
     cout<<"Failed to find any DINAST device"<<endl;
   
   // No bulk endpoint was found
-  if (bulk_ep == -1)
+  // bulk_ep is unsigned char! Can't compare with -1 !!!
+  //if (bulk_ep == -1)
     //throw PCLIOException ();
-    return;
+  //  return;
 
 }
 
@@ -266,7 +267,7 @@ pcl::DinastGrabber::getDeviceVersion ()
  
   data[21] = 0; // NULL
 
-  return (std::string ((const char*)data));
+  return (std::string (reinterpret_cast<const char*> (data)));
 }
 
 void
@@ -281,7 +282,7 @@ pcl::DinastGrabber::start ()
 void
 pcl::DinastGrabber::stop ()
 {
-  unsigned char ctrl_buf[3];
+  //unsigned char ctrl_buf[3];
 //  if (!USBTxControlData (device_handle, CMD_READ_STOP, ctrl_buf, 1))
 //    return;
 	running_=false;
@@ -304,7 +305,7 @@ pcl::DinastGrabber::checkHeader ()
         (g_buffer[i+4] == 0xBB) && (g_buffer[i+5] == 0xBB) &&
         (g_buffer[i+6] == 0x77) && (g_buffer[i+7] == 0x77))
     {
-      data_ptr = i + SYNC_PACKET;
+      data_ptr = int (i) + SYNC_PACKET;
       break;
     }
   }
@@ -349,7 +350,7 @@ pcl::DinastGrabber::readImage (unsigned char *image)
     // Copy data from the USB port if we actually read anything
     //std::cerr << "read " << actual_length << ", buf size: " << g_buffer.size () <<  std::endl;
     // Copy data into the buffer
-    int back = g_buffer.size ();
+    int back = int (g_buffer.size ());
     g_buffer.resize (back + actual_length);
     //memcpy (&g_buffer[back], &raw_buffer[0], actual_length);
     for (int i = 0; i < actual_length; ++i)
@@ -410,7 +411,7 @@ pcl::DinastGrabber::readImage (unsigned char *image1, unsigned char *image2)
         (raw_buffer[i+4] == 0xBB) && (raw_buffer[i+5] == 0xBB) &&
         (raw_buffer[i+6] == 0x77) && (raw_buffer[i+7] == 0x77))
     {
-      data_adr = i + SYNC_PACKET;
+      data_adr = int (i) + SYNC_PACKET;
       break;
     }
   }
