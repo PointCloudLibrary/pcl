@@ -201,7 +201,7 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::initCompute ()
   {
     PointCloudNPtr normals (new PointCloudN ());
     normals->reserve (normals->size ());
-    if (input_->height == 1 ) // not organized
+    if (!surface_->isOrganized ())
     {
       pcl::NormalEstimation<PointInT, NormalT> normal_estimation;
       normal_estimation.setInputCloud (surface_);

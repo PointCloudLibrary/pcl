@@ -145,19 +145,18 @@ pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloud
   if (normals_->empty ())
   {
     normals_->reserve (surface_->size ());
-    if (input_->height == 1 ) // not organized
+    if (!surface_->isOrganized ())
     {
       pcl::NormalEstimation<PointInT, NormalT> normal_estimation;
-      normal_estimation.setInputCloud(surface_);
-      normal_estimation.setRadiusSearch(search_radius_);
+      normal_estimation.setInputCloud (surface_);
+      normal_estimation.setRadiusSearch (search_radius_);
       normal_estimation.compute (*normals_);
     }
     else
     {
       IntegralImageNormalEstimation<PointInT, NormalT> normal_estimation;
       normal_estimation.setNormalEstimationMethod (pcl::IntegralImageNormalEstimation<PointInT, NormalT>::SIMPLE_3D_GRADIENT);
-
-      normal_estimation.setInputCloud(surface_);
+      normal_estimation.setInputCloud (surface_);
       normal_estimation.setNormalSmoothingSize (5.0);
       normal_estimation.compute (*normals_);
     }
