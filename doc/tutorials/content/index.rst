@@ -784,7 +784,7 @@ Segmentation
 
              Author: *Sergey Ushakov*
 
-             Compatibility: > PCL 1.6
+             Compatibility: > PCL 1.7
 
              In this tutorial we will learn how to use region growing segmentation algorithm.
      ======  ======
@@ -795,11 +795,11 @@ Segmentation
   * :ref:`region_growing_rgb_segmentation`
 
      ======  ======
-     |se_5|  Title: **Colore-based Region Growing Segmentation**
+     |se_5|  Title: **Color-based Region Growing Segmentation**
 
              Author: *Sergey Ushakov*
 
-             Compatibility: > PCL 1.6
+             Compatibility: > PCL 1.7
 
              In this tutorial we will learn how to use color-based region growing segmentation algorithm.
      ======  ======
@@ -814,7 +814,7 @@ Segmentation
 
              Author: *Sergey Ushakov*
 
-             Compatibility: > PCL 1.6
+             Compatibility: > PCL 1.7
 
              In this tutorial we will learn how to use min-cut based segmentation algorithm.
      ======  ======
@@ -832,9 +832,9 @@ Surface
      ======  ======
      |su_1|  Title: **Smoothing and normal estimation based on polynomial reconstruction**
 
-             Author: *Zoltan-Csaba Marton*
+             Author: *Zoltan-Csaba Marton, Alexandru E. Ichim*
 
-             Compatibility: > PCL 1.3
+             Compatibility: > PCL 1.6
 
              In this tutorial, we will learn how to construct and run a Moving Least Squares (MLS) algorithm to obtain smoothed XYZ coordinates and normals.
      ======  ======
