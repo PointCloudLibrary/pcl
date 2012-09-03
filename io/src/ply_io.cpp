@@ -449,6 +449,15 @@ pcl::PLYReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
   orientation = Eigen::Quaternionf (orientation_);
   origin = origin_;
 
+  for (size_t i = 0; i < cloud_->fields.size (); ++i)
+  {
+    if (cloud_->fields[i].name == "nx")
+      cloud_->fields[i].name = "normal_x";
+    if (cloud_->fields[i].name == "ny")
+      cloud_->fields[i].name = "normal_y";
+    if (cloud_->fields[i].name == "nz")
+      cloud_->fields[i].name = "normal_z";
+  }
   return (0);
 }
 
