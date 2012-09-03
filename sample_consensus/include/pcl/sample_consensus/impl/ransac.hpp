@@ -42,7 +42,7 @@
 
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool
-pcl::RandomSampleConsensus<PointT>::computeModel (int debug_verbosity_level)
+pcl::RandomSampleConsensus<PointT>::computeModel (int)
 {
   // Warn and exit if no threshold was set
   if (threshold_ == std::numeric_limits<double>::max())
@@ -79,7 +79,7 @@ pcl::RandomSampleConsensus<PointT>::computeModel (int debug_verbosity_level)
     if (!sac_model_->computeModelCoefficients (selection, model_coefficients))
     {
       //++iterations_;
-      ++ skipped_count;
+      ++skipped_count;
       continue;
     }
 
@@ -108,18 +108,15 @@ pcl::RandomSampleConsensus<PointT>::computeModel (int debug_verbosity_level)
     }
 
     ++iterations_;
-    if (debug_verbosity_level > 1)
-      PCL_DEBUG ("[pcl::RandomSampleConsensus::computeModel] Trial %d out of %f: %d inliers (best is: %d so far).\n", iterations_, k, n_inliers_count, n_best_inliers_count);
+    PCL_DEBUG ("[pcl::RandomSampleConsensus::computeModel] Trial %d out of %f: %d inliers (best is: %d so far).\n", iterations_, k, n_inliers_count, n_best_inliers_count);
     if (iterations_ > max_iterations_)
     {
-      if (debug_verbosity_level > 0)
-        PCL_DEBUG ("[pcl::RandomSampleConsensus::computeModel] RANSAC reached the maximum number of trials.\n");
+      PCL_DEBUG ("[pcl::RandomSampleConsensus::computeModel] RANSAC reached the maximum number of trials.\n");
       break;
     }
   }
 
-  if (debug_verbosity_level > 0)
-    PCL_DEBUG ("[pcl::RandomSampleConsensus::computeModel] Model: %zu size, %d inliers.\n", model_.size (), n_best_inliers_count);
+  PCL_DEBUG ("[pcl::RandomSampleConsensus::computeModel] Model: %zu size, %d inliers.\n", model_.size (), n_best_inliers_count);
 
   if (model_.empty ())
   {
