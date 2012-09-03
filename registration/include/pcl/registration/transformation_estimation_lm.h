@@ -177,8 +177,8 @@ namespace pcl
         virtual double 
         computeDistance (const PointSource &p_src, const PointTarget &p_tgt) const
         {
-          Vector4fMapConst s = p_src.getVector4fMap ();
-          Vector4fMapConst t = p_tgt.getVector4fMap ();
+          Eigen::Vector4f s (p_src.x, p_src.y, p_src.z, 0);
+          Eigen::Vector4f t (p_tgt.x, p_tgt.y, p_tgt.z, 0);
           return (pcl::distances::l2 (s, t));
         }
 

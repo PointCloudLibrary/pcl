@@ -93,7 +93,7 @@ namespace pcl
           //pnt_out.getVector3fMap () = transform_matrix_.topLeftCorner (3, 3) * 
           //                            pnt_in.getVector3fMap () + 
           //                            transform_matrix_.block (0, 3, 3, 1);
-          pnt_out.data[3] = pnt_in.data[3];
+          //pnt_out.data[3] = pnt_in.data[3];
         }
 
         /** \brief Get the number of dimensions. */
