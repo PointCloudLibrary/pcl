@@ -120,7 +120,15 @@ namespace pcl
 
       // Compress color information
       if (CompressionPointTraits<PointT>::hasColor && doColorEncoding)
-        encodeRGBImageToPNG (rgbData, cloud_width, cloud_height, compressedRGB, 1 /*Z_BEST_SPEED*/);
+      {
+        if (convertToMono)
+        {
+          encodeMonoImageToPNG (rgbData, cloud_width, cloud_height, compressedRGB, 1 /*Z_BEST_SPEED*/);
+        } else
+        {
+          encodeRGBImageToPNG (rgbData, cloud_width, cloud_height, compressedRGB, 1 /*Z_BEST_SPEED*/);
+        }
+      }
 
       compressedRGBSize = static_cast<uint32_t>(compressedRGB.size ());
       // Encode size of compressed RGB image data
