@@ -72,11 +72,11 @@ namespace pcl
       protected:
         virtual double
         computeDistance (const PointSource &p_src, const PointTarget &p_tgt) const
-        { 
+        {
           // Compute the point-to-plane distance
-          Vector4fMapConst s = p_src.getVector4fMap ();
-          Vector4fMapConst t = p_tgt.getVector4fMap ();
-          Vector4fMapConst n = p_tgt.getNormalVector4fMap ();
+          Eigen::Vector4f s (p_src.x, p_src.y, p_src.z, 0);
+          Eigen::Vector4f t (p_tgt.x, p_tgt.y, p_tgt.z, 0);
+          Eigen::Vector4f n (p_tgt.normal_x, p_tgt.normal_y, p_tgt.normal_z, 0);
           return ((s - t).dot (n));
         }
 
