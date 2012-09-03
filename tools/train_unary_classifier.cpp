@@ -101,7 +101,7 @@ loadCloud (const std::string &filename, CloudLT::Ptr &cloud)
 }
 
 void
-compute (const CloudT::Ptr &input, std::vector<FeatureT> &output,
+compute (const CloudT::Ptr &input, std::vector<FeatureT, Eigen::aligned_allocator<FeatureT> > &output,
          unsigned int k,
          float normal_radius_search,
          float fpfh_radius_search,
@@ -130,7 +130,7 @@ compute (const CloudT::Ptr &input, std::vector<FeatureT> &output,
 }
 
 void
-compute (const CloudLT::Ptr &input, std::vector<FeatureT> &output,
+compute (const CloudLT::Ptr &input, std::vector<FeatureT, Eigen::aligned_allocator<FeatureT> > &output,
          unsigned int k,
          float normal_radius_search,
          float fpfh_radius_search,
@@ -159,7 +159,7 @@ compute (const CloudLT::Ptr &input, std::vector<FeatureT> &output,
 }
 
 void
-saveCloud (const std::string &filename, std::vector<FeatureT> &output)
+saveCloud (const std::string &filename, std::vector<FeatureT, Eigen::aligned_allocator<FeatureT> > &output)
 {
   TicToc tt;
   tt.tic ();
@@ -247,7 +247,7 @@ main (int argc, char** argv)
   print_info ("normal-radius-search: %f \n", normal_radius_search);
   print_info ("fpfh-radius-search: %f \n\n", fpfh_radius_search);
 
-  std::vector<FeatureT> features;
+  std::vector<FeatureT, Eigen::aligned_allocator<FeatureT> > features;
   //FeatureT::Ptr feature (new FeatureT);
   if (!label)
   {
