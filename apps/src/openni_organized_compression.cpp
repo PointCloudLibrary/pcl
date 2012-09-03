@@ -82,6 +82,7 @@ char usage[] = "\n"
   "      -t       : output statistics\n"
   "      -e       : show input cloud during encoding\n"
   "      -r       : raw encoding of disparity maps\n"
+  "      -g       : gray scale conversion\n"
 
   "\n"
   "  example:\n"
@@ -118,6 +119,7 @@ class SimpleOpenNIViewer
                         bool doColorEncoding_arg,
                         bool bShowStatistics_arg,
                         bool bRawImageEncoding_arg,
+                        bool bGrayScaleConversion_arg,
                         int pngLevel_arg = -1) :
     viewer ("Input Point Cloud - PCL Compression Viewer"),
     outputFile_ (outputFile_arg),
@@ -125,7 +127,8 @@ class SimpleOpenNIViewer
     doColorEncoding_ (doColorEncoding_arg),
     bShowStatistics_ (bShowStatistics_arg),
     bRawImageEncoding_ (bRawImageEncoding_arg),
-    pngLevel_ (pngLevel_arg)
+    pngLevel_ (pngLevel_arg),
+    bGrayScaleConversion_(bGrayScaleConversion_arg)
     {
     }
 
@@ -133,7 +136,7 @@ class SimpleOpenNIViewer
     {
       if (!viewer.wasStopped ())
       {
-        organizedEncoder_->encodePointCloud (cloud, outputFile_, doColorEncoding_, bShowStatistics_, pngLevel_);
+        organizedEncoder_->encodePointCloud (cloud, outputFile_, doColorEncoding_,bGrayScaleConversion_,bShowStatistics_, pngLevel_);
 
         viewer.showCloud (cloud);
       }
@@ -176,6 +179,7 @@ class SimpleOpenNIViewer
     bool doColorEncoding_;
     bool bShowStatistics_;
     bool bRawImageEncoding_;
+    bool bGrayScaleConversion_;
     int pngLevel_;
 };
 
@@ -186,12 +190,14 @@ struct EventHelper
                bool doColorEncoding_arg,
                bool bShowStatistics_arg,
                bool bRawImageEncoding_arg,
+               bool bGrayScaleConversion_arg,
                int pngLevel_arg = -1) :
   outputFile_ (outputFile_arg),
   organizedEncoder_ (octreeEncoder_arg),
   doColorEncoding_ (doColorEncoding_arg),
   bShowStatistics_ (bShowStatistics_arg),
   bRawImageEncoding_ (bRawImageEncoding_arg),
+  bGrayScaleConversion_(bGrayScaleConversion_arg) ,
   pngLevel_ (pngLevel_arg)
   {
   }
@@ -201,7 +207,7 @@ struct EventHelper
   {
     if (!outputFile_.fail ())
     {
-      organizedEncoder_->encodePointCloud (cloud, outputFile_, doColorEncoding_, bShowStatistics_, pngLevel_);
+      organizedEncoder_->encodePointCloud (cloud, outputFile_, doColorEncoding_, bGrayScaleConversion_, bShowStatistics_, pngLevel_);
     }
   }
 
@@ -225,7 +231,7 @@ struct EventHelper
       image->fillRGB(width, height, &rgb_data[0], width*sizeof(uint8_t)*3);
     }
 
-    organizedEncoder_->encodeRawDisparityMapWithColorImage (disparity_data, rgb_data, width, height, outputFile_, doColorEncoding_, bShowStatistics_, pngLevel_);
+    organizedEncoder_->encodeRawDisparityMapWithColorImage (disparity_data, rgb_data, width, height, outputFile_, doColorEncoding_, bGrayScaleConversion_, bShowStatistics_, pngLevel_);
 
   }
 
@@ -281,6 +287,7 @@ struct EventHelper
   bool doColorEncoding_;
   bool bShowStatistics_;
   bool bRawImageEncoding_;
+  bool bGrayScaleConversion_;
   int pngLevel_;
 };
 
@@ -293,6 +300,7 @@ main (int argc, char **argv)
   bool doColorEncoding;
   bool bShowInputCloud;
   bool bRawImageEncoding;
+  bool bGrayScaleConversion;
 
   std::string fileName = "pc_compressed.pcc";
   std::string hostName = "localhost";
@@ -309,12 +317,16 @@ main (int argc, char **argv)
   doColorEncoding = false;
   bShowInputCloud = false;
   bRawImageEncoding = false;
+  bGrayScaleConversion = false;
 
   if (pcl::console::find_argument (argc, argv, "-e")>0) 
     bShowInputCloud = true;
 
   if (pcl::console::find_argument (argc, argv, "-r")>0)
     bRawImageEncoding = true;
+
+  if (pcl::console::find_argument (argc, argv, "-g")>0)
+    bGrayScaleConversion = true;
 
   if (pcl::console::find_argument (argc, argv, "-s")>0) 
   {
@@ -380,12 +392,12 @@ main (int argc, char **argv)
 
       if (!bShowInputCloud) 
       {
-        EventHelper v (compressedPCFile, organizedCoder, doColorEncoding, showStatistics, bRawImageEncoding);
+        EventHelper v (compressedPCFile, organizedCoder, doColorEncoding, showStatistics, bRawImageEncoding, bGrayScaleConversion);
         v.run ();
       } 
       else
       {
-        SimpleOpenNIViewer v (compressedPCFile, organizedCoder, doColorEncoding, showStatistics, bRawImageEncoding);
+        SimpleOpenNIViewer v (compressedPCFile, organizedCoder, doColorEncoding, showStatistics, bRawImageEncoding, bGrayScaleConversion);
         v.run ();
       }
 
@@ -427,12 +439,12 @@ main (int argc, char **argv)
 
         if (!bShowInputCloud) 
         {
-          EventHelper v (socketStream, organizedCoder, doColorEncoding, showStatistics, bRawImageEncoding);
+          EventHelper v (socketStream, organizedCoder, doColorEncoding, showStatistics, bRawImageEncoding, bGrayScaleConversion);
           v.run ();
         } 
         else
         {
-          SimpleOpenNIViewer v (socketStream, organizedCoder, doColorEncoding, showStatistics, bRawImageEncoding);
+          SimpleOpenNIViewer v (socketStream, organizedCoder, doColorEncoding, showStatistics, bRawImageEncoding, bGrayScaleConversion);
           v.run ();
         }
 

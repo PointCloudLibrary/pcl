@@ -97,6 +97,7 @@ namespace pcl
                           float focalLength_arg,
                           float disparityShift_arg,
                           float disparityScale_arg,
+                          bool ,
                           typename std::vector<uint16_t>& disparityData_arg,
                           typename std::vector<uint8_t>&)
       {
@@ -140,6 +141,7 @@ namespace pcl
         */
       static void convert(typename std::vector<uint16_t>& disparityData_arg,
                           typename std::vector<uint8_t>&,
+                          bool,
                           size_t width_arg,
                           size_t height_arg,
                           float focalLength_arg,
@@ -212,6 +214,7 @@ namespace pcl
         * \param[in] focalLength_arg focal length
         * \param[in] disparityShift_arg disparity shift
         * \param[in] disparityScale_arg disparity scaling
+        * \param[in] convertToMono convert color to mono/grayscale
         * \param[out] disparityData_arg output disparity image
         * \param[out] rgbData_arg output rgb image
         * \ingroup io
@@ -220,6 +223,7 @@ namespace pcl
                           float focalLength_arg,
                           float disparityShift_arg,
                           float disparityScale_arg,
+                          bool convertToMono,
                           typename std::vector<uint16_t>& disparityData_arg,
                           typename std::vector<uint8_t>& rgbData_arg)
       {
@@ -233,7 +237,14 @@ namespace pcl
 
         // Allocate memory
         disparityData_arg.reserve (cloud_size);
-        rgbData_arg.reserve (cloud_size * 3);
+        if (convertToMono)
+        {
+          rgbData_arg.reserve (cloud_size);
+        } else
+        {
+          rgbData_arg.reserve (cloud_size * 3);
+        }
+
 
         for (i = 0; i < cloud_size; ++i)
         {
@@ -241,12 +252,25 @@ namespace pcl
 
           if (pcl::isFinite (point))
           {
-            // Encode point color
-            const uint32_t rgb = *reinterpret_cast<const int*> (&point.rgb);
+            if (convertToMono)
+            {
+              // Encode point color
+              const uint32_t rgb = *reinterpret_cast<const int*> (&point.rgb);
+              uint8_t grayvalue = static_cast<uint8_t>(0.2989 * static_cast<float>((rgb >> 16) & 0x0000ff) +
+                                                       0.5870 * static_cast<float>((rgb >> 8)  & 0x0000ff) +
+                                                       0.1140 * static_cast<float>((rgb >> 0)  & 0x0000ff));
 
-            rgbData_arg.push_back ( (rgb >> 16) & 0x0000ff);
-            rgbData_arg.push_back ( (rgb >> 8) & 0x0000ff);
-            rgbData_arg.push_back ( (rgb >> 0) & 0x0000ff);
+              rgbData_arg.push_back (grayvalue);
+            } else
+            {
+              // Encode point color
+              const uint32_t rgb = *reinterpret_cast<const int*> (&point.rgb);
+
+              rgbData_arg.push_back ( (rgb >> 16) & 0x0000ff);
+              rgbData_arg.push_back ( (rgb >> 8) & 0x0000ff);
+              rgbData_arg.push_back ( (rgb >> 0) & 0x0000ff);
+            }
+
 
             // Inverse depth quantization
             uint16_t disparity = static_cast<uint16_t> (focalLength_arg / (disparityScale_arg * point.z) + disparityShift_arg / disparityScale_arg);
@@ -256,10 +280,17 @@ namespace pcl
           }
           else
           {
+
             // Encode black point
-            rgbData_arg.push_back (0);
-            rgbData_arg.push_back (0);
-            rgbData_arg.push_back (0);
+            if (convertToMono)
+            {
+              rgbData_arg.push_back (0);
+            } else
+            {
+              rgbData_arg.push_back (0);
+              rgbData_arg.push_back (0);
+              rgbData_arg.push_back (0);
+            }
 
             // Encode bad point
             disparityData_arg.push_back (0);
@@ -271,6 +302,7 @@ namespace pcl
       /** \brief Convert disparity image to point cloud
         * \param[in] disparityData_arg output disparity image
         * \param[in] rgbData_arg output rgb image
+        * \param[in] monoImage_arg input image is a single-channel mono image
         * \param[in] width_arg width of disparity image
         * \param[in] height_arg height of disparity image
         * \param[in] focalLength_arg focal length
@@ -281,6 +313,7 @@ namespace pcl
         */
       static void convert(typename std::vector<uint16_t>& disparityData_arg,
                           typename std::vector<uint8_t>& rgbData_arg,
+                          bool monoImage_arg,
                           size_t width_arg,
                           size_t height_arg,
                           float focalLength_arg,
@@ -296,7 +329,13 @@ namespace pcl
         assert (disparityData_arg.size()==cloud_size);
         if (hasColor)
         {
-          assert (rgbData_arg.size()==cloud_size*3);
+          if (monoImage_arg)
+          {
+            assert (rgbData_arg.size()==cloud_size);
+          } else
+          {
+            assert (rgbData_arg.size()==cloud_size*3);
+          }
         }
 
         int x, y, centerX, centerY;
@@ -336,15 +375,30 @@ namespace pcl
 
               if (hasColor)
               {
-                const uint8_t& pixel_r = rgbData_arg[i*3+0];
-                const uint8_t& pixel_g = rgbData_arg[i*3+1];
-                const uint8_t& pixel_b = rgbData_arg[i*3+2];
+                if (monoImage_arg)
+                {
+                  const uint8_t& pixel_r = rgbData_arg[i];
+                  const uint8_t& pixel_g = rgbData_arg[i];
+                  const uint8_t& pixel_b = rgbData_arg[i];
 
-                // Define point color
-                uint32_t rgb = (static_cast<uint32_t>(pixel_r) << 16
-                              | static_cast<uint32_t>(pixel_g) << 8
-                              | static_cast<uint32_t>(pixel_b));
-                newPoint.rgb = *reinterpret_cast<float*>(&rgb);
+                  // Define point color
+                  uint32_t rgb = (static_cast<uint32_t>(pixel_r) << 16
+                                | static_cast<uint32_t>(pixel_g) << 8
+                                | static_cast<uint32_t>(pixel_b));
+                  newPoint.rgb = *reinterpret_cast<float*>(&rgb);
+                } else
+                {
+                  const uint8_t& pixel_r = rgbData_arg[i*3+0];
+                  const uint8_t& pixel_g = rgbData_arg[i*3+1];
+                  const uint8_t& pixel_b = rgbData_arg[i*3+2];
+
+                  // Define point color
+                  uint32_t rgb = (static_cast<uint32_t>(pixel_r) << 16
+                                | static_cast<uint32_t>(pixel_g) << 8
+                                | static_cast<uint32_t>(pixel_b));
+                  newPoint.rgb = *reinterpret_cast<float*>(&rgb);
+                }
+
               } else
               {
                 // Set white point color

@@ -77,12 +77,14 @@ namespace pcl
          * \param[in] cloud_arg:  point cloud to be compressed
          * \param[out] compressedDataOut_arg:  binary output stream containing compressed data
          * \param[in] doColorEncoding: encode color information (if available)
+         * \param[in] convertToMono: convert rgb to mono
          * \param[in] pngLevel_arg: png compression level (default compression: -1)
          * \param[in] bShowStatistics_arg:  show statistics
          */
         void encodePointCloud (const PointCloudConstPtr &cloud_arg,
                                std::ostream& compressedDataOut_arg,
                                bool doColorEncoding = false,
+                               bool convertToMono = false,
                                bool bShowStatistics_arg = true,
                                int pngLevel_arg = -1);
 
@@ -94,6 +96,7 @@ namespace pcl
          * \param[in] height_arg:  height of disparity map/color image
          * \param[out] compressedDataOut_arg:  binary output stream containing compressed data
          * \param[in] doColorEncoding: encode color information (if available)
+         * \param[in] convertToMono: convert rgb to mono
          * \param[in] pngLevel_arg: png compression level (default compression: -1)
          * \param[in] bShowStatistics_arg:  show statistics
          * \param[in] focalLength_arg focal length
@@ -106,6 +109,7 @@ namespace pcl
                                                    uint32_t height_arg,
                                                    std::ostream& compressedDataOut_arg,
                                                    bool doColorEncoding = false,
+                                                   bool convertToMono = false,
                                                    bool bShowStatistics_arg = true,
                                                    int pngLevel_arg = -1,
                                                    float focalLength_arg = 525.0f,
