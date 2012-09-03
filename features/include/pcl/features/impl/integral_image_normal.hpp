@@ -218,7 +218,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormal (
     // no valid points within the rectangular reagion?
     if (count == 0)
     {
-      normal.normal_x = normal.normal_y = normal.normal_z = normal.curvature = std::numeric_limits<float>::quiet_NaN ();
+      normal.normal_x = normal.normal_y = normal.normal_z = normal.curvature = bad_point;
       return;
     }
 
@@ -259,7 +259,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormal (
     unsigned count_y = integral_image_DY_.getFiniteElementsCount (pos_x - rect_width_2_, pos_y - rect_height_2_, rect_width_, rect_height_);
     if (count_x == 0 || count_y == 0)
     {
-      normal.normal_x = normal.normal_y = normal.normal_z = normal.curvature = std::numeric_limits<float>::quiet_NaN ();
+      normal.normal_x = normal.normal_y = normal.normal_z = normal.curvature = bad_point;
       return;
     }
     Eigen::Vector3d gradient_x = integral_image_DX_.getFirstOrderSum (pos_x - rect_width_2_, pos_y - rect_height_2_, rect_width_, rect_height_);
@@ -269,7 +269,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormal (
     double normal_length = normal_vector.squaredNorm ();
     if (normal_length == 0.0f)
     {
-      normal.getNormalVector4fMap ().setConstant (bad_point);
+      normal.getNormalVector3fMap ().setConstant (bad_point);
       normal.curvature = bad_point;
       return;
     }
@@ -297,7 +297,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormal (
 //    unsigned count = integral_image_depth_.getFiniteElementsCount (pos_x - rect_width_2_, pos_y - rect_height_2_, rect_width_, rect_height_);
 //    if (count == 0)
 //    {
-//      normal.normal_x = normal.normal_y = normal.normal_z = normal.curvature = std::numeric_limits<float>::quiet_NaN ();
+//      normal.normal_x = normal.normal_y = normal.normal_z = normal.curvature = bad_point;
 //      return;
 //    }
 //    const float mean_L_z = integral_image_depth_.getFirstOrderSum (pos_x - rect_width_2_ - 1, pos_y - rect_height_2_    , rect_width_ - 1, rect_height_ - 1) / ((rect_width_-1)*(rect_height_-1));
@@ -313,7 +313,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormal (
 
     if (count_L_z == 0 || count_R_z == 0 || count_U_z == 0 || count_D_z == 0)
     {
-      normal.normal_x = normal.normal_y = normal.normal_z = normal.curvature = std::numeric_limits<float>::quiet_NaN ();
+      normal.normal_x = normal.normal_y = normal.normal_z = normal.curvature = bad_point;
       return;
     }
 
@@ -343,7 +343,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormal (
 
     if (normal_length == 0.0f)
     {
-      normal.getNormalVector4fMap ().setConstant (bad_point);
+      normal.getNormalVector3fMap ().setConstant (bad_point);
       normal.curvature = bad_point;
       return;
     }
@@ -374,7 +374,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormal (
     double normal_length = normal_vector.squaredNorm ();
     if (normal_length == 0.0f)
     {
-      normal.getNormalVector4fMap ().setConstant (bad_point);
+      normal.getNormalVector3fMap ().setConstant (bad_point);
       normal.curvature = bad_point;
       return;
     }
@@ -395,7 +395,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormal (
     return;
   }
 
-  normal.getNormalVector4fMap ().setConstant (bad_point);
+  normal.getNormalVector3fMap ().setConstant (bad_point);
   normal.curvature = bad_point;
   return;
 }
@@ -524,7 +524,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormalMirro
     // no valid points within the rectangular reagion?
     if (count == 0)
     {
-      normal.normal_x = normal.normal_y = normal.normal_z = normal.curvature = std::numeric_limits<float>::quiet_NaN ();
+      normal.normal_x = normal.normal_y = normal.normal_z = normal.curvature = bad_point;
       return;
     }
 
@@ -595,7 +595,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormalMirro
 
     if (count_x == 0 || count_y == 0)
     {
-      normal.normal_x = normal.normal_y = normal.normal_z = normal.curvature = std::numeric_limits<float>::quiet_NaN ();
+      normal.normal_x = normal.normal_y = normal.normal_z = normal.curvature = bad_point;
       return;
     }
     //Eigen::Vector3d gradient_x = integral_image_DX_.getFirstOrderSum (pos_x - rect_width_2_, pos_y - rect_height_2_, rect_width_, rect_height_);
@@ -612,7 +612,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormalMirro
     double normal_length = normal_vector.squaredNorm ();
     if (normal_length == 0.0f)
     {
-      normal.getNormalVector4fMap ().setConstant (bad_point);
+      normal.getNormalVector3fMap ().setConstant (bad_point);
       normal.curvature = bad_point;
       return;
     }
@@ -672,7 +672,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormalMirro
 
     //if (min_x >= width || max_x >= width || min_y >= height || max_y >= height)
     //{
-    //  normal.normal_x = normal.normal_y = normal.normal_z = normal.curvature = std::numeric_limits<float>::quiet_NaN ();
+    //  normal.normal_x = normal.normal_y = normal.normal_z = normal.curvature = bad_point;
     //  return;
     //}
 
@@ -715,7 +715,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormalMirro
 
     if (count_L_z == 0 || count_R_z == 0 || count_U_z == 0 || count_D_z == 0)
     {
-      normal.normal_x = normal.normal_y = normal.normal_z = normal.curvature = std::numeric_limits<float>::quiet_NaN ();
+      normal.normal_x = normal.normal_y = normal.normal_z = normal.curvature = bad_point;
       return;
     }
 
@@ -765,7 +765,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormalMirro
 
     if (normal_length == 0.0f)
     {
-      normal.getNormalVector4fMap ().setConstant (bad_point);
+      normal.getNormalVector3fMap ().setConstant (bad_point);
       normal.curvature = bad_point;
       return;
     }
@@ -817,7 +817,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormalMirro
     //double normal_length = normal_vector.squaredNorm ();
     //if (normal_length == 0.0f)
     //{
-    //  normal.getNormalVector4fMap ().setConstant (bad_point);
+    //  normal.getNormalVector3fMap ().setConstant (bad_point);
     //  normal.curvature = bad_point;
     //  return;
     //}
@@ -838,7 +838,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormalMirro
     //return;
   }
 
-  normal.getNormalVector4fMap ().setConstant (bad_point);
+  normal.getNormalVector3fMap ().setConstant (bad_point);
   normal.curvature = bad_point;
   return;
 }
@@ -955,9 +955,9 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeature (PointCl
     size_t count = border * input_->width;
     for (size_t idx = 0; idx < count; ++idx)
     {
-      vec1 [idx].getNormalVector4fMap ().setConstant (bad_point);
+      vec1 [idx].getNormalVector3fMap ().setConstant (bad_point);
       vec1 [idx].curvature = bad_point;
-      vec2 [idx].getNormalVector4fMap ().setConstant (bad_point);
+      vec2 [idx].getNormalVector3fMap ().setConstant (bad_point);
       vec2 [idx].curvature = bad_point;
     }
 
@@ -968,9 +968,9 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeature (PointCl
     {
       for (size_t ci = 0; ci < border; ++ci)
       {
-        vec1 [ci].getNormalVector4fMap ().setConstant (bad_point);
+        vec1 [ci].getNormalVector3fMap ().setConstant (bad_point);
         vec1 [ci].curvature = bad_point;
-        vec2 [ci].getNormalVector4fMap ().setConstant (bad_point);
+        vec2 [ci].getNormalVector3fMap ().setConstant (bad_point);
         vec2 [ci].curvature = bad_point;
       }
     }
@@ -988,7 +988,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeature (PointCl
           const float depth = input_->points[index].z;
           if (!pcl_isfinite (depth))
           {
-            output[index].getNormalVector4fMap ().setConstant (bad_point);
+            output[index].getNormalVector3fMap ().setConstant (bad_point);
             output[index].curvature = bad_point;
             continue;
           }
@@ -1002,7 +1002,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeature (PointCl
           }
           else
           {
-            output[index].getNormalVector4fMap ().setConstant (bad_point);
+            output[index].getNormalVector3fMap ().setConstant (bad_point);
             output[index].curvature = bad_point;
           }
         }
@@ -1022,7 +1022,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeature (PointCl
 
           if (!pcl_isfinite (input_->points[index].z))
           {
-            output [index].getNormalVector4fMap ().setConstant (bad_point);
+            output [index].getNormalVector3fMap ().setConstant (bad_point);
             output [index].curvature = bad_point;
             continue;
           }
@@ -1036,7 +1036,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeature (PointCl
           }
           else
           {
-            output [index].getNormalVector4fMap ().setConstant (bad_point);
+            output [index].getNormalVector3fMap ().setConstant (bad_point);
             output [index].curvature = bad_point;
           }
         }
@@ -1062,7 +1062,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeature (PointCl
           const float depth = input_->points[index].z;
           if (!pcl_isfinite (depth))
           {
-            output[index].getNormalVector4fMap ().setConstant (bad_point);
+            output[index].getNormalVector3fMap ().setConstant (bad_point);
             output[index].curvature = bad_point;
             continue;
           }
@@ -1076,7 +1076,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeature (PointCl
           }
           else
           {
-            output[index].getNormalVector4fMap ().setConstant (bad_point);
+            output[index].getNormalVector3fMap ().setConstant (bad_point);
             output[index].curvature = bad_point;
           }
         }
@@ -1098,7 +1098,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeature (PointCl
 
           if (!pcl_isfinite (input_->points[index].z))
           {
-            output [index].getNormalVector4fMap ().setConstant (bad_point);
+            output [index].getNormalVector3fMap ().setConstant (bad_point);
             output [index].curvature = bad_point;
             continue;
           }
@@ -1112,7 +1112,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeature (PointCl
           }
           else
           {
-            output [index].getNormalVector4fMap ().setConstant (bad_point);
+            output [index].getNormalVector3fMap ().setConstant (bad_point);
             output [index].curvature = bad_point;
           }
         }
