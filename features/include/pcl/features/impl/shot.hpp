@@ -631,34 +631,15 @@ pcl::SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::computePointSH
     PCL_WARN ("[pcl::%s::computePointSHOT] Warning! Neighborhood has less than 5 vertexes. Aborting description of point with index %d\n",
                   getClassName ().c_str (), (*indices_)[index]);
 
-	shot.setConstant(descLength_, 1, std::numeric_limits<float>::quiet_NaN () );
+    shot.setConstant(descLength_, 1, std::numeric_limits<float>::quiet_NaN () );
 
     return;
   }
 
-  const PointRFT& current_frame = frames_->points[index];
-  //if (!pcl_isfinite (current_frame.rf[0]) || !pcl_isfinite (current_frame.rf[4]) || !pcl_isfinite (current_frame.rf[11]))
-    //return;
-
   //If shape description is enabled, compute the bins activated by each neighbor of the current feature in the shape histogram
   if (b_describe_shape_)
   {
-    binDistanceShape.resize (nNeighbors);
-
-    Eigen::Vector4f current_frame_z (current_frame.z_axis[0], current_frame.z_axis[1], current_frame.z_axis[2], 0); 
-        
-    for (size_t i_idx = 0; i_idx < indices.size (); ++i_idx)
-    {
-      //feat[i].rf[6]*normal[0] + feat[i].rf[7]*normal[1] + feat[i].rf[8]*normal[2];
-      double cosineDesc = normals_->points[indices[i_idx]].getNormalVector4fMap ().dot (current_frame_z);
-
-      if (cosineDesc > 1.0)
-        cosineDesc = 1.0;
-      if (cosineDesc < - 1.0)
-        cosineDesc = - 1.0;
-
-      binDistanceShape[i_idx] = ((1.0 + cosineDesc) * nr_shape_bins_) / 2;
-    }
+    this->createBinDistanceShape (index, indices, binDistanceShape);
   }
 
   //If color description is enabled, compute the bins activated by each neighbor of the current feature in the color histogram
@@ -733,7 +714,7 @@ pcl::SHOTEstimation<PointInT, PointNT, PointOutT, PointRFT>::computePointSHOT (
     PCL_WARN ("[pcl::%s::computePointSHOT] Warning! Neighborhood has less than 5 vertexes. Aborting description of point with index %d\n",
                   getClassName ().c_str (), (*indices_)[index]);
 
-	shot.setConstant(descLength_, 1, std::numeric_limits<float>::quiet_NaN () );
+    shot.setConstant(descLength_, 1, std::numeric_limits<float>::quiet_NaN () );
 
     return;
   }
