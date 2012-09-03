@@ -1679,10 +1679,12 @@ TEST (ConditionalRemoval, Filters)
   condrem.setKeepOrganized (false);
   condrem.filter (output);
 
+  EXPECT_EQ (bool (output.isOrganized ()), false);
   EXPECT_EQ (int (output.points.size ()), 28);
   EXPECT_NEAR (output.points[output.points.size () - 1].x, -0.087292, 1e-4);
   EXPECT_NEAR (output.points[output.points.size () - 1].y, 0.103140, 1e-4);
   EXPECT_NEAR (output.points[output.points.size () - 1].z, 0.020825, 1e-4);
+  EXPECT_EQ (bool (output.is_dense), true);
 
   // try the not dense version
   condrem.setKeepOrganized (true);
@@ -1697,10 +1699,12 @@ TEST (ConditionalRemoval, Filters)
     num_not_nan++;
   }
 
+  EXPECT_EQ (bool (output.isOrganized ()), bool (cloud->isOrganized ()));
   EXPECT_EQ (int (output.points.size ()), int (cloud->points.size ()));
   EXPECT_EQ (int (output.width), int (cloud->width));
   EXPECT_EQ (int (output.height), int (cloud->height));
   EXPECT_EQ (num_not_nan, 28);
+  EXPECT_EQ (bool (output.is_dense), false);
 
   // build the filter
   ConditionalRemoval<PointXYZ> condrem_ (range_cond,true);
@@ -1710,11 +1714,13 @@ TEST (ConditionalRemoval, Filters)
   condrem_.setKeepOrganized (false);
   condrem_.filter (output);
 
+  EXPECT_EQ (bool (output.isOrganized ()), false);
   EXPECT_EQ (int (output.points.size ()), 28);
   EXPECT_EQ (int (output.points.size ()), cloud->points.size()-condrem_.getRemovedIndices()->size());
   EXPECT_NEAR (output.points[output.points.size () - 1].x, -0.087292, 1e-4);
   EXPECT_NEAR (output.points[output.points.size () - 1].y, 0.103140, 1e-4);
   EXPECT_NEAR (output.points[output.points.size () - 1].z, 0.020825, 1e-4);
+  EXPECT_EQ (bool (output.is_dense), true);
 
   // try the not dense version
   condrem_.setKeepOrganized (true);
@@ -1729,10 +1735,12 @@ TEST (ConditionalRemoval, Filters)
     num_not_nan++;
   }
 
+  EXPECT_EQ (bool (output.isOrganized ()), bool (cloud->isOrganized ()));
   EXPECT_EQ (int (output.points.size ()), int (cloud->points.size ()));
   EXPECT_EQ (int (output.width), int (cloud->width));
   EXPECT_EQ (int (output.height), int (cloud->height));
   EXPECT_EQ (num_not_nan, 28);
+  EXPECT_EQ (bool (output.is_dense), false);
   EXPECT_EQ (int (num_not_nan), cloud->points.size()-condrem_.getRemovedIndices()->size());
 }
 
