@@ -79,7 +79,7 @@ namespace pcl
       train (pcl::PointCloud<pcl::FPFHSignature33>::Ptr &output);
       
       void
-      trainWithLabel (std::vector<pcl::PointCloud<pcl::FPFHSignature33> > &output);
+      trainWithLabel (std::vector<pcl::PointCloud<pcl::FPFHSignature33>, Eigen::aligned_allocator<pcl::PointCloud<pcl::FPFHSignature33> > > &output);
 
       void
       segment (pcl::PointCloud<pcl::PointXYZRGBL>::Ptr &out);
