@@ -21,8 +21,8 @@ allows to reduce the total number of segments).
 
 So we have the sorted cloud. Until there are unlabeled points in the cloud, algorithm picks up the point with minimum curvature value and starts the growth of the region. This process occurs as follows:
 
- * The picked point is added to the set called seeds.
- * For every seed point algorithm finds neighbouring points.
+  * The picked point is added to the set called seeds.
+  * For every seed point algorithm finds neighbouring points.
      
      * Every neighbour is tested for the angle between its normal and normal of the current seed point. If the angle is less than threshold value
        then current point is added to the current region.
@@ -33,6 +33,7 @@ If the seeds set becomes empty this means that the algorithm has grown the regio
 You can find the pseudocode for the said algorithm below.
 
 Inputs:
+  
   * *Point cloud* = :math:`\{P\}`
   * *Point normals* = :math:`\{N\}`
   * *Points curvatures* = :math:`\{c\}`
@@ -41,12 +42,14 @@ Inputs:
   * *Angle threshold* :math:`\theta_{th}`
 
 Initialize:
+  
   * *Region list* :math:`{R}\leftarrow{\O}`
   * *Available points list* :math:`\{A\}\leftarrow\{1,...,|P|\}`
 
 Algorithm:
 
- * **While** :math:`\{A\}` *is not empty* **do**
+  * **While** :math:`\{A\}` *is not empty* **do**
+     
      * *Current region* :math:`\{R_c\}\leftarrow{\O}`
      * *Current seeds* :math:`\{S_c\}\leftarrow{\O}`
      * *Point with minimum curvature in* :math:`\{A\}\rightarrow P_{min}`
@@ -54,19 +57,28 @@ Algorithm:
      * :math:`\{R_c\}\leftarrow\{R_c\}\cup P_{min}`
      * :math:`\{A\}\leftarrow\{A\}\setminus P_{min}`
      * **for** :math:`i=0` *to* **size** ( :math:`\{S_c\}` ) **do**
+          
           * *Find nearest neighbours of current seed point* :math:`\{B_c\}\leftarrow\Omega(S_c\{i\})`
           * **for** :math:`j=0` *to* **size** ( :math:`\{B_c\}` ) **do**
+               
                * *Current neighbour point* :math:`P_j\leftarrow B_c\{j\}`
                * **If** :math:`\{A\}` *contains* :math:`P_j` *and* :math:`cos^{-1}(|(N\{S_c\{i\}\},N\{S_c\{j\}\})|)<\theta_{th}` **then**
+                    
                     * :math:`\{R_c\}\leftarrow\{R_c\}\cup P_j`
                     * :math:`\{A\}\leftarrow\{A\}\setminus P_j`
                     * **If** :math:`c\{P_j\}<c_{th}` **then**
+
                          * :math:`\{S_c\}\leftarrow\{S_c\}\cup P_j`
+
                     * **end if**
+
                * **end if**
+
           * **end for**
+
      * **end for**
      * *Add current region to global segment list* :math:`\{R\}\leftarrow\{R\}\cup\{R_c\}`
+
  * **end while**
  * **Return** :math:`\{R\}`
 
