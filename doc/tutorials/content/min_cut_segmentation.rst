@@ -16,12 +16,14 @@ The idea of this algorithm is as follows:
     called source and sink. Every vertex of the graph that corresponds to the point is connected with source and sink with the edges.
     In addition to these, every vertex (except source and sink) has edges that connect the corresponding point with its nearest neighbours.
  #. Algorithm assigns weights for every edge. There are three different types of weight. Let's examine them:
+
      * First of all it assigns weight to the edges between clouds points. This weight is called smooth cost and is calculated by the formula:
 
        .. centered::
           :math:`smoothCost=e^{-(\frac{dist}{ \sigma })^2}`
 
        Here :math:`dist` is the distance between points. The farther away the points are, the more is probability that the edge will be cut.
+
      * Next step the algorithm sets data cost. It consists of foreground and background penalties.
        The first one is the weight for those edges that connect clouds points with the source vertex and has the constant user-defined value.
        The second one is assigned to the edges that connect points with the sink vertex and is calculated by the formula:
@@ -36,6 +38,7 @@ The idea of this algorithm is as follows:
 
        Radius that occurs in the formula is the input parameter for this algorithm and can be roughly considered as the range from objects center
        outside of which there are no points that belong to foreground (objects horizontal radius).
+
  #. After all the preparations the search of the minimum cut is made. Based on an analysis of this cut, cloud is divided on forground and
     background points.
 
