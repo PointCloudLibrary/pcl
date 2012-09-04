@@ -20,8 +20,10 @@ The reason for this is that the point with the minimum curvature is located in t
 allows to reduce the total number of segments).
 
 So we have the sorted cloud. Until there are unlabeled points in the cloud, algorithm picks up the point with minimum curvature value and starts the growth of the region. This process occurs as follows:
+
  * The picked point is added to the set called seeds.
  * For every seed point algorithm finds neighbouring points.
+     
      * Every neighbour is tested for the angle between its normal and normal of the current seed point. If the angle is less than threshold value
        then current point is added to the current region.
      * After that every neighbour is tested for the curvature value. If the curvature is less than threshold value then this point is added to the seeds.
