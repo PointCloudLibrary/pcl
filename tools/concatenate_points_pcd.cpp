@@ -105,8 +105,9 @@ int
     cloud_all += cloud;
   }
 
-  pcl::io::savePCDFile ("output.pcd", cloud_all, true);
-
+  pcl::PCDWriter writer;
+  writer.writeBinaryCompressed ("output.pcd", cloud_all);
+  
   return (0);
 }
 /* ]--- */
