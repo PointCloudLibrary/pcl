@@ -103,6 +103,15 @@ namespace pcl
       static Eigen::Vector2d
       computeVariance (const Eigen::Vector2d &mean, const vector_vec2d &data);
 
+      /** compute bounding box of curve control points */
+      static void
+      computeBoundingBox (const ON_NurbsCurve &nurbs, Eigen::Vector3d &_min, Eigen::Vector3d &_max);
+      static void
+      computeBoundingBox (const ON_NurbsSurface &nurbs, Eigen::Vector3d &_min, Eigen::Vector3d &_max);
+
+      static double
+      computeRScale (Eigen::Vector3d _min, Eigen::Vector3d _max);
+
       /** \brief PCA - principal-component-analysis
        *  \param[in] data Set of points.
        *  \param[out] mean The mean of the set of points.

@@ -156,6 +156,10 @@ namespace pcl
                       double &error, Eigen::Vector3d &p, Eigen::Vector3d &tu, Eigen::Vector3d &tv, int maxSteps = 100,
                       double accuracy = 1e-6, bool quiet = true);
 
+      static Eigen::Vector2d
+      inverseMapping (const ON_NurbsSurface &nurbs, const Eigen::Vector3d &pt, const Eigen::Vector2d &hint,
+                      Eigen::Vector3d &p, int maxSteps, double accuracy, bool quiet);
+
       /** \brief Given a point pt, the function finds the closest midpoint of the elements of the surface.
        *  \param[in] nurbs the B-Spline surface.
        *  \param[in] pt the point to which the closest midpoint of the elements will be computed.
@@ -215,7 +219,7 @@ namespace pcl
       setQuiet (bool val)
       {
         m_quiet = val;
-        m_solver.setQuiet(val);
+        m_solver.setQuiet (val);
       }
 
     protected:

@@ -1038,6 +1038,84 @@ FittingSurface::inverseMapping (const ON_NurbsSurface &nurbs, const Vector3d &pt
 }
 
 Vector2d
+FittingSurface::inverseMapping (const ON_NurbsSurface &nurbs, const Vector3d &pt, const Vector2d &hint, Vector3d &p,
+                                int maxSteps, double accuracy, bool quiet)
+{
+
+  double pointAndTangents[9];
+
+  Vector2d current, delta;
+  Matrix2d A;
+  Vector2d b;
+  Vector3d r, tu, tv;
+  std::vector<double> elementsU = getElementVector (nurbs, 0);
+  std::vector<double> elementsV = getElementVector (nurbs, 1);
+  double minU = elementsU[0];
+  double minV = elementsV[0];
+  double maxU = elementsU[elementsU.size () - 1];
+  double maxV = elementsV[elementsV.size () - 1];
+
+  current = hint;
+
+  for (int k = 0; k < maxSteps; k++)
+  {
+
+    nurbs.Evaluate (current (0), current (1), 1, 3, pointAndTangents);
+    p (0) = pointAndTangents[0];
+    p (1) = pointAndTangents[1];
+    p (2) = pointAndTangents[2];
+    tu (0) = pointAndTangents[3];
+    tu (1) = pointAndTangents[4];
+    tu (2) = pointAndTangents[5];
+    tv (0) = pointAndTangents[6];
+    tv (1) = pointAndTangents[7];
+    tv (2) = pointAndTangents[8];
+
+    r = p - pt;
+
+    b (0) = -r.dot (tu);
+    b (1) = -r.dot (tv);
+
+    A (0, 0) = tu.dot (tu);
+    A (0, 1) = tu.dot (tv);
+    A (1, 0) = A (0, 1);
+    A (1, 1) = tv.dot (tv);
+
+    delta = A.ldlt ().solve (b);
+
+    if (delta.norm () < accuracy)
+    {
+      return current;
+    }
+    else
+    {
+      current = current + delta;
+
+      if (current (0) < minU)
+        current (0) = minU;
+      else if (current (0) > maxU)
+        current (0) = maxU;
+
+      if (current (1) < minV)
+        current (1) = minV;
+      else if (current (1) > maxV)
+        current (1) = maxV;
+
+    }
+
+  }
+
+  if (!quiet)
+  {
+    printf ("[FittingSurface::inverseMapping] Warning: Method did not converge (%e %d)\n", accuracy, maxSteps);
+    printf ("  %f %f ... %f %f\n", hint (0), hint (1), current (0), current (1));
+  }
+
+  return current;
+
+}
+
+Vector2d
 FittingSurface::findClosestElementMidPoint (const ON_NurbsSurface &nurbs, const Vector3d &pt)
 {
   Vector2d hint;

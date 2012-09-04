@@ -170,7 +170,7 @@ FittingCurve2d::assemble (const Parameter &parameter)
     time_start = clock ();
 
   std::vector<double> elements = getElementVector (m_nurbs);
-  unsigned cp_res = std::max<unsigned>(1, parameter.closest_point_resolution);
+  unsigned cp_res = std::max<unsigned> (1, parameter.closest_point_resolution);
 
   int cp_red = m_nurbs.m_order - 2;
   int ncp = m_nurbs.m_cv_count - 2 * cp_red;
@@ -195,8 +195,7 @@ FittingCurve2d::assemble (const Parameter &parameter)
   if (wInt > 0.0)
     assembleInterior (wInt, parameter.interior_sigma2, row);
 
-  assembleClosestPoints (elements, parameter.closest_point_weight, parameter.closest_point_sigma2,
-                         cp_res, row);
+  assembleClosestPoints (elements, parameter.closest_point_weight, parameter.closest_point_sigma2, cp_res, row);
 
   if (wCageReg > 0.0)
     addCageRegularisation (wCageReg, row, elements, parameter.smooth_concavity);
@@ -557,7 +556,7 @@ FittingCurve2d::initCPsNurbsCurve2D (int order, const vector_vec2d &cps)
     return nurbs;
   }
 
-  int ncps = cps.size () + 2 * cp_red + 1; // +2*cp_red for smoothness and +1 for closing
+  int ncps = cps.size () + 2 * cp_red; // +2*cp_red for smoothness and +1 for closing
   nurbs = ON_NurbsCurve (2, false, order, ncps);
   nurbs.MakePeriodicUniformKnotVector (1.0 / (ncps - order));
 
@@ -571,10 +570,10 @@ FittingCurve2d::initCPsNurbsCurve2D (int order, const vector_vec2d &cps)
   for (int j = 0; j < cp_red; j++)
   {
     ON_3dPoint cp;
-    nurbs.GetCV (nurbs.CVCount () - 2 - cp_red + j, cp);
+    nurbs.GetCV (nurbs.CVCount () - 1 - cp_red + j, cp);
     nurbs.SetCV (j, cp);
 
-    nurbs.GetCV (cp_red - j + 1, cp);
+    nurbs.GetCV (cp_red - j, cp);
     nurbs.SetCV (nurbs.CVCount () - 1 - j, cp);
   }
 
@@ -693,6 +692,9 @@ FittingCurve2d::assembleInterior (double wInt, double sigma2, unsigned &row)
   m_data->interior_normals.clear ();
   m_data->interior_line_start.clear ();
   m_data->interior_line_end.clear ();
+
+  double rScale (1.0);
+
   for (int p = 0; p < nInt; p++)
   {
     Eigen::Vector2d &pcp = m_data->interior[p];
@@ -703,14 +705,14 @@ FittingCurve2d::assembleInterior (double wInt, double sigma2, unsigned &row)
     double error;
     if (p < (int)m_data->interior_param.size ())
     {
-      param
-          = inverseMapping (m_nurbs, pcp, m_data->interior_param[p], error, pt, t, in_max_steps, in_accuracy, m_quiet);
+      param = inverseMapping (m_nurbs, pcp, m_data->interior_param[p], error, pt, t, rScale, in_max_steps, in_accuracy,
+                              m_quiet);
       m_data->interior_param[p] = param;
     }
     else
     {
       param = findClosestElementMidPoint (m_nurbs, pcp, in_samples);
-      param = inverseMapping (m_nurbs, pcp, param, error, pt, t, in_max_steps, in_accuracy, m_quiet);
+      param = inverseMapping (m_nurbs, pcp, param, error, pt, t, rScale, in_max_steps, in_accuracy, m_quiet);
       m_data->interior_param.push_back (param);
     }
 
@@ -845,8 +847,8 @@ FittingCurve2d::assembleClosestPoints (const std::vector<double> &elements, doub
 
 double
 FittingCurve2d::inverseMapping (const ON_NurbsCurve &nurbs, const Eigen::Vector2d &pt, const double &hint,
-                                double &error, Eigen::Vector2d &p, Eigen::Vector2d &t, int maxSteps, double accuracy,
-                                bool quiet)
+                                double &error, Eigen::Vector2d &p, Eigen::Vector2d &t, double rScale, int maxSteps,
+                                double accuracy, bool quiet)
 {
   if (nurbs.Order () == 2)
     return inverseMappingO2 (nurbs, pt, error, p, t);
@@ -880,9 +882,15 @@ FittingCurve2d::inverseMapping (const ON_NurbsCurve &nurbs, const Eigen::Vector2
     int E = findElement (current, elements);
     double e = elements[E + 1] - elements[E];
 
-    delta = -(0.5 * e) * r.dot (t) / t.norm (); //  A.ldlt().solve(b);
+    delta = -(0.5 * e * rScale) * r.dot (t) / t.norm (); //  A.ldlt().solve(b);
 
-    if (std::fabs (delta) < accuracy)
+    //    e = 0.5 * std::abs<double> (e);
+    //    if (delta > e)
+    //      delta = e;
+    //    if (delta < -e)
+    //      delta = -e;
+
+    if (std::abs<double> (delta) < accuracy)
     {
 
       error = r.norm ();

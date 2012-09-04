@@ -183,8 +183,8 @@ namespace pcl
        *  \return closest point on curve in parametric domain.*/
       static double
       inverseMapping (const ON_NurbsCurve &nurbs, const Eigen::Vector2d &pt, const double &hint, double &error,
-                      Eigen::Vector2d &p, Eigen::Vector2d &t, int maxSteps = 100, double accuracy = 1e-6,
-                      bool quiet = true);
+                      Eigen::Vector2d &p, Eigen::Vector2d &t, double rScale, int maxSteps = 100,
+                      double accuracy = 1e-6, bool quiet = true);
 
       static double
       inverseMappingO2 (const ON_NurbsCurve &nurbs, const Eigen::Vector2d &pt, double &error, Eigen::Vector2d &p,
@@ -231,7 +231,8 @@ namespace pcl
       /** \brief Assemble closest points constraints. At each midpoint of the curve elements the closest data points
        * are computed and point-to-curve constraints are added. */
       virtual void
-      assembleClosestPoints (const std::vector<double> &elements, double weight, double sigma2, unsigned samples_per_element, unsigned &row);
+      assembleClosestPoints (const std::vector<double> &elements, double weight, double sigma2,
+                             unsigned samples_per_element, unsigned &row);
 
       NurbsSolve m_solver;
       bool m_quiet;

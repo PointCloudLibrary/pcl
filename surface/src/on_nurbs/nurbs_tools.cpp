@@ -255,6 +255,69 @@ NurbsTools::computeVariance (const Eigen::Vector2d &mean, const vector_vec2d &da
 }
 
 void
+NurbsTools::computeBoundingBox (const ON_NurbsCurve &nurbs, Eigen::Vector3d &_min, Eigen::Vector3d &_max)
+{
+  _min = Eigen::Vector3d (DBL_MAX, DBL_MAX, DBL_MAX);
+  _max = Eigen::Vector3d (0.0, 0.0, 0.0);
+  for (int i = 0; i < nurbs.CVCount (); i++)
+  {
+    ON_3dPoint p;
+    nurbs.GetCV (i, p);
+
+    if (p.x < _min (0))
+      _min (0) = p.x;
+    if (p.y < _min (1))
+      _min (1) = p.y;
+    if (p.z < _min (2))
+      _min (2) = p.z;
+
+    if (p.x > _max (0))
+      _max (0) = p.x;
+    if (p.y > _max (1))
+      _max (1) = p.y;
+    if (p.z > _max (2))
+      _max (2) = p.z;
+  }
+}
+
+void
+NurbsTools::computeBoundingBox (const ON_NurbsSurface &nurbs, Eigen::Vector3d &_min, Eigen::Vector3d &_max)
+{
+  _min = Eigen::Vector3d (DBL_MAX, DBL_MAX, DBL_MAX);
+  _max = Eigen::Vector3d (0.0, 0.0, 0.0);
+  for (int i = 0; i < nurbs.CVCount (0); i++)
+  {
+    for (int j = 0; j < nurbs.CVCount (1); j++)
+    {
+      ON_3dPoint p;
+      nurbs.GetCV (i, j, p);
+
+      if (p.x < _min (0))
+        _min (0) = p.x;
+      if (p.y < _min (1))
+        _min (1) = p.y;
+      if (p.z < _min (2))
+        _min (2) = p.z;
+
+      if (p.x > _max (0))
+        _max (0) = p.x;
+      if (p.y > _max (1))
+        _max (1) = p.y;
+      if (p.z > _max (2))
+        _max (2) = p.z;
+    }
+  }
+}
+
+double
+NurbsTools::computeRScale (Eigen::Vector3d _min, Eigen::Vector3d _max)
+{
+  Eigen::Vector3d a = _max - _min;
+
+  return std::max<double> (a (0), std::max<double> (a (1), a (2)));
+}
+
+void
 NurbsTools::pca (const vector_vec3d &data, Eigen::Vector3d &mean, Eigen::Matrix3d &eigenvectors,
                  Eigen::Vector3d &eigenvalues)
 {
