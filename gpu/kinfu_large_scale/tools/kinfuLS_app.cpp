@@ -1115,8 +1115,8 @@ main (int argc, char* argv[])
     }
     else if (pc::parse_argument (argc, argv, "-pcd", pcd_dir) > 0)
     {
-       float fps_pcd = 0.0f;
-  //   pc::parse_argument (argc, argv, "-pcd_fps", fps_pcd);
+       float fps_pcd = 15.0f;
+     pc::parse_argument (argc, argv, "-pcd_fps", fps_pcd);
 
 		vector<string> pcd_files = getPcdFilesInDir(pcd_dir);    
 		// Sort the read files by name
