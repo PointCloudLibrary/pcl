@@ -123,15 +123,15 @@ constructTransformationMatrix (const double & alpha, const double & beta, const 
 
   // Construct the transformation matrix from rotation and translation 
   transformation_matrix = Eigen::Matrix<Scalar, 4, 4>::Zero ();
-  transformation_matrix (0, 0) =  static_cast<Scalar> (cos (gamma) * cos (beta));
-  transformation_matrix (0, 1) = -static_cast<Scalar> (sin (gamma) * cos (alpha) + cos (gamma) * sin (beta) * sin (alpha));
-  transformation_matrix (0, 2) =  static_cast<Scalar> (sin (gamma) * sin (alpha) + cos (gamma) * sin (beta) * cos (alpha));
-  transformation_matrix (1, 0) =  static_cast<Scalar> (sin (gamma) * cos (beta));
-  transformation_matrix (1, 1) =  static_cast<Scalar> (cos (gamma) * cos (alpha) + sin (gamma) * sin (beta) * sin (alpha));
-  transformation_matrix (1, 2) = -static_cast<Scalar> (cos (gamma) * sin (alpha) + sin (gamma) * sin (beta) * cos (alpha));
-  transformation_matrix (2, 0) = -static_cast<Scalar> (sin (beta));
-  transformation_matrix (2, 1) =  static_cast<Scalar> (cos (beta) * sin (alpha));
-  transformation_matrix (2, 2) =  static_cast<Scalar> (cos (beta) * cos (alpha));
+  transformation_matrix (0, 0) = static_cast<Scalar> ( cos (gamma) * cos (beta));
+  transformation_matrix (0, 1) = static_cast<Scalar> (-sin (gamma) * cos (alpha) + cos (gamma) * sin (beta) * sin (alpha));
+  transformation_matrix (0, 2) = static_cast<Scalar> ( sin (gamma) * sin (alpha) + cos (gamma) * sin (beta) * cos (alpha));
+  transformation_matrix (1, 0) = static_cast<Scalar> ( sin (gamma) * cos (beta));
+  transformation_matrix (1, 1) = static_cast<Scalar> ( cos (gamma) * cos (alpha) + sin (gamma) * sin (beta) * sin (alpha));
+  transformation_matrix (1, 2) = static_cast<Scalar> (-cos (gamma) * sin (alpha) + sin (gamma) * sin (beta) * cos (alpha));
+  transformation_matrix (2, 0) = static_cast<Scalar> (-sin (beta));
+  transformation_matrix (2, 1) = static_cast<Scalar> ( cos (beta) * sin (alpha));
+  transformation_matrix (2, 2) = static_cast<Scalar> ( cos (beta) * cos (alpha));
 
   transformation_matrix (0, 3) = static_cast<Scalar> (tx);
   transformation_matrix (1, 3) = static_cast<Scalar> (ty);
