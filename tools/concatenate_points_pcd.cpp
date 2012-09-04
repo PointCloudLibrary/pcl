@@ -105,7 +105,7 @@ int
     cloud_all += cloud;
   }
 
-  pcl::io::savePCDFile ("output.pcd", cloud_all);
+  pcl::io::savePCDFile ("output.pcd", cloud_all, true);
 
   return (0);
 }
