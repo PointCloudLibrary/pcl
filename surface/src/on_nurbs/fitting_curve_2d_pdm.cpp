@@ -193,7 +193,7 @@ FittingCurve2d::assemble (const Parameter &parameter)
   unsigned row (0);
 
   if (wInt > 0.0)
-    assembleInterior (wInt, parameter.interior_sigma2, row);
+    assembleInterior (wInt, parameter.interior_sigma2, parameter.rScale, row);
 
   assembleClosestPoints (elements, parameter.closest_point_weight, parameter.closest_point_sigma2, cp_res, row);
 
@@ -683,7 +683,7 @@ FittingCurve2d::getElementVector (const ON_NurbsCurve &nurbs)
 }
 
 void
-FittingCurve2d::assembleInterior (double wInt, double sigma2, unsigned &row)
+FittingCurve2d::assembleInterior (double wInt, double sigma2, double rScale, unsigned &row)
 {
   int nInt = m_data->interior.size ();
   bool wFunction (true);
@@ -692,8 +692,6 @@ FittingCurve2d::assembleInterior (double wInt, double sigma2, unsigned &row)
   m_data->interior_normals.clear ();
   m_data->interior_line_start.clear ();
   m_data->interior_line_end.clear ();
-
-  double rScale (1.0);
 
   for (int p = 0; p < nInt; p++)
   {

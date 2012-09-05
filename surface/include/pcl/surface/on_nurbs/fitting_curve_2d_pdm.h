@@ -65,9 +65,10 @@ namespace pcl
         double closest_point_sigma2;
         unsigned closest_point_resolution;
         double smooth_concavity;
+        double rScale;
         Parameter () :
           interior_sigma2 (0.1), smoothness (0.1), closest_point_weight (0.1), closest_point_sigma2 (0.1),
-              closest_point_resolution (0), smooth_concavity (1.0)
+              closest_point_resolution (0), smooth_concavity (1.0), rScale (1.0)
         {
         }
       };
@@ -226,7 +227,7 @@ namespace pcl
 
       /** \brief Assemble point-to-curve constraints. */
       virtual void
-      assembleInterior (double wInt, double sigma2, unsigned &row);
+      assembleInterior (double wInt, double sigma2, double rScale, unsigned &row);
 
       /** \brief Assemble closest points constraints. At each midpoint of the curve elements the closest data points
        * are computed and point-to-curve constraints are added. */
