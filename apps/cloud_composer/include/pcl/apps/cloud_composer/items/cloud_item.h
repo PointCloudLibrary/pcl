@@ -118,8 +118,10 @@ namespace pcl
         getPointType () const { return point_type_; }
         
         template <typename PointT> void
-        printNumPoints () const;
+        printNumPoints () const;        
         
+        bool
+        isSanitized () const { return is_sanitized_; }
       private:
         
         //These are just stored for convenience 
@@ -136,6 +138,11 @@ namespace pcl
         //Internal Storage of the templated type of this cloud
         int point_type_;
         bool template_cloud_set_;
+        
+        bool
+        checkIfFinite ();
+        
+        bool is_sanitized_;
         
         //Helper functions which set the point_type_ based on the current point type
         template <typename PointT> inline void 

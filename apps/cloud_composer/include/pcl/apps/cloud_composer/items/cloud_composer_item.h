@@ -51,7 +51,8 @@ static QStringList ITEM_TYPES_STRINGS(QStringList()
       << "Cloud Composer Item"
       << "Cloud Item"
       << "Normals Item"
-      << "FPFH Item");
+      << "FPFH Item"
+      );
 
 namespace pcl
 {

@@ -17,18 +17,15 @@ pcl::cloud_composer::CloudItem::CloudItem (QString name,
   , orientation_ (orientation)
   , template_cloud_set_ (false)
   , point_type_ (PointTypeFlags::NONE)
+  , is_sanitized_ (false)
 {
   
   //Sanitize the cloud data using passthrough
  // qDebug () << "Cloud size before passthrough : "<<cloud_ptr->width<<"x"<<cloud_ptr->height;
-  sensor_msgs::PointCloud2::Ptr cloud_filtered (new sensor_msgs::PointCloud2);
-  pcl::PassThrough<sensor_msgs::PointCloud2> pass_filter;
-  pass_filter.setInputCloud (cloud_ptr);
-  pass_filter.setKeepOrganized (false);
-  pass_filter.filter (*cloud_filtered);
+
 //  qDebug () << "Cloud size after passthrough : "<<cloud_filtered->width<<"x"<<cloud_filtered->height;
-  cloud_blob_ptr_ = cloud_filtered;
-  sensor_msgs::PointCloud2::ConstPtr const_cloud_ptr = cloud_filtered;  
+  cloud_blob_ptr_ = cloud_ptr;
+  sensor_msgs::PointCloud2::ConstPtr const_cloud_ptr = cloud_ptr;  
   this->setData (QVariant::fromValue (const_cloud_ptr), ItemDataRole::CLOUD_BLOB);
   this->setData (QVariant::fromValue (origin_), ItemDataRole::ORIGIN);
   this->setData (QVariant::fromValue (orientation_), ItemDataRole::ORIENTATION);
@@ -49,6 +46,9 @@ pcl::cloud_composer::CloudItem::CloudItem (QString name,
  
   if (make_templated_cloud)
     setTemplateCloudFromBlob ();
+  
+  if (checkIfFinite ())
+    is_sanitized_ = true;
   
 }
 
@@ -187,3 +187,22 @@ pcl::cloud_composer::CloudItem::setTemplateCloudFromBlob ()
   
 }
 
+
+bool
+pcl::cloud_composer::CloudItem::checkIfFinite ()
+{
+  if (! cloud_blob_ptr_)
+    return false;
+  
+  sensor_msgs::PointCloud2::Ptr cloud_filtered = boost::make_shared<sensor_msgs::PointCloud2> ();
+  pcl::PassThrough<sensor_msgs::PointCloud2> pass_filter;
+  pass_filter.setInputCloud (cloud_blob_ptr_);
+  pass_filter.setKeepOrganized (false);
+  pass_filter.filter (*cloud_filtered);
+  
+  if (cloud_filtered->data.size() == cloud_blob_ptr_->data.size ())
+    return true;
+  
+  return false;
+
+}

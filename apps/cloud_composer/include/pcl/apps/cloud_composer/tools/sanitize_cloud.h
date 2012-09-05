@@ -35,8 +35,8 @@
  *
  */
 
-#ifndef EUCLIDEAN_CLUSTERING_H_
-#define EUCLIDEAN_CLUSTERING_H_
+#ifndef SANITIZE_CLOUD_H_
+#define SANITIZE_CLOUD_H_
 
 #include <pcl/apps/cloud_composer/tool_interface/abstract_tool.h>
 #include <pcl/apps/cloud_composer/tool_interface/tool_factory.h>
@@ -46,43 +46,43 @@ namespace pcl
 {
   namespace cloud_composer
   {
-    class EuclideanClusteringTool : public SplitItemTool
+    class SanitizeCloudTool : public ModifyItemTool
     {
       Q_OBJECT
+    public:
+      SanitizeCloudTool (PropertiesModel* parameter_model, QObject* parent);
+      virtual ~SanitizeCloudTool ();
+      
+      virtual QList <CloudComposerItem*>
+      performAction (QList <const CloudComposerItem*> input_data, PointTypeFlags::PointType type = PointTypeFlags::NONE);
+      
+      inline virtual QString
+      getToolName () const { return "Sanitize Cloud Tool";}
+      };
+      
+      
+      class SanitizeCloudToolFactory : public QObject, public ToolFactory
+      {
+        Q_OBJECT
+        Q_INTERFACES (pcl::cloud_composer::ToolFactory)
       public:
-        EuclideanClusteringTool (PropertiesModel* parameter_model, QObject* parent);
-        virtual ~EuclideanClusteringTool ();
-        
-        virtual QList <CloudComposerItem*>
-        performAction (QList <const CloudComposerItem*> input_data, PointTypeFlags::PointType type = PointTypeFlags::NONE);
-            
-        inline virtual QString
-        getToolName () const { return "Euclidean Clustering Tool";}
-    };
-
-    
-    class EuclideanClusteringToolFactory : public QObject, public ToolFactory
-    {
-      Q_OBJECT
-      Q_INTERFACES (pcl::cloud_composer::ToolFactory)
-      public:
-        SplitItemTool*
+        ModifyItemTool*
         createTool (PropertiesModel* parameter_model, QObject* parent = 0) 
         {
-            return new EuclideanClusteringTool(parameter_model, parent);
+          return new SanitizeCloudTool(parameter_model, parent);
         }
         
         PropertiesModel*
         createToolParameterModel (QObject* parent);
         
         inline virtual QString 
-        getPluginName () const { return "Euclidean Clustering";}
+        getPluginName () const { return "Sanitize Cloud";}
         
-        inline virtual QString 
-        getToolGroupName () const { return "Segmentation";}
+        virtual QString 
+        getToolGroupName () const { return "Filters";}
         
-        inline virtual QString
-        getIconName () const { return ":/euclidean_clustering.png"; }
+        virtual QString
+        getIconName () const { return ":/sanitize_cloud.png"; }
         
         inline virtual CloudComposerItem::ItemType
         getInputItemType () const
@@ -95,16 +95,16 @@ namespace pcl
         {
           return QList <CloudComposerItem::ItemType> ();
         }
-    };
-
-
-
+      };
+      
+      
+      
+    }
   }
-}
-
-
-
-
-
-
-#endif //EUCLIDEAN_CLUSTERING_H_
+  
+  
+  
+  
+  
+  
+  #endif //SANITIZE_CLOUD_H_

@@ -173,6 +173,17 @@ if(build)
     set (VOXDS_HEADERS include/pcl/apps/${SUBSYS_NAME}/tools/voxel_grid_downsample.h)
     define_composer_tool (voxel_grid_downsample "${VOXDS_SOURCES}" "${VOXDS_HEADERS}" "${VOXDS_DEPS}")
     
+     #Organized Segmentation
+    set (OSEG_DEPS pcl_segmentation pcl_kdtree)
+    set (OSEG_SOURCES tools/organized_segmentation.cpp include/pcl/apps/${SUBSYS_NAME}/tools/impl/organized_segmentation.hpp)
+    set (OSEG_HEADERS include/pcl/apps/${SUBSYS_NAME}/tools/organized_segmentation.h)
+    define_composer_tool (organized_segmentation "${OSEG_SOURCES}" "${OSEG_HEADERS}" "${OSEG_DEPS}")
+    
+        #Sanitize Cloud Tool
+    set (SAN_DEPS pcl_filters)
+    set (SAN_SOURCES tools/sanitize_cloud.cpp)
+    set (SAN_HEADERS include/pcl/apps/${SUBSYS_NAME}/tools/sanitize_cloud.h)
+    define_composer_tool (sanitize_cloud "${SAN_SOURCES}" "${SAN_HEADERS}" "${SAN_DEPS}")
     
   endif ()  #VTK_FOUND AND QT4_FOUND AND VTK_USE_QVTK
 
