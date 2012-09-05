@@ -53,14 +53,14 @@ cloud_filtered to cloud_projected.
 
 .. literalinclude:: sources/concave_hull_2d/concave_hull_2d.cpp
    :language: cpp
-   :lines: 46-50
+   :lines: 46-51
 
 The real interesting part is in the lines below, where the ConcaveHull object
 gets created and the reconstruction is performed:
 
 .. literalinclude:: sources/concave_hull_2d/concave_hull_2d.cpp
    :language: cpp
-   :lines: 55-59
+   :lines: 56-60
 
 Compiling and running the program
 ---------------------------------
