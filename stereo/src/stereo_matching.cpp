@@ -162,6 +162,9 @@ pcl::StereoMatching::getVisualMap (pcl::PointCloud<pcl::RGB>::Ptr vMap)
     vMap->height = height_;
   }
 
+  if ( vMap->is_dense)
+    vMap->is_dense = false;
+
   pcl::RGB invalid_val;
   invalid_val.r = 0;
   invalid_val.g = 255;
@@ -312,6 +315,9 @@ pcl::StereoMatching::getPointCloud (
     cloud->height = height_;
     cloud->is_dense = false;
   }
+
+  if ( cloud->is_dense)
+    cloud->is_dense = false;
 
   //Loop
   pcl::PointXYZ temp_point;
