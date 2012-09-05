@@ -281,6 +281,33 @@ pcl::visualization::ImageViewer::showMonoImage (
 
 //////////////////////////////////////////////////////////////////////////////////////////
 void
+pcl::visualization::ImageViewer::addMonoImage (
+    const pcl::PointCloud<pcl::Intensity8u> &cloud,
+    const std::string &layer_id, double opacity)
+{
+  if (data_size_ < cloud.width * cloud.height)
+  {
+    data_size_ = cloud.width * cloud.height * 3;
+    data_.reset (new unsigned char[data_size_]);
+  }
+
+  convertIntensityCloud8uToUChar (cloud, data_);
+
+  return (addMonoImage (data_.get (), cloud.width, cloud.height, layer_id, opacity));
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::visualization::ImageViewer::showMonoImage (
+    const pcl::PointCloud<pcl::Intensity8u> &cloud,
+    const std::string &layer_id, double opacity)
+{
+  addMonoImage (cloud, layer_id, opacity);
+  render ();
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+void
 pcl::visualization::ImageViewer::addFloatImage (
     const float* float_image, unsigned int width, unsigned int height,
     float min_value, float max_value, bool grayscale,
@@ -937,7 +964,19 @@ pcl::visualization::ImageViewer::convertIntensityCloudToUChar (
     boost::shared_array<unsigned char> data)
 {
   int j = 0;
+  for (size_t i = 0; i < cloud.points.size (); ++i)
+  {
+    data[j++] = static_cast <unsigned char> (cloud.points[i].intensity * 255);
+  }
+}
 
+//////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::visualization::ImageViewer::convertIntensityCloud8uToUChar (
+    const pcl::PointCloud<pcl::Intensity8u> &cloud,
+    boost::shared_array<unsigned char> data)
+{
+  int j = 0;
   for (size_t i = 0; i < cloud.points.size (); ++i)
     data[j++] = static_cast<unsigned char> (cloud.points[i].intensity);
 }

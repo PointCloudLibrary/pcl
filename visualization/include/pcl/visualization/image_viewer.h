@@ -177,6 +177,48 @@ namespace pcl
         addMonoImage (const pcl::PointCloud<pcl::Intensity> &cloud,
                      const std::string &layer_id = "mono_image", double opacity = 1.0);
 
+        /** \brief Show a monochrome 2D image on screen.
+          * \param[in] cloud the input data representing the grayscale point cloud
+          * \param[in] layer_id the name of the layer (default: "image")
+          * \param[in] opacity the opacity of the layer (default: 1.0)
+          */
+        inline void
+        showMonoImage (const pcl::PointCloud<pcl::Intensity8u>::ConstPtr &cloud,
+                      const std::string &layer_id = "mono_image", double opacity = 1.0)
+        {
+          return (showMonoImage (*cloud, layer_id, opacity));
+        }
+
+        /** \brief Add a monochrome 2D image layer, but do not render it (use spin/spinOnce to update).
+          * \param[in] cloud the input data representing the grayscale point cloud
+          * \param[in] layer_id the name of the layer (default: "image")
+          * \param[in] opacity the opacity of the layer (default: 1.0)
+          */
+        inline void
+        addMonoImage (const pcl::PointCloud<pcl::Intensity8u>::ConstPtr &cloud,
+                     const std::string &layer_id = "mono_image", double opacity = 1.0)
+        {
+          return (addMonoImage (*cloud, layer_id, opacity));
+        }
+
+        /** \brief Show a monochrome 2D image on screen.
+          * \param[in] cloud the input data representing the grayscale point cloud
+          * \param[in] layer_id the name of the layer (default: "image")
+          * \param[in] opacity the opacity of the layer (default: 1.0)
+          */
+        void
+        showMonoImage (const pcl::PointCloud<pcl::Intensity8u> &cloud,
+                      const std::string &layer_id = "mono_image", double opacity = 1.0);
+
+        /** \brief Add a monochrome 2D image layer, but do not render it (use spin/spinOnce to update).
+          * \param[in] cloud the input data representing the RGB point cloud
+          * \param[in] layer_id the name of the layer (default: "image")
+          * \param[in] opacity the opacity of the layer (default: 1.0)
+          */
+        void
+        addMonoImage (const pcl::PointCloud<pcl::Intensity8u> &cloud,
+                     const std::string &layer_id = "mono_image", double opacity = 1.0);
+
         /** \brief Show a 2D RGB image on screen.
           * \param[in] data the input data representing the image
           * \param[in] width the width of the image
@@ -773,6 +815,16 @@ namespace pcl
           */
         void
         convertIntensityCloudToUChar (const pcl::PointCloud<pcl::Intensity> &cloud,
+                                boost::shared_array<unsigned char> data);
+
+        /** \brief Convert the Intensity8u information in a PointCloud<Intensity8u> to an unsigned char array
+          * \param[in] cloud the input cloud containing the grayscale intensity information
+          * \param[out] data a boost shared array of unsigned char type
+          * \note The method assumes that the data array has already been allocated and
+          * contains enough space to copy all the data from cloud!
+          */
+        void
+        convertIntensityCloud8uToUChar (const pcl::PointCloud<pcl::Intensity8u> &cloud,
                                 boost::shared_array<unsigned char> data);
 
         /** \brief Convert the RGB information in a PointCloud<T> to an unsigned char array

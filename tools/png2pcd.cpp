@@ -56,6 +56,7 @@
 #define RED_MULTIPLIER 0.299
 #define GREEN_MULTIPLIER 0.587
 #define BLUE_MULTIPLIER 0.114
+#define MAX_COLOR_INTENSITY 255
 
 using namespace pcl;
 using namespace pcl::io;
@@ -72,10 +73,10 @@ printHelp (int, char **argv)
   std::cout << "***************************************************************************" << std::endl << std::endl;
   std::cout << "Usage: " << argv[0] << " [Options] input.png output.pcd" << std::endl << std::endl;
   std::cout << "Options:" << std::endl;
-  std::cout << "     -h:                                            Show this help." << std::endl;
-  std::cout << "     -format 0 | 1:                                 Set the format of the output pcd file." << std::endl;
-  std::cout << "     -mode DEFAULT | FORCE_COLOR | FORCE_GRAYSCALE: Set the working mode of the converter." << std::endl;
-
+  std::cout << "     -h:                                               Show this help." << std::endl;
+  std::cout << "     -format 0 | 1:                                    Set the format of the output pcd file." << std::endl;
+  std::cout << "     -mode DEFAULT | FORCE_COLOR | FORCE_GRAYSCALE:    Set the working mode of the converter." << std::endl;
+  std::cout << "       --intensity_type: FLOAT | UINT8_T               Set the desired intensity type" << std::endl;
 }
 
 template<typename PointInT> void
@@ -144,14 +145,34 @@ main (int argc, char** argv)
   double* pixel = new double [4];
   memset (pixel, 0, sizeof(double) * 4);
 
+  std::string intensity_type;
+
   if (mode.compare ("DEFAULT") == 0)
   {
     //
-    // If the input image is a monochrome image the output cloud will be a pcl::PointCloud<pcl::Intensity>,
-    // otherwise it will be a pcl::PointCloud<pcl::RGB>
+    // If the input image is a monochrome image the output cloud will be:
+    // - a pcl::PointCloud<pcl::Intensity> if the intensity_type flag is set to FLOAT;
+    // - a pcl::PointCloud<pcl::Intensity8u> if the intensity_type flag is set to UINT_8;
+    // otherwise it will be a pcl::PointCloud<pcl::RGB>.
     //
 
+    if (pcl::console::parse_argument (argc, argv, "--intensity_type", intensity_type) != -1)
+    {
+      if (intensity_type.compare ("FLOAT") != 0 && intensity_type.compare ("UINT_8") != 0)
+      {
+	print_error ("Wrong intensity option.\n");
+        printHelp (argc, argv);
+        exit (-1);
+      }
+    }
+    else
+    {
+      print_error ("The intensity type must be set to enable the PNG conversion.\n");
+      exit (-1);
+    }
+
     PointCloud<Intensity> mono_cloud;
+    PointCloud<Intensity8u> mono_cloud_u8;
     PointCloud<RGB> color_cloud;
 
     int rgb;
@@ -159,29 +180,58 @@ main (int argc, char** argv)
 
     switch (components)
     {
-      case 1: mono_cloud.width = dimensions[0];
-	      mono_cloud.height = dimensions[1]; // This indicates that the point cloud is organized
-	      mono_cloud.is_dense = true;
-	      mono_cloud.points.resize (mono_cloud.width * mono_cloud.height);
-
-	      for (int z = 0; z < dimensions[2]; z++)
+      case 1: if (intensity_type.compare ("FLOAT") == 0)
 	      {
-		for (int y = 0; y < dimensions[1]; y++)
+		mono_cloud.width = dimensions[0];
+		mono_cloud.height = dimensions[1]; // This indicates that the point cloud is organized
+		mono_cloud.is_dense = true;
+		mono_cloud.points.resize (mono_cloud.width * mono_cloud.height);
+
+		for (int z = 0; z < dimensions[2]; z++)
 		{
-		  for (int x = 0; x < dimensions[0]; x++)
+		  for (int y = 0; y < dimensions[1]; y++)
 		  {
-		    pixel[0] = image_data->GetScalarComponentAsDouble(x, y, 0, 0);
+		    for (int x = 0; x < dimensions[0]; x++)
+		    {
+		      pixel[0] = image_data->GetScalarComponentAsDouble(x, y, 0, 0);
 
-		    Intensity gray;
-		    gray.intensity = static_cast<uint8_t> (pixel[0]);
+		      Intensity gray;
+		      gray.intensity = static_cast<float> (pixel[0]) / MAX_COLOR_INTENSITY;
 
-		    mono_cloud (x, dimensions[1] - y - 1) = gray;
+		      mono_cloud (x, dimensions[1] - y - 1) = gray;
+		    }
 		  }
-		}
-	      }
+	     	}
 
-	      // Save the point cloud into a PCD file
-	      saveCloud<Intensity> (argv[pcd_file_indices[0]], mono_cloud, format);
+		// Save the point cloud into a PCD file
+		saveCloud<Intensity> (argv[pcd_file_indices[0]], mono_cloud, format);
+	      }
+	      else
+	      {
+		mono_cloud_u8.width = dimensions[0];
+		mono_cloud_u8.height = dimensions[1]; // This indicates that the point cloud is organized
+		mono_cloud_u8.is_dense = true;
+		mono_cloud_u8.points.resize (mono_cloud_u8.width * mono_cloud_u8.height);
+
+		for (int z = 0; z < dimensions[2]; z++)
+		{
+		  for (int y = 0; y < dimensions[1]; y++)
+		  {
+		    for (int x = 0; x < dimensions[0]; x++)
+		    {
+		      pixel[0] = image_data->GetScalarComponentAsDouble(x, y, 0, 0);
+
+		      Intensity8u gray;
+		      gray.intensity = static_cast<uint8_t> (pixel[0]);
+
+		      mono_cloud_u8 (x, dimensions[1] - y - 1) = gray;
+		    }
+		  }
+	     	}
+
+		// Save the point cloud into a PCD file
+		saveCloud<Intensity8u> (argv[pcd_file_indices[0]], mono_cloud_u8, format);
+	      }
 	      break;
 
       case 3: color_cloud.width = dimensions[0];
@@ -356,58 +406,117 @@ main (int argc, char** argv)
   else if (mode.compare ("FORCE_GRAYSCALE") == 0)
   {
     //
-    // Force the output cloud to be a pcl::PointCloud<pcl::Intensity> even if the input image is a
-    // RGB or a RGBA image.
+    // Force the output cloud to be:
+    // - a pcl::PointCloud<pcl::Intensity> if the intensity_type flag is set to FLOAT;
+    // - a pcl::PointCloud<pcl::Intensity8u> if the intensity_type flag is set to UINT_8;
+    // even if the input image is a RGB or a RGBA image.
     //
 
     PointCloud<Intensity> cloud;
-    cloud.width = dimensions[0];
-    cloud.height = dimensions[1]; // This indicates that the point cloud is organized
-    cloud.is_dense = true;
-    cloud.points.resize (cloud.width * cloud.height);
+    PointCloud<Intensity8u> cloud8u;
 
-
-    for (int z = 0; z < dimensions[2]; z++)
+    if (pcl::console::parse_argument (argc, argv, "--intensity_type", intensity_type) != -1)
     {
-      for (int y = 0; y < dimensions[1]; y++)
+      if (intensity_type.compare ("FLOAT") == 0)
       {
-        for (int x = 0; x < dimensions[0]; x++)
-        {
-          for (int c = 0; c < components; c++)
-            pixel[c] = image_data->GetScalarComponentAsDouble(x, y, 0, c);
+	cloud.width = dimensions[0];
+	cloud.height = dimensions[1]; // This indicates that the point cloud is organized
+	cloud.is_dense = true;
+	cloud.points.resize (cloud.width * cloud.height);
 
-  	  Intensity gray;
+	for (int z = 0; z < dimensions[2]; z++)
+	{
+	  for (int y = 0; y < dimensions[1]; y++)
+	  {
+	    for (int x = 0; x < dimensions[0]; x++)
+	    {
+	      for (int c = 0; c < components; c++)
+		pixel[c] = image_data->GetScalarComponentAsDouble(x, y, 0, c);
 
-  	  switch (components)
-  	  {
-  	    case 1:  gray.intensity = static_cast<uint8_t> (pixel[0]);
-  		     break;
+	  	Intensity gray;
 
-  	    case 3:  gray.intensity = static_cast<uint8_t> ( RED_MULTIPLIER * pixel[0] +
-  						      GREEN_MULTIPLIER * pixel[1] +
-  						      BLUE_MULTIPLIER * pixel[2] );
-  		     break;
+	  	switch (components)
+	  	{
+	  	  case 1:  gray.intensity = static_cast<float> (pixel[0]) / MAX_COLOR_INTENSITY;
+	  		   break;
 
-  	    case 4:  gray.intensity = static_cast<uint8_t> ( RED_MULTIPLIER * pixel[0] +
-						      GREEN_MULTIPLIER * pixel[1] +
-						      BLUE_MULTIPLIER * pixel[2] );
-  		     break;
-  	}
+	  	  case 3:  gray.intensity = static_cast<float> ( RED_MULTIPLIER * pixel[0] +
+	  						      GREEN_MULTIPLIER * pixel[1] +
+	  						      BLUE_MULTIPLIER * pixel[2] ) / MAX_COLOR_INTENSITY;
+	  		     break;
 
-  	cloud (x, dimensions[1] - y - 1) = gray;
-        }
+	  	    case 4:  gray.intensity = static_cast<float> ( RED_MULTIPLIER * pixel[0] +
+							      GREEN_MULTIPLIER * pixel[1] +
+							      BLUE_MULTIPLIER * pixel[2] ) / MAX_COLOR_INTENSITY;
+	  		     break;
+	  	}
+
+	  	cloud (x, dimensions[1] - y - 1) = gray;
+	        }
+	      }
+	    }
+
+	    // Save the point cloud into a PCD file
+	    saveCloud<Intensity> (argv[pcd_file_indices[0]], cloud, format);
+      }
+      else if (intensity_type.compare ("UINT_8") != 0)
+      {
+	cloud8u.width = dimensions[0];
+	cloud8u.height = dimensions[1]; // This indicates that the point cloud is organized
+	cloud8u.is_dense = true;
+	cloud8u.points.resize (cloud8u.width * cloud8u.height);
+
+	for (int z = 0; z < dimensions[2]; z++)
+	{
+	  for (int y = 0; y < dimensions[1]; y++)
+	  {
+	    for (int x = 0; x < dimensions[0]; x++)
+	    {
+	      for (int c = 0; c < components; c++)
+		pixel[c] = image_data->GetScalarComponentAsDouble(x, y, 0, c);
+
+	  	Intensity8u gray;
+
+	  	switch (components)
+	  	{
+	  	  case 1:  gray.intensity = static_cast<uint8_t> (pixel[0]);
+	  		   break;
+
+	  	  case 3:  gray.intensity = static_cast<uint8_t> ( RED_MULTIPLIER * pixel[0] +
+	  						      GREEN_MULTIPLIER * pixel[1] +
+	  						      BLUE_MULTIPLIER * pixel[2] );
+	  		   break;
+
+	  	  case 4:  gray.intensity = static_cast<uint8_t> ( RED_MULTIPLIER * pixel[0] +
+							      GREEN_MULTIPLIER * pixel[1] +
+							      BLUE_MULTIPLIER * pixel[2] );
+	  		   break;
+	  	}
+
+	  	cloud8u (x, dimensions[1] - y - 1) = gray;
+	        }
+	      }
+	    }
+
+	    // Save the point cloud into a PCD file
+	    saveCloud<Intensity8u> (argv[pcd_file_indices[0]], cloud8u, format);
+      }
+      else
+      {
+	print_error ("Wrong intensity option.\n");
+        printHelp (argc, argv);
+        exit (-1);
       }
     }
+    else
+    {
+      print_error ("The intensity type must be set to enable the PNG conversion.\n");
+      exit (-1);
+    }
 
-    // Save the point cloud into a PCD file
-    saveCloud<Intensity> (argv[pcd_file_indices[0]], cloud, format);
   }
 
   delete[] pixel;
 
   return 0;
 }
-
-
-
-

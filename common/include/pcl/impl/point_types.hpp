@@ -193,6 +193,12 @@ namespace pcl
 #define PCL_ADD_INTENSITY \
     struct \
     { \
+      float intensity; \
+    }; \
+
+#define PCL_ADD_INTENSITY_8U \
+    struct \
+    { \
       uint8_t intensity; \
     }; \
 
@@ -205,7 +211,6 @@ namespace pcl
   typedef const Eigen::Map<const Eigen::Vector3f> Vector3fMapConst;
   typedef Eigen::Map<Eigen::Vector4f, Eigen::Aligned> Vector4fMap;
   typedef const Eigen::Map<const Eigen::Vector4f, Eigen::Aligned> Vector4fMapConst;
-
 
 
   struct _PointXYZ
@@ -298,6 +303,7 @@ namespace pcl
   }
 
   /** \brief A point structure representing the grayscale intensity in single-channel images.
+    * Intensity is represented as a float value.
     * \ingroup common
     */
   struct _Intensity
@@ -313,11 +319,38 @@ namespace pcl
 
     inline Intensity ()
     {
-      intensity = 0;
+      intensity = 0.0f;
     }
   };
   inline std::ostream&
   operator << (std::ostream& os, const Intensity& p)
+  {
+    os << "( " << static_cast<int>(p.intensity) << " )";
+    return (os);
+  }
+
+  /** \brief A point structure representing the grayscale intensity in single-channel images.
+    * Intensity is represented as a uint8_t value.
+    * \ingroup common
+    */
+  struct _Intensity8u
+  {
+    PCL_ADD_INTENSITY_8U;
+  };
+  struct Intensity8u: public _Intensity8u
+  {
+    inline Intensity8u (const _Intensity8u &p)
+    {
+      intensity = p.intensity;
+    }
+
+    inline Intensity8u ()
+    {
+      intensity = 0;
+    }
+  };
+  inline std::ostream&
+  operator << (std::ostream& os, const Intensity8u& p)
   {
     os << "( " << static_cast<int>(p.intensity) << " )";
     return (os);
