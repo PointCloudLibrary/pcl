@@ -222,6 +222,10 @@ template <typename PointInT, typename PointNT, typename PointOutT, typename Poin
 pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT>::normalizeHistogram (
     Eigen::VectorXf &shot, int desc_length)
 {
+	// Normalization is performed by considering the L2 norm
+	// and not the sum of bins, as reported in the ECCV paper.
+	// This is due to additional experiments performed by the authors after its pubblication,
+	// where L2 normalization turned out better at handling point density variations.
   double acc_norm = 0;
   for (int j = 0; j < desc_length; j++)
     acc_norm += shot[j] * shot[j];
