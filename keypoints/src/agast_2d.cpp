@@ -58,6 +58,8 @@ pcl::AgastKeypoint2D<pcl::PointXYZ, pcl::PointUV>::detectKeypoints (pcl::PointCl
   if (!detector_)
     detector_.reset (new pcl::keypoints::agast::AgastDetector7_12s (width, height, threshold_, bmax_));
 
+  detector_->setMaxKeypoints (nr_max_keypoints_);
+
   if (apply_non_max_suppression_)
   {
     pcl::PointCloud<pcl::PointUV> tmp_cloud;
@@ -102,7 +104,7 @@ pcl::keypoints::agast::AbstractAgastDetector::detectKeypoints (
 void
 pcl::keypoints::agast::AbstractAgastDetector::applyNonMaxSuppression (
     const pcl::PointCloud<pcl::PointUV> &input,
-    const std::vector<int> &scores,
+    const std::vector<ScoreIndex> &scores,
     pcl::PointCloud<pcl::PointUV> &output)
 {
   std::vector<int> nms_flags;
@@ -117,40 +119,40 @@ pcl::keypoints::agast::AbstractAgastDetector::applyNonMaxSuppression (
   std::vector<int>::iterator nms_flags_p;
   std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV> >::iterator curr_corner_nms;
   int j;
-  int numCorners_all = int (corners_all.size ());
-  int nMaxCorners = int (corners_nms.capacity ());
+  int num_corners_all = int (corners_all.size ());
+  int n_max_corners = int (corners_nms.capacity ());
 
   curr_corner = corners_all.begin ();
 
-  if (numCorners_all > nMaxCorners)
+  if (num_corners_all > n_max_corners)
   {
-    if (nMaxCorners == 0)
+    if (n_max_corners == 0)
     {
-      nMaxCorners = 512 > numCorners_all ? 512 : numCorners_all;
-      corners_nms.reserve (nMaxCorners);
-      nms_flags.reserve (nMaxCorners);
+      n_max_corners = 512 > num_corners_all ? 512 : num_corners_all;
+      corners_nms.reserve (n_max_corners);
+      nms_flags.reserve (n_max_corners);
     }
     else
     {
-      nMaxCorners *= 2;
-      if (numCorners_all > nMaxCorners)
-        nMaxCorners = numCorners_all;
-      corners_nms.reserve (nMaxCorners);
-      nms_flags.reserve (nMaxCorners);
+      n_max_corners *= 2;
+      if (num_corners_all > n_max_corners)
+        n_max_corners = num_corners_all;
+      corners_nms.reserve (n_max_corners);
+      nms_flags.reserve (n_max_corners);
     }
   }
-  corners_nms.resize (numCorners_all);
-  nms_flags.resize (numCorners_all);
+  corners_nms.resize (num_corners_all);
+  nms_flags.resize (num_corners_all);
 
   nms_flags_p = nms_flags.begin ();
   curr_corner_nms = corners_nms.begin ();
 
   // set all flags to MAXIMUM
-  for (j = numCorners_all; j > 0; j--)
+  for (j = num_corners_all; j > 0; j--)
     *nms_flags_p++= -1;
   nms_flags_p = nms_flags.begin ();
 
-  for (curr_corner_ind = 0; curr_corner_ind < numCorners_all; curr_corner_ind++)
+  for (curr_corner_ind = 0; curr_corner_ind < num_corners_all; curr_corner_ind++)
   {
     int t;
 
@@ -177,7 +179,7 @@ pcl::keypoints::agast::AbstractAgastDetector::applyNonMaxSuppression (
         while (nms_flags[t] != -1) //find the maximum in this block
           t = nms_flags[t];
 
-        if (scores[curr_corner_ind] < scores[t])
+        if (scores[curr_corner_ind].score < scores[t].score)
         {
           nms_flags[curr_corner_ind] = t;
         }
@@ -199,7 +201,7 @@ pcl::keypoints::agast::AbstractAgastDetector::applyNonMaxSuppression (
       {
         if (t != curr_corner_ind)
         {
-          if (scores[curr_corner_ind] < scores[t] )
+          if (scores[curr_corner_ind].score < scores[t].score)
             nms_flags[curr_corner_ind] = t;
           else
             nms_flags[t] = curr_corner_ind;
@@ -209,7 +211,7 @@ pcl::keypoints::agast::AbstractAgastDetector::applyNonMaxSuppression (
       {
         if (t != curr_cornerMaxAbove_ind)
         {
-          if (scores[curr_cornerMaxAbove_ind] < scores[t])
+          if (scores[curr_cornerMaxAbove_ind].score < scores[t].score)
           {
             nms_flags[curr_cornerMaxAbove_ind] = t;
             nms_flags[curr_corner_ind] = t;
@@ -228,7 +230,7 @@ pcl::keypoints::agast::AbstractAgastDetector::applyNonMaxSuppression (
 
   // collecting maximum corners
   corners_nms.resize (0);
-  for (curr_corner_ind = 0; curr_corner_ind < numCorners_all; curr_corner_ind++)
+  for (curr_corner_ind = 0; curr_corner_ind < num_corners_all; curr_corner_ind++)
   {
     if (*nms_flags_p++ == -1)
       corners_nms.push_back (corners_all[curr_corner_ind]);
@@ -246,10 +248,25 @@ pcl::keypoints::agast::AbstractAgastDetector::applyNonMaxSuppression (
   const pcl::PointCloud<pcl::PointUV> &input,
   pcl::PointCloud<pcl::PointUV> &output)
 {
-  std::vector<int> scores;
+  std::vector<ScoreIndex> scores;
   computeCornerScores (&(intensity_data[0]), input.points, scores);
   
-  return (applyNonMaxSuppression (input, scores, output));
+  // If a threshold for the maximum number of keypoints is given
+  if (nr_max_keypoints_ <= scores.size ()) //std::numeric_limits<unsigned int>::max ())
+  {
+    std::sort (scores.begin (), scores.end (), CompareScoreIndex ());
+
+    scores.resize (nr_max_keypoints_);
+
+    // Need to copy the points
+    pcl::PointCloud<pcl::PointUV> best_input;
+    best_input.resize (nr_max_keypoints_);
+    for (int i = 0; i < scores.size (); ++i)
+      best_input[i] = input[scores[i].idx];
+    applyNonMaxSuppression (best_input, scores, output);
+  }
+  else
+    applyNonMaxSuppression (input, scores, output);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -259,10 +276,25 @@ pcl::keypoints::agast::AbstractAgastDetector::applyNonMaxSuppression (
   const pcl::PointCloud<pcl::PointUV> &input,
   pcl::PointCloud<pcl::PointUV> &output)
 {
-  std::vector<int> scores;
+  std::vector<ScoreIndex> scores;
   computeCornerScores (&(intensity_data[0]), input.points, scores);
   
-  return (applyNonMaxSuppression (input, scores, output));
+  // If a threshold for the maximum number of keypoints is given
+  if (nr_max_keypoints_ <= scores.size ()) //std::numeric_limits<unsigned int>::max ())
+  {
+    std::sort (scores.begin (), scores.end (), CompareScoreIndex ());
+
+    scores.resize (nr_max_keypoints_);
+
+    // Need to copy the points
+    pcl::PointCloud<pcl::PointUV> best_input;
+    best_input.resize (nr_max_keypoints_);
+    for (int i = 0; i < scores.size (); ++i)
+      best_input[i] = input[scores[i].idx];
+    applyNonMaxSuppression (best_input, scores, output);
+  }
+  else
+    applyNonMaxSuppression (input, scores, output);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -270,7 +302,7 @@ void
 pcl::keypoints::agast::AbstractAgastDetector::computeCornerScores (
   const unsigned char* im,
   const std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV> > &corners_all, 
-  std::vector<int> & scores)
+  std::vector<ScoreIndex> &scores)
 {
   unsigned int n = 0;
   unsigned int num_corners = static_cast<unsigned int> (corners_all.size ());
@@ -290,7 +322,10 @@ pcl::keypoints::agast::AbstractAgastDetector::computeCornerScores (
   scores.resize (num_corners);
 
   for (; n < num_corners; n++)
-    scores[n] = computeCornerScore (im + static_cast<size_t> (corners_all[n].v) * width_ + static_cast<size_t> (corners_all[n].u));
+  {
+    scores[n].idx   = n;
+    scores[n].score = computeCornerScore (im + static_cast<size_t> (corners_all[n].v) * width_ + static_cast<size_t> (corners_all[n].u));
+  }
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -298,7 +333,7 @@ void
 pcl::keypoints::agast::AbstractAgastDetector::computeCornerScores (
   const float* im,
   const std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV> > &corners_all, 
-  std::vector<int> & scores)
+  std::vector<ScoreIndex> &scores)
 {
   unsigned int n = 0;
   unsigned int num_corners = static_cast<unsigned int> (corners_all.size ());
@@ -318,7 +353,10 @@ pcl::keypoints::agast::AbstractAgastDetector::computeCornerScores (
   scores.resize (num_corners);
 
   for (; n < num_corners; n++)
-    scores[n] = computeCornerScore (im + static_cast<size_t> (corners_all[n].v) * width_ + static_cast<size_t> (corners_all[n].u));
+  {
+    scores[n].idx   = n;
+    scores[n].score = computeCornerScore (im + static_cast<size_t> (corners_all[n].v) * width_ + static_cast<size_t> (corners_all[n].u));
+  }
 }
 
 

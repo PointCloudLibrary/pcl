@@ -75,7 +75,11 @@ namespace pcl
                                  const size_t height, 
                                  const double threshold,
                                  const double bmax) 
-            : width_ (width), height_ (height), threshold_ (threshold), bmax_ (bmax)
+            : width_ (width)
+            , height_ (height)
+            , threshold_ (threshold)
+            , nr_max_keypoints_ (std::numeric_limits<unsigned int>::max ())
+            , bmax_ (bmax)
           {}
 
           /** \brief Destructor. */
@@ -146,6 +150,23 @@ namespace pcl
             return (threshold_);
           }
 
+          /** \brief Sets the maximum number of keypoints to return. The
+            * estimated keypoints are sorted by their internal score.
+            * \param[in] nr_max_keypoints set the maximum number of keypoints to return
+            */
+          inline void
+          setMaxKeypoints (const unsigned int nr_max_keypoints)
+          {
+            nr_max_keypoints_ = nr_max_keypoints;
+          }
+
+          /** \brief Get the maximum nuber of keypoints to return, as set by the user. */
+          inline unsigned int 
+          getMaxKeypoints ()
+          {
+            return (nr_max_keypoints_);
+          }
+
           /** \brief Detects points of interest (i.e., keypoints) in the given image
             * \param[in] im the image to detect keypoints in 
             * \param[out] corners_all the resultant set of keypoints detected
@@ -163,6 +184,28 @@ namespace pcl
                   std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV> > &) const = 0;
 
         protected:
+
+          /** \brief Structure holding an index and the associated keypoint score. */
+          struct ScoreIndex
+          {
+            int idx;
+            int score;
+          };
+
+          /** \brief Score index comparator. */
+          struct CompareScoreIndex
+          {
+            /** \brief Comparator
+              * \param[i1] the first score index
+              * \param[i2] the second score index
+              */
+            inline bool
+            operator() (const ScoreIndex &i1, const ScoreIndex &i2)
+            {
+              return (i1.score > i2.score);
+            }
+          };
+
           /** \brief Initializes the sample pattern. */
           virtual void
           initPattern () = 0;
@@ -174,7 +217,7 @@ namespace pcl
             */
           void
           applyNonMaxSuppression (const pcl::PointCloud<pcl::PointUV> &input, 
-                                  const std::vector<int>& scores, 
+                                  const std::vector<ScoreIndex>& scores, 
                                   pcl::PointCloud<pcl::PointUV> &output);
 
           /** \brief Computes corner scores for the specified points. 
@@ -185,7 +228,7 @@ namespace pcl
           void 
           computeCornerScores (const unsigned char* im, 
                                const std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV> > & corners_all, 
-                               std::vector<int> & scores);
+                               std::vector<ScoreIndex> & scores);
 
           /** \brief Computes corner scores for the specified points. 
             * \param im
@@ -195,7 +238,7 @@ namespace pcl
           void 
           computeCornerScores (const float* im, 
                                const std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV> > & corners_all, 
-                               std::vector<int> & scores);
+                               std::vector<ScoreIndex> & scores);
 
           /** \brief Width of the image to process. */
           size_t width_;
@@ -204,6 +247,9 @@ namespace pcl
 
           /** \brief Threshold for corner detection. */
           double threshold_;
+
+          /** \brief The maximum number of keypoints to return. */
+          unsigned int nr_max_keypoints_;
 
           /** \brief Max image value. */
           double bmax_;
@@ -561,6 +607,7 @@ namespace pcl
         , apply_non_max_suppression_ (true)
         , bmax_ (255)
         , detector_ ()
+        , nr_max_keypoints_ (std::numeric_limits<unsigned int>::max ())
       {
         k_ = 1;
       }
@@ -584,6 +631,23 @@ namespace pcl
       getThreshold ()
       {
         return (threshold_);
+      }
+
+      /** \brief Sets the maximum number of keypoints to return. The
+        * estimated keypoints are sorted by their internal score.
+        * \param[in] nr_max_keypoints set the maximum number of keypoints to return
+        */
+      inline void
+      setMaxKeypoints (const unsigned int nr_max_keypoints)
+      {
+        nr_max_keypoints_ = nr_max_keypoints;
+      }
+
+      /** \brief Get the maximum nuber of keypoints to return, as set by the user. */
+      inline unsigned int 
+      getMaxKeypoints ()
+      {
+        return (nr_max_keypoints_);
       }
 
       /** \brief Sets the max image data value (affects how many iterations AGAST does)
@@ -655,6 +719,9 @@ namespace pcl
 
       /** \brief The Agast detector to use. */
       AgastDetectorPtr detector_;
+
+      /** \brief The maximum number of keypoints to return. */
+      unsigned int nr_max_keypoints_;
   };
 
   /** \brief Detects 2D AGAST corner points. Based on the original work and
@@ -697,6 +764,7 @@ namespace pcl
       using AgastKeypoint2DBase<PointInT, PointOutT, pcl::common::IntensityFieldAccessor<PointInT> >::bmax_;
       using AgastKeypoint2DBase<PointInT, PointOutT, pcl::common::IntensityFieldAccessor<PointInT> >::apply_non_max_suppression_;
       using AgastKeypoint2DBase<PointInT, PointOutT, pcl::common::IntensityFieldAccessor<PointInT> >::detector_;
+      using AgastKeypoint2DBase<PointInT, PointOutT, pcl::common::IntensityFieldAccessor<PointInT> >::nr_max_keypoints_;
 
       /** \brief Constructor */
       AgastKeypoint2D ()

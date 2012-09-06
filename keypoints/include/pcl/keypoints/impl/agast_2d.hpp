@@ -78,6 +78,8 @@ pcl::AgastKeypoint2D<PointInT, PointOutT>::detectKeypoints (PointCloudOut &outpu
   if (!detector_)
     detector_.reset (new pcl::keypoints::agast::AgastDetector7_12s (width, height, threshold_, bmax_));
 
+  detector_->setMaxKeypoints (nr_max_keypoints_);
+
   if (apply_non_max_suppression_)
   {
     pcl::PointCloud<pcl::PointUV> tmp_cloud;
