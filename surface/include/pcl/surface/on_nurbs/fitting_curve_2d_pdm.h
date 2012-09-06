@@ -196,8 +196,9 @@ namespace pcl
        *  \param[in] pt the point to which the closest midpoint of the elements will be computed.
        *  return closest midpoint in parametric domain. */
       static double
-      findClosestElementMidPoint (const ON_NurbsCurve &nurbs, const Eigen::Vector2d &pt,
-                                  unsigned samples_per_element = 1, bool quiet = true);
+      findClosestElementMidPoint (const ON_NurbsCurve &nurbs, const Eigen::Vector2d &pt);
+      static double
+      findClosestElementMidPoint (const ON_NurbsCurve &nurbs, const Eigen::Vector2d &pt, double hint);
 
       /** \brief Enable/Disable debug outputs in console. */
       inline void
@@ -209,11 +210,10 @@ namespace pcl
 
       /** \brief Set parameters for inverse mapping. */
       inline void
-      setInverseParams (int max_steps = 200, double accuracy = 1e-6, int samples = 1)
+      setInverseParams (int max_steps = 200, double accuracy = 1e-6)
       {
         in_max_steps = max_steps;
         in_accuracy = accuracy;
-        in_samples = samples;
       }
 
     protected:
@@ -239,7 +239,6 @@ namespace pcl
       bool m_quiet;
       int in_max_steps;
       double in_accuracy;
-      int in_samples;
 
     };
   }

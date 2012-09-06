@@ -53,7 +53,6 @@ FittingCurve2d::FittingCurve2d (int order, NurbsDataCurve2d *data)
 
   in_max_steps = 200;
   in_accuracy = 1e-6;
-  in_samples = 1;
   m_quiet = true;
 }
 
@@ -66,7 +65,6 @@ FittingCurve2d::FittingCurve2d (NurbsDataCurve2d *data, const ON_NurbsCurve &nc)
 
   in_max_steps = 200;
   in_accuracy = 1e-6;
-  in_samples = 1;
   m_quiet = true;
 }
 
@@ -136,8 +134,6 @@ FittingCurve2d::fitting (FitParameter &param)
       if (!(j % param.addCPsIteration) && (m_nurbs.CVCount () < param.maxCPs))
         addCPsOnClosestPointViolation (param.addCPsAccuracy);
     }
-
-    m_data->interior_param.clear ();
 
     assemble (param.param);
 
@@ -248,7 +244,7 @@ FittingCurve2d::updateCurve (double damp)
   {
 
     ON_3dPoint cp_prev;
-    m_nurbs.GetCV (j + cp_red, cp_prev);
+    m_nurbs.GetCV (j, cp_prev);
 
     double x = m_solver.x (j, 0);
     double y = m_solver.x (j, 1);
@@ -263,17 +259,14 @@ FittingCurve2d::updateCurve (double damp)
     cp.y = cp_prev.y + damp * (y - cp_prev.y);
     cp.z = 0.0;
 
-    m_nurbs.SetCV (j + cp_red, cp);
-  }
-
-  for (int j = 0; j < cp_red; j++)
-  {
-
-    ON_3dPoint cp;
-    m_nurbs.GetCV (m_nurbs.m_cv_count - 1 - cp_red + j, cp);
     m_nurbs.SetCV (j, cp);
 
-    m_nurbs.GetCV (cp_red - j, cp);
+  }
+
+  for (int j = 0; j < 2 * cp_red; j++)
+  {
+    ON_3dPoint cp;
+    m_nurbs.GetCV (2 * cp_red - 1 - j, cp);
     m_nurbs.SetCV (m_nurbs.m_cv_count - 1 - j, cp);
   }
 
@@ -558,7 +551,7 @@ FittingCurve2d::initCPsNurbsCurve2D (int order, const vector_vec2d &cps)
 
   int ncps = cps.size () + 2 * cp_red; // +2*cp_red for smoothness and +1 for closing
   nurbs = ON_NurbsCurve (2, false, order, ncps);
-  nurbs.MakePeriodicUniformKnotVector (1.0 / (ncps - order));
+  nurbs.MakePeriodicUniformKnotVector (1.0 / (ncps - order + 1));
 
   for (int j = 0; j < cps.size (); j++)
     nurbs.SetCV (cp_red + j, ON_3dPoint (cps[j] (0), cps[j] (1), 0.0));
@@ -703,13 +696,13 @@ FittingCurve2d::assembleInterior (double wInt, double sigma2, double rScale, uns
     double error;
     if (p < (int)m_data->interior_param.size ())
     {
-      param = inverseMapping (m_nurbs, pcp, m_data->interior_param[p], error, pt, t, rScale, in_max_steps, in_accuracy,
-                              m_quiet);
+      param = findClosestElementMidPoint (m_nurbs, pcp, m_data->interior_param[p]);
+      param = inverseMapping (m_nurbs, pcp, param, error, pt, t, rScale, in_max_steps, in_accuracy, m_quiet);
       m_data->interior_param[p] = param;
     }
     else
     {
-      param = findClosestElementMidPoint (m_nurbs, pcp, in_samples);
+      param = findClosestElementMidPoint (m_nurbs, pcp);
       param = inverseMapping (m_nurbs, pcp, param, error, pt, t, rScale, in_max_steps, in_accuracy, m_quiet);
       m_data->interior_param.push_back (param);
     }
@@ -932,7 +925,7 @@ FittingCurve2d::inverseMappingO2 (const ON_NurbsCurve &nurbs, const Eigen::Vecto
   double min_param (DBL_MAX);
   double min_dist (DBL_MAX);
   error = DBL_MAX;
-  int is_corner;
+  int is_corner (-1);
 
   for (unsigned i = 0; i < elements.size () - 1; i++)
   {
@@ -1076,35 +1069,74 @@ FittingCurve2d::inverseMappingO2 (const ON_NurbsCurve &nurbs, const Eigen::Vecto
 //}
 
 double
-FittingCurve2d::findClosestElementMidPoint (const ON_NurbsCurve &nurbs, const Eigen::Vector2d &pt,
-                                            unsigned samples_per_element, bool quiet)
+FittingCurve2d::findClosestElementMidPoint (const ON_NurbsCurve &nurbs, const Eigen::Vector2d &pt, double hint)
 {
-  double hint (0.0);
-  Eigen::Vector2d p, r;
-  std::vector<double> elements = getElementVector (nurbs);
+  // evaluate hint
+  double param = hint;
   double points[2];
+  nurbs.Evaluate (param, 0, 2, points);
+  Eigen::Vector2d p (points[0], points[1]);
+  Eigen::Vector2d r = p - pt;
 
-  if (samples_per_element <= 0)
-    samples_per_element = 1;
+  double d_shortest_hint = r.squaredNorm ();
+  double d_shortest_elem (DBL_MAX);
 
-  double d_shortest (DBL_MAX);
-  double seg = 1.0 / (samples_per_element + 1);
+  // evaluate elements
+  std::vector<double> elements = pcl::on_nurbs::FittingCurve2d::getElementVector (nurbs);
+  double seg = 1.0 / (nurbs.Order () - 1);
 
-  if (!quiet)
+  for (unsigned i = 0; i < elements.size () - 1; i++)
   {
-    printf ("[FittingCurve2d::findClosestElementMidPoint] elements: ");
-    printf (" %f", elements[0]);
+    double &xi0 = elements[i];
+    double &xi1 = elements[i + 1];
+    double dxi = xi1 - xi0;
+
+    for (unsigned j = 0; j < nurbs.Order (); j++)
+    {
+      double xi = xi0 + (seg * j) * dxi;
+
+      nurbs.Evaluate (xi, 0, 2, points);
+      p (0) = points[0];
+      p (1) = points[1];
+
+      r = p - pt;
+
+      double d = r.squaredNorm ();
+
+      if (d < d_shortest_elem)
+      {
+        d_shortest_elem = d;
+        param = xi;
+      }
+    }
   }
 
-  for (unsigned i = 0; i < elements.size (); i++)
-  {
-    int k = i % elements.size ();
-    double xi0 = elements[i];
-    double dxi = elements[k] - xi0;
+  if(d_shortest_hint < d_shortest_elem)
+    return hint;
+  else
+    return param;
+}
 
-    for (unsigned j = 0; j < samples_per_element; j++)
+double
+FittingCurve2d::findClosestElementMidPoint (const ON_NurbsCurve &nurbs, const Eigen::Vector2d &pt)
+{
+  double param (0.0);
+  Eigen::Vector2d p, r;
+  std::vector<double> elements = pcl::on_nurbs::FittingCurve2d::getElementVector (nurbs);
+  double points[2];
+
+  double d_shortest (DBL_MAX);
+  double seg = 1.0 / (nurbs.Order () - 1);
+
+  for (unsigned i = 0; i < elements.size () - 1; i++)
+  {
+    double &xi0 = elements[i];
+    double &xi1 = elements[i + 1];
+    double dxi = xi1 - xi0;
+
+    for (unsigned j = 0; j < nurbs.Order (); j++)
     {
-      double xi = xi0 + (seg * (j + 1)) * dxi;
+      double xi = xi0 + (seg * j) * dxi;
 
       nurbs.Evaluate (xi, 0, 2, points);
       p (0) = points[0];
@@ -1117,13 +1149,11 @@ FittingCurve2d::findClosestElementMidPoint (const ON_NurbsCurve &nurbs, const Ei
       if (d < d_shortest)
       {
         d_shortest = d;
-        hint = xi;
+        param = xi;
       }
     }
   }
-  if (!quiet)
-    printf ("\n");
 
-  return hint;
+  return param;
 }
 
