@@ -73,14 +73,11 @@ TEST (PCL, CorrespondenceEstimation)
   // check for correct order and number of matches
   EXPECT_EQ (int (correspondences->size ()), nr_original_correspondences);
   if (int (correspondences->size ()) == nr_original_correspondences)
-  {
     for (int i = 0; i < nr_original_correspondences; ++i)
+    {
       EXPECT_EQ ((*correspondences)[i].index_query, i);
-
-    // check for correct matches
-    for (int i = 0; i < nr_original_correspondences; ++i)
       EXPECT_EQ ((*correspondences)[i].index_match, correspondences_original[i][1]);
-  }
+    }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -99,7 +96,10 @@ TEST (PCL, CorrespondenceEstimationReciprocal)
   EXPECT_EQ (int (correspondences->size ()), nr_reciprocal_correspondences);
   if (int (correspondences->size ()) == nr_reciprocal_correspondences)
     for (int i = 0; i < nr_reciprocal_correspondences; ++i)
+    {
+      EXPECT_EQ ((*correspondences)[i].index_query, correspondences_reciprocal[i][0]);
       EXPECT_EQ ((*correspondences)[i].index_match, correspondences_reciprocal[i][1]);
+    }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -125,7 +125,10 @@ TEST (PCL, CorrespondenceRejectorDistance)
   EXPECT_EQ (int (correspondences_result_rej_dist->size ()), nr_correspondences_result_rej_dist);
   if (int (correspondences_result_rej_dist->size ()) == nr_correspondences_result_rej_dist)
     for (int i = 0; i < nr_correspondences_result_rej_dist; ++i)
+    {
+      EXPECT_EQ ((*correspondences_result_rej_dist)[i].index_query, correspondences_dist[i][0]);
       EXPECT_EQ ((*correspondences_result_rej_dist)[i].index_match, correspondences_dist[i][1]);
+    }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -144,14 +147,19 @@ TEST (PCL, CorrespondenceRejectorMedianDistance)
   boost::shared_ptr<pcl::Correspondences>  correspondences_result_rej_median_dist (new pcl::Correspondences);
   pcl::registration::CorrespondenceRejectorMedianDistance corr_rej_median_dist;
   corr_rej_median_dist.setInputCorrespondences(correspondences);
-  corr_rej_median_dist.setMedianFactor (0.5);
+  corr_rej_median_dist.setMedianFactor (rej_median_factor);
 
   corr_rej_median_dist.getCorrespondences(*correspondences_result_rej_median_dist);
 
   // check for correct matches
-  if (int (correspondences_result_rej_median_dist->size ()) == nr_correspondences_result_rej_dist)
-    for (int i = 0; i < nr_correspondences_result_rej_dist; ++i)
-      EXPECT_EQ ((*correspondences_result_rej_median_dist)[i].index_match, correspondences_dist[i][1]);
+  EXPECT_NEAR (corr_rej_median_dist.getMedianDistance (), rej_median_distance, 1e-4);
+  EXPECT_EQ (int (correspondences_result_rej_median_dist->size ()), nr_correspondences_result_rej_median_dist);
+  if (int (correspondences_result_rej_median_dist->size ()) == nr_correspondences_result_rej_median_dist)
+    for (int i = 0; i < nr_correspondences_result_rej_median_dist; ++i)
+    {
+      EXPECT_EQ ((*correspondences_result_rej_median_dist)[i].index_query, correspondences_median_dist[i][0]);
+      EXPECT_EQ ((*correspondences_result_rej_median_dist)[i].index_match, correspondences_median_dist[i][1]);
+    }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -176,7 +184,10 @@ TEST (PCL, CorrespondenceRejectorOneToOne)
   EXPECT_EQ (int (correspondences_result_rej_one_to_one->size ()), nr_correspondences_result_rej_one_to_one);
   if (int (correspondences_result_rej_one_to_one->size ()) == nr_correspondences_result_rej_one_to_one)
     for (int i = 0; i < nr_correspondences_result_rej_one_to_one; ++i)
+    {
+      EXPECT_EQ ((*correspondences_result_rej_one_to_one)[i].index_query, correspondences_one_to_one[i][0]);
       EXPECT_EQ ((*correspondences_result_rej_one_to_one)[i].index_match, correspondences_one_to_one[i][1]);
+    }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -207,7 +218,10 @@ TEST (PCL, CorrespondenceRejectorSampleConsensus)
   EXPECT_EQ (int (correspondences_result_rej_sac->size ()), nr_correspondences_result_rej_sac);
   if (int (correspondences_result_rej_sac->size ()) == nr_correspondences_result_rej_sac)
     for (int i = 0; i < nr_correspondences_result_rej_sac; ++i)
+    {
+      EXPECT_EQ ((*correspondences_result_rej_sac)[i].index_query, correspondences_sac[i][0]);
       EXPECT_EQ ((*correspondences_result_rej_sac)[i].index_match, correspondences_sac[i][1]);
+    }
 
   // check for correct transformation
   for (int i = 0; i < 4; ++i)
@@ -262,7 +276,10 @@ TEST (PCL, CorrespondenceRejectorSurfaceNormal)
   // check for correct matches
   if (int (correspondences_result_rej_surf_norm->size ()) == nr_correspondences_result_rej_dist)
     for (int i = 0; i < nr_correspondences_result_rej_dist; ++i)
+    {
+      EXPECT_EQ ((*correspondences_result_rej_surf_norm)[i].index_query, correspondences_dist[i][0]);
       EXPECT_EQ ((*correspondences_result_rej_surf_norm)[i].index_match, correspondences_dist[i][1]);
+    }
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, CorrespondenceRejectorTrimmed)
@@ -286,12 +303,11 @@ TEST (PCL, CorrespondenceRejectorTrimmed)
   // check for correct matches, number of matches, and for sorting (correspondences should be sorted w.r.t. distance)
   EXPECT_EQ (int (correspondences_result_rej_trimmed->size ()), nr_correspondences_result_rej_trimmed);
   if (int (correspondences_result_rej_trimmed->size ()) == nr_correspondences_result_rej_trimmed)
-  {
     for (int i = 0; i < nr_correspondences_result_rej_trimmed; ++i)
+    {
       EXPECT_EQ ((*correspondences_result_rej_trimmed)[i].index_query, correspondences_trimmed[i][0]);
-    for (int i = 0; i < nr_correspondences_result_rej_trimmed; ++i)
       EXPECT_EQ ((*correspondences_result_rej_trimmed)[i].index_match, correspondences_trimmed[i][1]);
-  }
+    }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -318,7 +334,10 @@ TEST (PCL, CorrespondenceRejectorVarTrimmed)
   // check for correct matches
   if (int (correspondences_result_rej_var_trimmed_dist->size ()) == nr_correspondences_result_rej_dist)
     for (int i = 0; i < nr_correspondences_result_rej_dist; ++i)
+    {
+      EXPECT_EQ ((*correspondences_result_rej_var_trimmed_dist)[i].index_query, correspondences_dist[i][0]);
       EXPECT_EQ ((*correspondences_result_rej_var_trimmed_dist)[i].index_match, correspondences_dist[i][1]);
+    }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
