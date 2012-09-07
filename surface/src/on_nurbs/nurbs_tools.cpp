@@ -258,7 +258,7 @@ void
 NurbsTools::computeBoundingBox (const ON_NurbsCurve &nurbs, Eigen::Vector3d &_min, Eigen::Vector3d &_max)
 {
   _min = Eigen::Vector3d (DBL_MAX, DBL_MAX, DBL_MAX);
-  _max = Eigen::Vector3d (0.0, 0.0, 0.0);
+  _max = Eigen::Vector3d (-DBL_MAX, -DBL_MAX, -DBL_MAX);
   for (int i = 0; i < nurbs.CVCount (); i++)
   {
     ON_3dPoint p;
@@ -284,7 +284,7 @@ void
 NurbsTools::computeBoundingBox (const ON_NurbsSurface &nurbs, Eigen::Vector3d &_min, Eigen::Vector3d &_max)
 {
   _min = Eigen::Vector3d (DBL_MAX, DBL_MAX, DBL_MAX);
-  _max = Eigen::Vector3d (0.0, 0.0, 0.0);
+  _max = Eigen::Vector3d (-DBL_MAX, -DBL_MAX, -DBL_MAX);
   for (int i = 0; i < nurbs.CVCount (0); i++)
   {
     for (int j = 0; j < nurbs.CVCount (1); j++)
