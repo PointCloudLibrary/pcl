@@ -62,6 +62,10 @@ namespace pcl
       typedef typename Keypoint<PointInT, PointOutT>::KdTree KdTree;
       typedef typename PointCloudIn::ConstPtr PointCloudInConstPtr;
 
+      typedef typename pcl::PointCloud<NormalT> PointCloudN;
+      typedef typename PointCloudN::Ptr PointCloudNPtr;
+      typedef typename PointCloudN::ConstPtr PointCloudNConstPtr;
+
       using Keypoint<PointInT, PointOutT>::name_;
       using Keypoint<PointInT, PointOutT>::input_;
       using Keypoint<PointInT, PointOutT>::indices_;
@@ -123,7 +127,7 @@ namespace pcl
         * \param normals
         */
       void 
-      setNormals (boost::shared_ptr<pcl::PointCloud<NormalT> > normals ) const;
+      setNormals (const PointCloudNConstPtr &normals);
 
       virtual void
       setSearchSurface (const PointCloudInConstPtr &cloud);
@@ -172,7 +176,7 @@ namespace pcl
       float angular_threshold_;
       float intensity_threshold_;
       float tolerance_;
-      boost::shared_ptr<pcl::PointCloud<NormalT> > normals_;
+      PointCloudNConstPtr normals_;
       unsigned int threads_;
       bool geometric_validation_;
       bool nonmax_;

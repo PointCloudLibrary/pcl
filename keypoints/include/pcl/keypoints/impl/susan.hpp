@@ -86,7 +86,7 @@ pcl::SUSAN<PointInT, PointOutT, NormalT, IntensityT>::setIntensityThreshold (flo
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT, typename NormalT, typename IntensityT> void 
-pcl::SUSAN<PointInT, PointOutT, NormalT, IntensityT>::setNormals (boost::shared_ptr<pcl::PointCloud<NormalT> > normals ) const 
+pcl::SUSAN<PointInT, PointOutT, NormalT, IntensityT>::setNormals (const PointCloudNConstPtr &normals)
 { 
   normals_ = normals;
 }
@@ -96,7 +96,7 @@ template <typename PointInT, typename PointOutT, typename NormalT, typename Inte
 pcl::SUSAN<PointInT, PointOutT, NormalT, IntensityT>::setSearchSurface (const PointCloudInConstPtr &cloud) 
 { 
   surface_ = cloud; 
-  normals_->clear (); 
+  normals_.reset (new pcl::PointCloud<NormalT>);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -222,22 +222,29 @@ pcl::SUSAN<PointInT, PointOutT, NormalT, IntensityT>::initCompute ()
   
   if (normals_->empty ())
   {
-    normals_->reserve (surface_->size ());
-    if (!surface_->isOrganized ()) // not organized
+    PointCloudNPtr normals (new PointCloudN ());
+    normals->reserve (normals->size ());
+    if (!surface_->isOrganized ())
     {
       pcl::NormalEstimation<PointInT, NormalT> normal_estimation;
-      normal_estimation.setInputCloud(surface_);
-      normal_estimation.setRadiusSearch(search_radius_);
-      normal_estimation.compute (*normals_);
+      normal_estimation.setInputCloud (surface_);
+      normal_estimation.setRadiusSearch (search_radius_);
+      normal_estimation.compute (*normals);
     }
     else
     {
       IntegralImageNormalEstimation<PointInT, NormalT> normal_estimation;
       normal_estimation.setNormalEstimationMethod (pcl::IntegralImageNormalEstimation<PointInT, NormalT>::SIMPLE_3D_GRADIENT);
-      normal_estimation.setInputCloud(surface_);
+      normal_estimation.setInputCloud (surface_);
       normal_estimation.setNormalSmoothingSize (5.0);
-      normal_estimation.compute (*normals_);
+      normal_estimation.compute (*normals);
     }
+    normals_ = normals;
+  }
+  if (normals_->size () != surface_->size ())
+  {
+    PCL_ERROR ("[pcl::%s::initCompute] normals given, but the number of normals does not match the number of input points!\n", name_.c_str ());
+    return (false);
   }
   return (true);
 }
