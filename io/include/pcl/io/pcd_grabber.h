@@ -105,8 +105,8 @@ namespace pcl
       virtual void 
       trigger ();
 
-      /** \brief whether the grabber is started (publishing) or not.
-        * \return true only if publishing.
+      /** \brief Indicates whether the grabber is streaming or not.
+        * \return true if grabber is started and hasn't run out of PCD files.
         */
       virtual bool 
       isRunning () const;

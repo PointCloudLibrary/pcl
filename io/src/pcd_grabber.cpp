@@ -318,7 +318,7 @@ pcl::PCDGrabberBase::trigger ()
 bool 
 pcl::PCDGrabberBase::isRunning () const
 {
-  return (impl_->running_);
+  return (impl_->running_ && (impl_->pcd_iterator_ != impl_->pcd_files_.end()));
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
