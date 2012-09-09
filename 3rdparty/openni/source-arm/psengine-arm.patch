@@ -1,0 +1,33 @@
+diff -urN original_files/ps_engine/Platform.Arm modified_files/ps_engine/Platform.Arm
+--- original_files/ps_engine/Platform/Linux/Build/Common/Platform.Arm	2012-09-05 17:13:54.000000000 -0700
++++ modified_files/ps_engine/Platform/Linux/Build/Common/Platform.Arm	2012-09-05 17:10:04.000000000 -0700
+@@ -1,7 +1,7 @@
+ ifeq "$(CFG)" "Release"
+ 
+     # Hardware specifying flags
+-    CFLAGS += -march=armv7-a -mtune=cortex-a8 -mfpu=neon -mfloat-abi=softfp #-mcpu=cortex-a8
++    CFLAGS += -march=armv7-a -mtune=cortex-a8 -mfpu=neon  #-mcpu=cortex-a8
+ 
+     # Optimization level, minus currently buggy optimizing methods (which break bit-exact)
+     CFLAGS += -O3 -fno-tree-pre -fno-strict-aliasing
+diff -urN original_files/ps_engine/RedistMaker modified_files/ps_engine/RedistMaker
+--- original_files/ps_engine/Platform/Linux/CreateRedist/RedistMaker	2012-09-05 17:13:22.000000000 -0700
++++ modified_files/ps_engine/Platform/Linux/CreateRedist/RedistMaker	2012-09-05 17:07:26.000000000 -0700
+@@ -27,7 +27,7 @@
+ 		PLATFORM="x86" ;;
+ 	x86_64)
+ 		PLATFORM="x64" ;;
+-	arm)
++	armv7l)
+ 		PLATFORM="Arm" ;;
+ 	*)
+ 		echo "Unknown machine type: $MACHINE_TYPE"
+@@ -67,7 +67,7 @@
+ # Build Engine
+ echo "Building..."
+ make -C ../Build clean > /dev/null
+-make -j$(calc_jobs_number) -C ../Build
++make -C ../Build
+ 
+ # create redist folder structure
+ echo "Creating redist folder..."

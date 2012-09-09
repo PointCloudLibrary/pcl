@@ -1,0 +1,34 @@
+diff -urN original_files/Makefile modified_files/Makefile
+--- original_files/Makefile	2012-09-05 17:18:00.000000000 -0700
++++ modified_files/Makefile	2012-09-05 16:53:34.000000000 -0700
+@@ -12,6 +12,13 @@
+ ifeq (${ARCHITECTURE},x86_64)
+         ARCH=amd64
+         OPENNI_ARCH=x64
++endif
++
++
++ifeq (${ARCHITECTURE},armv7l)
++        ARCH=armhf
++        OPENNI_ARCH=Arm
++
+ else 
+         ARCH=i386
+         OPENNI_ARCH=xx
+@@ -48,7 +55,6 @@
+ 	sudo cp -f ./openni/build/openni/Platform/Linux/Redist/${OPENNI_REDISTNAME}/Bin/* /usr/bin/
+ 	sudo cp -f ./openni/build/openni/Platform/Linux/Redist/${OPENNI_REDISTNAME}/Documentation/html/* /usr/share/openni/doc/
+ 	sudo cp -f ./openni/build/openni/Platform/Linux/Redist/${OPENNI_REDISTNAME}/Samples/Bin/${OPENNI_ARCH}-Release/Sample-* /usr/share/openni/samples/
+-	sudo cp -f ./openni/build/openni/Platform/Linux/Redist/${OPENNI_REDISTNAME}/Samples/Bin/${OPENNI_ARCH}-Release/NiViewer /usr/share/openni/samples/
+ 	sudo sed s/__VERSION__/${OPENNI_VERSION}~${DISTRO}/ ./CONTROL/openni.pc > /usr/lib/pkgconfig/openni-dev.pc
+ 	sudo /bin/bash ./CONTROL/openni_postinst configure
+ 
+@@ -135,7 +141,6 @@
+ 	cp -f ./openni/build/openni/Platform/Linux/Redist/${OPENNI_REDISTNAME}/Bin/* $(OPENNI_PACKAGE_NAME)/usr/bin/
+ 	cp -f ./openni/build/openni/Platform/Linux/Redist/${OPENNI_REDISTNAME}/Documentation/html/* $(OPENNI_PACKAGE_NAME)/usr/share/openni/doc/
+ 	cp -f ./openni/build/openni/Platform/Linux/Redist/${OPENNI_REDISTNAME}/Samples/Bin/${OPENNI_ARCH}-Release/Sample-* $(OPENNI_PACKAGE_NAME)/usr/share/openni/samples/
+-	cp -f ./openni/build/openni/Platform/Linux/Redist/${OPENNI_REDISTNAME}/Samples/Bin/${OPENNI_ARCH}-Release/NiViewer $(OPENNI_PACKAGE_NAME)/usr/share/openni/samples/
+ 	@sed s/__VERSION__/${OPENNI_VERSION}~${DISTRO}/ ./CONTROL/openni_control | sed s/__ARCHITECTURE__/$(ARCH)/ > $(OPENNI_PACKAGE_NAME)/DEBIAN/control
+ 	@sed s/__VERSION__/${OPENNI_VERSION}~${DISTRO}/ ./CONTROL/openni.pc > $(OPENNI_PACKAGE_NAME)/usr/lib/pkgconfig/openni-dev.pc
+ 	@dpkg-deb -b $(OPENNI_PACKAGE_NAME)
+
