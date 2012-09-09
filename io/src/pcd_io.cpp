@@ -69,6 +69,8 @@ pcl::PCDWriter::setLockingPermissions (const std::string &file_name,
                                        boost::interprocess::file_lock &lock)
 {
 #ifndef WIN32
+  // Boost version 1.49 introduced permissions
+#if BOOST_VERSION >= 104900
   // Attempt to lock the file. 
   // For mandatory locking, the filesystem must be mounted with the "mand" option in Linux (see http://www.hackinglinuxexposed.com/articles/20030623.html)
   lock = boost::interprocess::file_lock (file_name.c_str ());
@@ -77,8 +79,6 @@ pcl::PCDWriter::setLockingPermissions (const std::string &file_name,
   else
     PCL_DEBUG ("[pcl::PCDWriter::setLockingPermissions] File %s could not be locked!\n", file_name.c_str ());
 
-  // Boost version 1.49 introduced permissions
-#if BOOST_VERSION >= 104900
   namespace fs = boost::filesystem;
   fs::permissions (fs::path (file_name), fs::add_perms | fs::set_gid_on_exe);
 #endif
@@ -90,14 +90,14 @@ void
 pcl::PCDWriter::resetLockingPermissions (const std::string &file_name,
                                          boost::interprocess::file_lock &lock)
 {
-  (void)file_name;
 #ifndef WIN32
-// Boost version 1.49 introduced permissions
+  // Boost version 1.49 introduced permissions
 #if BOOST_VERSION >= 104900
+  (void)file_name;
   namespace fs = boost::filesystem;
   fs::permissions (fs::path (file_name), fs::remove_perms | fs::set_gid_on_exe);
-#endif
   lock.unlock ();
+#endif
 #endif
 }
 
