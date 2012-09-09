@@ -85,8 +85,8 @@ namespace pcl
       using Search<PointT>::sorted_results_;
 
       public:
-        typedef boost::shared_ptr<FlannSearch<PointT> > Ptr;
-        typedef boost::shared_ptr<const FlannSearch<PointT> > ConstPtr;
+        typedef boost::shared_ptr<FlannSearch<PointT, FlannDistance> > Ptr;
+        typedef boost::shared_ptr<const FlannSearch<PointT, FlannDistance> > ConstPtr;
 
         /** \brief Helper class that creates a FLANN index from a given FLANN matrix. To
           * use a FLANN index type with FlannSearch, implement this interface and
@@ -101,6 +101,10 @@ namespace pcl
             * \return The FLANN index.
             */
             virtual IndexPtr createIndex (MatrixConstPtr data)=0;
+
+          /** \brief destructor 
+            */
+            virtual ~FlannIndexCreator () {}
         };
 
         /** \brief Creates a FLANN KdTreeSingleIndex from the given input data.
@@ -152,7 +156,7 @@ namespace pcl
           * \param[in] cloud the const boost shared pointer to a PointCloud message
           * \param[in] indices the point indices subset that is to be used from \a cloud
           */
-        inline virtual void
+        virtual void
         setInputCloud (const PointCloudConstPtr& cloud, const IndicesConstPtr& indices = IndicesConstPtr ());
 
         /** \brief Search for the k-nearest neighbors for the given query point.
