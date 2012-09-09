@@ -176,7 +176,8 @@ namespace pcl
     {
       return (field.name == traits::name<PointT, Tag>::value &&
               field.datatype == traits::datatype<PointT, Tag>::value &&
-              field.count == traits::datatype<PointT, Tag>::size);
+              (field.count == traits::datatype<PointT, Tag>::size ||
+               field.count == 0 && traits::datatype<PointT, Tag>::size == 1 /* see bug #821 */));
     }
   };
 
