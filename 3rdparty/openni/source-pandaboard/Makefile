@@ -16,9 +16,9 @@ uninstall:
 	hg clone https://kforge.ros.org/openni/drivers -r 12111edd3b15 ../openni_drivers
 	cd ../openni_drivers/openni && make build/openni && cd -
 	cd ../openni_drivers/ps_engine && make build/ps_engine && cd -
-	cd ../openni_drivers && patch -p1 < ../source-arm/arm.patch && cd -
-	cd ../openni_drivers/openni/build && patch -p1 < ../../../source-arm/openni-arm.patch && cd -
-	cd ../openni_drivers/ps_engine/build && patch -p1 < ../../../source-arm/psengine-arm.patch && cd -
+	cd ../openni_drivers && patch -p1 < ../source-pandaboard/arm.patch && cd -
+	cd ../openni_drivers/openni/build && patch -p1 < ../../../source-pandaboard/openni-arm.patch && cd -
+	cd ../openni_drivers/ps_engine/build && patch -p1 < ../../../source-pandaboard/psengine-arm.patch && cd -
 		
 clean:
 	rm -rf ../openni_drivers
