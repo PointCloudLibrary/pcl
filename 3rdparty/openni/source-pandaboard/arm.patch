@@ -31,4 +31,14 @@ diff -urN original_files/Makefile modified_files/Makefile
  	@sed s/__VERSION__/${OPENNI_VERSION}~${DISTRO}/ ./CONTROL/openni_control | sed s/__ARCHITECTURE__/$(ARCH)/ > $(OPENNI_PACKAGE_NAME)/DEBIAN/control
  	@sed s/__VERSION__/${OPENNI_VERSION}~${DISTRO}/ ./CONTROL/openni.pc > $(OPENNI_PACKAGE_NAME)/usr/lib/pkgconfig/openni-dev.pc
  	@dpkg-deb -b $(OPENNI_PACKAGE_NAME)
-
+--- original_files/git_checkout.mk	Wed Apr 25 15:44:31 2012 -0700
++++ modified_files/git_checkout.mk	Sun Sep 09 15:43:19 2012 -0700
+@@ -17,7 +17,7 @@
+ 	touch rospack_nosubdirs
+ 
+ patched: $(GIT_DIR) $(GIT_PATCH) Makefile
+-	cd $(GIT_DIR) && git reset --hard
++#cd $(GIT_DIR) && git reset --hard
+ ifneq ($(strip $(GIT_PATCH)),)
+ 	$(foreach PATCH, $(GIT_PATCH), patch -d $(GIT_DIR) -p1 < $(PATCH) && ) echo patched
+ 	touch rospack_nosubdirs

@@ -22,12 +22,4 @@ diff -urN original_files/ps_engine/RedistMaker modified_files/ps_engine/RedistMa
  		PLATFORM="Arm" ;;
  	*)
  		echo "Unknown machine type: $MACHINE_TYPE"
-@@ -67,7 +67,7 @@
- # Build Engine
- echo "Building..."
- make -C ../Build clean > /dev/null
--make -j$(calc_jobs_number) -C ../Build
-+make -C ../Build
- 
- # create redist folder structure
- echo "Creating redist folder..."
+
