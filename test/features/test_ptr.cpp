@@ -68,9 +68,10 @@ TEST (PCL, FeaturePtr)
 //  RSDEstimation<PointXYZ, Normal, PrincipalRadiiRSD>::Ptr rsd (new RSDEstimation<PointXYZ, Normal, PrincipalRadiiRSD> ());
 //  rsd->setNrSubdivisions (20);
 
+#ifndef PCL_ONLY_CORE_POINT_TYPES
   RIFTEstimation<PointXYZI, IntensityGradient, Histogram<32> >::Ptr rift (new RIFTEstimation<PointXYZI, IntensityGradient, Histogram<32> > ());
   rift->setNrDistanceBins (10);
-
+#endif
   NormalBasedSignatureEstimation<PointXYZ, Normal, NormalBasedSignature12>::Ptr nbs (new NormalBasedSignatureEstimation<PointXYZ, Normal, NormalBasedSignature12> ());
   nbs->setN (20);
 }
