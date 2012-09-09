@@ -38,13 +38,31 @@
  *
  */
 
-#include <cstdlib> // EXIT_SUCCESS, EXIT_FAILURE
-#include <pcl/apps/in_hand_scanner/in_hand_scanner.h>
+#ifndef PCL_IN_HAND_SCANNER_COMMON_TYPES_H
+#define PCL_IN_HAND_SCANNER_COMMON_TYPES_H
 
-int main (int argc, char** argv)
+#include <pcl/point_cloud.h>
+#include <pcl/point_types.h>
+#include <pcl/apps/in_hand_scanner/eigen.h>
+
+namespace pcl
 {
-  pcl::ihs::InHandScanner scanner (argc, argv);
-  scanner.run ();
+  namespace ihs
+  {
 
-  return (EXIT_SUCCESS);
-}
+    typedef pcl::PointXYZRGBA                      PointInput;
+    typedef pcl::PointCloud <pcl::ihs::PointInput> CloudInput;
+    typedef pcl::ihs::CloudInput::Ptr              CloudInputPtr;
+    typedef pcl::ihs::CloudInput::ConstPtr         CloudInputConstPtr;
+
+    typedef pcl::PointXYZRGBNormal                     PointProcessed;
+    typedef pcl::PointCloud <pcl::ihs::PointProcessed> CloudProcessed;
+    typedef pcl::ihs::CloudProcessed::Ptr              CloudProcessedPtr;
+    typedef pcl::ihs::CloudProcessed::ConstPtr         CloudProcessedConstPtr;
+
+    typedef Eigen::Matrix4f Transformation;
+
+  } // End namespace ihs
+} // End namespace pcl
+
+#endif // PCL_IN_HAND_SCANNER_COMMON_TYPES_H

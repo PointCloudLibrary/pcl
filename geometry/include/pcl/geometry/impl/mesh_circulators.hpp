@@ -86,22 +86,22 @@ namespace pcl
     public:
 
       VertexAroundVertexCirculator (const Vertex& vertex,
-                                    Mesh*const    p_mesh)
-        : p_mesh_                 (p_mesh),
+                                    Mesh*const    mesh)
+        : mesh_                   (mesh),
           idx_outgoing_half_edge_ (vertex.getOutgoingHalfEdgeIndex ())
       {
       }
 
       VertexAroundVertexCirculator (const VertexIndex& idx_vertex,
-                                    Mesh*const         p_mesh)
-        : p_mesh_                 (p_mesh),
-          idx_outgoing_half_edge_ (p_mesh->getElement (idx_vertex).getOutgoingHalfEdgeIndex ())
+                                    Mesh*const         mesh)
+        : mesh_                   (mesh),
+          idx_outgoing_half_edge_ (mesh->getElement (idx_vertex).getOutgoingHalfEdgeIndex ())
       {
       }
 
       VertexAroundVertexCirculator (const HalfEdgeIndex& idx_outgoing_half_edge,
-                                    Mesh*const           p_mesh)
-        : p_mesh_                 (p_mesh),
+                                    Mesh*const           mesh)
+        : mesh_                   (mesh),
           idx_outgoing_half_edge_ (idx_outgoing_half_edge)
       {
       }
@@ -109,7 +109,7 @@ namespace pcl
       template <class OtherMeshT>
       VertexAroundVertexCirculator (const pcl::VertexAroundVertexCirculator <OtherMeshT>& other,
                                     typename boost::enable_if <boost::is_convertible <OtherMeshT*, Mesh*>, enabler>::type = enabler ())
-        : p_mesh_                 (other.p_mesh_),
+        : mesh_                   (other.mesh_),
           idx_outgoing_half_edge_ (other.idx_outgoing_half_edge_)
       {
       }
@@ -125,7 +125,7 @@ namespace pcl
       const VertexIndex&
       getDereferencedIndex () const
       {
-        return (p_mesh_->getElement (idx_outgoing_half_edge_).getTerminatingVertexIndex ());
+        return (mesh_->getElement (idx_outgoing_half_edge_).getTerminatingVertexIndex ());
       }
 
       bool
@@ -148,24 +148,24 @@ namespace pcl
       void
       increment ()
       {
-        idx_outgoing_half_edge_ = p_mesh_->getElement (idx_outgoing_half_edge_).getPrevHalfEdge (*p_mesh_).getOppositeHalfEdgeIndex ();
+        idx_outgoing_half_edge_ = mesh_->getElement (idx_outgoing_half_edge_).getPrevHalfEdge (*mesh_).getOppositeHalfEdgeIndex ();
       }
 
       void
       decrement ()
       {
-        idx_outgoing_half_edge_ = p_mesh_->getElement (idx_outgoing_half_edge_).getOppositeHalfEdge (*p_mesh_).getNextHalfEdgeIndex ();
+        idx_outgoing_half_edge_ = mesh_->getElement (idx_outgoing_half_edge_).getOppositeHalfEdge (*mesh_).getNextHalfEdgeIndex ();
       }
 
       reference
       dereference () const
       {
-        return (p_mesh_->getElement (idx_outgoing_half_edge_).getTerminatingVertex (*p_mesh_));
+        return (mesh_->getElement (idx_outgoing_half_edge_).getTerminatingVertex (*mesh_));
       }
 
     private:
 
-      Mesh*         p_mesh_;
+      Mesh*         mesh_;
       HalfEdgeIndex idx_outgoing_half_edge_;
   };
 
@@ -209,22 +209,22 @@ namespace pcl
     public:
 
       OutgoingHalfEdgeAroundVertexCirculator (const Vertex& vertex,
-                                              Mesh*const    p_mesh)
-        : p_mesh_                 (p_mesh),
+                                              Mesh*const    mesh)
+        : mesh_                   (mesh),
           idx_outgoing_half_edge_ (vertex.getOutgoingHalfEdgeIndex ())
       {
       }
 
       OutgoingHalfEdgeAroundVertexCirculator (const VertexIndex& idx_vertex,
-                                              Mesh*const         p_mesh)
-        : p_mesh_                 (p_mesh),
-          idx_outgoing_half_edge_ (p_mesh->getElement (idx_vertex).getOutgoingHalfEdgeIndex ())
+                                              Mesh*const         mesh)
+        : mesh_                   (mesh),
+          idx_outgoing_half_edge_ (mesh->getElement (idx_vertex).getOutgoingHalfEdgeIndex ())
       {
       }
 
       OutgoingHalfEdgeAroundVertexCirculator (const HalfEdgeIndex& idx_outgoing_half_edge,
-                                              Mesh*const           p_mesh)
-        : p_mesh_                 (p_mesh),
+                                              Mesh*const           mesh)
+        : mesh_                   (mesh),
           idx_outgoing_half_edge_ (idx_outgoing_half_edge)
       {
       }
@@ -232,7 +232,7 @@ namespace pcl
       template <class OtherMeshT>
       OutgoingHalfEdgeAroundVertexCirculator (const pcl::OutgoingHalfEdgeAroundVertexCirculator <OtherMeshT>& other,
                                               typename boost::enable_if <boost::is_convertible <OtherMeshT*, Mesh*>, enabler>::type = enabler ())
-        : p_mesh_                 (other.p_mesh_),
+        : mesh_                   (other.mesh_),
           idx_outgoing_half_edge_ (other.idx_outgoing_half_edge_)
       {
       }
@@ -271,24 +271,24 @@ namespace pcl
       void
       increment ()
       {
-        idx_outgoing_half_edge_ = p_mesh_->getElement (idx_outgoing_half_edge_).getPrevHalfEdge (*p_mesh_).getOppositeHalfEdgeIndex ();
+        idx_outgoing_half_edge_ = mesh_->getElement (idx_outgoing_half_edge_).getPrevHalfEdge (*mesh_).getOppositeHalfEdgeIndex ();
       }
 
       void
       decrement ()
       {
-        idx_outgoing_half_edge_ = p_mesh_->getElement (idx_outgoing_half_edge_).getOppositeHalfEdge (*p_mesh_).getNextHalfEdgeIndex ();
+        idx_outgoing_half_edge_ = mesh_->getElement (idx_outgoing_half_edge_).getOppositeHalfEdge (*mesh_).getNextHalfEdgeIndex ();
       }
 
       reference
       dereference () const
       {
-        return (p_mesh_->getElement (idx_outgoing_half_edge_));
+        return (mesh_->getElement (idx_outgoing_half_edge_));
       }
 
     private:
 
-      Mesh*         p_mesh_;
+      Mesh*         mesh_;
       HalfEdgeIndex idx_outgoing_half_edge_;
   };
 
@@ -332,22 +332,22 @@ namespace pcl
     public:
 
       IncomingHalfEdgeAroundVertexCirculator (const Vertex& vertex,
-                                              Mesh*const    p_mesh)
-        : p_mesh_                (p_mesh),
-          idx_incoming_half_edge (vertex.getOutgoingHalfEdge (*p_mesh_).getOppositeHalfEdgeIndex ())
+                                              Mesh*const    mesh)
+        : mesh_                  (mesh),
+          idx_incoming_half_edge (vertex.getOutgoingHalfEdge (*mesh_).getOppositeHalfEdgeIndex ())
       {
       }
 
       IncomingHalfEdgeAroundVertexCirculator (const VertexIndex& idx_vertex,
-                                              Mesh*const         p_mesh)
-        : p_mesh_                (p_mesh),
-          idx_incoming_half_edge (p_mesh->getElement (idx_vertex).getIncomingHalfEdgeIndex (*p_mesh_))
+                                              Mesh*const         mesh)
+        : mesh_                  (mesh),
+          idx_incoming_half_edge (mesh->getElement (idx_vertex).getIncomingHalfEdgeIndex (*mesh_))
       {
       }
 
       IncomingHalfEdgeAroundVertexCirculator (const HalfEdgeIndex& idx_incoming_half_edge,
-                                              Mesh*const           p_mesh)
-        : p_mesh_                (p_mesh),
+                                              Mesh*const           mesh)
+        : mesh_                  (mesh),
           idx_incoming_half_edge (idx_incoming_half_edge)
       {
       }
@@ -355,7 +355,7 @@ namespace pcl
       template <class OtherMeshT>
       IncomingHalfEdgeAroundVertexCirculator (const pcl::IncomingHalfEdgeAroundVertexCirculator <OtherMeshT>& other,
                                               typename boost::enable_if <boost::is_convertible <OtherMeshT*, Mesh*>, enabler>::type = enabler ())
-        : p_mesh_                (other.p_mesh_),
+        : mesh_                  (other.mesh_),
           idx_incoming_half_edge (other.idx_incoming_half_edge)
       {
       }
@@ -394,24 +394,24 @@ namespace pcl
       void
       increment ()
       {
-        idx_incoming_half_edge = p_mesh_->getElement (idx_incoming_half_edge).getOppositeHalfEdge (*p_mesh_).getPrevHalfEdgeIndex ();
+        idx_incoming_half_edge = mesh_->getElement (idx_incoming_half_edge).getOppositeHalfEdge (*mesh_).getPrevHalfEdgeIndex ();
       }
 
       void
       decrement ()
       {
-        idx_incoming_half_edge = p_mesh_->getElement (idx_incoming_half_edge).getNextHalfEdge (*p_mesh_).getOppositeHalfEdgeIndex ();
+        idx_incoming_half_edge = mesh_->getElement (idx_incoming_half_edge).getNextHalfEdge (*mesh_).getOppositeHalfEdgeIndex ();
       }
 
       reference
       dereference () const
       {
-        return (p_mesh_->getElement (idx_incoming_half_edge));
+        return (mesh_->getElement (idx_incoming_half_edge));
       }
 
     private:
 
-      Mesh*         p_mesh_;
+      Mesh*         mesh_;
       HalfEdgeIndex idx_incoming_half_edge;
   };
 
@@ -455,22 +455,22 @@ namespace pcl
     public:
 
       FaceAroundVertexCirculator (const Vertex& vertex,
-                                  Mesh*const    p_mesh)
-        : p_mesh_                 (p_mesh),
+                                  Mesh*const    mesh)
+        : mesh_                   (mesh),
           idx_outgoing_half_edge_ (vertex.getOutgoingHalfEdgeIndex ())
       {
       }
 
       FaceAroundVertexCirculator (const VertexIndex& idx_vertex,
-                                  Mesh*const         p_mesh)
-        : p_mesh_                 (p_mesh),
-          idx_outgoing_half_edge_ (p_mesh->getElement (idx_vertex).getOutgoingHalfEdgeIndex ())
+                                  Mesh*const         mesh)
+        : mesh_                   (mesh),
+          idx_outgoing_half_edge_ (mesh->getElement (idx_vertex).getOutgoingHalfEdgeIndex ())
       {
       }
 
       FaceAroundVertexCirculator (const HalfEdgeIndex& idx_outgoing_half_edge,
-                                  Mesh*const           p_mesh)
-        : p_mesh_                 (p_mesh),
+                                  Mesh*const           mesh)
+        : mesh_                   (mesh),
           idx_outgoing_half_edge_ (idx_outgoing_half_edge)
       {
       }
@@ -478,7 +478,7 @@ namespace pcl
       template <class OtherMeshT>
       FaceAroundVertexCirculator (const pcl::FaceAroundVertexCirculator <OtherMeshT>& other,
                                   typename boost::enable_if <boost::is_convertible <OtherMeshT*, Mesh*>, enabler>::type = enabler ())
-        : p_mesh_                 (other.p_mesh_),
+        : mesh_                   (other.mesh_),
           idx_outgoing_half_edge_ (other.idx_outgoing_half_edge_)
       {
       }
@@ -494,7 +494,7 @@ namespace pcl
       const FaceIndex&
       getDereferencedIndex () const
       {
-        return (p_mesh_->getElement (idx_outgoing_half_edge_).getFaceIndex ());
+        return (mesh_->getElement (idx_outgoing_half_edge_).getFaceIndex ());
       }
 
       bool
@@ -517,24 +517,24 @@ namespace pcl
       void
       increment ()
       {
-        idx_outgoing_half_edge_ = p_mesh_->getElement (idx_outgoing_half_edge_).getPrevHalfEdge (*p_mesh_).getOppositeHalfEdgeIndex ();
+        idx_outgoing_half_edge_ = mesh_->getElement (idx_outgoing_half_edge_).getPrevHalfEdge (*mesh_).getOppositeHalfEdgeIndex ();
       }
 
       void
       decrement ()
       {
-        idx_outgoing_half_edge_ = p_mesh_->getElement (idx_outgoing_half_edge_).getOppositeHalfEdge (*p_mesh_).getNextHalfEdgeIndex ();
+        idx_outgoing_half_edge_ = mesh_->getElement (idx_outgoing_half_edge_).getOppositeHalfEdge (*mesh_).getNextHalfEdgeIndex ();
       }
 
       reference
       dereference () const
       {
-        return (p_mesh_->getElement (idx_outgoing_half_edge_).getFace (*p_mesh_));
+        return (mesh_->getElement (idx_outgoing_half_edge_).getFace (*mesh_));
       }
 
     private:
 
-      Mesh*         p_mesh_;
+      Mesh*         mesh_;
       HalfEdgeIndex idx_outgoing_half_edge_;
   };
 
@@ -578,22 +578,22 @@ namespace pcl
     public:
 
       VertexAroundFaceCirculator (const Face& face,
-                                  Mesh*const  p_mesh)
-        : p_mesh_              (p_mesh),
+                                  Mesh*const  mesh)
+        : mesh_                (mesh),
           idx_inner_half_edge_ (face.getInnerHalfEdgeIndex ())
       {
       }
 
       VertexAroundFaceCirculator (const FaceIndex& idx_face,
-                                  Mesh*const       p_mesh)
-        : p_mesh_              (p_mesh),
-          idx_inner_half_edge_ (p_mesh->getElement (idx_face).getInnerHalfEdgeIndex ())
+                                  Mesh*const       mesh)
+        : mesh_                (mesh),
+          idx_inner_half_edge_ (mesh->getElement (idx_face).getInnerHalfEdgeIndex ())
       {
       }
 
       VertexAroundFaceCirculator (const HalfEdgeIndex& idx_inner_half_edge,
-                                  Mesh*const           p_mesh)
-        : p_mesh_              (p_mesh),
+                                  Mesh*const           mesh)
+        : mesh_                (mesh),
           idx_inner_half_edge_ (idx_inner_half_edge)
       {
       }
@@ -601,7 +601,7 @@ namespace pcl
       template <class OtherMeshT>
       VertexAroundFaceCirculator (const pcl::VertexAroundFaceCirculator <OtherMeshT>& other,
                                   typename boost::enable_if <boost::is_convertible <OtherMeshT*, Mesh*>, enabler>::type = enabler ())
-        : p_mesh_              (other.p_mesh_),
+        : mesh_                (other.mesh_),
           idx_inner_half_edge_ (other.idx_inner_half_edge_)
       {
       }
@@ -617,7 +617,7 @@ namespace pcl
       const VertexIndex&
       getDereferencedIndex () const
       {
-        return (p_mesh_->getElement (idx_inner_half_edge_).getTerminatingVertexIndex ());
+        return (mesh_->getElement (idx_inner_half_edge_).getTerminatingVertexIndex ());
       }
 
       bool
@@ -640,24 +640,24 @@ namespace pcl
       void
       increment ()
       {
-        idx_inner_half_edge_ = p_mesh_->getElement (idx_inner_half_edge_).getNextHalfEdgeIndex ();
+        idx_inner_half_edge_ = mesh_->getElement (idx_inner_half_edge_).getNextHalfEdgeIndex ();
       }
 
       void
       decrement ()
       {
-        idx_inner_half_edge_ = p_mesh_->getElement (idx_inner_half_edge_).getPrevHalfEdgeIndex ();
+        idx_inner_half_edge_ = mesh_->getElement (idx_inner_half_edge_).getPrevHalfEdgeIndex ();
       }
 
       reference
       dereference () const
       {
-        return (p_mesh_->getElement (idx_inner_half_edge_).getTerminatingVertex (*p_mesh_));
+        return (mesh_->getElement (idx_inner_half_edge_).getTerminatingVertex (*mesh_));
       }
 
     private:
 
-      Mesh*         p_mesh_;
+      Mesh*         mesh_;
       HalfEdgeIndex idx_inner_half_edge_;
   };
 
@@ -701,22 +701,22 @@ namespace pcl
     public:
 
       InnerHalfEdgeAroundFaceCirculator (const Face& face,
-                                         Mesh*const  p_mesh)
-        : p_mesh_              (p_mesh),
+                                         Mesh*const  mesh)
+        : mesh_                (mesh),
           idx_inner_half_edge_ (face.getInnerHalfEdgeIndex ())
       {
       }
 
       InnerHalfEdgeAroundFaceCirculator (const FaceIndex& idx_face,
-                                         Mesh*const       p_mesh)
-        : p_mesh_              (p_mesh),
-          idx_inner_half_edge_ (p_mesh->getElement (idx_face).getInnerHalfEdgeIndex ())
+                                         Mesh*const       mesh)
+        : mesh_                (mesh),
+          idx_inner_half_edge_ (mesh->getElement (idx_face).getInnerHalfEdgeIndex ())
       {
       }
 
       InnerHalfEdgeAroundFaceCirculator (const HalfEdgeIndex& idx_inner_half_edge,
-                                         Mesh*const           p_mesh)
-        : p_mesh_              (p_mesh),
+                                         Mesh*const           mesh)
+        : mesh_                (mesh),
           idx_inner_half_edge_ (idx_inner_half_edge)
       {
       }
@@ -724,7 +724,7 @@ namespace pcl
       template <class OtherMeshT>
       InnerHalfEdgeAroundFaceCirculator (const pcl::InnerHalfEdgeAroundFaceCirculator <OtherMeshT>& other,
                                          typename boost::enable_if <boost::is_convertible <OtherMeshT*, Mesh*>, enabler>::type = enabler ())
-        : p_mesh_              (other.p_mesh_),
+        : mesh_                (other.mesh_),
           idx_inner_half_edge_ (other.idx_inner_half_edge_)
       {
       }
@@ -763,24 +763,24 @@ namespace pcl
       void
       increment ()
       {
-        idx_inner_half_edge_ = p_mesh_->getElement (idx_inner_half_edge_).getNextHalfEdgeIndex ();
+        idx_inner_half_edge_ = mesh_->getElement (idx_inner_half_edge_).getNextHalfEdgeIndex ();
       }
 
       void
       decrement ()
       {
-        idx_inner_half_edge_ = p_mesh_->getElement (idx_inner_half_edge_).getPrevHalfEdgeIndex ();
+        idx_inner_half_edge_ = mesh_->getElement (idx_inner_half_edge_).getPrevHalfEdgeIndex ();
       }
 
       reference
       dereference () const
       {
-        return (p_mesh_->getElement (idx_inner_half_edge_));
+        return (mesh_->getElement (idx_inner_half_edge_));
       }
 
     private:
 
-      Mesh*         p_mesh_;
+      Mesh*         mesh_;
       HalfEdgeIndex idx_inner_half_edge_;
   };
 
@@ -824,22 +824,22 @@ namespace pcl
     public:
 
       OuterHalfEdgeAroundFaceCirculator (const Face& face,
-                                         Mesh*const  p_mesh)
-        : p_mesh_              (p_mesh),
+                                         Mesh*const  mesh)
+        : mesh_                (mesh),
           idx_inner_half_edge_ (face.getInnerHalfEdgeIndex ())
       {
       }
 
       OuterHalfEdgeAroundFaceCirculator (const FaceIndex& idx_face,
-                                         Mesh*const       p_mesh)
-        : p_mesh_              (p_mesh),
-          idx_inner_half_edge_ (p_mesh->getElement (idx_face).getInnerHalfEdgeIndex ())
+                                         Mesh*const       mesh)
+        : mesh_                (mesh),
+          idx_inner_half_edge_ (mesh->getElement (idx_face).getInnerHalfEdgeIndex ())
       {
       }
 
       OuterHalfEdgeAroundFaceCirculator (const HalfEdgeIndex& idx_inner_half_edge,
-                                         Mesh*const           p_mesh)
-        : p_mesh_              (p_mesh),
+                                         Mesh*const           mesh)
+        : mesh_                (mesh),
           idx_inner_half_edge_ (idx_inner_half_edge)
       {
       }
@@ -847,7 +847,7 @@ namespace pcl
       template <class OtherMeshT>
       OuterHalfEdgeAroundFaceCirculator (const pcl::OuterHalfEdgeAroundFaceCirculator <OtherMeshT>& other,
                                          typename boost::enable_if <boost::is_convertible <OtherMeshT*, Mesh*>, enabler>::type = enabler ())
-        : p_mesh_              (other.p_mesh_),
+        : mesh_                (other.mesh_),
           idx_inner_half_edge_ (other.idx_inner_half_edge_)
       {
       }
@@ -863,7 +863,7 @@ namespace pcl
       const HalfEdgeIndex&
       getDereferencedIndex () const
       {
-        return (p_mesh_->getElement (idx_inner_half_edge_).getOppositeHalfEdgeIndex ());
+        return (mesh_->getElement (idx_inner_half_edge_).getOppositeHalfEdgeIndex ());
       }
 
       bool
@@ -886,24 +886,24 @@ namespace pcl
       void
       increment ()
       {
-        idx_inner_half_edge_ = p_mesh_->getElement (idx_inner_half_edge_).getNextHalfEdgeIndex ();
+        idx_inner_half_edge_ = mesh_->getElement (idx_inner_half_edge_).getNextHalfEdgeIndex ();
       }
 
       void
       decrement ()
       {
-        idx_inner_half_edge_ = p_mesh_->getElement (idx_inner_half_edge_).getPrevHalfEdgeIndex ();
+        idx_inner_half_edge_ = mesh_->getElement (idx_inner_half_edge_).getPrevHalfEdgeIndex ();
       }
 
       reference
       dereference () const
       {
-        return (p_mesh_->getElement (idx_inner_half_edge_).getOppositeHalfEdge (*p_mesh_));
+        return (mesh_->getElement (idx_inner_half_edge_).getOppositeHalfEdge (*mesh_));
       }
 
     private:
 
-      Mesh*         p_mesh_;
+      Mesh*         mesh_;
       HalfEdgeIndex idx_inner_half_edge_;
   };
 
@@ -947,22 +947,22 @@ namespace pcl
     public:
 
       FaceAroundFaceCirculator (const Face& face,
-                                Mesh*const  p_mesh)
-        : p_mesh_              (p_mesh),
+                                Mesh*const  mesh)
+        : mesh_                (mesh),
           idx_inner_half_edge_ (face.getInnerHalfEdgeIndex ())
       {
       }
 
       FaceAroundFaceCirculator (const FaceIndex& idx_face,
-                                Mesh*const       p_mesh)
-        : p_mesh_              (p_mesh),
-          idx_inner_half_edge_ (p_mesh->getElement (idx_face).getInnerHalfEdgeIndex ())
+                                Mesh*const       mesh)
+        : mesh_                (mesh),
+          idx_inner_half_edge_ (mesh->getElement (idx_face).getInnerHalfEdgeIndex ())
       {
       }
 
       FaceAroundFaceCirculator (const HalfEdgeIndex& idx_inner_half_edge,
-                                Mesh*const           p_mesh)
-        : p_mesh_              (p_mesh),
+                                Mesh*const           mesh)
+        : mesh_                (mesh),
           idx_inner_half_edge_ (idx_inner_half_edge)
       {
       }
@@ -970,7 +970,7 @@ namespace pcl
       template <class OtherMeshT>
       FaceAroundFaceCirculator (const pcl::FaceAroundFaceCirculator <OtherMeshT>& other,
                                 typename boost::enable_if <boost::is_convertible <OtherMeshT*, Mesh*>, enabler>::type = enabler ())
-        : p_mesh_              (other.p_mesh_),
+        : mesh_                (other.mesh_),
           idx_inner_half_edge_ (other.idx_inner_half_edge_)
       {
       }
@@ -986,7 +986,7 @@ namespace pcl
       const FaceIndex&
       getDereferencedIndex () const
       {
-        return (p_mesh_->getElement (idx_inner_half_edge_).getOppositeFaceIndex (*p_mesh_));
+        return (mesh_->getElement (idx_inner_half_edge_).getOppositeFaceIndex (*mesh_));
       }
 
       bool
@@ -1009,24 +1009,24 @@ namespace pcl
       void
       increment ()
       {
-        idx_inner_half_edge_ = p_mesh_->getElement (idx_inner_half_edge_).getNextHalfEdgeIndex ();
+        idx_inner_half_edge_ = mesh_->getElement (idx_inner_half_edge_).getNextHalfEdgeIndex ();
       }
 
       void
       decrement ()
       {
-        idx_inner_half_edge_ = p_mesh_->getElement (idx_inner_half_edge_).getPrevHalfEdgeIndex ();
+        idx_inner_half_edge_ = mesh_->getElement (idx_inner_half_edge_).getPrevHalfEdgeIndex ();
       }
 
       reference
       dereference () const
       {
-        return (p_mesh_->getElement (idx_inner_half_edge_).getOppositeFace (*p_mesh_));
+        return (mesh_->getElement (idx_inner_half_edge_).getOppositeFace (*mesh_));
       }
 
     private:
 
-      Mesh*         p_mesh_;
+      Mesh*         mesh_;
       HalfEdgeIndex idx_inner_half_edge_;
   };
 

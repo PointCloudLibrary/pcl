@@ -38,58 +38,33 @@
  *
  */
 
-#include <pcl/apps/in_hand_scanner/main_window.h>
+#ifndef PCL_IN_HAND_SCANNER_CUSTOM_INTERACTOR_STYLE_H
+#define PCL_IN_HAND_SCANNER_CUSTOM_INTERACTOR_STYLE_H
 
-#include <ostream>
-#include <sstream>
+#include <pcl/visualization/interactor_style.h>
 
-#include <QTimer>
-
-#include <pcl/visualization/pcl_visualizer.h>
-#include <pcl/apps/in_hand_scanner/in_hand_scanner.h>
-
-////////////////////////////////////////////////////////////////////////////////
-
-pcl::InHandScannerMainWindow::InHandScannerMainWindow (QWidget* p_parent)
-  : QMainWindow        (p_parent),
-
-    p_ui_              (new Ui::MainWindow),
-    p_timer_           (new QTimer (this)),
-
-    p_visualizer_      (new PCLVisualizer ("", false)),
-    p_in_hand_scanner_ (new InHandScanner ())
+namespace pcl
 {
-  p_ui_->setupUi (this);
-  this->setWindowTitle ("PCL in-hand scanner");
+  namespace ihs
+  {
 
-  // Timer
-  p_timer_->start (5); // ms
-  connect (p_timer_.get (), SIGNAL (timeout ()), this, SLOT (visualizationSlot ()));
+    class CustomInteractorStyle : public pcl::visualization::PCLVisualizerInteractorStyle
+    {
 
-  // Visualization
-  p_ui_->qvtkWidget->SetRenderWindow (p_visualizer_->getRenderWindow ());
-  p_visualizer_->setupInteractor (p_ui_->qvtkWidget->GetInteractor (), p_ui_->qvtkWidget->GetRenderWindow ());
-  p_visualizer_->getInteractorStyle ()->setKeyboardModifier (pcl::visualization::INTERACTOR_KB_MOD_SHIFT);
-  p_ui_->qvtkWidget->update ();
+      public:
 
-  // Scanner
-  p_in_hand_scanner_->setVisualizer (p_visualizer_);
-  p_in_hand_scanner_->start ();
-}
+        static CustomInteractorStyle* New ();
 
-////////////////////////////////////////////////////////////////////////////////
+        CustomInteractorStyle ();
 
-pcl::InHandScannerMainWindow::~InHandScannerMainWindow ()
-{
-}
+        vtkTypeMacro (CustomInteractorStyle, vtkInteractorStyleTrackballCamera)
 
-////////////////////////////////////////////////////////////////////////////////
+        /** \brief Deactivate the key-commands. The rest is copy pasted from pcl::visualization::PCLVisualizerInteractorStyle */
+        virtual void
+        OnKeyDown ();
+    };
 
-void
-pcl::InHandScannerMainWindow::visualizationSlot ()
-{
-  p_in_hand_scanner_->draw ();
-  p_ui_->qvtkWidget->update ();
-}
+  } // End namespace ihs
+} // End namespace pcl
 
-////////////////////////////////////////////////////////////////////////////////
+#endif // PCL_IN_HAND_SCANNER_CUSTOM_INTERACTOR_STYLE_H

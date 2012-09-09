@@ -44,7 +44,9 @@
 namespace pcl
 {
 
-  /** \brief An Edge is a connection between two vertexes. In a half-edge mesh these are split into two HalfEdges with opposite orientation.
+  /** \brief An Edge is a connection between two vertexes.
+    *
+    * In a half-edge mesh the edge is split into two HalfEdges with opposite orientation.
     *
     * \tparam HalfEdgeDataT User data that is stored in the HalfEdge: Must have operator == (Equality Comparable)
     * \tparam MeshT Mesh to which the HalfEdge belongs to (classes derived from MeshBase)

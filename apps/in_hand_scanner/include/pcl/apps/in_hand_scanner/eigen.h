@@ -38,13 +38,16 @@
  *
  */
 
-#include <cstdlib> // EXIT_SUCCESS, EXIT_FAILURE
-#include <pcl/apps/in_hand_scanner/in_hand_scanner.h>
+#ifndef PCL_IN_HAND_SCANNER_EIGEN_H
+#define PCL_IN_HAND_SCANNER_EIGEN_H
 
-int main (int argc, char** argv)
-{
-  pcl::ihs::InHandScanner scanner (argc, argv);
-  scanner.run ();
+#ifdef __GNUC__
+  #pragma GCC system_header
+#endif
 
-  return (EXIT_SUCCESS);
-}
+#include <Eigen/Core>
+#include <Eigen/Geometry>
+#include <Eigen/Cholesky>
+#include <Eigen/StdVector>
+
+#endif // PCL_IN_HAND_SCANNER_EIGEN_H

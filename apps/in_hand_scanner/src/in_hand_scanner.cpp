@@ -14,7 +14,7 @@
  *  * Redistributions of source code must retain the above copyright
  *    notice, this list of conditions and the following disclaimer.
  *  * Redistributions in binary form must reproduce the above
- *    copyright notice, this list of conditions and the following
+ *    copyright notice, this list ofc conditions and the following
  *    disclaimer in the documentation and/or other materials provided
  *    with the distribution.
  *  * Neither the name of the copyright holder(s) nor the names of its
@@ -40,130 +40,355 @@
 
 #include <pcl/apps/in_hand_scanner/in_hand_scanner.h>
 
+#include <pcl/common/transforms.h>
+#include <pcl/exceptions.h>
 #include <pcl/io/openni_grabber.h>
-#include <pcl/features/integral_image_normal.h>
-#include <pcl/filters/passthrough.h>
 #include <pcl/visualization/pcl_visualizer.h>
+#include <pcl/apps/in_hand_scanner/custom_interactor_style.h>
+#include <pcl/apps/in_hand_scanner/icp.h>
+#include <pcl/apps/in_hand_scanner/input_data_processing.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 
-pcl::InHandScanner::InHandScanner ()
-  : mutex_               (),
+pcl::ihs::InHandScanner::InHandScanner (int argc, char** argv)
+  : mutex_                 (),
+    run_                   (true),
 
-    p_grabber_           (new Grabber ("#1")),
-    p_visualizer_        (),
-    p_normal_estimation_ (new NormalEstimation ()),
-    p_pass_through_      (new PassThrough ()),
+    grabber_               (),
+    input_data_processing_ (new InputDataProcessing ()),
+    visualizer_            (),
 
-    p_drawn_cloud_       (new Cloud ())
+    icp_                   (new ICP ()),
+    transformation_        (Transformation::Identity ()),
+
+    new_data_connection_   (),
+
+    cloud_data_draw_       (),
+    cloud_model_draw_      (new CloudProcessed ()),
+    cloud_model_           (new CloudProcessed ()),
+
+    running_mode_          (RM_UNPROCESSED),
+    iteration_             (0),
+
+    draw_crop_box_         (false)
 {
-  // Normal estimation
-  p_normal_estimation_->setNormalEstimationMethod (NormalEstimation::AVERAGE_3D_GRADIENT);
-  p_normal_estimation_->setMaxDepthChangeFactor (0.02f);
-  p_normal_estimation_->setNormalSmoothingSize (10.0f);
+  std::cerr << "Initializing the grabber ...\n  ";
+  try
+  {
+    grabber_ = GrabberPtr (new Grabber ());
+  }
+  catch (const pcl::PCLException& e)
+  {
+    std::cerr << "ERROR in in_hand_scanner.cpp: " << e.what () << std::endl;
+    exit (EXIT_FAILURE);
+  }
+  std::cerr << "DONE\n";
 
-  // Pass through
+  // Visualizer
+  visualizer_ = PCLVisualizerPtr (new PCLVisualizer (argc, argv, "PCL in-hand scanner", pcl::ihs::CustomInteractorStyle::New ()));
+
+  // TODO: Adapt this to the resolution of the grabbed image
+  // grabber_->getDevice ()->get??
+  visualizer_->getRenderWindow ()->SetSize (640, 480);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-pcl::InHandScanner::~InHandScanner ()
+pcl::ihs::InHandScanner::~InHandScanner ()
 {
-  if (p_grabber_->isRunning ())
+  if (grabber_ && grabber_->isRunning ()) grabber_->stop ();
+  if (new_data_connection_.connected ())  new_data_connection_.disconnect ();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+void
+pcl::ihs::InHandScanner::run ()
+{
+  // Visualizer callbacks
+  visualizer_->registerKeyboardCallback (&pcl::ihs::InHandScanner::keyboardCallback, *this);
+
+  // Grabber callbacks
+  boost::function <void (const CloudInputConstPtr&)> new_data_cb = boost::bind (&pcl::ihs::InHandScanner::newDataCallback, this, _1);
+  new_data_connection_ = grabber_->registerCallback (new_data_cb);
+
+  grabber_->start ();
+
+  // Visualization loop
+  while (run_ && !visualizer_->wasStopped ())
   {
-    p_grabber_->stop ();
+    this->calcFPS (visualization_fps_);
+
+    visualizer_->spinOnce ();
+
+    this->drawClouds ();
+    this->drawMesh ();
+    this->drawCropBox ();
+    this->drawFPS ();
+
+    boost::this_thread::sleep (boost::posix_time::microseconds (100));
   }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 void
-pcl::InHandScanner::setVisualizer (const PCLVisualizerPtr& p_visualizer)
+pcl::ihs::InHandScanner::quit ()
 {
-  p_visualizer_ = p_visualizer;
+  boost::mutex::scoped_lock lock (mutex_);
+
+  run_ = false;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 void
-pcl::InHandScanner::start ()
+pcl::ihs::InHandScanner::setRunningMode (const RunningMode& mode)
 {
-  boost::function<void (const CloudConstPtr&)> f = boost::bind (&pcl::InHandScanner::grabbedDataCallback, this, _1);
-  /*boost::signals2::connection c = */
-  p_grabber_->registerCallback (f);
-  p_grabber_->start ();
-}
+  boost::mutex::scoped_lock lock (mutex_);
 
-////////////////////////////////////////////////////////////////////////////////
+  running_mode_ = mode;
 
-void
-pcl::InHandScanner::draw ()
-{
-  if (!p_drawn_cloud_)
+  switch (running_mode_)
   {
-    boost::this_thread::sleep (boost::posix_time::milliseconds (1));
+    case RM_UNPROCESSED:
+    {
+      std::cerr << "Showing the unprocessed input data\n";
+      break;
+    }
+    case RM_PROCESSED:
+    {
+      std::cerr << "Showing the processed input data\n";
+      break;
+    }
+    case RM_REGISTRATION_CONT:
+    {
+      std::cerr << "Continuous registration\n";
+      break;
+    }
+    case RM_REGISTRATION_SINGLE:
+    {
+      std::cerr << "Single registration\n";
+      break;
+    }
+    default:
+    {
+      std::cerr << "ERROR in in_hand_scanner.cpp: Unknown command!\n";
+      exit (EXIT_FAILURE);
+      break;
+    }
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+void
+pcl::ihs::InHandScanner::resetRegistration ()
+{
+  boost::mutex::scoped_lock lock (mutex_);
+
+  running_mode_     = RM_PROCESSED;
+  iteration_        = 0;
+  transformation_   = Transformation::Identity ();
+  cloud_model_draw_ = CloudProcessedPtr (new CloudProcessed ());
+  cloud_model_->clear ();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+void
+pcl::ihs::InHandScanner::newDataCallback (const CloudInputConstPtr& cloud_in)
+{
+  boost::mutex::scoped_lock lock (mutex_);
+
+  this->calcFPS (computation_fps_);
+
+  if (running_mode_ < RM_UNPROCESSED)
+  {
     return;
   }
 
-  CloudPtr p_temp_cloud;
+  // Input data processing
+  CloudProcessedPtr cloud_processed = running_mode_ >= RM_PROCESSED ?
+                                        input_data_processing_->process (cloud_in) :
+                                        input_data_processing_->calculateNormals (cloud_in);
 
+  CloudProcessedPtr cloud_data = cloud_processed;
+
+  // Registration & integration
+  if (running_mode_ >= RM_REGISTRATION_CONT)
   {
-    boost::mutex::scoped_lock locker (mutex_);
-    p_temp_cloud.swap (p_drawn_cloud_);
-  }
+    if(running_mode_ == RM_REGISTRATION_SINGLE)
+    {
+      running_mode_ = RM_PROCESSED;
+    }
 
-  p_visualizer_->setBackgroundColor (1.0, 1.0, 1.0);
-  if (!p_visualizer_->updatePointCloud (p_temp_cloud, "cloud"))
-  {
-    p_visualizer_->addPointCloud (p_temp_cloud, "cloud");
-    p_visualizer_->resetCameraViewpoint ("cloud");
-  }
+    if (iteration_ == 0)
+    {
+      transformation_ = Transformation::Identity ();
+      cloud_model_    = cloud_processed;
+      cloud_data      = CloudProcessedPtr (new CloudProcessed ());
+    }
+    else
+    {
+      // Registration
+      Transformation T = Transformation::Identity ();
+      if (!icp_->findTransformation (cloud_model_, cloud_processed, transformation_, T))
+      {
+        cloud_data = cloud_processed;
+      }
+      else
+      {
+        transformation_ = T;
 
-  this->showFPS ("visualization");
+        // test registration
+        pcl::transformPointCloudWithNormals (*cloud_model_, *cloud_model_, T.inverse ().eval ());
+        // end test
+      }
+    }
+
+    ++iteration_;
+  } // End if (running_mode_ >= RM_REGISTRATION_CONT)
+
+  // Set the clouds for visualization
+  cloud_data_draw_ = cloud_data;
+  if (!cloud_model_draw_) cloud_model_draw_ = CloudProcessedPtr (new CloudProcessed ());
+  pcl::copyPointCloud (*cloud_model_, *cloud_model_draw_);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 void
-pcl::InHandScanner::grabbedDataCallback (const CloudConstPtr& p_cloud_in)
+pcl::ihs::InHandScanner::drawClouds ()
 {
-  boost::mutex::scoped_lock locker (mutex_);
+  // Get the clouds
+  CloudProcessedPtr cloud_data_temp;
+  CloudProcessedPtr cloud_model_temp;
+  if (mutex_.try_lock ())
+  {
+    cloud_data_temp.swap (cloud_data_draw_);
+    cloud_model_temp.swap (cloud_model_draw_);
+    mutex_.unlock ();
+  }
 
-  // Calculate the normals
-  CloudWithNormalsPtr p_cloud_with_normals (new CloudWithNormals ());
-  //  p_normal_estimation_->setInputCloud (p_cloud_in);
-  //  p_normal_estimation_->compute (*p_cloud_with_normals);
-  pcl::copyPointCloud (*p_cloud_in, *p_cloud_with_normals); // Adding '<Point, PointWithNormal>' does not help
+  // Draw the clouds
+  if (cloud_data_temp)
+  {
+    pcl::visualization::PointCloudColorHandlerRGBField <PointProcessed> ch (cloud_data_temp);
+    if (!visualizer_->updatePointCloud <PointProcessed> (cloud_data_temp, ch, "cloud_data"))
+    {
+      visualizer_->addPointCloud <PointProcessed> (cloud_data_temp, ch, "cloud_data");
+      visualizer_->resetCameraViewpoint ("cloud_data");
+    }
+  }
 
-  //  // Pass through
-  //  PointCloudWithNormalsPtr p_cloud_pass_through (new PointCloudWithNormals ());
-  //  p_pass_through_->setInputCloud (p_cloud_with_normals);
-  //  p_pass_through_->filter (*p_cloud_pass_through);
-
-  // Set the cloud for visualization
-  p_drawn_cloud_.reset (new Cloud ());
-  pcl::copyPointCloud (*p_cloud_with_normals, *p_drawn_cloud_); // Adding '<PointWithNormal, Point>' does not help
-  //pcl::copyPointCloud (*p_cloud_in, *p_drawn_cloud_); // works
-  this->showFPS ("computation");
+  if (cloud_model_temp)
+  {
+    pcl::visualization::PointCloudColorHandlerRGBField <PointProcessed> ch (cloud_model_temp);
+    if (!visualizer_->updatePointCloud <PointProcessed> (cloud_model_temp, ch, "cloud_model"))
+    {
+      visualizer_->addPointCloud <PointProcessed> (cloud_model_temp, ch, "cloud_model");
+      visualizer_->resetCameraViewpoint ("cloud_model");
+    }
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 void
-pcl::InHandScanner::showFPS (const std::string& what) const
+pcl::ihs::InHandScanner::drawMesh ()
 {
-  static unsigned int count = 0;
-  static double       last  = pcl::getTime ();
-  double              now   = pcl::getTime ();
 
-  ++count;
-  if ((now-last) >= 1.)
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+void
+pcl::ihs::InHandScanner::drawCropBox ()
+{
+  static bool crop_box_added = false;
+  if (draw_crop_box_ && !crop_box_added)
   {
-    const double fps = static_cast<double> (count) / (now - last);
-    std::cerr << "Average framerate (" << what << ") = " << fps << "Hz\n";
+    float x_min, x_max, y_min, y_max, z_min, z_max;
+    input_data_processing_->getCropBox (x_min, x_max, y_min, y_max, z_min, z_max);
+    visualizer_->addCube (x_min, x_max, y_min, y_max, z_min, z_max, 1., 1., 1., "crop_box");
+    crop_box_added = true;
+  }
+  else  if (!draw_crop_box_ && crop_box_added)
+  {
+    visualizer_->removeShape ("crop_box");
+    crop_box_added = false;
+  }
+}
 
-    count = 0;
-    last  = now;
+////////////////////////////////////////////////////////////////////////////////
+
+void
+pcl::ihs::InHandScanner::drawFPS ()
+{
+  std::string vis_fps ("Visualization: "), comp_fps ("Computation: ");
+  bool draw = false;
+
+  if (mutex_.try_lock ())
+  {
+    vis_fps.append (visualization_fps_.str ()).append (" fps");
+    comp_fps.append (computation_fps_.str ()).append (" fps");
+    draw = true;
+    mutex_.unlock ();
+  }
+
+  if (!draw) return;
+
+  if (!visualizer_->updateText (vis_fps, 1., 15., "visualization_fps"))
+  {
+    visualizer_->addText (vis_fps, 1., 15., "visualization_fps");
+  }
+
+  if (!visualizer_->updateText (comp_fps, 1., 30., "computation_fps"))
+  {
+    visualizer_->addText (comp_fps, 1., 30., "computation_fps");
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+void
+pcl::ihs::InHandScanner::keyboardCallback (const pcl::visualization::KeyboardEvent& event, void*)
+{
+  if(!event.keyDown ())
+  {
+    return;
+  }
+
+  switch (event.getKeyCode ())
+  {
+    case 'h': case 'H':
+    {
+      std::cerr << "======================================================================\n"
+                << "Help:\n"
+                << "----------------------------------------------------------------------\n"
+                << "q, ESC: Quit the application\n"
+                << "----------------------------------------------------------------------\n"
+                << "1     : Shows the unprocessed input data\n"
+                << "2     : Shows the processed input data\n"
+                << "3     : Registers new data to the first acquired data continuously\n"
+                << "4     : Registers new data once and returns to '2'\n"
+                << "0     : Reset the registration\n"
+                << "======================================================================\n";
+      break;
+    }
+    case   0: // Special key
+    {
+      break;
+    }
+    case  27: // ESC
+    case 'q': this->quit ();                                 break;
+    case '1': this->setRunningMode (RM_UNPROCESSED);         break;
+    case '2': this->setRunningMode (RM_PROCESSED);           break;
+    case '3': this->setRunningMode (RM_REGISTRATION_CONT);   break;
+    case '4': this->setRunningMode (RM_REGISTRATION_SINGLE); break;
+    case '0': this->resetRegistration ();                    break;
+    default:                                                 break;
   }
 }
 

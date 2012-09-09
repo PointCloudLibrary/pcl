@@ -38,13 +38,65 @@
  *
  */
 
-#include <cstdlib> // EXIT_SUCCESS, EXIT_FAILURE
-#include <pcl/apps/in_hand_scanner/in_hand_scanner.h>
+#ifndef PCL_IN_HAND_SCANNER_INTEGRATION_H
+#define PCL_IN_HAND_SCANNER_INTEGRATION_H
 
-int main (int argc, char** argv)
+#include <pcl/apps/in_hand_scanner/common_types.h>
+
+////////////////////////////////////////////////////////////////////////////////
+// Forward declarations
+////////////////////////////////////////////////////////////////////////////////
+
+namespace pcl
 {
-  pcl::ihs::InHandScanner scanner (argc, argv);
-  scanner.run ();
+  template <typename PointT>
+  class KdTree;
+} // End namespace pcl
 
-  return (EXIT_SUCCESS);
-}
+////////////////////////////////////////////////////////////////////////////////
+// Integration
+////////////////////////////////////////////////////////////////////////////////
+
+namespace pcl
+{
+  namespace ihs
+  {
+
+    class Integration
+    {
+
+      public:
+
+        typedef pcl::ihs::PointProcessed         PointProcessed;
+        typedef pcl::ihs::CloudProcessed         CloudProcessed;
+        typedef pcl::ihs::CloudProcessedPtr      CloudProcessedPtr;
+        typedef pcl::ihs::CloudProcessedConstPtr CloudProcessedConstPtr;
+
+        typedef pcl::ihs::Transformation         Transformation;
+
+        typedef pcl::KdTree <PointProcessed>     KdTree;
+        typedef boost::shared_ptr <KdTree>       KdTreePtr;
+        typedef boost::shared_ptr <const KdTree> KdTreeConstPtr;
+
+      public:
+
+        Integration ();
+
+        bool
+        merge (const CloudProcessedPtr&      cloud_model,
+               const CloudProcessedConstPtr& cloud_data,
+               const Transformation&         T) const;
+
+      private:
+
+        // Nearest neighbor search
+        KdTreePtr kd_tree_;
+
+        // Maximum squared distance where points are averaged out
+        float     squared_distance_max_;
+    };
+
+  } // End namespace ihs
+} // End namespace pcl
+
+#endif // PCL_IN_HAND_SCANNER_INTEGRATION_H

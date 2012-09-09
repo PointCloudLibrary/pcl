@@ -42,11 +42,13 @@
 #define PCL_IN_HAND_SCANNER_IN_HAND_SCANNER_H
 
 #include <string>
+#include <sstream>
+#include <iomanip>
 
 #include <boost/thread/mutex.hpp>
 
-#include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
+#include <pcl/common/time.h>
+#include <pcl/apps/in_hand_scanner/common_types.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 // Forward declarations
@@ -56,15 +58,16 @@ namespace pcl
 {
   class OpenNIGrabber;
 
-  template <class PointInT, class PointOutT>
-  class IntegralImageNormalEstimation;
-
-  template <class PointT>
-  class PassThrough;
+  namespace ihs
+  {
+    class InputDataProcessing;
+    class ICP;
+  } // End namespace ihs
 
   namespace visualization
   {
     class PCLVisualizer;
+    class KeyboardEvent;
   } // End namespace visualization
 
 } // End namespace pcl
@@ -75,72 +78,168 @@ namespace pcl
 
 namespace pcl
 {
-
-  class InHandScanner
+  namespace ihs
   {
 
-    private:
+    class InHandScanner
+    {
 
-      typedef pcl::PointXYZRGBA      Point;
-      typedef pcl::PointCloud<Point> Cloud;
-      typedef Cloud::Ptr             CloudPtr;
-      typedef Cloud::ConstPtr        CloudConstPtr;
+      public:
 
-      typedef pcl::PointXYZRGBNormal           PointWithNormal;
-      typedef pcl::PointCloud<PointWithNormal> CloudWithNormals;
-      typedef CloudWithNormals::Ptr            CloudWithNormalsPtr;
-      typedef CloudWithNormals::ConstPtr       CloudWithNormalsConstPtr;
+        /** \brief Mode in which the scanner is currently running */
+        typedef enum RunningMode
+        {
+          RM_UNPROCESSED         = 0, /**< Shows the unprocessed input data */
+          RM_PROCESSED           = 1, /**< Shows the processed input data */
+          RM_REGISTRATION_CONT   = 2, /**< Registers new data to the first acquired data continuously */
+          RM_REGISTRATION_SINGLE = 3  /**< Registers new data once and returns to showing the processed data */
+        } RunningMode;
 
-      typedef pcl::OpenNIGrabber               Grabber;
-      typedef boost::shared_ptr<Grabber>       GrabberPtr;
-      typedef boost::shared_ptr<const Grabber> GrabberConstPtr;
+      private:
 
-      typedef pcl::IntegralImageNormalEstimation<Point, PointWithNormal> NormalEstimation;
-      typedef boost::shared_ptr<NormalEstimation>                        NormalEstimationPtr;
-      typedef boost::shared_ptr<const NormalEstimation>                  NormalEstimationConstPtr;
+        typedef pcl::ihs::PointInput         PointInput;
+        typedef pcl::ihs::CloudInput         CloudInput;
+        typedef pcl::ihs::CloudInputPtr      CloudInputPtr;
+        typedef pcl::ihs::CloudInputConstPtr CloudInputConstPtr;
 
-      typedef pcl::PassThrough<PointWithNormal>    PassThrough;
-      typedef boost::shared_ptr<PassThrough>       PassThroughPtr;
-      typedef boost::shared_ptr<const PassThrough> PassThroughConstPtr;
+        typedef pcl::ihs::PointProcessed         PointProcessed;
+        typedef pcl::ihs::CloudProcessed         CloudProcessed;
+        typedef pcl::ihs::CloudProcessedPtr      CloudProcessedPtr;
+        typedef pcl::ihs::CloudProcessedConstPtr CloudProcessedConstPtr;
 
-      typedef pcl::visualization::PCLVisualizer      PCLVisualizer;
-      typedef boost::shared_ptr<PCLVisualizer>       PCLVisualizerPtr;
-      typedef boost::shared_ptr<const PCLVisualizer> PCLVisualizerConstPtr;
+        typedef pcl::OpenNIGrabber                Grabber;
+        typedef boost::shared_ptr <Grabber>       GrabberPtr;
+        typedef boost::shared_ptr <const Grabber> GrabberConstPtr;
 
-    public:
+        typedef pcl::ihs::InputDataProcessing                 InputDataProcessing;
+        typedef boost::shared_ptr <InputDataProcessing>       InputDataProcessingPtr;
+        typedef boost::shared_ptr <const InputDataProcessing> InputDataProcessingConstPtr;
 
-      InHandScanner ();
-      ~InHandScanner ();
+        typedef pcl::ihs::ICP                 ICP;
+        typedef boost::shared_ptr <ICP>       ICPPtr;
+        typedef boost::shared_ptr <const ICP> ICPConstPtr;
+        typedef pcl::ihs::Transformation      Transformation;
 
-      void
-      setVisualizer (const PCLVisualizerPtr& p_visualizer);
+        typedef pcl::visualization::PCLVisualizer       PCLVisualizer;
+        typedef boost::shared_ptr <PCLVisualizer>       PCLVisualizerPtr;
+        typedef boost::shared_ptr <const PCLVisualizer> PCLVisualizerConstPtr;
 
-      void
-      start ();
+        class FPS
+        {
+          public:
+            FPS () : fps_ (0.) {}
+          protected:
+            ~FPS () {}
 
-      void
-      draw ();
+          public:
+            double& value ()       {return (fps_);}
+            double  value () const {return (fps_);}
 
-    private:
+            std::string
+            str () const
+            {
+              std::stringstream ss;
+              ss << std::setprecision (1) << std::fixed << fps_;
+              return (ss.str ());
+            }
 
-      void
-      grabbedDataCallback (const CloudConstPtr& p_cloud_in);
+          private:
+            double fps_;
+        };
 
-      void
-      showFPS (const std::string& what) const;
+        class VisualizationFPS : public FPS
+        {
+          public:
+            VisualizationFPS () : FPS () {}
+            ~VisualizationFPS () {}
+        };
+        class ComputationFPS : public FPS
+        {
+          public:
+            ComputationFPS () : FPS () {}
+            ~ComputationFPS () {}
+        };
 
-    private:
+      public:
 
-      boost::mutex        mutex_;
+        InHandScanner (int argc, char** argv);
+        ~InHandScanner ();
 
-      GrabberPtr          p_grabber_;
-      PCLVisualizerPtr    p_visualizer_;
-      NormalEstimationPtr p_normal_estimation_;
-      PassThroughPtr      p_pass_through_;
+        void
+        run ();
 
-      CloudPtr            p_drawn_cloud_;
-  };
+        void
+        quit ();
 
+        void
+        setRunningMode (const RunningMode& mode);
+
+        void
+        resetRegistration ();
+
+      private:
+
+        void
+        newDataCallback (const CloudInputConstPtr& cloud_in);
+
+        void
+        drawClouds ();
+
+        void
+        drawMesh ();
+
+        void
+        drawCropBox ();
+
+        void
+        drawFPS ();
+
+        void
+        keyboardCallback (const pcl::visualization::KeyboardEvent& event, void*);
+
+        template <class FPS> void
+        calcFPS (FPS& fps) const
+        {
+          static pcl::StopWatch sw;
+          static unsigned int count = 0;
+
+          ++count;
+          if (sw.getTimeSeconds () >= 1.)
+          {
+            fps.value () = static_cast <double> (count) / sw.getTimeSeconds ();
+            count = 0;
+            sw.reset ();
+          }
+        }
+
+      private:
+
+        boost::mutex                mutex_;
+        bool                        run_;
+
+        GrabberPtr                  grabber_;
+        InputDataProcessingPtr      input_data_processing_;
+        PCLVisualizerPtr            visualizer_;
+
+        ICPPtr                      icp_;
+        Transformation              transformation_;
+
+        boost::signals2::connection new_data_connection_;
+
+        CloudProcessedPtr           cloud_data_draw_;
+        CloudProcessedPtr           cloud_model_draw_;
+        CloudProcessedPtr           cloud_model_;
+
+        RunningMode                 running_mode_;
+        unsigned int                iteration_;
+
+        bool                        draw_crop_box_;
+
+        VisualizationFPS            visualization_fps_;
+        ComputationFPS              computation_fps_;
+    };
+
+  } // End namespace ihs
 } // End namespace pcl
 
 #endif // PCL_IN_HAND_SCANNER_IN_HAND_SCANNER_H

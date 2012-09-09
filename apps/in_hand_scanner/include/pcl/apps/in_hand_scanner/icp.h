@@ -38,74 +38,92 @@
  *
  */
 
-#ifndef PCL_IN_HAND_SCANNER_MAIN_WINDOW_H
-#define PCL_IN_HAND_SCANNER_MAIN_WINDOW_H
-
+#ifndef PCL_IN_HAND_SCANNER_ICP_H
+#define PCL_IN_HAND_SCANNER_ICP_H
 
 #include <boost/shared_ptr.hpp>
 
-#include <QMainWindow>
-#include <ui_main_window.h>
+#include <pcl/apps/in_hand_scanner/eigen.h>
+#include <pcl/apps/in_hand_scanner/common_types.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 // Forward declarations
 ////////////////////////////////////////////////////////////////////////////////
 
-class QTimer;
-
 namespace pcl
 {
-  class InHandScanner;
-
-  namespace visualization
-  {
-    class PCLVisualizer;
-  } // End namespace visualization
-
+  template <typename PointT>
+  class KdTree;
 } // End namespace pcl
 
 ////////////////////////////////////////////////////////////////////////////////
-// InHandScannerMainWindow
+// ICP
 ////////////////////////////////////////////////////////////////////////////////
 
 namespace pcl
 {
-
-  class InHandScannerMainWindow : public QMainWindow
+  namespace ihs
   {
-      Q_OBJECT
 
-    private:
+    class ICP
+    {
 
-      typedef boost::shared_ptr<Ui::MainWindow> MainWindowPtr;
-      typedef boost::shared_ptr<QTimer>         QTimerPtr;
+      public:
 
-      typedef pcl::InHandScanner               InHandScanner;
-      typedef boost::shared_ptr<InHandScanner> InHandScannerPtr;
+        typedef pcl::ihs::PointProcessed         PointProcessed;
+        typedef pcl::ihs::CloudProcessed         CloudProcessed;
+        typedef pcl::ihs::CloudProcessedPtr      CloudProcessedPtr;
+        typedef pcl::ihs::CloudProcessedConstPtr CloudProcessedConstPtr;
 
-      typedef pcl::visualization::PCLVisualizer PCLVisualizer;
-      typedef boost::shared_ptr<PCLVisualizer>  PCLVisualizerPtr;
+        typedef pcl::ihs::Transformation         Transformation;
 
-    public:
+        typedef pcl::KdTree <PointProcessed>     KdTree;
+        typedef boost::shared_ptr <KdTree>       KdTreePtr;
+        typedef boost::shared_ptr <const KdTree> KdTreeConstPtr;
 
-      explicit InHandScannerMainWindow (QWidget* p_parent = 0);
-      ~InHandScannerMainWindow ();
+      public:
 
-    private slots:
+        ICP ();
 
-      void
-      visualizationSlot ();
+        bool
+        findTransformation (const CloudProcessedConstPtr& cloud_model,
+                            const CloudProcessedConstPtr& cloud_data,
+                            const Transformation&         T_init,
+                            Transformation&               T_final);
 
-    private:
+      private:
 
-      MainWindowPtr    p_ui_;
-      QTimerPtr        p_timer_;
+        CloudProcessedConstPtr
+        selectModelPoints (const CloudProcessedConstPtr& cloud_model,
+                           const Transformation&         T_init_inv) const;
 
-      PCLVisualizerPtr p_visualizer_;
-      InHandScannerPtr p_in_hand_scanner_;
-  };
+        CloudProcessedConstPtr
+        selectDataPoints (const CloudProcessedConstPtr& cloud_data) const;
 
+        bool
+        minimizePointPlane (const CloudProcessedConstPtr& cloud_source,
+                            const CloudProcessedConstPtr& cloud_target,
+                            Transformation&               T) const;
+
+      private:
+
+        // Nearest neighbor search
+        KdTreePtr    kd_tree_;
+
+        // Convergence
+        float        epsilon_;     // in m^2
+
+        // Registration failure
+        unsigned int max_iterations_;
+        float        min_overlap_; // [0 1]
+        float        max_fitness_; // in m^2
+
+        // Correspondence rejection
+        float        squared_distance_threshold_factor_;
+        float        normals_threshold_; // cos(angle)
+    };
+
+  } // End namespace ihs
 } // End namespace pcl
 
-#endif // PCL_IN_HAND_SCANNER_MAIN_WINDOW_H
-
+#endif // PCL_IN_HAND_SCANNER_ICP_H
