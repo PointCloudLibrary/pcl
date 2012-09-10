@@ -599,9 +599,18 @@ namespace pcl
         (void)res;
         assert (res == 0);
         pcl::PCDWriter writer;
-//            PCL_INFO ("[pcl::outofcore::OutofcoreOctreeDiskContainer::%s] Concatenating point cloud from %s to new cloud\n", __FUNCTION__, disk_storage_filename_->c_str ());
+        PCL_DEBUG ("[pcl::outofcore::OutofcoreOctreeDiskContainer::%s] Concatenating point cloud from %s to new cloud\n", __FUNCTION__, disk_storage_filename_->c_str ());
+        
+        size_t previous_num_pts = tmp_cloud->width*tmp_cloud->height + input_cloud->width*input_cloud->height;
         pcl::concatenatePointCloud (*tmp_cloud, *input_cloud, *tmp_cloud);
-        writer.writeBinaryCompressed (*disk_storage_filename_, *input_cloud);
+        size_t res_pts = tmp_cloud->width*tmp_cloud->height;
+        
+        (void)previous_num_pts;
+        (void)res_pts;
+        
+        assert (previous_num_pts == res_pts);
+        
+        writer.writeBinaryCompressed (*disk_storage_filename_, *tmp_cloud);
             
       }
       else //otherwise create the point cloud which will be saved to the pcd file for the first time

@@ -696,7 +696,9 @@ namespace pcl
 //            PCL_INFO ("[pcl::outofcore::OutofcoreOctreeBaseNode::%s] Adding %u points at max depth, %u\n",__FUNCTION__, input_cloud->width*input_cloud->height, this->depth_);
             
         this->root_->m_tree_->incrementPointsInLOD (this->depth_, input_cloud->width * input_cloud->height );
+
         payload_->insertRange (input_cloud);            
+
         return (input_cloud->width * input_cloud->height);
       }
       else
