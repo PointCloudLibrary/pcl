@@ -88,7 +88,7 @@ TEST (PCL, Organized_Neighbor_Pointcloud_Nearest_K_Neighbour_Search)
 
   size_t i;
 
-  srand (time (NULL));
+  srand (int (time (NULL)));
 
   unsigned int K;
 
@@ -125,11 +125,11 @@ TEST (PCL, Organized_Neighbor_Pointcloud_Nearest_K_Neighbour_Search)
     for (ypos = -centerY; ypos < centerY; ypos++)
       for (xpos = -centerX; xpos < centerX; xpos++)
       {
-        z = 15.0 * ((double)rand () / (double)(RAND_MAX+1.0))+20;
-        y = (double)ypos*oneOverFocalLength*(double)z;
-        x = (double)xpos*oneOverFocalLength*(double)z;
+        z = 15.0 * (double (rand ()) / double (RAND_MAX+1.0))+20;
+        y = double (ypos * oneOverFocalLength * z);
+        x = double (xpos * oneOverFocalLength * z);
 
-        cloudIn->points.push_back(PointXYZ (x, y, z));
+        cloudIn->points.push_back (PointXYZ (float (x), float (y), float (z)));
       }
 
     unsigned int searchIdx = rand()%(cloudIn->width * cloudIn->height);
@@ -140,7 +140,7 @@ TEST (PCL, Organized_Neighbor_Pointcloud_Nearest_K_Neighbour_Search)
 
     // organized nearest neighbor search
     organizedNeighborSearch.setInputCloud (cloudIn);
-    organizedNeighborSearch.nearestKSearch (searchPoint, (int)K, k_indices, k_sqr_distances);
+    organizedNeighborSearch.nearestKSearch (searchPoint, int (K), k_indices, k_sqr_distances);
 
 
     double pointDist;
@@ -158,7 +158,7 @@ TEST (PCL, Organized_Neighbor_Pointcloud_Nearest_K_Neighbour_Search)
              /*+*/ (cloudIn->points[i].y - searchPoint.y) * (cloudIn->points[i].y - searchPoint.y) +
                    (cloudIn->points[i].z - searchPoint.z) * (cloudIn->points[i].z - searchPoint.z));
 
-      prioPointQueueEntry pointEntry (cloudIn->points[i], pointDist, i);
+      prioPointQueueEntry pointEntry (cloudIn->points[i], pointDist, int (i));
 
       pointCandidates.push (pointEntry);
     }
@@ -171,7 +171,7 @@ TEST (PCL, Organized_Neighbor_Pointcloud_Nearest_K_Neighbour_Search)
     while (pointCandidates.size ())
     {
       k_indices_bruteforce.push_back (pointCandidates.top ().pointIdx_);
-      k_sqr_distances_bruteforce.push_back (pointCandidates.top ().pointDistance_);
+      k_sqr_distances_bruteforce.push_back (float (pointCandidates.top ().pointDistance_));
 
       pointCandidates.pop ();
     }
@@ -201,7 +201,7 @@ TEST (PCL, Organized_Neighbor_Pointcloud_Neighbours_Within_Radius_Search)
 
   size_t i,j;
 
-  srand (time (NULL));
+  srand (int (time (NULL)));
 
 	search::OrganizedNeighbor<PointXYZ> organizedNeighborSearch;
 
@@ -234,11 +234,11 @@ TEST (PCL, Organized_Neighbor_Pointcloud_Neighbours_Within_Radius_Search)
     for (ypos = -centerY; ypos < centerY; ypos++)
       for (xpos = -centerX; xpos < centerX; xpos++)
       {
-        z = 5.0 * ( ((double)rand () / (double)RAND_MAX))+5;
+        z = 5.0 * ( (double (rand ()) / double (RAND_MAX)))+5;
         y = ypos*oneOverFocalLength*z;
         x = xpos*oneOverFocalLength*z;
 
-        cloudIn->points[idx++]= PointXYZ (x, y, z);
+        cloudIn->points[idx++]= PointXYZ (float (x), float (y), float (z));
       }
 
     unsigned int randomIdx = rand()%(cloudIn->width * cloudIn->height);
@@ -246,7 +246,7 @@ TEST (PCL, Organized_Neighbor_Pointcloud_Neighbours_Within_Radius_Search)
     const PointXYZ& searchPoint = cloudIn->points[randomIdx];
 
     double pointDist;
-    double searchRadius = 1.0 * ((double)rand () / (double)RAND_MAX);
+    double searchRadius = 1.0 * (double (rand ()) / double (RAND_MAX));
 
     int minX = cloudIn->width;
     int minY = cloudIn->height;
@@ -267,12 +267,12 @@ TEST (PCL, Organized_Neighbor_Pointcloud_Neighbours_Within_Radius_Search)
       if (pointDist <= searchRadius)
       {
         // add point candidates to vector list
-        cloudSearchBruteforce.push_back ((int)i);
+        cloudSearchBruteforce.push_back (int (i));
 
-        minX = std::min<int>(minX, i%cloudIn->width);
-        minY = std::min<int>(minY, i/cloudIn->width);
-        maxX = std::max<int>(maxX, i%cloudIn->width);
-        maxY = std::max<int>(maxY, i/cloudIn->width);
+        minX = std::min<int>(minX, int (i) % cloudIn->width);
+        minY = std::min<int>(minY, int (i) / cloudIn->width);
+        maxX = std::max<int>(maxX, int (i) % cloudIn->width);
+        maxY = std::max<int>(maxY, int (i) / cloudIn->width);
       }
     }
 

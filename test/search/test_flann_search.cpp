@@ -53,22 +53,24 @@ PointCloud<PointXYZ> cloud, cloud_big;
 void
 init ()
 {
-  float resolution = 0.1;
+  float resolution = 0.1f;
   for (float z = -0.5f; z <= 0.5f; z += resolution)
     for (float y = -0.5f; y <= 0.5f; y += resolution)
       for (float x = -0.5f; x <= 0.5f; x += resolution)
         cloud.points.push_back (PointXYZ (x, y, z));
-  cloud.width = cloud.points.size ();
+  cloud.width = int (cloud.points.size ());
   cloud.height = 1;
 
   cloud_big.width = 640;
   cloud_big.height = 480;
-  srand (time (NULL));
+  srand (int (time (NULL)));
   // Randomly create a new point cloud
   for (size_t i = 0; i < cloud_big.width * cloud_big.height; ++i)
     cloud_big.points.push_back (
-                                PointXYZ (1024 * rand () / (RAND_MAX + 1.0), 1024 * rand () / (RAND_MAX + 1.0),
-                                          1024 * rand () / (RAND_MAX + 1.0)));
+                                PointXYZ (
+                                  float (1024 * rand () / (RAND_MAX + 1.0)),
+                                  float (1024 * rand () / (RAND_MAX + 1.0)),
+                                  float (1024 * rand () / (RAND_MAX + 1.0))));
 };
 
 
@@ -82,7 +84,7 @@ init ()
   for (size_t i = 0; i < cloud.points.size (); ++i)
   {
     float distance = euclideanDistance (cloud.points[i], test_point);
-    sorted_brute_force_result.insert (make_pair (distance, (int)i));
+    sorted_brute_force_result.insert (make_pair (distance, int (i)));
   }
   float max_dist = 0.0f;
   unsigned int counter = 0;
@@ -220,7 +222,7 @@ TEST (PCL, FlannSearch_knnByIndex)
   std::vector< int > query_indices;
   for (size_t i = 0; i<cloud_big.size (); i+=2)
   {
-    query_indices.push_back (i);
+    query_indices.push_back (int (i));
   }
   flann_search->nearestKSearch (cloud_big, query_indices,no_of_neighbors,indices,dists);
 
@@ -332,7 +334,7 @@ TEST (PCL, FlannSearch_knnByIndex)
 
   vector<int> query_indices;
   for (size_t i = 0; i<cloud_big.size (); i+=2)
-    query_indices.push_back (i);
+    query_indices.push_back (int (i));
 
   {
     ScopeTime scopeTime ("FLANN multi nearestKSearch with indices");
