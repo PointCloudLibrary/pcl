@@ -58,6 +58,9 @@ namespace pcl
     class TransformationEstimationSVD : public TransformationEstimation<PointSource, PointTarget, Scalar>
     {
       public:
+        typedef boost::shared_ptr<TransformationEstimationSVD<PointSource, PointTarget, Scalar> > Ptr;
+        typedef boost::shared_ptr<const TransformationEstimationSVD<PointSource, PointTarget, Scalar> > ConstPtr;
+
         typedef typename TransformationEstimation<PointSource, PointTarget, Scalar>::Matrix4 Matrix4;
         
         TransformationEstimationSVD () {};

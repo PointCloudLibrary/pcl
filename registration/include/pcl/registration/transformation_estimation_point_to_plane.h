@@ -58,6 +58,8 @@ namespace pcl
     {
       public:
         typedef boost::shared_ptr<TransformationEstimationPointToPlane<PointSource, PointTarget, Scalar> > Ptr;
+        typedef boost::shared_ptr<const TransformationEstimationPointToPlane<PointSource, PointTarget, Scalar> > ConstPtr;
+
         typedef pcl::PointCloud<PointSource> PointCloudSource;
         typedef typename PointCloudSource::Ptr PointCloudSourcePtr;
         typedef typename PointCloudSource::ConstPtr PointCloudSourceConstPtr;

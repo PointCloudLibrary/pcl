@@ -68,6 +68,9 @@ namespace pcl
       typedef PointIndices::ConstPtr PointIndicesConstPtr;
 
       public:
+        typedef boost::shared_ptr<TransformationEstimationLM<PointSource, PointTarget, MatScalar> > Ptr;
+        typedef boost::shared_ptr<const TransformationEstimationLM<PointSource, PointTarget, MatScalar> > ConstPtr;
+
         typedef Eigen::Matrix<MatScalar, Eigen::Dynamic, 1> VectorX;
         typedef typename TransformationEstimation<PointSource, PointTarget, MatScalar>::Matrix4 Matrix4;
         
