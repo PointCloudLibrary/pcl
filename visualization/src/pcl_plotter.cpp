@@ -569,7 +569,7 @@ pcl::visualization::PCLPlotter::computeHistogram (
   //fill the freq for each data
   for (int i = 0; i < data.size (); i++)
   {
-    int index = int (data[i] - min) / int (size);
+    int index = int (floor ((data[i] - min) / size));
     if (index == nbins) index = nbins - 1; //including right boundary
     histogram[index ].second++;
   }
