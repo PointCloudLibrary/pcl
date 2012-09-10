@@ -375,9 +375,5 @@ main (int argc, char** argv)
   pcl::search::Search<PointXYZ>* FlannSearch = new pcl::search::FlannSearch<PointXYZ> ( new search::FlannSearch<PointXYZ>::KdTreeIndexCreator);
   FlannSearch->setInputCloud (cloud.makeShared ());
 
-  pthread_key_t t;
-  pthread_key_create(&t,0);
-
   return (RUN_ALL_TESTS ());
 }
-;
