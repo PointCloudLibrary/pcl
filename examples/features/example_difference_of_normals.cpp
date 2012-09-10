@@ -103,7 +103,7 @@ int main (int argc, char *argv[])
 
 	  // Create downsampled point cloud for DoN NN search with large scale
 	  large_cloud_downsampled = PointCloud<PointT>::Ptr(new pcl::PointCloud<PointT>);
-	  const float largedownsample = scale2/decimation;
+	  const float largedownsample = float (scale2/decimation);
 	  sor.setLeafSize (largedownsample, largedownsample, largedownsample);
 	  sor.filter (*large_cloud_downsampled);
 	  cout << "Using leaf size of " << largedownsample << " for large scale, " << large_cloud_downsampled->size() << " points" << endl;
@@ -219,7 +219,7 @@ int main (int argc, char *argv[])
 		  cloud_cluster_don->points.push_back (doncloud->points[*pit]);
 		}
 
-		cloud_cluster_don->width = cloud_cluster_don->points.size ();
+		cloud_cluster_don->width = int (cloud_cluster_don->points.size ());
 		cloud_cluster_don->height = 1;
 		cloud_cluster_don->is_dense = true;
 
