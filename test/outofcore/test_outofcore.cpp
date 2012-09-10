@@ -641,6 +641,7 @@ TEST_F (OutofcoreTest, Outofcore_MultiplePointClouds)
 
   EXPECT_EQ (2*numPts, pcl_cloud.getNumPointsAtDepth (pcl_cloud.getDepth ())) << "Points are lost when two points clouds are added to the outofcore file system\n";
   cleanUpFilesystem ();
+
 }
 
 TEST_F (OutofcoreTest, Outofcore_PointCloudInput_LOD)
@@ -761,6 +762,69 @@ TEST_F (OutofcoreTest, PointCloud2_Insertion)
   EXPECT_EQ (octreeA.addPointCloud (input_cloud, false), points_in_input_cloud) << "Insertion failure. Number of points successfully added does not match size of input cloud\n";
   EXPECT_EQ (octreeB.addPointCloud (input_cloud, false), points_in_input_cloud) << "Insertion failure. Number of points successfully added does not match size of input cloud\n";
 }
+
+TEST_F (OutofcoreTest, PointCloud2_MultiplePointCloud)
+{
+
+  cleanUpFilesystem ();
+  
+  //Specify the bounding box of the point clouds
+  const Eigen::Vector3d min (-100.1, -100.1, -100.1);
+  const Eigen::Vector3d max (100.1, 100.1, 100.1);
+
+  //create a point cloud
+  PointCloud<PointT>::Ptr first_cloud (new PointCloud<PointT> ());
+  PointCloud<PointT>::Ptr second_cloud (new PointCloud<PointT> ());
+
+  first_cloud->width = numPts;
+  first_cloud->height = 1;
+  first_cloud->reserve (numPts);
+
+  second_cloud->width = numPts;
+  second_cloud->height = 1;
+  second_cloud->reserve (numPts);
+  
+  //generate some random points
+  for (size_t i=0; i < numPts; i++)
+  {
+    PointT tmp (static_cast<float> (i % 50), 
+                static_cast<float> (i % 50),
+                 static_cast<float> (i % 50));
+    
+    first_cloud->points.push_back (tmp);
+  }
+
+  for (size_t i=0; i < numPts; i++)
+  {
+    PointT tmp (static_cast<float> (i % 50), 
+                 static_cast<float> (i % 50), 
+                 static_cast<float> (i % 50));
+    
+    second_cloud->points.push_back (tmp);
+  }
+
+  sensor_msgs::PointCloud2::Ptr first_cloud_ptr (new sensor_msgs::PointCloud2 ());
+  sensor_msgs::PointCloud2::Ptr second_cloud_ptr (new sensor_msgs::PointCloud2 ());
+  
+  toROSMsg<PointT> (*first_cloud, *first_cloud_ptr);
+  toROSMsg<PointT> (*second_cloud, *second_cloud_ptr);
+
+  //Create an outofcore tree which just concatenates the two clouds into a single PCD in the root node. Check that the number of points is correct.
+  octree_disk shallow_outofcore (0/*depth*/, min, max, filename_otreeB, "ECEF");
+  
+  shallow_outofcore.addPointCloud (first_cloud);
+  shallow_outofcore.addPointCloud (second_cloud);
+  
+  sensor_msgs::PointCloud2::Ptr result (new sensor_msgs::PointCloud2 ());
+  shallow_outofcore.queryBBIncludes (min, max, 0, result);
+  
+  size_t num_points_queried = result->width*result->height;
+  size_t num_points_inserted = first_cloud->width*first_cloud->height + second_cloud->width*second_cloud->height;
+
+  EXPECT_EQ (num_points_inserted, num_points_queried) << "If num_points_inserted > num_points_on_disk, then points were dropped on insertion of multiple clouds in the outofcore octree";
+}
+
+
 
 //test that the PointCloud2 query returns the same points as the templated queries
 TEST_F (OutofcoreTest, PointCloud2_Query)
