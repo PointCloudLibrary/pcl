@@ -84,13 +84,13 @@ loadTrainedFeatures (std::vector<FeatureT::Ptr> &out,
     if (!boost::filesystem::is_directory (it->status ()) &&
         boost::filesystem::extension (it->path ()) == ".pcd")
     {   
-      std::stringstream ss; 
+      std::stringstream ss;
       ss << it->path ().filename ();
 
       print_highlight ("Loading %s \n", ss.str ().c_str ());
       
       FeatureT::Ptr features (new FeatureT);
-      loadPCDFile (it->path ().filename (), *features);
+      loadPCDFile (ss.str (), *features);
 
       out.push_back (features);
     }
