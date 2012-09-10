@@ -81,7 +81,7 @@ namespace pcl
 
           // Compute w from the unit quaternion
           Eigen::Quaternion<Scalar> q (0, p[3], p[4], p[5]);
-          q.w () = sqrt (1 - q.dot (q));
+          q.w () = static_cast<Scalar> (sqrt (1 - q.dot (q)));
           trans.topLeftCorner (3, 3) = q.toRotationMatrix ();
         }
     };
