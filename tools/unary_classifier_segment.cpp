@@ -90,7 +90,7 @@ loadTrainedFeatures (std::vector<FeatureT::Ptr> &out,
       print_highlight ("Loading %s \n", ss.str ().c_str ());
       
       FeatureT::Ptr features (new FeatureT);
-      loadPCDFile (it->path ().filename ().c_str(), *features);
+      loadPCDFile (it->path ().filename (), *features);
 
       out.push_back (features);
     }
