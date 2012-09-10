@@ -1206,7 +1206,7 @@ namespace pcl
 //            PCL_INFO ("[pcl::outofcore::OutofcoreOctreeBaseNode::%s] Partial extraction of points in bounding box. Desired: %.2lf %.2lf %2lf, %.2lf %.2lf %.2lf; This node BB: %.2lf %.2lf %.2lf, %.2lf %.2lf %.2lf\n", __FUNCTION__, min_bb[0], min_bb[1], min_bb[2], max_bb[0], max_bb[1], max_bb[2], min_[0], min_[1], min_[2], max_[0], max_[1], max_[2] );
             
             //put the ros message into a pointxyz point cloud (just to get the indices by using getPointsInBox)
-            pcl::PointCloud<pcl::PointXYZ>::Ptr tmp_cloud ( new pcl::PointCloud<pcl::PointXYZ> () );
+            typename pcl::PointCloud<PointT>::Ptr tmp_cloud ( new pcl::PointCloud<PointT> () );
             pcl::fromROSMsg ( *tmp_blob, *tmp_cloud );
             assert (tmp_blob->width*tmp_blob->height == tmp_cloud->width*tmp_cloud->height );
 
@@ -1812,7 +1812,7 @@ namespace pcl
       
       for ( size_t point_idx =0; point_idx < input_cloud->data.size (); point_idx +=input_cloud->point_step )
       {
-        PointXYZ local_pt;
+        PointT local_pt;
 
         local_pt.x = * (reinterpret_cast<float*>(&input_cloud->data[point_idx + x_offset]));
         local_pt.y = * (reinterpret_cast<float*>(&input_cloud->data[point_idx + y_offset]));
