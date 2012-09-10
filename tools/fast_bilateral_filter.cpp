@@ -49,8 +49,8 @@ using namespace pcl;
 using namespace pcl::io;
 using namespace pcl::console;
 
-float default_sigma_s = 15;
-float default_sigma_r = 0.05;
+float default_sigma_s = 15.0f;
+float default_sigma_r = 0.05f;
 bool default_early_division = false;
 
 void
