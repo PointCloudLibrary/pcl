@@ -198,9 +198,9 @@ TEST (PCL, Matrix4Affine3Transform)
   Eigen::Affine3f affine;
   pcl::getTransformation (0, 0, 0, rot_x, rot_y, rot_z, affine);
 
-  EXPECT_FLOAT_EQ (affine (0, 0),  0.56854731f); EXPECT_FLOAT_EQ (affine (0, 1), -0.82217032f); EXPECT_FLOAT_EQ (affine (0, 2), -0.028107658f);
-  EXPECT_FLOAT_EQ (affine (1, 0), -0.76327348f); EXPECT_FLOAT_EQ (affine (1, 1), -0.51445758f); EXPECT_FLOAT_EQ (affine (1, 2), -0.39082864f);
-  EXPECT_FLOAT_EQ (affine (2, 0),  0.30686751f); EXPECT_FLOAT_EQ (affine (2, 1),  0.24365838f); EXPECT_FLOAT_EQ (affine (2, 2), -0.920034f);
+  EXPECT_NEAR (affine (0, 0),  0.56854731f, 1e-4); EXPECT_NEAR (affine (0, 1), -0.82217032f, 1e-4); EXPECT_NEAR (affine (0, 2), -0.028107658f, 1e-4);
+  EXPECT_NEAR (affine (1, 0), -0.76327348f, 1e-4); EXPECT_NEAR (affine (1, 1), -0.51445758f, 1e-4); EXPECT_NEAR (affine (1, 2), -0.39082864f, 1e-4);
+  EXPECT_NEAR (affine (2, 0),  0.30686751f, 1e-4); EXPECT_NEAR (affine (2, 1),  0.24365838f, 1e-4); EXPECT_NEAR (affine (2, 2), -0.920034f, 1e-4);
 
   // Approximative!!! Uses SVD internally! See http://eigen.tuxfamily.org/dox/Transform_8h_source.html
   Eigen::Matrix3f rotation = affine.rotation ();
