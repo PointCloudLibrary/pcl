@@ -113,7 +113,14 @@ The viewer below displays a sample of the output obtained after the entire pipel
 
 .. raw:: html
 
-    <iframe src="http://pointclouds.org/assets/viewer/pcl_viewer.html?load=http://svn.pointclouds.org/pcl/trunk/doc/tutorials/content/images/using_kinfu_large_scale/using_kinfu_large_scale.pcd&scale=0.004&psize=1" align="center" width="600" height="400" marginwidth="0" marginheight="0" frameborder='no' allowfullscreen mozallowfullscreen webkitallowfullscreen style="max-width: 100%;"></iframe>
+    <iframe src="http://pointclouds.org/assets/viewer/pcl_viewer.html?load=http://svn.pointclouds.org/pcl/trunk/doc/tutorials/content/images/using_kinfu_large_scale/Tutorial_Cloud_Couch_bin_compressed.pcd&scale=0.004&psize=1" align="center" width="600" height="400" marginwidth="0" marginheight="0" frameborder='no' allowfullscreen mozallowfullscreen webkitallowfullscreen style="max-width: 100%;"></iframe>
+
+To further demonstrate the capabilities of KinFu Large Scale, we made another example with a room.
+
+.. raw:: html
+
+    <iframe src="http://pointclouds.org/assets/viewer/pcl_viewer.html?load=http://svn.pointclouds.org/pcl/trunk/doc/tutorials/content/images/using_kinfu_large_scale/using_kinfu_large_scale_output.pcd&scale=0.004&psize=1" align="center" width="600" height="400" marginwidth="0" marginheight="0" frameborder='no' allowfullscreen mozallowfullscreen webkitallowfullscreen style="max-width: 100%;"></iframe>
+
 
 General Recommendations
 -----------------------
