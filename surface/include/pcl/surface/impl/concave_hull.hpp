@@ -139,7 +139,7 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
   // If no input dimension is specified, determine automatically
   if (dim_ == 0)
   {
-    PCL_WARN ("[pcl::%s] WARNING: Input dimension not specified.  Automatically determining input dimension.\n", getClassName ().c_str ());
+    PCL_DEBUG ("[pcl::%s] WARNING: Input dimension not specified.  Automatically determining input dimension.\n", getClassName ().c_str ());
     if (eigen_values[0] / eigen_values[2] < 1.0e-3)
       dim_ = 2;
     else
