@@ -106,6 +106,15 @@ The following video shows the process in detail. It also shows the final output 
   
      <iframe width="420" height="315" src="http://www.youtube.com/embed/7S7Jj-4cKHs" frameborder="0" allowfullscreen></iframe>
 
+Output
+-------
+
+The viewer below displays a sample of the output obtained after the entire pipeline. The mesh was decimated, and the faces were removed so that only the points remained. So, the output mesh was converted from mesh (.ply) to point cloud (.pcd) to show it in this tutorial. The vertex count is ~900k points.
+
+.. raw:: html
+
+    <iframe src="http://pointclouds.org/assets/viewer/pcl_viewer.html?load=http://svn.pointclouds.org/pcl/trunk/doc/tutorials/content/images/using_kinfu_large_scale/using_kinfu_large_scale.pcd&scale=0.004&psize=1" align="center" width="600" height="400" marginwidth="0" marginheight="0" frameborder='no' allowfullscreen mozallowfullscreen webkitallowfullscreen style="max-width: 100%;"></iframe>
+
 General Recommendations
 -----------------------
 
