@@ -294,7 +294,7 @@ namespace pcl
   inline std::ostream&
   operator << (std::ostream& os, const RGB& p)
   {
-    os << "(" 
+    os << "("
       << static_cast<int>(p.r) << ","
       << static_cast<int>(p.g) << ","
       << static_cast<int>(p.b) << ","
@@ -394,7 +394,7 @@ namespace pcl
       intensity = _intensity;
     }
   };
-  inline std::ostream& 
+  inline std::ostream&
   operator << (std::ostream& os, const PointXYZI& p)
   {
     os << "(" << p.x << "," << p.y << "," << p.z << " - " << p.intensity << ")";
@@ -486,8 +486,8 @@ namespace pcl
     }
     inline Eigen::Vector3i getRGBVector3i () { return (Eigen::Vector3i (r, g, b)); }
     inline const Eigen::Vector3i getRGBVector3i () const { return (Eigen::Vector3i (r, g, b)); }
-    inline Eigen::Vector4i getRGBVector4i () { return (Eigen::Vector4i (r, g, b, 0)); }
-    inline const Eigen::Vector4i getRGBVector4i () const { return (Eigen::Vector4i (r, g, b, 0)); }
+    inline Eigen::Vector4i getRGBVector4i () { return (Eigen::Vector4i (r, g, b, a)); }
+    inline const Eigen::Vector4i getRGBVector4i () const { return (Eigen::Vector4i (r, g, b, a)); }
   };
 
   inline std::ostream&
@@ -575,8 +575,8 @@ namespace pcl
 
     inline Eigen::Vector3i getRGBVector3i () { return (Eigen::Vector3i (r, g, b)); }
     inline const Eigen::Vector3i getRGBVector3i () const { return (Eigen::Vector3i (r, g, b)); }
-    inline Eigen::Vector4i getRGBVector4i () { return (Eigen::Vector4i (r, g, b, 0)); }
-    inline const Eigen::Vector4i getRGBVector4i () const { return (Eigen::Vector4i (r, g, b, 0)); }
+    inline Eigen::Vector4i getRGBVector4i () { return (Eigen::Vector4i (r, g, b, a)); }
+    inline const Eigen::Vector4i getRGBVector4i () const { return (Eigen::Vector4i (r, g, b, a)); }
 
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
@@ -684,7 +684,7 @@ namespace pcl
     return (os);
   }
 
-  /** \brief A 2D point structure representing pixel image coordinates. 
+  /** \brief A 2D point structure representing pixel image coordinates.
     * \note We use float to be able to represent subpixels.
     * \ingroup common
     */
@@ -931,8 +931,8 @@ namespace pcl
 
     inline Eigen::Vector3i getRGBVector3i () { return (Eigen::Vector3i (r, g, b)); }
     inline const Eigen::Vector3i getRGBVector3i () const { return (Eigen::Vector3i (r, g, b)); }
-    inline Eigen::Vector4i getRGBVector4i () { return (Eigen::Vector4i (r, g, b, 0)); }
-    inline const Eigen::Vector4i getRGBVector4i () const { return (Eigen::Vector4i (r, g, b, 0)); }
+    inline Eigen::Vector4i getRGBVector4i () { return (Eigen::Vector4i (r, g, b, a)); }
+    inline const Eigen::Vector4i getRGBVector4i () const { return (Eigen::Vector4i (r, g, b, a)); }
   };
   inline std::ostream& operator << (std::ostream& os, const PointXYZRGBNormal& p)
   {
@@ -1050,7 +1050,7 @@ namespace pcl
       vp_x = p.vp_x; vp_y = p.vp_y; vp_z = p.vp_z;
     }
 
-    inline PointWithViewpoint (float _x = 0.0f, float _y = 0.0f, float _z = 0.0f, 
+    inline PointWithViewpoint (float _x = 0.0f, float _y = 0.0f, float _z = 0.0f,
                                float _vp_x = 0.0f, float _vp_y = 0.0f, float _vp_z = 0.0f)
     {
       x = _x; y = _y; z = _z;
@@ -1292,9 +1292,9 @@ namespace pcl
 
   inline std::ostream& operator << (std::ostream& os, const ReferenceFrame& p)
   {
-    os << "(" 
-       << p.x_axis[0] << " " << p.x_axis[1] << " " << p.x_axis[2] << "," 
-       << p.y_axis[0] << " " << p.y_axis[1] << " " << p.y_axis[2] << "," 
+    os << "("
+       << p.x_axis[0] << " " << p.x_axis[1] << " " << p.x_axis[2] << ","
+       << p.y_axis[0] << " " << p.y_axis[1] << " " << p.y_axis[2] << ","
        << p.z_axis[0] << " " << p.z_axis[1] << " " << p.z_axis[2] << ")";
     return (os);
   }
@@ -1338,7 +1338,7 @@ namespace pcl
   };
   inline std::ostream& operator << (std::ostream& os, const BRISKSignature512& p)
   {
-    os << p.scale << " " << p.orientation << " "; 
+    os << p.scale << " " << p.orientation << " ";
     for (int i = 0; i < 64; ++i)
     os << (i == 0 ? "(" : "") << p.descriptor[i] << (i < 63 ? ", " : ")");
     return (os);
@@ -1449,14 +1449,14 @@ namespace pcl
   struct EIGEN_ALIGN16 _PointWithScale
   {
     PCL_ADD_POINT4D; // This adds the members x,y,z which can also be accessed using the point (which is float[4])
-    
+
     union
     {
       /** \brief Diameter of the meaningfull keypoint neighborhood. */
       float scale;
       float size;
     };
-    
+
     /** \brief Computed orientation of the keypoint (-1 if not applicable). */
     float angle;
     /** \brief The response by which the most strong keypoints have been selected. */
