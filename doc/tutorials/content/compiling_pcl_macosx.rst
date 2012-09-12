@@ -149,7 +149,7 @@ Install VTK
 
 To install via MacPorts::
 
-   $ sudo port install vtk5 +x11
+   $ sudo port install vtk5 +qt4_mac
    
 To install from source download the source from
 http://www.vtk.org/VTK/resources/software.html
@@ -166,22 +166,13 @@ Within the CMake configuration:
 
    Press [t] to get into advanced mode and change the following::
    
-      OPENGL_INCLUDE_DIR:/usr/X11R6/include
-      OPENGL_gl_LIBRARY:-L/usr/X11R6/lib -lGL
-      OPENGL_glu_LIBRARY:-L/usr/X11R6/lib -lGLU
-      OPENGL_xmesa_INCLUDE_DIR:/usr/X11R6/include
       VTK_USE_CARBON:OFF
-      VTK_USE_COCOA:OFF
-      VTK_USE_X:ON
-
-   .. note::
-      
-      If you don't see OPENGL_xmesa_INCLUDE_DIR when you first load it's because
-      VTK_USE_X: OFF.  Once set to ON you should see it.
+      VTK_USE_COCOA:ON
+      VTK_USE_X:OFF
 
    .. note::
 
-      VTK *must* be built with X11 support and *must* be installed,
+      VTK *must* be built with Cocoa support and *must* be installed,
       in order for the visualization module to be able to compile. If you do
       not require visualisation, you may omit this step.
 
