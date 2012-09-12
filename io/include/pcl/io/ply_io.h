@@ -522,7 +522,7 @@ namespace pcl
         * \param[in] cloud the point cloud data message
         * \param[in] origin the sensor data acquisition origin (translation)
         * \param[in] orientation the sensor data acquisition origin (rotation)
-        *.\param[in] use_camera if set to true then PLY file will use element camera else
+        * \param[in] use_camera if set to true then PLY file will use element camera else
         * element range_grid will be used
         */
       int 
