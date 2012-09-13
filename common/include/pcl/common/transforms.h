@@ -67,14 +67,6 @@ namespace pcl
     return (transformPointCloud<PointT, float> (cloud_in, cloud_out, transform));
   }
 
-  template <typename PointT> void 
-  transformPointCloud (const pcl::PointCloud<PointT> &cloud_in, 
-                       pcl::PointCloud<PointT> &cloud_out, 
-                       const Eigen::Affine3d &transform)
-  {
-    return (transformPointCloud<PointT, double> (cloud_in, cloud_out, transform));
-  }
-
   /** \brief Apply an affine transform defined by an Eigen Transform
     * \param[in] cloud_in the input point cloud
     * \param[in] indices the set of point indices to use from the input point cloud
@@ -95,15 +87,6 @@ namespace pcl
                        const Eigen::Affine3f &transform)
   {
     return (transformPointCloud<PointT, float> (cloud_in, indices, cloud_out, transform));
-  }
-
-  template <typename PointT> void 
-  transformPointCloud (const pcl::PointCloud<PointT> &cloud_in, 
-                       const std::vector<int> &indices, 
-                       pcl::PointCloud<PointT> &cloud_out, 
-                       const Eigen::Affine3d &transform)
-  {
-    return (transformPointCloud<PointT, double> (cloud_in, indices, cloud_out, transform));
   }
 
   /** \brief Apply an affine transform defined by an Eigen Transform
@@ -131,15 +114,6 @@ namespace pcl
     return (transformPointCloud<PointT, float> (cloud_in, indices, cloud_out, transform));
   }
 
-  template <typename PointT> void 
-  transformPointCloud (const pcl::PointCloud<PointT> &cloud_in, 
-                       const pcl::PointIndices &indices, 
-                       pcl::PointCloud<PointT> &cloud_out, 
-                       const Eigen::Affine3d &transform)
-  {
-    return (transformPointCloud<PointT, double> (cloud_in, indices, cloud_out, transform));
-  }
-
   /** \brief Transform a point cloud and rotate its normals using an Eigen transform.
     * \param[in] cloud_in the input point cloud
     * \param[out] cloud_out the resultant output point cloud
@@ -157,14 +131,6 @@ namespace pcl
                                   const Eigen::Affine3f &transform)
   {
     return (transformPointCloudWithNormals<PointT, float> (cloud_in, cloud_out, transform));
-  }
-
-  template <typename PointT> void 
-  transformPointCloudWithNormals (const pcl::PointCloud<PointT> &cloud_in, 
-                                  pcl::PointCloud<PointT> &cloud_out, 
-                                  const Eigen::Affine3d &transform)
-  {
-    return (transformPointCloudWithNormals<PointT, double> (cloud_in, cloud_out, transform));
   }
 
   /** \brief Transform a point cloud and rotate its normals using an Eigen transform.
@@ -186,15 +152,6 @@ namespace pcl
                                   const Eigen::Affine3f &transform)
   {
     return (transformPointCloudWithNormals<PointT, float> (cloud_in, indices, cloud_out, transform));
-  }
-
-  template <typename PointT> void 
-  transformPointCloudWithNormals (const pcl::PointCloud<PointT> &cloud_in, 
-                                  const std::vector<int> &indices, 
-                                  pcl::PointCloud<PointT> &cloud_out, 
-                                  const Eigen::Affine3d &transform)
-  {
-    return (transformPointCloudWithNormals<PointT, double> (cloud_in, indices, cloud_out, transform));
   }
 
   /** \brief Transform a point cloud and rotate its normals using an Eigen transform.
@@ -222,15 +179,6 @@ namespace pcl
     return (transformPointCloudWithNormals<PointT, float> (cloud_in, indices, cloud_out, transform));
   }
 
-  template <typename PointT> void 
-  transformPointCloudWithNormals (const pcl::PointCloud<PointT> &cloud_in, 
-                                  const pcl::PointIndices &indices, 
-                                  pcl::PointCloud<PointT> &cloud_out, 
-                                  const Eigen::Affine3d &transform)
-  {
-    return (transformPointCloudWithNormals<PointT, double> (cloud_in, indices, cloud_out, transform));
-  }
-
   /** \brief Apply a rigid transform defined by a 4x4 matrix
     * \param[in] cloud_in the input point cloud
     * \param[out] cloud_out the resultant output point cloud
@@ -253,14 +201,6 @@ namespace pcl
                        const Eigen::Matrix4f &transform)
   {
     return (transformPointCloud<PointT, float> (cloud_in, cloud_out, transform));
-  }
-
-  template <typename PointT> void 
-  transformPointCloud (const pcl::PointCloud<PointT> &cloud_in, 
-                       pcl::PointCloud<PointT> &cloud_out, 
-                       const Eigen::Matrix4d &transform)
-  {
-    return (transformPointCloud<PointT, double> (cloud_in, cloud_out, transform));
   }
 
   /** \brief Apply a rigid transform defined by a 4x4 matrix
@@ -289,15 +229,6 @@ namespace pcl
     return (transformPointCloud<PointT, float> (cloud_in, indices, cloud_out, transform));
   }
 
-  template <typename PointT> void 
-  transformPointCloud (const pcl::PointCloud<PointT> &cloud_in, 
-                       const std::vector<int> &indices, 
-                       pcl::PointCloud<PointT> &cloud_out, 
-                       const Eigen::Matrix4d &transform)
-  {
-    return (transformPointCloud<PointT, double> (cloud_in, indices, cloud_out, transform));
-  }
-
   /** \brief Apply a rigid transform defined by a 4x4 matrix
     * \param[in] cloud_in the input point cloud
     * \param[in] indices the set of point indices to use from the input point cloud
@@ -321,15 +252,6 @@ namespace pcl
                        const Eigen::Matrix4f &transform)
   {
     return (transformPointCloud<PointT, float> (cloud_in, indices, cloud_out, transform));
-  }
-
-  template <typename PointT> void 
-  transformPointCloud (const pcl::PointCloud<PointT> &cloud_in, 
-                       const pcl::PointIndices &indices, 
-                       pcl::PointCloud<PointT> &cloud_out, 
-                       const Eigen::Matrix4d &transform)
-  {
-    return (transformPointCloud<PointT, double> (cloud_in, indices, cloud_out, transform));
   }
 
   /** \brief Transform a point cloud and rotate its normals using an Eigen transform.
@@ -357,14 +279,6 @@ namespace pcl
     return (transformPointCloudWithNormals<PointT, float> (cloud_in, cloud_out, transform));
   }
 
-  template <typename PointT> void 
-  transformPointCloudWithNormals (const pcl::PointCloud<PointT> &cloud_in, 
-                                  pcl::PointCloud<PointT> &cloud_out, 
-                                  const Eigen::Matrix4d &transform)
-  {
-    return (transformPointCloudWithNormals<PointT, double> (cloud_in, cloud_out, transform));
-  }
-
   /** \brief Transform a point cloud and rotate its normals using an Eigen transform.
     * \param[in] cloud_in the input point cloud
     * \param[in] indices the set of point indices to use from the input point cloud
@@ -393,15 +307,6 @@ namespace pcl
     return (transformPointCloudWithNormals<PointT, float> (cloud_in, indices, cloud_out, transform));
   }
 
-  template <typename PointT> void 
-  transformPointCloudWithNormals (const pcl::PointCloud<PointT> &cloud_in, 
-                                  const std::vector<int> &indices, 
-                                  pcl::PointCloud<PointT> &cloud_out, 
-                                  const Eigen::Matrix4d &transform)
-  {
-    return (transformPointCloudWithNormals<PointT, double> (cloud_in, indices, cloud_out, transform));
-  }
-
   /** \brief Transform a point cloud and rotate its normals using an Eigen transform.
     * \param[in] cloud_in the input point cloud
     * \param[in] indices the set of point indices to use from the input point cloud
@@ -428,15 +333,6 @@ namespace pcl
                                   const Eigen::Matrix4f &transform)
   {
     return (transformPointCloudWithNormals<PointT, float> (cloud_in, indices, cloud_out, transform));
-  }
-
-  template <typename PointT> void 
-  transformPointCloudWithNormals (const pcl::PointCloud<PointT> &cloud_in, 
-                                  const pcl::PointIndices &indices, 
-                                  pcl::PointCloud<PointT> &cloud_out, 
-                                  const Eigen::Matrix4d &transform)
-  {
-    return (transformPointCloudWithNormals<PointT, double> (cloud_in, indices, cloud_out, transform));
   }
 
   /** \brief Apply a rigid transform defined by a 3D offset and a quaternion
@@ -461,15 +357,6 @@ namespace pcl
     return (transformPointCloud<PointT, float> (cloud_in, cloud_out, offset, rotation));
   }
 
-  template <typename PointT> inline void 
-  transformPointCloud (const pcl::PointCloud<PointT> &cloud_in, 
-                       pcl::PointCloud<PointT> &cloud_out, 
-                       const Eigen::Vector3d &offset, 
-                       const Eigen::Quaterniond &rotation)
-  {
-    return (transformPointCloud<PointT, double> (cloud_in, cloud_out, offset, rotation));
-  }
-
   /** \brief Transform a point cloud and rotate its normals using an Eigen transform.
     * \param[in] cloud_in the input point cloud
     * \param[out] cloud_out the resultant output point cloud
@@ -492,15 +379,6 @@ namespace pcl
     return (transformPointCloudWithNormals<PointT, float> (cloud_in, cloud_out, offset, rotation));
   }
 
-  template <typename PointT> void 
-  transformPointCloudWithNormals (const pcl::PointCloud<PointT> &cloud_in, 
-                                  pcl::PointCloud<PointT> &cloud_out, 
-                                  const Eigen::Vector3d &offset, 
-                                  const Eigen::Quaterniond &rotation)
-  {
-    return (transformPointCloudWithNormals<PointT, double> (cloud_in, cloud_out, offset, rotation));
-  }
-
   /** \brief Transform a point with members x,y,z
     * \param[in] point the point to transform
     * \param[out] transform the transformation to apply
@@ -516,13 +394,6 @@ namespace pcl
                   const Eigen::Affine3f &transform)
   {
     return (transformPoint<PointT, float> (point, transform));
-  }
-
-  template <typename PointT> inline PointT
-  transformPoint (const PointT &point, 
-                  const Eigen::Affine3d &transform)
-  {
-    return (transformPoint<PointT, double> (point, transform));
   }
 
   /** \brief Calculates the principal (PCA-based) alignment of the point cloud
@@ -541,13 +412,6 @@ namespace pcl
                               Eigen::Affine3f &transform)
   {
     return (getPrincipalTransformation<PointT, float> (cloud, transform));
-  }
-
-  template <typename PointT> inline double
-  getPrincipalTransformation (const pcl::PointCloud<PointT> &cloud, 
-                              Eigen::Affine3d &transform)
-  {
-    return (getPrincipalTransformation<PointT, double> (cloud, transform));
   }
 }
 
