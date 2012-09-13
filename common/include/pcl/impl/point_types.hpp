@@ -221,8 +221,8 @@ namespace pcl
   };
 
   /** \brief A point structure representing Euclidean xyz coordinates. (SSE friendly)
-   * \ingroup common
-   */
+    * \ingroup common
+    */
   struct EIGEN_ALIGN16 PointXYZ : public _PointXYZ
   {
     inline PointXYZ (const _PointXYZ &p)
@@ -252,6 +252,14 @@ namespace pcl
   }
 
 
+#ifdef RGB
+#undef RGB
+#endif
+  struct _RGB
+  {
+    PCL_ADD_RGB;
+  };
+  
   /** \brief A structure representing RGB color information.
     *
     * The RGBA information is available either as separate r, g, b, or as a
@@ -271,13 +279,6 @@ namespace pcl
     * \endcode
     *
     */
-#ifdef RGB
-#undef RGB
-#endif
-  struct _RGB
-  {
-    PCL_ADD_RGB;
-  };
   struct RGB: public _RGB
   {
     inline RGB (const _RGB &p)
@@ -302,14 +303,15 @@ namespace pcl
     return (os);
   }
 
-  /** \brief A point structure representing the grayscale intensity in single-channel images.
-    * Intensity is represented as a float value.
-    * \ingroup common
-    */
   struct _Intensity
   {
     PCL_ADD_INTENSITY;
   };
+
+  /** \brief A point structure representing the grayscale intensity in single-channel images.
+    * Intensity is represented as a float value.
+    * \ingroup common
+    */
   struct Intensity: public _Intensity
   {
     inline Intensity (const _Intensity &p)
@@ -329,14 +331,15 @@ namespace pcl
     return (os);
   }
 
-  /** \brief A point structure representing the grayscale intensity in single-channel images.
-    * Intensity is represented as a uint8_t value.
-    * \ingroup common
-    */
   struct _Intensity8u
   {
     PCL_ADD_INTENSITY_8U;
   };
+
+  /** \brief A point structure representing the grayscale intensity in single-channel images.
+    * Intensity is represented as a uint8_t value.
+    * \ingroup common
+    */
   struct Intensity8u: public _Intensity8u
   {
     inline Intensity8u (const _Intensity8u &p)
@@ -442,26 +445,6 @@ namespace pcl
   }
 
 
-  /** \brief A point structure representing Euclidean xyz coordinates, and the RGBA color.
-   *
-   * The RGBA information is available either as separate r, g, b, or as a
-   * packed uint32_t rgba value. To pack it, use:
-   *
-   * \code
-   * int rgb = ((int)r) << 16 | ((int)g) << 8 | ((int)b);
-   * \endcode
-   *
-   * To unpack it use:
-   *
-   * \code
-   * int rgb = ...;
-   * uint8_t r = (rgb >> 16) & 0x0000ff;
-   * uint8_t g = (rgb >> 8)  & 0x0000ff;
-   * uint8_t b = (rgb)     & 0x0000ff;
-   * \endcode
-   *
-   * \ingroup common
-   */
   struct EIGEN_ALIGN16 _PointXYZRGBA
   {
     PCL_ADD_POINT4D; // This adds the members x,y,z which can also be accessed using the point (which is float[4])
@@ -469,6 +452,26 @@ namespace pcl
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 
+  /** \brief A point structure representing Euclidean xyz coordinates, and the RGBA color.
+    *
+    * The RGBA information is available either as separate r, g, b, or as a
+    * packed uint32_t rgba value. To pack it, use:
+    *
+    * \code
+    * int rgb = ((int)r) << 16 | ((int)g) << 8 | ((int)b);
+    * \endcode
+    *
+    * To unpack it use:
+    *
+    * \code
+    * int rgb = ...;
+    * uint8_t r = (rgb >> 16) & 0x0000ff;
+    * uint8_t g = (rgb >> 8)  & 0x0000ff;
+    * uint8_t b = (rgb)     & 0x0000ff;
+    * \endcode
+    *
+    * \ingroup common
+    */
   struct EIGEN_ALIGN16 PointXYZRGBA : public _PointXYZRGBA
   {
     inline PointXYZRGBA (const _PointXYZRGBA &p)
@@ -518,36 +521,36 @@ namespace pcl
   };
 
   /** \brief A point structure representing Euclidean xyz coordinates, and the RGB color.
-   *
-   * Due to historical reasons (PCL was first developed as a ROS package), the
-   * RGB information is packed into an integer and casted to a float. This is
-   * something we wish to remove in the near future, but in the meantime, the
-   * following code snippet should help you pack and unpack RGB colors in your
-   * PointXYZRGB structure:
-   *
-   * \code
-   * // pack r/g/b into rgb
-   * uint8_t r = 255, g = 0, b = 0;    // Example: Red color
-   * uint32_t rgb = ((uint32_t)r << 16 | (uint32_t)g << 8 | (uint32_t)b);
-   * p.rgb = *reinterpret_cast<float*>(&rgb);
-   * \endcode
-   *
-   * To unpack the data into separate values, use:
-   *
-   * \code
-   * PointXYZRGB p;
-   * // unpack rgb into r/g/b
-   * uint32_t rgb = *reinterpret_cast<int*>(&p.rgb);
-   * uint8_t r = (rgb >> 16) & 0x0000ff;
-   * uint8_t g = (rgb >> 8)  & 0x0000ff;
-   * uint8_t b = (rgb)       & 0x0000ff;
-   * \endcode
-   *
-   *
-   * Alternatively, from 1.1.0 onwards, you can use p.r, p.g, and p.b directly.
-   *
-   * \ingroup common
-   */
+    *
+    * Due to historical reasons (PCL was first developed as a ROS package), the
+    * RGB information is packed into an integer and casted to a float. This is
+    * something we wish to remove in the near future, but in the meantime, the
+    * following code snippet should help you pack and unpack RGB colors in your
+    * PointXYZRGB structure:
+    *
+    * \code
+    * // pack r/g/b into rgb
+    * uint8_t r = 255, g = 0, b = 0;    // Example: Red color
+    * uint32_t rgb = ((uint32_t)r << 16 | (uint32_t)g << 8 | (uint32_t)b);
+    * p.rgb = *reinterpret_cast<float*>(&rgb);
+    * \endcode
+    *
+    * To unpack the data into separate values, use:
+    *
+    * \code
+    * PointXYZRGB p;
+    * // unpack rgb into r/g/b
+    * uint32_t rgb = *reinterpret_cast<int*>(&p.rgb);
+    * uint8_t r = (rgb >> 16) & 0x0000ff;
+    * uint8_t g = (rgb >> 8)  & 0x0000ff;
+    * uint8_t b = (rgb)       & 0x0000ff;
+    * \endcode
+    *
+    *
+    * Alternatively, from 1.1.0 onwards, you can use p.r, p.g, and p.b directly.
+    *
+    * \ingroup common
+    */
   struct EIGEN_ALIGN16 PointXYZRGB : public _PointXYZRGB
   {
     inline PointXYZRGB (const _PointXYZRGB &p)
@@ -700,8 +703,8 @@ namespace pcl
   }
 
   /** \brief A point structure representing an interest point with Euclidean xyz coordinates, and an interest value.
-   * \ingroup common
-   */
+    * \ingroup common
+    */
   struct EIGEN_ALIGN16 InterestPoint
   {
     PCL_ADD_POINT4D; // This adds the members x,y,z which can also be accessed using the point (which is float[4])
@@ -721,9 +724,6 @@ namespace pcl
     return (os);
   }
 
-  /** \brief A point structure representing normal coordinates and the surface curvature estimate. (SSE friendly)
-   * \ingroup common
-   */
   struct EIGEN_ALIGN16 _Normal
   {
     PCL_ADD_NORMAL4D; // This adds the member normal[3] which can also be accessed using the point (which is float[4])
@@ -738,6 +738,9 @@ namespace pcl
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 
+  /** \brief A point structure representing normal coordinates and the surface curvature estimate. (SSE friendly)
+    * \ingroup common
+    */
   struct Normal : public _Normal
   {
     inline Normal (const _Normal &p)
@@ -769,15 +772,15 @@ namespace pcl
     return (os);
   }
 
-  /** \brief A point structure representing an Axis using its normal coordinates. (SSE friendly)
-    *  \ingroup common
-    */
   struct EIGEN_ALIGN16 _Axis
   {
     PCL_ADD_NORMAL4D;
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 
+  /** \brief A point structure representing an Axis using its normal coordinates. (SSE friendly)
+    *  \ingroup common
+    */
   struct EIGEN_ALIGN16 Axis : public _Axis
   {
     inline Axis (const _Axis &p)
@@ -812,9 +815,6 @@ namespace pcl
     return os;
   }
 
-  /** \brief A point structure representing Euclidean xyz coordinates, together with normal coordinates and the surface curvature estimate. (SSE friendly)
-   * \ingroup common
-   */
   struct EIGEN_ALIGN16 _PointNormal
   {
     PCL_ADD_POINT4D; // This adds the members x,y,z which can also be accessed using the point (which is float[4])
@@ -830,6 +830,9 @@ namespace pcl
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 
+  /** \brief A point structure representing Euclidean xyz coordinates, together with normal coordinates and the surface curvature estimate. (SSE friendly)
+    * \ingroup common
+    */
   struct PointNormal : public _PointNormal
   {
     inline PointNormal (const _PointNormal &p)
@@ -853,35 +856,6 @@ namespace pcl
     return (os);
   }
 
-  /** \brief A point structure representing Euclidean xyz coordinates, and the RGB color, together with normal coordinates and the surface curvature estimate.
-   * Due to historical reasons (PCL was first developed as a ROS package), the
-   * RGB information is packed into an integer and casted to a float. This is
-   * something we wish to remove in the near future, but in the meantime, the
-   * following code snippet should help you pack and unpack RGB colors in your
-   * PointXYZRGB structure:
-   *
-   * \code
-   * // pack r/g/b into rgb
-   * uint8_t r = 255, g = 0, b = 0;    // Example: Red color
-   * uint32_t rgb = ((uint32_t)r << 16 | (uint32_t)g << 8 | (uint32_t)b);
-   * p.rgb = *reinterpret_cast<float*>(&rgb);
-   * \endcode
-   *
-   * To unpack the data into separate values, use:
-   *
-   * \code
-   * PointXYZRGB p;
-   * // unpack rgb into r/g/b
-   * uint32_t rgb = *reinterpret_cast<int*>(&p.rgb);
-   * uint8_t r = (rgb >> 16) & 0x0000ff;
-   * uint8_t g = (rgb >> 8)  & 0x0000ff;
-   * uint8_t b = (rgb)       & 0x0000ff;
-   * \endcode
-   *
-   *
-   * Alternatively, from 1.1.0 onwards, you can use p.r, p.g, and p.b directly.
-   * \ingroup common
-   */
   struct EIGEN_ALIGN16 _PointXYZRGBNormal
   {
     PCL_ADD_POINT4D; // This adds the members x,y,z which can also be accessed using the point (which is float[4])
@@ -909,6 +883,36 @@ namespace pcl
     };
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
+
+  /** \brief A point structure representing Euclidean xyz coordinates, and the RGB color, together with normal coordinates and the surface curvature estimate.
+    * Due to historical reasons (PCL was first developed as a ROS package), the
+    * RGB information is packed into an integer and casted to a float. This is
+    * something we wish to remove in the near future, but in the meantime, the
+    * following code snippet should help you pack and unpack RGB colors in your
+    * PointXYZRGB structure:
+    *
+    * \code
+    * // pack r/g/b into rgb
+    * uint8_t r = 255, g = 0, b = 0;    // Example: Red color
+    * uint32_t rgb = ((uint32_t)r << 16 | (uint32_t)g << 8 | (uint32_t)b);
+    * p.rgb = *reinterpret_cast<float*>(&rgb);
+    * \endcode
+    *
+    * To unpack the data into separate values, use:
+    *
+    * \code
+    * PointXYZRGB p;
+    * // unpack rgb into r/g/b
+    * uint32_t rgb = *reinterpret_cast<int*>(&p.rgb);
+    * uint8_t r = (rgb >> 16) & 0x0000ff;
+    * uint8_t g = (rgb >> 8)  & 0x0000ff;
+    * uint8_t b = (rgb)       & 0x0000ff;
+    * \endcode
+    *
+    *
+    * Alternatively, from 1.1.0 onwards, you can use p.r, p.g, and p.b directly.
+    * \ingroup common
+    */
   struct PointXYZRGBNormal : public _PointXYZRGBNormal
   {
     inline PointXYZRGBNormal (const _PointXYZRGBNormal &p)
@@ -940,9 +944,6 @@ namespace pcl
     return (os);
   }
 
-  /** \brief A point structure representing Euclidean xyz coordinates, intensity, together with normal coordinates and the surface curvature estimate.
-   * \ingroup common
-   */
   struct EIGEN_ALIGN16 _PointXYZINormal
   {
     PCL_ADD_POINT4D; // This adds the members x,y,z which can also be accessed using the point (which is float[4])
@@ -959,6 +960,9 @@ namespace pcl
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 
+  /** \brief A point structure representing Euclidean xyz coordinates, intensity, together with normal coordinates and the surface curvature estimate.
+    * \ingroup common
+    */
   struct PointXYZINormal : public _PointXYZINormal
   {
     inline PointXYZINormal (const _PointXYZINormal &p)
@@ -984,9 +988,6 @@ namespace pcl
     return (os);
   }
 
-  /** \brief A point structure representing Euclidean xyz coordinates, padded with an extra range float.
-   * \ingroup common
-   */
   struct EIGEN_ALIGN16 _PointWithRange
   {
     PCL_ADD_POINT4D; // This adds the members x,y,z which can also be accessed using the point (which is float[4])
@@ -1001,6 +1002,9 @@ namespace pcl
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 
+  /** \brief A point structure representing Euclidean xyz coordinates, padded with an extra range float.
+    * \ingroup common
+    */
   struct PointWithRange : public _PointWithRange
   {
     inline PointWithRange (const _PointWithRange &p)
@@ -1040,8 +1044,8 @@ namespace pcl
   };
 
   /** \brief A point structure representing Euclidean xyz coordinates together with the viewpoint from which it was seen.
-   * \ingroup common
-   */
+    * \ingroup common
+    */
   struct EIGEN_ALIGN16 PointWithViewpoint : public _PointWithViewpoint
   {
     inline PointWithViewpoint (const _PointWithViewpoint &p)
@@ -1065,8 +1069,8 @@ namespace pcl
   }
 
   /** \brief A point structure representing the three moment invariants.
-   * \ingroup common
-   */
+    * \ingroup common
+    */
   struct MomentInvariants
   {
     float j1, j2, j3;
@@ -1078,8 +1082,8 @@ namespace pcl
   }
 
   /** \brief A point structure representing the minimum and maximum surface radii (in meters) computed using RSD.
-   * \ingroup common
-   */
+    * \ingroup common
+    */
   struct PrincipalRadiiRSD
   {
     float r_min, r_max;
@@ -1091,8 +1095,8 @@ namespace pcl
   }
 
   /** \brief A point structure representing a description of whether a point is lying on a surface boundary or not.
-   * \ingroup common
-   */
+    * \ingroup common
+    */
   struct Boundary
   {
     uint8_t boundary_point;
@@ -1104,8 +1108,8 @@ namespace pcl
   }
 
   /** \brief A point structure representing the principal curvatures and their magnitudes.
-   * \ingroup common
-   */
+    * \ingroup common
+    */
   struct PrincipalCurvatures
   {
     union
@@ -1128,8 +1132,8 @@ namespace pcl
   }
 
   /** \brief A point structure representing the Point Feature Histogram (PFH).
-   * \ingroup common
-   */
+    * \ingroup common
+    */
   struct PFHSignature125
   {
     float histogram[125];
@@ -1142,8 +1146,8 @@ namespace pcl
   }
 
   /** \brief A point structure representing the Point Feature Histogram with colors (PFHRGB).
-   * \ingroup common
-   */
+    * \ingroup common
+    */
   struct PFHRGBSignature250
   {
     float histogram[250];
@@ -1156,8 +1160,8 @@ namespace pcl
   }
 
   /** \brief A point structure for storing the Point Pair Feature (PPF) values
-   * \ingroup common
-   */
+    * \ingroup common
+    */
   struct PPFSignature
   {
     float f1, f2, f3, f4;
@@ -1186,9 +1190,9 @@ namespace pcl
    }
 
   /** \brief A point structure representing the Normal Based Signature for
-   * a feature matrix of 4-by-3
-   * \ingroup common
-   */
+    * a feature matrix of 4-by-3
+    * \ingroup common
+    */
   struct NormalBasedSignature12
   {
     float values[12];
@@ -1345,8 +1349,8 @@ namespace pcl
   }
 
   /** \brief A point structure representing the Ensemble of Shape Functions (ESF).
-   * \ingroup common
-   */
+    * \ingroup common
+    */
   struct ESFSignature640
   {
     float histogram[640];
@@ -1359,8 +1363,8 @@ namespace pcl
   }
 
   /** \brief A point structure representing the GFPFH descriptor with 16 bins.
-   * \ingroup common
-   */
+    * \ingroup common
+    */
   struct GFPFHSignature16
   {
       float histogram[16];
@@ -1374,8 +1378,8 @@ namespace pcl
   }
 
   /** \brief A point structure representing the Narf descriptor.
-   * \ingroup common
-   */
+    * \ingroup common
+    */
   struct Narf36
   {
     float x, y, z, roll, pitch, yaw;
@@ -1390,8 +1394,8 @@ namespace pcl
   }
 
   /** \brief A structure to store if a point in a range image lies on a border between an obstacle and the background.
-   * \ingroup common
-   */
+    * \ingroup common
+    */
   struct BorderDescription
   {
     int x, y;
@@ -1406,8 +1410,8 @@ namespace pcl
   }
 
   /** \brief A point structure representing the intensity gradient of an XYZI point cloud.
-   * \ingroup common
-   */
+    * \ingroup common
+    */
   struct IntensityGradient
   {
     union
@@ -1443,9 +1447,6 @@ namespace pcl
     return (os);
   }
 
-  /** \brief A point structure representing a 3-D position and scale.
-    * \ingroup common
-    */
   struct EIGEN_ALIGN16 _PointWithScale
   {
     PCL_ADD_POINT4D; // This adds the members x,y,z which can also be accessed using the point (which is float[4])
@@ -1467,6 +1468,9 @@ namespace pcl
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 
+  /** \brief A point structure representing a 3-D position and scale.
+    * \ingroup common
+    */
   struct PointWithScale : public _PointWithScale
   {
     inline PointWithScale (const _PointWithScale &p)
@@ -1519,9 +1523,6 @@ namespace pcl
     return (os);
   }
 
-  /** \brief A surfel, that is, a point structure representing Euclidean xyz coordinates, together with normal coordinates, a RGBA color, a radius, a confidence value and the surface curvature estimate.
-   * \ingroup common
-   */
   struct EIGEN_ALIGN16 _PointSurfel
   {
     PCL_ADD_POINT4D; // This adds the members x,y,z which can also be accessed using the point (which is float[4])
@@ -1552,6 +1553,9 @@ namespace pcl
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 
+  /** \brief A surfel, that is, a point structure representing Euclidean xyz coordinates, together with normal coordinates, a RGBA color, a radius, a confidence value and the surface curvature estimate.
+    * \ingroup common
+    */
   struct PointSurfel : public _PointSurfel
   {
     inline PointSurfel (const _PointSurfel &p)
