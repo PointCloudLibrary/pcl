@@ -60,7 +60,7 @@ main (int, char **argv)
 	
   if (pcl::io::loadPCDFile<pcl::PointXYZ> (argv[1], *cloud_ptr) == -1)
   {
-    cout<<"Couldn't read the file "<<argv[1]<<endl;
+    std::cout<<"Couldn't read the file "<<argv[1]<<std::endl;
     return (-1);
   }
   std::cout << "Loaded pcd file " << argv[1] << " with " << cloud_ptr->points.size () << std::endl;
