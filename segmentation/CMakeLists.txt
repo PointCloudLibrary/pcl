@@ -23,6 +23,7 @@ if(build)
         src/crf_segmentation.cpp
         src/crf_normal_segmentation.cpp
         src/unary_classifier.cpp
+        src/conditional_euclidean_clustering.cpp
        )
     # NOTE: boost/graph/boykov_kolmogorov_max_flow.hpp only exists for versions > 1.43
     if(Boost_MAJOR_VERSION GREATER 1 OR Boost_MINOR_VERSION GREATER 43)
@@ -57,6 +58,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/crf_segmentation.h
         include/pcl/${SUBSYS_NAME}/crf_normal_segmentation.h
         include/pcl/${SUBSYS_NAME}/unary_classifier.h
+        include/pcl/${SUBSYS_NAME}/conditional_euclidean_clustering.h
         )
     # NOTE: boost/graph/boykov_kolmogorov_max_flow.hpp only exists for versions > 1.43
     if(Boost_MAJOR_VERSION GREATER 1 OR Boost_MINOR_VERSION GREATER 43)
@@ -79,8 +81,9 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/organized_multi_plane_segmentation.hpp
         include/pcl/${SUBSYS_NAME}/impl/planar_polygon_fusion.hpp
         include/pcl/${SUBSYS_NAME}/impl/crf_segmentation.hpp
-        include/pcl/${SUBSYS_NAME}/impl/crf_normal_segmentation.hpp
         include/pcl/${SUBSYS_NAME}/impl/unary_classifier.hpp
+        include/pcl/${SUBSYS_NAME}/impl/crf_normal_segmentation.hpp
+        include/pcl/${SUBSYS_NAME}/impl/conditional_euclidean_clustering.hpp
         )
     # NOTE: boost/graph/boykov_kolmogorov_max_flow.hpp only exists for versions > 1.43
     if(Boost_MAJOR_VERSION GREATER 1 OR Boost_MINOR_VERSION GREATER 43)
