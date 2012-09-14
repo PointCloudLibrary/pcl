@@ -38,6 +38,8 @@
 #ifndef PCL_OCTREE_KEY_H
 #define PCL_OCTREE_KEY_H
 
+#include <stdint.h>
+
 namespace pcl
 {
   namespace octree
@@ -130,10 +132,13 @@ namespace pcl
                                          |  (!!(this->z & depthMask)));
       }
 
+      /* \brief maximum depth that can be addressed */
+      static const unsigned char maxDepth = static_cast<const unsigned char>(sizeof(uint32_t)*8);
+
       // Indices addressing a voxel at (X, Y, Z)
-      unsigned int x;
-      unsigned int y;
-      unsigned int z;
+      uint32_t x;
+      uint32_t y;
+      uint32_t z;
 
     };
   }
