@@ -59,11 +59,11 @@ namespace pcl
      *  \author Julius Kammerl (julius@kammerl.de)
      */
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename PointT, typename LeafT = OctreeContainerDataTVector<int>,
-        typename BranchT = OctreeContainerEmpty<int> >
+    template<typename PointT, typename LeafContainerT = OctreeContainerDataTVector<int>,
+        typename BranchContainerT = OctreeContainerEmpty<int> >
 
     class OctreePointCloudChangeDetector : public OctreePointCloud<PointT,
-        LeafT, BranchT, Octree2BufBase<int, LeafT, BranchT> >
+        LeafContainerT, BranchContainerT, Octree2BufBase<int, LeafContainerT, BranchContainerT> >
 
     {
 
@@ -73,8 +73,8 @@ namespace pcl
          *  \param resolution_arg:  octree resolution at lowest octree level
          * */
         OctreePointCloudChangeDetector (const double resolution_arg) :
-            OctreePointCloud<PointT, LeafT, BranchT,
-                Octree2BufBase<int, LeafT, BranchT> > (resolution_arg)
+            OctreePointCloud<PointT, LeafContainerT, BranchContainerT,
+                Octree2BufBase<int, LeafContainerT, BranchContainerT> > (resolution_arg)
         {
         }
 

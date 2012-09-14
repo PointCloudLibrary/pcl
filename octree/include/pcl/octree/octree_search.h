@@ -58,8 +58,8 @@ namespace pcl
       * \ingroup octree
       * \author Julius Kammerl (julius@kammerl.de)
       */
-    template<typename PointT, typename LeafT = OctreeContainerDataTVector<int> ,  typename BranchT = OctreeContainerEmpty<int> >
-    class OctreePointCloudSearch : public OctreePointCloud<PointT, LeafT, BranchT>
+    template<typename PointT, typename LeafContainerT = OctreeContainerDataTVector<int> ,  typename BranchContainerT = OctreeContainerEmpty<int> >
+    class OctreePointCloudSearch : public OctreePointCloud<PointT, LeafContainerT, BranchContainerT>
     {
       public:
         // public typedefs
@@ -71,13 +71,13 @@ namespace pcl
         typedef boost::shared_ptr<const PointCloud> PointCloudConstPtr;
 
         // Boost shared pointers
-        typedef boost::shared_ptr<OctreePointCloudSearch<PointT, LeafT, BranchT> > Ptr;
-        typedef boost::shared_ptr<const OctreePointCloudSearch<PointT, LeafT, BranchT> > ConstPtr;
+        typedef boost::shared_ptr<OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT> > Ptr;
+        typedef boost::shared_ptr<const OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT> > ConstPtr;
 
         // Eigen aligned allocator
         typedef std::vector<PointT, Eigen::aligned_allocator<PointT> > AlignedPointTVector;
 
-        typedef OctreePointCloud<PointT, LeafT, BranchT> OctreeT;
+        typedef OctreePointCloud<PointT, LeafContainerT, BranchContainerT> OctreeT;
         typedef typename OctreeT::LeafNode LeafNode;
         typedef typename OctreeT::BranchNode BranchNode;
 
@@ -85,7 +85,7 @@ namespace pcl
           * \param[in] resolution octree resolution at lowest octree level
           */
         OctreePointCloudSearch (const double resolution) :
-          OctreePointCloud<PointT, LeafT, BranchT> (resolution)
+          OctreePointCloud<PointT, LeafContainerT, BranchContainerT> (resolution)
         {
         }
 

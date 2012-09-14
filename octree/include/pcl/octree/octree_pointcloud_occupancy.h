@@ -59,29 +59,29 @@ namespace pcl
      *  \author Julius Kammerl (julius@kammerl.de)
      */
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename PointT, typename LeafT = OctreeContainerEmpty<int>,
-        typename BranchT = OctreeContainerEmpty<int> >
-    class OctreePointCloudOccupancy : public OctreePointCloud<PointT, LeafT,
-        BranchT, OctreeBase<int, LeafT, BranchT> >
+    template<typename PointT, typename LeafContainerT = OctreeContainerEmpty<int>,
+        typename BranchContainerT = OctreeContainerEmpty<int> >
+    class OctreePointCloudOccupancy : public OctreePointCloud<PointT, LeafContainerT,
+        BranchContainerT, OctreeBase<int, LeafContainerT, BranchContainerT> >
 
     {
 
       public:
         // public typedefs for single/double buffering
-        typedef OctreePointCloudOccupancy<PointT, LeafT, BranchT> SingleBuffer;
-        typedef OctreePointCloudOccupancy<PointT, LeafT, BranchT> DoubleBuffer;
+        typedef OctreePointCloudOccupancy<PointT, LeafContainerT, BranchContainerT> SingleBuffer;
+        typedef OctreePointCloudOccupancy<PointT, LeafContainerT, BranchContainerT> DoubleBuffer;
 
         // public point cloud typedefs
-        typedef typename OctreePointCloud<PointT, LeafT, BranchT>::PointCloud PointCloud;
-        typedef typename OctreePointCloud<PointT, LeafT, BranchT>::PointCloudPtr PointCloudPtr;
-        typedef typename OctreePointCloud<PointT, LeafT, BranchT>::PointCloudConstPtr PointCloudConstPtr;
+        typedef typename OctreePointCloud<PointT, LeafContainerT, BranchContainerT>::PointCloud PointCloud;
+        typedef typename OctreePointCloud<PointT, LeafContainerT, BranchContainerT>::PointCloudPtr PointCloudPtr;
+        typedef typename OctreePointCloud<PointT, LeafContainerT, BranchContainerT>::PointCloudConstPtr PointCloudConstPtr;
 
         /** \brief Constructor.
          *  \param resolution_arg:  octree resolution at lowest octree level
          * */
         OctreePointCloudOccupancy (const double resolution_arg) :
-            OctreePointCloud<PointT, LeafT, BranchT,
-                OctreeBase<int, LeafT, BranchT> > (resolution_arg)
+            OctreePointCloud<PointT, LeafContainerT, BranchContainerT,
+                OctreeBase<int, LeafContainerT, BranchContainerT> > (resolution_arg)
         {
         }
 

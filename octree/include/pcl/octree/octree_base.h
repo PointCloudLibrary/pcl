@@ -59,8 +59,8 @@ namespace pcl
      * \ingroup octree
      * \author Julius Kammerl (julius@kammerl.de)
      */
-    template<typename DataT, typename LeafT = OctreeContainerDataT<DataT>,
-        typename BranchT = OctreeContainerEmpty<DataT> >
+    template<typename DataT, typename LeafContainerT = OctreeContainerDataT<DataT>,
+        typename BranchContainerT = OctreeContainerEmpty<DataT> >
     class OctreeBase
     {
 
@@ -69,7 +69,7 @@ namespace pcl
         typedef OctreeBase<DataT, OctreeContainerDataT<DataT>, OctreeContainerEmpty<DataT> > SingleObjLeafContainer;
         typedef OctreeBase<DataT, OctreeContainerDataTVector<DataT>, OctreeContainerEmpty<DataT> > MultipleObjsLeafContainer;
 
-        typedef OctreeBase<DataT, LeafT, BranchT> OctreeT;
+        typedef OctreeBase<DataT, LeafContainerT, BranchContainerT> OctreeT;
 
         // iterators are friends
         friend class OctreeIteratorBase<DataT, OctreeT> ;
@@ -77,8 +77,8 @@ namespace pcl
         friend class OctreeBreadthFirstIterator<DataT, OctreeT> ;
         friend class OctreeLeafNodeIterator<DataT, OctreeT> ;
 
-        typedef OctreeBranchNode<BranchT> BranchNode;
-        typedef OctreeLeafNode<LeafT> LeafNode;
+        typedef OctreeBranchNode<BranchContainerT> BranchNode;
+        typedef OctreeLeafNode<LeafContainerT> LeafNode;
 
         // Octree default iterators
         typedef OctreeDepthFirstIterator<int, OctreeT> Iterator;
@@ -403,13 +403,13 @@ namespace pcl
         {
           if (node_arg->getNodeType () == LEAF_NODE)
           {
-            const LeafT* leafContainer = dynamic_cast<const LeafT*> (node_arg);
+            const LeafContainerT* leafContainer = dynamic_cast<const LeafContainerT*> (node_arg);
             leafContainer->getData (data_arg);
           }
           else
           {
-            const BranchT* branchContainer =
-                dynamic_cast<const BranchT*> (node_arg);
+            const BranchContainerT* branchContainer =
+                dynamic_cast<const BranchContainerT*> (node_arg);
             branchContainer->getData (data_arg);
           }
         }
@@ -423,13 +423,13 @@ namespace pcl
         {
           if (node_arg->getNodeType () == LEAF_NODE)
           {
-            const LeafT* leafContainer = dynamic_cast<const LeafT*> (node_arg);
+            const LeafContainerT* leafContainer = dynamic_cast<const LeafContainerT*> (node_arg);
             leafContainer->getData (data_arg);
           }
           else
           {
-            const BranchT* branchContainer =
-                dynamic_cast<const BranchT*> (node_arg);
+            const BranchContainerT* branchContainer =
+                dynamic_cast<const BranchContainerT*> (node_arg);
             branchContainer->getData (data_arg);
           }
         }
@@ -443,13 +443,13 @@ namespace pcl
           size_t nodeSize;
           if (node_arg->getNodeType () == LEAF_NODE)
           {
-            const LeafT* leafContainer = dynamic_cast<const LeafT*> (node_arg);
+            const LeafContainerT* leafContainer = dynamic_cast<const LeafContainerT*> (node_arg);
             nodeSize = leafContainer->getSize ();
           }
           else
           {
-            const BranchT* branchContainer =
-                dynamic_cast<const BranchT*> (node_arg);
+            const BranchContainerT* branchContainer =
+                dynamic_cast<const BranchContainerT*> (node_arg);
             nodeSize = branchContainer->getSize ();
           }
           return nodeSize;

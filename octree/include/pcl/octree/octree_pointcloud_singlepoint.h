@@ -60,26 +60,26 @@ namespace pcl
      *  \author Julius Kammerl (julius@kammerl.de)
      */
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename PointT, typename LeafT = OctreeContainerDataT<int>,
-        typename BranchT = OctreeContainerEmpty<int>,
-        typename OctreeT = OctreeBase<int, LeafT, BranchT> >
+    template<typename PointT, typename LeafContainerT = OctreeContainerDataT<int>,
+        typename BranchContainerT = OctreeContainerEmpty<int>,
+        typename OctreeT = OctreeBase<int, LeafContainerT, BranchContainerT> >
 
-    class OctreePointCloudSinglePoint : public OctreePointCloud<PointT, LeafT,
-        BranchT, OctreeT>
+    class OctreePointCloudSinglePoint : public OctreePointCloud<PointT, LeafContainerT,
+        BranchContainerT, OctreeT>
     {
 
       public:
         // public typedefs for single/double buffering
-        typedef OctreePointCloudSinglePoint<PointT, LeafT, BranchT,
-            OctreeBase<int, LeafT, BranchT> > SingleBuffer;
-        typedef OctreePointCloudSinglePoint<PointT, LeafT, BranchT,
-            Octree2BufBase<int, LeafT, BranchT> > DoubleBuffer;
+        typedef OctreePointCloudSinglePoint<PointT, LeafContainerT, BranchContainerT,
+            OctreeBase<int, LeafContainerT, BranchContainerT> > SingleBuffer;
+        typedef OctreePointCloudSinglePoint<PointT, LeafContainerT, BranchContainerT,
+            Octree2BufBase<int, LeafContainerT, BranchContainerT> > DoubleBuffer;
 
         /** \brief Constructor.
          *  \param resolution_arg: octree resolution at lowest octree level
          * */
         OctreePointCloudSinglePoint (const double resolution_arg) :
-            OctreePointCloud<PointT, LeafT, BranchT, OctreeT> (resolution_arg)
+            OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT> (resolution_arg)
         {
         }
 

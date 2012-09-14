@@ -170,14 +170,14 @@ namespace pcl
      * \ingroup octree
      * \author Julius Kammerl (julius@kammerl.de)
      */
-    template<typename DataT, typename LeafT = OctreeContainerDataT<DataT>,
-        typename BranchT = OctreeContainerEmpty<DataT> >
+    template<typename DataT, typename LeafContainerT = OctreeContainerDataT<DataT>,
+        typename BranchContainerT = OctreeContainerEmpty<DataT> >
     class Octree2BufBase
     {
 
       public:
 
-        typedef Octree2BufBase<DataT, LeafT, BranchT> OctreeT;
+        typedef Octree2BufBase<DataT, LeafContainerT, BranchContainerT> OctreeT;
 
         // iterators are friends
         friend class OctreeIteratorBase<DataT, OctreeT> ;
@@ -185,8 +185,8 @@ namespace pcl
         friend class OctreeBreadthFirstIterator<DataT, OctreeT> ;
         friend class OctreeLeafNodeIterator<DataT, OctreeT> ;
 
-        typedef BufferedBranchNode<BranchT> BranchNode;
-        typedef OctreeLeafNode<LeafT> LeafNode;
+        typedef BufferedBranchNode<BranchContainerT> BranchNode;
+        typedef OctreeLeafNode<LeafContainerT> LeafNode;
 
         // Octree default iterators
         typedef OctreeDepthFirstIterator<int, OctreeT> Iterator;
@@ -436,12 +436,13 @@ namespace pcl
         virtual void addData (const OctreeKey& key_arg, const DataT& data_arg)
         {
           // request a (new) leaf from tree
-          LeafT* leaf = createLeaf (key_arg);
+          LeafNode* newLeaf;
+          createLeafRecursive (key_arg, depthMask_, rootNode_, false, newLeaf);
 
           // assign data to leaf
-          if (leaf)
+          if (newLeaf)
           {
-            leaf->setData (data_arg);
+            newLeaf->setData (data_arg);
             objectCount_++;
           }
         }
@@ -450,10 +451,12 @@ namespace pcl
          *  \param key_arg: octree key addressing a leaf node.
          *  \return pointer to leaf node. If leaf node is not found, this pointer returns 0.
          * */
-        inline LeafT*
+        inline LeafNode*
         findLeaf (const OctreeKey& key_arg) const
         {
-          return findLeafRecursive (key_arg, depthMask_, rootNode_);
+          LeafNode* result = 0;
+          findLeafRecursive (key_arg, depthMask_, rootNode_, result);
+          return result;
         }
 
         /** \brief Create a leaf node.
@@ -461,12 +464,12 @@ namespace pcl
          *  \param key_arg: octree key addressing a leaf node.
          *  \return pointer to an existing or created leaf node.
          * */
-        inline LeafT*
+        inline LeafNode*
         createLeaf (const OctreeKey& key_arg)
         {
-          LeafT* result;
+          LeafNode* result;
 
-          result = createLeafRecursive (key_arg, depthMask_, rootNode_, false);
+          createLeafRecursive (key_arg, depthMask_, rootNode_, false, result);
 
           // getLeafRecursive has changed the octree -> clean-up/tree-reset might be required
           treeDirtyFlag_ = true;
@@ -480,8 +483,10 @@ namespace pcl
          * */
         inline bool existLeaf (const OctreeKey& key_arg) const
         {
-          return ( (key_arg <= maxKey_)
-              && (findLeafRecursive (key_arg, depthMask_, rootNode_) != 0));
+          LeafNode* result = 0;
+          findLeafRecursive (key_arg, depthMask_, rootNode_, result);
+
+          return ( (result !=0) && (key_arg <= maxKey_) );
         }
 
         /** \brief Remove leaf node from octree
@@ -546,13 +551,13 @@ namespace pcl
         {
           if (node_arg->getNodeType () == LEAF_NODE)
           {
-            const LeafT* leafContainer = dynamic_cast<const LeafT*> (node_arg);
+            const LeafContainerT* leafContainer = dynamic_cast<const LeafContainerT*> (node_arg);
             leafContainer->getData (data_arg);
           }
           else
           {
-            const BranchT* branchContainer =
-                dynamic_cast<const BranchT*> (node_arg);
+            const BranchContainerT* branchContainer =
+                dynamic_cast<const BranchContainerT*> (node_arg);
             branchContainer->getData (data_arg);
           }
         }
@@ -566,13 +571,13 @@ namespace pcl
         {
           if (node_arg->getNodeType () == LEAF_NODE)
           {
-            const LeafT* leafContainer = dynamic_cast<const LeafT*> (node_arg);
+            const LeafContainerT* leafContainer = dynamic_cast<const LeafContainerT*> (node_arg);
             leafContainer->getData (data_arg);
           }
           else
           {
-            const BranchT* branchContainer =
-                dynamic_cast<const BranchT*> (node_arg);
+            const BranchContainerT* branchContainer =
+                dynamic_cast<const BranchContainerT*> (node_arg);
             branchContainer->getData (data_arg);
           }
         }
@@ -586,13 +591,13 @@ namespace pcl
           size_t nodeSize;
           if (node_arg->getNodeType () == LEAF_NODE)
           {
-            const LeafT* leafContainer = dynamic_cast<const LeafT*> (node_arg);
+            const LeafContainerT* leafContainer = dynamic_cast<const LeafContainerT*> (node_arg);
             nodeSize = leafContainer->getSize ();
           }
           else
           {
-            const BranchT* branchContainer =
-                dynamic_cast<const BranchT*> (node_arg);
+            const BranchContainerT* branchContainer =
+                dynamic_cast<const BranchContainerT*> (node_arg);
             nodeSize = branchContainer->getSize ();
           }
           return nodeSize;
@@ -783,28 +788,27 @@ namespace pcl
         // Recursive octree methods
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        /** \brief Recursively search for a leaf node at octree key. If leaf node does not exist, it will be created.
+        /** \brief Create a leaf node at octree key. If leaf node does already exist, it is returned.
          *  \param key_arg: reference to an octree key
          *  \param depthMask_arg: depth mask used for octree key analysis and for branch depth indicator
          *  \param branch_arg: current branch node
          *  \param branchReset_arg: Reset pointer array of current branch
-         *  \return pointer to leaf node class
+         *  \param returnLeaf_arg: return pointer to leaf node
          **/
-        LeafT*
-        createLeafRecursive (const OctreeKey& key_arg,
-            unsigned int depthMask_arg, BranchNode* branch_arg,
-            bool branchReset_arg);
+        void
+        createLeafRecursive (const OctreeKey& key_arg, unsigned int depthMask_arg, BranchNode* branch_arg, bool branchReset_arg, LeafNode*& returnLeaf_arg);
+
 
         /** \brief Recursively search for a given leaf node and return a pointer.
          *  \note  If leaf node does not exist, a 0 pointer is returned.
          *  \param key_arg: reference to an octree key
          *  \param depthMask_arg: depth mask used for octree key analysis and for branch depth indicator
          *  \param branch_arg: current branch node
-         *  \return pointer to leaf node class. Returns 0 if leaf node is not found.
+         *  \param result_arg: pointer to leaf node class
          **/
-        LeafT*
-        findLeafRecursive (const OctreeKey& key_arg, unsigned int depthMask_arg,
-            BranchNode* branch_arg) const;
+        void
+        findLeafRecursive (const OctreeKey& key_arg, unsigned int depthMask_arg, BranchNode* branch_arg, LeafNode*& result_arg) const;
+
 
         /** \brief Recursively search and delete leaf node
          *  \param key_arg: reference to an octree key

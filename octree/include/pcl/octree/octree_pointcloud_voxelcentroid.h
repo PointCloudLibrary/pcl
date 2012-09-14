@@ -133,14 +133,14 @@ namespace pcl
       * \ingroup octree
       * \author Julius Kammerl (julius@kammerl.de)
       */
-    template<typename PointT, typename LeafT = OctreePointCloudVoxelCentroidContainer<PointT> , typename BranchT = OctreeContainerEmpty<int> >
-    class OctreePointCloudVoxelCentroid : public OctreePointCloud<PointT, LeafT, BranchT>
+    template<typename PointT, typename LeafContainerT = OctreePointCloudVoxelCentroidContainer<PointT> , typename BranchContainerT = OctreeContainerEmpty<int> >
+    class OctreePointCloudVoxelCentroid : public OctreePointCloud<PointT, LeafContainerT, BranchContainerT>
     {
       public:
-        typedef boost::shared_ptr<OctreePointCloudVoxelCentroid<PointT, LeafT> > Ptr;
-        typedef boost::shared_ptr<const OctreePointCloudVoxelCentroid<PointT, LeafT> > ConstPtr;
+        typedef boost::shared_ptr<OctreePointCloudVoxelCentroid<PointT, LeafContainerT> > Ptr;
+        typedef boost::shared_ptr<const OctreePointCloudVoxelCentroid<PointT, LeafContainerT> > ConstPtr;
 
-        typedef OctreePointCloud<PointT, LeafT, BranchT> OctreeT;
+        typedef OctreePointCloud<PointT, LeafContainerT, BranchContainerT> OctreeT;
         typedef typename OctreeT::LeafNode LeafNode;
         typedef typename OctreeT::BranchNode BranchNode;
 
@@ -148,7 +148,7 @@ namespace pcl
           * \param[in] resolution_arg octree resolution at lowest octree level
           */
         OctreePointCloudVoxelCentroid (const double resolution_arg) :
-          OctreePointCloud<PointT, LeafT, BranchT> (resolution_arg)
+          OctreePointCloud<PointT, LeafContainerT, BranchContainerT> (resolution_arg)
         {
         }
 
@@ -173,7 +173,7 @@ namespace pcl
             const PointT& cloudPoint = this->getPointByIndex (data_arg);
 
             // add data to leaf
-            LeafT* container = new_leaf;
+            LeafContainerT* container = new_leaf;
             container->addPoint (cloudPoint);
             this->objectCount_++;
           }
@@ -204,7 +204,7 @@ namespace pcl
           * \return number of occupied voxels
           */
         size_t
-        getVoxelCentroids (typename OctreePointCloud<PointT, LeafT, BranchT>::AlignedPointTVector &voxel_centroid_list_arg) const;
+        getVoxelCentroids (typename OctreePointCloud<PointT, LeafContainerT, BranchContainerT>::AlignedPointTVector &voxel_centroid_list_arg) const;
 
         /** \brief Recursively explore the octree and output a PointT vector of centroids for all occupied voxels.
          ** \param[in] binaryTreeOut_arg: binary output vector
@@ -215,7 +215,7 @@ namespace pcl
         void
         getVoxelCentroidsRecursive (const BranchNode* branch_arg, 
                                     OctreeKey& key_arg, 
-                                    typename OctreePointCloud<PointT, LeafT, BranchT>::AlignedPointTVector &voxel_centroid_list_arg) const;
+                                    typename OctreePointCloud<PointT, LeafContainerT, BranchContainerT>::AlignedPointTVector &voxel_centroid_list_arg) const;
 
     };
   }

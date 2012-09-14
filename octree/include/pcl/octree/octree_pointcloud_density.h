@@ -110,8 +110,8 @@ namespace pcl
       * \ingroup octree
       * \author Julius Kammerl (julius@kammerl.de)
       */
-    template<typename PointT, typename LeafT = OctreePointCloudDensityContainer<int> , typename BranchT = OctreeContainerEmpty<int> >
-    class OctreePointCloudDensity : public OctreePointCloud<PointT, LeafT, BranchT>
+    template<typename PointT, typename LeafContainerT = OctreePointCloudDensityContainer<int> , typename BranchContainerT = OctreeContainerEmpty<int> >
+    class OctreePointCloudDensity : public OctreePointCloud<PointT, LeafContainerT, BranchContainerT>
     {
       public:
 
@@ -119,7 +119,7 @@ namespace pcl
          *  \param resolution_arg:  octree resolution at lowest octree level
          * */
         OctreePointCloudDensity (const double resolution_arg) :
-        OctreePointCloud<PointT, LeafT, BranchT> (resolution_arg)
+        OctreePointCloud<PointT, LeafContainerT, BranchContainerT> (resolution_arg)
         {
         }
 

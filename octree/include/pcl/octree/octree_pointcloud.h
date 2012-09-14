@@ -66,16 +66,16 @@ namespace pcl
      *  \note Note: The tree depth equates to the resolution and the bounding box dimensions of the octree.
      *  \note
      *  \note typename: PointT: type of point used in pointcloud
-     *  \note typename: LeafT:  leaf node container (
-     *  \note typename: BranchT:  branch node container
+     *  \note typename: LeafContainerT:  leaf node container (
+     *  \note typename: BranchContainerT:  branch node container
      *  \note typename: OctreeT: octree implementation ()
      *  \ingroup octree
      *  \author Julius Kammerl (julius@kammerl.de)
      */
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename PointT, typename LeafT = OctreeContainerDataTVector<int>,
-        typename BranchT = OctreeContainerEmpty<int>,
-        typename OctreeT = OctreeBase<int, LeafT, BranchT> >
+    template<typename PointT, typename LeafContainerT = OctreeContainerDataTVector<int>,
+        typename BranchContainerT = OctreeContainerEmpty<int>,
+        typename OctreeT = OctreeBase<int, LeafContainerT, BranchContainerT> >
 
     class OctreePointCloud : public OctreeT
     {
@@ -125,12 +125,12 @@ namespace pcl
         typedef boost::shared_ptr<const PointCloud> PointCloudConstPtr;
 
         // public typedefs for single/double buffering
-        typedef OctreePointCloud<PointT, LeafT, OctreeBase<int, LeafT> > SingleBuffer;
-        typedef OctreePointCloud<PointT, LeafT, Octree2BufBase<int, LeafT> > DoubleBuffer;
+        typedef OctreePointCloud<PointT, LeafContainerT, OctreeBase<int, LeafContainerT> > SingleBuffer;
+        typedef OctreePointCloud<PointT, LeafContainerT, Octree2BufBase<int, LeafContainerT> > DoubleBuffer;
 
         // Boost shared pointers
-        typedef boost::shared_ptr<OctreePointCloud<PointT, LeafT, OctreeT> > Ptr;
-        typedef boost::shared_ptr<const OctreePointCloud<PointT, LeafT, OctreeT> > ConstPtr;
+        typedef boost::shared_ptr<OctreePointCloud<PointT, LeafContainerT, OctreeT> > Ptr;
+        typedef boost::shared_ptr<const OctreePointCloud<PointT, LeafContainerT, OctreeT> > ConstPtr;
 
         // Eigen aligned allocator
         typedef std::vector<PointT, Eigen::aligned_allocator<PointT> > AlignedPointTVector;
@@ -419,8 +419,16 @@ namespace pcl
          * \param[in] point_arg query point
          * \return pointer to leaf node. If leaf node does not exist, pointer is 0.
          */
-        LeafT*
-        findLeafAtPoint (const PointT& point_arg) const;
+        LeafNode*
+        findLeafAtPoint (const PointT& point_arg) const
+        {
+          OctreeKey key;
+
+          // generate key for point
+          this->genOctreeKeyforPoint (point_arg, key);
+
+          return (this->findLeaf (key));
+        }
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // Protected octree methods based on octree keys
