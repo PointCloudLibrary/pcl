@@ -45,8 +45,6 @@
 
 #include <pcl/pcl_macros.h>
 
-using namespace std;
-
 namespace pcl
 {
   namespace octree
@@ -246,7 +244,7 @@ namespace pcl
          * \param[in] dataVector_arg: reference to DataT vector that is to be extended with leaf node DataT elements.
          */
         void
-        getData (vector<DataT>& dataVector_arg) const
+        getData (std::vector<DataT>& dataVector_arg) const
         {
           if (!isEmpty_)
             dataVector_arg.push_back (this->data_);
@@ -364,7 +362,7 @@ namespace pcl
 
       protected:
         /** \brief Leaf node DataT vector. */
-        vector<DataT> leafDataTVector_;
+        std::vector<DataT> leafDataTVector_;
       };
 
   }

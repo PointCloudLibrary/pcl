@@ -54,6 +54,8 @@
 #define SYNC_PACKET     512
 #define RGB16_LENGTH    IMAGE_WIDTH*2*IMAGE_HEIGHT
 
+using namespace std;
+
 pcl::DinastGrabber::DinastGrabber ()
   : second_image (false)
   , running_ (false)

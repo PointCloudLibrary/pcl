@@ -58,8 +58,6 @@
 
 #define IMAGE_PAGE_MAX    (1)
 
-using namespace std;
-
 namespace pcl
 {
   /** \brief Grabber for DINAST devices (i.e., IPA-1002, IPA-1110, IPA-2001)

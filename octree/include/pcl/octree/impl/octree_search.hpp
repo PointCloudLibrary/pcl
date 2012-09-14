@@ -45,6 +45,8 @@
 #include <pcl/common/common.h>
 #include <assert.h>
 
+using namespace std;
+
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT, typename LeafT, typename BranchT> bool
 pcl::octree::OctreePointCloudSearch<PointT, LeafT, BranchT>::voxelSearch (const PointT& point,

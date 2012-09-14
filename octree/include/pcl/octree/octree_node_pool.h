@@ -42,8 +42,6 @@
 
 #include <pcl/pcl_macros.h>
 
-using namespace std;
-
 namespace pcl
 {
   namespace octree
@@ -122,7 +120,7 @@ namespace pcl
         }
 
       protected:
-        vector<NodeT*> nodePool_;
+        std::vector<NodeT*> nodePool_;
       };
 
   }

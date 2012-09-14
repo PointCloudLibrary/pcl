@@ -39,15 +39,11 @@
 #ifndef PCL_OCTREE_NODE_H
 #define PCL_OCTREE_NODE_H
 
-#include <string>
-#include <vector>
 #include <cstddef>
 
 #include <assert.h>
 
 #include <pcl/pcl_macros.h>
-
-using namespace std;
 
 namespace pcl
 {

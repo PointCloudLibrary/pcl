@@ -345,7 +345,7 @@ pcl::UnaryClassifier<PointT>::assignLabels (std::vector<int> &indi,
       float l = static_cast<float> (indi[i]) / nfm;
       float intpart;
       //float fractpart = modf (l , &intpart);
-      modf (l , &intpart);
+      std::modf (l , &intpart);
       int label = static_cast<int> (intpart);
       
       out->points[i].label = label+2;

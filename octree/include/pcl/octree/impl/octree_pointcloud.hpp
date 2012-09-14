@@ -44,6 +44,8 @@
 
 #include <pcl/common/common.h>
 
+using namespace std;
+
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT, typename LeafT, typename BranchT, typename OctreeT>
 pcl::octree::OctreePointCloud<PointT, LeafT, BranchT, OctreeT>::OctreePointCloud (const double resolution) :
