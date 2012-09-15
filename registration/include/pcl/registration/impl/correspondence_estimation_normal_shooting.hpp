@@ -96,7 +96,7 @@ pcl::registration::CorrespondenceEstimationNormalShooting<PointSource, PointTarg
         pt.y = target_->points[nn_indices[j]].y - input_->points[*idx_i].y;
         pt.z = target_->points[nn_indices[j]].z - input_->points[*idx_i].z;
 
-        NormalT &normal = source_normals_->points[*idx_i];
+        const NormalT &normal = source_normals_->points[*idx_i];
         Eigen::Vector3d N (normal.normal_x, normal.normal_y, normal.normal_z);
         Eigen::Vector3d V (pt.x, pt.y, pt.z);
         Eigen::Vector3d C = N.cross (V);
@@ -145,7 +145,7 @@ pcl::registration::CorrespondenceEstimationNormalShooting<PointSource, PointTarg
         pt.y = target_->points[nn_indices[j]].y - pt_src.y;
         pt.z = target_->points[nn_indices[j]].z - pt_src.z;
         
-        NormalT &normal = source_normals_->points[*idx_i];
+        const NormalT &normal = source_normals_->points[*idx_i];
         Eigen::Vector3d N (normal.normal_x, normal.normal_y, normal.normal_z);
         Eigen::Vector3d V (pt.x, pt.y, pt.z);
         Eigen::Vector3d C = N.cross (V);
@@ -227,7 +227,7 @@ pcl::registration::CorrespondenceEstimationNormalShooting<PointSource, PointTarg
         pt.y = target_->points[nn_indices[j]].y - input_->points[*idx_i].y;
         pt.z = target_->points[nn_indices[j]].z - input_->points[*idx_i].z;
 
-        NormalT &normal = source_normals_->points[*idx_i];
+        const NormalT &normal = source_normals_->points[*idx_i];
         Eigen::Vector3d N (normal.normal_x, normal.normal_y, normal.normal_z);
         Eigen::Vector3d V (pt.x, pt.y, pt.z);
         Eigen::Vector3d C = N.cross (V);
@@ -284,7 +284,7 @@ pcl::registration::CorrespondenceEstimationNormalShooting<PointSource, PointTarg
         pt.y = target_->points[nn_indices[j]].y - pt_src.y;
         pt.z = target_->points[nn_indices[j]].z - pt_src.z;
         
-        NormalT &normal = source_normals_->points[*idx_i];
+        const NormalT &normal = source_normals_->points[*idx_i];
         Eigen::Vector3d N (normal.normal_x, normal.normal_y, normal.normal_z);
         Eigen::Vector3d V (pt.x, pt.y, pt.z);
         Eigen::Vector3d C = N.cross (V);

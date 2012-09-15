@@ -75,6 +75,7 @@ namespace pcl
         typedef typename PointCloudTarget::ConstPtr PointCloudTargetConstPtr;
 
         typedef typename pcl::PointCloud<NormalT>::Ptr NormalsPtr;
+				typedef typename pcl::PointCloud<NormalT>::ConstPtr NormalsConstPtr;
 
         /** \brief Empty constructor. 
           *
@@ -93,22 +94,22 @@ namespace pcl
           * \param[in] normals the normals computed for the source cloud
           */
         inline void
-        setSourceNormals (const NormalsPtr &normals) { source_normals_ = normals; }
+        setSourceNormals (const NormalsConstPtr &normals) { source_normals_ = normals; }
 
         /** \brief Get the normals of the source point cloud
           */
-        inline NormalsPtr
+        inline NormalsConstPtr
         getSourceNormals () const { return (source_normals_); }
 
         /** \brief Set the normals computed on the target point cloud
           * \param[in] normals the normals computed for the target cloud
           */
         inline void
-        setTargetNormals (const NormalsPtr &normals) { target_normals_ = normals; }
+        setTargetNormals (const NormalsConstPtr &normals) { target_normals_ = normals; }
 
         /** \brief Get the normals of the target point cloud
           */
-        inline NormalsPtr
+        inline NormalsConstPtr
         getTargetNormals () const { return (target_normals_); }
 
         /** \brief Determine the correspondences between input and target cloud.
@@ -159,10 +160,10 @@ namespace pcl
        private:
 
         /** \brief The normals computed at each point in the source cloud */
-        NormalsPtr source_normals_; 
+        NormalsConstPtr source_normals_; 
 
         /** \brief The normals computed at each point in the target cloud */
-        NormalsPtr target_normals_; 
+        NormalsConstPtr target_normals_; 
 
         /** \brief The number of neighbours to be considered in the target point cloud */
         unsigned int k_;
