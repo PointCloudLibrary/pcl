@@ -114,7 +114,6 @@ pcl::ihs::InputDataProcessing::process (const CloudInputConstPtr& cloud) const
       it_out->getNormalVector3fMap () = Eigen::Vector3f (std::numeric_limits <float>::quiet_NaN (),
                                                          std::numeric_limits <float>::quiet_NaN (),
                                                          std::numeric_limits <float>::quiet_NaN ());
-      // cloud_out->is_dense = false;
     }
   }
 

@@ -75,9 +75,21 @@ namespace pcl
         typedef pcl::ihs::CloudProcessedPtr      CloudProcessedPtr;
         typedef pcl::ihs::CloudProcessedConstPtr CloudProcessedConstPtr;
 
+        typedef pcl::ihs::PointModel         PointModel;
+        typedef pcl::ihs::CloudModel         CloudModel;
+        typedef pcl::ihs::CloudModelPtr      CloudModelPtr;
+        typedef pcl::ihs::CloudModelConstPtr CloudModelConstPtr;
+
         typedef pcl::ihs::Transformation         Transformation;
 
-        typedef pcl::KdTree <PointProcessed>     KdTree;
+      private:
+
+        typedef pcl::PointNormal              PointNormal;
+        typedef pcl::PointCloud <PointNormal> CloudNormal;
+        typedef CloudNormal::Ptr              CloudNormalPtr;
+        typedef CloudNormal::ConstPtr         CloudNormalConstPtr;
+
+        typedef pcl::KdTree <PointNormal>        KdTree;
         typedef boost::shared_ptr <KdTree>       KdTreePtr;
         typedef boost::shared_ptr <const KdTree> KdTreeConstPtr;
 
@@ -86,24 +98,24 @@ namespace pcl
         ICP ();
 
         bool
-        findTransformation (const CloudProcessedConstPtr& cloud_model,
+        findTransformation (const CloudModelConstPtr&     cloud_model,
                             const CloudProcessedConstPtr& cloud_data,
                             const Transformation&         T_init,
                             Transformation&               T_final);
 
       private:
 
-        CloudProcessedConstPtr
-        selectModelPoints (const CloudProcessedConstPtr& cloud_model,
-                           const Transformation&         T_init_inv) const;
+        CloudNormalConstPtr
+        selectModelPoints (const CloudModelConstPtr& cloud_model,
+                           const Transformation&     T_init_inv) const;
 
-        CloudProcessedConstPtr
+        CloudNormalConstPtr
         selectDataPoints (const CloudProcessedConstPtr& cloud_data) const;
 
         bool
-        minimizePointPlane (const CloudProcessedConstPtr& cloud_source,
-                            const CloudProcessedConstPtr& cloud_target,
-                            Transformation&               T) const;
+        minimizePointPlane (const CloudNormalConstPtr& cloud_source,
+                            const CloudNormalConstPtr& cloud_target,
+                            Transformation&            T) const;
 
       private:
 
@@ -111,7 +123,7 @@ namespace pcl
         KdTreePtr    kd_tree_;
 
         // Convergence
-        float        epsilon_;     // in m^2
+        float        epsilon_; // in m^2
 
         // Registration failure
         unsigned int max_iterations_;

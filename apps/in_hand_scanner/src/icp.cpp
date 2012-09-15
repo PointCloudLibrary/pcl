@@ -52,12 +52,12 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 pcl::ihs::ICP::ICP ()
-  : kd_tree_ (new pcl::KdTreeFLANN <PointProcessed> ()),
+  : kd_tree_ (new pcl::KdTreeFLANN <PointNormal> ()),
 
-    epsilon_        (1e-6f),
-    max_iterations_ (100),
+    epsilon_        (1e-9f),
+    max_iterations_ (50),
     min_overlap_    (.75f),
-    max_fitness_    (10e-3f),
+    max_fitness_    (10e-6f),
 
     squared_distance_threshold_factor_ (9.f),
     normals_threshold_                 (.7f)
@@ -67,7 +67,7 @@ pcl::ihs::ICP::ICP ()
 ////////////////////////////////////////////////////////////////////////////////
 
 bool
-pcl::ihs::ICP::findTransformation (const CloudProcessedConstPtr& cloud_model,
+pcl::ihs::ICP::findTransformation (const CloudModelConstPtr&     cloud_model,
                                    const CloudProcessedConstPtr& cloud_data,
                                    const Transformation&         T_init,
                                    Transformation&               T_final)
@@ -95,8 +95,8 @@ pcl::ihs::ICP::findTransformation (const CloudProcessedConstPtr& cloud_model,
   Transformation T_cur = T_init;
 
   // Point selection
-  const CloudProcessedConstPtr cloud_model_selected = this->selectModelPoints (cloud_model, T_init.inverse ());
-  const CloudProcessedConstPtr cloud_data_selected = this->selectDataPoints (cloud_data);
+  const CloudNormalConstPtr cloud_model_selected = this->selectModelPoints (cloud_model, T_init.inverse ());
+  const CloudNormalConstPtr cloud_data_selected = this->selectDataPoints (cloud_data);
 
   const size_t n_data  = cloud_data_selected->size ();
   const size_t n_model = cloud_model_selected->size ();
@@ -114,8 +114,8 @@ pcl::ihs::ICP::findTransformation (const CloudProcessedConstPtr& cloud_model,
   while (true)
   {
     // Clouds with one to one correspondences
-    CloudProcessedPtr cloud_model_corr (new CloudProcessed ());
-    CloudProcessedPtr cloud_data_corr (new CloudProcessed ());
+    CloudNormalPtr cloud_model_corr (new CloudNormal ());
+    CloudNormalPtr cloud_data_corr (new CloudNormal ());
 
     cloud_model_corr->reserve (n_data);
     cloud_data_corr->reserve (n_data);
@@ -123,19 +123,20 @@ pcl::ihs::ICP::findTransformation (const CloudProcessedConstPtr& cloud_model,
     // Accumulated error
     float squared_distance_sum = 0.f;
 
-    CloudProcessed::const_iterator it_d = cloud_data_selected->begin ();
+    // NN search
+    std::vector <int>   index (1);
+    std::vector <float> squared_distance (1);
+
+    CloudNormal::const_iterator it_d = cloud_data_selected->begin ();
     for (; it_d!=cloud_data_selected->end (); ++it_d)
     {
       // Transform the data point
-      PointProcessed pt_d = *it_d;
+      PointNormal pt_d = *it_d;
       pt_d.getVector4fMap ()       = T_cur * pt_d.getVector4fMap ();
       pt_d.getNormalVector4fMap () = T_cur * pt_d.getNormalVector4fMap ();
 
       // Find the correspondence to the model points
-      std::vector <int>   ind (1);
-      std::vector <float> squared_distance (1);
-
-      if (!kd_tree_->nearestKSearch (pt_d, 1, ind, squared_distance))
+      if (!kd_tree_->nearestKSearch (pt_d, 1, index, squared_distance))
       {
         std::cerr << "ERROR in icp.cpp: nearestKSearch failed!\n";
         return (false);
@@ -144,14 +145,14 @@ pcl::ihs::ICP::findTransformation (const CloudProcessedConstPtr& cloud_model,
       // Check the distance threshold
       if (squared_distance[0] < squared_distance_threshold)
       {
-        if (ind[0] >= cloud_model_selected->size ())
+        if (index[0] >= cloud_model_selected->size ())
         {
           std::cerr << "ERROR in icp.cpp: Segfault!\n";
-          std::cerr << "  Trying to access index " << ind[0] << " >= " << cloud_model_selected->size () << std::endl;
+          std::cerr << "  Trying to access index " << index[0] << " >= " << cloud_model_selected->size () << std::endl;
           exit (EXIT_FAILURE);
         }
 
-        const PointProcessed& pt_m = cloud_model_selected->operator [] (ind[0]);
+        const PointNormal& pt_m = cloud_model_selected->operator [] (index[0]);
 
         // Check the normals threshold
         if (pt_m.getNormalVector4fMap ().dot (pt_d.getNormalVector4fMap ()) > normals_threshold_)
@@ -165,8 +166,8 @@ pcl::ihs::ICP::findTransformation (const CloudProcessedConstPtr& cloud_model,
     }
 
     // Shrink to fit ("Scott Meyers swap trick")
-    CloudProcessed (*cloud_model_corr).swap (*cloud_model_corr);
-    CloudProcessed (*cloud_data_corr).swap (*cloud_data_corr);
+    CloudNormal (*cloud_model_corr).swap (*cloud_model_corr);
+    CloudNormal (*cloud_data_corr).swap (*cloud_data_corr);
 
     const size_t n_corr = cloud_data_corr->size ();
     if (n_corr < n_min)
@@ -233,36 +234,40 @@ pcl::ihs::ICP::findTransformation (const CloudProcessedConstPtr& cloud_model,
 
 ////////////////////////////////////////////////////////////////////////////////
 
-pcl::ihs::ICP::CloudProcessedConstPtr
-pcl::ihs::ICP::selectModelPoints (const CloudProcessedConstPtr& cloud_model,
-                                  const Transformation&         T_init_inv) const
+pcl::ihs::ICP::CloudNormalConstPtr
+pcl::ihs::ICP::selectModelPoints (const CloudModelConstPtr& cloud_model,
+                                  const Transformation&     T_init_inv) const
 {
-  const CloudProcessedPtr cloud_model_out (new CloudProcessed ());
+  const CloudNormalPtr cloud_model_out (new CloudNormal ());
   cloud_model_out->reserve (cloud_model->size ());
 
-  CloudProcessed::const_iterator it_in = cloud_model->begin ();
+  CloudModel::const_iterator it_in = cloud_model->begin ();
   for (; it_in!=cloud_model->end (); ++it_in)
   {
     // Don't consider points that are facing away from the cameara.
     if ((T_init_inv * it_in->getNormalVector4fMap ()).z () < 0.f)
     {
+      PointNormal pt;
+      pt.getVector4fMap ()       = it_in->getVector4fMap ();
+      pt.getNormalVector4fMap () = it_in->getNormalVector4fMap ();
+
       // NOTE: Not the transformed points!!
-      cloud_model_out->push_back (*it_in);
+      cloud_model_out->push_back (pt);
     }
   }
 
   // Shrink to fit ("Scott Meyers swap trick")
-  CloudProcessed (*cloud_model_out).swap (*cloud_model_out);
+  CloudNormal (*cloud_model_out).swap (*cloud_model_out);
 
   return (cloud_model_out);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-pcl::ihs::ICP::CloudProcessedConstPtr
+pcl::ihs::ICP::CloudNormalConstPtr
 pcl::ihs::ICP::selectDataPoints (const CloudProcessedConstPtr& cloud_data) const
 {
-  const CloudProcessedPtr cloud_data_out (new CloudProcessed ());
+  const CloudNormalPtr cloud_data_out (new CloudNormal ());
   cloud_data_out->reserve (cloud_data->size ());
 
   CloudProcessed::const_iterator it_in = cloud_data->begin ();
@@ -270,12 +275,16 @@ pcl::ihs::ICP::selectDataPoints (const CloudProcessedConstPtr& cloud_data) const
   {
     if (pcl::isFinite (*it_in))
     {
-      cloud_data_out->push_back (*it_in);
+      PointNormal pt;
+      pt.getVector4fMap ()       = it_in->getVector4fMap ();
+      pt.getNormalVector4fMap () = it_in->getNormalVector4fMap ();
+
+      cloud_data_out->push_back (pt);
     }
   }
 
   // Shrink to fit ("Scott Meyers swap trick")
-  CloudProcessed (*cloud_data_out).swap (*cloud_data_out);
+  CloudNormal (*cloud_data_out).swap (*cloud_data_out);
 
   return (cloud_data_out);
 }
@@ -283,9 +292,9 @@ pcl::ihs::ICP::selectDataPoints (const CloudProcessedConstPtr& cloud_data) const
 ////////////////////////////////////////////////////////////////////////////////
 
 bool
-pcl::ihs::ICP::minimizePointPlane (const CloudProcessedConstPtr& cloud_source,
-                                   const CloudProcessedConstPtr& cloud_target,
-                                   Transformation&               T) const
+pcl::ihs::ICP::minimizePointPlane (const CloudNormalConstPtr& cloud_source,
+                                   const CloudNormalConstPtr& cloud_target,
+                                   Transformation&            T) const
 {
   // Check the input
   // n < n_min already checked in the icp main loop
@@ -308,17 +317,15 @@ pcl::ihs::ICP::minimizePointPlane (const CloudProcessedConstPtr& cloud_source,
   pcl::compute3DCentroid (*cloud_source, c_s); c_s.w () = 1.f;
   pcl::compute3DCentroid (*cloud_target, c_t); c_t.w () = 1.f;
 
-  // - There is no need to carry the rgb information along
-  // - The normals are only needed for the target
+  // The normals are only needed for the target
   typedef std::vector <Eigen::Vector4f, Eigen::aligned_allocator <Eigen::Vector4f> > Vec4Xf;
-
   Vec4Xf xyz_s, xyz_t, nor_t;
   xyz_s.reserve (n);
   xyz_t.reserve (n);
   nor_t.reserve (n);
 
-  CloudProcessed::const_iterator it_s = cloud_source->begin ();
-  CloudProcessed::const_iterator it_t = cloud_target->begin ();
+  CloudNormal::const_iterator it_s = cloud_source->begin ();
+  CloudNormal::const_iterator it_t = cloud_target->begin ();
 
   float accum = 0.f;
   for (; it_s!=cloud_source->end (); ++it_s, ++it_t)

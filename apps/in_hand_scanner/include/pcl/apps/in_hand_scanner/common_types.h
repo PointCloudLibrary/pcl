@@ -50,19 +50,38 @@ namespace pcl
   namespace ihs
   {
 
-    typedef pcl::PointXYZRGBA                      PointInput;
-    typedef pcl::PointCloud <pcl::ihs::PointInput> CloudInput;
-    typedef pcl::ihs::CloudInput::Ptr              CloudInputPtr;
-    typedef pcl::ihs::CloudInput::ConstPtr         CloudInputConstPtr;
+    typedef pcl::PointXYZRGBA            PointInput;
+    typedef pcl::PointCloud <PointInput> CloudInput;
+    typedef CloudInput::Ptr              CloudInputPtr;
+    typedef CloudInput::ConstPtr         CloudInputConstPtr;
 
-    typedef pcl::PointXYZRGBNormal                     PointProcessed;
-    typedef pcl::PointCloud <pcl::ihs::PointProcessed> CloudProcessed;
-    typedef pcl::ihs::CloudProcessed::Ptr              CloudProcessedPtr;
-    typedef pcl::ihs::CloudProcessed::ConstPtr         CloudProcessedConstPtr;
+    typedef pcl::PointXYZRGBNormal           PointProcessed;
+    typedef pcl::PointCloud <PointProcessed> CloudProcessed;
+    typedef CloudProcessed::Ptr              CloudProcessedPtr;
+    typedef CloudProcessed::ConstPtr         CloudProcessedConstPtr;
+
+    struct PointModel;
+    typedef pcl::PointCloud <PointModel> CloudModel;
+    typedef CloudModel::Ptr              CloudModelPtr;
+    typedef CloudModel::ConstPtr         CloudModelConstPtr;
 
     typedef Eigen::Matrix4f Transformation;
 
   } // End namespace ihs
 } // End namespace pcl
+
+#include <pcl/apps/in_hand_scanner/impl/common_types.hpp>
+
+POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::ihs::PointModel,
+                                   (float, x, x)
+                                   (float, y, y)
+                                   (float, z, z)
+                                   (float, normal_x, normal_x)
+                                   (float, normal_y, normal_y)
+                                   (float, normal_z, normal_z)
+                                   (float, rgb, rgb)
+                                   (float, weight, weight)
+                                   (int, age, age)
+                                   )
 
 #endif // PCL_IN_HAND_SCANNER_COMMON_TYPES_H

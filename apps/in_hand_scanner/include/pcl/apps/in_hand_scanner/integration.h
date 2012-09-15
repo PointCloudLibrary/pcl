@@ -72,9 +72,14 @@ namespace pcl
         typedef pcl::ihs::CloudProcessedPtr      CloudProcessedPtr;
         typedef pcl::ihs::CloudProcessedConstPtr CloudProcessedConstPtr;
 
+        typedef pcl::ihs::PointModel         PointModel;
+        typedef pcl::ihs::CloudModel         CloudModel;
+        typedef pcl::ihs::CloudModelPtr      CloudModelPtr;
+        typedef pcl::ihs::CloudModelConstPtr CloudModelConstPtr;
+
         typedef pcl::ihs::Transformation         Transformation;
 
-        typedef pcl::KdTree <PointProcessed>     KdTree;
+        typedef pcl::KdTree <PointModel>         KdTree;
         typedef boost::shared_ptr <KdTree>       KdTreePtr;
         typedef boost::shared_ptr <const KdTree> KdTreeConstPtr;
 
@@ -82,8 +87,12 @@ namespace pcl
 
         Integration ();
 
+        void
+        setInitialModel (const CloudModelPtr&          cloud_model,
+                         const CloudProcessedConstPtr& cloud_data) const;
+
         bool
-        merge (const CloudProcessedPtr&      cloud_model,
+        merge (const CloudModelPtr&          cloud_model,
                const CloudProcessedConstPtr& cloud_data,
                const Transformation&         T) const;
 
@@ -92,8 +101,11 @@ namespace pcl
         // Nearest neighbor search
         KdTreePtr kd_tree_;
 
-        // Maximum squared distance where points are averaged out
+        // Maximum squared distance below which points are averaged out
         float     squared_distance_max_;
+
+        // Minium dot product between normals above which points are averaged out
+        float     dot_normal_min_;
     };
 
   } // End namespace ihs

@@ -47,30 +47,35 @@
 #include <pcl/apps/in_hand_scanner/custom_interactor_style.h>
 #include <pcl/apps/in_hand_scanner/icp.h>
 #include <pcl/apps/in_hand_scanner/input_data_processing.h>
+#include <pcl/apps/in_hand_scanner/integration.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 
 pcl::ihs::InHandScanner::InHandScanner (int argc, char** argv)
   : mutex_                 (),
     run_                   (true),
+    visualization_fps_     (),
+    computation_fps_       (),
+    running_mode_          (RM_UNPROCESSED),
+    iteration_             (0),
+
+    visualizer_            (),
+    draw_crop_box_         (false),
 
     grabber_               (),
+    new_data_connection_   (),
+
     input_data_processing_ (new InputDataProcessing ()),
-    visualizer_            (),
 
     icp_                   (new ICP ()),
     transformation_        (Transformation::Identity ()),
 
-    new_data_connection_   (),
+    integration_           (new Integration ()),
 
     cloud_data_draw_       (),
-    cloud_model_draw_      (new CloudProcessed ()),
-    cloud_model_           (new CloudProcessed ()),
+    cloud_model_draw_      (new CloudModel ()),
+    cloud_model_           (new CloudModel ())
 
-    running_mode_          (RM_UNPROCESSED),
-    iteration_             (0),
-
-    draw_crop_box_         (false)
 {
   std::cerr << "Initializing the grabber ...\n  ";
   try
@@ -153,21 +158,25 @@ pcl::ihs::InHandScanner::setRunningMode (const RunningMode& mode)
   {
     case RM_UNPROCESSED:
     {
+      draw_crop_box_ = false;
       std::cerr << "Showing the unprocessed input data\n";
       break;
     }
     case RM_PROCESSED:
     {
+      draw_crop_box_ = true;
       std::cerr << "Showing the processed input data\n";
       break;
     }
     case RM_REGISTRATION_CONT:
     {
+      draw_crop_box_ = true;
       std::cerr << "Continuous registration\n";
       break;
     }
     case RM_REGISTRATION_SINGLE:
     {
+      draw_crop_box_ = true;
       std::cerr << "Single registration\n";
       break;
     }
@@ -190,8 +199,17 @@ pcl::ihs::InHandScanner::resetRegistration ()
   running_mode_     = RM_PROCESSED;
   iteration_        = 0;
   transformation_   = Transformation::Identity ();
-  cloud_model_draw_ = CloudProcessedPtr (new CloudProcessed ());
+  cloud_model_draw_ = CloudModelPtr (new CloudModel ());
   cloud_model_->clear ();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+void
+pcl::ihs::InHandScanner::resetCamera ()
+{
+  boost::mutex::scoped_lock lock (mutex_);
+  visualizer_->setCameraPosition (0., 0., 0., 0., 0., 1., 0., -1., 0.);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -209,11 +227,9 @@ pcl::ihs::InHandScanner::newDataCallback (const CloudInputConstPtr& cloud_in)
   }
 
   // Input data processing
-  CloudProcessedPtr cloud_processed = running_mode_ >= RM_PROCESSED ?
-                                        input_data_processing_->process (cloud_in) :
-                                        input_data_processing_->calculateNormals (cloud_in);
-
-  CloudProcessedPtr cloud_data = cloud_processed;
+  CloudProcessedPtr cloud_data = running_mode_ >= RM_PROCESSED ?
+                                   input_data_processing_->process (cloud_in) :
+                                   input_data_processing_->calculateNormals (cloud_in);
 
   // Registration & integration
   if (running_mode_ >= RM_REGISTRATION_CONT)
@@ -226,24 +242,20 @@ pcl::ihs::InHandScanner::newDataCallback (const CloudInputConstPtr& cloud_in)
     if (iteration_ == 0)
     {
       transformation_ = Transformation::Identity ();
-      cloud_model_    = cloud_processed;
-      cloud_data      = CloudProcessedPtr (new CloudProcessed ());
+      integration_->setInitialModel (cloud_model_, cloud_data);
+      cloud_data = CloudProcessedPtr (new CloudProcessed ());
     }
     else
     {
       // Registration
       Transformation T = Transformation::Identity ();
-      if (!icp_->findTransformation (cloud_model_, cloud_processed, transformation_, T))
+      if (!icp_->findTransformation (cloud_model_, cloud_data, transformation_, T))
       {
-        cloud_data = cloud_processed;
       }
       else
       {
         transformation_ = T;
-
-        // test registration
-        pcl::transformPointCloudWithNormals (*cloud_model_, *cloud_model_, T.inverse ().eval ());
-        // end test
+        integration_->merge (cloud_model_, cloud_data, transformation_);
       }
     }
 
@@ -252,7 +264,7 @@ pcl::ihs::InHandScanner::newDataCallback (const CloudInputConstPtr& cloud_in)
 
   // Set the clouds for visualization
   cloud_data_draw_ = cloud_data;
-  if (!cloud_model_draw_) cloud_model_draw_ = CloudProcessedPtr (new CloudProcessed ());
+  if (!cloud_model_draw_) cloud_model_draw_ = CloudModelPtr (new CloudModel ());
   pcl::copyPointCloud (*cloud_model_, *cloud_model_draw_);
 }
 
@@ -263,7 +275,7 @@ pcl::ihs::InHandScanner::drawClouds ()
 {
   // Get the clouds
   CloudProcessedPtr cloud_data_temp;
-  CloudProcessedPtr cloud_model_temp;
+  CloudModelPtr cloud_model_temp;
   if (mutex_.try_lock ())
   {
     cloud_data_temp.swap (cloud_data_draw_);
@@ -284,10 +296,10 @@ pcl::ihs::InHandScanner::drawClouds ()
 
   if (cloud_model_temp)
   {
-    pcl::visualization::PointCloudColorHandlerRGBField <PointProcessed> ch (cloud_model_temp);
-    if (!visualizer_->updatePointCloud <PointProcessed> (cloud_model_temp, ch, "cloud_model"))
+    pcl::visualization::PointCloudColorHandlerRGBField <PointModel> ch (cloud_model_temp);
+    if (!visualizer_->updatePointCloud <PointModel> (cloud_model_temp, ch, "cloud_model"))
     {
-      visualizer_->addPointCloud <PointProcessed> (cloud_model_temp, ch, "cloud_model");
+      visualizer_->addPointCloud <PointModel> (cloud_model_temp, ch, "cloud_model");
       visualizer_->resetCameraViewpoint ("cloud_model");
     }
   }
@@ -374,6 +386,8 @@ pcl::ihs::InHandScanner::keyboardCallback (const pcl::visualization::KeyboardEve
                 << "3     : Registers new data to the first acquired data continuously\n"
                 << "4     : Registers new data once and returns to '2'\n"
                 << "0     : Reset the registration\n"
+                << "----------------------------------------------------------------------\n"
+                << "c     : Reset the camera\n"
                 << "======================================================================\n";
       break;
     }
@@ -388,6 +402,7 @@ pcl::ihs::InHandScanner::keyboardCallback (const pcl::visualization::KeyboardEve
     case '3': this->setRunningMode (RM_REGISTRATION_CONT);   break;
     case '4': this->setRunningMode (RM_REGISTRATION_SINGLE); break;
     case '0': this->resetRegistration ();                    break;
+    case 'c': this->resetCamera ();                          break;
     default:                                                 break;
   }
 }

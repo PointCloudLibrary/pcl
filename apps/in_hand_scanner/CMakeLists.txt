@@ -1,7 +1,7 @@
 set(SUBSYS_NAME in_hand_scanner)
 set(SUBSYS_DESC "In-hand scanner for small objects")
-set(SUBSYS_DEPS     common     geometry     io     kdtree     registration     visualization)
-set(SUBSYS_LIBS pcl_common pcl_geometry pcl_io pcl_kdtree pcl_registration pcl_visualization)
+set(SUBSYS_DEPS     common     features     geometry     io     kdtree      visualization)
+set(SUBSYS_LIBS pcl_common pcl_features pcl_geometry pcl_io pcl_kdtree  pcl_visualization)
 
 ################################################################################
 
@@ -13,9 +13,10 @@ set(INCS include/pcl/apps/${SUBSYS_NAME}/common_types.h
          include/pcl/apps/${SUBSYS_NAME}/in_hand_scanner.h
          include/pcl/apps/${SUBSYS_NAME}/input_data_processing.h
          include/pcl/apps/${SUBSYS_NAME}/integration.h
-   )
+  )
 
-set(IMPL_INCS "")
+set(IMPL_INCS include/pcl/apps/${SUBSYS_NAME}/impl/common_types.hpp
+  )
 
 # Source files
 set(SRCS src/main.cpp
@@ -24,7 +25,7 @@ set(SRCS src/main.cpp
          src/in_hand_scanner.cpp
          src/input_data_processing.cpp
          src/integration.cpp
-   )
+  )
 
 ################################################################################
 

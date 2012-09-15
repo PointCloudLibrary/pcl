@@ -62,6 +62,7 @@ namespace pcl
   {
     class InputDataProcessing;
     class ICP;
+    class Integration;
   } // End namespace ihs
 
   namespace visualization
@@ -107,6 +108,11 @@ namespace pcl
         typedef pcl::ihs::CloudProcessedPtr      CloudProcessedPtr;
         typedef pcl::ihs::CloudProcessedConstPtr CloudProcessedConstPtr;
 
+        typedef pcl::ihs::PointModel         PointModel;
+        typedef pcl::ihs::CloudModel         CloudModel;
+        typedef pcl::ihs::CloudModelPtr      CloudModelPtr;
+        typedef pcl::ihs::CloudModelConstPtr CloudModelConstPtr;
+
         typedef pcl::OpenNIGrabber                Grabber;
         typedef boost::shared_ptr <Grabber>       GrabberPtr;
         typedef boost::shared_ptr <const Grabber> GrabberConstPtr;
@@ -119,6 +125,10 @@ namespace pcl
         typedef boost::shared_ptr <ICP>       ICPPtr;
         typedef boost::shared_ptr <const ICP> ICPConstPtr;
         typedef pcl::ihs::Transformation      Transformation;
+
+        typedef pcl::ihs::Integration                 Integration;
+        typedef boost::shared_ptr <Integration>       IntegrationPtr;
+        typedef boost::shared_ptr <const Integration> IntegrationConstPtr;
 
         typedef pcl::visualization::PCLVisualizer       PCLVisualizer;
         typedef boost::shared_ptr <PCLVisualizer>       PCLVisualizerPtr;
@@ -177,6 +187,9 @@ namespace pcl
         void
         resetRegistration ();
 
+        void
+        resetCamera ();
+
       private:
 
         void
@@ -216,27 +229,27 @@ namespace pcl
 
         boost::mutex                mutex_;
         bool                        run_;
+        VisualizationFPS            visualization_fps_;
+        ComputationFPS              computation_fps_;
+        RunningMode                 running_mode_;
+        unsigned int                iteration_;
+
+        PCLVisualizerPtr            visualizer_;
+        bool                        draw_crop_box_;
 
         GrabberPtr                  grabber_;
+        boost::signals2::connection new_data_connection_;
+
         InputDataProcessingPtr      input_data_processing_;
-        PCLVisualizerPtr            visualizer_;
 
         ICPPtr                      icp_;
         Transformation              transformation_;
 
-        boost::signals2::connection new_data_connection_;
+        IntegrationPtr              integration_;
 
         CloudProcessedPtr           cloud_data_draw_;
-        CloudProcessedPtr           cloud_model_draw_;
-        CloudProcessedPtr           cloud_model_;
-
-        RunningMode                 running_mode_;
-        unsigned int                iteration_;
-
-        bool                        draw_crop_box_;
-
-        VisualizationFPS            visualization_fps_;
-        ComputationFPS              computation_fps_;
+        CloudModelPtr               cloud_model_draw_;
+        CloudModelPtr               cloud_model_;
     };
 
   } // End namespace ihs
