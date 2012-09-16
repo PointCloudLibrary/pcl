@@ -33,6 +33,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  * $Id$
+ *
  */
 
 /** Re-enable these once all of registration is separated into H/HPP correctly. */

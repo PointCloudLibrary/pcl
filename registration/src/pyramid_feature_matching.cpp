@@ -33,6 +33,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  * $Id$
+ *
  */
 
 #include <pcl/point_types.h>

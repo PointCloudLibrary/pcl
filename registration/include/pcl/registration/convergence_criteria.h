@@ -33,6 +33,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
+ * $Id$
  *
  */
 
@@ -51,7 +52,7 @@ namespace pcl
       * This should be used as part of an Iterative Closest Point (ICP)-like
       * method, to verify if the algorithm has reached convergence.
       *
-      * Tipical convergence criteria that could inherit from this include:
+      * Typical convergence criteria that could inherit from this include:
       * 
       *  * a maximum number of iterations has been reached
       *  * the transformation (R, t) cannot be further updated (the difference between current and previous is smaller than a threshold)

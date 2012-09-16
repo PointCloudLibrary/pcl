@@ -33,6 +33,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  * $Id$
+ *
  */
 
 #ifndef PCL_PYRAMID_FEATURE_MATCHING_H_
