@@ -877,7 +877,7 @@ pcl::visualization::PCLVisualizer::addCorrespondences (
   memset (colors, 0, line_colors->GetNumberOfTuples () * line_colors->GetNumberOfComponents ());
   pcl::RGB rgb;
   // Will use random colors or RED by default
-  rgb.r = 255.0; rgb.g = rgb.b = 0.0;
+  rgb.r = 255; rgb.g = rgb.b = 0;
 
   // Prepare coordinates
   vtkSmartPointer<vtkPoints> line_points = vtkSmartPointer<vtkPoints>::New ();
@@ -982,7 +982,7 @@ pcl::visualization::PCLVisualizer::addCorrespondences (
   memset (colors, 0, line_colors->GetNumberOfTuples () * line_colors->GetNumberOfComponents ());
   pcl::RGB rgb;
   // Will use random colors or RED by default
-  rgb.r = 255.0; rgb.g = rgb.b = 0.0;
+  rgb.r = 255; rgb.g = rgb.b = 0;
 
   // Prepare coordinates
   vtkSmartPointer<vtkPoints> line_points = vtkSmartPointer<vtkPoints>::New ();
