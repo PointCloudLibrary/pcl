@@ -54,33 +54,18 @@ namespace pcl
 {
   namespace registration
   {
-    /** \brief @b CorrespondenceEstimation represents the base class for
-      * determining correspondences between target and query point
-      * sets/features.
-      *
-      * Code example:
-      *
-      * \code
-      * pcl::PointCloud<pcl::PointXYZRGBA>::Ptr source, target;
-      * // ... read or fill in source and target
-      * pcl::CorrespondenceEstimation<pcl::PointXYZ, pcl::PointXYZ> est;
-      * est.setInputSource (source);
-      * est.setInputTarget (target);
-      *
-      * pcl::Correspondences all_correspondences;
-      * // Determine all reciprocal correspondences
-      * est.determineReciprocalCorrespondences (all_correspondences);
-      * \endcode
-      *
-      * \author Radu B. Rusu, Michael Dixon, Dirk Holz
+    /** \brief Abstract @b CorrespondenceEstimationBase class. 
+      * All correspondence estimation methods should inherit from this.
+      * \author Radu B. Rusu
       * \ingroup registration
       */
     template <typename PointSource, typename PointTarget>
-    class CorrespondenceEstimation : public PCLBase<PointSource>
+    class CorrespondenceEstimationBase: public PCLBase<PointSource>
     {
       public:
-        typedef boost::shared_ptr<CorrespondenceEstimation<PointSource, PointTarget> > Ptr;
-        typedef boost::shared_ptr<const CorrespondenceEstimation<PointSource, PointTarget> > ConstPtr;
+        typedef boost::shared_ptr<CorrespondenceEstimationBase<PointSource, PointTarget> > Ptr;
+        typedef boost::shared_ptr<const CorrespondenceEstimationBase<PointSource, PointTarget> > ConstPtr;
+
         using PCLBase<PointSource>::initCompute;
         using PCLBase<PointSource>::deinitCompute;
         using PCLBase<PointSource>::input_;
@@ -101,8 +86,8 @@ namespace pcl
         typedef typename KdTree::PointRepresentationConstPtr PointRepresentationConstPtr;
 
         /** \brief Empty constructor. */
-        CorrespondenceEstimation () 
-          : corr_name_ ("CorrespondenceEstimation")
+        CorrespondenceEstimationBase () 
+          : corr_name_ ("CorrespondenceEstimationBase")
           , tree_ (new pcl::KdTreeFLANN<PointTarget>)
           , target_ ()
           , target_indices_ ()
@@ -118,7 +103,7 @@ namespace pcl
         inline void 
         setInputSource (const PointCloudSourceConstPtr &cloud)
         {
-          setInputCloud (cloud);
+          PCLBase<PointSource>::setInputCloud (cloud);
         }
 
         /** \brief Get a pointer to the input point cloud dataset target. */
@@ -170,7 +155,7 @@ namespace pcl
           */
         virtual void 
         determineCorrespondences (pcl::Correspondences &correspondences,
-                                  double max_distance = std::numeric_limits<double>::max ());
+                                  double max_distance = std::numeric_limits<double>::max ()) = 0;
 
         /** \brief Determine the reciprocal correspondences between input and target cloud.
           * A correspondence is considered reciprocal if both Src_i has Tgt_i as a 
@@ -181,7 +166,7 @@ namespace pcl
           */
         virtual void 
         determineReciprocalCorrespondences (pcl::Correspondences &correspondences,
-                                            double max_distance = std::numeric_limits<double>::max ());
+                                            double max_distance = std::numeric_limits<double>::max ()) = 0;
 
         /** \brief Provide a boost shared pointer to the PointRepresentation to be used 
           * when searching for nearest neighbors.
@@ -194,6 +179,14 @@ namespace pcl
         {
           point_representation_ = point_representation;
         }
+
+        /** \brief Return true if the source normals are needed for correspondence estimation. */
+        virtual bool
+        needsSourceNormals () = 0;
+
+        /** \brief Return true if the target normals are needed for correspondence estimation. */
+        virtual bool
+        needsTargetNormals () = 0;
 
       protected:
         /** \brief The correspondence estimation method name. */
@@ -218,6 +211,98 @@ namespace pcl
         /** \brief Internal computation initalization. */
         bool
         initCompute ();
+     };
+
+    /** \brief @b CorrespondenceEstimation represents the base class for
+      * determining correspondences between target and query point
+      * sets/features.
+      *
+      * Code example:
+      *
+      * \code
+      * pcl::PointCloud<pcl::PointXYZRGBA>::Ptr source, target;
+      * // ... read or fill in source and target
+      * pcl::CorrespondenceEstimation<pcl::PointXYZ, pcl::PointXYZ> est;
+      * est.setInputSource (source);
+      * est.setInputTarget (target);
+      *
+      * pcl::Correspondences all_correspondences;
+      * // Determine all reciprocal correspondences
+      * est.determineReciprocalCorrespondences (all_correspondences);
+      * \endcode
+      *
+      * \author Radu B. Rusu, Michael Dixon, Dirk Holz
+      * \ingroup registration
+      */
+    template <typename PointSource, typename PointTarget>
+    class CorrespondenceEstimation : public CorrespondenceEstimationBase<PointSource, PointTarget>
+    {
+      public:
+        typedef boost::shared_ptr<CorrespondenceEstimation<PointSource, PointTarget> > Ptr;
+        typedef boost::shared_ptr<const CorrespondenceEstimation<PointSource, PointTarget> > ConstPtr;
+
+        using CorrespondenceEstimationBase<PointSource, PointTarget>::point_representation_;
+        using CorrespondenceEstimationBase<PointSource, PointTarget>::tree_;
+        using CorrespondenceEstimationBase<PointSource, PointTarget>::target_;
+        using CorrespondenceEstimationBase<PointSource, PointTarget>::corr_name_;
+        using CorrespondenceEstimationBase<PointSource, PointTarget>::target_indices_;
+        using CorrespondenceEstimationBase<PointSource, PointTarget>::getClassName;
+        using CorrespondenceEstimationBase<PointSource, PointTarget>::initCompute;
+        using CorrespondenceEstimationBase<PointSource, PointTarget>::input_;
+        using CorrespondenceEstimationBase<PointSource, PointTarget>::indices_;
+        using PCLBase<PointSource>::deinitCompute;
+
+        typedef typename pcl::KdTree<PointTarget> KdTree;
+        typedef typename pcl::KdTree<PointTarget>::Ptr KdTreePtr;
+
+        typedef pcl::PointCloud<PointSource> PointCloudSource;
+        typedef typename PointCloudSource::Ptr PointCloudSourcePtr;
+        typedef typename PointCloudSource::ConstPtr PointCloudSourceConstPtr;
+
+        typedef pcl::PointCloud<PointTarget> PointCloudTarget;
+        typedef typename PointCloudTarget::Ptr PointCloudTargetPtr;
+        typedef typename PointCloudTarget::ConstPtr PointCloudTargetConstPtr;
+
+        typedef typename KdTree::PointRepresentationConstPtr PointRepresentationConstPtr;
+
+        /** \brief Empty constructor. */
+        CorrespondenceEstimation () 
+        {
+          corr_name_  = "CorrespondenceEstimation";
+        }
+
+        /** \brief Determine the correspondences between input and target cloud.
+          * \param[out] correspondences the found correspondences (index of query point, index of target point, distance)
+          * \param[in] max_distance maximum allowed distance between correspondences
+          */
+        virtual void 
+        determineCorrespondences (pcl::Correspondences &correspondences,
+                                  double max_distance = std::numeric_limits<double>::max ());
+
+        /** \brief Determine the reciprocal correspondences between input and target cloud.
+          * A correspondence is considered reciprocal if both Src_i has Tgt_i as a 
+          * correspondence, and Tgt_i has Src_i as one.
+          *
+          * \param[out] correspondences the found correspondences (index of query and target point, distance)
+          * \param[in] max_distance maximum allowed distance between correspondences
+          */
+        virtual void 
+        determineReciprocalCorrespondences (pcl::Correspondences &correspondences,
+                                            double max_distance = std::numeric_limits<double>::max ());
+
+        /** \brief Return true if the source normals are needed for correspondence estimation. */
+        virtual bool
+        needsSourceNormals ()
+        {
+          return (false);
+        }
+
+        /** \brief Return true if the target normals are needed for correspondence estimation. */
+        virtual bool
+        needsTargetNormals ()
+        {
+          return (false);
+        }
      };
   }
 }

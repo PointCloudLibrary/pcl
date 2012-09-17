@@ -51,7 +51,7 @@ pcl::registration::CorrespondenceEstimationBackProjection<PointSource, PointTarg
     return (false);
   }
 
-  return (CorrespondenceEstimation<PointSource, PointTarget>::initCompute ());
+  return (CorrespondenceEstimationBase<PointSource, PointTarget>::initCompute ());
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////

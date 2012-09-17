@@ -76,16 +76,19 @@ namespace pcl
       * \ingroup registration
       */
     template <typename PointSource, typename PointTarget, typename NormalT>
-    class CorrespondenceEstimationNormalShooting : public CorrespondenceEstimation <PointSource, PointTarget>
+    class CorrespondenceEstimationNormalShooting : public CorrespondenceEstimationBase<PointSource, PointTarget>
     {
       public:
-        using CorrespondenceEstimation<PointSource, PointTarget>::initCompute;
+        typedef boost::shared_ptr<CorrespondenceEstimationNormalShooting<PointSource, PointTarget, NormalT> > Ptr;
+        typedef boost::shared_ptr<const CorrespondenceEstimationNormalShooting<PointSource, PointTarget, NormalT> > ConstPtr;
+
+        using CorrespondenceEstimationBase<PointSource, PointTarget>::initCompute;
         using PCLBase<PointSource>::deinitCompute;
         using PCLBase<PointSource>::input_;
         using PCLBase<PointSource>::indices_;
-        using CorrespondenceEstimation<PointSource, PointTarget>::getClassName;
-        using CorrespondenceEstimation<PointSource, PointTarget>::point_representation_;
-        using CorrespondenceEstimation<PointSource, PointTarget>::target_indices_;
+        using CorrespondenceEstimationBase<PointSource, PointTarget>::getClassName;
+        using CorrespondenceEstimationBase<PointSource, PointTarget>::point_representation_;
+        using CorrespondenceEstimationBase<PointSource, PointTarget>::target_indices_;
 
         typedef typename pcl::KdTree<PointTarget> KdTree;
         typedef typename pcl::KdTree<PointTarget>::Ptr KdTreePtr;
@@ -108,7 +111,6 @@ namespace pcl
           */
         CorrespondenceEstimationNormalShooting ()
           : source_normals_ ()
-          , target_normals_ ()
           , k_ (10)
         {
           corr_name_ = "CorrespondenceEstimationNormalShooting";
@@ -124,17 +126,6 @@ namespace pcl
           */
         inline NormalsConstPtr
         getSourceNormals () const { return (source_normals_); }
-
-        /** \brief Set the normals computed on the target point cloud
-          * \param[in] normals the normals computed for the target cloud
-          */
-        inline void
-        setTargetNormals (const NormalsConstPtr &normals) { target_normals_ = normals; }
-
-        /** \brief Get the normals of the target point cloud
-          */
-        inline NormalsConstPtr
-        getTargetNormals () const { return (target_normals_); }
 
         /** \brief Determine the correspondences between input and target cloud.
           * \param[out] correspondences the found correspondences (index of query point, index of target point, distance)
@@ -171,11 +162,25 @@ namespace pcl
         inline void
         getKSearch () const { return (k_); }
 
+        /** \brief Return true if the source normals are needed for correspondence estimation. */
+        inline bool
+        needsSourceNormals ()
+        {
+          return (true);
+        }
+
+        /** \brief Return true if the target normals are needed for correspondence estimation. */
+        inline bool
+        needsTargetNormals ()
+        {
+          return (false);
+        }
+
       protected:
 
-        using CorrespondenceEstimation<PointSource, PointTarget>::corr_name_;
-        using CorrespondenceEstimation<PointSource, PointTarget>::tree_;
-        using CorrespondenceEstimation<PointSource, PointTarget>::target_;
+        using CorrespondenceEstimationBase<PointSource, PointTarget>::corr_name_;
+        using CorrespondenceEstimationBase<PointSource, PointTarget>::tree_;
+        using CorrespondenceEstimationBase<PointSource, PointTarget>::target_;
 
         /** \brief Internal computation initalization. */
         bool
@@ -185,9 +190,6 @@ namespace pcl
 
         /** \brief The normals computed at each point in the source cloud */
         NormalsConstPtr source_normals_;
-
-        /** \brief The normals computed at each point in the target cloud */
-        NormalsConstPtr target_normals_;
 
         /** \brief The number of neighbours to be considered in the target point cloud */
         unsigned int k_;

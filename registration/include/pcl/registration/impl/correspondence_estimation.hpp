@@ -45,8 +45,25 @@
 #include <pcl/common/io.h>
 
 ///////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointSource, typename PointTarget> void
+pcl::registration::CorrespondenceEstimationBase<PointSource, PointTarget>::setInputTarget (
+    const PointCloudTargetConstPtr &cloud)
+{
+  if (cloud->points.empty ())
+  {
+    PCL_ERROR ("[pcl::%s::setInputTarget] Invalid or empty point cloud dataset given!\n", getClassName ().c_str ());
+    return;
+  }
+  target_ = cloud;
+
+  // Set the internal point representation of choice
+  if (point_representation_)
+    tree_->setPointRepresentation (point_representation_);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget> bool
-pcl::registration::CorrespondenceEstimation<PointSource, PointTarget>::initCompute ()
+pcl::registration::CorrespondenceEstimationBase<PointSource, PointTarget>::initCompute ()
 {
   if (!target_)
   {
@@ -64,23 +81,6 @@ pcl::registration::CorrespondenceEstimation<PointSource, PointTarget>::initCompu
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointSource, typename PointTarget> void
-pcl::registration::CorrespondenceEstimation<PointSource, PointTarget>::setInputTarget (
-    const PointCloudTargetConstPtr &cloud)
-{
-  if (cloud->points.empty ())
-  {
-    PCL_ERROR ("[pcl::%s::setInputTarget] Invalid or empty point cloud dataset given!\n", getClassName ().c_str ());
-    return;
-  }
-  target_ = cloud;
-
-  // Set the internal point representation of choice
-  if (point_representation_)
-    tree_->setPointRepresentation (point_representation_);
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget> void
 pcl::registration::CorrespondenceEstimation<PointSource, PointTarget>::determineCorrespondences (
     pcl::Correspondences &correspondences, double max_distance)

@@ -46,13 +46,13 @@
 template <typename PointSource, typename PointTarget, typename NormalT> bool
 pcl::registration::CorrespondenceEstimationNormalShooting<PointSource, PointTarget, NormalT>::initCompute ()
 {
-  if (!source_normals_ || !target_normals_)
+  if (!source_normals_)
   {
-    PCL_WARN ("[pcl::%s::compute] Datasets containing normals for source/target have not been given!\n", getClassName ().c_str ());
+    PCL_WARN ("[pcl::%s::compute] Datasets containing normals for source have not been given!\n", getClassName ().c_str ());
     return (false);
   }
 
-  return (CorrespondenceEstimation<PointSource, PointTarget>::initCompute ());
+  return (CorrespondenceEstimationBase<PointSource, PointTarget>::initCompute ());
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -69,7 +69,7 @@ pcl::registration::CorrespondenceEstimationNormalShooting<PointSource, PointTarg
   std::vector<int> nn_indices (k_);
   std::vector<float> nn_dists (k_);
 
-  float min_dist = std::numeric_limits<float>::max ();
+  double min_dist = std::numeric_limits<double>::max ();
   int min_index = 0;
   
   pcl::Correspondence corr;
@@ -86,7 +86,7 @@ pcl::registration::CorrespondenceEstimationNormalShooting<PointSource, PointTarg
       tree_->nearestKSearch (input_->points[*idx_i], k_, nn_indices, nn_dists);
 
       // Among the K nearest neighbours find the one with minimum perpendicular distance to the normal
-      min_dist = std::numeric_limits<float>::max ();
+      min_dist = std::numeric_limits<double>::max ();
       
       // Find the best correspondence
       for (size_t j = 0; j < nn_indices.size (); j++)
@@ -103,11 +103,11 @@ pcl::registration::CorrespondenceEstimationNormalShooting<PointSource, PointTarg
         Eigen::Vector3d C = N.cross (V);
         
         // Check if we have a better correspondence
-        float dist = C.dot (C);
+        double dist = C.dot (C);
         if (dist < min_dist)
         {
           min_dist = dist;
-          min_index = j;
+          min_index = static_cast<int> (j);
         }
       }
       if (min_dist > max_distance)
@@ -129,7 +129,7 @@ pcl::registration::CorrespondenceEstimationNormalShooting<PointSource, PointTarg
       tree_->nearestKSearch (input_->points[*idx_i], k_, nn_indices, nn_dists);
  
       // Among the K nearest neighbours find the one with minimum perpendicular distance to the normal
-      min_dist = std::numeric_limits<float>::max ();
+      min_dist = std::numeric_limits<double>::max ();
       
       // Find the best correspondence
       for (size_t j = 0; j < nn_indices.size (); j++)
@@ -152,11 +152,11 @@ pcl::registration::CorrespondenceEstimationNormalShooting<PointSource, PointTarg
         Eigen::Vector3d C = N.cross (V);
         
         // Check if we have a better correspondence
-        float dist = C.dot (C);
+        double dist = C.dot (C);
         if (dist < min_dist)
         {
           min_dist = dist;
-          min_index = j;
+          min_index = static_cast<int> (j);
         }
       }
       if (min_dist > max_distance)
@@ -199,7 +199,7 @@ pcl::registration::CorrespondenceEstimationNormalShooting<PointSource, PointTarg
   std::vector<int> index_reciprocal (1);
   std::vector<float> distance_reciprocal (1);
 
-  float min_dist = std::numeric_limits<float>::max ();
+  double min_dist = std::numeric_limits<double>::max ();
   int min_index = 0;
   
   pcl::Correspondence corr;
@@ -217,7 +217,7 @@ pcl::registration::CorrespondenceEstimationNormalShooting<PointSource, PointTarg
       tree_->nearestKSearch (input_->points[*idx_i], k_, nn_indices, nn_dists);
 
       // Among the K nearest neighbours find the one with minimum perpendicular distance to the normal
-      min_dist = std::numeric_limits<float>::max ();
+      min_dist = std::numeric_limits<double>::max ();
       
       // Find the best correspondence
       for (size_t j = 0; j < nn_indices.size (); j++)
@@ -234,11 +234,11 @@ pcl::registration::CorrespondenceEstimationNormalShooting<PointSource, PointTarg
         Eigen::Vector3d C = N.cross (V);
         
         // Check if we have a better correspondence
-        float dist = C.dot (C);
+        double dist = C.dot (C);
         if (dist < min_dist)
         {
           min_dist = dist;
-          min_index = j;
+          min_index = static_cast<int> (j);
         }
       }
       if (min_dist > max_distance)
@@ -268,7 +268,7 @@ pcl::registration::CorrespondenceEstimationNormalShooting<PointSource, PointTarg
       tree_->nearestKSearch (input_->points[*idx_i], k_, nn_indices, nn_dists);
 
       // Among the K nearest neighbours find the one with minimum perpendicular distance to the normal
-      min_dist = std::numeric_limits<float>::max ();
+      min_dist = std::numeric_limits<double>::max ();
       
       // Find the best correspondence
       for (size_t j = 0; j < nn_indices.size (); j++)
@@ -291,11 +291,11 @@ pcl::registration::CorrespondenceEstimationNormalShooting<PointSource, PointTarg
         Eigen::Vector3d C = N.cross (V);
         
         // Check if we have a better correspondence
-        float dist = C.dot (C);
+        double dist = C.dot (C);
         if (dist < min_dist)
         {
           min_dist = dist;
-          min_index = j;
+          min_index = static_cast<int> (j);
         }
       }
       if (min_dist > max_distance)

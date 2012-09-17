@@ -53,16 +53,19 @@ namespace pcl
       * \ingroup registration
       */
     template <typename PointSource, typename PointTarget, typename NormalT>
-    class CorrespondenceEstimationBackProjection : public CorrespondenceEstimation <PointSource, PointTarget>
+    class CorrespondenceEstimationBackProjection : public CorrespondenceEstimationBase <PointSource, PointTarget>
     {
       public:
-        using CorrespondenceEstimation<PointSource, PointTarget>::initCompute;
+        typedef boost::shared_ptr<CorrespondenceEstimationBackProjection<PointSource, PointTarget, NormalT> > Ptr;
+        typedef boost::shared_ptr<const CorrespondenceEstimationBackProjection<PointSource, PointTarget, NormalT> > ConstPtr;
+
+        using CorrespondenceEstimationBase<PointSource, PointTarget>::initCompute;
         using PCLBase<PointSource>::deinitCompute;
         using PCLBase<PointSource>::input_;
         using PCLBase<PointSource>::indices_;
-        using CorrespondenceEstimation<PointSource, PointTarget>::getClassName;
-        using CorrespondenceEstimation<PointSource, PointTarget>::point_representation_;
-        using CorrespondenceEstimation<PointSource, PointTarget>::target_indices_;
+        using CorrespondenceEstimationBase<PointSource, PointTarget>::getClassName;
+        using CorrespondenceEstimationBase<PointSource, PointTarget>::point_representation_;
+        using CorrespondenceEstimationBase<PointSource, PointTarget>::target_indices_;
 
         typedef typename pcl::KdTree<PointTarget> KdTree;
         typedef typename pcl::KdTree<PointTarget>::Ptr KdTreePtr;
@@ -148,11 +151,25 @@ namespace pcl
         inline void
         getKSearch () const { return (k_); }
 
+        /** \brief Return true if the source normals are needed for correspondence estimation. */
+        inline bool
+        needsSourceNormals ()
+        {
+          return (true);
+        }
+
+        /** \brief Return true if the target normals are needed for correspondence estimation. */
+        inline bool
+        needsTargetNormals ()
+        {
+          return (true);
+        }
+
       protected:
 
-        using CorrespondenceEstimation<PointSource, PointTarget>::corr_name_;
-        using CorrespondenceEstimation<PointSource, PointTarget>::tree_;
-        using CorrespondenceEstimation<PointSource, PointTarget>::target_;
+        using CorrespondenceEstimationBase<PointSource, PointTarget>::corr_name_;
+        using CorrespondenceEstimationBase<PointSource, PointTarget>::tree_;
+        using CorrespondenceEstimationBase<PointSource, PointTarget>::target_;
 
         /** \brief Internal computation initalization. */
         bool
