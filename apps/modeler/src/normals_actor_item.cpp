@@ -74,9 +74,9 @@ pcl::modeler::NormalsActorItem::createNormalLines()
 
   if (cloud->is_dense)
   {
-    vtkIdType nr_normals = (cloud->points.size () - 1) / vtkIdType (level_) + 1;
+    vtkIdType nr_normals = static_cast<vtkIdType> ((cloud->points.size () - 1) / level_ + 1);
     data->SetNumberOfValues(2*3*nr_normals);
-    for (vtkIdType i = 0, j = 0; j < nr_normals; j++, i = j * vtkIdType (level_))
+    for (vtkIdType i = 0, j = 0; j < nr_normals; j++, i = static_cast<vtkIdType> (j * level_))
     {
       const CloudMesh::PointT& p = cloud->points[i];
       data->SetValue(2*j*3 + 0, p.x);
@@ -96,9 +96,9 @@ pcl::modeler::NormalsActorItem::createNormalLines()
     pcl::IndicesPtr indices(new std::vector<int>());
     pcl::removeNaNFromPointCloud(*cloud, *indices);
 
-    vtkIdType nr_normals = (indices->size () - 1) / vtkIdType (level_) + 1;
+    vtkIdType nr_normals = static_cast<vtkIdType> ((indices->size () - 1) / level_ + 1);
     data->SetNumberOfValues(2*3*nr_normals);
-    for (vtkIdType i = 0, j = 0; j < nr_normals; j++, i = j * vtkIdType (level_))
+    for (vtkIdType i = 0, j = 0; j < nr_normals; j++, i = static_cast<vtkIdType> (j * level_))
     {
       const CloudMesh::PointT& p= cloud->points[(*indices)[i]];
       data->SetValue (2*j*3 + 0, p.x);
@@ -167,14 +167,14 @@ pcl::modeler::NormalsActorItem::updateImpl()
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::modeler::NormalsActorItem::prepareContextMenu(QMenu*) const
+pcl::modeler::NormalsActorItem::prepareContextMenu(QMenu* ) const
 {
 
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::modeler::NormalsActorItem::prepareProperties(ParameterDialog*)
+pcl::modeler::NormalsActorItem::prepareProperties(ParameterDialog* )
 {
 
 }

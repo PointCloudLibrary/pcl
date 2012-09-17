@@ -58,7 +58,7 @@ pcl::modeler::StatisticalOutlierRemovalWorker::~StatisticalOutlierRemovalWorker(
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::modeler::StatisticalOutlierRemovalWorker::initParameters(CloudMeshItem*)
+pcl::modeler::StatisticalOutlierRemovalWorker::initParameters(CloudMeshItem *)
 {
   return;
 }

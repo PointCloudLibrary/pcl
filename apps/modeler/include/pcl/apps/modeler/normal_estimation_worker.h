@@ -48,12 +48,12 @@ namespace pcl
     class NormalEstimationWorker : public AbstractWorker 
     {
       public:
-        NormalEstimationWorker(const QList<CloudMeshItem*>& cloud_mesh_items, QWidget* parent=0);
+        NormalEstimationWorker(const QList<CloudMeshItem*>& cloud_mesh_items, QWidget* parent = 0);
         ~NormalEstimationWorker(void);
 
       protected:
         virtual std::string
-        getName () const {return ("Normal Estimation");}
+        getName () const { return ("Normal Estimation"); }
 
         virtual void
         initParameters(CloudMeshItem* cloud_mesh_item);
@@ -70,7 +70,6 @@ namespace pcl
         double z_min_, z_max_;
 
         DoubleParameter* search_radius_;
-
     };
 
   }

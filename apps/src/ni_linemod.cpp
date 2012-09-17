@@ -191,7 +191,7 @@ class NILinemod
     
     /////////////////////////////////////////////////////////////////////////
     void 
-    mouse_callback (const visualization::MouseEvent& mouse_event, void*)
+    mouse_callback (const visualization::MouseEvent&, void*)
     {
       //if (mouse_event.getType() == visualization::MouseEvent::MouseButtonPress && mouse_event.getButton() == visualization::MouseEvent::LeftButton)
       //{
@@ -297,7 +297,7 @@ class NILinemod
     segment (const PointT &picked_point, 
              int picked_idx,
              PlanarRegion<PointT> &region,
-             PointIndices &indices,
+             PointIndices &,
              CloudPtr &object)
     {
       // First frame is segmented using an organized multi plane segmentation approach from points and their normals
@@ -487,8 +487,6 @@ class NILinemod
       grabber_.start ();
       
       bool image_init = false, cloud_init = false;
-      unsigned char* rgb_data = 0;
-      unsigned rgb_data_size = 0;
 
       while (!cloud_viewer_.wasStopped () && !image_viewer_.wasStopped ())
       {
