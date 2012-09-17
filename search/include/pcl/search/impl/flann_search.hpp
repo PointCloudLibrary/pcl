@@ -54,10 +54,10 @@ pcl::search::FlannSearch<PointT, FlannDistance>::KdTreeIndexCreator::createIndex
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename FlannDistance>
-pcl::search::FlannSearch<PointT, FlannDistance>::FlannSearch(bool sorted, FlannIndexCreator *creator) : pcl::search::Search<PointT> ("FlannSearch",sorted),
-  creator_ (creator), eps_ (0), input_copied_for_flann_ (false)
+pcl::search::FlannSearch<PointT, FlannDistance>::FlannSearch(bool sorted, typename FlannIndexCreator::Ptr creator) : pcl::search::Search<PointT> ("FlannSearch",sorted),
+  index_(), creator_ (creator), input_flann_(), eps_ (0), input_copied_for_flann_ (false), point_representation_ (new DefaultPointRepresentation<PointT>),
+  dim_ (0), index_mapping_(), identity_mapping_()
 {
-  point_representation_.reset (new DefaultPointRepresentation<PointT>);
   dim_ = point_representation_->getNumberOfDimensions ();
 }
 
@@ -65,7 +65,6 @@ pcl::search::FlannSearch<PointT, FlannDistance>::FlannSearch(bool sorted, FlannI
 template <typename PointT, typename FlannDistance>
 pcl::search::FlannSearch<PointT, FlannDistance>::~FlannSearch()
 {
-  delete creator_;
   if (input_copied_for_flann_)
     delete [] input_flann_->ptr();
 }

@@ -96,6 +96,7 @@ namespace pcl
         class FlannIndexCreator
         {
           public:
+            typedef boost::shared_ptr<FlannIndexCreator> Ptr;
           /** \brief Create a FLANN Index from the input data.
             * \param[in] data The FLANN matrix containing the input.
             * \return The FLANN index.
@@ -126,7 +127,7 @@ namespace pcl
             unsigned int max_leaf_size_;
         };
 
-        FlannSearch (bool sorted = true, FlannIndexCreator* creator = new KdTreeIndexCreator());
+        FlannSearch (bool sorted = true, typename FlannIndexCreator::Ptr creator = typename FlannIndexCreator::Ptr (new KdTreeIndexCreator ()));
 
         /** \brief Destructor for FlannSearch. */
         virtual
@@ -238,7 +239,7 @@ namespace pcl
 
         /** The index creator, used to (re-) create the index when the search data is passed.
           */
-        FlannIndexCreator *creator_;
+        typename FlannIndexCreator::Ptr creator_;
 
         /** Input data in FLANN format.
           */
