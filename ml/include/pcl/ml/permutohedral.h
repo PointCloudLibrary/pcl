@@ -173,7 +173,7 @@ namespace pcl
         if (old_table[i] >= 0){
           int e = old_table[i];
           size_t h = hash( old_keys+(getKey(e)-keys_) ) % capacity_;
-          for(; table_[h] >= 0; h = h<capacity_-1 ? h+1 : 0);
+          for (; table_[h] >= 0; h = h<capacity_-1 ? h+1 : 0) { };
           table_[h] = e;
         }
       

@@ -77,7 +77,7 @@ template <class S, class T> static inline void
 clone (T*& dst, S* src, int n)
 {
   dst = new T[n];
-  memcpy (reinterpret_cast<void*> (dst), (void*) (src), sizeof (T) *n);
+  memcpy (reinterpret_cast<void*> (dst), reinterpret_cast<const void*> (src), sizeof (T) *n);
 }
 
 static inline double powi (double base, int times)
