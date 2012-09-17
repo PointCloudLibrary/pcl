@@ -127,8 +127,8 @@ class SimpleOpenNIViewer
     doColorEncoding_ (doColorEncoding_arg),
     bShowStatistics_ (bShowStatistics_arg),
     bRawImageEncoding_ (bRawImageEncoding_arg),
-    pngLevel_ (pngLevel_arg),
-    bGrayScaleConversion_(bGrayScaleConversion_arg)
+    bGrayScaleConversion_(bGrayScaleConversion_arg),
+    pngLevel_ (pngLevel_arg)
     {
     }
 
