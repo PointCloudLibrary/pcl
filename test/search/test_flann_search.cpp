@@ -71,7 +71,7 @@ init ()
                                   float (1024 * rand () / (RAND_MAX + 1.0)),
                                   float (1024 * rand () / (RAND_MAX + 1.0)),
                                   float (1024 * rand () / (RAND_MAX + 1.0))));
-};
+}
 
 
 /* Test for FlannSearch nearestKSearch */TEST (PCL, FlannSearch_nearestKSearch)
