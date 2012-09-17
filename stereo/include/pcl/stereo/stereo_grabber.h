@@ -68,7 +68,7 @@ namespace pcl
       /** \brief Copy constructor.
         * \param[in] src the Stereo Grabber base object to copy into this
         */
-      StereoGrabberBase (const StereoGrabberBase &src) : impl_ ()
+      StereoGrabberBase (const StereoGrabberBase &src) : Grabber (), impl_ ()
       {
         *this = src;
       }

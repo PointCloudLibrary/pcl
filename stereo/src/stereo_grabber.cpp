@@ -43,8 +43,14 @@
 //////////////////////// GrabberImplementation //////////////////////
 struct pcl::StereoGrabberBase::StereoGrabberImpl
 {
-  StereoGrabberImpl (pcl::StereoGrabberBase& grabber, const std::pair<std::string, std::string>& pair_files, float frames_per_second, bool repeat);
-  StereoGrabberImpl (pcl::StereoGrabberBase& grabber, const std::vector<std::pair<std::string, std::string> >& files, float frames_per_second, bool repeat);
+  StereoGrabberImpl (pcl::StereoGrabberBase& grabber,
+                     const std::pair<std::string, std::string>& pair_files,
+                     float frames_per_second,
+                     bool repeat);
+  StereoGrabberImpl (pcl::StereoGrabberBase& grabber,
+                     const std::vector<std::pair<std::string, std::string> >& files,
+                     float frames_per_second,
+                     bool repeat);
   void trigger ();
   void readAhead ();
   
@@ -63,7 +69,10 @@ struct pcl::StereoGrabberBase::StereoGrabberImpl
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-pcl::StereoGrabberBase::StereoGrabberImpl::StereoGrabberImpl (pcl::StereoGrabberBase& grabber, const std::pair<std::string, std::string>& pair_files, float frames_per_second, bool repeat)
+pcl::StereoGrabberBase::StereoGrabberImpl::StereoGrabberImpl (pcl::StereoGrabberBase& grabber,
+                                                              const std::pair<std::string, std::string>& pair_files,
+                                                              float frames_per_second,
+                                                              bool repeat)
   : grabber_ (grabber)
   , frames_per_second_ (frames_per_second)
   , repeat_ (repeat)
@@ -81,7 +90,10 @@ pcl::StereoGrabberBase::StereoGrabberImpl::StereoGrabberImpl (pcl::StereoGrabber
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-pcl::StereoGrabberBase::StereoGrabberImpl::StereoGrabberImpl (pcl::StereoGrabberBase& grabber, const std::vector<std::pair<std::string, std::string> >& files, float frames_per_second, bool repeat)
+pcl::StereoGrabberBase::StereoGrabberImpl::StereoGrabberImpl (pcl::StereoGrabberBase& grabber,
+                                                              const std::vector<std::pair<std::string, std::string> >& files,
+                                                              float frames_per_second,
+                                                              bool repeat)
   : grabber_ (grabber)
   , frames_per_second_ (frames_per_second)
   , repeat_ (repeat)
@@ -128,13 +140,17 @@ pcl::StereoGrabberBase::StereoGrabberImpl::trigger ()
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////// GrabberBase //////////////////////
-pcl::StereoGrabberBase::StereoGrabberBase (const std::pair<std::string, std::string>& pair_files, float frames_per_second, bool repeat)
+pcl::StereoGrabberBase::StereoGrabberBase (const std::pair<std::string, std::string>& pair_files,
+                                           float frames_per_second,
+                                           bool repeat)
   : impl_ (new StereoGrabberImpl (*this, pair_files, frames_per_second, repeat))
 {
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-pcl::StereoGrabberBase::StereoGrabberBase (const std::vector<std::pair<std::string, std::string> >& files, float frames_per_second, bool repeat)
+pcl::StereoGrabberBase::StereoGrabberBase (const std::vector<std::pair<std::string, std::string> >& files,
+                                           float frames_per_second,
+                                           bool repeat)
   : impl_ (new StereoGrabberImpl (*this, files, frames_per_second, repeat))
 {
 }
