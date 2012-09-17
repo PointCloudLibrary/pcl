@@ -57,7 +57,7 @@ namespace pcl
         getName () const {return ("Poisson Reconstruction");}
 
         virtual void
-        initParameters(CloudMeshItem* cloud_mesh_item) {}
+        initParameters (CloudMeshItem*) {}
 
         virtual void
         setupParameters();

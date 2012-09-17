@@ -526,7 +526,7 @@ pcl::modeler::SceneTree::dropEvent(QDropEvent * event)
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl::modeler::SceneTree::dropMimeData(QTreeWidgetItem * parent, int index, const QMimeData * data, Qt::DropAction action)
+pcl::modeler::SceneTree::dropMimeData(QTreeWidgetItem * parent, int, const QMimeData *, Qt::DropAction)
 {
   QList<CloudMeshItem*> selected_cloud_meshes = selectedTypeItems<CloudMeshItem>();
 

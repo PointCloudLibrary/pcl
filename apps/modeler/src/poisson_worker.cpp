@@ -43,8 +43,8 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::modeler::PoissonReconstructionWorker::PoissonReconstructionWorker(const QList<CloudMeshItem*>& cloud_mesh_items, QWidget* parent) :
-  depth_(NULL), solver_divide_(NULL), iso_divide_(NULL), degree_(NULL), scale_(NULL), samples_per_node_(NULL),
-  AbstractWorker(cloud_mesh_items, parent)
+  AbstractWorker(cloud_mesh_items, parent),
+  depth_(NULL), solver_divide_(NULL), iso_divide_(NULL), degree_(NULL), scale_(NULL), samples_per_node_(NULL)
 {
 
 }
@@ -122,8 +122,8 @@ pcl::modeler::PoissonReconstructionWorker::processImpl(CloudMeshItem* cloud_mesh
   poisson.setSolverDivide(*solver_divide_);
   poisson.setIsoDivide(*iso_divide_);
   poisson.setDegree(*degree_);
-  poisson.setScale(*scale_);
-  poisson.setScale(*samples_per_node_);
+  poisson.setScale (float (*scale_));
+  poisson.setScale (float (*samples_per_node_));
 
   poisson.setConfidence(true);
   poisson.setManifold(true);

@@ -106,7 +106,7 @@ pcl::modeler::RenderWindowItem::prepareProperties(ParameterDialog* parameter_dia
 {
   double r, g, b;
   render_window_->getBackground(r, g, b);
-  QColor color(r*255, g*255, b*255);
+  QColor color (int (r * 255.0), int (g * 255.0), int (b * 255.0));
   background_color_->setDefaultValue(color);
   parameter_dialog->addParameter(background_color_);
   parameter_dialog->addParameter(show_axes_);

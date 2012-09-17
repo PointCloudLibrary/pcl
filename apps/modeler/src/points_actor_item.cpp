@@ -113,14 +113,14 @@ pcl::modeler::PointsActorItem::updateImpl()
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::modeler::PointsActorItem::prepareContextMenu(QMenu* menu) const
+pcl::modeler::PointsActorItem::prepareContextMenu(QMenu*) const
 {
 
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::modeler::PointsActorItem::prepareProperties(ParameterDialog* parameter_dialog)
+pcl::modeler::PointsActorItem::prepareProperties(ParameterDialog*)
 {
 
 }

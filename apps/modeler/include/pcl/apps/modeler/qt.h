@@ -86,5 +86,6 @@
 #include <QItemSelectionModel>
 #include <QStandardItemModel>
 #include <QStyledItemDelegate>
+#include <QVTKWidget.h>
 
 #endif // PCL_MODELER_QT_H_

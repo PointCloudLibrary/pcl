@@ -37,7 +37,7 @@
 #ifndef PCL_MODELER_RENDER_WINDOW_H_
 #define PCL_MODELER_RENDER_WINDOW_H_
 
-#include <QVTKWidget.h>
+#include <pcl/apps/modeler/qt.h>
 #include <vtkSmartPointer.h>
 
 class vtkCubeAxesActor;
