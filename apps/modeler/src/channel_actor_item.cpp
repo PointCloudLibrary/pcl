@@ -106,7 +106,7 @@ pcl::modeler::ChannelActorItem::detachActor()
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::modeler::ChannelActorItem::prepareContextMenu(QMenu* menu) const
+pcl::modeler::ChannelActorItem::prepareContextMenu(QMenu*) const
 {
 
 }

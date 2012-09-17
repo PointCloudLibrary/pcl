@@ -91,9 +91,9 @@ namespace pcl
 
         boost::shared_ptr<CloudMesh>      cloud_mesh_;
         vtkSmartPointer<vtkPolyData>      poly_data_;
-        vtkSmartPointer<vtkActor>         actor_;
         vtkSmartPointer<vtkRenderWindow>  render_window_;
         std::string                       color_scheme_;
+        vtkSmartPointer<vtkActor>         actor_;
         double                            r_, g_, b_;
 
       private:

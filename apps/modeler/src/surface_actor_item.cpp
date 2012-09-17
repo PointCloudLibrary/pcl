@@ -109,14 +109,14 @@ pcl::modeler::SurfaceActorItem::updateImpl()
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::modeler::SurfaceActorItem::prepareContextMenu(QMenu* menu) const
+pcl::modeler::SurfaceActorItem::prepareContextMenu(QMenu*) const
 {
 
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::modeler::SurfaceActorItem::prepareProperties(ParameterDialog* parameter_dialog)
+pcl::modeler::SurfaceActorItem::prepareProperties(ParameterDialog*)
 {
 
 }
