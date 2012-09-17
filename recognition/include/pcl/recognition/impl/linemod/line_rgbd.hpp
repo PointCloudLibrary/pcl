@@ -598,7 +598,7 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::applyProjectiveDepthICPOnDetections ()
       size_t nr_inliers = 0;
       for (size_t match_index = 0; match_index < nr_matches; ++match_index)
       {
-        const float error = abs (depth_matches[match_index].first + z_translation - depth_matches[match_index].second);
+        const float error = fabsf (depth_matches[match_index].first + z_translation - depth_matches[match_index].second);
 
         if (error <= inlier_threshold)
         {
@@ -617,7 +617,7 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::applyProjectiveDepthICPOnDetections ()
     size_t average_counter = 0;
     for (size_t match_index = 0; match_index < nr_matches; ++match_index)
     {
-      const float error = abs (depth_matches[match_index].first + best_z_translation - depth_matches[match_index].second);
+      const float error = fabsf (depth_matches[match_index].first + best_z_translation - depth_matches[match_index].second);
 
       if (error <= inlier_threshold)
       {

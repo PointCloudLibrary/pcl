@@ -208,9 +208,9 @@ namespace pcl
       // normalize normals
       for (int normal_index = 0; normal_index < nr_normals; ++normal_index)
       {
-        const float length = sqrt (ref_normals[normal_index].x * ref_normals[normal_index].x +
-                                   ref_normals[normal_index].y * ref_normals[normal_index].y +
-                                   ref_normals[normal_index].z * ref_normals[normal_index].z);
+        const float length = sqrtf (ref_normals[normal_index].x * ref_normals[normal_index].x +
+                                    ref_normals[normal_index].y * ref_normals[normal_index].y +
+                                    ref_normals[normal_index].z * ref_normals[normal_index].z);
 
         const float inv_length = 1.0f / length;
 
@@ -229,7 +229,7 @@ namespace pcl
             PointXYZ normal (static_cast<float> (x_index - range_x/2), 
                              static_cast<float> (y_index - range_y/2), 
                              static_cast<float> (z_index - range_z));
-            const float length = sqrt (normal.x*normal.x + normal.y*normal.y + normal.z*normal.z);
+            const float length = sqrtf (normal.x*normal.x + normal.y*normal.y + normal.z*normal.z);
             const float inv_length = 1.0f / (length + 0.00001f);
 
             normal.x *= inv_length;
@@ -898,7 +898,7 @@ pcl::SurfaceNormalModality<PointInT>::computeAndQuantizeSurfaceNormals2 ()
         //double l_ny = l_ddy * dummy_focal_length;
         //double l_nz = -l_det * l_d;
 
-        float l_sqrt = sqrt(l_nx * l_nx + l_ny * l_ny + l_nz * l_nz);
+        float l_sqrt = sqrtf (l_nx * l_nx + l_ny * l_ny + l_nz * l_nz);
 
         if (l_sqrt > 0)
         {
@@ -908,7 +908,7 @@ pcl::SurfaceNormalModality<PointInT>::computeAndQuantizeSurfaceNormals2 ()
           l_ny *= l_norminv;
           l_nz *= l_norminv;
 
-          float angle = 22.5f + atan2 (l_ny, l_nx)*180.0f/3.14f;
+          float angle = 22.5f + atan2f (l_ny, l_nx) * 180.0f / 3.14f;
 
           if (angle < 0.0f) angle += 360.0f;
           if (angle >= 360.0f) angle -= 360.0f;
