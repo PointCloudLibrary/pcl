@@ -222,7 +222,12 @@ void vtkVertexBufferObject::Bind()
   vtkgl::BindBuffer(static_cast<GLenum>(this->BufferTarget), this->Handle);
 
   if(this->AttributeIndex >= 0){
-    vtkgl::VertexAttribPointer(this->AttributeIndex, this->AttributeSize, this->AttributeType, this->AttributeNormalized, this->AttributeStride, 0);
+    vtkgl::VertexAttribPointer(this->AttributeIndex,
+                               this->AttributeSize,
+                               this->AttributeType,
+                               static_cast<GLboolean> (this->AttributeNormalized),
+                               this->AttributeStride,
+                               0);
     vtkgl::EnableVertexAttribArray(this->AttributeIndex);
   } else {
     glEnableClientState(this->ArrayType);

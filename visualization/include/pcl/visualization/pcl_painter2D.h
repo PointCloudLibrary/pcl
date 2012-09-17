@@ -107,7 +107,7 @@ namespace pcl
         painter->GetDevice ()->SetMatrix (transform_->GetMatrix());
       }
 		  
-      virtual void draw (vtkContext2D*) {}
+      virtual void draw (vtkContext2D *) {}
     };
     
    /** \brief Class for PolyLine
