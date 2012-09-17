@@ -45,11 +45,11 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::modeler::NormalEstimationWorker::NormalEstimationWorker(const QList<CloudMeshItem*>& cloud_mesh_items, QWidget* parent) :
+  AbstractWorker(cloud_mesh_items, parent),
   x_min_(std::numeric_limits<double>::max()), x_max_(std::numeric_limits<double>::min()),
   y_min_(std::numeric_limits<double>::max()), y_max_(std::numeric_limits<double>::min()),
   z_min_(std::numeric_limits<double>::max()), z_max_(std::numeric_limits<double>::min()),
-  search_radius_(NULL),
-  AbstractWorker(cloud_mesh_items, parent)
+  search_radius_(NULL)
 {
 
 }
