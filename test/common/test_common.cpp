@@ -1140,7 +1140,7 @@ TEST (PCL, IsSamePointType)
   EXPECT_FALSE (status);
 }
 
-//* ---[ */
+/* ---[ */
 int
 main (int argc, char** argv)
 {

@@ -107,7 +107,7 @@ namespace pcl
         painter->GetDevice ()->SetMatrix (transform_->GetMatrix());
       }
 		  
-      virtual void draw (vtkContext2D * painter) {}
+      virtual void draw (vtkContext2D*) {}
     };
     
    /** \brief Class for PolyLine
@@ -120,7 +120,7 @@ namespace pcl
       void draw (vtkContext2D * painter)
       {
         applyInternals(painter);  
-        painter->DrawPoly (&info_[0], info_.size ()/2);
+        painter->DrawPoly (&info_[0], static_cast<unsigned int> (info_.size ()) / 2);
       }
     };
 
@@ -134,7 +134,7 @@ namespace pcl
       void draw (vtkContext2D * painter)
       {
         applyInternals(painter);  
-        painter->DrawPoints (&info_[0], info_.size ()/2);
+        painter->DrawPoints (&info_[0], static_cast<unsigned int> (info_.size ()) / 2);
       }
     };
 
@@ -162,7 +162,7 @@ namespace pcl
       void draw (vtkContext2D * painter)
       {
         applyInternals(painter);  
-        painter->DrawPolygon (&info_[0], info_.size ()/2);
+        painter->DrawPolygon (&info_[0], static_cast<unsigned int> (info_.size ()) / 2);
       }
     };
     

@@ -74,7 +74,7 @@ pcl::pcl_2d::edge<PointInT, PointOutT>::detectEdgeSobel (pcl::PointCloud<PointOu
     {
       output (j, i).magnitude_x = (*magnitude_x)(j, i).intensity;
       output (j, i).magnitude_y = (*magnitude_y)(j, i).intensity;
-      output (j, i).magnitude = sqrt  ((*magnitude_x)(j, i).intensity * (*magnitude_x)(j, i).intensity + (*magnitude_y)(j, i).intensity * (*magnitude_y)(j, i).intensity);
+      output (j, i).magnitude = sqrtf  ((*magnitude_x)(j, i).intensity * (*magnitude_x)(j, i).intensity + (*magnitude_y)(j, i).intensity * (*magnitude_y)(j, i).intensity);
       output (j, i).direction = atan2f ((*magnitude_y)(j, i).intensity, (*magnitude_x)(j, i).intensity);
     }
   }
@@ -152,7 +152,7 @@ pcl::pcl_2d::edge<PointInT, PointOutT>::detectEdgePrewitt (pcl::PointCloud<Point
     {
       output (j, i).magnitude_x = (*magnitude_x)(j, i).intensity;
       output (j, i).magnitude_y = (*magnitude_y)(j, i).intensity;
-      output (j, i).magnitude = sqrt  ((*magnitude_x)(j, i).intensity * (*magnitude_x)(j, i).intensity + (*magnitude_y)(j, i).intensity * (*magnitude_y)(j, i).intensity);
+      output (j, i).magnitude = sqrtf  ((*magnitude_x)(j, i).intensity * (*magnitude_x)(j, i).intensity + (*magnitude_y)(j, i).intensity * (*magnitude_y)(j, i).intensity);
       output (j, i).direction = atan2f ((*magnitude_y)(j, i).intensity, (*magnitude_x)(j, i).intensity);
     }
   }

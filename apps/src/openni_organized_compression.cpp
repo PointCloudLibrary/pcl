@@ -179,8 +179,8 @@ class SimpleOpenNIViewer
     bool doColorEncoding_;
     bool bShowStatistics_;
     bool bRawImageEncoding_;
-    bool bGrayScaleConversion_;
     int pngLevel_;
+    bool bGrayScaleConversion_;
 };
 
 struct EventHelper
@@ -223,7 +223,7 @@ struct EventHelper
     uint32_t height=depth_image->getHeight ();
 
     disparity_data.resize(width*height);
-    depth_image->fillDepthImageRaw(width, height, &disparity_data[0], width*sizeof(uint16_t));
+    depth_image->fillDepthImageRaw (static_cast<unsigned int> (width), static_cast<unsigned int> (height), &disparity_data[0], width*sizeof(uint16_t));
 
     if (image->getEncoding() != openni_wrapper::Image::RGB)
     {

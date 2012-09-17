@@ -181,7 +181,7 @@ namespace pcl
         float dx = input_->points[idx1].x - input_->points[idx2].x;
         float dy = input_->points[idx1].y - input_->points[idx2].y;
         float dz = input_->points[idx1].z - input_->points[idx2].z;
-        float dist = sqrt (dx*dx + dy*dy + dz*dz);
+        float dist = sqrtf (dx*dx + dy*dy + dz*dz);
 
         return (dist < distance_threshold_);
       }

@@ -318,7 +318,7 @@ int vtkVertexBufferObject::GetDataTypeSize(int type)
 //----------------------------------------------------------------------------
 bool vtkVertexBufferObject::Upload(vtkPoints *points)
 {
-  this->Count = points->GetNumberOfPoints();
+  this->Count = static_cast<unsigned int> (points->GetNumberOfPoints());
   this->AttributeSize = points->GetData()->GetNumberOfComponents();
   this->AttributeType = GL_FLOAT;
   this->Size = this->Count * this->AttributeSize * GetDataTypeSize(points->GetDataType());
@@ -338,17 +338,17 @@ bool vtkVertexBufferObject::Upload(vtkCellArray *verts)
   verts->InitTraversal();
   while(verts->GetNextCell(npts, pts) != 0){
     for (size_t i=0; i < static_cast<size_t>(npts); i++)
-        indices.push_back(pts[i]);
+        indices.push_back(static_cast<unsigned int> (pts[i]));
   }
 
-  this->Count = indices.size();
+  this->Count = static_cast<unsigned int> (indices.size());
   this->AttributeSize = 1;
   this->AttributeType = GL_INT;
-  this->Size = this->Count * sizeof(unsigned int);
+  this->Size = static_cast<unsigned int> (this->Count * sizeof(unsigned int));
   this->BufferTarget = vtkgl::ELEMENT_ARRAY_BUFFER;
   this->ArrayType = GL_INDEX_ARRAY;
 
-  return this->Upload(&indices[0], indices.size());
+  return this->Upload(&indices[0], static_cast <unsigned int> (indices.size()));
 }
 
 //----------------------------------------------------------------------------
@@ -357,7 +357,7 @@ bool vtkVertexBufferObject::Upload(unsigned int *indices, unsigned int count)
   this->Count = count;
   this->AttributeSize = 1;
   this->AttributeType = GL_INT;
-  this->Size = this->Count * sizeof(unsigned int);
+  this->Size = static_cast<unsigned int> (this->Count * sizeof(unsigned int));
   this->BufferTarget = vtkgl::ELEMENT_ARRAY_BUFFER;
   this->ArrayType = GL_INDEX_ARRAY;
 
@@ -383,7 +383,7 @@ bool vtkVertexBufferObject::Upload(vtkDataArray *array)
   if (!array)
     return false;
 
-  this->Count = array->GetNumberOfTuples();
+  this->Count = static_cast<unsigned int> (array->GetNumberOfTuples());
   this->AttributeSize = 3;
   this->AttributeType = GL_UNSIGNED_BYTE;
   if(array->GetNumberOfComponents() == 1){
@@ -406,7 +406,7 @@ bool vtkVertexBufferObject::Upload(vtkDataArray *array)
 bool vtkVertexBufferObject::Upload(vtkDataArray *array, int attributeType, int arrayType)
 {
 //  cout << "vtkDataArray - attributeType/Array" << endl;
-  this->Count = array->GetNumberOfTuples();
+  this->Count = static_cast<unsigned int> (array->GetNumberOfTuples());
   this->AttributeSize = array->GetNumberOfComponents();
   this->AttributeType = attributeType;
   this->Size = this->Count * this->AttributeSize * GetDataTypeSize(array->GetDataType());
@@ -420,7 +420,7 @@ bool vtkVertexBufferObject::Upload(vtkDataArray *array, int attributeType, int a
 bool vtkVertexBufferObject::Upload(vtkUnsignedCharArray *colors)
 {
 //  cout << "vtkUnsignedCharArray" << endl;
-  this->Count = colors->GetNumberOfTuples();
+  this->Count = static_cast<unsigned int> (colors->GetNumberOfTuples());
   this->AttributeSize = colors->GetNumberOfComponents();
   this->AttributeType = GL_UNSIGNED_BYTE;
   this->Size = this->Count * this->AttributeSize * GetDataTypeSize(colors->GetDataType());
