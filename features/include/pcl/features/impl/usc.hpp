@@ -167,7 +167,7 @@ pcl::UniqueShapeContext<PointInT, PointOutT, PointRFT>::computePointDescriptor (
     // ----- Compute current neighbour polar coordinates -----
 
     // Get distance between the neighbour and the origin
-    float r = sqrt (nn_dists[ne]);
+    float r = sqrtf (nn_dists[ne]);
 
     // Project point into the tangent plane
     Eigen::Vector3f proj;

@@ -124,7 +124,7 @@ pcl::modeler::CloudMesh::save(const std::vector<const CloudMesh*>& cloud_meshes,
       {
         pcl::Vertices polygon = polygons[j];
         for (size_t k = 0, k_end = polygon.vertices.size(); k < k_end; ++ k)
-          polygon.vertices[k] += delta;
+          polygon.vertices[k] += static_cast<unsigned int> (delta);
         cloud_mesh.polygons_.push_back(polygon);
       }
     }
@@ -214,7 +214,7 @@ pcl::modeler::CloudMesh::updateVtkPolygons()
     for (size_t i = 0, i_end = polygons_.size (); i < i_end; ++i)
     {
       size_t n_points = polygons_[i].vertices.size ();
-      vtk_polygons_->InsertNextCell (n_points);
+      vtk_polygons_->InsertNextCell (static_cast<unsigned int> (n_points));
       for (size_t j = 0; j < n_points; j++)
         vtk_polygons_->InsertCellPoint (polygons_[i].vertices[j]);
     }
@@ -227,7 +227,7 @@ pcl::modeler::CloudMesh::updateVtkPolygons()
     for (size_t i = 0, i_end = polygons_.size(); i < i_end; ++i)
     {
       size_t n_points = polygons_[i].vertices.size ();
-      vtk_polygons_->InsertNextCell (n_points);
+      vtk_polygons_->InsertNextCell (static_cast<unsigned int> (n_points));
       for (size_t j = 0; j < n_points; j++)
         vtk_polygons_->InsertCellPoint ((*indices)[polygons_[i].vertices[j]]);
     }
@@ -249,7 +249,7 @@ pcl::modeler::CloudMesh::transform(double tx, double ty, double tz, double rx, d
   rx *= M_PI/180;
   ry *= M_PI/180;
   rz *= M_PI/180;
-  Eigen::Affine3f affine_transform = pcl::getTransformation(tx, ty, tz, rx, ry, rz);
+  Eigen::Affine3f affine_transform = pcl::getTransformation (float (tx), float (ty), float (tz), float (rx), float (ry), float (rz));
   CloudMesh::PointCloud transform_cloud = mean_cloud;
   pcl::transformPointCloudWithNormals(mean_cloud, transform_cloud, affine_transform.matrix());
 

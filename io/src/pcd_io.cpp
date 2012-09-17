@@ -68,6 +68,8 @@ void
 pcl::PCDWriter::setLockingPermissions (const std::string &file_name,
                                        boost::interprocess::file_lock &lock)
 {
+  (void)file_name;
+  (void)lock;
 #ifndef WIN32
   // Boost version 1.49 introduced permissions
 #if BOOST_VERSION >= 104900
@@ -90,6 +92,8 @@ void
 pcl::PCDWriter::resetLockingPermissions (const std::string &file_name,
                                          boost::interprocess::file_lock &lock)
 {
+  (void)file_name;
+  (void)lock;
 #ifndef WIN32
   // Boost version 1.49 introduced permissions
 #if BOOST_VERSION >= 104900

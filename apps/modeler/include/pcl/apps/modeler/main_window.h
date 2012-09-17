@@ -130,7 +130,7 @@ namespace pcl
         friend class AbstractItem;
 
         MainWindow();
-        MainWindow(const MainWindow &){}            // copy ctor hidden
+        MainWindow(const MainWindow &) : QMainWindow () {}            // copy ctor hidden
         MainWindow& operator=(const MainWindow &) { return (*this); } // assign op. hidden
         ~MainWindow();
 

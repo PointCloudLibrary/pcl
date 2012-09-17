@@ -760,16 +760,16 @@ namespace pcl
       bool
       validateMeshElementIndex (const VertexIndex& idx_vertex) const
       {
-        if (!idx_vertex.isValid ())              return (false);
-        if (idx_vertex >= this->sizeVertexes ()) return (false);
+        if (!idx_vertex.isValid ())                    return (false);
+        if (idx_vertex >= int (this->sizeVertexes ())) return (false);
         return (true);
       }
 
       bool
       validateMeshElementIndex (const HalfEdgeIndex& idx_half_edge) const
       {
-        if (!idx_half_edge.isValid ())               return (false);
-        if (idx_half_edge >= this->sizeHalfEdges ()) return (false);
+        if (!idx_half_edge.isValid ())                     return (false);
+        if (idx_half_edge >= int (this->sizeHalfEdges ())) return (false);
         return (true);
       }
 
@@ -782,8 +782,8 @@ namespace pcl
       bool
       validateMeshElementIndex (const FaceIndex& idx_face) const
       {
-        if (!idx_face.isValid ())           return (false);
-        if (idx_face >= this->sizeFaces ()) return (false);
+        if (!idx_face.isValid ())                 return (false);
+        if (idx_face >= int (this->sizeFaces ())) return (false);
         return (true);
       }
 
