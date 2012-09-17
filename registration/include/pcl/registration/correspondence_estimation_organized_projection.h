@@ -56,6 +56,7 @@ namespace pcl
       * \Note The target point cloud must be organized (no restrictions on the source) and the target point cloud must be
       * given in the camera coordinate frame. Any other transformation is specified by the src_to_tgt_transformation_
       * variable.
+      */
     template <typename PointSource, typename PointTarget>
     class CorrespondenceEstimationOrganizedProjection : public CorrespondenceEstimation <PointSource, PointTarget>
     {
