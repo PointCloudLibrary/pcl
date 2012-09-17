@@ -37,4 +37,4 @@
  *
  */
 
-#include <pcl/registration/correspondence_estimation.h>
+#include <pcl/registration/correspondence_estimation_organized_projection.h>

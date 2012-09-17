@@ -17,6 +17,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/correspondence_estimation.h
         include/pcl/${SUBSYS_NAME}/correspondence_estimation_normal_shooting.h
         include/pcl/${SUBSYS_NAME}/correspondence_estimation_backprojection.h
+        include/pcl/${SUBSYS_NAME}/correspondence_estimation_organized_projection.h
         include/pcl/${SUBSYS_NAME}/correspondence_rejection.h
         include/pcl/${SUBSYS_NAME}/correspondence_rejection_distance.h
         include/pcl/${SUBSYS_NAME}/correspondence_rejection_median_distance.h
@@ -64,6 +65,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/correspondence_estimation.hpp
         include/pcl/${SUBSYS_NAME}/impl/correspondence_estimation_normal_shooting.hpp
         include/pcl/${SUBSYS_NAME}/impl/correspondence_estimation_backprojection.hpp
+        include/pcl/${SUBSYS_NAME}/impl/correspondence_estimation_organized_projection.hpp
         include/pcl/${SUBSYS_NAME}/impl/correspondence_rejection_distance.hpp
         include/pcl/${SUBSYS_NAME}/impl/correspondence_rejection_median_distance.hpp
         include/pcl/${SUBSYS_NAME}/impl/correspondence_rejection_surface_normal.hpp
@@ -96,6 +98,7 @@ if(build)
         src/correspondence_estimation.cpp
         src/correspondence_estimation_normal_shooting.cpp
         src/correspondence_estimation_backprojection.cpp
+        src/correspondence_estimation_organized_projection.cpp
         src/correspondence_rejection_distance.cpp
         src/correspondence_rejection_median_distance.cpp
         src/correspondence_rejection_surface_normal.cpp
