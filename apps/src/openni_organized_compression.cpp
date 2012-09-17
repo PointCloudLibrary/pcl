@@ -179,8 +179,8 @@ class SimpleOpenNIViewer
     bool doColorEncoding_;
     bool bShowStatistics_;
     bool bRawImageEncoding_;
-    int pngLevel_;
     bool bGrayScaleConversion_;
+    int pngLevel_;
 };
 
 struct EventHelper
