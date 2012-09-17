@@ -64,9 +64,9 @@ namespace pcl
     real alpha = weight/accumulatedWeight_;
 
     Eigen::Matrix<real, dimension, 1> diff = sample - mean_;
-    covariance_ = (1.0f-alpha)*(covariance_ + alpha * (diff * diff.transpose()));
+    covariance_ = (covariance_ + (diff * diff.transpose())*alpha)*(1.0f-alpha);
 
-    mean_ += alpha*(diff);
+    mean_ += (diff)*alpha;
 
     //if (pcl_isnan(covariance_(0,0)))
     //{
