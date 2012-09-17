@@ -223,12 +223,12 @@ struct EventHelper
     uint32_t height=depth_image->getHeight ();
 
     disparity_data.resize(width*height);
-    depth_image->fillDepthImageRaw (static_cast<unsigned int> (width), static_cast<unsigned int> (height), &disparity_data[0], width*sizeof(uint16_t));
+    depth_image->fillDepthImageRaw (width, height, &disparity_data[0], static_cast<unsigned int> (width * sizeof (uint16_t)));
 
     if (image->getEncoding() != openni_wrapper::Image::RGB)
     {
       rgb_data.resize(width*height*3);
-      image->fillRGB(width, height, &rgb_data[0], width*sizeof(uint8_t)*3);
+      image->fillRGB(width, height, &rgb_data[0], static_cast<unsigned int> (width * sizeof (uint8_t) * 3));
     }
 
     organizedEncoder_->encodeRawDisparityMapWithColorImage (disparity_data, rgb_data, width, height, outputFile_, doColorEncoding_, bGrayScaleConversion_, bShowStatistics_, pngLevel_);
