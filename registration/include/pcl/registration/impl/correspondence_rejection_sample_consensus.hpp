@@ -47,6 +47,18 @@ pcl::registration::CorrespondenceRejectorSampleConsensus<PointT>::getRemainingCo
     const pcl::Correspondences& original_correspondences, 
     pcl::Correspondences& remaining_correspondences)
 {
+  if (!input_)
+  {
+    PCL_ERROR ("[pcl::%s::getRemainingCorrespondences] No input cloud dataset was given!\n", getClassName ().c_str ());
+    return;
+  }
+
+  if (!target_)
+  {
+    PCL_ERROR ("[pcl::%s::getRemainingCorrespondences] No input target dataset was given!\n", getClassName ().c_str ());
+    return;
+  }
+
   int nr_correspondences = static_cast<int> (original_correspondences.size ());
   std::vector<int> source_indices (nr_correspondences);
   std::vector<int> target_indices (nr_correspondences);
