@@ -70,7 +70,7 @@ namespace pcl
         }
 
         /** \brief Copy constructor. */
-        BufferedBranchNode (const BufferedBranchNode& source) : ContainerT(source)
+        BufferedBranchNode (const BufferedBranchNode& source) : OctreeNode(), ContainerT(source)
         {
           *this = source;
         }
