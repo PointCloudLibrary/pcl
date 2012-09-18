@@ -2,7 +2,6 @@
  * Software License Agreement (BSD License)
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
- *  Copyright (c) 2010-2011, Willow Garage, Inc.
  *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
@@ -56,17 +55,18 @@ namespace pcl
       * \Note The target point cloud must be organized (no restrictions on the source) and the target point cloud must be
       * given in the camera coordinate frame. Any other transformation is specified by the src_to_tgt_transformation_
       * variable.
+      * \author Alex Ichim
       */
     template <typename PointSource, typename PointTarget>
-    class CorrespondenceEstimationOrganizedProjection : public CorrespondenceEstimation <PointSource, PointTarget>
+    class CorrespondenceEstimationOrganizedProjection : public CorrespondenceEstimationBase <PointSource, PointTarget>
     {
       public:
-        using CorrespondenceEstimation<PointSource, PointTarget>::initCompute;
+        using CorrespondenceEstimationBase<PointSource, PointTarget>::initCompute;
         using PCLBase<PointSource>::deinitCompute;
         using PCLBase<PointSource>::input_;
         using PCLBase<PointSource>::indices_;
-        using CorrespondenceEstimation<PointSource, PointTarget>::getClassName;
-        using CorrespondenceEstimation<PointSource, PointTarget>::point_representation_;
+        using CorrespondenceEstimationBase<PointSource, PointTarget>::getClassName;
+        using CorrespondenceEstimationBase<PointSource, PointTarget>::point_representation_;
 
         typedef pcl::PointCloud<PointSource> PointCloudSource;
         typedef typename PointCloudSource::Ptr PointCloudSourcePtr;
@@ -102,7 +102,7 @@ namespace pcl
           * \param[out] fy the focal length in pixels along the y-axis of the image
           */
         inline void
-        getFocalLengths (float &fx, float &fy)
+        getFocalLengths (float &fx, float &fy) const
         { fx = fx_; fy = fy_; }
 
 
@@ -119,7 +119,7 @@ namespace pcl
           * \param[out] cy the y-coordinate of the camera center
           */
         inline void
-        getCameraCenters (float &cx, float &cy)
+        getCameraCenters (float &cx, float &cy) const
         { cx = cx_; cy = cy_; }
 
 
@@ -138,8 +138,8 @@ namespace pcl
           * \param[out] src_to_tgt_transformation the transformation
           */
         inline Eigen::Matrix4f
-        getSourceTransformation ()
-        { return src_to_tgt_transformation_; }
+        getSourceTransformation () const
+        { return (src_to_tgt_transformation_); }
 
 
         /** \brief Sets the depth threshold; after projecting the source points in the image space of the target camera,
@@ -157,9 +157,8 @@ namespace pcl
           * \param[out] depth_threshold the depth threshold
           */
         inline float
-        getDepthThreshold ()
-        { return depth_threshold_; }
-
+        getDepthThreshold () const
+        { return (depth_threshold_); }
 
         /** \brief Computes the correspondences, applying a maximum Euclidean distance threshold.
           * \param[in] max_distance Euclidean distance threshold above which correspondences will be rejected
@@ -167,9 +166,8 @@ namespace pcl
         void
         determineCorrespondences (Correspondences &correspondences, double max_distance);
 
-
       protected:
-        using CorrespondenceEstimation<PointSource, PointTarget>::target_;
+        using CorrespondenceEstimationBase<PointSource, PointTarget>::target_;
 
         bool
         initCompute ();
