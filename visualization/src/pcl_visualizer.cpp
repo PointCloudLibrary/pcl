@@ -2602,7 +2602,7 @@ pcl::visualization::PCLVisualizer::updatePolygonMesh (
   points->SetNumberOfPoints (nr_points);
 
   // Get a pointer to the beginning of the data array
-  float *data = ((vtkFloatArray*)points->GetData ())->GetPointer (0);
+  float *data = static_cast<vtkFloatArray*> (points->GetData ())->GetPointer (0);
 
   int ptr = 0;
   std::vector<int> lookup;
@@ -2634,7 +2634,7 @@ pcl::visualization::PCLVisualizer::updatePolygonMesh (
   // Get the maximum size of a polygon
   int max_size_of_polygon = -1;
   for (size_t i = 0; i < verts.size (); ++i)
-    if (max_size_of_polygon < (int)verts[i].vertices.size ())
+    if (max_size_of_polygon < static_cast<int> (verts[i].vertices.size ()))
       max_size_of_polygon = verts[i].vertices.size ();
 
   // Update the cells
