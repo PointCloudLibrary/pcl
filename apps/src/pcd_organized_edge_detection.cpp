@@ -165,7 +165,7 @@ compute (const sensor_msgs::PointCloud2::ConstPtr &input, sensor_msgs::PointClou
   print_info ("Detecting all edges... [done, "); print_value ("%g", tt.toc ()); print_info (" ms]\n");
 
   // Make gray point clouds
-  for (int idx = 0; idx < (int)cloud->points.size (); idx++)
+  for (size_t idx = 0; idx < cloud->points.size (); idx++)
   {
     uint8_t gray = (cloud->points[idx].r + cloud->points[idx].g + cloud->points[idx].b)/3;
     cloud->points[idx].r = cloud->points[idx].g = cloud->points[idx].b = gray;
