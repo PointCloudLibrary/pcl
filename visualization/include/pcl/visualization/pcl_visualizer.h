@@ -829,6 +829,15 @@ namespace pcl
                            const std::vector<pcl::Vertices> &vertices,
                            const std::string &id = "polygon");
 
+        /** \brief Update a PolygonMesh object on screen
+          * \param[in] polymesh the polygonal mesh
+          * \param[in] id the polygon object id (default: "polygon")
+          * \return false if no polygonmesh with the specified ID was found
+          */
+        bool
+        updatePolygonMesh (const pcl::PolygonMesh &polymesh,
+                           const std::string &id = "polygon");
+
         /** \brief Add a Polygonline from a polygonMesh object to screen
           * \param[in] polymesh the polygonal mesh from where the polylines will be extracted
           * \param[in] id the polygon object id (default: "polygon")
