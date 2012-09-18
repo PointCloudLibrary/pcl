@@ -211,7 +211,14 @@ pcl::cloud_composer::ComposerMainWindow::initializePlugins ()
   if (!plugin_dir.cd (QDir::cleanPath ("../lib/cloud_composer_plugins")))
 #endif
   {
-    qCritical () << "Could not find plugin tool directory!!!";
+    #if _WIN32
+      if (!plugin_dir.cd (QDir::cleanPath ("cloud_composer_plugins")))
+    #else
+      if (!plugin_dir.cd (QDir::cleanPath ("../lib")))
+    #endif
+      {
+        qCritical () << "Could not find plugin tool directory!!!";
+      }
   }
   QStringList plugin_filter;
 #if _WIN32
