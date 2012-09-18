@@ -198,6 +198,8 @@ main (int argc, char** argv)
     return (-1);
   }
 
+  bool cam = pcl::console::find_switch (argc, argv, "-cam");
+
   // Command line parsing
   double bcolor[3] = {0, 0, 0};
   pcl::console::parse_3x_arguments (argc, argv, "-bc", bcolor[0], bcolor[1], bcolor[2]);
@@ -370,11 +372,15 @@ main (int argc, char** argv)
     {
       p.reset (new pcl::visualization::PCLVisualizer (argc, argv, "PCD viewer"));
       p->registerPointPickingCallback (&pp_callback, static_cast<void*> (&cloud));
-      Eigen::Matrix3f rotation;
-      rotation = orientation;
-      p->setCameraPosition (origin [0]                  , origin [1]                  , origin [2],
-                            origin [0] + rotation (0, 2), origin [1] + rotation (1, 2), origin [2] + rotation (2, 2),
-                                         rotation (0, 1),              rotation (1, 1),              rotation (2, 1));
+
+      if (!cam)
+      {
+        Eigen::Matrix3f rotation;
+        rotation = orientation;
+        p->setCameraPosition (origin [0]                  , origin [1]                  , origin [2],
+                              origin [0] + rotation (0, 2), origin [1] + rotation (1, 2), origin [2] + rotation (2, 2),
+                                           rotation (0, 1),              rotation (1, 1),              rotation (2, 1));
+      }
     }
 
     // Multiview enabled?
