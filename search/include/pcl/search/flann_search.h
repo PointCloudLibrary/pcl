@@ -46,8 +46,8 @@
 namespace flann
 {
   template<typename T> class NNIndex;
-  template<typename T> class L2;
-  template<typename T> class L2_Simple;
+  template<typename T> struct L2;
+  template<typename T> struct L2_Simple;
   template<typename T> class Matrix;
 }
 
@@ -96,7 +96,6 @@ namespace pcl
         class FlannIndexCreator
         {
           public:
-            typedef boost::shared_ptr<FlannIndexCreator> Ptr;
           /** \brief Create a FLANN Index from the input data.
             * \param[in] data The FLANN matrix containing the input.
             * \return The FLANN index.
@@ -107,6 +106,7 @@ namespace pcl
             */
             virtual ~FlannIndexCreator () {}
         };
+        typedef boost::shared_ptr<FlannIndexCreator> FlannIndexCreatorPtr;
 
         /** \brief Creates a FLANN KdTreeSingleIndex from the given input data.
           */
@@ -127,7 +127,7 @@ namespace pcl
             unsigned int max_leaf_size_;
         };
 
-        FlannSearch (bool sorted = true, typename FlannIndexCreator::Ptr creator = typename FlannIndexCreator::Ptr (new KdTreeIndexCreator ()));
+        FlannSearch (bool sorted = true, FlannIndexCreatorPtr creator = FlannIndexCreatorPtr (new KdTreeIndexCreator ()));
 
         /** \brief Destructor for FlannSearch. */
         virtual
@@ -239,7 +239,7 @@ namespace pcl
 
         /** The index creator, used to (re-) create the index when the search data is passed.
           */
-        typename FlannIndexCreator::Ptr creator_;
+        FlannIndexCreatorPtr creator_;
 
         /** Input data in FLANN format.
           */
