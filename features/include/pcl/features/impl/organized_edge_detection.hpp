@@ -40,7 +40,7 @@
 
 #include <pcl/features/organized_edge_detection.h>
 #include <pcl/point_types.h>
-//#include <pcl/2d/edge.h>
+#include <pcl/2d/edge.h>
 #include <pcl/console/print.h>
 #include <pcl/console/time.h>
 
@@ -262,8 +262,8 @@ pcl::OrganizedEdgeFromRGB<PointT, PointLT>::extractEdges (pcl::PointCloud<PointL
       }
     }
 
-    pcl::PointCloud<PointXYZIEdge> img_edge_rgb;
-    edge<PointXYZI, PointXYZIEdge> edge;
+    pcl::PointCloud<pcl::pcl_2d::PointXYZIEdge> img_edge_rgb;
+    pcl::pcl_2d::edge<PointXYZI, pcl::pcl_2d::PointXYZIEdge> edge;
     edge.setInputCloud (gray.makeShared ());
     edge.setHysteresisThresholdLow (th_rgb_canny_low_);
     edge.setHysteresisThresholdHigh (th_rgb_canny_high_);
@@ -321,8 +321,8 @@ pcl::OrganizedEdgeFromNormals<PointT, PointNT, PointLT>::extractEdges (pcl::Poin
       }
     }
 
-    pcl::PointCloud<PointXYZIEdge> img_edge;
-    edge<PointXYZI, PointXYZIEdge> edge;
+    pcl::PointCloud<pcl::pcl_2d::PointXYZIEdge> img_edge;
+    pcl::pcl_2d::edge<PointXYZI, pcl::pcl_2d::PointXYZIEdge> edge;
     edge.setHysteresisThresholdLow (th_hc_canny_low_);
     edge.setHysteresisThresholdHigh (th_hc_canny_high_);
     edge.canny (img_edge, nx, ny);
