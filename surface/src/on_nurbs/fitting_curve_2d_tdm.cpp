@@ -83,7 +83,7 @@ FittingCurve2dTDM::assemble (const FittingCurve2d::Parameter &parameter)
   unsigned row (0);
 
   if (wInt > 0.0)
-    assembleInterior (wInt, parameter.interior_sigma2, row);
+    assembleInterior (wInt, parameter.interior_sigma2, parameter.rScale, row);
 
   assembleClosestPoints (elements, parameter.closest_point_weight, parameter.closest_point_sigma2, row);
 
@@ -253,7 +253,7 @@ FittingCurve2dTDM::addCageRegularisation (double weight, unsigned &row, const st
 }
 
 void
-FittingCurve2dTDM::assembleInterior (double wInt, double sigma2, unsigned &row)
+FittingCurve2dTDM::assembleInterior (double wInt, double sigma2, double rScale, unsigned &row)
 {
   int nInt = m_data->interior.size ();
   bool wFunction (true);
@@ -272,13 +272,14 @@ FittingCurve2dTDM::assembleInterior (double wInt, double sigma2, unsigned &row)
     double error;
     if (p < (int)m_data->interior_param.size ())
     {
-      param = inverseMapping (m_nurbs, pcp, m_data->interior_param[p], error, pt, t, in_max_steps, in_accuracy);
+      param = findClosestElementMidPoint (m_nurbs, pcp, m_data->interior_param[p]);
+      param = inverseMapping (m_nurbs, pcp, param, error, pt, t, rScale, in_max_steps, in_accuracy, m_quiet);
       m_data->interior_param[p] = param;
     }
     else
     {
-      param = findClosestElementMidPoint(m_nurbs, pcp);
-      param = inverseMapping (m_nurbs, pcp, param, error, pt, t, in_max_steps, in_accuracy);
+      param = findClosestElementMidPoint (m_nurbs, pcp);
+      param = inverseMapping (m_nurbs, pcp, param, error, pt, t, rScale, in_max_steps, in_accuracy, m_quiet);
       m_data->interior_param.push_back (param);
     }
 
