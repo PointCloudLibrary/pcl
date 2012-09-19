@@ -69,8 +69,8 @@ pcl::KdTreeFLANN<PointT, Dist>::setInputCloud (const PointCloudConstPtr &cloud, 
   }
   total_nr_points_ = static_cast<int> (index_mapping_.size ());
 
-  flann_index_ = new FLANNIndex (flann::Matrix<float> (cloud_, index_mapping_.size (), dim_),
-                                 flann::KDTreeSingleIndexParams (15)); // max 15 points/leaf
+  flann_index_ = new FLANNIndex (::flann::Matrix<float> (cloud_, index_mapping_.size (), dim_),
+                                 ::flann::KDTreeSingleIndexParams (15)); // max 15 points/leaf
   flann_index_->buildIndex ();
 }
 
@@ -91,10 +91,10 @@ pcl::KdTreeFLANN<PointT, Dist>::nearestKSearch (const PointT &point, int k,
   std::vector<float> query (dim_);
   point_representation_->vectorize (static_cast<PointT> (point), query);
 
-  flann::Matrix<int> k_indices_mat (&k_indices[0], 1, k);
-  flann::Matrix<float> k_distances_mat (&k_distances[0], 1, k);
+  ::flann::Matrix<int> k_indices_mat (&k_indices[0], 1, k);
+  ::flann::Matrix<float> k_distances_mat (&k_distances[0], 1, k);
   // Wrap the k_indices and k_distances vectors (no data copy)
-  flann_index_->knnSearch (flann::Matrix<float> (&query[0], 1, dim_), 
+  flann_index_->knnSearch (::flann::Matrix<float> (&query[0], 1, dim_), 
                            k_indices_mat, k_distances_mat,
                            k, param_k_);
 
@@ -128,13 +128,13 @@ pcl::KdTreeFLANN<PointT, Dist>::radiusSearch (const PointT &point, double radius
   std::vector<std::vector<int> > indices(1);
   std::vector<std::vector<float> > dists(1);
 
-  flann::SearchParams params(param_radius_);
+  ::flann::SearchParams params(param_radius_);
   if (max_nn == static_cast<unsigned int>(total_nr_points_))
     params.max_neighbors = -1;  // return all neighbors in radius
   else
     params.max_neighbors = max_nn;
 
-  int neighbors_in_radius = flann_index_->radiusSearch (flann::Matrix<float> (&query[0], 1, dim_),
+  int neighbors_in_radius = flann_index_->radiusSearch (::flann::Matrix<float> (&query[0], 1, dim_),
       indices,
       dists,
       static_cast<float> (radius * radius), 

@@ -53,7 +53,7 @@ namespace pcl
     * \author Radu B. Rusu, Marius Muja
     * \ingroup kdtree 
     */
-  template <typename PointT, typename Dist = flann::L2_Simple<float> >
+  template <typename PointT, typename Dist = ::flann::L2_Simple<float> >
   class KdTreeFLANN : public pcl::KdTree<PointT>
   {
     public:
@@ -71,7 +71,7 @@ namespace pcl
       typedef boost::shared_ptr<std::vector<int> > IndicesPtr;
       typedef boost::shared_ptr<const std::vector<int> > IndicesConstPtr;
 
-      typedef flann::Index<Dist> FLANNIndex;
+      typedef ::flann::Index<Dist> FLANNIndex;
 
       // Boost shared pointers
       typedef boost::shared_ptr<KdTreeFLANN<PointT> > Ptr;
@@ -87,8 +87,8 @@ namespace pcl
         flann_index_ (NULL), cloud_ (NULL), 
         index_mapping_ (), identity_mapping_ (false),
         dim_ (0), total_nr_points_ (0),
-        param_k_ (flann::SearchParams (-1 , epsilon_)),
-        param_radius_ (flann::SearchParams (-1, epsilon_, sorted))
+        param_k_ (::flann::SearchParams (-1 , epsilon_)),
+        param_radius_ (::flann::SearchParams (-1, epsilon_, sorted))
       {
       }
 
@@ -100,8 +100,8 @@ namespace pcl
         flann_index_ (NULL), cloud_ (NULL), 
         index_mapping_ (), identity_mapping_ (false),
         dim_ (0), total_nr_points_ (0),
-        param_k_ (flann::SearchParams (-1 , epsilon_)),
-        param_radius_ (flann::SearchParams (-1, epsilon_, false))
+        param_k_ (::flann::SearchParams (-1 , epsilon_)),
+        param_radius_ (::flann::SearchParams (-1, epsilon_, false))
       {
         *this = k;
       }
@@ -131,16 +131,16 @@ namespace pcl
       setEpsilon (float eps)
       {
         epsilon_ = eps;
-        param_k_ = flann::SearchParams (-1 , epsilon_);
-        param_radius_ = flann::SearchParams (-1 , epsilon_, sorted_);
+        param_k_ = ::flann::SearchParams (-1 , epsilon_);
+        param_radius_ = ::flann::SearchParams (-1 , epsilon_, sorted_);
       }
 
       inline void 
       setSortedResults (bool sorted)
       {
         sorted_ = sorted;
-        param_k_ = flann::SearchParams (-1, epsilon_);
-        param_radius_ = flann::SearchParams (-1, epsilon_, sorted_);
+        param_k_ = ::flann::SearchParams (-1, epsilon_);
+        param_radius_ = ::flann::SearchParams (-1, epsilon_, sorted_);
       }
       
       inline Ptr makeShared () { return Ptr (new KdTreeFLANN<PointT> (*this)); } 
@@ -242,10 +242,10 @@ namespace pcl
       int total_nr_points_;
 
       /** \brief The KdTree search parameters for K-nearest neighbors. */
-      flann::SearchParams param_k_;
+      ::flann::SearchParams param_k_;
 
       /** \brief The KdTree search parameters for radius search. */
-      flann::SearchParams param_radius_;
+      ::flann::SearchParams param_radius_;
   };
 
   /** \brief KdTreeFLANN is a generic type of 3D spatial locator using kD-tree structures. The class is making use of
@@ -264,7 +264,7 @@ namespace pcl
       typedef boost::shared_ptr<std::vector<int> > IndicesPtr;
       typedef boost::shared_ptr<const std::vector<int> > IndicesConstPtr;
 
-      typedef flann::Index<flann::L2_Simple<float> > FLANNIndex;
+      typedef ::flann::Index< ::flann::L2_Simple<float> > FLANNIndex;
 
       typedef pcl::PointRepresentation<Eigen::MatrixXf> PointRepresentation;
       typedef boost::shared_ptr<const PointRepresentation> PointRepresentationConstPtr;
@@ -281,8 +281,8 @@ namespace pcl
       KdTreeFLANN (bool sorted = true) : 
         input_(), indices_(), epsilon_(0.0f), sorted_(sorted), flann_index_(NULL), cloud_(NULL),
         index_mapping_ (), identity_mapping_ (false), dim_ (0), 
-        param_k_ (flann::SearchParams (-1, epsilon_)),
-        param_radius_ (flann::SearchParams (-1, epsilon_, sorted)),
+        param_k_ (::flann::SearchParams (-1, epsilon_)),
+        param_radius_ (::flann::SearchParams (-1, epsilon_, sorted)),
         total_nr_points_ (0)
       {
         cleanup ();
@@ -294,8 +294,8 @@ namespace pcl
       KdTreeFLANN (const KdTreeFLANN<Eigen::MatrixXf> &k) : 
         input_(), indices_(), epsilon_(0.0f), sorted_(false), flann_index_(NULL), cloud_(NULL),
         index_mapping_ (), identity_mapping_ (false), dim_ (0), 
-        param_k_ (flann::SearchParams (-1, epsilon_)),
-        param_radius_ (flann::SearchParams (-1, epsilon_, sorted_)),
+        param_k_ (::flann::SearchParams (-1, epsilon_)),
+        param_radius_ (::flann::SearchParams (-1, epsilon_, sorted_)),
         total_nr_points_ (0)
       {
         *this = k;
@@ -329,8 +329,8 @@ namespace pcl
       setEpsilon (float eps)
       {
         epsilon_ = eps;
-        param_k_ = flann::SearchParams (-1 , epsilon_);
-        param_radius_ = flann::SearchParams (-1, epsilon_, sorted_);
+        param_k_ = ::flann::SearchParams (-1 , epsilon_);
+        param_radius_ = ::flann::SearchParams (-1, epsilon_, sorted_);
       }
 
       inline Ptr 
@@ -374,8 +374,8 @@ namespace pcl
           convertCloudToArray (*input_);
         }
 
-        flann_index_ = new FLANNIndex (flann::Matrix<float> (cloud_, index_mapping_.size (), dim_),
-                                       flann::KDTreeSingleIndexParams (15)); // max 15 points/leaf
+        flann_index_ = new FLANNIndex (::flann::Matrix<float> (cloud_, index_mapping_.size (), dim_),
+                                       ::flann::KDTreeSingleIndexParams (15)); // max 15 points/leaf
         flann_index_->buildIndex ();
       }
 
@@ -421,10 +421,10 @@ namespace pcl
         for (size_t i = 0; i < dim; ++i)
           query[i] = point[i];
 
-        flann::Matrix<int> k_indices_mat (&k_indices[0], 1, k);
-        flann::Matrix<float> k_distances_mat (&k_sqr_distances[0], 1, k);
+        ::flann::Matrix<int> k_indices_mat (&k_indices[0], 1, k);
+        ::flann::Matrix<float> k_distances_mat (&k_sqr_distances[0], 1, k);
         // Wrap the k_indices and k_distances vectors (no data copy)
-        flann_index_->knnSearch (flann::Matrix<float> (&query[0], 1, dim), 
+        flann_index_->knnSearch (::flann::Matrix<float> (&query[0], 1, dim), 
                                  k_indices_mat, k_distances_mat,
                                  k, param_k_);
 
@@ -511,13 +511,13 @@ namespace pcl
         std::vector<std::vector<int> > indices(1);
         std::vector<std::vector<float> > dists(1);
 
-        flann::SearchParams params(param_radius_);
+        ::flann::SearchParams params(param_radius_);
         if (max_nn == static_cast<unsigned int>(total_nr_points_))
           params.max_neighbors = -1;  // return all neighbors in radius
         else
           params.max_neighbors = max_nn;
 
-        int neighbors_in_radius = flann_index_->radiusSearch (flann::Matrix<float> (&query[0], 1, dim_),
+        int neighbors_in_radius = flann_index_->radiusSearch (::flann::Matrix<float> (&query[0], 1, dim_),
             indices,
             dists,
             static_cast<float> (radius * radius), 
@@ -742,10 +742,10 @@ namespace pcl
       int dim_;
 
       /** \brief The KdTree search parameters for K-nearest neighbors. */
-      flann::SearchParams param_k_;
+      ::flann::SearchParams param_k_;
 
       /** \brief The KdTree search parameters for radius search. */
-      flann::SearchParams param_radius_;
+      ::flann::SearchParams param_radius_;
 
       /** \brief The total size of the data (either equal to the number of points in the input cloud or to the number of indices - if passed). */
       int total_nr_points_;
