@@ -36,15 +36,15 @@
  * $Id$
  */
 
-#ifndef PCL_SUSAN_H_
-#define PCL_SUSAN_H_
+#ifndef PCL_SUSAN_KEYPOINT_H_
+#define PCL_SUSAN_KEYPOINT_H_
 
 #include <pcl/keypoints/keypoint.h>
 #include <pcl/common/intensity.h>
 
 namespace pcl
 {
-  /** \brief SUSAN implements a RGB-D extension of the SUSAN detector inluding normal 
+  /** \brief SUSANKeypoint implements a RGB-D extension of the SUSAN detector inluding normal 
     * directions variation in top of intensity variation. 
     * It is different from Harris in that it exploits normals directly so it is faster.  
     * Original paper "SUSAN — A New Approach to Low Level Image Processing", Smith,
@@ -54,7 +54,7 @@ namespace pcl
     * \ingroup keypoints
     */
   template <typename PointInT, typename PointOutT, typename NormalT = pcl::Normal, typename IntensityT= pcl::common::IntensityFieldAccessor<PointInT> >
-  class SUSAN : public Keypoint<PointInT, PointOutT>
+  class SUSANKeypoint : public Keypoint<PointInT, PointOutT>
   {
     public:
       typedef typename Keypoint<PointInT, PointOutT>::PointCloudIn PointCloudIn;
@@ -82,10 +82,10 @@ namespace pcl
         * \param[in] angular_threshold to test if normals are parallel
         * \param[in] intensity_threshold to test if points are of same color
         */
-      SUSAN (float radius = 0.01f, 
-             float distance_threshold = 0.001f, 
-             float angular_threshold = 0.0001f, 
-             float intensity_threshold = 7.0f)
+      SUSANKeypoint (float radius = 0.01f, 
+                     float distance_threshold = 0.001f, 
+                     float angular_threshold = 0.0001f, 
+                     float intensity_threshold = 7.0f)
         : distance_threshold_ (distance_threshold)
         , angular_threshold_ (angular_threshold)
         , intensity_threshold_ (intensity_threshold)
@@ -94,7 +94,7 @@ namespace pcl
         , label_idx_ (-1)
         , out_fields_ ()
       {
-        name_ = "SUSAN";
+        name_ = "SUSANKeypoint";
         search_radius_ = radius;
         geometric_validation_ = false;
         tolerance_ = 2 * distance_threshold_;
@@ -194,4 +194,4 @@ namespace pcl
 
 #include <pcl/keypoints/impl/susan.hpp>
 
-#endif // #ifndef PCL_SUSAN_H_
+#endif // #ifndef PCL_SUSAN_KEYPOINT_H_

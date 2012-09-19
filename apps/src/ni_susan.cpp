@@ -80,7 +80,7 @@ class SUSANDemo
       cloud_ = cloud;
 
       // Compute SUSAN keypoints 
-      SUSAN<PointT, KeyPointT> susan;
+      SUSANKeypoint<PointT, KeyPointT> susan;
       susan.setInputCloud (cloud);
       susan.setNumberOfThreads (6);
       susan.setNonMaxSupression (true);

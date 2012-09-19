@@ -367,7 +367,7 @@ namespace pcl
 
           typename pcl::PointCloud<pcl::PointXYZI>::Ptr intensity_keypoints (new pcl::PointCloud<pcl::PointXYZI>);
 
-          pcl::SUSAN<PointInT, pcl::PointXYZI> susan;
+          pcl::SUSANKeypoint<PointInT, pcl::PointXYZI> susan;
           susan.setNonMaxSupression (true);
           susan.setInputCloud (input_);
           susan.setNormals (normals_);
