@@ -67,7 +67,7 @@ pcl::registration::CorrespondenceEstimationBase<PointSource, PointTarget>::initC
 {
   if (!target_)
   {
-    PCL_WARN ("[pcl::%s::compute] No input target dataset was given!\n", getClassName ().c_str ());
+    PCL_ERROR ("[pcl::%s::compute] No input target dataset was given!\n", getClassName ().c_str ());
     return (false);
   }
 
