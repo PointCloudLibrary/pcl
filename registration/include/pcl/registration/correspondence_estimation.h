@@ -44,6 +44,7 @@
 #include <string>
 
 #include <pcl/pcl_base.h>
+#include <pcl/common/transforms.h>
 #include <pcl/kdtree/kdtree.h>
 #include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/pcl_macros.h>
@@ -59,12 +60,12 @@ namespace pcl
       * \author Radu B. Rusu
       * \ingroup registration
       */
-    template <typename PointSource, typename PointTarget>
+    template <typename PointSource, typename PointTarget, typename Scalar = float>
     class CorrespondenceEstimationBase: public PCLBase<PointSource>
     {
       public:
-        typedef boost::shared_ptr<CorrespondenceEstimationBase<PointSource, PointTarget> > Ptr;
-        typedef boost::shared_ptr<const CorrespondenceEstimationBase<PointSource, PointTarget> > ConstPtr;
+        typedef boost::shared_ptr<CorrespondenceEstimationBase<PointSource, PointTarget, Scalar> > Ptr;
+        typedef boost::shared_ptr<const CorrespondenceEstimationBase<PointSource, PointTarget, Scalar> > ConstPtr;
 
         using PCLBase<PointSource>::initCompute;
         using PCLBase<PointSource>::deinitCompute;
@@ -92,7 +93,28 @@ namespace pcl
           , target_ ()
           , target_indices_ ()
           , point_representation_ ()
+          , input_transformed_ ()
         {
+        }
+
+        /** \brief Provide a pointer to the input source 
+          * (e.g., the point cloud that we want to align to the target)
+          *
+          * \param[in] cloud the input point cloud source
+          */
+        inline void 
+        setInputCloud (const PointCloudSourceConstPtr &cloud)
+        {
+          PCL_WARN ("[pcl::registration::%s::setInputCloud] setInputCloud is deprecated. Please use setInputSource instead.\n", getClassName ().c_str ());
+          PCLBase<PointSource>::setInputCloud (cloud);
+        }
+
+        /** \brief Get a pointer to the input point cloud dataset target. */
+        inline PointCloudSourceConstPtr const 
+        getInputCloud () 
+        { 
+          PCL_WARN ("[pcl::registration::%s::getInputCloud] getInputCloud is deprecated. Please use getInputSource instead.\n", getClassName ().c_str ());
+          return (input_ ); 
         }
 
         /** \brief Provide a pointer to the input source 
@@ -108,7 +130,10 @@ namespace pcl
 
         /** \brief Get a pointer to the input point cloud dataset target. */
         inline PointCloudSourceConstPtr const 
-        getInputSource () { return (input_ ); }
+        getInputSource () 
+        { 
+          return (input_ ); 
+        }
 
         /** \brief Provide a pointer to the input target 
           * (e.g., the point cloud that we want to align the input source to)
@@ -180,13 +205,12 @@ namespace pcl
           point_representation_ = point_representation;
         }
 
-        /** \brief Return true if the source normals are needed for correspondence estimation. */
+        /** \brief Provide a simple mechanism to update the internal source cloud
+          * using a given transformation. Used in registration loops.
+          * \param[in] transform the transform to apply over the source cloud
+          */
         virtual bool
-        needsSourceNormals () = 0;
-
-        /** \brief Return true if the target normals are needed for correspondence estimation. */
-        virtual bool
-        needsTargetNormals () = 0;
+        updateSource (const Eigen::Matrix<Scalar, 4, 4> &transform) = 0;
 
       protected:
         /** \brief The correspondence estimation method name. */
@@ -203,6 +227,9 @@ namespace pcl
 
         /** \brief The point representation used (internal). */
         PointRepresentationConstPtr point_representation_;
+
+        /** \brief The transformed input source point cloud dataset. */
+        PointCloudTargetPtr input_transformed_;
 
         /** \brief Abstract class get name method. */
         inline const std::string& 
@@ -234,22 +261,23 @@ namespace pcl
       * \author Radu B. Rusu, Michael Dixon, Dirk Holz
       * \ingroup registration
       */
-    template <typename PointSource, typename PointTarget>
-    class CorrespondenceEstimation : public CorrespondenceEstimationBase<PointSource, PointTarget>
+    template <typename PointSource, typename PointTarget, typename Scalar = float>
+    class CorrespondenceEstimation : public CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>
     {
       public:
-        typedef boost::shared_ptr<CorrespondenceEstimation<PointSource, PointTarget> > Ptr;
-        typedef boost::shared_ptr<const CorrespondenceEstimation<PointSource, PointTarget> > ConstPtr;
+        typedef boost::shared_ptr<CorrespondenceEstimation<PointSource, PointTarget, Scalar> > Ptr;
+        typedef boost::shared_ptr<const CorrespondenceEstimation<PointSource, PointTarget, Scalar> > ConstPtr;
 
-        using CorrespondenceEstimationBase<PointSource, PointTarget>::point_representation_;
-        using CorrespondenceEstimationBase<PointSource, PointTarget>::tree_;
-        using CorrespondenceEstimationBase<PointSource, PointTarget>::target_;
-        using CorrespondenceEstimationBase<PointSource, PointTarget>::corr_name_;
-        using CorrespondenceEstimationBase<PointSource, PointTarget>::target_indices_;
-        using CorrespondenceEstimationBase<PointSource, PointTarget>::getClassName;
-        using CorrespondenceEstimationBase<PointSource, PointTarget>::initCompute;
-        using CorrespondenceEstimationBase<PointSource, PointTarget>::input_;
-        using CorrespondenceEstimationBase<PointSource, PointTarget>::indices_;
+        using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::point_representation_;
+        using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::input_transformed_;
+        using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::tree_;
+        using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::target_;
+        using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::corr_name_;
+        using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::target_indices_;
+        using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::getClassName;
+        using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::initCompute;
+        using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::input_;
+        using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::indices_;
         using PCLBase<PointSource>::deinitCompute;
 
         typedef typename pcl::KdTree<PointTarget> KdTree;
@@ -290,18 +318,22 @@ namespace pcl
         determineReciprocalCorrespondences (pcl::Correspondences &correspondences,
                                             double max_distance = std::numeric_limits<double>::max ());
 
-        /** \brief Return true if the source normals are needed for correspondence estimation. */
+        /** \brief Provide a simple mechanism to update the internal source cloud
+          * using a given transformation. Used in registration loops.
+          * \param[in] transform the transform to apply over the source cloud
+          */
         virtual bool
-        needsSourceNormals ()
+        updateSource (const Eigen::Matrix<Scalar, 4, 4> &transform)
         {
-          return (false);
-        }
-
-        /** \brief Return true if the target normals are needed for correspondence estimation. */
-        virtual bool
-        needsTargetNormals ()
-        {
-          return (false);
+          if (!input_)
+          {
+            PCL_ERROR ("[pcl::registration::%s::updateSource] No input XYZ dataset given. Please specify the input source cloud using setInputSource.\n", getClassName ().c_str ());
+            return (false);
+          }
+          input_transformed_.reset (new PointCloudSource);
+          pcl::transformPointCloud<PointSource, Scalar> (*input_, *input_transformed_, transform);
+          input_ = input_transformed_;
+          return (true);
         }
      };
   }

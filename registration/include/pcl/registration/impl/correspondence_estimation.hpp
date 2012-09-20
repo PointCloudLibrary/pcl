@@ -45,13 +45,13 @@
 #include <pcl/common/io.h>
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointSource, typename PointTarget> void
-pcl::registration::CorrespondenceEstimationBase<PointSource, PointTarget>::setInputTarget (
+template <typename PointSource, typename PointTarget, typename Scalar> void
+pcl::registration::CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::setInputTarget (
     const PointCloudTargetConstPtr &cloud)
 {
   if (cloud->points.empty ())
   {
-    PCL_ERROR ("[pcl::%s::setInputTarget] Invalid or empty point cloud dataset given!\n", getClassName ().c_str ());
+    PCL_ERROR ("[pcl::registration::%s::setInputTarget] Invalid or empty point cloud dataset given!\n", getClassName ().c_str ());
     return;
   }
   target_ = cloud;
@@ -62,12 +62,12 @@ pcl::registration::CorrespondenceEstimationBase<PointSource, PointTarget>::setIn
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointSource, typename PointTarget> bool
-pcl::registration::CorrespondenceEstimationBase<PointSource, PointTarget>::initCompute ()
+template <typename PointSource, typename PointTarget, typename Scalar> bool
+pcl::registration::CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::initCompute ()
 {
   if (!target_)
   {
-    PCL_ERROR ("[pcl::%s::compute] No input target dataset was given!\n", getClassName ().c_str ());
+    PCL_ERROR ("[pcl::registration::%s::compute] No input target dataset was given!\n", getClassName ().c_str ());
     return (false);
   }
 
@@ -81,8 +81,8 @@ pcl::registration::CorrespondenceEstimationBase<PointSource, PointTarget>::initC
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointSource, typename PointTarget> void
-pcl::registration::CorrespondenceEstimation<PointSource, PointTarget>::determineCorrespondences (
+template <typename PointSource, typename PointTarget, typename Scalar> void
+pcl::registration::CorrespondenceEstimation<PointSource, PointTarget, Scalar>::determineCorrespondences (
     pcl::Correspondences &correspondences, double max_distance)
 {
   if (!initCompute ())
@@ -142,8 +142,8 @@ pcl::registration::CorrespondenceEstimation<PointSource, PointTarget>::determine
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointSource, typename PointTarget> void
-pcl::registration::CorrespondenceEstimation<PointSource, PointTarget>::determineReciprocalCorrespondences (
+template <typename PointSource, typename PointTarget, typename Scalar> void
+pcl::registration::CorrespondenceEstimation<PointSource, PointTarget, Scalar>::determineReciprocalCorrespondences (
     pcl::Correspondences &correspondences, double max_distance)
 {
   if (!initCompute ())

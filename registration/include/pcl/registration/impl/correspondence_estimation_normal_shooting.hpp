@@ -43,21 +43,71 @@
 #include <pcl/registration/correspondence_estimation_normal_shooting.h>
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointSource, typename PointTarget, typename NormalT> bool
-pcl::registration::CorrespondenceEstimationNormalShooting<PointSource, PointTarget, NormalT>::initCompute ()
+template <typename PointSource, typename PointTarget, typename NormalT, typename Scalar> bool
+pcl::registration::CorrespondenceEstimationNormalShooting<PointSource, PointTarget, NormalT, Scalar>::initCompute ()
 {
   if (!source_normals_)
   {
-    PCL_WARN ("[pcl::%s::compute] Datasets containing normals for source have not been given!\n", getClassName ().c_str ());
+    PCL_WARN ("[pcl::registration::%s::initCompute] Datasets containing normals for source have not been given!\n", getClassName ().c_str ());
     return (false);
   }
 
-  return (CorrespondenceEstimationBase<PointSource, PointTarget>::initCompute ());
+  return (CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::initCompute ());
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointSource, typename PointTarget, typename NormalT> void
-pcl::registration::CorrespondenceEstimationNormalShooting<PointSource, PointTarget, NormalT>::determineCorrespondences (
+template <typename PointSource, typename PointTarget, typename NormalT, typename Scalar> void
+pcl::registration::CorrespondenceEstimationNormalShooting<PointSource, PointTarget, NormalT, Scalar>::rotatePointCloudNormals (
+    const pcl::PointCloud<NormalT> &cloud_in,
+    pcl::PointCloud<NormalT> &cloud_out,
+    const Eigen::Matrix<Scalar, 4, 4> &transform)
+{
+  if (&cloud_in != &cloud_out)
+  {
+    // Note: could be replaced by cloud_out = cloud_in
+    cloud_out.header   = cloud_in.header;
+    cloud_out.width    = cloud_in.width;
+    cloud_out.height   = cloud_in.height;
+    cloud_out.is_dense = cloud_in.is_dense;
+    cloud_out.points.reserve (cloud_out.points.size ());
+    cloud_out.points.assign (cloud_in.points.begin (), cloud_in.points.end ());
+  }
+
+  // If the data is dense, we don't need to check for NaN
+  if (cloud_in.is_dense)
+  {
+    for (size_t i = 0; i < cloud_out.points.size (); ++i)
+    {
+      // Rotate normals (WARNING: transform.rotation () uses SVD internally!)
+      Eigen::Matrix<Scalar, 3, 1> nt (cloud_in[i].normal_x, cloud_in[i].normal_y, cloud_in[i].normal_z);
+      cloud_out[i].normal_x = static_cast<float> (transform (0, 0) * nt.coeffRef (0) + transform (0, 1) * nt.coeffRef (1) + transform (0, 2) * nt.coeffRef (2));
+      cloud_out[i].normal_y = static_cast<float> (transform (1, 0) * nt.coeffRef (0) + transform (1, 1) * nt.coeffRef (1) + transform (1, 2) * nt.coeffRef (2));
+      cloud_out[i].normal_z = static_cast<float> (transform (2, 0) * nt.coeffRef (0) + transform (2, 1) * nt.coeffRef (1) + transform (2, 2) * nt.coeffRef (2));
+    }
+  }
+  // Dataset might contain NaNs and Infs, so check for them first.
+  else
+  {
+    for (size_t i = 0; i < cloud_out.points.size (); ++i)
+    {
+      if (!pcl_isfinite (cloud_in.points[i].normal_x) || 
+          !pcl_isfinite (cloud_in.points[i].normal_y) || 
+          !pcl_isfinite (cloud_in.points[i].normal_z))
+        continue;
+
+      // Rotate normals
+      //cloud_out.points[i].getNormalVector3fMap() = transform.rotation () * cloud_in.points[i].getNormalVector3fMap ();
+      Eigen::Matrix<Scalar, 3, 1> nt (cloud_in[i].normal_x, cloud_in[i].normal_y, cloud_in[i].normal_z);
+      cloud_out[i].normal_x = static_cast<float> (transform (0, 0) * nt.coeffRef (0) + transform (0, 1) * nt.coeffRef (1) + transform (0, 2) * nt.coeffRef (2));
+      cloud_out[i].normal_y = static_cast<float> (transform (1, 0) * nt.coeffRef (0) + transform (1, 1) * nt.coeffRef (1) + transform (1, 2) * nt.coeffRef (2));
+      cloud_out[i].normal_z = static_cast<float> (transform (2, 0) * nt.coeffRef (0) + transform (2, 1) * nt.coeffRef (1) + transform (2, 2) * nt.coeffRef (2));
+    }
+  }
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointSource, typename PointTarget, typename NormalT, typename Scalar> void
+pcl::registration::CorrespondenceEstimationNormalShooting<PointSource, PointTarget, NormalT, Scalar>::determineCorrespondences (
     pcl::Correspondences &correspondences, double max_distance)
 {
   if (!initCompute ())
@@ -173,8 +223,8 @@ pcl::registration::CorrespondenceEstimationNormalShooting<PointSource, PointTarg
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointSource, typename PointTarget, typename NormalT> void
-pcl::registration::CorrespondenceEstimationNormalShooting<PointSource, PointTarget, NormalT>::determineReciprocalCorrespondences (
+template <typename PointSource, typename PointTarget, typename NormalT, typename Scalar> void
+pcl::registration::CorrespondenceEstimationNormalShooting<PointSource, PointTarget, NormalT, Scalar>::determineReciprocalCorrespondences (
     pcl::Correspondences &correspondences, double max_distance)
 {
   if (!initCompute ())

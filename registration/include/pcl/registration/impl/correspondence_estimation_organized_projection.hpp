@@ -38,20 +38,23 @@
  *
  */
 
+#ifndef PCL_REGISTRATION_CORRESPONDENCE_ESTIMATION_BACK_PROJECTION_IMPL_HPP_
+#define PCL_REGISTRATION_CORRESPONDENCE_ESTIMATION_BACK_PROJECTION_IMPL_HPP_
+
 #include <pcl/registration/correspondence_estimation_organized_projection.h>
 
-
-template <typename PointSource, typename PointTarget> bool
-pcl::registration::CorrespondenceEstimationOrganizedProjection<PointSource, PointTarget>::initCompute ()
+///////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointSource, typename PointTarget, typename Scalar> bool
+pcl::registration::CorrespondenceEstimationOrganizedProjection<PointSource, PointTarget, Scalar>::initCompute ()
 {
   if (!CorrespondenceEstimation<PointSource, PointTarget>::initCompute ())
-    return false;
+    return (false);
 
   /// Check if the target cloud is organized
   if (!target_->isOrganized ())
   {
-    PCL_WARN ("[pcl::%s::initCompute] Target cloud is not organized.\n", getClassName ().c_str ());
-    return false;
+    PCL_WARN ("[pcl::registration::%s::initCompute] Target cloud is not organized.\n", getClassName ().c_str ());
+    return (false);
   }
 
   /// Put the projection matrix together
@@ -60,17 +63,16 @@ pcl::registration::CorrespondenceEstimationOrganizedProjection<PointSource, Poin
   projection_matrix_ (0, 2) = cx_;
   projection_matrix_ (1, 2) = cy_;
 
-  return true;
+  return (true);
 }
 
-
-template <typename PointSource, typename PointTarget> void
-pcl::registration::CorrespondenceEstimationOrganizedProjection<PointSource, PointTarget>::determineCorrespondences (pcl::Correspondences &correspondences,
+///////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointSource, typename PointTarget, typename Scalar> void
+pcl::registration::CorrespondenceEstimationOrganizedProjection<PointSource, PointTarget, Scalar>::determineCorrespondences (pcl::Correspondences &correspondences,
                                                                                                                     double max_distance)
 {
   if (!initCompute ())
     return;
-
 
   correspondences.resize (input_->size ());
   size_t c_index = 0;
@@ -107,3 +109,6 @@ pcl::registration::CorrespondenceEstimationOrganizedProjection<PointSource, Poin
 
   correspondences.resize (c_index);
 }
+
+#endif    // PCL_REGISTRATION_CORRESPONDENCE_ESTIMATION_BACK_PROJECTION_IMPL_HPP_
+

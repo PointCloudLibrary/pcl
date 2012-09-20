@@ -57,16 +57,17 @@ namespace pcl
       * variable.
       * \author Alex Ichim
       */
-    template <typename PointSource, typename PointTarget>
-    class CorrespondenceEstimationOrganizedProjection : public CorrespondenceEstimationBase <PointSource, PointTarget>
+    template <typename PointSource, typename PointTarget, typename Scalar = float>
+    class CorrespondenceEstimationOrganizedProjection : public CorrespondenceEstimationBase <PointSource, PointTarget, Scalar>
     {
       public:
-        using CorrespondenceEstimationBase<PointSource, PointTarget>::initCompute;
+        using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::initCompute;
+        using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::input_transformed_;
         using PCLBase<PointSource>::deinitCompute;
         using PCLBase<PointSource>::input_;
         using PCLBase<PointSource>::indices_;
-        using CorrespondenceEstimationBase<PointSource, PointTarget>::getClassName;
-        using CorrespondenceEstimationBase<PointSource, PointTarget>::point_representation_;
+        using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::getClassName;
+        using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::point_representation_;
 
         typedef pcl::PointCloud<PointSource> PointCloudSource;
         typedef typename PointCloudSource::Ptr PointCloudSourcePtr;
@@ -122,7 +123,6 @@ namespace pcl
         getCameraCenters (float &cx, float &cy) const
         { cx = cx_; cy = cy_; }
 
-
         /** \brief Sets the transformation from the source point cloud to the target point cloud.
           * \Note The target point cloud must be in its local camera coordinates, so use this transformation to correct
           * for that.
@@ -140,7 +140,6 @@ namespace pcl
         inline Eigen::Matrix4f
         getSourceTransformation () const
         { return (src_to_tgt_transformation_); }
-
 
         /** \brief Sets the depth threshold; after projecting the source points in the image space of the target camera,
           * this threshold is applied on the depths of corresponding dexels to eliminate the ones that are too far from
@@ -166,6 +165,24 @@ namespace pcl
         void
         determineCorrespondences (Correspondences &correspondences, double max_distance);
 
+        /** \brief Provide a simple mechanism to update the internal source cloud
+          * using a given transformation. Used in registration loops.
+          * \param[in] transform the transform to apply over the source cloud
+          */
+        virtual bool
+        updateSource (const Eigen::Matrix<Scalar, 4, 4> &transform)
+        {
+          if (!input_)
+          {
+            PCL_ERROR ("[pcl::registration::%s::updateSource] No input XYZ dataset given. Please specify the input source cloud using setInputSource.\n", getClassName ().c_str ());
+            return (false);
+          }
+          input_transformed_.reset (new PointCloudSource);
+          pcl::transformPointCloud<PointSource, Scalar> (*input_, *input_transformed_, transform);
+          input_ = input_transformed_;
+          return (true);
+        }
+
       protected:
         using CorrespondenceEstimationBase<PointSource, PointTarget>::target_;
 
@@ -184,8 +201,6 @@ namespace pcl
   }
 }
 
-
 #include <pcl/registration/impl/correspondence_estimation_organized_projection.hpp>
-
 
 #endif /* PCL_REGISTRATION_CORRESPONDENCE_ESTIMATION_ORGANIZED_PROJECTION_H_ */
