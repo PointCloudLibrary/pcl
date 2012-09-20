@@ -334,27 +334,88 @@ namespace pcl
         {
           if (!input_)
           {
-            PCL_ERROR ("[pcl::registration::%s::updateSource] No input XYZ dataset given. Please specify the input source cloud using setInputSource.\n", getClassName ().c_str ());
+            PCL_ERROR ("[pcl::registration::%s::updateSource] No input dataset given. Please specify the input source cloud using setInputSource.\n", getClassName ().c_str ());
             return (false);
           }
 
-          // Check if XYZ data is available
-          bool has_xyz = false;
-          for (size_t i = 0; i < input_fields_.size (); ++i)
+          // Check if XYZ or normal data is available
+          int x_idx = -1, nx_idx = -1;
+
+          for (int i = 0; i < int (input_fields_.size ()); ++i)
           {
             if (input_fields_[i].name == "x")
-            {
-              has_xyz = true;
-              break;
-            }
+              x_idx = i;
+            if (input_fields_[i].name == "normal_x")
+              nx_idx = i;
           }
 
           // If no XYZ available, then return
-          if (!has_xyz)
+          if (x_idx == -1)
             return (true);
 
-          input_transformed_.reset (new PointCloudSource);
-          pcl::transformPointCloud<PointSource, Scalar> (*input_, *input_transformed_, transform);
+          input_transformed_.reset (new PointCloudSource (*input_));
+         
+          int y_idx = x_idx + 1, z_idx = x_idx + 2, ny_idx = nx_idx + 1, nz_idx = nx_idx + 2;
+          Eigen::Vector4f pt (0.0f, 0.0f, 0.0f, 1.0f), pt_t;
+          Eigen::Matrix4f tr = transform.template cast<float> ();
+
+          if (nx_idx != -1)
+          {
+            Eigen::Vector3f nt, nt_t;
+            Eigen::Matrix3f rot = tr.block<3, 3> (0, 0);
+
+            //pcl::transformPointCloudWithNormals<PointSource, Scalar> (*input_, *input_transformed_, transform);
+            for (size_t i = 0; i < input_transformed_->size (); ++i)
+            {
+              uint8_t* pt_data = reinterpret_cast<uint8_t*> (&input_transformed_->points[i]);
+              memcpy (&pt[0], pt_data + input_fields_[x_idx].offset, sizeof (float));
+              memcpy (&pt[1], pt_data + input_fields_[y_idx].offset, sizeof (float));
+              memcpy (&pt[2], pt_data + input_fields_[z_idx].offset, sizeof (float));
+
+              if (!pcl_isfinite (pt[0]) || !pcl_isfinite (pt[1]) || !pcl_isfinite (pt[2])) 
+                continue;
+
+              pt_t = tr * pt;
+
+              memcpy (pt_data + input_fields_[x_idx].offset, &pt_t[0], sizeof (float));
+              memcpy (pt_data + input_fields_[y_idx].offset, &pt_t[1], sizeof (float));
+              memcpy (pt_data + input_fields_[z_idx].offset, &pt_t[2], sizeof (float));
+
+              memcpy (&nt[0], pt_data + input_fields_[nx_idx].offset, sizeof (float));
+              memcpy (&nt[1], pt_data + input_fields_[ny_idx].offset, sizeof (float));
+              memcpy (&nt[2], pt_data + input_fields_[nz_idx].offset, sizeof (float));
+
+              if (!pcl_isfinite (nt[0]) || !pcl_isfinite (nt[1]) || !pcl_isfinite (nt[2])) 
+                continue;
+
+              nt_t = rot * nt;
+
+              memcpy (pt_data + input_fields_[nx_idx].offset, &nt_t[0], sizeof (float));
+              memcpy (pt_data + input_fields_[ny_idx].offset, &nt_t[1], sizeof (float));
+              memcpy (pt_data + input_fields_[nz_idx].offset, &nt_t[2], sizeof (float));
+            }
+          }
+          else
+          {
+            //pcl::transformPointCloud<PointSource, Scalar> (*input_, *input_transformed_, transform);
+            for (size_t i = 0; i < input_transformed_->size (); ++i)
+            {
+              uint8_t* pt_data = reinterpret_cast<uint8_t*> (&input_transformed_->points[i]);
+              memcpy (&pt[0], pt_data + input_fields_[x_idx].offset, sizeof (float));
+              memcpy (&pt[1], pt_data + input_fields_[y_idx].offset, sizeof (float));
+              memcpy (&pt[2], pt_data + input_fields_[z_idx].offset, sizeof (float));
+
+              if (!pcl_isfinite (pt[0]) || !pcl_isfinite (pt[1]) || !pcl_isfinite (pt[2])) 
+                continue;
+
+              pt_t = tr * pt;
+
+              memcpy (pt_data + input_fields_[x_idx].offset, &pt_t[0], sizeof (float));
+              memcpy (pt_data + input_fields_[y_idx].offset, &pt_t[1], sizeof (float));
+              memcpy (pt_data + input_fields_[z_idx].offset, &pt_t[2], sizeof (float));
+            }
+          }
+          
           input_ = input_transformed_;
           return (true);
         }
