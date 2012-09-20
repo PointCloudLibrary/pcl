@@ -177,8 +177,7 @@ pcl::registration::TransformationEstimationLM<PointSource, PointTarget, MatScala
   int info = lm.minimize (x);
 
   // Compute the norm of the residuals
-  PCL_DEBUG ("[pcl::registration::TransformationEstimationLM::estimateRigidTransformation]");
-  PCL_DEBUG ("LM solver finished with exit code %i, having a residual norm of %g. \n", info, lm.fvec.norm ());
+  PCL_DEBUG ("[pcl::registration::TransformationEstimationLM::estimateRigidTransformation] LM solver finished with exit code %i, having a residual norm of %g. \n", info, lm.fvec.norm ());
   PCL_DEBUG ("Final solution: [%f", x[0]);
   for (int i = 1; i < n_unknowns; ++i) 
     PCL_DEBUG (" %f", x[i]);

@@ -49,13 +49,13 @@ pcl::registration::CorrespondenceRejectorSampleConsensus<PointT>::getRemainingCo
 {
   if (!input_)
   {
-    PCL_ERROR ("[pcl::%s::getRemainingCorrespondences] No input cloud dataset was given!\n", getClassName ().c_str ());
+    PCL_ERROR ("[pcl::registration::%s::getRemainingCorrespondences] No input cloud dataset was given!\n", getClassName ().c_str ());
     return;
   }
 
   if (!target_)
   {
-    PCL_ERROR ("[pcl::%s::getRemainingCorrespondences] No input target dataset was given!\n", getClassName ().c_str ());
+    PCL_ERROR ("[pcl::registration::%s::getRemainingCorrespondences] No input target dataset was given!\n", getClassName ().c_str ());
     return;
   }
 
@@ -122,4 +122,4 @@ pcl::registration::CorrespondenceRejectorSampleConsensus<PointT>::getRemainingCo
    }
 }
 
-#endif /* PCL_REGISTRATION_IMPL_CORRESPONDENCE_REJECTION_SAMPLE_CONSENSUS_HPP_ */
+#endif    // PCL_REGISTRATION_IMPL_CORRESPONDENCE_REJECTION_SAMPLE_CONSENSUS_HPP_

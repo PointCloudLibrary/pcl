@@ -47,7 +47,7 @@ pcl::registration::CorrespondenceRejectorSurfaceNormal::getRemainingCorresponden
 {
   if (!data_container_)
   {
-    PCL_ERROR ("DataContainer object is not initialized!\n");
+    PCL_ERROR ("[pcl::registratin::%s::getRemainingCorrespondences] DataContainer object is not initialized!\n", getClassName ().c_str ());
     return;
   }
 
