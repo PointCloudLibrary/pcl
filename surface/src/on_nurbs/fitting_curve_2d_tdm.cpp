@@ -42,17 +42,17 @@ using namespace pcl;
 using namespace on_nurbs;
 
 FittingCurve2dTDM::FittingCurve2dTDM (int order, NurbsDataCurve2d *data) :
-  FittingCurve2d (order, data)
+  FittingCurve2dPDM (order, data)
 {
 }
 
 FittingCurve2dTDM::FittingCurve2dTDM (NurbsDataCurve2d *data, const ON_NurbsCurve &ns) :
-  FittingCurve2d (data, ns)
+  FittingCurve2dPDM (data, ns)
 {
 }
 
 void
-FittingCurve2dTDM::assemble (const FittingCurve2d::Parameter &parameter)
+FittingCurve2dTDM::assemble (const FittingCurve2dPDM::Parameter &parameter)
 {
   clock_t time_start, time_end;
   if (!m_quiet)
@@ -62,33 +62,22 @@ FittingCurve2dTDM::assemble (const FittingCurve2d::Parameter &parameter)
   int ncp = m_nurbs.m_cv_count - 2 * cp_red;
   int nCageReg = m_nurbs.m_cv_count - 2 * cp_red;
   int nInt = m_data->interior.size ();
-  //  int nCommon = m_data->common.size();
-  //  int nClosestP = parameter.closest_point_resolution;
-
-  std::vector<double> elements = getElementVector (m_nurbs);
-  int nClosestP = elements.size ();
 
   double wInt = 1.0;
   if (!m_data->interior_weight.empty ())
-  {
     wInt = m_data->interior_weight[0];
-  }
 
-  double wCageReg = parameter.smoothness;
-
-  unsigned nrows = 2 * nInt + 2 * nCageReg + 2 * nClosestP;
+  unsigned nrows = 2 * nInt + 2 * nCageReg;
 
   m_solver.assign (nrows, ncp * 2, 1);
 
   unsigned row (0);
 
   if (wInt > 0.0)
-    assembleInterior (wInt, parameter.interior_sigma2, parameter.rScale, row);
+    assembleInterior (wInt, parameter.rScale, row);
 
-  assembleClosestPoints (elements, parameter.closest_point_weight, parameter.closest_point_sigma2, row);
-
-  if (wCageReg > 0.0)
-    addCageRegularisation (wCageReg, row, elements, parameter.smooth_concavity);
+  if (parameter.smoothness > 0.0)
+    addCageRegularisation (parameter.smoothness, row);
 
   if (row < nrows)
   {
@@ -109,7 +98,7 @@ double
 FittingCurve2dTDM::solve (double damp)
 {
   clock_t time_start, time_end;
-  double cps_diff(0.0);
+  double cps_diff (0.0);
   if (!m_quiet)
     time_start = clock ();
 
@@ -131,7 +120,9 @@ FittingCurve2dTDM::updateCurve (double damp)
   int cp_red = m_nurbs.m_order - 2;
   int ncp = m_nurbs.m_cv_count - 2 * cp_red;
 
-  double cps_diff(0.0);
+  double cps_diff (0.0);
+
+  // TODO this implementation rotates the control points, look up fitting_curve_2d_apdm for correct implementation
 
   for (int j = 0; j < ncp; j++)
   {
@@ -142,7 +133,7 @@ FittingCurve2dTDM::updateCurve (double damp)
     double x = m_solver.x (2 * j + 0, 0);
     double y = m_solver.x (2 * j + 1, 0);
 
-    cps_diff += sqrt((x-cp_prev.x) * (x-cp_prev.x) + (y-cp_prev.y) * (y-cp_prev.y));
+    cps_diff += sqrt ((x - cp_prev.x) * (x - cp_prev.x) + (y - cp_prev.y) * (y - cp_prev.y));
 
     ON_3dPoint cp;
     cp.x = cp_prev.x + damp * (x - cp_prev.x);
@@ -167,7 +158,7 @@ FittingCurve2dTDM::updateCurve (double damp)
 
 void
 FittingCurve2dTDM::addPointConstraint (const double &param, const Eigen::Vector2d &point,
-                                       const Eigen::Vector2d &normal, double weight, unsigned &row)
+                                        const Eigen::Vector2d &normal, double weight, unsigned &row)
 {
   int cp_red = m_nurbs.m_order - 2;
   int ncp = m_nurbs.m_cv_count - 2 * cp_red;
@@ -191,8 +182,7 @@ FittingCurve2dTDM::addPointConstraint (const double &param, const Eigen::Vector2
 }
 
 void
-FittingCurve2dTDM::addCageRegularisation (double weight, unsigned &row, const std::vector<double> &elements,
-                                          double wConcav)
+FittingCurve2dTDM::addCageRegularisation (double weight, unsigned &row)
 {
   int cp_red = (m_nurbs.m_order - 2);
   int ncp = (m_nurbs.m_cv_count - 2 * cp_red);
@@ -201,44 +191,6 @@ FittingCurve2dTDM::addCageRegularisation (double weight, unsigned &row, const st
   //  m_data->interior_line_end.clear();
   for (int j = 1; j < ncp + 1; j++)
   {
-
-    if (wConcav == 0.0)
-    {
-    }
-    else
-    {
-      int i = j % ncp;
-
-      if (i >= int (m_data->closest_points_error.size () - 1))
-      {
-        printf ("[FittingCurve2d::addCageRegularisation] Warning, index for closest_points_error out of bounds\n");
-      }
-      else
-      {
-        Eigen::Vector2d t, n;
-        double pt[4];
-
-        double xi = elements[i] + 0.5 * (elements[i + 1] - elements[i]);
-        m_nurbs.Evaluate (xi, 1, 2, pt);
-        t (0) = pt[2];
-        t (1) = pt[3];
-        n (0) = -t (1);
-        n (1) = t (0);
-        n.normalize ();
-
-        double err = m_data->closest_points_error[i] + 0.5 * (m_data->closest_points_error[i + 1]
-            - m_data->closest_points_error[i]);
-        m_solver.f (row + 0, 0, err * wConcav * n (0));
-        m_solver.f (row + 1, 0, err * wConcav * n (1));
-
-        //        Eigen::Vector2d p1, p2;
-        //        p1(0) = pt[0];
-        //        p1(1) = pt[1];
-        //        p2 = p1 + n * wConcav * err;
-        //        m_data->interior_line_start.push_back(p1);
-        //        m_data->interior_line_end.push_back(p2);
-      }
-    }
 
     m_solver.K (row, 2 * ((j + 0) % ncp) + 0, -2.0 * weight);
     m_solver.K (row, 2 * ((j - 1) % ncp) + 0, 1.0 * weight);
@@ -253,11 +205,9 @@ FittingCurve2dTDM::addCageRegularisation (double weight, unsigned &row, const st
 }
 
 void
-FittingCurve2dTDM::assembleInterior (double wInt, double sigma2, double rScale, unsigned &row)
+FittingCurve2dTDM::assembleInterior (double wInt, double rScale, unsigned &row)
 {
   int nInt = m_data->interior.size ();
-  bool wFunction (true);
-  double ds = 1.0 / (2.0 * sigma2);
   m_data->interior_line_start.clear ();
   m_data->interior_line_end.clear ();
   m_data->interior_error.clear ();
@@ -293,152 +243,11 @@ FittingCurve2dTDM::assembleInterior (double wInt, double sigma2, double rScale, 
     t (1) = pointAndTangents[3];
     n (0) = pointAndTangents[4];
     n (1) = pointAndTangents[5];
-
-    // evaluate if point lies inside or outside the closed curve
-    Eigen::Vector3d a (pcp (0) - pt (0), pcp (1) - pt (1), 0.0);
-    Eigen::Vector3d b (t (0), t (1), 0.0);
-    Eigen::Vector3d z = a.cross (b);
+    n.normalize ();
 
     if (p < (int)m_data->interior_weight.size ())
       wInt = m_data->interior_weight[p];
 
-    if (p < (int)m_data->interior_weight_function.size ())
-      wFunction = m_data->interior_weight_function[p];
-
-    double w (wInt);
-    if (z (2) > 0.0 && wFunction)
-      w = wInt * exp (-(error * error) * ds);
-
-    n.normalize ();
-    //    m_data->interior_line_start.push_back(pt);
-    //    m_data->interior_line_end.push_back(pt + n * 0.01);
-
-    //      w = 0.5 * wInt * exp(-(error * error) * ds);
-
-    // evaluate if this point is the closest point
-    //    int idx = NurbsTools::getClosestPoint(pt, m_data->interior);
-    //    if(idx == p)
-    //      w = 2.0 * wInt;
-
-    if (w > 1e-6) // avoids ill-conditioned matrix
-      addPointConstraint (m_data->interior_param[p], m_data->interior[p], n, w, row);
-    else
-    {
-      //      m_solver.K(row, 0, 0.0);
-      //      row++;
-    }
-  }
-}
-
-void
-FittingCurve2dTDM::assembleClosestPoints (const std::vector<double> &elements, double weight, double sigma2,
-                                          unsigned &row)
-{
-  m_data->closest_points.clear ();
-  m_data->closest_points_param.clear ();
-  m_data->closest_points_error.clear ();
-  m_data->interior_line_start.clear ();
-  m_data->interior_line_end.clear ();
-
-  double ds = 1.0 / (2.0 * sigma2);
-
-  for (unsigned i = 0; i < elements.size (); i++)
-  {
-
-    int j = i % elements.size ();
-
-    double dxi = elements[j] - elements[i];
-    double xi = elements[i] + 0.5 * dxi;
-
-    double points[6];
-    Eigen::Vector2d p1, p2, p3, t, in, n;
-    m_nurbs.Evaluate (xi, 2, 2, points);
-    p1 (0) = points[0];
-    p1 (1) = points[1];
-    t (0) = points[2];
-    t (1) = points[3];
-    t.normalize ();
-    in (0) = t (1);
-    in (1) = -t (0);
-
-    n (0) = points[4] * 0.01;
-    n (1) = points[5] * 0.01;
-
-    n = in * in.dot (n);
-
-    unsigned idxcp;
-    unsigned idx = NurbsTools::getClosestPoint (p1, in, m_data->interior, idxcp);
-    p2 = m_data->interior[idx];
-    p3 = m_data->interior[idxcp];
-
-    //    double xi2 = m_data->interior_param[idx];
-
-    double error2 = (p2 - p1).squaredNorm ();
-
-    m_data->closest_points.push_back (p3);
-    m_data->closest_points_param.push_back (xi);
-    m_data->closest_points_error.push_back ((p3 - p1).squaredNorm ());
-
-    double w (weight);
-    w = 0.5 * weight * exp (-(error2) * ds);
-    //    w = weight * std::fabs(in.dot(p2-p1));
-
-    //    if (weight > 0.0 && (std::fabs(xi2 - xi) < std::fabs(dxi)))
-    if (w > 0.0)
-    {
-      addPointConstraint (xi, p2, n, w, row);
-      m_data->interior_line_start.push_back (p1);
-      m_data->interior_line_end.push_back (p2);
-    }
-
-  }
-}
-
-void
-FittingCurve2dTDM::assembleClosestPoints (int res, double weight, unsigned &row)
-{
-  std::vector<double> elements = FittingCurve2dTDM::getElementVector (m_nurbs);
-  double xi_min = elements.front ();
-  double xi_max = elements.back ();
-
-  double step = (xi_max - xi_min) / res;
-
-  //  m_data->interior_line_start.clear();
-  //  m_data->interior_line_end.clear();
-  m_data->closest_points.clear ();
-  m_data->closest_points_param.clear ();
-  m_data->closest_points_error.clear ();
-  for (int i = 0; i < res; i++)
-  {
-    double xi = xi_min + i * step;
-
-    double points[6];
-    Eigen::Vector2d p1, p2, t, in, n;
-    //    m_nurbs.Evaluate(xi, 0, 2, points);
-    //    p1(0) = points[0];
-    //    p1(1) = points[1];
-
-    m_nurbs.Evaluate (xi, 2, 2, points);
-    p1 (0) = points[0];
-    p1 (1) = points[1];
-    t (0) = points[2];
-    t (1) = points[3];
-    in (0) = t (1);
-    in (1) = -t (0);
-    n (0) = points[4];
-    n (1) = points[5];
-    n = in * in.dot (n);
-
-    unsigned idx = NurbsTools::getClosestPoint (p1, m_data->interior);
-    p2 = m_data->interior[idx];
-
-    m_data->closest_points.push_back (p2);
-    m_data->closest_points_param.push_back (xi);
-    m_data->closest_points_error.push_back ((p2 - p1).squaredNorm ());
-    //    m_data->interior_line_start.push_back(p1);
-    //    m_data->interior_line_end.push_back(p2);
-
-    addPointConstraint (xi, p2, n, weight, row);
-
+    addPointConstraint (m_data->interior_param[p], m_data->interior[p], n, wInt, row);
   }
 }

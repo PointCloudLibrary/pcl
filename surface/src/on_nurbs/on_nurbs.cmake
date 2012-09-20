@@ -1,6 +1,9 @@
 
 set(ON_NURBS_INCLUDES
 	include/pcl/${SUBSYS_NAME}/on_nurbs/closing_boundary.h
+	include/pcl/${SUBSYS_NAME}/on_nurbs/fitting_curve_2d_apdm.h
+	include/pcl/${SUBSYS_NAME}/on_nurbs/fitting_curve_2d_asdm.h
+	include/pcl/${SUBSYS_NAME}/on_nurbs/fitting_curve_2d_atdm.h
 	include/pcl/${SUBSYS_NAME}/on_nurbs/fitting_curve_2d_pdm.h
 	include/pcl/${SUBSYS_NAME}/on_nurbs/fitting_curve_2d_sdm.h
 	include/pcl/${SUBSYS_NAME}/on_nurbs/fitting_curve_2d_tdm.h
@@ -20,6 +23,9 @@ set(ON_NURBS_INCLUDES
 
 set(ON_NURBS_SOURCES
 	src/on_nurbs/closing_boundary.cpp
+	src/on_nurbs/fitting_curve_2d_apdm.cpp
+	src/on_nurbs/fitting_curve_2d_asdm.cpp
+	src/on_nurbs/fitting_curve_2d_atdm.cpp
 	src/on_nurbs/fitting_curve_2d_pdm.cpp
 	src/on_nurbs/fitting_curve_2d_sdm.cpp
 	src/on_nurbs/fitting_curve_2d_tdm.cpp

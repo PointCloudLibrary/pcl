@@ -1,7 +1,7 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2011, Thomas Mörwald
+ *  Copyright (c) 2011, Thomas Mörwald, Jonathan Balzer, Inc.
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -14,7 +14,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Thomas Mörwald nor the names of its
+ *   * Neither the name of Thomas Mörwald or Jonathan Balzer nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -41,7 +41,7 @@
 #include <pcl/surface/on_nurbs/nurbs_tools.h>
 #include <pcl/surface/on_nurbs/nurbs_data.h>
 #include <pcl/surface/on_nurbs/nurbs_solve.h>
-#include <pcl/surface/on_nurbs/fitting_curve_2d_pdm.h>
+#include <pcl/surface/on_nurbs/fitting_curve_2d_apdm.h>
 
 namespace pcl
 {
@@ -53,18 +53,18 @@ namespace pcl
      *  Based on paper: TODO
      * \author Thomas Mörwald
      * \ingroup surface     */
-    class FittingCurve2dSDM : public FittingCurve2dPDM
+    class FittingCurve2dASDM : public FittingCurve2dAPDM
     {
     public:
       /** \brief Constructor initializing B-Spline curve using initNurbsCurve2D(...).
        * \param[in] order the polynomial order of the B-Spline curve.
        * \param[in] data pointer to the 2D point-cloud data to be fit.        */
-      FittingCurve2dSDM (int order, NurbsDataCurve2d *data);
+      FittingCurve2dASDM (int order, NurbsDataCurve2d *data);
 
       /** \brief Constructor initializing with the B-Spline curve given in argument 2.
        * \param[in] data pointer to the 2D point-cloud data to be fit.
        * \param[in] nc B-Spline curve used for fitting.        */
-      FittingCurve2dSDM (NurbsDataCurve2d *data, const ON_NurbsCurve &nc);
+      FittingCurve2dASDM (NurbsDataCurve2d *data, const ON_NurbsCurve &nc);
 
       /** \brief Assemble the system of equations for fitting
        * - for large point-clouds this is time consuming.
@@ -91,11 +91,17 @@ namespace pcl
 
       /** \brief Add minimization constraint: smoothness by control point regularisation. */
       virtual void
-      addCageRegularisation (double weight, unsigned &row);
+      addCageRegularisation (double weight, unsigned &row, const std::vector<double> &elements, double wConcav = 0.0);
 
       /** \brief Assemble point-to-surface constraints. */
       virtual void
-      assembleInterior (double wInt, double rScale, unsigned &row);
+      assembleInterior (double wInt, double sigma2, double rScale, unsigned &row);
+
+      /** \brief Assemble closest points constraints. At each midpoint of the curve elements the closest data points
+       * are computed and point-to-surface constraints are added. */
+      virtual void
+      assembleClosestPoints (const std::vector<double> &elements, double weight, double sigma2, unsigned &row);
+
     };
   }
 }

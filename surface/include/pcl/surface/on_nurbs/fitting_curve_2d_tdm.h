@@ -53,7 +53,7 @@ namespace pcl
      *  Based on paper: TODO
      * \author Thomas Mörwald
      * \ingroup surface     */
-    class FittingCurve2dTDM : public FittingCurve2d
+    class FittingCurve2dTDM : public FittingCurve2dPDM
     {
     public:
 
@@ -71,7 +71,7 @@ namespace pcl
        * - for large point-clouds this is time consuming.
        * - should be done once before refinement to initialize the starting points for point inversion. */
       void
-      assemble (const FittingCurve2d::Parameter &parameter);
+      assemble (const FittingCurve2dPDM::Parameter &parameter);
 
       /** \brief Solve system of equations using Eigen or UmfPack (can be defined in on_nurbs.cmake),
        *  and updates B-Spline curve if a solution can be obtained. */
@@ -91,21 +91,11 @@ namespace pcl
 
       /** \brief Add minimization constraint: smoothness by control point regularisation. */
       virtual void
-      addCageRegularisation (double weight, unsigned &row, const std::vector<double> &elements, double wConcav = 0.0);
+      addCageRegularisation (double weight, unsigned &row);
 
       /** \brief Assemble point-to-surface constraints. */
       virtual void
-      assembleInterior (double wInt, double sigma2, double rScale, unsigned &row);
-
-      /** \brief Assemble closest points constraints. At each midpoint of the curve elements the closest data points
-       * are computed and point-to-surface constraints are added. */
-      virtual void
-      assembleClosestPoints (const std::vector<double> &elements, double weight, double sigma2, unsigned &row);
-
-      /** \brief Assemble closest points constraints. Samples curve and searches for close data points,
-       * and adds point-to-surface constraint. */
-      virtual void
-      assembleClosestPoints (int res, double weight, unsigned &row);
+      assembleInterior (double wInt, double rScale, unsigned &row);
 
     };
   }

@@ -37,7 +37,7 @@
 
 #include <pcl/surface/on_nurbs/nurbs_data.h>
 #include <pcl/surface/on_nurbs/triangulation.h>
-#include <pcl/surface/on_nurbs/fitting_curve_2d_pdm.h>
+#include <pcl/surface/on_nurbs/fitting_curve_2d_apdm.h>
 #include <pcl/ros/conversions.h>
 
 using namespace pcl;
@@ -215,11 +215,11 @@ Triangulation::convertTrimmedSurface2PolygonMesh (const ON_NurbsSurface &nurbs, 
     Eigen::Vector2d vp (v.x, v.y);
 
     if (curve.Order () == 2)
-      param = pcl::on_nurbs::FittingCurve2d::inverseMappingO2 (curve, vp, err, pc, tc);
+      param = pcl::on_nurbs::FittingCurve2dAPDM::inverseMappingO2 (curve, vp, err, pc, tc);
     else
     {
-      param = pcl::on_nurbs::FittingCurve2d::findClosestElementMidPoint (curve, vp);
-      param = pcl::on_nurbs::FittingCurve2d::inverseMapping (curve, vp, param, err, pc, tc, rScale);
+      param = pcl::on_nurbs::FittingCurve2dAPDM::findClosestElementMidPoint (curve, vp);
+      param = pcl::on_nurbs::FittingCurve2dAPDM::inverseMapping (curve, vp, param, err, pc, tc, rScale);
     }
 
     Eigen::Vector3d a (vp (0) - pc (0), vp (1) - pc (1), 0.0);
@@ -342,11 +342,11 @@ Triangulation::convertTrimmedSurface2PolygonMesh (const ON_NurbsSurface &nurbs, 
     Eigen::Vector2d vp (v.x, v.y);
 
     if (curve.Order () == 2)
-      param = pcl::on_nurbs::FittingCurve2d::inverseMappingO2 (curve, vp, err, pc, tc);
+      param = pcl::on_nurbs::FittingCurve2dAPDM::inverseMappingO2 (curve, vp, err, pc, tc);
     else
     {
-      param = pcl::on_nurbs::FittingCurve2d::findClosestElementMidPoint (curve, vp);
-      param = pcl::on_nurbs::FittingCurve2d::inverseMapping (curve, vp, param, err, pc, tc, rScale, 100, 1e-4, true);
+      param = pcl::on_nurbs::FittingCurve2dAPDM::findClosestElementMidPoint (curve, vp);
+      param = pcl::on_nurbs::FittingCurve2dAPDM::inverseMapping (curve, vp, param, err, pc, tc, rScale, 100, 1e-4, true);
     }
 
     Eigen::Vector3d a (vp (0) - pc (0), vp (1) - pc (1), 0.0);

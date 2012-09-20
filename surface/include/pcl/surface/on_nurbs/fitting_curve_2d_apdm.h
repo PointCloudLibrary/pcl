@@ -52,30 +52,38 @@ namespace pcl
      *  Based on paper: TODO
      * \author Thomas Mörwald
      * \ingroup surface     */
-    class FittingCurve2dPDM
+    class FittingCurve2dAPDM
     {
     public:
 
       /** \brief Parameters for fitting */
       struct Parameter
       {
+        double interior_sigma2;
         double smoothness;
+        double closest_point_weight;
+        double closest_point_sigma2;
+        unsigned closest_point_resolution;
+        double smooth_concavity;
         double rScale;
         Parameter () :
-          smoothness (0.1), rScale (1.0)
+          interior_sigma2 (0.1), smoothness (0.1), closest_point_weight (0.1), closest_point_sigma2 (0.1),
+              closest_point_resolution (0), smooth_concavity (1.0), rScale (1.0)
         {
         }
       };
 
       struct FitParameter
       {
-        pcl::on_nurbs::FittingCurve2dPDM::Parameter param;
+        pcl::on_nurbs::FittingCurve2dAPDM::Parameter param;
         unsigned refinement;
         double addCPsAccuracy;
         unsigned addCPsIteration;
         unsigned maxCPs;
 
-        double meanDeltaCPS;
+        double fitAvgError;
+        double fitMaxError;
+        unsigned fitMaxSteps;
       };
 
       ON_TextLog m_out;
@@ -85,12 +93,12 @@ namespace pcl
       /** \brief Constructor initializing B-Spline curve using initNurbsCurve2D(...).
        * \param[in] order the polynomial order of the B-Spline curve.
        * \param[in] data pointer to the 2D point-cloud data to be fit.        */
-      FittingCurve2dPDM (int order, NurbsDataCurve2d *data);
+      FittingCurve2dAPDM (int order, NurbsDataCurve2d *data);
 
       /** \brief Constructor initializing with the B-Spline curve given in argument 2.
        * \param[in] data pointer to the 2D point-cloud data to be fit.
        * \param[in] nc B-Spline curve used for fitting.        */
-      FittingCurve2dPDM (NurbsDataCurve2d *data, const ON_NurbsCurve &nc);
+      FittingCurve2dAPDM (NurbsDataCurve2d *data, const ON_NurbsCurve &nc);
 
       /** \brief Find the element in which the parameter xi lies.
        * \param[in] xi value in parameter domain of the B-Spline curve.
@@ -107,6 +115,11 @@ namespace pcl
        *  \param[in] xi parameter defining the element to be refined. */
       void
       refine (double xi);
+
+      /** \brief Fitting with iterative refinement and adaptive knot insertion
+       *  \param[in] param The parameters for fitting*/
+      void
+      fitting (FitParameter &param);
 
       /** \brief Assemble the system of equations for fitting
        * - for large point-clouds this is time consuming.
@@ -210,11 +223,17 @@ namespace pcl
 
       /** \brief Add minimization constraint: smoothness by control point regularisation. */
       virtual void
-      addCageRegularisation (double weight, unsigned &row);
+      addCageRegularisation (double weight, unsigned &row, const std::vector<double> &elements, double wConcav = 0.0);
 
       /** \brief Assemble point-to-curve constraints. */
       virtual void
-      assembleInterior (double wInt, double rScale, unsigned &row);
+      assembleInterior (double wInt, double sigma2, double rScale, unsigned &row);
+
+      /** \brief Assemble closest points constraints. At each midpoint of the curve elements the closest data points
+       * are computed and point-to-curve constraints are added. */
+      virtual void
+      assembleClosestPoints (const std::vector<double> &elements, double weight, double sigma2,
+                             unsigned samples_per_element, unsigned &row);
 
       NurbsSolve m_solver;
       bool m_quiet;
