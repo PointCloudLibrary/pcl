@@ -122,7 +122,7 @@ FittingCurve::assemble (const Parameter &parameter)
 
   unsigned row (0);
 
-  assembleInterior (wInt, parameter.sigma, row);
+  assembleInterior (wInt, row);
 
   addCageRegularisation (wCageReg, row);
 
@@ -261,7 +261,7 @@ FittingCurve::initNurbsCurve2D (int order, const vector_vec2d &data)
 }
 
 ON_NurbsCurve
-FittingCurve::initNurbsCurvePCA (int order, const vector_vec3d &data)
+FittingCurve::initNurbsCurvePCA (int order, const vector_vec3d &data, int ncps)
 {
   if (data.empty ())
     printf ("[FittingCurve::initNurbsCurvePCA] Warning, no boundary parameters available\n");
@@ -278,13 +278,15 @@ FittingCurve::initNurbsCurvePCA (int order, const vector_vec3d &data)
 
   double r = 2.0 * sqrt (eigenvalues (0));
 
-  int ncpsV (2 * order);
-  ON_NurbsCurve nurbs = ON_NurbsCurve (3, false, order, ncpsV);
-  nurbs.MakePeriodicUniformKnotVector (1.0 / (ncpsV - order + 1));
+  if (ncps < 2 * order)
+    ncps = 2 * order;
 
-  double dcv = (2.0 * M_PI) / (ncpsV - order + 1);
+  ON_NurbsCurve nurbs = ON_NurbsCurve (3, false, order, ncps);
+  nurbs.MakePeriodicUniformKnotVector (1.0 / (ncps - order + 1));
+
+  double dcv = (2.0 * M_PI) / (ncps - order + 1);
   Eigen::Vector3d cv, cv_t;
-  for (int j = 0; j < ncpsV; j++)
+  for (int j = 0; j < ncps; j++)
   {
     cv (0) = r * sin (dcv * j);
     cv (1) = r * cos (dcv * j);
@@ -326,9 +328,8 @@ FittingCurve::getElementVector (const ON_NurbsCurve &nurbs)
 }
 
 void
-FittingCurve::assembleInterior (double wInt, double sigma, unsigned &row)
+FittingCurve::assembleInterior (double wInt, unsigned &row)
 {
-  double ds = 1.0 / (2.0 * sigma * sigma);
   int nInt = m_data->interior.size ();
   m_data->interior_line_start.clear ();
   m_data->interior_line_end.clear ();
@@ -358,9 +359,7 @@ FittingCurve::assembleInterior (double wInt, double sigma, unsigned &row)
     m_data->interior_line_start.push_back (pcp);
     m_data->interior_line_end.push_back (pt);
 
-    double w = wInt * exp (-(error * error) * ds);
-    if (w > 1e-6) // avoids ill-conditioned matrix
-      addPointConstraint (m_data->interior_param[p], m_data->interior[p], w, row);
+    addPointConstraint (m_data->interior_param[p], m_data->interior[p], wInt, row);
   }
 }
 

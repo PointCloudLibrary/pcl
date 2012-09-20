@@ -35,8 +35,8 @@
  *
  */
 
-#ifndef NURBS_FITTING_CURVE_2D_H
-#define NURBS_FITTING_CURVE_2D_H
+#ifndef NURBS_FITTING_CURVE_2D_APDM_H
+#define NURBS_FITTING_CURVE_2D_APDM_H
 
 #include <pcl/surface/on_nurbs/nurbs_tools.h>
 #include <pcl/surface/on_nurbs/nurbs_data.h>

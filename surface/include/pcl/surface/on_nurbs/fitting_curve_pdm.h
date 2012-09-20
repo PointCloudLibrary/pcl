@@ -35,8 +35,8 @@
  *
  */
 
-#ifndef NURBS_FITTING_CURVE_H
-#define NURBS_FITTING_CURVE_H
+#ifndef NURBS_FITTING_CURVE_PDM_H
+#define NURBS_FITTING_CURVE_PDM_H
 
 #include <pcl/surface/on_nurbs/nurbs_tools.h>
 #include <pcl/surface/on_nurbs/nurbs_data.h>
@@ -57,10 +57,9 @@ namespace pcl
     public:
       struct Parameter
       {
-        double sigma;
         double smoothness;
-        Parameter (double sigma = 1.0, double smoothness = 0.000001) :
-          sigma (sigma), smoothness (smoothness)
+        Parameter (double smoothness = 0.000001) :
+          smoothness (smoothness)
         {
         }
       };
@@ -118,7 +117,7 @@ namespace pcl
        *  \param[in] data 3D point-cloud
        *  \return B-Spline curve. */
       static ON_NurbsCurve
-      initNurbsCurvePCA (int order, const vector_vec3d &data);
+      initNurbsCurvePCA (int order, const vector_vec3d &data, int ncps = 0);
 
       /** \brief Inverse mapping / point inversion: Given a point pt, this function finds the closest
        * point on the B-Spline curve using Newtons method and point-distance (L2-, Euclidean norm).
@@ -167,7 +166,7 @@ namespace pcl
 
       /** \brief Assemble point-to-surface constraints. */
       void
-      assembleInterior (double wInt, double sigma, unsigned &row);
+      assembleInterior (double wInt, unsigned &row);
 
       NurbsSolve m_solver;
       bool m_quiet;
