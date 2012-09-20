@@ -340,7 +340,19 @@ namespace pcl
   namespace console
   {
     static bool s_NeedVerbosityInit = true;
-    static VERBOSITY_LEVEL s_VerbosityLevel = pcl::console::L_INFO;
+#ifdef VERBOSITY_LEVEL_ALWAYS
+  static VERBOSITY_LEVEL s_VerbosityLevel = pcl::console::L_ALWAYS; 
+#elif defined VERBOSITY_LEVEL_ERROR
+  static VERBOSITY_LEVEL s_VerbosityLevel = pcl::console::L_ERROR;
+#elif defined VERBOSITY_LEVEL_WARN
+  static VERBOSITY_LEVEL s_VerbosityLevel = pcl::console::L_WARN;
+#elif defined VERBOSITY_LEVEL_DEBUG
+  static VERBOSITY_LEVEL s_VerbosityLevel = pcl::console::L_DEBUG;
+#elif defined VERBOSITY_LEVEL_VERBOSE
+  static VERBOSITY_LEVEL s_VerbosityLevel = pcl::console::L_VERBOSE; 
+#else 
+  static VERBOSITY_LEVEL s_VerbosityLevel = pcl::console::L_INFO; 
+#endif
   }
 }
 
@@ -371,7 +383,20 @@ pcl::console::isVerbosityLevelEnabled (pcl::console::VERBOSITY_LEVEL level)
 bool 
 pcl::console::initVerbosityLevel ()
 {
+#ifdef VERBOSITY_LEVEL_ALWAYS
+  s_VerbosityLevel = pcl::console::L_ALWAYS; 
+#elif defined VERBOSITY_LEVEL_ERROR
+  s_VerbosityLevel = pcl::console::L_ERROR;
+#elif defined VERBOSITY_LEVEL_WARN
+  s_VerbosityLevel = pcl::console::L_WARN;
+#elif defined VERBOSITY_LEVEL_DEBUG
+  s_VerbosityLevel = pcl::console::L_DEBUG;
+#elif defined VERBOSITY_LEVEL_VERBOSE
+  s_VerbosityLevel = pcl::console::L_VERBOSE; 
+#else 
   s_VerbosityLevel = pcl::console::L_INFO; // Default value
+#endif
+
   char* pcl_verbosity_level = getenv ( "PCL_VERBOSITY_LEVEL");
   if (pcl_verbosity_level)
   {

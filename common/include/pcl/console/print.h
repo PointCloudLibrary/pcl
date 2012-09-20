@@ -41,6 +41,7 @@
 #include <stdarg.h>
 
 #include <pcl/pcl_macros.h>
+#include <pcl/pcl_config.h>
 
 #define PCL_ALWAYS(...)  pcl::console::print (pcl::console::L_ALWAYS, __VA_ARGS__)
 #define PCL_ERROR(...)   pcl::console::print (pcl::console::L_ERROR, __VA_ARGS__)
