@@ -1,6 +1,4 @@
-#include <pcl/surface/on_nurbs/fitting_curve_2d_pdm.h>
-#include <pcl/surface/on_nurbs/fitting_curve_2d_tdm.h>
-#include <pcl/surface/on_nurbs/fitting_curve_2d_sdm.h>
+#include <pcl/surface/on_nurbs/fitting_curve_pdm.h>
 #include <pcl/surface/on_nurbs/triangulation.h>
 
 #include <pcl/point_cloud.h>
@@ -9,16 +7,16 @@
 
 #include <pcl/visualization/pcl_visualizer.h>
 
-pcl::visualization::PCLVisualizer viewer ("Curve Fitting PDM (red), SDM (green), TDM (blue)");
+pcl::visualization::PCLVisualizer viewer ("Curve Fitting 3D");
 
 void
-PointCloud2Vector2d (pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, pcl::on_nurbs::vector_vec2d &data)
+PointCloud2Vector2d (pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, pcl::on_nurbs::vector_vec3d &data)
 {
   for (unsigned i = 0; i < cloud->size (); i++)
   {
     pcl::PointXYZ &p = cloud->at (i);
-    if (!isnan (p.x) && !isnan (p.y))
-      data.push_back (Eigen::Vector2d (p.x, p.y));
+    if (!isnan (p.x) && !isnan (p.y) && !isnan (p.z))
+      data.push_back (Eigen::Vector3d (p.x, p.y, p.z));
   }
 }
 
@@ -67,7 +65,7 @@ main (int argc, char *argv[])
   }
   else
   {
-    printf ("\nUsage: pcl_example_nurbs_fitting_curve pcd-file \n\n");
+    printf ("\nUsage: pcl_example_nurbs_fitting_curve3d pcd-file \n\n");
     printf ("  pcd-file    point-cloud file\n");
     exit (0);
   }
@@ -83,7 +81,7 @@ main (int argc, char *argv[])
   fromROSMsg (cloud2, *cloud);
 
   // convert to NURBS data structure
-  pcl::on_nurbs::NurbsDataCurve2d data;
+  pcl::on_nurbs::NurbsDataCurve data;
   PointCloud2Vector2d (cloud, data.interior);
 
   viewer.setSize (800, 600);
@@ -93,29 +91,18 @@ main (int argc, char *argv[])
   unsigned order (3);
   unsigned n_control_points (20);
 
-  pcl::on_nurbs::FittingCurve2dPDM::Parameter curve_params;
+  pcl::on_nurbs::FittingCurve::Parameter curve_params;
   curve_params.smoothness = 0.000001;
-  curve_params.rScale = 1.0;
 
   // #################### CURVE FITTING #########################
-  ON_NurbsCurve curve = pcl::on_nurbs::FittingCurve2dPDM::initNurbsCurve2D (order, data.interior, n_control_points);
+  ON_NurbsCurve curve = pcl::on_nurbs::FittingCurve::initNurbsCurvePCA (order, data.interior, n_control_points);
 
-  pcl::on_nurbs::FittingCurve2dPDM fit_pdm (&data, curve);
-  fit_pdm.assemble (curve_params);
-  fit_pdm.solve ();
-
-  pcl::on_nurbs::FittingCurve2dSDM fit_sdm (&data, curve);
-  fit_sdm.assemble (curve_params);
-  fit_sdm.solve ();
-
-  pcl::on_nurbs::FittingCurve2dTDM fit_tdm (&data, curve);
-  fit_tdm.assemble (curve_params);
-  fit_tdm.solve ();
+  pcl::on_nurbs::FittingCurve fit (&data, curve);
+  fit.assemble (curve_params);
+  fit.solve ();
 
   // visualize
-  VisualizeCurve (fit_pdm.m_nurbs, 1.0, 0.0, 0.0, false);
-  VisualizeCurve (fit_sdm.m_nurbs, 0.0, 1.0, 0.0, false);
-  VisualizeCurve (fit_tdm.m_nurbs, 0.0, 0.0, 1.0, false);
+  VisualizeCurve (fit.m_nurbs, 1.0, 0.0, 0.0, false);
   viewer.spin ();
 
   return 0;
