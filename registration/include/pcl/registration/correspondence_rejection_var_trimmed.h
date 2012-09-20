@@ -68,6 +68,8 @@ namespace pcl
       using CorrespondenceRejector::getClassName;
 
       public:
+        typedef boost::shared_ptr<CorrespondenceRejectorVarTrimmed> Ptr;
+        typedef boost::shared_ptr<const CorrespondenceRejectorVarTrimmed> ConstPtr;
 
         /** \brief Empty constructor. */
         CorrespondenceRejectorVarTrimmed () : 
@@ -98,11 +100,24 @@ namespace pcl
           * \param[in] cloud a cloud containing XYZ data
           */
         template <typename PointT> inline void 
-        setInputCloud (const typename pcl::PointCloud<PointT>::ConstPtr &cloud)
+        setInputSource (const typename pcl::PointCloud<PointT>::ConstPtr &cloud)
         {
           if (!data_container_)
             data_container_.reset (new DataContainer<PointT>);
-          boost::static_pointer_cast<DataContainer<PointT> > (data_container_)->setInputCloud (cloud);
+          boost::static_pointer_cast<DataContainer<PointT> > (data_container_)->setInputSource (cloud);
+        }
+
+        /** \brief Provide a source point cloud dataset (must contain XYZ
+          * data!), used to compute the correspondence distance.  
+          * \param[in] cloud a cloud containing XYZ data
+          */
+        template <typename PointT> inline void 
+        setInputCloud (const typename pcl::PointCloud<PointT>::ConstPtr &cloud)
+        {
+          PCL_WARN ("[pcl::registration::%s::setInputCloud] setInputCloud is deprecated. Please use setInputSource instead.\n", getClassName ().c_str ());
+          if (!data_container_)
+            data_container_.reset (new DataContainer<PointT>);
+          boost::static_pointer_cast<DataContainer<PointT> > (data_container_)->setInputSource (cloud);
         }
 
         /** \brief Provide a target point cloud dataset (must contain XYZ
@@ -143,6 +158,22 @@ namespace pcl
         inline double
         getMaxRatio () const { return max_ratio_; }
 
+        /** \brief Provide a simple mechanism to update the internal source cloud
+          * using a given transformation. Used in registration loops.
+          * \param[in] transform the transform to apply over the source cloud
+          */
+        virtual bool
+        updateSource (const Eigen::Matrix4d &transform)
+        {
+          if (!data_container_)
+          {
+            PCL_ERROR ("[pcl::registration::%s::updateSource] Data container is not initialized! Please initialize the data container using setInputSource or setInputTarget.\n", getClassName ().c_str ());
+            return (false);
+          }
+
+          return (data_container_->updateSource (transform));
+        }
+
       protected:
 
         /** \brief Apply the rejection algorithm.
@@ -172,7 +203,7 @@ namespace pcl
          */
         double max_ratio_;
 
-				/** \brief part of the term that balances the root mean square difference. This is an internal parameter
+       /** \brief part of the term that balances the root mean square difference. This is an internal parameter
          */
         double lambda_;
 
@@ -192,4 +223,4 @@ namespace pcl
 
 #include <pcl/registration/impl/correspondence_rejection_var_trimmed.hpp>
 
-#endif
+#endif    // PCL_REGISTRATION_CORRESPONDENCE_REJECTION_VAR_TRIMMED_H_ 

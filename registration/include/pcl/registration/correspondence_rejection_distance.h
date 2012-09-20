@@ -64,6 +64,8 @@ namespace pcl
       using CorrespondenceRejector::getClassName;
 
       public:
+        typedef boost::shared_ptr<CorrespondenceRejectorDistance> Ptr;
+        typedef boost::shared_ptr<const CorrespondenceRejectorDistance> ConstPtr;
 
         /** \brief Empty constructor. */
         CorrespondenceRejectorDistance () : max_distance_(std::numeric_limits<float>::max ()),
@@ -99,9 +101,22 @@ namespace pcl
         template <typename PointT> inline void 
         setInputCloud (const typename pcl::PointCloud<PointT>::ConstPtr &cloud)
         {
+          PCL_WARN ("[pcl::registration::%s::setInputCloud] setInputCloud is deprecated. Please use setInputSource instead.\n", getClassName ().c_str ());
           if (!data_container_)
             data_container_.reset (new DataContainer<PointT>);
-          boost::static_pointer_cast<DataContainer<PointT> > (data_container_)->setInputCloud (cloud);
+          boost::static_pointer_cast<DataContainer<PointT> > (data_container_)->setInputSource (cloud);
+        }
+
+        /** \brief Provide a source point cloud dataset (must contain XYZ
+          * data!), used to compute the correspondence distance.  
+          * \param[in] cloud a cloud containing XYZ data
+          */
+        template <typename PointT> inline void 
+        setInputSource (const typename pcl::PointCloud<PointT>::ConstPtr &cloud)
+        {
+          if (!data_container_)
+            data_container_.reset (new DataContainer<PointT>);
+          boost::static_pointer_cast<DataContainer<PointT> > (data_container_)->setInputSource (cloud);
         }
 
         /** \brief Provide a target point cloud dataset (must contain XYZ
@@ -114,6 +129,22 @@ namespace pcl
           if (!data_container_)
             data_container_.reset (new DataContainer<PointT>);
           boost::static_pointer_cast<DataContainer<PointT> > (data_container_)->setInputTarget (target);
+        }
+
+        /** \brief Provide a simple mechanism to update the internal source cloud
+          * using a given transformation. Used in registration loops.
+          * \param[in] transform the transform to apply over the source cloud
+          */
+        virtual bool
+        updateSource (const Eigen::Matrix4d &transform)
+        {
+          if (!data_container_)
+          {
+            PCL_ERROR ("[pcl::registration::%s::updateSource] Data container is not initialized! Please initialize the data container using setInputSource or setInputTarget.\n", getClassName ().c_str ());
+            return (false);
+          }
+
+          return (data_container_->updateSource (transform));
         }
 
       protected:

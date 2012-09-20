@@ -43,6 +43,7 @@
 
 #include <pcl/sample_consensus/ransac.h>
 #include <pcl/sample_consensus/sac_model_registration.h>
+#include <pcl/common/transforms.h>
 
 namespace pcl
 {
@@ -65,14 +66,19 @@ namespace pcl
       typedef typename PointCloud::ConstPtr PointCloudConstPtr;
 
       public:
+        typedef boost::shared_ptr<CorrespondenceRejectorSampleConsensus> Ptr;
+        typedef boost::shared_ptr<const CorrespondenceRejectorSampleConsensus> ConstPtr;
 
-        /** \brief Empty constructor. */
-        CorrespondenceRejectorSampleConsensus () :
-          inlier_threshold_ (0.05),
-          max_iterations_ (std::numeric_limits<int>::max ()),
-          input_ (),
-          target_ (),
-          best_transformation_ ()
+        /** \brief Empty constructor. Sets the inlier threshold to 5cm (0.05m), 
+          * and the maximum number of iterations to 1000. 
+          */
+        CorrespondenceRejectorSampleConsensus () 
+          : inlier_threshold_ (0.05)
+          , max_iterations_ (1000) // std::numeric_limits<int>::max ()
+          , input_ ()
+          , input_transformed_ ()
+          , target_ ()
+          , best_transformation_ ()
         {
           rejection_name_ = "CorrespondenceRejectorSampleConsensus";
         }
@@ -92,13 +98,52 @@ namespace pcl
           * \param[in] cloud a cloud containing XYZ data
           */
         virtual inline void 
-        setInputCloud (const PointCloudConstPtr &cloud) { input_ = cloud; }
+        setInputCloud (const PointCloudConstPtr &cloud) 
+        { 
+          PCL_WARN ("[pcl::registration::%s::setInputCloud] setInputCloud is deprecated. Please use setInputSource instead.\n", getClassName ().c_str ());
+          input_ = cloud; 
+        }
+
+        /** \brief Get a pointer to the input point cloud dataset target. */
+        inline PointCloudConstPtr const 
+        getInputCloud () 
+        { 
+          PCL_WARN ("[pcl::registration::%s::getInputCloud] getInputCloud is deprecated. Please use getInputSource instead.\n", getClassName ().c_str ());
+          return (input_); 
+        }
+
+        /** \brief Provide a source point cloud dataset (must contain XYZ data!)
+          * \param[in] cloud a cloud containing XYZ data
+          */
+        virtual inline void 
+        setInputSource (const PointCloudConstPtr &cloud) 
+        { 
+          input_ = cloud; 
+        }
+
+        /** \brief Get a pointer to the input point cloud dataset target. */
+        inline PointCloudConstPtr const 
+        getInputSource () { return (input_); }
 
         /** \brief Provide a target point cloud dataset (must contain XYZ data!)
           * \param[in] cloud a cloud containing XYZ data
           */
         virtual inline void 
-        setTargetCloud (const PointCloudConstPtr &cloud) { target_ = cloud; }
+        setTargetCloud (const PointCloudConstPtr &cloud) 
+        { 
+          PCL_WARN ("[pcl::registration::%s::setTargetCloud] setTargetCloud is deprecated. Please use setInputTarget instead.\n", getClassName ().c_str ());
+          target_ = cloud; 
+        }
+
+        /** \brief Provide a target point cloud dataset (must contain XYZ data!)
+          * \param[in] cloud a cloud containing XYZ data
+          */
+        virtual inline void 
+        setInputTarget (const PointCloudConstPtr &cloud) { target_ = cloud; }
+
+        /** \brief Get a pointer to the input point cloud dataset target. */
+        inline PointCloudConstPtr const 
+        getInputTarget () { return (target_ ); }
 
         /** \brief Set the maximum distance between corresponding points.
           * Correspondences with distances below the threshold are considered as inliers.
@@ -117,7 +162,7 @@ namespace pcl
           * \param[in] max_iterations Maximum number if iterations to run
           */
         inline void 
-        setMaxIterations (int max_iterations) {max_iterations_ = std::max(max_iterations, 0); };
+        setMaxIterations (int max_iterations) { max_iterations_ = std::max (max_iterations, 0); };
 
         /** \brief Get the maximum number of iterations.
           * \return max_iterations Maximum number if iterations to run
@@ -130,6 +175,24 @@ namespace pcl
           */
         inline Eigen::Matrix4f 
         getBestTransformation () { return best_transformation_; };
+
+        /** \brief Provide a simple mechanism to update the internal source cloud
+          * using a given transformation. Used in registration loops.
+          * \param[in] transform the transform to apply over the source cloud
+          */
+        virtual bool
+        updateSource (const Eigen::Matrix4d &transform)
+        {
+          if (!input_)
+          {
+            PCL_ERROR ("[pcl::registration::%s::updateSource] No input XYZ dataset given. Please specify the input source cloud using setInputSource.\n", getClassName ().c_str ());
+            return (false);
+          }
+          input_transformed_.reset (new PointCloud);
+          pcl::transformPointCloud<PointT, double> (*input_, *input_transformed_, transform);
+          input_ = input_transformed_;
+          return (true);
+        }
 
       protected:
 
@@ -147,6 +210,7 @@ namespace pcl
         int max_iterations_;
 
         PointCloudConstPtr input_;
+        PointCloudPtr input_transformed_;
         PointCloudConstPtr target_;
 
         Eigen::Matrix4f best_transformation_;
@@ -158,4 +222,4 @@ namespace pcl
 
 #include <pcl/registration/impl/correspondence_rejection_sample_consensus.hpp>
 
-#endif /* PCL_REGISTRATION_CORRESPONDENCE_REJECTION_SAMPLE_CONSENSUS_H_ */
+#endif    // PCL_REGISTRATION_CORRESPONDENCE_REJECTION_SAMPLE_CONSENSUS_H_

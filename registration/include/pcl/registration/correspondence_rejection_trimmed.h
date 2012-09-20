@@ -66,6 +66,8 @@ namespace pcl
       using CorrespondenceRejector::getClassName;
 
       public:
+        typedef boost::shared_ptr<CorrespondenceRejectorTrimmed> Ptr;
+        typedef boost::shared_ptr<const CorrespondenceRejectorTrimmed> ConstPtr;
 
         /** \brief Empty constructor. */
         CorrespondenceRejectorTrimmed () : 
@@ -112,6 +114,11 @@ namespace pcl
         getRemainingCorrespondences (const pcl::Correspondences& original_correspondences,
                                      pcl::Correspondences& remaining_correspondences);
 
+        virtual bool
+        updateSource (const Eigen::Matrix4d &)
+        {
+          return (true);
+        }
 
       protected:
 
@@ -136,4 +143,4 @@ namespace pcl
 
 #include <pcl/registration/impl/correspondence_rejection_trimmed.hpp>
 
-#endif /* PCL_REGISTRATION_CORRESPONDENCE_REJECTION_TRIMMED_H_ */
+#endif    // PCL_REGISTRATION_CORRESPONDENCE_REJECTION_TRIMMED_H_

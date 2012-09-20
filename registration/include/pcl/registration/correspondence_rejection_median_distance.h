@@ -65,11 +65,14 @@ namespace pcl
       using CorrespondenceRejector::getClassName;
 
       public:
+        typedef boost::shared_ptr<CorrespondenceRejectorMedianDistance> Ptr;
+        typedef boost::shared_ptr<const CorrespondenceRejectorMedianDistance> ConstPtr;
 
         /** \brief Empty constructor. */
-        CorrespondenceRejectorMedianDistance () : median_distance_ (0), 
-                                            factor_ (1.0),
-                                            data_container_ ()
+        CorrespondenceRejectorMedianDistance () 
+          : median_distance_ (0)
+          , factor_ (1.0)
+          , data_container_ ()
         {
           rejection_name_ = "CorrespondenceRejectorMedianDistance";
         }
@@ -91,11 +94,24 @@ namespace pcl
           * \param[in] cloud a cloud containing XYZ data
           */
         template <typename PointT> inline void 
-        setInputCloud (const typename pcl::PointCloud<PointT>::ConstPtr &cloud)
+        setInputSource (const typename pcl::PointCloud<PointT>::ConstPtr &cloud)
         {
           if (!data_container_)
             data_container_.reset (new DataContainer<PointT>);
-          boost::static_pointer_cast<DataContainer<PointT> > (data_container_)->setInputCloud (cloud);
+          boost::static_pointer_cast<DataContainer<PointT> > (data_container_)->setInputSource (cloud);
+        }
+
+        /** \brief Provide a source point cloud dataset (must contain XYZ
+          * data!), used to compute the correspondence distance.  
+          * \param[in] cloud a cloud containing XYZ data
+          */
+        template <typename PointT> inline void 
+        setInputCloud (const typename pcl::PointCloud<PointT>::ConstPtr &cloud)
+        {
+          PCL_WARN ("[pcl::registration::%s::setInputCloud] setInputCloud is deprecated. Please use setInputSource instead.\n", getClassName ().c_str ());
+          if (!data_container_)
+            data_container_.reset (new DataContainer<PointT>);
+          boost::static_pointer_cast<DataContainer<PointT> > (data_container_)->setInputSource (cloud);
         }
 
         /** \brief Provide a target point cloud dataset (must contain XYZ
@@ -120,6 +136,12 @@ namespace pcl
         /** \brief Get the factor used for thresholding in correspondence rejection. */
         inline double
         getMedianFactor () const { return factor_; };
+
+        virtual bool
+        updateSource (const Eigen::Matrix4d &)
+        {
+          return (true);
+        }
 
       protected:
 
@@ -151,4 +173,4 @@ namespace pcl
 
 #include <pcl/registration/impl/correspondence_rejection_median_distance.hpp>
 
-#endif
+#endif    // PCL_REGISTRATION_CORRESPONDENCE_REJECTION_MEDIAN_DISTANCE_H_

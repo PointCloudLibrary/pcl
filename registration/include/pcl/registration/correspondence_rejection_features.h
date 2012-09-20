@@ -64,6 +64,9 @@ namespace pcl
       using CorrespondenceRejector::getClassName;
 
       public:
+        typedef boost::shared_ptr<CorrespondenceRejectorFeatures> Ptr;
+        typedef boost::shared_ptr<const CorrespondenceRejectorFeatures> ConstPtr;
+
         /** \brief Empty constructor. */
         CorrespondenceRejectorFeatures () : max_distance_ (std::numeric_limits<float>::max ()), features_map_ ()
         {
@@ -131,6 +134,12 @@ namespace pcl
         template <typename FeatureT> inline void
         setFeatureRepresentation (const typename pcl::PointRepresentation<FeatureT>::ConstPtr &fr,
                                   const std::string &key);
+
+        virtual bool
+        updateSource (const Eigen::Matrix4d &)
+        {
+          return (true);
+        }
 
       protected:
 
@@ -248,7 +257,7 @@ namespace pcl
               // Check if the representations are valid
               if (!feature_representation_->isValid (feat_src) || !feature_representation_->isValid (feat_tgt))
               {
-                PCL_ERROR ("[pcl::registration::CorrespondenceRejectorFeatures::getCorrespondenceScore] Invalid feature representation given!\n");
+                PCL_ERROR ("[pcl::registration::%s::getCorrespondenceScore] Invalid feature representation given!\n", getClassName ().c_str ());
                 return (std::numeric_limits<double>::max ());
               }
 
