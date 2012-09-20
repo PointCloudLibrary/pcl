@@ -94,6 +94,7 @@ namespace pcl
           , target_indices_ ()
           , point_representation_ ()
           , input_transformed_ ()
+          , input_fields_ ()
         {
         }
 
@@ -107,6 +108,7 @@ namespace pcl
         {
           PCL_WARN ("[pcl::registration::%s::setInputCloud] setInputCloud is deprecated. Please use setInputSource instead.\n", getClassName ().c_str ());
           PCLBase<PointSource>::setInputCloud (cloud);
+          pcl::getFields (*cloud, input_fields_);
         }
 
         /** \brief Get a pointer to the input point cloud dataset target. */
@@ -126,6 +128,7 @@ namespace pcl
         setInputSource (const PointCloudSourceConstPtr &cloud)
         {
           PCLBase<PointSource>::setInputCloud (cloud);
+          pcl::getFields (*cloud, input_fields_);
         }
 
         /** \brief Get a pointer to the input point cloud dataset target. */
@@ -231,6 +234,9 @@ namespace pcl
         /** \brief The transformed input source point cloud dataset. */
         PointCloudTargetPtr input_transformed_;
 
+        /** \brief The types of input point fields available. */
+        std::vector<sensor_msgs::PointField> input_fields_;
+
         /** \brief Abstract class get name method. */
         inline const std::string& 
         getClassName () const { return (corr_name_); }
@@ -278,6 +284,7 @@ namespace pcl
         using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::initCompute;
         using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::input_;
         using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::indices_;
+        using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::input_fields_;
         using PCLBase<PointSource>::deinitCompute;
 
         typedef typename pcl::KdTree<PointTarget> KdTree;
@@ -330,6 +337,22 @@ namespace pcl
             PCL_ERROR ("[pcl::registration::%s::updateSource] No input XYZ dataset given. Please specify the input source cloud using setInputSource.\n", getClassName ().c_str ());
             return (false);
           }
+
+          // Check if XYZ data is available
+          bool has_xyz = false;
+          for (size_t i = 0; i < input_fields_.size (); ++i)
+          {
+            if (input_fields_[i].name == "x")
+            {
+              has_xyz = true;
+              break;
+            }
+          }
+
+          // If no XYZ available, then return
+          if (!has_xyz)
+            return (true);
+
           input_transformed_.reset (new PointCloudSource);
           pcl::transformPointCloud<PointSource, Scalar> (*input_, *input_transformed_, transform);
           input_ = input_transformed_;

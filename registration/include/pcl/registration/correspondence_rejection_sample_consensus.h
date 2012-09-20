@@ -162,13 +162,33 @@ namespace pcl
           * \param[in] max_iterations Maximum number if iterations to run
           */
         inline void 
-        setMaxIterations (int max_iterations) { max_iterations_ = std::max (max_iterations, 0); };
+        setMaxIterations (int max_iterations) 
+        { 
+          PCL_WARN ("[pcl::registration::%s::setMaxIterations] setMaxIterations is deprecated. Please use setMaximumIterations instead.\n", getClassName ().c_str ());
+          max_iterations_ = std::max (max_iterations, 0); 
+        }
+
+        /** \brief Set the maximum number of iterations.
+          * \param[in] max_iterations Maximum number if iterations to run
+          */
+        inline void 
+        setMaximumIterations (int max_iterations) { max_iterations_ = std::max (max_iterations, 0); }
 
         /** \brief Get the maximum number of iterations.
           * \return max_iterations Maximum number if iterations to run
           */
         inline int 
-        getMaxIterations () { return max_iterations_; };
+        getMaxIterations () 
+        {
+          PCL_WARN ("[pcl::registration::%s::getMaxIterations] getMaxIterations is deprecated. Please use getMaximumIterations instead.\n", getClassName ().c_str ());
+          return (max_iterations_); 
+        }
+
+        /** \brief Get the maximum number of iterations.
+          * \return max_iterations Maximum number if iterations to run
+          */
+        inline int 
+        getMaximumIterations () { return (max_iterations_); }
 
         /** \brief Get the best transformation after RANSAC rejection.
           * \return The homogeneous 4x4 transformation yielding the largest number of inliers.
