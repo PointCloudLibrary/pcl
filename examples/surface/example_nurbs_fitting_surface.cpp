@@ -129,7 +129,8 @@ main (int argc, char *argv[])
   curve_fit.fitting (curve_params);
 
   //   visualisation
-  pcl::on_nurbs::Triangulation::convertCurve2PointCloud (curve_fit.m_nurbs, fit.m_nurbs, curve_cloud, 8);
+  printf ("  visualize curve ...\n");
+  pcl::on_nurbs::Triangulation::convertCurve2PointCloud (curve_fit.m_nurbs, fit.m_nurbs, curve_cloud, 4);
   viewer.addPointCloud (curve_cloud);
   for (std::size_t i = 0; i < curve_cloud->size () - 1; i++)
   {
