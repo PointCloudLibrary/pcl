@@ -133,6 +133,9 @@ namespace pcl
       {
         reg_name_ = "SampleConsensusInitialAlignment";
         max_iterations_ = 1000;
+
+        // Setting a non-std::numeric_limits<double>::max () value to corr_dist_threshold_ to make it play nicely with TruncatedError
+        corr_dist_threshold_ = 100.0f;
         transformation_estimation_.reset (new pcl::registration::TransformationEstimationSVD<PointSource, PointTarget>);
       };
 
