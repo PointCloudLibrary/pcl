@@ -1,4 +1,6 @@
 #include <pcl/surface/on_nurbs/fitting_curve_2d_pdm.h>
+#include <pcl/surface/on_nurbs/fitting_curve_2d_tdm.h>
+#include <pcl/surface/on_nurbs/fitting_curve_2d_sdm.h>
 #include <pcl/surface/on_nurbs/triangulation.h>
 
 #include <pcl/point_cloud.h>
@@ -7,7 +9,7 @@
 
 #include <pcl/visualization/pcl_visualizer.h>
 
-pcl::visualization::PCLVisualizer viewer ("Boundary Fitting PDM");
+pcl::visualization::PCLVisualizer viewer ("Curve Fitting PDM (red), SDM (green), TDM (blue)");
 
 void
 PointCloud2Vector2d (pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, pcl::on_nurbs::vector_vec2d &data)
@@ -21,7 +23,7 @@ PointCloud2Vector2d (pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, pcl::on_nurbs::v
 }
 
 void
-VisualizeCurve (ON_NurbsCurve &curve)
+VisualizeCurve (ON_NurbsCurve &curve, double r, double g, double b, bool show_cps)
 {
   pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZRGB>);
   pcl::on_nurbs::Triangulation::convertCurve2PointCloud (curve, cloud, 8);
@@ -31,8 +33,26 @@ VisualizeCurve (ON_NurbsCurve &curve)
     pcl::PointXYZRGB &p1 = cloud->at (i);
     pcl::PointXYZRGB &p2 = cloud->at (i + 1);
     std::ostringstream os;
-    os << "line" << i;
-    viewer.addLine<pcl::PointXYZRGB> (p1, p2, 1.0, 0.0, 0.0, os.str ());
+    os << "line_" << r << "_" << g << "_" << b << "_" << i;
+    viewer.addLine<pcl::PointXYZRGB> (p1, p2, r, g, b, os.str ());
+  }
+
+  if (show_cps)
+  {
+    pcl::PointCloud<pcl::PointXYZ>::Ptr cps (new pcl::PointCloud<pcl::PointXYZ>);
+    for (int i = 0; i < curve.CVCount (); i++)
+    {
+      ON_3dPoint cp;
+      curve.GetCV (i, cp);
+
+      pcl::PointXYZ p;
+      p.x = cp.x;
+      p.y = cp.y;
+      p.z = cp.z;
+      cps->push_back (p);
+    }
+    pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> handler (cps, 255 * r, 255 * g, 255 * b);
+    viewer.addPointCloud<pcl::PointXYZ> (cps, handler, "cloud_cps");
   }
 }
 
@@ -65,6 +85,7 @@ main (int argc, char *argv[])
   viewer.setSize (800, 600);
   viewer.addPointCloud<pcl::PointXYZ> (cloud, "cloud");
 
+  // convert to NURBS data structure
   pcl::on_nurbs::NurbsDataCurve2d data;
   PointCloud2Vector2d (cloud, data.interior);
 
@@ -72,32 +93,31 @@ main (int argc, char *argv[])
   unsigned order (3);
   unsigned n_control_points (20);
 
-  pcl::on_nurbs::FittingCurve2d::FitParameter curve_params;
-  curve_params.addCPsAccuracy = 1000;   // no control points added
-  curve_params.addCPsIteration = 1000;  // no control points added
-  curve_params.maxCPs = 1000;
-  curve_params.fitMaxError = 1e-6;
-  curve_params.fitAvgError = 1e-8;
-  curve_params.fitMaxSteps = 50;
-  curve_params.refinement = 0;
-
-  curve_params.param.closest_point_resolution = 0;
-  curve_params.param.closest_point_weight = 0.0;
-  curve_params.param.closest_point_sigma2 = 0.0;
-  curve_params.param.interior_sigma2 = 0.0;
-  curve_params.param.smooth_concavity = 0.0;
-  curve_params.param.smoothness = 0.000001;
-
-  data.interior_weight_function.push_back (false);
+  pcl::on_nurbs::FittingCurve2dPDM::Parameter curve_params;
+  curve_params.smoothness = 0.000001;
+  curve_params.rScale = 1.0;
 
   // #################### CURVE FITTING #########################
-  ON_NurbsCurve curve = pcl::on_nurbs::FittingCurve2d::initNurbsCurve2D (order, data.interior, n_control_points);
-  pcl::on_nurbs::FittingCurve2d curve_fit (&data, curve);
-  curve_fit.fitting (curve_params);
+  ON_NurbsCurve curve = pcl::on_nurbs::FittingCurve2dPDM::initNurbsCurve2D (order, data.interior, n_control_points);
 
-  VisualizeCurve (curve_fit.m_nurbs);
+  pcl::on_nurbs::FittingCurve2dPDM fit_pdm (&data, curve);
+  fit_pdm.assemble (curve_params);
+  fit_pdm.solve ();
 
+  pcl::on_nurbs::FittingCurve2dSDM fit_sdm (&data, curve);
+  fit_sdm.assemble (curve_params);
+  fit_sdm.solve ();
+
+  pcl::on_nurbs::FittingCurve2dTDM fit_tdm (&data, curve);
+  fit_tdm.assemble (curve_params);
+  fit_tdm.solve ();
+
+  // visualize
+  VisualizeCurve (fit_pdm.m_nurbs, 1.0, 0.0, 0.0, false);
+  VisualizeCurve (fit_sdm.m_nurbs, 0.0, 1.0, 0.0, false);
+  VisualizeCurve (fit_tdm.m_nurbs, 0.0, 0.0, 1.0, false);
   viewer.spin ();
+
   return 0;
 }
 
