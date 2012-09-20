@@ -45,3 +45,10 @@
 #undef HAVE_QHULL
 #endif
 
+/* Verbosity level defined by user through ccmake. */
+#cmakedefine VERBOSITY_LEVEL_ALWAYS
+#cmakedefine VERBOSITY_LEVEL_ERROR
+#cmakedefine VERBOSITY_LEVEL_WARN
+#cmakedefine VERBOSITY_LEVEL_INFO
+#cmakedefine VERBOSITY_LEVEL_DEBUG
+#cmakedefine VERBOSITY_LEVEL_VERBOSE

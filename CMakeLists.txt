@@ -56,9 +56,9 @@ if (ANDROID)
   message ("PCL shared libs on Android must be: ${PCL_SHARED_LIBS}")
 endif()
 
+include(${PCL_SOURCE_DIR}/cmake/pcl_verbosity.cmake)
 include(${PCL_SOURCE_DIR}/cmake/pcl_targets.cmake)
 include(${PCL_SOURCE_DIR}/cmake/pcl_options.cmake)
-
 # ---[ Unix/Darwin/Windows specific flags
 if(CMAKE_COMPILER_IS_GNUCXX)
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wno-unknown-pragmas -Wconversion -Wold-style-cast -fno-strict-aliasing -Wno-format-extra-args -Wno-sign-compare -Wno-invalid-offsetof")
