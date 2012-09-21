@@ -154,6 +154,11 @@ namespace pcl
       initNurbsCurve2D (int order, const vector_vec2d &data, int ncps = 0, double radiusF = 1.0);
       //  static ON_NurbsCurve initNurbsCurvePCA(int order, const vector_vec2d &data);
 
+      /** \brief Reverse direction of rotation of a closed B-spline curve
+       *  \param[in] curve the curve to be reversed */
+      static void
+      reverse(ON_NurbsCurve &curve);
+
       /** \brief Get the elements of a B-Spline curve.*/
       static std::vector<double>
       getElementVector (const ON_NurbsCurve &nurbs);

@@ -117,7 +117,7 @@ namespace pcl
        *  \param[in] data 3D point-cloud
        *  \return B-Spline curve. */
       static ON_NurbsCurve
-      initNurbsCurvePCA (int order, const vector_vec3d &data, int ncps = 0);
+      initNurbsCurvePCA (int order, const vector_vec3d &data, int ncps = 0, double rf = 1.0);
 
       /** \brief Inverse mapping / point inversion: Given a point pt, this function finds the closest
        * point on the B-Spline curve using Newtons method and point-distance (L2-, Euclidean norm).

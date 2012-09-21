@@ -451,6 +451,21 @@ FittingCurve2dPDM::initNurbsCurve2D (int order, const vector_vec2d &data, int nc
   return nurbs;
 }
 
+void
+FittingCurve2dPDM::reverse (ON_NurbsCurve &curve)
+{
+
+  ON_NurbsCurve curve2 = curve;
+  for (int i = 0; i < curve.CVCount (); i++)
+  {
+    int j = curve.CVCount () - 1 - i;
+    ON_3dPoint p;
+    curve.GetCV (i, p);
+    curve2.SetCV (j, p);
+  }
+  curve = curve2;
+}
+
 //ON_NurbsCurve FittingCurve2dPDM::initNurbsCurvePCA(int order, const vector_vec2d &data)
 //{
 //  if (data.empty())
@@ -558,8 +573,8 @@ FittingCurve2dPDM::assembleInterior (double wInt, double rScale, unsigned &row)
 
 double
 FittingCurve2dPDM::inverseMapping (const ON_NurbsCurve &nurbs, const Eigen::Vector2d &pt, const double &hint,
-                                    double &error, Eigen::Vector2d &p, Eigen::Vector2d &t, double rScale, int maxSteps,
-                                    double accuracy, bool quiet)
+                                   double &error, Eigen::Vector2d &p, Eigen::Vector2d &t, double rScale, int maxSteps,
+                                   double accuracy, bool quiet)
 {
   if (nurbs.Order () == 2)
     return inverseMappingO2 (nurbs, pt, error, p, t);
@@ -635,7 +650,7 @@ FittingCurve2dPDM::inverseMapping (const ON_NurbsCurve &nurbs, const Eigen::Vect
 
 double
 FittingCurve2dPDM::inverseMappingO2 (const ON_NurbsCurve &nurbs, const Eigen::Vector2d &pt, double &error,
-                                      Eigen::Vector2d &p, Eigen::Vector2d &t)
+                                     Eigen::Vector2d &p, Eigen::Vector2d &t)
 {
   if (nurbs.Order () != 2)
     printf ("[FittingCurve2dPDM::inverseMappingO2] Error, order not 2 (polynomial degree 1)\n");

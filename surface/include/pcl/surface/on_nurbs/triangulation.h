@@ -66,6 +66,8 @@ namespace pcl
                       float height, unsigned segX, unsigned segY);
 
     public:
+      static bool
+      isInside(const ON_NurbsCurve &curve, const pcl::PointXYZ &v);
 
       //      /** \brief Converts an NurbsObject to a pcl::PolygonMesh by sampling all NURBS according to the resolution specified.
       //       *  \param[in] object The NURBS object.

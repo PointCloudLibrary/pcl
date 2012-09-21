@@ -261,7 +261,7 @@ FittingCurve::initNurbsCurve2D (int order, const vector_vec2d &data)
 }
 
 ON_NurbsCurve
-FittingCurve::initNurbsCurvePCA (int order, const vector_vec3d &data, int ncps)
+FittingCurve::initNurbsCurvePCA (int order, const vector_vec3d &data, int ncps, double rf)
 {
   if (data.empty ())
     printf ("[FittingCurve::initNurbsCurvePCA] Warning, no boundary parameters available\n");
@@ -276,7 +276,7 @@ FittingCurve::initNurbsCurvePCA (int order, const vector_vec3d &data, int ncps)
 
   eigenvalues = eigenvalues / s; // seems that the eigenvalues are dependent on the number of points (???)
 
-  double r = 2.0 * sqrt (eigenvalues (0));
+  double r = rf * sqrt (eigenvalues (0));
 
   if (ncps < 2 * order)
     ncps = 2 * order;
