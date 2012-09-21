@@ -126,7 +126,7 @@ pcl::registration::CorrespondenceEstimationBackProjection<PointSource, PointTarg
         if (dist < min_dist)
         {
           min_dist = dist;
-          min_index = j;
+          min_index = static_cast<int> (j);
         }
       }
       if (min_dist > max_distance)
@@ -167,7 +167,7 @@ pcl::registration::CorrespondenceEstimationBackProjection<PointSource, PointTarg
         if (dist < min_dist)
         {
           min_dist = dist;
-          min_index = j;
+          min_index = static_cast<int> (j);
         }
       }
       if (min_dist > max_distance)
@@ -241,7 +241,7 @@ pcl::registration::CorrespondenceEstimationBackProjection<PointSource, PointTarg
         if (dist < min_dist)
         {
           min_dist = dist;
-          min_index = j;
+          min_index = static_cast<int> (j);
         }
       }
       if (min_dist > max_distance)
@@ -289,7 +289,7 @@ pcl::registration::CorrespondenceEstimationBackProjection<PointSource, PointTarg
         if (dist < min_dist)
         {
           min_dist = dist;
-          min_index = j;
+          min_index = static_cast<int> (j);
         }
       }
       if (min_dist > max_distance)
