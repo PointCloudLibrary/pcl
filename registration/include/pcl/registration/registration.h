@@ -3,6 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -16,7 +17,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -47,26 +48,30 @@
 #include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/registration/boost.h>
 #include <pcl/registration/transformation_estimation.h>
+#include <pcl/registration/correspondence_estimation.h>
+#include <pcl/registration/correspondence_rejection.h>
 
 namespace pcl
 {
-  /** \brief @b Registration represents the base registration class. 
-    * All 3D registration methods should inherit from this class.
-    * \author Radu Bogdan Rusu, Michael Dixon
+  /** \brief @b Registration represents the base registration class for general purpose, ICP-like methods.
+    * \author Radu B. Rusu, Michael Dixon
     * \ingroup registration
     */
-  template <typename PointSource, typename PointTarget>
+  template <typename PointSource, typename PointTarget, typename Scalar = float>
   class Registration : public PCLBase<PointSource>
   {
     public:
+      typedef Eigen::Matrix<Scalar, 4, 4> Matrix4;
+
       using PCLBase<PointSource>::initCompute;
       using PCLBase<PointSource>::deinitCompute;
       using PCLBase<PointSource>::input_;
       using PCLBase<PointSource>::indices_;
 
-      typedef boost::shared_ptr< Registration<PointSource, PointTarget> > Ptr;
-      typedef boost::shared_ptr< const Registration<PointSource, PointTarget> > ConstPtr;
+      typedef boost::shared_ptr< Registration<PointSource, PointTarget, Scalar> > Ptr;
+      typedef boost::shared_ptr< const Registration<PointSource, PointTarget, Scalar> > ConstPtr;
 
+      typedef typename pcl::registration::CorrespondenceRejector::Ptr CorrespondenceRejectorPtr;
       typedef typename pcl::KdTree<PointTarget> KdTree;
       typedef typename pcl::KdTree<PointTarget>::Ptr KdTreePtr;
      
@@ -80,44 +85,122 @@ namespace pcl
 
       typedef typename KdTree::PointRepresentationConstPtr PointRepresentationConstPtr;
       
-      typedef typename pcl::registration::TransformationEstimation<PointSource, PointTarget> TransformationEstimation;
+      typedef typename pcl::registration::TransformationEstimation<PointSource, PointTarget, Scalar> TransformationEstimation;
       typedef typename TransformationEstimation::Ptr TransformationEstimationPtr;
       typedef typename TransformationEstimation::ConstPtr TransformationEstimationConstPtr;
 
+      typedef typename pcl::registration::CorrespondenceEstimationBase<PointSource, PointTarget, Scalar> CorrespondenceEstimation;
+      typedef typename CorrespondenceEstimation::Ptr CorrespondenceEstimationPtr;
+      typedef typename CorrespondenceEstimation::ConstPtr CorrespondenceConstPtr;
+
       /** \brief Empty constructor. */
-      Registration () : reg_name_ (),
-                        tree_ (new pcl::KdTreeFLANN<PointTarget>),
-                        nr_iterations_(0),
-                        max_iterations_(10),
-                        ransac_iterations_ (0),
-                        target_ (),
-                        final_transformation_ (Eigen::Matrix4f::Identity ()),
-                        transformation_ (Eigen::Matrix4f::Identity ()),
-                        previous_transformation_ (Eigen::Matrix4f::Identity ()),
-                        transformation_epsilon_ (0.0), 
-                        euclidean_fitness_epsilon_ (-std::numeric_limits<double>::max ()),
-                        corr_dist_threshold_ (std::sqrt (std::numeric_limits<double>::max ())),
-                        inlier_threshold_ (0.05),
-                        converged_ (false), 
-                        min_number_correspondences_ (3), 
-                        correspondence_distances_ (),
-                        transformation_estimation_ (),
-                        update_visualizer_ (NULL),
-                        point_representation_ ()
+      Registration () 
+        : reg_name_ ()
+        , tree_ (new pcl::KdTreeFLANN<PointTarget>)
+        , nr_iterations_ (0)
+        , max_iterations_ (10)
+        , ransac_iterations_ (0)
+        , target_ ()
+        , final_transformation_ (Matrix4::Identity ())
+        , transformation_ (Matrix4::Identity ())
+        , previous_transformation_ (Matrix4::Identity ())
+        , transformation_epsilon_ (0.0)
+        , euclidean_fitness_epsilon_ (-std::numeric_limits<double>::max ())
+        , corr_dist_threshold_ (std::sqrt (std::numeric_limits<double>::max ()))
+        , inlier_threshold_ (0.05)
+        , converged_ (false)
+        , min_number_correspondences_ (3)
+        , correspondence_distances_ ()
+        , transformation_estimation_ ()
+        , correspondence_estimation_ ()
+        , correspondence_rejectors_ ()
+        , update_visualizer_ (NULL)
+        , point_representation_ ()
       {
       }
 
       /** \brief destructor. */
       virtual ~Registration () {}
 
-      /** \brief Provide a pointer to the transformation estimation object. (e.g., SVD, point to plane etc.) 
-       *  \param te is the pointer to the corresponding transformation estimation object
-       */
+      /** \brief Provide a pointer to the transformation estimation object.
+        * (e.g., SVD, point to plane etc.) 
+        * 
+        * \param[in] te is the pointer to the corresponding transformation estimation object
+        *
+        * Code example:
+        *
+        * \code
+        * TransformationEstimationPointToPlaneLLS<PointXYZ, PointXYZ>::Ptr trans_lls (new TransformationEstimationPointToPlaneLLS<PointXYZ, PointXYZ>);
+        * icp.setTransformationEstimation (trans_lls);
+        * // or...
+        * TransformationEstimationSVD<PointXYZ, PointXYZ>::Ptr trans_svd (new TransformationEstimationSVD<PointXYZ, PointXYZ>);
+        * icp.setTransformationEstimation (trans_svd);
+        * \endcode
+        */
       void
       setTransformationEstimation (const TransformationEstimationPtr &te) { transformation_estimation_ = te; }
 
+      /** \brief Provide a pointer to the correspondence estimation object.
+        * (e.g., regular, reciprocal, normal shooting etc.) 
+        * 
+        * \param[in] ce is the pointer to the corresponding correspondence estimation object
+        *
+        * Code example:
+        *
+        * \code
+        * CorrespondenceEstimation<PointXYZ, PointXYZ>::Ptr ce (new CorrespondenceEstimation<PointXYZ, PointXYZ>);
+        * ce->setInputSource (source);
+        * ce->setInputTarget (target);
+        * icp.setCorrespondenceEstimation (ce);
+        * // or...
+        * CorrespondenceEstimationNormalShooting<PointNormal, PointNormal, PointNormal>::Ptr cens (new CorrespondenceEstimationNormalShooting<PointNormal, PointNormal>);
+        * ce->setInputSource (source);
+        * ce->setInputTarget (target);
+        * ce->setSourceNormals (source);
+        * ce->setTargetNormals (target);
+        * icp.setCorrespondenceEstimation (cens);
+        * \endcode
+        */
+      void
+      setCorrespondenceEstimation (const CorrespondenceEstimationPtr &ce) { correspondence_estimation_ = ce; }
+
+      /** \brief Provide a pointer to the input source 
+        * (e.g., the point cloud that we want to align to the target)
+        *
+        * \param[in] cloud the input point cloud source
+        */
+      inline void
+      setInputCloud (const PointCloudSourceConstPtr &cloud)
+      {
+        PCL_WARN ("[pcl::registration::%s::setInputCloud] setInputCloud is deprecated. Please use setInputSource instead.\n", getClassName ().c_str ());
+        PCLBase<PointSource>::setInputCloud (cloud);
+      }
+
+      /** \brief Get a pointer to the input point cloud dataset target. */
+      inline PointCloudSourceConstPtr const
+      getInputCloud () 
+      { 
+        PCL_WARN ("[pcl::registration::%s::getInputCloud] getInputCloud is deprecated. Please use getInputSource instead.\n", getClassName ().c_str ());
+        return (input_ ); 
+      }
+
+      /** \brief Provide a pointer to the input source 
+        * (e.g., the point cloud that we want to align to the target)
+        *
+        * \param[in] cloud the input point cloud source
+        */
+      inline void
+      setInputSource (const PointCloudSourceConstPtr &cloud)
+      {
+        PCLBase<PointSource>::setInputCloud (cloud);
+      }
+
+      /** \brief Get a pointer to the input point cloud dataset target. */
+      inline PointCloudSourceConstPtr const
+      getInputSource () { return (input_ ); }
+
       /** \brief Provide a pointer to the input target (e.g., the point cloud that we want to align the input source to)
-        * \param cloud the input point cloud target
+        * \param[in] cloud the input point cloud target
         */
       virtual inline void 
       setInputTarget (const PointCloudTargetConstPtr &cloud);
@@ -127,11 +210,11 @@ namespace pcl
       getInputTarget () { return (target_ ); }
 
       /** \brief Get the final transformation matrix estimated by the registration method. */
-      inline Eigen::Matrix4f 
+      inline Matrix4
       getFinalTransformation () { return (final_transformation_); }
 
       /** \brief Get the last incremental transformation matrix estimated by the registration method. */
-      inline Eigen::Matrix4f 
+      inline Matrix4
       getLastIncrementalTransformation () { return (transformation_); }
 
       /** \brief Set the maximum number of iterations the internal optimization should run for.
@@ -271,11 +354,40 @@ namespace pcl
         * \param guess the initial gross estimation of the transformation
         */
       inline void 
-      align (PointCloudSource &output, const Eigen::Matrix4f& guess);
+      align (PointCloudSource &output, const Matrix4& guess);
 
       /** \brief Abstract class get name method. */
       inline const std::string&
       getClassName () const { return (reg_name_); }
+
+      /** \brief Add a new correspondence rejector to the list
+        * \param[in] rejector the new correspondence rejector to concatenate
+        *
+        * Code example:
+        *
+        * \code
+        * CorrespondenceRejectorDistance rej;
+        * rej.setInputCloud<PointXYZ> (keypoints_src);
+        * rej.setInputTarget<PointXYZ> (keypoints_tgt);
+        * rej.setMaximumDistance (1);
+        * rej.setInputCorrespondences (all_correspondences);
+        * 
+        * // or...
+        *
+        * \endcode
+        */
+      inline void
+      addCorrespondenceRejector (const CorrespondenceRejectorPtr &rejector)
+      {
+        correspondence_rejectors_.push_back (rejector);
+      }
+
+      /** \brief Get the list of correspondence rejectors. */
+      inline std::vector<CorrespondenceRejectorPtr>
+      getCorrespondenceRejectors ()
+      {
+        return (correspondence_rejectors_);
+      }
 
     protected:
       /** \brief The registration method name. */
@@ -299,13 +411,13 @@ namespace pcl
       PointCloudTargetConstPtr target_;
 
       /** \brief The final transformation matrix estimated by the registration method after N iterations. */
-      Eigen::Matrix4f final_transformation_;
+      Matrix4 final_transformation_;
 
       /** \brief The transformation matrix estimated by the registration method. */
-      Eigen::Matrix4f transformation_;
+      Matrix4 transformation_;
 
       /** \brief The previous transformation matrix estimated by the registration method (used internally). */
-      Eigen::Matrix4f previous_transformation_;
+      Matrix4 previous_transformation_;
 
       /** \brief The maximum difference between two consecutive transformations in order to consider convergence 
         * (user defined). 
@@ -345,6 +457,12 @@ namespace pcl
       /** \brief A TransformationEstimation object, used to calculate the 4x4 rigid transformation. */
       TransformationEstimationPtr transformation_estimation_;
 
+      /** \brief A CorrespondenceEstimation object, used to estimate correspondences between the source and the target cloud. */
+      CorrespondenceEstimationPtr correspondence_estimation_;
+
+      /** \brief The list of correspondence rejectors to use. */
+      std::vector<CorrespondenceRejectorPtr> correspondence_rejectors_;
+
       /** \brief Callback function to update intermediate source point cloud position during it's registration
         * to the target point cloud.
         */
@@ -373,7 +491,7 @@ namespace pcl
  
       /** \brief Abstract transformation computation method with initial guess */
       virtual void 
-      computeTransformation (PointCloudSource &output, const Eigen::Matrix4f& guess) = 0;
+      computeTransformation (PointCloudSource &output, const Matrix4& guess) = 0;
 
       /** \brief The point representation used (internal). */
       PointRepresentationConstPtr point_representation_;

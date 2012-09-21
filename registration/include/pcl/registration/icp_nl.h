@@ -60,29 +60,29 @@ namespace pcl
     *     (via \ref setEuclideanFitnessEpsilon)</li>
     * </ol>
     *
-    * \author Radu Bogdan Rusu, Michael Dixon
+    * \author Radu B. Rusu, Michael Dixon
     * \ingroup registration
     */
-  template <typename PointSource, typename PointTarget>
-  class IterativeClosestPointNonLinear : public IterativeClosestPoint<PointSource, PointTarget>
+  template <typename PointSource, typename PointTarget, typename Scalar = float>
+  class IterativeClosestPointNonLinear : public IterativeClosestPoint<PointSource, PointTarget, Scalar>
   {
-    using Registration<PointSource, PointTarget>::min_number_correspondences_;
-    using Registration<PointSource, PointTarget>::reg_name_;
-    using Registration<PointSource, PointTarget>::transformation_estimation_;
-    using IterativeClosestPoint<PointSource, PointTarget>::computeTransformation;
+    using IterativeClosestPoint<PointSource, PointTarget, Scalar>::min_number_correspondences_;
+    using IterativeClosestPoint<PointSource, PointTarget, Scalar>::reg_name_;
+    using IterativeClosestPoint<PointSource, PointTarget, Scalar>::transformation_estimation_;
+    using IterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransformation;
 
     public:
+      typedef typename Registration<PointSource, PointTarget, Scalar>::Matrix4 Matrix4;
+
       /** \brief Empty constructor. */
       IterativeClosestPointNonLinear ()
       {
         min_number_correspondences_ = 4;
         reg_name_ = "IterativeClosestPointNonLinear";
 
-        transformation_estimation_.reset (new pcl::registration::TransformationEstimationLM<PointSource, PointTarget>);
+        transformation_estimation_.reset (new pcl::registration::TransformationEstimationLM<PointSource, PointTarget, Scalar>);
       }
   };
 }
-
-#include <pcl/registration/impl/icp_nl.hpp>
 
 #endif  //#ifndef PCL_ICP_NL_H_

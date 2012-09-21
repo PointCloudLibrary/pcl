@@ -17,7 +17,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -39,123 +39,83 @@
  */
 
 #include <pcl/registration/boost.h>
+#include <pcl/correspondence.h>
+#include <pcl/registration/default_convergence_criteria.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointSource, typename PointTarget> void
-pcl::IterativeClosestPoint<PointSource, PointTarget>::computeTransformation (PointCloudSource &output, const Eigen::Matrix4f &guess)
+template <typename PointSource, typename PointTarget, typename Scalar> void
+pcl::IterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransformation (
+    PointCloudSource &output, const Matrix4 &guess)
 {
   // Allocate enough space to hold the results
   std::vector<int> nn_indices (1);
   std::vector<float> nn_dists (1);
 
   // Point cloud containing the correspondences of each point in <input, indices>
-  PointCloudTarget input_corresp;
-  input_corresp.points.resize (indices_->size ());
+  PointCloudSourcePtr input_transformed (new PointCloudSource);
 
   nr_iterations_ = 0;
   converged_ = false;
-  double dist_threshold = corr_dist_threshold_ * corr_dist_threshold_;
+
+  // Initialise final transformation to the guessed one
+  final_transformation_ = guess;
 
   // If the guessed transformation is non identity
-  if (guess != Eigen::Matrix4f::Identity ())
-  {
-    // Initialise final transformation to the guessed one
-    final_transformation_ = guess;
+  if (guess != Matrix4::Identity ())
     // Apply guessed transformation prior to search for neighbours
-    transformPointCloud (output, output, guess);
-  }
+    transformPointCloud (*input_, *input_transformed, guess);
+  else
+    *input_transformed = *input_;
+ 
+  transformation_ = Matrix4::Identity ();
 
-  // Resize the vector of distances between correspondences 
-  std::vector<float> previous_correspondence_distances (indices_->size ());
-  correspondence_distances_.resize (indices_->size ());
+  // Pass in the default source and target for the Correspondence Estimation/Rejection code
+  correspondence_estimation_->setInputSource (input_transformed);
+  correspondence_estimation_->setInputTarget (target_);
+  //for (size_t i = 0; i < correspondence_rejectors_.size (); ++i)
+  //{
+  //  correspondence_rejectors_[i]->setInputCloud (input_transformed);
+  //  correspondence_rejectors_[i]->setInputTarget (target_);
+  //}
 
-  while (!converged_)           // repeat until convergence
+  CorrespondencesPtr correspondences (new Correspondences);
+
+  pcl::registration::DefaultConvergenceCriteria<Scalar> converged (nr_iterations_, transformation_, *correspondences);
+  converged.setMaximumIterations (max_iterations_);
+  
+  // Repeat until convergence
+  do
   {
     // Save the previously estimated transformation
     previous_transformation_ = transformation_;
+
     // And the previous set of distances
-    previous_correspondence_distances = correspondence_distances_;
+    //previous_correspondence_distances = correspondence_distances_;
 
-    int cnt = 0;
-    std::vector<int> source_indices (indices_->size ());
-    std::vector<int> target_indices (indices_->size ());
+    // Estimate correspondences
+    correspondence_estimation_->updateSource (transformation_);
+    correspondence_estimation_->determineCorrespondences (*correspondences);
 
-    // Iterating over the entire index vector and  find all correspondences
-    for (size_t idx = 0; idx < indices_->size (); ++idx)
+    //if (correspondence_rejectors_.empty ())
+    CorrespondencesPtr temp_correspondences (new Correspondences (*correspondences));
+    for (size_t i = 0; i < correspondence_rejectors_.size (); ++i)
     {
-      if (!this->searchForNeighbors (output, (*indices_)[idx], nn_indices, nn_dists))
-      {
-        PCL_ERROR ("[pcl::%s::computeTransformation] Unable to find a nearest neighbor in the target dataset for point %d in the source!\n", getClassName ().c_str (), (*indices_)[idx]);
-        return;
-      }
-
-      // Check if the distance to the nearest neighbor is smaller than the user imposed threshold
-      if (nn_dists[0] < dist_threshold)
-      {
-        source_indices[cnt] = (*indices_)[idx];
-        target_indices[cnt] = nn_indices[0];
-        cnt++;
-      }
-
-      // Save the nn_dists[0] to a global vector of distances
-      correspondence_distances_[(*indices_)[idx]] = std::min (nn_dists[0], static_cast<float> (dist_threshold));
+      PCL_DEBUG ("Applying a correspondence rejector method: %s.\n", correspondence_rejectors_[i]->getClassName ().c_str ());
+      correspondence_rejectors_[i]->setInputCorrespondences (temp_correspondences);
+      correspondence_rejectors_[i]->updateSource (transformation_.template cast<double> ());
+      correspondence_rejectors_[i]->getCorrespondences (*correspondences);
+      // Modify input for the next iteration
+      if (i < correspondence_rejectors_.size () - 1)
+        *temp_correspondences = *correspondences;
     }
-    if (cnt < min_number_correspondences_)
-    {
-      PCL_ERROR ("[pcl::%s::computeTransformation] Not enough correspondences found. Relax your threshold parameters.\n", getClassName ().c_str ());
-      converged_ = false;
-      return;
-    }
+    //}
 
-    // Resize to the actual number of valid correspondences
-    source_indices.resize (cnt); target_indices.resize (cnt);
-
-    std::vector<int> source_indices_good;
-    std::vector<int> target_indices_good;
-    {
-      // From the set of correspondences found, attempt to remove outliers
-      // Create the registration model
-      typedef typename SampleConsensusModelRegistration<PointSource>::Ptr SampleConsensusModelRegistrationPtr;
-      SampleConsensusModelRegistrationPtr model;
-      model.reset (new SampleConsensusModelRegistration<PointSource> (output.makeShared (), source_indices));
-      // Pass the target_indices
-      model->setInputTarget (target_, target_indices);
-      // Create a RANSAC model
-      RandomSampleConsensus<PointSource> sac (model, inlier_threshold_);
-      sac.setMaxIterations (ransac_iterations_);
-
-      // Compute the set of inliers
-      if (!sac.computeModel ())
-      {
-        source_indices_good = source_indices;
-        target_indices_good = target_indices;
-      }
-      else
-      {
-        std::vector<int> inliers;
-        // Get the inliers
-        sac.getInliers (inliers);
-        source_indices_good.resize (inliers.size ());
-        target_indices_good.resize (inliers.size ());
-
-        boost::unordered_map<int, int> source_to_target;
-        for (unsigned int i = 0; i < source_indices.size(); ++i)
-          source_to_target[source_indices[i]] = target_indices[i];
-
-        // Copy just the inliers
-        std::copy(inliers.begin(), inliers.end(), source_indices_good.begin());
-        for (size_t i = 0; i < inliers.size (); ++i)
-          target_indices_good[i] = source_to_target[inliers[i]];
-      }
-    }
-
+    size_t cnt = correspondences->size ();
     // Check whether we have enough correspondences
-    cnt = static_cast<int> (source_indices_good.size ());
     if (cnt < min_number_correspondences_)
     {
       PCL_ERROR ("[pcl::%s::computeTransformation] Not enough correspondences found. Relax your threshold parameters.\n", getClassName ().c_str ());
-      converged_ = false;
-      return;
+      break;
     }
 
     PCL_DEBUG ("[pcl::%s::computeTransformation] Number of correspondences %d [%f%%] out of %zu points [100.0%%], RANSAC rejected: %zu [%f%%].\n", 
@@ -163,50 +123,32 @@ pcl::IterativeClosestPoint<PointSource, PointTarget>::computeTransformation (Poi
         cnt, 
         (static_cast<float> (cnt) * 100.0f) / static_cast<float> (indices_->size ()), 
         indices_->size (), 
-        source_indices.size () - cnt, 
-        static_cast<float> (source_indices.size () - cnt) * 100.0f / static_cast<float> (source_indices.size ()));
+        indices_->size () - cnt, 
+        static_cast<float> (indices_->size () - cnt) * 100.0f / static_cast<float> (indices_->size ()));
   
     // Estimate the transform
-    //rigid_transformation_estimation_(output, source_indices_good, *target_, target_indices_good, transformation_);
-    transformation_estimation_->estimateRigidTransformation (output, source_indices_good, *target_, target_indices_good, transformation_);
+    transformation_estimation_->estimateRigidTransformation (*input_transformed, *target_, *correspondences, transformation_);
 
     // Tranform the data
-    transformPointCloud (output, output, transformation_);
+    transformPointCloud (*input_transformed, *input_transformed, transformation_);
 
     // Obtain the final transformation    
     final_transformation_ = transformation_ * final_transformation_;
 
-    nr_iterations_++;
+    ++nr_iterations_;
 
     // Update the vizualization of icp convergence
-    if (update_visualizer_ != 0)
-      update_visualizer_(output, source_indices_good, *target_, target_indices_good );
-
-    // Various/Different convergence termination criteria
-    // 1. Number of iterations has reached the maximum user imposed number of iterations (via 
-    //    setMaximumIterations)
-    // 2. The epsilon (difference) between the previous transformation and the current estimated transformation 
-    //    is smaller than an user imposed value (via setTransformationEpsilon)
-    // 3. The sum of Euclidean squared errors is smaller than a user defined threshold (via 
-    //    setEuclideanFitnessEpsilon)
-
-    if (nr_iterations_ >= max_iterations_ ||
-        (transformation_ - previous_transformation_).array ().abs ().sum () < transformation_epsilon_ ||
-        fabs (this->getFitnessScore (correspondence_distances_, previous_correspondence_distances)) <= euclidean_fitness_epsilon_
-       )
-    {
-      converged_ = true;
-      PCL_DEBUG ("[pcl::%s::computeTransformation] Convergence reached. Number of iterations: %d out of %d. Transformation difference: %f\n",
-                 getClassName ().c_str (), nr_iterations_, max_iterations_, (transformation_ - previous_transformation_).array ().abs ().sum ());
-
-      PCL_DEBUG ("nr_iterations_ (%d) >= max_iterations_ (%d)\n", nr_iterations_, max_iterations_);
-      PCL_DEBUG ("(transformation_ - previous_transformation_).array ().abs ().sum () (%f) < transformation_epsilon_ (%f)\n",
-                 (transformation_ - previous_transformation_).array ().abs ().sum (), transformation_epsilon_);
-      PCL_DEBUG ("fabs (getFitnessScore (correspondence_distances_, previous_correspondence_distances)) (%f) <= euclidean_fitness_epsilon_ (%f)\n",
-                 fabs (this->getFitnessScore (correspondence_distances_, previous_correspondence_distances)),
-                 euclidean_fitness_epsilon_);
-
-    }
+    //if (update_visualizer_ != 0)
+    //  update_visualizer_(output, source_indices_good, *target_, target_indices_good );
   }
+  while (!converged);
+
+  // Transform the input cloud using the final transformation
+  PCL_DEBUG ("Transformation is:\n\t%5f\t%5f\t%5f\t%5f\n\t%5f\t%5f\t%5f\t%5f\n\t%5f\t%5f\t%5f\t%5f\n\t%5f\t%5f\t%5f\t%5f\n", 
+      final_transformation_ (0, 0), final_transformation_ (0, 1), final_transformation_ (0, 2), final_transformation_ (0, 3),
+      final_transformation_ (1, 0), final_transformation_ (1, 1), final_transformation_ (1, 2), final_transformation_ (1, 3),
+      final_transformation_ (2, 0), final_transformation_ (2, 1), final_transformation_ (2, 2), final_transformation_ (2, 3),
+      final_transformation_ (3, 0), final_transformation_ (3, 1), final_transformation_ (3, 2), final_transformation_ (3, 3));
+  transformPointCloud (*input_, output, final_transformation_);
 }
 
