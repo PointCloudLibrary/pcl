@@ -72,35 +72,13 @@ pcl::registration::CorrespondenceEstimationBackProjection<PointSource, PointTarg
     cloud_out.points.assign (cloud_in.points.begin (), cloud_in.points.end ());
   }
 
-  // If the data is dense, we don't need to check for NaN
-  if (cloud_in.is_dense)
+  for (size_t i = 0; i < cloud_out.points.size (); ++i)
   {
-    for (size_t i = 0; i < cloud_out.points.size (); ++i)
-    {
-      // Rotate normals (WARNING: transform.rotation () uses SVD internally!)
-      Eigen::Matrix<Scalar, 3, 1> nt (cloud_in[i].normal_x, cloud_in[i].normal_y, cloud_in[i].normal_z);
-      cloud_out[i].normal_x = static_cast<float> (transform (0, 0) * nt.coeffRef (0) + transform (0, 1) * nt.coeffRef (1) + transform (0, 2) * nt.coeffRef (2));
-      cloud_out[i].normal_y = static_cast<float> (transform (1, 0) * nt.coeffRef (0) + transform (1, 1) * nt.coeffRef (1) + transform (1, 2) * nt.coeffRef (2));
-      cloud_out[i].normal_z = static_cast<float> (transform (2, 0) * nt.coeffRef (0) + transform (2, 1) * nt.coeffRef (1) + transform (2, 2) * nt.coeffRef (2));
-    }
-  }
-  // Dataset might contain NaNs and Infs, so check for them first.
-  else
-  {
-    for (size_t i = 0; i < cloud_out.points.size (); ++i)
-    {
-      if (!pcl_isfinite (cloud_in.points[i].normal_x) || 
-          !pcl_isfinite (cloud_in.points[i].normal_y) || 
-          !pcl_isfinite (cloud_in.points[i].normal_z))
-        continue;
-
-      // Rotate normals
-      //cloud_out.points[i].getNormalVector3fMap() = transform.rotation () * cloud_in.points[i].getNormalVector3fMap ();
-      Eigen::Matrix<Scalar, 3, 1> nt (cloud_in[i].normal_x, cloud_in[i].normal_y, cloud_in[i].normal_z);
-      cloud_out[i].normal_x = static_cast<float> (transform (0, 0) * nt.coeffRef (0) + transform (0, 1) * nt.coeffRef (1) + transform (0, 2) * nt.coeffRef (2));
-      cloud_out[i].normal_y = static_cast<float> (transform (1, 0) * nt.coeffRef (0) + transform (1, 1) * nt.coeffRef (1) + transform (1, 2) * nt.coeffRef (2));
-      cloud_out[i].normal_z = static_cast<float> (transform (2, 0) * nt.coeffRef (0) + transform (2, 1) * nt.coeffRef (1) + transform (2, 2) * nt.coeffRef (2));
-    }
+    // Rotate normals (WARNING: transform.rotation () uses SVD internally!)
+    Eigen::Matrix<Scalar, 3, 1> nt (cloud_in[i].normal_x, cloud_in[i].normal_y, cloud_in[i].normal_z);
+    cloud_out[i].normal_x = static_cast<float> (transform (0, 0) * nt.coeffRef (0) + transform (0, 1) * nt.coeffRef (1) + transform (0, 2) * nt.coeffRef (2));
+    cloud_out[i].normal_y = static_cast<float> (transform (1, 0) * nt.coeffRef (0) + transform (1, 1) * nt.coeffRef (1) + transform (1, 2) * nt.coeffRef (2));
+    cloud_out[i].normal_z = static_cast<float> (transform (2, 0) * nt.coeffRef (0) + transform (2, 1) * nt.coeffRef (1) + transform (2, 2) * nt.coeffRef (2));
   }
 }
 
