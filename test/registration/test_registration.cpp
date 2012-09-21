@@ -154,7 +154,7 @@ TEST (PCL, findFeatureCorrespondences)
 TEST (PCL, IterativeClosestPoint)
 {
   IterativeClosestPoint<PointXYZ, PointXYZ> reg;
-  reg.setInputCloud (cloud_source.makeShared ());
+  reg.setInputSource (cloud_source.makeShared ());
   reg.setInputTarget (cloud_target.makeShared ());
   reg.setMaximumIterations (50);
   reg.setTransformationEpsilon (1e-8);
@@ -198,7 +198,7 @@ TEST (PCL, IterativeClosestPointNonLinear)
   PointCloud<PointT> output;
 
   IterativeClosestPointNonLinear<PointT, PointT> reg;
-  reg.setInputCloud (temp_src);
+  reg.setInputSource (temp_src);
   reg.setInputTarget (temp_tgt);
   reg.setMaximumIterations (50);
   reg.setTransformationEpsilon (1e-8);
@@ -256,7 +256,7 @@ TEST (PCL, IterativeClosestPoint_PointToPlane)
   typedef registration::TransformationEstimationPointToPlane<PointT, PointT> PointToPlane;
   boost::shared_ptr<PointToPlane> point_to_plane (new PointToPlane);
   reg.setTransformationEstimation (point_to_plane);
-  reg.setInputCloud (src);
+  reg.setInputSource (src);
   reg.setInputTarget (tgt);
   reg.setMaximumIterations (50);
   reg.setTransformationEpsilon (1e-8);
@@ -307,7 +307,7 @@ TEST (PCL, NormalDistributionsTransform)
   NormalDistributionsTransform<PointT, PointT> reg;
   reg.setStepSize (0.05);
   reg.setResolution (0.025f);
-  reg.setInputCloud (src);
+  reg.setInputSource (src);
   reg.setInputTarget (tgt);
   reg.setMaximumIterations (50);
   reg.setTransformationEpsilon (1e-8);
@@ -421,7 +421,7 @@ TEST (PCL, SampleConsensusInitialAlignment)
   reg.setMaxCorrespondenceDistance (0.2);
   reg.setMaximumIterations (1000);
 
-  reg.setInputCloud (cloud_source_ptr);
+  reg.setInputSource (cloud_source_ptr);
   reg.setInputTarget (cloud_target_ptr);
   reg.setSourceFeatures (features_source.makeShared ());
   reg.setTargetFeatures (features_target.makeShared ());

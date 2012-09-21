@@ -66,7 +66,7 @@ TEST (PCL, CorrespondenceEstimation)
 
   boost::shared_ptr<pcl::Correspondences> correspondences (new pcl::Correspondences);
   pcl::registration::CorrespondenceEstimation<pcl::PointXYZ, pcl::PointXYZ> corr_est;
-  corr_est.setInputCloud (source);
+  corr_est.setInputSource (source);
   corr_est.setInputTarget (target);
   corr_est.determineCorrespondences (*correspondences);
 
@@ -88,7 +88,7 @@ TEST (PCL, CorrespondenceEstimationReciprocal)
 
   boost::shared_ptr<pcl::Correspondences> correspondences (new pcl::Correspondences);
   pcl::registration::CorrespondenceEstimation<pcl::PointXYZ, pcl::PointXYZ> corr_est;
-  corr_est.setInputCloud (source);
+  corr_est.setInputSource (source);
   corr_est.setInputTarget (target);
   corr_est.determineReciprocalCorrespondences (*correspondences);
 
@@ -111,7 +111,7 @@ TEST (PCL, CorrespondenceRejectorDistance)
   // re-do correspondence estimation
   boost::shared_ptr<pcl::Correspondences> correspondences (new pcl::Correspondences);
   pcl::registration::CorrespondenceEstimation<pcl::PointXYZ, pcl::PointXYZ> corr_est;
-  corr_est.setInputCloud (source);
+  corr_est.setInputSource (source);
   corr_est.setInputTarget (target);
   corr_est.determineCorrespondences (*correspondences);
 
@@ -140,7 +140,7 @@ TEST (PCL, CorrespondenceRejectorMedianDistance)
   // re-do correspondence estimation
   boost::shared_ptr<pcl::Correspondences> correspondences (new pcl::Correspondences);
   pcl::registration::CorrespondenceEstimation<pcl::PointXYZ, pcl::PointXYZ> corr_est;
-  corr_est.setInputCloud (source);
+  corr_est.setInputSource (source);
   corr_est.setInputTarget (target);
   corr_est.determineCorrespondences (*correspondences);
 
@@ -171,7 +171,7 @@ TEST (PCL, CorrespondenceRejectorOneToOne)
   // re-do correspondence estimation
   boost::shared_ptr<pcl::Correspondences> correspondences (new pcl::Correspondences);
   pcl::registration::CorrespondenceEstimation<pcl::PointXYZ, pcl::PointXYZ> corr_est;
-  corr_est.setInputCloud (source);
+  corr_est.setInputSource (source);
   corr_est.setInputTarget (target);
   corr_est.determineCorrespondences (*correspondences);
 
@@ -199,17 +199,17 @@ TEST (PCL, CorrespondenceRejectorSampleConsensus)
   // re-do correspondence estimation
   boost::shared_ptr<pcl::Correspondences> correspondences (new pcl::Correspondences);
   pcl::registration::CorrespondenceEstimation<pcl::PointXYZ, pcl::PointXYZ> corr_est;
-  corr_est.setInputCloud (source);
+  corr_est.setInputSource (source);
   corr_est.setInputTarget (target);
   corr_est.determineCorrespondences (*correspondences);
   EXPECT_EQ (int (correspondences->size ()), nr_original_correspondences);
 
   boost::shared_ptr<pcl::Correspondences> correspondences_result_rej_sac (new pcl::Correspondences);
   pcl::registration::CorrespondenceRejectorSampleConsensus<pcl::PointXYZ> corr_rej_sac;
-  corr_rej_sac.setInputCloud (source);
-  corr_rej_sac.setTargetCloud (target);
+  corr_rej_sac.setInputSource (source);
+  corr_rej_sac.setInputTarget (target);
   corr_rej_sac.setInlierThreshold (rej_sac_max_dist);
-  corr_rej_sac.setMaxIterations (rej_sac_max_iter);
+  corr_rej_sac.setMaximumIterations (rej_sac_max_iter);
   corr_rej_sac.setInputCorrespondences (correspondences);
   corr_rej_sac.getCorrespondences (*correspondences_result_rej_sac);
   Eigen::Matrix4f transform_res_from_SAC = corr_rej_sac.getBestTransformation ();
@@ -238,7 +238,7 @@ TEST (PCL, CorrespondenceRejectorSurfaceNormal)
   // re-do correspondence estimation
   boost::shared_ptr<pcl::Correspondences> correspondences (new pcl::Correspondences);
   pcl::registration::CorrespondenceEstimation<pcl::PointXYZ, pcl::PointXYZ> corr_est;
-  corr_est.setInputCloud (source);
+  corr_est.setInputSource (source);
   corr_est.setInputTarget (target);
   corr_est.determineCorrespondences (*correspondences);
 
@@ -262,7 +262,7 @@ TEST (PCL, CorrespondenceRejectorSurfaceNormal)
 
   pcl::registration::CorrespondenceRejectorSurfaceNormal  corr_rej_surf_norm;
   corr_rej_surf_norm.initializeDataContainer <pcl::PointXYZ, pcl::PointNormal> ();
-  corr_rej_surf_norm.setInputCloud <pcl::PointXYZ> (source);
+  corr_rej_surf_norm.setInputSource <pcl::PointXYZ> (source);
   corr_rej_surf_norm.setInputTarget <pcl::PointXYZ> (target);
   corr_rej_surf_norm.setInputNormals <pcl::PointXYZ, pcl::PointNormal> (source_normals);
   corr_rej_surf_norm.setTargetNormals <pcl::PointXYZ, pcl::PointNormal> (target_normals);
@@ -290,7 +290,7 @@ TEST (PCL, CorrespondenceRejectorTrimmed)
   // re-do correspondence estimation
   boost::shared_ptr<pcl::Correspondences> correspondences (new pcl::Correspondences);
   pcl::registration::CorrespondenceEstimation<pcl::PointXYZ, pcl::PointXYZ> corr_est;
-  corr_est.setInputCloud (source);
+  corr_est.setInputSource (source);
   corr_est.setInputTarget (target);
   corr_est.determineCorrespondences (*correspondences);
 
@@ -319,13 +319,13 @@ TEST (PCL, CorrespondenceRejectorVarTrimmed)
   // re-do correspondence estimation
   boost::shared_ptr<pcl::Correspondences> correspondences (new pcl::Correspondences);
   pcl::registration::CorrespondenceEstimation<pcl::PointXYZ, pcl::PointXYZ> corr_est;
-  corr_est.setInputCloud (source);
+  corr_est.setInputSource (source);
   corr_est.setInputTarget (target);
   corr_est.determineCorrespondences (*correspondences);
 
   boost::shared_ptr<pcl::Correspondences>  correspondences_result_rej_var_trimmed_dist (new pcl::Correspondences);
   pcl::registration::CorrespondenceRejectorVarTrimmed corr_rej_var_trimmed_dist;
-  corr_rej_var_trimmed_dist.setInputCloud<pcl::PointXYZ> (source);
+  corr_rej_var_trimmed_dist.setInputSource<pcl::PointXYZ> (source);
   corr_rej_var_trimmed_dist.setInputTarget<pcl::PointXYZ> (target);
   corr_rej_var_trimmed_dist.setInputCorrespondences(correspondences);
 
@@ -349,7 +349,7 @@ TEST (PCL, TransformationEstimationSVD)
   // re-do reciprocal correspondence estimation
   boost::shared_ptr<pcl::Correspondences> correspondences (new pcl::Correspondences);
   pcl::registration::CorrespondenceEstimation<pcl::PointXYZ, pcl::PointXYZ> corr_est;
-  corr_est.setInputCloud (source);
+  corr_est.setInputSource (source);
   corr_est.setInputTarget (target);
   corr_est.determineReciprocalCorrespondences (*correspondences);
 
@@ -374,7 +374,7 @@ TEST (PCL, TransformationEstimationLM)
   // re-do reciprocal correspondence estimation
   boost::shared_ptr<pcl::Correspondences> correspondences (new pcl::Correspondences);
   pcl::registration::CorrespondenceEstimation<pcl::PointXYZ, pcl::PointXYZ> corr_est;
-  corr_est.setInputCloud (source);
+  corr_est.setInputSource (source);
   corr_est.setInputTarget (target);
   corr_est.determineReciprocalCorrespondences (*correspondences);
 
