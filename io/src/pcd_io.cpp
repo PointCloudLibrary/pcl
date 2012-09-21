@@ -45,6 +45,7 @@
 #include <pcl/common/io.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/io/lzf.h>
+#include <pcl/console/time.h>
 
 #include <cstring>
 #include <cerrno>
@@ -928,6 +929,9 @@ pcl::PCDReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
                       Eigen::Vector4f &origin, Eigen::Quaternionf &orientation, int &pcd_version, 
                       const int offset)
 {
+  pcl::console::TicToc tt;
+  tt.tic ();
+
   int data_type;
   unsigned int data_idx;
 
@@ -1221,72 +1225,75 @@ pcl::PCDReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
   }
 
   // No need to do any extra checks if the data type is ASCII
-  if (data_type == 0)
-    return (0);
-
-  int point_size = static_cast<int> (cloud.data.size () / (cloud.height * cloud.width));
-  // Once copied, we need to go over each field and check if it has NaN/Inf values and assign cloud.is_dense to true or false
-  for (uint32_t i = 0; i < cloud.width * cloud.height; ++i)
+  if (data_type != 0)
   {
-    for (unsigned int d = 0; d < static_cast<unsigned int> (cloud.fields.size ()); ++d)
+    int point_size = static_cast<int> (cloud.data.size () / (cloud.height * cloud.width));
+    // Once copied, we need to go over each field and check if it has NaN/Inf values and assign cloud.is_dense to true or false
+    for (uint32_t i = 0; i < cloud.width * cloud.height; ++i)
     {
-      for (uint32_t c = 0; c < cloud.fields[d].count; ++c)
+      for (unsigned int d = 0; d < static_cast<unsigned int> (cloud.fields.size ()); ++d)
       {
-        switch (cloud.fields[d].datatype)
+        for (uint32_t c = 0; c < cloud.fields[d].count; ++c)
         {
-          case sensor_msgs::PointField::INT8:
+          switch (cloud.fields[d].datatype)
           {
-            if (!isValueFinite<pcl::traits::asType<sensor_msgs::PointField::INT8>::type>(cloud, i, point_size, d, c))
-              cloud.is_dense = false;
-            break;
-          }
-          case sensor_msgs::PointField::UINT8:
-          {
-            if (!isValueFinite<pcl::traits::asType<sensor_msgs::PointField::UINT8>::type>(cloud, i, point_size, d, c))
-              cloud.is_dense = false;
-            break;
-          }
-          case sensor_msgs::PointField::INT16:
-          {
-            if (!isValueFinite<pcl::traits::asType<sensor_msgs::PointField::INT16>::type>(cloud, i, point_size, d, c))
-              cloud.is_dense = false;
-            break;
-          }
-          case sensor_msgs::PointField::UINT16:
-          {
-            if (!isValueFinite<pcl::traits::asType<sensor_msgs::PointField::UINT16>::type>(cloud, i, point_size, d, c))
-              cloud.is_dense = false;
-            break;
-          }
-          case sensor_msgs::PointField::INT32:
-          {
-            if (!isValueFinite<pcl::traits::asType<sensor_msgs::PointField::INT32>::type>(cloud, i, point_size, d, c))
-              cloud.is_dense = false;
-            break;
-          }
-          case sensor_msgs::PointField::UINT32:
-          {
-            if (!isValueFinite<pcl::traits::asType<sensor_msgs::PointField::UINT32>::type>(cloud, i, point_size, d, c))
-              cloud.is_dense = false;
-            break;
-          }
-          case sensor_msgs::PointField::FLOAT32:
-          {
-            if (!isValueFinite<pcl::traits::asType<sensor_msgs::PointField::FLOAT32>::type>(cloud, i, point_size, d, c))
-              cloud.is_dense = false;
-            break;
-          }
-          case sensor_msgs::PointField::FLOAT64:
-          {
-            if (!isValueFinite<pcl::traits::asType<sensor_msgs::PointField::FLOAT64>::type>(cloud, i, point_size, d, c))
-              cloud.is_dense = false;
-            break;
+            case sensor_msgs::PointField::INT8:
+            {
+              if (!isValueFinite<pcl::traits::asType<sensor_msgs::PointField::INT8>::type>(cloud, i, point_size, d, c))
+                cloud.is_dense = false;
+              break;
+            }
+            case sensor_msgs::PointField::UINT8:
+            {
+              if (!isValueFinite<pcl::traits::asType<sensor_msgs::PointField::UINT8>::type>(cloud, i, point_size, d, c))
+                cloud.is_dense = false;
+              break;
+            }
+            case sensor_msgs::PointField::INT16:
+            {
+              if (!isValueFinite<pcl::traits::asType<sensor_msgs::PointField::INT16>::type>(cloud, i, point_size, d, c))
+                cloud.is_dense = false;
+              break;
+            }
+            case sensor_msgs::PointField::UINT16:
+            {
+              if (!isValueFinite<pcl::traits::asType<sensor_msgs::PointField::UINT16>::type>(cloud, i, point_size, d, c))
+                cloud.is_dense = false;
+              break;
+            }
+            case sensor_msgs::PointField::INT32:
+            {
+              if (!isValueFinite<pcl::traits::asType<sensor_msgs::PointField::INT32>::type>(cloud, i, point_size, d, c))
+                cloud.is_dense = false;
+              break;
+            }
+            case sensor_msgs::PointField::UINT32:
+            {
+              if (!isValueFinite<pcl::traits::asType<sensor_msgs::PointField::UINT32>::type>(cloud, i, point_size, d, c))
+                cloud.is_dense = false;
+              break;
+            }
+            case sensor_msgs::PointField::FLOAT32:
+            {
+              if (!isValueFinite<pcl::traits::asType<sensor_msgs::PointField::FLOAT32>::type>(cloud, i, point_size, d, c))
+                cloud.is_dense = false;
+              break;
+            }
+            case sensor_msgs::PointField::FLOAT64:
+            {
+              if (!isValueFinite<pcl::traits::asType<sensor_msgs::PointField::FLOAT64>::type>(cloud, i, point_size, d, c))
+                cloud.is_dense = false;
+              break;
+            }
           }
         }
       }
     }
   }
-
+  double total_time = tt.toc ();
+  PCL_DEBUG ("[pcl::PCDReader::read] Loaded %s as a %s cloud in %g ms with %d points. Available dimensions: %s.\n", 
+             file_name.c_str (), cloud.is_dense ? "dense" : "non-dense", total_time, 
+             cloud.width * cloud.height, pcl::getFieldsList (cloud).c_str ());
   return (0);
 }
 
