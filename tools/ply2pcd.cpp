@@ -107,7 +107,7 @@ main (int argc, char** argv)
   // Command line parsing
   bool format = 0;
   parse_argument (argc, argv, "-format", format);
-  print_info ("PCD output format: "); print_value ("%s\n", (format ? "binary" : "asci"));
+  print_info ("PCD output format: "); print_value ("%s\n", (format ? "binary" : "ascii"));
 
   // Load the first file
   sensor_msgs::PointCloud2 cloud;
