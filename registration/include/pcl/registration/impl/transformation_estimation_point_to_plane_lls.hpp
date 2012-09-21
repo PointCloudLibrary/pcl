@@ -121,7 +121,6 @@ constructTransformationMatrix (const double & alpha, const double & beta, const 
                                const double & tx,    const double & ty,   const double & tz,
                                Matrix4 &transformation_matrix) const
 {
-
   // Construct the transformation matrix from rotation and translation 
   transformation_matrix = Eigen::Matrix<Scalar, 4, 4>::Zero ();
   transformation_matrix (0, 0) = static_cast<Scalar> ( cos (gamma) * cos (beta));

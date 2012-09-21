@@ -47,7 +47,7 @@
 template <typename PointSource, typename PointTarget, typename Scalar> bool
 pcl::registration::CorrespondenceEstimationOrganizedProjection<PointSource, PointTarget, Scalar>::initCompute ()
 {
-  if (!CorrespondenceEstimation<PointSource, PointTarget>::initCompute ())
+  if (!CorrespondenceEstimationBase<PointSource, PointTarget>::initCompute ())
     return (false);
 
   /// Check if the target cloud is organized
@@ -68,8 +68,9 @@ pcl::registration::CorrespondenceEstimationOrganizedProjection<PointSource, Poin
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget, typename Scalar> void
-pcl::registration::CorrespondenceEstimationOrganizedProjection<PointSource, PointTarget, Scalar>::determineCorrespondences (pcl::Correspondences &correspondences,
-                                                                                                                    double max_distance)
+pcl::registration::CorrespondenceEstimationOrganizedProjection<PointSource, PointTarget, Scalar>::determineCorrespondences (
+    pcl::Correspondences &correspondences,
+    double max_distance)
 {
   if (!initCompute ())
     return;
@@ -108,6 +109,16 @@ pcl::registration::CorrespondenceEstimationOrganizedProjection<PointSource, Poin
   }
 
   correspondences.resize (c_index);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointSource, typename PointTarget, typename Scalar> void
+pcl::registration::CorrespondenceEstimationOrganizedProjection<PointSource, PointTarget, Scalar>::determineReciprocalCorrespondences (
+    pcl::Correspondences &correspondences,
+    double max_distance)
+{
+  /// Call the normal determineCorrespondences (...), as doing it both ways will not improve the results
+  determineCorrespondences (correspondences, max_distance);
 }
 
 #endif    // PCL_REGISTRATION_CORRESPONDENCE_ESTIMATION_BACK_PROJECTION_IMPL_HPP_

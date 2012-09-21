@@ -165,6 +165,13 @@ namespace pcl
         void
         determineCorrespondences (Correspondences &correspondences, double max_distance);
 
+        /** \brief Computes the correspondences, applying a maximum Euclidean distance threshold.
+          * \param[in] max_distance Euclidean distance threshold above which correspondences will be rejected
+          */
+        void
+        determineReciprocalCorrespondences (Correspondences &correspondences, double max_distance);
+
+
         /** \brief Provide a simple mechanism to update the internal source cloud
           * using a given transformation. Used in registration loops.
           * \param[in] transform the transform to apply over the source cloud
