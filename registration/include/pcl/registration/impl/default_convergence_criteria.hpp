@@ -50,7 +50,7 @@ pcl::registration::DefaultConvergenceCriteria<Scalar>::hasConverged ()
   PCL_DEBUG ("[pcl::DefaultConvergenceCriteria::hasConverged] Iteration %d out of %d.\n", iterations_, max_iterations_);
   // 1. Number of iterations has reached the maximum user imposed number of iterations
   if (iterations_ >= max_iterations_)
-    return (true);
+    return (failure_after_max_iter_ ? false : true);
 
   // 2. The epsilon (difference) between the previous transformation and the current estimated transformation
   double cos_angle = 0.5 * (transformation_.coeff (0, 0) + transformation_.coeff (1, 1) + transformation_.coeff (2, 2) - 1);
