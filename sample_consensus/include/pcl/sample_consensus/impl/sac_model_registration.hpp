@@ -3,6 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -16,7 +17,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -263,42 +264,29 @@ pcl::SampleConsensusModelRegistration<PointT>::estimateRigidTransformationSVD (
     Eigen::VectorXf &transform)
 {
   transform.resize (16);
-  Eigen::Vector4f centroid_src, centroid_tgt;
-  // Estimate the centroids of source, target
-  compute3DCentroid (cloud_src, indices_src, centroid_src);
-  compute3DCentroid (cloud_tgt, indices_tgt, centroid_tgt);
 
-  // Subtract the centroids from source, target
-  Eigen::MatrixXf cloud_src_demean;
-  demeanPointCloud (cloud_src, indices_src, centroid_src, cloud_src_demean);
+  Eigen::Matrix<double, 3, Eigen::Dynamic> src (3, indices_src.size ());
+  Eigen::Matrix<double, 3, Eigen::Dynamic> tgt (3, indices_tgt.size ());
 
-  Eigen::MatrixXf cloud_tgt_demean;
-  demeanPointCloud (cloud_tgt, indices_tgt, centroid_tgt, cloud_tgt_demean);
-
-  // Assemble the correlation matrix H = source * target'
-  Eigen::Matrix3f H = (cloud_src_demean * cloud_tgt_demean.transpose ()).topLeftCorner<3, 3>();
-
-  // Compute the Singular Value Decomposition
-  Eigen::JacobiSVD<Eigen::Matrix3f> svd (H, Eigen::ComputeFullU | Eigen::ComputeFullV);
-  Eigen::Matrix3f u = svd.matrixU ();
-  Eigen::Matrix3f v = svd.matrixV ();
-
-  // Compute R = V * U'
-  if (u.determinant () * v.determinant () < 0)
+  for (size_t i = 0; i < indices_src.size (); ++i)
   {
-    for (int x = 0; x < 3; ++x)
-      v (x, 2) *= -1;
+    src (0, i) = cloud_src[indices_src[i]].x;
+    src (1, i) = cloud_src[indices_src[i]].y;
+    src (2, i) = cloud_src[indices_src[i]].z;
+
+    tgt (0, i) = cloud_tgt[indices_tgt[i]].x;
+    tgt (1, i) = cloud_tgt[indices_tgt[i]].y;
+    tgt (2, i) = cloud_tgt[indices_tgt[i]].z;
   }
 
-  Eigen::Matrix3f R = v * u.transpose ();
+  // Call Umeyama directly from Eigen
+  Eigen::Matrix4d transformation_matrix = Eigen::umeyama (src, tgt, false);
 
   // Return the correct transformation
-  transform.segment<3> (0).matrix () = R.row (0); transform[12]  = 0;
-  transform.segment<3> (4).matrix () = R.row (1); transform[13]  = 0;
-  transform.segment<3> (8).matrix () = R.row (2); transform[14] = 0;
-
-  Eigen::Vector3f t = centroid_tgt.head<3> () - R * centroid_src.head<3> ();
-  transform[3] = t[0]; transform[7] = t[1]; transform[11] = t[2]; transform[15] = 1.0;
+  transform.segment<4> (0).matrix () = transformation_matrix.cast<float> ().row (0); 
+  transform.segment<4> (4).matrix () = transformation_matrix.cast<float> ().row (1);
+  transform.segment<4> (8).matrix () = transformation_matrix.cast<float> ().row (2);
+  transform.segment<4> (12).matrix () = transformation_matrix.cast<float> ().row (3);
 }
 
 #define PCL_INSTANTIATE_SampleConsensusModelRegistration(T) template class PCL_EXPORTS pcl::SampleConsensusModelRegistration<T>;
