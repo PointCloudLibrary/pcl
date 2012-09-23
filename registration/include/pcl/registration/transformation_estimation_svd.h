@@ -62,7 +62,7 @@ namespace pcl
         typedef boost::shared_ptr<const TransformationEstimationSVD<PointSource, PointTarget, Scalar> > ConstPtr;
 
         typedef typename TransformationEstimation<PointSource, PointTarget, Scalar>::Matrix4 Matrix4;
-        
+
         TransformationEstimationSVD () {};
         virtual ~TransformationEstimationSVD () {};
 
@@ -128,9 +128,9 @@ namespace pcl
           * \param[in] target_it an iterator over the target point cloud dataset
           * \param[out] transformation_matrix the resultant transformation matrix
           */
-        void 
-        estimateRigidTransformation (ConstCloudIterator<PointSource>& source_it, 
-                                     ConstCloudIterator<PointTarget>& target_it, 
+        void
+        estimateRigidTransformation (ConstCloudIterator<PointSource>& source_it,
+                                     ConstCloudIterator<PointTarget>& target_it,
                                      Matrix4 &transformation_matrix) const;
 
         /** \brief Obtain a 4x4 rigid transformation matrix from a correlation matrix H = src * tgt'
@@ -139,7 +139,8 @@ namespace pcl
           * \param[in] cloud_tgt_demean the input target cloud, demeaned, in Eigen format
           * \param[in] centroid_tgt the input target cloud, in Eigen format
           * \param[out] transformation_matrix the resultant 4x4 rigid transformation matrix
-          */ 
+          */
+        // TODO: This method is not used anymore in this class after changing to umeyama. Maybe remove it.
         void
         getTransformationFromCorrelation (
             const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> &cloud_src_demean,

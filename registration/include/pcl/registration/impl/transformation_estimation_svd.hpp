@@ -57,7 +57,7 @@ pcl::registration::TransformationEstimationSVD<PointSource, PointTarget, Scalar>
 
   ConstCloudIterator<PointSource> source_it (cloud_src);
   ConstCloudIterator<PointTarget> target_it (cloud_tgt);
-  estimateRigidTransformation (source_it, target_it, transformation_matrix);  
+  estimateRigidTransformation (source_it, target_it, transformation_matrix);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -77,7 +77,7 @@ pcl::registration::TransformationEstimationSVD<PointSource, PointTarget, Scalar>
 
   ConstCloudIterator<PointSource> source_it (cloud_src, indices_src);
   ConstCloudIterator<PointTarget> target_it (cloud_tgt);
-  estimateRigidTransformation (source_it, target_it, transformation_matrix);  
+  estimateRigidTransformation (source_it, target_it, transformation_matrix);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -98,7 +98,7 @@ pcl::registration::TransformationEstimationSVD<PointSource, PointTarget, Scalar>
 
   ConstCloudIterator<PointSource> source_it (cloud_src, indices_src);
   ConstCloudIterator<PointTarget> target_it (cloud_tgt, indices_tgt);
-  estimateRigidTransformation (source_it, target_it, transformation_matrix);  
+  estimateRigidTransformation (source_it, target_it, transformation_matrix);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -116,25 +116,47 @@ pcl::registration::TransformationEstimationSVD<PointSource, PointTarget, Scalar>
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget, typename Scalar> inline void
-pcl::registration::TransformationEstimationSVD<PointSource, PointTarget, Scalar>::estimateRigidTransformation (ConstCloudIterator<PointSource>& source_it, 
-                    ConstCloudIterator<PointTarget>& target_it, 
+pcl::registration::TransformationEstimationSVD<PointSource, PointTarget, Scalar>::estimateRigidTransformation (ConstCloudIterator<PointSource>& source_it,
+                    ConstCloudIterator<PointTarget>& target_it,
                     Matrix4 &transformation_matrix) const
 {
+  // Convert to Eigen format
+  const int npts = static_cast <int> (source_it.size ());
+
+  Eigen::Matrix<Scalar, 3, Eigen::Dynamic> cloud_src (3, npts);
+  Eigen::Matrix<Scalar, 3, Eigen::Dynamic> cloud_tgt (3, npts);
+
+  for (int i = 0; i < npts; ++i)
+  {
+    cloud_src (0, i) = source_it->x;
+    cloud_src (1, i) = source_it->y;
+    cloud_src (2, i) = source_it->z;
+    ++source_it;
+
+    cloud_tgt (0, i) = target_it->x;
+    cloud_tgt (1, i) = target_it->y;
+    cloud_tgt (2, i) = target_it->z;
+    ++target_it;
+  }
+
+  // Call Umeyama directly from Eigen
+  transformation_matrix = Eigen::umeyama (cloud_src, cloud_tgt, false);
+
   // <cloud_src,cloud_src> is the source dataset
-  transformation_matrix.setIdentity ();
+  //transformation_matrix.setIdentity ();
 
-  Eigen::Matrix<Scalar, 4, 1> centroid_src, centroid_tgt;
-  // Estimate the centroids of source, target
-  compute3DCentroid (source_it, centroid_src);
-  compute3DCentroid (target_it, centroid_tgt);
-  source_it.reset (); target_it.reset ();
+  //Eigen::Matrix<Scalar, 4, 1> centroid_src, centroid_tgt;
+  //// Estimate the centroids of source, target
+  //compute3DCentroid (source_it, centroid_src);
+  //compute3DCentroid (target_it, centroid_tgt);
+  //source_it.reset (); target_it.reset ();
 
-  // Subtract the centroids from source, target
-  Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> cloud_src_demean, cloud_tgt_demean;
-  demeanPointCloud (source_it, centroid_src, cloud_src_demean);
-  demeanPointCloud (target_it, centroid_tgt, cloud_tgt_demean);
+  //// Subtract the centroids from source, target
+  //Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> cloud_src_demean, cloud_tgt_demean;
+  //demeanPointCloud (source_it, centroid_src, cloud_src_demean);
+  //demeanPointCloud (target_it, centroid_tgt, cloud_tgt_demean);
 
-  getTransformationFromCorrelation (cloud_src_demean, centroid_src, cloud_tgt_demean, centroid_tgt, transformation_matrix);
+  //getTransformationFromCorrelation (cloud_src_demean, centroid_src, cloud_tgt_demean, centroid_tgt, transformation_matrix);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
