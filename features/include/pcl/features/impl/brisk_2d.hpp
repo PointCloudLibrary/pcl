@@ -528,10 +528,10 @@ pcl::BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::compute (
   //integral_image_2d.setInputData (image_data, width, height, width, width);
   
   for (size_t row_index = 1; row_index < height; ++row_index)
-    integral[index] = image_data[index] + integral[index-width];
+    integral[row_index*width] = image_data[row_index*width] + integral[row_index*width-width];
 
   for (size_t col_index = 1; col_index < width; ++col_index)
-    integral[index] = image_data[index] + integral[index-1];
+    integral[col_index] = image_data[col_index] + integral[col_index-1];
 
   for (size_t row_index = 1; row_index < height; ++row_index)
   {
