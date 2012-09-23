@@ -83,16 +83,6 @@ pcl::ihs::Integration::merge (const CloudModelPtr&          cloud_model,
                               const CloudProcessedConstPtr& cloud_data,
                               const Transformation&         T) const
 {
-  // Don't allow color values > 255
-  static const struct ThreshRGB
-  {
-    uint8_t
-    operator () (const float val) const
-    {
-      return (static_cast <uint8_t> (val > 255.f ? 255 : val));
-    }
-  } thresh_rgb;
-
   // TODO: The size is hard coded for the kinect
   const unsigned int w = 640;
   const unsigned int h = 480;
@@ -157,9 +147,9 @@ pcl::ihs::Integration::merge (const CloudModelPtr&          cloud_model,
 
         pt_m.getVector4fMap ()       = ( W*pt_m.getVector4fMap ()       + w*pt_d_trans.getVector4fMap ())       / WW;
         pt_m.getNormalVector4fMap () = ((W*pt_m.getNormalVector4fMap () + w*pt_d_trans.getNormalVector4fMap ()) / WW).normalized ();
-        pt_m.r                       = thresh_rgb ((W*r_m + w*r_d) / WW);
-        pt_m.g                       = thresh_rgb ((W*g_m + w*g_d) / WW);
-        pt_m.b                       = thresh_rgb ((W*b_m + w*b_d) / WW);
+        pt_m.r                       = rgbTrimming ((W*r_m + w*r_d) / WW);
+        pt_m.g                       = rgbTrimming ((W*g_m + w*g_d) / WW);
+        pt_m.b                       = rgbTrimming ((W*b_m + w*b_d) / WW);
 
         // Point has been observed again -> give it some extra time to live
         pt_m.age = 0;
