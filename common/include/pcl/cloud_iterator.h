@@ -74,10 +74,13 @@ namespace pcl
 
       unsigned getCurrentIndex () const;
 
+      /** \brief Size of the range the iterator is going through. Depending on how the CloudIterator was constructed this is the size of the cloud or indices/correspondences. */
+      size_t size () const;
+
       void reset ();
 
       bool isValid () const;
-      
+
       operator bool () const
       {
         return isValid ();
@@ -100,6 +103,9 @@ namespace pcl
           virtual unsigned getCurrentPointIndex () const = 0;
 
           virtual unsigned getCurrentIndex () const = 0;
+
+          /** \brief Size of the range the iterator is going through. Depending on how the CloudIterator was constructed this is the size of the cloud or indices/correspondences. */
+          virtual size_t size () const = 0;
 
           virtual void reset () = 0;
 
@@ -137,10 +143,13 @@ namespace pcl
 
       unsigned getCurrentIndex () const;
 
+      /** \brief Size of the range the iterator is going through. Depending on how the ConstCloudIterator was constructed this is the size of the cloud or indices/correspondences. */
+      size_t size () const;
+
       void reset ();
 
       bool isValid () const;
-      
+
       operator bool () const
       {
         return isValid ();
@@ -163,6 +172,9 @@ namespace pcl
           virtual unsigned getCurrentPointIndex () const = 0;
 
           virtual unsigned getCurrentIndex () const = 0;
+
+          /** \brief Size of the range the iterator is going through. Depending on how the ConstCloudIterator was constructed this is the size of the cloud or indices/correspondences. */
+          virtual size_t size () const = 0;
 
           virtual void reset () = 0;
 

@@ -44,7 +44,7 @@
 namespace pcl
 {
   /** \brief
-    * \author Suat Gedikli 
+    * \author Suat Gedikli
     */
   template <class PointT>
   class DefaultIterator : public CloudIterator<PointT>::Iterator
@@ -90,6 +90,11 @@ namespace pcl
         return (iterator_ - cloud_.begin ());
       }
 
+      size_t size () const
+      {
+        return cloud_.size ();
+      }
+
       void reset ()
       {
         iterator_ = cloud_.begin ();
@@ -105,7 +110,7 @@ namespace pcl
   };
 
   /** \brief
-    * \author Suat Gedikli 
+    * \author Suat Gedikli
     */
   template <class PointT>
   class IteratorIdx : public CloudIterator<PointT>::Iterator
@@ -113,14 +118,14 @@ namespace pcl
     public:
       IteratorIdx (PointCloud<PointT>& cloud, const std::vector<int>& indices)
         : cloud_ (cloud)
-        , indices_ (indices) 
+        , indices_ (indices)
         , iterator_ (indices_.begin ())
       {
       }
 
       IteratorIdx (PointCloud<PointT>& cloud, const PointIndices& indices)
         : cloud_ (cloud)
-        , indices_ (indices.indices) 
+        , indices_ (indices.indices)
         , iterator_ (indices_.begin ())
       {
       }
@@ -157,6 +162,11 @@ namespace pcl
         return (iterator_ - indices_.begin ());
       }
 
+      size_t size () const
+      {
+        return indices_.size ();
+      }
+
       void reset ()
       {
         iterator_ = indices_.begin ();
@@ -174,7 +184,7 @@ namespace pcl
   };
 
   /** \brief
-    * \author Suat Gedikli 
+    * \author Suat Gedikli
     */
   template <class PointT>
   class ConstCloudIterator<PointT>::DefaultConstIterator : public ConstCloudIterator<PointT>::Iterator
@@ -220,6 +230,11 @@ namespace pcl
         return (unsigned (iterator_ - cloud_.begin ()));
       }
 
+      size_t size () const
+      {
+        return cloud_.size ();
+      }
+
       void reset ()
       {
         iterator_ = cloud_.begin ();
@@ -235,24 +250,24 @@ namespace pcl
   };
 
   /** \brief
-    * \author Suat Gedikli 
+    * \author Suat Gedikli
     */
   template <class PointT>
   class ConstCloudIterator<PointT>::ConstIteratorIdx : public ConstCloudIterator<PointT>::Iterator
   {
     public:
-      ConstIteratorIdx (const PointCloud<PointT>& cloud, 
+      ConstIteratorIdx (const PointCloud<PointT>& cloud,
                         const std::vector<int>& indices)
         : cloud_ (cloud)
-        , indices_ (indices) 
+        , indices_ (indices)
         , iterator_ (indices_.begin ())
       {
       }
 
-      ConstIteratorIdx (const PointCloud<PointT>& cloud, 
+      ConstIteratorIdx (const PointCloud<PointT>& cloud,
                         const PointIndices& indices)
         : cloud_ (cloud)
-        , indices_ (indices.indices) 
+        , indices_ (indices.indices)
         , iterator_ (indices_.begin ())
       {
       }
@@ -287,6 +302,11 @@ namespace pcl
       unsigned getCurrentIndex () const
       {
         return (unsigned (iterator_ - indices_.begin ()));
+      }
+
+      size_t size () const
+      {
+        return indices_.size ();
       }
 
       void reset ()
@@ -399,6 +419,13 @@ pcl::CloudIterator<PointT>::getCurrentIndex () const
 }
 
 //////////////////////////////////////////////////////////////////////////////
+template <class PointT> size_t
+pcl::CloudIterator<PointT>::size () const
+{
+  return (iterator_->size ());
+}
+
+//////////////////////////////////////////////////////////////////////////////
 template <class PointT> void
 pcl::CloudIterator<PointT>::reset ()
 {
@@ -503,6 +530,13 @@ template <class PointT> unsigned
 pcl::ConstCloudIterator<PointT>::getCurrentIndex () const
 {
   return (iterator_->getCurrentIndex ());
+}
+
+//////////////////////////////////////////////////////////////////////////////
+template <class PointT> size_t
+pcl::ConstCloudIterator<PointT>::size () const
+{
+  return (iterator_->size ());
 }
 
 //////////////////////////////////////////////////////////////////////////////
