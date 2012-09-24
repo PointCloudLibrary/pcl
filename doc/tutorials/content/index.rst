@@ -822,6 +822,22 @@ Segmentation
      .. |se_6| image:: images/min_cut_segmentation.jpg
                :height: 100px
 
+  * :ref:`conditional_euclidean_clustering`
+
+     ======  ======
+     |se_7|  Title: **Conditional Euclidean Clustering**
+
+             Author: *Frits Florentinus*
+
+             Compatibility: > PCL 1.7
+
+             This tutorial describes how to use the Conditional Euclidean Clustering class in PCL:
+             A segmentation algorithm that clusters points based on Euclidean distance and a user-customizable condition that needs to hold.
+     ======  ======
+
+     .. |se_7| image:: images/conditional_euclidean_clustering.png
+               :height: 100px
+
 .. _surface_tutorial:
 
 Surface
