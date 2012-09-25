@@ -78,6 +78,7 @@ namespace pcl
       using Feature<PointInT, PointOutT>::fake_surface_;
       using FeatureFromNormals<PointInT, PointNT, PointOutT>::normals_;
       using FeatureWithLocalReferenceFrames<PointInT, PointRFT>::frames_;
+      using SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT>::lrf_radius_;
       using SHOTEstimation<PointInT, PointNT, PointOutT, PointRFT>::descLength_;
       using SHOTEstimation<PointInT, PointNT, PointOutT, PointRFT>::nr_grid_sector_;
       using SHOTEstimation<PointInT, PointNT, PointOutT, PointRFT>::nr_shape_bins_;
@@ -151,6 +152,7 @@ namespace pcl
       using Feature<PointInT, PointOutT>::fake_surface_;
       using FeatureFromNormals<PointInT, PointNT, PointOutT>::normals_;
       using FeatureWithLocalReferenceFrames<PointInT, PointRFT>::frames_;
+      using SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT>::lrf_radius_;
       using SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::descLength_;
       using SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::nr_grid_sector_;
       using SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::nr_shape_bins_;
@@ -200,5 +202,3 @@ namespace pcl
 }
 
 #endif  //#ifndef PCL_SHOT_OMP_H_
-
-

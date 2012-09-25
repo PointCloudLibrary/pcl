@@ -61,7 +61,7 @@ pcl::SHOTEstimationOMP<PointInT, PointNT, PointOutT, PointRFT>::initCompute ()
 
   // Default LRF estimation alg: SHOTLocalReferenceFrameEstimationOMP
   typename boost::shared_ptr<SHOTLocalReferenceFrameEstimationOMP<PointInT, PointRFT> > lrf_estimator(new SHOTLocalReferenceFrameEstimationOMP<PointInT, PointRFT>());
-  lrf_estimator->setRadiusSearch (search_radius_);
+  lrf_estimator->setRadiusSearch ((lrf_radius_ > 0 ? lrf_radius_ : search_radius_));
   lrf_estimator->setInputCloud (input_);
   lrf_estimator->setIndices (indices_);
   lrf_estimator->setNumberOfThreads(threads_);
@@ -99,7 +99,7 @@ pcl::SHOTColorEstimationOMP<PointInT, PointNT, PointOutT, PointRFT>::initCompute
 
   // Default LRF estimation alg: SHOTLocalReferenceFrameEstimationOMP
   typename boost::shared_ptr<SHOTLocalReferenceFrameEstimationOMP<PointInT, PointRFT> > lrf_estimator(new SHOTLocalReferenceFrameEstimationOMP<PointInT, PointRFT>());
-  lrf_estimator->setRadiusSearch (search_radius_);
+  lrf_estimator->setRadiusSearch ((lrf_radius_ > 0 ? lrf_radius_ : search_radius_));
   lrf_estimator->setInputCloud (input_);
   lrf_estimator->setIndices (indices_);
   lrf_estimator->setNumberOfThreads(threads_);

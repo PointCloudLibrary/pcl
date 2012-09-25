@@ -88,7 +88,7 @@ namespace pcl
         */
       SHOTEstimationBase (int nr_shape_bins = 10) :
         nr_shape_bins_ (nr_shape_bins),
-        shot_ (),
+        shot_ (), lrf_radius_ (0),
         sqradius_ (0), radius3_4_ (0), radius1_4_ (0), radius1_2_ (0),
         nr_grid_sector_ (32),
         maxAngularSectors_ (28),
@@ -109,6 +109,14 @@ namespace pcl
                         const std::vector<int> &indices,
                         const std::vector<float> &sqr_dists,
                         Eigen::VectorXf &shot) = 0;
+
+        /** \brief Set the radius used for local reference frame estimation if the frames are not set by the user */
+      virtual void
+      setLRFRadius (float radius) { lrf_radius_ = radius; }
+
+        /** \brief Get the radius used for local reference frame estimation */
+      virtual float
+      getLRFRadius () const { return lrf_radius_; }
 
     protected:
 
@@ -156,6 +164,9 @@ namespace pcl
 
       /** \brief Placeholder for a point's SHOT. */
       Eigen::VectorXf shot_;
+
+      /** \brief The radius used for the LRF computation */
+      float lrf_radius_;
 
       /** \brief The squared search radius. */
       double sqradius_;
@@ -564,5 +575,3 @@ namespace pcl
 }
 
 #endif  //#ifndef PCL_SHOT_H_
-
-
