@@ -73,7 +73,7 @@ pcl::GeometricConsistencyGrouping<PointModelT, PointSceneT>::clusterCorresponden
   model_scene_corrs_ = sorted_corrs;
 
   std::vector<int> consensus_set;
-  std::vector<bool> taken_corresps (model_scene_corrs_->size ());
+  std::vector<bool> taken_corresps (model_scene_corrs_->size (), false);
 
   Eigen::Vector3f dist_ref, dist_trg;
 
