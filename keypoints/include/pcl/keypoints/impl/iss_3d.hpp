@@ -373,7 +373,7 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloudOut
 
   for (index = 0; index < int (input_->size ()); index++)
   {
-    if (borders[index])
+    if (!borders[index])
     {
       if ( (prg_mem[index][0] < gamma_21_) && (prg_mem[index][1] < gamma_32_) )
       {
@@ -409,7 +409,7 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloudOut
 
       n_neighbors = static_cast<int> (nn_indices.size ());
 
-      if (n_neighbors < min_neighbors_)
+      if (n_neighbors >= min_neighbors_)
       {
         is_max = true;
 
