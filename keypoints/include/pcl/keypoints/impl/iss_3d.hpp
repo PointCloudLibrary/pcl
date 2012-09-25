@@ -229,12 +229,6 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::initCompute ()
 		name_.c_str (), min_neighbors_);
     return (false);
   }
-  if (normal_radius_ < 0)
-  {
-    PCL_ERROR ("[pcl::%s::initCompute] : the radius used to estimate surface normals (%f) must be positive!\n",
-		name_.c_str (), normal_radius_);
-    return (false);
-  }
 
   if (third_eigen_value_)
     delete[] third_eigen_value_;
@@ -247,42 +241,37 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::initCompute ()
 
   if (border_radius_ > 0.0)
   {
-    if (normal_radius_ <= 0.0 )
+    if (normals_->empty ())
     {
-      PCL_ERROR ("[pcl::%s::initCompute] : the normal radius (%f) must be strict positive!\n",
-		  name_.c_str (), normal_radius_);
-      return (false);
-    }
-    else
-    {
-      if (normals_->empty ())
+      if (normal_radius_ <= 0.)
       {
-	PointCloudNPtr normals (new PointCloudN ());
-        normals->reserve (surface_->size ());
-
-        if (input_->height == 1 )
-        {
-          pcl::NormalEstimation<PointInT, NormalT> normal_estimation;
-          normal_estimation.setInputCloud (surface_);
-          normal_estimation.setRadiusSearch (normal_radius_);
-          normal_estimation.compute (*normals);
-        }
-        else
-        {
-          pcl::IntegralImageNormalEstimation<PointInT, NormalT> normal_estimation;
-          normal_estimation.setNormalEstimationMethod (pcl::IntegralImageNormalEstimation<PointInT, NormalT>::SIMPLE_3D_GRADIENT);
-          normal_estimation.setInputCloud (surface_);
-          normal_estimation.setNormalSmoothingSize (5.0);
-          normal_estimation.compute (*normals);
-        }
-
-        normals_ = normals;
-      }
-      if (normals_->size () != surface_->size ())
-      {
-        PCL_ERROR ("[pcl::%s::initCompute] normals given, but the number of normals does not match the number of input points!\n", name_.c_str ());
+        PCL_ERROR ("[pcl::%s::initCompute] : the radius used to estimate surface normals (%f) must be positive!\n",
+        name_.c_str (), normal_radius_);
         return (false);
       }
+
+      PointCloudNPtr normal_ptr (new PointCloudN ());
+      if (input_->height == 1 )
+      {
+        pcl::NormalEstimation<PointInT, NormalT> normal_estimation;
+        normal_estimation.setInputCloud (surface_);
+        normal_estimation.setRadiusSearch (normal_radius_);
+        normal_estimation.compute (*normal_ptr);
+      }
+      else
+      {
+        pcl::IntegralImageNormalEstimation<PointInT, NormalT> normal_estimation;
+        normal_estimation.setNormalEstimationMethod (pcl::IntegralImageNormalEstimation<PointInT, NormalT>::SIMPLE_3D_GRADIENT);
+        normal_estimation.setInputCloud (surface_);
+        normal_estimation.setNormalSmoothingSize (5.0);
+        normal_estimation.compute (*normal_ptr);
+      }
+      normals_ = normal_ptr;
+    }
+    if (normals_->size () != surface_->size ())
+    {
+      PCL_ERROR ("[pcl::%s::initCompute] normals given, but the number of normals does not match the number of input points!\n", name_.c_str ());
+      return (false);
     }
   }
   else if (border_radius_ < 0.0)
