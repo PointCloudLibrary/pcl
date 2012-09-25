@@ -32,11 +32,11 @@ if(build)
     add_subdirectory(geometry)
     add_subdirectory(io)
     add_subdirectory(kdtree)
-    add_subdirectory(keypoints)
     add_subdirectory(octree)
     add_subdirectory(outofcore)
     add_subdirectory(registration)
     add_subdirectory(search)
+    add_subdirectory(keypoints)
     
     if(QHULL_FOUND)
       PCL_ADD_TEST(a_surface_test test_surface
