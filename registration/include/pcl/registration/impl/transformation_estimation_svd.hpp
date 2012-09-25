@@ -40,6 +40,8 @@
 #ifndef PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_SVD_HPP_
 #define PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_SVD_HPP_
 
+#include <pcl/common/eigen.h>
+
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget, typename Scalar> inline void
 pcl::registration::TransformationEstimationSVD<PointSource, PointTarget, Scalar>::estimateRigidTransformation (
@@ -116,9 +118,10 @@ pcl::registration::TransformationEstimationSVD<PointSource, PointTarget, Scalar>
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget, typename Scalar> inline void
-pcl::registration::TransformationEstimationSVD<PointSource, PointTarget, Scalar>::estimateRigidTransformation (ConstCloudIterator<PointSource>& source_it,
-                    ConstCloudIterator<PointTarget>& target_it,
-                    Matrix4 &transformation_matrix) const
+pcl::registration::TransformationEstimationSVD<PointSource, PointTarget, Scalar>::estimateRigidTransformation (
+    ConstCloudIterator<PointSource>& source_it,
+    ConstCloudIterator<PointTarget>& target_it,
+    Matrix4 &transformation_matrix) const
 {
   // Convert to Eigen format
   const int npts = static_cast <int> (source_it.size ());
@@ -139,24 +142,27 @@ pcl::registration::TransformationEstimationSVD<PointSource, PointTarget, Scalar>
     ++target_it;
   }
 
-  // Call Umeyama directly from Eigen
-  transformation_matrix = Eigen::umeyama (cloud_src, cloud_tgt, false);
+  // Call Umeyama directly from Eigen (PCL patched version until Eigen is released)
+  transformation_matrix = pcl::umeyama (cloud_src, cloud_tgt, false);
 
+#if 0
+  source_it.reset (); target_it.reset ();
   // <cloud_src,cloud_src> is the source dataset
-  //transformation_matrix.setIdentity ();
+  transformation_matrix.setIdentity ();
 
-  //Eigen::Matrix<Scalar, 4, 1> centroid_src, centroid_tgt;
-  //// Estimate the centroids of source, target
-  //compute3DCentroid (source_it, centroid_src);
-  //compute3DCentroid (target_it, centroid_tgt);
-  //source_it.reset (); target_it.reset ();
+  Eigen::Matrix<Scalar, 4, 1> centroid_src, centroid_tgt;
+  // Estimate the centroids of source, target
+  compute3DCentroid (source_it, centroid_src);
+  compute3DCentroid (target_it, centroid_tgt);
+  source_it.reset (); target_it.reset ();
 
-  //// Subtract the centroids from source, target
-  //Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> cloud_src_demean, cloud_tgt_demean;
-  //demeanPointCloud (source_it, centroid_src, cloud_src_demean);
-  //demeanPointCloud (target_it, centroid_tgt, cloud_tgt_demean);
+  // Subtract the centroids from source, target
+  Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> cloud_src_demean, cloud_tgt_demean;
+  demeanPointCloud (source_it, centroid_src, cloud_src_demean);
+  demeanPointCloud (target_it, centroid_tgt, cloud_tgt_demean);
 
-  //getTransformationFromCorrelation (cloud_src_demean, centroid_src, cloud_tgt_demean, centroid_tgt, transformation_matrix);
+  getTransformationFromCorrelation (cloud_src_demean, centroid_src, cloud_tgt_demean, centroid_tgt, transformation_matrix);
+#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
