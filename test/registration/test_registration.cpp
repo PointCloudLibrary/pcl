@@ -418,7 +418,7 @@ TEST (PCL, SampleConsensusInitialAlignment)
   // Initialize Sample Consensus Initial Alignment (SAC-IA)
   SampleConsensusInitialAlignment<PointXYZ, PointXYZ, FPFHSignature33> reg;
   reg.setMinSampleDistance (0.05f);
-  reg.setMaxCorrespondenceDistance (0.2);
+  reg.setMaxCorrespondenceDistance (0.1);
   reg.setMaximumIterations (1000);
 
   reg.setInputSource (cloud_source_ptr);

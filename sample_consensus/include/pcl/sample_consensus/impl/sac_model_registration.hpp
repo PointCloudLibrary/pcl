@@ -43,6 +43,7 @@
 
 #include <pcl/sample_consensus/sac_model_registration.h>
 #include <pcl/common/point_operators.h>
+#include <pcl/common/eigen.h>
 
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool
@@ -280,7 +281,7 @@ pcl::SampleConsensusModelRegistration<PointT>::estimateRigidTransformationSVD (
   }
 
   // Call Umeyama directly from Eigen
-  Eigen::Matrix4d transformation_matrix = Eigen::umeyama (src, tgt, false);
+  Eigen::Matrix4d transformation_matrix = pcl::umeyama (src, tgt, false);
 
   // Return the correct transformation
   transform.segment<4> (0).matrix () = transformation_matrix.cast<float> ().row (0); 
