@@ -838,6 +838,21 @@ Segmentation
      .. |se_7| image:: images/conditional_euclidean_clustering.png
                :height: 100px
 
+  * :ref:`don_segmentation`
+
+     ======  ======
+     |se_8|  Title: **Difference of Normals Based Segmentation**
+
+             Author: *Yani Ioannou*
+
+             Compatibility: > PCL 1.7
+
+             In this tutorial we will learn how to use the difference of normals feature for segmentation.
+     ======  ======
+
+     .. |se_8| image:: images/don_segmentation.png
+               :height: 100px
+               
 .. _surface_tutorial:
 
 Surface
