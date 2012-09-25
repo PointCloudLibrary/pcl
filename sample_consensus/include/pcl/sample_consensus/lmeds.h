@@ -1,7 +1,10 @@
 /*
  * Software License Agreement (BSD License)
  *
+ *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2009, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -14,7 +17,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -43,51 +46,56 @@
 
 namespace pcl
 {
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief @b LeastMedianSquares represents an implementation of the LMedS (Least Median of Squares) algorithm. LMedS 
     * is a RANSAC-like model-fitting algorithm that can tolerate up to 50% outliers without requiring thresholds to be 
     * set. See Andrea Fusiello's "Elements of Geometric Computer Vision"
     * (http://homepages.inf.ed.ac.uk/rbf/CVonline/LOCAL_COPIES/FUSIELLO4/tutorial.html#x1-520007) for more details.
-    * \author Radu Bogdan Rusu
+    * \author Radu B. Rusu
     * \ingroup sample_consensus
     */
   template <typename PointT>
   class LeastMedianSquares : public SampleConsensus<PointT>
   {
-    using SampleConsensus<PointT>::max_iterations_;
-    using SampleConsensus<PointT>::threshold_;
-    using SampleConsensus<PointT>::iterations_;
-    using SampleConsensus<PointT>::sac_model_;
-    using SampleConsensus<PointT>::model_;
-    using SampleConsensus<PointT>::model_coefficients_;
-    using SampleConsensus<PointT>::inliers_;
-
     typedef typename SampleConsensusModel<PointT>::Ptr SampleConsensusModelPtr;
 
     public:
+      typedef boost::shared_ptr<LeastMedianSquares> Ptr;
+      typedef boost::shared_ptr<const LeastMedianSquares> ConstPtr;
+
+      using SampleConsensus<PointT>::max_iterations_;
+      using SampleConsensus<PointT>::threshold_;
+      using SampleConsensus<PointT>::iterations_;
+      using SampleConsensus<PointT>::sac_model_;
+      using SampleConsensus<PointT>::model_;
+      using SampleConsensus<PointT>::model_coefficients_;
+      using SampleConsensus<PointT>::inliers_;
+
       /** \brief LMedS (Least Median of Squares) main constructor
-        * \param model a Sample Consensus model
+        * \param[in] model a Sample Consensus model
         */
-      LeastMedianSquares (const SampleConsensusModelPtr &model) : SampleConsensus<PointT> (model)
+      LeastMedianSquares (const SampleConsensusModelPtr &model) 
+        : SampleConsensus<PointT> (model)
       {
         // Maximum number of trials before we give up.
         max_iterations_ = 50;
       }
 
       /** \brief LMedS (Least Median of Squares) main constructor
-        * \param model a Sample Consensus model
-        * \param threshold distance to model threshold
+        * \param[in] model a Sample Consensus model
+        * \param[in] threshold distance to model threshold
         */
-      LeastMedianSquares (const SampleConsensusModelPtr &model, double threshold) : SampleConsensus<PointT> (model, threshold)
+      LeastMedianSquares (const SampleConsensusModelPtr &model, double threshold) 
+        : SampleConsensus<PointT> (model, threshold)
       {
         // Maximum number of trials before we give up.
         max_iterations_ = 50;
       }
 
       /** \brief Compute the actual model and find the inliers
-        * \param debug_verbosity_level enable/disable on-screen debug information and set the verbosity level
+        * \param[in] debug_verbosity_level enable/disable on-screen debug information and set the verbosity level
         */
-      bool computeModel (int debug_verbosity_level = 0);
+      bool 
+      computeModel (int debug_verbosity_level = 0);
   };
 }
 

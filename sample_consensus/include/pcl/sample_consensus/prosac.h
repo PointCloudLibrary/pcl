@@ -1,7 +1,10 @@
 /*
  * Software License Agreement (BSD License)
  *
+ *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2009, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -14,7 +17,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -43,7 +46,6 @@
 
 namespace pcl
 {
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief @b RandomSampleConsensus represents an implementation of the RANSAC (RAndom SAmple Consensus) algorithm, as
     * described in: "Matching with PROSAC – Progressive Sample Consensus", Chum, O. and Matas, J.G., CVPR, I: 220-226
     * 2005.
@@ -53,20 +55,23 @@ namespace pcl
   template<typename PointT>
   class ProgressiveSampleConsensus : public SampleConsensus<PointT>
   {
-    using SampleConsensus<PointT>::max_iterations_;
-    using SampleConsensus<PointT>::threshold_;
-    using SampleConsensus<PointT>::iterations_;
-    using SampleConsensus<PointT>::sac_model_;
-    using SampleConsensus<PointT>::model_;
-    using SampleConsensus<PointT>::model_coefficients_;
-    using SampleConsensus<PointT>::inliers_;
-    using SampleConsensus<PointT>::probability_;
-
     typedef typename SampleConsensusModel<PointT>::Ptr SampleConsensusModelPtr;
 
     public:
+      typedef boost::shared_ptr<ProgressiveSampleConsensus> Ptr;
+      typedef boost::shared_ptr<const ProgressiveSampleConsensus> ConstPtr;
+
+      using SampleConsensus<PointT>::max_iterations_;
+      using SampleConsensus<PointT>::threshold_;
+      using SampleConsensus<PointT>::iterations_;
+      using SampleConsensus<PointT>::sac_model_;
+      using SampleConsensus<PointT>::model_;
+      using SampleConsensus<PointT>::model_coefficients_;
+      using SampleConsensus<PointT>::inliers_;
+      using SampleConsensus<PointT>::probability_;
+
       /** \brief PROSAC (Progressive SAmple Consensus) main constructor
-        * \param model a Sample Consensus model
+        * \param[in] model a Sample Consensus model
         */
       ProgressiveSampleConsensus (const SampleConsensusModelPtr &model) :
         SampleConsensus<PointT> (model)
@@ -76,8 +81,8 @@ namespace pcl
       }
 
       /** \brief PROSAC (Progressive SAmple Consensus) main constructor
-        * \param model a Sample Consensus model
-        * \param threshold distance to model threshold
+        * \param[in] model a Sample Consensus model
+        * \param[in] threshold distance to model threshold
        */
       ProgressiveSampleConsensus (const SampleConsensusModelPtr &model, double threshold) :
         SampleConsensus<PointT> (model, threshold)
@@ -87,11 +92,13 @@ namespace pcl
       }
 
       /** \brief Compute the actual model and find the inliers
-        * \param debug_verbosity_level enable/disable on-screen debug information and set the verbosity level
+        * \param[in] debug_verbosity_level enable/disable on-screen debug information and set the verbosity level
         */
       bool 
       computeModel (int debug_verbosity_level = 0);
   };
 }
+
+#include <pcl/sample_consensus/impl/prosac.hpp>
 
 #endif  //#ifndef PCL_SAMPLE_CONSENSUS_PROSAC_H_
