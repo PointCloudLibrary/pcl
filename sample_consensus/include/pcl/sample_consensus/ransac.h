@@ -99,7 +99,5 @@ namespace pcl
   };
 }
 
-#include <pcl/sample_consensus/impl/ransac.hpp>
-
 #endif  //#ifndef PCL_SAMPLE_CONSENSUS_RANSAC_H_
 

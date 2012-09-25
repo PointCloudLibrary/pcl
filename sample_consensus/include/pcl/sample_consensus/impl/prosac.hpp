@@ -227,8 +227,6 @@ pcl::ProgressiveSampleConsensus<PointT>::computeModel (int debug_verbosity_level
     return (false);
   }
 
-  // Get the set of inliers that correspond to the best model found so far
-  //sac_model_->selectWithinDistance (model_coefficients_, threshold_, inliers_);
   return (true);
 }
 

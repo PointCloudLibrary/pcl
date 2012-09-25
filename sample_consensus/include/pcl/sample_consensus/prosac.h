@@ -99,6 +99,4 @@ namespace pcl
   };
 }
 
-#include <pcl/sample_consensus/impl/prosac.hpp>
-
 #endif  //#ifndef PCL_SAMPLE_CONSENSUS_PROSAC_H_
