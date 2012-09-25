@@ -102,7 +102,7 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::setNormals (const PointCloudNC
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointInT, typename PointOutT, typename NormalT> bool*
-pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::getBoundaryPoints (PointCloudIn &input, double border_radius)
+pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::getBoundaryPoints (PointCloudIn &input, double border_radius, float angle_threshold)
 {
   bool* edge_points = new bool [input.size ()];
 
@@ -110,6 +110,7 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::getBoundaryPoints (PointCloudI
   Eigen::Vector4f v = Eigen::Vector4f::Zero ();
 
   pcl::BoundaryEstimation<PointInT, NormalT, pcl::Boundary> boundary_estimator;
+  boundary_estimator.setInputCloud (input_);
 
   size_t index;
 #ifdef _OPENMP
@@ -123,16 +124,16 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::getBoundaryPoints (PointCloudI
     std::vector<float> nn_distances;
     int n_neighbors;
 
-    this->searchForNeighbors (index, border_radius, nn_indices, nn_distances);
+    this->searchForNeighbors (static_cast<int> (index), border_radius, nn_indices, nn_distances);
 
-    n_neighbors = nn_indices.size();
+    n_neighbors = static_cast<int> (nn_indices.size ());
 
     if (n_neighbors < min_neighbors_)
       continue;
 
     boundary_estimator.getCoordinateSystemOnPlane (normals_->points[index], u, v);
 
-    if (boundary_estimator.isBoundaryPoint (input, index, nn_indices, u, v, float (M_PI) / 2.0))
+    if (boundary_estimator.isBoundaryPoint (input, static_cast<int> (index), nn_indices, u, v, angle_threshold))
       edge_points[index] = true;
   }
 
@@ -160,7 +161,7 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::getScatterMatrix (const int& c
 
   this->searchForNeighbors (current_index, salient_radius_, nn_indices, nn_distances);
 
-  n_neighbors = nn_indices.size();
+  n_neighbors = static_cast<int> (nn_indices.size ());
 
   if (n_neighbors < min_neighbors_)
     return;
@@ -262,20 +263,25 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::initCompute ()
         if (input_->height == 1 )
         {
           pcl::NormalEstimation<PointInT, NormalT> normal_estimation;
-          normal_estimation.setInputCloud(surface_);
-          normal_estimation.setRadiusSearch(normal_radius_);
+          normal_estimation.setInputCloud (surface_);
+          normal_estimation.setRadiusSearch (normal_radius_);
           normal_estimation.compute (*normals);
         }
         else
         {
           pcl::IntegralImageNormalEstimation<PointInT, NormalT> normal_estimation;
           normal_estimation.setNormalEstimationMethod (pcl::IntegralImageNormalEstimation<PointInT, NormalT>::SIMPLE_3D_GRADIENT);
-          normal_estimation.setInputCloud(surface_);
+          normal_estimation.setInputCloud (surface_);
           normal_estimation.setNormalSmoothingSize (5.0);
           normal_estimation.compute (*normals);
         }
 
         normals_ = normals;
+      }
+      if (normals_->size () != surface_->size ())
+      {
+        PCL_ERROR ("[pcl::%s::initCompute] normals given, but the number of normals does not match the number of input points!\n", name_.c_str ());
+        return (false);
       }
     }
   }
@@ -297,7 +303,7 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloudOut
   output.points.clear ();
 
   if (border_radius_ > 0.0)
-    edge_points_ = getBoundaryPoints (*(input_->makeShared ()), border_radius_);
+    edge_points_ = getBoundaryPoints (*(input_->makeShared ()), border_radius_, angle_threshold_);
 
   bool* borders = new bool [input_->size()];
 
@@ -314,7 +320,7 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloudOut
       std::vector<int> nn_indices;
       std::vector<float> nn_distances;
 
-      this->searchForNeighbors (index, border_radius_, nn_indices, nn_distances);
+      this->searchForNeighbors (static_cast<int> (index), border_radius_, nn_indices, nn_distances);
 
       for (size_t j = 0 ; j < nn_indices.size (); j++)
       {
@@ -355,7 +361,7 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloudOut
     //if the considered point is not a border point then compute the scatter matrix
     Eigen::Matrix3d cov_m = Eigen::Matrix3d::Zero ();
 
-    getScatterMatrix (index, cov_m);
+    getScatterMatrix (static_cast<int> (index), cov_m);
 
     Eigen::SelfAdjointEigenSolver<Eigen::Matrix3d> solver (cov_m);
 
@@ -410,9 +416,9 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloudOut
       std::vector<float> nn_distances;
       int n_neighbors;
 
-      this->searchForNeighbors (index, non_max_radius_, nn_indices, nn_distances);
+      this->searchForNeighbors (static_cast<int> (index), non_max_radius_, nn_indices, nn_distances);
 
-      n_neighbors = nn_indices.size();
+      n_neighbors = static_cast<int> (nn_indices.size ());
 
       if (n_neighbors < min_neighbors_)
         continue;
