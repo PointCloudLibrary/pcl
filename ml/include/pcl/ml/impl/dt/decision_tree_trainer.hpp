@@ -70,7 +70,7 @@ pcl::DecisionTreeTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType
   // create random features
   std::vector<FeatureType> features;
 
-  if(!random_features_at_split_node_)
+  if (!random_features_at_split_node_)
     feature_handler_->createRandomFeatures (num_of_features_, features);
 
   // recursively build decision tree
@@ -80,13 +80,14 @@ pcl::DecisionTreeTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType
   if (decision_tree_trainer_data_provider_ != 0)
   {
     decision_tree_trainer_data_provider_->getDatasetAndLabels (data_set_, label_data_, examples_);
-    trainDecisionTreeNode(features, examples_, label_data_, max_tree_depth_, tree.getRoot ());
-    label_data_.clear();
-    data_set_.clear();
-    examples_.clear();
-  } else
+    trainDecisionTreeNode (features, examples_, label_data_, max_tree_depth_, tree.getRoot ());
+    label_data_.clear ();
+    data_set_.clear ();
+    examples_.clear ();
+  }
+  else
   {
-    trainDecisionTreeNode(features, examples_, label_data_, max_tree_depth_, tree.getRoot ());
+    trainDecisionTreeNode (features, examples_, label_data_, max_tree_depth_, tree.getRoot ());
   }
 }
 
@@ -114,13 +115,13 @@ pcl::DecisionTreeTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType
     return;
   };
 
-  if(examples.size() < min_examples_for_split_) {
+  if(examples.size () < min_examples_for_split_) {
     stats_estimator_->computeAndSetNodeStats (data_set_, examples, label_data, node);
     return;
   }
 
   if(random_features_at_split_node_) {
-    features.clear();
+    features.clear ();
     feature_handler_->createRandomFeatures (num_of_features_, features);
   }
 
