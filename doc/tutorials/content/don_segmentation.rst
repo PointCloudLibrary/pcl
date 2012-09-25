@@ -25,13 +25,13 @@ The Difference of Normals (DoN) provides a computationally efficient, multi-scal
 Formally the Difference of Normals operator is defined,
 
 		.. centered::
-		   :math:`\mathbf{\Delta}_\mathbf{\hat{n}}(p, r_s, r_l) = \frac{\mathbf{\hat{n}}(p, r_s) - \mathbf{\hat{n}}(p, r_l)}{2}`
+		   :math:`\mathbf{\Delta}\mathbf{\hat{n}}(p, r_s, r_l) = \frac{\mathbf{\hat{n}}(p, r_s) - \mathbf{\hat{n}}(p, r_l)}{2}`
 
 where :math:`$r_s, r_l \in \mathbb{R}$`, :math:`$r_s<r_l$`, and :math:`$\mathbf{\hat{n}}(p, r)$` is the surface normal estimate at point :math:`$p$`, given the support radius :math:`$r$`. Notice, the response of the operator is a normalized vector field, and is thus orientable (the resulting direction is a key feature), however the operator's norm often provides an easier quantity to work with, and is always in the range :math:`(0,1)`.
 
 .. scalenormals_figure::
 .. figure:: images/don_scalenormals.svg
-   :width: 80%
+   :width: 60%
    :align: center
    :alt: Illustration of the effect of support radius on estimated surface normals for a point cloud.
 
@@ -124,13 +124,46 @@ The ``pcl::DifferenceOfNormalsEstimation`` class has 3 template parameters, the 
 Difference of Normals Based Filtering
 -------------------------------------
 
+While we now have a Difference of Normals vector field, we still have the complete point set. To begin the segmentation process, we must actually discriminate points based on their Difference of Normals vector result. There are a number of common quantities you may want to try filtering by:
+
++---------------------------------------------------------------------+-----------------------+------------------------+----------------------------------------------------------+
+| Quantity                                                            | PointNormal Field     | Description            | Usage Scenario                                           |
++=====================================================================+=======================+========================+==========================================================+
+| :math:`\mathbf{\Delta}\mathbf{\hat{n}}(p, r_s, r_l)`                |  float normal[3]      | DoN vector             | Filtering points by relative DoN angle.                  |
++---------------------------------------------------------------------+-----------------------+------------------------+----------------------------------------------------------+
+| :math:`|\mathbf{\Delta}\mathbf{\hat{n}}(p, r_s, r_l)| \in (0,1)`    |  float curvature      | DoN :math:`l_2` norm   | Filtering points by scale membership, large magnitude    |
+|                                                                     |                       |                        | indicates point has a strong response at then given      |
+|                                                                     |                       |                        | scale parameters                                         |
++---------------------------------------------------------------------+-----------------------+------------------------+----------------------------------------------------------+
+| :math:`\mathbf{\Delta}\mathbf{\hat{n}}(p, r_s, r_l)_x \in (-1,1)`,  |  float normal[0]      | DoN vector x component | Filtering points by orientable scale, i.e. building      |
++---------------------------------------------------------------------+-----------------------+------------------------+ facades with large                                       |  
+| :math:`\mathbf{\Delta}\mathbf{\hat{n}}(p, r_s, r_l)_y \in (-1,1)`,  |  float normal[1]      | DoN vector y component | large :math:`|{\mathbf{\Delta}\mathbf{\hat{n}}}_x|`      |
++---------------------------------------------------------------------+-----------------------+------------------------+ and/or :math:`|{\mathbf{\Delta}\mathbf{\hat{n}}}_y|` and |
+| :math:`\mathbf{\Delta}\mathbf{\hat{n}}(p, r_s, r_l)_z \in (-1,1)`,  |  float normal[2]      | DoN vector z component | small :math:`|{\mathbf{\Delta}\mathbf{\hat{n}}}_z|`      |
++---------------------------------------------------------------------+-----------------------+------------------------+----------------------------------------------------------+
+
+In this example we will do a simple magnitude threshold, looking for objects of a scale regardless of their orientation in the scene. To do so, we must create a conditional filter:
+
 .. literalinclude:: sources/don_segmentation/don_segmentation.cpp
    :language: cpp
    :lines: 131-145
 
+After we apply the filter we are left with a reduced pointcloud consisting of the points with a strong response with the given scale parameters.
+
 .. note::
    For more information on point cloud filtering and building filtering conditions, please read the :ref:`conditional_removal` tutorial.
 
+Clustering the Results
+----------------------
+
+.. literalinclude:: sources/don_segmentation/don_segmentation.cpp
+   :language: cpp
+   :lines: 155-169
+
+Finally, we are usually left with a number of objects or regions with good isolation, allowing us to use a simple clustering algorithm to segment the results. In this example we used Euclidean Clustering with a threshold equal to the small radius parameter.
+
+.. note::
+   For more information on point cloud clustering, please read the :ref:`cluster_extraction` tutorial.
 
 Compiling and running the program
 ---------------------------------
@@ -141,9 +174,9 @@ Add the following lines to your CMakeLists.txt file:
    :language: cmake
    :linenos:
 
-After you have made the executable, you can run it. Simply do::
+After you have made the executable, you can run it. Simply run::
 
-  $ ./don_segmentation
+  $ ./don_segmentation <inputfile> <smallscale> <largescale> <threshold> <segradius>
 
 After the segmentation the cloud viewer window will be opened and you will see something similar to those images:
 
