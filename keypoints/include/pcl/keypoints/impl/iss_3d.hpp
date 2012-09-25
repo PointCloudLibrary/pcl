@@ -112,11 +112,11 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::getBoundaryPoints (PointCloudI
   pcl::BoundaryEstimation<PointInT, NormalT, pcl::Boundary> boundary_estimator;
   boundary_estimator.setInputCloud (input_);
 
-  size_t index;
+  int index;
 #ifdef _OPENMP
 #pragma omp parallel for private(u, v) num_threads(threads_)
 #endif
-  for (index = 0; index < input.points.size (); index++)
+  for (index = 0; index < int (input.points.size ()); index++)
   {
     edge_points[index] = false;
 
@@ -128,13 +128,13 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::getBoundaryPoints (PointCloudI
 
     n_neighbors = static_cast<int> (nn_indices.size ());
 
-    if (n_neighbors < min_neighbors_)
-      continue;
+    if (n_neighbors >= min_neighbors_)
+    {
+      boundary_estimator.getCoordinateSystemOnPlane (normals_->points[index], u, v);
 
-    boundary_estimator.getCoordinateSystemOnPlane (normals_->points[index], u, v);
-
-    if (boundary_estimator.isBoundaryPoint (input, static_cast<int> (index), nn_indices, u, v, angle_threshold))
-      edge_points[index] = true;
+      if (boundary_estimator.isBoundaryPoint (input, static_cast<int> (index), nn_indices, u, v, angle_threshold))
+        edge_points[index] = true;
+    }
   }
 
   return (edge_points);
