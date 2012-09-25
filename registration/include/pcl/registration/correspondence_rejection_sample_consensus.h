@@ -57,15 +57,15 @@ namespace pcl
     template <typename PointT>
     class CorrespondenceRejectorSampleConsensus: public CorrespondenceRejector
     {
-      using CorrespondenceRejector::input_correspondences_;
-      using CorrespondenceRejector::rejection_name_;
-      using CorrespondenceRejector::getClassName;
-
       typedef pcl::PointCloud<PointT> PointCloud;
       typedef typename PointCloud::Ptr PointCloudPtr;
       typedef typename PointCloud::ConstPtr PointCloudConstPtr;
 
       public:
+        using CorrespondenceRejector::input_correspondences_;
+        using CorrespondenceRejector::rejection_name_;
+        using CorrespondenceRejector::getClassName;
+
         typedef boost::shared_ptr<CorrespondenceRejectorSampleConsensus> Ptr;
         typedef boost::shared_ptr<const CorrespondenceRejectorSampleConsensus> ConstPtr;
 
