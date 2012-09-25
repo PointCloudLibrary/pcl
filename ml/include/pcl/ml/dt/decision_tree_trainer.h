@@ -144,37 +144,37 @@ namespace pcl
         * \param[in] n Number of examples
         */
       inline void
-			setMinExamplesForSplit(size_t n)
+      setMinExamplesForSplit (size_t n)
       {
-				min_examples_for_split_ = n;
-			}
+        min_examples_for_split_ = n;
+      }
 
       /** \brief Specify the thresholds to be used when evaluating features.
         * \param[in] thres The threshold values.
         */
       void
-			setThresholds(std::vector<float> & thres)
+      setThresholds (std::vector<float> & thres)
       {
-				thresholds_ = thres;
-			}
+        thresholds_ = thres;
+      }
 
       /** \brief Specify the data provider.
-				* \param[in] dftp The data provider that should implement getDatasetAndLabels(...) function
-				*/
-			void
-			setDecisionTreeDataProvider(boost::shared_ptr<pcl::DecisionTreeTrainerDataProvider<FeatureType, DataSet, LabelType, ExampleIndex, NodeType> > & dtdp)
-			{
-				decision_tree_trainer_data_provider_ = dtdp;
-			}
+        * \param[in] dftp The data provider that should implement getDatasetAndLabels(...) function
+        */
+      void
+      setDecisionTreeDataProvider (boost::shared_ptr<pcl::DecisionTreeTrainerDataProvider<FeatureType, DataSet, LabelType, ExampleIndex, NodeType> > & dtdp)
+      {
+        decision_tree_trainer_data_provider_ = dtdp;
+      }
 
       /** \brief Specify if the features are randomly generated at each split node.
-				* \param[in] b Do it or not.
-				*/
-			void
-			setRandomFeaturesAtSplitNode(bool b)
-			{
-				random_features_at_split_node_ = b;
-			}
+        * \param[in] b Do it or not.
+        */
+      void
+      setRandomFeaturesAtSplitNode (bool b)
+      {
+        random_features_at_split_node_ = b;
+      }
 
       /** \brief Trains a decision tree using the set training data and settings.
         * \param[out] tree Destination for the trained tree.
@@ -230,7 +230,7 @@ namespace pcl
       std::vector<ExampleIndex> examples_;
   
       /** \brief Minimum number of examples to split a node. */
-			size_t min_examples_for_split_;
+      size_t min_examples_for_split_;
       /** \brief Thresholds to be used instead of generating uniform distributed thresholds. */
       std::vector<float> thresholds_;
       /** \brief The data provider which is called before training a specific tree, if pointer is NULL, then data_set_ is used. */

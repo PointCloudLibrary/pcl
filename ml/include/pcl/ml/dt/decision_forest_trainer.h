@@ -154,37 +154,37 @@ namespace pcl
         * \param[in] n Number of examples
         */
       inline void
-			setMinExamplesForSplit(size_t n)
+      setMinExamplesForSplit(size_t n)
       {
-				decision_tree_trainer_.setMinExamplesForSplit(n);
-			}
+        decision_tree_trainer_.setMinExamplesForSplit(n);
+      }
 
       /** \brief Specify the thresholds to be used when evaluating features.
         * \param[in] thres The threshold values.
         */
-			void
-			setThresholds(std::vector<float> & thres)
-			{
-				decision_tree_trainer_.setThresholds(thres);
-			}
+      void
+      setThresholds(std::vector<float> & thres)
+      {
+        decision_tree_trainer_.setThresholds(thres);
+      }
 
       /** \brief Specify the data provider.
         * \param[in] dftp The data provider that should implement getDatasetAndLabels(...) function
         */
-			void
-			setDecisionTreeDataProvider(boost::shared_ptr<pcl::DecisionTreeTrainerDataProvider<FeatureType, DataSet, LabelType, ExampleIndex, NodeType> > & dtdp)
-			{
-				decision_tree_trainer_.setDecisionTreeDataProvider(dtdp);
-			}
+      void
+      setDecisionTreeDataProvider(boost::shared_ptr<pcl::DecisionTreeTrainerDataProvider<FeatureType, DataSet, LabelType, ExampleIndex, NodeType> > & dtdp)
+      {
+        decision_tree_trainer_.setDecisionTreeDataProvider(dtdp);
+      }
 
       /** \brief Specify if the features are randomly generated at each split node.
-				* \param[in] b Do it or not.
-				*/
-			void
-			setRandomFeaturesAtSplitNode(bool b)
-			{
-				decision_tree_trainer_.setRandomFeaturesAtSplitNode(b);
-			}
+        * \param[in] b Do it or not.
+        */
+      void
+      setRandomFeaturesAtSplitNode(bool b)
+      {
+        decision_tree_trainer_.setRandomFeaturesAtSplitNode(b);
+      }
 
       /** \brief Trains a decision forest using the set training data and settings.
         * \param[out] tree Destination for the trained forest.

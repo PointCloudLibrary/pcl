@@ -71,24 +71,23 @@ pcl::DecisionTreeTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType
   std::vector<FeatureType> features;
 
   if(!random_features_at_split_node_)
-  	feature_handler_->createRandomFeatures (num_of_features_, features);
+    feature_handler_->createRandomFeatures (num_of_features_, features);
 
   // recursively build decision tree
   NodeType root_node; 
   tree.setRoot (root_node);
 
   if (decision_tree_trainer_data_provider_ != 0)
-	{
-		decision_tree_trainer_data_provider_->getDatasetAndLabels(data_set_, label_data_, examples_);
-		trainDecisionTreeNode (features, examples_, label_data_, max_tree_depth_, tree.getRoot ());
-		label_data_.clear();
-		data_set_.clear();
-		examples_.clear();
-	}
-	else
-	{
-		trainDecisionTreeNode (features, examples_, label_data_, max_tree_depth_, tree.getRoot ());
-	}
+  {
+    decision_tree_trainer_data_provider_->getDatasetAndLabels (data_set_, label_data_, examples_);
+    trainDecisionTreeNode(features, examples_, label_data_, max_tree_depth_, tree.getRoot ());
+    label_data_.clear();
+    data_set_.clear();
+    examples_.clear();
+  } else
+  {
+    trainDecisionTreeNode(features, examples_, label_data_, max_tree_depth_, tree.getRoot ());
+  }
 }
 
 
@@ -121,8 +120,8 @@ pcl::DecisionTreeTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType
   }
 
   if(random_features_at_split_node_) {
-  	features.clear();
-		feature_handler_->createRandomFeatures (num_of_features_, features);
+    features.clear();
+    feature_handler_->createRandomFeatures (num_of_features_, features);
   }
 
   std::vector<float> feature_results;
@@ -149,20 +148,24 @@ pcl::DecisionTreeTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType
     // get list of thresholds
     if (thresholds_.size () > 0)
     {
-			// compute information gain for each threshold and store threshold with highest information gain
-    	for (size_t threshold_index = 0; threshold_index < thresholds_.size (); ++threshold_index)
-			{
+      // compute information gain for each threshold and store threshold with highest information gain
+      for (size_t threshold_index = 0; threshold_index < thresholds_.size (); ++threshold_index)
+      {
 
-				const float information_gain = stats_estimator_->computeInformationGain (data_set_, examples, label_data, feature_results, flags,
-																																								 thresholds_[threshold_index]);
+        const float information_gain = stats_estimator_->computeInformationGain (data_set_,
+                                                                                 examples,
+                                                                                 label_data,
+                                                                                 feature_results,
+                                                                                 flags,
+                                                                                 thresholds_[threshold_index]);
 
-				if (information_gain > best_feature_information_gain)
-				{
-					best_feature_information_gain = information_gain;
-					best_feature_index = static_cast<int> (feature_index);
-					best_feature_threshold = thresholds_[threshold_index];
-				}
-			}
+        if (information_gain > best_feature_information_gain)
+        {
+          best_feature_information_gain = information_gain;
+          best_feature_index = static_cast<int> (feature_index);
+          best_feature_threshold = thresholds_[threshold_index];
+        }
+      }
     }
     else
     {
