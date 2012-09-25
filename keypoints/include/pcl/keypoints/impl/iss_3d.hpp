@@ -296,11 +296,11 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloudOut
 
   bool* borders = new bool [input_->size()];
 
-  size_t index;
+  int index;
 #ifdef _OPENMP
   #pragma omp parallel for num_threads(threads_)
 #endif
-  for(index = 0; index < input_->size (); index++)
+  for (index = 0; index < int (input_->size ()); index++)
   {
     borders[index] = false;
 
@@ -336,7 +336,7 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloudOut
 #ifdef _OPENMP
   #pragma omp parallel for num_threads(threads_)
 #endif
-  for(index = 0; index < input_->size (); index++)
+  for (index = 0; index < int (input_->size ()); index++)
   {
 #ifdef _OPENMP
     int tid = omp_get_thread_num ();
@@ -344,48 +344,48 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloudOut
     int tid = 0;
 #endif
 
-    if (borders[index])
-      continue;
-
-    //if the considered point is not a border point then compute the scatter matrix
-    Eigen::Matrix3d cov_m = Eigen::Matrix3d::Zero ();
-
-    getScatterMatrix (static_cast<int> (index), cov_m);
-
-    Eigen::SelfAdjointEigenSolver<Eigen::Matrix3d> solver (cov_m);
-
-    const double& e1c = solver.eigenvalues ()[2];
-    const double& e2c = solver.eigenvalues ()[1];
-    const double& e3c = solver.eigenvalues ()[0];
-
-    if (!pcl_isfinite (e1c) || !pcl_isfinite (e2c) || !pcl_isfinite (e3c))
-      continue;
-
-    omp_mem[tid][0] = e2c / e1c;
-    omp_mem[tid][1] = e3c / e2c;;
-    omp_mem[tid][2] = e3c;
-
-    for (int d = 0; d < omp_mem[tid].size (); ++d)
+    if (!borders[index])
     {
-      prg_mem[index][d] = omp_mem[tid][d];
+      //if the considered point is not a border point then compute the scatter matrix
+      Eigen::Matrix3d cov_m = Eigen::Matrix3d::Zero ();
+
+      getScatterMatrix (static_cast<int> (index), cov_m);
+
+      Eigen::SelfAdjointEigenSolver<Eigen::Matrix3d> solver (cov_m);
+
+      const double& e1c = solver.eigenvalues ()[2];
+      const double& e2c = solver.eigenvalues ()[1];
+      const double& e3c = solver.eigenvalues ()[0];
+
+      if (!pcl_isfinite (e1c) || !pcl_isfinite (e2c) || !pcl_isfinite (e3c))
+        continue;
+
+      omp_mem[tid][0] = e2c / e1c;
+      omp_mem[tid][1] = e3c / e2c;;
+      omp_mem[tid][2] = e3c;
+
+      for (int d = 0; d < omp_mem[tid].size (); ++d)
+      {
+        prg_mem[index][d] = omp_mem[tid][d];
+      }
     }
   }
 
-  for (index = 0; index < input_->size(); index++)
+  for (index = 0; index < int (input_->size ()); index++)
   {
     if (borders[index])
-      continue;
-
-    if ( (prg_mem[index][0] < gamma_21_) && (prg_mem[index][1] < gamma_32_) )
     {
-      if (prg_mem[index][2] < 0.0)
+      if ( (prg_mem[index][0] < gamma_21_) && (prg_mem[index][1] < gamma_32_) )
       {
-        PCL_ERROR ("[pcl::%s::detectKeypoints] : compute failed! The third eigenvalue (%f) must be strict positive.\n",
-              name_.c_str (), prg_mem[index][2]);
-        return;
-      }
+        if (prg_mem[index][2] < 0.0)
+        {
+          PCL_ERROR ("[pcl::%s::detectKeypoints] : compute failed! The third eigenvalue (%f) must be strict positive.\n",
+                name_.c_str (), prg_mem[index][2]);
+          return;
+        }
 
-      third_eigen_value_[index] = prg_mem[index][2];
+        third_eigen_value_[index] = prg_mem[index][2];
+      }
     }
   }
 
@@ -395,7 +395,7 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloudOut
 #ifdef _OPENMP
   #pragma omp parallel for private(is_max) num_threads(threads_)
 #endif
-  for (index = 0; index < input_->size (); index++)
+  for (index = 0; index < int (input_->size ()); index++)
   {
     feat_max [index] = false;
 
@@ -410,22 +410,22 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloudOut
       n_neighbors = static_cast<int> (nn_indices.size ());
 
       if (n_neighbors < min_neighbors_)
-        continue;
+      {
+        is_max = true;
 
-      is_max = true;
-
-      for (size_t j = 0 ; j < n_neighbors; j++)
-        if (third_eigen_value_[index] < third_eigen_value_[nn_indices[j]])
-          is_max = false;
-      if (is_max)
-        feat_max[index] = true;
+        for (size_t j = 0 ; j < n_neighbors; j++)
+          if (third_eigen_value_[index] < third_eigen_value_[nn_indices[j]])
+            is_max = false;
+        if (is_max)
+          feat_max[index] = true;
+      }
     }
   }
 
 #ifdef _OPENMP
 #pragma omp parallel for shared (output) num_threads(threads_)
 #endif
-  for (index = 0; index < input_->size(); index++)
+  for (index = 0; index < int (input_->size ()); index++)
   {
     if (feat_max[index])
 #ifdef _OPENMP
