@@ -203,18 +203,33 @@ pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT>::createBinDistan
 
   Eigen::Vector4f current_frame_z (current_frame.z_axis[0], current_frame.z_axis[1], current_frame.z_axis[2], 0);
 
+  unsigned nan_counter = 0;
   for (size_t i_idx = 0; i_idx < indices.size (); ++i_idx)
   {
-    //double cosineDesc = feat[i].rf[6]*normal[0] + feat[i].rf[7]*normal[1] + feat[i].rf[8]*normal[2];
-    double cosineDesc = normals_->points[indices[i_idx]].getNormalVector4fMap ().dot (current_frame_z);
+    // check NaN normal
+    const Eigen::Vector4f& normal_vec = normals_->points[indices[i_idx]].getNormalVector4fMap ();
+    if (!pcl_isfinite (normal_vec[0]) ||
+        !pcl_isfinite (normal_vec[1]) ||
+        !pcl_isfinite (normal_vec[2]))
+    {
+      bin_distance_shape[i_idx] = std::numeric_limits<double>::quiet_NaN ();
+      ++nan_counter;
+    } else
+    {
+      //double cosineDesc = feat[i].rf[6]*normal[0] + feat[i].rf[7]*normal[1] + feat[i].rf[8]*normal[2];
+      double cosineDesc = normal_vec.dot (current_frame_z);
 
-    if (cosineDesc > 1.0)
-      cosineDesc = 1.0;
-    if (cosineDesc < - 1.0)
-      cosineDesc = - 1.0;
+      if (cosineDesc > 1.0)
+        cosineDesc = 1.0;
+      if (cosineDesc < - 1.0)
+        cosineDesc = - 1.0;
 
-    bin_distance_shape[i_idx] = ((1.0 + cosineDesc) * nr_shape_bins_) / 2;
+      bin_distance_shape[i_idx] = ((1.0 + cosineDesc) * nr_shape_bins_) / 2;
+    }
   }
+  if (nan_counter > 0)
+    PCL_WARN ("[pcl::%s::createBinDistanceShape] Point %d has %d (%f%%) NaN normals in its neighbourhood\n",
+      getClassName ().c_str (), index, nan_counter, (static_cast<float>(nan_counter)*100.f/static_cast<float>(indices.size ())));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -253,6 +268,9 @@ pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT>::interpolateSing
 
   for (size_t i_idx = 0; i_idx < indices.size (); ++i_idx)
   {
+    if (!pcl_isfinite(binDistance[i_idx]))
+      continue;
+
     Eigen::Vector4f delta = surface_->points[indices[i_idx]].getVector4fMap () - central_point;
     delta[3] = 0;
 
@@ -429,6 +447,9 @@ pcl::SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::interpolateDou
 
   for (size_t i_idx = 0; i_idx < indices.size (); ++i_idx)
   {
+    if (!pcl_isfinite(binDistanceShape[i_idx]))
+      continue;
+
     Eigen::Vector4f delta = surface_->points[indices[i_idx]].getVector4fMap () - central_point;
     delta[3] = 0;
 
@@ -1018,4 +1039,3 @@ pcl::SHOTColorEstimation<PointInT, PointNT, Eigen::MatrixXf, PointRFT>::computeF
 #define PCL_INSTANTIATE_SHOTColorEstimation(T,NT,OutT,RFT) template class PCL_EXPORTS pcl::SHOTColorEstimation<T,NT,OutT,RFT>;
 
 #endif    // PCL_FEATURES_IMPL_SHOT_H_
-
