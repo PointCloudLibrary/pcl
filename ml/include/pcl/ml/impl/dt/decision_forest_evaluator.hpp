@@ -86,5 +86,25 @@ pcl::DecisionForestEvaluator<FeatureType, DataSet, LabelType, ExampleIndex, Node
     label_data[label_index] *= inv_num_of_trees;
   }
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <class FeatureType, class DataSet, class LabelType, class ExampleIndex, class NodeType>
+void
+pcl::DecisionForestEvaluator<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::evaluate (
+  pcl::DecisionForest<NodeType> & forest,
+  pcl::FeatureHandler<FeatureType, DataSet, ExampleIndex> & feature_handler,
+  pcl::StatsEstimator<LabelType, NodeType, DataSet, ExampleIndex> & stats_estimator,
+  DataSet & data_set,
+  ExampleIndex example,
+  std::vector<NodeType> & leaves)
+{
+  leaves.resize(forest.size());
+  for (size_t forest_index = 0; forest_index < forest.size (); ++forest_index)
+  {
+    NodeType leave;
+    tree_evaluator_.evaluate (forest[forest_index], feature_handler, stats_estimator, data_set, example, leave);
+    leaves[forest_index] = leave;
+  }
+}
   
 #endif

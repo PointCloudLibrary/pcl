@@ -16,6 +16,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/dt/decision_tree.h
         include/pcl/${SUBSYS_NAME}/dt/decision_tree_evaluator.h
         include/pcl/${SUBSYS_NAME}/dt/decision_tree_trainer.h
+        include/pcl/${SUBSYS_NAME}/dt/decision_tree_data_provider.h
         include/pcl/${SUBSYS_NAME}/ferns/fern.h
         include/pcl/${SUBSYS_NAME}/ferns/fern_evaluator.h
         include/pcl/${SUBSYS_NAME}/ferns/fern_trainer.h

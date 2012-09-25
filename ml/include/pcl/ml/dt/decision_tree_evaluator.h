@@ -99,6 +99,22 @@ namespace pcl
                     std::vector<ExampleIndex> & examples,
                     std::vector<LabelType> & label_data);
     
+    /** \brief Evaluates the specified examples using the supplied tree.
+			 * \param[in] tree The decision tree.
+			 * \param[in] feature_handler The feature handler used to train the tree.
+			 * \param[in] stats_estimator The statistics estimation instance used while training the tree.
+			 * \param[in] data_set The data set used for evaluation.
+			 * \param[in] example The example that has to be evaluated.
+			 * \param[out] leave The leave reached by the examples.
+			 */
+		 void
+		 evaluate (pcl::DecisionTree<NodeType> & tree,
+							 pcl::FeatureHandler<FeatureType, DataSet, ExampleIndex> & feature_handler,
+							 pcl::StatsEstimator<LabelType, NodeType, DataSet, ExampleIndex> & stats_estimator,
+							 DataSet & data_set,
+							 ExampleIndex example,
+							 NodeType & leave);
+
     /** \brief Evaluates the specified examples using the supplied tree. 
       * \param[in] tree The decision tree.
       * \param[in] feature_handler The feature handler used to train the tree.

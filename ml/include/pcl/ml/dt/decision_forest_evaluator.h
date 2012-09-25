@@ -81,6 +81,22 @@ namespace pcl
                 DataSet & data_set,
                 std::vector<ExampleIndex> & examples,
                 std::vector<LabelType> & label_data);
+
+      /** \brief Evaluates a specific patch using the supplied forest.
+				* \param[in] DecisionForestEvaluator The decision forest.
+				* \param[in] feature_handler The feature handler used to train the tree.
+				* \param[in] stats_estimator The statistics estimation instance used while training the tree.
+				* \param[in] data_set The data set used for evaluation.
+				* \param[in] examples The examples that have to be evaluated.
+				* \param[out] leaves The leaves where the patch arrives
+				*/
+			void
+			evaluate (pcl::DecisionForest<NodeType> & DecisionForestEvaluator,
+								pcl::FeatureHandler<FeatureType, DataSet, ExampleIndex> & feature_handler,
+								pcl::StatsEstimator<LabelType, NodeType, DataSet, ExampleIndex> & stats_estimator,
+								DataSet & data_set,
+								ExampleIndex example,
+								std::vector<NodeType> & leaves);
     
     private:
       /** \brief Evaluator for decision trees. */
