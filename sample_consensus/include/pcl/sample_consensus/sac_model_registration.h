@@ -56,10 +56,10 @@ namespace pcl
   template <typename PointT>
   class SampleConsensusModelRegistration : public SampleConsensusModel<PointT>
   {
-    using SampleConsensusModel<PointT>::input_;
-    using SampleConsensusModel<PointT>::indices_;
-
     public:
+      using SampleConsensusModel<PointT>::input_;
+      using SampleConsensusModel<PointT>::indices_;
+
       typedef typename SampleConsensusModel<PointT>::PointCloud PointCloud;
       typedef typename SampleConsensusModel<PointT>::PointCloudPtr PointCloudPtr;
       typedef typename SampleConsensusModel<PointT>::PointCloudConstPtr PointCloudConstPtr;
