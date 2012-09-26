@@ -1,0 +1,535 @@
+#include "pcl/recognition/face_detection/face_detector_data_provider.h"
+#include "pcl/recognition/face_detection/face_common.h"
+#include <pcl/common/time.h>
+#include <pcl/features/integral_image_normal.h>
+#include <pcl/io/pcd_io.h>
+
+//Uncomment the following lines and set PCL_FACE_DETECTION_VIS_TRAINING_FDDP to 1
+//to visualize the training process...
+
+//#include <pcl/visualization/pcl_visualizer.h>
+//#define PCL_FACE_DETECTION_VIS_TRAINING_FDDP 0
+
+namespace pcl
+{
+  namespace face_detection
+  {
+    inline
+    void showBining(int num_pitch, float res_pitch, int min_pitch, int num_yaw, float res_yaw, int min_yaw, std::vector<std::vector<int> > & yaw_pitch_bins)
+    {
+      std::cout << "\t\t";
+      for (int j = 0; j < num_pitch; j++)
+      {
+        std::cout << round (min_pitch + res_pitch * j) << "\t";
+      }
+
+      std::cout << std::endl;
+
+      for (int i = 0; i < num_yaw; i++)
+      {
+        std::cout << round (min_yaw + res_yaw * i) << " => \t\t";
+        for (int j = 0; j < num_pitch; j++)
+        {
+          //std::cout <<  std::setprecision(3) << yaw_pitch_bins[i][j] / static_cast<float>(max_elems) << "\t";
+          std::cout << yaw_pitch_bins[i][j] << "\t";
+        }
+
+        std::cout << std::endl;
+      }
+    }
+  }
+}
+
+template<class FeatureType, class DataSet, class LabelType, class ExampleIndex, class NodeType>
+void pcl::face_detection::FaceDetectorDataProvider<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::initialize(std::string & data_dir)
+{
+  std::string start = "";
+  std::string ext = std::string ("pcd");
+  bf::path dir = data_dir;
+
+  std::vector < std::string > files;
+  getFilesInDirectory (dir, start, files, ext);
+
+  //apart from loading the file names, we will do some bining regarding pitch and yaw
+  std::vector < std::vector<int> > yaw_pitch_bins;
+  std::vector < std::vector<std::vector<std::string> > > image_files_per_bin;
+
+  float res_yaw = 15.f;
+  float res_pitch = res_yaw;
+  int min_yaw = -75;
+  int min_pitch = -60;
+
+  size_t num_yaw = (std::abs (min_yaw) * 2) / res_yaw + 1;
+  size_t num_pitch = (std::abs (min_pitch) * 2) / res_pitch + 1;
+
+  yaw_pitch_bins.resize (num_yaw);
+  image_files_per_bin.resize (num_yaw);
+  for (size_t i = 0; i < num_yaw; i++)
+  {
+    yaw_pitch_bins[i].resize (num_pitch);
+    image_files_per_bin[i].resize (num_pitch);
+    for (size_t j = 0; j < num_pitch; j++)
+    {
+      yaw_pitch_bins[i][j] = 0;
+    }
+  }
+
+  for (size_t i = 0; i < files.size (); i++)
+  {
+    std::stringstream filestream;
+    filestream << data_dir << "/" << files[i];
+    std::string file = filestream.str ();
+
+    std::string pose_file (files[i]);
+    boost::replace_all (pose_file, ".pcd", "_pose.txt");
+
+    Eigen::Matrix4f pose_mat;
+    pose_mat.setIdentity (4, 4);
+
+    std::stringstream filestream_pose;
+    filestream_pose << data_dir << "/" << pose_file;
+    pose_file = filestream_pose.str ();
+
+    bool result = readMatrixFromFile (pose_file, pose_mat);
+    if (result)
+    {
+      Eigen::Vector3f ea = pose_mat.block<3, 3> (0, 0).eulerAngles (0, 1, 2);
+      ea *= 57.2957795; //transform it to degrees to do the binning
+      int y = round ((ea[0] + std::abs (min_yaw)) / static_cast<float> (res_yaw));
+      int p = round ((ea[1] + std::abs (min_pitch)) / static_cast<float> (res_pitch));
+
+      if (y < 0)
+        y = 0;
+      if (p < 0)
+        p = 0;
+      if (p >= num_pitch)
+        p = num_pitch - 1;
+      if (y >= num_yaw)
+        y = num_yaw - 1;
+
+      assert (y >= 0 && y < num_yaw);
+      assert (p >= 0 && p < num_pitch);
+
+      yaw_pitch_bins[y][p]++;
+
+      image_files_per_bin[y][p].push_back (file);
+    }
+  }
+
+  pcl::face_detection::showBining (num_pitch, res_pitch, min_pitch, num_yaw, res_yaw, min_yaw, yaw_pitch_bins);
+
+  int max_elems = 0;
+  int total_elems = 0;
+
+  for (size_t i = 0; i < num_yaw; i++)
+  {
+    for (size_t j = 0; j < num_pitch; j++)
+    {
+      total_elems += yaw_pitch_bins[i][j];
+      if (yaw_pitch_bins[i][j] > max_elems)
+        max_elems = yaw_pitch_bins[i][j];
+    }
+  }
+
+  float average = static_cast<float> (total_elems) / (static_cast<float> (num_pitch + num_yaw));
+  std::cout << "The average number of image per bin is:" << average << std::endl;
+
+  std::cout << "Total number of images in the dataset:" << total_elems << std::endl;
+  //reduce unbalance from dataset by capping the number of images per bin, keeping at least a certain min
+  if (min_images_per_bin_ != -1)
+  {
+    std::cout << "Reducing unbalance of the dataset." << std::endl;
+    for (size_t i = 0; i < num_yaw; i++)
+    {
+      for (size_t j = 0; j < num_pitch; j++)
+      {
+        if (yaw_pitch_bins[i][j] >= min_images_per_bin_)
+        {
+          std::random_shuffle (image_files_per_bin[i][j].begin (), image_files_per_bin[i][j].end ());
+          image_files_per_bin[i][j].resize (min_images_per_bin_);
+          yaw_pitch_bins[i][j] = min_images_per_bin_;
+        }
+
+        for (size_t ii = 0; ii < image_files_per_bin[i][j].size (); ii++)
+        {
+          image_files_.push_back (image_files_per_bin[i][j][ii]);
+        }
+      }
+    }
+  }
+
+  pcl::face_detection::showBining (num_pitch, res_pitch, min_pitch, num_yaw, res_yaw, min_yaw, yaw_pitch_bins);
+  std::cout << "Total number of images in the dataset:" << image_files_.size () << std::endl;
+}
+
+//shuffle file and get the first num_images_ as requested by a tree
+//extract positive and negative samples
+//create training examples and labels
+
+template<class FeatureType, class DataSet, class LabelType, class ExampleIndex, class NodeType>
+void pcl::face_detection::FaceDetectorDataProvider<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::getDatasetAndLabels(DataSet & data_set,
+    std::vector<LabelType> & label_data, std::vector<ExampleIndex> & examples)
+{
+  srand (time (NULL));
+  std::random_shuffle (image_files_.begin (), image_files_.end ());
+  std::vector < std::string > files;
+  files = image_files_;
+  files.resize (std::min (num_images_, static_cast<int> (files.size ())));
+
+  std::vector < TrainingExample > training_examples;
+  std::vector<float> labels;
+
+  int total_neg, total_pos;
+  total_neg = total_pos = 0;
+
+#if PCL_FACE_DETECTION_VIS_TRAINING_FDDP == 1
+  pcl::visualization::PCLVisualizer vis("training");
+#endif
+
+  for (size_t j = 0; j < files.size (); j++)
+  {
+
+#if PCL_FACE_DETECTION_VIS_TRAINING_FDDP == 1
+    vis.removeAllPointClouds();
+    vis.removeAllShapes();
+#endif
+
+    if ((j % 50) == 0)
+    {
+      std::cout << "Loading image..." << j << std::endl;
+    }
+    //1. Load clouds with and without labels
+    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
+    pcl::PointCloud<pcl::PointXYZ>::Ptr loaded_cloud (new pcl::PointCloud<pcl::PointXYZ>);
+
+    pcl::io::loadPCDFile (files[j], *loaded_cloud);
+
+    pcl::PointCloud<pcl::PointXYZL>::Ptr cloud_labels (new pcl::PointCloud<pcl::PointXYZL>);
+    pcl::PointCloud<pcl::PointXYZL>::Ptr loaded_cloud_labels (new pcl::PointCloud<pcl::PointXYZL>);
+    pcl::io::loadPCDFile (files[j], *loaded_cloud_labels);
+
+    //crop images to remove as many NaNs as possible and reduce the memory footprint
+    {
+      int min_col, min_row;
+      int max_col, max_row;
+      min_col = min_row = std::numeric_limits<int>::max ();
+      max_col = max_row = std::numeric_limits<int>::min ();
+
+      for (int col = 0; col < loaded_cloud->width; col++)
+      {
+        for (int row = 0; row < loaded_cloud->height; row++)
+        {
+          if (pcl::isFinite (loaded_cloud->at (col, row)))
+          {
+            if (row < min_row)
+              min_row = row;
+
+            if (row > max_row)
+              max_row = row;
+
+            if (col < min_col)
+              min_col = col;
+
+            if (col > max_col)
+              max_col = col;
+          }
+        }
+      }
+
+      //std::cout << min_col << " - " << max_col << std::endl;
+      //std::cout << min_row << " - " << max_row << std::endl;
+
+      cropCloud<pcl::PointXYZ> (min_col, max_col, min_row, max_row, *loaded_cloud, *cloud);
+      cropCloud<pcl::PointXYZL> (min_col, max_col, min_row, max_row, *loaded_cloud_labels, *cloud_labels);
+
+      /*pcl::visualization::PCLVisualizer vis ("training");
+       vis.addPointCloud(loaded_cloud);
+       vis.spin();*/
+    }
+
+    //Compute integral image over depth
+    boost::shared_ptr < pcl::IntegralImage2D<float, 1> > integral_image_depth;
+    integral_image_depth.reset (new pcl::IntegralImage2D<float, 1> (false));
+
+    int element_stride = sizeof(pcl::PointXYZ) / sizeof(float);
+    int row_stride = element_stride * cloud->width;
+    const float *data = reinterpret_cast<const float*> (&cloud->points[0]);
+    integral_image_depth->setInput (data + 2, cloud->width, cloud->height, element_stride, row_stride);
+
+    //Compute normals and normal integral images
+    pcl::PointCloud<pcl::Normal>::Ptr normals (new pcl::PointCloud<pcl::Normal>);
+
+    if (USE_NORMALS_)
+    {
+      typedef typename pcl::IntegralImageNormalEstimation<pcl::PointXYZ, pcl::Normal> NormalEstimator_;
+      NormalEstimator_ n3d;
+      n3d.setNormalEstimationMethod (n3d.COVARIANCE_MATRIX);
+      n3d.setInputCloud (cloud);
+      n3d.setRadiusSearch (0.02);
+      n3d.setKSearch (0);
+      {
+        pcl::ScopeTime t ("compute normals...");
+        n3d.compute (*normals);
+      }
+    }
+
+    int element_stride_normal = sizeof(pcl::Normal) / sizeof(float);
+    int row_stride_normal = element_stride_normal * normals->width;
+    boost::shared_ptr < pcl::IntegralImage2D<float, 1> > integral_image_normal_x;
+    boost::shared_ptr < pcl::IntegralImage2D<float, 1> > integral_image_normal_y;
+    boost::shared_ptr < pcl::IntegralImage2D<float, 1> > integral_image_normal_z;
+
+    if (USE_NORMALS_)
+    {
+      integral_image_normal_x.reset (new pcl::IntegralImage2D<float, 1> (false));
+      const float *data_nx = reinterpret_cast<const float*> (&normals->points[0]);
+      integral_image_normal_x->setInput (data_nx, normals->width, normals->height, element_stride_normal, row_stride_normal);
+
+      integral_image_normal_y.reset (new pcl::IntegralImage2D<float, 1> (false));
+      const float *data_ny = reinterpret_cast<const float*> (&normals->points[0]);
+      integral_image_normal_y->setInput (data_ny + 1, normals->width, normals->height, element_stride_normal, row_stride_normal);
+
+      integral_image_normal_z.reset (new pcl::IntegralImage2D<float, 1> (false));
+      const float *data_nz = reinterpret_cast<const float*> (&normals->points[0]);
+      integral_image_normal_z->setInput (data_nz + 2, normals->width, normals->height, element_stride_normal, row_stride_normal);
+    }
+
+    //Using cloud labels estimate a 2D window from where to extract positive samples
+    //Rest can be used to extract negative samples
+    int min_col, min_row;
+    int max_col, max_row;
+    min_col = min_row = std::numeric_limits<int>::max ();
+    max_col = max_row = std::numeric_limits<int>::min ();
+
+    //std::cout << cloud_labels->width << " " << cloud_labels->height << std::endl;
+
+    for (int col = 0; col < cloud_labels->width; col++)
+    {
+      for (int row = 0; row < cloud_labels->height; row++)
+      {
+        if (cloud_labels->at (col, row).label == 1)
+        {
+          if (row < min_row)
+            min_row = row;
+
+          if (row > max_row)
+            max_row = row;
+
+          if (col < min_col)
+            min_col = col;
+
+          if (col > max_col)
+            max_col = col;
+        }
+      }
+    }
+
+#if PCL_FACE_DETECTION_VIS_TRAINING_FDDP == 1
+    pcl::PointCloud<pcl::PointXYZI>::Ptr cloud_intensity(new pcl::PointCloud<pcl::PointXYZI>);
+    cloud_intensity->width = cloud->width;
+    cloud_intensity->height = cloud->height;
+    cloud_intensity->points.resize(cloud->points.size());
+    cloud_intensity->is_dense = cloud->is_dense;
+
+    for (int jjj = 0; jjj < static_cast<int>(cloud->points.size()); jjj++)
+    {
+      cloud_intensity->points[jjj].getVector4fMap() = cloud->points[jjj].getVector4fMap();
+      cloud_intensity->points[jjj].intensity = 0.f;
+      int row, col;
+      col = jjj % cloud->width;
+      row = jjj / cloud->width;
+      //std::cout << row << " " << col << std::endl;
+      if (check_inside(col, row, min_col, max_col, min_row, max_row))
+      {
+        cloud_intensity->points[jjj].intensity = 1.f;
+      }
+    }
+
+    pcl::visualization::PointCloudColorHandlerGenericField < pcl::PointXYZI > handler(cloud_intensity, "intensity");
+    vis.addPointCloud(cloud_intensity, handler, "intensity_cloud");
+#endif
+
+    std::string pose_file (files[j]);
+    boost::replace_all (pose_file, ".pcd", "_pose.txt");
+
+    Eigen::Matrix4f pose_mat;
+    pose_mat.setIdentity (4, 4);
+    readMatrixFromFile (pose_file, pose_mat);
+
+    Eigen::Vector3f ea = pose_mat.block<3, 3> (0, 0).eulerAngles (0, 1, 2);
+    Eigen::Vector3f trans_vector = Eigen::Vector3f (pose_mat (0, 3), pose_mat (1, 3), pose_mat (2, 3));
+
+    pcl::PointXYZ center_point;
+    center_point.x = trans_vector[0];
+    center_point.y = trans_vector[1];
+    center_point.z = trans_vector[2];
+
+    int N_patches = patches_per_image_;
+    int pos_extracted = 0;
+    int neg_extracted = 0;
+    int w_size_2 = static_cast<int> (w_size_ / 2);
+
+    //************************************************
+    //2nd training style, fanelli's journal description
+    //************************************************
+    {
+
+      typedef std::pair<int, int> pixelpair;
+      std::vector < pixelpair > negative_p, positive_p;
+      //get negative and positive indices to sample from
+      for (int col = 0; col < (cloud_labels->width - w_size_); col++)
+      {
+        for (int row = 0; row < (cloud_labels->height - w_size_); row++)
+        {
+          if (!pcl::isFinite (cloud->at (col + w_size_2, row + w_size_2)))
+            continue;
+
+          //reject patches with more than percent invalid values
+          float percent = 0.5f;
+          if (integral_image_depth->getFiniteElementsCount (col, row, w_size_, w_size_) < (percent * w_size_ * w_size_))
+            continue;
+
+          pixelpair pp = std::make_pair (col, row);
+          if (cloud_labels->at (col + w_size_2, row + w_size_2).label == 1)
+            positive_p.push_back (pp);
+          else
+            negative_p.push_back (pp);
+        }
+      }
+
+      //shuffle and resize
+      std::random_shuffle (positive_p.begin (), positive_p.end ());
+      std::random_shuffle (negative_p.begin (), negative_p.end ());
+      positive_p.resize (N_patches);
+      negative_p.resize (N_patches);
+
+      //extract positive patch
+      for (size_t p = 0; p < positive_p.size (); p++)
+      {
+        int col, row;
+        col = positive_p[p].first;
+        row = positive_p[p].second;
+
+        pcl::PointXYZ patch_center_point;
+        patch_center_point.x = cloud->at (col + w_size_2, row + w_size_2).x;
+        patch_center_point.y = cloud->at (col + w_size_2, row + w_size_2).y;
+        patch_center_point.z = cloud->at (col + w_size_2, row + w_size_2).z;
+
+        TrainingExample te;
+        te.iimages_.push_back (integral_image_depth);
+        if (USE_NORMALS_)
+        {
+          te.iimages_.push_back (integral_image_normal_x);
+          te.iimages_.push_back (integral_image_normal_y);
+          te.iimages_.push_back (integral_image_normal_z);
+        }
+
+        te.row_ = row;
+        te.col_ = col;
+        te.wsize_ = w_size_;
+
+        te.trans_ = center_point.getVector3fMap () - patch_center_point.getVector3fMap ();
+        te.trans_ *= 1000.f; //transform it to milimiters
+        te.rot_ = ea;
+        te.rot_ *= 57.2957795; //transform it to degrees
+
+        labels.push_back (1);
+        pos_extracted++;
+        total_pos++;
+
+        training_examples.push_back (te);
+#if PCL_FACE_DETECTION_VIS_TRAINING_FDDP == 1
+        pcl::PointCloud<pcl::PointXYZI>::Ptr cloud_intensity2(new pcl::PointCloud<pcl::PointXYZI>(*cloud_intensity));
+        for (int jjj = col; jjj < (col + w_size_); jjj++)
+        {
+          for (int iii = row; iii < (row + w_size_); iii++)
+          {
+            cloud_intensity2->at(jjj, iii).intensity = 2.f;
+          }
+        }
+
+        vis.removeAllPointClouds();
+
+        pcl::visualization::PointCloudColorHandlerGenericField < pcl::PointXYZI > handler(cloud_intensity2, "intensity");
+        vis.addPointCloud(cloud_intensity2, handler, "cloud");
+        vis.spinOnce();
+        sleep(0.5);
+#endif
+
+      }
+
+#if PCL_FACE_DETECTION_VIS_TRAINING_FDDP == 1
+      std::cout << "Going to extract negative patches..." << std::endl;
+      sleep(2);
+#endif
+
+      for (size_t p = 0; p < negative_p.size (); p++)
+      {
+        int col, row;
+        col = negative_p[p].first;
+        row = negative_p[p].second;
+
+        TrainingExample te;
+        te.iimages_.push_back (integral_image_depth);
+        if (USE_NORMALS_)
+        {
+          te.iimages_.push_back (integral_image_normal_x);
+          te.iimages_.push_back (integral_image_normal_y);
+          te.iimages_.push_back (integral_image_normal_z);
+        }
+
+        te.row_ = row;
+        te.col_ = col;
+        te.wsize_ = w_size_;
+        labels.push_back (0);
+        neg_extracted++;
+        total_neg++;
+
+        training_examples.push_back (te);
+#if PCL_FACE_DETECTION_VIS_TRAINING_FDDP == 1
+        pcl::PointCloud<pcl::PointXYZI>::Ptr cloud_intensity2(new pcl::PointCloud<pcl::PointXYZI>(*cloud_intensity));
+        for (int jjj = col; jjj < (col + w_size_); jjj++)
+        {
+          for (int iii = row; iii < (row + w_size_); iii++)
+          {
+            cloud_intensity2->at(jjj, iii).intensity = 2.f;
+          }
+        }
+
+        vis.removeAllPointClouds();
+
+        pcl::visualization::PointCloudColorHandlerGenericField < pcl::PointXYZI > handler(cloud_intensity2, "intensity");
+        vis.addPointCloud(cloud_intensity2, handler, "cloud");
+        vis.spinOnce();
+        sleep(0.5);
+#endif
+      }
+
+      if (neg_extracted != N_patches)
+      {
+        std::cout << "Extracted " << neg_extracted << " negative patches" << std::endl;
+        std::cout << files[j] << std::endl;
+      }
+
+      if (pos_extracted != N_patches)
+      {
+        std::cout << "Extracted " << pos_extracted << " positive patches" << std::endl;
+        std::cout << files[j] << std::endl;
+      }
+    }
+  }
+
+  std::cout << training_examples.size () << " " << labels.size () << " " << total_neg << " " << total_pos << std::endl;
+
+  //train random forest and make persistent
+  std::vector<int> example_indices;
+  for (size_t i = 0; i < labels.size (); i++)
+    example_indices.push_back (static_cast<int> (i));
+
+  label_data = labels;
+  data_set = training_examples;
+  examples = example_indices;
+}
+
+template class pcl::face_detection::FaceDetectorDataProvider<pcl::face_detection::FeatureType, std::vector<pcl::face_detection::TrainingExample>, float, int,
+    pcl::face_detection::RFTreeNode<pcl::face_detection::FeatureType> >;
