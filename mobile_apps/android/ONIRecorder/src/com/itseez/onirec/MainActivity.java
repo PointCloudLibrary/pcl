@@ -16,6 +16,7 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 import org.libusb.UsbHelper;
 
 import java.io.File;
@@ -59,7 +60,7 @@ public class MainActivity extends Activity {
                             state.usbPermissionChange(true);
                     }
                     else {
-                        Log.d(TAG, "USB permission denied.");
+                        Log.i(TAG, "USB permission denied.");
                         state.usbPermissionChange(false);
                     }
                 }
@@ -166,16 +167,22 @@ public class MainActivity extends Activity {
             }
 
             if (awaitingPermission.isEmpty())
-                setState(new StateNoDevice());
+                setState(new StateIdle(R.string.status_no_devices));
             else
                 setState(new StateWaiting());
         }
     }
 
-    private class StateNoDevice extends State {
+    private class StateIdle extends State {
+        private String status;
+
+        public StateIdle(int formatId, Object... args) {
+            status = String.format(getResources().getString(formatId), args);
+        }
+
         @Override
         public void enter() {
-            textStatus.setText(R.string.status_no_devices);
+            textStatus.setText(status);
         }
 
         @Override
@@ -223,7 +230,7 @@ public class MainActivity extends Activity {
                 setLabel();
                 maybeGoReady();
             } else {
-                setState(new StateNoDevice());
+                setState(new StateIdle(R.string.status_permission_denied));
             }
         }
     }
@@ -232,18 +239,44 @@ public class MainActivity extends Activity {
         CaptureThreadManager manager;
         boolean isRecording = false;
 
+        private void setRecordingState(boolean enabled) {
+            isRecording = enabled;
+            buttonRecord.setText(enabled ? R.string.record_stop : R.string.record_start);
+        }
+
         @Override
         public void enter() {
             textFps.setVisibility(View.VISIBLE);
             textFps.setText(String.format(getResources().getString(R.string.x_fps), 0.));
             buttonRecord.setVisibility(View.VISIBLE);
-            buttonRecord.setText(R.string.record_start);
+            setRecordingState(false);
 
             textStatus.setText(R.string.status_previewing);
             manager = new CaptureThreadManager(surfaceColor.getHolder(), surfaceDepth.getHolder(), new CaptureThreadManager.Feedback() {
                 @Override
                 public void setFps(double fps) {
                     textFps.setText(String.format(getResources().getString(R.string.x_fps), fps));
+                }
+
+                @Override
+                public void reportError(Error error, String oniMessage) {
+                    switch (error) {
+                    case FailedToStartCapture:
+                        setState(new StateIdle(R.string.status_capture_error,
+                                getResources().getString(R.string.error_failed_to_start_capture), oniMessage));
+                        return;
+                    case FailedDuringCapture:
+                        setState(new StateIdle(R.string.status_capture_error,
+                                getResources().getString(R.string.error_failed_during_capture), oniMessage));
+                        return;
+                    case FailedToStartRecording:
+                        setRecordingState(false);
+                        Toast.makeText(MainActivity.this,
+                                String.format(getResources().getString(R.string.status_capture_error),
+                                        getResources().getString(R.string.error_failed_to_start_recording),
+                                        oniMessage),
+                                Toast.LENGTH_LONG).show();
+                    }
                 }
             });
         }
@@ -270,7 +303,7 @@ public class MainActivity extends Activity {
         @Override
         public void usbPermissionChange(boolean granted) {
             if (!granted) {
-                setState(new StateNoDevice());
+                setState(new StateIdle(R.string.status_permission_denied));
             }
         }
 
@@ -278,8 +311,7 @@ public class MainActivity extends Activity {
         public void recordClicked() {
             if (isRecording) {
                 manager.stopRecording();
-                isRecording = false;
-                buttonRecord.setText(R.string.record_start);
+                setRecordingState(false);
                 textStatus.setText(R.string.status_previewing);
             } else {
                 int file_no = 0;
@@ -291,8 +323,7 @@ public class MainActivity extends Activity {
 
                 manager.startRecording(capture_path);
 
-                isRecording = true;
-                buttonRecord.setText(R.string.record_stop);
+                setRecordingState(true);
                 textStatus.setText(String.format(getResources().getString(R.string.status_recording_to),
                         capture_path.getAbsolutePath()));
             }

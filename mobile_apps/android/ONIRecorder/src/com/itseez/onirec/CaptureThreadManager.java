@@ -17,7 +17,10 @@ import java.nio.ShortBuffer;
 
 class CaptureThreadManager {
     public interface Feedback {
+        public enum Error { FailedToStartCapture, FailedDuringCapture, FailedToStartRecording }
+
         void setFps(double fps);
+        void reportError(Error error, String oniMessage);
     }
 
     private static final String TAG = "onirec.CaptureThreadManager";
@@ -58,9 +61,16 @@ class CaptureThreadManager {
         public void run() {
             try {
                 context.waitAndUpdateAll();
-            } catch (StatusException se) {
-                Log.e(TAG, Log.getStackTraceString(se));
-                // TODO: handle this
+            } catch (final StatusException se) {
+                final String message = "Failed to acquire a frame.";
+                Log.e(TAG, message, se);
+                uiHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        feedback.reportError(Feedback.Error.FailedDuringCapture, se.getMessage());
+                    }
+                });
+                return;
             }
 
             int frame_width = color.getMetaData().getXRes();
@@ -142,7 +152,6 @@ class CaptureThreadManager {
             @Override
             public void run() {
                 initOpenNI();
-                handler.post(processFrame);
             }
         });
     }
@@ -173,9 +182,16 @@ class CaptureThreadManager {
                     recorder.setDestination(RecordMedium.FILE, file.getAbsolutePath());
                     recorder.addNodeToRecording(color);
                     recorder.addNodeToRecording(depth);
-                } catch (GeneralException ge) {
-                    Log.e(TAG, Log.getStackTraceString(ge));
-                    // TODO: handle this
+                } catch (final GeneralException ge) {
+                    if (recorder != null) recorder.dispose();
+                    final String message = "Failed to start recording.";
+                    Log.e(TAG, message, ge);
+                    uiHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            feedback.reportError(Feedback.Error.FailedToStartRecording, ge.getMessage());
+                        }
+                    });
                 }
             }
         });
@@ -185,8 +201,10 @@ class CaptureThreadManager {
         handler.post(new Runnable() {
             @Override
             public void run() {
-                recorder.dispose();
-                recorder = null;
+                if (recorder != null) {
+                    recorder.dispose();
+                    recorder = null;
+                }
             }
         });
     }
@@ -199,25 +217,33 @@ class CaptureThreadManager {
             depth = DepthGenerator.create(context);
 
             context.startGeneratingAll();
-        } catch (GeneralException ge) {
-            Log.e(TAG, Log.getStackTraceString(ge));
-            // TODO: handle this
+        } catch (final GeneralException ge) {
+            final String message = "Failed to initialize OpenNI.";
+            Log.e(TAG, message, ge);
+            uiHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    feedback.reportError(Feedback.Error.FailedToStartCapture, ge.getMessage());
+                }
+            });
+            return;
         }
+
+        handler.post(processFrame);
     }
 
     private void terminateOpenNI() {
-        try {
-            context.stopGeneratingAll();
-        } catch (StatusException e) {
-            Log.e(TAG, "OpenNI context failed to stop generating.");
-        }
+        if (context != null)
+            try {
+                context.stopGeneratingAll();
+            } catch (StatusException e) {
+                Log.e(TAG, "OpenNI context failed to stop generating.", e);
+            }
 
-        if (recorder != null)
-            recorder.dispose();
+        if (recorder != null) recorder.dispose();
+        if (depth != null) depth.dispose();
+        if (color != null) color.dispose();
 
-        depth.dispose();
-        color.dispose();
-
-        context.dispose();
+        if (context != null) context.dispose();
     }
 }
