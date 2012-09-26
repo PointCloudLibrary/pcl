@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.View;
 import android.widget.TextView;
 import org.libusb.UsbHelper;
 
@@ -23,6 +24,7 @@ public class MainActivity extends Activity {
     static final String TAG = "onirec.MainActivity";
 
     private TextView textStatus;
+    private TextView textFps;
     private SurfaceView surfaceColor;
     private SurfaceView surfaceDepth;
 
@@ -87,6 +89,7 @@ public class MainActivity extends Activity {
         setContentView(R.layout.main);
 
         textStatus = (TextView) findViewById(R.id.text_status);
+        textFps = (TextView) findViewById(R.id.text_fps);
         surfaceColor = (SurfaceView) findViewById(R.id.surface_color);
         surfaceDepth = (SurfaceView) findViewById(R.id.surface_depth);
 
@@ -126,7 +129,9 @@ public class MainActivity extends Activity {
 
     private class StateStopped implements State {
         @Override
-        public void activate() { }
+        public void activate() {
+            textFps.setVisibility(View.INVISIBLE);
+        }
 
         @Override
         public void stop() {
@@ -172,6 +177,7 @@ public class MainActivity extends Activity {
     private class StateNoDevice implements State {
         @Override
         public void activate() {
+            textFps.setVisibility(View.INVISIBLE);
             textStatus.setText(R.string.status_no_devices);
         }
 
@@ -192,6 +198,8 @@ public class MainActivity extends Activity {
 
     private class StateWaiting implements State {
         private void setLabel() {
+            textFps.setVisibility(View.INVISIBLE);
+
             if (!awaitingPermission.isEmpty())
                 textStatus.setText(R.string.status_waiting_for_permission);
             else
@@ -200,7 +208,7 @@ public class MainActivity extends Activity {
 
         private void maybeGoReady() {
             if (awaitingPermission.isEmpty() && surfaces == 2)
-                setState(new StateReady());
+                setState(new StatePreviewing());
         }
 
         @Override
@@ -235,13 +243,20 @@ public class MainActivity extends Activity {
         }
     }
 
-    private class StateReady implements State {
+    private class StatePreviewing implements State {
         CaptureThreadManager manager;
 
         @Override
         public void activate() {
-            textStatus.setText(R.string.status_ready);
-            manager = new CaptureThreadManager(surfaceColor.getHolder(), surfaceDepth.getHolder());
+            textFps.setVisibility(View.VISIBLE);
+            textFps.setText(String.format(getResources().getString(R.string.x_fps), 0.));
+            textStatus.setText(R.string.status_previewing);
+            manager = new CaptureThreadManager(surfaceColor.getHolder(), surfaceDepth.getHolder(), new CaptureThreadManager.Feedback() {
+                @Override
+                public void setFps(double fps) {
+                    textFps.setText(String.format(getResources().getString(R.string.x_fps), fps));
+                }
+            });
         }
 
         @Override

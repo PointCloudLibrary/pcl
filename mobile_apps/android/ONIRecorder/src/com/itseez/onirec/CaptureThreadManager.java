@@ -2,12 +2,8 @@ package com.itseez.onirec;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Paint;
 import android.graphics.Rect;
-import android.os.Handler;
-import android.os.HandlerThread;
-import android.os.Looper;
-import android.os.SystemClock;
+import android.os.*;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import org.OpenNI.Context;
@@ -18,16 +14,24 @@ import org.OpenNI.StatusException;
 import java.nio.ByteBuffer;
 
 class CaptureThreadManager {
+    public interface Feedback {
+        void setFps(double fps);
+    }
+
     static final String TAG = "onirec.CaptureThreadManager";
-    final HandlerThread thread;
-    final Handler handler;
+    private final HandlerThread thread;
+    private final Handler handler;
+    private final Handler uiHandler = new Handler();
     private final SurfaceHolder holderColor;
     private final SurfaceHolder holderDepth;
-    private final Paint paint = new Paint();
+    private Feedback feedback;
 
     private Context context;
     private ImageGenerator color;
     //private DepthGenerator depth;
+
+    int frameCount = 0;
+    long lastUpdateTime = SystemClock.uptimeMillis();
 
     private native static void imageBufferToBitmap(ByteBuffer buf, Bitmap bm);
 
@@ -38,45 +42,34 @@ class CaptureThreadManager {
     private Runnable processFrame = new Runnable() {
         @Override
         public void run() {
-            long clock_before;
-            long time_grabbing, time_reading, time_drawing;
-
-            clock_before = SystemClock.uptimeMillis();
             try {
                 context.waitAndUpdateAll();
             } catch (StatusException se) {
                 Log.e(TAG, Log.getStackTraceString(se));
                 // TODO: handle this
             }
-            time_grabbing = SystemClock.uptimeMillis() - clock_before;
-
-            clock_before = SystemClock.uptimeMillis();
 
             int frame_width = color.getMetaData().getXRes(), frame_height = color.getMetaData().getYRes();
 
             ByteBuffer color_buffer = color.getMetaData().getData().createByteBuffer();
 
             Bitmap color_bitmap = Bitmap.createBitmap(frame_width, frame_height, Bitmap.Config.ARGB_8888);
+            color_bitmap.setHasAlpha(false);
 
             imageBufferToBitmap(color_buffer, color_bitmap);
 
-            time_reading = SystemClock.uptimeMillis() - clock_before;
-
-            clock_before = SystemClock.uptimeMillis();
             Canvas canvas = holderColor.lockCanvas();
 
             if (canvas != null) {
                 Rect canvas_size = holderColor.getSurfaceFrame();
+                Rect bm_size = new Rect(0, 0, frame_width, frame_height);
 
-                canvas.drawBitmap(color_bitmap, 0, 0, paint);
+                canvas.drawBitmap(color_bitmap, bm_size, canvas_size, null);
 
                 holderColor.unlockCanvasAndPost(canvas);
             }
 
-            time_drawing = SystemClock.uptimeMillis() - clock_before;
-            Log.i(TAG, String.format("grabbing %d reading %d drawing %d", time_grabbing, time_reading, time_drawing));
-
-/*
+            /*
             ShortBuffer depth_buffer = depth.getMetaData().getData().createShortBuffer();
 
             for (int i = 0; i < num_pixels; ++i)
@@ -96,14 +89,31 @@ class CaptureThreadManager {
                 holderDepth.unlockCanvasAndPost(canvas);
             }
 */
+            ++frameCount;
+            final long new_time = SystemClock.uptimeMillis();
+            if (new_time >= lastUpdateTime + 500) {
+                final double fps = frameCount / (double) (new_time - lastUpdateTime) * 1000;
+
+                uiHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        feedback.setFps(fps);
+                    }
+                });
+
+                frameCount = 0;
+                lastUpdateTime = new_time;
+            }
 
             handler.post(processFrame);
         }
     };
 
-    public CaptureThreadManager(SurfaceHolder holderColor, SurfaceHolder holderDepth) {
+    public CaptureThreadManager(SurfaceHolder holderColor, SurfaceHolder holderDepth, Feedback feedback) {
         this.holderColor = holderColor;
         this.holderDepth = holderDepth;
+        this.feedback = feedback;
+
         thread = new HandlerThread("Capture Thread");
         thread.start();
 

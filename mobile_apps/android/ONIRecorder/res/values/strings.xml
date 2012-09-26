@@ -6,5 +6,6 @@
     <string name="status_no_devices">No Kinects found.</string>
     <string name="status_waiting_for_permission">Waiting for permission…</string>
     <string name="status_waiting_for_surfaces">Waiting for surfaces…</string>
-    <string name="status_ready">Ready.</string>
+    <string name="status_previewing">Previewing…</string>
+    <string name="x_fps">%1$f FPS</string>
 </resources>
