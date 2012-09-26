@@ -28,6 +28,7 @@ public class MainActivity extends Activity {
     private static final String TAG = "onirec.MainActivity";
 
     private Button buttonRecord;
+    private Button buttonReplay;
     private TextView textStatus;
     private TextView textFps;
     private SurfaceView surfaceColor;
@@ -44,6 +45,8 @@ public class MainActivity extends Activity {
 
     private final Set<UsbDevice> awaitingPermission = new HashSet<UsbDevice>();
     private int surfaces = 0;
+
+    private File lastRecording;
 
     private final BroadcastReceiver usb_receiver = new BroadcastReceiver() {
         @Override
@@ -100,6 +103,7 @@ public class MainActivity extends Activity {
         setContentView(R.layout.main);
 
         buttonRecord = (Button) findViewById(R.id.button_record);
+        buttonReplay = (Button) findViewById(R.id.button_replay);
         textStatus = (TextView) findViewById(R.id.text_status);
         textFps = (TextView) findViewById(R.id.text_fps);
         surfaceColor = (SurfaceView) findViewById(R.id.surface_color);
@@ -124,8 +128,11 @@ public class MainActivity extends Activity {
     }
 
     @SuppressWarnings("UnusedDeclaration")
-    public void buttonRecordOnClick(View view) {
-        state.recordClicked();
+    public void onClick(View view) {
+        if (view == buttonRecord)
+            state.recordClicked();
+        else if (view == buttonReplay)
+            ;
     }
 
     private void setState(State newState) {
@@ -133,6 +140,21 @@ public class MainActivity extends Activity {
         state = newState;
         Log.d(TAG, "New state: " + state.getClass().getName());
         state.enter();
+    }
+
+    private void updateButtonReplayState() {
+        String format = getResources().getString(R.string.replay_start);
+
+        if (lastRecording != null)
+        {
+            buttonRecord.setText(String.format(format, lastRecording.getName()));
+            buttonRecord.setEnabled(true);
+        }
+        else
+        {
+            buttonRecord.setText(String.format(format, getResources().getString(R.string.last_recording)));
+            buttonRecord.setEnabled(false);
+        }
     }
 
     private abstract static class State {
@@ -183,6 +205,7 @@ public class MainActivity extends Activity {
         @Override
         public void enter() {
             textStatus.setText(status);
+            updateButtonReplayState();
         }
 
         @Override
@@ -276,6 +299,8 @@ public class MainActivity extends Activity {
                                         getResources().getString(R.string.error_failed_to_start_recording),
                                         oniMessage),
                                 Toast.LENGTH_LONG).show();
+                        lastRecording = null;
+                        updateButtonReplayState();
                     }
                 }
             });

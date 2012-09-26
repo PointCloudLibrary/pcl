@@ -48,6 +48,14 @@
             android:layout_height="wrap_content"
             android:text="@string/status_loading"
             android:layout_gravity="center"/>
+    <Button android:id="@+id/button_replay"
+            android:onClick="onClick"
+            android:text="@string/replay_start"
+            android:layout_gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:enabled="false"
+    />
     <TextView
             android:id="@+id/text_fps"
             android:layout_width="wrap_content"
@@ -56,7 +64,7 @@
             android:layout_gravity="center"
             android:visibility="invisible"/>
     <Button android:id="@+id/button_record"
-            android:onClick="buttonRecordOnClick"
+            android:onClick="onClick"
             android:text="@string/record_start"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

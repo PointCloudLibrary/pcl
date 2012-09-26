@@ -35,6 +35,7 @@ class CaptureThreadManager {
     private ImageGenerator color;
     private DepthGenerator depth;
     private Recorder recorder;
+    private Player player;
 
     private Bitmap colorBitmap;
     private Bitmap depthBitmap;
@@ -212,9 +213,31 @@ class CaptureThreadManager {
     private void initOpenNI() {
         try {
             context = new Context();
-
             color = ImageGenerator.create(context);
             depth = DepthGenerator.create(context);
+
+            context.startGeneratingAll();
+        } catch (final GeneralException ge) {
+            final String message = "Failed to initialize OpenNI.";
+            Log.e(TAG, message, ge);
+            uiHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    feedback.reportError(Feedback.Error.FailedToStartCapture, ge.getMessage());
+                }
+            });
+            return;
+        }
+
+        handler.post(processFrame);
+    }
+
+    private void initOpenNIFromRecording(File record) {
+        try {
+            context = new Context();
+            player = context.openFileRecordingEx(record.getAbsolutePath());
+            color = (ImageGenerator) context.findExistingNode(NodeType.IMAGE);
+            depth = (DepthGenerator) context.findExistingNode(NodeType.DEPTH);
 
             context.startGeneratingAll();
         } catch (final GeneralException ge) {
@@ -243,7 +266,7 @@ class CaptureThreadManager {
         if (recorder != null) recorder.dispose();
         if (depth != null) depth.dispose();
         if (color != null) color.dispose();
-
+        if (player != null) player.dispose();
         if (context != null) context.dispose();
     }
 }

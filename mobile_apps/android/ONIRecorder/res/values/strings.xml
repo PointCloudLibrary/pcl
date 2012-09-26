@@ -16,4 +16,7 @@
     <string name="error_failed_to_start_capture">failed to start capture</string>
     <string name="error_failed_during_capture">capture has terminated abnormally</string>
     <string name="error_failed_to_start_recording">failed to start recording</string>
+    <string name="replay_start">Replay %1$s</string>
+    <string name="replay_stop">Stop replaying</string>
+    <string name="last_recording">last recording</string>
 </resources>
