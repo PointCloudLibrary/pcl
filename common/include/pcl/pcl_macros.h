@@ -60,7 +60,7 @@ namespace pcl
 #if defined _MSC_VER
   // 4244 : conversion from 'type1' to 'type2', possible loss of data
   // 4661 : no suitable definition provided for explicit template instantiation reques
-  #pragma warning (disable: 4244 4267 4521 4251 4661)
+  #pragma warning (disable: 4244 4267 4521 4251 4661 4305)
 #endif
 
 #include <iostream>
