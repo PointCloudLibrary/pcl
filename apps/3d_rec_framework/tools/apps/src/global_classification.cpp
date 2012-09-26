@@ -5,6 +5,7 @@
  *      Author: aitor
  */
 
+#include <pcl/pcl_macros.h>
 #include <pcl/apps/3d_rec_framework/pipeline/global_nn_classifier.h>
 #include <pcl/apps/3d_rec_framework/pc_source/mesh_source.h>
 #include <pcl/apps/3d_rec_framework/feature_wrapper/global/vfh_estimator.h>
