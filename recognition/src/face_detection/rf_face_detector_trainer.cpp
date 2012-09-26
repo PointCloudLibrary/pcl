@@ -286,7 +286,7 @@ void pcl::RFFaceDetectorTrainer::detectFaces()
 
   if (use_normals_)
   {
-    typedef typename pcl::IntegralImageNormalEstimation<pcl::PointXYZ, pcl::Normal> NormalEstimator_;
+    typedef pcl::IntegralImageNormalEstimation<pcl::PointXYZ, pcl::Normal> NormalEstimator_;
     NormalEstimator_ n3d;
     n3d.setNormalEstimationMethod (n3d.COVARIANCE_MATRIX);
     n3d.setInputCloud (cloud);
@@ -437,7 +437,7 @@ void pcl::RFFaceDetectorTrainer::detectFaces()
     pcl::PointCloud<pcl::Normal>::Ptr scene_normals (new pcl::PointCloud<pcl::Normal> ());
 
     {
-      typedef typename pcl::IntegralImageNormalEstimation<pcl::PointXYZ, pcl::Normal> NormalEstimator_;
+      typedef pcl::IntegralImageNormalEstimation<pcl::PointXYZ, pcl::Normal> NormalEstimator_;
       NormalEstimator_ n3d;
       n3d.setNormalEstimationMethod (n3d.COVARIANCE_MATRIX);
       n3d.setInputCloud (input_);
