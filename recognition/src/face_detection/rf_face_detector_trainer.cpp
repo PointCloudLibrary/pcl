@@ -232,9 +232,9 @@ void pcl::RFFaceDetectorTrainer::setModelPath(std::string & model)
 {
   model_path_ = model;
   pcl::PointCloud<pcl::PointXYZ>::Ptr model_cloud (new pcl::PointCloud<pcl::PointXYZ> ());
+  pcl::io::loadPCDFile (model_path_, *model_cloud);
 
   model_original_.reset (new pcl::PointCloud<pcl::PointXYZ> ());
-  pcl::io::loadPCDFile (model, *model_original_);
 
   {
     pcl::VoxelGrid<pcl::PointXYZ> voxel_grid_icp;
