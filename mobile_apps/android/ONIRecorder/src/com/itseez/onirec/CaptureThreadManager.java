@@ -3,11 +3,15 @@ package com.itseez.onirec;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Rect;
-import android.os.*;
+import android.os.Handler;
+import android.os.HandlerThread;
+import android.os.Looper;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import org.OpenNI.*;
 
+import java.io.File;
 import java.nio.ByteBuffer;
 import java.nio.ShortBuffer;
 
@@ -27,6 +31,7 @@ class CaptureThreadManager {
     private Context context;
     private ImageGenerator color;
     private DepthGenerator depth;
+    private Recorder recorder;
 
     private Bitmap colorBitmap;
     private Bitmap depthBitmap;
@@ -159,6 +164,33 @@ class CaptureThreadManager {
         }
     }
 
+    public void startRecording(final File file) {
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    recorder = Recorder.create(context, "oni");
+                    recorder.setDestination(RecordMedium.FILE, file.getAbsolutePath());
+                    recorder.addNodeToRecording(color);
+                    recorder.addNodeToRecording(depth);
+                } catch (GeneralException ge) {
+                    Log.e(TAG, Log.getStackTraceString(ge));
+                    // TODO: handle this
+                }
+            }
+        });
+    }
+
+    public void stopRecording() {
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                recorder.dispose();
+                recorder = null;
+            }
+        });
+    }
+
     private void initOpenNI() {
         try {
             context = new Context();
@@ -179,6 +211,9 @@ class CaptureThreadManager {
         } catch (StatusException e) {
             Log.e(TAG, "OpenNI context failed to stop generating.");
         }
+
+        if (recorder != null)
+            recorder.dispose();
 
         depth.dispose();
         color.dispose();

@@ -55,4 +55,11 @@
             android:text="@string/x_fps"
             android:layout_gravity="center"
             android:visibility="invisible"/>
+    <Button android:id="@+id/button_record"
+            android:onClick="buttonRecordOnClick"
+            android:text="@string/record_start"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="invisible"/>
 </LinearLayout>

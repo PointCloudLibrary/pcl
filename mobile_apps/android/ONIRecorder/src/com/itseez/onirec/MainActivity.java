@@ -9,13 +9,16 @@ import android.content.IntentFilter;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import org.libusb.UsbHelper;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -23,6 +26,7 @@ import java.util.Set;
 public class MainActivity extends Activity {
     static final String TAG = "onirec.MainActivity";
 
+    private Button buttonRecord;
     private TextView textStatus;
     private TextView textFps;
     private SurfaceView surfaceColor;
@@ -31,6 +35,12 @@ public class MainActivity extends Activity {
     private static final String ACTION_USB_PERMISSION = "com.itseez.onirec.USB_PERMISSION";
 
     State state;
+
+    {
+        state = new StateStopped();
+        state.enter();
+    }
+
     Set<UsbDevice> awaitingPermission = new HashSet<UsbDevice>();
     private int surfaces = 0;
 
@@ -88,6 +98,7 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
+        buttonRecord = (Button) findViewById(R.id.button_record);
         textStatus = (TextView) findViewById(R.id.text_status);
         textFps = (TextView) findViewById(R.id.text_fps);
         surfaceColor = (SurfaceView) findViewById(R.id.surface_color);
@@ -97,7 +108,6 @@ public class MainActivity extends Activity {
         surfaceDepth.getHolder().addCallback(surface_callbacks);
 
         registerReceiver(usb_receiver, new IntentFilter(ACTION_USB_PERMISSION));
-        setState(new StateStopped());
     }
 
     @Override
@@ -112,32 +122,30 @@ public class MainActivity extends Activity {
         state.stop();
     }
 
+    @SuppressWarnings("UnusedDeclaration")
+    public void buttonRecordOnClick(View view) {
+        state.recordClicked();
+    }
+
     private void setState(State newState) {
+        state.leave();
         state = newState;
         Log.d(TAG, "New state: " + state.getClass().getName());
-        state.activate();
+        state.enter();
     }
 
-    private interface State {
-        void activate();
+    private abstract static class State {
+        public void enter() {}
+        public void leave() {}
 
-        void start();
-        void stop();
-        void surfaceStateChange();
-        void usbPermissionChange(boolean granted);
+        public void start() { throw new IllegalStateException(); }
+        public void stop() { throw new IllegalStateException(); }
+        public void surfaceStateChange() { throw new IllegalStateException(); }
+        public void usbPermissionChange(boolean granted) { throw new IllegalStateException(); }
+        public void recordClicked() { throw new IllegalStateException(); }
     }
 
-    private class StateStopped implements State {
-        @Override
-        public void activate() {
-            textFps.setVisibility(View.INVISIBLE);
-        }
-
-        @Override
-        public void stop() {
-            throw new IllegalStateException("already stopped");
-        }
-
+    private class StateStopped extends State {
         @Override
         public void start() {
             UsbManager manager = UsbHelper.getManager();
@@ -162,28 +170,12 @@ public class MainActivity extends Activity {
             else
                 setState(new StateWaiting());
         }
-
-        @Override
-        public void usbPermissionChange(boolean granted) {
-            throw new IllegalStateException("stopped");
-        }
-
-        @Override
-        public void surfaceStateChange() {
-            throw new IllegalStateException("stopped");
-        }
     }
 
-    private class StateNoDevice implements State {
+    private class StateNoDevice extends State {
         @Override
-        public void activate() {
-            textFps.setVisibility(View.INVISIBLE);
+        public void enter() {
             textStatus.setText(R.string.status_no_devices);
-        }
-
-        @Override
-        public void start() {
-            throw new IllegalStateException("already started");
         }
 
         @Override
@@ -196,10 +188,8 @@ public class MainActivity extends Activity {
         @Override public void usbPermissionChange(boolean granted) { }
     }
 
-    private class StateWaiting implements State {
+    private class StateWaiting extends State {
         private void setLabel() {
-            textFps.setVisibility(View.INVISIBLE);
-
             if (!awaitingPermission.isEmpty())
                 textStatus.setText(R.string.status_waiting_for_permission);
             else
@@ -208,17 +198,12 @@ public class MainActivity extends Activity {
 
         private void maybeGoReady() {
             if (awaitingPermission.isEmpty() && surfaces == 2)
-                setState(new StatePreviewing());
+                setState(new StateCapturing());
         }
 
         @Override
-        public void activate() {
+        public void enter() {
             setLabel();
-        }
-
-        @Override
-        public void start() {
-            throw new IllegalStateException("already started");
         }
 
         @Override
@@ -243,13 +228,17 @@ public class MainActivity extends Activity {
         }
     }
 
-    private class StatePreviewing implements State {
+    private class StateCapturing extends State {
         CaptureThreadManager manager;
+        boolean isRecording = false;
 
         @Override
-        public void activate() {
+        public void enter() {
             textFps.setVisibility(View.VISIBLE);
             textFps.setText(String.format(getResources().getString(R.string.x_fps), 0.));
+            buttonRecord.setVisibility(View.VISIBLE);
+            buttonRecord.setText(R.string.record_start);
+
             textStatus.setText(R.string.status_previewing);
             manager = new CaptureThreadManager(surfaceColor.getHolder(), surfaceDepth.getHolder(), new CaptureThreadManager.Feedback() {
                 @Override
@@ -260,20 +249,20 @@ public class MainActivity extends Activity {
         }
 
         @Override
-        public void start() {
-            throw new IllegalStateException("already started");
+        public void leave() {
+            manager.stop();
+            textFps.setVisibility(View.INVISIBLE);
+            buttonRecord.setVisibility(View.INVISIBLE);
         }
 
         @Override
         public void stop() {
-            manager.stop();
             setState(new StateStopped());
         }
 
         @Override
         public void surfaceStateChange() {
             if (surfaces < 2) {
-                manager.stop();
                 setState(new StateWaiting());
             }
         }
@@ -281,8 +270,31 @@ public class MainActivity extends Activity {
         @Override
         public void usbPermissionChange(boolean granted) {
             if (!granted) {
-                manager.stop();
                 setState(new StateNoDevice());
+            }
+        }
+
+        @Override
+        public void recordClicked() {
+            if (isRecording) {
+                manager.stopRecording();
+                isRecording = false;
+                buttonRecord.setText(R.string.record_start);
+                textStatus.setText(R.string.status_previewing);
+            } else {
+                int file_no = 0;
+                File capture_path;
+
+                do
+                    capture_path = new File(Environment.getExternalStorageDirectory(), "test" + file_no++ + ".oni");
+                while (capture_path.exists());
+
+                manager.startRecording(capture_path);
+
+                isRecording = true;
+                buttonRecord.setText(R.string.record_stop);
+                textStatus.setText(String.format(getResources().getString(R.string.status_recording_to),
+                        capture_path.getAbsolutePath()));
             }
         }
     }
