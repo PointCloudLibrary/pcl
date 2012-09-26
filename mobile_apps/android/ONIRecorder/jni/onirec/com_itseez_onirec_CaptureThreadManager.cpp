@@ -53,3 +53,44 @@ Java_com_itseez_onirec_CaptureThreadManager_imageBufferToBitmap
   AndroidBitmap_unlockPixels(env, bm);
 }
 
+JNIEXPORT void JNICALL
+Java_com_itseez_onirec_CaptureThreadManager_depthBufferToBitmap
+  (JNIEnv * env, jclass clazz, jobject buf, jobject bm, jint maxZ)
+{
+  AndroidBitmapInfo info;
+  if (AndroidBitmap_getInfo(env, bm, &info) != ANDROID_BITMAP_RESUT_SUCCESS) {
+    __android_log_write(ANDROID_LOG_ERROR, TAG, "Couldn't get bitmap info.");
+    return;
+  }
+
+  if (info.format != ANDROID_BITMAP_FORMAT_RGBA_8888) {
+    __android_log_print(ANDROID_LOG_ERROR, TAG, "Unsupported bitmap format: %d.", info.format);
+    return;
+  }
+
+  void * bm_pixels;
+  if (AndroidBitmap_lockPixels(env, bm, &bm_pixels) != ANDROID_BITMAP_RESUT_SUCCESS) {
+    __android_log_write(ANDROID_LOG_ERROR, TAG, "Couldn't lock bitmap pixels.");
+    return;
+  }
+
+  char * bm_pixels_char = static_cast<char *>(bm_pixels);
+
+  unsigned int * buf_int = static_cast<unsigned int *>(env->GetDirectBufferAddress(buf));
+
+  for (int i = 0; i < info.height; ++i) {
+    int * pixel = reinterpret_cast<int *>(bm_pixels_char + i * info.stride);
+
+    // we will assume width is a multiple of 2 (as is the case with all Kinect output formats)
+    for (int j = 0; j < info.width; j += 2, pixel += 2, buf_int += 1) {
+      unsigned int depths = *buf_int;
+      unsigned char gray1 = unsigned(double(depths >> 16) / double(maxZ) * 255.);
+      unsigned char gray2 = unsigned(double(depths && 0xFFFF) / double(maxZ) * 255.);
+
+      pixel[0] = 0xFF000000 | (gray1 << 16) | (gray1 << 8) | gray1;
+      pixel[1] = 0xFF000000 | (gray2 << 16) | (gray2 << 8) | gray2;
+    }
+  }
+
+  AndroidBitmap_unlockPixels(env, bm);
+}

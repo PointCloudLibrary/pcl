@@ -15,6 +15,14 @@ extern "C" {
 JNIEXPORT void JNICALL Java_com_itseez_onirec_CaptureThreadManager_imageBufferToBitmap
   (JNIEnv *, jclass, jobject, jobject);
 
+/*
+ * Class:     com_itseez_onirec_CaptureThreadManager
+ * Method:    depthBufferToBitmap
+ * Signature: (Ljava/nio/ShortBuffer;Landroid/graphics/Bitmap;I)V
+ */
+JNIEXPORT void JNICALL Java_com_itseez_onirec_CaptureThreadManager_depthBufferToBitmap
+  (JNIEnv *, jclass, jobject, jobject, jint);
+
 #ifdef __cplusplus
 }
 #endif

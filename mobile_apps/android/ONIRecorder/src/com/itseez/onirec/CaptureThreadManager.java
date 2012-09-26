@@ -6,12 +6,10 @@ import android.graphics.Rect;
 import android.os.*;
 import android.util.Log;
 import android.view.SurfaceHolder;
-import org.OpenNI.Context;
-import org.OpenNI.GeneralException;
-import org.OpenNI.ImageGenerator;
-import org.OpenNI.StatusException;
+import org.OpenNI.*;
 
 import java.nio.ByteBuffer;
+import java.nio.ShortBuffer;
 
 class CaptureThreadManager {
     public interface Feedback {
@@ -28,12 +26,23 @@ class CaptureThreadManager {
 
     private Context context;
     private ImageGenerator color;
-    //private DepthGenerator depth;
+    private DepthGenerator depth;
+
+    private Bitmap colorBitmap;
+    private Bitmap depthBitmap;
+
+    {
+        colorBitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
+        colorBitmap.setHasAlpha(false);
+        depthBitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
+        depthBitmap.setHasAlpha(false);
+    }
 
     int frameCount = 0;
     long lastUpdateTime = SystemClock.uptimeMillis();
 
     private native static void imageBufferToBitmap(ByteBuffer buf, Bitmap bm);
+    private native static void depthBufferToBitmap(ShortBuffer buf, Bitmap bm, int maxZ);
 
     static {
         System.loadLibrary("onirec");
@@ -49,14 +58,16 @@ class CaptureThreadManager {
                 // TODO: handle this
             }
 
-            int frame_width = color.getMetaData().getXRes(), frame_height = color.getMetaData().getYRes();
+            int frame_width = color.getMetaData().getXRes();
+            int frame_height = color.getMetaData().getYRes();
 
-            ByteBuffer color_buffer = color.getMetaData().getData().createByteBuffer();
+            if (colorBitmap.getWidth() != frame_width || colorBitmap.getHeight() != frame_height) {
+                colorBitmap.recycle();
+                colorBitmap = Bitmap.createBitmap(frame_width, frame_height, Bitmap.Config.ARGB_8888);
+                colorBitmap.setHasAlpha(false);
+            }
 
-            Bitmap color_bitmap = Bitmap.createBitmap(frame_width, frame_height, Bitmap.Config.ARGB_8888);
-            color_bitmap.setHasAlpha(false);
-
-            imageBufferToBitmap(color_buffer, color_bitmap);
+            imageBufferToBitmap(color.getMetaData().getData().createByteBuffer(), colorBitmap);
 
             Canvas canvas = holderColor.lockCanvas();
 
@@ -64,31 +75,36 @@ class CaptureThreadManager {
                 Rect canvas_size = holderColor.getSurfaceFrame();
                 Rect bm_size = new Rect(0, 0, frame_width, frame_height);
 
-                canvas.drawBitmap(color_bitmap, bm_size, canvas_size, null);
+                canvas.drawBitmap(colorBitmap, bm_size, canvas_size, null);
 
                 holderColor.unlockCanvasAndPost(canvas);
             }
 
-            /*
-            ShortBuffer depth_buffer = depth.getMetaData().getData().createShortBuffer();
+            frame_width = depth.getMetaData().getXRes();
+            frame_height = depth.getMetaData().getYRes();
 
-            for (int i = 0; i < num_pixels; ++i)
-            {
-                int gray = (int) (depth_buffer.get(i) / 32767. * 255.);
-                color_array[i] = Color.rgb(gray, gray, gray);
+            if (depthBitmap.getWidth() != frame_width || depthBitmap.getHeight() != frame_height) {
+                depthBitmap.recycle();
+                depthBitmap = Bitmap.createBitmap(frame_width, frame_height, Bitmap.Config.ARGB_8888);
+                depthBitmap.setHasAlpha(false);
             }
+
+            long time_before = SystemClock.uptimeMillis();
+            depthBufferToBitmap(depth.getMetaData().getData().createShortBuffer(), depthBitmap,
+                    depth.getMetaData().getZRes() - 1);
+            Log.i(TAG, String.format("time: %d", SystemClock.uptimeMillis() - time_before));
 
             canvas = holderDepth.lockCanvas();
 
             if (canvas != null) {
-                Rect canvas_size = holderColor.getSurfaceFrame();
+                Rect canvas_size = holderDepth.getSurfaceFrame();
+                Rect bm_size = new Rect(0, 0, frame_width, frame_height);
 
-                canvas.drawBitmap(color_array, 0, frame_width, 0, 0, canvas_size.width(), canvas_size.height(),
-                        false, paint);
+                canvas.drawBitmap(depthBitmap, bm_size, canvas_size, null);
 
                 holderDepth.unlockCanvasAndPost(canvas);
             }
-*/
+
             ++frameCount;
             final long new_time = SystemClock.uptimeMillis();
             if (new_time >= lastUpdateTime + 500) {
@@ -150,7 +166,7 @@ class CaptureThreadManager {
             context = new Context();
 
             color = ImageGenerator.create(context);
-            //depth = DepthGenerator.create(context);
+            depth = DepthGenerator.create(context);
 
             context.startGeneratingAll();
         } catch (GeneralException ge) {
@@ -166,7 +182,7 @@ class CaptureThreadManager {
             Log.e(TAG, "OpenNI context failed to stop generating.");
         }
 
-        //depth.dispose();
+        depth.dispose();
         color.dispose();
 
         context.dispose();
