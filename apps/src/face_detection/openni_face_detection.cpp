@@ -28,7 +28,7 @@ void run(pcl::RFFaceDetectorTrainer & fdrf, bool heat_map = false, bool show_vot
   {
     scene_vis = camera.snap ();
 
-    typename pcl::PointCloud<pcl::PointXYZ>::Ptr scene (new pcl::PointCloud<pcl::PointXYZ> ());
+    pcl::PointCloud<pcl::PointXYZ>::Ptr scene (new pcl::PointCloud<pcl::PointXYZ> ());
     pcl::copyPointCloud (*scene_vis, *scene);
 
     fdrf.setInputCloud (scene);
