@@ -45,6 +45,7 @@
 #pragma GCC system_header 
 #endif
 
+#include <pcl/pcl_macros.h>
 #include <pcl/point_traits.h>
 #include <boost/mpl/vector.hpp>
 #include <boost/mpl/for_each.hpp>
