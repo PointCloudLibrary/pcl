@@ -89,10 +89,8 @@ class CaptureThreadManager {
                 depthBitmap.setHasAlpha(false);
             }
 
-            long time_before = SystemClock.uptimeMillis();
             depthBufferToBitmap(depth.getMetaData().getData().createShortBuffer(), depthBitmap,
                     depth.getMetaData().getZRes() - 1);
-            Log.i(TAG, String.format("time: %d", SystemClock.uptimeMillis() - time_before));
 
             canvas = holderDepth.lockCanvas();
 

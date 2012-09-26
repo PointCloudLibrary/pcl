@@ -28,12 +28,12 @@ Java_com_itseez_onirec_CaptureThreadManager_imageBufferToBitmap
     return;
   }
 
-  char * bm_pixels_char = static_cast<char *>(bm_pixels);
+  int * bm_pixels_int = static_cast<int *>(bm_pixels);
 
   unsigned int * buf_int = static_cast<unsigned int *>(env->GetDirectBufferAddress(buf));
 
   for (int i = 0; i < info.height; ++i) {
-    int * pixel = reinterpret_cast<int *>(bm_pixels_char + i * info.stride);
+    int * pixel = bm_pixels_int + i * info.stride / sizeof(int);
     
     // we will assume width is a multiple of 4 (as is the case with all Kinect output formats)
     for (int j = 0; j < info.width; j += 4, pixel += 4, buf_int += 3) {
@@ -74,12 +74,12 @@ Java_com_itseez_onirec_CaptureThreadManager_depthBufferToBitmap
     return;
   }
 
-  char * bm_pixels_char = static_cast<char *>(bm_pixels);
+  int * bm_pixels_int = static_cast<int *>(bm_pixels);
 
   unsigned int * buf_int = static_cast<unsigned int *>(env->GetDirectBufferAddress(buf));
 
   for (int i = 0; i < info.height; ++i) {
-    int * pixel = reinterpret_cast<int *>(bm_pixels_char + i * info.stride);
+    int * pixel = bm_pixels_int + i * info.stride / sizeof(int);
 
     // we will assume width is a multiple of 2 (as is the case with all Kinect output formats)
     for (int j = 0; j < info.width; j += 2, pixel += 2, buf_int += 1) {
