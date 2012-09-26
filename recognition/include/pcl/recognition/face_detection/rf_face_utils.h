@@ -278,7 +278,7 @@ namespace pcl
             Eigen::Vector3d & centroid) const
         {
           Eigen::Matrix<double, 1, 9, Eigen::RowMajor> accu = Eigen::Matrix<double, 1, 9, Eigen::RowMajor>::Zero ();
-          unsigned int point_count = examples.size ();
+          unsigned int point_count = static_cast<unsigned int> (examples.size ());
 
           for (size_t i = 0; i < point_count; ++i)
           {
