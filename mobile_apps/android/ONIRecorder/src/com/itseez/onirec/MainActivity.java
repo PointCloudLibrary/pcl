@@ -24,7 +24,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class MainActivity extends Activity {
-    static final String TAG = "onirec.MainActivity";
+    private static final String TAG = "onirec.MainActivity";
 
     private Button buttonRecord;
     private TextView textStatus;
@@ -34,17 +34,17 @@ public class MainActivity extends Activity {
 
     private static final String ACTION_USB_PERMISSION = "com.itseez.onirec.USB_PERMISSION";
 
-    State state;
+    private State state;
 
     {
         state = new StateStopped();
         state.enter();
     }
 
-    Set<UsbDevice> awaitingPermission = new HashSet<UsbDevice>();
+    private final Set<UsbDevice> awaitingPermission = new HashSet<UsbDevice>();
     private int surfaces = 0;
 
-    private BroadcastReceiver usb_receiver = new BroadcastReceiver() {
+    private final BroadcastReceiver usb_receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
@@ -73,7 +73,7 @@ public class MainActivity extends Activity {
         }
     };
 
-    private SurfaceHolder.Callback surface_callbacks = new SurfaceHolder.Callback() {
+    private final SurfaceHolder.Callback surface_callbacks = new SurfaceHolder.Callback() {
         @Override
         public void surfaceCreated(SurfaceHolder holder) {
             Log.d(TAG, "surfaceCreated");

@@ -10,7 +10,7 @@ import org.xmlpull.v1.XmlSerializer;
 import java.io.*;
 
 public class Application extends android.app.Application {
-    static final String TAG = "onirec.Application";
+    private static final String TAG = "onirec.Application";
 
     static {
         System.loadLibrary("onirec");

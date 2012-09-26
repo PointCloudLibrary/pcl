@@ -17,6 +17,7 @@ public class UsbHelper {
         manager = (UsbManager) context.getSystemService(Service.USB_SERVICE);
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public static UsbDeviceConnection openDevice(String path) {
         UsbDevice device = manager.getDeviceList().get(path);
         if (device == null) return null;

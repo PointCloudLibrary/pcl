@@ -20,13 +20,13 @@ class CaptureThreadManager {
         void setFps(double fps);
     }
 
-    static final String TAG = "onirec.CaptureThreadManager";
+    private static final String TAG = "onirec.CaptureThreadManager";
     private final HandlerThread thread;
     private final Handler handler;
     private final Handler uiHandler = new Handler();
     private final SurfaceHolder holderColor;
     private final SurfaceHolder holderDepth;
-    private Feedback feedback;
+    private final Feedback feedback;
 
     private Context context;
     private ImageGenerator color;
@@ -43,8 +43,8 @@ class CaptureThreadManager {
         depthBitmap.setHasAlpha(false);
     }
 
-    int frameCount = 0;
-    long lastUpdateTime = SystemClock.uptimeMillis();
+    private int frameCount = 0;
+    private long lastUpdateTime = SystemClock.uptimeMillis();
 
     private native static void imageBufferToBitmap(ByteBuffer buf, Bitmap bm);
     private native static void depthBufferToBitmap(ShortBuffer buf, Bitmap bm, int maxZ);
@@ -53,7 +53,7 @@ class CaptureThreadManager {
         System.loadLibrary("onirec");
     }
 
-    private Runnable processFrame = new Runnable() {
+    private final Runnable processFrame = new Runnable() {
         @Override
         public void run() {
             try {
