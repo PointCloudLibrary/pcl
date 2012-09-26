@@ -227,6 +227,9 @@ namespace pcl
 
       /** \brief The resultant clusters that contain more than max_cluster_size points */
       pcl::IndicesClustersPtr large_clusters_;
+
+    public:
+      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 }
 
