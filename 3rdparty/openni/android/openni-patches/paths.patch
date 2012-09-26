@@ -1,0 +1,18 @@
+Move configuration files to a more conventional location.
+
+Index: OpenNI/Source/OpenNI/XnOpenNI.cpp
+===================================================================
+--- OpenNI.orig/Source/OpenNI/XnOpenNI.cpp	2012-09-26 13:55:01.762564859 +0400
++++ OpenNI/Source/OpenNI/XnOpenNI.cpp	2012-09-26 13:55:11.443185592 +0400
+@@ -6991,9 +6991,9 @@
+ #if (XN_PLATFORM == XN_PLATFORM_WIN32)
+ 	#define XN_OPEN_NI_FILES_LOCATION "\\Data\\"
+ #elif (CE4100)
+-	#define XN_OPEN_NI_FILES_LOCATION "/usr/etc/ni/"
++	#define XN_OPEN_NI_FILES_LOCATION "/etc/openni/"
+ #elif (XN_PLATFORM == XN_PLATFORM_LINUX_X86 || XN_PLATFORM == XN_PLATFORM_LINUX_ARM || XN_PLATFORM == XN_PLATFORM_MACOSX)
+-	#define XN_OPEN_NI_FILES_LOCATION "/var/lib/ni/"
++	#define XN_OPEN_NI_FILES_LOCATION "/etc/openni/"
+ #elif (XN_PLATFORM == XN_PLATFORM_ANDROID_ARM)
+ 	#define XN_OPEN_NI_FILES_LOCATION "/data/ni/"
+ #else

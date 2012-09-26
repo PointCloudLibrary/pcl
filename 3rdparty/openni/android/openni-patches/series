@@ -1,0 +1,11 @@
+newline-end.patch
+paths.patch
+format-args.patch
+substitute-libusb.patch
+dynamic-linker.patch
+android-install-path-var.patch
+java-bindings-bugs.patch
+setschedparam.patch
+usb-race-condition.patch
+update-android-project.patch
+useless-android-files.patch

@@ -1,0 +1,57 @@
+Fixed several printf arguments not having the expected type.
+
+Index: OpenNI/Source/OpenNI/XnProfiling.cpp
+===================================================================
+--- OpenNI.orig/Source/OpenNI/XnProfiling.cpp	2012-09-26 14:12:06.142564681 +0400
++++ OpenNI/Source/OpenNI/XnProfiling.cpp	2012-09-26 14:12:06.832561931 +0400
+@@ -87,8 +87,8 @@
+ 		// print profiled sections
+ 		nReportChars = 0;
+ 		nReportChars += sprintf(csReport + nReportChars, "Profiling Report:\n");
+-		nReportChars += sprintf(csReport + nReportChars, "%-*s %-5s %-6s %-9s %-7s\n", g_ProfilingData.nMaxSectionName, "TaskName", "Times", "% Time", "TotalTime", "AvgTime");
+-		nReportChars += sprintf(csReport + nReportChars, "%-*s %-5s %-6s %-9s %-7s\n", g_ProfilingData.nMaxSectionName, "========", "=====", "======", "=========", "=======");
++		nReportChars += sprintf(csReport + nReportChars, "%-*s %-5s %-6s %-9s %-7s\n", (int)g_ProfilingData.nMaxSectionName, "TaskName", "Times", "% Time", "TotalTime", "AvgTime");
++		nReportChars += sprintf(csReport + nReportChars, "%-*s %-5s %-6s %-9s %-7s\n", (int)g_ProfilingData.nMaxSectionName, "========", "=====", "======", "=========", "=======");
+ 
+ 		XnUInt64 nTotalTime = 0;
+ 
+@@ -104,7 +104,7 @@
+ 				nAvgTime = pSection->nTotalTime / pSection->nTimesExecuted;
+ 			}
+ 
+-			nReportChars += sprintf(csReport + nReportChars, "%-*s %5u %6.2f %9llu %7llu\n", g_ProfilingData.nMaxSectionName, 
++			nReportChars += sprintf(csReport + nReportChars, "%-*s %5u %6.2f %9llu %7llu\n", (int)g_ProfilingData.nMaxSectionName,
+ 				pSection->csName, pSection->nTimesExecuted, dCPUPercentage, pSection->nTotalTime, nAvgTime);
+ 
+ 			if (pSection->nIndentation == 0)
+@@ -118,7 +118,7 @@
+ 		// print total
+ 		XnDouble dCPUPercentage = ((XnDouble)nTotalTime) / (nNow - nLastTime) * 100.0;
+ 		nReportChars += sprintf(csReport + nReportChars, "%-*s %5s %6.2f %9llu %7s\n", 
+-			g_ProfilingData.nMaxSectionName, "*** Total ***", "-", dCPUPercentage, nTotalTime, "-");
++			(int)g_ProfilingData.nMaxSectionName, "*** Total ***", "-", dCPUPercentage, nTotalTime, "-");
+ 
+ 		xnLogVerbose(XN_MASK_PROFILING, "%s", csReport);
+ 
+Index: OpenNI/Source/Utils/niLicense/niLicense.cpp
+===================================================================
+--- OpenNI.orig/Source/Utils/niLicense/niLicense.cpp	2012-09-26 14:12:06.142564681 +0400
++++ OpenNI/Source/Utils/niLicense/niLicense.cpp	2012-09-26 14:12:06.942561572 +0400
+@@ -119,14 +119,14 @@
+ 		nRetVal = xnOSStrNCopy(license.strVendor, strVendor, strlen(strVendor) + 1, sizeof(license.strVendor));
+ 		if (nRetVal != XN_STATUS_OK)
+ 		{
+-			printf("Error: Vendor name is too long (should be up to %u characters).", sizeof(license.strVendor) - 1);
++			printf("Error: Vendor name is too long (should be up to %lu characters).", (unsigned long) (sizeof(license.strVendor) - 1));
+ 			return -1;
+ 		}
+ 
+ 		nRetVal = xnOSStrNCopy(license.strKey, strKey, strlen(strKey) + 1, sizeof(license.strKey));
+ 		if (nRetVal != XN_STATUS_OK)
+ 		{
+-			printf("Error: Key is too long (should be up to %u characters).", sizeof(license.strKey) - 1);
++			printf("Error: Key is too long (should be up to %lu characters).", (unsigned long) (sizeof(license.strKey) - 1));
+ 			return -1;
+ 		}
+ 	}
+

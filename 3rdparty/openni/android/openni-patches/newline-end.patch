@@ -1,0 +1,13 @@
+Add a newline at the end of NiHandTracker/main.cpp.
+
+Index: OpenNI/Samples/NiHandTracker/main.cpp
+===================================================================
+--- OpenNI.orig/Samples/NiHandTracker/main.cpp	2012-09-26 13:51:21.161939114 +0400
++++ OpenNI/Samples/NiHandTracker/main.cpp	2012-09-26 13:53:16.061935591 +0400
+@@ -75,4 +75,4 @@
+ 	}
+ 
+ 	return 0;
+-}
+\ No newline at end of file
++}

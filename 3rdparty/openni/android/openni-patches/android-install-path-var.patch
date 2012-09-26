@@ -1,0 +1,26 @@
+Make the install location envirnoment variable mandatory on Android and change the suffix.
+
+Index: OpenNI/Source/OpenNI/XnOpenNI.cpp
+===================================================================
+--- OpenNI.orig/Source/OpenNI/XnOpenNI.cpp	2012-09-26 14:27:00.892561592 +0400
++++ OpenNI/Source/OpenNI/XnOpenNI.cpp	2012-09-26 14:36:46.683187312 +0400
+@@ -6995,7 +6995,7 @@
+ #elif (XN_PLATFORM == XN_PLATFORM_LINUX_X86 || XN_PLATFORM == XN_PLATFORM_LINUX_ARM || XN_PLATFORM == XN_PLATFORM_MACOSX)
+ 	#define XN_OPEN_NI_FILES_LOCATION "/etc/openni/"
+ #elif (XN_PLATFORM == XN_PLATFORM_ANDROID_ARM)
+-	#define XN_OPEN_NI_FILES_LOCATION "/data/ni/"
++	#define XN_OPEN_NI_FILES_LOCATION "/data/"
+ #else
+ 	#error "Unsupported platform!"
+ #endif
+@@ -7007,8 +7007,8 @@
+ 	nRetVal = xnOSGetEnvironmentVariable(XN_OPEN_NI_INSTALL_PATH_ENV, strDest, nBufSize);
+ 	if (nRetVal == XN_STATUS_OS_ENV_VAR_NOT_FOUND)
+ 	{
+-		#if (XN_PLATFORM == XN_PLATFORM_WIN32)
+-			// we don't allow environment variable not to be defined on Windows.
++		#if (XN_PLATFORM == XN_PLATFORM_WIN32 || XN_PLATFORM == XN_PLATFORM_ANDROID_ARM)
++			// we don't allow environment variable not to be defined on Windows or Android.
+ 			return nRetVal;
+ 		#else
+ 			// use root FS

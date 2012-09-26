@@ -1,0 +1,56 @@
+Remove useless files from the Android project.
+
+The PNG files are supposed to be removed too, but there's no way to
+show that in a patch.
+
+Index: OpenNI/Wrappers/OpenNI.java/AndroidManifest.xml
+===================================================================
+--- OpenNI.orig/Wrappers/OpenNI.java/AndroidManifest.xml	2012-09-26 13:30:36.791936262 +0400
++++ OpenNI/Wrappers/OpenNI.java/AndroidManifest.xml	2012-09-26 14:53:05.492561389 +0400
+@@ -4,9 +4,4 @@
+       android:versionCode="1"
+       android:versionName="1.0">
+     <uses-sdk android:minSdkVersion="9" />
+-
+-    <application android:icon="@drawable/icon" android:label="@string/app_name">
+-
+-
+-    </application>
+ </manifest>
+\ No newline at end of file
+Index: OpenNI/Wrappers/OpenNI.java/res/drawable-hdpi/icon.png
+===================================================================
+Binary files OpenNI.orig/Wrappers/OpenNI.java/res/drawable-hdpi/icon.png	2012-09-26 14:53:37.463186245 +0400 and /dev/null	1970-01-01 00:00:00.000000000 +0000 differ
+Index: OpenNI/Wrappers/OpenNI.java/res/drawable-ldpi/icon.png
+===================================================================
+Binary files OpenNI.orig/Wrappers/OpenNI.java/res/drawable-ldpi/icon.png	2012-09-26 14:53:37.493186410 +0400 and /dev/null	1970-01-01 00:00:00.000000000 +0000 differ
+Index: OpenNI/Wrappers/OpenNI.java/res/drawable-mdpi/icon.png
+===================================================================
+Binary files OpenNI.orig/Wrappers/OpenNI.java/res/drawable-mdpi/icon.png	2012-09-26 14:53:37.523186189 +0400 and /dev/null	1970-01-01 00:00:00.000000000 +0000 differ
+Index: OpenNI/Wrappers/OpenNI.java/res/layout/main.xml
+===================================================================
+--- OpenNI.orig/Wrappers/OpenNI.java/res/layout/main.xml	2012-09-26 13:30:36.791936262 +0400
++++ /dev/null	1970-01-01 00:00:00.000000000 +0000
+@@ -1,12 +0,0 @@
+-<?xml version="1.0" encoding="utf-8"?>
+-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+-    android:orientation="vertical"
+-    android:layout_width="fill_parent"
+-    android:layout_height="fill_parent"
+-    >
+-<TextView  
+-    android:layout_width="fill_parent" 
+-    android:layout_height="wrap_content" 
+-    android:text="@string/hello"
+-    />
+-</LinearLayout>
+Index: OpenNI/Wrappers/OpenNI.java/res/values/strings.xml
+===================================================================
+--- OpenNI.orig/Wrappers/OpenNI.java/res/values/strings.xml	2012-09-26 13:30:36.791936262 +0400
++++ /dev/null	1970-01-01 00:00:00.000000000 +0000
+@@ -1,5 +0,0 @@
+-<?xml version="1.0" encoding="utf-8"?>
+-<resources>
+-    <string name="hello">Hello World!</string>
+-    <string name="app_name">OpenNI.java</string>
+-</resources>

@@ -1,0 +1,24 @@
+Fix usage of pthread_setschedparam.
+
+Index: OpenNI/Source/OpenNI/Linux/LinuxThreads.cpp
+===================================================================
+--- OpenNI.orig/Source/OpenNI/Linux/LinuxThreads.cpp	2012-09-26 14:12:06.862560798 +0400
++++ OpenNI/Source/OpenNI/Linux/LinuxThreads.cpp	2012-09-26 14:47:34.491936533 +0400
+@@ -157,7 +157,7 @@
+ 		memset(&param, 0, sizeof(param));
+ 	
+ #ifndef XN_PLATFORM_HAS_NO_SCHED_PARAM
+-		param.__sched_priority = 5;
++		param.sched_priority = 5;
+ #endif
+ 		nPolicy = SCHED_RR;
+ 	}
+@@ -169,7 +169,7 @@
+ 	rc = pthread_setschedparam(*ThreadHandle, nPolicy, &param);
+ 	if (rc != 0)
+ 	{
+-		xnLogWarning(XN_MASK_OS, "Failed to set thread priority (%d)", errno);
++		xnLogWarning(XN_MASK_OS, "Failed to set thread priority (%d)", rc);
+ 		return (XN_STATUS_OS_THREAD_SET_PRIORITY_FAILED);
+ 	}
+ 	
