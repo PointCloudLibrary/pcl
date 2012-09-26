@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical">
+    <LinearLayout android:layout_width="fill_parent"
+                  android:layout_height="wrap_content"
+                  android:orientation="horizontal"
+                  android:baselineAligned="false">
+        <LinearLayout android:layout_width="0dp"
+                      android:layout_height="fill_parent"
+                      android:orientation="vertical"
+                      android:layout_weight="1"
+                      android:layout_margin="10dp">
+            <SurfaceView
+                    android:id="@+id/surface_color"
+                    android:layout_width="640dp"
+                    android:layout_height="480dp"
+                    android:layout_gravity="center"/>
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/caption_color"
+                    android:layout_gravity="center"/>
+        </LinearLayout>
+        <LinearLayout android:layout_width="0dp"
+                      android:layout_height="fill_parent"
+                      android:orientation="vertical"
+                      android:layout_weight="1"
+                      android:layout_margin="10dp">
+            <SurfaceView
+                    android:id="@+id/surface_depth"
+                    android:layout_width="640dp"
+                    android:layout_height="480dp"
+                    android:layout_gravity="center"/>
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/caption_depth"
+                    android:layout_gravity="center"/>
+        </LinearLayout>
+    </LinearLayout>
+    <TextView
+            android:id="@+id/text_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/status_loading"
+            android:layout_gravity="center"/>
+</LinearLayout>
