@@ -1,0 +1,1924 @@
+This is actually several patches jumbled into one. Eventually I will
+hopefully separate them into several patches based on logical changes.
+
+ -dpb
+
+diff --git a/Data/GlobalDefaults.ini b/Data/GlobalDefaults.ini
+index fcfec6c..750dce8 100644
+--- a/Data/GlobalDefaults.ini
++++ b/Data/GlobalDefaults.ini
+@@ -6,7 +6,7 @@ LogMasks=ALL
+ ; 0 - No (default), 1 - Yes
+ ;LogWriteToConsole=1
+ ; 0 - No (default), 1 - Yes
+-LogWriteToFile=1
++;LogWriteToFile=1
+ ; 0 - No (default), 1 - Yes
+ ;LogWriteLineInfo=0
+ ; leave empty for nothing (default). ALL - all masks
+diff --git a/Platform/Android/jni/XnCore/Android.mk b/Platform/Android/jni/XnCore/Android.mk
+index 979c53b..23f24aa 100644
+--- a/Platform/Android/jni/XnCore/Android.mk
++++ b/Platform/Android/jni/XnCore/Android.mk
+@@ -24,7 +24,7 @@ LOCAL_C_INCLUDES := \
+ 
+ LOCAL_CFLAGS:= -fvisibility=hidden -DXN_CORE_EXPORTS
+ 
+-LOCAL_LDFLAGS += -Wl,--export-dynamic --dynamic-linker 
++LOCAL_LDFLAGS += -Wl,--export-dynamic
+ 
+ LOCAL_SHARED_LIBRARIES := OpenNI libusb
+ 
+diff --git a/Platform/Android/jni/XnDDK/Android.mk b/Platform/Android/jni/XnDDK/Android.mk
+index 3c5d70b..233fc1d 100644
+--- a/Platform/Android/jni/XnDDK/Android.mk
++++ b/Platform/Android/jni/XnDDK/Android.mk
+@@ -25,7 +25,7 @@ LOCAL_C_INCLUDES := \
+ 
+ LOCAL_CFLAGS := -fvisibility=hidden -DXN_DDK_EXPORTS
+ 
+-LOCAL_LDFLAGS += -Wl,--export-dynamic --dynamic-linker 
++LOCAL_LDFLAGS += -Wl,--export-dynamic
+ 
+ LOCAL_SHARED_LIBRARIES := OpenNI libusb XnCore XnFormats
+ 
+diff --git a/Platform/Android/jni/XnDeviceFile/Android.mk b/Platform/Android/jni/XnDeviceFile/Android.mk
+index 9fcabe5..68b9662 100644
+--- a/Platform/Android/jni/XnDeviceFile/Android.mk
++++ b/Platform/Android/jni/XnDeviceFile/Android.mk
+@@ -25,7 +25,7 @@ LOCAL_C_INCLUDES := \
+ 
+ LOCAL_CFLAGS := -fvisibility=hidden -DXN_DEVICE_EXPORTS
+ 
+-LOCAL_LDFLAGS += -Wl,--export-dynamic --dynamic-linker 
++LOCAL_LDFLAGS += -Wl,--export-dynamic
+ 
+ LOCAL_SHARED_LIBRARIES := OpenNI libusb XnCore XnFormats XnDDK
+ 
+diff --git a/Platform/Android/jni/XnDeviceSensorV2/Android.mk b/Platform/Android/jni/XnDeviceSensorV2/Android.mk
+index 8df6499..47e959e 100644
+--- a/Platform/Android/jni/XnDeviceSensorV2/Android.mk
++++ b/Platform/Android/jni/XnDeviceSensorV2/Android.mk
+@@ -25,7 +25,7 @@ LOCAL_C_INCLUDES := \
+ 
+ LOCAL_CFLAGS := -fvisibility=hidden -DXN_DEVICE_EXPORTS
+ 
+-LOCAL_LDFLAGS += -Wl,--export-dynamic --dynamic-linker 
++LOCAL_LDFLAGS += -Wl,--export-dynamic
+ 
+ LOCAL_SHARED_LIBRARIES := OpenNI libusb XnCore XnFormats XnDDK
+ 
+diff --git a/Platform/Android/jni/XnFormats/Android.mk b/Platform/Android/jni/XnFormats/Android.mk
+index de31310..a60cf97 100644
+--- a/Platform/Android/jni/XnFormats/Android.mk
++++ b/Platform/Android/jni/XnFormats/Android.mk
+@@ -27,7 +27,7 @@ LOCAL_C_INCLUDES := \
+ 
+ LOCAL_CFLAGS := -fvisibility=hidden -DXN_FORMATS_EXPORTS
+ 
+-LOCAL_LDFLAGS += -Wl,--export-dynamic --dynamic-linker 
++LOCAL_LDFLAGS += -Wl,--export-dynamic
+ 
+ LOCAL_SHARED_LIBRARIES := OpenNI libusb XnCore
+ 
+diff --git a/Platform/Linux/Install/55-primesense-usb.rules b/Platform/Linux/Install/55-primesense-usb.rules
+index 6294f40..621fe3b 100644
+--- a/Platform/Linux/Install/55-primesense-usb.rules
++++ b/Platform/Linux/Install/55-primesense-usb.rules
+@@ -1,8 +1,15 @@
+ # make primesense device mount with writing permissions (default is read only for unknown devices)
+-SYSFS{idProduct}=="0200",SYSFS{idVendor}=="1d27",MODE="666",OWNER="xxx",GROUP="users"
+-SYSFS{idProduct}=="0300",SYSFS{idVendor}=="1d27",MODE="666",OWNER="xxx",GROUP="users"
+-SYSFS{idProduct}=="0400",SYSFS{idVendor}=="1d27",MODE="666",OWNER="xxx",GROUP="users"
+-SYSFS{idProduct}=="0500",SYSFS{idVendor}=="1d27",MODE="666",OWNER="xxx",GROUP="users"
+-SYSFS{idProduct}=="0600",SYSFS{idVendor}=="1d27",MODE="666",OWNER="xxx",GROUP="users"
+-SYSFS{idProduct}=="0601",SYSFS{idVendor}=="1d27",MODE="666",OWNER="xxx",GROUP="users"
++SYSFS{idProduct}=="0200",SYSFS{idVendor}=="1d27",MODE="666",OWNER="root",GROUP="users"
++SYSFS{idProduct}=="0300",SYSFS{idVendor}=="1d27",MODE="666",OWNER="root",GROUP="users"
++SYSFS{idProduct}=="0400",SYSFS{idVendor}=="1d27",MODE="666",OWNER="root",GROUP="users"
++SYSFS{idProduct}=="0500",SYSFS{idVendor}=="1d27",MODE="666",OWNER="root",GROUP="users"
++SYSFS{idProduct}=="0600",SYSFS{idVendor}=="1d27",MODE="666",OWNER="root",GROUP="users"
++SYSFS{idProduct}=="0601",SYSFS{idVendor}=="1d27",MODE="666",OWNER="root",GROUP="users"
+ 
++#--avin mod--
++# Kinect
++SUBSYSTEM=="usb", ATTR{idProduct}=="02ae", ATTR{idVendor}=="045e", MODE:="0666", OWNER:="root", GROUP:="video"
++SUBSYSTEM=="usb", ATTR{idProduct}=="02ad", ATTR{idVendor}=="045e", MODE:="0666", OWNER:="root", GROUP:="audio"
++SUBSYSTEM=="usb", ATTR{idProduct}=="02b0", ATTR{idVendor}=="045e", MODE:="0666", OWNER:="root", GROUP:="video"
++SUBSYSTEM=="usb", ATTR{idProduct}=="02be", ATTR{idVendor}=="045e", MODE:="0666", OWNER:="root", GROUP:="audio"
++SUBSYSTEM=="usb", ATTR{idProduct}=="02bf", ATTR{idVendor}=="045e", MODE:="0666", OWNER:="root", GROUP:="video"
+diff --git a/Source/XnDeviceSensorV2/Bayer.cpp b/Source/XnDeviceSensorV2/Bayer.cpp
+index 43666ad..cead14f 100644
+--- a/Source/XnDeviceSensorV2/Bayer.cpp
++++ b/Source/XnDeviceSensorV2/Bayer.cpp
+@@ -20,104 +20,1207 @@
+ *                                                                           *
+ ****************************************************************************/
+ //---------------------------------------------------------------------------
++/****************************************************************************
++ * Edited 12.04.2011 by Raphael Dumusc                                      *
++ * Incorporated ROS code for improved Bayer Pattern to RGB conversion.      *
++ ***************************************************************************/
+ // Includes
++ /*
++ The ROS bayer pattern to RGB conversion
++ Modified to be used in Avin's mod of the Primesense driver.
++ Original code available here:
++ http://www.ros.org/doc/api/openni_camera/html/openni__image__bayer__grbg_8cpp_source.html
++*/
++
++/*
++ * Software License Agreement (BSD License)
++ *
++ *  Copyright (c) 2011 2011 Willow Garage, Inc.
++ *    Suat Gedikli <gedikli@willowgarage.com>
++ *
++ *  All rights reserved.
++ *
++ *  Redistribution and use in source and binary forms, with or without
++ *  modification, are permitted provided that the following conditions
++ *  are met:
++ *
++ *   * Redistributions of source code must retain the above copyright
++ *     notice, this list of conditions and the following disclaimer.
++ *   * Redistributions in binary form must reproduce the above
++ *     copyright notice, this list of conditions and the following
++ *     disclaimer in the documentation and/or other materials provided
++ *     with the distribution.
++ *   * Neither the name of Willow Garage, Inc. nor the names of its
++ *     contributors may be used to endorse or promote products derived
++ *     from this software without specific prior written permission.
++ *
++ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
++ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
++ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
++ *  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
++ *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
++ *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
++ *  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
++ *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
++ *  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
++ *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
++ *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
++ *  POSSIBILITY OF SUCH DAMAGE.
++ *
++ */
+ //---------------------------------------------------------------------------
+ #include "Bayer.h"
+-#include <math.h>
++#include <sstream>
++#include <iostream>
+ 
++#define AVG(a,b) (((int)(a) + (int)(b)) >> 1)
++#define AVG3(a,b,c) (((int)(a) + (int)(b) + (int)(c)) / 3)
++#define AVG4(a,b,c,d) (((int)(a) + (int)(b) + (int)(c) + (int)(d)) >> 2)
++#define WAVG4(a,b,c,d,x,y)  ( ( ((int)(a) + (int)(b)) * (int)(x) + ((int)(c) + (int)(d)) * (int)(y) ) / ( 2 * ((int)(x) + (int(y))) ) )
++using namespace std;
+ //---------------------------------------------------------------------------
++typedef enum
++{
++	Bilinear = 0,
++	EdgeAware,
++	EdgeAwareWeighted
++} DebayeringMethod;
+ // Global Variables
++void BayerUpdateGamma(float fGammaCorr)
++{
++}
+ //---------------------------------------------------------------------------
+-XnUInt8 Gamma[256] = {
+-	0,      1,     2,     3,     4,     5,     6,     7,     8,     9,    10,    11,    12,    13,    14,    15,
+-	16,    17,    18,    19,    20,    21,    22,    23,    24,    25,    26,    27,    28,    29,    30,    31,
+-	32,    33,    34,    35,    36,    37,    38,    39,    40,    41,    42,    43,    44,    45,    46,    47,
+-	48,    49,    50,    51,    52,    53,    54,    55,    56,    57,    58,    59,    60,    61,    62,    63,
+-	64,    65,    66,    67,    68,    69,    70,    71,    72,    73,    74,    75,    76,    77,    78,    79,
+-	80,    81,    82,    83,    84,    85,    86,    87,    88,    89,    90,    91,    92,    93,    94,    95,
+-	96,    97,    98,    99,    100,   101,   102,   103,   104,   105,   106,   107,   108,   109,   110,   111,
+-	112,   113,   114,   115,   116,   117,   118,   119,   120,   121,   122,   123,   124,   125,   126,   127,
+-	128,   129,   130,   131,   132,   133,   134,   135,   136,   137,   138,   139,   140,   141,   142,   143,
+-	144,   145,   146,   147,   148,   149,   150,   151,   152,   153,   154,   155,   156,   157,   158,   159,
+-	160,   161,   162,   163,   164,   165,   166,   167,   168,   169,   170,   171,   172,   173,   174,   175,
+-	176,   177,   178,   179,   180,   181,   182,   183,   184,   185,   186,   187,   188,   189,   190,   191,
+-	192,   193,   194,   195,   196,   197,   198,   199,   200,   201,   202,   203,   204,   205,   206,   207,
+-	208,   209,   210,   211,   212,   213,   214,   215,   216,   217,   218,   219,   220,   221,   222,   223,
+-	224,   225,   226,   227,   228,   229,   230,   231,   232,   233,   234,   235,   236,   237,   238,   239,
+-	240,   241,   242,   243,   244,   245,   246,   247,   248,   249,   250,   251,   252,   253,   254,   255};
++void fillRGB(unsigned width, unsigned height, const XnUInt8* bayer_pixel, unsigned char* rgb_buffer, DebayeringMethod debayering_method, XnUInt32 nDownSampleStep)
++{
+ 
++	unsigned rgb_line_step = width * 3;
+ //---------------------------------------------------------------------------
+ // Code
++	unsigned rgb_line_skip = rgb_line_step - width * 3;
+ //---------------------------------------------------------------------------
+-void BayerUpdateGamma(float fGammaCorr)
++	if (nDownSampleStep == 1)
+ {
+-	for(XnUInt32 iG = 0; iG < 256;++iG)
+-		Gamma[iG] = XnUInt8(255*pow(XnDouble(iG)/255.0,(XnDouble)fGammaCorr) + 0.5);
++		//register const XnUInt8 *bayer_pixel = image_md_->Data ();
++		register unsigned yIdx, xIdx;
++
++		int bayer_line_step = width;
++		int bayer_line_step2 = width << 1;
++
++		if (debayering_method == Bilinear)
++		{
++			// first two pixel values for first two lines
++			// Bayer         0 1 2
++			//         0     G r g
++			// line_step     b g b
++			// line_step2    g r g
++
++			rgb_buffer[3] = rgb_buffer[0] = bayer_pixel[1]; // red pixel
++			rgb_buffer[1] = bayer_pixel[0]; // green pixel
++			rgb_buffer[rgb_line_step + 2] = rgb_buffer[2] = bayer_pixel[bayer_line_step]; // blue;
++
++			// Bayer         0 1 2
++			//         0     g R g
++			// line_step     b g b
++			// line_step2    g r g
++			//rgb_pixel[3] = bayer_pixel[1];
++			rgb_buffer[4] = AVG3 (bayer_pixel[0], bayer_pixel[2], bayer_pixel[bayer_line_step + 1]);
++			rgb_buffer[rgb_line_step + 5] = rgb_buffer[5] = AVG (bayer_pixel[bayer_line_step], bayer_pixel[bayer_line_step + 2]);
++
++			// BGBG line
++			// Bayer         0 1 2
++			//         0     g r g
++			// line_step     B g b
++			// line_step2    g r g
++			rgb_buffer[rgb_line_step + 3] = rgb_buffer[rgb_line_step ] = AVG (bayer_pixel[1], bayer_pixel[bayer_line_step2 + 1]);
++			rgb_buffer[rgb_line_step + 1] = AVG3 (bayer_pixel[0], bayer_pixel[bayer_line_step + 1], bayer_pixel[bayer_line_step2]);
++			//rgb_pixel[rgb_line_step + 2] = bayer_pixel[line_step];
++
++			// pixel (1, 1)  0 1 2
++			//         0     g r g
++			// line_step     b G b
++			// line_step2    g r g
++			//rgb_pixel[rgb_line_step + 3] = AVG( bayer_pixel[1] , bayer_pixel[line_step2+1] );
++			rgb_buffer[rgb_line_step + 4] = bayer_pixel[bayer_line_step + 1];
++			//rgb_pixel[rgb_line_step + 5] = AVG( bayer_pixel[line_step] , bayer_pixel[line_step+2] );
++
++			rgb_buffer += 6;
++			bayer_pixel += 2;
++			// rest of the first two lines
++
++			for (xIdx = 2; xIdx < width - 2; xIdx += 2, rgb_buffer += 6, bayer_pixel += 2)
++			{
++				// GRGR line
++				// Bayer        -1 0 1 2
++				//           0   r G r g
++				//   line_step   g b g b
++				// line_step2    r g r g
++				rgb_buffer[0] = AVG (bayer_pixel[1], bayer_pixel[-1]);
++				rgb_buffer[1] = bayer_pixel[0];
++				rgb_buffer[2] = bayer_pixel[bayer_line_step + 1];
++
++				// Bayer        -1 0 1 2
++				//          0    r g R g
++				//  line_step    g b g b
++				// line_step2    r g r g
++				rgb_buffer[3] = bayer_pixel[1];
++				rgb_buffer[4] = AVG3 (bayer_pixel[0], bayer_pixel[2], bayer_pixel[bayer_line_step + 1]);
++				rgb_buffer[rgb_line_step + 5] = rgb_buffer[5] = AVG (bayer_pixel[bayer_line_step], bayer_pixel[bayer_line_step + 2]);
++
++				// BGBG line
++				// Bayer         -1 0 1 2
++				//         0      r g r g
++				// line_step      g B g b
++				// line_step2     r g r g
++				rgb_buffer[rgb_line_step ] = AVG4 (bayer_pixel[1], bayer_pixel[bayer_line_step2 + 1], bayer_pixel[-1], bayer_pixel[bayer_line_step2 - 1]);
++				rgb_buffer[rgb_line_step + 1] = AVG4 (bayer_pixel[0], bayer_pixel[bayer_line_step2], bayer_pixel[bayer_line_step - 1], bayer_pixel[bayer_line_step + 1]);
++				rgb_buffer[rgb_line_step + 2] = bayer_pixel[bayer_line_step];
++
++				// Bayer         -1 0 1 2
++				//         0      r g r g
++				// line_step      g b G b
++				// line_step2     r g r g
++				rgb_buffer[rgb_line_step + 3] = AVG (bayer_pixel[1], bayer_pixel[bayer_line_step2 + 1]);
++				rgb_buffer[rgb_line_step + 4] = bayer_pixel[bayer_line_step + 1];
++				//rgb_pixel[rgb_line_step + 5] = AVG( bayer_pixel[line_step] , bayer_pixel[line_step+2] );
+ }
+ 
+-static inline void WriteRGB(XnUInt8 *pBuffer, XnUInt8 nRed, XnUInt8 nGreen, XnUInt8 nBlue)
++			// last two pixel values for first two lines
++			// GRGR line
++			// Bayer        -1 0 1
++			//           0   r G r
++			//   line_step   g b g
++			// line_step2    r g r
++			rgb_buffer[0] = AVG (bayer_pixel[1], bayer_pixel[-1]);
++			rgb_buffer[1] = bayer_pixel[0];
++			rgb_buffer[rgb_line_step + 5] = rgb_buffer[rgb_line_step + 2] = rgb_buffer[5] = rgb_buffer[2] = bayer_pixel[bayer_line_step];
++
++			// Bayer        -1 0 1
++			//          0    r g R
++			//  line_step    g b g
++			// line_step2    r g r
++			rgb_buffer[3] = bayer_pixel[1];
++			rgb_buffer[4] = AVG (bayer_pixel[0], bayer_pixel[bayer_line_step + 1]);
++			//rgb_pixel[5] = bayer_pixel[line_step];
++
++			// BGBG line
++			// Bayer        -1 0 1
++			//          0    r g r
++			//  line_step    g B g
++			// line_step2    r g r
++			rgb_buffer[rgb_line_step ] = AVG4 (bayer_pixel[1], bayer_pixel[bayer_line_step2 + 1], bayer_pixel[-1], bayer_pixel[bayer_line_step2 - 1]);
++			rgb_buffer[rgb_line_step + 1] = AVG4 (bayer_pixel[0], bayer_pixel[bayer_line_step2], bayer_pixel[bayer_line_step - 1], bayer_pixel[bayer_line_step + 1]);
++			//rgb_pixel[rgb_line_step + 2] = bayer_pixel[line_step];
++
++			// Bayer         -1 0 1
++			//         0      r g r
++			// line_step      g b G
++			// line_step2     r g r
++			rgb_buffer[rgb_line_step + 3] = AVG (bayer_pixel[1], bayer_pixel[bayer_line_step2 + 1]);
++			rgb_buffer[rgb_line_step + 4] = bayer_pixel[bayer_line_step + 1];
++			//rgb_pixel[rgb_line_step + 5] = bayer_pixel[line_step];
++
++			bayer_pixel += bayer_line_step + 2;
++			rgb_buffer += rgb_line_step + 6 + rgb_line_skip;
++
++			// main processing
++
++			for (yIdx = 2; yIdx < height - 2; yIdx += 2)
+ {
+-	pBuffer[BAYER_RED] = Gamma[nRed];
+-	pBuffer[BAYER_GREEN] = Gamma[nGreen];
+-	pBuffer[BAYER_BLUE] = Gamma[nBlue];
++				// first two pixel values
++				// Bayer         0 1 2
++				//        -1     b g b
++				//         0     G r g
++				// line_step     b g b
++				// line_step2    g r g
++
++				rgb_buffer[3] = rgb_buffer[0] = bayer_pixel[1]; // red pixel
++				rgb_buffer[1] = bayer_pixel[0]; // green pixel
++				rgb_buffer[2] = AVG (bayer_pixel[bayer_line_step], bayer_pixel[-bayer_line_step]); // blue;
++
++				// Bayer         0 1 2
++				//        -1     b g b
++				//         0     g R g
++				// line_step     b g b
++				// line_step2    g r g
++				//rgb_pixel[3] = bayer_pixel[1];
++				rgb_buffer[4] = AVG4 (bayer_pixel[0], bayer_pixel[2], bayer_pixel[bayer_line_step + 1], bayer_pixel[1 - bayer_line_step]);
++				rgb_buffer[5] = AVG4 (bayer_pixel[bayer_line_step], bayer_pixel[bayer_line_step + 2], bayer_pixel[-bayer_line_step], bayer_pixel[2 - bayer_line_step]);
++
++				// BGBG line
++				// Bayer         0 1 2
++				//         0     g r g
++				// line_step     B g b
++				// line_step2    g r g
++				rgb_buffer[rgb_line_step + 3] = rgb_buffer[rgb_line_step ] = AVG (bayer_pixel[1], bayer_pixel[bayer_line_step2 + 1]);
++				rgb_buffer[rgb_line_step + 1] = AVG3 (bayer_pixel[0], bayer_pixel[bayer_line_step + 1], bayer_pixel[bayer_line_step2]);
++				rgb_buffer[rgb_line_step + 2] = bayer_pixel[bayer_line_step];
++
++				// pixel (1, 1)  0 1 2
++				//         0     g r g
++				// line_step     b G b
++				// line_step2    g r g
++				//rgb_pixel[rgb_line_step + 3] = AVG( bayer_pixel[1] , bayer_pixel[line_step2+1] );
++				rgb_buffer[rgb_line_step + 4] = bayer_pixel[bayer_line_step + 1];
++				rgb_buffer[rgb_line_step + 5] = AVG (bayer_pixel[bayer_line_step], bayer_pixel[bayer_line_step + 2]);
++
++				rgb_buffer += 6;
++				bayer_pixel += 2;
++				// continue with rest of the line
++				for (xIdx = 2; xIdx < width - 2; xIdx += 2, rgb_buffer += 6, bayer_pixel += 2)
++				{
++					// GRGR line
++					// Bayer        -1 0 1 2
++					//          -1   g b g b
++					//           0   r G r g
++					//   line_step   g b g b
++					// line_step2    r g r g
++					rgb_buffer[0] = AVG (bayer_pixel[1], bayer_pixel[-1]);
++					rgb_buffer[1] = bayer_pixel[0];
++					rgb_buffer[2] = AVG (bayer_pixel[bayer_line_step], bayer_pixel[-bayer_line_step]);
++
++					// Bayer        -1 0 1 2
++					//          -1   g b g b
++					//          0    r g R g
++					//  line_step    g b g b
++					// line_step2    r g r g
++					rgb_buffer[3] = bayer_pixel[1];
++					rgb_buffer[4] = AVG4 (bayer_pixel[0], bayer_pixel[2], bayer_pixel[bayer_line_step + 1], bayer_pixel[1 - bayer_line_step]);
++					rgb_buffer[5] = AVG4 (bayer_pixel[-bayer_line_step], bayer_pixel[2 - bayer_line_step], bayer_pixel[bayer_line_step], bayer_pixel[bayer_line_step + 2]);
++
++					// BGBG line
++					// Bayer         -1 0 1 2
++					//         -1     g b g b
++					//          0     r g r g
++					// line_step      g B g b
++					// line_step2     r g r g
++					rgb_buffer[rgb_line_step ] = AVG4 (bayer_pixel[1], bayer_pixel[bayer_line_step2 + 1], bayer_pixel[-1], bayer_pixel[bayer_line_step2 - 1]);
++					rgb_buffer[rgb_line_step + 1] = AVG4 (bayer_pixel[0], bayer_pixel[bayer_line_step2], bayer_pixel[bayer_line_step - 1], bayer_pixel[bayer_line_step + 1]);
++					rgb_buffer[rgb_line_step + 2] = bayer_pixel[bayer_line_step];
++
++					// Bayer         -1 0 1 2
++					//         -1     g b g b
++					//          0     r g r g
++					// line_step      g b G b
++					// line_step2     r g r g
++					rgb_buffer[rgb_line_step + 3] = AVG (bayer_pixel[1], bayer_pixel[bayer_line_step2 + 1]);
++					rgb_buffer[rgb_line_step + 4] = bayer_pixel[bayer_line_step + 1];
++					rgb_buffer[rgb_line_step + 5] = AVG (bayer_pixel[bayer_line_step], bayer_pixel[bayer_line_step + 2]);
+ }
+ 
+-void Bayer2RGB888(const XnUInt8* pBayerImage, XnUInt8* pRGBImage, XnUInt32 nXRes, XnUInt32 nYRes, XnUInt32 /*nDownSampleStep*/, XnUInt32 nBadPixels)
++				// last two pixels of the line
++				// last two pixel values for first two lines
++				// GRGR line
++				// Bayer        -1 0 1
++				//           0   r G r
++				//   line_step   g b g
++				// line_step2    r g r
++				rgb_buffer[0] = AVG (bayer_pixel[1], bayer_pixel[-1]);
++				rgb_buffer[1] = bayer_pixel[0];
++				rgb_buffer[rgb_line_step + 5] = rgb_buffer[rgb_line_step + 2] = rgb_buffer[5] = rgb_buffer[2] = bayer_pixel[bayer_line_step];
++
++				// Bayer        -1 0 1
++				//          0    r g R
++				//  line_step    g b g
++				// line_step2    r g r
++				rgb_buffer[3] = bayer_pixel[1];
++				rgb_buffer[4] = AVG (bayer_pixel[0], bayer_pixel[bayer_line_step + 1]);
++				//rgb_pixel[5] = bayer_pixel[line_step];
++
++				// BGBG line
++				// Bayer        -1 0 1
++				//          0    r g r
++				//  line_step    g B g
++				// line_step2    r g r
++				rgb_buffer[rgb_line_step ] = AVG4 (bayer_pixel[1], bayer_pixel[bayer_line_step2 + 1], bayer_pixel[-1], bayer_pixel[bayer_line_step2 - 1]);
++				rgb_buffer[rgb_line_step + 1] = AVG4 (bayer_pixel[0], bayer_pixel[bayer_line_step2], bayer_pixel[bayer_line_step - 1], bayer_pixel[bayer_line_step + 1]);
++				//rgb_pixel[rgb_line_step + 2] = bayer_pixel[line_step];
++
++				// Bayer         -1 0 1
++				//         0      r g r
++				// line_step      g b G
++				// line_step2     r g r
++				rgb_buffer[rgb_line_step + 3] = AVG (bayer_pixel[1], bayer_pixel[bayer_line_step2 + 1]);
++				rgb_buffer[rgb_line_step + 4] = bayer_pixel[bayer_line_step + 1];
++				//rgb_pixel[rgb_line_step + 5] = bayer_pixel[line_step];
++
++				bayer_pixel += bayer_line_step + 2;
++				rgb_buffer += rgb_line_step + 6 + rgb_line_skip;
++			}
++
++			//last two lines
++			// Bayer         0 1 2
++			//        -1     b g b
++			//         0     G r g
++			// line_step     b g b
++
++			rgb_buffer[rgb_line_step + 3] = rgb_buffer[rgb_line_step ] = rgb_buffer[3] = rgb_buffer[0] = bayer_pixel[1]; // red pixel
++			rgb_buffer[1] = bayer_pixel[0]; // green pixel
++			rgb_buffer[rgb_line_step + 2] = rgb_buffer[2] = bayer_pixel[bayer_line_step]; // blue;
++
++			// Bayer         0 1 2
++			//        -1     b g b
++			//         0     g R g
++			// line_step     b g b
++			//rgb_pixel[3] = bayer_pixel[1];
++			rgb_buffer[4] = AVG4 (bayer_pixel[0], bayer_pixel[2], bayer_pixel[bayer_line_step + 1], bayer_pixel[1 - bayer_line_step]);
++			rgb_buffer[5] = AVG4 (bayer_pixel[bayer_line_step], bayer_pixel[bayer_line_step + 2], bayer_pixel[-bayer_line_step], bayer_pixel[2 - bayer_line_step]);
++
++			// BGBG line
++			// Bayer         0 1 2
++			//        -1     b g b
++			//         0     g r g
++			// line_step     B g b
++			//rgb_pixel[rgb_line_step    ] = bayer_pixel[1];
++			rgb_buffer[rgb_line_step + 1] = AVG (bayer_pixel[0], bayer_pixel[bayer_line_step + 1]);
++			rgb_buffer[rgb_line_step + 2] = bayer_pixel[bayer_line_step];
++
++			// Bayer         0 1 2
++			//        -1     b g b
++			//         0     g r g
++			// line_step     b G b
++			//rgb_pixel[rgb_line_step + 3] = AVG( bayer_pixel[1] , bayer_pixel[line_step2+1] );
++			rgb_buffer[rgb_line_step + 4] = bayer_pixel[bayer_line_step + 1];
++			rgb_buffer[rgb_line_step + 5] = AVG (bayer_pixel[bayer_line_step], bayer_pixel[bayer_line_step + 2]);
++
++			rgb_buffer += 6;
++			bayer_pixel += 2;
++			// rest of the last two lines
++			for (xIdx = 2; xIdx < width - 2; xIdx += 2, rgb_buffer += 6, bayer_pixel += 2)
+ {
+-	XnUInt8 nRed;
+-	XnUInt8 nGreen;
+-	XnUInt8 nBlue;
+-	const XnUInt8* pBayer;
+-	XnUInt8* pRGB;
+ 
+ 	//if (nBadPixels > 1)
+ 	//{
+ 		//nBadPixels = 1;
+ 	//}
++				rgb_buffer[0] = AVG (bayer_pixel[1], bayer_pixel[-1]);
++				rgb_buffer[1] = bayer_pixel[0];
++				rgb_buffer[2] = AVG (bayer_pixel[bayer_line_step], bayer_pixel[-bayer_line_step]);
++
++
++
++
++
++				rgb_buffer[rgb_line_step + 3] = rgb_buffer[3] = bayer_pixel[1];
++				rgb_buffer[4] = AVG4 (bayer_pixel[0], bayer_pixel[2], bayer_pixel[bayer_line_step + 1], bayer_pixel[1 - bayer_line_step]);
++				rgb_buffer[5] = AVG4 (bayer_pixel[bayer_line_step], bayer_pixel[bayer_line_step + 2], bayer_pixel[-bayer_line_step], bayer_pixel[-bayer_line_step + 2]);
++
++
++
++
++
++
++				rgb_buffer[rgb_line_step ] = AVG (bayer_pixel[-1], bayer_pixel[1]);
++				rgb_buffer[rgb_line_step + 1] = AVG3 (bayer_pixel[0], bayer_pixel[bayer_line_step - 1], bayer_pixel[bayer_line_step + 1]);
++				rgb_buffer[rgb_line_step + 2] = bayer_pixel[bayer_line_step];
++
++
++				// Bayer       -1 0 1 2
++				//        -1    g b g b
++				//         0    r g r g
++				// line_step    g b G b
++				//rgb_pixel[rgb_line_step + 3] = bayer_pixel[1];
++				rgb_buffer[rgb_line_step + 4] = bayer_pixel[bayer_line_step + 1];
++				rgb_buffer[rgb_line_step + 5] = AVG (bayer_pixel[bayer_line_step], bayer_pixel[bayer_line_step + 2]);
++}
++
++			// last two pixel values for first two lines
++			// GRGR line
++			// Bayer       -1 0 1
++			//        -1    g b g
++			//         0    r G r
++			// line_step    g b g
++			rgb_buffer[rgb_line_step ] = rgb_buffer[0] = AVG (bayer_pixel[1], bayer_pixel[-1]);
++			rgb_buffer[1] = bayer_pixel[0];
++			rgb_buffer[5] = rgb_buffer[2] = AVG (bayer_pixel[bayer_line_step], bayer_pixel[-bayer_line_step]);
++
++			// Bayer       -1 0 1
++			//        -1    g b g
++			//         0    r g R
++			// line_step    g b g
++			rgb_buffer[rgb_line_step + 3] = rgb_buffer[3] = bayer_pixel[1];
++			rgb_buffer[4] = AVG3 (bayer_pixel[0], bayer_pixel[bayer_line_step + 1], bayer_pixel[-bayer_line_step + 1]);
++			//rgb_pixel[5] = AVG( bayer_pixel[line_step], bayer_pixel[-line_step] );
++
++			// BGBG line
++			// Bayer       -1 0 1
++			//        -1    g b g
++			//         0    r g r
++			// line_step    g B g
++			//rgb_pixel[rgb_line_step    ] = AVG2( bayer_pixel[-1], bayer_pixel[1] );
++			rgb_buffer[rgb_line_step + 1] = AVG3 (bayer_pixel[0], bayer_pixel[bayer_line_step - 1], bayer_pixel[bayer_line_step + 1]);
++			rgb_buffer[rgb_line_step + 5] = rgb_buffer[rgb_line_step + 2] = bayer_pixel[bayer_line_step];
++
++			// Bayer       -1 0 1
++			//        -1    g b g
++			//         0    r g r
++			// line_step    g b G
++			//rgb_pixel[rgb_line_step + 3] = bayer_pixel[1];
++			rgb_buffer[rgb_line_step + 4] = bayer_pixel[bayer_line_step + 1];
++			//rgb_pixel[rgb_line_step + 5] = bayer_pixel[line_step];
++		}
++		else if (debayering_method == EdgeAware)
++		{
++			int dh, dv;
++
++			// first two pixel values for first two lines
++			// Bayer         0 1 2
++			//         0     G r g
++			// line_step     b g b
++			// line_step2    g r g
++
++			rgb_buffer[3] = rgb_buffer[0] = bayer_pixel[1]; // red pixel
++			rgb_buffer[1] = bayer_pixel[0]; // green pixel
++			rgb_buffer[rgb_line_step + 2] = rgb_buffer[2] = bayer_pixel[bayer_line_step]; // blue;
++
++			// Bayer         0 1 2
++			//         0     g R g
++			// line_step     b g b
++			// line_step2    g r g
++			//rgb_pixel[3] = bayer_pixel[1];
++			rgb_buffer[4] = AVG3 (bayer_pixel[0], bayer_pixel[2], bayer_pixel[bayer_line_step + 1]);
++			rgb_buffer[rgb_line_step + 5] = rgb_buffer[5] = AVG (bayer_pixel[bayer_line_step], bayer_pixel[bayer_line_step + 2]);
++
++			// BGBG line
++			// Bayer         0 1 2
++			//         0     g r g
++			// line_step     B g b
++			// line_step2    g r g
++			rgb_buffer[rgb_line_step + 3] = rgb_buffer[rgb_line_step ] = AVG (bayer_pixel[1], bayer_pixel[bayer_line_step2 + 1]);
++			rgb_buffer[rgb_line_step + 1] = AVG3 (bayer_pixel[0], bayer_pixel[bayer_line_step + 1], bayer_pixel[bayer_line_step2]);
++			//rgb_pixel[rgb_line_step + 2] = bayer_pixel[line_step];
++
++			// pixel (1, 1)  0 1 2
++			//         0     g r g
++			// line_step     b G b
++			// line_step2    g r g
++			//rgb_pixel[rgb_line_step + 3] = AVG( bayer_pixel[1] , bayer_pixel[line_step2+1] );
++			rgb_buffer[rgb_line_step + 4] = bayer_pixel[bayer_line_step + 1];
++			//rgb_pixel[rgb_line_step + 5] = AVG( bayer_pixel[line_step] , bayer_pixel[line_step+2] );
++
++			rgb_buffer += 6;
++			bayer_pixel += 2;
++			// rest of the first two lines
++			for (xIdx = 2; xIdx < width - 2; xIdx += 2, rgb_buffer += 6, bayer_pixel += 2)
++			{
++				// GRGR line
++				// Bayer        -1 0 1 2
++				//           0   r G r g
++				//   line_step   g b g b
++				// line_step2    r g r g
++				rgb_buffer[0] = AVG (bayer_pixel[1], bayer_pixel[-1]);
++				rgb_buffer[1] = bayer_pixel[0];
++				rgb_buffer[2] = bayer_pixel[bayer_line_step + 1];
++
++				// Bayer        -1 0 1 2
++				//          0    r g R g
++				//  line_step    g b g b
++				// line_step2    r g r g
++				rgb_buffer[3] = bayer_pixel[1];
++				rgb_buffer[4] = AVG3 (bayer_pixel[0], bayer_pixel[2], bayer_pixel[bayer_line_step + 1]);
++				rgb_buffer[rgb_line_step + 5] = rgb_buffer[5] = AVG (bayer_pixel[bayer_line_step], bayer_pixel[bayer_line_step + 2]);
++
++				// BGBG line
++				// Bayer         -1 0 1 2
++				//         0      r g r g
++				// line_step      g B g b
++				// line_step2     r g r g
++				rgb_buffer[rgb_line_step ] = AVG4 (bayer_pixel[1], bayer_pixel[bayer_line_step2 + 1], bayer_pixel[-1], bayer_pixel[bayer_line_step2 - 1]);
++				rgb_buffer[rgb_line_step + 1] = AVG4 (bayer_pixel[0], bayer_pixel[bayer_line_step2], bayer_pixel[bayer_line_step - 1], bayer_pixel[bayer_line_step + 1]);
++				rgb_buffer[rgb_line_step + 2] = bayer_pixel[bayer_line_step];
++
++				// Bayer         -1 0 1 2
++				//         0      r g r g
++				// line_step      g b G b
++				// line_step2     r g r g
++				rgb_buffer[rgb_line_step + 3] = AVG (bayer_pixel[1], bayer_pixel[bayer_line_step2 + 1]);
++				rgb_buffer[rgb_line_step + 4] = bayer_pixel[bayer_line_step + 1];
++				//rgb_pixel[rgb_line_step + 5] = AVG( bayer_pixel[line_step] , bayer_pixel[line_step+2] );
++			}
++
++			// last two pixel values for first two lines
++			// GRGR line
++			// Bayer        -1 0 1
++			//           0   r G r
++			//   line_step   g b g
++			// line_step2    r g r
++			rgb_buffer[0] = AVG (bayer_pixel[1], bayer_pixel[-1]);
++			rgb_buffer[1] = bayer_pixel[0];
++			rgb_buffer[rgb_line_step + 5] = rgb_buffer[rgb_line_step + 2] = rgb_buffer[5] = rgb_buffer[2] = bayer_pixel[bayer_line_step];
++
++			// Bayer        -1 0 1
++			//          0    r g R
++			//  line_step    g b g
++			// line_step2    r g r
++			rgb_buffer[3] = bayer_pixel[1];
++			rgb_buffer[4] = AVG (bayer_pixel[0], bayer_pixel[bayer_line_step + 1]);
++			//rgb_pixel[5] = bayer_pixel[line_step];
++
++			// BGBG line
++			// Bayer        -1 0 1
++			//          0    r g r
++			//  line_step    g B g
++			// line_step2    r g r
++			rgb_buffer[rgb_line_step ] = AVG4 (bayer_pixel[1], bayer_pixel[bayer_line_step2 + 1], bayer_pixel[-1], bayer_pixel[bayer_line_step2 - 1]);
++			rgb_buffer[rgb_line_step + 1] = AVG4 (bayer_pixel[0], bayer_pixel[bayer_line_step2], bayer_pixel[bayer_line_step - 1], bayer_pixel[bayer_line_step + 1]);
++			//rgb_pixel[rgb_line_step + 2] = bayer_pixel[line_step];
++
++			// Bayer         -1 0 1
++			//         0      r g r
++			// line_step      g b G
++			// line_step2     r g r
++			rgb_buffer[rgb_line_step + 3] = AVG (bayer_pixel[1], bayer_pixel[bayer_line_step2 + 1]);
++			rgb_buffer[rgb_line_step + 4] = bayer_pixel[bayer_line_step + 1];
++			//rgb_pixel[rgb_line_step + 5] = bayer_pixel[line_step];
+ 
+-	XnInt32 BAYER_LINE_LENGTH = nXRes;
+-	XnInt32 BAYER_LINE_LENGTH2 = BAYER_LINE_LENGTH*2;
+-	XnInt32 BAYER_RGB_LINE_LENGTH = nXRes*BAYER_BPP;
+-	XnInt32 BAYER_RGB_LINE_LENGTH2 = BAYER_RGB_LINE_LENGTH*2;
++			bayer_pixel += bayer_line_step + 2;
++			rgb_buffer += rgb_line_step + 6 + rgb_line_skip;
++			// main processing
++			for (yIdx = 2; yIdx < height - 2; yIdx += 2)
++			{
++				// first two pixel values
++				// Bayer         0 1 2
++				//        -1     b g b
++				//         0     G r g
++				// line_step     b g b
++				// line_step2    g r g
+ 
+-	const XnUInt8* pCurrBayer;
+-	XnUInt8* pCurrRGB;
+-	XnUInt32 nColCount;
+-	XnUInt32 nTotalColsCount = (nXRes-2) / 2;
+-	XnUInt32 nTotalRowsCount = (nYRes-4) / 2;
++				rgb_buffer[3] = rgb_buffer[0] = bayer_pixel[1]; // red pixel
++				rgb_buffer[1] = bayer_pixel[0]; // green pixel
++				rgb_buffer[2] = AVG (bayer_pixel[bayer_line_step], bayer_pixel[-bayer_line_step]); // blue;
+ 
+-	pBayer = pBayerImage + BAYER_LINE_LENGTH - nBadPixels;
+-	pRGB = pRGBImage + BAYER_RGB_LINE_LENGTH;
++				// Bayer         0 1 2
++				//        -1     b g b
++				//         0     g R g
++				// line_step     b g b
++				// line_step2    g r g
++				//rgb_pixel[3] = bayer_pixel[1];
++				rgb_buffer[4] = AVG4 (bayer_pixel[0], bayer_pixel[2], bayer_pixel[bayer_line_step + 1], bayer_pixel[1 - bayer_line_step]);
++				rgb_buffer[5] = AVG4 (bayer_pixel[bayer_line_step], bayer_pixel[bayer_line_step + 2], bayer_pixel[-bayer_line_step], bayer_pixel[2 - bayer_line_step]);
+ 
+-	do {
+-		pCurrBayer = pBayer+ 1;
+-		pCurrRGB = pRGB + BAYER_BPP;
++				// BGBG line
++				// Bayer         0 1 2
++				//         0     g r g
++				// line_step     B g b
++				// line_step2    g r g
++				rgb_buffer[rgb_line_step + 3] = rgb_buffer[rgb_line_step ] = AVG (bayer_pixel[1], bayer_pixel[bayer_line_step2 + 1]);
++				rgb_buffer[rgb_line_step + 1] = AVG3 (bayer_pixel[0], bayer_pixel[bayer_line_step + 1], bayer_pixel[bayer_line_step2]);
++				rgb_buffer[rgb_line_step + 2] = bayer_pixel[bayer_line_step];
+ 
+-		nColCount = nTotalColsCount;
++				// pixel (1, 1)  0 1 2
++				//         0     g r g
++				// line_step     b G b
++				// line_step2    g r g
++				//rgb_pixel[rgb_line_step + 3] = AVG( bayer_pixel[1] , bayer_pixel[line_step2+1] );
++				rgb_buffer[rgb_line_step + 4] = bayer_pixel[bayer_line_step + 1];
++				rgb_buffer[rgb_line_step + 5] = AVG (bayer_pixel[bayer_line_step], bayer_pixel[bayer_line_step + 2]);
+ 
+-		do {
++				rgb_buffer += 6;
++				bayer_pixel += 2;
++				// continue with rest of the line
++				for (xIdx = 2; xIdx < width - 2; xIdx += 2, rgb_buffer += 6, bayer_pixel += 2)
++				{
++					// GRGR line
++					// Bayer        -1 0 1 2
++					//          -1   g b g b
++					//           0   r G r g
++					//   line_step   g b g b
++					// line_step2    r g r g
++					rgb_buffer[0] = AVG (bayer_pixel[1], bayer_pixel[-1]);
++					rgb_buffer[1] = bayer_pixel[0];
++					rgb_buffer[2] = AVG (bayer_pixel[bayer_line_step], bayer_pixel[-bayer_line_step]);
+ 
+-			nRed   = ((XnUInt32)pCurrBayer[-BAYER_LINE_LENGTH]+pCurrBayer[BAYER_LINE_LENGTH]) / 2;
+-			nBlue  = ((XnUInt32)pCurrBayer[-1]+pCurrBayer[1]) / 2;
+-			WriteRGB(pCurrRGB+0, nRed, pCurrBayer[0], nBlue);
++					// Bayer        -1 0 1 2
++					//          -1   g b g b
++					//          0    r g R g
++					//  line_step    g b g b
++					// line_step2    r g r g
+ 
+-			nRed   = ((XnUInt32)pCurrBayer[-BAYER_LINE_LENGTH+2]+pCurrBayer[BAYER_LINE_LENGTH+2]) / 2;
+-			nGreen = ((XnUInt32)pCurrBayer[0]+pCurrBayer[2]) / 2;
+-			WriteRGB(pCurrRGB+BAYER_BPP, nRed, nGreen, pCurrBayer[1]);
++					dh = abs (bayer_pixel[0] - bayer_pixel[2]);
++					dv = abs (bayer_pixel[-bayer_line_step + 1] - bayer_pixel[bayer_line_step + 1]);
+ 
+-			nGreen = ((XnUInt32)pCurrBayer[BAYER_LINE_LENGTH-1]+pCurrBayer[BAYER_LINE_LENGTH+1]) / 2;
+-			nBlue  = ((XnUInt32)pCurrBayer[BAYER_LINE_LENGTH2-1]+pCurrBayer[BAYER_LINE_LENGTH2+1]) / 2;
+-			WriteRGB(pCurrRGB+BAYER_RGB_LINE_LENGTH, pCurrBayer[BAYER_LINE_LENGTH], nGreen, nBlue);
++					if (dh > dv)
++						rgb_buffer[4] = AVG (bayer_pixel[-bayer_line_step + 1], bayer_pixel[bayer_line_step + 1]);
++					else if (dv > dh)
++						rgb_buffer[4] = AVG (bayer_pixel[0], bayer_pixel[2]);
++					else
++						rgb_buffer[4] = AVG4 (bayer_pixel[-bayer_line_step + 1], bayer_pixel[bayer_line_step + 1], bayer_pixel[0], bayer_pixel[2]);
+ 
+-			nRed   = ((XnUInt32)pCurrBayer[BAYER_LINE_LENGTH]+pCurrBayer[BAYER_LINE_LENGTH+2]) / 2;
+-			nBlue  = ((XnUInt32)pCurrBayer[1]+pCurrBayer[BAYER_LINE_LENGTH2+1]) / 2;
+-			WriteRGB(pCurrRGB+BAYER_RGB_LINE_LENGTH+BAYER_BPP, nRed, pCurrBayer[BAYER_LINE_LENGTH+1], nBlue);
++					rgb_buffer[3] = bayer_pixel[1];
++					rgb_buffer[5] = AVG4 (bayer_pixel[-bayer_line_step], bayer_pixel[2 - bayer_line_step], bayer_pixel[bayer_line_step], bayer_pixel[bayer_line_step + 2]);
+ 
+-			pCurrBayer += 2;
+-			pCurrRGB += 2*BAYER_BPP;
+-		} while (--nColCount);
++					// BGBG line
++					// Bayer         -1 0 1 2
++					//         -1     g b g b
++					//          0     r g r g
++					// line_step      g B g b
++					// line_step2     r g r g
++					rgb_buffer[rgb_line_step ] = AVG4 (bayer_pixel[1], bayer_pixel[bayer_line_step2 + 1], bayer_pixel[-1], bayer_pixel[bayer_line_step2 - 1]);
++					rgb_buffer[rgb_line_step + 2] = bayer_pixel[bayer_line_step];
+ 
+-		pBayer += BAYER_LINE_LENGTH2;
+-		pRGB += BAYER_RGB_LINE_LENGTH2;
+-	} while (--nTotalRowsCount);
++					dv = abs (bayer_pixel[0] - bayer_pixel[bayer_line_step2]);
++					dh = abs (bayer_pixel[bayer_line_step - 1] - bayer_pixel[bayer_line_step + 1]);
++
++					if (dv > dh)
++						rgb_buffer[rgb_line_step + 1] = AVG (bayer_pixel[bayer_line_step - 1], bayer_pixel[bayer_line_step + 1]);
++					else if (dh > dv)
++						rgb_buffer[rgb_line_step + 1] = AVG (bayer_pixel[0], bayer_pixel[bayer_line_step2]);
++					else
++						rgb_buffer[rgb_line_step + 1] = AVG4 (bayer_pixel[0], bayer_pixel[bayer_line_step2], bayer_pixel[bayer_line_step - 1], bayer_pixel[bayer_line_step + 1]);
++
++					// Bayer         -1 0 1 2
++					//         -1     g b g b
++					//          0     r g r g
++					// line_step      g b G b
++					// line_step2     r g r g
++					rgb_buffer[rgb_line_step + 3] = AVG (bayer_pixel[1], bayer_pixel[bayer_line_step2 + 1]);
++					rgb_buffer[rgb_line_step + 4] = bayer_pixel[bayer_line_step + 1];
++					rgb_buffer[rgb_line_step + 5] = AVG (bayer_pixel[bayer_line_step], bayer_pixel[bayer_line_step + 2]);
++				}
++
++				// last two pixels of the line
++				// last two pixel values for first two lines
++				// GRGR line
++				// Bayer        -1 0 1
++				//           0   r G r
++				//   line_step   g b g
++				// line_step2    r g r
++				rgb_buffer[0] = AVG (bayer_pixel[1], bayer_pixel[-1]);
++				rgb_buffer[1] = bayer_pixel[0];
++				rgb_buffer[rgb_line_step + 5] = rgb_buffer[rgb_line_step + 2] = rgb_buffer[5] = rgb_buffer[2] = bayer_pixel[bayer_line_step];
++
++				// Bayer        -1 0 1
++				//          0    r g R
++				//  line_step    g b g
++				// line_step2    r g r
++				rgb_buffer[3] = bayer_pixel[1];
++				rgb_buffer[4] = AVG (bayer_pixel[0], bayer_pixel[bayer_line_step + 1]);
++				//rgb_pixel[5] = bayer_pixel[line_step];
++
++				// BGBG line
++				// Bayer        -1 0 1
++				//          0    r g r
++				//  line_step    g B g
++				// line_step2    r g r
++				rgb_buffer[rgb_line_step ] = AVG4 (bayer_pixel[1], bayer_pixel[bayer_line_step2 + 1], bayer_pixel[-1], bayer_pixel[bayer_line_step2 - 1]);
++				rgb_buffer[rgb_line_step + 1] = AVG4 (bayer_pixel[0], bayer_pixel[bayer_line_step2], bayer_pixel[bayer_line_step - 1], bayer_pixel[bayer_line_step + 1]);
++				//rgb_pixel[rgb_line_step + 2] = bayer_pixel[line_step];
++
++				// Bayer         -1 0 1
++				//         0      r g r
++				// line_step      g b G
++				// line_step2     r g r
++				rgb_buffer[rgb_line_step + 3] = AVG (bayer_pixel[1], bayer_pixel[bayer_line_step2 + 1]);
++				rgb_buffer[rgb_line_step + 4] = bayer_pixel[bayer_line_step + 1];
++				//rgb_pixel[rgb_line_step + 5] = bayer_pixel[line_step];
++
++				bayer_pixel += bayer_line_step + 2;
++				rgb_buffer += rgb_line_step + 6 + rgb_line_skip;
++			}
++
++			//last two lines
++			// Bayer         0 1 2
++			//        -1     b g b
++			//         0     G r g
++			// line_step     b g b
++
++			rgb_buffer[rgb_line_step + 3] = rgb_buffer[rgb_line_step ] = rgb_buffer[3] = rgb_buffer[0] = bayer_pixel[1]; // red pixel
++			rgb_buffer[1] = bayer_pixel[0]; // green pixel
++			rgb_buffer[rgb_line_step + 2] = rgb_buffer[2] = bayer_pixel[bayer_line_step]; // blue;
++
++			// Bayer         0 1 2
++			//        -1     b g b
++			//         0     g R g
++			// line_step     b g b
++			//rgb_pixel[3] = bayer_pixel[1];
++			rgb_buffer[4] = AVG4 (bayer_pixel[0], bayer_pixel[2], bayer_pixel[bayer_line_step + 1], bayer_pixel[1 - bayer_line_step]);
++			rgb_buffer[5] = AVG4 (bayer_pixel[bayer_line_step], bayer_pixel[bayer_line_step + 2], bayer_pixel[-bayer_line_step], bayer_pixel[2 - bayer_line_step]);
++
++			// BGBG line
++			// Bayer         0 1 2
++			//        -1     b g b
++			//         0     g r g
++			// line_step     B g b
++			//rgb_pixel[rgb_line_step    ] = bayer_pixel[1];
++			rgb_buffer[rgb_line_step + 1] = AVG (bayer_pixel[0], bayer_pixel[bayer_line_step + 1]);
++			rgb_buffer[rgb_line_step + 2] = bayer_pixel[bayer_line_step];
++
++			// Bayer         0 1 2
++			//        -1     b g b
++			//         0     g r g
++			// line_step     b G b
++			//rgb_pixel[rgb_line_step + 3] = AVG( bayer_pixel[1] , bayer_pixel[line_step2+1] );
++			rgb_buffer[rgb_line_step + 4] = bayer_pixel[bayer_line_step + 1];
++			rgb_buffer[rgb_line_step + 5] = AVG (bayer_pixel[bayer_line_step], bayer_pixel[bayer_line_step + 2]);
++
++			rgb_buffer += 6;
++			bayer_pixel += 2;
++			// rest of the last two lines
++			for (xIdx = 2; xIdx < width - 2; xIdx += 2, rgb_buffer += 6, bayer_pixel += 2)
++			{
++				// GRGR line
++				// Bayer       -1 0 1 2
++				//        -1    g b g b
++				//         0    r G r g
++				// line_step    g b g b
++				rgb_buffer[0] = AVG (bayer_pixel[1], bayer_pixel[-1]);
++				rgb_buffer[1] = bayer_pixel[0];
++				rgb_buffer[2] = AVG (bayer_pixel[bayer_line_step], bayer_pixel[-bayer_line_step]);
++
++				// Bayer       -1 0 1 2
++				//        -1    g b g b
++				//         0    r g R g
++				// line_step    g b g b
++				rgb_buffer[rgb_line_step + 3] = rgb_buffer[3] = bayer_pixel[1];
++				rgb_buffer[4] = AVG4 (bayer_pixel[0], bayer_pixel[2], bayer_pixel[bayer_line_step + 1], bayer_pixel[1 - bayer_line_step]);
++				rgb_buffer[5] = AVG4 (bayer_pixel[bayer_line_step], bayer_pixel[bayer_line_step + 2], bayer_pixel[-bayer_line_step], bayer_pixel[-bayer_line_step + 2]);
++
++				// BGBG line
++				// Bayer       -1 0 1 2
++				//        -1    g b g b
++				//         0    r g r g
++				// line_step    g B g b
++				rgb_buffer[rgb_line_step ] = AVG (bayer_pixel[-1], bayer_pixel[1]);
++				rgb_buffer[rgb_line_step + 1] = AVG3 (bayer_pixel[0], bayer_pixel[bayer_line_step - 1], bayer_pixel[bayer_line_step + 1]);
++				rgb_buffer[rgb_line_step + 2] = bayer_pixel[bayer_line_step];
++
++
++				// Bayer       -1 0 1 2
++				//        -1    g b g b
++				//         0    r g r g
++				// line_step    g b G b
++				//rgb_pixel[rgb_line_step + 3] = bayer_pixel[1];
++				rgb_buffer[rgb_line_step + 4] = bayer_pixel[bayer_line_step + 1];
++				rgb_buffer[rgb_line_step + 5] = AVG (bayer_pixel[bayer_line_step], bayer_pixel[bayer_line_step + 2]);
++			}
++
++			// last two pixel values for first two lines
++			// GRGR line
++			// Bayer       -1 0 1
++			//        -1    g b g
++			//         0    r G r
++			// line_step    g b g
++			rgb_buffer[rgb_line_step ] = rgb_buffer[0] = AVG (bayer_pixel[1], bayer_pixel[-1]);
++			rgb_buffer[1] = bayer_pixel[0];
++			rgb_buffer[5] = rgb_buffer[2] = AVG (bayer_pixel[bayer_line_step], bayer_pixel[-bayer_line_step]);
++
++			// Bayer       -1 0 1
++			//        -1    g b g
++			//         0    r g R
++			// line_step    g b g
++			rgb_buffer[rgb_line_step + 3] = rgb_buffer[3] = bayer_pixel[1];
++			rgb_buffer[4] = AVG3 (bayer_pixel[0], bayer_pixel[bayer_line_step + 1], bayer_pixel[-bayer_line_step + 1]);
++			//rgb_pixel[5] = AVG( bayer_pixel[line_step], bayer_pixel[-line_step] );
++
++			// BGBG line
++			// Bayer       -1 0 1
++			//        -1    g b g
++			//         0    r g r
++			// line_step    g B g
++			//rgb_pixel[rgb_line_step    ] = AVG2( bayer_pixel[-1], bayer_pixel[1] );
++			rgb_buffer[rgb_line_step + 1] = AVG3 (bayer_pixel[0], bayer_pixel[bayer_line_step - 1], bayer_pixel[bayer_line_step + 1]);
++			rgb_buffer[rgb_line_step + 5] = rgb_buffer[rgb_line_step + 2] = bayer_pixel[bayer_line_step];
++
++			// Bayer       -1 0 1
++			//        -1    g b g
++			//         0    r g r
++			// line_step    g b G
++			//rgb_pixel[rgb_line_step + 3] = bayer_pixel[1];
++			rgb_buffer[rgb_line_step + 4] = bayer_pixel[bayer_line_step + 1];
++			//rgb_pixel[rgb_line_step + 5] = bayer_pixel[line_step];
++		}
++		else if (debayering_method == EdgeAwareWeighted)
++		{
++			int dh, dv;
++
++			// first two pixel values for first two lines
++			// Bayer         0 1 2
++			//         0     G r g
++			// line_step     b g b
++			// line_step2    g r g
++
++			rgb_buffer[3] = rgb_buffer[0] = bayer_pixel[1]; // red pixel
++			rgb_buffer[1] = bayer_pixel[0]; // green pixel
++			rgb_buffer[rgb_line_step + 2] = rgb_buffer[2] = bayer_pixel[bayer_line_step]; // blue;
++
++			// Bayer         0 1 2
++			//         0     g R g
++			// line_step     b g b
++			// line_step2    g r g
++			//rgb_pixel[3] = bayer_pixel[1];
++			rgb_buffer[4] = AVG3 (bayer_pixel[0], bayer_pixel[2], bayer_pixel[bayer_line_step + 1]);
++			rgb_buffer[rgb_line_step + 5] = rgb_buffer[5] = AVG (bayer_pixel[bayer_line_step], bayer_pixel[bayer_line_step + 2]);
++
++			// BGBG line
++			// Bayer         0 1 2
++			//         0     g r g
++			// line_step     B g b
++			// line_step2    g r g
++			rgb_buffer[rgb_line_step + 3] = rgb_buffer[rgb_line_step ] = AVG (bayer_pixel[1], bayer_pixel[bayer_line_step2 + 1]);
++			rgb_buffer[rgb_line_step + 1] = AVG3 (bayer_pixel[0], bayer_pixel[bayer_line_step + 1], bayer_pixel[bayer_line_step2]);
++			//rgb_pixel[rgb_line_step + 2] = bayer_pixel[line_step];
++
++			// pixel (1, 1)  0 1 2
++			//         0     g r g
++			// line_step     b G b
++			// line_step2    g r g
++			//rgb_pixel[rgb_line_step + 3] = AVG( bayer_pixel[1] , bayer_pixel[line_step2+1] );
++			rgb_buffer[rgb_line_step + 4] = bayer_pixel[bayer_line_step + 1];
++			//rgb_pixel[rgb_line_step + 5] = AVG( bayer_pixel[line_step] , bayer_pixel[line_step+2] );
++
++			rgb_buffer += 6;
++			bayer_pixel += 2;
++			// rest of the first two lines
++			for (xIdx = 2; xIdx < width - 2; xIdx += 2, rgb_buffer += 6, bayer_pixel += 2)
++			{
++				// GRGR line
++				// Bayer        -1 0 1 2
++				//           0   r G r g
++				//   line_step   g b g b
++				// line_step2    r g r g
++				rgb_buffer[0] = AVG (bayer_pixel[1], bayer_pixel[-1]);
++				rgb_buffer[1] = bayer_pixel[0];
++				rgb_buffer[2] = bayer_pixel[bayer_line_step + 1];
++
++				// Bayer        -1 0 1 2
++				//          0    r g R g
++				//  line_step    g b g b
++				// line_step2    r g r g
++				rgb_buffer[3] = bayer_pixel[1];
++				rgb_buffer[4] = AVG3 (bayer_pixel[0], bayer_pixel[2], bayer_pixel[bayer_line_step + 1]);
++				rgb_buffer[rgb_line_step + 5] = rgb_buffer[5] = AVG (bayer_pixel[bayer_line_step], bayer_pixel[bayer_line_step + 2]);
++
++				// BGBG line
++				// Bayer         -1 0 1 2
++				//         0      r g r g
++				// line_step      g B g b
++				// line_step2     r g r g
++				rgb_buffer[rgb_line_step ] = AVG4 (bayer_pixel[1], bayer_pixel[bayer_line_step2 + 1], bayer_pixel[-1], bayer_pixel[bayer_line_step2 - 1]);
++				rgb_buffer[rgb_line_step + 1] = AVG4 (bayer_pixel[0], bayer_pixel[bayer_line_step2], bayer_pixel[bayer_line_step - 1], bayer_pixel[bayer_line_step + 1]);
++				rgb_buffer[rgb_line_step + 2] = bayer_pixel[bayer_line_step];
++
++				// Bayer         -1 0 1 2
++				//         0      r g r g
++				// line_step      g b G b
++				// line_step2     r g r g
++				rgb_buffer[rgb_line_step + 3] = AVG (bayer_pixel[1], bayer_pixel[bayer_line_step2 + 1]);
++				rgb_buffer[rgb_line_step + 4] = bayer_pixel[bayer_line_step + 1];
++				//rgb_pixel[rgb_line_step + 5] = AVG( bayer_pixel[line_step] , bayer_pixel[line_step+2] );
++			}
++
++			// last two pixel values for first two lines
++			// GRGR line
++			// Bayer        -1 0 1
++			//           0   r G r
++			//   line_step   g b g
++			// line_step2    r g r
++			rgb_buffer[0] = AVG (bayer_pixel[1], bayer_pixel[-1]);
++			rgb_buffer[1] = bayer_pixel[0];
++			rgb_buffer[rgb_line_step + 5] = rgb_buffer[rgb_line_step + 2] = rgb_buffer[5] = rgb_buffer[2] = bayer_pixel[bayer_line_step];
++
++			// Bayer        -1 0 1
++			//          0    r g R
++			//  line_step    g b g
++			// line_step2    r g r
++			rgb_buffer[3] = bayer_pixel[1];
++			rgb_buffer[4] = AVG (bayer_pixel[0], bayer_pixel[bayer_line_step + 1]);
++			//rgb_pixel[5] = bayer_pixel[line_step];
++
++			// BGBG line
++			// Bayer        -1 0 1
++			//          0    r g r
++			//  line_step    g B g
++			// line_step2    r g r
++			rgb_buffer[rgb_line_step ] = AVG4 (bayer_pixel[1], bayer_pixel[bayer_line_step2 + 1], bayer_pixel[-1], bayer_pixel[bayer_line_step2 - 1]);
++			rgb_buffer[rgb_line_step + 1] = AVG4 (bayer_pixel[0], bayer_pixel[bayer_line_step2], bayer_pixel[bayer_line_step - 1], bayer_pixel[bayer_line_step + 1]);
++			//rgb_pixel[rgb_line_step + 2] = bayer_pixel[line_step];
++
++			// Bayer         -1 0 1
++			//         0      r g r
++			// line_step      g b G
++			// line_step2     r g r
++			rgb_buffer[rgb_line_step + 3] = AVG (bayer_pixel[1], bayer_pixel[bayer_line_step2 + 1]);
++			rgb_buffer[rgb_line_step + 4] = bayer_pixel[bayer_line_step + 1];
++			//rgb_pixel[rgb_line_step + 5] = bayer_pixel[line_step];
++
++			bayer_pixel += bayer_line_step + 2;
++			rgb_buffer += rgb_line_step + 6 + rgb_line_skip;
++			// main processing
++			for (yIdx = 2; yIdx < height - 2; yIdx += 2)
++			{
++				// first two pixel values
++				// Bayer         0 1 2
++				//        -1     b g b
++				//         0     G r g
++				// line_step     b g b
++				// line_step2    g r g
++
++				rgb_buffer[3] = rgb_buffer[0] = bayer_pixel[1]; // red pixel
++				rgb_buffer[1] = bayer_pixel[0]; // green pixel
++				rgb_buffer[2] = AVG (bayer_pixel[bayer_line_step], bayer_pixel[-bayer_line_step]); // blue;
++
++				// Bayer         0 1 2
++				//        -1     b g b
++				//         0     g R g
++				// line_step     b g b
++				// line_step2    g r g
++				//rgb_pixel[3] = bayer_pixel[1];
++				rgb_buffer[4] = AVG4 (bayer_pixel[0], bayer_pixel[2], bayer_pixel[bayer_line_step + 1], bayer_pixel[1 - bayer_line_step]);
++				rgb_buffer[5] = AVG4 (bayer_pixel[bayer_line_step], bayer_pixel[bayer_line_step + 2], bayer_pixel[-bayer_line_step], bayer_pixel[2 - bayer_line_step]);
++
++				// BGBG line
++				// Bayer         0 1 2
++				//         0     g r g
++				// line_step     B g b
++				// line_step2    g r g
++				rgb_buffer[rgb_line_step + 3] = rgb_buffer[rgb_line_step ] = AVG (bayer_pixel[1], bayer_pixel[bayer_line_step2 + 1]);
++				rgb_buffer[rgb_line_step + 1] = AVG3 (bayer_pixel[0], bayer_pixel[bayer_line_step + 1], bayer_pixel[bayer_line_step2]);
++				rgb_buffer[rgb_line_step + 2] = bayer_pixel[bayer_line_step];
++
++				// pixel (1, 1)  0 1 2
++				//         0     g r g
++				// line_step     b G b
++				// line_step2    g r g
++				//rgb_pixel[rgb_line_step + 3] = AVG( bayer_pixel[1] , bayer_pixel[line_step2+1] );
++				rgb_buffer[rgb_line_step + 4] = bayer_pixel[bayer_line_step + 1];
++				rgb_buffer[rgb_line_step + 5] = AVG (bayer_pixel[bayer_line_step], bayer_pixel[bayer_line_step + 2]);
++
++				rgb_buffer += 6;
++				bayer_pixel += 2;
++				// continue with rest of the line
++				for (xIdx = 2; xIdx < width - 2; xIdx += 2, rgb_buffer += 6, bayer_pixel += 2)
++				{
++					// GRGR line
++					// Bayer        -1 0 1 2
++					//          -1   g b g b
++					//           0   r G r g
++					//   line_step   g b g b
++					// line_step2    r g r g
++					rgb_buffer[0] = AVG (bayer_pixel[1], bayer_pixel[-1]);
++					rgb_buffer[1] = bayer_pixel[0];
++					rgb_buffer[2] = AVG (bayer_pixel[bayer_line_step], bayer_pixel[-bayer_line_step]);
++
++					// Bayer        -1 0 1 2
++					//          -1   g b g b
++					//          0    r g R g
++					//  line_step    g b g b
++					// line_step2    r g r g
++
++					dh = abs (bayer_pixel[0] - bayer_pixel[2]);
++					dv = abs (bayer_pixel[-bayer_line_step + 1] - bayer_pixel[bayer_line_step + 1]);
++
++					if (dv == 0 && dh == 0)
++						rgb_buffer[4] = AVG4 (bayer_pixel[1 - bayer_line_step], bayer_pixel[1 + bayer_line_step], bayer_pixel[0], bayer_pixel[2]);
++					else
++						rgb_buffer[4] = WAVG4 (bayer_pixel[1 - bayer_line_step], bayer_pixel[1 + bayer_line_step], bayer_pixel[0], bayer_pixel[2], dh, dv);
++					rgb_buffer[3] = bayer_pixel[1];
++					rgb_buffer[5] = AVG4 (bayer_pixel[-bayer_line_step], bayer_pixel[2 - bayer_line_step], bayer_pixel[bayer_line_step], bayer_pixel[bayer_line_step + 2]);
++
++					// BGBG line
++					// Bayer         -1 0 1 2
++					//         -1     g b g b
++					//          0     r g r g
++					// line_step      g B g b
++					// line_step2     r g r g
++					rgb_buffer[rgb_line_step ] = AVG4 (bayer_pixel[1], bayer_pixel[bayer_line_step2 + 1], bayer_pixel[-1], bayer_pixel[bayer_line_step2 - 1]);
++					rgb_buffer[rgb_line_step + 2] = bayer_pixel[bayer_line_step];
++
++					dv = abs (bayer_pixel[0] - bayer_pixel[bayer_line_step2]);
++					dh = abs (bayer_pixel[bayer_line_step - 1] - bayer_pixel[bayer_line_step + 1]);
++
++					if (dv == 0 && dh == 0)
++						rgb_buffer[rgb_line_step + 1] = AVG4 (bayer_pixel[0], bayer_pixel[bayer_line_step2], bayer_pixel[bayer_line_step - 1], bayer_pixel[bayer_line_step + 1]);
++					else
++						rgb_buffer[rgb_line_step + 1] = WAVG4 (bayer_pixel[0], bayer_pixel[bayer_line_step2], bayer_pixel[bayer_line_step - 1], bayer_pixel[bayer_line_step + 1], dh, dv);
++
++					// Bayer         -1 0 1 2
++					//         -1     g b g b
++					//          0     r g r g
++					// line_step      g b G b
++					// line_step2     r g r g
++					rgb_buffer[rgb_line_step + 3] = AVG (bayer_pixel[1], bayer_pixel[bayer_line_step2 + 1]);
++					rgb_buffer[rgb_line_step + 4] = bayer_pixel[bayer_line_step + 1];
++					rgb_buffer[rgb_line_step + 5] = AVG (bayer_pixel[bayer_line_step], bayer_pixel[bayer_line_step + 2]);
++				}
++
++				// last two pixels of the line
++				// last two pixel values for first two lines
++				// GRGR line
++				// Bayer        -1 0 1
++				//           0   r G r
++				//   line_step   g b g
++				// line_step2    r g r
++				rgb_buffer[0] = AVG (bayer_pixel[1], bayer_pixel[-1]);
++				rgb_buffer[1] = bayer_pixel[0];
++				rgb_buffer[rgb_line_step + 5] = rgb_buffer[rgb_line_step + 2] = rgb_buffer[5] = rgb_buffer[2] = bayer_pixel[bayer_line_step];
++
++				// Bayer        -1 0 1
++				//          0    r g R
++				//  line_step    g b g
++				// line_step2    r g r
++				rgb_buffer[3] = bayer_pixel[1];
++				rgb_buffer[4] = AVG (bayer_pixel[0], bayer_pixel[bayer_line_step + 1]);
++				//rgb_pixel[5] = bayer_pixel[line_step];
++
++				// BGBG line
++				// Bayer        -1 0 1
++				//          0    r g r
++				//  line_step    g B g
++				// line_step2    r g r
++				rgb_buffer[rgb_line_step ] = AVG4 (bayer_pixel[1], bayer_pixel[bayer_line_step2 + 1], bayer_pixel[-1], bayer_pixel[bayer_line_step2 - 1]);
++				rgb_buffer[rgb_line_step + 1] = AVG4 (bayer_pixel[0], bayer_pixel[bayer_line_step2], bayer_pixel[bayer_line_step - 1], bayer_pixel[bayer_line_step + 1]);
++				//rgb_pixel[rgb_line_step + 2] = bayer_pixel[line_step];
++
++				// Bayer         -1 0 1
++				//         0      r g r
++				// line_step      g b G
++				// line_step2     r g r
++				rgb_buffer[rgb_line_step + 3] = AVG (bayer_pixel[1], bayer_pixel[bayer_line_step2 + 1]);
++				rgb_buffer[rgb_line_step + 4] = bayer_pixel[bayer_line_step + 1];
++				//rgb_pixel[rgb_line_step + 5] = bayer_pixel[line_step];
++
++				bayer_pixel += bayer_line_step + 2;
++				rgb_buffer += rgb_line_step + 6 + rgb_line_skip;
++			}
++
++			//last two lines
++			// Bayer         0 1 2
++			//        -1     b g b
++			//         0     G r g
++			// line_step     b g b
++
++			rgb_buffer[rgb_line_step + 3] = rgb_buffer[rgb_line_step ] = rgb_buffer[3] = rgb_buffer[0] = bayer_pixel[1]; // red pixel
++			rgb_buffer[1] = bayer_pixel[0]; // green pixel
++			rgb_buffer[rgb_line_step + 2] = rgb_buffer[2] = bayer_pixel[bayer_line_step]; // blue;
++
++			// Bayer         0 1 2
++			//        -1     b g b
++			//         0     g R g
++			// line_step     b g b
++			//rgb_pixel[3] = bayer_pixel[1];
++			rgb_buffer[4] = AVG4 (bayer_pixel[0], bayer_pixel[2], bayer_pixel[bayer_line_step + 1], bayer_pixel[1 - bayer_line_step]);
++			rgb_buffer[5] = AVG4 (bayer_pixel[bayer_line_step], bayer_pixel[bayer_line_step + 2], bayer_pixel[-bayer_line_step], bayer_pixel[2 - bayer_line_step]);
++
++			// BGBG line
++			// Bayer         0 1 2
++			//        -1     b g b
++			//         0     g r g
++			// line_step     B g b
++			//rgb_pixel[rgb_line_step    ] = bayer_pixel[1];
++			rgb_buffer[rgb_line_step + 1] = AVG (bayer_pixel[0], bayer_pixel[bayer_line_step + 1]);
++			rgb_buffer[rgb_line_step + 2] = bayer_pixel[bayer_line_step];
++
++			// Bayer         0 1 2
++			//        -1     b g b
++			//         0     g r g
++			// line_step     b G b
++			//rgb_pixel[rgb_line_step + 3] = AVG( bayer_pixel[1] , bayer_pixel[line_step2+1] );
++			rgb_buffer[rgb_line_step + 4] = bayer_pixel[bayer_line_step + 1];
++			rgb_buffer[rgb_line_step + 5] = AVG (bayer_pixel[bayer_line_step], bayer_pixel[bayer_line_step + 2]);
++
++			rgb_buffer += 6;
++			bayer_pixel += 2;
++			// rest of the last two lines
++			for (xIdx = 2; xIdx < width - 2; xIdx += 2, rgb_buffer += 6, bayer_pixel += 2)
++			{
++				// GRGR line
++				// Bayer       -1 0 1 2
++				//        -1    g b g b
++				//         0    r G r g
++				// line_step    g b g b
++				rgb_buffer[0] = AVG (bayer_pixel[1], bayer_pixel[-1]);
++				rgb_buffer[1] = bayer_pixel[0];
++				rgb_buffer[2] = AVG (bayer_pixel[bayer_line_step], bayer_pixel[-bayer_line_step]);
++
++				// Bayer       -1 0 1 2
++				//        -1    g b g b
++				//         0    r g R g
++				// line_step    g b g b
++				rgb_buffer[rgb_line_step + 3] = rgb_buffer[3] = bayer_pixel[1];
++				rgb_buffer[4] = AVG4 (bayer_pixel[0], bayer_pixel[2], bayer_pixel[bayer_line_step + 1], bayer_pixel[1 - bayer_line_step]);
++				rgb_buffer[5] = AVG4 (bayer_pixel[bayer_line_step], bayer_pixel[bayer_line_step + 2], bayer_pixel[-bayer_line_step], bayer_pixel[-bayer_line_step + 2]);
++
++				// BGBG line
++				// Bayer       -1 0 1 2
++				//        -1    g b g b
++				//         0    r g r g
++				// line_step    g B g b
++				rgb_buffer[rgb_line_step ] = AVG (bayer_pixel[-1], bayer_pixel[1]);
++				rgb_buffer[rgb_line_step + 1] = AVG3 (bayer_pixel[0], bayer_pixel[bayer_line_step - 1], bayer_pixel[bayer_line_step + 1]);
++				rgb_buffer[rgb_line_step + 2] = bayer_pixel[bayer_line_step];
++
++
++				// Bayer       -1 0 1 2
++				//        -1    g b g b
++				//         0    r g r g
++				// line_step    g b G b
++				//rgb_pixel[rgb_line_step + 3] = bayer_pixel[1];
++				rgb_buffer[rgb_line_step + 4] = bayer_pixel[bayer_line_step + 1];
++				rgb_buffer[rgb_line_step + 5] = AVG (bayer_pixel[bayer_line_step], bayer_pixel[bayer_line_step + 2]);
++			}
++
++			// last two pixel values for first two lines
++			// GRGR line
++			// Bayer       -1 0 1
++			//        -1    g b g
++			//         0    r G r
++			// line_step    g b g
++			rgb_buffer[rgb_line_step ] = rgb_buffer[0] = AVG (bayer_pixel[1], bayer_pixel[-1]);
++			rgb_buffer[1] = bayer_pixel[0];
++			rgb_buffer[5] = rgb_buffer[2] = AVG (bayer_pixel[bayer_line_step], bayer_pixel[-bayer_line_step]);
++
++			// Bayer       -1 0 1
++			//        -1    g b g
++			//         0    r g R
++			// line_step    g b g
++			rgb_buffer[rgb_line_step + 3] = rgb_buffer[3] = bayer_pixel[1];
++			rgb_buffer[4] = AVG3 (bayer_pixel[0], bayer_pixel[bayer_line_step + 1], bayer_pixel[-bayer_line_step + 1]);
++			//rgb_pixel[5] = AVG( bayer_pixel[line_step], bayer_pixel[-line_step] );
++
++			// BGBG line
++			// Bayer       -1 0 1
++			//        -1    g b g
++			//         0    r g r
++			// line_step    g B g
++			//rgb_pixel[rgb_line_step    ] = AVG2( bayer_pixel[-1], bayer_pixel[1] );
++			rgb_buffer[rgb_line_step + 1] = AVG3 (bayer_pixel[0], bayer_pixel[bayer_line_step - 1], bayer_pixel[bayer_line_step + 1]);
++			rgb_buffer[rgb_line_step + 5] = rgb_buffer[rgb_line_step + 2] = bayer_pixel[bayer_line_step];
++
++			// Bayer       -1 0 1
++			//        -1    g b g
++			//         0    r g r
++			// line_step    g b G
++			//rgb_pixel[rgb_line_step + 3] = bayer_pixel[1];
++			rgb_buffer[rgb_line_step + 4] = bayer_pixel[bayer_line_step + 1];
++			//rgb_pixel[rgb_line_step + 5] = bayer_pixel[line_step];
++		}
++		//else
++		//	THROW_OPENNI_EXCEPTION ("Unknwon debayering method: %d", (int)debayering_method);
++	}
++	//Warning: Downsampling mod is untested
++	else if (nDownSampleStep > 1)
++	{
++		// get each or each 2nd pixel group to find rgb values!
++		register unsigned bayerXStep = nDownSampleStep;
++		register unsigned bayerYSkip = (nDownSampleStep - 1) * width;
++
++		// Downsampling and debayering at once
++		register const XnUInt8* bayer_buffer = bayer_pixel;
++
++		for (register unsigned yIdx = 0; yIdx < height; ++yIdx, bayer_buffer += bayerYSkip, rgb_buffer += rgb_line_skip) // skip a line
++		{
++			for (register unsigned xIdx = 0; xIdx < width; ++xIdx, rgb_buffer += 3, bayer_buffer += bayerXStep)
++			{
++				rgb_buffer[ 2 ] = bayer_buffer[ width ];
++				rgb_buffer[ 1 ] = AVG (bayer_buffer[0], bayer_buffer[ width + 1]);
++				rgb_buffer[ 0 ] = bayer_buffer[ 1 ];
++			}
++		}
++	}
++}
++
++
++
++void Bayer2RGB888(const XnUInt8* pBayerImage, XnUInt8* pRGBImage, XnUInt32 nXRes, XnUInt32 nYRes, XnUInt32 nDownSampleStep, XnUInt32 nBadPixels)
++{
++	fillRGB(nXRes, nYRes, pBayerImage, pRGBImage, DebayeringMethod(1), nDownSampleStep); // DebayeringMethod(0) == bilinear, (1) == edge aware, (2) == edge aware weighted
+ }
+diff --git a/Source/XnDeviceSensorV2/Registration.cpp b/Source/XnDeviceSensorV2/Registration.cpp
+index 4f85eee..5c10a98 100644
+--- a/Source/XnDeviceSensorV2/Registration.cpp
++++ b/Source/XnDeviceSensorV2/Registration.cpp
+@@ -248,10 +248,8 @@ void BuildDepthToShiftTable(XnUInt16* pDepth2Shift, XnSensorDepthStream* m_pStre
+ 	m_pStream->GetProperty(XN_STREAM_PROPERTY_ZERO_PLANE_DISTANCE, &nPlaneDsr);
+ 	dPlaneDsr = (XnDouble)nPlaneDsr;
+ 
+-	XnUInt64 nDCRCDist;
+ 	XnDouble dDCRCDist;
+-	m_pStream->GetProperty(XN_STREAM_PROPERTY_DCMOS_RCMOS_DISTANCE, &nDCRCDist);
+-	dDCRCDist = (XnDouble)nDCRCDist;
++	m_pStream->GetProperty(XN_STREAM_PROPERTY_DCMOS_RCMOS_DISTANCE, &dDCRCDist);
+ 
+ 	XnDouble dPelSize = 1.0 / (dPlanePixelSize * nXScale * S2D_PEL_CONST);
+ 	XnDouble dPelDCC = dDCRCDist * dPelSize * S2D_PEL_CONST;
+@@ -472,13 +470,28 @@ void XnRegistration::Apply1000(XnDepthPixel* pInput, XnDepthPixel* pOutput)
+ 			nNewX = (XnInt32)(XnDouble(*pRegTable)/XN_REG_X_SCALE + XnInt32(pDepth2ShiftTable[nValue]/XN_REG_PARAB_COEFF - nConstShift) * dShiftFactor);
+ 			nNewY = *(pRegTable+1);
+ 
+-			if ((XnUInt32)nNewX-1 < (XnUInt32)nDepthXRes-1)
++			if ((XnUInt32)nNewX-1 < (XnUInt32)nDepthXRes-1 && (XnUInt32)nNewY <(XnUInt32) nDepthYRes)
+ 			{
+ 				nArrPos = nNewY * nDepthXRes + nNewX;
+ 				nOutValue = pOutput[nArrPos];
+ 
+ 				if (nOutValue == 0 || nOutValue > nValue)
+ 				{
++				  if ( nNewX > 0 && nNewY > 0 )
++					{
++						pOutput[nArrPos-nDepthXRes] = nValue;
++						pOutput[nArrPos-nDepthXRes-1] = nValue;
++						pOutput[nArrPos-1] = nValue;
++					}
++					else if( nNewY > 0 )
++					{
++						pOutput[nArrPos-nDepthXRes] = nValue;
++					}
++					else if( nNewX > 0 )
++					{
++						pOutput[nArrPos-1] = nValue;
++					}
++
+ 					pOutput[nArrPos] = nValue;
+ 					pOutput[nArrPos-1] = nValue;
+ 					pOutput[nArrPos-nDepthXRes] = nValue;
+@@ -523,7 +536,7 @@ void XnRegistration::Apply1080(XnDepthPixel* pInput, XnDepthPixel* pOutput)
+ 				nNewX = (XnUInt32)(*pRegTable + pRGBRegDepthToShiftTable[nValue]) / RGB_REG_X_VAL_SCALE;
+ 				nNewY = *(pRegTable+1);
+ 
+-				if (nNewX < nDepthXRes)
++				if (nNewX < nDepthXRes && nNewY < nDepthYRes)
+ 				{
+ 					nArrPos = bMirror ? (nNewY+1)*nDepthXRes - nNewX : (nNewY*nDepthXRes) + nNewX;
+ 					nArrPos -= nConstOffset;
+diff --git a/Source/XnDeviceSensorV2/XnDataProcessor.h b/Source/XnDeviceSensorV2/XnDataProcessor.h
+index 7132346..7301837 100644
+--- a/Source/XnDeviceSensorV2/XnDataProcessor.h
++++ b/Source/XnDeviceSensorV2/XnDataProcessor.h
+@@ -86,7 +86,8 @@ protected:
+ 	/* The number of bytes received so far (since last time this member was reset). */
+ 	XnUInt32 m_nBytesReceived;
+ 	/* Stores last packet ID */
+-	XnUInt16 m_nLastPacketID;
++	// --avin mod--
++  XnUInt8  m_nLastPacketID;
+ 	/* The name of the stream. */
+ 	const XnChar* m_csName;
+ 
+diff --git a/Source/XnDeviceSensorV2/XnDeviceSensorIO.cpp b/Source/XnDeviceSensorV2/XnDeviceSensorIO.cpp
+index 8fd955c..ab2688e 100644
+--- a/Source/XnDeviceSensorV2/XnDeviceSensorIO.cpp
++++ b/Source/XnDeviceSensorV2/XnDeviceSensorIO.cpp
+@@ -30,9 +30,12 @@
+ // Defines
+ //---------------------------------------------------------------------------
+ #define XN_SENSOR_VENDOR_ID			0x1D27
++#define XN_SENSOR_2_0_PRODUCT_ID	0x0200
+ #define XN_SENSOR_5_0_PRODUCT_ID	0x0500
+ #define XN_SENSOR_6_0_PRODUCT_ID	0x0600
+-#define XN_SENSOR_6_0_1_PRODUCT_ID	0x0601
++#define XN_SENSOR_6_0_1_PRODUCT_ID      0x0601
++#define XN_SENSOR_MSK_VENDOR_ID   0x045E
++#define XN_SENSOR_MSK_PRODUCT_ID  0x02AE
+ 
+ //---------------------------------------------------------------------------
+ // Enums
+@@ -147,9 +150,11 @@ XnStatus XnSensorIO::OpenDataEndPoints(XnSensorUsbInterface nInterface, const Xn
+ 			XN_LOG_WARNING_RETURN(XN_STATUS_USB_INTERFACE_NOT_SUPPORTED, XN_MASK_DEVICE_IO, "Unknown interface type: %d", nInterface);
+ 		}
+ 
++/*
+ 		xnLogVerbose(XN_MASK_DEVICE_IO, "Setting USB alternative interface to %d...", nAlternativeInterface);
+ 		nRetVal = xnUSBSetInterface(m_pSensorHandle->USBDevice, 0, nAlternativeInterface);
+ 		XN_IS_STATUS_OK(nRetVal);
++*/
+ 	}
+ 
+ 	xnLogVerbose(XN_MASK_DEVICE_IO, "Opening endpoints...");
+@@ -356,14 +361,14 @@ XnStatus XnSensorIO::CloseDevice()
+ 	return (XN_STATUS_OK);
+ }
+ 
+-XnStatus Enumerate(XnUInt16 nProduct, XnStringsHash& devicesSet)
++XnStatus Enumerate(XnUInt16 nVendor, XnUInt16 nProduct, XnStringsHash& devicesSet)
+ {
+ 	XnStatus nRetVal = XN_STATUS_OK;
+ 	
+ 	const XnUSBConnectionString* astrDevicePaths;
+ 	XnUInt32 nCount;
+ 
+-	nRetVal = xnUSBEnumerateDevices(XN_SENSOR_VENDOR_ID, nProduct, &astrDevicePaths, &nCount);
++  nRetVal = xnUSBEnumerateDevices(nVendor, nProduct, &astrDevicePaths, &nCount);
+ 	XN_IS_STATUS_OK(nRetVal);
+ 
+ 	for (XnUInt32 i = 0; i < nCount; ++i)
+@@ -391,28 +396,35 @@ XnStatus XnSensorIO::EnumerateSensors(XnConnectionString* aConnectionStrings, Xn
+ 	
+ 	if (devicesSet.Size() == 0)
+ 	{
+-		// search for a v6.0.1 device
+-		nRetVal = Enumerate(XN_SENSOR_6_0_1_PRODUCT_ID, devicesSet);
+-		XN_IS_STATUS_OK(nRetVal);
+-
+-		// search for a v6.0 device
+-		nRetVal = Enumerate(XN_SENSOR_6_0_PRODUCT_ID, devicesSet);
+-		XN_IS_STATUS_OK(nRetVal);	
+-	}
+ #else
+ 	XnStringsHash devicesSet;
++#endif
++
++	// search for a MSK device
++	nRetVal = Enumerate(XN_SENSOR_MSK_VENDOR_ID, XN_SENSOR_MSK_PRODUCT_ID, devicesSet);
++	XN_IS_STATUS_OK(nRetVal);
+ 
+ 	// search for a v6.0.1 device
+-	nRetVal = Enumerate(XN_SENSOR_6_0_1_PRODUCT_ID, devicesSet);
++  nRetVal = Enumerate(XN_SENSOR_VENDOR_ID, XN_SENSOR_6_0_1_PRODUCT_ID, devicesSet);
+ 	XN_IS_STATUS_OK(nRetVal);
+ 
+ 	// search for a v6.0 device
+-	nRetVal = Enumerate(XN_SENSOR_6_0_PRODUCT_ID, devicesSet);
++  nRetVal = Enumerate(XN_SENSOR_VENDOR_ID, XN_SENSOR_6_0_PRODUCT_ID, devicesSet);
++	XN_IS_STATUS_OK(nRetVal);	
++
++	// search for a v6.0.1 device
++	nRetVal = Enumerate(XN_SENSOR_VENDOR_ID, XN_SENSOR_5_0_PRODUCT_ID, devicesSet);
++	XN_IS_STATUS_OK(nRetVal);
++
++	// search for a v6.0 device
++	nRetVal = Enumerate(XN_SENSOR_VENDOR_ID, XN_SENSOR_2_0_PRODUCT_ID, devicesSet);
+ 	XN_IS_STATUS_OK(nRetVal);
+ 
+ 	// search for a v5.0 device
+-	nRetVal = Enumerate(XN_SENSOR_5_0_PRODUCT_ID, devicesSet);
++	nRetVal = Enumerate(XN_SENSOR_VENDOR_ID, XN_SENSOR_5_0_PRODUCT_ID, devicesSet);
+ 	XN_IS_STATUS_OK(nRetVal);
++#if (XN_PLATFORM == XN_PLATFORM_MACOSX)	
++  }
+ #endif
+ 	
+ 	// now copy back
+@@ -470,7 +482,8 @@ XnStatus XnSensorIO::SetCallback(XnUSBEventCallbackFunctionPtr pCallbackPtr, voi
+ 	XnStatus nRetVal = XN_STATUS_OK;
+ 	
+ 	// try to register callback to a 5.0 device
+-	nRetVal = xnUSBSetCallbackHandler(XN_SENSOR_VENDOR_ID, XN_SENSOR_5_0_PRODUCT_ID, NULL, pCallbackPtr, pCallbackData);
++// --avin mod--
++//	nRetVal = xnUSBSetCallbackHandler(XN_SENSOR_VENDOR_ID, XN_SENSOR_5_0_PRODUCT_ID, NULL, pCallbackPtr, pCallbackData);
+ 
+ 	return nRetVal;
+ }
+diff --git a/Source/XnDeviceSensorV2/XnDeviceSensorProtocol.cpp b/Source/XnDeviceSensorV2/XnDeviceSensorProtocol.cpp
+index 6fae06e..8bfb9ac 100644
+--- a/Source/XnDeviceSensorV2/XnDeviceSensorProtocol.cpp
++++ b/Source/XnDeviceSensorV2/XnDeviceSensorProtocol.cpp
+@@ -101,30 +101,36 @@ XnBool XN_CALLBACK_TYPE XnDeviceSensorProtocolUsbEpCb(XnUChar* pBuffer, XnUInt32
+ 				// move to next state
+ 				pCurrState->CurrHeader.nMagic = nMagic;
+ 				pCurrState->State = XN_PACKET_HEADER;
+-				pCurrState->nMissingBytesInState = sizeof(XnSensorProtocolResponseHeader);
++				pCurrState->nMissingBytesInState = sizeof(XnSensorProtocolResponseHeader) - 2;
+ 				break;
+ 			}
+ 
+-			while (pBuffer < pBufEnd)
++			pCurrState->nMissingBytesInState = sizeof(XnUInt16);
++
++			while (pBuffer < pBufEnd - 1)
+ 			{
+ 				if (nMagic == *(XnUInt16*)(pBuffer))
+ 				{
+ 					pCurrState->CurrHeader.nMagic = nMagic;
+ 					pCurrState->State = XN_PACKET_HEADER;
+-					pCurrState->nMissingBytesInState = sizeof(XnSensorProtocolResponseHeader);
++					pCurrState->nMissingBytesInState = sizeof(XnSensorProtocolResponseHeader) - 2;
++					pBuffer += 2;
+ 					break;
+ 				}
+ 				else
+ 					pBuffer++;
+ 			}
+ 
+-			if (pBuffer == pBufEnd &&					// magic wasn't found
+-				pBuffer[-1] == ((XnUInt8*)&nMagic)[0])	// last byte in buffer is first in magic
++			if (pBuffer == pBufEnd - 1) // magic wasn't found
+ 			{
+-				// mark that we found first one
+-				pCurrState->nMissingBytesInState--;
+-			}
++				if (pBuffer[0] == ((XnUInt8*)&nMagic)[0]) // last byte in buffer is first in magic
++				{
++					// mark that we found first one
++					pCurrState->nMissingBytesInState--;
++				}
+ 
++				pBuffer++;
++			}
+ 			break;
+ 
+ 		case XN_PACKET_HEADER:
+diff --git a/Source/XnDeviceSensorV2/XnDeviceSensorProtocol.h b/Source/XnDeviceSensorV2/XnDeviceSensorProtocol.h
+index 057d925..4ef054f 100644
+--- a/Source/XnDeviceSensorV2/XnDeviceSensorProtocol.h
++++ b/Source/XnDeviceSensorV2/XnDeviceSensorProtocol.h
+@@ -82,7 +82,9 @@ typedef struct XnSensorProtocolResponseHeader
+ {
+ 	XnUInt16 nMagic;
+ 	XnUInt16 nType;
+-	XnUInt16 nPacketID;
++  // --avin mod--
++  XnUInt8  nPacketID;
++  XnUInt8  nUnknown;
+ 	XnUInt16 nBufSize;
+ 	XnUInt32 nTimeStamp;
+ } XnSensorProtocolResponseHeader;
+diff --git a/Source/XnDeviceSensorV2/XnFirmwareStreams.cpp b/Source/XnDeviceSensorV2/XnFirmwareStreams.cpp
+index eb2e45d..b8d84e5 100644
+--- a/Source/XnDeviceSensorV2/XnFirmwareStreams.cpp
++++ b/Source/XnDeviceSensorV2/XnFirmwareStreams.cpp
+@@ -112,10 +112,11 @@ XnStatus XnFirmwareStreams::CheckClaimStream(const XnChar* strType, XnResolution
+ 			}
+ 
+ 			// check FPS
+-			if (pIRStreamData->nFPS != nFPS)
+-			{
+-				XN_LOG_WARNING_RETURN(XN_STATUS_DEVICE_BAD_PARAM, XN_MASK_DEVICE_SENSOR, "Depth and IR streams must have the same FPS!");
+-			}
++			// check FPS
++			//if (pIRStreamData->nFPS != nFPS)
++			//{
++			//	XN_LOG_WARNING_RETURN(XN_STATUS_DEVICE_BAD_PARAM, XN_MASK_DEVICE_SENSOR, "Depth and IR streams must have the same FPS!");
++			//}
+ 		}
+ 	}
+ 	else if (strcmp(strType, XN_STREAM_TYPE_IR) == 0)
+@@ -144,10 +145,10 @@ XnStatus XnFirmwareStreams::CheckClaimStream(const XnChar* strType, XnResolution
+ 			}
+ 
+ 			// check FPS
+-			if (pDepthStreamData->nFPS != nFPS)
+-			{
+-				XN_LOG_WARNING_RETURN(XN_STATUS_DEVICE_BAD_PARAM, XN_MASK_DEVICE_SENSOR, "Depth and IR streams must have the same FPS!");
+-			}
++			//if (pDepthStreamData->nFPS != nFPS)
++			//{
++			//	XN_LOG_WARNING_RETURN(XN_STATUS_DEVICE_BAD_PARAM, XN_MASK_DEVICE_SENSOR, "Depth and IR streams must have the same FPS!");
++			//}
+ 		}
+ 	}
+ 	else if (strcmp(strType, XN_STREAM_TYPE_IMAGE) == 0)
+diff --git a/Source/XnDeviceSensorV2/XnHostProtocol.h b/Source/XnDeviceSensorV2/XnHostProtocol.h
+index 36721c8..ea49f0a 100644
+--- a/Source/XnDeviceSensorV2/XnHostProtocol.h
++++ b/Source/XnDeviceSensorV2/XnHostProtocol.h
+@@ -108,8 +108,8 @@ enum EPsProtocolOpCodes_V017
+ typedef enum
+ {
+ 	XN_HOST_PROTOCOL_ALGORITHM_DEPTH_INFO	= 0x00,
+-	XN_HOST_PROTOCOL_ALGORITHM_REGISTRATION	= 0x02,
+-	XN_HOST_PROTOCOL_ALGORITHM_PADDING		= 0x03,
++	XN_HOST_PROTOCOL_ALGORITHM_REGISTRATION	= 0x40,
++	XN_HOST_PROTOCOL_ALGORITHM_PADDING		= 0x41,
+ 	XN_HOST_PROTOCOL_ALGORITHM_BLANKING		= 0x06,
+ 	XN_HOST_PROTOCOL_ALGORITHM_DEVICE_INFO	= 0x07,
+ 	XN_HOST_PROTOCOL_ALGORITHM_FREQUENCY	= 0x80
+diff --git a/Source/XnDeviceSensorV2/XnSensorDepthStream.cpp b/Source/XnDeviceSensorV2/XnSensorDepthStream.cpp
+index 5c2ed2e..57fc7a0 100644
+--- a/Source/XnDeviceSensorV2/XnSensorDepthStream.cpp
++++ b/Source/XnDeviceSensorV2/XnSensorDepthStream.cpp
+@@ -319,6 +319,8 @@ XnStatus XnSensorDepthStream::ConfigureStreamImpl()
+ 	nRetVal = m_Helper.GetCmosInfo()->SetCmosConfig(XN_CMOS_TYPE_DEPTH, GetResolution(), GetFPS());
+ 	XN_IS_STATUS_OK(nRetVal);
+ 
++  // Thanks to avin again! :-)
++  XnHostProtocolSetParam(GetHelper()->GetPrivateData(), 0x105, 0);
+ 	return XN_STATUS_OK;
+ }
+ 
+diff --git a/Source/XnDeviceSensorV2/XnSensorDepthStream.h b/Source/XnDeviceSensorV2/XnSensorDepthStream.h
+index 7ac329a..b70f67c 100644
+--- a/Source/XnDeviceSensorV2/XnSensorDepthStream.h
++++ b/Source/XnDeviceSensorV2/XnSensorDepthStream.h
+@@ -36,11 +36,11 @@
+ // Defines
+ //---------------------------------------------------------------------------
+ #define XN_DEPTH_STREAM_DEFAULT_INPUT_FORMAT				XN_IO_DEPTH_FORMAT_UNCOMPRESSED_11_BIT
+-#define XN_DEPTH_STREAM_DEFAULT_RESOLUTION					XN_RESOLUTION_QVGA
++#define XN_DEPTH_STREAM_DEFAULT_RESOLUTION					XN_RESOLUTION_VGA
+ #define XN_DEPTH_STREAM_DEFAULT_FPS							30
+ #define XN_DEPTH_STREAM_DEFAULT_OUTPUT_FORMAT				XN_OUTPUT_FORMAT_DEPTH_VALUES
+ #define XN_DEPTH_STREAM_DEFAULT_REGISTRATION				FALSE
+-#define XN_DEPTH_STREAM_DEFAULT_REGISTRATION_TYPE			XN_PROCESSING_DONT_CARE
++#define XN_DEPTH_STREAM_DEFAULT_REGISTRATION_TYPE	  XN_PROCESSING_SOFTWARE
+ #define XN_DEPTH_STREAM_DEFAULT_HOLE_FILLER					TRUE
+ #define XN_DEPTH_STREAM_DEFAULT_WHITE_BALANCE				TRUE
+ #define XN_DEPTH_STREAM_DEFAULT_GAIN_OLD					50
+diff --git a/Source/XnDeviceSensorV2/XnSensorFirmwareParams.cpp b/Source/XnDeviceSensorV2/XnSensorFirmwareParams.cpp
+index 913fb6a..6fee21e 100644
+--- a/Source/XnDeviceSensorV2/XnSensorFirmwareParams.cpp
++++ b/Source/XnDeviceSensorV2/XnSensorFirmwareParams.cpp
+@@ -510,10 +510,10 @@ XnStatus XnSensorFirmwareParams::SetImageResolution(XnUInt64 nValue)
+ 		case XN_RESOLUTION_VGA:
+ 			break;
+ 		case XN_RESOLUTION_SXGA:
+-			if (m_pInfo->nFWVer < XN_SENSOR_FW_VER_5_3)
+-			{
+-				XN_LOG_WARNING_RETURN(XN_STATUS_IO_INVALID_STREAM_IMAGE_RESOLUTION, XN_MASK_DEVICE_SENSOR, "Image resolution is not supported by this firmware!");
+-			}
++			//if (m_pInfo->nFWVer < XN_SENSOR_FW_VER_5_3)
++			//{
++			//	XN_LOG_WARNING_RETURN(XN_STATUS_IO_INVALID_STREAM_IMAGE_RESOLUTION, XN_MASK_DEVICE_SENSOR, "Image resolution is not supported by this firmware!");
++			//}
+ 			break;
+ 		case XN_RESOLUTION_UXGA:
+ 			if (m_pInfo->nFWVer < XN_SENSOR_FW_VER_5_1)
+diff --git a/Source/XnDeviceSensorV2/XnSensorIRStream.cpp b/Source/XnDeviceSensorV2/XnSensorIRStream.cpp
+index ebf162a..6014b7e 100644
+--- a/Source/XnDeviceSensorV2/XnSensorIRStream.cpp
++++ b/Source/XnDeviceSensorV2/XnSensorIRStream.cpp
+@@ -87,6 +87,7 @@ XnStatus XnSensorIRStream::Init()
+ 		{ 0, XN_RESOLUTION_QVGA, 60 },
+ 		{ 0, XN_RESOLUTION_VGA, 30 },
+ 		{ 0, XN_RESOLUTION_SXGA, 30 },
++		{ 0, XN_RESOLUTION_SXGA, 15 },
+ 	};
+ 	nRetVal = AddSupportedModes(aSupportedModes, sizeof(aSupportedModes)/sizeof(aSupportedModes[0]));
+ 	XN_IS_STATUS_OK(nRetVal);
+@@ -96,6 +97,7 @@ XnStatus XnSensorIRStream::Init()
+ 		XnCmosPreset aSupportedModesSXGA[] = 
+ 		{
+ 			{ 0, XN_RESOLUTION_SXGA, 30 },
++			{ 0, XN_RESOLUTION_SXGA, 15 },
+ 		};
+ 		nRetVal = AddSupportedModes(aSupportedModesSXGA, sizeof(aSupportedModesSXGA)/sizeof(aSupportedModesSXGA[0]));
+ 		XN_IS_STATUS_OK(nRetVal);
+diff --git a/Source/XnDeviceSensorV2/XnSensorImageStream.cpp b/Source/XnDeviceSensorV2/XnSensorImageStream.cpp
+index be42cc7..a458595 100644
+--- a/Source/XnDeviceSensorV2/XnSensorImageStream.cpp
++++ b/Source/XnDeviceSensorV2/XnSensorImageStream.cpp
+@@ -214,6 +214,14 @@ XnStatus XnSensorImageStream::Init()
+ 		nRetVal = AddSupportedMode(supportedModes, XN_IO_IMAGE_FORMAT_YUV422, XN_RESOLUTION_VGA, 30);
+ 		XN_IS_STATUS_OK(nRetVal);
+ 
++		// Suat: Enable Bayer images
++		nRetVal = AddSupportedMode(supportedModes, XN_IO_IMAGE_FORMAT_BAYER, XN_RESOLUTION_QVGA, 30);
++		XN_IS_STATUS_OK(nRetVal);
++		nRetVal = AddSupportedMode(supportedModes, XN_IO_IMAGE_FORMAT_BAYER, XN_RESOLUTION_QVGA, 60);
++		XN_IS_STATUS_OK(nRetVal);
++		nRetVal = AddSupportedMode(supportedModes, XN_IO_IMAGE_FORMAT_BAYER, XN_RESOLUTION_VGA, 30);
++		XN_IS_STATUS_OK(nRetVal);
++
+ 		// add uncompressed ones
+ 		if (bUncompressedAllowed)
+ 		{
+@@ -223,15 +231,31 @@ XnStatus XnSensorImageStream::Init()
+ 			XN_IS_STATUS_OK(nRetVal);
+ 			nRetVal = AddSupportedMode(supportedModes, XN_IO_IMAGE_FORMAT_UNCOMPRESSED_YUV422, XN_RESOLUTION_VGA, 30);
+ 			XN_IS_STATUS_OK(nRetVal);
++
++      // Suat: Enable umcompressed Bayer
++			nRetVal = AddSupportedMode(supportedModes, XN_IO_IMAGE_FORMAT_UNCOMPRESSED_BAYER, XN_RESOLUTION_SXGA, 15);
++			XN_IS_STATUS_OK(nRetVal);
++			nRetVal = AddSupportedMode(supportedModes, XN_IO_IMAGE_FORMAT_UNCOMPRESSED_BAYER, XN_RESOLUTION_VGA, 30);
++			XN_IS_STATUS_OK(nRetVal);
++			nRetVal = AddSupportedMode(supportedModes, XN_IO_IMAGE_FORMAT_UNCOMPRESSED_BAYER, XN_RESOLUTION_QVGA, 60);
++			XN_IS_STATUS_OK(nRetVal);
++			nRetVal = AddSupportedMode(supportedModes, XN_IO_IMAGE_FORMAT_UNCOMPRESSED_BAYER, XN_RESOLUTION_QVGA, 30);
++			XN_IS_STATUS_OK(nRetVal);
+ 		}
+ 
+ 		// starting with FW 5.2, 25 FPS is also supported
+-		if (m_Helper.GetFirmwareVersion() >= XN_SENSOR_FW_VER_5_2)
++		//Suat: changed to 5_1 since out 5_1_6 works good with 25Hz
++		if (m_Helper.GetFirmwareVersion() >= XN_SENSOR_FW_VER_5_1)
+ 		{
+ 			nRetVal = AddSupportedMode(supportedModes, XN_IO_IMAGE_FORMAT_YUV422, XN_RESOLUTION_QVGA, 25);
+ 			XN_IS_STATUS_OK(nRetVal);
+ 			nRetVal = AddSupportedMode(supportedModes, XN_IO_IMAGE_FORMAT_YUV422, XN_RESOLUTION_VGA, 25);
+ 			XN_IS_STATUS_OK(nRetVal);
++      // Suat: Enable Bayer
++			nRetVal = AddSupportedMode(supportedModes, XN_IO_IMAGE_FORMAT_BAYER, XN_RESOLUTION_QVGA, 25);
++			XN_IS_STATUS_OK(nRetVal);
++			nRetVal = AddSupportedMode(supportedModes, XN_IO_IMAGE_FORMAT_BAYER, XN_RESOLUTION_VGA, 25);
++			XN_IS_STATUS_OK(nRetVal);
+ 
+ 			if (bUncompressedAllowed)
+ 			{
+@@ -239,6 +263,10 @@ XnStatus XnSensorImageStream::Init()
+ 				XN_IS_STATUS_OK(nRetVal);
+ 				nRetVal = AddSupportedMode(supportedModes, XN_IO_IMAGE_FORMAT_UNCOMPRESSED_YUV422, XN_RESOLUTION_VGA, 25);
+ 				XN_IS_STATUS_OK(nRetVal);
++			  nRetVal = AddSupportedMode(supportedModes, XN_IO_IMAGE_FORMAT_UNCOMPRESSED_BAYER, XN_RESOLUTION_QVGA, 25);
++			  XN_IS_STATUS_OK(nRetVal);
++			  nRetVal = AddSupportedMode(supportedModes, XN_IO_IMAGE_FORMAT_UNCOMPRESSED_BAYER, XN_RESOLUTION_VGA, 25);
++			  XN_IS_STATUS_OK(nRetVal);
+ 			}
+ 		}
+ 
+@@ -255,11 +283,15 @@ XnStatus XnSensorImageStream::Init()
+ 			{
+ 				nRetVal = AddSupportedMode(supportedModes, XN_IO_IMAGE_FORMAT_YUV422, XN_RESOLUTION_SXGA, 30);
+ 				XN_IS_STATUS_OK(nRetVal);
++				nRetVal = AddSupportedMode(supportedModes, XN_IO_IMAGE_FORMAT_BAYER, XN_RESOLUTION_SXGA, 30);
++				XN_IS_STATUS_OK(nRetVal);
+ 
+ 				if (bUncompressedAllowed)
+ 				{
+ 					nRetVal = AddSupportedMode(supportedModes, XN_IO_IMAGE_FORMAT_UNCOMPRESSED_YUV422, XN_RESOLUTION_SXGA, 30);
+ 					XN_IS_STATUS_OK(nRetVal);
++					nRetVal = AddSupportedMode(supportedModes, XN_IO_IMAGE_FORMAT_UNCOMPRESSED_BAYER, XN_RESOLUTION_SXGA, 30);
++					XN_IS_STATUS_OK(nRetVal);
+ 				}
+ 			}
+ 		}
+@@ -370,7 +402,7 @@ XnStatus XnSensorImageStream::ValidateMode()
+ 			nInputFormat != XN_IO_IMAGE_FORMAT_UNCOMPRESSED_YUV422 &&
+ 			nInputFormat != XN_IO_IMAGE_FORMAT_BAYER)
+ 		{
+-			XN_LOG_WARNING_RETURN(XN_STATUS_DEVICE_BAD_PARAM, XN_MASK_DEVICE_SENSOR, "Input format %d cannot be converted to RGB24!", nInputFormat);
++			//XN_LOG_WARNING_RETURN(XN_STATUS_DEVICE_BAD_PARAM, XN_MASK_DEVICE_SENSOR, "Input format %d cannot be converted to RGB24!", nInputFormat);
+ 		}
+ 		break;
+ 	case XN_OUTPUT_FORMAT_YUV422:
+diff --git a/Source/XnDeviceSensorV2/XnSensorImageStream.h b/Source/XnDeviceSensorV2/XnSensorImageStream.h
+index 94bc3a5..7f60e99 100644
+--- a/Source/XnDeviceSensorV2/XnSensorImageStream.h
++++ b/Source/XnDeviceSensorV2/XnSensorImageStream.h
+@@ -33,8 +33,8 @@
+ // Defines
+ //---------------------------------------------------------------------------
+ #define XN_IMAGE_STREAM_DEFAULT_FPS				30
+-#define XN_IMAGE_STREAM_DEFAULT_RESOLUTION		XN_RESOLUTION_QVGA
+-#define XN_IMAGE_STREAM_DEFAULT_INPUT_FORMAT	XN_IO_IMAGE_FORMAT_UNCOMPRESSED_YUV422
++#define XN_IMAGE_STREAM_DEFAULT_RESOLUTION		XN_RESOLUTION_VGA
++#define XN_IMAGE_STREAM_DEFAULT_INPUT_FORMAT	XN_IO_IMAGE_FORMAT_UNCOMPRESSED_BAYER
+ #define XN_IMAGE_STREAM_DEFAULT_OUTPUT_FORMAT	XN_OUTPUT_FORMAT_RGB24
+ #define XN_IMAGE_STREAM_DEFAULT_FLICKER			0
+ #define XN_IMAGE_STREAM_DEFAULT_QUALITY			3
+diff --git a/Source/XnDeviceSensorV2/XnUncompressedBayerProcessor.cpp b/Source/XnDeviceSensorV2/XnUncompressedBayerProcessor.cpp
+index 5f611e2..f1f6acb 100644
+--- a/Source/XnDeviceSensorV2/XnUncompressedBayerProcessor.cpp
++++ b/Source/XnDeviceSensorV2/XnUncompressedBayerProcessor.cpp
+@@ -67,12 +67,21 @@ void XnUncompressedBayerProcessor::ProcessFramePacketChunk(const XnSensorProtoco
+ 
+ 	// if output format is Gray8, we can write directly to output buffer. otherwise, we need
+ 	// to write to a temp buffer.
+-	XnBuffer* pWriteBuffer = (GetStream()->GetOutputFormat() == XN_OUTPUT_FORMAT_GRAYSCALE8) ? GetWriteBuffer() : &m_UncompressedBayerBuffer;
+ 
+-	// make sure we have enough room
+-	if (CheckWriteBufferForOverflow(nDataSize))
++	if (GetStream()->GetOutputFormat() == XN_OUTPUT_FORMAT_GRAYSCALE8)
+ 	{
+-		pWriteBuffer->UnsafeWrite(pData, nDataSize);
++		XnBuffer* pWriteBuffer = GetWriteBuffer();
++
++		// make sure we have enough room
++		if (CheckWriteBufferForOverflow(nDataSize))
++			pWriteBuffer->UnsafeWrite(pData, nDataSize);
++	}
++	else
++	{
++		XnBuffer* pWriteBuffer = &m_UncompressedBayerBuffer;
++
++		if (pWriteBuffer->Write(pData, nDataSize) != XN_STATUS_OK)
++			xnLogWarning(XN_MASK_SENSOR_PROTOCOL_IMAGE, "Uncompressed buffer overflow");
+ 	}
+ 
+ 	XN_PROFILING_END_SECTION
+@@ -90,7 +99,18 @@ void XnUncompressedBayerProcessor::OnEndOfFrame(const XnSensorProtocolResponseHe
+ 		case XN_OUTPUT_FORMAT_RGB24:
+ 			{
+ 				Bayer2RGB888(m_UncompressedBayerBuffer.GetData(), GetWriteBuffer()->GetUnsafeWritePointer(), GetActualXRes(), GetActualYRes(), 1, 0);
+-				GetWriteBuffer()->UnsafeUpdateSize(GetActualXRes()*GetActualYRes()*3);
++
++				XnUInt32 frame_size;
++
++				// if the frame was corrupted, propagate the corruption into the write buffer
++				if (m_UncompressedBayerBuffer.GetSize() < GetActualXRes()*GetActualYRes())
++					frame_size = m_UncompressedBayerBuffer.GetSize() * 3;
++				else if (m_UncompressedBayerBuffer.GetSize() > GetActualXRes()*GetActualYRes())
++					frame_size = 0; // overflows are failures too
++				else
++					frame_size = GetActualXRes()*GetActualYRes()*3;
++
++				GetWriteBuffer()->UnsafeUpdateSize(frame_size);
+ 				m_UncompressedBayerBuffer.Reset();
+ 			}
+ 			break;
+@@ -100,3 +120,15 @@ void XnUncompressedBayerProcessor::OnEndOfFrame(const XnSensorProtocolResponseHe
+ 
+ 	XN_PROFILING_END_SECTION
+ }
++
++void XnUncompressedBayerProcessor::OnStartOfFrame(const XnSensorProtocolResponseHeader* pHeader)
++{
++	XN_PROFILING_START_SECTION("XnUncompressedBayerProcessor::OnStartOfFrame")
++
++	XnImageProcessor::OnStartOfFrame(pHeader);
++
++	if (GetStream()->GetOutputFormat() == XN_OUTPUT_FORMAT_RGB24)
++		m_UncompressedBayerBuffer.Reset();
++
++	XN_PROFILING_END_SECTION
++}
+diff --git a/Source/XnDeviceSensorV2/XnUncompressedBayerProcessor.h b/Source/XnDeviceSensorV2/XnUncompressedBayerProcessor.h
+index 7590da8..3586172 100644
+--- a/Source/XnDeviceSensorV2/XnUncompressedBayerProcessor.h
++++ b/Source/XnDeviceSensorV2/XnUncompressedBayerProcessor.h
+@@ -45,6 +45,7 @@ public:
+ protected:
+ 	virtual void ProcessFramePacketChunk(const XnSensorProtocolResponseHeader* pHeader, const XnUChar* pData, XnUInt32 nDataOffset, XnUInt32 nDataSize);
+ 	virtual void OnEndOfFrame(const XnSensorProtocolResponseHeader* pHeader);
++	virtual void OnStartOfFrame(const XnSensorProtocolResponseHeader* pHeader);
+ 
+ 	//---------------------------------------------------------------------------
+ 	// Class Members
