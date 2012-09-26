@@ -132,7 +132,7 @@ void run(pcl::RFFaceDetectorTrainer & fdrf, typename pcl::PointCloud<PointInT>::
       cylinder_coeff.values[4] = vec[1];
       cylinder_coeff.values[5] = vec[2];
 
-      cylinder_coeff.values[6] = 0.01;
+      cylinder_coeff.values[6] = 0.01f;
       vis.addCylinder (cylinder_coeff, "cylinder");
     }
   }

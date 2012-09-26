@@ -102,6 +102,7 @@ namespace pcl
         const float threshold,
         unsigned char & branch_index) const
       {
+        (void)flag;
         branch_index = (result > threshold) ? 1 : 0;
       }
   };
