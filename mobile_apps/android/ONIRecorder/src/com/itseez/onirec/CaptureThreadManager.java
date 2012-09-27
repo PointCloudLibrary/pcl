@@ -163,6 +163,7 @@ class CaptureThreadManager {
             public void run() {
                 handler.removeCallbacks(processFrame);
                 terminateOpenNI();
+                uiHandler.removeCallbacksAndMessages(null);
                 Looper.myLooper().quit();
             }
         });

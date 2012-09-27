@@ -48,7 +48,7 @@ public class MainActivity extends Activity {
 
     private File lastRecording;
 
-    private final BroadcastReceiver usb_receiver = new BroadcastReceiver() {
+    private final BroadcastReceiver usbReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
@@ -58,6 +58,7 @@ public class MainActivity extends Activity {
 
                     if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
                         Log.i(TAG, "USB permission granted for device " + device.getDeviceName() + ".");
+                        awaitingPermission.remove(device);
                         state.usbPermissionChange(device, true);
                     }
                     else {
@@ -110,7 +111,7 @@ public class MainActivity extends Activity {
         surfaceColor.getHolder().addCallback(surface_callbacks);
         surfaceDepth.getHolder().addCallback(surface_callbacks);
 
-        registerReceiver(usb_receiver, new IntentFilter(ACTION_USB_PERMISSION));
+        registerReceiver(usbReceiver, new IntentFilter(ACTION_USB_PERMISSION));
     }
 
     @Override
@@ -145,13 +146,13 @@ public class MainActivity extends Activity {
 
         if (lastRecording != null)
         {
-            buttonRecord.setText(String.format(format, lastRecording.getName()));
-            buttonRecord.setEnabled(true);
+            buttonReplay.setText(String.format(format, lastRecording.getName()));
+            buttonReplay.setEnabled(true);
         }
         else
         {
-            buttonRecord.setText(String.format(format, getResources().getString(R.string.last_recording)));
-            buttonRecord.setEnabled(false);
+            buttonReplay.setText(String.format(format, getResources().getString(R.string.last_recording)));
+            buttonReplay.setEnabled(false);
         }
     }
 
@@ -264,7 +265,6 @@ public class MainActivity extends Activity {
         @Override
         public void usbPermissionChange(UsbDevice device, boolean granted) {
             if (granted) {
-                awaitingPermission.remove(device);
                 setLabel();
                 checkReady();
             } else {
