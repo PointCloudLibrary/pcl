@@ -119,7 +119,7 @@ namespace pcl
             for (size_t v = 0; v < cloud_out.height; v++)
             {
               //std::cout << u << " ----- " << v << std::endl;
-              cloud_out.at (u, v) = cloud_in.at (min_col + u, min_row + v);
+              cloud_out.at (u, v) = cloud_in.at (min_col + int (u), min_row + int (v));
             }
           }
 

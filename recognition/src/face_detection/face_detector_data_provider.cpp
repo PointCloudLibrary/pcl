@@ -20,14 +20,14 @@ namespace pcl
       std::cout << "\t\t";
       for (int j = 0; j < num_pitch; j++)
       {
-        std::cout << round (min_pitch + res_pitch * j) << "\t";
+        std::cout << pcl_round (min_pitch + res_pitch * j) << "\t";
       }
 
       std::cout << std::endl;
 
       for (int i = 0; i < num_yaw; i++)
       {
-        std::cout << round (min_yaw + res_yaw * i) << " => \t\t";
+        std::cout << pcl_round (min_yaw + res_yaw * i) << " => \t\t";
         for (int j = 0; j < num_pitch; j++)
         {
           //std::cout <<  std::setprecision(3) << yaw_pitch_bins[i][j] / static_cast<float>(max_elems) << "\t";
@@ -95,8 +95,8 @@ void pcl::face_detection::FaceDetectorDataProvider<FeatureType, DataSet, LabelTy
     {
       Eigen::Vector3f ea = pose_mat.block<3, 3> (0, 0).eulerAngles (0, 1, 2);
       ea *= 57.2957795; //transform it to degrees to do the binning
-      int y = round ((ea[0] + std::abs (min_yaw)) / static_cast<float> (res_yaw));
-      int p = round ((ea[1] + std::abs (min_pitch)) / static_cast<float> (res_pitch));
+      int y = pcl_round ((ea[0] + std::abs (min_yaw)) / static_cast<float> (res_yaw));
+      int p = pcl_round ((ea[1] + std::abs (min_pitch)) / static_cast<float> (res_pitch));
 
       if (y < 0)
         y = 0;
