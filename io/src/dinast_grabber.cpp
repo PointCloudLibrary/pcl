@@ -36,7 +36,6 @@
  */
 
 #include <pcl/pcl_config.h>
-
 #include <pcl/io/dinast_grabber.h>
 #include <iostream>
 
@@ -66,22 +65,8 @@ pcl::DinastGrabber::DinastGrabber ()
 
 pcl::DinastGrabber::~DinastGrabber () throw ()
 {
-  try
-  {
-    stop ();
-    libusb_exit (ctx);
-    // unregister callbacks
-
-    // release the pointer to the device object
-
-    
-    // disconnect all listeners
-
-  }
-  catch (...)
-  {
-    // destructor never throws
-  }
+  stop ();
+  libusb_exit (ctx);
 }
 
 std::string
@@ -99,7 +84,7 @@ pcl::DinastGrabber::isRunning () const
 float
 pcl::DinastGrabber::getFramesPerSecond () const
 {
-  //figure this out!!
+
   return (0);
 }
 
@@ -117,8 +102,7 @@ pcl::DinastGrabber::findDevice ( int device_position, const int id_vendor, const
   ssize_t cnt = libusb_get_device_list (ctx, &devs);
 
   if (cnt < 0)
-    //throw PCLIOException ();
-    return;
+    PCL_THROW_EXCEPTION (pcl::IOException, "No usb devices found!");
   
   // Iterate over all devices
   for (ssize_t i = 0; i < cnt; ++i)
@@ -169,13 +153,7 @@ pcl::DinastGrabber::findDevice ( int device_position, const int id_vendor, const
   
   //Check if device founded if not notify
   if (device_handle==NULL)
-    cout<<"Failed to find any DINAST device"<<endl;
-  
-  // No bulk endpoint was found
-  // bulk_ep is unsigned char! Can't compare with -1 !!!
-  //if (bulk_ep == -1)
-    //throw PCLIOException ();
-  //  return;
+    PCL_THROW_EXCEPTION (pcl::IOException, "Failed to find any DINAST devices attached");
 
 }
 
@@ -183,17 +161,8 @@ void
 pcl::DinastGrabber::openDevice ()
 {
 
-  if (device_handle == NULL)
-  {
-    cout<<"device not found"<<endl; //expection
-    return;
-  }
-
   if(libusb_claim_interface(device_handle, 0) < 0)
-     cout<<"Failed to Claim interface on device"<<endl;  //Throw PCLIOException
-  else
-    cout<<"Interface Claimed properly"<<endl;
-  
+     PCL_THROW_EXCEPTION (pcl::IOException, "Failed to open device");  
 }
 
 void
@@ -213,20 +182,17 @@ pcl::DinastGrabber::USBRxControlData (const unsigned char req_code,
   // the direction of the transfer is inferred from the requesttype field of the setup packet.
   unsigned char requesttype = CTRL_TO_HOST;
   // the value field for the setup packet
-  unsigned int value = 0x02;
+  uint16_t value = 0x02;
   // the index field for the setup packet
-  unsigned char index = 0x08;
+  uint16_t index = 0x08;
   // timeout (in ms) that this function should wait before giving up due to no response being received
   // for an unlimited timeout, use value 0.
-  unsigned int timeout = 1000;
+  uint16_t timeout = 1000;
   
   int nr_read = libusb_control_transfer (device_handle, requesttype, 
-                                         req_code, value, index, buffer, length, timeout);
+                                         req_code, value, index, buffer, (uint16_t)length, timeout);
   if (nr_read != (int)length)
-  {
-    //throw PCLIOException ();
-    return (false);
-  }
+    PCL_THROW_EXCEPTION (pcl::IOException, "control data error");
 
   return (true);
 }
@@ -239,20 +205,17 @@ pcl::DinastGrabber::USBTxControlData (const unsigned char req_code,
   // the direction of the transfer is inferred from the requesttype field of the setup packet.
   unsigned char requesttype = CTRL_TO_DEVICE;
   // the value field for the setup packet
-  unsigned int value = 0x01;
+  uint16_t value = 0x01;
   // the index field for the setup packet
-  unsigned char index = 0x00;
+  uint16_t index = 0x00;
   // timeout (in ms) that this function should wait before giving up due to no response being received
   // for an unlimited timeout, use value 0.
-  unsigned int timeout = 1000;
+  uint16_t timeout = 1000;
   
   int nr_read = libusb_control_transfer (device_handle, requesttype, 
-                                         req_code, value, index, buffer, length, timeout);
+                                         req_code, value, index, buffer, (uint16_t)length, timeout);
   if (nr_read != (int)length)
-  {
-    //throw PCLIOException ();
-    return (false);
-  }
+    PCL_THROW_EXCEPTION (pcl::IOException, "USB control data error");
 
   return (true);
 }
@@ -263,8 +226,7 @@ pcl::DinastGrabber::getDeviceVersion ()
   unsigned char data[30];
   if (!USBRxControlData (CMD_GET_VERSION, data, 21))
   {
-    //throw PCLIOException ();
-    return ("");
+    
   }
  
   data[21] = 0; // NULL
@@ -278,16 +240,13 @@ pcl::DinastGrabber::start ()
   unsigned char ctrl_buf[3];
   if (!USBTxControlData (CMD_READ_START, ctrl_buf, 1))
     return;
-	running_ = true;
+      running_ = true;
 }
 
 void
 pcl::DinastGrabber::stop ()
 {
-  //unsigned char ctrl_buf[3];
-//  if (!USBTxControlData (device_handle, CMD_READ_STOP, ctrl_buf, 1))
-//    return;
-	running_=false;
+  running_=false;
 }
 
 int
@@ -343,10 +302,9 @@ pcl::DinastGrabber::readImage (unsigned char *image)
                                     RGB16_LENGTH + SYNC_PACKET, &actual_length, 1000);
     if (res != 0 || actual_length == 0)
     {
-      std::cerr << "USB read error!" << std::endl;
-      //throw PCLIOException ();
+
       memset (&image[0], 0x00, IMAGE_SIZE);
-      return (0);
+      PCL_THROW_EXCEPTION (pcl::IOException, "USB read error!");
     }
 
     // Copy data from the USB port if we actually read anything
@@ -389,6 +347,7 @@ pcl::DinastGrabber::readImage (unsigned char *image)
   return (IMAGE_SIZE);
 }
 
+
 int
 pcl::DinastGrabber::readImage (unsigned char *image1, unsigned char *image2)
 {
@@ -400,10 +359,9 @@ pcl::DinastGrabber::readImage (unsigned char *image1, unsigned char *image2)
                                   RGB16_LENGTH * 2 + SYNC_PACKET, &actual_length, 0);
   if (res != 0 || actual_length == 0)
   {
-    std::cerr << "USB read error!" << std::endl;
-    //throw PCLIOException ();
+
     memset (&image1[0], 0x00, IMAGE_SIZE);
-    return (0);
+    PCL_THROW_EXCEPTION (pcl::IOException, "USB read error!");
   }
 
   for (size_t i = 0; i < actual_length; ++i)

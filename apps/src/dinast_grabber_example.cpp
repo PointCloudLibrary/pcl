@@ -86,8 +86,8 @@ convertImageToCloud (const unsigned char *image, pcl::PointCloud<pcl::PointXYZI>
       float xc = (float)(x - 160);
       float yc = (float)(y - 120);
       double r1 = sqrt (xc * xc + yc * yc);
-      double r2 = r1 * r1;
-      double r3 = r1 * r2;
+      float r2 = r1 * r1;
+      float r3 = r1 * r2;
       double A = -2e-5 * r3 + 0.004 * r2 + 0.1719 * r1 + 350.03;
       double B = -2e-9 * r3 + 3e-7 * r2 - 1e-5 * r1 - 0.01;
 
@@ -133,33 +133,25 @@ convertImageToCloud (const unsigned char *image, pcl::PointCloud<pcl::PointXYZI>
         pixel = A;
 
       float dy = y*0.1;
-      double dist = (log((double)pixel/A)/B-dy)*(7E-07*r3 - 0.0001*r2 + 0.004*r1 + 0.9985)*1.5;
-      double dist_2d = r1;
+      float dist = (log((double)pixel/A)/B-dy)*(7E-07*r3 - 0.0001*r2 + 0.004*r1 + 0.9985)*1.5;
+      float dist_2d = r1;
 
-      static const double dist_max_2d = 1 / 160.0; /// @todo Why not 200?
+      static const float dist_max_2d = 1 / 160.0; /// @todo Why not 200?
       //static const double dist_max_2d = 1 / 200.0;
       static const double FOV = 64.0 * M_PI / 180.0; // diagonal FOV?
   
-      double theta_colati = FOV * r1 * dist_max_2d;
-      double c_theta = cos (theta_colati);
-      double s_theta = sin (theta_colati);
-      double c_ksai = ((double)(x - 160.)) / r1;
-      double s_ksai = ((double)(y - 120.)) / r1;
+      float theta_colati = FOV * r1 * dist_max_2d;
+      float c_theta = cos (theta_colati);
+      float s_theta = sin (theta_colati);
+      float c_ksai = ((double)(x - 160.)) / r1;
+      float s_ksai = ((double)(y - 120.)) / r1;
 
       cloud.points[depth_idx].x = (dist * s_theta * c_ksai) / 500.0 + 0.5; //cartesian x
       cloud.points[depth_idx].y = (dist * s_theta * s_ksai) / 500.0 + 0.5; //cartesian y
       cloud.points[depth_idx].z = (dist * c_theta);                        //cartesian z
       /// @todo This looks weird, can it cause artifacts?
       if (cloud.points[depth_idx].z < 0.01)
-#if 1
         cloud.points[depth_idx].z = 0.01;
-#else
-        cloud.points[depth_idx].x = std::numeric_limits<float>::quiet_NaN ();
-        cloud.points[depth_idx].y = std::numeric_limits<float>::quiet_NaN ();
-        cloud.points[depth_idx].z = std::numeric_limits<float>::quiet_NaN ();
-        cloud.points[depth_idx].intensity = pixel;
-        continue;
-#endif
 
       cloud.points[depth_idx].z /= 500.0;
       cloud.points[depth_idx].intensity = pixel;
@@ -193,10 +185,9 @@ main (int argc, char** argv)
   
   while (true)
   {
-    if (grabber.readImage ( img1, img2) == 0)
-      continue;
+    grabber.readImage ( img1, img2);
 
-     convertImageToCloud (img1, *cloud);
+    convertImageToCloud (img1, *cloud);
     
     
     FPS_CALC ("grabber + visualization");

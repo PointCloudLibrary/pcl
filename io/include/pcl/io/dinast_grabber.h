@@ -39,9 +39,8 @@
 
 #include <pcl/pcl_config.h>
 #include <pcl/point_types.h>
-
-#include <libusb-1.0/libusb.h>
 #include <pcl/io/grabber.h>
+#include <libusb-1.0/libusb.h>
 #include <boost/circular_buffer.hpp>
 #include <string>
 
@@ -164,6 +163,12 @@ namespace pcl
         */
       int
       readImage (unsigned char *image1, unsigned char *image2);
+      
+//       /** \brief Read XYZI Point Cloud
+//        *  \return the XYZ point cloud from the camera
+//        */
+//       pcl::PointCloud<pcl::PointXYZI>
+//       readPointCloud ();
       
       /** \brief Read image data
       * \param[out] the image data in PointCloud format
