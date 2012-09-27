@@ -21,6 +21,7 @@ class CaptureThreadManager {
 
         void setFps(double fps);
         void reportError(Error error, String oniMessage);
+        void reportRecordingFinished();
     }
 
     private static final String TAG = "onirec.CaptureThreadManager";
@@ -40,6 +41,8 @@ class CaptureThreadManager {
     private Bitmap colorBitmap;
     private Bitmap depthBitmap;
 
+    private boolean hasError = false;
+
     {
         colorBitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
         colorBitmap.setHasAlpha(false);
@@ -57,6 +60,16 @@ class CaptureThreadManager {
         System.loadLibrary("onirec");
     }
 
+    private void reportError(final Feedback.Error error, final String oniMessage) {
+        hasError = true;
+        uiHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                feedback.reportError(error, oniMessage);
+            }
+        });
+    }
+
     private final Runnable processFrame = new Runnable() {
         @Override
         public void run() {
@@ -65,12 +78,7 @@ class CaptureThreadManager {
             } catch (final StatusException se) {
                 final String message = "Failed to acquire a frame.";
                 Log.e(TAG, message, se);
-                uiHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        feedback.reportError(Feedback.Error.FailedDuringCapture, se.getMessage());
-                    }
-                });
+                reportError(Feedback.Error.FailedDuringCapture, se.getMessage());
                 return;
             }
 
@@ -188,12 +196,7 @@ class CaptureThreadManager {
                     if (recorder != null) recorder.dispose();
                     final String message = "Failed to start recording.";
                     Log.e(TAG, message, ge);
-                    uiHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            feedback.reportError(Feedback.Error.FailedToStartRecording, ge.getMessage());
-                        }
-                    });
+                    reportError(Feedback.Error.FailedToStartRecording, ge.getMessage());
                 }
             }
         });
@@ -206,6 +209,12 @@ class CaptureThreadManager {
                 if (recorder != null) {
                     recorder.dispose();
                     recorder = null;
+                    uiHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            feedback.reportRecordingFinished();
+                        }
+                    });
                 }
             }
         });
@@ -221,12 +230,7 @@ class CaptureThreadManager {
         } catch (final GeneralException ge) {
             final String message = "Failed to initialize OpenNI.";
             Log.e(TAG, message, ge);
-            uiHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    feedback.reportError(Feedback.Error.FailedToStartCapture, ge.getMessage());
-                }
-            });
+            reportError(Feedback.Error.FailedToStartCapture, ge.getMessage());
             return;
         }
 
@@ -244,12 +248,7 @@ class CaptureThreadManager {
         } catch (final GeneralException ge) {
             final String message = "Failed to initialize OpenNI.";
             Log.e(TAG, message, ge);
-            uiHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    feedback.reportError(Feedback.Error.FailedToStartCapture, ge.getMessage());
-                }
-            });
+            reportError(Feedback.Error.FailedToStartCapture, ge.getMessage());
             return;
         }
 
@@ -269,5 +268,9 @@ class CaptureThreadManager {
         if (color != null) color.dispose();
         if (player != null) player.dispose();
         if (context != null) context.dispose();
+    }
+
+    public boolean hasError() {
+        return hasError;
     }
 }

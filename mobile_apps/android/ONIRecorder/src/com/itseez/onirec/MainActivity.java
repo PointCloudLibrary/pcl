@@ -107,6 +107,7 @@ public class MainActivity extends Activity {
         textFps = (TextView) findViewById(R.id.text_fps);
         surfaceColor = (SurfaceView) findViewById(R.id.surface_color);
         surfaceDepth = (SurfaceView) findViewById(R.id.surface_depth);
+        updateLastRecording(null);
 
         surfaceColor.getHolder().addCallback(surface_callbacks);
         surfaceDepth.getHolder().addCallback(surface_callbacks);
@@ -131,7 +132,7 @@ public class MainActivity extends Activity {
         if (view == buttonRecord)
             state.recordClicked();
         else if (view == buttonReplay)
-            ;
+            state.replayClicked();
     }
 
     private void setState(State newState) {
@@ -141,7 +142,8 @@ public class MainActivity extends Activity {
         state.enter();
     }
 
-    private void updateButtonReplayState() {
+    private void updateLastRecording(File lastRecording) {
+        this.lastRecording = lastRecording;
         String format = getResources().getString(R.string.replay_start);
 
         if (lastRecording != null)
@@ -182,6 +184,7 @@ public class MainActivity extends Activity {
         public void surfaceStateChange() { throw new IllegalStateException(); }
         public void usbPermissionChange(UsbDevice device, boolean granted) { throw new IllegalStateException(); }
         public void recordClicked() { throw new IllegalStateException(); }
+        public void replayClicked() { throw new IllegalStateException(); }
     }
 
     private class StateStopped extends State {
@@ -206,7 +209,6 @@ public class MainActivity extends Activity {
         @Override
         public void enter() {
             textStatus.setText(status);
-            updateButtonReplayState();
         }
 
         @Override
@@ -217,6 +219,12 @@ public class MainActivity extends Activity {
         @Override public void surfaceStateChange() { }
 
         @Override public void usbPermissionChange(UsbDevice device, boolean granted) { }
+
+        @Override
+        public void replayClicked() {
+            awaitingPermission.clear();
+            setState(new StateWaiting(new StateCapturing()));
+        }
     }
 
     private class StateWaiting extends State {
@@ -283,9 +291,11 @@ public class MainActivity extends Activity {
     private class StateCapturing extends State {
         CaptureThreadManager manager;
         boolean isRecording = false;
+        File currentRecording;
 
         private void setRecordingState(boolean enabled) {
             isRecording = enabled;
+            buttonRecord.setEnabled(true);
             buttonRecord.setText(enabled ? R.string.record_stop : R.string.record_start);
         }
 
@@ -311,6 +321,7 @@ public class MainActivity extends Activity {
                                 getResources().getString(R.string.error_failed_to_start_capture), oniMessage));
                         return;
                     case FailedDuringCapture:
+                        if (isRecording) updateLastRecording(null);
                         setState(new StateIdle(R.string.status_capture_error,
                                 getResources().getString(R.string.error_failed_during_capture), oniMessage));
                         return;
@@ -321,9 +332,15 @@ public class MainActivity extends Activity {
                                         getResources().getString(R.string.error_failed_to_start_recording),
                                         oniMessage),
                                 Toast.LENGTH_LONG).show();
-                        lastRecording = null;
-                        updateButtonReplayState();
+                        updateLastRecording(null);
                     }
+                }
+
+                @Override
+                public void reportRecordingFinished() {
+                    setRecordingState(false);
+                    textStatus.setText(R.string.status_previewing);
+                    updateLastRecording(currentRecording);
                 }
             });
         }
@@ -331,6 +348,9 @@ public class MainActivity extends Activity {
         @Override
         public void leave() {
             manager.stop();
+            if (isRecording)
+                updateLastRecording(manager.hasError() ? null : currentRecording);
+
             textFps.setVisibility(View.INVISIBLE);
             buttonRecord.setVisibility(View.INVISIBLE);
         }
@@ -358,21 +378,19 @@ public class MainActivity extends Activity {
         public void recordClicked() {
             if (isRecording) {
                 manager.stopRecording();
-                setRecordingState(false);
-                textStatus.setText(R.string.status_previewing);
+                buttonRecord.setEnabled(false);
             } else {
                 int file_no = 0;
-                File capture_path;
 
                 do
-                    capture_path = new File(Environment.getExternalStorageDirectory(), "test" + file_no++ + ".oni");
-                while (capture_path.exists());
+                    currentRecording = new File(Environment.getExternalStorageDirectory(), "recording" + file_no++ + ".oni");
+                while (currentRecording.exists());
 
-                manager.startRecording(capture_path);
+                manager.startRecording(currentRecording);
 
                 setRecordingState(true);
                 textStatus.setText(String.format(getResources().getString(R.string.status_recording_to),
-                        capture_path.getAbsolutePath()));
+                        currentRecording.getAbsolutePath()));
             }
         }
     }
