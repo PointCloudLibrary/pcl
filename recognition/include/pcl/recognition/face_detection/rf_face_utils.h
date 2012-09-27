@@ -173,7 +173,7 @@ namespace pcl
           if (el_f1 == 0 || el_f2 == 0 || (el_f1 <= static_cast<int> (f * feature.wsizex1_ * feature.wsizey1_))
               || (el_f2 <= static_cast<int> (f * feature.wsizex2_ * feature.wsizey2_)))
           {
-            result = static_cast<float> (round (rand () / static_cast<float> (RAND_MAX)));
+            result = static_cast<float> (pcl_round (rand () / static_cast<float> (RAND_MAX)));
             flag = 1;
           } else
           {
