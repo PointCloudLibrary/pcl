@@ -191,7 +191,7 @@ namespace pcl
         * \param[out] output Output point cloud passed by reference
         */
       void 
-      applyMorphologicalOperation  (PointCloud<PointT> &output);
+      applyMorphologicalOperation (pcl::PointCloud<PointT> &output);
       
       /**
         * \param[in] structuring_element The structuring element to be used for the morphological operation
