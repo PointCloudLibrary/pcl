@@ -201,11 +201,12 @@ pcl::SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::comput
 
   final_transformation_ = guess;
   int i_iter = 0;
-  if (!guess.isApprox(Eigen::Matrix4f::Identity (), 0.01f)) 
-  { //If guess is not the Identity matrix we check it.
-	  transformPointCloud (*input_, input_transformed, final_transformation_);
-	  lowest_error = computeErrorMetric (input_transformed, static_cast<float> (corr_dist_threshold_));
-	  i_iter = 1;
+  if (!guess.isApprox (Eigen::Matrix4f::Identity (), 0.01f)) 
+  {
+    //If guess is not the Identity matrix we check it.
+    transformPointCloud (*input_, input_transformed, final_transformation_);
+    lowest_error = computeErrorMetric (input_transformed, static_cast<float> (corr_dist_threshold_));
+    i_iter = 1;
   }
 
   for (; i_iter < max_iterations_; ++i_iter)
