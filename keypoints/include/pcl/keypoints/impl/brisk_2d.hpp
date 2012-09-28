@@ -72,13 +72,8 @@ pcl::BriskKeypoint2D<PointInT, PointOutT, IntensityT>::detectKeypoints (PointClo
   // destination for intensity data; will be forwarded to BRISK
   std::vector<unsigned char> image_data (width*height);
 
-  for (size_t row_index = 0; row_index < height; ++row_index)
-  {
-    for (size_t col_index = 0; col_index < width; ++col_index)
-    {
-      image_data[row_index*width + col_index] = static_cast<unsigned char> (intensity_ ((*input_) (col_index, row_index)));
-    }
-  }
+  for (size_t i = 0; i < image_data.size (); ++i)
+    image_data[i] = static_cast<unsigned char> (intensity_ ((*input_)[i]));
 
   pcl::keypoints::brisk::ScaleSpace brisk_scale_space (octaves_);
   brisk_scale_space.constructPyramid (image_data, width, height);

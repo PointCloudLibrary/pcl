@@ -460,13 +460,8 @@ pcl::BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::compute (
   // destination for intensity data; will be forwarded to BRISK
   std::vector<unsigned char> image_data (width*height);
 
-  for (size_t row_index = 0; row_index < height; ++row_index)
-  {
-    for (size_t col_index = 0; col_index < width; ++col_index)
-    {
-      image_data[row_index*width + col_index] = static_cast<unsigned char> (intensity_ ((*input_cloud_) (col_index, row_index)));
-    }
-  }
+  for (size_t i = 0; i < image_data.size (); ++i)
+    image_data[i] = static_cast<unsigned char> (intensity_ ((*input_cloud_)[i]));
 
   // Remove keypoints very close to the border
   size_t ksize = keypoints_->points.size ();

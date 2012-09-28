@@ -71,9 +71,8 @@ pcl::AgastKeypoint2D<PointInT, PointOutT>::detectKeypoints (PointCloudOut &outpu
   // destination for intensity data; will be forwarded to AGAST
   std::vector<unsigned char> image_data (width*height);
 
-  for (size_t row_index = 0; row_index < height; ++row_index)
-    for (size_t col_index = 0; col_index < width; ++col_index)
-      image_data[row_index*width + col_index] = static_cast<unsigned char> (intensity_ ((*input_) (col_index, row_index)));
+  for (size_t i = 0; i < image_data.size (); ++i)
+    image_data[i] = static_cast<unsigned char> (intensity_ ((*input_)[i]));
 
   if (!detector_)
     detector_.reset (new pcl::keypoints::agast::AgastDetector7_12s (width, height, threshold_, bmax_));
