@@ -114,12 +114,11 @@ namespace pcl
           cloud_out.width = max_col - min_col + 1;
           cloud_out.height = max_row - min_row + 1;
           cloud_out.points.resize (cloud_out.width * cloud_out.height);
-          for (size_t u = 0; u < cloud_out.width; u++)
+          for (unsigned int u = 0; u < cloud_out.width; u++)
           {
-            for (size_t v = 0; v < cloud_out.height; v++)
+            for (unsigned int v = 0; v < cloud_out.height; v++)
             {
-              //std::cout << u << " ----- " << v << std::endl;
-              cloud_out.at (u, v) = cloud_in.at (min_col + int (u), min_row + int (v));
+              cloud_out.at (u, v) = cloud_in.at (min_col + u, min_row + v);
             }
           }
 

@@ -95,7 +95,7 @@ namespace pcl
 
         void createRandomFeatures(const size_t num_of_features, std::vector<FT> & features)
         {
-          srand (time (NULL));
+          srand (static_cast<unsigned int>(time (NULL)));
           int min_s = 20;
           float range_d = 0.05f;
           float incr_d = 0.01f;
@@ -166,18 +166,18 @@ namespace pcl
           int el_f2 = te.iimages_[feature.used_ii_]->getFiniteElementsCount (te.col_ + feature.col2_, te.row_ + feature.row2_, feature.wsizex2_,
               feature.wsizey2_);
 
-          float sum_f1 = te.iimages_[feature.used_ii_]->getFirstOrderSum (te.col_ + feature.col1_, te.row_ + feature.row1_, feature.wsizex1_, feature.wsizey1_);
-          float sum_f2 = te.iimages_[feature.used_ii_]->getFirstOrderSum (te.col_ + feature.col2_, te.row_ + feature.row2_, feature.wsizex2_, feature.wsizey2_);
+          float sum_f1 = static_cast<float>(te.iimages_[feature.used_ii_]->getFirstOrderSum (te.col_ + feature.col1_, te.row_ + feature.row1_, feature.wsizex1_, feature.wsizey1_));
+          float sum_f2 = static_cast<float>(te.iimages_[feature.used_ii_]->getFirstOrderSum (te.col_ + feature.col2_, te.row_ + feature.row2_, feature.wsizex2_, feature.wsizey2_));
 
           float f = min_valid_small_patch_depth_;
-          if (el_f1 == 0 || el_f2 == 0 || (el_f1 <= static_cast<int> (f * feature.wsizex1_ * feature.wsizey1_))
-              || (el_f2 <= static_cast<int> (f * feature.wsizex2_ * feature.wsizey2_)))
+          if (el_f1 == 0 || el_f2 == 0 || (el_f1 <= static_cast<int> (f * static_cast<float>(feature.wsizex1_ * feature.wsizey1_)))
+              || (el_f2 <= static_cast<int> (f * static_cast<float>(feature.wsizex2_ * feature.wsizey2_))))
           {
-            result = static_cast<float> (pcl_round (rand () / static_cast<float> (RAND_MAX)));
+            result = static_cast<float> (pcl_round (static_cast<float>(rand ()) / static_cast<float> (RAND_MAX)));
             flag = 1;
           } else
           {
-            result = static_cast<float> ((sum_f1 / el_f1 - sum_f2 / el_f2) > feature.threshold_);
+            result = static_cast<float> ((sum_f1 / static_cast<float>(el_f1) - sum_f2 / static_cast<float>(el_f2)) > feature.threshold_);
             flag = 0;
           }
 
@@ -355,12 +355,13 @@ namespace pcl
           for (size_t branch_index = 0; branch_index < (num_of_branches + 1); ++branch_index)
           {
             float pf = sums[branch_index] / static_cast<float> (branch_element_count[branch_index]);
-            float pnf = (branch_element_count[branch_index] - sums[branch_index] + 1) / static_cast<float> (branch_element_count[branch_index]);
-            hp[branch_index] -= (pf * log (pf) + pnf * log (pnf));
+            float pnf = (static_cast<LabelDataType>(branch_element_count[branch_index]) - sums[branch_index] + 1.f)
+                        / static_cast<LabelDataType> (branch_element_count[branch_index]);
+            hp[branch_index] -= static_cast<float>(pf * log (pf) + pnf * log (pnf));
           }
 
           //use mean of the examples as purity
-          float purity = static_cast<float> (sums[num_of_branches]) / branch_element_count[num_of_branches];
+          float purity = sums[num_of_branches] / static_cast<LabelDataType>(branch_element_count[num_of_branches]);
           float tp = 0.8f;
 
           if (purity >= tp)
@@ -372,7 +373,6 @@ namespace pcl
             positive_examples.resize (num_of_branches + 1);
 
             size_t pos = 0;
-
             for (size_t example_index = 0; example_index < num_of_examples; ++example_index)
             {
               unsigned char branch_index;
@@ -405,9 +405,9 @@ namespace pcl
 
             for (size_t branch_index = 0; branch_index < (num_of_branches + 1); ++branch_index)
             {
-              unsigned int n_points_offset = computeMeanAndCovarianceOffset (data_set, positive_examples[branch_index], offset_covariances[branch_index],
+              computeMeanAndCovarianceOffset (data_set, positive_examples[branch_index], offset_covariances[branch_index],
                   offset_centroids[branch_index]);
-              unsigned int n_points_angles = computeMeanAndCovarianceAngles (data_set, positive_examples[branch_index], angle_covariances[branch_index],
+              computeMeanAndCovarianceAngles (data_set, positive_examples[branch_index], angle_covariances[branch_index],
                   angle_centroids[branch_index]);
             }
 
@@ -415,8 +415,10 @@ namespace pcl
             std::vector<float> hr (num_of_branches + 1, 0.f);
             for (size_t branch_index = 0; branch_index < (num_of_branches + 1); ++branch_index)
             {
-              hr[branch_index] = 0.5f * log (std::pow (2 * M_PI, 3) * offset_covariances[branch_index].determinant ())
-                  + 0.5f * log (std::pow (2 * M_PI, 3) * angle_covariances[branch_index].determinant ());
+              hr[branch_index] = static_cast<float>(0.5f * log (std::pow (2 * M_PI, 3)
+                                                    * offset_covariances[branch_index].determinant ())
+                                                    + 0.5f * log (std::pow (2 * M_PI, 3)
+                                                    * angle_covariances[branch_index].determinant ()));
             }
 
             for (size_t branch_index = 0; branch_index < (num_of_branches + 1); ++branch_index)
@@ -445,7 +447,6 @@ namespace pcl
             std::vector<unsigned char> & branch_indices) const
         {
           const size_t num_of_results = results.size ();
-          const size_t num_of_branches = getNumOfBranches ();
 
           branch_indices.resize (num_of_results);
           for (size_t result_index = 0; result_index < num_of_results; ++result_index)
@@ -487,8 +488,8 @@ namespace pcl
             sqr_sum += label * label;
           }
 
-          sum /= num_of_examples;
-          sqr_sum /= num_of_examples;
+          sum /= static_cast<float>(num_of_examples);
+          sqr_sum /= static_cast<float>(num_of_examples);
 
           const float variance = sqr_sum - sum * sum;
 
@@ -516,7 +517,7 @@ namespace pcl
          * \param[in] node The node for which code is generated.
          * \param[out] stream The destination for the generated code.
          */
-        void generateCodeForBranchIndexComputation(NodeType & node, std::ostream & stream) const
+        void generateCodeForBranchIndexComputation(NodeType & /*node*/, std::ostream & stream) const
         {
           stream << "ERROR: RegressionVarianceStatsEstimator does not implement generateCodeForBranchIndex(...)";
         }
@@ -525,7 +526,7 @@ namespace pcl
          * \param[in] node The node for which code is generated.
          * \param[out] stream The destination for the generated code.
          */
-        void generateCodeForOutput(NodeType & node, std::ostream & stream) const
+        void generateCodeForOutput(NodeType & /*node*/, std::ostream & stream) const
         {
           stream << "ERROR: RegressionVarianceStatsEstimator does not implement generateCodeForBranchIndex(...)";
         }

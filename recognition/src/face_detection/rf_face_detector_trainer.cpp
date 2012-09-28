@@ -83,7 +83,7 @@ void pcl::RFFaceDetectorTrainer::faceVotesClustering()
   float large_radius = HEAD_DIAMETER_SQ / (larger_radius_ratio_ * larger_radius_ratio_);
 
   std::vector < Eigen::Vector3f > clusters_mean;
-  std::vector < std::vector<size_t> > votes_indices;
+  std::vector < std::vector<int> > votes_indices;
 
   for (size_t i = 0; i < head_center_votes_.size (); i++)
   {
@@ -104,8 +104,8 @@ void pcl::RFFaceDetectorTrainer::faceVotesClustering()
     //no cluster found, create new cluster
     if (!found)
     {
-      std::vector < size_t > ind;
-      ind.push_back (i);
+      std::vector < int > ind;
+      ind.push_back (static_cast<int>(i));
       votes_indices.push_back (ind);
 
       std::vector < Eigen::Vector3f > votes_in_cluster;
@@ -123,14 +123,14 @@ void pcl::RFFaceDetectorTrainer::faceVotesClustering()
     {
       if ((votes_indices[j].size () > biggest_num) && (valid_in_cluster[j]))
       {
-        idx = j;
+        idx = static_cast<int>(j);
         biggest_num = static_cast<int> (votes_indices[j].size ());
       }
     }
 
-    clusters_mean[idx] = (clusters_mean[idx] * (static_cast<int> (votes_indices[idx].size ())) + center_vote)
+    clusters_mean[idx] = (clusters_mean[idx] * (static_cast<float> (votes_indices[idx].size ())) + center_vote)
         / (static_cast<float> (votes_indices[idx].size ()) + 1.f);
-    votes_indices[idx].push_back (i);
+    votes_indices[idx].push_back (static_cast<int>(i));
     head_center_original_votes_clustered_[idx].push_back (center_vote);
   }
 
@@ -147,7 +147,7 @@ void pcl::RFFaceDetectorTrainer::faceVotesClustering()
     if (votes_indices[i].size () < min_votes_size_)
       continue;
 
-    std::vector < size_t > new_cluster;
+    std::vector < int > new_cluster;
 
     for (int it = 0; it < msi; it++)
     {
@@ -376,7 +376,9 @@ void pcl::RFFaceDetectorTrainer::detectFaces()
               if ((leaves[l].covariance_trans_.trace () + leaves[l].covariance_rot_.trace ()) > trans_max_variance_)
                 continue;
 
-              Eigen::Vector3f head_center = Eigen::Vector3f (leaves[l].trans_mean_[0], leaves[l].trans_mean_[1], leaves[l].trans_mean_[2]);
+              Eigen::Vector3f head_center = Eigen::Vector3f (static_cast<float>(leaves[l].trans_mean_[0]),
+                                                             static_cast<float>(leaves[l].trans_mean_[1]),
+                                                             static_cast<float>(leaves[l].trans_mean_[2]));
               head_center *= 0.001f;
 
               pcl::PointXYZ patch_center_point;
@@ -401,8 +403,10 @@ void pcl::RFFaceDetectorTrainer::detectFaces()
               head_center_votes_.push_back (head_center);
               float mult_fact = 0.0174532925f;
               angle_votes_.push_back (
-                  Eigen::Vector3f (leaves[l].rot_mean_[0] * mult_fact, leaves[l].rot_mean_[1] * mult_fact, leaves[l].rot_mean_[2] * mult_fact));
-              uncertainties_.push_back (leaves[l].covariance_trans_.trace () + leaves[l].covariance_rot_.trace ());
+                  Eigen::Vector3f (static_cast<float>(leaves[l].rot_mean_[0]) * mult_fact,
+                                   static_cast<float>(leaves[l].rot_mean_[1]) * mult_fact,
+                                   static_cast<float>(leaves[l].rot_mean_[2]) * mult_fact));
+              uncertainties_.push_back (static_cast<float>(leaves[l].covariance_trans_.trace () + leaves[l].covariance_rot_.trace ()));
             }
           }
         }
@@ -414,7 +418,7 @@ void pcl::RFFaceDetectorTrainer::detectFaces()
       face_heat_map_.reset (new pcl::PointCloud<pcl::PointXYZI>);
       face_heat_map_->resize (cloud->points.size ());
       face_heat_map_->height = 1;
-      face_heat_map_->width = cloud->points.size ();
+      face_heat_map_->width = static_cast<unsigned int>(cloud->points.size ());
       face_heat_map_->is_dense = false;
 
       for (size_t i = 0; i < cloud->points.size (); i++)

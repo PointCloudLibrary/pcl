@@ -5,10 +5,12 @@
 #include <pcl/io/pcd_io.h>
 
 //Uncomment the following lines and set PCL_FACE_DETECTION_VIS_TRAINING_FDDP to 1
-//to visualize the training process...
-
+//to visualize the training process and change the CMakeLists.txt accordingly.
 //#include <pcl/visualization/pcl_visualizer.h>
-//#define PCL_FACE_DETECTION_VIS_TRAINING_FDDP 0
+//#define PCL_FACE_DETECTION_VIS_TRAINING_FDDP 1
+//TODO: This is not very good as it forces recognition to depend on pcl_visualization
+//much better solution would be pass a visualization function from the user code to make it transparent
+//to the training process
 
 namespace pcl
 {
@@ -20,14 +22,14 @@ namespace pcl
       std::cout << "\t\t";
       for (int j = 0; j < num_pitch; j++)
       {
-        std::cout << pcl_round (min_pitch + res_pitch * j) << "\t";
+        std::cout << pcl_round (static_cast<float>(min_pitch) + res_pitch * static_cast<float>(j)) << "\t";
       }
 
       std::cout << std::endl;
 
       for (int i = 0; i < num_yaw; i++)
       {
-        std::cout << pcl_round (min_yaw + res_yaw * i) << " => \t\t";
+        std::cout << pcl_round (static_cast<float>(min_yaw) + res_yaw * static_cast<float>(i)) << " => \t\t";
         for (int j = 0; j < num_pitch; j++)
         {
           //std::cout <<  std::setprecision(3) << yaw_pitch_bins[i][j] / static_cast<float>(max_elems) << "\t";
@@ -59,8 +61,8 @@ void pcl::face_detection::FaceDetectorDataProvider<FeatureType, DataSet, LabelTy
   int min_yaw = -75;
   int min_pitch = -60;
 
-  size_t num_yaw = (std::abs (min_yaw) * 2) / res_yaw + 1;
-  size_t num_pitch = (std::abs (min_pitch) * 2) / res_pitch + 1;
+  int num_yaw = static_cast<int>((std::abs (min_yaw) * 2) / static_cast<int>(res_yaw + 1.f));
+  int num_pitch = static_cast<int>((std::abs (min_pitch) * 2) / static_cast<int>(res_pitch + 1.f));
 
   yaw_pitch_bins.resize (num_yaw);
   image_files_per_bin.resize (num_yaw);
@@ -94,9 +96,9 @@ void pcl::face_detection::FaceDetectorDataProvider<FeatureType, DataSet, LabelTy
     if (result)
     {
       Eigen::Vector3f ea = pose_mat.block<3, 3> (0, 0).eulerAngles (0, 1, 2);
-      ea *= 57.2957795; //transform it to degrees to do the binning
-      int y = pcl_round ((ea[0] + std::abs (min_yaw)) / static_cast<float> (res_yaw));
-      int p = pcl_round ((ea[1] + std::abs (min_pitch)) / static_cast<float> (res_pitch));
+      ea *= 57.2957795f; //transform it to degrees to do the binning
+      int y = static_cast<int>(pcl_round ((ea[0] + static_cast<float>(std::abs (min_yaw))) / res_yaw));
+      int p = static_cast<int>(pcl_round ((ea[1] + static_cast<float>(std::abs (min_pitch))) / res_pitch));
 
       if (y < 0)
         y = 0;
@@ -170,7 +172,7 @@ template<class FeatureType, class DataSet, class LabelType, class ExampleIndex, 
 void pcl::face_detection::FaceDetectorDataProvider<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::getDatasetAndLabels(DataSet & data_set,
     std::vector<LabelType> & label_data, std::vector<ExampleIndex> & examples)
 {
-  srand (time (NULL));
+  srand (static_cast<unsigned int>(time (NULL)));
   std::random_shuffle (image_files_.begin (), image_files_.end ());
   std::vector < std::string > files;
   files = image_files_;
@@ -386,7 +388,7 @@ void pcl::face_detection::FaceDetectorDataProvider<FeatureType, DataSet, LabelTy
 
           //reject patches with more than percent invalid values
           float percent = 0.5f;
-          if (integral_image_depth->getFiniteElementsCount (col, row, w_size_, w_size_) < (percent * w_size_ * w_size_))
+          if (static_cast<float>(integral_image_depth->getFiniteElementsCount (col, row, w_size_, w_size_)) < (percent * static_cast<float>(w_size_ * w_size_)))
             continue;
 
           pixelpair pp = std::make_pair (col, row);
@@ -431,7 +433,7 @@ void pcl::face_detection::FaceDetectorDataProvider<FeatureType, DataSet, LabelTy
         te.trans_ = center_point.getVector3fMap () - patch_center_point.getVector3fMap ();
         te.trans_ *= 1000.f; //transform it to milimiters
         te.rot_ = ea;
-        te.rot_ *= 57.2957795; //transform it to degrees
+        te.rot_ *= 57.2957795f; //transform it to degrees
 
         labels.push_back (1);
         pos_extracted++;
@@ -453,7 +455,8 @@ void pcl::face_detection::FaceDetectorDataProvider<FeatureType, DataSet, LabelTy
         pcl::visualization::PointCloudColorHandlerGenericField < pcl::PointXYZI > handler(cloud_intensity2, "intensity");
         vis.addPointCloud(cloud_intensity2, handler, "cloud");
         vis.spinOnce();
-        sleep(0.5);
+        vis.spin();
+        sleep(1);
 #endif
 
       }
@@ -501,7 +504,8 @@ void pcl::face_detection::FaceDetectorDataProvider<FeatureType, DataSet, LabelTy
         pcl::visualization::PointCloudColorHandlerGenericField < pcl::PointXYZI > handler(cloud_intensity2, "intensity");
         vis.addPointCloud(cloud_intensity2, handler, "cloud");
         vis.spinOnce();
-        sleep(0.5);
+        vis.spin();
+        sleep(1);
 #endif
       }
 
