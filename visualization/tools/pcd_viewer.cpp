@@ -546,9 +546,17 @@ main (int argc, char** argv)
 
   if (!mview)
   {
-    std::string str (argv[p_file_indices.at (0)]);
-    for (size_t i = 01; i < p_file_indices.size (); ++i)
+    std::string str;
+    if (!p_file_indices.empty ())
+      str = std::string (argv[p_file_indices.at (0)]);
+    else if (!vtk_file_indices.empty ())
+      str = std::string (argv[vtk_file_indices.at (0)]);
+
+    for (size_t i = 1; i < p_file_indices.size (); ++i)
       str += ", " + std::string (argv[p_file_indices.at (i)]);
+
+    for (size_t i = 1; i < vtk_file_indices.size (); ++i)
+      str += ", " + std::string (argv[vtk_file_indices.at (i)]);
 
     p->addText (str, 5, 5, 10, 1.0, 1.0, 1.0, "text_allnames");
   }
