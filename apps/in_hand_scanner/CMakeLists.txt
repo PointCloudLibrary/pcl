@@ -13,6 +13,7 @@ set(INCS include/pcl/apps/${SUBSYS_NAME}/common_types.h
          include/pcl/apps/${SUBSYS_NAME}/in_hand_scanner.h
          include/pcl/apps/${SUBSYS_NAME}/input_data_processing.h
          include/pcl/apps/${SUBSYS_NAME}/integration.h
+         include/pcl/apps/${SUBSYS_NAME}/visibility_confidence.h
   )
 
 set(IMPL_INCS include/pcl/apps/${SUBSYS_NAME}/impl/common_types.hpp
@@ -25,6 +26,7 @@ set(SRCS src/main.cpp
          src/in_hand_scanner.cpp
          src/input_data_processing.cpp
          src/integration.cpp
+         src/visibility_confidence.cpp
   )
 
 ################################################################################

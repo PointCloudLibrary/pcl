@@ -38,89 +38,50 @@
  *
  */
 
-#ifndef PCL_IN_HAND_SCANNER_CUSTOM_INTERACTOR_STYLE_H
-#define PCL_IN_HAND_SCANNER_CUSTOM_INTERACTOR_STYLE_H
+#ifndef PCL_IN_HAND_SCANNER_VISIBILITY_CONFIDENCE_H
+#define PCL_IN_HAND_SCANNER_VISIBILITY_CONFIDENCE_H
 
-#include <pcl/visualization/interactor_style.h>
 #include <pcl/apps/in_hand_scanner/eigen.h>
 
-namespace pcl
-{
-  namespace ihs
-  {
+//namespace pcl
+//{
+//  namespace ihs
+//  {
 
-    class CustomInteractorStyle : public pcl::visualization::PCLVisualizerInteractorStyle
-    {
+//    class VisibilityConfidence
+//    {
+//      public:
 
-      public:
+//        class HalfDomeVertexes
+//        {
+//          public:
 
-        typedef pcl::visualization::KeyboardEvent KeyboardEvent;
-        typedef pcl::visualization::MouseEvent    MouseEvent;
+//            static const int                    n = 31;
+//            typedef Eigen::Matrix <float, 4, n> Data;
 
-        typedef Eigen::Quaterniond   Quaternion;
-        typedef Eigen::AngleAxisd    AngleAxis;
-        typedef Eigen::Vector3d      Vec3;
+//          public:
 
-      public:
+//            HalfDomeVertexes ();
 
-        static CustomInteractorStyle* New ();
+//            const Data&
+//            data () const;
 
-        CustomInteractorStyle ();
+//          private:
 
-        vtkTypeMacro (CustomInteractorStyle, vtkInteractorStyleTrackballCamera)
+//            Data data_;
+//        };
 
-        virtual void
-        OnChar ();
+//      public:
 
-        virtual void
-        OnKeyDown ();
+//        VisibilityConfidence ();
 
-        virtual void
-        OnKeyUp ();
+//      private:
 
-        void
-        resetCamera ();
+//        static const HalfDomeVertexes half_dome_vertexes_;
 
-        void
-        transformCamera (const Quaternion& rotation, const Vec3& translation);
+//    };
 
-        void
-        setPivot (const Vec3& pivot);
+//  } // End namespace ihs
+//} // End namespace pcl
 
-        const Vec3&
-        getPivot () const;
-
-        virtual void
-        Rotate ();
-
-        virtual void
-        Spin ();
-
-        virtual void
-        Pan ();
-
-        virtual void
-        Dolly ();
-
-        virtual void
-        OnMouseWheelForward ();
-
-        virtual void
-        OnMouseWheelBackward ();
-
-      protected:
-
-        void
-        updateCamera ();
-
-      protected:
-
-        Quaternion  R_;
-        Vec3        t_;
-        Vec3        pivot_;
-    };
-
-  } // End namespace ihs
-} // End namespace pcl
-
-#endif // PCL_IN_HAND_SCANNER_CUSTOM_INTERACTOR_STYLE_H
+#endif // PCL_IN_HAND_SCANNER_VISIBILITY_CONFIDENCE_H

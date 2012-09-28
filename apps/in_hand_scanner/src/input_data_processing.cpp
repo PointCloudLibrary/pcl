@@ -49,12 +49,12 @@
 pcl::ihs::InputDataProcessing::InputDataProcessing ()
   : normal_estimation_ (new NormalEstimation ()),
 
-    x_min_             (-.15f),
-    x_max_             ( .15f),
-    y_min_             (-.15f),
-    y_max_             ( .15f),
-    z_min_             ( .48f),
-    z_max_             ( .70f)
+    x_min_             (-15.f),
+    x_max_             ( 15.f),
+    y_min_             (-15.f),
+    y_max_             ( 15.f),
+    z_min_             ( 48.f),
+    z_max_             ( 70.f)
 {
   // Normal estimation
   normal_estimation_->setNormalEstimationMethod (NormalEstimation::AVERAGE_3D_GRADIENT);
@@ -90,12 +90,15 @@ pcl::ihs::InputDataProcessing::process (const CloudInputConstPtr& cloud) const
 
   for (; it_in!=cloud->end (); ++it_in, ++it_n, ++it_out)
   {
+    // m -> cm
+    const Eigen::Vector3f xyz = 100.f * it_in->getVector3fMap ();
+
     if (pcl::isFinite (*it_in) && pcl::isFinite (*it_n) &&
-        it_in->x >= x_min_     && it_in->x <= x_max_    &&
-        it_in->y >= y_min_     && it_in->y <= y_max_    &&
-        it_in->z >= z_min_     && it_in->z <= z_max_)
+        xyz.x () >= x_min_     && xyz.x () <= x_max_    &&
+        xyz.y () >= y_min_     && xyz.y () <= y_max_    &&
+        xyz.z () >= z_min_     && xyz.z () <= z_max_)
     {
-      it_out->getVector4fMap ()       = it_in->getVector4fMap ();
+      it_out->getVector3fMap ()       = xyz;
       it_out->rgba                    = it_in->rgba;
       it_out->getNormalVector4fMap () = it_n->getNormalVector4fMap ();
     }
@@ -148,7 +151,8 @@ pcl::ihs::InputDataProcessing::calculateNormals (const CloudInputConstPtr& cloud
 
   for (; it_in!=cloud->end (); ++it_in, ++it_n, ++it_out)
   {
-    it_out->getVector4fMap ()       = it_in->getVector4fMap ();
+    // m -> cm
+    it_out->getVector4fMap ()       = 100.f * it_in->getVector4fMap ();
     it_out->rgba                    = it_in->rgba;
     it_out->getNormalVector4fMap () = it_n->getNormalVector4fMap ();
   }

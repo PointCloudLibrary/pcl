@@ -60,8 +60,9 @@ namespace pcl
 
   namespace ihs
   {
-    class InputDataProcessing;
+    class CustomInteractorStyle;
     class ICP;
+    class InputDataProcessing;
     class Integration;
   } // End namespace ihs
 
@@ -90,10 +91,11 @@ namespace pcl
         /** \brief Mode in which the scanner is currently running */
         typedef enum RunningMode
         {
-          RM_UNPROCESSED         = 0, /**< Shows the unprocessed input data */
-          RM_PROCESSED           = 1, /**< Shows the processed input data */
-          RM_REGISTRATION_CONT   = 2, /**< Registers new data to the first acquired data continuously */
-          RM_REGISTRATION_SINGLE = 3  /**< Registers new data once and returns to showing the processed data */
+          RM_SHOW_MODEL          = 0, /**< Show the model shape (if one is available) */
+          RM_UNPROCESSED         = 1, /**< Shows the unprocessed input data */
+          RM_PROCESSED           = 2, /**< Shows the processed input data */
+          RM_REGISTRATION_CONT   = 3, /**< Registers new data to the first acquired data continuously */
+          RM_REGISTRATION_SINGLE = 4  /**< Registers new data once and returns to showing the processed data */
         } RunningMode;
 
       private:
@@ -133,6 +135,10 @@ namespace pcl
         typedef pcl::visualization::PCLVisualizer       PCLVisualizer;
         typedef boost::shared_ptr <PCLVisualizer>       PCLVisualizerPtr;
         typedef boost::shared_ptr <const PCLVisualizer> PCLVisualizerConstPtr;
+
+        typedef pcl::ihs::CustomInteractorStyle InteractorStyle;
+        typedef InteractorStyle*                InteractorStylePtr;
+        typedef const InteractorStyle*          InteractorStyleConstPtr;
 
         class FPS
         {
@@ -235,6 +241,7 @@ namespace pcl
         unsigned int                iteration_;
 
         PCLVisualizerPtr            visualizer_;
+        InteractorStylePtr          interactor_style_;
         bool                        draw_crop_box_;
 
         GrabberPtr                  grabber_;

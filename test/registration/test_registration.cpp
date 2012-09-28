@@ -429,7 +429,7 @@ TEST (PCL, SampleConsensusInitialAlignment)
   // Register
   reg.align (cloud_reg);
   EXPECT_EQ (int (cloud_reg.points.size ()), int (cloud_source.points.size ()));
-  EXPECT_EQ (reg.getFitnessScore () < 0.0005, true);
+  EXPECT_LT (reg.getFitnessScore (), 0.0005);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -14,7 +14,7 @@
  *  * Redistributions of source code must retain the above copyright
  *    notice, this list of conditions and the following disclaimer.
  *  * Redistributions in binary form must reproduce the above
- *    copyright notice, this list ofc conditions and the following
+ *    copyright notice, this list of conditions and the following
  *    disclaimer in the documentation and/or other materials provided
  *    with the distribution.
  *  * Neither the name of the copyright holder(s) nor the names of its
@@ -60,7 +60,9 @@ pcl::ihs::InHandScanner::InHandScanner (int argc, char** argv)
     iteration_             (0),
 
     visualizer_            (),
+    interactor_style_      (),
     draw_crop_box_         (false),
+    pivot_                 (0.f, 0.f, 0.f, 1.f),
 
     grabber_               (),
     new_data_connection_   (),
@@ -95,6 +97,13 @@ pcl::ihs::InHandScanner::InHandScanner (int argc, char** argv)
   // TODO: Adapt this to the resolution of the grabbed image
   // grabber_->getDevice ()->get??
   visualizer_->getRenderWindow ()->SetSize (640, 480);
+
+  interactor_style_ = dynamic_cast <InteractorStylePtr> (visualizer_->getInteractorStyle ().GetPointer ());
+  if (!interactor_style_)
+  {
+    std::cerr << "ERROR in in_hand_scanner.cpp: Could not get the custom interactor style\n";
+    exit (EXIT_FAILURE);
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -156,6 +165,12 @@ pcl::ihs::InHandScanner::setRunningMode (const RunningMode& mode)
 
   switch (running_mode_)
   {
+    case RM_SHOW_MODEL:
+    {
+      draw_crop_box_ = false;
+      std::cerr << "Show the model\n";
+      break;
+    }
     case RM_UNPROCESSED:
     {
       draw_crop_box_ = false;
@@ -209,7 +224,8 @@ void
 pcl::ihs::InHandScanner::resetCamera ()
 {
   boost::mutex::scoped_lock lock (mutex_);
-  visualizer_->setCameraPosition (0., 0., 0., 0., 0., 1., 0., -1., 0.);
+
+  interactor_style_->resetCamera ();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -221,15 +237,11 @@ pcl::ihs::InHandScanner::newDataCallback (const CloudInputConstPtr& cloud_in)
 
   this->calcFPS (computation_fps_);
 
-  if (running_mode_ < RM_UNPROCESSED)
-  {
-    return;
-  }
-
   // Input data processing
-  CloudProcessedPtr cloud_data = running_mode_ >= RM_PROCESSED ?
-                                   input_data_processing_->process (cloud_in) :
-                                   input_data_processing_->calculateNormals (cloud_in);
+  CloudProcessedPtr cloud_data;
+  if      (running_mode_ == RM_SHOW_MODEL)  cloud_data = CloudProcessedPtr (new CloudProcessed ());
+  else if (running_mode_ == RM_UNPROCESSED) cloud_data = input_data_processing_->calculateNormals (cloud_in);
+  else if (running_mode_ >= RM_PROCESSED)   cloud_data = input_data_processing_->process (cloud_in);
 
   // Registration & integration
   if (running_mode_ >= RM_REGISTRATION_CONT)
@@ -247,7 +259,6 @@ pcl::ihs::InHandScanner::newDataCallback (const CloudInputConstPtr& cloud_in)
     }
     else
     {
-      // Registration
       Transformation T = Transformation::Identity ();
       if (!icp_->findTransformation (cloud_model_, cloud_data, transformation_, T))
       {
@@ -256,6 +267,8 @@ pcl::ihs::InHandScanner::newDataCallback (const CloudInputConstPtr& cloud_in)
       {
         transformation_ = T;
         integration_->merge (cloud_model_, cloud_data, transformation_);
+        cloud_data = CloudProcessedPtr (new CloudProcessed ());
+        // interactor_style_->transformCamera (InteractorStyle::Quaternion (T.topLeftCorner <3, 3> ().cast <double> ()), T.topRightCorner <3, 1> ().cast <double> ());
       }
     }
 
@@ -264,8 +277,13 @@ pcl::ihs::InHandScanner::newDataCallback (const CloudInputConstPtr& cloud_in)
 
   // Set the clouds for visualization
   cloud_data_draw_ = cloud_data;
-  if (!cloud_model_draw_) cloud_model_draw_ = CloudModelPtr (new CloudModel ());
-  pcl::copyPointCloud (*cloud_model_, *cloud_model_draw_);
+  if (!cloud_model_draw_)              cloud_model_draw_ = CloudModelPtr (new CloudModel ());
+  if (running_mode_ != RM_UNPROCESSED) pcl::copyPointCloud (*cloud_model_, *cloud_model_draw_);
+
+  // TODO: put this into the visualization thread.
+  Eigen::Vector4f pivot (0.f, 0.f, 0.f, 1.f);
+  if (cloud_model_draw_->size () && pcl::compute3DCentroid (*cloud_model_draw_, pivot)) pivot_ = pivot;
+  else if (pcl::compute3DCentroid (*cloud_data_draw_, pivot))                           pivot_ = pivot;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -290,8 +308,8 @@ pcl::ihs::InHandScanner::drawClouds ()
     if (!visualizer_->updatePointCloud <PointProcessed> (cloud_data_temp, ch, "cloud_data"))
     {
       visualizer_->addPointCloud <PointProcessed> (cloud_data_temp, ch, "cloud_data");
-      visualizer_->resetCameraViewpoint ("cloud_data");
     }
+
   }
 
   if (cloud_model_temp)
@@ -300,9 +318,16 @@ pcl::ihs::InHandScanner::drawClouds ()
     if (!visualizer_->updatePointCloud <PointModel> (cloud_model_temp, ch, "cloud_model"))
     {
       visualizer_->addPointCloud <PointModel> (cloud_model_temp, ch, "cloud_model");
-      visualizer_->resetCameraViewpoint ("cloud_model");
     }
   }
+
+  interactor_style_->setPivot (pivot_.cast <double> ().head <3> ());
+
+  // TODO: Test if this works
+  //  vtkCamera*const cam = visualizer_->getRenderWindow ()->GetRenderers ()->GetFirstRenderer ()->GetActiveCamera ();
+  //  const Eigen::Vector3d pos = Eigen::Map<Eigen::Vector3d> (cam->GetPosition ());
+  //  cam->SetFocalPoint (pivot_.cast <double> ().data ());
+  //  cam->SetPosition (pos.cast <double> ().data ());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -385,6 +410,7 @@ pcl::ihs::InHandScanner::keyboardCallback (const pcl::visualization::KeyboardEve
                 << "2     : Shows the processed input data\n"
                 << "3     : Registers new data to the first acquired data continuously\n"
                 << "4     : Registers new data once and returns to '2'\n"
+                << "5     : Shows the model shape\n"
                 << "0     : Reset the registration\n"
                 << "----------------------------------------------------------------------\n"
                 << "c     : Reset the camera\n"
@@ -401,6 +427,7 @@ pcl::ihs::InHandScanner::keyboardCallback (const pcl::visualization::KeyboardEve
     case '2': this->setRunningMode (RM_PROCESSED);           break;
     case '3': this->setRunningMode (RM_REGISTRATION_CONT);   break;
     case '4': this->setRunningMode (RM_REGISTRATION_SINGLE); break;
+    case '5': this->setRunningMode (RM_SHOW_MODEL);          break;
     case '0': this->resetRegistration ();                    break;
     case 'c': this->resetCamera ();                          break;
     default:                                                 break;

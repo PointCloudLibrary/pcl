@@ -51,7 +51,7 @@
 
 pcl::ihs::Integration::Integration ()
   : kd_tree_              (new pcl::KdTreeFLANN <PointModel> ()),
-    squared_distance_max_ (4e-6f),
+    squared_distance_max_ (4e-2f),
     dot_normal_min_       (.6f)
 {
 }
@@ -147,9 +147,9 @@ pcl::ihs::Integration::merge (const CloudModelPtr&          cloud_model,
 
         pt_m.getVector4fMap ()       = ( W*pt_m.getVector4fMap ()       + w*pt_d_trans.getVector4fMap ())       / WW;
         pt_m.getNormalVector4fMap () = ((W*pt_m.getNormalVector4fMap () + w*pt_d_trans.getNormalVector4fMap ()) / WW).normalized ();
-        pt_m.r                       = rgbTrimming ((W*r_m + w*r_d) / WW);
-        pt_m.g                       = rgbTrimming ((W*g_m + w*g_d) / WW);
-        pt_m.b                       = rgbTrimming ((W*b_m + w*b_d) / WW);
+        pt_m.r                       = trimRGB ((W*r_m + w*r_d) / WW);
+        pt_m.g                       = trimRGB ((W*g_m + w*g_d) / WW);
+        pt_m.b                       = trimRGB ((W*b_m + w*b_d) / WW);
 
         // Point has been observed again -> give it some extra time to live
         pt_m.age = 0;
@@ -166,6 +166,14 @@ pcl::ihs::Integration::merge (const CloudModelPtr&          cloud_model,
   // TODO: aging (inside previous loop?)
 
   return (true);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+uint8_t
+pcl::ihs::Integration::trimRGB (const float val) const
+{
+  return (static_cast <uint8_t> (val > 255.f ? 255 : val));
 }
 
 ////////////////////////////////////////////////////////////////////////////////

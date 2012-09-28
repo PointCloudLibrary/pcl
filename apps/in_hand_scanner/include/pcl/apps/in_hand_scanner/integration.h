@@ -98,9 +98,10 @@ namespace pcl
 
       private:
 
-        const uint8_t
-        rgbTrimming (const float val) const
-        { return (static_cast <uint8_t> (val > 255.f ? 255 : val)); }
+        uint8_t
+        trimRGB (const float val) const;
+
+      private:
 
         // Nearest neighbor search
         KdTreePtr kd_tree_;

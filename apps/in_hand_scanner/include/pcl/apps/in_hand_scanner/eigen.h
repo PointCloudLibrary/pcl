@@ -48,6 +48,5 @@
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 #include <Eigen/Cholesky>
-#include <Eigen/StdVector>
 
 #endif // PCL_IN_HAND_SCANNER_EIGEN_H

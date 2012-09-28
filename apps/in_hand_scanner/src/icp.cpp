@@ -46,18 +46,17 @@
 // #include <iomanip>
 
 #include <pcl/kdtree/kdtree_flann.h>
-#include <pcl/common/transforms.h>
-#include <pcl/common/impl/centroid.hpp>
+#include <pcl/common/centroid.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 
 pcl::ihs::ICP::ICP ()
   : kd_tree_ (new pcl::KdTreeFLANN <PointNormal> ()),
 
-    epsilon_        (1e-9f),
+    epsilon_        (10e-6f),
     max_iterations_ (50),
     min_overlap_    (.75f),
-    max_fitness_    (10e-6f),
+    max_fitness_    (.1f),
 
     squared_distance_threshold_factor_ (9.f),
     normals_threshold_                 (.7f)
@@ -100,11 +99,8 @@ pcl::ihs::ICP::findTransformation (const CloudModelConstPtr&     cloud_model,
 
   const size_t n_data  = cloud_data_selected->size ();
   const size_t n_model = cloud_model_selected->size ();
-  if(n_model < n_min || n_data < n_min)
-  {
-    std::cerr << "ERROR in icp.cpp: Not enough points after selection!\n";
-    return (false);
-  }
+  if(n_model < n_min) {std::cerr << "ERROR in icp.cpp: Not enough model points after selection!\n"; return (false);}
+  if(n_data < n_min)  {std::cerr << "ERROR in icp.cpp: Not enough data points after selection!\n"; return (false);}
 
   // Build a kd-tree
   kd_tree_->setInputCloud (cloud_model_selected);
@@ -214,7 +210,7 @@ pcl::ihs::ICP::findTransformation (const CloudModelConstPtr&     cloud_model,
             << "  - iter          / max iter   : " << iter            << " / " << max_iterations_
             << (iter            > max_iterations_ ? " <-- :-(\n" : "\n")
             << "  - overlap       / min overlap: " << overlap         << " / " << min_overlap_
-            << (overlap         < min_overlap_    ? " <-- :-(\n" : "\n\n");
+            << (overlap         < min_overlap_    ? " <-- :-(\n" : "\n");
 
   if (iter > max_iterations_ || overlap <  min_overlap_ || current_fitness > max_fitness_)
   {
