@@ -119,7 +119,7 @@ namespace pcl
         * \param[in] condition_function The condition function that needs to hold for clustering
         */
       inline void
-      setConditionFunction (bool (*condition_function) (PointT, PointT, float))
+      setConditionFunction (bool (*condition_function) (const PointT&, const PointT&, float)) 
       {
         condition_function_ = condition_function;
       }
@@ -208,7 +208,7 @@ namespace pcl
       SearcherPtr searcher_;
 
       /** \brief The condition function that needs to hold for clustering */
-      bool (*condition_function_) (PointT, PointT, float);
+      bool (*condition_function_) (const PointT&, const PointT&, float);
 
       /** \brief The distance to scan for cluster candidates (default = 0.0) */
       float cluster_tolerance_;
