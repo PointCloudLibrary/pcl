@@ -1,10 +1,19 @@
 Fix a memory leak and a crash in the Java bindings.
 
-Index: OpenNI/Wrappers/OpenNI.java/src/org/OpenNI/Context.java
-===================================================================
---- OpenNI.orig/Wrappers/OpenNI.java/src/org/OpenNI/Context.java	2012-09-26 14:12:06.392563448 +0400
-+++ OpenNI/Wrappers/OpenNI.java/src/org/OpenNI/Context.java	2012-09-26 14:41:29.111936956 +0400
-@@ -129,7 +129,9 @@
+From: Roman Donchenko <roman.donchenko@itseez.com>
+
+
+---
+ Wrappers/OpenNI.java/src/org/OpenNI/Context.java   |   13 +++++++++++--
+ .../OpenNI.java/src/org/OpenNI/NodeWrapper.java    |    1 +
+ Wrappers/OpenNI.jni/org_OpenNI_NativeMethods.cpp   |    4 +++-
+ 3 files changed, 15 insertions(+), 3 deletions(-)
+
+diff --git a/Wrappers/OpenNI.java/src/org/OpenNI/Context.java b/Wrappers/OpenNI.java/src/org/OpenNI/Context.java
+index 9204c4e..154e290 100644
+--- a/Wrappers/OpenNI.java/src/org/OpenNI/Context.java
++++ b/Wrappers/OpenNI.java/src/org/OpenNI/Context.java
+@@ -129,7 +129,9 @@ public class Context extends ObjectWrapper
  		OutArg<Long> phNode = new OutArg<Long>();
  		int status = NativeMethods.xnCreateProductionTree(toNative(), nodeInfo.toNative(), phNode);
  		WrapperUtils.throwOnError(status);
@@ -15,7 +24,7 @@ Index: OpenNI/Wrappers/OpenNI.java/src/org/OpenNI/Context.java
  	}
  	
  	public ProductionNode createAnyProductionTree(NodeType type, Query query) throws GeneralException
-@@ -141,7 +143,9 @@
+@@ -141,7 +143,9 @@ public class Context extends ObjectWrapper
  				phNode,
  				errors.toNative());
  		WrapperUtils.checkEnumeration(status, errors);
@@ -26,7 +35,7 @@ Index: OpenNI/Wrappers/OpenNI.java/src/org/OpenNI/Context.java
  	}
  
  	public NodeInfoList enumerateExistingNodes() throws GeneralException
-@@ -378,6 +382,11 @@
+@@ -378,6 +382,11 @@ public class Context extends ObjectWrapper
  		return createProductionNodeObject(hNode, type);
  	}
  
@@ -38,11 +47,11 @@ Index: OpenNI/Wrappers/OpenNI.java/src/org/OpenNI/Context.java
  	private Observable<ErrorStateEventArgs> errorStateChangedEvent;
  	private Hashtable<Long, ProductionNode> allNodes = new Hashtable<Long, ProductionNode>();
  	
-Index: OpenNI/Wrappers/OpenNI.java/src/org/OpenNI/NodeWrapper.java
-===================================================================
---- OpenNI.orig/Wrappers/OpenNI.java/src/org/OpenNI/NodeWrapper.java	2012-09-26 14:12:06.362562179 +0400
-+++ OpenNI/Wrappers/OpenNI.java/src/org/OpenNI/NodeWrapper.java	2012-09-26 14:41:22.592561999 +0400
-@@ -47,6 +47,7 @@
+diff --git a/Wrappers/OpenNI.java/src/org/OpenNI/NodeWrapper.java b/Wrappers/OpenNI.java/src/org/OpenNI/NodeWrapper.java
+index 2391c7d..8585082 100644
+--- a/Wrappers/OpenNI.java/src/org/OpenNI/NodeWrapper.java
++++ b/Wrappers/OpenNI.java/src/org/OpenNI/NodeWrapper.java
+@@ -47,6 +47,7 @@ public class NodeWrapper extends ObjectWrapper
  
  	protected void freeObject(long ptr)
  	{
@@ -50,11 +59,11 @@ Index: OpenNI/Wrappers/OpenNI.java/src/org/OpenNI/NodeWrapper.java
  		NativeMethods.xnProductionNodeRelease(ptr);
  	}
  	
-Index: OpenNI/Wrappers/OpenNI.jni/org_OpenNI_NativeMethods.cpp
-===================================================================
---- OpenNI.orig/Wrappers/OpenNI.jni/org_OpenNI_NativeMethods.cpp	2012-09-26 14:12:06.442561766 +0400
-+++ OpenNI/Wrappers/OpenNI.jni/org_OpenNI_NativeMethods.cpp	2012-09-26 14:41:22.592561999 +0400
-@@ -699,8 +699,10 @@
+diff --git a/Wrappers/OpenNI.jni/org_OpenNI_NativeMethods.cpp b/Wrappers/OpenNI.jni/org_OpenNI_NativeMethods.cpp
+index 6f8b639..4eabdb1 100644
+--- a/Wrappers/OpenNI.jni/org_OpenNI_NativeMethods.cpp
++++ b/Wrappers/OpenNI.jni/org_OpenNI_NativeMethods.cpp
+@@ -699,8 +699,10 @@ jobject CreateProductionNodeDescription(JNIEnv *env, const XnProductionNodeDescr
  	jclass cls = env->FindClass("org/OpenNI/ProductionNodeDescription");
  	jmethodID clsCtor = env->GetMethodID(cls, "<init>", "(ILjava/lang/String;Ljava/lang/String;Lorg/OpenNI/Version;)V");
  

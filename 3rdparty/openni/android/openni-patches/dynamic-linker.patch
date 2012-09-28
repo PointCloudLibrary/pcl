@@ -1,10 +1,19 @@
 Remove the --dynamic-linker option (which doesn't exist) from build options.
 
-Index: OpenNI/Platform/Android/Samples/SamplesAssistant/jni/Android.mk
-===================================================================
---- OpenNI.orig/Platform/Android/Samples/SamplesAssistant/jni/Android.mk	2012-09-26 13:30:36.711934868 +0400
-+++ OpenNI/Platform/Android/Samples/SamplesAssistant/jni/Android.mk	2012-09-26 14:34:22.283186100 +0400
-@@ -25,7 +25,7 @@
+From: Roman Donchenko <roman.donchenko@itseez.com>
+
+
+---
+ .../Samples/SamplesAssistant/jni/Android.mk        |    2 +-
+ Platform/Android/jni/OpenNI.jni/Android.mk         |    2 +-
+ Platform/Android/jni/OpenNI/Android.mk             |    2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/Platform/Android/Samples/SamplesAssistant/jni/Android.mk b/Platform/Android/Samples/SamplesAssistant/jni/Android.mk
+index e4b980d..9515e8d 100644
+--- a/Platform/Android/Samples/SamplesAssistant/jni/Android.mk
++++ b/Platform/Android/Samples/SamplesAssistant/jni/Android.mk
+@@ -25,7 +25,7 @@ LOCAL_C_INCLUDES := \
  
  LOCAL_CFLAGS:= -fvisibility=hidden -DXN_EXPORTS
  
@@ -13,11 +22,11 @@ Index: OpenNI/Platform/Android/Samples/SamplesAssistant/jni/Android.mk
  
  LOCAL_LDLIBS := -llog
  LOCAL_LDLIBS += $(OPENNI_DIR)/Platform/Android/libs/armeabi-v7a/libOpenNI.so
-Index: OpenNI/Platform/Android/jni/OpenNI.jni/Android.mk
-===================================================================
---- OpenNI.orig/Platform/Android/jni/OpenNI.jni/Android.mk	2012-09-26 13:30:36.751939347 +0400
-+++ OpenNI/Platform/Android/jni/OpenNI.jni/Android.mk	2012-09-26 14:34:22.283186100 +0400
-@@ -22,7 +22,7 @@
+diff --git a/Platform/Android/jni/OpenNI.jni/Android.mk b/Platform/Android/jni/OpenNI.jni/Android.mk
+index 30b332c..30ce781 100644
+--- a/Platform/Android/jni/OpenNI.jni/Android.mk
++++ b/Platform/Android/jni/OpenNI.jni/Android.mk
+@@ -22,7 +22,7 @@ LOCAL_C_INCLUDES := \
  
  LOCAL_CFLAGS:= -fvisibility=hidden -DXN_EXPORTS
  
@@ -26,11 +35,11 @@ Index: OpenNI/Platform/Android/jni/OpenNI.jni/Android.mk
  
  LOCAL_LDLIBS := -llog
  
-Index: OpenNI/Platform/Android/jni/OpenNI/Android.mk
-===================================================================
---- OpenNI.orig/Platform/Android/jni/OpenNI/Android.mk	2012-09-26 14:33:15.102561135 +0400
-+++ OpenNI/Platform/Android/jni/OpenNI/Android.mk	2012-09-26 14:34:22.283186100 +0400
-@@ -27,7 +27,7 @@
+diff --git a/Platform/Android/jni/OpenNI/Android.mk b/Platform/Android/jni/OpenNI/Android.mk
+index 47b0911..355cb74 100644
+--- a/Platform/Android/jni/OpenNI/Android.mk
++++ b/Platform/Android/jni/OpenNI/Android.mk
+@@ -27,7 +27,7 @@ LOCAL_C_INCLUDES := \
  
  LOCAL_CFLAGS:= -fvisibility=hidden -DXN_EXPORTS
  

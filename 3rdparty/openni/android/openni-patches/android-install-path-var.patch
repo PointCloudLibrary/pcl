@@ -1,10 +1,17 @@
-Make the install location envirnoment variable mandatory on Android and change the suffix.
+Make the install location environment variable mandatory on Android and change the suffix.
 
-Index: OpenNI/Source/OpenNI/XnOpenNI.cpp
-===================================================================
---- OpenNI.orig/Source/OpenNI/XnOpenNI.cpp	2012-09-26 14:27:00.892561592 +0400
-+++ OpenNI/Source/OpenNI/XnOpenNI.cpp	2012-09-26 14:36:46.683187312 +0400
-@@ -6995,7 +6995,7 @@
+From: Roman Donchenko <roman.donchenko@itseez.com>
+
+
+---
+ Source/OpenNI/XnOpenNI.cpp |    6 +++---
+ 1 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/Source/OpenNI/XnOpenNI.cpp b/Source/OpenNI/XnOpenNI.cpp
+index de4d7e7..3ceae9e 100644
+--- a/Source/OpenNI/XnOpenNI.cpp
++++ b/Source/OpenNI/XnOpenNI.cpp
+@@ -6995,7 +6995,7 @@ XN_C_API XnStatus xnScriptNodeRun(XnNodeHandle hScript, XnEnumerationErrors* pEr
  #elif (XN_PLATFORM == XN_PLATFORM_LINUX_X86 || XN_PLATFORM == XN_PLATFORM_LINUX_ARM || XN_PLATFORM == XN_PLATFORM_MACOSX)
  	#define XN_OPEN_NI_FILES_LOCATION "/etc/openni/"
  #elif (XN_PLATFORM == XN_PLATFORM_ANDROID_ARM)
@@ -13,7 +20,7 @@ Index: OpenNI/Source/OpenNI/XnOpenNI.cpp
  #else
  	#error "Unsupported platform!"
  #endif
-@@ -7007,8 +7007,8 @@
+@@ -7007,8 +7007,8 @@ XnStatus xnGetOpenNIConfFilesPath(XnChar* strDest, XnUInt32 nBufSize)
  	nRetVal = xnOSGetEnvironmentVariable(XN_OPEN_NI_INSTALL_PATH_ENV, strDest, nBufSize);
  	if (nRetVal == XN_STATUS_OS_ENV_VAR_NOT_FOUND)
  	{

@@ -1,19 +1,124 @@
 Replace the bundled libusb with a reference to our own.
 
-Index: OpenNI/Platform/Android/jni/External/Android.mk
-===================================================================
---- OpenNI.orig/Platform/Android/jni/External/Android.mk	2012-09-26 14:25:58.782562307 +0400
-+++ /dev/null	1970-01-01 00:00:00.000000000 +0000
+From: Roman Donchenko <roman.donchenko@itseez.com>
+
+
+---
+ Platform/Android/jni/External/Android.mk           |    5 
+ Platform/Android/jni/External/libusb-1.0.8/AUTHORS |   20 
+ .../Android/jni/External/libusb-1.0.8/Android.mk   |   28 
+ Platform/Android/jni/External/libusb-1.0.8/COPYING |  504 -
+ .../Android/jni/External/libusb-1.0.8/ChangeLog    | 1853 ---
+ Platform/Android/jni/External/libusb-1.0.8/INSTALL |  234 
+ .../Android/jni/External/libusb-1.0.8/Makefile.am  |   27 
+ .../Android/jni/External/libusb-1.0.8/Makefile.in  |  802 -
+ Platform/Android/jni/External/libusb-1.0.8/NEWS    |   56 
+ Platform/Android/jni/External/libusb-1.0.8/PORTING |   95 
+ Platform/Android/jni/External/libusb-1.0.8/README  |   21 
+ Platform/Android/jni/External/libusb-1.0.8/THANKS  |    8 
+ Platform/Android/jni/External/libusb-1.0.8/TODO    |    9 
+ .../Android/jni/External/libusb-1.0.8/aclocal.m4   | 8984 --------------
+ Platform/Android/jni/External/libusb-1.0.8/compile |  142 
+ .../Android/jni/External/libusb-1.0.8/config.guess | 1545 --
+ .../Android/jni/External/libusb-1.0.8/config.h.in  |   98 
+ .../Android/jni/External/libusb-1.0.8/config.sub   | 1676 ---
+ .../Android/jni/External/libusb-1.0.8/configure    |13264 --------------------
+ .../Android/jni/External/libusb-1.0.8/configure.ac |  131 
+ Platform/Android/jni/External/libusb-1.0.8/depcomp |  584 -
+ .../jni/External/libusb-1.0.8/doc/Makefile.am      |   10 
+ .../jni/External/libusb-1.0.8/doc/Makefile.in      |  374 -
+ .../jni/External/libusb-1.0.8/doc/doxygen.cfg.in   | 1294 --
+ .../jni/External/libusb-1.0.8/examples/Makefile.am |   13 
+ .../jni/External/libusb-1.0.8/examples/Makefile.in |  533 -
+ .../jni/External/libusb-1.0.8/examples/dpfp.c      |  507 -
+ .../External/libusb-1.0.8/examples/dpfp_threaded.c |  545 -
+ .../jni/External/libusb-1.0.8/examples/lsusb.c     |   64 
+ .../Android/jni/External/libusb-1.0.8/install-sh   |  507 -
+ .../jni/External/libusb-1.0.8/libusb-1.0.pc.in     |   11 
+ .../jni/External/libusb-1.0.8/libusb/Makefile.am   |   21 
+ .../jni/External/libusb-1.0.8/libusb/Makefile.in   |  637 -
+ .../jni/External/libusb-1.0.8/libusb/config.h      |    5 
+ .../jni/External/libusb-1.0.8/libusb/core.c        | 1583 --
+ .../jni/External/libusb-1.0.8/libusb/descriptor.c  |  719 -
+ .../Android/jni/External/libusb-1.0.8/libusb/io.c  | 2313 ---
+ .../jni/External/libusb-1.0.8/libusb/libusb.h      | 1241 --
+ .../jni/External/libusb-1.0.8/libusb/libusbi.h     |  809 -
+ .../External/libusb-1.0.8/libusb/os/darwin_usb.c   | 1513 --
+ .../External/libusb-1.0.8/libusb/os/darwin_usb.h   |  161 
+ .../External/libusb-1.0.8/libusb/os/linux_usbfs.c  | 2211 ---
+ .../External/libusb-1.0.8/libusb/os/linux_usbfs.h  |  138 
+ .../jni/External/libusb-1.0.8/libusb/sync.c        |  311 
+ .../Android/jni/External/libusb-1.0.8/ltmain.sh    | 8406 -------------
+ Platform/Android/jni/External/libusb-1.0.8/missing |  367 -
+ Platform/Android/jni/OpenNI/Android.mk             |   13 
+ .../Android/jni/Samples/NiSimpleRead/Android.mk    |    2 
+ .../jni/Samples/NiSimpleSkeleton/Android.mk        |    2 
+ Platform/Android/jni/Utils/niLicense/Android.mk    |    2 
+ Platform/Android/jni/Utils/niReg/Android.mk        |    2 
+ 51 files changed, 6 insertions(+), 54394 deletions(-)
+ delete mode 100644 Platform/Android/jni/External/Android.mk
+ delete mode 100644 Platform/Android/jni/External/libusb-1.0.8/AUTHORS
+ delete mode 100644 Platform/Android/jni/External/libusb-1.0.8/Android.mk
+ delete mode 100644 Platform/Android/jni/External/libusb-1.0.8/COPYING
+ delete mode 100644 Platform/Android/jni/External/libusb-1.0.8/ChangeLog
+ delete mode 100644 Platform/Android/jni/External/libusb-1.0.8/INSTALL
+ delete mode 100644 Platform/Android/jni/External/libusb-1.0.8/Makefile.am
+ delete mode 100644 Platform/Android/jni/External/libusb-1.0.8/Makefile.in
+ delete mode 100644 Platform/Android/jni/External/libusb-1.0.8/NEWS
+ delete mode 100644 Platform/Android/jni/External/libusb-1.0.8/PORTING
+ delete mode 100644 Platform/Android/jni/External/libusb-1.0.8/README
+ delete mode 100644 Platform/Android/jni/External/libusb-1.0.8/THANKS
+ delete mode 100644 Platform/Android/jni/External/libusb-1.0.8/TODO
+ delete mode 100644 Platform/Android/jni/External/libusb-1.0.8/aclocal.m4
+ delete mode 100644 Platform/Android/jni/External/libusb-1.0.8/compile
+ delete mode 100644 Platform/Android/jni/External/libusb-1.0.8/config.guess
+ delete mode 100644 Platform/Android/jni/External/libusb-1.0.8/config.h.in
+ delete mode 100644 Platform/Android/jni/External/libusb-1.0.8/config.sub
+ delete mode 100644 Platform/Android/jni/External/libusb-1.0.8/configure
+ delete mode 100644 Platform/Android/jni/External/libusb-1.0.8/configure.ac
+ delete mode 100644 Platform/Android/jni/External/libusb-1.0.8/depcomp
+ delete mode 100644 Platform/Android/jni/External/libusb-1.0.8/doc/Makefile.am
+ delete mode 100644 Platform/Android/jni/External/libusb-1.0.8/doc/Makefile.in
+ delete mode 100644 Platform/Android/jni/External/libusb-1.0.8/doc/doxygen.cfg.in
+ delete mode 100644 Platform/Android/jni/External/libusb-1.0.8/examples/Makefile.am
+ delete mode 100644 Platform/Android/jni/External/libusb-1.0.8/examples/Makefile.in
+ delete mode 100644 Platform/Android/jni/External/libusb-1.0.8/examples/dpfp.c
+ delete mode 100644 Platform/Android/jni/External/libusb-1.0.8/examples/dpfp_threaded.c
+ delete mode 100644 Platform/Android/jni/External/libusb-1.0.8/examples/lsusb.c
+ delete mode 100644 Platform/Android/jni/External/libusb-1.0.8/install-sh
+ delete mode 100644 Platform/Android/jni/External/libusb-1.0.8/libusb-1.0.pc.in
+ delete mode 100644 Platform/Android/jni/External/libusb-1.0.8/libusb/Makefile.am
+ delete mode 100644 Platform/Android/jni/External/libusb-1.0.8/libusb/Makefile.in
+ delete mode 100644 Platform/Android/jni/External/libusb-1.0.8/libusb/config.h
+ delete mode 100644 Platform/Android/jni/External/libusb-1.0.8/libusb/core.c
+ delete mode 100644 Platform/Android/jni/External/libusb-1.0.8/libusb/descriptor.c
+ delete mode 100644 Platform/Android/jni/External/libusb-1.0.8/libusb/io.c
+ delete mode 100644 Platform/Android/jni/External/libusb-1.0.8/libusb/libusb.h
+ delete mode 100644 Platform/Android/jni/External/libusb-1.0.8/libusb/libusbi.h
+ delete mode 100644 Platform/Android/jni/External/libusb-1.0.8/libusb/os/darwin_usb.c
+ delete mode 100644 Platform/Android/jni/External/libusb-1.0.8/libusb/os/darwin_usb.h
+ delete mode 100644 Platform/Android/jni/External/libusb-1.0.8/libusb/os/linux_usbfs.c
+ delete mode 100644 Platform/Android/jni/External/libusb-1.0.8/libusb/os/linux_usbfs.h
+ delete mode 100644 Platform/Android/jni/External/libusb-1.0.8/libusb/sync.c
+ delete mode 100644 Platform/Android/jni/External/libusb-1.0.8/ltmain.sh
+ delete mode 100644 Platform/Android/jni/External/libusb-1.0.8/missing
+
+diff --git a/Platform/Android/jni/External/Android.mk b/Platform/Android/jni/External/Android.mk
+deleted file mode 100644
+index 835b0ff..0000000
+--- a/Platform/Android/jni/External/Android.mk
++++ /dev/null
 @@ -1,5 +0,0 @@
 -# OpenNI Android makefile.
 -#
 -
 -include $(call all-subdir-makefiles)
 -
-Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/AUTHORS
-===================================================================
---- OpenNI.orig/Platform/Android/jni/External/libusb-1.0.8/AUTHORS	2012-09-26 14:25:58.502562079 +0400
-+++ /dev/null	1970-01-01 00:00:00.000000000 +0000
+diff --git a/Platform/Android/jni/External/libusb-1.0.8/AUTHORS b/Platform/Android/jni/External/libusb-1.0.8/AUTHORS
+deleted file mode 100644
+index dc0e053..0000000
+--- a/Platform/Android/jni/External/libusb-1.0.8/AUTHORS
++++ /dev/null
 @@ -1,20 +0,0 @@
 -Copyright (C) 2007-2009 Daniel Drake <dsd@gentoo.org>
 -Copyright (c) 2001 Johannes Erdfelt <johannes@erdfelt.com>
@@ -35,10 +140,11 @@ Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/AUTHORS
 -Toby Peterson
 -Vasily Khoruzhick
 -
-Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/Android.mk
-===================================================================
---- OpenNI.orig/Platform/Android/jni/External/libusb-1.0.8/Android.mk	2012-09-26 14:25:58.722560962 +0400
-+++ /dev/null	1970-01-01 00:00:00.000000000 +0000
+diff --git a/Platform/Android/jni/External/libusb-1.0.8/Android.mk b/Platform/Android/jni/External/libusb-1.0.8/Android.mk
+deleted file mode 100644
+index faf4ee1..0000000
+--- a/Platform/Android/jni/External/libusb-1.0.8/Android.mk
++++ /dev/null
 @@ -1,28 +0,0 @@
 -# OpenNI Android makefile.
 -# libusb.so
@@ -68,10 +174,11 @@ Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/Android.mk
 -LOCAL_MODULE := libusb
 -
 -include $(BUILD_SHARED_LIBRARY)
-Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/COPYING
-===================================================================
---- OpenNI.orig/Platform/Android/jni/External/libusb-1.0.8/COPYING	2012-09-26 14:25:58.482561791 +0400
-+++ /dev/null	1970-01-01 00:00:00.000000000 +0000
+diff --git a/Platform/Android/jni/External/libusb-1.0.8/COPYING b/Platform/Android/jni/External/libusb-1.0.8/COPYING
+deleted file mode 100644
+index 5ab7695..0000000
+--- a/Platform/Android/jni/External/libusb-1.0.8/COPYING
++++ /dev/null
 @@ -1,504 +0,0 @@
 -		  GNU LESSER GENERAL PUBLIC LICENSE
 -		       Version 2.1, February 1999
@@ -577,10 +684,11 @@ Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/COPYING
 -That's all there is to it!
 -
 -
-Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/ChangeLog
-===================================================================
---- OpenNI.orig/Platform/Android/jni/External/libusb-1.0.8/ChangeLog	2012-09-26 14:25:58.512561701 +0400
-+++ /dev/null	1970-01-01 00:00:00.000000000 +0000
+diff --git a/Platform/Android/jni/External/libusb-1.0.8/ChangeLog b/Platform/Android/jni/External/libusb-1.0.8/ChangeLog
+deleted file mode 100644
+index a438108..0000000
+--- a/Platform/Android/jni/External/libusb-1.0.8/ChangeLog
++++ /dev/null
 @@ -1,1853 +0,0 @@
 -commit a04cbb0095a78aeed3f65aaf06c46069d0ac184a
 -Author: Daniel Drake <dan@reactivated.net>
@@ -2435,10 +2543,11 @@ Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/ChangeLog
 -    Initial commit
 -    
 -    Basic library structure which supports enumerating detected USB devices
-Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/INSTALL
-===================================================================
---- OpenNI.orig/Platform/Android/jni/External/libusb-1.0.8/INSTALL	2012-09-26 14:25:58.702561336 +0400
-+++ /dev/null	1970-01-01 00:00:00.000000000 +0000
+diff --git a/Platform/Android/jni/External/libusb-1.0.8/INSTALL b/Platform/Android/jni/External/libusb-1.0.8/INSTALL
+deleted file mode 100644
+index 5458714..0000000
+--- a/Platform/Android/jni/External/libusb-1.0.8/INSTALL
++++ /dev/null
 @@ -1,234 +0,0 @@
 -Installation Instructions
 -*************************
@@ -2674,10 +2783,11 @@ Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/INSTALL
 -`configure' also accepts some other, not widely useful, options.  Run
 -`configure --help' for more details.
 -
-Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/Makefile.am
-===================================================================
---- OpenNI.orig/Platform/Android/jni/External/libusb-1.0.8/Makefile.am	2012-09-26 14:25:58.692560000 +0400
-+++ /dev/null	1970-01-01 00:00:00.000000000 +0000
+diff --git a/Platform/Android/jni/External/libusb-1.0.8/Makefile.am b/Platform/Android/jni/External/libusb-1.0.8/Makefile.am
+deleted file mode 100644
+index 1b65a92..0000000
+--- a/Platform/Android/jni/External/libusb-1.0.8/Makefile.am
++++ /dev/null
 @@ -1,27 +0,0 @@
 -AUTOMAKE_OPTIONS = dist-bzip2 no-dist-gzip
 -ACLOCAL_AMFLAGS = -I m4
@@ -2706,10 +2816,11 @@ Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/Makefile.am
 -	rsync -rv $(reldir) dsd_,libusb@frs.sourceforge.net:/home/frs/project/l/li/libusb/libusb-1.0/
 -	rm -rf $(reldir)
 -
-Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/Makefile.in
-===================================================================
---- OpenNI.orig/Platform/Android/jni/External/libusb-1.0.8/Makefile.in	2012-09-26 14:25:58.512561701 +0400
-+++ /dev/null	1970-01-01 00:00:00.000000000 +0000
+diff --git a/Platform/Android/jni/External/libusb-1.0.8/Makefile.in b/Platform/Android/jni/External/libusb-1.0.8/Makefile.in
+deleted file mode 100644
+index 172434e..0000000
+--- a/Platform/Android/jni/External/libusb-1.0.8/Makefile.in
++++ /dev/null
 @@ -1,802 +0,0 @@
 -# Makefile.in generated by automake 1.11.1 from Makefile.am.
 -# @configure_input@
@@ -3513,10 +3624,11 @@ Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/Makefile.in
 -# Tell versions [3.59,3.63) of GNU make to not export all variables.
 -# Otherwise a system limit (for SysV at least) may be exceeded.
 -.NOEXPORT:
-Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/NEWS
-===================================================================
---- OpenNI.orig/Platform/Android/jni/External/libusb-1.0.8/NEWS	2012-09-26 14:25:58.672561783 +0400
-+++ /dev/null	1970-01-01 00:00:00.000000000 +0000
+diff --git a/Platform/Android/jni/External/libusb-1.0.8/NEWS b/Platform/Android/jni/External/libusb-1.0.8/NEWS
+deleted file mode 100644
+index 42c232c..0000000
+--- a/Platform/Android/jni/External/libusb-1.0.8/NEWS
++++ /dev/null
 @@ -1,56 +0,0 @@
 -This file lists notable changes in each release. For the full history of all
 -changes, see ChangeLog.
@@ -3574,10 +3686,11 @@ Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/NEWS
 -2008-05-25: v0.9.0 release
 - * First libusb-1.0 beta release
 -
-Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/PORTING
-===================================================================
---- OpenNI.orig/Platform/Android/jni/External/libusb-1.0.8/PORTING	2012-09-26 14:25:58.662560426 +0400
-+++ /dev/null	1970-01-01 00:00:00.000000000 +0000
+diff --git a/Platform/Android/jni/External/libusb-1.0.8/PORTING b/Platform/Android/jni/External/libusb-1.0.8/PORTING
+deleted file mode 100644
+index 7070784..0000000
+--- a/Platform/Android/jni/External/libusb-1.0.8/PORTING
++++ /dev/null
 @@ -1,95 +0,0 @@
 -PORTING LIBUSB TO OTHER PLATFORMS
 -
@@ -3674,10 +3787,11 @@ Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/PORTING
 -submissions). Even if you do not make such changes yourself, please do raise
 -the issues on the mailing list at the very minimum.
 -
-Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/README
-===================================================================
---- OpenNI.orig/Platform/Android/jni/External/libusb-1.0.8/README	2012-09-26 14:25:58.522560696 +0400
-+++ /dev/null	1970-01-01 00:00:00.000000000 +0000
+diff --git a/Platform/Android/jni/External/libusb-1.0.8/README b/Platform/Android/jni/External/libusb-1.0.8/README
+deleted file mode 100644
+index eefe5ee..0000000
+--- a/Platform/Android/jni/External/libusb-1.0.8/README
++++ /dev/null
 @@ -1,21 +0,0 @@
 -libusb
 -======
@@ -3700,10 +3814,11 @@ Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/README
 -
 -- Daniel Drake <dsd@gentoo.org>
 -(use the mailing list rather than mailing developers directly)
-Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/THANKS
-===================================================================
---- OpenNI.orig/Platform/Android/jni/External/libusb-1.0.8/THANKS	2012-09-26 14:25:58.652560429 +0400
-+++ /dev/null	1970-01-01 00:00:00.000000000 +0000
+diff --git a/Platform/Android/jni/External/libusb-1.0.8/THANKS b/Platform/Android/jni/External/libusb-1.0.8/THANKS
+deleted file mode 100644
+index d926126..0000000
+--- a/Platform/Android/jni/External/libusb-1.0.8/THANKS
++++ /dev/null
 @@ -1,8 +0,0 @@
 -Development contributors are listed in the AUTHORS file. Other community
 -members who have made significant contributions in other areas are listed
@@ -3713,10 +3828,11 @@ Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/THANKS
 -Ludovic Rousseau
 -Tim Roberts
 -Xiaofan Chen
-Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/TODO
-===================================================================
---- OpenNI.orig/Platform/Android/jni/External/libusb-1.0.8/TODO	2012-09-26 14:25:58.712561410 +0400
-+++ /dev/null	1970-01-01 00:00:00.000000000 +0000
+diff --git a/Platform/Android/jni/External/libusb-1.0.8/TODO b/Platform/Android/jni/External/libusb-1.0.8/TODO
+deleted file mode 100644
+index 6c162a3..0000000
+--- a/Platform/Android/jni/External/libusb-1.0.8/TODO
++++ /dev/null
 @@ -1,9 +0,0 @@
 -for 1.1 or future
 -==================
@@ -3727,10 +3843,11 @@ Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/TODO
 -exposing of parent-child device relationships
 -"usb primer" introduction docs
 -more examples
-Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/aclocal.m4
-===================================================================
---- OpenNI.orig/Platform/Android/jni/External/libusb-1.0.8/aclocal.m4	2012-09-26 14:25:58.492564241 +0400
-+++ /dev/null	1970-01-01 00:00:00.000000000 +0000
+diff --git a/Platform/Android/jni/External/libusb-1.0.8/aclocal.m4 b/Platform/Android/jni/External/libusb-1.0.8/aclocal.m4
+deleted file mode 100644
+index a65a6c8..0000000
+--- a/Platform/Android/jni/External/libusb-1.0.8/aclocal.m4
++++ /dev/null
 @@ -1,8984 +0,0 @@
 -# generated automatically by aclocal 1.11.1 -*- Autoconf -*-
 -
@@ -12716,10 +12833,11 @@ Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/aclocal.m4
 -AC_SUBST([am__untar])
 -]) # _AM_PROG_TAR
 -
-Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/compile
-===================================================================
---- OpenNI.orig/Platform/Android/jni/External/libusb-1.0.8/compile	2012-09-26 14:25:58.652560429 +0400
-+++ /dev/null	1970-01-01 00:00:00.000000000 +0000
+diff --git a/Platform/Android/jni/External/libusb-1.0.8/compile b/Platform/Android/jni/External/libusb-1.0.8/compile
+deleted file mode 100644
+index 1b1d232..0000000
+--- a/Platform/Android/jni/External/libusb-1.0.8/compile
++++ /dev/null
 @@ -1,142 +0,0 @@
 -#! /bin/sh
 -# Wrapper for compilers which do not understand `-c -o'.
@@ -12863,10 +12981,11 @@ Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/compile
 -# time-stamp-format: "%:y-%02m-%02d.%02H"
 -# time-stamp-end: "$"
 -# End:
-Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/config.guess
-===================================================================
---- OpenNI.orig/Platform/Android/jni/External/libusb-1.0.8/config.guess	2012-09-26 14:25:58.732561398 +0400
-+++ /dev/null	1970-01-01 00:00:00.000000000 +0000
+diff --git a/Platform/Android/jni/External/libusb-1.0.8/config.guess b/Platform/Android/jni/External/libusb-1.0.8/config.guess
+deleted file mode 100644
+index 2313a17..0000000
+--- a/Platform/Android/jni/External/libusb-1.0.8/config.guess
++++ /dev/null
 @@ -1,1545 +0,0 @@
 -#! /bin/sh
 -# Attempt to guess a canonical system name.
@@ -14413,10 +14532,11 @@ Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/config.guess
 -# time-stamp-format: "%:y-%02m-%02d"
 -# time-stamp-end: "'"
 -# End:
-Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/config.h.in
-===================================================================
---- OpenNI.orig/Platform/Android/jni/External/libusb-1.0.8/config.h.in	2012-09-26 14:25:58.722560962 +0400
-+++ /dev/null	1970-01-01 00:00:00.000000000 +0000
+diff --git a/Platform/Android/jni/External/libusb-1.0.8/config.h.in b/Platform/Android/jni/External/libusb-1.0.8/config.h.in
+deleted file mode 100644
+index 45e0db7..0000000
+--- a/Platform/Android/jni/External/libusb-1.0.8/config.h.in
++++ /dev/null
 @@ -1,98 +0,0 @@
 -/* config.h.in.  Generated from configure.ac by autoheader.  */
 -
@@ -14516,10 +14636,11 @@ Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/config.h.in
 -#ifndef __cplusplus
 -#undef inline
 -#endif
-Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/config.sub
-===================================================================
---- OpenNI.orig/Platform/Android/jni/External/libusb-1.0.8/config.sub	2012-09-26 14:25:58.702561336 +0400
-+++ /dev/null	1970-01-01 00:00:00.000000000 +0000
+diff --git a/Platform/Android/jni/External/libusb-1.0.8/config.sub b/Platform/Android/jni/External/libusb-1.0.8/config.sub
+deleted file mode 100644
+index ba16ebf..0000000
+--- a/Platform/Android/jni/External/libusb-1.0.8/config.sub
++++ /dev/null
 @@ -1,1676 +0,0 @@
 -#! /bin/sh
 -# Configuration validation subroutine script.
@@ -16197,10 +16318,11 @@ Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/config.sub
 -# time-stamp-format: "%:y-%02m-%02d"
 -# time-stamp-end: "'"
 -# End:
-Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/configure
-===================================================================
---- OpenNI.orig/Platform/Android/jni/External/libusb-1.0.8/configure	2012-09-26 14:25:58.742562596 +0400
-+++ /dev/null	1970-01-01 00:00:00.000000000 +0000
+diff --git a/Platform/Android/jni/External/libusb-1.0.8/configure b/Platform/Android/jni/External/libusb-1.0.8/configure
+deleted file mode 100644
+index fed317a..0000000
+--- a/Platform/Android/jni/External/libusb-1.0.8/configure
++++ /dev/null
 @@ -1,13264 +0,0 @@
 -#! /bin/sh
 -# Guess values for system-dependent variables and create Makefiles.
@@ -29466,10 +29588,11 @@ Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/configure
 -fi
 -
 -
-Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/configure.ac
-===================================================================
---- OpenNI.orig/Platform/Android/jni/External/libusb-1.0.8/configure.ac	2012-09-26 14:25:58.682560732 +0400
-+++ /dev/null	1970-01-01 00:00:00.000000000 +0000
+diff --git a/Platform/Android/jni/External/libusb-1.0.8/configure.ac b/Platform/Android/jni/External/libusb-1.0.8/configure.ac
+deleted file mode 100644
+index 4668cf0..0000000
+--- a/Platform/Android/jni/External/libusb-1.0.8/configure.ac
++++ /dev/null
 @@ -1,131 +0,0 @@
 -AC_INIT([libusb], [1.0.8])
 -AM_INIT_AUTOMAKE
@@ -29602,10 +29725,11 @@ Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/configure.ac
 -AC_CONFIG_FILES([libusb-1.0.pc] [Makefile] [libusb/Makefile] [examples/Makefile] [doc/Makefile] [doc/doxygen.cfg])
 -AC_OUTPUT
 -
-Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/depcomp
-===================================================================
---- OpenNI.orig/Platform/Android/jni/External/libusb-1.0.8/depcomp	2012-09-26 14:25:58.482561791 +0400
-+++ /dev/null	1970-01-01 00:00:00.000000000 +0000
+diff --git a/Platform/Android/jni/External/libusb-1.0.8/depcomp b/Platform/Android/jni/External/libusb-1.0.8/depcomp
+deleted file mode 100644
+index ca5ea4e..0000000
+--- a/Platform/Android/jni/External/libusb-1.0.8/depcomp
++++ /dev/null
 @@ -1,584 +0,0 @@
 -#! /bin/sh
 -# depcomp - compile a program generating dependencies as side-effects
@@ -30191,10 +30315,11 @@ Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/depcomp
 -# time-stamp-format: "%:y-%02m-%02d.%02H"
 -# time-stamp-end: "$"
 -# End:
-Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/doc/Makefile.am
-===================================================================
---- OpenNI.orig/Platform/Android/jni/External/libusb-1.0.8/doc/Makefile.am	2012-09-26 14:25:58.772560293 +0400
-+++ /dev/null	1970-01-01 00:00:00.000000000 +0000
+diff --git a/Platform/Android/jni/External/libusb-1.0.8/doc/Makefile.am b/Platform/Android/jni/External/libusb-1.0.8/doc/Makefile.am
+deleted file mode 100644
+index ac5b189..0000000
+--- a/Platform/Android/jni/External/libusb-1.0.8/doc/Makefile.am
++++ /dev/null
 @@ -1,10 +0,0 @@
 -EXTRA_DIST = doxygen.cfg.in
 -
@@ -30206,10 +30331,11 @@ Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/doc/Makefile.am
 -	rsync -av api-1.0/ dsd_,libusb@web.sourceforge.net:htdocs/api-1.0/
 -	rm -f api-1.0
 -
-Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/doc/Makefile.in
-===================================================================
---- OpenNI.orig/Platform/Android/jni/External/libusb-1.0.8/doc/Makefile.in	2012-09-26 14:25:58.752560854 +0400
-+++ /dev/null	1970-01-01 00:00:00.000000000 +0000
+diff --git a/Platform/Android/jni/External/libusb-1.0.8/doc/Makefile.in b/Platform/Android/jni/External/libusb-1.0.8/doc/Makefile.in
+deleted file mode 100644
+index cdeebe6..0000000
+--- a/Platform/Android/jni/External/libusb-1.0.8/doc/Makefile.in
++++ /dev/null
 @@ -1,374 +0,0 @@
 -# Makefile.in generated by automake 1.11.1 from Makefile.am.
 -# @configure_input@
@@ -30585,10 +30711,11 @@ Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/doc/Makefile.in
 -# Tell versions [3.59,3.63) of GNU make to not export all variables.
 -# Otherwise a system limit (for SysV at least) may be exceeded.
 -.NOEXPORT:
-Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/doc/doxygen.cfg.in
-===================================================================
---- OpenNI.orig/Platform/Android/jni/External/libusb-1.0.8/doc/doxygen.cfg.in	2012-09-26 14:25:58.762567305 +0400
-+++ /dev/null	1970-01-01 00:00:00.000000000 +0000
+diff --git a/Platform/Android/jni/External/libusb-1.0.8/doc/doxygen.cfg.in b/Platform/Android/jni/External/libusb-1.0.8/doc/doxygen.cfg.in
+deleted file mode 100644
+index 574b52f..0000000
+--- a/Platform/Android/jni/External/libusb-1.0.8/doc/doxygen.cfg.in
++++ /dev/null
 @@ -1,1294 +0,0 @@
 -# Doxyfile 1.5.3
 -
@@ -31884,10 +32011,11 @@ Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/doc/doxygen.cfg.in
 -# used. If set to NO the values of all tags below this one will be ignored.
 -
 -SEARCHENGINE           = NO
-Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/examples/Makefile.am
-===================================================================
---- OpenNI.orig/Platform/Android/jni/External/libusb-1.0.8/examples/Makefile.am	2012-09-26 14:25:58.542560428 +0400
-+++ /dev/null	1970-01-01 00:00:00.000000000 +0000
+diff --git a/Platform/Android/jni/External/libusb-1.0.8/examples/Makefile.am b/Platform/Android/jni/External/libusb-1.0.8/examples/Makefile.am
+deleted file mode 100644
+index 600ebd4..0000000
+--- a/Platform/Android/jni/External/libusb-1.0.8/examples/Makefile.am
++++ /dev/null
 @@ -1,13 +0,0 @@
 -INCLUDES = -I$(top_srcdir)
 -noinst_PROGRAMS = lsusb dpfp dpfp_threaded
@@ -31902,10 +32030,11 @@ Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/examples/Makefile.am
 -dpfp_threaded_CFLAGS = -pthread $(AM_CFLAGS)
 -dpfp_threaded_LDADD = ../libusb/libusb-1.0.la -lusb-1.0
 -
-Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/examples/Makefile.in
-===================================================================
---- OpenNI.orig/Platform/Android/jni/External/libusb-1.0.8/examples/Makefile.in	2012-09-26 14:25:58.532561447 +0400
-+++ /dev/null	1970-01-01 00:00:00.000000000 +0000
+diff --git a/Platform/Android/jni/External/libusb-1.0.8/examples/Makefile.in b/Platform/Android/jni/External/libusb-1.0.8/examples/Makefile.in
+deleted file mode 100644
+index 00598b1..0000000
+--- a/Platform/Android/jni/External/libusb-1.0.8/examples/Makefile.in
++++ /dev/null
 @@ -1,533 +0,0 @@
 -# Makefile.in generated by automake 1.11.1 from Makefile.am.
 -# @configure_input@
@@ -32440,10 +32569,11 @@ Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/examples/Makefile.in
 -# Tell versions [3.59,3.63) of GNU make to not export all variables.
 -# Otherwise a system limit (for SysV at least) may be exceeded.
 -.NOEXPORT:
-Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/examples/dpfp.c
-===================================================================
---- OpenNI.orig/Platform/Android/jni/External/libusb-1.0.8/examples/dpfp.c	2012-09-26 14:25:58.552561069 +0400
-+++ /dev/null	1970-01-01 00:00:00.000000000 +0000
+diff --git a/Platform/Android/jni/External/libusb-1.0.8/examples/dpfp.c b/Platform/Android/jni/External/libusb-1.0.8/examples/dpfp.c
+deleted file mode 100644
+index bd9702a..0000000
+--- a/Platform/Android/jni/External/libusb-1.0.8/examples/dpfp.c
++++ /dev/null
 @@ -1,507 +0,0 @@
 -/*
 - * libusb example program to manipulate U.are.U 4000B fingerprint scanner.
@@ -32952,10 +33082,11 @@ Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/examples/dpfp.c
 -	return r >= 0 ? r : -r;
 -}
 -
-Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/examples/dpfp_threaded.c
-===================================================================
---- OpenNI.orig/Platform/Android/jni/External/libusb-1.0.8/examples/dpfp_threaded.c	2012-09-26 14:25:58.542560428 +0400
-+++ /dev/null	1970-01-01 00:00:00.000000000 +0000
+diff --git a/Platform/Android/jni/External/libusb-1.0.8/examples/dpfp_threaded.c b/Platform/Android/jni/External/libusb-1.0.8/examples/dpfp_threaded.c
+deleted file mode 100644
+index 59540e3..0000000
+--- a/Platform/Android/jni/External/libusb-1.0.8/examples/dpfp_threaded.c
++++ /dev/null
 @@ -1,545 +0,0 @@
 -/*
 - * libusb example program to manipulate U.are.U 4000B fingerprint scanner.
@@ -33502,10 +33633,11 @@ Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/examples/dpfp_threaded.
 -	return r >= 0 ? r : -r;
 -}
 -
-Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/examples/lsusb.c
-===================================================================
---- OpenNI.orig/Platform/Android/jni/External/libusb-1.0.8/examples/lsusb.c	2012-09-26 14:25:58.552561069 +0400
-+++ /dev/null	1970-01-01 00:00:00.000000000 +0000
+diff --git a/Platform/Android/jni/External/libusb-1.0.8/examples/lsusb.c b/Platform/Android/jni/External/libusb-1.0.8/examples/lsusb.c
+deleted file mode 100644
+index 317adf0..0000000
+--- a/Platform/Android/jni/External/libusb-1.0.8/examples/lsusb.c
++++ /dev/null
 @@ -1,64 +0,0 @@
 -/*
 - * libusb example program to list devices on the bus
@@ -33571,10 +33703,11 @@ Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/examples/lsusb.c
 -	return 0;
 -}
 -
-Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/install-sh
-===================================================================
---- OpenNI.orig/Platform/Android/jni/External/libusb-1.0.8/install-sh	2012-09-26 14:25:58.752560854 +0400
-+++ /dev/null	1970-01-01 00:00:00.000000000 +0000
+diff --git a/Platform/Android/jni/External/libusb-1.0.8/install-sh b/Platform/Android/jni/External/libusb-1.0.8/install-sh
+deleted file mode 100644
+index 4fbbae7..0000000
+--- a/Platform/Android/jni/External/libusb-1.0.8/install-sh
++++ /dev/null
 @@ -1,507 +0,0 @@
 -#!/bin/sh
 -# install - install a program, script, or datafile
@@ -34083,10 +34216,11 @@ Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/install-sh
 -# time-stamp-format: "%:y-%02m-%02d.%02H"
 -# time-stamp-end: "$"
 -# End:
-Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/libusb-1.0.pc.in
-===================================================================
---- OpenNI.orig/Platform/Android/jni/External/libusb-1.0.8/libusb-1.0.pc.in	2012-09-26 14:25:58.742562596 +0400
-+++ /dev/null	1970-01-01 00:00:00.000000000 +0000
+diff --git a/Platform/Android/jni/External/libusb-1.0.8/libusb-1.0.pc.in b/Platform/Android/jni/External/libusb-1.0.8/libusb-1.0.pc.in
+deleted file mode 100644
+index dd6bde0..0000000
+--- a/Platform/Android/jni/External/libusb-1.0.8/libusb-1.0.pc.in
++++ /dev/null
 @@ -1,11 +0,0 @@
 -prefix=@prefix@
 -exec_prefix=@exec_prefix@
@@ -34099,10 +34233,11 @@ Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/libusb-1.0.pc.in
 -Libs: -L${libdir} -lusb-1.0
 -Cflags: -I${includedir}/libusb-1.0
 -
-Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/libusb/Makefile.am
-===================================================================
---- OpenNI.orig/Platform/Android/jni/External/libusb-1.0.8/libusb/Makefile.am	2012-09-26 14:25:58.612561695 +0400
-+++ /dev/null	1970-01-01 00:00:00.000000000 +0000
+diff --git a/Platform/Android/jni/External/libusb-1.0.8/libusb/Makefile.am b/Platform/Android/jni/External/libusb-1.0.8/libusb/Makefile.am
+deleted file mode 100644
+index a2be46c..0000000
+--- a/Platform/Android/jni/External/libusb-1.0.8/libusb/Makefile.am
++++ /dev/null
 @@ -1,21 +0,0 @@
 -lib_LTLIBRARIES = libusb-1.0.la
 -
@@ -34125,10 +34260,11 @@ Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/libusb/Makefile.am
 -
 -hdrdir = $(includedir)/libusb-1.0
 -hdr_HEADERS = libusb.h
-Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/libusb/Makefile.in
-===================================================================
---- OpenNI.orig/Platform/Android/jni/External/libusb-1.0.8/libusb/Makefile.in	2012-09-26 14:25:58.562560359 +0400
-+++ /dev/null	1970-01-01 00:00:00.000000000 +0000
+diff --git a/Platform/Android/jni/External/libusb-1.0.8/libusb/Makefile.in b/Platform/Android/jni/External/libusb-1.0.8/libusb/Makefile.in
+deleted file mode 100644
+index 34c14b3..0000000
+--- a/Platform/Android/jni/External/libusb-1.0.8/libusb/Makefile.in
++++ /dev/null
 @@ -1,637 +0,0 @@
 -# Makefile.in generated by automake 1.11.1 from Makefile.am.
 -# @configure_input@
@@ -34767,20 +34903,22 @@ Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/libusb/Makefile.in
 -# Tell versions [3.59,3.63) of GNU make to not export all variables.
 -# Otherwise a system limit (for SysV at least) may be exceeded.
 -.NOEXPORT:
-Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/libusb/config.h
-===================================================================
---- OpenNI.orig/Platform/Android/jni/External/libusb-1.0.8/libusb/config.h	2012-09-26 14:25:58.602560121 +0400
-+++ /dev/null	1970-01-01 00:00:00.000000000 +0000
+diff --git a/Platform/Android/jni/External/libusb-1.0.8/libusb/config.h b/Platform/Android/jni/External/libusb-1.0.8/libusb/config.h
+deleted file mode 100644
+index c055b7c..0000000
+--- a/Platform/Android/jni/External/libusb-1.0.8/libusb/config.h
++++ /dev/null
 @@ -1,5 +0,0 @@
 -#define OS_LINUX
 -#define ENABLE_LOGGING 
 -#define API_EXPORTED
 -
 -
-Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/libusb/core.c
-===================================================================
---- OpenNI.orig/Platform/Android/jni/External/libusb-1.0.8/libusb/core.c	2012-09-26 14:25:58.572561732 +0400
-+++ /dev/null	1970-01-01 00:00:00.000000000 +0000
+diff --git a/Platform/Android/jni/External/libusb-1.0.8/libusb/core.c b/Platform/Android/jni/External/libusb-1.0.8/libusb/core.c
+deleted file mode 100644
+index a0e3dbe..0000000
+--- a/Platform/Android/jni/External/libusb-1.0.8/libusb/core.c
++++ /dev/null
 @@ -1,1583 +0,0 @@
 -/*
 - * Core functions for libusb
@@ -36365,10 +36503,11 @@ Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/libusb/core.c
 -	fprintf(stream, "\n");
 -}
 -
-Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/libusb/descriptor.c
-===================================================================
---- OpenNI.orig/Platform/Android/jni/External/libusb-1.0.8/libusb/descriptor.c	2012-09-26 14:25:58.582562256 +0400
-+++ /dev/null	1970-01-01 00:00:00.000000000 +0000
+diff --git a/Platform/Android/jni/External/libusb-1.0.8/libusb/descriptor.c b/Platform/Android/jni/External/libusb-1.0.8/libusb/descriptor.c
+deleted file mode 100644
+index acd7668..0000000
+--- a/Platform/Android/jni/External/libusb-1.0.8/libusb/descriptor.c
++++ /dev/null
 @@ -1,719 +0,0 @@
 -/*
 - * USB descriptor handling functions for libusb
@@ -37089,10 +37228,11 @@ Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/libusb/descriptor.c
 -	return di;
 -}
 -
-Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/libusb/io.c
-===================================================================
---- OpenNI.orig/Platform/Android/jni/External/libusb-1.0.8/libusb/io.c	2012-09-26 14:25:58.562560359 +0400
-+++ /dev/null	1970-01-01 00:00:00.000000000 +0000
+diff --git a/Platform/Android/jni/External/libusb-1.0.8/libusb/io.c b/Platform/Android/jni/External/libusb-1.0.8/libusb/io.c
+deleted file mode 100644
+index 69d62c8..0000000
+--- a/Platform/Android/jni/External/libusb-1.0.8/libusb/io.c
++++ /dev/null
 @@ -1,2313 +0,0 @@
 -/*
 - * I/O functions for libusb
@@ -39407,10 +39547,11 @@ Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/libusb/io.c
 -
 -}
 -
-Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/libusb/libusb.h
-===================================================================
---- OpenNI.orig/Platform/Android/jni/External/libusb-1.0.8/libusb/libusb.h	2012-09-26 14:25:58.592561713 +0400
-+++ /dev/null	1970-01-01 00:00:00.000000000 +0000
+diff --git a/Platform/Android/jni/External/libusb-1.0.8/libusb/libusb.h b/Platform/Android/jni/External/libusb-1.0.8/libusb/libusb.h
+deleted file mode 100644
+index 483d76a..0000000
+--- a/Platform/Android/jni/External/libusb-1.0.8/libusb/libusb.h
++++ /dev/null
 @@ -1,1241 +0,0 @@
 -/*
 - * Public libusb header file
@@ -40653,10 +40794,11 @@ Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/libusb/libusb.h
 -#endif
 -
 -#endif
-Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/libusb/libusbi.h
-===================================================================
---- OpenNI.orig/Platform/Android/jni/External/libusb-1.0.8/libusb/libusbi.h	2012-09-26 14:25:58.592561713 +0400
-+++ /dev/null	1970-01-01 00:00:00.000000000 +0000
+diff --git a/Platform/Android/jni/External/libusb-1.0.8/libusb/libusbi.h b/Platform/Android/jni/External/libusb-1.0.8/libusb/libusbi.h
+deleted file mode 100644
+index e488885..0000000
+--- a/Platform/Android/jni/External/libusb-1.0.8/libusb/libusbi.h
++++ /dev/null
 @@ -1,809 +0,0 @@
 -/*
 - * Internal header for libusb
@@ -41467,10 +41609,11 @@ Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/libusb/libusbi.h
 -
 -#endif
 -
-Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/libusb/os/darwin_usb.c
-===================================================================
---- OpenNI.orig/Platform/Android/jni/External/libusb-1.0.8/libusb/os/darwin_usb.c	2012-09-26 14:25:58.642561867 +0400
-+++ /dev/null	1970-01-01 00:00:00.000000000 +0000
+diff --git a/Platform/Android/jni/External/libusb-1.0.8/libusb/os/darwin_usb.c b/Platform/Android/jni/External/libusb-1.0.8/libusb/os/darwin_usb.c
+deleted file mode 100644
+index 0e69e77..0000000
+--- a/Platform/Android/jni/External/libusb-1.0.8/libusb/os/darwin_usb.c
++++ /dev/null
 @@ -1,1513 +0,0 @@
 -/*
 - * darwin backend for libusb 1.0
@@ -42985,10 +43128,11 @@ Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/libusb/os/darwin_usb.c
 -	.add_iso_packet_size = 0,
 -};
 -
-Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/libusb/os/darwin_usb.h
-===================================================================
---- OpenNI.orig/Platform/Android/jni/External/libusb-1.0.8/libusb/os/darwin_usb.h	2012-09-26 14:25:58.622563093 +0400
-+++ /dev/null	1970-01-01 00:00:00.000000000 +0000
+diff --git a/Platform/Android/jni/External/libusb-1.0.8/libusb/os/darwin_usb.h b/Platform/Android/jni/External/libusb-1.0.8/libusb/os/darwin_usb.h
+deleted file mode 100644
+index a7b31eb..0000000
+--- a/Platform/Android/jni/External/libusb-1.0.8/libusb/os/darwin_usb.h
++++ /dev/null
 @@ -1,161 +0,0 @@
 -/*
 - * darwin backend for libusb 1.0
@@ -43151,10 +43295,11 @@ Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/libusb/os/darwin_usb.h
 -
 -
 -#endif
-Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/libusb/os/linux_usbfs.c
-===================================================================
---- OpenNI.orig/Platform/Android/jni/External/libusb-1.0.8/libusb/os/linux_usbfs.c	2012-09-26 14:25:58.632570250 +0400
-+++ /dev/null	1970-01-01 00:00:00.000000000 +0000
+diff --git a/Platform/Android/jni/External/libusb-1.0.8/libusb/os/linux_usbfs.c b/Platform/Android/jni/External/libusb-1.0.8/libusb/os/linux_usbfs.c
+deleted file mode 100644
+index 6b02188..0000000
+--- a/Platform/Android/jni/External/libusb-1.0.8/libusb/os/linux_usbfs.c
++++ /dev/null
 @@ -1,2211 +0,0 @@
 -/*
 - * Linux usbfs backend for libusb
@@ -45367,10 +45512,11 @@ Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/libusb/os/linux_usbfs.c
 -	.add_iso_packet_size = 0,
 -};
 -
-Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/libusb/os/linux_usbfs.h
-===================================================================
---- OpenNI.orig/Platform/Android/jni/External/libusb-1.0.8/libusb/os/linux_usbfs.h	2012-09-26 14:25:58.622563093 +0400
-+++ /dev/null	1970-01-01 00:00:00.000000000 +0000
+diff --git a/Platform/Android/jni/External/libusb-1.0.8/libusb/os/linux_usbfs.h b/Platform/Android/jni/External/libusb-1.0.8/libusb/os/linux_usbfs.h
+deleted file mode 100644
+index bd02edc..0000000
+--- a/Platform/Android/jni/External/libusb-1.0.8/libusb/os/linux_usbfs.h
++++ /dev/null
 @@ -1,138 +0,0 @@
 -/*
 - * usbfs header structures
@@ -45510,10 +45656,11 @@ Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/libusb/os/linux_usbfs.h
 -#define IOCTL_USBFS_CONNECT	_IO('U', 23)
 -
 -#endif
-Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/libusb/sync.c
-===================================================================
---- OpenNI.orig/Platform/Android/jni/External/libusb-1.0.8/libusb/sync.c	2012-09-26 14:25:58.572561732 +0400
-+++ /dev/null	1970-01-01 00:00:00.000000000 +0000
+diff --git a/Platform/Android/jni/External/libusb-1.0.8/libusb/sync.c b/Platform/Android/jni/External/libusb-1.0.8/libusb/sync.c
+deleted file mode 100644
+index d972c2d..0000000
+--- a/Platform/Android/jni/External/libusb-1.0.8/libusb/sync.c
++++ /dev/null
 @@ -1,311 +0,0 @@
 -/*
 - * Synchronous I/O functions for libusb
@@ -45826,10 +45973,11 @@ Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/libusb/sync.c
 -		transferred, timeout, LIBUSB_TRANSFER_TYPE_INTERRUPT);
 -}
 -
-Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/ltmain.sh
-===================================================================
---- OpenNI.orig/Platform/Android/jni/External/libusb-1.0.8/ltmain.sh	2012-09-26 14:25:58.672561783 +0400
-+++ /dev/null	1970-01-01 00:00:00.000000000 +0000
+diff --git a/Platform/Android/jni/External/libusb-1.0.8/ltmain.sh b/Platform/Android/jni/External/libusb-1.0.8/ltmain.sh
+deleted file mode 100644
+index a72f2fd..0000000
+--- a/Platform/Android/jni/External/libusb-1.0.8/ltmain.sh
++++ /dev/null
 @@ -1,8406 +0,0 @@
 -# Generated from ltmain.m4sh.
 -
@@ -54237,10 +54385,11 @@ Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/ltmain.sh
 -# End:
 -# vi:sw=2
 -
-Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/missing
-===================================================================
---- OpenNI.orig/Platform/Android/jni/External/libusb-1.0.8/missing	2012-09-26 14:25:58.692560000 +0400
-+++ /dev/null	1970-01-01 00:00:00.000000000 +0000
+diff --git a/Platform/Android/jni/External/libusb-1.0.8/missing b/Platform/Android/jni/External/libusb-1.0.8/missing
+deleted file mode 100644
+index 1c8ff70..0000000
+--- a/Platform/Android/jni/External/libusb-1.0.8/missing
++++ /dev/null
 @@ -1,367 +0,0 @@
 -#! /bin/sh
 -# Common stub for a few missing GNU programs while installing.
@@ -54609,11 +54758,11 @@ Index: OpenNI/Platform/Android/jni/External/libusb-1.0.8/missing
 -# time-stamp-format: "%:y-%02m-%02d.%02H"
 -# time-stamp-end: "$"
 -# End:
-Index: OpenNI/Platform/Android/jni/OpenNI/Android.mk
-===================================================================
---- OpenNI.orig/Platform/Android/jni/OpenNI/Android.mk	2012-09-26 14:30:13.911936898 +0400
-+++ OpenNI/Platform/Android/jni/OpenNI/Android.mk	2012-09-26 14:31:26.451937037 +0400
-@@ -24,14 +24,13 @@
+diff --git a/Platform/Android/jni/OpenNI/Android.mk b/Platform/Android/jni/OpenNI/Android.mk
+index 06acac6..47b0911 100644
+--- a/Platform/Android/jni/OpenNI/Android.mk
++++ b/Platform/Android/jni/OpenNI/Android.mk
+@@ -24,14 +24,13 @@ LOCAL_C_INCLUDES := \
  	$(LOCAL_PATH)/../../../../Include/ \
  	$(LOCAL_PATH)/../../../../Source/ \
  	$(LOCAL_PATH)/../../../../Source/External/TinyXml/ \
@@ -54629,7 +54778,7 @@ Index: OpenNI/Platform/Android/jni/OpenNI/Android.mk
  
  LOCAL_PREBUILT_LIBS := libc 
  
-@@ -39,12 +38,4 @@
+@@ -39,12 +38,4 @@ LOCAL_MODULE:= OpenNI
  
  include $(BUILD_SHARED_LIBRARY)
  
@@ -54643,11 +54792,11 @@ Index: OpenNI/Platform/Android/jni/OpenNI/Android.mk
 -	)
 -endif
 +$(call import-module,libusb-1.0)
-Index: OpenNI/Platform/Android/jni/Samples/NiSimpleRead/Android.mk
-===================================================================
---- OpenNI.orig/Platform/Android/jni/Samples/NiSimpleRead/Android.mk	2012-09-26 13:30:36.751939347 +0400
-+++ OpenNI/Platform/Android/jni/Samples/NiSimpleRead/Android.mk	2012-09-26 14:31:56.671936682 +0400
-@@ -11,7 +11,7 @@
+diff --git a/Platform/Android/jni/Samples/NiSimpleRead/Android.mk b/Platform/Android/jni/Samples/NiSimpleRead/Android.mk
+index 5c43cb0..2909467 100644
+--- a/Platform/Android/jni/Samples/NiSimpleRead/Android.mk
++++ b/Platform/Android/jni/Samples/NiSimpleRead/Android.mk
+@@ -11,7 +11,7 @@ LOCAL_C_INCLUDES :=
  
  LOCAL_CFLAGS:= -fvisibility=hidden -DXN_EXPORTS
  
@@ -54656,11 +54805,11 @@ Index: OpenNI/Platform/Android/jni/Samples/NiSimpleRead/Android.mk
  
  LOCAL_MODULE := Sample-SimpleRead
  
-Index: OpenNI/Platform/Android/jni/Samples/NiSimpleSkeleton/Android.mk
-===================================================================
---- OpenNI.orig/Platform/Android/jni/Samples/NiSimpleSkeleton/Android.mk	2012-09-26 13:30:36.751939347 +0400
-+++ OpenNI/Platform/Android/jni/Samples/NiSimpleSkeleton/Android.mk	2012-09-26 14:31:56.671936682 +0400
-@@ -11,7 +11,7 @@
+diff --git a/Platform/Android/jni/Samples/NiSimpleSkeleton/Android.mk b/Platform/Android/jni/Samples/NiSimpleSkeleton/Android.mk
+index 31f8584..1a1034c 100644
+--- a/Platform/Android/jni/Samples/NiSimpleSkeleton/Android.mk
++++ b/Platform/Android/jni/Samples/NiSimpleSkeleton/Android.mk
+@@ -11,7 +11,7 @@ LOCAL_C_INCLUDES :=
  
  LOCAL_CFLAGS:= -fvisibility=hidden -DXN_EXPORTS
  
@@ -54669,11 +54818,11 @@ Index: OpenNI/Platform/Android/jni/Samples/NiSimpleSkeleton/Android.mk
  
  LOCAL_MODULE := Sample-SimpleSkeleton
  
-Index: OpenNI/Platform/Android/jni/Utils/niLicense/Android.mk
-===================================================================
---- OpenNI.orig/Platform/Android/jni/Utils/niLicense/Android.mk	2012-09-26 13:30:36.751939347 +0400
-+++ OpenNI/Platform/Android/jni/Utils/niLicense/Android.mk	2012-09-26 14:31:56.671936682 +0400
-@@ -11,7 +11,7 @@
+diff --git a/Platform/Android/jni/Utils/niLicense/Android.mk b/Platform/Android/jni/Utils/niLicense/Android.mk
+index 176837f..fa15874 100644
+--- a/Platform/Android/jni/Utils/niLicense/Android.mk
++++ b/Platform/Android/jni/Utils/niLicense/Android.mk
+@@ -11,7 +11,7 @@ LOCAL_C_INCLUDES :=
  
  LOCAL_CFLAGS := -fvisibility=hidden -DXN_FORMATS_EXPORTS 
  
@@ -54682,11 +54831,11 @@ Index: OpenNI/Platform/Android/jni/Utils/niLicense/Android.mk
  
  LOCAL_MODULE := niLicense
  
-Index: OpenNI/Platform/Android/jni/Utils/niReg/Android.mk
-===================================================================
---- OpenNI.orig/Platform/Android/jni/Utils/niReg/Android.mk	2012-09-26 13:30:36.751939347 +0400
-+++ OpenNI/Platform/Android/jni/Utils/niReg/Android.mk	2012-09-26 14:31:56.671936682 +0400
-@@ -11,7 +11,7 @@
+diff --git a/Platform/Android/jni/Utils/niReg/Android.mk b/Platform/Android/jni/Utils/niReg/Android.mk
+index 14ddbfd..7daacf3 100644
+--- a/Platform/Android/jni/Utils/niReg/Android.mk
++++ b/Platform/Android/jni/Utils/niReg/Android.mk
+@@ -11,7 +11,7 @@ LOCAL_C_INCLUDES :=
  
  LOCAL_CFLAGS := -fvisibility=hidden -DXN_FORMATS_EXPORTS 
  

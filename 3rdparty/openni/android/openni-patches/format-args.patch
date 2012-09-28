@@ -1,10 +1,19 @@
 Fixed several printf arguments not having the expected type.
 
-Index: OpenNI/Source/OpenNI/XnProfiling.cpp
-===================================================================
---- OpenNI.orig/Source/OpenNI/XnProfiling.cpp	2012-09-26 14:12:06.142564681 +0400
-+++ OpenNI/Source/OpenNI/XnProfiling.cpp	2012-09-26 14:12:06.832561931 +0400
-@@ -87,8 +87,8 @@
+From: Roman Donchenko <roman.donchenko@itseez.com>
+
+This patch is originally from <https://kforge.ros.org/openni/drivers/>,
+slightly modified by me.
+---
+ Source/OpenNI/XnProfiling.cpp        |    8 ++++----
+ Source/Utils/niLicense/niLicense.cpp |    4 ++--
+ 2 files changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/Source/OpenNI/XnProfiling.cpp b/Source/OpenNI/XnProfiling.cpp
+index f9874fa..93dd0a2 100644
+--- a/Source/OpenNI/XnProfiling.cpp
++++ b/Source/OpenNI/XnProfiling.cpp
+@@ -87,8 +87,8 @@ XN_THREAD_PROC xnProfilingThread(XN_THREAD_PARAM /*pThreadParam*/)
  		// print profiled sections
  		nReportChars = 0;
  		nReportChars += sprintf(csReport + nReportChars, "Profiling Report:\n");
@@ -15,7 +24,7 @@ Index: OpenNI/Source/OpenNI/XnProfiling.cpp
  
  		XnUInt64 nTotalTime = 0;
  
-@@ -104,7 +104,7 @@
+@@ -104,7 +104,7 @@ XN_THREAD_PROC xnProfilingThread(XN_THREAD_PARAM /*pThreadParam*/)
  				nAvgTime = pSection->nTotalTime / pSection->nTimesExecuted;
  			}
  
@@ -24,7 +33,7 @@ Index: OpenNI/Source/OpenNI/XnProfiling.cpp
  				pSection->csName, pSection->nTimesExecuted, dCPUPercentage, pSection->nTotalTime, nAvgTime);
  
  			if (pSection->nIndentation == 0)
-@@ -118,7 +118,7 @@
+@@ -118,7 +118,7 @@ XN_THREAD_PROC xnProfilingThread(XN_THREAD_PARAM /*pThreadParam*/)
  		// print total
  		XnDouble dCPUPercentage = ((XnDouble)nTotalTime) / (nNow - nLastTime) * 100.0;
  		nReportChars += sprintf(csReport + nReportChars, "%-*s %5s %6.2f %9llu %7s\n", 
@@ -33,11 +42,11 @@ Index: OpenNI/Source/OpenNI/XnProfiling.cpp
  
  		xnLogVerbose(XN_MASK_PROFILING, "%s", csReport);
  
-Index: OpenNI/Source/Utils/niLicense/niLicense.cpp
-===================================================================
---- OpenNI.orig/Source/Utils/niLicense/niLicense.cpp	2012-09-26 14:12:06.142564681 +0400
-+++ OpenNI/Source/Utils/niLicense/niLicense.cpp	2012-09-26 14:12:06.942561572 +0400
-@@ -119,14 +119,14 @@
+diff --git a/Source/Utils/niLicense/niLicense.cpp b/Source/Utils/niLicense/niLicense.cpp
+index b16659c..09b15da 100644
+--- a/Source/Utils/niLicense/niLicense.cpp
++++ b/Source/Utils/niLicense/niLicense.cpp
+@@ -119,14 +119,14 @@ int main(int argc, char* argv[])
  		nRetVal = xnOSStrNCopy(license.strVendor, strVendor, strlen(strVendor) + 1, sizeof(license.strVendor));
  		if (nRetVal != XN_STATUS_OK)
  		{
@@ -54,4 +63,3 @@ Index: OpenNI/Source/Utils/niLicense/niLicense.cpp
  			return -1;
  		}
  	}
-

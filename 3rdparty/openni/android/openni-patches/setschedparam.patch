@@ -1,10 +1,17 @@
 Fix usage of pthread_setschedparam.
 
-Index: OpenNI/Source/OpenNI/Linux/LinuxThreads.cpp
-===================================================================
---- OpenNI.orig/Source/OpenNI/Linux/LinuxThreads.cpp	2012-09-26 14:12:06.862560798 +0400
-+++ OpenNI/Source/OpenNI/Linux/LinuxThreads.cpp	2012-09-26 14:47:34.491936533 +0400
-@@ -157,7 +157,7 @@
+From: Roman Donchenko <roman.donchenko@itseez.com>
+
+
+---
+ Source/OpenNI/Linux/LinuxThreads.cpp |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/Source/OpenNI/Linux/LinuxThreads.cpp b/Source/OpenNI/Linux/LinuxThreads.cpp
+index 980236c..8b9b6b2 100644
+--- a/Source/OpenNI/Linux/LinuxThreads.cpp
++++ b/Source/OpenNI/Linux/LinuxThreads.cpp
+@@ -157,7 +157,7 @@ XN_C_API XnStatus xnOSSetThreadPriority(XN_THREAD_HANDLE ThreadHandle, XnThreadP
  		memset(&param, 0, sizeof(param));
  	
  #ifndef XN_PLATFORM_HAS_NO_SCHED_PARAM
@@ -13,7 +20,7 @@ Index: OpenNI/Source/OpenNI/Linux/LinuxThreads.cpp
  #endif
  		nPolicy = SCHED_RR;
  	}
-@@ -169,7 +169,7 @@
+@@ -169,7 +169,7 @@ XN_C_API XnStatus xnOSSetThreadPriority(XN_THREAD_HANDLE ThreadHandle, XnThreadP
  	rc = pthread_setschedparam(*ThreadHandle, nPolicy, &param);
  	if (rc != 0)
  	{
