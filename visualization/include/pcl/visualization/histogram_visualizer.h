@@ -77,10 +77,9 @@ namespace pcl
           * \param[in] r the red component of the RGB color
           * \param[in] g the green component of the RGB color
           * \param[in] b the blue component of the RGB color
-          * \param[in] viewport the view port (default: all)
           */
         void 
-        setBackgroundColor (const double &r, const double &g, const double &b, int viewport = 0);
+        setBackgroundColor (const double &r, const double &g, const double &b);
 
         /** \brief Add a histogram feature to screen as a separate window, from a cloud containing a single histogram.
           * \param[in] cloud the PointCloud dataset containing the histogram

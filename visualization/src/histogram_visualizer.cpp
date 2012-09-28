@@ -175,9 +175,10 @@ pcl::visualization::PCLHistogramVisualizer::spin ()
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void 
-pcl::visualization::PCLHistogramVisualizer::setBackgroundColor (const double &, const double &, const double &, int)
+pcl::visualization::PCLHistogramVisualizer::setBackgroundColor (const double &r, const double &g, const double &b)
 {
-/*  rens_->InitTraversal ();
+  /*
+  rens_->InitTraversal ();
   vtkRenderer* renderer = NULL;
   int i = 1;
   while ((renderer = rens_->GetNextItem ()) != NULL)
@@ -194,7 +195,13 @@ pcl::visualization::PCLHistogramVisualizer::setBackgroundColor (const double &, 
       renderer->Render ();
     }
     ++i;
-  }*/
+  }
+  */
+  for (RenWinInteractMap::iterator am_it = wins_.begin (); am_it != wins_.end (); ++am_it)
+  {
+    (*am_it).second.ren_->SetBackground (r, g, b);
+    (*am_it).second.ren_->Render ();
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
