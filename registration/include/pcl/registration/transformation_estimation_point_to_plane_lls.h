@@ -74,6 +74,7 @@ namespace pcl
           * \param[in] cloud_src the source point cloud dataset
           * \param[in] cloud_tgt the target point cloud dataset
           * \param[out] transformation_matrix the resultant transformation matrix
+          * \param[in] weights weights for the point correspondences - not used in this class
           */
         inline void
         estimateRigidTransformation (
@@ -87,6 +88,7 @@ namespace pcl
           * \param[in] indices_src the vector of indices describing the points of interest in \a cloud_src
           * \param[in] cloud_tgt the target point cloud dataset
           * \param[out] transformation_matrix the resultant transformation matrix
+          * \param[in] weights weights for the point correspondences - not used in this class
           */
         inline void
         estimateRigidTransformation (
@@ -102,6 +104,7 @@ namespace pcl
           * \param[in] cloud_tgt the target point cloud dataset
           * \param[in] indices_tgt the vector of indices describing the correspondences of the interst points from \a indices_src
           * \param[out] transformation_matrix the resultant transformation matrix
+          * \param[in] weights weights for the point correspondences - not used in this class
           */
         inline void
         estimateRigidTransformation (

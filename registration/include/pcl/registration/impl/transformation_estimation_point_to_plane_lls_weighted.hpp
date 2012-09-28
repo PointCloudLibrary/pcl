@@ -48,10 +48,17 @@ estimateRigidTransformation (const pcl::PointCloud<PointSource> &cloud_src,
                              Matrix4 &transformation_matrix,
                              const std::vector<Scalar> &weights) const
 {
-  size_t nr_points = cloud_src.points.size ();
-  if (cloud_tgt.points.size () != nr_points)
+  if (cloud_tgt.points.size () != cloud_src.points.size ())
   {
-    PCL_ERROR ("[pcl::TransformationEstimationPointToPlaneLLSWeighted::estimateRigidTransformation] Number or points in source (%zu) differs than target (%zu)!\n", nr_points, cloud_tgt.points.size ());
+    PCL_ERROR ("[pcl::TransformationEstimationPointToPlaneLLSWeighted::estimateRigidTransformation] Number or points in source (%zu) differs than target (%zu)!\n",
+               cloud_src.size (), cloud_tgt.size ());
+    return;
+  }
+
+  if (weights.size () != cloud_src.size ())
+  {
+    PCL_ERROR ("pcl::TransformationEstimationPointToPlaneLLSWeighted::estimateRigidTransformation] Number of weights for the correspondences (%zu) differs from the number of correspondences (%zu)!\n",
+               weights.size (), cloud_src.size ());
     return;
   }
 
@@ -70,10 +77,17 @@ estimateRigidTransformation (const pcl::PointCloud<PointSource> &cloud_src,
                              Matrix4 &transformation_matrix,
                              const std::vector<Scalar> &weights) const
 {
-  size_t nr_points = indices_src.size ();
-  if (cloud_tgt.points.size () != nr_points)
+  if (cloud_tgt.points.size () != indices_src.size ())
   {
-    PCL_ERROR ("[pcl::TransformationEstimationPointToPlaneLLSWeighted::estimateRigidTransformation] Number or points in source (%zu) differs than target (%zu)!\n", indices_src.size (), cloud_tgt.points.size ());
+    PCL_ERROR ("[pcl::TransformationEstimationPointToPlaneLLSWeighted::estimateRigidTransformation] Number or points in source (%zu) differs than target (%zu)!\n",
+               indices_src.size (), cloud_tgt.size ());
+    return;
+  }
+
+  if (weights.size () != indices_src.size ())
+  {
+    PCL_ERROR ("pcl::TransformationEstimationPointToPlaneLLSWeighted::estimateRigidTransformation] Number of weights for the correspondences (%zu) differs from the number of correspondences (%zu)!\n",
+               weights.size (), indices_src.size ());
     return;
   }
 
@@ -94,10 +108,17 @@ estimateRigidTransformation (const pcl::PointCloud<PointSource> &cloud_src,
                              Matrix4 &transformation_matrix,
                              const std::vector<Scalar> &weights) const
 {
-  size_t nr_points = indices_src.size ();
-  if (indices_tgt.size () != nr_points)
+  if (indices_tgt.size () != indices_src.size ())
   {
-    PCL_ERROR ("[pcl::TransformationEstimationPointToPlaneLLSWeighted::estimateRigidTransformation] Number or points in source (%zu) differs than target (%zu)!\n", indices_src.size (), indices_tgt.size ());
+    PCL_ERROR ("[pcl::TransformationEstimationPointToPlaneLLSWeighted::estimateRigidTransformation] Number or points in source (%zu) differs than target (%zu)!\n",
+               indices_src.size (), indices_tgt.size ());
+    return;
+  }
+
+  if (weights.size () != indices_src.size ())
+  {
+    PCL_ERROR ("pcl::TransformationEstimationPointToPlaneLLSWeighted::estimateRigidTransformation] Number of weights for the correspondences (%zu) differs from the number of correspondences (%zu)!\n",
+               weights.size (), indices_src.size ());
     return;
   }
 
@@ -118,7 +139,7 @@ estimateRigidTransformation (const pcl::PointCloud<PointSource> &cloud_src,
   ConstCloudIterator<PointSource> source_it (cloud_src, correspondences, true);
   ConstCloudIterator<PointTarget> target_it (cloud_tgt, correspondences, false);
   std::vector<Scalar> weights (correspondences.size ());
-  for (size_t i = 0; correspondences.size (); ++i)
+  for (size_t i = 0; i < correspondences.size (); ++i)
     weights[i] = correspondences[i].weight;
   typename std::vector<Scalar>::const_iterator weights_it = weights.begin ();
   estimateRigidTransformation (source_it, target_it, weights_it, transformation_matrix);
@@ -157,8 +178,6 @@ estimateRigidTransformation (ConstCloudIterator<PointSource>& source_it,
                              typename std::vector<Scalar>::const_iterator& weights_it,
                              Matrix4 &transformation_matrix) const
 {
-  PCL_INFO ("Using weighted correspondences in transformation estimation\n");
-
   typedef Eigen::Matrix<double, 6, 1> Vector6d;
   typedef Eigen::Matrix<double, 6, 6> Matrix6d;
 
@@ -167,7 +186,7 @@ estimateRigidTransformation (ConstCloudIterator<PointSource>& source_it,
   ATA.setZero ();
   ATb.setZero ();
 
-  while (source_it.isValid () && target_it.isValid () && weights_it.isValid ())
+  while (source_it.isValid ())
   {
     if (!pcl_isfinite (source_it->x) ||
         !pcl_isfinite (source_it->y) ||
@@ -187,8 +206,6 @@ estimateRigidTransformation (ConstCloudIterator<PointSource>& source_it,
       ++ weights_it;
       continue;
     }
-
-    Scalar caca = *weights_it;
 
     const float & sx = source_it->x;
     const float & sy = source_it->y;
