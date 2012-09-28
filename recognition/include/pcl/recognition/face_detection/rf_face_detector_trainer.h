@@ -15,7 +15,7 @@
 
 namespace pcl
 {
-  class RFFaceDetectorTrainer
+  class PCL_EXPORTS RFFaceDetectorTrainer
   {
     private:
       int w_size_;
