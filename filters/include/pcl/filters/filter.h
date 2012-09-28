@@ -61,6 +61,19 @@ namespace pcl
                            pcl::PointCloud<PointT> &cloud_out, 
                            std::vector<int> &index);
 
+  /** \brief Removes points that have their normals invalid (i.e., equal to NaN)
+    * \param[in] cloud_in the input point cloud
+    * \param[out] cloud_out the input point cloud
+    * \param[out] index the mapping (ordered): cloud_out.points[i] = cloud_in.points[index[i]]
+    * \note The density of the point cloud is lost.
+    * \note Can be called with cloud_in == cloud_out
+    * \ingroup filters
+    */
+  template<typename PointT> void
+  removeNaNNormalsFromPointCloud (const pcl::PointCloud<PointT> &cloud_in, 
+                                  pcl::PointCloud<PointT> &cloud_out, 
+                                  std::vector<int> &index);
+
   ////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief Filter represents the base filter class. All filters must inherit from this interface.
     * \author Radu B. Rusu

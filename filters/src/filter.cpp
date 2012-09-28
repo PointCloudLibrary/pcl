@@ -76,5 +76,6 @@ pcl::Filter<sensor_msgs::PointCloud2>::filter (PointCloud2 &output)
 }
 
 // Instantiations of specific point types
-PCL_INSTANTIATE(removeNanFromPointCloud, PCL_XYZ_POINT_TYPES)
+PCL_INSTANTIATE(removeNaNFromPointCloud, PCL_XYZ_POINT_TYPES)
+PCL_INSTANTIATE(removeNaNNormalsFromPointCloud, PCL_NORMAL_POINT_TYPES)
 
