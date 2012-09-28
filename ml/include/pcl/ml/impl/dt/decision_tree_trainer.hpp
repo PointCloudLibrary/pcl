@@ -290,14 +290,14 @@ pcl::DecisionTreeTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType
   }
 
   const float range = max_value - min_value;
-  const float step = range / (num_of_thresholds+2);
+  const float step = range / static_cast<float>(num_of_thresholds+2);
 
   // compute thresholds
   thresholds.resize (num_of_thresholds);
 
   for (int threshold_index = 0; threshold_index < num_of_thresholds; ++threshold_index)
   {
-    thresholds[threshold_index] = min_value + step*(threshold_index+1);
+    thresholds[threshold_index] = min_value + step*(static_cast<float>(threshold_index+1));
   }
 }
   
