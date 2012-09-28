@@ -48,7 +48,7 @@ namespace pcl
     * For more information check the documentation of setConditionFunction() or the usage example below:
     * \code
     * bool
-    * enforceIntensitySimilarity (pcl::PointXYZI point_a, pcl::PointXYZI point_b, float squared_distance)
+    * enforceIntensitySimilarity (const pcl::PointXYZI& point_a, const pcl::PointXYZI& point_b, float squared_distance)
     * {
     *   if (fabs (point_a.intensity - point_b.intensity) < 0.1f)
     *     return (true);
