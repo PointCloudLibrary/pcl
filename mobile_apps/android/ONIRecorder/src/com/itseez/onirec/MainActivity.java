@@ -107,7 +107,11 @@ public class MainActivity extends Activity {
         textFps = (TextView) findViewById(R.id.text_fps);
         surfaceColor = (SurfaceView) findViewById(R.id.surface_color);
         surfaceDepth = (SurfaceView) findViewById(R.id.surface_depth);
-        updateLastRecording(null);
+
+        if (savedInstanceState == null)
+            updateLastRecording(null);
+        else
+            updateLastRecording((File) savedInstanceState.getSerializable("lastRecording"));
 
         surfaceColor.getHolder().addCallback(surface_callbacks);
         surfaceDepth.getHolder().addCallback(surface_callbacks);
@@ -125,6 +129,11 @@ public class MainActivity extends Activity {
     protected void onStop() {
         super.onStop();
         state.stop();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putSerializable("lastRecording", lastRecording);
     }
 
     @SuppressWarnings("UnusedDeclaration")
@@ -197,6 +206,9 @@ public class MainActivity extends Activity {
             else
                 setState(new StateWaiting(new StateCapturing()));
         }
+
+        @Override
+        public void surfaceStateChange() { }
     }
 
     private class StateIdle extends State {
@@ -223,7 +235,7 @@ public class MainActivity extends Activity {
         @Override
         public void replayClicked() {
             awaitingPermission.clear();
-            setState(new StateWaiting(new StateCapturing()));
+            setState(new StateWaiting(new StateReplaying()));
         }
     }
 
@@ -288,6 +300,81 @@ public class MainActivity extends Activity {
         }
     }
 
+    private class StateReplaying extends State {
+        CaptureThreadManager manager;
+
+        @Override
+        public void enter() {
+            buttonReplay.setText(R.string.replay_stop);
+            textFps.setVisibility(View.VISIBLE);
+            textFps.setText(String.format(getResources().getString(R.string.x_fps), 0.));
+            textStatus.setText(String.format(getResources().getString(R.string.status_replaying), lastRecording.getName()));
+
+            CaptureThreadManager.Feedback feedback = new CaptureThreadManager.Feedback() {
+                @Override
+                public void setFps(double fps) {
+                    textFps.setText(String.format(getResources().getString(R.string.x_fps), fps));
+                }
+
+                @Override
+                public void reportError(Error error, String oniMessage) {
+                    switch (error) {
+                        case FailedToStartCapture:
+                            setState(new StateIdle(R.string.status_openni_error,
+                                    getResources().getString(R.string.error_failed_to_start_replay), oniMessage));
+                            return;
+                        case FailedDuringCapture:
+                            setState(new StateIdle(R.string.status_openni_error,
+                                    getResources().getString(R.string.error_failed_during_replay), oniMessage));
+                            return;
+                        default:
+                            throw new IllegalStateException();
+                    }
+                }
+
+                @Override
+                public void reportRecordingFinished() {
+                    throw new IllegalStateException();
+                }
+            };
+
+            manager = new CaptureThreadManager(surfaceColor.getHolder(), surfaceDepth.getHolder(), feedback, lastRecording);
+        }
+
+        @Override
+        public void leave() {
+            manager.stop();
+
+            textFps.setVisibility(View.INVISIBLE);
+            updateLastRecording(lastRecording);
+        }
+
+        @Override
+        public void stop() {
+            setState(new StateStopped());
+        }
+
+        @Override
+        public void surfaceStateChange() {
+            if (surfaces < 2) setState(new StateWaiting(new StateCapturing()));
+        }
+
+        @Override
+        public void usbPermissionChange(UsbDevice device, boolean granted) { }
+
+        @Override
+        public void replayClicked() {
+            updateLastRecording(lastRecording);
+
+            findInterestingDevices();
+
+            if (awaitingPermission.isEmpty())
+                setState(new StateIdle(R.string.status_no_devices));
+            else
+                setState(new StateWaiting(new StateCapturing()));
+        }
+    }
+
     private class StateCapturing extends State {
         CaptureThreadManager manager;
         boolean isRecording = false;
@@ -317,22 +404,24 @@ public class MainActivity extends Activity {
                 public void reportError(Error error, String oniMessage) {
                     switch (error) {
                     case FailedToStartCapture:
-                        setState(new StateIdle(R.string.status_capture_error,
+                        setState(new StateIdle(R.string.status_openni_error,
                                 getResources().getString(R.string.error_failed_to_start_capture), oniMessage));
                         return;
                     case FailedDuringCapture:
                         if (isRecording) updateLastRecording(null);
-                        setState(new StateIdle(R.string.status_capture_error,
+                        setState(new StateIdle(R.string.status_openni_error,
                                 getResources().getString(R.string.error_failed_during_capture), oniMessage));
                         return;
                     case FailedToStartRecording:
                         setRecordingState(false);
                         Toast.makeText(MainActivity.this,
-                                String.format(getResources().getString(R.string.status_capture_error),
+                                String.format(getResources().getString(R.string.status_openni_error),
                                         getResources().getString(R.string.error_failed_to_start_recording),
                                         oniMessage),
                                 Toast.LENGTH_LONG).show();
                         updateLastRecording(null);
+                    default:
+                        throw new IllegalStateException();
                     }
                 }
 
@@ -391,7 +480,13 @@ public class MainActivity extends Activity {
                 setRecordingState(true);
                 textStatus.setText(String.format(getResources().getString(R.string.status_recording_to),
                         currentRecording.getAbsolutePath()));
+                buttonReplay.setEnabled(false);
             }
+        }
+
+        @Override
+        public void replayClicked() {
+            setState(new StateReplaying());
         }
     }
 }

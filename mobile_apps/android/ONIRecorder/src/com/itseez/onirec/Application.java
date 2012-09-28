@@ -105,7 +105,7 @@ public class Application extends android.app.Application {
         File ni_out_dir = getDir("ni", MODE_PRIVATE);
 
         extractAssets(ni_out_dir);
-        writeModulesXml(ni_out_dir, new String[] { "XnDeviceSensorV2", "nimCodecs", "nimRecorder" }, new File(lib_dir));
+        writeModulesXml(ni_out_dir, new String[] { "XnDeviceSensorV2", "nimCodecs", "nimRecorder", "nimMockNodes" }, new File(lib_dir));
 
         setenv("LIBUSB_DEBUG", "1");
         setenv("OPEN_NI_INSTALL_PATH", ni_out_dir.getAbsolutePath());

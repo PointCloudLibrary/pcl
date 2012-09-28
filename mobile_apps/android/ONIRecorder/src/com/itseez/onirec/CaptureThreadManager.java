@@ -165,6 +165,24 @@ class CaptureThreadManager {
         });
     }
 
+    public CaptureThreadManager(SurfaceHolder holderColor, SurfaceHolder holderDepth, Feedback feedback, final File recording) {
+        this.holderColor = holderColor;
+        this.holderDepth = holderDepth;
+        this.feedback = feedback;
+
+        thread = new HandlerThread("Capture Thread");
+        thread.start();
+
+        handler = new Handler(thread.getLooper());
+
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                initOpenNIFromRecording(recording);
+            }
+        });
+    }
+
     public void stop() {
         handler.post(new Runnable() {
             @Override

@@ -9,13 +9,16 @@
     <string name="status_previewing">Previewing…</string>
     <string name="status_recording_to">Recording to %1$s…</string>
     <string name="status_permission_denied">USB permission denied.</string>
-    <string name="status_capture_error">Error: %1$s; OpenNI says: \"%2$s\".</string>
+    <string name="status_openni_error">Error: %1$s; OpenNI says: \"%2$s\".</string>
+    <string name="status_replaying">Replaying %1$s…</string>
     <string name="x_fps">%1$.2f FPS</string>
     <string name="record_start">Start recording</string>
     <string name="record_stop">Stop recording</string>
     <string name="error_failed_to_start_capture">failed to start capture</string>
     <string name="error_failed_during_capture">capture has terminated abnormally</string>
     <string name="error_failed_to_start_recording">failed to start recording</string>
+    <string name="error_failed_to_start_replay">failed to start replay</string>
+    <string name="error_failed_during_replay">replay has terminated abnormally</string>
     <string name="replay_start">Replay %1$s</string>
     <string name="replay_stop">Stop replaying</string>
     <string name="last_recording">last recording</string>
