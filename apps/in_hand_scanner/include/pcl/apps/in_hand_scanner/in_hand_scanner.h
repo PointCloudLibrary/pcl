@@ -243,6 +243,7 @@ namespace pcl
         PCLVisualizerPtr            visualizer_;
         InteractorStylePtr          interactor_style_;
         bool                        draw_crop_box_;
+        Eigen::Vector4f             pivot_;
 
         GrabberPtr                  grabber_;
         boost::signals2::connection new_data_connection_;
