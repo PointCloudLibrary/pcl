@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -305,6 +306,7 @@ public class MainActivity extends Activity {
 
         @Override
         public void enter() {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
             buttonReplay.setText(R.string.replay_stop);
             textFps.setVisibility(View.VISIBLE);
             textFps.setText(String.format(getResources().getString(R.string.x_fps), 0.));
@@ -347,6 +349,7 @@ public class MainActivity extends Activity {
 
             textFps.setVisibility(View.INVISIBLE);
             updateLastRecording(lastRecording);
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         }
 
         @Override
@@ -388,6 +391,7 @@ public class MainActivity extends Activity {
 
         @Override
         public void enter() {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
             textFps.setVisibility(View.VISIBLE);
             textFps.setText(String.format(getResources().getString(R.string.x_fps), 0.));
             buttonRecord.setVisibility(View.VISIBLE);
@@ -442,6 +446,7 @@ public class MainActivity extends Activity {
 
             textFps.setVisibility(View.INVISIBLE);
             buttonRecord.setVisibility(View.INVISIBLE);
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         }
 
         @Override
