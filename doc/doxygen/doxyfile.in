@@ -214,7 +214,7 @@ SERVER_BASED_SEARCH    = YES
 #---------------------------------------------------------------------------
 # configuration options related to the LaTeX output
 #---------------------------------------------------------------------------
-GENERATE_LATEX         = NO
+GENERATE_LATEX         = YES
 LATEX_OUTPUT           = latex
 LATEX_CMD_NAME         = latex
 MAKEINDEX_CMD_NAME     = makeindex
@@ -280,7 +280,8 @@ SEARCH_INCLUDES        = YES
 INCLUDE_PATH           = 
 INCLUDE_FILE_PATTERNS  = *.h
 #PREDEFINED             = protected=private \
-PREDEFINED             = "HAVE_QHULL=1"
+PREDEFINED             = "HAVE_QHULL=1" \
+                         "HAVE_OPENNI=1"
 EXPAND_AS_DEFINED      = 
 SKIP_FUNCTION_MACROS   = YES
 
