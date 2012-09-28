@@ -38,15 +38,17 @@
  *  Created on: May 28, 2012
  *      Author: somani
  */
-#include "../edge.h"
-#include "../convolution_2d.h"
+
+#ifndef PCL_2D_KEYPOINT_HPP_
+#define PCL_2D_KEYPOINT_HPP_
+
+#include <pcl/2d/edge.h>
+#include <pcl/2d/convolution_2d.h>
 #include <limits>
 
-#ifndef KEYPOINT_HPP_
-#define KEYPOINT_HPP_
-
+//////////////////////////////////////////////////////////////////////////////
 void
-pcl::pcl_2d::keypoint::harrisCorner  (ImageType &output, ImageType &input, const float sigma_d, const float sigma_i, const float alpha, const float thresh){
+pcl::keypoint::harrisCorner (ImageType &output, ImageType &input, const float sigma_d, const float sigma_i, const float alpha, const float thresh){
 
   /*creating the gaussian kernels*/
   ImageType kernel_d;
@@ -108,10 +110,11 @@ pcl::pcl_2d::keypoint::harrisCorner  (ImageType &output, ImageType &input, const
         output[i][j] = 0;
     }
   }
-
 }
+
+//////////////////////////////////////////////////////////////////////////////
 void
-pcl::pcl_2d::keypoint::hessianBlob  (ImageType &output, ImageType &input, const float sigma, bool SCALED){
+pcl::keypoint::hessianBlob (ImageType &output, ImageType &input, const float sigma, bool SCALED){
   /*creating the gaussian kernels*/
   ImageType kernel, cornerness;
   conv_2d->gaussianKernel  (5, sigma, kernel);
@@ -168,8 +171,9 @@ pcl::pcl_2d::keypoint::hessianBlob  (ImageType &output, ImageType &input, const 
   }
 }
 
+//////////////////////////////////////////////////////////////////////////////
 void
-pcl::pcl_2d::keypoint::hessianBlob  (ImageType &output, ImageType &input, const float start_scale, const float scaling_factor, const int num_scales){
+pcl::keypoint::hessianBlob (ImageType &output, ImageType &input, const float start_scale, const float scaling_factor, const int num_scales){
   const size_t height = input.size();
   const size_t width = input[0].size();
   const int local_search_radius = 1;
@@ -223,8 +227,10 @@ pcl::pcl_2d::keypoint::hessianBlob  (ImageType &output, ImageType &input, const 
     }
   }
 }
+
+//////////////////////////////////////////////////////////////////////////////
 void
-pcl::pcl_2d::keypoint::imageElementMultiply  (ImageType &output, ImageType &input1, ImageType &input2){
+pcl::keypoint::imageElementMultiply (ImageType &output, ImageType &input1, ImageType &input2){
   const size_t height = input1.size ();
   const size_t width = input1[0].size ();
   output.resize (height);
@@ -237,4 +243,5 @@ pcl::pcl_2d::keypoint::imageElementMultiply  (ImageType &output, ImageType &inpu
     }
   }
 }
-#endif /* KEYPOINT_HPP_ */
+
+#endif  // PCL_2D_KEYPOINT_HPP_

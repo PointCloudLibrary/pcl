@@ -246,25 +246,17 @@ pcl::OrganizedEdgeFromRGB<PointT, PointLT>::extractEdges (pcl::PointCloud<PointL
 {
   if ((detecting_edge_types_ & EDGELABEL_RGB_CANNY))
   {
-    pcl::PointCloud<PointXYZI> gray;
-    gray.width = input_->width;
-    gray.height = input_->height;
-    gray.resize (input_->height*input_->width);
+    pcl::PointCloud<PointXYZI>::Ptr gray (new pcl::PointCloud<PointXYZI>);
+    gray->width = input_->width;
+    gray->height = input_->height;
+    gray->resize (input_->height*input_->width);
 
-    for (int row = 0; row < int(input_->height); row++)
-    {
-      for (int col = 0; col < int(input_->width); col++)
-      {
-        int r = input_->points[row*int(input_->width) + col].r;
-        int g = input_->points[row*int(input_->width) + col].g;
-        int b = input_->points[row*int(input_->width) + col].b;
-        gray (col, row).intensity = float ((r+g+b) / 3);
-      }
-    }
+    for (size_t i = 0; i < input_->size (); ++i)
+      (*gray)[i].intensity = float (((*input_)[i].r + (*input_)[i].g + (*input_)[i].b) / 3);
 
-    pcl::PointCloud<pcl::pcl_2d::PointXYZIEdge> img_edge_rgb;
-    pcl::pcl_2d::edge<PointXYZI, pcl::pcl_2d::PointXYZIEdge> edge;
-    edge.setInputCloud (gray.makeShared ());
+    pcl::PointCloud<pcl::PointXYZIEdge> img_edge_rgb;
+    pcl::Edge<PointXYZI, pcl::PointXYZIEdge> edge;
+    edge.setInputCloud (gray);
     edge.setHysteresisThresholdLow (th_rgb_canny_low_);
     edge.setHysteresisThresholdHigh (th_rgb_canny_high_);
     edge.detectEdgeCanny (img_edge_rgb);
@@ -321,11 +313,11 @@ pcl::OrganizedEdgeFromNormals<PointT, PointNT, PointLT>::extractEdges (pcl::Poin
       }
     }
 
-    pcl::PointCloud<pcl::pcl_2d::PointXYZIEdge> img_edge;
-    pcl::pcl_2d::edge<PointXYZI, pcl::pcl_2d::PointXYZIEdge> edge;
+    pcl::PointCloud<pcl::PointXYZIEdge> img_edge;
+    pcl::Edge<PointXYZI, pcl::PointXYZIEdge> edge;
     edge.setHysteresisThresholdLow (th_hc_canny_low_);
     edge.setHysteresisThresholdHigh (th_hc_canny_high_);
-    edge.canny (img_edge, nx, ny);
+    edge.canny (nx, ny, img_edge);
 
     for (int row=0; row<labels.height; row++)
     {

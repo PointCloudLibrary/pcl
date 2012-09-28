@@ -44,7 +44,7 @@
 #include <pcl/2d/Morphology.h>
 #include <pcl/pcl_base.h>
 
-using namespace pcl::pcl_2d;
+using namespace pcl;
 
 void example_edge ()
 {
