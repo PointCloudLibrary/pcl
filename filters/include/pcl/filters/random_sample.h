@@ -65,6 +65,10 @@ namespace pcl
     typedef typename PointCloud::ConstPtr PointCloudConstPtr;
 
     public:
+
+      typedef boost::shared_ptr<RandomSample<PointT> > Ptr;
+      typedef boost::shared_ptr<const RandomSample<PointT> > ConstPtr;
+
       /** \brief Empty constructor. */
       RandomSample () : sample_ (UINT_MAX), seed_ (static_cast<unsigned int> (time (NULL)))
       {
@@ -145,11 +149,15 @@ namespace pcl
     using FilterIndices<sensor_msgs::PointCloud2>::filter_name_;
     using FilterIndices<sensor_msgs::PointCloud2>::getClassName;
 
-    typedef sensor_msgs::PointCloud2 PointCloud2;
-    typedef PointCloud2::Ptr PointCloud2Ptr;
-    typedef PointCloud2::ConstPtr PointCloud2ConstPtr;
+    typedef typename sensor_msgs::PointCloud2 PointCloud2;
+    typedef typename PointCloud2::Ptr PointCloud2Ptr;
+    typedef typename PointCloud2::ConstPtr PointCloud2ConstPtr;
 
     public:
+  
+      typedef boost::shared_ptr<RandomSample<sensor_msgs::PointCloud2> > Ptr;
+      typedef boost::shared_ptr<const RandomSample<sensor_msgs::PointCloud2> > ConstPtr;
+  
       /** \brief Empty constructor. */
       RandomSample () : sample_ (UINT_MAX), seed_ (static_cast<unsigned int> (time (NULL)))
       {

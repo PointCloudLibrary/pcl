@@ -58,6 +58,7 @@
 #include <pcl/outofcore/outofcore_base_data.h>
 
 #include <pcl/filters/filter.h>
+#include <pcl/filters/random_sample.h>
 
 #include <sensor_msgs/PointCloud2.h>
 
@@ -65,6 +66,15 @@ namespace pcl
 {
   namespace outofcore
   {
+    struct OutofcoreParams
+    {
+      std::string node_index_basename_;
+      std::string node_container_basename_;
+      std::string node_index_extension_;
+      std::string node_container_extension_;
+      double sample_percent;
+    };
+    
     /** \class OutofcoreOctreeBase 
      *  \brief This code defines the octree used for point storage at Urban Robotics. 
      * 
@@ -304,7 +314,7 @@ namespace pcl
          * \param[out] dst The destination vector of points
          */
         void
-        queryBBIncludes (const Eigen::Vector3d &min, const Eigen::Vector3d &max, const size_t query_depth, AlignedPointTVector &dst) const;
+        queryBBIncludes (const Eigen::Vector3d &min, const Eigen::Vector3d &max, const boost::uint64_t query_depth, AlignedPointTVector &dst) const;
 
         /** \brief Query all points falling within the input bounding box at \ref query_depth and return a PointCloud2 object in \ref dst_blob.
          *
@@ -314,7 +324,7 @@ namespace pcl
          * \param[out] dst_blob Storage location for the points satisfying the query.
          **/
         void
-        queryBBIncludes (const Eigen::Vector3d &min, const Eigen::Vector3d &max, const int query_depth, const sensor_msgs::PointCloud2::Ptr &dst_blob) const;
+        queryBBIncludes (const Eigen::Vector3d &min, const Eigen::Vector3d &max, const boost::uint64_t query_depth, const sensor_msgs::PointCloud2::Ptr &dst_blob) const;
         
         /** \brief Returns a random subsample of points within the given bounding box at \ref query_depth.
          *
@@ -325,7 +335,7 @@ namespace pcl
          * 
          */
         void
-        queryBBIncludes_subsample (const Eigen::Vector3d &min, const Eigen::Vector3d &max, size_t query_depth, const double percent, AlignedPointTVector &dst) const;
+        queryBBIncludes_subsample (const Eigen::Vector3d &min, const Eigen::Vector3d &max, uint64_t query_depth, const double percent, AlignedPointTVector &dst) const;
 
         //--------------------------------------------------------------------------------
         //PointCloud2 methods
@@ -564,7 +574,7 @@ namespace pcl
 
         /** \brief recursive portion of lod builder */
         void
-        buildLODRecursive (OutofcoreNodeType** current_branch, const int current_dims);
+        buildLODRecursive (std::vector<BranchNode*>& current_branch);
 
         /** \brief Re-write of the original UR buildLOD which
          *  recursively constructs the LOD in a depth-first fashion 
@@ -631,7 +641,7 @@ namespace pcl
 
         double sample_percent_;
 
-        pcl::Filter<sensor_msgs::PointCloud2>::Ptr lod_filter_ptr_;
+        pcl::RandomSample<sensor_msgs::PointCloud2>::Ptr lod_filter_ptr_;
         
     };
   }

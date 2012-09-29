@@ -107,6 +107,7 @@ namespace pcl
       , metadata_ (new OutofcoreOctreeBaseMetadata ())
       , lod_filter_ptr_ (new pcl::RandomSample<sensor_msgs::PointCloud2> ())
     {
+      //Enlarge the bounding box to a cube so our voxels will be cubes
       Eigen::Vector3d tmp_min = min;
       Eigen::Vector3d tmp_max = max;
       this->enlargeToCube (tmp_min, tmp_max);
@@ -245,6 +246,7 @@ namespace pcl
     }
 
     ////////////////////////////////////////////////////////////////////////////////
+
     template<typename ContainerT, typename PointT> boost::uint64_t
     OutofcoreOctreeBase<ContainerT, PointT>::addPointCloud_and_genLOD (sensor_msgs::PointCloud2::Ptr &input_cloud)
     {
@@ -273,7 +275,7 @@ namespace pcl
     ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> void
-    OutofcoreOctreeBase<ContainerT, PointT>::queryBBIncludes (const Eigen::Vector3d& min, const Eigen::Vector3d& max, const size_t query_depth, AlignedPointTVector& dst) const
+    OutofcoreOctreeBase<ContainerT, PointT>::queryBBIncludes (const Eigen::Vector3d& min, const Eigen::Vector3d& max, const boost::uint64_t query_depth, AlignedPointTVector& dst) const
     {
       boost::shared_lock < boost::shared_mutex > lock (read_write_mutex_);
       dst.clear ();
@@ -282,8 +284,9 @@ namespace pcl
     }
 
     ////////////////////////////////////////////////////////////////////////////////
+
     template<typename ContainerT, typename PointT> void
-    OutofcoreOctreeBase<ContainerT, PointT>::queryBBIncludes (const Eigen::Vector3d& min, const Eigen::Vector3d& max, const int query_depth, const sensor_msgs::PointCloud2::Ptr& dst_blob) const
+    OutofcoreOctreeBase<ContainerT, PointT>::queryBBIncludes (const Eigen::Vector3d& min, const Eigen::Vector3d& max, const boost::uint64_t query_depth, const sensor_msgs::PointCloud2::Ptr& dst_blob) const
     {
       boost::shared_lock < boost::shared_mutex > lock (read_write_mutex_);
 
@@ -297,7 +300,7 @@ namespace pcl
     ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> void
-    OutofcoreOctreeBase<ContainerT, PointT>::queryBBIncludes_subsample (const Eigen::Vector3d& min, const Eigen::Vector3d& max, const size_t query_depth, const double percent, AlignedPointTVector& dst) const
+    OutofcoreOctreeBase<ContainerT, PointT>::queryBBIncludes_subsample (const Eigen::Vector3d& min, const Eigen::Vector3d& max, const boost::uint64_t query_depth, const double percent, AlignedPointTVector& dst) const
     {
       boost::shared_lock < boost::shared_mutex > lock (read_write_mutex_);
       dst.clear ();
@@ -320,7 +323,7 @@ namespace pcl
     ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> void
-    OutofcoreOctreeBase<ContainerT, PointT>::printBoundingBox(const size_t query_depth) const
+    OutofcoreOctreeBase<ContainerT, PointT>::printBoundingBox(const boost::uint64_t query_depth) const
     {
       boost::shared_lock < boost::shared_mutex > lock (read_write_mutex_);
       root_node_->printBoundingBox (query_depth);
@@ -511,14 +514,16 @@ namespace pcl
 
       boost::unique_lock < boost::shared_mutex > lock (read_write_mutex_);
 
-      const int current_dims = 1;
+      const int number_of_nodes = 1;
 
-      OutofcoreOctreeBaseNode<ContainerT, PointT>* current_branch[current_dims] = {root_node_};
+      std::vector<BranchNode*> current_branch (number_of_nodes, static_cast<BranchNode*>(0));
+      current_branch[0] = root_node_;
 
-      this->buildLODRecursive (current_branch, current_dims);
+      this->buildLODRecursive (current_branch);
     }
 
     ////////////////////////////////////////////////////////////////////////////////
+
     template<typename ContainerT, typename PointT> void
     OutofcoreOctreeBase<ContainerT, PointT>::printBoundingBox (OutofcoreOctreeBaseNode<ContainerT, PointT>& node) const
     {
@@ -529,99 +534,96 @@ namespace pcl
     
 
     ////////////////////////////////////////////////////////////////////////////////
+
     template<typename ContainerT, typename PointT> void
     OutofcoreOctreeBase<ContainerT, PointT>::buildLODIterative ()
     {
       OutofcoreOctreeBase<ContainerT, PointT>::Iterator myit (*this);
-      
-      while (*myit!=0)
-      {
-        this->printBoundingBox (**myit);
-      }
-      
     }
 
     ////////////////////////////////////////////////////////////////////////////////
+
     template<typename ContainerT, typename PointT> void
-    OutofcoreOctreeBase<ContainerT, PointT>::buildLODRecursive (OutofcoreOctreeBaseNode<ContainerT, PointT>** current_branch, const int current_dims)
+    OutofcoreOctreeBase<ContainerT, PointT>::buildLODRecursive (std::vector<BranchNode*>& current_branch)
     {
-      //stop if this brach does not exist
-      if (!current_branch[current_dims - 1])
+      PCL_DEBUG ("[pcl::outofcore::OutofcoreOctreeBase::%s] Building LOD at depth %d",__FUNCTION__,current_branch.size ());
+      
+      if (!current_branch.back ())
       {
         return;
       }
-
-      if ((current_branch[current_dims - 1]->getNumChildren () == 0)
-          && (!current_branch[current_dims - 1]->hasUnloadedChildren ()))//at leaf: subsample, remove, and copy to higher nodes
+      
+      if (current_branch.back ()->getNodeType () == pcl::octree::LEAF_NODE)
       {
-        //this node's idx is (current_dims-1)
-        OutofcoreOctreeBaseNode<ContainerT, PointT>* leaf = current_branch[current_dims - 1];
+        BranchNode* leaf = current_branch.back ();
 
-        boost::uint64_t leaf_start_size = leaf->payload_->size ();
-        if (leaf_start_size > 0)//skip empty
+        sensor_msgs::PointCloud2::Ptr leaf_input_cloud (new sensor_msgs::PointCloud2 ());
+        //read the data from the PCD file associated with the leaf; it is full resolution
+        leaf->read (leaf_input_cloud);
+        
+        //go up the tree, re-downsampling the full resolution leaf cloud at lower and lower resolution
+        for (int64_t level = static_cast<uint64_t>(current_branch.size ()-2); level >= 0; level--)
         {
-          for (boost::uint64_t startp = 0; startp < leaf_start_size; startp += LOAD_COUNT_)
+          BranchNode* target_parent = current_branch[level];
+          double exponent = static_cast<double>(current_branch.size () - target_parent->getDepth ());
+          double current_depth_sample_percent = pow (sample_percent_, exponent);
+          //------------------------------------------------------------
+          //subsample data:
+          //   1. Get indices from a random sample
+          //   2. Extract those indices with the extract indices class (in order to also get the complement)
+          //------------------------------------------------------------
+
+          lod_filter_ptr_->setInputCloud (leaf_input_cloud);
+
+          //set sample size to 1/8 of total points (12.5%)
+          uint64_t sample_size = static_cast<uint64_t> (static_cast<double> (leaf_input_cloud->width*leaf_input_cloud->height) * current_depth_sample_percent);
+          
+          lod_filter_ptr_->setSample (static_cast<unsigned int> (sample_size));
+      
+          //create our destination
+          sensor_msgs::PointCloud2::Ptr downsampled_cloud (new sensor_msgs::PointCloud2 ());
+
+          //create destination for indices
+          pcl::IndicesPtr downsampled_cloud_indices (new std::vector< int > ());
+          lod_filter_ptr_->filter (*downsampled_cloud_indices);
+
+          //extract the "random subset", size by setSampleSize
+          pcl::ExtractIndices<sensor_msgs::PointCloud2> extractor;
+          extractor.setInputCloud (leaf_input_cloud);
+          extractor.setIndices (downsampled_cloud_indices);
+          extractor.filter (*downsampled_cloud);
+
+          //write to the target
+          if (downsampled_cloud->width*downsampled_cloud->height > 0)
           {
-            //there are (current_dims-1) nodes above this one, indexed 0 thru (current_dims-2)
-            for (size_t level = (current_dims - 1); level >= 1; level--)
-            {
-              //the target to copy points into
-              OutofcoreOctreeBaseNode<ContainerT, PointT>* target_parent = current_branch[level - 1];
-
-              //the percent to copy
-              //each level up the chain gets sample_precent^l of the leaf's data
-//              lod_filter_ptr_->setSample (std::pow (sample_precent_, current_dims - level)*num_points);
-              
-              double percent = pow (double (OutofcoreOctreeBaseNode<ContainerT, PointT>::sample_precent), double (current_dims - level));
-
-              //read in percent of node
-              sensor_msgs::PointCloud2::Ptr tmp_blob (new sensor_msgs::PointCloud2 ());
-              sensor_msgs::PointCloud2::Ptr subsampled_blob (new sensor_msgs::PointCloud2 ());
-              leaf->read (tmp_blob);
-              //subsample the blob
-              
-              //write to the target
-              
-              PCL_THROW_EXCEPTION (PCLException, "Not implemented\n");
-
-#if 0              
-              if (!v.empty ())
-              {
-                target_parent->payload_->insertRange ( v );
-//                target_parent->payload->insertRange (&(v.front ()), v.size ());
-                this->incrementPointsInLOD (target_parent->depth_, v.size ());
-              }
-#endif
-            }
+            target_parent->payload_->insertRange (downsampled_cloud);
+            this->incrementPointsInLOD (target_parent->getDepth (), downsampled_cloud->width*downsampled_cloud->height);
           }
         }
       }
       else//not at leaf, keep going down
       {
-        //clear this node, in case we are updating the LOD
-        current_branch[current_dims - 1]->payload_->clear ();
+        //clear this node while walking down the tree in case we are updating the LOD
+        current_branch.back ()->clearData ();
+        
+        std::vector<BranchNode*> next_branch (current_branch.size () +1, static_cast<BranchNode*> (0));
 
-        const int next_dims = current_dims + 1;
-        OutofcoreOctreeBaseNode<ContainerT, PointT>** next_branch = new OutofcoreOctreeBaseNode<ContainerT, PointT>*[next_dims];
-        memcpy (next_branch, current_branch, current_dims * sizeof(OutofcoreOctreeBaseNode<ContainerT, PointT>**));
+        next_branch.insert (next_branch.begin (), current_branch.begin (), current_branch.end ());
 
-        size_t numchild = current_branch[current_dims - 1]->getNumChildren ();
-        if ((numchild != 8) && (current_branch[current_dims - 1]->hasUnloadedChildren ()))
+        if (current_branch.back ()->hasUnloadedChildren ())
         {
-          current_branch[current_dims - 1]->loadChildren (false);
-          numchild = current_branch[current_dims - 1]->getNumChildren ();
+          current_branch.back ()->loadChildren (false);
         }
 
-        for (size_t i = 0; i < numchild; i++)
-        {
-          next_branch[next_dims - 1] = next_branch[current_dims - 1]->children_[i];
-          buildLODRecursive (next_branch, next_dims);
-        }
+        unsigned char number_of_children = current_branch.back ()->getNumChildren ();
 
-        delete[] next_branch;
+        for (unsigned char i = 0; i < number_of_children; i++)
+        {
+          next_branch.back () = current_branch.back ()->getChildPtr (i);
+          buildLODRecursive (next_branch);
+        }
       }
     }
-
     ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> void

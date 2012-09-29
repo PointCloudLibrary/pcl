@@ -180,7 +180,7 @@ namespace pcl
 //////////////////////////////////////////////////////////////////////////////// 
 
     template<typename ContainerT, typename PointT>
-    OutofcoreOctreeBaseNode<ContainerT, PointT>::OutofcoreOctreeBaseNode (const int max_depth, const Eigen::Vector3d& bb_min, const Eigen::Vector3d& bb_max, OutofcoreOctreeBase<ContainerT, PointT> * const tree, const boost::filesystem::path& root_name)
+    OutofcoreOctreeBaseNode<ContainerT, PointT>::OutofcoreOctreeBaseNode (const boost::uint64_t max_depth, const Eigen::Vector3d& bb_min, const Eigen::Vector3d& bb_max, OutofcoreOctreeBase<ContainerT, PointT> * const tree, const boost::filesystem::path& root_name)
       : m_tree_ (tree)
       , root_node_ ()
       , parent_ ()
@@ -264,12 +264,12 @@ namespace pcl
 
     ////////////////////////////////////////////////////////////////////////////////
     
-    template<typename ContainerT, typename PointT> unsigned char
+    template<typename ContainerT, typename PointT> size_t
     OutofcoreOctreeBaseNode<ContainerT, PointT>::countNumChildren () const
     {
-      unsigned char child_count = 0;
+      size_t child_count = 0;
       
-      for(int i=0; i<8; i++)
+      for(size_t i=0; i<8; i++)
       {
         boost::filesystem::path child_path = this->node_metadata_->getDirectoryPathname () / boost::filesystem::path (boost::lexical_cast<std::string> (i));
         if (boost::filesystem::exists (child_path))
@@ -397,7 +397,7 @@ namespace pcl
       }
       
       boost::uint64_t points_added = 0;
-      for (int i = 0; i < 8; i++)
+      for (size_t i = 0; i < 8; i++)
       {
         if (c[i].empty ())
           continue;
@@ -460,7 +460,7 @@ namespace pcl
 
         std::vector < std::vector<const PointT*> > c;
         c.resize (8);
-        for (int i = 0; i < 8; i++)
+        for (size_t i = 0; i < 8; i++)
         {
           c[i].reserve (p.size () / 8);
         }
@@ -487,7 +487,7 @@ namespace pcl
         }
         
         boost::uint64_t points_added = 0;
-        for (int i = 0; i < 8; i++)
+        for (size_t i = 0; i < 8; i++)
         {
           if (c[i].empty ())
             continue;
@@ -529,14 +529,14 @@ namespace pcl
         
         this->sortOctantIndices (input_cloud, indices, node_metadata_->getVoxelCenter ());
 
-        for(int k=0; k<indices.size (); k++)
+        for(size_t k=0; k<indices.size (); k++)
         {
           PCL_DEBUG ("[pcl::outofcore::OutofcoreOctreeBaseNode::%s] Computed %d indices in octact %d\n", __FUNCTION__, indices[k].size (), k);
         }
 
         boost::uint64_t points_added = 0;
 
-        for(int i=0; i<8; i++)
+        for(size_t i=0; i<8; i++)
         {
           if ( indices[i].empty () )
             continue;
@@ -689,7 +689,7 @@ namespace pcl
     {
       // Reserve space for children nodes
       c.resize(8);
-      for(int i = 0; i < 8; i++)
+      for(size_t i = 0; i < 8; i++)
         c[i].reserve(p.size() / 8);
 
       const size_t len = p.size();
@@ -790,15 +790,18 @@ namespace pcl
       this->sortOctantIndices (remaining_points, indices, node_metadata_->getVoxelCenter ());
 
       //pass each set of points to the appropriate child octant
-      for(int i=0; i<8; i++)
+      for(size_t i=0; i<8; i++)
       {
 
         if(indices[i].empty ())
           continue;
 
         if( children_[i] == false )
+        {
+          assert (i < 8);
           createChild (i);
-
+        }
+        
         //copy correct indices into a temporary cloud
         sensor_msgs::PointCloud2::Ptr tmp_local_point_cloud (new sensor_msgs::PointCloud2 ());
         pcl::copyPointCloud (*remaining_points, indices[i], *tmp_local_point_cloud);
@@ -852,7 +855,7 @@ namespace pcl
       subdividePoints(p, c, skip_bb_check);
 
       boost::uint64_t points_added = 0;
-      for(int i = 0; i < 8; i++)
+      for(size_t i = 0; i < 8; i++)
       {
         // If child doesn't have points
         if(c[i].empty())
@@ -872,8 +875,10 @@ namespace pcl
     ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> void
-    OutofcoreOctreeBaseNode<ContainerT, PointT>::createChild (const int idx)
+    OutofcoreOctreeBaseNode<ContainerT, PointT>::createChild (const size_t idx)
     {
+      assert (idx < 8);
+      
       //if already has 8 children, return
       if (children_[idx] || (num_children_ == 8))
       {
@@ -1265,7 +1270,7 @@ namespace pcl
     
     ////////////////////////////////////////////////////////////////////////////////
     template<typename ContainerT, typename PointT> void
-    OutofcoreOctreeBaseNode<ContainerT, PointT>::queryBBIncludes_subsample (const Eigen::Vector3d& min_bb, const Eigen::Vector3d& max_bb, int query_depth, const double percent, AlignedPointTVector& dst)
+    OutofcoreOctreeBaseNode<ContainerT, PointT>::queryBBIncludes_subsample (const Eigen::Vector3d& min_bb, const Eigen::Vector3d& max_bb, boost::uint64_t query_depth, const double percent, AlignedPointTVector& dst)
     {
       //check if the queried bounding box has any intersection with this node's bounding box
       if (intersectsWithBoundingBox (min_bb, max_bb))
@@ -1529,7 +1534,7 @@ namespace pcl
     ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> OutofcoreOctreeBaseNode<ContainerT, PointT>*
-    OutofcoreOctreeBaseNode<ContainerT, PointT>::getChildPtr (unsigned char index_arg) const
+    OutofcoreOctreeBaseNode<ContainerT, PointT>::getChildPtr (size_t index_arg) const
     {
 
       PCL_DEBUG ("[pcl::outofcore::OutofcoreOctreeBaseNode::%s] %d", __FUNCTION__, index_arg);
@@ -1537,13 +1542,20 @@ namespace pcl
     }
 
     ////////////////////////////////////////////////////////////////////////////////
+    template<typename ContainerT, typename PointT> boost::uint64_t
+    OutofcoreOctreeBaseNode<ContainerT, PointT>::getDataSize () const
+    {
+      return (this->payload_->getDataSize ());
+    }
 
-    template<typename ContainerT, typename PointT> unsigned char
+    ////////////////////////////////////////////////////////////////////////////////
+
+    template<typename ContainerT, typename PointT> size_t
     OutofcoreOctreeBaseNode<ContainerT, PointT>::countNumLoadedChildren () const
     {
-      unsigned char loaded_children_count = 0;
+      size_t loaded_children_count = 0;
       
-      for (int i=0; i<8; i++)
+      for (size_t i=0; i<8; i++)
       {
         if (children_[i] != 0)
           loaded_children_count++;

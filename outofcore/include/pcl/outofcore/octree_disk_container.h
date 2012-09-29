@@ -262,6 +262,10 @@ namespace pcl
         static void
         getRandomUUIDString (std::string &s);
 
+        /** \brief Returns the number of points in the PCD file by reading the PCD header. */
+        boost::uint64_t
+        getDataSize () const;
+        
       private:
         //no copy construction
         OutofcoreOctreeDiskContainer (const OutofcoreOctreeDiskContainer &rval) { }
@@ -273,9 +277,6 @@ namespace pcl
         void
         flushWritebuff (const bool force_cache_dealloc);
     
-        /** \brief elements [0,...,size()-1] map to [filelen, ..., filelen + size()-1] */
-        AlignedPointTVector writebuff_;
-
         /** \brief Name of the storage file on disk (i.e., the PCD file) */
         boost::shared_ptr<std::string> disk_storage_filename_;
 
@@ -283,6 +284,9 @@ namespace pcl
 
         //number of elements in file
         uint64_t filelen_;
+
+        /** \brief elements [0,...,size()-1] map to [filelen, ..., filelen + size()-1] */
+        AlignedPointTVector writebuff_;
 
         const static uint64_t READ_BLOCK_SIZE_;
 

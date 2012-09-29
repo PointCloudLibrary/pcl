@@ -92,7 +92,8 @@ namespace pcl
     class OutofcoreOctreeBaseNode : public pcl::octree::OctreeNode
     {
       friend class OutofcoreOctreeBase<ContainerT, PointT> ;
-  
+
+      //these methods can be rewritten with the iterators. 
       friend OutofcoreOctreeBaseNode<ContainerT, PointT>*
       makenode_norec<ContainerT, PointT> (const boost::filesystem::path &path, OutofcoreOctreeBaseNode<ContainerT, PointT>* super);
   
@@ -108,6 +109,8 @@ namespace pcl
 
         typedef std::vector<PointT, Eigen::aligned_allocator<PointT> > AlignedPointTVector;
 
+        typedef pcl::octree::node_type_t node_type_t;
+
         const static std::string node_index_basename;
         const static std::string node_container_basename;
         const static std::string node_index_extension;
@@ -119,7 +122,7 @@ namespace pcl
         OutofcoreOctreeBaseNode ();
 
         /** \brief Create root node and directory */
-        OutofcoreOctreeBaseNode (const int max_depth, const Eigen::Vector3d &bb_min, const Eigen::Vector3d &bb_max, OutofcoreOctreeBase<ContainerT, PointT> * const tree, const boost::filesystem::path &root_name);
+        OutofcoreOctreeBaseNode (const boost::uint64_t max_depth, const Eigen::Vector3d &bb_min, const Eigen::Vector3d &bb_max, OutofcoreOctreeBase<ContainerT, PointT> * const tree, const boost::filesystem::path &root_name);
 
         /** \brief Will recursively delete all children calling recFreeChildrein */
         virtual
@@ -165,7 +168,7 @@ namespace pcl
          *  \param[out] v std::list of points returned by the query
          */
         virtual void
-        queryBBIncludes_subsample (const Eigen::Vector3d &min_bb, const Eigen::Vector3d &max_bb, int query_depth, const double percent, AlignedPointTVector &v);
+        queryBBIncludes_subsample (const Eigen::Vector3d &min_bb, const Eigen::Vector3d &max_bb, boost::uint64_t query_depth, const double percent, AlignedPointTVector &v);
 
         /** \brief Tests if the coordinate falls within the boundaries of the bounding box, inclusively
          */
@@ -217,7 +220,7 @@ namespace pcl
         virtual int
         read (sensor_msgs::PointCloud2::Ptr &output_cloud);
 
-        virtual inline pcl::octree::node_type_t
+        virtual inline node_type_t
         getNodeType () const
         {
           if(this->getNumChildren () > 0)
@@ -246,7 +249,7 @@ namespace pcl
         }
 
         /** \brief Returns the total number of children on disk */
-        virtual unsigned char
+        virtual size_t
         getNumChildren () const 
         {
           unsigned char res = this->countNumChildren ();
@@ -254,7 +257,7 @@ namespace pcl
         }
 
         /** \brief Count loaded chilren */
-        virtual unsigned char
+        virtual size_t
         getNumLoadedChildren ()  const
         {
           unsigned char res = this->countNumLoadedChildren ();
@@ -263,8 +266,19 @@ namespace pcl
         
         /** \brief Returns a pointer to the child in octant index_arg */
         virtual OutofcoreOctreeBaseNode*
-        getChildPtr (unsigned char index_arg) const;
+        getChildPtr (size_t index_arg) const;
 
+        /** \brief Gets the number of points available in the PCD file */
+        virtual boost::uint64_t
+        getDataSize () const;
+
+        inline virtual void
+        clearData ()
+        {
+          //clears write cache and removes PCD file from disk
+          this->payload_->clear ();
+        }
+        
       ///////////////////////////////////////////////////////////////////////////////
       // PROTECTED METHODS
       ////////////////////////////////////////////////////////////////////////////////
@@ -297,13 +311,13 @@ namespace pcl
         void init_root_node (const Eigen::Vector3d &bb_min, const Eigen::Vector3d &bb_max, OutofcoreOctreeBase<ContainerT, PointT> * const tree, const boost::filesystem::path &rootname);
 
         /** \brief Counts the number of child directories on disk; used to update num_children_ */
-        virtual unsigned char
+        virtual size_t
         countNumChildren () const;
 
         /** \brief Counts the number of loaded chilren by testing the \ref children_ array; 
          *  used to update num_loaded_chilren_ internally 
          */
-        virtual unsigned char
+        virtual size_t
         countNumLoadedChildren () const;
         
         /** \brief Save node's metadata to file
@@ -399,7 +413,7 @@ namespace pcl
          *  \param[in] idx Index (0-7) of the child node
          */
         void
-        createChild (const int idx);
+        createChild (const size_t idx);
 
         /** \brief Write JSON metadata for this node to file */
         void

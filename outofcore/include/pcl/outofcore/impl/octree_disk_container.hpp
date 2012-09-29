@@ -95,7 +95,10 @@ namespace pcl
     ////////////////////////////////////////////////////////////////////////////////
 
     template<typename PointT>
-    OutofcoreOctreeDiskContainer<PointT>::OutofcoreOctreeDiskContainer ()
+    OutofcoreOctreeDiskContainer<PointT>::OutofcoreOctreeDiskContainer () 
+      : filelen_ (0)
+      , writebuff_ (0)
+      , disk_storage_filename_ ()
     {
       std::string temp = getRandomUUIDString ();
       disk_storage_filename_ = boost::shared_ptr<std::string> (new std::string (temp));
@@ -105,9 +108,10 @@ namespace pcl
 
     template<typename PointT>
     OutofcoreOctreeDiskContainer<PointT>::OutofcoreOctreeDiskContainer (const boost::filesystem::path& path)
-      : writebuff_ ()
+      : filelen_ (0)
+      , writebuff_ (0)
       , disk_storage_filename_ ()
-      , filelen_ ()
+
     {
       if (boost::filesystem::exists (path))
       {
@@ -119,7 +123,6 @@ namespace pcl
           boost::filesystem::path file = path / filename;
 
          disk_storage_filename_ = boost::shared_ptr<std::string> (new std::string (file.string ()));
-          filelen_ = 0;
         }
         else
         {
@@ -781,6 +784,26 @@ namespace pcl
       }
       
       filelen_ += count;
+    }
+    ////////////////////////////////////////////////////////////////////////////////
+
+    template<typename PointT> boost::uint64_t
+    OutofcoreOctreeDiskContainer<PointT>::getDataSize () const
+    {
+      sensor_msgs::PointCloud2 cloud_info;
+      Eigen::Vector4f origin;
+      Eigen::Quaternionf orientation;
+      int pcd_version;
+      int data_type;
+      unsigned int data_index;
+      
+      //read the header of the pcd file and get the number of points
+      PCDReader reader;
+      reader.readHeader (*disk_storage_filename_, cloud_info, origin, orientation, pcd_version, data_type, data_index, 0);
+      
+      boost::uint64_t total_points = cloud_info.width * cloud_info.height + writebuff_.size ();
+
+      return (total_points);
     }
     ////////////////////////////////////////////////////////////////////////////////
 

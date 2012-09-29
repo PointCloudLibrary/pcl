@@ -68,9 +68,14 @@ int main (int argc, char** argv)
   sensor_msgs::PointCloud2::Ptr cloud (new sensor_msgs::PointCloud2 ());
     
   pcl::io::loadPCDFile (argv[1], *cloud);
-  
+
   octree->addPointCloud (cloud, false);
 
+  pcl::io::loadPCDFile (argv[2], *cloud);
+  octree->addPointCloud (cloud, false);
+  
+  octree->buildLOD ();
+  
   delete octree;
 
   OctreeDisk octree2 (file_location, true);
