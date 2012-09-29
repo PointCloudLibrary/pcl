@@ -44,6 +44,7 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/apps/in_hand_scanner/eigen.h>
+#include <pcl/geometry/impl/triangle_mesh.hpp>
 
 namespace pcl
 {
@@ -83,5 +84,17 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::ihs::PointModel,
                                    (float, weight, weight)
                                    (int, age, age)
                                    )
+
+namespace pcl
+{
+  namespace ihs
+  {
+    typedef pcl::TriangleMesh <true, PointModel> Mesh;
+    typedef boost::shared_ptr <Mesh>             MeshPtr;
+    typedef boost::shared_ptr <const Mesh>       MeshConstPtr;
+    typedef Mesh::Vertex                         Vertex;
+    typedef Mesh::Face                           Face;
+  } // End namespace ihs
+} // End namespace pcl
 
 #endif // PCL_IN_HAND_SCANNER_COMMON_TYPES_H

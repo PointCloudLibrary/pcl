@@ -17,6 +17,7 @@ set(INCS include/pcl/apps/${SUBSYS_NAME}/common_types.h
   )
 
 set(IMPL_INCS include/pcl/apps/${SUBSYS_NAME}/impl/common_types.hpp
+              include/pcl/apps/${SUBSYS_NAME}/impl/common_functions.hpp
   )
 
 # Source files

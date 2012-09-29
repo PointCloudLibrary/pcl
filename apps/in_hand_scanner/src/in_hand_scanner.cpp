@@ -48,6 +48,7 @@
 #include <pcl/apps/in_hand_scanner/icp.h>
 #include <pcl/apps/in_hand_scanner/input_data_processing.h>
 #include <pcl/apps/in_hand_scanner/integration.h>
+#include <pcl/apps/in_hand_scanner/impl/common_functions.hpp>
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -75,8 +76,8 @@ pcl::ihs::InHandScanner::InHandScanner (int argc, char** argv)
     integration_           (new Integration ()),
 
     cloud_data_draw_       (),
-    cloud_model_draw_      (new CloudModel ()),
-    cloud_model_           (new CloudModel ())
+    mesh_model_draw_       (new Mesh ()),
+    mesh_model_            (new Mesh ())
 
 {
   std::cerr << "Initializing the grabber ...\n  ";
@@ -139,6 +140,14 @@ pcl::ihs::InHandScanner::run ()
     this->drawMesh ();
     this->drawCropBox ();
     this->drawFPS ();
+
+    interactor_style_->setPivot (pivot_.cast <double> ().head <3> ());
+
+    // TODO: Test if this works
+    //  vtkCamera*const cam = visualizer_->getRenderWindow ()->GetRenderers ()->GetFirstRenderer ()->GetActiveCamera ();
+    //  const Eigen::Vector3d pos = Eigen::Map<Eigen::Vector3d> (cam->GetPosition ());
+    //  cam->SetFocalPoint (pivot_.cast <double> ().data ());
+    //  cam->SetPosition (pos.cast <double> ().data ());
 
     boost::this_thread::sleep (boost::posix_time::microseconds (100));
   }
@@ -211,11 +220,11 @@ pcl::ihs::InHandScanner::resetRegistration ()
 {
   boost::mutex::scoped_lock lock (mutex_);
 
-  running_mode_     = RM_PROCESSED;
-  iteration_        = 0;
-  transformation_   = Transformation::Identity ();
-  cloud_model_draw_ = CloudModelPtr (new CloudModel ());
-  cloud_model_->clear ();
+  running_mode_    = RM_PROCESSED;
+  iteration_       = 0;
+  transformation_  = Transformation::Identity ();
+  mesh_model_draw_ = MeshPtr (new Mesh ());
+  mesh_model_->clear ();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -254,19 +263,19 @@ pcl::ihs::InHandScanner::newDataCallback (const CloudInputConstPtr& cloud_in)
     if (iteration_ == 0)
     {
       transformation_ = Transformation::Identity ();
-      integration_->setInitialModel (cloud_model_, cloud_data);
+      integration_->reconstructMesh (cloud_data, mesh_model_);
       cloud_data = CloudProcessedPtr (new CloudProcessed ());
     }
     else
     {
       Transformation T = Transformation::Identity ();
-      if (!icp_->findTransformation (cloud_model_, cloud_data, transformation_, T))
+      if (!icp_->findTransformation (mesh_model_, cloud_data, transformation_, T))
       {
       }
       else
       {
         transformation_ = T;
-        integration_->merge (cloud_model_, cloud_data, transformation_);
+        integration_->merge (cloud_data, mesh_model_, transformation_);
         cloud_data = CloudProcessedPtr (new CloudProcessed ());
         // interactor_style_->transformCamera (InteractorStyle::Quaternion (T.topLeftCorner <3, 3> ().cast <double> ()), T.topRightCorner <3, 1> ().cast <double> ());
       }
@@ -277,13 +286,13 @@ pcl::ihs::InHandScanner::newDataCallback (const CloudInputConstPtr& cloud_in)
 
   // Set the clouds for visualization
   cloud_data_draw_ = cloud_data;
-  if (!cloud_model_draw_)              cloud_model_draw_ = CloudModelPtr (new CloudModel ());
-  if (running_mode_ != RM_UNPROCESSED) pcl::copyPointCloud (*cloud_model_, *cloud_model_draw_);
+  if (!mesh_model_draw_)               mesh_model_draw_  = MeshPtr (new Mesh ());
+  if (running_mode_ != RM_UNPROCESSED) *mesh_model_draw_ = *mesh_model_;
 
   // TODO: put this into the visualization thread.
   Eigen::Vector4f pivot (0.f, 0.f, 0.f, 1.f);
-  if (cloud_model_draw_->size () && pcl::compute3DCentroid (*cloud_model_draw_, pivot)) pivot_ = pivot;
-  else if (pcl::compute3DCentroid (*cloud_data_draw_, pivot))                           pivot_ = pivot;
+  if (mesh_model_draw_->sizeVertexes () && pcl::compute3DCentroid (*mesh_model_draw_, pivot)) pivot_ = pivot;
+  else if (pcl::compute3DCentroid (*cloud_data_draw_, pivot))                                 pivot_ = pivot;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -293,41 +302,19 @@ pcl::ihs::InHandScanner::drawClouds ()
 {
   // Get the clouds
   CloudProcessedPtr cloud_data_temp;
-  CloudModelPtr cloud_model_temp;
   if (mutex_.try_lock ())
   {
     cloud_data_temp.swap (cloud_data_draw_);
-    cloud_model_temp.swap (cloud_model_draw_);
     mutex_.unlock ();
   }
+  if (!cloud_data_temp) return;
 
   // Draw the clouds
-  if (cloud_data_temp)
+  pcl::visualization::PointCloudColorHandlerRGBField <PointProcessed> ch (cloud_data_temp);
+  if (!visualizer_->updatePointCloud <PointProcessed> (cloud_data_temp, ch, "cloud_data"))
   {
-    pcl::visualization::PointCloudColorHandlerRGBField <PointProcessed> ch (cloud_data_temp);
-    if (!visualizer_->updatePointCloud <PointProcessed> (cloud_data_temp, ch, "cloud_data"))
-    {
-      visualizer_->addPointCloud <PointProcessed> (cloud_data_temp, ch, "cloud_data");
-    }
-
+    visualizer_->addPointCloud <PointProcessed> (cloud_data_temp, ch, "cloud_data");
   }
-
-  if (cloud_model_temp)
-  {
-    pcl::visualization::PointCloudColorHandlerRGBField <PointModel> ch (cloud_model_temp);
-    if (!visualizer_->updatePointCloud <PointModel> (cloud_model_temp, ch, "cloud_model"))
-    {
-      visualizer_->addPointCloud <PointModel> (cloud_model_temp, ch, "cloud_model");
-    }
-  }
-
-  interactor_style_->setPivot (pivot_.cast <double> ().head <3> ());
-
-  // TODO: Test if this works
-  //  vtkCamera*const cam = visualizer_->getRenderWindow ()->GetRenderers ()->GetFirstRenderer ()->GetActiveCamera ();
-  //  const Eigen::Vector3d pos = Eigen::Map<Eigen::Vector3d> (cam->GetPosition ());
-  //  cam->SetFocalPoint (pivot_.cast <double> ().data ());
-  //  cam->SetPosition (pos.cast <double> ().data ());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -335,7 +322,53 @@ pcl::ihs::InHandScanner::drawClouds ()
 void
 pcl::ihs::InHandScanner::drawMesh ()
 {
+  // Get the mesh
+  MeshPtr mesh_model_temp;
+  if (mutex_.try_lock ())
+  {
+    mesh_model_temp.swap (mesh_model_draw_);
+    mutex_.unlock ();
+  }
+  if (!mesh_model_temp) return;
+  if (!mesh_model_temp->sizeVertexes ())
+  {
+    // TODO: addPolygonMesh does not remove the mesh if it is empty: "[0;m[1;31m[addPolygonMesh] No vertices given!"
+    visualizer_->removePolygonMesh ("mesh_model");
+    return;
+  }
 
+  // Convert to cloud + indices for visualization
+  typedef pcl::Vertices                         Face;
+  typedef std::vector <Face>                    Faces;
+  typedef Mesh::VertexConstIterator             VCI;
+  typedef Mesh::FaceConstIterator               FCI;
+  typedef Mesh::VertexAroundFaceConstCirculator VAFCCirc;
+
+  Face          triangle; triangle.vertices.resize (3);
+  CloudModelPtr vertexes (new CloudModel ());
+  Faces         triangles;
+  vertexes->reserve (mesh_model_temp->sizeVertexes ());
+  triangles.reserve (3 * mesh_model_temp->sizeFaces ());
+
+  for (VCI it=mesh_model_temp->beginVertexes (); it!=mesh_model_temp->endVertexes (); ++it)
+  {
+    vertexes->push_back (*it);
+  }
+
+  for (FCI it=mesh_model_temp->beginFaces (); it!=mesh_model_temp->endFaces (); ++it)
+  {
+    VAFCCirc circ = mesh_model_temp->getVertexAroundFaceConstCirculator (*it);
+    triangle.vertices [0] = (circ++).getDereferencedIndex ().getIndex ();
+    triangle.vertices [1] = (circ++).getDereferencedIndex ().getIndex ();
+    triangle.vertices [2] = (circ  ).getDereferencedIndex ().getIndex ();
+    triangles.push_back (triangle);
+  }
+
+  // pcl::visualization::PointCloudColorHandlerRGBField <PointXYZ> ch (mesh_model_temp);
+  if (!visualizer_->updatePolygonMesh <PointModel> (vertexes, triangles, "mesh_model"))
+  {
+    visualizer_->addPolygonMesh <PointModel> (vertexes, triangles, "mesh_model");
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////

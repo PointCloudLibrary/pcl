@@ -62,9 +62,9 @@ namespace pcl
                          const float   nx, const float   ny, const float   nz,
                          const uint8_t  r, const uint8_t  g, const uint8_t  b,
                          const float weight)
-        :        x ( x),        y ( y),        z ( z),
+        : x        ( x), y        ( y), z        ( z),
           normal_x (nx), normal_y (ny), normal_z (nz),
-                 b ( b),        g ( g),        r ( r), a (255),
+          b        ( b), g        ( g), r        ( r), a (255),
           weight   (weight),
           age      (0)
       {

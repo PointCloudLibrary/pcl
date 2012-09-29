@@ -115,6 +115,12 @@ namespace pcl
         typedef pcl::ihs::CloudModelPtr      CloudModelPtr;
         typedef pcl::ihs::CloudModelConstPtr CloudModelConstPtr;
 
+        typedef pcl::ihs::Mesh         Mesh;
+        typedef pcl::ihs::MeshPtr      MeshPtr;
+        typedef pcl::ihs::MeshConstPtr MeshConstPtr;
+        typedef pcl::ihs::Vertex       Vertex;
+        typedef pcl::ihs::Face         Face;
+
         typedef pcl::OpenNIGrabber                Grabber;
         typedef boost::shared_ptr <Grabber>       GrabberPtr;
         typedef boost::shared_ptr <const Grabber> GrabberConstPtr;
@@ -256,8 +262,8 @@ namespace pcl
         IntegrationPtr              integration_;
 
         CloudProcessedPtr           cloud_data_draw_;
-        CloudModelPtr               cloud_model_draw_;
-        CloudModelPtr               cloud_model_;
+        MeshPtr                     mesh_model_draw_;
+        MeshPtr                     mesh_model_;
     };
 
   } // End namespace ihs

@@ -72,12 +72,16 @@ namespace pcl
         typedef pcl::ihs::CloudProcessedPtr      CloudProcessedPtr;
         typedef pcl::ihs::CloudProcessedConstPtr CloudProcessedConstPtr;
 
-        typedef pcl::ihs::PointModel         PointModel;
-        typedef pcl::ihs::CloudModel         CloudModel;
-        typedef pcl::ihs::CloudModelPtr      CloudModelPtr;
-        typedef pcl::ihs::CloudModelConstPtr CloudModelConstPtr;
+        typedef pcl::ihs::PointModel          PointModel;
+        typedef pcl::ihs::Mesh                Mesh;
+        typedef pcl::ihs::MeshPtr             MeshPtr;
+        typedef pcl::ihs::MeshConstPtr        MeshConstPtr;
+        typedef pcl::ihs::Vertex              Vertex;
+        typedef pcl::ihs::Face                Face;
+        typedef pcl::ihs::Mesh::VertexIndex   VertexIndex;
+        typedef pcl::ihs::Mesh::VertexIndexes VertexIndexes;
 
-        typedef pcl::ihs::Transformation         Transformation;
+        typedef pcl::ihs::Transformation Transformation;
 
         typedef pcl::KdTree <PointModel>         KdTree;
         typedef boost::shared_ptr <KdTree>       KdTreePtr;
@@ -87,13 +91,14 @@ namespace pcl
 
         Integration ();
 
-        void
-        setInitialModel (const CloudModelPtr&          cloud_model,
-                         const CloudProcessedConstPtr& cloud_data) const;
+        // TODO: Not compatible with indexed clouds
+        bool
+        reconstructMesh (const CloudProcessedConstPtr& cloud,
+                         const MeshPtr&                mesh) const;
 
         bool
-        merge (const CloudModelPtr&          cloud_model,
-               const CloudProcessedConstPtr& cloud_data,
+        merge (const CloudProcessedConstPtr& cloud_data,
+               const MeshPtr&                mesh_model,
                const Transformation&         T) const;
 
       private:

@@ -75,12 +75,14 @@ namespace pcl
         typedef pcl::ihs::CloudProcessedPtr      CloudProcessedPtr;
         typedef pcl::ihs::CloudProcessedConstPtr CloudProcessedConstPtr;
 
-        typedef pcl::ihs::PointModel         PointModel;
-        typedef pcl::ihs::CloudModel         CloudModel;
-        typedef pcl::ihs::CloudModelPtr      CloudModelPtr;
-        typedef pcl::ihs::CloudModelConstPtr CloudModelConstPtr;
+        typedef pcl::ihs::PointModel   PointModel;
+        typedef pcl::ihs::Mesh         Mesh;
+        typedef pcl::ihs::MeshPtr      MeshPtr;
+        typedef pcl::ihs::MeshConstPtr MeshConstPtr;
+        typedef pcl::ihs::Vertex       Vertex;
+        typedef pcl::ihs::Face         Face;
 
-        typedef pcl::ihs::Transformation         Transformation;
+        typedef pcl::ihs::Transformation Transformation;
 
       private:
 
@@ -98,7 +100,7 @@ namespace pcl
         ICP ();
 
         bool
-        findTransformation (const CloudModelConstPtr&     cloud_model,
+        findTransformation (const MeshConstPtr&           mesh_model,
                             const CloudProcessedConstPtr& cloud_data,
                             const Transformation&         T_init,
                             Transformation&               T_final);
@@ -106,8 +108,8 @@ namespace pcl
       private:
 
         CloudNormalConstPtr
-        selectModelPoints (const CloudModelConstPtr& cloud_model,
-                           const Transformation&     T_init_inv) const;
+        selectModelPoints (const MeshConstPtr&   mesh_model,
+                           const Transformation& T_init_inv) const;
 
         CloudNormalConstPtr
         selectDataPoints (const CloudProcessedConstPtr& cloud_data) const;

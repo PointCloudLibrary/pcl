@@ -66,7 +66,7 @@ pcl::ihs::ICP::ICP ()
 ////////////////////////////////////////////////////////////////////////////////
 
 bool
-pcl::ihs::ICP::findTransformation (const CloudModelConstPtr&     cloud_model,
+pcl::ihs::ICP::findTransformation (const MeshConstPtr&           mesh_model,
                                    const CloudProcessedConstPtr& cloud_data,
                                    const Transformation&         T_init,
                                    Transformation&               T_final)
@@ -75,7 +75,7 @@ pcl::ihs::ICP::findTransformation (const CloudModelConstPtr&     cloud_model,
   // TODO: Double check the minimum number of points necessary for icp
   const size_t n_min = 4;
 
-  if(cloud_model->size () < n_min || cloud_data->size () < n_min)
+  if(mesh_model->sizeVertexes () < n_min || cloud_data->size () < n_min)
   {
     std::cerr << "ERROR in icp.cpp: Not enough input points!\n";
     return (false);
@@ -94,8 +94,8 @@ pcl::ihs::ICP::findTransformation (const CloudModelConstPtr&     cloud_model,
   Transformation T_cur = T_init;
 
   // Point selection
-  const CloudNormalConstPtr cloud_model_selected = this->selectModelPoints (cloud_model, T_init.inverse ());
-  const CloudNormalConstPtr cloud_data_selected = this->selectDataPoints (cloud_data);
+  const CloudNormalConstPtr cloud_model_selected = this->selectModelPoints (mesh_model, T_init.inverse ());
+  const CloudNormalConstPtr cloud_data_selected  = this->selectDataPoints (cloud_data);
 
   const size_t n_data  = cloud_data_selected->size ();
   const size_t n_model = cloud_model_selected->size ();
@@ -231,14 +231,14 @@ pcl::ihs::ICP::findTransformation (const CloudModelConstPtr&     cloud_model,
 ////////////////////////////////////////////////////////////////////////////////
 
 pcl::ihs::ICP::CloudNormalConstPtr
-pcl::ihs::ICP::selectModelPoints (const CloudModelConstPtr& cloud_model,
-                                  const Transformation&     T_init_inv) const
+pcl::ihs::ICP::selectModelPoints (const MeshConstPtr&   mesh_model,
+                                  const Transformation& T_init_inv) const
 {
   const CloudNormalPtr cloud_model_out (new CloudNormal ());
-  cloud_model_out->reserve (cloud_model->size ());
+  cloud_model_out->reserve (mesh_model->sizeVertexes ());
 
-  CloudModel::const_iterator it_in = cloud_model->begin ();
-  for (; it_in!=cloud_model->end (); ++it_in)
+  Mesh::VertexConstIterator it_in = mesh_model->beginVertexes ();
+  for (; it_in!=mesh_model->endVertexes (); ++it_in)
   {
     // Don't consider points that are facing away from the cameara.
     if ((T_init_inv * it_in->getNormalVector4fMap ()).z () < 0.f)
