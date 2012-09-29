@@ -149,9 +149,9 @@ namespace pcl
     using FilterIndices<sensor_msgs::PointCloud2>::filter_name_;
     using FilterIndices<sensor_msgs::PointCloud2>::getClassName;
 
-    typedef typename sensor_msgs::PointCloud2 PointCloud2;
-    typedef typename PointCloud2::Ptr PointCloud2Ptr;
-    typedef typename PointCloud2::ConstPtr PointCloud2ConstPtr;
+    typedef sensor_msgs::PointCloud2 PointCloud2;
+    typedef PointCloud2::Ptr PointCloud2Ptr;
+    typedef PointCloud2::ConstPtr PointCloud2ConstPtr;
 
     public:
   
