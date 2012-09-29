@@ -97,7 +97,7 @@ pcl::AdaptiveCostSOStereoMatching::compute_impl (unsigned char* ref_img, unsigne
  
   for (int y = radius_ + 1; y < height_ - radius_; y++)
   {
-    for (int x = max_disp_ + 1; x < width_; x++)
+    for (int x = x_off_ + max_disp_ + 1; x < width_; x++)
     {
       for (int j = -radius_; j <= radius_; j++)
         wl[j+radius_] = lut[ abs(ref_img[(y+j)*width_+x] - ref_img[y*width_+x]) ] * ds[j+radius_];
@@ -124,7 +124,7 @@ pcl::AdaptiveCostSOStereoMatching::compute_impl (unsigned char* ref_img, unsigne
     for (int d = 0; d < max_disp_; d++)
       fwd[max_disp_+1][d] = acc[max_disp_+1][d];
 
-    for (int x = max_disp_+2; x<width_; x++)
+    for (int x = x_off_ + max_disp_+2; x<width_; x++)
     {
       float c_min = fwd[x-1][0];
       for (int d = 1; d < max_disp_; d++)
@@ -143,7 +143,7 @@ pcl::AdaptiveCostSOStereoMatching::compute_impl (unsigned char* ref_img, unsigne
     for (int d = 0; d < max_disp_; d++)
       bck[width_-1][d] = acc[width_-1][d];
  
-    for (int x = width_-2; x > max_disp_; x--)
+    for (int x = width_-2; x > max_disp_ + x_off_; x--)
     {
       
       float c_min = bck[x+1][0];
@@ -158,7 +158,7 @@ pcl::AdaptiveCostSOStereoMatching::compute_impl (unsigned char* ref_img, unsigne
     }//x
  
     //last scan
-    for (int x = max_disp_ + 1; x < width_; x++)
+    for (int x = x_off_ + max_disp_ + 1; x < width_; x++)
     {
       float c_min = std::numeric_limits<float>::max ();
       short int dbest = 0;

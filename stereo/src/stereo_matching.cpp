@@ -613,5 +613,12 @@ pcl::GrayStereoMatching::compute (unsigned char* ref_img, unsigned char* trg_img
     leftRightCheck();
   }
 
+  //at the end, x_offset (*16) needs to be added to all computed disparities, 
+  //so that each fixed point value of the disparity map represents the true disparity value multiplied by 16  
+  for (int j = 0; j < height_; j++)
+    for (int i = 0; i < width_; i++)
+      if ( disp_map_[j * width_ + i] > 0)
+	    disp_map_[j * width_ + i] += x_off_ * 16;
+
 }
 
