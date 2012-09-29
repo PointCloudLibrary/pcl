@@ -115,14 +115,14 @@ namespace pcl
         const static std::string node_container_basename;
         const static std::string node_index_extension;
         const static std::string node_container_extension;
-        const static double sample_precent;
+        const static double sample_percent_;
 
         /** \brief Empty constructor; sets pointers for children and for bounding boxes to 0
          */
         OutofcoreOctreeBaseNode ();
 
         /** \brief Create root node and directory */
-        OutofcoreOctreeBaseNode (const boost::uint64_t max_depth, const Eigen::Vector3d &bb_min, const Eigen::Vector3d &bb_max, OutofcoreOctreeBase<ContainerT, PointT> * const tree, const boost::filesystem::path &root_name);
+        OutofcoreOctreeBaseNode (const Eigen::Vector3d &bb_min, const Eigen::Vector3d &bb_max, OutofcoreOctreeBase<ContainerT, PointT> * const tree, const boost::filesystem::path &root_name);
 
         /** \brief Will recursively delete all children calling recFreeChildrein */
         virtual
@@ -170,7 +170,10 @@ namespace pcl
         virtual void
         queryBBIncludes_subsample (const Eigen::Vector3d &min_bb, const Eigen::Vector3d &max_bb, boost::uint64_t query_depth, const double percent, AlignedPointTVector &v);
 
-        /** \brief Tests if the coordinate falls within the boundaries of the bounding box, inclusively
+        virtual void
+        queryBBIncludes_subsample (const Eigen::Vector3d &min_bb, const Eigen::Vector3d &max_bb, boost::uint64_t query_depth, const sensor_msgs::PointCloud2::Ptr& dst_blob, double percent = 1.0);
+
+        /** \brief Recursive acquires PCD paths to any node with which the queried bounding box intersects (at query_depth only).
          */
         virtual void
         queryBBIntersects (const Eigen::Vector3d &min_bb, const Eigen::Vector3d &max_bb, const boost::uint32_t query_depth, std::list<std::string> &file_names);
@@ -199,7 +202,7 @@ namespace pcl
         virtual boost::uint64_t
         addPointCloud (const sensor_msgs::PointCloud2::Ptr &input_cloud, const bool skip_bb_check = false);
 
-        /** \brief Add a single PointCloud2 into the octree and build the subsampled LOD during construction */
+        /** \brief Add a single PointCloud2 into the octree and build the subsampled LOD during construction; this method of LOD construction is <b>not</b> multiresolution. Rather, there are no redundant data. */
         virtual boost::uint64_t
         addPointCloud_and_genLOD (const sensor_msgs::PointCloud2::Ptr input_cloud); //, const bool skip_bb_check);
         
@@ -252,7 +255,7 @@ namespace pcl
         virtual size_t
         getNumChildren () const 
         {
-          unsigned char res = this->countNumChildren ();
+          size_t res = this->countNumChildren ();
           return (res);
         }
 
@@ -260,7 +263,7 @@ namespace pcl
         virtual size_t
         getNumLoadedChildren ()  const
         {
-          unsigned char res = this->countNumLoadedChildren ();
+          size_t res = this->countNumLoadedChildren ();
           return (res);
         }        
         
@@ -511,7 +514,7 @@ namespace pcl
         std::vector<OutofcoreOctreeBaseNode*> children_;
 
         /** \brief Number of children on disk. This is only changed when a new node is created */
-        unsigned char num_children_;
+        uint64_t num_children_;
 
         /** \brief Number of loaded children this node has
          *
@@ -519,7 +522,7 @@ namespace pcl
          *  and their metadata files have been loaded into
          *  memory. num_loaded_children_ <= num_children_
          */
-        unsigned char num_loaded_children_;
+        uint64_t num_loaded_children_;
 
         /** \brief what holds the points. currently a custom class, but in theory
          * you could use an stl container if you rewrote some of this class. I used

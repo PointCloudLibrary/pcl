@@ -96,9 +96,9 @@ namespace pcl
 
     template<typename PointT>
     OutofcoreOctreeDiskContainer<PointT>::OutofcoreOctreeDiskContainer () 
-      : filelen_ (0)
+      : disk_storage_filename_ ()
+      , filelen_ (0)
       , writebuff_ (0)
-      , disk_storage_filename_ ()
     {
       std::string temp = getRandomUUIDString ();
       disk_storage_filename_ = boost::shared_ptr<std::string> (new std::string (temp));
@@ -108,10 +108,9 @@ namespace pcl
 
     template<typename PointT>
     OutofcoreOctreeDiskContainer<PointT>::OutofcoreOctreeDiskContainer (const boost::filesystem::path& path)
-      : filelen_ (0)
+      : disk_storage_filename_ ()
+      , filelen_ (0)
       , writebuff_ (0)
-      , disk_storage_filename_ ()
-
     {
       if (boost::filesystem::exists (path))
       {
@@ -164,9 +163,7 @@ namespace pcl
     template<typename PointT> void
     OutofcoreOctreeDiskContainer<PointT>::flushWritebuff (const bool force_cache_dealloc)
     {
-      int outofcore_v = 3;
-      
-      if (outofcore_v >= 3 && writebuff_.size () > 0)
+      if (writebuff_.size () > 0)
       {
         //construct the point cloud for this node
         typename pcl::PointCloud<PointT>::Ptr cloud (new pcl::PointCloud<PointT>);
@@ -186,29 +183,6 @@ namespace pcl
         int res = writer.writeBinaryCompressed (*disk_storage_filename_, *cloud);
         (void)res;
         assert (res == 0);
-      }
-      
-      if (outofcore_v < 3)
-      {
-        if (writebuff_.size () > 0)
-        {
-          FILE* f = fopen (disk_storage_filename_->c_str (), "a+b");
-
-          size_t len = writebuff_.size () * sizeof(PointT);
-
-          char* loc = reinterpret_cast<char*> (& (writebuff_.front ()));
-          size_t w = fwrite (loc, 1, len, f);
-          (void)w;
-          assert (w == len);
-
-          int res = fclose (f);
-          (void)res;
-          assert (res ==  0);
-
-          filelen_ += writebuff_.size ();
-          writebuff_.clear ();
-        }
-
         if (force_cache_dealloc)
         {
           writebuff_.resize (0);

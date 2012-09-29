@@ -346,23 +346,22 @@ namespace pcl
          *  \param[in] max The maximum corner of the input bounding box.
          *  \param[in] query_depth The depth of tree at which to query; only points at this depth are returned
          *  \param[out] dst_blob The destination in which points within the bounding box are stored.
-         *  \param[in] filter Optional filter for the points before returning. The most common uses of this would be to subsample, downsample, or upsample data.
+         *  \param[in] percent optional sampling percentage which is applied after each time data are read from disk
          */
         virtual void
-        queryBoundingBox (const Eigen::Vector3d &min, const Eigen::Vector3d &max, const int query_depth, const sensor_msgs::PointCloud2::Ptr &dst_blob, pcl::Filter<sensor_msgs::PointCloud2> &filter = 0)
-        {
-          PCL_THROW_EXCEPTION (PCLException, "Not implemented\n");
-        }
+        queryBoundingBox (const Eigen::Vector3d &min, const Eigen::Vector3d &max, const int query_depth, const sensor_msgs::PointCloud2::Ptr &dst_blob, double percent = 1.0);
         
         /** \brief Returns list of pcd files from nodes whose bounding boxes intersect with the input bounding box.
          * \param[in] min The minimum corner of the input bounding box.
          * \param[in] max The maximum corner of the input bounding box.
          * \param[out] filenames The list of paths to the PCD files which can be loaded and processed.
          */
-        virtual void
-        queryBoundingBox (const Eigen::Vector3d &min, const Eigen::Vector3d &max, const int query_depth, std::list<std::string> &filenames) 
+        inline virtual void
+        queryBoundingBox (const Eigen::Vector3d &min, const Eigen::Vector3d &max, const int query_depth, std::list<std::string> &filenames) const
         {
-          PCL_THROW_EXCEPTION (PCLException, "Not implemented\n");
+          boost::shared_lock < boost::shared_mutex > lock (read_write_mutex_);
+          filenames.clear ();
+          this->root_node_->queryBBIntersects (min, max, query_depth, filenames);
         }
 
         // Parameterization: getters and setters
@@ -539,7 +538,7 @@ namespace pcl
         inline void 
         setSamplePercent (const double sample_percent_arg)
         {
-          this->sample_percent_ = sample_percent_arg > 1.0 ? 1.0 : std::fabs (sample_percent_arg);
+          this->sample_percent_ = std::fabs (sample_percent_arg) > 1.0 ? 1.0 : std::fabs (sample_percent_arg);
         }
 	
       protected:

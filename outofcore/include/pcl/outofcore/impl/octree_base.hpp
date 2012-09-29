@@ -78,8 +78,8 @@ namespace pcl
       : root_node_ ()
       , read_write_mutex_ ()
       , metadata_ (new OutofcoreOctreeBaseMetadata ())
-      , lod_filter_ptr_ (new pcl::RandomSample<sensor_msgs::PointCloud2> ())
       , sample_percent_ (0.125)
+      , lod_filter_ptr_ (new pcl::RandomSample<sensor_msgs::PointCloud2> ())
     {
       //validate the root filename
       if (!this->checkExtension (root_name))
@@ -106,8 +106,8 @@ namespace pcl
       : root_node_()
       , read_write_mutex_ ()
       , metadata_ (new OutofcoreOctreeBaseMetadata ())
-      , lod_filter_ptr_ (new pcl::RandomSample<sensor_msgs::PointCloud2> ())
       , sample_percent_ (0.125)
+      , lod_filter_ptr_ (new pcl::RandomSample<sensor_msgs::PointCloud2> ())
     {
       //Enlarge the bounding box to a cube so our voxels will be cubes
       Eigen::Vector3d tmp_min = min;
@@ -128,8 +128,8 @@ namespace pcl
       : root_node_()
       , read_write_mutex_ ()
       , metadata_ (new OutofcoreOctreeBaseMetadata ())
-      , lod_filter_ptr_ (new pcl::RandomSample<sensor_msgs::PointCloud2> ())
       , sample_percent_ (0.125)
+      , lod_filter_ptr_ (new pcl::RandomSample<sensor_msgs::PointCloud2> ())
     {
       //Create a new outofcore tree
       this->init (max_depth, min, max, root_node_name, coord_sys);
@@ -165,7 +165,7 @@ namespace pcl
       this->enlargeToCube (tmp_min, tmp_max);
 
       // Create root node
-      root_node_= new OutofcoreOctreeBaseNode<ContainerT, PointT> (depth, tmp_min, tmp_max, this, root_name);
+      root_node_= new OutofcoreOctreeBaseNode<ContainerT, PointT> (tmp_min, tmp_max, this, root_name);
       root_node_->m_tree_ = this;
       
       // Set root nodes file path
@@ -308,6 +308,20 @@ namespace pcl
       boost::shared_lock < boost::shared_mutex > lock (read_write_mutex_);
       dst.clear ();
       root_node_->queryBBIncludes_subsample (min, max, query_depth, percent, dst);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////
+    template<typename ContainerT, typename PointT> void
+    OutofcoreOctreeBase<ContainerT, PointT>::queryBoundingBox (const Eigen::Vector3d &min, const Eigen::Vector3d &max, const int query_depth, const sensor_msgs::PointCloud2::Ptr &dst_blob, double percent)
+    {
+      if (percent==1.0)
+      {
+        root_node_->queryBBIncludes (min, max, query_depth, dst_blob);
+      }
+      else
+      {
+        root_node_->queryBBIncludes_subsample (min, max, query_depth, dst_blob, percent);
+      }
     }
 
     ////////////////////////////////////////////////////////////////////////////////
@@ -590,7 +604,7 @@ namespace pcl
           if (sample_size == 0)
             sample_size = 1;
           
-          lod_filter_ptr_->setSample (sample_size);
+          lod_filter_ptr_->setSample (static_cast<unsigned int>(sample_size));
       
           //create our destination
           sensor_msgs::PointCloud2::Ptr downsampled_cloud (new sensor_msgs::PointCloud2 ());
@@ -625,8 +639,6 @@ namespace pcl
           current_branch.back ()->loadChildren (false);
         }
 
-        size_t number_of_children = current_branch.back ()->getNumChildren ();
-        
         for (size_t i = 0; i < 8; i++)
         {
           next_branch.push_back (current_branch.back ()->getChildPtr (i));

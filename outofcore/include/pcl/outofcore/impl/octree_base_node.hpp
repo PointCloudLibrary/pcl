@@ -81,7 +81,7 @@ namespace pcl
     boost::mt19937 OutofcoreOctreeBaseNode<ContainerT, PointT>::rand_gen_;
 
     template<typename ContainerT, typename PointT>
-    const double OutofcoreOctreeBaseNode<ContainerT, PointT>::sample_precent = .125;
+    const double OutofcoreOctreeBaseNode<ContainerT, PointT>::sample_percent_ = .125;
 
     template<typename ContainerT, typename PointT>
     const std::string OutofcoreOctreeBaseNode<ContainerT, PointT>::pcd_extension = ".pcd";
@@ -180,7 +180,7 @@ namespace pcl
 //////////////////////////////////////////////////////////////////////////////// 
 
     template<typename ContainerT, typename PointT>
-    OutofcoreOctreeBaseNode<ContainerT, PointT>::OutofcoreOctreeBaseNode (const boost::uint64_t max_depth, const Eigen::Vector3d& bb_min, const Eigen::Vector3d& bb_max, OutofcoreOctreeBase<ContainerT, PointT> * const tree, const boost::filesystem::path& root_name)
+    OutofcoreOctreeBaseNode<ContainerT, PointT>::OutofcoreOctreeBaseNode (const Eigen::Vector3d& bb_min, const Eigen::Vector3d& bb_max, OutofcoreOctreeBase<ContainerT, PointT> * const tree, const boost::filesystem::path& root_name)
       : m_tree_ (tree)
       , root_node_ ()
       , parent_ ()
@@ -585,8 +585,8 @@ namespace pcl
         sampleBuff = p;
       }
 
-      // Derive percentage from specified sample_precent and tree depth
-      const double percent = pow(sample_precent, double((this->root_node_->m_tree_->getDepth () - depth_)));
+      // Derive percentage from specified sample_percent and tree depth
+      const double percent = pow(sample_percent_, double((this->root_node_->m_tree_->getDepth () - depth_)));
       const uint64_t samplesize = static_cast<uint64_t>(percent * static_cast<double>(sampleBuff.size()));
       const uint64_t inputsize = sampleBuff.size();
 
@@ -1042,7 +1042,7 @@ namespace pcl
       {
         if (this->depth_ < query_depth)
         {
-          if (num_children_ > 0)
+          if (this->getNumChildren () > 0)
           {
             for (size_t i = 0; i < 8; i++)
             {
@@ -1063,9 +1063,9 @@ namespace pcl
           return;
         }
 
-        if (!payload_->empty ())
+        if (payload_->getDataSize () > 0)
         {
-          file_names.push_back (payload_->path ());
+          file_names.push_back (this->node_metadata_->getMetadataFilename ().string ());
         }
       }
     }
@@ -1268,6 +1268,73 @@ namespace pcl
     
     ////////////////////////////////////////////////////////////////////////////////
     template<typename ContainerT, typename PointT> void
+    OutofcoreOctreeBaseNode<ContainerT, PointT>::queryBBIncludes_subsample (const Eigen::Vector3d& min_bb, const Eigen::Vector3d& max_bb, boost::uint64_t query_depth, const sensor_msgs::PointCloud2::Ptr& dst_blob, double percent)
+    {
+      if (intersectsWithBoundingBox (min_bb, max_bb))
+        {
+          if (this->depth_ < query_depth)
+          {
+            if (this->hasUnloadedChildren ())
+              this->loadChildren (false);
+
+            if (this->getNumChildren () > 0)
+            {
+              for (size_t i=0; i<8; i++)
+              {
+                //recursively traverse (depth first)
+                if (children_[i]!=0)
+                  children_[i]->queryBBIncludes_subsample (min_bb, max_bb, query_depth, dst_blob, percent);
+              }
+              return;
+            }
+          }
+          //otherwise, at max depth --> read from disk, subsample, concatenate
+          else
+          {
+            
+            if (inBoundingBox (min_bb, max_bb))
+            {
+              sensor_msgs::PointCloud2::Ptr tmp_blob;
+              this->payload_->read (tmp_blob);
+              uint64_t num_pts = tmp_blob->width*tmp_blob->height;
+                
+              double sample_points = static_cast<double>(num_pts) * percent;
+              if (num_pts > 0)
+              {
+                //always sample at least one point
+                sample_points = sample_points > 0 ? sample_points : 1;
+              }
+              else
+              {
+                return;
+              }
+              
+              
+              pcl::RandomSample<sensor_msgs::PointCloud2> random_sampler;
+              random_sampler.setInputCloud (tmp_blob);
+              
+              sensor_msgs::PointCloud2::Ptr downsampled_points (new sensor_msgs::PointCloud2 ());
+              
+              //set sample size as percent * number of points read
+              random_sampler.setSample (static_cast<unsigned int> (sample_points));
+
+              pcl::ExtractIndices<sensor_msgs::PointCloud2> extractor;
+              
+              pcl::IndicesPtr downsampled_cloud_indices (new std::vector<int> ());
+              random_sampler.filter (*downsampled_cloud_indices);
+              extractor.setIndices (downsampled_cloud_indices);
+              extractor.filter (*downsampled_points);
+              
+              //concatenate the result into the destination cloud
+              pcl::concatenatePointCloud (*dst_blob, *downsampled_points, *dst_blob);
+            }
+          }
+        }
+    }
+    
+    
+    ////////////////////////////////////////////////////////////////////////////////
+    template<typename ContainerT, typename PointT> void
     OutofcoreOctreeBaseNode<ContainerT, PointT>::queryBBIncludes_subsample (const Eigen::Vector3d& min_bb, const Eigen::Vector3d& max_bb, boost::uint64_t query_depth, const double percent, AlignedPointTVector& dst)
     {
       //check if the queried bounding box has any intersection with this node's bounding box
@@ -1346,6 +1413,7 @@ namespace pcl
       , depth_ ()
       , children_ (std::vector <OutofcoreOctreeBaseNode<ContainerT, PointT>*> (8,static_cast<OutofcoreOctreeBaseNode<ContainerT, PointT>*>(0)))
       , num_children_ ()
+      , num_loaded_children_ (0)
       , payload_ ()
       , node_metadata_ ()
     {
@@ -1445,6 +1513,7 @@ namespace pcl
       Eigen::Vector3d min, max;
       node_metadata_->getBoundingBox (min, max);
       
+      //Check whether any portion of min_bb, max_bb falls within min,max
       if (((min[0] <= min_bb[0]) && (min_bb[0] <= max[0])) || ((min_bb[0] <= min[0]) && (min[0] <= max_bb[0])))
       {
         if (((min[1] <= min_bb[1]) && (min_bb[1] <= max[1])) || ((min_bb[1] <= min[1]) && (min[1] <= max_bb[1])))

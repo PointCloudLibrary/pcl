@@ -836,6 +836,54 @@ TEST_F (OutofcoreTest, PointCloud2_MultiplePointCloud)
   EXPECT_EQ (num_points_inserted, num_points_queried) << "If num_points_inserted > num_points_on_disk, then points were dropped on insertion of multiple clouds in the outofcore octree";
 }
 
+TEST_F (OutofcoreTest, PointCloud2_QueryBoundingBox)
+{
+  cleanUpFilesystem ();
+
+  //Specify the bounding box of the point clouds
+  const Eigen::Vector3d min (-100.1, -100.1, -100.1);
+  const Eigen::Vector3d max (100.1, 100.1, 100.1);
+  
+  const boost::uint64_t depth = 2;
+
+  //create a point cloud
+  PointCloud<PointT>::Ptr test_cloud (new PointCloud<PointT> ());
+
+  test_cloud->width = numPts;
+  test_cloud->height = 1;
+  test_cloud->reserve (numPts);
+
+  //generate some random points
+  for (size_t i=0; i < numPts; i++)
+  {
+    PointT tmp (static_cast<float> (i % 50) - 50 , 
+                 static_cast<float> (i % 50) - 50, 
+                 static_cast<float> (i % 50) - 50);
+    
+    test_cloud->points.push_back (tmp);
+  }
+
+  sensor_msgs::PointCloud2::Ptr dst_blob (new sensor_msgs::PointCloud2 ());
+  
+  pcl::toROSMsg (*test_cloud, *dst_blob);
+
+  octree_disk octreeA (depth, min, max, filename_otreeA, "ECEF");
+  octree_disk octreeB (depth, min, max, filename_otreeB, "ECEF");
+
+  uint64_t points_added = octreeA.addPointCloud (dst_blob, false);
+  EXPECT_EQ (points_added, dst_blob->width*dst_blob->height);
+  
+  sensor_msgs::PointCloud2::Ptr dst_blob2 (new sensor_msgs::PointCloud2 ());
+  
+  octreeA.queryBoundingBox (min, max, 2, dst_blob2);
+  std::list<std::string> filenames;
+  octreeA.queryBoundingBox (min, max, 2, filenames);
+  EXPECT_GE (filenames.size (), 1);
+  
+  octreeA.queryBoundingBox (min, max, 2, dst_blob2, 0.125);
+  EXPECT_GE (dst_blob2->width*dst_blob2->height, 1);
+  cleanUpFilesystem ();
+}
 
 
 //test that the PointCloud2 query returns the same points as the templated queries
