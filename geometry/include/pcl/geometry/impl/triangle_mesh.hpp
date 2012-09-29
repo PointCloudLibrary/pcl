@@ -140,6 +140,11 @@ namespace pcl
                const VertexIndex&  idx_v_2,
                const FaceData&     face_data = FaceData ())
       {
+        if (!idx_v_0.isValid () || !idx_v_1.isValid () || !idx_v_2.isValid ())
+        {
+          return FaceIndex ();
+        }
+
         HalfEdgeIndex idx_he_01, idx_he_12, idx_he_20;
         HalfEdgeIndex idx_he_10, idx_he_21, idx_he_02;
 
@@ -253,6 +258,10 @@ namespace pcl
         }
 
         // Connect the triangle pair if possible
+        if (!idx_v_0.isValid () || !idx_v_1.isValid () || !idx_v_2.isValid () || !idx_v_3.isValid ())
+        {
+          return (std::make_pair (FaceIndex (), FaceIndex ()));
+        }
         HalfEdgeIndex idx_he_01, idx_he_12, idx_he_23, idx_he_30;
 
         // Check manifoldness
