@@ -145,6 +145,11 @@ namespace pcl
 
         if (Base::getElement (idx_v_0).isIsolated () && Base::getElement (idx_v_1).isIsolated () && Base::getElement (idx_v_2).isIsolated ())
         {
+          if (idx_v_0==idx_v_1 || idx_v_0==idx_v_2 || idx_v_1==idx_v_2)
+          {
+            return FaceIndex ();
+          }
+
           Base::addHalfEdgePair (idx_v_0,idx_v_1, HalfEdgeData (),HalfEdgeData (), idx_he_01,idx_he_10);
           Base::addHalfEdgePair (idx_v_1,idx_v_2, HalfEdgeData (),HalfEdgeData (), idx_he_12,idx_he_21);
           Base::addHalfEdgePair (idx_v_2,idx_v_0, HalfEdgeData (),HalfEdgeData (), idx_he_20,idx_he_02);
