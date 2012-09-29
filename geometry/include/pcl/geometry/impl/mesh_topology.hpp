@@ -531,9 +531,9 @@ namespace pcl
       }
 
       bool
-      secondTopologyCheck (const bool is_new_ab,
-                           const bool is_new_bc,
-                           const bool is_isolated_b,
+      secondTopologyCheck (const bool /*is_new_ab*/,
+                           const bool /*is_new_bc*/,
+                           const bool /*is_isolated_b*/,
                            NonManifoldMeshTag) const
       {
         return (true);
