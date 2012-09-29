@@ -148,7 +148,7 @@ pcl::Morphology<PointT>::openingBinary (pcl::PointCloud<PointT> &output)
 {
   PointCloudInPtr intermediate_output (new PointCloudIn);
   erosionBinary (*intermediate_output);
-  setInputCloud (intermediate_output);
+  this->setInputCloud (intermediate_output);
   dilationBinary (output);
 }
 
@@ -159,7 +159,7 @@ pcl::Morphology<PointT>::closingBinary (pcl::PointCloud<PointT> &output)
 {
   PointCloudInPtr intermediate_output (new PointCloudIn);
   dilationBinary (*intermediate_output);
-  setInputCloud (intermediate_output);
+  this->setInputCloud (intermediate_output);
   erosionBinary (output);
 }
 
@@ -256,7 +256,7 @@ pcl::Morphology<PointT>::openingGray (pcl::PointCloud<PointT> &output)
 {
   PointCloudInPtr intermediate_output (new PointCloudIn);
   erosionGray (*intermediate_output);
-  setInputCloud (intermediate_output);
+  this->setInputCloud (intermediate_output);
   dilationGray (output);
 }
 
@@ -266,7 +266,7 @@ pcl::Morphology<PointT>::closingGray (pcl::PointCloud<PointT> &output)
 {
   PointCloudInPtr intermediate_output (new PointCloudIn);
   dilationGray (*intermediate_output);
-  setInputCloud (intermediate_output);
+  this->setInputCloud (intermediate_output);
   erosionGray (output);
 }
 
