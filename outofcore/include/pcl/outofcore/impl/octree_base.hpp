@@ -698,7 +698,7 @@ namespace pcl
       if (side_length < leaf_resolution)
           return (0);
           
-      boost::uint64_t res = static_cast<boost::uint64_t> (std::ceil (log2 (side_length/leaf_resolution)));
+      boost::uint64_t res = static_cast<boost::uint64_t> (std::ceil (log2f (side_length/leaf_resolution)));
       
       PCL_DEBUG ("[pcl::outofcore::OutofcoreOctreeBase::calculateDepth] Setting depth to %d\n",res);
       return (res);
