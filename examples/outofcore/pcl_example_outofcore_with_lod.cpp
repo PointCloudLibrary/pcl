@@ -36,6 +36,17 @@
  *  $Id$
  */
 
+#include <pcl/io/pcd_io.h>
+#include <pcl/console/print.h>
+
+#include <pcl/outofcore/outofcore.h>
+#include <pcl/outofcore/outofcore_impl.h>
+
+using namespace pcl::outofcore;
+
+typedef OutofcoreOctreeBase<OutofcoreOctreeDiskContainer<pcl::PointXYZ>, pcl::PointXYZ> OctreeDisk;
+typedef OutofcoreOctreeBaseNode<OutofcoreOctreeDiskContainer<pcl::PointXY>, pcl::PointXYZ> OctreeDiskNode;
+
 int main (int argc, char** argv)
 {
 
@@ -56,16 +67,9 @@ int main (int argc, char** argv)
   
   octree->addPointCloud (cloud, false);
 
-  octree->sync ();
-  
-  pcl::RandomSample<sensor_msgs::PointCloud2>::Ptr random_sampler (new pcl::RandomSample<sensor_msgs::PointCloud2>());
-  octree->setLODFilter (random_sampler);
-  octree->setMultiresolution (true);
-  octree->setSamplePercentage (0.125);
-  octree->setBuildStyle (OUTOFCORE_RECURSIVE);
-  octree->buildLOD ();
+  octree->setSamplePercent (0.125);
 
-  octree->sync ();
+  octree->buildLOD ();
   
   return (0);
 }
