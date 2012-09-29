@@ -3,7 +3,6 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2012, Willow Garage, Inc.
- *  Copyright (c) 2012, Urban Robotics, Inc.
  *
  *  All rights reserved.
  *
@@ -33,21 +32,38 @@
  *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
- *  
- *  $Id: outofcore.h 6913 2012-08-22 09:37:26Z stfox88 $
+ *
+ * $Id: OutofcoreBreadthFirstIterator.h -1M 2012-08-24 19:37:13Z (local) $
  */
 
-#ifndef OUTOFCORE_H_
-#define OUTOFCORE_H_
+#ifndef PCL_OUTOFCORE_BFS_ITERATOR_BASE_H_
+#define PCL_OUTOFCORE_ITERATOR_BASE_H_
 
-#include <pcl/outofcore/octree_base.h>
-#include <pcl/outofcore/octree_base_node.h>
+#include <pcl/outofcore/OutofcoreIteratorBase.h>
 
-#include <pcl/outofcore/octree_abstract_node_container.h>
+namespace pcl
+{
+  namespace outofcore
+  {
+    class OutofcoreBFSIterator : public OutofcoreIteratorBase
+    {
+      public:
+        OutofcoreBFSIterator (OutofcoreOctreeBase& outofcore_octree_arg) :
+           OutofcoreIteratorBase (outofcore_octree_arg)
+        {
+        }
 
-#include <pcl/outofcore/octree_disk_container.h>
-#include <pcl/outofcore/octree_ram_container.h>
+        ~OutofcoreBFSIteratorBase ()
+        {
+        }
 
-#include <pcl/outofcore/outofcore_node_data.h>
+        OutofcoreBFSIterator& 
+        operator++(const OutofcoreBFSIterator &src);
+        
+    };
+  }
+}
 
-#endif // OUTOFCORE_H_
+        
+
+        

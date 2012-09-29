@@ -34,7 +34,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  * 
- *  $Id$
+ *  $Id: outofcore_impl.h 6802 2012-08-13 05:31:09Z stfox88 $
  */
 
 #ifndef OUTOFCORE_IMPL_H_

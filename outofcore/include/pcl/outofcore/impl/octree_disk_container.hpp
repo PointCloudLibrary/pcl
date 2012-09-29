@@ -34,7 +34,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- *  $Id$
+ *  $Id: octree_disk_container.hpp 6927M 2012-08-24 17:01:57Z (local) $
  */
 
 #ifndef PCL_OUTOFCORE_OCTREE_DISK_CONTAINER_IMPL_H_
@@ -97,8 +97,7 @@ namespace pcl
     template<typename PointT>
     OutofcoreOctreeDiskContainer<PointT>::OutofcoreOctreeDiskContainer ()
     {
-      std::string temp;
-      getRandomUUIDString (temp);
+      std::string temp = getRandomUUIDString ();
       disk_storage_filename_ = boost::shared_ptr<std::string> (new std::string (temp));
       filelen_ = 0;
     }
@@ -219,6 +218,8 @@ namespace pcl
     template<typename PointT> PointT
     OutofcoreOctreeDiskContainer<PointT>::operator[] (uint64_t idx) const
     {
+      PCL_THROW_EXCEPTION (PCLException, "[pcl::outofcore::OutofcoreOctreeDiskContainer] Not implemented for use with PCL library\n");
+      
       //if the index is on disk
       if (idx < filelen_)
       {
@@ -649,9 +650,43 @@ namespace pcl
 
 ////////////////////////////////////////////////////////////////////////////////
 
+    template<typename PointT> int
+    OutofcoreOctreeDiskContainer<PointT>::read (sensor_msgs::PointCloud2::Ptr& output_cloud)
+    {
+      sensor_msgs::PointCloud2::Ptr temp_output_cloud (new sensor_msgs::PointCloud2 ());
+
+      if (boost::filesystem::exists (*disk_storage_filename_))
+      {
+//            PCL_INFO ("[pcl::outofcore::OutofcoreOctreeDiskContainer::%s] Reading points from disk from %s.\n", __FUNCTION__ , disk_storage_filename_->c_str ());
+        int res = pcl::io::loadPCDFile (*disk_storage_filename_, *temp_output_cloud);
+        (void)res;
+        assert (res != -1);
+        if(res == -1)
+          return (-1);
+      }
+      else
+      {
+        PCL_ERROR ("[pcl::outofcore::OutofcoreOctreeDiskContainer::%s] File %s does not exist in node.\n", __FUNCTION__, disk_storage_filename_->c_str ()); 
+        return (-1);
+      }
+
+      if(output_cloud.get () != 0)
+      {
+        pcl::concatenatePointCloud (*output_cloud, *temp_output_cloud, *output_cloud);
+      }
+      else
+      {
+        output_cloud = temp_output_cloud;
+      }
+      return (0);
+    }
+
+////////////////////////////////////////////////////////////////////////////////
+
     template<typename PointT> void
     OutofcoreOctreeDiskContainer<PointT>::insertRange (const PointT* const * start, const uint64_t count)
     {
+//      PCL_THROW_EXCEPTION (PCLException, "[pcl::outofcore::OutofcoreOctreeDiskContainer] Deprecated\n");
       //copy the handles to a continuous block
       PointT* arr = new PointT[count];
 

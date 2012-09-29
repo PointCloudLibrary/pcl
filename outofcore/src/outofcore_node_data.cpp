@@ -33,13 +33,16 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- *  $Id$
+ *  $Id: outofcore_node_data.cpp 6913 2012-08-22 09:37:26Z stfox88 $
  *
  */
 
 #include <pcl/outofcore/outofcore_node_data.h>
 
 #include <pcl/console/print.h>
+
+#include <pcl/pcl_macros.h>
+#include <pcl/common/io.h>
 
 #include <iostream>
 #include <fstream>
@@ -68,7 +71,7 @@ namespace pcl
 
 ////////////////////////////////////////////////////////////////////////////////
 
-    Eigen::Vector3d 
+    const Eigen::Vector3d&
     OutofcoreOctreeNodeMetadata::getBoundingBoxMin () const
     {
       return (min_bb_);
@@ -77,7 +80,7 @@ namespace pcl
 ////////////////////////////////////////////////////////////////////////////////
 
     void 
-    OutofcoreOctreeNodeMetadata::setBoundingBoxMin (const Eigen::Vector3d min_bb)
+    OutofcoreOctreeNodeMetadata::setBoundingBoxMin (const Eigen::Vector3d& min_bb)
     {
       min_bb_ = min_bb;
       this->updateVoxelCenter ();
@@ -85,7 +88,7 @@ namespace pcl
 
 ////////////////////////////////////////////////////////////////////////////////
 
-    Eigen::Vector3d 
+    const Eigen::Vector3d&
     OutofcoreOctreeNodeMetadata::getBoundingBoxMax () const
     {
       return (max_bb_);
@@ -94,7 +97,7 @@ namespace pcl
 ////////////////////////////////////////////////////////////////////////////////
 
     void 
-    OutofcoreOctreeNodeMetadata::setBoundingBoxMax (const Eigen::Vector3d max_bb)
+    OutofcoreOctreeNodeMetadata::setBoundingBoxMax (const Eigen::Vector3d& max_bb)
     {
       max_bb_ = max_bb;
       this->updateVoxelCenter ();
@@ -112,7 +115,7 @@ namespace pcl
 ////////////////////////////////////////////////////////////////////////////////
 
     void 
-    OutofcoreOctreeNodeMetadata::setBoundingBox (const Eigen::Vector3d min_bb, const Eigen::Vector3d max_bb)
+    OutofcoreOctreeNodeMetadata::setBoundingBox (const Eigen::Vector3d& min_bb, const Eigen::Vector3d& max_bb)
     {
       min_bb_ = min_bb;
       max_bb_ = max_bb;
@@ -121,7 +124,7 @@ namespace pcl
     
 ////////////////////////////////////////////////////////////////////////////////
 
-    boost::filesystem::path 
+    const boost::filesystem::path&
     OutofcoreOctreeNodeMetadata::getDirectoryPathname () const
     {
       return (directory_);
@@ -129,14 +132,14 @@ namespace pcl
 
 ////////////////////////////////////////////////////////////////////////////////
     void
-    OutofcoreOctreeNodeMetadata::setDirectoryPathname (const boost::filesystem::path directory_pathname)
+    OutofcoreOctreeNodeMetadata::setDirectoryPathname (const boost::filesystem::path& directory_pathname)
     {
       directory_ = directory_pathname;
     }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-    boost::filesystem::path 
+    const boost::filesystem::path&
     OutofcoreOctreeNodeMetadata::getPCDFilename () const
     {
       return (binary_point_filename_);
@@ -145,7 +148,7 @@ namespace pcl
 ////////////////////////////////////////////////////////////////////////////////
 
     void 
-    OutofcoreOctreeNodeMetadata::setPCDFilename (const boost::filesystem::path point_filename)
+    OutofcoreOctreeNodeMetadata::setPCDFilename (const boost::filesystem::path& point_filename)
     {
       binary_point_filename_ = point_filename;
     }
@@ -169,7 +172,7 @@ namespace pcl
 
 ////////////////////////////////////////////////////////////////////////////////
 
-    boost::filesystem::path 
+    const boost::filesystem::path&
     OutofcoreOctreeNodeMetadata::getMetadataFilename () const
     {
       return (metadata_filename_);
@@ -178,7 +181,7 @@ namespace pcl
 ////////////////////////////////////////////////////////////////////////////////
 
     void 
-    OutofcoreOctreeNodeMetadata::setMetadataFilename (const boost::filesystem::path path_to_metadata)
+    OutofcoreOctreeNodeMetadata::setMetadataFilename (const boost::filesystem::path& path_to_metadata)
     {
       directory_ = path_to_metadata.parent_path ();
       metadata_filename_ = path_to_metadata;
@@ -186,7 +189,7 @@ namespace pcl
 
 ////////////////////////////////////////////////////////////////////////////////
 
-    Eigen::Vector3d 
+    const Eigen::Vector3d&
     OutofcoreOctreeNodeMetadata::getVoxelCenter () const
     {
       return (midpoint_xyz_);
@@ -282,26 +285,27 @@ namespace pcl
       //return success
       return (1);
     }
-    
 ////////////////////////////////////////////////////////////////////////////////
 
     int 
-    OutofcoreOctreeNodeMetadata::loadMetadataFromDisk (const boost::filesystem::path path_to_metadata)
+    OutofcoreOctreeNodeMetadata::loadMetadataFromDisk (const boost::filesystem::path& path_to_metadata)
     {
       this->setMetadataFilename (path_to_metadata);
       this->setDirectoryPathname (path_to_metadata.parent_path ());
       return (this->loadMetadataFromDisk ());
     }
 
-////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////    
 
-    void 
-    OutofcoreOctreeNodeMetadata::updateVoxelCenter ()
+    std::ostream& 
+    operator<<(std::ostream& os, const OutofcoreOctreeNodeMetadata& metadata_arg)
     {
-      midpoint_xyz_ = (this->max_bb_ + this->min_bb_)/static_cast<double>(2.0);
+      PCL_THROW_EXCEPTION (PCLException, "Not implemented\n");
     }
     
-////////////////////////////////////////////////////////////////////////////////    
+////////////////////////////////////////////////////////////////////////////////
+
+
   }//namespace outofcore
 }//namespace pcl
 

@@ -33,21 +33,27 @@
  *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
- *  
- *  $Id: outofcore.h 6913 2012-08-22 09:37:26Z stfox88 $
+ *
+ *  $Id: OutofcoreOctreeBase.h -1M 2012-08-23 15:37:18Z (local) $
  */
 
-#ifndef OUTOFCORE_H_
-#define OUTOFCORE_H_
+#ifndef PCL_OUTOFCORE_OCTREE_BASE_H_
+#define PCL_OUTOFCORE_OCTREE_BASE_H_
 
-#include <pcl/outofcore/octree_base.h>
+#include <pcl/outofcore/boost.h>
+
 #include <pcl/outofcore/octree_base_node.h>
-
-#include <pcl/outofcore/octree_abstract_node_container.h>
-
 #include <pcl/outofcore/octree_disk_container.h>
 #include <pcl/outofcore/octree_ram_container.h>
 
-#include <pcl/outofcore/outofcore_node_data.h>
+#include <sensor_msgs/PointCloud2.h>
 
-#endif // OUTOFCORE_H_
+class OutofcoreOctreeIteratorBase
+{
+  public: 
+
+    //public typedefs
+    
+
+
+#endif

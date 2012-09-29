@@ -50,6 +50,8 @@
 using namespace std;
 
 #include <pcl/common/time.h>
+#include <pcl/console/print.h>
+
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 
@@ -265,6 +267,7 @@ point_test (octree_disk& t)
       if (qboxmax[j] < query_box_min[j])
       {
         std::swap (query_box_min[j], qboxmax[j]);
+        assert (query_box_min[j] < qboxmax[j]);
       }
     }
 
@@ -538,7 +541,7 @@ TEST_F (OutofcoreTest, Outofcore_PointcloudConstructor)
 
   EXPECT_EQ (numPts, test_cloud->points.size ());
   
-  octree_disk pcl_cloud (min, max, 4, outofcore_path, "ECEF");
+  octree_disk pcl_cloud (4, min, max, outofcore_path, "ECEF");
 
   pcl_cloud.addPointCloud (test_cloud);
   
@@ -569,7 +572,7 @@ TEST_F (OutofcoreTest, Outofcore_PointsOnBoundaries)
     cloud->points.push_back (tmp);
   }
 
-  octree_disk octree (min, max, 4, outofcore_path, "ECEF");
+  octree_disk octree (4, min, max, outofcore_path, "ECEF");
 
   octree.addPointCloud (cloud);
 
@@ -631,7 +634,7 @@ TEST_F (OutofcoreTest, Outofcore_MultiplePointClouds)
     second_cloud->points.push_back (tmp);
   }
 
-  octree_disk pcl_cloud (min, max, 4, outofcore_path, "ECEF");
+  octree_disk pcl_cloud (4, min, max, outofcore_path, "ECEF");
 
   EXPECT_EQ (test_cloud->points.size () , pcl_cloud.addPointCloud (test_cloud));
 
@@ -640,6 +643,9 @@ TEST_F (OutofcoreTest, Outofcore_MultiplePointClouds)
   pcl_cloud.addPointCloud (second_cloud);
 
   EXPECT_EQ (2*numPts, pcl_cloud.getNumPointsAtDepth (pcl_cloud.getDepth ())) << "Points are lost when two points clouds are added to the outofcore file system\n";
+
+  pcl_cloud.buildLOD ();
+  
   cleanUpFilesystem ();
 
 }
@@ -685,7 +691,7 @@ TEST_F (OutofcoreTest, Outofcore_PointCloudInput_LOD)
     second_cloud->points.push_back (tmp);
   }
 
-  octree_disk pcl_cloud (min, max, 4, outofcore_path, "ECEF");
+  octree_disk pcl_cloud (4, min, max, outofcore_path, "ECEF");
 
   pcl_cloud.addPointCloud_and_genLOD (second_cloud);
 
@@ -895,6 +901,7 @@ TEST_F (OutofcoreTest, PointCloud2_Query)
 int
 main (int argc, char** argv)
 {
+//  pcl::console::setVerbosityLevel (pcl::console::L_VERBOSE);
   testing::InitGoogleTest (&argc, argv);
   return (RUN_ALL_TESTS ());
 }

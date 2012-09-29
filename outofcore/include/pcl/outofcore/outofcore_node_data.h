@@ -33,9 +33,8 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- *  $Id$
+ *  $Id: outofcore_node_data.h 6915 2012-08-22 10:54:21Z stfox88 $
  */
-
 
 #ifndef PCL_OUTOFCORE_OCTREE_NODE_METADATA_H_
 #define PCL_OUTOFCORE_OCTREE_NODE_METADATA_H_
@@ -46,11 +45,13 @@
 
 #include <pcl/common/eigen.h>
 
+#include <ostream>
+
 namespace pcl
 {
   namespace outofcore
   {
-    /** \class OctreeNodeMetadata 
+    /** \class OutofcoreOctreeNodeMetadata 
      *
      *  \brief Encapsulated class to read JSON metadata into memory, and write the JSON metadata for each
      *  node. 
@@ -79,44 +80,49 @@ namespace pcl
      */
     class PCL_EXPORTS OutofcoreOctreeNodeMetadata
     {
+
       public:
+        //public typedefs
+        typedef boost::shared_ptr<OutofcoreOctreeNodeMetadata> Ptr;
+        typedef boost::shared_ptr<const OutofcoreOctreeNodeMetadata> ConstPtr;
+  
         /** \brief Empty constructor */
         OutofcoreOctreeNodeMetadata ();
         ~OutofcoreOctreeNodeMetadata ();
 
         /** \brief Get the lower bounding box corner */
-        Eigen::Vector3d 
+        const Eigen::Vector3d&
         getBoundingBoxMin () const;
         /** \brief Set the lower bounding box corner */
         void 
-        setBoundingBoxMin (const Eigen::Vector3d min_bb);
+        setBoundingBoxMin (const Eigen::Vector3d& min_bb);
         /** \brief Get the upper bounding box corner */
-        Eigen::Vector3d 
+        const Eigen::Vector3d&
         getBoundingBoxMax () const;
         /** \brief Set the upper bounding box corner */
         void 
-        setBoundingBoxMax (const Eigen::Vector3d max_bb);
+        setBoundingBoxMax (const Eigen::Vector3d& max_bb);
 
         /** \brief Get the lower and upper corners of the bounding box enclosing this node */
         void 
         getBoundingBox (Eigen::Vector3d &min_bb, Eigen::Vector3d &max_bb) const;
         /** \brief Set the lower and upper corners of the bounding box */
         void 
-        setBoundingBox (const Eigen::Vector3d min_bb, const Eigen::Vector3d max_bb);
+        setBoundingBox (const Eigen::Vector3d& min_bb, const Eigen::Vector3d& max_bb);
         
         /** \brief Get the directory path name; this is the parent_path of  */
-        boost::filesystem::path 
+        const boost::filesystem::path&
         getDirectoryPathname () const;
         /** \brief Set the directory path name */
         void 
-        setDirectoryPathname (const boost::filesystem::path directory_pathname);
+        setDirectoryPathname (const boost::filesystem::path& directory_pathname);
 
         /** \brief Get the path to the PCD file */
-        boost::filesystem::path 
+        const boost::filesystem::path&
         getPCDFilename () const;
         /** \brief Set the point filename; extension .pcd */
         void 
-        setPCDFilename (const boost::filesystem::path point_filename);
+        setPCDFilename (const boost::filesystem::path& point_filename);
 
         /** \brief et the outofcore version read from the "version" field of the JSON object */
         int 
@@ -126,14 +132,14 @@ namespace pcl
         setOutofcoreVersion (const int version);
 
         /** \brief Sets the name of the JSON file */
-        boost::filesystem::path 
+        const boost::filesystem::path&
         getMetadataFilename () const;
         /** \brief Gets the name of the JSON file */
         void 
-        setMetadataFilename (const boost::filesystem::path path_to_metadata);
+        setMetadataFilename (const boost::filesystem::path& path_to_metadata);
         
         /** \brief Get the midpoint of this node's bounding box */
-        Eigen::Vector3d 
+        const Eigen::Vector3d&
         getVoxelCenter () const;
         
         /** \brief Writes the data to a JSON file located at \ref metadata_filename_ */
@@ -145,8 +151,11 @@ namespace pcl
         loadMetadataFromDisk ();
         /** \brief Loads the data from a JSON file located at \ref metadata_filename_ */
         int 
-        loadMetadataFromDisk (const boost::filesystem::path path_to_metadata);
+        loadMetadataFromDisk (const boost::filesystem::path& path_to_metadata);
 
+        friend
+        std::ostream& operator<<(std::ostream& os, const OutofcoreOctreeNodeMetadata& metadata_arg);
+        
       protected:
         /** \brief The X,Y,Z axes-aligned minimum corner for the bounding box */
         Eigen::Vector3d min_bb_;
@@ -164,8 +173,11 @@ namespace pcl
         int outofcore_version_;
 
         /** \brief Computes the midpoint; used when bounding box is changed */
-        void 
-        updateVoxelCenter ();
+        inline void 
+        updateVoxelCenter ()
+        {
+          midpoint_xyz_ = (this->max_bb_ + this->min_bb_)/static_cast<double>(2.0);
+        }
     };
   }//namespace outofcore
 }//namespace pcl

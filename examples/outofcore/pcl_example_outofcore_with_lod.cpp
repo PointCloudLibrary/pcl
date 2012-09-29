@@ -3,7 +3,6 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2012, Willow Garage, Inc.
- *  Copyright (c) 2012, Urban Robotics, Inc.
  *
  *  All rights reserved.
  *
@@ -33,21 +32,18 @@
  *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
- *  
- *  $Id: outofcore.h 6913 2012-08-22 09:37:26Z stfox88 $
+ *
+ *  $Id$
  */
 
-#ifndef OUTOFCORE_H_
-#define OUTOFCORE_H_
+int main (int argc, char** argv)
+{
 
-#include <pcl/outofcore/octree_base.h>
-#include <pcl/outofcore/octree_base_node.h>
+  //Find all PCD files located in argv[1] directory
 
-#include <pcl/outofcore/octree_abstract_node_container.h>
+  //
 
-#include <pcl/outofcore/octree_disk_container.h>
-#include <pcl/outofcore/octree_ram_container.h>
 
-#include <pcl/outofcore/outofcore_node_data.h>
 
-#endif // OUTOFCORE_H_
+  return (0);
+}

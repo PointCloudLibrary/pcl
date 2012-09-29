@@ -34,7 +34,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- *  $Id$
+ *  $Id: octree_disk_container.h 6927M 2012-08-24 13:26:40Z (local) $
  */
 
 #ifndef PCL_OUTOFCORE_OCTREE_DISK_CONTAINER_H_
@@ -79,8 +79,8 @@ namespace pcl
 
         /** \brief Creates uuid named file or loads existing file
          * 
-         * If \ref dir is a directory, this constructor will create a new
-         * uuid named file; if \ref dir is an existing file, it will load the
+         * If \b dir is a directory, this constructor will create a new
+         * uuid named file; if \b dir is an existing file, it will load the
          * file metadata for accessing the tree.
          *
          * \param[in] dir Path to the tree. If it is a directory, it
@@ -148,6 +148,12 @@ namespace pcl
         /// \todo refactor \ref readRange and strip start & count parameters and replace with array of indices
         void
         readRange (const uint64_t, const uint64_t, sensor_msgs::PointCloud2::Ptr &dst);
+
+        /** \brief Reads the entire point contents from disk into \ref output_cloud
+         *  \param[out] output_cloud
+         */
+        int
+        read (sensor_msgs::PointCloud2::Ptr &output_cloud);
 
         /** \brief  grab percent*count random points. points are \b not guaranteed to be
          * unique (could have multiple identical points!)

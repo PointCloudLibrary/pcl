@@ -3,7 +3,6 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2012, Willow Garage, Inc.
- *  Copyright (c) 2012, Urban Robotics, Inc.
  *
  *  All rights reserved.
  *
@@ -33,21 +32,58 @@
  *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
- *  
- *  $Id: outofcore.h 6913 2012-08-22 09:37:26Z stfox88 $
+ *
+ *  $Id$
  */
 
-#ifndef OUTOFCORE_H_
-#define OUTOFCORE_H_
+#include <pcl/io/pcd_io.h>
+#include <pcl/console/print.h>
 
-#include <pcl/outofcore/octree_base.h>
-#include <pcl/outofcore/octree_base_node.h>
+#include <pcl/outofcore/outofcore.h>
+#include <pcl/outofcore/outofcore_impl.h>
 
-#include <pcl/outofcore/octree_abstract_node_container.h>
+#include <pcl/outofcore/OutofcoreIteratorBase.h>
 
-#include <pcl/outofcore/octree_disk_container.h>
-#include <pcl/outofcore/octree_ram_container.h>
+#include <pcl/outofcore/OutofcoreDepthFirstIterator.h>
+#include <pcl/outofcore/impl/OutofcoreDepthFirstIterator.hpp>
 
-#include <pcl/outofcore/outofcore_node_data.h>
+using namespace pcl::outofcore;
 
-#endif // OUTOFCORE_H_
+typedef OutofcoreOctreeBase<OutofcoreOctreeDiskContainer<pcl::PointXYZ>, pcl::PointXYZ> OctreeDisk;
+typedef OutofcoreOctreeBaseNode<OutofcoreOctreeDiskContainer<pcl::PointXY>, pcl::PointXYZ> OctreeDiskNode;
+
+int main (int argc, char** argv)
+{
+//  pcl::console::setVerbosityLevel (pcl::console::L_VERBOSE);
+
+  int depth = 3;
+  Eigen::Vector3d min (-10.0, -10.0, -10.0);
+  Eigen::Vector3d max (10.0, 10.0, 10.0);
+  boost::filesystem::path file_location ("tree/tree.oct_idx");
+  
+  OctreeDisk* octree;
+  
+  octree = new OctreeDisk (depth, min, max, file_location, "ECEF");
+
+  sensor_msgs::PointCloud2::Ptr cloud (new sensor_msgs::PointCloud2 ());
+    
+  pcl::io::loadPCDFile (argv[1], *cloud);
+  
+  octree->addPointCloud (cloud, false);
+
+  delete octree;
+
+  OctreeDisk octree2 (file_location, true);
+
+  //iterate over the octree, depth first
+  OutofcoreDepthFirstIterator<pcl::PointXYZ, pcl::outofcore::OutofcoreOctreeDiskContainer<pcl::PointXYZ> > it (octree2);
+  OctreeDisk::Iterator myit (octree2);
+
+  while ( *myit !=0 )
+  {
+    octree2.printBoundingBox (**myit);
+    myit++;
+  }
+
+  return (0);
+}

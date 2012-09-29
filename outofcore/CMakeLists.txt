@@ -1,6 +1,6 @@
 set(SUBSYS_NAME outofcore)
 set(SUBSYS_DESC "Point cloud outofcore library")
-set(SUBSYS_DEPS common io visualization filters)
+set(SUBSYS_DEPS common io filters visualization octree)
 
 set(build TRUE)
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
@@ -12,11 +12,16 @@ if(build)
     set(srcs
         src/cJSON.cpp
 	src/outofcore_node_data.cpp
+	src/outofcore_base_data.cpp
         )
 
     set(incs
-	include/pcl/${SUBSYS_NAME}/boost.h
+        include/pcl/${SUBSYS_NAME}/metadata.h
+	include/pcl/${SUBSYS_NAME}/outofcore_base_data.h
 	include/pcl/${SUBSYS_NAME}/outofcore_node_data.h
+	include/pcl/${SUBSYS_NAME}/OutofcoreIteratorBase.h
+	include/pcl/${SUBSYS_NAME}/OutofcoreDepthFirstIterator.h
+	include/pcl/${SUBSYS_NAME}/boost.h
         include/pcl/${SUBSYS_NAME}/cJSON.h
         include/pcl/${SUBSYS_NAME}/octree_base.h
         include/pcl/${SUBSYS_NAME}/octree_base_node.h
@@ -26,6 +31,7 @@ if(build)
         )
 
     set(impl_incs
+	include/pcl/${SUBSYS_NAME}/impl/OutofcoreDepthFirstIterator.hpp
         include/pcl/${SUBSYS_NAME}/impl/octree_base.hpp
         include/pcl/${SUBSYS_NAME}/impl/octree_base_node.hpp
         include/pcl/${SUBSYS_NAME}/impl/octree_disk_container.hpp

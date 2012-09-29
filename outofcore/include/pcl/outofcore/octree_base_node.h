@@ -34,28 +34,21 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- *  $Id$
+ *  $Id: octree_base_node.h 6927M 2012-08-25 00:23:04Z (local) $
  */
 
 #ifndef PCL_OUTOFCORE_OCTREE_BASE_NODE_H_
 #define PCL_OUTOFCORE_OCTREE_BASE_NODE_H_
 
-// Boost
-#include <boost/filesystem.hpp>
-#include <boost/thread.hpp>
-#include <boost/random/mersenne_twister.hpp>
-#include <boost/random/uniform_int.hpp>
-#include <boost/random/bernoulli_distribution.hpp>
-
-// PCL (Urban Robotics)
 #include <pcl/common/io.h>
+#include <sensor_msgs/PointCloud2.h>
 
+#include <pcl/outofcore/boost.h>
 #include <pcl/outofcore/octree_base.h>
 #include <pcl/outofcore/octree_disk_container.h>
-
 #include <pcl/outofcore/outofcore_node_data.h>
 
-#include <sensor_msgs/PointCloud2.h>
+#include <pcl/octree/octree_nodes.h>
 
 namespace pcl
 {
@@ -98,7 +91,7 @@ namespace pcl
      *
      */
     template<typename ContainerT, typename PointT>
-    class OutofcoreOctreeBaseNode
+    class OutofcoreOctreeBaseNode : public pcl::octree::OctreeNode
     {
       friend class OutofcoreOctreeBase<ContainerT, PointT> ;
   
@@ -127,13 +120,11 @@ namespace pcl
          */
         OutofcoreOctreeBaseNode ();
 
-        /** \brief Create root node and directory setting voxel size*/
-        OutofcoreOctreeBaseNode (const Eigen::Vector3d &bb_min, const Eigen::Vector3d &bb_max, const double node_dim_meters, OutofcoreOctreeBase<ContainerT, PointT> * const tree, const boost::filesystem::path &root_name);
-
-        /** \brief Create root node and directory setting setting max depth*/
+        /** \brief Create root node and directory */
         OutofcoreOctreeBaseNode (const int max_depth, const Eigen::Vector3d &bb_min, const Eigen::Vector3d &bb_max, OutofcoreOctreeBase<ContainerT, PointT> * const tree, const boost::filesystem::path &root_name);
 
         /** \brief Will recursively delete all children calling recFreeChildrein */
+        virtual
         ~OutofcoreOctreeBaseNode ();
 
         //query
@@ -141,7 +132,7 @@ namespace pcl
          * \param[out] minCoord returns the minimum corner of the bounding box indexed by 0-->X, 1-->Y, 2-->Z 
          * \param[out] maxCoord returns the maximum corner of the bounding box indexed by 0-->X, 1-->Y, 2-->Z 
          */
-        inline void
+        virtual inline void
         getBoundingBox (Eigen::Vector3d &min_bb, Eigen::Vector3d &max_bb) const
         {
           node_metadata_->getBoundingBox (min_bb, max_bb);
@@ -155,7 +146,7 @@ namespace pcl
          *  \param[in] query_depth the maximum depth to query in the octree for points within the bounding box
          *  \param[out] dst destion of points returned by the queries
          */
-        void
+        virtual void
         queryBBIncludes (const Eigen::Vector3d &min_bb, const Eigen::Vector3d &max_bb, size_t query_depth, AlignedPointTVector &dst);
 
         /** \brief Recursively add points that fall into the queried bounding box up to the \b query_depth
@@ -165,7 +156,7 @@ namespace pcl
          *  \param[in] query_depth the maximum depth to query in the octree for points within the bounding box
          *  \param[out] dst_blob destion of points returned by the queries
          */
-        void
+        virtual void
         queryBBIncludes (const Eigen::Vector3d &min_bb, const Eigen::Vector3d &max_bb, size_t query_depth, const sensor_msgs::PointCloud2::Ptr &dst_blob);
 
         /** \brief Recursively add points that fall into the queried bounding box up to the \b query_depth 
@@ -175,28 +166,28 @@ namespace pcl
          *  \param[in] query_depth
          *  \param[out] v std::list of points returned by the query
          */
-        void
+        virtual void
         queryBBIncludes_subsample (const Eigen::Vector3d &min_bb, const Eigen::Vector3d &max_bb, int query_depth, const double percent, AlignedPointTVector &v);
 
         /** \brief Tests if the coordinate falls within the boundaries of the bounding box, inclusively
          */
-        void
+        virtual void
         queryBBIntersects (const Eigen::Vector3d &min_bb, const Eigen::Vector3d &max_bb, const boost::uint32_t query_depth, std::list<std::string> &file_names);
 
         /** \brief Write the voxel size to stdout at \ref query_depth 
          * \param[in] query_depth The depth at which to print the size of the voxel/bounding boxes
          */
-        void
+        virtual void
         printBoundingBox (const size_t query_depth) const;
 
         /** \brief add point to this node if we are a leaf, or find the leaf below us that is supposed to take the point 
          *  \param[in] p vector of points to add to the leaf
          *  \param[in] skipBBCheck whether to check if the point's coordinates fall within the bounding box
          */
-        boost::uint64_t
+        virtual boost::uint64_t
         addDataToLeaf (const AlignedPointTVector &p, const bool skip_bb_check);
 
-        boost::uint64_t
+        virtual boost::uint64_t
         addDataToLeaf (const std::vector<const PointT*> &p, const bool skip_bb_check);
 
         /** \brief Add a single PointCloud2 object into the octree.
@@ -204,11 +195,11 @@ namespace pcl
          * \param[in] input_cloud
          * \param[in] skip_bb_check (default = false)
          */
-        boost::uint64_t
+        virtual boost::uint64_t
         addPointCloud (const sensor_msgs::PointCloud2::Ptr &input_cloud, const bool skip_bb_check = false);
 
         /** \brief Add a single PointCloud2 into the octree and build the subsampled LOD during construction */
-        boost::uint64_t
+        virtual boost::uint64_t
         addPointCloud_and_genLOD (const sensor_msgs::PointCloud2::Ptr input_cloud); //, const bool skip_bb_check);
         
         /** \brief Recursively add points to the leaf and children subsampling LODs
@@ -216,7 +207,7 @@ namespace pcl
          *
          * \note rng_mutex_ lock occurs
          */
-        boost::uint64_t
+        virtual boost::uint64_t
         addDataToLeaf_and_genLOD (const AlignedPointTVector &p, const bool skip_bb_check);
 
         /** \brief Write a python visual script to @b file
@@ -225,6 +216,61 @@ namespace pcl
         void
         writeVPythonVisual (std::ofstream &file);
 
+        virtual int
+        read (sensor_msgs::PointCloud2::Ptr &output_cloud);
+
+        virtual inline pcl::octree::node_type_t
+        getNodeType () const
+        {
+          if(this->getNumChildren () > 0)
+          {
+            return (pcl::octree::BRANCH_NODE);
+          }
+          else
+          {
+//            assert (this->depth_ == this->max_depth_);
+            return (pcl::octree::LEAF_NODE);
+          }
+        }
+        
+        virtual
+        OutofcoreOctreeBaseNode* 
+        deepCopy () const
+        {
+          OutofcoreOctreeBaseNode* res = NULL;
+          PCL_THROW_EXCEPTION (PCLException, "Not implemented\n");
+          return (res);
+        }
+
+        virtual inline size_t
+        getDepth () const
+        {
+          return (this->depth_);
+        }
+
+        /** \brief Returns the total number of children on disk */
+        virtual unsigned char
+        getNumChildren () const 
+        {
+          unsigned char res = this->countNumChildren ();
+          return (res);
+        }
+
+        /** \brief Count loaded chilren */
+        virtual unsigned char
+        getNumLoadedChildren ()  const
+        {
+          unsigned char res = this->countNumLoadedChildren ();
+          return (res);
+        }        
+        
+        /** \brief Returns a pointer to the child in octant index_arg */
+        virtual OutofcoreOctreeBaseNode*
+        getChildPtr (unsigned char index_arg) const;
+
+      ///////////////////////////////////////////////////////////////////////////////
+      // PROTECTED METHODS
+      ////////////////////////////////////////////////////////////////////////////////
       protected:
         /** \brief Load from disk 
          * If creating root, path is full name. If creating any other
@@ -253,6 +299,16 @@ namespace pcl
          */
         void init_root_node (const Eigen::Vector3d &bb_min, const Eigen::Vector3d &bb_max, OutofcoreOctreeBase<ContainerT, PointT> * const tree, const boost::filesystem::path &rootname);
 
+        /** \brief Counts the number of child directories on disk; used to update num_children_ */
+        virtual unsigned char
+        countNumChildren () const;
+
+        /** \brief Counts the number of loaded chilren by testing the \ref children_ array; 
+         *  used to update num_loaded_chilren_ internally 
+         */
+        virtual unsigned char
+        countNumLoadedChildren () const;
+        
         /** \brief Save node's metadata to file
          * \param[in] recursive: if false, save only this node's metadata to file; if true, recursively
          * save all children's metadata to files as well
@@ -356,6 +412,7 @@ namespace pcl
 
         /** \brief Auxiliary method which computes the depth of the tree based on the dimension of the smallest voxel.
          *  \param[in] min_bb The minimum corner of t
+         *  \todo MOVE calcDepthForDim to octree_base interface, as private method
          */
         int
         calcDepthForDim (const Eigen::Vector3d &min_bb, const Eigen::Vector3d &max_bb, const double dim);
@@ -370,13 +427,6 @@ namespace pcl
         size () const
         {
           return (payload_->size ());
-        }
-
-        /** \brief Number of children (0 or 8). */
-        inline size_t
-        num_child_ren () const
-        {
-          return num_child_;
         }
 
         void
@@ -413,11 +463,11 @@ namespace pcl
         copyAllCurrentAndChildPointsRec_sub (std::list<PointT> &v, const double percent);
 
         /** \brief Returns whether or not a node has unloaded children data */
-        inline bool
+        bool
         hasUnloadedChildren () const;
 
         /** \brief Load nodes child data creating new nodes for each */
-        void
+        virtual void
         loadChildren (bool recursive);
 
         /** \brief Gets a vector of occupied voxel centers
@@ -425,14 +475,14 @@ namespace pcl
          * \param[in] query_depth
          */
         void
-        getVoxelCentersRecursive (AlignedPointTVector &voxel_centers, const size_t query_depth);
+        getOccupiedVoxelCentersRecursive (AlignedPointTVector &voxel_centers, const size_t query_depth);
 
         /** \brief Gets a vector of occupied voxel centers
          * \param[out] voxel_centers
          * \param[in] query_depth
          */
         void
-        getVoxelCentersRecursive (std::vector<Eigen::Vector3d, Eigen::aligned_allocator<Eigen::Vector3d> > &voxel_centers, const size_t query_depth);
+        getOccupiedVoxelCentersRecursive (std::vector<Eigen::Vector3d, Eigen::aligned_allocator<Eigen::Vector3d> > &voxel_centers, const size_t query_depth);
 
         /** \brief Sorts the indices based on x,y,z fields and pushes the index into the proper octant's vector;
          *  This could be overloaded with a parallelized implementation
@@ -450,15 +500,24 @@ namespace pcl
         /** \brief The tree we belong to */
         OutofcoreOctreeBase<ContainerT, PointT>* m_tree_;//
         /** \brief The root node of the tree we belong to */
-        OutofcoreOctreeBaseNode* root_;//
+        OutofcoreOctreeBaseNode* root_node_;//
         /** \brief super-node */
         OutofcoreOctreeBaseNode* parent_;
         /** \brief Depth in the tree, root is 0, root's children are 1, ... */
         size_t depth_;
         /** \brief The children of this node */
         OutofcoreOctreeBaseNode* children_[8];
-        /** \brief number of children this node has. Between 0 and 8 inclusive */
-        size_t num_child_;
+
+        /** \brief Number of children on disk. This is only changed when a new node is created */
+        unsigned char num_children_;
+
+        /** \brief Number of loaded children this node has
+         *
+         *  "Loaded" means child OctreeBaseNodes have been allocated,
+         *  and their metadata files have been loaded into
+         *  memory. num_loaded_children_ <= num_children_
+         */
+        unsigned char num_loaded_children_;
 
         /** \brief what holds the points. currently a custom class, but in theory
          * you could use an stl container if you rewrote some of this class. I used
@@ -477,8 +536,7 @@ namespace pcl
         /** \brief Extension for this class to find the pcd files on disk */
         const static std::string pcd_extension;
 
-        boost::shared_ptr<OutofcoreOctreeNodeMetadata> node_metadata_;
-
+        OutofcoreOctreeNodeMetadata::Ptr node_metadata_;
     };
   }//namespace outofcore
 }//namespace pcl

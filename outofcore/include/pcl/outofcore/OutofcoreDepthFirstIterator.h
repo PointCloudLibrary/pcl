@@ -3,7 +3,6 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2012, Willow Garage, Inc.
- *  Copyright (c) 2012, Urban Robotics, Inc.
  *
  *  All rights reserved.
  *
@@ -33,21 +32,53 @@
  *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
- *  
- *  $Id: outofcore.h 6913 2012-08-22 09:37:26Z stfox88 $
+ *
+ * $Id$
  */
 
-#ifndef OUTOFCORE_H_
-#define OUTOFCORE_H_
+#ifndef PCL_OUTOFCORE_DEPTH_FIRST_ITERATOR_H_
+#define PCL_OUTOFCORE_DEPTH_FIRST_ITERATOR_H_
 
-#include <pcl/outofcore/octree_base.h>
-#include <pcl/outofcore/octree_base_node.h>
+#include <pcl/outofcore/OutofcoreIteratorBase.h>
+namespace pcl
+{
+  namespace outofcore
+  {
+    template<typename PointT, typename ContainerT>
+    class OutofcoreDepthFirstIterator : public OutofcoreIteratorBase<PointT, ContainerT>
+    {
+      public:
+        typedef typename pcl::outofcore::OutofcoreOctreeBase<ContainerT, PointT> OctreeDisk;
+        typedef typename pcl::outofcore::OutofcoreOctreeBaseNode<ContainerT, PointT> OctreeDiskNode;
 
-#include <pcl/outofcore/octree_abstract_node_container.h>
+        typedef typename pcl::outofcore::OutofcoreOctreeBaseNode<ContainerT, PointT> LeafNode;
+        typedef typename pcl::outofcore::OutofcoreOctreeBaseNode<ContainerT, PointT> BranchNode;
 
-#include <pcl/outofcore/octree_disk_container.h>
-#include <pcl/outofcore/octree_ram_container.h>
+        explicit
+        OutofcoreDepthFirstIterator (OctreeDisk& octree_arg);
 
-#include <pcl/outofcore/outofcore_node_data.h>
+        virtual
+        ~OutofcoreDepthFirstIterator ();
+      
+        OutofcoreDepthFirstIterator&
+        operator++ ();
+      
+        inline OutofcoreDepthFirstIterator
+        operator++ (int)
+        {
+          OutofcoreDepthFirstIterator _Tmp = *this;
+          ++*this;
+          return (_Tmp);
+        }
+      
+        void
+        skipChildVoxels ();
+      
+      protected:
+        unsigned char currentChildIdx_;
+        std::vector<std::pair<OctreeDiskNode*, unsigned char> > stack_;
+    };
+  }
+}
 
-#endif // OUTOFCORE_H_
+#endif //PCL_OUTOFCORE_DEPTH_FIRST_ITERATOR_H_

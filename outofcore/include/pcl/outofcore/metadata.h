@@ -3,7 +3,6 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2012, Willow Garage, Inc.
- *  Copyright (c) 2012, Urban Robotics, Inc.
  *
  *  All rights reserved.
  *
@@ -33,21 +32,67 @@
  *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
- *  
- *  $Id: outofcore.h 6913 2012-08-22 09:37:26Z stfox88 $
+ *
+ *  $Id$
  */
 
-#ifndef OUTOFCORE_H_
-#define OUTOFCORE_H_
 
-#include <pcl/outofcore/octree_base.h>
-#include <pcl/outofcore/octree_base_node.h>
+#ifndef PCL_OUTOFCORE_METADATA_H_
+#define PCL_OUTOFCORE_METADATA_H_
 
-#include <pcl/outofcore/octree_abstract_node_container.h>
+#include <pcl/outofcore/boost.h>
+#include <vector>
+#include <ostream>
 
-#include <pcl/outofcore/octree_disk_container.h>
-#include <pcl/outofcore/octree_ram_container.h>
+namespace pcl
+{
+  namespace outofcore
+  {
+    
+    /** \class AbstractMetadata
+     *
+     *  \brief Abstract interface for outofcore metadata file types
+     *
+     *  \ingroup outofcore
+     *  \author Stephen Fox (foxstephend@gmail.com)
+     */
 
-#include <pcl/outofcore/outofcore_node_data.h>
+    class PCL_EXPORTS OutofcoreAbstractMetadata
+    {
+    public:
+      
+      /** \brief Empty constructor */
+      OutofcoreAbstractMetadata ()
+      {
+      }
+      
+      virtual
+      ~OutofcoreAbstractMetadata ()
+      {}
+      
+      /** \brief Write the metadata in the on-disk format, e.g. JSON. */
+      virtual void
+      serializeMetadataToDisk () = 0;
 
-#endif // OUTOFCORE_H_
+      /** \brief Method which should read and parse metadata and store
+       *  it in variables that have public getters and setters*/
+      virtual int
+      loadMetadataFromDisk (const boost::filesystem::path& path_to_metadata) = 0;
+      
+      /** \brief Should write the same ascii metadata that is saved on
+       *   disk, or a human readable format of the metadata in case a binary format is being used */
+      friend std::ostream& 
+      operator<<(std::ostream& os, const OutofcoreAbstractMetadata& metadata_arg);
+      
+    protected:
+      
+      /** \brief Constructs the metadata ascii which can be written to disk or piped to stdout */
+      virtual void
+      writeMetadataString (std::vector<char>& buf) =0;
+      
+    };
+    
+  }//namespace outofcore
+}//namespace pcl
+
+#endif //PCL_OUTOFCORE_METADATA_H_

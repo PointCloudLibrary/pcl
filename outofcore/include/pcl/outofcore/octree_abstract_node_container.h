@@ -33,7 +33,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- *  $Id$
+ *  $Id: octree_abstract_node_container.h 6802M 2012-08-25 00:11:05Z (local) $
  */
 
 #ifndef PCL_OUTOFCORE_OCTREE_ABSTRACT_NODE_CONTAINER_H_
@@ -42,22 +42,22 @@
 #include <vector>
 #include <string>
 
-#include <boost/filesystem.hpp>
-#include <boost/thread.hpp>
-#include <boost/random/mersenne_twister.hpp>
+#include <pcl/outofcore/boost.h>
 
 namespace pcl
 {
   namespace outofcore
   {
     template<typename PointT>
-    class OutofcoreAbstractNodeContainer
+    class OutofcoreAbstractNodeContainer 
     {
 
       public:
         typedef std::vector<PointT, Eigen::aligned_allocator<PointT> > AlignedPointTVector;
 
-        OutofcoreAbstractNodeContainer () {}
+        OutofcoreAbstractNodeContainer () 
+          : container_ ()
+        {}
 
         OutofcoreAbstractNodeContainer (const boost::filesystem::path&) {}
 
