@@ -636,21 +636,22 @@ TEST_F (OutofcoreTest, Outofcore_MultiplePointClouds)
 
   octree_disk pcl_cloud (4, min, max, outofcore_path, "ECEF");
 
-  EXPECT_EQ (test_cloud->points.size () , pcl_cloud.addPointCloud (test_cloud));
+  ASSERT_EQ (test_cloud->points.size (), pcl_cloud.addPointCloud (test_cloud)) << "Points lost when adding the first cloud to the tree\n";
 
-  EXPECT_EQ (numPts, pcl_cloud.getNumPointsAtDepth (pcl_cloud.getDepth ()));
+  ASSERT_EQ (numPts, pcl_cloud.getNumPointsAtDepth (pcl_cloud.getDepth ())) << "Book keeping of number of points at query depth does not match number of points inserted to the leaves\n";
 
   pcl_cloud.addPointCloud (second_cloud);
 
   EXPECT_EQ (2*numPts, pcl_cloud.getNumPointsAtDepth (pcl_cloud.getDepth ())) << "Points are lost when two points clouds are added to the outofcore file system\n";
 
+  pcl_cloud.setSamplePercent (0.125);
   pcl_cloud.buildLOD ();
-
+  
   //check that there is at least one point in each LOD
   for (size_t i=0; i<pcl_cloud.getDepth (); i++)
-    EXPECT_GE (1, pcl_cloud.getNumPointsAtDepth (i));
+    EXPECT_GE (pcl_cloud.getNumPointsAtDepth (i), 1) << "No points in the LOD indicates buildLOD failed\n";
 
-  EXPECT_EQ (2*numPts, pcl_cloud.getNumPointsAtDepth (pcl_cloud.getDepth ()));
+  EXPECT_EQ (2*numPts, pcl_cloud.getNumPointsAtDepth (pcl_cloud.getDepth ())) << "Points in leaves were lost while building LOD!\n";
 
   cleanUpFilesystem ();
 }
