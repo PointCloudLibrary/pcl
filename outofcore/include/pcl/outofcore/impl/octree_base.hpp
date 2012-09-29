@@ -340,7 +340,7 @@ namespace pcl
     ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> void
-    OutofcoreOctreeBase<ContainerT, PointT>::printBoundingBox(const boost::uint64_t query_depth) const
+    OutofcoreOctreeBase<ContainerT, PointT>::printBoundingBox(const size_t query_depth) const
     {
       boost::shared_lock < boost::shared_mutex > lock (read_write_mutex_);
       root_node_->printBoundingBox (query_depth);
