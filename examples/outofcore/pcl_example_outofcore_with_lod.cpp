@@ -41,9 +41,31 @@ int main (int argc, char** argv)
 
   //Find all PCD files located in argv[1] directory
 
-  //
+  int depth = 3;
+  Eigen::Vector3d min (-10.0, -10.0, -10.0);
+  Eigen::Vector3d max (10.0, 10.0, 10.0);
+  boost::filesystem::path file_location ("tree/tree.oct_idx");
+  
+  OctreeDisk* octree;
+  
+  octree = new OctreeDisk (depth, min, max, file_location, "ECEF");
 
+  sensor_msgs::PointCloud2::Ptr cloud (new sensor_msgs::PointCloud2 ());
+    
+  pcl::io::loadPCDFile (argv[1], *cloud);
+  
+  octree->addPointCloud (cloud, false);
 
+  octree->sync ();
+  
+  pcl::RandomSample<sensor_msgs::PointCloud2>::Ptr random_sampler (new pcl::RandomSample<sensor_msgs::PointCloud2>());
+  octree->setLODFilter (random_sampler);
+  octree->setMultiresolution (true);
+  octree->setSamplePercentage (0.125);
+  octree->setBuildStyle (OUTOFCORE_RECURSIVE);
+  octree->buildLOD ();
 
+  octree->sync ();
+  
   return (0);
 }

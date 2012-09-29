@@ -75,7 +75,7 @@ namespace pcl
      *
      *  The JSON file is formatted in the following way:
      *  {
-     *    "name": "test,
+     *    "name": "nameoftree",
      *    "version": 3,
      *    "pointtype": "urp",               #(needs to be changed*)
      *    "lod": 3,                         #(depth of the tree

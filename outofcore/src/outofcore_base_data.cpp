@@ -57,7 +57,7 @@ namespace pcl
       , outofcore_version_ ()
       , coordinate_system_ ()
       , tree_name_ ()
-      , point_type_ ()
+      , point_type_ ("urp")
       , levels_of_depth_ ()
       , LOD_num_points_ ()
     {
@@ -70,7 +70,7 @@ namespace pcl
       , outofcore_version_ ()
       , coordinate_system_ ()
       , tree_name_ ()
-      , point_type_ ()
+      , point_type_ ("urp")
       , levels_of_depth_ ()
       , LOD_num_points_ ()
     {
@@ -124,9 +124,9 @@ namespace pcl
       // Create JSON object
       boost::shared_ptr<cJSON> idx (cJSON_CreateObject (), cJSON_Delete);
   
-      cJSON* name = cJSON_CreateString ("test");
+      cJSON* name = cJSON_CreateString (tree_name_.c_str ());
       cJSON* version = cJSON_CreateNumber ( __PCL_OUTOFCORE_VERSION__ );
-      cJSON* pointtype = cJSON_CreateString ("urp");
+      cJSON* pointtype = cJSON_CreateString (point_type_.c_str ());
       cJSON* lod = cJSON_CreateNumber (static_cast<double> (levels_of_depth_));
 
       // cJSON does not allow 64 bit ints.  Have to put the points in a double to

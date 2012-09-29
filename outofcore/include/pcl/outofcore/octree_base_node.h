@@ -61,8 +61,6 @@ namespace pcl
     template<typename ContainerT, typename PointT>
     class OutofcoreOctreeBase;
 
-    /** \todo Move non-class functions to an octree accessor class */
-
     /** \brief Non-class function which creates a single child leaf; used with \ref queryBBIntersects_noload to avoid loading the data from disk */
     template<typename ContainerT, typename PointT> OutofcoreOctreeBaseNode<ContainerT, PointT>*
     makenode_norec (const boost::filesystem::path &path, OutofcoreOctreeBaseNode<ContainerT, PointT>* super);
@@ -185,10 +183,10 @@ namespace pcl
          *  \param[in] skipBBCheck whether to check if the point's coordinates fall within the bounding box
          */
         virtual boost::uint64_t
-        addDataToLeaf (const AlignedPointTVector &p, const bool skip_bb_check);
+        addDataToLeaf (const AlignedPointTVector &p, const bool skip_bb_check = true);
 
         virtual boost::uint64_t
-        addDataToLeaf (const std::vector<const PointT*> &p, const bool skip_bb_check);
+        addDataToLeaf (const std::vector<const PointT*> &p, const bool skip_bb_check = true);
 
         /** \brief Add a single PointCloud2 object into the octree.
          *
@@ -228,7 +226,6 @@ namespace pcl
           }
           else
           {
-//            assert (this->depth_ == this->max_depth_);
             return (pcl::octree::LEAF_NODE);
           }
         }
@@ -317,8 +314,6 @@ namespace pcl
         saveIdx (bool recursive);
 
         /** \brief Randomly sample point data 
-         *  \todo This needs to be deprecated; random sampling has its own class
-         *  \todo Parameterize random sampling, uniform downsampling, etc...
          */
         void
         randomSample (const AlignedPointTVector &p, AlignedPointTVector &insertBuff, const bool skip_bb_check);
@@ -410,13 +405,6 @@ namespace pcl
         void
         saveMetadataToFile (const boost::filesystem::path &path);
 
-        /** \brief Auxiliary method which computes the depth of the tree based on the dimension of the smallest voxel.
-         *  \param[in] min_bb The minimum corner of t
-         *  \todo MOVE calcDepthForDim to octree_base interface, as private method
-         */
-        int
-        calcDepthForDim (const Eigen::Vector3d &min_bb, const Eigen::Vector3d &max_bb, const double dim);
-
         /** \brief Method which recursively free children of this node 
          */
         void
@@ -506,7 +494,7 @@ namespace pcl
         /** \brief Depth in the tree, root is 0, root's children are 1, ... */
         size_t depth_;
         /** \brief The children of this node */
-        OutofcoreOctreeBaseNode* children_[8];
+        std::vector<OutofcoreOctreeBaseNode*> children_;
 
         /** \brief Number of children on disk. This is only changed when a new node is created */
         unsigned char num_children_;

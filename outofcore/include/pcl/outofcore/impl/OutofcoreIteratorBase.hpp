@@ -53,8 +53,9 @@ namespace pcl
       stack_.reserve (this->octree_.getTreeDepth ());
       OutofcoreIteratorBase<PointT,ContainerT>::reset ();
     }
-    ////////////////////////////////////////////////////////////////////////////////
 
+    ////////////////////////////////////////////////////////////////////////////////
+    
     template<typename PointT, typename ContainerT> 
     OutofcoreDepthFirstIterator<PointT, ContainerT>::~OutofcoreDepthFirstIterator ()
     {
@@ -140,6 +141,7 @@ namespace pcl
         
       return (*this);
     }
+
     ////////////////////////////////////////////////////////////////////////////////
 
   }//namesapce pcl

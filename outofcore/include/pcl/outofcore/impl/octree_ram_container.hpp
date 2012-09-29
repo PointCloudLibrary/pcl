@@ -80,14 +80,17 @@ namespace pcl
         assert ( fclose (fxyz) == 0 );
       }
     }
-////////////////////////////////////////////////////////////////////////////////
+
+    ////////////////////////////////////////////////////////////////////////////////
+
     template<typename PointT> void
     OutofcoreOctreeRamContainer<PointT>::insertRange (const PointT* start, const boost::uint64_t count)
     {
       container_.insert (container_.end (), start, start + count);
     }
 
-////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
+
     template<typename PointT> void
     OutofcoreOctreeRamContainer<PointT>::insertRange (const PointT* const * start, const boost::uint64_t count)
     {
@@ -99,7 +102,8 @@ namespace pcl
       }
       container_.insert (container_.end (), temp.begin (), temp.end ());
     }
-////////////////////////////////////////////////////////////////////////////////
+
+    ////////////////////////////////////////////////////////////////////////////////
 
     template<typename PointT> void
     OutofcoreOctreeRamContainer<PointT>::readRange (const boost::uint64_t start, const boost::uint64_t count,
@@ -108,7 +112,8 @@ namespace pcl
       v.resize (count);
       memcpy (v.data (), container_.data () + start, count * sizeof(PointT));
     }
-////////////////////////////////////////////////////////////////////////////////
+
+    ////////////////////////////////////////////////////////////////////////////////
 
     template<typename PointT> void
     OutofcoreOctreeRamContainer<PointT>::readRangeSubSample (const boost::uint64_t start, 
@@ -116,7 +121,6 @@ namespace pcl
                                                       const double percent, 
                                                       AlignedPointTVector& v)
     {
-      /** \todo change the subsampling technique to use built in PCL sampling */
       boost::uint64_t samplesize = static_cast<boost::uint64_t> (percent * static_cast<double> (count));
 
       boost::mutex::scoped_lock lock (rng_mutex_);
@@ -130,7 +134,8 @@ namespace pcl
         v.push_back (container_[buffstart]);
       }
     }
-////////////////////////////////////////////////////////////////////////////////
+
+    ////////////////////////////////////////////////////////////////////////////////
 
   }//namespace outofcore
 }//namespace pcl

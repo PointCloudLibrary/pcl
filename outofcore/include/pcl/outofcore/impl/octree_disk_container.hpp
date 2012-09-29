@@ -92,7 +92,7 @@ namespace pcl
       ss << u;
       s = ss.str ();
     }
-////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
 
     template<typename PointT>
     OutofcoreOctreeDiskContainer<PointT>::OutofcoreOctreeDiskContainer ()
@@ -101,7 +101,7 @@ namespace pcl
       disk_storage_filename_ = boost::shared_ptr<std::string> (new std::string (temp));
       filelen_ = 0;
     }
-////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
 
     template<typename PointT>
     OutofcoreOctreeDiskContainer<PointT>::OutofcoreOctreeDiskContainer (const boost::filesystem::path& path)
@@ -149,16 +149,15 @@ namespace pcl
         filelen_ = 0;
       }
     }
-////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
 
     template<typename PointT>
     OutofcoreOctreeDiskContainer<PointT>::~OutofcoreOctreeDiskContainer ()
     {
       flushWritebuff (true);
     }
-////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
 
-    /// \todo deprecate flushWritebuff ? unused? 
     template<typename PointT> void
     OutofcoreOctreeDiskContainer<PointT>::flushWritebuff (const bool force_cache_dealloc)
     {
@@ -193,7 +192,7 @@ namespace pcl
           FILE* f = fopen (disk_storage_filename_->c_str (), "a+b");
 
           size_t len = writebuff_.size () * sizeof(PointT);
-          /** \todo study and optimize the serialization to disk */
+
           char* loc = reinterpret_cast<char*> (& (writebuff_.front ()));
           size_t w = fwrite (loc, 1, len, f);
           (void)w;
@@ -213,7 +212,7 @@ namespace pcl
         }
       }
     }
-////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
 
     template<typename PointT> PointT
     OutofcoreOctreeDiskContainer<PointT>::operator[] (uint64_t idx) const
@@ -335,7 +334,7 @@ namespace pcl
       fclose (f);
 */
 }
-////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
 
     template<typename PointT> void
     OutofcoreOctreeDiskContainer<PointT>::readRangeSubSample_bernoulli (const uint64_t start, const uint64_t count, const double percent, AlignedPointTVector& dst)
@@ -427,7 +426,7 @@ namespace pcl
         fclose (f);
       }
     }
-////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
 
 //change this to use a weighted coin flip, to allow sparse sampling of small clouds (eg the bernoulli above)
     template<typename PointT> void
@@ -525,19 +524,18 @@ namespace pcl
         assert (res == 0);
       }
     }
-////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
 
     template<typename PointT> void
     OutofcoreOctreeDiskContainer<PointT>::push_back (const PointT& p)
     {
-      ///\todo modfiy this method & delayed write cache for construction
       writebuff_.push_back (p);
       if (writebuff_.size () > WRITE_BUFF_MAX_)
       {
         flushWritebuff (false);
       }
     }
-////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
 
     template<typename PointT> void
     OutofcoreOctreeDiskContainer<PointT>::insertRange (const AlignedPointTVector& src)
@@ -577,13 +575,12 @@ namespace pcl
       //save and close
       PCDWriter writer;
       
-      /// \todo allow appending to pcd file without loading all of the point data into memory
       int res = writer.writeBinaryCompressed (*disk_storage_filename_, *tmp_cloud);
       (void)res;
       assert (res == 0);
     }
   
-////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
 
     template<typename PointT> void
     OutofcoreOctreeDiskContainer<PointT>::insertRange (const sensor_msgs::PointCloud2::Ptr& input_cloud)
@@ -624,7 +621,7 @@ namespace pcl
 
     }
 
-////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
 
     template<typename PointT> void
     OutofcoreOctreeDiskContainer<PointT>::readRange (const uint64_t, const uint64_t, sensor_msgs::PointCloud2::Ptr& dst)
@@ -648,7 +645,7 @@ namespace pcl
       }
     }
 
-////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
 
     template<typename PointT> int
     OutofcoreOctreeDiskContainer<PointT>::read (sensor_msgs::PointCloud2::Ptr& output_cloud)
@@ -681,7 +678,7 @@ namespace pcl
       return (0);
     }
 
-////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
 
     template<typename PointT> void
     OutofcoreOctreeDiskContainer<PointT>::insertRange (const PointT* const * start, const uint64_t count)
@@ -700,14 +697,11 @@ namespace pcl
       delete[] arr;
     }
     
-////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
 
     template<typename PointT> void
     OutofcoreOctreeDiskContainer<PointT>::insertRange (const PointT* start, const uint64_t count)
     {
-      ///\todo standardize the interface for writing points to disk with this class; this method may not work properly
-      ///\todo deprecate this method
-
       //variables which ultimately need to be global
       int outofcore_v = 3;
       //only flush the write buffer if there are enough points for it
@@ -752,7 +746,6 @@ namespace pcl
         //save and close
         PCDWriter writer;
 
-        /// \todo allow appending to pcd file without loading all of the point data into memory
         int res = writer.writeBinaryCompressed (*disk_storage_filename_, *tmp_cloud);
         (void)res;
         assert (res == 0);
@@ -789,7 +782,8 @@ namespace pcl
       
       filelen_ += count;
     }
-////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
+
   }//namespace outofcore
 }//namespace pcl
 

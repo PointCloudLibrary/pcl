@@ -108,7 +108,6 @@ namespace pcl
         void
         insertRange (const sensor_msgs::PointCloud2::Ptr &input_cloud);
 
-        /** \todo standardize the interface for writing binary data to the files .oct_dat files */
         void
         insertRange (const PointT* const * start, const uint64_t count);
     
@@ -116,17 +115,6 @@ namespace pcl
          * blocks of point data. This is called by the outofcore
          * octree interface, opens the binary file for appending data,
          * and writes it to disk.
-         *
-         * \todo With the current implementation of \b insertRange,
-         * frequently the file is open and sometimes 1-3 points are
-         * written to disk. This might be normal if the resolution is
-         * low enough, but performance could be improved if points are
-         * first sorted into buckets by locational code, then sent to
-         * their appropriate container for being written to
-         * disk. Furthermore, for OUTOFCORE_VERSION_ >= 3, this will
-         * use PCD files (and possibly Julius's octree compression)
-         * rather than an unorganized linear dump of the binary PointT
-         * data.
          *
          * \param[in] start address of the first point to insert
          * \param[in] count offset from start of the last point to insert
@@ -145,7 +133,6 @@ namespace pcl
         void
         readRange (const uint64_t start, const uint64_t count, AlignedPointTVector &dst);
 
-        /// \todo refactor \ref readRange and strip start & count parameters and replace with array of indices
         void
         readRange (const uint64_t, const uint64_t, sensor_msgs::PointCloud2::Ptr &dst);
 
@@ -157,8 +144,6 @@ namespace pcl
 
         /** \brief  grab percent*count random points. points are \b not guaranteed to be
          * unique (could have multiple identical points!)
-         *
-         * \todo improve the random sampling of octree points from the disk container
          *
          * \param[in] start The starting index of points to select
          * \param count[in] The length of the range of points from which to randomly sample 
@@ -273,10 +258,6 @@ namespace pcl
          *
          * A mutex lock happens to ensure uniquness
          *
-         * \todo Does this need to be on a templated class?  Seems like this could
-         * be a general utility function.
-         * \todo Does this need to be random?
-         *
          */
         static void
         getRandomUUIDString (std::string &s);
@@ -295,25 +276,16 @@ namespace pcl
         /** \brief elements [0,...,size()-1] map to [filelen, ..., filelen + size()-1] */
         AlignedPointTVector writebuff_;
 
-        //std::fstream fileback;//elements [0,...,filelen-1]
         /** \brief Name of the storage file on disk (i.e., the PCD file) */
         boost::shared_ptr<std::string> disk_storage_filename_;
 
+        //--- possibly deprecated parameter variables --//
+
         //number of elements in file
-        /// \todo This value was originally computed by the number of bytes in the binary dump to disk. Now, since we are using binary compressed, it needs to be computed in a different way (!). This is causing Unit Tests: PCL.Outofcore_Point_Query, OutofcoreTest.PointCloud2_Query and OutofcoreTest.PointCloud2_Insert( on post-insert query test) to fail as of 4 July 2012. SDF
         uint64_t filelen_;
 
         const static uint64_t READ_BLOCK_SIZE_;
 
-        /** \todo Consult with the literature about optimizing out of core read/write */
-        /** \todo this will be handled by the write method in pcl::FileWriter */
-        /** \todo WRITE_BUFF_MAX_ is something of a misnomer; this is
-         *  used in two different ways in the class which accounts for
-         *  a bug. It should be the maximum number of points written
-         *  to disk. However, in some places it is also used as the
-         *  maximum number of points allowed to exist in \b writebuff_
-         *  at any given time.
-         */
         static const uint64_t WRITE_BUFF_MAX_;
 
         static boost::mutex rng_mutex_;

@@ -62,7 +62,6 @@ namespace pcl
   namespace outofcore
   {
     
-    /// \todo wrap these into an "outofcore parameters" class
     template<typename ContainerT, typename PointT>
     const std::string OutofcoreOctreeBaseNode<ContainerT, PointT>::node_index_basename = "node";
 
@@ -93,7 +92,7 @@ namespace pcl
       , root_node_ (NULL)
       , parent_ (NULL)
       , depth_ (0)
-      , children_ ()
+      , children_ (std::vector <OutofcoreOctreeBaseNode<ContainerT, PointT>*> (8,static_cast<OutofcoreOctreeBaseNode<ContainerT, PointT>*>(0)))
       , num_children_ (0)
       , num_loaded_children_ (0)
       , payload_ ()
@@ -101,10 +100,9 @@ namespace pcl
     {
       node_metadata_ = boost::shared_ptr<OutofcoreOctreeNodeMetadata> (new OutofcoreOctreeNodeMetadata ());
       node_metadata_->setOutofcoreVersion (3);
-      memset (children_, 0, 8 * sizeof(OutofcoreOctreeBaseNode<ContainerT, PointT>*));
     }
 
-////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT>
     OutofcoreOctreeBaseNode<ContainerT, PointT>::OutofcoreOctreeBaseNode (const boost::filesystem::path& directory_path, OutofcoreOctreeBaseNode<ContainerT, PointT>* super, bool load_all)
@@ -112,7 +110,7 @@ namespace pcl
       , root_node_ ()
       , parent_ (super)
       , depth_ ()
-      , children_ ()
+      , children_ (std::vector <OutofcoreOctreeBaseNode<ContainerT, PointT>*> (8,static_cast<OutofcoreOctreeBaseNode<ContainerT, PointT>*>(0)))
       , num_children_ (0)
       , num_loaded_children_ (0)
       , payload_ ()
@@ -120,7 +118,6 @@ namespace pcl
     {
       node_metadata_ = boost::shared_ptr<OutofcoreOctreeNodeMetadata> (new OutofcoreOctreeNodeMetadata ());
       node_metadata_->setOutofcoreVersion (3);
-      memset (children_, 0, 8*sizeof (OutofcoreOctreeBaseNode<ContainerT, PointT> *));
 
       //Check if this is the first node created/loaded (this is true if super, i.e. node's parent is NULL)
       if (super == NULL)
@@ -171,6 +168,7 @@ namespace pcl
       
       //load the metadata
       loadFromFile (node_metadata_->getMetadataFilename (), super);
+
       //set the number of children in this node
       num_children_ = this->countNumChildren ();
 
@@ -180,6 +178,25 @@ namespace pcl
       }
     }
 //////////////////////////////////////////////////////////////////////////////// 
+
+    template<typename ContainerT, typename PointT>
+    OutofcoreOctreeBaseNode<ContainerT, PointT>::OutofcoreOctreeBaseNode (const int max_depth, const Eigen::Vector3d& bb_min, const Eigen::Vector3d& bb_max, OutofcoreOctreeBase<ContainerT, PointT> * const tree, const boost::filesystem::path& root_name)
+      : m_tree_ (tree)
+      , root_node_ ()
+      , parent_ ()
+      , depth_ ()
+      , children_ (std::vector <OutofcoreOctreeBaseNode<ContainerT, PointT>*> (8,static_cast<OutofcoreOctreeBaseNode<ContainerT, PointT>*> (0)))
+      , num_children_ (0)
+      , num_loaded_children_ (0)
+      , payload_ ()
+      , node_metadata_ (new OutofcoreOctreeNodeMetadata ())
+    {
+      assert (tree != NULL);
+      node_metadata_->setOutofcoreVersion (3);
+      init_root_node (bb_min, bb_max, tree, root_name);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> void
     OutofcoreOctreeBaseNode<ContainerT, PointT>::init_root_node (const Eigen::Vector3d& bb_min, const Eigen::Vector3d& bb_max, OutofcoreOctreeBase<ContainerT, PointT> * const tree, const boost::filesystem::path& root_name)
@@ -192,7 +209,6 @@ namespace pcl
       depth_ = 0;
 
       //Mark the children as unallocated
-      memset (children_, 0, 8 * sizeof(OutofcoreOctreeBaseNode<ContainerT, PointT>*));
       num_children_ = 0;
 
       Eigen::Vector3d tmp_max = bb_max;
@@ -219,7 +235,6 @@ namespace pcl
       }
 
       // Create a unique id for node file name
-      /** \todo: getRandomUUIDString shouldn't be in class octree_disk_container; also this is pretty slow*/
       std::string uuid;
       
       OutofcoreOctreeDiskContainer<PointT>::getRandomUUIDString (uuid);
@@ -237,7 +252,17 @@ namespace pcl
       // Create data container, ie octree_disk_container, octree_ram_container
       payload_ = boost::shared_ptr<ContainerT> (new ContainerT (node_metadata_->getPCDFilename ()));
     }
-////////////////////////////////////////////////////////////////////////////////
+
+    ////////////////////////////////////////////////////////////////////////////////
+
+    template<typename ContainerT, typename PointT>
+    OutofcoreOctreeBaseNode<ContainerT, PointT>::~OutofcoreOctreeBaseNode ()
+    {
+      // Recursively delete all children and this nodes data
+      recFreeChildren ();
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////
     
     template<typename ContainerT, typename PointT> unsigned char
     OutofcoreOctreeBaseNode<ContainerT, PointT>::countNumChildren () const
@@ -253,7 +278,7 @@ namespace pcl
       return (child_count);
     }
 
-////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> void
     OutofcoreOctreeBaseNode<ContainerT, PointT>::saveIdx (bool recursive)
@@ -270,34 +295,7 @@ namespace pcl
       }
     }
 
-////////////////////////////////////////////////////////////////////////////////
-
-    template<typename ContainerT, typename PointT>
-    OutofcoreOctreeBaseNode<ContainerT, PointT>::OutofcoreOctreeBaseNode (const int max_depth, const Eigen::Vector3d& bb_min, const Eigen::Vector3d& bb_max, OutofcoreOctreeBase<ContainerT, PointT> * const tree, const boost::filesystem::path& root_name)
-      : m_tree_ (tree)
-      , root_node_ ()
-      , parent_ ()
-      , depth_ ()
-      , children_ ()
-      , num_children_ (0)
-      , num_loaded_children_ (0)
-      , payload_ ()
-      , node_metadata_ (new OutofcoreOctreeNodeMetadata ())
-    {
-      assert (tree != NULL);
-      
-      node_metadata_->setOutofcoreVersion (3);
-      init_root_node (bb_min, bb_max, tree, root_name);
-    }
-////////////////////////////////////////////////////////////////////////////////
-
-    template<typename ContainerT, typename PointT>
-    OutofcoreOctreeBaseNode<ContainerT, PointT>::~OutofcoreOctreeBaseNode ()
-    {
-      // Recursively delete all children and this nodes data
-      recFreeChildren ();
-    }
-////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> bool
     OutofcoreOctreeBaseNode<ContainerT, PointT>::hasUnloadedChildren () const
@@ -307,7 +305,7 @@ namespace pcl
       else
         return (false);
     }
-////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> void
     OutofcoreOctreeBaseNode<ContainerT, PointT>::loadChildren (bool recursive)
@@ -331,7 +329,7 @@ namespace pcl
       }
       assert (num_loaded_children_ == this->getNumChildren ());
     }
-////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> void
     OutofcoreOctreeBaseNode<ContainerT, PointT>::recFreeChildren ()
@@ -349,16 +347,14 @@ namespace pcl
           delete (current);
         }
       }
-      memset (children_, 0, 8 * sizeof(OutofcoreOctreeBaseNode<ContainerT, PointT>*));
+      children_.resize (8, static_cast<OutofcoreOctreeBaseNode<ContainerT, PointT>* > (0));
       num_children_ = 0;
     }
-////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> uint64_t
     OutofcoreOctreeBaseNode<ContainerT, PointT>::addDataToLeaf (const AlignedPointTVector& p, const bool skip_bb_check)
     {
-      ///\todo consider using fr/p 02 locational codes
-
       //quit if there are no points to add
       if (p.empty ())
       {
@@ -412,14 +408,12 @@ namespace pcl
       }
       return (points_added);
     }
-////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
 
 
     template<typename ContainerT, typename PointT> boost::uint64_t
     OutofcoreOctreeBaseNode<ContainerT, PointT>::addDataToLeaf (const std::vector<const PointT*>& p, const bool skip_bb_check)
     {
-      ///\todo deprecate this method
-      
       if (p.empty ())
       {
         return (0);
@@ -427,7 +421,8 @@ namespace pcl
 
       if (this->depth_ == this->root_node_->m_tree_->getDepth ())
       {
-        if (skip_bb_check)//trust me, just add the points
+        //trust me, just add the points
+        if (skip_bb_check)
         {
           root_node_->m_tree_->incrementPointsInLOD (this->depth_, p.size ());
           
@@ -458,12 +453,9 @@ namespace pcl
       }
       else
       {
-        if (num_children_ < 8)
+        if (this->hasUnloadedChildren ())
         {
-          if (hasUnloadedChildren ())
-          {
-            loadChildren (false);
-          }
+          loadChildren (false);
         }
 
         std::vector < std::vector<const PointT*> > c;
@@ -509,7 +501,7 @@ namespace pcl
       // std::cerr << "failed to place point!!!" << std::endl;
       return (0);
     }
-////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
 
 
     template<typename ContainerT, typename PointT> boost::uint64_t
@@ -575,8 +567,7 @@ namespace pcl
     }
 
 
-////////////////////////////////////////////////////////////////////////////////
-/** todo: Need to refactor this further as to not pass in a BBCheck */
+    ////////////////////////////////////////////////////////////////////////////////
     template<typename ContainerT, typename PointT> void
     OutofcoreOctreeBaseNode<ContainerT, PointT>::randomSample(const AlignedPointTVector& p, AlignedPointTVector& insertBuff, const bool skip_bb_check)
     {
@@ -628,7 +619,7 @@ namespace pcl
             insertBuff.push_back( p[i] );
       }
     }
-////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> boost::uint64_t
     OutofcoreOctreeBaseNode<ContainerT, PointT>::addDataAtMaxDepth (const AlignedPointTVector& p, const bool skip_bb_check)
@@ -644,12 +635,10 @@ namespace pcl
         // Insert point data
         payload_->insertRange ( p );
         
-        ///\todo this is not a failsafe way to know all the points were written (!!!!)
         return (p.size ());
       }
 
       // Add points found within the current node's bounding box
-      /// \todo standardize the boundary case
       else
       {
         AlignedPointTVector buff;
@@ -672,7 +661,7 @@ namespace pcl
         return (buff.size ());
       }
     }
-////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
     template<typename ContainerT, typename PointT> boost::uint64_t
     OutofcoreOctreeBaseNode<ContainerT, PointT>::addDataAtMaxDepth ( const sensor_msgs::PointCloud2::Ptr input_cloud, const bool skip_bb_check)
     {
@@ -694,7 +683,7 @@ namespace pcl
     }
 
 
-////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
     template<typename ContainerT, typename PointT> void
     OutofcoreOctreeBaseNode<ContainerT, PointT>::subdividePoints (const AlignedPointTVector &p, std::vector< AlignedPointTVector > &c, const bool skip_bb_check)
     {
@@ -715,7 +704,7 @@ namespace pcl
         subdividePoint (pt, c);
       }
     }
-////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> void
     OutofcoreOctreeBaseNode<ContainerT, PointT>::subdividePoint (const PointT& point, std::vector< AlignedPointTVector >& c)
@@ -726,7 +715,7 @@ namespace pcl
       c[octant].push_back (point);
     }
 
-////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
     template<typename ContainerT, typename PointT> boost::uint64_t
     OutofcoreOctreeBaseNode<ContainerT, PointT>::addPointCloud_and_genLOD (const sensor_msgs::PointCloud2::Ptr input_cloud) //, const bool skip_bb_check = false )
     {
@@ -757,9 +746,8 @@ namespace pcl
       //   1. Get indices from a random sample
       //   2. Extract those indices with the extract indices class (in order to also get the complement)
       //------------------------------------------------------------
-      /// \todo Parameterize the filter to be an input to the outofcore class, with this as default
       pcl::RandomSample<sensor_msgs::PointCloud2> random_sampler;
-      random_sampler.setInputCloud ( input_cloud );
+      random_sampler.setInputCloud (input_cloud);
 
       //set sample size to 1/8 of total points (12.5%)
       uint64_t sample_size = input_cloud->width*input_cloud->height / 8;
@@ -767,14 +755,17 @@ namespace pcl
       
       //create our destination
       sensor_msgs::PointCloud2::Ptr downsampled_cloud ( new sensor_msgs::PointCloud2 () );
+
       //create destination for indices
       pcl::IndicesPtr downsampled_cloud_indices ( new std::vector< int > () );
       random_sampler.filter (*downsampled_cloud_indices);
+
       //extract the "random subset", size by setSampleSize
       pcl::ExtractIndices<sensor_msgs::PointCloud2> extractor;
       extractor.setInputCloud ( input_cloud );
       extractor.setIndices ( downsampled_cloud_indices );
       extractor.filter ( *downsampled_cloud );
+
       //extract the complement of those points (i.e. everything remaining)
       sensor_msgs::PointCloud2::Ptr remaining_points ( new sensor_msgs::PointCloud2 () );
       extractor.setNegative (true);
@@ -809,38 +800,39 @@ namespace pcl
           createChild (i);
 
         //copy correct indices into a temporary cloud
-        sensor_msgs::PointCloud2::Ptr tmp_local_point_cloud ( new sensor_msgs::PointCloud2 () );
-        pcl::copyPointCloud ( *remaining_points, indices[i], *tmp_local_point_cloud );
+        sensor_msgs::PointCloud2::Ptr tmp_local_point_cloud (new sensor_msgs::PointCloud2 ());
+        pcl::copyPointCloud (*remaining_points, indices[i], *tmp_local_point_cloud);
 
         //recursively add points and keep track of how many were successfully added to the tree
-        points_added += children_[i]->addPointCloud_and_genLOD ( tmp_local_point_cloud );
+        points_added += children_[i]->addPointCloud_and_genLOD (tmp_local_point_cloud);
         PCL_DEBUG ("[pcl::outofcore::OutofcoreOctreeBaseNode::%s] points_added: %lu, indices[i].size: %lu, tmp_local_point_cloud size: %lu\n", __FUNCTION__, points_added, indices[i].size (), tmp_local_point_cloud->width*tmp_local_point_cloud->height);
 
       }
       assert (points_added == input_cloud->width*input_cloud->height);
       return (points_added);
     }
-////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> boost::uint64_t
     OutofcoreOctreeBaseNode<ContainerT, PointT>::addDataToLeaf_and_genLOD (const AlignedPointTVector& p, const bool skip_bb_check)
     {
-      // If there's no points return
+      // If there are no points return
       if (p.empty ())
         return (0);
 
-      /// \todo: Why is skip_bb_check set to false when adding points at max depth
       //  when adding data and generating sampled LOD 
       // If the max depth has been reached
       assert (this->root_node_->m_tree_ != NULL );
       
       if (this->depth_ == this->root_node_->m_tree_->getDepth ())
+      {
+        PCL_DEBUG ("[pcl::outofcore::OutofcoreOctreeBaseNode::addDataToLeaf_and_genLOD] Adding data to the leaves\n");
         return (addDataAtMaxDepth(p, false));
-
+      }
+      
       // Create child nodes of the current node but not grand children+
-      if (num_children_ < 8)
-        if (hasUnloadedChildren ())
-          loadChildren (false);
+      if (this->hasUnloadedChildren ())
+        loadChildren (false /*no recursive loading*/);
 
       // Randomly sample data
       AlignedPointTVector insertBuff;
@@ -851,16 +843,14 @@ namespace pcl
         // Increment point count for node
         root_node_->m_tree_->incrementPointsInLOD (this->depth_, insertBuff.size());
         // Insert sampled point data
-//        payload_->insertRange ( &(insertBuff.front ()), insertBuff.size());
         payload_->insertRange (insertBuff);
         
       }
 
       //subdivide vec to pass data down lower
-      std::vector< AlignedPointTVector > c;
+      std::vector<AlignedPointTVector> c;
       subdividePoints(p, c, skip_bb_check);
 
-      /// \todo: Perhaps do a quick loop through the lists here and dealloc the reserved mem for empty lists
       boost::uint64_t points_added = 0;
       for(int i = 0; i < 8; i++)
       {
@@ -872,29 +862,26 @@ namespace pcl
         if(!children_[i])
           createChild(i);
 
-        /// \todo: Why are there no bounding box checks on the way down?
         // Recursively build children
         points_added += children_[i]->addDataToLeaf_and_genLOD(c[i], true);
         c[i].clear();
       }
 
       return (points_added);
-
-      // todo: Make sure I didn't break anything by removing the if/else above
-      // std::cerr << "failed to place point!!!" << std::endl;
-      //return 0;
     }
-////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> void
     OutofcoreOctreeBaseNode<ContainerT, PointT>::createChild (const int idx)
     {
       //if already has 8 children, return
       if (children_[idx] || (num_children_ == 8))
+      {
+        PCL_ERROR ("[pcl::outofcore::OutofcoreOctreeBaseNode::createChild] Not allowed to create a 9th child of %s",this->node_metadata_->getMetadataFilename ().c_str ());
         return;
+      }
 
       Eigen::Vector3d start = node_metadata_->getBoundingBoxMin ();
-
       Eigen::Vector3d step = (node_metadata_->getBoundingBoxMax () - start)/static_cast<double>(2.0);
 
       Eigen::Vector3d childbb_min;
@@ -928,13 +915,8 @@ namespace pcl
 
       num_children_++;
     }
-////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
 
-    template<typename ContainerT, typename PointT> int
-    OutofcoreOctreeBaseNode<ContainerT, PointT>::calcDepthForDim (const Eigen::Vector3d& min_bb, const Eigen::Vector3d& max_bb, const double dim)
-    {
-    }
-////////////////////////////////////////////////////////////////////////////////
     template<typename ContainerT, typename PointT> bool
     pointInBoundingBox (const Eigen::Vector3d& min_bb, const Eigen::Vector3d& max_bb, const Eigen::Vector3d& point)
     {
@@ -948,10 +930,9 @@ namespace pcl
       }
       return (false);
     }
-    
 
 
-////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
     template<typename ContainerT, typename PointT> inline bool
     OutofcoreOctreeBaseNode<ContainerT, PointT>::pointInBoundingBox (const PointT& p) const
     {
@@ -969,7 +950,7 @@ namespace pcl
       return (false);
     }
 
-////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
     template<typename ContainerT, typename PointT> void
     OutofcoreOctreeBaseNode<ContainerT, PointT>::printBoundingBox (const size_t query_depth) const
     {
@@ -977,7 +958,6 @@ namespace pcl
       Eigen::Vector3d max;
       node_metadata_->getBoundingBox (min, max);
 
-      ///\todo move \ref printBoundingBox to node_metadata_ file
       if (this->depth_ < query_depth){
         for (size_t i = 0; i < this->depth_; i++)
           std::cout << "  ";
@@ -998,7 +978,7 @@ namespace pcl
       }
     }
 
-////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
     template<typename ContainerT, typename PointT> void
     OutofcoreOctreeBaseNode<ContainerT, PointT>::getOccupiedVoxelCentersRecursive (AlignedPointTVector &voxel_centers, const size_t query_depth)
     {
@@ -1024,7 +1004,7 @@ namespace pcl
       }
     }
 
-////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
     template<typename ContainerT, typename PointT> void
     OutofcoreOctreeBaseNode<ContainerT, PointT>::getOccupiedVoxelCentersRecursive (std::vector<Eigen::Vector3d, Eigen::aligned_allocator<Eigen::Vector3d> > &voxel_centers, const size_t query_depth)
     {
@@ -1046,7 +1026,7 @@ namespace pcl
     }
 
 
-////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> void
     OutofcoreOctreeBaseNode<ContainerT, PointT>::queryBBIntersects (const Eigen::Vector3d& min_bb, const Eigen::Vector3d& max_bb, const boost::uint32_t query_depth, std::list<std::string>& file_names)
@@ -1086,7 +1066,7 @@ namespace pcl
         }
       }
     }
-////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> void
     OutofcoreOctreeBaseNode<ContainerT, PointT>::queryBBIncludes (const Eigen::Vector3d& min_bb, const Eigen::Vector3d& max_bb, size_t query_depth, const sensor_msgs::PointCloud2::Ptr& dst_blob) 
@@ -1283,7 +1263,7 @@ namespace pcl
       }
     }
     
-////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
     template<typename ContainerT, typename PointT> void
     OutofcoreOctreeBaseNode<ContainerT, PointT>::queryBBIncludes_subsample (const Eigen::Vector3d& min_bb, const Eigen::Vector3d& max_bb, int query_depth, const double percent, AlignedPointTVector& dst)
     {
@@ -1340,8 +1320,6 @@ namespace pcl
               }
             }//force the payload cache to deconstruct here
 
-            //** \todo: this is likely to be very slow.*/
-
             //use STL random_shuffle and push back a random selection of the points onto our list
             std::random_shuffle (payload_cache_within_region.begin (), payload_cache_within_region.end ());
             size_t numpick = static_cast<size_t> (percent * static_cast<double> (payload_cache_within_region.size ()));;
@@ -1354,7 +1332,7 @@ namespace pcl
         }
       }
     }
-////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
 
 //dir is current level. we put this nodes files into it
     template<typename ContainerT, typename PointT>
@@ -1363,7 +1341,7 @@ namespace pcl
       , root_node_ ()
       , parent_ ()
       , depth_ ()
-      , children_ ()
+      , children_ (std::vector <OutofcoreOctreeBaseNode<ContainerT, PointT>*> (8,static_cast<OutofcoreOctreeBaseNode<ContainerT, PointT>*>(0)))
       , num_children_ ()
       , payload_ ()
       , node_metadata_ ()
@@ -1383,7 +1361,6 @@ namespace pcl
       assert (m_tree_ != NULL);
 
       depth_ = super->depth_ + 1;
-      memset (children_, 0, 8 * sizeof(OutofcoreOctreeBaseNode<ContainerT, PointT>*));
       num_children_ = 0;
 
       node_metadata_->setBoundingBox (bb_min, bb_max);
@@ -1396,14 +1373,7 @@ namespace pcl
       std::string node_index_name = uuid_idx + std::string ("_") + node_index_basename + node_index_extension;
 
       std::string node_container_name;
-      if( true )//OUTOFCORE_VERSION_ >= 3 )
-      {
-        node_container_name = uuid_cont + std::string ("_") + node_container_basename + pcd_extension;
-      }
-      else
-      {
-        node_container_name = uuid_cont + std::string ("_") + node_container_basename + node_container_extension;
-      }
+      node_container_name = uuid_cont + std::string ("_") + node_container_basename + pcd_extension;
 
       node_metadata_->setDirectoryPathname (boost::filesystem::path (dir));
       node_metadata_->setPCDFilename (node_metadata_->getDirectoryPathname () / boost::filesystem::path (node_container_name));
@@ -1412,9 +1382,10 @@ namespace pcl
       boost::filesystem::create_directory (node_metadata_->getDirectoryPathname ());
 
       payload_ = boost::shared_ptr<ContainerT> (new ContainerT (node_metadata_->getPCDFilename ()));
-      saveIdx (false);
+      this->saveIdx (false);
     }
-////////////////////////////////////////////////////////////////////////////////
+
+    ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> void
     OutofcoreOctreeBaseNode<ContainerT, PointT>::copyAllCurrentAndChildPointsRec (std::list<PointT>& v)
@@ -1437,7 +1408,8 @@ namespace pcl
         v.insert (v.end (), payload_cache.begin (), payload_cache.end ());
       }
     }
-////////////////////////////////////////////////////////////////////////////////
+
+    ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> void
     OutofcoreOctreeBaseNode<ContainerT, PointT>::copyAllCurrentAndChildPointsRec_sub (std::list<PointT>& v, const double percent)
@@ -1461,7 +1433,8 @@ namespace pcl
         v.push_back (payload_cache[i]);
       }
     }
-////////////////////////////////////////////////////////////////////////////////
+
+    ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> inline bool
     OutofcoreOctreeBaseNode<ContainerT, PointT>::intersectsWithBoundingBox (const Eigen::Vector3d& min_bb, const Eigen::Vector3d& max_bb) const
@@ -1482,7 +1455,7 @@ namespace pcl
 
       return (false);
     }
-////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> inline bool
     OutofcoreOctreeBaseNode<ContainerT, PointT>::inBoundingBox (const Eigen::Vector3d& min_bb, const Eigen::Vector3d& max_bb) const
@@ -1504,14 +1477,13 @@ namespace pcl
 
       return (false);
     }
-////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> inline bool
     OutofcoreOctreeBaseNode<ContainerT, PointT>::pointInBoundingBox (const Eigen::Vector3d& min_bb, const Eigen::Vector3d& max_bb,
                                                          const PointT& p)
     {
       //by convention, minimum boundary is included; maximum boundary is not
-      /// \todo go through all of the code to standardize this
       if ((min_bb[0] <= p.x) && (p.x < max_bb[0]))
       {
         if ((min_bb[1] <= p.y) && (p.y < max_bb[1]))
@@ -1524,7 +1496,8 @@ namespace pcl
       }
       return (false);
     }
-////////////////////////////////////////////////////////////////////////////////
+
+    ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> void
     OutofcoreOctreeBaseNode<ContainerT, PointT>::writeVPythonVisual (std::ofstream& file)
@@ -1545,14 +1518,16 @@ namespace pcl
       }
     }
 
-////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
+
     template<typename ContainerT, typename PointT> int
     OutofcoreOctreeBaseNode<ContainerT, PointT>::read (sensor_msgs::PointCloud2::Ptr &output_cloud)
     {
       return (this->payload_->read (output_cloud));
     }
 
-////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
+
     template<typename ContainerT, typename PointT> OutofcoreOctreeBaseNode<ContainerT, PointT>*
     OutofcoreOctreeBaseNode<ContainerT, PointT>::getChildPtr (unsigned char index_arg) const
     {
@@ -1560,10 +1535,8 @@ namespace pcl
       PCL_DEBUG ("[pcl::outofcore::OutofcoreOctreeBaseNode::%s] %d", __FUNCTION__, index_arg);
       return (children_[index_arg]);
     }
-    
 
-
-////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> unsigned char
     OutofcoreOctreeBaseNode<ContainerT, PointT>::countNumLoadedChildren () const
@@ -1579,7 +1552,7 @@ namespace pcl
       return (loaded_children_count);
     }
     
-////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> void
     OutofcoreOctreeBaseNode<ContainerT, PointT>::loadFromFile (const boost::filesystem::path& path, OutofcoreOctreeBaseNode<ContainerT, PointT>* super)
@@ -1608,13 +1581,18 @@ namespace pcl
 
       //	version->valuedouble;
       */
+
       //this shouldn't be part of 'loadFromFile'
       this->parent_ = super;
-      memset (children_, 0, 8 * sizeof(OutofcoreOctreeBaseNode<ContainerT, PointT>*));
+
+      if (num_children_ > 0)
+        recFreeChildren ();      
+
       this->num_children_ = 0;
       this->payload_ = boost::shared_ptr<ContainerT> (new ContainerT (node_metadata_->getPCDFilename ()));
     }
-////////////////////////////////////////////////////////////////////////////////
+
+    ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> void
     OutofcoreOctreeBaseNode<ContainerT, PointT>::convertToXYZRecursive ()
@@ -1634,7 +1612,8 @@ namespace pcl
           children_[i]->convertToXYZ ();
       }
     }
-////////////////////////////////////////////////////////////////////////////////
+
+    ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> void
     OutofcoreOctreeBaseNode<ContainerT, PointT>::flushToDiskRecursive ()
@@ -1645,7 +1624,9 @@ namespace pcl
           children_[i]->flushToDiskRecursive ();
       }
     }
-////////////////////////////////////////////////////////////////////////////////
+
+    ////////////////////////////////////////////////////////////////////////////////
+#if 0
     template<typename ContainerT, typename PointT> OutofcoreOctreeBaseNode<ContainerT, PointT>*
     makenode_norec (const boost::filesystem::path& path, OutofcoreOctreeBaseNode<ContainerT, PointT>* super)
     {
@@ -1696,7 +1677,7 @@ namespace pcl
 
         if (!loaded)
         {
-          PCL_ERROR ( "[pcl::outofcore::OutofcoreOctreeBaseNode] Could not find index!\n");
+          PCL_ERROR ("[pcl::outofcore::OutofcoreOctreeBaseNode] Could not find index!\n");
           PCL_THROW_EXCEPTION (PCLException, "[pcl::outofcore::OutofcoreOctreeBaseNode] Could not find node metadata index file");
         }
 
@@ -1723,19 +1704,19 @@ namespace pcl
       }
 
       thisnode->parent_ = super;
-      memset (thisnode->children_, 0, 8 * sizeof(OutofcoreOctreeBaseNode<OutofcoreOctreeDiskContainer < PointT > , PointT >*));//octree_disk_node*));
+      children_.clear ();
+      children_.resize (8, static_cast<OutofcoreOctreeBaseNode<ContainerT, PointT>* > (0));
       thisnode->num_children_ = 0;
 
       return (thisnode);
     }
-////////////////////////////////////////////////////////////////////////////////
+
+    ////////////////////////////////////////////////////////////////////////////////
 
 //accelerate search
     template<typename ContainerT, typename PointT> void
     queryBBIntersects_noload (const boost::filesystem::path& root_node, const Eigen::Vector3d& min, const Eigen::Vector3d& max, const boost::uint32_t query_depth, std::list<std::string>& bin_name)
     {
-      ///\todo this class already has a private "root" member
-      //it also has min[3] and max[3] members
       OutofcoreOctreeBaseNode<ContainerT, PointT>* root = makenode_norec<ContainerT, PointT> (root_node, NULL);
       if (root == NULL)
       {
@@ -1766,7 +1747,8 @@ namespace pcl
       }
       delete root;
     }
-////////////////////////////////////////////////////////////////////////////////
+
+    ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> void
     queryBBIntersects_noload (OutofcoreOctreeBaseNode<ContainerT, PointT>* current, const Eigen::Vector3d& min, const Eigen::Vector3d& max, const boost::uint32_t query_depth, std::list<std::string>& bin_name)
@@ -1795,7 +1777,8 @@ namespace pcl
         }
       }
     }
-////////////////////////////////////////////////////////////////////////////////
+#endif
+    ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> void
     OutofcoreOctreeBaseNode<ContainerT, PointT>::sortOctantIndices (const sensor_msgs::PointCloud2::Ptr &input_cloud, std::vector< std::vector<int> > &indices, const Eigen::Vector3d &mid_xyz)
@@ -1819,23 +1802,19 @@ namespace pcl
         local_pt.y = * (reinterpret_cast<float*>(&input_cloud->data[point_idx + y_offset]));
         local_pt.z = * (reinterpret_cast<float*>(&input_cloud->data[point_idx + z_offset]));
 
-        if( !this->pointInBoundingBox (local_pt) )
-        {
-          PCL_ERROR ( "[pcl::outofcore::OutofcoreOctreeBaseNode::%s] Failed to place point ( %.2f,%.2f,%.2f) within bounding box\n", __FUNCTION__, local_pt.x, local_pt.y, local_pt.z );
-          continue;
-        }
+        assert (this->pointInBoundingBox (local_pt) == true);
 
         //compute the box we are in
         size_t box = 0;
         box = ((local_pt.z >= mid_xyz[2]) << 2) | ((local_pt.y >= mid_xyz[1]) << 1) | ((local_pt.x >= mid_xyz[0]) << 0);
-        assert ( box < 8 );
+        assert (box < 8);
               
         //insert to the vector of indices
-        indices[box].push_back ( static_cast<int> ( point_idx / input_cloud->point_step ) );
+        indices[box].push_back (static_cast<int> (point_idx/input_cloud->point_step));
       }
     }
+    ////////////////////////////////////////////////////////////////////////////////
 
-////////////////////////////////////////////////////////////////////////////////
   }//namespace outofcore
 }//namespace pcl
 

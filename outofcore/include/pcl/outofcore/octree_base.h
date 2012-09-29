@@ -70,30 +70,66 @@ namespace pcl
      * 
      *  \note Code was adapted from the Urban Robotics out of core octree implementation. 
      *  Contact Jacob Schloss <jacob.schloss@urbanrobotics.net> with any questions. 
-     *  http://www.urbanrobotics.net/
+     *  http://www.urbanrobotics.net/. This code was integrated for the Urban Robotics 
+     *  Code Sprint (URCS) by Stephen Fox (foxstephend@gmail.com). Additional development notes can be found at
+     *  http://www.pointclouds.org/blog/urcs/.
      *
      *  The primary purpose of this class is an interface to the
      *  recursive traversal (recursion handled by \ref OutofcoreOctreeBaseNode) of the
      *  in-memory/top-level octree structure. The metadata in each node
-     *  can be loaded entirely into main memory, and the tree traversed
+     *  can be loaded entirely into main memory, from which the tree can be traversed
      *  recursively in this state. This class provides an the interface
      *  for: 
      *               -# Point/Region insertion methods 
      *               -# Frustrum/box/region queries
-     *               -# Parameterization of compression, resolution, container type, etc...
+     *               -# Parameterization of resolution, container type, etc...
      *
-     *  \todo downsampling of queries
-     *  \todo downsampling of octree during construction (or leave that to the user's own preprocessing)
-     *  \todo parameterize compression 
-     *  \todo parameterize container type (template?)
-     *  \todo adjust for varying densities at different LODs
-     *  \todo Re-implement buildLOD for PointCloud2 / pcd files
-     *  \todo Add support for an array of input clouds or locations of pcd files on disk
-     *  \todo clean up access specifiers to streamline public interface
-     *  \todo add PCL instantiation macro into templated hpp files
+     *  For lower-level node access, there is a Depth-First iterator
+     *  for traversing the trees with direct access to the nodes. This
+     *  can be used for implementing other algorithms, and other
+     *  iterators can be written in a similar fashion.
+     *
+     *  The format of the octree is stored on disk in a hierarchical
+     *  octree structure, where .oct_idx are the JSON-based node
+     *  metadata files managed by \ref OutofcoreOctreeNodeMetadata,
+     *  and .octree is the JSON-based octree metadata file managed by
+     *  \ref OutofcoreOctreeBaseMetadata. Children of each node live
+     *  in up to eight subdirectories named from 0 to 7, where a
+     *  metadata and optionally a pcd file will exist. The PCD files
+     *  are stored in compressed binary PCD format, containing all of
+     *  the fields existing in the PointCloud2 objects originally
+     *  inserted into the out of core object.
+     *  
+     *  A brief outline of the out of core octree can be seen
+     *  below. The files in [brackets] exist only when the LOD are
+     *  built.
+     *
+     *  tree_name/
+     *       tree_name.oct_idx
+     *       tree_name.octree
+     *       [tree_name-uuid.pcd]
+     *       0/
+     *            tree_name.oct_idx
+     *            [tree_name-uuid.pcd]
+     *            0/
+     *               ...
+     *            1/
+     *              ...
+     *                  ...
+     *                      0/
+     *                          tree_name.oct_idx
+     *                          tree_name.pcd
+     *       1/
+     *       ...
+     *       7/
+     *
+     *  At this point in time, there is not support for multiple trees
+     *  existing in a single directory hierarchy.
+     *
      *
      *  \ingroup outofcore
      *  \author Jacob Schloss (jacob.schloss@urbanrobotics.net)
+     *  \author Stephen Fox, Urban Robotics Code Sprint (foxstephend@gmail.com)
      *
      */
     template<typename ContainerT, typename PointT>
@@ -103,13 +139,13 @@ namespace pcl
       friend class pcl::outofcore::OutofcoreIteratorBase<PointT, ContainerT>;
 
       public:
-        // public typedefs
-        // UR Typedefs
-        typedef OutofcoreOctreeBase<OutofcoreOctreeDiskContainer < PointT > , PointT > octree_disk;
-        typedef OutofcoreOctreeBaseNode<OutofcoreOctreeDiskContainer < PointT > , PointT > octree_disk_node;
 
-        typedef OutofcoreOctreeBase<OutofcoreOctreeRamContainer< PointT> , PointT> octree_ram;
-        typedef OutofcoreOctreeBaseNode<OutofcoreOctreeRamContainer<PointT> , PointT> octree_ram_node;
+        // public typedefs
+        typedef OutofcoreOctreeBase<OutofcoreOctreeDiskContainer<PointT>, PointT > octree_disk;
+        typedef OutofcoreOctreeBaseNode<OutofcoreOctreeDiskContainer<PointT>, PointT > octree_disk_node;
+
+        typedef OutofcoreOctreeBase<OutofcoreOctreeRamContainer<PointT>, PointT> octree_ram;
+        typedef OutofcoreOctreeBaseNode<OutofcoreOctreeRamContainer<PointT>, PointT> octree_ram_node;
 
         typedef OutofcoreOctreeBaseNode<ContainerT, PointT> OutofcoreNodeType;
 
@@ -123,6 +159,7 @@ namespace pcl
         typedef boost::shared_ptr<const OutofcoreOctreeBase<ContainerT, PointT> > ConstPtr;
 
         typedef pcl::PointCloud<PointT> PointCloud;
+
         typedef boost::shared_ptr<std::vector<int> > IndicesPtr;
         typedef boost::shared_ptr<const std::vector<int> > IndicesConstPtr;
 
@@ -150,19 +187,16 @@ namespace pcl
          *
          * Create a new tree rootname with specified bounding box; will remove and overwrite existing tree with the same name
          *
-         * Makes a tree with enough LODs for the lowest bin to be have a diagonal
-         * smaller than node_dim_meters, or a volume less than (node_dim_meters)^3.
-         * Meters is a misnomer: the coord system is assumed to be Cartesian, but
-         * not any particular unit
+         * Computes the depth of the tree based on desired leaf , then calls the other constructor.
          *
          * \param min Bounding box min
          * \param max Bounding box max
          * \param node_dim_meters Node dimension in meters (assuming your point data is in meters)
          * \param root_node_name must end in ".oct_idx" 
-         * \param coord_sys 
+         * \param coord_sys Coordinate system which is stored in the JSON metadata
          * \throws PCLException if root file extension does not match \ref OutofcoreOctreeBaseNode::node_index_extension
          */
-        OutofcoreOctreeBase (const Eigen::Vector3d& min, const Eigen::Vector3d& max, const double node_dim_meters, const boost::filesystem::path &root_node_name, const std::string &coord_sys);
+        OutofcoreOctreeBase (const Eigen::Vector3d& min, const Eigen::Vector3d& max, const double resolution_arg, const boost::filesystem::path &root_node_name, const std::string &coord_sys);
 
         /** \brief Create a new tree; will not overwrite existing tree of same name
          *
@@ -171,12 +205,13 @@ namespace pcl
          * \param max_depth Specifies a fixed number of LODs to generate, which is the depth of the tree
          * \param min Bounding box min
          * \param max Bounding box max
-         * \param rootname must end in ".oct_idx" 
-         * \param coord_sys
+         * \note Bounding box of the tree must be set before inserting any points. The tree \b cannot be resized at this time.
+         * \param root_node_name must end in ".oct_idx" 
+         * \param coord_sys Coordinate system which is stored in the JSON metadata
          * \throws PCLException if the parent directory has existing children (detects an existing tree)
          * \throws PCLException if file extension is not ".oct_idx"
          */
-        OutofcoreOctreeBase (const boost::uint64_t max_depth, const Eigen::Vector3d &min, const Eigen::Vector3d &max, const boost::filesystem::path &rootname, const std::string &coord_sys);
+        OutofcoreOctreeBase (const boost::uint64_t max_depth, const Eigen::Vector3d &min, const Eigen::Vector3d &max, const boost::filesystem::path &root_node_name, const std::string &coord_sys);
 
         virtual
         ~OutofcoreOctreeBase ();
@@ -212,9 +247,9 @@ namespace pcl
          * Recursively add points to the tree. 1/8 of the remaining
          * points at each LOD are stored at each internal node of the
          * octree until either (a) runs out of points, in which case
-         * the leaf is not at the \ref max_depth_ of the tree, or (b)
-         * a larger set of points falls in the leaf at \ref
-         * max_depth_. Note unlike the old implementation, multiple
+         * the leaf is not at the maximum depth of the tree, or (b)
+         * a larger set of points falls in the leaf at the maximum depth.
+         * Note unlike the old implementation, multiple
          * copies of the same point will \b not be added at multiple
          * LODs as it walks the tree. Once the point is added to the
          * octree, it is no longer propagated further down the tree.
@@ -229,9 +264,6 @@ namespace pcl
 
         boost::uint64_t
         addPointCloud (sensor_msgs::PointCloud2::Ptr &input_cloud);
-        
-        boost::uint64_t
-        addPointCloud (sensor_msgs::PointCloud2::Ptr &input_cloud, pcl::Filter<sensor_msgs::PointCloud2> &lod_filter);
         
         boost::uint64_t
         addPointCloud_and_genLOD (PointCloudConstPtr point_cloud);
@@ -268,7 +300,7 @@ namespace pcl
          * \param[in] min The minimum corner of the bounding box for querying
          * \param[in] max The maximum corner of the bounding box for querying
          * \param[in] query_depth The depth from which point data will be taken
-         *   \note If the LODs of the tree have not been built, you must specify the \ref max_depth_ in order to retrieve any data
+         *   \note If the LODs of the tree have not been built, you must specify the maximum depth in order to retrieve any data
          * \param[out] dst The destination vector of points
          */
         void
@@ -354,7 +386,7 @@ namespace pcl
         
 
         /** \brief Get number of points at each LOD 
-         * \return std::vector of number of points in each LOD indexed by each level of depth, 0 to \ref max_depth_
+         * \return vector of number of points in each LOD indexed by each level of depth, 0 to the depth of the tree.
          */
         inline const std::vector<boost::uint64_t>&
         getNumPointsVector () const
@@ -376,7 +408,7 @@ namespace pcl
           return (this->getDepth ());
         }
 
-        /** \brief Computes the expected voxel dimensions at the leaves (at \ref max_depth_)
+        /** \brief Computes the expected voxel dimensions at the leaves 
          */
         bool
         getBinDimension (double &x, double &y) const;
@@ -386,10 +418,10 @@ namespace pcl
          *  \return the side length of the cubic voxel size at the specified depth
          */
         double
-        getVoxelSideLength (const boost::uint64_t depth) const;
+        getVoxelSideLength (const boost::uint64_t& depth) const;
 
         /** \brief Gets the smallest (assumed) cubic voxel side lengths. The smallest voxels are located at the max depth of the tree.
-         * \return The side length of a the cubic voxel located at \ref max_depth_
+         * \return The side length of a the cubic voxel located at the leaves
          */
         double
         getVoxelSideLength () const
@@ -397,16 +429,10 @@ namespace pcl
           return (this->getVoxelSideLength (metadata_->getDepth ()));
         }
 
-        /** \brief Get coord system tag in the metadata 
-         *  
-         *  \note This was part of the original Urban Robotics
-         *  implementation, and can be stored in the metadata of the
-         *  tree. If you have additional payload, we recommend 
-         *  using a custom field of the PointCloud2 input upon
-         *  construction of the tree.
+        /** \brief Get coordinate system tag from the JSON metadata file
          */
         const std::string&
-        getCoordSystem ()
+        getCoordSystem () const
         {
           return (metadata_->getCoordinateSystem ());
         }
@@ -430,7 +456,7 @@ namespace pcl
         void
         printBoundingBox (OutofcoreNodeType& node) const;
 
-        /** \brief Prints size of BBoxes to stdout
+        /** \brief Prints size of the bounding boxes to stdou
          */
         inline void
         printBoundingBox() const
@@ -471,13 +497,6 @@ namespace pcl
         // Serializers
         // -----------------------------------------------------------------------
 
-        /** \brief Save the index files for each node.  You do not need to call this
-         * explicitly
-         * \todo does saveIdx () need to be  public?
-         */
-        void
-        saveIdx ();
-
         /** \brief Save each .bin file as an XYZ file */
         void
         convertToXYZ ();
@@ -487,8 +506,84 @@ namespace pcl
         void
         writeVPythonVisual (const boost::filesystem::path filename);
 
-        // (note from UR) The following are DEPRECATED since I found that writeback caches did not
-        // scale well, and they are currently disabled in the backend
+        OutofcoreNodeType*
+        getBranchChildPtr (const BranchNode& branch_arg, unsigned char childIdx_arg) const;
+
+        pcl::Filter<sensor_msgs::PointCloud2>::Ptr
+        getLODFilter ();
+
+        const pcl::Filter<sensor_msgs::PointCloud2>::ConstPtr
+        getLODFilter () const;
+
+        /** \brief Sets the filter to use when building the levels of depth. Recommended filters are pcl::RandomSample<sensor_msgs::PointCloud2> or pcl::VoxelGrid */
+        void
+       setLODFilter (const pcl::Filter<sensor_msgs::PointCloud2>::Ptr& filter_arg);
+
+        /** \brief Returns the sample_percent_ used when constructing the LOD. */
+        double 
+        getSamplePercent () const
+        {
+          return (sample_percent_);
+        }
+        
+        /** \brief Sets the sampling percent for constructing LODs. Each LOD gets sample_percent^d points. 
+         * \param[in] sample_percent_arg Percentage between 0 and 1. */
+        inline void 
+        setSamplePercent (const double sample_percent_arg)
+        {
+          this->sample_percent_ = sample_percent_arg > 1.0 ? 1.0 : std::fabs (sample_percent_arg);
+        }
+	
+      protected:
+        void
+        init (const boost::uint64_t& depth, const Eigen::Vector3d& min, const Eigen::Vector3d& max, const boost::filesystem::path& root_name, const std::string& coord_sys);
+
+        OutofcoreOctreeBase (OutofcoreOctreeBase &rval);
+
+        OutofcoreOctreeBase (const OutofcoreOctreeBase &rval);
+
+        OutofcoreOctreeBase&
+        operator= (OutofcoreOctreeBase &rval);
+
+        OutofcoreOctreeBase&
+        operator= (const OutofcoreOctreeBase &rval);
+
+        inline OutofcoreNodeType*
+        getRootNode ()
+        {
+          return (this->root_node_);
+        }
+
+        /** \brief flush empty nodes only */
+        void
+        DeAllocEmptyNodeCache (OutofcoreNodeType* current);
+
+        /** \brief Write octree definition ".octree" (defined by octree_extension_) to disk */
+        void
+        saveToFile ();
+
+        /** \brief recursive portion of lod builder */
+        void
+        buildLODRecursive (OutofcoreNodeType** current_branch, const int current_dims);
+
+        /** \brief Re-write of the original UR buildLOD which
+         *  recursively constructs the LOD in a depth-first fashion 
+         */
+        void
+        buildLODIterative ();
+        
+        /** \brief Increment current depths (LOD for branch nodes) point count; called by addDataAtMaxDepth in OutofcoreOctreeBaseNode
+         */
+        inline void
+        incrementPointsInLOD (boost::uint64_t depth, boost::uint64_t inc);
+
+        /** \brief Auxiliary function to validate path_name extension is .octree
+         *  
+         *  \return 0 if bad; 1 if extension is .oct_idx
+         */
+        bool
+        checkExtension (const boost::filesystem::path& path_name);
+
 
         /** \brief DEPRECATED - Flush all nodes' cache 
          *  \deprecated this was moved to the octree_node class
@@ -508,71 +603,20 @@ namespace pcl
         void
         DeAllocEmptyNodeCache ();
 
-        OutofcoreOctreeBaseNode<ContainerT, PointT>*
-        getBranchChildPtr (const BranchNode& branch_arg, unsigned char childIdx_arg) const;
-          
-      protected:
-        void
-        init (const boost::uint64_t& depth, const Eigen::Vector3d& min, const Eigen::Vector3d& max, const boost::filesystem::path& root_name, const std::string& coord_sys);
-
-        OutofcoreOctreeBase (OutofcoreOctreeBase &rval);
-        OutofcoreOctreeBase (const OutofcoreOctreeBase &rval);
-
-        OutofcoreOctreeBase&
-        operator= (OutofcoreOctreeBase &rval);
-
-        OutofcoreOctreeBase&
-        operator= (const OutofcoreOctreeBase &rval);
-
-        inline OutofcoreOctreeBaseNode<ContainerT, PointT>*
-        getRootNode ()
-        {
-          return (this->root_node_);
-        }
-
-        /** \brief flush empty nodes only */
-        void
-        DeAllocEmptyNodeCache (OutofcoreOctreeBaseNode<ContainerT, PointT>* current);
-
-        /** \brief Write octree definition ".octree" (defined by octree_extension_) to disk */
-        void
-        saveToFile ();
-
-        /** \brief recursive portion of lod builder
-         * \todo Rewrite and parameterize*/
-        void
-        buildLODRecursive (OutofcoreOctreeBaseNode<ContainerT, PointT>** current_branch, const int current_dims);
-
-        /** \brief Increment current depths (LOD for branch nodes) point count; called by addDataAtMaxDepth in OutofcoreOctreeBaseNode
-         */
-        inline void
-        incrementPointsInLOD (boost::uint64_t depth, boost::uint64_t inc);
-
-        /** \brief Auxiliary function to validate path_name extension is .octree
-         *  
-         *  \return 0 if bad; 1 if extension is .oct_idx
-         */
-        bool
-        checkExtension (const boost::filesystem::path& path_name);
-
         /** \brief Pointer to the root node of the octree data structure */
-        OutofcoreOctreeBaseNode<ContainerT, PointT>* root_node_;
+        OutofcoreNodeType* root_node_;
 
         /** \brief shared mutex for controlling read/write access to disk */
         mutable boost::shared_mutex read_write_mutex_;
 
         boost::shared_ptr<OutofcoreOctreeBaseMetadata> metadata_;
         
-        /** \brief the pre-set maximum depth of the tree */
-        boost::uint64_t max_depth_;
-
         /** \brief defined as ".octree" to append to treepath files
          *  \note this might change
          */
         const static std::string TREE_EXTENSION_;
         const static int OUTOFCORE_VERSION_;
 
-        /** \todo @b loadcount mystery constant 2e9 points at a time to subsample; should parameterize */
         const static uint64_t LOAD_COUNT_ = static_cast<uint64_t>(2e9);
 
       private:    
@@ -584,7 +628,11 @@ namespace pcl
         /** \brief Auxiliary function to compute the depth of the tree given the bounding box and the desired size of the leaf voxels */
         boost::uint64_t
         calculateDepth (const Eigen::Vector3d& min_bb, const Eigen::Vector3d& max_bb, const double leaf_resolution);
-          
+
+        double sample_percent_;
+
+        pcl::Filter<sensor_msgs::PointCloud2>::Ptr lod_filter_ptr_;
+        
     };
   }
 }
