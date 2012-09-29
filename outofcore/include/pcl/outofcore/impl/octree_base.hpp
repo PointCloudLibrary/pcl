@@ -553,14 +553,6 @@ namespace pcl
     ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> void
-    OutofcoreOctreeBase<ContainerT, PointT>::buildLODIterative ()
-    {
-      OutofcoreOctreeBase<ContainerT, PointT>::Iterator myit (*this);
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////
-
-    template<typename ContainerT, typename PointT> void
     OutofcoreOctreeBase<ContainerT, PointT>::buildLODRecursive (const std::vector<BranchNode*>& current_branch)
     {
       PCL_DEBUG ("%s Building LOD at depth %d",__PRETTY_FUNCTION__, current_branch.size ());

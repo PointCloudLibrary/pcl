@@ -573,12 +573,6 @@ namespace pcl
         void
         buildLODRecursive (const std::vector<BranchNode*>& current_branch);
 
-        /** \brief Re-write of the original UR buildLOD which
-         *  recursively constructs the LOD in a depth-first fashion 
-         */
-        void
-        buildLODIterative ();
-        
         /** \brief Increment current depths (LOD for branch nodes) point count; called by addDataAtMaxDepth in OutofcoreOctreeBaseNode
          */
         inline void
