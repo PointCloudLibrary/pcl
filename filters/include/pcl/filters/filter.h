@@ -184,6 +184,9 @@ namespace pcl
   class PCL_EXPORTS Filter<sensor_msgs::PointCloud2> : public PCLBase<sensor_msgs::PointCloud2>
   {
     public:
+      typedef boost::shared_ptr< Filter<sensor_msgs::PointCloud2> > Ptr;
+      typedef boost::shared_ptr< const Filter<sensor_msgs::PointCloud2> > ConstPtr;
+
       typedef sensor_msgs::PointCloud2 PointCloud2;
       typedef PointCloud2::Ptr PointCloud2Ptr;
       typedef PointCloud2::ConstPtr PointCloud2ConstPtr;
