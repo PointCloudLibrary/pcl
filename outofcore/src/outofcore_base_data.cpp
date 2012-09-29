@@ -82,6 +82,7 @@ namespace pcl
       
     OutofcoreOctreeBaseMetadata::~OutofcoreOctreeBaseMetadata ()
     {
+      this->serializeMetadataToDisk ();
     }
 
     ////////////////////////////////////////////////////////////////////////////////

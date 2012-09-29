@@ -44,6 +44,12 @@ namespace pcl
 {
   namespace outofcore
   {
+    /** \class OutofcoreDepthFirstIterator
+     *
+     *  
+     *
+     *
+     */
     template<typename PointT, typename ContainerT>
     class OutofcoreDepthFirstIterator : public OutofcoreIteratorBase<PointT, ContainerT>
     {

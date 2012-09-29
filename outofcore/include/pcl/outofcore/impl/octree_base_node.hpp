@@ -663,17 +663,17 @@ namespace pcl
     }
     ////////////////////////////////////////////////////////////////////////////////
     template<typename ContainerT, typename PointT> boost::uint64_t
-    OutofcoreOctreeBaseNode<ContainerT, PointT>::addDataAtMaxDepth ( const sensor_msgs::PointCloud2::Ptr input_cloud, const bool skip_bb_check)
+    OutofcoreOctreeBaseNode<ContainerT, PointT>::addDataAtMaxDepth (const sensor_msgs::PointCloud2::Ptr input_cloud, const bool skip_bb_check)
     {
       //this assumes data is already in the correct bin
       if(skip_bb_check == true)
       {
-            PCL_DEBUG ("[pcl::outofcore::OutofcoreOctreeBaseNode::%s] Adding %u points at max depth, %u\n",__FUNCTION__, input_cloud->width*input_cloud->height, this->depth_);
-            
-        this->root_node_->m_tree_->incrementPointsInLOD (this->depth_, input_cloud->width * input_cloud->height );
+        PCL_DEBUG ("[pcl::outofcore::OutofcoreOctreeBaseNode::%s] Adding %u points at max depth, %u\n",__FUNCTION__, input_cloud->width*input_cloud->height, this->depth_);
+        
+        this->root_node_->m_tree_->incrementPointsInLOD (this->depth_, input_cloud->width*input_cloud->height );
         payload_->insertRange (input_cloud);            
 
-        return (input_cloud->width * input_cloud->height);
+        return (input_cloud->width*input_cloud->height);
       }
       else
       {
@@ -762,14 +762,14 @@ namespace pcl
 
       //extract the "random subset", size by setSampleSize
       pcl::ExtractIndices<sensor_msgs::PointCloud2> extractor;
-      extractor.setInputCloud ( input_cloud );
-      extractor.setIndices ( downsampled_cloud_indices );
-      extractor.filter ( *downsampled_cloud );
+      extractor.setInputCloud (input_cloud);
+      extractor.setIndices (downsampled_cloud_indices);
+      extractor.filter (*downsampled_cloud);
 
       //extract the complement of those points (i.e. everything remaining)
       sensor_msgs::PointCloud2::Ptr remaining_points ( new sensor_msgs::PointCloud2 () );
       extractor.setNegative (true);
-      extractor.filter ( *remaining_points );
+      extractor.filter (*remaining_points);
 
       PCL_DEBUG ( "[pcl::outofcore::OutofcoreOctreeBaseNode::%s] Random sampled: %lu of %lu\n", __FUNCTION__, downsampled_cloud->width * downsampled_cloud->height, input_cloud->width * input_cloud->height );
       
@@ -925,7 +925,6 @@ namespace pcl
     template<typename ContainerT, typename PointT> bool
     pointInBoundingBox (const Eigen::Vector3d& min_bb, const Eigen::Vector3d& max_bb, const Eigen::Vector3d& point)
     {
-      // won't <= lead to points being added to more than one voxel?
       if (((min_bb[0] <= point[0]) && (point[0] < max_bb[0])) &&
           ((min_bb[1] <= point[1]) && (point[1] < max_bb[1])) &&
           ((min_bb[2] <= point[2]) && (point[2] < max_bb[2])))
@@ -938,13 +937,12 @@ namespace pcl
 
 
     ////////////////////////////////////////////////////////////////////////////////
-    template<typename ContainerT, typename PointT> inline bool
+    template<typename ContainerT, typename PointT> bool
     OutofcoreOctreeBaseNode<ContainerT, PointT>::pointInBoundingBox (const PointT& p) const
     {
       const Eigen::Vector3d& min = node_metadata_->getBoundingBoxMin ();
       const Eigen::Vector3d& max = node_metadata_->getBoundingBoxMax ();
 
-      // won't <= lead to points being added to more than one voxel?
       if (((min[0] <= p.x) && (p.x < max[0])) &&
           ((min[1] <= p.y) && (p.y < max[1])) &&
           ((min[2] <= p.z) && (p.z < max[2])))
@@ -1536,7 +1534,6 @@ namespace pcl
     template<typename ContainerT, typename PointT> OutofcoreOctreeBaseNode<ContainerT, PointT>*
     OutofcoreOctreeBaseNode<ContainerT, PointT>::getChildPtr (size_t index_arg) const
     {
-
       PCL_DEBUG ("[pcl::outofcore::OutofcoreOctreeBaseNode::%s] %d", __FUNCTION__, index_arg);
       return (children_[index_arg]);
     }
@@ -1814,6 +1811,14 @@ namespace pcl
         local_pt.y = * (reinterpret_cast<float*>(&input_cloud->data[point_idx + y_offset]));
         local_pt.z = * (reinterpret_cast<float*>(&input_cloud->data[point_idx + z_offset]));
 
+        if (!pcl_isfinite (local_pt.x) || !pcl_isfinite (local_pt.y) || !pcl_isfinite (local_pt.z))
+          continue;
+
+        if(!this->pointInBoundingBox (local_pt))
+        {
+          PCL_ERROR ("pcl::outofcore::OutofcoreOctreeBaseNode::%s] Point %2.lf %.2lf %.2lf not in bounding box", __FUNCTION__, local_pt.x, local_pt.y, local_pt.z);
+        }
+        
         assert (this->pointInBoundingBox (local_pt) == true);
 
         //compute the box we are in

@@ -88,26 +88,9 @@ namespace pcl
         virtual void
         convertToXYZ (const boost::filesystem::path& path)=0;
 
-////////////////////////////////////////////////////////////////////////////////
-//METHODS IMPLEMENTED IN ONLY DISK OR RAM THAT PROBABLY COULD BE IN BOTH
-////////////////////////////////////////////////////////////////////////////////
-/*        virtual void
-          readRangeSubSample_bernoulli (const boost::uint64_t start, const boost::uint64_t count, const double percent, std::vector<PointT, Eigen::aligned_allocator<PointT> >& v)=0;*/
-        
-/*
-        virtual void
-        flush (const bool force_cache_dealloc)=0;
-*/
         virtual PointT
         operator[] (uint64_t idx) const=0;
-/*
-        virtual void
-        push_back (const PointT& p)=0;
-*/      
-/*
-        virtual std::string&
-        path () =0;
-*/      
+
       protected:
         OutofcoreAbstractNodeContainer (const OutofcoreAbstractNodeContainer& rval);
 

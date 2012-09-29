@@ -645,9 +645,14 @@ TEST_F (OutofcoreTest, Outofcore_MultiplePointClouds)
   EXPECT_EQ (2*numPts, pcl_cloud.getNumPointsAtDepth (pcl_cloud.getDepth ())) << "Points are lost when two points clouds are added to the outofcore file system\n";
 
   pcl_cloud.buildLOD ();
-  
-  cleanUpFilesystem ();
 
+  //check that there is at least one point in each LOD
+  for (size_t i=0; i<pcl_cloud.getDepth (); i++)
+    EXPECT_GE (1, pcl_cloud.getNumPointsAtDepth (i));
+
+  EXPECT_EQ (2*numPts, pcl_cloud.getNumPointsAtDepth (pcl_cloud.getDepth ()));
+
+  cleanUpFilesystem ();
 }
 
 TEST_F (OutofcoreTest, Outofcore_PointCloudInput_LOD)

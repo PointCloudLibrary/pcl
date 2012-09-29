@@ -450,9 +450,7 @@ namespace pcl
         // Mutators
         // -----------------------------------------------------------------------
 
-        /** \brief Generate LODs for the tree 
-         *  \note This is not implemented for PointCloud2 yet
-         *  \throws PCLException, not implemented
+        /** \brief Generate multi-resolution LODs for the tree, which are a uniform random sampling all child leafs below the node.
          */
         void
         buildLOD ();
@@ -527,7 +525,7 @@ namespace pcl
 
         /** \brief Sets the filter to use when building the levels of depth. Recommended filters are pcl::RandomSample<sensor_msgs::PointCloud2> or pcl::VoxelGrid */
         void
-       setLODFilter (const pcl::Filter<sensor_msgs::PointCloud2>::Ptr& filter_arg);
+        setLODFilter (const pcl::Filter<sensor_msgs::PointCloud2>::Ptr& filter_arg);
 
         /** \brief Returns the sample_percent_ used when constructing the LOD. */
         double 
@@ -574,7 +572,7 @@ namespace pcl
 
         /** \brief recursive portion of lod builder */
         void
-        buildLODRecursive (std::vector<BranchNode*>& current_branch);
+        buildLODRecursive (const std::vector<BranchNode*>& current_branch);
 
         /** \brief Re-write of the original UR buildLOD which
          *  recursively constructs the LOD in a depth-first fashion 

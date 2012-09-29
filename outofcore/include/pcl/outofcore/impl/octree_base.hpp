@@ -79,6 +79,7 @@ namespace pcl
       , read_write_mutex_ ()
       , metadata_ (new OutofcoreOctreeBaseMetadata ())
       , lod_filter_ptr_ (new pcl::RandomSample<sensor_msgs::PointCloud2> ())
+      , sample_percent_ (0.125)
     {
       //validate the root filename
       if (!this->checkExtension (root_name))
@@ -106,6 +107,7 @@ namespace pcl
       , read_write_mutex_ ()
       , metadata_ (new OutofcoreOctreeBaseMetadata ())
       , lod_filter_ptr_ (new pcl::RandomSample<sensor_msgs::PointCloud2> ())
+      , sample_percent_ (0.125)
     {
       //Enlarge the bounding box to a cube so our voxels will be cubes
       Eigen::Vector3d tmp_min = min;
@@ -127,6 +129,7 @@ namespace pcl
       , read_write_mutex_ ()
       , metadata_ (new OutofcoreOctreeBaseMetadata ())
       , lod_filter_ptr_ (new pcl::RandomSample<sensor_msgs::PointCloud2> ())
+      , sample_percent_ (0.125)
     {
       //Create a new outofcore tree
       this->init (max_depth, min, max, root_node_name, coord_sys);
@@ -229,7 +232,7 @@ namespace pcl
     OutofcoreOctreeBase<ContainerT, PointT>::addPointCloud (sensor_msgs::PointCloud2::Ptr &input_cloud, const bool skip_bb_check = false)
     {
       uint64_t pt_added = this->root_node_->addPointCloud (input_cloud, skip_bb_check) ;
-      assert (input_cloud->width*input_cloud->height == pt_added);
+//      assert (input_cloud->width*input_cloud->height == pt_added);
       return (pt_added);
     }
 
@@ -518,7 +521,7 @@ namespace pcl
 
       std::vector<BranchNode*> current_branch (number_of_nodes, static_cast<BranchNode*>(0));
       current_branch[0] = root_node_;
-
+      assert (current_branch.back () != 0);
       this->buildLODRecursive (current_branch);
     }
 
@@ -544,9 +547,9 @@ namespace pcl
     ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> void
-    OutofcoreOctreeBase<ContainerT, PointT>::buildLODRecursive (std::vector<BranchNode*>& current_branch)
+    OutofcoreOctreeBase<ContainerT, PointT>::buildLODRecursive (const std::vector<BranchNode*>& current_branch)
     {
-      PCL_DEBUG ("[pcl::outofcore::OutofcoreOctreeBase::%s] Building LOD at depth %d",__FUNCTION__,current_branch.size ());
+      PCL_DEBUG ("%s Building LOD at depth %d",__PRETTY_FUNCTION__, current_branch.size ());
       
       if (!current_branch.back ())
       {
@@ -555,18 +558,24 @@ namespace pcl
       
       if (current_branch.back ()->getNodeType () == pcl::octree::LEAF_NODE)
       {
+        assert (current_branch.back ()->getDepth () == this->getDepth ());
+        
         BranchNode* leaf = current_branch.back ();
 
         sensor_msgs::PointCloud2::Ptr leaf_input_cloud (new sensor_msgs::PointCloud2 ());
         //read the data from the PCD file associated with the leaf; it is full resolution
         leaf->read (leaf_input_cloud);
+        assert (leaf_input_cloud->width*leaf_input_cloud->height > 0);
         
         //go up the tree, re-downsampling the full resolution leaf cloud at lower and lower resolution
-        for (int64_t level = static_cast<uint64_t>(current_branch.size ()-2); level >= 0; level--)
+        for (int64_t level = static_cast<int64_t>(current_branch.size ()-1); level >= 1; level--)
         {
-          BranchNode* target_parent = current_branch[level];
+          BranchNode* target_parent = current_branch[level-1];
+          assert (target_parent != 0);
           double exponent = static_cast<double>(current_branch.size () - target_parent->getDepth ());
           double current_depth_sample_percent = pow (sample_percent_, exponent);
+
+          assert (current_depth_sample_percent > 0.0);
           //------------------------------------------------------------
           //subsample data:
           //   1. Get indices from a random sample
@@ -577,8 +586,11 @@ namespace pcl
 
           //set sample size to 1/8 of total points (12.5%)
           uint64_t sample_size = static_cast<uint64_t> (static_cast<double> (leaf_input_cloud->width*leaf_input_cloud->height) * current_depth_sample_percent);
+
+          if (sample_size == 0)
+            sample_size = 1;
           
-          lod_filter_ptr_->setSample (static_cast<unsigned int> (sample_size));
+          lod_filter_ptr_->setSample (sample_size);
       
           //create our destination
           sensor_msgs::PointCloud2::Ptr downsampled_cloud (new sensor_msgs::PointCloud2 ());
@@ -606,21 +618,23 @@ namespace pcl
         //clear this node while walking down the tree in case we are updating the LOD
         current_branch.back ()->clearData ();
         
-        std::vector<BranchNode*> next_branch (current_branch.size () +1, static_cast<BranchNode*> (0));
-
-        next_branch.insert (next_branch.begin (), current_branch.begin (), current_branch.end ());
+        std::vector<BranchNode*> next_branch (current_branch);
 
         if (current_branch.back ()->hasUnloadedChildren ())
         {
           current_branch.back ()->loadChildren (false);
         }
 
-        unsigned char number_of_children = current_branch.back ()->getNumChildren ();
-
-        for (unsigned char i = 0; i < number_of_children; i++)
+        size_t number_of_children = current_branch.back ()->getNumChildren ();
+        
+        for (size_t i = 0; i < 8; i++)
         {
-          next_branch.back () = current_branch.back ()->getChildPtr (i);
-          buildLODRecursive (next_branch);
+          next_branch.push_back (current_branch.back ()->getChildPtr (i));
+          //skip that child if it doesn't exist
+          if (next_branch.back () != 0)
+            buildLODRecursive (next_branch);
+          
+          next_branch.pop_back ();
         }
       }
     }

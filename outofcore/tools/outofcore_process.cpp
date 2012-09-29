@@ -90,6 +90,7 @@ getCloudFromFile (boost::filesystem::path pcd_path)
   }
 
   print_info ("(%d)\n", (cloud->width * cloud->height));
+
   return cloud;
 }
 
@@ -186,20 +187,20 @@ outofcoreProcess (std::vector<boost::filesystem::path> pcd_paths, boost::filesys
 
     boost::uint64_t pts = 0;
     
-    // LOD not currently supported
-    //load the points into the outofcore octree
-    if (gen_lod)
-    {
-      print_info ("  Generating LODs\n");
-      pts = outofcore_octree->addPointCloud_and_genLOD (cloud);
-    }
-    else
-    {
+    // if (gen_lod)
+    // {
+    //    print_info ("  Generating LODs\n");
+    //    pts = outofcore_octree->addPointCloud_and_genLOD (cloud);
+    // }
+    // else
+    // {
       pts = outofcore_octree->addPointCloud (cloud, false);
-    }
-
+//    }
+    
     print_info ("Successfully added %lu points\n", pts);
-    assert ( pts == cloud->width * cloud->height );
+    print_info ("%lu Points were dropped (probably NaN)\n", cloud->width*cloud->height - pts);
+    
+//    assert ( pts == cloud->width * cloud->height );
     
     total_pts += pts;
   }
@@ -212,6 +213,13 @@ outofcoreProcess (std::vector<boost::filesystem::path> pcd_paths, boost::filesys
 
   print_info ("  Depth: %i\n", outofcore_octree->getDepth ());
   print_info ("  Resolution: [%f, %f]\n", x, y);
+
+  if(gen_lod)
+  {
+    print_info ("Generating LOD...\n");
+    outofcore_octree->setSamplePercent (0.25);
+    outofcore_octree->buildLOD ();
+  }
 
   //free outofcore data structure; the destructor forces buffer flush to disk
   delete outofcore_octree;

@@ -52,13 +52,13 @@ namespace pcl
   namespace outofcore
   {
     /** \brief Abstract octree iterator class
-     *  \note This class is based on the octree_iterator written by Julius Kammerl adapted to the outofcore octree.
+     *  \note This class is based on the octree_iterator written by Julius Kammerl adapted to the outofcore octree. The interface is very similar, but it does \b not inherit the \ref pcl_octree iterator base.
      *  \ingroup outofcore
      *  \author Stephen Fox (foxstephend@gmail.com)
      */
     template<typename PointT, typename ContainerT>
     class OutofcoreIteratorBase : public std::iterator<std::forward_iterator_tag,     /*iterator type*/
-                                                       const OutofcoreOctreeBaseNode<ContainerT, PointT>,
+                                                      const OutofcoreOctreeBaseNode<ContainerT, PointT>,
                                                        void,  /*no defined distance between iterator*/
                                                        const OutofcoreOctreeBaseNode<ContainerT, PointT>*,/*Pointer type*/
                                                        const OutofcoreOctreeBaseNode<ContainerT, PointT>&>/*Reference type*/

@@ -278,7 +278,7 @@ namespace pcl
           //clears write cache and removes PCD file from disk
           this->payload_->clear ();
         }
-        
+
       ///////////////////////////////////////////////////////////////////////////////
       // PROTECTED METHODS
       ////////////////////////////////////////////////////////////////////////////////
@@ -309,6 +309,13 @@ namespace pcl
          * \throws PCLException if the specified path already exists
          */
         void init_root_node (const Eigen::Vector3d &bb_min, const Eigen::Vector3d &bb_max, OutofcoreOctreeBase<ContainerT, PointT> * const tree, const boost::filesystem::path &rootname);
+
+        /** \brief no copy construction right now */
+        OutofcoreOctreeBaseNode (const OutofcoreOctreeBaseNode &rval);
+
+        /** \brief Operator= is not implemented */
+        OutofcoreOctreeBaseNode&
+        operator= (const OutofcoreOctreeBaseNode &rval);
 
         /** \brief Counts the number of child directories on disk; used to update num_children_ */
         virtual size_t
@@ -395,14 +402,14 @@ namespace pcl
          *  \param[in] min_bb The minimum corner of the input bounding box
          *  \param[in] max_bb The maximum corner of the input bounding box
          **/
-        static inline bool
+        static bool
         pointInBoundingBox (const Eigen::Vector3d &min_bb, const Eigen::Vector3d &max_bb, const PointT &p);
 
         /** \brief Tests whether \ref x, \ref y, and \ref z fall within the input bounding box
          *  \param[in] min_bb The minimum corner of the input bounding box
          *  \param[in] max_bb The maximum corner of the input bounding box
          **/
-        static inline bool
+        static bool
         pointInBoundingBox (const Eigen::Vector3d &min_bb, const Eigen::Vector3d &max_bb, const double x, const double y, const double z);
 
         /** \brief Tests if specified point is within bounds of current node's bounding box */
@@ -444,13 +451,6 @@ namespace pcl
          */
         void
         convertToXYZRecursive ();
-
-        /** \brief no copy construction right now */
-        OutofcoreOctreeBaseNode (const OutofcoreOctreeBaseNode &rval);
-
-        /** \brief Operator= is not implemented */
-        OutofcoreOctreeBaseNode&
-        operator= (const OutofcoreOctreeBaseNode &rval);
 
         /** \brief Private constructor used for children 
          */

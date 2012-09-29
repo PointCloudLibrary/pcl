@@ -68,7 +68,6 @@ int main (int argc, char** argv)
   sensor_msgs::PointCloud2::Ptr cloud (new sensor_msgs::PointCloud2 ());
     
   pcl::io::loadPCDFile (argv[1], *cloud);
-
   octree->addPointCloud (cloud, false);
 
   pcl::io::loadPCDFile (argv[2], *cloud);
@@ -76,17 +75,13 @@ int main (int argc, char** argv)
   
   octree->buildLOD ();
   
-  delete octree;
-
-  OctreeDisk octree2 (file_location, true);
-
   //iterate over the octree, depth first
-  OutofcoreDepthFirstIterator<pcl::PointXYZ, pcl::outofcore::OutofcoreOctreeDiskContainer<pcl::PointXYZ> > it (octree2);
-  OctreeDisk::Iterator myit (octree2);
+  OutofcoreDepthFirstIterator<pcl::PointXYZ, pcl::outofcore::OutofcoreOctreeDiskContainer<pcl::PointXYZ> > it (*octree);
+  OctreeDisk::Iterator myit (*octree);
 
   while ( *myit !=0 )
   {
-    octree2.printBoundingBox (**myit);
+    octree->printBoundingBox (**myit);
     myit++;
   }
 
