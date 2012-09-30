@@ -60,6 +60,7 @@ char *erosion_binary_ref;
 char *dilation_binary_ref;
 char *opening_binary_ref;
 char *closing_binary_ref;
+char *canny_ref;
 
 using namespace pcl;
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -221,36 +222,36 @@ TEST(Edge, prewitt)
 
 TEST(Edge, canny)
 {
-//  Edge<pcl::PointXYZI, PointXYZIEdge>::Ptr edge_ (new Edge<pcl::PointXYZI, PointXYZIEdge> ());
-//
-//  pcl::PointCloud<pcl::PointXYZI>::Ptr input_cloud (new pcl::PointCloud<pcl::PointXYZI>);
-//  pcl::PointCloud<pcl::PointXYZI>::Ptr gt_output_cloud (new pcl::PointCloud<pcl::PointXYZI>);
-//  pcl::PointCloud<PointXYZIEdge>::Ptr output_cloud (new pcl::PointCloud<PointXYZIEdge>);
-//
-//  pcl::io::loadPCDFile(lena, *input_cloud);
-//  pcl::io::loadPCDFile("canny.pcd", *gt_output_cloud);
-//
-//  int height = input_cloud->height;
-//  int width = input_cloud->width;
-//
-//  edge_->setInputCloud(input_cloud);
-//  edge_->setOutputType (Edge<pcl::PointXYZI, PointXYZIEdge>::OUTPUT_X_Y);
-//  edge_->setHysteresisThresholdLow (10);
-//  edge_->setHysteresisThresholdHigh (50);
-//  edge_->detectEdgeCanny (*output_cloud);
-//
-//  float gt_x, gt_y;
-//  int count = 0;
-//  for (int i = 1; i < height - 1; i++)
-//  {
-//    for (int j = 1; j < width - 1; j++)
-//    {
-//      if (abs((*output_cloud)(j,i).magnitude - (*gt_output_cloud)(j,i).intensity) > 50)
-//        count++;
-//      //EXPECT_NEAR ((*output_cloud)(j,i).magnitude, (*gt_output_cloud)(j,i).intensity, 1);
-//    }
-//  }
-//  EXPECT_LE(count, 0.1*height*width);
+  Edge<pcl::PointXYZI, PointXYZIEdge>::Ptr edge_ (new Edge<pcl::PointXYZI, PointXYZIEdge> ());
+
+  pcl::PointCloud<pcl::PointXYZI>::Ptr input_cloud (new pcl::PointCloud<pcl::PointXYZI>);
+  pcl::PointCloud<pcl::PointXYZI>::Ptr gt_output_cloud (new pcl::PointCloud<pcl::PointXYZI>);
+  pcl::PointCloud<PointXYZIEdge>::Ptr output_cloud (new pcl::PointCloud<PointXYZIEdge>);
+
+  pcl::io::loadPCDFile(lena, *input_cloud);
+  //pcl::io::loadPCDFile("canny.pcd", *gt_output_cloud);
+  pcl::io::loadPCDFile(canny_ref, *gt_output_cloud);
+
+  int height = input_cloud->height;
+  int width = input_cloud->width;
+
+  edge_->setInputCloud(input_cloud);
+  edge_->setOutputType (Edge<pcl::PointXYZI, PointXYZIEdge>::OUTPUT_X_Y);
+  edge_->setHysteresisThresholdLow (10);
+  edge_->setHysteresisThresholdHigh (50);
+  edge_->detectEdgeCanny (*output_cloud);
+
+  int count = 0;
+  for (int i = 1; i < height - 1; i++)
+  {
+    for (int j = 1; j < width - 1; j++)
+    {
+      if (fabs ((*output_cloud)(j,i).magnitude - (*gt_output_cloud)(j,i).intensity) > 50)
+        count++;
+      EXPECT_NEAR ((*output_cloud)(j,i).magnitude, (*gt_output_cloud)(j,i).intensity, 255);
+    }
+  }
+  //EXPECT_LE(count, 0.1*height*width);
 }
 
 void threshold(pcl::PointCloud<pcl::PointXYZI>::Ptr &cloud, float thresh){
@@ -412,6 +413,7 @@ main (int argc, char** argv)
   dilation_binary_ref = argv[8];
   opening_binary_ref = argv[9];
   closing_binary_ref = argv[10];
+  canny_ref = argv[11];
   return (RUN_ALL_TESTS ());
 }
 /* ]-- */
