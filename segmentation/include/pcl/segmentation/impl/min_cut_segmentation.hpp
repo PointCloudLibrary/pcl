@@ -297,6 +297,9 @@ pcl::MinCutSegmentation<PointT>::extract (std::vector <pcl::PointIndices>& clust
 
   assembleLabels (residual_capacity);
 
+  clusters.reserve (clusters_.size ());
+  std::copy (clusters_.begin (), clusters_.end (), std::back_inserter (clusters));
+
   deinitCompute ();
 }
 
