@@ -97,8 +97,8 @@ pcl::ihs::ICP::findTransformation (const MeshConstPtr&           mesh_model,
   const CloudNormalConstPtr cloud_model_selected = this->selectModelPoints (mesh_model, T_init.inverse ());
   const CloudNormalConstPtr cloud_data_selected  = this->selectDataPoints (cloud_data);
 
-  const size_t n_data  = cloud_data_selected->size ();
   const size_t n_model = cloud_model_selected->size ();
+  const size_t n_data  = cloud_data_selected->size ();
   if(n_model < n_min) {std::cerr << "ERROR in icp.cpp: Not enough model points after selection!\n"; return (false);}
   if(n_data < n_min)  {std::cerr << "ERROR in icp.cpp: Not enough data points after selection!\n"; return (false);}
 
@@ -203,6 +203,7 @@ pcl::ihs::ICP::findTransformation (const MeshConstPtr&           mesh_model,
 
   // Some output
   std::cerr << "\nRegistration:\n"
+            << "  - num model     / num data   : " << n_model         << " / " << n_data << "\n"
             << "  - delta fitness / epsilon    : " << delta_fitness   << " / " << epsilon_
             << (delta_fitness   < epsilon_        ? " <-- :-)\n" : "\n")
             << "  - fitness       / max fitness: " << current_fitness << " / " << max_fitness_

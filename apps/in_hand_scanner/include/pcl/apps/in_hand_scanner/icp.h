@@ -79,8 +79,8 @@ namespace pcl
         typedef pcl::ihs::Mesh         Mesh;
         typedef pcl::ihs::MeshPtr      MeshPtr;
         typedef pcl::ihs::MeshConstPtr MeshConstPtr;
-        typedef pcl::ihs::Vertex       Vertex;
-        typedef pcl::ihs::Face         Face;
+        typedef Mesh::Vertex           Vertex;
+        typedef Mesh::Face             Face;
 
         typedef pcl::ihs::Transformation Transformation;
 

@@ -41,16 +41,26 @@
 #ifndef PCL_IN_HAND_SCANNER_COMMON_TYPES_HPP
 #define PCL_IN_HAND_SCANNER_COMMON_TYPES_HPP
 
+#include <limits>
+
 namespace pcl
 {
   namespace ihs
   {
     struct EIGEN_ALIGN16 PointModel
     {
+      // NOTE: I rely on NaN in the default constructor!
       inline PointModel ()
-        :        x (0.f),        y (0.f),        z (0.f),
-          normal_x (0.f), normal_y (0.f), normal_z (0.f),
-                 b (0  ),        g (0  ),        r (0  ), a (255),
+        : x        (std::numeric_limits<float>::quiet_NaN ()),
+          y        (std::numeric_limits<float>::quiet_NaN ()),
+          z        (std::numeric_limits<float>::quiet_NaN ()),
+          normal_x (std::numeric_limits<float>::quiet_NaN ()),
+          normal_y (std::numeric_limits<float>::quiet_NaN ()),
+          normal_z (std::numeric_limits<float>::quiet_NaN ()),
+          b        (0),
+          g        (0),
+          r        (0),
+          a        (255),
           weight   (0.f),
           age      (0)
       {
@@ -78,6 +88,17 @@ namespace pcl
           rgba     (other.rgba),
           weight   (other.weight),
           age      (other.age)
+      {
+        data[3]   = 1.f;
+        data_n[3] = 0.f;
+      }
+
+      inline PointModel (const pcl::PointXYZRGBNormal& other, const float weight)
+        : x        (other.x),        y        (other.y),        z        (other.z),
+          normal_x (other.normal_x), normal_y (other.normal_y), normal_z (other.normal_z),
+          rgba     (other.rgba),
+          weight   (weight),
+          age      (0)
       {
         data[3]   = 1.f;
         data_n[3] = 0.f;

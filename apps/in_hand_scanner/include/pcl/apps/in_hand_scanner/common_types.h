@@ -92,8 +92,6 @@ namespace pcl
     typedef pcl::TriangleMesh <true, PointModel> Mesh;
     typedef boost::shared_ptr <Mesh>             MeshPtr;
     typedef boost::shared_ptr <const Mesh>       MeshConstPtr;
-    typedef Mesh::Vertex                         Vertex;
-    typedef Mesh::Face                           Face;
   } // End namespace ihs
 } // End namespace pcl
 

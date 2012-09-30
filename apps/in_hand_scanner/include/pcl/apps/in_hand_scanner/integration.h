@@ -67,23 +67,33 @@ namespace pcl
 
       public:
 
+        typedef pcl::PointXYZ              PointXYZ;
+        typedef pcl::PointCloud <PointXYZ> CloudXYZ;
+        typedef CloudXYZ::Ptr              CloudXYZPtr;
+        typedef CloudXYZ::ConstPtr         CloudXYZConstPtr;
+
         typedef pcl::ihs::PointProcessed         PointProcessed;
         typedef pcl::ihs::CloudProcessed         CloudProcessed;
         typedef pcl::ihs::CloudProcessedPtr      CloudProcessedPtr;
         typedef pcl::ihs::CloudProcessedConstPtr CloudProcessedConstPtr;
 
-        typedef pcl::ihs::PointModel          PointModel;
-        typedef pcl::ihs::Mesh                Mesh;
-        typedef pcl::ihs::MeshPtr             MeshPtr;
-        typedef pcl::ihs::MeshConstPtr        MeshConstPtr;
-        typedef pcl::ihs::Vertex              Vertex;
-        typedef pcl::ihs::Face                Face;
-        typedef pcl::ihs::Mesh::VertexIndex   VertexIndex;
-        typedef pcl::ihs::Mesh::VertexIndexes VertexIndexes;
+        typedef pcl::ihs::PointModel         PointModel;
+        typedef pcl::ihs::CloudModel         CloudModel;
+        typedef pcl::ihs::CloudModelPtr      CloudModelPtr;
+        typedef pcl::ihs::CloudModelConstPtr CloudModelConstPtr;
+
+        typedef pcl::ihs::Mesh            Mesh;
+        typedef pcl::ihs::MeshPtr         MeshPtr;
+        typedef pcl::ihs::MeshConstPtr    MeshConstPtr;
+        typedef Mesh::Vertex              Vertex;
+        typedef Mesh::Face                Face;
+        typedef Mesh::VertexIndex         VertexIndex;
+        typedef Mesh::VertexIndexes       VertexIndexes;
+        typedef Mesh::VertexConstIterator VertexConstIterator;
 
         typedef pcl::ihs::Transformation Transformation;
 
-        typedef pcl::KdTree <PointModel>         KdTree;
+        typedef pcl::KdTree <PointXYZ>           KdTree;
         typedef boost::shared_ptr <KdTree>       KdTreePtr;
         typedef boost::shared_ptr <const KdTree> KdTreeConstPtr;
 
@@ -91,10 +101,9 @@ namespace pcl
 
         Integration ();
 
-        // TODO: Not compatible with indexed clouds
         bool
-        reconstructMesh (const CloudProcessedConstPtr& cloud,
-                         const MeshPtr&                mesh) const;
+        reconstructMesh (const CloudProcessedConstPtr& cloud_data,
+                         const MeshPtr&                mesh_model) const;
 
         bool
         merge (const CloudProcessedConstPtr& cloud_data,
@@ -105,6 +114,40 @@ namespace pcl
 
         uint8_t
         trimRGB (const float val) const;
+
+        // 2 - 1
+        // | / |
+        // 3 - 0
+        void
+        addToMesh (const CloudModel::const_iterator& it_pt_0,
+                   const CloudModel::const_iterator& it_pt_1,
+                   const CloudModel::const_iterator& it_pt_2,
+                   const CloudModel::const_iterator& it_pt_3,
+                   const VertexIndexes::iterator&    it_vi_0,
+                   const VertexIndexes::iterator&    it_vi_1,
+                   const VertexIndexes::iterator&    it_vi_2,
+                   const VertexIndexes::iterator&    it_vi_3,
+                   const MeshPtr&                    mesh) const;
+
+        void
+        addToMesh (const CloudModel::const_iterator& it_pt_0,
+                   const CloudModel::const_iterator& it_pt_1,
+                   const CloudModel::const_iterator& it_pt_2,
+                   const VertexIndexes::iterator&    it_vi_0,
+                   const VertexIndexes::iterator&    it_vi_1,
+                   const VertexIndexes::iterator&    it_vi_2,
+                   const MeshPtr&                    mesh) const;
+
+        bool
+        distanceThreshold (const PointModel& pt_0,
+                           const PointModel& pt_1,
+                           const PointModel& pt_2) const;
+
+        bool
+        distanceThreshold (const PointModel& pt_0,
+                           const PointModel& pt_1,
+                           const PointModel& pt_2,
+                           const PointModel& pt_3) const;
 
       private:
 

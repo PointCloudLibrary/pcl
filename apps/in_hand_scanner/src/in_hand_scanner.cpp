@@ -243,6 +243,7 @@ void
 pcl::ihs::InHandScanner::newDataCallback (const CloudInputConstPtr& cloud_in)
 {
   boost::mutex::scoped_lock lock (mutex_);
+  if (!run_) return;
 
   this->calcFPS (computation_fps_);
 
@@ -265,28 +266,26 @@ pcl::ihs::InHandScanner::newDataCallback (const CloudInputConstPtr& cloud_in)
       transformation_ = Transformation::Identity ();
       integration_->reconstructMesh (cloud_data, mesh_model_);
       cloud_data = CloudProcessedPtr (new CloudProcessed ());
+      ++iteration_;
     }
     else
     {
       Transformation T = Transformation::Identity ();
-      if (!icp_->findTransformation (mesh_model_, cloud_data, transformation_, T))
-      {
-      }
-      else
+      if (icp_->findTransformation (mesh_model_, cloud_data, transformation_, T))
       {
         transformation_ = T;
         integration_->merge (cloud_data, mesh_model_, transformation_);
         cloud_data = CloudProcessedPtr (new CloudProcessed ());
         // interactor_style_->transformCamera (InteractorStyle::Quaternion (T.topLeftCorner <3, 3> ().cast <double> ()), T.topRightCorner <3, 1> ().cast <double> ());
+
+        ++iteration_;
       }
     }
-
-    ++iteration_;
-  } // End if (running_mode_ >= RM_REGISTRATION_CONT)
+  }
 
   // Set the clouds for visualization
   cloud_data_draw_ = cloud_data;
-  if (!mesh_model_draw_)               mesh_model_draw_  = MeshPtr (new Mesh ());
+  if (!mesh_model_draw_)                mesh_model_draw_ = MeshPtr (new Mesh ());
   if (running_mode_ != RM_UNPROCESSED) *mesh_model_draw_ = *mesh_model_;
 
   // TODO: put this into the visualization thread.

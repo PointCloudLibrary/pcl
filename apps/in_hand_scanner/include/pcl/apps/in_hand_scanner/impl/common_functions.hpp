@@ -42,6 +42,7 @@
 #define PCL_IN_HAND_SCANNER_COMMON_FUNCTIONS_HPP
 
 #include <pcl/geometry/impl/mesh_base.hpp>
+#include <algorithm>
 
 // Keep these functions in here until they are properly tested
 namespace pcl
@@ -79,6 +80,19 @@ namespace pcl
     if (n) centroid = Vec4 (x/nn, y/nn, z/nn, 1.);
 
     return n;
+  }
+
+
+  template <class T> inline T
+  max3 (const T a, const T b, const T c)
+  {
+    return std::max (std::max (a,b), c);
+  }
+
+  template <class T> inline T
+  max4 (const T a, const T b, const T c, const T d)
+  {
+    return std::max (max3 (a, b, c), d);
   }
 
 } // End namespace pcl
