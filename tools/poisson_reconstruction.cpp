@@ -47,9 +47,6 @@ using namespace pcl;
 using namespace pcl::io;
 using namespace pcl::console;
 
-#include <fstream>
-using namespace std;
-
 int default_depth = 8;
 int default_solver_divide = 8;
 int default_iso_divide = 8;
@@ -89,20 +86,20 @@ compute (const sensor_msgs::PointCloud2::ConstPtr &input, PolygonMesh &output,
   PointCloud<PointNormal>::Ptr xyz_cloud (new pcl::PointCloud<PointNormal> ());
   fromROSMsg (*input, *xyz_cloud);
 
+  print_info ("Using parameters: depth %d, solverDivide %d, isoDivide %d\n", depth, solver_divide, iso_divide);
+
 	Poisson<PointNormal> poisson;
 	poisson.setDepth (depth);
 	poisson.setSolverDivide (solver_divide);
 	poisson.setIsoDivide (iso_divide);
   poisson.setInputCloud (xyz_cloud);
 
-
   TicToc tt;
   tt.tic ();
-
-  print_highlight ("Computing ");
+  print_highlight ("Computing ...");
   poisson.reconstruct (output);
 
-  print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms]\n");
+  print_info ("[Done, "); print_value ("%g", tt.toc ()); print_info (" ms]\n");
 }
 
 void
@@ -121,7 +118,7 @@ saveCloud (const std::string &filename, const PolygonMesh &output)
 int
 main (int argc, char** argv)
 {
-  print_info ("Compute the surface reconstruction of a point cloud using the marching cubes algorithm (pcl::surface::MarchingCubesGreedy or pcl::surface::MarchingCubesGreedyDot. For more information, use: %s -h\n", argv[0]);
+  print_info ("Compute the surface reconstruction of a point cloud using the Poisson surface reconstruction (pcl::surface::Poisson). For more information, use: %s -h\n", argv[0]);
 
   if (argc < 3)
   {
@@ -164,7 +161,7 @@ main (int argc, char** argv)
   if (!loadCloud (argv[pcd_file_indices[0]], *cloud))
     return (-1);
 
-  // Apply the marching cubes algorithm
+  // Apply the Poisson surface reconstruction algorithm
   PolygonMesh output;
   compute (cloud, output, depth, solver_divide, iso_divide);
 
