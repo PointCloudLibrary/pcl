@@ -43,6 +43,9 @@
 
 namespace pcl
 {
+  typedef std::vector<pcl::PointIndices> IndicesClusters;
+  typedef boost::shared_ptr<std::vector<pcl::PointIndices> > IndicesClustersPtr;
+
   /** \brief @b ConditionalEuclideanClustering performs segmentation based on Euclidean distance and a user-defined clustering condition.
     * \details The condition that need to hold is currently passed using a function pointer.
     * For more information check the documentation of setConditionFunction() or the usage example below:
