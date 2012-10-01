@@ -85,7 +85,7 @@ Java_com_itseez_onirec_CaptureThreadManager_depthBufferToBitmap
     for (int j = 0; j < info.width; j += 2, pixel += 2, buf_int += 1) {
       unsigned int depths = *buf_int;
       unsigned char gray1 = unsigned(double(depths >> 16) / double(maxZ) * 255.);
-      unsigned char gray2 = unsigned(double(depths && 0xFFFF) / double(maxZ) * 255.);
+      unsigned char gray2 = unsigned(double(depths & 0xFFFF) / double(maxZ) * 255.);
 
       pixel[0] = 0xFF000000 | (gray1 << 16) | (gray1 << 8) | gray1;
       pixel[1] = 0xFF000000 | (gray2 << 16) | (gray2 << 8) | gray2;
