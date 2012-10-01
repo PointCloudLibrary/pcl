@@ -39,14 +39,14 @@
 #ifndef PCL_PCL_BASE_H_
 #define PCL_PCL_BASE_H_
 
+// Include PCL macros such as PCL_ERROR, etc
+#include <pcl/pcl_macros.h>
+
 #include <cstddef>
 #include <pcl/common/eigen.h>
 #include <pcl/common/boost.h>
 // STD includes
 #include <vector>
-
-// Include PCL macros such as PCL_ERROR, etc
-#include <pcl/pcl_macros.h>
 
 // Point Cloud message includes. Needed everywhere.
 #include <sensor_msgs/PointCloud2.h>
