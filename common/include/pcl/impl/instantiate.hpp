@@ -41,6 +41,7 @@
 #pragma GCC system_header 
 #endif
 
+#include <pcl/pcl_config.h>
 #include <boost/preprocessor/seq/for_each.hpp>
 #include <boost/preprocessor/seq/for_each_product.hpp>
 #include <boost/preprocessor/seq/to_tuple.hpp>
@@ -54,6 +55,19 @@
 // PCL_INSTANTIATE: call to instantiate template TEMPLATE for all
 // POINT_TYPES
 //
+
+#ifdef PCL_NO_PRECOMPILE
+
+//#pragma message("WARNING: PCL compiled with PCL_NO_PRECOMPILE support. Remember to include the impl/foo.hpp headers in your code.")
+
+#define PCL_INSTANTIATE_PRODUCT_IMPL(r, product)
+#define PCL_INSTANTIATE_IMPL(r, TEMPLATE, POINT_TYPE) 
+#define PCL_INSTANTIATE(TEMPLATE, POINT_TYPES)
+#define PCL_INSTANTIATE_PRODUCT_IMPL(r, product)
+#define PCL_INSTANTIATE_PRODUCT(TEMPLATE, PRODUCT)
+
+#else
+
 #define PCL_INSTANTIATE_IMPL(r, TEMPLATE, POINT_TYPE) \
   BOOST_PP_CAT(PCL_INSTANTIATE_, TEMPLATE)(POINT_TYPE)
 
@@ -96,5 +110,6 @@
 #define PCL_INSTANTIATE_PRODUCT(TEMPLATE, PRODUCT) \
   BOOST_PP_SEQ_FOR_EACH_PRODUCT(PCL_INSTANTIATE_PRODUCT_IMPL, ((TEMPLATE))PRODUCT)
 
+#endif
 
 #endif
