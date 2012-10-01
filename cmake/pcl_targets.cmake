@@ -102,7 +102,7 @@ endmacro(PCL_ADD_INCLUDES)
 macro(PCL_ADD_LIBRARY _name _component)
     add_library(${_name} ${PCL_LIB_TYPE} ${ARGN})
     # must link explicitly against boost.
-    target_link_libraries(${_name} ${Boost_LIBRARIES})
+    target_link_libraries(${_name} m ${Boost_LIBRARIES})
 	
 	if(MSVC90 OR MSVC10)
 	  target_link_libraries(${_name} delayimp.lib)  # because delay load is enabled for openmp.dll
@@ -184,7 +184,7 @@ macro(PCL_ADD_EXECUTABLE _name _component)
     add_executable(${_name} ${ARGN})
     # must link explicitly against boost.
     if(UNIX AND NOT ANDROID)
-      target_link_libraries(${_name} ${Boost_LIBRARIES} pthread ${CLANG_LIBRARIES})
+      target_link_libraries(${_name} ${Boost_LIBRARIES} pthread m ${CLANG_LIBRARIES})
     else()
       target_link_libraries(${_name} ${Boost_LIBRARIES})
     endif()
