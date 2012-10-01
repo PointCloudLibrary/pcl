@@ -46,9 +46,9 @@ namespace pcl
   {
     /** \class OutofcoreDepthFirstIterator
      *
-     *  
-     *
-     *
+     *  \ingroup outofcore
+     *  \author Stephen Fox (foxstephend@gmail.com)
+     *  \note Code adapted from \ref octree_iterator.h in Module \ref pcl_octree written by Julius Kammerl
      */
     template<typename PointT, typename ContainerT>
     class OutofcoreDepthFirstIterator : public OutofcoreIteratorBase<PointT, ContainerT>
