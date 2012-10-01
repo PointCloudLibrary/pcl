@@ -153,9 +153,7 @@ namespace pcl
       typedef typename PointCloudIn::Ptr PointCloudInPtr;
       typedef typename PointCloudIn::ConstPtr PointCloudInConstPtr;
 
-      // FIXME this enum should have a type.  Not be anonymous. 
-      // Otherplaces where consts are used probably should be fixed.
-      enum 
+      enum GP3Type
       { 
         NONE = -1,    // not-defined
         FREE = 0,    
@@ -213,7 +211,7 @@ namespace pcl
 
       /** \brief Get the nearest neighbor distance multiplier. */
       inline double 
-      getMu () { return (mu_); }
+      getMu () const { return (mu_); }
 
       /** \brief Set the maximum number of nearest neighbors to be searched for.
         * \param[in] nnn the maximum number of nearest neighbors
@@ -223,7 +221,7 @@ namespace pcl
 
       /** \brief Get the maximum number of nearest neighbors to be searched for. */
       inline int 
-      getMaximumNearestNeighbors () { return (nnn_); }
+      getMaximumNearestNeighbors () const { return (nnn_); }
 
       /** \brief Set the sphere radius that is to be used for determining the k-nearest neighbors used for triangulating.
         * \param[in] radius the sphere radius that is to contain all k-nearest neighbors
@@ -234,7 +232,7 @@ namespace pcl
 
       /** \brief Get the sphere radius used for determining the k-nearest neighbors. */
       inline double 
-      getSearchRadius () { return (search_radius_); }
+      getSearchRadius () const { return (search_radius_); }
 
       /** \brief Set the minimum angle each triangle should have.
         * \param[in] minimum_angle the minimum angle each triangle should have
@@ -245,7 +243,7 @@ namespace pcl
 
       /** \brief Get the parameter for distance based weighting of neighbors. */
       inline double 
-      getMinimumAngle () { return (minimum_angle_); }
+      getMinimumAngle () const { return (minimum_angle_); }
 
       /** \brief Set the maximum angle each triangle can have.
         * \param[in] maximum_angle the maximum angle each triangle can have
@@ -256,7 +254,7 @@ namespace pcl
 
       /** \brief Get the parameter for distance based weighting of neighbors. */
       inline double 
-      getMaximumAngle () { return (maximum_angle_); }
+      getMaximumAngle () const { return (maximum_angle_); }
 
       /** \brief Don't consider points for triangulation if their normal deviates more than this value from the query point's normal.
         * \param[in] eps_angle maximum surface angle
@@ -268,7 +266,7 @@ namespace pcl
 
       /** \brief Get the maximum surface angle. */
       inline double 
-      getMaximumSurfaceAngle () { return (eps_angle_); }
+      getMaximumSurfaceAngle () const { return (eps_angle_); }
 
       /** \brief Set the flag if the input normals are oriented consistently.
         * \param[in] consistent set it to true if the normals are consistently oriented
@@ -278,7 +276,7 @@ namespace pcl
 
       /** \brief Get the flag for consistently oriented normals. */
       inline bool 
-      getNormalConsistency () { return (consistent_); }
+      getNormalConsistency () const { return (consistent_); }
 
       /** \brief Set the flag to order the resulting triangle vertices consistently (positive direction around normal).
         * @note Assumes consistently oriented normals (towards the viewpoint) -- see setNormalConsistency ()
@@ -289,28 +287,28 @@ namespace pcl
 
       /** \brief Get the flag signaling consistently ordered triangle vertices. */
       inline bool 
-      getConsistentVertexOrdering () { return (consistent_ordering_); }
+      getConsistentVertexOrdering () const { return (consistent_ordering_); }
 
       /** \brief Get the state of each point after reconstruction.
         * \note Options are defined as constants: FREE, FRINGE, COMPLETED, BOUNDARY and NONE
         */
       inline std::vector<int> 
-      getPointStates () { return (state_); }
+      getPointStates () const { return (state_); }
 
       /** \brief Get the ID of each point after reconstruction.
         * \note parts are numbered from 0, a -1 denotes unconnected points
         */
       inline std::vector<int> 
-      getPartIDs () { return (part_); }
+      getPartIDs () const { return (part_); }
 
 
       /** \brief Get the sfn list. */
       inline std::vector<int>
-      getSFN () { return (sfn_); }
+      getSFN () const { return (sfn_); }
 
       /** \brief Get the ffn list. */
       inline std::vector<int>
-      getFFN () { return (ffn_); }
+      getFFN () const { return (ffn_); }
 
     protected:
       /** \brief The nearest neighbor distance multiplier to obtain the final search radius. */
