@@ -100,7 +100,8 @@ namespace pcl
       , filelen_ (0)
       , writebuff_ (0)
     {
-      std::string temp = getRandomUUIDString ();
+      std::string temp;
+      getRandomUUIDString (temp);
       disk_storage_filename_ = boost::shared_ptr<std::string> (new std::string (temp));
       filelen_ = 0;
     }
