@@ -34,7 +34,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- *  $Id: octree_base.hpp 6927M 2012-08-24 20:22:36Z (local) $
+ *  $Id$
  */
 
 #ifndef PCL_OUTOFCORE_OCTREE_BASE_IMPL_H_
@@ -229,7 +229,7 @@ namespace pcl
     ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> boost::uint64_t
-    OutofcoreOctreeBase<ContainerT, PointT>::addPointCloud (sensor_msgs::PointCloud2::Ptr &input_cloud, const bool skip_bb_check = false)
+    OutofcoreOctreeBase<ContainerT, PointT>::addPointCloud (sensor_msgs::PointCloud2::Ptr &input_cloud, const bool skip_bb_check)
     {
       uint64_t pt_added = this->root_node_->addPointCloud (input_cloud, skip_bb_check) ;
 //      assert (input_cloud->width*input_cloud->height == pt_added);
