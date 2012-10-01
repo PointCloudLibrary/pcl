@@ -45,6 +45,12 @@
 #pragma GCC system_header 
 #endif
 
+#if defined _MSC_VER
+  #pragma warning (push, 2)
+  // 4244 : conversion from 'type1' to 'type2', possible loss of data
+  #pragma warning (disable: 4244)
+#endif
+
 #include <pcl/pcl_macros.h>
 #include <pcl/point_traits.h>
 #include <boost/mpl/vector.hpp>
@@ -370,6 +376,10 @@ namespace pcl
 #define POINT_CLOUD_REGISTER_WITH_FUSION(name, seq)                     \
   BOOST_FUSION_ADAPT_ASSOC_STRUCT_I(name, POINT_CLOUD_EXPAND_TAGS(seq)) \
   /***/
+#endif
+
+#if defined _MSC_VER
+  #pragma warning (pop)
 #endif
 
 #endif  //#ifndef PCL_REGISTER_POINT_STRUCT_H_
