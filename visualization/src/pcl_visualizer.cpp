@@ -1381,7 +1381,7 @@ pcl::visualization::PCLVisualizer::setShapeRenderingProperties (
     return (false);
   }
   // Get the actor pointer
-  vtkLODActor* actor = vtkLODActor::SafeDownCast (am_it->second);
+  vtkActor* actor = vtkActor::SafeDownCast (am_it->second);
 
   switch (property)
   {
@@ -1426,7 +1426,7 @@ pcl::visualization::PCLVisualizer::setShapeRenderingProperties (
     return (false);
   }
   // Get the actor pointer
-  vtkLODActor* actor = vtkLODActor::SafeDownCast (am_it->second);
+  vtkActor* actor = vtkActor::SafeDownCast (am_it->second);
 
   switch (property)
   {
