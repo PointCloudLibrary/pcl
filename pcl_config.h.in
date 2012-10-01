@@ -37,6 +37,9 @@
 /* Precompile for a minimal set of point types instead of all. */
 #cmakedefine PCL_ONLY_CORE_POINT_TYPES
 
+/* Do not precompile for any point types at all. */
+#cmakedefine PCL_NO_PRECOMPILE
+
 #ifdef DISABLE_OPENNI
 #undef HAVE_OPENNI
 #endif
