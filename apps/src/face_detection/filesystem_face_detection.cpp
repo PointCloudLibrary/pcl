@@ -18,8 +18,8 @@ bool SHOW_GT = false;
 bool VIDEO = false;
 
 template<class PointInT>
-void run(pcl::RFFaceDetectorTrainer & fdrf, typename pcl::PointCloud<PointInT>::Ptr & scene_vis, pcl::visualization::PCLVisualizer & vis, bool heat_map = false,
-    bool show_votes = false, std::string & filename = "")
+void run(pcl::RFFaceDetectorTrainer & fdrf, typename pcl::PointCloud<PointInT>::Ptr & scene_vis, pcl::visualization::PCLVisualizer & vis, bool heat_map,
+    bool show_votes, const std::string & filename)
 {
   pcl::PointCloud<pcl::PointXYZ>::Ptr scene (new pcl::PointCloud<pcl::PointXYZ>);
   pcl::copyPointCloud (*scene_vis, *scene);

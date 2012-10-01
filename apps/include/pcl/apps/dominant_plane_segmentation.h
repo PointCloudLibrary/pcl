@@ -283,4 +283,8 @@ namespace pcl
   }
 }
 
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/apps/impl/dominant_plane_segmentation.hpp>
+#endif
+
 #endif /* DOMINANT_PLANE_SEGMENTATION_H_ */

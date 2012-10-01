@@ -253,7 +253,7 @@ namespace pcl
           if (point_count != 0)
           {
             accu /= static_cast<double> (point_count);
-            centroid.head<3> () = accu.tail<3> ();
+            centroid.head<3> ().matrix () = accu.tail<3> ();
             covariance_matrix.coeffRef (0) = accu[0] - accu[6] * accu[6];
             covariance_matrix.coeffRef (1) = accu[1] - accu[6] * accu[7];
             covariance_matrix.coeffRef (2) = accu[2] - accu[6] * accu[8];
@@ -297,7 +297,7 @@ namespace pcl
           if (point_count != 0)
           {
             accu /= static_cast<double> (point_count);
-            centroid.head<3> () = accu.tail<3> ();
+            centroid.head<3> ().matrix () = accu.tail<3> ();
             covariance_matrix.coeffRef (0) = accu[0] - accu[6] * accu[6];
             covariance_matrix.coeffRef (1) = accu[1] - accu[6] * accu[7];
             covariance_matrix.coeffRef (2) = accu[2] - accu[6] * accu[8];
