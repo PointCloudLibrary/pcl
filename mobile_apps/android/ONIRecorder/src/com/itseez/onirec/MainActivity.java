@@ -2,10 +2,7 @@ package com.itseez.onirec;
 
 import android.app.Activity;
 import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
+import android.content.*;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 import android.os.Bundle;
@@ -109,10 +106,8 @@ public class MainActivity extends Activity {
         surfaceColor = (SurfaceView) findViewById(R.id.surface_color);
         surfaceDepth = (SurfaceView) findViewById(R.id.surface_depth);
 
-        if (savedInstanceState == null)
-            updateLastRecording(null);
-        else
-            updateLastRecording((File) savedInstanceState.getSerializable("lastRecording"));
+        String lastRecordingName = getPreferences(MODE_PRIVATE).getString("lastRecording", null);
+        updateLastRecording(lastRecordingName == null ? null : new File(lastRecordingName));
 
         surfaceColor.getHolder().addCallback(surface_callbacks);
         surfaceDepth.getHolder().addCallback(surface_callbacks);
@@ -130,12 +125,11 @@ public class MainActivity extends Activity {
     protected void onStop() {
         super.onStop();
         state.stop();
-    }
 
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putSerializable("lastRecording", lastRecording);
+        SharedPreferences settings = getPreferences(MODE_PRIVATE);
+        SharedPreferences.Editor settings_editor = settings.edit();
+        settings_editor.putString("lastRecording", lastRecording == null ? null : lastRecording.getAbsolutePath());
+        settings_editor.commit();
     }
 
     @SuppressWarnings("UnusedDeclaration")
