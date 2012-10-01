@@ -93,7 +93,6 @@ namespace pcl
         void
         setBitDepth (unsigned char bitDepth_arg)
         {
-          assert (bitDepth_arg <= bitDepth_arg);
           colorBitReduction_ = static_cast<unsigned char> (8 - bitDepth_arg);
         }
 
