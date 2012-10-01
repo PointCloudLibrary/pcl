@@ -257,7 +257,7 @@ namespace pcl
               // Check if the representations are valid
               if (!feature_representation_->isValid (feat_src) || !feature_representation_->isValid (feat_tgt))
               {
-                PCL_ERROR ("[pcl::registration::%s::getCorrespondenceScore] Invalid feature representation given!\n", getClassName ().c_str ());
+                PCL_ERROR ("[pcl::registration::%s::getCorrespondenceScore] Invalid feature representation given!\n", this->getClassName ().c_str ());
                 return (std::numeric_limits<double>::max ());
               }
 
