@@ -114,6 +114,10 @@ namespace pcl
      *  below. The files in [brackets] exist only when the LOD are
      *  built.
      *
+     *  At this point in time, there is not support for multiple trees
+     *  existing in a single directory hierarchy.
+     *
+     *  \verbatim
      *  tree_name/
      *       tree_name.oct_idx
      *       tree_name.octree
@@ -133,9 +137,7 @@ namespace pcl
      *       ...
      *       7/
      *
-     *  At this point in time, there is not support for multiple trees
-     *  existing in a single directory hierarchy.
-     *
+     *  \endverbatim
      *
      *  \ingroup outofcore
      *  \author Jacob Schloss (jacob.schloss@urbanrobotics.net)
