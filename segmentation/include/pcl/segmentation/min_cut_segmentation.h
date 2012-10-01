@@ -39,12 +39,12 @@
 #ifndef PCL_MIN_CUT_SEGMENTATION_H_
 #define PCL_MIN_CUT_SEGMENTATION_H_
 
+#include <pcl/segmentation/boost.h>
 #if (BOOST_VERSION >= 104400)
 #include <pcl/pcl_base.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/search/search.h>
-#include <pcl/segmentation/boost.h>
 #include <string>
 #include <set>
 
