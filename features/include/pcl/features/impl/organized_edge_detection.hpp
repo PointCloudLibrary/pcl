@@ -38,9 +38,8 @@
 #ifndef PCL_FEATURES_IMPL_ORGANIZED_EDGE_DETECTION_H_
 #define PCL_FEATURES_IMPL_ORGANIZED_EDGE_DETECTION_H_
 
-#include <pcl/features/organized_edge_detection.h>
-#include <pcl/point_types.h>
 #include <pcl/2d/edge.h>
+#include <pcl/features/organized_edge_detection.h>
 #include <pcl/console/print.h>
 #include <pcl/console/time.h>
 

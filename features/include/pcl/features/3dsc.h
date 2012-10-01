@@ -308,4 +308,8 @@ namespace pcl
   };
 }
 
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/features/impl/3dsc.hpp>
+#endif
+
 #endif  //#ifndef PCL_3DSC_H_

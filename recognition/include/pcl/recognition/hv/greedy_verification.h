@@ -177,4 +177,8 @@ namespace pcl
     };
 }
 
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/recognition/impl/hv/greedy_verification.hpp>
+#endif
+
 #endif /* PCL_RECOGNITION_HV_GREEDY_H_ */

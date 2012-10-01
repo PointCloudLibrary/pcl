@@ -186,4 +186,8 @@ namespace pcl
   }
 }
 
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/segmentation/impl/extract_labeled_clusters.hpp>
+#endif
+
 #endif  //#ifndef PCL_EXTRACT_LABELED_CLUSTERS_H_

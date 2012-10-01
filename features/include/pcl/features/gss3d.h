@@ -156,5 +156,8 @@ namespace pcl
   };
 }
 
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/features/impl/gss3d.hpp>
+#endif
 
 #endif /* PCL_GSS3D_H_ */

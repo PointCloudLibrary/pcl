@@ -34,6 +34,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
+#pragma once
 #include <pcl/recognition/hv/greedy_verification.h>
 
 template<typename ModelT, typename SceneT>

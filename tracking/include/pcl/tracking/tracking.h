@@ -128,4 +128,8 @@ POINT_CLOUD_REGISTER_POINT_WRAPPER(pcl::tracking::ParticleXYZR, pcl::tracking::_
 #  endif
 #endif
 
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/tracking/impl/tracking.hpp>
+#endif
+
 #endif

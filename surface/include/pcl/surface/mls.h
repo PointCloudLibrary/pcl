@@ -493,4 +493,8 @@ namespace pcl
   };
 }
 
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/surface/impl/mls.hpp>
+#endif
+
 #endif  /* #ifndef PCL_MLS_H_ */

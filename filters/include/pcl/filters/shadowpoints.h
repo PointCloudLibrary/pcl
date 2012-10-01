@@ -114,4 +114,9 @@ namespace pcl
       float threshold_;
   };
 }
+
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/filters/impl/shadowpoints.hpp>
+#endif
+
 #endif  //#ifndef PCL_FILTERS_SHADOW_POINTS_FILTER_H_

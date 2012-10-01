@@ -45,6 +45,10 @@ namespace pcl
   }
 }
 
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/tracking/impl/distance_coherence.hpp>
+#endif
+
 // #include <pcl/tracking/impl/distance_coherence.hpp>
 
 #endif

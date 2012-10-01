@@ -211,4 +211,8 @@ namespace pcl
  };
 }
 
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/segmentation/impl/crf_segmentation.hpp>
+#endif
+
 #endif

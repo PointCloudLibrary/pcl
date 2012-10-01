@@ -60,8 +60,8 @@ namespace pcl
     protected:
 
       /** \brief Filter cloud and initializes voxel structure.
-       * \param[out] output cloud containing centroids of voxels containing a sufficient number of points
-       */
+        * \param[out] output cloud containing centroids of voxels containing a sufficient number of points
+        */
       void 
       applyFilter (PointCloud &output);
 

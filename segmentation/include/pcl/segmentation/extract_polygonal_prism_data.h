@@ -190,4 +190,8 @@ namespace pcl
   };
 }
 
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/segmentation/impl/extract_polygonal_prism_data.hpp>
+#endif
+
 #endif  //#ifndef PCL_EXTRACT_POLYGONAL_PRISM_DATA_H_

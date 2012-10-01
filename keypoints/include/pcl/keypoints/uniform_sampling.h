@@ -132,5 +132,9 @@ namespace pcl
   };
 }
 
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/keypoints/impl/uniform_sampling.hpp>
+#endif
+
 #endif  //#ifndef PCL_KEYPOINTS_UNIFORM_SAMPLING_H_
 

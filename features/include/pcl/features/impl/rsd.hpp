@@ -93,10 +93,10 @@ pcl::computeRSD (boost::shared_ptr<const pcl::PointCloud<PointInT> > &surface, b
       continue; /// \note: we neglect points that are outside the specified interval!
 
     // compute bins and increase
-    int bin_d = (int) floor (nr_subdiv * dist / max_dist);
+    int bin_d = static_cast<int> (floor (nr_subdiv * dist / max_dist));
     if (compute_histogram)
     {
-      int bin_a = std::min (nr_subdiv-1, (int) floor (nr_subdiv * angle / (M_PI/2)));
+      int bin_a = std::min (nr_subdiv-1, static_cast<int> (floor (nr_subdiv * angle / (M_PI/2))));
       histogram(bin_a, bin_d)++;
     }
 
@@ -192,10 +192,10 @@ pcl::computeRSD (boost::shared_ptr<const pcl::PointCloud<PointNT> > &normals,
       continue; /// \note: we neglect points that are outside the specified interval!
 
     // compute bins and increase
-    int bin_d = (int) floor (nr_subdiv * dist / max_dist);
+    int bin_d = static_cast<int> (floor (nr_subdiv * dist / max_dist));
     if (compute_histogram)
     {
-      int bin_a = std::min (nr_subdiv-1, (int) floor (nr_subdiv * angle / (M_PI/2)));
+      int bin_a = std::min (nr_subdiv-1, static_cast<int> (floor (nr_subdiv * angle / (M_PI/2))));
       histogram(bin_a, bin_d)++;
     }
 

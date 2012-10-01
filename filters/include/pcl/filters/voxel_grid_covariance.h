@@ -532,4 +532,8 @@ namespace pcl
   };
 }
 
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/filters/impl/voxel_grid_covariance.hpp>
+#endif
+
 #endif  //#ifndef PCL_VOXEL_GRID_COVARIANCE_H_

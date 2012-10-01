@@ -253,4 +253,8 @@ namespace pcl
   };
 }
 
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/filters/impl/filter.hpp>
+#endif
+
 #endif  //#ifndef PCL_FILTER_H_

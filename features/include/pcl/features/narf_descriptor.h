@@ -106,5 +106,4 @@ namespace pcl
 #pragma GCC diagnostic warning "-Weffc++"
 #endif
 
-
 #endif  //#ifndef PCL_NARF_DESCRIPTOR_H_

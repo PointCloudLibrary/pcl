@@ -76,4 +76,8 @@ namespace pcl
   };
 }
 
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/segmentation/impl/crf_normal_segmentation.hpp>
+#endif
+
 #endif

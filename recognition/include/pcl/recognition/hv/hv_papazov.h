@@ -116,4 +116,8 @@ namespace pcl
   };
 }
 
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/recognition/impl/hv/hv_papazov.hpp>
+#endif
+
 #endif /* PCL_RECOGNITION_HV_PAPAZOV_H_ */

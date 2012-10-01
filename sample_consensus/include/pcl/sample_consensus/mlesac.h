@@ -157,4 +157,8 @@ namespace pcl
   };
 }
 
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/sample_consensus/impl/mlesac.hpp>
+#endif
+
 #endif  //#ifndef PCL_SAMPLE_CONSENSUS_MLESAC_H_

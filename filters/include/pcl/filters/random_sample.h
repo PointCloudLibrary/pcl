@@ -229,4 +229,8 @@ namespace pcl
    };
 }
 
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/filters/impl/random_sample.hpp>
+#endif
+
 #endif  //#ifndef PCL_FILTERS_RANDOM_SUBSAMPLE_H_

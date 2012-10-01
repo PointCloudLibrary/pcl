@@ -97,5 +97,8 @@ namespace pcl
 
 // #include <pcl/tracking/impl/hsv_color_coherence.hpp>
 
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/tracking/impl/hsv_color_coherence.hpp>
+#endif
 
 #endif

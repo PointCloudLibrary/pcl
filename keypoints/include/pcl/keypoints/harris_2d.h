@@ -187,6 +187,6 @@ namespace pcl
   };
 }
 
-#include "pcl/keypoints/impl/harris_2d.hpp"
+#include <pcl/keypoints/impl/harris_2d.hpp>
 
 #endif // #ifndef PCL_HARRIS_KEYPOINT_2D_H_

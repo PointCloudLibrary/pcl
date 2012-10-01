@@ -123,4 +123,8 @@ namespace pcl
 }
 
 
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/features/impl/statistical_multiscale_interest_region_extraction.hpp>
+#endif
+
 #endif /* STATISTICAL_MULTISCALE_INTEREST_REGION_EXTRACTION_H_ */

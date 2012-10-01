@@ -423,4 +423,8 @@ namespace pcl
   };
 }
 
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/features/impl/organized_edge_detection.hpp>
+#endif
+
 #endif //#ifndef PCL_FEATURES_ORGANIZED_EDGE_DETECTION_H_

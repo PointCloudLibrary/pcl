@@ -140,4 +140,8 @@ namespace pcl
     };
 }
 
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/features/impl/don.hpp>
+#endif
+
 #endif // PCL_FILTERS_DON_H_

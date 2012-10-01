@@ -169,4 +169,8 @@ namespace pcl
   };
 }
 
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/segmentation/impl/seeded_hue_segmentation.hpp>
+#endif
+
 #endif  //#ifndef PCL_SEEDED_HUE_SEGMENTATION_H_

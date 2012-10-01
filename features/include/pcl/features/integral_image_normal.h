@@ -416,6 +416,9 @@ namespace pcl
 #pragma GCC diagnostic warning "-Weffc++"
 #endif
 
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/features/impl/integral_image_normal.hpp>
+#endif
 
 #endif
 

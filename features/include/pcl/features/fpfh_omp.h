@@ -125,6 +125,8 @@ namespace pcl
   };
 }
 
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/features/impl/fpfh_omp.hpp>
+#endif
+
 #endif  //#ifndef PCL_FPFH_OMP_H_
-
-

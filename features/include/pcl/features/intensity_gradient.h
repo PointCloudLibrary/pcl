@@ -149,4 +149,8 @@ namespace pcl
   };
 }
 
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/features/impl/intensity_gradient.hpp>
+#endif
+
 #endif // #ifndef PCL_INTENSITY_GRADIENT_H_

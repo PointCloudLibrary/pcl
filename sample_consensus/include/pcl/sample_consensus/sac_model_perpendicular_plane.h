@@ -166,4 +166,8 @@ namespace pcl
   };
 }
 
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/sample_consensus/impl/sac_model_perpendicular_plane.hpp>
+#endif
+
 #endif  //#ifndef PCL_SAMPLE_CONSENSUS_MODEL_PERPENDICULARPLANE_H_

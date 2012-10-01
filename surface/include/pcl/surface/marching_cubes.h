@@ -510,5 +510,9 @@ namespace pcl
   };
 }
 
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/surface/impl/marching_cubes.hpp>
+#endif
+
 #endif  // PCL_SURFACE_MARCHING_CUBES_H_
 

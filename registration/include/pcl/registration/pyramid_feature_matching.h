@@ -193,4 +193,8 @@ namespace pcl
   };
 }
 
-#endif /* PCL_PYRAMID_FEATURE_MATCHING_H_ */
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/registration/impl/pyramid_feature_matching.hpp>
+#endif
+
+#endif    // PCL_PYRAMID_FEATURE_MATCHING_H_

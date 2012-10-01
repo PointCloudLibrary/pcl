@@ -211,4 +211,8 @@ namespace pcl
   }
 }
 
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/tracking/impl/kld_adaptive_particle_filter.hpp>
+#endif
+
 #endif

@@ -144,4 +144,8 @@ namespace pcl
   };
 }
 
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/features/impl/ppf.hpp>
+#endif
+
 #endif // PCL_PPF_H_

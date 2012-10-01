@@ -162,4 +162,8 @@ namespace pcl
   };
 }
 
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/features/impl/normal_based_signature.hpp>
+#endif
+
 #endif /* PCL_NORMAL_BASED_SIGNATURE_H_ */

@@ -83,5 +83,9 @@ namespace pcl
   };
 }
 
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/surface/impl/marching_cubes_hoppe.hpp>
+#endif
+
 #endif  // PCL_SURFACE_MARCHING_CUBES_HOPPE_H_
 

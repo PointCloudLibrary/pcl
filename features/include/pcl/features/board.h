@@ -397,4 +397,8 @@ namespace pcl
   };
 }
 
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/features/impl/board.hpp>
+#endif
+
 #endif  //#ifndef PCL_BOARD_H_

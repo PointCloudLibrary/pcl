@@ -277,4 +277,8 @@ namespace pcl
   };
 }
 
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/segmentation/impl/region_growing_rgb.hpp>
+#endif
+
 #endif

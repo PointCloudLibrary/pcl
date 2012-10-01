@@ -333,4 +333,8 @@ namespace pcl
   };
 }
 
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/sample_consensus/impl/sac_model_cylinder.hpp>
+#endif
+
 #endif  //#ifndef PCL_SAMPLE_CONSENSUS_MODEL_CYLINDER_H_

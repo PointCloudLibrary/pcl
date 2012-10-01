@@ -152,5 +152,9 @@ namespace pcl
   };
 }
 
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/features/impl/linear_least_squares_normal.hpp>
+#endif
+
 #endif 
 

@@ -232,4 +232,8 @@ namespace pcl
 
 } // namespace pcl
 
-#endif // ndef PCL_FILTERS_CROP_HULL_H_
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/filters/impl/crop_hull.hpp>
+#endif
+
+#endif // ifndef PCL_FILTERS_CROP_HULL_H_

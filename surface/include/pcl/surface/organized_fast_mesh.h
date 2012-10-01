@@ -328,4 +328,8 @@ namespace pcl
   };
 }
 
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/surface/impl/organized_fast_mesh.hpp>
+#endif
+
 #endif  // PCL_SURFACE_ORGANIZED_FAST_MESH_H_

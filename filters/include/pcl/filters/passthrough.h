@@ -370,5 +370,9 @@ namespace pcl
   };
 }
 
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/filters/impl/passthrough.hpp>
+#endif
+
 #endif  // PCL_FILTERS_PASSTHROUGH_H_
 

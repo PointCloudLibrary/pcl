@@ -226,6 +226,8 @@ namespace pcl
   };
 }
 
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/features/impl/boundary.hpp>
+#endif
+
 #endif  //#ifndef PCL_BOUNDARY_H_
-
-

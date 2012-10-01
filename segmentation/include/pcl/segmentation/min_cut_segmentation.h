@@ -39,6 +39,7 @@
 #ifndef PCL_MIN_CUT_SEGMENTATION_H_
 #define PCL_MIN_CUT_SEGMENTATION_H_
 
+#if (BOOST_VERSION >= 104400)
 #include <pcl/pcl_base.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
@@ -49,9 +50,8 @@
 
 namespace pcl
 {
-  /** \brief
-    * This class implements the segmentation algorithm based on minimal cut of the graph.
-    * Description can be found in the article
+  /** \brief This class implements the segmentation algorithm based on minimal cut of the graph.
+    * The description can be found in the article:
     * "Min-Cut Based Segmentation of Point Clouds"
     * \author: Aleksey Golovinskiy and Thomas Funkhouser.
     */
@@ -322,4 +322,9 @@ namespace pcl
   };
 }
 
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/segmentation/impl/min_cut_segmentation.hpp>
+#endif
+
+#endif
 #endif

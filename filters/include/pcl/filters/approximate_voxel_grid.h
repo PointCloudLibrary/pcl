@@ -225,8 +225,12 @@ namespace pcl
       /** \brief Write a single point from the hash to the output cloud
         */
       void 
-      flush(PointCloud &output, size_t op, he *hhe, int rgba_index, int centroid_size);
+      flush (PointCloud &output, size_t op, he *hhe, int rgba_index, int centroid_size);
   };
 }
+
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/filters/impl/approximate_voxel_grid.hpp>
+#endif
 
 #endif  //#ifndef PCL_FILTERS_VOXEL_GRID_MAP_H_

@@ -99,5 +99,9 @@ namespace pcl
   };
 }
 
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/sample_consensus/impl/ransac.hpp>
+#endif
+
 #endif  //#ifndef PCL_SAMPLE_CONSENSUS_RANSAC_H_
 

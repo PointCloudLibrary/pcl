@@ -274,4 +274,8 @@ namespace pcl
   };
 }
 
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/filters/impl/project_inliers.hpp>
+#endif
+
 #endif  //#ifndef PCL_FILTERS_PROJECT_INLIERS_H_

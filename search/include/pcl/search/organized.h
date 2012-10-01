@@ -274,5 +274,9 @@ namespace pcl
   }
 }
 
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/search/impl/organized.hpp>
+#endif
+
 #endif
 

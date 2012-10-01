@@ -151,4 +151,8 @@ namespace pcl
   };
 }
 
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/recognition/impl/cg/geometric_consistency.hpp>
+#endif
+
 #endif // PCL_RECOGNITION_GEOMETRIC_CONSISTENCY_H_

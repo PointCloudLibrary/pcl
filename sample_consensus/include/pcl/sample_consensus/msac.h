@@ -100,4 +100,8 @@ namespace pcl
   };
 }
 
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/sample_consensus/impl/msac.hpp>
+#endif
+
 #endif  //#ifndef PCL_SAMPLE_CONSENSUS_MSAC_H_

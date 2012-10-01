@@ -262,4 +262,8 @@ namespace pcl
   };
 }
 
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/features/impl/usc.hpp>
+#endif
+
 #endif  //#ifndef PCL_USC_H_

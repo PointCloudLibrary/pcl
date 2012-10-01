@@ -249,4 +249,9 @@ namespace pcl
                             float &nx, float &ny, float &nz, float &curvature);
   };
 }
+
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/filters/impl/sampling_surface_normal.hpp>
+#endif
+
 #endif  //#ifndef PCL_FILTERS_SAMPLING_SURFACE_NORMAL_H_

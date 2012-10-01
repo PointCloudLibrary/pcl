@@ -210,4 +210,8 @@ namespace pcl
   }
 }
 
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/recognition/impl/hv/occlusion_reasoning.hpp>
+#endif
+
 #endif /* PCL_RECOGNITION_OCCLUSION_REASONING_H_ */

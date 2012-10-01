@@ -185,4 +185,9 @@ namespace pcl
 
   };
 }
+
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/filters/impl/normal_space.hpp>
+#endif
+
 #endif  //#ifndef PCL_FILTERS_NORMAL_SPACE_SUBSAMPLE_H_

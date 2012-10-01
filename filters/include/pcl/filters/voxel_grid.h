@@ -798,4 +798,8 @@ namespace pcl
   };
 }
 
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/filters/impl/voxel_grid.hpp>
+#endif
+
 #endif  //#ifndef PCL_FILTERS_VOXEL_GRID_MAP_H_

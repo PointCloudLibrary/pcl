@@ -109,5 +109,9 @@ namespace pcl
   };
 }
 
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/features/impl/shot_lrf_omp.hpp>
+#endif
+
 #endif    // PCL_FEATURES_SHOT_LRF_H_
 

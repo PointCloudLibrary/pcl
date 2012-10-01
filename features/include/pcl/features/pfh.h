@@ -305,6 +305,9 @@ namespace pcl
    };
 }
 
-#endif  //#ifndef PCL_PFH_H_
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/features/impl/pfh.hpp>
+#endif
 
+#endif  //#ifndef PCL_PFH_H_
 

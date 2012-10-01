@@ -279,6 +279,10 @@ namespace pcl
   }
 }
 
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/octree/impl/octree_search.hpp>
+#else
 #define PCL_INSTANTIATE_Octree(T) template class PCL_EXPORTS pcl::search::Octree<T>;
+#endif
 
 #endif    // PCL_SEARCH_OCTREE_H

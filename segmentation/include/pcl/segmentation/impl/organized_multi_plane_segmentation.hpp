@@ -46,14 +46,6 @@
 #include <pcl/common/centroid.h>
 #include <pcl/common/eigen.h>
 
-///////////////////////////////////////////////////////////////
-Eigen::Vector3f linePlaneIntersection (Eigen::Vector3f& p1, Eigen::Vector3f& p2, Eigen::Vector3f& norm, Eigen::Vector3f& p3)
-{
-  float u = norm.dot ((p3 - p1)) / norm.dot ((p2 - p1));
-  Eigen::Vector3f intersection (p1 + u * (p2 - p1));
-  return (intersection);
-}
-
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> pcl::PointCloud<PointT>
 projectToPlaneFromViewpoint (pcl::PointCloud<PointT>& cloud, Eigen::Vector4f& normal, Eigen::Vector3f& centroid, Eigen::Vector3f& vp)
@@ -64,7 +56,9 @@ projectToPlaneFromViewpoint (pcl::PointCloud<PointT>& cloud, Eigen::Vector4f& no
   for (size_t i = 0; i < cloud.points.size (); i++)
   {
     Eigen::Vector3f pt (cloud.points[i].x, cloud.points[i].y, cloud.points[i].z);
-    Eigen::Vector3f intersection = linePlaneIntersection (vp, pt, norm, centroid);
+    //Eigen::Vector3f intersection = (vp, pt, norm, centroid);
+    float u = norm.dot ((centroid - vp)) / norm.dot ((pt - vp));
+    Eigen::Vector3f intersection (vp + u * (pt - vp));
     projected_cloud[i].x = intersection[0];
     projected_cloud[i].y = intersection[1];
     projected_cloud[i].z = intersection[2];

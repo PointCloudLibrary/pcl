@@ -189,4 +189,8 @@ namespace pcl
   };
 }
 
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/features/impl/intensity_spin.hpp>
+#endif
+
 #endif // #ifndef PCL_INTENSITY_SPIN_H_

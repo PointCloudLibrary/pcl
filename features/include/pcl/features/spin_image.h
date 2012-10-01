@@ -353,6 +353,9 @@ namespace pcl
   };
 }
 
-#endif  //#ifndef PCL_SPIN_IMAGE_H_
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/features/impl/spin_image.hpp>
+#endif
 
+#endif  //#ifndef PCL_SPIN_IMAGE_H_
 

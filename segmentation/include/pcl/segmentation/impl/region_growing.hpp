@@ -676,13 +676,6 @@ pcl::RegionGrowing<PointT, NormalT>::getColoredCloud ()
   return (colored_cloud);
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-bool
-pcl::comparePair (std::pair<float, int> i, std::pair<float, int> j)
-{
-  return (i.first < j.first);
-}
-
 #define PCL_INSTANTIATE_RegionGrowing(T) template class pcl::RegionGrowing<T, pcl::Normal>;
 
 #endif    // PCL_SEGMENTATION_REGION_GROWING_HPP_

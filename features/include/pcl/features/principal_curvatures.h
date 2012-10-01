@@ -174,4 +174,8 @@ namespace pcl
   };
 }
 
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/features/impl/principal_curvatures.hpp>
+#endif
+
 #endif  //#ifndef PCL_PRINCIPAL_CURVATURES_H_

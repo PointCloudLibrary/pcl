@@ -45,9 +45,6 @@
 #include <pcl/point_types.h>
 #include <pcl/octree/octree.h>
 
-// maximum depth of octree as we are using "unsigned int" octree keys / bit masks
-#define OCT_MAXTREEDEPTH ( sizeof(size_t) * 8  )
-
 namespace pcl
 {
   namespace octree

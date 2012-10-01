@@ -46,5 +46,8 @@ namespace pcl
 }
 
 // #include <pcl/tracking/impl/normal_coherence.hpp>
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/tracking/impl/normal_coherence.hpp>
+#endif
 
 #endif

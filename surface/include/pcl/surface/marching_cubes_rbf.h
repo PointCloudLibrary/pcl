@@ -106,5 +106,9 @@ namespace pcl
   };
 }
 
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/surface/impl/marching_cubes_rbf.hpp>
+#endif
+
 #endif  // PCL_SURFACE_MARCHING_CUBES_RBF_H_
 

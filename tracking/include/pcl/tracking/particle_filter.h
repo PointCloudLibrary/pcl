@@ -524,5 +524,8 @@ namespace pcl
 }
 
 // #include <pcl/tracking/impl/particle_filter.hpp>
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/tracking/impl/particle_filter.hpp>
+#endif
 
 #endif //PCL_TRACKING_PARTICLE_FILTER_H_

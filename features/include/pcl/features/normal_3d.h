@@ -403,6 +403,9 @@ namespace pcl
   };
 }
 
-#endif  //#ifndef PCL_NORMAL_3D_H_
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/features/impl/normal_3d.hpp>
+#endif
 
+#endif  //#ifndef PCL_NORMAL_3D_H_
 

@@ -196,5 +196,9 @@ namespace pcl
   };
 }
 
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/surface/impl/concave_hull.hpp>
+#endif
+
 #endif  //#ifndef PCL_CONCAVE_HULL
 #endif

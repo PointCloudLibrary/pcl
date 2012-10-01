@@ -406,4 +406,8 @@ namespace pcl
   };
 }
 
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/segmentation/impl/sac_segmentation.hpp>
+#endif
+
 #endif  //#ifndef PCL_SEGMENTATION_SAC_SEGMENTATION_H_

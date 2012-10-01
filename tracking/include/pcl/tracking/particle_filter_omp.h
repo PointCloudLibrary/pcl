@@ -89,5 +89,8 @@ namespace pcl
 }
 
 //#include <pcl/tracking/impl/particle_filter_omp.hpp>
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/tracking/impl/particle_filter_omp.hpp>
+#endif
 
 #endif

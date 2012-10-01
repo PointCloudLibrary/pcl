@@ -48,6 +48,9 @@
 #include "octree_iterator.h"
 #include "octree_node_pool.h"
 
+// maximum depth of octree as we are using "unsigned int" octree keys / bit masks
+#define OCT_MAXTREEDEPTH ( sizeof(size_t) * 8  )
+
 namespace pcl
 {
   namespace octree

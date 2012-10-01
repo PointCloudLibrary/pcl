@@ -148,4 +148,8 @@ namespace pcl
   };
 }
 
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/filters/impl/bilateral.hpp>
+#endif
+
 #endif // PCL_FILTERS_BILATERAL_H_

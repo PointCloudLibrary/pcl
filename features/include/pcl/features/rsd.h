@@ -225,6 +225,8 @@ namespace pcl
   };
 }
 
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/features/impl/rsd.hpp>
+#endif
+
 #endif  //#ifndef PCL_RSD_H_
-
-

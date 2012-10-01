@@ -512,4 +512,8 @@ namespace pcl
   };
 }
 
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/recognition/impl/cg/hough_3d.hpp>
+#endif
+
 #endif // PCL_RECOGNITION_HOUGH_3D_H_

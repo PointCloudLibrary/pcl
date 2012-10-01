@@ -98,4 +98,8 @@ namespace pcl
   };
 }
 
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/filters/impl/plane_clipper3D.hpp>
+#endif
+
 #endif // PCL_PLANE_CLIPPER3D_H_

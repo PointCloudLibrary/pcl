@@ -254,5 +254,9 @@ namespace pcl
   };
 }
 
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/surface/impl/convex_hull.hpp>
+#endif
+
 #endif  //#ifndef PCL_CONVEX_HULL_2D_H_
 #endif

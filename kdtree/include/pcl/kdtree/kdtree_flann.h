@@ -752,4 +752,8 @@ namespace pcl
   };
 }
 
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/kdtree/impl/kdtree_flann.hpp>
+#endif
+
 #endif

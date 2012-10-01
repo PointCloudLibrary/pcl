@@ -38,15 +38,7 @@
 #include <map>
 #include <pcl/common/io.h>
 #include <pcl/filters/voxel_grid_label.h>
-
-struct cloud_point_index_idx 
-{
-  unsigned int idx;
-  unsigned int cloud_point_index;
-
-  cloud_point_index_idx (unsigned int idx_, unsigned int cloud_point_index_) : idx (idx_), cloud_point_index (cloud_point_index_) {}
-  bool operator < (const cloud_point_index_idx &p) const { return (idx < p.idx); }
-};
+#include <pcl/filters/impl/voxel_grid.hpp>
 
 void
 pcl::VoxelGridLabel::applyFilter (PointCloud &output)

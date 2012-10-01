@@ -108,4 +108,8 @@ namespace pcl
   };
 }
 
-#endif /* PCL_SURFEL_SMOOTHING_H_ */
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/surface/impl/surfel_smoothing.hpp>
+#endif
+
+#endif    // PCL_SURFEL_SMOOTHING_H_

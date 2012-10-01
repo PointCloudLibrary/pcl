@@ -393,6 +393,6 @@ namespace pcl
 
 }
 
-#include "pcl/keypoints/impl/brisk_2d.hpp"
+#include <pcl/keypoints/impl/brisk_2d.hpp>
 
 #endif

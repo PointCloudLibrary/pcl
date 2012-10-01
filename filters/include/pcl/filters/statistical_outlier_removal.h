@@ -292,5 +292,9 @@ namespace pcl
   };
 }
 
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/filters/impl/statistical_outlier_removal.hpp>
+#endif
+
 #endif  // PCL_FILTERS_STATISTICAL_OUTLIER_REMOVAL_H_
 

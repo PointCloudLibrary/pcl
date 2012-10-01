@@ -332,5 +332,9 @@ namespace pcl
   }
 }
 
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/registration/impl/lum.hpp>
+#endif
+
 #endif  // PCL_REGISTRATION_LUM_H_
 

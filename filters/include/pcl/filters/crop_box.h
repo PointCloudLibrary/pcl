@@ -338,4 +338,8 @@ namespace pcl
   };
 }
 
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/filters/impl/crop_box.hpp>
+#endif
+
 #endif  // PCL_FILTERS_CROP_BOX_H_

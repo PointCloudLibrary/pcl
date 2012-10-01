@@ -143,9 +143,9 @@ pcl::VoxelGridCovariance<PointT>::applyFilter (PointCloud &output)
           continue;
       }
 
-      int ijk0 = static_cast<int> (floor (input_->points[cp].x * inverse_leaf_size_[0]) - min_b_[0]);
-      int ijk1 = static_cast<int> (floor (input_->points[cp].y * inverse_leaf_size_[1]) - min_b_[1]);
-      int ijk2 = static_cast<int> (floor (input_->points[cp].z * inverse_leaf_size_[2]) - min_b_[2]);
+      int ijk0 = static_cast<int> (floor (input_->points[cp].x * inverse_leaf_size_[0]) - static_cast<float> (min_b_[0]));
+      int ijk1 = static_cast<int> (floor (input_->points[cp].y * inverse_leaf_size_[1]) - static_cast<float> (min_b_[1]));
+      int ijk2 = static_cast<int> (floor (input_->points[cp].z * inverse_leaf_size_[2]) - static_cast<float> (min_b_[2]));
 
       // Compute the centroid leaf index
       int idx = ijk0 * divb_mul_[0] + ijk1 * divb_mul_[1] + ijk2 * divb_mul_[2];
@@ -202,9 +202,9 @@ pcl::VoxelGridCovariance<PointT>::applyFilter (PointCloud &output)
             !pcl_isfinite (input_->points[cp].z))
           continue;
 
-      int ijk0 = static_cast<int> (floor (input_->points[cp].x * inverse_leaf_size_[0]) - min_b_[0]);
-      int ijk1 = static_cast<int> (floor (input_->points[cp].y * inverse_leaf_size_[1]) - min_b_[1]);
-      int ijk2 = static_cast<int> (floor (input_->points[cp].z * inverse_leaf_size_[2]) - min_b_[2]);
+      int ijk0 = static_cast<int> (floor (input_->points[cp].x * inverse_leaf_size_[0]) - static_cast<float> (min_b_[0]));
+      int ijk1 = static_cast<int> (floor (input_->points[cp].y * inverse_leaf_size_[1]) - static_cast<float> (min_b_[1]));
+      int ijk2 = static_cast<int> (floor (input_->points[cp].z * inverse_leaf_size_[2]) - static_cast<float> (min_b_[2]));
 
       // Compute the centroid leaf index
       int idx = ijk0 * divb_mul_[0] + ijk1 * divb_mul_[1] + ijk2 * divb_mul_[2];

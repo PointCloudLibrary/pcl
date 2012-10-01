@@ -326,12 +326,18 @@ namespace pcl
 
     public:
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
- };
+  };
 
- /** \brief This function is used as a comparator for sorting. */
- bool
- comparePair (std::pair<float, int> i, std::pair<float, int> j);
-
+  /** \brief This function is used as a comparator for sorting. */
+  inline bool
+  comparePair (std::pair<float, int> i, std::pair<float, int> j)
+  {
+    return (i.first < j.first);
+  }
 }
+
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/segmentation/impl/region_growing.hpp>
+#endif
 
 #endif

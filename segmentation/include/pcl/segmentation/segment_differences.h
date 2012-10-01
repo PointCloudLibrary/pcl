@@ -155,4 +155,8 @@ namespace pcl
   };
 }
 
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/segmentation/impl/segment_differences.hpp>
+#endif
+
 #endif  //#ifndef PCL_SEGMENT_DIFFERENCES_H_

@@ -692,4 +692,8 @@ namespace pcl
   };
 }
 
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/filters/impl/conditional_removal.hpp>
+#endif
+
 #endif 

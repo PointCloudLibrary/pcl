@@ -195,5 +195,8 @@ namespace pcl
   };
 }
 
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/features/impl/multiscale_feature_persistence.hpp>
+#endif
 
 #endif /* PCL_MULTISCALE_FEATURE_PERSISTENCE_H_ */

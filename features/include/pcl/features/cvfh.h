@@ -292,4 +292,8 @@ namespace pcl
 
 }
 
-#endif  //#ifndef PCL_FEATURES_VFH_H_
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/features/impl/cvfh.hpp>
+#endif
+
+#endif  //#ifndef PCL_FEATURES_CVFH_H_

@@ -318,4 +318,8 @@ namespace pcl
 //  };
 }
 
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/features/impl/vfh.hpp>
+#endif
+
 #endif  //#ifndef PCL_FEATURES_VFH_H_

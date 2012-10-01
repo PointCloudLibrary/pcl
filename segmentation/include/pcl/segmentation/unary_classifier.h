@@ -172,4 +172,8 @@ namespace pcl
  };
 }
 
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/segmentation/impl/unary_classifier.hpp>
+#endif
+
 #endif
