@@ -61,7 +61,8 @@ namespace pcl
   // 4244 : conversion from 'type1' to 'type2', possible loss of data
   // 4661 : no suitable definition provided for explicit template instantiation reques
   // 4503 : decorated name length exceeded, name was truncated
-  #pragma warning (disable: 4018 4244 4267 4521 4251 4661 4305 4503)
+  // 4146 : unary minus operator applied to unsigned type, result still unsigned
+  #pragma warning (disable: 4018 4244 4267 4521 4251 4661 4305 4503 4146)
 #endif
 
 #include <iostream>
