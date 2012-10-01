@@ -507,7 +507,7 @@ pcl::io::pointCloudTovtkPolyData(const sensor_msgs::PointCloud2Ptr& cloud, vtkSm
     }
 
     poly_data->GetCellData()->AddArray(cloud_intensity);
-    if (!rgb_idx > 0)
+    if (rgb_idx > 0)
       poly_data->GetCellData()->SetActiveAttribute("intensity", vtkDataSetAttributes::SCALARS);
   }
   // Add Normals
