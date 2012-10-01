@@ -97,7 +97,7 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::process (PointCloudOut &output)
   }
 
   // Send the surface dataset to the spatial locator
-  tree_->setInputCloud (input_, indices_);
+  tree_->setInputCloud (input_);
 
   switch (upsample_method_)
   {
@@ -128,7 +128,6 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::process (PointCloudOut &output)
     normals_->height = 1;
     normals_->width = static_cast<uint32_t> (normals_->size ());
 
-    // TODO!!! MODIFY TO PER-CLOUD COPYING - much faster than per-point
     for (unsigned int i = 0; i < output.size (); ++i)
     {
       typedef typename pcl::traits::fieldList<PointOutT>::type FieldList;
@@ -150,24 +149,20 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::process (PointCloudOut &output)
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT> void
 pcl::MovingLeastSquares<PointInT, PointOutT>::computeMLSPointNormal (int index,
-    const PointCloudIn &input,
-    const std::vector<int> &nn_indices,
-    std::vector<float> &nn_sqr_dists,
-    PointCloudOut &projected_points,
-    NormalCloud &projected_points_normals)
-    {
+                                                                     const std::vector<int> &nn_indices,
+                                                                     std::vector<float> &nn_sqr_dists,
+                                                                     PointCloudOut &projected_points,
+                                                                     NormalCloud &projected_points_normals)
+{
   // Compute the plane coefficients
-  //pcl::computePointNormal<PointInT> (*input_, nn_indices, model_coefficients, curvature);
   EIGEN_ALIGN16 Eigen::Matrix3f covariance_matrix;
   Eigen::Vector4f xyz_centroid;
 
   // Estimate the XYZ centroid
-  pcl::compute3DCentroid (input, nn_indices, xyz_centroid);
-  //pcl::compute3DCentroid (input, nn_indices, xyz_centroid);
+  pcl::compute3DCentroid (*input_, nn_indices, xyz_centroid);
 
-  pcl::computeCovarianceMatrix (input, nn_indices, xyz_centroid, covariance_matrix);
   // Compute the 3x3 covariance matrix
-
+  pcl::computeCovarianceMatrix (*input_, nn_indices, xyz_centroid, covariance_matrix);
   EIGEN_ALIGN16 Eigen::Vector3f::Scalar eigen_value;
   EIGEN_ALIGN16 Eigen::Vector3f eigen_vector;
   Eigen::Vector4f model_coefficients;
@@ -177,7 +172,7 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::computeMLSPointNormal (int index,
   model_coefficients[3] = -1 * model_coefficients.dot (xyz_centroid);
 
   // Projected query point
-  Eigen::Vector3f point = input[(*indices_)[index]].getVector3fMap ();
+  Eigen::Vector3f point = input_->points[index].getVector3fMap ();
   float distance = point.dot (model_coefficients.head<3> ()) + model_coefficients[3];
   point -= distance * model_coefficients.head<3> ();
 
@@ -388,15 +383,15 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::computeMLSPointNormal (int index,
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT> void
 pcl::MovingLeastSquares<PointInT, PointOutT>::projectPointToMLSSurface (float &u_disp, float &v_disp,
-    Eigen::Vector3d &u, Eigen::Vector3d &v,
-    Eigen::Vector3d &plane_normal,
-    float &curvature,
-    Eigen::Vector3f &query_point,
-    Eigen::VectorXd &c_vec,
-    int num_neighbors,
-    PointOutT &result_point,
-    pcl::Normal &result_normal)
-    {
+                                                                        Eigen::Vector3d &u, Eigen::Vector3d &v,
+                                                                        Eigen::Vector3d &plane_normal,
+                                                                        float &curvature,
+                                                                        Eigen::Vector3f &query_point,
+                                                                        Eigen::VectorXd &c_vec,
+                                                                        int num_neighbors,
+                                                                        PointOutT &result_point,
+                                                                        pcl::Normal &result_normal)
+{
   double n_disp = 0.0f;
   double d_u = 0.0f, d_v = 0.0f;
 
@@ -454,14 +449,11 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::performProcessing (PointCloudOut &
   std::vector<int> nn_indices;
   std::vector<float> nn_sqr_dists;
 
-  typedef typename pcl::traits::fieldList<typename PointCloudIn::PointType>::type FieldListInput;
-  typedef typename pcl::traits::fieldList<typename PointCloudOut::PointType>::type FieldListOutput;
-
   // For all points
   for (size_t cp = 0; cp < indices_->size (); ++cp)
   {
     // Get the initial estimates of point positions and their neighborhoods
-    if (!searchForNeighbors (int (cp), nn_indices, nn_sqr_dists))
+    if (!searchForNeighbors ((*indices_)[cp], nn_indices, nn_sqr_dists))
       continue;
 
     // Check the number of nearest neighbors for normal estimation (and later
@@ -473,23 +465,15 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::performProcessing (PointCloudOut &
     PointCloudOut projected_points;
     NormalCloud projected_points_normals;
     // Get a plane approximating the local surface's tangent and project point onto it
-    computeMLSPointNormal (int (cp), *input_, nn_indices, nn_sqr_dists, projected_points, projected_points_normals);
+    computeMLSPointNormal ((*indices_)[cp], nn_indices, nn_sqr_dists, projected_points, projected_points_normals);
 
 
-    /// Copy RGB information if available
-    float rgb_input;
-    bool rgb_exists_input;
-    pcl::for_each_type<FieldListInput> (pcl::CopyIfFieldExists<typename PointCloudIn::PointType, float> (
-        input_->points[(*indices_)[cp]], "rgb", rgb_exists_input, rgb_input));
+    /// Copy all information from the input cloud to the output points (not doing any interpolation)
+    for (size_t pp = 0; pp < projected_points.size (); ++pp)
+      copyMissingFields (input_->points[(*indices_)[cp]], projected_points[pp]);
 
-    if (rgb_exists_input)
-    {
-      for (size_t pp = 0; pp < projected_points.size (); ++pp)
-        pcl::for_each_type<FieldListOutput> (pcl::SetIfFieldExists<typename PointCloudOut::PointType, float> (
-            projected_points.points[pp], "rgb", rgb_input));
-    }
 
-    // Append projected points to output
+    /// Append projected points to output
     output.insert (output.end (), projected_points.begin (), projected_points.end ());
     if (compute_normals_)
       normals_->insert (normals_->end (), projected_points_normals.begin (), projected_points_normals.end ());
@@ -538,17 +522,9 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::performProcessing (PointCloudOut &
                                 mls_results_[input_index].num_neighbors,
                                 result_point, result_normal);
 
-      /// Copy RGB information if available
-      float rgb_input;
-      bool rgb_exists_input;
-      pcl::for_each_type<FieldListInput> (pcl::CopyIfFieldExists<typename PointCloudIn::PointType, float> (
-          input_->points[input_index], "rgb", rgb_exists_input, rgb_input));
+      /// Copy additional point information if available
+      copyMissingFields (input_->points[input_index], result_point);
 
-      if (rgb_exists_input)
-      {
-          pcl::for_each_type<FieldListOutput> (pcl::SetIfFieldExists<typename PointCloudOut::PointType, float> (
-              result_point, "rgb", rgb_input));
-      }
 
       output.push_back (result_point);
       if (compute_normals_)
@@ -613,17 +589,8 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::performProcessing (PointCloudOut &
       if (d_after > d_before)
         continue;
 
-      /// Copy RGB information if available
-      float rgb_input;
-      bool rgb_exists_input;
-      pcl::for_each_type<FieldListInput> (pcl::CopyIfFieldExists<typename PointCloudIn::PointType, float> (
-          input_->points[input_index], "rgb", rgb_exists_input, rgb_input));
-
-      if (rgb_exists_input)
-      {
-          pcl::for_each_type<FieldListOutput> (pcl::SetIfFieldExists<typename PointCloudOut::PointType, float> (
-              result_point, "rgb", rgb_input));
-      }
+      /// Copy additional point information if available
+      copyMissingFields (input_->points[input_index], result_point);
 
       output.push_back (result_point);
       if (compute_normals_)
@@ -697,6 +664,24 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::MLSVoxelGrid::dilate ()
           }
   }
   voxel_grid_ = new_voxel_grid;
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT, typename PointOutT> void
+pcl::MovingLeastSquares<PointInT, PointOutT>::copyMissingFields (const PointInT &point_in,
+                                                                 PointOutT &point_out) const
+{
+  typedef typename pcl::traits::fieldList<typename PointCloudIn::PointType>::type FieldListInput;
+  typedef typename pcl::traits::fieldList<typename PointCloudOut::PointType>::type FieldListOutput;
+  typedef typename pcl::intersect<FieldListInput, FieldListOutput>::type FieldList;
+
+  PointOutT temp = point_out;
+  pcl::for_each_type <FieldList> (pcl::NdConcatenateFunctor <PointInT, PointOutT> (point_in,
+                                                                                   point_out));
+  point_out.x = temp.x;
+  point_out.y = temp.y;
+  point_out.z = temp.z;
 }
 
 

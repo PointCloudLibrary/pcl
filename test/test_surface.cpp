@@ -137,6 +137,25 @@ TEST (PCL, MovingLeastSquares)
   EXPECT_NEAR (fabs (mls_normals->points[0].normal[2]), 0.795969, 1e-3);
   EXPECT_NEAR (mls_normals->points[0].curvature, 0.012019, 1e-3);
 
+  // Test indices
+  IndicesPtr indices (new std::vector<int> ());
+  indices->push_back (1);
+  indices->push_back (3);
+  indices->push_back (100);
+  mls.setIndices (indices);
+  PointCloud<PointNormal>::Ptr mls_normals_indices (new PointCloud<PointNormal> ());
+  mls.process (*mls_normals_indices);
+  for (size_t i = 0; i < mls_normals_indices->size (); ++i)
+  {
+    EXPECT_NEAR (mls_normals_indices->points[i].x, mls_normals->points[(*indices)[i]].x, 1e-3);
+    EXPECT_NEAR (mls_normals_indices->points[i].y, mls_normals->points[(*indices)[i]].y, 1e-3);
+    EXPECT_NEAR (mls_normals_indices->points[i].z, mls_normals->points[(*indices)[i]].z, 1e-3);
+    EXPECT_NEAR (fabs (mls_normals_indices->points[i].normal_x), fabs (mls_normals->points[(*indices)[i]].normal_x), 1e-3);
+    EXPECT_NEAR (fabs (mls_normals_indices->points[i].normal_y), fabs (mls_normals->points[(*indices)[i]].normal_y), 1e-3);
+    EXPECT_NEAR (fabs (mls_normals_indices->points[i].normal_z), fabs (mls_normals->points[(*indices)[i]].normal_z), 1e-3);
+    EXPECT_NEAR (mls_normals_indices->points[i].curvature, mls_normals->points[(*indices)[i]].curvature, 1e-3);
+  }
+
   // Testing upsampling
   MovingLeastSquares<PointXYZ, PointNormal> mls_upsampling;
   // Set parameters

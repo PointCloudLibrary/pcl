@@ -436,7 +436,6 @@ namespace pcl
 
       /** \brief Smooth a given point and its neighborghood using Moving Least Squares.
         * \param[in] index the inex of the query point in the \ref input cloud
-        * \param[in] input the input point cloud that \ref nn_indices refer to
         * \param[in] nn_indices the set of nearest neighbors indices for \ref pt
         * \param[in] nn_sqr_dists the set of nearest neighbors squared distances for \ref pt
         * \param[out] projected_points the set of points projected points around the query point
@@ -446,7 +445,6 @@ namespace pcl
         */
       void
       computeMLSPointNormal (int index,
-                             const PointCloudIn &input,
                              const std::vector<int> &nn_indices,
                              std::vector<float> &nn_sqr_dists,
                              PointCloudOut &projected_points,
@@ -476,6 +474,10 @@ namespace pcl
                                 int num_neighbors,
                                 PointOutT &result_point,
                                 pcl::Normal &result_normal);
+
+      void
+      copyMissingFields (const PointInT &point_in,
+                         PointOutT &point_out) const;
 
     private:
       /** \brief Abstract surface reconstruction method. 
