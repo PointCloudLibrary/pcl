@@ -1,0 +1,247 @@
+/*
+ * Software License Agreement (BSD License)
+ *
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2012-, Open Perception, Inc.
+ *
+ *  All rights reserved.
+ *
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions
+ *  are met:
+ *
+ *   * Redistributions of source code must retain the above copyright
+ *     notice, this list of conditions and the following disclaimer.
+ *   * Redistributions in binary form must reproduce the above
+ *     copyright notice, this list of conditions and the following
+ *     disclaimer in the documentation and/or other materials provided
+ *     with the distribution.
+ *   * Neither the name of the copyright holder(s) nor the names of its
+ *     contributors may be used to endorse or promote products derived
+ *     from this software without specific prior written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ *  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ *  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ *  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ *  POSSIBILITY OF SUCH DAMAGE.
+ *
+ * $Id: test_surface.cpp 6579 2012-07-27 18:57:32Z rusu $
+ *
+ */
+
+#include <gtest/gtest.h>
+
+#include <pcl/point_types.h>
+#include <pcl/io/pcd_io.h>
+#include <pcl/io/vtk_io.h>
+#include <pcl/features/normal_3d.h>
+#include <pcl/surface/concave_hull.h>
+#include <pcl/common/common.h>
+
+using namespace pcl;
+using namespace pcl::io;
+using namespace std;
+
+PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>);
+PointCloud<PointNormal>::Ptr cloud_with_normals (new PointCloud<PointNormal>);
+search::KdTree<PointXYZ>::Ptr tree;
+search::KdTree<PointNormal>::Ptr tree2;
+
+// add by ktran to test update functions
+PointCloud<PointXYZ>::Ptr cloud1 (new PointCloud<PointXYZ>);
+PointCloud<PointNormal>::Ptr cloud_with_normals1 (new PointCloud<PointNormal>);
+search::KdTree<PointXYZ>::Ptr tree3;
+search::KdTree<PointNormal>::Ptr tree4;
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, ConcaveHull_bunny)
+{
+  //construct dataset
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud2D (new pcl::PointCloud<pcl::PointXYZ> (*cloud));
+  for (size_t i = 0; i < cloud2D->points.size (); i++)
+    cloud2D->points[i].z = 0;
+
+  pcl::PointCloud<pcl::PointXYZ> alpha_shape;
+  pcl::PointCloud<pcl::PointXYZ>::Ptr voronoi_centers (new pcl::PointCloud<pcl::PointXYZ>);
+  std::vector<pcl::Vertices> polygons_alpha;
+
+  pcl::ConcaveHull<pcl::PointXYZ> concave_hull;
+  concave_hull.setInputCloud (cloud2D);
+  concave_hull.setAlpha (0.5);
+  concave_hull.setVoronoiCenters (voronoi_centers);
+  concave_hull.reconstruct (alpha_shape, polygons_alpha);
+
+  EXPECT_EQ (alpha_shape.points.size (), 21);
+
+  pcl::PointCloud<pcl::PointXYZ> alpha_shape1;
+  pcl::PointCloud<pcl::PointXYZ>::Ptr voronoi_centers1 (new pcl::PointCloud<pcl::PointXYZ>);
+  std::vector<pcl::Vertices> polygons_alpha1;
+
+  pcl::ConcaveHull<pcl::PointXYZ> concave_hull1;
+  concave_hull1.setInputCloud (cloud2D);
+  concave_hull1.setAlpha (1.5);
+  concave_hull1.setVoronoiCenters (voronoi_centers1);
+  concave_hull1.reconstruct (alpha_shape1, polygons_alpha1);
+
+  EXPECT_EQ (alpha_shape1.points.size (), 20);
+
+  pcl::PointCloud<pcl::PointXYZ> alpha_shape2;
+  pcl::PointCloud<pcl::PointXYZ>::Ptr voronoi_centers2 (new pcl::PointCloud<pcl::PointXYZ>);
+  std::vector<pcl::Vertices> polygons_alpha2;
+  pcl::ConcaveHull<pcl::PointXYZ> concave_hull2;
+  concave_hull2.setInputCloud (cloud2D);
+  concave_hull2.setAlpha (0.01);
+  concave_hull2.setVoronoiCenters (voronoi_centers2);
+  concave_hull2.reconstruct (alpha_shape2, polygons_alpha2);
+
+  EXPECT_EQ (alpha_shape2.points.size (), 81);
+
+  //PolygonMesh concave;
+  //toROSMsg (alpha_shape2, concave.cloud);
+  //concave.polygons = polygons_alpha2;
+  //saveVTKFile ("./test/bun0-concave2d.vtk", concave);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, ConcaveHull_LTable)
+{
+  //construct dataset
+  pcl::PointCloud<pcl::PointXYZ> cloud_out_ltable;
+  cloud_out_ltable.points.resize (100);
+
+  int npoints = 0;
+  for (size_t i = 0; i < 8; i++)
+  {
+    for (size_t j = 0; j <= 2; j++)
+    {
+      cloud_out_ltable.points[npoints].x = float (i) * 0.5f;
+      cloud_out_ltable.points[npoints].y = -float (j) * 0.5f;
+      cloud_out_ltable.points[npoints].z = 0.f;
+      npoints++;
+    }
+  }
+
+  for (size_t i = 0; i <= 2; i++)
+  {
+    for(size_t j = 3; j < 8; j++)
+    {
+      cloud_out_ltable.points[npoints].x = float (i) * 0.5f;
+      cloud_out_ltable.points[npoints].y = -float (j) * 0.5f;
+      cloud_out_ltable.points[npoints].z = 0.f;
+      npoints++;
+    }
+  }
+
+  cloud_out_ltable.points.resize (npoints);
+
+  pcl::PointCloud<pcl::PointXYZ>::ConstPtr cloudptr (new pcl::PointCloud<pcl::PointXYZ> (cloud_out_ltable));
+
+  pcl::PointCloud<pcl::PointXYZ> alpha_shape;
+  pcl::PointCloud<pcl::PointXYZ>::Ptr voronoi_centers (new pcl::PointCloud<pcl::PointXYZ>);
+  std::vector<pcl::Vertices> polygons_alpha;
+
+  pcl::ConcaveHull<pcl::PointXYZ> concave_hull;
+  concave_hull.setInputCloud (cloudptr);
+  concave_hull.setAlpha (0.5);
+  concave_hull.setVoronoiCenters (voronoi_centers);
+  concave_hull.reconstruct (alpha_shape, polygons_alpha);
+
+  EXPECT_EQ (alpha_shape.points.size (), 27);
+
+  pcl::PointCloud<pcl::PointXYZ> alpha_shape1;
+  pcl::PointCloud<pcl::PointXYZ>::Ptr voronoi_centers1 (new pcl::PointCloud<pcl::PointXYZ>);
+  std::vector<pcl::Vertices> polygons_alpha1;
+
+  pcl::ConcaveHull<pcl::PointXYZ> concave_hull1;
+  concave_hull1.setInputCloud (cloudptr);
+  concave_hull1.setAlpha (1.5);
+  concave_hull1.setVoronoiCenters (voronoi_centers1);
+  concave_hull1.reconstruct (alpha_shape1, polygons_alpha1);
+
+  EXPECT_EQ (alpha_shape1.points.size (), 23);
+
+  pcl::PointCloud<pcl::PointXYZ> alpha_shape2;
+  pcl::PointCloud<pcl::PointXYZ>::Ptr voronoi_centers2 (new pcl::PointCloud<pcl::PointXYZ>);
+  std::vector<pcl::Vertices> polygons_alpha2;
+  pcl::ConcaveHull<pcl::PointXYZ> concave_hull2;
+  concave_hull2.setInputCloud (cloudptr);
+  concave_hull2.setAlpha (3);
+  concave_hull2.setVoronoiCenters (voronoi_centers2);
+  concave_hull2.reconstruct (alpha_shape2, polygons_alpha2);
+
+  EXPECT_EQ (alpha_shape2.points.size (), 19);
+}
+
+/* ---[ */
+int
+main (int argc, char** argv)
+{
+  if (argc < 2)
+  {
+    std::cerr << "No test file given. Please download `bun0.pcd` and pass its path to the test." << std::endl;
+    return (-1);
+  }
+
+  // Load file
+  sensor_msgs::PointCloud2 cloud_blob;
+  loadPCDFile (argv[1], cloud_blob);
+  fromROSMsg (cloud_blob, *cloud);
+
+  // Create search tree
+  tree.reset (new search::KdTree<PointXYZ> (false));
+  tree->setInputCloud (cloud);
+
+  // Normal estimation
+  NormalEstimation<PointXYZ, Normal> n;
+  PointCloud<Normal>::Ptr normals (new PointCloud<Normal> ());
+  n.setInputCloud (cloud);
+  //n.setIndices (indices[B);
+  n.setSearchMethod (tree);
+  n.setKSearch (20);
+  n.compute (*normals);
+
+  // Concatenate XYZ and normal information
+  pcl::concatenateFields (*cloud, *normals, *cloud_with_normals);
+      
+  // Create search tree
+  tree2.reset (new search::KdTree<PointNormal>);
+  tree2->setInputCloud (cloud_with_normals);
+
+  // Process for update cloud
+  if(argc == 3){
+    sensor_msgs::PointCloud2 cloud_blob1;
+    loadPCDFile (argv[2], cloud_blob1);
+    fromROSMsg (cloud_blob1, *cloud1);
+        // Create search tree
+    tree3.reset (new search::KdTree<PointXYZ> (false));
+    tree3->setInputCloud (cloud1);
+
+    // Normal estimation
+    NormalEstimation<PointXYZ, Normal> n1;
+    PointCloud<Normal>::Ptr normals1 (new PointCloud<Normal> ());
+    n1.setInputCloud (cloud1);
+
+    n1.setSearchMethod (tree3);
+    n1.setKSearch (20);
+    n1.compute (*normals1);
+
+    // Concatenate XYZ and normal information
+    pcl::concatenateFields (*cloud1, *normals1, *cloud_with_normals1);
+    // Create search tree
+    tree4.reset (new search::KdTree<PointNormal>);
+    tree4->setInputCloud (cloud_with_normals1);
+  }
+
+  // Testing
+  testing::InitGoogleTest (&argc, argv);
+  return (RUN_ALL_TESTS ());
+}
+/* ]--- */

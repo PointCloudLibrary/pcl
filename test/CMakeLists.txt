@@ -37,13 +37,7 @@ if(build)
     add_subdirectory(registration)
     add_subdirectory(search)
     add_subdirectory(keypoints)
-    
-    if(QHULL_FOUND)
-      PCL_ADD_TEST(a_surface_test test_surface
-                   FILES test_surface.cpp
-                   LINK_WITH pcl_gtest pcl_io pcl_kdtree pcl_surface pcl_features
-                   ARGUMENTS ${PCL_SOURCE_DIR}/test/bun0.pcd)
-    endif(QHULL_FOUND)
+    add_subdirectory(surface)
     
     PCL_ADD_TEST(search test_search
                  FILES test_search.cpp
