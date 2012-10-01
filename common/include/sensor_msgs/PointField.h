@@ -19,14 +19,14 @@ namespace sensor_msgs
     pcl::uint8_t datatype;
     pcl::uint32_t count;
 
-    enum { INT8 = 1 };
-    enum { UINT8 = 2 };
-    enum { INT16 = 3 };
-    enum { UINT16 = 4 };
-    enum { INT32 = 5 };
-    enum { UINT32 = 6 };
-    enum { FLOAT32 = 7 };
-    enum { FLOAT64 = 8 };
+    enum PointFieldTypes { INT8 = 1,
+                           UINT8 = 2,
+                           INT16 = 3,
+                           UINT16 = 4,
+                           INT32 = 5,
+                           UINT32 = 6,
+                           FLOAT32 = 7,
+                           FLOAT64 = 8 };
 
   public:
     typedef boost::shared_ptr< ::sensor_msgs::PointField> Ptr;
