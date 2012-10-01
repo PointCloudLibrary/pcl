@@ -45,7 +45,7 @@
 #endif
 
 #if defined _MSC_VER
-#  pragma warning(disable: 4267)
+#  pragma warning(disable: 4267 4244)
 #endif
 
 #include <flann/flann.hpp>
