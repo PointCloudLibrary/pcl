@@ -82,10 +82,10 @@ pcl::GeometricConsistencyGrouping<PointModelT, PointSceneT>::clusterCorresponden
   pcl::copyPointCloud<PointSceneT, PointModelT> (*scene_, *temp_scene_cloud_ptr);
 
   pcl::registration::CorrespondenceRejectorSampleConsensus<PointModelT> corr_rejector;
-  corr_rejector.setMaxIterations (10000);
+  corr_rejector.setMaximumIterations (10000);
   corr_rejector.setInlierThreshold (gc_size_);
-  corr_rejector.setInputCloud (input_);
-  corr_rejector.setTargetCloud (temp_scene_cloud_ptr);
+  corr_rejector.setInputSource(input_);
+  corr_rejector.setInputTarget (temp_scene_cloud_ptr);
 
   for (size_t i = 0; i < model_scene_corrs_->size (); ++i)
   {

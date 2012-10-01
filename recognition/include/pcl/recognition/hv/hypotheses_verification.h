@@ -71,6 +71,8 @@ namespace pcl
      */
     typename pcl::PointCloud<SceneT>::ConstPtr occlusion_cloud_;
 
+    bool occlusion_cloud_set_;
+
     /*
      * \brief Downsampled scene point cloud
      */
@@ -117,6 +119,7 @@ namespace pcl
       zbuffer_self_occlusion_resolution_ = 150;
       resolution_ = 0.005f;
       inliers_threshold_ = static_cast<float>(resolution_);
+      occlusion_cloud_set_ = false;
     }
 
     /*
@@ -169,8 +172,10 @@ namespace pcl
     {
 
       mask_.clear();
-      if(occlusion_cloud_ == 0)
+      if(!occlusion_cloud_set_) {
+        PCL_WARN("Occlusion cloud not set, using scene_cloud instead...\n");
         occlusion_cloud_ = scene_cloud_;
+      }
 
       if (!occlusion_reasoning)
         visible_models_ = models;
@@ -180,6 +185,11 @@ namespace pcl
         if (scene_cloud_ == 0)
         {
           PCL_ERROR("setSceneCloud should be called before adding the model if reasoning about occlusions...");
+        }
+
+        if (!occlusion_cloud_->isOrganized ())
+        {
+          PCL_WARN("Scene not organized... filtering using computed depth buffer\n");
         }
 
         pcl::occlusion_reasoning::ZBuffering<ModelT, SceneT> zbuffer_scene (zbuffer_scene_resolution_, zbuffer_scene_resolution_, 1.f);
@@ -206,7 +216,6 @@ namespace pcl
           }
           else
           {
-            PCL_WARN("Scene not organized... filtering using computed depth buffer\n");
             zbuffer_scene.filter (const_filtered, filtered, 0.01f);
           }
 
@@ -215,6 +224,8 @@ namespace pcl
 
         complete_models_ = models;
       }
+
+      occlusion_cloud_set_ = false;
     }
 
     /*
@@ -245,6 +256,7 @@ namespace pcl
 
     void setOcclusionCloud (const typename pcl::PointCloud<SceneT>::Ptr & occ_cloud) {
       occlusion_cloud_ = occ_cloud;
+      occlusion_cloud_set_ = true;
     }
 
     /*
