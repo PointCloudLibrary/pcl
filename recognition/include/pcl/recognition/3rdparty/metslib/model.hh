@@ -108,7 +108,7 @@ namespace mets {
     virtual 
     ~printable() {}
     virtual void 
-    print(std::ostream& os) const { };
+    print(std::ostream& /*os*/) const { };
   };
 
   /// @defgroup model Model
@@ -654,7 +654,7 @@ namespace mets {
     }
     
     /// @brief Use the same set set of moves at each iteration.
-    void refresh(mets::feasible_solution& s) { }
+    void refresh(mets::feasible_solution& /*s*/) { }
     
   };
 
@@ -680,7 +680,7 @@ namespace mets {
 
     /// @brief This is a static neighborhood
     void 
-    refresh(mets::feasible_solution& s) 
+    refresh(mets::feasible_solution& /*s*/)
     { }
 
   };
@@ -736,7 +736,7 @@ mets::invert_subsequence::apply(mets::feasible_solution& s) const
 { 
   mets::permutation_problem& sol = 
     static_cast<mets::permutation_problem&>(s);
-  int size = sol.size();
+  int size = static_cast<int>(sol.size());
   int top = p1 < p2 ? (p2-p1+1) : (size+p2-p1+1);
   for(int ii(0); ii!=top/2; ++ii)
     {
@@ -753,7 +753,7 @@ mets::invert_subsequence::evaluate(const mets::feasible_solution& s) const
 { 
   const mets::permutation_problem& sol = 
     static_cast<const mets::permutation_problem&>(s);
-  int size = sol.size();
+  int size = static_cast<int>(sol.size());
   int top = p1 < p2 ? (p2-p1+1) : (size+p2-p1+1);
   mets::gol_type eval = 0.0;
   for(int ii(0); ii!=top/2; ++ii)

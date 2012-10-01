@@ -124,6 +124,10 @@ namespace mets {
     search()
       throw(no_moves_error);
 
+    void setApplyAndEvaluate(bool b) {
+      apply_and_evaluate = b;
+    }
+
     /// @brief The current annealing temperature.
     ///
     /// @return The current temperature of the algorithm.
@@ -145,6 +149,7 @@ namespace mets {
     double stop_temp_m;
     double current_temp_m;
     double K_m;
+
 #if defined (METSLIB_HAVE_UNORDERED_MAP) && !defined (METSLIB_TR1_MIXED_NAMESPACE)
     std::uniform_real<double> ureal;
     std::mt19937 rng;
@@ -152,9 +157,10 @@ namespace mets {
 #else
     std::tr1::uniform_real<double> ureal;
     std::tr1::mt19937 rng;
-    std::tr1::variate_generator< std::tr1::mt19937,
-				 std::tr1::uniform_real<double> > gen;
+    std::tr1::variate_generator< std::tr1::mt19937, std::tr1::uniform_real<double> > gen;
 #endif
+
+    bool apply_and_evaluate;
   };
     
   /// @brief Original ECS proposed by Kirkpatrick
@@ -166,7 +172,7 @@ namespace mets {
       : abstract_cooling_schedule(), factor_m(alpha) 
     { if(alpha >= 1) throw std::runtime_error("alpha must be < 1"); }
     double
-    operator()(double temp, feasible_solution& fs)
+    operator()(double temp, feasible_solution& /*fs*/)
     { return temp*factor_m; }
   protected:
     double factor_m;
@@ -181,7 +187,7 @@ namespace mets {
       : abstract_cooling_schedule(), decrement_m(delta)
     { if(delta <= 0) throw std::runtime_error("delta must be > 0"); }
     double
-    operator()(double temp, feasible_solution& fs)
+    operator()(double temp, feasible_solution& /*fs*/)
     { return std::max(0.0, temp-decrement_m); }
   protected:
     double decrement_m;
@@ -204,7 +210,7 @@ simulated_annealing(evaluable_solution& working,
     termination_criteria_m(tc), cooling_schedule_m(cs),
     starting_temp_m(starting_temp), stop_temp_m(stop_temp),
     current_temp_m(), K_m(K),
-    ureal(0.0,1.0), rng(), gen(rng, ureal)
+    ureal(0.0,1.0), rng(), gen(rng, ureal), apply_and_evaluate(false)
 { 
 }
 
@@ -222,37 +228,48 @@ mets::simulated_annealing<move_manager_t>::search()
       gol_type actual_cost = 
 	static_cast<mets::evaluable_solution&>(base_t::working_solution_m)
 	.cost_function();
-      gol_type best_cost = 
+      /*gol_type best_cost =
 	static_cast<mets::evaluable_solution&>(base_t::working_solution_m)
-	.cost_function();
+	.cost_function();*/
 
       base_t::moves_m.refresh(base_t::working_solution_m);
       for(typename move_manager_t::iterator movit = base_t::moves_m.begin(); 
-	  movit != base_t::moves_m.end(); ++movit)
-	{
-	  // apply move and record proposed cost function
-	  gol_type cost = (*movit)->evaluate(base_t::working_solution_m);
-	  
-	  double delta = ((double)(cost-actual_cost));
-	  if(delta < 0 || gen() < exp(-delta/(K_m*current_temp_m)))
-	    {
-	      // accepted: apply, record, exit for and lower temperature
-	      (*movit)->apply(base_t::working_solution_m);
-	      base_t::current_move_m = movit;
+          movit != base_t::moves_m.end(); ++movit)
+      {
+        // apply move and record proposed cost function
+        gol_type cost;
+        if(apply_and_evaluate) {
+          cost = (*movit)->apply_and_evaluate(base_t::working_solution_m);
+        } else {
+          cost = (*movit)->evaluate(base_t::working_solution_m);
+        }
 
-	      if(base_t::solution_recorder_m.accept(base_t::working_solution_m))
-		{
-		  base_t::step_m = base_t::IMPROVEMENT_MADE;
-		  this->notify();
-		}
-	      base_t::step_m = base_t::MOVE_MADE;
-	      this->notify();
-	      break;
-	    }
-	} // end for each move
+        double delta = (static_cast<double>(cost-actual_cost));
+        if(delta < 0 || gen() < exp(-delta/(K_m*current_temp_m)))
+        {
+          // accepted: apply, record, exit for and lower temperature
+          if(!apply_and_evaluate)
+            (*movit)->apply(base_t::working_solution_m);
+
+          base_t::current_move_m = movit;
+          if(base_t::solution_recorder_m.accept(base_t::working_solution_m))
+          {
+            base_t::step_m = base_t::IMPROVEMENT_MADE;
+            this->notify();
+          }
+
+          base_t::step_m = base_t::MOVE_MADE;
+          this->notify();
+          break;
+        }
+        else if(apply_and_evaluate)
+        {
+          (*movit)->unapply(base_t::working_solution_m);
+        }
+      } // end for each move
       
       current_temp_m = 
-	cooling_schedule_m(current_temp_m, base_t::working_solution_m);
+      cooling_schedule_m(current_temp_m, base_t::working_solution_m);
     }
 }
 #endif

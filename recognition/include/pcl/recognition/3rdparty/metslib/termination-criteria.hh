@@ -233,7 +233,7 @@ namespace mets {
   public:
     forever() : termination_criteria_chain() {}
     bool 
-    operator()(const feasible_solution& fs)
+    operator()(const feasible_solution& /*fs*/)
     { return false; }
     void reset() 
     { termination_criteria_chain::reset(); }
