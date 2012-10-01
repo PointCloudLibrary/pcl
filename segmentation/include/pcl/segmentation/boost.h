@@ -46,6 +46,7 @@
 #endif
 
 // Marking all Boost headers as system headers to remove warnings
+#include <boost/version.hpp>
 #include <boost/make_shared.hpp>
 #if (BOOST_VERSION >= 104400) 
 #include <boost/graph/boykov_kolmogorov_max_flow.hpp>
