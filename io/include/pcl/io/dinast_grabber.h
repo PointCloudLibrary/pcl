@@ -164,11 +164,11 @@ namespace pcl
       int
       readImage (unsigned char *image1, unsigned char *image2);
       
-//       /** \brief Read XYZI Point Cloud
-//        *  \return the XYZ point cloud from the camera
-//        */
-//       pcl::PointCloud<pcl::PointXYZI>
-//       readPointCloud ();
+      /** \brief Read XYZI Point Cloud
+       *  \return the XYZ point cloud from the camera
+       */
+      void
+      getData(unsigned char *image, pcl::PointCloud<pcl::PointXYZI>::Ptr cloud);
       
       /** \brief Read image data
       * \param[out] the image data in PointCloud format
@@ -178,7 +178,7 @@ namespace pcl
 
       
       /** \brief the libusb context*/
-      libusb_context *ctx;
+      libusb_context *context;
       
       /** \brief the actual device_handle for the camera */
       struct libusb_device_handle* device_handle;
@@ -196,7 +196,6 @@ namespace pcl
       bool second_image;
       bool running_;
 
-      
       
   };
 } //namespace pcl
