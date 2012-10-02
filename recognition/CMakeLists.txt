@@ -44,6 +44,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/hv/occlusion_reasoning.h
         include/pcl/${SUBSYS_NAME}/hv/hypotheses_verification.h
         include/pcl/${SUBSYS_NAME}/hv/hv_papazov.h
+        include/pcl/${SUBSYS_NAME}/hv/hv_go.h
         include/pcl/${SUBSYS_NAME}/hv/greedy_verification.h    
       )
       
@@ -70,6 +71,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/hv/occlusion_reasoning.hpp
         include/pcl/${SUBSYS_NAME}/impl/hv/hv_papazov.hpp        
         include/pcl/${SUBSYS_NAME}/impl/hv/greedy_verification.hpp
+        include/pcl/${SUBSYS_NAME}/impl/hv/hv_go.hpp
     )
     
     set(cg_impl_incs
@@ -85,6 +87,7 @@ if(build)
         src/mask_map.cpp
         src/hv/occlusion_reasoning.cpp
         src/hv/hv_papazov.cpp
+        src/hv/hv_go.cpp
         src/hv/greedy_verification.cpp
         src/cg/hough_3d.cpp
         src/cg/geometric_consistency.cpp
@@ -93,10 +96,22 @@ if(build)
         src/face_detection/face_detector_data_provider.cpp
         src/face_detection/rf_face_detector_trainer.cpp
         )
+        
+    set(metslib_incs
+        include/pcl/${SUBSYS_NAME}/3rdparty/metslib/abstract-search.hh
+        include/pcl/${SUBSYS_NAME}/3rdparty/metslib/local-search.hh
+        include/pcl/${SUBSYS_NAME}/3rdparty/metslib/mets.hh
+        include/pcl/${SUBSYS_NAME}/3rdparty/metslib/metslib_config.hh
+        include/pcl/${SUBSYS_NAME}/3rdparty/metslib/model.hh
+        include/pcl/${SUBSYS_NAME}/3rdparty/metslib/observer.hh
+        include/pcl/${SUBSYS_NAME}/3rdparty/metslib/simulated-annealing.hh
+        include/pcl/${SUBSYS_NAME}/3rdparty/metslib/tabu-search.hh
+        include/pcl/${SUBSYS_NAME}/3rdparty/metslib/termination-criteria.hh
+    )
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
-    PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${impl_incs} ${face_detection_incs} ${hv_incs} ${hv_impl_incs} ${cg_incs} ${cg_impl_incs})
+    PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${impl_incs} ${face_detection_incs} ${hv_incs} ${hv_impl_incs} ${cg_incs} ${cg_impl_incs} ${metslib_incs})
     target_link_libraries(${LIB_NAME} pcl_common pcl_kdtree pcl_octree pcl_search pcl_features pcl_registration pcl_sample_consensus pcl_filters pcl_ml pcl_io)
     PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}" "${SUBSYS_DEPS}" "" "" "" "")
     # Install include files
