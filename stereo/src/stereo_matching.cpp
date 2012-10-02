@@ -260,16 +260,18 @@ pcl::StereoMatching::getPointCloud (
   nan_point.g = std::numeric_limits<unsigned char>::quiet_NaN();
   nan_point.b = std::numeric_limits<unsigned char>::quiet_NaN();
 
+  float depth_scale = baseline * focal * 16.0f;
+
   for (int j = 0; j < height_; j++)
   {
     for (int i = 0; i < width_; i++)
     {
       if (disp_map_[ j*width_ + i] > 0)
       {
-        temp_point.z = (baseline * focal) / disp_map_[ j*width_ + i];
+        temp_point.z = (depth_scale) / (disp_map_[ j*width_ + i]);
         temp_point.x = ((static_cast<float> (i) - u_c) * temp_point.z) / focal;
         temp_point.y = ((static_cast<float> (j) - v_c) * temp_point.z) / focal;
-        
+
         //temp_point.intensity = ( texture->at(j*width_+i).r +texture->at(j*width_+i).g + texture->at(j*width_+i).b) / 3.0f;
         temp_point.r = texture->at (j * width_ + i).r;
         temp_point.g = texture->at (j * width_ + i).g; 
@@ -280,7 +282,13 @@ pcl::StereoMatching::getPointCloud (
       //adding NaN value
       else
       {
-        (*cloud)[j*width_ + i] = nan_point;
+        temp_point.x = std::numeric_limits<float>::quiet_NaN();
+        temp_point.y = std::numeric_limits<float>::quiet_NaN();
+        temp_point.z = std::numeric_limits<float>::quiet_NaN();
+        temp_point.r = texture->at (j * width_ + i).r;
+        temp_point.g = texture->at (j * width_ + i).g; 
+        temp_point.b = texture->at (j * width_ + i).b; 
+        (*cloud)[j*width_ + i] = temp_point;
       }
     }
   }
