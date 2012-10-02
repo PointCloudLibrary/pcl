@@ -118,7 +118,12 @@
 #include <iostream>
 #include <stdexcept>
 #include <algorithm>
-#if defined (METSLIB_HAVE_UNORDERED_MAP)
+
+#if defined (METSLIB_TR1_BOOST)
+#  include <boost/random/uniform_int.hpp>
+#  include <boost/random/uniform_real.hpp>
+#  include <boost/unordered_map.hpp>
+#elif defined (METSLIB_HAVE_UNORDERED_MAP)
 #  include <unordered_map>
 #  include <random>
 #elif defined (METSLIB_HAVE_TR1_UNORDERED_MAP)

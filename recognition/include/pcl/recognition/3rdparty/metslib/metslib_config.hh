@@ -39,4 +39,9 @@
 #  else
 #    define METSLIB_HAVE_TR1_UNORDERED_MAP 1
 #  endif
+
+//Within PCL, force always to use boost unordered_map and random generators
+//Other options give problems with Clang... needs further investigation...
+#define METSLIB_TR1_BOOST 1
+
 #endif

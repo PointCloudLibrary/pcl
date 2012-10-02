@@ -326,7 +326,13 @@ namespace mets {
 
   protected:
     typedef std::deque<move*> move_list_type;
-#if defined (METSLIB_HAVE_UNORDERED_MAP) && !defined (METSLIB_TR1_MIXED_NAMESPACE)
+#if defined (METSLIB_TR1_BOOST)
+    typedef boost::unordered_map<
+          mana_move*, // Key type
+          int, //insert a move and the number of times it's present in the list
+          mana_move_hash,
+          dereferenced_equal_to<mana_move*> > move_map_type;
+#elif defined (METSLIB_HAVE_UNORDERED_MAP) && !defined (METSLIB_TR1_MIXED_NAMESPACE)
     typedef std::unordered_map<
       mana_move*, // Key type
       int, //insert a move and the number of times it's present in the list

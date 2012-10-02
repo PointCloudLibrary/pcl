@@ -257,7 +257,11 @@ namespace mets {
   template<typename random_generator>
   void random_shuffle(permutation_problem& p, random_generator& rng)
   {
-#if defined (METSLIB_HAVE_UNORDERED_MAP) && !defined (METSLIB_TR1_MIXED_NAMESPACE)
+#if defined (METSLIB_TR1_BOOST)
+    boost::uniform_int<size_t> unigen;
+    boost::variate_generator<random_generator&,
+      boost::uniform_int<size_t> >gen(rng, unigen);
+#elif defined (METSLIB_HAVE_UNORDERED_MAP) && !defined (METSLIB_TR1_MIXED_NAMESPACE)
     std::uniform_int<size_t> unigen;
     std::variate_generator<random_generator&, 
       std::uniform_int<size_t> >gen(rng, unigen);
@@ -276,7 +280,9 @@ namespace mets {
   template<typename random_generator>
   void perturbate(permutation_problem& p, unsigned int n, random_generator& rng)
   {
-#if defined (METSLIB_HAVE_UNORDERED_MAP) && !defined (METSLIB_TR1_MIXED_NAMESPACE)
+#if defined (METSLIB_TR1_BOOST)
+    boost::uniform_int<> int_range;
+#elif defined (METSLIB_HAVE_UNORDERED_MAP) && !defined (METSLIB_TR1_MIXED_NAMESPACE)
     std::uniform_int<> int_range;
 #else
     std::tr1::uniform_int<> int_range;
@@ -540,7 +546,9 @@ namespace mets {
   
 
   /// @brief Generates a stochastic subset of the neighborhood.
-#if defined (METSLIB_HAVE_UNORDERED_MAP) && !defined (METSLIB_TR1_MIXED_NAMESPACE)
+#if defined (METSLIB_TR1_BOOST)
+  template<typename random_generator = boost::minstd_rand0>
+#elif defined (METSLIB_HAVE_UNORDERED_MAP) && !defined (METSLIB_TR1_MIXED_NAMESPACE)
   template<typename random_generator = std::minstd_rand0>
 #else
   template<typename random_generator = std::tr1::minstd_rand0>
@@ -568,7 +576,10 @@ namespace mets {
     
   protected:
     random_generator& rng;
-#if defined (METSLIB_HAVE_UNORDERED_MAP) && !defined (METSLIB_TR1_MIXED_NAMESPACE)
+
+#if defined (METSLIB_TR1_BOOST)
+    boost::uniform_int<> int_range;
+#elif defined (METSLIB_HAVE_UNORDERED_MAP) && !defined (METSLIB_TR1_MIXED_NAMESPACE)
     std::uniform_int<> int_range;
 #else
     std::tr1::uniform_int<> int_range;

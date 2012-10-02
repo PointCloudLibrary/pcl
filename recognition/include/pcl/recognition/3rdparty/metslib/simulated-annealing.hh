@@ -150,7 +150,11 @@ namespace mets {
     double current_temp_m;
     double K_m;
 
-#if defined (METSLIB_HAVE_UNORDERED_MAP) && !defined (METSLIB_TR1_MIXED_NAMESPACE)
+#if defined (METSLIB_TR1_BOOST)
+    boost::uniform_real<double> ureal;
+    boost::mt19937 rng;
+    boost::variate_generator< boost::mt19937, boost::uniform_real<double> > gen;
+#elif defined (METSLIB_HAVE_UNORDERED_MAP) && !defined (METSLIB_TR1_MIXED_NAMESPACE)
     std::uniform_real<double> ureal;
     std::mt19937 rng;
     std::variate_generator< std::mt19937, std::uniform_real<double> > gen;
