@@ -114,7 +114,8 @@ if (__COMPILER_PATHSCALE)
 endif()
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-invalid-offsetof") # Unfortunately older Clang versions do not have this: -Wno-unnamed-type-template-args
+  SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Qunused-arguments")
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Qunused-arguments -Wno-invalid-offsetof") # Unfortunately older Clang versions do not have this: -Wno-unnamed-type-template-args
   SET(CLANG_LIBRARIES "stdc++")
 endif()
 
