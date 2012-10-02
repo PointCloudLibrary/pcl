@@ -86,8 +86,8 @@ void
 RangeImagePlanar::calculate3DPoint (float image_x, float image_y, float range, Eigen::Vector3f& point) const
 {
   //cout << __PRETTY_FUNCTION__ << " called.\n";
-  float delta_x = (image_x-center_x_)*focal_length_x_reciprocal_,
-        delta_y = (image_y-center_y_)*focal_length_y_reciprocal_;
+  float delta_x = (image_x+static_cast<float> (image_offset_x_)-center_x_)*focal_length_x_reciprocal_,
+        delta_y = (image_y+static_cast<float> (image_offset_y_)-center_y_)*focal_length_y_reciprocal_;
   point[2] = range / (sqrtf (delta_x*delta_x + delta_y*delta_y + 1));
   point[0] = delta_x*point[2];
   point[1] = delta_y*point[2];
@@ -99,10 +99,15 @@ inline void
 RangeImagePlanar::getImagePoint (const Eigen::Vector3f& point, float& image_x, float& image_y, float& range) const 
 {
   Eigen::Vector3f transformedPoint = to_range_image_system_ * point;
+  if (transformedPoint[2]<=0)  // Behind the observer?
+  {
+    image_x = image_y = range = -1.0f;
+    return;
+  }
   range = transformedPoint.norm ();
   
-  image_x = center_x_ + focal_length_x_*transformedPoint[0]/transformedPoint[2];
-  image_y = center_y_ + focal_length_y_*transformedPoint[1]/transformedPoint[2];
+  image_x = center_x_ + focal_length_x_*transformedPoint[0]/transformedPoint[2] - static_cast<float> (image_offset_x_);
+  image_y = center_y_ + focal_length_y_*transformedPoint[1]/transformedPoint[2] - static_cast<float> (image_offset_y_);
 }
 
 }  // namespace end

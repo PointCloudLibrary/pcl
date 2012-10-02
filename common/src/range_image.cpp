@@ -235,12 +235,13 @@ RangeImage::cropImage (int borderSize, int top, int right, int bottom, int left)
   {
     ++top;
     int lineStart = top*width;
-    for (int x=left; x<=right && !topIsDone; ++x)
+    int min_x=std::max(0, left), max_x=std::min(static_cast<int> (width)-1, right);
+    for (int x=min_x; x<=max_x && !topIsDone; ++x)
       if (pcl_isfinite (points[lineStart + x].range))
         topIsDone = true;
   }
   // Check if range image is empty
-  if (top > bottom) 
+  if (top >= static_cast<int> (height)) 
   {
     points.clear ();
     width = height = 0;
@@ -249,7 +250,9 @@ RangeImage::cropImage (int borderSize, int top, int right, int bottom, int left)
   // Find right border
   while (!rightIsDone) 
   {
-    for (int y=top; y<=bottom && !rightIsDone; ++y)
+    --right;
+    int min_y=std::max(0, top), max_y=std::min(static_cast<int> (height)-1, bottom);
+    for (int y=min_y; y<=max_y && !rightIsDone; ++y)
       if (pcl_isfinite (points[y*width + right].range))
         rightIsDone = true;
   }
@@ -258,7 +261,8 @@ RangeImage::cropImage (int borderSize, int top, int right, int bottom, int left)
   {
     --bottom;
     int lineStart = bottom*width;
-    for (int x=left; x<=right && !bottomIsDone; ++x)
+    int min_x=std::max(0, left), max_x=std::min(static_cast<int> (width)-1, right);
+    for (int x=min_x; x<=max_x && !bottomIsDone; ++x)
       if (pcl_isfinite (points[lineStart + x].range))
         bottomIsDone = true;
   } 
@@ -266,12 +270,12 @@ RangeImage::cropImage (int borderSize, int top, int right, int bottom, int left)
   while (!leftIsDone) 
   {
     ++left;
-    for (int y=top; y<=bottom && !leftIsDone; ++y)
+    int min_y=std::max(0, top), max_y=std::min(static_cast<int> (height)-1, bottom);
+    for (int y=min_y; y<=max_y && !leftIsDone; ++y)
       if (pcl_isfinite (points[y*width + left].range))
         leftIsDone = true;
   } 
   left-=borderSize; top-=borderSize; right+=borderSize; bottom+=borderSize;
-  
   
   // Create copy without copying the old points - vector::swap only copies a few pointers, not the content
   PointCloud<PointWithRange>::VectorType tmpPoints;
@@ -283,6 +287,8 @@ RangeImage::cropImage (int borderSize, int top, int right, int bottom, int left)
   image_offset_x_ = left+oldRangeImage.image_offset_x_;
   image_offset_y_ = top+oldRangeImage.image_offset_y_;
   points.resize (width*height);
+  
+  //std::cout << oldRangeImage.width<<"x"<<oldRangeImage.height<<" -> "<<width<<"x"<<height<<"\n";
   
   // Copy points
   for (int y=0, oldY=top; y< static_cast<int> (height); ++y,++oldY) 
