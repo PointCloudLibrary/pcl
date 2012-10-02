@@ -252,14 +252,16 @@ pcl::StereoMatching::getPointCloud (
 
   //Loop
   pcl::PointXYZRGB temp_point;
-  pcl::PointXYZRGB nan_point;
+  /*pcl::PointXYZRGB nan_point;
   nan_point.x = std::numeric_limits<float>::quiet_NaN();
   nan_point.y = std::numeric_limits<float>::quiet_NaN();
   nan_point.z = std::numeric_limits<float>::quiet_NaN();
   nan_point.r = std::numeric_limits<unsigned char>::quiet_NaN();
   nan_point.g = std::numeric_limits<unsigned char>::quiet_NaN();
-  nan_point.b = std::numeric_limits<unsigned char>::quiet_NaN();
+  nan_point.b = std::numeric_limits<unsigned char>::quiet_NaN();*/
 
+  //all disparities are multiplied by a constant equal to 16; 
+  //this must be taken into account when computing z values
   float depth_scale = baseline * focal * 16.0f;
 
   for (int j = 0; j < height_; j++)
@@ -335,6 +337,10 @@ pcl::StereoMatching::getPointCloud (
   nan_point.z = std::numeric_limits<float>::quiet_NaN();
   //nan_point.intensity = std::numeric_limits<float>::quiet_NaN();
 
+  //all disparities are multiplied by a constant equal to 16; 
+  //this must be taken into account when computing z values
+  float depth_scale = baseline * focal * 16.0f;
+
   for ( int j=0; j<height_; j++)
   {
     for ( int i=0; i<width_; i++)
@@ -342,7 +348,7 @@ pcl::StereoMatching::getPointCloud (
       if ( disp_map_[ j*width_ + i] > 0 )
       {
 
-        temp_point.z = (baseline * focal) / disp_map_[j * width_ + i];
+        temp_point.z = depth_scale / disp_map_[j * width_ + i];
         temp_point.x = ((static_cast<float> (i) - u_c) * temp_point.z) / focal;
         temp_point.y = ((static_cast<float> (j) - v_c) * temp_point.z) / focal;
         //temp_point.intensity = 255;
