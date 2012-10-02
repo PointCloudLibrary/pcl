@@ -50,39 +50,42 @@ if(build)
         include(src/openNURBS/openNURBS.cmake)
         include(src/on_nurbs/on_nurbs.cmake) 
     ENDIF(BUILD_surface_on_nurbs)
-    
 
     set(POISSON_INCLUDES
-        include/pcl/${SUBSYS_NAME}/poisson/allocator.h
-        include/pcl/${SUBSYS_NAME}/poisson/binary_node.h
-        include/pcl/${SUBSYS_NAME}/poisson/factor.h
-        include/pcl/${SUBSYS_NAME}/poisson/function_data.h
-        include/pcl/${SUBSYS_NAME}/poisson/geometry.h
-        include/pcl/${SUBSYS_NAME}/poisson/hash.h
-        include/pcl/${SUBSYS_NAME}/poisson/marching_cubes_poisson.h
-        include/pcl/${SUBSYS_NAME}/poisson/multi_grid_octree_data.h
-        include/pcl/${SUBSYS_NAME}/poisson/octree_poisson.h
-        include/pcl/${SUBSYS_NAME}/poisson/polynomial.h
-        include/pcl/${SUBSYS_NAME}/poisson/ppolynomial.h
-        include/pcl/${SUBSYS_NAME}/poisson/sparse_matrix.h
-        include/pcl/${SUBSYS_NAME}/poisson/vector.h
+        3rdparty/PoissonRecon_V4/allocator.h
+        3rdparty/PoissonRecon_V4/binary_node.h
+        3rdparty/PoissonRecon_V4/bspline_data.h
+        3rdparty/PoissonRecon_V4/factor.h
+        3rdparty/PoissonRecon_V4/function_data.h
+        3rdparty/PoissonRecon_V4/geometry.h
+        3rdparty/PoissonRecon_V4/hash.h
+        3rdparty/PoissonRecon_V4/marching_cubes_poisson.h
+        3rdparty/PoissonRecon_V4/mat.h
+        3rdparty/PoissonRecon_V4/multi_grid_octree_data.h
+        3rdparty/PoissonRecon_V4/octree_poisson.h
+        3rdparty/PoissonRecon_V4/polynomial.h
+        3rdparty/PoissonRecon_V4/ppolynomial.h
+        3rdparty/PoissonRecon_V4/sparse_matrix.h
+        3rdparty/PoissonRecon_V4/vector.h
         )
     set(POISSON_IMPLS
-        include/pcl/${SUBSYS_NAME}/impl/poisson/function_data.hpp
-        include/pcl/${SUBSYS_NAME}/impl/poisson/geometry.hpp
-        include/pcl/${SUBSYS_NAME}/impl/poisson/multi_grid_octree_data.hpp
-        include/pcl/${SUBSYS_NAME}/impl/poisson/octree_poisson.hpp
-        include/pcl/${SUBSYS_NAME}/impl/poisson/polynomial.hpp
-        include/pcl/${SUBSYS_NAME}/impl/poisson/ppolynomial.hpp
-        include/pcl/${SUBSYS_NAME}/impl/poisson/sparse_matrix.hpp
-        include/pcl/${SUBSYS_NAME}/impl/poisson/vector.hpp
+        3rdparty/PoissonRecon_V4/bspline_data.hpp
+        3rdparty/PoissonRecon_V4/function_data.hpp
+        3rdparty/PoissonRecon_V4/geometry.hpp
+        3rdparty/PoissonRecon_V4/mat.hpp
+        3rdparty/PoissonRecon_V4/multi_grid_octree_data.hpp
+        3rdparty/PoissonRecon_V4/octree_poisson.hpp
+        3rdparty/PoissonRecon_V4/polynomial.hpp
+        3rdparty/PoissonRecon_V4/ppolynomial.hpp
+        3rdparty/PoissonRecon_V4/sparse_matrix.hpp
+        3rdparty/PoissonRecon_V4/vector.hpp
         )
     set(POISSON_SOURCES
-        src/poisson/factor.cpp
-        src/poisson/geometry.cpp
-        src/poisson/marching_cubes_poisson.cpp
+        3rdparty/PoissonRecon_V4/factor.cpp
+        3rdparty/PoissonRecon_V4/geometry.cpp
+        3rdparty/PoissonRecon_V4/marching_cubes_poisson.cpp
         )
-    
+   
     set(srcs src/processing.cpp 
         src/ear_clipping.cpp
         src/gp3.cpp
@@ -149,7 +152,7 @@ if(build)
         )
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
-    include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include ${VTK_INCLUDE_DIRS})
+    include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include ${VTK_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR})
     link_directories(${VTK_LIBRARY_DIRS})
     PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${impl_incs})
     target_link_libraries(${LIB_NAME} pcl_common pcl_io pcl_search pcl_kdtree pcl_octree ${VTK_SMOOTHING_TARGET_LINK_LIBRARIES} ${ON_NURBS_LIBRARIES})

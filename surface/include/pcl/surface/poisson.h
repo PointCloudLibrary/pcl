@@ -39,7 +39,7 @@
 #define PCL_SURFACE_POISSON_H_
 
 #include <pcl/surface/reconstruction.h>
-#include <pcl/surface/poisson/geometry.h>
+#include "../3rdparty/PoissonRecon_V4/geometry.h"
 
 namespace pcl
 {
@@ -213,17 +213,23 @@ namespace pcl
       bool output_polygons_;
 
       int depth_;
+      int min_depth_;
       int solver_divide_;
       int iso_divide_;
       int refine_;
       int kernel_depth_;
       int degree_;
+      float point_weight_;
+      bool non_adaptive_weights_;
+      bool show_residual_;
+      int min_iterations_;
+      float solver_accuracy_;
 
       float samples_per_node_;
       float scale_;
 
       template<int Degree> void
-      execute (poisson::CoredMeshData &mesh,
+      execute (poisson::CoredVectorMeshData &mesh,
                poisson::Point3D<float> &translate,
                float &scale);
 

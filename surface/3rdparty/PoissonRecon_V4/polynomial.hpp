@@ -1,58 +1,46 @@
 /*
- * Software License Agreement (BSD License)
- *
- *  Point Cloud Library (PCL) - www.pointclouds.org
- *  Copyright (c) 2009-2012, Willow Garage, Inc.
- *  Copyright (c) 2006, Michael Kazhdan and Matthew Bolitho,
- *                      Johns Hopkins University
- *
- *  All rights reserved.
- *
- *  Redistribution and use in source and binary forms, with or without
- *  modification, are permitted provided that the following conditions
- *  are met:
- *
- *   * Redistributions of source code must retain the above copyright
- *     notice, this list of conditions and the following disclaimer.
- *   * Redistributions in binary form must reproduce the above
- *     copyright notice, this list of conditions and the following
- *     disclaimer in the documentation and/or other materials provided
- *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
- *     contributors may be used to endorse or promote products derived
- *     from this software without specific prior written permission.
- *
- *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- *  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
- *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
- *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
- *  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
- *  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
- *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- *  POSSIBILITY OF SUCH DAMAGE.
- *
- * $Id$
- *
- */
+Copyright (c) 2006, Michael Kazhdan and Matthew Bolitho
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification,
+are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this list of
+conditions and the following disclaimer. Redistributions in binary form must reproduce
+the above copyright notice, this list of conditions and the following disclaimer
+in the documentation and/or other materials provided with the distribution. 
+
+Neither the name of the Johns Hopkins University nor the names of its contributors
+may be used to endorse or promote products derived from this software without specific
+prior written permission. 
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
+EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO THE IMPLIED WARRANTIES 
+OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT
+SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
+TO, PROCUREMENT OF SUBSTITUTE  GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
+DAMAGE.
+*/
 
 #include <float.h>
 #include <math.h>
 #include <algorithm>
+#include "factor.h"
 
-#include <pcl/surface/poisson/factor.h>
+////////////////
+// Polynomial //
+////////////////
+
+namespace pcl
+{
+  namespace poisson
+  {
 
 
-namespace pcl {
-  namespace poisson {
-
-
-    ////////////////
-    // Polynomial //
-    ////////////////
     template<int Degree>
     Polynomial<Degree>::Polynomial(void){memset(coefficients,0,sizeof(double)*(Degree+1));}
     template<int Degree>
@@ -86,18 +74,18 @@ namespace pcl {
       for(int i=0;i<=Degree;i++){p.coefficients[i+1]=coefficients[i]/(i+1);}
       return p;
     }
+    template<> double Polynomial< 0 >::operator() ( double t ) const { return coefficients[0]; }
+    template<> double Polynomial< 1 >::operator() ( double t ) const { return coefficients[0]+coefficients[1]*t; }
+    template<> double Polynomial< 2 >::operator() ( double t ) const { return coefficients[0]+(coefficients[1]+coefficients[2]*t)*t; }
     template<int Degree>
-    double Polynomial<Degree>::operator() (const double& t) const{
-      double temp=1;
-      double v=0;
-      for(int i=0;i<=Degree;i++){
-        v+=temp*coefficients[i];
-        temp*=t;
-      }
+    double Polynomial<Degree>::operator() ( double t ) const{
+      double v=coefficients[Degree];
+      for( int d=Degree-1 ; d>=0 ; d-- ) v = v*t + coefficients[d];
       return v;
     }
     template<int Degree>
-    double Polynomial<Degree>::integral(const double& tMin,const double& tMax) const{
+    double Polynomial<Degree>::integral( double tMin , double tMax ) const
+    {
       double v=0;
       double t1,t2;
       t1=tMin;
@@ -128,7 +116,7 @@ namespace pcl {
     void Polynomial<Degree>::setZero(void){memset(coefficients,0,sizeof(double)*(Degree+1));}
 
     template<int Degree>
-    Polynomial<Degree>& Polynomial<Degree>::addScaled(const Polynomial& p,const double& s){
+    Polynomial<Degree>& Polynomial<Degree>::addScaled(const Polynomial& p,double s){
       for(int i=0;i<=Degree;i++){coefficients[i]+=p.coefficients[i]*s;}
       return *this;
     }
@@ -155,19 +143,19 @@ namespace pcl {
       return q;
     }
     template<int Degree>
-    void Polynomial<Degree>::Scale(const Polynomial& p,const double& w,Polynomial& q){
+    void Polynomial<Degree>::Scale(const Polynomial& p,double w,Polynomial& q){
       for(int i=0;i<=Degree;i++){q.coefficients[i]=p.coefficients[i]*w;}
     }
     template<int Degree>
-    void Polynomial<Degree>::AddScaled(const Polynomial& p1,const double& w1,const Polynomial& p2,const double& w2,Polynomial& q){
+    void Polynomial<Degree>::AddScaled(const Polynomial& p1,double w1,const Polynomial& p2,double w2,Polynomial& q){
       for(int i=0;i<=Degree;i++){q.coefficients[i]=p1.coefficients[i]*w1+p2.coefficients[i]*w2;}
     }
     template<int Degree>
-    void Polynomial<Degree>::AddScaled(const Polynomial& p1,const double& w1,const Polynomial& p2,Polynomial& q){
+    void Polynomial<Degree>::AddScaled(const Polynomial& p1,double w1,const Polynomial& p2,Polynomial& q){
       for(int i=0;i<=Degree;i++){q.coefficients[i]=p1.coefficients[i]*w1+p2.coefficients[i];}
     }
     template<int Degree>
-    void Polynomial<Degree>::AddScaled(const Polynomial& p1,const Polynomial& p2,const double& w2,Polynomial& q){
+    void Polynomial<Degree>::AddScaled(const Polynomial& p1,const Polynomial& p2,double w2,Polynomial& q){
       for(int i=0;i<=Degree;i++){q.coefficients[i]=p1.coefficients[i]+p2.coefficients[i]*w2;}
     }
 
@@ -196,51 +184,60 @@ namespace pcl {
     }
 
     template<int Degree>
-    Polynomial<Degree>& Polynomial<Degree>::operator += (const double& s){
+    Polynomial<Degree>& Polynomial<Degree>::operator += ( double s )
+    {
       coefficients[0]+=s;
       return *this;
     }
     template<int Degree>
-    Polynomial<Degree>& Polynomial<Degree>::operator -= (const double& s){
+    Polynomial<Degree>& Polynomial<Degree>::operator -= ( double s )
+    {
       coefficients[0]-=s;
       return *this;
     }
     template<int Degree>
-    Polynomial<Degree>& Polynomial<Degree>::operator *= (const double& s){
+    Polynomial<Degree>& Polynomial<Degree>::operator *= ( double s )
+    {
       for(int i=0;i<=Degree;i++){coefficients[i]*=s;}
       return *this;
     }
     template<int Degree>
-    Polynomial<Degree>& Polynomial<Degree>::operator /= (const double& s){
+    Polynomial<Degree>& Polynomial<Degree>::operator /= ( double s )
+    {
       for(int i=0;i<=Degree;i++){coefficients[i]/=s;}
       return *this;
     }
     template<int Degree>
-    Polynomial<Degree> Polynomial<Degree>::operator + (const double& s) const{
+    Polynomial<Degree> Polynomial<Degree>::operator + ( double s ) const
+    {
       Polynomial<Degree> q=*this;
       q.coefficients[0]+=s;
       return q;
     }
     template<int Degree>
-    Polynomial<Degree> Polynomial<Degree>::operator - (const double& s) const{
+    Polynomial<Degree> Polynomial<Degree>::operator - ( double s ) const
+    {
       Polynomial q=*this;
       q.coefficients[0]-=s;
       return q;
     }
     template<int Degree>
-    Polynomial<Degree> Polynomial<Degree>::operator * (const double& s) const{
+    Polynomial<Degree> Polynomial<Degree>::operator * ( double s ) const
+    {
       Polynomial q;
       for(int i=0;i<=Degree;i++){q.coefficients[i]=coefficients[i]*s;}
       return q;
     }
     template<int Degree>
-    Polynomial<Degree> Polynomial<Degree>::operator / (const double& s) const{
-      Polynomial q(this->degree());
-      for(int i=0;i<=Degree;i++){q.coefficients[i]=coefficients[i]/s;}
+    Polynomial<Degree> Polynomial<Degree>::operator / ( double s ) const
+    {
+      Polynomial q;
+      for( int i=0 ; i<=Degree ; i++ ) q.coefficients[i] = coefficients[i]/s;
       return q;
     }
     template<int Degree>
-    Polynomial<Degree> Polynomial<Degree>::scale(const double& s) const{
+    Polynomial<Degree> Polynomial<Degree>::scale( double s ) const
+    {
       Polynomial q=*this;
       double s2=1.0;
       for(int i=0;i<=Degree;i++){
@@ -250,7 +247,8 @@ namespace pcl {
       return q;
     }
     template<int Degree>
-    Polynomial<Degree> Polynomial<Degree>::shift(const double& t) const{
+    Polynomial<Degree> Polynomial<Degree>::shift( double t ) const
+    {
       Polynomial<Degree> q;
       for(int i=0;i<=Degree;i++){
         double temp=1;
@@ -271,34 +269,57 @@ namespace pcl {
       printf("\n");
     }
     template<int Degree>
-    void Polynomial<Degree>::getSolutions(const double& c,std::vector<double>& roots,const double& EPS) const {
+    void Polynomial<Degree>::getSolutions(double c,std::vector<double>& roots,double EPS) const
+    {
       double r[4][2];
       int rCount=0;
       roots.clear();
       switch(Degree){
-        case 1:
-          rCount=Factor(coefficients[1],coefficients[0]-c,r,EPS);
-          break;
-        case 2:
-          rCount=Factor(coefficients[2],coefficients[1],coefficients[0]-c,r,EPS);
-          break;
-        case 3:
-          rCount=Factor(coefficients[3],coefficients[2],coefficients[1],coefficients[0]-c,r,EPS);
-          break;
-          //	case 4:
-          //		rCount=Factor(coefficients[4],coefficients[3],coefficients[2],coefficients[1],coefficients[0]-c,r,EPS);
-          //		break;
-        default:
-          printf("Can't solve polynomial of degree: %d\n",Degree);
+      case 1:
+        rCount=Factor(coefficients[1],coefficients[0]-c,r,EPS);
+        break;
+      case 2:
+        rCount=Factor(coefficients[2],coefficients[1],coefficients[0]-c,r,EPS);
+        break;
+      case 3:
+        rCount=Factor(coefficients[3],coefficients[2],coefficients[1],coefficients[0]-c,r,EPS);
+        break;
+        //	case 4:
+        //		rCount=Factor(coefficients[4],coefficients[3],coefficients[2],coefficients[1],coefficients[0]-c,r,EPS);
+        //		break;
+      default:
+        printf("Can't solve polynomial of degree: %d\n",Degree);
       }
       for(int i=0;i<rCount;i++){
         if(fabs(r[i][1])<=EPS){
           roots.push_back(r[i][0]);
-          //printf("%d] %f\t%f\n",i,r[i][0],(*this)(r[i][0])-c);
         }
       }
     }
-
+    template< >
+    Polynomial< 0 > Polynomial< 0 >::BSplineComponent( int i )
+    {
+      Polynomial p;
+      p.coefficients[0] = 1.;
+      return p;
+    }
+    template< int Degree >
+    Polynomial< Degree > Polynomial< Degree >::BSplineComponent( int i )
+    {
+      Polynomial p;
+      if( i>0 )
+      {
+        Polynomial< Degree > _p = Polynomial< Degree-1 >::BSplineComponent( i-1 ).integral();
+        p -= _p;
+        p.coefficients[0] += _p(1);
+      }
+      if( i<Degree )
+      {
+        Polynomial< Degree > _p = Polynomial< Degree-1 >::BSplineComponent( i ).integral();
+        p += _p;
+      }
+      return p;
+    }
 
   }
 }

@@ -1,61 +1,50 @@
 /*
- * Software License Agreement (BSD License)
- *
- *  Point Cloud Library (PCL) - www.pointclouds.org
- *  Copyright (c) 2009-2012, Willow Garage, Inc.
- *  Copyright (c) 2006, Michael Kazhdan and Matthew Bolitho,
- *                      Johns Hopkins University
- *
- *  All rights reserved.
- *
- *  Redistribution and use in source and binary forms, with or without
- *  modification, are permitted provided that the following conditions
- *  are met:
- *
- *   * Redistributions of source code must retain the above copyright
- *     notice, this list of conditions and the following disclaimer.
- *   * Redistributions in binary form must reproduce the above
- *     copyright notice, this list of conditions and the following
- *     disclaimer in the documentation and/or other materials provided
- *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
- *     contributors may be used to endorse or promote products derived
- *     from this software without specific prior written permission.
- *
- *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- *  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
- *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
- *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
- *  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
- *  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
- *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- *  POSSIBILITY OF SUCH DAMAGE.
- *
- * $Id$
- *
- */
+Copyright (c) 2006, Michael Kazhdan and Matthew Bolitho
+All rights reserved.
 
+Redistribution and use in source and binary forms, with or without modification,
+are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this list of
+conditions and the following disclaimer. Redistributions in binary form must reproduce
+the above copyright notice, this list of conditions and the following disclaimer
+in the documentation and/or other materials provided with the distribution. 
+
+Neither the name of the Johns Hopkins University nor the names of its contributors
+may be used to endorse or promote products derived from this software without specific
+prior written permission. 
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
+EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO THE IMPLIED WARRANTIES 
+OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT
+SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
+TO, PROCUREMENT OF SUBSTITUTE  GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
+DAMAGE.
+*/
+
+//////////////////////
+// Polynomial Roots //
+//////////////////////
 #include <math.h>
-#include <pcl/surface/poisson/factor.h>
+#include "factor.h"
 
-namespace pcl {
-  namespace poisson {
+namespace pcl
+{
+  namespace poisson
+  {
 
-    //////////////////////
-    // Polynomial Roots //
-    //////////////////////
 
-    int Factor(double a1,double a0,double roots[1][2],const double& EPS){
+    int Factor(double a1,double a0,double roots[1][2],double EPS){
       if(fabs(a1)<=EPS){return 0;}
       roots[0][0]=-a0/a1;
       roots[0][1]=0;
       return 1;
     }
-    int Factor(double a2,double a1,double a0,double roots[2][2],const double& EPS){
+    int Factor(double a2,double a1,double a0,double roots[2][2],double EPS){
       double d;
       if(fabs(a2)<=EPS){return Factor(a1,a0,roots,EPS);}
 
@@ -77,7 +66,7 @@ namespace pcl {
     }
     // Solution taken from: http://mathworld.wolfram.com/CubicFormula.html
     // and http://www.csit.fsu.edu/~burkardt/f_src/subpak/subpak.f90
-    int Factor(double a3,double a2,double a1,double a0,double roots[3][2],const double& EPS){
+    int Factor(double a3,double a2,double a1,double a0,double roots[3][2],double EPS){
       double q,r,r2,q3;
 
       if(fabs(a3)<=EPS){return Factor(a2,a1,a0,roots,EPS);}
@@ -122,7 +111,7 @@ namespace pcl {
       roots[2][0]-=a2/3;
       return 3;
     }
-    double ArcTan2(const double& y,const double& x){
+    double ArcTan2(double y,double x){
       /* This first case should never happen */
       if(y==0 && x==0){return 0;}
       if(x==0){
@@ -166,7 +155,7 @@ namespace pcl {
     }
     // Solution taken from: http://mathworld.wolfram.com/QuarticEquation.html
     // and http://www.csit.fsu.edu/~burkardt/f_src/subpak/subpak.f90
-    int Factor(double a4,double a3,double a2,double a1,double a0,double roots[4][2],const double& EPS){
+    int Factor(double a4,double a3,double a2,double a1,double a0,double roots[4][2],double EPS){
       double R[2],D[2],E[2],R2[2];
 
       if(fabs(a4)<EPS){return Factor(a3,a2,a1,a0,roots,EPS);}
@@ -225,7 +214,7 @@ namespace pcl {
       return 4;
     }
 
-    int Solve(const double* eqns,const double* values,double* solutions,const int& dim){
+    int Solve(const double* eqns,const double* values,double* solutions,int dim){
       int i,j,eIndex;
       double v,m;
       int *index=new int[dim];
@@ -280,7 +269,5 @@ namespace pcl {
       delete[] set;
       return 1;
     }
-
-
   }
 }
