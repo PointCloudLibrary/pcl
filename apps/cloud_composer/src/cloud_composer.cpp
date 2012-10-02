@@ -86,6 +86,7 @@ pcl::cloud_composer::ComposerMainWindow::connectEditActions ()
   multiplexer_->connect (SIGNAL (deleteAvailable (bool)), action_delete_, SLOT (setEnabled (bool)));
   
   multiplexer_->connect (this, SIGNAL (insertNewCloudFromFile()), SLOT (insertNewCloudFromFile()));
+  multiplexer_->connect (this, SIGNAL (saveSelectedCloudToFile()), SLOT (saveSelectedCloudToFile()));
   
   
   mouse_style_group_ = new QActionGroup (this);
@@ -328,6 +329,16 @@ void
 pcl::cloud_composer::ComposerMainWindow::on_action_save_project_as__triggered ()
 {
   qDebug () << "Saving Project As...";
+}
+
+void
+pcl::cloud_composer::ComposerMainWindow::on_action_save_selected_cloud__triggered ()
+{
+  if (current_model_)
+    emit saveSelectedCloudToFile();
+  else
+    QMessageBox::warning (this, "No Project Open!", "Cannot save cloud, no project is open!");
+
 }
 
 void

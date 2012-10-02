@@ -132,6 +132,9 @@ namespace pcl
         {
           emitDataChanged ();
         }
+        
+        virtual bool
+        isSanitized () const { return false; }
       protected:
 
         /** \brief Model for storing the properties of the item - pointer kept for convenience   */

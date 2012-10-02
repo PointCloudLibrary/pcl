@@ -126,6 +126,10 @@ namespace pcl
         void 
         insertNewCloudFromFile ();
         
+        /** \brief Opens a file dialog and saves selected cloud to file   */
+        void 
+        saveSelectedCloudToFile ();
+        
         /** \brief This emits all the state signals, which updates the GUI action button status (enabled/disabled)" */
         void
         emitAllStateSignals ();

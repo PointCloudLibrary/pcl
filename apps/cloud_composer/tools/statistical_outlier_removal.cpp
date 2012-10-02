@@ -36,7 +36,11 @@ pcl::cloud_composer::StatisticalOutlierRemovalTool::performAction (ConstItemList
     qWarning () << "Input vector has more than one item in StatisticalOutlierRemovalTool";
   }
   input_item = input_data.value (0);
-    
+  if ( !input_item->isSanitized () )
+  {
+    qCritical () << "StatisticalOutlierRemovalTool requires sanitized input!";
+    return output;
+  }
   
   if (input_item->type () ==  CloudComposerItem::CLOUD_ITEM )
   {

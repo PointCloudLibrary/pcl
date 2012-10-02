@@ -120,7 +120,7 @@ namespace pcl
         template <typename PointT> void
         printNumPoints () const;        
         
-        bool
+        virtual bool
         isSanitized () const { return is_sanitized_; }
       private:
         

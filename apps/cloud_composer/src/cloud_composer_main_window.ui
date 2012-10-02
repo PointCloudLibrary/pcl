@@ -26,7 +26,7 @@
      <x>0</x>
      <y>0</y>
      <width>1280</width>
-     <height>26</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -39,6 +39,7 @@
     <addaction name="action_open_project_"/>
     <addaction name="action_save_project_"/>
     <addaction name="action_save_project_as_"/>
+    <addaction name="action_save_selected_cloud_"/>
     <addaction name="separator"/>
     <addaction name="action_exit_"/>
    </widget>
@@ -113,6 +114,7 @@
    <addaction name="action_open_project_"/>
    <addaction name="action_open_cloud_as_new_project_"/>
    <addaction name="action_save_project_"/>
+   <addaction name="action_save_selected_cloud_"/>
    <addaction name="separator"/>
    <addaction name="action_insert_from_file_"/>
    <addaction name="action_insert_from_openNi_source_"/>
@@ -512,6 +514,18 @@
    </property>
    <property name="toolTip">
     <string>Move clicked item</string>
+   </property>
+  </action>
+  <action name="action_save_selected_cloud_">
+   <property name="icon">
+    <iconset resource="../resources/resources.qrc">
+     <normaloff>:/save_selected_cloud.png</normaloff>:/save_selected_cloud.png</iconset>
+   </property>
+   <property name="text">
+    <string>Save Selected Cloud</string>
+   </property>
+   <property name="toolTip">
+    <string>Save the currently selected cloud to file</string>
    </property>
   </action>
  </widget>

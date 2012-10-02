@@ -81,9 +81,13 @@ namespace pcl
         void
         activeProjectChanged (ProjectModel* new_model, ProjectModel* previous_model);
         
-        /** \brief This project specific signal gets a slot and signal so we can one-click create project and insert from file */
+        /** \brief This signal tells the current project to insert a cloud using a file dialog box */
         void 
         insertNewCloudFromFile ();
+        
+        /** \brief This signal tells the current project to save currently selected cloud to file */
+        void 
+        saveSelectedCloudToFile ();
         
       public slots:
       //Slots for File Menu Actions
@@ -97,6 +101,8 @@ namespace pcl
         on_action_save_project__triggered ();
         void
         on_action_save_project_as__triggered ();
+        void 
+        on_action_save_selected_cloud__triggered ();
         void
         on_action_exit__triggered ();
 

@@ -207,6 +207,49 @@ pcl::cloud_composer::ProjectModel::insertNewCloudFromFile ()
   
 }
 
+void
+pcl::cloud_composer::ProjectModel::saveSelectedCloudToFile ()
+{
+  qDebug () << "Saving cloud to file...";
+  QModelIndexList selected_indexes = selection_model_->selectedIndexes ();
+  if (selected_indexes.size () == 0)
+  {
+    QMessageBox::warning (qobject_cast<QWidget *>(this->parent ()), "No Cloud Selected", "Cannot save, no cloud is selected in the browser or cloud view");
+    return;
+  }
+  else if (selected_indexes.size () > 1)
+  {
+    QMessageBox::warning (qobject_cast<QWidget *>(this->parent ()), "Too many clouds Selected", "Cannot save, currently only support saving one cloud at a time");
+    return;
+  }
+  
+  QStandardItem* item = this->itemFromIndex (selected_indexes.value (0));
+  CloudItem* cloud_to_save = dynamic_cast <CloudItem*> (item); 
+  if (!cloud_to_save )
+  {
+    QMessageBox::warning (qobject_cast<QWidget *>(this->parent ()), "Not a Cloud!", "Selected item is not a cloud, not saving!");
+    return;
+  }
+  
+  QString filename = QFileDialog::getSaveFileName (0,tr ("Save Cloud"), last_directory_.absolutePath (), tr ("PointCloud(*.pcd)"));
+  if ( filename.isNull ())
+  {
+    qWarning () << "No file selected, not saving";
+    return;
+  }
+  else
+  {
+    QFileInfo file_info (filename);
+    last_directory_ = file_info.absoluteDir ();
+  }
+  
+  sensor_msgs::PointCloud2::ConstPtr cloud = cloud_to_save->data (ItemDataRole::CLOUD_BLOB).value <sensor_msgs::PointCloud2::ConstPtr> ();
+  Eigen::Vector4f origin = cloud_to_save->data (ItemDataRole::ORIGIN).value <Eigen::Vector4f> ();
+  Eigen::Quaternionf orientation = cloud_to_save->data (ItemDataRole::ORIENTATION).value <Eigen::Quaternionf> ();
+  int result = pcl::io::savePCDFile (filename.toStdString (), *cloud, origin, orientation );
+  
+}
+
 void 
 pcl::cloud_composer::ProjectModel::enqueueToolAction (AbstractTool* tool)
 {

@@ -10,6 +10,7 @@
         <file>show_axes.png</file>
         <file>frustum_selection.png</file>
         <file>new_cloud_from_selection.png</file>
+        <file>save_selected_cloud.png</file>
 		<file>click_move.png</file>
 		<file>camera_move.png</file>
 		<file>selection_move.png</file>
