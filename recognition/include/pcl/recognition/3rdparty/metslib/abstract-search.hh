@@ -278,7 +278,7 @@ namespace mets {
     void 
     update(mets::abstract_search<neighborhood_t>* as) 
     {
-      const mets::feasible_solution& p = as->working();
+      const mets::evaluable_solution& p = as->working();
       if(as->step() == mets::abstract_search<neighborhood_t>::MOVE_MADE)
 	{
 	  os << iteration++ << "\t" 
@@ -307,7 +307,7 @@ namespace mets {
     void 
     update(mets::abstract_search<neighborhood_t>* as) 
     {
-      const mets::feasible_solution& p = as->working();
+      const mets::evaluable_solution& p = as->working();
 
       if(as->step() == mets::abstract_search<neighborhood_t>::MOVE_MADE)
 	{
