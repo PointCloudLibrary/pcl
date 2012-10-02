@@ -4,6 +4,7 @@
 #include <pcl/registration/transformation_estimation_svd.h>
 #include <pcl/registration/icp.h>
 #include <pcl/visualization/pcl_visualizer.h>
+#include <pcl/registration/transformation_estimation_point_to_plane_lls.h>
 
 template<template<class > class Distance, typename PointInT, typename FeatureT>
   void
@@ -387,7 +388,6 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
       pcl::ScopeTime ticp ("ICP ");
 
       //Prepare scene and model clouds for the pose refinement step
-      //float VOXEL_SIZE_ICP_ = 0.0025f;
       PointInTPtr cloud_voxelized_icp (new pcl::PointCloud<PointInT> ());
       pcl::VoxelGrid<PointInT> voxel_grid_icp;
       voxel_grid_icp.setInputCloud (processed);
@@ -403,12 +403,21 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
         PointInTPtr model_aligned (new pcl::PointCloud<PointInT>);
         pcl::transformPointCloud (*model_cloud, *model_aligned, transforms_->at (i));
 
+        typename pcl::registration::CorrespondenceRejectorSampleConsensus<PointInT>::Ptr rej (
+            new pcl::registration::CorrespondenceRejectorSampleConsensus<PointInT> ());
+
+        rej->setInputSource (model_aligned);
+        rej->setInputTarget (cloud_voxelized_icp);
+        rej->setMaximumIterations (1000);
+        rej->setInlierThreshold (0.005f);
+
         pcl::IterativeClosestPoint<PointInT, PointInT> reg;
-        reg.setInputCloud (model_aligned); //model
+        reg.addCorrespondenceRejector (rej);
+        reg.setInputSource (model_aligned); //model
         reg.setInputTarget (cloud_voxelized_icp); //scene
         reg.setMaximumIterations (ICP_iterations_);
         reg.setMaxCorrespondenceDistance (VOXEL_SIZE_ICP_ * 3.f);
-        reg.setTransformationEpsilon (1e-6);
+        reg.setTransformationEpsilon (1e-9);
 
         typename pcl::PointCloud<PointInT>::Ptr output_ (new pcl::PointCloud<PointInT> ());
         reg.align (*output_);
