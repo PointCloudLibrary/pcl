@@ -116,6 +116,12 @@ public class MainActivity extends Activity {
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(usbReceiver);
+    }
+
+    @Override
     protected void onStart() {
         super.onStart();
         state.start();
