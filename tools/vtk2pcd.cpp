@@ -53,21 +53,6 @@ printHelp (int, char **argv)
   print_error ("Syntax is: %s input.vtk output.pcd\n", argv[0]);
 }
 
-bool
-loadCloud (const std::string &filename, vtkSmartPointer<vtkPolyData> &cloud)
-{
-  TicToc tt;
-  print_highlight ("Loading "); print_value ("%s ", filename.c_str ());
-
-  tt.tic ();
-  vtkSmartPointer<vtkPolyDataReader> reader;
-  reader->SetFileName (filename.c_str ());
-  cloud = reader->GetOutput ();
-  print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", cloud->GetNumberOfPoints ()); print_info (" points]\n");
-
-  return (true);
-}
-
 void
 saveCloud (const std::string &filename, const pcl::PointCloud<pcl::PointXYZ> &cloud)
 {
@@ -103,10 +88,15 @@ main (int argc, char** argv)
     return (-1);
   }
 
-  // Load the first file
-  vtkSmartPointer<vtkPolyData> polydata;
-  if (!loadCloud (argv[vtk_file_indices[0]], polydata)) 
-    return (-1);
+  // Load the VTK file
+  TicToc tt;
+  print_highlight ("Loading "); print_value ("%s ", argv[vtk_file_indices[0]]);
+
+  vtkSmartPointer<vtkPolyDataReader> reader = vtkSmartPointer<vtkPolyDataReader>::New ();
+  reader->SetFileName (argv[vtk_file_indices[0]]);
+  reader->Update ();
+  vtkSmartPointer<vtkPolyData> polydata = reader->GetOutput ();
+  print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", polydata->GetNumberOfPoints ()); print_info (" points]\n");
 
   pcl::PointCloud<pcl::PointXYZ> cloud;
   vtkPolyDataToPointCloud (polydata, cloud);
