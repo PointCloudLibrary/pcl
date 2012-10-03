@@ -73,12 +73,13 @@ pcl::Poisson<PointNT>::Poisson ()
   , output_polygons_ (false)
   , no_reset_samples_ (false)
   , no_clip_tree_ (false)
-  , manifold_ (false)
+  , manifold_ (true)
   , refine_ (3)
   , kernel_depth_ (8)
   , degree_ (2)
   , min_iterations_ (8)
   , solver_accuracy_ (1e-3f)
+  , non_adaptive_weights_ (false)
 {
 }
 
@@ -98,50 +99,50 @@ pcl::Poisson<PointNT>::execute (poisson::CoredVectorMeshData &mesh,
   poisson::TreeNodeData::UseIndex = 1;
   poisson::Octree<Degree> tree;
 
-    /// TODO OPENMP stuff
-//    tree.threads = Threads.value;
-    center.coords[0]=center.coords[1]=center.coords[2]=0;
+  /// TODO OPENMP stuff
+  //    tree.threads = Threads.value;
+  center.coords[0] = center.coords[1] = center.coords[2] = 0;
 
 
-    if (solver_divide_ < min_depth_)
-    {
-      PCL_WARN ("[pcl::Poisson] solver_divide_ must be at least as large as min_depth_: %d >= %d\n", solver_divide_, min_depth_);
-      solver_divide_ = min_depth_;
-    }
-    if (iso_divide_< min_depth_)
-    {
-      PCL_WARN ("[pcl::Poisson] iso_divide_ must be at least as large as min_depth_: %d >= %d\n", iso_divide_, min_depth_);
-      iso_divide_ = min_depth_;
-    }
+  if (solver_divide_ < min_depth_)
+  {
+    PCL_WARN ("[pcl::Poisson] solver_divide_ must be at least as large as min_depth_: %d >= %d\n", solver_divide_, min_depth_);
+    solver_divide_ = min_depth_;
+  }
+  if (iso_divide_< min_depth_)
+  {
+    PCL_WARN ("[pcl::Poisson] iso_divide_ must be at least as large as min_depth_: %d >= %d\n", iso_divide_, min_depth_);
+    iso_divide_ = min_depth_;
+  }
 
-    pcl::poisson::TreeOctNode::SetAllocator (MEMORY_ALLOCATOR_BLOCK_SIZE);
+  pcl::poisson::TreeOctNode::SetAllocator (MEMORY_ALLOCATOR_BLOCK_SIZE);
 
-    kernel_depth_ = depth_ - 2;
+  kernel_depth_ = depth_ - 2;
 
-    tree.setBSplineData (depth_, pcl::poisson::Real (1.0 / (1 << depth_)), true);
+  tree.setBSplineData (depth_, pcl::poisson::Real (1.0 / (1 << depth_)), true);
 
-    tree.maxMemoryUsage = 0;
-    int point_count = tree.setTree (input_, depth_, min_depth_, kernel_depth_, samples_per_node_,
-                                    scale_, center, scale, confidence_, point_weight_, !non_adaptive_weights_);
+  tree.maxMemoryUsage = 0;
 
-    tree.ClipTree ();
-    tree.finalize ();
-    tree.RefineBoundary (iso_divide_);
 
-    PCL_DEBUG ("Input Points: %d\n" , point_count );
-    PCL_DEBUG ("Leaves/Nodes: %d/%d\n" , tree.tree.leaves() , tree.tree.nodes() );
+  int point_count = tree.setTree (input_, depth_, min_depth_, kernel_depth_, samples_per_node_,
+                                  scale_, center, scale, confidence_, point_weight_, !non_adaptive_weights_);
 
-    tree.maxMemoryUsage = 0;
-    tree.SetLaplacianConstraints ();
+  tree.ClipTree ();
+  tree.finalize ();
+  tree.RefineBoundary (iso_divide_);
 
-    tree.maxMemoryUsage = 0;
-    tree.LaplacianMatrixIteration (solver_divide_, show_residual_, min_iterations_, solver_accuracy_);
+  PCL_DEBUG ("Input Points: %d\n" , point_count );
+  PCL_DEBUG ("Leaves/Nodes: %d/%d\n" , tree.tree.leaves() , tree.tree.nodes() );
 
-    iso_value = tree.GetIsoValue ();
-//    printf( "Iso-Value: %e\n" , iso_value );
-//    DumpOutput( "Memory Usage: %.3f MB\n" , float(tree.MemoryUsage()) );
+  tree.maxMemoryUsage = 0;
+  tree.SetLaplacianConstraints ();
 
-    tree.GetMCIsoTriangles (iso_value, iso_divide_, &mesh, 0, 1, manifold_, output_polygons_);
+  tree.maxMemoryUsage = 0;
+  tree.LaplacianMatrixIteration (solver_divide_, show_residual_, min_iterations_, solver_accuracy_);
+
+  iso_value = tree.GetIsoValue ();
+
+  tree.GetMCIsoTriangles (iso_value, iso_divide_, &mesh, 0, 1, manifold_, output_polygons_);
 }
 
 
@@ -155,35 +156,35 @@ pcl::Poisson<PointNT>::performReconstruction (PolygonMesh &output)
 
   switch (degree_)
   {
-    case 1:
-    {
-      execute<1> (mesh, center, scale);
-      break;
-    }
-    case 2:
-    {
-      execute<2> (mesh, center, scale);
-      break;
-    }
-    case 3:
-    {
-      execute<3> (mesh, center, scale);
-      break;
-    }
-    case 4:
-    {
-      execute<4> (mesh, center, scale);
-      break;
-    }
-    case 5:
-    {
-      execute<5> (mesh, center, scale);
-      break;
-    }
-    default:
-    {
-      PCL_ERROR (stderr, "Degree %d not supported\n", degree_);
-    }
+  case 1:
+  {
+    execute<1> (mesh, center, scale);
+    break;
+  }
+  case 2:
+  {
+    execute<2> (mesh, center, scale);
+    break;
+  }
+  case 3:
+  {
+    execute<3> (mesh, center, scale);
+    break;
+  }
+  case 4:
+  {
+    execute<4> (mesh, center, scale);
+    break;
+  }
+  case 5:
+  {
+    execute<5> (mesh, center, scale);
+    break;
+  }
+  default:
+  {
+    PCL_ERROR (stderr, "Degree %d not supported\n", degree_);
+  }
   }
 
   // Write output PolygonMesh
@@ -236,35 +237,35 @@ pcl::Poisson<PointNT>::performReconstruction (pcl::PointCloud<PointNT> &points,
 
   switch (degree_)
   {
-    case 1:
-    {
-      execute<1> (mesh, center, scale);
-      break;
-    }
-    case 2:
-    {
-      execute<2> (mesh, center, scale);
-      break;
-    }
-    case 3:
-    {
-      execute<3> (mesh, center, scale);
-      break;
-    }
-    case 4:
-    {
-      execute<4> (mesh, center, scale);
-      break;
-    }
-    case 5:
-    {
-      execute<5> (mesh, center, scale);
-      break;
-    }
-    default:
-    {
-      PCL_ERROR (stderr, "Degree %d not supported\n", degree_);
-    }
+  case 1:
+  {
+    execute<1> (mesh, center, scale);
+    break;
+  }
+  case 2:
+  {
+    execute<2> (mesh, center, scale);
+    break;
+  }
+  case 3:
+  {
+    execute<3> (mesh, center, scale);
+    break;
+  }
+  case 4:
+  {
+    execute<4> (mesh, center, scale);
+    break;
+  }
+  case 5:
+  {
+    execute<5> (mesh, center, scale);
+    break;
+  }
+  default:
+  {
+    PCL_ERROR (stderr, "Degree %d not supported\n", degree_);
+  }
   }
 
   // Write output PolygonMesh

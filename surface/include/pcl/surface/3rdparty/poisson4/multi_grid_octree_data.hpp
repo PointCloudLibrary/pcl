@@ -738,13 +738,13 @@ namespace pcl
         p[0] = input_->points[cnt].x;
         p[1] = input_->points[cnt].y;
         p[2] = input_->points[cnt].z;
-        cnt++;
 
         for (i = 0; i < DIMENSION; i++)
         {
           if( !cnt || p[i]<min[i] ) min[i] = p[i];
           if( !cnt || p[i]>max[i] ) max[i] = p[i];
         }
+        cnt++;
       }
 
       scale = std::max< Real >( max[0]-min[0] , std::max< Real >( max[1]-min[1] , max[2]-min[2] ) );
@@ -763,7 +763,6 @@ namespace pcl
           normal[0] = input_->points[cnt].normal_x;
           normal[1] = input_->points[cnt].normal_y;
           normal[2] = input_->points[cnt].normal_z;
-          cnt++;
 
           for( i=0 ; i<DIMENSION ; i++ ) position[i] = ( position[i]-center[i] ) / scale;
           myCenter[0] = myCenter[1] = myCenter[2] = Real(0.5);
@@ -790,6 +789,7 @@ namespace pcl
             d++;
           }
           NonLinearUpdateWeightContribution( temp , position , weight );
+          cnt++;
         }
       }
 

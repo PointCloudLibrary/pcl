@@ -50,6 +50,7 @@ using namespace pcl::console;
 int default_depth = 8;
 int default_solver_divide = 8;
 int default_iso_divide = 8;
+float default_point_weight = 4.0f;
 
 void
 printHelp (int, char **argv)
@@ -62,6 +63,8 @@ printHelp (int, char **argv)
   print_value ("%d", default_solver_divide); print_info (")\n");
   print_info ("                     -iso_divide X     = Set the depth at which a block iso-surface extractor should be used to extract the iso-surface (default: ");
   print_value ("%d", default_iso_divide); print_info (")\n");
+  print_info ("                     -point_weight X   = Specifies the importance that interpolation of the point samples is given in the formulation of the screened Poisson equation. The results of the original (unscreened) Poisson Reconstruction can be obtained by setting this value to 0. (default: ");
+  print_value ("%d", default_point_weight); print_info (")\n");
 }
 
 bool
@@ -81,7 +84,7 @@ loadCloud (const std::string &filename, sensor_msgs::PointCloud2 &cloud)
 
 void
 compute (const sensor_msgs::PointCloud2::ConstPtr &input, PolygonMesh &output,
-         int depth, int solver_divide, int iso_divide)
+         int depth, int solver_divide, int iso_divide, float point_weight)
 {
   PointCloud<PointNormal>::Ptr xyz_cloud (new pcl::PointCloud<PointNormal> ());
   fromROSMsg (*input, *xyz_cloud);
@@ -92,6 +95,7 @@ compute (const sensor_msgs::PointCloud2::ConstPtr &input, PolygonMesh &output,
 	poisson.setDepth (depth);
 	poisson.setSolverDivide (solver_divide);
 	poisson.setIsoDivide (iso_divide);
+  poisson.setPointWeight (point_weight);
   poisson.setInputCloud (xyz_cloud);
 
   TicToc tt;
@@ -155,6 +159,9 @@ main (int argc, char** argv)
   parse_argument (argc, argv, "-iso_divide", iso_divide);
   print_info ("Setting iso_divide to: "); print_value ("%d\n", iso_divide);
 
+  float point_weight = default_point_weight;
+  parse_argument (argc, argv, "-point_weight", point_weight);
+  print_info ("Setting point_weight to: "); print_value ("%f\n", point_weight);
 
   // Load the first file
   sensor_msgs::PointCloud2::Ptr cloud (new sensor_msgs::PointCloud2);
@@ -163,7 +170,7 @@ main (int argc, char** argv)
 
   // Apply the Poisson surface reconstruction algorithm
   PolygonMesh output;
-  compute (cloud, output, depth, solver_divide, iso_divide);
+  compute (cloud, output, depth, solver_divide, iso_divide, point_weight);
 
   // Save into the second file
   saveCloud (argv[vtk_file_indices[0]], output);
