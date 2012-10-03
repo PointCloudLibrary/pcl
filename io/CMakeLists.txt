@@ -99,6 +99,7 @@ if(build)
         src/pcd_io.cpp
         src/vtk_io.cpp
         src/ply_io.cpp
+	src/ascii_io.cpp
         src/compression.cpp
         src/lzf.cpp
         src/obj_io.cpp
@@ -125,7 +126,8 @@ if(build)
         include/pcl/${SUBSYS_NAME}/vtk_io.h
         include/pcl/${SUBSYS_NAME}/ply_io.h
         include/pcl/${SUBSYS_NAME}/tar.h
-        include/pcl/${SUBSYS_NAME}/obj_io.h 
+        include/pcl/${SUBSYS_NAME}/obj_io.h
+        include/pcl/${SUBSYS_NAME}/ascii_io.h
         ${VTK_IO_INCLUDES}
         ${OPENNI_GRABBER_INCLUDES}
         ${DINAST_GRABBER_INCLUDES}
