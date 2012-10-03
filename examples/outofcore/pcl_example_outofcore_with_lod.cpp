@@ -42,6 +42,11 @@
 #include <pcl/outofcore/outofcore.h>
 #include <pcl/outofcore/outofcore_impl.h>
 
+#include <pcl/outofcore/boost.h>
+
+#include<pcl/point_types.h>
+#include <sensor_msgs/PointCloud2.h>
+
 using namespace pcl::outofcore;
 
 typedef OutofcoreOctreeBase<OutofcoreOctreeDiskContainer<pcl::PointXYZ>, pcl::PointXYZ> OctreeDisk;

@@ -39,13 +39,12 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/console/print.h>
 
+#include <pcl/point_types.h>
+#include <sensor_msgs/PointCloud2.h>
+
 #include <pcl/outofcore/outofcore.h>
 #include <pcl/outofcore/outofcore_impl.h>
-
-#include <pcl/outofcore/OutofcoreIteratorBase.h>
-
-#include <pcl/outofcore/OutofcoreDepthFirstIterator.h>
-#include <pcl/outofcore/impl/OutofcoreDepthFirstIterator.hpp>
+#include <pcl/outofcore/boost.h>
 
 using namespace pcl::outofcore;
 
