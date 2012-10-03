@@ -28,6 +28,7 @@ DAMAGE.
 
 #ifndef MARCHING_CUBES_INCLUDED
 #define MARCHING_CUBES_INCLUDED
+#include <pcl/pcl_macros.h>
 #include <vector>
 #include "geometry.h"
 
@@ -37,7 +38,8 @@ namespace pcl
   namespace poisson
   {
 
-    class Square{
+    class PCL_EXPORTS Square
+    {
       public:
         const static unsigned int CORNERS=4,EDGES=4,NEIGHBORS=4;
         static int  CornerIndex			(int x,int y);
@@ -52,7 +54,8 @@ namespace pcl
         static void EdgeCorners(int idx,int& c1,int &c2);
     };
 
-    class Cube{
+    class PCL_EXPORTS Cube
+    {
       public:
         const static unsigned int CORNERS=8,EDGES=12,NEIGHBORS=6;
 
@@ -79,7 +82,8 @@ namespace pcl
         static void FaceCorners(int idx,int& c1,int &c2,int& c3,int& c4);
     };
 
-    class MarchingSquares{
+    class PCL_EXPORTS MarchingSquares
+    {
         static double Interpolate(double v1,double v2);
         static void SetVertex(int e,const double values[Square::CORNERS],double iso);
       public:
@@ -94,7 +98,7 @@ namespace pcl
         static int AddEdgeIndices(const double v[Square::CORNERS],double isoValue,int* edges);
     };
 
-    class MarchingCubes
+    class PCL_EXPORTS MarchingCubes
     {
         static void SetVertex(int e,const double values[Cube::CORNERS],double iso);
         static int GetFaceIndex(const double values[Cube::CORNERS],double iso,int faceIndex);
@@ -133,7 +137,6 @@ namespace pcl
         static int HasFaceRoots(int mcIndex,int faceIndex);
         static int HasEdgeRoots(int mcIndex,int edgeIndex);
     };
-
   }
 }
 

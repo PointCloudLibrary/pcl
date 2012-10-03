@@ -33,6 +33,7 @@ DAMAGE.
 #  pragma GCC system_header
 #endif
 
+#include <pcl/pcl_macros.h>
 #include <math.h>
 #include <vector>
 #include "hash.h"
@@ -83,10 +84,12 @@ namespace pcl
     template <class Real>
     void CrossProduct(const Point3D<Real>& p1,const Point3D<Real>& p2,Point3D<Real>& p);
 
-    class Edge{
+    class Edge
+    {
       public:
         double p[2][2];
-        double Length(void) const{
+        double Length(void) const
+        {
           double d[2];
           d[0]=p[0][0]-p[1][0];
           d[1]=p[0][1]-p[1][1];
@@ -94,10 +97,12 @@ namespace pcl
           return sqrt(d[0]*d[0]+d[1]*d[1]);
         }
     };
-    class Triangle{
+    class Triangle
+    {
       public:
         double p[3][3];
-        double Area(void) const{
+        double Area(void) const
+        {
           double v1[3] , v2[3] , v[3];
           for( int d=0 ; d<3 ; d++ )
           {
@@ -109,7 +114,8 @@ namespace pcl
           v[2] =  v1[0]*v2[1] - v1[1]*v2[0];
           return sqrt( v[0]*v[0] + v[1]*v[1] + v[2]*v[2] ) / 2;
         }
-        double AspectRatio(void) const{
+        double AspectRatio(void) const
+        {
           double d=0;
           int i,j;
           for(i=0;i<3;i++){
@@ -120,7 +126,8 @@ namespace pcl
         }
 
     };
-    class CoredPointIndex{
+    class PCL_EXPORTS CoredPointIndex
+    {
       public:
         int index;
         char inCore;
@@ -237,7 +244,7 @@ namespace pcl
         virtual int polygonCount( void ) = 0;
     };
 
-    class CoredVectorMeshData : public CoredMeshData
+    class PCL_EXPORTS CoredVectorMeshData : public CoredMeshData
     {
         std::vector<Point3D<float> > oocPoints;
         std::vector< std::vector< int > > polygons;
@@ -257,7 +264,7 @@ namespace pcl
         int outOfCorePointCount(void);
         int polygonCount( void );
     };
-    class CoredVectorMeshData2 : public CoredMeshData2
+    class PCL_EXPORTS CoredVectorMeshData2 : public CoredMeshData2
     {
         std::vector< CoredMeshData2::Vertex > oocPoints;
         std::vector< std::vector< int > > polygons;
@@ -277,7 +284,7 @@ namespace pcl
         int outOfCorePointCount( void );
         int polygonCount( void );
     };
-    class CoredFileMeshData : public CoredMeshData
+    class PCL_EXPORTS CoredFileMeshData : public CoredMeshData
     {
         FILE *oocPointFile , *polygonFile;
         int oocPoints , polygons;
@@ -296,7 +303,7 @@ namespace pcl
         int outOfCorePointCount(void);
         int polygonCount( void );
     };
-    class CoredFileMeshData2 : public CoredMeshData2
+    class PCL_EXPORTS CoredFileMeshData2 : public CoredMeshData2
     {
         FILE *oocPointFile , *polygonFile;
         int oocPoints , polygons;
