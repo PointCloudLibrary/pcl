@@ -45,12 +45,12 @@
 #include <pcl/common/vector_average.h>
 #include <pcl/Vertices.h>
 
-#include <../3rdparty/PoissonRecon_V4/octree_poisson.h>
-#include <../3rdparty/PoissonRecon_V4/sparse_matrix.h>
-#include <../3rdparty/PoissonRecon_V4/function_data.h>
-#include <../3rdparty/PoissonRecon_V4/ppolynomial.h>
-#include <../3rdparty/PoissonRecon_V4/multi_grid_octree_data.h>
-#include <../3rdparty/PoissonRecon_V4/geometry.h>
+#include <pcl/surface/3rdparty/poisson4/octree_poisson.h>
+#include <pcl/surface/3rdparty/poisson4/sparse_matrix.h>
+#include <pcl/surface/3rdparty/poisson4/function_data.h>
+#include <pcl/surface/3rdparty/poisson4/ppolynomial.h>
+#include <pcl/surface/3rdparty/poisson4/multi_grid_octree_data.h>
+#include <pcl/surface/3rdparty/poisson4/geometry.h>
 
 #define MEMORY_ALLOCATOR_BLOCK_SIZE 1<<12
 
@@ -65,7 +65,7 @@ pcl::Poisson<PointNT>::Poisson ()
   : depth_ (8)
   , min_depth_ (5)
   , point_weight_ (4)
-  , scale_ (1.1)
+  , scale_ (1.1f)
   , solver_divide_ (8)
   , iso_divide_ (8)
   , samples_per_node_ (1.0)
@@ -116,9 +116,9 @@ pcl::Poisson<PointNT>::execute (poisson::CoredVectorMeshData &mesh,
 
     pcl::poisson::TreeOctNode::SetAllocator (MEMORY_ALLOCATOR_BLOCK_SIZE);
 
-    int kernel_depth = depth_ - 2;
+    kernel_depth_ = depth_ - 2;
 
-    tree.setBSplineData (depth_, pcl::poisson::Real (1.0) / (1 << depth_), true);
+    tree.setBSplineData (depth_, pcl::poisson::Real (1.0 / (1 << depth_)), true);
 
     tree.maxMemoryUsage = 0;
     int point_count = tree.setTree (input_, depth_, min_depth_, kernel_depth_, samples_per_node_,
@@ -128,8 +128,8 @@ pcl::Poisson<PointNT>::execute (poisson::CoredVectorMeshData &mesh,
     tree.finalize ();
     tree.RefineBoundary (iso_divide_);
 
-//    printf( "Input Points: %d\n" , point_count );
-//    printf( "Leaves/Nodes: %d/%d\n" , tree.tree.leaves() , tree.tree.nodes() );
+    PCL_DEBUG ("Input Points: %d\n" , point_count );
+    PCL_DEBUG ("Leaves/Nodes: %d/%d\n" , tree.tree.leaves() , tree.tree.nodes() );
 
     tree.maxMemoryUsage = 0;
     tree.SetLaplacianConstraints ();

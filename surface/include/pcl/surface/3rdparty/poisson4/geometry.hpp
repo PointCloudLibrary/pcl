@@ -26,6 +26,8 @@ ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF S
 DAMAGE.
 */
 
+#include <pcl/console/print.h>
+
 namespace pcl
 {
   namespace poisson
@@ -354,11 +356,11 @@ namespace pcl
           eIdx=edgeMap[e];
           if(edges[eIdx].pIndex[0]==p[i]){
             if(edges[eIdx].tIndex[0]<0){edges[eIdx].tIndex[0]=tIdx;}
-            else{printf("Edge Triangle in use 1\n");return 0;}
+            else{PCL_DEBUG("Edge Triangle in use 1\n");return 0;}
           }
           else{
             if(edges[eIdx].tIndex[1]<0){edges[eIdx].tIndex[1]=tIdx;}
-            else{printf("Edge Triangle in use 2\n");return 0;}
+            else{PCL_DEBUG("Edge Triangle in use 2\n");return 0;}
           }
 
         }

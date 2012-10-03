@@ -29,6 +29,10 @@ DAMAGE.
 #ifndef OCT_NODE_INCLUDED
 #define OCT_NODE_INCLUDED
 
+#if defined __GNUC__
+#  pragma GCC system_header
+#endif
+
 #include "allocator.h"
 #include "binary_node.h"
 #include "marching_cubes_poisson.h"
@@ -81,7 +85,7 @@ namespace pcl
         static const int DepthShift,OffsetShift,OffsetShift1,OffsetShift2,OffsetShift3;
         static const int DepthMask,OffsetMask;
 
-        static Allocator<OctNode> Allocator;
+        static Allocator<OctNode> internalAllocator;
         static int UseAllocator(void);
         static void SetAllocator(int blockSize);
 

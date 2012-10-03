@@ -31,6 +31,10 @@ DAMAGE.
 
 #define BOUNDARY_CONDITIONS 1
 
+#if defined __GNUC__
+#  pragma GCC system_header
+#endif
+
 
 #include "ppolynomial.h"
 

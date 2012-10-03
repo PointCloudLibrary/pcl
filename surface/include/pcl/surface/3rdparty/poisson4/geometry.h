@@ -29,6 +29,10 @@ DAMAGE.
 #ifndef GEOMETRY_INCLUDED
 #define GEOMETRY_INCLUDED
 
+#if defined __GNUC__
+#  pragma GCC system_header
+#endif
+
 #include <math.h>
 #include <vector>
 #include "hash.h"

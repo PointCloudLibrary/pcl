@@ -48,7 +48,7 @@ namespace pcl
     template<class NodeData,class Real> const int OctNode<NodeData,Real>::OffsetShift3=OffsetShift2+OffsetShift;
 
     template<class NodeData,class Real> int OctNode<NodeData,Real>::UseAlloc=0;
-    template<class NodeData,class Real> Allocator<OctNode<NodeData,Real> > OctNode<NodeData,Real>::Allocator;
+    template<class NodeData,class Real> Allocator<OctNode<NodeData,Real> > OctNode<NodeData,Real>::internalAllocator;
 
     template<class NodeData,class Real>
     void OctNode<NodeData,Real>::SetAllocator(int blockSize)
@@ -56,7 +56,7 @@ namespace pcl
       if(blockSize>0)
       {
         UseAlloc=1;
-        Allocator.set(blockSize);
+        internalAllocator.set(blockSize);
       }
       else{UseAlloc=0;}
     }
@@ -87,7 +87,7 @@ namespace pcl
     int OctNode<NodeData,Real>::initChildren(void){
       int i,j,k;
 
-      if(UseAlloc){children=Allocator.newElements(8);}
+      if(UseAlloc){children=internalAllocator.newElements(8);}
       else{
         if(children){delete[] children;}
         children=NULL;

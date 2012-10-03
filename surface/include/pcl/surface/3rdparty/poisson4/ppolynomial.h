@@ -28,6 +28,11 @@ DAMAGE.
 
 #ifndef P_POLYNOMIAL_INCLUDED
 #define P_POLYNOMIAL_INCLUDED
+
+#if defined __GNUC__
+#  pragma GCC system_header
+#endif
+
 #include <vector>
 #include "polynomial.h"
 

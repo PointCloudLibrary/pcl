@@ -29,6 +29,10 @@ DAMAGE.
 #ifndef __SPARSEMATRIX_HPP
 #define __SPARSEMATRIX_HPP
 
+#if defined __GNUC__
+#  pragma GCC system_header
+#endif
+
 #include "vector.h"
 #include "allocator.h"
 
@@ -53,7 +57,7 @@ namespace pcl
         int _maxEntriesPerRow;
         static int UseAlloc;
       public:
-        static Allocator<MatrixEntry<T> > Allocator;
+        static Allocator<MatrixEntry<T> > internalAllocator;
         static int UseAllocator(void);
         static void SetAllocator( int blockSize );
 

@@ -26,7 +26,7 @@ ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF S
 DAMAGE.
 */
 #include <math.h>
-#include "marching_cubes_poisson.h"
+#include <pcl/surface/3rdparty/poisson4/marching_cubes_poisson.h>
 
 ////////////
 // Square //

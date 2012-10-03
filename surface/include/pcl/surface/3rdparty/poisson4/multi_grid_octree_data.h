@@ -29,6 +29,10 @@ DAMAGE.
 #ifndef MULTI_GRID_OCTREE_DATA_INCLUDED
 #define MULTI_GRID_OCTREE_DATA_INCLUDED
 
+#if defined __GNUC__
+#  pragma GCC system_header
+#endif
+
 #define MISHA_DEBUG 1
 
 #define GRADIENT_DOMAIN_SOLUTION 1	// Given the constraint vector-field V(p), there are two ways to solve for the coefficients, x, of the indicator function

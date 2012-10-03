@@ -30,7 +30,7 @@ DAMAGE.
 // Polynomial Roots //
 //////////////////////
 #include <math.h>
-#include "factor.h"
+#include <pcl/surface/3rdparty/poisson4/factor.h>
 
 namespace pcl
 {

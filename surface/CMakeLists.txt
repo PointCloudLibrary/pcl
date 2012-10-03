@@ -52,41 +52,40 @@ if(build)
     ENDIF(BUILD_surface_on_nurbs)
 
     set(POISSON_INCLUDES
-        3rdparty/PoissonRecon_V4/allocator.h
-        3rdparty/PoissonRecon_V4/binary_node.h
-        3rdparty/PoissonRecon_V4/bspline_data.h
-        3rdparty/PoissonRecon_V4/factor.h
-        3rdparty/PoissonRecon_V4/function_data.h
-        3rdparty/PoissonRecon_V4/geometry.h
-        3rdparty/PoissonRecon_V4/hash.h
-        3rdparty/PoissonRecon_V4/marching_cubes_poisson.h
-        3rdparty/PoissonRecon_V4/mat.h
-        3rdparty/PoissonRecon_V4/multi_grid_octree_data.h
-        3rdparty/PoissonRecon_V4/octree_poisson.h
-        3rdparty/PoissonRecon_V4/polynomial.h
-        3rdparty/PoissonRecon_V4/ppolynomial.h
-        3rdparty/PoissonRecon_V4/sparse_matrix.h
-        3rdparty/PoissonRecon_V4/vector.h
-        )
-    set(POISSON_IMPLS
-        3rdparty/PoissonRecon_V4/bspline_data.hpp
-        3rdparty/PoissonRecon_V4/function_data.hpp
-        3rdparty/PoissonRecon_V4/geometry.hpp
-        3rdparty/PoissonRecon_V4/mat.hpp
-        3rdparty/PoissonRecon_V4/multi_grid_octree_data.hpp
-        3rdparty/PoissonRecon_V4/octree_poisson.hpp
-        3rdparty/PoissonRecon_V4/polynomial.hpp
-        3rdparty/PoissonRecon_V4/ppolynomial.hpp
-        3rdparty/PoissonRecon_V4/sparse_matrix.hpp
-        3rdparty/PoissonRecon_V4/vector.hpp
+        include/pcl/${SUBSYS_NAME}/3rdparty/poisson4/allocator.h
+        include/pcl/${SUBSYS_NAME}/3rdparty/poisson4/binary_node.h
+        include/pcl/${SUBSYS_NAME}/3rdparty/poisson4/bspline_data.h
+        include/pcl/${SUBSYS_NAME}/3rdparty/poisson4/factor.h
+        include/pcl/${SUBSYS_NAME}/3rdparty/poisson4/function_data.h
+        include/pcl/${SUBSYS_NAME}/3rdparty/poisson4/geometry.h
+        include/pcl/${SUBSYS_NAME}/3rdparty/poisson4/hash.h
+        include/pcl/${SUBSYS_NAME}/3rdparty/poisson4/marching_cubes_poisson.h
+        include/pcl/${SUBSYS_NAME}/3rdparty/poisson4/mat.h
+        include/pcl/${SUBSYS_NAME}/3rdparty/poisson4/multi_grid_octree_data.h
+        include/pcl/${SUBSYS_NAME}/3rdparty/poisson4/octree_poisson.h
+        include/pcl/${SUBSYS_NAME}/3rdparty/poisson4/polynomial.h
+        include/pcl/${SUBSYS_NAME}/3rdparty/poisson4/ppolynomial.h
+        include/pcl/${SUBSYS_NAME}/3rdparty/poisson4/sparse_matrix.h
+        include/pcl/${SUBSYS_NAME}/3rdparty/poisson4/vector.h
+        include/pcl/${SUBSYS_NAME}/3rdparty/poisson4/bspline_data.hpp
+        include/pcl/${SUBSYS_NAME}/3rdparty/poisson4/function_data.hpp
+        include/pcl/${SUBSYS_NAME}/3rdparty/poisson4/geometry.hpp
+        include/pcl/${SUBSYS_NAME}/3rdparty/poisson4/mat.hpp
+        include/pcl/${SUBSYS_NAME}/3rdparty/poisson4/multi_grid_octree_data.hpp
+        include/pcl/${SUBSYS_NAME}/3rdparty/poisson4/octree_poisson.hpp
+        include/pcl/${SUBSYS_NAME}/3rdparty/poisson4/polynomial.hpp
+        include/pcl/${SUBSYS_NAME}/3rdparty/poisson4/ppolynomial.hpp
+        include/pcl/${SUBSYS_NAME}/3rdparty/poisson4/sparse_matrix.hpp
+        include/pcl/${SUBSYS_NAME}/3rdparty/poisson4/vector.hpp
         )
     set(POISSON_SOURCES
-        3rdparty/PoissonRecon_V4/factor.cpp
-        3rdparty/PoissonRecon_V4/geometry.cpp
-        3rdparty/PoissonRecon_V4/marching_cubes_poisson.cpp
+        src/3rdparty/poisson4/factor.cpp
+        src/3rdparty/poisson4/geometry.cpp
+        src/3rdparty/poisson4/marching_cubes_poisson.cpp
         )
    
-    set(srcs src/processing.cpp 
+    set(srcs 
+        src/processing.cpp 
         src/ear_clipping.cpp
         src/gp3.cpp
         src/grid_projection.cpp
@@ -132,7 +131,8 @@ if(build)
         ${ON_NURBS_INCLUDES}
         )
 
-    set(impl_incs include/pcl/${SUBSYS_NAME}/impl/gp3.hpp
+    set(impl_incs 
+        include/pcl/${SUBSYS_NAME}/impl/gp3.hpp
         include/pcl/${SUBSYS_NAME}/impl/grid_projection.hpp
         include/pcl/${SUBSYS_NAME}/impl/marching_cubes.hpp
         include/pcl/${SUBSYS_NAME}/impl/marching_cubes_hoppe.hpp
@@ -145,7 +145,6 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/surfel_smoothing.hpp
         include/pcl/${SUBSYS_NAME}/impl/texture_mapping.hpp
         include/pcl/${SUBSYS_NAME}/impl/poisson.hpp
-        ${POISSON_IMPLS}
         ${HULL_IMPLS}
         ${OPENNURBS_IMPLS}
         ${ON_NURBS_IMPLS}
@@ -162,10 +161,8 @@ if(build)
     PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}" "${SUBSYS_DEPS}" "" "" "" "")
 
     # Install include files
-    PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs})
-    PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/poisson ${POISSON_INCLUDES})
+    PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs} ${POISSON_INCLUDES})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${impl_incs})
-    PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl/poisson ${POISSON_IMPLS})
 
     if(BUILD_surface_on_nurbs)
       PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/openNURBS ${OPENNURBS_INCLUDES})

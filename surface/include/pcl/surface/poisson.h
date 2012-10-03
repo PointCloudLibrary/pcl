@@ -39,10 +39,15 @@
 #define PCL_SURFACE_POISSON_H_
 
 #include <pcl/surface/reconstruction.h>
-#include "../3rdparty/PoissonRecon_V4/geometry.h"
 
 namespace pcl
 {
+  namespace poisson
+  {
+    class CoredVectorMeshData;
+    template <class Real> class Point3D;
+  }
+
   /** \brief The Poisson surface reconstruction algorithm.
     * \note Code adapted from Misha Kazhdan: http://www.cs.jhu.edu/~misha/Code/PoissonRecon/
     * \note Based on the paper:
