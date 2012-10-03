@@ -27,7 +27,7 @@ if(NOT WIN32)
   find_package_handle_standard_args(USB_10 DEFAULT_MSG USB_10_LIBRARY USB_10_INCLUDE_DIR)
    
   if(NOT USB_10_FOUND)
-    message(STATUS "OpeNI disabled because libusb-1.0 not found.")     
+    message(STATUS "OpenNI disabled because libusb-1.0 not found.")     
     return()
   else()
     include_directories(SYSTEM ${USB_10_INCLUDE_DIR})
