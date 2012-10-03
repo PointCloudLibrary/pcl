@@ -62,24 +62,23 @@ using namespace pcl;
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointNT>
 pcl::Poisson<PointNT>::Poisson ()
-: data_ (),
-  no_reset_samples_ (false),
-  no_clip_tree_ (false),
-  confidence_ (false),
-  manifold_ (false),
-  output_polygons_ (false),
-  depth_ (8),
-  solver_divide_ (8),
-  iso_divide_ (8),
-  refine_ (3),
-  kernel_depth_ (8),
-  degree_ (2),
-  samples_per_node_ (1.0),
-  scale_ (1.25),
-  min_depth_ (5),
-  min_iterations_ (8),
-  point_weight_ (4.0f),
-  solver_accuracy_ (1e-3f)
+  : depth_ (8)
+  , min_depth_ (5)
+  , point_weight_ (4)
+  , scale_ (1.1)
+  , solver_divide_ (8)
+  , iso_divide_ (8)
+  , samples_per_node_ (1.0)
+  , confidence_ (false)
+  , output_polygons_ (false)
+  , no_reset_samples_ (false)
+  , no_clip_tree_ (false)
+  , manifold_ (false)
+  , refine_ (3)
+  , kernel_depth_ (8)
+  , degree_ (2)
+  , min_iterations_ (8)
+  , solver_accuracy_ (1e-3f)
 {
 }
 
@@ -95,64 +94,9 @@ pcl::Poisson<PointNT>::execute (poisson::CoredVectorMeshData &mesh,
                                 poisson::Point3D<float> &center,
                                 float &scale)
 {
-//  float isoValue = 0.0f;
-//  ///////////////////////////////////////
-//  // Fix courtesy of David Gallup      //
-//  poisson::TreeNodeData::UseIndex = 1; //
-//  ///////////////////////////////////////
-//  poisson::Octree<Degree> tree;
-//  poisson::PPolynomial<Degree> ReconstructionFunction = poisson::PPolynomial<Degree>::GaussianApproximation ();
-
-//  center.coords[0] = center.coords[1] = center.coords[2] = 0.0f;
-
-//  poisson::TreeOctNode::SetAllocator (MEMORY_ALLOCATOR_BLOCK_SIZE);
-
-//  kernel_depth_ = depth_ - 2;
-////  if(KernelDepth.set){kernelDepth=KernelDepth.value;}
-
-//  tree.setFunctionData (ReconstructionFunction, depth_, 0, poisson::Real (1.0f) / poisson::Real (1 << depth_));
-////  if (kernel_depth_>depth_)
-////  {
-////    fprintf(stderr,"KernelDepth can't be greater than Depth: %d <= %d\n",kernel_depth_,depth_);
-////    return;
-////  }
-
-//  tree.setTree (input_, depth_, kernel_depth_, float (samples_per_node_), scale_, center, scale, !no_reset_samples_, confidence_);
-
-//  printf ("scale after settree %f\n", scale);
-
-//  if(!no_clip_tree_)
-//  {
-//    tree.ClipTree ();
-//  }
-
-//  tree.finalize1 (refine_);
-
-//  tree.maxMemoryUsage = 0;
-//  tree.SetLaplacianWeights ();
-
-//  tree.finalize2 (refine_);
-
-//  tree.maxMemoryUsage = 0;
-//  tree.LaplacianMatrixIteration (solver_divide_);
-
-//  tree.maxMemoryUsage = 0;
-//  isoValue = tree.GetIsoValue ();
-
-//  if (iso_divide_)
-//    tree.GetMCIsoTriangles (isoValue, iso_divide_, &mesh, 0, 1, manifold_, output_polygons_);
-//  else
-//    tree.GetMCIsoTriangles (isoValue, &mesh, 0, 1, manifold_, output_polygons_);
-
-
-
-//  pcl::poisson::Point3D< float > center;
-    pcl::poisson::Real iso_value = 0;
-    //////////////////////////////////
-    // Fix courtesy of David Gallup //
-    poisson::TreeNodeData::UseIndex = 1;     //
-    //////////////////////////////////
-    poisson::Octree<Degree> tree;
+  pcl::poisson::Real iso_value = 0;
+  poisson::TreeNodeData::UseIndex = 1;
+  poisson::Octree<Degree> tree;
 
     /// TODO OPENMP stuff
 //    tree.threads = Threads.value;
@@ -170,62 +114,34 @@ pcl::Poisson<PointNT>::execute (poisson::CoredVectorMeshData &mesh,
       iso_divide_ = min_depth_;
     }
 
-    pcl::poisson::TreeOctNode::SetAllocator( MEMORY_ALLOCATOR_BLOCK_SIZE );
+    pcl::poisson::TreeOctNode::SetAllocator (MEMORY_ALLOCATOR_BLOCK_SIZE);
 
     int kernel_depth = depth_ - 2;
 
-    tree.setBSplineData( depth_ , pcl::poisson::Real(1.0)/(1<<depth_) , true );
+    tree.setBSplineData (depth_, pcl::poisson::Real (1.0) / (1 << depth_), true);
 
-    tree.maxMemoryUsage=0;
-    int point_count = tree.setTree( input_ , depth_, min_depth_, kernel_depth_ , samples_per_node_,
+    tree.maxMemoryUsage = 0;
+    int point_count = tree.setTree (input_, depth_, min_depth_, kernel_depth_, samples_per_node_,
                                     scale_, center, scale, confidence_, point_weight_, !non_adaptive_weights_);
 
-    tree.ClipTree();
-    tree.finalize();
-    tree.RefineBoundary( iso_divide_);
+    tree.ClipTree ();
+    tree.finalize ();
+    tree.RefineBoundary (iso_divide_);
 
-//    DumpOutput2( comments[commentNum++] , "#             Tree set in: %9.1f (s), %9.1f (MB)\n" , Time()-t , tree.maxMemoryUsage );
-    printf( "Input Points: %d\n" , point_count );
-    printf( "Leaves/Nodes: %d/%d\n" , tree.tree.leaves() , tree.tree.nodes() );
-//    DumpOutput( "Memory Usage: %.3f MB\n" , float( MemoryInfo::Usage() )/(1<<20) );
+//    printf( "Input Points: %d\n" , point_count );
+//    printf( "Leaves/Nodes: %d/%d\n" , tree.tree.leaves() , tree.tree.nodes() );
 
-    tree.maxMemoryUsage=0;
-    tree.SetLaplacianConstraints();
+    tree.maxMemoryUsage = 0;
+    tree.SetLaplacianConstraints ();
 
-    tree.maxMemoryUsage=0;
-    tree.LaplacianMatrixIteration( solver_divide_, show_residual_, min_iterations_, solver_accuracy_);
-//    DumpOutput2( comments[commentNum++] , "# Linear system solved in: %9.1f (s), %9.1f (MB)\n" , Time()-t , tree.maxMemoryUsage );
-//    DumpOutput( "Memory Usage: %.3f MB\n" , float( MemoryInfo::Usage() )/(1<<20) );
+    tree.maxMemoryUsage = 0;
+    tree.LaplacianMatrixIteration (solver_divide_, show_residual_, min_iterations_, solver_accuracy_);
 
-//    pcl::poisson::CoredVectorMeshData mesh;
-//    if( Verbose.set ) tree.maxMemoryUsage=0;
-//    t=Time();
-    iso_value = tree.GetIsoValue();
-    printf( "Iso-Value: %e\n" , iso_value );
+    iso_value = tree.GetIsoValue ();
+//    printf( "Iso-Value: %e\n" , iso_value );
 //    DumpOutput( "Memory Usage: %.3f MB\n" , float(tree.MemoryUsage()) );
 
-
-
-//    if( Out.set )
-//    {
-//      t=Time();
-      tree.GetMCIsoTriangles( iso_value , iso_divide_ , &mesh , 0 , 1 , manifold_, output_polygons_);
-//      if( PolygonMesh.set ) DumpOutput2( comments[commentNum++] , "#         Got polygons in: %9.1f (s), %9.1f (MB)\n" , Time()-t , tree.maxMemoryUsage );
-//      else                  DumpOutput2( comments[commentNum++] , "#        Got triangles in: %9.1f (s), %9.1f (MB)\n" , Time()-t , tree.maxMemoryUsage );
-//      DumpOutput2( comments[commentNum++],"#              Total time: %9.1f (s)\n" , Time()-tt );
-
-//      if( NoComments.set )
-//      {
-//        if( ASCII.set ) PlyWritePolygons( Out.value , &mesh , PLY_ASCII         , center , scale );
-//        else
-//      PlyWritePolygons( Out.value , &mesh , PLY_BINARY_NATIVE , center , scale );
-//      }
-//      else
-//      {
-//        if( ASCII.set ) PlyWritePolygons( Out.value , &mesh , PLY_ASCII         , center , scale , comments , commentNum );
-//        else            PlyWritePolygons( Out.value , &mesh , PLY_BINARY_NATIVE , center , scale , comments , commentNum );
-//      }
-//    }
+    tree.GetMCIsoTriangles (iso_value, iso_divide_, &mesh, 0, 1, manifold_, output_polygons_);
 }
 
 
@@ -270,8 +186,7 @@ pcl::Poisson<PointNT>::performReconstruction (PolygonMesh &output)
     }
   }
 
-  /// Write output PolygonMesh
-  // write vertices
+  // Write output PolygonMesh
   pcl::PointCloud<pcl::PointXYZ> cloud;
   cloud.points.resize (int (mesh.outOfCorePointCount () + mesh.inCorePoints.size ()));
   poisson::Point3D<float> p;
@@ -371,11 +286,9 @@ pcl::Poisson<PointNT>::performReconstruction (pcl::PointCloud<PointNT> &points,
     points.points[i].z = p.coords[2]*scale+center.coords[2];
   }
 
-
-
   polygons.resize (mesh.polygonCount ());
 
-  // write faces
+  // Write faces
   std::vector<poisson::CoredVertexIndex> polygon;
   for (int p_i = 0; p_i < mesh.polygonCount (); p_i++)
   {

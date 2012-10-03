@@ -83,42 +83,6 @@ namespace pcl
       performReconstruction (pcl::PointCloud<PointNT> &points,
                              std::vector<pcl::Vertices> &polygons);
 
-      /** \brief Set the confidence flag
-        * \note Enabling this flag tells the reconstructor to use the size of the normals as confidence information.
-        * When the flag is not enabled, all normals are normalized to have unit-length prior to reconstruction.
-        * \param[in] confidence the given flag
-        */
-      inline void
-      setConfidence (bool confidence) { confidence_ = confidence; }
-
-      /** \brief Get the confidence flag */
-      inline bool
-      getConfidence () { return confidence_; }
-
-      /** \brief Set the manifold flag.
-        * \note Enabling this flag tells the reconstructor to add the polygon barycenter when triangulating polygons
-        * with more than three vertices.
-        * \param[in] manifold the given flag
-        */
-      inline void
-      setManifold (bool manifold) { manifold_ = manifold; }
-
-      /** \brief Get the manifold flag */
-      inline bool
-      getManifold () { return manifold_; }
-
-      /** \brief Enabling this flag tells the reconstructor to output a polygon mesh (rather than triangulating the
-        * results of Marching Cubes).
-        * \param[in] output_polygons the given flag
-        */
-      inline void
-      setOutputPolygons (bool output_polygons) { output_polygons_ = output_polygons; }
-
-      /** \brief Get whether the algorithm outputs a polygon mesh or a triangle mesh */
-      inline bool
-      getOutputPolygons () { return output_polygons_; }
-
-
       /** \brief Set the maximum depth of the tree that will be used for surface reconstruction.
         * \note Running at depth d corresponds to solving on a voxel grid whose resolution is no larger than
         * 2^d x 2^d x 2^d. Note that since the reconstructor adapts the octree to the sampling density, the specified
@@ -131,6 +95,31 @@ namespace pcl
       /** \brief Get the depth parameter */
       inline int
       getDepth () { return depth_; }
+
+      inline void
+      setMinDepth (int min_depth) { min_depth_ = min_depth; }
+
+      inline int
+      getMinDepth () { return min_depth_; }
+
+      inline void
+      setPointWeight (float point_weight) { point_weight_ = point_weight; }
+
+      inline float
+      getPointWeight () { return point_weight_; }
+
+      /** \brief Set the ratio between the diameter of the cube used for reconstruction and the diameter of the
+        * samples' bounding cube.
+        * \param[in] scale the given parameter value
+        */
+      inline void
+      setScale (float scale) { scale_ = scale; }
+
+      /** Get the ratio between the diameter of the cube used for reconstruction and the diameter of the
+        * samples' bounding cube.
+        */
+      inline float
+      getScale () { return scale_; }
 
       /** \brief Set the the depth at which a block Gauss-Seidel solver is used to solve the Laplacian equation
         * \note Using this parameter helps reduce the memory overhead at the cost of a small increase in
@@ -173,18 +162,28 @@ namespace pcl
       inline float
       getSamplesPerNode () { return samples_per_node_; }
 
-      /** \brief Set the ratio between the diameter of the cube used for reconstruction and the diameter of the
-        * samples' bounding cube.
-        * \param[in] scale the given parameter value
+      /** \brief Set the confidence flag
+        * \note Enabling this flag tells the reconstructor to use the size of the normals as confidence information.
+        * When the flag is not enabled, all normals are normalized to have unit-length prior to reconstruction.
+        * \param[in] confidence the given flag
         */
       inline void
-      setScale (float scale) { scale_ = scale; }
+      setConfidence (bool confidence) { confidence_ = confidence; }
 
-      /** Get the ratio between the diameter of the cube used for reconstruction and the diameter of the
-        * samples' bounding cube.
+      /** \brief Get the confidence flag */
+      inline bool
+      getConfidence () { return confidence_; }
+
+      /** \brief Enabling this flag tells the reconstructor to output a polygon mesh (rather than triangulating the
+        * results of Marching Cubes).
+        * \param[in] output_polygons the given flag
         */
-      inline float
-      getScale () { return scale_; }
+      inline void
+      setOutputPolygons (bool output_polygons) { output_polygons_ = output_polygons; }
+
+      /** \brief Get whether the algorithm outputs a polygon mesh or a triangle mesh */
+      inline bool
+      getOutputPolygons () { return output_polygons_; }
 
       /** \brief Set the degree parameter
         * \param[in] degree the given degree
@@ -196,37 +195,45 @@ namespace pcl
       inline int
       getDegree () { return degree_; }
 
+      /** \brief Set the manifold flag.
+        * \note Enabling this flag tells the reconstructor to add the polygon barycenter when triangulating polygons
+        * with more than three vertices.
+        * \param[in] manifold the given flag
+        */
+      inline void
+      setManifold (bool manifold) { manifold_ = manifold; }
+
+      /** \brief Get the manifold flag */
+      inline bool
+      getManifold () { return manifold_; }
 
     protected:
-      /** \brief The point cloud input (XYZ+Normals). */
-      PointCloudPtr data_;
-
       /** \brief Class get name method. */
       std::string
       getClassName () const { return ("Poisson"); }
 
     private:
-      bool no_reset_samples_;
-      bool no_clip_tree_;
-      bool confidence_;
-      bool manifold_;
-      bool output_polygons_;
-
       int depth_;
       int min_depth_;
+      float point_weight_;
+      float scale_;
       int solver_divide_;
       int iso_divide_;
+      float samples_per_node_;
+      bool confidence_;
+      bool output_polygons_;
+
+      bool no_reset_samples_;
+      bool no_clip_tree_;
+      bool manifold_;
+
       int refine_;
       int kernel_depth_;
       int degree_;
-      float point_weight_;
       bool non_adaptive_weights_;
       bool show_residual_;
       int min_iterations_;
       float solver_accuracy_;
-
-      float samples_per_node_;
-      float scale_;
 
       template<int Degree> void
       execute (poisson::CoredVectorMeshData &mesh,
