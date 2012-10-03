@@ -363,7 +363,6 @@ pcl::ihs::InHandScanner::drawMesh ()
     triangles.push_back (triangle);
   }
 
-  // pcl::visualization::PointCloudColorHandlerRGBField <PointXYZ> ch (mesh_model_temp);
   if (!visualizer_->updatePolygonMesh <PointModel> (vertexes, triangles, "mesh_model"))
   {
     visualizer_->addPolygonMesh <PointModel> (vertexes, triangles, "mesh_model");

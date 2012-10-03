@@ -156,9 +156,6 @@ pcl::ihs::Integration::merge (const CloudProcessedConstPtr& cloud_data,
 
   mesh_model->reserveVertexes (mesh_model->sizeVertexes () + cloud_data->size ());
 
-  // Sensor direction in model coordinates
-  const Eigen::Vector4f sensor_direction (T * Eigen::Vector4f (0.f, 0.f, 1.f, 0.f));
-
   // Data cloud in model coordinates and weights (this does not change the connectivity information)
   CloudModelPtr cloud_transformed (new CloudModel ());
   cloud_transformed->resize (s);
