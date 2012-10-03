@@ -564,7 +564,7 @@ namespace pcl
 #ifdef WIN32
 #ifndef _AtomicIncrement_
 #define _AtomicIncrement_
-#include <WinBase.h>
+#include <windows.h>
     inline void AtomicIncrement( volatile float* ptr , float addend )
     {
       float newValue = *ptr;
