@@ -235,7 +235,7 @@ TEST (MinCutSegmentationTest, Segment)
   std::vector <pcl::PointIndices> clusters;
   mcSeg.extract (clusters);
   int num_of_segments = static_cast<int> (clusters.size ());
-  EXPECT_EQ (0, num_of_segments);
+  EXPECT_EQ (2, num_of_segments);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -248,7 +248,7 @@ TEST (MinCutSegmentationTest, SegmentWithoutForegroundPoints)
   std::vector <pcl::PointIndices> clusters;
   mcSeg.extract (clusters);
   int num_of_segments = static_cast<int> (clusters.size ());
-  EXPECT_EQ (0, num_of_segments);
+  EXPECT_EQ (2, num_of_segments);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
