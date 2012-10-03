@@ -144,6 +144,9 @@ if (build)
       PCL_ADD_EXECUTABLE(pcl_obj2vtk ${SUBSYS_NAME} obj2vtk.cpp)
       target_link_libraries(pcl_obj2vtk pcl_common pcl_io)
 
+      PCL_ADD_EXECUTABLE(pcl_vtk2pcd ${SUBSYS_NAME} vtk2pcd.cpp)
+      target_link_libraries(pcl_vtk2pcd pcl_common pcl_io)
+
       if(BUILD_visualization)
   
         PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS visualization)
