@@ -2,7 +2,7 @@
  * Software License Agreement (BSD License)
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
- *  Copyright (c) 2009-2011, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -16,7 +16,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -34,12 +34,14 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
+
 #ifndef __PCL_IO_DINAST_GRABBER__
 #define __PCL_IO_DINAST_GRABBER__
 
 #include <pcl/pcl_config.h>
 #include <pcl/point_types.h>
 #include <pcl/io/grabber.h>
+#include <pcl/common/time.h>
 #include <libusb-1.0/libusb.h>
 #include <boost/circular_buffer.hpp>
 #include <string>
@@ -60,7 +62,7 @@
 namespace pcl
 {
   /** \brief Grabber for DINAST devices (i.e., IPA-1002, IPA-1110, IPA-2001)
-    * \author Marco A. Gutierrez <marcog@unex.es>
+  * \author Marco A. Gutierrez <marcog@unex.es>
   * \ingroup io
   */
   class PCL_EXPORTS DinastGrabber: public Grabber
@@ -91,7 +93,7 @@ namespace pcl
       getFramesPerSecond () const;
 
 
-      /** \brief Find a Dinast 3D camera device and open de device handler
+      /** \brief Find the specified Dinast 3D camera device
         * \param[in] device_position Number corresponding to the device to grab
         * \param[in] id_vendor the ID of the camera vendor (should be 0x18d1)
         * \param[in] id_product the ID of the product (should be 0x1402)
@@ -101,12 +103,12 @@ namespace pcl
                   const int id_vendor = 0x18d1, 
                   const int id_product = 0x1402);
 
-      /** \brief Claims the interface for the already finded device
+      /** \brief Claims the interface for an already founded device
         */
       void
       openDevice ();
 
-      /** \brief Close the given the device of the DINAST camera
+      /** \brief Close the DINAST camera device
         */
       void
       closeDevice ();
@@ -157,25 +159,12 @@ namespace pcl
         */
       int
       readImage (unsigned char *image);
-
-      /** \brief Read image data
-        * \param[out] the image data in unsigned short format
-        */
-      int
-      readImage (unsigned char *image1, unsigned char *image2);
       
-      /** \brief Read XYZI Point Cloud
-       *  \return the XYZ point cloud from the camera
+      /** \brief Obtains the image and the corresponding XYZI Point Cloud
+       *  \param[out] the image data in unsigned short format and the corresponding point cloud from the camera
        */
       void
       getData(unsigned char *image, pcl::PointCloud<pcl::PointXYZI>::Ptr cloud);
-      
-      /** \brief Read image data
-      * \param[out] the image data in PointCloud format
-      */     
-      int
-      readData(unsigned char *_image, pcl::PointCloud<pcl::PointXYZI> &cloud);
-
       
       /** \brief the libusb context*/
       libusb_context *context;
@@ -189,7 +178,7 @@ namespace pcl
       /** \brief Global buffer */
       boost::circular_buffer<unsigned char> g_buffer;
 
-      // Bulk endpoint address value
+      /**  \brief Bulk endpoint address value */
       unsigned char bulk_ep;
 
       // Since there is no header after the first image, we need to save the state

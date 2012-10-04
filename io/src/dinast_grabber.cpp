@@ -2,7 +2,7 @@
  * Software License Agreement (BSD License)
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
- *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -16,7 +16,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -83,8 +83,14 @@ pcl::DinastGrabber::isRunning () const
 float
 pcl::DinastGrabber::getFramesPerSecond () const
 {
+  static unsigned count = 0;
+  static double last = pcl::getTime ();
+  double now = pcl::getTime (); 
+  float rate = 1/float(now - last);
+  count = 0; 
+  last = now; 
 
-  return (0);
+  return (rate);
 }
 
 void
@@ -92,12 +98,18 @@ pcl::DinastGrabber::findDevice ( int device_position, const int id_vendor, const
 {
   int device_position_counter=0;
   
-  if (libusb_init (&context) != 0)
-    return;
+  //Initialize libusb
+  int ret=libusb_init (&context);
+  std::stringstream sstream;
+  if (ret != 0)
+  {
+    sstream << "libusb initialization fialure, LIBUSB_ERROR: "<<ret;
+    PCL_THROW_EXCEPTION (pcl::IOException, sstream.str());
+  }
   
   libusb_set_debug (context, 3);
-
   libusb_device **devs = NULL;
+  
   // Get the list of USB devices
   ssize_t cnt = libusb_get_device_list (context, &devs);
 
@@ -215,7 +227,11 @@ pcl::DinastGrabber::USBTxControlData (const unsigned char req_code,
   int nr_read = libusb_control_transfer (device_handle, requesttype, 
                                          req_code, value, index, buffer, uint16_t(length), timeout);
   if (nr_read != int(length))
-    PCL_THROW_EXCEPTION (pcl::IOException, "USB control data error");
+  {
+    std::stringstream sstream;
+    sstream<<"USB control data error, LIBUSB_ERROR: "<<nr_read;
+    PCL_THROW_EXCEPTION (pcl::IOException, sstream.str());
+  }
 
   return (true);
 }
@@ -229,7 +245,7 @@ pcl::DinastGrabber::getDeviceVersion ()
      PCL_THROW_EXCEPTION (pcl::IOException, "Error trying to get device version");
   }
  
-  data[21] = 0; // NULL
+  data[21] = 0;
 
   return (std::string (reinterpret_cast<const char*> (data)));
 }
@@ -239,14 +255,16 @@ pcl::DinastGrabber::start ()
 {
   unsigned char ctrl_buf[3];
   if (!USBTxControlData (CMD_READ_START, ctrl_buf, 1))
-    return;
+    PCL_THROW_EXCEPTION (pcl::IOException, "Could not start the USB data reading");
   running_ = true;
 }
 
 void
 pcl::DinastGrabber::stop ()
 {
-  
+  unsigned char ctrl_buf[3];
+  if (!USBTxControlData (CMD_READ_START, ctrl_buf, 1))
+    PCL_THROW_EXCEPTION (pcl::IOException, "Could not start the USB data reading");
   running_=false;
 }
 
@@ -362,120 +380,57 @@ pcl::DinastGrabber::getData (unsigned char *image, pcl::PointCloud<pcl::PointXYZ
   int depth_idx = 0;
   int pxl[9];
 
+  float sum = 0;
+  int count = 0;
   for (int x = 0; x < cloud->width; ++x)
   {
     for (int y = 0; y < cloud->height; ++y, ++depth_idx)
     {
-      float xc = (float)(x - 160);
-      float yc = (float)(y - 120);
+      unsigned char pixel = image[x + IMAGE_WIDTH * y]; //image[depth_idx];
+
+      float xc = float(x - 160);
+      float yc = float(y - 120);
       double r1 = sqrt (xc * xc + yc * yc);
-      float r2 = r1 * r1;
-      float r3 = r1 * r2;
+      double r2 = r1 * r1;
+      double r3 = r1 * r2;
       double A = -2e-5 * r3 + 0.004 * r2 + 0.1719 * r1 + 350.03;
       double B = -2e-9 * r3 + 3e-7 * r2 - 1e-5 * r1 - 0.01;
 
-      // Low pass filtering
-      /// @todo Try a bilateral filter to avoid blurring over depth boundaries
-      int measure = 0;
-      if ((y > 0) && (y < (IMAGE_HEIGHT - 1)) && (x > 0) && (x < (IMAGE_WIDTH - 1)))
-      {
-        int ipx = x + IMAGE_WIDTH * y;
-#if 1
-        pxl[0] = image[ipx];
-        pxl[1] = image[ipx-1];
-        pxl[2] = image[ipx+1];
-        pxl[3] = image[ipx - IMAGE_WIDTH];
-        pxl[4] = image[ipx - IMAGE_WIDTH - 1];
-        pxl[5] = image[ipx - IMAGE_WIDTH + 1];
-        pxl[6] = image[ipx + IMAGE_WIDTH];
-        pxl[7] = image[ipx + IMAGE_WIDTH - 1];
-        pxl[8] = image[ipx + IMAGE_WIDTH + 1];
-
-        for (int ii = 0; ii < 9; ii++) 
-          measure += pxl[ii];
-        measure /= 9;
-#else
-        // No blurring
-        measure = image[ipx];
-#endif
-      }
-      if (measure > 255)
-        measure = 255;  // saturation for display
-
-      unsigned char pixel = measure;//image[depth_idx];
-      if (pixel < 1)
-      {
-        cloud->points[depth_idx].x = std::numeric_limits<float>::quiet_NaN ();
-        cloud->points[depth_idx].y = std::numeric_limits<float>::quiet_NaN ();
-        cloud->points[depth_idx].z = std::numeric_limits<float>::quiet_NaN ();
-        cloud->points[depth_idx].intensity = pixel;
-        continue;
-      }
+      /// Compute distance
 
       if (pixel > A)
         pixel = A;
-
       float dy = y*0.1;
-      float dist = (log((double)pixel/A)/B-dy)*(7E-07*r3 - 0.0001*r2 + 0.004*r1 + 0.9985)*1.5;
+      float dist = (log(double(pixel/A))/B-dy)*(7E-07*r3 - 0.0001*r2 + 0.004*r1 + 0.9985)*1.5;
       float dist_2d = r1;
-
+//       static const float dist_max_2d = 1 / 212.60291;
       static const float dist_max_2d = 1 / 160.0; /// @todo Why not 200?
       //static const double dist_max_2d = 1 / 200.0;
+//       static const double FOV = 40. * M_PI / 180.0; // diagonal FOV?
       static const double FOV = 64.0 * M_PI / 180.0; // diagonal FOV?
-  
-      float theta_colati = FOV * r1 * dist_max_2d;
+       float theta_colati = FOV * r1 * dist_max_2d;
       float c_theta = cos (theta_colati);
       float s_theta = sin (theta_colati);
-      float c_ksai = ((double)(x - 160.)) / r1;
-      float s_ksai = ((double)(y - 120.)) / r1;
-
+      float c_ksai = (double(x - 160.)) / r1;
+      float s_ksai = (double(y - 120.)) / r1;
       cloud->points[depth_idx].x = (dist * s_theta * c_ksai) / 500.0 + 0.5; //cartesian x
       cloud->points[depth_idx].y = (dist * s_theta * s_ksai) / 500.0 + 0.5; //cartesian y
       cloud->points[depth_idx].z = (dist * c_theta);                        //cartesian z
-      /// @todo This looks weird, can it cause artifacts?
       if (cloud->points[depth_idx].z < 0.01)
         cloud->points[depth_idx].z = 0.01;
-
       cloud->points[depth_idx].z /= 500.0;
       cloud->points[depth_idx].intensity = pixel;
+
+      
+      //get rid of the noise
+      if(cloud->points[depth_idx].z > 0.8 or cloud->points[depth_idx].z < 0.02)
+      {
+        cloud->points[depth_idx].x = std::numeric_limits<float>::quiet_NaN ();
+      	cloud->points[depth_idx].y = std::numeric_limits<float>::quiet_NaN ();
+      	cloud->points[depth_idx].z = std::numeric_limits<float>::quiet_NaN ();
+      	cloud->points[depth_idx].intensity = pixel;
+      }
     }
   }
-}
-
-
-int
-pcl::DinastGrabber::readImage (unsigned char *image1, unsigned char *image2)
-{
-  // Read data in two image blocks until we get a header
-  int data_adr = -1;
-  // Read at least two images in synchronous mode
-  int actual_length;
-  int res = libusb_bulk_transfer (device_handle, bulk_ep, raw_buffer, 
-                                  RGB16_LENGTH * 2 + SYNC_PACKET, &actual_length, 0);
-  if (res != 0 || actual_length == 0)
-  {
-
-    memset (&image1[0], 0x00, IMAGE_SIZE);
-    PCL_THROW_EXCEPTION (pcl::IOException, "USB read error!");
-  }
-
-  for (size_t i = 0; i < actual_length; ++i)
-  {
-    if ((raw_buffer[i+0] == 0xAA) && (raw_buffer[i+1] == 0xAA) && 
-        (raw_buffer[i+2] == 0x44) && (raw_buffer[i+3] == 0x44) &&
-        (raw_buffer[i+4] == 0xBB) && (raw_buffer[i+5] == 0xBB) &&
-        (raw_buffer[i+6] == 0x77) && (raw_buffer[i+7] == 0x77))
-    {
-      data_adr = int (i) + SYNC_PACKET;
-      break;
-    }
-  }
-  // An image found. Copy it from the buffer into the user given buffer
-  for (int i = 0; i < IMAGE_SIZE; ++i)
-    image1[i] = raw_buffer[data_adr + i];
-  for (int i = 0; i < IMAGE_SIZE; ++i)
-    image2[i] = raw_buffer[data_adr + IMAGE_SIZE + i];
-
-  return (IMAGE_SIZE);
 }
 
