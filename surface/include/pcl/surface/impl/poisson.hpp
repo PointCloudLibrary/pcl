@@ -77,9 +77,10 @@ pcl::Poisson<PointNT>::Poisson ()
   , refine_ (3)
   , kernel_depth_ (8)
   , degree_ (2)
+  , non_adaptive_weights_ (false)
+  , show_residual_ (false)
   , min_iterations_ (8)
   , solver_accuracy_ (1e-3f)
-  , non_adaptive_weights_ (false)
 {
 }
 
