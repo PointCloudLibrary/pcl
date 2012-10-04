@@ -9,7 +9,6 @@
 #include <pcl/apps/3d_rec_framework/pipeline/local_recognizer.h>
 #include <pcl/apps/3d_rec_framework/pc_source/mesh_source.h>
 #include <pcl/recognition/cg/geometric_consistency.h>
-#include <pcl/recognition/cg/hough_3d.h>
 #include <pcl/apps/3d_rec_framework/feature_wrapper/local/shot_local_estimator.h>
 #include <pcl/apps/3d_rec_framework/feature_wrapper/local/shot_local_estimator_omp.h>
 #include <pcl/apps/3d_rec_framework/feature_wrapper/local/fpfh_local_estimator.h>
@@ -19,12 +18,8 @@
 #include <pcl/recognition/cg/geometric_consistency.h>
 #include <pcl/recognition/cg/hough_3d.h>
 #include <pcl/recognition/hv/hv_papazov.h>
-//#include <pcl/recognition/hv/hv_go.h>
-//#include <pcl/apps/3d_rec_framework/feature_wrapper/normal_estimator.h>
-//#include <pcl/keypoints/uniform_sampling.h>
-//#include <pcl/visualization/pcl_visualizer.h>
-//#include <pcl/recognition/cg/correspondence_grouping.h>
-//#include <pcl/features/board.h>
+#include <pcl/recognition/hv/hv_go.h>
+#include <pcl/recognition/hv/greedy_verification.h>
 
 void
 getScenesInDirectory (bf::path & dir, std::string & rel_path_so_far, std::vector<std::string> & relative_paths)
@@ -132,6 +127,7 @@ template<template<class > class DistT, typename PointT, typename FeatureT>
         typename pcl::PointCloud<PointT>::Ptr scene (new pcl::PointCloud<PointT> ());
         pcl::io::loadPCDFile (file.str (), *scene);
 
+        local.setVoxelSizeICP (0.005f);
         local.setInputCloud (scene);
         {
           pcl::ScopeTime ttt ("Recognition");
@@ -156,7 +152,36 @@ template<template<class > class DistT, typename PointT, typename FeatureT>
           typename pcl::PointCloud<PointT>::Ptr model_aligned (new pcl::PointCloud<PointT>);
           pcl::transformPointCloud (*model_cloud, *model_aligned, transforms->at (j));
 
-          pcl::visualization::PointCloudColorHandlerRandom<PointT> random_handler (model_aligned);
+          float r, g, b;
+          std::cout << models->at (j).id_ << std::endl;
+          r = 255.0f;
+          g = 0.0f;
+          b = 0.0f;
+
+          if (models->at (j).id_.compare ("cheff") == 0)
+          {
+            r = 0.0f;
+            g = 255.0f;
+            b = 0.0f;
+          }
+          else if (models->at (j).id_.compare ("chicken_high") == 0)
+          {
+            r = 0.0f;
+            g = 255.0f;
+            b = 255.0f;
+          }
+          else if (models->at (j).id_.compare ("parasaurolophus_high") == 0)
+          {
+            r = 255.0f;
+            g = 255.0f;
+            b = 0.f;
+          }
+          else
+          {
+
+          }
+
+          pcl::visualization::PointCloudColorHandlerCustom<PointT> random_handler (model_aligned, r, g, b);
           vis.addPointCloud<PointT> (model_aligned, random_handler, name.str ());
         }
 
@@ -275,26 +300,35 @@ getModelsInDirectory (bf::path & dir, std::string & rel_path_so_far, std::vector
 
 typedef pcl::ReferenceFrame RFType;
 
-int CG_SIZE_ = 9;
+int CG_SIZE_ = 3;
 float CG_THRESHOLD_ = 0.005f;
-int CG_ALG = 0;
 
-//./bin/pcl_local_or_mian -models_dir /home/aitor/data/Mians_dataset/models/ -mians_scenes_dir /home/aitor/data/Mians_dataset/scenes/pcl_scenes/ -training_dir trained_models2/ -icp_iterations 0 -descriptor_name shot_omp -gc_size 3 -use_cache 1 -scene -1
+/** Based on the paper:
+  * "A Global Hypotheses Verification Method for 3D Object Recognition",
+  * A. Aldoma and F. Tombari and L. Di Stefano and Markus Vincze, ECCV 2012
+  *
+  * Note: Due to changes PCL experimented between submission and the current status,
+  * you might find some inconsistencies between parameter value in code and in the paper.
+  * (tested on revision 7453)
+  */
 
 int
 main (int argc, char ** argv)
 {
-  std::string path = "models/";
-  std::string desc_name = "shot";
+  std::string path = "";
+  std::string desc_name = "shot_omp";
   std::string training_dir = "trained_models/";
   std::string mians_scenes = "";
   int force_retrain = 0;
-  int icp_iterations = 10;
-  int use_cache = 0;
+  int icp_iterations = 20;
+  int use_cache = 1;
   int splits = 512;
   int scene = -1;
   int detect_clutter = 1;
-  int split_opt = 1;
+  int hv_method = 0;
+  int use_hv = 1;
+  float thres_hyp_ = 0.2f;
+  float desc_radius = 0.04f;
 
   pcl::console::parse_argument (argc, argv, "-models_dir", path);
   pcl::console::parse_argument (argc, argv, "-training_dir", training_dir);
@@ -305,13 +339,22 @@ main (int argc, char ** argv)
   pcl::console::parse_argument (argc, argv, "-use_cache", use_cache);
   pcl::console::parse_argument (argc, argv, "-splits", splits);
   pcl::console::parse_argument (argc, argv, "-gc_size", CG_SIZE_);
+  pcl::console::parse_argument (argc, argv, "-gc_threshold", CG_THRESHOLD_);
   pcl::console::parse_argument (argc, argv, "-scene", scene);
   pcl::console::parse_argument (argc, argv, "-detect_clutter", detect_clutter);
-  pcl::console::parse_argument (argc, argv, "-split_opt", split_opt);
+  pcl::console::parse_argument (argc, argv, "-hv_method", hv_method);
+  pcl::console::parse_argument (argc, argv, "-use_hv", use_hv);
+  pcl::console::parse_argument (argc, argv, "-thres_hyp", thres_hyp_);
 
   if (mians_scenes.compare ("") == 0)
   {
     PCL_ERROR("Set the directory containing mians scenes using the -mians_scenes_dir [dir] option\n");
+    return -1;
+  }
+
+  if (path.compare ("") == 0)
+  {
+    PCL_ERROR("Set the directory containing the models of mian dataset using the -models_dir [dir] option\n");
     return -1;
   }
 
@@ -334,7 +377,7 @@ main (int argc, char ** argv)
   //configure mesh source
   boost::shared_ptr<pcl::rec_3d_framework::MeshSource<pcl::PointXYZ> > mesh_source (new pcl::rec_3d_framework::MeshSource<pcl::PointXYZ>);
   mesh_source->setPath (path);
-  mesh_source->setResolution (150);
+  mesh_source->setResolution (250);
   mesh_source->setTesselationLevel (1);
   mesh_source->setViewAngle (57.f);
   mesh_source->setRadiusSphere (1.5f);
@@ -350,40 +393,28 @@ main (int argc, char ** argv)
   normal_estimator->setCMR (false);
   normal_estimator->setDoVoxelGrid (true);
   normal_estimator->setRemoveOutliers (true);
-  normal_estimator->setValuesForCMRFalse (0.005f, 0.015f);
+  normal_estimator->setValuesForCMRFalse (0.003f, 0.012f);
 
   //configure keypoint extractor
   boost::shared_ptr<pcl::rec_3d_framework::UniformSamplingExtractor<pcl::PointXYZ> >
                                                                                      uniform_keypoint_extractor (
                                                                                                                  new pcl::rec_3d_framework::UniformSamplingExtractor<
                                                                                                                      pcl::PointXYZ>);
-  uniform_keypoint_extractor->setSamplingDensity (0.01f);
+  //uniform_keypoint_extractor->setSamplingDensity (0.01f);
+  uniform_keypoint_extractor->setSamplingDensity (0.005f);
+  uniform_keypoint_extractor->setFilterPlanar (true);
 
   boost::shared_ptr<pcl::rec_3d_framework::KeypointExtractor<pcl::PointXYZ> > keypoint_extractor;
   keypoint_extractor = boost::static_pointer_cast<pcl::rec_3d_framework::KeypointExtractor<pcl::PointXYZ> > (uniform_keypoint_extractor);
 
   //configure cg algorithm (geometric consistency grouping)
   boost::shared_ptr<pcl::CorrespondenceGrouping<pcl::PointXYZ, pcl::PointXYZ> > cast_cg_alg;
-
-  if (CG_ALG == 0)
-  {
-    boost::shared_ptr<pcl::GeometricConsistencyGrouping<pcl::PointXYZ, pcl::PointXYZ> > gcg_alg (
-                                                                                                 new pcl::GeometricConsistencyGrouping<pcl::PointXYZ,
-                                                                                                     pcl::PointXYZ>);
-    gcg_alg->setGCThreshold (CG_SIZE_);
-    gcg_alg->setGCSize (CG_THRESHOLD_);
-    cast_cg_alg = boost::static_pointer_cast<pcl::CorrespondenceGrouping<pcl::PointXYZ, pcl::PointXYZ> > (gcg_alg);
-  }
-  else if (CG_ALG == 1)
-  {
-    //configure cg algorithm (hough 3d)
-    boost::shared_ptr<pcl::Hough3DGrouping<pcl::PointXYZ, pcl::PointXYZ> > hough_3d_alg (new pcl::Hough3DGrouping<pcl::PointXYZ, pcl::PointXYZ>);
-    hough_3d_alg->setLocalRfSearchRadius (0.04f);
-    hough_3d_alg->setLocalRfNormalsSearchRadius (0.015f);
-    hough_3d_alg->setHoughBinSize (CG_THRESHOLD_);
-    hough_3d_alg->setHoughThreshold (CG_SIZE_);
-    cast_cg_alg = boost::static_pointer_cast<pcl::CorrespondenceGrouping<pcl::PointXYZ, pcl::PointXYZ> > (hough_3d_alg);
-  }
+  boost::shared_ptr<pcl::GeometricConsistencyGrouping<pcl::PointXYZ, pcl::PointXYZ> > gcg_alg (
+                                                                                               new pcl::GeometricConsistencyGrouping<pcl::PointXYZ,
+                                                                                                   pcl::PointXYZ>);
+  gcg_alg->setGCThreshold (CG_SIZE_);
+  gcg_alg->setGCSize (CG_THRESHOLD_);
+  cast_cg_alg = boost::static_pointer_cast<pcl::CorrespondenceGrouping<pcl::PointXYZ, pcl::PointXYZ> > (gcg_alg);
 
   //configure hypothesis verificator
   boost::shared_ptr<pcl::PapazovHV<pcl::PointXYZ, pcl::PointXYZ> > papazov (new pcl::PapazovHV<pcl::PointXYZ, pcl::PointXYZ>);
@@ -392,23 +423,38 @@ main (int argc, char ** argv)
   papazov->setSupportThreshold (0.08f);
   papazov->setPenaltyThreshold (0.05f);
   papazov->setConflictThreshold (0.02f);
+  papazov->setOcclusionThreshold (0.01f);
 
-  boost::shared_ptr<pcl::HypothesisVerification<pcl::PointXYZ, pcl::PointXYZ> > cast_hv_alg;
-  cast_hv_alg = boost::static_pointer_cast<pcl::HypothesisVerification<pcl::PointXYZ, pcl::PointXYZ> > (papazov);
-
-  /*boost::shared_ptr<pcl::GlobalHypothesesVerification<pcl::PointXYZ, pcl::PointXYZ> > go (
+  boost::shared_ptr<pcl::GlobalHypothesesVerification<pcl::PointXYZ, pcl::PointXYZ> > go (
                                                                                           new pcl::GlobalHypothesesVerification<pcl::PointXYZ,
                                                                                               pcl::PointXYZ>);
   go->setResolution (0.005f);
   go->setMaxIterations (7000);
   go->setInlierThreshold (0.005f);
-  go->setRadiusClutter (0.035f);
+  go->setRadiusClutter (0.04f);
   go->setRegularizer (3.f);
-  go->setClutterRegularizer (5.f);
+  go->setClutterRegularizer (7.5f);
   go->setDetectClutter (detect_clutter);
-  go->setUseConflictGraph (split_opt);
+  go->setOcclusionThreshold (0.01f);
 
-  cast_hv_alg = boost::static_pointer_cast<pcl::HypothesisVerification<pcl::PointXYZ, pcl::PointXYZ> > (go);*/
+  boost::shared_ptr<pcl::GreedyVerification<pcl::PointXYZ, pcl::PointXYZ> > greedy (new pcl::GreedyVerification<pcl::PointXYZ, pcl::PointXYZ> (3.f));
+  greedy->setResolution (0.005f);
+  greedy->setInlierThreshold (0.005f);
+  greedy->setOcclusionThreshold (0.01f);
+
+  boost::shared_ptr<pcl::HypothesisVerification<pcl::PointXYZ, pcl::PointXYZ> > cast_hv_alg;
+
+  switch (hv_method)
+  {
+    case 1:
+      cast_hv_alg = boost::static_pointer_cast<pcl::HypothesisVerification<pcl::PointXYZ, pcl::PointXYZ> > (greedy);
+      break;
+    case 2:
+      cast_hv_alg = boost::static_pointer_cast<pcl::HypothesisVerification<pcl::PointXYZ, pcl::PointXYZ> > (papazov);
+      break;
+    default:
+      cast_hv_alg = boost::static_pointer_cast<pcl::HypothesisVerification<pcl::PointXYZ, pcl::PointXYZ> > (go);
+  }
 
   if (desc_name.compare ("shot") == 0)
   {
@@ -427,7 +473,8 @@ main (int argc, char ** argv)
     local.setDescriptorName (desc_name);
     local.setFeatureEstimator (cast_estimator);
     local.setCGAlgorithm (cast_cg_alg);
-    local.setHVAlgorithm (cast_hv_alg);
+    if (use_hv)
+      local.setHVAlgorithm (cast_hv_alg);
     local.setUseCache (static_cast<bool> (use_cache));
     local.initialize (static_cast<bool> (force_retrain));
 
@@ -446,7 +493,8 @@ main (int argc, char ** argv)
     estimator.reset (new pcl::rec_3d_framework::SHOTLocalEstimationOMP<pcl::PointXYZ, pcl::Histogram<352> >);
     estimator->setNormalEstimator (normal_estimator);
     estimator->addKeypointExtractor (keypoint_extractor);
-    estimator->setSupportRadius (0.04f);
+    //estimator->setSupportRadius (0.04f);
+    estimator->setSupportRadius (desc_radius);
 
     boost::shared_ptr<pcl::rec_3d_framework::LocalEstimator<pcl::PointXYZ, pcl::Histogram<352> > > cast_estimator;
     cast_estimator = boost::dynamic_pointer_cast<pcl::rec_3d_framework::LocalEstimator<pcl::PointXYZ, pcl::Histogram<352> > > (estimator);
@@ -457,10 +505,12 @@ main (int argc, char ** argv)
     local.setDescriptorName (desc_name);
     local.setFeatureEstimator (cast_estimator);
     local.setCGAlgorithm (cast_cg_alg);
-    local.setHVAlgorithm (cast_hv_alg);
+    if (use_hv)
+      local.setHVAlgorithm (cast_hv_alg);
+
     local.setUseCache (static_cast<bool> (use_cache));
     local.initialize (static_cast<bool> (force_retrain));
-    local.setThresholdAcceptHyp (0.2f);
+    local.setThresholdAcceptHyp (thres_hyp_);
 
     uniform_keypoint_extractor->setSamplingDensity (0.005f);
     local.setICPIterations (icp_iterations);
@@ -487,7 +537,9 @@ main (int argc, char ** argv)
     local.setDescriptorName (desc_name);
     local.setFeatureEstimator (cast_estimator);
     local.setCGAlgorithm (cast_cg_alg);
-    local.setHVAlgorithm (cast_hv_alg);
+    if (use_hv)
+      local.setHVAlgorithm (cast_hv_alg);
+
     local.setUseCache (static_cast<bool> (use_cache));
     local.initialize (static_cast<bool> (force_retrain));
 

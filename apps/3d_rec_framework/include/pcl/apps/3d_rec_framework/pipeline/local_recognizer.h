@@ -147,15 +147,16 @@ namespace pcl
         void
         drawCorrespondences (PointInTPtr & cloud, ObjectHypothesis & oh, PointInTPtr & keypoints_pointcloud, pcl::Correspondences & correspondences)
         {
-          pcl::visualization::PCLVisualizer vis ("correspondences...");
+          pcl::visualization::PCLVisualizer vis_corresp_;
+          vis_corresp_.setWindowName("correspondences...");
           pcl::visualization::PointCloudColorHandlerCustom<PointInT> random_handler (cloud, 255, 0, 0);
-          vis.addPointCloud<PointInT> (cloud, random_handler, "points");
+          vis_corresp_.addPointCloud<PointInT> (cloud, random_handler, "points");
 
           typename pcl::PointCloud<PointInT>::ConstPtr cloud_sampled;
           cloud_sampled = oh.model_.getAssembled (0.0025f);
 
           pcl::visualization::PointCloudColorHandlerCustom<PointInT> random_handler_sampled (cloud_sampled, 0, 0, 255);
-          vis.addPointCloud<PointInT> (cloud_sampled, random_handler_sampled, "sampled");
+          vis_corresp_.addPointCloud<PointInT> (cloud_sampled, random_handler_sampled, "sampled");
 
           for (size_t kk = 0; kk < correspondences.size (); kk++)
           {
@@ -167,10 +168,13 @@ namespace pcl
             std::stringstream line_name;
             line_name << "line_" << kk;
 
-            vis.addLine<pcl::PointXYZ, pcl::PointXYZ> (p_scene, p, line_name.str ());
+            vis_corresp_.addLine<pcl::PointXYZ, pcl::PointXYZ> (p_scene, p, line_name.str ());
           }
 
-          vis.spin ();
+          vis_corresp_.spin ();
+          vis_corresp_.removeAllPointClouds();
+          vis_corresp_.removeAllShapes();
+          vis_corresp_.close();
         }
 
       public:

@@ -235,27 +235,6 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
 
     std::cout << "Number of keypoints:" << keypoints_pointcloud->points.size () << std::endl;
 
-    /*boost::shared_ptr < std::vector<int> > indices (new std::vector<int> ());
-    indices->resize (keypoints_input.points.size ());
-    for (size_t i = 0; i < indices->size (); i++)
-    {
-      (*indices)[i] = keypoints_input.points[i];
-    }
-
-    typename pcl::PointCloud<PointInT>::Ptr keypoints_pointcloud (new pcl::PointCloud<PointInT> ());
-    pcl::copyPointCloud (*processed, *indices, *keypoints_pointcloud);*/
-
-    /*{
-      pcl::visualization::PCLVisualizer vis("keypoints");
-      vis.addPointCloud<PointInT>(processed, "input");
-
-      pcl::visualization::PointCloudColorHandlerCustom<PointInT> handler_votes (keypoints_pointcloud, 255, 0, 0);
-      vis.addPointCloud<PointInT> (keypoints_pointcloud, handler_votes, "votes_cloud");
-      vis.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 14, "votes_cloud");
-      vis.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_OPACITY, 0.5, "votes_cloud");
-      vis.spin();
-    }*/
-
     int size_feat = sizeof(signatures->points[0].histogram) / sizeof(float);
 
     //feature matching and object hypotheses
@@ -395,29 +374,29 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
       voxel_grid_icp.filter (*cloud_voxelized_icp);
       source_->voxelizeAllModels (VOXEL_SIZE_ICP_);
 
-#pragma omp parallel for schedule(dynamic, 4) num_threads(omp_get_num_procs())
+#pragma omp parallel for schedule(dynamic,1) num_threads(omp_get_num_procs())
       for (int i = 0; i < static_cast<int>(models_->size ()); i++)
       {
 
-        ConstPointInTPtr model_cloud = models_->at (i).getAssembled (VOXEL_SIZE_ICP_);
+        ConstPointInTPtr model_cloud;
         PointInTPtr model_aligned (new pcl::PointCloud<PointInT>);
+        model_cloud = models_->at (i).getAssembled (VOXEL_SIZE_ICP_);
         pcl::transformPointCloud (*model_cloud, *model_aligned, transforms_->at (i));
 
         typename pcl::registration::CorrespondenceRejectorSampleConsensus<PointInT>::Ptr rej (
             new pcl::registration::CorrespondenceRejectorSampleConsensus<PointInT> ());
 
-        rej->setInputSource (model_aligned);
         rej->setInputTarget (cloud_voxelized_icp);
         rej->setMaximumIterations (1000);
         rej->setInlierThreshold (0.005f);
+        rej->setInputSource (model_aligned);
 
         pcl::IterativeClosestPoint<PointInT, PointInT> reg;
         reg.addCorrespondenceRejector (rej);
-        reg.setInputSource (model_aligned); //model
         reg.setInputTarget (cloud_voxelized_icp); //scene
+        reg.setInputSource (model_aligned); //model
         reg.setMaximumIterations (ICP_iterations_);
-        reg.setMaxCorrespondenceDistance (VOXEL_SIZE_ICP_ * 3.f);
-        reg.setTransformationEpsilon (1e-9);
+        reg.setMaxCorrespondenceDistance (VOXEL_SIZE_ICP_ * 4.f);
 
         typename pcl::PointCloud<PointInT>::Ptr output_ (new pcl::PointCloud<PointInT> ());
         reg.align (*output_);
@@ -425,24 +404,6 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
         Eigen::Matrix4f icp_trans = reg.getFinalTransformation ();
         transforms_->at (i) = icp_trans * transforms_->at (i);
       }
-
-     /* pcl::visualization::PCLVisualizer vis("vis");
-      vis.addPointCloud<PointInT>(cloud_voxelized_icp);
-
-      for (int i = 0; i < static_cast<int>(models_->size ()); i++)
-      {
-        ConstPointInTPtr model_cloud = models_->at (i).getAssembled (0.0025f);
-        PointInTPtr model_aligned (new pcl::PointCloud<PointInT>);
-        pcl::transformPointCloud (*model_cloud, *model_aligned, transforms_->at (i));
-        pcl::visualization::PointCloudColorHandlerCustom<PointInT> random_handler (model_aligned, 0, 255, 0);
-        vis.addPointCloud<PointInT> (model_aligned, random_handler, "cloud_model");
-        std::cout << "Adding point cloud..." << std::endl;
-        vis.spin();
-        vis.removePointCloud("cloud_model");
-      }
-
-     vis.spin();*/
-
     }
 
     /**
