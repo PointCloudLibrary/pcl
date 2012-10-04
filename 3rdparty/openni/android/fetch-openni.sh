@@ -28,4 +28,10 @@ cat ../openni-patches/series | while read patchname; do
   esac
 done
 
+rm -rv Wrappers/OpenNI.java/res
+
+echo 'Updating Android project...'
+
+android update lib-project -p Wrappers/OpenNI.java
+
 echo 'Done.'
