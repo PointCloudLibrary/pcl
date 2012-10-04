@@ -420,6 +420,9 @@ pcl::apps::RenderViewsTesselatedSphere::generateViews() {
       for (int sel_id = 0; sel_id < (ids->GetNumberOfTuples ()); sel_id++)
       {
         int id_mesh = int (ids->GetValue (sel_id));
+        if(id_mesh >= polydata->GetNumberOfPolys())
+          continue;
+
         vtkCell * cell = polydata->GetCell (id_mesh);
         vtkTriangle* triangle = dynamic_cast<vtkTriangle*> (cell);
         double p0[3];
