@@ -305,21 +305,6 @@ Features
      .. |fe_7| image:: images/narf_keypoint_extraction.png
                :height: 100px
 
-  * :ref:`feature_evaluation_framework`
-    
-     ======  ======
-     |fe_8|  Title: **How to benchmark feature descriptor algorithms**
-
-             Author: *Pararth Shah*
-
-             Compatibility: > PCL 1.0
-
-             In this tutorial, we will go over how to use the FeatureEvaluationFramework class to benchmark various feature descriptor algorithms.
-     ======  ======
-     
-     .. |fe_8| image:: images/feature_evaluation/class_hierarchy.png
-               :height: 100px
-               
 .. _filtering_tutorial:
 
 Filtering
