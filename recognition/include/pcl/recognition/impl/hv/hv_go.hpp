@@ -146,6 +146,7 @@ mets::gol_type pcl::GlobalHypothesesVerification<ModelT, SceneT>::evaluateSoluti
         explained_by_RM_distance_weighted, 1.f);
     updateUnexplainedVector (recognition_models_[changed]->unexplained_in_neighborhood, recognition_models_[changed]->unexplained_in_neighborhood_weights,
         unexplained_by_RM_neighboorhods, recognition_models_[changed]->explained_, explained_by_RM_, 1.f);
+    updateCMDuplicity(recognition_models_[changed]->complete_cloud_occupancy_indices_, complete_cloud_occupancy_by_RM_, 1.f);
   } else
   {
     //it has been deactivated
@@ -153,6 +154,7 @@ mets::gol_type pcl::GlobalHypothesesVerification<ModelT, SceneT>::evaluateSoluti
         explained_by_RM_distance_weighted, -1.f);
     updateUnexplainedVector (recognition_models_[changed]->unexplained_in_neighborhood, recognition_models_[changed]->unexplained_in_neighborhood_weights,
         unexplained_by_RM_neighboorhods, recognition_models_[changed]->explained_, explained_by_RM_, -1.f);
+    updateCMDuplicity(recognition_models_[changed]->complete_cloud_occupancy_indices_, complete_cloud_occupancy_by_RM_, -1.f);
     sign = -1.f;
   }
 
@@ -165,7 +167,14 @@ mets::gol_type pcl::GlobalHypothesesVerification<ModelT, SceneT>::evaluateSoluti
 
   setPreviousBadInfo (bad_info);
 
-  return static_cast<mets::gol_type> ((good_info - bad_info - static_cast<float> (duplicity) - unexplained_info) * -1.f); //return the dual to our max problem
+  int n_active_hyp = 0;
+  for(size_t i=0; i < active.size(); i++) {
+    if(active[i])
+      n_active_hyp++;
+  }
+
+  float duplicity_cm = static_cast<float> (getDuplicityCM ()) * w_occupied_multiple_cm_;
+  return static_cast<mets::gol_type> ((good_info - bad_info - static_cast<float> (duplicity) - unexplained_info - duplicity_cm - static_cast<float> (n_active_hyp)) * -1.f); //return the dual to our max problem
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -179,6 +188,7 @@ void pcl::GlobalHypothesesVerification<ModelT, SceneT>::initialize()
   explained_by_RM_.clear ();
   mask_.clear ();
   indices_.clear (),
+  complete_cloud_occupancy_by_RM_.clear ();
 
   // initialize mask to false
   mask_.resize (complete_models_.size ());
@@ -263,9 +273,6 @@ void pcl::GlobalHypothesesVerification<ModelT, SceneT>::initialize()
 
       intens += intens_incr;
     }
-
-    std::cout << "Number of points in scene:" << scene_cloud_downsampled_->points.size () << " Number of clusters:" << clusters.size ()
-        << " Points in clusters..." << clusters_cloud_->points.size () << std::endl;
   }
 
   //compute cues
@@ -287,7 +294,64 @@ void pcl::GlobalHypothesesVerification<ModelT, SceneT>::initialize()
     indices_.resize(valid);
   }
 
-  std::cout << "recog models:" << recognition_models_.size () << std::endl;
+  //compute the bounding boxes for the models
+  ModelT min_pt_all, max_pt_all;
+  min_pt_all.x = min_pt_all.y = min_pt_all.z = std::numeric_limits<float>::max ();
+  max_pt_all.x = max_pt_all.y = max_pt_all.z = (std::numeric_limits<float>::max () - 0.001f) * -1;
+
+  for (size_t i = 0; i < recognition_models_.size (); i++)
+  {
+    ModelT min_pt, max_pt;
+    pcl::getMinMax3D (*complete_models_[indices_[i]], min_pt, max_pt);
+    if (min_pt.x < min_pt_all.x)
+      min_pt_all.x = min_pt.x;
+
+    if (min_pt.y < min_pt_all.y)
+      min_pt_all.y = min_pt.y;
+
+    if (min_pt.z < min_pt_all.z)
+      min_pt_all.z = min_pt.z;
+
+    if (max_pt.x > max_pt_all.x)
+      max_pt_all.x = max_pt.x;
+
+    if (max_pt.y > max_pt_all.y)
+      max_pt_all.y = max_pt.y;
+
+    if (max_pt.z > max_pt_all.z)
+      max_pt_all.z = max_pt.z;
+  }
+
+  int size_x, size_y, size_z;
+  size_x = static_cast<int> (std::ceil (std::abs (max_pt_all.x - min_pt_all.x) / res_occupancy_grid_)) + 1;
+  size_y = static_cast<int> (std::ceil (std::abs (max_pt_all.y - min_pt_all.y) / res_occupancy_grid_)) + 1;
+  size_z = static_cast<int> (std::ceil (std::abs (max_pt_all.z - min_pt_all.z) / res_occupancy_grid_)) + 1;
+
+  complete_cloud_occupancy_by_RM_.resize (size_x * size_y * size_z, 0);
+
+  for (size_t i = 0; i < recognition_models_.size (); i++)
+  {
+
+    std::map<int, bool> banned;
+    std::map<int, bool>::iterator banned_it;
+
+    for (size_t j = 0; j < complete_models_[indices_[i]]->points.size (); j++)
+    {
+      int pos_x, pos_y, pos_z;
+      pos_x = static_cast<int> (std::floor ((complete_models_[indices_[i]]->points[j].x - min_pt_all.x) / res_occupancy_grid_));
+      pos_y = static_cast<int> (std::floor ((complete_models_[indices_[i]]->points[j].y - min_pt_all.y) / res_occupancy_grid_));
+      pos_z = static_cast<int> (std::floor ((complete_models_[indices_[i]]->points[j].z - min_pt_all.z) / res_occupancy_grid_));
+
+      int idx = pos_z * size_x * size_y + pos_y * size_x + pos_x;
+      banned_it = banned.find (idx);
+      if (banned_it == banned.end ())
+      {
+        complete_cloud_occupancy_by_RM_[idx]++;
+        recognition_models_[i]->complete_cloud_occupancy_indices_.push_back (idx);
+        banned[idx] = true;
+      }
+    }
+  }
 
   {
     pcl::ScopeTime tcues ("Computing clutter cues");
@@ -337,6 +401,14 @@ void pcl::GlobalHypothesesVerification<ModelT, SceneT>::SAOptimize(std::vector<i
     }
   }
 
+  int occupied_multiple = 0;
+  for(size_t i=0; i < complete_cloud_occupancy_by_RM_.size(); i++) {
+    if(complete_cloud_occupancy_by_RM_[i] > 1) {
+      occupied_multiple+=complete_cloud_occupancy_by_RM_[i];
+    }
+  }
+
+  setPreviousDuplicityCM(occupied_multiple);
   //do optimization
   //Define model SAModel, initial solution is all models activated
 
@@ -356,10 +428,13 @@ void pcl::GlobalHypothesesVerification<ModelT, SceneT>::SAOptimize(std::vector<i
   setPreviousBadInfo (bad_information_);
   setPreviousUnexplainedValue (unexplained_in_neighboorhod);
 
-  //std::cout << "unexplained:" << unexplained_in_neighboorhod << std::endl;
-
   SAModel model;
-  model.cost_ = static_cast<mets::gol_type> ((good_information_ - bad_information_ - static_cast<float> (duplicity) - unexplained_in_neighboorhod) * -1.f);
+  model.cost_ = static_cast<mets::gol_type> ((good_information_ - bad_information_
+                                               - static_cast<float> (duplicity)
+                                               - static_cast<float> (occupied_multiple) * w_occupied_multiple_cm_
+                                               - static_cast<float> (recognition_models_.size ())
+                                               - unexplained_in_neighboorhod) * -1.f);
+
   model.setSolution (initial_solution);
   model.setOptimizer (this);
   SAModel best (model);
@@ -403,18 +478,6 @@ void pcl::GlobalHypothesesVerification<ModelT, SceneT>::verify()
     for (size_t i = 0; i < subsolution.size (); i++)
     {
       mask_[indices_[cc_[c][i]]] = (subsolution[i]);
-    }
-    //std::cout << indices_.size () << " " << recognition_models_.size () << std::endl;
-  }
-
-  //merge solutions
-  //std::cout << indices_.size () << " " << recognition_models_.size () << std::endl;
-  for (size_t i = 0; i < indices_.size (); i++)
-  {
-    if (mask_[indices_[i]])
-    {
-      std::cout << "Unique scene points explained:" << recognition_models_[i]->explained_.size () << " visible cloud size:"
-          << recognition_models_[i]->cloud_->points.size () << std::endl;
     }
   }
 }
@@ -550,7 +613,6 @@ bool pcl::GlobalHypothesesVerification<ModelT, SceneT>::addModel(typename pcl::P
 
   for (it = model_explains_scene_points.begin (); it != model_explains_scene_points.end (); it++, p++)
   {
-    //std::cout << it->second->size() << std::endl;
     size_t closest = 0;
     float min_d = std::numeric_limits<float>::min ();
     for (size_t i = 0; i < it->second->size (); i++)
@@ -578,8 +640,6 @@ bool pcl::GlobalHypothesesVerification<ModelT, SceneT>::addModel(typename pcl::P
     explained_indices_distances.push_back (d_weight * dotp);
 
   }
-
-  //std::cout << "color_weight_inliers" << color_weight_inliers << std::endl;
 
   recog_model->bad_information_ = static_cast<int> (recog_model->outlier_indices_.size ());
   recog_model->explained_ = explained_indices;

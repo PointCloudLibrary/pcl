@@ -37,6 +37,7 @@ namespace pcl
           std::vector<int> unexplained_in_neighborhood; //indices vector referencing unexplained_by_RM_neighboorhods
           std::vector<float> unexplained_in_neighborhood_weights; //weights for the points not being explained in the neighborhood of a hypothesis
           std::vector<int> outlier_indices_; //outlier indices of this model
+          std::vector<int> complete_cloud_occupancy_indices_;
           typename pcl::PointCloud<ModelT>::Ptr cloud_;
           typename pcl::PointCloud<ModelT>::Ptr complete_cloud_;
           int bad_information_;
@@ -189,6 +190,10 @@ namespace pcl
       pcl::PointCloud<pcl::Normal>::Ptr scene_normals_;
       pcl::PointCloud<pcl::PointXYZI>::Ptr clusters_cloud_;
 
+      std::vector<int> complete_cloud_occupancy_by_RM_;
+      float res_occupancy_grid_;
+      float w_occupied_multiple_cm_;
+
       std::vector<int> explained_by_RM_; //represents the points of scene_cloud_ that are explained by the recognition models
       std::vector<float> explained_by_RM_distance_weighted; //represents the points of scene_cloud_ that are explained by the recognition models
       std::vector<float> unexplained_by_RM_neighboorhods; //represents the points of scene_cloud_ that are not explained by the active hypotheses in the neighboorhod of the recognition models
@@ -203,6 +208,7 @@ namespace pcl
 
       float previous_explained_value;
       int previous_duplicity_;
+      int previous_duplicity_complete_models_;
       float previous_bad_info_;
       float previous_unexplained_;
 
@@ -233,6 +239,11 @@ namespace pcl
         previous_duplicity_ = v;
       }
 
+      void setPreviousDuplicityCM(int v)
+      {
+        previous_duplicity_complete_models_ = v;
+      }
+
       void setPreviousUnexplainedValue(float v)
       {
         previous_unexplained_ = v;
@@ -251,6 +262,11 @@ namespace pcl
       int getDuplicity()
       {
         return previous_duplicity_;
+      }
+
+      int getDuplicityCM()
+      {
+        return previous_duplicity_complete_models_;
       }
 
       void updateUnexplainedVector(std::vector<int> & unexplained_, std::vector<float> & unexplained_distances, std::vector<float> & unexplained_by_RM,
@@ -336,6 +352,27 @@ namespace pcl
         previous_duplicity_ += add_to_duplicity_;
       }
 
+      void updateCMDuplicity(std::vector<int> & vec, std::vector<int> & occupancy_vec, float sign) {
+        int add_to_duplicity_ = 0;
+        for (size_t i = 0; i < vec.size (); i++)
+        {
+          bool prev_dup = occupancy_vec[vec[i]] > 1;
+          occupancy_vec[vec[i]] += static_cast<int> (sign);
+          if ((occupancy_vec[vec[i]] > 1) && prev_dup)
+          { //its still a duplicate, we are adding
+            add_to_duplicity_ += static_cast<int> (sign); //so, just add or remove one
+          } else if ((occupancy_vec[vec[i]] == 1) && prev_dup)
+          { //if was duplicate before, now its not, remove 2, we are removing the hypothesis
+            add_to_duplicity_ -= 2;
+          } else if ((occupancy_vec[vec[i]] > 1) && !prev_dup)
+          { //it was not a duplicate but it is now, add 2, we are adding a conflicting hypothesis for the point
+            add_to_duplicity_ += 2;
+          }
+        }
+
+        previous_duplicity_complete_models_ += add_to_duplicity_;
+      }
+
       float getTotalExplainedInformation(std::vector<int> & explained_, std::vector<float> & explained_by_RM_distance_weighted, int * duplicity_)
       {
         float explained_info = 0;
@@ -404,6 +441,8 @@ namespace pcl
         detect_clutter_ = true;
         radius_neighborhood_GO_ = 0.03f;
         clutter_regularizer_ = 5.f;
+        res_occupancy_grid_ = 0.01f;
+        w_occupied_multiple_cm_ = 4.f;
       }
 
       void
