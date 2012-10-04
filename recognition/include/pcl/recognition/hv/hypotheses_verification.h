@@ -111,6 +111,10 @@ namespace pcl
      */
     float inliers_threshold_;
 
+    /*
+     * \brief Threshold to consider a point being occluded
+     */
+    float occlusion_thres_;
   public:
 
     HypothesisVerification ()
@@ -120,6 +124,7 @@ namespace pcl
       resolution_ = 0.005f;
       inliers_threshold_ = static_cast<float>(resolution_);
       occlusion_cloud_set_ = false;
+      occlusion_thres_ = 0.005f;
     }
 
     /*
@@ -129,6 +134,15 @@ namespace pcl
     void
     setResolution(float r) {
       resolution_ = r;
+    }
+
+    /*
+     *  \brief Sets the occlusion threshold
+     *  mask t threshold
+     */
+    void
+    setOcclusionThreshold(float t) {
+      occlusion_thres_ = t;
     }
 
     /*
@@ -212,11 +226,11 @@ namespace pcl
           //scene-occlusions
           if (occlusion_cloud_->isOrganized ())
           {
-            filtered = pcl::occlusion_reasoning::filter<ModelT,SceneT> (occlusion_cloud_, const_filtered, 525.f, 0.01f);
+            filtered = pcl::occlusion_reasoning::filter<ModelT,SceneT> (occlusion_cloud_, const_filtered, 525.f, occlusion_thres_);
           }
           else
           {
-            zbuffer_scene.filter (const_filtered, filtered, 0.01f);
+            zbuffer_scene.filter (const_filtered, filtered, occlusion_thres_);
           }
 
           visible_models_.push_back (filtered);
