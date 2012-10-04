@@ -1837,7 +1837,7 @@ namespace pcl
     int Octree<Degree>::LaplacianMatrixIteration( int subdivideDepth , bool showResidual , int minIters , double accuracy )
     {
       int i,iter=0;
-      double t;
+      double t = 0;
       fData.setDotTables( fData.DD_DOT_FLAG | fData.DV_DOT_FLAG );
 
       SparseMatrix< float >::SetAllocator( MEMORY_ALLOCATOR_BLOCK_SIZE );
@@ -1925,7 +1925,7 @@ namespace pcl
       Vector< Real > B , _B , _X;
       AdjacencySetFunction asf;
       AdjacencyCountFunction acf;
-      double systemTime = 0 , solveTime = 0 , memUsage = 0 , evaluateTime = 0 , gTime , sTime;
+      double systemTime = 0 , solveTime = 0 , memUsage = 0 , evaluateTime = 0 , gTime = 0, sTime = 0;
       Real myRadius , myRadius2;
 
       if( depth>_minDepth )

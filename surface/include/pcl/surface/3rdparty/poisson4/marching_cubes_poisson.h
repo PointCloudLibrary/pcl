@@ -38,7 +38,7 @@ namespace pcl
   namespace poisson
   {
 
-    class PCL_EXPORTS Square
+    class Square
     {
       public:
         const static unsigned int CORNERS=4,EDGES=4,NEIGHBORS=4;
@@ -54,7 +54,7 @@ namespace pcl
         static void EdgeCorners(int idx,int& c1,int &c2);
     };
 
-    class PCL_EXPORTS Cube
+    class Cube
     {
       public:
         const static unsigned int CORNERS=8,EDGES=12,NEIGHBORS=6;

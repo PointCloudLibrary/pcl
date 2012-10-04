@@ -196,7 +196,7 @@ namespace pcl
         int idx;
         bool inCore;
     };
-    class CoredMeshData
+    class PCL_EXPORTS CoredMeshData
     {
       public:
         std::vector<Point3D<float> > inCorePoints;
@@ -212,7 +212,7 @@ namespace pcl
         virtual int polygonCount( void ) = 0;
     };
     // Stores the iso-span of each vertex, rather than it's position
-    class CoredMeshData2
+    class PCL_EXPORTS CoredMeshData2
     {
       public:
         struct Vertex
@@ -284,7 +284,7 @@ namespace pcl
         int outOfCorePointCount( void );
         int polygonCount( void );
     };
-    class PCL_EXPORTS CoredFileMeshData : public CoredMeshData
+    class CoredFileMeshData : public CoredMeshData
     {
         FILE *oocPointFile , *polygonFile;
         int oocPoints , polygons;
@@ -303,7 +303,7 @@ namespace pcl
         int outOfCorePointCount(void);
         int polygonCount( void );
     };
-    class PCL_EXPORTS CoredFileMeshData2 : public CoredMeshData2
+    class CoredFileMeshData2 : public CoredMeshData2
     {
         FILE *oocPointFile , *polygonFile;
         int oocPoints , polygons;
