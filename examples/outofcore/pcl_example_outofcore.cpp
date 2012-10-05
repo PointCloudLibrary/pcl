@@ -58,10 +58,12 @@ int main (int argc, char** argv)
   int depth = 3;
   Eigen::Vector3d min (-10.0, -10.0, -10.0);
   Eigen::Vector3d max (10.0, 10.0, 10.0);
+
+  //specify the destination of the tree
   boost::filesystem::path file_location ("tree/tree.oct_idx");
   
+  //create the tree with bounding box that will encompass the region of points in the PCD files
   OctreeDisk* octree;
-  
   octree = new OctreeDisk (depth, min, max, file_location, "ECEF");
 
   sensor_msgs::PointCloud2::Ptr cloud (new sensor_msgs::PointCloud2 ());

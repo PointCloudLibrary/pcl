@@ -122,7 +122,7 @@ namespace pcl
           boost::filesystem::path filename (uuid);
           boost::filesystem::path file = path / filename;
 
-         disk_storage_filename_ = boost::shared_ptr<std::string> (new std::string (file.string ()));
+          disk_storage_filename_ = boost::shared_ptr<std::string> (new std::string (file.string ()));
         }
         else
         {
@@ -238,7 +238,6 @@ namespace pcl
     {
       if (count == 0)
       {
-//        PCL_DEBUG ("[pcl::outofcore::OutofcoreOctreeDiskContainer] No points requested for reading\n");
         return;
       }
 
@@ -258,60 +257,7 @@ namespace pcl
       for (size_t i=0; i < cloud->points.size (); i++)
         dst.push_back (cloud->points[i]);
       
-/* //reinsert this when adding backward compatability (version <= 2)
-      //this can never happen.
-      if (start < filelen_)
-      {
-        filestart = start;
-      }
-
-      int64_t buffstart = -1;
-      int64_t buffcount = -1;
-
-
-      if ((start + count) <= filelen_)
-      {
-        filecount = count;
-      }
-      else
-      {
-        filecount = filelen_ - start;
-
-        buffstart = 0;
-        buffcount = count - filecount;
-      }
-
-      //resize
-      PointT* loc = NULL;
-      v.resize (static_cast<uint64_t>(count));
-      loc = reinterpret_cast<PointT*> (&(v.front ()));
-
-      //do the read
-      FILE* f = fopen (disk_storage_filename_->c_str (), "rb");
-      assert (f != NULL);
-
-      int seekret = _fseeki64 (f, filestart * static_cast<uint64_t>(sizeof(PointT)), SEEK_SET);
-      assert (seekret == 0);
-
-      for (uint64_t pos = 0; pos < filecount; pos += READ_BLOCK_SIZE_)
-      {
-        if ((pos + READ_BLOCK_SIZE_) < filecount)
-        {
-          size_t readlen = fread (loc, sizeof(PointT), READ_BLOCK_SIZE_, f);
-          assert (readlen == READ_BLOCK_SIZE_);
-          loc += READ_BLOCK_SIZE_;
-        }
-        else
-        {
-          size_t readlen = fread (loc, sizeof(PointT), static_cast<size_t>(filecount - pos), f);
-          assert (readlen == filecount - pos);
-          loc += filecount - pos;
-        }
-      }
-
-      fclose (f);
-*/
-}
+    }
     ////////////////////////////////////////////////////////////////////////////////
 
     template<typename PointT> void
@@ -374,7 +320,7 @@ namespace pcl
           boost::bernoulli_distribution<double> filedist (percent);
           boost::variate_generator<boost::mt19937&, boost::bernoulli_distribution<double> > filecoin (rand_gen_, filedist);
           for (uint64_t i = filestart; i < (filestart + filecount); i++)
-         {
+          {
             if (filecoin ())
             {
               offsets.push_back (i);
@@ -680,85 +626,44 @@ namespace pcl
     template<typename PointT> void
     OutofcoreOctreeDiskContainer<PointT>::insertRange (const PointT* start, const uint64_t count)
     {
-      //variables which ultimately need to be global
-      int outofcore_v = 3;
-      //only flush the write buffer if there are enough points for it
-      //to be worth the seek the tradeoff here is RAM; sorting first,
-      //then dumping to nodes would be more efficient for disk I/O
-      //int flush_size = 1000;
+      typename pcl::PointCloud<PointT>::Ptr tmp_cloud (new pcl::PointCloud<PointT> ());
 
-      if (outofcore_v >= 3)
+      // If there's a pcd file with data, read it in from disk for appending
+      if (boost::filesystem::exists (*disk_storage_filename_))
       {
-        typename pcl::PointCloud<PointT>::Ptr tmp_cloud (new pcl::PointCloud<PointT> ());
-
-        // If there's a pcd file with data, read it in from disk for appending
-        if (boost::filesystem::exists (*disk_storage_filename_))
-        {
-          pcl::PCDReader reader;
-          // Open it
-          int res = reader.read (disk_storage_filename_->c_str (), *tmp_cloud);
-          (void)res; 
-          assert (res == 0);
-        }
-        else //otherwise create the pcd file
-        {
-          tmp_cloud->width = static_cast<uint32_t> (count) + static_cast<uint32_t> (writebuff_.size ());
-          tmp_cloud->height = 1;
-        }            
-
-        // Add any points in the cache
-        for (size_t i = 0; i < writebuff_.size (); i++)
-        {
-          tmp_cloud->points.push_back (writebuff_ [i]);
-        }
-
-        //add the new points passed with this function
-        for (size_t i = 0; i < count; i++)
-        {
-          tmp_cloud->points.push_back (*(start + i));
-        }
-
-        tmp_cloud->width = static_cast<uint32_t> (tmp_cloud->points.size ());
+        pcl::PCDReader reader;
+        // Open it
+        int res = reader.read (disk_storage_filename_->c_str (), *tmp_cloud);
+        (void)res; 
+        assert (res == 0);
+      }
+      else //otherwise create the pcd file
+      {
+        tmp_cloud->width = static_cast<uint32_t> (count) + static_cast<uint32_t> (writebuff_.size ());
         tmp_cloud->height = 1;
-            
-        //save and close
-        PCDWriter writer;
+      }            
 
-        int res = writer.writeBinaryCompressed (*disk_storage_filename_, *tmp_cloud);
-        (void)res;
-        assert (res == 0);
-      }
-      else //less than version 3
+      // Add any points in the cache
+      for (size_t i = 0; i < writebuff_.size (); i++)
       {
-        
-        //open the file for appending binary
-        FILE* f = fopen (disk_storage_filename_->c_str (), "a+b");
-        assert (f != NULL); 
-
-        for (uint64_t pos = 0; pos < count; pos += WRITE_BUFF_MAX_)
-        {
-          const PointT* loc = start + pos;
-          if ((pos + WRITE_BUFF_MAX_) < count)
-          {
-            size_t res = fwrite (loc, sizeof (PointT), WRITE_BUFF_MAX_, f);
-            (void)res;
-            assert (res == WRITE_BUFF_MAX_);
-          }
-          else
-          {
-            size_t res = fwrite (loc, sizeof(PointT), static_cast<size_t> (count - pos), f);
-            (void)res;
-            assert (res == count - pos);
-          }
-        }
-
-        //	int closeret = fclose(f);
-        int res = fclose (f);
-        (void)res;
-        assert (res == 0);
+        tmp_cloud->points.push_back (writebuff_ [i]);
       }
-      
-      filelen_ += count;
+
+      //add the new points passed with this function
+      for (size_t i = 0; i < count; i++)
+      {
+        tmp_cloud->points.push_back (*(start + i));
+      }
+
+      tmp_cloud->width = static_cast<uint32_t> (tmp_cloud->points.size ());
+      tmp_cloud->height = 1;
+            
+      //save and close
+      PCDWriter writer;
+
+      int res = writer.writeBinaryCompressed (*disk_storage_filename_, *tmp_cloud);
+      (void)res;
+      assert (res == 0);
     }
     ////////////////////////////////////////////////////////////////////////////////
 

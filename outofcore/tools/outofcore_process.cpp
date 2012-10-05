@@ -69,7 +69,7 @@ using pcl::console::print_info;
 
 #include <boost/foreach.hpp>
 
-typedef OutofcoreOctreeBase<OutofcoreOctreeDiskContainer<PointT> , PointT> octree_disk;
+typedef OutofcoreOctreeBase<> octree_disk;
 
 const int OCTREE_DEPTH (0);
 const int OCTREE_RESOLUTION (1);

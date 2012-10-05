@@ -177,29 +177,36 @@ namespace pcl
       cJSON* numpts = cJSON_GetObjectItem (idx.get (), "numpts");
       cJSON* coord = cJSON_GetObjectItem (idx.get (), "coord_system");
 
+      bool parse_failure = false;
+
       // Validate JSON
       if (!((name) && (version) && (pointtype) && (lod) && (numpts) && (coord)))
       {
         PCL_ERROR ( "[pcl::outofcore::OutofcoreOctreeBaseMetadata::loadMetadataFromDisk] One of expected metadata fields does not exist in %s\n", metadata_filename_.c_str ());
-        PCL_THROW_EXCEPTION (PCLException, "Outofcore Octree Parse Failure\n");
+        parse_failure = true;
       }
       if ((name->type != cJSON_String) || (version->type != cJSON_Number) || (pointtype->type != cJSON_String)
           || (lod->type != cJSON_Number) || (numpts->type != cJSON_Array) || (coord->type != cJSON_String))
       {
         PCL_ERROR ( "[pcl::outofcore::OutofcoreOctreeBaseMetadata::loadMetadataFromDisk] One of metadata fields does not contain its expected type in %s\n",metadata_filename_.c_str ());
-        PCL_THROW_EXCEPTION (PCLException, "Outofcore Octree Exception: Index failed to parse\n");
+        parse_failure = true;
       }
       if (version->valuedouble != 2.0 && version->valuedouble != 3.0)//only support version 2.0 and 3.0
       {
         PCL_ERROR ( "[pcl::outofcore::OutofcoreOctreeBaseMetadata::loadMetadataFromDisk] Outofcore version field (just read version:number = %.1lf) in %s does not match the current supported versions\n",metadata_filename_.c_str (), version->valuedouble);
-        PCL_THROW_EXCEPTION (PCLException, "Outofcore Octree Parse Failure: Incompatible Version of Outofcore Octree\n");
-        
+        parse_failure = true;
       }
       if ((lod->valueint + 1) != cJSON_GetArraySize (numpts))
       {
         PCL_ERROR ( "[pcl::outofcore::OutofcoreOctreeBaseMetadata::loadMetadataFromDisk] lod:num+1=%d+1 (i.e. height of tree) does not match size of LOD array (%d) in %s\n", lod->valueint, cJSON_GetArraySize (numpts), metadata_filename_.c_str ());
-        PCL_THROW_EXCEPTION (PCLException, "Outofcore Octree Parse Failure: LOD and array size of points is not valid\n");
+        parse_failure = true;
       }
+
+      if (parse_failure)
+      {
+        PCL_THROW_EXCEPTION (PCLException, "[pcl::outofcore::OutofcoreOctreeBaseMetadata::loadMetadataFromDisk] Parse Failure\n");
+      }
+      
 
       // Get Data
       LOD_num_points_.resize (lod->valueint + 1);

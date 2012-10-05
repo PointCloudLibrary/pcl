@@ -1138,11 +1138,13 @@ namespace pcl
             PCL_DEBUG ( "[pcl::outofcore::OutofcoreOctreeBaseNode::%s] Points in dst_blob: %ul\n", __FUNCTION__, dst_blob->width*dst_blob->height );
             return;
           }
+          else
+          {
           //otherwise queried bounding box only partially intersects this
           //node's bounding box, so we have to check all the points in
           //this box for intersection with queried bounding box
-          else
-          {
+
+            
 //            PCL_DEBUG ("[pcl::outofcore::OutofcoreOctreeBaseNode::%s] Partial extraction of points in bounding box. Desired: %.2lf %.2lf %2lf, %.2lf %.2lf %.2lf; This node BB: %.2lf %.2lf %.2lf, %.2lf %.2lf %.2lf\n", __FUNCTION__, min_bb[0], min_bb[1], min_bb[2], max_bb[0], max_bb[1], max_bb[2], min_[0], min_[1], min_[2], max_[0], max_[1], max_[2] );
             
             //put the ros message into a pointxyz point cloud (just to get the indices by using getPointsInBox)
@@ -1638,28 +1640,6 @@ namespace pcl
       PCL_DEBUG ("[pcl:outofcore::OutofcoreOctreeBaseNode] Loading metadata from %s\n", path.filename ().c_str ());
       node_metadata_->loadMetadataFromDisk (path);
 
-      //Validate
-      /* //Ignore for now
-
-      if (!((version) && (bb_min) && (bb_max) && (bin)))
-      {
-        PCL_ERROR ( "[pcl::outofcore::OutofcoreOctreeBaseNode] index %s failed to parse! Doesn't contain all attributes\n", path.c_str () );
-        PCL_THROW_EXCEPTION (PCLException, "[pcl::outofcore::OutofcoreOctreeBaseNode] Outofcore Octree Parse Failure: Metadata does not contain all attributes");
-      }
-      if ((version->type != cJSON_Number) || (bb_min->type != cJSON_Array) || (bb_max->type != cJSON_Array) || (bin->type != cJSON_String))
-      {
-        PCL_ERROR ( "[pcl::outofcore::OutofcoreOctreeBaseNode] index %s failed to parse! Invalid data types\n", path.c_str () );
-        PCL_THROW_EXCEPTION (PCLException, "[pcl::outofcore::OutofcoreOctreeBaseNode] Outofcore Octree Parse Failure: Metadata contains invalid data types");
-      }
-      if (version->valuedouble != 2.0 && version->valuedouble != 3.0)
-      {
-        PCL_ERROR ( "[pcl::outofcore::OutofcoreOctreeBaseNode] index %s failed to parse!\n  Incompatible version", path.c_str () );
-        PCL_THROW_EXCEPTION (PCLException, "[pcl::outofcore::OutofcoreOctreeBaseNode] Outofcore Octree Parse Failure: Incompatible version");
-      }
-
-      //	version->valuedouble;
-      */
-
       //this shouldn't be part of 'loadFromFile'
       this->parent_ = super;
 
@@ -1704,7 +1684,51 @@ namespace pcl
     }
 
     ////////////////////////////////////////////////////////////////////////////////
-#if 0
+
+    template<typename ContainerT, typename PointT> void
+    OutofcoreOctreeBaseNode<ContainerT, PointT>::sortOctantIndices (const sensor_msgs::PointCloud2::Ptr &input_cloud, std::vector< std::vector<int> > &indices, const Eigen::Vector3d &mid_xyz)
+    {
+      if (indices.size () < 8)
+        indices.resize (8);
+
+      int x_idx = pcl::getFieldIndex (*input_cloud , std::string ("x") );
+      int y_idx = pcl::getFieldIndex (*input_cloud, std::string ("y") );
+      int z_idx = pcl::getFieldIndex (*input_cloud, std::string ("z") );
+
+      int x_offset = input_cloud->fields[x_idx].offset;
+      int y_offset = input_cloud->fields[y_idx].offset;
+      int z_offset = input_cloud->fields[z_idx].offset;
+      
+      for ( size_t point_idx =0; point_idx < input_cloud->data.size (); point_idx +=input_cloud->point_step )
+      {
+        PointT local_pt;
+
+        local_pt.x = * (reinterpret_cast<float*>(&input_cloud->data[point_idx + x_offset]));
+        local_pt.y = * (reinterpret_cast<float*>(&input_cloud->data[point_idx + y_offset]));
+        local_pt.z = * (reinterpret_cast<float*>(&input_cloud->data[point_idx + z_offset]));
+
+        if (!pcl_isfinite (local_pt.x) || !pcl_isfinite (local_pt.y) || !pcl_isfinite (local_pt.z))
+          continue;
+
+        if(!this->pointInBoundingBox (local_pt))
+        {
+          PCL_ERROR ("pcl::outofcore::OutofcoreOctreeBaseNode::%s] Point %2.lf %.2lf %.2lf not in bounding box", __FUNCTION__, local_pt.x, local_pt.y, local_pt.z);
+        }
+        
+        assert (this->pointInBoundingBox (local_pt) == true);
+
+        //compute the box we are in
+        size_t box = 0;
+        box = ((local_pt.z >= mid_xyz[2]) << 2) | ((local_pt.y >= mid_xyz[1]) << 1) | ((local_pt.x >= mid_xyz[0]) << 0);
+        assert (box < 8);
+              
+        //insert to the vector of indices
+        indices[box].push_back (static_cast<int> (point_idx/input_cloud->point_step));
+      }
+    }
+    ////////////////////////////////////////////////////////////////////////////////
+
+#if 0  //A bunch of non-class methods left from the Urban Robotics code that has been deactivated
     template<typename ContainerT, typename PointT> OutofcoreOctreeBaseNode<ContainerT, PointT>*
     makenode_norec (const boost::filesystem::path& path, OutofcoreOctreeBaseNode<ContainerT, PointT>* super)
     {
@@ -1856,49 +1880,6 @@ namespace pcl
       }
     }
 #endif
-    ////////////////////////////////////////////////////////////////////////////////
-
-    template<typename ContainerT, typename PointT> void
-    OutofcoreOctreeBaseNode<ContainerT, PointT>::sortOctantIndices (const sensor_msgs::PointCloud2::Ptr &input_cloud, std::vector< std::vector<int> > &indices, const Eigen::Vector3d &mid_xyz)
-    {
-      if (indices.size () < 8)
-        indices.resize (8);
-
-      int x_idx = pcl::getFieldIndex (*input_cloud , std::string ("x") );
-      int y_idx = pcl::getFieldIndex (*input_cloud, std::string ("y") );
-      int z_idx = pcl::getFieldIndex (*input_cloud, std::string ("z") );
-
-      int x_offset = input_cloud->fields[x_idx].offset;
-      int y_offset = input_cloud->fields[y_idx].offset;
-      int z_offset = input_cloud->fields[z_idx].offset;
-      
-      for ( size_t point_idx =0; point_idx < input_cloud->data.size (); point_idx +=input_cloud->point_step )
-      {
-        PointT local_pt;
-
-        local_pt.x = * (reinterpret_cast<float*>(&input_cloud->data[point_idx + x_offset]));
-        local_pt.y = * (reinterpret_cast<float*>(&input_cloud->data[point_idx + y_offset]));
-        local_pt.z = * (reinterpret_cast<float*>(&input_cloud->data[point_idx + z_offset]));
-
-        if (!pcl_isfinite (local_pt.x) || !pcl_isfinite (local_pt.y) || !pcl_isfinite (local_pt.z))
-          continue;
-
-        if(!this->pointInBoundingBox (local_pt))
-        {
-          PCL_ERROR ("pcl::outofcore::OutofcoreOctreeBaseNode::%s] Point %2.lf %.2lf %.2lf not in bounding box", __FUNCTION__, local_pt.x, local_pt.y, local_pt.z);
-        }
-        
-        assert (this->pointInBoundingBox (local_pt) == true);
-
-        //compute the box we are in
-        size_t box = 0;
-        box = ((local_pt.z >= mid_xyz[2]) << 2) | ((local_pt.y >= mid_xyz[1]) << 1) | ((local_pt.x >= mid_xyz[0]) << 0);
-        assert (box < 8);
-              
-        //insert to the vector of indices
-        indices[box].push_back (static_cast<int> (point_idx/input_cloud->point_step));
-      }
-    }
     ////////////////////////////////////////////////////////////////////////////////
 
   }//namespace outofcore

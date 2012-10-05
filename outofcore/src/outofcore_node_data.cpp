@@ -271,6 +271,35 @@ namespace pcl
       cJSON* cjson_bb_min = cJSON_GetObjectItem (idx.get (), "bb_min");
       cJSON* cjson_bb_max = cJSON_GetObjectItem (idx.get (), "bb_max");
       cJSON* cjson_bin_point_filename = cJSON_GetObjectItem (idx.get (), "bin");
+
+      bool parse_failure = false;
+      
+      //Sanitize
+      if (!cjson_outofcore_version)
+      {
+        PCL_ERROR ("[pcl::outofcore::OutofcoreOctreeNodeMetadata::%s] Failed to parse \"version\" field of node metadata %s\n", __FUNCTION__, metadata_filename_.c_str ());
+        parse_failure = true;
+      }
+      if (!cjson_bb_min)
+      {
+        PCL_ERROR ("[pcl::outofcore::OutofcoreOctreeNodeMetadata::%s] Failed to parse \"bb_min\" field of node metadata %s\n", __FUNCTION__, metadata_filename_.c_str ());        
+        parse_failure = true;
+      }
+      if (!cjson_bb_max)
+      {
+        PCL_ERROR ("[pcl::outofcore::OutofcoreOctreeNodeMetadata::%s] Failed to parse \"bb_max\" field of node metadata %s\n", __FUNCTION__, metadata_filename_.c_str ());
+        parse_failure = true;
+      }
+      if (!cjson_bin_point_filename)
+      {
+        PCL_ERROR ("[pcl::outofcore::OutofcoreOctreeNodeMetadata::%s] Failed to parse \"bin\" field of node metadata %s\n", __FUNCTION__, metadata_filename_.c_str ());
+        parse_failure = true;
+      }
+      
+      if (parse_failure)
+      {
+        PCL_THROW_EXCEPTION (PCLException, "[pcl::outofcore::OutofcoreOctreeNodeMetadata::%s] Outofcore node metadata parse error\n");
+      }
       
       for (int i = 0; i < 3; i++)
       {
