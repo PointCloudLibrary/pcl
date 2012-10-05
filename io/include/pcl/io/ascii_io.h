@@ -56,6 +56,7 @@ namespace pcl
     public:
       ASCIIReader ();
       virtual ~ASCIIReader ();
+      using FileReader::read;
 
       /* Load only the meta information (number of points, their types, etc),
         * and not the points themselves, from a given FILE file. Useful for fast
