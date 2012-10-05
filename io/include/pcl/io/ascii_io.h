@@ -35,8 +35,8 @@
  *
  */
 
-#ifndef ASCII_IO_H_
-#define ASCII_IO_H_
+#ifndef PCL_IO_ASCII_IO_H_
+#define PCL_IO_ASCII_IO_H_
 
 #include <pcl/io/file_io.h>
 #include <sensor_msgs/PointField.h>
@@ -45,126 +45,132 @@
 
 namespace pcl
 {
-/** \brief Ascii Point Cloud Reader.
-  * Read any ASCII file by setting the separating characters and input point fields.
-  *
-  * \author Adam Stambler (adasta@gmail.com)
-  * \ingroup io
-  */
-  class ASCIIReader : public FileReader
+  /** \brief Ascii Point Cloud Reader.
+    * Read any ASCII file by setting the separating characters and input point fields.
+    *
+    * \author Adam Stambler (adasta@gmail.com)
+    * \ingroup io
+    */
+  class PCL_EXPORTS ASCIIReader : public FileReader
   {
+    public:
+      ASCIIReader ();
+      virtual ~ASCIIReader ();
 
-  public:
-    ASCIIReader();
-    virtual ~ASCIIReader();
-    using   FileReader::read ;
-
-/* Load only the meta information (number of points, their types, etc),
-  * and not the points themselves, from a given FILE file. Useful for fast
-  * evaluation of the underlying data structure.
-  *
-  * Returns:
-  *  * < 0 (-1) on error
-  *  * > 0 on success
-  * \param[in] file_name the name of the file to load
-  * \param[out] cloud the resultant point cloud dataset (only the header will be filled)
-  * \param[out] origin the sensor acquisition origin (only for > FILE_V7 - null if not present)
-  * \param[out] orientation the sensor acquisition orientation (only for > FILE_V7 - identity if not present)
-  * \param[out] file_version the FILE version of the file (either FILE_V6 or FILE_V7)
-  * \param[out] data_type the type of data (binary data=1, ascii=0, etc)
-  * \param[out] data_idx the offset of cloud data within the file
-  * \param[in] offset the offset in the file where to expect the true header to begin.
-  * One usage example for setting the offset parameter is for reading
-  * data from a TAR "archive containing multiple files: TAR files always
-  * add a 512 byte header in front of the actual file, so set the offset
-  * to the next byte after the header (e.g., 513).
-  */
-    virtual int
-    readHeader (const std::string &file_name, sensor_msgs::PointCloud2 &cloud,
-                Eigen::Vector4f &origin, Eigen::Quaternionf &orientation,
-                int &file_version, int &data_type, unsigned int &data_idx, const int offset = 0) ;
+      /* Load only the meta information (number of points, their types, etc),
+        * and not the points themselves, from a given FILE file. Useful for fast
+        * evaluation of the underlying data structure.
+        *
+        * Returns:
+        *  * < 0 (-1) on error
+        *  * > 0 on success
+        * \param[in] file_name the name of the file to load
+        * \param[out] cloud the resultant point cloud dataset (only the header will be filled)
+        * \param[out] origin the sensor acquisition origin (only for > FILE_V7 - null if not present)
+        * \param[out] orientation the sensor acquisition orientation (only for > FILE_V7 - identity if not present)
+        * \param[out] file_version the FILE version of the file (either FILE_V6 or FILE_V7)
+        * \param[out] data_type the type of data (binary data=1, ascii=0, etc)
+        * \param[out] data_idx the offset of cloud data within the file
+        * \param[in] offset the offset in the file where to expect the true header to begin.
+        * One usage example for setting the offset parameter is for reading
+        * data from a TAR "archive containing multiple files: TAR files always
+        * add a 512 byte header in front of the actual file, so set the offset
+        * to the next byte after the header (e.g., 513).
+        */
+      virtual int
+      readHeader (const std::string &file_name, sensor_msgs::PointCloud2 &cloud,
+                  Eigen::Vector4f &origin, Eigen::Quaternionf &orientation,
+                  int &file_version, int &data_type, unsigned int &data_idx, const int offset = 0) ;
 
 
-  /** \brief Read a point cloud data from a FILE file and store it into a sensor_msgs/PointCloud2.
-    * \param[in] file_name the name of the file containing the actual PointCloud data
-    * \param[out] cloud the resultant PointCloud message read from disk
-    * \param[out] origin the sensor acquisition origin (only for > FILE_V7 - null if not present)
-    * \param[out] orientation the sensor acquisition orientation (only for > FILE_V7 - identity if not present)
-    * \param[out] file_version the FILE version of the file (either FILE_V6 or FILE_V7)
-    * \param[in] offset the offset in the file where to expect the true header to begin.
-    * One usage example for setting the offset parameter is for reading
-    * data from a TAR "archive containing multiple files: TAR files always
-    * add a 512 byte header in front of the actual file, so set the offset
-    * to the next byte after the header (e.g., 513).
-    */
-    virtual int
-    read (const std::string &file_name, sensor_msgs::PointCloud2 &cloud,
-          Eigen::Vector4f &origin, Eigen::Quaternionf &orientation, int &file_version,
-          const int offset = 0);
+      /** \brief Read a point cloud data from a FILE file and store it into a sensor_msgs/PointCloud2.
+        * \param[in] file_name the name of the file containing the actual PointCloud data
+        * \param[out] cloud the resultant PointCloud message read from disk
+        * \param[out] origin the sensor acquisition origin (only for > FILE_V7 - null if not present)
+        * \param[out] orientation the sensor acquisition orientation (only for > FILE_V7 - identity if not present)
+        * \param[out] file_version the FILE version of the file (either FILE_V6 or FILE_V7)
+        * \param[in] offset the offset in the file where to expect the true header to begin.
+        * One usage example for setting the offset parameter is for reading
+        * data from a TAR "archive containing multiple files: TAR files always
+        * add a 512 byte header in front of the actual file, so set the offset
+        * to the next byte after the header (e.g., 513).
+        */
+      virtual int
+      read (const std::string &file_name, sensor_msgs::PointCloud2 &cloud,
+            Eigen::Vector4f &origin, Eigen::Quaternionf &orientation, int &file_version,
+            const int offset = 0);
 
-  /** \brief Set the ascii file point fields using a list of fields.
-    * \param[in] fields  is a list of point fields, in order, in the input ascii file
-    */
-    void setInputFields(const std::vector<sensor_msgs::PointField>& fields );
-
-
-  /** \brief Set the ascii file point fields using a point type.
-    * \param[in] p  a point type
-    */
-    template<typename PointT>
-    void setInputFields( const PointT p=PointT() );
+      /** \brief Set the ascii file point fields using a list of fields.
+        * \param[in] fields  is a list of point fields, in order, in the input ascii file
+        */
+      void 
+      setInputFields (const std::vector<sensor_msgs::PointField>& fields);
 
 
-  /** \brief Set the Separting characters for the ascii point fields 2.
-    * \param[in] chars string of separating characters
-    *  Sets the separating characters for the point fields.  The
-    *  default separating characters are " \n\t,"
-    */
-    void setSepChars(std::string chars);
-
-  /** \brief Set the extension of the ascii point file type.
-    * \param[in] ext   extension (example :  ".txt" or ".xyz" )
-    */
-    void setExtension(std::string ext){extension_ = ext;}
-  protected:
-    std::string sep_chars_;
-    std::string extension_;
-    std::vector<sensor_msgs::PointField> fields_;
-    std::string name_;
+      /** \brief Set the ascii file point fields using a point type.
+        * \param[in] p  a point type
+        */
+      template<typename PointT>
+      void setInputFields (const PointT p = PointT ());
 
 
-    /** \brief Parses token based on field type.
-    * \param[in] token   string representation of point fields
-    * \param[in] field   token point field type
-    * \param[out] data_target  address that the point field data should be assigned to
-    *  returns the size of the parsed point field in bytes
-    */
-    int parse( const std::string& token, const sensor_msgs::PointField& field, uint8_t* data_target );
+      /** \brief Set the Separting characters for the ascii point fields 2.
+        * \param[in] chars string of separating characters
+        *  Sets the separating characters for the point fields.  The
+        *  default separating characters are " \n\t,"
+        */
+      void 
+      setSepChars (const std::string &chars);
 
-    /** \brief Returns the size in bytes of a point field type.
-    * \param[in] type   point field type
-    *  returns the size of the type in bytes
-    */
-    uint32_t typeSize( int type);
+      /** \brief Set the extension of the ascii point file type.
+        * \param[in] ext   extension (example :  ".txt" or ".xyz" )
+        */
+      void 
+      setExtension (const std::string &ext) { extension_ = ext; }
+
+    protected:
+      std::string sep_chars_;
+      std::string extension_;
+      std::vector<sensor_msgs::PointField> fields_;
+      std::string name_;
+
+
+      /** \brief Parses token based on field type.
+        * \param[in] token   string representation of point fields
+        * \param[in] field   token point field type
+        * \param[out] data_target  address that the point field data should be assigned to
+        *  returns the size of the parsed point field in bytes
+        */
+      int 
+      parse (const std::string& token, const sensor_msgs::PointField& field, uint8_t* data_target);
+
+      /** \brief Returns the size in bytes of a point field type.
+        * \param[in] type   point field type
+        *  returns the size of the type in bytes
+        */
+      uint32_t 
+      typeSize (int type);
 	};
 }
 
+//////////////////////////////////////////////////////////////////////////////
 template<typename PointT> void
 pcl::ASCIIReader::setInputFields (const PointT p)
 {
   (void) p;
 
-  pcl::getFields<PointT>(fields_);
+  pcl::getFields<PointT> (fields_);
 
-  //remove empty fields and adjust offset
+  // Remove empty fields and adjust offset
   int offset =0;
-  for(std::vector<sensor_msgs::PointField>::iterator field_iter = fields_.begin();
-      field_iter!=  fields_.end(); field_iter++)
+  for (std::vector<sensor_msgs::PointField>::iterator field_iter = fields_.begin ();
+       field_iter != fields_.end (); field_iter++)
   {
-    if (field_iter->name == "_") field_iter = fields_.erase(field_iter);
-    field_iter->offset=offset;
-    offset += typeSize(field_iter->datatype);
+    if (field_iter->name == "_") 
+      field_iter = fields_.erase (field_iter);
+    field_iter->offset = offset;
+    offset += typeSize (field_iter->datatype);
   }
 }
 
-#endif /* PTS_IO_H_ */
+#endif    // PCL_IO_ASCII_IO_H_
