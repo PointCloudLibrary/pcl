@@ -203,6 +203,7 @@ namespace pcl
 
         Eigen::Matrix3f projection_matrix_;
 
+      public:
         EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     };
   }
