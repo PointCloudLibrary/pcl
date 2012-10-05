@@ -192,12 +192,12 @@ Install FLANN
 Install VTK
 '''''''''''
 
-To install VTK with X11 support, you need a modified Homebrew formula for VTK. Please
+To install VTK, you need a modified Homebrew formula for VTK. Please
 download it from `VTK.RB <http://dev.pointclouds.org/attachments/600/vtk.rb>`_.
 
 ::
 
-  $ brew install vtk --x11
+  $ brew install vtk --qt OR --qt-extern [if you have your own Qt installation already]
 
 .. note::
 
