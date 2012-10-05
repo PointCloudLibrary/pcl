@@ -45,6 +45,7 @@
 #include <pcl/console/print.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/io/ply_io.h>
+#include <pcl/io/ascii_io.h>
 #include <fstream>
 #include <locale>
 #include <stdexcept>
@@ -876,6 +877,49 @@ TEST (PCL, PCDReaderWriterEigen)
     EXPECT_FLOAT_EQ (cloud_eigen5.points (i, 2), cloud.points[i].z);
     EXPECT_FLOAT_EQ (cloud_eigen5.points (i, 3), cloud.points[i].intensity);
   }
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, ASCIIReader)
+{
+  PointCloud<PointXYZI> cloud, rcloud;
+
+  cloud.width  = 300;
+  cloud.height = 1;
+  cloud.points.resize (cloud.width * cloud.height);
+  cloud.is_dense = true;
+
+
+  std::fstream afile ("/home/asher/test_pcd.txt", std::iostream::out);
+
+  afile<< std::setprecision(10);
+
+  srand (static_cast<unsigned int> (time (NULL)));
+  size_t nr_p = cloud.points.size ();
+  // Randomly create a new point cloud
+  for (size_t i = 0; i < nr_p; ++i)
+  {
+    cloud.points[i].x = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
+    cloud.points[i].y = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
+    cloud.points[i].z = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
+    cloud.points[i].intensity = static_cast<float> (i);
+   afile << cloud.points[i].x << " , " << cloud.points[i].y  << " , " << cloud.points[i].z << " , "  << cloud.points[i].intensity << " \n";
+  }
+  afile.close();
+
+  ASCIIReader reader;
+  reader.setInputFields( pcl::PointXYZI() );
+
+  EXPECT_GE(reader.read("/home/asher/test_pcd.txt", rcloud), 0);
+  EXPECT_EQ(cloud.points.size(), rcloud.points.size() );
+
+  for(int i=0;i < rcloud.points.size(); i++){
+    EXPECT_FLOAT_EQ(cloud.points[i].x, rcloud.points[i].x);
+    EXPECT_FLOAT_EQ(cloud.points[i].y,rcloud.points[i].y);
+    EXPECT_FLOAT_EQ(cloud.points[i].z, rcloud.points[i].z);
+    EXPECT_FLOAT_EQ(cloud.points[i].intensity, rcloud.points[i].intensity);
+  }
+
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////

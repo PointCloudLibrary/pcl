@@ -43,14 +43,16 @@
 #include <pcl/common/io.h>
 
 
-namespace pcl{
+namespace pcl
+{
 /** \brief Ascii Point Cloud Reader.
   * Read any ASCII file by setting the separating characters and input point fields.
   *
   * \author Adam Stambler (adasta@gmail.com)
   * \ingroup io
   */
-  class ASCIIReader : public FileReader {
+  class ASCIIReader : public FileReader
+  {
 
   public:
     ASCIIReader();
@@ -144,12 +146,24 @@ namespace pcl{
     *  returns the size of the type in bytes
     */
     uint32_t typeSize( int type);
-};
+	};
 }
 
 template<typename PointT> void
-pcl::ASCIIReader::setInputFields(const PointT p) {
+pcl::ASCIIReader::setInputFields (const PointT p)
+{
+  (void) p;
+
   pcl::getFields<PointT>(fields_);
+
+  //remove empty fields and adjust offset
+  int offset =0;
+  for(std::vector<sensor_msgs::PointField>::iterator field_iter = fields_.begin();
+      field_iter!=  fields_.end(); field_iter++){
+    if (field_iter->name == "_") field_iter = fields_.erase(field_iter);
+    field_iter->offset=offset;
+    offset += typeSize(field_iter->datatype);
+  }
 }
 
 #endif /* PTS_IO_H_ */
