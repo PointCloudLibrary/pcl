@@ -890,7 +890,7 @@ TEST (PCL, ASCIIReader)
   cloud.is_dense = true;
 
 
-  std::fstream afile ("/home/asher/test_pcd.txt", std::iostream::out);
+  std::fstream afile ("test_pcd.txt", std::iostream::out);
 
   afile<< std::setprecision(10);
 
@@ -910,7 +910,7 @@ TEST (PCL, ASCIIReader)
   ASCIIReader reader;
   reader.setInputFields( pcl::PointXYZI() );
 
-  EXPECT_GE(reader.read("/home/asher/test_pcd.txt", rcloud), 0);
+  EXPECT_GE(reader.read("test_pcd.txt", rcloud), 0);
   EXPECT_EQ(cloud.points.size(), rcloud.points.size() );
 
   for(int i=0;i < rcloud.points.size(); i++){

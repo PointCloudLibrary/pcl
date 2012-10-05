@@ -159,7 +159,8 @@ pcl::ASCIIReader::setInputFields (const PointT p)
   //remove empty fields and adjust offset
   int offset =0;
   for(std::vector<sensor_msgs::PointField>::iterator field_iter = fields_.begin();
-      field_iter!=  fields_.end(); field_iter++){
+      field_iter!=  fields_.end(); field_iter++)
+  {
     if (field_iter->name == "_") field_iter = fields_.erase(field_iter);
     field_iter->offset=offset;
     offset += typeSize(field_iter->datatype);
