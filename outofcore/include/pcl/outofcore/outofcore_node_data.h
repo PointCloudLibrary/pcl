@@ -63,12 +63,14 @@ namespace pcl
      *  saved to the metadata object file on disk.
      *
      *  The JSON file is formatted in the following way:
-     *  {
-     *    "version": 3,
-     *    "bb_min":  [xxx,yyy,zzz],
-     *    "bb_max":  [xxx,yyy,zzz],
-     *    "bin":     "path_to_data.pcd"
-     *  }
+     *  \verbatim
+     {
+       "version": 3,
+       "bb_min":  [xxx,yyy,zzz],
+       "bb_max":  [xxx,yyy,zzz],
+       "bin":     "path_to_data.pcd"
+     }
+     \endverbatim
      *
      *  Any properties not stored in the metadata file are computed
      *  when the file is loaded (e.g. \ref midpoint_xyz_). By
@@ -90,6 +92,9 @@ namespace pcl
         OutofcoreOctreeNodeMetadata ();
         ~OutofcoreOctreeNodeMetadata ();
 
+        /** \brief Copy constructor */
+        OutofcoreOctreeNodeMetadata (const OutofcoreOctreeNodeMetadata& orig);
+        
         /** \brief Get the lower bounding box corner */
         const Eigen::Vector3d&
         getBoundingBoxMin () const;

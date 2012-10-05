@@ -74,14 +74,16 @@ namespace pcl
      *  some point.
      *
      *  The JSON file is formatted in the following way:
-     *  {
-     *    "name": "nameoftree",
-     *    "version": 3,
-     *    "pointtype": "urp",               #(needs to be changed*)
-     *    "lod": 3,                         #(depth of the tree
-     *    "numpts":  [X0, X1, X2, ..., XD], #total number of points at each LOD
-     *    "coord_system": "ECEF"            #the tree is not affected by this value
-     *  }
+     *  \verbatim
+     {
+       "name": "nameoftree",
+       "version": 3,
+       "pointtype": "urp",               #(needs to be changed*)
+       "lod": 3,                         #(depth of the tree
+       "numpts":  [X0, X1, X2, ..., XD], #total number of points at each LOD
+       "coord_system": "ECEF"            #the tree is not affected by this value
+     }
+     \endverbatim
      *
      *  Any properties not stored in the metadata file are computed
      *  when the file is loaded. By convention, and for historical
@@ -104,6 +106,9 @@ namespace pcl
         OutofcoreOctreeBaseMetadata (const boost::filesystem::path& path_arg);
         /** \brief Default destructor*/
         ~OutofcoreOctreeBaseMetadata ();
+
+        /** \brief Copy constructor */
+        OutofcoreOctreeBaseMetadata (const OutofcoreOctreeBaseMetadata& orig);
 
         /** \brief et the outofcore version read from the "version" field of the JSON object */
         int 

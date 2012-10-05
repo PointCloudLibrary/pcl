@@ -59,7 +59,8 @@ namespace pcl
         binary_point_filename_ (),
         midpoint_xyz_ (),
         directory_ (),
-        metadata_filename_ ()
+        metadata_filename_ (),
+        outofcore_version_ ()
     {
     }
 
@@ -69,6 +70,21 @@ namespace pcl
     {
     }
 
+    ////////////////////////////////////////////////////////////////////////////////
+
+    OutofcoreOctreeNodeMetadata::OutofcoreOctreeNodeMetadata (const OutofcoreOctreeNodeMetadata& orig)
+    {
+      this->min_bb_ = orig.min_bb_;
+      this->max_bb_ = orig.max_bb_;
+      this->binary_point_filename_ = orig.binary_point_filename_;
+      this->midpoint_xyz_ = orig.midpoint_xyz_;
+      this->directory_ = orig.directory_;
+      this->metadata_filename_ = orig.metadata_filename_;
+      this->outofcore_version_ = orig.outofcore_version_;
+
+      this->updateVoxelCenter ();
+    }
+    
     ////////////////////////////////////////////////////////////////////////////////
 
     const Eigen::Vector3d&
@@ -329,6 +345,7 @@ namespace pcl
     std::ostream& 
     operator<<(std::ostream& os, const OutofcoreOctreeNodeMetadata& metadata_arg)
     {
+      //todo: implement me
       PCL_THROW_EXCEPTION (PCLException, "Not implemented\n");
     }
     

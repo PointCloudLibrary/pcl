@@ -87,6 +87,20 @@ namespace pcl
 
     ////////////////////////////////////////////////////////////////////////////////
 
+    OutofcoreOctreeBaseMetadata::OutofcoreOctreeBaseMetadata (const OutofcoreOctreeBaseMetadata& orig) 
+      : metadata_filename_ (orig.metadata_filename_)
+      , outofcore_version_ (orig.outofcore_version_)
+      , coordinate_system_ (orig.coordinate_system_)
+      , tree_name_ (orig.tree_name_)
+      , point_type_ (orig.point_type_)
+      , levels_of_depth_ (orig.levels_of_depth_)
+      , LOD_num_points_ (orig.LOD_num_points_)
+    {
+
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////
+
     int
     OutofcoreOctreeBaseMetadata::getOutofcoreVersion () const
     {

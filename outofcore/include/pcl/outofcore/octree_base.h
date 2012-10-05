@@ -118,26 +118,25 @@ namespace pcl
      *  existing in a single directory hierarchy.
      *
      *  \verbatim
-     *  tree_name/
-     *       tree_name.oct_idx
-     *       tree_name.octree
-     *       [tree_name-uuid.pcd]
-     *       0/
-     *            tree_name.oct_idx
-     *            [tree_name-uuid.pcd]
-     *            0/
-     *               ...
-     *            1/
-     *              ...
-     *                  ...
-     *                      0/
-     *                          tree_name.oct_idx
-     *                          tree_name.pcd
-     *       1/
-     *       ...
-     *       7/
-     *
-     *  \endverbatim
+     tree_name/
+          tree_name.oct_idx
+          tree_name.octree
+          [tree_name-uuid.pcd]
+          0/
+               tree_name.oct_idx
+               [tree_name-uuid.pcd]
+               0/
+                  ...
+               1/
+                   ...
+                     ...
+                         0/
+                             tree_name.oct_idx
+                             tree_name.pcd
+          1/
+          ...
+          7/
+     \endverbatim
      *
      *  \ingroup outofcore
      *  \author Jacob Schloss (jacob.schloss@urbanrobotics.net)
