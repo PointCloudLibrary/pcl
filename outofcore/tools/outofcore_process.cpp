@@ -96,7 +96,7 @@ getCloudFromFile (boost::filesystem::path pcd_path)
 
 int
 outofcoreProcess (std::vector<boost::filesystem::path> pcd_paths, boost::filesystem::path root_dir, 
-                  int depth, double resolution, int build_octree_with, bool gen_lod, bool overwrite)
+                  int depth, double resolution, int build_octree_with, bool gen_lod, bool overwrite, bool multiresolution)
 {
   // Bounding box min/max pts
   PointT min_pt, max_pt;
@@ -187,15 +187,15 @@ outofcoreProcess (std::vector<boost::filesystem::path> pcd_paths, boost::filesys
 
     boost::uint64_t pts = 0;
     
-    // if (gen_lod)
-    // {
-    //    print_info ("  Generating LODs\n");
-    //    pts = outofcore_octree->addPointCloud_and_genLOD (cloud);
-    // }
-    // else
-    // {
+    if (gen_lod && !multiresolution)
+    {
+      print_info ("  Generating LODs\n");
+      pts = outofcore_octree->addPointCloud_and_genLOD (cloud);
+    }
+    else
+    {
       pts = outofcore_octree->addPointCloud (cloud, false);
-//    }
+    }
     
     print_info ("Successfully added %lu points\n", pts);
     print_info ("%lu Points were dropped (probably NaN)\n", cloud->width*cloud->height - pts);
@@ -214,7 +214,7 @@ outofcoreProcess (std::vector<boost::filesystem::path> pcd_paths, boost::filesys
   print_info ("  Depth: %i\n", outofcore_octree->getDepth ());
   print_info ("  Resolution: [%f, %f]\n", x, y);
 
-  if(gen_lod)
+  if(multiresolution)
   {
     print_info ("Generating LOD...\n");
     outofcore_octree->setSamplePercent (0.25);
@@ -239,6 +239,7 @@ printHelp (int, char **argv)
   print_info ("\t -resolution <resolution>      \t Octree resolution\n");
   print_info ("\t -gen_lod                      \t Generate octree LODs\n");
   print_info ("\t -overwrite                    \t Overwrite existing octree\n");
+  print_info ("\t -multiresolution              \t Generate multiresolutoin LOD\n");
   print_info ("\t -h                            \t Display help\n");
   print_info ("\n");
 }
@@ -272,6 +273,7 @@ main (int argc, char* argv[])
   int depth = 4;
   double resolution = .1;
   bool gen_lod = false;
+  bool multiresolution = false;
   bool overwrite = false;
   int build_octree_with = OCTREE_DEPTH;
 
@@ -291,6 +293,12 @@ main (int argc, char* argv[])
   parse_argument (argc, argv, "-resolution", resolution);
   gen_lod = find_switch (argc, argv, "-gen_lod");
   overwrite = find_switch (argc, argv, "-overwrite");
+
+  if (gen_lod && find_switch (argc, argv, "-multiresolution"))
+  {
+    multiresolution = true;
+  }
+  
 
   // Parse non-option arguments for pcd files
   std::vector<int> file_arg_indices = parse_file_extension_argument (argc, argv, ".pcd");
@@ -322,5 +330,5 @@ main (int argc, char* argv[])
   if (root_dir.extension () == ".pcd")
     root_dir = root_dir.parent_path () / (root_dir.stem().string() + "_tree").c_str();
 
-  return outofcoreProcess (pcd_paths, root_dir, depth, resolution, build_octree_with, gen_lod, overwrite);
+  return outofcoreProcess (pcd_paths, root_dir, depth, resolution, build_octree_with, gen_lod, overwrite, multiresolution);
 }
