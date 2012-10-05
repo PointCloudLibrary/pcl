@@ -144,7 +144,7 @@ namespace pcl
      *  \author Stephen Fox, Urban Robotics Code Sprint (foxstephend@gmail.com)
      *
      */
-    template<typename ContainerT, typename PointT>
+    template<typename ContainerT = OutofcoreOctreeDiskContainer<pcl::PointXYZ>, typename PointT = pcl::PointXYZ>
     class OutofcoreOctreeBase
     {
       friend class OutofcoreOctreeBaseNode<ContainerT, PointT>;

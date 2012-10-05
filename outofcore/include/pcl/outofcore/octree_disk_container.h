@@ -67,7 +67,7 @@ namespace pcl
    *  \ingroup outofcore
    *  \author Jacob Schloss (jacob.schloss@urbanrobotics.net)
    */
-    template<typename PointT>
+    template<typename PointT = pcl::PointXYZ>
     class OutofcoreOctreeDiskContainer : public OutofcoreAbstractNodeContainer<PointT>
     {
   

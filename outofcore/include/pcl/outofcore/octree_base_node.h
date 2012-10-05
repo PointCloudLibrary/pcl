@@ -88,7 +88,7 @@ namespace pcl
      *  \author Jacob Schloss (jacob.schloss@urbanrobotics.net)
      *
      */
-    template<typename ContainerT, typename PointT>
+    template<typename ContainerT = OutofcoreOctreeDiskContainer<pcl::PointXYZ>, typename PointT = pcl::PointXYZ>
     class OutofcoreOctreeBaseNode : public pcl::octree::OctreeNode
     {
       friend class OutofcoreOctreeBase<ContainerT, PointT> ;
