@@ -44,8 +44,7 @@
 #include <assert.h>
 #include <utility>
 
-#include <boost/type_traits/conditional.hpp>
-
+#include <pcl/geometry/boost.h>
 #include <pcl/geometry/eigen.h>
 #include <pcl/geometry/mesh_element_index.h>
 #include <pcl/geometry/impl/vertex.hpp>

@@ -42,9 +42,9 @@
 #define PCL_GEOMETRY_MESH_TOPOLOGY_HPP
 
 #include <stack>
+#include <algorithm>
 
-#include <boost/type_traits/integral_constant.hpp>
-
+#include <pcl/geometry/boost.h>
 #include <pcl/geometry/impl/mesh_base.hpp>
 
 namespace pcl
@@ -244,6 +244,18 @@ namespace pcl
       }
 
     protected:
+
+      //////////////////////////////////////////////////////////////////////////
+      // uniqueCheck
+      //////////////////////////////////////////////////////////////////////////
+
+      bool
+      uniqueCheck (VertexIndexes vertex_indexes) const
+      {
+        // TODO: Check if an unordered_set is faster (vertex_indexes can be passed by reference).
+        std::sort (vertex_indexes.begin (), vertex_indexes.end ());
+        return (std::adjacent_find (vertex_indexes.begin (), vertex_indexes.end ()) == vertex_indexes.end ());
+      }
 
       //////////////////////////////////////////////////////////////////////////
       // firstTopologyCheck

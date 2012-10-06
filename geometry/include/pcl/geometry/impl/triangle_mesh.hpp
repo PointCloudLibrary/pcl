@@ -142,7 +142,16 @@ namespace pcl
       {
         if (!idx_v_0.isValid () || !idx_v_1.isValid () || !idx_v_2.isValid ())
         {
-          return FaceIndex ();
+          return (FaceIndex ());
+        }
+
+        VertexIndexes vi; vi.reserve (3);
+        vi.push_back (idx_v_0);
+        vi.push_back (idx_v_1);
+        vi.push_back (idx_v_2);
+        if (!this->uniqueCheck (vi))
+        {
+          return (FaceIndex ());
         }
 
         HalfEdgeIndex idx_he_01, idx_he_12, idx_he_20;
@@ -150,11 +159,6 @@ namespace pcl
 
         if (Base::getElement (idx_v_0).isIsolated () && Base::getElement (idx_v_1).isIsolated () && Base::getElement (idx_v_2).isIsolated ())
         {
-          if (idx_v_0==idx_v_1 || idx_v_0==idx_v_2 || idx_v_1==idx_v_2)
-          {
-            return FaceIndex ();
-          }
-
           Base::addHalfEdgePair (idx_v_0,idx_v_1, HalfEdgeData (),HalfEdgeData (), idx_he_01,idx_he_10);
           Base::addHalfEdgePair (idx_v_1,idx_v_2, HalfEdgeData (),HalfEdgeData (), idx_he_12,idx_he_21);
           Base::addHalfEdgePair (idx_v_2,idx_v_0, HalfEdgeData (),HalfEdgeData (), idx_he_20,idx_he_02);
@@ -262,6 +266,16 @@ namespace pcl
         {
           return (std::make_pair (FaceIndex (), FaceIndex ()));
         }
+        VertexIndexes vi; vi.reserve (4);
+        vi.push_back (idx_v_0);
+        vi.push_back (idx_v_1);
+        vi.push_back (idx_v_2);
+        vi.push_back (idx_v_3);
+        if (!this->uniqueCheck (vi))
+        {
+          return (std::make_pair (FaceIndex (), FaceIndex ()));
+        }
+
         HalfEdgeIndex idx_he_01, idx_he_12, idx_he_23, idx_he_30;
 
         // Check manifoldness

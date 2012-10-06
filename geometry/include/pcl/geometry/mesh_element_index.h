@@ -220,8 +220,9 @@ namespace pcl
 
 } // End namespace pcl
 
+// TODO: Doesn't work.
 /** \brief ostream operator */
-template <class DerivedT>  std::ostream&
+template <class DerivedT> std::ostream&
 operator << (std::ostream& os, const pcl::BaseMeshElementIndex <DerivedT>& idx)
 {
   return (os << idx.getIndex ());

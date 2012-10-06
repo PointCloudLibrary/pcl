@@ -41,12 +41,7 @@
 #ifndef PCL_GEOMETRY_MESH_CIRCULATORS_HPP
 #define PCL_GEOMETRY_MESH_CIRCULATORS_HPP
 
-#include <boost/iterator/iterator_facade.hpp>
-#include <boost/utility/enable_if.hpp>
-#include <boost/type_traits/is_const.hpp>
-#include <boost/type_traits/is_convertible.hpp>
-#include <boost/type_traits/conditional.hpp>
-#include <boost/type_traits/add_const.hpp>
+#include <pcl/geometry/boost.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 // VertexAroundVertexCirculator
