@@ -254,7 +254,11 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloud
   }
 
   if (!nonmax_)
+  {
     output = *response;
+    // we do not change the denseness in this case
+    output.is_dense = input_->is_dense;
+  }
   else
   {
     output.points.clear ();
@@ -265,10 +269,13 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloud
 #endif
     for (int idx = 0; idx < static_cast<int> (response->points.size ()); ++idx)
     {
-      if (!isFinite (response->points[idx]) || response->points[idx].intensity < threshold_)
+      if (!isFinite (response->points[idx]) ||
+          !pcl_isfinite (response->points[idx].intensity) ||
+          response->points[idx].intensity < threshold_)
         continue;
-		  std::vector<int> nn_indices;
-		  std::vector<float> nn_dists;
+
+      std::vector<int> nn_indices;
+      std::vector<float> nn_dists;
       tree_->radiusSearch (idx, search_radius_, nn_indices, nn_dists);
       bool is_maxima = true;
       for (std::vector<int>::const_iterator iIt = nn_indices.begin(); iIt != nn_indices.end(); ++iIt)
@@ -291,10 +298,8 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloud
 
     output.height = 1;
     output.width = static_cast<uint32_t> (output.points.size());
+    output.is_dense = true;
   }
-
-  // we don not change the denseness
-  output.is_dense = input_->is_dense;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -312,8 +317,8 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::responseHarris (PointCloudO
     output [pIdx].intensity = 0.0; //std::numeric_limits<float>::quiet_NaN ();
     if (isFinite (pointIn))
     {
-			std::vector<int> nn_indices;
-			std::vector<float> nn_dists;
+      std::vector<int> nn_indices;
+      std::vector<float> nn_dists;
       tree_->radiusSearch (pointIn, search_radius_, nn_indices, nn_dists);
       calculateNormalCovar (nn_indices, covar);
 
@@ -351,8 +356,8 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::responseNoble (PointCloudOu
     output [pIdx].intensity = 0.0;
     if (isFinite (pointIn))
     {
-			std::vector<int> nn_indices;
-			std::vector<float> nn_dists;
+      std::vector<int> nn_indices;
+      std::vector<float> nn_dists;
       tree_->radiusSearch (pointIn, search_radius_, nn_indices, nn_dists);
       calculateNormalCovar (nn_indices, covar);
       float trace = covar [0] + covar [5] + covar [7];
@@ -389,8 +394,8 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::responseLowe (PointCloudOut
     output [pIdx].intensity = 0.0;
     if (isFinite (pointIn))
     {
-			std::vector<int> nn_indices;
-			std::vector<float> nn_dists;
+      std::vector<int> nn_indices;
+      std::vector<float> nn_dists;
       tree_->radiusSearch (pointIn, search_radius_, nn_indices, nn_dists);
       calculateNormalCovar (nn_indices, covar);
       float trace = covar [0] + covar [5] + covar [7];
@@ -446,8 +451,8 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::responseTomasi (PointCloudO
     output [pIdx].intensity = 0.0;
     if (isFinite (pointIn))
     {
-			std::vector<int> nn_indices;
-			std::vector<float> nn_dists;
+      std::vector<int> nn_indices;
+      std::vector<float> nn_dists;
       tree_->radiusSearch (pointIn, search_radius_, nn_indices, nn_dists);
       calculateNormalCovar (nn_indices, covar);
       float trace = covar [0] + covar [5] + covar [7];
@@ -496,8 +501,8 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::refineCorners (PointCloudOu
       corner.x = corners[cIdx].x;
       corner.y = corners[cIdx].y;
       corner.z = corners[cIdx].z;
-			std::vector<int> nn_indices;
-			std::vector<float> nn_dists;
+      std::vector<int> nn_indices;
+      std::vector<float> nn_dists;
       tree_->radiusSearch (corner, search_radius_, nn_indices, nn_dists);
       for (std::vector<int>::const_iterator iIt = nn_indices.begin(); iIt != nn_indices.end(); ++iIt)
       {

@@ -215,7 +215,11 @@ pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloud
 
   // just return the response
   if (!nonmax_)
+  {
     output = *response;
+    // we do not change the denseness in this case
+    output.is_dense = input_->is_dense;
+  }
   else
   {
     output.points.clear ();
@@ -228,8 +232,9 @@ pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloud
     {
       if (!isFinite (response->points[idx]) || response->points[idx].intensity < threshold_)
         continue;
-		  std::vector<int> nn_indices;
-		  std::vector<float> nn_dists;
+
+      std::vector<int> nn_indices;
+      std::vector<float> nn_dists;
       tree_->radiusSearch (idx, search_radius_, nn_indices, nn_dists);
       bool is_maxima = true;
       for (std::vector<int>::const_iterator iIt = nn_indices.begin(); iIt != nn_indices.end(); ++iIt)
@@ -246,14 +251,16 @@ pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloud
 #endif
         output.points.push_back (response->points[idx]);
     }
+
     if (refine_)
       refineCorners (output);
+
     output.height = 1;
-    output.width = output.points.size();
+    output.width = static_cast<uint32_t> (output.points.size());
+    output.is_dense = true;
   }
 
-  // we don not change the denseness
-  output.is_dense = input_->is_dense;
+  
 }
 
 template <typename PointInT, typename PointOutT, typename NormalT> void
@@ -274,8 +281,8 @@ pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::responseTomasi (PointCloudO
     pointOut.intensity = 0.0; //std::numeric_limits<float>::quiet_NaN ();
     if (isFinite (pointIn))
     {
-			std::vector<int> nn_indices;
-			std::vector<float> nn_dists;
+      std::vector<int> nn_indices;
+      std::vector<float> nn_dists;
       tree_->radiusSearch (pointIn, search_radius_, nn_indices, nn_dists);
       calculateCombinedCovar (nn_indices, covar);
 
@@ -370,8 +377,8 @@ pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::refineCorners (PointCloudOu
       corner.x = cornerIt->x;
       corner.y = cornerIt->y;
       corner.z = cornerIt->z;
-			std::vector<int> nn_indices;
-			std::vector<float> nn_dists;      
+      std::vector<int> nn_indices;
+      std::vector<float> nn_dists;      
       search.radiusSearch (corner, search_radius_, nn_indices, nn_dists);
       for (std::vector<int>::const_iterator iIt = nn_indices.begin(); iIt != nn_indices.end(); ++iIt)
       {
