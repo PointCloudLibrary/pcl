@@ -64,22 +64,22 @@ namespace pcl
     typedef typename Mesh::VertexConstIterator               VertexConstIterator;
     typedef Eigen::Matrix<ScalarT, 4, 1>                     Vec4;
 
-    unsigned int n = 0;
     ScalarT x = 0.;
     ScalarT y = 0.;
     ScalarT z = 0.;
 
-    for (VertexConstIterator it = mesh.beginVertexes (); it!=mesh.endVertexes (); ++it, ++n)
+    for (VertexConstIterator it = mesh.beginVertexes (); it!=mesh.endVertexes (); ++it)
     {
       x += it->x;
       y += it->y;
       z += it->z;
     }
-    ScalarT nn = static_cast <ScalarT> (n);
 
-    if (n) centroid = Vec4 (x/nn, y/nn, z/nn, 1.);
+    ScalarT n = static_cast <ScalarT> (mesh.sizeVertexes ());
 
-    return n;
+    if (mesh.sizeVertexes ()) centroid = Vec4 (x/n, y/n, z/n, 1.);
+
+    return (mesh.sizeVertexes ());
   }
 } // End namespace pcl
 
