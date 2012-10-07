@@ -6,7 +6,8 @@ set(SUBSYS_LIBS pcl_common pcl_features pcl_geometry pcl_io pcl_kdtree  pcl_visu
 ################################################################################
 
 # Header files
-set(INCS include/pcl/apps/${SUBSYS_NAME}/common_types.h
+set(INCS include/pcl/apps/${SUBSYS_NAME}/boost.h
+         include/pcl/apps/${SUBSYS_NAME}/common_types.h
          include/pcl/apps/${SUBSYS_NAME}/custom_interactor_style.h
          include/pcl/apps/${SUBSYS_NAME}/eigen.h
          include/pcl/apps/${SUBSYS_NAME}/icp.h
