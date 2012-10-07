@@ -1018,6 +1018,20 @@ Applications
      .. |ap_4| image:: images/using_kinfu_large_scale.png
                :height: 100px
 
+  * :ref:`gpu_people`
+     
+     ======  ======
+     |ap_5|  Title: **People Detection**
+
+             Author: *Koen Buys*
+
+             Compatibility: > PCL 1.7 trunk
+
+             This tutorial presents a method for people and pose detection.
+     ======  ======
+     
+     .. |ap_5| image:: images/gpu/people/c2_100.png
+               :height: 100px
  ..
   * :ref:`normal_estimation_integral_images`
     Surface normal estimation

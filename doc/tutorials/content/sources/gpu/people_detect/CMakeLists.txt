@@ -3,7 +3,6 @@ cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 project(people_detect)
 
 find_package(PCL 1.7 REQUIRED)
-#find_package(PCL 1.6 REQUIRED)
 
 include_directories(${PCL_INCLUDE_DIRS})
 link_directories(${PCL_LIBRARY_DIRS})
