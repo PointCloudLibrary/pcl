@@ -55,7 +55,8 @@
 pcl::ihs::Integration::Integration ()
   : kd_tree_              (new pcl::KdTreeFLANN <PointXYZ> ()),
     squared_distance_max_ (4e-2f),
-    dot_normal_min_       (.6f)
+    dot_normal_min_       (.6f),
+    weight_min_           (.3f)
 {
 }
 
@@ -70,52 +71,90 @@ pcl::ihs::Integration::reconstructMesh (const CloudProcessedConstPtr& cloud_data
     std::cerr << "ERROR in integration.cpp: Cloud is not organized\n";
     return (false);
   }
-  const uint32_t w = cloud_data->width;
-  const uint32_t h = cloud_data->height;
-  const size_t   s = cloud_data->size ();
+  const uint32_t width  = cloud_data->width;
+  const uint32_t height = cloud_data->height;
+  const size_t   size   = cloud_data->size ();
 
   mesh_model->clear ();
-  mesh_model->reserveVertexes (s);
-  mesh_model->reserveFaces (2 * (w-1) * (h-1));
+  mesh_model->reserveVertexes (size);
+  mesh_model->reserveFaces (2 * (width-1) * (height-1));
 
   // Store which vertex is set at which position (initialized with invalid indexes)
-  VertexIndexes vertex_indexes (s, VertexIndex ());
+  VertexIndexes vertex_indexes (size, VertexIndex ());
 
-  // Convert to the model cloud type. This is actually not needed but avoids code duplication (see the merge). And reconstructMesh is called only the first reconstruction step anyway.
+  // Convert to the model cloud type. This is actually not needed but avoids code duplication (see merge). And reconstructMesh is called only the first reconstruction step anyway.
   // NOTE: The default constructor of PointModel has to initialize with NaNs!
   CloudModelPtr cloud_model (new CloudModel ());
-  cloud_model->resize (s);
+  cloud_model->resize (size);
 
-  CloudProcessed::const_iterator it_d_0 = cloud_data->begin ()  + w + 1;
-  CloudModel::iterator           it_m_0 = cloud_model->begin () + w + 1;
-  CloudModel::const_iterator     it_m_1 = cloud_model->begin ()     + 1;
-  CloudModel::const_iterator     it_m_2 = cloud_model->begin ()        ;
-  CloudModel::const_iterator     it_m_3 = cloud_model->begin () + w    ;
-
-  VertexIndexes::iterator it_vi_0 = vertex_indexes.begin () + w + 1;
-  VertexIndexes::iterator it_vi_1 = vertex_indexes.begin ()     + 1;
-  VertexIndexes::iterator it_vi_2 = vertex_indexes.begin ()        ;
-  VertexIndexes::iterator it_vi_3 = vertex_indexes.begin () + w    ;
-
-  for (uint32_t r=1; r<h; ++r)
+  // Set the model points not reached by the main loop
+  for (uint32_t c=0; c<width; ++c)
   {
-    for (uint32_t c=1; c<w; ++c)
+    const PointProcessed& pt_d = cloud_data->operator [] (c);
+    if (pcl::isFinite (pt_d))
     {
-      *it_m_0 = PointModel (*it_d_0, 1.f);
+      cloud_model->operator [] (c) = PointModel (pt_d, -pt_d.normal_z);
+    }
+  }
+  for (uint32_t r=1; r<height; ++r)
+  {
+    for (uint32_t c=0; c<2; ++c)
+    {
+      const PointProcessed& pt_d = cloud_data->operator [] (r*width + c);
+      if (pcl::isFinite (pt_d))
+      {
+        cloud_model->operator [] (r*width + c) = PointModel (pt_d, -pt_d.normal_z);
+      }
+    }
+  }
 
-      this->addToMesh (it_m_0,  it_m_1,  it_m_2,  it_m_3,
-                       it_vi_0, it_vi_1, it_vi_2, it_vi_3,
+  // 4   2 - 1  //
+  //     |   |  //
+  // *   3 - 0  //
+  //            //
+  // 4 - 2   1  //
+  //   \   \    //
+  // *   3 - 0  //
+  CloudProcessed::const_iterator it_d_0 = cloud_data->begin ()  + width + 2;
+  CloudModel::iterator           it_m_0 = cloud_model->begin () + width + 2;
+  CloudModel::const_iterator     it_m_1 = cloud_model->begin ()         + 2;
+  CloudModel::const_iterator     it_m_2 = cloud_model->begin ()         + 1;
+  CloudModel::const_iterator     it_m_3 = cloud_model->begin () + width + 1;
+  CloudModel::const_iterator     it_m_4 = cloud_model->begin ()            ;
+
+  VertexIndexes::iterator it_vi_0 = vertex_indexes.begin () + width + 2;
+  VertexIndexes::iterator it_vi_1 = vertex_indexes.begin ()         + 2;
+  VertexIndexes::iterator it_vi_2 = vertex_indexes.begin ()         + 1;
+  VertexIndexes::iterator it_vi_3 = vertex_indexes.begin () + width + 1;
+  VertexIndexes::iterator it_vi_4 = vertex_indexes.begin ()            ;
+
+  for (uint32_t r=1; r<height; ++r)
+  {
+    for (uint32_t c=2; c<width; ++c)
+    {
+      // weight = -dot (normal, [0; 0; 1])
+      const float weight = -it_d_0->normal_z;
+      if (pcl::isFinite(*it_d_0) && weight >= weight_min_)
+      {
+        *it_m_0 = PointModel (*it_d_0, weight);
+      }
+
+      this->addToMesh (it_m_3,  it_m_0,  it_m_1,  it_m_2,
+                       it_vi_3, it_vi_0, it_vi_1, it_vi_2,
+                       mesh_model);
+      this->addToMesh (it_m_3,  it_m_0,  it_m_2,  it_m_4,
+                       it_vi_3, it_vi_0, it_vi_2, it_vi_4,
                        mesh_model);
 
       ++it_d_0;
-      ++it_m_0; ++it_m_1; ++it_m_2; ++it_m_3;
-      ++it_vi_0; ++it_vi_1; ++it_vi_2; ++it_vi_3;
-    }
+      ++it_m_0;  ++it_m_1;  ++it_m_2;  ++it_m_3;  ++it_m_4;
+      ++it_vi_0; ++it_vi_1; ++it_vi_2; ++it_vi_3; ++it_vi_4;
+    } // for (uint32_t c=2; c<width; ++c)
 
-    ++it_d_0;
-    ++it_m_0; ++it_m_1; ++it_m_2; ++it_m_3;
-    ++it_vi_0; ++it_vi_1; ++it_vi_2; ++it_vi_3;
-  }
+    it_d_0  += 2;
+    it_m_0  += 2; it_m_1  += 2; it_m_2  += 2; it_m_3  += 2, it_m_4  += 2;
+    it_vi_0 += 2; it_vi_1 += 2; it_vi_2 += 2; it_vi_3 += 2, it_vi_4 += 2;
+  } // for (uint32_t r=1; r<height; ++r)
 
   return (true);
 }
@@ -132,9 +171,9 @@ pcl::ihs::Integration::merge (const CloudProcessedConstPtr& cloud_data,
     std::cerr << "ERROR in integration.cpp: Data cloud is not organized\n";
     return (false);
   }
-  const uint32_t w = cloud_data->width;
-  const uint32_t h = cloud_data->height;
-  const size_t   s = cloud_data->size ();
+  const uint32_t width  = cloud_data->width;
+  const uint32_t height = cloud_data->height;
+  const size_t   size   = cloud_data->size ();
 
   if (!mesh_model->sizeVertexes ())
   {
@@ -155,88 +194,132 @@ pcl::ihs::Integration::merge (const CloudProcessedConstPtr& cloud_data,
   std::vector <float> squared_distance (1);
 
   mesh_model->reserveVertexes (mesh_model->sizeVertexes () + cloud_data->size ());
+  mesh_model->reserveFaces (mesh_model->sizeFaces () + 2 * (width-1) * (height-1));
 
-  // Data cloud in model coordinates and weights (this does not change the connectivity information)
+  // Data cloud in model coordinates (this does not change the connectivity information) and weights
   CloudModelPtr cloud_transformed (new CloudModel ());
-  cloud_transformed->resize (s);
+  cloud_transformed->resize (size);
 
   // Store which vertex is set at which position (initialized with invalid indexes)
-  VertexIndexes vertex_indexes (s, VertexIndex ());
+  VertexIndexes vertex_indexes (size, VertexIndex ());
 
-  CloudProcessed::const_iterator it_d     = cloud_data->begin ()        + w + 1;
-  CloudModel::iterator           it_d_t_0 = cloud_transformed->begin () + w + 1;
-  CloudModel::const_iterator     it_d_t_1 = cloud_transformed->begin ()     + 1;
-  CloudModel::const_iterator     it_d_t_2 = cloud_transformed->begin ()        ;
-  CloudModel::const_iterator     it_d_t_3 = cloud_transformed->begin () + w    ;
-
-  VertexIndexes::iterator it_vi_0 = vertex_indexes.begin () + w + 1;
-  VertexIndexes::iterator it_vi_1 = vertex_indexes.begin ()     + 1;
-  VertexIndexes::iterator it_vi_2 = vertex_indexes.begin ()        ;
-  VertexIndexes::iterator it_vi_3 = vertex_indexes.begin () + w    ;
-
-  for (int r=1; r<h; ++r)
+  // Set the transformed points not reached by the main loop
+  for (uint32_t c=0; c<width; ++c)
   {
-    for (int c=1; c<w; ++c)
+    const PointProcessed& pt_d = cloud_data->operator [] (c);
+    if (pcl::isFinite (pt_d))
     {
-      if (pcl::isFinite (*it_d))
+      cloud_transformed->operator [] (c) = PointModel (pcl::transformPoint (pt_d, Eigen::Affine3f (T)), -pt_d.normal_z);
+    }
+  }
+  for (uint32_t r=1; r<height; ++r)
+  {
+    for (uint32_t c=0; c<2; ++c)
+    {
+      const PointProcessed& pt_d = cloud_data->operator [] (r*width + c);
+      if (pcl::isFinite (pt_d))
+      {
+        cloud_transformed->operator [] (r*width + c) = PointModel (pcl::transformPoint (pt_d, Eigen::Affine3f (T)), -pt_d.normal_z);
+      }
+    }
+  }
+
+  // 4   2 - 1  //
+  //     |   |  //
+  // *   3 - 0  //
+  //            //
+  // 4 - 2   1  //
+  //   \   \    //
+  // *   3 - 0  //
+  CloudProcessed::const_iterator it_d_0   = cloud_data->begin ()        + width + 2;
+  CloudModel::iterator           it_d_t_0 = cloud_transformed->begin () + width + 2;
+  CloudModel::const_iterator     it_d_t_1 = cloud_transformed->begin ()         + 2;
+  CloudModel::const_iterator     it_d_t_2 = cloud_transformed->begin ()         + 1;
+  CloudModel::const_iterator     it_d_t_3 = cloud_transformed->begin () + width + 1;
+  CloudModel::const_iterator     it_d_t_4 = cloud_transformed->begin ()            ;
+
+  VertexIndexes::iterator it_vi_0 = vertex_indexes.begin () + width + 2;
+  VertexIndexes::iterator it_vi_1 = vertex_indexes.begin ()         + 2;
+  VertexIndexes::iterator it_vi_2 = vertex_indexes.begin ()         + 1;
+  VertexIndexes::iterator it_vi_3 = vertex_indexes.begin () + width + 1;
+  VertexIndexes::iterator it_vi_4 = vertex_indexes.begin ()            ;
+
+  for (uint32_t r=1; r<height; ++r)
+  {
+    for (uint32_t c=2; c<width; ++c)
+    {
+      if (pcl::isFinite (*it_d_0))
       {
         // weight = -dot (normal, [0; 0; 1])
-        *it_d_t_0 = PointModel (pcl::transformPoint (*it_d, Eigen::Affine3f (T)), -it_d->normal_z);
+        *it_d_t_0 = PointModel (pcl::transformPoint (*it_d_0, Eigen::Affine3f (T)), -it_d_0->normal_z);
 
-        // NN search
-        if (!kd_tree_->nearestKSearchT (*it_d_t_0, 1, index, squared_distance))
+        if (it_d_t_0->weight >= weight_min_)
         {
-          std::cerr << "ERROR in integration.cpp: nearestKSearch failed!\n";
-          return (false);
-        }
-
-        // Average out corresponding points
-        if (squared_distance[0] <= squared_distance_max_)
-        {
-          Vertex& v_m = mesh_model->getElement (VertexIndex (index[0])); // Non-const reference!
-
-          if (v_m.getNormalVector4fMap ().dot (it_d_t_0->getNormalVector4fMap ()) >= dot_normal_min_)
+          // NN search
+          if (!kd_tree_->nearestKSearchT (*it_d_t_0, 1, index, squared_distance))
           {
-            *it_vi_0 = VertexIndex (index[0]);
+            std::cerr << "ERROR in integration.cpp: nearestKSearch failed!\n";
+            return (false);
+          }
 
-            const float W   = v_m.weight;         // Old accumulated weight
-            const float w   = it_d_t_0->weight;   // Weight of new point
-            const float WW  = v_m.weight = W + w; // New accumulated weight
+          // Average out corresponding points
+          if (squared_distance[0] <= squared_distance_max_)
+          {
+            Vertex& v_m = mesh_model->getElement (VertexIndex (index[0])); // Non-const reference!
 
-            const float r_m = static_cast <float> (v_m.r);
-            const float g_m = static_cast <float> (v_m.g);
-            const float b_m = static_cast <float> (v_m.b);
+            if (v_m.getNormalVector4fMap ().dot (it_d_t_0->getNormalVector4fMap ()) >= dot_normal_min_)
+            {
+              *it_vi_0 = VertexIndex (index[0]);
 
-            const float r_d = static_cast <float> (it_d_t_0->r);
-            const float g_d = static_cast <float> (it_d_t_0->g);
-            const float b_d = static_cast <float> (it_d_t_0->b);
+              const float W   = v_m.weight;         // Old accumulated weight
+              const float w   = it_d_t_0->weight;   // Weight of new point
+              const float WW  = v_m.weight = W + w; // New accumulated weight
 
-            v_m.getVector4fMap ()       = ( W*v_m.getVector4fMap ()       + w*it_d_t_0->getVector4fMap ())       / WW;
-            v_m.getNormalVector4fMap () = ((W*v_m.getNormalVector4fMap () + w*it_d_t_0->getNormalVector4fMap ()) / WW).normalized ();
-            v_m.r                       = this->trimRGB ((W*r_m + w*r_d) / WW);
-            v_m.g                       = this->trimRGB ((W*g_m + w*g_d) / WW);
-            v_m.b                       = this->trimRGB ((W*b_m + w*b_d) / WW);
+              const float r_m = static_cast <float> (v_m.r);
+              const float g_m = static_cast <float> (v_m.g);
+              const float b_m = static_cast <float> (v_m.b);
 
-            // Point has been observed again -> give it some extra time to live
-            v_m.age = 0;
-          } // dot normals
-        } // squared distance
-      } // if (pcl::isFinite (*it_pt_0))
+              const float r_d = static_cast <float> (it_d_t_0->r);
+              const float g_d = static_cast <float> (it_d_t_0->g);
+              const float b_d = static_cast <float> (it_d_t_0->b);
+
+              v_m.getVector4fMap ()       = ( W*v_m.getVector4fMap ()       + w*it_d_t_0->getVector4fMap ())       / WW;
+              v_m.getNormalVector4fMap () = ((W*v_m.getNormalVector4fMap () + w*it_d_t_0->getNormalVector4fMap ()) / WW).normalized ();
+              v_m.r                       = this->trimRGB ((W*r_m + w*r_d) / WW);
+              v_m.g                       = this->trimRGB ((W*g_m + w*g_d) / WW);
+              v_m.b                       = this->trimRGB ((W*b_m + w*b_d) / WW);
+
+              // Point has been observed again -> give it some extra time to live
+              v_m.age = 0;
+            } // dot normals
+          } // squared distance
+        } // min weight
+      } // isfinite
 
       // Connect
-      this->addToMesh (it_d_t_0, it_d_t_1, it_d_t_2, it_d_t_3,
-                       it_vi_0, it_vi_1, it_vi_2, it_vi_3,
+      // 4   2 - 1  //
+      //     |   |  //
+      // *   3 - 0  //
+      //            //
+      // 4 - 2   1  //
+      //   \   \    //
+      // *   3 - 0  //
+      this->addToMesh (it_d_t_3, it_d_t_0, it_d_t_1, it_d_t_2,
+                       it_vi_3,  it_vi_0,  it_vi_1,  it_vi_2,
+                       mesh_model);
+      this->addToMesh (it_d_t_3, it_d_t_0, it_d_t_2, it_d_t_4,
+                       it_vi_3,  it_vi_0,  it_vi_2,  it_vi_4,
                        mesh_model);
 
-      ++it_d;
-      ++it_d_t_0; ++it_d_t_1; ++it_d_t_2; ++it_d_t_3;
-      ++it_vi_0; ++it_vi_1; ++it_vi_2; ++it_vi_3;
-    } // for (int c=1; c<w; ++c)
+      ++it_d_0;
+      ++it_d_t_0; ++it_d_t_1; ++it_d_t_2; ++it_d_t_3; ++it_d_t_4;
+      ++it_vi_0;  ++it_vi_1;  ++it_vi_2;  ++it_vi_3;  ++it_vi_4;
+    } // for (uint32_t c=2; c<width; ++c)
 
-    ++it_d;
-    ++it_d_t_0; ++it_d_t_1; ++it_d_t_2; ++it_d_t_3;
-    ++it_vi_0; ++it_vi_1; ++it_vi_2; ++it_vi_3;
-  } // for (int r=1; r<h; ++r)
+    it_d_0   += 2;
+    it_d_t_0 += 2; it_d_t_1 += 2; it_d_t_2 += 2; it_d_t_3 += 2, it_d_t_4 += 2;
+    it_vi_0  += 2; it_vi_1  += 2; it_vi_2  += 2; it_vi_3  += 2, it_vi_4  += 2;
+  } // for (uint32_t r=1; r<height; ++r)
 
   return (true);
 }
@@ -264,7 +347,7 @@ pcl::ihs::Integration::addToMesh (const CloudModel::const_iterator& it_pt_0,
 {
   // Treated bitwise
   // 2 - 1
-  // | / |
+  // |   |
   // 3 - 0
   const unsigned char is_finite = static_cast <unsigned char> ((1 * pcl::isFinite (*it_pt_0)) | (2 * pcl::isFinite (*it_pt_1)) | (4 * pcl::isFinite (*it_pt_2)) | (8 * pcl::isFinite (*it_pt_3)));
 
@@ -314,9 +397,10 @@ pcl::ihs::Integration::distanceThreshold (const PointModel& pt_0,
                                           const PointModel& pt_1,
                                           const PointModel& pt_2) const
 {
-  return (pcl::max3 ((pt_0.getVector3fMap () - pt_1.getVector3fMap ()).squaredNorm (),
-                     (pt_1.getVector3fMap () - pt_2.getVector3fMap ()).squaredNorm (),
-                     (pt_2.getVector3fMap () - pt_0.getVector3fMap ()).squaredNorm ()) <= squared_distance_max_);
+  if ((pt_0.getVector3fMap () - pt_1.getVector3fMap ()).squaredNorm () > squared_distance_max_) return (false);
+  if ((pt_1.getVector3fMap () - pt_2.getVector3fMap ()).squaredNorm () > squared_distance_max_) return (false);
+  if ((pt_2.getVector3fMap () - pt_0.getVector3fMap ()).squaredNorm () > squared_distance_max_) return (false);
+  return (true);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -327,10 +411,11 @@ pcl::ihs::Integration::distanceThreshold (const PointModel& pt_0,
                                           const PointModel& pt_2,
                                           const PointModel& pt_3) const
 {
-  return (pcl::max4 ((pt_0.getVector3fMap () - pt_1.getVector3fMap ()).squaredNorm (),
-                     (pt_1.getVector3fMap () - pt_2.getVector3fMap ()).squaredNorm (),
-                     (pt_2.getVector3fMap () - pt_3.getVector3fMap ()).squaredNorm (),
-                     (pt_3.getVector3fMap () - pt_0.getVector3fMap ()).squaredNorm ()) <= squared_distance_max_);
+  if ((pt_0.getVector3fMap () - pt_1.getVector3fMap ()).squaredNorm () > squared_distance_max_) return (false);
+  if ((pt_1.getVector3fMap () - pt_2.getVector3fMap ()).squaredNorm () > squared_distance_max_) return (false);
+  if ((pt_2.getVector3fMap () - pt_3.getVector3fMap ()).squaredNorm () > squared_distance_max_) return (false);
+  if ((pt_3.getVector3fMap () - pt_0.getVector3fMap ()).squaredNorm () > squared_distance_max_) return (false);
+  return (true);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -45,9 +45,8 @@
 #include <sstream>
 #include <iomanip>
 
-#include <boost/thread/mutex.hpp>
-
 #include <pcl/common/time.h>
+#include <pcl/apps/in_hand_scanner/boost.h>
 #include <pcl/apps/in_hand_scanner/common_types.h>
 
 ////////////////////////////////////////////////////////////////////////////////

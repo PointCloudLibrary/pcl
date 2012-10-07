@@ -86,7 +86,6 @@ namespace pcl
         typedef pcl::ihs::MeshPtr         MeshPtr;
         typedef pcl::ihs::MeshConstPtr    MeshConstPtr;
         typedef Mesh::Vertex              Vertex;
-        typedef Mesh::Face                Face;
         typedef Mesh::VertexIndex         VertexIndex;
         typedef Mesh::VertexIndexes       VertexIndexes;
         typedef Mesh::VertexConstIterator VertexConstIterator;
@@ -159,6 +158,9 @@ namespace pcl
 
         // Minium dot product between normals above which points are averaged out
         float     dot_normal_min_;
+
+        // Minimum weight above which points are added.
+        float     weight_min_;
     };
 
   } // End namespace ihs

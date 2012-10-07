@@ -276,6 +276,8 @@ pcl::ihs::InHandScanner::newDataCallback (const CloudInputConstPtr& cloud_in)
         transformation_ = T;
         integration_->merge (cloud_data, mesh_model_, transformation_);
         cloud_data = CloudProcessedPtr (new CloudProcessed ());
+
+        // Does not work here because multiple threads!
         // interactor_style_->transformCamera (InteractorStyle::Quaternion (T.topLeftCorner <3, 3> ().cast <double> ()), T.topRightCorner <3, 1> ().cast <double> ());
 
         ++iteration_;
@@ -407,14 +409,14 @@ pcl::ihs::InHandScanner::drawFPS ()
 
   if (!draw) return;
 
-  if (!visualizer_->updateText (vis_fps, 1., 15., "visualization_fps"))
+  if (!visualizer_->updateText (vis_fps, 1, 15, "visualization_fps"))
   {
-    visualizer_->addText (vis_fps, 1., 15., "visualization_fps");
+    visualizer_->addText (vis_fps, 1, 15, "visualization_fps");
   }
 
-  if (!visualizer_->updateText (comp_fps, 1., 30., "computation_fps"))
+  if (!visualizer_->updateText (comp_fps, 1, 30, "computation_fps"))
   {
-    visualizer_->addText (comp_fps, 1., 30., "computation_fps");
+    visualizer_->addText (comp_fps, 1, 30, "computation_fps");
   }
 }
 

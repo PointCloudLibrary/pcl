@@ -38,49 +38,13 @@
  *
  */
 
-#ifndef PCL_IN_HAND_SCANNER_COMMON_FUNCTIONS_HPP
-#define PCL_IN_HAND_SCANNER_COMMON_FUNCTIONS_HPP
+#ifndef PCL_IN_HAND_SCANNER_BOOST_H
+#define PCL_IN_HAND_SCANNER_BOOST_H
 
-#include <pcl/geometry/impl/mesh_base.hpp>
-#include <algorithm>
+#ifdef __GNUC__
+  #pragma GCC system_header
+#endif
 
-// Keep these functions in here until they are properly tested
-namespace pcl
-{
+#include <boost/thread/mutex.hpp>
 
-  /** \brief Compute the 3D (X-Y-Z) centroid of the mesh and return it as a 3D vector.
-    * \param[in] mesh the input mesh
-    * \param[out] centroid the output centroid
-    * \return number of valid points used to determine the centroid.
-    * \note if return value is 0, the centroid is not changed, thus not valid.
-    * \note no check for NaN or Inf is performed!
-    * \ingroup common
-    */
-  template <class VertexDataT, class FaceDataT, class HalfEdgeDataT, class ScalarT> inline unsigned int
-  compute3DCentroid (const MeshBase <VertexDataT, FaceDataT, HalfEdgeDataT>& mesh,
-                     Eigen::Matrix<ScalarT, 4, 1>&                           centroid)
-  {
-    typedef MeshBase <VertexDataT, FaceDataT, HalfEdgeDataT> Mesh;
-    typedef typename Mesh::VertexConstIterator               VertexConstIterator;
-    typedef Eigen::Matrix<ScalarT, 4, 1>                     Vec4;
-
-    unsigned int n = 0;
-    ScalarT x = 0.;
-    ScalarT y = 0.;
-    ScalarT z = 0.;
-
-    for (VertexConstIterator it = mesh.beginVertexes (); it!=mesh.endVertexes (); ++it, ++n)
-    {
-      x += it->x;
-      y += it->y;
-      z += it->z;
-    }
-    ScalarT nn = static_cast <ScalarT> (n);
-
-    if (n) centroid = Vec4 (x/nn, y/nn, z/nn, 1.);
-
-    return n;
-  }
-} // End namespace pcl
-
-#endif // PCL_IN_HAND_SCANNER_COMMON_FUNCTIONS_HPP
+#endif // PCL_IN_HAND_SCANNER_BOOST_H
