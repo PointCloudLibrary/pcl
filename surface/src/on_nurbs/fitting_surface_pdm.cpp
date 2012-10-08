@@ -1,7 +1,7 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2011, Thomas Mörwald, Jonathan Balzer, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -14,7 +14,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Thomas Mörwald or Jonathan Balzer nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * @author thomas.moerwald
+ * 
  *
  */
 
@@ -116,11 +116,8 @@ FittingSurface::refine (ON_NurbsSurface &nurbs, int dim)
 void
 FittingSurface::assemble (Parameter param)
 {
-  clock_t time_start, time_end;
-  time_start = clock ();
-
-  int nBnd = m_data->boundary.size ();
-  int nInt = m_data->interior.size ();
+  int nBnd = static_cast<int> (m_data->boundary.size ());
+  int nInt = static_cast<int> (m_data->interior.size ());
   int nCurInt = param.regularisation_resU * param.regularisation_resV;
   int nCurBnd = 2 * param.regularisation_resU + 2 * param.regularisation_resV;
   int nCageReg = (m_nurbs.m_cv_count[0] - 2) * (m_nurbs.m_cv_count[1] - 2);
@@ -185,13 +182,6 @@ FittingSurface::assemble (Parameter param)
     addCageBoundaryRegularisation (param.boundary_smoothness, WEST, row);
     addCageBoundaryRegularisation (param.boundary_smoothness, EAST, row);
     addCageCornerRegularisation (param.boundary_smoothness * 2.0, row);
-  }
-
-  time_end = clock ();
-  if (!m_quiet)
-  {
-    double solve_time = (double)(time_end - time_start) / (double)(CLOCKS_PER_SEC);
-    printf ("[FittingSurface::assemble()] (assemble (%d,%d): %f sec)\n", nrows, ncp, solve_time);
   }
 }
 
@@ -286,7 +276,7 @@ FittingSurface::assembleInterior (double wInt, unsigned &row)
   m_data->interior_line_end.clear ();
   m_data->interior_error.clear ();
   m_data->interior_normals.clear ();
-  unsigned nInt = m_data->interior.size ();
+  unsigned nInt = static_cast<unsigned> (m_data->interior.size ());
   for (unsigned p = 0; p < nInt; p++)
   {
     Vector3d &pcp = m_data->interior[p];
@@ -330,7 +320,7 @@ FittingSurface::assembleBoundary (double wBnd, unsigned &row)
   m_data->boundary_line_end.clear ();
   m_data->boundary_error.clear ();
   m_data->boundary_normals.clear ();
-  unsigned nBnd = m_data->boundary.size ();
+  unsigned nBnd = static_cast<unsigned> (m_data->boundary.size ());
   for (unsigned p = 0; p < nBnd; p++)
   {
     Vector3d &pcp = m_data->boundary[p];
@@ -411,7 +401,7 @@ FittingSurface::initNurbsPCA (int order, NurbsDataSurface *m_data, Eigen::Vector
   Eigen::Matrix3d eigenvectors;
   Eigen::Vector3d eigenvalues;
 
-  unsigned s = m_data->interior.size ();
+  unsigned s = static_cast<unsigned> (m_data->interior.size ());
 
   NurbsTools::pca (m_data->interior, mean, eigenvectors, eigenvalues);
 
@@ -459,7 +449,7 @@ FittingSurface::initNurbsPCABoundingBox (int order, NurbsDataSurface *m_data, Ei
   Eigen::Matrix3d eigenvectors;
   Eigen::Vector3d eigenvalues;
 
-  unsigned s = m_data->interior.size ();
+  unsigned s = static_cast<unsigned> (m_data->interior.size ());
   m_data->interior_param.clear ();
 
   NurbsTools::pca (m_data->interior, mean, eigenvectors, eigenvalues);
@@ -478,7 +468,7 @@ FittingSurface::initNurbsPCABoundingBox (int order, NurbsDataSurface *m_data, Ei
   Eigen::Vector3d v_min (DBL_MAX, DBL_MAX, DBL_MAX);
   for (unsigned i = 0; i < s; i++)
   {
-    Eigen::Vector3d p = eigenvectors_inv * (m_data->interior[i] - mean);
+    Eigen::Vector3d p (eigenvectors_inv * (m_data->interior[i] - mean));
     m_data->interior_param.push_back (Eigen::Vector2d (p (0), p (1)));
 
     if (p (0) > v_max (0))
@@ -539,8 +529,8 @@ void
 FittingSurface::addPointConstraint (const Eigen::Vector2d &params, const Eigen::Vector3d &point, double weight,
                                     unsigned &row)
 {
-  double N0[m_nurbs.Order (0) * m_nurbs.Order (0)];
-  double N1[m_nurbs.Order (1) * m_nurbs.Order (1)];
+  double *N0 = new double[m_nurbs.Order (0) * m_nurbs.Order (0)];
+  double *N1 = new double[m_nurbs.Order (1) * m_nurbs.Order (1)];
 
   int E = ON_NurbsSpanIndex (m_nurbs.m_order[0], m_nurbs.m_cv_count[0], m_nurbs.m_knot[0], params (0), 0, 0);
   int F = ON_NurbsSpanIndex (m_nurbs.m_order[1], m_nurbs.m_cv_count[1], m_nurbs.m_knot[1], params (1), 0, 0);
@@ -566,6 +556,8 @@ FittingSurface::addPointConstraint (const Eigen::Vector2d &params, const Eigen::
 
   row++;
 
+  delete [] N1;
+  delete [] N0;
 }
 
 //void FittingSurface::addBoundaryPointConstraint(double paramU, double paramV, double weight, unsigned &row)
@@ -750,8 +742,8 @@ FittingSurface::addCageCornerRegularisation (double weight, unsigned &row)
 void
 FittingSurface::addInteriorRegularisation (int order, int resU, int resV, double weight, unsigned &row)
 {
-  double N0[m_nurbs.Order (0) * m_nurbs.Order (0)];
-  double N1[m_nurbs.Order (1) * m_nurbs.Order (1)];
+  double *N0 = new double[m_nurbs.Order (0) * m_nurbs.Order (0)];
+  double *N1 = new double[m_nurbs.Order (1) * m_nurbs.Order (1)];
 
   double dU = (m_maxU - m_minU) / resU;
   double dV = (m_maxV - m_minV) / resV;
@@ -797,13 +789,15 @@ FittingSurface::addInteriorRegularisation (int order, int resU, int resV, double
     }
   }
 
+  delete [] N1;
+  delete [] N0;
 }
 
 void
 FittingSurface::addBoundaryRegularisation (int order, int resU, int resV, double weight, unsigned &row)
 {
-  double N0[m_nurbs.Order (0) * m_nurbs.Order (0)];
-  double N1[m_nurbs.Order (1) * m_nurbs.Order (1)];
+  double *N0 = new double[m_nurbs.Order (0) * m_nurbs.Order (0)];
+  double *N1 = new double[m_nurbs.Order (1) * m_nurbs.Order (1)];
 
   double dU = (m_maxU - m_minU) / resU;
   double dV = (m_maxV - m_minV) / resV;
@@ -952,6 +946,8 @@ FittingSurface::addBoundaryRegularisation (int order, int resU, int resV, double
 
   }
 
+  delete [] N1;
+  delete [] N0;
 }
 
 Vector2d

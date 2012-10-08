@@ -1,7 +1,7 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2011, Thomas Mörwald, Jonathan Balzer, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -14,7 +14,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Thomas Mörwald or Jonathan Balzer nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * @author thomas.moerwald
+ * 
  *
  */
 
@@ -54,7 +54,7 @@ NurbsTools::downsample_random (const vector_vec3d &data1, vector_vec3d &data2, u
     return;
   }
 
-  unsigned s = data1.size ();
+  unsigned s = unsigned (data1.size ());
   data2.clear ();
 
   for (unsigned i = 0; i < size; i++)
@@ -70,7 +70,7 @@ NurbsTools::downsample_random (vector_vec3d &data, unsigned size)
   if (data.size () <= size && size > 0)
     return;
 
-  unsigned s = data.size ();
+  unsigned s = unsigned (data.size ());
 
   vector_vec3d data_tmp;
 
@@ -197,7 +197,7 @@ NurbsTools::computeMean (const vector_vec3d &data)
 {
   Eigen::Vector3d u (0.0, 0.0, 0.0);
 
-  unsigned s = data.size ();
+  unsigned s = unsigned (data.size ());
   double ds = 1.0 / s;
 
   for (unsigned i = 0; i < s; i++)
@@ -212,7 +212,7 @@ NurbsTools::computeMean (const vector_vec2d &data)
   Eigen::Vector2d u (0.0, 0.0);
 
   size_t s = data.size ();
-  double ds = 1.0 / s;
+  double ds = 1.0 / double (s);
 
   for (size_t i = 0; i < s; i++)
     u += (data[i] * ds);
@@ -226,7 +226,7 @@ NurbsTools::computeVariance (const Eigen::Vector3d &mean, const vector_vec3d &da
   Eigen::Vector3d var (0.0, 0.0, 0.0);
 
   size_t s = data.size ();
-  double ds = 1.0 / s;
+  double ds = 1.0 / double (s);
 
   for (size_t i = 0; i < s; i++)
   {
@@ -243,7 +243,7 @@ NurbsTools::computeVariance (const Eigen::Vector2d &mean, const vector_vec2d &da
   Eigen::Vector2d var (0.0, 0.0);
 
   size_t s = data.size ();
-  double ds = 1.0 / s;
+  double ds = 1.0 / double (s);
 
   for (size_t i = 0; i < s; i++)
   {
@@ -329,7 +329,7 @@ NurbsTools::pca (const vector_vec3d &data, Eigen::Vector3d &mean, Eigen::Matrix3
 
   mean = computeMean (data);
 
-  unsigned s = data.size ();
+  unsigned s = unsigned (data.size ());
 
   Eigen::MatrixXd Q (3, s);
 

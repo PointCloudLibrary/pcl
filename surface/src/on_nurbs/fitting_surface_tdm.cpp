@@ -1,7 +1,7 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2011, Thomas Mörwald, Jonathan Balzer, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -14,7 +14,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Thomas Mörwald or Jonathan Balzer nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * @author thomas.moerwald
+ * 
  *
  */
 
@@ -54,11 +54,8 @@ FittingSurfaceTDM::FittingSurfaceTDM (int order, NurbsDataSurface *data, Eigen::
 void
 FittingSurfaceTDM::assemble (ParameterTDM param)
 {
-  clock_t time_start, time_end;
-  time_start = clock ();
-
-  int nBnd = m_data->boundary.size ();
-  int nInt = m_data->interior.size ();
+  int nBnd = static_cast<int> (m_data->boundary.size ());
+  int nInt = static_cast<int> (m_data->interior.size ());
   int nCurInt = param.regularisation_resU * param.regularisation_resV;
   int nCurBnd = 2 * param.regularisation_resU + 2 * param.regularisation_resV;
   int nCageReg = (m_nurbs.CVCount (0) - 2) * (m_nurbs.CVCount (1) - 2);
@@ -104,13 +101,6 @@ FittingSurfaceTDM::assemble (ParameterTDM param)
     addCageBoundaryRegularisation (param.boundary_smoothness, EAST, row);
     addCageCornerRegularisation (param.boundary_smoothness * 2.0, row);
   }
-
-  time_end = clock ();
-  if (!m_quiet)
-  {
-    double solve_time = (double)(time_end - time_start) / (double)(CLOCKS_PER_SEC);
-    printf ("[FittingSurfaceTDM::assemble()] (assemble (%d,%d): %f sec)\n", nrows, ncp, solve_time);
-  }
 }
 
 void
@@ -152,7 +142,7 @@ FittingSurfaceTDM::assembleInterior (double wInt, double wTangent, unsigned &row
   m_data->interior_line_end.clear ();
   m_data->interior_error.clear ();
   m_data->interior_normals.clear ();
-  unsigned nInt = m_data->interior.size ();
+  unsigned nInt = static_cast<unsigned> (m_data->interior.size ());
   for (unsigned p = 0; p < nInt; p++)
   {
     Vector3d &pcp = m_data->interior[p];
@@ -197,7 +187,7 @@ FittingSurfaceTDM::assembleBoundary (double wBnd, double wTangent, unsigned &row
   m_data->boundary_line_end.clear ();
   m_data->boundary_error.clear ();
   m_data->boundary_normals.clear ();
-  unsigned nBnd = m_data->boundary.size ();
+  unsigned nBnd = static_cast<unsigned> (m_data->boundary.size ());
   for (unsigned p = 0; p < nBnd; p++)
   {
     Vector3d &pcp = m_data->boundary[p];
@@ -237,8 +227,8 @@ FittingSurfaceTDM::addPointConstraint (const Eigen::Vector2d &params, const Eige
                                        const Eigen::Vector3d &n, const Eigen::Vector3d &tu, const Eigen::Vector3d &tv,
                                        double tangent_weight, double weight, unsigned &row)
 {
-  double N0[m_nurbs.Order (0) * m_nurbs.Order (0)];
-  double N1[m_nurbs.Order (1) * m_nurbs.Order (1)];
+  double *N0 = new double[m_nurbs.Order (0) * m_nurbs.Order (0)];
+  double *N1 = new double[m_nurbs.Order (1) * m_nurbs.Order (1)];
 
   int E = ON_NurbsSpanIndex (m_nurbs.Order(0), m_nurbs.CVCount (0), m_nurbs.m_knot[0], params (0), 0, 0);
   int F = ON_NurbsSpanIndex (m_nurbs.Order(1), m_nurbs.CVCount (1), m_nurbs.m_knot[1], params (1), 0, 0);
@@ -269,6 +259,8 @@ FittingSurfaceTDM::addPointConstraint (const Eigen::Vector2d &params, const Eige
 
   row += 3;
 
+  delete [] N1;
+  delete [] N0;
 }
 
 void

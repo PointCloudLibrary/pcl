@@ -1,7 +1,7 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2011, Thomas Mörwald, Jonathan Balzer, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -14,7 +14,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Thomas Mörwald or Jonathan Balzer nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * @author thomas.moerwald
+ * 
  *
  */
 
@@ -72,7 +72,7 @@ int
 FittingCurve::findElement (double xi, const std::vector<double> &elements)
 {
   if (xi >= elements.back ())
-    return (elements.size () - 2);
+    return (int (elements.size ()) - 2);
 
   for (unsigned i = 0; i < elements.size () - 1; i++)
   {
@@ -104,14 +104,10 @@ FittingCurve::refine ()
 void
 FittingCurve::assemble (const Parameter &parameter)
 {
-  clock_t time_start, time_end;
-  if (!m_quiet)
-    time_start = clock ();
-
   int cp_red = m_nurbs.m_order - 2;
   int ncp = m_nurbs.m_cv_count - 2 * cp_red;
   int nCageReg = m_nurbs.m_cv_count - 2 * cp_red;
-  int nInt = m_data->interior.size ();
+  int nInt = int (m_data->interior.size ());
 
   int nrows = nInt + nCageReg;
 
@@ -125,35 +121,17 @@ FittingCurve::assemble (const Parameter &parameter)
   assembleInterior (wInt, row);
 
   addCageRegularisation (wCageReg, row);
-
-  if (!m_quiet)
-  {
-    time_end = clock ();
-    double solve_time = (double)(time_end - time_start) / (double)(CLOCKS_PER_SEC);
-    printf ("[FittingPatch::assemble()] (assemble (%d,%d): %f sec)\n", nrows, ncp, solve_time);
-  }
 }
 
 void
 FittingCurve::solve (double damp)
 {
-  clock_t time_start, time_end;
-  if (!m_quiet)
-    time_start = clock ();
-
   if (m_solver.solve ())
     updateCurve (damp);
-
-  if (!m_quiet)
-  {
-    time_end = clock ();
-    double solve_time = (double)(time_end - time_start) / (double)(CLOCKS_PER_SEC);
-    printf ("[FittingPatch::solve()] (%f sec)\n", solve_time);
-  }
 }
 
 void
-FittingCurve::updateCurve (double damp)
+FittingCurve::updateCurve (double)
 {
   int cp_red = m_nurbs.m_order - 2;
   int ncp = m_nurbs.m_cv_count - 2 * cp_red;
@@ -186,7 +164,7 @@ FittingCurve::addPointConstraint (const double &param, const Eigen::Vector3d &po
 {
   int cp_red = m_nurbs.m_order - 2;
   int ncp = m_nurbs.m_cv_count - 2 * cp_red;
-  double N[m_nurbs.m_order * m_nurbs.m_order];
+  double *N = new double[m_nurbs.m_order * m_nurbs.m_order];
 
   int E = ON_NurbsSpanIndex (m_nurbs.m_order, m_nurbs.m_cv_count, m_nurbs.m_knot, param, 0, 0);
 
@@ -200,6 +178,8 @@ FittingCurve::addPointConstraint (const double &param, const Eigen::Vector3d &po
     m_solver.K (row, (E + i) % ncp, weight * N[i]);
 
   row++;
+
+  delete [] N;
 }
 
 void
@@ -231,7 +211,7 @@ FittingCurve::initNurbsCurve2D (int order, const vector_vec2d &data)
 
   Eigen::Vector2d mean = NurbsTools::computeMean (data);
 
-  unsigned s = data.size ();
+  unsigned s = unsigned (data.size ());
 
   double r (0.0);
   for (unsigned i = 0; i < s; i++)
@@ -270,7 +250,7 @@ FittingCurve::initNurbsCurvePCA (int order, const vector_vec3d &data, int ncps, 
   Eigen::Matrix3d eigenvectors;
   Eigen::Vector3d eigenvalues;
 
-  unsigned s = data.size ();
+  unsigned s = unsigned (data.size ());
 
   NurbsTools::pca (data, mean, eigenvectors, eigenvalues);
 
@@ -330,7 +310,7 @@ FittingCurve::getElementVector (const ON_NurbsCurve &nurbs)
 void
 FittingCurve::assembleInterior (double wInt, unsigned &row)
 {
-  int nInt = m_data->interior.size ();
+  int nInt = int (m_data->interior.size ());
   m_data->interior_line_start.clear ();
   m_data->interior_line_end.clear ();
   m_data->interior_error.clear ();
@@ -343,7 +323,7 @@ FittingCurve::assembleInterior (double wInt, unsigned &row)
     double param;
     Eigen::Vector3d pt, t;
     double error;
-    if (p < (int)m_data->interior_param.size ())
+    if (p < int (m_data->interior_param.size ()))
     {
       param = inverseMapping (m_nurbs, pcp, m_data->interior_param[p], error, pt, t, in_max_steps, in_accuracy);
       m_data->interior_param[p] = param;
@@ -367,8 +347,8 @@ double
 FittingCurve::inverseMapping (const ON_NurbsCurve &nurbs, const Eigen::Vector3d &pt, const double &hint, double &error,
                               Eigen::Vector3d &p, Eigen::Vector3d &t, int maxSteps, double accuracy, bool quiet)
 {
-  int cp_red = (nurbs.m_order - 2);
-  int ncpj = (nurbs.m_cv_count - 2 * cp_red);
+  //int cp_red = (nurbs.m_order - 2);
+  //int ncpj = int (nurbs.m_cv_count - 2 * cp_red);
   double pointAndTangents[6];
 
   double current, delta;

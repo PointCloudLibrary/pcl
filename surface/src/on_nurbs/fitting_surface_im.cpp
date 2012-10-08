@@ -1,7 +1,7 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2011, Thomas Mörwald, Jonathan Balzer, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -14,7 +14,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Thomas Mörwald or Jonathan Balzer nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * @author thomas.moerwald
+ * 
  *
  */
 
@@ -49,7 +49,7 @@ FittingSurfaceIM::computeMean () const
   u.y = 0.0;
   u.z = 0.0;
 
-  double ds = 1.0 / m_indices.size ();
+  double ds = 1.0 / double (m_indices.size ());
 
   const pcl::PointCloud<pcl::PointXYZRGB> &cloud_ref = *m_cloud;
   for (size_t idx = 0; idx < m_indices.size (); idx++)
@@ -58,12 +58,12 @@ FittingSurfaceIM::computeMean () const
     int j = m_indices[idx] / cloud_ref.width;
 
     const pcl::PointXYZRGB &point = cloud_ref (i, j);
-    if (isnan (point.x) || isnan (point.y) || isnan (point.z))
+    if (pcl_isnan (point.x) || pcl_isnan (point.y) || pcl_isnan (point.z))
       continue;
 
-    u.x += point.x * ds;
-    u.y += point.y * ds;
-    u.z += point.z * ds;
+    u.x += point.x * float (ds);
+    u.y += point.y * float (ds);
+    u.z += point.z * float (ds);
   }
 
   return u;
@@ -82,7 +82,7 @@ FittingSurfaceIM::computeIndexBoundingBox (pcl::PointCloud<pcl::PointXYZRGB>::Pt
     int j = indices[idx] / cloud_ref.width;
 
     const pcl::PointXYZRGB &point = cloud_ref (i, j);
-    if (isnan (point.x) || isnan (point.y) || isnan (point.z))
+    if (pcl_isnan (point.x) || pcl_isnan (point.y) || pcl_isnan (point.z))
       continue;
 
     if (i < bb (0))
@@ -176,8 +176,8 @@ FittingSurfaceIM::refine ()
   Eigen::Vector2d bbx (m_nurbs.Knot (0, 0), m_nurbs.Knot (0, m_nurbs.KnotCount (0) - 1));
   Eigen::Vector2d bby (m_nurbs.Knot (1, 0), m_nurbs.Knot (1, m_nurbs.KnotCount (1) - 1));
 
-  int dx = bbx (1) - bbx (0);
-  int dy = bby (1) - bby (0);
+  int dx = int (bbx (1) - bbx (0));
+  int dy = int (bby (1) - bby (0));
   double ddx = double (dx) / (m_nurbs.CVCount (0) - 1);
   double ddy = double (dy) / (m_nurbs.CVCount (1) - 1);
 
@@ -186,8 +186,8 @@ FittingSurfaceIM::refine ()
   {
     for (int j = 0; j < m_nurbs.CVCount (1); j++)
     {
-      int px = bbx (0) + ddx * i;
-      int py = bby (0) + ddy * j;
+      int px = int (bbx (0) + ddx * i);
+      int py = int (bby (0) + ddy * j);
       m_cps_px.push_back (Eigen::Vector2i (px, py));
     }
   }
@@ -260,7 +260,7 @@ FittingSurfaceIM::initSurface (int order, Eigen::Vector4d bb)
 void
 FittingSurfaceIM::assemble (bool inverse_mapping)
 {
-  int nInt = m_indices.size ();
+  int nInt = int (m_indices.size ());
   int nCageReg = (m_nurbs.m_cv_count[0] - 2) * (m_nurbs.m_cv_count[1] - 2);
   int nCageRegBnd = 2 * (m_nurbs.m_cv_count[0] - 1) + 2 * (m_nurbs.m_cv_count[1] - 1);
 
@@ -281,7 +281,7 @@ FittingSurfaceIM::assemble (bool inverse_mapping)
     const pcl::PointXYZRGB &pt = cloud_ref.at (m_indices[i]);
     Eigen::Vector2i params (px, py);
 
-    if (isnan (pt.z) || pt.z == 0.0)
+    if (pcl_isnan (pt.z) || pt.z == 0.0)
       throw std::runtime_error ("[FittingSurfaceIM::assemble] Error, not a number (pt.z)");
 
     if (inverse_mapping)
@@ -291,8 +291,8 @@ FittingSurfaceIM::assemble (bool inverse_mapping)
       Eigen::Vector3d p, tu, tv;
       Eigen::Vector2d params1 (params (0), params (1));
       params1 = inverseMapping (m_nurbs, point, params1, error, p, tu, tv, 200, 1e-6, true);
-      params (0) = params1 (0);
-      params (1) = params1 (1);
+      params (0) = int (params1 (0));
+      params (1) = int (params1 (1));
     }
 
     addPointConstraint (params, pt.z, 1.0, row);
@@ -331,8 +331,8 @@ FittingSurfaceIM::assemble (bool inverse_mapping)
 void
 FittingSurfaceIM::addPointConstraint (const Eigen::Vector2i &params, double z, double weight, unsigned &row)
 {
-  double N0[m_nurbs.Order (0) * m_nurbs.Order (0)];
-  double N1[m_nurbs.Order (1) * m_nurbs.Order (1)];
+  double *N0 = new double[m_nurbs.Order (0) * m_nurbs.Order (0)];
+  double *N1 = new double[m_nurbs.Order (1) * m_nurbs.Order (1)];
 
   int E = ON_NurbsSpanIndex (m_nurbs.m_order[0], m_nurbs.m_cv_count[0], m_nurbs.m_knot[0], params (0), 0, 0);
   int F = ON_NurbsSpanIndex (m_nurbs.m_order[1], m_nurbs.m_cv_count[1], m_nurbs.m_knot[1], params (1), 0, 0);
@@ -355,6 +355,9 @@ FittingSurfaceIM::addPointConstraint (const Eigen::Vector2i &params, double z, d
   } // i
 
   row++;
+
+  delete [] N1;
+  delete [] N0;
 }
 
 void

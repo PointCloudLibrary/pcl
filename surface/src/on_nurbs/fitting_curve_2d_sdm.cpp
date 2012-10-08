@@ -1,7 +1,7 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2011, Thomas Mörwald
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -14,7 +14,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Thomas Mörwald nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * @author thomas.moerwald
+ * 
  *
  */
 
@@ -56,14 +56,10 @@ FittingCurve2dSDM::FittingCurve2dSDM (NurbsDataCurve2d *data, const ON_NurbsCurv
 void
 FittingCurve2dSDM::assemble (const FittingCurve2dPDM::Parameter &parameter)
 {
-  clock_t time_start, time_end;
-  if (!m_quiet)
-    time_start = clock ();
-
   int cp_red = m_nurbs.m_order - 2;
   int ncp = m_nurbs.m_cv_count - 2 * cp_red;
   int nCageReg = m_nurbs.m_cv_count - 2 * cp_red;
-  int nInt = m_data->interior.size ();
+  int nInt = int (m_data->interior.size ());
 
   double wInt = 1.0;
   if (!m_data->interior_weight.empty ())
@@ -87,32 +83,16 @@ FittingCurve2dSDM::assemble (const FittingCurve2dPDM::Parameter &parameter)
     if (!m_quiet)
       printf ("[FittingCurve2dSDM::assemble] Warning: rows do not match: %d %d\n", row, nrows);
   }
-
-  if (!m_quiet)
-  {
-    time_end = clock ();
-    double solve_time = (double)(time_end - time_start) / (double)(CLOCKS_PER_SEC);
-    printf ("[FittingCurve2dSDM::assemble()] (assemble (%d,%d): %f sec)\n", nrows, ncp, solve_time);
-  }
 }
 
 double
 FittingCurve2dSDM::solve (double damp)
 {
-  clock_t time_start, time_end;
   double cps_diff (0.0);
-  if (!m_quiet)
-    time_start = clock ();
 
   if (m_solver.solve ())
     cps_diff = updateCurve (damp);
 
-  if (!m_quiet)
-  {
-    time_end = clock ();
-    double solve_time = (double)(time_end - time_start) / (double)(CLOCKS_PER_SEC);
-    printf ("[FittingPatch::solve()] (%f sec)\n", solve_time);
-  }
   return cps_diff;
 }
 
@@ -165,7 +145,7 @@ FittingCurve2dSDM::addPointConstraint (const double &param, const Eigen::Vector2
 {
   int cp_red = m_nurbs.m_order - 2;
   int ncp = m_nurbs.m_cv_count - 2 * cp_red;
-  double N[m_nurbs.m_order * m_nurbs.m_order];
+  double *N = new double[m_nurbs.m_order * m_nurbs.m_order];
 
   int E = ON_NurbsSpanIndex (m_nurbs.m_order, m_nurbs.m_cv_count, m_nurbs.m_knot, param, 0, 0);
 
@@ -204,6 +184,8 @@ FittingCurve2dSDM::addPointConstraint (const double &param, const Eigen::Vector2
     row++;
 
   }
+
+  delete [] N;
 }
 
 void
@@ -229,7 +211,7 @@ FittingCurve2dSDM::addCageRegularisation (double weight, unsigned &row)
 void
 FittingCurve2dSDM::assembleInterior (double wInt, double rScale, unsigned &row)
 {
-  unsigned nInt = m_data->interior.size ();
+  unsigned nInt = int (m_data->interior.size ());
   m_data->interior_line_start.clear ();
   m_data->interior_line_end.clear ();
   m_data->interior_error.clear ();
@@ -255,7 +237,7 @@ FittingCurve2dSDM::assembleInterior (double wInt, double rScale, unsigned &row)
     double param;
     Eigen::Vector2d pt, t, n;
     double error;
-    if (p < (int)m_data->interior_param.size ())
+    if (p < int (m_data->interior_param.size ()))
     {
       param = findClosestElementMidPoint (m_nurbs, pcp, m_data->interior_param[p]);
       param = inverseMapping (m_nurbs, pcp, param, error, pt, t, rScale, in_max_steps, in_accuracy, m_quiet);

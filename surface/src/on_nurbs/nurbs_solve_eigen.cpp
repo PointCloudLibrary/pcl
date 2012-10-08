@@ -1,7 +1,7 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2011, Thomas Mörwald, Jonathan Balzer, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -14,7 +14,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Thomas Mörwald or Jonathan Balzer nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * @author thomas.moerwald
+ * 
  *
  */
 
@@ -132,22 +132,9 @@ NurbsSolve::printF ()
 bool
 NurbsSolve::solve ()
 {
-
-  clock_t time_start, time_end;
-  time_start = clock ();
-
   //  m_xeig = m_Keig.colPivHouseholderQr().solve(m_feig);
   //  Eigen::MatrixXd x = A.householderQr().solve(b);
   m_xeig = m_Keig.jacobiSvd (Eigen::ComputeThinU | Eigen::ComputeThinV).solve (m_feig);
-
-  time_end = clock ();
-
-  if (!m_quiet)
-  {
-    double solve_time = (double)(time_end - time_start) / (double)(CLOCKS_PER_SEC);
-    printf ("[NurbsSolve[Eigen]::solve_eigen()] solution found! (%f sec)\n", solve_time);
-    printf ("[NurbsSolve[Eigen]::solve()] Warning: Using dense solver is quite inefficient, use UmfPack instead.\n");
-  }
 
   return true;
 }
@@ -155,7 +142,7 @@ NurbsSolve::solve ()
 Eigen::MatrixXd
 NurbsSolve::diff ()
 {
-  Eigen::MatrixXd f = m_Keig * m_xeig;
+  Eigen::MatrixXd f (m_Keig * m_xeig);
   return (f - m_feig);
 }
 

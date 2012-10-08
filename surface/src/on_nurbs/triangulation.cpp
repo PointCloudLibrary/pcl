@@ -1,7 +1,7 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2011, Thomas Mörwald, Jonathan Balzer, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -14,7 +14,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Thomas Mörwald or Jonathan Balzer nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * @author thomas.moerwald
+ * 
  *
  */
 
@@ -75,15 +75,15 @@ Triangulation::createVertices (pcl::PointCloud<pcl::PointXYZ>::Ptr &cloud, float
                                float height, unsigned segX, unsigned segY)
 {
   pcl::PointXYZ v;
-  float dx = width / segX;
-  float dy = height / segY;
+  float dx = width / float (segX);
+  float dy = height / float (segY);
 
   for (unsigned j = 0; j <= segY; j++)
   {
     for (unsigned i = 0; i <= segX; i++)
     {
-      v.x = x0 + i * dx;
-      v.y = y0 + j * dy;
+      v.x = x0 + float (i) * dx;
+      v.y = y0 + float (j) * dy;
       v.z = z0;
       cloud->push_back (v);
     }
@@ -179,7 +179,7 @@ Triangulation::convertSurface2PolygonMesh (const ON_NurbsSurface &nurbs, Polygon
 
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
   mesh.polygons.clear ();
-  createVertices (cloud, x0, y0, 0.0, w, h, resolution, resolution);
+  createVertices (cloud, float (x0), float (y0), 0.0f, float (w), float (h), resolution, resolution);
   createIndices (mesh.polygons, 0, resolution, resolution);
 
   for (unsigned i = 0; i < cloud->size (); i++)
@@ -189,9 +189,9 @@ Triangulation::convertSurface2PolygonMesh (const ON_NurbsSurface &nurbs, Polygon
     double point[9];
     nurbs.Evaluate (v.x, v.y, 1, 3, point);
 
-    v.x = point[0];
-    v.y = point[1];
-    v.z = point[2];
+    v.x = float (point[0]);
+    v.y = float (point[1]);
+    v.z = float (point[2]);
   }
 
   toROSMsg (*cloud, mesh.cloud);
@@ -219,7 +219,7 @@ Triangulation::convertTrimmedSurface2PolygonMesh (const ON_NurbsSurface &nurbs, 
 
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
   std::vector<pcl::Vertices> polygons;
-  createVertices (cloud, x0, y0, 0.0, w, h, resolution, resolution);
+  createVertices (cloud, float (x0), float (y0), 0.0f, float (w), float (h), resolution, resolution);
   createIndices (polygons, 0, resolution, resolution);
 
   vector_vec2d points (cloud->size (), Eigen::Vector2d ());
@@ -295,8 +295,8 @@ Triangulation::convertTrimmedSurface2PolygonMesh (const ON_NurbsSurface &nurbs, 
   {
     pcl::PointXYZ &v = cloud->at (out_idx[i]);
     Eigen::Vector2d &pc = out_pc[i];
-    v.x = pc (0);
-    v.y = pc (1);
+    v.x = float (pc (0));
+    v.y = float (pc (1));
   }
 
   for (std::size_t i = 0; i < cloud->size (); i++)
@@ -307,9 +307,9 @@ Triangulation::convertTrimmedSurface2PolygonMesh (const ON_NurbsSurface &nurbs, 
     double point[3];
     nurbs.Evaluate (v.x, v.y, 0, 3, point);
 
-    v.x = point[0];
-    v.y = point[1];
-    v.z = point[2];
+    v.x = float (point[0]);
+    v.y = float (point[1]);
+    v.z = float (point[2]);
     //    tu[0] = point[3];
     //    tu[1] = point[4];
     //    tu[2] = point[5];
@@ -346,7 +346,7 @@ Triangulation::convertTrimmedSurface2PolygonMesh (const ON_NurbsSurface &nurbs, 
 
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
   std::vector<pcl::Vertices> polygons;
-  createVertices (cloud, x0, y0, 0.0, w, h, resolution, resolution);
+  createVertices (cloud, float (x0), float (y0), 0.0f, float (w), float (h), resolution, resolution);
   createIndices (polygons, 0, resolution, resolution);
 
   vector_vec2d points (cloud->size (), Eigen::Vector2d ());
@@ -425,8 +425,8 @@ Triangulation::convertTrimmedSurface2PolygonMesh (const ON_NurbsSurface &nurbs, 
   {
     pcl::PointXYZ &v = cloud->at (out_idx[i]);
     Eigen::Vector2d &pc = out_pc[i];
-    v.x = pc (0);
-    v.y = pc (1);
+    v.x = float (pc (0));
+    v.y = float (pc (1));
   }
 
   for (std::size_t i = 0; i < cloud->size (); i++)
@@ -436,9 +436,9 @@ Triangulation::convertTrimmedSurface2PolygonMesh (const ON_NurbsSurface &nurbs, 
     double point[3];
     nurbs.Evaluate (v.x, v.y, 0, 3, point);
 
-    v.x = point[0];
-    v.y = point[1];
-    v.z = point[2];
+    v.x = float (point[0]);
+    v.y = float (point[1]);
+    v.z = float (point[2]);
   }
 
   for (std::size_t i = 0; i < start.size (); i++)
@@ -482,7 +482,7 @@ Triangulation::convertSurface2Vertices (const ON_NurbsSurface &nurbs, pcl::Point
   double y1 = nurbs.Knot (1, nurbs.KnotCount (1) - 1);
   double h = y1 - y0;
 
-  createVertices (cloud, x0, y0, 0.0, w, h, resolution, resolution);
+  createVertices (cloud, float (x0), float (y0), 0.0f, float (w), float (h), resolution, resolution);
   createIndices (vertices, 0, resolution, resolution);
 
   for (unsigned i = 0; i < cloud->size (); i++)
@@ -579,9 +579,9 @@ Triangulation::convertCurve2PointCloud (const ON_NurbsCurve &curve, const ON_Nur
       double pp[3];
       curve.Evaluate (xi, 0, 2, pp);
       surf.Evaluate (pp[0], pp[1], 0, 3, p);
-      pt.x = p[0];
-      pt.y = p[1];
-      pt.z = p[2];
+      pt.x = float (p[0]);
+      pt.y = float (p[1]);
+      pt.z = float (p[2]);
       pt.r = 255;
       pt.g = 0;
       pt.b = 0;

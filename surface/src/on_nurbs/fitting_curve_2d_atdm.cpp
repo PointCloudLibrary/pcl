@@ -1,7 +1,7 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2011, Thomas Mörwald, Jonathan Balzer, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -14,7 +14,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Thomas Mörwald or Jonathan Balzer nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * @author thomas.moerwald
+ * 
  *
  */
 
@@ -54,19 +54,15 @@ FittingCurve2dATDM::FittingCurve2dATDM (NurbsDataCurve2d *data, const ON_NurbsCu
 void
 FittingCurve2dATDM::assemble (const FittingCurve2dAPDM::Parameter &parameter)
 {
-  clock_t time_start, time_end;
-  if (!m_quiet)
-    time_start = clock ();
-
   int cp_red = m_nurbs.m_order - 2;
   int ncp = m_nurbs.m_cv_count - 2 * cp_red;
   int nCageReg = m_nurbs.m_cv_count - 2 * cp_red;
-  int nInt = m_data->interior.size ();
+  int nInt = int (m_data->interior.size ());
   //  int nCommon = m_data->common.size();
   //  int nClosestP = parameter.closest_point_resolution;
 
   std::vector<double> elements = getElementVector (m_nurbs);
-  int nClosestP = elements.size ();
+  int nClosestP = int (elements.size ());
 
   double wInt = 1.0;
   if (!m_data->interior_weight.empty ())
@@ -96,32 +92,16 @@ FittingCurve2dATDM::assemble (const FittingCurve2dAPDM::Parameter &parameter)
     if (!m_quiet)
       printf ("[FittingCurve2dATDM::assemble] Warning: rows do not match: %d %d\n", row, nrows);
   }
-
-  if (!m_quiet)
-  {
-    time_end = clock ();
-    double solve_time = (double)(time_end - time_start) / (double)(CLOCKS_PER_SEC);
-    printf ("[FittingPatch::assemble()] (assemble (%d,%d): %f sec)\n", nrows, ncp, solve_time);
-  }
 }
 
 double
 FittingCurve2dATDM::solve (double damp)
 {
-  clock_t time_start, time_end;
   double cps_diff(0.0);
-  if (!m_quiet)
-    time_start = clock ();
 
   if (m_solver.solve ())
     cps_diff = updateCurve (damp);
 
-  if (!m_quiet)
-  {
-    time_end = clock ();
-    double solve_time = (double)(time_end - time_start) / (double)(CLOCKS_PER_SEC);
-    printf ("[FittingPatch::solve()] (%f sec)\n", solve_time);
-  }
   return cps_diff;
 }
 
@@ -173,7 +153,7 @@ FittingCurve2dATDM::addPointConstraint (const double &param, const Eigen::Vector
 {
   int cp_red = m_nurbs.m_order - 2;
   int ncp = m_nurbs.m_cv_count - 2 * cp_red;
-  double N[m_nurbs.m_order * m_nurbs.m_order];
+  double *N = new double[m_nurbs.m_order * m_nurbs.m_order];
 
   int E = ON_NurbsSpanIndex (m_nurbs.m_order, m_nurbs.m_cv_count, m_nurbs.m_knot, param, 0, 0);
 
@@ -190,6 +170,8 @@ FittingCurve2dATDM::addPointConstraint (const double &param, const Eigen::Vector
   for (int i = 0; i < m_nurbs.m_order; i++)
     m_solver.K (row, 2 * ((E + i) % ncp) + 1, weight * normal (1) * N[i]);
   row++;
+
+  delete [] N;
 }
 
 void
@@ -257,7 +239,7 @@ FittingCurve2dATDM::addCageRegularisation (double weight, unsigned &row, const s
 void
 FittingCurve2dATDM::assembleInterior (double wInt, double sigma2, double rScale, unsigned &row)
 {
-  int nInt = m_data->interior.size ();
+  int nInt = int (m_data->interior.size ());
   bool wFunction (true);
   double ds = 1.0 / (2.0 * sigma2);
   m_data->interior_line_start.clear ();
@@ -272,7 +254,7 @@ FittingCurve2dATDM::assembleInterior (double wInt, double sigma2, double rScale,
     double param;
     Eigen::Vector2d pt, t, n;
     double error;
-    if (p < (int)m_data->interior_param.size ())
+    if (p < int (m_data->interior_param.size ()))
     {
       param = findClosestElementMidPoint (m_nurbs, pcp, m_data->interior_param[p]);
       param = inverseMapping (m_nurbs, pcp, param, error, pt, t, rScale, in_max_steps, in_accuracy, m_quiet);
@@ -301,10 +283,10 @@ FittingCurve2dATDM::assembleInterior (double wInt, double sigma2, double rScale,
     Eigen::Vector3d b (t (0), t (1), 0.0);
     Eigen::Vector3d z = a.cross (b);
 
-    if (p < (int)m_data->interior_weight.size ())
+    if (p < int (m_data->interior_weight.size ()))
       wInt = m_data->interior_weight[p];
 
-    if (p < (int)m_data->interior_weight_function.size ())
+    if (p < int (m_data->interior_weight_function.size ()))
       wFunction = m_data->interior_weight_function[p];
 
     double w (wInt);
@@ -347,7 +329,7 @@ FittingCurve2dATDM::assembleClosestPoints (const std::vector<double> &elements, 
   for (unsigned i = 0; i < elements.size (); i++)
   {
 
-    int j = i % elements.size ();
+    int j = i % int (elements.size ());
 
     double dxi = elements[j] - elements[i];
     double xi = elements[i] + 0.5 * dxi;
