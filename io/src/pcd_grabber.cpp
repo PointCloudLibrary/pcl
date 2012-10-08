@@ -195,7 +195,11 @@ bool
 pcl::PCDGrabberBase::PCDGrabberImpl::readTARHeader ()
 {
   // Read in the header
+#if WIN32
+  int result = static_cast<int> (_read (tar_fd_, reinterpret_cast<char*> (&tar_header_), 512));
+#else
   int result = static_cast<int> (::read (tar_fd_, reinterpret_cast<char*> (&tar_header_), 512));
+#endif
   if (result == -1)
   {
     closeTARFile ();
