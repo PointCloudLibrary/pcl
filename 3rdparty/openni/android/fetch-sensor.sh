@@ -11,4 +11,12 @@ git checkout Stable-5.1.0.41
 
 normalize_eol
 
-patch -p1 -i ../sensor.patch
+cat ../sensor-patches/series | while read patchname; do
+  case "$patchname" in
+    \#*)
+      ;; # ignore comments
+    *)
+      git apply -v ../sensor-patches/$patchname
+      ;;
+  esac
+done

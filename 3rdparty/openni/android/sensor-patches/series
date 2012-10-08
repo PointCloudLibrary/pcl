@@ -1,0 +1,8 @@
+# This series applies on GIT commit 804fde6b6a5b588214e64a5e7bbab5109eed5912
+permissions.patch
+kinect.patch
+file-log-disable.patch
+dynamic-linker.patch
+magic-handling.patch
+bayer-buffer.patch
+rules.patch
