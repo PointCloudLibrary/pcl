@@ -1,0 +1,51 @@
+INSTRUCTIONS:
+
+This instruction assumes that you have:
+0) installed Android SDK, Android NDK.
+1) compiled VES (including VTK, KiwiViewer) for Android (http://vtk.org/Wiki/VES/Developers_Guide) 
+2) compiled Point Cloud Library for Android in conjunction with VTK, VES, and Kiwi (http://vtk.org/Wiki/VES/Point_Cloud_Library)
+
+Steps
+1st - patch VES Library, rebuild VES library.
+
+cd PATH_TO_VES_DIR 
+git apply vesKiwi.patch
+
+2nd - copy KiwiPCL to PATH_TO_VES_DIR/Apps/Android
+
+Change dependencies in the next files:
+
+CMakeLists.txt
+
+Replace all “/home/andrey/kiwi/VES/” to your path to VES library.
+Replace all “/home/andrey/kiwi/pcl-superbuild/” to your path to PCL for Android in conjunction with VTK, VES, and Kiwi  
+Replace “/home/andrey/android-ndk-r8b/” to your path to android-ndk
+
+configure_ant.sh
+Replace “/home/andrey/android-sdks/” to your path to android-sdk
+
+configure_cmake.sh
+Replace “/home/andrey/android-ndk-r8b/” to your path to android-ndk
+
+tools.sh
+Replace all “/home/andrey/kiwi/VES/” to your path to VES library.
+
+build/my.sh
+Replace all “/home/andrey/kiwi/VES/” to your path to VES library.
+Replace all “/home/andrey/kiwi/pcl-superbuild/” to your path to PCL for Android in conjunction with VTK, VES, and Kiwi  
+
+assets.cmake
+Replace all “/home/andrey/kiwi/VES/” to your path to VES library.
+
+
+Next, from this directory execute the following commands:
+
+# configure
+./configure_ant.sh
+./configure_cmake.sh
+
+# build
+./compile.sh
+
+# run on a device
+./run.sh

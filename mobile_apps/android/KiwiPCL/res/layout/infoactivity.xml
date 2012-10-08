@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/InfoRelativeLayout1"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+<LinearLayout
+    android:id="@+id/headerLayout"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_alignParentTop="true"
+    android:layout_centerHorizontal="true"
+    android:layout_marginTop="20dp"
+    android:orientation="horizontal" >
+
+
+    <ImageView
+      android:id="@+id/kiwiLogo"
+      android:src="@drawable/icon"
+      android:layout_width="100dp"
+      android:layout_height="100dp"
+      android:layout_gravity="center_vertical"/>
+
+    <LinearLayout
+      android:id="@+id/titleLayout"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center_vertical"
+      android:layout_marginLeft="10dp"
+      android:orientation="vertical" >
+
+      <TextView
+        android:id="@+id/kiwiText"
+        android:text="KiwiViewer"
+        android:textSize="30dp"
+        android:textStyle="italic"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"/>
+
+      <TextView
+        android:id="@+id/kiwiText"
+        android:text="@string/version_string"
+        android:textSize="14dp"
+        android:textStyle="italic"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"/>
+
+    </LinearLayout>
+
+</LinearLayout>
+
+    <TextView
+android:id="@+id/detailsText"
+android:text="Current Mesh:\n  Triangles: 0\n  Lines: 0\n  Vertices: 0\n  Drawing @ 60Hz"
+android:textSize="20dp"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:layout_below="@+id/headerLayout"
+android:layout_centerHorizontal="true"
+android:layout_marginTop="1dp"/>
+
+
+    <TextView
+android:id="@+id/licenseLink"
+android:text="@string/license_link"
+android:textSize="14dp"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:layout_above="@+id/copyrightText"
+android:layout_centerHorizontal="true"
+android:layout_marginBottom="4dp"
+/>
+
+
+    <TextView
+android:id="@+id/copyrightText"
+android:text="@string/copyright_text"
+android:textSize="14dp"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:layout_alignParentBottom="true"
+android:layout_centerHorizontal="true"
+android:layout_marginBottom="4dp"
+/>
+
+
+
+    <ImageView
+android:id="@+id/kitwareLogo"
+android:src="@drawable/kitwarelogo"
+android:layout_width="60dp"
+android:layout_height="60dp"
+android:layout_alignParentBottom="true"
+android:layout_alignParentRight="true"
+android:layout_marginRight="8dp"
+android:layout_marginBottom="8dp"/>
+
+
+</RelativeLayout>
