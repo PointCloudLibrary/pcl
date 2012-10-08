@@ -103,13 +103,13 @@ namespace pcl
         inline int
         getMaximumIterations () const { return (max_iterations_); }
 
-        /** \brief Specifys if the registration fails or converges when the maximum number of iterations is reached.
+        /** \brief Specifies if the registration fails or converges when the maximum number of iterations is reached.
           * \param[in] failure_after_max_iter If true, the registration fails. If false, the registration is assumed to have converged.
           */
         inline void
         setFailureAfterMaximumIterations (const bool failure_after_max_iter) {failure_after_max_iter_ = failure_after_max_iter;}
 
-        /** \brief Get if the registration will fail or converge when the maximum number of iterations is reached. */
+        /** \brief Get whether the registration will fail or converge when the maximum number of iterations is reached. */
         inline bool
         getFailureAfterMaximumIterations () const {return (failure_after_max_iter_);}
 
