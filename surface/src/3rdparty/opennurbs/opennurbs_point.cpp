@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -14,7 +14,7 @@
 ////////////////////////////////////////////////////////////////
 */
 
-#include <pcl/surface/3rdparty/opennurbs/opennurbs.h>
+#include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
 
 bool ON_IsValid(double x)
 {
@@ -353,6 +353,78 @@ bool ON_Interval::Union( // this = this union arg
       Destroy();
   }
   return rc;
+}
+
+bool ON_Interval::Union(
+  int count,
+  const double* t
+  )
+{
+  bool rc = false;
+  double a, mn, mx;
+
+  if ( 0 != t )
+  {
+    while ( count > 0 && !ON_IsValid(*t) )
+    {
+      count--;
+      t++;
+    }
+  }
+
+  if ( count <= 0 || 0 == t )
+  {
+    // this may be increasing, decreasing, or empty
+    if ( !IsEmptySet() )
+    {
+      mn = Min();
+      mx = Max();
+      if ( mn <= mx && ON_IsValid(mn) && ON_IsValid(mx) )
+      {
+        Set( mn, mx );
+        rc = true;
+      }
+    }
+  }
+  else 
+  {
+    if ( IsEmptySet() ) 
+    {
+      a = *t++;
+      Set( a, a );
+      count--;
+      rc = true;
+    }
+    mn = Min();
+    mx = Max();
+    while( count > 0 )
+    {
+      count--;
+      a = *t++;
+      if ( ON_IsValid(a) )
+      {
+        if ( a < mn )
+          mn = a;
+        else if ( a > mx )
+          mx = a;
+      }
+    }
+    if ( mn <= mx && ON_IsValid(mn) && ON_IsValid(mx) )
+    {
+      Set(mn,mx);
+      rc = true;
+    }
+    else
+      Destroy();
+  }
+  return rc;
+}
+
+bool ON_Interval::Union(
+       double t
+       )
+{
+  return Union(1,&t);
 }
 
 //////////
@@ -727,7 +799,7 @@ double ON_3fPoint::Fuzz(
           double absolute_tolerance // (default =  ON_ZERO_TOLERANCE) 
           ) const
 {
-  double t = MaximumCoordinate()* ON_SQRT_EPSILON;
+  double t = MaximumCoordinate()* ON_RELATIVE_TOLERANCE;
   return(t > absolute_tolerance) ? t : absolute_tolerance;
 }
 
@@ -1173,7 +1245,7 @@ double ON_3dPoint::Fuzz(
           double absolute_tolerance // (default =  ON_ZERO_TOLERANCE) 
           ) const
 {
-  double t = MaximumCoordinate()* ON_SQRT_EPSILON;
+  double t = MaximumCoordinate()* ON_RELATIVE_TOLERANCE;
   return(t > absolute_tolerance) ? t : absolute_tolerance;
 }
 
@@ -1221,7 +1293,7 @@ double ON_3fVector::Fuzz(
           double absolute_tolerance // (default =  ON_ZERO_TOLERANCE) 
           ) const
 {
-  double t = MaximumCoordinate()* ON_SQRT_EPSILON;
+  double t = MaximumCoordinate()* ON_RELATIVE_TOLERANCE;
   return(t > absolute_tolerance) ? t : absolute_tolerance;
 }
 
@@ -1230,7 +1302,7 @@ double ON_3dVector::Fuzz(
           double absolute_tolerance // (default =  ON_ZERO_TOLERANCE) 
           ) const
 {
-  double t = MaximumCoordinate()* ON_SQRT_EPSILON;
+  double t = MaximumCoordinate()* ON_RELATIVE_TOLERANCE;
   return(t > absolute_tolerance) ? t : absolute_tolerance;
 }
 
@@ -1695,6 +1767,17 @@ float& ON_2fPoint::operator[](int i)
   return *pd;
 }
 
+float ON_2fPoint::operator[](unsigned int i) const
+{
+  return (i<=0) ? x : y;
+}
+
+float& ON_2fPoint::operator[](unsigned int i)
+{
+  float* pd = (i<=0)? &x : &y;
+  return *pd;
+}
+
 double ON_2fPoint::DistanceTo( const ON_2fPoint& p ) const
 {
   return ON_Length2d(p.x-x,p.y-y);
@@ -2134,6 +2217,17 @@ float& ON_3fPoint::operator[](int i)
   return *pd;
 }
 
+float ON_3fPoint::operator[](unsigned int i) const
+{
+  return ( (i<=0)?x:((i>=2)?z:y) );
+}
+
+float& ON_3fPoint::operator[](unsigned int i)
+{
+  float* pd = (i<=0)? &x : ( (i>=2) ?  &z : &y);
+  return *pd;
+}
+
 double ON_3fPoint::DistanceTo( const ON_3fPoint& p ) const
 {
   return ON_Length3d(p.x-x,p.y-y,p.z-z);
@@ -2488,6 +2582,17 @@ float ON_4fPoint::operator[](int i) const
 }
 
 float& ON_4fPoint::operator[](int i)
+{
+  float* pd = (i<=0) ? &x : ( (i>=3) ? &w : (i==1)?&y:&z);
+  return *pd;
+}
+
+float ON_4fPoint::operator[](unsigned int i) const
+{
+  return ((i<=0)?x:((i>=3)?w:((i==1)?y:z)));
+}
+
+float& ON_4fPoint::operator[](unsigned int i)
 {
   float* pd = (i<=0) ? &x : ( (i>=3) ? &w : (i==1)?&y:&z);
   return *pd;
@@ -2885,6 +2990,17 @@ float ON_2fVector::operator[](int i) const
 }
 
 float& ON_2fVector::operator[](int i)
+{
+  float* pd = (i<=0)? &x : &y;
+  return *pd;
+}
+
+float ON_2fVector::operator[](unsigned int i) const
+{
+  return ((i<=0)?x:y);
+}
+
+float& ON_2fVector::operator[](unsigned int i)
 {
   float* pd = (i<=0)? &x : &y;
   return *pd;
@@ -3384,6 +3500,17 @@ float ON_3fVector::operator[](int i) const
 }
 
 float& ON_3fVector::operator[](int i)
+{
+  float* pd = (i<=0)? &x : ( (i>=2) ?  &z : &y);
+  return *pd;
+}
+
+float ON_3fVector::operator[](unsigned int i) const
+{
+  return ( (i<=0)?x:((i>=2)?z:y) );
+}
+
+float& ON_3fVector::operator[](unsigned int i)
 {
   float* pd = (i<=0)? &x : ( (i>=2) ?  &z : &y);
   return *pd;
@@ -3901,6 +4028,17 @@ double& ON_2dPoint::operator[](int i)
   return *pd;
 }
 
+double ON_2dPoint::operator[](unsigned int i) const
+{
+  return (i<=0) ? x : y;
+}
+
+double& ON_2dPoint::operator[](unsigned int i)
+{
+  double* pd = (i<=0)? &x : &y;
+  return *pd;
+}
+
 double ON_2dPoint::DistanceTo( const ON_2dPoint& p ) const
 {
   return ON_Length2d(p.x-x,p.y-y);
@@ -4361,6 +4499,17 @@ double& ON_3dPoint::operator[](int i)
   return *pd;
 }
 
+double ON_3dPoint::operator[](unsigned int i) const
+{
+  return ( (i<=0)?x:((i>=2)?z:y) );
+}
+
+double& ON_3dPoint::operator[](unsigned int i)
+{
+  double* pd = (i<=0)? &x : ( (i>=2) ?  &z : &y);
+  return *pd;
+}
+
 double ON_3dPoint::DistanceTo( const ON_3dPoint& p ) const
 {
   return ON_Length3d(p.x-x,p.y-y,p.z-z);
@@ -4729,6 +4878,17 @@ double ON_4dPoint::operator[](int i) const
 }
 
 double& ON_4dPoint::operator[](int i)
+{
+  double* pd = (i<=0) ? &x : ( (i>=3) ? &w : (i==1)?&y:&z);
+  return *pd;
+}
+
+double ON_4dPoint::operator[](unsigned int i) const
+{
+  return ((i<=0)?x:((i>=3)?w:((i==1)?y:z)));
+}
+
+double& ON_4dPoint::operator[](unsigned int i)
 {
   double* pd = (i<=0) ? &x : ( (i>=3) ? &w : (i==1)?&y:&z);
   return *pd;
@@ -5143,6 +5303,17 @@ double& ON_2dVector::operator[](int i)
   return *pd;
 }
 
+double ON_2dVector::operator[](unsigned int i) const
+{
+  return ((i<=0)?x:y);
+}
+
+double& ON_2dVector::operator[](unsigned int i)
+{
+  double* pd = (i<=0)? &x : &y;
+  return *pd;
+}
+
 int ON_2dVector::MaximumCoordinateIndex() const
 {
   return ( (fabs(y)>fabs(x)) ? 1 : 0 );
@@ -5223,47 +5394,43 @@ void ON_2dVector::Reverse()
 bool ON_2dVector::Unitize()
 {
   // 15 September 2003 Dale Lear
-  //     Added the ON_DBL_MIN test.  See ON_2dVector::Length()
+  //     Added the ON_IS_FINITE and ON_DBL_MIN test.  See ON_2dVector::Length()
   //     for details.
-  bool rc = false;
   double d = Length();
-  if ( d > ON_DBL_MIN ) 
+  if ( ON_IS_FINITE(d) )
   {
-    x /= d;
-    y /= d;
-    rc = true;
-  }
-  else if ( d > 0.0 && ON_IS_FINITE(d) )
-  {
-    // This code is rarely used and can be slow.
-    // It multiplies by 2^1023 in an attempt to 
-    // normalize the coordinates.
-    // If the renormalization works, then we're
-    // ok.  If the renormalization fails, we
-    // return false.
-    ON_2dVector tmp;
-    tmp.x = x*8.9884656743115795386465259539451e+307;
-    tmp.y = y*8.9884656743115795386465259539451e+307;
-    d = tmp.Length();
-    if ( d > ON_DBL_MIN )
+    if ( d > ON_DBL_MIN ) 
     {
-      x = tmp.x/d;
-      y = tmp.y/d;
-      rc = true;
+      x /= d;
+      y /= d;
+      return true;
     }
-    else
+    
+    if ( d > 0.0 )
     {
-      x = 0.0;
-      y = 0.0;
+      // This code is rarely used and can be slow.
+      // It multiplies by 2^1023 in an attempt to 
+      // normalize the coordinates.
+      // If the renormalization works, then we're
+      // ok.  If the renormalization fails, we
+      // return false.
+      ON_2dVector tmp;
+      tmp.x = x*8.9884656743115795386465259539451e+307;
+      tmp.y = y*8.9884656743115795386465259539451e+307;
+      d = tmp.Length();
+      if ( ON_IS_FINITE(d) && d > ON_DBL_MIN )
+      {
+        x = tmp.x/d;
+        y = tmp.y/d;
+        return true;
+      }
     }
-  }
-  else
-  {
-    x = 0.0;
-    y = 0.0;
   }
 
-  return rc;
+  x = 0.0;
+  y = 0.0;
+
+  return false;
 }
 
 bool ON_2dVector::IsTiny( double tiny_tol ) const
@@ -5718,6 +5885,17 @@ double& ON_3dVector::operator[](int i)
   return *pd;
 }
 
+double ON_3dVector::operator[](unsigned int i) const
+{
+  return ( (i<=0)?x:((i>=2)?z:y) );
+}
+
+double& ON_3dVector::operator[](unsigned int i)
+{
+  double* pd = (i<=0)? &x : ( (i>=2) ?  &z : &y);
+  return *pd;
+}
+
 int ON_3dVector::MaximumCoordinateIndex() const
 {
   return (fabs(y)>fabs(x)) ? ((fabs(z)>fabs(y))?2:1) : ((fabs(z)>fabs(x))?2:0);
@@ -5800,52 +5978,48 @@ void ON_3dVector::Reverse()
 bool ON_3dVector::Unitize()
 {
   // 15 September 2003 Dale Lear
-  //     Added the ON_DBL_MIN test.  See ON_3dVector::Length()
+  //     Added the ON_IS_FINITE and ON_DBL_MIN test.  See ON_3dVector::Length()
   //     for details.
-  bool rc = false;
   double d = Length();
-  if ( d > ON_DBL_MIN )
+
+  if ( ON_IS_FINITE(d) )
   {
-    x /= d;
-    y /= d;
-    z /= d;
-    rc = true;
-  }
-  else if ( d > 0.0 && ON_IS_FINITE(d) )
-  {
-    // This code is rarely used and can be slow.
-    // It multiplies by 2^1023 in an attempt to 
-    // normalize the coordinates.
-    // If the renormalization works, then we're
-    // ok.  If the renormalization fails, we
-    // return false.
-    ON_3dVector tmp;
-    tmp.x = x*8.9884656743115795386465259539451e+307;
-    tmp.y = y*8.9884656743115795386465259539451e+307;
-    tmp.z = z*8.9884656743115795386465259539451e+307;
-    d = tmp.Length();
     if ( d > ON_DBL_MIN )
     {
-      x = tmp.x/d;
-      y = tmp.y/d;
-      z = tmp.z/d;
-      rc = true;
+      x /= d;
+      y /= d;
+      z /= d;
+      return true;
     }
-    else
+    
+    if ( d > 0.0 )
     {
-      x = 0.0;
-      y = 0.0;
-      z = 0.0;
+      // This code is rarely used and can be slow.
+      // It multiplies by 2^1023 in an attempt to 
+      // normalize the coordinates.
+      // If the renormalization works, then we're
+      // ok.  If the renormalization fails, we
+      // return false.
+      ON_3dVector tmp;
+      tmp.x = x*8.9884656743115795386465259539451e+307;
+      tmp.y = y*8.9884656743115795386465259539451e+307;
+      tmp.z = z*8.9884656743115795386465259539451e+307;
+      d = tmp.Length();
+      if ( ON_IS_FINITE(d) && d > ON_DBL_MIN )
+      {
+        x = tmp.x/d;
+        y = tmp.y/d;
+        z = tmp.z/d;
+        return true;
+      }
     }
-  }
-  else
-  {
-    x = 0.0;
-    y = 0.0;
-    z = 0.0;
   }
 
-  return rc;
+  x = 0.0;
+  y = 0.0;
+  z = 0.0;
+
+  return false;
 }
 
 double ON_3dVector::LengthAndUnitize()
@@ -6077,9 +6251,76 @@ bool ON_PlaneEquation::Create( ON_3dPoint P, ON_3dVector N )
   return rc;
 }
 
+ON_PlaneEquation::ON_PlaneEquation()
+: ON_3dVector(0.0,0.0,0.0)
+, d(0.0)
+{}
+
+ON_PlaneEquation::ON_PlaneEquation(double xx, double yy, double zz, double dd)
+: ON_3dVector(xx,yy,zz)
+, d(dd)
+{}
+
+const ON_PlaneEquation ON_PlaneEquation::UnsetPlaneEquation(ON_UNSET_VALUE,ON_UNSET_VALUE,ON_UNSET_VALUE,ON_UNSET_VALUE);
+const ON_PlaneEquation ON_PlaneEquation::ZeroPlaneEquation(0.0,0.0,0.0,0.0);
+
 bool ON_PlaneEquation::IsValid() const
 {
-  return (ON_IS_VALID(x) && ON_IS_VALID(y) && ON_IS_VALID(z) && ON_IS_VALID(d));
+  return ( ON_IS_VALID(x) && ON_IS_VALID(y) && ON_IS_VALID(z) && ON_IS_VALID(d) );
+}
+
+bool ON_PlaneEquation::IsSet() const
+{
+  return ( ON_IS_VALID(x) && ON_IS_VALID(y) && ON_IS_VALID(z) && ON_IS_VALID(d) 
+           && (0.0 != x || 0.0 != y || 0.0 != z) 
+         );
+}
+
+double ON_PlaneEquation::ZeroTolerance() const
+{
+  double zero_tolerance = 0.0;
+  ON_3dVector N(x,y,z);
+  if ( N.Unitize() && ON_IS_VALID(d) )
+  {
+    const ON_3dPoint P( -d*N.x, -d*N.y, -d*N.z  );
+
+    zero_tolerance = fabs(ValueAt(P));
+
+    ON_3dVector X;
+    X.PerpendicularTo(N);
+    X.Unitize();
+    
+    double t = fabs(ValueAt(P+X));
+    if ( t > zero_tolerance )
+      zero_tolerance = t;
+    t = fabs(ValueAt(P-X));
+    if ( t > zero_tolerance )
+      zero_tolerance = t;
+    t = fabs(ValueAt(P+d*X));
+    if ( t > zero_tolerance )
+      zero_tolerance = t;
+    t = fabs(ValueAt(P-d*X));
+    if ( t > zero_tolerance )
+      zero_tolerance = t;
+
+    ON_3dVector Y = ON_CrossProduct(N,X);
+    Y.Unitize();
+
+    t = fabs(ValueAt(P+Y));
+    if ( t > zero_tolerance )
+      zero_tolerance = t;
+    t = fabs(ValueAt(P-Y));
+    if ( t > zero_tolerance )
+      zero_tolerance = t;
+    t = fabs(ValueAt(P+d*Y));
+    if ( t > zero_tolerance )
+      zero_tolerance = t;
+    t = fabs(ValueAt(P-d*Y));
+    if ( t > zero_tolerance )
+      zero_tolerance = t;
+  }
+
+  return zero_tolerance;
 }
 
 bool ON_PlaneEquation::Transform( const ON_Xform& xform )
@@ -6757,10 +6998,10 @@ bool ON_BoundingBox::IsValid() const
 
 void ON_BoundingBox::Dump(ON_TextLog& text_log) const
 {
-  text_log.Print(L"Bounding box: ");
+  text_log.Print("Bounding box: ");
   if ( !IsValid() )
   {
-    text_log.Print(L"not valid ");
+    text_log.Print("not valid ");
   }
   text_log.Print("%.17g to %.17g, %.17g to %.17g, %.17g to %.17g\n",
     m_min.x,m_max.x,

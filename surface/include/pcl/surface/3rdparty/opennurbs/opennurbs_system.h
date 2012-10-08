@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -24,6 +24,11 @@
 
 #if !defined(OPENNURBS_SYSTEM_INC_)
 #define OPENNURBS_SYSTEM_INC_
+
+// The public release of opennurbs as a source code C++
+// library is built with OPENNURBS_PUBLIC_RELEASE
+// defined.
+#define OPENNURBS_PUBLIC_RELEASE
 
 /* compiler choice */
 #if defined(_MSC_VER)
@@ -274,7 +279,7 @@
 #define ON_MSC_CDECL
 #endif
 
-#if !defined(ON_OS_WINDOWS)
+#if !defined(ON_OS_WINDOWS) && !defined(_GNU_SOURCE) && !defined(ON_COMPILER_XCODE)
 
 /* define wchar_t, true, false, NULL */
 

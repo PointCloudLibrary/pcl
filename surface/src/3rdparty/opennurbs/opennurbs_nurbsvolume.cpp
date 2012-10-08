@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -14,7 +14,7 @@
 ////////////////////////////////////////////////////////////////
 */
 
-#include <pcl/surface/3rdparty/opennurbs/opennurbs.h>
+#include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
 
 ON_OBJECT_IMPLEMENT(ON_NurbsCage,ON_Geometry,"06936AFB-3D3C-41ac-BF70-C9319FA480A1");
 
@@ -1464,7 +1464,7 @@ bool ON_NurbsCage::IsClosed(int dir) const
           {
             cv0 = CV(i,j,k);
             cv1 = CV(i+d[0],j+d[1],k+d[2]);
-            if ( ON_ComparePoint( m_dim, m_is_rat, cv0, cv1 ) )
+            if ( false == ON_PointsAreCoincident( m_dim, m_is_rat, cv0, cv1 ) )
               return false;
           }
         }
@@ -1498,7 +1498,7 @@ bool ON_NurbsCage::IsPeriodic(int dir) const
           {
             cv0 = CV(i,j,k);
             cv1 = CV(i+d[0],j+d[1],k+d[2]);
-            if ( ON_ComparePoint( m_dim, m_is_rat, cv0, cv1 ) )
+            if ( false == ON_PointsAreCoincident(m_dim, m_is_rat, cv0, cv1 ) )
               return false;
           }
         }
@@ -1981,57 +1981,6 @@ bool ON_NurbsCage::IsSingular(		 // true if surface side is collapsed to a point
 {
   ON_ERROR("TODO: fill in ON_NurbsCage::IsSingular\n");
   return false;
-  /*
-  int i,j,k=0;
-  ON_3dPoint p[2];
-  double fuzz[2] = {0.0,0.0};
-  p[0].Zero();
-  p[1].Zero();
-  int i0 = 0;
-  int i1 = 0;
-  int j0 = 0;
-  int j1 = 0;
-  switch ( side ) {
-  case 0: // south
-      i0 = 0;
-      i1 = Order(0);
-      j0 = 0;
-      j1 = 1;
-    break;
-  case 1: // east
-      i0 = Order(0)-1;
-      i1 = Order(0);
-      j0 = 0;
-      j1 = Order(1);
-    break;
-  case 2: // north
-      i0 = 0;
-      i1 = Order(0);
-      j0 = Order(1)-1;
-      j1 = Order(1);
-    break;
-  case 3: // west
-      i0 = 0;
-      i1 = 1;
-      j0 = 0;
-      j1 = Order(1);
-    break;
-  default:
-    return false;
-    break;
-  }
-
-  GetCV(i0,j0,p[k]);
-  fuzz[k] = p[k].Fuzz();
-  for ( i = i0; i < i1; i++ ) for ( j = j0; j < j1; j++ ) {
-    k = (k+1)%2;
-    GetCV( i, j, p[k] );
-    fuzz[k] = p[k].Fuzz();
-    if ( (p[0]-p[1]).MaximumCoordinate() > fuzz[0]+fuzz[1] )
-      return false;
-  }
-  return true;
-  */
 }
 
 bool ON_GetCageXform( const ON_NurbsCage& cage, ON_Xform& cage_xform )
@@ -2095,301 +2044,6 @@ ON_CageMorph::~ON_CageMorph()
   m_control = 0;
 }
 
-void ON_MorphControl::MorphPointLocalizerHelper( 
-              const ON_3dPoint& point, 
-              double& w, 
-              double& clspt_max_dist,
-              const ON_Localizer*& distloc  
-              ) const
-{
-  w = 1.0;
-  clspt_max_dist = 0.0;
-  distloc = 0;
-  for ( int i = m_localizers.Count()-1; i >= 0 && w > 0.0; i-- )
-  {
-    const ON_Localizer& loc =  m_localizers[i];
-    if ( ON_Localizer::distance_type == loc.m_type )
-    {
-      distloc = &loc;
-      if (distloc->m_d.IsDecreasing() )
-      {
-        // points further away than clspt_max_dist
-        // from the cage do not get morphed.
-        // Setting this value will substantially speed
-        // up localized morphs (like small srfs
-        // draped on a large mesh).
-        clspt_max_dist = distloc->m_d[0];
-      }
-    }
-    else
-      w *= loc.Value(point);
-  }
-}
-
-void ON_MorphControl::MorphPointVarient1Helper(
-  double t,
-  double w,
-  const ON_Localizer* distloc,
-  ON_3dPoint& Q,
-  ON_3dVector* N
-  ) const
-{
-  ON_3dVector D, T, D0, D1, T0, T1;
-  ON_3dPoint  P0, P1;
-  ON_Xform rot;
-  if ( ON_UNSET_VALUE == m_nurbs_curve_domain.m_t[0])
-  {
-    const_cast<ON_MorphControl*>(this)->m_nurbs_curve_domain = m_nurbs_curve0.Domain();
-  }
-
-  m_nurbs_curve0.Ev1Der(t,P0,D0);
-  if ( distloc )
-  {
-    w *= distloc->Value(P0.DistanceTo(Q));
-    if ( 0.0 == w )
-      return;
-  }
-  T0 = D0;
-  T0.Unitize();
-
-  m_nurbs_curve.Ev1Der(t,P1,D1);
-  T1 = D1;
-  T1.Unitize();
-
-  D = (Q-P0);
-  if ( (t <= m_nurbs_curve_domain[0] || t >= m_nurbs_curve_domain[1]) 
-       && !m_nurbs_curve0.IsClosed() 
-     )
-  {
-    double z = D*T0;
-    T = (D*T0)*T1;
-    D = D - z*T0;
-    double d0 = D0.Length();
-    double d1 = D1.Length();
-    if ( d0 > 0.0 && d1 > 0.0 )
-    {
-      T = (d1/d0)*T;
-    }
-  }
-  else
-  {
-    T.x = T.y = T.z = 0.0;
-  }
-  rot.Rotation(T0,T1,ON_origin);
-  D = rot*D;
-  if ( w < 1.0 )
-  {
-    Q = (1.0-w)*Q + w*(P1 + D + T);
-    if (N)
-    {
-      T0 = *N;
-      T0.Unitize();
-      T1 = rot*T0;
-      T = (1.0-w)*T0 + w*T1;
-      if ( T.Unitize() )
-        *N = T;
-    }
-  }
-  else
-  {
-    Q = P1 + D + T;
-    if (N)
-    {
-      T1 = rot*(*N);
-      if ( T1.Unitize() )
-        *N = T1;
-    }
-  }
-}
-
-void ON_MorphControl::MorphPointVarient2Helper(
-  double s,
-  double t,
-  double w,
-  const ON_Localizer* distloc,
-  ON_3dPoint& Q,
-  ON_3dVector* N
-  ) const
-{
-  ON_3dPoint P0, P1;
-  ON_3dVector Du0, Dv0, Du1, Dv1, N0, N1, D;
-  double u,v,e,pr,z;
-
-  if ( ON_UNSET_VALUE == m_nurbs_surface_domain[0].m_t[0])
-  {
-    const_cast<ON_MorphControl*>(this)->m_nurbs_surface_domain[0] = m_nurbs_surface0.Domain(0);
-    const_cast<ON_MorphControl*>(this)->m_nurbs_surface_domain[1] = m_nurbs_surface0.Domain(1);
-  }
-
-
-  bool bDuTweak = ((s <= m_nurbs_surface_domain[0][0] || s >= m_nurbs_surface_domain[0][1]) && !m_nurbs_surface0.IsClosed(0));
-  bool bDvTweak = ((t <= m_nurbs_surface_domain[1][0] || t >= m_nurbs_surface_domain[1][1]) && !m_nurbs_surface0.IsClosed(1));
-
-  m_nurbs_surface0.EvNormal(s,t,P0,Du0,Dv0,N0);
-
-  if ( distloc )
-  {
-    w *= distloc->Value(P0.DistanceTo(Q));
-    if ( 0.0 == w )
-      return;
-  }
-
-  m_nurbs_surface.EvNormal(s,t,P1,Du1,Dv1,N1);
-
-  D.x = (Q.x - P0.x);
-  D.y = (Q.y - P0.y);
-  D.z = (Q.z - P0.z);
-
-  u = v = ON_UNSET_VALUE;
-  z = N0.x*D.x + N0.y*D.y + N0.z*D.z;
-  if ( bDuTweak || bDvTweak )
-  {
-    // point is not over the surface
-    //D -= z*N0;
-    D.x -= z*N0.x;
-    D.y -= z*N0.y;
-    D.z -= z*N0.z;
-    //if ( bDuTweak )
-    //{
-    //  if ( bDvTweak )
-    //  {
-    //    if ( 2 == ON_Solve3x2(&Du0.x,&Dv0.x,D.x,D.y,D.z,&u,&v,&e,&pr) )
-    //    {
-    //      //D = s*Du1 + t*Dv1;
-    //      D.x = u*Du1.x + v*Dv1.x;
-    //      D.y = u*Du1.y + v*Dv1.y;
-    //      D.z = u*Du1.z + v*Dv1.z;
-    //    }
-    //  }
-    //  else
-    //  {
-    //    u = Du0.x*D.x + Du0.y*D.y + Du0.z*D.z;
-    //    D.x = u*Du1.x;
-    //    D.y = u*Du1.y;
-    //    D.z = u*Du1.z;
-    //  }
-    //}
-    if ( bDuTweak || bDvTweak )
-    {
-      // point is not "above" the surface - use extended tangent
-      // plane.  If you modify this code, retest RR 23644.
-      if ( 2 == ON_Solve3x2(&Du0.x,&Dv0.x,D.x,D.y,D.z,&u,&v,&e,&pr) )
-      {
-        //D = s*Du1 + t*Dv1;
-        D.x = u*Du1.x + v*Dv1.x;
-        D.y = u*Du1.y + v*Dv1.y;
-        D.z = u*Du1.z + v*Dv1.z;
-      }
-    }
-    else
-    {
-      v = Dv0.x*D.x + Dv0.y*D.y + Dv0.z*D.z;
-      D.x = v*Dv1.x;
-      D.y = v*Dv1.y;
-      D.z = v*Dv1.z;
-    }
-  }
-  else
-  {
-    D.x = D.y = D.z = 0.0;
-  }
-
-  if ( w < 1.0 )
-  {
-    u = 1.0-w;
-    Q.x = u*Q.x + w*(P1.x + z*N1.x + D.x);
-    Q.y = u*Q.y + w*(P1.y + z*N1.y + D.y);
-    Q.z = u*Q.z + w*(P1.z + z*N1.z + D.z);
-  }
-  else
-  {
-    Q.x = P1.x + z*N1.x + D.x;
-    Q.y = P1.y + z*N1.y + D.y;
-    Q.z = P1.z + z*N1.z + D.z;
-  }
-
-  if ( N )
-  {
-    z = N0.x*N->x + N0.y*N->y + N0.z*N->z;
-    D.x = N->x - z*N0.x;
-    D.y = N->y - z*N0.y;
-    D.z = N->z - z*N0.z;
-    if ( 2 == ON_Solve3x2(&Du0.x,&Dv0.x,D.x,D.y,D.z,&u,&v,&e,&pr) )
-    {
-      //D = s*Du1 + t*Dv1;
-      D.x = u*Du1.x + v*Dv1.x;
-      D.y = u*Du1.y + v*Dv1.y;
-      D.z = u*Du1.z + v*Dv1.z;
-    }
-    D.Unitize();
-    e = 1.0-fabs(z);
-    D.x = z*N1.x + e*D.x;
-    D.y = z*N1.y + e*D.y;
-    D.z = z*N1.z + e*D.z;
-    if ( D.Unitize() )
-    {
-      if ( w < 1.0 )
-      {
-        N0 = *N;
-        if ( N0.Unitize() )
-        {
-          u = 1.0-w;
-          N1.x = u*N0.x + w*D.x; 
-          N1.y = u*N0.y + w*D.y; 
-          N1.z = u*N0.z + w*D.z;
-          if ( N1.Unitize() )
-          {
-            N->x = N1.x;
-            N->y = N1.y;
-            N->z = N1.z;
-          }
-        }
-      }
-      else
-      {
-        N->x = D.x; N->y = D.y; N->z = D.z;
-      }
-    }
-  }
-}
-
-
-
-ON_3dPoint ON_MorphControl::MorphPoint( ON_3dPoint point ) const
-{
-  double w = 1.0;
-  double clspt_max_dist = 0.0;
-  const ON_Localizer* distloc = 0;
-  MorphPointLocalizerHelper(point,w,clspt_max_dist,distloc);
-
-  ON_3dPoint Q(point);
-  if ( w > 0.0 )
-  {
-    ON_3dPoint rst;
-
-    switch(m_varient)
-    {
-    case 1:
-      w = 0.0;
-      break;
-
-    case 2:
-      w = 0.0;
-      break;
-
-    case 3:
-      rst = m_nurbs_cage0*point;
-      Q = m_nurbs_cage.PointAt(rst.x,rst.y,rst.z);
-      break;
-
-    default:
-      w = 0.0;
-    }
-  }
-
-  return (w*Q + (1.0-w)*point);
-}
-
 bool ON_MorphControl::IsIdentity( const ON_BoundingBox& bbox ) const
 {
   int i, count = m_localizers.Count();
@@ -2399,13 +2053,6 @@ bool ON_MorphControl::IsIdentity( const ON_BoundingBox& bbox ) const
     rc = m_localizers[i].IsZero(bbox);
   }
   return rc;
-}
-
-
-
-ON_3dPoint ON_CageMorph::MorphPoint( ON_3dPoint point ) const
-{
-  return m_control ? m_control->MorphPoint(point) : point;
 }
 
 bool ON_CageMorph::IsIdentity( const ON_BoundingBox& bbox ) const

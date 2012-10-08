@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -14,7 +14,7 @@
 ////////////////////////////////////////////////////////////////
 */
 
-#include <pcl/surface/3rdparty/opennurbs/opennurbs.h>
+#include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
 
 // {EA2EFFD2-C9A9-4cb1-BE15-D2F46290F1A1}
 //const ON_UUID ON_MaterialRef::material_from_layer = 
@@ -80,7 +80,7 @@ char* on_strrev(char* s)
 #else
   int i, j;
   char c;
-  for ( i = 0, j = strlen(s)-1; i < j; i++, j-- ) {
+  for ( i = 0, j = ((int)strlen(s))-1; i < j; i++, j-- ) {
     c = s[i];
     s[i] = s[j];
     s[j] = c;
@@ -820,26 +820,253 @@ int on_vsnwprintf( wchar_t *buffer, size_t count, const wchar_t *format, va_list
   int rc = on_vsnprintf( abuffer, 4*count, aformat.Array(), argptr );
 
   // convert formatted ASCII buffer to UNICODE
-  on_MultiByteToWideChar( abuffer, strlen(abuffer), buffer, count );
+  on_MultiByteToWideChar( abuffer, (int)strlen(abuffer), buffer, (int)count );
   onfree(abuffer);  
   return rc;
 #endif
 }
 
+void on_splitpath(
+  const char* path,
+  const char** drive,
+  const char** dir,
+  const char** fname,
+  const char** ext
+  )
+{
+  // The "const char* path" parameter is a UTF-8 encoded string. 
+  // Since the unicode code point values for the characters we 
+  // are searching for ( '/' '\' '.' ':' A-Z a-z) are all > 0 
+  // and < 128, we can simply check for an array element having
+  // the character value and not have to worry about dealing
+  // with UTF-8 continuation values (>= 128).
+
+  const char slash1 = '/';
+  const char slash2 = '\\'; // do this even with the os is unix because
+                            // we might be parsing a file name saved
+                            // in Windows.
+
+  const char* f;
+  const char* e;
+  const char* s;
+  const char* s1;
+
+  if ( 0 != drive )
+    *drive = 0;
+  if ( 0 != dir )
+    *dir = 0;
+  if ( 0 != fname )
+    *fname = 0;
+  if ( 0 != ext )
+    *ext = 0;
+
+  if ( 0 != path && 0 != *path )
+  {
+    // deal with Windows' drive letter (even when the os is unix)
+    if ( ':' == path[1] )
+    {
+      if ( (path[0] >= 'A' && path[0] <= 'Z') || (path[0] >= 'a' && path[0] <= 'z') )
+      {
+        if ( drive )
+          *drive = path;
+        path += 2;
+        if ( 0 == *path )
+          return;
+      }
+    }
+  }
+
+  if ( 0 != path && 0 != *path )
+  {
+    e = 0;
+    f = 0;
+    s1 = path;
+    while ( 0 != *s1 )
+      s1++;
+    s = (s1 > path) ? s1 - 1 : path;
+  
+    while ( s > path && '.' != *s && slash1 != *s && slash2 != *s )
+      s--;
+
+    if ( '.' == *s && 0 != s[1] )
+    {
+      // extensions must have something after the dot.
+      e = s;
+      s1 = e;
+      s--;
+    }
+
+    while ( s > path && slash1 != *s && slash2 != *s )
+      s--;
+
+    if ( s >= path && s < s1 )
+    {
+      if (slash1 == *s || slash2 == *s ) 
+      {
+        if ( s+1 < s1 )
+          f = s+1;
+      }
+      else if ( s == path )
+      {
+        f = s;
+      }
+    }
+
+    if ( 0 == f )
+    {
+      // must have a non-empty filename in order to have and "extension"
+      f = e;
+      e = 0;
+    }
+
+    if ( 0 != dir && (0 == f || path < f) )
+      *dir = path;
+
+    if ( 0 != f && 0 != fname )
+      *fname = f;
+
+    if ( 0 != e && 0 != ext )
+      *ext = e;
+  }
+
+}
+
+void on_wsplitpath(
+  const wchar_t* path,
+  const wchar_t** drive,
+  const wchar_t** dir,
+  const wchar_t** fname,
+  const wchar_t** ext
+  )
+{
+  // The "const wchar_t* path" parameter is a UTF-8, UTF-16 or UTF-32
+  // encoded string. Since the unicode code point values for the 
+  // characters we are searching for ( '/' '\' '.' ':' A-Z a-z) are
+  // all > 0 and < 128, we can simply check for an array element 
+  // having the character value and not have to worry about dealing
+  // with UTF-16 surrogate pair values (0xD800-0xDBFF and DC00-DFFF)
+  // and UTF-8 continuation values (>= 128).
+
+  const wchar_t slash1 = '/';
+  const wchar_t slash2 = '\\'; // do this even with the os is unix because
+                               // we might be parsing a file name saved
+                               // in Windows.
+
+  const wchar_t* f;
+  const wchar_t* e;
+  const wchar_t* s;
+  const wchar_t* s1;
+
+  if ( 0 != drive )
+    *drive = 0;
+  if ( 0 != dir )
+    *dir = 0;
+  if ( 0 != fname )
+    *fname = 0;
+  if ( 0 != ext )
+    *ext = 0;
+
+  if ( 0 != path && 0 != *path )
+  {
+    // deal with Windows' drive letter (even when the os is unix)
+    if ( ':' == path[1] )
+    {
+      if ( (path[0] >= 'A' && path[0] <= 'Z') || (path[0] >= 'a' && path[0] <= 'z') )
+      {
+        if ( drive )
+          *drive = path;
+        path += 2;
+        if ( 0 == *path )
+          return;
+      }
+    }
+  }
+
+  if ( 0 != path && 0 != *path )
+  {
+    e = 0;
+    f = 0;
+    s1 = path;
+    while ( 0 != *s1 )
+      s1++;
+    s = (s1 > path) ? s1 - 1 : path;
+  
+    while ( s > path && '.' != *s && slash1 != *s && slash2 != *s )
+      s--;
+
+    if ( '.' == *s && 0 != s[1] )
+    {
+      // extensions must have something after the dot.
+      e = s;
+      s1 = e;
+      s--;
+    }
+
+    while ( s > path && slash1 != *s && slash2 != *s )
+      s--;
+
+    if ( s >= path && s < s1 )
+    {
+      if (slash1 == *s || slash2 == *s ) 
+      {
+        if ( s+1 < s1 )
+          f = s+1;
+      }
+      else if ( s == path )
+      {
+        f = s;
+      }
+    }
+
+    if ( 0 == f )
+    {
+      // must have a non-empty filename in order to have and "extension"
+      f = e;
+      e = 0;
+    }
+
+    if ( 0 != dir && (0 == f || path < f) )
+      *dir = path;
+
+    if ( 0 != f && 0 != fname )
+      *fname = f;
+
+    if ( 0 != e && 0 != ext )
+      *ext = e;
+  }
+
+}
+
+
+
 int ON::Version()
 {
 #define OPENNURBS_VERSION_DEFINITION
-#include <pcl/surface/3rdparty/opennurbs/opennurbs_version.h>
+#include "pcl/surface/3rdparty/opennurbs/opennurbs_version.h"
   return OPENNURBS_VERSION;
 #undef OPENNURBS_VERSION
 #undef OPENNURBS_VERSION_DEFINITION
 }
 
-const char* ON::Revision()
+const char* ON::SourceRevision()
 {
-  return OPENNURBS_SVN_REVISION;
+  return OPENNURBS_SRC_SVN_REVISION;
 }
 
+const char* ON::SourceBranch()
+{
+  return OPENNURBS_SRC_SVN_BRANCH;
+}
+
+const char* ON::DocumentationRevision()
+{
+  return OPENNURBS_DOC_SVN_REVISION;
+}
+
+const char* ON::DocumentationBranch()
+{
+  return OPENNURBS_DOC_SVN_BRANCH;
+}
 
 FILE* ON::OpenFile( // like fopen() - needed when OpenNURBS is used as a DLL
         const char* filename, // file name
@@ -1839,7 +2066,7 @@ ON::object_decoration ON::ObjectDecoration(int i)
 ON::osnap_mode ON::OSnapMode(int i)
 {
   ON::osnap_mode osm;
-  switch(i)
+  switch((unsigned int)i)
   {
   case os_none:          osm = os_none; break;
   case os_near:          osm = os_near; break;

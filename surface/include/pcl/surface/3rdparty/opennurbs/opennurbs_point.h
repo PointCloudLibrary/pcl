@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -123,6 +123,8 @@ public:
 
   double& operator[](int); // returns (index<=0) ? m_t[0] : m_t[1]
   double operator[](int) const; // returns (index<=0) ? m_t[0] : m_t[1]
+  double& operator[](unsigned int); // returns (index<=0) ? m_t[0] : m_t[1]
+  double operator[](unsigned int) const; // returns (index<=0) ? m_t[0] : m_t[1]
 
   double Min() const; // returns smaller of m_t[0] and m_t[1]
   double Max() const; // returns larger of m_t[0] and m_t[1]
@@ -231,6 +233,15 @@ public:
   // Union() returns true if the union is not empty.
   bool Union( // this = this union arg
          const ON_Interval&
+         );
+
+  bool Union( // this = this union arg
+         double t
+         );
+
+  bool Union( // this = this union arg
+         int count,
+         const double* t
          );
 
   //////////
@@ -343,6 +354,8 @@ public:
   // index operators mimic double[2] behavior
   double& operator[](int);
   double operator[](int) const;
+  double& operator[](unsigned int);
+  double operator[](unsigned int) const;
 
   /*
   Returns:
@@ -491,6 +504,8 @@ public:
   // index operators mimic double[3] behavior
   double& operator[](int);
   double operator[](int) const;
+  double& operator[](unsigned int);
+  double operator[](unsigned int) const;
 
   /*
   Returns:
@@ -613,6 +628,8 @@ public:
   // index operators mimic double[4] behavior
   double& operator[](int);
   double operator[](int) const;
+  double& operator[](unsigned int);
+  double operator[](unsigned int) const;
 
   /*
   Returns:
@@ -755,6 +772,8 @@ public:
   // index operators mimic double[2] behavior
   double& operator[](int);
   double operator[](int) const;
+  double& operator[](unsigned int);
+  double operator[](unsigned int) const;
 
   /*
   Returns:
@@ -1032,6 +1051,8 @@ public:
   // index operators mimic double[3] behavior
   double& operator[](int);
   double operator[](int) const;
+  double& operator[](unsigned int);
+  double operator[](unsigned int) const;
 
   /*
   Returns:
@@ -1172,7 +1193,29 @@ public:
   // C++ defaults for construction, destruction, copys, and operator=
   // work fine.
 
+  static const ON_PlaneEquation UnsetPlaneEquation; // (ON_UNSET_VALUE,ON_UNSET_VALUE,ON_UNSET_VALUE,ON_UNSET_VALUE)
+  static const ON_PlaneEquation ZeroPlaneEquation; // (0.0,0.0,0.0,0.0)
+
+  ON_PlaneEquation();
+
+  ON_PlaneEquation(double xx, double yy, double zz, double dd);
+
+  /*
+  Description:
+    returns true if x, y, z, d are valid, finite doubles.
+  Remarks:
+    this function will return true if x, y and z are all zero.
+  See Also:
+    ON_PlaneEquation::IsSet().
+  */
   bool IsValid() const;
+
+  /*
+  Description:
+    returns true if x, y, z, d are valid, finite doubles and
+    at least one of x, y or z is not zero.
+  */
+  bool IsSet() const;
 
   /*
   Description:
@@ -1235,6 +1278,15 @@ public:
 
   /*
   Description:
+    This function calculates and evalutes points that 
+    would be exactly on the plane if double precision
+    aritmetic were mathematically perfect and returns
+    the largest value of the evaluations.
+  */
+  double ZeroTolerance() const;
+
+  /*
+  Description:
     Transform the plane equation so that, if e0 is the initial
     equation, e1 is transformed equation and P is a point,
     then e0.ValueAt(P) = e1.ValueAt(xform*P).
@@ -1285,51 +1337,6 @@ public:
     Maximum value of the plane equation on the bounding box.
   */
   double MaximumValueAt(const ON_BoundingBox& bbox) const;
-
-
-  /*
-  Description:
-    Get the minimum value of the plane equation
-    on a bounding box.
-  Parameters:
-    crvleafbox - [in] 
-  Returns:
-    Minimum value of the plane equation on the curve leaf box.
-  */
-  double MinimumValueAt(const class ON_CurveLeafBox& crvleafbox) const;
-
-  /*
-  Description:
-    Get the maximum value of the plane equation
-    on a bounding box.
-  Parameters:
-    crvleafbox - [in] 
-  Returns:
-    Maximum value of the plane equation on the curve leaf box.
-  */
-  double MaximumValueAt(const class ON_CurveLeafBox& crvleafbox) const;
-
-  /*
-  Description:
-    Get the minimum value of the plane equation
-    on a bounding box.
-  Parameters:
-    bbox - [in] 
-  Returns:
-    Minimum value of the plane equation on the bounding box.
-  */
-  double MinimumValueAt(const class ON_SurfaceLeafBox& srfleafbox) const;
-
-  /*
-  Description:
-    Get the maximum value of the plane equation
-    on a bounding box.
-  Parameters:
-    bbox - [in] 
-  Returns:
-    Maximum value of the plane equation on the bounding box.
-  */
-  double MaximumValueAt(const class ON_SurfaceLeafBox& srfleafbox) const;
 
   /*
   Description:
@@ -1453,7 +1460,7 @@ public:
           double* smin,
           double* smax
           ) const;
-
+  
   bool operator==(const ON_PlaneEquation&) const;
   bool operator!=(const ON_PlaneEquation&) const;
 

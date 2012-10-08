@@ -80,10 +80,10 @@
  * The history for versions after 1.2.0 are in ChangeLog in zlib distribution.
  */
 
-#include <pcl/surface/3rdparty/opennurbs/zutil.h>
-#include <pcl/surface/3rdparty/opennurbs/inftrees.h>
-#include <pcl/surface/3rdparty/opennurbs/inflate.h>
-#include <pcl/surface/3rdparty/opennurbs/inffast.h>
+#include "pcl/surface/3rdparty/opennurbs/zutil.h"
+#include "pcl/surface/3rdparty/opennurbs/inftrees.h"
+#include "pcl/surface/3rdparty/opennurbs/inflate.h"
+#include "pcl/surface/3rdparty/opennurbs/inffast.h"
 
 #ifdef MAKEFIXED
 #  ifndef BUILDFIXED
@@ -237,7 +237,7 @@ struct inflate_state FAR *state;
         virgin = 0;
     }
 #else /* !BUILDFIXED */
-#include <pcl/surface/3rdparty/opennurbs/inffixed.h>
+#   include "pcl/surface/3rdparty/opennurbs/inffixed.h"
 #endif /* BUILDFIXED */
     state->lencode = lenfix;
     state->lenbits = 9;
@@ -434,7 +434,7 @@ unsigned out;
     do { \
         if (have == 0) goto inf_leave; \
         have--; \
-        hold += (unsigned long)(*next++) << bits; \
+        hold += (unsigned int)(*next++) << bits; \
         bits += 8; \
     } while (0)
 
@@ -559,7 +559,7 @@ int flush;
     unsigned char FAR *next;    /* next input */
     unsigned char FAR *put;     /* next output */
     unsigned have, left;        /* available input and output */
-    unsigned long hold;         /* bit buffer */
+    unsigned int hold;         /* bit buffer */
     unsigned bits;              /* bits in bit buffer */
     unsigned in, out;           /* save starting available input and output */
     unsigned copy;              /* number of stored or match bytes to copy */
@@ -1172,7 +1172,7 @@ const Bytef *dictionary;
 uInt dictLength;
 {
     struct inflate_state FAR *state;
-    unsigned long id;
+    unsigned int id;
 
     /* check state */
     if (strm == Z_NULL || strm->state == Z_NULL) return Z_STREAM_ERROR;
@@ -1263,7 +1263,7 @@ int ZEXPORT inflateSync(strm)
 z_streamp strm;
 {
     unsigned len;               /* number of bytes to look at or looked at */
-    unsigned long in, out;      /* temporary to save total_in and total_out */
+    unsigned int in, out;      /* temporary to save total_in and total_out */
     unsigned char buf[4];       /* to restore bit buffer to byte string */
     struct inflate_state FAR *state;
 

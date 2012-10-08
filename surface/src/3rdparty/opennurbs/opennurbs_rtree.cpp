@@ -1,9 +1,7 @@
-#include <pcl/surface/3rdparty/opennurbs/opennurbs.h>
-
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -15,6 +13,8 @@
 //
 ////////////////////////////////////////////////////////////////
 */
+
+#include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
 
 // Dimension of tree bounding boxes
 #define ON_RTree_NODE_DIM 3
@@ -165,13 +165,14 @@ static size_t MemPoolBlkSize( size_t leaf_count )
   return (sizeof_blklink + nodes_per_blk*sizeof_node);
 }
 
-ON_RTreeMemPool::ON_RTreeMemPool( size_t leaf_count  )
+ON_RTreeMemPool::ON_RTreeMemPool( ON_MEMORY_POOL* heap, size_t leaf_count  )
 : m_nodes(0)
 , m_list_nodes(0)
 , m_buffer(0)
 , m_buffer_capacity(0)
 , m_blk_list(0)
 , m_sizeof_blk(0)
+, m_heap(heap)
 , m_sizeof_heap(0)
 {
   m_sizeof_blk = MemPoolBlkSize(leaf_count); 
@@ -197,7 +198,7 @@ void ON_RTreeMemPool::GrowBuffer()
     m_sizeof_blk = MemPoolBlkSize(0); 
   }
 
-  struct Blk* blk = (struct Blk*)onmalloc(m_sizeof_blk);
+  struct Blk* blk = (struct Blk*)onmalloc_from_pool(m_heap,m_sizeof_blk);
   if ( blk )
   {
     m_sizeof_heap += m_sizeof_blk;
@@ -479,10 +480,10 @@ bool ON_RTreeIterator::Prev()
 //
 
 
-ON_RTree::ON_RTree( size_t leaf_count )
+ON_RTree::ON_RTree( ON_MEMORY_POOL* heap, size_t leaf_count )
 : m_root(0)
 , m_reserved(0)
-, m_mem_pool(leaf_count)
+, m_mem_pool(heap,leaf_count)
 {
 }
 
@@ -497,60 +498,162 @@ bool ON_RTree::CreateMeshFaceTree( const ON_Mesh* mesh )
 {
   double fmin[3], fmax[3];
   ON_3dPoint V;
-  int fi, fcount;
+  unsigned int fi, fcount;
   const int* fvi;
   const ON_MeshFace* meshF;
-  const ON_3fPoint* meshV;
+  const ON_3fPoint* meshfV;
+  const ON_3dPoint* meshdV;
 
   RemoveAll();
 
   if ( 0 == mesh )
     return false;
 
-  fcount = mesh->m_F.Count();
-  if ( 0 == fcount )
+  fcount = mesh->m_F.UnsignedCount();
+  if ( fcount <= 0 )
     return false;
 
   meshF = mesh->m_F.Array();
   if ( 0 == meshF )
     return false;
 
-  meshV = mesh->m_V.Array();
-  if ( 0 == meshV )
-    return false;
+  meshfV = mesh->m_V.Array();
 
-  for ( fi = 0; fi < fcount; fi++ )
+  meshdV = mesh->HasDoublePrecisionVertices() 
+         ? mesh->DoublePrecisionVertices().Array() 
+         : 0;
+
+  if ( 0 != meshfV )
   {
-    fvi = meshF[fi].vi;
-
-    V = meshV[fvi[0]];
-    fmin[0] = fmax[0] = V.x;
-    fmin[1] = fmax[1] = V.y;
-    fmin[2] = fmax[2] = V.z;
-
-    V = meshV[fvi[1]];
-    if ( V.x < fmin[0] ) fmin[0] = V.x; else if ( V.x > fmax[0] ) fmax[0] = V.x;
-    if ( V.y < fmin[1] ) fmin[1] = V.y; else if ( V.y > fmax[1] ) fmax[1] = V.y;
-    if ( V.z < fmin[2] ) fmin[2] = V.z; else if ( V.z > fmax[2] ) fmax[2] = V.z;  
-
-    V = meshV[fvi[2]];
-    if ( V.x < fmin[0] ) fmin[0] = V.x; else if ( V.x > fmax[0] ) fmax[0] = V.x;
-    if ( V.y < fmin[1] ) fmin[1] = V.y; else if ( V.y > fmax[1] ) fmax[1] = V.y;
-    if ( V.z < fmin[2] ) fmin[2] = V.z; else if ( V.z > fmax[2] ) fmax[2] = V.z;  
-
-    if ( fvi[2] != fvi[3] )
+    if ( 0 != meshdV )
     {
-      V = meshV[fvi[3]];
+      for ( fi = 0; fi < fcount; fi++ )
+      {
+        fvi = meshF[fi].vi;
+
+        V = meshfV[fvi[0]];
+        fmin[0] = fmax[0] = V.x;
+        fmin[1] = fmax[1] = V.y;
+        fmin[2] = fmax[2] = V.z;
+        V = meshdV[fvi[0]];
+        if ( V.x < fmin[0] ) fmin[0] = V.x; else if ( V.x > fmax[0] ) fmax[0] = V.x;
+        if ( V.y < fmin[1] ) fmin[1] = V.y; else if ( V.y > fmax[1] ) fmax[1] = V.y;
+        if ( V.z < fmin[2] ) fmin[2] = V.z; else if ( V.z > fmax[2] ) fmax[2] = V.z;  
+
+        V = meshfV[fvi[1]];
+        if ( V.x < fmin[0] ) fmin[0] = V.x; else if ( V.x > fmax[0] ) fmax[0] = V.x;
+        if ( V.y < fmin[1] ) fmin[1] = V.y; else if ( V.y > fmax[1] ) fmax[1] = V.y;
+        if ( V.z < fmin[2] ) fmin[2] = V.z; else if ( V.z > fmax[2] ) fmax[2] = V.z;  
+        V = meshdV[fvi[1]];
+        if ( V.x < fmin[0] ) fmin[0] = V.x; else if ( V.x > fmax[0] ) fmax[0] = V.x;
+        if ( V.y < fmin[1] ) fmin[1] = V.y; else if ( V.y > fmax[1] ) fmax[1] = V.y;
+        if ( V.z < fmin[2] ) fmin[2] = V.z; else if ( V.z > fmax[2] ) fmax[2] = V.z;  
+
+        V = meshfV[fvi[2]];
+        if ( V.x < fmin[0] ) fmin[0] = V.x; else if ( V.x > fmax[0] ) fmax[0] = V.x;
+        if ( V.y < fmin[1] ) fmin[1] = V.y; else if ( V.y > fmax[1] ) fmax[1] = V.y;
+        if ( V.z < fmin[2] ) fmin[2] = V.z; else if ( V.z > fmax[2] ) fmax[2] = V.z;  
+        V = meshdV[fvi[2]];
+        if ( V.x < fmin[0] ) fmin[0] = V.x; else if ( V.x > fmax[0] ) fmax[0] = V.x;
+        if ( V.y < fmin[1] ) fmin[1] = V.y; else if ( V.y > fmax[1] ) fmax[1] = V.y;
+        if ( V.z < fmin[2] ) fmin[2] = V.z; else if ( V.z > fmax[2] ) fmax[2] = V.z;  
+
+        if ( fvi[2] != fvi[3] )
+        {
+          V = meshfV[fvi[3]];
+          if ( V.x < fmin[0] ) fmin[0] = V.x; else if ( V.x > fmax[0] ) fmax[0] = V.x;
+          if ( V.y < fmin[1] ) fmin[1] = V.y; else if ( V.y > fmax[1] ) fmax[1] = V.y;
+          if ( V.z < fmin[2] ) fmin[2] = V.z; else if ( V.z > fmax[2] ) fmax[2] = V.z;      
+          V = meshdV[fvi[3]];
+          if ( V.x < fmin[0] ) fmin[0] = V.x; else if ( V.x > fmax[0] ) fmax[0] = V.x;
+          if ( V.y < fmin[1] ) fmin[1] = V.y; else if ( V.y > fmax[1] ) fmax[1] = V.y;
+          if ( V.z < fmin[2] ) fmin[2] = V.z; else if ( V.z > fmax[2] ) fmax[2] = V.z;  
+        }
+
+        if ( !Insert(fmin,fmax,fi) )
+        {
+          RemoveAll();
+          return false;
+        }
+      }
+    }
+    else
+    {
+      for ( fi = 0; fi < fcount; fi++ )
+      {
+        fvi = meshF[fi].vi;
+
+        V = meshfV[fvi[0]];
+        fmin[0] = fmax[0] = V.x;
+        fmin[1] = fmax[1] = V.y;
+        fmin[2] = fmax[2] = V.z;
+
+        V = meshfV[fvi[1]];
+        if ( V.x < fmin[0] ) fmin[0] = V.x; else if ( V.x > fmax[0] ) fmax[0] = V.x;
+        if ( V.y < fmin[1] ) fmin[1] = V.y; else if ( V.y > fmax[1] ) fmax[1] = V.y;
+        if ( V.z < fmin[2] ) fmin[2] = V.z; else if ( V.z > fmax[2] ) fmax[2] = V.z;  
+
+        V = meshfV[fvi[2]];
+        if ( V.x < fmin[0] ) fmin[0] = V.x; else if ( V.x > fmax[0] ) fmax[0] = V.x;
+        if ( V.y < fmin[1] ) fmin[1] = V.y; else if ( V.y > fmax[1] ) fmax[1] = V.y;
+        if ( V.z < fmin[2] ) fmin[2] = V.z; else if ( V.z > fmax[2] ) fmax[2] = V.z;  
+
+        if ( fvi[2] != fvi[3] )
+        {
+          V = meshfV[fvi[3]];
+          if ( V.x < fmin[0] ) fmin[0] = V.x; else if ( V.x > fmax[0] ) fmax[0] = V.x;
+          if ( V.y < fmin[1] ) fmin[1] = V.y; else if ( V.y > fmax[1] ) fmax[1] = V.y;
+          if ( V.z < fmin[2] ) fmin[2] = V.z; else if ( V.z > fmax[2] ) fmax[2] = V.z;      
+        }
+
+        if ( !Insert(fmin,fmax,fi) )
+        {
+          RemoveAll();
+          return false;
+        }
+      }
+    }
+  }
+  else if ( 0 != meshdV )
+  {
+    for ( fi = 0; fi < fcount; fi++ )
+    {
+      fvi = meshF[fi].vi;
+
+      V = meshdV[fvi[0]];
+      fmin[0] = fmax[0] = V.x;
+      fmin[1] = fmax[1] = V.y;
+      fmin[2] = fmax[2] = V.z;
+
+      V = meshdV[fvi[1]];
       if ( V.x < fmin[0] ) fmin[0] = V.x; else if ( V.x > fmax[0] ) fmax[0] = V.x;
       if ( V.y < fmin[1] ) fmin[1] = V.y; else if ( V.y > fmax[1] ) fmax[1] = V.y;
-      if ( V.z < fmin[2] ) fmin[2] = V.z; else if ( V.z > fmax[2] ) fmax[2] = V.z;      
-    }
+      if ( V.z < fmin[2] ) fmin[2] = V.z; else if ( V.z > fmax[2] ) fmax[2] = V.z;  
 
-    if ( !Insert(fmin,fmax,fi) )
-    {
-      RemoveAll();
-      return false;
+      V = meshdV[fvi[2]];
+      if ( V.x < fmin[0] ) fmin[0] = V.x; else if ( V.x > fmax[0] ) fmax[0] = V.x;
+      if ( V.y < fmin[1] ) fmin[1] = V.y; else if ( V.y > fmax[1] ) fmax[1] = V.y;
+      if ( V.z < fmin[2] ) fmin[2] = V.z; else if ( V.z > fmax[2] ) fmax[2] = V.z;  
+
+      if ( fvi[2] != fvi[3] )
+      {
+        V = meshdV[fvi[3]];
+        if ( V.x < fmin[0] ) fmin[0] = V.x; else if ( V.x > fmax[0] ) fmax[0] = V.x;
+        if ( V.y < fmin[1] ) fmin[1] = V.y; else if ( V.y > fmax[1] ) fmax[1] = V.y;
+        if ( V.z < fmin[2] ) fmin[2] = V.z; else if ( V.z > fmax[2] ) fmax[2] = V.z;      
+      }
+
+      if ( !Insert(fmin,fmax,fi) )
+      {
+        RemoveAll();
+        return false;
+      }
     }
+  }
+  else
+  {
+    // no vertices
+    return false;
   }
 
   return (0 != m_root);
@@ -2297,6 +2400,234 @@ void ON_RTree::ReInsert(ON_RTreeNode* a_node, ON_RTreeListNode** a_listNode)
   *a_listNode = newListNode;
 }
 
+
+static
+bool OverlapBoundedPlaneXYZHelper( const double* a_bounded_plane, const ON_RTreeBBox* a_rect )
+{
+  unsigned char flag = 0;
+  double x, y, z, d, v;
+  
+  // check the 8 corners of the box minimizing the number of evaluations
+  // and unrolling the loop for speed
+
+  // corner = (min, min, min)
+  x = a_bounded_plane[0]*a_rect->m_min[0]; 
+  y = a_bounded_plane[1]*a_rect->m_min[1];
+  z = a_bounded_plane[2]*a_rect->m_min[2];
+  d = a_bounded_plane[3];
+  v = x + y + z + d;
+  if ( v < a_bounded_plane[4] )
+    flag = 1;
+  else if ( v > a_bounded_plane[5] )
+    flag = 2;
+  else
+    return true;
+  
+  // corner = (max, min, min)
+  x = a_bounded_plane[0]*a_rect->m_max[0]; 
+  v = x + y + z + d;
+  if ( v < a_bounded_plane[4] )
+  {
+    flag |= 1;
+    if ( 3 == flag )
+      return true;
+  }
+  else if ( v > a_bounded_plane[5] )
+  {
+    flag |= 2;
+    if ( 3 == flag )
+      return true;
+  }
+  else
+    return true;
+  
+  // corner = (max, max, min)
+  y = a_bounded_plane[1]*a_rect->m_max[1];
+  v = x + y + z + d;
+  if ( v < a_bounded_plane[4] )
+  {
+    flag |= 1;
+    if ( 3 == flag )
+      return true;
+  }
+  else if ( v > a_bounded_plane[5] )
+  {
+    flag |= 2;
+    if ( 3 == flag )
+      return true;
+  }
+  else
+    return true;
+    
+  // corner = (max, max, max)
+  z = a_bounded_plane[2]*a_rect->m_max[2];
+  v = x + y + z + d;
+  if ( v < a_bounded_plane[4] )
+  {
+    flag |= 1;
+    if ( 3 == flag )
+      return true;
+  }
+  else if ( v > a_bounded_plane[5] )
+  {
+    flag |= 2;
+    if ( 3 == flag )
+      return true;
+  }
+  else
+    return true;
+
+  // corner = (min, max, max)
+  x = a_bounded_plane[0]*a_rect->m_min[0]; 
+  v = x + y + z + d;
+  if ( v < a_bounded_plane[4] )
+  {
+    flag |= 1;
+    if ( 3 == flag )
+      return true;
+  }
+  else if ( v > a_bounded_plane[5] )
+  {
+    flag |= 2;
+    if ( 3 == flag )
+      return true;
+  }
+  else
+    return true;
+  
+  // corner = (min, min, max)
+  y = a_bounded_plane[1]*a_rect->m_min[1];
+  v = x + y + z + d;
+  if ( v < a_bounded_plane[4] )
+  {
+    flag |= 1;
+    if ( 3 == flag )
+      return true;
+  }
+  else if ( v > a_bounded_plane[5] )
+  {
+    flag |= 2;
+    if ( 3 == flag )
+      return true;
+  }
+  else
+    return true;
+
+  // corner = (max, min, max)
+  x = a_bounded_plane[0]*a_rect->m_max[0]; 
+  v = x + y + z + d;
+  if ( v < a_bounded_plane[4] )
+  {
+    flag |= 1;
+    if ( 3 == flag )
+      return true;
+  }
+  else if ( v > a_bounded_plane[5] )
+  {
+    flag |= 2;
+    if ( 3 == flag )
+      return true;
+  }
+  else
+    return true;
+
+  // corner = (min, max, min)
+  x = a_bounded_plane[0]*a_rect->m_min[0]; 
+  y = a_bounded_plane[1]*a_rect->m_max[1];
+  z = a_bounded_plane[2]*a_rect->m_min[2];
+  v = x + y + z + d;
+  if ( v < a_bounded_plane[4] )
+  {
+    flag |= 1;
+    if ( 3 == flag )
+      return true;
+  }
+  else if ( v > a_bounded_plane[5] )
+  {
+    flag |= 2;
+    if ( 3 == flag )
+      return true;
+  }
+  else
+    return true;
+  
+  // Either all 8 box corners 
+  // are below the min plane (flag=1)
+  // or above the max plane (flag=2).
+  return false;
+}
+
+static
+bool SearchBoundedPlaneXYZHelper(const ON_RTreeNode* a_node, const double* a_bounded_plane, ON_RTreeSearchResultCallback& a_result ) 
+{
+  int i, count;
+
+  if ( (count = a_node->m_count) > 0 )
+  {
+    const ON_RTreeBranch* branch = a_node->m_branch;
+    if(a_node->IsInternalNode()) 
+    {
+      // a_node is an internal node - search m_branch[].m_child as needed
+      for( i=0; i < count; ++i )
+      {
+        if(OverlapBoundedPlaneXYZHelper(a_bounded_plane, &branch[i].m_rect))
+        {
+          if(!SearchBoundedPlaneXYZHelper(branch[i].m_child, a_bounded_plane, a_result) )
+          {
+            return false; // Don't continue searching
+          }
+        }
+      }
+    }
+    else
+    {
+      // a_node is a leaf node - return m_branch[].m_id values
+      for(i=0; i < count; ++i)
+      {
+        if(OverlapBoundedPlaneXYZHelper(a_bounded_plane, &branch[i].m_rect))
+        {
+          if ( !a_result.m_resultCallback( a_result.m_context, branch[i].m_id ) )
+          {
+            // callback canceled search
+            return false;
+          }
+        }
+      }
+    }
+  }
+
+  return true; // Continue searching
+}
+
+bool ON_RTree::Search(
+  const double a_plane_eqn[4],
+  double a_min,
+  double a_max,
+  bool ON_MSC_CDECL a_resultCallback(void* a_context, ON__INT_PTR a_id), 
+  void* a_context
+  ) const
+{
+  if (    0 == m_root 
+       || 0 == a_plane_eqn 
+       || !(a_min <= a_max) 
+       || (0.0 == a_plane_eqn[0] && 0.0 == a_plane_eqn[1] && 0.0 == a_plane_eqn[2])
+     )
+    return false;
+
+  double bounded_plane[6];
+  bounded_plane[0] = a_plane_eqn[0];
+  bounded_plane[1] = a_plane_eqn[1];
+  bounded_plane[2] = a_plane_eqn[2];
+  bounded_plane[3] = a_plane_eqn[3];
+  bounded_plane[4] = a_min;
+  bounded_plane[5] = a_max;
+
+  ON_RTreeSearchResultCallback result;
+  result.m_context = a_context;
+  result.m_resultCallback = a_resultCallback;
+
+  return SearchBoundedPlaneXYZHelper(m_root, bounded_plane, result);
+}
 
 // Search in an index tree or subtree for all data retangles that overlap the argument rectangle.
 

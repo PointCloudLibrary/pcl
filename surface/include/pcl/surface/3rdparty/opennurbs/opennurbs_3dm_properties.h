@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -35,10 +35,24 @@ public:
 
   void Dump( ON_TextLog& ) const;
 
+  /*
+  Returns:
+    true 
+      if m_create_time is >= January 1, 1970
+  */
+  bool CreateTimeIsSet() const;
+
+  /*
+  Returns:
+    true 
+      if m_last_edit_time is >= January 1, 1970
+  */
+  bool LastEditedTimeIsSet() const;
+
   ON_wString m_sCreatedBy;
   ON_wString m_sLastEditedBy;
-  struct tm  m_create_time;
-  struct tm  m_last_edit_time;
+  struct tm  m_create_time;     // UCT create time
+  struct tm  m_last_edit_time;  // UCT las edited time
   int        m_revision_count;
 };
 

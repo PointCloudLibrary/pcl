@@ -1,4 +1,4 @@
-#include <pcl/surface/3rdparty/opennurbs/opennurbs.h>
+#include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
 
 static bool ON_ExtrusionPolyCurveProfileIsNotValid()
 {
@@ -138,7 +138,7 @@ bool ON_Extrusion::CleanupPolyCurveProfile( ON_PolyCurve& polycurve )
       else
       {
         new_segment->Append(old_segment);
-        if ( new_segment->HasGap() )
+        if ( new_segment->FindNextGap(0) )
         {
           rc = false;
           break;
@@ -659,6 +659,18 @@ bool ON_Extrusion::GetProfileTransformation( double s, ON_Xform& xform ) const
   return true;
 }
 
+static bool CleanProfileSegment( ON_Curve* curve )
+{
+  ON_NurbsCurve* nurbs_curve = ON_NurbsCurve::Cast(curve);
+  if ( nurbs_curve )
+  {
+    nurbs_curve->RemoveSingularSpans();
+    return ( nurbs_curve->IsValid() && false == nurbs_curve->SpanIsSingular(0) );
+  }
+  
+  return true;
+}
+
 static bool ProfileHelper( int desired_orientation, ON_Curve* profile )
 {
   // desired_orientation  0: outer profile that can be open or closed.
@@ -743,6 +755,26 @@ static bool ProfileHelper( int desired_orientation, ON_Curve* profile )
   if ( 0 != polycurve )
   {
     polycurve->RemoveNesting();
+    
+    if ( polycurve->SegmentCurves().Count() < 1 )
+    {
+      ON_ERROR("ON_Extrusion::Set/Add Profile - ON_PolyCurve has no segments.");
+      return false;
+    }
+    
+    if ( polycurve->SegmentCurves().Count() + 1 != polycurve->SegmentParameters().Count() )
+    {
+      ON_ERROR("ON_Extrusion::Set/Add Profile - ON_PolyCurve segment and parameter counts do not agree.");
+      return false;
+    }
+
+    for ( int i = polycurve->Count()-1; i >= 0; i-- )
+    {
+      ON_Curve* segment = polycurve->SegmentCurve(i);
+      if ( !CleanProfileSegment(segment) )
+        polycurve->Remove(i);
+    }
+
     for ( int i = 0; i < polycurve->Count(); i++ )
     {
       ON_Curve* segment = polycurve->SegmentCurve(i);
@@ -751,12 +783,21 @@ static bool ProfileHelper( int desired_orientation, ON_Curve* profile )
         ON_ERROR("ON_Extrusion::Set/Add Profile - ON_PolyCurve has null segment.");
         return false;
       }
-      if ( !segment->SetDomain( polycurve->SegmentDomain(i) ) )
+      const ON_Interval segment_domain = polycurve->SegmentDomain(i);
+      if ( !segment_domain.IsIncreasing() )
+      {
+        ON_ERROR("ON_Extrusion::Set/Add Profile - segment has invalid domain.");
+        return false;
+      }
+      if ( !segment->SetDomain( segment_domain ) )
       {
         ON_ERROR("ON_Extrusion::Set/Add Profile - segment->SetDomain() failed.");
         return false;
       }
     }
+  }
+  else if ( !CleanProfileSegment(profile) )
+  {
   }
 
   return true;
@@ -1293,6 +1334,16 @@ void ON_Extrusion::Dump( ON_TextLog& text_log ) const
   text_log.Print("Up: ");
   text_log.Print(m_up);
   text_log.Print("\n");
+  text_log.Print("m_bCap[] = (%d, %d)\n",m_bCap[0],m_bCap[1]);
+  text_log.Print("m_bHaveN[] = (%d, %d)\n",m_bHaveN[0],m_bHaveN[1]);
+  text_log.Print("m_N[] = (");
+  text_log.Print(m_N[0]);
+  text_log.Print(", ");
+  text_log.Print(m_N[1]);
+  text_log.Print("\n");
+  text_log.Print("m_path_domain = (%.17g, %.17g)\n",m_path_domain[0],m_path_domain[1]);
+  text_log.Print("m_bTransposed = %d\n",m_bTransposed);
+  text_log.Print("Profile Count: %d\n",m_profile_count);
   text_log.Print("Profile:\n");
     {
   text_log.PushIndent();
@@ -1494,7 +1545,6 @@ bool GetBoundingBoxHelper(const ON_Extrusion& extrusion,
   corners[6] = corners[2];
   corners[7] = corners[3];
 
-  const ON_3dVector T = extrusion.m_path.Tangent();
   ON_Xform xform0;
   if ( !extrusion.GetProfileTransformation(0,xform0) )
     return false;
@@ -1679,202 +1729,393 @@ ON_BOOL32 ON_Extrusion::Transform( const ON_Xform& xform )
   if ( !m_path.IsValid() || !m_up.IsUnitVector() || m_profile_count < 1 )
     return ON_Extrusion_TransformFailed();
 
-  ON_3dPoint Q0 = xform*m_path.from;
-  ON_3dPoint Q1 = xform*m_path.to;
-  if ( !Q0.IsValid() )
-    return ON_Extrusion_TransformFailed();
-  if ( !Q1.IsValid() )
-    return ON_Extrusion_TransformFailed();
   ON_3dVector T = m_path.Tangent();
-  ON_3dVector QT0 = Q1-Q0;
+  ON_3dVector UxT = ON_CrossProduct(m_up,T);
+  if ( !UxT.IsUnitVector() && !UxT.Unitize() )
+    return ON_Extrusion_TransformFailed();
+
+  const bool bUseVectorXform = (0.0 == xform[3][0] && 0.0 == xform[3][1] && 0.0 == xform[3][2]);
+
+  ON_3dPoint E[2], QE[2];
+  E[0] = m_path.from;
+  E[1] = m_path.to;
+  QE[0] = xform*E[0];
+  QE[1] = xform*E[1];
+  if ( !QE[0].IsValid() )
+    return ON_Extrusion_TransformFailed();
+  if ( !QE[1].IsValid() )
+    return ON_Extrusion_TransformFailed();
+  ON_3dVector QT0 = bUseVectorXform ? (xform*(E[1] - E[0])) : (QE[1]-QE[0]);
   if ( !QT0.Unitize() )
     return ON_Extrusion_TransformFailed();
-  ON_3dVector QT = (( fabs(QT0*T - 1.0) <= ON_SQRT_EPSILON ) ? T : QT0);
-  ON_3dVector X = ON_CrossProduct(m_up,T);
-  if ( !X.IsUnitVector() && !X.Unitize() )
-    return ON_Extrusion_TransformFailed();
   
-  ON_3dPoint X0 = xform*(m_path.from + X);
-  ON_3dPoint Y0 = xform*(m_path.from + m_up);
-  ON_3dPoint X1 = xform*(m_path.to + X);
-  ON_3dPoint Y1 = xform*(m_path.to + m_up);
+  const int base_index = ( QE[1].DistanceTo(E[1]) < QE[0].DistanceTo(E[0]) ) ? 1 : 0;
+  const ON_3dPoint B(E[base_index]);
+  const ON_3dPoint QB(QE[base_index]);
 
-  ON_3dVector QU0 = Y0-Q0;
-  if ( !QU0.Unitize() )
-    return ON_Extrusion_TransformFailed();
-  ON_3dVector QU = (( fabs(QU*m_up - 1.0) <= ON_SQRT_EPSILON ) ? m_up : QU0);
-
-  // 12 July 2008 Dale Lear - this test fixes http://dev.mcneel.com/bugtrack/?q=88130
-  if ( fabs(QU*QT) > fabs(QU0*QT0) )
+  const double QT0oT = QT0*T;
+  bool bSamePathDir = ( fabs(fabs(QT0oT) - 1.0) <= ON_SQRT_EPSILON );
+  ON_3dVector QT = bSamePathDir ? ((QT0oT < 0.0) ? -T : T) : QT0;
+  const double Qlen = QE[0].DistanceTo(QE[1]);
+  if ( bSamePathDir )
   {
-    QU = QU0;
-    QT = QT0;
-  }
-
-  // profile_xform will be the transformation 
-  // applied to the 2d profile curve.
-  const ON_3dVector QDX = X0 - Q0;
-  ON_3dVector QX = QDX - (QDX*QU)*QU;
-  if ( !QX.Unitize() )
-    return ON_Extrusion_TransformFailed();
-  if ( ON_CrossProduct(QX,QU)*QT < 0.0 )
-    QX.Reverse();
-  if ( fabs(QX*X - 1.0) <= ON_SQRT_EPSILON )
-    QX = X;
-
-  ON_3dVector path_shear(0.0,0.0,1.0);
-  path_shear.x = -(QX*QT);
-  path_shear.y = -(QU*QT);
-  if ( fabs(path_shear.x) <= ON_SQRT_EPSILON )
-    path_shear.x = 0.0;
-  if ( fabs(path_shear.y) <= ON_SQRT_EPSILON )
-    path_shear.y = 0.0;
-  double d = path_shear.x*path_shear.x + path_shear.y*path_shear.y;
-  if ( d >= 1.0 )
-    return ON_Extrusion_TransformFailed(); 
-  path_shear.z = sqrt(1.0-d);
-  if ( path_shear.z <= ON_Extrusion::m_Nz_min )
-    return ON_Extrusion_TransformFailed(); 
-  bool bHavePathShear =  (    path_shear.IsUnitVector()
-                           && (path_shear.x != 0.0 || path_shear.y != 0.0)
-                           && path_shear.z > ON_Extrusion::m_Nz_min 
-                         );
-  if ( !bHavePathShear )
-    path_shear.Set(0.0,0.0,1.0);
-
-  // miter normals
-  ON_3dVector QN[2];
-  for ( int i = 0; i < 2; i++ )
-  {
-    QN[i] = m_N[i];
-    if ( m_bHaveN[i] )
+    ON_3dPoint R =  QB + (base_index ? -Qlen : Qlen)*QT;
+    if ( QE[1-base_index].DistanceTo( R ) <= ON_SQRT_EPSILON*Qlen )
     {
-      const ON_3dVector N3d = m_N[i].x*X + m_N[i].y*m_up + m_N[i].z*T;
-      const ON_3dPoint  P = (0 == i) ? m_path.from : m_path.to;
-      const ON_3dPoint QP = (0 == i) ? Q0 : Q1;
-      ON_3dPoint QTip = xform*(P + N3d);
-      ON_3dVector QN3d = QTip - QP;
-      if ( !QN3d.Unitize() )
-        continue;
-      QN[i].x = QX*QN3d;
-      QN[i].y = QU*QN3d;
-      QN[i].z = QT*QN3d;
-      if (    !QN[i].Unitize()
-           || QN[i].z < ON_Extrusion::m_Nz_min
-           || fabs(QN[i]*m_N[i] - 1.0) <= ON_SQRT_EPSILON 
-         )
-      {
-        QN[i] = m_N[i];
-      }
+      QE[1-base_index] = R;
+    }
+    else
+    {
+      bSamePathDir = false;
+      QT = QT0;
     }
   }
 
+  const ON_3dPoint X0 = xform*(B + UxT);
+  const ON_3dPoint Y0 = xform*(B + m_up);
+  const ON_3dVector QDY = bUseVectorXform ? (xform*m_up) : (Y0-QB);
+  ON_3dVector QY = QDY;
+  if ( !QY.Unitize() )
+    return ON_Extrusion_TransformFailed();
+  ON_3dVector QU0 = QDY - (QDY*QT)*QT;
+  if ( !QU0.Unitize() )
+    return ON_Extrusion_TransformFailed();
+
+  const double QU0oU = QU0*m_up;
+  bool bSameUpDir = ( fabs(fabs(QU0oU) - 1.0) <= ON_SQRT_EPSILON );
+  ON_3dVector QU = bSameUpDir ? ((QU0oU < 0.0) ? -m_up : m_up) : QU0;
+
+  if (bSameUpDir && !bSamePathDir && fabs(QU*QT) > fabs(QU0*QT) )
+  {
+    // 12 July 2008 Dale Lear - this test fixes http://dev.mcneel.com/bugtrack/?q=88130
+    bSameUpDir = false;
+    QU = QU0;
+  }
+
+  ON_3dVector QUxQT = ON_CrossProduct(QU,QT);
+  if ( !QUxQT.Unitize() )
+    return ON_Extrusion_TransformFailed();
+
+  const double QUxQToUxT = QUxQT*UxT;
+  if ( (bSamePathDir && bSameUpDir) || fabs(fabs(QUxQToUxT) - 1.0) <= ON_SQRT_EPSILON )
+  {
+    if ( QUxQToUxT < 0.0 )
+      QUxQT = -UxT;
+    else
+      QUxQT = UxT;
+  }
+
+  const double QUoQY = QU*QY;
+  if ( fabs(QUoQY - 1.0) < ON_SQRT_EPSILON )
+    QY = QU;
+  else if ( fabs(QUoQY + 1.0) < ON_SQRT_EPSILON )
+    QY = -QU;
+
+  // profile_xform will be the transformation 
+  // applied to the 2d profile curve.
+  const ON_3dVector QDX = bUseVectorXform ? (xform*UxT) : (X0 - QB);
+  ON_3dVector QX = QDX - (QDX*QY)*QY;
+  if ( !QX.Unitize() )
+    return ON_Extrusion_TransformFailed();
+
+  const double QUxQToQX = QUxQT*QX;
+  if ( fabs(QUxQToQX - 1.0) < ON_SQRT_EPSILON )
+    QX = QUxQT;
+  else if ( fabs(QUxQToQX + 1.0) < ON_SQRT_EPSILON )
+    QX = -QUxQT;
+
+
+  ON_3dVector QXxQY = ON_CrossProduct(QX,QY);
+  if ( !QXxQY.IsUnitVector() && !QXxQY.Unitize() )
+    return ON_Extrusion_TransformFailed();
+  if ( QXxQY*QT < 0.0 )
+  {
+    QX.Reverse();
+    QXxQY.Reverse();
+  }
+
+  ON_3dVector path_shear(0.0,QU*QXxQY,QT*QXxQY);
+  bool bHavePathShear =    path_shear.z > ON_Extrusion::m_Nz_min 
+                        && path_shear.z < 1.0 - ON_SQRT_EPSILON
+                        && path_shear.y < 1.0 - ON_SQRT_EPSILON;
+  if ( bHavePathShear )
+  {
+    double x2 = path_shear.y*path_shear.y + path_shear.z*path_shear.z;
+    if ( x2 > ON_SQRT_EPSILON && x2 <= 1.0 )
+    {
+      double QUxQToQXxQY = QUxQT*QXxQY;
+      path_shear.x = sqrt(1.0 - x2);
+      if ( QUxQToQXxQY < 0.0 )
+        path_shear.x = -path_shear.x;
+    }
+    if ( fabs(path_shear.y) <= ON_SQRT_EPSILON )
+      path_shear.y = 0.0;
+    bHavePathShear = path_shear.IsUnitVector() && (path_shear.x != 0.0 || path_shear.y != 0.0);
+  }
+
+  if ( !bHavePathShear )
+  {
+    path_shear.Set(0.0,0.0,1.0);
+    QXxQY = QT;
+  }
+
+  // miter normals
+  ON_3dVector QN[2] = {ON_3dVector::ZeroVector,ON_3dVector::ZeroVector};
+  bool bHaveQN[2] = {false,false};
+  bool bUseQN[2] = {false,false};
+  for ( int i = 0; i < 2; i++ )
+  {
+    if ( m_bHaveN[i] )
+    {
+      QN[i] = m_N[i];
+      bHaveQN[i] = true;
+      bUseQN[i] = true;
+
+      // In order for this to work with  transformations that
+      // have bHavePathShear = true, we have to see where the
+      // miter *plane* is mapped which, for a shear 
+      // transformation, cannot be done by transforming 
+      // m_N[i] = normal to the miter plane.
+      ON_3dVector QN3d;
+      if ( bHavePathShear )
+      {
+        // calculate a world 3d basis for the miter plane
+        ON_3dVector V1(m_N[i].y,-m_N[i].x,0.0);
+        V1.Unitize();
+        ON_3dVector V2 = ON_CrossProduct( m_N[i],V1);
+        V1 = V1.x*UxT + V1.y*m_up + V1.z*T;
+        V2 = V2.x*UxT + V2.y*m_up + V2.z*T;
+
+        // transform the basis to get a world 3d basis
+        // for the transformed miter plane.
+        ON_3dVector QV1 = xform*V1;
+        ON_3dVector QV2 = xform*V2;
+        double lenQV1 = QV1.Length();
+        double lenQV2 = QV2.Length();
+        if ( fabs(lenQV1 - lenQV2) > 0.125*(lenQV1 + lenQV2) )
+        {
+          // if lengths are "different", then normalize
+          // before taking the cross product. Otherwise,
+          // skip normalization to get slightly
+          // more precision in a calculation that is
+          // already pretty fuzzy.
+          QV1.Unitize();
+          QV2.Unitize();
+        }
+
+        // now get a world 3d normal to the miter plane
+        QN3d = ON_CrossProduct(QV1,QV2);
+      }
+      else
+      {
+        const ON_3dVector N3d = m_N[i].x*UxT + m_N[i].y*m_up + m_N[i].z*T;
+        ON_3dPoint QTip = xform*(E[i] + N3d);
+        QN3d = bUseVectorXform ? (xform*N3d) : (QTip - QE[i]);
+      }
+      if ( !QN3d.Unitize() )
+        continue;
+
+      // QN[i] = miter vector
+      QN[i].x = QUxQT*QN3d;
+      QN[i].y = QU*QN3d;
+      QN[i].z = QT*QN3d;
+      if ( QN[i].z < 0.0 )
+        QN[i].Reverse(); // necessary for some mirror transformations
+      if ( !QN[i].Unitize() )
+      {
+         bHaveQN[i] = false;
+      }
+      if ( fabs(QN[i].x) <= ON_SQRT_EPSILON )
+        QN[i].x = 0.0;
+      if ( fabs(QN[i].y) <= ON_SQRT_EPSILON )
+        QN[i].y = 0.0;
+      if (    QN[i].z < ON_Extrusion::m_Nz_min
+           || QN[i].z >= 1.0 - ON_SQRT_EPSILON
+           || (fabs(QN[i].x) <= ON_SQRT_EPSILON && fabs(QN[i].y) <= ON_SQRT_EPSILON )
+         )
+      {
+        bHaveQN[i] = false;
+      }
+
+      if ( !bHaveQN[i] )
+        QN[i] = ON_3dVector::ZeroVector;
+      else if ( fabs(QN[i]*m_N[i] - 1.0) <= 1.0e-6 ) // ON_SQRT_EPSILON 
+        QN[i] = m_N[i];
+    }
+  }
 
   // get 2d profile transformation
   ON_Xform profile_xform(1.0);
-
   // set 2d profile y scale
-  profile_xform.m_xform[1][1] = Y0.DistanceTo(Q0);
-  if ( fabs(profile_xform.m_xform[1][1] - 1.0) <= ON_SQRT_EPSILON )
-    profile_xform.m_xform[1][1] = 1.0;
-  else if ( !ON_IsValid(profile_xform.m_xform[1][1]) || 0.0 == profile_xform.m_xform[1][1] )
+  const double profile_y_scale = QDY.Length(); // = QYoQDY "mathematically"
+
+  if ( !bHavePathShear )
   {
-    // cannot flatten profile
-    return ON_Extrusion_TransformFailed(); 
-  }
-  // NOTE: 
-  //   profile_xform.m_xform[1][1] must always be > 0.0 and
-  //   is the most precise number number in the matrix.
+    const double profile_x_scale = QX*QDX;
 
-  // set 2d profile x scale
-  profile_xform.m_xform[0][0] = QX*QDX;
-  if ( fabs( profile_xform.m_xform[0][0] - 1.0 ) <= ON_SQRT_EPSILON )
-    profile_xform.m_xform[0][0] = 1.0;
-  else if ( fabs( profile_xform.m_xform[0][0] + 1.0 ) <= ON_SQRT_EPSILON )
-    profile_xform.m_xform[0][0] = -1.0;
-
-  const double profile_xform_tol = ON_SQRT_EPSILON*(fabs(profile_xform.m_xform[0][0]) + profile_xform.m_xform[1][1]);
-  if ( fabs(fabs(profile_xform.m_xform[0][0]) - profile_xform.m_xform[1][1]) <= profile_xform_tol )
-  {
-    profile_xform.m_xform[0][0] = ((profile_xform.m_xform[0][0] < 0.0)?-1.0:1.0)*profile_xform.m_xform[1][1];
-  }
-  else if ( fabs(profile_xform.m_xform[0][0]) <= profile_xform_tol )
-  {
-    // cannot flatten profile
-    return ON_Extrusion_TransformFailed(); 
-  }
-
-  const double profile_det = profile_xform.m_xform[0][0]*profile_xform.m_xform[1][1];
-  if ( !ON_IsValid(profile_det) || 0.0 == profile_det )
-    return ON_Extrusion_TransformFailed();
-
-  // set 2d profile shear
-  profile_xform.m_xform[1][0] = QU*QDX;
-  if ( fabs( profile_xform.m_xform[1][0] ) <= profile_xform_tol )
-    profile_xform.m_xform[1][0] = 0.0;
-
-  if ( bHavePathShear )
-  {
-    double cosa = path_shear.z; // N is relative to xy plane.
-    ON_2dVector A(-path_shear.y,path_shear.x); // path_shear is relative to xy plane.
-    A.Unitize();
-    
-    // S is the inverse of a non-uniform scale that maps A to A and 
-    // perpA to 1/cosa*perpA.
-    // The scale distorts the profile so that after it is rotated
-    // into the miter plane, the projection of the rotated profile
-    // onto the xy-plane matches the original profile.
-    // The inverse needs to be applied because the shear transformation
-    // results in miter being added to the extrusion and the profiles
-    // need to be contracted to compenstate.
-    const double c = 1.0 - 1.0/cosa;
-    ON_Xform Sinverse(0.0);
-    Sinverse[0][0] = cosa*(1.0 - c*A.x*A.x);
-    Sinverse[0][1] = -cosa*c*A.x*A.y;
-    Sinverse[1][0] = Sinverse[0][1];
-    Sinverse[1][1] = cosa*(1.0 - c*A.y*A.y);
-    Sinverse[2][2] = 1.0;
-    Sinverse[3][3] = 1.0;
-    profile_xform = Sinverse*profile_xform;
-
-    // I often happens that the shear rotates "up".
-    // However, there may be no change as well when the
-    // original "up" is an eigenvector of the shear 
-    // transformation.
-    ON_Xform R(1.0);
-    R.Rotation(T,QT,ON_3dPoint::Origin);
-    ON_3dVector RU = R*m_up;
-    if ( fabs(RU*QT) < fabs(QU*QT) )
-      QU = RU;
-    if ( fabs(QT*QU) > ON_SQRT_EPSILON )
+    if ( !ON_IsValid(profile_y_scale) || 0.0 == profile_y_scale )
+    {
+      // cannot flatten profile
       return ON_Extrusion_TransformFailed(); 
+    } 
+
+    if ( !ON_IsValid(profile_x_scale) || 0.0 == profile_x_scale )
+    {
+      // cannot flatten profile
+      return ON_Extrusion_TransformFailed(); 
+    } 
+
+    // NOTE: 
+    //   profile_xform.m_xform[1][1] must always be > 0.0 and
+    //   is the most precise number number in the matrix.
+    const double profile_y_scale_tol = ON_SQRT_EPSILON;
+    const double profile_x_scale_tol = 10.0*profile_y_scale_tol;
+
+    if ( fabs(profile_y_scale - 1.0) <= profile_y_scale_tol )
+      profile_xform.m_xform[1][1] = 1.0;
+    else
+      profile_xform.m_xform[1][1] = profile_y_scale;
+
+    if ( fabs( profile_x_scale - 1.0 ) <= profile_x_scale_tol )
+      profile_xform.m_xform[0][0] = 1.0;
+    else if ( fabs( profile_x_scale + 1.0 ) <= profile_x_scale_tol )
+      profile_xform.m_xform[0][0] = -1.0;
+    else
+      profile_xform.m_xform[0][0] = profile_x_scale;
+
+    const double profile_xform_tol = profile_x_scale_tol*(fabs(profile_xform.m_xform[0][0]) + profile_xform.m_xform[1][1]);
+    if ( fabs(fabs(profile_xform.m_xform[0][0]) - profile_xform.m_xform[1][1]) <= profile_xform_tol )
+    {
+      profile_xform.m_xform[0][0] = ((profile_xform.m_xform[0][0] < 0.0)?-1.0:1.0)*profile_xform.m_xform[1][1];
+    }
+    else if ( fabs(profile_xform.m_xform[0][0]) <= profile_xform_tol )
+    {
+      // cannot flatten profile
+      return ON_Extrusion_TransformFailed(); 
+    }
+
+    double profile_det = profile_xform.m_xform[0][0]*profile_xform.m_xform[1][1];
+    if ( !ON_IsValid(profile_det) || 0.0 == profile_det )
+      return ON_Extrusion_TransformFailed();
+
+    // set 2d profile shear
+    const double profile_shear_tol = profile_xform_tol;
+    const double QYoQDX = QY*QDX;
+    if ( fabs( QYoQDX ) <= profile_shear_tol )
+      profile_xform.m_xform[1][0] = 0.0;
+    else
+      profile_xform.m_xform[1][0] = QYoQDX;
+  }
+  else
+  {
+    // plane0 is world 3d plane that provides the coordinate system
+    // for mapping the original 2d profile into world 3d.
+    ON_Plane plane0;
+    plane0.origin = B; plane0.xaxis = UxT; plane0.yaxis = m_up;   plane0.zaxis = T;
+    plane0.UpdateEquation();
+
+    // plane1 is world 3d plane that provides the coordinate system
+    // for mapping the transformed 2d profile into world 3d.
+    ON_Plane plane1;
+    plane1.origin = QB; plane1.xaxis = QUxQT; plane1.yaxis = QU;   plane1.zaxis = QT;
+    plane1.UpdateEquation();
+
+    ON_Xform xform1, xform3, xform4, xform5;
+
+    // xform 1 maps original 2d profile to world 3d
+    xform1.Rotation(ON_Plane::World_xy,plane0);
+
+    // xform maps plane1 to 
+
+    // xform 3 maps the transformed 3d profile to the world 3d plane
+    // that is orthoganal to the transformed axis vector.
+    xform3.PlanarProjection(plane1);
+
+    // xform4 maps the transformed world 3d profile back to the xy plane
+    xform4.Rotation(plane1, ON_Plane::World_xy);
+
+    profile_xform = xform4*xform3*xform*xform1;
+    profile_xform.m_xform[0][2] = 0.0;
+    profile_xform.m_xform[1][2] = 0.0;
+    profile_xform.m_xform[2][0] = 0.0; profile_xform.m_xform[2][1] = 0.0; profile_xform.m_xform[2][2] = 1.0; profile_xform.m_xform[2][3] = 0.0;
+    profile_xform.m_xform[3][0] = 0.0; profile_xform.m_xform[3][1] = 0.0; profile_xform.m_xform[3][2] = 0.0; profile_xform.m_xform[3][3] = 1.0;
+
+    const double xform_tol = 10.0*ON_SQRT_EPSILON;
+    if ( profile_y_scale > xform_tol && fabs(profile_y_scale - 1.0) > xform_tol )
+    {
+      double profile_scale_tol = profile_y_scale*ON_SQRT_EPSILON;
+      if ( fabs(profile_xform.m_xform[0][0] - profile_y_scale) < profile_scale_tol )
+      {
+        profile_xform.m_xform[0][0] = profile_y_scale;
+        if ( fabs(profile_xform.m_xform[1][1] - profile_y_scale) < profile_scale_tol )
+          profile_xform.m_xform[1][1] = profile_y_scale;
+        else if ( fabs(profile_xform.m_xform[1][1] + profile_y_scale) < profile_scale_tol )
+          profile_xform.m_xform[1][1] = -profile_y_scale;
+      }
+    }
+
+    for ( int i = 0; i < 2; i++ ) for ( int j = 0; j < 4; j++ )
+    {
+      if ( 2 == j )
+        continue;
+      double x = fabs(profile_xform.m_xform[i][j]);
+      if ( fabs(x) <= xform_tol )
+        profile_xform.m_xform[i][j] = 0.0;
+      else if ( fabs(1.0-x) <= xform_tol )
+        profile_xform.m_xform[i][j] = 1.0;
+      else if ( fabs(x-1.0) <= xform_tol )
+        profile_xform.m_xform[i][j] = -1.0;
+    }
   }
 
   // start transforming informtion here
   TransformUserData(xform);
 
   // transform path, up, and miter directions
-  m_path.from = Q0;
-  m_path.to = Q1;
+  m_path.from = QE[0];
+  m_path.to = QE[1];
   m_up = QU;
-  if ( m_bHaveN[0] && QN[0].IsValid() && QN[0].IsUnitVector() )
-    m_N[0] = QN[0];
-  if ( m_bHaveN[1] && QN[1].IsValid() && QN[1].IsUnitVector() )
-    m_N[1] = QN[1];
-  if ( bHavePathShear )
+  for ( int i = 0; i < 2; i++ )
   {
-    // TODO: 
-    //  1) combine with eisting mitering
-    //  2) fix bug when eigenvector of the shear transform
-    //     is not parallel to a profile plane axis.
-    m_bHaveN[0] = true;
-    m_N[0] = path_shear;
-    m_bHaveN[1] = true;
-    m_N[1] = path_shear;
+    if ( bUseQN[i] )
+    {
+      m_N[i] = QN[i];
+      m_bHaveN[i] = bHaveQN[i];
+    }
+    else if ( bHavePathShear )
+    {
+      m_N[i] = path_shear;
+      m_bHaveN[i] = true;
+    }
+    else
+    {
+      m_N[i].Set(0.0,0.0,0.0);
+      m_bHaveN[i] = false;
+    }
   }
 
+  //if ( m_bHaveN[0] && QN[0].IsValid() && QN[0].IsUnitVector() )
+  //  m_N[0] = QN[0];
+  //if ( m_bHaveN[1] && QN[1].IsValid() && QN[1].IsUnitVector() )
+  //  m_N[1] = QN[1];
+  //if ( bHavePathShear )
+  //{
+  //  // TODO: 
+  //  //  1) combine with eisting mitering
+  //  //  2) fix bug when eigenvector of the shear transform
+  //  //     is not parallel to a profile plane axis.
+  //  m_bHaveN[0] = true;
+  //  m_N[0] = path_shear;
+  //  m_bHaveN[1] = true;
+  //  m_N[1] = path_shear;
+  //}
+
+  if ( profile_xform.IsIdentity() )
+    return true; // should happen on all rotations and translations.
+  
+  double profile_det = profile_xform[0][0]*profile_xform[1][1] - profile_xform[1][0]*profile_xform[0][1];
   bool bNeedReverse = (profile_det < 0.0);
-  return Profile2dTransform( *this, profile_xform, bNeedReverse );
+  return  Profile2dTransform( *this, profile_xform, bNeedReverse );
 }
 
 class CMyBrepIsSolidSetter : public ON_Brep
@@ -1897,6 +2138,16 @@ public:
   ON_Extrusion_BrepForm_FaceInfo();
 
   ~ON_Extrusion_BrepForm_FaceInfo();
+
+  /*
+  Returns
+    false if m_face_index < 0.  This happens when the 3d profile
+    for the extrusion is too short or bogus or the nurbs surface
+    generated from this profile is bogus.  One way this happens
+    is when the transformation from 2d to 3d has an enormous
+    translation component.
+  */
+  bool HaveBrepFaceFace() const;
 
   void Init();
 
@@ -1932,15 +2183,40 @@ ON_Extrusion_BrepForm_FaceInfo::~ON_Extrusion_BrepForm_FaceInfo()
 {
   // when m_extrusion_srf is not null, its destructor deletes m_extrusion_profile.
   if ( 0 != m_extrusion_srf )
+  {
+    // When m_extrusion_srf is not null, it 
+    // manages the m_extrusion_profile curve
+    m_extrusion_profile = 0;
     delete m_extrusion_srf;
-  else if ( 0 != m_extrusion_profile )
+    m_extrusion_srf = 0;
+  }
+  
+  if ( 0 != m_extrusion_profile )
+  {
     delete m_extrusion_profile;
+    m_extrusion_profile = 0;
+  }
 
   if ( m_cap_c2[0] )
+  {
     delete m_cap_c2[0];
+    m_cap_c2[0] = 0;
+  }
+  
   if ( m_cap_c2[1] )
+  {
     delete m_cap_c2[1];
+    m_cap_c2[1] = 0;
+  }
+
   memset(this,0,sizeof(*this));
+}
+
+bool ON_Extrusion_BrepForm_FaceInfo::HaveBrepFaceFace() const
+{
+  if ( m_face_index < 0 )
+    return false;
+  return true;
 }
 
 void ON_Extrusion_BrepForm_FaceInfo::Init()
@@ -1986,6 +2262,9 @@ ON_PlaneSurface* MakeCapPlaneHelper(
   int outer_loop_iso_trim_count = 0;
   for ( int i = 0; i < finfo.Count(); i++ )
   {
+    if ( false == finfo[i].HaveBrepFaceFace() )
+      continue; // profile curve segment was too short or bogus
+
     if ( 0 != finfo[i].m_profile_index )
     {
       // this and the rest of the finfo[] elements attach
@@ -2061,9 +2340,12 @@ int MakeCapLoopHelper(
           int fi0,
           int cap_index, // 0 = bottom, 1 = top
           ON_BrepFace* capface, 
-          ON_BrepLoop::TYPE loop_type
+          ON_BrepLoop::TYPE loop_type,
+          bool* bTrimsWereModified
           )
 {
+  ON_BrepEdge* edge;
+
   if ( 0 == capface )
     return fi0; // happens when extrusion has an open end
 
@@ -2077,24 +2359,61 @@ int MakeCapLoopHelper(
   ON_BrepLoop& loop = brep->NewLoop(loop_type,*capface);
 
   bool bRev3d = false;
+  bool bCloseGaps = true;
 
   int fi1;
   for ( fi1 = fi0; fi1 < finfo.Count(); fi1++ )
   {
+    if ( false == finfo[fi1].HaveBrepFaceFace() )
+      continue; // profile segment for this face was too short or bogus
+
     if ( finfo[fi0].m_profile_index != finfo[fi1].m_profile_index )
       break;
+
     ON_NurbsCurve* c2 = finfo[fi1].m_cap_c2[cap_index];
     if ( 0 == c2 )
+    {
+      bCloseGaps = false;
       break;
+    }
     int c2i = brep->AddTrimCurve(c2);
     finfo[fi1].m_cap_c2[cap_index] = 0;
-    ON_BrepEdge* edge = brep->Edge(finfo[fi1].m_cap_edge_index[cap_index]);
+    edge = brep->Edge(finfo[fi1].m_cap_edge_index[cap_index]);
     if ( 0 == edge )
+    {
+      bCloseGaps = false;
       break;
+    }
     ON_BrepTrim& trim = brep->NewTrim(*edge, bRev3d, loop, c2i);
     trim.m_tolerance[0] = trim.m_tolerance[1] = 0.0;
   }
   brep->SetTrimIsoFlags( loop );
+
+  // 6 June 2012 Dale Lear
+  //    Fix bug 105311
+  //    Sometimes there are gaps in ON_PolyCurve profiles that
+  //    need to be closed to make a valid ON_Brep.  The gaps
+  //    need to be closed after the call to SetTrimIsoFlags().
+  if ( bCloseGaps ) for ( int lti = 0; lti < loop.m_ti.Count(); lti++ )
+  {
+    ON_BrepTrim& trim0 = brep->m_T[loop.m_ti[lti]];
+    ON_BrepTrim& trim1 = brep->m_T[loop.m_ti[(lti+1)%loop.m_ti.Count()]];
+    if ( trim0.PointAtEnd() != trim1.PointAtStart() )
+    {
+      if ( brep->CloseTrimGap(trim0,trim1) )
+      {
+        edge = trim0.Edge();
+        if ( edge )
+          edge->m_tolerance = ON_UNSET_VALUE;
+        edge = trim1.Edge();
+        if ( edge )
+          edge->m_tolerance = ON_UNSET_VALUE;
+        if ( 0 != bTrimsWereModified )
+          *bTrimsWereModified = true;
+      }
+    }
+  }
+
   return fi1;
 }
 
@@ -2120,6 +2439,9 @@ bool MakeCap2dCurvesHelper(
   {
     ON_NurbsCurve* c20 = 0;
     ON_NurbsCurve* c21 = 0;
+
+    if ( false == finfo[i].HaveBrepFaceFace() )
+      continue; // profile curve was too short or bogus
 
     c20 = finfo[i].m_extrusion_srf->m_profile->NurbsCurve();
     if ( 0 == c20 )
@@ -2191,8 +2513,8 @@ int ON_Extrusion::ProfileSmoothSegmentCount( int profile_index ) const
 {
   if ( 0 == Profile(profile_index) )
     return 0;
-  ON_SimpleArray<double> k;
-  return (1 + GetProfileKinkParameters(profile_index, k));
+  ON_SimpleArray<double> * k  = 0;
+  return (1 + GetProfileKinkParameters(profile_index,*k));
 }
 
 int ON_Extrusion::GetProfileKinkParameters( int profile_index, ON_SimpleArray<double>& profile_kink_parameters ) const
@@ -2387,6 +2709,7 @@ ON_Brep* ON_Extrusion::BrepForm( ON_Brep* brep, bool bSmoothFaces ) const
       // create an extrusion that represents a single surface
       // to store in the brep.
       ON_Extrusion_BrepForm_FaceInfo& fi = finfo[finfo_index];
+      fi.m_face_index = -1;
 
       fi.m_extrusion_srf = new ON_Extrusion();
       fi.m_extrusion_srf->m_path = m_path;
@@ -2436,23 +2759,26 @@ ON_Brep* ON_Extrusion::BrepForm( ON_Brep* brep, bool bSmoothFaces ) const
       ON_NurbsSurface* face_srf = fi.m_extrusion_srf->NurbsSurface();
       if ( 0 == face_srf )
       {
-        if (newbrep != brep )
-          delete newbrep;
-        return 0;
+        continue;
+        ////if (newbrep != brep )
+        ////  delete newbrep;
+        ////return 0;
       }
-      int brep_S_count = newbrep->m_S.Count();
+
       const ON_BrepFace* face = newbrep->NewFace(face_srf,fi.m_vid,fi.m_eid,fi.m_bRev3d);
       if ( 0 == face )
       {
-        if (    newbrep->m_S.Count() == brep_S_count 
-             || (newbrep->m_S.Count() > brep_S_count &&  0 == newbrep->m_S[brep_S_count])
-          )
-        {
-          delete face_srf;
-        }
-        if (newbrep != brep )
-          delete newbrep;
-        return 0;
+        // When NewFace() returns null, face_srf is not reference in newbrep.
+        delete face_srf;
+
+        // 10 July 2012 Dale Lear
+        //    Continue to attempt to get a brep form.  This failure
+        //    typically happens when face_srf has two singularities
+        //    because a profile component is very short.
+        continue;
+        ////if (newbrep != brep )
+        ////  delete newbrep;
+        ////return 0;
       }
       fi.m_face_index = face->m_face_index; 
 
@@ -2513,6 +2839,8 @@ ON_Brep* ON_Extrusion::BrepForm( ON_Brep* brep, bool bSmoothFaces ) const
   }
 
   // Add end caps
+  bool bSetEdgeTolerances = false;
+
   while ( is_capped > 0 && cap_count == ((3 == is_capped) ? 2 : 1) )
   {
     // while(...) not a loop 
@@ -2581,7 +2909,7 @@ ON_Brep* ON_Extrusion::BrepForm( ON_Brep* brep, bool bSmoothFaces ) const
         if ( finfo[fi0].m_profile_index != profile_index )
           break;
         ON_BrepLoop::TYPE loop_type = ( 0 == profile_index ) ? ON_BrepLoop::outer : ON_BrepLoop::inner;
-        fi1 = MakeCapLoopHelper(finfo,fi0,cap_index,capface,loop_type);
+        fi1 = MakeCapLoopHelper(finfo,fi0,cap_index,capface,loop_type,&bSetEdgeTolerances);
         if ( fi1 <= fi0 )
           break;
         fi0 = fi1;
@@ -2610,6 +2938,9 @@ ON_Brep* ON_Extrusion::BrepForm( ON_Brep* brep, bool bSmoothFaces ) const
     // set a tight bounding box
     ((CMyBrepIsSolidSetter*)newbrep)->SetBBox(*this);
     newbrep->SetTrimBoundingBoxes(true);
+
+    if ( bSetEdgeTolerances )
+      newbrep->SetEdgeTolerances(true);
   }
 
 #if defined(ON_DEBUG)
@@ -2627,8 +2958,8 @@ bool ON_Extrusion::GetBrepFormComponentIndex(
   ON_COMPONENT_INDEX& brep_ci
   ) const
 {
-  const ON_Brep unused_brep;
-  return GetBrepFormComponentIndex(extrusion_ci,ON_UNSET_VALUE,unused_brep,brep_ci);
+  const ON_Brep* null_brep_pointer = 0;
+  return GetBrepFormComponentIndex(extrusion_ci,ON_UNSET_VALUE,*null_brep_pointer,brep_ci);
 }
 
 static bool GetBrepFormFaceIndex(
@@ -2829,18 +3160,6 @@ bool ON_Extrusion::GetBrepFormComponentIndex(
   return true;
 }
 
-class CVertexInfo
-{
-  // Helper class used in ON_Extrusion::CreateMesh()
-  // It is declared out here to keep gcc happy.
-public:
-  ON_3dPoint P;  // profile 2d point
-  ON_3dVector T; // profile 3d tangent
-  double kappa;  // used if we need curvature
-  double t;      // profile parameter
-  int vi[2];     // mesh->m_V[] indices
-};
-
 ON_BOOL32 ON_Extrusion::SetDomain( 
   int dir, // 0 sets first parameter's domain, 1 gets second parameter's domain
   double t0, 
@@ -2872,6 +3191,58 @@ ON_Interval ON_Extrusion::Domain(
   return (path_dir == dir ) 
          ? m_path_domain 
          : ((1-path_dir == dir && m_profile) ? m_profile->Domain() : ON_Interval());
+}
+
+ON_BOOL32 ON_Extrusion::GetSurfaceSize( 
+    double* width, 
+    double* height 
+    ) const
+{
+  bool rc = true;
+  //int path_dir = PathParameter();
+  if ( PathParameter() )
+  {
+    double* p = width;
+    width = height;
+    height = p;
+  }
+  if ( width )
+  {
+    if ( m_path.IsValid() && m_t.IsIncreasing() )
+      *width = m_path.Length()*m_t.Length();
+    else
+    {
+      *width = 0.0;
+      rc = false;
+    }
+  }
+  if (height)
+  {
+    if ( m_profile )
+    {
+      // A crude over estimate is good enough for file IO 
+      // needs in the public souce code version. When there
+      // are multiple profile components, the nurbs_profile_curve
+      // will have a whacky control polygon, but it's length will
+      // be ok as an estimate.
+      ON_NurbsCurve nurbs_profile_curve;
+      if ( m_profile->GetNurbForm(nurbs_profile_curve) <= 0 )
+      {
+        *height = 0.0;
+        rc = false;
+      }
+      else
+      {
+        *height = nurbs_profile_curve.ControlPolygonLength();
+      }
+    }
+    else 
+    {
+      rc = false;
+      *height = 0.0;
+    }
+  }
+  return rc;
 }
 
 int ON_Extrusion::SpanCount(
@@ -3026,10 +3397,6 @@ ON_BOOL32 ON_Extrusion::IsPeriodic( int dir ) const
   return false;
 }
 
-//ON_BOOL32 ON_Extrusion::IsSingular( // true if surface side is collapsed to a point
-//      int        // side of parameter space to test
-//                 // 0 = south, 1 = east, 2 = north, 3 = west
-//      ) const
 bool ON_Extrusion::GetNextDiscontinuity( 
                 int dir,
                 ON::continuity c,
@@ -3392,17 +3759,6 @@ ON_Curve* ON_Extrusion::IsoCurve(
   return isocurve;
 }
 
-
-//ON_Curve* ON_Extrusion::Pushup( const ON_Curve& curve_2d,
-//                  double tolerance,
-//                  const ON_Interval* curve_2d_subdomain = NULL
-//                  ) const
-//ON_Curve* ON_Extrusion::Pullback( const ON_Curve& curve_3d,
-//                  double tolerance,
-//                  const ON_Interval* curve_3d_subdomain = NULL,
-//                  ON_3dPoint start_uv = ON_UNSET_POINT,
-//                  ON_3dPoint end_uv = ON_UNSET_POINT
-//                  ) const
 ON_BOOL32 ON_Extrusion::Trim(
        int dir,
        const ON_Interval& domain
@@ -3446,6 +3802,7 @@ ON_BOOL32 ON_Extrusion::Trim(
           if ( bChanged )
           {
             m_path_domain = dom;
+            DestroySurfaceTree();
           }
         }
       }
@@ -3456,6 +3813,7 @@ ON_BOOL32 ON_Extrusion::Trim(
     if ( m_profile )
     {
       rc = m_profile->Trim(domain)?true:false;
+      DestroySurfaceTree();
     }
   }
   return rc;
@@ -3511,6 +3869,7 @@ bool ON_Extrusion::Extend(
       {
         m_path.from = P0;
         m_path.to = P1;
+        DestroySurfaceTree();
       }
     }
   }
@@ -3519,6 +3878,8 @@ bool ON_Extrusion::Extend(
     if ( m_profile )
     {
       rc = m_profile->Extend(domain);
+      if (rc) 
+        DestroySurfaceTree();
     }
   }
   return rc;
@@ -3701,7 +4062,6 @@ int ON_Extrusion::GetNurbForm(
     return 0;
 
   ON_Xform xform0,xform1;
-  const ON_3dVector pathT = m_path.Tangent();
   if ( !GetProfileTransformation(0,xform0) )
     return false;
   if ( !GetProfileTransformation(1,xform1) )
@@ -4044,3 +4404,94 @@ ON_Extrusion* ON_Extrusion::Pipe(
   return extrusion_pipe;
 }
 
+
+ON_Extrusion* ON_Extrusion::CreateFrom3dCurve( 
+    const ON_Curve& curve,
+    const ON_Plane* plane,
+    double height,
+    bool bCap,
+    ON_Extrusion* extrusion
+    )
+  {
+    if ( 0 != extrusion )
+      extrusion->Destroy();
+
+    if ( ON_IsValid(height) && 0.0 == height )
+      return 0;
+
+    ON_Interval z(0.0,height);
+    if ( z.IsDecreasing() )
+      z.Swap();
+    if ( !z.IsIncreasing() )
+      return 0;
+    
+    if ( !curve.IsValid() )
+      return 0;
+
+    ON_Plane curve_plane;
+    if ( 0 == plane )
+    {
+      if ( !curve.IsPlanar(&curve_plane) )
+        return 0;
+      plane = &curve_plane;
+    }
+
+    if ( !plane->IsValid() )
+      return 0;
+
+    ON_Xform xform2d;
+    xform2d.ChangeBasis(ON_Plane::World_xy,*plane);
+
+    ON_Curve* curve2d = curve.DuplicateCurve();
+    if ( 0 == curve2d )
+      return 0;
+
+    ON_Extrusion* result = 0;
+
+    for (;;)
+    {
+      if ( !curve2d->Transform(xform2d) )
+        break;
+      curve2d->ChangeDimension(2);
+
+      if ( 0 == extrusion )
+        result = new ON_Extrusion();
+      else
+        result = extrusion;
+
+      if ( !result->SetPathAndUp(
+                  plane->PointAt(0.0,0.0,z[0]),
+                  plane->PointAt(0.0,0.0,z[1]),
+                  plane->yaxis
+                  ) )
+        break;
+
+      if ( !result->SetOuterProfile(curve2d,bCap) )
+        break;
+
+      if ( !result->IsValid() )
+        break;
+
+      // success
+      curve2d = 0;
+
+      break;
+    }
+
+    if ( 0 != curve2d )
+    {
+      // failure
+      delete curve2d;
+      curve2d = 0;
+      
+      if ( 0 != result && result != extrusion )
+        delete result;
+
+      if ( extrusion )
+        extrusion->Destroy();
+
+      result = 0;
+    }
+
+    return result;
+  }

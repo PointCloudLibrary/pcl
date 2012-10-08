@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -14,7 +14,7 @@
 ////////////////////////////////////////////////////////////////
 */
 
-#include <pcl/surface/3rdparty/opennurbs/opennurbs.h>
+#include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
 
 static void SwapRow( double matrix[4][4], int i0, int i1 )
 {
@@ -859,23 +859,49 @@ bool ON_Xform::IsValid() const
 
 bool ON_Xform::IsIdentity( double zero_tolerance ) const
 {
+  // The code below will return false if m_xform[][] contains
+  // a nan value.
+  const double* v = &m_xform[0][0];
+  for ( int i = 0; i < 3; i++ )
+  {
+    if ( !(fabs(1.0 - *v++) <= zero_tolerance) )
+      return false;
+    if ( !(fabs(*v++) <= zero_tolerance) )
+      return false;
+    if ( !(fabs(*v++) <= zero_tolerance) )
+      return false;
+    if ( !(fabs(*v++) <= zero_tolerance) )
+      return false;
+    if ( !(fabs(*v++) <= zero_tolerance) )
+      return false;
+  }
+  if ( !(fabs( 1.0 - *v ) <= zero_tolerance) )
+    return false;
+  return true;
+}
+
+bool ON_Xform::IsNotIdentity( double zero_tolerance ) const
+{
+  // The code below will return false if m_xform[][] contains
+  // a nan value.
   const double* v = &m_xform[0][0];
   for ( int i = 0; i < 3; i++ )
   {
     if ( fabs(1.0 - *v++) > zero_tolerance )
-      return false;
-    if ( fabs(*v++) >  zero_tolerance )
-      return false;
-    if ( fabs(*v++) >  zero_tolerance )
-      return false;
-    if ( fabs(*v++) >  zero_tolerance )
-      return false;
-    if ( fabs(*v++) >  zero_tolerance )
-      return false;
+      return true;
+    if ( fabs(*v++) > zero_tolerance )
+      return true;
+    if ( fabs(*v++) > zero_tolerance )
+      return true;
+    if ( fabs(*v++) > zero_tolerance )
+      return true;
+    if ( fabs(*v++) > zero_tolerance )
+      return true;
   }
   if ( fabs( 1.0 - *v ) > zero_tolerance )
-    return false;
-  return true;
+    return true;
+
+  return false;
 }
 
 bool ON_Xform::IsTranslation( double zero_tolerance ) const
@@ -959,7 +985,7 @@ int ON_Xform::IsSimilarity() const
       double sx = X.Length();
       double sy = Y.Length();
       double sz = Z.Length();
-      if (   sx == 0.0 || sy == 0.0 || sz == 0.0
+      if (   sx == 0.0 || sy == 0.0 || sz == 0.0 
           || fabs(sx-sy) > tol || fabs(sy-sz) > tol || fabs(sz-sx) > tol )
       {
         // non-uniform scale or worse
@@ -1176,56 +1202,57 @@ void ON_Xform::Rotation(
 {
   Identity();
 
-  // 29 June 2005 Dale Lear
-  //     Kill noise in input
-  if ( fabs(sin_angle) >= 1.0-ON_SQRT_EPSILON && fabs(cos_angle) <= ON_SQRT_EPSILON )
+  for(;;)
   {
-    cos_angle = 0.0;
-    if ( sin_angle < 0.0 ) sin_angle = -1.0; else sin_angle = 1.0;
-  }
-  else if ( fabs(cos_angle) >= 1.0-ON_SQRT_EPSILON && fabs(sin_angle) <= ON_SQRT_EPSILON )
-  {
-    sin_angle = 0.0;
-    if ( cos_angle < 0.0 ) cos_angle = -1.0; else cos_angle = 1.0;
-  }
-  else if ( fabs(cos_angle*cos_angle + sin_angle*sin_angle - 1.0) > ON_SQRT_EPSILON )
-  {
-    ON_2dVector cs(cos_angle,sin_angle);
-    if ( cs.Unitize() )
+    // 29 June 2005 Dale Lear
+    //     Kill noise in input
+    if ( fabs(sin_angle) >= 1.0-ON_SQRT_EPSILON && fabs(cos_angle) <= ON_SQRT_EPSILON )
     {
-      cos_angle = cs.x;
-      sin_angle = cs.y;
+      cos_angle = 0.0;
+      sin_angle = (sin_angle < 0.0) ? -1.0 : 1.0; 
+      break;
     }
-    else
+    
+    if ( fabs(cos_angle) >= 1.0-ON_SQRT_EPSILON && fabs(sin_angle) <= ON_SQRT_EPSILON )
     {
-      ON_ERROR("sin_angle and cos_angle are both zero.");
-      cos_angle = 1.0;
+      cos_angle = (cos_angle < 0.0) ? -1.0 : 1.0; 
       sin_angle = 0.0;
+      break;
     }
-  }
-  else
-  {
-    if ( cos_angle >= 1.0 ) 
+    
+    if ( fabs(cos_angle*cos_angle + sin_angle*sin_angle - 1.0) > ON_SQRT_EPSILON )
     {
-      sin_angle = 0.0;
-      cos_angle = 1.0; 
-    }
-    else if (cos_angle <= -1.0)
-    {
-      sin_angle = 0.0;
-      cos_angle = -1.0; 
+      ON_2dVector cs(cos_angle,sin_angle);
+      if ( cs.Unitize() )
+      {
+        cos_angle = cs.x;
+        sin_angle = cs.y;
+        // no break here
+      }
+      else
+      {
+        ON_ERROR("sin_angle and cos_angle are both zero.");
+        cos_angle = 1.0;
+        sin_angle = 0.0;
+        break;
+      }
     }
 
-    if ( sin_angle >= 1.0 )
+    if ( fabs(cos_angle) > 1.0-ON_EPSILON || fabs(sin_angle) < ON_EPSILON )
     {
-      sin_angle = 1.0;
-      cos_angle = 0.0;
+      cos_angle = (cos_angle < 0.0) ? -1.0 : 1.0; 
+      sin_angle = 0.0;
+      break;
     }
-    else if (sin_angle <= -1.0)
+
+    if ( fabs(sin_angle) > 1.0-ON_EPSILON || fabs(cos_angle) < ON_EPSILON )
     {
-      sin_angle = -1.0;
       cos_angle = 0.0;
+      sin_angle = (sin_angle < 0.0) ? -1.0 : 1.0; 
+      break;
     }
+
+    break;
   }
 
   if (sin_angle != 0.0 || cos_angle != 1.0) 

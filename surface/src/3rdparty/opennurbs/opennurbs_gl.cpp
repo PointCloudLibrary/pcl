@@ -14,8 +14,8 @@
 ////////////////////////////////////////////////////////////////
 */
 
-#include <pcl/surface/3rdparty/opennurbs/opennurbs.h>
-#include <pcl/surface/3rdparty/opennurbs/opennurbs_gl.h> // ON_GL() function declarations
+#include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
+#include "pcl/surface/3rdparty/opennurbs/opennurbs_gl.h" // ON_GL() function declarations
 
 void ON_GL( const int order,     // ON_NurbsCurve order
               const int cv_count,  // ON_NurbsCurve cv count

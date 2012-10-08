@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -218,8 +218,8 @@ public:
             FILE* fp = ON::OpenFile( sFileName, "rb");
 
             // for UNICODE file names
-            const wchar* sFileName = ....;
-            FILE* fp = ON::OpenFile( sFileName, L"rb");
+            const wchar_t* wsFileName = ....;
+            FILE* fp = ON::OpenFile( wsFileName, L"rb");
 
             bool bModelRead = false;
             bool bModelIsValid = false;
@@ -262,26 +262,41 @@ public:
   /*
   Description:
     Writes contents of this model to an openNURBS archive.
-    I STRONGLY suggested that you call Polish() before calling 
+    It is a good practice to call Polish() before calling 
     Write so that your file has all the "fluff" that makes it
     complete.  If the model is not valid, then Write will refuse
     to write it.
+
   Parameters:
-    archive - [in] archive to write to
-    version - [in] Version of the openNURBS archive to write.
-                   Must be 2, 3 or 4.  
-                   Rhino 2.x can read version 2 files.
-                   Rhino 3.x can read version 2 and 3 files.
-                   Rhino 4.x can read version 2, 3 and 4 files.
-                   Use version 4 when possible.
+    archive - [in]
+      archive to write to
+
+    version - [in] 
+      Version of the openNURBS archive to write.
+        0 default value and suggested.
+           When 0 is passed in, the value of ON_BinaryArchive::CurrentArchiveVersion()
+           is used.
+        2, 3, 4
+          If you pass in one of these values, some information 
+          in current data structures will not be saved in the
+          file. 
+          Rhino 2.x can read version 2 files.
+          Rhino 3.x can read version 2 and 3 files.
+          Rhino 4.x can read version 2, 3 and 4 files.
+          Rhino 5.x can read version 2, 3, 4, 5 and 50 files.
+          Rhino 5.x writes version 50 files.
+
     sStartSectionComment - [in] 
-                   Brief ASCII desciption of your app, today's date,
-                   etc.
-    error_log - [out] any archive writing errors are logged here.
+      Brief desciption of your app, today's date, etc.
+
+    error_log - [out]
+      any archive writing errors are logged here.
+
   Returns:
     True if archive is written with no error. 
     False if errors occur.
     Error details are logged in error_log.
+
   Example:
 
             model = ...;
@@ -303,8 +318,8 @@ public:
               FILE* fp = ON::OpenFile( sFileName, "wb");
 
               // for UNICODE file names
-              const wchar* sFileName = ....;
-              FILE* fp = ON::OpenFile( sFileName, L"wb");
+              const wchar_t* wsFileName = ....;
+              FILE* fp = ON::OpenFile( wsFileName, L"wb");
 
               bool ok = false;
               if ( 0 != fp )
@@ -327,21 +342,21 @@ public:
   */
   bool Write( 
          ON_BinaryArchive& archive,
-         int version = 5,
+         int version = 0,
          const char* sStartSectionComment = NULL,
          ON_TextLog* error_log = NULL
          );
 
   bool Write( 
          const char* filename,
-         int version = 5,
+         int version = 0,
          const char* sStartSectionComment = NULL,
          ON_TextLog* error_log = NULL
          );
 
   bool Write( 
          const wchar_t* filename,
-         int version = 5,
+         int version = 0,
          const char* sStartSectionComment = NULL,
          ON_TextLog* error_log = NULL
          );

@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -14,7 +14,7 @@
 ////////////////////////////////////////////////////////////////
 */
 
-#include <pcl/surface/3rdparty/opennurbs/opennurbs.h>
+#include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
 
 ON_OBJECT_IMPLEMENT( ON_Group, ON_Object, "721D9F97-3645-44c4-8BE6-B2CF697D25CE" );
 
@@ -42,7 +42,7 @@ void ON_Group::Dump( ON_TextLog& dump ) const
   if ( !name )
     name = L"";
   dump.Print("group index = %d\n",m_group_index);
-  dump.Print("group name = \"%S\"\n",name);
+  dump.Print("group name = \"%ls\"\n",name);
 }
 
 ON_BOOL32 ON_Group::Write(

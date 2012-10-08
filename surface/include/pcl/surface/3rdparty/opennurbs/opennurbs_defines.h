@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -161,6 +161,7 @@
 #define ON_DBL_MIN 2.22507385850720200e-308
 #endif
 
+// ON_EPSILON = 2^-52
 #if defined(DBL_EPSILON)
 #define ON_EPSILON DBL_EPSILON
 #else
@@ -256,15 +257,37 @@ ON_END_EXTERNC
 #define ON_UNSET_COLOR 0xFFFFFFFF
 
 /*
-// In rare cases when an absolute "zero" tolerance is
-// required, ON_ZERO_TOLERANCE is used to compare
-// numbers.  This number should be no smaller than
+// In cases when an absolute "zero" tolerance 
+// is required to compare model space coordinates,
+// ON_ZERO_TOLERANCE is used.  The value of
+// ON_ZERO_TOLERANCE should be no smaller than
 // ON_EPSILON and should be several orders of 
 // magnitude smaller than ON_SQRT_EPSILON
 // 
 */
-#define ON_ZERO_TOLERANCE 1.0e-12
+//#define ON_ZERO_TOLERANCE 1.0e-12
+// ON_ZERO_TOLERANCE = 2^-32
+#define ON_ZERO_TOLERANCE 2.3283064365386962890625e-10
 
+/*
+// In cases when an relative "zero" tolerance is
+// required for comparing model space coordinates, 
+// (fabs(a)+fabs(b))*ON_RELATIVE_TOLERANCE is used.
+// ON_RELATIVE_TOLERANCE should be larger than
+// ON_EPSILON and smaller than no larger than 
+// ON_ZERO_TOLERANCE*2^-10.
+// 
+*/
+// ON_RELATIVE_TOLERANCE = 2^-42
+#define ON_RELATIVE_TOLERANCE 2.27373675443232059478759765625e-13
+
+/*
+// Bugs in geometry calculations involving world coordinates 
+// values > ON_MAXIMUM_WORLD_COORDINATE_VALUE
+// will be a low priority.
+*/
+// ON_MAXIMUM_VALUE = 2^27
+#define ON_MAXIMUM_WORLD_COORDINATE_VALUE 1.34217728e8
 
 /*
 // The default test for deciding if a curvature value should be
@@ -324,7 +347,7 @@ typedef struct tagON_4dex ON_4dex;
 union ON_U
 {
   char      b[8]; // 8 bytes
-  ON__INT64 h;    // 64 bit "hyper" integer
+  ON__INT64 h;    // 64 bit integer
   ON__INT32 i;    // 32 bit integer
   int       j[2]; // two 32 bit integers
   void*     p;
@@ -361,7 +384,17 @@ public:
   //////////
   // McNeel subversion revsion used to build opennurbs
   static
-  const char* Revision();
+  const char* SourceRevision();
+
+  static
+  const char* DocumentationRevision();
+
+  static
+  const char* SourceBranch();
+
+  static
+  const char* DocumentationBranch();
+
 
   //// File open/close for DLL use ///////////////////////////////////////////////
 
@@ -410,6 +443,22 @@ public:
                      time_t* create_time,
                      time_t* lastmodify_time
                     );
+
+  /*
+  Returns true if pathname is a directory.
+  */
+  static bool IsDirectory( const wchar_t* pathname );
+  static bool IsDirectory( const char* utf8pathname );
+
+  /*
+  Returns
+    If the file is an opennurbs file, the version of the file
+    is returned (2,3,4,50,...).
+    If the file is not an opennurbs file, 0 is returned.
+  */
+  static int IsOpenNURBSFile( const wchar_t* pathname );
+  static int IsOpenNURBSFile( const char* utf8pathname );
+  static int IsOpenNURBSFile( FILE* fp );
 
   //// Dimension Types ///////////////////////////////////////////////////////////
   enum eAnnotationType
@@ -549,6 +598,51 @@ public:
       const class ON_3dmUnitsAndTolerances& us_from, 
       const class ON_3dmUnitsAndTolerances& us_to
       );
+
+
+  /*
+  Description:
+    Returns the string " : ".  This is the string Rhino uses
+    to separate reference model names from the root name for 
+    things like layer, block definition, material, linetype,
+    dimstyle and font names.  
+  See Also:
+    ON::NameReferenceDelimiterLength()
+    ON::IsNameReferenceDelimiter()
+  */
+  static const wchar_t* NameReferenceDelimiter();
+
+  /*
+  Description:
+    Returns the number of characters in the string returned
+    by ON::NameReferenceDelimiter().
+  See Also:
+    ON::NameReferenceDelimiterLength()
+    ON::IsNameReferenceDelimiter()
+  */
+  static unsigned int NameReferenceDelimiterLength();
+
+  /*
+  Description:
+    Test a string to see if its beginning matches the 
+    string returned by ON::NameReferenceDelimiter().
+  Parameters:
+    s - [in];
+      string to test.
+  Returns:
+    null:
+      The beginning of the string does not match ON::NameReferenceDelimiter().
+    non-null:
+      The beginning of the string matches ON::NameReferenceDelimiter(). The
+      returned pointer is the first character in s after the last character
+      of the delimiter.  Put another way, if the beginning of s matches
+      the string  ON::NameReferenceDelimiter(), then the returned pointer is
+      s + ON::NameReferenceDelimiterLength().
+  See Also:
+    ON::NameReferenceDelimiter()
+    ON::NameReferenceDelimiterLength()
+  */
+  static const wchar_t* IsNameReferenceDelimiter(const wchar_t* s);
 
   //// distance_display_mode ///////////////////////////////////
   enum distance_display_mode
@@ -1506,6 +1600,110 @@ int on_MultiByteToWideChar(
     int          // cchWideChar
     );
 
+/*
+Description:
+  Find the locations in a path the specify the drive, directory,
+  file name and file extension.
+Parameters:
+  path - [in]
+    UTF-8 encoded string that is a legitimate path to a file.
+  drive - [out] (pass null if you don't need the drive)
+    If drive is not null and the path parameter begins with 
+    an A-Z or a-z followed by a colon ( : ) then the returned
+    value of *drive will equal the input value of path.
+  dir - [out] (pass null if you don't need the directory)
+    If dir is not null and the path parameter contains a
+    directory specification, then the returned value of *dir
+    will point to the character in path where the directory
+    specification begins.
+  fname - [out] (pass null if you don't need the file name)
+    If fname is not null and the path parameter contains a
+    file name specification, then the returned value of *fname
+    will point to the character in path where the file name
+    specification begins.
+  ext - [out] (pass null if you don't need the extension)
+    If ext is not null and the path parameter contains a
+    file extension specification, then the returned value of
+    *ext will point to the '.' character in path where the file
+    extension specification begins.
+Remarks:
+  This function will treat a front slash ( / ) and a back slash
+  ( \ ) as directory separators.  Because this function parses
+  file names store in .3dm files and the .3dm file may have been
+  written on a Windows computer and then read on a another
+  computer, it looks for a drive dpecification even when the
+  operating system is not Windows.
+  This function will not return an directory that does not
+  end with a trailing slash.
+  This function will not return an empty filename and a non-empty
+  extension.
+  This function parses the path string according to these rules.
+  It does not check the actual file system to see if the answer
+  is correct.
+See Also:
+  ON_String::SplitPath
+*/
+ON_DECL void on_splitpath(
+  const char* path,
+  const char** drive,
+  const char** dir,
+  const char** fname,
+  const char** ext
+  );
+
+/*
+Description:
+  Find the locations in a path the specify the drive, directory,
+  file name and file extension.
+Parameters:
+  path - [in]
+    UTF-8, UTF-16 or UTF-32 encoded wchar_t string that is a
+    legitimate path to a file.
+  drive - [out] (pass null if you don't need the drive)
+    If drive is not null and the path parameter begins with 
+    an A-Z or a-z followed by a colon ( : ) then the returned
+    value of *drive will equal the input value of path.
+  dir - [out] (pass null if you don't need the directory)
+    If dir is not null and the path parameter contains a
+    directory specification, then the returned value of *dir
+    will point to the character in path where the directory
+    specification begins.
+  fname - [out] (pass null if you don't need the file name)
+    If fname is not null and the path parameter contains a
+    file name specification, then the returned value of *fname
+    will point to the character in path where the file name
+    specification begins.
+  ext - [out] (pass null if you don't need the extension)
+    If ext is not null and the path parameter contains a
+    file extension specification, then the returned value of
+    *ext will point to the '.' character in path where the file
+    extension specification begins.
+Remarks:
+  This function will treat a front slash ( / ) and a back slash
+  ( \ ) as directory separators.  Because this function parses
+  file names store in .3dm files and the .3dm file may have been
+  written on a Windows computer and then read on a another
+  computer, it looks for a drive dpecification even when the
+  operating system is not Windows.
+  This function will not return an directory that does not
+  end with a trailing slash.
+  This function will not return an empty filename and a non-empty
+  extension.
+  This function parses the path string according to these rules.
+  It does not check the actual file system to see if the answer
+  is correct.
+See Also:
+  ON_wString::SplitPath
+*/
+ON_DECL void on_wsplitpath(
+  const wchar_t* path,
+  const wchar_t** drive,
+  const wchar_t** dir,
+  const wchar_t** fname,
+  const wchar_t** ext
+  );
+
 ON_END_EXTERNC
+
 
 #endif

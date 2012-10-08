@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -14,7 +14,7 @@
 ////////////////////////////////////////////////////////////////
 */
 
-#include <pcl/surface/3rdparty/opennurbs/opennurbs.h>
+#include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
 
 #define ON_BOZO_VACCINE_11EE2C1FF90D4C6AA7CDEC8532E1E32D
 #define ON_BOZO_VACCINE_F42D967121EB46929B9ABC3507FF28F5
@@ -31,9 +31,9 @@ ON_InstanceDefinition::ON_InstanceDefinition()
   m_us.m_custom_unit_name.Destroy();
   m_source_bRelativePath = false;
   m_reserved1 = 0;
+  m_idef_layer_style = 0;
   m_reserved2[0] = 0;
   m_reserved2[1] = 0;
-  m_reserved2[2] = 0;
 }
 
 ON_InstanceDefinition::~ON_InstanceDefinition()
@@ -43,12 +43,10 @@ ON_InstanceDefinition::~ON_InstanceDefinition()
 
 void ON_InstanceDefinition::Dump( ON_TextLog& text_log ) const
 {
-  const wchar_t* s;
-
-  s = m_name;
-  if ( 0 == s ) 
-    s = L"";
-  text_log.Print(L"Name: \"%s\"\n",s);
+  const wchar_t* wsIDefName = m_name;
+  if ( 0 == wsIDefName ) 
+    wsIDefName = L"";
+  text_log.Print("Name: \"%ls\"\n",wsIDefName);
 
 
   text_log.Print("Type: ");
@@ -58,7 +56,10 @@ void ON_InstanceDefinition::Dump( ON_TextLog& text_log ) const
     text_log.Print("embedded.");
     break;
   case ON_InstanceDefinition::embedded_def:
-    text_log.Print("embedded - definition from source archive.");
+    if ( m_source_archive.Length() > 0 )
+      text_log.Print("OBSOLETE embedded_def with non-empty source archive - should be linked_and_embedded_def.");
+    else
+      text_log.Print("OBSOLETE embedded_def with empty source archive - should be static_def.");
     break;
   case ON_InstanceDefinition::linked_and_embedded_def:
     text_log.Print("embedded and linked - definition from source archive.");
@@ -73,71 +74,71 @@ void ON_InstanceDefinition::Dump( ON_TextLog& text_log ) const
   text_log.Print("\n");
 
 
-  text_log.Print(L"Id: "); text_log.Print(m_uuid); text_log.Print(L"\n");
+  text_log.Print("Id: "); text_log.Print(m_uuid); text_log.Print("\n");
 
-  s = m_description;
-  if ( 0 != s && 0 != s[0]) 
-    text_log.Print(L"Description: \"%s\"\n",s);
+  const wchar_t* wsDescription = m_description;
+  if ( 0 != wsDescription && 0 != wsDescription[0]) 
+    text_log.Print("Description: \"%ls\"\n",wsDescription);
 
-  s = m_url;
-  if ( 0 != s && 0 != s[0]) 
-    text_log.Print(L"URL: \"%s\"\n",s);
+  const wchar_t* wsURL = m_url;
+  if ( 0 != wsURL && 0 != wsURL[0]) 
+    text_log.Print("URL: \"%ls\"\n",wsURL);
 
-  s = m_url_tag;
-  if ( 0 != s && 0 != s[0]) 
-    text_log.Print(L"URL tag: \"%s\"\n",s);
+  const wchar_t* wsTag = m_url_tag;
+  if ( 0 != wsTag && 0 != wsTag[0]) 
+    text_log.Print("URL tag: \"%ls\"\n",wsTag);
 
   m_us.Dump(text_log);
 
-  s = SourceArchive();
-  text_log.Print(L"Source archive: ");
-  if ( 0 == s || 0 == s[0] )
+  const wchar_t* wsSourceArchive = SourceArchive();
+  text_log.Print("Source archive: ");
+  if ( 0 == wsSourceArchive || 0 == wsSourceArchive[0] )
   {
-    text_log.Print(L"none.\n");
+    text_log.Print("none.\n");
   }
   else
   {
     bool bRel = m_source_bRelativePath;
-    text_log.Print(L"\"%s\" (%s)\n",s,bRel?L"relative":L"absolute");
+    text_log.Print("\"%ls\" (%s)\n",wsSourceArchive,bRel?"relative":"absolute");
 
     text_log.PushIndent();
     ON_wString str;
     bRel = false;
     if ( GetAlternateSourceArchivePath(str,bRel) )
     {
-      s = str;
-      if ( 0 == s || 0 == s[0] )
-        s = L"";
-      text_log.Print(L"Alternate archive: \"%s\" (%s)\n",s,bRel?L"relative":L"absolute");
+      const wchar_t* wsAlternateArchive = str;
+      if ( 0 == wsAlternateArchive || 0 == wsAlternateArchive[0] )
+        wsAlternateArchive = L"";
+      text_log.Print("Alternate archive: \"%ls\" (%s)\n",wsAlternateArchive,bRel?"relative":"absolute");
     }
 
-    text_log.Print(L"Update depth: %d\n",m_idef_update_type);
+    text_log.Print("Update depth: %d\n",m_idef_update_type);
 
-    text_log.Print(L"Archive ");
+    text_log.Print("Archive ");
     m_source_archive_checksum.Dump(text_log);    
     text_log.PopIndent();
   }
 
   const int id_count = m_object_uuid.Count();
-  text_log.Print(L"Contains: %d objects\n",id_count);
+  text_log.Print("Contains: %d objects\n",id_count);
 
   if ( id_count > 0 )
   {
     text_log.PushIndent();
 
     text_log.Print(m_object_uuid[0]); 
-    text_log.Print(L"\n");
+    text_log.Print("\n");
 
     if ( id_count > 4 )
     {
-      text_log.Print(L"...\n");
+      text_log.Print("...\n");
     }
     else
     {
       for ( int i = 1; i < id_count; i++ )
       {
         text_log.Print(m_object_uuid[i]);
-        text_log.Print(L"\n");
+        text_log.Print("\n");
       }
     }
 
@@ -165,11 +166,49 @@ ON_BOOL32 ON_InstanceDefinition::IsValid( ON_TextLog* text_log ) const
     }
     return false;
   }
+
   switch( m_idef_update_type)
   {
-    case embedded_def:
-    case linked_def:
+    case static_def:
+      // no source archive information should be present
+      if ( m_source_archive.Length() > 0 )
+      {
+        if (text_log)
+        {
+          text_log->Print("ON_InstanceDefinition is static but m_source_archive is not empty.\n");
+        }
+        return false;
+      }
+      if ( m_source_archive_checksum.IsSet() )
+      {
+        if (text_log)
+        {
+          text_log->Print("ON_InstanceDefinition is static but m_source_archive_checksum is set.\n");
+        }
+        return false;
+      }
+
+      if ( 0 != m_idef_layer_style )
+      {
+        if (text_log)
+        {
+          text_log->Print("ON_InstanceDefinition is static but m_idef_layer_style is not zero.\n");
+        }
+        return false;
+      }
+      break;
+
+    case embedded_def: // embedded_def is obsolete - 
+      if ( text_log )
+      {
+        text_log->Print("ON_InstanceDefinition.m_idef_update_type = obsolete \"embedded_idef\". Use \"static_def\" or \"linked_and_embedded_def\".\n");
+      }
+      return false;
+      break;
+
     case linked_and_embedded_def:
+    case linked_def:
+      // source archive information is required
       if( m_source_archive.IsEmpty())
       {
         if (text_log)
@@ -178,9 +217,46 @@ ON_BOOL32 ON_InstanceDefinition::IsValid( ON_TextLog* text_log ) const
         }
         return false;
       }
+      if( !m_source_archive_checksum.IsSet())
+      {
+        if (text_log)
+        {
+          text_log->Print("ON_InstanceDefinition is linked or embedded but m_source_archive_checksum is zero.\n");
+        }
+        return false;
+      }
+
+      if ( linked_def == m_idef_update_type )
+      {
+        if ( 1 != m_idef_layer_style && 2 != m_idef_layer_style )
+        {
+          if (text_log)
+          {
+            text_log->Print("ON_InstanceDefinition is linked_def but m_idef_layer_style is not 1 or 2.\n");
+          }
+          return false;
+        }
+      }
+      else
+      {
+        if ( 0 != m_idef_layer_style )
+        {
+          if (text_log)
+          {
+            text_log->Print("ON_InstanceDefinition is linked_and_embedded_def but m_idef_layer_style is not zero.\n");
+          }
+          return false;
+        }
+      }
+
       break;
+
     default:
-      // do nothing on rest of cases
+      if ( text_log )
+      {
+        text_log->Print("ON_InstanceDefinition.m_idef_update_type value is invalid.\n");
+      }
+      return false;
       break;
   }
 
@@ -207,7 +283,7 @@ ON_BOOL32 ON_InstanceDefinition::Write(
        ON_BinaryArchive& binary_archive
      ) const
 {
-  bool rc = binary_archive.Write3dmChunkVersion(1,5);
+  bool rc = binary_archive.Write3dmChunkVersion(1,6);
 
   // version 1.0 fields
   if ( rc )
@@ -236,16 +312,35 @@ ON_BOOL32 ON_InstanceDefinition::Write(
     rc = binary_archive.WriteString( m_url_tag );
   if ( rc )
     rc = binary_archive.WriteBoundingBox( m_bbox );
+
   // m_idef_update_type was an unsigned int and got changed to an enum.  Read and write
   // as an unsigned int to support backwards compatibility
+  const unsigned int idef_update_type = (unsigned int)this->IdefUpdateType();
   if ( rc )
-    rc = binary_archive.WriteInt( (unsigned int)m_idef_update_type );
+    rc = binary_archive.WriteInt( idef_update_type );
   if ( rc )
-    rc = binary_archive.WriteString( m_source_archive );
+  {
+    // 7 February 2012
+    //   Purge source archive information from static_defs
+    if ( ON_InstanceDefinition::static_def == idef_update_type )
+    {
+      ON_wString empty_string;
+      rc = binary_archive.WriteString( empty_string );
+    }
+    else
+      rc = binary_archive.WriteString( m_source_archive );
+  }
   
   // version 1.1 fields
   if (rc)
-    rc = m_source_archive_checksum.Write( binary_archive );
+  {
+    // 7 February 2012
+    //   Purge source archive information from static_defs
+    if ( ON_InstanceDefinition::static_def == idef_update_type )
+      ON_CheckSum::UnsetCheckSum.Write(binary_archive);
+    else
+      rc = m_source_archive_checksum.Write( binary_archive );
+  }
   
   // version 1.2 fields
   if (rc)
@@ -256,7 +351,12 @@ ON_BOOL32 ON_InstanceDefinition::Write(
     rc = binary_archive.WriteDouble( m_us.m_custom_unit_scale );
 
   if ( rc )
-    rc = binary_archive.WriteBool( m_source_bRelativePath );
+  {
+    bool b = (ON_InstanceDefinition::static_def == idef_update_type)
+           ? false
+           : m_source_bRelativePath;
+    rc = binary_archive.WriteBool( b );
+  }
 
   // version 1.4 fields
   if (rc)
@@ -266,9 +366,25 @@ ON_BOOL32 ON_InstanceDefinition::Write(
   if (rc)
     rc = binary_archive.WriteInt(m_idef_update_depth);
 
+  // version 1.6 fields ( added 14 February 2012 )
+  if (rc)
+    rc = binary_archive.WriteInt(  m_idef_layer_style );
+
   return rc;
 }
 
+ON_InstanceDefinition::IDEF_UPDATE_TYPE ON_InstanceDefinition::IdefUpdateType() const
+{
+  if ( ON_InstanceDefinition::embedded_def == m_idef_update_type )
+  {
+    ON_ERROR("Using obsolete ON_InstanceDefinition::embedded_def value - fix code.");
+    const_cast< ON_InstanceDefinition* >(this)->m_idef_update_type 
+                                  = ( m_source_archive.Length() > 0 )
+                                  ? ON_InstanceDefinition::linked_and_embedded_def
+                                  : ON_InstanceDefinition::static_def;
+  }
+  return m_idef_update_type;
+}
 
 ON_InstanceDefinition::IDEF_UPDATE_TYPE ON_InstanceDefinition::IdefUpdateType(int i)
 {
@@ -301,6 +417,8 @@ ON_BOOL32 ON_InstanceDefinition::Read(
 {
   int major_version = 0;
   int minor_version = 0;
+
+  m_idef_layer_style = 0;
 
   m_us.m_custom_unit_scale = 0.0;
   m_us.m_custom_unit_name.Destroy();
@@ -375,9 +493,56 @@ ON_BOOL32 ON_InstanceDefinition::Read(
           if (rc && minor_version >= 5 )
           {
             rc = binary_archive.ReadInt(&m_idef_update_depth);
+
+            if ( rc && minor_version >= 6 )
+            {
+              unsigned int i = 0;
+              rc = binary_archive.ReadInt(&i);
+              if ( i && i > 0 && i < 256 )
+                m_idef_layer_style = (unsigned char)i;
+            }
           }
         }
       }
+    }
+
+    if ( ON_InstanceDefinition::embedded_def == m_idef_update_type )
+    {
+      // 7 February 2012
+      //   "embedded_def" is obsolete.
+      if (m_source_archive.Length() > 0 )
+        m_idef_update_type = ON_InstanceDefinition::linked_and_embedded_def;
+      else
+        DestroySourceArchive(); // convert to static
+    }
+
+    if ( ON_InstanceDefinition::linked_def == m_idef_update_type )
+    {
+      if ( m_idef_layer_style < 1 || m_idef_layer_style > 2 )
+      {
+        // The goal of the next if/else clause is for Rhino users
+        // to see what they saw when they created the file.
+        if ( binary_archive.Archive3dmVersion() < 50 )
+        {
+          // V4 linked blocks and early V5 linked blocks treated
+          // layers and materials the way newer "active" idefs work,
+          // so when I read an archive with version < 50, the
+          // default will be 1 for "active".  
+          m_idef_layer_style = 1;
+        }
+        else
+        {
+          // The more recent V5 linked blocks treated layers and materials
+          // the way "reference" style idefs work, so when I read an
+          // archive with version >= 50 (meaning recent V5), the default
+          // will be 2 for "reference".
+          m_idef_layer_style = 2;
+        }
+      }
+    }
+    else
+    {
+      m_idef_layer_style= 0;
     }
   }
   return rc;
@@ -431,9 +596,12 @@ const wchar_t* ON_InstanceDefinition::Name() const
 
 void ON_InstanceDefinition::SetName( const wchar_t* name )
 {
-  m_name = name;
-  m_name.TrimLeft();
-  m_name.TrimRight();
+  ON_wString s(name);
+  s.TrimLeftAndRight();
+  if ( s.IsEmpty() )
+    m_name.Destroy();
+  else
+    m_name = s;
 }
 
 
@@ -444,9 +612,12 @@ const wchar_t* ON_InstanceDefinition::URL() const
 
 void ON_InstanceDefinition::SetURL( const wchar_t* url )
 {
-  m_url = url;
-  m_url.TrimLeft();
-  m_url.TrimRight();
+  ON_wString s(url);
+  s.TrimLeftAndRight();
+  if ( s.IsEmpty() )
+    m_url.Destroy();
+  else
+    m_url = s;
 }
 
 const wchar_t* ON_InstanceDefinition::URL_Tag() const
@@ -456,9 +627,12 @@ const wchar_t* ON_InstanceDefinition::URL_Tag() const
 
 void ON_InstanceDefinition::SetURL_Tag( const wchar_t* url_tag )
 {
-  m_url_tag = url_tag;
-  m_url_tag.TrimLeft();
-  m_url_tag.TrimRight();
+  ON_wString s(url_tag);
+  s.TrimLeftAndRight();
+  if ( s.IsEmpty() )
+    m_url_tag.Destroy();
+  else
+    m_url_tag = s;
 }
 
 ON_UUID ON_InstanceDefinition::Uuid() const
@@ -478,9 +652,12 @@ const wchar_t* ON_InstanceDefinition::Description() const
 
 void ON_InstanceDefinition::SetDescription( const wchar_t* description )
 {
-  m_description = description;
-  m_description.TrimLeft();
-  m_description.TrimRight();
+  ON_wString s(description);
+  s.TrimLeftAndRight();
+  if ( s.IsEmpty() )
+    m_description.Destroy();
+  else
+    m_description = s;
 }
 
 void ON_InstanceDefinition::SetBoundingBox( ON_BoundingBox bbox )
@@ -488,18 +665,41 @@ void ON_InstanceDefinition::SetBoundingBox( ON_BoundingBox bbox )
   m_bbox = bbox;
 }
 
-void ON_InstanceDefinition::SetSourceArchive( const wchar_t* source_archive, 
-                                              ON_CheckSum checksum,
-                                              ON_InstanceDefinition::IDEF_UPDATE_TYPE idef_update_type)
+void ON_InstanceDefinition::SetSourceArchive(
+        const wchar_t* source_archive, 
+        ON_CheckSum checksum,
+        ON_InstanceDefinition::IDEF_UPDATE_TYPE idef_update_type
+        )
 {
-  ON_wString s = source_archive;
-  s.TrimLeftAndRight();
-  m_source_archive = s;
-  m_source_archive_checksum = checksum;
-  if ( m_source_archive.IsEmpty() )
-    m_idef_update_type = ON_InstanceDefinition::static_def;
+  ON_wString s(source_archive);
+  s.TrimLeftAndRight();  
+  if ( s.IsEmpty() )
+  {
+    DestroySourceArchive();
+  }
   else
+  {
+    SetAlternateSourceArchivePath(0,false);
+    m_source_archive = s;
+    m_source_bRelativePath = false;
+    m_source_archive_checksum = checksum;
     m_idef_update_type = ON_InstanceDefinition::IdefUpdateType(idef_update_type);
+    if ( ON_InstanceDefinition::linked_def != m_idef_update_type )
+    {
+      m_idef_layer_style = 0;
+    }
+  }
+}
+
+void ON_InstanceDefinition::DestroySourceArchive()
+{
+  m_source_archive.Destroy();
+  m_source_archive_checksum.Zero();
+  m_source_bRelativePath = false;
+  m_idef_update_type = ON_InstanceDefinition::static_def;
+  m_idef_layer_style = 0;
+  m_idef_update_depth = 0;
+  SetAlternateSourceArchivePath(0,false);
 }
 
 const wchar_t* ON_InstanceDefinition::SourceArchive() const
@@ -819,7 +1019,7 @@ ON__IDefLayerSettingsUserData* ON__IDefLayerSettingsUserData::FindOrCreate(const
 ON__IDefLayerSettingsUserData::ON__IDefLayerSettingsUserData()
 {
   m_userdata_uuid = ON__IDefLayerSettingsUserData::m_ON__IDefLayerSettingsUserData_class_id.Uuid();
-  m_application_uuid = ON_opennurbs_id;
+  m_application_uuid = ON_opennurbs5_id;
   m_userdata_copycount = 1;
   CreateHelper();
 }
@@ -833,7 +1033,7 @@ ON__IDefLayerSettingsUserData::ON__IDefLayerSettingsUserData(const ON__IDefLayer
 : ON_UserData(src)
 {
   m_userdata_uuid = ON__IDefLayerSettingsUserData::m_ON__IDefLayerSettingsUserData_class_id.Uuid();
-  m_application_uuid = ON_opennurbs_id;
+  m_application_uuid = ON_opennurbs5_id;
   CreateHelper();
   CopyHelper(src);
 }
@@ -1337,7 +1537,7 @@ ON__IDefAlternativePathUserData* ON__IDefAlternativePathUserData::FindOrCreate(c
 ON__IDefAlternativePathUserData::ON__IDefAlternativePathUserData()
 {
   m_userdata_uuid = ON__IDefAlternativePathUserData::m_ON__IDefAlternativePathUserData_class_id.Uuid();
-  m_application_uuid = ON_opennurbs_id;
+  m_application_uuid = ON_opennurbs5_id;
   m_userdata_copycount = 1;
   CreateHelper();
 }
@@ -1351,7 +1551,7 @@ ON__IDefAlternativePathUserData::ON__IDefAlternativePathUserData(const ON__IDefA
 : ON_UserData(src)
 {
   m_userdata_uuid = ON__IDefAlternativePathUserData::m_ON__IDefAlternativePathUserData_class_id.Uuid();
-  m_application_uuid = ON_opennurbs_id;
+  m_application_uuid = ON_opennurbs5_id;
   CreateHelper();
   CopyHelper(src);
 }
@@ -1459,8 +1659,15 @@ void ON_InstanceDefinition::SetAlternateSourceArchivePath(
       bool bRelativePath
       )
 {
-  if ( 0 != alternate_source_archive_path && 0 == alternate_source_archive_path[0] )
-    alternate_source_archive_path = 0;
+  ON_wString s;
+  if ( 0 != alternate_source_archive_path )
+  {
+    s = alternate_source_archive_path;
+    s.TrimLeftAndRight();
+    alternate_source_archive_path = s;
+    if ( 0 != alternate_source_archive_path && 0 == alternate_source_archive_path[0] )
+      alternate_source_archive_path = 0;
+  }
   ON__IDefAlternativePathUserData* ud = ON__IDefAlternativePathUserData::FindOrCreate(*this,0!=alternate_source_archive_path);
   if ( 0 != ud )
   {

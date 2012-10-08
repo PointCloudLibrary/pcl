@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -142,22 +142,6 @@ public:
   ////////////////////////////////////////////////////////////////////
   // surface interface
 
-  /*
-  Description:
-    Computes a polygon mesh approximation of the surface.    
-  Parameters:
-    mp - [in] meshing parameters
-    mesh - [in] if not NULL, the surface mesh will be put
-                into this mesh.
-  Returns:
-    A polygon mesh of the surface.
-  Remarks:
-    This virtual function works in the openNURBS that is
-    part of the Rhino SDK.  The source code for this 
-    functionallity is not provided in the free openNURBS
-    toolkit.
-  */
-
   ON_BOOL32 GetDomain( 
          int dir,              // 0 gets first parameter, 1 gets second parameter
          double* t0,
@@ -180,6 +164,35 @@ public:
   ON_Interval Domain(
     int dir // 0 gets first parameter's domain, 1 gets second parameter's domain
     ) const = 0;
+
+  /*
+  Description:
+    Get an estimate of the size of the rectangle that would
+    be created if the 3d surface where flattened into a rectangle.
+  Parameters:
+    width - [out]  (corresponds to the first surface parameter)
+    height - [out] (corresponds to the first surface parameter)
+  Example:
+
+          // Reparameterize a surface to minimize distortion 
+          // in the map from parameter space to 3d.
+          ON_Surface* surf = ...;
+          double width, height;
+          if ( surf->GetSurfaceSize( &width, &height ) )
+          {
+            srf->SetDomain( 0, ON_Interval( 0.0, width ) );
+            srf->SetDomain( 1, ON_Interval( 0.0, height ) );
+          }
+
+  Returns:
+    true if successful.
+  */
+  virtual
+  ON_BOOL32 GetSurfaceSize( 
+      double* width, 
+      double* height 
+      ) const;
+
 
   virtual 
   int SpanCount(
@@ -826,8 +839,55 @@ public:
         double surface_s, double surface_t,
         double* nurbs_s,  double* nurbs_t
         ) const;
+
+
+  // If the geometry surface is modified in any way, then
+  // call DestroySurfaceTree().
+  void DestroySurfaceTree();
 };
 
+class ON_CLASS ON_SurfaceProperties
+{
+  // Surface properties
+public:
+  // The constructor sets all fields to zero.
+  ON_SurfaceProperties();
+
+  /*
+  Parameters:
+    surface - [in]
+      If surface is not null, then it is used to set the surface properties.
+      If surface is null, then all surface properties are set to to zero.
+  Remarks:
+    Does not modify the value of m_tag.
+  */
+  void Set( const ON_Surface* surface );
+
+  bool m_bIsSet;           // True if Set() has been callled with a non-null surface.
+
+  bool m_bHasSingularity;  // true if at least one m_bSingular[] setting is true.
+  bool m_bIsSingular[4];   // m_bSingular[i] = ON_Surface::IsSingular(i)
+
+  bool m_bHasSeam;         // true if at least one m_bClosed[] setting is true.
+  bool m_bIsClosed[2];     // m_bClosed[i] = ON_Surface::IsClosed(i)
+
+private:
+  bool m_bReserved[7];
+
+public:
+  ON_Interval m_domain[2]; // m_domain[i] = ON_Surface.Domain(i)
+
+private:
+  unsigned char m_reserved[16];
+
+public:
+  // Last pointer passed to ON_SurfaceProperties::Set().
+  const ON_Surface* m_surface;
+
+  // The constructor sets this value to zero.
+  // Nothing in opennurbs modifies or uses this value.
+  ON__INT_PTR m_tag;
+};
 
 #if defined(ON_DLL_TEMPLATE)
 // This stuff is here because of a limitation in the way Microsoft
@@ -853,12 +913,6 @@ public:
   ON_BOOL32 Duplicate( ON_SurfaceArray& ) const; // operator= copies the pointer values
                                      // duplicate copies the surfaces themselves
 };
-
-ON_DECL
-double ON_ClosestPointAngle(const ON_Line&, const ON_Curve&, ON_Interval,const ON_3dPoint&,ON_3dPoint&, double*, double* );
-
-ON_DECL
-double ON_GetFittingTolerance( const class ON_SurfaceTreeNode* snodeA, const class ON_SurfaceTreeNode* snodeB, double intersection_tolerance, double fitting_tolerance );
 
 
 #endif

@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -119,9 +119,30 @@ public:
          const ON_Xform&
          );
 
+  /////////////////////////////////////////////////////////////////
+  // ON_Surface overrides
+
   ON_Interval Domain(
     int // 0 gets first parameter's domain, 1 gets second parameter's domain
     ) const;
+
+
+  /*
+  Description:
+    Get an estimate of the size of the rectangle that would
+    be created if the 3d surface where flattened into a rectangle.
+  Parameters:
+    width - [out]  (corresponds to the first surface parameter)
+    height - [out] (corresponds to the first surface parameter)
+  Remarks:
+    overrides virtual ON_Surface::GetSurfaceSize
+  Returns:
+    true if successful.
+  */
+  ON_BOOL32 GetSurfaceSize( 
+      double* width, 
+      double* height 
+      ) const;
 
   int SpanCount(
     int // 0 gets first parameter's domain, 1 gets second parameter's domain

@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -14,7 +14,7 @@
 ////////////////////////////////////////////////////////////////
 */
 
-#include <pcl/surface/3rdparty/opennurbs/opennurbs.h>
+#include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
 
 // wide char (unicode) <-> char (ascii) converter
 static int w2c_size( int, const wchar_t* ); // gets minimum "c_count" arg for w2c().
@@ -133,7 +133,8 @@ static int c2w( int c_count,
 
 void ON_String::CopyToArray( int w_count, const wchar_t* w )
 {
-  // convert UTF-16 string to UTF-8 string
+  // if sizeof(wchar_t) is 2, this converts a UTF-16 string to UTF-8 string
+  // if sizeof(wchar_t) is 4, this converts a UTF-32 string to UTF-8 string
   int c_count = w2c_size( w_count, w );
   char* c = (char*)onmalloc(c_count+1);
   memset( c, 0, c_count+1 );
@@ -433,6 +434,7 @@ ON_wString::~ON_wString()
 ON_wString::ON_wString(const ON_wString& src)
 {
 	if (    src.Header()->ref_count > 0 
+       && 0 == ON_WorkerMemoryPool()
        )	
   {
 		m_s = src.m_s;
@@ -590,6 +592,7 @@ const ON_wString& ON_wString::operator=(const ON_wString& src)
       Create();
     }
     else if (    src.Header()->ref_count > 0 
+              && 0 == ON_WorkerMemoryPool()
             ) 
     {
       Destroy();
@@ -1060,40 +1063,40 @@ bool ON_wString::WildCardMatchNoCase( const wchar_t* pattern ) const
 }
 
 /*
-static TestReplace()
+static TestReplace( ON_TextLog* text_log )
 {
   int len, len1, len2, i, count, gap, k, i0, repcount, replen;
   ON_wString str;
 
   bool bRepeat = false;
 
-  wchar_t s[1024], token1[1024], token2[1024];
+  wchar_t ws[1024], wsToken1[1024], wsToken2[1024];
 
-  memset(s,     0,1024*sizeof(s[0]));
-  memset(token1,0,1024*sizeof(token1[0]));
-  memset(token2,0,1024*sizeof(token2[0]));
+  memset(ws,     0,sizeof(ws));
+  memset(wsToken1,0,sizeof(wsToken1));
+  memset(wsToken2,0,sizeof(wsToken2));
 
 	for ( len = 1; len < 32; len++ )
   {
     for ( len1 = 1; len1 < len+1; len1++ )
     {
       if ( len1 > 0 )
-        token1[0] = '<';
+        wsToken1[0] = '<';
       for ( i = 1; i < len1-1; i++ )
-        token1[i] = '-';
+        wsToken1[i] = '-';
       if ( len1 > 1 )
-        token1[len1-1] = '>';
-      token1[len1] = 0;
+        wsToken1[len1-1] = '>';
+      wsToken1[len1] = 0;
 
       for ( len2 = 1; len2 < len1+5; len2++ )
       {
         if ( len2 > 0 )
-          token2[0] = '+';
+          wsToken2[0] = '+';
         for ( i = 1; i < len2-1; i++ )
-          token2[i] = '=';
+          wsToken2[i] = '=';
         if ( len2 > 1 )
-          token2[len2-1] = '*';
-        token2[len2] = 0;
+          wsToken2[len2-1] = '*';
+        wsToken2[len2] = 0;
 
         for ( k = 1; k*len1 <= len+1; k++ )
         {
@@ -1107,23 +1110,26 @@ static TestReplace()
           {
             for ( i = 0; i < len; i++ )
             {
-              s[i] = (wchar_t)('a' + (i%26));
+              ws[i] = (wchar_t)('a' + (i%26));
             }
-            s[len] = 0;
+            ws[len] = 0;
             count = 0;
             for ( i = i0; i+len1 <= len; i += (gap+len1) )
             {
-              memcpy(&s[i],token1,len1*sizeof(s[0]));
+              memcpy(&ws[i],wsToken1,len1*sizeof(ws[0]));
               count++;
             }
-            str = s;
-            repcount = str.Replace(token1,token2);
+            str = ws;
+            repcount = str.Replace(wsToken1,wsToken2);
             replen = str.Length();
             if ( repcount != count || replen != len + count*(len2-len1) )
             {
-              RhinoApp().Print(L"%s -> %s failed\n",token1,token2);
-              RhinoApp().Print(L"%s (%d tokens, %d chars)\n",s,count,len);
-              RhinoApp().Print(L"%s (%d tokens, %d chars)\n",str.Array(),repcount,replen);
+              if ( text_log )
+              {
+                text_log->Print("%ls -> %ls failed\n",wsToken1,wsToken2);
+                text_log->Print("%ls (%d tokens, %d chars)\n",ws,count,len);
+                text_log->Print("%ls (%d tokens, %d chars)\n",str.Array(),repcount,replen);
+              }
               if ( bRepeat )
               {
                 bRepeat = false;
@@ -1997,3 +2003,203 @@ bool ON_wString::operator>=(const wchar_t* s2) const
 {
   return (Compare(s2) >= 0) ? true : false;
 }
+
+
+void ON_String::SplitPath( 
+    const char* path,
+    ON_String* drive,
+    ON_String* dir,
+    ON_String* fname,
+    ON_String* ext
+    )
+{
+  const char* dr = 0;
+  const char* d = 0;
+  const char* f = 0;
+  const char* e = 0;
+
+  on_splitpath(path,&dr,&d,&f,&e);
+
+  if ( 0 != drive )
+  {
+    if ( 0 != dr )
+    {
+      if ( 0 != d )
+        drive->CopyToArray((int)(d-dr),dr);
+      else if ( 0 != f )
+        drive->CopyToArray((int)(f-dr),dr);
+      else if ( 0 != e )
+        drive->CopyToArray((int)(e-dr),dr);
+      else
+        *drive = dr;
+    }
+    else
+      drive->Empty();
+  }
+
+  if ( 0 != dir )
+  {
+    if ( 0 != d )
+    {
+      if ( 0 != f )
+        dir->CopyToArray((int)(f-d),d);
+      else if ( 0 != e )
+        dir->CopyToArray((int)(e-d),d);
+      else
+        *dir = d;
+    }
+    else
+      dir->Empty();
+  }
+
+  if ( 0 != fname )
+  {
+    if ( 0 != f )
+    {
+      if ( 0 != e )
+        fname->CopyToArray((int)(e-f),f);
+      else
+        *fname = f;
+    }
+    else
+      fname->Empty();
+  }
+
+  if ( 0 != ext )
+  {
+    *ext = e;
+  }
+}
+
+void ON_wString::SplitPath( 
+    const char* path,
+    ON_wString* drive,
+    ON_wString* dir,
+    ON_wString* fname,
+    ON_wString* ext
+    )
+{
+  const char* dr = 0;
+  const char* d = 0;
+  const char* f = 0;
+  const char* e = 0;
+
+  on_splitpath(path,&dr,&d,&f,&e);
+
+  if ( 0 != drive )
+  {
+    if ( 0 != dr )
+    {
+      if ( 0 != d )
+        drive->CopyToArray((int)(d-dr),dr);
+      else if ( 0 != f )
+        drive->CopyToArray((int)(f-dr),dr);
+      else if ( 0 != e )
+        drive->CopyToArray((int)(e-dr),dr);
+      else
+        *drive = dr;
+    }
+    else
+      drive->Empty();
+  }
+
+  if ( 0 != dir )
+  {
+    if ( 0 != d )
+    {
+      if ( 0 != f )
+        dir->CopyToArray((int)(f-d),d);
+      else if ( 0 != e )
+        dir->CopyToArray((int)(e-d),d);
+      else
+        *dir = d;
+    }
+    else
+      dir->Empty();
+  }
+
+  if ( 0 != fname )
+  {
+    if ( 0 != f )
+    {
+      if ( 0 != e )
+        fname->CopyToArray((int)(e-f),f);
+      else
+        *fname = f;
+    }
+    else
+      fname->Empty();
+  }
+
+  if ( 0 != ext )
+  {
+    *ext = e;
+  }
+}
+
+void ON_wString::SplitPath( 
+    const wchar_t* path,
+    ON_wString* drive,
+    ON_wString* dir,
+    ON_wString* fname,
+    ON_wString* ext
+    )
+{
+  const wchar_t* dr = 0;
+  const wchar_t* d = 0;
+  const wchar_t* f = 0;
+  const wchar_t* e = 0;
+
+  on_wsplitpath(path,&dr,&d,&f,&e);
+
+  if ( 0 != drive )
+  {
+    if ( 0 != dr )
+    {
+      if ( 0 != d )
+        drive->CopyToArray((int)(d-dr),dr);
+      else if ( 0 != f )
+        drive->CopyToArray((int)(f-dr),dr);
+      else if ( 0 != e )
+        drive->CopyToArray((int)(e-dr),dr);
+      else
+        *drive = dr;
+    }
+    else
+      drive->Empty();
+  }
+
+  if ( 0 != dir )
+  {
+    if ( 0 != d )
+    {
+      if ( 0 != f )
+        dir->CopyToArray((int)(f-d),d);
+      else if ( 0 != e )
+        dir->CopyToArray((int)(e-d),d);
+      else
+        *dir = d;
+    }
+    else
+      dir->Empty();
+  }
+
+  if ( 0 != fname )
+  {
+    if ( 0 != f )
+    {
+      if ( 0 != e )
+        fname->CopyToArray((int)(e-f),f);
+      else
+        *fname = f;
+    }
+    else
+      fname->Empty();
+  }
+
+  if ( 0 != ext )
+  {
+    *ext = e;
+  }
+}
+

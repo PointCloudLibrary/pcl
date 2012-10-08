@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -14,7 +14,7 @@
 ////////////////////////////////////////////////////////////////
 */
 
-#include <pcl/surface/3rdparty/opennurbs/opennurbs.h>
+#include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
 
 ON_COMPONENT_INDEX::ON_COMPONENT_INDEX() 
                    : m_type(ON_COMPONENT_INDEX::invalid_type),
@@ -34,7 +34,7 @@ ON_COMPONENT_INDEX::ON_COMPONENT_INDEX(
 ON_COMPONENT_INDEX::TYPE ON_COMPONENT_INDEX::Type(int i)
 {
   TYPE t = invalid_type;
-  switch(i)
+  switch((unsigned int)i)
   {
   case no_type:            t = no_type;            break;
   case brep_vertex:        t = brep_vertex;        break;
@@ -712,6 +712,9 @@ const ON_Brep* ON_BrepParent( const ON_Geometry* geo )
 {
   const ON_Brep* brep = 0;
 
+  if ( geo == NULL )
+    return NULL;
+
   if  ( ON::brep_object == geo->ObjectType() )
   {
     brep = ON_Brep::Cast(geo);
@@ -766,6 +769,9 @@ const ON_Brep* ON_BrepParent( const ON_Geometry* geo )
 const ON_Mesh* ON_MeshParent( const ON_Geometry* geo )
 {
   const ON_Mesh* mesh = 0;
+
+  if ( geo == NULL )
+    return NULL;
 
   if  ( ON::mesh_object == geo->ObjectType() )
   {
@@ -1016,7 +1022,10 @@ void ON_ObjRef::SetProxy(
   m__proxy2 = proxy2;
   if ( bCountReferences && (m__proxy1 || m__proxy2) )
   {
-    m__proxy_ref_count = (int*)onmalloc(sizeof(*m__proxy_ref_count));
+    m__proxy_ref_count = (int*)onmalloc_from_pool( 
+          ON_MainMemoryPool(), 
+          sizeof(*m__proxy_ref_count) 
+          );
     *m__proxy_ref_count = 1;
   }
 }

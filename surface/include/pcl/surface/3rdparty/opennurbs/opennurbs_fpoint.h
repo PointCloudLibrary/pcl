@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -127,6 +127,8 @@ public:
   // index operators mimic float[2] behavior
   float& operator[](int);
   float operator[](int) const;
+  float& operator[](unsigned int);
+  float operator[](unsigned int) const;
 
   // set 2d point value
   void Set(float,float);
@@ -258,6 +260,8 @@ public:
   // index operators mimic float[3] behavior
   float& operator[](int);
   float operator[](int) const;
+  float& operator[](unsigned int);
+  float operator[](unsigned int) const;
 
   // set 3d point value
   void Set(float,float,float);
@@ -363,6 +367,8 @@ public:
   // index operators mimic float[4] behavior
   float& operator[](int);
   float operator[](int) const;
+  float& operator[](unsigned int);
+  float operator[](unsigned int) const;
 
   // set 4d point value
   void Set(float,float,float,float);
@@ -491,6 +497,8 @@ public:
   // index operators mimic float[2] behavior
   float& operator[](int);
   float operator[](int) const;
+  float& operator[](unsigned int);
+  float operator[](unsigned int) const;
 
   // set 2d vector value
   void Set(float,float);
@@ -726,6 +734,8 @@ public:
   // index operators mimic float[3] behavior
   float& operator[](int);
   float operator[](int) const;
+  float& operator[](unsigned int);
+  float operator[](unsigned int) const;
 
   // set 3d vector value
   void Set(float,float,float);

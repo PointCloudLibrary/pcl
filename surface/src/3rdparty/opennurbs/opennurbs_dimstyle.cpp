@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -14,7 +14,7 @@
 ////////////////////////////////////////////////////////////////
 */
 
-#include <pcl/surface/3rdparty/opennurbs/opennurbs.h>
+#include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
 
 /*
 Changes and additions 5/01/07 LW
@@ -730,11 +730,11 @@ ON_BOOL32 ON_DimStyle::IsValid( ON_TextLog* text_log ) const
 
 void ON_DimStyle::Dump( ON_TextLog& dump ) const
 {
-  const wchar_t* name = m_dimstyle_name;
-  if ( !name )
-    name = L"";
+  const wchar_t* wsName = m_dimstyle_name;
+  if ( !wsName )
+    wsName = L"";
   dump.Print("dimstyle index = %d\n",m_dimstyle_index);
-  dump.Print("dimstyle name = \"%S\"\n",name);
+  dump.Print("dimstyle name = \"%ls\"\n",wsName);
 }
 
 ON_BOOL32 ON_DimStyle::Write(

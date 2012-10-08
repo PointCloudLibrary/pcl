@@ -13,8 +13,7 @@
 #endif
 
 #if !defined(ON_MSC_SOLUTION_DIR)
-// ON_MSC_SOLUTION_DIR must have a trailing slash
-#define ON_MSC_SOLUTION_DIR "../"
+#define ON_MSC_SOLUTION_DIR ".."
 #endif
 
 #if !defined(ON_MSC_LIB_DIR)
@@ -26,12 +25,12 @@
 #if defined(NDEBUG)
 
 // Release x64 (64 bit) libs
-#define ON_MSC_LIB_DIR "x64/Release/"
+#define ON_MSC_LIB_DIR "x64/Release"
 
 #else // _DEBUG
 
 // Debug x64 (64 bit) libs
-#define ON_MSC_LIB_DIR "x64/Debug/"
+#define ON_MSC_LIB_DIR "x64/Debug"
 
 #endif // NDEBUG else _DEBUG
 
@@ -42,12 +41,12 @@
 #if defined(NDEBUG)
 
 // Release x86 (32 bit) libs
-#define ON_MSC_LIB_DIR "Release/"
+#define ON_MSC_LIB_DIR "Release"
 
 #else // _DEBUG
 
 // Debug x86 (32 bit) libs
-#define ON_MSC_LIB_DIR "Debug/"
+#define ON_MSC_LIB_DIR "Debug"
 
 #endif // NDEBUG else _DEBUG
 
@@ -57,11 +56,11 @@
 
 #if defined(ON_DLL_IMPORTS)
 #pragma message( " --- dynamically linking opennurbs (DLL)." )
-#pragma comment(lib, "\"" ON_MSC_SOLUTION_DIR ON_MSC_LIB_DIR "opennurbs.lib" "\"")
+#pragma comment(lib, "\"" ON_MSC_SOLUTION_DIR "/" ON_MSC_LIB_DIR "/" "opennurbs.lib" "\"")
 #else
 #pragma message( " --- statically linking opennurbs." )
-#pragma comment(lib, "\"" ON_MSC_SOLUTION_DIR ON_MSC_LIB_DIR "zlib.lib" "\"")
-#pragma comment(lib, "\"" ON_MSC_SOLUTION_DIR ON_MSC_LIB_DIR "opennurbs_staticlib.lib" "\"")
+#pragma comment(lib, "\"" ON_MSC_SOLUTION_DIR "/" ON_MSC_LIB_DIR "/" "zlib.lib" "\"")
+#pragma comment(lib, "\"" ON_MSC_SOLUTION_DIR "/" ON_MSC_LIB_DIR "/" "opennurbs_staticlib.lib" "\"")
 #endif
 
 

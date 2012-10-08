@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -158,6 +158,46 @@ public:
   */
   static bool GetReferenceName( const wchar_t* layer_name, ON_wString& reference_name );
 
+  // The PER_VIEWPORT_SETTINGS enum defines
+  // the bits used to set masks in functions used
+  // to specify and query per viewport layer settings.
+  enum PER_VIEWPORT_SETTINGS
+  {
+    per_viewport_none              =  0,
+
+    per_viewport_id               =  1,
+    per_viewport_color            =  2,
+    per_viewport_plot_color       =  4,
+    per_viewport_plot_weight      =  8,
+    per_viewport_visible          = 16,
+    per_viewport_persistent_visibility = 32,
+
+    per_viewport_all_settings     = 0xFFFFFFFF
+    // (Developers: these values are used in file IO and must not be changed.)
+  };
+
+ /*
+  Parameters:
+    viewport_id - [in]
+      If viewport_id is not nil, then checks for per viewport
+      settings for that specific viewport.
+      If viewport_id is nil, then checks for per viewport settings
+      in any viewport.
+    settings_mask - [in]
+      settings_mask is a bitfield that specifies which settings
+      to check for.  The bits are defined in the
+      ON_Layer::PER_VIEWPORT_PROPERTIES enum.  If you want to 
+      determine if the layer has any per viewport settings,
+      then pass 0xFFFFFFFF.
+  Returns:
+    True if the layer has per viewport override for the specified
+    settings.
+  */
+  bool HasPerViewportSettings(
+    ON_UUID viewport_id,
+    unsigned int settings_mask
+    ) const;
+
   /*
   Parameters:
     viewport_id - [in]
@@ -171,19 +211,49 @@ public:
     const ON_UUID& viewport_id
     ) const;
 
+
   /*
   Description:
-    Copies all per viewport settings
+    Copies all per viewport settings for the source_viewport_id
   Parameters:
-    source - [in]
+    source_viewport_id - [in]
       viewport id to copy all per viewport settings from
-    destination - [in]
+    destination_viewport_id - [in]
       viewport od to copy all per viewport settings to
   Returns:
     True if the settings could be copied, False if no per-viewport
     settings exist for the source viewport id
   */
-  bool CopyPerViewportSettings(ON_UUID source, ON_UUID destination);
+  bool CopyPerViewportSettings( 
+    ON_UUID source_viewport_id,
+    ON_UUID destination_viewport_id
+    );
+
+
+  /*
+  Description:
+    Copies specified per viewport settings from a source layer to this
+    layer.
+  Parameters:
+    source_layer - [in]
+      layer to copy settings from
+    viewport_id - [in]
+      viewport id to copy all per viewport settings from.
+      If viewport_id is nil, then the per viewport settings
+      for all viewports will be copied.
+    settings_mask - [in]
+      bits indicate which settings to copy
+      Use the ON_Layer PER_VIEWPORT_SETTINGS enum to
+      set the bits.
+  Returns:
+    True if the settings were copied, False if no per-viewport
+    settings exist for the specified viewport_id.
+  */
+  bool CopyPerViewportSettings( 
+    const ON_Layer& source_layer,
+    ON_UUID viewport_id,
+    unsigned int settings_mask
+    );
 
   /*
   Description:
@@ -219,7 +289,6 @@ public:
   */
   ON__UINT32 PerViewportSettingsCRC() const;
 
-
   /*
   Description:
     Set the color used by objects on this layer that do
@@ -232,7 +301,22 @@ public:
       to the viewport with the specified id.
   */
 	void SetColor( ON_Color layer_color ); // layer display color
-  void SetColor( ON_Color layer_color, const ON_UUID& viewport_id );
+
+  /*
+  Description:
+    Set the color used by objects on this layer that do
+    not have a per object color set
+  Parameters:
+    viewport_id - [in]
+      If viewport_id is not nil, then the setting applies only
+      to the viewport with the specified id.
+    layer_color - [in]
+      Passing ON_UNSET_COLOR will clear the settings.
+  */
+  void SetPerViewportColor( ON_UUID viewport_id, ON_Color layer_color );
+
+  /* use ON_Layer::SetPerViewportColor */
+  ON_DEPRECATED void SetColor( ON_Color, const ON_UUID& );
 
   /*
   Parameters:
@@ -244,7 +328,20 @@ public:
     not have a per object color set.
   */
 	ON_Color Color() const;
-	ON_Color Color( const ON_UUID& viewport_id ) const;
+
+  /*
+  Parameters:
+    viewport_id - [in]
+      If viewport_id is not nil, then the setting to use
+      for a specific viewport is returned.
+  Returns:
+    The color used by objects in the specified viewport and
+    on this layer that do not have a per object color set.
+  */
+  ON_Color PerViewportColor( ON_UUID viewport_id ) const;
+
+  /* use ON_Layer::PerViewportColor */
+	ON_DEPRECATED ON_Color Color( const ON_UUID& ) const;
 
   /*
   Description:
@@ -270,7 +367,18 @@ public:
       to the viewport with the specified id.
   */
 	void SetPlotColor( ON_Color plot_color ); // plotting color
-	void SetPlotColor( ON_Color plot_color, const ON_UUID& viewport_id ); // plotting color
+
+  void SetPerViewportPlotColor( ON_UUID viewport_id, ON_Color plot_color );
+
+  /* use ON_Layer::SetPerViewportPlotColor */
+  ON_DEPRECATED	void SetPlotColor( ON_Color, const ON_UUID& ); 
+
+  /*
+  Returns:
+    The plotting color used by objects on this layer that do
+    not have a per object color set.
+  */
+	ON_Color PlotColor() const;
 
   /*
   Parameters:
@@ -281,8 +389,10 @@ public:
     The plotting color used by objects on this layer that do
     not have a per object color set.
   */
-	ON_Color PlotColor() const;
-	ON_Color PlotColor( const ON_UUID& viewport_id ) const;
+	ON_Color PerViewportPlotColor( ON_UUID viewport_id ) const;
+  
+  /* use ON_Layer::PerViewportPlotColor */
+  ON_DEPRECATED	ON_Color PlotColor( const ON_UUID& ) const;
 
   /*
   Description:
@@ -324,18 +434,6 @@ public:
   bool IsVisible() const;
 
   /*
-  Returns:
-    Returns true if objects on layer are visible.
-  Parameters:
-    viewport_id - [in]
-      If viewport_id is not nil, then the visibility setting
-      for that viewport is returned.  If viewport_id
-      is nil, then true is returned if the layer is visible
-      in some viewport.
-  */
-	bool IsVisible( const ON_UUID& viewport_id ) const;
-
-  /*
   Description:
     Controls layer visibility
   Parameters:
@@ -348,7 +446,137 @@ public:
     ON_Layer::IsVisible
   */
   void SetVisible( bool bVisible );
-  void SetVisible( bool bVisible, const ON_UUID& viewport_id );
+
+  /*
+  Description:
+    The persistent visbility setting is used for layers whose
+    visibilty can be changed by a "parent" object. A common case
+    is when a layer is a child layer (ON_Layer.m_parent_id is
+    not nil). In this case, when a parent layer is turned off,
+    then child layers are also turned off. The persistent
+    visibility setting determines what happens when the parent
+    is turned on again.
+  Returns:
+    true: 
+      If this layer's visibility is controlled by a parent object
+      and the parent is turned on (after being off), then this
+      layer will also be turned on.
+    false:
+      If this layer's visibility is controlled by a parent object
+      and the parent layer is turned on (after being off), then
+      this layer will continue to be off.
+  Remarks:
+    When the persistent visbility is not explicitly set, this
+    function returns the current value of IsVisible().
+  See Also:
+    ON_Layer::SetPersistentVisibility
+    ON_Layer::UnsetPersistentVisibility
+  */
+  bool PersistentVisibility() const;
+
+  /*
+  Description:
+    Set the persistent visibility setting for this layer.
+  Parameters:
+    bPersistentVisibility - [in]
+      persistent visibility setting for this layer.
+  Remarks:
+    See ON_Layer::PersistentVisibility for a detailed description
+    of persistent visibility.
+  See Also:
+    ON_Layer::PersistentVisibility
+    ON_Layer::UnsetPersistentVisibility
+  */
+  void SetPersistentVisibility( bool bPersistentVisibility );
+
+  /*
+  Description:
+    Remove any explicit persistent visibility setting from this
+    layer. When persistent visibility is not explictly set,
+    the value of ON_Layer::IsVisible() is used.
+  Remarks:
+    See ON_Layer::PersistentVisibility for a detailed description
+    of persistent visibility.
+  See Also:
+    ON_Layer::PersistentVisibility
+    ON_Layer::SetPersistentVisibility
+  */
+  void UnsetPersistentVisibility();
+    
+  /*
+  Parameters:
+    viewport_id - [in]
+      If viewport_id is not nil, then the visibility setting
+      for that viewport is returned.  If viewport_id
+      is nil, then true is returned if the layer is visible
+      in some viewport.
+  Returns:
+    Returns true if objects on layer are visible.
+  */
+	bool PerViewportIsVisible( ON_UUID viewport_id ) const;	
+
+  /* use ON_Layer::PerViewportIsVisible */ 
+  ON_DEPRECATED bool IsVisible( const ON_UUID& ) const; 
+
+  /*
+  Description:
+    Controls layer visibility in specific viewports.
+  Parameters:
+    viewport_id - [in]
+      If viewport_id is not nil, then the setting applies only
+      to the viewport with the specified id.  If viewport_id
+      is nil, then the setting applies to all viewports with
+      per viewport layer settings.
+    bVisible - [in] true to make layer visible, 
+                    false to make layer invisible
+  See Also:
+    ON_Layer::IsVisibleInViewport()
+  */
+  void SetPerViewportVisible( ON_UUID viewport_id, bool bVisible );
+  
+  /* use ON_Layer::SetPerViewportVisible */ 
+  ON_DEPRECATED void SetVisible( bool, const ON_UUID& );
+
+  /*
+  Parameters:
+    viewport_id - [in]
+      id of a viewport.  If viewport_id is nil, then 
+      ON_Layer::PersistentVisibility() is returned.
+  Returns:
+    true: 
+      If this layer's visibility in the specified viewport is 
+      controlled by a parent object and the parent is turned on
+      (after being off), then this layer will also be turned on
+      in the specified viewport.
+    false:
+      If this layer's visibility in the specified viewport is
+      controlled by a parent object and the parent layer is 
+      turned on (after being off), then this layer will continue
+      to be off in the specified viewport.
+  Remarks:
+    See ON_Layer::SetPersistentVisibility
+    for a description of persistent visibility.
+  See Also:
+    ON_Layer::SetPerViewportPersistentVisibility
+  */
+  bool PerViewportPersistentVisibility( ON_UUID viewport_id ) const;
+
+  /*
+  Description:
+    This function allows per viewport setting the
+    child visibility property.
+  Parameters
+    viewport_id - [in]
+    bPersistentVisibility - [in]
+  Remarks:
+    See ON_Layer::SetPersistentVisibility
+    for a description of the child visibility property.
+  See Also:
+    ON_Layer::SetPersistentVisibility
+  */
+  void SetPerViewportPersistentVisibility( ON_UUID viewport_id, bool bPersistentVisibility );
+
+  void UnsetPerViewportPersistentVisibility( ON_UUID viewport_id );    
 
   /*
   Description:
@@ -361,6 +589,24 @@ public:
       the all per viewport visibility settings will be removed.
   */
   void DeletePerViewportVisible( const ON_UUID& viewport_id );
+
+  /*
+  Description:
+    Get a list of the viewport ids of viewports that 
+    that have per viewport visibility settings that
+    override the default layer visibility setting 
+    ON_Layer::m_bVisible.
+  Parameters:
+    viewport_id_list - [out]
+      List of viewport id's that have a per viewport visibility
+      setting.  If the returned list is empty, then there
+      are no per viewport visibility settings.
+  Returns:
+    Number of ids added to the list.
+  */
+  void GetPerViewportVisibilityViewportIds(
+    ON_SimpleArray<ON_UUID>& viewport_id_list
+    ) const;
 
   /*
   Returns:
@@ -380,6 +626,60 @@ public:
     ON_Layer::IsLocked
   */
   void SetLocked( bool bLocked );
+
+  /*
+  Description:
+    The persistent locking setting is used for layers that can
+    be locked by a "parent" object. A common case is when a layer
+    is a child layer (ON_Layer.m_parent_id is not nil). In this 
+    case, when a parent layer is locked, then child layers are 
+    also locked. The persistent locking setting determines what
+    happens when the parent is unlocked again.
+  Returns:
+    true: 
+      If this layer's locking is controlled by a parent object
+      and the parent is unlocked (after being locked), then this
+      layer will also be unlocked.
+    false:
+      If this layer's locking is controlled by a parent object
+      and the parent layer is unlocked (after being locked), then
+      this layer will continue to be locked.
+  Remarks:
+    When the persistent locking is not explicitly set, this
+    function returns the current value of IsLocked().
+  See Also:
+    ON_Layer::SetPersistentLocking
+    ON_Layer::UnsetPersistentLocking
+  */
+  bool PersistentLocking() const;
+
+  /*
+  Description:
+    Set the persistent locking setting for this layer.
+  Parameters:
+    bPersistentLocking - [in]
+      persistent locking for this layer.
+  Remarks:
+    See ON_Layer::PersistentLocking for a detailed description of
+    persistent locking.
+  See Also:
+    ON_Layer::PersistentLocking
+    ON_Layer::UnsetPersistentLocking
+  */
+  void SetPersistentLocking(bool bPersistentLocking);
+
+  /*
+  Description:
+    Remove any explicity persistent locking settings from this
+    layer.
+  Remarks:
+    See ON_Layer::PersistentLocking for a detailed description of
+    persistent locking.
+  See Also:
+    ON_Layer::PersistentLocking
+    ON_Layer::SetPersistentLocking
+  */
+  void UnsetPersistentLocking();
 
   /*
   Returns:
@@ -417,18 +717,34 @@ public:
     A thickness of -1.0 indicates the layer should not be printed.
   */
   double PlotWeight() const;
-  double PlotWeight( const ON_UUID& viewport_id ) const;
+  
+  double PerViewportPlotWeight( ON_UUID viewport_id ) const;
+
+  /* use ON_Layer::PerViewportPlotWeight */ 
+  ON_DEPRECATED double PlotWeight( const ON_UUID& ) const;
 
   /*
   Description:
-    Get the weight of the plotting pen.
+    Set the weight of the plotting pen.
   Parameters:
     plot_weight_mm - [in] Set the thickness of the plotting pen in millimeters.
        0.0 means use the default pen width which is a Rhino app setting.
       -1.0 means layer does not print (still displays on the screen)
   */
   void SetPlotWeight(double plot_weight_mm);
-  void SetPlotWeight(double plot_weight_mm, const ON_UUID& viewport_id );
+
+  /*
+  Description:
+    Set the weight of the plotting pen.
+  Parameters:
+    plot_weight_mm - [in] Set the thickness of the plotting pen in millimeters.
+       0.0 means use the default pen width which is a Rhino app setting.
+      -1.0 means layer does not print (still displays on the screen)
+  */
+  void SetPerViewportPlotWeight(ON_UUID viewport_id, double plot_weight_mm);
+
+  /* use ON_Layer::SetPerViewportPlotWeight */ 
+  ON_DEPRECATED void SetPlotWeight(double, const ON_UUID& );
 
   /*
   Description:
@@ -591,10 +907,31 @@ public:
   bool GetSavedSettings( ON_Layer& layer, unsigned int& settings ) const;
   
 private:
-  // The m__runtime_flags are used to speed queries that require
-  // checking user data.  This field is not saved in persistent 
-  // archives and its interpretation is subject to change.
-  unsigned char m__runtime_flags;
+  // The following information may not be accurate and is subject
+  // to change at any time.
+  //
+  // m_extension_bits & 0x01: 
+  //   The value of ( m_extension_bits & 0x01) is used to speed
+  //   common per viewport visiblity and color queries.
+  //     0x00 = there may be per viewport settings on this layer.
+  //     0x01 = there are no per viewport settings on this layer.
+  //
+  // m_extension_bits & 0x06:
+  //   The value of ( m_extension_bits & 0x06) is the persistent
+  //   visibility setting for this layer.
+  //     0x00 = no persistent visibility setting
+  //     0x02 = persistent visibility = true
+  //     0x04 = persistent visibility = false
+  //     0x06 = invalid value - treated as 0x00
+  //
+  // m_extension_bits & 0x18:
+  //   The value of ( m_extension_bits & 0x18) is the persistent
+  //   locking setting for this layer.
+  //     0x00 = no persistent locking setting
+  //     0x08 = persistent locking = true
+  //     0x10 = persistent locking = false
+  //     0x18 = invalid value - treated as 0x00
+  unsigned char m_extension_bits;
 };
 
 

@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -13,7 +13,8 @@
 //
 ////////////////////////////////////////////////////////////////
 */
-#include <pcl/surface/3rdparty/opennurbs/opennurbs.h>
+#include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
+
 
 static
 const ON_BrepEdge* FindLinearEdge( const ON_Brep& brep, int vi0, int vi1 )
@@ -1146,22 +1147,13 @@ ON_Brep* ON_BrepWedge( const ON_3dPoint* corners, ON_Brep* pBrep )
 
 ON_Brep* ON_BrepSphere( const ON_Sphere& sphere, ON_Brep* pBrep )
 {
-  ON_BOOL32 bArcLengthParameterization = true;
+  bool bArcLengthParameterization = true;
   ON_Brep* brep = NULL;
   if ( pBrep )
     pBrep->Destroy();
-  ON_RevSurface* pRevSurface = sphere.RevSurfaceForm();
+  ON_RevSurface* pRevSurface = sphere.RevSurfaceForm(bArcLengthParameterization);
   if ( pRevSurface )
   {
-    if ( bArcLengthParameterization )
-    {
-      double r = fabs(sphere.radius);
-      if ( r <= ON_SQRT_EPSILON )
-        r = 1.0;
-      r *= ON_PI;
-      pRevSurface->SetDomain(0,0.0,2.0*r);
-      pRevSurface->SetDomain(1,-r,r);
-    }
     brep = ON_BrepRevSurface( pRevSurface, false, false, pBrep );
     if ( !brep )
       delete pRevSurface;
@@ -1279,9 +1271,10 @@ ON_Brep* ON_BrepRevSurface(
       bCapEnd = false;
     }
 
-    if ( brep && !brep->Create(pRevSurface) )
+    if ( !brep->Create(pRevSurface) )
     {
-      delete brep;
+      if (!brep)
+        delete brep;
       brep = 0;
     }
     else if ( bCapStart || bCapEnd )
@@ -1720,10 +1713,24 @@ ON_Brep* ON_BrepFromMesh(
     ON_Surface::ISO quad_iso[4] = {ON_Surface::S_iso,ON_Surface::E_iso,ON_Surface::N_iso,ON_Surface::W_iso};
     ON_Surface::ISO tri_iso[3] = {ON_Surface::S_iso,ON_Surface::E_iso,ON_Surface::not_iso};
 
+    // May 1, 2012 Tim Fix for RR 104209
+    // Use double precision vertexes from the mesh if they exist
+    const ON_3dPointArray* pDPV = 0;
+    if (mesh_topology.m_mesh->HasDoublePrecisionVertices() && mesh_topology.m_mesh->DoublePrecisionVerticesAreValid())
+      pDPV = &mesh_topology.m_mesh->DoublePrecisionVertices();
+
     for ( vi = 0; vi < vertex_count; vi++ )
     {
       ON_3dPoint pt;
-      pt = mesh_topology.TopVertexPoint(vi);
+
+      // May 1, 2012 Tim Fix for RR 104209
+      // Use double precision vertexes from the mesh if they exist
+      const ON_MeshTopologyVertex& topvert = mesh_topology.m_topv[vi];
+      if (0 != pDPV)
+        pt = *pDPV->At(topvert.m_vi[0]);
+      else
+        pt = mesh_topology.m_mesh->m_V[topvert.m_vi[0]];
+
       brep->NewVertex( pt, 0.0 );
     }
 
@@ -1827,7 +1834,7 @@ ON_Brep* ON_BrepFromMesh(
           }
           else 
           {
-            fei = (lti+1)%4;
+            fei = bTriangle ? ((lti+1)%3) : ((lti+1)%4);
             edge_index = mesh_face.m_topei[fei];
             ON_BrepEdge& brep_edge = brep->m_E[edge_index];
             const ON_MeshTopologyEdge& mesh_edge = mesh_topology.m_tope[edge_index];
@@ -2066,6 +2073,7 @@ ON_BOOL32 ON_BrepTrim::SetEndPoint(ON_3dPoint end_point)
 
 bool ON_Brep::CloseTrimGap( ON_BrepTrim& trim0, ON_BrepTrim& trim1 )
 {
+
   // carefully close gap between end of prev_trim and start of next_trim
 
   // make sure trim0 and trim1 are adjacent trims in a trimming loop
@@ -2363,7 +2371,6 @@ bool ON_Brep::RemoveNesting(
   return rc;
 }
 
-
 static bool IsSlitTrim(const ON_BrepTrim& T)
 
 {
@@ -2423,6 +2430,7 @@ static bool IsSlitTrim(const ON_BrepTrim& T)
 }
 
 static bool ON_BrepRemoveSlits(ON_BrepLoop& L)
+
 {
   if (L.m_loop_index < 0)
     return false;
@@ -2570,6 +2578,7 @@ static bool ON_BrepRemoveSlits(ON_BrepLoop& L)
 //ON_Brep::Compact() to get rid of deleted trims and loops.
 
 bool ON_BrepRemoveSlits(ON_BrepFace& F)
+
 {
   //For each loop, look for slit pairs that fall between non slits and 
   //break the loop at the pair.

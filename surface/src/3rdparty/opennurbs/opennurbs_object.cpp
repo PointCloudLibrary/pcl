@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -13,7 +13,11 @@
 //
 ////////////////////////////////////////////////////////////////
 */
-#include <pcl/surface/3rdparty/opennurbs/opennurbs.h>
+#include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
+
+
+
+#if defined(ON_DLL_EXPORTS)
 
 #if defined(ON_COMPILER_MSC)
 // Force this module to be inited first so the important globals
@@ -22,6 +26,12 @@
 #pragma warning( disable : 4073 )
 #pragma init_seg(lib)
 #pragma warning( pop )
+#endif
+
+//
+//
+////////////////////////////////////////////////////////////////////////////////
+
 #endif
 
 const ON_UUID ON_nil_uuid = {0,0,0,{0,0,0,0,0,0,0,0}};
@@ -488,9 +498,6 @@ static void ValidateSizesHelper()
 void ON::Begin()
 {
   ValidateSizesHelper();
-
-  ON_MemoryManagerBegin();
-
 
 #if !defined(ON_DLL_EXPORTS)
   // Some statically linked library optimizations discard
@@ -1282,10 +1289,14 @@ bool ON_Object::CopyFrom( const ON_Object* src )
   return (cid && cid->ClassIdVersion() >= 1 && cid->m_copy) ? cid->m_copy(src,this) : false;
 }
 
-ON_Object::ON_Object() : m_userdata_list(0)
+ON_Object::ON_Object()
+: 
+m_userdata_list(0)
 {}
 
-ON_Object::ON_Object(const ON_Object& src) : m_userdata_list(0)
+ON_Object::ON_Object(const ON_Object& src)
+:
+m_userdata_list(0)
 {
   CopyUserData(src);
 }
@@ -1778,9 +1789,3 @@ void ON_Brep::DestroyRuntimeCache( bool bDelete )
   m_bbox.Destroy();
 }
 
-struct ON_Vtable* ON_ClassVtable(void* p)
-{
-  void* vtable_ptr = *((void**)p);
-  struct ON_Vtable* the_vtable = (ON_Vtable*)vtable_ptr;
-  return the_vtable;
-}

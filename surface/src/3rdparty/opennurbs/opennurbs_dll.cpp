@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -14,7 +14,7 @@
 ////////////////////////////////////////////////////////////////
 */
 
-#include <pcl/surface/3rdparty/opennurbs/opennurbs.h>
+#include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
 
 // opennurbs_dll.cpp : Defines the entry point for the Windows DLL application.
 //
@@ -29,14 +29,12 @@ BOOL APIENTRY DllMain( HANDLE hModule,
   static int bRunning = 0;
   if ( !bRunning ) 
   {
-    ON_MemoryManagerBegin();
     bRunning = true;
   }
 
   switch( ul_reason_for_call ) {
 
   case DLL_PROCESS_ATTACH:
-    ::OutputDebugStringA("OpenNURBS DllMain() ul_reason_for_call = DLL_PROCESS_ATTACH\n");
     ON_ClassId::IncrementMark(); // make sure each DLL that each process that 
                                  // uses OpenNURBS has a unique mark.
     break;

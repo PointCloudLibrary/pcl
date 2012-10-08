@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -14,7 +14,7 @@
 ////////////////////////////////////////////////////////////////
 */
 
-#include <pcl/surface/3rdparty/opennurbs/opennurbs.h>
+#include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
 
 ON_OBJECT_IMPLEMENT(ON_LineCurve,ON_Curve,"4ED7D4DB-E947-11d3-BFE5-0010830122F0");
 
@@ -124,6 +124,7 @@ ON_BOOL32
 ON_LineCurve::Transform( const ON_Xform& xform )
 {
   TransformUserData(xform);
+	DestroyCurveTree();
   return m_line.Transform( xform );
 }
 
@@ -211,6 +212,7 @@ ON_BOOL32 ON_LineCurve::SetDomain( double t0, double t1)
   if (t0 < t1)
   {
     m_t.Set(t0, t1);
+		DestroyCurveTree();
     return true;
   }
   return false;
@@ -222,6 +224,7 @@ bool ON_LineCurve::ChangeDimension( int desired_dimension )
 
   if (rc && m_dim != desired_dimension )
   {
+    DestroyCurveTree();
     if ( desired_dimension == 2 )
     {
       // 7 April 2003 Dale Lear - zero z coords if x coord are set
@@ -372,6 +375,7 @@ ON_LineCurve::Reverse()
   m_line.from = m_line.to;
   m_line.to = p;
   m_t.Reverse();
+	DestroyCurveTree();
   return true;
 }
 
@@ -418,16 +422,17 @@ ON_BOOL32 ON_LineCurve::Evaluate( // returns false if unable to evaluate
   return rc;
 }
 
-
 ON_BOOL32 ON_LineCurve::SetStartPoint(ON_3dPoint start_point)
 {
   m_line.from = start_point;
+	DestroyCurveTree();
   return true;
 }
 
 ON_BOOL32 ON_LineCurve::SetEndPoint(ON_3dPoint end_point)
 {
   m_line.to = end_point;
+	DestroyCurveTree();
   return true;
 }
 
@@ -508,6 +513,7 @@ ON_BOOL32 ON_LineCurve::Trim( const ON_Interval& domain )
   ON_BOOL32 rc = false;
   if ( domain.IsIncreasing() )
   {
+    DestroyCurveTree();
     ON_3dPoint p = PointAt( domain[0] );
     ON_3dPoint q = PointAt( domain[1] );
 		if( p.DistanceTo(q)>0){								// 2 April 2003 Greg Arden A successfull trim 
@@ -518,6 +524,7 @@ ON_BOOL32 ON_LineCurve::Trim( const ON_Interval& domain )
 			rc = true;
 		}
   }
+	DestroyCurveTree();
   return rc;
 }
 
@@ -548,6 +555,7 @@ bool ON_LineCurve::Extend(
   if (do_it){
     m_line = ON_Line(Q0, Q1);
     SetDomain(t0, t1);
+    DestroyCurveTree();
   }
   return do_it;
 }
@@ -598,10 +606,12 @@ ON_BOOL32 ON_LineCurve::Split(
       right_side = right_line;
     }
 
+    left_line->DestroyCurveTree();
     left_line->m_line = left;
     left_line->m_t.Set( t0, t );
     left_line->m_dim = dim;
 
+    right_line->DestroyCurveTree();
     right_line->m_line = right;
     right_line->m_t.Set( t, t1 );
     right_line->m_dim = dim;

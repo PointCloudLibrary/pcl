@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -14,7 +14,7 @@
 ////////////////////////////////////////////////////////////////
 */
 
-#include <pcl/surface/3rdparty/opennurbs/opennurbs.h>
+#include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
 
 ON_VIRTUAL_OBJECT_IMPLEMENT(ON_UserData,ON_Object,"850324A7-050E-11d4-BFFA-0010830122F0");
 
@@ -122,7 +122,7 @@ void ON_UserData::Dump( ON_TextLog& text_log ) const
   if ( description.IsEmpty() )
     description = L"none";
   const wchar_t* ws = description;
-  text_log.Print("user data description: %S\n",ws);
+  text_log.Print("user data description: %ls\n",ws);
   text_log.Print("user data uuid: ");
   text_log.Print(m_userdata_uuid);
   text_log.Print("\n");
@@ -414,11 +414,14 @@ size_t ON_UnknownUserDataArchive::CurrentPosition() const
 bool ON_UnknownUserDataArchive::SeekFromCurrentPosition( int offset )
 {
   bool rc = false;
-  size_t newpos = m_buffer_position + offset;
-  if ( newpos >= 0 && newpos < m_sizeof_buffer ) 
+  if ( offset >= 0 || m_buffer_position >= ((size_t)(-offset)) )
   {
-    m_buffer_position = newpos;
-    rc = true;
+    size_t newpos = m_buffer_position + offset;
+    if ( newpos < m_sizeof_buffer ) 
+    {
+      m_buffer_position = newpos;
+      rc = true;
+    }
   }
   return rc;
 }
@@ -426,9 +429,12 @@ bool ON_UnknownUserDataArchive::SeekFromCurrentPosition( int offset )
 bool ON_UnknownUserDataArchive::SeekFromStart( size_t offset )
 {
   bool rc = false;
-  if ( offset >= 0 && offset < m_sizeof_buffer ) 
+  if ( offset < m_sizeof_buffer ) 
   {
-    m_buffer_position = offset;
+    if ( offset > 0 )
+      m_buffer_position = offset;
+    else
+      m_buffer_position = 0;
     rc = true;
   }
   return rc;
@@ -598,15 +604,15 @@ bool ON_UserString::Read(ON_BinaryArchive& archive)
 
 void ON_UserString::Dump(ON_TextLog& text_log) const
 {
-  const wchar_t* s = m_key;
-  if ( !s )
-    s = L"";
-  text_log.Print("Key: %s\n");
+  const wchar_t* ws = m_key;
+  if ( !ws )
+    ws = L"";
+  text_log.Print("Key: %ls\n", ws);
   
-  s = m_string_value;
-  if ( !s )
-    s = L"";
-  text_log.Print(L"Value: %s\n",s);
+  ws = m_string_value;
+  if ( !ws )
+    ws = L"";
+  text_log.Print("Value: %ls\n",ws);
 }
 
 ON_OBJECT_IMPLEMENT(ON_UserStringList,ON_UserData,"CE28DE29-F4C5-4faa-A50A-C3A6849B6329");
@@ -662,7 +668,7 @@ ON__UINT32 ON_UserStringList::DataCRC(ON__UINT32 current_remainder) const
 void ON_UserStringList::Dump( ON_TextLog& text_log ) const
 {
   int i, count = m_e.Count();
-  text_log.Print(L"%d entries\n",count);
+  text_log.Print("%d entries\n",count);
   text_log.PushIndent();
   for ( i = 0; i < count; i++ )
   {
@@ -792,12 +798,30 @@ bool ON_UserStringList::GetUserString( const wchar_t* key, ON_wString& string_va
 
 static int cmp_hash_2dex_ij(const void* a, const void* b)
 {
-  int rc;
   const int* ai = (const int*)a;
   const int* bi = (const int*)b;
-  if ( 0 == (rc = ai[0] - bi[0]) )
-    rc = ai[1] - bi[1];
-  return rc;
+  // 26 January 2012 Dale Lear
+  //    Part of the fix for http://dev.mcneel.com/bugtrack/?q=97693
+  //
+  //    The "i" values are actually 32 bit hashes of a string
+  //    and are often large.  The sign of (ai[0] - bi[0]) cannot
+  //    be used to compare ai[0] and bi[0] because integer
+  //    overflow occures with values that are large.
+  //
+  ////// NO!
+  //////if ( 0 == (rc = ai[0] - bi[0]) )
+  //////  rc = ai[1] - bi[1];
+  //////return rc;
+
+  if ( ai[0] < bi[0] )
+    return -1;
+  if ( ai[0] > bi[0] )
+    return 1;
+  if ( ai[1] < bi[1] )
+    return -1;
+  if ( ai[1] > bi[1] )
+    return 1;
+  return 0;
 }
 
 int ON_UserStringList::SetUserStrings( int count, const ON_UserString* us, bool bReplace )
@@ -843,9 +867,10 @@ int ON_UserStringList::SetUserStrings( int count, const ON_UserString* us, bool 
     hash[i].i = (int)m_e[i].m_key.DataCRCLower(0);
     hash[i].j = i;
   }
+
   for ( i = 0; i < count; i++ )
   {
-    hash1[i].i = (int)m_e[i].m_key.DataCRCLower(0);
+    hash1[i].i = (int)us[i].m_key.DataCRCLower(0);
     hash1[i].j = i;
     hash[i+count0].i = hash1[i].i;
     hash[i+count0].j = hash1[i].j+count0;
@@ -870,7 +895,7 @@ int ON_UserStringList::SetUserStrings( int count, const ON_UserString* us, bool 
     k0 = h-hash;
     while ( k0 > 0 && h[-1].i == h[0].i )
     {
-      // set h = first element in hash[] with this has code.
+      // set h = first element in hash[] with this hash code.
       k0--;
       h--;
     }

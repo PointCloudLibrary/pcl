@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -14,7 +14,7 @@
 ////////////////////////////////////////////////////////////////
 */
 
-#include <pcl/surface/3rdparty/opennurbs/opennurbs.h>
+#include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
 
 ON_Circle::ON_Circle() 
                   : radius(1.0)
@@ -176,7 +176,7 @@ bool ON_Circle::Transform( const ON_Xform& xform )
     }
     if (    0.0 == b 
          && 0.0 == c 
-         && fabs(r1-r2) <= ON_SQRT_EPSILON*(r1+r2)
+         && fabs(r1-r1) <= ON_SQRT_EPSILON*(r1+r2) 
        )
     {
       // transform is a similarity
@@ -270,32 +270,43 @@ bool ON_Circle::Create( // circle through three 3d points
   //m_point[2] = R;
 
   // get normal
-  bool rc = Z.PerpendicularTo( P, Q, R );
+  for(;;)
+  {
+    if ( !Z.PerpendicularTo( P, Q, R ) )
+      break;
 
-  // get center as the intersection of 3 planes
-  //  
-  ON_Plane plane0( P, Z );
-  ON_Plane plane1( 0.5*(P+Q), P-Q );
-  ON_Plane plane2( 0.5*(R+Q), R-Q );
-  if ( !ON_Intersect( plane0, plane1, plane2, C ) )
-    rc = false;
+    // get center as the intersection of 3 planes
+    ON_Plane plane0( P, Z );
+    ON_Plane plane1( 0.5*(P+Q), P-Q );
+    ON_Plane plane2( 0.5*(R+Q), R-Q );
+    if ( !ON_Intersect( plane0, plane1, plane2, C ) )
+      break;
 
-  X = P - C;
-  radius = X.Length();
-  if ( radius == 0.0 )
-    rc = false;
-  X.Unitize();
-  Y = ON_CrossProduct( Z, X );
-  Y.Unitize();
+    X = P - C;
+    radius = X.Length();
+    if ( !(radius > 0.0) )
+      break;
 
-  plane.origin = C;
-  plane.xaxis = X;
-  plane.yaxis = Y;
-  plane.zaxis = Z;
+    if ( !X.Unitize() )
+      break;
+    
+    Y = ON_CrossProduct( Z, X );
+    if ( !Y.Unitize() )
+      break;
 
-  plane.UpdateEquation();
+    plane.origin = C;
+    plane.xaxis = X;
+    plane.yaxis = Y;
+    plane.zaxis = Z;
 
-  return rc;
+    plane.UpdateEquation();
+
+    return true;
+  }
+
+  plane = ON_Plane::World_xy;
+  radius = 0.0;
+  return false;
 }
 
 //////////

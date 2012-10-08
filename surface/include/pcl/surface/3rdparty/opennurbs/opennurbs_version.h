@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -14,26 +14,21 @@
 ////////////////////////////////////////////////////////////////
 */
 
+
 #if !defined(OPENNURBS_VERSION_DEFINITION)
 #error Do NOT include opennurbs_version.h in your code.  Use ON::Version() instead.
 #endif
 
+
 // OpenNURBS users:
 //   Do not change OPENNURBS_VERSION or the OpenNURBS code
 //   that reads 3DM files not work correctly.
+#define OPENNURBS_VERSION 201209145
 
-// The YYYYMMDD portion of the Debug and Release
-// version numbers is always the same.  
-// The last digit of a debug build version number is 9. 
-// The last digit of a V4 release build version number is 4.
-// The last digit of a V5 release build version number is 5.
-#if defined(_DEBUG)
-#define OPENNURBS_VERSION 201111229
-#else
-#define OPENNURBS_VERSION 201111225
-#endif
+// Subversion revision and branch used for source code.
+#define OPENNURBS_SRC_SVN_REVISION "85828"
+#define OPENNURBS_SRC_SVN_BRANCH ".../opennurbs_public/2012-09-14-0000/opennurbs"
 
-// Subversion revision used to build opennurbs.
-// The build process updates this number; it should be zero for developers.
-// If the build process commits a number other than 0 it's a bug.
-#define OPENNURBS_SVN_REVISION "0"
+// Subversion revision and branch used for documentation.
+#define OPENNURBS_DOC_SVN_REVISION "85828"
+#define OPENNURBS_DOC_SVN_BRANCH ".../opennurbs_public/2012-09-14-0000/opennurbs"

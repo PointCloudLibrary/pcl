@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -1273,7 +1273,11 @@ void ON_ClassArray<T>::Move( int dest_i, int src_i, int ele_cnt )
     SetCapacity( capacity );
   }
 
-  memmove( &m_a[dest_i], &m_a[src_i], ele_cnt*sizeof(T) );
+  // This call to memmove is ok, even when T is a class with a vtable
+  // because the it doesn't change the vtable for the class.
+  // Classes that have back pointers, like ON_UserData, are
+  // handled elsewhere and cannot be in ON_ClassArray<>s.
+  memmove( (void*)(&m_a[dest_i]), (const void*)(&m_a[src_i]), ele_cnt*sizeof(T) );
 }
 
 template <class T>
@@ -1369,7 +1373,9 @@ void ON_ClassArray<T>::Insert( int i, const T& x )
 	  m_count++;
     if ( i < m_count-1 ) {
       Move( i+1, i, m_count-1-i );
-      memset( &m_a[i], 0, sizeof(T) );
+      // This call to memset is ok even when T has a vtable
+      // because in-place construction is used later.
+      memset( (void*)(&m_a[i]), 0, sizeof(T) );
       ConstructDefaultElement( &m_a[i] );
     }
     else {
@@ -1391,9 +1397,13 @@ void ON_ClassArray<T>::Remove( int i )
   if ( i >= 0 && i < m_count ) 
   {
     DestroyElement( m_a[i] );
-    memset( &m_a[i], 0, sizeof(T) );
+    // This call to memset is ok even when T has a vtable
+    // because in-place construction is used later.
+    memset( (void*)(&m_a[i]), 0, sizeof(T) );
     Move( i, i+1, m_count-1-i );
-    memset( &m_a[m_count-1], 0, sizeof(T) );
+    // This call to memset is ok even when T has a vtable
+    // because in-place construction is used later.
+    memset( (void*)(&m_a[m_count-1]), 0, sizeof(T) );
     ConstructDefaultElement(&m_a[m_count-1]);
     m_count--;
   }
@@ -1405,7 +1415,9 @@ void ON_ClassArray<T>::Empty()
   int i;
   for ( i = m_count-1; i >= 0; i-- ) {
     DestroyElement( m_a[i] );
-    memset( &m_a[i], 0, sizeof(T) );
+    // This call to memset is ok even when T has a vtable
+    // because in-place construction is used later.
+    memset( (void*)(&m_a[i]), 0, sizeof(T) );
     ConstructDefaultElement( &m_a[i] );
   }
   m_count = 0;
@@ -1612,7 +1624,9 @@ void ON_ClassArray<T>::Zero()
   if ( m_a && m_capacity > 0 ) {
     for ( i = m_capacity-1; i >= 0; i-- ) {
       DestroyElement(m_a[i]);
-      memset( &m_a[i], 0, sizeof(T) );
+      // This call to memset is ok even when T has a vtable
+      // because in-place construction is used later.
+      memset( (void*)(&m_a[i]), 0, sizeof(T) );
       ConstructDefaultElement(&m_a[i]);
     }
   }
@@ -1670,7 +1684,11 @@ void ON_ClassArray<T>::SetCapacity( int capacity )
     // initialize new elements with default constructor
     if ( 0 != m_a )
     {
-      memset( m_a + m_capacity, 0, (capacity-m_capacity)*sizeof(T) );
+      // even when m_a is an array of classes with vtable pointers,
+      // this call to memset(..., 0, ...) is what I want to do
+      // because in-place construction will be used when needed
+      // on this memory.
+      memset( (void*)(m_a + m_capacity), 0, (capacity-m_capacity)*sizeof(T) );
       for ( i = m_capacity; i < capacity; i++ ) {
         ConstructDefaultElement(&m_a[i]);
       }

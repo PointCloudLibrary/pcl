@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -16,71 +16,6 @@
 
 #if !defined(ON_ARCHIVE_INC_)
 #define ON_ARCHIVE_INC_
-
-
-#if defined(ON_COMPILER_MSC)
-
-extern "C"
-{
-
-/*
-Description:
-  Set the directory where ON_DebugWriteObject() will write
-  the .3dm file.
-Parameters:
-  directory_name - [in]
-Remarks:
-  This function is not thread safe.  It stores directory_name
-  in a static array.
-*/
-ON_DECL
-void ON_SetDebugWriteObjectDirectory(const wchar_t* directory_name);
-
-/*
-Description:
-  Get the directory where ON_DebugWriteObject() will write
-  the .3dm file.
-Returns:
-  The directory name or null if the name has not been set.
-*/
-ON_DECL
-const wchar_t* ON_DebugWriteObjectDirectory();
-
-/*
-Description:
-  ON_DebugWriteObject is a debugging utility that can be called
-  from a debugger's evaluate expression window to dump objects 
-  for future inspection.
-Parameters:
-  pObject - [in]
-Returns:
-  If successful, and integer >= N which indicates the object
-  was saved in a file named /debug_file_0000N.3dm.
-See Also:
-  ON_DebugWritePoint
-*/
-ON_DECL
-int ON_DebugWriteObject( const class ON_Object* pObject );
-
-/*
-Description:
-  ON_DebugWrite3dPoint is a debugging utility that can be called
-  from a debugger's evaluate expression window to dump points 
-  for future inspection.
-Parameters:
-  p3dPoint - [in]
-Returns:
-  If successful, and integer >= N which indicates the object
-  was saved in a file named /debug_file_0000N.3dm.
-See Also:
-  ON_DebugWriteObject
-*/
-ON_DECL
-int ON_DebugWritePoint( const class ON_3dPoint* p3dPoint );
-
-}
-
-#endif
 
 class ON_CLASS ON_FileStream
 {
@@ -275,18 +210,18 @@ public:
           // Iterate through the files in a directory named "\rootdir\subdir"
           FILE* fp = 0;
           ON_FileIterator fit;
-          const wchar_t* directory = L"\\rootdir\\subdir";
-          for ( const wchar_t* filename = fit.FirstFile( directory, L"*.3dm" );
+          const char* directory = "\\rootdir\\subdir";
+          for ( const wchar_t* filename = fit.FirstFile( directory, "*.3dm" );
                 0 != filename;
                 filename = fit.NextFile()
               )
           {
             if ( fit.CurrentFileIsDirectory() )
               continue;
-            ON_wString fullpath = directory;
+            ON_String fullpath = directory;
             fullpath += '\\';
             fullpath += filename;
-            FILE* fp = ON_FileStream::Open(fullpath,L"rb");
+            FILE* fp = ON_FileStream::Open(fullpath,"rb");
             if ( 0 == fp )
             {
               continue;
@@ -305,6 +240,11 @@ public:
     const wchar_t* file_name_filter
     );
 
+  const wchar_t* FirstFile( 
+    const char* directory_name, 
+    const char* file_name_filter
+    );
+
   /*
   Description:
     Find the next matching file in the directory.
@@ -317,7 +257,19 @@ public:
 
   ON__UINT64 CurrentFileSize() const;
 
+  /*
+  Returns 
+    true if the current "file" is a directory.
+  */
   bool CurrentFileIsDirectory() const;
+
+  /*
+  Returns 
+    true if the current file or directory is hidden.
+    This means its name begins with a '.' or it's
+    Windows hidden attribute is true.
+  */
+  bool CurrentFileIsHidden() const;
 
   bool GetCurrentFullPathFileName( ON_wString& filename ) const;
 
@@ -355,7 +307,7 @@ private:
   HANDLE m_h;
   WIN32_FIND_DATA m_fd;
 #else
-  ON_String m_file_name_filter;
+  ON_wString m_ws_file_name_filter;
   ON_String m_utf8_file_name_filter;
   DIR* m_dir;
   struct dirent m_dirent;
@@ -365,7 +317,7 @@ private:
   wchar_t m_current_name[1024];
   ON__UINT64 m_current_file_attributes; // 1 = regular file, 2 = directory
   ON__UINT64 m_current_file_size;
-  ON__UINT64 m_current_create_time;
+  ON__UINT64 m_current_file_create_time;
   ON__UINT64 m_current_last_modified_time;
   ON__UINT64 m_current_last_access_time;
 #endif
@@ -679,6 +631,7 @@ private:
   bool SetCurrentSegment(bool);
   void Copy( const ON_Buffer& );
 
+  ON_MEMORY_POOL* m_heap;
   ON_Buffer_ErrorHandler m_error_handler;
 
   ON__UINT32 m_last_error;
@@ -1080,23 +1033,106 @@ public:
   // ( a.k.a GMT, UTC ).  Use ANSI C time() and gmtime() calls.
   bool ReadTime( struct tm& );
 
-  bool ReadStringSize( // Read size of NULL terminated string
-      size_t*          // (returned size includes NULL terminator)
+  /*
+  Parameters:
+    str_array_count - [out]
+      Number of elements in the string array. All ON_BinaryArchive string
+      WriteString() functions write a null terminator to the file and
+      the null terminator is included in the count. This means that
+      if a string has a non-zero element, then str_array_count >= 2.
+  Remarks:
+    Modify your code to use ReadStringUTF8ElementCount() when reading
+    UTF-8 encoded strings and ReadStringUTF16ElementCount()
+    when reading UTF-16 encoded strings.
+  */
+  ON_DEPRECATED bool ReadStringSize(
+      size_t* str_array_count
       );
-  bool ReadString(     // Read NULL terminated string
-      size_t,          // length = value from ReadStringSize()
-      char*            // array[length]
+
+  /*
+  Parameters:
+    string_utf8_element_count - [out]
+      Number of bytes in the string array. All ON_BinaryArchive string
+      WriteString() functions write a null terminator to the file and
+      the null terminator is included in string_element_count. This means
+      that if opennurbs wrote the string, either string_element_count = 0
+      or string_element_count >= 2.
+  */
+  bool ReadStringUTF8ElementCount(
+    size_t* string_utf8_element_count
+    );
+
+  /*
+  Parameters:
+    string_utf16_element_count - [out]
+      Number of elements in the string array. All ON_BinaryArchive string
+      WriteString() functions write a null terminator to the file and
+      the null terminator is included in string_element_count. This means
+      that if opennurbs wrote the string, either string_element_count = 0
+      or string_element_count >= 2.
+  */
+  bool ReadStringUTF16ElementCount(
+    size_t* string_utf16_element_count
+    );
+
+
+  /*
+  Parameters:
+    str_array_count - [in]
+      Number of char elements in str_array[], including the null
+      terminator.  The value of str_array_count is returned by
+      ReadCharStringElementCount().
+    str_array - [in/out]
+      Pass in an array with at least str_array_count elements.
+      If true is returned and str_array_count > 0,
+      then str_array[str_array_count-1] = 0. All strings with
+      char elements written by Rhino are UTF-8 encoded
+      unicode strings.
+  */
+  bool ReadString(
+      size_t str_array_count,
+      char* str_array
       );
-  bool ReadString(     // Read NULL terminated string
-      size_t,          // length = value from ReadStringSize()
-      unsigned char*   // array[length]
+
+  /*
+  Parameters:
+    str_array_count - [in]
+      Number of unsignd char elements in str_array[], including
+      the null terminator. The value of str_array_count is returned
+      by ReadCharStringElementCount().
+    str_array - [in/out]
+      Pass in an array with at least str_array_count elements.
+      If true is returned and str_array_count > 0,
+      then str_array[str_array_count-1] = 0. All strings with
+      unsigned char elements written by Rhino are UTF-8 encoded 
+      unicode strings.
+  */
+  bool ReadString(
+      size_t str_array_count,
+      unsigned char* str_array
       );
-  bool ReadString(    // Read NULL terminated wide (unicode) string
-      size_t,          // length = value from ReadStringSize()
-      unsigned short*  // array[length]
+
+  /*
+  Parameters:
+    str_array_count - [in]
+      Number of unsigned short elements in str_array[],
+      including the null terminator. The value of 
+      str_array_count is returned by ReadWideCharStringElementCount().
+    str_array - [in/out]
+      Pass in an array with at least str_array_count elements.
+      If true is returned and str_array_count > 0,
+      then str_array[str_array_count-1] = 0. All strings with
+      unsigned short elements written by Rhino are UTF-16 encoded
+      unicode strings.
+  */
+  bool ReadString(
+      size_t str_array_count,
+      unsigned short*  str_array
       );
-  bool ReadString( ON_String& );
-  bool ReadString( ON_wString& );
+
+  bool ReadString( ON_String& sUTF8 );
+
+  bool ReadString( ON_wString& s );
 
   bool ReadComponentIndex( ON_COMPONENT_INDEX& );
 
@@ -1279,21 +1315,75 @@ public:
   // ( a.k.a GMT, UCT ).  Use ANSI C time() and gmtime() calls.
   bool WriteTime( const struct tm& );
 
-  // To read strings written with WriteString(), first call
-  // ReadStringLength() to get the length of the string (including
-  // the NULL terminator, then call ReadString() with enought memory
-  // to load the string.
-  bool WriteString( // Write NULL terminated string
-      const char*         
+  /*
+  Parameters:
+    sUTF8 - [in]
+      A null terminated UTF-8 encoded unicode string.
+  Remarks:
+    To read a string written with WriteString(const char*),
+    call ReadStringUTF8ElementCount(&string_utf8_element_count)
+    to get the number of char elements written in the file,
+    obtain a buffer with at least string_utf8_element_count
+    char elements and then call 
+    ReadString(string_utf8_element_count,buffer) to read the
+    char elements.
+
+    If 0 == sUTF8 or 0 == SUTF8[0], a 4 byte int with
+    value = 0 is written, otherwise a 4 byte int with
+    value = strlen + 1 is written, followed by the string,
+    followed by the null terminator.
+  */
+  bool WriteString(
+      const char* sUTF8         
       );
-  bool WriteString( // Write NULL terminated string
-      const unsigned char*
+
+  /*
+  Parameters:
+    sUTF8 - [in]
+      A null terminated UTF-8 encoded unicode string.
+  Remarks:
+    To read a string written with WriteString(const unsigned char*),
+    call ReadStringUTF8ElementCount(&string_utf8_element_count) to
+    get the number of unsigned char elements written in the file,
+    obtain a buffer with at least string_utf8_element_count
+    unsigned char elements and then call 
+    ReadString(string_utf8_element_count,buffer) to read the 
+    unsigned charelements.
+
+    If 0 == sUTF8 or 0 == SUTF8[0], a 4 byte int with
+    value = 0 is written, otherwise a 4 byte int with
+    value = strlen + 1 is written, followed by the string,
+    followed by the null terminator.
+  */
+  bool WriteString(
+      const unsigned char* sUTF8
       );
-  bool WriteString(  // Write NULL terminated wide (unicode) string
-      const unsigned short* // array[length]
+
+  /*
+  Parameters:
+    sUTF16 - [in]
+      A null terminated UTF-16 encoded unicode string.
+  Remarks:
+    To read a string written with WriteString(const unsigned short*),
+    call ReadStringUTF16ElementCount(&string_utf16_element_count) to
+    get the number of unsigned short elements written in the file,
+    obtain a buffer with at least string_utf16_element_count
+    unsigned short elements and then call 
+    ReadString(string_utf16_element_count,buffer) to read the
+    unsigned short elements.
+
+    If 0 == sUTF8 or 0 == SUTF8[0], a 4 byte int with
+    value = 0 is written, otherwise a 4 byte int with
+    value = strlen + 1 is written, followed by the string,
+    followed by the null terminator.
+  */
+  bool WriteString(
+      const unsigned short* sUTF16
       );
-  bool WriteString( const ON_String& );
-  bool WriteString( const ON_wString& );
+  
+  bool WriteString( const ON_String& sUTF8 );
+
+  bool WriteString( const ON_wString& s);
 
   bool WriteComponentIndex( const ON_COMPONENT_INDEX& );
 
@@ -1408,31 +1498,41 @@ public:
   ///////////////////////////////////////////////////////////////////
   // Step 1: REQUIRED - Write/Read Start Section
   //
+
   /*
   Parameters:
     version - [in]
-       0, 2, 3, 4, 50, ...
+       0, 2, 3, 4, 5 or 50 (5 is treated as 50)
        
-       If version is 0, then the value of ON_BinaryArchive::CurrentVersion()
+       If version is 0, then the value of ON_BinaryArchive::CurrentArchiveVersion()
        is used.
 
-       It is suggested that you use either 0 or the value of 
-       ON_BinaryArchive::CurrentArchiveVersion() for this parameter 
-       when you want your code to write the most up to date
-       file version.       
+       Use either 0 or the value of ON_BinaryArchive::CurrentArchiveVersion()
+       for the version parameter when you want your code to write the most 
+       up to date file version. 
+
+    sStartSectionComment - [in]
+      NULL or ASCII string with application name, et cetera.
+      This information is primarily used when debugging files
+      that contain problems.  McNeel and Associates stores
+      application name, application version, compile date, 
+      and the OS in use when file was written.
   */
   bool Write3dmStartSection( 
         int version,
-        const char* // NULL or ASCII string with application name, etc.
-                    // This information is primarily used when debugging files
-                    // that contain problems.  McNeel and Associates stores
-                    // application name, application version, compile date, 
-                    // OS in use when file was written.
+        const char* sStartSectionComment
         );
 
+  /*
+  Parameters:
+    version - [out]
+       .3dm file version (2, 3, 4, 5 or 50)
+    sStartSectionComment - [out]
+      string passed to Write3dmStartSection()
+  */
   bool Read3dmStartSection( 
-        int*, // returns version (1,2,3,4,5,50,...)
-        ON_String& 
+        int* version,
+        ON_String& sStartSectionComment
         );
 
   ///////////////////////////////////////////////////////////////////
@@ -2660,9 +2760,9 @@ public:
     mode - [in]
     fp - [in]
       If a file is being read, fp is the pointer returned 
-      from ON_FileStream::Open(...,L"rb").
+      from ON_FileStream::Open(...,"rb").
       If a file is being written, fp is the pointer returned 
-      from ON_FileStream::Open(...,L"wb").
+      from ON_FileStream::Open(...,"wb").
   */
   ON_BinaryFile( ON::archive_mode, FILE* fp );
 

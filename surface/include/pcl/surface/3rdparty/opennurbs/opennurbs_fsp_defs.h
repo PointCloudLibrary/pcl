@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -107,6 +107,18 @@ template <class T>
 T* ON_SimpleFixedSizePool<T>::Element(size_t element_index) const
 {
   return (T *)ON_FixedSizePool::Element(element_index);
+}
+
+template <class T>
+void ON_SimpleFixedSizePool<T>::SetHeap( ON_MEMORY_POOL* heap )
+{
+  ON_FixedSizePool::SetHeap(heap);
+}
+
+template <class T>
+ON_MEMORY_POOL* ON_SimpleFixedSizePool<T>::Heap()
+{
+  return ON_FixedSizePool::Heap();
 }
 
 template <class T>

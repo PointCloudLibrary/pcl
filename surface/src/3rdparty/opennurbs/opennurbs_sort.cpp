@@ -1,4 +1,4 @@
-#include <pcl/surface/3rdparty/opennurbs/opennurbs.h>
+#include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
 
 /*
 If the speed of ON_qsort() functions on arrays that
@@ -179,8 +179,8 @@ ON_hsort(void *base, size_t nel, size_t width, int (*compar)(void*,const void*,c
 #define ON_SORT_TEMPLATE_TYPE double
 #define ON_QSORT_FNAME ON_qsort_double
 #define ON_HSORT_FNAME ON_hsort_double
-#include <pcl/surface/3rdparty/opennurbs/opennurbs_qsort_template.h>
-#include <pcl/surface/3rdparty/opennurbs/opennurbs_hsort_template.h>
+#include "pcl/surface/3rdparty/opennurbs/opennurbs_qsort_template.h"
+#include "pcl/surface/3rdparty/opennurbs/opennurbs_hsort_template.h"
 #undef ON_SORT_TEMPLATE_TYPE
 #undef ON_QSORT_FNAME
 #undef ON_HSORT_FNAME
@@ -200,8 +200,8 @@ void ON_SortDoubleArray(
 #define ON_SORT_TEMPLATE_TYPE float
 #define ON_QSORT_FNAME ON_qsort_float
 #define ON_HSORT_FNAME ON_hsort_float
-#include <pcl/surface/3rdparty/opennurbs/opennurbs_qsort_template.h>
-#include <pcl/surface/3rdparty/opennurbs/opennurbs_hsort_template.h>
+#include "pcl/surface/3rdparty/opennurbs/opennurbs_qsort_template.h"
+#include "pcl/surface/3rdparty/opennurbs/opennurbs_hsort_template.h"
 #undef ON_SORT_TEMPLATE_TYPE
 #undef ON_QSORT_FNAME
 #undef ON_HSORT_FNAME
@@ -222,8 +222,8 @@ void ON_SortFloatArray(
 #define ON_SORT_TEMPLATE_TYPE int
 #define ON_QSORT_FNAME ON_qsort_int
 #define ON_HSORT_FNAME ON_hsort_int
-#include <pcl/surface/3rdparty/opennurbs/opennurbs_qsort_template.h>
-#include <pcl/surface/3rdparty/opennurbs/opennurbs_hsort_template.h>
+#include "pcl/surface/3rdparty/opennurbs/opennurbs_qsort_template.h"
+#include "pcl/surface/3rdparty/opennurbs/opennurbs_hsort_template.h"
 #undef ON_SORT_TEMPLATE_TYPE
 #undef ON_QSORT_FNAME
 #undef ON_HSORT_FNAME
@@ -244,8 +244,8 @@ void ON_SortIntArray(
 #define ON_SORT_TEMPLATE_TYPE unsigned int
 #define ON_QSORT_FNAME ON_qsort_uint
 #define ON_HSORT_FNAME ON_hsort_uint
-#include <pcl/surface/3rdparty/opennurbs/opennurbs_qsort_template.h>
-#include <pcl/surface/3rdparty/opennurbs/opennurbs_hsort_template.h>
+#include "pcl/surface/3rdparty/opennurbs/opennurbs_qsort_template.h"
+#include "pcl/surface/3rdparty/opennurbs/opennurbs_hsort_template.h"
 #undef ON_SORT_TEMPLATE_TYPE
 #undef ON_QSORT_FNAME
 #undef ON_HSORT_FNAME

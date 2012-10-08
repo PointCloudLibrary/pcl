@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -615,6 +615,14 @@ public:
       If target_dist <= 0.0, it is ignored.
       If target_dist > 0, it is used as described in the
       description of the min_near_over_far parameter.
+    relative_depth_bias - [in]
+      If relative_depth_bias <= 0.0, it is ignored.
+      If relative_depth_bias > 0, it is assumed that
+      the requested near_dist and far_dist were calculated
+      assuming no depth bias and the values will be
+      appropriately adjusted to ensure the frustum's 
+      near and far clipping planes will not clip biased
+      objects.
   */
   bool SetFrustumNearFar( 
          double near_dist,
@@ -622,6 +630,15 @@ public:
          double min_near_dist,
          double min_near_over_far,
          double target_dist
+         );
+
+  bool SetFrustumNearFar( 
+         double near_dist,
+         double far_dist,
+         double min_near_dist,
+         double min_near_over_far,
+         double target_dist,
+         double relative_depth_bias
          );
 
   // Description:

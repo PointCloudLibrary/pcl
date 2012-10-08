@@ -5,7 +5,7 @@
 
 /* @(#) $Id$ */
 
-#include <pcl/surface/3rdparty/opennurbs/zutil.h>
+#include "pcl/surface/3rdparty/opennurbs/zutil.h"
 
 #ifndef NO_DUMMY_DECL
 struct internal_state      {int dummy;}; /* for buggy compilers */
@@ -275,7 +275,7 @@ void  zcfree (voidpf opaque, voidpf ptr)
 voidpf zcalloc (voidpf opaque, unsigned items, unsigned size)
 {
     if (opaque) opaque = 0; /* to make compiler happy */
-    return _halloc((long)items, size);
+    return _halloc((int)items, size);
 }
 
 void  zcfree (voidpf opaque, voidpf ptr)

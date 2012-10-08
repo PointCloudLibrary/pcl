@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -76,6 +76,10 @@ extern ON_EXTERN_DECL const ON_UUID ON_v4_userdata_id;
 // write userdata in 3dm files.  User data whose class
 // definition is in opennurbs should use these
 // ids as the user data application id.
+// No other user data should use these ids.
+// The "extern ON_EXTERN_DECL" prefix on the declarations
+// of these ids was a mistake that will be corrected when
+// the public SDK can be changed.
 // In situations where you want to use the id
 // for the current version of opennurbs, use
 // ON_opennurbs_id and you won't have to update

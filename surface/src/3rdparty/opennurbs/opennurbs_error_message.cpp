@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -14,7 +14,7 @@
 ////////////////////////////////////////////////////////////////
 */
 
-#include <pcl/surface/3rdparty/opennurbs/opennurbs.h>
+#include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
 
 
 void ON_ErrorMessage(
@@ -30,6 +30,12 @@ void ON_ErrorMessage(
   // to do whatever you want to with the message.
   if ( sErrorMessage && sErrorMessage[0] ) 
   {
+
+#if defined(ON_PURIFY_BUILD) && defined(ON_32BIT_POINTER)
+    // 10 December 2003 Dale Lear
+    //     Make ON_ERROR/ON_WARNING messages show up in Purify
+    PurifyPrintf("%s",sErrorMessage);
+#endif
 
 #if defined(ON_OS_WINDOWS)
     ::OutputDebugStringA( "\n" );

@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -13,7 +13,7 @@
 //
 ////////////////////////////////////////////////////////////////
 */
-#include <pcl/surface/3rdparty/opennurbs/opennurbs.h>
+#include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
 
 ON_OBJECT_IMPLEMENT(ON_PlaneSurface,ON_Surface,"4ED7D4DF-E947-11d3-BFE5-0010830122F0");
 ON_OBJECT_IMPLEMENT(ON_ClippingPlaneSurface,ON_PlaneSurface,"DBC5A584-CE3F-4170-98A8-497069CA5C36");
@@ -203,6 +203,19 @@ int ON_PlaneSurface::SpanCount( int dir ) const
   return 1;
 }
 
+ON_BOOL32 ON_PlaneSurface::GetSurfaceSize( 
+    double* width, 
+    double* height 
+    ) const
+{
+  if ( width ) 
+    *width = Extents(0).Length();
+  if ( height ) 
+    *height = Extents(1).Length();
+  return true;
+}
+
+
 ON_BOOL32 ON_PlaneSurface::GetSpanVector( int dir, double* s ) const
 {
   ON_Interval d = Domain(dir);
@@ -371,7 +384,7 @@ ON_PlaneSurface::Evaluate( // returns false if unable to evaluate
 ON_Curve* ON_PlaneSurface::IsoCurve( int dir, double c ) const
 {
   ON_LineCurve* line_curve = 0;
-  if ( dir == 0 || dir == 1 && IsValid() ) 
+  if ( (dir == 0 || dir == 1) && IsValid() ) 
   {
     ON_Line line;
     ON_Interval domain = Domain(dir);
@@ -391,10 +404,6 @@ ON_Curve* ON_PlaneSurface::IsoCurve( int dir, double c ) const
   }
   return line_curve;
 }
-
-
-
-
 
 ON_BOOL32 ON_PlaneSurface::Trim(
        int dir,
@@ -446,6 +455,7 @@ bool ON_PlaneSurface::Extend(
     xdom[1] = m_extents[dir].ParameterAt( m_domain[dir].NormalizedParameterAt(domain[1]));
   }
   if (!changed) return false;
+  DestroySurfaceTree();
 
   m_domain[dir] = tdom;
   m_extents[dir] = xdom;
@@ -582,6 +592,27 @@ ON_BOOL32 ON_PlaneSurface::GetLocalClosestPoint( const ON_3dPoint& test_point, /
   // for planes, global serach is fast and returns same answer as local search
   return GetClosestPoint(test_point,s,t,0.0,sdomain,tdomain);
 }
+
+
+ON_Surface* ON_PlaneSurface::Offset(
+      double offset_distance, 
+      double tolerance, 
+      double* max_deviation
+      ) const
+{
+  if ( max_deviation )
+    *max_deviation = 0.0;
+  ON_PlaneSurface* offset_srf = new ON_PlaneSurface(*this);
+  ON_3dVector delta = offset_srf->m_plane.zaxis;
+  double d = delta.Length();
+  if ( fabs(1.0-d) <= ON_SQRT_EPSILON )
+    d = 1.0;
+  d = offset_distance/d;
+  offset_srf->m_plane.origin = offset_srf->m_plane.origin + (d*delta);
+  offset_srf->m_plane.UpdateEquation();
+  return offset_srf;
+}
+
 
 int 
 ON_PlaneSurface::GetNurbForm( // returns 0: unable to create NURBS representation
@@ -774,6 +805,7 @@ ON_BOOL32 ON_PlaneSurface::SetDomain(
   {
     rc = true;
     m_domain[dir].Set(t0,t1);
+    DestroySurfaceTree();
   }
   return rc;
 }
@@ -1118,4 +1150,5 @@ ON_BOOL32 ON_ClippingPlaneSurface::Read( ON_BinaryArchive& file )
 
   return rc;
 }
+
 

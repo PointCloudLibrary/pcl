@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -14,7 +14,7 @@
 ////////////////////////////////////////////////////////////////
 */
 
-#include <pcl/surface/3rdparty/opennurbs/opennurbs.h>
+#include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
 
 ON_OBJECT_IMPLEMENT(ON_ArcCurve,ON_Curve,"CF33BE2A-09B4-11d4-BFFB-0010830122F0");
 
@@ -161,6 +161,7 @@ ON_BOOL32
 ON_ArcCurve::Transform( const ON_Xform& xform )
 {
   TransformUserData(xform);
+	DestroyCurveTree();
   return m_arc.Transform( xform );
 }
 
@@ -191,6 +192,10 @@ void ON_ArcCurve::Dump( ON_TextLog& dump ) const
   dump.Print( m_arc.plane.origin );
   dump.Print( "\nradius = %g\n",m_arc.radius);
   dump.Print( "length = %g\n",m_arc.Length());
+  ON_3dPoint start = PointAtStart();
+  ON_3dPoint end = PointAtEnd();
+  dump.Print( "start = "); dump.Print(start);
+  dump.Print( "\nend = "); dump.Print(end); dump.Print("\n");
   dump.PopIndent();
 }
 
@@ -243,6 +248,7 @@ ON_BOOL32 ON_ArcCurve::SetDomain( double t0, double t1 )
     m_t.Set(t0,t1);
     rc = true;
   }
+	DestroyCurveTree();
   return rc;
 }
 
@@ -252,6 +258,7 @@ bool ON_ArcCurve::ChangeDimension( int desired_dimension )
   bool rc = (desired_dimension>=2 && desired_dimension<=3);
   if ( rc && m_dim != desired_dimension )
   {
+  	DestroyCurveTree();
     if ( desired_dimension == 2 )
       m_dim = 2;
     else
@@ -369,6 +376,7 @@ ON_ArcCurve::Reverse()
   if (rc)
 	{
     m_t.Reverse();
+		DestroyCurveTree();
 	}	
   return true;
 }
@@ -406,6 +414,7 @@ ON_BOOL32 ON_ArcCurve::SetStartPoint(ON_3dPoint start_point)
       }
     }
   }
+	DestroyCurveTree();
   return rc;  
 }
 
@@ -440,6 +449,7 @@ ON_BOOL32 ON_ArcCurve::SetEndPoint(ON_3dPoint end_point)
       }
     }
   }
+	DestroyCurveTree();
   return rc;  
 }
 
@@ -459,8 +469,28 @@ ON_BOOL32 ON_ArcCurve::Evaluate( // returns false if unable to evaluate
     double rat = m_arc.DomainRadians().Length()/m_t.Length();
     double scale = 1.0;
     double a = m_arc.DomainRadians().ParameterAt( m_t.NormalizedParameterAt(t) );
-    double c = cos(a)*m_arc.radius;
-    double s = sin(a)*m_arc.radius;
+
+    // 12 July 2012 Dale Lear
+    //   When making a sphere with center (0,0,0) and radius = 1.0e9,
+    //   a = ON_PI = 3.1415926535897931, c = -1.0 and s = 1.2246467991473532e-016
+    //   so I'm adding the if ... statements to keep arc evaluations more precise
+    //   at multiples of 1/2 pi.
+    double c = cos(a);
+    double s = sin(a);
+    if ( fabs(c) < ON_EPSILON || fabs(s) > 1.0-ON_EPSILON )
+    {
+      c = 0.0;
+      s = s < 0.0 ? -1.0 : 1.0;
+    }
+    else if ( fabs(s) < ON_EPSILON || fabs(c) > 1.0-ON_EPSILON )
+    {
+      s = 0.0;
+      c = c < 0.0 ? -1.0 : 1.0;
+    }
+
+    c *= m_arc.radius;
+    s *= m_arc.radius;
+
     ON_3dPoint p = m_arc.plane.origin + c*m_arc.plane.xaxis + s*m_arc.plane.yaxis;
     v[0] = p.x;
     v[1] = p.y;
@@ -502,6 +532,7 @@ ON_BOOL32 ON_ArcCurve::Trim( const ON_Interval& in )
     {
       rc = false;
     }
+    DestroyCurveTree();
   }
   return rc;
 }
@@ -525,6 +556,8 @@ bool ON_ArcCurve::Extend(
     changed = true;
   }
   if (!changed) return false;
+
+  DestroyCurveTree();
 
   double a0 = m_arc.Domain().ParameterAt(Domain().NormalizedParameterAt(s0));
   double a1 = m_arc.Domain().ParameterAt(Domain().NormalizedParameterAt(s1));
@@ -565,6 +598,7 @@ ON_BOOL32 ON_ArcCurve::Split(
     left_arc = ON_ArcCurve::Cast(left_side);
     if ( 0 == left_arc )
       return false;
+    left_arc->DestroyCurveTree();
   }
 
   if ( 0 != right_side )
@@ -572,6 +606,7 @@ ON_BOOL32 ON_ArcCurve::Split(
     right_arc = ON_ArcCurve::Cast(right_side);
     if ( 0 == right_arc )
       return false;
+    right_arc->DestroyCurveTree();
   }
 
   if ( 0 == left_arc )

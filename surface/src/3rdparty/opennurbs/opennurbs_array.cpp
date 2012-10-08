@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -14,7 +14,7 @@
 ////////////////////////////////////////////////////////////////
 */
 
-#include <pcl/surface/3rdparty/opennurbs/opennurbs.h>   // openNURBS declarations of functions that perform simple calculations
+#include "pcl/surface/3rdparty/opennurbs/opennurbs.h"   // openNURBS declarations of functions that perform simple calculations
 
 ON_2dPointArray::ON_2dPointArray() 
 {}
@@ -1314,33 +1314,41 @@ const ON_2dex* ON_BinarySearch2dexArray( int key_i, const ON_2dex* base, size_t 
   if (nel > 0 && base )
   {
     size_t i;
-    int d;
+    int base_i;
 
     // The end tests are not necessary, but they
     // seem to provide overall speed improvement
     // for the types of searches that call this
     // function.
-    d = key_i-base[0].i;
-    if ( d < 0 )
+
+    // 26 January 2012 Dale Lear
+    //   Part of the fix for http://dev.mcneel.com/bugtrack/?q=97693
+    //   When the values of key_i and base[].i are large,
+    //   key_i - base[].i suffers from integer overflow
+    //   and the difference can not be use to compare
+    //   magnitudes.
+
+    base_i = base[0].i;
+    if ( key_i < base_i )
       return 0;
-    if ( !d )
+    if ( key_i == base_i )
       return base;
 
-    d = key_i-base[nel-1].i;
-    if ( d > 0 )
+    base_i = base[nel-1].i;
+    if ( key_i > base_i )
       return 0;
-    if ( !d )
+    if ( key_i == base_i )
       return (base + (nel-1));
 
     while ( nel > 0 )
     {
       i = nel/2;
-      d = key_i - base[i].i;
-      if ( d < 0 )
+      base_i = base[i].i;
+      if ( key_i < base_i )
       {
         nel = i;
       }
-      else if ( d > 0 )
+      else if ( key_i > base_i )
       {
         i++;
         base += i;
@@ -1358,7 +1366,13 @@ const ON_2dex* ON_BinarySearch2dexArray( int key_i, const ON_2dex* base, size_t 
 static
 int compare_2dex_i(const void* a, const void* b)
 {
-  return ( *((const int*)a) - *((const int*)b) );
+  const int ai = *((const int*)a);
+  const int bi = *((const int*)b);
+  if ( ai < bi )
+    return -1;
+  if ( ai > bi )
+    return 1;
+  return 0;
 }
 
 const ON_2dex* ON_2dexMap::Find2dex(int i) const

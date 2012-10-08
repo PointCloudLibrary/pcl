@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -14,7 +14,7 @@
 ////////////////////////////////////////////////////////////////
 */
 
-#include <pcl/surface/3rdparty/opennurbs/opennurbs.h>
+#include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
 
 ON_OBJECT_IMPLEMENT( ON_3dmObjectAttributes, ON_Object, "A828C015-09F5-477c-8665-F0482F5D6996" );
 
@@ -893,8 +893,15 @@ unsigned int ON_3dmObjectAttributes::SizeOf() const
 
 void ON_3dmObjectAttributes::Dump( ON_TextLog& dump ) const
 {
-  const wchar_t* s = m_name;
-  if ( !s ) s = L"";
+  const wchar_t* wsName = m_name;
+  if ( !wsName )
+    wsName = L"";
+  dump.Print("object name = \"%ls\"\n",wsName);
+
+  dump.Print("object uuid = ");
+  dump.Print(m_uuid);
+  dump.Print("\n");
+
   const char* sMode = "unknown";
   switch( Mode() )
   {
@@ -911,11 +918,8 @@ void ON_3dmObjectAttributes::Dump( ON_TextLog& dump ) const
     sMode = "unknown";
     break;
   }
-  dump.Print("object name = \"%S\"\n",s);
-  dump.Print("object uuid = ");
-  dump.Print(m_uuid);
-  dump.Print("\n");
-  dump.Print("object mode = %s\n",sMode);
+  dump.Print("object mode = %s\n",sMode); // sSMode is const char*
+
   dump.Print("object layer index = %d\n",m_layer_index);
   dump.Print("object material index = %d\n",m_material_index);
   const char* sMaterialSource = "unknown";
@@ -924,7 +928,7 @@ void ON_3dmObjectAttributes::Dump( ON_TextLog& dump ) const
   case ON::material_from_object: sMaterialSource = "object material"; break;
   case ON::material_from_parent: sMaterialSource = "parent material"; break;
   }
-  dump.Print("material source = %s\n",sMaterialSource);
+  dump.Print("material source = %s\n",sMaterialSource); // sMaterialSource is const char*
   const int group_count = GroupCount();
   if ( group_count > 0 ) {
     const int* group = GroupList();

@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -14,7 +14,7 @@
 ////////////////////////////////////////////////////////////////
 */
 
-#include <pcl/surface/3rdparty/opennurbs/opennurbs.h>
+#include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
 
 ON_OBJECT_IMPLEMENT(ON_CurveOnSurface,ON_Curve,"4ED7D4D8-E947-11d3-BFE5-0010830122F0");
 
@@ -209,6 +209,7 @@ ON_BOOL32
 ON_CurveOnSurface::Transform( const ON_Xform& xform )
 {
   TransformUserData(xform);
+	DestroyCurveTree();
   return ( m_s ) ? m_s->Transform(xform) : false;
 }
 
@@ -316,6 +317,7 @@ ON_CurveOnSurface::Reverse()
 {
   ON_BOOL32 rc = ( m_c2 ) ? m_c2->Reverse() : false;
   if ( rc && m_c3 ) rc = m_c3->Reverse();
+	DestroyCurveTree();
   return rc;
 }
 

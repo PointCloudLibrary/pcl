@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -14,7 +14,7 @@
 ////////////////////////////////////////////////////////////////
 */
 
-#include <pcl/surface/3rdparty/opennurbs/opennurbs.h>
+#include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
 
 double ON_EvaluateBernsteinBasis(int degree, int i, double t)
 /*****************************************************************************
@@ -1642,8 +1642,6 @@ void ON_ConvertNurbSpanToBezier(int cvdim, int order,
  *
  * RELATED FUNCTIONS:
  *   TL_EvdeBoor(), TL_ConvertBezierToPolynomial
- *
- * Copyright (c) 1994 Robert McNeel & Associates. All rights reserved.
  */
 {
   ON_EvaluateNurbsDeBoor(cvdim,order,cvstride,cv,knot, 1, 0.0, t0);

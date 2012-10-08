@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -14,7 +14,7 @@
 ////////////////////////////////////////////////////////////////
 */
 
-#include <pcl/surface/3rdparty/opennurbs/opennurbs.h>
+#include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
 
 ON_OBJECT_IMPLEMENT( ON_Viewport, ON_Geometry, "D66E5CCF-EA39-11d3-BFE5-0010830122F0" );
 
@@ -3389,6 +3389,26 @@ bool ON_Viewport::SetFrustumNearFar(
        double target_dist
        )
 {
+  double relative_depth_bias = 0.0;
+  return SetFrustumNearFar( 
+            near_dist,
+            far_dist,
+            min_near_dist,
+            min_near_over_far,
+            target_dist,
+            relative_depth_bias
+            );
+}
+
+bool ON_Viewport::SetFrustumNearFar( 
+       double near_dist,
+       double far_dist,
+       double min_near_dist,
+       double min_near_over_far,
+       double target_dist,
+       double relative_depth_bias
+       )
+{
   if (    !ON_IsValid(near_dist)
        || !ON_IsValid(far_dist)
        || near_dist > far_dist )
@@ -3512,7 +3532,7 @@ bool ON_Viewport::SetFrustumNearFar(
           //double n = target_dist + s*(near_dist-target_dist);
           //double f = target_dist + s*(far_dist-target_dist);
 
-#if defined(_DEBUG)
+#if defined(ON_DEBUG)
           double m = ((f != 0.0) ? n/f : 0.0)/min_near_over_far;
           if ( m < 0.95 || m > 1.05 )
           {
@@ -3606,7 +3626,83 @@ bool ON_Viewport::SetFrustumNearFar(
   }
 
   // call bare bones setter
-  return SetFrustumNearFar( near_dist, far_dist );
+  bool rc = SetFrustumNearFar( near_dist, far_dist );
+
+  // if depth bias will be applied, then make an attempt
+  // to adust the frustum's near plane to prevent
+  // clipping biased objects.  This post-adjustment
+  // fixes display bugs like # 87514.
+  if ( rc 
+       && relative_depth_bias > 0.0 && relative_depth_bias <= 0.5 
+       && m_frus_near > min_near_dist
+       && m_frus_far > m_frus_near
+       && m_frus_near > MIN_NEAR_DIST
+       )
+  {
+    const double near0 = m_frus_near;
+    const double far0 = m_frus_far;
+    double bias_3d = 1.001*relative_depth_bias*(m_frus_far - m_frus_near);
+    double near1 = m_frus_near - bias_3d;
+    if ( IsPerspectiveProjection() )
+    {
+      if ( near1 < min_near_over_far*far0 || near1 < MIN_NEAR_OVER_FAR*far0 )
+      {
+        if (near0 - near1 > 0.01*near0)
+          near1 = 0.99*near0;
+      }
+    }
+
+    // It is important that this test be applied in perspective
+    // and parallel views.  Otherwise the camera location in
+    // parallel view will creep back when SetFrustumNearFar()
+    // is called multiple times.
+    if ( !(near1 >= min_near_dist && near1 >= MIN_NEAR_DIST) )
+    {
+      near1 = (min_near_dist >= MIN_NEAR_DIST)
+            ? min_near_dist
+            : MIN_NEAR_DIST;
+    }
+
+    if ( near1 < near0 )
+    {
+#if defined(ON_DEBUG)
+      const ON_3dPoint debug_camloc0(m_CamLoc);
+#endif
+      if ( IsPerspectiveProjection() )
+      {
+        rc = SetFrustumNearFar( near1, far0 );
+        if (!rc)
+          rc = SetFrustumNearFar( near0, far0 );
+      }
+      else
+      {
+        // call this function again with relative_depth_bias = 0.0
+        // to get cameral location positioned correctly when near1 
+        // is too small or negative.
+        rc = SetFrustumNearFar( 
+          near1, far0,
+          min_near_dist, min_near_over_far,
+          target_dist,
+          0.0
+          );
+        if (!rc)
+          rc = SetFrustumNearFar( 
+            near0, far0,
+            min_near_dist, min_near_over_far,
+            target_dist,
+            0.0
+            );
+      }
+#if defined(ON_DEBUG)
+      if ( debug_camloc0 != m_CamLoc )
+      {
+        ON_WARNING("Relative depth bias changed camera location.");
+      }
+#endif
+    }
+  }
+
+  return rc;
 }
 
 

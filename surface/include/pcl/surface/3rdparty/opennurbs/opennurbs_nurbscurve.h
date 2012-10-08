@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -599,6 +599,13 @@ public:
     double tolerance
     ) const;
 
+  bool SpanIsLinear( 
+    int span_index, 
+    double min_length,
+    double tolerance,
+    ON_Line* line
+    ) const;
+
   /*
   Description:
     Looks for problems caused by knots that are close together
@@ -611,6 +618,8 @@ public:
       can be repaired, but does not modify the curve.
   Returns:
     True if bad knots were found and can be repaired.
+  See Also:
+    ON_NurbsCurve::RemoveShortSegments
   */
   bool RepairBadKnots(
     double knot_tolerance=0.0,
@@ -968,6 +977,62 @@ public:
       int,            // span_index (0 <= span_index <= m_cv_count-m_order)
       ON_BezierCurve& // bezier returned here
       ) const;
+
+  /*
+  Paramaters:
+    span_index - [in]
+      The index of a non-empty span to test.
+        span_index >= 0
+        span_index <= m_cv_count-m_order
+        m_knot[span_index+m_order-2] < m_knot[span_index+m_order-1]
+  Returns:
+    true if the span_index parameter is valid and the span is singular
+    (collapsed to a point).
+    false if the span is not singular or span_index does not identify
+    a non-empty span.
+  */
+  bool SpanIsSingular( 
+    int span_index 
+    ) const;
+
+  /*
+  Returns:
+    True if every span in the NURBS curve is singular.
+  See Also:
+    ON_NurbsCurve::RepairBadKnots()
+    ON_NurbsCurve::RemoveShortSegments()
+  */
+  bool IsSingular() const;
+
+  /*
+  Paramaters:
+    span_index - [in]
+      The index of a non-empty span to remove.
+        span_index >= 0
+        span_index <= m_cv_count-m_order
+        m_knot[span_index+m_order-2] < m_knot[span_index+m_order-1]
+  Returns:
+    True if the span was successfully removed.
+  Remarks:
+    The NURBS curve must have 2 or more spans (m_cv_count > m_order).
+    Set m0 = mulitiplicity of the knot at m_knot[span_index+m_order-2]
+    and m1 = mulitiplicity of the knot at m_knot[span_index+m_order-1].
+    If (m0 + m1) < degree, then the degree-(m0+m1) cvs will be added
+    to the NURBS curve. If (m0+m1) > degree, then (m0+m1)-degree cvs will
+    be removed from the curve.
+  See Also:
+    ON_NurbsCurve::RepairBadKnots()
+    ON_NurbsCurve::RemoveShortSegments()
+  */
+  bool RemoveSpan(
+    int span_index 
+    );
+
+  /*
+  Returns:
+    Number of spans removed.
+  */
+  int RemoveSingularSpans();
 
   ////////
   // Returns true if the NURBS curve has bezier spans 

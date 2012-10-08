@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -13,7 +13,7 @@
 //
 ////////////////////////////////////////////////////////////////
 */
-#include <pcl/surface/3rdparty/opennurbs/opennurbs.h>
+#include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
 
 
 #if defined(ON_COMPILER_MSC)
@@ -2966,7 +2966,14 @@ bool ONX_Model::Read(
 
   // Remap layer, material, linetype, font, dimstyle, hatch pattern, etc., 
   // indices so the correspond to the model's table array index.
+  //
+  // Polish also sets revision history information if it is missing.
+  // In this case, that is not appropriate so the value of
+  // m_properties.m_RevisionHistory is saved before calling Polish()
+  // and restored afterwards.
+  const ON_3dmRevisionHistory saved_revision_history(m_properties.m_RevisionHistory);
   Polish();
+  m_properties.m_RevisionHistory = saved_revision_history;
 
   return return_code;
 }
@@ -3040,12 +3047,19 @@ bool ONX_Model::Write(
     return false;
   }
 
-  if ( version < 2 || version > 5 )
+  if ( 0 != version )
   {
-    // version must be 2, 3, 4 or 5
-    version = 5;
-    if ( error_log) error_log->Print("ONX_Model::Write version parameter = %d; it must be 2, 3, or 4.\n",
-                    version);
+    if (    version < 2 
+         || version > ON_BinaryArchive::CurrentArchiveVersion() 
+         || (version >= 50 && 0 != (version%10))
+         || (version < 50 && version > ON_BinaryArchive::CurrentArchiveVersion()/10)
+         )
+    {
+      // version must be 0, 2, 3, 4, 5 or 50
+      version = 0;
+      if ( error_log) error_log->Print("ONX_Model::Write version parameter = %d; it must be 0, or >= 2 and <= %d, or a multiple of 10 >= 50 and <= %d.\n",
+                      version,ON_BinaryArchive::CurrentArchiveVersion()/10,ON_BinaryArchive::CurrentArchiveVersion());
+    }
   }
 
   if ( !archive.WriteMode() )
@@ -3877,7 +3891,7 @@ static int AuditTextureMappingTableHelper(
         if ( text_log )
         {
           text_log->PushIndent();
-          text_log->Print(L"Repaired.\n");
+          text_log->Print("Repaired.\n");
           text_log->PopIndent();
         }
         if ( repair_count )
@@ -3921,7 +3935,7 @@ static int AuditGroupTableHelper(
         if ( text_log )
         {
           text_log->PushIndent();
-          text_log->Print(L"Repaired.\n");
+          text_log->Print("Repaired.\n");
           text_log->PopIndent();
         }
         if ( repair_count )
@@ -3965,7 +3979,7 @@ static int AuditFontTableHelper(
         if ( text_log )
         {
           text_log->PushIndent();
-          text_log->Print(L"Repaired.\n");
+          text_log->Print("Repaired.\n");
           text_log->PopIndent();
         }
         if ( repair_count )
@@ -4009,7 +4023,7 @@ static int AuditDimStyleTableHelper(
         if ( text_log )
         {
           text_log->PushIndent();
-          text_log->Print(L"Repaired.\n");
+          text_log->Print("Repaired.\n");
           text_log->PopIndent();
         }
         if ( repair_count )
@@ -4053,7 +4067,7 @@ static int AuditHatchPatternTableHelper(
         if ( text_log )
         {
           text_log->PushIndent();
-          text_log->Print(L"Repaired.\n");
+          text_log->Print("Repaired.\n");
           text_log->PopIndent();
         }
         if ( repair_count )
@@ -4074,7 +4088,7 @@ static int AuditHatchPatternTableHelper(
 static int AuditObjectAttributesHelper(
       ONX_Model& model,
       ON_3dmObjectAttributes& attributes,
-      const wchar_t* parent_name,
+      const char* parent_name,
       int parent_index,
       bool bAttemptRepair,
       int* repair_count,
@@ -4201,7 +4215,7 @@ static int AuditLightTableHelper(
         if ( text_log )
         {
           text_log->PushIndent();
-          text_log->Print(L"Repaired.\n");
+          text_log->Print("Repaired.\n");
           text_log->PopIndent();
         }
         if ( repair_count )
@@ -4215,7 +4229,7 @@ static int AuditLightTableHelper(
 
     int attrc = AuditObjectAttributesHelper(model,
       xlight.m_attributes,
-      L"m_light_table[%d].m_attributes",
+      "m_light_table[%d].m_attributes",
       i,
       bAttemptRepair,
       repair_count,
@@ -4261,7 +4275,7 @@ static int AuditMaterialTableHelper(
         if ( text_log )
         {
           text_log->PushIndent();
-          text_log->Print(L"Repaired.\n");
+          text_log->Print("Repaired.\n");
           text_log->PopIndent();
         }
         if ( repair_count )
@@ -4304,7 +4318,7 @@ static int AuditLinetypeTableHelper(
         if ( text_log )
         {
           text_log->PushIndent();
-          text_log->Print(L"Repaired.\n");
+          text_log->Print("Repaired.\n");
           text_log->PopIndent();
         }
         if ( repair_count )
@@ -4350,7 +4364,7 @@ static int AuditLayerTableHelper(
         if ( text_log )
         {
           text_log->PushIndent();
-          text_log->Print(L"Repaired.\n");
+          text_log->Print("Repaired.\n");
           text_log->PopIndent();
         }
         if ( repair_count )
@@ -4378,7 +4392,7 @@ static int AuditLayerTableHelper(
         if ( text_log )
         {
           text_log->PushIndent();
-          text_log->Print(L"Repaired.\n");
+          text_log->Print("Repaired.\n");
           text_log->PopIndent();
         }
         if ( repair_count )
@@ -4405,7 +4419,7 @@ static int AuditLayerTableHelper(
         if ( text_log )
         {
           text_log->PushIndent();
-          text_log->Print(L"Repaired.\n");
+          text_log->Print("Repaired.\n");
           text_log->PopIndent();
         }
         if ( repair_count )
@@ -4433,7 +4447,7 @@ static int AuditLayerTableHelper(
         if ( text_log )
         {
           text_log->PushIndent();
-          text_log->Print(L"Repaired.\n");
+          text_log->Print("Repaired.\n");
           text_log->PopIndent();
         }
         if ( repair_count )
@@ -4457,8 +4471,8 @@ static int AuditIdsHelper(
       bool bAttemptRepair,
       int* repair_count,
       ON_TextLog* text_log,
-      const wchar_t* nil_id_msg,
-      const wchar_t* dup_id_msg
+      const char* nil_id_msg,
+      const char* dup_id_msg
       )
 {
   int nil_count = 0;
@@ -4491,11 +4505,11 @@ static int AuditIdsHelper(
             id_list[i].m_id = id;
             rep_count++;
             if ( text_log )
-              text_log->Print(L" Repaired.");
+              text_log->Print(" Repaired.");
           }
         }
         if ( text_log )
-          text_log->Print(L"\n");
+          text_log->Print("\n");
       }
     }
 
@@ -4530,11 +4544,11 @@ static int AuditIdsHelper(
               rep_count++;
               id_list[i].m_id = id;
               if ( text_log )
-                text_log->Print(L" Repaired.");
+                text_log->Print(" Repaired.");
             }
           }
           if ( text_log )
-            text_log->Print(L"\n");
+            text_log->Print("\n");
         }
         else
         {
@@ -4584,8 +4598,8 @@ static int AuditObjectIdsHelper(
               bAttemptRepair,
               repair_count,
               text_log,
-              L"m_object_table[%d].m_attributes.m_uuid is nil.",
-              L"m_object_table[%d] and [%d] have the same id."
+              "m_object_table[%d].m_attributes.m_uuid is nil.",
+              "m_object_table[%d] and [%d] have the same id."
               );
     if (rc && bAttemptRepair )
     {
@@ -4654,8 +4668,8 @@ static int AuditLightIdsHelper(
               bAttemptRepair,
               repair_count,
               text_log,
-              L"m_light_table[%d] light id is nil.",
-              L"m_light_table[%d] and[%d] have the same id."
+              "m_light_table[%d] light id is nil.",
+              "m_light_table[%d] and[%d] have the same id."
               );
 
     rc += mismatch_count;
@@ -4680,7 +4694,7 @@ static int AuditLightIdsHelper(
         rc++;
         if ( text_log )
         {
-          text_log->Print(L"m_light_table[%d] and m_object_table[%d] have same id.",
+          text_log->Print("m_light_table[%d] and m_object_table[%d] have same id.",
                           i,
                           oi
                           );
@@ -4739,8 +4753,8 @@ static int AuditIDefIdsHelper(
               bAttemptRepair,
               repair_count,
               text_log,
-              L"m_idef_table[%d].m_attributes.m_uuid is nil.",
-              L"m_idef_table[%d] and[%d] are the same."
+              "m_idef_table[%d].m_attributes.m_uuid is nil.",
+              "m_idef_table[%d] and[%d] are the same."
               );
     if (rc && bAttemptRepair )
     {
@@ -4777,8 +4791,8 @@ static int AuditMappingIdsHelper(
               bAttemptRepair,
               repair_count,
               text_log,
-              L"m_mapping_table[%d].m_mapping_id is nil.",
-              L"m_mapping_table[%d] and[%d] are the same."
+              "m_mapping_table[%d].m_mapping_id is nil.",
+              "m_mapping_table[%d] and[%d] are the same."
               );
     if (rc && bAttemptRepair )
     {
@@ -4816,8 +4830,8 @@ static int AuditMaterialIdsHelper(
               bAttemptRepair,
               repair_count,
               text_log,
-              L"m_material_table[%d].m_material_id is nil.",
-              L"m_material_table[%d] and[%d] are the same."
+              "m_material_table[%d].m_material_id is nil.",
+              "m_material_table[%d] and[%d] are the same."
               );
     if (rc && bAttemptRepair )
     {
@@ -4923,7 +4937,7 @@ static int AuditIDefTableHelper(
     if ( !ONX_IsValidName(idef_name) )
     {
       if ( text_log )
-        text_log->Print("m_idef_table[%d].Name() = \"%S\" is not valid.\n",i,idef_name);
+        text_log->Print("m_idef_table[%d].Name() = \"%ls\" is not valid.\n",i,idef_name);
       idef_ok = false;
     }
     else
@@ -5111,7 +5125,7 @@ static int AuditObjectTableHelper(
 
     int attrc = AuditObjectAttributesHelper(model,
                                 obj.m_attributes,
-                                L"m_object_table[%d].m_attributes",
+                                "m_object_table[%d].m_attributes",
                                 i,
                                 bAttemptRepair,
                                 repair_count,

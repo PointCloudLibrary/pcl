@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -14,7 +14,7 @@
 ////////////////////////////////////////////////////////////////
 */
 
-#include <pcl/surface/3rdparty/opennurbs/opennurbs.h>
+#include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
 
 const ON_Plane ON_xy_plane( ON_3dPoint(0.0,0.0,0.0),
                               ON_3dVector(1.0,0.0,0.0),
@@ -379,12 +379,21 @@ bool ON_Plane::Transform( const ON_Xform& xform )
   }
 
   ON_3dPoint origin_pt = xform*origin;
-  // use care tranforming vectors 
-  ON_3dVector xaxis_vec = (xform*(origin+xaxis)) - origin_pt;
-  ON_3dVector yaxis_vec = (xform*(origin+yaxis)) - origin_pt;
+
+  // use care tranforming vectors to get
+  // maximum precision and the right answer
+  bool bUseVectorXform = (    0.0 == xform.m_xform[3][0] 
+                           && 0.0 == xform.m_xform[3][1]
+                           && 0.0 == xform.m_xform[3][2] 
+                           && 1.0 == xform.m_xform[3][3]
+                         );
+
+  ON_3dVector xaxis_vec = bUseVectorXform ? (xform*xaxis) : ((xform*(origin+xaxis)) - origin_pt);
+  ON_3dVector yaxis_vec = bUseVectorXform ? (xform*yaxis) : ((xform*(origin+yaxis)) - origin_pt);
 
   return CreateFromFrame( origin_pt, xaxis_vec, yaxis_vec );
 }
+
 
 bool ON_Plane::SwapCoordinates( int i, int j )
 {

@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -14,9 +14,7 @@
 ////////////////////////////////////////////////////////////////
 */
 
-#include <pcl/surface/3rdparty/opennurbs/opennurbs.h>
-
-static void ON_DebuggerBreakpoint() {} // <- Good location for a debugger breakpoint.
+#include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
 
 // openNURBS Geometry Library Errors and Warnings
 //
@@ -36,25 +34,7 @@ static void ON_DebuggerBreakpoint() {} // <- Good location for a debugger breakp
 static int ON_ERROR_COUNT = 0;
 static int ON_WARNING_COUNT = 0;
 static int ON_MATH_ERROR_COUNT = 0;
-
-// 0 = no break
-// 1 = break on errors, warnings, and asserts
-#if defined(ON_DEBUG)
-
-// debug build defaults
-static int ON_DEBUG_BREAK_ON_FIRST_ERROR_OPTION = 1; 
-static int ON_DEBUG_BREAK_OPTION = 0; 
-static int ON_DEBUG_ERROR_MESSAGE_OPTION = 1; 
-
-#else
-
-// release build defaults
-static int ON_DEBUG_BREAK_ON_FIRST_ERROR_OPTION = 0; 
-static int ON_DEBUG_BREAK_OPTION = 0; 
 static int ON_DEBUG_ERROR_MESSAGE_OPTION = 0; 
-
-#endif
-
 
 int ON_GetErrorCount(void)
 {
@@ -71,27 +51,6 @@ int ON_GetMathErrorCount(void)
 {
   return ON_MATH_ERROR_COUNT;	
 }	
-
-int ON_GetDebugBreak(void)
-{
-  return ON_DEBUG_BREAK_OPTION?true:false;
-}
-
-
-void ON_EnableDebugBreak( int bEnableDebugBreak )
-{
-  ON_DEBUG_BREAK_OPTION = bEnableDebugBreak ? 1 : 0;
-}
-
-int ON_GetDebugBreakOnFirstError(void)
-{
-  return ON_DEBUG_BREAK_ON_FIRST_ERROR_OPTION?true:false;
-}
-
-void ON_EnableDebugBreakOnFirstError( int bEnableDebugBreak )
-{
-  ON_DEBUG_BREAK_ON_FIRST_ERROR_OPTION = bEnableDebugBreak ? 1 : 0;
-}
 
 int ON_GetDebugErrorMessage(void)
 {
@@ -138,19 +97,16 @@ void ON_MathError(
 
 static void ON_IncrementErrorCount()
 {
-  ON_DebuggerBreakpoint();
   ON_ERROR_COUNT++;
 }
 
 static void ON_IncrementWarningCount()
 {
-  ON_DebuggerBreakpoint();
   ON_WARNING_COUNT++;
 }
 
 bool ON_IsNotValid()
 {
-  ON_DebuggerBreakpoint();
   return false;
 }
 

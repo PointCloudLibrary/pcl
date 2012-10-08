@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -55,8 +55,8 @@ struct ON_UnicodeErrorParameters
        UTF-8 sequence. 
 
        This error is masked if 0 != (16 & m_error_mask).
-       If the error is masked and the value of error_code_point is
-       a valid unicode code point, then error_code_point is used
+       If the error is masked and the value of m_error_code_point is
+       a valid unicode code point, then m_error_code_point is used
        and parsing continues.
   */
   unsigned int m_error_status;
@@ -64,7 +64,7 @@ struct ON_UnicodeErrorParameters
   /*
   If 0 != (error_mask & 4), then type 4 errors are masked.
   If 0 != (error_mask & 8), then type 8 errors are masked.
-  If 0 != (error_mask & 16) and error_code_point is a valid unicode
+  If 0 != (error_mask & 16) and m_error_code_point is a valid unicode
   code point value, then type 16 errors are masked.
   */
   unsigned int m_error_mask;
@@ -72,6 +72,7 @@ struct ON_UnicodeErrorParameters
   /*
   Unicode code point value to use in when masking type 16 errors.
   If 0 == (error_mask & 16), then this parameter is ignored.
+  0xFFFD is a popular choice for the m_error_code_point value.
   */
   ON__UINT32 m_error_code_point;
 };
@@ -316,6 +317,7 @@ Parameters:
   error_code_point - [in]
     Unicode code point value to use in when masking type 16 errors.
     If 0 == (error_mask & 16), then this parameter is ignored.
+    0xFFFD is a popular choice for the error_code_point value.
 
   sNextUTF8 - [out]
     If sNextUTF8 is not null, then *sNextUTF8 points to the first
@@ -415,6 +417,7 @@ Parameters:
   error_code_point - [in]
     Unicode code point value to use in when masking type 16 errors.
     If 0 == (error_mask & 16), then this parameter is ignored.
+    0xFFFD is a popular choice for the error_code_point value.
 
   sNextUTF8 - [out]
     If sNextUTF8 is not null, then *sNextUTF8 points to the first
@@ -527,6 +530,7 @@ Parameters:
   error_code_point - [in]
     Unicode code point value to use in when masking type 16 errors.
     If 0 == (error_mask & 16), then this parameter is ignored.
+    0xFFFD is a popular choice for the error_code_point value.
 
   sNextUTF16 - [out]
     If sNextUTF16 is not null, then *sNextUTF16 points to the first
@@ -639,6 +643,7 @@ Parameters:
   error_code_point - [in]
     Unicode code point value to use in when masking type 16 errors.
     If 0 == (error_mask & 16), then this parameter is ignored.
+    0xFFFD is a popular choice for the error_code_point value.
 
   sNextUTF16 - [out]
     If sNextUTF16 is not null, then *sNextUTF16 points to the first
@@ -757,6 +762,7 @@ Parameters:
   error_code_point - [in]
     Unicode code point value to use in when masking type 16 errors.
     If 0 == (error_mask & 16), then this parameter is ignored.
+    0xFFFD is a popular choice for the error_code_point value.
 
   sNextUTF32 - [out]
     If sNextUTF32 is not null, then *sNextUTF32 points to the first
@@ -874,6 +880,7 @@ Parameters:
   error_code_point - [in]
     Unicode code point value to use in when masking type 16 errors.
     If 0 == (error_mask & 16), then this parameter is ignored.
+    0xFFFD is a popular choice for the error_code_point value.
 
   sNextUnicode - [out]
     If sNextUnicode is not null, then *sNextUnicode points to the first
@@ -996,6 +1003,7 @@ Parameters:
   error_code_point - [in]
     Unicode code point value to use in when masking type 16 errors.
     If 0 == (error_mask & 16), then this parameter is ignored.
+    0xFFFD is a popular choice for the error_code_point value.
 
   sNextWideChar - [out]
     If sNextWideChar is not null, then *sNextWideChar points to the first
@@ -1102,6 +1110,7 @@ Parameters:
   error_code_point - [in]
     Unicode code point value to use in when masking type 16 errors.
     If 0 == (error_mask & 16), then this parameter is ignored.
+    0xFFFD is a popular choice for the error_code_point value.
 
   sNextUTF8 - [out]
     If sNextUTF8 is not null, then *sNextUTF8 points to the first

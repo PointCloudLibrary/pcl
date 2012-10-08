@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -14,7 +14,7 @@
 ////////////////////////////////////////////////////////////////
 */
 
-#include <pcl/surface/3rdparty/opennurbs/opennurbs.h>
+#include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
 
 ON_OBJECT_IMPLEMENT(ON_PolylineCurve,ON_Curve,"4ED7D4E6-E947-11d3-BFE5-0010830122F0");
 
@@ -107,6 +107,7 @@ ON_BOOL32
 ON_PolylineCurve::Transform( const ON_Xform& xform )
 {
   TransformUserData(xform);
+	DestroyCurveTree();
   return m_pline.Transform( xform );
 }
 
@@ -115,37 +116,42 @@ ON_PolylineCurve::Transform( const ON_Xform& xform )
 ON_BOOL32
 ON_PolylineCurve::SwapCoordinates( int i, int j )
 {
+	DestroyCurveTree();
   return m_pline.SwapCoordinates(i,j);
 }
 
 ON_BOOL32 ON_PolylineCurve::IsValid( ON_TextLog* text_log ) const
 {
-  ON_BOOL32 rc = false;
   const int count = PointCount();
   if ( count >= 2 && count == m_t.Count() ) 
   {
-    rc = m_pline.IsValid();
+    if ( !m_pline.IsValid() )
+    {
+      if ( 0 != text_log )
+      {
+        text_log->Print("PolylineCurve m_pline[] is not valid.\n");
+      }
+      return ON_IsNotValid();
+    }
     int i;
-    for ( i = 1; rc && i < count; i++ ) 
+    for ( i = 1; i < count; i++ ) 
     {
       if ( m_t[i] <= m_t[i-1] )
       {
-        rc = false;
         if ( 0 != text_log )
         {
           text_log->Print("PolylineCurve m_t[%d]=%g should be less than m_t[%d]=(%g).\n",
                            i-1,m_t[i-1],i,m_t[i]);
         }
+        return ON_IsNotValid();
       }
     }
-    if ( rc )
+
+    if (m_dim < 2 || m_dim > 3 )
     {
-      if (m_dim < 2 || m_dim > 3 )
-      {
-        rc = false;
-        if (0 != text_log )
-          text_log->Print("PolylineCurve m_dim = %d (should be 2 or 3).\n",m_dim);
-      }
+      if (0 != text_log )
+        text_log->Print("PolylineCurve m_dim = %d (should be 2 or 3).\n",m_dim);
+      return ON_IsNotValid();
     }
   }
   else if ( 0 != text_log )
@@ -155,9 +161,10 @@ ON_BOOL32 ON_PolylineCurve::IsValid( ON_TextLog* text_log ) const
     else
       text_log->Print("PolylineCurve m_t.Count() = %d and PointCount() = %d (should be equal)\n",
                       m_t.Count(),count);
+    return ON_IsNotValid();
   }
 
-  return rc;
+  return true;
 }
 
 void ON_PolylineCurve::Dump( ON_TextLog& dump ) const
@@ -228,6 +235,7 @@ ON_BOOL32 ON_PolylineCurve::SetDomain( double t0, double t1 )
 			rc=true;
     }
   }
+	DestroyCurveTree();
   return rc;  
 }
 
@@ -237,6 +245,7 @@ bool ON_PolylineCurve::ChangeDimension( int desired_dimension )
 
   if ( rc && m_dim != desired_dimension )
   {
+  	DestroyCurveTree();
     int i, count = m_pline.Count();
     if ( 2 == desired_dimension )
     {
@@ -717,6 +726,7 @@ ON_PolylineCurve::Reverse()
     }
     rc = true;
   }
+	DestroyCurveTree();
   return rc;
 }
 
@@ -744,6 +754,7 @@ ON_BOOL32 ON_PolylineCurve::SetStartPoint(
     m_pline[0] = start_point;
     rc = true;
   }
+	DestroyCurveTree();
   return rc;
 }
 
@@ -771,6 +782,7 @@ ON_BOOL32 ON_PolylineCurve::SetEndPoint(
     m_pline[count-1] = end_point;
     rc = true;
   }
+	DestroyCurveTree();
   return rc;
 }
 
@@ -935,6 +947,9 @@ ON_BOOL32 ON_PolylineCurve::Trim( const ON_Interval& domain )
     return false;
   }
 
+  // we will begin modifying the polyline
+  DestroyCurveTree();
+
   if ( actual_trim_domain == original_polyline_domain )
   {
     // ParameterSearch says that the ends of output_domain
@@ -1090,6 +1105,9 @@ bool ON_PolylineCurve::Extend(
     m_pline[last] = Q1;
   }
 
+  if (changed){
+    DestroyCurveTree();
+  }
   return changed;
 }
 
@@ -1136,7 +1154,7 @@ ON_BOOL32 ON_PolylineCurve::Split(
     //   when (t=m_t[0]+epsilon and epsilon is small enough
     //   that parameter search considers t to be nearly equal
     //   to m_t[0].
-    if (    (segment_index >= 1 || false==split_at_break && 0 == segment_index)
+    if (    ( segment_index >= 1 || (false==split_at_break && 0 == segment_index) )
          && segment_index < count 
          && m_t[0] < t && t < m_t[count] 
        )

@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -14,7 +14,7 @@
 ////////////////////////////////////////////////////////////////
 */
 
-#include <pcl/surface/3rdparty/opennurbs/opennurbs.h>
+#include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
 
 ON_OBJECT_IMPLEMENT(ON_CurveProxy,ON_Curve,"4ED7D4D9-E947-11d3-BFE5-0010830122F0");
 
@@ -135,6 +135,7 @@ void ON_CurveProxy::SetProxyCurve( const ON_Curve* real_curve )
     SetProxyCurve( real_curve, real_curve->Domain() );
   else
   {
+    DestroyCurveTree();
     m_real_curve_domain.Destroy();
     m_this_domain.Destroy();
     m_bReversed = false;
@@ -149,6 +150,7 @@ void ON_CurveProxy::SetProxyCurve( const ON_Curve* real_curve,
     // setting m_real_curve=0 prevents crashes if user has deleted
     // the "real" curve before calling SetProxyCurve().
     m_real_curve = 0;
+    DestroyCurveTree();
     m_real_curve_domain.Destroy();
     m_this_domain.Destroy();
     m_bReversed = false;
@@ -175,6 +177,7 @@ void ON_CurveProxy::SetProxyCurve( const ON_Curve* real_curve,
     // setting m_real_curve=0 prevents crashes if user has deleted
     // the "real" curve before calling SetProxyCurve().
     m_real_curve = 0;
+    DestroyCurveTree();
   }
 
   m_real_curve = real_curve;
@@ -196,6 +199,7 @@ const ON_Curve* ON_CurveProxy::ProxyCurve() const
 
 bool ON_CurveProxy::SetProxyCurveDomain( ON_Interval proxy_curve_subdomain )
 {
+  DestroyCurveTree();
   bool rc = proxy_curve_subdomain.IsIncreasing();
   if ( rc )
   {
@@ -322,6 +326,7 @@ ON_BOOL32 ON_CurveProxy::SetDomain( double t0, double t1 )
   ON_BOOL32 rc = false;
   if (t0 < t1)
   {
+		DestroyCurveTree();
     m_this_domain.Set(t0, t1);
     rc = true;
   }
@@ -844,6 +849,7 @@ ON_CurveProxy::Reverse()
   if ( m_this_domain.IsIncreasing() )
   {
     m_bReversed = (m_bReversed) ? false : true;
+	  DestroyCurveTree();
     m_this_domain.Reverse();
   }
   return true;
@@ -915,7 +921,6 @@ ON_CurveProxy::Evaluate( // returns false if unable to evaluate
   return rc;
 }
 
-
 ON_BOOL32 ON_CurveProxy::Trim(
   const ON_Interval& domain
   )
@@ -930,6 +935,7 @@ ON_BOOL32 ON_CurveProxy::Trim(
       ON_Interval real_dom = RealCurveInterval( &trim_dom );
       if ( real_dom.IsIncreasing() )
       {
+        DestroyCurveTree();
         m_real_curve_domain = real_dom;
         m_this_domain = trim_dom;
         rc = true;

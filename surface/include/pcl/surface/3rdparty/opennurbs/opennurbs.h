@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -13,7 +13,6 @@
 //
 ////////////////////////////////////////////////////////////////
 */
-
 
 ////////////////////////////////////////////////////////////////
 //
@@ -57,7 +56,6 @@
 #include "opennurbs_bounding_box.h"   // simple 3d axis aligned bounding box
 #include "opennurbs_matrix.h"         // general m X n matrix
 #include "opennurbs_xform.h"          // 4 X 4 transformation matrix
-#include "opennurbs_quaternion.h"
 #include "opennurbs_workspace.h"      // workspace memory allocation
 #include "opennurbs_plane.h"          // simple 3d plane
 #include "opennurbs_circle.h"         // simple 3d circle
@@ -81,7 +79,6 @@
 #include "opennurbs_mapchan.h"
 #include "opennurbs_rendering.h"
 #include "opennurbs_archive.h"        // binary arcive objects for serialization to file, memory blocks, etc.
-#include "opennurbs_massprop.h"       // mass properties values
 #include "opennurbs_arc.h"            // simple 3d circular arc
 #include "opennurbs_object.h"         // virtual base class for all openNURBS objects
 #include "opennurbs_userdata.h"       // class for attaching persistent user information to openNURBS objects
@@ -131,7 +128,6 @@
 #include "opennurbs_detail.h"         // ON_Detail definition
 #include "opennurbs_lookup.h"         // ON_SerialNumberTable
 #include "opennurbs_object_history.h"
-
 #include "opennurbs_extensions.h"
 
 #endif

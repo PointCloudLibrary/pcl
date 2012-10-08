@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -167,6 +167,243 @@ public:
 
     Do not make any calls to FirstBlock() or NextBlock() when using
     FirstElement() and NextElement() to iteratate through elements.
+
+    If you need iterate through a fixed size pool and another
+    function may also be in the middle of iterating the pool
+    as well, then use ON_FixedSizePoolIterator.  In particular,
+    if you have multiple concurrent threads iterating the same 
+    fixed size pool, then use ON_FixedSizePoolIterator.
+  */
+  void* FirstElement();
+  void* FirstElement( size_t element_index );
+
+  /*
+  Description:
+    Get the next element when iterating through the list of elements.
+  Example:
+    See the FirstElement() documentation.
+  Returns:
+    The next element when iterating through the list of elements.
+  Remarks:
+    FirstElement() and NextElement() will return elements that have 
+    been returned to the pool using ReturnElement().  If you use 
+    ReturnElement(), then be sure to mark the element so it can be
+    identified and skipped.
+
+    Do not make any calls to FirstBlock() or NextBlock() when using
+    FirstElement() and NextElement() to iteratate through elements.
+
+    If you need iterate through a fixed size pool and another
+    function may also be in the middle of iterating the pool
+    as well, then use ON_FixedSizePoolIterator.  In particular,
+    if you have multiple concurrent threads iterating the same 
+    fixed size pool, then use ON_FixedSizePoolIterator.
+  */
+  void* NextElement();
+
+  /*
+  Description:
+    Get a pointer to the first element in the first block.
+  Parameters:
+    block_element_count - [out] (can be null)
+      If not null, the number of elements allocated from the
+      first block is returned in block_element_count.
+      Note that if you have used ReturnElement(), some
+      of these elemements may have been returned.
+  Example:
+    The loop will iteratate through all the blocks.
+
+          // iterate through all blocks in the pool
+          size_t block_element_count = 0;
+          for ( void* p = FirstBlock(&block_element_count); 
+                0 != p; 
+                p = NextBlock(&block_element_count) 
+              )
+          {
+            ElementType* e = (ElementType*)p;
+            for ( size_t i = 0; 
+                  i < block_element_count; 
+                  i++, e = ((const char*)e) + SizeofElement() 
+                )
+            {
+              ...
+            }
+          }
+
+  Returns:
+    The first block when iterating the list of blocks.
+  Remarks:
+    The heap for a fixed size memory pool is simply a linked
+    list of blocks. FirstBlock() and NextBlock() can be used
+    to iterate through the list of blocks.
+
+    Do not make any calls to FirstElement() or NextElement() when using
+    FirstBlock() and NextBlock() to iteratate through blocks.
+
+    If you need iterate through a fixed size pool and another
+    function may also be in the middle of iterating the pool
+    as well, then use ON_FixedSizePoolIterator.  In particular,
+    if you have multiple concurrent threads iterating the same 
+    fixed size pool, then use ON_FixedSizePoolIterator.
+  */
+  void* FirstBlock( size_t* block_element_count );
+
+  /*
+  Description:
+    Get the next block when iterating through the blocks.
+  Parameters:
+    block_element_count - [out] (can be null)
+      If not null, the number of elements allocated from the
+      block is returned in block_element_count.  Note that if
+      you have used ReturnElement(), some of these elemements
+      may have been returned.
+  Example:
+    See the FirstBlock() documentation.
+  Returns:
+    The next block when iterating through the blocks.
+  Remarks:
+    Do not make any calls to FirstElement() or NextElement() when using
+    FirstBlock() and NextBlock() to iteratate through blocks.
+
+    If you need iterate through a fixed size pool and another
+    function may also be in the middle of iterating the pool
+    as well, then use ON_FixedSizePoolIterator.  In particular,
+    if you have multiple concurrent threads iterating the same 
+    fixed size pool, then use ON_FixedSizePoolIterator.
+  */
+  void* NextBlock( size_t* block_element_count );
+
+  /*
+  Description:
+    Get the i-th elment in the pool.
+  Parameters:
+    element_index - [in]
+  Returns:
+    A pointer to the i-th element.  The first element has index = 0
+    and is the element returned by the first call to AllocateElement().
+    The last element has index = ElementCount()-1.
+    If i is out of range, null is returned.
+  Remarks:
+    It is faster to use FirstElement() and NextElement() to iterate
+    through the entire list of elements.  This function is relatively
+    efficient when there are a few large blocks in the pool
+    or element_index is small compared to the number of elements
+    in the first few blocks.
+
+    If ReturnElement() is not used or AllocateElement() calls to
+    are made after any use of ReturnElement(), then the i-th 
+    element is the one returned by the (i+1)-th call to 
+    AllocateElement().
+  */
+  void* Element(size_t element_index) const;
+
+public:
+  // Expert user functions below for situations where you
+  // need to specify the heap used for this pool.
+
+  /*
+  Description:
+    Expert user function to specify which heap is used.
+  */
+  void SetHeap( ON_MEMORY_POOL* heap );
+
+  /*
+  Description:
+    Expert user function.
+  Returns:
+    Heap used by this pool.  A null pointer means the default
+    heap is being used.
+  */
+  ON_MEMORY_POOL* Heap();
+
+  /*
+  Description:
+    Expert user function to call when the heap used by this pool
+    is no longer valid.  This call zeros all fields and does not
+    call any heap functions.  After calling EmergencyDestroy(), 
+    the destructor will not attempt to free any heap.
+  */
+  void EmergencyDestroy();
+
+private:
+  friend class ON_FixedSizePoolIterator;
+
+  void* m_first_block;
+
+  // ReturnElement() adds to the m_al_element stack.
+  // AllocateElement() will use the stack before using m_al_element_array[]
+  void* m_al_element_stack;
+
+  // used by the iterators
+  void* m_qwerty_it_block;
+  void* m_qwerty_it_element;
+
+  void* m_al_block; // current element allocation block.
+  // m_al_element_array[] is in m_al_block and has length m_al_count.
+  void* m_al_element_array;
+  size_t m_al_count;
+  size_t m_sizeof_element;
+  size_t m_block_element_count;  // block element count
+  size_t m_active_element_count; // number of active elements
+  size_t m_total_element_count;  // total number of elements (active + returned)
+  ON_MEMORY_POOL* m_heap;
+  
+private:
+  // returns capacity of elements in existing block
+  size_t BlockElementCapacity( const void* block ) const;
+
+  // returns number of allocated of elements in existing block
+  size_t BlockElementCount( const void* block ) const;
+private:
+  // prohibit copy construction and operator=.
+  ON_FixedSizePool(const ON_FixedSizePool&);
+  ON_FixedSizePool& operator=(const ON_FixedSizePool&);
+};
+
+class ON_CLASS ON_FixedSizePoolIterator
+{
+public:
+  ON_FixedSizePoolIterator( const class ON_FixedSizePool& fsp );
+
+  const class ON_FixedSizePool& m_fsp;
+
+  /*
+  Description:
+    Get the first element when iterating through the list of elements.
+  Parameters:
+    element_index - [in]
+      If you use the version of FirstElement() that has an 
+      element_index parameter, then the iteration begins at
+      that element.
+  Example:
+    The loop will iteratate through all the elements returned from
+    AllocateElement(), including any that have be returned to the pool
+    using ReturnElement().
+
+          // iterate through all elements in the pool
+          // This iteration will go through TotalElements() items.
+          for ( void* p = FirstElement(); 0 != p; p = NextElement() )
+          {
+            // If you are not using ReturnElement(), then you may process
+            // "p" immediately. If you have used ReturnElement(), then you
+            // must check some value in p located after the first sizeof(void*)
+            // bytes to see if p is active.
+            if ( p is not active )
+              continue;
+
+            ... process p
+          }
+
+  Returns:
+    The first element when iterating through the list of elements.
+  Remarks:
+    FirstElement() and NextElement() will return elements that have 
+    been returned to the pool using ReturnElement().  If you use 
+    ReturnElement(), then be sure to mark the element so it can be
+    identified and skipped.
+
+    Do not make any calls to FirstBlock() or NextBlock() when using
+    FirstElement() and NextElement() to iteratate through elements.
   */
   void* FirstElement();
   void* FirstElement( size_t element_index );
@@ -249,70 +486,12 @@ public:
   */
   void* NextBlock( size_t* block_element_count );
 
-  /*
-  Description:
-    Get the i-th elment in the pool.
-  Parameters:
-    element_index - [in]
-  Returns:
-    A pointer to the i-th element.  The first element has index = 0
-    and is the element returned by the first call to AllocateElement().
-    The last element has index = ElementCount()-1.
-    If i is out of range, null is returned.
-  Remarks:
-    It is faster to use FirstElement() and NextElement() to iterate
-    through the entire list of elements.  This function is relatively
-    efficient when there are a few large blocks in the pool
-    or element_index is small compared to the number of elements
-    in the first few blocks.
-
-    If ReturnElement() is not used or AllocateElement() calls to
-    are made after any use of ReturnElement(), then the i-th 
-    element is the one returned by the (i+1)-th call to 
-    AllocateElement().
-  */
-  void* Element(size_t element_index) const;
-
-public:
-  /*
-  Description:
-    Expert user function to call when the heap used by this pool
-    is no longer valid.  This call zeros all fields and does not
-    call any heap functions.  After calling EmergencyDestroy(), 
-    the destructor will not attempt to free any heap.
-  */
-  void EmergencyDestroy();
-
 private:
-  void* m_first_block;
-
-  // ReturnElement() adds to the m_al_element stack.
-  // AllocateElement() will use the stack before using m_al_element_array[]
-  void* m_al_element_stack;
-
-  // used by the iterators
   void* m_it_block;
   void* m_it_element;
 
-  void* m_al_block; // current element allocation block.
-  // m_al_element_array[] is in m_al_block and has length m_al_count.
-  void* m_al_element_array;
-  size_t m_al_count;
-  size_t m_sizeof_element;
-  size_t m_block_element_count;  // block element count
-  size_t m_active_element_count; // number of active elements
-  size_t m_total_element_count;  // total number of elements (active + returned)
-  
-private:
-  // returns capacity of elements in existing block
-  size_t BlockElementCapacity( const void* block ) const;
-
-  // returns number of allocated of elements in existing block
-  size_t BlockElementCount( const void* block ) const;
-private:
-  // prohibit copy construction and operator=.
-  ON_FixedSizePool(const ON_FixedSizePool&);
-  ON_FixedSizePool& operator=(const ON_FixedSizePool&);
+  // no implementation (you can use a copy construtor)
+  ON_FixedSizePoolIterator& operator=(const ON_FixedSizePoolIterator&);
 };
 
 
@@ -533,6 +712,24 @@ public:
   T* Element(size_t element_index) const;
 
 public:
+  // Expert user functions below for situations where you
+  // need to specify the heap used for this pool.
+
+  /*
+  Description:
+    Expert user function to specify which heap is used.
+  */
+  void SetHeap( ON_MEMORY_POOL* heap );
+
+  /*
+  Description:
+    Expert user function.
+  Returns:
+    Heap used by this pool.  A null pointer means the default
+    heap is being used.
+  */
+  ON_MEMORY_POOL* Heap();
+
   /*
   Description:
     Expert user function to call when the heap used by this pool

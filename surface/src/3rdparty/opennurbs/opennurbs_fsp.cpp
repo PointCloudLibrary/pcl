@@ -1,4 +1,4 @@
-#include <pcl/surface/3rdparty/opennurbs/opennurbs.h>
+#include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
 
 ON_FixedSizePool::ON_FixedSizePool()
 {
@@ -92,8 +92,8 @@ void ON_FixedSizePool::ReturnAll()
   {
     // initialize
     m_al_element_stack = 0;
-    m_it_block = 0;
-    m_it_element = 0;
+    m_qwerty_it_block = 0;
+    m_qwerty_it_element = 0;
     m_al_block = m_first_block;
     m_al_element_array = (void*)(((char*)m_al_block) + 2*sizeof(void*));
     m_al_count = BlockElementCapacity(m_first_block); 
@@ -118,6 +118,16 @@ void ON_FixedSizePool::Destroy()
 void ON_FixedSizePool::EmergencyDestroy()
 {
   memset(this,0,sizeof(*this));
+}
+
+void ON_FixedSizePool::SetHeap( ON_MEMORY_POOL* heap )
+{
+  m_heap = heap;
+}
+
+ON_MEMORY_POOL* ON_FixedSizePool::Heap()
+{
+  return m_heap;
 }
 
 size_t ON_FixedSizePool::ActiveElementCount() const
@@ -166,7 +176,7 @@ void* ON_FixedSizePool::AllocateElement()
           return 0;
         }
 
-        p = onmalloc( 2*sizeof(void*) + m_al_count*m_sizeof_element ); // get some heap
+        p = onmalloc_from_pool( m_heap, 2*sizeof(void*) + m_al_count*m_sizeof_element ); // get some heap
 
         // set "next" pointer to zero
         *((void**)p) = 0;
@@ -231,11 +241,33 @@ void ON_FixedSizePool::ReturnElement(void* p)
   }
 }
 
+
+ON_FixedSizePoolIterator::ON_FixedSizePoolIterator( const ON_FixedSizePool& fsp )
+: m_fsp(fsp)
+, m_it_block(0)
+, m_it_element(0)
+{}
+
 void* ON_FixedSizePool::FirstElement()
 {
   if ( m_first_block && m_total_element_count > 0 )
   {
-    m_it_block = m_first_block;
+    m_qwerty_it_block = m_first_block;
+    m_qwerty_it_element = (void*)(((char*)m_qwerty_it_block)+2*sizeof(void*)); // m_qwerty_it_element points to first element in m_first_block
+  }
+  else
+  {
+    m_qwerty_it_block = 0;
+    m_qwerty_it_element = 0;
+  }
+  return m_qwerty_it_element;
+}
+
+void* ON_FixedSizePoolIterator::FirstElement()
+{
+  if ( m_fsp.m_first_block && m_fsp.m_total_element_count > 0 )
+  {
+    m_it_block = m_fsp.m_first_block;
     m_it_element = (void*)(((char*)m_it_block)+2*sizeof(void*)); // m_it_element points to first element in m_first_block
   }
   else
@@ -248,10 +280,37 @@ void* ON_FixedSizePool::FirstElement()
 
 void* ON_FixedSizePool::NextElement()
 {
+  if ( m_qwerty_it_element )
+  {
+    m_qwerty_it_element = (void*)(((char*)m_qwerty_it_element) + m_sizeof_element);
+    if ( m_qwerty_it_element == m_al_element_array )
+    {
+      m_qwerty_it_block = 0;
+      m_qwerty_it_element = 0;
+    }
+    else if ( m_qwerty_it_element == *((void**)(((char*)m_qwerty_it_block) + sizeof(void*))) )
+    {
+      // m_qwerty_it_element  = "end" pointer which means we are at the end of m_qwerty_it_block
+      m_qwerty_it_block = *((void**)m_qwerty_it_block); // m_qwerty_it_block = "next" block
+      m_qwerty_it_element = (0 != m_qwerty_it_block)    // m_qwerty_it_element points to first element in m_qwerty_it_block
+                   ? (void*)(((char*)m_qwerty_it_block)+2*sizeof(void*))
+                   : 0;
+      if ( m_qwerty_it_element == m_al_element_array )
+      {
+        m_qwerty_it_block = 0;
+        m_qwerty_it_element = 0;
+      }
+    }
+  }
+  return m_qwerty_it_element;
+}
+
+void* ON_FixedSizePoolIterator::NextElement()
+{
   if ( m_it_element )
   {
-    m_it_element = (void*)(((char*)m_it_element) + m_sizeof_element);
-    if ( m_it_element == m_al_element_array )
+    m_it_element = (void*)(((char*)m_it_element) + m_fsp.m_sizeof_element);
+    if ( m_it_element == m_fsp.m_al_element_array )
     {
       m_it_block = 0;
       m_it_element = 0;
@@ -263,7 +322,7 @@ void* ON_FixedSizePool::NextElement()
       m_it_element = (0 != m_it_block)    // m_it_element points to first element in m_it_block
                    ? (void*)(((char*)m_it_block)+2*sizeof(void*))
                    : 0;
-      if ( m_it_element == m_al_element_array )
+      if ( m_it_element == m_fsp.m_al_element_array )
       {
         m_it_block = 0;
         m_it_element = 0;
@@ -273,7 +332,6 @@ void* ON_FixedSizePool::NextElement()
   return m_it_element;
 }
 
-
 void* ON_FixedSizePool::FirstElement(size_t element_index)
 {
   const char* block;
@@ -281,9 +339,9 @@ void* ON_FixedSizePool::FirstElement(size_t element_index)
   const char* next_block;
   size_t block_count;
 
-  m_it_block = 0;
-  m_it_element = 0;
-  if ( element_index >= 0 && element_index < m_total_element_count )
+  m_qwerty_it_block = 0;
+  m_qwerty_it_element = 0;
+  if ( element_index < m_total_element_count )
   {
     for ( block = (const char*)m_first_block; 0 != block; block = next_block )
     {
@@ -300,8 +358,44 @@ void* ON_FixedSizePool::FirstElement(size_t element_index)
       block_count = (block_end - block)/m_sizeof_element;
       if ( element_index < block_count )
       {
+        m_qwerty_it_block = (void*)block;
+        m_qwerty_it_element = ((void*)(block + (2*sizeof(void*) + element_index*m_sizeof_element)));
+        break;
+      }
+      element_index -= block_count;
+    }
+  }
+  return m_qwerty_it_element;
+}
+
+void* ON_FixedSizePoolIterator::FirstElement(size_t element_index)
+{
+  const char* block;
+  const char* block_end;
+  const char* next_block;
+  size_t block_count;
+
+  m_it_block = 0;
+  m_it_element = 0;
+  if ( element_index < m_fsp.m_total_element_count )
+  {
+    for ( block = (const char*)m_fsp.m_first_block; 0 != block; block = next_block )
+    {
+      if ( block == m_fsp.m_al_block )
+      {
+        next_block = 0;
+        block_end = (const char*)m_fsp.m_al_element_array;
+      }
+      else
+      {
+        next_block = *((const char**)block);
+        block_end =  *((const char**)(block + sizeof(void*)));
+      }
+      block_count = (block_end - block)/m_fsp.m_sizeof_element;
+      if ( element_index < block_count )
+      {
         m_it_block = (void*)block;
-        m_it_element = ((void*)(block + (2*sizeof(void*) + element_index*m_sizeof_element)));
+        m_it_element = ((void*)(block + (2*sizeof(void*) + element_index*m_fsp.m_sizeof_element)));
         break;
       }
       element_index -= block_count;
@@ -309,7 +403,6 @@ void* ON_FixedSizePool::FirstElement(size_t element_index)
   }
   return m_it_element;
 }
-
 
 size_t ON_FixedSizePool::BlockElementCapacity( const void* block ) const
 {
@@ -335,10 +428,29 @@ void* ON_FixedSizePool::FirstBlock( size_t* block_element_count )
 {
   if ( m_first_block && m_total_element_count > 0 )
   {
-    m_it_block = m_first_block;
+    m_qwerty_it_block = m_first_block;
+    m_qwerty_it_element = (void*)(((char*)m_qwerty_it_block)+2*sizeof(void*)); // m_qwerty_it_element points to first element in m_first_block
+    if ( 0 != block_element_count )
+      *block_element_count = BlockElementCount(m_qwerty_it_block);
+  }
+  else
+  {
+    m_qwerty_it_block = 0;
+    m_qwerty_it_element = 0;
+    if ( 0 != block_element_count )
+      *block_element_count = 0;
+  }
+  return m_qwerty_it_element;
+}
+
+void* ON_FixedSizePoolIterator::FirstBlock( size_t* block_element_count )
+{
+  if ( m_fsp.m_first_block && m_fsp.m_total_element_count > 0 )
+  {
+    m_it_block = m_fsp.m_first_block;
     m_it_element = (void*)(((char*)m_it_block)+2*sizeof(void*)); // m_it_element points to first element in m_first_block
     if ( 0 != block_element_count )
-      *block_element_count = BlockElementCount(m_it_block);
+      *block_element_count = m_fsp.BlockElementCount(m_it_block);
   }
   else
   {
@@ -352,12 +464,43 @@ void* ON_FixedSizePool::FirstBlock( size_t* block_element_count )
 
 void* ON_FixedSizePool::NextBlock( size_t* block_element_count )
 {
+  if ( 0 != m_qwerty_it_block 
+       && m_qwerty_it_block != m_al_block
+       && m_qwerty_it_element == (void*)(((char*)m_qwerty_it_block)+2*sizeof(void*)) )
+  {
+    m_qwerty_it_block = *((void**)m_qwerty_it_block);
+    if ( m_qwerty_it_block == m_al_element_array )
+    {
+      m_qwerty_it_block = 0;
+      m_qwerty_it_element = 0;
+      if ( 0 != block_element_count )
+        *block_element_count = 0;
+    }
+    else
+    {
+      m_qwerty_it_element = (void*)(((char*)m_qwerty_it_block)+2*sizeof(void*)); // m_qwerty_it_element points to first element in m_first_block
+      if ( 0 != block_element_count )
+        *block_element_count = BlockElementCount(m_qwerty_it_block);
+    }
+  }
+  else
+  {
+    m_qwerty_it_block = 0;
+    m_qwerty_it_element = 0;
+    if ( 0 != block_element_count )
+      *block_element_count = 0;
+  }
+  return m_qwerty_it_element;
+}
+
+void* ON_FixedSizePoolIterator::NextBlock( size_t* block_element_count )
+{
   if ( 0 != m_it_block 
-       && m_it_block != m_al_block
+       && m_it_block != m_fsp.m_al_block
        && m_it_element == (void*)(((char*)m_it_block)+2*sizeof(void*)) )
   {
     m_it_block = *((void**)m_it_block);
-    if ( m_it_block == m_al_element_array )
+    if ( m_it_block == m_fsp.m_al_element_array )
     {
       m_it_block = 0;
       m_it_element = 0;
@@ -368,7 +511,7 @@ void* ON_FixedSizePool::NextBlock( size_t* block_element_count )
     {
       m_it_element = (void*)(((char*)m_it_block)+2*sizeof(void*)); // m_it_element points to first element in m_first_block
       if ( 0 != block_element_count )
-        *block_element_count = BlockElementCount(m_it_block);
+        *block_element_count = m_fsp.BlockElementCount(m_it_block);
     }
   }
   else
@@ -388,25 +531,23 @@ void* ON_FixedSizePool::Element(size_t element_index) const
   const char* next_block;
   size_t block_count;
 
-  if ( element_index >= 0 )
+  for ( block = (const char*)m_first_block; 0 != block; block = next_block )
   {
-    for ( block = (const char*)m_first_block; 0 != block; block = next_block )
+    if ( block == m_al_block )
     {
-      if ( block == m_al_block )
-      {
-        next_block = 0;
-        block_end = (const char*)m_al_element_array;
-      }
-      else
-      {
-        next_block = *((const char**)block);
-        block_end =  *((const char**)(block + sizeof(void*)));
-      }
-      block_count = (block_end - block)/m_sizeof_element;
-      if ( element_index < block_count )
-        return ((void*)(block + (2*sizeof(void*) + element_index*m_sizeof_element)));
-      element_index -= block_count;
+      next_block = 0;
+      block_end = (const char*)m_al_element_array;
     }
+    else
+    {
+      next_block = *((const char**)block);
+      block_end =  *((const char**)(block + sizeof(void*)));
+    }
+    block_count = (block_end - block)/m_sizeof_element;
+    if ( element_index < block_count )
+      return ((void*)(block + (2*sizeof(void*) + element_index*m_sizeof_element)));
+    element_index -= block_count;
   }
+
   return 0;
 }

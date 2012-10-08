@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -17,6 +17,255 @@
 #if !defined(ON_STRING_INC_)
 #define ON_STRING_INC_
 
+
+
+/*
+Description:
+  Sort an index array.
+Parameters
+  method - [in]
+    ON::quick_sort (best in general) or ON::heap_sort.
+    Use ON::heap_sort only after doing meaningful performance
+    testing using optimized release builds that demonstrate
+    ON::heap_sort is significantly better.
+  index - [out] 
+    Pass in an array of count integers.  The returned
+    index[] is a permutation of (0,1,..,count-1)
+    such that compare(B[index[i]],B[index[i+1]) <= 0
+    where B[i] = base + i*sizeof_element
+  base - [in]
+    array of count elements
+  count - [in]
+    number of elements in the index[] and base[] arrays
+  sizeof_element - [in]
+    number of bytes between consecutive elements in the
+    base[] array.
+  compare - [in]
+    Comparison function a la qsort().
+*/
+ON_DECL
+void ON_Sort( 
+        ON::sort_algorithm method,
+        int* index,
+        const void* base,
+        size_t count,
+        size_t sizeof_element,
+        int (*compare)(const void*,const void*) // int compar(const void*,const void*)
+        );
+
+/*
+Description:
+  Sort an index array using a compare function
+  that takes an additional pointer that can be used to
+  pass extra informtation.
+Parameters
+  method - [in]
+    ON::quick_sort (best in general) or ON::heap_sort.
+    Use ON::heap_sort only after doing meaningful performance
+    testing using optimized release builds that demonstrate
+    ON::heap_sort is significantly better.
+  index - [out] 
+    Pass in an array of count integers.  The returned
+    index[] is a permutation of (0,1,..,count-1)
+    such that compare(B[index[i]],B[index[i+1]) <= 0
+    where B[i] = base + i*sizeof_element
+  base - [in]
+    array of count elements
+  count - [in]
+    number of elements in the index[] and base[] arrays
+  sizeof_element - [in]
+    number of bytes between consecutive elements in the
+    base[] array.
+  compare - [in]
+    Comparison function a la qsort().  The context parameter
+    is pass as the third argument.
+  context - [in]
+    pointer passed as the third argument to compare().
+*/
+ON_DECL
+void ON_Sort( 
+        ON::sort_algorithm method,
+        int* index,
+        const void* base,
+        size_t count,
+        size_t sizeof_element,
+        int (*compare)(const void*,const void*,void*), // int compar(const void* a,const void* b, void* ptr)
+        void* context
+        );
+
+/*
+Description:
+  Various sorts. When in doubt, use ON_qsort().
+  ON_qsort - quick sort.
+  ON_hsort = hearp sort.
+Parameters
+  base - [in]
+    array of count elements
+  count - [in]
+    number of elements in the index[] and base[] arrays
+  sizeof_element - [in]
+    number of bytes between consecutive elements in the
+    base[] array.
+  compare - [in]
+    Comparison function a la qsort().  The context parameter
+    is pass as the third argument.
+  context - [in]
+    pointer passed as the third argument to compare().
+Remarks:
+  As a rule, use quick sort unless extensive tests in your case
+  prove that heap sort is faster. 
+  
+  This implementation of quick sort is generally faster than 
+  heap sort, even when the input arrays are nearly sorted.
+  The only common case when heap sort is faster occurs when
+  the arrays are strictly "chevron" (3,2,1,2,3) or "carat" 
+  (1,2,3,2,1) ordered, and in these cases heap sort is about
+  50% faster.  If the "chevron" or "caret" ordered arrays 
+  have a little randomness added, the two algorithms have 
+  the same speed.
+*/
+ON_DECL
+void ON_hsort( 
+        void* base,
+        size_t count,
+        size_t sizeof_element,
+        int (*compare)(const void*,const void*)
+        );
+
+ON_DECL
+void ON_qsort( 
+        void* base,
+        size_t count,
+        size_t sizeof_element,
+        int (*compare)(const void*,const void*)
+        );
+
+ON_DECL
+void ON_hsort( 
+        void* base,
+        size_t count,
+        size_t sizeof_element,
+        int (*compare)(void*,const void*,const void*),
+        void* context
+        );
+
+ON_DECL
+void ON_qsort( 
+        void* base,
+        size_t count,
+        size_t sizeof_element,
+        int (*compare)(void*,const void*,const void*),
+        void* context
+        );
+
+/*
+Description:
+  Sort an array of doubles in place.
+Parameters:
+  sort_algorithm - [in]  
+    ON::quick_sort (best in general) or ON::heap_sort
+    Use ON::heap_sort only if you have done extensive testing with
+    optimized release builds and are confident heap sort is 
+    significantly faster in your case.
+  a - [in / out] 
+    The values in a[] are sorted so that a[i] <= a[i+1].
+    a[] cannot contain NaNs.
+  nel - [in]
+    length of array a[]
+*/
+ON_DECL
+void ON_SortDoubleArray( 
+        ON::sort_algorithm sort_algorithm,
+        double* a,
+        size_t nel
+        );
+
+/*
+Description:
+  Sort an array of ints in place.
+Parameters:
+  sort_algorithm - [in]  
+    ON::quick_sort (best in general) or ON::heap_sort
+    Use ON::heap_sort only if you have done extensive testing with
+    optimized release builds and are confident heap sort is 
+    significantly faster in your case.
+  a - [in / out] 
+    The values in a[] are sorted so that a[i] <= a[i+1].
+  nel - [in]
+    length of array a[]
+*/
+ON_DECL
+void ON_SortIntArray(
+        ON::sort_algorithm sort_algorithm,
+        int* a,
+        size_t nel
+        );
+
+/*
+Description:
+  Sort an array of unsigned ints in place.
+Parameters:
+  sort_algorithm - [in]  
+    ON::quick_sort (best in general) or ON::heap_sort
+    Use ON::heap_sort only if you have done extensive testing with
+    optimized release builds and are confident heap sort is 
+    significantly faster in your case.
+  a - [in / out] 
+    The values in a[] are sorted so that a[i] <= a[i+1].
+  nel - [in]
+    length of array a[]
+*/
+ON_DECL
+void ON_SortUnsignedIntArray(
+        ON::sort_algorithm sort_algorithm,
+        unsigned int* a,
+        size_t nel
+        );
+
+/*
+Description:
+  Sort an array of unsigned null terminated char strings in place.
+Parameters:
+  sort_algorithm - [in]  
+    ON::quick_sort (best in general) or ON::heap_sort
+    Use ON::heap_sort only if you have done extensive testing with
+    optimized release builds and are confident heap sort is 
+    significantly faster in your case.
+  a - [in / out] 
+    The values in a[] are sorted so that strcmp(a[i],a[i+1]) <= 0.
+  nel - [in]
+    length of array a[]
+*/
+ON_DECL
+void ON_SortStringArray(
+        ON::sort_algorithm sort_algorithm,
+        char** a,
+        size_t nel
+        );
+
+ON_DECL
+const int* ON_BinarySearchIntArray( 
+          int key, 
+          const int* base, 
+          size_t nel
+          );
+
+ON_DECL
+const unsigned int* ON_BinarySearchUnsignedIntArray( 
+          unsigned int key, 
+          const unsigned int* base, 
+          size_t nel
+          );
+
+ON_DECL
+const double* ON_BinarySearchDoubleArray( 
+          double key, 
+          const double* base, 
+          size_t nel
+          );
+
+
+
 /*
   This class is intended to be used to determine if a file's
   contents have changed.
@@ -26,6 +275,8 @@ class ON_CLASS ON_CheckSum
 public:
   ON_CheckSum();
   ~ON_CheckSum();
+
+  static const ON_CheckSum UnsetCheckSum;
 
   // zeros all fields.
   void Zero();
@@ -61,7 +312,7 @@ public:
   Descripton:
     Set check sum values for a file.
   Parameters:
-    fp - [in] pointer to a file opened with ON:FileOpen(...,L"rb")
+    fp - [in] pointer to a file opened with ON:FileOpen(...,"rb")
   Returns:
     True if checksum is set.
   */
@@ -99,7 +350,7 @@ public:
   Description:
     Test buffer to see if it has a matching checksum.
   Paramters:
-    fp - [in] pointer to file opened with ON::OpenFile(...,L"rb")
+    fp - [in] pointer to file opened with ON::OpenFile(...,"rb")
     bSkipTimeCheck - [in] if true, the time of last
        modification is not checked.
   Returns:
@@ -362,6 +613,57 @@ public:
   unsigned int SizeOf() const;
 
   ON__UINT32 DataCRC(ON__UINT32 current_remainder) const;
+
+  /*
+  Description:
+    Find the locations in a path the specify the drive, directory,
+    file name and file extension.
+  Parameters:
+    path - [in]
+      path to split
+    drive - [out] (pass null if you don't need the drive)
+      If drive is not null and the path parameter contains a Windows 
+      drive specification, then the returned value of *drive will
+      either be empty or the Windows drive letter followed by
+      the trailing colon.
+    dir - [out] (pass null if you don't need the directory)
+      If dir is not null and the path parameter contains a
+      directory specification, then the returned value of *dir
+      will be the directory specification including the trailing
+      slash.
+    fname - [out] (pass null if you don't need the file name)
+      If fname is not null and the path parameter contains a
+      file name specification, then the returned value of *fname
+      will be the file name.
+    ext - [out] (pass null if you don't need the extension)
+      If ext is not null and the path parameter contains a
+      file extension specification, then the returned value of
+      *ext will be the file extension including the initial
+      '.' character.
+  Remarks:
+    This function will treat a front slash ( / ) and a back slash
+    ( \ ) as directory separators.  Because this function parses
+    file names store in .3dm files and the .3dm file may have been
+    written on a Windows computer and then read on a another
+    computer, it looks for a drive dpecification even when the
+    operating system is not Windows.
+    This function will not return an directory that does not
+    end with a trailing slash.
+    This function will not return an empty filename and a non-empty
+    extension.
+    This function parses the path string according to these rules.
+    It does not check the actual file system to see if the answer
+    is correct.
+  See Also:
+    on_splitpath
+  */
+  static void SplitPath( 
+    const char* path,
+    ON_String* drive,
+    ON_String* dir,
+    ON_String* fname,
+    ON_String* ext
+    );
 
 // Implementation
 public:
@@ -679,6 +981,65 @@ public:
   */
   ON__UINT32 DataCRCLower(ON__UINT32 current_remainder) const;
 
+  /*
+  Description:
+    Find the locations in a path the specify the drive, directory,
+    file name and file extension.
+  Parameters:
+    path - [in]
+      path to split
+    drive - [out] (pass null if you don't need the drive)
+      If drive is not null and the path parameter contains a Windows 
+      drive specification, then the returned value of *drive will
+      either be empty or the Windows drive letter followed by
+      the trailing colon.
+    dir - [out] (pass null if you don't need the directory)
+      If dir is not null and the path parameter contains a
+      directory specification, then the returned value of *dir
+      will be the directory specification including the trailing
+      slash.
+    fname - [out] (pass null if you don't need the file name)
+      If fname is not null and the path parameter contains a
+      file name specification, then the returned value of *fname
+      will be the file name.
+    ext - [out] (pass null if you don't need the extension)
+      If ext is not null and the path parameter contains a
+      file extension specification, then the returned value of
+      *ext will be the file extension including the initial
+      '.' character.
+  Remarks:
+    This function will treat a front slash ( / ) and a back slash
+    ( \ ) as directory separators.  Because this function parses
+    file names store in .3dm files and the .3dm file may have been
+    written on a Windows computer and then read on a another
+    computer, it looks for a drive dpecification even when the
+    operating system is not Windows.
+    This function will not return an directory that does not
+    end with a trailing slash.
+    This function will not return an empty filename and a non-empty
+    extension.
+    This function parses the path string according to these rules.
+    It does not check the actual file system to see if the answer
+    is correct.
+  See Also:
+    on_splitpath
+    on_wsplitpath
+  */
+  static void SplitPath( 
+    const char* path,
+    ON_wString* drive,
+    ON_wString* dir,
+    ON_wString* fname,
+    ON_wString* ext
+    );
+
+  static void SplitPath( 
+    const wchar_t* path,
+    ON_wString* drive,
+    ON_wString* dir,
+    ON_wString* fname,
+    ON_wString* ext
+    );
 // Implementation
 public:
 	~ON_wString();
@@ -713,6 +1074,9 @@ public:
   ON_UnitSystem(ON::unit_system);
   ON_UnitSystem& operator=(ON::unit_system);
 
+  bool operator==(const ON_UnitSystem&);
+  bool operator!=(const ON_UnitSystem&);
+
   bool IsValid() const;
 
   void Default(); // millimeters = default unit system
@@ -733,7 +1097,7 @@ public:
   //    your ON_UnitSystem would be
   //      m_unit_system       = ON::custom_unit_system
   //      m_custom_unit_scale = 1.0/5556.0 = 0.0001799856...
-  //      m_custom_unit_name  = L"Nautical leagues"
+  //      m_custom_unit_name  = "Nautical leagues"
 };
 
 

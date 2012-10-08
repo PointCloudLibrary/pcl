@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -14,7 +14,7 @@
 ////////////////////////////////////////////////////////////////
 */
 
-#include <pcl/surface/3rdparty/opennurbs/opennurbs.h>
+#include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
 
 class ON_Value
 {
@@ -1394,7 +1394,7 @@ int ON_PolyEdgeHistoryValue::GetPolyEdgePointers( ON_ClassArray<ON_PolyEdgeHisto
 ON_Value* ON_Value::CreateValue( int value_type )
 {
   ON_Value* value = 0;
-  switch(value_type)
+  switch((unsigned int)value_type)
   {
   case no_value_type:
     break;

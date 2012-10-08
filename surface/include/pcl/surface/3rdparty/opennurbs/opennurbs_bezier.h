@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -1804,17 +1804,6 @@ class ON_CLASS ON_BezierCageMorph : public ON_SpaceMorph
 public:
   ON_BezierCageMorph();
   ~ON_BezierCageMorph();
-
-  /*
-  Description:
-    Override of virtual ON_SpaceMorph::MorphPoint.
-  Parameters:
-    point - [in] 
-      (x,y,z) gets mapped to m_rst2xyz(m_xyz2rst*point);
-  */
-  ON_3dPoint MorphPoint( 
-            ON_3dPoint point 
-            ) const;
 
   /*
   Description:

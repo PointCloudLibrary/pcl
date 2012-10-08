@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -14,7 +14,32 @@
 ////////////////////////////////////////////////////////////////
 */
 
-#include <pcl/surface/3rdparty/opennurbs/opennurbs.h>
+#include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
+
+
+////////////////////////////////////////////////////////////////////////
+
+bool ON_BezierCurve::GetTightBoundingBox( 
+		ON_BoundingBox& tight_bbox, 
+    int bGrowBox,
+		const ON_Xform* xform
+    ) const
+{
+  // The result from ON_GetPointListBoundingBox() is good enough
+  // for file IO needs in the public souce code version.
+  return ON_GetPointListBoundingBox(
+    m_dim,
+    m_is_rat, 
+    m_order, 
+    m_cv_stride,
+    m_cv,
+    tight_bbox,
+    bGrowBox,
+    xform 
+    );
+}
+
+////////////////////////////////////////////////////////////////////////
 
 ON_PolynomialCurve::ON_PolynomialCurve()
                    : m_dim(0), m_is_rat(0), m_order(0), m_domain(0.0,1.0)
@@ -667,26 +692,6 @@ bool ON_BezierCurve::GetBoundingBox( // returns true if successful
   }
   return rc;
 }
-
-bool ON_BezierCurve::GetTightBoundingBox( 
-		ON_BoundingBox& tight_bbox, 
-    int bGrowBox,
-		const ON_Xform* xform
-    ) const
-{
-  // no tight bounding boxes in free opennurbs
-  return ON_GetPointListBoundingBox(
-    m_dim,
-    m_is_rat,
-    m_order,
-    m_cv_stride,
-    m_cv,
-    tight_bbox,
-    bGrowBox,
-    xform
-    );
-}
-
 
 ON_BoundingBox ON_BezierCurve::BoundingBox() const
 {
@@ -1632,11 +1637,11 @@ bool ON_BezierCurve::Split(
     
     if ( this != &left_bez )
     {
-      if ( !left_bez.m_cv || (0 < left_bez.m_cv_capacity && left_bez.m_cv_capacity < cvdim*m_order) )
+      if ( 0 == left_bez.m_cv || (0 < left_bez.m_cv_capacity && left_bez.m_cv_capacity < cvdim*m_order) )
       {
         left_bez.Create( m_dim, m_is_rat, m_order );
       }
-      else if ( left_bez.m_dim != m_dim && left_bez.m_is_rat != m_is_rat && left_bez.m_order != m_order || left_bez.m_cv_stride < cvdim )
+      else if ( left_bez.m_dim != m_dim || left_bez.m_is_rat != m_is_rat || left_bez.m_order != m_order || left_bez.m_cv_stride < cvdim )
       {
         left_bez.m_dim       = m_dim;
         left_bez.m_is_rat    = m_is_rat?1:0;
@@ -1651,7 +1656,7 @@ bool ON_BezierCurve::Split(
       {
         right_bez.Create( m_dim, m_is_rat, m_order );
       }
-      else if ( right_bez.m_dim != m_dim && right_bez.m_is_rat != m_is_rat && right_bez.m_order != m_order || right_bez.m_cv_stride < cvdim )
+      else if ( right_bez.m_dim != m_dim || right_bez.m_is_rat != m_is_rat || right_bez.m_order != m_order || right_bez.m_cv_stride < cvdim )
       {
         right_bez.m_dim       = m_dim;
         right_bez.m_is_rat    = m_is_rat?1:0;
@@ -2841,55 +2846,42 @@ bool ON_BezierSurface::IsSingular(		 // true if surface side is collapsed to a p
 																			// 0 = south, 1 = east, 2 = north, 3 = west
 				) const
 {
-  int i,j,k=0;
-  ON_3dPoint p[2];
-  double fuzz[2] = {0.0,0.0};
-  p[0].Zero();
-  p[1].Zero();
-  int i0 = 0;
-  int i1 = 0;
-  int j0 = 0;
-  int j1 = 0;
-  switch ( side ) {
+  const double* points = 0;
+  int point_count = 0;
+  int point_stride = 0;
+
+  switch ( side ) 
+  {
   case 0: // south
-      i0 = 0;
-      i1 = Order(0);
-      j0 = 0;
-      j1 = 1;
+    points = CV(0,0);
+    point_count = m_order[0];
+    point_stride = m_cv_stride[0];
     break;
+
   case 1: // east
-      i0 = Order(0)-1;
-      i1 = Order(0);
-      j0 = 0;
-      j1 = Order(1);
+    points = CV(m_order[0]-1,0);
+    point_count = m_order[1];
+    point_stride = m_cv_stride[1];
     break;
+
   case 2: // north
-      i0 = 0;
-      i1 = Order(0);
-      j0 = Order(1)-1;
-      j1 = Order(1);
+    points = CV(0,m_order[1]-1);
+    point_count = m_order[0];
+    point_stride = m_cv_stride[0];
     break;
+
   case 3: // west
-      i0 = 0;
-      i1 = 1;
-      j0 = 0;
-      j1 = Order(1);
+    points = CV(0,0);
+    point_count = m_order[1];
+    point_stride = m_cv_stride[1];
     break;
+
   default:
     return false;
     break;
   }
 
-  GetCV(i0,j0,p[k]);
-  fuzz[k] = p[k].Fuzz();
-  for ( i = i0; i < i1; i++ ) for ( j = j0; j < j1; j++ ) {
-    k = (k+1)%2;
-    GetCV( i, j, p[k] );
-    fuzz[k] = p[k].Fuzz();
-    if ( (p[0]-p[1]).MaximumCoordinate() > fuzz[0]+fuzz[1] )
-      return false;
-  }
-  return true;
+  return ON_PointsAreCoincident(m_dim,m_is_rat,point_count,point_stride,points);
 }
 
 bool ON_ReparameterizeRationalBezierCurve(
@@ -2991,7 +2983,7 @@ bool ON_ChangeRationalBezierCurveWeights(
     return false;
   if ( i0 == i1 && w0 != w1 )
     return false;
-  if ( (w0 < 0.0 && w1 > 0.0) || (w0 > 0.0 && w1 < 0.0) )
+  if ( (w0 < 0.0 && w1 > 0.0) || (w0 > 0.0 && w0 < 0.0) )
     return false;
   if (i0 > i1) 
   {

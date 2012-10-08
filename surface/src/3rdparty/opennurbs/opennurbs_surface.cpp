@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -14,14 +14,16 @@
 ////////////////////////////////////////////////////////////////
 */
 
-#include <pcl/surface/3rdparty/opennurbs/opennurbs.h>
+#include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
 
 ON_VIRTUAL_OBJECT_IMPLEMENT(ON_Surface,ON_Geometry,"4ED7D4E1-E947-11d3-BFE5-0010830122F0");
 
 ON_Surface::ON_Surface()
+: ON_Geometry()
 {}
 
-ON_Surface::ON_Surface(const ON_Surface& src) : ON_Geometry(src)
+ON_Surface::ON_Surface(const ON_Surface& src)
+: ON_Geometry(src)
 {}
 
 unsigned int ON_Surface::SizeOf() const
@@ -39,12 +41,19 @@ unsigned int ON_Surface::SizeOf() const
 
 ON_Surface& ON_Surface::operator=(const ON_Surface& src)
 {
+  DestroySurfaceTree();
   ON_Geometry::operator=(src);
   return *this;
 }
 
 ON_Surface::~ON_Surface()
 {
+  // Do not call the (virtual) DestroyRuntimeCache or 
+  // DestroySurfaceTree (which calls DestroyRuntimeCache()
+  // because it opens the potential for crashes in a
+  // "dirty" destructors of classes derived from ON_Surface
+  // that to not use DestroyRuntimeCache() in their
+  // destructors and to not set deleted pointers to zero.
 }
 
 ON_Surface* ON_Surface::DuplicateSurface() const
@@ -63,6 +72,18 @@ ON_BOOL32 ON_Surface::GetDomain( int dir, double* t0, double* t1 ) const
   if ( t0 ) *t0 = d[0];
   if ( t1 ) *t1 = d[1];
   return d.IsIncreasing();
+}
+
+ON_BOOL32 ON_Surface::GetSurfaceSize( 
+    double* width, 
+    double* height 
+    ) const
+{
+  if ( width )
+    *width = 0.0;
+  if ( height )
+    *height = 0.0;
+  return false;
 }
 
 bool ON_Surface::SetDomain( int dir, ON_Interval domain )
@@ -300,7 +321,8 @@ ON_Surface::IsClosed(int dir) const
   if ( d.IsIncreasing() && Dimension() <= 3 ) {
     const int span_count = SpanCount(dir?0:1);
     const int span_degree = Degree(dir?0:1);
-    if ( span_count > 0 && span_degree > 0 ) {
+    if ( span_count > 0 && span_degree > 0 )
+    {
       ON_SimpleArray<double> s(span_count+1);
       s.SetCount(span_count+1);
       int n = 2*span_degree+1;
@@ -325,7 +347,8 @@ ON_Surface::IsClosed(int dir) const
         v0 = &t;
         v1 = &t;
       }
-      if ( GetSpanVector( dir?0:1, s.Array() ) ) {
+      if ( GetSpanVector( dir?0:1, s.Array() ) )
+      {
         int span_index, i;
         for ( span_index = 0; span_index < span_count; span_index++ ) {
           sp.Set(s[span_index],s[span_index+1]);
@@ -335,10 +358,11 @@ ON_Surface::IsClosed(int dir) const
               return false;
             if ( !Evaluate( *u1, *v1, 2, 3, Q, 0, hintQ ) )
               return false;
-            if ( ON_ComparePoint( 3, 0, &P.x, &Q.x ) )
+            if ( false == ON_PointsAreCoincident( 3, 0, &P.x, &Q.x ) )
               return false;
           }
         }
+        return true;
       }
     }
   }
@@ -1462,4 +1486,56 @@ ON_Brep* ON_Surface::BrepForm( ON_Brep* brep ) const
     }
   }
   return pBrep;
+}
+
+void ON_Surface::DestroySurfaceTree()
+{
+  DestroyRuntimeCache(true);
+}
+
+ON_SurfaceProperties::ON_SurfaceProperties()
+{
+  memset(this,0,sizeof(*this));
+}
+
+
+void ON_SurfaceProperties::Set( const ON_Surface* surface )
+{
+  m_surface = surface;
+
+  if ( 0 == m_surface )
+  {
+    m_bIsSet = false;
+
+    m_bHasSingularity = false;
+    m_bIsSingular[0] = false;
+    m_bIsSingular[1] = false;
+    m_bIsSingular[2] = false;
+    m_bIsSingular[3] = false;
+
+    m_bHasSeam = false;
+    m_bIsClosed[0] = false;
+    m_bIsClosed[1] = false;
+
+    m_domain[0].Set(0.0,0.0);
+    m_domain[1].Set(0.0,0.0);
+  }
+  else
+  {
+    m_bIsSet = true;
+
+    m_bIsSingular[0] = m_surface->IsSingular(0)?true:false;
+    m_bIsSingular[1] = m_surface->IsSingular(1)?true:false;
+    m_bIsSingular[2] = m_surface->IsSingular(2)?true:false;
+    m_bIsSingular[3] = m_surface->IsSingular(3)?true:false;
+    m_bHasSingularity = (m_bIsSingular[0] || m_bIsSingular[1] || m_bIsSingular[2] || m_bIsSingular[3]);
+
+    m_bIsClosed[0] = m_surface->IsClosed(0)?true:false;
+    m_bIsClosed[1] = m_surface->IsClosed(1)?true:false;
+    m_bHasSeam = (m_bIsClosed[0] || m_bIsClosed[1]);
+
+    m_domain[0] = m_surface->Domain(0);
+    m_domain[1] = m_surface->Domain(1);
+  }
+
 }

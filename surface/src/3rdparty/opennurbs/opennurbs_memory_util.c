@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -14,9 +14,9 @@
 ////////////////////////////////////////////////////////////////
 */
 
-#include <pcl/surface/3rdparty/opennurbs/opennurbs_system.h>
-#include <pcl/surface/3rdparty/opennurbs/opennurbs_defines.h>
-#include <pcl/surface/3rdparty/opennurbs/opennurbs_memory.h>
+#include "pcl/surface/3rdparty/opennurbs/opennurbs_system.h"
+#include "pcl/surface/3rdparty/opennurbs/opennurbs_defines.h"
+#include "pcl/surface/3rdparty/opennurbs/opennurbs_memory.h"
 
 // Memory utilities used by OpenNURBS.  If you are using
 // custom memory managment, NOTHING in this file needs to

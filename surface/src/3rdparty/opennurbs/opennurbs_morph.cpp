@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -14,7 +14,7 @@
 ////////////////////////////////////////////////////////////////
 */
 
-#include <pcl/surface/3rdparty/opennurbs/opennurbs.h>
+#include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
 
 
 ON_Localizer::ON_Localizer()
@@ -286,11 +286,9 @@ double ON_Localizer::Value(ON_3dPoint P) const
     break;
 
   case curve_type:
-    return 1.0;
     break;
 
   case surface_type:
-    return 1.0;
     break;
 
   case distance_type:
@@ -429,50 +427,6 @@ ON_SpaceMorph::~ON_SpaceMorph()
 {
 }
 
-ON_3dVector ON_SpaceMorph::MorphVector( 
-          ON_3dPoint tail_point, 
-          ON_3dVector vector 
-          ) const
-{
-  return (MorphPoint(tail_point+vector) - MorphPoint(tail_point));
-}
-
-ON_4dPoint ON_SpaceMorph::MorphPoint( 
-          ON_4dPoint point
-          ) const
-{
-  ON_4dPoint q = MorphPoint(ON_3dPoint(point));
-  q.w = point.w;
-  q.x *= q.w;
-  q.y *= q.w;
-  q.z *= q.w;
-  return q;
-}
-
-bool ON_SpaceMorph::Ev1Der(
-          ON_3dPoint rst,
-          ON_3dPoint& xyz,
-          ON_3dVector& Dr,
-          ON_3dVector& Ds,
-          ON_3dVector& Dt
-          ) const
-{
-  // This is a quick estimate of the derivative.
-  // Space morphs that are used to deform smooth breps
-  // should override this function.
-  double d = 1.0e-6;
-  double e = 1.0/d;
-  ON_3dPoint P;
-  ON_3dPoint dr(rst.x+d,rst.y,rst.z);
-  ON_3dPoint ds(rst.x,rst.y+d,rst.z);
-  ON_3dPoint dt(rst.x,rst.y,rst.z+d);
-  P = MorphPoint(rst);
-  Dr = e*(MorphPoint(dr) - P);
-  Ds = e*(MorphPoint(ds) - P);
-  Dt = e*(MorphPoint(dt) - P);
-  return true;
-}
-
 double ON_SpaceMorph::Tolerance() const
 {
   return m_tolerance;
@@ -508,114 +462,6 @@ bool ON_SpaceMorph::PreserveStructure() const
 void ON_SpaceMorph::SetPreserveStructure( bool bPreserveStructure )
 {
   m_bPreserveStructure = bPreserveStructure ? true : false;
-}
-
-void ON_SpaceMorph::MorphPointList(
-        int dim, 
-        int is_rat,
-        int count, 
-        int stride,
-        double* point
-        ) const
-{
-  if ( dim > 0 && stride >= (dim+(is_rat)?1:0) && count > 0 && point != 0 )
-  {
-    int i;
-    if ( is_rat )
-    {
-      ON_4dPoint p(0.0,0.0,0.0,1.0), q;
-      for ( i = 0; i < count; i++ )
-      {
-        p.x = point[0];
-        if ( dim > 1 )
-          p.y = point[1];
-        if ( dim > 2 )
-          p.z = point[2];
-        p.w = point[dim];
-        q = MorphPoint(p);
-        point[0] = q.x;
-        if ( dim > 1 )
-          point[1] = q.y;
-        if ( dim > 2 )
-          point[2] = q.z;
-        point[dim] = q.w;
-        point += stride;
-      }
-    }
-    else
-    {
-      ON_3dPoint p(0.0,0.0,0.0), q;
-      for ( i = 0; i < count; i++ )
-      {
-        p.x = point[0];
-        if ( dim > 1 )
-          p.y = point[1];
-        if ( dim > 2 )
-          p.z = point[2];
-        q = MorphPoint(p);
-        point[0] = q.x;
-        if ( dim > 1 )
-          point[1] = q.y;
-        if ( dim > 2 )
-          point[2] = q.z;
-        point += stride;
-      }
-    }
-  }
-}
-
-void ON_SpaceMorph::MorphPointList(
-        int dim, 
-        int is_rat,
-        int count, 
-        int stride,
-        float* point
-        ) const
-{
-  if ( dim > 0 && stride >= (dim+(is_rat)?1:0) && count > 0 && point != 0 )
-  {
-    int i;
-    if ( is_rat )
-    {
-      ON_4dPoint p(0.0,0.0,0.0,1.0), q;
-      for ( i = 0; i < count; i++ )
-      {
-        p.x = point[0];
-        if ( dim > 1 )
-          p.y = point[1];
-        if ( dim > 2 )
-          p.z = point[2];
-        p.w = point[dim];
-        q = MorphPoint(p);
-        point[0] = (float)q.x;
-        if ( dim > 1 )
-          point[1] = (float)q.y;
-        if ( dim > 2 )
-          point[2] = (float)q.z;
-        point[dim] = (float)q.w;
-        point += stride;
-      }
-    }
-    else
-    {
-      ON_3dPoint p(0.0,0.0,0.0), q;
-      for ( i = 0; i < count; i++ )
-      {
-        p.x = point[0];
-        if ( dim > 1 )
-          p.y = point[1];
-        if ( dim > 2 )
-          p.z = point[2];
-        q = MorphPoint(p);
-        point[0] = (float)q.x;
-        if ( dim > 1 )
-          point[1] = (float)q.y;
-        if ( dim > 2 )
-          point[2] = (float)q.z;
-        point += stride;
-      }
-    }
-  }
 }
 
 bool ON_Mesh::EvaluatePoint( const class ON_ObjRef& objref, ON_3dPoint& P ) const
@@ -688,5 +534,4 @@ bool ON_Mesh::EvaluatePoint( const class ON_ObjRef& objref, ON_3dPoint& P ) cons
 
   return P.IsValid();
 }
-
 

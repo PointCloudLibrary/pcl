@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -110,6 +110,9 @@ public:
 
   // virtual ON_Object::SizeOf override
   unsigned int SizeOf() const;
+
+  // virtual ON_Geometry override
+  bool EvaluatePoint( const class ON_ObjRef& objref, ON_3dPoint& P ) const;
 
   /*
   Description:
@@ -460,6 +463,10 @@ public:
         discontinuous.  A value of 0 means teh curve is not
         closed, a locus discontinuity test was applied, and
         t1 is at the start of end of the curve.
+        If 'c', the type of continuity to test for 
+        is ON::Gsmooth_continuous and the curvature changes 
+        from curved to 0 or 0 to curved and there is no 
+        tangency kink dtype is returns 3
     cos_angle_tolerance - [in] default = cos(1 degree) Used only
         when c is ON::G1_continuous or ON::G2_continuous.  If the
         cosine of the angle between two tangent vectors is 
@@ -853,6 +860,7 @@ public:
          int* hint = 0
          ) const = 0;
 
+  
   /*
   Parameters:
     min_length -[in]
@@ -876,6 +884,18 @@ public:
   bool LastSpanIsLinear( 
     double min_length,
     double tolerance
+    ) const;
+
+  bool FirstSpanIsLinear( 
+    double min_length,
+    double tolerance,
+    ON_Line* span_line
+    ) const;
+
+  bool LastSpanIsLinear( 
+    double min_length,
+    double tolerance,
+    ON_Line* span_line
     ) const;
 
   // Description:
@@ -1066,47 +1086,48 @@ public:
         double* nurbs_t
         ) const;
 
+
+  // Description:
+  //   Destroys the runtime curve tree used to speed closest
+  //   point and intersection calcuations.
+  // Remarks:
+  //   If the geometry of the curve is modified in any way,
+  //   then call DestroyCurveTree();  The curve tree is 
+  //   created as needed.
+  void DestroyCurveTree();
+
   /*
-  Description:
-    Mesh a curve into line segments.
-  Parameters:
-    mp - [in] 
-      Parameters that determine how the curve will be
-      approximated by a polyline.
-    polyline - [in]
-      If not NULL, the polyline approximation will be appended
-      to this polyline.
-    bSkipFirstPoint - [in]
-      If true, the starting point of the approximation
-      will not be added to the returned polyline.  This
-      parameter is useful when getting a polyline approximation
-      of a sequence of contiguous curves.
-    domain - [in]
-      If not NULL, the polyline approximation will be restricted
-      to this domain.
-  Returns:
-    A pointer to the polyline approximation.
+	Description:
+		Lookup a parameter in the m_t array, optionally using a built in snap tolerance to 
+		snap a parameter value to an element of m_t.
+		This function is used by some types derived from ON_Curve to snap parameter values
+	Parameters:
+		t			- [in]	parameter
+		index -[out]	index into m_t such that
+					  			if function returns false then
+								   
+									 @table  
+									 value                  condition
+						  			-1									 t<m_t[0] or m_t is empty				
+										0<=i<=m_t.Count()-2		m_t[i] < t < m_t[i+1]			
+										m_t.Count()-1					t>m_t[ m_t.Count()-1]			 
+
+									if the function returns true then t is equal to, or is closest to and 
+									within  tolerance of m_t[index]. 
+									
+		bEnableSnap-[in] enable snapping 
+		m_t				-[in]	Array of parameter values to snap to
+		RelTol		-[in] tolerance used in snapping
+	
+	Returns:		
+		true if the t is exactly equal to (bEnableSnap==false), or within tolerance of
+		(bEnableSnap==true) m_t[index]. 
   */
-  class ON_PolylineCurve* MeshCurve( 
-    ON_MeshCurveParameters& mp,
-    ON_PolylineCurve* polyline,
-    bool bSkipFirstPoint,
-    const ON_Interval* domain
-    ) const;
-
-  // The non-const version of MeshCurve() exists because a version of the
-  // SDK was shipped with the "const" tag missing.  The non-const
-  // version does not modify this.
-  class ON_PolylineCurve* MeshCurve( 
-    ON_MeshCurveParameters& mp,
-    ON_PolylineCurve* polyline,
-    bool bSkipFirstPoint,
-    const ON_Interval* domain
-    );
-
 protected:
   bool ParameterSearch( double t, int& index, bool bEnableSnap, const ON_SimpleArray<double>& m_t, 
 															double RelTol=ON_SQRT_EPSILON) const;
+
+private:
 };
 
 #if defined(ON_DLL_TEMPLATE)

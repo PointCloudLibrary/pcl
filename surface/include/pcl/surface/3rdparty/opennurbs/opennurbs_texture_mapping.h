@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -449,29 +449,6 @@ public:
     ON_3dPoint* T
     ) const;
 
-  int EvaluateMeshMapping( 
-    const ON_3dPoint& P,
-    const ON_3dVector& N,
-    const ON_Mesh* mesh,
-    ON_3dPoint* T
-    ) const;
-
-  int EvaluateSurfaceMapping( 
-    const ON_3dPoint& P,
-    const ON_3dVector& N,
-    const ON_Surface* srf,
-    ON_3dPoint* T
-    ) const;
-
-  int EvaluateBrepMapping( 
-    const ON_3dPoint& P,
-    const ON_3dVector& N,
-    const ON_Brep* brep,
-    ON_3dPoint* T
-    ) const;
-
-  static void SetAdvancedBrepMappingToolFunctions(TEXMAP_INTERSECT_LINE_SURFACE, TEXMAP_BREP_FACE_CLOSEST_POINT);
-
   /*
   Description:
     Quickly check to see if a mesh or tag has texture coordinates
@@ -662,9 +639,10 @@ public:
   
   TEXTURE_SPACE m_texture_space;
 
-  // The m_bCapped applies to cylinder and box mappings.  If
-  // m_bCapped is false, the cylinder or box is "infinite".
-  // If m_bCapped is true, they are finite.
+  // The m_bCapped applies to planar, cylinder and box mappings.
+  // If m_bCapped is false, the cylinder or box is "infinite", if m_bCapped is true, they are finite.
+  // In planar mappings, m_bCapped=false means "the Z texture coordinate will always be 0.0"
+  // this is now the default behaviour in Rhino 5.0 - it's what users expect apparently.
   bool m_bCapped;
 
   //////////////////////////////////////////////////////////

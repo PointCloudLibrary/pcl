@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -14,7 +14,7 @@
 ////////////////////////////////////////////////////////////////
 */
 
-#include <pcl/surface/3rdparty/opennurbs/opennurbs.h>
+#include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
 
 ON_OBJECT_IMPLEMENT(ON_PolyCurve,ON_Curve,"4ED7D4E0-E947-11d3-BFE5-0010830122F0");
 
@@ -210,6 +210,7 @@ ON_PolyCurve::SwapCoordinates( int i, int j )
   for ( segment_index = 0; segment_index < count && rc; segment_index++ ) {
     rc = m_segment[segment_index]->SwapCoordinates( i, j );
   }
+	DestroyCurveTree();
   return rc;
 }
 
@@ -224,22 +225,22 @@ bool ON_PolyCurve::IsValid( bool bAllowGaps, ON_TextLog* text_log ) const
   const int dim = Dimension();
   ON_3dPoint p0, p1;
   int segment_index;
-  bool rc = (count>0 && dim>0) ? true : false;
-  if ( !rc )
+  if ( count <= 0 || dim <= 0 )
   {
     if ( text_log )
       text_log->Print("Polycurve segment count = %d and dim = %d\n",count,dim);
+    return ON_IsNotValid();
   }
 
-  if ( rc && m_t.Count() != count+1 )
+  if ( m_t.Count() != count+1 )
   {
     if ( text_log )
       text_log->Print("Polycurve segment count = %d and m_t.Count()=%d (should be segment count+1)\n",
                       count,m_t.Count());
-    rc = false;
+    return ON_IsNotValid();
   }
 
-  for ( segment_index = 0; segment_index < count && rc; segment_index++ ) 
+  for ( segment_index = 0; segment_index < count; segment_index++ ) 
   {
     if ( 0 == m_segment[segment_index] )
     {
@@ -247,18 +248,16 @@ bool ON_PolyCurve::IsValid( bool bAllowGaps, ON_TextLog* text_log ) const
       {
         text_log->Print("Polycurve segment[%d] is null.\n",segment_index);
       }
-      rc = false;
-      break;
+      return ON_IsNotValid();
     }
 
-    rc = m_segment[segment_index]->IsValid( text_log ) ? true : false;
-    if ( !rc )
+    if ( !m_segment[segment_index]->IsValid( text_log ) )
     {
       if ( text_log )
       {
         text_log->Print("Polycurve segment[%d] is not valid.\n",segment_index);
       }
-      break;
+      return ON_IsNotValid();
     }
 
     int seg_dim = m_segment[segment_index]->Dimension();
@@ -266,58 +265,88 @@ bool ON_PolyCurve::IsValid( bool bAllowGaps, ON_TextLog* text_log ) const
     {
       if ( text_log )
         text_log->Print("Polycurve segment[%d]->Dimension()=%d (should be %d).\n",segment_index,seg_dim,dim);
-      rc = false; // all segments must have same dimension
-      break;
+      return ON_IsNotValid(); // all segments must have same dimension
     }
 
-    if ( rc && m_t[segment_index] >= m_t[segment_index+1] )
+    if ( m_t[segment_index] >= m_t[segment_index+1] )
     {
       if ( text_log )
         text_log->Print("Polycurve m_t[%d]=%g and m_t[%d]=%g (should be increasing)\n",
                          segment_index,   m_t[segment_index],
                          segment_index+1, m_t[segment_index+1]);
-      rc = false; // segment domain must be non-empty
-      break;
+      return ON_IsNotValid(); // segment domain must be non-empty
     }
 
-    if ( rc && count > 1 && !bAllowGaps && m_segment[segment_index]->IsClosed() ) 
+    if ( count > 1 && !bAllowGaps && m_segment[segment_index]->IsClosed() ) 
     {
       if ( text_log )
         text_log->Print("Polycurve segment[%d] is closed (%d segments).\n",segment_index,count);
-      rc = false; // closed segments not permitted in multi segment curve
-      break;
+      return ON_IsNotValid(); // closed segments not permitted in multi segment curve
     }
   }
 
-  if (rc && !bAllowGaps )
+  if ( !bAllowGaps )
   {
     // check for gaps
-    segment_index = HasGap();
-    if ( segment_index > 0 )
+    int gap_index = FindNextGap(0);
+    if ( gap_index > 0 )
     {
-      p0 = m_segment[segment_index-1]->PointAtEnd();
-      p1 = m_segment[segment_index]->PointAtStart();
+      p0 = m_segment[gap_index-1]->PointAtEnd();
+      p1 = m_segment[gap_index]->PointAtStart();
       double d = p0.DistanceTo(p1);
       if ( text_log )
         text_log->Print("Polycurve end of segment[%d] != start of segment[%d] (distance=%g)\n",
-                        segment_index-1, segment_index, d );
-      rc = false; // not contiguous
+                        gap_index-1, gap_index, d );
+      return ON_IsNotValid(); // not contiguous
     }
   }
 
-  return rc;
+  return true;
 }
 
 void ON_PolyCurve::Dump( ON_TextLog& dump ) const
 {
   const int count = Count();
   int i;
+
+  ON_3dPoint segment_start = ON_3dPoint::UnsetPoint;
+  ON_3dPoint segment_end = ON_3dPoint::UnsetPoint;
+  double gap;
+
   dump.Print( "ON_PolyCurve segment count = %d\n", count );
   dump.PushIndent();
-  for ( i = 0; i < count; i++ ) {
-    dump.Print( "Segment %d: (%g,%g)\n", i+1, m_t[i], m_t[i+1] );
+  for ( i = 0; i < count; i++ )
+  {
+    if ( 0 != m_segment[i] )
+      segment_start = m_segment[i]->PointAtStart();
+    else
+      segment_start = ON_3dPoint::UnsetPoint;
+    gap = (segment_start.IsValid() && segment_end.IsValid())
+        ? segment_start.DistanceTo(segment_end)
+        : ON_UNSET_VALUE;
+    dump.Print( "Segment %d: (%g,%g)", i+1, m_t[i], m_t[i+1] );
+    if ( i > 0 )
+    {
+      if ( ON_IsValid(gap) )
+        dump.Print(" gap = %.17g",gap);
+      else if ( !segment_start.IsValid() )
+        dump.Print(" invalid segment curve");
+      else if ( !segment_end.IsValid() )
+        dump.Print(" invalid previous segment curve");
+    }
+    dump.Print("\n");
+
     dump.PushIndent();
-    m_segment[i]->Dump(dump);
+    if ( 0 == m_segment[i] )
+    {
+      dump.Print("null curve pointer\n");
+      segment_end = ON_3dPoint::UnsetPoint;
+    }
+    else
+    {
+      m_segment[i]->Dump(dump);
+      segment_end = m_segment[i]->PointAtEnd();
+    }
     dump.PopIndent();
   }
   dump.PopIndent();
@@ -468,7 +497,7 @@ ON_Interval ON_PolyCurve::Domain() const
 {
   ON_Interval d;
   const int count = Count();
-  if ( count > 0 && m_t[0] < m_t[count] ) {
+  if ( count > 0 && count+1 == m_t.Count() && m_t[0] < m_t[count] ) {
     d.Set(m_t[0],m_t[count]);
   }
   return d;
@@ -972,59 +1001,306 @@ ON_PolyCurve::IsClosed() const
   }
   else if ( count > 1 ) 
   {
-    // 17 May2005 Dale Lear - I added the !HasGap() test
-    //                        so discontinuous curves are
-    //                        not flagged as closed.
-    bIsClosed = ( ON_Curve::IsClosed() && !HasGap() );
+    // 17 May2005 Dale Lear 
+    //  I added the FindNextGap(0) <= 0 test to
+    //  prevent discontinuous curves from being
+    //  classified as closed.
+    bIsClosed = ( ON_Curve::IsClosed() && FindNextGap(0) <= 0 );
   }
   return bIsClosed;
 }
 
-int ON_PolyCurve::HasGap() const
+static bool GetLineIsoCoordinates( const ON_Line& line, const ON_3dPoint P, ON_3dPoint& C )
 {
-  const int count = m_segment.Count();
+  C.x = (line.from.x == line.to.x) ? P.x : ON_UNSET_VALUE;
+  C.y = (line.from.y == line.to.y) ? P.y : ON_UNSET_VALUE;
+  C.z = (line.from.z == line.to.z) ? P.z : ON_UNSET_VALUE;
+  return ( ON_3dPoint::UnsetPoint != C );
+}
 
-  if ( count > 1 )
+static void LineLineTieBreaker( const ON_Line& line0, const ON_Line& line1, 
+                                ON_3dPoint& Q0, ON_3dPoint& Q1 )
+{
+  double line0_length = line0.Length();
+  double line1_length = line1.Length();
+
+  ON_3dPoint C0, C1;
+  bool bHaveIsoCoords0 = GetLineIsoCoordinates(line0,Q0,C0);
+  bool bHaveIsoCoords1 = GetLineIsoCoordinates(line1,Q1,C1);
+  if ( bHaveIsoCoords0 || bHaveIsoCoords1 )
   {
-    int i;
-    ON_3dPoint P0, P1;
-    const ON_Curve* c0 = 0;
-    const ON_Curve* c1 = m_segment[0];
-    for (i = 1; i < count; i++ )
+    for ( int i = 0; i < 3; i++ )
     {
-      c0 = c1;
-      c1 = m_segment[i];
-      if ( 0 == c0 || 0 == c1 )
-        return i; // "gap"
-      P0 = c0->PointAtEnd();
-      P1 = c1->PointAtStart();
-      // Note:  The point compare test should be the same
-      //        as the one used in ON_Curve::IsClosed().
-      //
-      if ( ON_ComparePoint( 3, false, &P0.x, &P1.x ) )
+      double c0 = C0[i];
+      double c1 = C1[i];
+      if ( ON_UNSET_VALUE == c0 && ON_UNSET_VALUE == c1 )
+        continue;
+      double c = ON_UNSET_VALUE;
+      if ( c0 == c1 )
+        c = c0;
+      else if ( ON_UNSET_VALUE == c0 )
+        c = c1;
+      else if ( ON_UNSET_VALUE == c1 )
+        c = c0;
+      else if ( line0_length > line1_length )
+        c = c0;
+      else
+        c = c1;
+      if ( ON_UNSET_VALUE != c && ON_IsValid(c) )
       {
-        // To fix RR 13325 I allow a little more leeway for arcs.
-        const ON_ArcCurve* arc0 = ON_ArcCurve::Cast(m_segment[i-1]);
-        const ON_ArcCurve* arc1 = ON_ArcCurve::Cast(m_segment[i]);
-        if ( 0 == arc0 && 0 == arc1 )
-          return i; // gap
-        double tol = ON_ZERO_TOLERANCE;
-        const double tol0 = arc0  ? ( arc0->m_arc.radius*arc0->m_arc.AngleRadians()*1.0e-10 ) : 0.0;
-        const double tol1 = arc1  ? ( arc1->m_arc.radius*arc1->m_arc.AngleRadians()*1.0e-10 ) : 0.0;
-        if ( tol < tol0 ) 
-          tol = tol0;
-        if ( tol < tol1 ) 
-          tol = tol1;
-        const double d = P0.DistanceTo(P1);
-        if ( d > tol )
-        {
-          return i; // gap
-        }
+        Q0[i] = c;
+        Q1[i] = c;
       }
     }
   }
+}
 
-  return 0; // no gaps
+static void SetLineIsoCoords( const ON_Line& line, const ON_3dPoint& P, ON_3dPoint& Q )
+{
+  ON_3dPoint C;
+  if ( GetLineIsoCoordinates(line,P,C) )
+  {
+    if ( ON_UNSET_VALUE != C.x && ON_IsValid(C.x) )
+      Q.x = P.x;
+    if ( ON_UNSET_VALUE != C.y && ON_IsValid(C.y) )
+      Q.y = P.y;
+    if ( ON_UNSET_VALUE != C.z && ON_IsValid(C.z) )
+      Q.z = P.z;
+  }
+}
+
+static ON_NurbsCurve* ChangeArcEnd( const ON_ArcCurve* arc, ON_3dPoint P, ON_3dPoint Q, int end_index )
+{
+  if ( P == Q )
+    return 0;
+
+  ON_NurbsCurve* nc = arc->NurbsCurve();
+  if ( 0 == nc || nc->m_cv_count < 3 )
+    return 0;
+  
+  int cv0_dex, cv1_dex;
+  if ( 1 == end_index )
+  {
+    cv0_dex = nc->m_cv_count-1;
+    cv1_dex = cv0_dex - 1;
+  }
+  else
+  {
+    cv0_dex = 0;
+    cv1_dex = cv0_dex + 1;
+  }
+
+  if ( !nc->SetCV(cv0_dex,Q) )
+  {
+    delete nc;
+    return 0;
+  }
+
+  ON_4dPoint R;
+  if ( !nc->GetCV(cv1_dex,R) )
+  {
+    delete nc;
+    return 0;
+  }
+
+  R.x += (Q.x-P.x)*R.w;
+  R.y += (Q.y-P.y)*R.w;
+  R.z += (Q.z-P.z)*R.w;
+  nc->SetCV(cv1_dex,R);
+
+  return nc;
+}
+
+bool ON_PolyCurve::CloseGap( int gap_index, int ends_to_modify )
+{
+  const int count = m_segment.Count();
+
+  if ( gap_index <= 0 || gap_index >= count )
+  {
+    ON_ERROR("Invalid gap_index parameter.");
+    return 0; // nothing to do
+  }
+
+  ON_Curve* c0 = m_segment[gap_index-1];
+  ON_Curve* c1 = m_segment[gap_index];
+  if ( 0 == c0 || 0 == c1 )
+  {
+    ON_ERROR("Null curve segments.");
+    return false; // invalid polycurve
+  }
+
+  const ON_3dPoint P0 = c0->PointAtEnd();
+  const ON_3dPoint P1 = c1->PointAtStart();
+  if ( P0 == P1 )
+    return false; // nothing to do
+
+  ON_3dPoint Q0(P0);
+  ON_3dPoint Q1(P1);
+
+  const ON_ArcCurve* arc0 = ON_ArcCurve::Cast(c0);
+  const ON_ArcCurve* arc1 = ON_ArcCurve::Cast(c1);
+
+  if ( 0 != arc0 && 0 != arc1 )
+  {
+    if ( arc1->m_arc.Length() < arc0->m_arc.Length() )
+      Q1 = P0;
+    else
+      Q0 = P1;
+  }
+  else if ( 0 != arc0 && 0 == arc1 )
+  {
+    Q1 = P0;
+  }
+  else if ( 0 != arc1 && 0 == arc0 )
+  {
+    Q0 = P1;
+  }
+  else
+  {
+    ON_Line line0, line1;
+    double min_line_length = 0.0;
+    double is_linear_tolerance = 0.0;
+    bool bLine0 = (0 == arc0)
+                ? c0->LastSpanIsLinear(min_line_length,is_linear_tolerance,&line0)
+                : false;
+    bool bLine1 = (0 == arc0)
+                ? c1->FirstSpanIsLinear(min_line_length,is_linear_tolerance,&line1)
+                : false;
+    if ( bLine0 && bLine1 )
+      LineLineTieBreaker(line0,line1,Q0,Q1);
+    else if ( bLine0 )
+      SetLineIsoCoords(line0,P0,Q1);
+    else if ( bLine1 )
+      SetLineIsoCoords(line1,P1,Q0);
+  }
+
+  if ( Q0.x != Q1.x )
+    Q0.x = Q1.x = 0.5*(P0.x + P1.x);
+  if ( Q0.y != Q1.y )
+    Q0.y = Q1.y = 0.5*(P0.y + P1.y);
+  if ( Q0.z != Q1.z )
+    Q0.z = Q1.z = 0.5*(P0.z + P1.z);
+
+  if ( Q0 != P0 )
+  {
+    if ( 0 != arc0 )
+    {
+      ON_NurbsCurve* nc0 = ChangeArcEnd( arc0, P0, Q0 , 1 );
+      if ( nc0 )
+      {
+        delete m_segment[gap_index-1];
+        m_segment[gap_index-1] = nc0;
+        c0 = nc0;
+        arc0 = 0;
+      }
+    }
+    else
+    {
+      c0->SetEndPoint(Q0);
+    }
+  }
+
+  if ( Q1 != P1 )
+  {
+    if ( 0 != arc1 )
+    {
+      ON_NurbsCurve* nc1 = ChangeArcEnd( arc1, P1, Q1, 0 );
+      if ( nc1 )
+      {
+        delete m_segment[gap_index];
+        m_segment[gap_index] = nc1;
+        c0 = nc1;
+        arc1 = 0;
+      }
+    }
+    else
+    {
+      c1->SetStartPoint(Q1);
+    }
+  }
+
+  return HasGapAt(gap_index-1) ? false : true;
+}
+
+int ON_PolyCurve::CloseGaps()
+{
+  int rc = 0;
+  int segment_index0 = 0;
+  int gap_index = 0;
+  
+  for(;;)
+  {
+    gap_index = FindNextGap(segment_index0);
+    if ( gap_index <= segment_index0 || gap_index >= m_segment.Count() )
+      break;
+    if ( CloseGap(gap_index,0) )
+      rc++;
+    segment_index0 = gap_index;
+  }
+
+  return rc;
+}
+
+int ON_PolyCurve::HasGap() const
+{
+  return FindNextGap(0);
+}
+
+
+bool ON_PolyCurve::HasGapAt(int segment_index) const
+{
+  const int count = m_segment.Count();
+
+  if ( segment_index < 0 || segment_index >= count-1 )
+    return 0;
+
+  const ON_Curve* c0 = m_segment[segment_index];
+  const ON_Curve* c1 = m_segment[segment_index+1];
+  if ( 0 == c0 || 0 == c1 )
+    return false;
+
+  ON_3dPoint P0 = c0->PointAtEnd();
+  ON_3dPoint P1 = c1->PointAtStart();
+  // Note:  The point compare test should be the same
+  //        as the one used in ON_Curve::IsClosed().
+  if ( false == ON_PointsAreCoincident( 3, false, &P0.x, &P1.x ) )
+  {
+    // To fix RR 13325 I allow a little more leeway for arcs.
+    const ON_ArcCurve* arc0 = ON_ArcCurve::Cast(c0);
+    const ON_ArcCurve* arc1 = ON_ArcCurve::Cast(c1);
+    if ( 0 == arc0 && 0 == arc1 )
+      return true; // gap
+
+    double tol = ON_ZERO_TOLERANCE;
+    const double tol0 = arc0  ? ( arc0->m_arc.radius*arc0->m_arc.AngleRadians()*1.0e-10 ) : 0.0;
+    const double tol1 = arc1  ? ( arc1->m_arc.radius*arc1->m_arc.AngleRadians()*1.0e-10 ) : 0.0;
+    if ( tol < tol0 ) 
+      tol = tol0;
+    if ( tol < tol1 ) 
+      tol = tol1;
+    const double d = P0.DistanceTo(P1);
+    if ( d > tol )
+    {
+      return true; // gap
+    }
+  }
+
+  return false; // no gap
+}
+
+
+int ON_PolyCurve::FindNextGap(int segment_index0) const
+{
+  if ( segment_index0 >= 0 )
+  {
+    const int count = m_segment.Count();
+    for (int gap_index = segment_index0+1; gap_index < count; gap_index++ )
+    {
+      if ( HasGapAt(gap_index-1) )
+        return gap_index;
+    }
+  }
+  return 0;
 }
 
 
@@ -1520,6 +1796,7 @@ ON_PolyCurve::Reverse()
     }
     m_t[count] = -m_t[count];
   }
+	DestroyCurveTree();
   return rc;
 }
 
@@ -1630,9 +1907,20 @@ ON_BOOL32 ON_PolyCurve::Evaluate( // returns false if unable to evaluate
           }
           else 
           {
-            const double d = 1.0/(t1-t0);
-            const double a = (t - t0)*d;
-            const double b = (t1 - t)*d;
+            // 30 May 2012 Dale Lear bug # 105974
+            //   The arithmetic below was setting b = 0 and a = 0.9999999999999...
+            //   so I added the checking for 0 and 1 stuff.
+            const double d = t1-t0;
+            double a = (t - t0)/d;
+            double b = (t1 - t)/d;
+            if ( 0.0 == b )
+              a = 1.0;
+            else if ( 1.0 == b )
+              a = 0.0;
+            else if ( 0.0 == a )
+              b = 1.0;
+            else if ( 1.0 == a )
+              b = 0.0;
             s = b*s0 + a*s1;
           }
           if ( -1 == side )
@@ -1768,11 +2056,13 @@ ON_PolyCurve::Reserve( int capacity )
 
 ON_BOOL32 ON_PolyCurve::Prepend( ON_Curve* c )
 {
+	DestroyCurveTree();
   return Insert( 0, c );
 }
 
 ON_BOOL32 ON_PolyCurve::Append( ON_Curve* c )
 {
+	DestroyCurveTree();
   return Insert( Count(), c );
 }
 
@@ -1888,6 +2178,7 @@ ON_BOOL32 ON_PolyCurve::SetStartPoint(ON_3dPoint start_point)
     if ( c )
       rc = c->SetStartPoint(start_point);
   }
+	DestroyCurveTree();
   return rc;
 }
 
@@ -1900,6 +2191,7 @@ ON_BOOL32 ON_PolyCurve::SetEndPoint(ON_3dPoint end_point)
     if ( c )
       rc = c->SetEndPoint(end_point);
   }
+	DestroyCurveTree();
   return rc;
 }
 
@@ -2165,6 +2457,9 @@ ON_BOOL32 ON_PolyCurve::Trim(
     // is if something is seriously wrong with the m_t[] values.
     return false;
   }
+
+  // we will begin modifying the polycurve
+  DestroyCurveTree();
 
   if ( actual_trim_domain == original_polycurve_domain )
   {
@@ -2434,6 +2729,8 @@ ON_BOOL32 ON_PolyCurve::Trim(
 	m_t[0] = output_domain[0];
   m_t[m_t.Count()-1] = output_domain[1];
 
+	DestroyCurveTree();
+
   return true;
 }
 
@@ -2481,6 +2778,10 @@ bool ON_PolyCurve::Extend(
     }
   }
  
+  if (changed){
+    DestroyCurveTree();
+  }
+ 
   return changed;
 }
  
@@ -2501,9 +2802,13 @@ ON_BOOL32 ON_PolyCurve::Split(
 
   if ( pLeftSide && pLeftSide != this )
     pLeftSide->Destroy();
+  else if ( pLeftSide == this )
+    pLeftSide->DestroyCurveTree();
 
   if ( pRightSide && pRightSide != this )
     pRightSide->Destroy();
+  else if ( pRightSide == this )
+    pRightSide->DestroyCurveTree();
 
   if ( left_side && !pLeftSide )
     return false;

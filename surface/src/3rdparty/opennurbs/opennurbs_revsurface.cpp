@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -14,7 +14,7 @@
 ////////////////////////////////////////////////////////////////
 */
 
-#include <pcl/surface/3rdparty/opennurbs/opennurbs.h>
+#include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
 
 ON_OBJECT_IMPLEMENT( ON_RevSurface, ON_Surface, "A16220D3-163B-11d4-8000-0010830122F0");
 
@@ -56,6 +56,7 @@ ON_RevSurface::~ON_RevSurface()
 
 void ON_RevSurface::Destroy()
 {
+  DestroySurfaceTree();
   if ( m_curve)
   {
     delete m_curve;
@@ -133,6 +134,7 @@ ON_BOOL32 ON_RevSurface::SetAngleRadians(
     }
     m_angle.Set( start_angle_radians, end_angle_radians );
     rc = true;
+    DestroySurfaceTree();
   }
   return rc;
 }
@@ -601,6 +603,20 @@ int ON_RevSurface::GetNurbForm(class ON_NurbsSurface& srf , double tolerance ) c
       rc = m_curve->GetNurbForm(c,tolerance);
       if (rc) 
       {
+        if ( 2 == c.m_dim )
+        {
+          // Increasing the dimension of a 2d curve to 3d fixes
+          // was added to make the Scale1D operation in
+          // bug # 103845 work.
+          ON_WARNING("ON_RevSurface.m_curve is 2-dimensional.");
+          c.ChangeDimension(3);
+        }
+        if ( 3 != c.m_dim )
+        {
+          ON_ERROR("ON_RevSurface.m_curve is not valid.");
+          return 0;
+        }
+
         if ( m_angle[0] != 0.0 )
         {
           c.Rotate( m_angle[0], m_axis.Direction(), m_axis.from );
@@ -613,7 +629,15 @@ int ON_RevSurface::GetNurbForm(class ON_NurbsSurface& srf , double tolerance ) c
         rho.X.Unitize();
         rho.Y = ON_CrossProduct(rho.Z,rho.X);
         rho.Y.Unitize();
-        srf.TensorProduct( a, c, rho );
+        if ( !srf.TensorProduct( a, c, rho ) )
+        {
+          // Testing for false here prevents crashes
+          // when and was added as part of investigating
+          // bug # 103845.  A change a few lines up
+          // made it so that particular bug no longer
+          // fails to create a nurbs surface.
+          return 0;
+        }
 
         // make singular points "spot on"
         ON_3dPoint C0 = c.PointAtStart();
@@ -895,6 +919,7 @@ bool ON_RevSurface::Extend(
 
   if ( rc )
   {
+    DestroySurfaceTree();
     // update bounding box
     ON_BoundingBox bbox0 = m_bbox;
     m_bbox.Destroy();
@@ -1028,7 +1053,6 @@ ON_BOOL32 ON_RevSurface::Split(
   return rc;
 }
 
-
 ON_BOOL32 ON_RevSurface::Transpose()
 {
   m_bTransposed = m_bTransposed ? false : true;
@@ -1120,9 +1144,9 @@ bool ON_RevSurface::GetNextDiscontinuity(
 
 ON_BOOL32 ON_RevSurface::IsSingular( int side ) const // 0 = south, 1 = east, 2 = north, 3 = west
 {
-  ON_BOOL32 rc = false;
+  bool rc = false;
   ON_3dPoint P, Q;
-  double d, tol;
+  //double d, tol;
   if ( side < 0 || side > 3 )
     return false;
 
@@ -1161,20 +1185,25 @@ ON_BOOL32 ON_RevSurface::IsSingular( int side ) const // 0 = south, 1 = east, 2 
     //if ( d <= ON_ZERO_TOLERANCE )
     //  rc = true;
 
-    d = fabs(P.x - Q.x);
-    tol = ON_ZERO_TOLERANCE + fabs(Q.x)*ON_SQRT_EPSILON;
-    if ( d <= tol )
-    {
-      d = fabs(P.y - Q.y);
-      tol = ON_ZERO_TOLERANCE + fabs(Q.y)*ON_SQRT_EPSILON;
-      if ( d <= tol )
-      {
-        d = fabs(P.z - Q.z);
-        tol = ON_ZERO_TOLERANCE + fabs(Q.z)*ON_SQRT_EPSILON;
-        if ( d <= tol )
-          rc = true;
-      }
-    }
+    // 12 July 2012 Dale Lear
+    //   Use ON_PointsAreCoincident() for all IsSingular queries
+    //
+    //d = fabs(P.x - Q.x);
+    //tol = ON_ZERO_TOLERANCE + fabs(Q.x)*ON_SQRT_EPSILON;
+    //if ( d <= tol )
+    //{
+    //  d = fabs(P.y - Q.y);
+    //  tol = ON_ZERO_TOLERANCE + fabs(Q.y)*ON_SQRT_EPSILON;
+    //  if ( d <= tol )
+    //  {
+    //    d = fabs(P.z - Q.z);
+    //    tol = ON_ZERO_TOLERANCE + fabs(Q.z)*ON_SQRT_EPSILON;
+    //    if ( d <= tol )
+    //      rc = true;
+    //  }
+    //}
+    rc = ON_PointsAreCoincident(3,0,&P.x,&Q.x);
+
   }
 
   return rc;
@@ -1291,6 +1320,65 @@ ON_Interval ON_RevSurface::Domain( int dir ) const
     d = m_curve->Domain();
   }
   return d;
+}
+
+ON_BOOL32 ON_RevSurface::GetSurfaceSize( 
+    double* width, 
+    double* height 
+    ) const
+{
+  ON_BOOL32 rc = false;
+  if ( m_bTransposed )
+  {
+    double* ptr = width;
+    width = height;
+    height = ptr;
+  }
+  if ( m_curve )
+  {
+    rc = true;
+
+    ON_Interval cdom = m_curve->Domain();
+    int i, hint = 0;
+    int imax = 64;
+    double d = 1.0/((double)imax);
+    ON_3dPoint pt0 = ON_UNSET_POINT;
+    ON_3dPoint pt;
+    double length_estimate = 0.0;
+
+    if ( width != NULL || height != NULL )
+    {
+      double radius_estimate = 0.0;
+      double r;
+      for ( i = 0; i <= imax; i++ )
+      {
+        if ( m_curve->EvPoint( cdom.ParameterAt(i*d), pt, 0, &hint ) )
+        {
+          r = m_axis.DistanceTo(pt);
+          if ( r > radius_estimate )
+            radius_estimate = r;
+          if ( pt0 != ON_UNSET_POINT )
+            length_estimate += pt0.DistanceTo(pt);
+          pt0 = pt;
+        }
+      }
+      if ( width != NULL )
+        *width = m_angle.Length()*radius_estimate;
+    }
+
+    if ( height != NULL )
+    {
+      *height = length_estimate;
+    }
+  }
+  else
+  {
+    if ( width )
+      *width = 0.0;
+    if ( height )
+      *height = 0.0;
+  }
+  return rc;
 }
 
 int ON_RevSurface::SpanCount( int dir ) const
@@ -2265,138 +2353,5 @@ ON_BOOL32 ON_RevSurface::IsConical(
   if ( cone )
     *cone = c;
   return c.IsValid();
-}
-
-static
-double ON_ClosestPointAngleHelper( 
-            const ON_Line& axis, 
-            const ON_Curve& curve, 
-            ON_Interval angle_domain,
-            const ON_3dPoint& test_point,
-            ON_3dPoint& curve_test_point
-            )
-{
-  // this assumes curve (revolute) is coplanar with axis and midpoint of curve is
-  // not on the axis
-
-  // angle_domain is on the stack and we assume it is increasing
-  // below, so it is ok to swap it here.  This does not change the
-  // interval that was passed to ClsPtAngle().
-  if ( angle_domain.IsDecreasing() )
-    angle_domain.Swap();
-
-  curve_test_point = test_point;
-  ON_3dPoint Cpt = curve.PointAt( curve.Domain().ParameterAt( 0.5 ) );
-  ON_3dPoint Apt = axis.ClosestPointTo( Cpt );
-  ON_3dVector v0 = Cpt - Apt;
-  ON_3dVector v1 = test_point - axis.ClosestPointTo( test_point );
-  if ( !v0.Unitize() || !v1.Unitize() )
-  {
-    // point is on the axis - see bug 42808 pick cyl first.
-    return ON_UNSET_VALUE;
-  }
-  double angle = angle_domain[0];
-  double cos_angle = v0*v1;
-  ON_3dVector Cross = ON_CrossProduct( v0, v1 );
-  double sin_angle = Cross.Length();
-  if (axis.Direction()*Cross < 0.0) 
-    sin_angle *= -1.0;
-
-  // 16 November 2002 Dale Lear: I was getting the wrong pullback on
-  //     cyl seams when cos_angle=1.0 and sin_angle = ...1e-16.  This
-  //     fixed the bug.
-
-  // cos_angle sin_angle is garbage if fabs() s < ON_EPSILON
-  if ( fabs(sin_angle) < ON_EPSILON ) sin_angle = 0.0;
-  if ( fabs(cos_angle) < ON_EPSILON ) cos_angle = 0.0;
-
-  // if cos/sin is +1, -1, then we set the other to 0
-  if      ( cos_angle >=  1.0 ) { cos_angle =  1.0; sin_angle =  0.0; }
-  else if ( cos_angle <= -1.0 ) { cos_angle = -1.0; sin_angle =  0.0; }
-  else if ( sin_angle >=  1.0 ) { cos_angle =  0.0; sin_angle =  1.0; }
-  else if ( sin_angle <= -1.0 ) { cos_angle =  0.0; sin_angle = -1.0; }
-  else if ( cos_angle == 0.0 && sin_angle != 0.0 ) { sin_angle = (sin_angle>0.0) ? 1.0 : -1.0;}
-  else if ( cos_angle != 0.0 && sin_angle == 0.0 ) { cos_angle = (cos_angle>0.0) ? 1.0 : -1.0;}
-
-  if ( sin_angle != 0.0 || cos_angle != 0.0 )
-  {
-    {
-      ON_Xform rot;
-      rot.Rotation( -sin_angle, cos_angle, axis.Tangent(), Apt );
-      curve_test_point = rot*test_point;
-    }
-    angle = atan2( sin_angle, cos_angle );
-    if ( !angle_domain.Includes(angle) )
-    {
-      // NOTE: angle[0] and angle[1] can both be negative (-2pi,pi) for example
-      const double twopi = 2.0*ON_PI;
-
-      // if angle is too small, add 2pi
-      while ( angle < angle_domain[0] )
-        angle += twopi;
-
-      // if angle is too big, subtract 2pi
-      while ( angle > angle_domain[0]+twopi && angle > angle_domain[1] )
-        angle -= twopi;
-
-      if ( !angle_domain.Includes(angle) )
-      {
-        // a0 = smallest angle between "angle" and angle[0]
-        double d0 = fabs(angle - angle_domain[0]);
-        double d1 = fabs(angle - angle_domain[0] - twopi);
-        double d2 = fabs(angle - angle_domain[0] + twopi);
-        double a0 = (d0<=d1) ? ((d0<=d2)?d0:d2) : ((d1<=d2)?d1:d2);
-
-        // a1 = smallest angle between "angle" and angle[1]
-        d0 = fabs(angle - angle_domain[1]);
-        d1 = fabs(angle - angle_domain[1] - twopi);
-        d2 = fabs(angle - angle_domain[1] + twopi);
-        double a1 = (d0<=d1) ? ((d0<=d2)?d0:d2) : ((d1<=d2)?d1:d2);
-
-        if ( a0 <= a1 )
-        {
-          // angle is closest to angle_domain[0]
-          angle = angle_domain[0];
-        }
-        else
-        {
-          // angle is closest to angle_domain[1]
-          angle = angle_domain[1];
-        }
-      }
-    }
-  }
-
-  // angle may have been tweaked and atan2 might have a bit of fuzz,
-  // this makes sure sine and cosine are spot on.
-  sin_angle = sin(angle);
-  cos_angle = cos(angle);
-
-  return angle;
-}
-
-double ON_ClosestPointAngle( 
-            const ON_Line& axis, 
-            const ON_Curve& curve, 
-            ON_Interval angle_domain,
-            const ON_3dPoint& test_point,
-            ON_3dPoint& curve_test_point, 
-            double* sine_angle, 
-            double* cosine_angle 
-            )
-{
-  double angle = ON_ClosestPointAngleHelper(axis,curve,angle_domain,test_point,curve_test_point);
-  if ( !ON_IsValid(angle) )
-  {
-    // happens when test point is on the axis of revolution.
-    // For example, bug 42808 when the cyl is picked first and the sphere second.
-    // This behavior is long standing.
-    angle = angle_domain.Min();
-  }
-  if ( 0 != sine_angle )
-    *sine_angle = sin(angle);
-  if ( 0 != cosine_angle )
-    *cosine_angle = cos(angle);
-  return angle;
 }
 

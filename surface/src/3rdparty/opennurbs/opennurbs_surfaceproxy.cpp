@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -14,7 +14,7 @@
 ////////////////////////////////////////////////////////////////
 */
 
-#include <pcl/surface/3rdparty/opennurbs/opennurbs.h>
+#include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
 
 ON_OBJECT_IMPLEMENT(ON_SurfaceProxy,ON_Surface,"4ED7D4E2-E947-11d3-BFE5-0010830122F0");
 
@@ -67,6 +67,7 @@ void ON_SurfaceProxy::SetProxySurface( const ON_Surface* proxy_surface )
   // "real" surface before calling SetProxySurface().
   m_surface = 0;
 
+  DestroySurfaceTree();
   if ( proxy_surface == this )
     proxy_surface = 0;
   m_surface = proxy_surface;
@@ -164,6 +165,32 @@ ON_SurfaceProxy::Domain( int dir ) const
   return d;
 }
 
+ON_BOOL32 ON_SurfaceProxy::GetSurfaceSize( 
+    double* width, 
+    double* height 
+    ) const
+{
+  ON_BOOL32 rc = false;
+  if ( m_surface )
+  {
+    if ( m_bTransposed )
+    {
+      double* ptr = width;
+      width = height;
+      height = ptr;
+    }
+    rc = m_surface->GetSurfaceSize(width,height);
+  }
+  else
+  {
+    if ( width )
+      *width = 0.0;
+    if ( height )
+      *height = 0.0;
+  }
+  return rc;
+}
+
 int
 ON_SurfaceProxy::SpanCount( int dir ) const
 {
@@ -240,22 +267,16 @@ ON_SurfaceProxy::IsIsoparametric( // returns isoparametric status of 2d curve
     {
 		case x_iso:
 			iso = y_iso;
-			break;
 		case y_iso:
 			iso = x_iso;
-			break;
 		case W_iso:
 			iso = S_iso;
-			break;
 		case S_iso:
 			iso = W_iso;
-			break;
 		case N_iso:
 			iso = E_iso;
-			break;
 		case E_iso:
 			iso = N_iso;
-			break;
     default:
       // intentionally ignoring other ON_Surface::ISO enum values
       break;
@@ -285,22 +306,16 @@ ON_SurfaceProxy::IsIsoparametric( // returns isoparametric status based on bound
     {
 		case x_iso:
 			iso = y_iso;
-			break;
 		case y_iso:
 			iso = x_iso;
-			break;
 		case W_iso:
 			iso = S_iso;
-			break;
 		case S_iso:
 			iso = W_iso;
-			break;
 		case N_iso:
 			iso = E_iso;
-			break;
 		case E_iso:
 			iso = N_iso;
-			break;
     default:
       // intentionally ignoring other ON_Surface::ISO enum values
       break;
@@ -392,6 +407,7 @@ ON_SurfaceProxy::Reverse(
 ON_BOOL32
 ON_SurfaceProxy::Transpose()
 {
+  DestroySurfaceTree();
   m_bTransposed = (m_bTransposed) ? false : true;
   return true;
 }

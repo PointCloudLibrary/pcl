@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -14,7 +14,7 @@
 ////////////////////////////////////////////////////////////////
 */
 
-#include <pcl/surface/3rdparty/opennurbs/opennurbs.h>
+#include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
 
 /////////////////////////////////////////////////////////////////////////////
 // Empty strings point at empty_astring
@@ -271,6 +271,7 @@ ON_String::~ON_String()
 ON_String::ON_String(const ON_String& src)
 {
 	if (    src.Header()->ref_count > 0 
+       && 0 == ON_WorkerMemoryPool()
      )	
   {
 		m_s = src.m_s;
@@ -417,6 +418,7 @@ ON_String& ON_String::operator=(const ON_String& src)
       Create();
     }
     else if (    src.Header()->ref_count > 0 
+              && 0 == ON_WorkerMemoryPool()
             ) 
     {
       Destroy();
@@ -1284,6 +1286,8 @@ void ON_CheckSum::Zero()
     m_crc[i] = 0;
 }
 
+const ON_CheckSum ON_CheckSum::UnsetCheckSum;
+
 bool ON_CheckSum::IsSet() const
 {
   return ( 0 != m_size 
@@ -1430,6 +1434,130 @@ bool ON::GetFileStats( FILE* fp,
   return rc;
 }
 
+bool ON::IsDirectory( const wchar_t* pathname )
+{
+  bool rc = false;
+
+  if ( 0 != pathname && 0 != pathname[0] )
+  {
+    ON_wString buffer;
+    const wchar_t* stail = pathname;
+    while ( 0 != *stail )
+      stail++;
+    stail--;
+    if ( '\\' == *stail || '/' == *stail ) 
+    {
+      const wchar_t trim[2] = {*stail,0};
+      buffer = pathname;
+      buffer.TrimRight(trim);
+      if ( buffer.Length() > 0 )
+        pathname = buffer;
+    }
+#if defined(ON_COMPILER_MSC)
+    // this works on Windows
+    struct _stat64 buf;
+    memset(&buf,0,sizeof(buf));
+    int stat_errno = _wstat64( pathname, &buf );
+    if ( 0 == stat_errno && 0 != (_S_IFDIR & buf.st_mode) )
+    {
+      rc = true;
+    }
+#else
+    ON_String s = pathname;
+    const char* utf8pathname = s;
+    rc = ON::IsDirectory(utf8pathname);
+#endif
+  }
+
+  return rc;
+}
+
+bool ON::IsDirectory( const char* utf8pathname )
+{
+  bool rc = false;
+
+  if ( 0 != utf8pathname && 0 != utf8pathname[0] )
+  {
+    ON_String buffer;
+    const char* stail = utf8pathname;
+    while ( 0 != *stail )
+      stail++;
+    stail--;
+    if ( '\\' == *stail || '/' == *stail ) 
+    {
+      const char trim[2] = {*stail,0};
+      buffer = utf8pathname;
+      buffer.TrimRight(trim);
+      if ( buffer.Length() > 0 )
+        utf8pathname = buffer;
+    }
+#if defined(ON_COMPILER_MSC)
+    // this works on Windows
+    struct _stat64 buf;
+    memset(&buf,0,sizeof(buf));
+    int stat_errno = _stat64( utf8pathname, &buf );
+    if ( 0 == stat_errno && 0 != (_S_IFDIR & buf.st_mode) )
+    {
+      rc = true;
+    }
+#else
+    // this works on Apple and gcc implentations.
+    struct stat buf;
+    memset(&buf,0,sizeof(buf));
+    int stat_errno = stat( utf8pathname, &buf );
+    if ( 0 == stat_errno && S_ISDIR(buf.st_mode) )
+    {
+      rc = true;
+    }
+#endif
+  }
+
+  return rc;
+}
+
+
+int ON::IsOpenNURBSFile( FILE* fp )
+{
+  ON_String sStartSectionComment;
+  int version = 0;
+  if ( 0 != fp )
+  {
+    ON_BinaryFile archive(ON::read3dm,fp);
+    if ( !archive.Read3dmStartSection(&version,sStartSectionComment) )
+      version = 0;
+  }
+  return version;
+}
+
+int ON::IsOpenNURBSFile( const wchar_t* pathname )
+{
+  int version = 0;
+  if ( 0 != pathname && 0 != pathname[0] )
+  {
+    FILE* fp = ON::OpenFile(pathname,L"rb");
+    if ( 0 != fp )
+    {
+      version = ON::IsOpenNURBSFile(fp);
+      ON::CloseFile(fp);
+    }
+  }
+  return version;
+}
+
+int ON::IsOpenNURBSFile( const char* utf8pathname )
+{
+  int version = 0;
+  if ( 0 != utf8pathname && 0 != utf8pathname[0] )
+  {
+    FILE* fp = ON::OpenFile(utf8pathname,"rb");
+    if ( 0 != fp )
+    {
+      version = ON::IsOpenNURBSFile(fp);
+      ON::CloseFile(fp);
+    }
+  }
+  return version;
+}
 
 bool ON_CheckSum::SetFileCheckSum( FILE* fp )
 {
@@ -1533,11 +1661,18 @@ bool ON_CheckSum::SetFileCheckSum( const wchar_t* filename )
 {
   bool rc = false;
   Zero();
-  FILE* fp = ON::OpenFile(filename,L"rb");
-  if ( fp )
+  if ( 0 == filename || 0 == filename[0] )
   {
-    rc = SetFileCheckSum(fp);
-    ON::CloseFile(fp);
+    rc = true;
+  }
+  else
+  {
+    FILE* fp = ON::OpenFile(filename,L"rb");
+    if ( fp )
+    {
+      rc = SetFileCheckSum(fp);
+      ON::CloseFile(fp);
+    }
   }
   return rc;
 }
@@ -1670,18 +1805,18 @@ void ON_CheckSum::Dump(ON_TextLog& text_log) const
   unsigned long long u; // 8 bytes in windows and gcc - should be at least as big
                         // as a size_t or time_t.
 
-  text_log.Print(L"Checksum:");
+  text_log.Print("Checksum:");
   if ( !IsSet() )
-    text_log.Print(L"zero (not set)\n");
+    text_log.Print("zero (not set)\n");
   else
   {
     text_log.PushIndent();
-    text_log.Print(L"\n");
+    text_log.Print("\n");
     u = (unsigned long long)m_size;
-    text_log.Print(L"Size: %llu bytes\n",u);
+    text_log.Print("Size: %llu bytes\n",u);
     u = (unsigned long long)m_time;
-    text_log.Print(L"Last Modified Time: %u (seconds since January 1, 1970, UCT)\n",u);
-    text_log.Print(L"CRC List: %08x, %08x, %08x, %08x, %08x, %08x, %08x, %08x\n",
+    text_log.Print("Last Modified Time: %u (seconds since January 1, 1970, UCT)\n",u);
+    text_log.Print("CRC List: %08x, %08x, %08x, %08x, %08x, %08x, %08x, %08x\n",
                    m_crc[0],m_crc[1],m_crc[2],m_crc[3],m_crc[4],m_crc[5],m_crc[6],m_crc[7]
                    );
     text_log.PopIndent();

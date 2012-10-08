@@ -81,8 +81,8 @@ struct inflate_state {
     int havedict;               /* true if dictionary provided */
     int flags;                  /* gzip header method and flags (0 if zlib) */
     unsigned dmax;              /* zlib header max distance (INFLATE_STRICT) */
-    unsigned long check;        /* protected copy of check value */
-    unsigned long total;        /* protected copy of output count */
+    unsigned int check;        /* protected copy of check value */
+    unsigned int total;        /* protected copy of output count */
     gz_headerp head;            /* where to save gzip header information */
         /* sliding window */
     unsigned wbits;             /* log base 2 of requested window size */
@@ -91,7 +91,7 @@ struct inflate_state {
     unsigned write;             /* window write index */
     unsigned char FAR *window;  /* allocated sliding window, if needed */
         /* bit accumulator */
-    unsigned long hold;         /* input bit accumulator */
+    unsigned int hold;         /* input bit accumulator */
     unsigned bits;              /* number of bits in "in" */
         /* for string and stored block copying */
     unsigned length;            /* literal or length of data to copy */

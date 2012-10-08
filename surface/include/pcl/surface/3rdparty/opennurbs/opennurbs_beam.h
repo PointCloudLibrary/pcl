@@ -9,7 +9,7 @@ Parameters:
   P - [in] start or end of path
   T - [in] unit tanget to path
   U - [in] unit up vector perpendicular to T
-  Normal - [in] optional unit vector with Normal->x > 0 that
+  Normal - [in] optional unit vector with Normal->z > 0 that
      defines the unit normal to the miter plane.
   xform - [out]
     transformation that maps the profile curve to 3d world space
@@ -175,6 +175,10 @@ public:
   ON_Interval Domain(
         int dir
         ) const;
+  ON_BOOL32 GetSurfaceSize( 
+        double* width, 
+        double* height 
+        ) const;
   int SpanCount(
         int dir
         ) const;
@@ -251,6 +255,7 @@ public:
          int dir,
          double c
          ) const;
+
   ON_BOOL32 Trim(
          int dir,
          const ON_Interval& domain
@@ -265,6 +270,29 @@ public:
          ON_Surface*& west_or_south_side,
          ON_Surface*& east_or_north_side
          ) const;
+
+  bool GetClosestPoint( 
+          const ON_3dPoint& P,
+          double* s,
+          double* t,
+          double maximum_distance = 0.0,
+          const ON_Interval* sdomain = 0,
+          const ON_Interval* tdomain = 0
+          ) const;
+
+  ON_BOOL32 GetLocalClosestPoint( const ON_3dPoint&, // test_point
+          double,double,     // seed_parameters
+          double*,double*,   // parameters of local closest point returned here
+          const ON_Interval* = NULL, // first parameter sub_domain
+          const ON_Interval* = NULL  // second parameter sub_domain
+          ) const;
+
+  //ON_Surface* Offset(
+  //      double offset_distance, 
+  //      double tolerance, 
+  //      double* max_deviation = NULL
+  //      ) const;
+
   int GetNurbForm(
         ON_NurbsSurface& nurbs_surface,
         double tolerance = 0.0
@@ -772,7 +800,7 @@ public:
     extrusion - [in] 
       If the input extrusion pointer is null, one will be allocated on the heap
       and it is the caller's responsibility to delte it at an appropriate time.
-      If the input point is not null, this extrusion will be used and the same
+      If the input pointer is not null, this extrusion will be used and the same
       pointer will be returned, provided the input is valid.
   Returns:
     If the input is valid, a pointer to an ON_Exrusion form of the cylinder.
@@ -817,7 +845,7 @@ public:
     extrusion - [in] 
       If the input extrusion pointer is null, one will be allocated on the heap
       and it is the caller's responsibility to delte it at an appropriate time.
-      If the input point is not null, this extrusion will be used and the same
+      If the input pointer is not null, this extrusion will be used and the same
       pointer will be returned, provided the input is valid.
   Returns:
     If the input is valid, a pointer to an ON_Exrusion form of the pipe.
@@ -848,7 +876,45 @@ public:
     bool bCapTop,
     ON_Extrusion* extrusion = 0 
     );
+
+  /*
+  Description:
+    Create an ON_Exrusion from a 3d curve, a plane and a height.
+  Parameters:
+    curve - [in] 
+      A continuous 3d curve.
+    plane - [in]
+      If plane is null, then the plane returned by curve.IsPlanar() is used.
+      The 3d curve is projected to this plane and the result is passed to
+      ON_Extrusion::SetOuterProfile().
+    height - [in]
+      If the height > 0, the bottom of the extrusion will be in plane and
+      the top will be height units above the plane.
+      If the height < 0, the top of the extrusion will be in plane and
+      the bottom will be height units below the plane.
+    bCap - [in]
+      If the curve is closed and bCap is true, then the resulting extrusion
+      is capped.
+    extrusion - [in] 
+      If the input extrusion pointer is null, one will be allocated on the heap
+      and it is the caller's responsibility to delte it at an appropriate time.
+      If the input pointer is not null, this extrusion will be used and the same
+      pointer will be returned, provided the input is valid.
+  Returns:
+    If the input is valid, a pointer to an ON_Exrusion form of the pipe.
+    If the input is not valid, then null, even when the input extrusion
+    object is not null.
+  */
+  static ON_Extrusion* CreateFrom3dCurve( 
+    const ON_Curve& curve,
+    const ON_Plane* plane,
+    double height,
+    bool bCap,
+    ON_Extrusion* extrusion = 0 
+    );
+
 };
+
 
 #endif
 

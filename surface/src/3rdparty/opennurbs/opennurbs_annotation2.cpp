@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -14,7 +14,7 @@
 ////////////////////////////////////////////////////////////////
 */
 
-#include <pcl/surface/3rdparty/opennurbs/opennurbs.h>
+#include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
 
 // This define is up here so anybody who want's to defeat the
 // bozo vaccine has to be doing it on purpose.
@@ -782,7 +782,12 @@ static bool WriteAnnotation2UserText_V4( ON_BinaryArchive& file, const ON_wStrin
     {
       s4 += L'\r';
       s4 += L'\n';
-      while(i < len-1 && (s[i+1] == L'\r' || s[i+1] == L'\n'))
+      
+      // May 24, 2012  Tim - Fix for RR 100260.  If we use a while here we
+      // miss adding carriage returns where the user really meant to have a 
+      // blank line.  If we only check the next character and then continue on
+      // we preserve the blank lines.
+      if(i < len-1 && (s[i+1] == L'\r' || s[i+1] == L'\n'))
         i++;
       continue;
     }
@@ -799,21 +804,21 @@ static bool WriteAnnotation2UserText_V5( ON_BinaryArchive& file, const ON_wStrin
   return rc;
 }
 
-static int CountTextLines(const ON_wString& text)
-{
-  int len = text.Length();
-  int lines = len > 0 ? 1 : 0;
-  for(int i = 0; i < len; i++)
-  {
-    if(text[i] == L'\n' || text[i] == L'\r')
-    {
-      lines++;
-      if(i < len-1 && text[i] == L'\r' && text[i+1] == L'\n')
-        i++;
-    }
-  }
-  return lines;
-}
+//static int CountTextLines(const ON_wString& text)
+//{
+//  int len = text.Length();
+//  int lines = len > 0 ? 1 : 0;
+//  for(int i = 0; i < len; i++)
+//  {
+//    if(text[i] == L'\n' || text[i] == L'\r')
+//    {
+//      lines++;
+//      if(i < len-1 && text[i] == L'\r' && text[i+1] == L'\n')
+//        i++;
+//    }
+//  }
+//  return lines;
+//}
 
 ON_BOOL32 ON_Annotation2::Write( ON_BinaryArchive& file ) const
 {
@@ -863,35 +868,39 @@ ON_BOOL32 ON_Annotation2::Write( ON_BinaryArchive& file ) const
     // know the width of the text here
     // This doesn't change the size or position of any fields being
     // written, but just adjusts the plane to tune up the alignment
-    ON_Plane plane = m_plane;
-    if(file.Archive3dmVersion() <= 4 && m_type == ON::dtTextBlock)
-    {
-      double height = m_textheight;
-      int lines = CountTextLines(m_usertext);
-      double linefeed = ON_Font::m_default_linefeed_ratio;
 
-      if(m_justification & tjBottom)
-      {
-        if(lines > 1)
-        {
-          ON_3dPoint p = plane.PointAt(0.0, height * (lines-1) * linefeed);
-          plane.SetOrigin(p);
-        }
-      }
-      else if(m_justification & tjMiddle)
-      {
-        double h = height * (lines-1) * linefeed + height;
-        ON_3dPoint p = plane.PointAt(0.0, h * 0.5);
-        plane.SetOrigin(p);
-      }
-      else if(m_justification & tjTop)
-      {
-        ON_3dPoint p = plane.PointAt(0.0, -height);
-        plane.SetOrigin(p);
-      }
-    }
+    // 16 Nov, 2011 - Lowell - Change text to bottom left justified for pre-v5 files rr94270
+    // This stuff is moved to CRhinoDoc::Write3DMHelper() so it will help with other file
+    // formats too
+    //ON_Plane plane = m_plane;
+    //if(file.Archive3dmVersion() <= 4 && m_type == ON::dtTextBlock)
+    //{
+    //  double height = m_textheight;
+    //  int lines = CountTextLines(m_usertext);
+    //  double linefeed = ON_Font::m_default_linefeed_ratio;
+
+    //  if(m_justification & tjBottom)
+    //  {
+    //    if(lines > 1)
+    //    {
+    //      ON_3dPoint p = plane.PointAt(0.0, -height * (lines-1) * linefeed);
+    //      plane.SetOrigin(p);
+    //    }
+    //  }
+    //  else if(m_justification & tjMiddle)
+    //  {
+    //    double h = height * (lines-1) * linefeed + height;
+    //    ON_3dPoint p = plane.PointAt(0.0, h * 0.5);
+    //    plane.SetOrigin(p);
+    //  }
+    //  else if(m_justification & tjTop)
+    //  {
+    //    ON_3dPoint p = plane.PointAt(0.0, -height);
+    //    plane.SetOrigin(p);
+    //  }
+    //}
   
-    rc = file.WritePlane(plane);
+    rc = file.WritePlane(m_plane);
     if ( !rc) break;
 
     ON_2dPointArray points = m_points;
@@ -1911,6 +1920,7 @@ ON_BOOL32 ON_LinearDimension2::GetBBox(
 
     uv.y = m_points[1].y;
     P.Append( m_plane.PointAt(uv.x,uv.y) );
+    bGrowBox = P.GetBBox(&bbox.m_min.x, &bbox.m_max.x, bGrowBox);
   }
 
   if ( bGrowBox )
@@ -2389,12 +2399,10 @@ int ON_LinearDimension2::GetDimensionLineSegments(
   if( pDE)
     ForceArrows = pDE->ArrowPosition();
 
-  if(ForceArrows == 1)  // force inside
-  {
-    rc = 1;
-  }
-  else if(ForceArrows == -1 ||        // force outside
-          dimwidth < mindimwidth )    // arrowheads have to be "outside" - they won't fit inside even without text
+  // 19 Apr 2012 - Lowell - Fixed so forcing arrows inside won't cause the dim line to 
+  // draw through InLine text  rr103322
+  if(ForceArrows == -1 ||        // force outside
+     (dimwidth < mindimwidth  && ForceArrows != 1))    // arrowheads have to be "outside" - they won't fit inside even without text
   {
     t = arrowwidth + tailwidth;
     x[0] = x0;
@@ -2424,7 +2432,11 @@ int ON_LinearDimension2::GetDimensionLineSegments(
                          ? vp->CameraZ() 
                          : m_plane.zaxis;
 
-    const double gdi_gap = fabs(textgap/gdi_to_plane_scale);
+    // 30 July 2012 - Lowell - Slightly shrink the text gap value
+    // so that text + gap won't intersect the dim line if when text
+    // is moved along the dim line. rr110504
+    double gdi_gap = fabs(textgap/gdi_to_plane_scale)-12;
+    if(gdi_gap < 0.0) gdi_gap = 0.0;
 
     R.Set(gdi_text_rect.left-gdi_gap,gdi_text_rect.bottom+gdi_gap,0.0);
     ray.from = gdi_to_world*R; ray.to = ray.from + vp_zaxis;
@@ -2750,6 +2762,7 @@ ON_BOOL32 ON_RadialDimension2::GetBBox(
 
     uv = m_points[3];
     P.Append( m_plane.PointAt(uv.x,uv.y) );
+    bGrowBox = P.GetBBox(&bbox.m_min.x, &bbox.m_max.x, bGrowBox);
   }
 
   if ( bGrowBox )
@@ -4047,7 +4060,11 @@ int ON_AngularDimension2::GetDimensionArcSegments(
                          ? vp->CameraZ() 
                          : m_plane.zaxis;
 
-    const double gdi_gap = fabs(textgap/gdi_to_plane_scale);
+    // 30 July 2012 - Lowell - Slightly shrink the text gap value
+    // so that text + gap won't intersect the dim line if when text
+    // is moved along the dim line. rr110504
+    double gdi_gap = fabs(textgap/gdi_to_plane_scale)-12;
+    if(gdi_gap < 0.0) gdi_gap = 0.0;
 
     R.Set(gdi_text_rect.left-gdi_gap,gdi_text_rect.bottom+gdi_gap,0.0);
     ray.from = gdi_to_world*R; ray.to = ray.from + vp_zaxis;
@@ -4571,6 +4588,7 @@ ON_BOOL32 ON_OrdinateDimension2::GetBBox( double* boxmin,
 
     P.Append( m_plane.PointAt( m_points[0].x, m_points[0].y));
     P.Append( m_plane.PointAt( m_points[1].x, m_points[1].y));
+    bGrowBox = P.GetBBox(&bbox.m_min.x, &bbox.m_max.x, bGrowBox);
   }
 
   if ( bGrowBox )
@@ -4900,6 +4918,11 @@ ON_BOOL32 ON_TextEntity2::GetBBox(
   {
     ON_2dPoint uv = m_points[0];
     bbox.Set( m_plane.PointAt(uv.x,uv.y), bGrowBox );
+    bGrowBox = true;
+  }
+  else if ( 0 == m_points.Count() )
+  {
+    bbox.Set( m_plane.origin, bGrowBox );
     bGrowBox = true;
   }
 
@@ -5560,7 +5583,7 @@ ON_BOOL32 ON_TextDot::IsValid(
 
 void ON_TextDot::Dump( ON_TextLog& log) const
 {
-  log.Print("ON_TextDot \"%S\" at ",m_text.Array());
+  log.Print("ON_TextDot \"%ls\" at ",m_text.Array());
   log.Print( m_point);  // ON_Geometry 3d location
   log.Print("\n");
 }

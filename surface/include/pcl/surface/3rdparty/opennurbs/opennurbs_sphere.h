@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -110,11 +110,18 @@ public:
   Description:
     Creates a surface of revolution definition of the sphere.
   Parameters:
-    srf - [in] if not NULL, then this srf is used.
+    bArcLengthParameterization - [in]
+      true: 
+        The domain will be set to (0,radius*2*pi)x(-radius*pi/2,radius*pi/2)
+      false: 
+        The domain will be set to (0,2*pi)x(-pi/2,pi/2)
+    srf - [in]
+      if not NULL, then this srf is used.
   Result:
     A surface of revolution or NULL if the sphere is not valid.
   */
-  ON_RevSurface* RevSurfaceForm( ON_RevSurface* srf = NULL ) const;
+  ON_RevSurface* RevSurfaceForm( bool bArcLengthParameterization, ON_RevSurface* srf = NULL ) const;
+  ON_DEPRECATED ON_RevSurface* RevSurfaceForm( ON_RevSurface* srf = NULL ) const;
 };
 
 #endif

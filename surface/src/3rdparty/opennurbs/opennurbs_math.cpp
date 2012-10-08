@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -14,7 +14,7 @@
 ////////////////////////////////////////////////////////////////
 */
 
-#include <pcl/surface/3rdparty/opennurbs/opennurbs.h>
+#include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
 
 /*
 Description:
@@ -1591,7 +1591,84 @@ ON_TransformVectorList(
   return rc;
 }
 
+bool ON_PointsAreCoincident(
+    int dim,
+    int is_rat,
+    const double* pointA,
+    const double* pointB
+    )
+{
+  double d, a, b, wa, wb;
+  
+  if ( dim < 1 || 0 == pointA || 0 == pointB )
+    return false;
 
+  if ( is_rat )
+  {
+    wa = pointA[dim];
+    wb = pointB[dim];
+    if ( 0.0 == wa || 0.0 == wb )
+    {
+      if ( 0.0 == wa && 0.0 == wb )
+        return ON_PointsAreCoincident(dim,0,pointA,pointB);
+      return false;
+    }
+    while(dim--)
+    {
+      a = *pointA++ / wa;
+      b = *pointB++ / wb;
+      d = fabs(a-b);
+      if ( d <= ON_ZERO_TOLERANCE )
+        continue;
+      if ( d <= (fabs(a)+fabs(b))*ON_RELATIVE_TOLERANCE )
+        continue;
+      return false;
+    }
+  }
+  else
+  {
+    while(dim--)
+    {
+      a = *pointA++;
+      b = *pointB++;
+      d = fabs(a-b);
+      if ( d <= ON_ZERO_TOLERANCE )
+        continue;
+      if ( d <= (fabs(a)+fabs(b))*ON_RELATIVE_TOLERANCE )
+        continue;
+      return false;
+    }
+  }
+
+  return true;
+}
+
+bool ON_PointsAreCoincident(
+    int dim,
+    int is_rat,
+    int point_count,
+    int point_stride,
+    const double* points
+    )
+{
+  if ( 0 == points || point_count < 2 )
+    return false;
+  if ( point_stride < (is_rat?(dim+1):dim) )
+    return false;
+  if ( false == ON_PointsAreCoincident( dim, is_rat, points, points + ((point_count-1)*point_stride) ) )
+    return false;
+  if ( point_count > 2 )
+  {
+    point_count--;
+    while ( point_count-- )
+    {
+      if ( false == ON_PointsAreCoincident(dim,is_rat,points,points + point_stride ) )
+        return false;
+      points += point_stride;
+    }
+  }
+  return true;
+}
 
 int 
 ON_ComparePoint( // returns 
@@ -1611,7 +1688,7 @@ ON_ComparePoint( // returns
   for ( i = 0; i < dim; i++ ) {
     a = wA* *pointA++;
     b = wB* *pointB++;
-    tol = (fabs(a) + fabs(b))* ON_SQRT_EPSILON;
+    tol = (fabs(a) + fabs(b))* ON_RELATIVE_TOLERANCE;
     if ( tol <  ON_ZERO_TOLERANCE )
       tol =  ON_ZERO_TOLERANCE;
     if ( a < b-tol )

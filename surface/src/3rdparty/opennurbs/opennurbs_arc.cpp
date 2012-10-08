@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -14,7 +14,7 @@
 ////////////////////////////////////////////////////////////////
 */
 
-#include <pcl/surface/3rdparty/opennurbs/opennurbs.h>
+#include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
 
 ON_Arc::ON_Arc() : m_angle(0.0,2.0*ON_PI)
 {
@@ -165,10 +165,32 @@ bool ON_Arc::Create( // arc through 3 3d points
   const ON_3dPoint& R  // point R
   )
 {
-  ON_Circle c(P,Q,R);
+  ON_Circle c;
   double a = 0.0;
-  c.ClosestPointTo( R, &a );
-  return Create( c, ON_Interval(0.0,a) );
+
+  for (;;)
+  {
+
+    if ( !c.Create(P,Q,R) )
+      break;
+
+    if ( !c.ClosestPointTo( R, &a ) )
+      break;
+
+    if ( !(a > 0.0) )
+      break;
+    
+    if ( !Create( c, ON_Interval(0.0,a) ) )
+      break;
+
+    return true;
+  }
+
+  plane = ON_Plane::World_xy;
+  radius = 0.0;
+  m_angle.Set(0.0,0.0);
+
+  return false;
 }
 
 //////////

@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -16,11 +16,6 @@
 
 #if !defined(OPENNURBS_MESH_INC_)
 #define OPENNURBS_MESH_INC_
-
-class ON_Mesh;
-class ON_MeshVertexRef;
-class ON_MeshEdgeRef;
-class ON_MeshFaceRef;
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -501,6 +496,19 @@ public:
         int mesh_vertex_count,
         const ON_3dPoint* V
         );
+
+  /*
+  Description:
+    Compute the face normal
+  Parameters:
+    dV - [in] double precision vertex array for the mesh
+    fV - [in] float precision vertex array for the mesh
+    FN - [out] face normal
+  Returns:
+    true if FN is valid.
+  */
+  bool ComputeFaceNormal( const ON_3dPoint* dV, ON_3dVector& FN ) const;
+  bool ComputeFaceNormal( const ON_3fPoint* fV, ON_3dVector& FN ) const;
 };
 
 struct ON_MeshFaceSide
@@ -590,9 +598,9 @@ public:
   Returns:
     a reference to the vertex
   */
-  ON_MeshVertexRef VertexRef(ON_COMPONENT_INDEX ci) const;
+  class ON_MeshVertexRef VertexRef(ON_COMPONENT_INDEX ci) const;
 
-  ON_MeshVertexRef VertexRef(int topv_index) const;
+  class ON_MeshVertexRef VertexRef(int topv_index) const;
 
   /*
   Description:
@@ -602,9 +610,9 @@ public:
   Returns:
     a reference to the edge
   */
-  ON_MeshEdgeRef EdgeRef(ON_COMPONENT_INDEX ci) const;
+  class ON_MeshEdgeRef EdgeRef(ON_COMPONENT_INDEX ci) const;
 
-  ON_MeshEdgeRef EdgeRef(int tope_index) const;
+  class ON_MeshEdgeRef EdgeRef(int tope_index) const;
 
   /*
   Description:
@@ -618,9 +626,9 @@ public:
     are parallel arrays; corresponding faces have identical
     indices.
   */
-  ON_MeshFaceRef FaceRef(ON_COMPONENT_INDEX ci) const;
+  class ON_MeshFaceRef FaceRef(ON_COMPONENT_INDEX ci) const;
 
-  ON_MeshFaceRef FaceRef(int topf_index) const;
+  class ON_MeshFaceRef FaceRef(int topf_index) const;
 
 
   /*
@@ -785,6 +793,9 @@ private:
   volatile int m_b32IsValid; // sizeof(m_bIsValid) must be 4 - it is used in sleep locks.
                     //    0: Not Valid
                     //    1: Valid
+                    //   -1: Sleep locked - ON_Mesh::Topology() calculation is in progress
+  int WaitUntilReady(int sleep_value) const; // waits until m_b32IsValid >= 0
+
 private:
   // no implementation
   ON_MeshTopology(const ON_MeshTopology&);
@@ -912,6 +923,11 @@ public:
   void Transform( const ON_Xform& xform );
   void Set(const ON_TextureMapping& mapping);
 
+  /*
+  Description:
+    Sets the tag to the value the meshes have that
+    come out of ON_Brep::CreateMesh().
+  */
   void SetDefaultSurfaceParameterMappingTag();
 
   int Compare( const ON_MappingTag& other,
@@ -970,7 +986,6 @@ ON_DLL_TEMPLATE template class ON_CLASS ON_ClassArray<ON_TextureCoordinates>;
 #pragma warning( pop )
 #endif
 
-
 class ON_CLASS ON_Mesh : public ON_Geometry
 {
   ON_OBJECT_DECLARE(ON_Mesh);
@@ -1001,8 +1016,6 @@ public:
                            // EmergencyDestroy() under normal conditions 
                            // will result in ~ON_Mesh() leaking
                            // memory.
-
-  const class ON_MeshTree* MeshTree() const;
 
   void DestroyTree( bool bDeleteTree = true );
 
@@ -1530,36 +1543,6 @@ public:
 
   /*
   Description:
-    Determine if a point is inside a solid brep.
-  Paramters:
-    test_point - [in]
-    tolerance - [in] >= 0.0
-      3d distance tolerance used for ray-mesh intersection
-      and determining strict inclusion.
-    bStrictlyInside - [in] 
-      If bStrictlyInside is true, then test_point must be inside mesh
-      by at least tolerance in order for this function to return
-      true. If bStrictlyInside is false, then this function will return
-      true if test_point is inside or the distance from test_point to
-      a mesh face is <= tolerance.
-  Returns:
-    True if test_point is inside the solid mesh.
-  Remarks:
-    The caller is responsible for making certing the mesh is
-    solid before calling this function. If the mesh is not
-    solid, the behavior is unpredictable.
-  See Also:
-    ON_Mesh::IsSolid()
-  */
-  bool IsPointInside(
-          ON_3dPoint test_point, 
-          double tolerance,
-          bool bStrictlyInside
-          ) const;
-
-
-  /*
-  Description:
     Appends a list of mesh edges that begin or end at the specified
     vertices to the edges[] array.
   Parameters:
@@ -1590,6 +1573,7 @@ public:
     bool bNoDuplicates,
     ON_SimpleArray<ON_2dex>& edges
     ) const;
+
 
   /*
   Description:
@@ -1670,7 +1654,6 @@ public:
       const int* Vid,
       struct ON_MeshFaceSide*& sides
       ) const;
-
 
   /*
   Description:
@@ -1959,6 +1942,71 @@ public:
     Destroy any existing N-gon list.
   */
   void DestroyNgonList();
+
+  ///////////////////////////////////////////////////////////////////////
+  //
+  // mesh components
+  //   ON_Mesh objects can consist of sets of faces that are isolated
+  //   from any other sets of faces.  The following 2 functions will
+  //   dissect a mesh into these sets, called components.  Not to be 
+  //   confused with ON_COMPONENT_INDEX.
+
+  /*
+    Description:
+      Calculates the components of a mesh and sets a label for each face in
+      the facet_component_labels array.
+    Parameters:
+      bUseVertexConnections- [in]
+        If this parameter is true, then facets that share a common vertex
+        are considered connected.
+        If this parameter is false, then facets must share an edge to
+        be considered connected.
+      bUseTopologicalConnections - [in]
+        If this parameter is true, then geometric location is used
+        to determine if facets are connected. 
+        If this parameter is false, then facets must share the same vertex 
+        or vertices to be considered connected.
+      facet_component_labels- [out]
+        facet_component_labels[] will be an array with the same size
+        as ON_Mesh.m_F.Count() and facet_component_labels[i]
+        is the component id m_F[i] belongs to.  The component id
+        will be 1 to the number of compoents.
+    Returns:
+      Number of components on success, 0 on failure 
+  */
+
+  int GetConnectedComponents( bool bUseVertexConnections, 
+                              bool bTopologicalConnections, 
+                              ON_SimpleArray<int>& facet_component_labels
+                            ) const;
+
+  /*
+    Description:
+      Calculates the components of a mesh and sets a label for each face in
+      the facet_component_labels array.
+    Parameters:
+      bUseVertexConnections- [in]
+        If this parameter is true, then facets that share a common vertex
+        are considered connected.
+        If this parameter is false, then facets must share an edge to
+        be considered connected.
+      bUseTopologicalConnections - [in]
+        If this parameter is true, then geometric location is used
+        to determine if facets are connected. 
+        If this parameter is false, then facets must share the same vertex 
+        or vertices to be considered connected.
+      components   - [out]
+        New components are appended to this array
+        if this parameter is null, then the components are just counted.
+    Returns:
+      Number of components on success, 0 on failure 
+  */
+
+  int GetConnectedComponents( bool bUseVertexConnections, 
+                              bool bTopologicalConnections, 
+                              ON_SimpleArray<ON_Mesh*>* components
+                            ) const;
+
 
   /////////////////////////////////////////////////////////////////
   // 
@@ -2336,8 +2384,6 @@ protected:
   // sub-mesh information rendering large meshes
   ON_MeshPartition* m_partition;
 
-  class ON_MeshTree* m_mtree;
-
 private:
   bool Write_1( ON_BinaryArchive& ) const; // uncompressed 1.x format
   bool Write_2( int, ON_BinaryArchive& ) const; // compressed 2.x format
@@ -2551,202 +2597,6 @@ public:
 
 /*
 Description:
-  Calculate a quick and dirty polygon mesh approximation
-  of a surface.
-Parameters:
-  surface - [in]
-  mesh_density - [in] If <= 10, this number controls
-        the relative polygon count.  If > 10, this number
-        specifies a target number of polygons.
-  mesh - [in] if not NULL, the polygon mesh will be put
-              on this mesh.
-Returns:
-  A polygon mesh approximation of the surface or NULL
-  if the surface could not be meshed.
-*/
-ON_DECL
-ON_Mesh* ON_MeshSurface( 
-            const ON_Surface& surface, 
-            int mesh_density = 0,
-            ON_Mesh* mesh = 0
-            );
-
-/*
-Description:
-  Calculate a quick and dirty polygon mesh approximation
-  of a surface.
-Parameters:
-  surface - [in]
-  u_count - [in] >= 2 Number of "u" parameters in u[] array.
-  u       - [in] u parameters
-  v_count - [in] >= 2 Number of "v" parameters in v[] array.
-  v       - [in] v parameters
-  mesh - [in] if not NULL, the polygon mesh will be put
-              on this mesh.
-Returns:
-  A polygon mesh approximation of the surface or NULL
-  if the surface could not be meshed.
-*/
-ON_DECL
-ON_Mesh* ON_MeshSurface( 
-            const ON_Surface& surface, 
-            int u_count,
-            const double* u,
-            int v_count,
-            const double* v,
-            ON_Mesh* mesh = 0
-            );
-
-/*
-Description:
-  Finds the barycentric coordinates of the point on a 
-  triangle that is closest to P.
-Parameters:
-  A - [in] triangle corner
-  B - [in] triangle corner
-  C - [in] triangle corner
-  P - [in] point to test
-  a - [out] barycentric coordinate
-  b - [out] barycentric coordinate
-  c - [out] barycentric coordinate
-        If ON_ClosestPointToTriangle() returns true, then
-        (*a)*A + (*b)*B + (*c)*C is the point on the 
-        triangle's plane that is closest to P.  It is 
-        always the case that *a + *b + *c = 1, but this
-        function will return negative barycentric 
-        coordinate if the point on the plane is not
-        inside the triangle.
-Returns:
-  True if the triangle is not degenerate.  False if the
-  triangle is degenerate; in this case the returned
-  closest point is the input point that is closest to P.
-*/
-ON_DECL
-bool ON_ClosestPointToTriangle( 
-        ON_3dPoint A, ON_3dPoint B, ON_3dPoint C,
-        ON_3dPoint P,
-        double* a, double* b, double* c
-        );
-
-/*
-Description:
-  Finds the barycentric coordinates of the point on a 
-  triangle that is closest to P.
-Parameters:
-  A - [in] triangle corner
-  B - [in] triangle corner
-  C - [in] triangle corner
-  P - [in] point to test
-  a - [out] barycentric coordinate
-  b - [out] barycentric coordinate
-  c - [out] barycentric coordinate
-        If ON_ClosestPointToTriangle() returns true, then
-        (*a)*A + (*b)*B + (*c)*C is the point on the 
-        triangle's plane that is closest to P.  It is 
-        always the case that *a + *b + *c = 1, but this
-        function will return negative barycentric 
-        coordinate if the point on the plane is not
-        inside the triangle.
-Returns:
-  True if the triangle is not degenerate.  False if the
-  triangle is degenerate; in this case the returned
-  closest point is the input point that is closest to P.
-*/
-ON_DECL
-bool ON_ClosestPointToTriangleFast( 
-          const ON_3dPoint& A, 
-          const ON_3dPoint& B, 
-          const ON_3dPoint& C, 
-          ON_3dPoint P,
-          double* a, double* b, double* c
-          );
-
-/*
-Description:
-  Finds the barycentric coordinates of a pair of points on two
-  triangles that are as close as any other pair.
-Parameters:
-  A - [in] first triangle corners
-  B - [in] second triangle corners
-  a - [out] barycentric coordinates for triangle A
-  b - [out] barycentric coordinates for triangle B
-
-        If ON_ClosestPointBetweenTriangles() returns true, then
-        (a[0])*A[0] + (a[1])*A[1] + (a[2])*A[2] is the point on  
-        triangle A and  (b[0])*B[0] + (b[1])*B[1] + (b[2])*B[2] is
-        the point on triangle B.  It is 
-        always the case that a[0]+a[1]+a[2] = 1, a[0]>=0, a[1]>0, a[2]>0,
-        b[0]+b[1]+b[2] = 1, b[0]>=0, b[1]>0, b[2]>0
-Returns:
-  True if successful.  
-*/
-ON_DECL
-bool ON_ClosestPointBetweenTriangles(const ON_3dPoint A[3],
-                                     const ON_3dPoint B[3],
-                                     double a[3],
-                                     double b[3]
-                                     );
-
-/*
-Description:
-  Finds the barycentric coordinates of a pair of points on two
-  triangles that are as close as any other pair.
-Parameters:
-  Tri - [in] triangle corners
-  Quad - [in] quad corners in order around the quad
-  t - [out] barycentric coordinates for Tri
-  q - [out] barycentric coordinates for Quad
-
-        If ON_ClosestPointBetweenTriangleAndQuad() returns true, then
-        (t[0])*Tri[0] + (t[1])*Tri[1] + (t[2])*Tri[2] is the point on  
-        Tri and  (q[0])*Quad[0] + (q[1])*Quad[1] + (q[2])*Quad[2] + (q[3])*Quad[3] is
-        the point on Quad.  It is 
-        always the case that t[0]+t[1]+t[2] = 1, t[0]>=0, t[1]>0, t[2]>0,
-        q[0]+q[1]+q[2]+q[3] = 1, q[0]>=0, q[1]>0, q[2]>0, q[3].
-        The surface of Quad is defined to be the two triangle surfaces, 
-        <Quad[0], Quad[1], Quad[2]> and <Quad[2], Quad[3], Quad[0]>.  It will always be
-        the case that either q[1]=0 or q[3]=0.
-Returns:
-  True if successful.  
-*/
-ON_DECL
-bool ON_ClosestPointBetweenTriangleAndQuad(const ON_3dPoint Tri[3],
-                                           const ON_3dPoint Quad[4],
-                                           double t[3],
-                                           double q[4]
-                                           );
-
-/*
-Description:
-  Finds the barycentric coordinates of a pair of points on two
-  triangles that are as close as any other pair.
-Parameters:
-  A - [in] first quad corners, in order around the quad
-  B - [in] second quad corners, in order around the quad
-  a - [out] barycentric coordinates for quad A
-  b - [out] barycentric coordinates for quad B
-
-        If ON_ClosestPointBetweenQuads() returns true, then
-        (a[0])*A[0] + (a[1])*A[1] + (a[2])*A[2] + (a[3])*A[3] is the point on  
-        quad A and  (b[0])*B[0] + (b[1])*B[1] + (b[2])*B[2] + (b[3])*B[3] is
-        the point on quad B.  It is 
-        always the case that a[0]+a[1]+a[2]+a[3] = 1, a[0]>=0, a[1]>0, a[2]>0, a[3]>0.
-        b[0]+b[1]+b[2]+b[3] = 1, b[0]>=0, b[1]>0, b[2]>0, b[3]>0
-        The surface of Quad is defined to be the two triangle surfaces, 
-        <Quad[0], Quad[1], Quad[2]> and <Quad[2], Quad[3], Quad[0]>.  It will always be
-        the case that either q[1]=0 or q[3]=0.
-Returns:
-  True if successful.  
-*/
-ON_DECL
-bool ON_ClosestPointBetweenQuads(const ON_3dPoint A[4],
-                                 const ON_3dPoint B[4],
-                                 double a[4],
-                                 double b[4]
-                                 );
-
-/*
-Description:
   Calculate a mesh representation of the NURBS surface's control polygon.
 Parameters:
   nurbs_surface - [in]
@@ -2765,35 +2615,6 @@ ON_Mesh* ON_ControlPolygonMesh(
           bool bCleanMesh,
           ON_Mesh* input_mesh = NULL
           );
-
-/*
-Description:
-  Finds the intersection between a line segment an a triangle.
-Parameters:
-  A - [in] triangle corner
-  B - [in] triangle corner
-  C - [in] triangle corner
-  P - [in] start of line segment
-  Q - [in] end of line segment
-  abc - [out] 
-     barycentric coordinates of intersection point(s)
-  t - [out] line coordinate of intersection point(s)
-Returns:
-  0 - no intersection
-  1 - one intersection point
-  2 - intersection segment
-*/
-ON_DECL
-int ON_LineTriangleIntersect(
-        const ON_3dPoint& A,
-        const ON_3dPoint& B,
-        const ON_3dPoint& C,
-        const ON_3dPoint& P,
-        const ON_3dPoint& Q,
-        double abc[2][3], 
-        double t[2],
-        double tol
-        );
 
 /*
 Description:
@@ -2845,126 +2666,4 @@ bool ON_GetTrianglePlaneEquation(
         double* evaluation_tol
         );
 
-/*
-Description:
-  Triangulate a 2D simple closed polygon.
-Parameters:
-  point_count - [in] number of points in polygon ( >= 3 )
-  point_stride - [in]
-  P - [in] 
-    i-th point = (P[i*point_stride], P[i*point_stride+1])
-  tri_stride - [in]
-  triangle - [out]
-    array of (point_count-2)*tri_stride integers
-Returns:
-  True if successful.  In this case, the polygon is trianglulated into 
-  point_count-2 triangles.  The indices of the 3 points that are the 
-  corner of the i-th (0<= i < point_count-2) triangle are
-    (triangle[i*tri_stride], triangle[i*tri_stride+1], triangle[i*tri_stride+2]).
-Remarks:
-  Do NOT duplicate the start/end point; i.e., a triangle will have
-  a point count of 3 and P will specify 3 distinct non-collinear points.
-*/
-ON_DECL
-bool ON_Mesh2dPolygon( 
-          int point_count,
-          int point_stride,
-          const double* P,
-          int tri_stride,
-          int* triangle 
-          );
-
-/*
-Description:
-  Fill in a 2d region with triangles.
-Parameters:
-  point_count - [in] number of 2d points.
-  point_stride - [in] i-th point = (point[j],point[j+1]), where
-                      j = i*point_stride.
-  point - [in] 2d point locations.  It is ok to include points that are inside the region
-               but not at the ednd of an edge.  Duplicate points are not permitted.
-  edge_count - [in] number of edges (if 0, then the input list of point
-                    is treated as a counterclockwise closed polyline.
-  edge_stride - [in] i-th edge connects points (edge[j],edge[j+1]) where
-                     j = i*edge_stride.
-  edge - [in] indices of edge ends.  Edges should intersect only at shared end points.
-  edge_side - [in] if NULL, the triangles are built on the left side
-                   of the edges.  If not NULL, then
-                   edge[i] determines which side(s) of the edge need
-                   triangles.  1 = left side only, 2 = right side only, 3 = both sides
-  triangles - [out]  triangles are appended to this list.  The (i,j,k) are
-                     vertex indices.
-  new_points - [out] 
-    If this paramter is present and the edges intersect, then a point is
-    created at the intersection. The index used in the triangles to
-    reference the point new_points[i] is (point_count+i).
-Returns:
-  Number of triangles appended to triangles[] array.
-*/
-ON_DECL
-int ON_Mesh2dRegion(
-          int point_count,
-          int point_stride,
-          const double* point,
-          int edge_count,
-          int edge_stride,
-          const int* edge,
-          const int* edge_side,
-          ON_SimpleArray<ON_3dex>& triangles
-          );
-
-/*
-Description:
-  Fill in a 2d region with triangles.
-Parameters:
-  point_count - [in] 
-    number of 2d points.
-  point_stride - [in] 
-    i-th point = (point[j],point[j+1]), where j = i*point_stride.
-  point - [in] 
-    2d point locations.  It is ok to include points that are inside 
-    the region but not at the end of an edge.  
-    Duplicate points are not permitted.
-  edge_count - [in] 
-    number of edges (if 0, then the input list of point
-    is treated as closed polyline.
-  edge_stride - [in] 
-    i-th edge connects points (edge[j],edge[j+1]) where j = i*edge_stride.
-  edge - [in] 
-    indices of edge ends. If any edges intersect, then the intersection point is
-    returned in new_points[].
-  edge_side_stride - [in]
-    i-th edge_side value is edge_side[i*edge_side_stride].
-    If the edge_side values are contant, you can set edge_side_stride = 0 
-    and pass the address of an unsigned char for edge_side.
-  edge_side - [in] 
-    If not null, then edge[i] determines which side(s) of the edge needs
-    triangles.  1 = left side only, 2 = right side only, 3 = both sides
-    If null, then the both sides of interior edges get triangles.
-  triangles - [out]  
-    triangles are appended to this list.  The (i,j,k) are
-    vertex indices.
-  new_points - [out] 
-    If this paramter is present and the edges intersect, then a point is
-    created at the intersection. The index used in the triangles to
-    reference the point new_points[i] is (point_count+i).
-Returns:
-  Number of triangles appended to triangles[] array.
-*/
-ON_DECL
-int ON_Mesh2dRegion(
-          unsigned int point_count,
-          unsigned int point_stride,
-          const double* point,
-          unsigned int edge_count,
-          unsigned int edge_stride,
-          const unsigned int* edge,
-          unsigned int edge_side_stride,
-          const unsigned char* edge_side,
-          ON_SimpleArray<ON_3dex>& triangles,
-          ON_SimpleArray<ON_2dPoint>& new_points
-          );
-
 #endif
-
-

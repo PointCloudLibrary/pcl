@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -14,7 +14,7 @@
 ////////////////////////////////////////////////////////////////
 */
 
-#include <pcl/surface/3rdparty/opennurbs/opennurbs.h>
+#include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
 
 
 ////////////////////////////////////////////////////////////////
@@ -98,7 +98,7 @@ ON_Material::Dump( ON_TextLog& dump ) const
   s = m_material_name;
   if ( !s ) 
     s = L"";
-  dump.Print("name = \"%S\"\n",s);
+  dump.Print("name = \"%ls\"\n",s);
   
   dump.Print("ambient rgb = "); dump.PrintRGB( m_ambient ); dump.Print("\n");
   dump.Print("diffuse rgb = "); dump.PrintRGB( m_diffuse ); dump.Print("\n");
@@ -729,6 +729,20 @@ static int CompareXform( const ON_Xform& a, const ON_Xform& b )
   return j;
 }
 
+static int CompareTextureDoubles( size_t count, const double* a, const double* b )
+{
+  while ( count-- )
+  {
+    if ( *a < *b )
+      return -1;
+    if ( *a > *b )
+      return  1;
+    a++;
+    b++;
+  }
+  return 0;
+}
+
 int ON_Texture::Compare( const ON_Texture& other ) const
 {
   int rc = ON_UuidCompare( &m_texture_id, &other.m_texture_id );
@@ -776,10 +790,13 @@ int ON_Texture::Compare( const ON_Texture& other ) const
     rc = m_bump_scale.Compare(other.m_bump_scale);
     if (rc) break;
 
-    rc = memcmp(&m_blend_A[0],&other.m_blend_A[0],3*sizeof(m_blend_A[0]));
+    rc = CompareTextureDoubles( 1, &m_blend_constant_A, &other.m_blend_constant_A );
     if (rc) break;
 
-    rc = memcmp(&m_blend_RGB[0],&other.m_blend_RGB[0],3*sizeof(m_blend_RGB[0]));
+    rc = CompareTextureDoubles( sizeof(m_blend_A)/sizeof(m_blend_A[0]), m_blend_A, other.m_blend_A);
+    if (rc) break;
+
+    rc = CompareTextureDoubles( sizeof(m_blend_RGB)/sizeof(m_blend_RGB[0]), m_blend_RGB, other.m_blend_RGB);
     if (rc) break;
 
     break;
@@ -1026,7 +1043,7 @@ ON_Texture::TYPE ON_Texture::TypeFromInt( int i )
 {
   ON_Texture::TYPE type = no_texture_type;
 
-  switch(i)
+  switch((unsigned int)i)
   {
   case no_texture_type:
     type = no_texture_type;
@@ -1054,7 +1071,7 @@ ON_Texture::TYPE ON_Texture::TypeFromInt( int i )
 ON_Texture::MODE ON_Texture::ModeFromInt( int i )
 {
   ON_Texture::MODE mode = no_texture_mode;
-  switch(i)
+  switch((unsigned int)i)
   {
   case no_texture_mode:
     mode = no_texture_mode;
@@ -1078,7 +1095,7 @@ ON_Texture::MODE ON_Texture::ModeFromInt( int i )
 ON_Texture::FILTER ON_Texture::FilterFromInt( int i )
 {
   ON_Texture::FILTER filter = linear_filter;
-  switch(i)
+  switch((unsigned int)i)
   {
   case nearest_filter:
     filter = nearest_filter;
@@ -1097,7 +1114,7 @@ ON_Texture::WRAP ON_Texture::WrapFromInt( int i )
 {
   ON_Texture::WRAP wrap = repeat_wrap;
 
-  switch(i)
+  switch((unsigned int)i)
   {
   case repeat_wrap:
     wrap = repeat_wrap;
@@ -1768,6 +1785,10 @@ int ON_TextureMapping::EvaluatePlaneMapping(
   // Apply texture coordinate transformation 
   *T = m_uvw*rst;
 
+  //See docs - if m_bCapped is false, then planar is truely flat.
+  if (!m_bCapped)
+	  T->z = 0.0;
+
   return 1;
 }
 
@@ -2200,106 +2221,6 @@ int ON_TextureMapping::EvaluateBoxMapping(
   return side0;
 }
 
-int ON_TextureMapping::EvaluateMeshMapping(const ON_3dPoint& P, const ON_3dVector& N, const ON_Mesh* mesh, ON_3dPoint* T) const
-{
-  return 0;
-}
-
-int ON_TextureMapping::EvaluateSurfaceMapping( 
-  const ON_3dPoint& P,
-  const ON_3dVector& N,
-  const ON_Surface* srf,
-  ON_3dPoint* T
-  ) const
-{
-  return 0;
-}
-
-class CBrepFaceMappingData
-{
-public:
-	void Set(const ON_Mesh& mesh)
-	{
-		m_srf_domain[0] = mesh.m_srf_domain[0];
-		m_srf_domain[1] = mesh.m_srf_domain[1];
-		m_packed_tex_domain[0] = mesh.m_packed_tex_domain[0];
-		m_packed_tex_domain[1] = mesh.m_packed_tex_domain[1];
-		m_packed_tex_rotate = mesh.m_packed_tex_rotate;
-	}
-	ON_Interval m_srf_domain[2];
-	ON_Interval m_packed_tex_domain[2];
-	bool m_packed_tex_rotate;
-};
-
-class CBrepMappingData
-{
-public:
-	CBrepMappingData(ON__UINT32 brepDataCRC = 0, ON_UUID brepModelObjectId = ON_nil_uuid) { m_brepDataCRC = brepDataCRC; m_brepModelObjectId = brepModelObjectId; }
-
-	static int Compare(const CBrepMappingData * pA, const CBrepMappingData * pB)
-	{
-		if (pA->m_brepDataCRC < pB->m_brepDataCRC)
-		{
-			return -1;
-		}
-		if (pA->m_brepDataCRC > pB->m_brepDataCRC)
-		{
-			return 1;
-		}
-		return ON_UuidCompare(pA->m_brepModelObjectId, pB->m_brepModelObjectId);
-	}
-
-	ON_SimpleArray<CBrepFaceMappingData> m_faceData;
-	ON__UINT32 m_brepDataCRC;
-	ON_UUID m_brepModelObjectId;
-};
-
-class CBrepMappingDataCache
-{
-public:
-	CBrepMappingDataCache() {}
-	~CBrepMappingDataCache() {}
-
-	bool GetBrepFaceMappingData(const ON_Brep * pBrep, int face, CBrepFaceMappingData & brepFaceMappingDataOut);
-protected:
-
-	ON_ClassArray<CBrepMappingData> m_aDataBlocks[0x20];
-};
-
-bool CBrepMappingDataCache::GetBrepFaceMappingData(const ON_Brep * pBrep, int face, CBrepFaceMappingData & brepFaceMappingDataOut)
-{
-	if (NULL == pBrep || face < 0)
-		return false;
-
-	const ON_UUID brepModelObjectId = pBrep->ModelObjectId();
-	const ON__UINT32 brepDataCRC = pBrep->DataCRC(123456789);
-	const unsigned int blockIndex = (brepDataCRC & 0x1F);
-	CBrepMappingData brepMappingData(brepDataCRC, brepModelObjectId);
-	const int brepMappingDataIndex = m_aDataBlocks[blockIndex].BinarySearch(&brepMappingData, CBrepMappingData::Compare);
-
-	if (0 <= brepMappingDataIndex)
-	{
-		const CBrepMappingData & brepMappingData = m_aDataBlocks[blockIndex][brepMappingDataIndex];
-		if (brepMappingData.m_faceData.Count() <= face)
-			return false;
-
-		brepFaceMappingDataOut = brepMappingData.m_faceData[face];
-
-		return true;
-	}
-
-  return false;
-}
-
-void ON_TextureMapping::SetAdvancedBrepMappingToolFunctions(TEXMAP_INTERSECT_LINE_SURFACE pFnILS, TEXMAP_BREP_FACE_CLOSEST_POINT pFnBFCP)
-{
-}
-
-int ON_TextureMapping::EvaluateBrepMapping( const ON_3dPoint& P, const ON_3dVector& N, const ON_Brep* brep,	ON_3dPoint* T) const
-{
-  return 0;
-}
-
 int ON_TextureMapping::Evaluate(
         const ON_3dPoint& P,
         const ON_3dVector& N,
@@ -2332,6 +2253,7 @@ int ON_TextureMapping::Evaluate(
         ) const
 {
   int rc;
+
 	switch(m_type)
 	{
 	case srfp_mapping:
@@ -2347,15 +2269,19 @@ int ON_TextureMapping::Evaluate(
 	case box_mapping:
 		rc = EvaluateBoxMapping(P,N,T);
 		break;
+
 	case mesh_mapping_primitive:
-		rc = EvaluateMeshMapping(P,N,ON_Mesh::Cast(m_mapping_primitive),T);
+    rc = 0;
 		break;
+
 	case srf_mapping_primitive:
-		rc = EvaluateSurfaceMapping(P,N,ON_Surface::Cast(m_mapping_primitive),T);
+    rc = 0;
 		break;
+
 	case brep_mapping_primitive:
-		rc = EvaluateBrepMapping(P,N,ON_Brep::Cast(m_mapping_primitive),T);
+    rc = 0;
 		break;
+
 	default:
 		rc = EvaluatePlaneMapping(P,N,T);
 		break;
@@ -2765,7 +2691,7 @@ bool ON_TextureMapping::GetTextureCoordinates(
 
 		if (clspt_projection == m_projection && ON_TextureMapping::mesh_mapping_primitive == m_type && NULL != m_mapping_primitive)
 		{
-      return false;
+      rc = false;
 		}
 		else if ( mesh_N &&
           (   ray_projection == m_projection 
@@ -2991,12 +2917,15 @@ class ON__CChangeTextureCoordinateHelper
   // IT IS A PRIVATE HELPER CLASS.
 public:
   ON__CChangeTextureCoordinateHelper( ON_Mesh& mesh, int newvcnt, float*& mesh_T );
+  ~ON__CChangeTextureCoordinateHelper();
+
   int DupVertex(int vi);
   void ChangeTextureCoordinate(int* Fvi, int fvi, float x, float y, float* mesh_T, int mesh_T_stride );
 
   int m_tci;
 
   ON_Mesh& m_mesh;
+  ON_3dPointArray* m_mesh_dV;
   bool m_bHasVertexNormals;
   bool m_bHasVertexTextures;
   bool m_bHasVertexColors;
@@ -3054,6 +2983,7 @@ ON__CChangeTextureCoordinateHelper::ON__CChangeTextureCoordinateHelper(
     int newvcnt,
     float*& mesh_T ) 
 : m_mesh(mesh)
+, m_mesh_dV(0)
 , m_vuse_count(0)
 {
   // adding vertices invalidates this cached information.
@@ -3072,6 +3002,18 @@ ON__CChangeTextureCoordinateHelper::ON__CChangeTextureCoordinateHelper(
   // the next time they are used.
 
   m_mesh.m_V.Reserve(vcnt+newvcnt);
+
+  if (    m_mesh.HasDoublePrecisionVertices() 
+       && m_mesh.DoublePrecisionVerticesAreValid() 
+     )
+  {
+    m_mesh_dV = &m_mesh.DoublePrecisionVertices();
+    m_mesh_dV->Reserve(vcnt+newvcnt);
+  }
+  else
+  {
+    m_mesh.DestroyDoublePrecisionVertices();
+  }
 
   m_bHasVertexNormals = m_mesh.HasVertexNormals();
   if ( m_bHasVertexNormals ) 
@@ -3122,6 +3064,17 @@ ON__CChangeTextureCoordinateHelper::ON__CChangeTextureCoordinateHelper(
   }
 }
 
+
+ON__CChangeTextureCoordinateHelper::~ON__CChangeTextureCoordinateHelper()
+{
+  if ( 0 != m_mesh_dV )
+  {
+    m_mesh.SetDoublePrecisionVerticesAsValid();
+    m_mesh.SetSinglePrecisionVerticesAsValid();
+    m_mesh_dV = 0;
+  }
+}
+
 int ON__CChangeTextureCoordinateHelper::DupVertex(int vi)
 {
   if ( 0 == m_vuse_count )
@@ -3168,6 +3121,11 @@ int ON__CChangeTextureCoordinateHelper::DupVertex(int vi)
 
   m_mesh.m_V.AppendNew();
   *m_mesh.m_V.Last() = m_mesh.m_V[vi];
+  if ( 0 != m_mesh_dV )
+  {
+    m_mesh_dV->AppendNew();
+    *(m_mesh_dV->Last()) = m_mesh_dV->operator[](vi);
+  }
   if ( m_bHasVertexTextures )
   {
     m_mesh.m_T.AppendNew();
@@ -4470,7 +4428,7 @@ bool ON_RenderingAttributes::IsValid( ON_TextLog* text_log ) const
         {
           if( text_log )
           {
-            text_log->Print(L"ON_RenderingAttributes error: m_materials[%d] and m_materials[%d] have the same plug-in id.\n",i,j);
+            text_log->Print("ON_RenderingAttributes error: m_materials[%d] and m_materials[%d] have the same plug-in id.\n",i,j);
           }
           return false;
         }
@@ -4501,7 +4459,7 @@ bool ON_ObjectRenderingAttributes::IsValid( ON_TextLog* text_log ) const
         {
           if( text_log )
           {
-            text_log->Print(L"ON_ObjectRenderingAttributes error: m_mappings[%d] and m_mappings[%d] have the same plug-in id.\n",i,j);
+            text_log->Print("ON_ObjectRenderingAttributes error: m_mappings[%d] and m_mappings[%d] have the same plug-in id.\n",i,j);
           }
           return false;
         }
@@ -4923,7 +4881,9 @@ bool ON_ObjectRenderingAttributes::Read( ON_BinaryArchive& archive )
     bool b = AdvancedTexturePreview();
     rc = archive.ReadBool(&b);
     if ( !rc ) break;
-    EnableAdvancedTexturePreview(b);
+    // Jussi 20120430: We don't want to enable advanced texture preview by default. It will be
+    //                 turned on when needed (depending on active render plug-in etc).
+    //EnableAdvancedTexturePreview(b);
 
     break;
   }

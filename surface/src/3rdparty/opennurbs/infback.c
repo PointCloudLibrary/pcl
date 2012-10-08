@@ -10,10 +10,10 @@
    inflate_fast() can be used with either inflate.c or infback.c.
  */
 
-#include <pcl/surface/3rdparty/opennurbs/zutil.h>
-#include <pcl/surface/3rdparty/opennurbs/inftrees.h>
-#include <pcl/surface/3rdparty/opennurbs/inflate.h>
-#include <pcl/surface/3rdparty/opennurbs/inffast.h>
+#include "pcl/surface/3rdparty/opennurbs/zutil.h"
+#include "pcl/surface/3rdparty/opennurbs/inftrees.h"
+#include "pcl/surface/3rdparty/opennurbs/inflate.h"
+#include "pcl/surface/3rdparty/opennurbs/inffast.h"
 
 /* function prototypes */
 local void fixedtables OF((struct inflate_state FAR *state));
@@ -105,7 +105,7 @@ struct inflate_state FAR *state;
         virgin = 0;
     }
 #else /* !BUILDFIXED */
-#include <pcl/surface/3rdparty/opennurbs/inffixed.h>
+#   include "pcl/surface/3rdparty/opennurbs/inffixed.h"
 #endif /* BUILDFIXED */
     state->lencode = lenfix;
     state->lenbits = 9;
@@ -164,7 +164,7 @@ struct inflate_state FAR *state;
     do { \
         PULL(); \
         have--; \
-        hold += (unsigned long)(*next++) << bits; \
+        hold += (unsigned int)(*next++) << bits; \
         bits += 8; \
     } while (0)
 
@@ -249,7 +249,7 @@ void FAR *out_desc;
     unsigned char FAR *next;    /* next input */
     unsigned char FAR *put;     /* next output */
     unsigned have, left;        /* available input and output */
-    unsigned long hold;         /* bit buffer */
+    unsigned int hold;         /* bit buffer */
     unsigned bits;              /* bits in bit buffer */
     unsigned copy;              /* number of stored or match bytes to copy */
     unsigned char FAR *from;    /* where to copy match bytes from */

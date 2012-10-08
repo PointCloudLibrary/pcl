@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -13,7 +13,7 @@
 //
 ////////////////////////////////////////////////////////////////
 */
-#include <pcl/surface/3rdparty/opennurbs/opennurbs.h>
+#include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
 
 ON__UINT16 ON_CRC16( ON__UINT16 current_remainder, size_t count, const void* p )
 {
@@ -216,9 +216,9 @@ ON__UINT32 ON_CRC32( ON__UINT32 current_remainder, size_t count, const void* p )
   {
     const unsigned char* b = (const unsigned char*)p;
 
-    // The "L" was need long ago when "int" was often a 16 bit integers.
+    // The trailing L was needed long ago when "int" was often a 16 bit integers.
     // Today it is more common for "int" to be a 32 bit integer and
-    // "L" to be a 32 or 64 bit integer.  So, the L is causing more
+    // L to be a 32 or 64 bit integer.  So, the L is causing more
     // problems that it is fixing.
     // current_remainder ^= 0xffffffffL; 
     current_remainder ^= 0xffffffff;
@@ -239,9 +239,9 @@ ON__UINT32 ON_CRC32( ON__UINT32 current_remainder, size_t count, const void* p )
     {
       current_remainder = ON_CRC32_ZLIB_TABLE[((int)current_remainder ^ (*b++)) & 0xff] ^ (current_remainder >> 8);
     }
-    // The "L" was need long ago when "int" was often a 16 bit integers.
+    // The trailing L was needed long ago when "int" was often a 16 bit integers.
     // Today it is more common for "int" to be a 32 bit integer and
-    // "L" to be a 32 or 64 bit integer.  So, the L is causing more
+    // L to be a 32 or 64 bit integer.  So, the L is causing more
     // problems than it is fixing.
     //current_remainder ^= 0xffffffffL;
     current_remainder ^= 0xffffffff;

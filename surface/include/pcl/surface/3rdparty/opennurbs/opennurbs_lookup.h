@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -33,7 +33,7 @@ Description:
 class ON_CLASS ON_SerialNumberMap
 {
 public:
-  ON_SerialNumberMap();
+  ON_SerialNumberMap( ON_MEMORY_POOL* pool = 0 );
   ~ON_SerialNumberMap();
 
   struct MAP_VALUE
@@ -372,6 +372,9 @@ private:
 
   unsigned int m_maxsn; // largest sn stored anywhere
   unsigned int m_reserved;
+
+  // All heap used in this class is allocated from this pool.
+  ON_MEMORY_POOL* m_pool;
 
   // Serial Number list counts
   size_t m_sn_count;   // total number of elements                       

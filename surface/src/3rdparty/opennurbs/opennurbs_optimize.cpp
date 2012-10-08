@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -14,7 +14,7 @@
 ////////////////////////////////////////////////////////////////
 */
 
-#include <pcl/surface/3rdparty/opennurbs/opennurbs.h>
+#include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
 
 
 
@@ -344,7 +344,7 @@ ON_BOOL32 ON_LocalZero1::FindZero( double* t )
 {
   // Find values of m_t0 and m_t1 between t0 and t1 such that
   // f(m_t0) and f(m_t1) have different signs
-  ON_BOOL32 rc = ( m_t0 == ON_UNSET_VALUE || m_t1 == ON_UNSET_VALUE ) ? true : false;
+  ON_BOOL32 rc = ( m_t0 == ON_UNSET_VALUE || m_t0 == ON_UNSET_VALUE ) ? true : false;
 
   if ( rc ) {
     if ( m_t0 < m_t0 ) {

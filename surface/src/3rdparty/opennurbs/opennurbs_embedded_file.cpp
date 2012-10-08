@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -14,7 +14,7 @@
 ////////////////////////////////////////////////////////////////
 */
 
-#include <pcl/surface/3rdparty/opennurbs/opennurbs.h>
+#include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
 
 
 ON_Buffer::ON_Buffer()
@@ -23,6 +23,7 @@ ON_Buffer::ON_Buffer()
 , m_first_segment(0)
 , m_last_segment(0)
 , m_current_segment(0)
+, m_heap(0)
 , m_error_handler(0)
 , m_last_error(0)
 {
@@ -42,6 +43,7 @@ void ON_Buffer::EmergencyDestroy()
   m_first_segment = 0;
   m_last_segment = 0;
   m_current_segment = 0;
+  m_heap = 0;
   m_error_handler = 0;
   m_last_error = 0;
 }
@@ -157,6 +159,7 @@ ON_Buffer::ON_Buffer( const ON_Buffer& src )
 , m_first_segment(0)
 , m_last_segment(0)
 , m_current_segment(0)
+, m_heap(src.m_heap)
 , m_error_handler(0)
 , m_last_error(0)
 {
@@ -1137,6 +1140,7 @@ bool ON_Buffer::Compress( ON_Buffer& compressed_buffer ) const
       compressed_buffer.m_first_segment = out->m_first_segment;
       compressed_buffer.m_last_segment = out->m_last_segment;
       compressed_buffer.m_current_segment = out->m_current_segment;
+      compressed_buffer.m_heap = out->m_heap;
       compressed_buffer.m_error_handler = out->m_error_handler;
       compressed_buffer.m_last_error = out->m_last_error;
       
@@ -1233,6 +1237,7 @@ bool ON_Buffer::Uncompress( ON_Buffer& uncompressed_buffer ) const
       uncompressed_buffer.m_first_segment = out->m_first_segment;
       uncompressed_buffer.m_last_segment = out->m_last_segment;
       uncompressed_buffer.m_current_segment = out->m_current_segment;
+      uncompressed_buffer.m_heap = out->m_heap;
       uncompressed_buffer.m_error_handler = out->m_error_handler;
       uncompressed_buffer.m_last_error = out->m_last_error;
       
@@ -1305,7 +1310,7 @@ ON_EmbeddedFile::ON_EmbeddedFile(const ON_EmbeddedFile& src)
 , m_file_crc(src.m_file_crc)
 , m_buffer_crc(src.m_buffer_crc)
 , m_buffer(src.m_buffer)
-, m_bCompressedBuffer(m_bCompressedBuffer)
+, m_bCompressedBuffer(src.m_bCompressedBuffer)  //fixed 29 12 2011
 {
   m_reserved3[0] = 0;
   m_reserved3[1] = 0;
@@ -1334,7 +1339,7 @@ ON_EmbeddedFile& ON_EmbeddedFile::operator=(const ON_EmbeddedFile& src)
     m_file_crc   = src.m_file_crc;
     m_buffer_crc = src.m_buffer_crc;
     m_buffer     = src.m_buffer;
-    m_bCompressedBuffer = m_bCompressedBuffer;
+    m_bCompressedBuffer = src.m_bCompressedBuffer;   //fixed 29 12 2011
   }
   return *this;
 }

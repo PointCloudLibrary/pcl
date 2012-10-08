@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -768,22 +768,15 @@ public:
   // bitmaps associated with rendering materials
   bool m_bSaveTextureBitmapsInFile;
 
-  // linked instance defintion settings
-  int m_idef_link_update;  // 0 = use ON_InstanceDefinition setting
-                           //       The ON_InstanceDefinition::m_idef_update_type
-                           //       field controls when and with how much
-                           //       prompting embedded or linked idefs get updated.
-                           // 1 = prompt
-                           //       Ignore m_idef_update_type settings.
-                           //       If an embedded or linked idef needs to 
-                           //       be updated, ask the user what to do.
-                           // 2 = always update - no prompting
-                           //       Ignore m_idef_update_type settings.
-                           //       If an embedded or linked idef needs to 
-                           //       be updated, silently update it.
-                           // 3 = never update - no prompting
-                           //       Ignore m_idef_update_type settings.
-                           //       Do not update embedded or linked idefs.
+  // As of 7 February 2012, the m_idef_link_update setting
+  // controls if, when and how linked and linked_and_embedded
+  // instance defintions are updated when the source archive
+  // that was used to create the idef has changed.
+  int m_idef_link_update;  
+      // 1 = prompt - ask the user if the idef should be updated.
+      // 2 = always update - no prompting
+      // 3 = never update - no prompting
+      // Any value not equal to 1,2 or 3 shall be treated as 1.
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////

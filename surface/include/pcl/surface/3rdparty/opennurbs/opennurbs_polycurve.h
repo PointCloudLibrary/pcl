@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -166,7 +166,6 @@ public:
   ON_BOOL32 SwapCoordinates(
         int, int        // indices of coords to swap
         );
-
 
   // virtual ON_Geometry override
   bool EvaluatePoint( const class ON_ObjRef& objref, ON_3dPoint& P ) const;
@@ -618,15 +617,75 @@ public:
 
   /*
   Description:
-    This is a quick way to see if the curve has 
-    gaps between the sub curve segments.  
-    The test is fairly severe (ON_ComparePoint).
+    Search the curve for gaps between the sub curve segments. 
+  Parameters:
+    segment_index0 - [in]
+      The search for gaps starts at with the comparing
+      the end of segment[segment_index0] and the start of
+      segment[segment_index0+1].
   Returns:
-    0:     The ends adjacent polycuve segments are coincident.
-    i > 0: The end of polycuve segment (i-1) is not coincident
-           with the start of polycurve segment i.
+    0:     
+      No gaps were found.
+    i > segment_index0:
+      The end of polycuve segment[i-1] is not coincident
+      with the start of polycurve segment[i].
   */
-  int HasGap() const;
+  int FindNextGap( int segment_index0 ) const;
+
+  /*
+  Description:
+    Determine if there is a gap between the end of 
+    segment[segment_index] and the start of segment[segment_index+1].
+  Parameters:
+    segment_index - [in]
+      >= 0
+  Returns:
+    true: 
+      segment_index was valid and there is a gap between
+      the end of segment[segment_index] and the start of
+      segment[segment_index+1].
+  */
+  bool HasGapAt( int segment_index ) const;
+  
+  // Replace calls to HasGap() with FindNextGap(0)
+  ON_DEPRECATED int HasGap() const;
+
+  /*
+  Description:
+    Modify the one or both locations at the end of 
+    segment[gap_index-1] and the start of segment[gap_index]
+    so they are coindicent.  
+  Parameters:
+    gap_index - [in] 1 <= gap_index < Count()
+      If the locations at the end of segment[gap_index-1] and 
+      the start of segment[gap_index] are not identical, then
+      an attempt is made to modify the segments so these
+      locations are closer.
+    ends_to_modify - [in]
+      0: (suggested)
+        The code will decide what segments to modify.
+      1: 
+        modify the end location of segment[gap_index-1]
+      2:
+        modify the start location of segment[gap_index]
+  Returns:
+    True if a modification was performed and HasGap(gap_index-1)
+    returns 0 after the modification.
+    False if no modification was preformed because there
+    was no gap or because one could not be performed.
+  Remarks:
+    Note that passing the return value from FindNextGap() will 
+    close the gap found by FindNextGap().
+  */
+  bool CloseGap( int gap_index, int segments_to_modify );
+
+  /*
+  Description:
+    Searches for and closes all gaps that can be found.
+  Returns:
+    Number of gaps that were closed.
+  */
+  int CloseGaps();
 
   void Reserve( int ); // make sure capacity is at least the specified count
 

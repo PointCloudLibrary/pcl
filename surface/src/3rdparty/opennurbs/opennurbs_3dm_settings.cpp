@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -14,7 +14,7 @@
 ////////////////////////////////////////////////////////////////
 */
 
-#include <pcl/surface/3rdparty/opennurbs/opennurbs.h>
+#include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
 
 // Easy way to toggle the name of the obsolete ON_3dmView::m_target
 // variable when you want to change the name and compile to insure
@@ -50,6 +50,38 @@ ON_UnitSystem& ON_UnitSystem::operator=(ON::unit_system us)
     m_custom_unit_name.Destroy();
   }
   return *this;
+}
+
+bool ON_UnitSystem::operator==(const ON_UnitSystem& other)
+{
+  if ( m_unit_system != other.m_unit_system )
+    return false;
+
+  if ( ON::custom_unit_system == m_unit_system )
+  {
+    if ( m_custom_unit_name.Compare(other.m_custom_unit_name) )
+      return false;
+    if ( !(m_custom_unit_scale == other.m_custom_unit_scale) )
+      return false;
+  }
+
+  return true;
+}
+
+bool ON_UnitSystem::operator!=(const ON_UnitSystem& other)
+{
+  if ( m_unit_system != other.m_unit_system )
+    return true;
+
+  if ( ON::custom_unit_system == m_unit_system )
+  {
+    if ( m_custom_unit_name.Compare(other.m_custom_unit_name) )
+      return true;
+    if ( m_custom_unit_scale != other.m_custom_unit_scale )
+      return true;
+  }
+
+  return false;
 }
 
 ON_UnitSystem::~ON_UnitSystem()
@@ -225,9 +257,15 @@ void ON_UnitSystem::Dump( ON_TextLog& dump ) const
 
   case ON::custom_unit_system:
     if ( m_custom_unit_name.Length() > 0 )
-      sUnitSystem.Format(L"%s (= %g meters)",
-                         m_custom_unit_name.Array(),
-                         m_custom_unit_scale);
+    {
+      const wchar_t* wsCustomUnitName = m_custom_unit_name.Array();
+      if ( 0 != wsCustomUnitName && 0 != wsCustomUnitName[0] )
+      {
+        sUnitSystem.Format("%ls (= %g meters)",
+                           wsCustomUnitName,
+                           m_custom_unit_scale);
+      }
+    }
     else
       sUnitSystem.Format("user defined unit (= %g meters)",m_custom_unit_scale);
     break;
@@ -235,7 +273,9 @@ void ON_UnitSystem::Dump( ON_TextLog& dump ) const
     sUnitSystem = "unknown unit system";
     break;
   }
-  dump.Print("Unit system: %S\n",sUnitSystem.Array());
+  const wchar_t* wsUnitSystem = sUnitSystem.Array();
+  if ( 0 != wsUnitSystem )
+    dump.Print("Unit system: %ls\n",wsUnitSystem);
 }
 
 void ON_3dmUnitsAndTolerances::Default()
@@ -1612,9 +1652,9 @@ ON_3dmView::~ON_3dmView()
 
 void ON_3dmView::Dump( ON_TextLog& dump ) const
 {
-  const wchar_t* sViewName = m_name;
-  if ( !sViewName )
-    sViewName = L"";
+  const wchar_t* wsViewName = m_name;
+  if ( !wsViewName )
+    wsViewName = L"";
   ON::view_projection proj = m_vp.Projection();
   
 
@@ -1636,7 +1676,7 @@ void ON_3dmView::Dump( ON_TextLog& dump ) const
     sProjectionName = "unknown";
     break;
   }
-  dump.Print("Viewport: name = \"%S\" projection = %s\n",sViewName,sProjectionName);
+  dump.Print("Viewport: name = \"%ls\" projection = %s\n",wsViewName,sProjectionName);
 
   dump.PushIndent();
 
@@ -2688,7 +2728,9 @@ ON_3dmIOSettings::ON_3dmIOSettings()
 void ON_3dmIOSettings::Default()
 {
   m_bSaveTextureBitmapsInFile = false;
-  m_idef_link_update = 0;
+  // 7 February 2011 - default changed to 1.
+  //m_idef_link_update = 0;
+  m_idef_link_update = 1;
 }
 
 
@@ -2713,6 +2755,12 @@ bool ON_3dmIOSettings::Read(ON_BinaryArchive& file)
     rc = file.ReadInt(&m_idef_link_update);
     if(!rc) break;
 
+    if ( 0 == m_idef_link_update && file.Archive3dmVersion() >= 5 )
+    {
+      // 7 February 2011 - old 0 value is no longer an option.
+      m_idef_link_update = 1;
+    }
+
     break;
   }
 
@@ -2732,7 +2780,13 @@ bool ON_3dmIOSettings::Write(ON_BinaryArchive& file) const
     rc = file.WriteBool(m_bSaveTextureBitmapsInFile);
     if(!rc) break;
 
-    rc = file.WriteInt(m_idef_link_update);
+    int i = m_idef_link_update;
+    if ( 0 == i && file.Archive3dmVersion() >= 5 )
+    {
+      // 7 February 2011 - old 0 value is no longer an option.
+      i = 1;
+    }
+    rc = file.WriteInt(i);
     if(!rc) break;
 
     break;
@@ -3878,7 +3932,7 @@ void ON_3dmSettings::Dump( ON_TextLog& dump ) const
   const wchar_t* model_URL = m_model_URL;
   if ( model_URL && *model_URL ) 
   {
-    dump.Print("Model URL: %S\n",model_URL);
+    dump.Print("Model URL: %ls\n",model_URL);
   }
   dump.Print("Model space units and tolerances:\n");
   dump.PushIndent();

@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -14,57 +14,61 @@
 ////////////////////////////////////////////////////////////////
 */
 
-#include <pcl/surface/3rdparty/opennurbs/opennurbs.h>
+#include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
 
 #if defined(ON_DLL_EXPORTS)
 // When compiling a Windows DLL opennurbs, we
 // statically link ./zlib/.../zlib....lib into
 // the opennurbs DLL.
 
-#if !defined(ON_MSC_SOLUTION_DIR)
-// ON_ZLIB_SOLUTION_DIR must have a trailing slash
-#define ON_MSC_SOLUTION_DIR "./"
-#endif
 
-#if !defined(ON_MSC_LIB_DIR)
+#define OPENNURBS_ZLIB_FILE_NAME "zlib.lib"
 
-#if defined(WIN64)
+//////////////////////////////////////////////////////////////
+//
+// OPENNURBS_ZLIB_OUTPUT_DIR is the directory containing zlib
+// relative to the "opennurbs" directory.  
+//
+// OPENNURBS_ZLIB_OUTPUT_DIR must not have a trailing slash
+//
+#define OPENNURBS_ZLIB_OUTPUT_ROOT_DIR "."
 
-// x64 (64 bit) static libraries
 
-#if defined(NDEBUG)
+#if defined(WIN64) && defined(_M_X64)
 
-// Release x64 (64 bit) libs
-#define ON_MSC_LIB_DIR "x64/Release/"
-
-#else // _DEBUG
-
-// Debug x64 (64 bit) libs
-#define ON_MSC_LIB_DIR "x64/Debug/"
-
-#endif // NDEBUG else _DEBUG
-
-#else // WIN32
-
-// x86 (32 bit) static libraries
+// 64 bit Windows zlib linking instructions
 
 #if defined(NDEBUG)
 
-// Release x86 (32 bit) libs
-#define ON_MSC_LIB_DIR "Release/"
+// release x64 libs
+#define OPENNURBS_CONFIGURATION_DIR "x64/Release"
 
 #else // _DEBUG
 
-// Debug x86 (32 bit) libs
-#define ON_MSC_LIB_DIR "Debug/"
+// debug  x64 libs
+#define OPENNURBS_CONFIGURATION_DIR "x64/Debug"
 
-#endif // NDEBUG else _DEBUG
+#endif // if NDEBUG else _DEBUG
 
-#endif // WIN64 else WIN32
+#elif defined(WIN32) && defined(_M_IX86)
 
-#endif //  !defined(ON_MSC_LIB_DIR)
+// 32 bit Windows zlib linking instructions
 
-#pragma comment(lib, "\"" ON_MSC_SOLUTION_DIR ON_MSC_LIB_DIR "zlib.lib" "\"")
+#if defined(NDEBUG)
+
+// release 32 bit WIndows libs
+#define OPENNURBS_CONFIGURATION_DIR "Release"
+
+#else // _DEBUG
+
+// debug 32 bit WIndows libs
+#define OPENNURBS_CONFIGURATION_DIR "Debug"
+
+#endif // if NDEBUG else _DEBUG
+
+#endif // if WIN64 else WIN32
+
+#pragma comment(lib, "\"" OPENNURBS_ZLIB_OUTPUT_ROOT_DIR "/" OPENNURBS_CONFIGURATION_DIR "/" OPENNURBS_ZLIB_FILE_NAME "\"")
 
 #endif // ON_DLL_EXPORTS
 

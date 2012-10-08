@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -14,7 +14,7 @@
 ////////////////////////////////////////////////////////////////
 */
 
-#include <pcl/surface/3rdparty/opennurbs/opennurbs.h>
+#include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -41,9 +41,78 @@ void ON_3dmRevisionHistory::Default()
   m_revision_count = 0;
 }
 
+static int ON_CompareRevisionHistoryTime( const struct tm* time0, const struct tm* time1 )
+{
+  if ( 0 == time0 || 0 == time1 )
+  {
+    if ( 0 != time0 )
+      return 1;
+    if ( 0 != time1 )
+      return -1;
+    return 0;
+  }
+
+  if (time0->tm_year < time1->tm_year)
+    return -1;
+  if (time0->tm_year > time1->tm_year)
+    return 1;
+
+  if (time0->tm_mon < time1->tm_mon)
+    return -1;
+  if (time0->tm_mon > time1->tm_mon)
+    return 1;
+
+  if (time0->tm_mday < time1->tm_mday)
+    return -1;
+  if (time0->tm_mday > time1->tm_mday)
+    return 1;
+
+  if (time0->tm_hour < time1->tm_hour)
+    return -1;
+  if (time0->tm_hour > time1->tm_hour)
+    return 1;
+
+  if (time0->tm_min < time1->tm_min)
+    return -1;
+  if (time0->tm_min > time1->tm_min)
+    return 1;
+
+  if (time0->tm_sec < time1->tm_sec)
+    return -1;
+  if (time0->tm_sec > time1->tm_sec)
+    return 1;
+
+  return 0;
+}
+
+bool ON_3dmRevisionHistory::CreateTimeIsSet() const
+{
+  struct tm jan_1_1970;
+  memset(&jan_1_1970,0,sizeof(jan_1_1970));
+  jan_1_1970.tm_mday = 1;    /* day of the month - [1,31] */
+  jan_1_1970.tm_year = 70;   /* years since 1900 */
+  return ( ON_CompareRevisionHistoryTime(&jan_1_1970,&m_create_time) >= 0 );
+}
+/*
+Returns:
+  true 
+    if m_last_edit_time is >= January 1, 1970
+*/
+bool ON_3dmRevisionHistory::LastEditedTimeIsSet() const
+{
+  struct tm jan_1_1970;
+  memset(&jan_1_1970,0,sizeof(jan_1_1970));
+  jan_1_1970.tm_mday = 1;    /* day of the month - [1,31] */
+  jan_1_1970.tm_year = 70;   /* years since 1900 */
+  return ( ON_CompareRevisionHistoryTime(&jan_1_1970,&m_last_edit_time) >= 0 );
+}
+
+
 ON_BOOL32 ON_3dmRevisionHistory::IsValid() const
 {
-  return ( m_last_edit_time.tm_year > 0 ) ? true : false;
+  return (     LastEditedTimeIsSet() 
+            && ON_CompareRevisionHistoryTime(&m_create_time, &m_last_edit_time) <= 0
+         );
 }
 
 int ON_3dmRevisionHistory::NewRevision()
@@ -68,11 +137,15 @@ int ON_3dmRevisionHistory::NewRevision()
   m_sLastEditedBy = current_user;
 #endif
 
-  if ( m_revision_count == 0 ) {
+  if ( m_revision_count <= 0 ) 
+  {
+    m_revision_count = 0;
     m_sCreatedBy = m_sLastEditedBy;
     m_create_time = current_time;
   };
+
   m_revision_count++;
+
   return m_revision_count;
 }
 
@@ -106,15 +179,15 @@ ON_BOOL32 ON_3dmRevisionHistory::Read( ON_BinaryArchive& file )
 
 void ON_3dmRevisionHistory::Dump( ON_TextLog& dump ) const
 {
-  const wchar_t* s = m_sCreatedBy;
-  if ( !s ) s = L"";
-  dump.Print("Created by: %S\n", s );
+  const wchar_t* ws = m_sCreatedBy;
+  if ( !ws ) ws = L"";
+  dump.Print("Created by: %ls\n", ws );
   dump.Print("Created on: "); dump.PrintTime(m_create_time); dump.Print("\n");
 
   
-  s = m_sLastEditedBy;
-  if ( !s ) s = L"";
-  dump.Print("Last edited by: %S\n", s );
+  ws = m_sLastEditedBy;
+  if ( !ws ) ws = L"";
+  dump.Print("Last edited by: %ls\n", ws );
   dump.Print("Last edited on: "); dump.PrintTime(m_last_edit_time); dump.Print("\n");
 
   dump.Print("Revision count: %d\n",m_revision_count);
@@ -265,13 +338,13 @@ void ON_3dmApplication::Dump( ON_TextLog& dump ) const
 {
   const wchar_t* s = m_application_name;
   if ( s )
-    dump.Print("Name: %S\n",s);
+    dump.Print("Name: %ls\n",s);
   s = m_application_URL;
   if ( s )
-    dump.Print("URL: %S\n",s);
+    dump.Print("URL: %ls\n",s);
   s = m_application_details;
   if ( s )
-    dump.Print("Details: %S\n",s);
+    dump.Print("Details: %ls\n",s);
 }
 
 ON_BOOL32 ON_3dmApplication::IsValid() const

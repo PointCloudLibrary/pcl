@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -106,6 +106,30 @@ public:
   ON_BOOL32 SwapCoordinates(
         int, int        // indices of coords to swap
         );
+
+  /*
+  Description:
+    Get the index of the point in the point cloud that is closest
+    to P.
+  Parameters:
+    P - [in]
+    closest_point_index - [out]
+    maximum_distance - [in] optional distance constraint.
+        If maximum_distance > 0, then only points Q with
+        |P-Q| <= maximum_distance are tested.
+  Returns:
+    True if a point is found; in which case *closest_point_index
+    is the index of the point.  False if no point is found
+    or the input is not valid.
+  See Also:
+    ON_GetClosestPointInPointList
+  */
+  bool GetClosestPoint( 
+          ON_3dPoint P,
+          int* closest_point_index,
+          double maximum_distance = 0.0
+          ) const;
+
 
   /////////////////////////////////////////////////////////////////
   // Interface

@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -14,10 +14,10 @@
 ////////////////////////////////////////////////////////////////
 */
 
-#include <pcl/surface/3rdparty/opennurbs/opennurbs_system.h>
-#include <pcl/surface/3rdparty/opennurbs/opennurbs_defines.h>
-#include <pcl/surface/3rdparty/opennurbs/opennurbs_memory.h>
-#include <pcl/surface/3rdparty/opennurbs/opennurbs_error.h>
+#include "pcl/surface/3rdparty/opennurbs/opennurbs_system.h"
+#include "pcl/surface/3rdparty/opennurbs/opennurbs_defines.h"
+#include "pcl/surface/3rdparty/opennurbs/opennurbs_memory.h"
+#include "pcl/surface/3rdparty/opennurbs/opennurbs_error.h"
 
 #if defined(ON_DLL_IMPORTS)
 /*
@@ -30,104 +30,94 @@
 #error opennurbs_memory.c must not be compiled with ON_DLL_IMPORTS defined.
 #endif
 
+ON_MEMORY_POOL* ON_MainMemoryPool(void)
+{
+  return 0;
+}
 
-#if defined(_MSC_VER)
-#if _MSC_VER == 1200
-/*
-//  (_MSC_VER is defined as 1200 for Microsoft Visual C++ 6.0)
-//
-//   NOTE WELL: Microsoft's VC 6.0 realloc() contains a bug that can cause
-//              crashes and should be avoided.  See MSDN Knowledge Base
-//              article ID Q225099 for more information.
-*/
-#define ON_REALLOC_BROKEN
-#endif
-#endif
+ON_MEMORY_POOL* ON_WorkerMemoryPool(void)
+{
+  return 0;
+}
 
+void* onmalloc_from_pool( ON_MEMORY_POOL* pool, size_t sz )
+{
+  void* p;
+  p = (sz > 0) ? malloc(sz) : 0;
+  return p;
+}
 
 void* onmalloc( size_t sz )
 {
-  return (sz > 0) ? malloc(sz) : 0;
+  return onmalloc_from_pool( 0, sz );
+}
+
+void* oncalloc_from_pool( ON_MEMORY_POOL* pool, size_t num, size_t sz )
+{
+  void* p;
+  p = (num > 0 && sz > 0) ? calloc(num,sz) : 0;
+  return p;
 }
 
 void* oncalloc( size_t num, size_t sz )
 {
-  return (num > 0 && sz > 0) ? calloc(num,sz) : 0;
+  return oncalloc_from_pool( 0, num, sz );
 }
 
 void onfree( void* memblock )
 {
-  if ( memblock )
-    free( memblock );
+  if ( 0 != memblock )
+    free(memblock);
 }
 
 void* onrealloc( void* memblock, size_t sz )
 {
-  if ( 0 == memblock )
-  {
-    return onmalloc(sz);
-  }
+  return onrealloc_from_pool( 0, memblock, sz );
+}
 
-  if ( 0 == sz )
+void* onrealloc_from_pool( ON_MEMORY_POOL* pool, void* memblock, size_t sz )
+{
+  void* p;
+  
+  if ( sz <= 0 ) 
   {
     onfree(memblock);
     return 0;
   }
+  
+  if ( !memblock ) 
+  {
+    return onmalloc_from_pool( pool, sz);
+  }
 
-#if defined(ON_REALLOC_BROKEN)
-  /* use malloc() and memcpy() instead of buggy realloc() */
-  void* p;
-  const size_t memblocksz = _msize(memblock);
-  if ( sz <= memblocksz ) {
-    /* shrink */
-    if ( memblocksz <= 28 || 8*sz >= 7*memblocksz ) 
-    {
-      /* don't bother reallocating */
-      p = memblock;
-    }
-    else {
-      /* allocate smaller block */
-      p = malloc(sz);
-      if ( p ) 
-      {
-        memcpy( p, memblock, sz );
-        free(memblock);
-      }
-    }
-  }
-  else if ( sz > memblocksz ) {
-    /* grow */
-    p = malloc(sz);
-    if ( p ) {
-      memcpy( p, memblock, memblocksz );
-      free(memblock);
-    }
-  }
+  p = realloc(memblock,sz);
+
   return p;
-#else
-  return realloc( memblock, sz );
-#endif
 }
 
 size_t onmsize( const void* memblock )
 {
-  size_t sz =
-#if defined(ON_OS_WINDOWS)
-  (0 != memblock) ? _msize((void*)memblock) : 0
+  size_t sz = 0;
+
+  if (memblock) 
+  {
+#if defined(ON_COMPILER_MSC)
+    sz = _msize( (void*)memblock );
+#elif defined(ON_COMPILER_XCODE)
+    sz = malloc_size( (void*)memblock );
 #else
-  // OS doesn't support _msize().
-  0
+    // No predictable function exists and
+    // nothing in core opennurbs code uses
+    // onmsize().  If you find a portable
+    // way to support another compiler or 
+    // platform, then report it to the support
+    // contact on http://opennurbs.org and
+    // the code will be added in the next release.
+    //ON_ERROR("onmsize not implemented on this compiler or platform.");
+    sz = 0;
 #endif
-  ;
-  
+  }
+
   return sz;
-}
-
-void ON_MemoryManagerBegin(void)
-{
-}
-
-void ON_MemoryManagerEnd(void)
-{
 }
 

@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -1033,6 +1033,21 @@ public:
   */
   ON_BrepLoop* OuterLoop() const;
 
+  /*
+  Parameters:
+    dir
+       1: side with underlying surface normal
+         pointing into the topology region
+      -1: side with underlying surface normal
+          pointing out of the topology region
+  Returns:
+    Brep region topology face side.  If the region
+    topology has not be created by calling
+    ON_Brep::RegionToplogy(), then NULL is returned.
+  */
+  class ON_BrepFaceSide* FaceSide(int dir) const;
+
+
   /////////////////////////////////////////////////////////////////
   // ON_Object overrides
   //
@@ -1188,6 +1203,44 @@ public:
   bool TransformTrim( const ON_Xform& xform );
 
   /*
+  Description:
+    Expert user tool that replaces the 3d surface geometry
+    use by the face.
+  Parameters;
+    si - [in] brep surface index of new surface
+    bTransformTrimCurves - [in]
+      If unsure, then pass true.
+      If the surface's domain has changed and you are certain
+      its parameterization still jibes with the trim curve
+      locations, then pass false.
+  Returns:
+    True if successful.
+  Example:
+
+            ON_Surface* pSurface = ...;
+            int si = brep.AddSurface(pSurface);
+            face.ChangeSurface(si);
+
+  Remarks:
+    If the face had a surface and new surface has a different
+    shape, then you probably want to call something like
+    ON_Brep::RebuildEdges() to move the 3d edge curves so they
+    will lie on the new surface. This doesn't delete the old 
+    surface; call ON_Brep::CullUnusedSurfaces() or ON_Brep::Compact
+    to remove unused surfaces.
+  See Also:
+    ON_Brep::RebuildEdges
+    ON_Brep::CullUnusedSurfaces
+  */
+  bool ChangeSurface(
+    int si
+    );
+  bool ChangeSurface(
+    int si,
+    bool bTransformTrimCurves
+    );
+
+  /*
   Returns:
     brep.m_S[] surface index of the 3d surface geometry used by 
     this face or -1.
@@ -1236,6 +1289,159 @@ private:
   ON_BrepFace( const ON_BrepFace& );
 };
 
+class ON_CLASS ON_BrepFaceSide : public ON_Object
+{
+  ON_OBJECT_DECLARE(ON_BrepFaceSide);
+public:
+  ON_BOOL32 IsValid( ON_TextLog* text_log = NULL ) const;
+
+  // Union available for application use.
+  // The constructor zeros m_faceside_user.
+  // The value is of m_faceside_user is not saved in 3DM
+  // archives and may be changed by some computations.
+  ON_U m_faceside_user;
+
+  // index of face side in ON_BrepRegionTopology.m_FS[] array
+  int m_faceside_index;  
+
+  ON_BrepFaceSide();
+  ~ON_BrepFaceSide();
+  ON_BrepFaceSide& operator=(const ON_BrepFaceSide&);
+
+  ON_BOOL32 Write(ON_BinaryArchive& binary_archive) const;
+  ON_BOOL32 Read(ON_BinaryArchive& binary_archive);
+
+
+  /*
+  Returns:
+   Brep this face side belongs to.
+  */
+  ON_Brep* Brep() const;
+
+  /*
+  Returns:
+    Region topology this face side belongs to.
+  */
+  class ON_BrepRegionTopology* RegionTopology() const;
+
+  /*
+  Returns:
+   Region the face side belongs to.
+  */
+  class ON_BrepRegion* Region() const;
+
+  /*
+  Returns:
+   Face this side belongs to.
+  */
+  class ON_BrepFace* Face() const;
+
+  /*
+  Returns:
+   +1: underlying geometric surface normal points
+       into region.
+   -1: underlying geometric surface normal points
+       out of region.
+  */
+  int SurfaceNormalDirection() const;
+
+public:
+  int m_ri; // region index 
+            // m_ri = -1 indicates this faceside overlaps
+            // another faceside. Generally this is a flaw
+            // in an ON_Brep.
+  int m_fi; // face index
+  int m_srf_dir; //  1 ON_BrepFace's surface normal points into region
+                 // -1 ON_BrepFace's surface normal points out of region
+
+private:
+  friend class ON_Brep;
+  friend class ON_BrepRegionTopology;
+  ON_BrepRegionTopology* m_rtop;
+  ON_BrepFaceSide( const ON_BrepFaceSide& );
+};
+
+class ON_CLASS ON_BrepRegion : public ON_Object
+{
+  ON_OBJECT_DECLARE(ON_BrepRegion);
+public:
+  ON_BOOL32 IsValid( ON_TextLog* text_log = NULL ) const;
+
+  // Union available for application use.
+  // The constructor zeros m_region_user.
+  // The value is of m_region_user is not saved in 3DM
+  // archives and may be changed by some computations.
+  ON_U m_region_user;
+
+  // index of region in ON_BrepRegionTopology.m_R[] array
+  int m_region_index;
+
+  ON_BrepRegion();
+  ~ON_BrepRegion();
+  ON_BrepRegion& operator=(const ON_BrepRegion&);
+
+  ON_BOOL32 Write(ON_BinaryArchive& binary_archive) const;
+  ON_BOOL32 Read(ON_BinaryArchive& binary_archive);
+
+  /*
+  Returns:
+   Brep this region belongs to.
+  */
+  ON_Brep* Brep() const;
+
+  /*
+  Returns:
+    Region topology this region belongs to.
+  */
+  class ON_BrepRegionTopology* RegionTopology() const;
+
+  /*
+  Parameter:
+    rfsi - [in] index into the region's m_fsi[] array.
+  Returns:
+    The face side in rtop.m_FS[m_fsi[rsi]], where
+    rtop is the ON_BrepRegionTopology class this
+    region belongs to.
+  */
+  ON_BrepFaceSide* FaceSide(int rfsi) const;
+
+  /*
+  Returns:
+    True if the region is finite.
+  */
+  bool IsFinite() const;
+
+  /*
+  Returns:
+   Region bounding box.
+  */
+  const ON_BoundingBox& BoundingBox() const;
+
+  ON_SimpleArray<int> m_fsi; // indices of face sides
+  int m_type; // 0 = infinte, 1 = bounded
+  ON_BoundingBox m_bbox;
+
+  /*
+  Description:
+    Get the boundary of a region as a brep object.  
+    If the region is finite, the boundary will be a closed
+    manifold brep.  The boundary may have more than one
+    connected component.
+  Parameters:
+    brep - [in] if not NULL, the brep form is put into
+                this brep.
+  Returns: the region boundary as a brep or NULL if the
+           calculation fails.
+  */
+  ON_Brep* RegionBoundaryBrep( ON_Brep* brep = NULL ) const;
+
+private:
+  friend class ON_Brep;
+  friend class ON_BrepRegionTopology;
+  ON_BrepRegionTopology* m_rtop;
+  ON_BrepRegion( const ON_BrepRegion& );
+};
+
 #if defined(ON_DLL_TEMPLATE)
 // This stuff is here because of a limitation in the way Microsoft
 // handles templates and DLLs.  See Microsoft's knowledge base 
@@ -1252,6 +1458,8 @@ ON_DLL_TEMPLATE template class ON_CLASS ON_ClassArray<ON_BrepLoop>;
 ON_DLL_TEMPLATE template class ON_CLASS ON_ObjectArray<ON_BrepLoop>;
 ON_DLL_TEMPLATE template class ON_CLASS ON_ClassArray<ON_BrepFace>;
 ON_DLL_TEMPLATE template class ON_CLASS ON_ObjectArray<ON_BrepFace>;
+ON_DLL_TEMPLATE template class ON_CLASS ON_ObjectArray<ON_BrepFaceSide>;
+ON_DLL_TEMPLATE template class ON_CLASS ON_ObjectArray<ON_BrepRegion>;
 #pragma warning( pop )
 #endif
 
@@ -1309,6 +1517,54 @@ public:
   ON_BOOL32 Write( ON_BinaryArchive& ) const;
 
   unsigned int SizeOf() const;
+};
+
+class ON_CLASS ON_BrepFaceSideArray : public ON_ObjectArray<ON_BrepFaceSide>
+{
+public:
+  ON_BrepFaceSideArray();
+  ~ON_BrepFaceSideArray();
+
+  bool Read( ON_BinaryArchive& );
+  bool Write( ON_BinaryArchive& ) const;
+
+  unsigned int SizeOf() const;
+};
+
+class ON_CLASS ON_BrepRegionArray : public ON_ObjectArray<ON_BrepRegion>
+{
+public:
+  ON_BrepRegionArray();
+  ~ON_BrepRegionArray();
+
+  bool Read( ON_BinaryArchive& );
+  bool Write( ON_BinaryArchive& ) const;
+
+  unsigned int SizeOf() const;
+};
+
+class ON_CLASS ON_BrepRegionTopology
+{
+public:
+  ON_BrepRegionTopology();
+  ON_BrepRegionTopology(const ON_BrepRegionTopology& src);
+  ~ON_BrepRegionTopology();
+  ON_BrepRegionTopology& operator=(const ON_BrepRegionTopology&);
+
+  ON_BrepFaceSideArray m_FS;
+  ON_BrepRegionArray m_R;
+
+  ON_Brep* Brep() const;
+  bool IsValid( ON_TextLog* text_log = 0 ) const;
+  bool Read( ON_BinaryArchive& );
+  bool Write( ON_BinaryArchive& ) const;
+
+  unsigned int SizeOf() const;
+
+private:
+  friend class ON_BrepRegionTopologyUserData;
+  friend class ON_Brep;
+  ON_Brep* m_brep;
 };
 
 class ON_CLASS ON_Brep : public ON_Geometry 
@@ -1407,6 +1663,22 @@ public:
 
   /*
   Description:
+    Calculates polygon mesh approximation of the brep
+    and appends one mesh for each face to the mesh_list[]
+    array.
+  Parameters:
+    mp - [in] meshing parameters
+    mesh_list - [out] meshes are appended to this array.
+  Returns:
+    Number of meshes appended to mesh_list[] array.
+  */
+  int CreateMesh( 
+    const ON_MeshParameters& mp,
+    ON_SimpleArray<ON_Mesh*>& mesh_list
+    ) const;
+
+  /*
+  Description:
     Destroy meshes used to render and analyze brep.
   Parameters:
     mesh_type - [in] type of mesh to destroy
@@ -1436,75 +1708,6 @@ public:
     ON_BrepFace::SetMesh
   */
   int GetMesh( ON::mesh_type mesh_type, ON_SimpleArray< const ON_Mesh* >& meshes ) const;
-
-  /*
-  Description:
-    Calculate area mass properties of the brep.
-  Parameters:
-    mp - [out] 
-    bArea - [in] true to calculate area
-    bFirstMoments - [in] true to calculate area first moments,
-                         area and area centroid.
-    bSecondMoments - [in] true to calculate area second moments.
-    bProductMoments - [in] true to calculate area product moments.
-  Returns:
-    True if successful.
-  */
-  bool AreaMassProperties(
-    ON_MassProperties& mp,
-    bool bArea = true,
-    bool bFirstMoments = true,
-    bool bSecondMoments = true,
-    bool bProductMoments = true,
-    double rel_tol = 1.0e-6,
-    double abs_tol = 1.0e-6
-    ) const;
-
-  /*
-  Description:
-    Calculate volume mass properties of the brep.
-  Parameters:
-    mp - [out] 
-    bVolume - [in] true to calculate volume
-    bFirstMoments - [in] true to calculate volume first moments,
-                         volume, and volume centroid.
-    bSecondMoments - [in] true to calculate volume second moments.
-    bProductMoments - [in] true to calculate volume product moments.
-    base_point - [in] 
-      If the brep is closed, then pass ON_UNSET_VALUE.
-
-      This parameter is for expert users who are computing a
-      volume whose boundary is defined by several non-closed
-      breps, surfaces, and meshes.
-
-      When computing the volume, volume centroid, or volume
-      first moments of a volume whose boundary is defined by 
-      several breps, surfaces, and meshes, pass the same 
-      base_point to each call to VolumeMassProperties.  
-
-      When computing the volume second moments or volume product
-      moments of a volume whose boundary is defined by several
-      breps, surfaces, and meshes, you MUST pass the entire 
-      volume's centroid as the base_point and the input mp 
-      parameter must contain the results of a previous call
-      to VolumeMassProperties(mp,true,true,false,false,base_point).
-      In particular, in this case, you need to make two sets of
-      calls; use first set to calculate the volume centroid and
-      the second set calculate the second moments and product 
-      moments.
-  Returns:
-    True if successful.
-  */
-  bool VolumeMassProperties(
-    ON_MassProperties& mp, 
-    bool bVolume = true,
-    bool bFirstMoments = true,
-    bool bSecondMoments = true,
-    bool bProductMoments = true,
-    ON_3dPoint base_point = ON_UNSET_POINT,
-    double rel_tol = 1.0e-6,
-    double abs_tol = 1.0e-6
-    ) const;
 
   /*
   Description:
@@ -1657,6 +1860,17 @@ public:
   */
   bool IsValidTolerancesAndFlags( ON_TextLog* text_log = NULL ) const;
 
+  // Description:
+  //   Tests brep to see if it is valid for 
+  //   saving in V2 3DM archives.
+  // Returns:
+  //   true if brep is valid for V2 3DM archives.
+  // Remarks:
+  //   V2 breps could not have dangling curves.
+  bool IsValidForV2() const;
+  bool IsValidForV2( const ON_BrepTrim& ) const;
+  bool IsValidForV2( const ON_BrepEdge& ) const;
+
   // virtual ON_Objet::Dump() override
   void Dump( ON_TextLog& ) const; // for debugging
 
@@ -1686,9 +1900,6 @@ public:
   ON_BOOL32 Transform( 
          const ON_Xform&
          );
-
-  // virtual ON_Geometry::IsDeformable() override
-  bool IsDeformable() const;
 
   // virtual ON_Geometry::SwapCoordinates() override
   ON_BOOL32 SwapCoordinates(
@@ -2889,6 +3100,29 @@ public:
     ON_Brep* sub_brep = 0 
     ) const;
 
+  ///////////////////////////////////////////////////////////////////////
+  //
+  // region topology
+  //
+  bool HasRegionTopology() const;
+
+  /*
+  Description:
+    Get region topology information:
+    In order to keep the ON_Brep class efficient, rarely used
+    region topology information is not maintained.  If you 
+    require this information, call RegionTopology().
+  */
+  const ON_BrepRegionTopology& RegionTopology() const;
+
+  /*
+  Description:
+    Get region topology information:
+    In order to keep the ON_Brep class efficient, rarely used
+    region topology information is not maintained.  If you 
+    require this information, call RegionTopology().
+  */
+  void DestroyRegionTopology();
   // Description:
   //   Duplicate a single brep face.
   // Parameters:
@@ -3426,7 +3660,7 @@ public:
     True if successful.
   Remarks:
     The trims must be in the same trimming loop.  The vertex
-    at the end of teim0 must be the same as the vertex at
+    at the end of trim0 must be the same as the vertex at
     the start of trim1.  The trim's m_iso and m_type flags
     need to be correctly set.
   */
@@ -3510,6 +3744,8 @@ public:
 
 protected:	
   friend class ON_BrepFace;
+  friend class ON_BrepRegion;
+  friend class ON_BrepFaceSide;
   ON_BoundingBox m_bbox;
 
   // Never directly set m_is_solid, use calls to IsSolid() and/or 

@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -13,7 +13,7 @@
 //
 ////////////////////////////////////////////////////////////////
 */
-#include <pcl/surface/3rdparty/opennurbs/opennurbs.h>
+#include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
 
 //March 23, 2008 - LW
 //Adding ON_HatchExtra class to support movable base point for hatches
@@ -444,15 +444,15 @@ void ON_HatchPattern::Dump( ON_TextLog& dump) const
   }
   dump.Print( "\n");
 
-  const wchar_t* s = m_hatchpattern_name;
-  if ( 0 == s )
-    s = L"";
-  dump.Print( L"Name: %s\n", s);
+  const wchar_t* wsHatchPatternName = m_hatchpattern_name;
+  if ( 0 == wsHatchPatternName )
+    wsHatchPatternName = L"";
+  dump.Print( "Name: %ls\n", wsHatchPatternName);
 
-  s =  m_description;
-  if ( 0 == s )
-    s = L"";
-  dump.Print( L"Description: %s\n", s);
+  const wchar_t* wsDescription =  m_description;
+  if ( 0 == wsDescription )
+    wsDescription = L"";
+  dump.Print( "Description: %ls\n", wsDescription);
 
   if( m_type == ftLines)
   {
@@ -462,7 +462,7 @@ void ON_HatchPattern::Dump( ON_TextLog& dump) const
     {
       m_lines[i].Dump( dump);
     }
-    dump.Print( L"\n");
+    dump.Print( "\n");
   }
 }
 
@@ -793,11 +793,16 @@ void ON_HatchLoop::Dump( ON_TextLog& dump) const
   if( m_type == ltInner)
     dump.Print( "Inner hatch loop\n");
 
-  //if( m_type == ltOuter)
-  //  dump.Print( "Loop type: Outer\n");
-  //if( m_type == ltInner)
-  //  dump.Print( "Loop type: Inner\n");
-  //dump.Print( "2d curve: %p\n", m_p2dCurve);
+  if ( 0 == m_p2dCurve )
+  {
+    dump.Print( "2d curve: null pointer\n");
+  }
+  else
+  {
+    dump.Print( "2d curve:\n");
+    m_p2dCurve->Dump(dump);
+  }
+
 }
 
 ON_BOOL32 ON_HatchLoop::Write( ON_BinaryArchive& ar) const
@@ -857,6 +862,9 @@ bool ON_HatchLoop::SetCurve( const ON_Curve& curve)
   ON_Curve* pC = curve.DuplicateCurve();
   if( pC)
   {
+    if(pC->Dimension() == 3 && !pC->ChangeDimension(2))
+      return false;
+
     if( m_p2dCurve)
       delete m_p2dCurve;
     m_p2dCurve = pC;
@@ -963,11 +971,19 @@ ON_BOOL32 ON_Hatch::IsValid( ON_TextLog* text_log) const
       text_log->Print( "Plane is not valid\n");
     return false;
   }
-  int i;
+  // 18 June 2012 - Lowell - Added loop self-intersection and 
+  // intersecting other loops tests
   int count = m_loops.Count();
-  for( i = 0; i < count; i++)
+  for(int i = 0; i < count; i++)
   {
-    rc = m_loops[i]->IsValid( text_log);
+    if(m_loops[i] == 0)
+    {
+      if( text_log)
+        text_log->Print( "Loop[%d] is NULL\n", i);
+      return false;
+    }
+    if(rc)
+      rc = m_loops[i]->IsValid( text_log);
     if( !rc)
     {
       if( text_log)
@@ -975,14 +991,23 @@ ON_BOOL32 ON_Hatch::IsValid( ON_TextLog* text_log) const
       return false;
     }
   }
+  
   return true;
 }
 
 void ON_Hatch::Dump( ON_TextLog& dump) const
 {
-  dump.Print( "Hatch: Solid fill");
+  dump.Print("Hatch: Pattern index: %d\n", PatternIndex());
+  dump.Print("Pattern rotation: %g\n", PatternRotation());
+  dump.Print("Pattern scale: %g\n", PatternScale());
+  ON_3dPoint p = this->BasePoint();
+  dump.Print("Base point: %g, %g, %g\n", p.x, p.y, p.z);
+  dump.Print("Plane origin: %g, %g, %g\n", m_plane.origin.x, m_plane.origin.y, m_plane.origin.z);
+  dump.Print("Plane x axis: %g, %g, %g\n", m_plane.xaxis.x, m_plane.xaxis.y, m_plane.xaxis.z);
+  dump.Print("Plane y axis: %g, %g, %g\n", m_plane.yaxis.x, m_plane.yaxis.y, m_plane.yaxis.z);
+  dump.Print("Plane z axis: %g, %g, %g\n", m_plane.zaxis.x, m_plane.zaxis.y, m_plane.zaxis.z);
   int count = m_loops.Count();
-  dump.Print( "Loop count = %d\n", count);
+  dump.Print("Loop count = %d\n", count);
   for( int i = 0; i < count; i++)
     m_loops[i]->Dump( dump);
 }
@@ -1123,6 +1148,88 @@ bool ON_Hatch::GetTightBoundingBox( ON_BoundingBox& tight_bbox, int bGrowBox, co
   return curves.GetTightBoundingBox(tight_bbox,bGrowBox,xform);
 }
 
+static double Angle3d(const ON_3dVector& axis, ON_3dVector& from, const ON_3dVector& to)
+{
+  ON_3dVector x = from, a = to;
+  x.Unitize();
+  a.Unitize();
+
+  ON_3dVector y = ON_CrossProduct(axis, from);
+  y.Unitize();
+
+  double cosa = x * a;
+
+  if(cosa > 1.0 - ON_SQRT_EPSILON)
+    return 0.0;
+  if(cosa < ON_SQRT_EPSILON - 1.0)
+    return ON_PI;
+
+  double sina = a * y;
+
+  return atan2(sina, cosa);
+}
+
+
+#define ARBBOUND  0.015625
+void arbaxis(const ON_3dVector& givenaxis, ON_3dVector& newaxis)
+{
+  if(fabs(givenaxis[0]) < ARBBOUND && fabs(givenaxis[1]) < ARBBOUND) // near world z
+    newaxis = ON_CrossProduct(ON_yaxis, givenaxis);
+  else
+    newaxis = ON_CrossProduct(ON_zaxis, givenaxis);
+
+  newaxis.Unitize();
+}
+
+double arbaxisRotation(const ON_Plane& plane)
+{
+  // get arbaxis frame and angle of rotation from it
+  ON_3dVector arbXaxis;
+  arbaxis(plane.zaxis, arbXaxis);
+  return Angle3d(plane.zaxis, arbXaxis, plane.xaxis);
+}
+
+// 20 June 2012 - Lowell - rr44706, 68320
+// This will find A, the arbaxis direction for the hatch plane
+// and rotate the hatch plane by -A and rotate the hatch boundaries
+// by A and add A to the hatch rotation.
+// The picture will be the same after that, but the way the
+// angle is represented will match the way AutoCAD does it
+// so hatches can be round-tripped with acad files.
+// In addition, after several hatches are rotated by different amounts
+// the hatch angles can be set to look the same by setting them all
+// to the same pattern rotation
+ 
+static void UnrotateHatch(ON_Hatch* hatch)
+{
+  double a = arbaxisRotation(hatch->Plane());
+  ON_Plane& plane = *(ON_Plane*)(&hatch->Plane());
+  if(fabs(a) > ON_ZERO_TOLERANCE)
+  {
+    plane.Rotate(-a, plane.zaxis);
+    for(int i = 0; i < hatch->LoopCount(); i++)
+    {
+      ON_Curve* pC = (ON_Curve*)hatch->Loop(i)->Curve();
+      pC->Rotate(a, ON_zaxis, ON_origin);
+    }
+    hatch->SetPatternRotation(hatch->PatternRotation()+a);
+  }
+  ON_3dPoint P;
+  plane.ClosestPointTo(ON_origin, &P.x, &P.y);
+
+  if(fabs(P.x) > ON_ZERO_TOLERANCE ||fabs(P.y) > ON_ZERO_TOLERANCE ||fabs(P.z) > ON_ZERO_TOLERANCE)
+  {
+    ON_2dVector V(-P.x, -P.y);
+    for(int i = 0; i < hatch->LoopCount(); i++)
+    {
+      ON_Curve* pC = (ON_Curve*)hatch->Loop(i)->Curve();
+      pC->Translate(V);
+    }
+    P = plane.PointAt(P.x, P.y);
+    plane.origin = P;
+  }
+}
+
 ON_BOOL32 ON_Hatch::Transform( const ON_Xform& xform)
 {
   if( fabs( fabs( xform.Determinant()) - 1.0) > 1.0e-4)
@@ -1146,7 +1253,12 @@ ON_BOOL32 ON_Hatch::Transform( const ON_Xform& xform)
   }
   int rc = m_plane.Transform( xform);
 
+  UnrotateHatch(this);
+
   TransformUserData(xform);
+
+
+
 
   return rc;
 }
@@ -1218,7 +1330,7 @@ void ON_Hatch::AddLoop( ON_HatchLoop* pLoop)
 
 bool ON_Hatch::InsertLoop( int index, ON_HatchLoop* loop)
 {
-  if( index >= 0 && index < m_loops.Count())
+  if( index >= 0 && index <= m_loops.Count()) // 26 June 2012 - Lowell - Changed ndex < to ndex <= 
   {
     m_loops.Insert(index, loop);
 	return true;

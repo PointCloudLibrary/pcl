@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -37,9 +37,16 @@ public:
   // Create a radius one arc with angle = 2*pi
   ON_Arc();
 
+  /*
+  Description:
+    Construct an arc from a circle and an angle in radians
+  Parameters:
+    circle - [in]
+    angle_in_radians - [in]
+  */
   ON_Arc(
-    const ON_Circle&,
-    double           // angle in radians
+    const ON_Circle& circle,
+    double angle_in_radians
     );
 
   /*
@@ -53,42 +60,101 @@ public:
     ON_Interval angle_interval_in_radians
     );
 
+  /*
+  Description:
+    Construct an arc from a plane, radius and an angle in radians.
+    The center of the arc is at the plane's origin.
+  Parameters:
+    plane - [in]
+      circle is in this plane with center at m_origin
+    center - [in]
+      circle's center point
+    radius - [in]
+    angle_in_radians - [in]
+  */
   ON_Arc(
-    const ON_Plane&, // circle is in this plane with center at m_origin
-    double,          // radius
-    double           // angle in radians
+    const ON_Plane& plane,
+    double radius,
+    double angle_in_radians
     );
 
-  ON_Arc( // arc is parallel to XY plane
-    const ON_3dPoint&, // center
-    double,            // radius
-    double             // angle in radians
+  /*
+  Description:
+    Construct an arc parallel to the world XY plane from a
+    center point, radius, and angle in radians.
+    The arc starts at center+(radius,0,0).
+  Parameters:
+    center - [in]
+    radius - [in]
+    angle_in_radians - [in]
+  */
+  ON_Arc(
+    const ON_3dPoint& center,
+    double radius,
+    double angle_in_radians
     );
 
-  ON_Arc( // arc parallel to a plane
-    const ON_Plane&,   // circle will be parallel to this plane
-    const ON_3dPoint&, // center
-    double,            // radius
-    double             // angle in radians
+  /*
+  Description:
+    Construct an arc parallel to plane from a center point, 
+    radius, and angle in radians.  
+    The arc starts at center+radius*plane.xaxis.
+  Parameters:
+    plane - [in]
+      The plane x, y and z axis are used to defines the circle
+      plane's x, y and z axis.  The plane origin is ignorned.
+    center - [in]
+      circle's center point
+    radius - [in]
+    angle_in_radians - [in]
+  */
+  ON_Arc(
+    const ON_Plane& plane,
+    const ON_3dPoint& center,
+    double radius,
+    double angle_in_radians
     );
 
-  ON_Arc( // arc through 3 2d points
-    const ON_2dPoint&, // point P
-    const ON_2dPoint&, // point Q
-    const ON_2dPoint&  // point R
+  /*
+  Description:
+    Construct an arc that passes through three 2d points.
+  Parameters:
+    start_point - [in]
+    interior_point - [in]
+    end_point - [in]
+  */
+  ON_Arc(
+    const ON_2dPoint& start_point,
+    const ON_2dPoint& interior_point,
+    const ON_2dPoint& end_point
     );
 
-  ON_Arc( // arc through 3 3d points
-    const ON_3dPoint&, // point P
-    const ON_3dPoint&, // point Q
-    const ON_3dPoint&  // point R
+  /*
+  Description:
+    Construct an arc that passes through three 3d points.
+  Parameters:
+    start_point - [in]
+    interior_point - [in]
+    end_point - [in]
+  */
+  ON_Arc(
+    const ON_3dPoint& start_point,
+    const ON_3dPoint& interior_point,
+    const ON_3dPoint& end_point
     );
 
-  //////////
-  // Create an arc from a circle and an angle in radians
+  /*
+  Description:
+    Create an arc from a circle and an angle in radians
+  Parameters:
+    circle - [in]
+    angle_in_radians - [in]
+  Returns:
+    true if input is valid and a valid arc is created.
+  */
   bool Create(
-    const ON_Circle&, // [IN]
-    double            // [IN] angle in radians
+    const ON_Circle& circle,
+    double angle_in_radians
     );
 
   /*
@@ -106,64 +172,117 @@ public:
     ON_Interval angle_interval_in_radians
     );
 
-  //////////
-  // Create an arc from a plane, radius and an angle in radians.
-  // The center of the arc is at the plane's origin.
+  /*
+  Description:
+    Create an arc from a plane, radius and an angle in radians.
+    The center of the arc is at the plane's origin.
+  Parameters:
+    plane - [in]
+      circle is in this plane with center at m_origin
+    center - [in]
+      circle's center point
+    radius - [in]
+    angle_in_radians - [in]
+  */
   bool Create(
-    const ON_Plane&, // [IN] circle is in this plane with center at m_origin
-    double,          // [IN] radius
-    double           // [IN] angle in radians
+    const ON_Plane& plane,
+    double radius,
+    double angle_in_radians
     );
 
-  //////////
-  // Create an arc parallel to the world XY plane from a center point,
-  // radius, and angle in radians.  The arc starts at center+(radius,0,0).
+ /*
+  Description:
+    Create an arc parallel to the world XY plane from a
+    center point, radius, and angle in radians.
+    The arc starts at center+(radius,0,0).
+  Parameters:
+    center - [in]
+    radius - [in]
+    angle_in_radians - [in]
+  */
   bool Create(
-    const ON_3dPoint&, // [IN] center
-    double,            // [IN] radius
-    double             // [IN] angle in radians
+    const ON_3dPoint& center,
+    double radius,
+    double angle_in_radians
     );
 
-  //////////
-  // Create an arc parallel to plane from a center point, radius, 
-  // and angle in radians.  The arc starts at center+radius*plane.xaxis.
+  /*
+  Description:
+    Create an arc parallel to plane from a center point, 
+    radius, and angle in radians.  
+    The arc starts at center+radius*plane.xaxis.
+  Parameters:
+    plane - [in]
+      The plane x, y and z axis are used to defines the circle
+      plane's x, y and z axis.  The plane origin is ignorned.
+    center - [in]
+      circle's center point
+    radius - [in]
+    angle_in_radians - [in]
+  */
   bool Create(
-    const ON_Plane&,   // [IN] circle will be parallel to this plane
-    const ON_3dPoint&, // [IN] center
-    double,            // [IN] radius
-    double             // [IN] angle in radians
+    const ON_Plane& plane,
+    const ON_3dPoint& center,
+    double radius,
+    double angle_in_radians
     );
 
-  //////////
-  // Create an arc that passes through 3 2d points.
-  bool Create( // arc through 3 2d points
-    const ON_2dPoint&, // [IN] point P
-    const ON_2dPoint&, // [IN] point Q
-    const ON_2dPoint&  // [IN] point R
-    );
-
-  //////////
-  // Create an arc that passes through 3 3d points.
-  bool Create( // arc through 3 3d points
-    const ON_3dPoint&, // [IN] point P
-    const ON_3dPoint&, // [IN] point Q
-    const ON_3dPoint&  // [IN] point R
-    );
-
-  //////////
-  // Create an arc from a 2d start point, 2d start direction, and 2d end point.
+  /*
+  Description:
+    Create an arc that passes through three 2d points.
+  Parameters:
+    start_point - [in]
+    interior_point - [in]
+    end_point - [in]
+  */
   bool Create(
-    const ON_2dPoint&,  // [IN] point P
-    const ON_2dVector&, // [IN] arc direction at P
-    const ON_2dPoint&   // [IN] point R
+    const ON_2dPoint& start_point,
+    const ON_2dPoint& interior_point,
+    const ON_2dPoint& end_point
     );
 
-  //////////
-  // Create an arc from a 3d start point, 3d start direction, and 3d end point.
+  /*
+  Description:
+    Create an arc that passes through three 3d points.
+  Parameters:
+    start_point - [in]
+    interior_point - [in]
+    end_point - [in]
+  */
   bool Create(
-    const ON_3dPoint&,  // [IN] point P
-    const ON_3dVector&, // [IN] arc direction at P
-    const ON_3dPoint&   // [IN] point R
+    const ON_3dPoint& start_point,
+    const ON_3dPoint& interior_point,
+    const ON_3dPoint& end_point
+    );
+
+  /*
+  Description:
+    Create an arc from a 2d start point, 2d start direction 
+    and a 2d end point.
+  Parameters:
+    start_point - [in]
+    dir_at_start - [in]
+    end_point - [in]
+  */
+  bool Create(
+    const ON_2dPoint& start_point,
+    const ON_2dVector& dir_at_start,
+    const ON_2dPoint& end_point
+    );
+
+  /*
+  Description:
+    Create an arc from a 3d start point, 3d start direction 
+    and a 3d end point.
+  Parameters:
+    start_point - [in]
+    dir_at_start - [in]
+    end_point - [in]
+  */
+  bool Create(
+    const ON_3dPoint& start_point,
+    const ON_3dVector& dir_at_start,
+    const ON_3dPoint& end_point
     );
 
   ON_Arc& operator=( const ON_Circle& );

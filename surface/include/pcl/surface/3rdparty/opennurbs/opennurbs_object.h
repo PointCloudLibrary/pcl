@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -248,35 +248,6 @@ Returns:
 ON_DECL
 ON_UUID ON_GetMostRecentClassIdCreateUuid();
 
-typedef int (*ON_Vtable_func)(void);
-
-struct ON_Vtable
-{
-  // The actual number of virtual functions depends on the class.
-  // The four in f[4] is just there to make it easy to see the 
-  // first four in the debugger.  There can be fewer or more
-  // than four virtual functions.  The function prototype
-  // also depends on the class defintion.  In particular,
-  // it is probably not int function(void).
-  ON_Vtable_func f[4];
-};
-
-/*
-Description:
-  Expert user function to get a pointer to 
-  a class's vtable.
-Parameters:
-  pClass - [in] a class that has a vtable.
-    If you pass a class that does not have
-    a vtable, then the returned pointer is
-    garbage.
-Returns:
-  A pointer to the vtable.
-*/
-ON_DECL
-struct ON_Vtable* ON_ClassVtable(void* p);
-
-
 /*
 All classes derived from ON_Object must have 
 
@@ -438,6 +409,7 @@ public:
   bool CopyFrom( const ON_Object* src );
 
 public:
+
   ON_Object();
   ON_Object( const ON_Object& );
   ON_Object& operator=( const ON_Object& );

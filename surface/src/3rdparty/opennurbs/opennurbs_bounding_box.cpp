@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -14,7 +14,7 @@
 ////////////////////////////////////////////////////////////////
 */
 
-#include <pcl/surface/3rdparty/opennurbs/opennurbs.h>
+#include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
 
 ON_BoundingBox::ON_BoundingBox()
                 : m_min(1.0,0.0,0.0), 
@@ -148,6 +148,19 @@ ON_BoundingBox::GetCorners(
 ON_ClippingRegion::ON_ClippingRegion()
 {
   memset(this,0,sizeof(*this));
+}
+
+void ON_ClippingRegion::SetClipPlaneTolerance( double clip_plane_tolerance )
+{
+  if ( clip_plane_tolerance > 0.0 && clip_plane_tolerance < 3.402823466e+38 )
+    m_clip_plane_tolerance = (float)clip_plane_tolerance;
+  else
+    m_clip_plane_tolerance = 0.0;
+}
+
+double ON_ClippingRegion::ClipPlaneTolerance() const
+{
+  return (float)m_clip_plane_tolerance;
 }
 
 int ON_ClippingRegion::InViewFrustum( 
@@ -362,6 +375,14 @@ int ON_ClippingRegion::InClipPlaneRegion(
   unsigned int out, all_out, some_out, cpbit;
   int i, j;
 
+  // 14 May 2012 Dale Lear
+  //   Fix http://dev.mcneel.com/bugtrack/?q=102481
+  //   Picking hatches that are coplanar with clipping planes.
+  //   The "fix" was to set clipping_plane_tolerance = same
+  //   tolerance the display code uses.  Before the fix,
+  //   0.0 was used as the clipping_plane_tolerance.
+  const double clip_plane_tolerance = ClipPlaneTolerance();
+
   if ( count <= 0 || !p )
     return 0;
 
@@ -382,7 +403,7 @@ int ON_ClippingRegion::InClipPlaneRegion(
       while (j--)
       {
         x = cpeqn->x*cv[0] + cpeqn->y*cv[1] + cpeqn->z*cv[2] + cpeqn->d;
-        if ( x < 0.0 )
+        if ( x < -clip_plane_tolerance )
           out |= cpbit;
         cpbit <<= 1;
         cpeqn++;;
@@ -424,6 +445,14 @@ int ON_ClippingRegion::InClipPlaneRegion(
   if ( m_clip_plane_count <= 0 )
     return 2;
 
+  // 14 May 2012 Dale Lear
+  //   Fix http://dev.mcneel.com/bugtrack/?q=102481
+  //   Picking hatches that are coplanar with clipping planes.
+  //   The "fix" was to set clipping_plane_tolerance = same
+  //   tolerance the display code uses.  Before the fix,
+  //   0.0 was used as the clipping_plane_tolerance.
+  const double clip_plane_tolerance = ClipPlaneTolerance();
+
   some_out = 0;
   all_out  = 0xFFFFFFFF;
   cv = &p[0].x;
@@ -438,7 +467,7 @@ int ON_ClippingRegion::InClipPlaneRegion(
       while (j--)
       {
         x = cpeqn->x*cv[0] + cpeqn->y*cv[1] + cpeqn->z*cv[2] + cpeqn->d;
-        if ( x < 0.0 )
+        if ( x < -clip_plane_tolerance )
           out |= cpbit;
         cpbit <<= 1;
         cpeqn++;;
@@ -480,6 +509,14 @@ int ON_ClippingRegion::InClipPlaneRegion(
   if ( m_clip_plane_count <= 0 )
     return 2;
 
+  // 14 May 2012 Dale Lear
+  //   Fix http://dev.mcneel.com/bugtrack/?q=102481
+  //   Picking hatches that are coplanar with clipping planes.
+  //   The "fix" was to set clipping_plane_tolerance = same
+  //   tolerance the display code uses.  Before the fix,
+  //   0.0 was used as the clipping_plane_tolerance.
+  const double clip_plane_tolerance = ClipPlaneTolerance();
+
   some_out = 0;
   all_out  = 0xFFFFFFFF;
   cv = &p[0].x;
@@ -494,7 +531,7 @@ int ON_ClippingRegion::InClipPlaneRegion(
       while (j--)
       {
         x = cpeqn->x*cv[0] + cpeqn->y*cv[1] + cpeqn->z*cv[2] + cpeqn->d*cv[3];
-        if ( x < 0.0 )
+        if ( x < -clip_plane_tolerance )
           out |= cpbit;
         cpbit <<= 1;
         cpeqn++;;
@@ -557,6 +594,14 @@ int ON_ClippingRegion::IsVisible( int count, const ON_3fPoint* p ) const
   unsigned int out, all_out, some_out, cpbit;
   int i, j;
 
+  // 14 May 2012 Dale Lear
+  //   Fix http://dev.mcneel.com/bugtrack/?q=102481
+  //   Picking hatches that are coplanar with clipping planes.
+  //   The "fix" was to set clipping_plane_tolerance = same
+  //   tolerance the display code uses.  Before the fix,
+  //   0.0 was used as the clipping_plane_tolerance.
+  const double clip_plane_tolerance = ClipPlaneTolerance();
+
   some_out = 0;
   all_out  = 0xFFFFFFFF;
   xform = &m_xform.m_xform[0][0];
@@ -572,7 +617,7 @@ int ON_ClippingRegion::IsVisible( int count, const ON_3fPoint* p ) const
       while (j--)
       {
         x = cpeqn->x*cv[0] + cpeqn->y*cv[1] + cpeqn->z*cv[2] + cpeqn->d;
-        if ( x < 0.0 )
+        if ( x < -clip_plane_tolerance )
           out |= cpbit;
         cpbit <<= 1;
         cpeqn++;;
@@ -613,6 +658,14 @@ int ON_ClippingRegion::IsVisible( int count, const ON_3dPoint* p ) const
   unsigned int out, all_out, some_out, cpbit;
   int i, j;
 
+  // 14 May 2012 Dale Lear
+  //   Fix http://dev.mcneel.com/bugtrack/?q=102481
+  //   Picking hatches that are coplanar with clipping planes.
+  //   The "fix" was to set clipping_plane_tolerance = same
+  //   tolerance the display code uses.  Before the fix,
+  //   0.0 was used as the clipping_plane_tolerance.
+  const double clip_plane_tolerance = ClipPlaneTolerance();
+
   some_out = 0;
   all_out  = 0xFFFFFFFF;
   xform = &m_xform.m_xform[0][0];
@@ -628,7 +681,7 @@ int ON_ClippingRegion::IsVisible( int count, const ON_3dPoint* p ) const
       while (j--)
       {
         x = cpeqn->x*cv[0] + cpeqn->y*cv[1] + cpeqn->z*cv[2] + cpeqn->d;
-        if ( x < 0.0 )
+        if ( x < -clip_plane_tolerance )
           out |= cpbit;
         cpbit <<= 1;
         cpeqn++;;
@@ -670,6 +723,14 @@ int ON_ClippingRegion::IsVisible( int count, const ON_4dPoint* p ) const
   unsigned int out, all_out, some_out, cpbit;
   int i, j;
 
+  // 14 May 2012 Dale Lear
+  //   Fix http://dev.mcneel.com/bugtrack/?q=102481
+  //   Picking hatches that are coplanar with clipping planes.
+  //   The "fix" was to set clipping_plane_tolerance = same
+  //   tolerance the display code uses.  Before the fix,
+  //   0.0 was used as the clipping_plane_tolerance.
+  const double clip_plane_tolerance = ClipPlaneTolerance();
+
   some_out = 0;
   all_out  = 0xFFFFFFFF;
   xform = &m_xform.m_xform[0][0];
@@ -685,10 +746,10 @@ int ON_ClippingRegion::IsVisible( int count, const ON_4dPoint* p ) const
       while (j--)
       {
         x = cpeqn->x*cv[0] + cpeqn->y*cv[1] + cpeqn->z*cv[2] + cpeqn->d*cv[3];
-        if ( x < 0.0 )
+        if ( x < -clip_plane_tolerance )
           out |= cpbit;
         cpbit <<= 1;
-        cpeqn++;;
+        cpeqn++;
       }
     }
     w = xform[12]*cv[0] + xform[13]*cv[1] + xform[14]*cv[2] + xform[15]*cv[3];
@@ -728,6 +789,15 @@ unsigned int ON_ClippingRegion::TransformPoint(
   const ON_PlaneEquation* cpeqn;
   int j;
   double x,y,z,w;
+
+  // 14 May 2012 Dale Lear
+  //   Fix http://dev.mcneel.com/bugtrack/?q=102481
+  //   Picking hatches that are coplanar with clipping planes.
+  //   The "fix" was to set clipping_plane_tolerance = same
+  //   tolerance the display code uses.  Before the fix,
+  //   0.0 was used as the clipping_plane_tolerance.
+  const double clip_plane_tolerance = ClipPlaneTolerance();
+
   out = 0;
   if ( m_clip_plane_count )
   {
@@ -737,10 +807,10 @@ unsigned int ON_ClippingRegion::TransformPoint(
     while (j--)
     {
       x = cpeqn->x*cv[0] + cpeqn->y*cv[1] + cpeqn->z*cv[2] + cpeqn->d*cv[3];
-      if ( x < 0.0 )
+      if ( x < -clip_plane_tolerance )
         out |= cpbit;
       cpbit <<= 1;
-      cpeqn++;;
+      cpeqn++;
     }
   }
   w = xform[12]*cv[0] + xform[13]*cv[1] + xform[14]*cv[2] + xform[15]*cv[3];
@@ -767,6 +837,15 @@ unsigned int ON_ClippingRegion::TransformPoint(
   const ON_PlaneEquation* cpeqn;
   int j;
   double x,y,z,w;
+
+  // 14 May 2012 Dale Lear
+  //   Fix http://dev.mcneel.com/bugtrack/?q=102481
+  //   Picking hatches that are coplanar with clipping planes.
+  //   The "fix" was to set clipping_plane_tolerance = same
+  //   tolerance the display code uses.  Before the fix,
+  //   0.0 was used as the clipping_plane_tolerance.
+  const double clip_plane_tolerance = ClipPlaneTolerance();
+
   out = 0;
   if ( m_clip_plane_count )
   {
@@ -776,10 +855,10 @@ unsigned int ON_ClippingRegion::TransformPoint(
     while (j--)
     {
       x = cpeqn->x*cv[0] + cpeqn->y*cv[1] + cpeqn->z*cv[2] + cpeqn->d;
-      if ( x < 0.0 )
+      if ( x < -clip_plane_tolerance )
         out |= cpbit;
       cpbit <<= 1;
-      cpeqn++;;
+      cpeqn++;
     }
   }
   w = xform[12]*cv[0] + xform[13]*cv[1] + xform[14]*cv[2] + xform[15];
@@ -821,6 +900,14 @@ int ON_ClippingRegion::TransformPoints( int count, ON_4dPoint* p, unsigned int* 
   unsigned int out, all_out, some_out, cpbit;
   int i, j;
 
+  // 14 May 2012 Dale Lear
+  //   Fix http://dev.mcneel.com/bugtrack/?q=102481
+  //   Picking hatches that are coplanar with clipping planes.
+  //   The "fix" was to set clipping_plane_tolerance = same
+  //   tolerance the display code uses.  Before the fix,
+  //   0.0 was used as the clipping_plane_tolerance.
+  const double clip_plane_tolerance = ClipPlaneTolerance();
+
   some_out = 0;
   all_out  = 0xFFFFFFFF;
   xform = &m_xform.m_xform[0][0];
@@ -837,7 +924,7 @@ int ON_ClippingRegion::TransformPoints( int count, ON_4dPoint* p, unsigned int* 
       while (j--)
       {
         x = cpeqn->x*cv[0] + cpeqn->y*cv[1] + cpeqn->z*cv[2] + cpeqn->d*cv[3];
-        if ( x < 0.0 )
+        if ( x < -clip_plane_tolerance )
           out |= cpbit;
         cpbit <<= 1;
         cpeqn++;;
@@ -877,6 +964,14 @@ int ON_ClippingRegion::TransformPoints( int count, ON_4dPoint* p ) const
   double x, y, z, w;
   unsigned int out, all_out, some_out, cpbit;
   int i, j;
+  
+  // 14 May 2012 Dale Lear
+  //   Fix http://dev.mcneel.com/bugtrack/?q=102481
+  //   Picking hatches that are coplanar with clipping planes.
+  //   The "fix" was to set clipping_plane_tolerance = same
+  //   tolerance the display code uses.  Before the fix,
+  //   0.0 was used as the clipping_plane_tolerance.
+  const double clip_plane_tolerance = ClipPlaneTolerance();
 
   some_out = 0;
   all_out  = 0xFFFFFFFF;
@@ -894,7 +989,7 @@ int ON_ClippingRegion::TransformPoints( int count, ON_4dPoint* p ) const
       while (j--)
       {
         x = cpeqn->x*cv[0] + cpeqn->y*cv[1] + cpeqn->z*cv[2] + cpeqn->d*cv[3];
-        if ( x < 0.0 )
+        if ( x < -clip_plane_tolerance )
           out |= cpbit;
         cpbit <<= 1;
         cpeqn++;;
@@ -951,6 +1046,7 @@ bool ON_ClippingRegion::GetLineClipPlaneParamters(
     s0 = 0.0;
     s1 = 1.0;
     eqn = m_clip_plane;
+    const double clip_plane_tolerance = ClipPlaneTolerance();
     for ( i = 0; i < m_clip_plane_count; i++, eqn++ )
     {
       x0 = eqn->x*P0.x + eqn->y*P0.y + eqn->z*P0.z + eqn->d*P0.w;
@@ -958,25 +1054,37 @@ bool ON_ClippingRegion::GetLineClipPlaneParamters(
       if ( x0 < 0.0)
       {
         if ( x1 <= 0.0 )
-          return false;
-        s = x0/(x0-x1);
-        if ( s > s0 )
         {
-          s0 = s;
-          if ( s0 >= s1 )
+          if ( x0 < -clip_plane_tolerance && x1 <= - clip_plane_tolerance )
             return false;
+        }
+        if ( x0 != x1 )
+        {
+          s = x0/(x0-x1);
+          if ( s > s0 )
+          {
+            s0 = s;
+            if ( s0 >= s1 )
+              return false;
+          }
         }
       }
       else if ( x1 < 0.0 )
       {
         if ( x0 <= 0.0 )
-          return false;
-        s = x1/(x1-x0);
-        if ( s < s1 )
         {
-          s1 = s;
-          if ( s0 >= s1 )
+          if ( x1 < -clip_plane_tolerance && x0 <= - clip_plane_tolerance )
             return false;
+        }
+        if ( x0 != x1 )
+        {
+          s = x1/(x1-x0);
+          if ( s < s1 )
+          {
+            s1 = s;
+            if ( s0 >= s1 )
+              return false;
+          }
         }
       }
     }
@@ -1216,7 +1324,8 @@ int ON_BoundingBox::GetClosestPoint(
 	for(i=0; i<2; i++){
 		closest = ClosestPoint(line[i]);
 		double dot = (closest - line[i]) * line.Direction();
-		if( i==0 && dot<= 0 || i==1 && dot>=0 ){
+		if( (i==0 && dot<= 0) || (i==1 && dot>=0) )
+    {
 			if(t0) *t0 = i;
 			if(t1) *t1 = i;
 			box_point = closest;
@@ -1260,16 +1369,16 @@ bool Intersect( ON_Interval A, ON_Interval B, ON_Interval& AB){
 	if(B.IsDecreasing()) B.Swap();
 
 	bool NotEmpty=true;
-	if( A.m_t[0] <= B.m_t[0] && B.m_t[0] <= A.m_t[1] &&  A.m_t[1] <= B.m_t[1]){
+	if( A.m_t[0] <= B.m_t[0] && B.m_t[0]<=A.m_t[1] &&  A.m_t[1]<= B.m_t[1]){
 		AB.Set(B.m_t[0], A.m_t[1]);
-	} else if( B.m_t[0] <= A.m_t[0] && A.m_t[0] <= B.m_t[1] && B.m_t[1] <=A.m_t[1]){
+	} else if( B.m_t[0] <= A.m_t[0] && A.m_t[0]<=B.m_t[1] && B.m_t[1]<=A.m_t[1]){
 		AB.Set(A.m_t[0], B.m_t[1]);
-	} else if( A.m_t[0] <= B.m_t[0] && B.m_t[0] <= B.m_t[1] && B.m_t[1] <= A.m_t[1]){
+	} else if( A.m_t[0] <=  B.m_t[0] && B.m_t[0] <= B.m_t[1] && B.m_t[1]<= A.m_t[1]){
 		AB.Set(B.m_t[0], B.m_t[1]);
-	} else if( B.m_t[0] <= A.m_t[0] && A.m_t[0] <= A.m_t[1] && A.m_t[1] <= B.m_t[1]){
+	} else if( B.m_t[0] <= A.m_t[0] && A.m_t[0] <= A.m_t[1] && A.m_t[1]<= B.m_t[1]){
 		AB.Set(A.m_t[0], A.m_t[1]);
-//	} else if( B.m_t[0] <= A.m_t[0] && A.m_t[0] <= A.m_t[1] && A.m_t[1] <= B.m_t[1]){
-//		AB.Set(A.m_t[0], A.m_t[1]);
+	} else if( B.m_t[0] <= A.m_t[0]  && A.m_t[0] <= A.m_t[1]  && A.m_t[1]<= B.m_t[1]){
+		AB.Set(A.m_t[0], A.m_t[1]);
 	} else if(A.m_t[1] < B.m_t[0] || B.m_t[1] < A.m_t[0] ){
 		AB.Destroy();
 		NotEmpty = false;
@@ -2246,8 +2355,8 @@ bool ON_BeyondSinglePrecision( const ON_BoundingBox& bbox, ON_Xform* xform )
   if ( bbox.IsValid() )
   {
     // 31 March 2011:
-    //   The values of too_far = 1.0e6 and too_big = 1.0e6
-    //   were wild guesses.  If you changes these values,
+    //   The values of too_far = 262144.0 and too_big = 1048576.0
+    //   are first guesses.  If you changes these values,
     //   you must append a comment containing your name,
     //   the date, the values your are using, a bug number
     //   of a bug report containing a file that demonstrates
@@ -2255,7 +2364,7 @@ bool ON_BeyondSinglePrecision( const ON_BoundingBox& bbox, ON_Xform* xform )
     //   previous bugs before committing your changes.
     //
     //   DATE: 31 March 2011
-    //   NAME: Dale Lear, Steve Baer
+    //   NAME: Dale Lear
     //   COMMENT: First guess at values for too_far and too
     //   VALUES:  too_far = 262144.0 from tests with simple mesh sphere
     //            too_big = 1048576.0
@@ -2264,17 +2373,17 @@ bool ON_BeyondSinglePrecision( const ON_BoundingBox& bbox, ON_Xform* xform )
     const double too_big = 1048576.0; // MUST be a power of 2
     bool bTooFar = (    bbox.m_min.x >=  too_far 
                      || bbox.m_min.y >=  too_far 
-                     || bbox.m_min.z >=  too_far
+                     || bbox.m_min.x >=  too_far 
                      || bbox.m_max.x <= -too_far
                      || bbox.m_max.y <= -too_far
-                     || bbox.m_max.z <= -too_far
+                     || bbox.m_max.x <= -too_far
                    );
     bool bTooBig = (   bbox.m_min.x <= -too_big 
                      || bbox.m_min.y <= -too_big 
-                     || bbox.m_min.z <= -too_big
+                     || bbox.m_min.x <= -too_big 
                      || bbox.m_max.x >=  too_big
                      || bbox.m_max.y >=  too_big
-                     || bbox.m_max.z >=  too_big
+                     || bbox.m_max.x >=  too_big
                      );
     if ( bTooFar || bTooBig )
     {
@@ -2427,15 +2536,14 @@ double ON_BoundingBox::MinimumDistanceTo( const ON_3dPoint& P ) const
 
 double ON_BoundingBox::MaximumDistanceTo( const ON_3dPoint& P ) const
 {
-  // 8 Feb 2005 - new function - not tested yet
   // this function must be fast
   // If Q = any point in box, then
   // P.DistanceTo(Q) <= MaximumDistanceTo(P).
   ON_3dVector V;
 
   V.x = ( (P.x < 0.5*(m_min.x+m_max.x)) ? m_max.x : m_min.x) - P.x;
-  V.y = ( (P.y < 0.5*(m_min.x+m_max.y)) ? m_max.y : m_min.y) - P.y;
-  V.z = ( (P.z < 0.5*(m_min.x+m_max.z)) ? m_max.z : m_min.z) - P.z;
+  V.y = ( (P.y < 0.5*(m_min.y+m_max.y)) ? m_max.y : m_min.y) - P.y;
+  V.z = ( (P.z < 0.5*(m_min.z+m_max.z)) ? m_max.z : m_min.z) - P.z;
 
   return V.Length();
 }

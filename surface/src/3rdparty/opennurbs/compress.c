@@ -6,7 +6,7 @@
 /* @(#) $Id$ */
 
 #define ZLIB_INTERNAL
-#include <pcl/surface/3rdparty/opennurbs/zlib.h>
+#include "pcl/surface/3rdparty/opennurbs/zlib.h"
 
 /* ===========================================================================
      Compresses the source buffer into the destination buffer. The level

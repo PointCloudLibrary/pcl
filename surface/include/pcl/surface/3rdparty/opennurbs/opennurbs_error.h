@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -73,19 +73,11 @@ ON_DECL
 int     ON_GetMathErrorCount(void);
 
 ON_DECL
-int     ON_GetDebugBreak(void);
-ON_DECL
-void    ON_EnableDebugBreak( int bEnableDebugBreak );
-
-ON_DECL
-int ON_GetDebugBreakOnFirstError(void);
-ON_DECL
-void ON_EnableDebugBreakOnFirstError( int bEnableDebugBreak );
-
-ON_DECL
 int     ON_GetDebugErrorMessage(void);
+
 ON_DECL
 void    ON_EnableDebugErrorMessage( int bEnableDebugErrorMessage );
+
 
 ON_DECL
 void    ON_Error( const char*, /* sFileName:   __FILE__ will do fine */
@@ -114,6 +106,8 @@ void    ON_WarningEx( const char*, // sFileName:   __FILE__ will do fine
                   const char*,   // printf() style format string
                   ...            // printf() style ags
                   );
+
+// Ideally - these "assert" functions will be deleted when the SDK can be changed.
 ON_DECL
 void    ON_Assert( int,         /* if false, error is flagged */
                    const char*, /* sFileName:   __FILE__ will do fine */

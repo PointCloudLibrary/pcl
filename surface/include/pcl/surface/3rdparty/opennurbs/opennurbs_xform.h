@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -107,10 +107,21 @@ public:
           0 0 1 0
           0 0 0 1
   Remarks:
-    The test for zero is fabs(x) <= zero_tolerance.
-    The test for one is fabs(x-1) <= zero_tolerance.
+    An element of the matrix is "zero" if fabs(x) <= zero_tolerance.
+    An element of the matrix is "one" if fabs(1.0-x) <= zero_tolerance.
+    If the matrix contains a nan, false is returned.
   */
   bool IsIdentity( double zero_tolerance = 0.0) const;
+  
+  /*
+  Returns:
+    true if the matrix is valid and is not the identity transformation
+  Remarks:
+    An element of the matrix is "zero" if fabs(x) <= zero_tolerance.
+    An element of the matrix is "one" if fabs(1.0-x) <= zero_tolerance.
+    If the matrix contains a nan, false is returned.
+  */
+  bool IsNotIdentity( double zero_tolerance = 0.0) const;
   
   /*
   Returns:
@@ -762,6 +773,29 @@ public:
   // coordinate box.
   ON_Xform m_xform;
 
+  /*
+  Parameters:
+    clip_plane_tolerance - [in]  
+      3d world coordinates tolerance to use when testing 
+      objects to see if the planes in m_clip_plane[] hide
+      the objects.      
+  Remarks:
+    The constructor sets this value to zero.  Rhino uses
+    values around 1e-5.
+  */
+  void SetClipPlaneTolerance( double clip_plane_tolerance );
+
+  /*
+  Returns:
+    3d world coordinates tolerance to use when testing 
+    objects to see if the planes in m_clip_plane[] hide
+    the objects.      
+  Remarks:
+    The constructor sets this value to zero.  Rhino uses
+    values around 1e-5.
+  */
+  double ClipPlaneTolerance() const;
+
   enum
   {
     max_clip_plane_count = 16, // must be <= 25
@@ -776,6 +810,15 @@ public:
   // The convex region that is the intersection of the positive 
   // side of these planes is the active region.
   int m_clip_plane_count; // (0 <= m_clip_plane_count <= max_clip_plane_count)
+
+private:
+  // The "float" should be a double, but that can't happen
+  // until V6 because it will brake the SDK.  Use the
+  // SetClipPlaneTolerance() and ClipPlaneTolerance() 
+  // functions to set and get this value.
+  float m_clip_plane_tolerance;
+
+public:
   ON_PlaneEquation m_clip_plane[max_clip_plane_count];
 
   /*
@@ -1151,48 +1194,6 @@ public:
 
   /*
   Description:
-    Morphs euclidean point.
-  Parameters:
-    point - [in]
-  Returns:
-    Morphed point.  
-  Remarks:
-    If you are morphing simple objects like points and
-    meshes, then you can simply morph the locations. 
-    If you are morphing more complicated objects like 
-    NURBS geometry, then your override should
-    pay attention to the values of m_bQuickPreview, 
-    m_bPreserveStructure, and m_tolerance.
-  */
-  virtual
-  ON_3dPoint MorphPoint( 
-            ON_3dPoint point 
-            ) const = 0;
-
-  /*
-  Description:
-    Get the first derivative of the morph function.
-  Parameters:
-    rst - [in] evalation parameters
-    Dr - [out]  (dx/dr, dy/dr, dz/dr)
-    Ds - [out]  (dx/ds, dy/ds, dz/ds)
-    Dt - [out]  (dx/dt, dy/dt, dz/dt)
-  Returns:
-    True if successful.
-  */
-  virtual
-  bool Ev1Der(
-            ON_3dPoint rst,
-            ON_3dPoint& xyz,
-            ON_3dVector& Dr,
-            ON_3dVector& Ds,
-            ON_3dVector& Dt
-            ) const;
-
-
-
-  /*
-  Description:
     Provides a quick way to determine if a morph function
     is the identity (doesn't move the points) on a region
     of space.
@@ -1205,74 +1206,6 @@ public:
   */
   virtual
   bool IsIdentity( const ON_BoundingBox& bbox ) const;
-
-  /*
-  Description:
-    Morphs rational point.
-  Parameters:
-    point - [in]
-  Returns:
-    Morphed point.
-  Remarks:
-    Default morphs euclidean location and preserves weight.
-  */
-  virtual
-  ON_4dPoint MorphPoint( 
-            ON_4dPoint point 
-            ) const;
-
-  /*
-  Description:
-    Morphs vector.
-  Parameters:
-    tail_point - [in] tail point
-    vector - [in]
-  Returns:
-    Morphed vector.
-  Remakrs:
-    Default returns difference of morphed tail+vector and tail.
-  */
-  virtual
-  ON_3dVector MorphVector( 
-            ON_3dPoint tail_point, 
-            ON_3dVector vector 
-            ) const;
-
-  /*
-  Description:
-    Morphs point list
-  Parameters:
-    dim - [in]
-    is_rat - [in]
-    count - [in]
-    stride - [in]
-    point - [in/out]
-  */
-  void MorphPointList(
-          int dim, 
-          int is_rat,
-          int count, 
-          int stride,
-          double* point
-          ) const;
-
-  /*
-  Description:
-    Morphs point list
-  Parameters:
-    dim - [in]
-    is_rat - [in]
-    count - [in]
-    stride - [in]
-    point - [in/out]
-  */
-  void MorphPointList(
-          int dim, 
-          int is_rat,
-          int count, 
-          int stride,
-          float* point
-          ) const;
 
   /*
   Description:

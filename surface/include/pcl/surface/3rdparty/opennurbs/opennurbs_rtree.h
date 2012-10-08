@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -149,7 +149,7 @@ struct ON_RTreeSearchResult
 class ON_CLASS ON_RTreeMemPool
 {
 public:
-  ON_RTreeMemPool( size_t leaf_count );
+  ON_RTreeMemPool( ON_MEMORY_POOL* heap, size_t leaf_count );
   ~ON_RTreeMemPool();
 
   ON_RTreeNode* AllocNode();
@@ -192,6 +192,7 @@ private:
   struct Blk* m_blk_list;   // linked list used to free all allocated memory
   size_t m_sizeof_blk;      // total amount of memory in each block.
 
+  ON_MEMORY_POOL* m_heap;
   size_t m_sizeof_heap; // total amount of heap memory in this rtree
 };
 
@@ -377,7 +378,7 @@ private:
 class ON_CLASS ON_RTree
 {
 public:
-  ON_RTree( size_t leaf_count = 0 );
+  ON_RTree( ON_MEMORY_POOL* heap = 0, size_t leaf_count = 0 );
   ~ON_RTree();
 
   /*
@@ -503,6 +504,35 @@ public:
 
   bool Search( 
     ON_RTreeBBox* a_rect,
+    bool ON_MSC_CDECL resultCallback(void* a_context, ON__INT_PTR a_id), 
+    void* a_context
+    ) const;
+
+  /*
+  Description:
+    Search the R-tree for all elements whose bounding boxes overlap
+    the set of points between to parallel planes.
+  Parameters:
+    a_plane_eqn - [in]
+    a_min - [in]
+    a_max - [in]
+      The region between the parallel planes is the set point points
+      where the value of the plane equation is >= a_min and <= a_max.
+    resultCallback - [in]
+      A function to call when leaf nodes overlap the region between
+      the parallel planes.
+    a_context - [in]
+      pointer passed to the resultCallback() function.
+  Returns:
+    True if entire tree was searched.  It is possible no results were found.
+  Remarks:
+    If you are using a Search() that uses a resultCallback() function,
+    then return true to keep searching and false to terminate the search.
+  */
+  bool Search(
+    const double a_plane_eqn[4],
+    double a_min,
+    double a_max,
     bool ON_MSC_CDECL resultCallback(void* a_context, ON__INT_PTR a_id), 
     void* a_context
     ) const;

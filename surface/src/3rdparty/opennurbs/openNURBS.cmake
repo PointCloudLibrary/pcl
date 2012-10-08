@@ -56,7 +56,6 @@ SET(OPENNURBS_INCLUDES
     include/pcl/${SUBSYS_NAME}/3rdparty/opennurbs/opennurbs_linetype.h
     include/pcl/${SUBSYS_NAME}/3rdparty/opennurbs/opennurbs_lookup.h
     include/pcl/${SUBSYS_NAME}/3rdparty/opennurbs/opennurbs_mapchan.h
-    include/pcl/${SUBSYS_NAME}/3rdparty/opennurbs/opennurbs_massprop.h
     include/pcl/${SUBSYS_NAME}/3rdparty/opennurbs/opennurbs_material.h
     include/pcl/${SUBSYS_NAME}/3rdparty/opennurbs/opennurbs_math.h
     include/pcl/${SUBSYS_NAME}/3rdparty/opennurbs/opennurbs_matrix.h
@@ -81,7 +80,6 @@ SET(OPENNURBS_INCLUDES
     include/pcl/${SUBSYS_NAME}/3rdparty/opennurbs/opennurbs_polylinecurve.h
     include/pcl/${SUBSYS_NAME}/3rdparty/opennurbs/opennurbs_polyline.h
     include/pcl/${SUBSYS_NAME}/3rdparty/opennurbs/opennurbs_qsort_template.h
-    include/pcl/${SUBSYS_NAME}/3rdparty/opennurbs/opennurbs_quaternion.h
     include/pcl/${SUBSYS_NAME}/3rdparty/opennurbs/opennurbs_rand.h
     include/pcl/${SUBSYS_NAME}/3rdparty/opennurbs/opennurbs_rendering.h
     include/pcl/${SUBSYS_NAME}/3rdparty/opennurbs/opennurbs_revsurface.h
@@ -103,7 +101,6 @@ SET(OPENNURBS_INCLUDES
     include/pcl/${SUBSYS_NAME}/3rdparty/opennurbs/opennurbs_viewport.h
     include/pcl/${SUBSYS_NAME}/3rdparty/opennurbs/opennurbs_workspace.h
     include/pcl/${SUBSYS_NAME}/3rdparty/opennurbs/opennurbs_xform.h
-    include/pcl/${SUBSYS_NAME}/3rdparty/opennurbs/opennurbs_x.h
     include/pcl/${SUBSYS_NAME}/3rdparty/opennurbs/opennurbs_zlib.h
     include/pcl/${SUBSYS_NAME}/3rdparty/opennurbs/crc32.h
     include/pcl/${SUBSYS_NAME}/3rdparty/opennurbs/deflate.h
@@ -128,7 +125,6 @@ SET(OPENNURBS_SOURCES
     src/3rdparty/opennurbs/opennurbs_array.cpp
     src/3rdparty/opennurbs/opennurbs_base32.cpp
     src/3rdparty/opennurbs/opennurbs_base64.cpp
-    src/3rdparty/opennurbs/opennurbs_basic.cpp
     src/3rdparty/opennurbs/opennurbs_beam.cpp
     src/3rdparty/opennurbs/opennurbs_bezier.cpp
     src/3rdparty/opennurbs/opennurbs_beziervolume.cpp
@@ -176,7 +172,6 @@ SET(OPENNURBS_SOURCES
     src/3rdparty/opennurbs/opennurbs_linecurve.cpp
     src/3rdparty/opennurbs/opennurbs_linetype.cpp
     src/3rdparty/opennurbs/opennurbs_lookup.cpp
-    src/3rdparty/opennurbs/opennurbs_massprop.cpp
     src/3rdparty/opennurbs/opennurbs_material.cpp
     src/3rdparty/opennurbs/opennurbs_math.cpp
     src/3rdparty/opennurbs/opennurbs_matrix.cpp
@@ -206,7 +201,6 @@ SET(OPENNURBS_SOURCES
     src/3rdparty/opennurbs/opennurbs_polyline.cpp
     src/3rdparty/opennurbs/opennurbs_polylinecurve.cpp
     src/3rdparty/opennurbs/opennurbs_precompiledheader.cpp
-    src/3rdparty/opennurbs/opennurbs_quaternion.cpp
     src/3rdparty/opennurbs/opennurbs_rand.cpp
     src/3rdparty/opennurbs/opennurbs_revsurface.cpp
     src/3rdparty/opennurbs/opennurbs_rtree.cpp

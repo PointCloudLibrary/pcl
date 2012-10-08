@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -311,6 +311,24 @@ public:
     int // 0 gets first parameter's domain, 1 gets second parameter's domain
     ) const;
 
+
+  /*
+  Description:
+    Get an estimate of the size of the rectangle that would
+    be created if the 3d surface where flattened into a rectangle.
+  Parameters:
+    width - [out]  (corresponds to the first surface parameter)
+    height - [out] (corresponds to the first surface parameter)
+  Remarks:
+    overrides virtual ON_Surface::GetSurfaceSize
+  Returns:
+    true if successful.
+  */
+  ON_BOOL32 GetSurfaceSize( 
+      double* width, 
+      double* height 
+      ) const;
+
   int SpanCount(
     int // 0 gets first parameter's domain, 1 gets second parameter's domain
     ) const; // number of smooth spans in curve
@@ -584,6 +602,27 @@ public:
          ON_Surface*& west_or_south_side,
          ON_Surface*& east_or_north_side
          ) const;
+
+  /*
+  Description:
+    Offset surface.
+  Parameters:
+    offset_distance - [in] offset distance
+    tolerance - [in] Some surfaces do not have an exact offset that
+      can be represented using the same class of surface definition.
+      In that case, the tolerance specifies the desired accuracy.
+    max_deviation - [out] If this parameter is not NULL, the maximum
+      deviation from the returned offset to the true offset is returned
+      here.  This deviation is zero except for cases where an exact
+      offset cannot be computed using the same class of surface definition.
+  Returns:
+    Offset surface.
+  */
+  ON_Surface* Offset(
+        double offset_distance, 
+        double tolerance, 
+        double* max_deviation = NULL
+        ) const;
 
   int GetNurbForm( // returns 0: unable to create NURBS representation
                    //            with desired accuracy.
@@ -1855,41 +1894,6 @@ public:
   // Get a cage_morph that can be passed to Morph functions
   bool GetCageMorph( class ON_CageMorph& cage_morph ) const;
 
-  /*
-  Description:
-    Evaluates the deformation.  Used by ON_CageMorph::MorphPoint().
-  */
-  ON_3dPoint MorphPoint( ON_3dPoint point ) const;
-
-  /*
-  Description:
-    Get localizer settings needed in MorphPoint().
-  */
-  void MorphPointLocalizerHelper( 
-                const ON_3dPoint& point, 
-                double& w, 
-                double& clspt_max_dist,
-                const ON_Localizer*& distloc  
-                ) const;
-
-  void MorphPointVarient1Helper(
-                double t,
-                double w,
-                const ON_Localizer* distloc,
-                ON_3dPoint& Q,
-                ON_3dVector* N
-                ) const;
-
-  void MorphPointVarient2Helper(
-                double s,
-                double t,
-                double w,
-                const ON_Localizer* distloc,
-                ON_3dPoint& Q,
-                ON_3dVector* N
-                ) const;
-
-
   bool IsIdentity( const ON_BoundingBox& bbox ) const;
 
   int m_varient; // 1= curve, 2 = surface, 3 = cage
@@ -1928,7 +1932,6 @@ public:
   ON_CageMorph();
   ~ON_CageMorph();
 
-  ON_3dPoint MorphPoint( ON_3dPoint point ) const;
   bool IsIdentity( const ON_BoundingBox& bbox ) const;
 
   const ON_MorphControl* m_control;

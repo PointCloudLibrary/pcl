@@ -145,7 +145,7 @@ typedef struct internal_state {
      *   hash_shift * MIN_MATCH >= hash_bits
      */
 
-    long block_start;
+    int block_start;
     /* Window position at the beginning of the current output block. Gets
      * negative when the window is moved backwards.
      */

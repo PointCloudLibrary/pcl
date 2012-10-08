@@ -48,7 +48,7 @@ typedef unsigned char  uch;
 typedef uch FAR uchf;
 typedef unsigned short ush;
 typedef ush FAR ushf;
-typedef unsigned long  ulg;
+typedef unsigned int  ulg;
 
 extern const char * const z_errmsg[10]; /* indexed by 2-zlib_error */
 /* (size given to avoid silly warnings with Visual C++) */
@@ -92,7 +92,7 @@ extern const char * const z_errmsg[10]; /* indexed by 2-zlib_error */
 #    if(__STDC__ == 1) && (defined(__LARGE__) || defined(__COMPACT__))
        /* Allow compilation with ANSI keywords only enabled */
        void _Cdecl farfree( void *block );
-       void *_Cdecl farmalloc( unsigned long nbytes );
+       void *_Cdecl farmalloc( unsigned int nbytes );
 #    else
 #      include <alloc.h>
 #    endif

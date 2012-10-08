@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -35,37 +35,41 @@ public:
   // (m_source_archive) containing the original defition.
   enum IDEF_UPDATE_TYPE
   {
-    static_def = 0,   // This instance definition is never updated.
-                      // If m_source_archive is set, it records the
-                      // origin of the instance definition geometry
-                      // and, but m_source_archive is never used
-                      // to update the instance definition
-    embedded_def = 1, // This instance definition geometry was
-                      // imported from another archive (m_source_archive)
-                      // and is embedded. If m_source_archive changes,
-                      // the user is asked if they want to update
-                      // the instance definition.
+    static_def = 0,
+    embedded_def = 1,
+      // As of 7 February, "static_def" and "embedded_def" 
+      // and shall be treated the same. Using "static_def"
+      // is prefered and "embedded_def" is obsolete.
+      // The geometry for the instance definition
+      // is saved in archives, is fixed and has no
+      // connection to a source archive.
+      // All source archive information should be
+      // empty strings and m_source_archive_checksum
+      // shoule be "zero".
     linked_and_embedded_def = 2,
-                      // This instance definition geometry was
-                      // imported from another archive (m_source_archive)
-                      // and is embedded. If m_source_archive changes,
-                      // the instance definition is automatically updated.
-                      // If m_source_archive is not available, the
-                      // instance definition is still valid.
-    linked_def = 3,   // This instance definition geometry was
-                      // imported from another archive (m_source_archive)
-                      // and is not embedded. If m_source_archive changes,
-                      // the instance definition is automatically updated.
-                      // If m_source_archive is not available, the
-                      // instance definition is not valid.
-                      // This does not save runtime memory.  It may
-                      // save a little disk space, but the definition
-                      // will be unavailable whenever the linked file
-                      // is unavailable. If the linked file is relatively
-                      // small, then using this feature is not reccomended.
+      // The geometry for the instance definition
+      // is saved in archives.  Complete source
+      // archive and checksum information will be 
+      // present. The document setting 
+      // ON_3dmIOSettings.m_idef_link_update 
+      // determines if, when and how the instance
+      // definition geometry is updated by reading the
+      // source archive.
+    linked_def = 3,   
+      // The geometry for this instance definition
+      // is not saved in the archive that contains
+      // this instance definition. This instance 
+      // definition geometry is imported from a
+      // "source archive" The "source archive" file
+      // name and checksum information are saved
+      // in m_source_archive and m_source_archive_checksum.
+      // If file named in m_source_archive is not available, 
+      // then this instance definition is not valid and any
+      // references to it are not valid.
     force_32bit_idef_update_type = 0xFFFFFFFF
   };
 
+  // Converts and integer into an IDEF_UPDATE_TYPE enum.
   static IDEF_UPDATE_TYPE IdefUpdateType(int i);
 
   // Bits that identify subsets of the instance defintion
@@ -79,8 +83,8 @@ public:
     idef_description_setting    =    2,  // m_description
     idef_url_setting            =    4,  // all m_url_* fields
     idef_units_setting          =    8,  // m_us and m_unit_scale
-    idef_source_archive_setting = 0x10,  // all m_source_* fields
-    idef_userdata_setting       = 0x20,  // all m_source_* fields
+    idef_source_archive_setting = 0x10,  // all m_source_*, layer style, update depth fields
+    idef_userdata_setting       = 0x20, 
     all_idef_settings           = 0xFFFFFFFF
   };
 
@@ -144,20 +148,41 @@ public:
     SetSource to specify the source archive.
   Parameters:
     source_archive - [in] name of source archive
-    checksum - [in] check sum used to detect changed
-    source_type - [in] See comments for ON_InstanceDefinition::IDEF_UPDATE_TYPE
+    checksum - [in] check sum used to detect changed.
+      Generally, you will pass ON_CheckSum::UnsetCheckSum
+      for this argument and Rhino will handle setting
+      the checksum to the appropriate value at the appropriate
+      time.
+    source_type - [in]
+      If source_archive and checksum are empty, then
+      source_type is ignored and static_def will be used.
+      If source_archive is a nonempty string and checksum
+      is set, then source_type must be either 
+      linked_and_embedded_def or linked_def.  If you
+      are changing the source archive of a valid idef,
+      then simply pass this->IdefUpdateType().
   Remarks:
-    In all cases, the complete instance definition geometry
-    is stored in the 3dm archive.  When an instance definition
-    is linked or embedded, applications can examine the source
-    archive settings and update the  definition when appropriate.
-    The checksum can be used to detect changed files.
+    See the IDEF_UPDATE_TYPE comments for more details.
   */
   void SetSourceArchive( 
         const wchar_t* source_archive, 
         ON_CheckSum checksum,
         IDEF_UPDATE_TYPE update_type
         );
+
+  /*
+  Description:
+    Destroys all source archive information.
+    Specifically:
+      * m_source_archive is set to the empty string.
+      * m_source_bRelativePath is set to false
+      * The alternative source archive path is set
+        to the empty string.
+      * m_source_archive_checksum.Zero() is used to
+        destroy all checksum information.
+      * m_idef_update_type is set to static_def.
+  */
+  void DestroySourceArchive();
 
   /*
   Returns:
@@ -298,7 +323,15 @@ public:
 
   ON_UnitSystem  m_us;
   
+  // Note: the embedded_def type is obsolete.
+  //  To avoid having to deal with this obsolete type in
+  //  your code, using ON_InstanceDefintion::IdefUpdateType()
+  //  to get this value.  The IdefUpdateType() function
+  //  with convert the obsolte value to the correct
+  //  value.
   IDEF_UPDATE_TYPE m_idef_update_type; 
+
+  IDEF_UPDATE_TYPE IdefUpdateType() const;
 
   int m_idef_update_depth; // Controls how much geometry is read when
                            // a linked idef is updated.
@@ -311,8 +344,15 @@ public:
                                  // a relative the location of the 3dm file
                                  // containing this instance definition.
 
+  // A static or linked_and_embedded idef must have m_layer_style = 0
+  // A linked idef must have m_layer_style = 1 or 2
+  //   0 = unset
+  //   1 = active (linked idef layers will be active)
+  //   2 = reference (linked idef layers will be reference)
+  unsigned char m_idef_layer_style;
+                               
 private:
-  unsigned char m_reserved2[3];
+  unsigned char m_reserved2[2];
 
 #if defined(ON_64BIT_POINTER)
 private:

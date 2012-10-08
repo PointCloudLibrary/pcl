@@ -3,10 +3,10 @@
  * For conditions of distribution and use, see copyright notice in zlib.h
  */
 
-#include <pcl/surface/3rdparty/opennurbs/zutil.h>
-#include <pcl/surface/3rdparty/opennurbs/inftrees.h>
-#include <pcl/surface/3rdparty/opennurbs/inflate.h>
-#include <pcl/surface/3rdparty/opennurbs/inffast.h>
+#include "pcl/surface/3rdparty/opennurbs/zutil.h"
+#include "pcl/surface/3rdparty/opennurbs/inftrees.h"
+#include "pcl/surface/3rdparty/opennurbs/inflate.h"
+#include "pcl/surface/3rdparty/opennurbs/inffast.h"
 
 #ifndef ASMINF
 
@@ -81,7 +81,7 @@ unsigned start;         /* inflate()'s starting value for strm->avail_out */
     unsigned whave;             /* valid bytes in the window */
     unsigned write;             /* window write index */
     unsigned char FAR *window;  /* allocated sliding window, if wsize != 0 */
-    unsigned long hold;         /* local strm->hold */
+    unsigned int hold;         /* local strm->hold */
     unsigned bits;              /* local strm->bits */
     code const FAR *lcode;      /* local strm->lencode */
     code const FAR *dcode;      /* local strm->distcode */
@@ -119,9 +119,9 @@ unsigned start;         /* inflate()'s starting value for strm->avail_out */
        input data or output space */
     do {
         if (bits < 15) {
-            hold += (unsigned long)(PUP(in)) << bits;
+            hold += (unsigned int)(PUP(in)) << bits;
             bits += 8;
-            hold += (unsigned long)(PUP(in)) << bits;
+            hold += (unsigned int)(PUP(in)) << bits;
             bits += 8;
         }
         this = lcode[hold & lmask];
@@ -141,7 +141,7 @@ unsigned start;         /* inflate()'s starting value for strm->avail_out */
             op &= 15;                           /* number of extra bits */
             if (op) {
                 if (bits < op) {
-                    hold += (unsigned long)(PUP(in)) << bits;
+                    hold += (unsigned int)(PUP(in)) << bits;
                     bits += 8;
                 }
                 len += (unsigned)hold & ((1U << op) - 1);
@@ -150,9 +150,9 @@ unsigned start;         /* inflate()'s starting value for strm->avail_out */
             }
             Tracevv((stderr, "inflate:         length %u\n", len));
             if (bits < 15) {
-                hold += (unsigned long)(PUP(in)) << bits;
+                hold += (unsigned int)(PUP(in)) << bits;
                 bits += 8;
-                hold += (unsigned long)(PUP(in)) << bits;
+                hold += (unsigned int)(PUP(in)) << bits;
                 bits += 8;
             }
             this = dcode[hold & dmask];
@@ -165,10 +165,10 @@ unsigned start;         /* inflate()'s starting value for strm->avail_out */
                 dist = (unsigned)(this.val);
                 op &= 15;                       /* number of extra bits */
                 if (bits < op) {
-                    hold += (unsigned long)(PUP(in)) << bits;
+                    hold += (unsigned int)(PUP(in)) << bits;
                     bits += 8;
                     if (bits < op) {
-                        hold += (unsigned long)(PUP(in)) << bits;
+                        hold += (unsigned int)(PUP(in)) << bits;
                         bits += 8;
                     }
                 }

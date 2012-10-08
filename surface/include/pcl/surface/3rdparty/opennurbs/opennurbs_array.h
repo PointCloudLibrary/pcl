@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -629,6 +629,30 @@ public:
   bool Translate(
         const ON_3dVector& delta
         );
+
+  /*
+  Description:
+    Get the index of the point in the array that is closest
+    to P.
+  Parameters:
+    P - [in]
+    closest_point_index - [out]
+    maximum_distance - [in] optional distance constraint.
+        If maximum_distance > 0, then only points Q with
+        |P-Q| <= maximum_distance are returned.
+  Returns:
+    True if a point is found; in which case *closest_point_index
+    is the index of the point.  False if no point is found
+    or the input is not valid.
+  See Also:
+    ON_GetClosestPointInPointList
+    ON_PointCloud::GetClosestPoint
+  */
+  bool GetClosestPoint( 
+          ON_3dPoint P,
+          int* closest_point_index,
+          double maximum_distance = 0.0
+          ) const;
 
 };
 
@@ -1720,6 +1744,7 @@ See Also:
   ON_CompareDecreasing
 */
 template< class T>
+static
 int ON_CompareIncreasing( const T* a, const T* b);
 
 /* 
@@ -1753,6 +1778,7 @@ See Also:
   ON_CompareIncreasing
 */
 template< class T>
+static
 int ON_CompareDecreasing( const T* a, const T* b);
 
 

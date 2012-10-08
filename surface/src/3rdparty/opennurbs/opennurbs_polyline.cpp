@@ -1,7 +1,7 @@
 /* $NoKeywords: $ */
 /*
 //
-// Copyright (c) 1993-2011 Robert McNeel & Associates. All rights reserved.
+// Copyright (c) 1993-2012 Robert McNeel & Associates. All rights reserved.
 // OpenNURBS, Rhinoceros, and Rhino3D are registered trademarks of Robert
 // McNeel & Associates.
 //
@@ -14,7 +14,7 @@
 ////////////////////////////////////////////////////////////////
 */
 
-#include <pcl/surface/3rdparty/opennurbs/opennurbs.h>
+#include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
 
 ON_Polyline::ON_Polyline()
 {
@@ -131,11 +131,14 @@ bool ON_Polyline::IsClosed( double tolerance ) const
         }
       }
     }
-    else {
-      if ( 0 == ON_ComparePoint(3,false,&m_a[0].x,&m_a[count].x) ) {
+    else
+    {
+      if ( ON_PointsAreCoincident(3,false,&m_a[0].x,&m_a[count].x) ) 
+      {
         for ( i = 1; i < count; i++ ) {
-          if (    ON_ComparePoint(3,false,&m_a[i].x,&m_a[0].x) 
-               && ON_ComparePoint(3,false,&m_a[i].x,&m_a[count].x) )
+          if (    !ON_PointsAreCoincident(3,false,&m_a[i].x,&m_a[0].x) 
+               && !ON_PointsAreCoincident(3,false,&m_a[i].x,&m_a[count].x) 
+             )
           {
             rc = true;
             break;
