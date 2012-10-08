@@ -223,7 +223,7 @@ NurbsTools::computeMean (const vector_vec2d &data)
 Eigen::Vector3d
 NurbsTools::computeVariance (const Eigen::Vector3d &mean, const vector_vec3d &data)
 {
-  Eigen::Vector3d var (0.0, 0.0);
+  Eigen::Vector3d var (0.0, 0.0, 0.0);
 
   size_t s = data.size ();
   double ds = 1.0 / s;

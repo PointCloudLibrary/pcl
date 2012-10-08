@@ -40,7 +40,7 @@
 
 #include <pcl/surface/on_nurbs/nurbs_data.h>
 
-#include <pcl/surface/openNURBS/opennurbs.h>
+#include <pcl/surface/3rdparty/opennurbs/opennurbs.h>
 
 #undef Success
 #include <Eigen/Dense>

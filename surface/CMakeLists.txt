@@ -38,7 +38,7 @@ if(build)
             include/pcl/${SUBSYS_NAME}/vtk_smoothing/vtk_mesh_smoothing_windowed_sinc.h)
 
         set(VTK_SMOOTHING_SOURCE 
-	    src/vtk_smoothing/vtk_utils.cpp
+            src/vtk_smoothing/vtk_utils.cpp
             src/vtk_smoothing/vtk_mesh_subdivision.cpp
             src/vtk_smoothing/vtk_mesh_smoothing_laplacian.cpp
             src/vtk_smoothing/vtk_mesh_smoothing_windowed_sinc.cpp)
@@ -47,7 +47,7 @@ if(build)
     
     SET(BUILD_surface_on_nurbs 0 CACHE BOOL "Fitting NURBS to point-clouds using openNURBS" )
     IF(BUILD_surface_on_nurbs)
-        include(src/openNURBS/openNURBS.cmake)
+        include(src/3rdparty/opennurbs/openNURBS.cmake)
         include(src/on_nurbs/on_nurbs.cmake) 
     ENDIF(BUILD_surface_on_nurbs)
 
@@ -165,7 +165,7 @@ if(build)
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${impl_incs})
 
     if(BUILD_surface_on_nurbs)
-      PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/openNURBS ${OPENNURBS_INCLUDES})
+      PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/3rdparty/opennurbs ${OPENNURBS_INCLUDES})
       PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/on_nurbs ${ON_NURBS_INCLUDES})
     endif(BUILD_surface_on_nurbs)
 

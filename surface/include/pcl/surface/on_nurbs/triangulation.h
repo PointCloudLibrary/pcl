@@ -40,7 +40,7 @@
 
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
-#include <pcl/surface/openNURBS/opennurbs.h>
+#include <pcl/surface/3rdparty/opennurbs/opennurbs.h>
 #include <pcl/PolygonMesh.h>
 
 #include <pcl/surface/on_nurbs/nurbs_data.h>
