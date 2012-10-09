@@ -3,9 +3,13 @@
 Detecting people and their poses using PointCloud Library
 ---------------------------------------------------------
 In this tutorial we will learn how detect a person and its pose in a pointcloud. 
-This is based on work from Koen Buys, Cedric Cagniart and Anatoly Bashkeev.
-This shows how to detect people with an Primesense device, the full version working on oni and pcd files can be found in trunk.
-The code assumes a organised and projectable pointcloud, and should work with other sensors then the Primesense device.
+This is based on work from Koen Buys, Cedric Cagniart, Anatoly Bashkeev and Caroline Pantofaru, this
+has been presented on ICRA2012 and IROS2012 and an official reference for a journal paper is in progress.
+
+This shows how to detect people with an Primesense device, the full version 
+working on oni and pcd files can be found in trunk.
+The code assumes a organised and projectable pointcloud, and should work with other 
+sensors then the Primesense device.
 
   .. image:: images/gpu/people/ss26_1.png
     :width: 400 pt
@@ -14,16 +18,14 @@ The code assumes a organised and projectable pointcloud, and should work with ot
     :width: 400 pt
     :height: 372 pt
 
-In order to run the code you'll need a decent Nvidia GPU with Fermi or Kepler architecture.
+In order to run the code you'll need a decent Nvidia GPU with Fermi or Kepler architecture, have a look
+at the GPU installation tutorial to get up and running with your GPU installation.
 
 The code
 --------
-The full version of this code can be found in PCL trunk/gpu/people/tools, the following is a reduced version for the tutorial.
-First, create a file, let's say, ``people_detect.cpp`` in your favorite editor, and place the following inside it:
-
-.. literalinclude:: sources/gpu/people_detect/src/people_detect.cpp
-   :language: cpp
-   :linenos:
+The full version of this code can be found in PCL trunk/gpu/people/tools, 
+the following is a reduced version for the tutorial.
+This version can be found in doc/tutorials/content/sources/gpu/people_detect.
 
 The explanation
 ---------------
