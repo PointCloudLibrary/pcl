@@ -122,7 +122,6 @@ EXCLUDE                = */.svn \
                          "@PCL_SOURCE_DIR@/android" \
                          "@PCL_SOURCE_DIR@/apps" \
                          "@PCL_SOURCE_DIR@/tools" \
-                         "@PCL_SOURCE_DIR@/gpu/people" \
                          "@PCL_SOURCE_DIR@/surface/include/pcl/surface/poisson" \
                          "@PCL_SOURCE_DIR@/surface/include/pcl/surface/impl/poisson" \
                          "@PCL_SOURCE_DIR@/surface/include/pcl/surface/on_nurbs" \
