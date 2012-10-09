@@ -1,6 +1,6 @@
 set(SUBSYS_NAME apps)
 set(SUBSYS_DESC "Application examples/samples that show how PCL works")
-set(SUBSYS_DEPS common geometry io filters sample_consensus segmentation visualization kdtree features surface octree registration keypoints tracking search recognition ml)
+set(SUBSYS_DEPS common geometry io filters sample_consensus segmentation visualization kdtree features surface octree registration keypoints tracking search recognition ml stereo)
 
 # Find VTK
 if(NOT VTK_FOUND)
@@ -79,6 +79,9 @@ if(build)
 
     PCL_ADD_EXECUTABLE(pcl_fs_face_detector ${SUBSYS_NAME} src/face_detection//filesystem_face_detection.cpp)
     target_link_libraries(pcl_fs_face_detector pcl_features pcl_recognition pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_surface pcl_keypoints pcl_ml pcl_search pcl_kdtree vtkRendering vtkIO)
+
+    PCL_ADD_EXECUTABLE(pcl_stereo_ground_segmentation ${SUBSYS_NAME} src/stereo_ground_segmentation.cpp)
+    target_link_libraries(pcl_stereo_ground_segmentation pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_features pcl_stereo)
 
     if (OPENNI_FOUND AND BUILD_OPENNI)
 
