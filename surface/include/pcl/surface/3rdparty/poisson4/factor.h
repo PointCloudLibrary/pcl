@@ -29,7 +29,7 @@ DAMAGE.
 #ifndef FACTOR_INCLUDED
 #define FACTOR_INCLUDED
 
-#include <pcl/pcl_config.h>
+#include <pcl/pcl_exports.h>
 
 #define PI 3.1415926535897932384
 #define SQRT_3 1.7320508075688772935
