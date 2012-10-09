@@ -1,6 +1,6 @@
 set(SUBSYS_NAME examples)
 set(SUBSYS_DESC "PCL examples")
-set(SUBSYS_DEPS common io features search kdtree octree filters keypoints segmentation sample_consensus)
+set(SUBSYS_DEPS common io features search kdtree octree filters keypoints segmentation sample_consensus outofcore)
 
 set(DEFAULT TRUE)
 set(REASON)
