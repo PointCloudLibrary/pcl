@@ -165,6 +165,7 @@ if(build)
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${impl_incs})
 
     if(BUILD_surface_on_nurbs)
+      add_definitions(-DUNICODE -D_UNICODE)
       PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/3rdparty/opennurbs ${OPENNURBS_INCLUDES})
       PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/on_nurbs ${ON_NURBS_INCLUDES})
     endif(BUILD_surface_on_nurbs)
