@@ -29,6 +29,12 @@ DAMAGE.
 #include "octree_poisson.h"
 #include "mat.h"
 
+#if defined WIN32 || defined _WIN32
+  #include <intrin.h>
+  #include <hash_map>
+#endif
+
+
 #define ITERATION_POWER 1.0/3
 #define MEMORY_ALLOCATOR_BLOCK_SIZE 1<<12
 #define SPLAT_ORDER 2
@@ -49,6 +55,26 @@ namespace pcl
     const Real EPSILON=Real(1e-6);
     const Real ROUND_EPS=Real(1e-5);
 
+#if defined WIN32 
+    using stdext::hash_map;
+#else
+    using std::hash_map;
+#endif
+
+
+    void atomicOr(volatile int& dest, int value)
+    {
+#ifdef WIN32
+    #if defined (_M_IX86)
+      _InterlockedOr( (long volatile*)&dest, value );
+    #else
+      InterlockedOr( (long volatile*)&dest , value );
+    #endif
+#else // !WIN32
+    #pragma omp atomic
+      dest |= value;
+#endif // WIN32
+    }
 
 
     /////////////////////
@@ -2511,7 +2537,7 @@ namespace pcl
       delete[] rootData.edgesSet ; rootData.edgesSet = NULL;
       coarseRootData.interiorRoots = NULL;
       coarseRootData.boundaryValues = rootData.boundaryValues;
-      for( std::hash_map< long long , int >::iterator iter=rootData.boundaryRoots.begin() ; iter!=rootData.boundaryRoots.end() ; iter++ )
+      for( poisson::hash_map< long long , int >::iterator iter=rootData.boundaryRoots.begin() ; iter!=rootData.boundaryRoots.end() ; iter++ )
         coarseRootData.boundaryRoots[iter->first] = iter->second;
 
       for( int d=sDepth ; d>=0 ; d-- )
@@ -2802,26 +2828,17 @@ namespace pcl
       {
         TreeOctNode* parent = leaf->parent;
         int c = int( leaf - leaf->parent->children );
-        int mcid = leaf->nodeData.mcIndex & (1<<MarchingCubes::cornerMap[c]);
+        int mcid = leaf->nodeData.mcIndex & (1<<MarchingCubes::cornerMap()[c]);
 
         if( mcid )
         {
-#ifdef WIN32
-          InterlockedOr( (volatile unsigned long long*)&(parent->nodeData.mcIndex) , mcid );
-#else // !WIN32
-#pragma omp atomic
-          parent->nodeData.mcIndex |= mcid;
-#endif // WIN32
+          poisson::atomicOr(parent->nodeData.mcIndex, mcid);
+
           while( 1 )
           {
             if( parent->parent && parent->parent->d>=_minDepth && (parent-parent->parent->children)==c )
             {
-#ifdef WIN32
-              InterlockedOr( (volatile unsigned long long*)&(parent->parent->nodeData.mcIndex) , mcid );
-#else // !WIN32
-#pragma omp atomic
-              parent->parent->nodeData.mcIndex |= mcid;
-#endif // WIN32
+              poisson::atomicOr(parent->parent->nodeData.mcIndex, mcid);
               parent = parent->parent;
             }
             else break;
@@ -3167,7 +3184,7 @@ namespace pcl
       }
       else
       {
-        if( !(MarchingCubes::edgeMask[finest->nodeData.mcIndex] & (1<<finestIndex)) )
+        if( !(MarchingCubes::edgeMask()[finest->nodeData.mcIndex] & (1<<finestIndex)) )
         {
           fprintf( stderr , "[WARNING] Finest node does not have iso-edge\n" );
           return 0;
@@ -3209,7 +3226,7 @@ namespace pcl
 
 
       // The assumption is that the super-edge has a root along it.
-      if(!(MarchingCubes::edgeMask[node->nodeData.mcIndex] & (1<<edgeIndex))){return 0;}
+      if(!(MarchingCubes::edgeMask()[node->nodeData.mcIndex] & (1<<edgeIndex))){return 0;}
 
       Cube::FacesAdjacentToEdge(edgeIndex,f1,f2);
 
@@ -3337,7 +3354,7 @@ namespace pcl
           key = ri.key;
           if( !rootData.interiorRoots || IsBoundaryEdge( node , i , j , k , sDepth ) )
           {
-            std::hash_map< long long , int >::iterator iter , end;
+            poisson::hash_map< long long , int >::iterator iter , end;
             // Check if the root has already been set
 #pragma omp critical (boundary_roots_hash_access)
             {

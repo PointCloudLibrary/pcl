@@ -38,10 +38,10 @@ namespace pcl
   namespace poisson
   {
 
-    class Square
+    class PCL_EXPORTS Square
     {
       public:
-        const static unsigned int CORNERS=4,EDGES=4,NEIGHBORS=4;
+        enum {  CORNERS=4,EDGES=4,NEIGHBORS=4 };
         static int  CornerIndex			(int x,int y);
         static int  AntipodalCornerIndex(int idx);
         static void FactorCornerIndex	(int idx,int& x,int& y);
@@ -54,10 +54,10 @@ namespace pcl
         static void EdgeCorners(int idx,int& c1,int &c2);
     };
 
-    class Cube
+    class PCL_EXPORTS Cube
     {
       public:
-        const static unsigned int CORNERS=8,EDGES=12,NEIGHBORS=6;
+        enum { CORNERS=8,EDGES=12,NEIGHBORS=6 };
 
         static int  CornerIndex			(int x,int y,int z);
         static void FactorCornerIndex	(int idx,int& x,int& y,int& z);
@@ -87,10 +87,10 @@ namespace pcl
         static double Interpolate(double v1,double v2);
         static void SetVertex(int e,const double values[Square::CORNERS],double iso);
       public:
-        const static unsigned int MAX_EDGES=2;
-        static const int edgeMask[1<<Square::CORNERS];
-        static const int edges[1<<Square::CORNERS][2*MAX_EDGES+1];
-        static double vertexList[Square::EDGES][2];
+        enum { MAX_EDGES=2 };
+        static const int* edgeMask();
+        static const int edges(int i, int j);
+        static double& vertexList(int i, int j);
 
         static int GetIndex(const double values[Square::CORNERS],double iso);
         static int IsAmbiguous(const double v[Square::CORNERS],double isoValue);
@@ -110,11 +110,11 @@ namespace pcl
       public:
         static double Interpolate(double v1,double v2);
         static float Interpolate(float v1,float v2);
-        const static unsigned int MAX_TRIANGLES=5;
-        static const int edgeMask[1<<Cube::CORNERS];
-        static const int triangles[1<<Cube::CORNERS][3*MAX_TRIANGLES+1];
-        static const int cornerMap[Cube::CORNERS];
-        static double vertexList[Cube::EDGES][3];
+        enum { MAX_TRIANGLES=5 };
+        static const int* edgeMask();
+        static const int triangles(int i, int j);
+        static const int* cornerMap();
+        static double& vertexList(int i, int j);
 
         static int AddTriangleIndices(int mcIndex,int* triangles);
 
