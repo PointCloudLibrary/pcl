@@ -46,9 +46,9 @@ VisualizeCurve (ON_NurbsCurve &curve, double r, double g, double b, bool show_cp
       curve.GetCV (i, cp);
 
       pcl::PointXYZ p;
-      p.x = cp.x;
-      p.y = cp.y;
-      p.z = cp.z;
+      p.x = float (cp.x);
+      p.y = float (cp.y);
+      p.z = float (cp.z);
       cps->push_back (p);
     }
     pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> handler (cps, 255 * r, 255 * g, 255 * b);

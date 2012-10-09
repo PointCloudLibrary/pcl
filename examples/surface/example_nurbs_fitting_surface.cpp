@@ -55,7 +55,7 @@ main (int argc, char *argv[])
   PointCloud2Vector3d (cloud, data.interior);
   pcl::visualization::PointCloudColorHandlerCustom<Point> handler (cloud, 0, 255, 0);
   viewer.addPointCloud<Point> (cloud, handler, "cloud_cylinder");
-  printf ("  %d points in data set\n", cloud->size ());
+  printf ("  %zu points in data set\n", cloud->size ());
 
   // ############################################################################
   // fit NURBS surface
