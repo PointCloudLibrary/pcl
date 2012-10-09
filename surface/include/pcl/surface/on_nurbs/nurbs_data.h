@@ -129,6 +129,7 @@ namespace pcl
         common_boundary_param.clear ();
       }
 
+      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     };
 
     /** \brief Data structure for 3D NURBS curve fitting
@@ -157,6 +158,7 @@ namespace pcl
         interior_normals.clear ();
       }
 
+      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     };
 
     /** \brief Data structure for 2D NURBS curve fitting
@@ -202,6 +204,7 @@ namespace pcl
         interior_normals.clear ();
       }
 
+      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     };
 
   }

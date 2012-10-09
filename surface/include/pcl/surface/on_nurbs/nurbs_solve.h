@@ -52,74 +52,76 @@ namespace pcl
      * (can be defined in on_nurbs.cmake)*/
     class NurbsSolve
     {
-    public:
-      /** \brief Empty constructor */
-      NurbsSolve () :
-        m_quiet (true)
-      {
-      }
+      public:
+        /** \brief Empty constructor */
+        NurbsSolve () :
+          m_quiet (true)
+        {
+        }
 
-      /** \brief Assign size and dimension (2D, 3D) of system of equations. */
-      void
-      assign (unsigned rows, unsigned cols, unsigned dims);
+        /** \brief Assign size and dimension (2D, 3D) of system of equations. */
+        void
+        assign (unsigned rows, unsigned cols, unsigned dims);
 
-      /** \brief Set value for system matrix K (stiffness matrix, basis functions) */
-      void
-      K (unsigned i, unsigned j, double v);
-      /** \brief Set value for state vector x (control points) */
-      void
-      x (unsigned i, unsigned j, double v);
-      /** \brief Set value for target vector f (force vector) */
-      void
-      f (unsigned i, unsigned j, double v);
+        /** \brief Set value for system matrix K (stiffness matrix, basis functions) */
+        void
+        K (unsigned i, unsigned j, double v);
+        /** \brief Set value for state vector x (control points) */
+        void
+        x (unsigned i, unsigned j, double v);
+        /** \brief Set value for target vector f (force vector) */
+        void
+        f (unsigned i, unsigned j, double v);
 
-      /** \brief Get value for system matrix K (stiffness matrix, basis functions) */
-      double
-      K (unsigned i, unsigned j);
-      /** \brief Get value for state vector x (control points) */
-      double
-      x (unsigned i, unsigned j);
-      /** \brief Get value for target vector f (force vector) */
-      double
-      f (unsigned i, unsigned j);
+        /** \brief Get value for system matrix K (stiffness matrix, basis functions) */
+        double
+        K (unsigned i, unsigned j);
+        /** \brief Get value for state vector x (control points) */
+        double
+        x (unsigned i, unsigned j);
+        /** \brief Get value for target vector f (force vector) */
+        double
+        f (unsigned i, unsigned j);
 
-      /** \brief Resize target vector f (force vector) */
-      void
-      resizeF (unsigned rows);
+        /** \brief Resize target vector f (force vector) */
+        void
+        resizeF (unsigned rows);
 
-      /** \brief Print system matrix K (stiffness matrix, basis functions) */
-      void
-      printK ();
-      /** \brief Print state vector x (control points) */
-      void
-      printX ();
-      /** \brief Print target vector f (force vector) */
-      void
-      printF ();
+        /** \brief Print system matrix K (stiffness matrix, basis functions) */
+        void
+        printK ();
+        /** \brief Print state vector x (control points) */
+        void
+        printX ();
+        /** \brief Print target vector f (force vector) */
+        void
+        printF ();
 
-      /** \brief Solves the system of equations with respect to x.
-       *  - Using UmfPack incredibly speeds up this function.      */
-      bool
-      solve ();
+        /** \brief Solves the system of equations with respect to x.
+         *  - Using UmfPack incredibly speeds up this function.      */
+        bool
+        solve ();
 
-      /** \brief Compute the difference between solution K*x and target f */
-      Eigen::MatrixXd
-      diff ();
+        /** \brief Compute the difference between solution K*x and target f */
+        Eigen::MatrixXd
+        diff ();
 
-      /** \brief Enable/Disable debug outputs in console. */
-      inline void
-      setQuiet (bool val)
-      {
-        m_quiet = val;
-      }
+        /** \brief Enable/Disable debug outputs in console. */
+        inline void
+        setQuiet (bool val)
+        {
+          m_quiet = val;
+        }
 
-    private:
-      bool m_quiet;
-      SparseMat m_Ksparse;
-      Eigen::MatrixXd m_Keig;
-      Eigen::MatrixXd m_xeig;
-      Eigen::MatrixXd m_feig;
+      private:
+        bool m_quiet;
+        SparseMat m_Ksparse;
+        Eigen::MatrixXd m_Keig;
+        Eigen::MatrixXd m_xeig;
+        Eigen::MatrixXd m_feig;
 
+      public:
+        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     };
 
   }
