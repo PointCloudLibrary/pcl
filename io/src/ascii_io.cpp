@@ -40,6 +40,7 @@
 #include <fstream>
 #include <boost/filesystem.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/cstdint.hpp>
 
 //////////////////////////////////////////////////////////////////////////////
 pcl::ASCIIReader::ASCIIReader ()
@@ -145,7 +146,7 @@ pcl::ASCIIReader::read (
 
   int total=0;
 
-  uint8_t* data = cloud.data.data ();
+  uint8_t* data = &cloud.data[0];
   while (std::getline (ifile, line))
   {
     boost::algorithm::trim (line);
@@ -164,7 +165,7 @@ pcl::ASCIIReader::read (
      for (int i = 0; i < fields_.size (); i++) 
        offset += parse (tokens[i], fields_[i], data + offset);
    }
-   catch (std::exception& e)
+   catch (std::exception& /*e*/)
    {
      continue;
    }
@@ -243,7 +244,7 @@ pcl::ASCIIReader::parse (
 }
 
 //////////////////////////////////////////////////////////////////////////////
-uint32_t
+boost::uint32_t
 pcl::ASCIIReader::typeSize (int type)
 {
   switch (type)
