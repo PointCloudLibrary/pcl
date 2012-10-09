@@ -309,7 +309,7 @@ namespace pcl
         return edgeMask_local;
     }
     
-  const int MarchingSquares::edges(int i, int j)
+  int MarchingSquares::edges(int i, int j)
   {
     const static int edges_local[1<<Square::CORNERS][MAX_EDGES*2+1] = 
     {
@@ -452,7 +452,7 @@ const int* MarchingCubes::edgeMask()
     return edgeMast_local;
 }
 
-const int MarchingCubes::triangles(int i, int j)
+int MarchingCubes::triangles(int i, int j)
 {
     static const int triangles_local[1<<Cube::CORNERS][MAX_TRIANGLES*3+1] = {
     {  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1},

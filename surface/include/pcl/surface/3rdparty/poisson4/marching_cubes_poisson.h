@@ -89,7 +89,7 @@ namespace pcl
       public:
         enum { MAX_EDGES=2 };
         static const int* edgeMask();
-        static const int edges(int i, int j);
+        static int edges(int i, int j);
         static double& vertexList(int i, int j);
 
         static int GetIndex(const double values[Square::CORNERS],double iso);
@@ -112,7 +112,7 @@ namespace pcl
         static float Interpolate(float v1,float v2);
         enum { MAX_TRIANGLES=5 };
         static const int* edgeMask();
-        static const int triangles(int i, int j);
+        static int triangles(int i, int j);
         static const int* cornerMap();
         static double& vertexList(int i, int j);
 
