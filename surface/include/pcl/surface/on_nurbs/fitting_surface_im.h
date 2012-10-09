@@ -116,7 +116,7 @@ namespace pcl
 
     public:
       void
-      initSurface (int order, Eigen::Vector4d bb);
+      initSurface (int order, const Eigen::Vector4d &bb);
 
       void
       assemble (bool inverse_mapping = false);

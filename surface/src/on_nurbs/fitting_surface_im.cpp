@@ -202,7 +202,7 @@ FittingSurfaceIM::refine ()
 //}
 
 void
-FittingSurfaceIM::initSurface (int order, Eigen::Vector4d bb)
+FittingSurfaceIM::initSurface (int order, const Eigen::Vector4d &bb)
 {
   m_cps_px.clear ();
 
