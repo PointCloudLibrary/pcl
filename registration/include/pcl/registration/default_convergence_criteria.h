@@ -90,8 +90,23 @@ namespace pcl
           , translation_threshold_ (3e-4 * 3e-4)  // 0.0003 meters
           , mse_threshold_relative_ (0.00001)     // 0.001% of the previous MSE (relative error)
           , mse_threshold_absolute_ (1e-12)       // MSE (absolute error)
+          , iterations_similar_transforms_ (0)
+          , max_iterations_similar_transforms_ (0)
         {
         }
+
+        /** \brief Set the maximum number of iterations that the internal rotation, 
+          * translation, and MSE differences are allowed to be similar. 
+          * \param[in] nr_iterations the maximum number of iterations 
+          */
+        inline void
+        setMaximumIterationsSimilarTransforms (const int nr_iterations) { max_iterations_similar_transforms_ = nr_iterations; }
+
+        /** \brief Get the maximum number of iterations that the internal rotation, 
+          * translation, and MSE differences are allowed to be similar, as set by the user.
+          */
+        inline int
+        getMaximumIterationsSimilarTransforms () const { return (max_iterations_similar_transforms_); }
 
         /** \brief Set the maximum number of iterations the internal optimization should run for.
           * \param[in] nr_iterations the maximum number of iterations the internal optimization should run for
@@ -107,11 +122,11 @@ namespace pcl
           * \param[in] failure_after_max_iter If true, the registration fails. If false, the registration is assumed to have converged.
           */
         inline void
-        setFailureAfterMaximumIterations (const bool failure_after_max_iter) {failure_after_max_iter_ = failure_after_max_iter;}
+        setFailureAfterMaximumIterations (const bool failure_after_max_iter) { failure_after_max_iter_ = failure_after_max_iter; }
 
         /** \brief Get whether the registration will fail or converge when the maximum number of iterations is reached. */
         inline bool
-        getFailureAfterMaximumIterations () const {return (failure_after_max_iter_);}
+        getFailureAfterMaximumIterations () const { return (failure_after_max_iter_); }
 
         /** \brief Set the rotation threshold cosine angle (maximum allowable difference between two consecutive transformations) in order for an optimization to be considered as having converged to the final solution.
           * \param[in] threshold the rotation threshold in order for an optimization to be considered as having converged to the final solution.
@@ -190,7 +205,7 @@ namespace pcl
         /** \brief The MSE for the current set of correspondences. */
         double correspondences_cur_mse_;
 
-        /** \brief The maximum number of iterations that the registration loop is to be executed. */
+        /** \brief The maximum nuyyGmber of iterations that the registration loop is to be executed. */
         int max_iterations_;
 
         /** \brief Specifies if the registration fails or converges when the maximum number of iterations is reached. */
@@ -207,6 +222,14 @@ namespace pcl
 
         /** \brief The absolute change from the previous MSE for the current set of correspondences. */
         double mse_threshold_absolute_;
+
+        /** \brief Internal counter for the number of iterations that the internal 
+          * rotation, translation, and MSE differences are allowed to be similar. */
+        int iterations_similar_transforms_;
+
+        /** \brief The maximum number of iterations that the internal rotation, 
+          * translation, and MSE differences are allowed to be similar. */
+        int max_iterations_similar_transforms_;
 
       public:
         EIGEN_MAKE_ALIGNED_OPERATOR_NEW

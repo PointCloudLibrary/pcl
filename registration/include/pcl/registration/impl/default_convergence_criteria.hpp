@@ -60,7 +60,19 @@ pcl::registration::DefaultConvergenceCriteria<Scalar>::hasConverged ()
   PCL_DEBUG ("[pcl::DefaultConvergenceCriteria::hasConverged] Current transformation gave %f rotation (cosine) and %f translation.\n", cos_angle, translation_sqr);
 
   if (cos_angle >= rotation_threshold_ && translation_sqr <= translation_threshold_)
-    return (true);
+  {
+    if (iterations_similar_transforms_ < max_iterations_similar_transforms_)
+    {
+      // Increment the number of transforms that the thresholds are allowed to be similar
+      ++iterations_similar_transforms_;
+      return (false);
+    }
+    else
+    {
+      iterations_similar_transforms_ = 0;
+      return (true);
+    }
+  }
 
   correspondences_cur_mse_ = calculateMSE (correspondences_);
   PCL_DEBUG ("[pcl::DefaultConvergenceCriteria::hasConverged] Previous / Current MSE for correspondences distances is: %f / %f.\n", correspondences_prev_mse_, correspondences_cur_mse_);
@@ -68,9 +80,22 @@ pcl::registration::DefaultConvergenceCriteria<Scalar>::hasConverged ()
   // 3. The relative sum of Euclidean squared errors is smaller than a user defined threshold
   if (fabs (correspondences_cur_mse_ - correspondences_prev_mse_) < mse_threshold_absolute_ ||
       fabs (correspondences_cur_mse_ - correspondences_prev_mse_) / correspondences_prev_mse_ < mse_threshold_relative_)
-    return (true);
+  {
+    if (iterations_similar_transforms_ < max_iterations_similar_transforms_)
+    {
+      // Increment the number of transforms that the thresholds are allowed to be similar
+      ++iterations_similar_transforms_;
+      return (false);
+    }
+    else
+    {
+      iterations_similar_transforms_ = 0;
+      return (true);
+    }
+  }
 
   correspondences_prev_mse_ = correspondences_cur_mse_;
+
   return (false);
 }
 
