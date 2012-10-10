@@ -17,7 +17,9 @@
 #if !defined(ON_TEXTLOG_INC_)
 #define ON_TEXTLOG_INC_
 
-class ON_CLASS ON_TextLog
+#include <pcl/pcl_exports.h>
+
+class PCL_EXPORTS ON_CLASS ON_TextLog
 {
 public:
   /*
