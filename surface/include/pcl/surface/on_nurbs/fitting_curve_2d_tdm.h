@@ -38,6 +38,7 @@
 #ifndef NURBS_FITTING_CURVE_2D_TDM_H
 #define NURBS_FITTING_CURVE_2D_TDM_H
 
+#include <pcl/pcl_exports.h>
 #include <pcl/surface/on_nurbs/nurbs_tools.h>
 #include <pcl/surface/on_nurbs/nurbs_data.h>
 #include <pcl/surface/on_nurbs/nurbs_solve.h>
@@ -49,54 +50,59 @@ namespace pcl
   {
 
     /** \brief Fitting a 2D B-Spline curve to 2D point-clouds using tangent-distance-minimization
-     *  and optionally asymmetric-distance-minimization
-     *  Based on paper: TODO
-     * \author Thomas Mörwald
-     * \ingroup surface     */
-    class FittingCurve2dTDM : public FittingCurve2dPDM
+      *  and optionally asymmetric-distance-minimization
+      *  Based on paper: TODO
+      * \author Thomas Mörwald
+      * \ingroup surface
+      */
+    class PCL_EXPORTS FittingCurve2dTDM : public FittingCurve2dPDM
     {
-    public:
+      public:
 
-      /** \brief Constructor initializing B-Spline curve using initNurbsCurve2D(...).
-       * \param[in] order the polynomial order of the B-Spline curve.
-       * \param[in] data pointer to the 2D point-cloud data to be fit.        */
-      FittingCurve2dTDM (int order, NurbsDataCurve2d *data);
+        /** \brief Constructor initializing B-Spline curve using initNurbsCurve2D(...).
+          * \param[in] order the polynomial order of the B-Spline curve.
+          * \param[in] data pointer to the 2D point-cloud data to be fit.
+          */
+        FittingCurve2dTDM (int order, NurbsDataCurve2d *data);
 
-      /** \brief Constructor initializing with the B-Spline curve given in argument 2.
-       * \param[in] data pointer to the 2D point-cloud data to be fit.
-       * \param[in] nc B-Spline curve used for fitting.        */
-      FittingCurve2dTDM (NurbsDataCurve2d *data, const ON_NurbsCurve &nc);
+        /** \brief Constructor initializing with the B-Spline curve given in argument 2.
+          * \param[in] data pointer to the 2D point-cloud data to be fit.
+          * \param[in] nc B-Spline curve used for fitting.
+          */
+        FittingCurve2dTDM (NurbsDataCurve2d *data, const ON_NurbsCurve &nc);
 
-      /** \brief Assemble the system of equations for fitting
-       * - for large point-clouds this is time consuming.
-       * - should be done once before refinement to initialize the starting points for point inversion. */
-      void
-      assemble (const FittingCurve2dPDM::Parameter &parameter);
+        /** \brief Assemble the system of equations for fitting
+          * - for large point-clouds this is time consuming.
+          * - should be done once before refinement to initialize the starting points for point inversion. 
+          */
+        void
+        assemble (const FittingCurve2dPDM::Parameter &parameter);
 
-      /** \brief Solve system of equations using Eigen or UmfPack (can be defined in on_nurbs.cmake),
-       *  and updates B-Spline curve if a solution can be obtained. */
-      virtual double
-      solve (double damp = 1.0);
+        /** \brief Solve system of equations using Eigen or UmfPack (can be defined in on_nurbs.cmake),
+          *  and updates B-Spline curve if a solution can be obtained. 
+          */
+        virtual double
+        solve (double damp = 1.0);
 
-      /** \brief Update curve according to the current system of equations.
-       *  \param[in] damp damping factor from one iteration to the other. */
-      virtual double
-      updateCurve (double damp);
+        /** \brief Update curve according to the current system of equations.
+          * \param[in] damp damping factor from one iteration to the other.
+          */
+        virtual double
+        updateCurve (double damp);
 
-    protected:
-      /** \brief Add minimization constraint: point-to-surface distance (tangent-distance-minimization). */
-      virtual void
-      addPointConstraint (const double &param, const Eigen::Vector2d &point, const Eigen::Vector2d &normal,
-                          double weight, unsigned &row);
+      protected:
+        /** \brief Add minimization constraint: point-to-surface distance (tangent-distance-minimization). */
+        virtual void
+        addPointConstraint (const double &param, const Eigen::Vector2d &point, const Eigen::Vector2d &normal,
+                            double weight, unsigned &row);
 
-      /** \brief Add minimization constraint: smoothness by control point regularisation. */
-      virtual void
-      addCageRegularisation (double weight, unsigned &row);
+        /** \brief Add minimization constraint: smoothness by control point regularisation. */
+        virtual void
+        addCageRegularisation (double weight, unsigned &row);
 
-      /** \brief Assemble point-to-surface constraints. */
-      virtual void
-      assembleInterior (double wInt, double rScale, unsigned &row);
-
+        /** \brief Assemble point-to-surface constraints. */
+        virtual void
+        assembleInterior (double wInt, double rScale, unsigned &row);
     };
   }
 }
