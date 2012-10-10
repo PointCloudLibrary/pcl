@@ -1,0 +1,23 @@
+# ignore executables
+*.ex
+
+# ignore binary/compiled files
+*.[oa]
+
+# ignore temporary files
+*~
+.DS_Store
+
+# ignore vim files
+.*.swp
+
+# ignore output text files
+testlog.txt
+res_*.txt
+
+# Release files
+release_*
+release_*/*
+NE10_*.tgz
+docs/*
+doc/*

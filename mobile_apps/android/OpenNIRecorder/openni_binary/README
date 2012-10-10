@@ -1,0 +1,27 @@
+IMPORTANT: This step is required to enable the OpenNI support.
+
+run ./build_openni_script.sh 
+
+this will create a new directory at ../../openni_drivers 
+
+the binary will be created automatically
+
+then run on the terminal
+
+#adb shell
+#mkdir /data/ni
+#mount -o remount rw /system
+
+Lastly, we do 
+
+sh push_lib.sh 
+
+to push the .so to the device. 
+
+After that we shall run to mount the usbfs (this is required*** after every reboot).
+
+mount -o devmode=0666 -t usbfs none /proc/bus/usb
+
+
+
+-ray (june 28,2012)

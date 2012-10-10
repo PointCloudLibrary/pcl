@@ -1,0 +1,100 @@
+    /*
+     *  Copyright 2011-12 ARM Limited
+     *
+     *  Licensed under the Apache License, Version 2.0 (the "License");
+     *  you may not use this file except in compliance with the License.
+     *  You may obtain a copy of the License at
+     *
+     *      http://www.apache.org/licenses/LICENSE-2.0
+     *
+     *  Unless required by applicable law or agreed to in writing, software
+     *  distributed under the License is distributed on an "AS IS" BASIS,
+     *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     *  See the License for the specific language governing permissions and
+     *  limitations under the License.
+     */
+
+
+#Contents
+
+#NE10 Usage
+##Using NE10
+
+#NE10 Usage
+
+This file explains use of NE10 library.
+
+#Contents
+##Using NE10
+###General Notes
+###C Bindings
+###Future Bindings
+
+#Using NE10
+
+NE10 is implemented in a mix of C, intrinsics and assembler, however all
+functions are exposed as C.  It can be used as a shared or static library and
+individual functions can be safely excluded from a build to reduce final
+binary size.
+
+##General Notes
+
+The type checking is relaxed, to enable compatiblity with any pre-existing or
+prevailing system of types a project might have.  The debug version of the
+library will check the ranges passed in a call conform to the API limitations.
+The production version avoids these checks for performance reasons.
+
+It is assumed that the ranges of input arrays to be processed do not overlap.
+Clean handling of overlapping arrays is not designed for or tested.  It is
+possible for source and destination pointers to be the same, or for you to pass
+in pointers inside the same array *as long as the regions indicated by
+pointer+length do not overlap*.  Incorrect usage will typically result in an assert
+in debug builds and variable and inaccurate results in production builds.
+
+##C Bindings
+
+The C bindings (available in inc/NE10.h) aim for a balance between simple to
+use and efficient from a execution perspective.  They are intended to be usable
+in C and C++ code, or in theory, in any other language with a well constructed
+mechanism for calling out to C code.
+
+The calls themselves are listed in inc/NE10.h, however depending on your
+circumstances - for example knowing that you are only going to be executing
+code on platforms with NEON available, then you could use the inc/NE10_neon.h
+include file and access those functions directly.
+
+Usage of all the functions is generally consistent, and function specific
+differences documented in the header, but here is an example as a taste:
+
+    arm_vec3f_t *destination;
+    arm_vec3f_t *source1;
+    arm_vec3f_t *source2;
+    int feedback;
+
+    /* Fill your arrays with interesting vector data.. */
+      ...
+    
+    /* Normalize the vectors in source1, returning the result in place */
+    feedback = normalize_vec3f(source1, source1);
+    if (feedback = <check error code>) {
+	   printf("Bad Thing happened normalizing!\n");
+	}
+	/* Multiply source1 by source2, returning the result in destination */
+	feedback = mul_vec3f(destination, source1, source2);
+    if (feedback = <check error code>) {
+	   printf("Bad Thing happened multiplying!\n");
+	}
+
+While the functions all return an integer value to indicate success or failure,
+in practice almost none of the functions currently implemented can 'fail' in that
+way, however future functions may. This is to allow for a more consistent interface
+across the API in the future.
+
+##Future Bindings
+
+We hope to to add C++ bindings at a later date, based on feedback on the most
+appropriate way to provide that sort of API.  Other languages will be
+considered, however the priority will be to improve the scope and performance
+of functions provided under the existing bindings.
+
+

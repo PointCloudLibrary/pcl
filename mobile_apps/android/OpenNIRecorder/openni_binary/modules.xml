@@ -1,0 +1,7 @@
+<Modules>
+ <Module path="/system/lib/libnimMockNodes.so" />
+ <Module path="/system/lib/libnimCodecs.so" />
+ <Module path="/system/lib/libnimRecorder.so" />
+ <Module path="/system/lib/libXnDeviceSensorV2.so" configDir="/data/ni/" />
+ <Module path="/system/lib/libXnDeviceFile.so" configDir="/data/ni/" />
+</Modules>
