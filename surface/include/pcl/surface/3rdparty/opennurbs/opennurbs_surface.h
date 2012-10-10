@@ -23,6 +23,8 @@
 #if !defined(OPENNURBS_SURFACE_INC_)
 #define OPENNURBS_SURFACE_INC_
 
+#include <pcl/pcl_exports.h>
+
 class ON_Curve;
 class ON_NurbsSurface;
 class ON_SurfaceTree;
@@ -39,7 +41,7 @@ class ON_PolyCurve;
 class ON_CurveProxy;
 class ON_Surface;
 
-class ON_CLASS ON_Surface : public ON_Geometry
+class PCL_EXPORTS ON_CLASS ON_Surface : public ON_Geometry
 {
   ON_OBJECT_DECLARE(ON_Surface);
 
