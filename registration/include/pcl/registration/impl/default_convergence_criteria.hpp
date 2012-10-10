@@ -47,10 +47,21 @@
 template <typename Scalar> bool
 pcl::registration::DefaultConvergenceCriteria<Scalar>::hasConverged ()
 {
+  convergence_state_ = CONVERGENCE_CRITERIA_NOT_CONVERGED;
+
   PCL_DEBUG ("[pcl::DefaultConvergenceCriteria::hasConverged] Iteration %d out of %d.\n", iterations_, max_iterations_);
   // 1. Number of iterations has reached the maximum user imposed number of iterations
   if (iterations_ >= max_iterations_)
+  {
+    if (failure_after_max_iter_)
+      return (false);
+    else
+    {
+      convergence_state_ = CONVERGENCE_CRITERIA_ITERATIONS;
+      return (true);
+    }
     return (failure_after_max_iter_ ? false : true);
+  }
 
   // 2. The epsilon (difference) between the previous transformation and the current estimated transformation
   double cos_angle = 0.5 * (transformation_.coeff (0, 0) + transformation_.coeff (1, 1) + transformation_.coeff (2, 2) - 1);
@@ -70,6 +81,7 @@ pcl::registration::DefaultConvergenceCriteria<Scalar>::hasConverged ()
     else
     {
       iterations_similar_transforms_ = 0;
+      convergence_state_ = CONVERGENCE_CRITERIA_TRANSFORM;
       return (true);
     }
   }
@@ -78,8 +90,8 @@ pcl::registration::DefaultConvergenceCriteria<Scalar>::hasConverged ()
   PCL_DEBUG ("[pcl::DefaultConvergenceCriteria::hasConverged] Previous / Current MSE for correspondences distances is: %f / %f.\n", correspondences_prev_mse_, correspondences_cur_mse_);
 
   // 3. The relative sum of Euclidean squared errors is smaller than a user defined threshold
-  if (fabs (correspondences_cur_mse_ - correspondences_prev_mse_) < mse_threshold_absolute_ ||
-      fabs (correspondences_cur_mse_ - correspondences_prev_mse_) / correspondences_prev_mse_ < mse_threshold_relative_)
+  // Absolute
+  if (fabs (correspondences_cur_mse_ - correspondences_prev_mse_) < mse_threshold_absolute_)
   {
     if (iterations_similar_transforms_ < max_iterations_similar_transforms_)
     {
@@ -90,6 +102,24 @@ pcl::registration::DefaultConvergenceCriteria<Scalar>::hasConverged ()
     else
     {
       iterations_similar_transforms_ = 0;
+      convergence_state_ = CONVERGENCE_CRITERIA_ABS_MSE;
+      return (true);
+    }
+  }
+  
+  // Relative
+  if (fabs (correspondences_cur_mse_ - correspondences_prev_mse_) / correspondences_prev_mse_ < mse_threshold_relative_)
+  {
+    if (iterations_similar_transforms_ < max_iterations_similar_transforms_)
+    {
+      // Increment the number of transforms that the thresholds are allowed to be similar
+      ++iterations_similar_transforms_;
+      return (false);
+    }
+    else
+    {
+      iterations_similar_transforms_ = 0;
+      convergence_state_ = CONVERGENCE_CRITERIA_REL_MSE;
       return (true);
     }
   }

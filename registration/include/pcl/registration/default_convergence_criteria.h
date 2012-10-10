@@ -67,6 +67,15 @@ namespace pcl
       public:
         typedef Eigen::Matrix<Scalar, 4, 4> Matrix4;
 
+        enum ConvergenceState
+        {
+          CONVERGENCE_CRITERIA_NOT_CONVERGED,
+          CONVERGENCE_CRITERIA_ITERATIONS,
+          CONVERGENCE_CRITERIA_TRANSFORM,
+          CONVERGENCE_CRITERIA_ABS_MSE,
+          CONVERGENCE_CRITERIA_REL_MSE
+        };
+
         /** \brief Empty constructor.
           * Sets:
           *  * the maximum number of iterations to 1000
@@ -92,6 +101,7 @@ namespace pcl
           , mse_threshold_absolute_ (1e-12)       // MSE (absolute error)
           , iterations_similar_transforms_ (0)
           , max_iterations_similar_transforms_ (0)
+          , convergence_state_ (CONVERGENCE_CRITERIA_NOT_CONVERGED)
         {
         }
 
@@ -175,6 +185,13 @@ namespace pcl
         virtual bool
         hasConverged ();
 
+        /** \brief Return the convergence state after hasConverged () */
+        ConvergenceState
+        getConvergenceState ()
+        {
+          return (convergence_state_);
+        }
+
       protected:
 
         /** \brief Calculate the mean squared error (MSE) of the distance for a given set of correspondences.
@@ -230,6 +247,9 @@ namespace pcl
         /** \brief The maximum number of iterations that the internal rotation, 
           * translation, and MSE differences are allowed to be similar. */
         int max_iterations_similar_transforms_;
+
+        /** \brief The state of the convergence (e.g., why did the registration converge). */
+        ConvergenceState convergence_state_;
 
       public:
         EIGEN_MAKE_ALIGNED_OPERATOR_NEW
