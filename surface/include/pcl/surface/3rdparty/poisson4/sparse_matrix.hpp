@@ -27,7 +27,15 @@ DAMAGE.
 */
 
 #include <float.h>
-
+#ifdef _WIN32
+# ifndef WIN32_LEAN_AND_MEAN
+#  define WIN32_LEAN_AND_MEAN
+# endif // WIN32_LEAN_AND_MEAN
+# ifndef NOMINMAX
+#  define NOMINMAX
+# endif // NOMINMAX
+# include <windows.h>
+#endif //_WIN32
 
 ///////////////////
 //  SparseMatrix //
@@ -564,7 +572,6 @@ namespace pcl
 #ifdef WIN32
 #ifndef _AtomicIncrement_
 #define _AtomicIncrement_
-#include <windows.h>
     inline void AtomicIncrement( volatile float* ptr , float addend )
     {
       float newValue = *ptr;
