@@ -48,7 +48,6 @@
 #include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/kdtree/impl/kdtree_flann.hpp> // NOTE: PointModel is not registered to the default point types
 #include <pcl/apps/in_hand_scanner/impl/common_functions.hpp>
-#include <pcl/common/transforms.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -139,11 +138,11 @@ pcl::ihs::Integration::reconstructMesh (const CloudProcessedConstPtr& cloud_data
         *it_m_0 = PointModel (*it_d_0, weight);
       }
 
-      this->addToMesh (it_m_3,  it_m_0,  it_m_1,  it_m_2,
-                       it_vi_3, it_vi_0, it_vi_1, it_vi_2,
+      this->addToMesh (it_m_0,  it_m_1,  it_m_2,  it_m_3,
+                       it_vi_0, it_vi_1, it_vi_2, it_vi_3,
                        mesh_model);
-      this->addToMesh (it_m_3,  it_m_0,  it_m_2,  it_m_4,
-                       it_vi_3, it_vi_0, it_vi_2, it_vi_4,
+      this->addToMesh (it_m_0,  it_m_2,  it_m_4,  it_m_3,
+                       it_vi_0, it_vi_2, it_vi_4, it_vi_3,
                        mesh_model);
 
       ++it_d_0;
@@ -197,8 +196,8 @@ pcl::ihs::Integration::merge (const CloudProcessedConstPtr& cloud_data,
   mesh_model->reserveFaces (mesh_model->sizeFaces () + 2 * (width-1) * (height-1));
 
   // Data cloud in model coordinates (this does not change the connectivity information) and weights
-  CloudModelPtr cloud_transformed (new CloudModel ());
-  cloud_transformed->resize (size);
+  CloudModelPtr cloud_data_transformed (new CloudModel ());
+  cloud_data_transformed->resize (size);
 
   // Store which vertex is set at which position (initialized with invalid indexes)
   VertexIndexes vertex_indexes (size, VertexIndex ());
@@ -209,7 +208,10 @@ pcl::ihs::Integration::merge (const CloudProcessedConstPtr& cloud_data,
     const PointProcessed& pt_d = cloud_data->operator [] (c);
     if (pcl::isFinite (pt_d))
     {
-      cloud_transformed->operator [] (c) = PointModel (pcl::transformPoint (pt_d, Eigen::Affine3f (T)), -pt_d.normal_z);
+      PointModel& pt_d_t = cloud_data_transformed->operator [] (c);
+      pt_d_t = PointModel (pt_d, -pt_d.normal_z);
+      pt_d_t.getVector4fMap ()       = T * pt_d_t.getVector4fMap ();
+      pt_d_t.getNormalVector4fMap () = T * pt_d_t.getNormalVector4fMap ();
     }
   }
   for (uint32_t r=1; r<height; ++r)
@@ -219,7 +221,10 @@ pcl::ihs::Integration::merge (const CloudProcessedConstPtr& cloud_data,
       const PointProcessed& pt_d = cloud_data->operator [] (r*width + c);
       if (pcl::isFinite (pt_d))
       {
-        cloud_transformed->operator [] (r*width + c) = PointModel (pcl::transformPoint (pt_d, Eigen::Affine3f (T)), -pt_d.normal_z);
+        PointModel& pt_d_t = cloud_data_transformed->operator [] (r*width + c);
+        pt_d_t = PointModel (pt_d, -pt_d.normal_z);
+        pt_d_t.getVector4fMap ()       = T * pt_d_t.getVector4fMap ();
+        pt_d_t.getNormalVector4fMap () = T * pt_d_t.getNormalVector4fMap ();
       }
     }
   }
@@ -231,12 +236,12 @@ pcl::ihs::Integration::merge (const CloudProcessedConstPtr& cloud_data,
   // 4 - 2   1  //
   //   \   \    //
   // *   3 - 0  //
-  CloudProcessed::const_iterator it_d_0   = cloud_data->begin ()        + width + 2;
-  CloudModel::iterator           it_d_t_0 = cloud_transformed->begin () + width + 2;
-  CloudModel::const_iterator     it_d_t_1 = cloud_transformed->begin ()         + 2;
-  CloudModel::const_iterator     it_d_t_2 = cloud_transformed->begin ()         + 1;
-  CloudModel::const_iterator     it_d_t_3 = cloud_transformed->begin () + width + 1;
-  CloudModel::const_iterator     it_d_t_4 = cloud_transformed->begin ()            ;
+  CloudProcessed::const_iterator it_d_0   = cloud_data->begin ()             + width + 2;
+  CloudModel::iterator           it_d_t_0 = cloud_data_transformed->begin () + width + 2;
+  CloudModel::const_iterator     it_d_t_1 = cloud_data_transformed->begin ()         + 2;
+  CloudModel::const_iterator     it_d_t_2 = cloud_data_transformed->begin ()         + 1;
+  CloudModel::const_iterator     it_d_t_3 = cloud_data_transformed->begin () + width + 1;
+  CloudModel::const_iterator     it_d_t_4 = cloud_data_transformed->begin ()            ;
 
   VertexIndexes::iterator it_vi_0 = vertex_indexes.begin () + width + 2;
   VertexIndexes::iterator it_vi_1 = vertex_indexes.begin ()         + 2;
@@ -251,7 +256,9 @@ pcl::ihs::Integration::merge (const CloudProcessedConstPtr& cloud_data,
       if (pcl::isFinite (*it_d_0))
       {
         // weight = -dot (normal, [0; 0; 1])
-        *it_d_t_0 = PointModel (pcl::transformPoint (*it_d_0, Eigen::Affine3f (T)), -it_d_0->normal_z);
+        *it_d_t_0 = PointModel (*it_d_0, -it_d_0->normal_z);
+        it_d_t_0->getVector4fMap ()       = T * it_d_t_0->getVector4fMap ();
+        it_d_t_0->getNormalVector4fMap () = T * it_d_t_0->getNormalVector4fMap ();
 
         if (it_d_t_0->weight >= weight_min_)
         {
@@ -304,11 +311,11 @@ pcl::ihs::Integration::merge (const CloudProcessedConstPtr& cloud_data,
       // 4 - 2   1  //
       //   \   \    //
       // *   3 - 0  //
-      this->addToMesh (it_d_t_3, it_d_t_0, it_d_t_1, it_d_t_2,
-                       it_vi_3,  it_vi_0,  it_vi_1,  it_vi_2,
+      this->addToMesh (it_d_t_0, it_d_t_1, it_d_t_2, it_d_t_3,
+                       it_vi_0,  it_vi_1,  it_vi_2,  it_vi_3,
                        mesh_model);
-      this->addToMesh (it_d_t_3, it_d_t_0, it_d_t_2, it_d_t_4,
-                       it_vi_3,  it_vi_0,  it_vi_2,  it_vi_4,
+      this->addToMesh (it_d_t_0, it_d_t_2, it_d_t_4, it_d_t_3,
+                       it_vi_0,  it_vi_2,  it_vi_4,  it_vi_3,
                        mesh_model);
 
       ++it_d_0;
