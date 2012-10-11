@@ -160,7 +160,6 @@ if(build)
 
     # Install include files
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs})
-    PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/vtk_smoothing ${VTK_SMOOTHING_INCLUDES})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/3rdparty/poisson4 ${POISSON_INCLUDES})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${impl_incs})
 
