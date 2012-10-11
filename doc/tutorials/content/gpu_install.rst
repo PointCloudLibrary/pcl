@@ -36,10 +36,48 @@ latest version was 4.2 and the beta release of version 5 was available as well.
 
 First you will need to install the latest video drivers, download the correct one from the site
 and run the install file, after this, download the toolkit and install it.
+At the moment of writing this was version 295.41, please choose the most up to date one.
 
-You can get the SDK, but for PCL this is needed, this provides you with general CUDA examples
+ $ wget http://developer.download.nvidia.com/compute/cuda/4_2/rel/drivers/devdriver_4.2_linux_64_295.41.run
+ $ chmod +x devdriver_4.2_linux_64_295.41.run
+ $ sudo ./devdriver_4.2_linux_64_295.41.run
+
+You need to run this script without your X-server running. You can shut your X-server down as follows:
+Go to a terminal by pressing Ctrl-Alt-F1 and typing:
+
+ $ sudo service gdm stop
+
+Once you have installed you GPU device driver you will also need to install the CUDA Toolkit:
+
+ $ wget http://developer.download.nvidia.com/compute/cuda/4_2/rel/toolkit/cudatoolkit_4.2.9_linux_64_ubuntu11.04.run
+ $ chmod +x cudatoolkit_4.2.9_linux_64_ubuntu11.04.run
+ $ sudo ./cudatoolkit_4.2.9_linux_64_ubuntu11.04.run
+ 
+You can get the SDK, but for PCL this is not needed, this provides you with general CUDA examples
 and some scripts to test the performance of your CPU as well as your hardware specifications.
 
+Now you can get the latest trunk version (or another one) of PCL and configure your
+installation to use the CUDA functions.
+
+Go to your PCL root folder and do:
+
+ $ mkdir build; cd build
+ $ ccmake ..
+
+Press c to configure ccmake, press t to toggle to the advanced mode as a number of options
+only appear in advanced mode. The latest CUDA algorithms are beeing kept in the GPU project, for
+this the BUILD_GPU option needs to be on and the BUILD_gpu_<X> indicate the different
+GPU subprojects.
+Press c again to configure for you options, press g to generate the makefiles and to exit. Now
+the makefiles have been generated successfully and can be executed by doing:
+
+ $ make
+
+If you want to install your PCL installation for everybody to use:
+
+ $ make install
+
+Now your installation is finished!
 
 Tested Hardware
 ---------------
@@ -49,9 +87,11 @@ Please report us the hardware you have tested the following methods with.
 | Method                | Hardware            | Reported FPS   |
 +=======================+=====================+================+
 | Kinfu                 | GTX680              | 20-27          |
++-----------------------+---------------------+----------------+
 |                       | C2070               | 29             |
 +-----------------------+---------------------+----------------+
 | People Pose Detection | GTX680              | 20-23          |
++-----------------------+---------------------+----------------+
 |                       | C2070               | 10-20          |
 +-----------------------+---------------------+----------------+
 
