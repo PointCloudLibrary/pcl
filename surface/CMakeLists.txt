@@ -126,9 +126,9 @@ if(build)
         ${VTK_SMOOTHING_INCLUDES}
         include/pcl/${SUBSYS_NAME}/poisson.h
         ${HULL_INCLUDES}
-        ${POISSON_INCLUDES}
-        ${OPENNURBS_INCLUDES}
-        ${ON_NURBS_INCLUDES}
+      #  ${POISSON_INCLUDES}
+      #  ${OPENNURBS_INCLUDES}
+      #  ${ON_NURBS_INCLUDES}
         )
 
     set(impl_incs 
@@ -146,8 +146,8 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/texture_mapping.hpp
         include/pcl/${SUBSYS_NAME}/impl/poisson.hpp
         ${HULL_IMPLS}
-        ${OPENNURBS_IMPLS}
-        ${ON_NURBS_IMPLS}
+      #  ${OPENNURBS_IMPLS}
+      #  ${ON_NURBS_IMPLS}
         )
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
@@ -162,6 +162,7 @@ if(build)
 
     # Install include files
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs} ${POISSON_INCLUDES})
+    PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/3rdparty/poisson4 ${POISSON_INCLUDES})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${impl_incs})
 
     if(BUILD_surface_on_nurbs)
