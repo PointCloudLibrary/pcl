@@ -123,9 +123,9 @@ if(build)
         include/pcl/${SUBSYS_NAME}/simplification_remove_unused_vertices.h
         include/pcl/${SUBSYS_NAME}/surfel_smoothing.h        
         include/pcl/${SUBSYS_NAME}/texture_mapping.h
-        ${VTK_SMOOTHING_INCLUDES}
         include/pcl/${SUBSYS_NAME}/poisson.h
         ${HULL_INCLUDES}
+      #  ${VTK_SMOOTHING_INCLUDES}
       #  ${POISSON_INCLUDES}
       #  ${OPENNURBS_INCLUDES}
       #  ${ON_NURBS_INCLUDES}
@@ -146,14 +146,12 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/texture_mapping.hpp
         include/pcl/${SUBSYS_NAME}/impl/poisson.hpp
         ${HULL_IMPLS}
-      #  ${OPENNURBS_IMPLS}
-      #  ${ON_NURBS_IMPLS}
         )
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include ${VTK_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR})
     link_directories(${VTK_LIBRARY_DIRS})
-    PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${impl_incs})
+    PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${impl_incs} ${VTK_SMOOTHING_INCLUDES} ${POISSON_INCLUDES} ${OPENNURBS_INCLUDES} ${ON_NURBS_INCLUDES})
     target_link_libraries(${LIB_NAME} pcl_common pcl_io pcl_search pcl_kdtree pcl_octree ${VTK_SMOOTHING_TARGET_LINK_LIBRARIES} ${ON_NURBS_LIBRARIES})
     if(QHULL_FOUND)
       target_link_libraries(${LIB_NAME} ${QHULL_LIBRARIES})
@@ -161,7 +159,8 @@ if(build)
     PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}" "${SUBSYS_DEPS}" "" "" "" "")
 
     # Install include files
-    PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs} ${POISSON_INCLUDES})
+    PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs})
+    PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/vtk_smoothing ${VTK_SMOOTHING_INCLUDES})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/3rdparty/poisson4 ${POISSON_INCLUDES})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${impl_incs})
 
