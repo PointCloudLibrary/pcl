@@ -18,7 +18,7 @@
   limitations under the License.
  ========================================================================*/
 
-package com.kitware.KiwiViewer;
+package com.itseez.icpdemo;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -308,7 +308,7 @@ public class KiwiViewerActivity extends Activity {
               Intent datasetTableIntent = new Intent();
               datasetTableIntent.setClass(KiwiViewerActivity.this, DatasetListActivity.class);
               initBuiltinDatasetNames();
-              datasetTableIntent.putExtra("com.kitware.KiwiViewer.bundle.DatasetList", mBuiltinDatasetNames);
+              datasetTableIntent.putExtra("com.itseez.icpdemo.bundle.DatasetList", mBuiltinDatasetNames);
               startActivityForResult(datasetTableIntent, DATASETTABLE_REQUEST_CODE);
           }
       });
@@ -476,10 +476,10 @@ public class KiwiViewerActivity extends Activity {
         curBundle = data.getExtras();
       }
       if (requestCode == DATASETTABLE_REQUEST_CODE && curBundle != null
-          && curBundle.containsKey("com.kitware.KiwiViewer.bundle.DatasetName")) {
+          && curBundle.containsKey("com.itseez.icpdemo.bundle.DatasetName")) {
 
-        String name = curBundle.getString("com.kitware.KiwiViewer.bundle.DatasetName");
-        int offset = curBundle.getInt("com.kitware.KiwiViewer.bundle.DatasetOffset");
+        String name = curBundle.getString("com.itseez.icpdemo.bundle.DatasetName");
+        int offset = curBundle.getInt("com.itseez.icpdemo.bundle.DatasetOffset");
         datasetToOpen = offset;
       }
 

@@ -33,7 +33,7 @@
  * limitations under the License.
  */
 
-package com.kitware.KiwiViewer;
+package com.itseez.icpdemo;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -166,7 +166,7 @@ public class KiwiGLSurfaceView extends GLSurfaceView implements MultiTouchObject
     private void init() {
       mGestureDetector = new GestureDetector(new MyGestureDetector());
       tryPreserveEGLContext();
-      initEGL(true, 20, 2);
+      initEGL(true, 8, 0);
     }
 
 

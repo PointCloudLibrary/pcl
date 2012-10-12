@@ -18,24 +18,28 @@
   limitations under the License.
  ========================================================================*/
 
-package com.kitware.KiwiViewer;
+package com.itseez.icpdemo;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.TextView;
-import android.view.Window;
 import android.view.WindowManager.LayoutParams;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
-import android.text.method.LinkMovementMethod;
+import android.widget.ListView;
 
+import java.util.ArrayList;
 
-public class InfoActivity extends Activity {
+/**
+ *
+ *
+ */
+public class DatasetListActivity extends Activity {
 
+  public ListView mListView;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -48,28 +52,26 @@ public class InfoActivity extends Activity {
     // ...but notify us that it happened.
     getWindow().setFlags(LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH, LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH);
 
-    // fullscreen with no title bar
-    requestWindowFeature(Window.FEATURE_NO_TITLE);
-    getWindow().setFlags(LayoutParams.FLAG_FULLSCREEN, LayoutParams.FLAG_FULLSCREEN);
+    setTitle("Select Registration Method");
 
+    this.setContentView(R.layout.datasetlistactivity);
+    ArrayList<String> datasets = getIntent().getExtras().getStringArrayList("com.itseez.icpdemo.bundle.DatasetList");
+    ArrayAdapter<String> adapter = new ArrayAdapter<String>(getBaseContext(),android.R.layout.simple_list_item_1,datasets);
+    mListView = (ListView) findViewById(R.id.listView);
+    mListView.setAdapter(adapter);
+    mListView.setOnItemClickListener(new OnItemClickListener() {
 
-    this.setContentView(R.layout.infoactivity);
-
-    String detailsStr = String.format("Scene statistics:\n  Triangles: %d\n  Lines: %d\n  Vertices: %d\n  Drawing @ %d fps",
-      KiwiNative.getNumberOfTriangles(),
-      KiwiNative.getNumberOfLines(),
-      KiwiNative.getNumberOfVertices(),
-      KiwiNative.getFramesPerSecond());
-
-    TextView detailsText = (TextView) findViewById(R.id.detailsText);
-    detailsText.setText(detailsStr);
-
-    TextView linkText = (TextView) findViewById(R.id.licenseLink);
-    linkText.setMovementMethod(LinkMovementMethod.getInstance());
-
-    TextView copyrightText = (TextView) findViewById(R.id.copyrightText);
-    copyrightText.setMovementMethod(LinkMovementMethod.getInstance());
-
+      @Override
+      public void onItemClick(AdapterView<?> adapterView, View view, int pos,
+          long arg3) {
+        String value = (String) adapterView.getItemAtPosition(pos);
+        Intent curIntent = new Intent();
+        curIntent.putExtra("com.itseez.icpdemo.bundle.DatasetName",value);
+        curIntent.putExtra("com.itseez.icpdemo.bundle.DatasetOffset",pos);
+        setResult(Activity.RESULT_OK, curIntent);
+        finish();
+      }
+    });
 
   }
 

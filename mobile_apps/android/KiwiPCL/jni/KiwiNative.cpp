@@ -17,7 +17,7 @@
   See the License for the specific language governing permissions and
   limitations under the License.
  ========================================================================*/
- 
+
 #include <jni.h>
 #include <sys/types.h>
 #include <android/log.h>
@@ -211,102 +211,102 @@ bool setupGraphics(int w, int h)
 
 //----------------------------------------------------------------------------
 extern "C" {
-  JNIEXPORT void JNICALL Java_com_kitware_KiwiViewer_KiwiNative_init(JNIEnv * env, jobject obj,  jint width, jint height);
-  JNIEXPORT void JNICALL Java_com_kitware_KiwiViewer_KiwiNative_reshape(JNIEnv * env, jobject obj,  jint width, jint height);
-  JNIEXPORT void JNICALL Java_com_kitware_KiwiViewer_KiwiNative_handleSingleTouchPanGesture(JNIEnv * env, jobject obj,  jfloat dx, jfloat dy);
-  JNIEXPORT void JNICALL Java_com_kitware_KiwiViewer_KiwiNative_handleTwoTouchPanGesture(JNIEnv * env, jobject obj,  jfloat x0, jfloat y0, jfloat x1, jfloat y1);
-  JNIEXPORT void JNICALL Java_com_kitware_KiwiViewer_KiwiNative_handleTwoTouchPinchGesture(JNIEnv * env, jobject obj,  jfloat scale);
-  JNIEXPORT void JNICALL Java_com_kitware_KiwiViewer_KiwiNative_handleTwoTouchRotationGesture(JNIEnv * env, jobject obj,  jfloat rotation);
-  JNIEXPORT void JNICALL Java_com_kitware_KiwiViewer_KiwiNative_handleSingleTouchDown(JNIEnv * env, jobject obj,  jfloat x, jfloat y);
-  JNIEXPORT void JNICALL Java_com_kitware_KiwiViewer_KiwiNative_handleSingleTouchUp(JNIEnv * env, jobject obj);
-  JNIEXPORT void JNICALL Java_com_kitware_KiwiViewer_KiwiNative_handleSingleTouchTap(JNIEnv * env, jobject obj,  jfloat x, jfloat y);
-  JNIEXPORT void JNICALL Java_com_kitware_KiwiViewer_KiwiNative_handleDoubleTap(JNIEnv * env, jobject obj,  jfloat x, jfloat y);
-  JNIEXPORT void JNICALL Java_com_kitware_KiwiViewer_KiwiNative_handleLongPress(JNIEnv * env, jobject obj,  jfloat x, jfloat y);
-  JNIEXPORT jboolean JNICALL Java_com_kitware_KiwiViewer_KiwiNative_render(JNIEnv * env, jobject obj);
-  JNIEXPORT void JNICALL Java_com_kitware_KiwiViewer_KiwiNative_resetCamera(JNIEnv * env, jobject obj);
-  JNIEXPORT void JNICALL Java_com_kitware_KiwiViewer_KiwiNative_stopInertialMotion(JNIEnv * env, jobject obj);
-  JNIEXPORT jstring JNICALL Java_com_kitware_KiwiViewer_KiwiNative_getDatasetName(JNIEnv* env, jobject obj, jint offset);
-  JNIEXPORT jstring JNICALL Java_com_kitware_KiwiViewer_KiwiNative_getDatasetFilename(JNIEnv* env, jobject obj, jint offset);
-  JNIEXPORT jint JNICALL Java_com_kitware_KiwiViewer_KiwiNative_getNumberOfBuiltinDatasets(JNIEnv* env, jobject obj);
-  JNIEXPORT jint JNICALL Java_com_kitware_KiwiViewer_KiwiNative_getDefaultBuiltinDatasetIndex(JNIEnv* env, jobject obj);
-  JNIEXPORT jboolean JNICALL Java_com_kitware_KiwiViewer_KiwiNative_getDatasetIsLoaded(JNIEnv* env, jobject obj);
-  JNIEXPORT void JNICALL Java_com_kitware_KiwiViewer_KiwiNative_clearExistingDataset(JNIEnv * env, jobject obj);
-  JNIEXPORT jboolean JNICALL Java_com_kitware_KiwiViewer_KiwiNative_loadDataset(JNIEnv* env, jobject obj, jstring filename, int builtinDatasetIndex);
+  JNIEXPORT void JNICALL Java_com_itseez_icpdemo_KiwiNative_init(JNIEnv * env, jobject obj,  jint width, jint height);
+  JNIEXPORT void JNICALL Java_com_itseez_icpdemo_KiwiNative_reshape(JNIEnv * env, jobject obj,  jint width, jint height);
+  JNIEXPORT void JNICALL Java_com_itseez_icpdemo_KiwiNative_handleSingleTouchPanGesture(JNIEnv * env, jobject obj,  jfloat dx, jfloat dy);
+  JNIEXPORT void JNICALL Java_com_itseez_icpdemo_KiwiNative_handleTwoTouchPanGesture(JNIEnv * env, jobject obj,  jfloat x0, jfloat y0, jfloat x1, jfloat y1);
+  JNIEXPORT void JNICALL Java_com_itseez_icpdemo_KiwiNative_handleTwoTouchPinchGesture(JNIEnv * env, jobject obj,  jfloat scale);
+  JNIEXPORT void JNICALL Java_com_itseez_icpdemo_KiwiNative_handleTwoTouchRotationGesture(JNIEnv * env, jobject obj,  jfloat rotation);
+  JNIEXPORT void JNICALL Java_com_itseez_icpdemo_KiwiNative_handleSingleTouchDown(JNIEnv * env, jobject obj,  jfloat x, jfloat y);
+  JNIEXPORT void JNICALL Java_com_itseez_icpdemo_KiwiNative_handleSingleTouchUp(JNIEnv * env, jobject obj);
+  JNIEXPORT void JNICALL Java_com_itseez_icpdemo_KiwiNative_handleSingleTouchTap(JNIEnv * env, jobject obj,  jfloat x, jfloat y);
+  JNIEXPORT void JNICALL Java_com_itseez_icpdemo_KiwiNative_handleDoubleTap(JNIEnv * env, jobject obj,  jfloat x, jfloat y);
+  JNIEXPORT void JNICALL Java_com_itseez_icpdemo_KiwiNative_handleLongPress(JNIEnv * env, jobject obj,  jfloat x, jfloat y);
+  JNIEXPORT jboolean JNICALL Java_com_itseez_icpdemo_KiwiNative_render(JNIEnv * env, jobject obj);
+  JNIEXPORT void JNICALL Java_com_itseez_icpdemo_KiwiNative_resetCamera(JNIEnv * env, jobject obj);
+  JNIEXPORT void JNICALL Java_com_itseez_icpdemo_KiwiNative_stopInertialMotion(JNIEnv * env, jobject obj);
+  JNIEXPORT jstring JNICALL Java_com_itseez_icpdemo_KiwiNative_getDatasetName(JNIEnv* env, jobject obj, jint offset);
+  JNIEXPORT jstring JNICALL Java_com_itseez_icpdemo_KiwiNative_getDatasetFilename(JNIEnv* env, jobject obj, jint offset);
+  JNIEXPORT jint JNICALL Java_com_itseez_icpdemo_KiwiNative_getNumberOfBuiltinDatasets(JNIEnv* env, jobject obj);
+  JNIEXPORT jint JNICALL Java_com_itseez_icpdemo_KiwiNative_getDefaultBuiltinDatasetIndex(JNIEnv* env, jobject obj);
+  JNIEXPORT jboolean JNICALL Java_com_itseez_icpdemo_KiwiNative_getDatasetIsLoaded(JNIEnv* env, jobject obj);
+  JNIEXPORT void JNICALL Java_com_itseez_icpdemo_KiwiNative_clearExistingDataset(JNIEnv * env, jobject obj);
+  JNIEXPORT jboolean JNICALL Java_com_itseez_icpdemo_KiwiNative_loadDataset(JNIEnv* env, jobject obj, jstring filename, int builtinDatasetIndex);
 
-JNIEXPORT jboolean JNICALL Java_com_kitware_KiwiViewer_KiwiNative_PCLPath(JNIEnv* env, jobject obj, jstring filename, int id);
+JNIEXPORT jboolean JNICALL Java_com_itseez_icpdemo_KiwiNative_PCLPath(JNIEnv* env, jobject obj, jstring filename, int id);
 
 
-  JNIEXPORT void JNICALL Java_com_kitware_KiwiViewer_KiwiNative_checkForAdditionalDatasets(JNIEnv* env, jobject obj, jstring storageDir);
-  JNIEXPORT jstring JNICALL Java_com_kitware_KiwiViewer_KiwiNative_getLoadDatasetErrorTitle(JNIEnv* env, jobject obj);
-  JNIEXPORT jstring JNICALL Java_com_kitware_KiwiViewer_KiwiNative_getLoadDatasetErrorMessage(JNIEnv* env, jobject obj);
+  JNIEXPORT void JNICALL Java_com_itseez_icpdemo_KiwiNative_checkForAdditionalDatasets(JNIEnv* env, jobject obj, jstring storageDir);
+  JNIEXPORT jstring JNICALL Java_com_itseez_icpdemo_KiwiNative_getLoadDatasetErrorTitle(JNIEnv* env, jobject obj);
+  JNIEXPORT jstring JNICALL Java_com_itseez_icpdemo_KiwiNative_getLoadDatasetErrorMessage(JNIEnv* env, jobject obj);
 
-  JNIEXPORT jint JNICALL Java_com_kitware_KiwiViewer_KiwiNative_getNumberOfTriangles(JNIEnv* env, jobject obj);
-  JNIEXPORT jint JNICALL Java_com_kitware_KiwiViewer_KiwiNative_getNumberOfLines(JNIEnv* env, jobject obj);
-  JNIEXPORT jint JNICALL Java_com_kitware_KiwiViewer_KiwiNative_getNumberOfVertices(JNIEnv* env, jobject obj);
-  JNIEXPORT jint JNICALL Java_com_kitware_KiwiViewer_KiwiNative_getFramesPerSecond(JNIEnv* env, jobject obj);
-  JNIEXPORT jint JNICALL Java_com_kitware_KiwiViewer_KiwiNative_myassets(JNIEnv* env, jobject obj,jobject assetManager);
+  JNIEXPORT jint JNICALL Java_com_itseez_icpdemo_KiwiNative_getNumberOfTriangles(JNIEnv* env, jobject obj);
+  JNIEXPORT jint JNICALL Java_com_itseez_icpdemo_KiwiNative_getNumberOfLines(JNIEnv* env, jobject obj);
+  JNIEXPORT jint JNICALL Java_com_itseez_icpdemo_KiwiNative_getNumberOfVertices(JNIEnv* env, jobject obj);
+  JNIEXPORT jint JNICALL Java_com_itseez_icpdemo_KiwiNative_getFramesPerSecond(JNIEnv* env, jobject obj);
+  JNIEXPORT jint JNICALL Java_com_itseez_icpdemo_KiwiNative_myassets(JNIEnv* env, jobject obj,jobject assetManager);
 };
 
 //-----------------------------------------------------------------------------
-JNIEXPORT void JNICALL Java_com_kitware_KiwiViewer_KiwiNative_init(JNIEnv * env, jobject obj,  jint width, jint height)
+JNIEXPORT void JNICALL Java_com_itseez_icpdemo_KiwiNative_init(JNIEnv * env, jobject obj,  jint width, jint height)
 {
   LOGI("setupGraphics(%d, %d)", width, height);
   setupGraphics(width, height);
 }
 
-JNIEXPORT void JNICALL Java_com_kitware_KiwiViewer_KiwiNative_reshape(JNIEnv * env, jobject obj,  jint width, jint height)
+JNIEXPORT void JNICALL Java_com_itseez_icpdemo_KiwiNative_reshape(JNIEnv * env, jobject obj,  jint width, jint height)
 {
   LOGI("reshape(%d, %d)", width, height);
   app->resizeView(width, height);
   LOGI("end reshape");
 }
 
-JNIEXPORT void JNICALL Java_com_kitware_KiwiViewer_KiwiNative_handleSingleTouchPanGesture(JNIEnv * env, jobject obj,  jfloat dx, jfloat dy)
+JNIEXPORT void JNICALL Java_com_itseez_icpdemo_KiwiNative_handleSingleTouchPanGesture(JNIEnv * env, jobject obj,  jfloat dx, jfloat dy)
 {
   app->handleSingleTouchPanGesture(dx, dy);
 }
 
-JNIEXPORT void JNICALL Java_com_kitware_KiwiViewer_KiwiNative_handleTwoTouchPanGesture(JNIEnv * env, jobject obj,  jfloat x0, jfloat y0, jfloat x1, jfloat y1)
+JNIEXPORT void JNICALL Java_com_itseez_icpdemo_KiwiNative_handleTwoTouchPanGesture(JNIEnv * env, jobject obj,  jfloat x0, jfloat y0, jfloat x1, jfloat y1)
 {
   app->handleTwoTouchPanGesture(x0, y0, x1, y1);
 }
 
-JNIEXPORT void JNICALL Java_com_kitware_KiwiViewer_KiwiNative_handleTwoTouchPinchGesture(JNIEnv * env, jobject obj,  jfloat scale)
+JNIEXPORT void JNICALL Java_com_itseez_icpdemo_KiwiNative_handleTwoTouchPinchGesture(JNIEnv * env, jobject obj,  jfloat scale)
 {
   app->handleTwoTouchPinchGesture(scale);
 }
 
-JNIEXPORT void JNICALL Java_com_kitware_KiwiViewer_KiwiNative_handleTwoTouchRotationGesture(JNIEnv * env, jobject obj,  jfloat rotation)
+JNIEXPORT void JNICALL Java_com_itseez_icpdemo_KiwiNative_handleTwoTouchRotationGesture(JNIEnv * env, jobject obj,  jfloat rotation)
 {
   app->handleTwoTouchRotationGesture(rotation);
 }
 
-JNIEXPORT void JNICALL Java_com_kitware_KiwiViewer_KiwiNative_handleSingleTouchDown(JNIEnv * env, jobject obj,  jfloat x, jfloat y)
+JNIEXPORT void JNICALL Java_com_itseez_icpdemo_KiwiNative_handleSingleTouchDown(JNIEnv * env, jobject obj,  jfloat x, jfloat y)
 {
   app->handleSingleTouchDown(x, y);
 }
 
-JNIEXPORT void JNICALL Java_com_kitware_KiwiViewer_KiwiNative_handleSingleTouchUp(JNIEnv * env, jobject obj)
+JNIEXPORT void JNICALL Java_com_itseez_icpdemo_KiwiNative_handleSingleTouchUp(JNIEnv * env, jobject obj)
 {
   app->handleSingleTouchUp();
 }
 
-JNIEXPORT void JNICALL Java_com_kitware_KiwiViewer_KiwiNative_handleSingleTouchTap(JNIEnv * env, jobject obj,  jfloat x, jfloat y)
+JNIEXPORT void JNICALL Java_com_itseez_icpdemo_KiwiNative_handleSingleTouchTap(JNIEnv * env, jobject obj,  jfloat x, jfloat y)
 {
   app->handleSingleTouchTap(x, y);
 }
 
-JNIEXPORT void JNICALL Java_com_kitware_KiwiViewer_KiwiNative_handleDoubleTap(JNIEnv * env, jobject obj,  jfloat x, jfloat y)
+JNIEXPORT void JNICALL Java_com_itseez_icpdemo_KiwiNative_handleDoubleTap(JNIEnv * env, jobject obj,  jfloat x, jfloat y)
 {
   app->handleDoubleTap(x, y);
 }
 
-JNIEXPORT void JNICALL Java_com_kitware_KiwiViewer_KiwiNative_handleLongPress(JNIEnv * env, jobject obj,  jfloat x, jfloat y)
+JNIEXPORT void JNICALL Java_com_itseez_icpdemo_KiwiNative_handleLongPress(JNIEnv * env, jobject obj,  jfloat x, jfloat y)
 {
   app->handleLongPress(x, y);
 }
 
-JNIEXPORT jboolean JNICALL Java_com_kitware_KiwiViewer_KiwiNative_render(JNIEnv * env, jobject obj)
+JNIEXPORT jboolean JNICALL Java_com_itseez_icpdemo_KiwiNative_render(JNIEnv * env, jobject obj)
 {
   double currentTime = vtkTimerLog::GetUniversalTime();
   double dt = currentTime - fpsT0;
@@ -325,52 +325,52 @@ JNIEXPORT jboolean JNICALL Java_com_kitware_KiwiViewer_KiwiNative_render(JNIEnv 
   return app->cameraSpinner()->isEnabled() || app->isAnimating();
 }
 
-JNIEXPORT void JNICALL Java_com_kitware_KiwiViewer_KiwiNative_resetCamera(JNIEnv * env, jobject obj)
+JNIEXPORT void JNICALL Java_com_itseez_icpdemo_KiwiNative_resetCamera(JNIEnv * env, jobject obj)
 {
   resetView();
 }
 
-JNIEXPORT void JNICALL Java_com_kitware_KiwiViewer_KiwiNative_stopInertialMotion(JNIEnv * env, jobject obj)
+JNIEXPORT void JNICALL Java_com_itseez_icpdemo_KiwiNative_stopInertialMotion(JNIEnv * env, jobject obj)
 {
   app->haltCameraRotationInertia();
 }
 
-JNIEXPORT jstring JNICALL Java_com_kitware_KiwiViewer_KiwiNative_getDatasetName(JNIEnv* env, jobject obj, jint offset)
+JNIEXPORT jstring JNICALL Java_com_itseez_icpdemo_KiwiNative_getDatasetName(JNIEnv* env, jobject obj, jint offset)
 {
   std::string name = app->builtinDatasetName(offset);
   const char* nameForOutput = name.c_str();
   return(env->NewStringUTF(name.c_str()));
 }
 
-JNIEXPORT jstring JNICALL Java_com_kitware_KiwiViewer_KiwiNative_getDatasetFilename(JNIEnv* env, jobject obj, jint offset)
+JNIEXPORT jstring JNICALL Java_com_itseez_icpdemo_KiwiNative_getDatasetFilename(JNIEnv* env, jobject obj, jint offset)
 {
   std::string name = app->builtinDatasetFilename(offset);
   const char* nameForOutput = name.c_str();
   return(env->NewStringUTF(name.c_str()));
 }
 
-JNIEXPORT jint JNICALL Java_com_kitware_KiwiViewer_KiwiNative_getNumberOfBuiltinDatasets(JNIEnv* env, jobject obj)
+JNIEXPORT jint JNICALL Java_com_itseez_icpdemo_KiwiNative_getNumberOfBuiltinDatasets(JNIEnv* env, jobject obj)
 {
   return app->numberOfBuiltinDatasets();
 }
 
-JNIEXPORT jint JNICALL Java_com_kitware_KiwiViewer_KiwiNative_getDefaultBuiltinDatasetIndex(JNIEnv* env, jobject obj)
+JNIEXPORT jint JNICALL Java_com_itseez_icpdemo_KiwiNative_getDefaultBuiltinDatasetIndex(JNIEnv* env, jobject obj)
 {
   return app->defaultBuiltinDatasetIndex();
 }
 
-JNIEXPORT jboolean JNICALL Java_com_kitware_KiwiViewer_KiwiNative_getDatasetIsLoaded(JNIEnv* env, jobject obj)
+JNIEXPORT jboolean JNICALL Java_com_itseez_icpdemo_KiwiNative_getDatasetIsLoaded(JNIEnv* env, jobject obj)
 {
   return !appState.currentDataset.empty();
 }
 
-JNIEXPORT void JNICALL Java_com_kitware_KiwiViewer_KiwiNative_clearExistingDataset(JNIEnv * env, jobject obj)
+JNIEXPORT void JNICALL Java_com_itseez_icpdemo_KiwiNative_clearExistingDataset(JNIEnv * env, jobject obj)
 {
   clearExistingDataset();
 }
 
 
-  JNIEXPORT jint JNICALL Java_com_kitware_KiwiViewer_KiwiNative_myassets(JNIEnv* env, jobject obj,jobject assetMgr)
+  JNIEXPORT jint JNICALL Java_com_itseez_icpdemo_KiwiNative_myassets(JNIEnv* env, jobject obj,jobject assetMgr)
 {
 
 //AAssetManager* mgr = AAssetManager_fromJava(env, assetManager);
@@ -400,7 +400,7 @@ LOGI("INIT POINTCLOUD SHADER!");
 }
 
 
-JNIEXPORT jboolean JNICALL Java_com_kitware_KiwiViewer_KiwiNative_PCLPath(JNIEnv* env, jobject obj, jstring filename, int id)
+JNIEXPORT jboolean JNICALL Java_com_itseez_icpdemo_KiwiNative_PCLPath(JNIEnv* env, jobject obj, jstring filename, int id)
 {
 //  const char *javaStr = env->GetStringUTFChars(filename, NULL);
 
@@ -426,7 +426,7 @@ LOGI("PCL_PATH END!");
 
 
 
-JNIEXPORT jboolean JNICALL Java_com_kitware_KiwiViewer_KiwiNative_loadDataset(JNIEnv* env, jobject obj, jstring filename, jint builtinDatasetIndex)
+JNIEXPORT jboolean JNICALL Java_com_itseez_icpdemo_KiwiNative_loadDataset(JNIEnv* env, jobject obj, jstring filename, jint builtinDatasetIndex)
 {
 //  const char *javaStr = env->GetStringUTFChars(filename, NULL);
 //  if (javaStr) {
@@ -479,7 +479,7 @@ const char *javaStr = env->GetStringUTFChars(filename, NULL);
 
 }
 
-JNIEXPORT void JNICALL Java_com_kitware_KiwiViewer_KiwiNative_checkForAdditionalDatasets(JNIEnv* env, jobject obj, jstring storageDir)
+JNIEXPORT void JNICALL Java_com_itseez_icpdemo_KiwiNative_checkForAdditionalDatasets(JNIEnv* env, jobject obj, jstring storageDir)
 {
   const char *javaStr = env->GetStringUTFChars(storageDir, NULL);
   if (javaStr) {
@@ -489,34 +489,34 @@ JNIEXPORT void JNICALL Java_com_kitware_KiwiViewer_KiwiNative_checkForAdditional
   }
 }
 
-JNIEXPORT jstring JNICALL Java_com_kitware_KiwiViewer_KiwiNative_getLoadDatasetErrorTitle(JNIEnv* env, jobject obj)
+JNIEXPORT jstring JNICALL Java_com_itseez_icpdemo_KiwiNative_getLoadDatasetErrorTitle(JNIEnv* env, jobject obj)
 {
   std::string str = app->loadDatasetErrorTitle();
   return env->NewStringUTF(str.c_str());
 }
 
-JNIEXPORT jstring JNICALL Java_com_kitware_KiwiViewer_KiwiNative_getLoadDatasetErrorMessage(JNIEnv* env, jobject obj)
+JNIEXPORT jstring JNICALL Java_com_itseez_icpdemo_KiwiNative_getLoadDatasetErrorMessage(JNIEnv* env, jobject obj)
 {
   std::string str = app->loadDatasetErrorMessage();
   return env->NewStringUTF(str.c_str());
 }
 
-JNIEXPORT jint JNICALL Java_com_kitware_KiwiViewer_KiwiNative_getNumberOfTriangles(JNIEnv* env, jobject obj)
+JNIEXPORT jint JNICALL Java_com_itseez_icpdemo_KiwiNative_getNumberOfTriangles(JNIEnv* env, jobject obj)
 {
   return app->numberOfModelFacets();
 }
 
-JNIEXPORT jint JNICALL Java_com_kitware_KiwiViewer_KiwiNative_getNumberOfLines(JNIEnv* env, jobject obj)
+JNIEXPORT jint JNICALL Java_com_itseez_icpdemo_KiwiNative_getNumberOfLines(JNIEnv* env, jobject obj)
 {
   return app->numberOfModelLines();
 }
 
-JNIEXPORT jint JNICALL Java_com_kitware_KiwiViewer_KiwiNative_getNumberOfVertices(JNIEnv* env, jobject obj)
+JNIEXPORT jint JNICALL Java_com_itseez_icpdemo_KiwiNative_getNumberOfVertices(JNIEnv* env, jobject obj)
 {
   return app->numberOfModelVertices();
 }
 
-JNIEXPORT jint JNICALL Java_com_kitware_KiwiViewer_KiwiNative_getFramesPerSecond(JNIEnv* env, jobject obj)
+JNIEXPORT jint JNICALL Java_com_itseez_icpdemo_KiwiNative_getFramesPerSecond(JNIEnv* env, jobject obj)
 {
   return lastFps;
 }

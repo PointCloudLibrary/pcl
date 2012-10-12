@@ -18,7 +18,7 @@
   limitations under the License.
  ========================================================================*/
 
-package com.kitware.KiwiViewer;
+package com.itseez.icpdemo;
 
 import android.content.res.AssetManager;
 

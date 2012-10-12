@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
-    <com.kitware.KiwiViewer.KiwiGLSurfaceView
+    <com.itseez.icpdemo.KiwiGLSurfaceView
         android:id="@+id/glSurfaceView"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"

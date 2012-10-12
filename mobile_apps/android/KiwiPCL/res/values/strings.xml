@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">KiwiViewer</string>
+    <string name="app_name">ICP Demo</string>
     <string name="version_string">version 1.0.0</string>
     <string name="welcome_title">Welcome To KiwiViewer</string>
     <string name="welcome_message">Thanks for installing KiwiViewer!\n\nVisit us at www.kiwiviewer.org for more information.</string>

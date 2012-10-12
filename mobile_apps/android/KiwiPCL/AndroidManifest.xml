@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-        package="com.kitware.KiwiViewer"
+        package="com.itseez.icpdemo"
         android:versionCode="1"
         android:versionName="1.0"
        >
@@ -197,7 +197,7 @@
         <activity android:name=".DatasetListActivity"
                   android:theme="@style/ThemeHoloDialog">
             <intent-filter>
-                <action android:name="com.kitware.KiwiViewer.action.DatasetList"/>
+                <action android:name="com.itseez.icpdemo.action.DatasetList"/>
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
@@ -205,7 +205,7 @@
         <activity android:name=".InfoActivity"
                   android:theme="@style/ThemeDialogWhenLarge">
             <intent-filter>
-                <action android:name="com.kitware.KiwiViewer.action.Info"/>
+                <action android:name="com.itseez.icpdemo.action.Info"/>
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
