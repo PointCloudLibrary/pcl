@@ -1,4 +1,4 @@
-.. _gpu_people:
+.. _gpu_install:
 
 Configuring your PC to use your Nvidia GPU with PCL
 ---------------------------------------------------
