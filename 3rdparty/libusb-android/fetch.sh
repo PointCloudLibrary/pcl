@@ -2,6 +2,8 @@
 
 set -e
 
+rm -rf config libusb 2>&1
+
 git clone git://git.savannah.gnu.org/config.git config
 git clone git://git.libusb.org/libusb.git libusb
 
