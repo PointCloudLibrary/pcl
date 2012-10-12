@@ -380,101 +380,6 @@ RangeImage::getIntegralImage (float*& integral_image, int*& valid_points_num_ima
 
 /////////////////////////////////////////////////////////////////////////
 void 
-RangeImage::getBlurredImageUsingIntegralImage (int blur_radius, float* integral_image, int* valid_points_num_image,
-                                               RangeImage& blurred_image) const
-{
-  blurred_image = *this;
-  for (int y=0; y<int (height); ++y)
-  {
-    for (int x=0; x<int (width); ++x)
-    {
-      const PointWithRange& old_point = getPoint (x, y);
-      PointWithRange& new_point = blurred_image.getPoint (x, y);
-      if (!pcl_isfinite (old_point.range))
-        continue;
-      
-      int top= (std::max) (-1, y-blur_radius-1), right = (std::min) (static_cast<int> (width)-1, x+blur_radius), bottom =
-          (std::min) (static_cast<int> (height)-1, y+blur_radius), left= (std::max) (-1, x-blur_radius-1);
-      
-      float top_left_value=0, top_right_value=0,
-            bottom_right_value=integral_image[bottom*width+right], bottom_left_value=0;
-      int top_left_valid_points=0, top_right_valid_points=0,
-          bottom_right_valid_points=valid_points_num_image[bottom*width+right], bottom_left_valid_points=0;
-      if (left>=0)
-      {
-        bottom_left_value = integral_image[bottom*width+left];
-        bottom_left_valid_points = valid_points_num_image[bottom*width+left];
-        if (top>=0)
-        {
-          top_left_value = integral_image[top*width+left];
-          top_left_valid_points = valid_points_num_image[top*width+left];
-        }
-      }
-      if (top>=0)
-      {
-        top_right_value = integral_image[top*width+right];
-        top_right_valid_points = valid_points_num_image[top*width+right];
-      }
-      int valid_points_num = bottom_right_valid_points + top_left_valid_points - bottom_left_valid_points -
-                             top_right_valid_points;
-      new_point.range = (bottom_right_value + top_left_value - bottom_left_value - top_right_value) / 
-                        static_cast<float> (valid_points_num);
-    }
-  }
-  blurred_image.recalculate3DPointPositions ();
-}
-
-/////////////////////////////////////////////////////////////////////////
-void 
-RangeImage::getBlurredImage (int blur_radius, RangeImage& blurred_image) const
-{
-  MEASURE_FUNCTION_TIME;
-  
-  if (blur_radius > 1)  // For a high blur radius it's faster to use integral images
-  {
-    float* integral_image;
-    int* valid_points_num_image;
-    getIntegralImage (integral_image, valid_points_num_image);
-    getBlurredImageUsingIntegralImage (blur_radius, integral_image, valid_points_num_image, blurred_image);
-    delete[] integral_image;
-    delete[] valid_points_num_image;
-    return;
-  }
-  
-  blurred_image = *this;
-  
-  if (blur_radius==0)
-    return;
-  
-  for (int y=0; y < static_cast<int> (height); ++y)
-  {
-    for (int x=0; x < static_cast<int> (width); ++x)
-    {
-      PointWithRange& new_point = blurred_image.getPoint (x, y);
-      const PointWithRange& original_point = getPoint (x, y);
-      if (!pcl_isfinite (original_point.range))
-        continue;
-      
-      new_point.range = 0.0f;
-      float weight_sum = 0.0f;
-      for (int y2=y-blur_radius; y2<y+blur_radius; ++y2)
-      {
-        for (int x2=x-blur_radius; x2<x+blur_radius; ++x2)
-        {
-          if (!isValid (x2,y2))
-            continue;
-          new_point.range += getPoint (x2, y2).range;
-          weight_sum += 1.0f;
-        }
-      }
-      new_point.range /= weight_sum;
-    }
-  }
-  blurred_image.recalculate3DPointPositions ();
-}
-
-/////////////////////////////////////////////////////////////////////////
-void 
 RangeImage::setUnseenToMaxRange ()
 {
   for (unsigned int i=0; i<points.size (); ++i)
@@ -998,6 +903,7 @@ RangeImage::extractFarRanges (const sensor_msgs::PointCloud2& point_cloud_data,
   far_ranges.is_dense = false;
 }
 
+/////////////////////////////////////////////////////////////////////////
 float
 RangeImage::getOverlap (const RangeImage& other_range_image, const Eigen::Affine3f& relative_transformation,
                         int search_radius, float max_distance, int pixel_step) const
@@ -1046,6 +952,108 @@ RangeImage::getOverlap (const RangeImage& other_range_image, const Eigen::Affine
     }
   }
   return static_cast<float> (hits_counter)/static_cast<float> (valid_points_counter);
+}
+
+/////////////////////////////////////////////////////////////////////////
+void
+RangeImage::getBlurredImageUsingIntegralImage (int blur_radius, float* integral_image, int* valid_points_num_image,
+                                               RangeImage& blurred_image) const
+{
+  this->copyTo(blurred_image);
+  for (int y=0; y<int (height); ++y)
+  {
+    for (int x=0; x<int (width); ++x)
+    {
+      const PointWithRange& old_point = getPoint (x, y);
+      PointWithRange& new_point = blurred_image.getPoint (x, y);
+      if (!pcl_isfinite (old_point.range))
+        continue;
+      
+      int top= (std::max) (-1, y-blur_radius-1), right = (std::min) (static_cast<int> (width)-1, x+blur_radius), bottom =
+          (std::min) (static_cast<int> (height)-1, y+blur_radius), left= (std::max) (-1, x-blur_radius-1);
+      
+      float top_left_value=0, top_right_value=0,
+            bottom_right_value=integral_image[bottom*width+right], bottom_left_value=0;
+      int top_left_valid_points=0, top_right_valid_points=0,
+          bottom_right_valid_points=valid_points_num_image[bottom*width+right], bottom_left_valid_points=0;
+      if (left>=0)
+      {
+        bottom_left_value = integral_image[bottom*width+left];
+        bottom_left_valid_points = valid_points_num_image[bottom*width+left];
+        if (top>=0)
+        {
+          top_left_value = integral_image[top*width+left];
+          top_left_valid_points = valid_points_num_image[top*width+left];
+        }
+      }
+      if (top>=0)
+      {
+        top_right_value = integral_image[top*width+right];
+        top_right_valid_points = valid_points_num_image[top*width+right];
+      }
+      int valid_points_num = bottom_right_valid_points + top_left_valid_points - bottom_left_valid_points -
+                             top_right_valid_points;
+      new_point.range = (bottom_right_value + top_left_value - bottom_left_value - top_right_value) / 
+                        static_cast<float> (valid_points_num);
+    }
+  }
+  blurred_image.recalculate3DPointPositions ();
+}
+
+/////////////////////////////////////////////////////////////////////////
+void
+RangeImage::getBlurredImage (int blur_radius, RangeImage& blurred_image) const
+{
+  //MEASURE_FUNCTION_TIME;
+  
+  if (blur_radius > 1)  // For a high blur radius it's faster to use integral images
+  {
+    float* integral_image;
+    int* valid_points_num_image;
+    getIntegralImage (integral_image, valid_points_num_image);
+    getBlurredImageUsingIntegralImage (blur_radius, integral_image, valid_points_num_image, blurred_image);
+    delete[] integral_image;
+    delete[] valid_points_num_image;
+    return;
+  }
+  
+  this->copyTo(blurred_image);
+  
+  if (blur_radius==0)
+    return;
+  
+  for (int y=0; y < static_cast<int> (height); ++y)
+  {
+    for (int x=0; x < static_cast<int> (width); ++x)
+    {
+      PointWithRange& new_point = blurred_image.getPoint (x, y);
+      const PointWithRange& original_point = getPoint (x, y);
+      if (!pcl_isfinite (original_point.range))
+        continue;
+      
+      new_point.range = 0.0f;
+      float weight_sum = 0.0f;
+      for (int y2=y-blur_radius; y2<y+blur_radius; ++y2)
+      {
+        for (int x2=x-blur_radius; x2<x+blur_radius; ++x2)
+        {
+          if (!isValid (x2,y2))
+            continue;
+          new_point.range += getPoint (x2, y2).range;
+          weight_sum += 1.0f;
+        }
+      }
+      new_point.range /= weight_sum;
+    }
+  }
+  blurred_image.recalculate3DPointPositions ();
+}
+
+/////////////////////////////////////////////////////////////////////////
+void
+RangeImage::copyTo (RangeImage& other) const
+{
+  other = *this;
 }
 
 }  // namespace end

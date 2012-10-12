@@ -1197,6 +1197,7 @@ RangeImage::setAngularResolution (float angular_resolution_x, float angular_reso
   angular_resolution_y_reciprocal_ = 1.0f / angular_resolution_y_;
 }
 
+/////////////////////////////////////////////////////////////////////////
 inline void 
 RangeImage::setTransformationToRangeImageSystem (const Eigen::Affine3f& to_range_image_system)
 {
@@ -1204,11 +1205,13 @@ RangeImage::setTransformationToRangeImageSystem (const Eigen::Affine3f& to_range
   to_world_system_ = to_range_image_system_.inverse ();
 }
 
+/////////////////////////////////////////////////////////////////////////
 inline void 
 RangeImage::getAngularResolution (float& angular_resolution_x, float& angular_resolution_y) const
 {  
   angular_resolution_x = angular_resolution_x_;
   angular_resolution_y = angular_resolution_y_;
 }
+
 
 }  // namespace end

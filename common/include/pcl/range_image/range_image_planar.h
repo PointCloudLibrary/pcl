@@ -64,6 +64,10 @@ namespace pcl
        *  Reimplmentation to return an image of the same type. */
       virtual RangeImage* 
       getNew () const { return new RangeImagePlanar; }
+
+      /** Copy *this to other. Derived version - also copying additonal RangeImagePlanar members */
+      PCL_EXPORTS virtual void
+      copyTo (RangeImage& other) const;
       
       // =====PUBLIC METHODS=====
       /** \brief Get a boost shared pointer of a copy of this */
@@ -182,6 +186,23 @@ namespace pcl
       PCL_EXPORTS virtual void 
       getHalfImage (RangeImage& half_image) const;
       
+      //! Getter for the focal length in X
+      inline float
+      getFocalLengthX () const { return focal_length_x_; }
+      
+      //! Getter for the focal length in Y
+      inline float
+      getFocalLengthY () const { return focal_length_y_; }
+      
+      //! Getter for the principal point in X
+      inline float
+      getCenterX () const { return center_x_; }
+      
+      //! Getter for the principal point in Y
+      inline float
+      getCenterY () const { return center_y_; }
+
+
     protected:
       float focal_length_x_, focal_length_y_; //!< The focal length of the image in pixels
       float focal_length_x_reciprocal_, focal_length_y_reciprocal_;  //!< 1/focal_length -> for internal use

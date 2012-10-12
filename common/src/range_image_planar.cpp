@@ -248,5 +248,17 @@ namespace pcl
     ret.image_offset_x_ = ret.image_offset_y_ = 0;
   }
 
+  /////////////////////////////////////////////////////////////////////////
+  void
+  RangeImagePlanar::copyTo (RangeImage& other) const
+  {
+    bool ERROR_GIVEN_RANGE_IMAGE_IS_NOT_A_RangeImagePlanar = typeid (*this) == typeid (other);
+    if (!ERROR_GIVEN_RANGE_IMAGE_IS_NOT_A_RangeImagePlanar) {
+      std::cerr << PVARC(typeid (*this).name())<<PVARN(typeid (other).name());
+    }
+    assert (ERROR_GIVEN_RANGE_IMAGE_IS_NOT_A_RangeImagePlanar);
+    *static_cast<RangeImagePlanar*> (&other) = *this;
+  }
+
 }  // namespace end
 

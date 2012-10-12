@@ -703,12 +703,12 @@ namespace pcl
       getIntegralImage (float*& integral_image, int*& valid_points_num_image) const;
       
       /** Get a blurred version of the range image using box filters on the provided integral image*/
-      PCL_EXPORTS void
+      PCL_EXPORTS void     // Template necessary so that this function also works in derived classes
       getBlurredImageUsingIntegralImage (int blur_radius, float* integral_image, int* valid_points_num_image,
                                          RangeImage& range_image) const;
       
       /** Get a blurred version of the range image using box filters */
-      PCL_EXPORTS void
+      PCL_EXPORTS virtual void     // Template necessary so that this function also works in derived classes
       getBlurredImage (int blur_radius, RangeImage& range_image) const;
       
       /** Get the squared euclidean distance between the two image points.
@@ -748,8 +748,12 @@ namespace pcl
       
       /** Return a newly created Range image.
        *  Can be reimplmented in derived classes like RangeImagePlanar to return an image of the same type. */
-      virtual RangeImage* 
+      PCL_EXPORTS virtual RangeImage* 
       getNew () const { return new RangeImage; }
+
+      /** Copy other to *this. Necessary for use in virtual functions that need to copy derived RangeImage classes (like RangeImagePlanar) */
+      PCL_EXPORTS virtual void
+      copyTo (RangeImage& other) const;
 
       
       // =====MEMBER VARIABLES=====
