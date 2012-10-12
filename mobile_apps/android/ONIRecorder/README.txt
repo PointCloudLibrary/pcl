@@ -11,5 +11,5 @@ To build, you will need special versions of libusb and OpenNI, available in
 
 export NDK_MODULE_PATH=<libusb>/android/ndk-modules:<OpenNI>/Platforms/Android/jni:<OpenNI>/Platforms/Android/jni/Modules:<Sensor>/Platforms/Android/jni
 ndk-build
-android update project -p . -n ONIRecorder -l <OpenNI>/Wrappers/OpenNI.java
+android update project -p . -n ONIRecorder -l ../../../3rdparty/openni/android/OpenNI/Wrappers/OpenNI.java
 ant debug
