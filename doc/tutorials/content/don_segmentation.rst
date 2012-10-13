@@ -9,8 +9,7 @@ In this tutorial we will learn how to use Difference of Normals features, implem
 This algorithm performs a scale based segmentation of the given input point cloud, finding points that belong within the scale parameters given.
 
 .. donpipeline::
-.. figure:: images/donpipeline.png
-   :width: 75%
+.. figure:: images/donpipelinesmall.jpg
    :align: center
 
    Overview of the pipeline in DoN segmentation.
@@ -42,8 +41,7 @@ The primary motivation behind DoN is the observation that surface normals estima
 The above diagram illustrates this effect in 1D. Normals, :math:`$\mathbf{\hat{n}}$`, and tangents, :math:`$T$`, estimated with a small support radius :math:`$r_s$` are affected by small-scale surface structure (and similarly by noise). On the other hand, normals and tangent planes estimated with a large support radius $r_l$ are less affected by small-scale structure, and represent the geometry of larger scale surface structures. In fact a similair set of features is seen in the DoN feature vectors for real-world street curbs in a LiDAR image shown below.
 
 .. doncurbcloseup::
-.. figure:: images/don_curb_closeup.png
-   :width: 80%
+.. figure:: images/don_curb_closeup_small.jpg
    :align: center
 
    Closeup of the DoN feature vectors calculated for a LiDAR pointcloud of a street curb.
