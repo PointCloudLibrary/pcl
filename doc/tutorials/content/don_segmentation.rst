@@ -58,16 +58,41 @@ For segmentation we simply perform the following:
  #. For every point the normalized difference of normals for every point, as defined above.
  #. Filter the resulting vector field to isolate points belonging to the scale/region of interest.
 
+The Data Set
+============
+For this tutorial we suggest the use of publically available (creative commons licensed) urban LiDAR data from the [KITTI]_ project. This data is collected from a Velodyne LiDAR scanner mounted on a car, for the purpose of evaluating self-driving cars. To convert the data set to PCL compatible point clouds please see [KITTIPCL]_. Examples and an example data set will be posted here in future as part of the tutorial. 
+
+.. For this tutorial we will use publically available (creative commons licensed) urban LiDAR data from the [KITTI]_ project. This data is collected from a Velodyne LiDAR scanner mounted on a car, for the purpose of evaluating self-driving cars. To convert the data set to PCL compatible point clouds please see [KITTIPCL]_. An example scan is presented here from the KITTI data set in PCL form, is available for use with this example, `<http://svn.pointclouds.org/data/tutorials/don_segmentation_tutorial.pcd>`_.
+
 The Code
 ========
-
-For this tutorial we will use publically available (creative commons licensed) urban LiDAR data from the [KITTI]_ project. This data is collected from a Velodyne LiDAR scanner mounted on a car, for the purpose of evaluating self-driving cars. To convert the data set to PCL compatible point clouds please see [KITTIPCL]_. An example scan is presented here from the KITTI data set in PCL form, is available for use with this example, `<http://svn.pointclouds.org/data/tutorials/don_segmentation_tutorial.pcd>`_.
 
 Next what you need to do is to create a file ``don_segmentation.cpp`` in any editor you prefer and copy the following code inside of it:
 
 .. literalinclude:: sources/don_segmentation/don_segmentation.cpp
    :language: cpp
    :linenos:
+
+Compiling and running the program
+---------------------------------
+
+Add the following lines to your CMakeLists.txt file:
+
+.. literalinclude:: sources/don_segmentation/CMakeLists.txt
+   :language: cmake
+   :linenos:
+
+Create a build directory, and build the executable::
+
+  $ mkdir build
+  $ cd build
+  $ cmake ..
+  $ make
+
+After you have made the executable, you can run it. Simply run::
+
+  $ ./don_segmentation <inputfile> <smallscale> <largescale> <threshold> <segradius>
+
 
 The Explanation
 ===============
@@ -162,19 +187,6 @@ Finally, we are usually left with a number of objects or regions with good isola
 
 .. note::
    For more information on point cloud clustering, please read the :ref:`cluster_extraction` tutorial.
-
-Compiling and running the program
----------------------------------
-
-Add the following lines to your CMakeLists.txt file:
-
-.. literalinclude:: sources/don_segmentation/CMakeLists.txt
-   :language: cmake
-   :linenos:
-
-After you have made the executable, you can run it. Simply run::
-
-  $ ./don_segmentation <inputfile> <smallscale> <largescale> <threshold> <segradius>
 
 After the segmentation the cloud viewer window will be opened and you will see something similar to those images:
 
