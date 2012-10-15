@@ -12,11 +12,13 @@ if(build)
     set(range_image_incs
         include/pcl/range_image/range_image.h
         include/pcl/range_image/range_image_planar.h
+        include/pcl/range_image/range_image_spherical.h
         )
   
     set(range_image_incs_impl
         include/pcl/range_image/impl/range_image.hpp
         include/pcl/range_image/impl/range_image_planar.hpp
+        include/pcl/range_image/impl/range_image_spherical.hpp
         )
 
     set(range_image_srcs
