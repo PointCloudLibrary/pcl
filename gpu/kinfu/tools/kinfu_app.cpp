@@ -616,6 +616,12 @@ struct KinFuApp
     }    
     cout << "Color integration: " << (integrate_colors_ ? "On" : "Off ( requires registration mode )") << endl;
   }
+  
+  void 
+  enableTruncationScaling()
+  {
+    kinfu_.volume().setTsdfTruncDist (kinfu_.volume().getSize()(0) / 100.0f);
+  }
 
   void
   toggleIndependentCamera()
@@ -965,8 +971,8 @@ print_cli_help ()
   cout << "    --registration, -r              : try to enable registration (source needs to support this)" << endl;
   cout << "    --current-cloud, -cc            : show current frame cloud" << endl;
   cout << "    --save-views, -sv               : accumulate scene view and save in the end ( Requires OpenCV. Will cause 'bad_alloc' after some time )" << endl;  
-  cout << "    --registration, -r              : enable registration mode" << endl; 
   cout << "    --integrate-colors, -ic         : enable color integration mode (allows to get cloud with colors)" << endl;   
+  cout << "    --scale-truncation, -st         : scale the truncation distance and raycaster based on the volume size" << endl;
   cout << "    -volume_size <size_in_meters>   : define integration volume size" << endl;
   cout << "Valid depth data sources:" << endl; 
   cout << "    -dev <device> (default), -oni <oni_file>, -pcd <pcd_file or directory>" << endl;
@@ -1059,6 +1065,9 @@ main (int argc, char* argv[])
       
   if (pc::find_switch (argc, argv, "--integrate-colors") || pc::find_switch (argc, argv, "-ic"))      
     app.toggleColorIntegration();
+
+  if (pc::find_switch (argc, argv, "--scale-truncation") || pc::find_switch (argc, argv, "-st"))      
+    app.enableTruncationScaling();
 
   // executing
   try { app.startMainLoop (triggered_capture); }  
