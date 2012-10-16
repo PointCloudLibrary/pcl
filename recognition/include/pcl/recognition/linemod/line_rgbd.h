@@ -127,6 +127,9 @@ namespace pcl
       bool
       loadTemplates (const std::string &file_name, size_t object_id = 0);
 
+      bool
+      addTemplate (const SparseQuantizedMultiModTemplate & sqmmt, pcl::PointCloud<pcl::PointXYZRGBA> & cloud, size_t object_id = 0);
+
       /** \brief Sets the threshold for the detection responses. Responses are between 0 and 1, where 1 is a best. 
         * \param[in] threshold The threshold used to decide where a template is detected.
         */
@@ -182,6 +185,20 @@ namespace pcl
         color_gradient_mod_.setInputCloud (cloud);
         color_gradient_mod_.processInputData ();
       }
+
+      /** \brief Creates a template from the specified data and adds it to the matching queue. 
+        * \param[in] mask_xyz the mask that determine which parts of the xyz-modality are used for creating the template.
+        * \param[in] mask_rgb the mask that determine which parts of the rgb-modality are used for creating the template.
+        * \param[in] region the region which will be associated with the template (can be larger than the actual modality-maps).
+        */
+      int 
+      createAndAddTemplate (
+        pcl::PointCloud<pcl::PointXYZRGBA> & cloud,
+        const size_t object_id,
+        const MaskMap & mask_xyz,
+        const MaskMap & mask_rgb,
+        const RegionXY & region);
+
 
       /** \brief Applies the detection process and fills the supplied vector with the detection instances. 
         * \param[out] detections The storage for the detection instances.

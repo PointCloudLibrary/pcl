@@ -424,6 +424,13 @@ namespace pcl
         return (templates_[template_id]);
       }
 
+      /** \brief Returns the number of stored/trained templates. */
+      inline size_t
+      getNumOfTemplates () const
+      {
+        return (templates_.size ());
+      }
+
       /** \brief Saves the stored templates to the specified file.
         * \param[in] file_name the name of the file to save the templates to.
         */
