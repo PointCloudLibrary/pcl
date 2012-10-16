@@ -2,6 +2,7 @@ package com.itseez.onirec;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.graphics.Rect;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -101,9 +102,8 @@ class CaptureThreadManager {
 
                 if (canvas != null) {
                     Rect canvas_size = holderColor.getSurfaceFrame();
-                    Rect bm_size = new Rect(0, 0, frame_width, frame_height);
 
-                    canvas.drawBitmap(colorBitmap, bm_size, canvas_size, null);
+                    canvas.drawBitmap(colorBitmap, null, canvas_size, null);
 
                     holderColor.unlockCanvasAndPost(canvas);
                 }
@@ -125,9 +125,8 @@ class CaptureThreadManager {
 
             if (canvas != null) {
                 Rect canvas_size = holderDepth.getSurfaceFrame();
-                Rect bm_size = new Rect(0, 0, frame_width, frame_height);
 
-                canvas.drawBitmap(depthBitmap, bm_size, canvas_size, null);
+                canvas.drawBitmap(depthBitmap, null, canvas_size, new Paint(Paint.DITHER_FLAG));
 
                 holderDepth.unlockCanvasAndPost(canvas);
             }
