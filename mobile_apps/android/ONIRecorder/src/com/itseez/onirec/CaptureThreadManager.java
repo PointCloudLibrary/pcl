@@ -82,26 +82,31 @@ class CaptureThreadManager {
                 return;
             }
 
-            int frame_width = color.getMetaData().getXRes();
-            int frame_height = color.getMetaData().getYRes();
+            int frame_width, frame_height;
+            Canvas canvas;
 
-            if (colorBitmap.getWidth() != frame_width || colorBitmap.getHeight() != frame_height) {
-                colorBitmap.recycle();
-                colorBitmap = Bitmap.createBitmap(frame_width, frame_height, Bitmap.Config.ARGB_8888);
-                colorBitmap.setHasAlpha(false);
-            }
+            if (color != null) {
+                frame_width = color.getMetaData().getXRes();
+                frame_height = color.getMetaData().getYRes();
 
-            imageBufferToBitmap(color.getMetaData().getData().createByteBuffer(), colorBitmap);
+                if (colorBitmap.getWidth() != frame_width || colorBitmap.getHeight() != frame_height) {
+                    colorBitmap.recycle();
+                    colorBitmap = Bitmap.createBitmap(frame_width, frame_height, Bitmap.Config.ARGB_8888);
+                    colorBitmap.setHasAlpha(false);
+                }
 
-            Canvas canvas = holderColor.lockCanvas();
+                imageBufferToBitmap(color.getMetaData().getData().createByteBuffer(), colorBitmap);
 
-            if (canvas != null) {
-                Rect canvas_size = holderColor.getSurfaceFrame();
-                Rect bm_size = new Rect(0, 0, frame_width, frame_height);
+                canvas = holderColor.lockCanvas();
 
-                canvas.drawBitmap(colorBitmap, bm_size, canvas_size, null);
+                if (canvas != null) {
+                    Rect canvas_size = holderColor.getSurfaceFrame();
+                    Rect bm_size = new Rect(0, 0, frame_width, frame_height);
 
-                holderColor.unlockCanvasAndPost(canvas);
+                    canvas.drawBitmap(colorBitmap, bm_size, canvas_size, null);
+
+                    holderColor.unlockCanvasAndPost(canvas);
+                }
             }
 
             frame_width = depth.getMetaData().getXRes();
@@ -208,7 +213,7 @@ class CaptureThreadManager {
                 try {
                     recorder = Recorder.create(context, "oni");
                     recorder.setDestination(RecordMedium.FILE, file.getAbsolutePath());
-                    recorder.addNodeToRecording(color);
+                    if (color != null) recorder.addNodeToRecording(color);
                     recorder.addNodeToRecording(depth);
                 } catch (final GeneralException ge) {
                     if (recorder != null) recorder.dispose();
@@ -241,7 +246,14 @@ class CaptureThreadManager {
     private void initOpenNI() {
         try {
             context = new Context();
-            color = ImageGenerator.create(context);
+
+            try {
+                color = ImageGenerator.create(context);
+            }
+            catch (StatusException ste) {
+                // There is no color output. Or there's an error, but we can't distinguish between the two cases.
+            }
+
             depth = DepthGenerator.create(context);
 
             context.startGeneratingAll();
@@ -259,7 +271,12 @@ class CaptureThreadManager {
         try {
             context = new Context();
             player = context.openFileRecordingEx(record.getAbsolutePath());
-            color = (ImageGenerator) context.findExistingNode(NodeType.IMAGE);
+
+            try {
+                color = (ImageGenerator) context.findExistingNode(NodeType.IMAGE);
+            } catch (StatusException se) {
+                // There's no color stream in the recording. (Or an error.)
+            }
             depth = (DepthGenerator) context.findExistingNode(NodeType.DEPTH);
 
             context.startGeneratingAll();

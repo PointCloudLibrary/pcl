@@ -3,7 +3,7 @@
     <string name="caption_color">Color</string>
     <string name="caption_depth">Depth</string>
     <string name="status_loading">Loading…</string>
-    <string name="status_no_devices">No Kinects found.</string>
+    <string name="status_no_devices">No sensors found.</string>
     <string name="status_waiting_for_permission">Waiting for permission…</string>
     <string name="status_waiting_for_surfaces">Waiting for surfaces…</string>
     <string name="status_previewing">Previewing…</string>
