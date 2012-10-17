@@ -143,7 +143,7 @@ pcl::IterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransformat
   }
   while (!converged);
 
-  converged_ = (bool)converged;
+  converged_ = static_cast<bool> (converged);
 
   // Transform the input cloud using the final transformation
   PCL_DEBUG ("Transformation is:\n\t%5f\t%5f\t%5f\t%5f\n\t%5f\t%5f\t%5f\t%5f\n\t%5f\t%5f\t%5f\t%5f\n\t%5f\t%5f\t%5f\t%5f\n", 
