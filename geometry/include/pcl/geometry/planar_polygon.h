@@ -40,8 +40,9 @@
 #ifndef PCL_GEOMETRY_PLANAR_POLYGON_H_
 #define PCL_GEOMETRY_PLANAR_POLYGON_H_
 
-#include <Eigen/Core>
-#include <vector>
+
+#include <pcl/common/eigen.h>
+#include <pcl/point_cloud.h>
 #include <pcl/ModelCoefficients.h>
 
 namespace pcl
