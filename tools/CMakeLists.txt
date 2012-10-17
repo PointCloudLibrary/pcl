@@ -137,6 +137,9 @@ if (build)
   
       PCL_ADD_EXECUTABLE(pcl_png2pcd ${SUBSYS_NAME} png2pcd.cpp)
       target_link_libraries(pcl_png2pcd pcl_common pcl_io)
+
+      PCL_ADD_EXECUTABLE(pcl_tiff2pcd ${SUBSYS_NAME} tiff2pcd.cpp)
+      target_link_libraries(pcl_tiff2pcd pcl_common pcl_io)
           
       PCL_ADD_EXECUTABLE(pcl_ply2vtk ${SUBSYS_NAME} ply2vtk.cpp)
       target_link_libraries(pcl_ply2vtk pcl_common pcl_io)
