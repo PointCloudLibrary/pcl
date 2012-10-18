@@ -1,0 +1,78 @@
+Remove the --dynamic-linker option (that doesn't exist) from the Android.mk
+
+From: Roman Donchenko <roman.donchenko@itseez.com>
+
+files.
+---
+ Platform/Android/jni/XnCore/Android.mk           |    2 +-
+ Platform/Android/jni/XnDDK/Android.mk            |    2 +-
+ Platform/Android/jni/XnDeviceFile/Android.mk     |    2 +-
+ Platform/Android/jni/XnDeviceSensorV2/Android.mk |    2 +-
+ Platform/Android/jni/XnFormats/Android.mk        |    2 +-
+ 5 files changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/Platform/Android/jni/XnCore/Android.mk b/Platform/Android/jni/XnCore/Android.mk
+index 979c53b..23f24aa 100644
+--- a/Platform/Android/jni/XnCore/Android.mk
++++ b/Platform/Android/jni/XnCore/Android.mk
+@@ -24,7 +24,7 @@ LOCAL_C_INCLUDES := \
+ 
+ LOCAL_CFLAGS:= -fvisibility=hidden -DXN_CORE_EXPORTS
+ 
+-LOCAL_LDFLAGS += -Wl,--export-dynamic --dynamic-linker 
++LOCAL_LDFLAGS += -Wl,--export-dynamic
+ 
+ LOCAL_SHARED_LIBRARIES := OpenNI libusb
+ 
+diff --git a/Platform/Android/jni/XnDDK/Android.mk b/Platform/Android/jni/XnDDK/Android.mk
+index 3c5d70b..233fc1d 100644
+--- a/Platform/Android/jni/XnDDK/Android.mk
++++ b/Platform/Android/jni/XnDDK/Android.mk
+@@ -25,7 +25,7 @@ LOCAL_C_INCLUDES := \
+ 
+ LOCAL_CFLAGS := -fvisibility=hidden -DXN_DDK_EXPORTS
+ 
+-LOCAL_LDFLAGS += -Wl,--export-dynamic --dynamic-linker 
++LOCAL_LDFLAGS += -Wl,--export-dynamic
+ 
+ LOCAL_SHARED_LIBRARIES := OpenNI libusb XnCore XnFormats
+ 
+diff --git a/Platform/Android/jni/XnDeviceFile/Android.mk b/Platform/Android/jni/XnDeviceFile/Android.mk
+index 9fcabe5..68b9662 100644
+--- a/Platform/Android/jni/XnDeviceFile/Android.mk
++++ b/Platform/Android/jni/XnDeviceFile/Android.mk
+@@ -25,7 +25,7 @@ LOCAL_C_INCLUDES := \
+ 
+ LOCAL_CFLAGS := -fvisibility=hidden -DXN_DEVICE_EXPORTS
+ 
+-LOCAL_LDFLAGS += -Wl,--export-dynamic --dynamic-linker 
++LOCAL_LDFLAGS += -Wl,--export-dynamic
+ 
+ LOCAL_SHARED_LIBRARIES := OpenNI libusb XnCore XnFormats XnDDK
+ 
+diff --git a/Platform/Android/jni/XnDeviceSensorV2/Android.mk b/Platform/Android/jni/XnDeviceSensorV2/Android.mk
+index 8df6499..47e959e 100644
+--- a/Platform/Android/jni/XnDeviceSensorV2/Android.mk
++++ b/Platform/Android/jni/XnDeviceSensorV2/Android.mk
+@@ -25,7 +25,7 @@ LOCAL_C_INCLUDES := \
+ 
+ LOCAL_CFLAGS := -fvisibility=hidden -DXN_DEVICE_EXPORTS
+ 
+-LOCAL_LDFLAGS += -Wl,--export-dynamic --dynamic-linker 
++LOCAL_LDFLAGS += -Wl,--export-dynamic
+ 
+ LOCAL_SHARED_LIBRARIES := OpenNI libusb XnCore XnFormats XnDDK
+ 
+diff --git a/Platform/Android/jni/XnFormats/Android.mk b/Platform/Android/jni/XnFormats/Android.mk
+index de31310..a60cf97 100644
+--- a/Platform/Android/jni/XnFormats/Android.mk
++++ b/Platform/Android/jni/XnFormats/Android.mk
+@@ -27,7 +27,7 @@ LOCAL_C_INCLUDES := \
+ 
+ LOCAL_CFLAGS := -fvisibility=hidden -DXN_FORMATS_EXPORTS
+ 
+-LOCAL_LDFLAGS += -Wl,--export-dynamic --dynamic-linker 
++LOCAL_LDFLAGS += -Wl,--export-dynamic
+ 
+ LOCAL_SHARED_LIBRARIES := OpenNI libusb XnCore
+ 
