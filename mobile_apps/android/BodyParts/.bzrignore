@@ -6,3 +6,14 @@ cmake_install.cmake
 *.cbp
 tools/pcd2rgbd
 CMakeLists.txt.user
+local.properties
+app/out
+app/obj
+.idea
+lib/systemlibs
+
+*.iml
+ant.properties
+build.xml
+app/gen
+app/libs
