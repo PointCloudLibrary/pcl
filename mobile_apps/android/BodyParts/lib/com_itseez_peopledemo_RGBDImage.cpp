@@ -1,5 +1,5 @@
 #include "com_itseez_peopledemo_RGBDImage.h"
-#include "RGBDImage.h"
+#include "rgbd_image.h"
 
 jfieldID fld_ptr;
 jmethodID meth_ctor;

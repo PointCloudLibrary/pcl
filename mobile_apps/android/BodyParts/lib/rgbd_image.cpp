@@ -1,6 +1,6 @@
 #include <cstring>
 
-#include "RGBDImage.h"
+#include "rgbd_image.h"
 
 RGBDImage::RGBDImage(boost::uint32_t width, boost::uint32_t height)
   : width(width), height(height), pixels(width * height)
