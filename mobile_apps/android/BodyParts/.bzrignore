@@ -4,3 +4,5 @@ Makefile
 tools/treetxt2bin
 cmake_install.cmake
 *.cbp
+tools/pcd2rgbd
+CMakeLists.txt.user
