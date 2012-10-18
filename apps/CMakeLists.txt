@@ -91,6 +91,10 @@ if(build)
       PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_openni_grab_frame ${SUBSYS_NAME} src/openni_grab_frame.cpp)
       target_link_libraries(pcl_openni_grab_frame pcl_common pcl_io pcl_visualization)
 
+      PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_openni_grab_images ${SUBSYS_NAME} src/openni_grab_images.cpp)
+      target_link_libraries(pcl_openni_grab_images pcl_common pcl_io pcl_visualization)
+
+
       PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_openni_fast_mesh ${SUBSYS_NAME} src/openni_fast_mesh.cpp)
       target_link_libraries(pcl_openni_fast_mesh pcl_common pcl_io pcl_visualization pcl_surface)
 
