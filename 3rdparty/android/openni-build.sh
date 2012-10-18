@@ -16,5 +16,5 @@ done
 (cd Sensor/Platform/Android; ndk-build)
 
 for libname in XnCore XnDDK XnDeviceFile XnDeviceSensorV2 XnFormats; do
- cp Sensor/Platform/Android/obj/local/armeabi-v7a/lib$libname.so "$NDK_MODULE_PATH/OpenNI/lib/armeabi-v7a"
+ cp Sensor/Platform/Android/obj/local/armeabi-v7a/lib$libname.so "$NDK_MODULE_PATH/Sensor/lib/armeabi-v7a"
 done
