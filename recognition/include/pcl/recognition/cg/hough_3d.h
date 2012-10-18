@@ -265,9 +265,11 @@ namespace pcl
 
       /** \brief Sets the minimum number of votes in the Hough space needed to infer the presence of a model instance into the scene cloud.
         * 
-        * \param[in] threshold the threshold for the Hough space voting, if set between -1 and 0 the maximum vote in the entire space is automatically
-        * calculated and -threshold 
-		* the maximum value is used as a threshold. This means that a value between -1 and 0 should be used only if at least one instance of the model is always present in the scene, or if this false positive can be filtered later        */
+        * \param[in] threshold the threshold for the Hough space voting, if set between -1 and 0 the maximum vote in the
+        * entire space is automatically calculated and -threshold the maximum value is used as a threshold. This means
+        * that a value between -1 and 0 should be used only if at least one instance of the model is always present in
+        * the scene, or if this false positive can be filtered later.
+        */
       inline void
       setHoughThreshold (double threshold)
       {
@@ -508,7 +510,6 @@ namespace pcl
         */
       template<typename PointType, typename PointRfType> void
       computeRf (const boost::shared_ptr<const pcl::PointCloud<PointType> > &input, pcl::PointCloud<PointRfType> &rf);
-
   };
 }
 

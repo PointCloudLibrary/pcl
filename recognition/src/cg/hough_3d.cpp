@@ -42,13 +42,9 @@
 #include "pcl/recognition/cg/hough_3d.h"
 #include "pcl/recognition/impl/cg/hough_3d.hpp"
 
-#ifdef PCL_ONLY_CORE_POINT_TYPES
-  PCL_INSTANTIATE_PRODUCT(Hough3DGrouping, ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA))((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA))((pcl::ReferenceFrame))((pcl::ReferenceFrame)))
-#else
-  PCL_INSTANTIATE_PRODUCT(Hough3DGrouping, (PCL_XYZ_POINT_TYPES)(PCL_XYZ_POINT_TYPES)((pcl::ReferenceFrame))((pcl::ReferenceFrame)))
-#endif
-
-//Hough Space implementation
+PCL_INSTANTIATE_PRODUCT(Hough3DGrouping, ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGB)(pcl::PointXYZRGBA))
+                                         ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGB)(pcl::PointXYZRGBA))
+                                         ((pcl::ReferenceFrame))((pcl::ReferenceFrame)))
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 pcl::recognition::HoughSpace3D::HoughSpace3D (const Eigen::Vector3d &min_coord, const Eigen::Vector3d &bin_size, const Eigen::Vector3d &max_coord)
@@ -125,7 +121,7 @@ pcl::recognition::HoughSpace3D::voteInt (const Eigen::Vector3d &single_vote_coor
 
   for (int d = 0; d < 3; ++d)
   {
-    // compute coordinates of central bin
+    // Compute coordinates of central bin
     central_bin_coord[d] = static_cast<int> (floor ((single_vote_coord[d] - min_coord_[d]) / bin_size_[d]));
     if (central_bin_coord[d] < 0 || central_bin_coord[d] >= bin_count_[d])
     {
@@ -136,13 +132,13 @@ pcl::recognition::HoughSpace3D::voteInt (const Eigen::Vector3d &single_vote_coor
 
     central_bin_index += partial_bin_products_[d] * central_bin_coord[d];
 
-    // compute coordinates of the centroid of the bin
+    // Compute coordinates of the centroid of the bin
     bin_centroid[d] = static_cast<float> ((2 * static_cast<double> (central_bin_coord[d]) * bin_size_[d] + bin_size_[d]) / 2.0 );
 
-    // compute interpolated weight for each coordinate of the central bin
+    // Compute interpolated weight for each coordinate of the central bin
     central_bin_weight[d] = static_cast<float> (1 - (fabs (single_vote_coord[d] - min_coord_[d] - bin_centroid[d]) / bin_size_[d] ) );
 
-    // compute the neighbor bins where the weight has to be interpolated
+    // Compute the neighbor bins where the weight has to be interpolated
     if ((single_vote_coord[d] - min_coord_[d]) < bin_centroid[d])
     {
       interp_bin[d] = central_bin_coord[d] - 1;
@@ -157,7 +153,7 @@ pcl::recognition::HoughSpace3D::voteInt (const Eigen::Vector3d &single_vote_coor
     }
   }
 
-  // for each neighbor of the central point
+  // For each neighbor of the central point
   //int counterRealVotes = 0;
   for (int n = 0; n < n_neigh; ++n)
   {
@@ -171,7 +167,7 @@ pcl::recognition::HoughSpace3D::voteInt (const Eigen::Vector3d &single_vote_coor
       curr_neigh_index = central_bin_coord[d] + ( n % (exp*3) ) / exp - 1; // (n % 3^(d+1) / 3^d) - 1
       if (curr_neigh_index >= 0 && curr_neigh_index <= bin_count_[d]-1)
       {
-        // each coordinate of the neighbor has to be equal either to one of the central bin or to one of the interpolated bins
+        // Each coordinate of the neighbor has to be equal either to one of the central bin or to one of the interpolated bins
         if(curr_neigh_index == interp_bin[d])
         {
           interp_weight[n] *= 1-central_bin_weight[d];
@@ -210,7 +206,7 @@ pcl::recognition::HoughSpace3D::voteInt (const Eigen::Vector3d &single_vote_coor
 double
 pcl::recognition::HoughSpace3D::findMaxima (double min_threshold, std::vector<double> &maxima_values, std::vector<std::vector<int> > &maxima_voter_ids)
 {
-  //if min_threshold between -1 and 0 use it as a percentage of maximum vote
+  // If min_threshold between -1 and 0 use it as a percentage of maximum vote
   if (min_threshold < 0)
   {
     double hough_maximum = std::numeric_limits<double>::min ();
@@ -241,7 +237,7 @@ pcl::recognition::HoughSpace3D::findMaxima (double min_threshold, std::vector<do
     if (hough_space_[i] < min_threshold)
       continue;
 
-    //Check with neighbors
+    // Check with neighbors
     bool is_maximum = true;
     int moduled_index = i;
 
@@ -269,6 +265,5 @@ pcl::recognition::HoughSpace3D::findMaxima (double min_threshold, std::vector<do
     }
   }
 
-  //std::cout << "Houghspace zeros: " << zeros << std::endl;
   return (min_threshold);
 }

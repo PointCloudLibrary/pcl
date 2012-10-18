@@ -48,14 +48,14 @@
 #include <pcl/features/normal_3d.h>
 #include <pcl/features/board.h>
 
+
 template<typename PointModelT, typename PointSceneT, typename PointModelRfT, typename PointSceneRfT>
 template<typename PointType, typename PointRfType> void
 pcl::Hough3DGrouping<PointModelT, PointSceneT, PointModelRfT, PointSceneRfT>::computeRf (const boost::shared_ptr<const pcl::PointCloud<PointType> > &input, pcl::PointCloud<PointRfType> &rf)
 {
   if (local_rf_search_radius_ == 0)
   {
-    PCL_WARN(
-      "[pcl::Hough3DGrouping::computeRf()] Warning! Reference frame search radius not set. Computing with default value. Results might be incorrect, algorithm might be slow.\n");
+    PCL_WARN ("[pcl::Hough3DGrouping::computeRf()] Warning! Reference frame search radius not set. Computing with default value. Results might be incorrect, algorithm might be slow.\n");
     local_rf_search_radius_ = static_cast<float> (hough_bin_size_);
   }
   pcl::PointCloud<Normal>::Ptr normal_cloud (new pcl::PointCloud<Normal> ());
@@ -85,8 +85,7 @@ pcl::Hough3DGrouping<PointModelT, PointSceneT, PointModelRfT, PointSceneRfT>::tr
 {
   if (!input_)
   {
-    PCL_ERROR(
-      "[pcl::Hough3DGrouping::train()] Error! Input cloud not set.\n");
+    PCL_ERROR ("[pcl::Hough3DGrouping::train()] Error! Input cloud not set.\n");
     return (false);
   }
 
@@ -102,8 +101,7 @@ pcl::Hough3DGrouping<PointModelT, PointSceneT, PointModelRfT, PointSceneRfT>::tr
 
   if (input_->size () != input_rf_->size ())
   {
-    PCL_ERROR(
-      "[pcl::Hough3DGrouping::train()] Error! Input cloud size != Input RF cloud size.\n");
+    PCL_ERROR ("[pcl::Hough3DGrouping::train()] Error! Input cloud size != Input RF cloud size.\n");
     return (false);
   }
 
@@ -163,15 +161,13 @@ pcl::Hough3DGrouping<PointModelT, PointSceneT, PointModelRfT, PointSceneRfT>::ho
 
   if (scene_->size () != scene_rf_->size ())
   {
-    PCL_ERROR(
-      "[pcl::Hough3DGrouping::recognizeModelInstances()] Error! Scene cloud size != Scene RF cloud size.\n");
+    PCL_ERROR ("[pcl::Hough3DGrouping::recognizeModelInstances()] Error! Scene cloud size != Scene RF cloud size.\n");
     return (false);
   }
 
   if (!model_scene_corrs_)
   {
-    PCL_ERROR (
-      "[pcl::Hough3DGrouping::recognizeModelInstances()] Error! Correspondences not set, please set them before calling again this function.\n");
+    PCL_ERROR ("[pcl::Hough3DGrouping::recognizeModelInstances()] Error! Correspondences not set, please set them before calling again this function.\n");
     return (false);
   }
 
@@ -225,14 +221,14 @@ pcl::Hough3DGrouping<PointModelT, PointSceneT, PointModelRfT, PointSceneRfT>::ho
     if (scene_votes[i].z () > d_max.z ()) 
       d_max.z () = scene_votes[i].z ();
 
-    //calculate max distance for interpolated votes
+    // Calculate max distance for interpolated votes
     if (use_interpolation_ && max_distance < model_scene_corrs_->at (i).distance)
     {
       max_distance = model_scene_corrs_->at (i).distance;
     }
   }
 
-  //Hough Voting
+  // Hough Voting
   hough_space_.reset (new pcl::recognition::HoughSpace3D (d_min, bin_size, d_max));
 
   for (int i = 0; i < n_matches; ++i)
@@ -269,14 +265,14 @@ pcl::Hough3DGrouping<PointModelT, PointSceneT, PointModelRfT, PointSceneRfT>::cl
     return;
   }
 
-  // finding max bins and voters
+  // Finding max bins and voters
   std::vector<double> max_values;
   std::vector<std::vector<int> > max_ids;
 
   hough_space_->findMaxima (hough_threshold_, max_values, max_ids);
 
-  //insert maximas into result vector, after Ransac correspondence rejection
-  //temp copy of scene cloud with the type cast to ModelT in order to use Ransac
+  // Insert maximas into result vector, after Ransac correspondence rejection
+  // Temp copy of scene cloud with the type cast to ModelT in order to use Ransac
   PointCloudPtr temp_scene_cloud_ptr (new PointCloud);
   pcl::copyPointCloud<PointSceneT, PointModelT> (*scene_, *temp_scene_cloud_ptr);
 
@@ -293,9 +289,9 @@ pcl::Hough3DGrouping<PointModelT, PointSceneT, PointModelRfT, PointSceneRfT>::cl
     {
       temp_corrs.push_back (model_scene_corrs_->at (max_ids[j][i]));
     }
-    //ransac filtering
+    // RANSAC filtering
     corr_rejector.getRemainingCorrespondences (temp_corrs, filtered_corrs);
-    //save transformations for recognize
+    // Save transformations for recognize
     found_transformations_.push_back (corr_rejector.getBestTransformation ());
 
     model_instances.push_back (filtered_corrs);
@@ -320,7 +316,7 @@ pcl::Hough3DGrouping<PointModelT, PointSceneT, PointModelRfT, PointSceneRfT>::cl
 //  if (!ransac.computeModel ())
 //    return (false);
 //
-//  //transform model coefficients from vectorXf to matrix4f
+//  // Transform model coefficients from vectorXf to matrix4f
 //  Eigen::VectorXf coeffs;
 //  ransac.getModelCoefficients (coeffs);
 //
@@ -349,8 +345,7 @@ pcl::Hough3DGrouping<PointModelT, PointSceneT, PointModelRfT, PointSceneRfT>::re
   transformations.clear ();
   if (!this->initCompute ())
   {
-    PCL_ERROR(
-      "[pcl::Hough3DGrouping::recognize()] Error! Model cloud or Scene cloud not set, please set them before calling again this function.\n");
+    PCL_ERROR ("[pcl::Hough3DGrouping::recognize()] Error! Model cloud or Scene cloud not set, please set them before calling again this function.\n");
     return (false);
   }
 
@@ -358,7 +353,7 @@ pcl::Hough3DGrouping<PointModelT, PointSceneT, PointModelRfT, PointSceneRfT>::re
 
   transformations = found_transformations_;
 
-  ////temp copy of scene cloud with the type cast to ModelT in order to use Ransac
+  //// Temp copy of scene cloud with the type cast to ModelT in order to use Ransac
   //PointCloudPtr temp_scene_cloud_ptr (new PointCloud);
   //pcl::copyPointCloud<PointSceneT, PointModelT> (*scene_, *temp_scene_cloud_ptr);
 
