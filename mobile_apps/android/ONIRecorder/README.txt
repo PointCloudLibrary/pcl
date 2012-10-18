@@ -13,5 +13,7 @@ After that, run the following in this directory (<pcl> means the full path to th
 
 export NDK_MODULE_PATH=<pcl>/3rdparty/android/ndk-modules
 ndk-build
-android update project -p . -n ONIRecorder -l ../../../3rdparty/android/OpenNI/Wrappers/OpenNI.java
+android update project -p . -n ONIRecorder \
+  -l ../../../3rdparty/android/OpenNI/Wrappers/OpenNI.java \
+  -l ../../../3rdparty/android/libusb/android/LibusbSupport
 ant debug
