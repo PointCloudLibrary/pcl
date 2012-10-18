@@ -81,7 +81,7 @@ RangeImage::atan2LookUp (float y, float x)
 inline float
 RangeImage::cosLookUp (float value)
 {
-  int cell_idx = static_cast<int> (pcl_lrintf ( (static_cast<float> (lookup_table_size)-1) * fabsf (value) / (2.0f * M_PI)));
+  int cell_idx = static_cast<int> (pcl_lrintf ( (static_cast<float> (lookup_table_size-1)) * fabsf (value) / (2.0f * static_cast<float> (M_PI))));
   return (cos_lookup_table[cell_idx]);
 }
 
