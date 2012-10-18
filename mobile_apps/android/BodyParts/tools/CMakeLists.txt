@@ -5,7 +5,7 @@ add_executable(treetxt2bin treetxt2bin.cpp)
 add_executable(pcd2rgbd pcd2rgbd.cpp)
 
 find_package(Boost REQUIRED)
-include_directories(Boost_INCLUDE_DIRS)
+include_directories(${Boost_INCLUDE_DIRS})
 
 find_package(PCL REQUIRED COMPONENTS io)
 include_directories(${PCL_INCLUDE_DIRS})
