@@ -1,0 +1,6 @@
+CMakeCache.txt
+CMakeFiles
+Makefile
+tools/treetxt2bin
+cmake_install.cmake
+*.cbp
