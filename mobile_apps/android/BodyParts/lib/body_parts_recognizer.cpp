@@ -7,7 +7,6 @@
 #include <EGL/egl.h>
 
 #include <boost/format.hpp>
-#include <boost/multi_array.hpp>
 
 #include <tbb/blocked_range2d.h>
 #include <tbb/parallel_for.h>
@@ -48,7 +47,7 @@ public:
   Depth
   getDepth(int x, int y) const
   {
-    if (x < 0 || x >= width || y < 0 || y >= height)
+    if (x < 0 || x >= int (width) || y < 0 || y >= int (height))
       return BACKGROUND_DEPTH;
 
     return depths[x + width * y];
@@ -129,16 +128,15 @@ struct DecisionTreeCPU
     return leaves[nid - nodes.size()];
   }
 
-  template <typename T>
   struct WalkHelper
   {
   private:
     const DecisionTreeCPU & tree;
     const DepthImage & image;
-    T & labels;
+    std::vector<Label> & labels;
 
   public:
-    WalkHelper(const DecisionTreeCPU & tree, const DepthImage & image, T & labels)
+    WalkHelper(const DecisionTreeCPU & tree, const DepthImage & image, std::vector<Label> & labels)
       : tree(tree), image(image), labels(labels)
     {
     }
@@ -153,8 +151,8 @@ struct DecisionTreeCPU
     }
   };
 
-  template <typename T> void
-  eval(const DepthImage & image, T & labels) const
+  void
+  eval(const DepthImage & image, std::vector<Label> & labels) const
   {
 #if 0
     for (unsigned x = 0; x < image.getWidth(); ++x)
@@ -164,7 +162,7 @@ struct DecisionTreeCPU
 #else
     tbb::parallel_for(
           tbb::blocked_range2d<unsigned>(0, image.getHeight(), 0, image.getWidth()),
-          WalkHelper<T>(*this, image, labels)
+          WalkHelper(*this, image, labels)
     );
 #endif
   }
@@ -304,7 +302,7 @@ public:
     offsets2_buffer.resize(4 * tree_width * tree_width);
     thresholds_buffer.resize(4 * tree_width * tree_width);
 
-    for (unsigned i = 0; i < (1 << tree_depth) - 1; ++i)
+    for (int i = 0; i < (1 << tree_depth) - 1; ++i)
     {
       std::memcpy(&offsets1_buffer[4 * i], data, 4);
       std::memcpy(&offsets2_buffer[4 * i], data + 4, 4);
@@ -367,8 +365,8 @@ public:
     eglDestroyContext (dpy, ctx);
   }
 
-  template <typename T> void
-  eval(const DepthImage & image, T & labels) const
+  void
+  eval(const DepthImage & image, std::vector<Label> & labels) const
   {
     Stopwatch preparation;
     eglMakeCurrent (dpy, dummy_surface, dummy_surface, ctx);
@@ -437,12 +435,16 @@ BodyPartsRecognizer::BodyPartsRecognizer(std::size_t num_trees, const char * tre
 struct ConsensusHelper
 {
 private:
-  const boost::multi_array<Label, 2> & multi_labels;
+  const std::vector<std::vector<Label> > & multi_labels;
   std::vector<Label> & labels;
   const DepthImage & depth_image;
 
 public:
-  ConsensusHelper(const boost::multi_array<Label, 2> & multi_labels, std::vector<Label> & labels, const DepthImage & depth_image)
+  ConsensusHelper(
+      const std::vector<std::vector<Label> > & multi_labels,
+      std::vector<Label> & labels,
+      const DepthImage & depth_image
+  )
     : multi_labels(multi_labels), labels(labels), depth_image(depth_image)
   {
   }
@@ -455,7 +457,7 @@ public:
         int bins[Labels::NUM_LABELS] = { 0 };
         std::size_t i = x + y * depth_image.getWidth();
 
-        for (std::size_t ti = 0; ti < multi_labels.shape ()[0]; ++ti)
+        for (std::size_t ti = 0; ti < multi_labels.size (); ++ti)
           ++bins[multi_labels[ti][i]];
 
         int consensus = maxElementNoTie(Labels::NUM_LABELS, bins);
@@ -471,7 +473,7 @@ public:
               Depth off_d = depth_image.getDepth (x + off_x, y + off_y);
 
               if (std::abs (d - off_d) < 50)
-                for (std::size_t ti = 0; ti < multi_labels.shape ()[0]; ++ti)
+                for (std::size_t ti = 0; ti < multi_labels.size (); ++ti)
                   ++bins[multi_labels[ti][i]];
             }
 
@@ -499,14 +501,14 @@ BodyPartsRecognizer::recognize(const RGBDImage & image, std::vector<Label> & lab
 
   __android_log_print(ANDROID_LOG_INFO, "BPR", "Thresholding: %d ms", watch_threshold.elapsedMs());
 
-  boost::multi_array<Label, 2> multi_labels (boost::extents[trees.size ()][labels.size ()]);
+  std::vector<std::vector<Label> > multi_labels (trees.size ());
 
   for (std::size_t ti = 0; ti < trees.size (); ++ti)
   {
     Stopwatch watch_evaluation;
 
-    boost::multi_array<Label, 2>::array_view<1>::type view = multi_labels[boost::indices[ti][boost::multi_array_types::index_range()]];
-    trees[ti]->eval (depth_image, view);
+    multi_labels[ti].resize (labels.size ());
+    trees[ti]->eval (depth_image, multi_labels[ti]);
 
     __android_log_print(ANDROID_LOG_INFO, "BPR", "Evaluating tree %d: %d ms", ti, watch_evaluation.elapsedMs());
   }

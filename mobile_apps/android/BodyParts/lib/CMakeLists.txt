@@ -33,6 +33,7 @@ include_directories(${TBB_INCLUDE_DIR})
 target_link_libraries(people_demo log EGL GLESv2 ${TBB_LIBRARY})
 
 if(CMAKE_COMPILER_IS_GNUCXX)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -funroll-loops")
 set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -funroll-loops")
 endif()

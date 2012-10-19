@@ -25,17 +25,20 @@ public class Main extends Activity {
     private TextView timing_text;
     private File[] imageFiles;
     private BodyPartsRecognizer bpr;
-    private EGL10 egl = (EGL10) EGLContext.getEGL();
+    private final EGL10 egl = (EGL10) EGLContext.getEGL();
 
-    private static byte[] readInputStream(InputStream is) throws IOException {
-        byte[] buffer = new byte[1024 * 1024];
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        int bytes_read;
+    private static byte[] readFile(File f) throws IOException {
+        byte[] contents = new byte[(int) f.length()];
+        InputStream stream = new FileInputStream(f);
 
-        while ((bytes_read = is.read(buffer)) != -1)
-            baos.write(buffer, 0, bytes_read);
+        try {
+            if (stream.read(contents) != contents.length)
+                Log.e(TAG, "Couldn't read the full file.");
+        } finally {
+            stream.close();
+        }
 
-        return baos.toByteArray();
+        return contents;
     }
 
     private Bitmap labelsToBitmap(int width, int height, byte[] labels) {
@@ -44,9 +47,10 @@ public class Main extends Activity {
 
         int[] pixels = new int[labels.length];
 
-        for (int i = 0; i < labels.length; ++i)
-            pixels[i] = labels[i] >= 0 && labels[i] < all_labels.length ? all_labels[labels[i]].color : 0xFFFFFFFF;
-
+        for (int i = 0; i < labels.length; ++i) {
+            byte label = labels[i];
+            pixels[i] = label >= 0 && label < all_labels.length ? all_labels[label].color : 0xFFFFFFFF;
+        }
 
         bmp.setPixels(pixels, 0, width, 0, 0, width, height);
         return bmp;
@@ -74,15 +78,8 @@ public class Main extends Activity {
 
         for (int ti = 0; ti < trees.length; ++ti) {
             try {
-                FileInputStream tree_stream = new FileInputStream(treeFiles[ti]);
-                try {
-                    trees[ti] = readInputStream(tree_stream);
-                }
-                finally {
-                    tree_stream.close();
-                }
-            }
-            catch (IOException ioe) {
+                trees[ti] = readFile(treeFiles[ti]);
+            } catch (IOException ioe) {
                 Log.e(TAG, ioe.getMessage(), ioe);
                 return;
             }
@@ -105,15 +102,10 @@ public class Main extends Activity {
 
         total_before = SystemClock.uptimeMillis();
 
-        millis_before = SystemClock.uptimeMillis();
-
         try {
-            InputStream rgbd_in = new FileInputStream(imageFiles[imgNum]);
-            try {
-                img = RGBDImage.parse(readInputStream(rgbd_in));
-            } finally {
-                rgbd_in.close();
-            }
+            byte[] contents = readFile(imageFiles[imgNum]);
+            millis_before = SystemClock.uptimeMillis();
+            img = RGBDImage.parse(contents);
         } catch (IOException ioe) {
             Log.e(TAG, ioe.getMessage(), ioe);
             return;
@@ -142,6 +134,7 @@ public class Main extends Activity {
         img.free();
 
         millis_after = SystemClock.uptimeMillis();
+
         Log.i(TAG, String.format("Drawing: %d ms", millis_after - millis_before));
 
         total_after = SystemClock.uptimeMillis();
@@ -149,7 +142,7 @@ public class Main extends Activity {
         Log.i(TAG, "Total: " + timing_text.getText());
     }
 
-    public void pictureClicked(View view) {
+    public void pictureClicked(@SuppressWarnings("UnusedParameters") View view) {
         ++imgNum;
         if (imgNum >= imageFiles.length)
             imgNum = 0;
