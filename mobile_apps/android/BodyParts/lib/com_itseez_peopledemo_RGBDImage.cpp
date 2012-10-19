@@ -2,7 +2,10 @@
 #include "jni_helper.hpp"
 #include "rgbd_image.h"
 
-jmethodID meth_ctor;
+namespace
+{
+  jmethodID meth_ctor;
+}
 
 JNIEXPORT void JNICALL
 Java_com_itseez_peopledemo_RGBDImage_cacheIds
@@ -16,12 +19,7 @@ JNIEXPORT void JNICALL
 Java_com_itseez_peopledemo_RGBDImage_free
   (JNIEnv * env, jobject object)
 {
-  RGBDImage * ptr = getPtr<RGBDImage> (env, object);
-  if (!ptr) return;
-
-  delete ptr;
-
-  setPtr<RGBDImage> (env, object, NULL);
+  freePtr<RGBDImage> (env, object);
 }
 
 JNIEXPORT void JNICALL

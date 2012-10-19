@@ -3,6 +3,7 @@ package com.itseez.peopledemo;
 import android.graphics.Bitmap;
 
 public class RGBDImage {
+    @SuppressWarnings("UnusedDeclaration")
     private long ptr;
 
     private static native void cacheIds();

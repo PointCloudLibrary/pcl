@@ -30,4 +30,15 @@ cachePtrID(JNIEnv * env, jclass clazz)
   JNIHelper<T>::fld_ptr = env->GetFieldID (clazz, "ptr", "J");
 }
 
+template <typename T> void
+freePtr(JNIEnv * env, jobject object)
+{
+  T * ptr = getPtr<T> (env, object);
+  if (!ptr) return;
+
+  delete ptr;
+
+  setPtr<T> (env, object, 0);
+}
+
 #endif // JNI_HELPER_

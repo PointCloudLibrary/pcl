@@ -1,4 +1,5 @@
 #ifndef RGBD_IMAGE_H_
+#define RGBD_IMAGE_H_
 
 #include <vector>
 
