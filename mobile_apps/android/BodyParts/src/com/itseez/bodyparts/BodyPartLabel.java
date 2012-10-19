@@ -1,5 +1,6 @@
 package com.itseez.bodyparts;
 
+import android.graphics.Bitmap;
 import android.graphics.Color;
 
 public enum BodyPartLabel {
@@ -37,8 +38,12 @@ public enum BodyPartLabel {
     NO_LABEL(Color.rgb(80, 57, 150));
 
     public final int color;
+    public final Bitmap icon;
 
     BodyPartLabel(int color) {
         this.color = color;
+
+        icon = Bitmap.createBitmap(50, 50, Bitmap.Config.ARGB_8888);
+        icon.eraseColor(color);
     }
 }
