@@ -1037,6 +1037,15 @@ namespace pcl
     s << "width: " << p.width << std::endl;
     s << "height: " << p.height << std::endl;
     s << "is_dense: " << p.is_dense << std::endl;
+    s << "sensor origin (xyz): [" << 
+      p.sensor_origin_.x () << ", " << 
+      p.sensor_origin_.y () << ", " << 
+      p.sensor_origin_.z () << "] / orientation (xyzw): [" << 
+      p.sensor_orientation_.x () << ", " << 
+      p.sensor_orientation_.y () << ", " << 
+      p.sensor_orientation_.z () << ", " << 
+      p.sensor_orientation_.w () << "]" <<
+      std::endl;
     return (s);
   }
 }
