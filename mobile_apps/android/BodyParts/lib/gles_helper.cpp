@@ -75,7 +75,7 @@ GlesHelper::GlesHelper(const std::vector<const char *> & fs_sources)
   dummy_surface = eglCreatePbufferSurface (dpy, config, NULL);
   eglMakeCurrent (dpy, dummy_surface, dummy_surface, ctx);
 
-  const char * vs_source = reinterpret_cast<const char *> (source_generic_vsh);
+  const char * vs_source = source_generic_vsh;
   GLuint vs = glCreateShader (GL_VERTEX_SHADER);
   CHECK_GL(glShaderSource (vs, 1, &vs_source, NULL));
   CHECK_GL(glCompileShader (vs));

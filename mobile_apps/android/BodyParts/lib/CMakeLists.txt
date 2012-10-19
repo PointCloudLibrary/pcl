@@ -9,8 +9,9 @@ function(embed_text_file name cpp_name_var)
   string(REPLACE . _ array_name_tail ${name})
   add_custom_command(
     OUTPUT ${cpp_name}
-    COMMAND bin2c -p 0 -n source_${array_name_tail} ${name} > ${cpp_name}
+    COMMAND python ${CMAKE_CURRENT_SOURCE_DIR}/embed-text-file.py source_${array_name_tail} ${CMAKE_CURRENT_SOURCE_DIR}/${name} > ${cpp_name}
     MAIN_DEPENDENCY ${name}
+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/embed-text-file.py
   )
 endfunction()
 

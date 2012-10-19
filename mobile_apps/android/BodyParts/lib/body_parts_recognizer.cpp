@@ -165,12 +165,11 @@ public:
     data += sizeof tree_depth;
     const int nodes_height = (1 << tree_depth) / tree_width;
 
-    const char * fs_source = reinterpret_cast<const char *> (source_tree_walk_fsh);
     std::string fs_macros =
         (boost::format("#define TREE_DEPTH %1%\n#define NODES_HEIGHT %2%\n") % tree_depth % nodes_height).str();
     std::vector<const char *> fs_sources;
     fs_sources.push_back(fs_macros.c_str());
-    fs_sources.push_back(fs_source);
+    fs_sources.push_back(source_tree_walk_fsh);
 
     helper.reset(new GlesHelper(fs_sources));
 
@@ -276,7 +275,7 @@ public:
 
     std::vector<const char *> fs_sources;
     fs_sources.push_back(fs_macros.c_str());
-    fs_sources.push_back(reinterpret_cast<const char *> (source_consensus_fsh));
+    fs_sources.push_back(source_consensus_fsh);
 
     helper.reset(new GlesHelper(fs_sources));
 
