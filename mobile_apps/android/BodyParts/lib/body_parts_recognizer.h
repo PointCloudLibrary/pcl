@@ -45,7 +45,7 @@ struct Labels
   static const Label Background  = 29;
   static const Label Reserved    = 30;
   static const Label NOLABEL     = 31;
-  static const Label NUM_LABELS  = 32;
+  static const unsigned NUM_LABELS  = 32;
 };
 
 struct DecisionTreeGPU;
