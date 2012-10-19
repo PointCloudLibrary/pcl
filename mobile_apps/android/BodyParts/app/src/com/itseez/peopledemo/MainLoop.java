@@ -94,7 +94,8 @@ public class MainLoop {
     public MainLoop(Main main, BodyPartsRecognizer bpr) {
         this.main = main;
         this.bpr = bpr;
-        this.grabber = Grabber.createFileGrabber("/mnt/sdcard2/rgbd");
+        //this.grabber = Grabber.createFileGrabber("/mnt/sdcard2/rgbd");
+        this.grabber = Grabber.createOpenNIGrabber();
         thread = new HandlerThread("Grabber/Processor");
         thread.start();
         handler = new Handler(thread.getLooper());
