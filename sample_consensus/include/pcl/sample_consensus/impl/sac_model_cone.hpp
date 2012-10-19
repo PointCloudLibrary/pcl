@@ -196,8 +196,9 @@ pcl::SampleConsensusModelCone<PointT, PointNT>::selectWithinDistance (
     return;
   }
 
-  inliers.reserve (indices_->size ());
-  error_sqr_dists_.reserve (indices_->size ());
+  int nr_p = 0;
+  inliers.resize (indices_->size ());
+  error_sqr_dists_.resize (indices_->size ());
 
   Eigen::Vector4f apex (model_coefficients[0], model_coefficients[1], model_coefficients[2], 0);
   Eigen::Vector4f axis_dir (model_coefficients[3], model_coefficients[4], model_coefficients[5], 0);
@@ -240,10 +241,13 @@ pcl::SampleConsensusModelCone<PointT, PointNT>::selectWithinDistance (
     if (distance < threshold)
     {
       // Returns the indices of the points whose distances are smaller than the threshold
-      inliers.push_back ((*indices_)[i]);
-      error_sqr_dists_.push_back (distance);
+      inliers[nr_p] = (*indices_)[i];
+      error_sqr_dists_[nr_p] = distance;
+      ++nr_p;
     }
   }
+  inliers.resize (nr_p);
+  error_sqr_dists_.resize (nr_p);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////

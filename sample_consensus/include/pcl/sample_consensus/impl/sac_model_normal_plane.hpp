@@ -66,8 +66,9 @@ pcl::SampleConsensusModelNormalPlane<PointT, PointNT>::selectWithinDistance (
   Eigen::Vector4f coeff = model_coefficients;
   coeff[3] = 0;
 
-  inliers.reserve (indices_->size ());
-  error_sqr_dists_.reserve (indices_->size ());
+  int nr_p = 0;
+  inliers.resize (indices_->size ());
+  error_sqr_dists_.resize (indices_->size ());
 
   // Iterate through the 3d points and calculate the distances from them to the plane
   for (size_t i = 0; i < indices_->size (); ++i)
@@ -86,10 +87,13 @@ pcl::SampleConsensusModelNormalPlane<PointT, PointNT>::selectWithinDistance (
     if (distance < threshold)
     {
       // Returns the indices of the points whose distances are smaller than the threshold
-      inliers.push_back ((*indices_)[i]);
-      error_sqr_dists_.push_back (distance);
+      inliers[nr_p] = (*indices_)[i];
+      error_sqr_dists_[nr_p] = distance;
+      ++nr_p;
     }
   }
+  inliers.resize (nr_p);
+  error_sqr_dists_.resize (nr_p);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////

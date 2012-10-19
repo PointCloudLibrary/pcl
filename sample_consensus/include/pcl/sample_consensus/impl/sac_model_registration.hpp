@@ -153,8 +153,9 @@ pcl::SampleConsensusModelRegistration<PointT>::selectWithinDistance (const Eigen
     return;
   }
   
-  inliers.reserve (indices_->size ());
-  error_sqr_dists_.reserve (indices_->size ());
+  int nr_p = 0;
+  inliers.resize (indices_->size ());
+  error_sqr_dists_.resize (indices_->size ());
 
   Eigen::Matrix4f transform;
   transform.row (0).matrix () = model_coefficients.segment<4>(0);
@@ -177,10 +178,13 @@ pcl::SampleConsensusModelRegistration<PointT>::selectWithinDistance (const Eigen
     // Calculate the distance from the transformed point to its correspondence
     if (distance < thresh)
     {
-      inliers.push_back ((*indices_)[i]);
-      error_sqr_dists_.push_back (static_cast<double> (distance));
+      inliers[nr_p] = (*indices_)[i];
+      error_sqr_dists_[nr_p] = static_cast<double> (distance);
+      ++nr_p;
     }
   }
+  inliers.resize (nr_p);
+  error_sqr_dists_.resize (nr_p);
 } 
 
 //////////////////////////////////////////////////////////////////////////

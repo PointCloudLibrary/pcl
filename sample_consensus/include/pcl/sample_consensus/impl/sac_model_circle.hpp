@@ -137,8 +137,9 @@ pcl::SampleConsensusModelCircle2D<PointT>::selectWithinDistance (
     inliers.clear ();
     return;
   }
-  inliers.reserve (indices_->size ());
-  error_sqr_dists_.reserve (indices_->size ());
+  int nr_p = 0;
+  inliers.resize (indices_->size ());
+  error_sqr_dists_.resize (indices_->size ());
 
   // Iterate through the 3d points and calculate the distances from them to the sphere
   for (size_t i = 0; i < indices_->size (); ++i)
@@ -155,10 +156,13 @@ pcl::SampleConsensusModelCircle2D<PointT>::selectWithinDistance (
     if (distance < threshold)
     {
       // Returns the indices of the points whose distances are smaller than the threshold
-      inliers.push_back ((*indices_)[i]);
-      error_sqr_dists_.push_back (static_cast<double> (distance));
+      inliers[nr_p] = (*indices_)[i];
+      error_sqr_dists_[nr_p] = static_cast<double> (distance);
+      ++nr_p;
     }
   }
+  inliers.resize (nr_p);
+  error_sqr_dists_.resize (nr_p);
 }
 
 //////////////////////////////////////////////////////////////////////////
