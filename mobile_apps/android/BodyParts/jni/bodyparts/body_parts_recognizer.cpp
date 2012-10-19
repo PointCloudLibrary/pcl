@@ -141,40 +141,63 @@ int maxElementNoTie(int num, unsigned * elements)
   return max_element;
 }
 
+struct FilterHelper
+{
+private:
+  ChannelRef<Label> noisy, good;
+  int radius;
+
+public:
+  FilterHelper(ChannelRef<Label> noisy, ChannelRef<Label> good, int radius)
+    : noisy(noisy), good(good), radius(radius)
+  { }
+
+  void
+  operator ()(const tbb::blocked_range2d<int> & range) const
+  {
+    int width = noisy.width, height = noisy.height;
+
+    for (int i = range.rows().begin(); i < range.rows().end(); ++i)
+      for (int j = range.cols().begin(); j < range.cols().end(); ++j)
+      {
+        int idx = i * width + j;
+
+        if (i < radius || i >= height - radius || j < radius || j >= width - radius || noisy.data[idx] == Labels::Background)
+        {
+          good.data[idx] = Labels::Background;
+          continue;
+        }
+
+        int bins[Labels::NUM_LABELS] = { 0 };
+        Label mode = -1;
+        Label mode_count = 0;
+
+        for (int dy = -radius; dy <= radius; ++dy)
+          for (int dx = -radius; dx <= radius; ++dx)
+          {
+            Label current = noisy.data[idx + dx + dy * width];
+            ++bins[current];
+            if (bins[current] > mode_count) {
+              mode_count = bins[current];
+              mode = current;
+            }
+          }
+
+        good.data[idx] = mode;
+      }
+  }
+};
+
 void filterLabels(Cloud & noisy, Cloud & output, int radius)
 {
   int width = noisy.getWidth(), height = noisy.getHeight();
   ChannelRef<Label> noisy_labels = noisy.get<TagBPLabel>();
-  ChannelRef<Label> labels = output.get<TagBPLabel>();
+  ChannelRef<Label> good_labels = output.get<TagBPLabel>();
 
-  for (unsigned i = 0; i < height; ++i)
-    for (unsigned j = 0; j < width; ++j)
-    {
-      unsigned idx = i * width + j;
-
-      if (i < radius || i >= height - radius || j < radius || j >= width - radius || noisy_labels.data[idx] == Labels::Background)
-      {
-        labels.data[idx] = Labels::Background;
-        continue;
-      }
-
-      int bins[Labels::NUM_LABELS] = { 0 };
-      Label mode = -1;
-      Label mode_count = 0;
-
-      for (int dy = -radius; dy <= radius; ++dy)
-        for (int dx = -radius; dx <= radius; ++dx)
-        {
-          Label current = noisy_labels.data[idx + dx + dy * width];
-          ++bins[current];
-          if (bins[current] > mode_count) {
-            mode_count = bins[current];
-            mode = current;
-          }
-        }
-
-      labels.data[idx] = mode;
-    }
+  tbb::parallel_for(
+        tbb::blocked_range2d<int>(0, noisy.getHeight(), 0, noisy.getWidth()),
+        FilterHelper(noisy_labels, good_labels, radius)
+  );
 }
 
 struct ConsensusHelper
