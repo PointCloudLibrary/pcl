@@ -79,7 +79,7 @@ namespace pcl
 
     if (mesh.sizeVertexes ()) centroid = Vec4 (x/n, y/n, z/n, 1.);
 
-    return (mesh.sizeVertexes ());
+    return (static_cast<unsigned int> (mesh.sizeVertexes ()));
   }
 } // End namespace pcl
 
