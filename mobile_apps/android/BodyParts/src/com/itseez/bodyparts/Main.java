@@ -1,12 +1,14 @@
 package com.itseez.bodyparts;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -15,7 +17,7 @@ import android.widget.Toast;
 import java.io.*;
 import java.util.Arrays;
 
-public class Main extends Activity {
+public class Main extends Activity implements View.OnClickListener {
     private static final String TAG = "bodyparts.Main";
 
     ImageView picture;
@@ -78,6 +80,7 @@ public class Main extends Activity {
         setContentView(R.layout.main);
 
         picture = (ImageView) findViewById(R.id.picture);
+        picture.setOnClickListener(this);
         textTiming = (TextView) findViewById(R.id.text_timing);
         textStatus = (TextView) findViewById(R.id.text_status);
 
@@ -154,6 +157,14 @@ public class Main extends Activity {
         return rgbd_dir;
     }
 
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.picture:
+                state.pictureClicked();
+        }
+    }
+
     private abstract static class State {
         public void enter() {}
         public void leave() {}
@@ -179,6 +190,8 @@ public class Main extends Activity {
         public void menuItemClose() {
             throw new IllegalStateException();
         }
+
+        public void pictureClicked() { }
     }
 
     private class StateStopped extends State {
@@ -239,6 +252,20 @@ public class Main extends Activity {
             public void closeFinished() {
                 throw new IllegalStateException();
             }
+
+            @Override
+            public void newFrame(long timeMs, Bitmap frame) {
+                picture.setImageBitmap(frame);
+
+                textTiming.setText(String.format(getResources().getString(R.string.timing_ms), timeMs));
+                Log.i(TAG, "Total: " + textTiming.getText());
+            }
+
+            @Override
+            public void grabberBroken() {
+                Toast.makeText(Main.this, R.string.toast_source_lost, Toast.LENGTH_LONG);
+                setState(new StateClosing(loop, proxyFeedback, new StateIdle()));
+            }
         };
 
         public StatePaused(MainLoop loop, ProxyFeedback proxyFeedback) {
@@ -250,6 +277,7 @@ public class Main extends Activity {
         public void enter() {
             proxyFeedback.replaceUnderlying(feedback);
             textStatus.setText(R.string.status_paused);
+            loop.doOneFrame();
         }
 
         @Override
@@ -287,6 +315,11 @@ public class Main extends Activity {
         public void menuItemClose() {
             setState(new StateClosing(loop, proxyFeedback, new StateIdle()));
         }
+
+        @Override
+        public void pictureClicked() {
+            loop.doOneFrame();
+        }
     }
 
     private class StateOpening extends State {
@@ -306,6 +339,16 @@ public class Main extends Activity {
 
             @Override
             public void closeFinished() {
+                throw new IllegalStateException();
+            }
+
+            @Override
+            public void grabberBroken() {
+                throw new IllegalStateException();
+            }
+
+            @Override
+            public void newFrame(long timeMs, Bitmap frame) {
                 throw new IllegalStateException();
             }
         };
@@ -358,10 +401,6 @@ public class Main extends Activity {
         }
     }
 
-    private class StateRunning extends State {
-
-    }
-
     private class StateClosing extends State {
         private final MainLoop loop;
         private final ProxyFeedback proxyFeedback;
@@ -376,6 +415,12 @@ public class Main extends Activity {
                 loop.destroy();
                 setState(nextState);
             }
+
+            @Override
+            public void grabberBroken() { /* ignore */ }
+
+            @Override
+            public void newFrame(long timeMs, Bitmap frame) { /* ignore */ }
         };
 
         public StateClosing(MainLoop loop, ProxyFeedback proxyFeedback, State nextState) {
@@ -400,5 +445,9 @@ public class Main extends Activity {
         public void activityStart() {
             nextState = new StateIdle();
         }
+    }
+
+    private class StateRunning extends State {
+
     }
 }

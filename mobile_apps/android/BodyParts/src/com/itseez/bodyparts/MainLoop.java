@@ -23,6 +23,8 @@ public class MainLoop {
     public interface Feedback {
         void initFinished(boolean success);
         void closeFinished();
+        void grabberBroken();
+        void newFrame(long timeMs, Bitmap frame);
     }
 
     private static void buildBitmap(Bitmap bmp, RGBDImage image, byte[] labels) {
@@ -48,6 +50,9 @@ public class MainLoop {
         millis_before = SystemClock.uptimeMillis();
 
         grabber.getFrame(img);
+
+        if (!grabber.isConnected())
+            return -1;
 
         millis_after = SystemClock.uptimeMillis();
         Log.i(TAG, String.format("Reading image: %d ms", millis_after - millis_before));
@@ -143,9 +148,6 @@ public class MainLoop {
         });
     }
 
-    public void start() {
-    }
-
     public void close() {
         handler.post(new Runnable() {
             @Override
@@ -171,6 +173,19 @@ public class MainLoop {
         }
 
         img.free();
+    }
+
+    public void doOneFrame() {
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                final long total_ms = processImage();
+                if (total_ms < 0)
+                    feedback.grabberBroken();
+                else
+                    feedback.newFrame(total_ms, bmp);
+            }
+        });
     }
 
     public boolean isLive() {

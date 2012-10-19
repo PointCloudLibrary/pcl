@@ -6,9 +6,11 @@
     <string name="menu_item_close">Close</string>
     <string name="toast_no_rgbd_directory">Couldn\'t find a directory with RGBD files.</string>
     <string name="toast_failed_to_open">Failed to open the data source.</string>
+    <string name="toast_source_lost">Lost the data source.</string>
     <string name="status_idle">Idle.</string>
     <string name="status_opening">Opening…</string>
     <string name="status_paused">Paused.</string>
     <string name="status_closing">Closing…</string>
     <string name="caption_frame">Frame</string>
+    <string name="timing_ms">%1$s ms</string>
 </resources>

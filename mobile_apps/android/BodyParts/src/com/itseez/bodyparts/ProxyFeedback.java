@@ -1,6 +1,7 @@
 package com.itseez.bodyparts;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
 
 class ProxyFeedback implements MainLoop.Feedback {
     Activity activity;
@@ -31,6 +32,26 @@ class ProxyFeedback implements MainLoop.Feedback {
             @Override
             public void run() {
                 underlying.closeFinished();
+            }
+        });
+    }
+
+    @Override
+    public void grabberBroken() {
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                underlying.grabberBroken();
+            }
+        });
+    }
+
+    @Override
+    public void newFrame(final long timeMs, final Bitmap frame) {
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                underlying.newFrame(timeMs, frame);
             }
         });
     }
