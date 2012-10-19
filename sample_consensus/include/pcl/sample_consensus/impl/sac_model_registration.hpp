@@ -256,8 +256,8 @@ pcl::SampleConsensusModelRegistration<PointT>::optimizeModelCoefficients (const 
   for (size_t i = 0; i < inliers.size (); ++i)
   {
     // NOTE: not tested!
-    indices_src[i] = (*indices_)[inliers[i]];
-    indices_tgt[i] = (*indices_tgt_)[inliers[i]];
+    indices_src[i] = inliers[i];
+    indices_tgt[i] = correspondences_[indices_src[i]];
   }
 
   estimateRigidTransformationSVD (*input_, indices_src, *target_, indices_tgt, optimized_coefficients);
