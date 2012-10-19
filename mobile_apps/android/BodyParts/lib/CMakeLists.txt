@@ -18,7 +18,7 @@ add_custom_command(
 add_library(people_demo SHARED
   com_itseez_peopledemo_RGBDImage.cpp
   com_itseez_peopledemo_BodyPartsRecognizer.cpp
-  rgbd_image.cpp body_parts_recognizer.cpp
+  rgbd_image.cpp body_parts_recognizer.cpp stopwatch.cpp
   ${CMAKE_CURRENT_BINARY_DIR}/generic.vsh.cpp
   ${CMAKE_CURRENT_BINARY_DIR}/tree_walk.fsh.cpp
 )

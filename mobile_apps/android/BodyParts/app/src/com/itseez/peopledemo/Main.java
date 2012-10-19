@@ -100,8 +100,12 @@ public class Main extends Activity {
     }
 
     private void processImage() {
-        long millis_before = SystemClock.uptimeMillis();
+        long millis_before, millis_after, total_before, total_after;
         RGBDImage img;
+
+        total_before = SystemClock.uptimeMillis();
+
+        millis_before = SystemClock.uptimeMillis();
 
         try {
             InputStream rgbd_in = new FileInputStream(imageFiles[imgNum]);
@@ -115,10 +119,19 @@ public class Main extends Activity {
             return;
         }
 
-
         Bitmap image_bmp = img.getColorsAsBitmap();
 
+        millis_after = SystemClock.uptimeMillis();
+        Log.i(TAG, String.format("Reading image: %d ms", millis_after - millis_before));
+
+        millis_before = SystemClock.uptimeMillis();
+
         byte[] labels_array = bpr.recognize(img);
+
+        millis_after = SystemClock.uptimeMillis();
+        Log.i(TAG, String.format("Recognition: %d ms", millis_after - millis_before));
+
+        millis_before = SystemClock.uptimeMillis();
 
         Bitmap labels_bmp = labelsToBitmap(img.getWidth(), img.getHeight(), labels_array);
 
@@ -128,8 +141,12 @@ public class Main extends Activity {
         picture.setImageBitmap(image_bmp);
         img.free();
 
-        long millis_after = SystemClock.uptimeMillis();
-        timing_text.setText(String.format("%d ms", millis_after - millis_before));
+        millis_after = SystemClock.uptimeMillis();
+        Log.i(TAG, String.format("Drawing: %d ms", millis_after - millis_before));
+
+        total_after = SystemClock.uptimeMillis();
+        timing_text.setText(String.format("%d ms", total_after - total_before));
+        Log.i(TAG, "Total: " + timing_text.getText());
     }
 
     public void pictureClicked(View view) {

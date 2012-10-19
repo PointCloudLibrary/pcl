@@ -12,6 +12,7 @@
 #include "body_parts_recognizer.h"
 #include "rgbd_image.h"
 #include "sources.h"
+#include "stopwatch.h"
 
 const Depth BACKGROUND_DEPTH = std::numeric_limits<Depth>::max();
 
@@ -370,15 +371,26 @@ BodyPartsRecognizer::recognize(const RGBDImage & image, std::vector<Label> & lab
   labels.resize (image.width * image.height);
 
   DepthImage depth_image (image);
+
+  Stopwatch watch_threshold;
+
   depth_image.applyThreshold (500);
+
+  __android_log_print(ANDROID_LOG_INFO, "BPR", "Thresholding: %d ms", watch_threshold.elapsedMs());
 
   boost::multi_array<Label, 2> multi_labels (boost::extents[trees.size ()][labels.size ()]);
 
   for (std::size_t ti = 0; ti < trees.size (); ++ti)
   {
+    Stopwatch watch_evaluation;
+
     boost::multi_array<Label, 2>::array_view<1>::type view = multi_labels[boost::indices[ti][boost::multi_array_types::index_range()]];
     trees[ti]->eval (depth_image, view);
+
+    __android_log_print(ANDROID_LOG_INFO, "BPR", "Evaluating tree %d: %d ms", ti, watch_evaluation.elapsedMs());
   }
+
+  Stopwatch watch_consensus;
 
   for (std::size_t i = 0; i < labels.size (); ++i)
   {
@@ -408,4 +420,6 @@ BodyPartsRecognizer::recognize(const RGBDImage & image, std::vector<Label> & lab
       labels[i] = std::max_element (bins, bins + Labels::NUM_LABELS) - bins;
     }
   }
+
+  __android_log_print(ANDROID_LOG_INFO, "BPR", "Finding consensus: %d ms", watch_consensus.elapsedMs());
 }
