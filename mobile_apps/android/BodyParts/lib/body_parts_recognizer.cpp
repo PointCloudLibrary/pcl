@@ -356,6 +356,21 @@ public:
   }
 };
 
+int maxElementNoTie(int num, int * elements)
+{
+  int max_element = 0;
+  int max = elements[max_element];
+
+  for (int i = 1; i < num; ++i)
+  {
+    int val = elements[i];
+    if (max < val) { max_element = i; max = val; }
+    else if (max == val) { max_element = -1; }
+  }
+
+  return max_element;
+}
+
 BodyPartsRecognizer::BodyPartsRecognizer(std::size_t num_trees, const char * trees[])
 {
   this->trees.resize(num_trees);
@@ -399,9 +414,9 @@ BodyPartsRecognizer::recognize(const RGBDImage & image, std::vector<Label> & lab
     for (std::size_t ti = 0; ti < trees.size (); ++ti)
       ++bins[multi_labels[ti][i]];
 
-    labels[i] = std::max_element (bins, bins + Labels::NUM_LABELS) - bins;
+    int consensus = maxElementNoTie(Labels::NUM_LABELS, bins);
 
-    if (std::count (bins, bins + Labels::NUM_LABELS, bins[labels[i]]) > 1)
+    if (consensus == -1)
     {
       std::fill (bins, bins + Labels::NUM_LABELS, 0);
       unsigned x = i % image.width, y = i / image.width;
@@ -419,7 +434,10 @@ BodyPartsRecognizer::recognize(const RGBDImage & image, std::vector<Label> & lab
 
       labels[i] = std::max_element (bins, bins + Labels::NUM_LABELS) - bins;
     }
+    else
+    {
+      labels[i] = consensus;
+    }
   }
-
   __android_log_print(ANDROID_LOG_INFO, "BPR", "Finding consensus: %d ms", watch_consensus.elapsedMs());
 }
