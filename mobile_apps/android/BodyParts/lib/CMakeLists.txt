@@ -16,13 +16,14 @@ endfunction()
 
 embed_text_file(generic.vsh generic_vsh_cpp)
 embed_text_file(tree_walk.fsh tree_walk_fsh_cpp)
+embed_text_file(consensus.fsh consensus_fsh_cpp)
 
 add_library(people_demo SHARED
   com_itseez_peopledemo_RGBDImage.cpp
   com_itseez_peopledemo_BodyPartsRecognizer.cpp
   rgbd_image.cpp body_parts_recognizer.cpp stopwatch.cpp
   gles_helper.cpp
-  ${generic_vsh_cpp} ${tree_walk_fsh_cpp}
+  ${generic_vsh_cpp} ${tree_walk_fsh_cpp} ${consensus_fsh_cpp}
 )
 
 find_package(Boost REQUIRED)

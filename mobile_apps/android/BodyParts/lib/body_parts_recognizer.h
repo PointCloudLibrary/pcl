@@ -1,6 +1,7 @@
 #ifndef BODY_PARTS_RECOGNIZER_
 #define BODY_PARTS_RECOGNIZER_
 
+#include <memory>
 #include <vector>
 
 #include <boost/cstdint.hpp>
@@ -50,11 +51,14 @@ struct Labels
 struct DecisionTreeGPU;
 struct DecisionTreeCPU;
 
+class ConsensusFinderGPU;
+
 struct BodyPartsRecognizer
 {
 private:
   typedef DecisionTreeCPU Tree;
   std::vector<boost::shared_ptr<Tree> > trees;
+  std::auto_ptr<ConsensusFinderGPU> consensus_finder;
 
 public:
   BodyPartsRecognizer(std::size_t num_trees, const char * trees[]);

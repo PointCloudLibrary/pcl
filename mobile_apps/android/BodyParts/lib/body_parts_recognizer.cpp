@@ -261,13 +261,53 @@ int maxElementNoTie(int num, int * elements)
   return max_element;
 }
 
-BodyPartsRecognizer::BodyPartsRecognizer(std::size_t num_trees, const char * trees[])
+class ConsensusFinderGPU : boost::noncopyable
 {
-  this->trees.resize(num_trees);
+  std::auto_ptr<GlesHelper> helper;
+  int multi_labels_tex, labels_tex;
 
-  for (std::size_t i = 0; i < num_trees; ++i)
-    this->trees[i].reset(new Tree(trees[i]));
-}
+public:
+  ConsensusFinderGPU(int num_trees)
+  {
+    std::string fs_macros = (
+          boost::format("#define NUM_TREES %1%\n#define NUM_LABELS %2%\n")
+          % num_trees % int(Labels::NUM_LABELS)
+    ).str();
+
+    std::vector<const char *> fs_sources;
+    fs_sources.push_back(fs_macros.c_str());
+    fs_sources.push_back(reinterpret_cast<const char *> (source_consensus_fsh));
+
+    helper.reset(new GlesHelper(fs_sources));
+
+    multi_labels_tex = helper->addTexture();
+    helper->bindTextureToUniform(multi_labels_tex, "multi_labels");
+
+    labels_tex = helper->addTexture();
+    helper->bindTextureToOutput(labels_tex);
+  }
+
+  void
+  run(unsigned width, unsigned height, const std::vector<std::vector<Label> > & multi_labels, std::vector<Label> & labels)
+  {
+    std::vector<unsigned char> buffer(4 * width * height);
+
+    for (std::size_t i = 0; i < labels.size(); ++i)
+      for (std::size_t ti = 0; ti < multi_labels.size(); ++ti)
+          buffer[4 * i + ti] = multi_labels[ti][i];
+
+    helper->setTextureData(multi_labels_tex, width, height, &buffer.front());
+    helper->setTextureData(labels_tex, width, height, NULL);
+
+    helper->setUniform("image_width", width);
+    helper->setUniform("image_height", height);
+
+    helper->run(width, height, buffer.data());
+
+    for (std::size_t i = 0; i < labels.size(); ++i)
+      labels[i] = buffer[4 * i];
+  }
+};
 
 struct ConsensusHelper
 {
@@ -324,6 +364,18 @@ public:
   }
 };
 
+BodyPartsRecognizer::BodyPartsRecognizer(std::size_t num_trees, const char * trees[])
+{
+  this->trees.resize(num_trees);
+
+  for (std::size_t i = 0; i < num_trees; ++i)
+    this->trees[i].reset(new Tree(trees[i]));
+
+#if GPU_CONSENSUS
+  this->consensus_finder.reset(new ConsensusFinderGPU(num_trees));
+#endif
+}
+
 void
 BodyPartsRecognizer::recognize(const RGBDImage & image, std::vector<Label> & labels)
 {
@@ -352,10 +404,14 @@ BodyPartsRecognizer::recognize(const RGBDImage & image, std::vector<Label> & lab
 
   Stopwatch watch_consensus;
 
+#if GPU_CONSENSUS
+  consensus_finder->run(image.width, image.height, multi_labels, labels);
+#else
   tbb::parallel_for(
         tbb::blocked_range2d<unsigned>(0, depth_image.getHeight(), 0, depth_image.getWidth()),
         ConsensusHelper(multi_labels, labels, depth_image)
   );
+#endif
 
   __android_log_print(ANDROID_LOG_INFO, "BPR", "Finding consensus: %d ms", watch_consensus.elapsedMs());
 }
