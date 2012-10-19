@@ -118,7 +118,7 @@ public class Main extends Activity implements View.OnClickListener, CompoundButt
             throw new RuntimeException(ioe);
         }
 
-        state = new StateStopped();
+        state = new StateStopped(new StateIdle());
         state.enter();
     }
 
@@ -179,6 +179,40 @@ public class Main extends Activity implements View.OnClickListener, CompoundButt
         return usable.toArray(new UsbDevice[usable.size()]);
     }
 
+    private State decideNextState(boolean live, boolean vocal) {
+        if (live) {
+            UsbDevice[] devices = findUsableDevices();
+
+            if (devices.length == 0) {
+                if (vocal)
+                    Toast.makeText(Main.this, R.string.toast_no_usable_devices, Toast.LENGTH_SHORT).show();
+                return null;
+            }
+
+            return new StateRequestingPermission(devices);
+        } else {
+            File rgbd_dir = checkRgbdDirectory();
+
+            if (rgbd_dir == null) {
+                if (vocal)
+                    Toast.makeText(Main.this, R.string.toast_no_rgbd_directory, Toast.LENGTH_SHORT).show();
+                return null;
+            }
+
+            return new StateOpening(rgbd_dir);
+        }
+    }
+
+    private State getNextStateDecider(final boolean live) {
+        return new State() {
+            @Override
+            public void enter() {
+                State nextState = decideNextState(live, false);
+                setState(nextState == null ? new StateIdle() : nextState);
+            }
+        };
+    }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -229,16 +263,22 @@ public class Main extends Activity implements View.OnClickListener, CompoundButt
     }
 
     private class StateStopped extends State {
+        private final State startState;
+
+        private StateStopped(State startState) {
+            this.startState = startState;
+        }
+
         @Override
         public void activityStart() {
-            setState(new StateIdle());
+            setState(startState);
         }
     }
 
     private class StateIdle extends State {
         @Override
         public void activityStop() {
-            setState(new StateStopped());
+            setState(new StateStopped(new StateIdle()));
         }
 
         @Override
@@ -256,26 +296,14 @@ public class Main extends Activity implements View.OnClickListener, CompoundButt
 
         @Override
         public void menuItemOpenFolder() {
-            File rgbd_dir = checkRgbdDirectory();
-
-            if (rgbd_dir == null) {
-                Toast.makeText(Main.this, R.string.toast_no_rgbd_directory, Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            setState(new StateOpening(rgbd_dir));
+            State nextState = decideNextState(false, true);
+            if (nextState != null) setState(nextState);
         }
 
         @Override
         public void menuItemOpenDevice() {
-            UsbDevice[] devices = findUsableDevices();
-
-            if (devices.length == 0) {
-                Toast.makeText(Main.this, R.string.toast_no_usable_devices, Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            setState(new StateRequestingPermission(devices));
+            State nextState = decideNextState(true, true);
+            if (nextState != null) setState(nextState);
         }
     }
 
@@ -306,7 +334,7 @@ public class Main extends Activity implements View.OnClickListener, CompoundButt
             @Override
             public void grabberBroken() {
                 Toast.makeText(Main.this, R.string.toast_source_lost, Toast.LENGTH_LONG).show();
-                setState(new StateClosing(loop, proxyFeedback, new StateIdle()));
+                setState(new StateClosing(loop, proxyFeedback, false, new StateIdle()));
             }
         };
 
@@ -336,7 +364,7 @@ public class Main extends Activity implements View.OnClickListener, CompoundButt
 
         @Override
         public void activityStop() {
-            setState(new StateClosing(loop, proxyFeedback, new StateStopped()));
+            setState(new StateClosing(loop, proxyFeedback, true, getNextStateDecider(loop.isLive())));
         }
 
         @Override
@@ -349,31 +377,19 @@ public class Main extends Activity implements View.OnClickListener, CompoundButt
 
         @Override
         public void menuItemOpenFolder() {
-            File rgbd_dir = checkRgbdDirectory();
-
-            if (rgbd_dir == null) {
-                Toast.makeText(Main.this, R.string.toast_no_rgbd_directory, Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            setState(new StateClosing(loop, proxyFeedback, new StateOpening(rgbd_dir)));
+            State nextState = decideNextState(false, true);
+            if (nextState != null) setState(new StateClosing(loop, proxyFeedback, false, nextState));
         }
 
         @Override
         public void menuItemOpenDevice() {
-            UsbDevice[] devices = findUsableDevices();
-
-            if (devices.length == 0) {
-                Toast.makeText(Main.this, R.string.toast_no_usable_devices, Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            setState(new StateClosing(loop, proxyFeedback, new StateRequestingPermission(devices)));
+            State nextState = decideNextState(true, true);
+            if (nextState != null) setState(new StateClosing(loop, proxyFeedback, false, nextState));
         }
 
         @Override
         public void menuItemClose() {
-            setState(new StateClosing(loop, proxyFeedback, new StateIdle()));
+            setState(new StateClosing(loop, proxyFeedback, false, new StateIdle()));
         }
 
         @Override
@@ -393,7 +409,7 @@ public class Main extends Activity implements View.OnClickListener, CompoundButt
                 }
                 else {
                     Toast.makeText(Main.this, R.string.toast_failed_to_open, Toast.LENGTH_LONG).show();
-                    setState(new StateClosing(loop, proxyFeedback, new StateIdle()));
+                    setState(new StateClosing(loop, proxyFeedback, false, new StateIdle()));
                 }
             }
 
@@ -434,43 +450,31 @@ public class Main extends Activity implements View.OnClickListener, CompoundButt
 
         @Override
         public void activityStop() {
-            setState(new StateClosing(loop, proxyFeedback, new StateStopped()));
+            setState(new StateClosing(loop, proxyFeedback, true, getNextStateDecider(rgbdDir == null)));
         }
 
         @Override
         public void menuItemOpenFolder() {
-            File rgbd_dir = checkRgbdDirectory();
-
-            if (rgbd_dir == null) {
-                Toast.makeText(Main.this, R.string.toast_no_rgbd_directory, Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            setState(new StateClosing(loop, proxyFeedback, new StateOpening(rgbd_dir)));
+            State nextState = decideNextState(false, true);
+            if (nextState != null) setState(new StateClosing(loop, proxyFeedback, false, nextState));
         }
 
         @Override
         public void menuItemOpenDevice() {
-            UsbDevice[] devices = findUsableDevices();
-
-            if (devices.length == 0) {
-                Toast.makeText(Main.this, R.string.toast_no_usable_devices, Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            setState(new StateClosing(loop, proxyFeedback, new StateRequestingPermission(devices)));
+            State nextState = decideNextState(true, true);
+            if (nextState != null) setState(new StateClosing(loop, proxyFeedback, false, nextState));
         }
 
         @Override
         public void menuItemClose() {
-            setState(new StateClosing(loop, proxyFeedback, new StateIdle()));
+            setState(new StateClosing(loop, proxyFeedback, false, new StateIdle()));
         }
     }
 
     private class StateClosing extends State {
         private final MainLoop loop;
         private final ProxyFeedback proxyFeedback;
-        private State nextState;
+        private State nextState, originalNextState;
 
         private final MainLoop.Feedback feedback = new MainLoop.Feedback() {
             @Override
@@ -489,10 +493,11 @@ public class Main extends Activity implements View.OnClickListener, CompoundButt
             public void newFrame(long timeMs, Bitmap frame) { /* ignore */ }
         };
 
-        public StateClosing(MainLoop loop, ProxyFeedback proxyFeedback, State nextState) {
+        public StateClosing(MainLoop loop, ProxyFeedback proxyFeedback, boolean stopping, State nextState) {
             this.loop = loop;
             this.proxyFeedback = proxyFeedback;
-            this.nextState = nextState;
+            this.originalNextState = nextState;
+            this.nextState = stopping ? new StateStopped(originalNextState) : originalNextState;
         }
 
         @Override
@@ -504,12 +509,12 @@ public class Main extends Activity implements View.OnClickListener, CompoundButt
 
         @Override
         public void activityStop() {
-            nextState = new StateStopped();
+            nextState = new StateStopped(originalNextState);
         }
 
         @Override
         public void activityStart() {
-            nextState = new StateIdle();
+            nextState = originalNextState;
         }
     }
 
@@ -562,7 +567,7 @@ public class Main extends Activity implements View.OnClickListener, CompoundButt
 
         @Override
         public void activityStop() {
-            setState(new StateStopped());
+            setState(new StateStopped(getNextStateDecider(true)));
         }
     }
 }
