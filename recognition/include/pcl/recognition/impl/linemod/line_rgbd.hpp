@@ -695,7 +695,7 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::refineDetectionsAlongDepth ()
 
         if (/*pcl_isfinite (point.x) && pcl_isfinite (point.y) && */pcl_isfinite (point.z))
         {
-          const size_t bin_index = (point.z - min_depth) / step_size;
+          const size_t bin_index = static_cast<size_t> ((point.z - min_depth) / step_size);
           ++depth_bins[bin_index];
         }
       }
@@ -709,7 +709,7 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::refineDetectionsAlongDepth ()
       integral_depth_bins[bin_index] = depth_bins[bin_index] + integral_depth_bins[bin_index-1];
     }
 
-    const size_t bb_depth_range = detection.bounding_box.depth / step_size;
+    const size_t bb_depth_range = static_cast<size_t> (detection.bounding_box.depth / step_size);
 
     size_t max_nr_points = 0;
     size_t max_index = 0;
