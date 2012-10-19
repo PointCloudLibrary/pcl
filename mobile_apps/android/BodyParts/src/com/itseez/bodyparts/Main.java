@@ -9,20 +9,18 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.*;
 
 import java.io.*;
 import java.util.Arrays;
 
-public class Main extends Activity implements View.OnClickListener {
+public class Main extends Activity implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
     private static final String TAG = "bodyparts.Main";
 
     ImageView picture;
     TextView textTiming;
     TextView textStatus;
+    CheckBox checkLoop;
     private State state;
     private BodyPartsRecognizer recognizer;
 
@@ -83,6 +81,8 @@ public class Main extends Activity implements View.OnClickListener {
         picture.setOnClickListener(this);
         textTiming = (TextView) findViewById(R.id.text_timing);
         textStatus = (TextView) findViewById(R.id.text_status);
+        checkLoop = (CheckBox) findViewById(R.id.check_loop);
+        checkLoop.setOnCheckedChangeListener(this);
 
         ListView color_ref = (ListView) findViewById(R.id.color_list);
         color_ref.setAdapter(new BodyPartLabelAdapter(this, android.R.layout.simple_list_item_1, BodyPartLabel.values(),
@@ -158,10 +158,18 @@ public class Main extends Activity implements View.OnClickListener {
     }
 
     @Override
-    public void onClick(View view) {
-        switch (view.getId()) {
+    public void onClick(View v) {
+        switch (v.getId()) {
             case R.id.picture:
                 state.pictureClicked();
+        }
+    }
+
+    @Override
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        switch (buttonView.getId()) {
+            case R.id.check_loop:
+                state.loopChanged(isChecked);
         }
     }
 
@@ -192,6 +200,10 @@ public class Main extends Activity implements View.OnClickListener {
         }
 
         public void pictureClicked() { }
+
+        public void loopChanged(boolean isChecked) {
+            throw new IllegalStateException();
+        }
     }
 
     private class StateStopped extends State {
@@ -229,7 +241,7 @@ public class Main extends Activity implements View.OnClickListener {
                 return;
             }
 
-            setState(new StateOpening(rgbd_dir));
+            setState(new StateOpen(rgbd_dir));
         }
 
         @Override
@@ -259,6 +271,8 @@ public class Main extends Activity implements View.OnClickListener {
 
                 textTiming.setText(String.format(getResources().getString(R.string.timing_ms), timeMs));
                 Log.i(TAG, "Total: " + textTiming.getText());
+
+                if (checkLoop.isChecked()) loop.doOneFrame();
             }
 
             @Override
@@ -276,8 +290,20 @@ public class Main extends Activity implements View.OnClickListener {
         @Override
         public void enter() {
             proxyFeedback.replaceUnderlying(feedback);
-            textStatus.setText(R.string.status_paused);
+            textStatus.setText(R.string.status_open);
+            checkLoop.setEnabled(true);
             loop.doOneFrame();
+        }
+
+        @Override
+        public void loopChanged(boolean isChecked) {
+            if (isChecked) loop.doOneFrame();
+        }
+
+        @Override
+        public void leave() {
+            checkLoop.setEnabled(false);
+            checkLoop.setChecked(false);
         }
 
         @Override
@@ -302,7 +328,7 @@ public class Main extends Activity implements View.OnClickListener {
                 return;
             }
 
-            setState(new StateClosing(loop, proxyFeedback, new StateOpening(rgbd_dir)));
+            setState(new StateClosing(loop, proxyFeedback, new StateOpen(rgbd_dir)));
         }
 
         @Override
@@ -318,11 +344,11 @@ public class Main extends Activity implements View.OnClickListener {
 
         @Override
         public void pictureClicked() {
-            loop.doOneFrame();
+            if (!checkLoop.isChecked()) loop.doOneFrame();
         }
     }
 
-    private class StateOpening extends State {
+    private class StateOpen extends State {
         private File rgbdDir;
         private MainLoop loop;
         private MainLoop.Feedback feedback = new MainLoop.Feedback() {
@@ -354,7 +380,7 @@ public class Main extends Activity implements View.OnClickListener {
         };
         private ProxyFeedback proxyFeedback = new ProxyFeedback(Main.this, feedback);
 
-        public StateOpening(File rgbdDir) {
+        public StateOpen(File rgbdDir) {
             this.rgbdDir = rgbdDir;
         }
 
@@ -386,7 +412,7 @@ public class Main extends Activity implements View.OnClickListener {
                 return;
             }
 
-            setState(new StateClosing(loop, proxyFeedback, new StateOpening(rgbd_dir)));
+            setState(new StateClosing(loop, proxyFeedback, new StateOpen(rgbd_dir)));
         }
 
         @Override
@@ -445,9 +471,5 @@ public class Main extends Activity implements View.OnClickListener {
         public void activityStart() {
             nextState = new StateIdle();
         }
-    }
-
-    private class StateRunning extends State {
-
     }
 }

@@ -9,8 +9,9 @@
     <string name="toast_source_lost">Lost the data source.</string>
     <string name="status_idle">Idle.</string>
     <string name="status_opening">Opening…</string>
-    <string name="status_paused">Paused.</string>
+    <string name="status_open">Open.</string>
     <string name="status_closing">Closing…</string>
     <string name="caption_frame">Frame</string>
+    <string name="caption_loop">Loop</string>
     <string name="timing_ms">%1$s ms</string>
 </resources>

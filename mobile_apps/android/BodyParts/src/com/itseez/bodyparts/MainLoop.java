@@ -10,9 +10,7 @@ public class MainLoop {
     private static final String TAG = "bodyparts.MainLoop";
     private HandlerThread thread;
     private Handler handler;
-    private IdleHandler idleHandler = new IdleHandler();
     private Grabber grabber;
-    private boolean running = false;
 
     private Bitmap bmp = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
     private RGBDImage img = new RGBDImage();
@@ -78,33 +76,6 @@ public class MainLoop {
         return total_after - total_before;
     }
 
-    class IdleHandler implements MessageQueue.IdleHandler {
-        @Override
-        public boolean queueIdle() {
-            handler.post(new Runnable() {
-                @Override
-                public void run() {
-                    if (!running) return;
-
-                    final long total_ms = processImage();
-
-/*
-                    main.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            main.picture.setImageBitmap(bmp);
-
-                            main.textTiming.setText(String.format("%d ms", total_ms));
-                            Log.i(TAG, "Total: " + main.textTiming.getText());
-                        }
-                    });
-                    */
-                }
-            });
-            return true;
-        }
-    }
-
     public MainLoop(BodyPartsRecognizer bpr, File rgbdDir, Feedback feedback) {
         this.feedback = feedback;
         this.bpr = bpr;
@@ -124,28 +95,6 @@ public class MainLoop {
             }
         });
 
-    }
-
-    public void resume() {
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                running = true;
-                grabber.start();
-                Looper.myQueue().addIdleHandler(idleHandler);
-            }
-        });
-    }
-
-    public void pause() {
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                running = false;
-                grabber.stop();
-                Looper.myQueue().removeIdleHandler(idleHandler);
-            }
-        });
     }
 
     public void close() {

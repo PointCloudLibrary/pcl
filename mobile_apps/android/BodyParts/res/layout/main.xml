@@ -20,10 +20,17 @@
                        android:contentDescription="@string/caption_frame"
                     />
         </FrameLayout>
+        <CheckBox android:id="@+id/check_loop"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:layout_gravity="center"
+                  android:enabled="false"
+                  android:text="@string/caption_loop" />
         <TextView android:id="@+id/text_status"
                   android:layout_width="wrap_content"
                   android:layout_height="wrap_content"
                   android:layout_gravity="center"
+                  android:text="@string/status_idle"
                 />
         <TextView android:id="@+id/text_timing"
                   android:layout_width="wrap_content"
