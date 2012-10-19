@@ -2631,7 +2631,7 @@ pcl::visualization::PCLVisualizer::updatePolygonMesh (
       if (!isFinite (cloud->points[i]))
         continue;
 
-      lookup [i] = j;
+      lookup [i] = static_cast<int> (j);
       memcpy (&data[ptr], &cloud->points[i].x, sizeof (float) * 3);
       j++;
       ptr += 3;
@@ -2644,7 +2644,7 @@ pcl::visualization::PCLVisualizer::updatePolygonMesh (
   int max_size_of_polygon = -1;
   for (size_t i = 0; i < verts.size (); ++i)
     if (max_size_of_polygon < static_cast<int> (verts[i].vertices.size ()))
-      max_size_of_polygon = verts[i].vertices.size ();
+      max_size_of_polygon = static_cast<int> (verts[i].vertices.size ());
 
   // Update the cells
   cells = vtkSmartPointer<vtkCellArray>::New ();
@@ -3367,7 +3367,7 @@ pcl::visualization::PCLVisualizer::fromHandlersToScreen (
   (*cloud_actor_map_)[id].color_handlers.push_back (color_handler);
 
   // Save the viewpoint transformation matrix to the global actor map
-  vtkSmartPointer<vtkMatrix4x4> transformation = vtkSmartPointer<vtkMatrix4x4>::New();
+  vtkSmartPointer<vtkMatrix4x4> transformation = vtkSmartPointer<vtkMatrix4x4>::New ();
   convertToVtkMatrix (sensor_origin, sensor_orientation, transformation);
   (*cloud_actor_map_)[id].viewpoint_transformation_ = transformation;
 
