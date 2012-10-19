@@ -5,9 +5,6 @@
 
 #include <android/log.h>
 
-#include <boost/format.hpp>
-#include <boost/utility.hpp>
-
 #include <tbb/blocked_range2d.h>
 #include <tbb/parallel_for.h>
 #include <tbb/task_scheduler_init.h>
