@@ -5,8 +5,10 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ListView;
 
 import java.io.*;
 import java.util.Arrays;
@@ -35,7 +37,7 @@ public class Main extends Activity {
         int[] pixels = new int[labels.length];
 
         for (int i = 0; i < labels.length; ++i)
-            pixels[i] = labels[i] > 0 ? 0xFF00FF00 : 0x00000000;
+            pixels[i] = BodyPartLabel.values()[labels[i]].color;
 
         bmp.setPixels(pixels, 0, width, 0, 0, width, height);
         return bmp;
@@ -49,7 +51,12 @@ public class Main extends Activity {
         imageFiles = new File("/mnt/sdcard2/rgbd").listFiles();
         Arrays.sort(imageFiles);
 
+        ListView color_ref = (ListView) findViewById(R.id.color_ref);
+        color_ref.setAdapter(new BodyPartLabelAdapter(this, android.R.layout.simple_list_item_1, BodyPartLabel.values(),
+                (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE)));
+
         File[] treeFiles = new File("/mnt/sdcard2/trees").listFiles();
+        Arrays.sort(treeFiles);
         byte[][] trees = new byte[treeFiles.length][];
 
         for (int ti = 0; ti < trees.length; ++ti) {

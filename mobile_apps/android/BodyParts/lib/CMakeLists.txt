@@ -10,3 +10,4 @@ add_library(people_demo SHARED
 
 find_package(Boost REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS})
+target_link_libraries(people_demo log)

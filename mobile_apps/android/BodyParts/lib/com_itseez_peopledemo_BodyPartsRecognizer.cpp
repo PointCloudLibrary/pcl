@@ -14,11 +14,11 @@ Java_com_itseez_peopledemo_BodyPartsRecognizer_create
   (JNIEnv * env, jobject object, jobjectArray trees)
 {
   std::vector<jbyteArray> trees_elements (env->GetArrayLength (trees));
-  std::vector<char *> trees_elements_elements;
+  std::vector<char *> trees_elements_elements(trees_elements.size());
 
   for (std::size_t i = 0; i < trees_elements.size (); ++i)
   {
-    trees_elements[i] = static_cast<jbyteArray> (env->GetObjectArrayElement (trees, 0));
+    trees_elements[i] = static_cast<jbyteArray> (env->GetObjectArrayElement (trees, i));
     trees_elements_elements[i] = reinterpret_cast<char *>
         (env->GetByteArrayElements (trees_elements[i], NULL));
   }
@@ -32,11 +32,8 @@ Java_com_itseez_peopledemo_BodyPartsRecognizer_create
             trees_data.size (), &trees_data.front()));
 
   for (std::size_t i = 0; i < trees_elements.size (); ++i)
-  {
     env->ReleaseByteArrayElements (trees_elements[i],
                                    reinterpret_cast<jbyte *> (trees_elements_elements[i]), 0);
-    env->DeleteGlobalRef (trees_elements[i]);
-  }
 }
 
 JNIEXPORT void JNICALL
