@@ -149,7 +149,8 @@ points in the input dataset.
 
      // Create an empty kdtree representation, and pass it to the PFH estimation object. 
      // Its content will be filled inside the object, based on the given input dataset (as no other search surface is given).
-     pcl::KdTreeFLANN<pcl::PointXYZ>::Ptr tree (new pcl::KdTreeFLANN<pcl::PointXYZ> ());
+     pcl::search::KdTree<pcl::PointXYZ>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZ> ());
+     //pcl::KdTreeFLANN<pcl::PointXYZ>::Ptr tree (new pcl::KdTreeFLANN<pcl::PointXYZ> ()); -- older call for PCL 1.5-
      pfh.setSearchMethod (tree);
 
      // Output datasets
