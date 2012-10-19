@@ -12,7 +12,16 @@ Java_com_itseez_peopledemo_RGBDImage_cacheIds
   (JNIEnv * env, jclass clazz)
 {
   cachePtrID<RGBDImage> (env, clazz);
-  meth_ctor = env->GetMethodID (clazz, "<init>", "()V");
+  meth_ctor = env->GetMethodID (clazz, "<init>", "(J)V");
+}
+
+JNIEXPORT void JNICALL
+Java_com_itseez_peopledemo_RGBDImage_create
+  (JNIEnv * env, jobject object)
+{
+  RGBDImage * ptr = new RGBDImage;
+
+  setPtr (env, object, ptr);
 }
 
 JNIEXPORT void JNICALL
@@ -51,17 +60,14 @@ Java_com_itseez_peopledemo_RGBDImage_getWidth
   return ptr->width;
 }
 
-JNIEXPORT jobject JNICALL
+JNIEXPORT void JNICALL
 Java_com_itseez_peopledemo_RGBDImage_parse
-  (JNIEnv * env, jclass clazz, jbyteArray bytes)
+  (JNIEnv * env, jobject object, jbyteArray bytes)
 {
+  RGBDImage * ptr = getPtr<RGBDImage> (env, object);
   jbyte * bytes_elements = env->GetByteArrayElements (bytes, NULL);
 
-  RGBDImage * ptr = RGBDImage::parse (reinterpret_cast<char *> (bytes_elements));
+  ptr->parse (reinterpret_cast<char *> (bytes_elements));
 
   env->ReleaseByteArrayElements (bytes, bytes_elements, 0);
-
-  jobject object = env->NewObject (clazz, meth_ctor);
-  setPtr (env, object, ptr);
-  return object;
 }

@@ -17,6 +17,14 @@ JNIEXPORT void JNICALL Java_com_itseez_peopledemo_RGBDImage_cacheIds
 
 /*
  * Class:     com_itseez_peopledemo_RGBDImage
+ * Method:    create
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_com_itseez_peopledemo_RGBDImage_create
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     com_itseez_peopledemo_RGBDImage
  * Method:    free
  * Signature: ()V
  */
@@ -50,10 +58,10 @@ JNIEXPORT jint JNICALL Java_com_itseez_peopledemo_RGBDImage_getWidth
 /*
  * Class:     com_itseez_peopledemo_RGBDImage
  * Method:    parse
- * Signature: ([B)Lcom/itseez/peopledemo/RGBDImage;
+ * Signature: ([B)V
  */
-JNIEXPORT jobject JNICALL Java_com_itseez_peopledemo_RGBDImage_parse
-  (JNIEnv *, jclass, jbyteArray);
+JNIEXPORT void JNICALL Java_com_itseez_peopledemo_RGBDImage_parse
+  (JNIEnv *, jobject, jbyteArray);
 
 #ifdef __cplusplus
 }

@@ -20,12 +20,11 @@ import java.util.Arrays;
 public class Main extends Activity {
     private static final String TAG = "PEOPLE.MAIN";
 
-    private int imgNum = 5;
     private ImageView picture;
     private TextView timing_text;
-    private File[] imageFiles;
     private BodyPartsRecognizer bpr;
     private final EGL10 egl = (EGL10) EGLContext.getEGL();
+    private Grabber grabber = Grabber.createFileGrabber("/mnt/sdcard2/rgbd");
 
     private static byte[] readFile(File f) throws IOException {
         byte[] contents = new byte[(int) f.length()];
@@ -65,9 +64,6 @@ public class Main extends Activity {
         picture = (ImageView) findViewById(R.id.picture);
         timing_text = (TextView) findViewById(R.id.timing_text);
 
-        imageFiles = new File("/mnt/sdcard2/rgbd").listFiles();
-        Arrays.sort(imageFiles);
-
         ListView color_ref = (ListView) findViewById(R.id.color_list);
         color_ref.setAdapter(new BodyPartLabelAdapter(this, android.R.layout.simple_list_item_1, BodyPartLabel.values(),
                 (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE)));
@@ -86,30 +82,26 @@ public class Main extends Activity {
         }
 
         bpr = new BodyPartsRecognizer(trees);
-
+        grabber.start();
         processImage();
     }
 
     @Override
     public void onDestroy() {
+        grabber.stop();
         egl.eglTerminate(egl.eglGetDisplay(EGL10.EGL_DEFAULT_DISPLAY));
         super.onDestroy();
     }
 
     private void processImage() {
         long millis_before, millis_after, total_before, total_after;
-        RGBDImage img;
+        RGBDImage img = new RGBDImage();
 
         total_before = SystemClock.uptimeMillis();
 
-        try {
-            byte[] contents = readFile(imageFiles[imgNum]);
-            millis_before = SystemClock.uptimeMillis();
-            img = RGBDImage.parse(contents);
-        } catch (IOException ioe) {
-            Log.e(TAG, ioe.getMessage(), ioe);
-            return;
-        }
+        millis_before = SystemClock.uptimeMillis();
+
+        grabber.getFrame(img);
 
         Bitmap image_bmp = img.getColorsAsBitmap();
 
@@ -143,10 +135,6 @@ public class Main extends Activity {
     }
 
     public void pictureClicked(@SuppressWarnings("UnusedParameters") View view) {
-        ++imgNum;
-        if (imgNum >= imageFiles.length)
-            imgNum = 0;
-
         processImage();
     }
 }

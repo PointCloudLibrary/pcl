@@ -19,9 +19,11 @@ struct RGBDImage
   boost::uint32_t width, height;
   std::vector<RGBD> pixels;
 
+  RGBDImage();
   RGBDImage(boost::uint32_t width, boost::uint32_t height);
-  static RGBDImage * parse(const char * data);
-  void readColors(boost::int32_t * colors);
+  void parse(const char * data);
+  void readColors(boost::int32_t * colors) const;
+  void resize(boost::uint32_t width, boost::uint32_t height);
 };
 
 #endif // RGBD_IMAGE_H_

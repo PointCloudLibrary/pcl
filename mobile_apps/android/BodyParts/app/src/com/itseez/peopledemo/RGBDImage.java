@@ -3,7 +3,6 @@ package com.itseez.peopledemo;
 import android.graphics.Bitmap;
 
 public class RGBDImage {
-    @SuppressWarnings("UnusedDeclaration")
     private long ptr;
 
     private static native void cacheIds();
@@ -14,6 +13,13 @@ public class RGBDImage {
         super.finalize();
     }
 
+    @SuppressWarnings("UnusedDeclaration")
+    private RGBDImage(long ptr)
+    {
+        this.ptr = ptr;
+    }
+
+    private native void create();
     public native void free();
 
     public native void readColors(int[] colors);
@@ -22,7 +28,7 @@ public class RGBDImage {
 
     public native int getWidth();
 
-    public native static RGBDImage parse(byte[] bytes);
+    public native void parse(byte[] bytes);
 
     static {
         System.loadLibrary("people_demo");
@@ -39,5 +45,8 @@ public class RGBDImage {
         return bm;
     }
 
-    private RGBDImage() { }
+    public RGBDImage()
+    {
+        create();
+    }
 }
