@@ -269,14 +269,10 @@ BodyPartsRecognizer::recognize(const RGBDImage & image, std::vector<Label> & lab
 
   Stopwatch watch_consensus;
 
-#if GPU_CONSENSUS
-  consensus_finder->run(image.width, image.height, multi_labels, labels);
-#else
   tbb::parallel_for(
         tbb::blocked_range2d<unsigned>(0, depth_image.getHeight(), 0, depth_image.getWidth()),
         ConsensusHelper(multi_labels, labels, depth_image)
   );
-#endif
 
   __android_log_print(ANDROID_LOG_INFO, "BPR", "Finding consensus: %d ms", watch_consensus.elapsedMs());
 }
