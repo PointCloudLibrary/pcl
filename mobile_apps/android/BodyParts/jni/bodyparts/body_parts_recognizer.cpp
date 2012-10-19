@@ -17,8 +17,6 @@
 
 const Depth BACKGROUND_DEPTH = std::numeric_limits<Depth>::max();
 
-DEFINE_CLOUD_TAG(TagBPLabel)
-
 template <typename Format> void
 applyThreshold(ChannelRef<Format> & channel, Format threshold, Format bgValue)
 {

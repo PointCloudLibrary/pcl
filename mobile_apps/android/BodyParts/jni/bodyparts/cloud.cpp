@@ -11,7 +11,7 @@ ChannelRef<Format>::ChannelRef(int width, int height, Format * data)
   : width(width), height(height), size(width * height), data(data)
 { }
 
-typedef bc::flat_map<const char *, void *>::iterator storage_iterator;
+typedef boost::container::flat_map<const std::type_info *, void *, TypeInfoComparator>::iterator storage_iterator;
 
 void
 Cloud::resize(int width, int height)
@@ -27,13 +27,13 @@ Cloud::resize(int width, int height)
 }
 
 template <typename Format> ChannelRef<Format>
-Cloud::get(const char * key)
+Cloud::get(const std::type_info * key)
 {
   return ChannelRef<Format>(width_, height_, getRaw<Format>(key));
 }
 
 template <typename Format> Format *
-Cloud::getRaw(const char * key)
+Cloud::getRaw(const std::type_info * key)
 {
   storage_iterator pos = storage_.lower_bound(key);
   if (pos != storage_.end() && pos->first == key) return static_cast<Format *>(pos->second);
@@ -49,12 +49,9 @@ Cloud::~Cloud()
   resize(0, 0);
 }
 
-DEFINE_CLOUD_TAG(TagColor)
-DEFINE_CLOUD_TAG(TagDepth)
-
 #define DEFINE_FORMAT(Format) \
-  template ChannelRef<Format> Cloud::get(const char * key); \
-  template Format * Cloud::getRaw(const char * key);
+  template ChannelRef<Format> Cloud::get(const std::type_info * key); \
+  template Format * Cloud::getRaw(const std::type_info * key);
 
 DEFINE_FORMAT(unsigned char)
 DEFINE_FORMAT(signed char)

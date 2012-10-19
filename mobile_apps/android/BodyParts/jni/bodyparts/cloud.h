@@ -1,6 +1,8 @@
 #ifndef CLOUD_H_
 #define CLOUD_H_
 
+#include <typeinfo>
+
 #include <boost/noncopyable.hpp>
 #include <boost/config.hpp>
 #include <boost/container/flat_map.hpp>
@@ -26,12 +28,17 @@ struct ChannelRef
   ChannelRef(int width, int height, Format * data);
 };
 
+struct TypeInfoComparator
+{
+  bool operator () (const std::type_info * t1, const std::type_info * t2) const { return (*t1).before(*t2); }
+};
+
 struct Cloud : boost::noncopyable
 {
   template <typename Tag> ChannelRef<typename Tag::format_type>
   get()
   {
-    return get<typename Tag::format_type>(Tag::key);
+    return get<typename Tag::format_type>(&typeid(Tag));
   }
 
   void
@@ -47,17 +54,16 @@ struct Cloud : boost::noncopyable
 
 private:
   int width_, height_;
-  boost::container::flat_map<const char *, void *> storage_;
+  boost::container::flat_map<const std::type_info *, void *, TypeInfoComparator> storage_;
 
   template <typename Format> ChannelRef<Format>
-  get(const char * key);
+  get(const std::type_info * key);
 
   template <typename Format> Format *
-  getRaw(const char * key);
+  getRaw(const std::type_info * key);
 };
 
-#define DECLARE_CLOUD_TAG(tag, format) struct tag { typedef format format_type; static const char * key; };
-#define DEFINE_CLOUD_TAG(tag) const char * tag::key = BOOST_STRINGIZE(tag);
+#define DECLARE_CLOUD_TAG(tag, format) struct tag { typedef format format_type; };
 
 struct RGB
 {
