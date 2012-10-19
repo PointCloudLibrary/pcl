@@ -58,6 +58,12 @@ void OpenNIGrabber::tryConnect()
   if (depth_status == XN_STATUS_OK && image_status == XN_STATUS_OK)
   {
     connected = true;
+
+    if (depth.IsCapabilitySupported(XN_CAPABILITY_ALTERNATIVE_VIEW_POINT)) {
+      xn::AlternativeViewPointCapability alt_vp_cap(depth);
+      if (alt_vp_cap.IsViewPointSupported(image))
+        alt_vp_cap.SetViewPoint(image);
+    }
   }
   else
   {
