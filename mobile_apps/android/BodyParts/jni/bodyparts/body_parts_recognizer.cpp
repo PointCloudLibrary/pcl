@@ -265,6 +265,15 @@ public:
   }
 };
 
+void
+findConsensus(const std::vector<std::vector<Label> > & multi_labels, Cloud & cloud)
+{
+  tbb::parallel_for(
+        tbb::blocked_range2d<unsigned>(0, cloud.getHeight(), 0, cloud.getWidth()),
+        ConsensusHelper(multi_labels, cloud)
+  );
+}
+
 BodyPartsRecognizer::BodyPartsRecognizer(std::size_t num_trees, const char * trees[])
 {
   this->trees.resize(num_trees);
@@ -302,10 +311,7 @@ BodyPartsRecognizer::recognize(Cloud & cloud) const
   Cloud noisy;
   noisy.resize(cloud.getWidth(), cloud.getHeight());
 
-  tbb::parallel_for(
-        tbb::blocked_range2d<unsigned>(0, cloud.getHeight(), 0, cloud.getWidth()),
-        ConsensusHelper(multi_labels, noisy)
-  );
+  findConsensus(multi_labels, noisy);
 
   __android_log_print(ANDROID_LOG_INFO, "BPR", "Finding consensus: %d ms", watch_consensus.elapsedMs());
 
