@@ -142,17 +142,10 @@ struct DecisionTreeCPU
   void
   eval(const DepthImage & image, std::vector<Label> & labels) const
   {
-#if 0
-    for (unsigned x = 0; x < image.getWidth(); ++x)
-      for (unsigned y = 0; y < image.getHeight(); ++y)
-        labels[x + y * image.getWidth()] = image.getDepth(x, y) == BACKGROUND_DEPTH ?
-              Labels::Background : walk(image, x, y);
-#else
     tbb::parallel_for(
           tbb::blocked_range2d<unsigned>(0, image.getHeight(), 0, image.getWidth()),
           WalkHelper(*this, image, labels)
     );
-#endif
   }
 };
 
@@ -359,45 +352,10 @@ BodyPartsRecognizer::recognize(const RGBDImage & image, std::vector<Label> & lab
 
   Stopwatch watch_consensus;
 
-#if 0
-  for (std::size_t i = 0; i < labels.size (); ++i)
-  {
-    int bins[Labels::NUM_LABELS] = { 0 };
-
-    for (std::size_t ti = 0; ti < trees.size (); ++ti)
-      ++bins[multi_labels[ti][i]];
-
-    int consensus = maxElementNoTie(Labels::NUM_LABELS, bins);
-
-    if (consensus == -1)
-    {
-      std::fill (bins, bins + Labels::NUM_LABELS, 0);
-      unsigned x = i % image.width, y = i / image.width;
-      Depth d = depth_image.getDepth (x, y);
-
-      for (int off_x = -1; off_x <= 1; ++off_x)
-        for (int off_y = -1; off_y <= 1; ++off_y)
-        {
-          Depth off_d = depth_image.getDepth (x + off_x, y + off_y);
-
-          if (std::abs (d - off_d) < 50)
-            for (std::size_t ti = 0; ti < trees.size (); ++ti)
-              ++bins[multi_labels[ti][i]];
-        }
-
-      labels[i] = std::max_element (bins, bins + Labels::NUM_LABELS) - bins;
-    }
-    else
-    {
-      labels[i] = consensus;
-    }
-  }
-#else
   tbb::parallel_for(
         tbb::blocked_range2d<unsigned>(0, depth_image.getHeight(), 0, depth_image.getWidth()),
         ConsensusHelper(multi_labels, labels, depth_image)
   );
-#endif
 
   __android_log_print(ANDROID_LOG_INFO, "BPR", "Finding consensus: %d ms", watch_consensus.elapsedMs());
 }
