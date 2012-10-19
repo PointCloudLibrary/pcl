@@ -25,7 +25,12 @@ add_library(people_demo SHARED
 
 find_package(Boost REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS})
-target_link_libraries(people_demo log EGL GLESv2)
+
+find_path(TBB_INCLUDE_DIR tbb/tbb.h)
+find_library(TBB_LIBRARY tbb)
+include_directories(${TBB_INCLUDE_DIR})
+
+target_link_libraries(people_demo log EGL GLESv2 ${TBB_LIBRARY})
 
 if(CMAKE_COMPILER_IS_GNUCXX)
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -funroll-loops")

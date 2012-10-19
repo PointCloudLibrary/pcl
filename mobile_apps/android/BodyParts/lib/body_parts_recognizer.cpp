@@ -9,6 +9,10 @@
 #include <boost/format.hpp>
 #include <boost/multi_array.hpp>
 
+#include <tbb/blocked_range2d.h>
+#include <tbb/parallel_for.h>
+#include <tbb/task_scheduler_init.h>
+
 #include "body_parts_recognizer.h"
 #include "rgbd_image.h"
 #include "sources.h"
@@ -42,6 +46,16 @@ public:
   }
 
   Depth
+  getDepth(int x, int y) const
+  {
+    if (x < 0 || x >= width || y < 0 || y >= height)
+      return BACKGROUND_DEPTH;
+
+    return depths[x + width * y];
+  }
+
+#if 0
+  Depth
   getDepth(float x, float y) const
   {
     int intx = int (x), inty = int (y);
@@ -51,6 +65,7 @@ public:
 
     return depths[intx + width * inty];
   }
+#endif
 
   unsigned getWidth() const { return width; }
   unsigned getHeight() const { return height; }
@@ -58,6 +73,8 @@ public:
 
 struct DecisionTreeCPU
 {
+  tbb::task_scheduler_init tbb_init;
+
   struct Offsets
   {
     boost::int16_t du1, dv1, du2, dv2;
@@ -112,13 +129,44 @@ struct DecisionTreeCPU
     return leaves[nid - nodes.size()];
   }
 
+  template <typename T>
+  struct WalkHelper
+  {
+  private:
+    const DecisionTreeCPU & tree;
+    const DepthImage & image;
+    T & labels;
+
+  public:
+    WalkHelper(const DecisionTreeCPU & tree, const DepthImage & image, T & labels)
+      : tree(tree), image(image), labels(labels)
+    {
+    }
+
+    void
+    operator () (const tbb::blocked_range2d<unsigned> & range) const
+    {
+      for (unsigned y = range.rows().begin(); y < range.rows().end(); ++y)
+        for (unsigned x = range.cols().begin(); x < range.cols().end(); ++x)
+          labels[x + y * image.getWidth()] = image.getDepth(x, y) == BACKGROUND_DEPTH ?
+                Labels::Background : tree.walk(image, x, y);
+    }
+  };
+
   template <typename T> void
   eval(const DepthImage & image, T & labels) const
   {
+#if 0
     for (unsigned x = 0; x < image.getWidth(); ++x)
       for (unsigned y = 0; y < image.getHeight(); ++y)
         labels[x + y * image.getWidth()] = image.getDepth(x, y) == BACKGROUND_DEPTH ?
               Labels::Background : walk(image, x, y);
+#else
+    tbb::parallel_for(
+          tbb::blocked_range2d<unsigned>(0, image.getHeight(), 0, image.getWidth()),
+          WalkHelper<T>(*this, image, labels)
+    );
+#endif
   }
 };
 
@@ -128,7 +176,7 @@ struct DecisionTreeCPU
   __android_log_print(ANDROID_LOG_DEBUG, "GLES", "GLES error at line %d: 0x%x", __LINE__, error); \
   } } while (0)
 
-struct DecisionTree
+struct DecisionTreeGPU
 {
 private:
   EGLDisplay dpy;
@@ -197,7 +245,7 @@ private:
   }
 
 public:
-  DecisionTree(const char * data)
+  DecisionTreeGPU(const char * data)
   {
     dpy = eglGetDisplay (EGL_DEFAULT_DISPLAY);
     eglBindAPI (EGL_OPENGL_API);
@@ -310,7 +358,7 @@ public:
     CHECK_GL(glEnableVertexAttribArray(position_location));
   }
 
-  ~DecisionTree()
+  ~DecisionTreeGPU()
   {
     eglBindAPI (EGL_OPENGL_API);
     eglMakeCurrent (dpy, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
@@ -322,6 +370,7 @@ public:
   template <typename T> void
   eval(const DepthImage & image, T & labels) const
   {
+    Stopwatch preparation;
     eglMakeCurrent (dpy, dummy_surface, dummy_surface, ctx);
 
     std::vector<unsigned char> depth_image_buffer(4 * image.getWidth() * image.getHeight());
@@ -344,15 +393,21 @@ public:
     CHECK_GL(glUniform1i(glGetUniformLocation(prog, "image_height"), image.getHeight()));
 
     glViewport(0, 0, image.getWidth(), image.getHeight());
+
+    __android_log_print(ANDROID_LOG_INFO, "BPR", "Preparation: %d ms", preparation.elapsedMs());
+    Stopwatch rendering;
     CHECK_GL(glDrawArrays(GL_TRIANGLE_STRIP, 0, 4));
+    glFinish();
 
+    __android_log_print(ANDROID_LOG_INFO, "BPR", "Rendering: %d ms", rendering.elapsedMs());
+    Stopwatch retrieval;
     std::vector<unsigned char> labels_buffer(depth_image_buffer.size());
-
     CHECK_GL(glReadPixels(0, 0, image.getWidth(), image.getHeight(),
                           GL_RGBA, GL_UNSIGNED_BYTE, &labels_buffer.front()));
 
     for (std::size_t i = 0; i < image.getWidth() * image.getHeight(); ++i)
       labels[i] = labels_buffer[4 * i];
+    __android_log_print(ANDROID_LOG_INFO, "BPR", "Retrieval: %d ms", retrieval.elapsedMs());
   }
 };
 
@@ -378,6 +433,57 @@ BodyPartsRecognizer::BodyPartsRecognizer(std::size_t num_trees, const char * tre
   for (std::size_t i = 0; i < num_trees; ++i)
     this->trees[i].reset(new Tree(trees[i]));
 }
+
+struct ConsensusHelper
+{
+private:
+  const boost::multi_array<Label, 2> & multi_labels;
+  std::vector<Label> & labels;
+  const DepthImage & depth_image;
+
+public:
+  ConsensusHelper(const boost::multi_array<Label, 2> & multi_labels, std::vector<Label> & labels, const DepthImage & depth_image)
+    : multi_labels(multi_labels), labels(labels), depth_image(depth_image)
+  {
+  }
+
+  void operator ()(const tbb::blocked_range2d<unsigned> & range) const
+  {
+    for (unsigned y = range.rows().begin(); y < range.rows().end(); ++y)
+      for (unsigned x = range.cols().begin(); x < range.cols().end(); ++x)
+      {
+        int bins[Labels::NUM_LABELS] = { 0 };
+        std::size_t i = x + y * depth_image.getWidth();
+
+        for (std::size_t ti = 0; ti < multi_labels.shape ()[0]; ++ti)
+          ++bins[multi_labels[ti][i]];
+
+        int consensus = maxElementNoTie(Labels::NUM_LABELS, bins);
+
+        if (consensus == -1)
+        {
+          std::fill (bins, bins + Labels::NUM_LABELS, 0);
+          Depth d = depth_image.getDepth (x, y);
+
+          for (int off_x = -1; off_x <= 1; ++off_x)
+            for (int off_y = -1; off_y <= 1; ++off_y)
+            {
+              Depth off_d = depth_image.getDepth (x + off_x, y + off_y);
+
+              if (std::abs (d - off_d) < 50)
+                for (std::size_t ti = 0; ti < multi_labels.shape ()[0]; ++ti)
+                  ++bins[multi_labels[ti][i]];
+            }
+
+          labels[i] = std::max_element (bins, bins + Labels::NUM_LABELS) - bins;
+        }
+        else
+        {
+          labels[i] = consensus;
+        }
+      }
+  }
+};
 
 void
 BodyPartsRecognizer::recognize(const RGBDImage & image, std::vector<Label> & labels)
@@ -407,6 +513,7 @@ BodyPartsRecognizer::recognize(const RGBDImage & image, std::vector<Label> & lab
 
   Stopwatch watch_consensus;
 
+#if 0
   for (std::size_t i = 0; i < labels.size (); ++i)
   {
     int bins[Labels::NUM_LABELS] = { 0 };
@@ -439,5 +546,12 @@ BodyPartsRecognizer::recognize(const RGBDImage & image, std::vector<Label> & lab
       labels[i] = consensus;
     }
   }
+#else
+  tbb::parallel_for(
+        tbb::blocked_range2d<unsigned>(0, depth_image.getHeight(), 0, depth_image.getWidth()),
+        ConsensusHelper(multi_labels, labels, depth_image)
+  );
+#endif
+
   __android_log_print(ANDROID_LOG_INFO, "BPR", "Finding consensus: %d ms", watch_consensus.elapsedMs());
 }

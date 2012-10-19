@@ -47,13 +47,13 @@ struct Labels
   static const Label NUM_LABELS  = 32;
 };
 
-struct DecisionTree;
+struct DecisionTreeGPU;
 struct DecisionTreeCPU;
 
 struct BodyPartsRecognizer
 {
 private:
-  typedef DecisionTree Tree;
+  typedef DecisionTreeCPU Tree;
   std::vector<boost::shared_ptr<Tree> > trees;
 
 public:
