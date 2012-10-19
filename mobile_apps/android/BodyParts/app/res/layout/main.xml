@@ -12,7 +12,6 @@
                    android:layout_width="wrap_content"
                    android:layout_height="wrap_content"
                    android:scaleType="center"
-                   android:onClick="pictureClicked"
                 />
         <TextView android:id="@+id/timing_text"
                   android:layout_width="wrap_content"
