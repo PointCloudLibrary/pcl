@@ -20,23 +20,8 @@ public class Main extends Activity {
     TextView timingText;
     MainLoop loop;
 
-    private static byte[] readFile(File f) throws IOException {
-        byte[] contents = new byte[(int) f.length()];
-        InputStream stream = new FileInputStream(f);
-
-        try {
-            if (stream.read(contents) != contents.length)
-                Log.e(TAG, "Couldn't read the full file.");
-        } finally {
-            stream.close();
-        }
-
-        return contents;
-    }
-
-    private byte[] readAsset(String name) throws IOException {
+    private byte[] readStream(InputStream stream) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        InputStream stream = getAssets().open(name);
         final int chunk_size = 1000000;
         byte[] chunk = new byte[chunk_size];
         int read;
@@ -60,12 +45,20 @@ public class Main extends Activity {
                 (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE)));
 
         try {
-            String[] treeNames = getAssets().list("trees");
-            Arrays.sort(treeNames);
-            byte[][] trees = new byte[treeNames.length][];
+            File[] treePaths = new File(Environment.getExternalStorageDirectory(), "trees").listFiles();
+            Arrays.sort(treePaths);
+            byte[][] trees = new byte[treePaths.length][];
 
             for (int ti = 0; ti < trees.length; ++ti)
-                trees[ti] = readAsset(new File("trees", treeNames[ti]).toString());
+            {
+                FileInputStream tree_stream = new FileInputStream(treePaths[ti]);
+
+                try {
+                    trees[ti] = readStream(new FileInputStream(treePaths[ti]));
+                } finally {
+                    tree_stream.close();
+                }
+            }
 
             File rgbd_dir = new File(Environment.getExternalStorageDirectory(), "rgbd");
             if (rgbd_dir.isDirectory() && rgbd_dir.listFiles(new FilenameFilter() {
