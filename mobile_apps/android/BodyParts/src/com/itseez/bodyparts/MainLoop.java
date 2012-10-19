@@ -91,6 +91,7 @@ public class MainLoop {
                 grabber = MainLoop.this.rgbdDir == null
                         ? Grabber.createOpenNIGrabber()
                         : Grabber.createFileGrabber(MainLoop.this.rgbdDir.getAbsolutePath());
+                grabber.start();
                 MainLoop.this.feedback.initFinished(grabber.isConnected());
             }
         });
@@ -101,6 +102,7 @@ public class MainLoop {
         handler.post(new Runnable() {
             @Override
             public void run() {
+                grabber.stop();
                 grabber.free();
                 feedback.closeFinished();
             }

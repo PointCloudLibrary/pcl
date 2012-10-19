@@ -1,7 +1,14 @@
 package com.itseez.bodyparts;
 
 import android.app.Activity;
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
+import android.hardware.usb.UsbDevice;
+import android.hardware.usb.UsbManager;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
@@ -10,9 +17,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.*;
+import org.libusb.UsbHelper;
 
 import java.io.*;
-import java.util.Arrays;
+import java.util.*;
 
 public class Main extends Activity implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
     private static final String TAG = "bodyparts.Main";
@@ -157,6 +165,20 @@ public class Main extends Activity implements View.OnClickListener, CompoundButt
         return rgbd_dir;
     }
 
+    private UsbDevice[] findUsableDevices() {
+        UsbManager manager = UsbHelper.getManager();
+
+        HashMap<String, UsbDevice> dev_list = manager.getDeviceList();
+
+        List<UsbDevice> usable = new LinkedList<UsbDevice>();
+
+        for (UsbDevice device: dev_list.values())
+            if (device.getVendorId() == 0x045e && device.getProductId() == 0x02ae)
+                usable.add(device);
+
+        return usable.toArray(new UsbDevice[usable.size()]);
+    }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -241,17 +263,23 @@ public class Main extends Activity implements View.OnClickListener, CompoundButt
                 return;
             }
 
-            setState(new StateOpen(rgbd_dir));
+            setState(new StateOpening(rgbd_dir));
         }
 
         @Override
         public void menuItemOpenDevice() {
-            super.menuItemOpenDevice();    //To change body of overridden methods use File | Settings | File Templates.
-            // TODO: write this
+            UsbDevice[] devices = findUsableDevices();
+
+            if (devices.length == 0) {
+                Toast.makeText(Main.this, R.string.toast_no_usable_devices, Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            setState(new StateRequestingPermission(devices));
         }
     }
 
-    private class StatePaused extends State {
+    private class StateOpen extends State {
         private final MainLoop loop;
         private final ProxyFeedback proxyFeedback;
         private final MainLoop.Feedback feedback = new MainLoop.Feedback() {
@@ -277,12 +305,12 @@ public class Main extends Activity implements View.OnClickListener, CompoundButt
 
             @Override
             public void grabberBroken() {
-                Toast.makeText(Main.this, R.string.toast_source_lost, Toast.LENGTH_LONG);
+                Toast.makeText(Main.this, R.string.toast_source_lost, Toast.LENGTH_LONG).show();
                 setState(new StateClosing(loop, proxyFeedback, new StateIdle()));
             }
         };
 
-        public StatePaused(MainLoop loop, ProxyFeedback proxyFeedback) {
+        public StateOpen(MainLoop loop, ProxyFeedback proxyFeedback) {
             this.loop = loop;
             this.proxyFeedback = proxyFeedback;
         }
@@ -328,13 +356,19 @@ public class Main extends Activity implements View.OnClickListener, CompoundButt
                 return;
             }
 
-            setState(new StateClosing(loop, proxyFeedback, new StateOpen(rgbd_dir)));
+            setState(new StateClosing(loop, proxyFeedback, new StateOpening(rgbd_dir)));
         }
 
         @Override
         public void menuItemOpenDevice() {
-            super.menuItemOpenDevice();    //To change body of overridden methods use File | Settings | File Templates.
-            // TODO: write this
+            UsbDevice[] devices = findUsableDevices();
+
+            if (devices.length == 0) {
+                Toast.makeText(Main.this, R.string.toast_no_usable_devices, Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            setState(new StateClosing(loop, proxyFeedback, new StateRequestingPermission(devices)));
         }
 
         @Override
@@ -348,17 +382,17 @@ public class Main extends Activity implements View.OnClickListener, CompoundButt
         }
     }
 
-    private class StateOpen extends State {
+    private class StateOpening extends State {
         private File rgbdDir;
         private MainLoop loop;
         private MainLoop.Feedback feedback = new MainLoop.Feedback() {
             @Override
             public void initFinished(boolean success) {
                 if (success) {
-                    setState(new StatePaused(loop, proxyFeedback));
+                    setState(new StateOpen(loop, proxyFeedback));
                 }
                 else {
-                    Toast.makeText(Main.this, R.string.toast_failed_to_open, Toast.LENGTH_LONG);
+                    Toast.makeText(Main.this, R.string.toast_failed_to_open, Toast.LENGTH_LONG).show();
                     setState(new StateClosing(loop, proxyFeedback, new StateIdle()));
                 }
             }
@@ -380,7 +414,7 @@ public class Main extends Activity implements View.OnClickListener, CompoundButt
         };
         private ProxyFeedback proxyFeedback = new ProxyFeedback(Main.this, feedback);
 
-        public StateOpen(File rgbdDir) {
+        public StateOpening(File rgbdDir) {
             this.rgbdDir = rgbdDir;
         }
 
@@ -412,13 +446,19 @@ public class Main extends Activity implements View.OnClickListener, CompoundButt
                 return;
             }
 
-            setState(new StateClosing(loop, proxyFeedback, new StateOpen(rgbd_dir)));
+            setState(new StateClosing(loop, proxyFeedback, new StateOpening(rgbd_dir)));
         }
 
         @Override
         public void menuItemOpenDevice() {
-            super.menuItemOpenDevice();    //To change body of overridden methods use File | Settings | File Templates.
-            // TODO: write this
+            UsbDevice[] devices = findUsableDevices();
+
+            if (devices.length == 0) {
+                Toast.makeText(Main.this, R.string.toast_no_usable_devices, Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            setState(new StateClosing(loop, proxyFeedback, new StateRequestingPermission(devices)));
         }
 
         @Override
@@ -470,6 +510,59 @@ public class Main extends Activity implements View.OnClickListener, CompoundButt
         @Override
         public void activityStart() {
             nextState = new StateIdle();
+        }
+    }
+
+    private class StateRequestingPermission extends State {
+        private static final String ACTION_USB_PERMISSION = "com.itseez.bodyparts.USB_PERMISSION";
+        private final Set<UsbDevice> remaining;
+        private PendingIntent pendingIntent;
+
+        private final BroadcastReceiver permReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (!intent.getAction().equals(ACTION_USB_PERMISSION)) return;
+                if (!intent.hasExtra(UsbManager.EXTRA_DEVICE)) return;
+
+                UsbDevice device = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
+                boolean granted = intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false);
+
+                if (granted) {
+                    remaining.remove(device);
+                    if (remaining.isEmpty())
+                        setState(new StateOpening(null));
+                } else {
+                    Toast.makeText(Main.this, R.string.toast_permission_denied, Toast.LENGTH_LONG).show();
+                    setState(new StateIdle());
+                }
+            }
+        };
+
+        public StateRequestingPermission(UsbDevice[] devices) {
+            remaining = new HashSet<UsbDevice>(Arrays.asList(devices));
+        }
+
+        @Override
+        public void enter() {
+            pendingIntent = PendingIntent.getBroadcast(Main.this, 0, new Intent(ACTION_USB_PERMISSION), 0);
+            textStatus.setText(R.string.status_requesting_permission);
+            registerReceiver(permReceiver, new IntentFilter(ACTION_USB_PERMISSION));
+
+            UsbManager manager = UsbHelper.getManager();
+
+            for (UsbDevice device: remaining)
+                manager.requestPermission(device, pendingIntent);
+        }
+
+        @Override
+        public void leave() {
+            pendingIntent.cancel();
+            unregisterReceiver(permReceiver);
+        }
+
+        @Override
+        public void activityStop() {
+            setState(new StateStopped());
         }
     }
 }
