@@ -24,7 +24,8 @@ public class Main extends Activity {
     private TextView timing_text;
     private BodyPartsRecognizer bpr;
     private final EGL10 egl = (EGL10) EGLContext.getEGL();
-    private Grabber grabber = Grabber.createFileGrabber("/mnt/sdcard2/rgbd");
+    private Grabber grabber = Grabber.createOpenNIGrabber();
+    private RGBDImage img = new RGBDImage();
 
     private static byte[] readFile(File f) throws IOException {
         byte[] contents = new byte[(int) f.length()];
@@ -89,13 +90,14 @@ public class Main extends Activity {
     @Override
     public void onDestroy() {
         grabber.stop();
+        grabber.free();
+        img.free();
         egl.eglTerminate(egl.eglGetDisplay(EGL10.EGL_DEFAULT_DISPLAY));
         super.onDestroy();
     }
 
     private void processImage() {
         long millis_before, millis_after, total_before, total_after;
-        RGBDImage img = new RGBDImage();
 
         total_before = SystemClock.uptimeMillis();
 
@@ -123,7 +125,6 @@ public class Main extends Activity {
         canvas.drawBitmap(labels_bmp, 0, 0, null);
 
         picture.setImageBitmap(image_bmp);
-        img.free();
 
         millis_after = SystemClock.uptimeMillis();
 

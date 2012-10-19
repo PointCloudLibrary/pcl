@@ -58,11 +58,15 @@ void OpenNIGrabber::getFrame(RGBDImage * frame)
 
   for (unsigned i = 0; i < frame->height * frame->width; ++i)
   {
-    frame->pixels[i].d = depthMD.Data()[i];
+    RGBD pixel;
+    pixel.d = depthMD.Data()[i];
+
     XnRGB24Pixel color = imageMD.RGB24Data()[i];
-    frame->pixels[i].r = color.nRed;
-    frame->pixels[i].g = color.nGreen;
-    frame->pixels[i].b = color.nBlue;
+    pixel.r = color.nRed;
+    pixel.g = color.nGreen;
+    pixel.b = color.nBlue;
+
+    frame->pixels[i] = pixel;
   }
 }
 
