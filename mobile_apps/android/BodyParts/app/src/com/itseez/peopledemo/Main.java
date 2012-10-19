@@ -2,7 +2,6 @@ package com.itseez.peopledemo;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.Log;
@@ -14,7 +13,10 @@ import android.widget.TextView;
 
 import javax.microedition.khronos.egl.EGL10;
 import javax.microedition.khronos.egl.EGLContext;
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 
 public class Main extends Activity {
@@ -24,8 +26,9 @@ public class Main extends Activity {
     private TextView timing_text;
     private BodyPartsRecognizer bpr;
     private final EGL10 egl = (EGL10) EGLContext.getEGL();
-    private Grabber grabber = Grabber.createOpenNIGrabber();
+    private Grabber grabber;
     private RGBDImage img = new RGBDImage();
+    Bitmap bmp = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
 
     private static byte[] readFile(File f) throws IOException {
         byte[] contents = new byte[(int) f.length()];
@@ -41,19 +44,19 @@ public class Main extends Activity {
         return contents;
     }
 
-    private Bitmap labelsToBitmap(int width, int height, byte[] labels) {
+    private static void buildBitmap(Bitmap bmp, RGBDImage image, byte[] labels) {
         BodyPartLabel[] all_labels = BodyPartLabel.values();
-        Bitmap bmp = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
 
         int[] pixels = new int[labels.length];
+        image.readColors(pixels);
 
         for (int i = 0; i < labels.length; ++i) {
             byte label = labels[i];
-            pixels[i] = label >= 0 && label < all_labels.length ? all_labels[label].color : 0xFFFFFFFF;
+            if (label != BodyPartLabel.BACKGROUND.ordinal())
+                pixels[i] = label >= 0 && label < all_labels.length ? all_labels[label].color : 0xFFFFFFFF;
         }
 
-        bmp.setPixels(pixels, 0, width, 0, 0, width, height);
-        return bmp;
+        bmp.setPixels(pixels, 0, image.getWidth(), 0, 0, image.getWidth(), image.getHeight());
     }
 
     @Override
@@ -83,17 +86,40 @@ public class Main extends Activity {
         }
 
         bpr = new BodyPartsRecognizer(trees);
+    }
+
+    @Override
+    public void onDestroy() {
+        grabber.free();
+        img.free();
+        egl.eglTerminate(egl.eglGetDisplay(EGL10.EGL_DEFAULT_DISPLAY));
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        grabber.stop();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         grabber.start();
         processImage();
     }
 
     @Override
-    public void onDestroy() {
-        grabber.stop();
+    protected void onStop() {
+        super.onStop();
         grabber.free();
-        img.free();
-        egl.eglTerminate(egl.eglGetDisplay(EGL10.EGL_DEFAULT_DISPLAY));
-        super.onDestroy();
+        grabber = null;
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        grabber = Grabber.createOpenNIGrabber();
     }
 
     private void processImage() {
@@ -104,8 +130,6 @@ public class Main extends Activity {
         millis_before = SystemClock.uptimeMillis();
 
         grabber.getFrame(img);
-
-        Bitmap image_bmp = img.getColorsAsBitmap();
 
         millis_after = SystemClock.uptimeMillis();
         Log.i(TAG, String.format("Reading image: %d ms", millis_after - millis_before));
@@ -119,15 +143,12 @@ public class Main extends Activity {
 
         millis_before = SystemClock.uptimeMillis();
 
-        Bitmap labels_bmp = labelsToBitmap(img.getWidth(), img.getHeight(), labels_array);
-
-        Canvas canvas = new Canvas(image_bmp);
-        canvas.drawBitmap(labels_bmp, 0, 0, null);
-
-        picture.setImageBitmap(image_bmp);
+        if (bmp.getWidth() != img.getWidth() || bmp.getHeight() != img.getHeight())
+            bmp = Bitmap.createBitmap(img.getWidth(), img.getHeight(), Bitmap.Config.ARGB_8888);
+        buildBitmap(bmp, img, labels_array);
+        picture.setImageBitmap(bmp);
 
         millis_after = SystemClock.uptimeMillis();
-
         Log.i(TAG, String.format("Drawing: %d ms", millis_after - millis_before));
 
         total_after = SystemClock.uptimeMillis();
