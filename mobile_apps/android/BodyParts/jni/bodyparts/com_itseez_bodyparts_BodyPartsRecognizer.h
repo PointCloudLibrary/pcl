@@ -34,7 +34,7 @@ JNIEXPORT void JNICALL Java_com_itseez_bodyparts_BodyPartsRecognizer_free
 /*
  * Class:     com_itseez_bodyparts_BodyPartsRecognizer
  * Method:    recognize
- * Signature: (Lcom/itseez/peopledemo/RGBDImage;)[B
+ * Signature: (Lcom/itseez/bodyparts/Cloud;)[B
  */
 JNIEXPORT jbyteArray JNICALL Java_com_itseez_bodyparts_BodyPartsRecognizer_recognize
   (JNIEnv *, jobject, jobject);

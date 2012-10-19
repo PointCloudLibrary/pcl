@@ -59,8 +59,8 @@ Java_com_itseez_bodyparts_Grabber_getFrame
   (JNIEnv * env, jobject object, jobject frame)
 {
   Grabber * ptr = getPtr<Grabber>(env, object);
-  RGBDImage * frame_ptr = getPtr<RGBDImage>(env, frame);
-  ptr->getFrame(frame_ptr);
+  Cloud * frame_ptr = getPtr<Cloud>(env, frame);
+  ptr->getFrame(*frame_ptr);
 }
 
 JNIEXPORT void JNICALL

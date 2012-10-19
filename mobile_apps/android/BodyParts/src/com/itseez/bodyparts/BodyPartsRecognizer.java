@@ -25,5 +25,5 @@ public class BodyPartsRecognizer {
         create(trees);
     }
 
-    public native byte[] recognize(RGBDImage image);
+    public native byte[] recognize(Cloud image);
 }

@@ -1,8 +1,6 @@
 package com.itseez.bodyparts;
 
-import android.graphics.Bitmap;
-
-public class RGBDImage {
+public class Cloud {
     private long ptr;
 
     private static native void cacheIds();
@@ -14,7 +12,7 @@ public class RGBDImage {
     }
 
     @SuppressWarnings("UnusedDeclaration")
-    private RGBDImage(long ptr)
+    private Cloud(long ptr)
     {
         this.ptr = ptr;
     }
@@ -28,24 +26,12 @@ public class RGBDImage {
 
     public native int getWidth();
 
-    public native void parse(byte[] bytes);
-
     static {
         System.loadLibrary("bodyparts");
         cacheIds();
     }
 
-    public Bitmap getColorsAsBitmap() {
-        int w = getWidth(), h = getHeight();
-        int[] colors = new int[w * h];
-        readColors(colors);
-
-        Bitmap bm = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
-        bm.setPixels(colors, 0, w, 0, 0, w, h);
-        return bm;
-    }
-
-    public RGBDImage()
+    public Cloud()
     {
         create();
     }

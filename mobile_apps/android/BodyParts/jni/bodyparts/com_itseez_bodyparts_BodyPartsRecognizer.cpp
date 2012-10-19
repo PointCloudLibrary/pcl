@@ -45,16 +45,16 @@ Java_com_itseez_bodyparts_BodyPartsRecognizer_free
 
 JNIEXPORT jbyteArray JNICALL
 Java_com_itseez_bodyparts_BodyPartsRecognizer_recognize
-  (JNIEnv * env, jobject object, jobject image)
+  (JNIEnv * env, jobject object, jobject cloud)
 {
   BodyPartsRecognizer * bpr = getPtr<BodyPartsRecognizer> (env, object);
-  RGBDImage * image_ptr = getPtr<RGBDImage> (env, image);
+  Cloud * cloud_ptr = getPtr<Cloud> (env, cloud);
 
-  std::vector<Label> labels;
-  bpr->recognize (*image_ptr, labels);
+  bpr->recognize (*cloud_ptr);
+  ChannelRef<Label> labels = cloud_ptr->get<TagBPLabel>();
 
-  jbyteArray result = env->NewByteArray (labels.size ());
-  env->SetByteArrayRegion (result, 0, labels.size (), reinterpret_cast<jbyte *> (&labels.front ()));
+  jbyteArray result = env->NewByteArray (labels.size);
+  env->SetByteArrayRegion (result, 0, labels.size, reinterpret_cast<jbyte *> (labels.data));
 
   return result;
 }

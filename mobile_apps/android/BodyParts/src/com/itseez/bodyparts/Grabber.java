@@ -26,7 +26,7 @@ public class Grabber {
 
     public native boolean isConnected();
 
-    public native void getFrame(RGBDImage frame);
+    public native void getFrame(Cloud frame);
 
     public native void start();
     public native void stop();

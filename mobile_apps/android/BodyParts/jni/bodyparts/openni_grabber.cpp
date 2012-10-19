@@ -19,7 +19,7 @@ public:
 
   virtual bool isConnected() const { return connected; }
 
-  virtual void getFrame(RGBDImage * frame);
+  virtual void getFrame(Cloud & frame);
 
   virtual void start();
   virtual void stop();
@@ -72,7 +72,7 @@ void OpenNIGrabber::tryConnect()
   }
 }
 
-void OpenNIGrabber::getFrame(RGBDImage * frame)
+void OpenNIGrabber::getFrame(Cloud & frame)
 {
   if (!connected) return;
 
@@ -92,19 +92,19 @@ void OpenNIGrabber::getFrame(RGBDImage * frame)
   image.GetMetaData(imageMD);
   __android_log_print(ANDROID_LOG_DEBUG, "OpenNIGrabber", "Image MD: width %d height %d.", imageMD.XRes(), imageMD.YRes());
 
-  frame->resize(depthMD.XRes(), depthMD.YRes());
+  frame.resize(depthMD.XRes(), depthMD.YRes());
 
-  for (unsigned i = 0; i < frame->height * frame->width; ++i)
+  ChannelRef<RGB> rgb = frame.get<TagColor>();
+  ChannelRef<Depth> depth = frame.get<TagDepth>();
+
+  for (int i = 0; i < frame.getWidth() * frame.getHeight(); ++i)
   {
-    RGBD pixel;
-    pixel.d = depthMD.Data()[i];
+    depth.data[i] = depthMD.Data()[i];
 
     XnRGB24Pixel color = imageMD.RGB24Data()[i];
-    pixel.r = color.nRed;
-    pixel.g = color.nGreen;
-    pixel.b = color.nBlue;
-
-    frame->pixels[i] = pixel;
+    rgb.data[i].r = color.nRed;
+    rgb.data[i].g = color.nGreen;
+    rgb.data[i].b = color.nBlue;
   }
 }
 

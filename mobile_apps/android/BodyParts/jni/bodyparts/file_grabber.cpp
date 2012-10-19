@@ -3,6 +3,7 @@
 #include <boost/filesystem/fstream.hpp>
 
 #include "grabber.h"
+#include "rgbd_image.h"
 
 namespace fs = boost::filesystem;
 
@@ -16,7 +17,7 @@ public:
 
   virtual bool isConnected() const { return !file_list.empty(); }
 
-  virtual void getFrame(RGBDImage * frame);
+  virtual void getFrame(Cloud & frame);
 
   virtual void start() {}
   virtual void stop() {}
@@ -35,7 +36,7 @@ FileGrabber::FileGrabber(const std::string & directory)
   }
 }
 
-void FileGrabber::getFrame(RGBDImage * frame)
+void FileGrabber::getFrame(Cloud & frame)
 {
   __android_log_print(ANDROID_LOG_DEBUG, "FileGrabber", "Readin' %s", file_list[current_file].c_str());
   fs::ifstream is(file_list[current_file], std::ios::binary);
@@ -49,7 +50,21 @@ void FileGrabber::getFrame(RGBDImage * frame)
 
   __android_log_print(ANDROID_LOG_DEBUG, "FileGrabber", "Read %d bytes", int(size));
 
-  frame->parse(&contents.front());
+  RGBDImage temp;
+  temp.parse(&contents.front());
+
+  frame.resize(temp.width, temp.height);
+
+  ChannelRef<RGB> rgb = frame.get<TagColor>();
+  ChannelRef<Depth> depth = frame.get<TagDepth>();
+
+  for (int i = 0; i < temp.width * temp.height; ++i)
+  {
+    rgb.data[i].r = temp.pixels[i].r;
+    rgb.data[i].g = temp.pixels[i].g;
+    rgb.data[i].b = temp.pixels[i].b;
+    depth.data[i] = temp.pixels[i].d;
+  }
 
   ++current_file;
   if (current_file >= file_list.size())

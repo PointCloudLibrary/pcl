@@ -13,7 +13,7 @@ public class MainLoop {
     private Grabber grabber;
 
     private Bitmap bmp = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
-    private RGBDImage img = new RGBDImage();
+    private Cloud img = new Cloud();
     private BodyPartsRecognizer bpr;
     private File rgbdDir;
     private Feedback feedback;
@@ -25,7 +25,7 @@ public class MainLoop {
         void newFrame(long timeMs, Bitmap frame);
     }
 
-    private static void buildBitmap(Bitmap bmp, RGBDImage image, byte[] labels) {
+    private static void buildBitmap(Bitmap bmp, Cloud image, byte[] labels) {
         BodyPartLabel[] all_labels = BodyPartLabel.values();
 
         int[] pixels = new int[labels.length];

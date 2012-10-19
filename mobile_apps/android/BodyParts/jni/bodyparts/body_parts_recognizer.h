@@ -7,7 +7,7 @@
 #include <boost/cstdint.hpp>
 #include <boost/shared_ptr.hpp>
 
-#include "rgbd_image.h"
+#include "cloud.h"
 
 typedef boost::uint8_t Label;
 
@@ -48,6 +48,8 @@ struct Labels
   static const unsigned NUM_LABELS  = 32;
 };
 
+DECLARE_CLOUD_TAG(TagBPLabel, Label)
+
 struct DecisionTreeCPU;
 
 struct BodyPartsRecognizer
@@ -58,7 +60,7 @@ private:
 
 public:
   BodyPartsRecognizer(std::size_t num_trees, const char * trees[]);
-  void recognize(const RGBDImage & image, std::vector<Label> & labels);
+  void recognize(Cloud & cloud);
 };
 
 #endif // BODY_PARTS_RECOGNIZER_

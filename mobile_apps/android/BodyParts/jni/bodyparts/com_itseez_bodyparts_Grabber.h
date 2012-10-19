@@ -26,7 +26,7 @@ JNIEXPORT void JNICALL Java_com_itseez_bodyparts_Grabber_free
 /*
  * Class:     com_itseez_bodyparts_Grabber
  * Method:    createOpenNIGrabber
- * Signature: ()Lcom/itseez/peopledemo/Grabber;
+ * Signature: ()Lcom/itseez/bodyparts/Grabber;
  */
 JNIEXPORT jobject JNICALL Java_com_itseez_bodyparts_Grabber_createOpenNIGrabber
   (JNIEnv *, jclass);
@@ -34,7 +34,7 @@ JNIEXPORT jobject JNICALL Java_com_itseez_bodyparts_Grabber_createOpenNIGrabber
 /*
  * Class:     com_itseez_bodyparts_Grabber
  * Method:    createFileGrabber
- * Signature: (Ljava/lang/String;)Lcom/itseez/peopledemo/Grabber;
+ * Signature: (Ljava/lang/String;)Lcom/itseez/bodyparts/Grabber;
  */
 JNIEXPORT jobject JNICALL Java_com_itseez_bodyparts_Grabber_createFileGrabber
   (JNIEnv *, jclass, jstring);
@@ -50,7 +50,7 @@ JNIEXPORT jboolean JNICALL Java_com_itseez_bodyparts_Grabber_isConnected
 /*
  * Class:     com_itseez_bodyparts_Grabber
  * Method:    getFrame
- * Signature: (Lcom/itseez/peopledemo/RGBDImage;)V
+ * Signature: (Lcom/itseez/bodyparts/Cloud;)V
  */
 JNIEXPORT void JNICALL Java_com_itseez_bodyparts_Grabber_getFrame
   (JNIEnv *, jobject, jobject);
