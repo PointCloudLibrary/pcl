@@ -147,8 +147,8 @@ void filterLabels(Cloud & noisy, Cloud & output, int radius)
   ChannelRef<Label> noisy_labels = noisy.get<TagBPLabel>();
   ChannelRef<Label> labels = output.get<TagBPLabel>();
 
-  for (unsigned j = 0; j < width; ++j)
-    for (unsigned i = 0; i < height; ++i)
+  for (unsigned i = 0; i < height; ++i)
+    for (unsigned j = 0; j < width; ++j)
     {
       unsigned idx = i * width + j;
 
@@ -162,8 +162,8 @@ void filterLabels(Cloud & noisy, Cloud & output, int radius)
       Label mode = -1;
       Label mode_count = 0;
 
-      for (int dx = -radius; dx <= radius; ++dx)
-        for (int dy = -radius; dy <= radius; ++dy)
+      for (int dy = -radius; dy <= radius; ++dy)
+        for (int dx = -radius; dx <= radius; ++dx)
         {
           Label current = noisy_labels.data[idx + dx + dy * width];
           ++bins[current];
