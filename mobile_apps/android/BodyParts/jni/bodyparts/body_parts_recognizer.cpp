@@ -163,6 +163,38 @@ int maxElementNoTie(int num, unsigned * elements)
   return max_element;
 }
 
+void filterLabels(unsigned width, unsigned height, const std::vector<Label> & noisyLabels, std::vector<Label> & labels, int radius)
+{
+  for (unsigned j = 0; j < width; ++j)
+    for (unsigned i = 0; i < height; ++i)
+    {
+      unsigned idx = i * width + j;
+
+      if (i < radius || i >= height - radius || j < radius || j >= width - radius || noisyLabels[idx] == Labels::Background)
+      {
+        labels[idx] = Labels::Background;
+        continue;
+      }
+
+      int bins[Labels::NUM_LABELS] = { 0 };
+      Label mode = -1;
+      Label mode_count = 0;
+
+      for (int dx = -radius; dx <= radius; ++dx)
+        for (int dy = -radius; dy <= radius; ++dy)
+        {
+          Label current = noisyLabels[idx + dx + dy * width];
+          ++bins[current];
+          if (bins[current] > mode_count) {
+            mode_count = bins[current];
+            mode = current;
+          }
+        }
+
+      labels[idx] = mode;
+    }
+}
+
 struct ConsensusHelper
 {
 private:
@@ -269,10 +301,19 @@ BodyPartsRecognizer::recognize(const RGBDImage & image, std::vector<Label> & lab
 
   Stopwatch watch_consensus;
 
+  std::vector<Label> noisy_labels (labels.size ());
+
   tbb::parallel_for(
         tbb::blocked_range2d<unsigned>(0, depth_image.getHeight(), 0, depth_image.getWidth()),
-        ConsensusHelper(multi_labels, labels, depth_image)
+        ConsensusHelper(multi_labels, noisy_labels, depth_image)
   );
 
   __android_log_print(ANDROID_LOG_INFO, "BPR", "Finding consensus: %d ms", watch_consensus.elapsedMs());
+
+  Stopwatch watch_filtering;
+
+  filterLabels(depth_image.getWidth(), depth_image.getHeight(), noisy_labels, labels, 2);
+
+  __android_log_print(ANDROID_LOG_INFO, "BPR", "Filtering labels: %d ms", watch_consensus.elapsedMs());
+
 }
