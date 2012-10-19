@@ -52,7 +52,7 @@ using namespace pcl::outofcore;
 typedef OutofcoreOctreeBase<OutofcoreOctreeDiskContainer<pcl::PointXYZ>, pcl::PointXYZ> OctreeDisk;
 typedef OutofcoreOctreeBaseNode<OutofcoreOctreeDiskContainer<pcl::PointXY>, pcl::PointXYZ> OctreeDiskNode;
 
-int main (int argc, char** argv)
+int main (int, char** argv)
 {
 
   //Find all PCD files located in argv[1] directory
