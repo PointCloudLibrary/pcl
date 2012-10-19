@@ -101,26 +101,44 @@ public class Main extends Activity implements View.OnClickListener, CompoundButt
         color_ref.setAdapter(new BodyPartLabelAdapter(this, android.R.layout.simple_list_item_1, BodyPartLabel.values(),
                 (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE)));
 
+        InputStream[] treeStreams = null;
+
         try {
-            File[] treePaths = new File(Environment.getExternalStorageDirectory(), "trees").listFiles();
-            Arrays.sort(treePaths);
-            byte[][] trees = new byte[treePaths.length][];
+            String[] treeAssets = getAssets().list("trees");
+            Arrays.sort(treeAssets);
+
+            if (treeAssets.length != 0) {
+                treeStreams = new InputStream[treeAssets.length];
+                for (int ti = 0; ti < treeAssets.length; ++ti)
+                    treeStreams[ti] = getAssets().open("trees/" + treeAssets[ti]);
+            } else {
+                File[] treePaths = new File(Environment.getExternalStorageDirectory(), "trees").listFiles();
+                Arrays.sort(treePaths);
+                treeStreams = new InputStream[treePaths.length];
+                for (int ti = 0; ti < treeAssets.length; ++ti)
+                    treeStreams[ti] = new FileInputStream(treePaths[ti]);
+            }
+
+            byte[][] trees = new byte[treeStreams.length][];
 
             for (int ti = 0; ti < trees.length; ++ti)
             {
-                FileInputStream tree_stream = new FileInputStream(treePaths[ti]);
-
-                try {
-                    trees[ti] = readStream(new FileInputStream(treePaths[ti]));
-                } finally {
-                    tree_stream.close();
-                }
+                trees[ti] = readStream(treeStreams[ti]);
             }
 
             recognizer = new BodyPartsRecognizer(trees);
         } catch (IOException ioe) {
             Log.e(TAG, "Couldn't read tree assets.", ioe);
             throw new RuntimeException(ioe);
+        } finally {
+            if (treeStreams != null)
+                for (InputStream stream: treeStreams)
+                    if (stream != null) try {
+                        stream.close();
+                    } catch (IOException ioe) {
+                        Log.e(TAG, "Failed to close a tree stream.", ioe);
+                        // Don't really care.
+                    }
         }
 
         state = new StateStopped(new StateIdle());
