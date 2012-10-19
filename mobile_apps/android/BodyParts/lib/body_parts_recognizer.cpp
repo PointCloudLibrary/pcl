@@ -245,14 +245,14 @@ public:
   }
 };
 
-int maxElementNoTie(int num, int * elements)
+int maxElementNoTie(int num, unsigned * elements)
 {
   int max_element = 0;
-  int max = elements[max_element];
+  unsigned max = elements[max_element];
 
   for (int i = 1; i < num; ++i)
   {
-    int val = elements[i];
+    unsigned val = elements[i];
     if (max < val) { max_element = i; max = val; }
     else if (max == val) { max_element = -1; }
   }
@@ -330,8 +330,19 @@ public:
     for (unsigned y = range.rows().begin(); y < range.rows().end(); ++y)
       for (unsigned x = range.cols().begin(); x < range.cols().end(); ++x)
       {
-        int bins[Labels::NUM_LABELS] = { 0 };
         std::size_t i = x + y * depth_image.getWidth();
+
+        bool background = true;
+        for (std::size_t ti = 0; ti < multi_labels.size (); ++ti)
+          if (multi_labels[ti][i] != Labels::Background) background = false;
+
+        if (background)
+        {
+          labels[i] = Labels::Background;
+          continue;
+        }
+
+        unsigned bins[Labels::NUM_LABELS] = { 0 };
 
         for (std::size_t ti = 0; ti < multi_labels.size (); ++ti)
           ++bins[multi_labels[ti][i]];
