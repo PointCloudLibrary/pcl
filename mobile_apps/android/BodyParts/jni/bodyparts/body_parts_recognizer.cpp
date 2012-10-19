@@ -11,8 +11,6 @@
 
 #include "body_parts_recognizer.h"
 #include "cloud.h"
-//#include "rgbd_image.h"
-//#include "sources.h"
 #include "stopwatch.h"
 
 const Depth BACKGROUND_DEPTH = std::numeric_limits<Depth>::max();
