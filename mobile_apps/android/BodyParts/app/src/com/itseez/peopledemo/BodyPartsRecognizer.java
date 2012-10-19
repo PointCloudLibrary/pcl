@@ -6,7 +6,7 @@ public class BodyPartsRecognizer {
 
     private static native void cacheIds();
 
-    private native void create();
+    private native void create(byte[][] trees);
 
     @Override
     protected void finalize() throws Throwable {
@@ -21,8 +21,8 @@ public class BodyPartsRecognizer {
         cacheIds();
     }
 
-    public BodyPartsRecognizer() {
-        create();
+    public BodyPartsRecognizer(byte[][] trees) {
+        create(trees);
     }
 
     public native byte[] recognize(RGBDImage image);

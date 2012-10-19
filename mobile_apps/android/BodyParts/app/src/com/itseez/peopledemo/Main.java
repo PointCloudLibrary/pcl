@@ -17,6 +17,7 @@ public class Main extends Activity {
     private int imgNum = 0;
     private ImageView picture;
     private File[] imageFiles;
+    private BodyPartsRecognizer bpr;
 
     private static byte[] readInputStream(InputStream is) throws IOException {
         byte[] buffer = new byte[1024 * 1024];
@@ -48,6 +49,27 @@ public class Main extends Activity {
         imageFiles = new File("/mnt/sdcard2/rgbd").listFiles();
         Arrays.sort(imageFiles);
 
+        File[] treeFiles = new File("/mnt/sdcard2/trees").listFiles();
+        byte[][] trees = new byte[treeFiles.length][];
+
+        for (int ti = 0; ti < trees.length; ++ti) {
+            try {
+                FileInputStream tree_stream = new FileInputStream(treeFiles[ti]);
+                try {
+                    trees[ti] = readInputStream(tree_stream);
+                }
+                finally {
+                    tree_stream.close();
+                }
+            }
+            catch (IOException ioe) {
+                Log.e(TAG, ioe.getMessage(), ioe);
+                return;
+            }
+        }
+
+        bpr = new BodyPartsRecognizer(trees);
+
         showImage();
     }
 
@@ -56,21 +78,24 @@ public class Main extends Activity {
 
         try {
             InputStream rgbd_in = new FileInputStream(imageFiles[imgNum]);
-            img = RGBDImage.parse(readInputStream(rgbd_in));
-            rgbd_in.close();
+            try {
+                img = RGBDImage.parse(readInputStream(rgbd_in));
+            } finally {
+                rgbd_in.close();
+            }
         } catch (IOException ioe) {
             Log.e(TAG, ioe.getMessage(), ioe);
             return;
         }
 
         Bitmap image_bmp = img.getColorsAsBitmap();
-        BodyPartsRecognizer bpr = new BodyPartsRecognizer();
         Bitmap labels_bmp = labelsToBitmap(img.getWidth(), img.getHeight(), bpr.recognize(img));
 
         Canvas canvas = new Canvas(image_bmp);
         canvas.drawBitmap(labels_bmp, 0, 0, null);
 
         picture.setImageBitmap(image_bmp);
+        img.free();
     }
 
     public void pictureClicked(View view) {

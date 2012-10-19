@@ -18,10 +18,10 @@ JNIEXPORT void JNICALL Java_com_itseez_peopledemo_BodyPartsRecognizer_cacheIds
 /*
  * Class:     com_itseez_peopledemo_BodyPartsRecognizer
  * Method:    create
- * Signature: ()V
+ * Signature: ([[B)V
  */
 JNIEXPORT void JNICALL Java_com_itseez_peopledemo_BodyPartsRecognizer_create
-  (JNIEnv *, jobject);
+  (JNIEnv *, jobject, jobjectArray);
 
 /*
  * Class:     com_itseez_peopledemo_BodyPartsRecognizer
