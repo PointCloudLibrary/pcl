@@ -255,7 +255,6 @@ pcl::SampleConsensusModelRegistration<PointT>::optimizeModelCoefficients (const 
   std::vector<int> indices_tgt (inliers.size ());
   for (size_t i = 0; i < inliers.size (); ++i)
   {
-    // NOTE: not tested!
     indices_src[i] = inliers[i];
     indices_tgt[i] = correspondences_[indices_src[i]];
   }
