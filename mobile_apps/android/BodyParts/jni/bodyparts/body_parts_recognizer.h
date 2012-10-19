@@ -60,7 +60,7 @@ private:
 
 public:
   BodyPartsRecognizer(std::size_t num_trees, const char * trees[]);
-  void recognize(Cloud & cloud);
+  void recognize(Cloud & cloud) const;
 };
 
 #endif // BODY_PARTS_RECOGNIZER_

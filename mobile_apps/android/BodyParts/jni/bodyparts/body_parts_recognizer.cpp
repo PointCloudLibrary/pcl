@@ -251,7 +251,7 @@ BodyPartsRecognizer::BodyPartsRecognizer(std::size_t num_trees, const char * tre
 }
 
 void
-BodyPartsRecognizer::recognize(Cloud & cloud)
+BodyPartsRecognizer::recognize(Cloud & cloud) const
 {
   ChannelRef<Depth> depth = cloud.get<TagDepth>();
 
@@ -278,7 +278,6 @@ BodyPartsRecognizer::recognize(Cloud & cloud)
 
   Cloud noisy;
   noisy.resize(cloud.getWidth(), cloud.getHeight());
-  std::vector<Label> noisy_labels (cloud.getHeight() * cloud.getWidth());
 
   tbb::parallel_for(
         tbb::blocked_range2d<unsigned>(0, cloud.getHeight(), 0, cloud.getWidth()),
