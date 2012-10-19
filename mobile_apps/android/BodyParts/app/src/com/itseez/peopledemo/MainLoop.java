@@ -94,14 +94,13 @@ public class MainLoop {
     public MainLoop(Main main, BodyPartsRecognizer bpr) {
         this.main = main;
         this.bpr = bpr;
-        //this.grabber = Grabber.createFileGrabber("/mnt/sdcard2/rgbd");
-        this.grabber = Grabber.createOpenNIGrabber();
+
         thread = new HandlerThread("Grabber/Processor");
         thread.start();
         handler = new Handler(thread.getLooper());
     }
 
-    public void start() {
+    public void resume() {
         handler.post(new Runnable() {
             @Override
             public void run() {
@@ -112,7 +111,7 @@ public class MainLoop {
         });
     }
 
-    public void stop() {
+    public void pause() {
         handler.post(new Runnable() {
             @Override
             public void run() {
@@ -121,6 +120,26 @@ public class MainLoop {
                 Looper.myQueue().removeIdleHandler(idleHandler);
             }
         });
+    }
+
+    public void start() {
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                grabber = Grabber.createOpenNIGrabber();
+                if (!grabber.isConnected())
+                    grabber = Grabber.createFileGrabber("/mnt/sdcard2/rgbd");
+            }
+        });
+    }
+
+    public void stop() {
+         handler.post(new Runnable() {
+             @Override
+             public void run() {
+                 grabber.free();
+             }
+         });
     }
 
     public void destroy() {

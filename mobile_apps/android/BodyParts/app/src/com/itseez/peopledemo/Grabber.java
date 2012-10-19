@@ -24,6 +24,8 @@ public class Grabber {
     public static native Grabber createOpenNIGrabber();
     public static native Grabber createFileGrabber(String directory);
 
+    public native boolean isConnected();
+
     public native void getFrame(RGBDImage frame);
 
     public native void start();

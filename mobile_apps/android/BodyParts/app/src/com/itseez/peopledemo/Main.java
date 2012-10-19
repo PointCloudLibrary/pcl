@@ -77,13 +77,13 @@ public class Main extends Activity {
     @Override
     protected void onPause() {
         super.onPause();
-        //grabber.stop();
+        loop.pause();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        //grabber.start();
+        loop.resume();
     }
 
     @Override

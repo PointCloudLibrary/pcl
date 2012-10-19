@@ -41,6 +41,14 @@ JNIEXPORT jobject JNICALL Java_com_itseez_peopledemo_Grabber_createFileGrabber
 
 /*
  * Class:     com_itseez_peopledemo_Grabber
+ * Method:    isConnected
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_itseez_peopledemo_Grabber_isConnected
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     com_itseez_peopledemo_Grabber
  * Method:    getFrame
  * Signature: (Lcom/itseez/peopledemo/RGBDImage;)V
  */

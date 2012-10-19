@@ -17,6 +17,8 @@ class OpenNIGrabber : public Grabber, boost::noncopyable
 public:
   OpenNIGrabber();
 
+  virtual bool isConnected() const { return connected; }
+
   virtual void getFrame(RGBDImage * frame);
 
   virtual void start();

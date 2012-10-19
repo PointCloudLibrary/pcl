@@ -14,6 +14,8 @@ class FileGrabber : public Grabber
 public:
   FileGrabber(const std::string & directory);
 
+  virtual bool isConnected() const { return !file_list.empty(); }
+
   virtual void getFrame(RGBDImage * frame);
 
   virtual void start() {}

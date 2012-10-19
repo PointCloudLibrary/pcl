@@ -46,6 +46,13 @@ Java_com_itseez_peopledemo_Grabber_createFileGrabber
   return object;
 }
 
+JNIEXPORT jboolean JNICALL
+Java_com_itseez_peopledemo_Grabber_isConnected
+  (JNIEnv * env, jobject object)
+{
+  Grabber * ptr = getPtr<Grabber>(env, object);
+  return ptr->isConnected();
+}
 
 JNIEXPORT void JNICALL
 Java_com_itseez_peopledemo_Grabber_getFrame

@@ -12,6 +12,8 @@ struct Grabber
 
   virtual ~Grabber() {}
 
+  virtual bool isConnected() const = 0;
+
   virtual void getFrame(RGBDImage * frame) = 0;
 
   virtual void start() = 0;
