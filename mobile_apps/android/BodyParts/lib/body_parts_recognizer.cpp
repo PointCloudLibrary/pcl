@@ -111,8 +111,8 @@ struct DecisionTreeCPU
     return leaves[nid - nodes.size()];
   }
 
-  void
-  eval(const DepthImage & image, Label * labels) const
+  template <typename T> void
+  eval(const DepthImage & image, T & labels) const
   {
     for (unsigned x = 0; x < image.getWidth(); ++x)
       for (unsigned y = 0; y < image.getHeight(); ++y)
