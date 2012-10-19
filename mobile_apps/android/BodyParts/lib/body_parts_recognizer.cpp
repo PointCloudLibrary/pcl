@@ -2,6 +2,8 @@
 #include <cstring>
 #include <limits>
 
+#include <boost/multi_array.hpp>
+
 #include "body_parts_recognizer.h"
 #include "rgbd_image.h"
 
@@ -115,25 +117,47 @@ BodyPartsRecognizer::recognize(const RGBDImage & image, std::vector<Label> & lab
   labels.clear ();
   labels.resize (image.width * image.height);
 
-  DepthImage depth_image(image);
-  depth_image.applyThreshold(500);
+  DepthImage depth_image (image);
+  depth_image.applyThreshold (500);
+
+  boost::multi_array<Label, 2> multi_labels (boost::extents[trees.size ()][labels.size ()]);
+
+  for (std::size_t ti = 0; ti < trees.size (); ++ti)
+  {
+    for (std::size_t i = 0; i < labels.size (); ++i)
+    {
+      int x = i % image.width, y = i / image.width;
+      multi_labels[ti][i] = depth_image.getDepth (x, y) != BACKGROUND_DEPTH
+          ? trees[ti]->walk (depth_image, x, y) : Labels::Background;
+    }
+  }
 
   for (std::size_t i = 0; i < labels.size (); ++i)
   {
-    unsigned x = i % image.width, y = i / image.width;
+    int bins[Labels::NUM_LABELS] = { 0 };
 
-    if (depth_image.getDepth(x, y) != BACKGROUND_DEPTH)
+    for (std::size_t ti = 0; ti < trees.size (); ++ti)
+      ++bins[multi_labels[ti][i]];
+
+    labels[i] = std::max_element (bins, bins + Labels::NUM_LABELS) - bins;
+
+    if (std::count (bins, bins + Labels::NUM_LABELS, bins[labels[i]]) > 1)
     {
-      unsigned bins[Labels::NUM_LABELS] = {0};
+      std::fill (bins, bins + Labels::NUM_LABELS, 0);
+      unsigned x = i % image.width, y = i / image.width;
+      Depth d = depth_image.getDepth (x, y);
 
-      for (std::size_t ti = 0; ti < trees.size(); ++ti)
-        ++bins[trees[ti]->walk(depth_image, x, y)];
+      for (int off_x = -1; off_x <= 1; ++off_x)
+        for (int off_y = -1; off_y <= 1; ++off_y)
+        {
+          Depth off_d = depth_image.getDepth (x + off_x, y + off_y);
 
-      labels[i] = std::max_element(bins, bins + Labels::NUM_LABELS) - bins;
-    }
-    else
-    {
-      labels[i] = Labels::Background;
+          if (std::abs (d - off_d) < 50)
+            for (std::size_t ti = 0; ti < trees.size (); ++ti)
+              ++bins[multi_labels[ti][i]];
+        }
+
+      labels[i] = std::max_element (bins, bins + Labels::NUM_LABELS) - bins;
     }
   }
 }
