@@ -4,6 +4,8 @@ import android.graphics.Bitmap;
 import android.os.*;
 import android.util.Log;
 
+import java.io.File;
+
 public class MainLoop {
     private static final String TAG = "bodyparts.MainLoop";
     private Main main;
@@ -13,9 +15,10 @@ public class MainLoop {
     private Grabber grabber;
     private boolean running = false;
 
-    Bitmap bmp = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
-    RGBDImage img = new RGBDImage();
-    BodyPartsRecognizer bpr;
+    private Bitmap bmp = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
+    private RGBDImage img = new RGBDImage();
+    private BodyPartsRecognizer bpr;
+    private File rgbdDir;
 
     private static void buildBitmap(Bitmap bmp, RGBDImage image, byte[] labels) {
         BodyPartLabel[] all_labels = BodyPartLabel.values();
@@ -92,8 +95,13 @@ public class MainLoop {
     }
 
     public MainLoop(Main main, BodyPartsRecognizer bpr) {
+        this(main, bpr, null);
+    }
+
+    public MainLoop(Main main, BodyPartsRecognizer bpr, File rgbdDir) {
         this.main = main;
         this.bpr = bpr;
+        this.rgbdDir = rgbdDir;
 
         thread = new HandlerThread("Grabber/Processor");
         thread.start();
@@ -126,9 +134,9 @@ public class MainLoop {
         handler.post(new Runnable() {
             @Override
             public void run() {
-                grabber = Grabber.createOpenNIGrabber();
-                if (!grabber.isConnected())
-                    grabber = Grabber.createFileGrabber("/mnt/sdcard2/rgbd");
+                grabber = rgbdDir == null
+                        ? Grabber.createOpenNIGrabber()
+                        : Grabber.createFileGrabber(rgbdDir.getAbsolutePath());
             }
         });
     }
@@ -147,7 +155,7 @@ public class MainLoop {
         try {
             thread.join();
         } catch (InterruptedException e) {
-
+            Thread.currentThread().interrupt();
         }
         grabber.free();
         img.free();

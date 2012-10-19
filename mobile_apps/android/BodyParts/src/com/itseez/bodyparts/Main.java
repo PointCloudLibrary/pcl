@@ -2,16 +2,15 @@ package com.itseez.bodyparts;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import org.libusb.UsbHelper;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.Arrays;
 
 public class Main extends Activity {
@@ -35,6 +34,19 @@ public class Main extends Activity {
         return contents;
     }
 
+    private byte[] readAsset(String name) throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        InputStream stream = getAssets().open(name);
+        final int chunk_size = 1000000;
+        byte[] chunk = new byte[chunk_size];
+        int read;
+
+        while ((read = stream.read(chunk)) != -1)
+            baos.write(chunk, 0, read);
+
+        return baos.toByteArray();
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,20 +59,28 @@ public class Main extends Activity {
         color_ref.setAdapter(new BodyPartLabelAdapter(this, android.R.layout.simple_list_item_1, BodyPartLabel.values(),
                 (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE)));
 
-        File[] treeFiles = new File("/mnt/sdcard2/trees").listFiles();
-        Arrays.sort(treeFiles);
-        byte[][] trees = new byte[treeFiles.length][];
+        try {
+            String[] treeNames = getAssets().list("trees");
+            Arrays.sort(treeNames);
+            byte[][] trees = new byte[treeNames.length][];
 
-        for (int ti = 0; ti < trees.length; ++ti) {
-            try {
-                trees[ti] = readFile(treeFiles[ti]);
-            } catch (IOException ioe) {
-                Log.e(TAG, ioe.getMessage(), ioe);
-                return;
-            }
+            for (int ti = 0; ti < trees.length; ++ti)
+                trees[ti] = readAsset(new File("trees", treeNames[ti]).toString());
+
+            File rgbd_dir = new File(Environment.getExternalStorageDirectory(), "rgbd");
+            if (rgbd_dir.isDirectory() && rgbd_dir.listFiles(new FilenameFilter() {
+                @Override
+                public boolean accept(File file, String s) {
+                    return s.endsWith(".rgbd");
+                }
+            }).length >= 1)
+                loop = new MainLoop(this, new BodyPartsRecognizer(trees), rgbd_dir);
+            else if (UsbHelper.getManager().getDeviceList().size() >= 1)
+                loop = new MainLoop(this, new BodyPartsRecognizer(trees));
+        } catch (IOException ioe) {
+            Log.e(TAG, "Couldn't read tree assets.", ioe);
+            throw new RuntimeException(ioe);
         }
-
-        loop = new MainLoop(this, new BodyPartsRecognizer(trees));
     }
 
     @Override
