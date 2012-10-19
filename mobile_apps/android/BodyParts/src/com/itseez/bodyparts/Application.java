@@ -94,6 +94,9 @@ public class Application extends android.app.Application {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_USB_HOST)) return;
+
         UsbHelper.useContext(getApplicationContext());
 
         String lib_dir;

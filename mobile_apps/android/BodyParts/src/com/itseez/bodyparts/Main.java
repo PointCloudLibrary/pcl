@@ -8,8 +8,6 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import javax.microedition.khronos.egl.EGL10;
-import javax.microedition.khronos.egl.EGLContext;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -21,7 +19,6 @@ public class Main extends Activity {
 
     ImageView picture;
     TextView timingText;
-    private final EGL10 egl = (EGL10) EGLContext.getEGL();
     MainLoop loop;
 
     private static byte[] readFile(File f) throws IOException {
@@ -42,7 +39,6 @@ public class Main extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-        egl.eglInitialize(egl.eglGetDisplay(EGL10.EGL_DEFAULT_DISPLAY), null);
 
         picture = (ImageView) findViewById(R.id.picture);
         timingText = (TextView) findViewById(R.id.timing_text);
@@ -70,7 +66,6 @@ public class Main extends Activity {
     @Override
     public void onDestroy() {
         loop.destroy();
-        egl.eglTerminate(egl.eglGetDisplay(EGL10.EGL_DEFAULT_DISPLAY));
         super.onDestroy();
     }
 
