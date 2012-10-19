@@ -1,3 +1,6 @@
+#ifndef JNI_HELPER_
+#define JNI_HELPER_
+
 #include <jni.h>
 
 template<typename T>
@@ -26,3 +29,5 @@ cachePtrID(JNIEnv * env, jclass clazz)
 {
   JNIHelper<T>::fld_ptr = env->GetFieldID (clazz, "ptr", "J");
 }
+
+#endif // JNI_HELPER_
