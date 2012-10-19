@@ -115,7 +115,7 @@ public class Main extends Activity implements View.OnClickListener, CompoundButt
                 File[] treePaths = new File(Environment.getExternalStorageDirectory(), "trees").listFiles();
                 Arrays.sort(treePaths);
                 treeStreams = new InputStream[treePaths.length];
-                for (int ti = 0; ti < treeAssets.length; ++ti)
+                for (int ti = 0; ti < treePaths.length; ++ti)
                     treeStreams[ti] = new FileInputStream(treePaths[ti]);
             }
 
