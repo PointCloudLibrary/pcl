@@ -52,6 +52,8 @@ pcl::transformPointCloud (const pcl::PointCloud<PointT> &cloud_in,
     cloud_out.height   = cloud_in.height;
     cloud_out.points.reserve (cloud_out.points.size ());
     cloud_out.points.assign (cloud_in.points.begin (), cloud_in.points.end ());
+    cloud_out.sensor_orientation_ = cloud_in.sensor_orientation_;
+    cloud_out.sensor_origin_      = cloud_in.sensor_origin_;
   }
 
   if (cloud_in.is_dense)
@@ -99,6 +101,8 @@ pcl::transformPointCloud (const pcl::PointCloud<PointT> &cloud_in,
   cloud_out.width    = static_cast<int> (npts);
   cloud_out.height   = 1;
   cloud_out.points.resize (npts);
+  cloud_out.sensor_orientation_ = cloud_in.sensor_orientation_;
+  cloud_out.sensor_origin_      = cloud_in.sensor_origin_;
 
   if (cloud_in.is_dense)
   {
@@ -149,6 +153,8 @@ pcl::transformPointCloudWithNormals (const pcl::PointCloud<PointT> &cloud_in,
     cloud_out.is_dense = cloud_in.is_dense;
     cloud_out.points.reserve (cloud_out.points.size ());
     cloud_out.points.assign (cloud_in.points.begin (), cloud_in.points.end ());
+    cloud_out.sensor_orientation_ = cloud_in.sensor_orientation_;
+    cloud_out.sensor_origin_      = cloud_in.sensor_origin_;
   }
 
   // If the data is dense, we don't need to check for NaN
@@ -210,6 +216,8 @@ pcl::transformPointCloudWithNormals (const pcl::PointCloud<PointT> &cloud_in,
   cloud_out.width    = static_cast<int> (npts);
   cloud_out.height   = 1;
   cloud_out.points.resize (npts);
+  cloud_out.sensor_orientation_ = cloud_in.sensor_orientation_;
+  cloud_out.sensor_origin_      = cloud_in.sensor_origin_;
 
   // If the data is dense, we don't need to check for NaN
   if (cloud_in.is_dense)
