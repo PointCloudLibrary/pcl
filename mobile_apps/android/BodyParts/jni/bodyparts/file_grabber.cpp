@@ -3,7 +3,6 @@
 #include <boost/filesystem/fstream.hpp>
 
 #include "grabber.h"
-#include "rgbd_image.h"
 
 namespace fs = boost::filesystem;
 
@@ -38,33 +37,19 @@ FileGrabber::FileGrabber(const std::string & directory)
 
 void FileGrabber::getFrame(Cloud & frame)
 {
-  __android_log_print(ANDROID_LOG_DEBUG, "FileGrabber", "Readin' %s", file_list[current_file].c_str());
   fs::ifstream is(file_list[current_file], std::ios::binary);
 
-  is.seekg(0, std::ios::end);
-  std::ios::pos_type size = is.tellg();
+  boost::uint32_t width, height;
+  is.read(reinterpret_cast<char *>(&width), sizeof width);
+  is.read(reinterpret_cast<char *>(&height), sizeof height);
 
-  is.seekg(0, std::ios::beg);
-  std::vector<char> contents(size);
-  is.read(&contents.front(), size);
-
-  __android_log_print(ANDROID_LOG_DEBUG, "FileGrabber", "Read %d bytes", int(size));
-
-  RGBDImage temp;
-  temp.parse(&contents.front());
-
-  frame.resize(temp.width, temp.height);
+  frame.resize(width, height);
 
   ChannelRef<RGB> rgb = frame.get<TagColor>();
   ChannelRef<Depth> depth = frame.get<TagDepth>();
 
-  for (int i = 0; i < temp.width * temp.height; ++i)
-  {
-    rgb.data[i].r = temp.pixels[i].r;
-    rgb.data[i].g = temp.pixels[i].g;
-    rgb.data[i].b = temp.pixels[i].b;
-    depth.data[i] = temp.pixels[i].d;
-  }
+  is.read(reinterpret_cast<char *>(rgb.data), width * height * sizeof *rgb.data);
+  is.read(reinterpret_cast<char *>(depth.data), width * height * sizeof *depth.data);
 
   ++current_file;
   if (current_file >= file_list.size())

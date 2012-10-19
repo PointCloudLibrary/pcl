@@ -12,11 +12,10 @@ struct RGBDHeader
   boost::uint32_t height;
 };
 
-struct RGBD
+struct RGB
 {
   boost::uint8_t r, g, b;
   boost::uint8_t dummy; // ensure alignment
-  boost::int16_t d;
 };
 
 int
@@ -55,12 +54,17 @@ main(int argc, char * argv[])
 
   for (unsigned i = 0; i < cloud->size(); ++i)
   {
-    RGBD pixel = {
+    RGB pixel = {
       cloud->at(i).r, cloud->at(i).g, cloud->at(i).b, 0,
-      boost::int16_t (cloud->at(i).z * 1000)
     };
     rgbd_file.write(reinterpret_cast<char *> (&pixel), sizeof pixel);
   }
+
+  for (unsigned i = 0; i < cloud->size(); ++i)
+  {
+    boost::int16_t pixel(cloud->at(i).z * 1000);
+    rgbd_file.write(reinterpret_cast<char *> (&pixel), sizeof pixel);
+  }  
 
   if (!rgbd_file)
   {
