@@ -3,6 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -16,7 +17,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -63,14 +64,15 @@ namespace pcl
   template <typename PointT, typename PointNT>
   class SampleConsensusModelCylinder : public SampleConsensusModel<PointT>, public SampleConsensusModelFromNormals<PointT, PointNT>
   {
-    using SampleConsensusModel<PointT>::input_;
-    using SampleConsensusModel<PointT>::indices_;
-    using SampleConsensusModel<PointT>::radius_min_;
-    using SampleConsensusModel<PointT>::radius_max_;
-    using SampleConsensusModelFromNormals<PointT, PointNT>::normals_;
-    using SampleConsensusModelFromNormals<PointT, PointNT>::normal_distance_weight_;
-
     public:
+      using SampleConsensusModel<PointT>::input_;
+      using SampleConsensusModel<PointT>::indices_;
+      using SampleConsensusModel<PointT>::radius_min_;
+      using SampleConsensusModel<PointT>::radius_max_;
+      using SampleConsensusModelFromNormals<PointT, PointNT>::normals_;
+      using SampleConsensusModelFromNormals<PointT, PointNT>::normal_distance_weight_;
+      using SampleConsensusModel<PointT>::error_sqr_dists_;
+
       typedef typename SampleConsensusModel<PointT>::PointCloud PointCloud;
       typedef typename SampleConsensusModel<PointT>::PointCloudPtr PointCloudPtr;
       typedef typename SampleConsensusModel<PointT>::PointCloudConstPtr PointCloudConstPtr;

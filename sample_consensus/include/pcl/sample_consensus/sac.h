@@ -3,6 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved. 
  *
@@ -16,7 +17,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -75,14 +76,14 @@ namespace pcl
         model_coefficients_ (), 
         probability_ (0.99), 
         iterations_ (0), 
-        threshold_ (std::numeric_limits<double>::max()),
+        threshold_ (std::numeric_limits<double>::max ()),
         max_iterations_ (1000), 
         rng_alg_ (), 
         rng_ (new boost::uniform_01<boost::mt19937> (rng_alg_))
       {
          // Create a random number generator object
          if (random)
-           rng_->base ().seed (static_cast<unsigned> (std::time(0)));
+           rng_->base ().seed (static_cast<unsigned> (std::time (0)));
          else
            rng_->base ().seed (12345u);
       };
@@ -106,7 +107,7 @@ namespace pcl
       {
          // Create a random number generator object
          if (random)
-           rng_->base ().seed (static_cast<unsigned> (std::time(0)));
+           rng_->base ().seed (static_cast<unsigned> (std::time (0)));
          else
            rng_->base ().seed (12345u);
        };
@@ -148,6 +149,70 @@ namespace pcl
       /** \brief Compute the actual model. Pure virtual. */
       virtual bool 
       computeModel (int debug_verbosity_level = 0) = 0;
+
+      /** \brief Refine the model found.
+        * This loops over the model coefficients and optimizes them together
+        * with the set of inliers, until the change in the set of inliers is
+        * minimal.
+        * \param[in] sigma standard deviation multiplier for considering a sample as inlier (Mahalanobis distance) 
+        * \param[in] max_iterations the maxim number of iterations to try to refine in case the inliers keep on changing
+        */
+      virtual bool 
+      refineModel (const double sigma = 3.0, const unsigned int max_iterations = 10000)
+      {
+        if (!sac_model_)
+        {
+          PCL_ERROR ("[pcl::SampleConsensus::refineModel] Critical error: NULL model!\n");
+          return (false);
+        }
+
+        double inlier_distance_threshold_sqr = threshold_ * threshold_, 
+               error_threshold = threshold_;
+        double sigma_sqr = sigma * sigma;
+        unsigned int refine_iterations = 0;
+        bool inlier_changed = false;
+        std::vector<int> new_inliers;
+        do
+        {
+          // Optimize the model coefficients
+          sac_model_->optimizeModelCoefficients (inliers_, model_coefficients_, model_coefficients_);
+
+          // Select the new inliers based on the optimized coefficients and new threshold
+          sac_model_->selectWithinDistance (model_coefficients_, error_threshold, new_inliers);
+          PCL_DEBUG ("[pcl::SampleConsensus::refineModel] Number of inliers found (before/after): %zu/%zu\n", inliers_.size (), new_inliers.size ());
+
+          // Estimate the variance and the new threshold
+          double variance = sac_model_->computeVariance ();
+          error_threshold = sqrt (std::min (inlier_distance_threshold_sqr, sigma_sqr * variance));
+
+          PCL_DEBUG ("[pcl::SampleConsensus::refineModel] New estimated error threshold: %g on iteration %d out of %d.\n", error_threshold, refine_iterations, max_iterations);
+          inlier_changed = false;
+          std::swap (inliers_, new_inliers);
+          // If the number of inliers changed, then we are still optimizing
+          if (new_inliers.size () != inliers_.size ())
+          {
+            inlier_changed = true;
+            continue;
+          }
+
+          // Check the values of the inlier set
+          for (size_t i = 0; i < inliers_.size (); ++i)
+          {
+            // If the value of the inliers changed, then we are still optimizing
+            if (inliers_[i] != new_inliers[i])
+            {
+              inlier_changed = true;
+              break;
+            }
+          }
+        }
+        while (inlier_changed && ++refine_iterations < max_iterations);
+       
+        // If no inliers have been changed anymore, then the refinement was successful
+        if (!inlier_changed)
+          return (true);
+        return (false);
+      }
 
       /** \brief Get a set of randomly selected indices.
         * \param[in] indices the input indices vector

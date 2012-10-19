@@ -1,7 +1,10 @@
 /*
  * Software License Agreement (BSD License)
  *
+ *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2009, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -14,7 +17,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -134,8 +137,8 @@ pcl::SampleConsensusModelCircle2D<PointT>::selectWithinDistance (
     inliers.clear ();
     return;
   }
-  int nr_p = 0;
-  inliers.resize (indices_->size ());
+  inliers.reserve (indices_->size ());
+  error_sqr_dists_.reserve (indices_->size ());
 
   // Iterate through the 3d points and calculate the distances from them to the sphere
   for (size_t i = 0; i < indices_->size (); ++i)
@@ -152,11 +155,10 @@ pcl::SampleConsensusModelCircle2D<PointT>::selectWithinDistance (
     if (distance < threshold)
     {
       // Returns the indices of the points whose distances are smaller than the threshold
-      inliers[nr_p] = (*indices_)[i];
-      nr_p++;
+      inliers.push_back ((*indices_)[i]);
+      error_sqr_dists_.push_back (static_cast<double> (distance));
     }
   }
-  inliers.resize (nr_p);
 }
 
 //////////////////////////////////////////////////////////////////////////
