@@ -79,6 +79,7 @@ namespace pcl
           , input_transformed_ ()
           , target_ ()
           , best_transformation_ ()
+          , refine_ (false)
         {
           rejection_name_ = "CorrespondenceRejectorSampleConsensus";
         }
@@ -214,6 +215,21 @@ namespace pcl
           return (true);
         }
 
+        /** \brief Specify whether the model should be refined internally using the variance of the inliers
+          * \param[in] refine true if the model should be refined, false otherwise
+          */
+        inline void
+        setRefineModel (const bool refine)
+        {
+          refine_ = refine;
+        }
+
+        /** \brief Get the internal refine parameter value as set by the user using setRefineModel */
+        inline bool
+        getRefineModel () const
+        {
+          return (refine_);
+        }
       protected:
 
         /** \brief Apply the rejection algorithm.
@@ -234,6 +250,8 @@ namespace pcl
         PointCloudConstPtr target_;
 
         Eigen::Matrix4f best_transformation_;
+
+        bool refine_;
       public:
         EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     };

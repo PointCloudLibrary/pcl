@@ -94,6 +94,12 @@ pcl::registration::CorrespondenceRejectorSampleConsensus<PointT>::getRemainingCo
      }
      else
      {
+       if (refine_ && !sac.refineModel ())
+       {
+         PCL_ERROR ("[pcl::registration::CorrespondenceRejectorSampleConsensus::getRemainingCorrespondences] Could not refine the model! Returning an empty solution.\n");
+         return;
+       }
+       
        std::vector<int> inliers;
        sac.getInliers (inliers);
 
