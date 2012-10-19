@@ -3,25 +3,26 @@
 cmake_minimum_required(VERSION 2.8)
 project(AndroidPeopleLibrary)
 
-add_custom_command(
-  OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/generic.vsh.cpp
-  COMMAND bin2c -p 0 -n source_generic_vsh generic.vsh > ${CMAKE_CURRENT_BINARY_DIR}/generic.vsh.cpp
-  MAIN_DEPENDENCY generic.vsh
-)
+function(embed_text_file name cpp_name_var)
+  set(cpp_name ${CMAKE_CURRENT_BINARY_DIR}/${name}.cpp)
+  set(${cpp_name_var} ${cpp_name} PARENT_SCOPE)
+  string(REPLACE . _ array_name_tail ${name})
+  add_custom_command(
+    OUTPUT ${cpp_name}
+    COMMAND bin2c -p 0 -n source_${array_name_tail} ${name} > ${cpp_name}
+    MAIN_DEPENDENCY ${name}
+  )
+endfunction()
 
-add_custom_command(
-  OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/tree_walk.fsh.cpp
-  COMMAND bin2c -p 0 -n source_tree_walk_fsh tree_walk.fsh > ${CMAKE_CURRENT_BINARY_DIR}/tree_walk.fsh.cpp
-  MAIN_DEPENDENCY tree_walk.fsh
-)
+embed_text_file(generic.vsh generic_vsh_cpp)
+embed_text_file(tree_walk.fsh tree_walk_fsh_cpp)
 
 add_library(people_demo SHARED
   com_itseez_peopledemo_RGBDImage.cpp
   com_itseez_peopledemo_BodyPartsRecognizer.cpp
   rgbd_image.cpp body_parts_recognizer.cpp stopwatch.cpp
   gles_helper.cpp
-  ${CMAKE_CURRENT_BINARY_DIR}/generic.vsh.cpp
-  ${CMAKE_CURRENT_BINARY_DIR}/tree_walk.fsh.cpp
+  ${generic_vsh_cpp} ${tree_walk_fsh_cpp}
 )
 
 find_package(Boost REQUIRED)
