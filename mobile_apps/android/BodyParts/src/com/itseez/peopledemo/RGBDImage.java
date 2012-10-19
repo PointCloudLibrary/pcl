@@ -31,7 +31,7 @@ public class RGBDImage {
     public native void parse(byte[] bytes);
 
     static {
-        System.loadLibrary("people_demo");
+        System.loadLibrary("bodyparts");
         cacheIds();
     }
 

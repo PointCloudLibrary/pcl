@@ -48,17 +48,13 @@ struct Labels
   static const unsigned NUM_LABELS  = 32;
 };
 
-struct DecisionTreeGPU;
 struct DecisionTreeCPU;
-
-class ConsensusFinderGPU;
 
 struct BodyPartsRecognizer
 {
 private:
   typedef DecisionTreeCPU Tree;
   std::vector<boost::shared_ptr<Tree> > trees;
-  std::auto_ptr<ConsensusFinderGPU> consensus_finder;
 
 public:
   BodyPartsRecognizer(std::size_t num_trees, const char * trees[]);

@@ -17,7 +17,7 @@ public class BodyPartsRecognizer {
     public native void free();
 
     static {
-        System.loadLibrary("people_demo");
+        System.loadLibrary("bodyparts");
         cacheIds();
     }
 

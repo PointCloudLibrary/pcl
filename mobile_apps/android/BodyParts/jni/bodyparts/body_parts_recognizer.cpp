@@ -13,7 +13,6 @@
 #include <tbb/task_scheduler_init.h>
 
 #include "body_parts_recognizer.h"
-#include "gles_helper.h"
 #include "rgbd_image.h"
 #include "sources.h"
 #include "stopwatch.h"
@@ -149,102 +148,6 @@ struct DecisionTreeCPU
   }
 };
 
-
-struct DecisionTreeGPU : boost::noncopyable
-{
-private:
-  std::auto_ptr<GlesHelper> helper;
-  GLuint depth_image_tex, labels_tex;
-
-public:
-  DecisionTreeGPU(const char * data)
-  {
-    const int tree_width = 2048;
-    boost::uint16_t tree_depth;
-    std::memcpy (&tree_depth, data, sizeof tree_depth);
-    data += sizeof tree_depth;
-    const int nodes_height = (1 << tree_depth) / tree_width;
-
-    std::string fs_macros =
-        (boost::format("#define TREE_DEPTH %1%\n#define NODES_HEIGHT %2%\n") % tree_depth % nodes_height).str();
-    std::vector<const char *> fs_sources;
-    fs_sources.push_back(fs_macros.c_str());
-    fs_sources.push_back(source_tree_walk_fsh);
-
-    helper.reset(new GlesHelper(fs_sources));
-
-    std::vector<unsigned char> offsets1_buffer, offsets2_buffer, thresholds_buffer;
-    offsets1_buffer.resize(4 * tree_width * tree_width);
-    offsets2_buffer.resize(4 * tree_width * tree_width);
-    thresholds_buffer.resize(4 * tree_width * tree_width);
-
-    for (int i = 0; i < (1 << tree_depth) - 1; ++i)
-    {
-      std::memcpy(&offsets1_buffer[4 * i], data, 4);
-      std::memcpy(&offsets2_buffer[4 * i], data + 4, 4);
-      std::memcpy(&thresholds_buffer[4 * i], data + 8, 2);
-      data += 10;
-    }
-
-    helper->bindTextureToUniform(
-          helper->addTexture(tree_width, tree_width, &offsets1_buffer.front()),
-          "offsets1");
-    helper->bindTextureToUniform(
-          helper->addTexture(tree_width, tree_width, &offsets2_buffer.front()),
-          "offsets2");
-    helper->bindTextureToUniform(
-          helper->addTexture(tree_width, tree_width, &thresholds_buffer.front()),
-          "thresholds");
-
-    std::vector<unsigned char> leaves_buffer(4 * tree_width * tree_width);
-
-    for (unsigned i = 0; i < (1 << 20); ++i)
-    {
-      std::memcpy(&leaves_buffer[4 * i], data, 1);
-      data += 1;
-    }
-
-    helper->bindTextureToUniform(
-          helper->addTexture(tree_width, tree_width, &leaves_buffer.front()),
-          "leaves");
-
-    depth_image_tex = helper->addTexture();
-    helper->bindTextureToUniform(depth_image_tex, "depth_image");
-
-    labels_tex = helper->addTexture();
-    helper->bindTextureToOutput(labels_tex);
-  }
-
-
-  void
-  eval(const DepthImage & image, std::vector<Label> & labels) const
-  {
-    std::vector<unsigned char> depth_image_buffer(4 * image.getWidth() * image.getHeight());
-
-    for (std::size_t i = 0; i < image.getWidth() * image.getHeight(); ++i)
-    {
-      Depth d = image.getDepth(i % image.getWidth(), i / image.getWidth());
-      *reinterpret_cast<Depth *> (&depth_image_buffer[4 * i]) = d;
-    }
-
-    helper->setTextureData(depth_image_tex,
-                           image.getWidth(), image.getHeight(), &depth_image_buffer.front());
-
-    helper->setTextureData(labels_tex,
-                           image.getWidth(), image.getHeight(), NULL);
-
-    helper->setUniform("image_width", image.getWidth());
-    helper->setUniform("image_height", image.getHeight());
-
-    std::vector<unsigned char> labels_buffer(depth_image_buffer.size());
-
-    helper->run(image.getWidth(), image.getHeight(), &labels_buffer.front());
-
-    for (std::size_t i = 0; i < image.getWidth() * image.getHeight(); ++i)
-      labels[i] = labels_buffer[4 * i];
-  }
-};
-
 int maxElementNoTie(int num, unsigned * elements)
 {
   int max_element = 0;
@@ -259,54 +162,6 @@ int maxElementNoTie(int num, unsigned * elements)
 
   return max_element;
 }
-
-class ConsensusFinderGPU : boost::noncopyable
-{
-  std::auto_ptr<GlesHelper> helper;
-  int multi_labels_tex, labels_tex;
-
-public:
-  ConsensusFinderGPU(int num_trees)
-  {
-    std::string fs_macros = (
-          boost::format("#define NUM_TREES %1%\n#define NUM_LABELS %2%\n")
-          % num_trees % int(Labels::NUM_LABELS)
-    ).str();
-
-    std::vector<const char *> fs_sources;
-    fs_sources.push_back(fs_macros.c_str());
-    fs_sources.push_back(source_consensus_fsh);
-
-    helper.reset(new GlesHelper(fs_sources));
-
-    multi_labels_tex = helper->addTexture();
-    helper->bindTextureToUniform(multi_labels_tex, "multi_labels");
-
-    labels_tex = helper->addTexture();
-    helper->bindTextureToOutput(labels_tex);
-  }
-
-  void
-  run(unsigned width, unsigned height, const std::vector<std::vector<Label> > & multi_labels, std::vector<Label> & labels)
-  {
-    std::vector<unsigned char> buffer(4 * width * height);
-
-    for (std::size_t i = 0; i < labels.size(); ++i)
-      for (std::size_t ti = 0; ti < multi_labels.size(); ++ti)
-          buffer[4 * i + ti] = multi_labels[ti][i];
-
-    helper->setTextureData(multi_labels_tex, width, height, &buffer.front());
-    helper->setTextureData(labels_tex, width, height, NULL);
-
-    helper->setUniform("image_width", width);
-    helper->setUniform("image_height", height);
-
-    helper->run(width, height, buffer.data());
-
-    for (std::size_t i = 0; i < labels.size(); ++i)
-      labels[i] = buffer[4 * i];
-  }
-};
 
 struct ConsensusHelper
 {

@@ -13,7 +13,7 @@ public class Grabber {
     }
 
     static {
-        System.loadLibrary("people_demo");
+        System.loadLibrary("bodyparts");
         cacheIds();
     }
 
