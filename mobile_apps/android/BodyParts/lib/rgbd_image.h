@@ -5,11 +5,13 @@
 
 #include <boost/cstdint.hpp>
 
+typedef boost::int16_t Depth;
+
 struct RGBD
 {
   boost::uint8_t r, g, b;
   boost::uint8_t dummy; // ensure alignment
-  boost::int16_t d;
+  Depth d;
 };
 
 struct RGBDImage
