@@ -4,13 +4,22 @@
               android:layout_width="wrap_content"
               android:layout_height="fill_parent"
         >
-    <ImageView android:id="@+id/picture"
-               android:layout_width="fill_parent"
-               android:layout_height="fill_parent"
-               android:scaleType="center"
-               android:onClick="pictureClicked"
-            />
-    <ListView android:id="@+id/color_ref"
+    <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent">
+        <ImageView android:id="@+id/picture"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:scaleType="center"
+                   android:onClick="pictureClicked"
+                />
+        <TextView android:id="@+id/timing_text"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                />
+    </LinearLayout>
+    <ListView android:id="@+id/color_list"
               android:layout_width="wrap_content"
               android:layout_height="fill_parent"
             />

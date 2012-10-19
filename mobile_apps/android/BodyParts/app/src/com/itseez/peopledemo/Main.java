@@ -4,11 +4,13 @@ import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import java.io.*;
 import java.util.Arrays;
@@ -18,26 +20,29 @@ public class Main extends Activity {
 
     private int imgNum = 0;
     private ImageView picture;
+    private TextView timing_text;
     private File[] imageFiles;
     private BodyPartsRecognizer bpr;
 
     private static byte[] readInputStream(InputStream is) throws IOException {
         byte[] buffer = new byte[1024 * 1024];
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        int bytes_read;
 
-        while (is.read(buffer) != -1)
-            baos.write(buffer);
+        while ((bytes_read = is.read(buffer)) != -1)
+            baos.write(buffer, 0, bytes_read);
 
         return baos.toByteArray();
     }
 
     private Bitmap labelsToBitmap(int width, int height, byte[] labels) {
+        BodyPartLabel[] all_labels = BodyPartLabel.values();
         Bitmap bmp = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
 
         int[] pixels = new int[labels.length];
 
         for (int i = 0; i < labels.length; ++i)
-            pixels[i] = BodyPartLabel.values()[labels[i]].color;
+            pixels[i] = all_labels[labels[i]].color;
 
         bmp.setPixels(pixels, 0, width, 0, 0, width, height);
         return bmp;
@@ -47,11 +52,14 @@ public class Main extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+
         picture = (ImageView) findViewById(R.id.picture);
+        timing_text = (TextView) findViewById(R.id.timing_text);
+
         imageFiles = new File("/mnt/sdcard2/rgbd").listFiles();
         Arrays.sort(imageFiles);
 
-        ListView color_ref = (ListView) findViewById(R.id.color_ref);
+        ListView color_ref = (ListView) findViewById(R.id.color_list);
         color_ref.setAdapter(new BodyPartLabelAdapter(this, android.R.layout.simple_list_item_1, BodyPartLabel.values(),
                 (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE)));
 
@@ -77,10 +85,11 @@ public class Main extends Activity {
 
         bpr = new BodyPartsRecognizer(trees);
 
-        showImage();
+        processImage();
     }
 
-    private void showImage() {
+    private void processImage() {
+        long millis_before = SystemClock.uptimeMillis();
         RGBDImage img;
 
         try {
@@ -95,14 +104,21 @@ public class Main extends Activity {
             return;
         }
 
+
         Bitmap image_bmp = img.getColorsAsBitmap();
-        Bitmap labels_bmp = labelsToBitmap(img.getWidth(), img.getHeight(), bpr.recognize(img));
+
+        byte[] labels_array = bpr.recognize(img);
+
+        Bitmap labels_bmp = labelsToBitmap(img.getWidth(), img.getHeight(), labels_array);
 
         Canvas canvas = new Canvas(image_bmp);
         canvas.drawBitmap(labels_bmp, 0, 0, null);
 
         picture.setImageBitmap(image_bmp);
         img.free();
+
+        long millis_after = SystemClock.uptimeMillis();
+        timing_text.setText(String.format("%d ms", millis_after - millis_before));
     }
 
     public void pictureClicked(View view) {
@@ -110,7 +126,7 @@ public class Main extends Activity {
         if (imgNum >= imageFiles.length)
             imgNum = 0;
 
-        showImage();
+        processImage();
     }
 }
 
