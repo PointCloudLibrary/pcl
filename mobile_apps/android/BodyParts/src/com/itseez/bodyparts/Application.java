@@ -15,6 +15,7 @@ public class Application extends android.app.Application {
     static {
         System.loadLibrary("usb-1.0");
         System.loadLibrary("OpenNI");
+        System.loadLibrary("tbb");
         System.loadLibrary("bodyparts");
     }
 
