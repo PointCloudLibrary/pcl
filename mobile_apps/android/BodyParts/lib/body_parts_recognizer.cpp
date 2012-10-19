@@ -54,19 +54,6 @@ public:
     return depths[x + width * y];
   }
 
-#if 0
-  Depth
-  getDepth(float x, float y) const
-  {
-    int intx = int (x), inty = int (y);
-
-    if (intx < 0 || intx >= width || inty < 0 || inty >= height)
-      return BACKGROUND_DEPTH;
-
-    return depths[intx + width * inty];
-  }
-#endif
-
   unsigned getWidth() const { return width; }
   unsigned getHeight() const { return height; }
 };
