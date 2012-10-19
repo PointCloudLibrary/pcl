@@ -1,4 +1,4 @@
-package com.itseez.peopledemo;
+package com.itseez.bodyparts;
 
 import android.graphics.Bitmap;
 

@@ -1,4 +1,4 @@
-#include "com_itseez_peopledemo_RGBDImage.h"
+#include "com_itseez_bodyparts_RGBDImage.h"
 #include "jni_helper.hpp"
 #include "rgbd_image.h"
 
@@ -8,7 +8,7 @@ namespace
 }
 
 JNIEXPORT void JNICALL
-Java_com_itseez_peopledemo_RGBDImage_cacheIds
+Java_com_itseez_bodyparts_RGBDImage_cacheIds
   (JNIEnv * env, jclass clazz)
 {
   cachePtrID<RGBDImage> (env, clazz);
@@ -16,7 +16,7 @@ Java_com_itseez_peopledemo_RGBDImage_cacheIds
 }
 
 JNIEXPORT void JNICALL
-Java_com_itseez_peopledemo_RGBDImage_create
+Java_com_itseez_bodyparts_RGBDImage_create
   (JNIEnv * env, jobject object)
 {
   RGBDImage * ptr = new RGBDImage;
@@ -25,14 +25,14 @@ Java_com_itseez_peopledemo_RGBDImage_create
 }
 
 JNIEXPORT void JNICALL
-Java_com_itseez_peopledemo_RGBDImage_free
+Java_com_itseez_bodyparts_RGBDImage_free
   (JNIEnv * env, jobject object)
 {
   freePtr<RGBDImage> (env, object);
 }
 
 JNIEXPORT void JNICALL
-Java_com_itseez_peopledemo_RGBDImage_readColors
+Java_com_itseez_bodyparts_RGBDImage_readColors
   (JNIEnv * env, jobject object, jintArray colors)
 {
   RGBDImage * ptr = getPtr<RGBDImage> (env, object);
@@ -45,7 +45,7 @@ Java_com_itseez_peopledemo_RGBDImage_readColors
 }
 
 JNIEXPORT jint JNICALL
-Java_com_itseez_peopledemo_RGBDImage_getHeight
+Java_com_itseez_bodyparts_RGBDImage_getHeight
   (JNIEnv * env, jobject object)
 {
   RGBDImage * ptr = getPtr<RGBDImage> (env, object);
@@ -53,7 +53,7 @@ Java_com_itseez_peopledemo_RGBDImage_getHeight
 }
 
 JNIEXPORT jint JNICALL
-Java_com_itseez_peopledemo_RGBDImage_getWidth
+Java_com_itseez_bodyparts_RGBDImage_getWidth
   (JNIEnv * env, jobject object)
 {
   RGBDImage * ptr = getPtr<RGBDImage> (env, object);
@@ -61,7 +61,7 @@ Java_com_itseez_peopledemo_RGBDImage_getWidth
 }
 
 JNIEXPORT void JNICALL
-Java_com_itseez_peopledemo_RGBDImage_parse
+Java_com_itseez_bodyparts_RGBDImage_parse
   (JNIEnv * env, jobject object, jbyteArray bytes)
 {
   RGBDImage * ptr = getPtr<RGBDImage> (env, object);

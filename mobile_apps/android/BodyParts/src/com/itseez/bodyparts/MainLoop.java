@@ -1,11 +1,11 @@
-package com.itseez.peopledemo;
+package com.itseez.bodyparts;
 
 import android.graphics.Bitmap;
 import android.os.*;
 import android.util.Log;
 
 public class MainLoop {
-    private static final String TAG = "MainLoop";
+    private static final String TAG = "bodyparts.MainLoop";
     private Main main;
     private HandlerThread thread;
     private Handler handler;

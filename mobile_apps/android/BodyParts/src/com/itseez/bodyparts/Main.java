@@ -1,4 +1,4 @@
-package com.itseez.peopledemo;
+package com.itseez.bodyparts;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -17,7 +17,7 @@ import java.io.InputStream;
 import java.util.Arrays;
 
 public class Main extends Activity {
-    private static final String TAG = "Main";
+    private static final String TAG = "bodyparts.Main";
 
     ImageView picture;
     TextView timingText;

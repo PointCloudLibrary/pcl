@@ -1,4 +1,4 @@
-#include "com_itseez_peopledemo_Grabber.h"
+#include "com_itseez_bodyparts_Grabber.h"
 #include "jni_helper.hpp"
 #include "grabber.h"
 
@@ -8,7 +8,7 @@ namespace
 }
 
 JNIEXPORT void JNICALL
-Java_com_itseez_peopledemo_Grabber_cacheIds
+Java_com_itseez_bodyparts_Grabber_cacheIds
   (JNIEnv * env, jclass clazz)
 {
   cachePtrID<Grabber> (env, clazz);
@@ -16,14 +16,14 @@ Java_com_itseez_peopledemo_Grabber_cacheIds
 }
 
 JNIEXPORT void JNICALL
-Java_com_itseez_peopledemo_Grabber_free
+Java_com_itseez_bodyparts_Grabber_free
   (JNIEnv * env, jobject object)
 {
   freePtr<Grabber> (env, object);
 }
 
 JNIEXPORT jobject JNICALL
-Java_com_itseez_peopledemo_Grabber_createOpenNIGrabber
+Java_com_itseez_bodyparts_Grabber_createOpenNIGrabber
   (JNIEnv * env, jclass clazz)
 {
   Grabber * ptr = Grabber::createOpenNIGrabber();
@@ -34,7 +34,7 @@ Java_com_itseez_peopledemo_Grabber_createOpenNIGrabber
 }
 
 JNIEXPORT jobject JNICALL
-Java_com_itseez_peopledemo_Grabber_createFileGrabber
+Java_com_itseez_bodyparts_Grabber_createFileGrabber
   (JNIEnv * env, jclass clazz, jstring directory)
 {
   const char * directory_chars = env->GetStringUTFChars(directory, NULL);
@@ -47,7 +47,7 @@ Java_com_itseez_peopledemo_Grabber_createFileGrabber
 }
 
 JNIEXPORT jboolean JNICALL
-Java_com_itseez_peopledemo_Grabber_isConnected
+Java_com_itseez_bodyparts_Grabber_isConnected
   (JNIEnv * env, jobject object)
 {
   Grabber * ptr = getPtr<Grabber>(env, object);
@@ -55,7 +55,7 @@ Java_com_itseez_peopledemo_Grabber_isConnected
 }
 
 JNIEXPORT void JNICALL
-Java_com_itseez_peopledemo_Grabber_getFrame
+Java_com_itseez_bodyparts_Grabber_getFrame
   (JNIEnv * env, jobject object, jobject frame)
 {
   Grabber * ptr = getPtr<Grabber>(env, object);
@@ -66,7 +66,7 @@ Java_com_itseez_peopledemo_Grabber_getFrame
 }
 
 JNIEXPORT void JNICALL
-Java_com_itseez_peopledemo_Grabber_start
+Java_com_itseez_bodyparts_Grabber_start
   (JNIEnv * env, jobject object)
 {
   Grabber * ptr = getPtr<Grabber>(env, object);
@@ -74,7 +74,7 @@ Java_com_itseez_peopledemo_Grabber_start
 }
 
 JNIEXPORT void JNICALL
-Java_com_itseez_peopledemo_Grabber_stop
+Java_com_itseez_bodyparts_Grabber_stop
   (JNIEnv * env, jobject object)
 {
   Grabber * ptr = getPtr<Grabber>(env, object);

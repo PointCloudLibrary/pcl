@@ -1,16 +1,16 @@
 #include "body_parts_recognizer.h"
-#include "com_itseez_peopledemo_BodyPartsRecognizer.h"
+#include "com_itseez_bodyparts_BodyPartsRecognizer.h"
 #include "jni_helper.hpp"
 
 JNIEXPORT void JNICALL
-Java_com_itseez_peopledemo_BodyPartsRecognizer_cacheIds
+Java_com_itseez_bodyparts_BodyPartsRecognizer_cacheIds
   (JNIEnv * env, jclass clazz)
 {
   cachePtrID<BodyPartsRecognizer> (env, clazz);
 }
 
 JNIEXPORT void JNICALL
-Java_com_itseez_peopledemo_BodyPartsRecognizer_create
+Java_com_itseez_bodyparts_BodyPartsRecognizer_create
   (JNIEnv * env, jobject object, jobjectArray trees)
 {
   std::vector<jbyteArray> trees_elements (env->GetArrayLength (trees));
@@ -37,14 +37,14 @@ Java_com_itseez_peopledemo_BodyPartsRecognizer_create
 }
 
 JNIEXPORT void JNICALL
-Java_com_itseez_peopledemo_BodyPartsRecognizer_free
+Java_com_itseez_bodyparts_BodyPartsRecognizer_free
   (JNIEnv * env, jobject object)
 {
   freePtr<BodyPartsRecognizer> (env, object);
 }
 
 JNIEXPORT jbyteArray JNICALL
-Java_com_itseez_peopledemo_BodyPartsRecognizer_recognize
+Java_com_itseez_bodyparts_BodyPartsRecognizer_recognize
   (JNIEnv * env, jobject object, jobject image)
 {
   BodyPartsRecognizer * bpr = getPtr<BodyPartsRecognizer> (env, object);

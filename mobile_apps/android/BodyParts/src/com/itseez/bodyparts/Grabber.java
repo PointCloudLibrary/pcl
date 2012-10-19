@@ -1,4 +1,4 @@
-package com.itseez.peopledemo;
+package com.itseez.bodyparts;
 
 public class Grabber {
     @SuppressWarnings("UnusedDeclaration")
