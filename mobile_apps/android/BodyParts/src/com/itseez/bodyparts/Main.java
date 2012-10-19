@@ -6,6 +6,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
@@ -55,6 +56,10 @@ public class Main extends Activity implements View.OnClickListener, CompoundButt
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
+
+        if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_USB_HOST))
+            menu.findItem(R.id.menu_item_open_device).setEnabled(false);
+
         return true;
     }
 
