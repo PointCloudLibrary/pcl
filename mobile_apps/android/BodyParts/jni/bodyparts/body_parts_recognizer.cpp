@@ -267,10 +267,6 @@ BodyPartsRecognizer::BodyPartsRecognizer(std::size_t num_trees, const char * tre
 
   for (std::size_t i = 0; i < num_trees; ++i)
     this->trees[i].reset(new Tree(trees[i]));
-
-#if GPU_CONSENSUS
-  this->consensus_finder.reset(new ConsensusFinderGPU(num_trees));
-#endif
 }
 
 void
