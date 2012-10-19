@@ -122,6 +122,18 @@ BodyPartsRecognizer::recognize(const RGBDImage & image, std::vector<Label> & lab
   {
     unsigned x = i % image.width, y = i / image.width;
 
-    labels[i] = depth_image.getDepth(x, y) == BACKGROUND_DEPTH ? 29 : trees[0]->walk(depth_image, x, y);
+    if (depth_image.getDepth(x, y) != BACKGROUND_DEPTH)
+    {
+      unsigned bins[Labels::NUM_LABELS] = {0};
+
+      for (std::size_t ti = 0; ti < trees.size(); ++ti)
+        ++bins[trees[ti]->walk(depth_image, x, y)];
+
+      labels[i] = std::max_element(bins, bins + Labels::NUM_LABELS) - bins;
+    }
+    else
+    {
+      labels[i] = Labels::Background;
+    }
   }
 }
