@@ -48,11 +48,13 @@ struct Labels
 };
 
 struct DecisionTree;
+struct DecisionTreeCPU;
 
 struct BodyPartsRecognizer
 {
 private:
-  std::vector<boost::shared_ptr<DecisionTree> > trees;
+  typedef DecisionTree Tree;
+  std::vector<boost::shared_ptr<Tree> > trees;
 
 public:
   BodyPartsRecognizer(std::size_t num_trees, const char * trees[]);

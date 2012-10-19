@@ -12,17 +12,20 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import javax.microedition.khronos.egl.EGL10;
+import javax.microedition.khronos.egl.EGLContext;
 import java.io.*;
 import java.util.Arrays;
 
 public class Main extends Activity {
     private static final String TAG = "PEOPLE.MAIN";
 
-    private int imgNum = 0;
+    private int imgNum = 5;
     private ImageView picture;
     private TextView timing_text;
     private File[] imageFiles;
     private BodyPartsRecognizer bpr;
+    private EGL10 egl = (EGL10) EGLContext.getEGL();
 
     private static byte[] readInputStream(InputStream is) throws IOException {
         byte[] buffer = new byte[1024 * 1024];
@@ -42,7 +45,8 @@ public class Main extends Activity {
         int[] pixels = new int[labels.length];
 
         for (int i = 0; i < labels.length; ++i)
-            pixels[i] = all_labels[labels[i]].color;
+            pixels[i] = labels[i] >= 0 && labels[i] < all_labels.length ? all_labels[labels[i]].color : 0xFFFFFFFF;
+
 
         bmp.setPixels(pixels, 0, width, 0, 0, width, height);
         return bmp;
@@ -52,6 +56,7 @@ public class Main extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+        egl.eglInitialize(egl.eglGetDisplay(EGL10.EGL_DEFAULT_DISPLAY), null);
 
         picture = (ImageView) findViewById(R.id.picture);
         timing_text = (TextView) findViewById(R.id.timing_text);
@@ -86,6 +91,12 @@ public class Main extends Activity {
         bpr = new BodyPartsRecognizer(trees);
 
         processImage();
+    }
+
+    @Override
+    public void onDestroy() {
+        egl.eglTerminate(egl.eglGetDisplay(EGL10.EGL_DEFAULT_DISPLAY));
+        super.onDestroy();
     }
 
     private void processImage() {

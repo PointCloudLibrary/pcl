@@ -17,3 +17,5 @@ ant.properties
 build.xml
 app/gen
 app/libs
+*.vsh.cpp
+*.fsh.cpp
