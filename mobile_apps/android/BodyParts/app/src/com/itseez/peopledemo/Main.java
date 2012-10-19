@@ -5,14 +5,18 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.util.Arrays;
 
 public class Main extends Activity {
     private static final String TAG = "PEOPLE.MAIN";
+
+    private int imgNum = 0;
+    private ImageView picture;
+    private File[] imageFiles;
 
     private static byte[] readInputStream(InputStream is) throws IOException {
         byte[] buffer = new byte[1024 * 1024];
@@ -24,8 +28,7 @@ public class Main extends Activity {
         return baos.toByteArray();
     }
 
-    private Bitmap labelsToBitmap(int width, int height, byte[] labels)
-    {
+    private Bitmap labelsToBitmap(int width, int height, byte[] labels) {
         Bitmap bmp = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
 
         int[] pixels = new int[labels.length];
@@ -41,16 +44,22 @@ public class Main extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+        picture = (ImageView) findViewById(R.id.picture);
+        imageFiles = new File("/mnt/sdcard2/rgbd").listFiles();
+        Arrays.sort(imageFiles);
+
+        showImage();
+    }
+
+    private void showImage() {
         RGBDImage img;
 
-        ImageView picture = (ImageView) findViewById(R.id.picture);
-
         try {
-            InputStream rgbd_in = getAssets().open("1.rgbd");
+            InputStream rgbd_in = new FileInputStream(imageFiles[imgNum]);
             img = RGBDImage.parse(readInputStream(rgbd_in));
             rgbd_in.close();
         } catch (IOException ioe) {
-            Log.e(TAG, ioe.getMessage());
+            Log.e(TAG, ioe.getMessage(), ioe);
             return;
         }
 
@@ -62,6 +71,14 @@ public class Main extends Activity {
         canvas.drawBitmap(labels_bmp, 0, 0, null);
 
         picture.setImageBitmap(image_bmp);
+    }
+
+    public void pictureClicked(View view) {
+        ++imgNum;
+        if (imgNum >= imageFiles.length)
+            imgNum = 0;
+
+        showImage();
     }
 }
 

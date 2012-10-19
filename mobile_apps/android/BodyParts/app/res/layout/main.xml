@@ -7,5 +7,7 @@
 <ImageView android:id="@+id/picture"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    android:scaleType="center"
+    android:onClick="pictureClicked"
  />
 </LinearLayout>
