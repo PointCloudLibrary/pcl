@@ -8,7 +8,6 @@ import java.io.File;
 
 public class MainLoop {
     private static final String TAG = "bodyparts.MainLoop";
-    private Main main;
     private HandlerThread thread;
     private Handler handler;
     private IdleHandler idleHandler = new IdleHandler();
@@ -19,6 +18,12 @@ public class MainLoop {
     private RGBDImage img = new RGBDImage();
     private BodyPartsRecognizer bpr;
     private File rgbdDir;
+    private Feedback feedback;
+
+    public interface Feedback {
+        void initFinished(boolean success);
+        void closeFinished();
+    }
 
     private static void buildBitmap(Bitmap bmp, RGBDImage image, byte[] labels) {
         BodyPartLabel[] all_labels = BodyPartLabel.values();
@@ -35,8 +40,7 @@ public class MainLoop {
         bmp.setPixels(pixels, 0, image.getWidth(), 0, 0, image.getWidth(), image.getHeight());
     }
 
-    private long processImage()
-    {
+    private long processImage() {
         long millis_before, millis_after, total_before, total_after;
 
         total_before = SystemClock.uptimeMillis();
@@ -79,33 +83,42 @@ public class MainLoop {
 
                     final long total_ms = processImage();
 
+/*
                     main.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             main.picture.setImageBitmap(bmp);
 
-                            main.timingText.setText(String.format("%d ms", total_ms));
-                            Log.i(TAG, "Total: " + main.timingText.getText());
+                            main.textTiming.setText(String.format("%d ms", total_ms));
+                            Log.i(TAG, "Total: " + main.textTiming.getText());
                         }
                     });
+                    */
                 }
             });
             return true;
         }
     }
 
-    public MainLoop(Main main, BodyPartsRecognizer bpr) {
-        this(main, bpr, null);
-    }
-
-    public MainLoop(Main main, BodyPartsRecognizer bpr, File rgbdDir) {
-        this.main = main;
+    public MainLoop(BodyPartsRecognizer bpr, File rgbdDir, Feedback feedback) {
+        this.feedback = feedback;
         this.bpr = bpr;
         this.rgbdDir = rgbdDir;
 
         thread = new HandlerThread("Grabber/Processor");
         thread.start();
         handler = new Handler(thread.getLooper());
+
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                grabber = MainLoop.this.rgbdDir == null
+                        ? Grabber.createOpenNIGrabber()
+                        : Grabber.createFileGrabber(MainLoop.this.rgbdDir.getAbsolutePath());
+                MainLoop.this.feedback.initFinished(grabber.isConnected());
+            }
+        });
+
     }
 
     public void resume() {
@@ -131,33 +144,36 @@ public class MainLoop {
     }
 
     public void start() {
+    }
+
+    public void close() {
         handler.post(new Runnable() {
             @Override
             public void run() {
-                grabber = rgbdDir == null
-                        ? Grabber.createOpenNIGrabber()
-                        : Grabber.createFileGrabber(rgbdDir.getAbsolutePath());
+                grabber.free();
+                feedback.closeFinished();
             }
         });
     }
 
-    public void stop() {
-         handler.post(new Runnable() {
-             @Override
-             public void run() {
-                 grabber.free();
-             }
-         });
-    }
-
     public void destroy() {
-        thread.quit();
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                Looper.myLooper().quit();
+            }
+        });
+
         try {
             thread.join();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
-        grabber.free();
+
         img.free();
+    }
+
+    public boolean isLive() {
+        return rgbdDir == null;
     }
 }

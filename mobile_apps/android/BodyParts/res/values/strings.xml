@@ -1,4 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Body Parts</string>
+    <string name="menu_item_open_folder">Open folder</string>
+    <string name="menu_item_open_device">Open device</string>
+    <string name="menu_item_close">Close</string>
+    <string name="toast_no_rgbd_directory">Couldn\'t find a directory with RGBD files.</string>
+    <string name="toast_failed_to_open">Failed to open the data source.</string>
+    <string name="status_idle">Idle.</string>
+    <string name="status_opening">Opening…</string>
+    <string name="status_paused">Paused.</string>
+    <string name="status_closing">Closing…</string>
+    <string name="caption_frame">Frame</string>
 </resources>

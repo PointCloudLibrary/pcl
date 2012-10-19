@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/menu_item_open_folder" android:title="@string/menu_item_open_folder" android:showAsAction="ifRoom" />
+    <item android:id="@+id/menu_item_open_device" android:title="@string/menu_item_open_device" android:showAsAction="ifRoom" />
+    <item android:id="@+id/menu_item_close" android:title="@string/menu_item_close" android:showAsAction="ifRoom" />
+</menu>
