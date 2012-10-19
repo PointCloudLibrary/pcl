@@ -7,6 +7,5 @@ $(call import-module,XnFormats)
 $(call import-module,XnDeviceSensorV2)
 
 $(call import-module,boost)
-$(call import-module,boost_filesystem)
 
 $(call import-module,tbb)
