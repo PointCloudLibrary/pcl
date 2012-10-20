@@ -336,16 +336,17 @@ namespace pcl
         */
       struct MLSResult
       {
-        MLSResult () : plane_normal (), u (), v (), c_vec (), num_neighbors (), curvature (), valid (false) {}
+        MLSResult () : mean (), plane_normal (), u_axis (), v_axis (), c_vec (), num_neighbors (), curvature (), valid (false) {}
 
-        MLSResult (Eigen::Vector3d &a_plane_normal,
-                   Eigen::Vector3d &a_u,
-                   Eigen::Vector3d &a_v,
-                   Eigen::VectorXd a_c_vec,
-                   int a_num_neighbors,
-                   float &a_curvature);
+        MLSResult (const Eigen::Vector3d &a_mean,
+                   const Eigen::Vector3d &a_plane_normal,
+                   const Eigen::Vector3d &a_u,
+                   const Eigen::Vector3d &a_v,
+                   const Eigen::VectorXd a_c_vec,
+                   const int a_num_neighbors,
+                   const float &a_curvature);
 
-        Eigen::Vector3d plane_normal, u, v;
+        Eigen::Vector3d mean, plane_normal, u_axis, v_axis;
         Eigen::VectorXd c_vec;
         int num_neighbors;
         float curvature;
@@ -466,10 +467,10 @@ namespace pcl
         */
       void
       projectPointToMLSSurface (float &u_disp, float &v_disp,
-                                Eigen::Vector3d &u, Eigen::Vector3d &v,
-                                Eigen::Vector3d &plane_normal,
+                                Eigen::Vector3d &u_axis, Eigen::Vector3d &v_axis,
+                                Eigen::Vector3d &n_axis,
+                                Eigen::Vector3d &mean,
                                 float &curvature,
-                                Eigen::Vector3f &query_point,
                                 Eigen::VectorXd &c_vec,
                                 int num_neighbors,
                                 PointOutT &result_point,

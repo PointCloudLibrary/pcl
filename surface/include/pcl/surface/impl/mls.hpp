@@ -155,25 +155,25 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::computeMLSPointNormal (int index,
                                                                      NormalCloud &projected_points_normals)
 {
   // Compute the plane coefficients
-  EIGEN_ALIGN16 Eigen::Matrix3f covariance_matrix;
-  Eigen::Vector4f xyz_centroid;
+  EIGEN_ALIGN16 Eigen::Matrix3d covariance_matrix;
+  Eigen::Vector4d xyz_centroid;
 
   // Estimate the XYZ centroid
   pcl::compute3DCentroid (*input_, nn_indices, xyz_centroid);
 
   // Compute the 3x3 covariance matrix
   pcl::computeCovarianceMatrix (*input_, nn_indices, xyz_centroid, covariance_matrix);
-  EIGEN_ALIGN16 Eigen::Vector3f::Scalar eigen_value;
-  EIGEN_ALIGN16 Eigen::Vector3f eigen_vector;
-  Eigen::Vector4f model_coefficients;
+  EIGEN_ALIGN16 Eigen::Vector3d::Scalar eigen_value;
+  EIGEN_ALIGN16 Eigen::Vector3d eigen_vector;
+  Eigen::Vector4d model_coefficients;
   pcl::eigen33 (covariance_matrix, eigen_value, eigen_vector);
   model_coefficients.head<3> ().matrix () = eigen_vector;
   model_coefficients[3] = 0;
   model_coefficients[3] = -1 * model_coefficients.dot (xyz_centroid);
 
   // Projected query point
-  Eigen::Vector3f point = input_->points[index].getVector3fMap ();
-  float distance = point.dot (model_coefficients.head<3> ()) + model_coefficients[3];
+  Eigen::Vector3d point = input_->points[index].getVector3fMap ().template cast<double> ();
+  double distance = point.dot (model_coefficients.head<3> ()) + model_coefficients[3];
   point -= distance * model_coefficients.head<3> ();
 
   float curvature = covariance_matrix.trace ();
@@ -183,11 +183,11 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::computeMLSPointNormal (int index,
 
 
   // Get a copy of the plane normal easy access
-  Eigen::Vector3d plane_normal = model_coefficients.head<3> ().cast<double> ();
+  Eigen::Vector3d plane_normal = model_coefficients.head<3> ();
   // Vector in which the polynomial coefficients will be put
   Eigen::VectorXd c_vec;
   // Local coordinate system (Darboux frame)
-  Eigen::Vector3d v (0.0f, 0.0f, 0.0f), u (0.0f, 0.0f, 0.0f);
+  Eigen::Vector3d v_axis (0.0f, 0.0f, 0.0f), u_axis (0.0f, 0.0f, 0.0f);
 
 
 
@@ -214,23 +214,23 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::computeMLSPointNormal (int index,
     Eigen::MatrixXd P_weight_Pt (nr_coeff_, nr_coeff_);
 
     // Get local coordinate system (Darboux frame)
-    v = plane_normal.unitOrthogonal ();
-    u = plane_normal.cross (v);
+    v_axis = plane_normal.unitOrthogonal ();
+    u_axis = plane_normal.cross (v_axis);
 
     // Go through neighbors, transform them in the local coordinate system,
     // save height and the evaluation of the polynome's terms
     double u_coord, v_coord, u_pow, v_pow;
     for (size_t ni = 0; ni < nn_indices.size (); ++ni)
     {
-      // (re-)compute weights
+      // (Re-)compute weights
       weight_vec (ni) = exp (-nn_sqr_dists[ni] / sqr_gauss_param_);
 
-      // transforming coordinates
-      u_coord = de_meaned[ni].dot (u);
-      v_coord = de_meaned[ni].dot (v);
+      // Transforming coordinates
+      u_coord = de_meaned[ni].dot (u_axis);
+      v_coord = de_meaned[ni].dot (v_axis);
       f_vec (ni) = de_meaned[ni].dot (plane_normal);
 
-      // compute the polynomial's terms at the current point
+      // Compute the polynomial's terms at the current point
       int j = 0;
       u_pow = 1;
       for (int ui = 0; ui <= order_; ++ui)
@@ -260,11 +260,11 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::computeMLSPointNormal (int index,
 
       if (polynomial_fit_ && static_cast<int> (nn_indices.size ()) >= nr_coeff_ && pcl_isfinite (c_vec[0]))
       {
-        point += (c_vec[0] * plane_normal).cast<float> ();
+        point += (c_vec[0] * plane_normal);
 
         // Compute tangent vectors using the partial derivates evaluated at (0,0) which is c_vec[order_+1] and c_vec[1]
         if (compute_normals_)
-          normal = plane_normal - c_vec[order_ + 1] * u - c_vec[1] * v;
+          normal = plane_normal - c_vec[order_ + 1] * u_axis - c_vec[1] * v_axis;
       }
 
       PointOutT aux;
@@ -295,9 +295,10 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::computeMLSPointNormal (int index,
           {
             PointOutT projected_point;
             pcl::Normal projected_normal;
-            projectPointToMLSSurface (u_disp, v_disp, u, v, plane_normal, curvature, point, c_vec, 
-                static_cast<int> (nn_indices.size ()),
-                projected_point, projected_normal);
+            projectPointToMLSSurface (u_disp, v_disp, u_axis, v_axis, plane_normal, point,
+                                      curvature, c_vec,
+                                      static_cast<int> (nn_indices.size ()),
+                                      projected_point, projected_normal);
 
             projected_points.push_back (projected_point);
             if (compute_normals_)
@@ -319,10 +320,10 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::computeMLSPointNormal (int index,
         if (polynomial_fit_ && static_cast<int> (nn_indices.size ()) >= nr_coeff_ && pcl_isfinite (c_vec[0]))
         {
           // Projection onto MLS surface along Darboux normal to the height at (0,0)
-          point += (c_vec[0] * plane_normal).cast<float> ();
+          point += (c_vec[0] * plane_normal);
           // Compute tangent vectors using the partial derivates evaluated at (0,0) which is c_vec[order_+1] and c_vec[1]
           if (compute_normals_)
-            normal = plane_normal - c_vec[order_ + 1] * u - c_vec[1] * v;
+            normal = plane_normal - c_vec[order_ + 1] * u_axis - c_vec[1] * v_axis;
         }
         PointOutT aux;
         aux.x = point[0];
@@ -354,9 +355,10 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::computeMLSPointNormal (int index,
 
           PointOutT projected_point;
           pcl::Normal projected_normal;
-          projectPointToMLSSurface (u_disp, v_disp, u, v, plane_normal, curvature, point, c_vec, 
-              static_cast<int> (nn_indices.size ()),
-              projected_point, projected_normal);
+          projectPointToMLSSurface (u_disp, v_disp, u_axis, v_axis, plane_normal, point,
+                                    curvature, c_vec,
+                                    static_cast<int> (nn_indices.size ()),
+                                    projected_point, projected_normal);
 
           projected_points.push_back (projected_point);
           if (compute_normals_)
@@ -373,20 +375,20 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::computeMLSPointNormal (int index,
     {
       // Take all point pairs and sample space between them in a grid-fashion
       // \note consider only point pairs with increasing indices
-      MLSResult result (plane_normal, u, v, c_vec, static_cast<int> (nn_indices.size ()), curvature);
+      MLSResult result (point, plane_normal, u_axis, v_axis, c_vec, static_cast<int> (nn_indices.size ()), curvature);
       mls_results_[index] = result;
       break;
     }
   }
-    }
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT> void
 pcl::MovingLeastSquares<PointInT, PointOutT>::projectPointToMLSSurface (float &u_disp, float &v_disp,
                                                                         Eigen::Vector3d &u, Eigen::Vector3d &v,
                                                                         Eigen::Vector3d &plane_normal,
+                                                                        Eigen::Vector3d &mean,
                                                                         float &curvature,
-                                                                        Eigen::Vector3f &query_point,
                                                                         Eigen::VectorXd &c_vec,
                                                                         int num_neighbors,
                                                                         PointOutT &result_point,
@@ -424,11 +426,12 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::projectPointToMLSSurface (float &u
     }
   }
 
+  result_point.x = static_cast<float> (mean[0] + u[0] * u_disp + v[0] * v_disp + plane_normal[0] * n_disp);
+  result_point.y = static_cast<float> (mean[1] + u[1] * u_disp + v[1] * v_disp + plane_normal[1] * n_disp);
+  result_point.z = static_cast<float> (mean[2] + u[2] * u_disp + v[2] * v_disp + plane_normal[2] * n_disp);
+
   Eigen::Vector3d normal = plane_normal - d_u * u - d_v * v;
   normal.normalize ();
-  result_point.x = static_cast<float> (query_point[0] + u[0] * u_disp + v[0] * v_disp + normal[0] * n_disp);
-  result_point.y = static_cast<float> (query_point[1] + u[1] * u_disp + v[1] * v_disp + normal[1] * n_disp);
-  result_point.z = static_cast<float> (query_point[2] + u[2] * u_disp + v[2] * v_disp + normal[2] * n_disp);
 
   result_normal.normal_x = static_cast<float> (normal[0]);
   result_normal.normal_y = static_cast<float> (normal[1]);
@@ -468,12 +471,12 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::performProcessing (PointCloudOut &
     computeMLSPointNormal ((*indices_)[cp], nn_indices, nn_sqr_dists, projected_points, projected_points_normals);
 
 
-    /// Copy all information from the input cloud to the output points (not doing any interpolation)
+    // Copy all information from the input cloud to the output points (not doing any interpolation)
     for (size_t pp = 0; pp < projected_points.size (); ++pp)
       copyMissingFields (input_->points[(*indices_)[cp]], projected_points[pp]);
 
 
-    /// Append projected points to output
+    // Append projected points to output
     output.insert (output.end (), projected_points.begin (), projected_points.end ());
     if (compute_normals_)
       normals_->insert (normals_->end (), projected_points_normals.begin (), projected_points_normals.end ());
@@ -500,31 +503,24 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::performProcessing (PointCloudOut &
       if (mls_results_[input_index].valid == false)
         continue;
 
-      Eigen::Vector3f add_point = distinct_cloud_->points[dp_i].getVector3fMap (),
-                      input_point = input_->points[input_index].getVector3fMap ();
+      Eigen::Vector3d add_point = distinct_cloud_->points[dp_i].getVector3fMap ().template cast<double> ();
 
-      Eigen::Vector3d aux = mls_results_[input_index].u;
-      Eigen::Vector3f u = aux.cast<float> ();
-      aux = mls_results_[input_index].v;
-      Eigen::Vector3f v = aux.cast<float> ();
-
-      float u_disp = (add_point - input_point).dot (u),
-            v_disp = (add_point - input_point).dot (v);
+      float u_disp = (add_point - mls_results_[input_index].mean).dot (mls_results_[input_index].u_axis),
+            v_disp = (add_point - mls_results_[input_index].mean).dot (mls_results_[input_index].v_axis);
 
       PointOutT result_point;
       pcl::Normal result_normal;
       projectPointToMLSSurface (u_disp, v_disp,
-                                mls_results_[input_index].u, mls_results_[input_index].v,
+                                mls_results_[input_index].u_axis, mls_results_[input_index].v_axis,
                                 mls_results_[input_index].plane_normal,
+                                mls_results_[input_index].mean,
                                 mls_results_[input_index].curvature,
-                                input_point,
                                 mls_results_[input_index].c_vec,
                                 mls_results_[input_index].num_neighbors,
                                 result_point, result_normal);
 
-      /// Copy additional point information if available
+      // Copy additional point information if available
       copyMissingFields (input_->points[input_index], result_point);
-
 
       output.push_back (result_point);
       if (compute_normals_)
@@ -562,32 +558,20 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::performProcessing (PointCloudOut &
       if (mls_results_[input_index].valid == false)
         continue;
 
-      Eigen::Vector3f add_point = p.getVector3fMap (),
-                      input_point = input_->points[input_index].getVector3fMap ();
-
-      Eigen::Vector3d aux = mls_results_[input_index].u;
-      Eigen::Vector3f u = aux.cast<float> ();
-      aux = mls_results_[input_index].v;
-      Eigen::Vector3f v = aux.cast<float> ();
-
-      float u_disp = (add_point - input_point).dot (u),
-            v_disp = (add_point - input_point).dot (v);
+      Eigen::Vector3d add_point = p.getVector3fMap ().template cast<double> ();
+      float u_disp = (add_point - mls_results_[input_index].mean).dot (mls_results_[input_index].u_axis),
+            v_disp = (add_point - mls_results_[input_index].mean).dot (mls_results_[input_index].v_axis);
 
       PointOutT result_point;
       pcl::Normal result_normal;
       projectPointToMLSSurface (u_disp, v_disp,
-                                mls_results_[input_index].u, mls_results_[input_index].v,
+                                mls_results_[input_index].u_axis, mls_results_[input_index].v_axis,
                                 mls_results_[input_index].plane_normal,
+                                mls_results_[input_index].mean,
                                 mls_results_[input_index].curvature,
-                                input_point,
                                 mls_results_[input_index].c_vec,
                                 mls_results_[input_index].num_neighbors,
                                 result_point, result_normal);
-
-      float d_before = (pos - input_point).norm (),
-            d_after = (result_point.getVector3fMap () - input_point). norm();
-      if (d_after > d_before)
-        continue;
 
       /// Copy additional point information if available
       copyMissingFields (input_->points[input_index], result_point);
@@ -601,14 +585,15 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::performProcessing (PointCloudOut &
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT>
-pcl::MovingLeastSquares<PointInT, PointOutT>::MLSResult::MLSResult (Eigen::Vector3d &a_plane_normal,
-    Eigen::Vector3d &a_u,
-    Eigen::Vector3d &a_v,
-    Eigen::VectorXd a_c_vec,
-    int a_num_neighbors,
-    float &a_curvature) :
-    plane_normal (a_plane_normal), u (a_u), v (a_v), c_vec (a_c_vec), num_neighbors (a_num_neighbors),
-    curvature (a_curvature), valid (true)
+pcl::MovingLeastSquares<PointInT, PointOutT>::MLSResult::MLSResult (const Eigen::Vector3d &a_mean,
+                                                                    const Eigen::Vector3d &a_plane_normal,
+                                                                    const Eigen::Vector3d &a_u,
+                                                                    const Eigen::Vector3d &a_v,
+                                                                    const Eigen::VectorXd a_c_vec,
+                                                                    const int a_num_neighbors,
+                                                                    const float &a_curvature) :
+  mean (a_mean), plane_normal (a_plane_normal), u_axis (a_u), v_axis (a_v), c_vec (a_c_vec), num_neighbors (a_num_neighbors),
+  curvature (a_curvature), valid (true)
 {
 }
 
