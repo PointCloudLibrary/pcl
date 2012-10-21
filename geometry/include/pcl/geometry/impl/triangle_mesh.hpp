@@ -175,24 +175,38 @@ namespace pcl
         bool is_new_12 = true;
         bool is_new_20 = true;
 
-        if (!Base::firstTopologyCheck (idx_v_0,idx_v_1, idx_he_01, is_new_01) ||
-            !Base::firstTopologyCheck (idx_v_1,idx_v_2, idx_he_12, is_new_12) ||
-            !Base::firstTopologyCheck (idx_v_2,idx_v_0, idx_he_20, is_new_20))
+        if (!Base::checkTopology1 (idx_v_0,idx_v_1, idx_he_01, is_new_01) ||
+            !Base::checkTopology1 (idx_v_1,idx_v_2, idx_he_12, is_new_12) ||
+            !Base::checkTopology1 (idx_v_2,idx_v_0, idx_he_20, is_new_20))
         {
           return (FaceIndex ());
         }
 
-        if (!Base::secondTopologyCheck (is_new_01,is_new_12, Base::getElement (idx_v_1).isIsolated ()) ||
-            !Base::secondTopologyCheck (is_new_12,is_new_20, Base::getElement (idx_v_2).isIsolated ()) ||
-            !Base::secondTopologyCheck (is_new_20,is_new_01, Base::getElement (idx_v_0).isIsolated ()))
+        if (!Base::checkTopology2 (is_new_01,is_new_12, Base::getElement (idx_v_1).isIsolated ()) ||
+            !Base::checkTopology2 (is_new_12,is_new_20, Base::getElement (idx_v_2).isIsolated ()) ||
+            !Base::checkTopology2 (is_new_20,is_new_01, Base::getElement (idx_v_0).isIsolated ()))
         {
           return (FaceIndex ());
         }
 
-        // Reconnect the existing half-edges if necessary
-        if (!is_new_01 && !is_new_12) Base::makeAdjacent (idx_he_01, idx_he_12);
-        if (!is_new_12 && !is_new_20) Base::makeAdjacent (idx_he_12, idx_he_20);
-        if (!is_new_20 && !is_new_01) Base::makeAdjacent (idx_he_20, idx_he_01);
+        // Reconnect the existing half-edges if needed
+        bool make_adjacent_01_12 = false;
+        bool make_adjacent_12_20 = false;
+        bool make_adjacent_20_01 = false;
+        HalfEdgeIndex idx_he_boundary_01_12;
+        HalfEdgeIndex idx_he_boundary_12_20;
+        HalfEdgeIndex idx_he_boundary_20_01;
+
+        if (!Base::checkAdjacency (idx_he_01,idx_he_12, is_new_01,is_new_12, make_adjacent_01_12, idx_he_boundary_01_12) ||
+            !Base::checkAdjacency (idx_he_12,idx_he_20, is_new_12,is_new_20, make_adjacent_12_20, idx_he_boundary_12_20) ||
+            !Base::checkAdjacency (idx_he_20,idx_he_01, is_new_20,is_new_01, make_adjacent_20_01, idx_he_boundary_20_01))
+        {
+          return (FaceIndex ());
+        }
+
+        Base::makeAdjacent (idx_he_01,idx_he_12, make_adjacent_01_12, idx_he_boundary_01_12);
+        Base::makeAdjacent (idx_he_12,idx_he_20, make_adjacent_12_20, idx_he_boundary_12_20);
+        Base::makeAdjacent (idx_he_20,idx_he_01, make_adjacent_20_01, idx_he_boundary_20_01);
 
         // Add the new half-edges if needed
         if (is_new_01) Base::addHalfEdgePair (idx_v_0,idx_v_1, HalfEdgeData (),HalfEdgeData (), idx_he_01,idx_he_10);
@@ -284,10 +298,10 @@ namespace pcl
         bool is_new_23 = true;
         bool is_new_30 = true;
 
-        if (!Base::firstTopologyCheck (idx_v_0,idx_v_1, idx_he_01, is_new_01) ||
-            !Base::firstTopologyCheck (idx_v_1,idx_v_2, idx_he_12, is_new_12) ||
-            !Base::firstTopologyCheck (idx_v_2,idx_v_3, idx_he_23, is_new_23) ||
-            !Base::firstTopologyCheck (idx_v_3,idx_v_0, idx_he_30, is_new_30))
+        if (!Base::checkTopology1 (idx_v_0,idx_v_1, idx_he_01, is_new_01) ||
+            !Base::checkTopology1 (idx_v_1,idx_v_2, idx_he_12, is_new_12) ||
+            !Base::checkTopology1 (idx_v_2,idx_v_3, idx_he_23, is_new_23) ||
+            !Base::checkTopology1 (idx_v_3,idx_v_0, idx_he_30, is_new_30))
         {
           return (std::make_pair (FaceIndex (), FaceIndex ()));
         }

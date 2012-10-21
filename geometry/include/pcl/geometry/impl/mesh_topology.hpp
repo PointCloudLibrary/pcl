@@ -258,30 +258,44 @@ namespace pcl
       }
 
       //////////////////////////////////////////////////////////////////////////
-      // firstTopologyCheck
+      // checkTopology1
       //////////////////////////////////////////////////////////////////////////
 
-      // is_new must be initialized with true!
       // Returns true if addFace may be continued
       bool
-      firstTopologyCheck (const VertexIndex& idx_v_a,
-                          const VertexIndex& idx_v_b,
-                          HalfEdgeIndex&     idx_he_a_out,
-                          bool&              is_new_ab) const
+      checkTopology1 (const VertexIndex& idx_v_a,
+                      const VertexIndex& idx_v_b,
+                      HalfEdgeIndex&     idx_he_a_out,
+                      bool&              is_new_ab) const
       {
-        return (this->firstTopologyCheck (idx_v_a, idx_v_b, idx_he_a_out, is_new_ab, IsManifold ()));
+        return (this->checkTopology1 (idx_v_a, idx_v_b, idx_he_a_out, is_new_ab, IsManifold ()));
       }
 
       //////////////////////////////////////////////////////////////////////////
-      // secondTopologyCheck
+      // checkTopology2
       //////////////////////////////////////////////////////////////////////////
 
       bool
-      secondTopologyCheck (const bool is_new_ab,
-                           const bool is_new_bc,
-                           const bool is_isolated_b) const
+      checkTopology2 (const bool is_new_ab,
+                      const bool is_new_bc,
+                      const bool is_isolated_b) const
       {
-        return (this->secondTopologyCheck (is_new_ab, is_new_bc, is_isolated_b, IsManifold ()));
+        return (this->checkTopology2 (is_new_ab, is_new_bc, is_isolated_b, IsManifold ()));
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      // checkAdjacency
+      //////////////////////////////////////////////////////////////////////////
+
+      bool
+      checkAdjacency (const HalfEdgeIndex& idx_he_ab,
+                      const HalfEdgeIndex& idx_he_bc,
+                      const bool           is_new_ab,
+                      const bool           is_new_bc,
+                      bool&                make_adjacent_ab_bc,
+                      HalfEdgeIndex&       idx_he_boundary)
+      {
+        return (this->checkAdjacency (idx_he_ab,idx_he_bc, is_new_ab,is_new_bc, make_adjacent_ab_bc, idx_he_boundary, IsManifold ()));
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -290,9 +304,11 @@ namespace pcl
 
       void
       makeAdjacent (const HalfEdgeIndex& idx_he_ab,
-                    const HalfEdgeIndex& idx_he_bc)
+                    const HalfEdgeIndex& idx_he_bc,
+                    bool&                make_adjacent_ab_bc,
+                    HalfEdgeIndex&       idx_he_boundary)
       {
-        return (this->makeAdjacent (idx_he_ab,idx_he_bc, IsManifold ()));
+        this->makeAdjacent (idx_he_ab,idx_he_bc, make_adjacent_ab_bc, idx_he_boundary, IsManifold ());
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -327,7 +343,7 @@ namespace pcl
       }
 
       //////////////////////////////////////////////////////////////////////////
-      // connect
+      // connectHalfEdges
       //////////////////////////////////////////////////////////////////////////
 
       void
@@ -471,15 +487,15 @@ namespace pcl
       }
 
       //////////////////////////////////////////////////////////////////////////
-      // firstTopologyCheck
+      // checkTopology1
       //////////////////////////////////////////////////////////////////////////
 
       bool
-      firstTopologyCheck (const VertexIndex& idx_v_a,
-                          const VertexIndex& idx_v_b,
-                          HalfEdgeIndex&     idx_he_a_out,
-                          bool&              is_new_ab,
-                          ManifoldMeshTag) const
+      checkTopology1 (const VertexIndex& idx_v_a,
+                      const VertexIndex& idx_v_b,
+                      HalfEdgeIndex&     idx_he_a_out,
+                      bool&              is_new_ab,
+                      ManifoldMeshTag) const
       {
         const Vertex& v_a = Base::getElement (idx_v_a);
 
@@ -490,16 +506,17 @@ namespace pcl
 
         if (!he_ab.isBoundary ())                          return (false);
         if (he_ab.getTerminatingVertexIndex () == idx_v_b) is_new_ab = false;
+        else                                               is_new_ab = true;
 
         return (true);
       }
 
       bool
-      firstTopologyCheck (const VertexIndex& idx_v_a,
-                          const VertexIndex& idx_v_b,
-                          HalfEdgeIndex&     idx_he_a_out,
-                          bool&              is_new_ab,
-                          NonManifoldMeshTag) const
+      checkTopology1 (const VertexIndex& idx_v_a,
+                      const VertexIndex& idx_v_b,
+                      HalfEdgeIndex&     idx_he_a_out,
+                      bool&              is_new_ab,
+                      NonManifoldMeshTag) const
       {
         const Vertex& v_a = Base::getElement (idx_v_a);
 
@@ -508,6 +525,8 @@ namespace pcl
 
         VertexAroundVertexConstCirculator       circ     = Base::getVertexAroundVertexConstCirculator (v_a.getOutgoingHalfEdgeIndex ());
         const VertexAroundVertexConstCirculator circ_end = circ;
+
+        is_new_ab = true;
 
         do
         {
@@ -529,26 +548,82 @@ namespace pcl
       }
 
       //////////////////////////////////////////////////////////////////////////
-      // secondTopologyCheck
+      // checkTopology2
       //////////////////////////////////////////////////////////////////////////
 
       bool
-      secondTopologyCheck (const bool is_new_ab,
-                           const bool is_new_bc,
-                           const bool is_isolated_b,
-                           ManifoldMeshTag) const
+      checkTopology2 (const bool is_new_ab,
+                      const bool is_new_bc,
+                      const bool is_isolated_b,
+                      ManifoldMeshTag) const
       {
         if (is_new_ab && is_new_bc && !is_isolated_b) return (false);
         else                                          return (true);
       }
 
       bool
-      secondTopologyCheck (const bool /*is_new_ab*/,
-                           const bool /*is_new_bc*/,
-                           const bool /*is_isolated_b*/,
-                           NonManifoldMeshTag) const
+      checkTopology2 (const bool /*is_new_ab*/,
+                      const bool /*is_new_bc*/,
+                      const bool /*is_isolated_b*/,
+                      NonManifoldMeshTag) const
       {
         return (true);
+      }
+
+      //////////////////////////////////////////////////////////////////////////
+      // checkAdjacency
+      //////////////////////////////////////////////////////////////////////////
+
+      bool
+      checkAdjacency (const HalfEdgeIndex& /*idx_he_ab*/,
+                      const HalfEdgeIndex& /*idx_he_bc*/,
+                      const bool           /*is_new_ab*/,
+                      const bool           /*is_new_bc*/,
+                      bool&                /*make_adjacent_ab_bc*/,
+                      HalfEdgeIndex&       /*idx_he_boundary*/,
+                      ManifoldMeshTag)
+      {
+        return (true);
+      }
+
+      bool
+      checkAdjacency (const HalfEdgeIndex& idx_he_ab,
+                      const HalfEdgeIndex& idx_he_bc,
+                      const bool           is_new_ab,
+                      const bool           is_new_bc,
+                      bool&                make_adjacent_ab_bc,
+                      HalfEdgeIndex&       idx_he_boundary,
+                      NonManifoldMeshTag)
+      {
+        if (is_new_ab || is_new_bc)
+        {
+          make_adjacent_ab_bc = false;
+          return (true); // Make adjacent is only needed for two old half-edges
+        }
+
+        if (Base::getElement (idx_he_ab).getNextHalfEdgeIndex () == idx_he_bc)
+        {
+          make_adjacent_ab_bc = false;
+          return (true); // already adjacent
+        }
+
+        make_adjacent_ab_bc = true;
+
+        // Find the next boundary half edge (counter-clockwise around vertex b)
+        OutgoingHalfEdgeAroundVertexConstCirculator circ = Base::getOutgoingHalfEdgeAroundVertexConstCirculator (Base::getElement (idx_he_ab).getOppositeHalfEdgeIndex ());
+
+        do ++circ; while (!circ->isBoundary () || circ.getCurrentHalfEdgeIndex ()==idx_he_bc);
+
+        // Check if a half-edge is available for connectivity re-arrangement
+        idx_he_boundary = circ.getDereferencedIndex ();
+        if (idx_he_boundary == Base::getElement (idx_he_ab).getNextHalfEdgeIndex ())
+        {
+          return (false);
+        }
+        else
+        {
+          return (true);
+        }
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -558,6 +633,8 @@ namespace pcl
       void
       makeAdjacent (const HalfEdgeIndex& /*idx_he_ab*/,
                     const HalfEdgeIndex& /*idx_he_bc*/,
+                    bool&                /*make_adjacent_ab_bc*/,
+                    HalfEdgeIndex&       /*idx_he_boundary*/,
                     ManifoldMeshTag)
       {
         // Nothing to do here (manifold)
@@ -566,36 +643,20 @@ namespace pcl
       void
       makeAdjacent (const HalfEdgeIndex& idx_he_ab,
                     const HalfEdgeIndex& idx_he_bc,
+                    bool&                make_adjacent_ab_bc,
+                    HalfEdgeIndex&       idx_he_boundary,
                     NonManifoldMeshTag)
       {
-        if (Base::getElement (idx_he_ab).getNextHalfEdgeIndex () == idx_he_bc)
-        {
-          return; // already adjacent
-        }
+        if (!make_adjacent_ab_bc) return;
 
-        // Find the next boundary half edge (counter-clockwise around vertex b)
-        OutgoingHalfEdgeAroundVertexConstCirculator circ = Base::getOutgoingHalfEdgeAroundVertexConstCirculator (Base::getElement (idx_he_ab).getOppositeHalfEdgeIndex ());
+        // Re-link. No references!
+        const HalfEdgeIndex idx_he_ab_next       = Base::getElement (idx_he_ab).getNextHalfEdgeIndex ();
+        const HalfEdgeIndex idx_he_bc_prev       = Base::getElement (idx_he_bc).getPrevHalfEdgeIndex ();
+        const HalfEdgeIndex idx_he_boundary_prev = Base::getElement (idx_he_boundary).getPrevHalfEdgeIndex ();
 
-        while (true)
-        {
-          // The first half-edge (he_ba) is not on the boundary -> circ is incremented at least once
-          // If re-linking is necessary then there are at least three boundary half-edges -> no infinite loop
-          if (circ->isBoundary ())
-          {
-            // Re-link. No references!
-            const HalfEdgeIndex idx_he_ab_next       = Base::getElement (idx_he_ab).getNextHalfEdgeIndex ();
-            const HalfEdgeIndex idx_he_bc_prev       = Base::getElement (idx_he_bc).getPrevHalfEdgeIndex ();
-            const HalfEdgeIndex idx_he_boundary      = circ.getDereferencedIndex ();
-            const HalfEdgeIndex idx_he_boundary_prev = Base::getElement (idx_he_boundary).getPrevHalfEdgeIndex ();
-
-            this->connectPrevNext (idx_he_ab, idx_he_bc);
-            this->connectPrevNext (idx_he_boundary_prev, idx_he_ab_next);
-            this->connectPrevNext (idx_he_bc_prev, idx_he_boundary);
-
-            return;
-          }
-          ++circ;
-        }
+        this->connectPrevNext (idx_he_ab, idx_he_bc);
+        this->connectPrevNext (idx_he_boundary_prev, idx_he_ab_next);
+        this->connectPrevNext (idx_he_bc_prev, idx_he_boundary);
       }
 
       //////////////////////////////////////////////////////////////////////////
