@@ -156,8 +156,13 @@ namespace pcl
       deleteVertex (const VertexIndex& idx_vertex)
       {
         assert (Base::validateMeshElementIndex (idx_vertex));
+        this->deleteVertex (Base::getElement (idx_vertex));
+      }
 
-        FaceAroundVertexConstCirculator       circ     = Base::getFaceAroundVertexConstCirculator (idx_vertex);
+      void
+      deleteVertex (const Vertex& vertex)
+      {
+        FaceAroundVertexConstCirculator       circ     = Base::getFaceAroundVertexConstCirculator (vertex);
         const FaceAroundVertexConstCirculator circ_end = circ;
 
         do
@@ -178,10 +183,14 @@ namespace pcl
       deleteEdge (const HalfEdgeIndex& idx_half_edge)
       {
         assert (Base::validateMeshElementIndex (idx_half_edge));
+        this->deleteEdge (Base::getElement (idx_half_edge));
+      }
 
-        const HalfEdge& he = Base::getElement (idx_half_edge);
-        this->deleteFace (he.getFaceIndex ());
-        this->deleteFace (he.getOppositeFaceIndex (*this));
+      void
+      deleteEdge (const HalfEdge& half_edge)
+      {
+        this->deleteFace (half_edge.getFaceIndex ());
+        this->deleteFace (half_edge.getOppositeFaceIndex (*this));
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -189,13 +198,19 @@ namespace pcl
       //////////////////////////////////////////////////////////////////////////
 
       void
-      deleteFace (const FaceIndex &idx_face)
+      deleteFace (const FaceIndex& idx_face)
       {
         assert (Base::validateMeshElementIndex (idx_face));
 
         std::stack<FaceIndex> delete_faces; // This is only needed for a manifold mesh. It should be removed by the compiler during the optimization for a non-manifold mesh.
 
-        return (this->deleteFace (idx_face, delete_faces, IsManifold ()));
+        this->deleteFace (idx_face, delete_faces, IsManifold ());
+      }
+
+      void
+      deleteFace (const Face& face)
+      {
+        this->deleteFace (face.getInnerHalfEdge (*this).getFaceIndex ());
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -796,10 +811,10 @@ namespace pcl
                  const HalfEdgeIndex&   idx_he_cb,
                  std::stack<FaceIndex>& delete_faces)
       {
-        if      (is_boundary_ba && is_boundary_cb)  this->reconnectBB   (idx_he_ab,idx_he_ba, idx_he_bc,idx_he_cb);
-        else if (is_boundary_ba && !is_boundary_cb) this->reconnectBNB  (idx_he_ab,idx_he_ba, idx_he_bc,idx_he_cb);
-        else if (!is_boundary_ba && is_boundary_cb) this->reconnectNBB  (idx_he_ab,idx_he_ba, idx_he_bc,idx_he_cb);
-        else                                        this->reconnectNBNB (idx_he_ab,idx_he_ba, idx_he_bc,idx_he_cb, delete_faces, IsManifold ());
+        if      ( is_boundary_ba &&  is_boundary_cb) this->reconnectBB   (idx_he_ab,idx_he_ba, idx_he_bc,idx_he_cb);
+        else if ( is_boundary_ba && !is_boundary_cb) this->reconnectBNB  (idx_he_ab,idx_he_ba, idx_he_bc,idx_he_cb);
+        else if (!is_boundary_ba &&  is_boundary_cb) this->reconnectNBB  (idx_he_ab,idx_he_ba, idx_he_bc,idx_he_cb);
+        else                                         this->reconnectNBNB (idx_he_ab,idx_he_ba, idx_he_bc,idx_he_cb, delete_faces, IsManifold ());
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -899,10 +914,10 @@ namespace pcl
 
       void
       reconnectNBNB (const HalfEdgeIndex&   idx_he_ab,
-                     const HalfEdgeIndex&   idx_he_ba,
+                     const HalfEdgeIndex&   /*idx_he_ba*/,
                      const HalfEdgeIndex&   idx_he_bc,
-                     const HalfEdgeIndex&   idx_he_cb,
-                     std::stack<FaceIndex>& delete_faces,
+                     const HalfEdgeIndex&   /*idx_he_cb*/,
+                     std::stack<FaceIndex>& /*delete_faces*/,
                      NonManifoldMeshTag)
       {
         Vertex& v_b = Base::getElement (idx_he_ab).getTerminatingVertex (*this);
