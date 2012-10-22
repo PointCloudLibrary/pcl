@@ -110,7 +110,23 @@ namespace pcl
            rng_->base ().seed (static_cast<unsigned> (std::time (0)));
          else
            rng_->base ().seed (12345u);
-       };
+      };
+
+      /** \brief Set the Sample Consensus model to use.
+        * \param[in] model a Sample Consensus model
+        */
+      void
+      setSampleConsensusModel (const SampleConsensusModelPtr &model)
+      {
+        sac_model_ = model;
+      }
+
+      /** \brief Get the Sample Consensus model used. */
+      SampleConsensusModelPtr
+      getSampleConsensusModel () const
+      {
+        return (sac_model_);
+      }
 
       /** \brief Destructor for base SAC. */
       virtual ~SampleConsensus () {};
