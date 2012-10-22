@@ -38,7 +38,12 @@ if(build)
     add_subdirectory(search)
     add_subdirectory(keypoints)
     add_subdirectory(surface)
-    
+
+	PCL_ADD_TEST(a_recognition_ism_test test_recognition_ism
+                 FILES test_recognition_ism.cpp
+                 LINK_WITH pcl_gtest pcl_io pcl_features
+                 ARGUMENTS ${PCL_SOURCE_DIR}/test/ism_train.pcd ${PCL_SOURCE_DIR}/test/ism_test.pcd)
+
     PCL_ADD_TEST(search test_search
                  FILES test_search.cpp
                  LINK_WITH pcl_gtest pcl_search pcl_io pcl_kdtree
