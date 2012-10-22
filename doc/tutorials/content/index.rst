@@ -626,6 +626,20 @@ Recognition
      .. |rc_1| image:: images/correspondence_grouping/correspondence_grouping.png
                :height: 100px
 
+  * :ref:`implicit_shape_model`
+
+     ======  ======
+     |rc_2|  Title: **Implicit Shape Model**
+
+             Author: *Sergey Ushakov*
+
+             Compatibility: > PCL 1.7
+
+             In this tutorial we will learn how the Implicit Shape Model algorithm works and how to use it for finding objects centers.
+     ======  ======
+
+     .. |rc_2| image:: images/implicit_shape_model.png
+               :height: 100px
 
 .. _registration_tutorial:
 
