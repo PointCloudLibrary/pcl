@@ -1074,7 +1074,7 @@ pcl::visualization::PCLVisualizer::updateCorrespondences (
   vtkSmartPointer<vtkLODActor> actor = vtkLODActor::SafeDownCast (am_it->second);
   vtkSmartPointer<vtkPolyData> line_data = reinterpret_cast<vtkPolyDataMapper*>(actor->GetMapper ())->GetInput ();
 
-  int n_corr = correspondences.size () / nth + 1;
+  int n_corr = int (correspondences.size () / nth + 1);
 
   // Prepare colors
   vtkSmartPointer<vtkUnsignedCharArray> line_colors = vtkSmartPointer<vtkUnsignedCharArray>::New ();
