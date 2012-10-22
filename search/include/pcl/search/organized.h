@@ -218,7 +218,11 @@ namespace pcl
           const PointT& point = input_->points [index];
           if (mask_ [index] && pcl_isfinite (point.x))
           {
-            float squared_distance = (point.getVector3fMap () - query.getVector3fMap ()).squaredNorm ();
+            //float squared_distance = (point.getVector3fMap () - query.getVector3fMap ()).squaredNorm ();
+            float dist_x = point.x - query.x;
+            float dist_y = point.y - query.y;
+            float dist_z = point.z - query.z;
+            float squared_distance = dist_x * dist_x + dist_y * dist_y + dist_z * dist_z;
             if (queue.size () < k)
               queue.push (Entry (index, squared_distance));
             else if (queue.top ().distance > squared_distance)
