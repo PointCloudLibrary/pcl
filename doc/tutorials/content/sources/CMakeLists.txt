@@ -16,6 +16,7 @@ foreach(subdir
           extract_indices
           #feature_evaluation
           greedy_projection
+		  implicit_shape_model
           iterative_closest_point
           kdtree_search
           min_cut_segmentation
