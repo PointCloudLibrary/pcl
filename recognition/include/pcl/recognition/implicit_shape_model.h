@@ -31,11 +31,6 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- *
- * Implementation of the ISM algorithm described in "Hough Transforms and 3D SURF for robust three dimensional classication"
- * by Jan Knopp, Mukta Prasad, Geert Willems, Radu Timofte, and Luc Van Gool
- *
- * Authors: Roman Shapovalov, Alexander Velizhev, Sergey Ushakov
  */
 
 #ifndef	PCL_IMPLICIT_SHAPE_MODEL_H_
@@ -96,7 +91,7 @@ namespace pcl
           * \param[in] in_class class for which this vote is cast
           */
         void
-        addVote (pcl::InterestPoint& in_vote, PointT vote_origin, int in_class);
+        addVote (pcl::InterestPoint& in_vote, const PointT &vote_origin, int in_class);
 
         /** \brief Returns the colored cloud that consists of votes for center (blue points) and
           * initial point cloud (if it was passed).
@@ -118,7 +113,7 @@ namespace pcl
           * \param[in] sigma_dist
           */
         double
-        getDensityAtPoint (PointT point, double sigma_dist);
+        getDensityAtPoint (const PointT &point, double sigma_dist);
 
         /** \brief This method simply returns the number of votes. */
         unsigned int
@@ -235,7 +230,12 @@ namespace pcl
       * by Jan Knopp1, Mukta Prasad, Geert Willems1, Radu Timofte, and Luc Van Gool.
       * It has two main member functions. One for training, using the data for which we know
       * which class it belongs to. And second for investigating a cloud for the presence
-      * of the class of interest. */
+      * of the class of interest.
+      * Implementation of the ISM algorithm described in "Hough Transforms and 3D SURF for robust three dimensional classication"
+      * by Jan Knopp, Mukta Prasad, Geert Willems, Radu Timofte, and Luc Van Gool
+      *
+      * Authors: Roman Shapovalov, Alexander Velizhev, Sergey Ushakov
+      */
     template <int FeatureSize, typename PointT, typename NormalT = pcl::Normal>
     class PCL_EXPORTS ImplicitShapeModelEstimation
     {
@@ -478,7 +478,7 @@ namespace pcl
           */
         void
         calculateWeights (const std::vector< LocationInfo, Eigen::aligned_allocator<LocationInfo> >& locations,
-                          Eigen::MatrixXi labels,
+                          const Eigen::MatrixXi &labels,
                           std::vector<float>& sigmas,
                           std::vector<std::vector<unsigned int> >& clusters,
                           std::vector<std::vector<float> >& statistical_weights,

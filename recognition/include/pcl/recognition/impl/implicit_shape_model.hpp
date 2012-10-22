@@ -70,7 +70,8 @@ pcl::features::ISMVoteList<PointT>::~ISMVoteList ()
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
-pcl::features::ISMVoteList<PointT>::addVote (pcl::InterestPoint& vote, PointT vote_origin, int votes_class)
+pcl::features::ISMVoteList<PointT>::addVote (
+    pcl::InterestPoint& vote, const PointT &vote_origin, int votes_class)
 {
   tree_is_valid_ = false;
   votes_->points.insert (votes_->points.end (), vote);// TODO: adjust height and width
@@ -264,7 +265,8 @@ pcl::features::ISMVoteList<PointT>::shiftMean (const Eigen::Vector3f& snap_pt, c
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> double
-pcl::features::ISMVoteList<PointT>::getDensityAtPoint (PointT point, double sigma_dist)
+pcl::features::ISMVoteList<PointT>::getDensityAtPoint (
+    const PointT &point, double sigma_dist)
 {
   validateTree ();
 
@@ -990,7 +992,7 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::calculateS
 template <int FeatureSize, typename PointT, typename NormalT> void
 pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::calculateWeights (
   const std::vector< LocationInfo, Eigen::aligned_allocator<LocationInfo> >& locations,
-  Eigen::MatrixXi labels,
+  const Eigen::MatrixXi &labels,
   std::vector<float>& sigmas,
   std::vector<std::vector<unsigned int> >& clusters,
   std::vector<std::vector<float> >& statistical_weights,
