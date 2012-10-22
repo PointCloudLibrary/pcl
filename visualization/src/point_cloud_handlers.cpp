@@ -137,7 +137,7 @@ pcl::visualization::PointCloudColorHandlerRGBField<sensor_msgs::PointCloud2>::ge
   // Allocate enough memory to hold all colors
   unsigned char* colors = new unsigned char[nr_points * 3];
 
-  float rgb_data;
+  pcl::RGB rgb_data;
   int point_offset = cloud_->fields[field_idx_].offset;
   int j = 0;
   
@@ -156,9 +156,6 @@ pcl::visualization::PointCloudColorHandlerRGBField<sensor_msgs::PointCloud2>::ge
       // Copy the value at the specified field
       memcpy (&rgb_data, &cloud_->data[point_offset], sizeof (float));
 
-      if (!pcl_isfinite (rgb_data))
-        continue;
-
       memcpy (&x_data, &cloud_->data[x_point_offset], sizeof (float));
       memcpy (&y_data, &cloud_->data[x_point_offset + sizeof (float)], sizeof (float));
       memcpy (&z_data, &cloud_->data[x_point_offset + 2 * sizeof (float)], sizeof (float));
@@ -166,11 +163,10 @@ pcl::visualization::PointCloudColorHandlerRGBField<sensor_msgs::PointCloud2>::ge
       if (!pcl_isfinite (x_data) || !pcl_isfinite (y_data) || !pcl_isfinite (z_data))
         continue;
 
-      int rgb = *reinterpret_cast<int*>(&rgb_data);
-      colors[j * 3 + 0] = static_cast<unsigned char> ((rgb >> 16) & 0xff);
-      colors[j * 3 + 1] = static_cast<unsigned char> ((rgb >> 8) & 0xff);
-      colors[j * 3 + 2] = static_cast<unsigned char> (rgb & 0xff);
-      j++;
+      colors[j + 0] = rgb_data.r;
+      colors[j + 1] = rgb_data.g;
+      colors[j + 2] = rgb_data.b;
+      j += 3;
     }
   }
   // No XYZ data checks
@@ -182,17 +178,16 @@ pcl::visualization::PointCloudColorHandlerRGBField<sensor_msgs::PointCloud2>::ge
       // Copy the value at the specified field
       memcpy (&rgb_data, &cloud_->data[point_offset], sizeof (float));
 
-      if (!pcl_isfinite (rgb_data))
-        continue;
-
-      int rgb = *reinterpret_cast<int*>(&rgb_data);
-      colors[j * 3 + 0] = static_cast<unsigned char> ((rgb >> 16) & 0xff);
-      colors[j * 3 + 1] = static_cast<unsigned char> ((rgb >> 8) & 0xff);
-      colors[j * 3 + 2] = static_cast<unsigned char> (rgb & 0xff);
-      j++;
+      colors[j + 0] = rgb_data.r;
+      colors[j + 1] = rgb_data.g;
+      colors[j + 2] = rgb_data.b;
+      j += 3;
     }
   }
-  reinterpret_cast<vtkUnsignedCharArray*>(&(*scalars))->SetArray (colors, 3 * j, 0);
+  if (j != 0)
+    reinterpret_cast<vtkUnsignedCharArray*>(&(*scalars))->SetArray (colors, j, 0);
+  else
+    reinterpret_cast<vtkUnsignedCharArray*>(&(*scalars))->SetNumberOfTuples (0);
   //delete [] colors;
 }
 

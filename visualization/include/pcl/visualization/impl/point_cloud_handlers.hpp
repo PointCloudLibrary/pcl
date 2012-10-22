@@ -153,11 +153,10 @@ pcl::visualization::PointCloudColorHandlerRGBField<PointT>::getColor (vtkSmartPo
           !pcl_isfinite (cloud_->points[cp].z))
         continue;
 
-      int idx = j * 3;
-      colors[idx    ] = cloud_->points[cp].r;
-      colors[idx + 1] = cloud_->points[cp].g;
-      colors[idx + 2] = cloud_->points[cp].b;
-      j++;
+      colors[j    ] = cloud_->points[cp].r;
+      colors[j + 1] = cloud_->points[cp].g;
+      colors[j + 2] = cloud_->points[cp].b;
+      j += 3;
     }
   }
   else

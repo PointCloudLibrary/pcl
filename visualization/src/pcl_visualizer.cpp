@@ -1065,9 +1065,6 @@ pcl::visualization::PCLVisualizer::createActorFromVTKDataSet (const vtkSmartPoin
 
     actor->SetMapper (mapper);
   }
-
-  actor->SetNumberOfCloudPoints (static_cast<int> (std::max<vtkIdType> (1, data->GetNumberOfPoints () / 10)));
-  actor->GetProperty ()->SetInterpolationToFlat ();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
