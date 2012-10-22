@@ -38,6 +38,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/ransac_based/obj_rec_ransac.h
         include/pcl/${SUBSYS_NAME}/ransac_based/model_library.h
         include/pcl/${SUBSYS_NAME}/ransac_based/voxel_structure.h
+		include/pcl/${SUBSYS_NAME}/implicit_shape_model.h
         )
         
     set(hv_incs
@@ -65,6 +66,7 @@ if(build)
     set(impl_incs 
         include/pcl/${SUBSYS_NAME}/impl/linemod/line_rgbd.hpp
         include/pcl/${SUBSYS_NAME}/impl/ransac_based/voxel_structure.hpp
+		include/pcl/${SUBSYS_NAME}/impl/implicit_shape_model.hpp
         )
         
     set(hv_impl_incs
@@ -95,6 +97,7 @@ if(build)
         src/ransac_based/model_library.cpp
         src/face_detection/face_detector_data_provider.cpp
         src/face_detection/rf_face_detector_trainer.cpp
+		src/implicit_shape_model.cpp
         )
         
     set(metslib_incs
