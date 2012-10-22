@@ -59,7 +59,7 @@ pcl::PointCloud<pcl::Normal>::Ptr testing_normals;
 TEST (ISM, TrainRecognize)
 {
   std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> clouds;
-  std::vector< typename pcl::PointCloud<pcl::Normal>::Ptr > normals;
+  std::vector<pcl::PointCloud<pcl::Normal>::Ptr > normals;
   std::vector<unsigned int> classes;
 
   clouds.push_back (training_cloud);
