@@ -82,9 +82,9 @@ pcl::registration::CorrespondenceEstimationOrganizedProjection<PointSource, Poin
   {
     if (isFinite (input_->points[*src_it]))
     {
-      Eigen::Vector4f p_src = src_to_tgt_transformation_ * input_->points[*src_it].getVector4fMap ();
+      Eigen::Vector4f p_src (src_to_tgt_transformation_ * input_->points[*src_it].getVector4fMap ());
       Eigen::Vector3f p_src3 (p_src[0], p_src[1], p_src[2]);
-      Eigen::Vector3f uv = projection_matrix_ * p_src3;
+      Eigen::Vector3f uv (projection_matrix_ * p_src3);
 
       /// Check if the point was behind the camera
       if (uv[2] < 0)
@@ -93,8 +93,8 @@ pcl::registration::CorrespondenceEstimationOrganizedProjection<PointSource, Poin
       int u = static_cast<int> (uv[0] / uv[2]);
       int v = static_cast<int> (uv[1] / uv[2]);
 
-      if (u >= 0 && u < target_->width &&
-          v >= 0 && v < target_->height &&
+      if (u >= 0 && u < int (target_->width) &&
+          v >= 0 && v < int (target_->height) &&
           isFinite ((*target_) (u, v)))
       {
         /// Check if the depth difference is larger than the threshold
