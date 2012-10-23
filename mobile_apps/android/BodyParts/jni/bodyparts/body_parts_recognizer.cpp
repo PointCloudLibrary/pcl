@@ -5,6 +5,8 @@
 
 #include <android/log.h>
 
+#include <boost/integer_traits.hpp>
+
 #include <tbb/blocked_range2d.h>
 #include <tbb/parallel_for.h>
 #include <tbb/task_scheduler_init.h>
@@ -24,9 +26,46 @@ applyThreshold(ChannelRef<Format> & channel, Format threshold, Format bgValue)
 }
 
 template <typename Format> Format
-selectThreshold(const ChannelRef<Format> & channel) {
-  Format min = *std::min_element(channel.data, channel.data + channel.size);
-  return min + 500;
+selectThreshold(const ChannelRef<Format> & channel)
+{
+  // We use Otsu's method here.
+  const int num_bins = boost::integer_traits<Format>::const_max + 1;
+  int bins[num_bins] = { 0 };
+  int count = 0;
+
+  for (int i = 0; i < channel.size; ++i)
+    if (channel.data[i] != BACKGROUND_DEPTH)
+    {
+      ++bins[channel.data[i]];
+      ++count;
+    }
+
+  double scale = 1. / count;
+  double mu = 0;
+
+  for (int i = 0; i < num_bins; ++i) mu += i * bins[i] * scale;
+
+  double mu1 = 0, mu2, p1 = 0, p2;
+  double max_var = 0;
+  Format thresh = 0;
+
+  for (int i = 0; i < num_bins; ++i)
+  {
+    p1 += bins[i] * scale;
+    p2 = 1 - p1;
+
+    mu1 += i * bins[i] * scale;
+    mu2 = mu - mu1;
+
+    double var = p1 * p2 * (mu1 - mu2) * (mu1 - mu2);
+    if (var > max_var)
+    {
+      max_var = var;
+      thresh = i;
+    }
+  }
+
+  return thresh;
 }
 
 template <typename Format> Format
