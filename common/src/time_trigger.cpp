@@ -134,7 +134,8 @@ pcl::TimeTrigger::thread_function ()
     {
       callbacks_();
       double rest = interval_ + time - getTime ();
-      condition_.timed_wait (lock, boost::posix_time::microseconds (static_cast<int64_t> ((rest * 1000000))));
+      if (rest > 0.0) // without a deadlock is possible, until notify() is called
+        condition_.timed_wait (lock, boost::posix_time::microseconds (static_cast<int64_t> ((rest * 1000000))));
     }
   }
 }
