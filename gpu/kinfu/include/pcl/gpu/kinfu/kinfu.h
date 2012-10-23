@@ -70,7 +70,7 @@ namespace pcl
 
         /** \brief Constructor
           * \param[in] rows height of depth image
-          * \param[in] cols width of depth image          
+          * \param[in] cols width of depth image
           */
         KinfuTracker (int rows = 480, int cols = 640);
 
@@ -114,7 +114,7 @@ namespace pcl
           * \param[in] max_weight max weighe for color integration. -1 means default weight.
           */
         void
-        initColorIntegration(int max_weight = -1);        
+        initColorIntegration(int max_weight = -1);
 
         /** \brief Returns cols passed to ctor */
         int
@@ -177,6 +177,9 @@ namespace pcl
           */
         void
         getLastFrameNormals (DeviceArray2D<NormalType>& normals) const;
+
+        /** \brief Disables ICP forever */
+        void disableIcp();
 
       private:
         
@@ -258,6 +261,9 @@ namespace pcl
 
         /** \brief Camera movement threshold. TSDF is integrated iff a camera movement metric exceedes some value. */
         float integration_metric_threshold_;
+
+        /** \brief ICP step is completelly disabled. Inly integratio now */
+        bool disable_icp_;
         
         /** \brief Allocates all GPU internal buffers.
           * \param[in] rows_arg
@@ -269,7 +275,7 @@ namespace pcl
         /** \brief Performs the tracker reset to initial  state. It's used if case of camera tracking fail.
           */
         void
-        reset ();       
+        reset ();
     };
   }
 };

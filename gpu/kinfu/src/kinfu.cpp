@@ -72,7 +72,7 @@ namespace pcl
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-pcl::gpu::KinfuTracker::KinfuTracker (int rows, int cols) : rows_(rows), cols_(cols), global_time_(0), max_icp_distance_(0), integration_metric_threshold_(0.f)
+pcl::gpu::KinfuTracker::KinfuTracker (int rows, int cols) : rows_(rows), cols_(cols), global_time_(0), max_icp_distance_(0), integration_metric_threshold_(0.f), disable_icp_(false)
 {
   const Vector3f volume_size = Vector3f::Constant (VOLUME_SIZE);
   const Vector3i volume_resolution(VOLUME_X, VOLUME_Y, VOLUME_Z);
@@ -223,136 +223,161 @@ bool
 pcl::gpu::KinfuTracker::operator() (const DepthMap& depth_raw)
 {  
   device::Intr intr (fx_, fy_, cx_, cy_);
+
+  if (!disable_icp_)
   {
-    //ScopeTime time(">>> Bilateral, pyr-down-all, create-maps-all");
-    //depth_raw.copyTo(depths_curr[0]);
-    device::bilateralFilter (depth_raw, depths_curr_[0]);
-
-	if (max_icp_distance_ > 0)
-		device::truncateDepth(depths_curr_[0], max_icp_distance_);
-
-    for (int i = 1; i < LEVELS; ++i)
-      device::pyrDown (depths_curr_[i-1], depths_curr_[i]);
-
-    for (int i = 0; i < LEVELS; ++i)
-    {
-      device::createVMap (intr(i), depths_curr_[i], vmaps_curr_[i]);
-      //device::createNMap(vmaps_curr_[i], nmaps_curr_[i]);
-      computeNormalsEigen (vmaps_curr_[i], nmaps_curr_[i]);
-    }
-    pcl::device::sync ();
-  }
-
-  //can't perform more on first frame
-  if (global_time_ == 0)
-  {
-    Matrix3frm init_Rcam = rmats_[0]; //  [Ri|ti] - pos of camera, i.e.
-    Vector3f   init_tcam = tvecs_[0]; //  transform from camera to global coo space for (i-1)th camera pose
-
-    Mat33&  device_Rcam = device_cast<Mat33> (init_Rcam);
-    float3& device_tcam = device_cast<float3>(init_tcam);
-
-    Matrix3frm init_Rcam_inv = init_Rcam.inverse ();
-    Mat33&   device_Rcam_inv = device_cast<Mat33> (init_Rcam_inv);
-    float3 device_volume_size = device_cast<const float3>(tsdf_volume_->getSize());
-
-    //integrateTsdfVolume(depth_raw, intr, device_volume_size, device_Rcam_inv, device_tcam, tranc_dist, volume_);    
-    device::integrateTsdfVolume(depth_raw, intr, device_volume_size, device_Rcam_inv, device_tcam, tsdf_volume_->getTsdfTruncDist(), tsdf_volume_->data(), depthRawScaled_);
-
-    for (int i = 0; i < LEVELS; ++i)
-      device::tranformMaps (vmaps_curr_[i], nmaps_curr_[i], device_Rcam, device_tcam, vmaps_g_prev_[i], nmaps_g_prev_[i]);
-
-    ++global_time_;
-    return (false);
-  }
-
-  ///////////////////////////////////////////////////////////////////////////////////////////
-  // Iterative Closest Point
-  Matrix3frm Rprev = rmats_[global_time_ - 1]; //  [Ri|ti] - pos of camera, i.e.
-  Vector3f   tprev = tvecs_[global_time_ - 1]; //  tranfrom from camera to global coo space for (i-1)th camera pose
-  Matrix3frm Rprev_inv = Rprev.inverse (); //Rprev.t();
-
-  //Mat33&  device_Rprev     = device_cast<Mat33> (Rprev);
-  Mat33&  device_Rprev_inv = device_cast<Mat33> (Rprev_inv);
-  float3& device_tprev     = device_cast<float3> (tprev);
-
-  Matrix3frm Rcurr = Rprev; // tranform to global coo for ith camera pose
-  Vector3f   tcurr = tprev;
-  {
-    //ScopeTime time("icp-all");
-    for (int level_index = LEVELS-1; level_index>=0; --level_index)
-    {
-      int iter_num = icp_iterations_[level_index];
-
-      MapArr& vmap_curr = vmaps_curr_[level_index];
-      MapArr& nmap_curr = nmaps_curr_[level_index];
-
-      //MapArr& vmap_g_curr = vmaps_g_curr_[level_index];
-      //MapArr& nmap_g_curr = nmaps_g_curr_[level_index];
-
-      MapArr& vmap_g_prev = vmaps_g_prev_[level_index];
-      MapArr& nmap_g_prev = nmaps_g_prev_[level_index];
-
-      //CorespMap& coresp = coresps_[level_index];
-
-      for (int iter = 0; iter < iter_num; ++iter)
       {
-        Mat33&  device_Rcurr = device_cast<Mat33> (Rcurr);
-        float3& device_tcurr = device_cast<float3>(tcurr);
+        //ScopeTime time(">>> Bilateral, pyr-down-all, create-maps-all");
+        //depth_raw.copyTo(depths_curr[0]);
+        device::bilateralFilter (depth_raw, depths_curr_[0]);
 
-        Eigen::Matrix<double, 6, 6, Eigen::RowMajor> A;
-        Eigen::Matrix<double, 6, 1> b;
-#if 0
-        device::tranformMaps(vmap_curr, nmap_curr, device_Rcurr, device_tcurr, vmap_g_curr, nmap_g_curr);
-        findCoresp(vmap_g_curr, nmap_g_curr, device_Rprev_inv, device_tprev, intr(level_index), vmap_g_prev, nmap_g_prev, distThres_, angleThres_, coresp);
-        device::estimateTransform(vmap_g_prev, nmap_g_prev, vmap_g_curr, coresp, gbuf_, sumbuf_, A.data(), b.data());
+        if (max_icp_distance_ > 0)
+          device::truncateDepth(depths_curr_[0], max_icp_distance_);
 
-        //cv::gpu::GpuMat ma(coresp.rows(), coresp.cols(), CV_32S, coresp.ptr(), coresp.step());
-        //cv::Mat cpu;
-        //ma.download(cpu);
-        //cv::imshow(names[level_index] + string(" --- coresp white == -1"), cpu == -1);
-#else
-        estimateCombined (device_Rcurr, device_tcurr, vmap_curr, nmap_curr, device_Rprev_inv, device_tprev, intr (level_index),
-                          vmap_g_prev, nmap_g_prev, distThres_, angleThres_, gbuf_, sumbuf_, A.data (), b.data ());
-#endif
-        //checking nullspace
-        double det = A.determinant ();
+        for (int i = 1; i < LEVELS; ++i)
+          device::pyrDown (depths_curr_[i-1], depths_curr_[i]);
 
-		if (fabs (det) < 1e-15 || pcl_isnan (det))
+        for (int i = 0; i < LEVELS; ++i)
         {
-          if (pcl_isnan (det)) cout << "qnan" << endl;
-
-          reset ();
-          return (false);
+          device::createVMap (intr(i), depths_curr_[i], vmaps_curr_[i]);
+          //device::createNMap(vmaps_curr_[i], nmaps_curr_[i]);
+          computeNormalsEigen (vmaps_curr_[i], nmaps_curr_[i]);
         }
-        //float maxc = A.maxCoeff();
-
-        Eigen::Matrix<float, 6, 1> result = A.llt ().solve (b).cast<float>();
-        //Eigen::Matrix<float, 6, 1> result = A.jacobiSvd(ComputeThinU | ComputeThinV).solve(b);
-
-        float alpha = result (0);
-        float beta  = result (1);
-        float gamma = result (2);
-
-        Eigen::Matrix3f Rinc = (Eigen::Matrix3f)AngleAxisf (gamma, Vector3f::UnitZ ()) * AngleAxisf (beta, Vector3f::UnitY ()) * AngleAxisf (alpha, Vector3f::UnitX ());
-        Vector3f tinc = result.tail<3> ();
-
-        //compose
-        tcurr = Rinc * tcurr + tinc;
-        Rcurr = Rinc * Rcurr;
+        pcl::device::sync ();
       }
-    }
+
+      //can't perform more on first frame
+      if (global_time_ == 0)
+      {
+        Matrix3frm init_Rcam = rmats_[0]; //  [Ri|ti] - pos of camera, i.e.
+        Vector3f   init_tcam = tvecs_[0]; //  transform from camera to global coo space for (i-1)th camera pose
+
+        Mat33&  device_Rcam = device_cast<Mat33> (init_Rcam);
+        float3& device_tcam = device_cast<float3>(init_tcam);
+
+        Matrix3frm init_Rcam_inv = init_Rcam.inverse ();
+        Mat33&   device_Rcam_inv = device_cast<Mat33> (init_Rcam_inv);
+        float3 device_volume_size = device_cast<const float3>(tsdf_volume_->getSize());
+
+        //integrateTsdfVolume(depth_raw, intr, device_volume_size, device_Rcam_inv, device_tcam, tranc_dist, volume_);    
+        device::integrateTsdfVolume(depth_raw, intr, device_volume_size, device_Rcam_inv, device_tcam, tsdf_volume_->getTsdfTruncDist(), tsdf_volume_->data(), depthRawScaled_);
+
+        for (int i = 0; i < LEVELS; ++i)
+          device::tranformMaps (vmaps_curr_[i], nmaps_curr_[i], device_Rcam, device_tcam, vmaps_g_prev_[i], nmaps_g_prev_[i]);
+
+        ++global_time_;
+        return (false);
+      }
+
+      ///////////////////////////////////////////////////////////////////////////////////////////
+      // Iterative Closest Point
+      Matrix3frm Rprev = rmats_[global_time_ - 1]; //  [Ri|ti] - pos of camera, i.e.
+      Vector3f   tprev = tvecs_[global_time_ - 1]; //  tranfrom from camera to global coo space for (i-1)th camera pose
+      Matrix3frm Rprev_inv = Rprev.inverse (); //Rprev.t();
+
+      //Mat33&  device_Rprev     = device_cast<Mat33> (Rprev);
+      Mat33&  device_Rprev_inv = device_cast<Mat33> (Rprev_inv);
+      float3& device_tprev     = device_cast<float3> (tprev);
+
+      Matrix3frm Rcurr = Rprev; // tranform to global coo for ith camera pose
+      Vector3f   tcurr = tprev;
+      {
+        //ScopeTime time("icp-all");
+        for (int level_index = LEVELS-1; level_index>=0; --level_index)
+        {
+          int iter_num = icp_iterations_[level_index];
+
+          MapArr& vmap_curr = vmaps_curr_[level_index];
+          MapArr& nmap_curr = nmaps_curr_[level_index];
+
+          //MapArr& vmap_g_curr = vmaps_g_curr_[level_index];
+          //MapArr& nmap_g_curr = nmaps_g_curr_[level_index];
+
+          MapArr& vmap_g_prev = vmaps_g_prev_[level_index];
+          MapArr& nmap_g_prev = nmaps_g_prev_[level_index];
+
+          //CorespMap& coresp = coresps_[level_index];
+
+          for (int iter = 0; iter < iter_num; ++iter)
+          {
+            Mat33&  device_Rcurr = device_cast<Mat33> (Rcurr);
+            float3& device_tcurr = device_cast<float3>(tcurr);
+
+            Eigen::Matrix<double, 6, 6, Eigen::RowMajor> A;
+            Eigen::Matrix<double, 6, 1> b;
+    #if 0
+            device::tranformMaps(vmap_curr, nmap_curr, device_Rcurr, device_tcurr, vmap_g_curr, nmap_g_curr);
+            findCoresp(vmap_g_curr, nmap_g_curr, device_Rprev_inv, device_tprev, intr(level_index), vmap_g_prev, nmap_g_prev, distThres_, angleThres_, coresp);
+            device::estimateTransform(vmap_g_prev, nmap_g_prev, vmap_g_curr, coresp, gbuf_, sumbuf_, A.data(), b.data());
+
+            //cv::gpu::GpuMat ma(coresp.rows(), coresp.cols(), CV_32S, coresp.ptr(), coresp.step());
+            //cv::Mat cpu;
+            //ma.download(cpu);
+            //cv::imshow(names[level_index] + string(" --- coresp white == -1"), cpu == -1);
+    #else
+            estimateCombined (device_Rcurr, device_tcurr, vmap_curr, nmap_curr, device_Rprev_inv, device_tprev, intr (level_index),
+                              vmap_g_prev, nmap_g_prev, distThres_, angleThres_, gbuf_, sumbuf_, A.data (), b.data ());
+    #endif
+            //checking nullspace
+            double det = A.determinant ();
+
+            if (fabs (det) < 1e-15 || pcl_isnan (det))
+            {
+              if (pcl_isnan (det)) cout << "qnan" << endl;
+
+              reset ();
+              return (false);
+            }
+            //float maxc = A.maxCoeff();
+
+            Eigen::Matrix<float, 6, 1> result = A.llt ().solve (b).cast<float>();
+            //Eigen::Matrix<float, 6, 1> result = A.jacobiSvd(ComputeThinU | ComputeThinV).solve(b);
+
+            float alpha = result (0);
+            float beta  = result (1);
+            float gamma = result (2);
+
+            Eigen::Matrix3f Rinc = (Eigen::Matrix3f)AngleAxisf (gamma, Vector3f::UnitZ ()) * AngleAxisf (beta, Vector3f::UnitY ()) * AngleAxisf (alpha, Vector3f::UnitX ());
+            Vector3f tinc = result.tail<3> ();
+
+            //compose
+            tcurr = Rinc * tcurr + tinc;
+            Rcurr = Rinc * Rcurr;
+          }
+        }
+      }
+      //save tranform
+      rmats_.push_back (Rcurr);
+      tvecs_.push_back (tcurr);
+  } 
+  else /* if (disable_icp_) */
+  {
+      if (global_time_ == 0)
+        ++global_time_;
+
+      Matrix3frm Rcurr = rmats_[global_time_ - 1];
+      Vector3f   tcurr = tvecs_[global_time_ - 1];
+
+      rmats_.push_back (Rcurr);
+      tvecs_.push_back (tcurr);
+
   }
-  //save tranform
-  rmats_.push_back (Rcurr);
-  tvecs_.push_back (tcurr);
-  
+
+  Matrix3frm Rprev = rmats_[global_time_ - 1];
+  Vector3f   tprev = tvecs_[global_time_ - 1];
+
+  Matrix3frm Rcurr = rmats_.back();
+  Vector3f   tcurr = tvecs_.back();
+
   ///////////////////////////////////////////////////////////////////////////////////////////
   // Integration check - We do not integrate volume if camera does not move.  
   float rnorm = rodrigues2(Rcurr.inverse() * Rprev).norm();
   float tnorm = (tcurr - tprev).norm();  
   const float alpha = 1.f;
-  bool integrate = (rnorm + alpha * tnorm)/2 >= integration_metric_threshold_;  
+  bool integrate = (rnorm + alpha * tnorm)/2 >= integration_metric_threshold_;
+
+  if (disable_icp_)
+    integrate = true;
 
   ///////////////////////////////////////////////////////////////////////////////////////////
   // Volume integration
@@ -372,7 +397,7 @@ pcl::gpu::KinfuTracker::operator() (const DepthMap& depth_raw)
   // Ray casting
   Mat33& device_Rcurr = device_cast<Mat33> (Rcurr);
   {
-    //ScopeTime time("ray-cast-all");                
+    //ScopeTime time("ray-cast-all");
     raycast (intr, device_Rcurr, device_tcurr, tsdf_volume_->getTsdfTruncDist(), device_volume_size, tsdf_volume_->data(), vmaps_g_prev_[0], nmaps_g_prev_[0]);
     for (int i = 1; i < LEVELS; ++i)
     {
@@ -470,6 +495,11 @@ pcl::gpu::KinfuTracker::getLastFrameNormals (DeviceArray2D<NormalType>& normals)
   DeviceArray2D<float8>& n = (DeviceArray2D<float8>&)normals;
   device::convert (nmaps_g_prev_[0], n);
 }
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void 
+pcl::gpu::KinfuTracker::disableIcp() { disable_icp_ = true; }
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

@@ -105,6 +105,8 @@ namespace pcl
     class PCL_EXPORTS ImageViewer
     {
       public:
+        typedef boost::shared_ptr<ImageViewer> Ptr;
+
         /** \brief Constructor.
           * \param[in] window_title the title of the window
           */
