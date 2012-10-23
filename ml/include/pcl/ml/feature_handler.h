@@ -59,7 +59,7 @@ namespace pcl
       virtual 
       ~FeatureHandler () {};
 
-      /** \biref Creates random features.
+      /** \brief Creates random features.
         * \param[in] num_of_features The number of random features to create.
         * \param[out] features The destination for the created features.
         */
