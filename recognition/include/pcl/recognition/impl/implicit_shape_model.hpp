@@ -122,7 +122,7 @@ pcl::features::ISMVoteList<PointT>::getColoredCloud (typename pcl::PointCloud<Po
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
 pcl::features::ISMVoteList<PointT>::findStrongestPeaks (
-  std::vector<pcl::ISMPeak> &out_peaks,
+  std::vector<pcl::ISMPeak, Eigen::aligned_allocator<pcl::ISMPeak> > &out_peaks,
   int in_class_id,
   double in_non_maxima_radius,
   double in_sigma)

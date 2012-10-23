@@ -106,7 +106,7 @@ namespace pcl
           * \param[in] in_non_maxima_radius non maxima supression radius. The shapes radius is recommended for this value.
           */
         void
-        findStrongestPeaks (std::vector<ISMPeak> &out_peaks, int in_class_id, double in_non_maxima_radius, double in_sigma);
+        findStrongestPeaks (std::vector<ISMPeak, Eigen::aligned_allocator<ISMPeak> > &out_peaks, int in_class_id, double in_non_maxima_radius, double in_sigma);
 
         /** \brief Returns the density at the specified point.
           * \param[in] point point of interest
