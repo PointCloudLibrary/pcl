@@ -103,7 +103,7 @@ namespace pcl
       using Keypoint<PointInT, PointOutT>::search_parameter_;
 
       /** \brief Constructor.
-        * \param[in] salient radius the radius of the spherical neighborhood used to compute the scatter matrix.
+        * \param[in] salient_radius the radius of the spherical neighborhood used to compute the scatter matrix.
         */
       ISSKeypoint3D (double salient_radius = 0.0001)
       : salient_radius_ (salient_radius)

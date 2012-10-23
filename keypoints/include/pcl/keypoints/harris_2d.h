@@ -67,7 +67,6 @@ namespace pcl
 
       /** \brief Constructor
         * \param[in] method the method to be used to determine the corner responses
-        * \param[in] radius the radius for normal estimation as well as for non maxima suppression
         * \param[in] threshold the threshold to filter out weak corners
         */
       HarrisKeypoint2D (ResponseMethod method = HARRIS, int window_width = 3, int window_height = 3, int min_distance = 5, float threshold = 0.0)
