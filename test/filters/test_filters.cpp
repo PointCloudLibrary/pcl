@@ -3,6 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2009-2012, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -44,6 +45,7 @@
 #include <pcl/filters/filter.h>
 #include <pcl/filters/passthrough.h>
 #include <pcl/filters/shadowpoints.h>
+#include <pcl/filters/frustum_culling.h>
 #include <pcl/filters/sampling_surface_normal.h>
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/filters/voxel_grid_covariance.h>
@@ -1936,6 +1938,61 @@ TEST (ShadowPoints, Filters)
 
   // Should filter out the one shadow point that was added.
   EXPECT_EQ (int (output.points.size ()), 10000);
+}
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+TEST (FrustumCulling, Filters)
+{
+  //Creating a point cloud on the XY plane
+  PointCloud<PointXYZ>::Ptr input (new PointCloud<PointXYZ> ());
+
+  for (int i = 0; i < 5; i++) 
+  {
+    for (int j = 0; j < 5; j++) 
+    {
+      for (int k = 0; k < 5; k++) 
+      {
+        pcl::PointXYZ pt;
+        pt.x = float (i);
+        pt.y = float (j);
+        pt.z = float (k);
+        input->points.push_back (pt);
+      }
+    }
+  }
+  input->width = 1;
+  input->height = static_cast<uint32_t> (input->points.size ());
+
+  pcl::FrustumCulling<pcl::PointXYZ> fc;
+  fc.setInputCloud (input);
+  fc.setVerticalFOV (90);
+  fc.setHorizontalFOV (90);
+  fc.setNearPlaneDistance (0.0);
+  fc.setFarPlaneDistance (10);
+
+  Eigen::Matrix4f camera_pose;
+  camera_pose.setZero ();
+
+  Eigen::Matrix3f R;
+  R = Eigen::AngleAxisf (0 * M_PI / 180, Eigen::Vector3f::UnitX ()) *
+    Eigen::AngleAxisf (0 * M_PI / 180, Eigen::Vector3f::UnitY ()) *
+    Eigen::AngleAxisf (0 * M_PI / 180, Eigen::Vector3f::UnitZ ());
+
+  camera_pose.block (0, 0, 3, 3) = R;
+
+  Eigen::Vector3f T;
+  T (0) = -5; T (1) = 0; T (2) = 0;
+  camera_pose.block (0, 3, 3, 1) = T;
+  camera_pose (3, 3) = 1;
+
+  fc.setCameraPose (camera_pose);
+
+  pcl::PointCloud <pcl::PointXYZ>::Ptr output (new pcl::PointCloud <pcl::PointXYZ>);
+  fc.filter (*output);
+
+  // Should filter all points in the input cloud
+  EXPECT_EQ (int (output->points.size ()), int (input->points.size ()));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

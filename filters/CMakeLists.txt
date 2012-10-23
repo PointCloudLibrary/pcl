@@ -29,7 +29,8 @@ if(build)
         src/fast_bilateral.cpp
         src/crop_hull.cpp
         src/voxel_grid_covariance.cpp
-	src/voxel_grid_label.cpp
+	      src/voxel_grid_label.cpp
+        src/frustum_culling.cpp
         )
 
     set(incs
@@ -59,6 +60,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/convolution.h
         include/pcl/${SUBSYS_NAME}/convolution_3d.h
         include/pcl/${SUBSYS_NAME}/voxel_grid_label.h
+        include/pcl/${SUBSYS_NAME}/frustum_culling.h
         )
 
     set(impl_incs
@@ -85,6 +87,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/voxel_grid_covariance.hpp
         include/pcl/${SUBSYS_NAME}/impl/convolution.hpp
         include/pcl/${SUBSYS_NAME}/impl/convolution_3d.hpp
+        include/pcl/${SUBSYS_NAME}/impl/frustum_culling.hpp
         )
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
