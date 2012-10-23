@@ -65,8 +65,8 @@ namespace pcl
    * \ingroup features
    */
   template <typename PointInT, typename PointNT, typename PointOutT>
-    class DifferenceOfNormalsEstimation : public Feature<PointInT, PointOutT>
-    {
+  class DifferenceOfNormalsEstimation : public Feature<PointInT, PointOutT>
+  {
       using Feature<PointInT, PointOutT>::getClassName;
       using Feature<PointInT, PointOutT>::feature_name_;
       using PCLBase<PointInT>::input_;
@@ -75,9 +75,12 @@ namespace pcl
       typedef typename PointCloudN::ConstPtr PointCloudNConstPtr;
       typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
     public:
+      typedef boost::shared_ptr<DifferenceOfNormalsEstimation<PointInT, PointNT, PointOutT> > Ptr;
+      typedef boost::shared_ptr<const DifferenceOfNormalsEstimation<PointInT, PointNT, PointOutT> > ConstPtr;
+
       /**
-       * Creates a new Difference of Normals filter.
-       */
+        * Creates a new Difference of Normals filter.
+        */
       DifferenceOfNormalsEstimation ()
       {
         feature_name_ = "DifferenceOfNormalsEstimation";

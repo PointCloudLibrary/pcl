@@ -60,6 +60,8 @@ namespace pcl
     using Feature<PointInT, PointOutT>::k_;
 
     public:
+      typedef boost::shared_ptr<IntegralImageNormalEstimation<PointInT, PointOutT> > Ptr;
+      typedef boost::shared_ptr<const IntegralImageNormalEstimation<PointInT, PointOutT> > ConstPtr;
 
       /** \brief Different types of border handling. */
         enum BorderPolicy

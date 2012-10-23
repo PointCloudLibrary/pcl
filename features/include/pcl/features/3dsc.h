@@ -71,46 +71,49 @@ namespace pcl
   class ShapeContext3DEstimation : public FeatureFromNormals<PointInT, PointNT, PointOutT>
   {
     public:
-       using Feature<PointInT, PointOutT>::feature_name_;
-       using Feature<PointInT, PointOutT>::getClassName;
-       using Feature<PointInT, PointOutT>::indices_;
-       using Feature<PointInT, PointOutT>::search_parameter_;
-       using Feature<PointInT, PointOutT>::search_radius_;
-       using Feature<PointInT, PointOutT>::surface_;
-       using Feature<PointInT, PointOutT>::input_;
-       using Feature<PointInT, PointOutT>::searchForNeighbors;
-       using FeatureFromNormals<PointInT, PointNT, PointOutT>::normals_;
+      typedef boost::shared_ptr<ShapeContext3DEstimation<PointInT, PointNT, PointOutT> > Ptr;
+      typedef boost::shared_ptr<const ShapeContext3DEstimation<PointInT, PointNT, PointOutT> > ConstPtr;
 
-       typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
-       typedef typename Feature<PointInT, PointOutT>::PointCloudIn PointCloudIn;
+      using Feature<PointInT, PointOutT>::feature_name_;
+      using Feature<PointInT, PointOutT>::getClassName;
+      using Feature<PointInT, PointOutT>::indices_;
+      using Feature<PointInT, PointOutT>::search_parameter_;
+      using Feature<PointInT, PointOutT>::search_radius_;
+      using Feature<PointInT, PointOutT>::surface_;
+      using Feature<PointInT, PointOutT>::input_;
+      using Feature<PointInT, PointOutT>::searchForNeighbors;
+      using FeatureFromNormals<PointInT, PointNT, PointOutT>::normals_;
 
-       /** \brief Constructor.
-         * \param[in] random If true the random seed is set to current time, else it is
-         * set to 12345 prior to computing the descriptor (used to select X axis)
-         */
-       ShapeContext3DEstimation (bool random = false) :
-         radii_interval_(0),
-         theta_divisions_(0),
-         phi_divisions_(0),
-         volume_lut_(0),
-         azimuth_bins_(12),
-         elevation_bins_(11),
-         radius_bins_(15),
-         min_radius_(0.1),
-         point_density_radius_(0.2),
-         descriptor_length_ (),
-         rng_alg_ (),
-         rng_ (new boost::uniform_01<boost::mt19937> (rng_alg_))
-       {
-         feature_name_ = "ShapeContext3DEstimation";
-         search_radius_ = 2.5;
+      typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
+      typedef typename Feature<PointInT, PointOutT>::PointCloudIn PointCloudIn;
 
-         // Create a random number generator object
-         if (random)
-           rng_->base ().seed (static_cast<unsigned> (std::time(0)));
-         else
-           rng_->base ().seed (12345u);
-       }
+      /** \brief Constructor.
+        * \param[in] random If true the random seed is set to current time, else it is
+        * set to 12345 prior to computing the descriptor (used to select X axis)
+        */
+      ShapeContext3DEstimation (bool random = false) :
+        radii_interval_(0),
+        theta_divisions_(0),
+        phi_divisions_(0),
+        volume_lut_(0),
+        azimuth_bins_(12),
+        elevation_bins_(11),
+        radius_bins_(15),
+        min_radius_(0.1),
+        point_density_radius_(0.2),
+        descriptor_length_ (),
+        rng_alg_ (),
+        rng_ (new boost::uniform_01<boost::mt19937> (rng_alg_))
+      {
+        feature_name_ = "ShapeContext3DEstimation";
+        search_radius_ = 2.5;
+
+        // Create a random number generator object
+        if (random)
+          rng_->base ().seed (static_cast<unsigned> (std::time(0)));
+        else
+          rng_->base ().seed (12345u);
+      }
 
       virtual ~ShapeContext3DEstimation() {}
 

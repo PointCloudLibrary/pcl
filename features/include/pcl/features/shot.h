@@ -68,6 +68,8 @@ namespace pcl
                              public FeatureWithLocalReferenceFrames<PointInT, PointRFT>
   {
     public:
+      typedef boost::shared_ptr<SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT> > Ptr;
+      typedef boost::shared_ptr<const SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT> > ConstPtr;
       using Feature<PointInT, PointOutT>::feature_name_;
       using Feature<PointInT, PointOutT>::getClassName;
       using Feature<PointInT, PointOutT>::input_;
@@ -219,6 +221,8 @@ namespace pcl
   class SHOTEstimation : public SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT>
   {
     public:
+      typedef boost::shared_ptr<SHOTEstimation<PointInT, PointNT, PointOutT, PointRFT> > Ptr;
+      typedef boost::shared_ptr<const SHOTEstimation<PointInT, PointNT, PointOutT, PointRFT> > ConstPtr;
       using SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT>::feature_name_;
       using SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT>::getClassName;
       using SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT>::indices_;
@@ -290,6 +294,8 @@ namespace pcl
   class SHOTEstimation<PointInT, PointNT, Eigen::MatrixXf, PointRFT> : public SHOTEstimation<PointInT, PointNT, pcl::SHOT352, PointRFT>
   {
     public:
+      typedef boost::shared_ptr<SHOTEstimation<PointInT, PointNT, PointRFT> > Ptr;
+      typedef boost::shared_ptr<const SHOTEstimation<PointInT, PointNT, PointRFT> > ConstPtr;
       using SHOTEstimation<PointInT, PointNT, pcl::SHOT352, PointRFT>::feature_name_;
       using SHOTEstimation<PointInT, PointNT, pcl::SHOT352, PointRFT>::getClassName;
       using SHOTEstimation<PointInT, PointNT, pcl::SHOT352, PointRFT>::indices_;
@@ -381,6 +387,8 @@ namespace pcl
   class SHOTColorEstimation : public SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT>
   {
     public:
+      typedef boost::shared_ptr<SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT> > Ptr;
+      typedef boost::shared_ptr<const SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT> > ConstPtr;
       using SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT>::feature_name_;
       using SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT>::getClassName;
       using SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT>::indices_;
@@ -505,6 +513,8 @@ namespace pcl
   class SHOTColorEstimation<PointInT, PointNT, Eigen::MatrixXf, PointRFT> : public SHOTColorEstimation<PointInT, PointNT, pcl::SHOT1344, PointRFT>
   {
     public:
+      typedef boost::shared_ptr<SHOTColorEstimation<PointInT, PointNT, PointRFT> > Ptr;
+      typedef boost::shared_ptr<const SHOTColorEstimation<PointInT, PointNT, PointRFT> > ConstPtr;
       using SHOTColorEstimation<PointInT, PointNT, pcl::SHOT1344, PointRFT>::feature_name_;
       using SHOTColorEstimation<PointInT, PointNT, pcl::SHOT1344, PointRFT>::getClassName;
       using SHOTColorEstimation<PointInT, PointNT, pcl::SHOT1344, PointRFT>::indices_;

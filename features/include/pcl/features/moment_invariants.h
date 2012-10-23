@@ -55,6 +55,8 @@ namespace pcl
   class MomentInvariantsEstimation: public Feature<PointInT, PointOutT>
   {
     public:
+      typedef boost::shared_ptr<MomentInvariantsEstimation<PointInT, PointOutT> > Ptr;
+      typedef boost::shared_ptr<const MomentInvariantsEstimation<PointInT, PointOutT> > ConstPtr;
       using Feature<PointInT, PointOutT>::feature_name_;
       using Feature<PointInT, PointOutT>::getClassName;
       using Feature<PointInT, PointOutT>::indices_;

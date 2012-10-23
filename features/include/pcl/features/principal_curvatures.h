@@ -60,6 +60,8 @@ namespace pcl
   class PrincipalCurvaturesEstimation : public FeatureFromNormals<PointInT, PointNT, PointOutT>
   {
     public:
+      typedef boost::shared_ptr<PrincipalCurvaturesEstimation<PointInT, PointNT, PointOutT> > Ptr;
+      typedef boost::shared_ptr<const PrincipalCurvaturesEstimation<PointInT, PointNT, PointOutT> > ConstPtr;
       using Feature<PointInT, PointOutT>::feature_name_;
       using Feature<PointInT, PointOutT>::getClassName;
       using Feature<PointInT, PointOutT>::indices_;

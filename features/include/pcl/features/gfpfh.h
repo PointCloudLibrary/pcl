@@ -56,13 +56,15 @@ namespace pcl
     * </li>
     * </ul>
     *
-    * \author Radu Bogdan Rusu
+    * \author Radu B. Rusu
     * \ingroup features
     */
   template <typename PointInT, typename PointLT, typename PointOutT>
   class GFPFHEstimation : public FeatureFromLabels<PointInT, PointLT, PointOutT>
   {
     public:
+      typedef boost::shared_ptr<GFPFHEstimation<PointInT, PointLT, PointOutT> > Ptr;
+      typedef boost::shared_ptr<const GFPFHEstimation<PointInT, PointLT, PointOutT> > ConstPtr;
       using FeatureFromLabels<PointInT, PointLT, PointOutT>::feature_name_;
       using FeatureFromLabels<PointInT, PointLT, PointOutT>::getClassName;
       using FeatureFromLabels<PointInT, PointLT, PointOutT>::indices_;

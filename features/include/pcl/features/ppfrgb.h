@@ -42,6 +42,8 @@ namespace pcl
   class PPFRGBRegionEstimation : public FeatureFromNormals<PointInT, PointNT, PointOutT>
   {
     public:
+      typedef boost::shared_ptr<PPFRGBRegionEstimation<PointInT, PointNT, PointOutT> > Ptr;
+      typedef boost::shared_ptr<const PPFRGBRegionEstimation<PointInT, PointNT, PointOutT> > ConstPtr;
       using PCLBase<PointInT>::indices_;
       using Feature<PointInT, PointOutT>::input_;
       using Feature<PointInT, PointOutT>::feature_name_;

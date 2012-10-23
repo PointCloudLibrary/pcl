@@ -67,6 +67,8 @@ namespace pcl
   class SHOTEstimationOMP : public SHOTEstimation<PointInT, PointNT, PointOutT, PointRFT>
   {
     public:
+      typedef boost::shared_ptr<SHOTEstimationOMP<PointInT, PointNT, PointOutT, PointRFT> > Ptr;
+      typedef boost::shared_ptr<const SHOTEstimationOMP<PointInT, PointNT, PointOutT, PointRFT> > ConstPtr;
       using Feature<PointInT, PointOutT>::feature_name_;
       using Feature<PointInT, PointOutT>::getClassName;
       using Feature<PointInT, PointOutT>::input_;
@@ -141,6 +143,8 @@ namespace pcl
   class SHOTColorEstimationOMP : public SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>
   {
     public:
+      typedef boost::shared_ptr<SHOTColorEstimationOMP<PointInT, PointNT, PointOutT, PointRFT> > Ptr;
+      typedef boost::shared_ptr<const SHOTColorEstimationOMP<PointInT, PointNT, PointOutT, PointRFT> > ConstPtr;
       using Feature<PointInT, PointOutT>::feature_name_;
       using Feature<PointInT, PointOutT>::getClassName;
       using Feature<PointInT, PointOutT>::input_;

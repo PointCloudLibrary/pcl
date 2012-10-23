@@ -87,6 +87,8 @@ namespace pcl
   class SpinImageEstimation : public Feature<PointInT, PointOutT>
   {
     public:
+      typedef boost::shared_ptr<SpinImageEstimation<PointInT, PointNT, PointOutT> > Ptr;
+      typedef boost::shared_ptr<const SpinImageEstimation<PointInT, PointNT, PointOutT> > ConstPtr;
       using Feature<PointInT, PointOutT>::feature_name_;
       using Feature<PointInT, PointOutT>::getClassName;
       using Feature<PointInT, PointOutT>::indices_;
@@ -106,9 +108,6 @@ namespace pcl
       typedef typename PointCloudIn::Ptr PointCloudInPtr;
       typedef typename PointCloudIn::ConstPtr PointCloudInConstPtr;
       
-      typedef typename boost::shared_ptr<SpinImageEstimation<PointInT, PointNT, PointOutT> > Ptr;
-      typedef typename boost::shared_ptr<const SpinImageEstimation<PointInT, PointNT, PointOutT> > ConstPtr;
-
       /** \brief Constructs empty spin image estimator.
         * 
         * \param[in] image_width spin-image resolution, number of bins along one dimension

@@ -64,32 +64,32 @@ namespace pcl
                              public FeatureWithLocalReferenceFrames<PointInT, PointRFT>
   {
     public:
-       using Feature<PointInT, PointOutT>::feature_name_;
-       using Feature<PointInT, PointOutT>::getClassName;
-       using Feature<PointInT, PointOutT>::indices_;
-       using Feature<PointInT, PointOutT>::search_parameter_;
-       using Feature<PointInT, PointOutT>::search_radius_;
-       using Feature<PointInT, PointOutT>::surface_;
-       using Feature<PointInT, PointOutT>::fake_surface_;
-       using Feature<PointInT, PointOutT>::input_;
-       using Feature<PointInT, PointOutT>::searchForNeighbors;
-       using FeatureWithLocalReferenceFrames<PointInT, PointRFT>::frames_;
+      using Feature<PointInT, PointOutT>::feature_name_;
+      using Feature<PointInT, PointOutT>::getClassName;
+      using Feature<PointInT, PointOutT>::indices_;
+      using Feature<PointInT, PointOutT>::search_parameter_;
+      using Feature<PointInT, PointOutT>::search_radius_;
+      using Feature<PointInT, PointOutT>::surface_;
+      using Feature<PointInT, PointOutT>::fake_surface_;
+      using Feature<PointInT, PointOutT>::input_;
+      using Feature<PointInT, PointOutT>::searchForNeighbors;
+      using FeatureWithLocalReferenceFrames<PointInT, PointRFT>::frames_;
 
-       typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
-       typedef typename Feature<PointInT, PointOutT>::PointCloudIn PointCloudIn;
-       typedef typename boost::shared_ptr<UniqueShapeContext<PointInT, PointOutT, PointRFT> > Ptr;
-       typedef typename boost::shared_ptr<const UniqueShapeContext<PointInT, PointOutT, PointRFT> > ConstPtr;
+      typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
+      typedef typename Feature<PointInT, PointOutT>::PointCloudIn PointCloudIn;
+      typedef typename boost::shared_ptr<UniqueShapeContext<PointInT, PointOutT, PointRFT> > Ptr;
+      typedef typename boost::shared_ptr<const UniqueShapeContext<PointInT, PointOutT, PointRFT> > ConstPtr;
 
 
-       /** \brief Constructor. */
-       UniqueShapeContext () :
-         radii_interval_(0), theta_divisions_(0), phi_divisions_(0), volume_lut_(0),
-         azimuth_bins_(12), elevation_bins_(11), radius_bins_(15),
-         min_radius_(0.1), point_density_radius_(0.2), descriptor_length_ (), local_radius_ (2.5)
-       {
-         feature_name_ = "UniqueShapeContext";
-         search_radius_ = 2.5;
-       }
+      /** \brief Constructor. */
+      UniqueShapeContext () :
+        radii_interval_(0), theta_divisions_(0), phi_divisions_(0), volume_lut_(0),
+        azimuth_bins_(12), elevation_bins_(11), radius_bins_(15),
+        min_radius_(0.1), point_density_radius_(0.2), descriptor_length_ (), local_radius_ (2.5)
+      {
+        feature_name_ = "UniqueShapeContext";
+        search_radius_ = 2.5;
+      }
 
       virtual ~UniqueShapeContext() { }
 

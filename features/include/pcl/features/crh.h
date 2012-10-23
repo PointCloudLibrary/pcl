@@ -57,11 +57,13 @@ namespace pcl
    * \author Aitor Aldoma
    * \ingroup features
    */
-
   template<typename PointInT, typename PointNT, typename PointOutT = pcl::Histogram<90> >
-    class CRHEstimation : public FeatureFromNormals<PointInT, PointNT, PointOutT>
-    {
+  class CRHEstimation : public FeatureFromNormals<PointInT, PointNT, PointOutT>
+  {
     public:
+      typedef boost::shared_ptr<CRHEstimation<PointInT, PointNT, PointOutT> > Ptr;
+      typedef boost::shared_ptr<const CRHEstimation<PointInT, PointNT, PointOutT> > ConstPtr;
+
       using Feature<PointInT, PointOutT>::feature_name_;
       using Feature<PointInT, PointOutT>::getClassName;
       using Feature<PointInT, PointOutT>::indices_;

@@ -58,6 +58,9 @@ namespace pcl
   class BOARDLocalReferenceFrameEstimation : public FeatureFromNormals<PointInT, PointNT, PointOutT>
   {
     public:
+      typedef boost::shared_ptr<BOARDLocalReferenceFrameEstimation<PointInT, PointNT, PointOutT> > Ptr;
+      typedef boost::shared_ptr<const BOARDLocalReferenceFrameEstimation<PointInT, PointNT, PointOutT> > ConstPtr;
+
       /** \brief Constructor. */
       BOARDLocalReferenceFrameEstimation () :
         tangent_radius_ (0.0f),

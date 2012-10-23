@@ -77,6 +77,8 @@ namespace pcl
   class PPFEstimation : public FeatureFromNormals<PointInT, PointNT, PointOutT>
   {
     public:
+      typedef boost::shared_ptr<PPFEstimation<PointInT, PointNT, PointOutT> > Ptr;
+      typedef boost::shared_ptr<const PPFEstimation<PointInT, PointNT, PointOutT> > ConstPtr;
       using PCLBase<PointInT>::indices_;
       using Feature<PointInT, PointOutT>::input_;
       using Feature<PointInT, PointOutT>::feature_name_;

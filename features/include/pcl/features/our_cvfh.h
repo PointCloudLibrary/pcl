@@ -60,9 +60,11 @@ namespace pcl
    * \ingroup features
    */
   template<typename PointInT, typename PointNT, typename PointOutT = pcl::VFHSignature308>
-    class OURCVFHEstimation : public FeatureFromNormals<PointInT, PointNT, PointOutT>
-    {
+  class OURCVFHEstimation : public FeatureFromNormals<PointInT, PointNT, PointOutT>
+  {
     public:
+      typedef boost::shared_ptr<OURCVFHEstimation<PointInT, PointNT, PointOutT> > Ptr;
+      typedef boost::shared_ptr<const OURCVFHEstimation<PointInT, PointNT, PointOutT> > ConstPtr;
       using Feature<PointInT, PointOutT>::feature_name_;
       using Feature<PointInT, PointOutT>::getClassName;
       using Feature<PointInT, PointOutT>::indices_;
@@ -400,8 +402,7 @@ namespace pcl
       computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &)
       {
       }
-    };
-
+  };
 }
 
 #ifdef PCL_NO_PRECOMPILE
