@@ -78,7 +78,7 @@ main (int argc, char** argv)
 
   double radius = model->sigmas_[testing_class] * 10.0;
   double sigma = model->sigmas_[testing_class];
-  std::vector<pcl::ISMPeak> strongest_peaks;
+  std::vector<pcl::ISMPeak, Eigen::aligned_allocator<pcl::ISMPeak> > strongest_peaks;
   vote_list->findStrongestPeaks (strongest_peaks, testing_class, radius, sigma);
 
   pcl::PointCloud <pcl::PointXYZRGB>::Ptr colored_cloud = (new pcl::PointCloud<pcl::PointXYZRGB>)->makeShared ();
