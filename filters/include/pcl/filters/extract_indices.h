@@ -92,7 +92,7 @@ namespace pcl
         * All fields of filtered points are replaced with the value set by setUserFilterValue() (default = NaN).
         * This method also automatically alters the input cloud set via setInputCloud().
         * It does not alter the value of the internal keep organized boolean as set by setKeepOrganized().
-        * \param[in/out] cloud The point cloud used for input and output.
+        * \param cloud The point cloud used for input and output.
         */
       void
       filterDirectly (PointCloudPtr &cloud);

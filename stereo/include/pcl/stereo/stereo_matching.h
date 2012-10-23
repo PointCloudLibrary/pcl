@@ -235,10 +235,10 @@ namespace pcl
       /** \brief Horizontal displacemente (x offset) used for stereo processing */
       int x_off_;
 
-      /** \brief Threshold for the ratio filter, \in [0 100] */
+      /** \brief Threshold for the ratio filter, \f$\in [0 100]\f$ */
       int ratio_filter_;
 
-      /** \brief Threshold for the peak filter, \in [0 inf] */
+      /** \brief Threshold for the peak filter, \f$\in [0 \infty]\f$ */
       int peak_filter_;
 
       /** \brief toggle for the activation of the pre-processing stage */

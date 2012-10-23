@@ -34,7 +34,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- *  $Id: octree_ram_container.h 6927 2012-08-23 02:34:54Z stfox88 $
+ *  $Id$
  */
 
 #ifndef PCL_OUTOFCORE_OCTREE_RAM_CONTAINER_H_
@@ -66,20 +66,20 @@ namespace pcl
         typedef typename OutofcoreAbstractNodeContainer<PointT>::AlignedPointTVector AlignedPointTVector;
 
         /** \brief empty contructor (with a path parameter?)
-         */
+          */
         OutofcoreOctreeRamContainer (const boost::filesystem::path&) : container_ () { }
         
-        /** \brief inserts \ref count number of points into container; uses the container_ type's insert         *  function
-         * \param[in] start - address of first point in array
-         * \param[in] count - the maximum offset from start of points inserted 
-         **/
+        /** \brief inserts count number of points into container; uses the container_ type's insert function
+          * \param[in] start - address of first point in array
+          * \param[in] count - the maximum offset from start of points inserted 
+          */
         void
         insertRange (const PointT* start, const uint64_t count);
 
         /** \brief inserts count points into container 
-         * \param[in] start - address of first point in array
-         * \param[in] count - the maximum offset from start of points inserted 
-         **/
+          * \param[in] start - address of first point in array
+          * \param[in] count - the maximum offset from start of points inserted 
+          */
         void
         insertRange (const PointT* const * start, const uint64_t count);
 
@@ -97,22 +97,22 @@ namespace pcl
         }
         
         /** \brief 
-         * \param[in] start Index of first point to return from container
-         * \param[in] count Offset (start + count) of the last point to return from container
-         * \param[out] v Array of points read from the input range
-         */
+          * \param[in] start Index of first point to return from container
+          * \param[in] count Offset (start + count) of the last point to return from container
+          * \param[out] v Array of points read from the input range
+          */
         void
         readRange (const uint64_t start, const uint64_t count, AlignedPointTVector &v);
 
         /** \brief grab percent*count random points. points are NOT
-         *   guaranteed to be unique (could have multiple identical points!)
-         *
-         * \param[in] start Index of first point in range to subsample
-         * \param[in] count Offset (start+count) of last point in range to subsample
-         * \param[in] percent Percentage of range to return
-         * \param[out] v Vector with percent*count uniformly random sampled 
-         * points from given input rangerange
-         */
+          *   guaranteed to be unique (could have multiple identical points!)
+          *
+          * \param[in] start Index of first point in range to subsample
+          * \param[in] count Offset (start+count) of last point in range to subsample
+          * \param[in] percent Percentage of range to return
+          * \param[out] v Vector with percent*count uniformly random sampled 
+          * points from given input rangerange
+          */
         void
         readRangeSubSample (const uint64_t start, const uint64_t count, const double percent, AlignedPointTVector &v);
 
@@ -139,8 +139,8 @@ namespace pcl
         }
 
         /** \brief Writes ascii x,y,z point data to path.string().c_str()
-         *  \param path The path/filename destination of the ascii xyz data
-         */
+          *  \param path The path/filename destination of the ascii xyz data
+          */
         void
         convertToXYZ (const boost::filesystem::path &path);
 
