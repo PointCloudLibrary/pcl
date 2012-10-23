@@ -46,25 +46,13 @@
 #include <boost/circular_buffer.hpp>
 #include <string>
 
-#define IMAGE_WIDTH     320
-#define IMAGE_HEIGHT    240
-#define IMAGE_SIZE      IMAGE_WIDTH * IMAGE_HEIGHT
-
-#define SYNC_PACKET     512
-
-#define RAW8_LENGTH     IMAGE_WIDTH*IMAGE_HEIGHT
-#define RGB16_LENGTH    IMAGE_WIDTH*2*IMAGE_HEIGHT
-#define RGB24_LENGTH    IMAGE_WIDTH*3*IMAGE_HEIGHT
-#define RGB32_LENGTH    IMAGE_WIDTH*4*IMAGE_HEIGHT
-
-#define IMAGE_PAGE_MAX    (1)
-
 namespace pcl
 {
   /** \brief Grabber for DINAST devices (i.e., IPA-1002, IPA-1110, IPA-2001)
-  * \author Marco A. Gutierrez <marcog@unex.es>
-  * \ingroup io
-  */
+    * \author Marco A. Gutierrez <marcog@unex.es>
+    * \ingroup io
+    */
+  
   class PCL_EXPORTS DinastGrabber: public Grabber
   {
 
@@ -75,12 +63,6 @@ namespace pcl
 
       /** \brief Destructor */
       ~DinastGrabber () throw ();
-
-      /** \brief returns the name of the concrete subclass, DinastGrabber.
-        * \return DinastGrabber.
-        */
-      std::string
-      getName() const;
 
       /** \brief Check if the grabber is running
         * \return true if grabber is running / streaming. False otherwise.
@@ -113,6 +95,34 @@ namespace pcl
       void
       closeDevice ();
 
+      /** \brief Get the version number of the currently opened device
+        */
+      std::string
+      getDeviceVersion ();
+
+      /** \brief Start the data acquisition process.
+        */
+      void
+      start ();
+
+      /** \brief Stop the data acquisition process.
+        */
+      void
+      stop ();
+
+      /** \brief Read image data
+        * \param[out] the image data in unsigned short format
+        */
+      int
+      readImage (unsigned char *image);
+      
+      /** \brief Obtains the image and the corresponding XYZI Point Cloud
+	*  \param[out] the image data in unsigned short format and the corresponding point cloud from the camera
+	*/
+      void
+      getData (unsigned char *image, pcl::PointCloud<pcl::PointXYZI>::Ptr cloud);
+      
+    protected:      
       /** \brief Send a RX data packet request
         * \param[in] req_code the request to send (the request field for the setup packet)
         * \param[in] length the length field for the setup packet. The data buffer should be at least this size.
@@ -130,22 +140,7 @@ namespace pcl
       USBTxControlData (const unsigned char req_code,
                         unsigned char *buffer,
                         int length);
-
-      /** \brief Get the version number of the currently opened device
-        */
-      std::string
-      getDeviceVersion ();
-
-      /** \brief Start the data acquisition process.
-        */
-      void
-      start ();
-
-      /** \brief Stop the data acquisition process.
-        */
-      void
-      stop ();
-
+      
       /** \brief Check if we have a header in the global buffer, and return the position of the next valid image.
         * \note If the image in the buffer is partial, return -1, as we have to wait until we add more data to it.
         * \return the position of the next valid image (i.e., right after a valid header) or -1 in case the buffer 
@@ -153,27 +148,36 @@ namespace pcl
         */
       int
       checkHeader ();
-
-       /** \brief Read image data
-        * \param[out] the image data in unsigned short format
+      
+      /** \brief Returns the name of the concrete subclass, DinastGrabber.
+        * \return DinastGrabber.
         */
-      int
-      readImage (unsigned char *image);
+      std::string
+      getName() const;
       
-      /** \brief Obtains the image and the corresponding XYZI Point Cloud
-       *  \param[out] the image data in unsigned short format and the corresponding point cloud from the camera
-       */
-      void
-      getData(unsigned char *image, pcl::PointCloud<pcl::PointXYZI>::Ptr cloud);
+      /** \brief Width of image */
+      const static int IMAGE_WIDTH = 320;
       
-      /** \brief the libusb context*/
+      /** \brief Height of image */
+      const static int IMAGE_HEIGHT  = 240;
+      
+      /** \brief Total size of image */
+      const static int IMAGE_SIZE = IMAGE_HEIGHT * IMAGE_WIDTH;
+      
+      /** \brief Length of a sync packet */
+      const static int SYNC_PACKET = 512;
+      
+      /** \brief Size of pixel */
+      enum pixel_syze { RAW8=1, RGB16=2, RGB24=3, RGB32=4 };
+      
+      /** \brief The libusb context*/
       libusb_context *context;
       
       /** \brief the actual device_handle for the camera */
       struct libusb_device_handle* device_handle;
       
-      /** \brief Temporary USB read buffer */
-      unsigned char raw_buffer[(RGB16_LENGTH + SYNC_PACKET)*2];
+      /** \brief Temporary USB read buffer, since we read two RGB16 images at a time size is the double of two images plus a sync packet */
+      unsigned char raw_buffer[(RGB16 * (IMAGE_SIZE) + SYNC_PACKET)*2];
 
       /** \brief Global buffer */
       boost::circular_buffer<unsigned char> g_buffer;
@@ -183,7 +187,7 @@ namespace pcl
 
       // Since there is no header after the first image, we need to save the state
       bool second_image;
-      bool running_;
+      bool running;
 
       
   };

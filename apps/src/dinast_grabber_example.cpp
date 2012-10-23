@@ -50,6 +50,9 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/io/dinast_grabber.h>
 
+#define IMAGE_HEIGHT 240
+#define IMAGE_WIDTH 320
+
 #define FPS_CALC(_WHAT_) \
 static unsigned count = 0;\
 static double last = pcl::getTime ();\
@@ -113,14 +116,14 @@ main (int argc, char** argv)
   grabber.openDevice();
 
   
-  std::cerr << "Device version/revision number: " << grabber.getDeviceVersion () << "Hz"<< std::endl;
+  std::cerr << "Device version/revision number: " << grabber.getDeviceVersion () << "Hz" << std::endl;
   
   grabber.start ();
 
   pcl::visualization::ImageViewer vis_img ("Dinast Image Viewer");
   pcl::visualization::PCLVisualizer vis_cld (argc, argv, "Dinast Cloud Viewer");
 
-  unsigned char *image = (unsigned char*)malloc (IMAGE_SIZE);
+  unsigned char *image =  reinterpret_cast <unsigned char*> (malloc (IMAGE_HEIGHT*IMAGE_WIDTH));
   pcl::PointCloud<pcl::PointXYZI>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZI>);
   
   while (true)

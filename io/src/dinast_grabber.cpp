@@ -49,61 +49,55 @@
 #define CMD_GET_VERSION 0xDC
 #define CMD_SEND_DATA   0xDE
 
-#define SYNC_PACKET     512
-#define RGB16_LENGTH    IMAGE_WIDTH*2*IMAGE_HEIGHT
-
 using namespace std;
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 pcl::DinastGrabber::DinastGrabber ()
   : second_image (false)
-  , running_ (false)
+  , running (false)
 {
   bulk_ep = -1;
   context = NULL;
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 pcl::DinastGrabber::~DinastGrabber () throw ()
 {
   stop ();
   libusb_exit (context);
 }
 
-std::string
-pcl::DinastGrabber::getName () const
-{
-    return (std::string ("DinastGrabber"));
-}
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 bool
 pcl::DinastGrabber::isRunning () const
 {
-  return (running_);
+  return (running);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 float
 pcl::DinastGrabber::getFramesPerSecond () const
-{
-  static unsigned count = 0;
+{ 
   static double last = pcl::getTime ();
   double now = pcl::getTime (); 
   float rate = 1/float(now - last);
-  count = 0; 
   last = now; 
 
   return (rate);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::DinastGrabber::findDevice ( int device_position, const int id_vendor, const int id_product)
+pcl::DinastGrabber::findDevice (int device_position, const int id_vendor, const int id_product)
 {
-  int device_position_counter=0;
+  int device_position_counter = 0;
   
   //Initialize libusb
   int ret=libusb_init (&context);
   std::stringstream sstream;
   if (ret != 0)
   {
-    sstream << "libusb initialization fialure, LIBUSB_ERROR: "<<ret;
+    sstream << "libusb initialization fialure, LIBUSB_ERROR: "<< ret;
     PCL_THROW_EXCEPTION (pcl::IOException, sstream.str());
   }
   
@@ -154,7 +148,7 @@ pcl::DinastGrabber::findDevice ( int device_position, const int id_vendor, const
       }
     }
     device_position_counter++;
-    if (device_position_counter==device_position)
+    if (device_position_counter == device_position)
       libusb_open(devs[i], &device_handle);
     // Free the configuration descriptor
     libusb_free_config_descriptor (config);
@@ -164,11 +158,12 @@ pcl::DinastGrabber::findDevice ( int device_position, const int id_vendor, const
   libusb_free_device_list (devs, 1);
   
   //Check if device founded if not notify
-  if (device_handle==NULL)
+  if (device_handle == NULL)
     PCL_THROW_EXCEPTION (pcl::IOException, "Failed to find any DINAST devices attached");
 
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::DinastGrabber::openDevice ()
 {
@@ -177,6 +172,7 @@ pcl::DinastGrabber::openDevice ()
      PCL_THROW_EXCEPTION (pcl::IOException, "Failed to open device");  
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::DinastGrabber::closeDevice ()
 {
@@ -186,56 +182,7 @@ pcl::DinastGrabber::closeDevice ()
   libusb_close (device_handle);
 }
 
-bool
-pcl::DinastGrabber::USBRxControlData (const unsigned char req_code,
-                                      unsigned char *buffer,
-                                      int length)
-{
-  // the direction of the transfer is inferred from the requesttype field of the setup packet.
-  unsigned char requesttype = CTRL_TO_HOST;
-  // the value field for the setup packet
-  uint16_t value = 0x02;
-  // the index field for the setup packet
-  uint16_t index = 0x08;
-  // timeout (in ms) that this function should wait before giving up due to no response being received
-  // for an unlimited timeout, use value 0.
-  uint16_t timeout = 1000;
-  
-  int nr_read = libusb_control_transfer (device_handle, requesttype, 
-                                         req_code, value, index, buffer, uint16_t(length), timeout);
-  if (nr_read != int(length))
-    PCL_THROW_EXCEPTION (pcl::IOException, "control data error");
-
-  return (true);
-}
-
-bool
-pcl::DinastGrabber::USBTxControlData (const unsigned char req_code,
-                                      unsigned char *buffer,
-                                      int length)
-{
-  // the direction of the transfer is inferred from the requesttype field of the setup packet.
-  unsigned char requesttype = CTRL_TO_DEVICE;
-  // the value field for the setup packet
-  uint16_t value = 0x01;
-  // the index field for the setup packet
-  uint16_t index = 0x00;
-  // timeout (in ms) that this function should wait before giving up due to no response being received
-  // for an unlimited timeout, use value 0.
-  uint16_t timeout = 1000;
-  
-  int nr_read = libusb_control_transfer (device_handle, requesttype, 
-                                         req_code, value, index, buffer, uint16_t(length), timeout);
-  if (nr_read != int(length))
-  {
-    std::stringstream sstream;
-    sstream<<"USB control data error, LIBUSB_ERROR: "<<nr_read;
-    PCL_THROW_EXCEPTION (pcl::IOException, sstream.str());
-  }
-
-  return (true);
-}
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 std::string
 pcl::DinastGrabber::getDeviceVersion ()
 {
@@ -250,49 +197,27 @@ pcl::DinastGrabber::getDeviceVersion ()
   return (std::string (reinterpret_cast<const char*> (data)));
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::DinastGrabber::start ()
 {
   unsigned char ctrl_buf[3];
   if (!USBTxControlData (CMD_READ_START, ctrl_buf, 1))
     PCL_THROW_EXCEPTION (pcl::IOException, "Could not start the USB data reading");
-  running_ = true;
+  running = true;
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::DinastGrabber::stop ()
 {
   unsigned char ctrl_buf[3];
   if (!USBTxControlData (CMD_READ_START, ctrl_buf, 1))
     PCL_THROW_EXCEPTION (pcl::IOException, "Could not start the USB data reading");
-  running_=false;
+  running = false;
 }
 
-int
-pcl::DinastGrabber::checkHeader ()
-{
-  // We need at least 2 full sync packets, in case the header starts at the end of the first sync packet to 
-  // guarantee that the index returned actually exists in g_buffer (we perform no checking in the rest of the code)
-  if (g_buffer.size () < 2 * SYNC_PACKET)
-    return (-1);
-
-  int data_ptr = -1;
-
-  for (size_t i = 0; i < g_buffer.size (); ++i)
-  {
-    if ((g_buffer[i+0] == 0xAA) && (g_buffer[i+1] == 0xAA) && 
-        (g_buffer[i+2] == 0x44) && (g_buffer[i+3] == 0x44) &&
-        (g_buffer[i+4] == 0xBB) && (g_buffer[i+5] == 0xBB) &&
-        (g_buffer[i+6] == 0x77) && (g_buffer[i+7] == 0x77))
-    {
-      data_ptr = int (i) + SYNC_PACKET;
-      break;
-    }
-  }
-
-  return (data_ptr);
-}
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 int
 pcl::DinastGrabber::readImage (unsigned char *image)
 {
@@ -318,7 +243,7 @@ pcl::DinastGrabber::readImage (unsigned char *image)
     // Read at least two images in synchronous mode
     int actual_length;
     int res = libusb_bulk_transfer (device_handle, bulk_ep, raw_buffer, 
-                                    RGB16_LENGTH + SYNC_PACKET, &actual_length, 1000);
+                                    RGB16 * (IMAGE_SIZE) + SYNC_PACKET, &actual_length, 1000);
     if (res != 0 || actual_length == 0)
     {
 
@@ -366,10 +291,10 @@ pcl::DinastGrabber::readImage (unsigned char *image)
   return (IMAGE_SIZE);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::DinastGrabber::getData (unsigned char *image, pcl::PointCloud<pcl::PointXYZI>::Ptr cloud)
 {
-
   readImage(image);
   
   cloud->points.resize (IMAGE_WIDTH * IMAGE_HEIGHT);
@@ -378,15 +303,12 @@ pcl::DinastGrabber::getData (unsigned char *image, pcl::PointCloud<pcl::PointXYZ
   cloud->is_dense = false;
 
   int depth_idx = 0;
-  int pxl[9];
 
-  float sum = 0;
-  int count = 0;
   for (int x = 0; x < cloud->width; ++x)
   {
     for (int y = 0; y < cloud->height; ++y, ++depth_idx)
     {
-      unsigned char pixel = image[x + IMAGE_WIDTH * y]; //image[depth_idx];
+      double pixel = image[x + IMAGE_WIDTH * y]; //image[depth_idx];
 
       float xc = float(x - 160);
       float yc = float(y - 120);
@@ -400,26 +322,26 @@ pcl::DinastGrabber::getData (unsigned char *image, pcl::PointCloud<pcl::PointXYZ
 
       if (pixel > A)
         pixel = A;
-      float dy = y*0.1;
-      float dist = (log(double(pixel/A))/B-dy)*(7E-07*r3 - 0.0001*r2 + 0.004*r1 + 0.9985)*1.5;
-      float dist_2d = r1;
+      double dy = y*0.1;
+      double dist = (log(double(pixel/A))/B-dy)*(7E-07*r3 - 0.0001*r2 + 0.004*r1 + 0.9985)*1.5;
+      //float dist_2d = r1;
 //       static const float dist_max_2d = 1 / 212.60291;
-      static const float dist_max_2d = 1 / 160.0; /// @todo Why not 200?
+      static const double dist_max_2d = 1 / 160.0; /// @todo Why not 200?
       //static const double dist_max_2d = 1 / 200.0;
 //       static const double FOV = 40. * M_PI / 180.0; // diagonal FOV?
       static const double FOV = 64.0 * M_PI / 180.0; // diagonal FOV?
-       float theta_colati = FOV * r1 * dist_max_2d;
-      float c_theta = cos (theta_colati);
-      float s_theta = sin (theta_colati);
-      float c_ksai = (double(x - 160.)) / r1;
-      float s_ksai = (double(y - 120.)) / r1;
-      cloud->points[depth_idx].x = (dist * s_theta * c_ksai) / 500.0 + 0.5; //cartesian x
-      cloud->points[depth_idx].y = (dist * s_theta * s_ksai) / 500.0 + 0.5; //cartesian y
-      cloud->points[depth_idx].z = (dist * c_theta);                        //cartesian z
+      double theta_colati = FOV * r1 * dist_max_2d;
+      double c_theta = cos (theta_colati);
+      double s_theta = sin (theta_colati);
+      double c_ksai = (double(x - 160.)) / r1;
+      double s_ksai = (double(y - 120.)) / r1;
+      cloud->points[depth_idx].x = float ((dist * s_theta * c_ksai) / 500.0 + 0.5); //cartesian x
+      cloud->points[depth_idx].y = float ((dist * s_theta * s_ksai) / 500.0 + 0.5); //cartesian y
+      cloud->points[depth_idx].z = float ((dist * c_theta));                        //cartesian z
       if (cloud->points[depth_idx].z < 0.01)
-        cloud->points[depth_idx].z = 0.01;
-      cloud->points[depth_idx].z /= 500.0;
-      cloud->points[depth_idx].intensity = pixel;
+        cloud->points[depth_idx].z = float(0.01);
+      cloud->points[depth_idx].z /= float(500.0);
+      cloud->points[depth_idx].intensity = float(pixel);
 
       
       //get rid of the noise
@@ -428,9 +350,93 @@ pcl::DinastGrabber::getData (unsigned char *image, pcl::PointCloud<pcl::PointXYZ
         cloud->points[depth_idx].x = std::numeric_limits<float>::quiet_NaN ();
       	cloud->points[depth_idx].y = std::numeric_limits<float>::quiet_NaN ();
       	cloud->points[depth_idx].z = std::numeric_limits<float>::quiet_NaN ();
-      	cloud->points[depth_idx].intensity = pixel;
+      	cloud->points[depth_idx].intensity = float(pixel);
       }
     }
   }
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+bool
+pcl::DinastGrabber::USBRxControlData (const unsigned char req_code,
+                                      unsigned char *buffer,
+                                      int length)
+{
+  // the direction of the transfer is inferred from the requesttype field of the setup packet.
+  unsigned char requesttype = CTRL_TO_HOST;
+  // the value field for the setup packet
+  uint16_t value = 0x02;
+  // the index field for the setup packet
+  uint16_t index = 0x08;
+  // timeout (in ms) that this function should wait before giving up due to no response being received
+  // for an unlimited timeout, use value 0.
+  uint16_t timeout = 1000;
+  
+  int nr_read = libusb_control_transfer (device_handle, requesttype, 
+                                         req_code, value, index, buffer, uint16_t(length), timeout);
+  if (nr_read != int(length))
+    PCL_THROW_EXCEPTION (pcl::IOException, "control data error");
+
+  return (true);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+bool
+pcl::DinastGrabber::USBTxControlData (const unsigned char req_code,
+                                      unsigned char *buffer,
+                                      int length)
+{
+  // the direction of the transfer is inferred from the requesttype field of the setup packet.
+  unsigned char requesttype = CTRL_TO_DEVICE;
+  // the value field for the setup packet
+  uint16_t value = 0x01;
+  // the index field for the setup packet
+  uint16_t index = 0x00;
+  // timeout (in ms) that this function should wait before giving up due to no response being received
+  // for an unlimited timeout, use value 0.
+  uint16_t timeout = 1000;
+  
+  int nr_read = libusb_control_transfer (device_handle, requesttype, 
+                                         req_code, value, index, buffer, uint16_t(length), timeout);
+  if (nr_read != int(length))
+  {
+    std::stringstream sstream;
+    sstream << "USB control data error, LIBUSB_ERROR: " << nr_read;
+    PCL_THROW_EXCEPTION (pcl::IOException, sstream.str());
+  }
+
+  return (true);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+int
+pcl::DinastGrabber::checkHeader ()
+{
+  // We need at least 2 full sync packets, in case the header starts at the end of the first sync packet to 
+  // guarantee that the index returned actually exists in g_buffer (we perform no checking in the rest of the code)
+  if (g_buffer.size () < 2 * SYNC_PACKET)
+    return (-1);
+
+  int data_ptr = -1;
+
+  for (size_t i = 0; i < g_buffer.size (); ++i)
+  {
+    if ((g_buffer[i + 0] == 0xAA) && (g_buffer[i + 1] == 0xAA) && 
+        (g_buffer[i + 2] == 0x44) && (g_buffer[i + 3] == 0x44) &&
+        (g_buffer[i + 4] == 0xBB) && (g_buffer[i + 5] == 0xBB) &&
+        (g_buffer[i + 6] == 0x77) && (g_buffer[i + 7] == 0x77))
+    {
+      data_ptr = int (i) + SYNC_PACKET;
+      break;
+    }
+  }
+
+  return (data_ptr);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+std::string
+pcl::DinastGrabber::getName () const
+{
+    return (std::string ("DinastGrabber"));
+}
