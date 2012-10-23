@@ -97,7 +97,7 @@ namespace pcl
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////
-  template<typename Sequence1, typename Sequence2>
+  template <typename Sequence1, typename Sequence2>
   struct intersect 
   { 
     typedef typename boost::mpl::remove_if<Sequence1, boost::mpl::not_<boost::mpl::contains<Sequence2, boost::mpl::_1> > >::type type; 

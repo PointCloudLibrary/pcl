@@ -67,18 +67,20 @@ namespace pcl
     typedef typename traits::POD<PointOutT>::type PodOut;
     
     NdConcatenateFunctor (const PointInT &p1, PointOutT &p2)
-      : p1_ (reinterpret_cast<const PodIn&>(p1)), p2_ (reinterpret_cast<PodOut&>(p2)) { }
+      : p1_ (reinterpret_cast<const PodIn&> (p1))
+      , p2_ (reinterpret_cast<PodOut&> (p2)) { }
 
-    template<typename Key> inline void operator() ()
+    template<typename Key> inline void 
+    operator () ()
     {
       // This sucks without Fusion :(
       //boost::fusion::at_key<Key> (p2_) = boost::fusion::at_key<Key> (p1_);
       typedef typename pcl::traits::datatype<PointInT, Key>::type InT;
       typedef typename pcl::traits::datatype<PointOutT, Key>::type OutT;
       // Note: don't currently support different types for the same field (e.g. converting double to float)
-      BOOST_MPL_ASSERT_MSG((boost::is_same<InT, OutT>::value),
-                           POINT_IN_AND_POINT_OUT_HAVE_DIFFERENT_TYPES_FOR_FIELD,
-                           (Key, PointInT&, InT, PointOutT&, OutT));
+      BOOST_MPL_ASSERT_MSG ((boost::is_same<InT, OutT>::value),
+                            POINT_IN_AND_POINT_OUT_HAVE_DIFFERENT_TYPES_FOR_FIELD,
+                            (Key, PointInT&, InT, PointOutT&, OutT));
       memcpy (reinterpret_cast<uint8_t*>(&p2_) + pcl::traits::offset<PointOutT, Key>::value,
               reinterpret_cast<const uint8_t*>(&p1_) + pcl::traits::offset<PointInT, Key>::value,
               sizeof (InT));
