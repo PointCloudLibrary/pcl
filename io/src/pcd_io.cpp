@@ -1131,15 +1131,17 @@ pcl::PCDReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
       PCL_DEBUG ("[pcl::PCDReader::read] Read a binary compressed file with %u bytes compressed and %u original.\n", compressed_size, uncompressed_size);
       // For all those weird situations where the compressed data is actually LARGER than the uncompressed one
       // (we really ought to check this in the compressor and copy the original data in those cases)
+
       if (data_size < compressed_size)
       {
+        PCL_DEBUG ("[pcl::PCDReader::read] Allocated data size (%zu) smaller than compressed size (%u). Need to remap.\n", data_size, compressed_size);
 #if _WIN32
         UnmapViewOfFile (map);
-        data_size = compressed_size;
+        data_size = compressed_size + data_idx + 8;
         map = static_cast<char*>(MapViewOfFile (fm, FILE_MAP_READ, 0, 0, data_size));
 #else
         munmap (map, data_size);
-        data_size = compressed_size;
+        data_size = compressed_size + data_idx + 8;
         map = static_cast<char*> (mmap (0, data_size, PROT_READ, MAP_SHARED, fd, 0));
 #endif
       }
@@ -1153,11 +1155,12 @@ pcl::PCDReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
 
       char *buf = static_cast<char*> (malloc (data_size));
       // The size of the uncompressed data better be the same as what we stored in the header
-      if (pcl::lzfDecompress (&map[data_idx + 8], compressed_size, buf, static_cast<unsigned int> (data_size)) != uncompressed_size)
+      unsigned int tmp_size = pcl::lzfDecompress (&map[data_idx + 8], compressed_size, buf, static_cast<unsigned int> (data_size));
+      if (tmp_size != uncompressed_size)
       {
         free (buf);
         pcl_close (fd);
-        PCL_ERROR ("[pcl::PCDReader::read] Size of decompressed lzf data does not match value stored in PCD header\n");
+        PCL_ERROR ("[pcl::PCDReader::read] Size of decompressed lzf data (%u) does not match value stored in PCD header (%u). Errno: %d\n", tmp_size, uncompressed_size, errno);
         return (-1);
       }
 
