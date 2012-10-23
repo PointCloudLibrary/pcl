@@ -42,7 +42,7 @@
 #include <pcl/console/print.h>
 
 /**
-  * \file geometry.h
+  * \file common/geometry.h
   * Defines some geometrical functions and utility functions
   * \ingroup common
   */

@@ -51,10 +51,10 @@
 namespace pcl
 {
   /** \brief Get the intersection of a two 3D lines in space as a 3D point
-    * \param line_a the coefficients of the first line (point, direction)
-    * \param line_b the coefficients of the second line (point, direction)
-    * \param point holder for the computed 3D point
-    * \param sqr_eps maximum allowable squared distance to the true solution
+    * \param[in] line_a the coefficients of the first line (point, direction)
+    * \param[in] line_b the coefficients of the second line (point, direction)
+    * \param[out] point holder for the computed 3D point
+    * \param[in] sqr_eps maximum allowable squared distance to the true solution
     * \ingroup common
     */
   PCL_EXPORTS bool
@@ -63,10 +63,10 @@ namespace pcl
                             Eigen::Vector4f &point, double sqr_eps = 1e-4);
 
   /** \brief Get the intersection of a two 3D lines in space as a 3D point
-    * \param line_a the coefficients of the first line (point, direction)
-    * \param line_b the coefficients of the second line (point, direction)
-    * \param point holder for the computed 3D point
-    * \param sqr_eps maximum allowable squared distance to the true solution
+    * \param[in] line_a the coefficients of the first line (point, direction)
+    * \param[in] line_b the coefficients of the second line (point, direction)
+    * \param[out] point holder for the computed 3D point
+    * \param[in] sqr_eps maximum allowable squared distance to the true solution
     * \ingroup common
     */
   PCL_EXPORTS bool
@@ -75,9 +75,9 @@ namespace pcl
                             Eigen::Vector4f &point, double sqr_eps = 1e-4);
 
   /** \brief Determine the line of intersection of two non-parallel planes using lagrange multipliers
-    * \described in: "Intersection of Two Planes, John Krumm, Microsoft Research, Redmond, WA, USA"
-    * \param[in] coefficients of plane A and plane B in the form ax + by + cz + d = 0
-    * \param[out] coefficients of line where line.tail<3>() = direction vector and
+    * \note Described in: "Intersection of Two Planes, John Krumm, Microsoft Research, Redmond, WA, USA"
+    * \param[in] plane_a coefficients of plane A and plane B in the form ax + by + cz + d = 0
+    * \param[out] plane_b coefficients of line where line.tail<3>() = direction vector and
     * line.head<3>() the point on the line clossest to (0, 0, 0)
     * \return true if succeeded/planes aren't parallel
     */

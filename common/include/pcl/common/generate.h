@@ -50,7 +50,7 @@ namespace pcl
   namespace common
   {
     /** \brief CloudGenerator class generates a point cloud using some randoom number generator.
-      * Generators can be found in \file pcl/common/include/random.h and easily extensible.
+      * Generators can be found in \file common/random.h and easily extensible.
       *  
       * \ingroup common
       * \author Nizar Sallem
