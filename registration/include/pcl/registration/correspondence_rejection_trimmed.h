@@ -86,7 +86,7 @@ namespace pcl
           * correspondences) and 1 (full overlap, all correspondences)
           */
         virtual inline void 
-        setOverlapRadio (float ratio) { overlap_ratio_ = std::min (1.0f, std::max (0.0f, ratio)); };
+        setOverlapRatio (float ratio) { overlap_ratio_ = std::min (1.0f, std::max (0.0f, ratio)); };
 
         /** \brief Get the maximum distance used for thresholding in correspondence rejection. */
         inline float 
