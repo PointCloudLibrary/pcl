@@ -204,6 +204,11 @@ main (int argc, char** argv)
     return (-1);
   }
 
+  bool debug = false;
+  pcl::console::parse_argument (argc, argv, "-debug", debug);
+  if (debug)
+    pcl::console::setVerbosityLevel (pcl::console::L_DEBUG);
+
   bool cam = pcl::console::find_switch (argc, argv, "-cam");
 
   // Command line parsing
