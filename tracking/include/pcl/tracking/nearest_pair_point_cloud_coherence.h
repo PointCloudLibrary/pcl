@@ -55,7 +55,7 @@ namespace pcl
         getSearchMethod () { return (search_); }
 
         /** \brief add a PointCoherence to the PointCloudCoherence.
-          * \param coherence a pointer to PointCoherence.
+          * \param[in] cloud coherence a pointer to PointCoherence.
           */
         virtual inline void
         setTargetCloud (const PointCloudInConstPtr &cloud)
@@ -65,7 +65,7 @@ namespace pcl
         }
         
         /** \brief set maximum distance to be taken into account.
-          * \param maximum distance.
+          * \param[in] val maximum distance.
           */
         inline void setMaximumDistance (double val) { maximum_distance_ = val; }
 
