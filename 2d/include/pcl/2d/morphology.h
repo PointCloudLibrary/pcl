@@ -72,34 +72,30 @@ namespace pcl
       closingBinary (pcl::PointCloud<PointT> &output);
 
       /** \brief Binary dilation is similar to a logical disjunction of sets. 
-       * At each pixel having value 1, if for all pixels in the structuring element 
-       * having value 1, the corresponding pixels in the input image are
-       * also 1, the center pixel is set to 1. Otherwise, it is set to 0.
-       * \param[out] output Output point cloud passed by reference
-       */
+        * At each pixel having value 1, if for all pixels in the structuring element  having value 1, the corresponding
+        * pixels in the input image are also 1, the center pixel is set to 1. Otherwise, it is set to 0.
+        * \param[out] output Output point cloud passed by reference
+        */
       void 
       erosionBinary (pcl::PointCloud<PointT> &output);
 
       /** \brief Binary erosion is similar to a logical addition of sets. 
-        * At each pixel having value 1, if at least one pixel in the structuring 
-        * element is 1 and the corresponding point in the input image is 1, the center 
-        * pixel is set to 1. Otherwise, it is set to 0.
+        * At each pixel having value 1, if at least one pixel in the structuring  element is 1 and the corresponding point
+        * in the input image is 1, the center pixel is set to 1. Otherwise, it is set to 0.
         * \param[out] output Output point cloud passed by reference
         */
       void 
       dilationBinary  (pcl::PointCloud<PointT> &output);
 
       /** \brief Grayscale erosion followed by dilation.
-        * This is used to remove small bright artifacts from the image.
-        * Large bright objects are relatively undisturbed.
+        * This is used to remove small bright artifacts from the image. Large bright objects are relatively undisturbed.
         * \param[out] output Output point cloud passed by reference
         */
       void 
       openingGray (pcl::PointCloud<PointT> &output);
 
       /** \brief Grayscale dilation followed by erosion.
-        * This is used to remove small dark artifacts from the image.
-        * bright features or large dark features are relatively undisturbed.
+        * This is used to remove small dark artifacts from the image. Bright features or large dark features are relatively undisturbed.
         * \param[out] output Output point cloud passed by reference
         */
       void 
@@ -129,7 +125,7 @@ namespace pcl
                          const pcl::PointCloud<PointT> &input2);
 
       /** \brief Set operation
-        * output = input1 <union> input2
+        * \f$output = input1 \cup input2\f$
         * \param[out] output Output point cloud passed by reference
         * \param[in] input1
         * \param[in] input2
@@ -139,9 +135,7 @@ namespace pcl
                    const pcl::PointCloud<PointT> &input1, 
                    const pcl::PointCloud<PointT> &input2);
 
-      /** \Set operation
-        * output = input1 <intersection> input2
-        *
+      /** \Set operation \f$ output = input1 \cap input2 \f$
         * \param[out] output Output point cloud passed by reference
         * \param[in] input1
         * \param[in] input2
