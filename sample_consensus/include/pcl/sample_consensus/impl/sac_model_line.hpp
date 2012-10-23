@@ -72,6 +72,13 @@ pcl::SampleConsensusModelLine<PointT>::computeModelCoefficients (
     return (false);
   }
 
+  if (fabs (input_->points[samples[0]].x - input_->points[samples[1]].x) <= std::numeric_limits<float>::epsilon () && 
+      fabs (input_->points[samples[0]].y - input_->points[samples[1]].y) <= std::numeric_limits<float>::epsilon () && 
+      fabs (input_->points[samples[0]].z - input_->points[samples[1]].z) <= std::numeric_limits<float>::epsilon ())
+  {
+    return (false);
+  }
+
   model_coefficients.resize (6);
   model_coefficients[0] = input_->points[samples[0]].x;
   model_coefficients[1] = input_->points[samples[0]].y;
