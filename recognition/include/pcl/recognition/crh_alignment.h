@@ -129,8 +129,8 @@ namespace pcl
       }
 
       /** \brief sets model and input centroids
-        * \param[in] model view centroid
-        * \param[in] input view centroid
+        * \param[in] c1 model view centroid
+        * \param[in] c2 input view centroid
         */
       void
       setInputAndTargetCentroids (Eigen::Vector3f & c1, Eigen::Vector3f & c2)
@@ -140,8 +140,8 @@ namespace pcl
       }
 
       /** \brief Computes the transformation aligning model to input
-       * \param[in] CRH histogram of the input cloud
-       * \param[in] CRH histogram of the target cloud
+       * \param[in] input_ftt CRH histogram of the input cloud
+       * \param[in] target_ftt CRH histogram of the target cloud
        */
       void
       align (pcl::PointCloud<pcl::Histogram<nbins_> > & input_ftt, pcl::PointCloud<pcl::Histogram<nbins_> > & target_ftt)
