@@ -323,7 +323,7 @@ TEST (PCL, CorrespondenceRejectorTrimmed)
 
   boost::shared_ptr<pcl::Correspondences> correspondences_result_rej_trimmed (new pcl::Correspondences);
   pcl::registration::CorrespondenceRejectorTrimmed corr_rej_trimmed;
-  corr_rej_trimmed.setOverlapRadio(rej_trimmed_overlap);
+  corr_rej_trimmed.setOverlapRatio(rej_trimmed_overlap);
   corr_rej_trimmed.setInputCorrespondences(correspondences);
   corr_rej_trimmed.getCorrespondences(*correspondences_result_rej_trimmed);
 
