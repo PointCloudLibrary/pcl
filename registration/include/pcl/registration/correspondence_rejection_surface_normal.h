@@ -100,8 +100,7 @@ namespace pcl
           data_container_.reset (new DataContainer<PointT, NormalT>);
         }
 
-        /** \brief Provide a source point cloud dataset (must contain XYZ
-          * data!), used to compute the correspondence distance.  
+        /** \brief Provide a source point cloud dataset (must contain XYZ data!), used to compute the correspondence distance.  
           * \param[in] cloud a cloud containing XYZ data
           */
         template <typename PointT> inline void 
@@ -116,8 +115,7 @@ namespace pcl
           boost::static_pointer_cast<DataContainer<PointT> > (data_container_)->setInputSource (input);
         }
 
-        /** \brief Provide a source point cloud dataset (must contain XYZ
-          * data!), used to compute the correspondence distance.  
+        /** \brief Provide a source point cloud dataset (must contain XYZ data!), used to compute the correspondence distance.  
           * \param[in] cloud a cloud containing XYZ data
           */
         template <typename PointT> inline void 
@@ -143,8 +141,7 @@ namespace pcl
           return (boost::static_pointer_cast<DataContainer<PointT> > (data_container_)->getInputSource ());
         }
 
-        /** \brief Provide a target point cloud dataset (must contain XYZ
-          * data!), used to compute the correspondence distance.  
+        /** \brief Provide a target point cloud dataset (must contain XYZ data!), used to compute the correspondence distance.  
           * \param[in] target a cloud containing XYZ data
           */
         template <typename PointT> inline void 
@@ -222,8 +219,8 @@ namespace pcl
           return (boost::static_pointer_cast<DataContainer<pcl::PointXYZ, NormalT> > (data_container_)->getTargetNormals ());
         }
 
-        /** \brief Provide a simple mechanism to update the internal source cloud
-          * using a given transformation. Used in registration loops.
+        /** \brief Provide a simple mechanism to update the internal source cloud using a given transformation.
+          * Used in registration loops.
           * \param[in] transform the transform to apply over the source cloud
           */
         virtual bool

@@ -52,7 +52,7 @@ namespace pcl
       * by a depth threshold and by a distance threshold.
       * It is not as precise as a nearest neighbor search, but it is much faster, as it avoids the usage of any additional
       * structures (i.e., kd-trees).
-      * \Note The target point cloud must be organized (no restrictions on the source) and the target point cloud must be
+      * \note The target point cloud must be organized (no restrictions on the source) and the target point cloud must be
       * given in the camera coordinate frame. Any other transformation is specified by the src_to_tgt_transformation_
       * variable.
       * \author Alex Ichim
@@ -124,7 +124,7 @@ namespace pcl
         { cx = cx_; cy = cy_; }
 
         /** \brief Sets the transformation from the source point cloud to the target point cloud.
-          * \Note The target point cloud must be in its local camera coordinates, so use this transformation to correct
+          * \note The target point cloud must be in its local camera coordinates, so use this transformation to correct
           * for that.
           * \param[in] src_to_tgt_transformation the transformation
           */
@@ -133,7 +133,7 @@ namespace pcl
         { src_to_tgt_transformation_ = src_to_tgt_transformation; }
 
         /** \brief Reads back the transformation from the source point cloud to the target point cloud.
-          * \Note The target point cloud must be in its local camera coordinates, so use this transformation to correct
+          * \note The target point cloud must be in its local camera coordinates, so use this transformation to correct
           * for that.
           * \param[out] src_to_tgt_transformation the transformation
           */
