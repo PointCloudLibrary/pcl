@@ -225,7 +225,7 @@ namespace pcl
         /** \brief The maximum nuyyGmber of iterations that the registration loop is to be executed. */
         int max_iterations_;
 
-        /** \brief Specifies if the registration fails or converges when the maximum number of iterations is reached. */
+        /** \brief Specifys if the registration fails or converges when the maximum number of iterations is reached. */
         bool failure_after_max_iter_;
 
         /** \brief The rotation threshold is the relative rotation between two iterations (as angle cosine). */
