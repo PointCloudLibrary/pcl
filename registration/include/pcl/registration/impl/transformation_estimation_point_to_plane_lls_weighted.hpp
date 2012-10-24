@@ -1,4 +1,4 @@
-/*/*
+/*
  * Software License Agreement (BSD License)
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
@@ -203,8 +203,6 @@ estimateRigidTransformation (ConstCloudIterator<PointSource>& source_it,
       ++ weights_it;
       continue;
     }
-
-    Scalar caca = *weights_it;
 
     const float & sx = source_it->x;
     const float & sy = source_it->y;
