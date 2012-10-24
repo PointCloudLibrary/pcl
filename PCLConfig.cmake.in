@@ -33,7 +33,7 @@ macro(pcl_message)
   endif(NOT PCL_FIND_QUIETLY)
 endmacro(pcl_message)
 
-# Remove duplicate libraries	
+# Remove duplicate libraries    
 macro(pcl_remove_duplicate_libraries _unfiltered_libraries _filtered_libraries)
   set(${_filtered_libraries})
   set(_debug_libraries)
@@ -476,12 +476,14 @@ foreach(component ${PCL_TO_FIND_COMPONENTS})
   
   find_path(PCL_${COMPONENT}_INCLUDE_DIR
     NAMES pcl/${component}
+          pcl/apps/${component}
           pcl/cuda/${cuda_component} pcl/cuda/${component}
           pcl/gpu/${gpu_component} pcl/gpu/${component}
     HINTS ${PCL_INCLUDE_DIRS}
           "${PCL_SOURCES_TREE}"
     PATH_SUFFIXES
           ${component}/include
+          apps/${component}/include
           cuda/${cuda_component}/include 
           gpu/${gpu_component}/include
     DOC "path to ${component} headers"
@@ -505,7 +507,7 @@ foreach(component ${PCL_TO_FIND_COMPONENTS})
       PATH)
 
     find_library(PCL_${COMPONENT}_LIBRARY_DEBUG ${pcl_component}${PCL_DEBUG_SUFFIX}
-      HINTS ${PCL_LIBRARY_DIRS}
+      HINTS ${PCL_LIBRARY_DIRS} 
       DOC "path to ${pcl_component} library debug"
       NO_DEFAULT_PATH)
     if(PCL_${COMPONENT}_LIBRARY_DEBUG)
@@ -546,7 +548,7 @@ foreach(component ${PCL_TO_FIND_COMPONENTS})
         list(APPEND PCL_${COMPONENT}_INCLUDE_DIRS ${PCL_${INT_DEP}_INCLUDE_DIRS})
         if(PCL_${INT_DEP}_LIBRARIES)
           list(APPEND PCL_${COMPONENT}_LIBRARIES "${PCL_${INT_DEP}_LIBRARIES}")
-        endif(PCL_${INT_DEP}_LIBRARIES)	
+        endif(PCL_${INT_DEP}_LIBRARIES) 
       endif(PCL_${INT_DEP}_FOUND)
     endforeach(int_dep)
   endif(PCL_${COMPONENT}_FOUND)
