@@ -434,7 +434,7 @@ list(LENGTH pcl_all_components PCL_NB_COMPONENTS)
 
 @PCLCONFIG_OPTIONAL_DEPENDENCIES@
 
-set(pcl_header_only_components 2d cuda_common gpu_tracking)
+set(pcl_header_only_components 2d cuda_common gpu_tracking modeler)
 
 include(FindPackageHandleStandardArgs)
 
