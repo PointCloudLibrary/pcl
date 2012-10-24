@@ -1494,6 +1494,7 @@ pcl::visualization::PCLVisualizer::initCameraParameters ()
   camera_.focal[0] = camera_.focal[1] = camera_.focal[2] = 0;
   camera_.pos[0] = camera_.pos[1] = 0; camera_.pos[2] = 1;
   camera_.view[0] = camera_.view[2] = 0; camera_.view[1] = 1;
+  camera_.fovy = 0.8575 / M_PI * 180.0; 
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -1516,6 +1517,8 @@ pcl::visualization::PCLVisualizer::updateCamera ()
      renderer->GetActiveCamera ()->SetFocalPoint (camera_.focal);
      renderer->GetActiveCamera ()->SetViewUp (camera_.view);
      renderer->GetActiveCamera ()->SetClippingRange (camera_.clip);
+     renderer->GetActiveCamera ()->SetUseHorizontalViewAngle (0);
+     renderer->GetActiveCamera ()->SetViewAngle (camera_.fovy);
    }
 }
 
