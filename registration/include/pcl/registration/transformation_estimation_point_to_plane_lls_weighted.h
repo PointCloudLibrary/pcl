@@ -67,8 +67,8 @@ namespace pcl
 
         typedef typename TransformationEstimation<PointSource, PointTarget, Scalar>::Matrix4 Matrix4;
         
-        TransformationEstimationPointToPlaneLLSWeighted () {};
-        virtual ~TransformationEstimationPointToPlaneLLSWeighted () {};
+        TransformationEstimationPointToPlaneLLSWeighted () { };
+        virtual ~TransformationEstimationPointToPlaneLLSWeighted () { };
 
         /** \brief Estimate a rigid rotation transformation between a source and a target point cloud using SVD.
           * \param[in] cloud_src the source point cloud dataset
@@ -79,8 +79,7 @@ namespace pcl
         estimateRigidTransformation (
             const pcl::PointCloud<PointSource> &cloud_src,
             const pcl::PointCloud<PointTarget> &cloud_tgt,
-            Matrix4 &transformation_matrix,
-            const std::vector<Scalar> &weights = std::vector<Scalar> ()) const;
+            Matrix4 &transformation_matrix) const;
 
         /** \brief Estimate a rigid rotation transformation between a source and a target point cloud using SVD.
           * \param[in] cloud_src the source point cloud dataset
@@ -93,8 +92,7 @@ namespace pcl
             const pcl::PointCloud<PointSource> &cloud_src,
             const std::vector<int> &indices_src,
             const pcl::PointCloud<PointTarget> &cloud_tgt,
-            Matrix4 &transformation_matrix,
-            const std::vector<Scalar> &weights = std::vector<Scalar> ()) const;
+            Matrix4 &transformation_matrix) const;
 
         /** \brief Estimate a rigid rotation transformation between a source and a target point cloud using SVD.
           * \param[in] cloud_src the source point cloud dataset
@@ -109,8 +107,7 @@ namespace pcl
             const std::vector<int> &indices_src,
             const pcl::PointCloud<PointTarget> &cloud_tgt,
             const std::vector<int> &indices_tgt,
-            Matrix4 &transformation_matrix,
-            const std::vector<Scalar> &weights = std::vector<Scalar> ()) const;
+            Matrix4 &transformation_matrix) const;
 
         /** \brief Estimate a rigid rotation transformation between a source and a target point cloud using SVD.
           * \param[in] cloud_src the source point cloud dataset
@@ -124,6 +121,14 @@ namespace pcl
             const pcl::PointCloud<PointTarget> &cloud_tgt,
             const pcl::Correspondences &correspondences,
             Matrix4 &transformation_matrix) const;
+
+
+        /** \brief Set the weights for the correspondences.
+          * \param[in] weights the weights for each correspondence
+          */
+        inline void
+        setCorrespondenceWeights (const std::vector<Scalar> &weights)
+        { weights_ = weights; }
 
       protected:
         
@@ -152,6 +157,7 @@ namespace pcl
                                        const double & tx,    const double & ty,   const double & tz,
                                        Matrix4 &transformation_matrix) const;
 
+        std::vector<Scalar> weights_;
     };
   }
 }

@@ -45,8 +45,7 @@ template <typename PointSource, typename PointTarget, typename Scalar> inline vo
 pcl::registration::TransformationEstimationPointToPlaneLLSWeighted<PointSource, PointTarget, Scalar>::
 estimateRigidTransformation (const pcl::PointCloud<PointSource> &cloud_src,
                              const pcl::PointCloud<PointTarget> &cloud_tgt,
-                             Matrix4 &transformation_matrix,
-                             const std::vector<Scalar> &weights) const
+                             Matrix4 &transformation_matrix) const
 {
   size_t nr_points = cloud_src.points.size ();
   if (cloud_tgt.points.size () != nr_points)
@@ -55,9 +54,15 @@ estimateRigidTransformation (const pcl::PointCloud<PointSource> &cloud_src,
     return;
   }
 
+  if (weights_.size () != nr_points)
+  {
+    PCL_ERROR ("[pcl::TransformationEstimationPointToPlaneLLSWeighted::estimateRigidTransformation] Number or weights from the number of correspondences! Use setWeights () to set them.\n");
+    return;
+  }
+
   ConstCloudIterator<PointSource> source_it (cloud_src);
   ConstCloudIterator<PointTarget> target_it (cloud_tgt);
-  typename std::vector<Scalar>::const_iterator weights_it = weights.begin ();
+  typename std::vector<Scalar>::const_iterator weights_it = weights_.begin ();
   estimateRigidTransformation (source_it, target_it, weights_it, transformation_matrix);
 }
 
@@ -67,8 +72,7 @@ pcl::registration::TransformationEstimationPointToPlaneLLSWeighted<PointSource, 
 estimateRigidTransformation (const pcl::PointCloud<PointSource> &cloud_src,
                              const std::vector<int> &indices_src,
                              const pcl::PointCloud<PointTarget> &cloud_tgt,
-                             Matrix4 &transformation_matrix,
-                             const std::vector<Scalar> &weights) const
+                             Matrix4 &transformation_matrix) const
 {
   size_t nr_points = indices_src.size ();
   if (cloud_tgt.points.size () != nr_points)
@@ -77,9 +81,16 @@ estimateRigidTransformation (const pcl::PointCloud<PointSource> &cloud_src,
     return;
   }
 
+  if (weights_.size () != nr_points)
+  {
+    PCL_ERROR ("[pcl::TransformationEstimationPointToPlaneLLSWeighted::estimateRigidTransformation] Number or weights from the number of correspondences! Use setWeights () to set them.\n");
+    return;
+  }
+
+
   ConstCloudIterator<PointSource> source_it (cloud_src, indices_src);
   ConstCloudIterator<PointTarget> target_it (cloud_tgt);
-  typename std::vector<Scalar>::const_iterator weights_it = weights.begin ();
+  typename std::vector<Scalar>::const_iterator weights_it = weights_.begin ();
   estimateRigidTransformation (source_it, target_it, weights_it, transformation_matrix);
 }
 
@@ -91,8 +102,7 @@ estimateRigidTransformation (const pcl::PointCloud<PointSource> &cloud_src,
                              const std::vector<int> &indices_src,
                              const pcl::PointCloud<PointTarget> &cloud_tgt,
                              const std::vector<int> &indices_tgt,
-                             Matrix4 &transformation_matrix,
-                             const std::vector<Scalar> &weights) const
+                             Matrix4 &transformation_matrix) const
 {
   size_t nr_points = indices_src.size ();
   if (indices_tgt.size () != nr_points)
@@ -101,9 +111,15 @@ estimateRigidTransformation (const pcl::PointCloud<PointSource> &cloud_src,
     return;
   }
 
+  if (weights_.size () != nr_points)
+  {
+    PCL_ERROR ("[pcl::TransformationEstimationPointToPlaneLLSWeighted::estimateRigidTransformation] Number or weights from the number of correspondences! Use setWeights () to set them.\n");
+    return;
+  }
+
   ConstCloudIterator<PointSource> source_it (cloud_src, indices_src);
   ConstCloudIterator<PointTarget> target_it (cloud_tgt, indices_tgt);
-  typename std::vector<Scalar>::const_iterator weights_it = weights.begin ();
+  typename std::vector<Scalar>::const_iterator weights_it = weights_.begin ();
   estimateRigidTransformation (source_it, target_it, weights_it, transformation_matrix);
 }
 
@@ -167,7 +183,7 @@ estimateRigidTransformation (ConstCloudIterator<PointSource>& source_it,
   ATA.setZero ();
   ATb.setZero ();
 
-  while (source_it.isValid () && target_it.isValid () && weights_it.isValid ())
+  while (source_it.isValid () && target_it.isValid ())
   {
     if (!pcl_isfinite (source_it->x) ||
         !pcl_isfinite (source_it->y) ||
