@@ -79,6 +79,9 @@ namespace pcl
 
         void
         adjustCamera (vtkImageData *image, vtkRenderer *ren);
+
+        void
+        adjustCamera (vtkRenderer *ren);
     };
 
     /** \brief ImageViewer is a class for 2D image visualization.

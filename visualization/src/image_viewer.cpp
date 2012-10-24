@@ -94,10 +94,12 @@ pcl::visualization::ImageViewer::ImageViewer (const std::string& window_title)
   image_viewer_->GetRenderWindow ()->SetWindowName (window_title.c_str ());
   image_viewer_->GetRenderWindow ()->DoubleBufferOn ();
   image_viewer_->GetRenderWindow ()->EraseOff ();
+  image_viewer_->GetRenderWindow ()->SetSize (640, 480);
   ren_ = image_viewer_->GetRenderer ();
   win_ = image_viewer_->GetRenderWindow ();
   interactor_ = win_->GetInteractor ();
 #else
+  win_->SetSize (640, 480);
   win_->AddRenderer (ren_);
   win_->SetWindowName (window_title.c_str ());
   interactor_->SetRenderWindow (win_);
@@ -135,6 +137,8 @@ pcl::visualization::ImageViewer::ImageViewer (const std::string& window_title)
   ren_->ResetCameraClippingRange ();
 #endif
   resetStoppedFlag ();
+    
+  PCL_DEBUG ("[pcl::visualization::ImageViewer] VTK version found: %d.%d\n", VTK_MAJOR_VERSION, VTK_MINOR_VERSION);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -403,7 +407,7 @@ pcl::visualization::ImageViewer::spin ()
   render ();
   resetStoppedFlag ();
   // Render the window before we start the interactor
-  interactor_->Render ();
+  //interactor_->Render ();
   interactor_->Start ();
 }
 
@@ -414,7 +418,7 @@ pcl::visualization::ImageViewer::spinOnce (int time, bool force_redraw)
   if (force_redraw)
   {
     render ();
-    interactor_->Render ();
+    //interactor_->Render ();
   }
 
   if (time <= 0)
@@ -581,7 +585,7 @@ pcl::visualization::ImageViewer::createLayer (
   l.canvas->SetNumberOfScalarComponents (4);
   if (fill_box)
   {
-    l.canvas->SetDrawColor (0.0, 0.0, 0.0, 0.0);
+    l.canvas->SetDrawColor (0.0, 0.0, 0.0, opacity * 255.0);
     l.canvas->FillBox (0, width, 0, height);
     l.canvas->Update ();
     l.canvas->Modified ();
@@ -599,6 +603,8 @@ pcl::visualization::ImageViewer::createLayer (
     PCL_DEBUG ("[pcl::visualization::ImageViewer::createLayer] Global actor not found. Creating a new one (layer ID='%s').\n", layer_id.c_str ());
     ren_->AddViewProp (slice_);
   }
+#else
+  image_viewer_->SetInputConnection (blend_->GetOutputPort ());
 #endif
 
   // Add another element
@@ -642,16 +648,40 @@ pcl::visualization::ImageViewer::removeLayer (const std::string &layer_id)
 
   // Clear the blender
   blend_->RemoveAllInputs ();
-  // Add the remaining layers back to the blender
-  for (size_t i = 0; i < layer_map_.size (); ++i)
+
+  // Add one empty black layer
+  unsigned width  = unsigned (getSize ()[0]);
+  unsigned height = unsigned (getSize ()[1]);
+  // Create a new layer
+  vtkSmartPointer<PCLImageCanvasSource2D> canvas = vtkSmartPointer<PCLImageCanvasSource2D>::New ();
+  canvas->SetScalarTypeToUnsignedChar ();
+  canvas->SetExtent (0, width, 0, height, 0, 0);
+  canvas->SetNumberOfScalarComponents (4);
+  canvas->SetDrawColor (0.0, 0.0, 0.0, 255.0);
+  canvas->FillBox (0, width, 0, height);
+  canvas->Update ();
+  canvas->Modified ();
+  blend_->AddInputConnection (canvas->GetOutputPort ());
+  blend_->SetOpacity (blend_->GetNumberOfInputs () - 1, 1.0);
+
+  if (layer_map_.size () > 0)
   {
-    blend_->AddInputConnection (layer_map_[i].canvas->GetOutputPort ());
-    blend_->SetOpacity (blend_->GetNumberOfInputs () - 1, layer_map_[i].opacity);
+    // Add the remaining layers back to the blender
+    for (size_t i = 0; i < layer_map_.size (); ++i)
+    {
+      blend_->AddInputConnection (layer_map_[i].canvas->GetOutputPort ());
+      blend_->SetOpacity (blend_->GetNumberOfInputs () - 1, layer_map_[i].opacity);
+    }
   }
+  blend_->Modified ();
+  blend_->Update ();
+
 #if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION >= 10))
   slice_->GetMapper ()->SetInput (blend_->GetOutput ());
+  slice_->GetMapper ()->Modified ();
 #else
   image_viewer_->SetInputConnection (blend_->GetOutputPort ());
+  image_viewer_->Modified ();
 #endif
 }
 
@@ -667,6 +697,9 @@ pcl::visualization::ImageViewer::addCircle (
   {
     PCL_DEBUG ("[pcl::visualization::ImageViewer::addCircle] No layer with ID='%s' found. Creating new one...\n", layer_id.c_str ());
     am_it = createLayer (layer_id, getSize ()[0] - 1, getSize ()[1] - 1, opacity, true);
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION >= 10))
+    interactor_style_->adjustCamera (ren_);
+#endif
   }
 
   am_it->canvas->SetDrawColor (r * 255.0, g * 255.0, b * 255.0, opacity * 255.0);
@@ -690,6 +723,9 @@ pcl::visualization::ImageViewer::addCircle (unsigned int x, unsigned int y, doub
   {
     PCL_DEBUG ("[pcl::visualization::ImageViewer::addCircle] No layer with ID='%s' found. Creating new one...\n", layer_id.c_str ());
     am_it = createLayer (layer_id, getSize ()[0] - 1, getSize ()[1] - 1, opacity, true);
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION >= 10))
+    interactor_style_->adjustCamera (ren_);
+#endif
   }
 
   am_it->canvas->SetDrawColor (0.0, 255.0, 0.0, opacity * 255.0);
@@ -714,13 +750,16 @@ pcl::visualization::ImageViewer::addFilledRectangle (
   {
     PCL_DEBUG ("[pcl::visualization::ImageViewer::addFilledRectangle] No layer with ID='%s' found. Creating new one...\n", layer_id.c_str ());
     am_it = createLayer (layer_id, getSize ()[0] - 1, getSize ()[1] - 1, opacity, true);
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION >= 10))
+    interactor_style_->adjustCamera (ren_);
+#endif
   }
 
   am_it->canvas->SetDrawColor (r * 255.0, g * 255.0, b * 255.0, opacity * 255.0);
 #if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION >= 10))
   am_it->canvas->FillBox (x_min, x_max, y_min, y_max);
 #else
-  am_it->canvas->FillBox (x_min, getSize ()[1] - x_max, y_min, getSize ()[1] - y_max);
+  am_it->canvas->FillBox (x_min, x_max, getSize ()[1] - y_max, getSize ()[1] - y_min);
 #endif
 
   return (true);
@@ -738,13 +777,16 @@ pcl::visualization::ImageViewer::addFilledRectangle (
   {
     PCL_DEBUG ("[pcl::visualization::ImageViewer::addFilledRectangle] No layer with ID='%s' found. Creating new one...\n", layer_id.c_str ());
     am_it = createLayer (layer_id, getSize ()[0] - 1, getSize ()[1] - 1, opacity, true);
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION >= 10))
+    interactor_style_->adjustCamera (ren_);
+#endif
   }
 
   am_it->canvas->SetDrawColor (0.0, 255.0, 0.0, opacity * 255.0);
 #if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION >= 10))
   am_it->canvas->FillBox (x_min, x_max, y_min, y_max);
 #else
-  am_it->canvas->FillBox (x_min, getSize ()[1] - x_max, y_min, getSize ()[1] - y_max);
+  am_it->canvas->FillBox (x_min, x_max, getSize ()[1] - y_max, getSize ()[1] - y_min);
 #endif
 
   return (true);
@@ -762,6 +804,9 @@ pcl::visualization::ImageViewer::addRectangle (
   {
     PCL_DEBUG ("[pcl::visualization::ImageViewer::addRectangle] No layer with ID='%s' found. Creating new one...\n", layer_id.c_str ());
     am_it = createLayer (layer_id, getSize ()[0] - 1, getSize ()[1] - 1, opacity, true);
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION >= 10))
+    interactor_style_->adjustCamera (ren_);
+#endif
   }
 
   am_it->canvas->SetDrawColor (r * 255.0, g * 255.0, b * 255.0, opacity * 255.0);
@@ -792,6 +837,9 @@ pcl::visualization::ImageViewer::addRectangle (
   {
     PCL_DEBUG ("[pcl::visualization::ImageViewer::addRectangle] No layer with ID='%s' found. Creating new one...\n", layer_id.c_str ());
     am_it = createLayer (layer_id, getSize ()[0] - 1, getSize ()[1] - 1, opacity, true);
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION >= 10))
+    interactor_style_->adjustCamera (ren_);
+#endif
   }
 
   am_it->canvas->SetDrawColor (0.0, 255.0, 0.0, opacity * 255.0);
@@ -822,6 +870,9 @@ pcl::visualization::ImageViewer::addRectangle (
   {
     PCL_DEBUG ("[pcl::visualization::ImageViewer::addRectangle] No layer with ID='%s' found. Creating new one...\n", layer_id.c_str ());
     am_it = createLayer (layer_id, getSize ()[0] - 1, getSize ()[1] - 1, opacity, true);
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION >= 10))
+    interactor_style_->adjustCamera (ren_);
+#endif
   }
 
   am_it->canvas->SetDrawColor (r * 255.0, g * 255.0, b * 255.0, opacity * 255.0);
@@ -831,10 +882,10 @@ pcl::visualization::ImageViewer::addRectangle (
   am_it->canvas->DrawSegment (int (max_pt.x), int (max_pt.y), int (max_pt.x), int (min_pt.y));
   am_it->canvas->DrawSegment (int (max_pt.x), int (min_pt.y), int (min_pt.x), int (min_pt.y));
 #else
-  am_it->canvas->DrawSegment (int (min_pt.x), getSize ()[1] - int (min_pt.y), int (min_pt.x), getSize ()[1] - int (max_pt.y));
-  am_it->canvas->DrawSegment (int (min_pt.x), getSize ()[1] - int (max_pt.y), int (max_pt.x), getSize ()[1] - int (max_pt.y));
-  am_it->canvas->DrawSegment (int (max_pt.x), getSize ()[1] - int (max_pt.y), int (max_pt.x), getSize ()[1] - int (min_pt.y));
-  am_it->canvas->DrawSegment (int (max_pt.x), getSize ()[1] - int (min_pt.y), int (min_pt.x), getSize ()[1] - int (min_pt.y));
+  am_it->canvas->DrawSegment (int (min_pt.x), getSize ()[1] - int (max_pt.y), int (min_pt.x), getSize ()[1] - int (min_pt.y));
+  am_it->canvas->DrawSegment (int (min_pt.x), getSize ()[1] - int (min_pt.y), int (max_pt.x), getSize ()[1] - int (min_pt.y));
+  am_it->canvas->DrawSegment (int (max_pt.x), getSize ()[1] - int (min_pt.y), int (max_pt.x), getSize ()[1] - int (max_pt.y));
+  am_it->canvas->DrawSegment (int (max_pt.x), getSize ()[1] - int (max_pt.y), int (min_pt.x), getSize ()[1] - int (max_pt.y));
 #endif
 
   return (true);
@@ -852,6 +903,9 @@ pcl::visualization::ImageViewer::addRectangle (
   {
     PCL_DEBUG ("[pcl::visualization::ImageViewer::addRectangle] No layer with ID='%s' found. Creating new one...\n", layer_id.c_str ());
     am_it = createLayer (layer_id, getSize ()[0] - 1, getSize ()[1] - 1, opacity, true);
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION >= 10))
+    interactor_style_->adjustCamera (ren_);
+#endif
   }
 
   am_it->canvas->SetDrawColor (0.0, 255.0, 0.0, opacity * 255.0);
@@ -861,10 +915,10 @@ pcl::visualization::ImageViewer::addRectangle (
   am_it->canvas->DrawSegment (int (max_pt.x), int (max_pt.y), int (max_pt.x), int (min_pt.y));
   am_it->canvas->DrawSegment (int (max_pt.x), int (min_pt.y), int (min_pt.x), int (min_pt.y));
 #else
-  am_it->canvas->DrawSegment (int (min_pt.x), getSize ()[1] - int (min_pt.y), int (min_pt.x), getSize ()[1] - int (max_pt.y));
-  am_it->canvas->DrawSegment (int (min_pt.x), getSize ()[1] - int (max_pt.y), int (max_pt.x), getSize ()[1] - int (max_pt.y));
-  am_it->canvas->DrawSegment (int (max_pt.x), getSize ()[1] - int (max_pt.y), int (max_pt.x), getSize ()[1] - int (min_pt.y));
-  am_it->canvas->DrawSegment (int (max_pt.x), getSize ()[1] - int (min_pt.y), int (min_pt.x), getSize ()[1] - int (min_pt.y));
+  am_it->canvas->DrawSegment (int (min_pt.x), getSize ()[1] - int (max_pt.y), int (min_pt.x), getSize ()[1] - int (min_pt.y));
+  am_it->canvas->DrawSegment (int (min_pt.x), getSize ()[1] - int (min_pt.y), int (max_pt.x), getSize ()[1] - int (min_pt.y));
+  am_it->canvas->DrawSegment (int (max_pt.x), getSize ()[1] - int (min_pt.y), int (max_pt.x), getSize ()[1] - int (max_pt.y));
+  am_it->canvas->DrawSegment (int (max_pt.x), getSize ()[1] - int (max_pt.y), int (min_pt.x), getSize ()[1] - int (max_pt.y));
 #endif
 
   return (true);
@@ -882,6 +936,9 @@ pcl::visualization::ImageViewer::addLine (unsigned int x_min, unsigned int y_min
   {
     PCL_DEBUG ("[pcl::visualization::ImageViewer::addLine] No layer with ID='%s' found. Creating new one...\n", layer_id.c_str ());
     am_it = createLayer (layer_id, getSize ()[0] - 1, getSize ()[1] - 1, opacity, true);
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION >= 10))
+    interactor_style_->adjustCamera (ren_);
+#endif
   }
 
   am_it->canvas->SetDrawColor (0.0, 255.0, 0.0, opacity * 255.0);
@@ -907,6 +964,9 @@ pcl::visualization::ImageViewer::addLine (unsigned int x_min, unsigned int y_min
   {
     PCL_DEBUG ("[pcl::visualization::ImageViewer::addLine] No layer with ID='%s' found. Creating new one...\n", layer_id.c_str ());
     am_it = createLayer (layer_id, getSize ()[0] - 1, getSize ()[1] - 1, opacity, true);
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION >= 10))
+    interactor_style_->adjustCamera (ren_);
+#endif
   }
 
   am_it->canvas->SetDrawColor (r * 255.0, g * 255.0, b * 255.0, opacity * 255.0);
@@ -930,6 +990,9 @@ pcl::visualization::ImageViewer::markPoint (
   {
     PCL_DEBUG ("[pcl::visualization::ImageViewer::markPoint] No layer with ID='%s' found. Creating new one...\n", layer_id.c_str ());
     am_it = createLayer (layer_id, getSize ()[0] - 1, getSize ()[1] - 1, opacity, true);
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION >= 10))
+    interactor_style_->adjustCamera (ren_);
+#endif
   }
 
   am_it->canvas->SetDrawColor (fg_color[0], fg_color[1], fg_color[2], opacity * 255.0);
@@ -950,10 +1013,10 @@ pcl::visualization::ImageViewer::markPoint (
 void
 pcl::visualization::ImageViewer::render ()
 {
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION >= 10))
-  win_->Render ();
-#else
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION < 10))
   image_viewer_->Render ();
+#else
+  win_->Render ();
 #endif
 }
 
@@ -1047,6 +1110,22 @@ pcl::visualization::ImageViewerInteractorStyle::adjustCamera (
   double yc = origin[1] + 0.5 * (extent[2] + extent[3]) * spacing[1];
   double yd = (extent[3] - extent[2] + 1) * spacing[1];
   double d = camera->GetDistance ();
+  camera->SetParallelScale (0.5 * yd);
+  camera->SetFocalPoint (xc, yc, 0.0);
+  camera->SetPosition (xc, yc, d);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::visualization::ImageViewerInteractorStyle::adjustCamera (vtkRenderer *ren)
+{
+  // Set up the background camera to fill the renderer with the image
+  vtkCamera* camera = ren->GetActiveCamera ();
+  int *wh = ren->GetRenderWindow ()->GetSize ();
+  double xc = static_cast<double> (wh[0]) / 2.0,
+         yc = static_cast<double> (wh[1]) / 2.0,
+         yd = static_cast<double> (wh[1]),
+         d = 3.346065;
   camera->SetParallelScale (0.5 * yd);
   camera->SetFocalPoint (xc, yc, 0.0);
   camera->SetPosition (xc, yc, d);
