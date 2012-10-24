@@ -134,7 +134,7 @@ estimateRigidTransformation (const pcl::PointCloud<PointSource> &cloud_src,
   ConstCloudIterator<PointSource> source_it (cloud_src, correspondences, true);
   ConstCloudIterator<PointTarget> target_it (cloud_tgt, correspondences, false);
   std::vector<Scalar> weights (correspondences.size ());
-  for (size_t i = 0; correspondences.size (); ++i)
+  for (size_t i = 0; i < correspondences.size (); ++i)
     weights[i] = correspondences[i].weight;
   typename std::vector<Scalar>::const_iterator weights_it = weights.begin ();
   estimateRigidTransformation (source_it, target_it, weights_it, transformation_matrix);
@@ -173,8 +173,6 @@ estimateRigidTransformation (ConstCloudIterator<PointSource>& source_it,
                              typename std::vector<Scalar>::const_iterator& weights_it,
                              Matrix4 &transformation_matrix) const
 {
-  PCL_INFO ("Using weighted correspondences in transformation estimation\n");
-
   typedef Eigen::Matrix<double, 6, 1> Vector6d;
   typedef Eigen::Matrix<double, 6, 6> Matrix6d;
 
