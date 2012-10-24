@@ -63,8 +63,7 @@ template <typename PointSource, typename PointTarget, typename MatScalar> void
 pcl::registration::TransformationEstimationLM<PointSource, PointTarget, MatScalar>::estimateRigidTransformation (
     const pcl::PointCloud<PointSource> &cloud_src,
     const pcl::PointCloud<PointTarget> &cloud_tgt,
-    Matrix4 &transformation_matrix,
-    const std::vector<MatScalar> &) const
+    Matrix4 &transformation_matrix) const
 {
 
   // <cloud_src,cloud_src> is the source dataset
@@ -119,8 +118,7 @@ pcl::registration::TransformationEstimationLM<PointSource, PointTarget, MatScala
     const pcl::PointCloud<PointSource> &cloud_src,
     const std::vector<int> &indices_src,
     const pcl::PointCloud<PointTarget> &cloud_tgt,
-    Matrix4 &transformation_matrix,
-    const std::vector<MatScalar> &) const
+    Matrix4 &transformation_matrix) const
 {
   if (indices_src.size () != cloud_tgt.points.size ())
   {
@@ -147,8 +145,7 @@ pcl::registration::TransformationEstimationLM<PointSource, PointTarget, MatScala
     const std::vector<int> &indices_src,
     const pcl::PointCloud<PointTarget> &cloud_tgt,
     const std::vector<int> &indices_tgt,
-    Matrix4 &transformation_matrix,
-    const std::vector<MatScalar> &) const
+    Matrix4 &transformation_matrix) const
 {
   if (indices_src.size () != indices_tgt.size ())
   {

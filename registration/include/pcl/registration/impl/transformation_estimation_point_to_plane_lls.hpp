@@ -45,8 +45,7 @@ template <typename PointSource, typename PointTarget, typename Scalar> inline vo
 pcl::registration::TransformationEstimationPointToPlaneLLS<PointSource, PointTarget, Scalar>::
 estimateRigidTransformation (const pcl::PointCloud<PointSource> &cloud_src,
                              const pcl::PointCloud<PointTarget> &cloud_tgt,
-                             Matrix4 &transformation_matrix,
-                             const std::vector<Scalar> &) const
+                             Matrix4 &transformation_matrix) const
 {
   size_t nr_points = cloud_src.points.size ();
   if (cloud_tgt.points.size () != nr_points)
@@ -66,8 +65,7 @@ pcl::registration::TransformationEstimationPointToPlaneLLS<PointSource, PointTar
 estimateRigidTransformation (const pcl::PointCloud<PointSource> &cloud_src,
                              const std::vector<int> &indices_src,
                              const pcl::PointCloud<PointTarget> &cloud_tgt,
-                             Matrix4 &transformation_matrix,
-                             const std::vector<Scalar> &) const
+                             Matrix4 &transformation_matrix) const
 {
   size_t nr_points = indices_src.size ();
   if (cloud_tgt.points.size () != nr_points)
@@ -89,8 +87,7 @@ estimateRigidTransformation (const pcl::PointCloud<PointSource> &cloud_src,
                              const std::vector<int> &indices_src,
                              const pcl::PointCloud<PointTarget> &cloud_tgt,
                              const std::vector<int> &indices_tgt,
-                             Matrix4 &transformation_matrix,
-                             const std::vector<Scalar> &) const
+                             Matrix4 &transformation_matrix) const
 {
   size_t nr_points = indices_src.size ();
   if (indices_tgt.size () != nr_points)
