@@ -2,8 +2,7 @@
  * Software License Agreement (BSD License)
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
- *  Copyright (c) 2010-2011, Willow Garage, Inc.
- *  Copyright (c) 2012-, Open Perception, Inc.
+ *  Copyright (c) 2012-, Open Perception Inc.
  *
  *  All rights reserved.
  *
@@ -34,39 +33,41 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id$
  *
  */
-#ifndef PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_SVD_H_
-#define PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_SVD_H_
+#ifndef PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_2D_H_
+#define PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_2D_H_
 
 #include <pcl/registration/transformation_estimation.h>
-#include <pcl/cloud_iterator.h>
 
 namespace pcl
 {
   namespace registration
   {
-    /** @b TransformationEstimationSVD implements SVD-based estimation of
-      * the transformation aligning the given correspondences.
+    /** @b TransformationEstimation2D implements a simple 2D rigid transformation 
+      * estimation (x, y, theta) for a given pair of datasets. 
+      *
+      * The two datasets should already be transformed so that the reference plane 
+      * equals z = 0.
       *
       * \note The class is templated on the source and target point types as well as on the output scalar of the transformation matrix (i.e., float or double). Default: float.
-      * \author Dirk Holz, Radu B. Rusu
+      *
+      * \author Suat Gedikli
       * \ingroup registration
       */
     template <typename PointSource, typename PointTarget, typename Scalar = float>
-    class TransformationEstimationSVD : public TransformationEstimation<PointSource, PointTarget, Scalar>
+    class TransformationEstimation2D : public TransformationEstimation<PointSource, PointTarget, Scalar>
     {
       public:
-        typedef boost::shared_ptr<TransformationEstimationSVD<PointSource, PointTarget, Scalar> > Ptr;
-        typedef boost::shared_ptr<const TransformationEstimationSVD<PointSource, PointTarget, Scalar> > ConstPtr;
+        typedef boost::shared_ptr<TransformationEstimation2D<PointSource, PointTarget, Scalar> > Ptr;
+        typedef boost::shared_ptr<const TransformationEstimation2D<PointSource, PointTarget, Scalar> > ConstPtr;
 
         typedef typename TransformationEstimation<PointSource, PointTarget, Scalar>::Matrix4 Matrix4;
 
-        TransformationEstimationSVD () {};
-        virtual ~TransformationEstimationSVD () {};
+        TransformationEstimation2D () {};
+        virtual ~TransformationEstimation2D () {};
 
-        /** \brief Estimate a rigid rotation transformation between a source and a target point cloud using SVD.
+        /** \brief Estimate a rigid transformation between a source and a target point cloud in 2D.
           * \param[in] cloud_src the source point cloud dataset
           * \param[in] cloud_tgt the target point cloud dataset
           * \param[out] transformation_matrix the resultant transformation matrix
@@ -77,7 +78,7 @@ namespace pcl
             const pcl::PointCloud<PointTarget> &cloud_tgt,
             Matrix4 &transformation_matrix) const;
 
-        /** \brief Estimate a rigid rotation transformation between a source and a target point cloud using SVD.
+        /** \brief Estimate a rigid transformation between a source and a target point cloud in 2D.
           * \param[in] cloud_src the source point cloud dataset
           * \param[in] indices_src the vector of indices describing the points of interest in \a cloud_src
           * \param[in] cloud_tgt the target point cloud dataset
@@ -90,14 +91,14 @@ namespace pcl
             const pcl::PointCloud<PointTarget> &cloud_tgt,
             Matrix4 &transformation_matrix) const;
 
-        /** \brief Estimate a rigid rotation transformation between a source and a target point cloud using SVD.
+        /** \brief Estimate a rigid transformation between a source and a target point cloud in 2D.
           * \param[in] cloud_src the source point cloud dataset
           * \param[in] indices_src the vector of indices describing the points of interest in \a cloud_src
           * \param[in] cloud_tgt the target point cloud dataset
           * \param[in] indices_tgt the vector of indices describing the correspondences of the interst points from \a indices_src
           * \param[out] transformation_matrix the resultant transformation matrix
           */
-        inline void
+        virtual void
         estimateRigidTransformation (
             const pcl::PointCloud<PointSource> &cloud_src,
             const std::vector<int> &indices_src,
@@ -105,13 +106,13 @@ namespace pcl
             const std::vector<int> &indices_tgt,
             Matrix4 &transformation_matrix) const;
 
-        /** \brief Estimate a rigid rotation transformation between a source and a target point cloud using SVD.
+        /** \brief Estimate a rigid transformation between a source and a target point cloud in 2D.
           * \param[in] cloud_src the source point cloud dataset
           * \param[in] cloud_tgt the target point cloud dataset
           * \param[in] correspondences the vector of correspondences between source and target point cloud
           * \param[out] transformation_matrix the resultant transformation matrix
           */
-        void
+        virtual void
         estimateRigidTransformation (
             const pcl::PointCloud<PointSource> &cloud_src,
             const pcl::PointCloud<PointTarget> &cloud_tgt,
@@ -136,7 +137,7 @@ namespace pcl
           * \param[in] cloud_tgt_demean the input target cloud, demeaned, in Eigen format
           * \param[in] centroid_tgt the input target cloud, in Eigen format
           * \param[out] transformation_matrix the resultant 4x4 rigid transformation matrix
-          */
+          */ 
         void
         getTransformationFromCorrelation (
             const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> &cloud_src_demean,
@@ -144,11 +145,11 @@ namespace pcl
             const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> &cloud_tgt_demean,
             const Eigen::Matrix<Scalar, 4, 1> &centroid_tgt,
             Matrix4 &transformation_matrix) const;
-     };
+    };
 
   }
 }
 
-#include <pcl/registration/impl/transformation_estimation_svd.hpp>
+#include <pcl/registration/impl/transformation_estimation_2D.hpp>
 
-#endif /* PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_SVD_H_ */
+#endif /* PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_2D_H_ */

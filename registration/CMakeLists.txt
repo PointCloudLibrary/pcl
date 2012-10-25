@@ -44,6 +44,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/registration.h
         include/pcl/${SUBSYS_NAME}/transforms.h
         include/pcl/${SUBSYS_NAME}/transformation_estimation.h
+        include/pcl/${SUBSYS_NAME}/transformation_estimation_2D.h
         include/pcl/${SUBSYS_NAME}/transformation_estimation_svd.h
         include/pcl/${SUBSYS_NAME}/transformation_estimation_svd_scale.h
         include/pcl/${SUBSYS_NAME}/transformation_estimation_lm.h
@@ -87,6 +88,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/ppf_registration.hpp
         include/pcl/${SUBSYS_NAME}/impl/pyramid_feature_matching.hpp
         include/pcl/${SUBSYS_NAME}/impl/registration.hpp
+        include/pcl/${SUBSYS_NAME}/impl/transformation_estimation_2D.hpp
         include/pcl/${SUBSYS_NAME}/impl/transformation_estimation_svd.hpp
         include/pcl/${SUBSYS_NAME}/impl/transformation_estimation_svd_scale.hpp
         include/pcl/${SUBSYS_NAME}/impl/transformation_estimation_lm.hpp
@@ -122,6 +124,7 @@ if(build)
         src/lum.cpp
         src/ndt.cpp
         src/ndt_2d.cpp
+        src/transformation_estimation_2D.cpp
         src/transformation_estimation_svd.cpp
         src/transformation_estimation_svd_scale.cpp
         src/transformation_estimation_lm.cpp
