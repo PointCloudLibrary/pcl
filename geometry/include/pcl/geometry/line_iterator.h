@@ -41,7 +41,7 @@ namespace pcl
 {
 /** \brief Organized Index Iterator for iterating over the "pixels" for a given line using the Bresenham algorithm.
   * Supports 4 and 8 neighborhood connectivity
-  * \note iterator does not visit the given end-point (by purpose).
+  * \note iterator does not visit the given end-point (on purpose).
   * \author Suat Gedikli <gedikli@willowgarage.com>
   * \ingroup  geometry
   */
