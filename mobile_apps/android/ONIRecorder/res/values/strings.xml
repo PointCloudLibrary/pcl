@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">OpenNI Recorder</string>
+    <string name="app_name">OpenNI (ONI) Recorder</string>
     <string name="caption_color">Color</string>
     <string name="caption_depth">Depth</string>
     <string name="status_loading">Loading…</string>
