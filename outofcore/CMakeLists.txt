@@ -28,9 +28,13 @@ if(build)
 	include/pcl/${SUBSYS_NAME}/octree_abstract_node_container.h
 	include/pcl/${SUBSYS_NAME}/octree_disk_container.h
 	include/pcl/${SUBSYS_NAME}/octree_ram_container.h
+	include/pcl/${SUBSYS_NAME}/outofcore.h
+	include/pcl/${SUBSYS_NAME}/outofcore_impl.h
+	include/pcl/${SUBSYS_NAME}/OutofcoreOctreeBase.h
         )
 
     set(impl_incs
+	include/pcl/${SUBSYS_NAME}/impl/OutofcoreIteratorBase.hpp
 	include/pcl/${SUBSYS_NAME}/impl/OutofcoreDepthFirstIterator.hpp
         include/pcl/${SUBSYS_NAME}/impl/octree_base.hpp
         include/pcl/${SUBSYS_NAME}/impl/octree_base_node.hpp
