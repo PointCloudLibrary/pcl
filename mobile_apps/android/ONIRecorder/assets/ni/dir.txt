@@ -1,2 +1,3 @@
 data/GlobalDefaultsKinect.ini
+data/GlobalDefaultsAsus.ini
 data/GlobalDefaults.ini
