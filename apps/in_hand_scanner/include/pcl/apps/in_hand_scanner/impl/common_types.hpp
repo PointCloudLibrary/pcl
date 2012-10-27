@@ -62,7 +62,8 @@ namespace pcl
           r        (0),
           a        (255),
           weight   (0.f),
-          age      (0)
+          age      (0),
+          visconf  ()
       {
         data[3]   = 1.f;
         data_n[3] = 0.f;
@@ -76,7 +77,8 @@ namespace pcl
           normal_x (nx), normal_y (ny), normal_z (nz),
           b        ( b), g        ( g), r        ( r), a (255),
           weight   (weight),
-          age      (0)
+          age      (0),
+          visconf  ()
       {
         data[3]   = 1.f;
         data_n[3] = 0.f;
@@ -87,7 +89,8 @@ namespace pcl
           normal_x (other.normal_x), normal_y (other.normal_y), normal_z (other.normal_z),
           rgba     (other.rgba),
           weight   (other.weight),
-          age      (other.age)
+          age      (other.age),
+          visconf  (other.visconf)
       {
         data[3]   = 1.f;
         data_n[3] = 0.f;
@@ -113,7 +116,8 @@ namespace pcl
       PCL_ADD_NORMAL4D
       PCL_ADD_RGB
       float weight;
-      int age;
+      unsigned int age;
+      pcl::ihs::VisibilityConfidence visconf;
 
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     };

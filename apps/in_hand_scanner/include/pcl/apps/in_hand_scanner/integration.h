@@ -109,6 +109,9 @@ namespace pcl
                const MeshPtr&                mesh_model,
                const Transformation&         T) const;
 
+        void
+        age (const MeshPtr& mesh, const bool cleanup=true) const;
+
       private:
 
         uint8_t
@@ -154,13 +157,17 @@ namespace pcl
         KdTreePtr kd_tree_;
 
         // Maximum squared distance below which points are averaged out
-        float     squared_distance_max_;
+        float squared_distance_max_;
 
         // Minium dot product between normals above which points are averaged out
-        float     dot_normal_min_;
+        float dot_normal_min_;
 
         // Minimum weight above which points are added.
-        float     weight_min_;
+        float weight_min_;
+
+        // A point dies if it has not been updated in the last age_max_ frames and the visibility confidence is below visconf_min
+        unsigned int age_max_;
+        float        visconf_min_; // [0 1]
     };
 
   } // End namespace ihs

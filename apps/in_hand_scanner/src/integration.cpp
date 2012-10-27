@@ -55,7 +55,10 @@ pcl::ihs::Integration::Integration ()
   : kd_tree_              (new pcl::KdTreeFLANN <PointXYZ> ()),
     squared_distance_max_ (4e-2f),
     dot_normal_min_       (.6f),
-    weight_min_           (.3f)
+    weight_min_           (.3f),
+    age_max_              (10), // test
+    // age_max_              (30),
+    visconf_min_          (.12)
 {
 }
 
@@ -90,9 +93,11 @@ pcl::ihs::Integration::reconstructMesh (const CloudProcessedConstPtr& cloud_data
   for (uint32_t c=0; c<width; ++c)
   {
     const PointProcessed& pt_d = cloud_data->operator [] (c);
-    if (pcl::isFinite (pt_d))
+    const float weight = -pt_d.normal_z; // weight = -dot (normal, [0; 0; 1])
+
+    if (pcl::isFinite (pt_d) && weight >= weight_min_)
     {
-      cloud_model->operator [] (c) = PointModel (pt_d, -pt_d.normal_z);
+      cloud_model->operator [] (c) = PointModel (pt_d, weight);
     }
   }
   for (uint32_t r=1; r<height; ++r)
@@ -100,9 +105,11 @@ pcl::ihs::Integration::reconstructMesh (const CloudProcessedConstPtr& cloud_data
     for (uint32_t c=0; c<2; ++c)
     {
       const PointProcessed& pt_d = cloud_data->operator [] (r*width + c);
-      if (pcl::isFinite (pt_d))
+      const float weight = -pt_d.normal_z; // weight = -dot (normal, [0; 0; 1])
+
+      if (pcl::isFinite (pt_d) && weight >= weight_min_)
       {
-        cloud_model->operator [] (r*width + c) = PointModel (pt_d, -pt_d.normal_z);
+        cloud_model->operator [] (r*width + c) = PointModel (pt_d, weight);
       }
     }
   }
@@ -131,8 +138,7 @@ pcl::ihs::Integration::reconstructMesh (const CloudProcessedConstPtr& cloud_data
   {
     for (uint32_t c=2; c<width; ++c)
     {
-      // weight = -dot (normal, [0; 0; 1])
-      const float weight = -it_d_0->normal_z;
+      const float weight = -it_d_0->normal_z; // weight = -dot (normal, [0; 0; 1])
       if (pcl::isFinite(*it_d_0) && weight >= weight_min_)
       {
         *it_m_0 = PointModel (*it_d_0, weight);
@@ -199,6 +205,9 @@ pcl::ihs::Integration::merge (const CloudProcessedConstPtr& cloud_data,
   CloudModelPtr cloud_data_transformed (new CloudModel ());
   cloud_data_transformed->resize (size);
 
+  // Sensor position in model coordinates
+  const Eigen::Vector4f& sensor_eye = T * Eigen::Vector4f (0.f, 0.f, 0.f, 1.f);
+
   // Store which vertex is set at which position (initialized with invalid indexes)
   VertexIndexes vertex_indexes (size, VertexIndex ());
 
@@ -206,10 +215,12 @@ pcl::ihs::Integration::merge (const CloudProcessedConstPtr& cloud_data,
   for (uint32_t c=0; c<width; ++c)
   {
     const PointProcessed& pt_d = cloud_data->operator [] (c);
-    if (pcl::isFinite (pt_d))
+    const float weight = -pt_d.normal_z; // weight = -dot (normal, [0; 0; 1])
+
+    if (pcl::isFinite (pt_d) && weight >= weight_min_)
     {
       PointModel& pt_d_t = cloud_data_transformed->operator [] (c);
-      pt_d_t = PointModel (pt_d, -pt_d.normal_z);
+      pt_d_t = PointModel (pt_d, weight);
       pt_d_t.getVector4fMap ()       = T * pt_d_t.getVector4fMap ();
       pt_d_t.getNormalVector4fMap () = T * pt_d_t.getNormalVector4fMap ();
     }
@@ -219,10 +230,12 @@ pcl::ihs::Integration::merge (const CloudProcessedConstPtr& cloud_data,
     for (uint32_t c=0; c<2; ++c)
     {
       const PointProcessed& pt_d = cloud_data->operator [] (r*width + c);
-      if (pcl::isFinite (pt_d))
+      const float weight = -pt_d.normal_z; // weight = -dot (normal, [0; 0; 1])
+
+      if (pcl::isFinite (pt_d) && weight >= weight_min_)
       {
         PointModel& pt_d_t = cloud_data_transformed->operator [] (r*width + c);
-        pt_d_t = PointModel (pt_d, -pt_d.normal_z);
+        pt_d_t = PointModel (pt_d, weight);
         pt_d_t.getVector4fMap ()       = T * pt_d_t.getVector4fMap ();
         pt_d_t.getNormalVector4fMap () = T * pt_d_t.getNormalVector4fMap ();
       }
@@ -253,55 +266,57 @@ pcl::ihs::Integration::merge (const CloudProcessedConstPtr& cloud_data,
   {
     for (uint32_t c=2; c<width; ++c)
     {
-      if (pcl::isFinite (*it_d_0))
+      const float weight = -it_d_0->normal_z; // weight = -dot (normal, [0; 0; 1])
+
+      if (pcl::isFinite (*it_d_0) && weight >= weight_min_)
       {
-        // weight = -dot (normal, [0; 0; 1])
-        *it_d_t_0 = PointModel (*it_d_0, -it_d_0->normal_z);
+        *it_d_t_0 = PointModel (*it_d_0, weight);
         it_d_t_0->getVector4fMap ()       = T * it_d_t_0->getVector4fMap ();
         it_d_t_0->getNormalVector4fMap () = T * it_d_t_0->getNormalVector4fMap ();
 
-        if (it_d_t_0->weight >= weight_min_)
+        // NN search
+        if (!kd_tree_->nearestKSearchT (*it_d_t_0, 1, index, squared_distance))
         {
-          // NN search
-          if (!kd_tree_->nearestKSearchT (*it_d_t_0, 1, index, squared_distance))
+          std::cerr << "ERROR in integration.cpp: nearestKSearch failed!\n";
+          return (false);
+        }
+
+        // Average out corresponding points
+        if (squared_distance[0] <= squared_distance_max_)
+        {
+          Vertex& v_m = mesh_model->getElement (VertexIndex (index[0])); // Non-const reference!
+
+          if (v_m.getNormalVector4fMap ().dot (it_d_t_0->getNormalVector4fMap ()) >= dot_normal_min_)
           {
-            std::cerr << "ERROR in integration.cpp: nearestKSearch failed!\n";
-            return (false);
-          }
+            *it_vi_0 = VertexIndex (index[0]);
 
-          // Average out corresponding points
-          if (squared_distance[0] <= squared_distance_max_)
-          {
-            Vertex& v_m = mesh_model->getElement (VertexIndex (index[0])); // Non-const reference!
+            const float W   = v_m.weight;         // Old accumulated weight
+            const float w   = it_d_t_0->weight;   // Weight of new point
+            const float WW  = v_m.weight = W + w; // New accumulated weight
 
-            if (v_m.getNormalVector4fMap ().dot (it_d_t_0->getNormalVector4fMap ()) >= dot_normal_min_)
-            {
-              *it_vi_0 = VertexIndex (index[0]);
+            const float r_m = static_cast <float> (v_m.r);
+            const float g_m = static_cast <float> (v_m.g);
+            const float b_m = static_cast <float> (v_m.b);
 
-              const float W   = v_m.weight;         // Old accumulated weight
-              const float w   = it_d_t_0->weight;   // Weight of new point
-              const float WW  = v_m.weight = W + w; // New accumulated weight
+            const float r_d = static_cast <float> (it_d_t_0->r);
+            const float g_d = static_cast <float> (it_d_t_0->g);
+            const float b_d = static_cast <float> (it_d_t_0->b);
 
-              const float r_m = static_cast <float> (v_m.r);
-              const float g_m = static_cast <float> (v_m.g);
-              const float b_m = static_cast <float> (v_m.b);
+            v_m.getVector4fMap ()       = ( W*v_m.getVector4fMap ()       + w*it_d_t_0->getVector4fMap ())       / WW;
+            v_m.getNormalVector4fMap () = ((W*v_m.getNormalVector4fMap () + w*it_d_t_0->getNormalVector4fMap ()) / WW).normalized ();
+            v_m.r                       = this->trimRGB ((W*r_m + w*r_d) / WW);
+            v_m.g                       = this->trimRGB ((W*g_m + w*g_d) / WW);
+            v_m.b                       = this->trimRGB ((W*b_m + w*b_d) / WW);
 
-              const float r_d = static_cast <float> (it_d_t_0->r);
-              const float g_d = static_cast <float> (it_d_t_0->g);
-              const float b_d = static_cast <float> (it_d_t_0->b);
+            // Point has been observed again -> give it some extra time to live
+            v_m.age = 0;
 
-              v_m.getVector4fMap ()       = ( W*v_m.getVector4fMap ()       + w*it_d_t_0->getVector4fMap ())       / WW;
-              v_m.getNormalVector4fMap () = ((W*v_m.getNormalVector4fMap () + w*it_d_t_0->getNormalVector4fMap ()) / WW).normalized ();
-              v_m.r                       = this->trimRGB ((W*r_m + w*r_d) / WW);
-              v_m.g                       = this->trimRGB ((W*g_m + w*g_d) / WW);
-              v_m.b                       = this->trimRGB ((W*b_m + w*b_d) / WW);
+            // add a direction to the visibility confidence
+            v_m.visconf.addDirection (v_m.getNormalVector4fMap (), sensor_eye-v_m.getVector4fMap (), w);
 
-              // Point has been observed again -> give it some extra time to live
-              v_m.age = 0;
-            } // dot normals
-          } // squared distance
-        } // min weight
-      } // isfinite
+          } // dot normals
+        } // squared distance
+      } // isfinite && min weight
 
       // Connect
       // 4   2 - 1  //
@@ -329,6 +344,39 @@ pcl::ihs::Integration::merge (const CloudProcessedConstPtr& cloud_data,
   } // for (uint32_t r=1; r<height; ++r)
 
   return (true);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+void
+pcl::ihs::Integration::age (const MeshPtr& mesh, const bool cleanup) const
+{
+  for (Mesh::VertexIterator it = mesh->beginVertexes (); it!=mesh->endVertexes (); ++it)
+  {
+    if(it->age < age_max_)
+    {
+       // Point survives
+       ++it->age;
+    }
+    else if(it->age == age_max_) // Judgement Day
+    {
+      if(it->visconf.getValue () < visconf_min_)
+      {
+        // Point dies (no need to transform it)
+        mesh->deleteVertex (*it);
+      }
+      else
+      {
+        // Point becomes immortal
+        it->age = std::numeric_limits <unsigned int>::max ();
+      }
+    }
+  }
+
+  if (cleanup)
+  {
+    mesh->cleanUp ();
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////

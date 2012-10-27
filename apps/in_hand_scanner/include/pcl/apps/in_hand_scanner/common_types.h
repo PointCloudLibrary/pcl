@@ -43,8 +43,9 @@
 
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
-#include <pcl/apps/in_hand_scanner/eigen.h>
 #include <pcl/geometry/impl/triangle_mesh.hpp>
+#include <pcl/apps/in_hand_scanner/eigen.h>
+#include <pcl/apps/in_hand_scanner/visibility_confidence.h>
 
 namespace pcl
 {
@@ -74,24 +75,24 @@ namespace pcl
 #include <pcl/apps/in_hand_scanner/impl/common_types.hpp>
 
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::ihs::PointModel,
-    (float, x, x)
-    (float, y, y)
-    (float, z, z)
-    (float, normal_x, normal_x)
-    (float, normal_y, normal_y)
-    (float, normal_z, normal_z)
-    (float, rgb, rgb)
-    (float, weight, weight)
-    (int, age, age)
-)
+                                   (float, x, x)
+                                   (float, y, y)
+                                   (float, z, z)
+                                   (float, normal_x, normal_x)
+                                   (float, normal_y, normal_y)
+                                   (float, normal_z, normal_z)
+                                   (float, rgb, rgb)
+                                   (float, weight, weight)
+                                   (unsigned int, age, age)
+                                  )
 
 namespace pcl
 {
   namespace ihs
   {
-    typedef pcl::TriangleMesh <true, PointModel> Mesh;
-    typedef boost::shared_ptr <Mesh>             MeshPtr;
-    typedef boost::shared_ptr <const Mesh>       MeshConstPtr;
+    typedef pcl::TriangleMesh <false, PointModel> Mesh;
+    typedef boost::shared_ptr <Mesh>              MeshPtr;
+    typedef boost::shared_ptr <const Mesh>        MeshConstPtr;
   } // End namespace ihs
 } // End namespace pcl
 

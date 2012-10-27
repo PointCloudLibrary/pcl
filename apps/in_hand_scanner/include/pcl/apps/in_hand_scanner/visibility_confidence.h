@@ -43,45 +43,63 @@
 
 #include <pcl/apps/in_hand_scanner/eigen.h>
 
-//namespace pcl
-//{
-//  namespace ihs
-//  {
+namespace pcl
+{
+  namespace ihs
+  {
 
-//    class VisibilityConfidence
-//    {
-//      public:
+    class VisibilityConfidence
+    {
+      public:
 
-//        class HalfDomeVertexes
-//        {
-//          public:
+        // - Frequency 3 Icosahedron where each vertex corresponds to a viewing direction
+        // - First vertex aligned to z-axis
+        // - Removed vertexes with z < 0.3
+        // -> 31 directions, fitting nicely into a 32 bit integer
+        // -> Very oblique angles are not considered
+        class Dome
+        {
+          public:
 
-//            static const int                    n = 31;
-//            typedef Eigen::Matrix <float, 4, n> Data;
+            static const int                                NumDirections = 31;
+            typedef Eigen::Matrix <float, 4, NumDirections> Directions;
 
-//          public:
+          public:
 
-//            HalfDomeVertexes ();
+            Dome ();
 
-//            const Data&
-//            data () const;
+            const Directions&
+            directions () const;
 
-//          private:
+          private:
 
-//            Data data_;
-//        };
+            Directions directions_;
+        };
 
-//      public:
+        typedef unsigned int Directions;
+        static const int     NumDirections = Dome::NumDirections;
 
-//        VisibilityConfidence ();
+      public:
 
-//      private:
+        VisibilityConfidence ();
 
-//        static const HalfDomeVertexes half_dome_vertexes_;
+        void
+        addDirection (const Eigen::Vector4f& normal,
+                      const Eigen::Vector4f& direction,
+                      const float            weight);
 
-//    };
+        float
+        getValue () const; // [0 1]
 
-//  } // End namespace ihs
-//} // End namespace pcl
+      private:
+
+        static const Dome dome_;
+        Directions        directions_;
+        float             weight_;
+        unsigned int      num_weights_;
+    };
+
+  } // End namespace ihs
+} // End namespace pcl
 
 #endif // PCL_IN_HAND_SCANNER_VISIBILITY_CONFIDENCE_H

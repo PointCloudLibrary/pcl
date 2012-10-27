@@ -275,6 +275,7 @@ pcl::ihs::InHandScanner::newDataCallback (const CloudInputConstPtr& cloud_in)
       {
         transformation_ = T;
         integration_->merge (cloud_data, mesh_model_, transformation_);
+        integration_->age (mesh_model_);
         cloud_data = CloudProcessedPtr (new CloudProcessed ());
 
         // Does not work here because multiple threads!
