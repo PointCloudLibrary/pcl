@@ -155,23 +155,28 @@ namespace pcl
       void
       deleteVertex (const VertexIndex& idx_vertex)
       {
-        assert (Base::validateMeshElementIndex (idx_vertex));
-        this->deleteVertex (Base::getElement (idx_vertex));
+        if (idx_vertex.isValid ())
+        {
+          this->deleteVertex (Base::getElement (idx_vertex));
+        }
       }
 
       void
-      deleteVertex (const Vertex& vertex)
+      deleteVertex (Vertex& vertex)
       {
+        if (vertex.isIsolated ())
+        {
+          vertex.setDeleted (true);
+          return;
+        }
+
         FaceAroundVertexConstCirculator       circ     = Base::getFaceAroundVertexConstCirculator (vertex);
         const FaceAroundVertexConstCirculator circ_end = circ;
 
+        assert (circ.isValid ());
         do
         {
-          const FaceIndex idx_face = (circ++).getDereferencedIndex ();
-          if (idx_face.isValid ())
-          {
-            this->deleteFace (idx_face);
-          }
+          this->deleteFace ((circ++).getDereferencedIndex ());
         } while (circ!=circ_end);
       }
 
@@ -182,15 +187,21 @@ namespace pcl
       void
       deleteEdge (const HalfEdgeIndex& idx_half_edge)
       {
-        assert (Base::validateMeshElementIndex (idx_half_edge));
-        this->deleteEdge (Base::getElement (idx_half_edge));
+        if (idx_half_edge.isValid ())
+        {
+          this->deleteEdge (Base::getElement (idx_half_edge));
+        }
       }
 
       void
-      deleteEdge (const HalfEdge& half_edge)
+      deleteEdge (HalfEdge& half_edge)
       {
-        this->deleteFace (half_edge.getFaceIndex ());
-        this->deleteFace (half_edge.getOppositeFaceIndex (*this));
+        HalfEdge& opposite = half_edge.getOppositeHalfEdge (*this);
+
+        if (half_edge.isBoundary ()) half_edge.setDeleted (true);
+        else                         this->deleteFace (half_edge.getFaceIndex ());
+        if (opposite.isBoundary ())  opposite.setDeleted (true);
+        else                         this->deleteFace (half_edge.getOppositeFaceIndex (*this));
       }
 
       //////////////////////////////////////////////////////////////////////////
@@ -200,61 +211,58 @@ namespace pcl
       void
       deleteFace (const FaceIndex& idx_face)
       {
-        assert (Base::validateMeshElementIndex (idx_face));
-
-        std::stack<FaceIndex> delete_faces; // This is only needed for a manifold mesh. It should be removed by the compiler during the optimization for a non-manifold mesh.
-
-        this->deleteFace (idx_face, delete_faces, IsManifold ());
+        if (idx_face.isValid ())
+        {
+          std::stack<FaceIndex> delete_faces; // This is actually only needed for the manifold mesh.
+          this->deleteFace (idx_face, delete_faces, IsManifold ());
+        }
       }
 
       void
       deleteFace (const Face& face)
       {
-        this->deleteFace (face.getInnerHalfEdge (*this).getFaceIndex ());
+        if (!face.getDeleted ())
+        {
+          this->deleteFace (face.getInnerHalfEdge (*this).getFaceIndex ());
+        }
       }
 
       //////////////////////////////////////////////////////////////////////////
       // cleanUp
       //////////////////////////////////////////////////////////////////////////
 
-      void cleanUp (const bool remove_isolated = true) // TODO: what is better default value?
+      void cleanUp (const bool remove_isolated = true) // TODO: what is the better default value?
       {
-        // Copy the non-isolated mesh elements and store the index to their new position
+        // Copy the non-deleted mesh elements and store the index to their new position
         const VertexIndexes   new_vertex_indexes    = this->removeMeshElements <Vertexes,  VertexIndexes>   (Base::vertexes_, remove_isolated);
         const HalfEdgeIndexes new_half_edge_indexes = this->removeMeshElements <HalfEdges, HalfEdgeIndexes> (Base::half_edges_, remove_isolated);
         const FaceIndexes     new_face_indexes      = this->removeMeshElements <Faces,     FaceIndexes>     (Base::faces_, remove_isolated);
 
         // Adjust the indexes
-        VertexIterator              it_v      = Base::beginVertexes ();
-        const VertexConstIterator   it_v_end  = Base::endVertexes ();
-        HalfEdgeIterator            it_he     = Base::beginHalfEdges ();
-        const HalfEdgeConstIterator it_he_end = Base::endHalfEdges ();
-        FaceIterator                it_f      = Base::beginFaces ();
-        const FaceConstIterator     it_f_end  = Base::endFaces ();
-
-        for (; it_v!=it_v_end; ++it_v)
+        for (VertexIterator it = Base::beginVertexes (); it!=Base::endVertexes (); ++it)
         {
-          if (!it_v->isIsolated ())
+          if (!it->isIsolated ())
           {
-            it_v->setOutgoingHalfEdgeIndex (new_half_edge_indexes [it_v->getOutgoingHalfEdgeIndex ().getIndex ()]);
+            it->setOutgoingHalfEdgeIndex (new_half_edge_indexes [it->getOutgoingHalfEdgeIndex ().getIndex ()]);
           }
         }
 
-        for (; it_he!=it_he_end; ++it_he)
+        for (HalfEdgeIterator it = Base::beginHalfEdges (); it!=Base::endHalfEdges (); ++it)
         {
-          it_he->setTerminatingVertexIndex (new_vertex_indexes [it_he->getTerminatingVertexIndex ().getIndex ()]);
-          it_he->setOppositeHalfEdgeIndex (new_half_edge_indexes [it_he->getOppositeHalfEdgeIndex ().getIndex ()]);
-          it_he->setNextHalfEdgeIndex (new_half_edge_indexes [it_he->getNextHalfEdgeIndex ().getIndex ()]);
-          it_he->setPrevHalfEdgeIndex (new_half_edge_indexes [it_he->getPrevHalfEdgeIndex ().getIndex ()]);
-          if (!it_he->isBoundary ())
+          it->setTerminatingVertexIndex (new_vertex_indexes    [it->getTerminatingVertexIndex ().getIndex ()]);
+          it->setOppositeHalfEdgeIndex  (new_half_edge_indexes [it->getOppositeHalfEdgeIndex ().getIndex ()]);
+          it->setNextHalfEdgeIndex      (new_half_edge_indexes [it->getNextHalfEdgeIndex ().getIndex ()]);
+          it->setPrevHalfEdgeIndex      (new_half_edge_indexes [it->getPrevHalfEdgeIndex ().getIndex ()]);
+          if (!it->isBoundary ())
           {
-            it_he->setFaceIndex (new_face_indexes [it_he->getFaceIndex ().getIndex ()]);
+            it->setFaceIndex (new_face_indexes [it->getFaceIndex ().getIndex ()]);
           }
+
         }
 
-        for (; it_f!=it_f_end; ++it_f)
+        for (FaceIterator it = Base::beginFaces (); it!=Base::endFaces (); ++it)
         {
-          it_f->setInnerHalfEdgeIndex (new_half_edge_indexes [it_f->getInnerHalfEdgeIndex ().getIndex ()]);
+          it->setInnerHalfEdgeIndex (new_half_edge_indexes [it->getInnerHalfEdgeIndex ().getIndex ()]);
         }
       }
 
@@ -936,30 +944,29 @@ namespace pcl
       removeMeshElements (MeshElementsT& mesh_elements,
                           const bool     remove_isolated) const
       {
-        typedef typename MeshElementsT::value_type      MeshElement;
+        typedef MeshElementsT                         MeshElements;
+        typedef typename MeshElements::iterator       MeshElementIterator;
+        typedef typename MeshElements::const_iterator MeshElementConstIterator;
 
         typedef MeshElementIndexesT                     MeshElementIndexes;
         typedef typename MeshElementIndexes::value_type MeshElementIndex;
         typedef typename MeshElementIndexes::iterator   MeshElementIndexIterator;
 
         MeshElementIndexes new_mesh_element_indexes (mesh_elements.size (), MeshElementIndex ());
-        MeshElementIndex   ind_old (0), ind_new (0);
+        MeshElementIndex   ind_new (0);
+
+        MeshElementConstIterator it_me_old = mesh_elements.begin ();
+        MeshElementIterator      it_me_new = mesh_elements.begin ();
 
         MeshElementIndexIterator       it_mei_new     = new_mesh_element_indexes.begin ();
         const MeshElementIndexIterator it_mei_new_end = new_mesh_element_indexes.end ();
 
-        for (; it_mei_new!=it_mei_new_end; ++it_mei_new, ++ind_old)
+        for (; it_mei_new!=it_mei_new_end; ++it_me_old, ++it_mei_new)
         {
-          MeshElement& me_old = mesh_elements [ind_old.getIndex ()];
-
-          if (!(me_old.getDeleted () || (remove_isolated && me_old.isIsolated ())))
+          if (!(it_me_old->getDeleted () || (remove_isolated && it_me_old->isIsolated ())))
           {
-            if (ind_new != ind_old) // avoid self assignment
-            {
-              mesh_elements [ind_new.getIndex ()] = me_old;
-            }
-
-            *it_mei_new = ind_new++;
+            *it_me_new++ = *it_me_old; // test for self assignment?
+            *it_mei_new  = ind_new++;
           }
         }
 
