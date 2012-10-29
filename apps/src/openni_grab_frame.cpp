@@ -55,7 +55,7 @@ class OpenNIGrabFrame
   typedef pcl::PointCloud<PointType> Cloud;
   typedef typename Cloud::ConstPtr CloudConstPtr;  
   public:
-    OpenNIGrabFrame () 
+    OpenNIGrabFrame (pcl::OpenNIGrabber &grabber)
     : visualizer_ (new pcl::visualization::PCLVisualizer ("OpenNI Viewer"))
     , writer_ ()
     , quit_ (false)
@@ -64,6 +64,7 @@ class OpenNIGrabFrame
     , file_name_ ("")
     , dir_name_ ("")
     , format_ (4)
+    , grabber_ (grabber)
     {
     }
 
@@ -151,18 +152,15 @@ class OpenNIGrabFrame
       visualizer_->registerMouseCallback (&OpenNIGrabFrame::mouse_callback, *this);
       visualizer_->registerKeyboardCallback(&OpenNIGrabFrame::keyboard_callback, *this);
       
-      // create a new grabber for OpenNI devices
-      pcl::Grabber* interface = new pcl::OpenNIGrabber ();
 
       // make callback function from member function
-      boost::function<void (const CloudConstPtr&)> f =
-        boost::bind (&OpenNIGrabFrame::cloud_cb_, this, _1);
+      boost::function<void (const CloudConstPtr&)> f = boost::bind (&OpenNIGrabFrame::cloud_cb_, this, _1);
 
       // connect callback function for desired signal. In this case its a point cloud with color values
-      boost::signals2::connection c = interface->registerCallback (f);
+      boost::signals2::connection c = grabber_.registerCallback (f);
 
       // start receiving point clouds
-      interface->start ();
+      grabber_.start ();
 
       // wait until user quits program with Ctrl-C, but no busy-waiting -> sleep (1);
       while (!visualizer_->wasStopped())
@@ -184,7 +182,7 @@ class OpenNIGrabFrame
         //boost::this_thread::sleep (boost::posix_time::seconds (1));
    
       // stop the grabber
-      interface->stop ();
+      grabber_.stop ();
     }
 
     void
@@ -240,6 +238,7 @@ class OpenNIGrabFrame
     unsigned format_;
     CloudConstPtr cloud_;
     mutable boost::mutex cloud_mutex_;
+    pcl::OpenNIGrabber &grabber_;
 };
 
 void
@@ -253,6 +252,8 @@ usage (char ** argv)
   print_info ("                    -XYZ  = store just a XYZ cloud\n");
   print_info ("                    -paused = start grabber in paused mode. Toggle pause by pressing the space bar\n");
   print_info ("                              or grab single frames by just pressing the left mouse button.\n");
+  print_info ("                    -imagemode = select the image mode (resolution, fps) for the grabber, see pcl::OpenNIGrabber::Mode for details.\n");
+  print_info ("                    -depthmode = select the depth mode (resolution, fps) for the grabber, see pcl::OpenNIGrabber::Mode for details.\n");
 }
 
 int 
@@ -272,6 +273,9 @@ main (int argc, char** argv)
   std::string filename;
   bool paused = false;
   bool xyz = false;
+  pcl::OpenNIGrabber::Mode depth_mode = pcl::OpenNIGrabber::OpenNI_Default_Mode;
+  pcl::OpenNIGrabber::Mode image_mode = pcl::OpenNIGrabber::OpenNI_Default_Mode;
+
   if (argc > 1)
   {
     // Parse the command line arguments for .pcd file
@@ -285,17 +289,28 @@ main (int argc, char** argv)
     parse_argument (argc, argv, "-format", format);
     xyz = find_switch (argc, argv, "-XYZ");
     paused = find_switch (argc, argv, "-paused");
+
+    unsigned mode;
+    if (pcl::console::parse(argc, argv, "-depthmode", mode) != -1)
+      depth_mode = pcl::OpenNIGrabber::Mode (mode);
+
+    if (pcl::console::parse(argc, argv, "-imagemode", mode) != -1)
+      image_mode = pcl::OpenNIGrabber::Mode (mode);
+
   }
+
+  pcl::OpenNIGrabber grabber ("#1", depth_mode, image_mode);
+
 
   if (xyz)
   {
-    OpenNIGrabFrame<pcl::PointXYZ> grab_frame;
+    OpenNIGrabFrame<pcl::PointXYZ> grab_frame (grabber);
     grab_frame.setOptions (filename, format, paused);
     grab_frame.run ();
   }
   else
   {
-    OpenNIGrabFrame<pcl::PointXYZRGBA> grab_frame;    
+    OpenNIGrabFrame<pcl::PointXYZRGBA> grab_frame (grabber);
     grab_frame.setOptions (filename, format, paused);
     grab_frame.run ();
   }
