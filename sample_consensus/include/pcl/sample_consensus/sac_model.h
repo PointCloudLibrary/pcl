@@ -170,11 +170,11 @@ namespace pcl
       virtual ~SampleConsensusModel () {};
 
       /** \brief Get a set of random data samples and return them as point
-        * indices. Pure virtual.  
+        * indices.
         * \param[out] iterations the internal number of iterations used by SAC methods
         * \param[out] samples the resultant model samples
         */
-      void 
+      virtual void 
       getSamples (int &iterations, std::vector<int> &samples)
       {
         // We're assuming that indices_ have already been set in the constructor
