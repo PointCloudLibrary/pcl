@@ -333,10 +333,17 @@ pcl::RegionGrowing<PointT, NormalT>::prepareForSegmentation ()
     return (false);
 
   // if user didn't set search method
-  if (search_ == 0)
-    search_ = boost::shared_ptr<pcl::search::Search<PointT> > (new pcl::search::KdTree<PointT>);
+  if (!search_)
+    search_.reset (new pcl::search::KdTree<PointT>);
 
-  search_->setInputCloud (input_, indices_);
+  if (indices_)
+  {
+    if (indices_->empty ())
+      PCL_ERROR ("[pcl::RegionGrowing::prepareForSegmentation] Empty given indices!\n");
+    search_->setInputCloud (input_, indices_);
+  }
+  else
+    search_->setInputCloud (input_);
 
   return (true);
 }

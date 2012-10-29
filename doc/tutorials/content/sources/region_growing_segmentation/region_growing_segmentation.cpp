@@ -40,7 +40,7 @@ main (int argc, char** argv)
   reg.setSearchMethod (tree);
   reg.setNumberOfNeighbours (30);
   reg.setInputCloud (cloud);
-  reg.setIndices (indices);
+  //reg.setIndices (indices);
   reg.setInputNormals (normals);
   reg.setSmoothnessThreshold (7.0 / 180.0 * M_PI);
   reg.setCurvatureThreshold (1.0);
