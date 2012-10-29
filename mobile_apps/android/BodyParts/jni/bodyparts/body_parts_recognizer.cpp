@@ -2,9 +2,11 @@
 #include <cstring>
 #include <limits>
 #include <memory>
+#include <queue>
 
 #include <android/log.h>
 
+#include <boost/foreach.hpp>
 #include <boost/integer_traits.hpp>
 
 #include <tbb/blocked_range2d.h>
@@ -72,6 +74,99 @@ template <typename Format> Format
 replaceZeroes(ChannelRef<Format> & channel, Format replacement)
 {
   std::replace(channel.data, channel.data + channel.size, Format(), replacement);
+}
+
+DECLARE_CLOUD_TAG(TagVisited, bool)
+
+struct Component
+{
+  int y, x, surface;
+};
+
+struct ComponentSurfaceCompare
+{
+  bool operator() (const Component & c1, const Component & c2)
+  { return c1.surface < c2.surface; }
+};
+
+template <typename Format> int
+calcComponentSurface(const ChannelRef<Format> channel, ChannelRef<bool> visited, Format empty, int startY, int startX)
+{
+  std::queue<std::pair<int, int> > to_visit;
+  to_visit.push(std::make_pair(startY, startX));
+  int surface = 0;
+
+  while (!to_visit.empty())
+  {
+    const std::pair<int, int> yx = to_visit.front();
+    to_visit.pop();
+
+    int y = yx.first, x = yx.second;
+
+    if (x < 0 || x >= channel.width || y < 0 || y >= channel.height || visited.at(y, x) || channel.at(y, x) == empty) continue;
+
+    visited.at(y, x) = true;
+    ++surface;
+
+    to_visit.push(std::make_pair(y, x + 1));
+    to_visit.push(std::make_pair(y, x - 1));
+    to_visit.push(std::make_pair(y + 1, x));
+    to_visit.push(std::make_pair(y - 1, x));
+  }
+
+  return surface;
+}
+
+template <typename Format> void
+eraseComponent(ChannelRef<Format> channel, Format empty, int y, int x)
+{
+  std::queue<std::pair<int, int> > to_visit;
+  to_visit.push(std::make_pair(y, x));
+
+  while (!to_visit.empty())
+  {
+    const std::pair<int, int> yx = to_visit.front();
+    to_visit.pop();
+
+    int y = yx.first, x = yx.second;
+
+    if (x < 0 || x >= channel.width || y < 0 || y >= channel.height || channel.at(y, x) == empty) continue;
+
+    channel.at(y, x) = empty;
+
+    to_visit.push(std::make_pair(y, x + 1));
+    to_visit.push(std::make_pair(y, x - 1));
+    to_visit.push(std::make_pair(y + 1, x));
+    to_visit.push(std::make_pair(y - 1, x));
+  }
+}
+
+template <typename Format> Format
+keepBiggestComponent(const ChannelRef<Format> channel, Format empty)
+{
+  Cloud temp;
+  temp.resize(channel.width, channel.height);
+
+  ChannelRef<bool> visited = temp.get<TagVisited>();
+  std::fill_n(visited.data, visited.size, false);
+
+  std::vector<Component> components;
+
+  for (int i = 0; i < channel.height; ++i)
+    for (int j = 0; j < channel.width; ++j)
+      if (channel.at(i, j) != empty && !visited.at(i, j))
+      {
+        Component component = { i, j, calcComponentSurface(channel, visited, empty, i, j) };
+        components.push_back(component);
+      }
+
+  const Component & biggest = *std::max_element(components.begin(), components.end(), ComponentSurfaceCompare());
+
+  int with = 0;
+
+  BOOST_FOREACH(const Component & c, components)
+    if (c.surface < biggest.surface)
+      eraseComponent(channel, empty, c.y, c.x);
 }
 
 struct DecisionTreeCPU
@@ -330,6 +425,7 @@ BodyPartsRecognizer::recognize(Cloud & cloud) const
 
   replaceZeroes(depth, BACKGROUND_DEPTH);
   applyThreshold(depth, selectThreshold(depth), BACKGROUND_DEPTH);
+  keepBiggestComponent(depth, BACKGROUND_DEPTH);
 
   __android_log_print(ANDROID_LOG_INFO, "BPR", "Thresholding: %d ms", watch_threshold.elapsedMs());
 

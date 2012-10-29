@@ -53,6 +53,8 @@ Cloud::~Cloud()
   template ChannelRef<Format> Cloud::get(const std::type_info * key); \
   template Format * Cloud::getRaw(const std::type_info * key);
 
+DEFINE_FORMAT(bool)
+
 DEFINE_FORMAT(unsigned char)
 DEFINE_FORMAT(signed char)
 DEFINE_FORMAT(unsigned short)
