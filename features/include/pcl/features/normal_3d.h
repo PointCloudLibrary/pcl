@@ -363,7 +363,10 @@ namespace pcl
         */
       void
       computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &) {}
-   };
+
+    public:
+      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+  };
 
   /** \brief NormalEstimation estimates local surface properties at each 3D point, such as surface normals and
     * curvatures.
