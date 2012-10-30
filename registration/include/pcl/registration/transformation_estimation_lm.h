@@ -163,7 +163,7 @@ namespace pcl
           * \param[in] warp_fcn a shared pointer to an object that warps points
           */
         void
-        setWarpFunction (const boost::shared_ptr<WarpPointRigid<PointSource, PointTarget> > &warp_fcn)
+        setWarpFunction (const boost::shared_ptr<WarpPointRigid<PointSource, PointTarget, MatScalar> > &warp_fcn)
         {
           warp_point_ = warp_fcn;
         }
