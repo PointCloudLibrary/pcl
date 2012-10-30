@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 import android.view.*;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 import org.libusb.UsbHelper;
@@ -23,7 +22,6 @@ import java.util.Set;
 public class MainActivity extends Activity {
     private static final String TAG = "onirec.MainActivity";
 
-    private Button buttonRecord;
     private TextView textStatus;
     private TextView textFps;
     private SurfaceView surfaceColor;
@@ -112,7 +110,6 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
-        buttonRecord = (Button) findViewById(R.id.button_record);
         textStatus = (TextView) findViewById(R.id.text_status);
         textFps = (TextView) findViewById(R.id.text_fps);
         surfaceColor = (SurfaceView) findViewById(R.id.surface_color);
@@ -140,11 +137,6 @@ public class MainActivity extends Activity {
     protected void onStop() {
         super.onStop();
         state.stop();
-    }
-
-    public void onClick(View view) {
-        if (view == buttonRecord)
-            state.recordClicked();
     }
 
     private void setState(State newState) {
@@ -200,7 +192,6 @@ public class MainActivity extends Activity {
         public void stop() { throw new IllegalStateException(); }
         public void surfaceStateChange() { throw new IllegalStateException(); }
         public void usbPermissionChange(UsbDevice device, boolean granted) { throw new IllegalStateException(); }
-        public void recordClicked() { throw new IllegalStateException(); }
 
         public boolean prepareMenu(Menu menu) { return false; }
 
@@ -415,13 +406,13 @@ public class MainActivity extends Activity {
 
     private class StateCapturing extends State {
         CaptureThreadManager manager;
-        boolean isRecording = false;
+        boolean isRecording = false, stoppingRecording = false;
         File currentRecording;
 
-        private void setRecordingState(boolean enabled) {
+        private void setRecordingState(boolean enabled, boolean stopping) {
             isRecording = enabled;
-            buttonRecord.setEnabled(true);
-            buttonRecord.setText(enabled ? R.string.record_stop : R.string.record_start);
+            stoppingRecording = stopping;
+            invalidateOptionsMenu();
         }
 
         @Override
@@ -429,8 +420,7 @@ public class MainActivity extends Activity {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
             textFps.setVisibility(View.VISIBLE);
             textFps.setText(String.format(getResources().getString(R.string.x_fps), 0.));
-            buttonRecord.setVisibility(View.VISIBLE);
-            setRecordingState(false);
+            setRecordingState(false, false);
 
             textStatus.setText(R.string.status_previewing);
             manager = new CaptureThreadManager(surfaceColor.getHolder(), surfaceDepth.getHolder(), new CaptureThreadManager.Feedback() {
@@ -453,7 +443,7 @@ public class MainActivity extends Activity {
                                 getResources().getString(R.string.error_failed_during_capture), oniMessage));
                         return;
                     case FailedToStartRecording:
-                        setRecordingState(false);
+                        setRecordingState(false, false);
                         Toast.makeText(MainActivity.this,
                                 String.format(getResources().getString(R.string.status_openni_error),
                                         getResources().getString(R.string.error_failed_to_start_recording),
@@ -469,9 +459,8 @@ public class MainActivity extends Activity {
 
                 @Override
                 public void reportRecordingFinished() {
-                    setRecordingState(false);
+                    setRecordingState(false, false);
                     textStatus.setText(R.string.status_previewing);
-                    invalidateOptionsMenu();
                 }
             });
         }
@@ -483,7 +472,6 @@ public class MainActivity extends Activity {
                 currentRecording.delete();
 
             textFps.setVisibility(View.INVISIBLE);
-            buttonRecord.setVisibility(View.INVISIBLE);
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         }
 
@@ -507,31 +495,12 @@ public class MainActivity extends Activity {
         }
 
         @Override
-        public void recordClicked() {
-            if (isRecording) {
-                manager.stopRecording();
-                buttonRecord.setEnabled(false);
-            } else {
-                int file_no = 0;
-
-                do
-                    currentRecording = new File(Environment.getExternalStorageDirectory(), "recording" + file_no++ + ".oni");
-                while (currentRecording.exists());
-
-                manager.startRecording(currentRecording);
-
-                setRecordingState(true);
-                textStatus.setText(String.format(getResources().getString(R.string.status_recording_to),
-                        currentRecording.getAbsolutePath()));
-                invalidateOptionsMenu();
-            }
-        }
-
-        @Override
         public boolean prepareMenu(Menu menu) {
-            menu.findItem(R.id.menu_item_replay).setVisible(true);
+            menu.findItem(R.id.menu_item_replay).setVisible(!isRecording);
+            menu.findItem(R.id.menu_item_record).setVisible(!isRecording);
+            menu.findItem(R.id.menu_item_stop_recording).setVisible(isRecording);
 
-            menu.findItem(R.id.menu_item_replay).setEnabled(!isRecording);
+            menu.findItem(R.id.menu_item_stop_recording).setEnabled(!stoppingRecording);
             return true;
         }
 
@@ -539,8 +508,32 @@ public class MainActivity extends Activity {
         public boolean menuItemClicked(MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.menu_item_replay:
+                {
                     initiateReplay();
                     return true;
+                }
+                case R.id.menu_item_record:
+                {
+                    int file_no = 0;
+
+                    do
+                        currentRecording = new File(Environment.getExternalStorageDirectory(), "recording" + file_no++ + ".oni");
+                    while (currentRecording.exists());
+
+                    manager.startRecording(currentRecording);
+
+                    setRecordingState(true, false);
+                    textStatus.setText(String.format(getResources().getString(R.string.status_recording_to),
+                            currentRecording.getAbsolutePath()));
+
+                    return true;
+                }
+                case R.id.menu_item_stop_recording:
+                {
+                    manager.stopRecording();
+                    setRecordingState(true, true);
+                    return true;
+                }
             }
 
             return false;
