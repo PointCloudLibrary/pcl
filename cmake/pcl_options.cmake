@@ -26,3 +26,7 @@ mark_as_advanced(PCL_ONLY_CORE_POINT_TYPES)
 option(PCL_NO_PRECOMPILE "Do not precompile PCL code for any point types at all." OFF)
 mark_as_advanced(PCL_NO_PRECOMPILE)
 
+# Enable or Disable the check for SSE optimizations
+option(PCL_ENABLE_SSE "Enable or Disable SSE optimizations." ON)
+mark_as_advanced(PCL_ENABLE_SSE)
+
