@@ -8,16 +8,14 @@ import android.hardware.usb.UsbManager;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
-import android.view.View;
-import android.view.WindowManager;
+import android.view.*;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 import org.libusb.UsbHelper;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -26,7 +24,6 @@ public class MainActivity extends Activity {
     private static final String TAG = "onirec.MainActivity";
 
     private Button buttonRecord;
-    private Button buttonReplay;
     private TextView textStatus;
     private TextView textFps;
     private SurfaceView surfaceColor;
@@ -41,10 +38,26 @@ public class MainActivity extends Activity {
         state.enter();
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        for (int i = 0; i < menu.size(); ++i)
+            menu.getItem(i).setVisible(false);
+        return state.prepareMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        return state.menuItemClicked(item);
+    }
+
     private final Set<UsbDevice> awaitingPermission = new HashSet<UsbDevice>();
     private int surfaces = 0;
-
-    private File lastRecording;
 
     private final BroadcastReceiver usbReceiver = new BroadcastReceiver() {
         @Override
@@ -100,14 +113,10 @@ public class MainActivity extends Activity {
         setContentView(R.layout.main);
 
         buttonRecord = (Button) findViewById(R.id.button_record);
-        buttonReplay = (Button) findViewById(R.id.button_replay);
         textStatus = (TextView) findViewById(R.id.text_status);
         textFps = (TextView) findViewById(R.id.text_fps);
         surfaceColor = (SurfaceView) findViewById(R.id.surface_color);
         surfaceDepth = (SurfaceView) findViewById(R.id.surface_depth);
-
-        String lastRecordingName = getPreferences(MODE_PRIVATE).getString("lastRecording", null);
-        updateLastRecording(lastRecordingName == null ? null : new File(lastRecordingName));
 
         surfaceColor.getHolder().addCallback(surface_callbacks);
         surfaceDepth.getHolder().addCallback(surface_callbacks);
@@ -131,19 +140,11 @@ public class MainActivity extends Activity {
     protected void onStop() {
         super.onStop();
         state.stop();
-
-        SharedPreferences settings = getPreferences(MODE_PRIVATE);
-        SharedPreferences.Editor settings_editor = settings.edit();
-        settings_editor.putString("lastRecording", lastRecording == null ? null : lastRecording.getAbsolutePath());
-        settings_editor.commit();
     }
 
-    @SuppressWarnings("UnusedDeclaration")
     public void onClick(View view) {
         if (view == buttonRecord)
             state.recordClicked();
-        else if (view == buttonReplay)
-            state.replayClicked();
     }
 
     private void setState(State newState) {
@@ -151,22 +152,7 @@ public class MainActivity extends Activity {
         state = newState;
         Log.d(TAG, "New state: " + state.getClass().getName());
         state.enter();
-    }
-
-    private void updateLastRecording(File lastRecording) {
-        this.lastRecording = lastRecording;
-        String format = getResources().getString(R.string.replay_start);
-
-        if (lastRecording != null)
-        {
-            buttonReplay.setText(String.format(format, lastRecording.getName()));
-            buttonReplay.setEnabled(true);
-        }
-        else
-        {
-            buttonReplay.setText(String.format(format, getResources().getString(R.string.last_recording)));
-            buttonReplay.setEnabled(false);
-        }
+        invalidateOptionsMenu();
     }
 
     private void findInterestingDevices() {
@@ -188,6 +174,24 @@ public class MainActivity extends Activity {
         }
     }
 
+    private void initiateReplay() {
+        final String[] recordings = Environment.getExternalStorageDirectory().list(new FilenameFilter() {
+            @Override
+            public boolean accept(File file, String s) {
+                return s.endsWith(".oni");
+            }
+        });
+
+        new RecordingPicker(recordings, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                awaitingPermission.clear();
+                setState(new StateWaiting(new StateReplaying(
+                        new File(Environment.getExternalStorageDirectory(), recordings[i]))));
+            }
+        }).show(getFragmentManager(), "recordings");
+    }
+
     private abstract static class State {
         public void enter() {}
         public void leave() {}
@@ -197,7 +201,10 @@ public class MainActivity extends Activity {
         public void surfaceStateChange() { throw new IllegalStateException(); }
         public void usbPermissionChange(UsbDevice device, boolean granted) { throw new IllegalStateException(); }
         public void recordClicked() { throw new IllegalStateException(); }
-        public void replayClicked() { throw new IllegalStateException(); }
+
+        public boolean prepareMenu(Menu menu) { return false; }
+
+        public boolean menuItemClicked(MenuItem item) { return false; }
     }
 
     private class StateStopped extends State {
@@ -237,9 +244,20 @@ public class MainActivity extends Activity {
         @Override public void usbPermissionChange(UsbDevice device, boolean granted) { }
 
         @Override
-        public void replayClicked() {
-            awaitingPermission.clear();
-            setState(new StateWaiting(new StateReplaying()));
+        public boolean prepareMenu(Menu menu) {
+            menu.findItem(R.id.menu_item_replay).setVisible(true);
+            return true;
+        }
+
+        @Override
+        public boolean menuItemClicked(MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.menu_item_replay:
+                    initiateReplay();
+                    return true;
+            }
+
+            return false;
         }
     }
 
@@ -306,14 +324,18 @@ public class MainActivity extends Activity {
 
     private class StateReplaying extends State {
         CaptureThreadManager manager;
+        File recording;
+
+        public StateReplaying(File recording) {
+            this.recording = recording;
+        }
 
         @Override
         public void enter() {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-            buttonReplay.setText(R.string.replay_stop);
             textFps.setVisibility(View.VISIBLE);
             textFps.setText(String.format(getResources().getString(R.string.x_fps), 0.));
-            textStatus.setText(String.format(getResources().getString(R.string.status_replaying), lastRecording.getName()));
+            textStatus.setText(String.format(getResources().getString(R.string.status_replaying), recording.getName()));
 
             CaptureThreadManager.Feedback feedback = new CaptureThreadManager.Feedback() {
                 @Override
@@ -343,7 +365,7 @@ public class MainActivity extends Activity {
                 }
             };
 
-            manager = new CaptureThreadManager(surfaceColor.getHolder(), surfaceDepth.getHolder(), feedback, lastRecording);
+            manager = new CaptureThreadManager(surfaceColor.getHolder(), surfaceDepth.getHolder(), feedback, recording);
         }
 
         @Override
@@ -351,7 +373,6 @@ public class MainActivity extends Activity {
             manager.stop();
 
             textFps.setVisibility(View.INVISIBLE);
-            updateLastRecording(lastRecording);
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         }
 
@@ -369,15 +390,26 @@ public class MainActivity extends Activity {
         public void usbPermissionChange(UsbDevice device, boolean granted) { }
 
         @Override
-        public void replayClicked() {
-            updateLastRecording(lastRecording);
+        public boolean prepareMenu(Menu menu) {
+            menu.findItem(R.id.menu_item_stop_replaying).setVisible(true);
+            return true;
+        }
 
-            findInterestingDevices();
+        @Override
+        public boolean menuItemClicked(MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.menu_item_stop_replaying:
+                    findInterestingDevices();
 
-            if (awaitingPermission.isEmpty())
-                setState(new StateIdle(R.string.status_no_devices));
-            else
-                setState(new StateWaiting(new StateCapturing()));
+                    if (awaitingPermission.isEmpty())
+                        setState(new StateIdle(R.string.status_no_devices));
+                    else
+                       setState(new StateWaiting(new StateCapturing()));
+
+                    return true;
+            }
+
+            return false;
         }
     }
 
@@ -415,7 +447,8 @@ public class MainActivity extends Activity {
                                 getResources().getString(R.string.error_failed_to_start_capture), oniMessage));
                         return;
                     case FailedDuringCapture:
-                        if (isRecording) updateLastRecording(null);
+                        if (isRecording) //noinspection ResultOfMethodCallIgnored
+                            currentRecording.delete();
                         setState(new StateIdle(R.string.status_openni_error,
                                 getResources().getString(R.string.error_failed_during_capture), oniMessage));
                         return;
@@ -426,7 +459,9 @@ public class MainActivity extends Activity {
                                         getResources().getString(R.string.error_failed_to_start_recording),
                                         oniMessage),
                                 Toast.LENGTH_LONG).show();
-                        updateLastRecording(null);
+
+                        //noinspection ResultOfMethodCallIgnored
+                        currentRecording.delete();
                     default:
                         throw new IllegalStateException();
                     }
@@ -436,7 +471,7 @@ public class MainActivity extends Activity {
                 public void reportRecordingFinished() {
                     setRecordingState(false);
                     textStatus.setText(R.string.status_previewing);
-                    updateLastRecording(currentRecording);
+                    invalidateOptionsMenu();
                 }
             });
         }
@@ -444,8 +479,8 @@ public class MainActivity extends Activity {
         @Override
         public void leave() {
             manager.stop();
-            if (isRecording)
-                updateLastRecording(manager.hasError() ? null : currentRecording);
+            if (isRecording && manager.hasError()) //noinspection ResultOfMethodCallIgnored
+                currentRecording.delete();
 
             textFps.setVisibility(View.INVISIBLE);
             buttonRecord.setVisibility(View.INVISIBLE);
@@ -488,13 +523,27 @@ public class MainActivity extends Activity {
                 setRecordingState(true);
                 textStatus.setText(String.format(getResources().getString(R.string.status_recording_to),
                         currentRecording.getAbsolutePath()));
-                buttonReplay.setEnabled(false);
+                invalidateOptionsMenu();
             }
         }
 
         @Override
-        public void replayClicked() {
-            setState(new StateReplaying());
+        public boolean prepareMenu(Menu menu) {
+            menu.findItem(R.id.menu_item_replay).setVisible(true);
+
+            menu.findItem(R.id.menu_item_replay).setEnabled(!isRecording);
+            return true;
+        }
+
+        @Override
+        public boolean menuItemClicked(MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.menu_item_replay:
+                    initiateReplay();
+                    return true;
+            }
+
+            return false;
         }
     }
 }
