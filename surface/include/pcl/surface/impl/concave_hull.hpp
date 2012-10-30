@@ -119,8 +119,8 @@ pcl::ConcaveHull<PointInT>::reconstruct (PointCloud &output, std::vector<pcl::Ve
 template <typename PointInT> void
 pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std::vector<pcl::Vertices> &polygons)
 {
-  EIGEN_ALIGN16 Eigen::Matrix3f covariance_matrix;
-  Eigen::Vector4f xyz_centroid;
+  EIGEN_ALIGN16 Eigen::Matrix3d covariance_matrix;
+  Eigen::Vector4d xyz_centroid;
   computeMeanAndCovarianceMatrix (*input_, *indices_, covariance_matrix, xyz_centroid);
 
   // Check if the covariance matrix is finite or not.
@@ -129,11 +129,11 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
       if (!pcl_isfinite (covariance_matrix.coeffRef (i, j)))
           return;
 
-  EIGEN_ALIGN16 Eigen::Vector3f eigen_values;
-  EIGEN_ALIGN16 Eigen::Matrix3f eigen_vectors;
+  EIGEN_ALIGN16 Eigen::Vector3d eigen_values;
+  EIGEN_ALIGN16 Eigen::Matrix3d eigen_vectors;
   pcl::eigen33 (covariance_matrix, eigen_vectors, eigen_values);
 
-  Eigen::Affine3f transform1;
+  Eigen::Affine3d transform1;
   transform1.setIdentity ();
 
   // If no input dimension is specified, determine automatically
@@ -538,7 +538,7 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
   int curlong, totlong;
   qh_memfreeshort (&curlong, &totlong);
 
-  Eigen::Affine3f transInverse = transform1.inverse ();
+  Eigen::Affine3d transInverse = transform1.inverse ();
   pcl::transformPointCloud (alpha_shape, alpha_shape, transInverse);
   xyz_centroid[0] = - xyz_centroid[0];
   xyz_centroid[1] = - xyz_centroid[1];
