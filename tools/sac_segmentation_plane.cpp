@@ -98,7 +98,7 @@ compute (const sensor_msgs::PointCloud2::ConstPtr &input, sensor_msgs::PointClou
   tt.tic ();
 
   // Refine the plane indices
-  typedef typename SampleConsensusModelPlane<PointXYZ>::Ptr SampleConsensusModelPlanePtr;
+  typedef SampleConsensusModelPlane<PointXYZ>::Ptr SampleConsensusModelPlanePtr;
   SampleConsensusModelPlanePtr model (new SampleConsensusModelPlane<PointXYZ> (xyz));
   RandomSampleConsensus<PointXYZ> sac (model, threshold);
   sac.setMaxIterations (max_iterations);
