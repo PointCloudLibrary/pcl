@@ -1873,7 +1873,6 @@ namespace pcl
 
       for( i=1 ; i<_sNodes.maxDepth ; i++ )
       {
-        printf( "Depth[%d/%d]: %d\n" , i , _sNodes.maxDepth-1 , _sNodes.nodeCount[i+1]-_sNodes.nodeCount[i] );
         if( subdivideDepth>0 ) iter += SolveFixedDepthMatrix( i , _sNodes , &metSolution[0] , subdivideDepth , showResidual , minIters , accuracy );
         else                   iter += SolveFixedDepthMatrix( i , _sNodes , &metSolution[0] ,                  showResidual , minIters , accuracy );
       }
@@ -1938,7 +1937,6 @@ namespace pcl
       // Copy the solution back into the tree (over-writing the constraints)
       for( int i=sNodes.nodeCount[depth] ; i<sNodes.nodeCount[depth+1] ; i++ ) sNodes.treeNodes[i]->nodeData.solution = Real( X[i-sNodes.nodeCount[depth]] );
 
-      printf("\tEvaluated / Got / Solved in: %6.3f / %6.3f / %6.3f\t(%.3f MB)\n" , evaluateTime , systemTime , solveTime , float( MemoryUsage() ) );
       return iter;
     }
     template<int Degree>
