@@ -1,7 +1,10 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2012, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -38,10 +41,10 @@
 #include <sensor_msgs/PointCloud2.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/io/vtk_io.h>
-#include <pcl/surface/poisson.h>
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
 #include <pcl/console/time.h>
+#include <pcl/surface/poisson.h>
 
 using namespace pcl;
 using namespace pcl::io;

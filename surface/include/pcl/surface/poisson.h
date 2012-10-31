@@ -250,6 +250,4 @@ namespace pcl
   };
 }
 
-#include <pcl/surface/impl/poisson.hpp>
-
 #endif  // PCL_SURFACE_POISSON_H_
