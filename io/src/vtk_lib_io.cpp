@@ -37,6 +37,7 @@
 
 #include <pcl/io/vtk_lib_io.h>
 #include <pcl/io/impl/vtk_lib_io.hpp>
+#include <sensor_msgs/PointCloud2.h>
 #include <vtkCellArray.h>
 #include <vtkCellData.h>
 #include <vtkDoubleArray.h>
@@ -227,6 +228,26 @@ pcl::io::vtk2mesh (const vtkSmartPointer<vtkPolyData>& poly_data, pcl::PolygonMe
   if (nr_points == 0)
     return (0);
 
+
+  // First get the xyz information
+  pcl::PointCloud<pcl::PointXYZ>::Ptr xyz_cloud (new pcl::PointCloud<pcl::PointXYZ> ());
+  xyz_cloud->points.resize (nr_points);
+  xyz_cloud->width = static_cast<uint32_t> (xyz_cloud->points.size ());
+  xyz_cloud->height = 1;
+  xyz_cloud->is_dense = true;
+  double point_xyz[3];
+  for (vtkIdType i = 0; i < mesh_points->GetNumberOfPoints (); i++)
+  {
+    mesh_points->GetPoint (i, &point_xyz[0]);
+    xyz_cloud->points[i].x = static_cast<float> (point_xyz[0]);
+    xyz_cloud->points[i].y = static_cast<float> (point_xyz[1]);
+    xyz_cloud->points[i].z = static_cast<float> (point_xyz[2]);
+  }
+  // And put it in the mesh cloud
+  pcl::toROSMsg (*xyz_cloud, mesh.cloud);
+
+
+  // Then the color information, if any
   vtkUnsignedCharArray* poly_colors = NULL;
   if (poly_data->GetPointData() != NULL)
     poly_colors = vtkUnsignedCharArray::SafeDownCast (poly_data->GetPointData ()->GetScalars ("Colors"));
@@ -241,47 +262,60 @@ pcl::io::vtk2mesh (const vtkSmartPointer<vtkPolyData>& poly_data, pcl::PolygonMe
   // TODO: currently only handles rgb values with 3 components
   if (poly_colors && (poly_colors->GetNumberOfComponents () == 3))
   {
-    pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_temp (new pcl::PointCloud<pcl::PointXYZRGB> ());
-    cloud_temp->points.resize (nr_points);
-    double point_xyz[3];
+    pcl::PointCloud<pcl::RGB>::Ptr rgb_cloud (new pcl::PointCloud<pcl::RGB> ());
+    rgb_cloud->points.resize (nr_points);
+    rgb_cloud->width = static_cast<uint32_t> (rgb_cloud->points.size ());
+    rgb_cloud->height = 1;
+    rgb_cloud->is_dense = true;
+
     unsigned char point_color[3];
     for (vtkIdType i = 0; i < mesh_points->GetNumberOfPoints (); i++)
     {
-      mesh_points->GetPoint (i, &point_xyz[0]);
-      cloud_temp->points[i].x = static_cast<float> (point_xyz[0]);
-      cloud_temp->points[i].y = static_cast<float> (point_xyz[1]);
-      cloud_temp->points[i].z = static_cast<float> (point_xyz[2]);
-
       poly_colors->GetTupleValue (i, &point_color[0]);
-      cloud_temp->points[i].r = point_color[0];
-      cloud_temp->points[i].g = point_color[1];
-      cloud_temp->points[i].b = point_color[2];
+      rgb_cloud->points[i].r = point_color[0];
+      rgb_cloud->points[i].g = point_color[1];
+      rgb_cloud->points[i].b = point_color[2];
     }
-    cloud_temp->width = static_cast<uint32_t> (cloud_temp->points.size ());
-    cloud_temp->height = 1;
-    cloud_temp->is_dense = true;
 
-    pcl::toROSMsg (*cloud_temp, mesh.cloud);
+    sensor_msgs::PointCloud2 rgb_cloud2;
+    pcl::toROSMsg (*rgb_cloud, rgb_cloud2);
+    sensor_msgs::PointCloud2 aux;
+    pcl::concatenateFields (rgb_cloud2, mesh.cloud, aux);
+    mesh.cloud = aux;
   }
-  else // in case points do not have color information:
+
+
+  // Then handle the normals, if any
+  vtkFloatArray* normals = NULL;
+  if (poly_data->GetPointData () != NULL)
+    normals = vtkFloatArray::SafeDownCast (poly_data->GetPointData ()->GetNormals ());
+  if (normals != NULL)
   {
-    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_temp (new pcl::PointCloud<pcl::PointXYZ> ());
-    cloud_temp->points.resize (nr_points);
-    double point_xyz[3];
+    pcl::PointCloud<pcl::Normal>::Ptr normal_cloud (new pcl::PointCloud<pcl::Normal> ());
+    normal_cloud->resize (nr_points);
+    normal_cloud->width = static_cast<uint32_t> (xyz_cloud->points.size ());
+    normal_cloud->height = 1;
+    normal_cloud->is_dense = true;
+
     for (vtkIdType i = 0; i < mesh_points->GetNumberOfPoints (); i++)
     {
-      mesh_points->GetPoint (i, &point_xyz[0]);
-      cloud_temp->points[i].x = static_cast<float> (point_xyz[0]);
-      cloud_temp->points[i].y = static_cast<float> (point_xyz[1]);
-      cloud_temp->points[i].z = static_cast<float> (point_xyz[2]);
+      float normal[3];
+      normals->GetTupleValue (i, normal);
+      normal_cloud->points[i].normal_x = normal[0];
+      normal_cloud->points[i].normal_y = normal[1];
+      normal_cloud->points[i].normal_z = normal[2];
     }
-    cloud_temp->width = static_cast<uint32_t> (cloud_temp->points.size ());
-    cloud_temp->height = 1;
-    cloud_temp->is_dense = true;
 
-    pcl::toROSMsg (*cloud_temp, mesh.cloud);
+    sensor_msgs::PointCloud2 normal_cloud2;
+    pcl::toROSMsg (*normal_cloud, normal_cloud2);
+    sensor_msgs::PointCloud2 aux;
+    pcl::concatenateFields (normal_cloud2, mesh.cloud, aux);
+    mesh.cloud = aux;
   }
 
+
+
+  // Now handle the polygons
   mesh.polygons.resize (nr_polygons);
   vtkIdType* cell_points;
   vtkIdType nr_cell_points;
