@@ -139,7 +139,7 @@ transformPointCloud2 (const sensor_msgs::PointCloud2 &input, sensor_msgs::PointC
   {
     if (input.fields[i].name == "rgb")
       has_rgb = true;
-    if (input.fields[i].name == "normals")
+    if (input.fields[i].name == "normal_x")
       has_normals = true;
   }
 
