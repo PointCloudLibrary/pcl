@@ -135,7 +135,7 @@ main (int argc, char** argv)
   pcd_file_indices = parse_file_extension_argument (argc, argv, ".pcd");
   if (pcd_file_indices.size () != 1)
   {
-    print_error ("Need one input PCD file and one output PCD file to continue.\n");
+    print_error ("Need one input PCD file and one output VTK file to continue.\n");
     return (-1);
   }
 
