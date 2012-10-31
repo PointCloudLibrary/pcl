@@ -219,6 +219,19 @@ pcl::VoxelGrid<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
   else
     getMinMax3D (input_, x_idx_, y_idx_, z_idx_, min_p, max_p);
 
+  // Check that the leaf size is not too small, given the size of the data
+  int64_t dx = static_cast<int64_t>((max_p[0] - min_p[0]) * inverse_leaf_size_[0])+1;
+  int64_t dy = static_cast<int64_t>((max_p[1] - min_p[1]) * inverse_leaf_size_[1])+1;
+  int64_t dz = static_cast<int64_t>((max_p[2] - min_p[2]) * inverse_leaf_size_[2])+1;
+
+  if( (dx*dy*dz) > static_cast<int64_t>(std::numeric_limits<int32_t>::max()) )
+  {
+    PCL_WARN("[pcl::%s::applyFilter] Leaf size is too small for the input dataset. Integer indices would overflow.", getClassName().c_str());
+    output.width = output.height = 0;
+    output.data.clear();
+    return;
+  }
+
   // Compute the minimum and maximum bounding box values
   min_b_[0] = static_cast<int> (floor (min_p[0] * inverse_leaf_size_[0]));
   max_b_[0] = static_cast<int> (floor (max_p[0] * inverse_leaf_size_[0]));
