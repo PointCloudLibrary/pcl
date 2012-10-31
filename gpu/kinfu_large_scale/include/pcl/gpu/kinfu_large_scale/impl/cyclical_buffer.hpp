@@ -39,7 +39,7 @@
 #define PCL_CYCLICAL_BUFFER_IMPL_HPP_
 
 #include <pcl/gpu/kinfu_large_scale/cyclical_buffer.h>
-
+#include "../../../../../src/internal.h"
 
 bool 
 pcl::gpu::CyclicalBuffer::checkForShift (const pcl::gpu::TsdfVolume::Ptr volume, const Eigen::Affine3f &cam_pose, const double distance_camera_target, const bool perform_shift, const bool last_shift)

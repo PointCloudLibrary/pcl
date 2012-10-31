@@ -47,7 +47,7 @@
 #include <pcl/gpu/kinfu_large_scale/point_intensity.h>
 
 #include <pcl/gpu/kinfu_large_scale/world_model.h>
-#include "../../../../src/internal.h"
+
 
 #include <pcl/io/pcd_io.h>
 namespace pcl
