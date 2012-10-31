@@ -50,11 +50,13 @@ using namespace pcl::console;
 void
 printHelp (int, char **argv)
 {
-  print_error ("Syntax is: %s input.vtk output.pcd\n", argv[0]);
+  print_error ("Syntax is: %s input.vtk output.pcd [options]\n", argv[0]);
+  print_info ("where options are: \n");
+  print_info ("     -copy_normals 0/1 : set to true (1) or false (0) if the output PointCloud should contain normals or not.\n");
 }
 
-void
-saveCloud (const std::string &filename, const pcl::PointCloud<pcl::PointXYZ> &cloud)
+template <typename T> void
+saveCloud (const std::string &filename, const pcl::PointCloud<T> &cloud)
 {
   TicToc tt;
   tt.tic ();
@@ -98,10 +100,30 @@ main (int argc, char** argv)
   vtkSmartPointer<vtkPolyData> polydata = reader->GetOutput ();
   print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", polydata->GetNumberOfPoints ()); print_info (" points]\n");
 
-  pcl::PointCloud<pcl::PointXYZ> cloud;
-  vtkPolyDataToPointCloud (polydata, cloud);
+  bool copy_normals = false;
+  parse_argument (argc, argv, "-copy_normals", copy_normals);
+  PCL_INFO ("Copy normals: %s.\n", copy_normals ? "true" : "false");
 
-  // Convert to pcd and save
-  saveCloud (argv[pcd_file_indices[0]], cloud);
+  if (copy_normals)
+  {
+    vtkSmartPointer<vtkPolyDataNormals> ng = vtkSmartPointer<vtkPolyDataNormals>::New ();
+    ng->SetInput (polydata);
+    ng->ComputePointNormalsOn ();
+    ng->ComputeCellNormalsOff ();
+    ng->Update ();
+    polydata = ng->GetOutput ();
+
+    pcl::PointCloud<pcl::PointNormal> cloud;
+    vtkPolyDataToPointCloud (polydata, cloud);
+    // Convert to pcd and save
+    saveCloud (argv[pcd_file_indices[0]], cloud);
+  }
+  else
+  { 
+    pcl::PointCloud<pcl::PointXYZ> cloud;
+    vtkPolyDataToPointCloud (polydata, cloud);
+    // Convert to pcd and save
+    saveCloud (argv[pcd_file_indices[0]], cloud);
+  }
 }
 
