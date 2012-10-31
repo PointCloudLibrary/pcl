@@ -57,11 +57,11 @@ template <typename PointInT> void
 pcl::ConvexHull<PointInT>::calculateInputDimension ()
 {
   PCL_DEBUG ("[pcl::%s::calculateInputDimension] WARNING: Input dimension not specified.  Automatically determining input dimension.\n", getClassName ().c_str ());
-  EIGEN_ALIGN16 Eigen::Matrix3f covariance_matrix;
-  Eigen::Vector4f xyz_centroid;
+  EIGEN_ALIGN16 Eigen::Matrix3d covariance_matrix;
+  Eigen::Vector4d xyz_centroid;
   computeMeanAndCovarianceMatrix (*input_, *indices_, covariance_matrix, xyz_centroid);
 
-  EIGEN_ALIGN16 Eigen::Vector3f eigen_values;
+  EIGEN_ALIGN16 Eigen::Vector3d eigen_values;
   pcl::eigen33 (covariance_matrix, eigen_values);
 
   if (eigen_values[0] / eigen_values[2] < 1.0e-3)
@@ -99,16 +99,16 @@ pcl::ConvexHull<PointInT>::performReconstruction2D (PointCloud &hull, std::vecto
   normal_calc_cloud.points[1] = p1;
   normal_calc_cloud.points[2] = p2;
     
-  Eigen::Vector4f normal_calc_centroid;
-  Eigen::Matrix3f normal_calc_covariance;
+  Eigen::Vector4d normal_calc_centroid;
+  Eigen::Matrix3d normal_calc_covariance;
   pcl::computeMeanAndCovarianceMatrix (normal_calc_cloud, normal_calc_covariance, normal_calc_centroid);
   // Need to set -1 here. See eigen33 for explanations.
-  Eigen::Vector3f::Scalar eigen_value;
-  Eigen::Vector3f plane_params;
+  Eigen::Vector3d::Scalar eigen_value;
+  Eigen::Vector3d plane_params;
   pcl::eigen33 (normal_calc_covariance, eigen_value, plane_params);
-  float theta_x = fabsf (plane_params.dot (x_axis_));
-  float theta_y = fabsf (plane_params.dot (y_axis_));
-  float theta_z = fabsf (plane_params.dot (z_axis_));
+  float theta_x = fabs (plane_params.dot (x_axis_));
+  float theta_y = fabs (plane_params.dot (y_axis_));
+  float theta_z = fabs (plane_params.dot (z_axis_));
 
   // Check for degenerate cases of each projection
   // We must avoid projections in which the plane projects as a line

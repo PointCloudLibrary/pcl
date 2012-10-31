@@ -241,13 +241,13 @@ namespace pcl
       std::string qhull_flags;
 
       /* \brief x-axis - for checking valid projections. */
-      const Eigen::Vector3f x_axis_;
+      const Eigen::Vector3d x_axis_;
 
       /* \brief y-axis - for checking valid projections. */
-      const Eigen::Vector3f y_axis_;
+      const Eigen::Vector3d y_axis_;
 
       /* \brief z-axis - for checking valid projections. */
-      const Eigen::Vector3f z_axis_;
+      const Eigen::Vector3d z_axis_;
 
       public:
         EIGEN_MAKE_ALIGNED_OPERATOR_NEW
