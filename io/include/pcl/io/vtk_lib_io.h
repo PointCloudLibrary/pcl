@@ -70,6 +70,7 @@
 #include <vtkSTLWriter.h>
 #include <vtkPNGReader.h>
 #include <vtkImageData.h>
+#include <vtkPolyDataNormals.h>
 
 namespace pcl
 {
