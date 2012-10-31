@@ -131,6 +131,7 @@ namespace pcl
       inline int
       getDim () const
       {
+        PCL_WARN ("[pcl::%s::getDim] This method is deprecated. Please use getDimension () instead.\n", getClassName ().c_str ());
         return dim_;
       }
 
