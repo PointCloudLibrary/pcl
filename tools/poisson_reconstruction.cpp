@@ -64,7 +64,7 @@ printHelp (int, char **argv)
   print_info ("                     -iso_divide X     = Set the depth at which a block iso-surface extractor should be used to extract the iso-surface (default: ");
   print_value ("%d", default_iso_divide); print_info (")\n");
   print_info ("                     -point_weight X   = Specifies the importance that interpolation of the point samples is given in the formulation of the screened Poisson equation. The results of the original (unscreened) Poisson Reconstruction can be obtained by setting this value to 0. (default: ");
-  print_value ("%d", default_point_weight); print_info (")\n");
+  print_value ("%f", default_point_weight); print_info (")\n");
 }
 
 bool
