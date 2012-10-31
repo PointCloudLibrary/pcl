@@ -102,9 +102,9 @@ pcl::io::vtkPolyDataToPointCloud (vtkPolyData* const polydata, pcl::PointCloud<P
   pcl::for_each_type<FieldList> (pcl::CopyIfFieldExists<typename CloudT::PointType, float> (test_point,
                                                                                             "normal_x", has_normal_x, normal_x_val));
   pcl::for_each_type<FieldList> (pcl::CopyIfFieldExists<typename CloudT::PointType, float> (test_point,
-                                                                                            "y_normal", has_normal_y, normal_y_val));
+                                                                                            "normal_y", has_normal_y, normal_y_val));
   pcl::for_each_type<FieldList> (pcl::CopyIfFieldExists<typename CloudT::PointType, float> (test_point,
-                                                                                            "z_normal", has_normal_z, normal_z_val));
+                                                                                            "normal_z", has_normal_z, normal_z_val));
 
   vtkFloatArray* normals = vtkFloatArray::SafeDownCast (polydata->GetPointData ()->GetNormals ());
   if (has_normal_x && has_normal_y && has_normal_z && normals)
@@ -200,11 +200,11 @@ pcl::io::vtkStructuredGridToPointCloud (vtkStructuredGrid* const structured_grid
   bool has_normal_x = false; bool has_normal_y = false; bool has_normal_z = false;
   float normal_x_val = 0.0f; float normal_y_val = 0.0f; float normal_z_val = 0.0f;
   pcl::for_each_type<FieldList> (pcl::CopyIfFieldExists<typename CloudT::PointType, float> (test_point,
-                                                                                            "x_normal", has_normal_x, normal_x_val));
+                                                                                            "normal_x", has_normal_x, normal_x_val));
   pcl::for_each_type<FieldList> (pcl::CopyIfFieldExists<typename CloudT::PointType, float> (test_point,
-                                                                                            "y_normal", has_normal_y, normal_y_val));
+                                                                                            "normal_y", has_normal_y, normal_y_val));
   pcl::for_each_type<FieldList> (pcl::CopyIfFieldExists<typename CloudT::PointType, float> (test_point,
-                                                                                            "z_normal", has_normal_z, normal_z_val));
+                                                                                            "normal_z", has_normal_z, normal_z_val));
 
   vtkFloatArray* normals = vtkFloatArray::SafeDownCast (structured_grid->GetPointData ()->GetNormals ());
 
@@ -313,9 +313,9 @@ pcl::io::pointCloudTovtkPolyData (const pcl::PointCloud<PointT>& cloud, vtkPolyD
     for (size_t i = 0; i < cloud.points.size (); ++i)
     {
       typename CloudT::PointType p = cloud.points[i];
-      pcl::for_each_type<FieldList> (pcl::CopyIfFieldExists<typename CloudT::PointType, float> (p, "x_normal", has_normal_x, normal_x_val));
-      pcl::for_each_type<FieldList> (pcl::CopyIfFieldExists<typename CloudT::PointType, float> (p, "y_normal", has_normal_y, normal_y_val));
-      pcl::for_each_type<FieldList> (pcl::CopyIfFieldExists<typename CloudT::PointType, float> (p, "z_normal", has_normal_z, normal_z_val));
+      pcl::for_each_type<FieldList> (pcl::CopyIfFieldExists<typename CloudT::PointType, float> (p, "normal_x", has_normal_x, normal_x_val));
+      pcl::for_each_type<FieldList> (pcl::CopyIfFieldExists<typename CloudT::PointType, float> (p, "normal_y", has_normal_y, normal_y_val));
+      pcl::for_each_type<FieldList> (pcl::CopyIfFieldExists<typename CloudT::PointType, float> (p, "normal_z", has_normal_z, normal_z_val));
       float normal[3] = {normal_x_val, normal_y_val, normal_z_val};
       normals->SetTupleValue (i, normal);
     }
@@ -421,9 +421,9 @@ pcl::io::pointCloudTovtkStructuredGrid (const pcl::PointCloud<PointT>& cloud, vt
         if (pcl::isFinite (point))
         {
           typename CloudT::PointType p = cloud.points[i];
-          pcl::for_each_type<FieldList> (pcl::CopyIfFieldExists<typename CloudT::PointType, float> (p, "x_normal", has_normal_x, normal_x_val));
-          pcl::for_each_type<FieldList> (pcl::CopyIfFieldExists<typename CloudT::PointType, float> (p, "y_normal", has_normal_y, normal_y_val));
-          pcl::for_each_type<FieldList> (pcl::CopyIfFieldExists<typename CloudT::PointType, float> (p, "z_normal", has_normal_z, normal_z_val));
+          pcl::for_each_type<FieldList> (pcl::CopyIfFieldExists<typename CloudT::PointType, float> (p, "normal_x", has_normal_x, normal_x_val));
+          pcl::for_each_type<FieldList> (pcl::CopyIfFieldExists<typename CloudT::PointType, float> (p, "normal_y", has_normal_y, normal_y_val));
+          pcl::for_each_type<FieldList> (pcl::CopyIfFieldExists<typename CloudT::PointType, float> (p, "normal_z", has_normal_z, normal_z_val));
           float normal[3] = {normal_x_val, normal_y_val, normal_z_val};
           normals->SetTupleValue (pointId, normal);
         }
