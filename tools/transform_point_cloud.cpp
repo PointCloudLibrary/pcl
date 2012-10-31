@@ -175,8 +175,9 @@ saveCloud (const std::string &filename, const sensor_msgs::PointCloud2 &output)
   tt.tic ();
 
   print_highlight ("Saving "); print_value ("%s ", filename.c_str ());
-  
-  pcl::io::savePCDFile (filename, output);
+
+  PCDWriter w;
+  w.writeBinaryCompressed (filename, output);
   
   printElapsedTimeAndNumberOfPoints (tt.toc (), output.width, output.height);
 }
