@@ -45,6 +45,9 @@
 #include <pcl/features/normal_3d.h>
 #include <pcl/surface/concave_hull.h>
 #include <pcl/common/common.h>
+#include <pcl/sample_consensus/sac_model_plane.h>
+#include <pcl/filters/project_inliers.h>
+
 
 using namespace pcl;
 using namespace pcl::io;
@@ -108,6 +111,42 @@ TEST (PCL, ConcaveHull_bunny)
   //toROSMsg (alpha_shape2, concave.cloud);
   //concave.polygons = polygons_alpha2;
   //saveVTKFile ("./test/bun0-concave2d.vtk", concave);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, ConcaveHull_planar_bunny)
+{
+  ConcaveHull<PointXYZ> concave_hull_3d;
+  concave_hull_3d.setAlpha (0.5);
+  concave_hull_3d.setInputCloud (cloud);
+  PointCloud<PointXYZ> hull_3d;
+  concave_hull_3d.reconstruct (hull_3d);
+
+  EXPECT_EQ (concave_hull_3d.getDimension (), 3);
+
+
+  ModelCoefficients::Ptr plane_coefficients (new ModelCoefficients ());
+  plane_coefficients->values.resize (4);
+  plane_coefficients->values[0] = -0.010666;
+  plane_coefficients->values[1] = -0.793771;
+  plane_coefficients->values[2] = -0.607779;
+  plane_coefficients->values[3] = 0.993252;
+
+  /// Project segmented object points onto plane
+  ProjectInliers<PointXYZ> project_inliers_filter;
+  project_inliers_filter.setInputCloud (cloud);
+  project_inliers_filter.setModelType (SACMODEL_PLANE);
+  project_inliers_filter.setModelCoefficients (plane_coefficients);
+  PointCloud<PointXYZ>::Ptr cloud_projected (new PointCloud<PointXYZ> ());
+  project_inliers_filter.filter (*cloud_projected);
+
+  ConcaveHull<PointXYZ> concave_hull_2d;
+  concave_hull_2d.setAlpha (0.5);
+  concave_hull_2d.setInputCloud (cloud_projected);
+  PointCloud<PointXYZ> hull_2d;
+  concave_hull_2d.reconstruct (hull_2d);
+
+  EXPECT_EQ (concave_hull_2d.getDimension (), 2);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -216,7 +255,8 @@ main (int argc, char** argv)
   tree2->setInputCloud (cloud_with_normals);
 
   // Process for update cloud
-  if(argc == 3){
+  if (argc == 3)
+  {
     sensor_msgs::PointCloud2 cloud_blob1;
     loadPCDFile (argv[2], cloud_blob1);
     fromROSMsg (cloud_blob1, *cloud1);

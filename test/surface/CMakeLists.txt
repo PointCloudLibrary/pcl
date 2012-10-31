@@ -30,11 +30,11 @@ PCL_ADD_TEST(surface_ear_clipping test_ear_clipping
 if(QHULL_FOUND)
   PCL_ADD_TEST(surface_convex_hull test_convex_hull
                FILES test_convex_hull.cpp
-               LINK_WITH pcl_gtest pcl_io pcl_kdtree pcl_surface pcl_features
+               LINK_WITH pcl_gtest pcl_io pcl_kdtree pcl_surface pcl_features pcl_filters
                ARGUMENTS ${PCL_SOURCE_DIR}/test/bun0.pcd)
   PCL_ADD_TEST(surface_concave test_concave_hull
                FILES test_concave_hull.cpp
-               LINK_WITH pcl_gtest pcl_io pcl_kdtree pcl_surface pcl_features
+               LINK_WITH pcl_gtest pcl_io pcl_kdtree pcl_surface pcl_features pcl_filters
                ARGUMENTS ${PCL_SOURCE_DIR}/test/bun0.pcd)
 endif(QHULL_FOUND)
 
