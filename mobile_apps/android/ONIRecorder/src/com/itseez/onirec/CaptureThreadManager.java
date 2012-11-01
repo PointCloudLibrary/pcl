@@ -269,11 +269,9 @@ class CaptureThreadManager {
                         contextHolder.getContext().startGeneratingAll();
                         handler.post(processFrame);
                     }
-
-                } catch (GeneralException e) {
-                    Log.wtf(TAG, e);
-                    throw new RuntimeException(e);
-                    //TODO: Handle me.
+                } catch (GeneralException ge) {
+                    Log.e(TAG, "Failed to switch mode.", ge);
+                    reportError(Feedback.Error.FailedDuringCapture, ge.getMessage());
                 }
             }
         });

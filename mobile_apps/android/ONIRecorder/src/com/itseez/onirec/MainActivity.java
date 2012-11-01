@@ -523,6 +523,8 @@ public class MainActivity extends Activity {
         private void setRecordingState(boolean enabled, boolean stopping) {
             isRecording = enabled;
             stoppingRecording = stopping;
+            spinnerColorMode.setEnabled(!enabled);
+            spinnerDepthMode.setEnabled(!enabled);
             invalidateOptionsMenu();
         }
 
