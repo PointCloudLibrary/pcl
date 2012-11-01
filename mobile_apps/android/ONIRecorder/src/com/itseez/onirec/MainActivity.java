@@ -510,8 +510,14 @@ public class MainActivity extends Activity {
                 spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                     @Override
                     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                        if (parent == spinnerDepthMode)
-                            manager.setDepthMode(spinnerAdapterDepth.getItem(position).getMode());
+                        switch (parent.getId()) {
+                            case R.id.spinner_color_mode:
+                                manager.setColorMode(spinnerAdapterColor.getItem(position).getMode());
+                                break;
+                            case R.id.spinner_depth_mode:
+                                manager.setDepthMode(spinnerAdapterDepth.getItem(position).getMode());
+                                break;
+                        }
                     }
 
                     @Override

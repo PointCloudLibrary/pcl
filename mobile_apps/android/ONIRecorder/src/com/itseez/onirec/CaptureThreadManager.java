@@ -243,6 +243,40 @@ class CaptureThreadManager {
         });
     }
 
+    public void setColorMode(final MapOutputMode mode) {
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                if (mode == null && color == null) return;
+
+                try {
+                    if (depth != null || color != null) {
+                        contextHolder.getContext().stopGeneratingAll();
+                        handler.removeCallbacks(processFrame);
+                    }
+
+                    if (mode == null) {
+                        color.dispose();
+                        color = null;
+                    } else if (color == null) {
+                        color = contextHolder.createImageGenerator();
+                        color.setMapOutputMode(mode);
+                    } else {
+                        color.setMapOutputMode(mode);
+                    }
+
+                    if (depth != null || color != null) {
+                        contextHolder.getContext().startGeneratingAll();
+                        handler.post(processFrame);
+                    }
+                } catch (GeneralException ge) {
+                    Log.e(TAG, "Failed to switch mode.", ge);
+                    reportError(Feedback.Error.FailedDuringCapture, ge.getMessage());
+                }
+            }
+        });
+    }
+
     public void setDepthMode(final MapOutputMode mode) {
         handler.post(new Runnable() {
             @Override
