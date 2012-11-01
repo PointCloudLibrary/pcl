@@ -46,6 +46,7 @@ pcl::NormalBasedSignatureEstimation<PointT, PointNT, PointFeature>::computeFeatu
   // do a few checks before starting the computations
 
   PointFeature test_feature;
+  (void)test_feature;
   if (N_prime_ * M_prime_ != sizeof (test_feature.values) / sizeof (float))
   {
     PCL_ERROR ("NormalBasedSignatureEstimation: not using the proper signature size: %u vs %u\n", N_prime_ * M_prime_, sizeof (test_feature.values) / sizeof (float));
