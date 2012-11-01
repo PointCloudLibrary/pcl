@@ -69,8 +69,7 @@ public class MainActivity extends Activity {
                         Log.i(TAG, "USB permission granted for device " + device.getDeviceName() + ".");
                         awaitingPermission.remove(device);
                         state.usbPermissionChange(device, true);
-                    }
-                    else {
+                    } else {
                         Log.i(TAG, "USB permission denied for device " + device.getDeviceName() + ".");
                         state.usbPermissionChange(device, false);
                     }
@@ -154,12 +153,12 @@ public class MainActivity extends Activity {
 
         awaitingPermission.clear();
 
-        for (String dev_name: dev_list.keySet()) {
+        for (String dev_name : dev_list.keySet()) {
             UsbDevice device = dev_list.get(dev_name);
             int vid = device.getVendorId(), pid = device.getProductId();
 
             if ((vid == 0x045e && pid == 0x02ae) || // Microsoft Kinect for Xbox 360
-                (vid == 0x1d27 && pid == 0x0600)) { // ASUS Xtion PRO
+                    (vid == 0x1d27 && pid == 0x0600)) { // ASUS Xtion PRO
                 Log.i(TAG, "Requesting USB permission for device " + device.getDeviceName() + ".");
                 awaitingPermission.add(device);
             }
@@ -185,17 +184,35 @@ public class MainActivity extends Activity {
     }
 
     private abstract static class State {
-        public void enter() {}
-        public void leave() {}
+        public void enter() {
+        }
 
-        public void start() { throw new IllegalStateException(); }
-        public void stop() { throw new IllegalStateException(); }
-        public void surfaceStateChange() { throw new IllegalStateException(); }
-        public void usbPermissionChange(UsbDevice device, boolean granted) { throw new IllegalStateException(); }
+        public void leave() {
+        }
 
-        public boolean prepareMenu(Menu menu) { return false; }
+        public void start() {
+            throw new IllegalStateException();
+        }
 
-        public boolean menuItemClicked(MenuItem item) { return false; }
+        public void stop() {
+            throw new IllegalStateException();
+        }
+
+        public void surfaceStateChange() {
+            throw new IllegalStateException();
+        }
+
+        public void usbPermissionChange(UsbDevice device, boolean granted) {
+            throw new IllegalStateException();
+        }
+
+        public boolean prepareMenu(Menu menu) {
+            return false;
+        }
+
+        public boolean menuItemClicked(MenuItem item) {
+            return false;
+        }
     }
 
     private class StateStopped extends State {
@@ -210,7 +227,8 @@ public class MainActivity extends Activity {
         }
 
         @Override
-        public void surfaceStateChange() { }
+        public void surfaceStateChange() {
+        }
     }
 
     private class StateIdle extends State {
@@ -230,9 +248,13 @@ public class MainActivity extends Activity {
             setState(new StateStopped());
         }
 
-        @Override public void surfaceStateChange() { }
+        @Override
+        public void surfaceStateChange() {
+        }
 
-        @Override public void usbPermissionChange(UsbDevice device, boolean granted) { }
+        @Override
+        public void usbPermissionChange(UsbDevice device, boolean granted) {
+        }
 
         @Override
         public boolean prepareMenu(Menu menu) {
@@ -266,7 +288,7 @@ public class MainActivity extends Activity {
 
             if (!awaitingPermission.isEmpty()) {
                 UsbManager manager = UsbHelper.getManager();
-                for (UsbDevice device: awaitingPermission)
+                for (UsbDevice device : awaitingPermission)
                     manager.requestPermission(device, permIntent);
             }
 
@@ -378,7 +400,8 @@ public class MainActivity extends Activity {
         }
 
         @Override
-        public void usbPermissionChange(UsbDevice device, boolean granted) { }
+        public void usbPermissionChange(UsbDevice device, boolean granted) {
+        }
 
         @Override
         public boolean prepareMenu(Menu menu) {
@@ -395,7 +418,7 @@ public class MainActivity extends Activity {
                     if (awaitingPermission.isEmpty())
                         setState(new StateIdle(R.string.status_no_devices));
                     else
-                       setState(new StateWaiting(new StateCapturing()));
+                        setState(new StateWaiting(new StateCapturing()));
 
                     return true;
             }
@@ -432,28 +455,28 @@ public class MainActivity extends Activity {
                 @Override
                 public void reportError(Error error, String oniMessage) {
                     switch (error) {
-                    case FailedToStartCapture:
-                        setState(new StateIdle(R.string.status_openni_error,
-                                getResources().getString(R.string.error_failed_to_start_capture), oniMessage));
-                        return;
-                    case FailedDuringCapture:
-                        if (isRecording) //noinspection ResultOfMethodCallIgnored
-                            currentRecording.delete();
-                        setState(new StateIdle(R.string.status_openni_error,
-                                getResources().getString(R.string.error_failed_during_capture), oniMessage));
-                        return;
-                    case FailedToStartRecording:
-                        setRecordingState(false, false);
-                        Toast.makeText(MainActivity.this,
-                                String.format(getResources().getString(R.string.status_openni_error),
-                                        getResources().getString(R.string.error_failed_to_start_recording),
-                                        oniMessage),
-                                Toast.LENGTH_LONG).show();
+                        case FailedToStartCapture:
+                            setState(new StateIdle(R.string.status_openni_error,
+                                    getResources().getString(R.string.error_failed_to_start_capture), oniMessage));
+                            return;
+                        case FailedDuringCapture:
+                            if (isRecording) //noinspection ResultOfMethodCallIgnored
+                                currentRecording.delete();
+                            setState(new StateIdle(R.string.status_openni_error,
+                                    getResources().getString(R.string.error_failed_during_capture), oniMessage));
+                            return;
+                        case FailedToStartRecording:
+                            setRecordingState(false, false);
+                            Toast.makeText(MainActivity.this,
+                                    String.format(getResources().getString(R.string.status_openni_error),
+                                            getResources().getString(R.string.error_failed_to_start_recording),
+                                            oniMessage),
+                                    Toast.LENGTH_LONG).show();
 
-                        //noinspection ResultOfMethodCallIgnored
-                        currentRecording.delete();
-                    default:
-                        throw new IllegalStateException();
+                            //noinspection ResultOfMethodCallIgnored
+                            currentRecording.delete();
+                        default:
+                            throw new IllegalStateException();
                     }
                 }
 
@@ -507,13 +530,11 @@ public class MainActivity extends Activity {
         @Override
         public boolean menuItemClicked(MenuItem item) {
             switch (item.getItemId()) {
-                case R.id.menu_item_replay:
-                {
+                case R.id.menu_item_replay: {
                     initiateReplay();
                     return true;
                 }
-                case R.id.menu_item_record:
-                {
+                case R.id.menu_item_record: {
                     int file_no = 0;
 
                     do
@@ -528,8 +549,7 @@ public class MainActivity extends Activity {
 
                     return true;
                 }
-                case R.id.menu_item_stop_recording:
-                {
+                case R.id.menu_item_stop_recording: {
                     manager.stopRecording();
                     setRecordingState(true, true);
                     return true;
