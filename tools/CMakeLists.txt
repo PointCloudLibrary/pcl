@@ -123,6 +123,11 @@ if (build)
   PCL_ADD_EXECUTABLE(pcl_fast_bilateral_filter ${SUBSYS_NAME} fast_bilateral_filter.cpp)
   target_link_libraries(pcl_fast_bilateral_filter pcl_common pcl_io pcl_filters)
 
+  if(BUILD_OPENNI AND OPENNI_FOUND)
+    PCL_ADD_EXECUTABLE(pcl_oni2pcd ${SUBSYS_NAME} oni2pcd.cpp)
+    target_link_libraries(pcl_oni2pcd pcl_common pcl_io)
+  endif(BUILD_OPENNI AND OPENNI_FOUND)
+
   if (QHULL_FOUND)
     PCL_ADD_EXECUTABLE(pcl_crop_to_hull ${SUBSYS_NAME} crop_to_hull.cpp)
     target_link_libraries(pcl_crop_to_hull pcl_common pcl_io pcl_filters pcl_surface)
