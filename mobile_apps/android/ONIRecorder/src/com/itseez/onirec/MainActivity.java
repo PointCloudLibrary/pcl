@@ -9,10 +9,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 import android.view.*;
-import android.widget.ArrayAdapter;
-import android.widget.Spinner;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.*;
 import org.OpenNI.MapOutputMode;
 import org.libusb.UsbHelper;
 
@@ -336,7 +333,49 @@ public class MainActivity extends Activity {
 
     private class StateReplaying extends State {
         CaptureThreadManager manager;
-        File recording;
+        final File recording;
+
+        final CaptureThreadManager.Feedback feedback = new CaptureThreadManager.Feedback() {
+            @Override
+            public void setFps(double fps) {
+                textFps.setText(String.format(getResources().getString(R.string.x_fps), fps));
+            }
+
+            @Override
+            public void reportError(Error error, String oniMessage) {
+                switch (error) {
+                    case FailedToStartCapture:
+                        setState(new StateIdle(R.string.status_openni_error,
+                                getResources().getString(R.string.error_failed_to_start_replay), oniMessage));
+                        return;
+                    case FailedDuringCapture:
+                        setState(new StateIdle(R.string.status_openni_error,
+                                getResources().getString(R.string.error_failed_during_replay), oniMessage));
+                        return;
+                    default:
+                        throw new IllegalStateException();
+                }
+            }
+
+            @Override
+            public void reportRecordingFinished() {
+                throw new IllegalStateException();
+            }
+
+            @Override
+            public void reportCaptureStarted(MapOutputMode[] colorModes, MapOutputMode currentColorMode,
+                                             MapOutputMode[] depthModes, MapOutputMode currentDepthMode) {
+                configureModeSpinner(currentColorMode, spinnerColorMode, adapterSpinnerColor);
+                configureModeSpinner(currentDepthMode, spinnerDepthMode, adapterSpinnerDepth);
+            }
+
+            private void configureModeSpinner(MapOutputMode mode, Spinner spinner, ArrayAdapter<MapModeWrapper> adapter) {
+                adapter.clear();
+                adapter.add(new MapModeWrapper(MainActivity.this, mode));
+                spinner.setVisibility(View.VISIBLE);
+                spinner.setEnabled(false);
+            }
+        };
 
         public StateReplaying(File recording) {
             this.recording = recording;
@@ -349,49 +388,8 @@ public class MainActivity extends Activity {
             textFps.setText(String.format(getResources().getString(R.string.x_fps), 0.));
             textStatus.setText(String.format(getResources().getString(R.string.status_replaying), recording.getName()));
 
-            CaptureThreadManager.Feedback feedback = new CaptureThreadManager.Feedback() {
-                @Override
-                public void setFps(double fps) {
-                    textFps.setText(String.format(getResources().getString(R.string.x_fps), fps));
-                }
-
-                @Override
-                public void reportError(Error error, String oniMessage) {
-                    switch (error) {
-                        case FailedToStartCapture:
-                            setState(new StateIdle(R.string.status_openni_error,
-                                    getResources().getString(R.string.error_failed_to_start_replay), oniMessage));
-                            return;
-                        case FailedDuringCapture:
-                            setState(new StateIdle(R.string.status_openni_error,
-                                    getResources().getString(R.string.error_failed_during_replay), oniMessage));
-                            return;
-                        default:
-                            throw new IllegalStateException();
-                    }
-                }
-
-                @Override
-                public void reportRecordingFinished() {
-                    throw new IllegalStateException();
-                }
-
-                @Override
-                public void reportCaptureStarted(MapOutputMode[] colorModes, MapOutputMode currentColorMode,
-                                                 MapOutputMode[] depthModes, MapOutputMode currentDepthMode) {
-                    configureModeSpinner(currentColorMode, spinnerColorMode, adapterSpinnerColor);
-                    configureModeSpinner(currentDepthMode, spinnerDepthMode, adapterSpinnerDepth);
-                }
-
-                private void configureModeSpinner(MapOutputMode mode, Spinner spinner, ArrayAdapter<MapModeWrapper> adapter) {
-                    adapter.clear();
-                    adapter.add(new MapModeWrapper(MainActivity.this, mode));
-                    spinner.setVisibility(View.VISIBLE);
-                    spinner.setEnabled(false);
-                }
-            };
-
-            manager = new CaptureThreadManager(surfaceColor.getHolder(), surfaceDepth.getHolder(), feedback, recording);
+            manager = new CaptureThreadManager(surfaceColor.getHolder(), surfaceDepth.getHolder(), feedback,
+                    new RecordingContextHolderFactory(recording));
         }
 
         @Override
@@ -437,6 +435,91 @@ public class MainActivity extends Activity {
         boolean isRecording = false, stoppingRecording = false;
         File currentRecording;
 
+        final CaptureThreadManager.Feedback feedback = new CaptureThreadManager.Feedback() {
+            @Override
+            public void setFps(double fps) {
+                textFps.setText(String.format(getResources().getString(R.string.x_fps), fps));
+            }
+
+            @Override
+            public void reportError(CaptureThreadManager.Feedback.Error error, String oniMessage) {
+                switch (error) {
+                    case FailedToStartCapture:
+                        setState(new StateIdle(R.string.status_openni_error,
+                                getResources().getString(R.string.error_failed_to_start_capture), oniMessage));
+                        return;
+                    case FailedDuringCapture:
+                        if (isRecording) //noinspection ResultOfMethodCallIgnored
+                            currentRecording.delete();
+                        setState(new StateIdle(R.string.status_openni_error,
+                                getResources().getString(R.string.error_failed_during_capture), oniMessage));
+                        return;
+                    case FailedToStartRecording:
+                        setRecordingState(false, false);
+                        Toast.makeText(MainActivity.this,
+                                String.format(getResources().getString(R.string.status_openni_error),
+                                        getResources().getString(R.string.error_failed_to_start_recording),
+                                        oniMessage),
+                                Toast.LENGTH_LONG).show();
+
+                        //noinspection ResultOfMethodCallIgnored
+                        currentRecording.delete();
+                    default:
+                        throw new IllegalStateException();
+                }
+            }
+
+            @Override
+            public void reportRecordingFinished() {
+                setRecordingState(false, false);
+                textStatus.setText(R.string.status_previewing);
+            }
+
+            @Override
+            public void reportCaptureStarted(MapOutputMode[] colorModes, MapOutputMode currentColorMode,
+                                             MapOutputMode[] depthModes, MapOutputMode currentDepthMode) {
+                configureModeSpinner(colorModes, currentColorMode, spinnerColorMode, adapterSpinnerColor);
+                configureModeSpinner(depthModes, currentDepthMode, spinnerDepthMode, adapterSpinnerDepth);
+            }
+
+            private void configureModeSpinner(MapOutputMode[] modes, MapOutputMode currentMode,
+                                              Spinner spinner, ArrayAdapter<MapModeWrapper> adapter) {
+                adapter.clear();
+                adapter.add(new MapModeWrapper(MainActivity.this, null));
+                MapModeWrapper current_mode_wrapper = new MapModeWrapper(MainActivity.this, currentMode);
+                int current_mode_index = 0;
+
+                if (modes != null) {
+                    Set<MapModeWrapper> unique_modes = new HashSet<MapModeWrapper>(modes.length);
+
+                    for (MapOutputMode mode : modes) {
+                        MapModeWrapper new_mode_wrapper = new MapModeWrapper(MainActivity.this, mode);
+                        if (!unique_modes.contains(new_mode_wrapper)) {
+                            unique_modes.add(new_mode_wrapper);
+                            adapter.add(new_mode_wrapper);
+                            if (current_mode_wrapper.equals(new_mode_wrapper))
+                                current_mode_index = unique_modes.size();
+                        }
+                    }
+                }
+
+                spinner.setSelection(current_mode_index);
+                spinner.setVisibility(View.VISIBLE);
+                spinner.setEnabled(true);
+                spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                        if (parent == spinnerDepthMode)
+                            manager.setDepthMode(adapterSpinnerDepth.getItem(position).getMode());
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> adapterView) {
+                    }
+                });
+            }
+        };
+
         private void setRecordingState(boolean enabled, boolean stopping) {
             isRecording = enabled;
             stoppingRecording = stopping;
@@ -451,79 +534,8 @@ public class MainActivity extends Activity {
             setRecordingState(false, false);
 
             textStatus.setText(R.string.status_previewing);
-            manager = new CaptureThreadManager(surfaceColor.getHolder(), surfaceDepth.getHolder(), new CaptureThreadManager.Feedback() {
-                @Override
-                public void setFps(double fps) {
-                    textFps.setText(String.format(getResources().getString(R.string.x_fps), fps));
-                }
-
-                @Override
-                public void reportError(Error error, String oniMessage) {
-                    switch (error) {
-                        case FailedToStartCapture:
-                            setState(new StateIdle(R.string.status_openni_error,
-                                    getResources().getString(R.string.error_failed_to_start_capture), oniMessage));
-                            return;
-                        case FailedDuringCapture:
-                            if (isRecording) //noinspection ResultOfMethodCallIgnored
-                                currentRecording.delete();
-                            setState(new StateIdle(R.string.status_openni_error,
-                                    getResources().getString(R.string.error_failed_during_capture), oniMessage));
-                            return;
-                        case FailedToStartRecording:
-                            setRecordingState(false, false);
-                            Toast.makeText(MainActivity.this,
-                                    String.format(getResources().getString(R.string.status_openni_error),
-                                            getResources().getString(R.string.error_failed_to_start_recording),
-                                            oniMessage),
-                                    Toast.LENGTH_LONG).show();
-
-                            //noinspection ResultOfMethodCallIgnored
-                            currentRecording.delete();
-                        default:
-                            throw new IllegalStateException();
-                    }
-                }
-
-                @Override
-                public void reportRecordingFinished() {
-                    setRecordingState(false, false);
-                    textStatus.setText(R.string.status_previewing);
-                }
-
-                @Override
-                public void reportCaptureStarted(MapOutputMode[] colorModes, MapOutputMode currentColorMode,
-                                                 MapOutputMode[] depthModes, MapOutputMode currentDepthMode) {
-                    configureModeSpinner(colorModes, currentColorMode, spinnerColorMode, adapterSpinnerColor);
-                    configureModeSpinner(depthModes, currentDepthMode, spinnerDepthMode, adapterSpinnerDepth);
-                }
-
-                private void configureModeSpinner(MapOutputMode[] modes, MapOutputMode currentMode,
-                                                  Spinner spinner, ArrayAdapter<MapModeWrapper> adapter) {
-                    adapter.clear();
-                    adapter.add(new MapModeWrapper(MainActivity.this, null));
-                    MapModeWrapper current_mode_wrapper = new MapModeWrapper(MainActivity.this, currentMode);
-                    int current_mode_index = 0;
-
-                    if (modes != null) {
-                        Set<MapModeWrapper> unique_modes = new HashSet<MapModeWrapper>(modes.length);
-
-                        for (MapOutputMode mode : modes) {
-                            MapModeWrapper new_mode_wrapper = new MapModeWrapper(MainActivity.this, mode);
-                            if (!unique_modes.contains(new_mode_wrapper)) {
-                                unique_modes.add(new_mode_wrapper);
-                                adapter.add(new_mode_wrapper);
-                                if (current_mode_wrapper.equals(new_mode_wrapper))
-                                    current_mode_index = unique_modes.size();
-                            }
-                        }
-                    }
-
-                    spinner.setSelection(current_mode_index);
-                    spinner.setVisibility(View.VISIBLE);
-                    spinner.setEnabled(true);
-                }
-            });
+            manager = new CaptureThreadManager(surfaceColor.getHolder(), surfaceDepth.getHolder(), feedback,
+                    new LiveContextHolderFactory());
         }
 
         @Override
@@ -533,6 +545,10 @@ public class MainActivity extends Activity {
                 currentRecording.delete();
 
             textFps.setVisibility(View.INVISIBLE);
+            spinnerColorMode.setVisibility(View.INVISIBLE);
+            spinnerDepthMode.setVisibility(View.INVISIBLE);
+            spinnerColorMode.setOnItemSelectedListener(null);
+            spinnerDepthMode.setOnItemSelectedListener(null);
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         }
 
