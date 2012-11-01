@@ -40,6 +40,7 @@
 #include <pcl/apps/modeler/cloud_mesh.h>
 #include <pcl/apps/modeler/cloud_mesh_item.h>
 #include <pcl/surface/poisson.h>
+#include <pcl/surface/impl/poisson.hpp>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::modeler::PoissonReconstructionWorker::PoissonReconstructionWorker(const QList<CloudMeshItem*>& cloud_mesh_items, QWidget* parent) :
