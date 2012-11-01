@@ -18,11 +18,14 @@ import java.nio.ShortBuffer;
 
 class CaptureThreadManager {
     public interface Feedback {
-        public enum Error { FailedToStartCapture, FailedDuringCapture, FailedToStartRecording }
+        public enum Error {FailedToStartCapture, FailedDuringCapture, FailedToStartRecording}
 
         void setFps(double fps);
+
         void reportError(Error error, String oniMessage);
+
         void reportRecordingFinished();
+
         void reportCaptureStarted(MapOutputMode[] colorModes, MapOutputMode currentColorMode,
                                   MapOutputMode[] depthModes, MapOutputMode currentDepthMode);
     }
@@ -70,6 +73,7 @@ class CaptureThreadManager {
     private long lastUpdateTime = SystemClock.uptimeMillis();
 
     private native static void imageBufferToBitmap(ByteBuffer buf, Bitmap bm);
+
     private native static void depthBufferToBitmap(ShortBuffer buf, Bitmap bm, int maxZ);
 
     static {
