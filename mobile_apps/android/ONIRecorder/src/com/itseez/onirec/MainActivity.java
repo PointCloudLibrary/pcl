@@ -464,6 +464,7 @@ public class MainActivity extends Activity {
 
                         //noinspection ResultOfMethodCallIgnored
                         currentRecording.delete();
+                        return;
                     default:
                         throw new IllegalStateException();
                 }
