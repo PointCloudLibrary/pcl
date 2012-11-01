@@ -18,9 +18,7 @@ import org.libusb.UsbHelper;
 
 import java.io.File;
 import java.io.FilenameFilter;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public class MainActivity extends Activity {
     private static final String TAG = "onirec.MainActivity";
@@ -60,35 +58,7 @@ public class MainActivity extends Activity {
         return state.menuItemClicked(item);
     }
 
-    private final Set<UsbDevice> awaitingPermission = new HashSet<UsbDevice>();
     private int surfaces = 0;
-
-    private final BroadcastReceiver usbReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            if (ACTION_USB_PERMISSION.equals(action)) {
-                synchronized (this) {
-                    UsbDevice device = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
-
-                    if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
-                        Log.i(TAG, "USB permission granted for device " + device.getDeviceName() + ".");
-                        awaitingPermission.remove(device);
-                        state.usbPermissionChange(device, true);
-                    } else {
-                        Log.i(TAG, "USB permission denied for device " + device.getDeviceName() + ".");
-                        state.usbPermissionChange(device, false);
-                    }
-                }
-            } else if (action.equals(UsbManager.ACTION_USB_DEVICE_ATTACHED)) {
-                UsbDevice device = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
-                Log.i(TAG, "USB device attached: " + device.getDeviceName());
-            } else if (action.equals(UsbManager.ACTION_USB_DEVICE_DETACHED)) {
-                UsbDevice device = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
-                Log.i(TAG, "USB device detached: " + device.getDeviceName());
-            }
-        }
-    };
 
     private final SurfaceHolder.Callback surface_callbacks = new SurfaceHolder.Callback() {
         @Override
@@ -135,13 +105,11 @@ public class MainActivity extends Activity {
         adapterSpinnerDepth.add("DUMMY");
         spinnerDepthMode.setAdapter(adapterSpinnerDepth);
 
-        registerReceiver(usbReceiver, new IntentFilter(ACTION_USB_PERMISSION));
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        unregisterReceiver(usbReceiver);
     }
 
     @Override
@@ -164,12 +132,21 @@ public class MainActivity extends Activity {
         invalidateOptionsMenu();
     }
 
-    private void findInterestingDevices() {
+    private void goToDefaultState() {
+        Collection<UsbDevice> devices = findInterestingDevices();
+
+        if (devices.isEmpty())
+            setState(new StateIdle(R.string.status_no_devices));
+        else
+            setState(new StateWaiting(devices, new StateCapturing()));
+    }
+
+    private Collection<UsbDevice> findInterestingDevices() {
         UsbManager manager = UsbHelper.getManager();
 
         HashMap<String, UsbDevice> dev_list = manager.getDeviceList();
 
-        awaitingPermission.clear();
+        List<UsbDevice> devices = new ArrayList<UsbDevice>();
 
         for (String dev_name : dev_list.keySet()) {
             UsbDevice device = dev_list.get(dev_name);
@@ -178,9 +155,11 @@ public class MainActivity extends Activity {
             if ((vid == 0x045e && pid == 0x02ae) || // Microsoft Kinect for Xbox 360
                     (vid == 0x1d27 && pid == 0x0600)) { // ASUS Xtion PRO
                 Log.i(TAG, "Requesting USB permission for device " + device.getDeviceName() + ".");
-                awaitingPermission.add(device);
+                devices.add(device);
             }
         }
+
+        return devices;
     }
 
     private void initiateReplay() {
@@ -194,8 +173,7 @@ public class MainActivity extends Activity {
         new RecordingPicker(recordings, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                awaitingPermission.clear();
-                setState(new StateWaiting(new StateReplaying(
+                setState(new StateWaiting(new ArrayList<UsbDevice>(), new StateReplaying(
                         new File(Environment.getExternalStorageDirectory(), recordings[i]))));
             }
         }).show(getFragmentManager(), "recordings");
@@ -220,10 +198,6 @@ public class MainActivity extends Activity {
             throw new IllegalStateException();
         }
 
-        public void usbPermissionChange(UsbDevice device, boolean granted) {
-            throw new IllegalStateException();
-        }
-
         public boolean prepareMenu(Menu menu) {
             return false;
         }
@@ -236,12 +210,7 @@ public class MainActivity extends Activity {
     private class StateStopped extends State {
         @Override
         public void start() {
-            findInterestingDevices();
-
-            if (awaitingPermission.isEmpty())
-                setState(new StateIdle(R.string.status_no_devices));
-            else
-                setState(new StateWaiting(new StateCapturing()));
+            goToDefaultState();
         }
 
         @Override
@@ -271,10 +240,6 @@ public class MainActivity extends Activity {
         }
 
         @Override
-        public void usbPermissionChange(UsbDevice device, boolean granted) {
-        }
-
-        @Override
         public boolean prepareMenu(Menu menu) {
             menu.findItem(R.id.menu_item_replay).setVisible(true);
             return true;
@@ -295,13 +260,38 @@ public class MainActivity extends Activity {
     private class StateWaiting extends State {
         private State stateOnSuccess;
         PendingIntent permIntent;
+        private final Set<UsbDevice> awaitingPermission;
 
-        public StateWaiting(State stateOnSuccess) {
+        private final BroadcastReceiver usbReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                String action = intent.getAction();
+                if (ACTION_USB_PERMISSION.equals(action)) {
+                    synchronized (this) {
+                        UsbDevice device = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
+
+                        if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
+                            Log.i(TAG, "USB permission granted for device " + device.getDeviceName() + ".");
+                            awaitingPermission.remove(device);
+                            setLabel();
+                            checkReady();
+                        } else {
+                            Log.i(TAG, "USB permission denied for device " + device.getDeviceName() + ".");
+                            setState(new StateIdle(R.string.status_permission_denied));
+                        }
+                    }
+                }
+            }
+        };
+
+        public StateWaiting(Collection<UsbDevice> devices, State stateOnSuccess) {
+            this.awaitingPermission = new HashSet<UsbDevice>(devices);
             this.stateOnSuccess = stateOnSuccess;
         }
 
         @Override
         public void enter() {
+            registerReceiver(usbReceiver, new IntentFilter(ACTION_USB_PERMISSION));
             permIntent = PendingIntent.getBroadcast(MainActivity.this, 0, new Intent(ACTION_USB_PERMISSION), 0);
 
             if (!awaitingPermission.isEmpty()) {
@@ -317,6 +307,7 @@ public class MainActivity extends Activity {
         @Override
         public void leave() {
             permIntent.cancel();
+            unregisterReceiver(usbReceiver);
         }
 
         private void checkReady() {
@@ -333,16 +324,6 @@ public class MainActivity extends Activity {
         public void surfaceStateChange() {
             setLabel();
             checkReady();
-        }
-
-        @Override
-        public void usbPermissionChange(UsbDevice device, boolean granted) {
-            if (granted) {
-                setLabel();
-                checkReady();
-            } else {
-                setState(new StateIdle(R.string.status_permission_denied));
-            }
         }
 
         private void setLabel() {
@@ -434,11 +415,7 @@ public class MainActivity extends Activity {
 
         @Override
         public void surfaceStateChange() {
-            if (surfaces < 2) setState(new StateWaiting(new StateCapturing()));
-        }
-
-        @Override
-        public void usbPermissionChange(UsbDevice device, boolean granted) {
+            if (surfaces < 2) setState(new StateWaiting(new ArrayList<UsbDevice>(), new StateReplaying(recording)));
         }
 
         @Override
@@ -451,13 +428,7 @@ public class MainActivity extends Activity {
         public boolean menuItemClicked(MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.menu_item_stop_replaying:
-                    findInterestingDevices();
-
-                    if (awaitingPermission.isEmpty())
-                        setState(new StateIdle(R.string.status_no_devices));
-                    else
-                        setState(new StateWaiting(new StateCapturing()));
-
+                    goToDefaultState();
                     return true;
             }
 
@@ -550,14 +521,7 @@ public class MainActivity extends Activity {
         @Override
         public void surfaceStateChange() {
             if (surfaces < 2) {
-                setState(new StateWaiting(new StateCapturing()));
-            }
-        }
-
-        @Override
-        public void usbPermissionChange(UsbDevice device, boolean granted) {
-            if (!granted) {
-                setState(new StateIdle(R.string.status_permission_denied));
+                setState(new StateWaiting(new ArrayList<UsbDevice>(), new StateCapturing()));
             }
         }
 
