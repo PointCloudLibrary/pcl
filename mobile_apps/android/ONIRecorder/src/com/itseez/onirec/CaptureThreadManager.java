@@ -23,6 +23,8 @@ class CaptureThreadManager {
         void setFps(double fps);
         void reportError(Error error, String oniMessage);
         void reportRecordingFinished();
+        void reportCaptureStarted(MapOutputMode[] colorModes, MapOutputMode currentColorMode,
+                                  MapOutputMode[] depthModes, MapOutputMode currentDepthMode);
     }
 
     private static final String TAG = "onirec.CaptureThreadManager";
@@ -152,21 +154,7 @@ class CaptureThreadManager {
     };
 
     public CaptureThreadManager(SurfaceHolder holderColor, SurfaceHolder holderDepth, Feedback feedback) {
-        this.holderColor = holderColor;
-        this.holderDepth = holderDepth;
-        this.feedback = feedback;
-
-        thread = new HandlerThread("Capture Thread");
-        thread.start();
-
-        handler = new Handler(thread.getLooper());
-
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                initOpenNI();
-            }
-        });
+        this(holderColor, holderDepth, feedback, null);
     }
 
     public CaptureThreadManager(SurfaceHolder holderColor, SurfaceHolder holderDepth, Feedback feedback, final File recording) {
@@ -182,7 +170,10 @@ class CaptureThreadManager {
         handler.post(new Runnable() {
             @Override
             public void run() {
-                initOpenNIFromRecording(recording);
+                if (recording != null)
+                    initOpenNIFromRecording(recording);
+                else
+                    initOpenNI();
             }
         });
     }
@@ -242,6 +233,20 @@ class CaptureThreadManager {
         });
     }
 
+    private void reportCaptureStart() throws StatusException {
+        final MapOutputMode[] color_modes = color == null ? null : color.getSupportedMapOutputModes();
+        final MapOutputMode color_current_mode = color == null ? null : color.getMapOutputMode();
+        final MapOutputMode[] depth_modes = depth == null ? null : depth.getSupportedMapOutputModes();
+        final MapOutputMode depth_current_mode = depth == null ? null : depth.getMapOutputMode();
+
+        uiHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                feedback.reportCaptureStarted(color_modes, color_current_mode, depth_modes, depth_current_mode);
+            }
+        });
+    }
+
     private void initOpenNI() {
         try {
             context = new Context();
@@ -253,9 +258,16 @@ class CaptureThreadManager {
                 // There is no color output. Or there's an error, but we can't distinguish between the two cases.
             }
 
-            depth = DepthGenerator.create(context);
+            try {
+                depth = DepthGenerator.create(context);
+            }
+            catch (StatusException ste) {
+                // If there's no depth or color, let's bail.
+                if (color == null) throw ste;
+            }
 
             context.startGeneratingAll();
+            reportCaptureStart();
         } catch (final GeneralException ge) {
             final String message = "Failed to initialize OpenNI.";
             Log.e(TAG, message, ge);
@@ -279,6 +291,7 @@ class CaptureThreadManager {
             depth = (DepthGenerator) context.findExistingNode(NodeType.DEPTH);
 
             context.startGeneratingAll();
+            reportCaptureStart();
         } catch (final GeneralException ge) {
             final String message = "Failed to initialize OpenNI.";
             Log.e(TAG, message, ge);

@@ -9,8 +9,11 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 import android.view.*;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+import org.OpenNI.MapOutputMode;
 import org.libusb.UsbHelper;
 
 import java.io.File;
@@ -26,6 +29,9 @@ public class MainActivity extends Activity {
     private TextView textFps;
     private SurfaceView surfaceColor;
     private SurfaceView surfaceDepth;
+    private Spinner spinnerColorMode, spinnerDepthMode;
+
+    private ArrayAdapter<String> adapterSpinnerColor, adapterSpinnerDepth;
 
     private static final String ACTION_USB_PERMISSION = "com.itseez.onirec.USB_PERMISSION";
 
@@ -113,9 +119,21 @@ public class MainActivity extends Activity {
         textFps = (TextView) findViewById(R.id.text_fps);
         surfaceColor = (SurfaceView) findViewById(R.id.surface_color);
         surfaceDepth = (SurfaceView) findViewById(R.id.surface_depth);
+        spinnerColorMode = (Spinner) findViewById(R.id.spinner_color_mode);
+        spinnerDepthMode = (Spinner) findViewById(R.id.spinner_depth_mode);
 
         surfaceColor.getHolder().addCallback(surface_callbacks);
         surfaceDepth.getHolder().addCallback(surface_callbacks);
+
+        adapterSpinnerColor = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item);
+        adapterSpinnerColor.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        adapterSpinnerColor.add("DUMMY"); // so that it has proper size right away
+        spinnerColorMode.setAdapter(adapterSpinnerColor);
+
+        adapterSpinnerDepth = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item);
+        adapterSpinnerDepth.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        adapterSpinnerDepth.add("DUMMY");
+        spinnerDepthMode.setAdapter(adapterSpinnerDepth);
 
         registerReceiver(usbReceiver, new IntentFilter(ACTION_USB_PERMISSION));
     }
@@ -376,6 +394,24 @@ public class MainActivity extends Activity {
                 public void reportRecordingFinished() {
                     throw new IllegalStateException();
                 }
+
+                @Override
+                public void reportCaptureStarted(MapOutputMode[] colorModes, MapOutputMode currentColorMode,
+                                                 MapOutputMode[] depthModes, MapOutputMode currentDepthMode) {
+                    configureModeSpinner(currentColorMode, spinnerColorMode, adapterSpinnerColor);
+                    configureModeSpinner(currentDepthMode, spinnerDepthMode, adapterSpinnerDepth);
+                }
+
+                private void configureModeSpinner(MapOutputMode mode, Spinner spinner, ArrayAdapter<String> adapter) {
+                    String str_mode = mode == null
+                            ? getResources().getString(R.string.not_available)
+                            : String.format(getResources().getString(R.string.mode_format),
+                            mode.getXRes(), mode.getYRes(), mode.getFPS());
+                    adapter.clear();
+                    adapter.add(str_mode);
+                    spinner.setVisibility(View.VISIBLE);
+                    spinner.setEnabled(false);
+                }
             };
 
             manager = new CaptureThreadManager(surfaceColor.getHolder(), surfaceDepth.getHolder(), feedback, recording);
@@ -386,6 +422,8 @@ public class MainActivity extends Activity {
             manager.stop();
 
             textFps.setVisibility(View.INVISIBLE);
+            spinnerColorMode.setVisibility(View.INVISIBLE);
+            spinnerDepthMode.setVisibility(View.INVISIBLE);
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         }
 
@@ -484,6 +522,12 @@ public class MainActivity extends Activity {
                 public void reportRecordingFinished() {
                     setRecordingState(false, false);
                     textStatus.setText(R.string.status_previewing);
+                }
+
+                @Override
+                public void reportCaptureStarted(MapOutputMode[] colorModes, MapOutputMode currentColorMode,
+                                                 MapOutputMode[] depthModes, MapOutputMode currentDepthMode) {
+                    //To change body of implemented methods use File | Settings | File Templates.
                 }
             });
         }

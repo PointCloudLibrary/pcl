@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">OpenNI (ONI) Recorder</string>
-    <string name="caption_color">Color</string>
-    <string name="caption_depth">Depth</string>
+    <string name="caption_color">Color:</string>
+    <string name="caption_depth">Depth:</string>
     <string name="status_loading">Loading…</string>
     <string name="status_no_devices">No sensors found.</string>
     <string name="status_waiting_for_permission">Waiting for permission…</string>
@@ -22,4 +22,6 @@
     <string name="menu_item_record">Record</string>
     <string name="menu_item_stop_recording">Stop recording</string>
     <string name="title_select_recording">Select recording</string>
+    <string name="not_available">N/A</string>
+    <string name="mode_format">%1$dx%2$d @ %3$d FPS</string>
 </resources>
