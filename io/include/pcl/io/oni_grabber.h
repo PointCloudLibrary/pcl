@@ -55,14 +55,20 @@
 
 namespace pcl
 {
-  struct PointXYZ;
-  struct PointXYZRGB;
-  struct PointXYZRGBA;
-  struct PointXYZI;
+  /** */
   template <typename T> class PointCloud;
+  /** */
+  struct PointXYZ;
+  /** */
+  struct PointXYZRGB;
+  /** */
+  struct PointXYZRGBA;
+  /** */
+  struct PointXYZI;
 
   /** \brief A simple ONI grabber.
     * \author Suat Gedikli
+    * \ingroup io
     */
   class PCL_EXPORTS ONIGrabber : public Grabber
   {
@@ -116,7 +122,14 @@ namespace pcl
       virtual float 
       getFramesPerSecond () const;
 
-    protected:
+      /** \brief Check if there is any data left in the ONI file to process. */
+      inline bool
+      hasDataLeft ()
+      {
+        return (device_->hasDataLeft ());
+      }
+
+     protected:
       /** \brief internal OpenNI (openni_wrapper) callback that handles image streams */
       void
       imageCallback (boost::shared_ptr<openni_wrapper::Image> image, void* cookie);

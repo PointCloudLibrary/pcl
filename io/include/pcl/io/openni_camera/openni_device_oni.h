@@ -76,6 +76,14 @@ namespace openni_wrapper
 
     bool trigger ();
     bool isStreaming () const throw ();
+
+    /** \brief Check if there is any data left in the ONI file to process. */
+    inline bool
+    hasDataLeft ()
+    {
+      return (!player_.IsEOF ());
+    }
+
   protected:
     virtual boost::shared_ptr<Image> getCurrentImage (boost::shared_ptr<xn::ImageMetaData> image_meta_data) const throw ();
 
