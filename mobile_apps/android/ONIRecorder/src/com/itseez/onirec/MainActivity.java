@@ -26,7 +26,7 @@ public class MainActivity extends Activity {
     private SurfaceView surfaceDepth;
     private Spinner spinnerColorMode, spinnerDepthMode;
 
-    private ArrayAdapter<MapModeWrapper> adapterSpinnerColor, adapterSpinnerDepth;
+    private ArrayAdapter<MapModeWrapper> spinnerAdapterColor, spinnerAdapterDepth;
 
     private static final String ACTION_USB_PERMISSION = "com.itseez.onirec.USB_PERMISSION";
 
@@ -92,15 +92,15 @@ public class MainActivity extends Activity {
         surfaceColor.getHolder().addCallback(surface_callbacks);
         surfaceDepth.getHolder().addCallback(surface_callbacks);
 
-        adapterSpinnerColor = new ArrayAdapter<MapModeWrapper>(this, android.R.layout.simple_spinner_item);
-        adapterSpinnerColor.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        adapterSpinnerColor.add(new MapModeWrapper(this, null)); // so that it has proper size right away
-        spinnerColorMode.setAdapter(adapterSpinnerColor);
+        spinnerAdapterColor = new ArrayAdapter<MapModeWrapper>(this, android.R.layout.simple_spinner_item);
+        spinnerAdapterColor.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerAdapterColor.add(new MapModeWrapper(this, null)); // so that it has proper size right away
+        spinnerColorMode.setAdapter(spinnerAdapterColor);
 
-        adapterSpinnerDepth = new ArrayAdapter<MapModeWrapper>(this, android.R.layout.simple_spinner_item);
-        adapterSpinnerDepth.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        adapterSpinnerDepth.add(new MapModeWrapper(this, null));
-        spinnerDepthMode.setAdapter(adapterSpinnerDepth);
+        spinnerAdapterDepth = new ArrayAdapter<MapModeWrapper>(this, android.R.layout.simple_spinner_item);
+        spinnerAdapterDepth.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerAdapterDepth.add(new MapModeWrapper(this, null));
+        spinnerDepthMode.setAdapter(spinnerAdapterDepth);
 
     }
 
@@ -365,8 +365,8 @@ public class MainActivity extends Activity {
             @Override
             public void reportCaptureStarted(MapOutputMode[] colorModes, MapOutputMode currentColorMode,
                                              MapOutputMode[] depthModes, MapOutputMode currentDepthMode) {
-                configureModeSpinner(currentColorMode, spinnerColorMode, adapterSpinnerColor);
-                configureModeSpinner(currentDepthMode, spinnerDepthMode, adapterSpinnerDepth);
+                configureModeSpinner(currentColorMode, spinnerColorMode, spinnerAdapterColor);
+                configureModeSpinner(currentDepthMode, spinnerDepthMode, spinnerAdapterDepth);
             }
 
             private void configureModeSpinner(MapOutputMode mode, Spinner spinner, ArrayAdapter<MapModeWrapper> adapter) {
@@ -478,8 +478,8 @@ public class MainActivity extends Activity {
             @Override
             public void reportCaptureStarted(MapOutputMode[] colorModes, MapOutputMode currentColorMode,
                                              MapOutputMode[] depthModes, MapOutputMode currentDepthMode) {
-                configureModeSpinner(colorModes, currentColorMode, spinnerColorMode, adapterSpinnerColor);
-                configureModeSpinner(depthModes, currentDepthMode, spinnerDepthMode, adapterSpinnerDepth);
+                configureModeSpinner(colorModes, currentColorMode, spinnerColorMode, spinnerAdapterColor);
+                configureModeSpinner(depthModes, currentDepthMode, spinnerDepthMode, spinnerAdapterDepth);
             }
 
             private void configureModeSpinner(MapOutputMode[] modes, MapOutputMode currentMode,
@@ -510,7 +510,7 @@ public class MainActivity extends Activity {
                     @Override
                     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                         if (parent == spinnerDepthMode)
-                            manager.setDepthMode(adapterSpinnerDepth.getItem(position).getMode());
+                            manager.setDepthMode(spinnerAdapterDepth.getItem(position).getMode());
                     }
 
                     @Override
