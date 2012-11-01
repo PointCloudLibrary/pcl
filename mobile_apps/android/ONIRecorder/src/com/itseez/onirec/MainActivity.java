@@ -29,7 +29,7 @@ public class MainActivity extends Activity {
     private SurfaceView surfaceDepth;
     private Spinner spinnerColorMode, spinnerDepthMode;
 
-    private ArrayAdapter<String> adapterSpinnerColor, adapterSpinnerDepth;
+    private ArrayAdapter<MapModeWrapper> adapterSpinnerColor, adapterSpinnerDepth;
 
     private static final String ACTION_USB_PERMISSION = "com.itseez.onirec.USB_PERMISSION";
 
@@ -95,14 +95,14 @@ public class MainActivity extends Activity {
         surfaceColor.getHolder().addCallback(surface_callbacks);
         surfaceDepth.getHolder().addCallback(surface_callbacks);
 
-        adapterSpinnerColor = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item);
+        adapterSpinnerColor = new ArrayAdapter<MapModeWrapper>(this, android.R.layout.simple_spinner_item);
         adapterSpinnerColor.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        adapterSpinnerColor.add("DUMMY"); // so that it has proper size right away
+        adapterSpinnerColor.add(new MapModeWrapper(this, null)); // so that it has proper size right away
         spinnerColorMode.setAdapter(adapterSpinnerColor);
 
-        adapterSpinnerDepth = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item);
+        adapterSpinnerDepth = new ArrayAdapter<MapModeWrapper>(this, android.R.layout.simple_spinner_item);
         adapterSpinnerDepth.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        adapterSpinnerDepth.add("DUMMY");
+        adapterSpinnerDepth.add(new MapModeWrapper(this, null));
         spinnerDepthMode.setAdapter(adapterSpinnerDepth);
 
     }
@@ -383,13 +383,9 @@ public class MainActivity extends Activity {
                     configureModeSpinner(currentDepthMode, spinnerDepthMode, adapterSpinnerDepth);
                 }
 
-                private void configureModeSpinner(MapOutputMode mode, Spinner spinner, ArrayAdapter<String> adapter) {
-                    String str_mode = mode == null
-                            ? getResources().getString(R.string.not_available)
-                            : String.format(getResources().getString(R.string.mode_format),
-                            mode.getXRes(), mode.getYRes(), mode.getFPS());
+                private void configureModeSpinner(MapOutputMode mode, Spinner spinner, ArrayAdapter<MapModeWrapper> adapter) {
                     adapter.clear();
-                    adapter.add(str_mode);
+                    adapter.add(new MapModeWrapper(MainActivity.this, mode));
                     spinner.setVisibility(View.VISIBLE);
                     spinner.setEnabled(false);
                 }
@@ -498,7 +494,34 @@ public class MainActivity extends Activity {
                 @Override
                 public void reportCaptureStarted(MapOutputMode[] colorModes, MapOutputMode currentColorMode,
                                                  MapOutputMode[] depthModes, MapOutputMode currentDepthMode) {
-                    //To change body of implemented methods use File | Settings | File Templates.
+                    configureModeSpinner(colorModes, currentColorMode, spinnerColorMode, adapterSpinnerColor);
+                    configureModeSpinner(depthModes, currentDepthMode, spinnerDepthMode, adapterSpinnerDepth);
+                }
+
+                private void configureModeSpinner(MapOutputMode[] modes, MapOutputMode currentMode,
+                                                  Spinner spinner, ArrayAdapter<MapModeWrapper> adapter) {
+                    adapter.clear();
+                    adapter.add(new MapModeWrapper(MainActivity.this, null));
+                    MapModeWrapper current_mode_wrapper = new MapModeWrapper(MainActivity.this, currentMode);
+                    int current_mode_index = 0;
+
+                    if (modes != null) {
+                        Set<MapModeWrapper> unique_modes = new HashSet<MapModeWrapper>(modes.length);
+
+                        for (MapOutputMode mode : modes) {
+                            MapModeWrapper new_mode_wrapper = new MapModeWrapper(MainActivity.this, mode);
+                            if (!unique_modes.contains(new_mode_wrapper)) {
+                                unique_modes.add(new_mode_wrapper);
+                                adapter.add(new_mode_wrapper);
+                                if (current_mode_wrapper.equals(new_mode_wrapper))
+                                    current_mode_index = unique_modes.size();
+                            }
+                        }
+                    }
+
+                    spinner.setSelection(current_mode_index);
+                    spinner.setVisibility(View.VISIBLE);
+                    spinner.setEnabled(true);
                 }
             });
         }

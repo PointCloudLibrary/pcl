@@ -22,6 +22,6 @@
     <string name="menu_item_record">Record</string>
     <string name="menu_item_stop_recording">Stop recording</string>
     <string name="title_select_recording">Select recording</string>
-    <string name="not_available">N/A</string>
+    <string name="mode_disabled">Disabled</string>
     <string name="mode_format">%1$dx%2$d @ %3$d FPS</string>
 </resources>
