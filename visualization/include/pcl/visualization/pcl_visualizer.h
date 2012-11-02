@@ -1432,6 +1432,12 @@ namespace pcl
         void
         setRepresentationToWireframeForAllActors ();
 
+        /** \brief Sets whether the 2D overlay text showing the framerate of the window is displayed or not.
+          * \param[in] show_fps determines whether the fps text will be shown or not.
+          */
+        void
+        setShowFPS (bool show_fps);
+
         /** \brief Renders a virtual scene as seen from the camera viewpoint and returns the rendered point cloud.
           * ATT: This method will only render the scene if only on viewport exists. Otherwise, returns an empty
           * point cloud and exits immediately.
@@ -1724,6 +1730,9 @@ namespace pcl
           PCLVisualizer* pcl_visualizer;
           bool decimated;
         };
+
+        /** \brief The FPSCallback object for the current visualizer. */
+        vtkSmartPointer<FPSCallback> update_fps_;
 
 #if !((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
         /** \brief Set to false if the interaction loop is running. */

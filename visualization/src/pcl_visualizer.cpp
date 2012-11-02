@@ -68,6 +68,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////////
 pcl::visualization::PCLVisualizer::PCLVisualizer (const std::string &name, const bool create_interactor)
   : interactor_ ()
+  , update_fps_ (vtkSmartPointer<FPSCallback>::New ())
 #if !((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
   , stopped_ ()
   , timer_id_ ()
@@ -82,19 +83,19 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (const std::string &name, const
   , coordinate_actor_map_ ()
   , camera_set_ ()
 {
-  // FPS callback
-  vtkSmartPointer<vtkTextActor> txt = vtkSmartPointer<vtkTextActor>::New ();
-  vtkSmartPointer<FPSCallback> update_fps = vtkSmartPointer<FPSCallback>::New ();
-  update_fps->actor = txt;
-  update_fps->pcl_visualizer = this;
-  update_fps->decimated = false;
-
   // Create a Renderer
   vtkSmartPointer<vtkRenderer> ren = vtkSmartPointer<vtkRenderer>::New ();
-  ren->AddObserver (vtkCommand::EndEvent, update_fps);
-  ren->AddActor (txt);
+  ren->AddObserver (vtkCommand::EndEvent, update_fps_);
   // Add it to the list of renderers
   rens_->AddItem (ren);
+
+  // FPS callback
+  vtkSmartPointer<vtkTextActor> txt = vtkSmartPointer<vtkTextActor>::New ();
+  update_fps_->actor = txt;
+  update_fps_->pcl_visualizer = this;
+  update_fps_->decimated = false;
+  ren->AddActor (txt);
+
 
   // Create a RendererWindow
   win_ = vtkSmartPointer<vtkRenderWindow>::New ();
@@ -130,6 +131,7 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (const std::string &name, const
 /////////////////////////////////////////////////////////////////////////////////////////////
 pcl::visualization::PCLVisualizer::PCLVisualizer (int &argc, char **argv, const std::string &name, PCLVisualizerInteractorStyle* style, const bool create_interactor)
   : interactor_ ()
+  , update_fps_ (vtkSmartPointer<FPSCallback>::New ())
 #if !((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
   , stopped_ ()
   , timer_id_ ()
@@ -146,19 +148,18 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (int &argc, char **argv, const 
 {
   style_ = style;
 
-  // FPS callback
-  vtkSmartPointer<vtkTextActor> txt = vtkSmartPointer<vtkTextActor>::New ();
-  vtkSmartPointer<FPSCallback> update_fps = vtkSmartPointer<FPSCallback>::New ();
-  update_fps->actor = txt;
-  update_fps->pcl_visualizer = this;
-  update_fps->decimated = false;
-
   // Create a Renderer
   vtkSmartPointer<vtkRenderer> ren = vtkSmartPointer<vtkRenderer>::New ();
-  ren->AddObserver (vtkCommand::EndEvent, update_fps);
-  ren->AddActor (txt);
+  ren->AddObserver (vtkCommand::EndEvent, update_fps_);
   // Add it to the list of renderers
   rens_->AddItem (ren);
+
+  // FPS callback
+  vtkSmartPointer<vtkTextActor> txt = vtkSmartPointer<vtkTextActor>::New ();
+  update_fps_->actor = txt;
+  update_fps_->pcl_visualizer = this;
+  update_fps_->decimated = false;
+  ren->AddActor (txt);
 
   // Create a RendererWindow
   win_ = vtkSmartPointer<vtkRenderWindow>::New ();
@@ -2951,6 +2952,15 @@ pcl::visualization::PCLVisualizer::setRepresentationToWireframeForAllActors ()
     }
   }
 }
+
+
+///////////////////////////////////////////////////////////////////////////////////
+void
+pcl::visualization::PCLVisualizer::setShowFPS (bool show_fps)
+{
+  update_fps_->actor->SetVisibility (show_fps);
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////////
 void
