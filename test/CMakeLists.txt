@@ -76,4 +76,12 @@ if(build)
                  FILES test_recognition_cg.cpp
                  LINK_WITH pcl_gtest pcl_common pcl_io pcl_kdtree pcl_features pcl_recognition pcl_keypoints
                  ARGUMENTS ${PCL_SOURCE_DIR}/test/milk.pcd ${PCL_SOURCE_DIR}/test/milk_cartoon_all_small_clorox.pcd)
+
+    if(BUILD_visualization)
+        PCL_ADD_TEST(a_visualization_test test_visualization
+                 FILES test_visualization.cpp
+                 LINK_WITH pcl_gtest pcl_io pcl_visualization pcl_features
+                 ARGUMENTS ${PCL_SOURCE_DIR}/test/bunny.pcd)
+    endif()
+
 endif(build)
