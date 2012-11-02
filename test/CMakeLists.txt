@@ -62,11 +62,6 @@ if(build)
                  LINK_WITH pcl_gtest pcl_io pcl_segmentation pcl_features
                  ARGUMENTS ${PCL_SOURCE_DIR}/test/bun0.pcd ${PCL_SOURCE_DIR}/test/car6.pcd ${PCL_SOURCE_DIR}/test/colored_cloud.pcd)
     
-    PCL_ADD_TEST(a_keypoints_test test_keypoints
-                 FILES test_keypoints.cpp
-                 LINK_WITH pcl_gtest pcl_io pcl_kdtree pcl_filters pcl_keypoints
-                 ARGUMENTS ${PCL_SOURCE_DIR}/test/cturtle.pcd)
-    
     PCL_ADD_TEST(test_non_linear test_non_linear
                  FILES test_non_linear.cpp
                  LINK_WITH pcl_gtest pcl_common pcl_io pcl_sample_consensus pcl_segmentation
