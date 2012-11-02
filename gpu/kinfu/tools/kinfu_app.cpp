@@ -399,7 +399,7 @@ struct SceneCloudView
         cloud_viewer_->initCameraParameters ();
         cloud_viewer_->setPosition (0, 500);
         cloud_viewer_->setSize (640, 480);
-        cloud_viewer_->setCameraClipDistance (0.01, 10.01);
+        cloud_viewer_->setCameraClipDistances (0.01, 10.01);
 
         cloud_viewer_->addText ("H: print help", 2, 15, 20, 34, 135, 246);
     }
