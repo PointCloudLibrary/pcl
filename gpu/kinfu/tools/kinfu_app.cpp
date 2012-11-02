@@ -731,7 +731,7 @@ struct KinFuApp
       setViewerPose (*scene_cloud_view_.cloud_viewer_, kinfu_.getCameraPose());
   }
   
-  void source_cb1(const boost::shared_ptr<openni_wrapper::DepthImage>& depth_wrapper)  
+  void source_cb1_device(const boost::shared_ptr<openni_wrapper::DepthImage>& depth_wrapper)  
   {        
     {
       boost::mutex::scoped_try_lock lock(data_ready_mutex_);
@@ -749,11 +749,56 @@ struct KinFuApp
     data_ready_cond_.notify_one();
   }
 
-  void source_cb2(const boost::shared_ptr<openni_wrapper::Image>& image_wrapper, const boost::shared_ptr<openni_wrapper::DepthImage>& depth_wrapper, float)
+  void source_cb2_device(const boost::shared_ptr<openni_wrapper::Image>& image_wrapper, const boost::shared_ptr<openni_wrapper::DepthImage>& depth_wrapper, float)
   {
     {
       boost::mutex::scoped_try_lock lock(data_ready_mutex_);
       if (exit_ || !lock)
+          return;
+                  
+      depth_.cols = depth_wrapper->getWidth();
+      depth_.rows = depth_wrapper->getHeight();
+      depth_.step = depth_.cols * depth_.elemSize();
+
+      source_depth_data_.resize(depth_.cols * depth_.rows);
+      depth_wrapper->fillDepthImageRaw(depth_.cols, depth_.rows, &source_depth_data_[0]);
+      depth_.data = &source_depth_data_[0];      
+      
+      rgb24_.cols = image_wrapper->getWidth();
+      rgb24_.rows = image_wrapper->getHeight();
+      rgb24_.step = rgb24_.cols * rgb24_.elemSize(); 
+
+      source_image_data_.resize(rgb24_.cols * rgb24_.rows);
+      image_wrapper->fillRGB(rgb24_.cols, rgb24_.rows, (unsigned char*)&source_image_data_[0]);
+      rgb24_.data = &source_image_data_[0];           
+    }
+    data_ready_cond_.notify_one();
+  }
+
+
+   void source_cb1_oni(const boost::shared_ptr<openni_wrapper::DepthImage>& depth_wrapper)  
+  {        
+    {
+      boost::mutex::scoped_lock lock(data_ready_mutex_);
+      if (exit_)
+          return;
+      
+      depth_.cols = depth_wrapper->getWidth();
+      depth_.rows = depth_wrapper->getHeight();
+      depth_.step = depth_.cols * depth_.elemSize();
+
+      source_depth_data_.resize(depth_.cols * depth_.rows);
+      depth_wrapper->fillDepthImageRaw(depth_.cols, depth_.rows, &source_depth_data_[0]);
+      depth_.data = &source_depth_data_[0];     
+    }
+    data_ready_cond_.notify_one();
+  }
+
+  void source_cb2_oni(const boost::shared_ptr<openni_wrapper::Image>& image_wrapper, const boost::shared_ptr<openni_wrapper::DepthImage>& depth_wrapper, float)
+  {
+    {
+      boost::mutex::scoped_lock lock(data_ready_mutex_);
+      if (exit_)
           return;
                   
       depth_.cols = depth_wrapper->getWidth();
@@ -783,8 +828,15 @@ struct KinFuApp
     typedef boost::shared_ptr<DepthImage> DepthImagePtr;
     typedef boost::shared_ptr<Image> ImagePtr;
         
-    boost::function<void (const ImagePtr&, const DepthImagePtr&, float constant)> func1 = boost::bind (&KinFuApp::source_cb2, this, _1, _2, _3);
-    boost::function<void (const DepthImagePtr&)> func2 = boost::bind (&KinFuApp::source_cb1, this, _1);
+    boost::function<void (const ImagePtr&, const DepthImagePtr&, float constant)> func1_dev = boost::bind (&KinFuApp::source_cb2_device, this, _1, _2, _3);
+    boost::function<void (const DepthImagePtr&)> func2_dev = boost::bind (&KinFuApp::source_cb1_device, this, _1);
+
+    boost::function<void (const ImagePtr&, const DepthImagePtr&, float constant)> func1_oni = boost::bind (&KinFuApp::source_cb2_oni, this, _1, _2, _3);
+    boost::function<void (const DepthImagePtr&)> func2_oni = boost::bind (&KinFuApp::source_cb1_oni, this, _1);
+    
+    bool is_oni = dynamic_cast<pcl::ONIGrabber*>(&capture_) != 0;
+    boost::function<void (const ImagePtr&, const DepthImagePtr&, float constant)> func1 = is_oni ? func1_oni : func1_dev;
+    boost::function<void (const DepthImagePtr&)> func2 = is_oni ? func2_oni : func2_dev;
 
     bool need_colors = integrate_colors_ || registration_;
     boost::signals2::connection c = need_colors ? capture_.registerCallback (func1) : capture_.registerCallback (func2);
@@ -802,7 +854,7 @@ struct KinFuApp
       { 
         if (triggered_capture)
             capture_.start(); // Triggers new frame
-        bool has_data = data_ready_cond_.timed_wait (lock, boost::posix_time::millisec(100));
+        bool has_data = data_ready_cond_.timed_wait (lock, boost::posix_time::millisec(100));        
                        
         try { this->execute (depth_, rgb24_, has_data); }
         catch (const std::bad_alloc& /*e*/) { cout << "Bad alloc" << endl; break; }
@@ -1066,12 +1118,12 @@ main (int argc, char* argv[])
     else
     {
       capture.reset( new pcl::OpenNIGrabber() );
-  
-      //capture.reset( new pcl::ONIGrabber("d:/onis/20111013-224932.oni", true, true) );
-      //capture.reset( new pcl::ONIGrabber("d:/onis/reg20111229-180846.oni, true, true) );    
-      //capture.reset( new pcl::ONIGrabber("/media/Main/onis/20111013-224932.oni", true, true) );
-      //capture.reset( new pcl::ONIGrabber("d:/onis/20111013-224551.oni", true, true) );
-      //capture.reset( new pcl::ONIGrabber("d:/onis/20111013-224719.oni", true, true) );    
+        
+      //triggered_capture = true; capture.reset( new pcl::ONIGrabber("d:/onis/20111013-224932.oni", true, ! triggered_capture) );
+      //triggered_capture = true; capture.reset( new pcl::ONIGrabber("d:/onis/reg20111229-180846.oni, true, ! triggered_capture) );    
+      //triggered_capture = true; capture.reset( new pcl::ONIGrabber("/media/Main/onis/20111013-224932.oni", true, ! triggered_capture) );
+      //triggered_capture = true; capture.reset( new pcl::ONIGrabber("d:/onis/20111013-224551.oni", true, ! triggered_capture) );
+      //triggered_capture = true; capture.reset( new pcl::ONIGrabber("d:/onis/20111013-224719.oni", true, ! triggered_capture) );    
     }
   }
   catch (const pcl::PCLException& /*e*/) { return cout << "Can't open depth source" << endl, -1; }
