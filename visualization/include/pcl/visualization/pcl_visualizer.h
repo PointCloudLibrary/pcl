@@ -1466,8 +1466,6 @@ namespace pcl
             std::vector<Eigen::Matrix4f,Eigen::aligned_allocator< Eigen::Matrix4f > > & poses, std::vector<float> & enthropies, int tesselation_level,
             float view_angle = 45, float radius_sphere = 1, bool use_vertices = true);
 
-        /** \brief Camera view, window position and size. */
-        Camera camera_;
 
         /** \brief Initialize camera parameters with some default values. */
         void
@@ -1499,10 +1497,10 @@ namespace pcl
         resetCameraViewpoint (const std::string &id = "cloud");
 
         /** \brief Set the camera pose given by position, viewpoint and up vector
-          * \param[in] pos_x the x co-ordinate of the camera location
-          * \param[in] pos_y the y co-ordinate of the camera location
-          * \param[in] pos_z the z co-ordinate of the camera location
-          * \param[in] view_x the x component of the view upoint of the camera
+          * \param[in] pos_x the x coordinate of the camera location
+          * \param[in] pos_y the y coordinate of the camera location
+          * \param[in] pos_z the z coordinate of the camera location
+          * \param[in] view_x the x component of the view point of the camera
           * \param[in] view_y the y component of the view point of the camera
           * \param[in] view_z the z component of the view point of the camera
           * \param[in] up_x the x component of the view up direction of the camera
@@ -1516,25 +1514,38 @@ namespace pcl
                            double up_x, double up_y, double up_z, int viewport = 0);
 
         /** \brief Set the camera location and viewup according to the given arguments
-          * \param[in] pos_x the x co-ordinate of the camera location
-          * \param[in] pos_y the y co-ordinate of the camera location
-          * \param[in] pos_z the z co-ordinate of the camera location
-          * \param[in] view_x the x component of the view up direction of the camera
-          * \param[in] view_y the y component of the view up direction of the camera
-          * \param[in] view_z the z component of the view up direction of the camera
+          * \param[in] pos_x the x coordinate of the camera location
+          * \param[in] pos_y the y coordinate of the camera location
+          * \param[in] pos_z the z coordinate of the camera location
+          * \param[in] up_x the x component of the view up direction of the camera
+          * \param[in] up_y the y component of the view up direction of the camera
+          * \param[in] up_z the z component of the view up direction of the camera
           * \param[in] viewport the viewport to modify camera of (0 modifies all cameras)
           */
         void
         setCameraPosition (double pos_x,double pos_y, double pos_z,
-                           double view_x, double view_y, double view_z, int viewport = 0);
+                           double up_x, double up_y, double up_z, int viewport = 0);
+
+        /** \brief Set the camera parameters via an intrinsics and and extrinsics matrix
+          * \note This assumes that the pixels are square and that the center of the image is at the center of the sensor.
+          * \param[in] intrinsics the intrinsics that will be used to compute the VTK camera parameters
+          * \param[in] extrinsics the extrinsics that will be used to compute the VTK camera parameters
+          * \param[in] viewport the viewport to modify camera of (0 modifies all cameras)
+          */
+        void
+        setCameraParameters (const Eigen::Matrix3f &intrinsics, const Eigen::Matrix4f &extrinsics, int viewport = 0);
+
+        void
+        setCameraParameters (const Camera &camera, int viewport = 0);
 
         /** \brief Get the current camera parameters. */
         void
         getCameras (std::vector<Camera>& cameras);
 
+
         /** \brief Get the current viewing pose. */
         Eigen::Affine3f
-        getViewerPose ();
+        getViewerPose (int viewport = 0);
 
         /** \brief Save the current rendered image to disk, as a PNG screenshot.
           * \param[in] file the name of the PNG file

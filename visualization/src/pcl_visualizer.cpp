@@ -67,8 +67,7 @@
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 pcl::visualization::PCLVisualizer::PCLVisualizer (const std::string &name, const bool create_interactor)
-  : camera_ ()
-  , interactor_ ()
+  : interactor_ ()
 #if !((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
   , stopped_ ()
   , timer_id_ ()
@@ -130,8 +129,7 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (const std::string &name, const
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 pcl::visualization::PCLVisualizer::PCLVisualizer (int &argc, char **argv, const std::string &name, PCLVisualizerInteractorStyle* style, const bool create_interactor)
-  : camera_ ()
-  , interactor_ ()
+  : interactor_ ()
 #if !((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
   , stopped_ ()
   , timer_id_ ()
@@ -168,18 +166,15 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (int &argc, char **argv, const 
 
   // Get screen size
   int *scr_size = win_->GetScreenSize ();
-  camera_.window_size[0] = scr_size[0]; camera_.window_size[1] = scr_size[1] / 2;
-  camera_.window_pos[0] = camera_.window_pos[1] = 0;
 
   // Set default camera parameters
   initCameraParameters ();
 
   // Parse the camera settings and update the internal camera
   camera_set_ = getCameraParameters (argc, argv);
-  updateCamera ();
   // Set the window size as 1/2 of the screen size or the user given parameter
-  win_->SetSize (int (camera_.window_size[0]), int (camera_.window_size[1]));
-  win_->SetPosition (int (camera_.window_pos[0]), int (camera_.window_pos[1]));
+  win_->SetSize (scr_size[0], scr_size[1]/2);
+  win_->SetPosition (0, 0);
 
   // By default, don't use vertex buffer objects
   use_vbos_ = false;
@@ -386,7 +381,7 @@ pcl::visualization::PCLVisualizer::spin ()
   resetStoppedFlag ();
   // Render the window before we start the interactor
   win_->Render ();
-    interactor_->Start ();
+  interactor_->Start ();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -864,7 +859,7 @@ pcl::visualization::PCLVisualizer::removeActorFromRenderer (const vtkSmartPointe
     if (viewport == 0)
     {
       renderer->RemoveActor (actor);
-      renderer->Render ();
+//      renderer->Render ();
     }
     else if (viewport == i)               // add the actor only to the specified viewport
     {
@@ -877,7 +872,7 @@ pcl::visualization::PCLVisualizer::removeActorFromRenderer (const vtkSmartPointe
         if (current_actor != actor_to_remove)
           continue;
         renderer->RemoveActor (actor);
-        renderer->Render ();
+//        renderer->Render ();
         // Found the correct viewport and removed the actor
         return (true);
       }
@@ -904,7 +899,7 @@ pcl::visualization::PCLVisualizer::removeActorFromRenderer (const vtkSmartPointe
     if (viewport == 0)
     {
       renderer->RemoveActor (actor);
-      renderer->Render ();
+//      renderer->Render ();
     }
     else if (viewport == i)               // add the actor only to the specified viewport
     {
@@ -917,7 +912,7 @@ pcl::visualization::PCLVisualizer::removeActorFromRenderer (const vtkSmartPointe
         if (current_actor != actor_to_remove)
           continue;
         renderer->RemoveActor (actor);
-        renderer->Render ();
+//        renderer->Render ();
         // Found the correct viewport and removed the actor
         return (true);
       }
@@ -1489,12 +1484,34 @@ pcl::visualization::PCLVisualizer::setShapeRenderingProperties (
 void
 pcl::visualization::PCLVisualizer::initCameraParameters ()
 {
-  // Set default camera parameters
-  camera_.clip[0] = 0.01; camera_.clip[1] = 1000.01;
-  camera_.focal[0] = camera_.focal[1] = camera_.focal[2] = 0;
-  camera_.pos[0] = camera_.pos[1] = 0; camera_.pos[2] = 1;
-  camera_.view[0] = camera_.view[2] = 0; camera_.view[1] = 1;
-  camera_.fovy = 0.8575 / M_PI * 180.0; 
+  Camera camera_temp;
+  // Set default camera parameters to something meaningful
+  camera_temp.clip[0] = 0.01;
+  camera_temp.clip[1] = 1000.01;
+
+  // Look straight along the z-axis
+  camera_temp.focal[0] = 0.;
+  camera_temp.focal[1] = 0.;
+  camera_temp.focal[2] = 1.;
+
+  // Position the camera at the origin
+  camera_temp.pos[0] = 0.;
+  camera_temp.pos[1] = 0.;
+  camera_temp.pos[2] = 0.;
+
+  // Set the up-vector of the camera to be the y-axis
+  camera_temp.view[0] = 0.;
+  camera_temp.view[1] = 1.;
+  camera_temp.view[2] = 0.;
+
+  // Set the camera field of view to about
+  camera_temp.fovy = 0.8575 / M_PI * 180.0;
+
+  int *scr_size = win_->GetScreenSize ();
+  camera_temp.window_size[0] = scr_size[0] / 2;
+  camera_temp.window_size[1] = scr_size[1] / 2;
+
+  setCameraParameters (camera_temp);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -1508,18 +1525,11 @@ pcl::visualization::PCLVisualizer::cameraParamsSet () const
 void
 pcl::visualization::PCLVisualizer::updateCamera ()
 {
-   // Update the camera parameters
-   rens_->InitTraversal ();
-   vtkRenderer* renderer = NULL;
-   while ((renderer = rens_->GetNextItem ()) != NULL)
-   {
-     renderer->GetActiveCamera ()->SetPosition (camera_.pos);
-     renderer->GetActiveCamera ()->SetFocalPoint (camera_.focal);
-     renderer->GetActiveCamera ()->SetViewUp (camera_.view);
-     renderer->GetActiveCamera ()->SetClippingRange (camera_.clip);
-     renderer->GetActiveCamera ()->SetUseHorizontalViewAngle (0);
-     renderer->GetActiveCamera ()->SetViewAngle (camera_.fovy);
-   }
+  PCL_WARN ("[pcl::visualization::PCLVisualizer::updateCamera()] This method was deprecated, just re-rendering all scenes now.");
+  // Update the camera parameters
+  vtkRenderer* renderer = NULL;
+  while ((renderer = rens_->GetNextItem ()) != NULL)
+    renderer->Render ();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -1549,7 +1559,7 @@ pcl::visualization::PCLVisualizer::updateShapePose (const std::string &id, const
 void
 pcl::visualization::PCLVisualizer::getCameras (std::vector<pcl::visualization::Camera>& cameras)
 {
-  cameras.clear();
+  cameras.clear ();
   rens_->InitTraversal ();
   vtkRenderer* renderer = NULL;
   while ((renderer = rens_->GetNextItem ()) != NULL)
@@ -1566,9 +1576,9 @@ pcl::visualization::PCLVisualizer::getCameras (std::vector<pcl::visualization::C
     cameras.back ().view[0] = renderer->GetActiveCamera ()->GetViewUp ()[0];
     cameras.back ().view[1] = renderer->GetActiveCamera ()->GetViewUp ()[1];
     cameras.back ().view[2] = renderer->GetActiveCamera ()->GetViewUp ()[2];
-    cameras.back().fovy = renderer->GetActiveCamera ()->GetViewAngle () / 180.0 * M_PI;
-    cameras.back ().window_size[0] = renderer->GetRenderWindow ()->GetSize()[0];
-    cameras.back ().window_size[1] = renderer->GetRenderWindow ()->GetSize()[1];
+    cameras.back ().fovy = renderer->GetActiveCamera ()->GetViewAngle () / 180.0 * M_PI;
+    cameras.back ().window_size[0] = renderer->GetRenderWindow ()->GetSize ()[0];
+    cameras.back ().window_size[1] = renderer->GetRenderWindow ()->GetSize ()[1];
     cameras.back ().window_pos[0] = 0;
     cameras.back ().window_pos[1] = 0;
   }
@@ -1576,21 +1586,49 @@ pcl::visualization::PCLVisualizer::getCameras (std::vector<pcl::visualization::C
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 Eigen::Affine3f
-pcl::visualization::PCLVisualizer::getViewerPose ()
+pcl::visualization::PCLVisualizer::getViewerPose (int viewport)
 {
-  Eigen::Affine3f ret(Eigen::Affine3f::Identity());
-  if (rens_->GetNumberOfItems () < 1)
-    return ret;
-  vtkCamera& camera = *rens_->GetFirstRenderer ()->GetActiveCamera ();
-  Eigen::Vector3d pos, x_axis, y_axis, z_axis;
-  camera.GetPosition (pos[0], pos[1], pos[2]);
-  camera.GetViewPlaneNormal (x_axis[0], x_axis[1], x_axis[2]);
-  x_axis = -x_axis;
-  camera.GetViewUp (z_axis[0], z_axis[1], z_axis[2]);
-  y_axis = z_axis.cross(x_axis).normalized();
-  ret(0,0)= float (x_axis[0]), ret(0,1)= float (y_axis[0]), ret(0,2)= float (z_axis[0]), ret(0,3)= float (pos[0]),
-  ret(1,0)= float (x_axis[1]), ret(1,1)= float (y_axis[1]), ret(1,2)= float (z_axis[1]), ret(1,3)= float (pos[1]),
-  ret(2,0)= float (x_axis[2]), ret(2,1)= float (y_axis[2]), ret(2,2)= float (z_axis[2]), ret(2,3)= float (pos[2]);
+  Eigen::Affine3f ret (Eigen::Affine3f::Identity ());
+
+  rens_->InitTraversal ();
+  vtkRenderer* renderer = NULL;
+  if (viewport == 0)
+    viewport = 1;
+  int viewport_i = 1;
+  while ((renderer = rens_->GetNextItem ()) != NULL)
+  {
+    if (viewport_i == viewport)
+    {
+      vtkCamera& camera = *renderer->GetActiveCamera ();
+      Eigen::Vector3d pos, x_axis, y_axis, z_axis;
+      camera.GetPosition (pos[0], pos[1], pos[2]);
+      camera.GetViewUp (y_axis[0], y_axis[1], y_axis[2]);
+      camera.GetFocalPoint (z_axis[0], z_axis[1], z_axis[2]);
+
+      z_axis = (z_axis - pos).normalized ();
+      x_axis = y_axis.cross (z_axis).normalized ();
+
+      /// TODO replace this ugly thing with matrix.block () = vector3f
+      ret (0, 0) = static_cast<float> (x_axis[0]);
+      ret (0, 1) = static_cast<float> (y_axis[0]);
+      ret (0, 2) = static_cast<float> (z_axis[0]);
+      ret (0, 3) = static_cast<float> (pos[0]);
+
+      ret (1, 0) = static_cast<float> (x_axis[1]);
+      ret (1, 1) = static_cast<float> (y_axis[1]);
+      ret (1, 2) = static_cast<float> (z_axis[1]);
+      ret (1, 3) = static_cast<float> (pos[1]);
+
+      ret (2, 0) = static_cast<float> (x_axis[2]);
+      ret (2, 1) = static_cast<float> (y_axis[2]);
+      ret (2, 2) = static_cast<float> (z_axis[2]);
+      ret (2, 3) = static_cast<float> (pos[2]);
+
+      return ret;
+    }
+    viewport_i ++;
+  }
+
   return ret;
 }
 
@@ -1601,9 +1639,9 @@ pcl::visualization::PCLVisualizer::resetCamera ()
   // Update the camera parameters
   rens_->InitTraversal ();
   vtkRenderer* renderer = NULL;
-  while ((renderer = rens_->GetNextItem ()) != NULL)
+  if ((renderer = rens_->GetNextItem ()) != NULL)
   {
-    renderer->ResetCamera ();
+      renderer->ResetCamera ();
   }
 }
 
@@ -1637,8 +1675,8 @@ pcl::visualization::PCLVisualizer::setCameraPosition (
 /////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::visualization::PCLVisualizer::setCameraPosition (
-    double posX,double posY, double posZ,
-    double vx, double vy, double vz, int viewport)
+    double pos_x, double pos_y, double pos_z,
+    double up_x, double up_y, double up_z, int viewport)
 {
   rens_->InitTraversal ();
   vtkRenderer* renderer = NULL;
@@ -1649,20 +1687,94 @@ pcl::visualization::PCLVisualizer::setCameraPosition (
     if (viewport == 0 || viewport == i)
     {
       vtkSmartPointer<vtkCamera> cam = renderer->GetActiveCamera ();
-      cam->SetPosition (posX, posY, posZ);
-      cam->SetViewUp (vx, vy, vz);
+      cam->SetPosition (pos_x, pos_y, pos_z);
+      cam->SetViewUp (up_x, up_y, up_z);
       renderer->Render ();
     }
     ++i;
   }
+}
 
+/////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::visualization::PCLVisualizer::setCameraParameters (const Eigen::Matrix3f &intrinsics,
+                                                        const Eigen::Matrix4f &extrinsics,
+                                                        int viewport)
+{
+  // Position = extrinsic translation
+  Eigen::Vector3f pos_vec = extrinsics.block<3, 1> (0, 3);
+
+  // Rotate the view vector
+  Eigen::Matrix3f rotation = extrinsics.block<3, 3> (0, 0);
+  Eigen::Vector3f y_axis (0.f, 1.f, 0.f);
+  Eigen::Vector3f up_vec (rotation * y_axis);
+
+  // Compute the new focal point
+  Eigen::Vector3f z_axis (0.f, 0.f, 1.f);
+  Eigen::Vector3f focal_vec = pos_vec + rotation * z_axis;
+
+  // Get the width and height of the image - assume the calibrated centers are at the center of the image
+  Eigen::Vector2i window_size;
+  window_size[0] = static_cast<int> (intrinsics (0, 2));
+  window_size[1] = static_cast<int> (intrinsics (1, 2));
+
+  // Compute the vertical field of view based on the focal length and image heigh
+  double fovy = 2 * atan (window_size[1] / (2. * intrinsics (1, 1))) * 180.0 / M_PI;
+
+
+  rens_->InitTraversal ();
+  vtkRenderer* renderer = NULL;
+  int i = 1;
+  while ((renderer = rens_->GetNextItem ()) != NULL)
+  {
+    // Modify all renderer's cameras
+    if (viewport == 0 || viewport == i)
+    {
+      vtkSmartPointer<vtkCamera> cam = renderer->GetActiveCamera ();
+      cam->SetPosition (pos_vec[0], pos_vec[1], pos_vec[2]);
+      cam->SetFocalPoint (focal_vec[0], focal_vec[1], focal_vec[2]);
+      cam->SetViewUp (up_vec[0], up_vec[1], up_vec[2]);
+      cam->SetUseHorizontalViewAngle (0);
+      cam->SetViewAngle (fovy);
+      cam->SetClippingRange (0.01, 1000.01);
+      win_->SetSize (window_size[0], window_size[2]);
+
+      renderer->Render ();
+    }
+  }
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::visualization::PCLVisualizer::setCameraParameters (const pcl::visualization::Camera &camera, int viewport)
+{
+  rens_->InitTraversal ();
+  vtkRenderer* renderer = NULL;
+  int i = 1;
+  while ((renderer = rens_->GetNextItem ()) != NULL)
+  {
+    // Modify all renderer's cameras
+    if (viewport == 0 || viewport == i)
+    {
+      vtkSmartPointer<vtkCamera> cam = renderer->GetActiveCamera ();
+      cam->SetPosition (camera.pos[0], camera.pos[1], camera.pos[2]);
+      cam->SetFocalPoint (camera.focal[0], camera.focal[1], camera.focal[2]);
+      cam->SetViewUp (camera.view[0], camera.view[1], camera.view[2]);
+      cam->SetClippingRange (camera.clip);
+      cam->SetUseHorizontalViewAngle (0);
+      cam->SetViewAngle (camera.fovy * 180.0 / M_PI);
+
+      win_->SetSize (static_cast<int> (camera.window_size[0]),
+                     static_cast<int> (camera.window_size[1]));
+    }
+  }
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::visualization::PCLVisualizer::resetCameraViewpoint (const std::string &id)
 {
-
   vtkSmartPointer<vtkMatrix4x4> camera_pose;
   static CloudActorMap::iterator it = cloud_actor_map_->find (id);
   if (it != cloud_actor_map_->end ())
@@ -1698,6 +1810,7 @@ pcl::visualization::PCLVisualizer::resetCameraViewpoint (const std::string &id)
 bool
 pcl::visualization::PCLVisualizer::getCameraParameters (int argc, char **argv)
 {
+  Camera camera_temp;
   for (int i = 1; i < argc; i++)
   {
     if ((strcmp (argv[i], "-cam") == 0) && (++i < argc))
@@ -1751,8 +1864,8 @@ pcl::visualization::PCLVisualizer::getCameraParameters (int argc, char **argv)
         pcl::console::print_error ("[PCLVisualizer::getCameraParameters] Invalid parameters given for camera clipping angle!\n");
         return (false);
       }
-      camera_.clip[0] = atof (clip_st.at (0).c_str ());
-      camera_.clip[1] = atof (clip_st.at (1).c_str ());
+      camera_temp.clip[0] = atof (clip_st.at (0).c_str ());
+      camera_temp.clip[1] = atof (clip_st.at (1).c_str ());
 
       std::vector<std::string> focal_st;
       boost::split (focal_st, focal_str, boost::is_any_of (","), boost::token_compress_on);
@@ -1761,9 +1874,9 @@ pcl::visualization::PCLVisualizer::getCameraParameters (int argc, char **argv)
         pcl::console::print_error ("[PCLVisualizer::getCameraParameters] Invalid parameters given for camera focal point!\n");
         return (false);
       }
-      camera_.focal[0] = atof (focal_st.at (0).c_str ());
-      camera_.focal[1] = atof (focal_st.at (1).c_str ());
-      camera_.focal[2] = atof (focal_st.at (2).c_str ());
+      camera_temp.focal[0] = atof (focal_st.at (0).c_str ());
+      camera_temp.focal[1] = atof (focal_st.at (1).c_str ());
+      camera_temp.focal[2] = atof (focal_st.at (2).c_str ());
 
       std::vector<std::string> pos_st;
       boost::split (pos_st, pos_str, boost::is_any_of (","), boost::token_compress_on);
@@ -1772,9 +1885,9 @@ pcl::visualization::PCLVisualizer::getCameraParameters (int argc, char **argv)
         pcl::console::print_error ("[PCLVisualizer::getCameraParameters] Invalid parameters given for camera position!\n");
         return (false);
       }
-      camera_.pos[0] = atof (pos_st.at (0).c_str ());
-      camera_.pos[1] = atof (pos_st.at (1).c_str ());
-      camera_.pos[2] = atof (pos_st.at (2).c_str ());
+      camera_temp.pos[0] = atof (pos_st.at (0).c_str ());
+      camera_temp.pos[1] = atof (pos_st.at (1).c_str ());
+      camera_temp.pos[2] = atof (pos_st.at (2).c_str ());
 
       std::vector<std::string> view_st;
       boost::split (view_st, view_str, boost::is_any_of (","), boost::token_compress_on);
@@ -1783,9 +1896,9 @@ pcl::visualization::PCLVisualizer::getCameraParameters (int argc, char **argv)
         pcl::console::print_error ("[PCLVisualizer::getCameraParameters] Invalid parameters given for camera viewup!\n");
         return (false);
       }
-      camera_.view[0] = atof (view_st.at (0).c_str ());
-      camera_.view[1] = atof (view_st.at (1).c_str ());
-      camera_.view[2] = atof (view_st.at (2).c_str ());
+      camera_temp.view[0] = atof (view_st.at (0).c_str ());
+      camera_temp.view[1] = atof (view_st.at (1).c_str ());
+      camera_temp.view[2] = atof (view_st.at (2).c_str ());
 
       std::vector<std::string> fovy_size_st;
       boost::split (fovy_size_st, fovy_str, boost::is_any_of (","), boost::token_compress_on);
@@ -1794,7 +1907,7 @@ pcl::visualization::PCLVisualizer::getCameraParameters (int argc, char **argv)
         pcl::console::print_error ("[PCLVisualizer::getCameraParameters] Invalid parameters given for field of view angle!\n");
         return (false);
       }
-      camera_.fovy = atof (fovy_size_st.at (0).c_str ());
+      camera_temp.fovy = atof (fovy_size_st.at (0).c_str ());
 
       std::vector<std::string> win_size_st;
       boost::split (win_size_st, win_size_str, boost::is_any_of (","), boost::token_compress_on);
@@ -1803,8 +1916,8 @@ pcl::visualization::PCLVisualizer::getCameraParameters (int argc, char **argv)
         pcl::console::print_error ("[PCLVisualizer::getCameraParameters] Invalid parameters given for window size!\n");
         return (false);
       }
-      camera_.window_size[0] = atof (win_size_st.at (0).c_str ());
-      camera_.window_size[1] = atof (win_size_st.at (1).c_str ());
+      camera_temp.window_size[0] = atof (win_size_st.at (0).c_str ());
+      camera_temp.window_size[1] = atof (win_size_st.at (1).c_str ());
 
       std::vector<std::string> win_pos_st;
       boost::split (win_pos_st, win_pos_str, boost::is_any_of (","), boost::token_compress_on);
@@ -1813,8 +1926,10 @@ pcl::visualization::PCLVisualizer::getCameraParameters (int argc, char **argv)
         pcl::console::print_error ("[PCLVisualizer::getCameraParameters] Invalid parameters given for window position!\n");
         return (false);
       }
-      camera_.window_pos[0] = atof (win_pos_st.at (0).c_str ());
-      camera_.window_pos[1] = atof (win_pos_st.at (1).c_str ());
+      camera_temp.window_pos[0] = atof (win_pos_st.at (0).c_str ());
+      camera_temp.window_pos[1] = atof (win_pos_st.at (1).c_str ());
+
+      setCameraParameters (camera_temp);
 
       return (true);
     }
@@ -2128,7 +2243,8 @@ bool
   // Create an Actor
   vtkSmartPointer<vtkLODActor> actor;
   createActorFromVTKDataSet (data, actor);
-  actor->GetProperty ()->SetRepresentationToWireframe ();
+//  actor->GetProperty ()->SetRepresentationToWireframe ();
+  actor->GetProperty ()->SetRepresentationToSurface ();
   actor->GetProperty ()->SetLighting (false);
   addActorToRenderer (actor, viewport);
 
@@ -3253,26 +3369,38 @@ pcl::visualization::PCLVisualizer::renderView (int xres, int yres, pcl::PointClo
   }
 
   //create render window with first element of rens_ (viewport 0)
-  vtkSmartPointer<vtkRenderWindow> render_win = vtkSmartPointer<vtkRenderWindow>::New ();
-  rens_->InitTraversal ();
-  vtkSmartPointer<vtkRenderer> renderer = rens_->GetNextItem ();
-  render_win->AddRenderer (renderer);
-  render_win->SetSize (xres, yres);
-  renderer->SetBackground (1.0, 0.5, 0.5);
+//  vtkSmartPointer<vtkRenderWindow> render_win = vtkSmartPointer<vtkRenderWindow>::New ();
+//  rens_->InitTraversal ();
+//  vtkSmartPointer<vtkRenderer> renderer = rens_->GetNextItem ();;
+//  render_win->AddRenderer (renderer);
+//  render_win->SetSize (xres, yres);
+//  renderer->SetBackground (1.0, 0.5, 0.5);
 
   vtkSmartPointer<vtkWorldPointPicker> worldPicker = vtkSmartPointer<vtkWorldPointPicker>::New ();
+  win_->SetSize (xres, yres);
+  win_->Render ();
 
-  render_win->Render ();
+//  render_win->Render ();
 
   cloud->points.resize (xres * yres);
-  cloud->width = xres * yres;
-  cloud->height = 1;
+  cloud->width = xres;
+  cloud->height = yres;;
 
   double coords[3];
   float * depth = new float[xres * yres];
-  render_win->GetZbufferData (0, 0, xres - 1, yres - 1, &(depth[0]));
+//  render_win->GetZbufferData (0, 0, xres - 1, yres - 1, &(depth[0]));
+  win_->GetZbufferData (0, 0, xres - 1, yres - 1, &(depth[0]));
 
-  int count_valid_depth_pixels = 0;
+  //transform cloud to give camera coordinates instead of world coordinates!
+  vtkSmartPointer<vtkMatrix4x4> view_transform = rens_->GetFirstRenderer ()->GetActiveCamera ()->GetViewTransformMatrix ();
+  Eigen::Matrix4f trans_view (Eigen::Matrix4f::Identity ());
+
+  for (int x = 0; x < 4; x++)
+    for (int y = 0; y < 4; y++)
+      trans_view (x, y) = static_cast<float> (view_transform->GetElement (x, y));
+
+
+  float bad_value = std::numeric_limits<float>::quiet_NaN ();
   for (size_t x = 0; x < size_t (xres); x++)
   {
     for (size_t y = 0; y < size_t (yres); y++)
@@ -3280,40 +3408,25 @@ pcl::visualization::PCLVisualizer::renderView (int xres, int yres, pcl::PointClo
       float value = depth[y * xres + x];
 
       if (value == 1.0)
+      {
+        (*cloud) (x, y).x = (*cloud) (x, y).y = (*cloud) (x, y).z = bad_value;
         continue;
+      }
 
-      worldPicker->Pick (static_cast<double> (x), static_cast<double> (y), value, renderer);
+      worldPicker->Pick (static_cast<double> (x), static_cast<double> (y), value, rens_->GetFirstRenderer ());
       worldPicker->GetPickPosition (coords);
-      cloud->points[count_valid_depth_pixels].x = static_cast<float> (coords[0]);
-      cloud->points[count_valid_depth_pixels].y = static_cast<float> (coords[1]);
-      cloud->points[count_valid_depth_pixels].z = static_cast<float> (coords[2]);
-      count_valid_depth_pixels++;
+
+
+      //NOTE: vtk view coordinate system is different than the standard camera coordinates (z forward, y down, x right)
+      //thus, the fliping in y and z
+      (*cloud)(x, y).getVector4fMap () = trans_view * Eigen::Vector4f (coords[0], coords[1], coords[2], 1.f);
+
+      (*cloud)(x, y).y *= -1.f;
+      (*cloud)(x, y).z *= -1.f;
     }
   }
 
   delete[] depth;
-
-  cloud->points.resize (count_valid_depth_pixels);
-  cloud->width = count_valid_depth_pixels;
-
-  //transform cloud to give camera coordinates instead of world coordinates!
-  vtkSmartPointer<vtkCamera> active_camera = renderer->GetActiveCamera ();
-  vtkSmartPointer<vtkMatrix4x4> view_transform = active_camera->GetViewTransformMatrix ();
-  Eigen::Matrix4f trans_view;
-  trans_view.setIdentity ();
-
-  for (int x = 0; x < 4; x++)
-    for (int y = 0; y < 4; y++)
-      trans_view (x, y) = static_cast<float> (view_transform->GetElement (x, y));
-
-  //NOTE: vtk view coordinate system is different than the standard camera coordinates (z forward, y down, x right)
-  //thus, the fliping in y and z
-  for (size_t i = 0; i < cloud->points.size (); i++)
-  {
-    cloud->points[i].getVector4fMap () = trans_view * cloud->points[i].getVector4fMap ();
-    cloud->points[i].y *= -1.0f;
-    cloud->points[i].z *= -1.0f;
-  }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

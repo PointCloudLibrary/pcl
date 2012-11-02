@@ -88,26 +88,31 @@ namespace pcl
     class PCL_EXPORTS Camera
     {
       public:
-        // focal point or lookAt
+        /** \brief Focal point or lookAt.
+          * \note The view direction can be obtained by (focal-pos).normalized ()
+          */
         double focal[3];
 
-        // position of the camera
+        /** \brief Position of the camera. */
         double pos[3];
 
-        // up vector of the camera
+        /** \brief Up vector of the camera.
+          * \note Not to be confused with the view direction, bad naming here. */
         double view[3];
 
-        // clipping planes clip[0] is near clipping plane or also the image plane, and clip [1] is the far clipping plane
+        /** \brief Clipping planes depths.
+          * clip[0] is near clipping plane, and clip [1] is the far clipping plane
+          */
         double clip[2];
 
-        // field of view angle in y direction (radians)
+        /** \brief Field of view angle in y direction (radians). */
         double fovy;
 
-        // the following variables are the actual position and size of the window on the screen
-        // and NOT the viewport! except for the size, which is the same
-        // the viewport is assumed to be centered and same size as the window.
+        // the following variables are the actual position and size of the window on the screen and NOT the viewport!
+        // except for the size, which is the same the viewport is assumed to be centered and same size as the window.
         double window_size[2];
         double window_pos[2];
+
 
         /** \brief Computes View matrix for Camera (Based on gluLookAt)
           * \param[out] view_mat the resultant matrix
