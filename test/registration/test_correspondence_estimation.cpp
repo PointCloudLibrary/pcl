@@ -69,7 +69,7 @@ TEST (CorrespondenceEstimation, CorrespondenceEstimationNormalShooting)
 
   pcl::CorrespondencesPtr corr (new pcl::Correspondences);
   pcl::registration::CorrespondenceEstimationNormalShooting <pcl::PointXYZ, pcl::PointXYZ, pcl::Normal> ce;
-  ce.setInputCloud (cloud1);
+  ce.setInputSource (cloud1);
   ce.setKSearch (10);
   ce.setSourceNormals (cloud1_normals);
   ce.setInputTarget (cloud2);
