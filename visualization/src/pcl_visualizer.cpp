@@ -1744,7 +1744,6 @@ pcl::visualization::PCLVisualizer::setCameraParameters (const Eigen::Matrix3f &i
   }
 }
 
-
 /////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::visualization::PCLVisualizer::setCameraParameters (const pcl::visualization::Camera &camera, int viewport)
@@ -1767,6 +1766,43 @@ pcl::visualization::PCLVisualizer::setCameraParameters (const pcl::visualization
 
       win_->SetSize (static_cast<int> (camera.window_size[0]),
                      static_cast<int> (camera.window_size[1]));
+    }
+  }
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::visualization::PCLVisualizer::setCameraClipDistances (double near, double far, int viewport)
+{
+  rens_->InitTraversal ();
+  vtkRenderer* renderer = NULL;
+  int i = 1;
+  while ((renderer = rens_->GetNextItem ()) != NULL)
+  {
+    // Modify all renderer's cameras
+    if (viewport == 0 || viewport == i)
+    {
+      vtkSmartPointer<vtkCamera> cam = renderer->GetActiveCamera ();
+      cam->SetClippingRange (near, far);
+    }
+  }
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::visualization::PCLVisualizer::setCameraFieldOfView (double fovy, int viewport)
+{
+  rens_->InitTraversal ();
+  vtkRenderer* renderer = NULL;
+  int i = 1;
+  while ((renderer = rens_->GetNextItem ()) != NULL)
+  {
+    // Modify all renderer's cameras
+    if (viewport == 0 || viewport == i)
+    {
+      vtkSmartPointer<vtkCamera> cam = renderer->GetActiveCamera ();
+      cam->SetUseHorizontalViewAngle (0);
+      cam->SetViewAngle (fovy * 180.0 / M_PI);
     }
   }
 }

@@ -1523,7 +1523,7 @@ namespace pcl
           * \param[in] viewport the viewport to modify camera of (0 modifies all cameras)
           */
         void
-        setCameraPosition (double pos_x,double pos_y, double pos_z,
+        setCameraPosition (double pos_x, double pos_y, double pos_z,
                            double up_x, double up_y, double up_z, int viewport = 0);
 
         /** \brief Set the camera parameters via an intrinsics and and extrinsics matrix
@@ -1535,8 +1535,26 @@ namespace pcl
         void
         setCameraParameters (const Eigen::Matrix3f &intrinsics, const Eigen::Matrix4f &extrinsics, int viewport = 0);
 
+        /** \brief Set the camera parameters by given a full camera data structure.
+          * \param[in] camera camera structure containing all the camera parameters.
+          * \param[in] viewport the viewport to modify camera of (0 modifies all cameras)
+          */
         void
         setCameraParameters (const Camera &camera, int viewport = 0);
+
+        /** \brief Set the camera clipping distances.
+          * \param[in] near the near clipping distance (no objects closer than this to the camera will be drawn)
+          * \param[in] far the far clipping distance (no objects further away than this to the camera will be drawn)
+          */
+        void
+        setCameraClipDistances (double near, double far, int viewport = 0);
+
+        /** \brief Set the camera vertical field of view.
+          * \param[in] fovy vertical field of view in radians
+          * \param[in] viewport the viewport to modify camera of (0 modifies all cameras)
+          */
+        void
+        setCameraFieldOfView (double fovy, int viewport = 0);
 
         /** \brief Get the current camera parameters. */
         void
