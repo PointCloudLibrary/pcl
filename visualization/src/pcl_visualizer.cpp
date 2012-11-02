@@ -1737,7 +1737,7 @@ pcl::visualization::PCLVisualizer::setCameraParameters (const Eigen::Matrix3f &i
       cam->SetUseHorizontalViewAngle (0);
       cam->SetViewAngle (fovy);
       cam->SetClippingRange (0.01, 1000.01);
-      win_->SetSize (window_size[0], window_size[2]);
+      win_->SetSize (window_size[0], window_size[1]);
 
       renderer->Render ();
     }
