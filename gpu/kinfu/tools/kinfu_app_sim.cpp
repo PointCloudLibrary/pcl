@@ -174,16 +174,9 @@ setViewerPose (visualization::PCLVisualizer& viewer, const Eigen::Affine3f& view
   Eigen::Vector3f pos_vector = viewer_pose * Eigen::Vector3f (0, 0, 0);
   Eigen::Vector3f look_at_vector = viewer_pose.rotation () * Eigen::Vector3f (0, 0, 1) + pos_vector;
   Eigen::Vector3f up_vector = viewer_pose.rotation () * Eigen::Vector3f (0, -1, 0);
-  viewer.camera_.pos[0] = pos_vector[0];
-  viewer.camera_.pos[1] = pos_vector[1];
-  viewer.camera_.pos[2] = pos_vector[2];
-  viewer.camera_.focal[0] = look_at_vector[0];
-  viewer.camera_.focal[1] = look_at_vector[1];
-  viewer.camera_.focal[2] = look_at_vector[2];
-  viewer.camera_.view[0] = up_vector[0];
-  viewer.camera_.view[1] = up_vector[1];
-  viewer.camera_.view[2] = up_vector[2];
-  viewer.updateCamera ();
+  viewer.setCameraPosition (pos_vector[0], pos_vector[1], pos_vector[2],
+                            look_at_vector[0], look_at_vector[1], look_at_vector[2],
+                            up_vector[0], up_vector[1], up_vector[2]);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -585,8 +578,7 @@ struct CurrentFrameCloudView
     cloud_viewer_.initCameraParameters ();
     cloud_viewer_.setPosition (0, 500);
     cloud_viewer_.setSize (640, 480);
-    cloud_viewer_.camera_.clip[0] = 0.01;
-    cloud_viewer_.camera_.clip[1] = 10.01;
+    cloud_viewer_.setCameraClipDistances (0.01, 10.01);
   }
 
   void
@@ -726,8 +718,7 @@ struct SceneCloudView
     cloud_viewer_.initCameraParameters ();
     cloud_viewer_.setPosition (0, 500);
     cloud_viewer_.setSize (640, 480);
-    cloud_viewer_.camera_.clip[0] = 0.01;
-    cloud_viewer_.camera_.clip[1] = 10.01;
+    cloud_viewer_.setCameraClipDistances (0.01, 10.01);
 
     cloud_viewer_.addText ("H: print help", 2, 15, 20, 34, 135, 246);         
   }
@@ -922,7 +913,7 @@ struct KinFuApp
     image_view_.viewerDepth_.registerKeyboardCallback (keyboard_callback, (void*)this);
 
     float diag = sqrt ((float)kinfu_.cols () * kinfu_.cols () + kinfu_.rows () * kinfu_.rows ());
-    scene_cloud_view_.cloud_viewer_.camera_.fovy = 2 * atan (diag / (2 * f)) * 1.5;
+    scene_cloud_view_.cloud_viewer_.setCameraFieldOfView (2 * atan (diag / (2 * f)) * 1.5);
     
     scene_cloud_view_.toggleCube(volume_size);    
   }
