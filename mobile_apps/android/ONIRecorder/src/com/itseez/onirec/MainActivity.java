@@ -238,6 +238,7 @@ public class MainActivity extends Activity {
 
         @Override
         public boolean prepareMenu(Menu menu) {
+            menu.findItem(R.id.menu_item_reconnect).setVisible(true);
             menu.findItem(R.id.menu_item_replay).setVisible(true);
             return true;
         }
@@ -245,6 +246,9 @@ public class MainActivity extends Activity {
         @Override
         public boolean menuItemClicked(MenuItem item) {
             switch (item.getItemId()) {
+                case R.id.menu_item_reconnect:
+                    goToDefaultState();
+                    return true;
                 case R.id.menu_item_replay:
                     initiateReplay();
                     return true;

@@ -17,6 +17,7 @@
     <string name="error_failed_to_start_recording">failed to start recording</string>
     <string name="error_failed_to_start_replay">failed to start replay</string>
     <string name="error_failed_during_replay">replay has terminated abnormally</string>
+    <string name="menu_item_reconnect">Reconnect</string>
     <string name="menu_item_replay">Replay</string>
     <string name="menu_item_stop_replaying">Stop replaying</string>
     <string name="menu_item_record">Record</string>
