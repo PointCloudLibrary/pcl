@@ -72,7 +72,7 @@ if(build)
                  LINK_WITH pcl_gtest pcl_common pcl_io pcl_kdtree pcl_features pcl_recognition pcl_keypoints
                  ARGUMENTS ${PCL_SOURCE_DIR}/test/milk.pcd ${PCL_SOURCE_DIR}/test/milk_cartoon_all_small_clorox.pcd)
 
-    if(BUILD_visualization)
+    if(BUILD_visualization AND (NOT UNIX OR (UNIX AND NOT ($ENV{DISPLAY} STREQUAL ""))))
         PCL_ADD_TEST(a_visualization_test test_visualization
                  FILES test_visualization.cpp
                  LINK_WITH pcl_gtest pcl_io pcl_visualization pcl_features
