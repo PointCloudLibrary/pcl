@@ -91,16 +91,9 @@ int main (int argc, char** argv)
   viewer.setBackgroundColor (1, 1, 1);
   
   viewer.initCameraParameters ();
-  viewer.camera_.pos[0] = 0.0;
-  viewer.camera_.pos[1] = -0.3;
-  viewer.camera_.pos[2] = -2.0;
-  viewer.camera_.focal[0] = 0.0;
-  viewer.camera_.focal[1] = 0.0+viewer.camera_.pos[1];
-  viewer.camera_.focal[2] = 1.0;
-  viewer.camera_.view[0] = 0.0;
-  viewer.camera_.view[1] = -1.0;
-  viewer.camera_.view[2] = 0.0;
-  viewer.updateCamera ();
+  viewer.setCameraPosition (0.0, -0.3, -2.0,
+                            0.0, -0.3, 1.0,
+                            0.0, -1.0, 0.0);
   
   openni_wrapper::OpenNIDriver& driver = openni_wrapper::OpenNIDriver::getInstance ();
   if (driver.getNumberDevices () > 0)
