@@ -67,10 +67,10 @@ if(CMAKE_COMPILER_IS_GNUCXX)
   # to disable a lot of warnings which are not fixable
   execute_process(COMMAND ${CMAKE_C_COMPILER} -dumpversion OUTPUT_VARIABLE GCC_VERSION)
   if (GCC_VERSION VERSION_GREATER 4.3)
-    message("-- GCC > 4.3 found, enabling -Wabi")
+    message(STATUS "-- GCC > 4.3 found, enabling -Wabi")
     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wabi")
   else()
-    message("-- GCC < 4.3 found, enabling -Wno-deprecated")
+    message(STATUS "-- GCC < 4.3 found, enabling -Wno-deprecated")
     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated")
   endif ()
 
@@ -282,6 +282,9 @@ set(pcl_config_h "${CMAKE_CURRENT_BINARY_DIR}/include/pcl/pcl_config.h")
 configure_file(${pcl_config_h_in} ${pcl_config_h})
 PCL_ADD_INCLUDES(common "" ${pcl_config_h})
 include_directories(${CMAKE_CURRENT_BINARY_DIR}/include)
+
+### ---[ Set up for tests
+enable_testing()
 
 ### ---[ Set up for examples
 #include(${PCL_SOURCE_DIR}/cmake/pcl_examples.cmake)
