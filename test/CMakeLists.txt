@@ -1,5 +1,5 @@
 set(SUBSYS_NAME global_tests)
-set(SUBSYS_DESC "Point cloud library global tests")
+set(SUBSYS_DESC "Point cloud library global unit tests")
 
 if(BUILD_visualization)
   include (${VTK_USE_FILE})
@@ -13,8 +13,6 @@ set(DEFAULT ON)
 set(build TRUE)
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ${DEFAULT} ${REASON})
 PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS ${OPT_DEPS})
-
-PCL_ADD_DOC(${SUBSYS_NAME})
 
 if(build)
 
