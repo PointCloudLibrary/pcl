@@ -47,8 +47,8 @@ main (int argc, char *argv[])
   istringstream (argv[2]) >> scale1;
   /// large scale
   istringstream (argv[3]) >> scale2;
-  /// threshold for DoN magnitude
-  istringstream (argv[4]) >> threshold;
+  istringstream (argv[4]) >> threshold;   // threshold for DoN magnitude
+  istringstream (argv[5]) >> segradius;   // threshold for radius segmentation
 
   // Load cloud in blob format
   sensor_msgs::PointCloud2 blob;
