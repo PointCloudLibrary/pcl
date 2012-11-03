@@ -56,6 +56,7 @@
 #include <pcl/registration/transformation_estimation_lm.h>
 #include <pcl/registration/transformation_estimation_svd.h>
 #include <pcl/registration/transformation_estimation_point_to_plane_lls.h>
+#include <pcl/registration/transformation_estimation_point_to_plane.h>
 #include <pcl/features/normal_3d.h>
 
 #include "test_registration_api_data.h"
@@ -469,44 +470,148 @@ TEST (PCL, TransformationEstimationPointToPlaneLLS)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, TransformationEstimationLM)
 {
-//  CloudXYZConstPtr source (new CloudXYZ (cloud_target));
-//  CloudXYZPtr      target (new CloudXYZ ());
-//  pcl::transformPointCloud (*source, *target, T_ref);
-//
-//  Eigen::Matrix4f T_LM;
-//  const pcl::registration::TransformationEstimationLM<PointXYZ, PointXYZ> trans_est_lm;
-//  trans_est_lm.estimateRigidTransformation(*source, *target, T_LM);
-//
-//  const Eigen::Quaternionf   R_LM_1 (T_LM.topLeftCorner  <3, 3> ());
-//  const Eigen::Translation3f t_LM_1 (T_LM.topRightCorner <3, 1> ());
-//
-//  EXPECT_NEAR (R_LM_1.x (), R_ref.x (), 1e-6f);
-//  EXPECT_NEAR (R_LM_1.y (), R_ref.y (), 1e-6f);
-//  EXPECT_NEAR (R_LM_1.z (), R_ref.z (), 1e-6f);
-//  EXPECT_NEAR (R_LM_1.w (), R_ref.w (), 1e-6f);
-//
-//  EXPECT_NEAR (t_LM_1.x (), t_ref.x (), 1e-6f);
-//  EXPECT_NEAR (t_LM_1.y (), t_ref.y (), 1e-6f);
-//  EXPECT_NEAR (t_LM_1.z (), t_ref.z (), 1e-6f);
-//
-//  // Check if the estimation with correspondences gives the same results
-//  Eigen::Matrix4f T_LM_2;
-//  pcl::Correspondences corr; corr.reserve (source->size ());
-//  for (int i=0; i<source->size (); ++i) corr.push_back (pcl::Correspondence (i, i, 0.f));
-//  trans_est_lm.estimateRigidTransformation(*source, *target, corr, T_LM_2);
-//
-//  const Eigen::Quaternionf   R_LM_2 (T_LM_2.topLeftCorner  <3, 3> ());
-//  const Eigen::Translation3f t_LM_2 (T_LM_2.topRightCorner <3, 1> ());
-//
-//  EXPECT_FLOAT_EQ (R_LM_1.x (), R_LM_2.x ());
-//  EXPECT_FLOAT_EQ (R_LM_1.y (), R_LM_2.y ());
-//  EXPECT_FLOAT_EQ (R_LM_1.z (), R_LM_2.z ());
-//  EXPECT_FLOAT_EQ (R_LM_1.w (), R_LM_2.w ());
-//
-//  EXPECT_FLOAT_EQ (t_LM_1.x (), t_LM_2.x ());
-//  EXPECT_FLOAT_EQ (t_LM_1.y (), t_LM_2.y ());
-//  EXPECT_FLOAT_EQ (t_LM_1.z (), t_LM_2.z ());
+  CloudXYZConstPtr source (new CloudXYZ (cloud_target));
+  CloudXYZPtr      target (new CloudXYZ ());
+  pcl::transformPointCloud (*source, *target, T_ref);
+
+  // Test the float precision first
+  Eigen::Matrix4f T_LM_float;
+  const pcl::registration::TransformationEstimationLM<PointXYZ, PointXYZ, float> trans_est_lm_float;
+  trans_est_lm_float.estimateRigidTransformation (*source, *target, T_LM_float);
+
+  const Eigen::Quaternionf   R_LM_1_float (T_LM_float.topLeftCorner  <3, 3> ());
+  const Eigen::Translation3f t_LM_1_float (T_LM_float.topRightCorner <3, 1> ());
+
+  EXPECT_NEAR (R_LM_1_float.x (), R_ref.x (), 1e-4f);
+  EXPECT_NEAR (R_LM_1_float.y (), R_ref.y (), 1e-4f);
+  EXPECT_NEAR (R_LM_1_float.z (), R_ref.z (), 1e-4f);
+  EXPECT_NEAR (R_LM_1_float.w (), R_ref.w (), 1e-4f);
+
+  EXPECT_NEAR (t_LM_1_float.x (), t_ref.x (), 1e-3f);
+  EXPECT_NEAR (t_LM_1_float.y (), t_ref.y (), 1e-3f);
+  EXPECT_NEAR (t_LM_1_float.z (), t_ref.z (), 1e-3f);
+
+  // Check if the estimation with correspondences gives the same results
+  Eigen::Matrix4f T_LM_2_float;
+  pcl::Correspondences corr;
+  corr.reserve (source->size ());
+  for (int i = 0; i < source->size (); ++i)
+    corr.push_back (pcl::Correspondence (i, i, 0.f));
+  trans_est_lm_float.estimateRigidTransformation (*source, *target, corr, T_LM_2_float);
+
+  const Eigen::Quaternionf   R_LM_2_float (T_LM_2_float.topLeftCorner  <3, 3> ());
+  const Eigen::Translation3f t_LM_2_float (T_LM_2_float.topRightCorner <3, 1> ());
+
+  EXPECT_FLOAT_EQ (R_LM_1_float.x (), R_LM_2_float.x ());
+  EXPECT_FLOAT_EQ (R_LM_1_float.y (), R_LM_2_float.y ());
+  EXPECT_FLOAT_EQ (R_LM_1_float.z (), R_LM_2_float.z ());
+  EXPECT_FLOAT_EQ (R_LM_1_float.w (), R_LM_2_float.w ());
+
+  EXPECT_FLOAT_EQ (t_LM_1_float.x (), t_LM_2_float.x ());
+  EXPECT_FLOAT_EQ (t_LM_1_float.y (), t_LM_2_float.y ());
+  EXPECT_FLOAT_EQ (t_LM_1_float.z (), t_LM_2_float.z ());
+
+
+  // Test the double precision, notice that the testing tolerances are much smaller
+  Eigen::Matrix4d T_LM_double;
+  const pcl::registration::TransformationEstimationLM<PointXYZ, PointXYZ, double> trans_est_lm_double;
+  trans_est_lm_double.estimateRigidTransformation (*source, *target, T_LM_double);
+
+  const Eigen::Quaterniond   R_LM_1_double (T_LM_double.topLeftCorner  <3, 3> ());
+  const Eigen::Translation3d t_LM_1_double (T_LM_double.topRightCorner <3, 1> ());
+
+  EXPECT_NEAR (R_LM_1_double.x (), R_ref.x (), 1e-6);
+  EXPECT_NEAR (R_LM_1_double.y (), R_ref.y (), 1e-6);
+  EXPECT_NEAR (R_LM_1_double.z (), R_ref.z (), 1e-6);
+  EXPECT_NEAR (R_LM_1_double.w (), R_ref.w (), 1e-6);
+
+  EXPECT_NEAR (t_LM_1_double.x (), t_ref.x (), 1e-6);
+  EXPECT_NEAR (t_LM_1_double.y (), t_ref.y (), 1e-6);
+  EXPECT_NEAR (t_LM_1_double.z (), t_ref.z (), 1e-6);
+
+  // Check if the estimation with correspondences gives the same results
+  Eigen::Matrix4d T_LM_2_double;
+  corr.clear ();
+  corr.reserve (source->size ());
+  for (int i = 0; i < source->size (); ++i)
+    corr.push_back (pcl::Correspondence (i, i, 0.f));
+  trans_est_lm_double.estimateRigidTransformation (*source, *target, corr, T_LM_2_double);
+
+  const Eigen::Quaterniond   R_LM_2_double (T_LM_2_double.topLeftCorner  <3, 3> ());
+  const Eigen::Translation3d t_LM_2_double (T_LM_2_double.topRightCorner <3, 1> ());
+
+  EXPECT_DOUBLE_EQ (R_LM_1_double.x (), R_LM_2_double.x ());
+  EXPECT_DOUBLE_EQ (R_LM_1_double.y (), R_LM_2_double.y ());
+  EXPECT_DOUBLE_EQ (R_LM_1_double.z (), R_LM_2_double.z ());
+  EXPECT_DOUBLE_EQ (R_LM_1_double.w (), R_LM_2_double.w ());
+
+  EXPECT_DOUBLE_EQ (t_LM_1_double.x (), t_LM_2_double.x ());
+  EXPECT_DOUBLE_EQ (t_LM_1_double.y (), t_LM_2_double.y ());
+  EXPECT_DOUBLE_EQ (t_LM_1_double.z (), t_LM_2_double.z ());
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, TransformationEstimationPointToPlane)
+{
+  pcl::registration::TransformationEstimationPointToPlane<pcl::PointNormal, pcl::PointNormal, float> transform_estimator_float;
+
+  // Create a test cloud
+  pcl::PointCloud<pcl::PointNormal>::Ptr src (new pcl::PointCloud<pcl::PointNormal>);
+  src->height = 1;
+  src->is_dense = true;
+  for (float x = -5.0f; x <= 5.0f; x += 0.5f)
+    for (float y = -5.0f; y <= 5.0f; y += 0.5f)
+    {
+      pcl::PointNormal p;
+      p.x = x;
+      p.y = y;
+      p.z = 0.1f * powf (x, 2.0f) + 0.2f * p.x * p.y - 0.3f * y + 1.0f;
+      float & nx = p.normal[0];
+      float & ny = p.normal[1];
+      float & nz = p.normal[2];
+      nx = -0.2f * p.x - 0.2f;
+      ny = 0.6f * p.y - 0.2f;
+      nz = 1.0f;
+
+      float magnitude = sqrtf (nx * nx + ny * ny + nz * nz);
+      nx /= magnitude;
+      ny /= magnitude;
+      nz /= magnitude;
+
+      src->points.push_back (p);
+    }
+  src->width = static_cast<uint32_t> (src->points.size ());
+
+  // Create a test matrix
+  Eigen::Matrix4f ground_truth_tform = Eigen::Matrix4f::Identity ();
+  ground_truth_tform.row (0) <<  0.9938f,  0.0988f,  0.0517f,  0.1000f;
+  ground_truth_tform.row (1) << -0.0997f,  0.9949f,  0.0149f, -0.2000f;
+  ground_truth_tform.row (2) << -0.0500f, -0.0200f,  0.9986f,  0.3000f;
+  ground_truth_tform.row (3) <<  0.0000f,  0.0000f,  0.0000f,  1.0000f;
+
+  pcl::PointCloud<pcl::PointNormal>::Ptr tgt (new pcl::PointCloud<pcl::PointNormal>);
+
+  pcl::transformPointCloudWithNormals (*src, *tgt, ground_truth_tform);
+
+  Eigen::Matrix4f estimated_transform_float;
+  transform_estimator_float.estimateRigidTransformation (*src, *tgt, estimated_transform_float);
+
+  for (int i = 0; i < 4; ++i)
+    for (int j = 0; j < 4; ++j)
+      EXPECT_NEAR (estimated_transform_float (i, j), ground_truth_tform (i, j), 1e-3);
+
+
+
+  pcl::registration::TransformationEstimationPointToPlane<pcl::PointNormal, pcl::PointNormal, double> transform_estimator_double;
+  Eigen::Matrix4d estimated_transform_double;
+  transform_estimator_double.estimateRigidTransformation (*src, *tgt, estimated_transform_double);
+
+  for (int i = 0; i < 4; ++i)
+    for (int j = 0; j < 4; ++j)
+      EXPECT_NEAR (estimated_transform_double (i, j), ground_truth_tform (i, j), 1e-3);
+}
+
+
 
 /* ---[ */
 int
