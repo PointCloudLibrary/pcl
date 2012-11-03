@@ -155,6 +155,7 @@ namespace pcl
       void
       deleteVertex (const VertexIndex& idx_vertex)
       {
+        assert (Base::validateMeshElementIndex (idx_vertex));
         if (idx_vertex.isValid ())
         {
           this->deleteVertex (Base::getElement (idx_vertex));
@@ -164,11 +165,8 @@ namespace pcl
       void
       deleteVertex (Vertex& vertex)
       {
-        if (vertex.isIsolated ())
-        {
-          vertex.setDeleted (true);
-          return;
-        }
+        if (vertex.getDeleted ()) return;
+        if (vertex.isIsolated ()) {vertex.setDeleted (true); return;}
 
         FaceAroundVertexConstCirculator       circ     = Base::getFaceAroundVertexConstCirculator (vertex);
         const FaceAroundVertexConstCirculator circ_end = circ;
@@ -187,6 +185,7 @@ namespace pcl
       void
       deleteEdge (const HalfEdgeIndex& idx_half_edge)
       {
+        assert (Base::validateMeshElementIndex (idx_half_edge));
         if (idx_half_edge.isValid ())
         {
           this->deleteEdge (Base::getElement (idx_half_edge));
@@ -211,9 +210,10 @@ namespace pcl
       void
       deleteFace (const FaceIndex& idx_face)
       {
+        assert (Base::validateMeshElementIndex (idx_face));
         if (idx_face.isValid ())
         {
-          std::stack<FaceIndex> delete_faces; // This is actually only needed for the manifold mesh.
+          std::stack <FaceIndex> delete_faces; // This is actually only needed for the manifold mesh.
           this->deleteFace (idx_face, delete_faces, IsManifold ());
         }
       }
@@ -257,7 +257,6 @@ namespace pcl
           {
             it->setFaceIndex (new_face_indexes [it->getFaceIndex ().getIndex ()]);
           }
-
         }
 
         for (FaceIterator it = Base::beginFaces (); it!=Base::endFaces (); ++it)
@@ -458,10 +457,7 @@ namespace pcl
                   std::stack<FaceIndex>& delete_faces,
                   NonManifoldMeshTag)
       {
-        assert (Base::validateMeshElementIndex (idx_face));
-
         Face& face = Base::getElement (idx_face);
-
         if (face.getDeleted ())
         {
           return; // already deleted
@@ -992,7 +988,6 @@ namespace pcl
           HalfEdgeIndex idx_he_ba_;
           bool          is_boundary_ba_;
       };
-
   };
 
 } // End namespace pcl
