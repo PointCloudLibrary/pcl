@@ -67,19 +67,29 @@ namespace pcl
         typedef PointIndices::Ptr PointIndicesPtr;
         typedef PointIndices::ConstPtr PointIndicesConstPtr;
 
+        typedef Eigen::Matrix<Scalar, 4, 1> Vector4;
 
         TransformationEstimationPointToPlane () {};
         virtual ~TransformationEstimationPointToPlane () {};
 
       protected:
-        virtual double
+        virtual Scalar
         computeDistance (const PointSource &p_src, const PointTarget &p_tgt) const
         {
           // Compute the point-to-plane distance
-          Eigen::Vector4f s (p_src.x, p_src.y, p_src.z, 0);
-          Eigen::Vector4f t (p_tgt.x, p_tgt.y, p_tgt.z, 0);
-          Eigen::Vector4f n (p_tgt.normal_x, p_tgt.normal_y, p_tgt.normal_z, 0);
+          Vector4 s (p_src.x, p_src.y, p_src.z, 0);
+          Vector4 t (p_tgt.x, p_tgt.y, p_tgt.z, 0);
+          Vector4 n (p_tgt.normal_x, p_tgt.normal_y, p_tgt.normal_z, 0);
           return ((s - t).dot (n));
+        }
+
+        virtual Scalar
+        computeDistance (const Vector4 &p_src, const PointTarget &p_tgt) const
+        {
+          // Compute the point-to-plane distance
+          Vector4 t (p_tgt.x, p_tgt.y, p_tgt.z, 0);
+          Vector4 n (p_tgt.normal_x, p_tgt.normal_y, p_tgt.normal_z, 0);
+          return ((p_src - t).dot (n));
         }
 
     };

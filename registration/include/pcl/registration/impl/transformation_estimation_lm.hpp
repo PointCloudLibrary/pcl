@@ -83,7 +83,7 @@ pcl::registration::TransformationEstimationLM<PointSource, PointTarget, MatScala
   }
 
   int n_unknowns = warp_point_->getDimension ();
-  Eigen::VectorXd x (n_unknowns);
+  VectorX x (n_unknowns);
   x.setZero ();
   
   // Set temporary pointers
@@ -92,7 +92,8 @@ pcl::registration::TransformationEstimationLM<PointSource, PointTarget, MatScala
 
   OptimizationFunctor functor (static_cast<int> (cloud_src.points.size ()), this);
   Eigen::NumericalDiff<OptimizationFunctor> num_diff (functor);
-  Eigen::LevenbergMarquardt<Eigen::NumericalDiff<OptimizationFunctor>, double> lm (num_diff);
+  //Eigen::LevenbergMarquardt<Eigen::NumericalDiff<OptimizationFunctor>, double> lm (num_diff);
+  Eigen::LevenbergMarquardt<Eigen::NumericalDiff<OptimizationFunctor>, MatScalar> lm (num_diff);
   int info = lm.minimize (x);
 
   // Compute the norm of the residuals
@@ -104,8 +105,7 @@ pcl::registration::TransformationEstimationLM<PointSource, PointTarget, MatScala
   PCL_DEBUG ("]\n");
 
   // Return the correct transformation
-  VectorX params = x.cast<MatScalar> ();
-  warp_point_->setParam (params);
+  warp_point_->setParam (x);
   transformation_matrix = warp_point_->getTransform ();
 
   tmp_src_ = NULL;
@@ -162,7 +162,7 @@ pcl::registration::TransformationEstimationLM<PointSource, PointTarget, MatScala
   }
 
   int n_unknowns = warp_point_->getDimension ();  // get dimension of unknown space
-  Eigen::VectorXd x (n_unknowns);
+  VectorX x (n_unknowns);
   x.setConstant (n_unknowns, 0);
 
   // Set temporary pointers
@@ -173,7 +173,8 @@ pcl::registration::TransformationEstimationLM<PointSource, PointTarget, MatScala
 
   OptimizationFunctorWithIndices functor (static_cast<int> (indices_src.size ()), this);
   Eigen::NumericalDiff<OptimizationFunctorWithIndices> num_diff (functor);
-  Eigen::LevenbergMarquardt<Eigen::NumericalDiff<OptimizationFunctorWithIndices> > lm (num_diff);
+  //Eigen::LevenbergMarquardt<Eigen::NumericalDiff<OptimizationFunctorWithIndices> > lm (num_diff);
+  Eigen::LevenbergMarquardt<Eigen::NumericalDiff<OptimizationFunctorWithIndices>, MatScalar> lm (num_diff);
   int info = lm.minimize (x);
 
   // Compute the norm of the residuals
@@ -184,8 +185,7 @@ pcl::registration::TransformationEstimationLM<PointSource, PointTarget, MatScala
   PCL_DEBUG ("]\n");
 
   // Return the correct transformation
-  VectorX params = x.cast<MatScalar> ();
-  warp_point_->setParam (params);
+  warp_point_->setParam (x);
   transformation_matrix = warp_point_->getTransform ();
 
   tmp_src_ = NULL;
@@ -210,20 +210,19 @@ pcl::registration::TransformationEstimationLM<PointSource, PointTarget, MatScala
     indices_tgt[i] = correspondences[i].index_match;
   }
 
-  estimateRigidTransformation(cloud_src, indices_src, cloud_tgt, indices_tgt, transformation_matrix);
+  estimateRigidTransformation (cloud_src, indices_src, cloud_tgt, indices_tgt, transformation_matrix);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget, typename MatScalar> int 
 pcl::registration::TransformationEstimationLM<PointSource, PointTarget, MatScalar>::OptimizationFunctor::operator () (
-    const Eigen::VectorXd &x, Eigen::VectorXd &fvec) const
+    const VectorX &x, VectorX &fvec) const
 {
   const PointCloud<PointSource> & src_points = *estimator_->tmp_src_;
   const PointCloud<PointTarget> & tgt_points = *estimator_->tmp_tgt_;
 
   // Initialize the warp function with the given parameters
-  VectorX params = x.cast<MatScalar> ();
-  estimator_->warp_point_->setParam (params);
+  estimator_->warp_point_->setParam (x);
 
   // Transform each source point and compute its distance to the corresponding target point
   for (int i = 0; i < values (); ++i)
@@ -232,9 +231,9 @@ pcl::registration::TransformationEstimationLM<PointSource, PointTarget, MatScala
     const PointTarget & p_tgt = tgt_points.points[i];
 
     // Transform the source point based on the current warp parameters
-    PointSource p_src_warped;
+    Vector4 p_src_warped;
     estimator_->warp_point_->warpPoint (p_src, p_src_warped);
-    
+
     // Estimate the distance (cost function)
     fvec[i] = estimator_->computeDistance (p_src_warped, p_tgt);
   }
@@ -244,7 +243,7 @@ pcl::registration::TransformationEstimationLM<PointSource, PointTarget, MatScala
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget, typename MatScalar> int
 pcl::registration::TransformationEstimationLM<PointSource, PointTarget, MatScalar>::OptimizationFunctorWithIndices::operator() (
-    const Eigen::VectorXd &x, Eigen::VectorXd &fvec) const
+    const VectorX &x, VectorX &fvec) const
 {
   const PointCloud<PointSource> & src_points = *estimator_->tmp_src_;
   const PointCloud<PointTarget> & tgt_points = *estimator_->tmp_tgt_;
@@ -252,8 +251,7 @@ pcl::registration::TransformationEstimationLM<PointSource, PointTarget, MatScala
   const std::vector<int> & tgt_indices = *estimator_->tmp_idx_tgt_;
 
   // Initialize the warp function with the given parameters
-  VectorX params = x.cast<MatScalar> ();
-  estimator_->warp_point_->setParam (params);
+  estimator_->warp_point_->setParam (x);
 
   // Transform each source point and compute its distance to the corresponding target point
   for (int i = 0; i < values (); ++i)
@@ -262,7 +260,7 @@ pcl::registration::TransformationEstimationLM<PointSource, PointTarget, MatScala
     const PointTarget & p_tgt = tgt_points.points[tgt_indices[i]];
 
     // Transform the source point based on the current warp parameters
-    PointSource p_src_warped;
+    Vector4 p_src_warped;
     estimator_->warp_point_->warpPoint (p_src, p_src_warped);
     
     // Estimate the distance (cost function)
