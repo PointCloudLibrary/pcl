@@ -47,8 +47,7 @@ namespace pcl
 {
   namespace registration
   {
-    /** \brief @b WarpPointRigid3D enables 6D (3D rotation + 3D translation) 
-      * transformations for points.
+    /** \brief Base warp point class. 
       * 
       * \note The class is templated on the source and target point types as well as on the output scalar of the transformation matrix (i.e., float or double). Default: float.
       * \author Radu B. Rusu
@@ -60,6 +59,7 @@ namespace pcl
       public:
         typedef Eigen::Matrix<Scalar, 4, 4> Matrix4;
         typedef Eigen::Matrix<Scalar, Eigen::Dynamic, 1> VectorX;
+        typedef Eigen::Matrix<Scalar, 4, 1> Vector4;
 
         typedef boost::shared_ptr<WarpPointRigid<PointSourceT, PointTargetT, Scalar> > Ptr;
         typedef boost::shared_ptr<const WarpPointRigid<PointSourceT, PointTargetT, Scalar> > ConstPtr;
@@ -87,7 +87,7 @@ namespace pcl
           * \param[in] pnt_in the point to warp (transform)
           * \param[out] pnt_out the warped (transformed) point
           */
-        void 
+        inline void 
         warpPoint (const PointSourceT& pnt_in, PointSourceT& pnt_out) const
         {
           pnt_out.x = static_cast<float> (transform_matrix_ (0, 0) * pnt_in.x + transform_matrix_ (0, 1) * pnt_in.y + transform_matrix_ (0, 2) * pnt_in.z + transform_matrix_ (0, 3));
@@ -97,6 +97,19 @@ namespace pcl
           //                            pnt_in.getVector3fMap () + 
           //                            transform_matrix_.block (0, 3, 3, 1);
           //pnt_out.data[3] = pnt_in.data[3];
+        }
+
+        /** \brief Warp a point given a transformation matrix
+          * \param[in] pnt_in the point to warp (transform)
+          * \param[out] pnt_out the warped (transformed) point
+          */
+        inline void 
+        warpPoint (const PointSourceT& pnt_in, Vector4& pnt_out) const
+        {
+          pnt_out[0] = static_cast<Scalar> (transform_matrix_ (0, 0) * pnt_in.x + transform_matrix_ (0, 1) * pnt_in.y + transform_matrix_ (0, 2) * pnt_in.z + transform_matrix_ (0, 3));
+          pnt_out[1] = static_cast<Scalar> (transform_matrix_ (1, 0) * pnt_in.x + transform_matrix_ (1, 1) * pnt_in.y + transform_matrix_ (1, 2) * pnt_in.z + transform_matrix_ (1, 3));
+          pnt_out[2] = static_cast<Scalar> (transform_matrix_ (2, 0) * pnt_in.x + transform_matrix_ (2, 1) * pnt_in.y + transform_matrix_ (2, 2) * pnt_in.z + transform_matrix_ (2, 3));
+          pnt_out[3] = 0.0;
         }
 
         /** \brief Get the number of dimensions. */

@@ -48,7 +48,8 @@ namespace pcl
 {
   namespace registration
   {
-    /** \brief Base warp point class. 
+    /** \brief @b WarpPointRigid3D enables 6D (3D rotation + 3D translation) 
+      * transformations for points.
       * 
       * \note The class is templated on the source and target point types as well as on the output scalar of the transformation matrix (i.e., float or double). Default: float.
       * \author Radu B. Rusu
@@ -58,6 +59,8 @@ namespace pcl
     class WarpPointRigid6D : public WarpPointRigid<PointSourceT, PointTargetT, Scalar>
     {
       public:
+        using WarpPointRigid<PointSourceT, PointTargetT, Scalar>::transform_matrix_;
+
         typedef typename WarpPointRigid<PointSourceT, PointTargetT, Scalar>::Matrix4 Matrix4;
         typedef typename WarpPointRigid<PointSourceT, PointTargetT, Scalar>::VectorX VectorX;
 
@@ -74,19 +77,19 @@ namespace pcl
         setParam (const VectorX& p)
         {
           assert (p.rows () == this->getDimension ());
-          Matrix4& trans = this->transform_matrix_;
-
-          trans.setZero ();
-          trans (3, 3) = 1;
 
           // Copy the rotation and translation components
-          trans.block (0, 3, 4, 1) = Eigen::Matrix<Scalar, 4, 1> (p[0], p[1], p[2], 1.0);
-
+          transform_matrix_.setZero ();
+          transform_matrix_ (0, 3) = p[0];
+          transform_matrix_ (1, 3) = p[1];
+          transform_matrix_ (2, 3) = p[2];
+          transform_matrix_ (3, 3) = 1;
+          
           // Compute w from the unit quaternion
           Eigen::Quaternion<Scalar> q (0, p[3], p[4], p[5]);
           q.w () = static_cast<Scalar> (sqrt (1 - q.dot (q)));
           q.normalize ();
-          trans.topLeftCorner (3, 3) = q.toRotationMatrix ();
+          transform_matrix_.topLeftCorner (3, 3) = q.toRotationMatrix ();
         }
     };
   }
