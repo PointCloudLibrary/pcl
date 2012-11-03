@@ -938,12 +938,12 @@ pcl::visualization::PCLVisualizer::addActorToRenderer (const vtkSmartPointer<vtk
     if (viewport == 0)
     {
       renderer->AddActor (actor);
-      renderer->Render ();
+//      renderer->Render ();
     }
     else if (viewport == i)               // add the actor only to the specified viewport
     {
       renderer->AddActor (actor);
-      renderer->Render ();
+//      renderer->Render ();
     }
     ++i;
   }
@@ -965,7 +965,7 @@ pcl::visualization::PCLVisualizer::removeActorFromRenderer (const vtkSmartPointe
     if (viewport == 0)
     {
       renderer->RemoveActor (actor);
-      renderer->Render ();
+//      renderer->Render ();
     }
     else if (viewport == i)               // add the actor only to the specified viewport
     {
@@ -978,7 +978,7 @@ pcl::visualization::PCLVisualizer::removeActorFromRenderer (const vtkSmartPointe
         if (current_actor != actor_to_remove)
           continue;
         renderer->RemoveActor (actor);
-        renderer->Render ();
+//        renderer->Render ();
         // Found the correct viewport and removed the actor
         return (true);
       }
@@ -1188,12 +1188,12 @@ pcl::visualization::PCLVisualizer::setBackgroundColor (
     if (viewport == 0)
     {
       renderer->SetBackground (r, g, b);
-      renderer->Render ();
+//      renderer->Render ();
     }
     else if (viewport == i)               // add the actor only to the specified viewport
     {
       renderer->SetBackground (r, g, b);
-      renderer->Render ();
+//      renderer->Render ();
     }
     ++i;
   }

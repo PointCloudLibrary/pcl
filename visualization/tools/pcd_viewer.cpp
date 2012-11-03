@@ -116,7 +116,15 @@ printHelp (int, char **argv)
   print_info ("\n");
   print_info ("                     -pc 0/X                  = disable/enable the display of every Xth point's principal curvatures as lines (default "); print_value ("disabled"); print_info (")\n");
   print_info ("                     -pc_scale X              = resize the principal curvatures vectors size to X (default "); print_value ("0.02"); print_info (")\n");
-  print_info ("                     -use_vbos                = use OpenGL vertex buffer objects\n");
+  print_info ("\n");
+  print_info ("                     -immediate_rendering 0/1 = use immediate mode rendering to draw the data (default: "); print_value ("disabled"); print_info (")\n");
+  print_info ("                                                Note: the use of immediate rendering will enable the visualization of larger datasets at the expense of extra RAM.\n");
+  print_info ("                                                See http://en.wikipedia.org/wiki/Immediate_mode for more information.\n");
+  print_info ("                     -vbo_rendering 0/1       = use OpenGL 1.4+ Vertex Buffer Objects for rendering (default: "); print_value ("disabled"); print_info (")\n");
+  print_info ("                                                Note: the use of VBOs will enable the visualization of larger datasets at the expense of extra RAM.\n");
+  print_info ("                                                See http://en.wikipedia.org/wiki/Vertex_Buffer_Object for more information.\n");
+  print_info ("\n");
+  print_info ("                     -use_point_picking       = enable the usage of picking points on screen (default "); print_value ("disabled"); print_info (")\n");
   print_info ("\n");
 
   print_info ("\n(Note: for multiple .pcd files, provide multiple -{fc,ps,opaque} parameters; they will be automatically assigned to the right file)\n");
@@ -211,6 +219,16 @@ main (int argc, char** argv)
 
   bool cam = pcl::console::find_switch (argc, argv, "-cam");
 
+  // Parse the command line arguments for .pcd files
+  std::vector<int> p_file_indices   = pcl::console::parse_file_extension_argument (argc, argv, ".pcd");
+  std::vector<int> vtk_file_indices = pcl::console::parse_file_extension_argument (argc, argv, ".vtk");
+
+  if (p_file_indices.size () == 0 && vtk_file_indices.size () == 0)
+  {
+    print_error ("No .PCD or .VTK file given. Nothing to visualize.\n");
+    return (-1);
+  }
+
   // Command line parsing
   double bcolor[3] = {0, 0, 0};
   pcl::console::parse_3x_arguments (argc, argv, "-bc", bcolor[0], bcolor[1], bcolor[2]);
@@ -237,16 +255,22 @@ main (int argc, char** argv)
   float pc_scale = PC_SCALE;
   pcl::console::parse_argument (argc, argv, "-pc_scale", pc_scale);
 
-  bool use_vbos = pcl::console::find_switch (argc, argv, "-use_vbos");
+  bool use_vbos = false;
+  pcl::console::parse_argument (argc, argv, "-vbo_rendering", use_vbos);
+  if (use_vbos) 
+    print_highlight ("Vertex Buffer Object (VBO) visualization enabled.\n");
 
-  // Parse the command line arguments for .pcd files
-  std::vector<int> p_file_indices   = pcl::console::parse_file_extension_argument (argc, argv, ".pcd");
-  std::vector<int> vtk_file_indices = pcl::console::parse_file_extension_argument (argc, argv, ".vtk");
+  bool use_pp   = pcl::console::find_switch (argc, argv, "-use_point_picking");
+  if (use_pp) 
+    print_highlight ("Point picking enabled.\n");
 
-  if (p_file_indices.size () == 0 && vtk_file_indices.size () == 0)
+  // If VBOs are not enabled, then try to use immediate rendering
+  bool use_immediate_rendering = false;
+  if (!use_vbos)
   {
-    print_error ("No .PCD or .VTK file given. Nothing to visualize.\n");
-    return (-1);
+    pcl::console::parse_argument (argc, argv, "-immediate_rendering", use_immediate_rendering);
+    if (use_immediate_rendering) 
+      print_highlight ("Using immediate mode rendering.\n");
   }
 
   // Multiview enabled?
@@ -350,6 +374,7 @@ main (int argc, char** argv)
   // Go through PCD files
   for (size_t i = 0; i < p_file_indices.size (); ++i)
   {
+    tt.tic ();
     cloud.reset (new sensor_msgs::PointCloud2);
     Eigen::Vector4f origin;
     Eigen::Quaternionf orientation;
@@ -357,7 +382,6 @@ main (int argc, char** argv)
 
     print_highlight (stderr, "Loading "); print_value (stderr, "%s ", argv[p_file_indices.at (i)]);
 
-    tt.tic ();
     if (pcd.read (argv[p_file_indices.at (i)], *cloud, origin, orientation, version) < 0)
       return (-1);
 
@@ -372,12 +396,12 @@ main (int argc, char** argv)
       if (!ph)
         ph.reset (new pcl::visualization::PCLPlotter);
 #endif
-      print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", cloud->fields[0].count); print_info (" points]\n");
 
       pcl::getMinMax (*cloud, 0, cloud->fields[0].name, min_p, max_p);
 #if VTK_MAJOR_VERSION==6 || (VTK_MAJOR_VERSION==5 && VTK_MINOR_VERSION>6)
       ph->addFeatureHistogram (*cloud, cloud->fields[0].name, cloud_name.str ());
 #endif
+      print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", cloud->fields[0].count); print_info (" points]\n");
       continue;
     }
 
@@ -387,7 +411,11 @@ main (int argc, char** argv)
     if (!p)
     {
       p.reset (new pcl::visualization::PCLVisualizer (argc, argv, "PCD viewer"));
-      p->registerPointPickingCallback (&pp_callback, static_cast<void*> (&cloud));
+      if (use_pp)   // Only enable the point picking callback if the command line parameter is enabled
+        p->registerPointPickingCallback (&pp_callback, static_cast<void*> (&cloud));
+
+      // Set whether or not we should be using the vtkVertexBufferObjectMapper
+      p->setUseVbos (use_vbos);
 
       if (!cam)
       {
@@ -416,11 +444,6 @@ main (int argc, char** argv)
       print_error ("[error: no points found!]\n");
       return (-1);
     }
-    print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%u", cloud->width * cloud->height); print_info (" points]\n");
-    print_info ("Available dimensions: "); print_value ("%s\n", pcl::getFieldsList (*cloud).c_str ());
-
-    // Set whether or not we should be using the vtkVertexBufferObjectMapper
-    p->setUseVbos(use_vbos);
 
     // If no color was given, get random colors
     if (fcolorparam)
@@ -439,10 +462,10 @@ main (int argc, char** argv)
     //p->addPointCloud<pcl::PointXYZ> (cloud_xyz, geometry_handler, color_handler, cloud_name.str (), viewport);
     p->addPointCloud (cloud, geometry_handler, color_handler, origin, orientation, cloud_name.str (), viewport);
 
+#if 0
     if (mview)
       // Add text with file name
       p->addText (argv[p_file_indices.at (i)], 5, 5, 10, 1.0, 1.0, 1.0, "text_" + std::string (argv[p_file_indices.at (i)]), viewport);
-
 
     // If normal lines are enabled
     if (normals != 0)
@@ -508,7 +531,7 @@ main (int argc, char** argv)
       p->addPointCloudPrincipalCurvatures (cloud_xyz, cloud_normals, cloud_pc, factor, pc_scale, cloud_name_normals_pc.str (), viewport);
       p->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 3, cloud_name_normals_pc.str ());
     }
-
+#endif
     // Add every dimension as a possible color
     if (!fcolorparam)
     {
@@ -527,14 +550,16 @@ main (int argc, char** argv)
         p->addPointCloud (cloud, color_handler, origin, orientation, cloud_name.str (), viewport);
       }
     }
+
     // Additionally, add normals as a handler
     geometry_handler.reset (new pcl::visualization::PointCloudGeometryHandlerSurfaceNormal<sensor_msgs::PointCloud2> (cloud));
     if (geometry_handler->isCapable ())
       //p->addPointCloud<pcl::PointXYZ> (cloud_xyz, geometry_handler, cloud_name.str (), viewport);
       p->addPointCloud (cloud, geometry_handler, origin, orientation, cloud_name.str (), viewport);
 
-    // Set immediate mode rendering ON
-    p->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_IMMEDIATE_RENDERING, 1.0, cloud_name.str ());
+    if (use_immediate_rendering)
+      // Set immediate mode rendering ON
+      p->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_IMMEDIATE_RENDERING, 1.0, cloud_name.str ());
 
     // Change the cloud rendered point size
     if (psize.size () > 0)
@@ -547,6 +572,9 @@ main (int argc, char** argv)
     // Reset camera viewpoint to center of cloud if camera parameters were not passed manually and this is the first loaded cloud
     if (i == 0 && !p->cameraParamsSet ())
       p->resetCameraViewpoint (cloud_name.str ());
+
+    print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%u", cloud->width * cloud->height); print_info (" points]\n");
+    print_info ("Available dimensions: "); print_value ("%s\n", pcl::getFieldsList (*cloud).c_str ());
   }
 
   if (!mview)
@@ -581,7 +609,11 @@ main (int argc, char** argv)
 
   // Clean up the memory used by the binary blob
   // Note: avoid resetting the cloud, otherwise the PointPicking callback will fail
-  //cloud.reset ();
+  if (!use_pp)   // Only enable the point picking callback if the command line parameter is enabled
+  {
+    cloud.reset ();
+    xyzcloud.reset ();
+  }
 
 #if VTK_MAJOR_VERSION==6 || (VTK_MAJOR_VERSION==5 && VTK_MINOR_VERSION>6)
   if (ph)
