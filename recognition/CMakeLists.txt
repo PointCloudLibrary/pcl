@@ -95,6 +95,7 @@ if(build)
         src/cg/geometric_consistency.cpp
         src/ransac_based/obj_rec_ransac.cpp
         src/ransac_based/model_library.cpp
+        src/ransac_based/orr_octree.cpp
         src/face_detection/face_detector_data_provider.cpp
         src/face_detection/rf_face_detector_trainer.cpp
 		src/implicit_shape_model.cpp

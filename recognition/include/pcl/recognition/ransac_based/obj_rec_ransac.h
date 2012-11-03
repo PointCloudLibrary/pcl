@@ -40,11 +40,14 @@
 #define PCL_RECOGNITION_OBJ_REC_RANSAC_H_
 
 #include "model_library.h"
+#include "aux.h"
 #include <pcl/pcl_exports.h>
 #include <pcl/point_cloud.h>
 #include <cmath>
 #include <string>
 #include <list>
+
+#define OBJ_REC_RANSAC_VERBOSE
 
 namespace pcl
 {
@@ -75,8 +78,8 @@ namespace pcl
         typedef ModelLibrary::PointCloudIn PointCloudIn;
         typedef ModelLibrary::PointCloudN PointCloudN;
 
-        typedef ModelLibrary::PointCloudInConstPtr PointCloudInConstPtr;
-        typedef ModelLibrary::PointCloudNConstPtr PointCloudNConstPtr;
+//        typedef ModelLibrary::PointCloudInConstPtr PointCloudInConstPtr;
+//        typedef ModelLibrary::PointCloudNConstPtr PointCloudNConstPtr;
 
         /** \brief This is an output item of the ObjRecRANSAC::recognize() method. It contains the recognized model, its name (the ones passed to
           * ObjRecRANSAC::addModel()), the rigid transform which aligns the model with the input scene and the match confidence which is a number
@@ -113,7 +116,7 @@ namespace pcl
           *
           * \param[in] fraction_of_pairs_in_hash_table determines how many pairs (as fraction of the total number) will be kept in the hashtable. Use the default
           * value (check the papers above for more details). */
-        ObjRecRANSAC (double pair_width, double voxel_size, double fraction_of_pairs_in_hash_table = 0.8);
+        ObjRecRANSAC (float pair_width, float voxel_size, float fraction_of_pairs_in_hash_table = 0.8f);
         virtual ~ObjRecRANSAC ()
         {
           this->clear();
@@ -136,7 +139,7 @@ namespace pcl
           * The method returns true if the model was successfully added to the model library and false otherwise (e.g., if 'object_name' is already in use).
           */
         bool
-        addModel (PointCloudInConstPtr points, PointCloudNConstPtr normals, const std::string& object_name)
+        addModel (PointCloudIn* points, PointCloudN* normals, const std::string& object_name)
         {
           return (model_library_.addModel (points, normals, object_name));
         }
@@ -158,7 +161,7 @@ namespace pcl
           *
           * \param[out] signature is an array of three doubles saving the three angles in the order shown above. */
         static inline void
-        compute_oriented_point_pair_signature (const Eigen::Vector3d& p1, const Eigen::Vector3d& n1, const Eigen::Vector3d& p2, const Eigen::Vector3d& n2, double signature[3]);
+        compute_oriented_point_pair_signature (const float *p1, const float *n1, const float *p2, const float *n2, float signature[3]);
 
         /** \brief Returns the hash table in the model library. */
         const pcl::recognition::ModelLibrary::HashTable*
@@ -168,25 +171,24 @@ namespace pcl
         }
 
       protected:
-        double pair_width_;
+        float pair_width_;
         ModelLibrary model_library_;
     };
 
 // === inline methods ===================================================================================================================================
 
     inline void
-    ObjRecRANSAC::compute_oriented_point_pair_signature(const Eigen::Vector3d& p1, const Eigen::Vector3d& n1, const Eigen::Vector3d& p2, const Eigen::Vector3d& n2, double signature[3])
+    ObjRecRANSAC::compute_oriented_point_pair_signature (const float *p1, const float *n1, const float *p2, const float *n2, float signature[3])
     {
       // Get the line from p1 to p2
-      Eigen::Vector3d line = p2 - p1;
-      line.normalize();
+      float line[3] = {p2[0] - p1[0], p2[1] - p1[1], p2[2] - p1[2]};
+      vecNormalize3 (line);
 
-      signature[0] = acos(n1.dot(line)); line[0] = -line[0]; line[1] = -line[1]; line[2] = -line[2];
-      signature[1] = acos(n2.dot(line));
-      signature[2] = acos(n1.dot(n2));
+      signature[0] = static_cast<float> (acos (vecDot3 (n1,line))); line[0] = -line[0]; line[1] = -line[1]; line[2] = -line[2];
+      signature[1] = static_cast<float> (acos (vecDot3 (n2,line)));
+      signature[2] = static_cast<float> (acos (vecDot3 (n1,n2)));
     }
   } // namespace recognition
 } // namespace pcl
 
 #endif // PCL_RECOGNITION_OBJ_REC_RANSAC_H_
-

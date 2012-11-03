@@ -46,6 +46,8 @@
 #include <cmath>
 #include <vector>
 
+#define PIf 3.14159265358979323846f
+
 using namespace std;
 using namespace pcl;
 using namespace console;
@@ -53,16 +55,16 @@ using namespace recognition;
 
 //============================================================================================================================================
 
-ModelLibrary::ModelLibrary (double pair_width)
-: pair_width_ (pair_width), pair_width_eps_ (0.1*pair_width)
+ModelLibrary::ModelLibrary (float pair_width, float voxel_size)
+: pair_width_ (pair_width), pair_width_eps_ (0.1f*pair_width), voxel_size_(voxel_size)
 {
-  num_of_cells_[0] = 60;
-  num_of_cells_[1] = 60;
-  num_of_cells_[2] = 60;
+  num_of_cells_[0] = 10; // 60
+  num_of_cells_[1] = 10; // 60
+  num_of_cells_[2] = 10; // 60
 
   // Compute the bounds of the hash table
-  double eps = 0.000001; // To be sure that an angle of 0 or PI will not be excluded because it lies on the boundary of the voxel structure
-  double bounds[6] = {-eps, M_PI+eps, -eps, M_PI+eps, -eps, M_PI+eps};
+  float eps = 0.000001f; // To be sure that an angle of 0 or PI will not be excluded because it lies on the boundary of the voxel structure
+  float bounds[6] = {-eps, PIf+eps, -eps, PIf+eps, -eps, PIf+eps};
 
   hash_table_.build (bounds, num_of_cells_);
 }
@@ -91,8 +93,12 @@ ModelLibrary::clear ()
 //============================================================================================================================================
 
 bool
-ModelLibrary::addModel (PointCloudInConstPtr points, PointCloudNConstPtr normals, const std::string& object_name)
+ModelLibrary::addModel (PointCloudIn* points, PointCloudN* normals, const std::string& object_name)
 {
+#ifdef OBJ_REC_RANSAC_VERBOSE
+  printf("ModelLibrary::%s(): begin\n", __func__);
+#endif
+
   // Try to insert a new model entry
   pair<map<string,Model*>::iterator, bool> result = models_.insert (pair<string,Model*> (object_name, static_cast<Model*> (NULL)));
 
@@ -107,33 +113,40 @@ ModelLibrary::addModel (PointCloudInConstPtr points, PointCloudNConstPtr normals
   Model* new_model = new Model (points, normals, object_name);
   result.first->second = new_model;
 
-  vector<std::pair<int,int> > point_pairs;
-  vector<int> point_ids;
-  vector<float> sqr_dist;
+  // Build the octree
+  ORROctree& octree = new_model->getOctree ();
+  octree.build (*points, voxel_size_, normals);
 
-  KdTreeFLANN<Eigen::Vector3d> kd_tree;
-  kd_tree.setInputCloud (points);
+  vector<ORROctree::Node*> &full_leaves = octree.getFullLeaves ();
+  list<ORROctree::Node*> inter_leaves;
+  ORROctree::Node::Data *node_data1;
+  int num_of_pairs = 0;
 
-  // The two radii
-  double min_sqr_radius = pair_width_ - pair_width_eps_, max_radius = pair_width_ + pair_width_eps_;
-  int i, k, num_found_points, num_model_points = static_cast<int> (points.get ()->points.size ());
+#ifdef OBJ_REC_RANSAC_VERBOSE
+  printf("\tfilling the hash table ... "); fflush(stdout);
+#endif
 
-  min_sqr_radius *= min_sqr_radius;
-
-  // For each model point get the model points lying between the spheres with radii min_radius and max_radius
-  for ( i = 0 ; i < num_model_points ; ++i )
+  // Run through all full leaves
+  for ( vector<ORROctree::Node*>::iterator leaf1 = full_leaves.begin () ; leaf1 != full_leaves.end () ; ++leaf1 )
   {
-    point_ids.clear();
-    sqr_dist.clear();
-    num_found_points = kd_tree.radiusSearch (points.get()->points[i], max_radius, point_ids, sqr_dist);
+    node_data1 = (*leaf1)->getData ();
 
-    for ( k = 0 ; k < num_found_points ; ++k )
-      // Should we take that point?
-      if ( sqr_dist[k] >= min_sqr_radius )
-        this->addToHashTable (new_model, i, point_ids[k]);
-      else // Break since the points are sorted based on their distance to the query point
-        break;
+    // Get all full leaves at the right distance to the current leaf
+    inter_leaves.clear ();
+    octree.getFullLeavesIntersectedBySphere (node_data1->getPoint (), pair_width_, inter_leaves);
+
+    for ( list<ORROctree::Node*>::iterator leaf2 = inter_leaves.begin () ; leaf2 != inter_leaves.end () ; ++leaf2 )
+    {
+      // Compute the hash table key
+      this->addToHashTable(new_model, node_data1, (*leaf2)->getData ());
+
+      ++num_of_pairs;
+    }
   }
+
+#ifdef OBJ_REC_RANSAC_VERBOSE
+  printf("OK\nModelLibrary::%s(): end\n", __func__);
+#endif
 
   return (true);
 }
@@ -141,20 +154,20 @@ ModelLibrary::addModel (PointCloudInConstPtr points, PointCloudNConstPtr normals
 //============================================================================================================================================
 
 void
-ModelLibrary::addToHashTable(const ModelLibrary::Model* model, int i, int j)
+ModelLibrary::addToHashTable (const ModelLibrary::Model* model, ORROctree::Node::Data* data1, ORROctree::Node::Data* data2)
 {
-  double key[3];
+  float key[3];
 
   // Compute the descriptor signature for the oriented point pair (i, j)
   ObjRecRANSAC::compute_oriented_point_pair_signature (
-      model->points_.get()->points[i], model->normals_.get()->points[i],
-      model->points_.get()->points[j], model->normals_.get()->points[j], key);
+    data1->getPoint (), data1->getNormal (),
+    data2->getPoint (), data2->getNormal (), key);
 
   // Get the hash table cell containing 'key' (there is for sure such a cell since the hash table bounds are large enough)
   HashTableCell* cell = hash_table_.getVoxel (key);
 
-  // Insert the id pair (i,j) belonging to 'model'
-  (*cell)[model].push_back (std::pair<int,int> (i, j));
+  // Insert the pair (data1,data2) belonging to 'model'
+  (*cell)[model].push_back (std::pair<ORROctree::Node::Data*,ORROctree::Node::Data*> (data1, data2));
 }
 
 //============================================================================================================================================

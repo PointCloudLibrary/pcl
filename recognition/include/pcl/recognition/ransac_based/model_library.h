@@ -40,8 +40,10 @@
 #define PCL_RECOGNITION_MODEL_LIBRARY_H_
 
 #include "voxel_structure.h"
+#include "orr_octree.h"
 #include <pcl/pcl_exports.h>
 #include <pcl/point_cloud.h>
+#include <pcl/point_types.h>
 #include <string>
 #include <list>
 #include <set>
@@ -54,39 +56,42 @@ namespace pcl
     class PCL_EXPORTS ModelLibrary
     {
       public:
-        typedef pcl::PointCloud<Eigen::Vector3d> PointCloudIn;
-        typedef pcl::PointCloud<Eigen::Vector3d> PointCloudN;
+        typedef pcl::PointCloud<pcl::PointXYZ> PointCloudIn;
+        typedef pcl::PointCloud<pcl::Normal> PointCloudN;
 
-        typedef boost::shared_ptr<PointCloudIn> PointCloudInPtr;
-        typedef boost::shared_ptr<PointCloudN> PointCloudNPtr;
-
-        typedef boost::shared_ptr<const PointCloudIn> PointCloudInConstPtr;
-        typedef boost::shared_ptr<const PointCloudN> PointCloudNConstPtr;
+//        typedef boost::shared_ptr<PointCloudIn> PointCloudInPtr;
+//        typedef boost::shared_ptr<PointCloudN> PointCloudNPtr;
+//
+//        typedef boost::shared_ptr<const PointCloudIn> PointCloudInConstPtr;
+//        typedef boost::shared_ptr<const PointCloudN> PointCloudNConstPtr;
 
         /** \brief Stores some information about the model. */
         class Model
         {
           public:
-            Model (PointCloudInConstPtr points, PointCloudNConstPtr normals, std::string object_name):
+            Model (PointCloudIn* points, PointCloudN* normals, std::string object_name):
               points_ (points),
               normals_(normals),
               obj_name_(object_name){}
             virtual ~Model (){}
 
+            ORROctree& getOctree() { return octree_;}
+
           public:
-            PointCloudInConstPtr points_;
-            PointCloudNConstPtr normals_;
+            PointCloudIn *points_;
+            PointCloudN *normals_;
             const std::string obj_name_;
+            ORROctree octree_;
         };
 
-        typedef std::list<std::pair<int,int> > int_pair_list;
-        typedef std::map<const Model*, int_pair_list> HashTableCell;
-        typedef VoxelStructure<HashTableCell> HashTable;
+        typedef std::list<std::pair<ORROctree::Node::Data*,ORROctree::Node::Data*> > node_data_pair_list;
+        typedef std::map<const Model*, node_data_pair_list> HashTableCell;
+        typedef VoxelStructure<HashTableCell, float> HashTable;
 
       public:
         /** \brief This class is used by 'ObjRecRANSAC' to maintain the object models to be recognized. Normally, you do not need to use
           * this class directly. */
-        ModelLibrary (double pair_width);
+        ModelLibrary (float pair_width, float voxel_size);
         virtual ~ModelLibrary ()
         {
           this->clear();
@@ -104,7 +109,7 @@ namespace pcl
           *
           * Returns true if model successfully added and false otherwise (e.g., if object_name is not unique). */
         bool
-        addModel (PointCloudInConstPtr points, PointCloudNConstPtr normals, const std::string& object_name);
+        addModel (PointCloudIn* points, PointCloudN* normals, const std::string& object_name);
 
         /** \brief Returns the hash table built by this instance. */
         const HashTable*
@@ -115,11 +120,11 @@ namespace pcl
 
       protected:
         void
-        addToHashTable (const Model* model, int i, int j);
+        addToHashTable (const Model* model, ORROctree::Node::Data* data1, ORROctree::Node::Data* data2);
 
       protected:
         std::map<std::string,Model*> models_;
-        double pair_width_, pair_width_eps_;
+        float pair_width_, pair_width_eps_, voxel_size_;
 
         HashTable hash_table_;
         int num_of_cells_[3];

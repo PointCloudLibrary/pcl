@@ -3,7 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2012, Willow Garage, Inc.
- *  
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -33,24 +33,89 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id$
  *
  */
 
-#include <pcl/recognition/ransac_based/obj_rec_ransac.h>
+/*
+ * aux.h
+ *
+ *  Created on: Oct 30, 2012
+ *      Author: papazov
+ */
 
-pcl::recognition::ObjRecRANSAC::ObjRecRANSAC (float pair_width, float voxel_size, float /*fraction_of_pairs_in_hash_table*/)
-: pair_width_(pair_width), model_library_(pair_width, voxel_size)
+#ifndef AUX_H_
+#define AUX_H_
+
+#include <cmath>
+
+namespace pcl
 {
+  namespace recognition
+  {
+    /** \brief c = a - b */
+    template <typename T>
+    void
+    vecDiff3(const T a[3], const T b[3], T c[3])
+    {
+      c[0] = a[0] - b[0];
+      c[1] = a[1] - b[1];
+      c[2] = a[2] - b[2];
+    }
+
+    /** \brief Returns the Euclidean distance between a and b. */
+    template <typename T>
+    T
+    vecDistance3(const T a[3], const T b[3])
+    {
+      T l[3] = {a[0]-b[0], a[1]-b[1], a[2]-b[2]};
+      return (vecLength3 (l));
+    }
+
+    /** \brief Returns the dot product a*b */
+    template <typename T>
+    T
+    vecDot3(const T a[3], const T b[3])
+    {
+      return (a[0]*b[0] + a[1]*b[1] + a[2]*b[2]);
+    }
+
+    /** \brief Returns the length of v. */
+    template <typename T>
+    T
+    vecLength3(const T v[3])
+    {
+      return (static_cast<T> (sqrt (v[0]*v[0] + v[1]*v[1] + v[2]*v[2])));
+    }
+
+    /** \brief v = scalar*v. */
+    template <typename T>
+    void
+    vecMult3(T v[3], T scalar)
+    {
+      v[0] *= scalar;
+      v[1] *= scalar;
+      v[2] *= scalar;
+    }
+
+    /** \brief Normalize v */
+    template <typename T>
+    void
+    vecNormalize3(T v[3])
+    {
+      T inv_len = (static_cast<T> (1.0))/vecLength3 (v);
+      v[0] *= inv_len;
+      v[1] *= inv_len;
+      v[2] *= inv_len;
+    }
+
+    /** \brief Returns the square length of v. */
+    template <typename T>
+    T
+    vecSqrLength3(const T v[3])
+    {
+      return (v[0]*v[0] + v[1]*v[1] + v[2]*v[2]);
+    }
+  }
 }
 
-//===========================================================================================================================================================================================
-
-void
-pcl::recognition::ObjRecRANSAC::recognize (const pcl::PointCloud<Eigen::Vector3d>& /*scene*/, const pcl::PointCloud<Eigen::Vector3d>& /*normals*/, std::list<ObjRecRANSAC::Output>& /*recognized_objects*/)
-{
-  // to be implemented
-}
-
-//===========================================================================================================================================================================================
-
+#endif // AUX_H_
