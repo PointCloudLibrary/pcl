@@ -56,8 +56,7 @@ pcl::ihs::Integration::Integration ()
     squared_distance_max_ (4e-2f),
     dot_normal_min_       (.6f),
     weight_min_           (.3f),
-    age_max_              (10), // test
-    // age_max_              (30),
+    age_max_              (30),
     visconf_min_          (.12)
 {
 }
@@ -377,6 +376,84 @@ pcl::ihs::Integration::age (const MeshPtr& mesh, const bool cleanup) const
   {
     mesh->cleanUp ();
   }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+void
+pcl::ihs::Integration::setDistanceThreshold (const float squared_distance)
+{
+  squared_distance_max_ = squared_distance;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+float
+pcl::ihs::Integration::getDistanceThreshold () const
+{
+  return (squared_distance_max_);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+void
+pcl::ihs::Integration::setAngleThreshold (const float dot_product)
+{
+  dot_normal_min_ = dot_product;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+float
+pcl::ihs::Integration::getAngleThreshold () const
+{
+  return (dot_normal_min_);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+void
+pcl::ihs::Integration::setMinimumWeight (const float weight)
+{
+  weight_min_ = weight;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+float
+pcl::ihs::Integration::getMinimumWeight () const
+{
+  return (weight_min_);
+}
+
+void
+pcl::ihs::Integration::setMaximumAge (const unsigned int age)
+{
+  age_max_ = age;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+unsigned int
+pcl::ihs::Integration::getMaximumAge () const
+{
+  return (age_max_);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+void
+pcl::ihs::Integration::setMinimumVisibilityConfidence (const float visconf)
+{
+  visconf_min_ = visconf;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+float
+pcl::ihs::Integration::getMinimumVisibilityConfidence () const
+{
+  return (visconf_min_);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

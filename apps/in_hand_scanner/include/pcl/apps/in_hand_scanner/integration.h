@@ -112,6 +112,21 @@ namespace pcl
         void
         age (const MeshPtr& mesh, const bool cleanup=true) const;
 
+        void  setDistanceThreshold (const float squared_distance);
+        float getDistanceThreshold () const;
+
+        void  setAngleThreshold (const float dot_product);
+        float getAngleThreshold () const;
+
+        void  setMinimumWeight (const float weight);
+        float getMinimumWeight () const;
+
+        void         setMaximumAge (const unsigned int age);
+        unsigned int getMaximumAge () const;
+
+        void  setMinimumVisibilityConfidence (const float visconf);
+        float getMinimumVisibilityConfidence () const;
+
       private:
 
         uint8_t
