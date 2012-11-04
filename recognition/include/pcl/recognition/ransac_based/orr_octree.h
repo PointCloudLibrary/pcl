@@ -49,6 +49,7 @@
 #include "auxiliary.h"
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
+#include <pcl/pcl_exports.h>
 #include <vector>
 #include <list>
 
@@ -64,7 +65,7 @@ namespace pcl
       * \author Chavdar Papazov
       * \ingroup recognition
       */
-    class ORROctree
+    class PCL_EXPORTS ORROctree
     {
       public:
         typedef pcl::PointCloud<pcl::PointXYZ> PointCloudIn;
