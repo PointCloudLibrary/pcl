@@ -206,7 +206,7 @@ namespace pcl
           * \return The vertex descriptor of the newly created vertex.
           */
         Vertex
-        addPointCloud (PointCloudPtr cloud, Eigen::Vector6f pose = Eigen::Vector6f::Zero ());
+        addPointCloud (PointCloudPtr cloud, const Eigen::Vector6f &pose = Eigen::Vector6f::Zero ());
 
         /** \brief Change a point cloud on one of the SLAM graph's vertices.
           * \details This method will change the point cloud attached to an existing vertex and will not alter the SLAM graph structure.
@@ -235,7 +235,7 @@ namespace pcl
           * \param[in] pose The new pose estimate for that vertex.
           */
         inline void
-        setPose (Vertex vertex, Eigen::Vector6f pose);
+        setPose (Vertex vertex, const Eigen::Vector6f &pose);
 
         /** \brief Return a pose estimate from one of the SLAM graph's vertices.
           * \note Vertex descriptors are typecastable to int.
@@ -317,7 +317,7 @@ namespace pcl
 
         /** \brief Returns a pose corrected 6DoF incidence matrix. */
         inline Eigen::Matrix6f
-        incidenceCorrection (Eigen::Vector6f pose);
+        incidenceCorrection (const Eigen::Vector6f &pose);
 
       private:
         /** \brief The internal SLAM graph structure. */

@@ -93,7 +93,7 @@ pcl::registration::LUM<PointT>::getConvergenceThreshold ()
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT> typename pcl::registration::LUM<PointT>::Vertex
-pcl::registration::LUM<PointT>::addPointCloud (PointCloudPtr cloud, Eigen::Vector6f pose)
+pcl::registration::LUM<PointT>::addPointCloud (PointCloudPtr cloud, const Eigen::Vector6f &pose)
 {
   Vertex v = add_vertex (*slam_graph_);
   (*slam_graph_)[v].cloud_ = cloud;
@@ -133,7 +133,7 @@ pcl::registration::LUM<PointT>::getPointCloud (Vertex vertex)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT> inline void
-pcl::registration::LUM<PointT>::setPose (Vertex vertex, Eigen::Vector6f pose)
+pcl::registration::LUM<PointT>::setPose (Vertex vertex, const Eigen::Vector6f &pose)
 {
   if (vertex >= getNumVertices ())
   {
@@ -399,7 +399,7 @@ pcl::registration::LUM<PointT>::computeEdge (Edge e)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT> inline Eigen::Matrix6f
-pcl::registration::LUM<PointT>::incidenceCorrection (Eigen::Vector6f pose)
+pcl::registration::LUM<PointT>::incidenceCorrection (const Eigen::Vector6f &pose)
 {
   Eigen::Matrix6f out = Eigen::Matrix6f::Identity ();
   float cx = cosf (pose (3)), sx = sinf (pose (3)), cy = cosf (pose (4)), sy = sinf (pose (4));
