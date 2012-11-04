@@ -47,10 +47,6 @@ template <typename PointSource, typename PointTarget, typename Scalar> void
 pcl::IterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransformation (
     PointCloudSource &output, const Matrix4 &guess)
 {
-  // Allocate enough space to hold the results
-  std::vector<int> nn_indices (1);
-  std::vector<float> nn_dists (1);
-
   // Point cloud containing the correspondences of each point in <input, indices>
   PointCloudSourcePtr input_transformed (new PointCloudSource);
 
@@ -94,7 +90,7 @@ pcl::IterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransformat
 
     // Estimate correspondences
     correspondence_estimation_->updateSource (transformation_);
-    correspondence_estimation_->determineCorrespondences (*correspondences);
+    correspondence_estimation_->determineCorrespondences (*correspondences, corr_dist_threshold_);
 
     //if (correspondence_rejectors_.empty ())
     CorrespondencesPtr temp_correspondences (new Correspondences (*correspondences));
