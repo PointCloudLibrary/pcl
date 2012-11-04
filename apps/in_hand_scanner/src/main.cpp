@@ -38,7 +38,7 @@
  *
  */
 
-#include <cstdlib> // EXIT_SUCCESS, EXIT_FAILURE
+#include <cstdlib>
 #include <pcl/apps/in_hand_scanner/in_hand_scanner.h>
 
 int main (int argc, char** argv)

@@ -41,7 +41,7 @@
 #include <pcl/apps/in_hand_scanner/icp.h>
 
 #include <limits>
-#include <cstdlib> // EXIT_SUCCESS, EXIT_FAILURE
+#include <cstdlib>
 
 // #include <iomanip>
 

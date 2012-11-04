@@ -40,11 +40,11 @@
 
 #include <pcl/apps/in_hand_scanner/integration.h>
 
-#include <cstdlib> // EXIT_SUCCESS, EXIT_FAILURE
 #include <iostream>
 #include <vector>
 #include <limits>
 
+#include <pcl/console/print.h>
 #include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/kdtree/impl/kdtree_flann.hpp> // NOTE: PointModel is not registered to the default point types
 #include <pcl/apps/in_hand_scanner/impl/common_functions.hpp>
@@ -138,6 +138,7 @@ pcl::ihs::Integration::reconstructMesh (const CloudProcessedConstPtr& cloud_data
     for (uint32_t c=2; c<width; ++c)
     {
       const float weight = -it_d_0->normal_z; // weight = -dot (normal, [0; 0; 1])
+
       if (pcl::isFinite(*it_d_0) && weight >= weight_min_)
       {
         *it_m_0 = PointModel (*it_d_0, weight);
@@ -381,9 +382,16 @@ pcl::ihs::Integration::age (const MeshPtr& mesh, const bool cleanup) const
 ////////////////////////////////////////////////////////////////////////////////
 
 void
-pcl::ihs::Integration::setDistanceThreshold (const float squared_distance)
+pcl::ihs::Integration::setDistanceThreshold (const float squared_distance_max)
 {
-  squared_distance_max_ = squared_distance;
+  if (squared_distance_max <= 0.f)
+  {
+    PCL_ERROR ("'squared_distance_max' must be greater than 0.\n");
+  }
+  else
+  {
+    squared_distance_max_ = squared_distance_max;
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -397,9 +405,16 @@ pcl::ihs::Integration::getDistanceThreshold () const
 ////////////////////////////////////////////////////////////////////////////////
 
 void
-pcl::ihs::Integration::setAngleThreshold (const float dot_product)
+pcl::ihs::Integration::setAngleThreshold (const float dot_normal_min)
 {
-  dot_normal_min_ = dot_product;
+  if (dot_normal_min < -1.f || dot_normal_min > 1.f)
+  {
+    PCL_ERROR ("'dot_normal_min' must be between -1 and 1.\n");
+  }
+  else
+  {
+    dot_normal_min_ = dot_normal_min;
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -413,9 +428,16 @@ pcl::ihs::Integration::getAngleThreshold () const
 ////////////////////////////////////////////////////////////////////////////////
 
 void
-pcl::ihs::Integration::setMinimumWeight (const float weight)
+pcl::ihs::Integration::setMinimumWeight (const float weight_min)
 {
-  weight_min_ = weight;
+  if (weight_min <= 0.f || weight_min > 1.f)
+  {
+    PCL_ERROR ("'weight_min' must be between 0 (excluded) and 1.\n");
+  }
+  else
+  {
+    weight_min_ = weight_min;
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -427,9 +449,16 @@ pcl::ihs::Integration::getMinimumWeight () const
 }
 
 void
-pcl::ihs::Integration::setMaximumAge (const unsigned int age)
+pcl::ihs::Integration::setMaximumAge (const unsigned int age_max)
 {
-  age_max_ = age;
+  if (age_max <= 0)
+  {
+    PCL_ERROR ("'age_max' must be greater than 0\n");
+  }
+  else
+  {
+    age_max_ = age_max;
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -443,9 +472,16 @@ pcl::ihs::Integration::getMaximumAge () const
 ////////////////////////////////////////////////////////////////////////////////
 
 void
-pcl::ihs::Integration::setMinimumVisibilityConfidence (const float visconf)
+pcl::ihs::Integration::setMinimumVisibilityConfidence (const float visconf_min)
 {
-  visconf_min_ = visconf;
+  if (visconf_min < 0.f || visconf_min > 1.f)
+  {
+    PCL_ERROR ("'visconf_min' must be between 0 and 1\n");
+  }
+  else
+  {
+    visconf_min_ = visconf_min;
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
