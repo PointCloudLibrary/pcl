@@ -487,12 +487,11 @@ namespace pcl
         return (true);
       }
 
-    private:
- 
       /** \brief Abstract transformation computation method with initial guess */
       virtual void 
       computeTransformation (PointCloudSource &output, const Matrix4& guess) = 0;
 
+    private:
       /** \brief The point representation used (internal). */
       PointRepresentationConstPtr point_representation_;
     public:
