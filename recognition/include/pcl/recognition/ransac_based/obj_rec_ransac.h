@@ -40,7 +40,7 @@
 #define PCL_RECOGNITION_OBJ_REC_RANSAC_H_
 
 #include "model_library.h"
-#include "aux.h"
+#include "auxiliary.h"
 #include <pcl/pcl_exports.h>
 #include <pcl/point_cloud.h>
 #include <cmath>

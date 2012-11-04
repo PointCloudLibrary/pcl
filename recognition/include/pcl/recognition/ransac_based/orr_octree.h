@@ -46,7 +46,7 @@
 #ifndef PCL_RECOGNITION_ORR_OCTREE_H_
 #define PCL_RECOGNITION_ORR_OCTREE_H_
 
-#include "aux.h"
+#include "auxiliary.h"
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 #include <vector>
