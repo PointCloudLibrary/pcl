@@ -631,18 +631,12 @@ namespace pcl
         // Find the next boundary half edge (counter-clockwise around vertex b)
         OutgoingHalfEdgeAroundVertexConstCirculator circ = Base::getOutgoingHalfEdgeAroundVertexConstCirculator (Base::getElement (idx_he_ab).getOppositeHalfEdgeIndex ());
 
-        do ++circ; while (!circ->isBoundary () || circ.getCurrentHalfEdgeIndex ()==idx_he_bc);
-
-        // Check if a half-edge is available for connectivity re-arrangement
+        do ++circ; while (!circ->isBoundary ());
         idx_he_boundary = circ.getDereferencedIndex ();
-        if (idx_he_boundary == Base::getElement (idx_he_ab).getNextHalfEdgeIndex ())
-        {
-          return (false);
-        }
-        else
-        {
-          return (true);
-        }
+
+        // This would detatch the faces around the vertex from each other.
+        if (circ.getCurrentHalfEdgeIndex () == idx_he_bc) return (false);
+        else                                              return (true);
       }
 
       //////////////////////////////////////////////////////////////////////////
