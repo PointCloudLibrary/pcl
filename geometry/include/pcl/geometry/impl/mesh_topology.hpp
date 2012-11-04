@@ -634,7 +634,7 @@ namespace pcl
         do ++circ; while (!circ->isBoundary ());
         idx_he_boundary = circ.getDereferencedIndex ();
 
-        // This would detatch the faces around the vertex from each other.
+        // This would detach the faces around the vertex from each other.
         if (circ.getCurrentHalfEdgeIndex () == idx_he_bc) return (false);
         else                                              return (true);
       }
