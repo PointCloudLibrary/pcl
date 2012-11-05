@@ -91,7 +91,7 @@ namespace pcl
 
       typedef typename pcl::registration::CorrespondenceEstimationBase<PointSource, PointTarget, Scalar> CorrespondenceEstimation;
       typedef typename CorrespondenceEstimation::Ptr CorrespondenceEstimationPtr;
-      typedef typename CorrespondenceEstimation::ConstPtr CorrespondenceConstPtr;
+      typedef typename CorrespondenceEstimation::ConstPtr CorrespondenceEstimationConstPtr;
 
       /** \brief Empty constructor. */
       Registration () 
@@ -110,7 +110,7 @@ namespace pcl
         , inlier_threshold_ (0.05)
         , converged_ (false)
         , min_number_correspondences_ (3)
-        , correspondence_distances_ ()
+        , correspondences_ (new Correspondences)
         , transformation_estimation_ ()
         , correspondence_estimation_ ()
         , correspondence_rejectors_ ()
@@ -218,7 +218,7 @@ namespace pcl
       getLastIncrementalTransformation () { return (transformation_); }
 
       /** \brief Set the maximum number of iterations the internal optimization should run for.
-        * \param nr_iterations the maximum number of iterations the internal optimization should run for
+        * \param[in] nr_iterations the maximum number of iterations the internal optimization should run for
         */
       inline void 
       setMaximumIterations (int nr_iterations) { max_iterations_ = nr_iterations; }
@@ -228,7 +228,7 @@ namespace pcl
       getMaximumIterations () { return (max_iterations_); }
 
       /** \brief Set the number of iterations RANSAC should run for.
-        * \param ransac_iterations is the number of iterations RANSAC should run for
+        * \param[in] ransac_iterations is the number of iterations RANSAC should run for
         */
       inline void 
       setRANSACIterations (int ransac_iterations) { ransac_iterations_ = ransac_iterations; }
@@ -242,7 +242,7 @@ namespace pcl
         * The method considers a point to be an inlier, if the distance between the target data index and the transformed 
         * source index is smaller than the given inlier distance threshold. 
         * The value is set by default to 0.05m.
-        * \param inlier_threshold the inlier distance threshold for the internal RANSAC outlier rejection loop
+        * \param[in] inlier_threshold the inlier distance threshold for the internal RANSAC outlier rejection loop
         */
       inline void 
       setRANSACOutlierRejectionThreshold (double inlier_threshold) { inlier_threshold_ = inlier_threshold; }
@@ -253,7 +253,7 @@ namespace pcl
 
       /** \brief Set the maximum distance threshold between two correspondent points in source <-> target. If the 
         * distance is larger than this threshold, the points will be ignored in the alignment process.
-        * \param distance_threshold the maximum distance threshold between a point and its nearest neighbor 
+        * \param[in] distance_threshold the maximum distance threshold between a point and its nearest neighbor 
         * correspondent in order to be considered in the alignment process
         */
       inline void 
@@ -268,7 +268,7 @@ namespace pcl
       /** \brief Set the transformation epsilon (maximum allowable difference between two consecutive 
         * transformations) in order for an optimization to be considered as having converged to the final 
         * solution.
-        * \param epsilon the transformation epsilon in order for an optimization to be considered as having 
+        * \param[in] epsilon the transformation epsilon in order for an optimization to be considered as having 
         * converged to the final solution.
         */
       inline void 
@@ -284,7 +284,7 @@ namespace pcl
         * the algorithm is considered to have converged. 
         * The error is estimated as the sum of the differences between correspondences in an Euclidean sense, 
         * divided by the number of correspondences.
-        * \param epsilon the maximum allowed distance error before the algorithm will be considered to have
+        * \param[in] epsilon the maximum allowed distance error before the algorithm will be considered to have
         * converged
         */
 
@@ -298,7 +298,7 @@ namespace pcl
       getEuclideanFitnessEpsilon () { return (euclidean_fitness_epsilon_); }
 
       /** \brief Provide a boost shared pointer to the PointRepresentation to be used when comparing points
-        * \param point_representation the PointRepresentation to be used by the k-D tree
+        * \param[in] point_representation the PointRepresentation to be used by the k-D tree
         */
       inline void
       setPointRepresentation (const PointRepresentationConstPtr &point_representation)
@@ -323,7 +323,7 @@ namespace pcl
       }
 
       /** \brief Obtain the Euclidean fitness score (e.g., sum of squared distances from the source to the target)
-        * \param max_range maximum allowable distance between a point and its correspondence in the target 
+        * \param[in] max_range maximum allowable distance between a point and its correspondence in the target 
         * (default: double::max)
         */
       inline double 
@@ -343,15 +343,15 @@ namespace pcl
 
       /** \brief Call the registration algorithm which estimates the transformation and returns the transformed source 
         * (input) as \a output.
-        * \param output the resultant input transfomed point cloud dataset
+        * \param[out] output the resultant input transfomed point cloud dataset
         */
-      inline void 
+      inline void
       align (PointCloudSource &output);
 
       /** \brief Call the registration algorithm which estimates the transformation and returns the transformed source 
         * (input) as \a output.
-        * \param output the resultant input transfomed point cloud dataset
-        * \param guess the initial gross estimation of the transformation
+        * \param[out] output the resultant input transfomed point cloud dataset
+        * \param[in] guess the initial gross estimation of the transformation
         */
       inline void 
       align (PointCloudSource &output, const Matrix4& guess);
@@ -449,10 +449,8 @@ namespace pcl
         */
       int min_number_correspondences_;
 
-      /** \brief A set of distances between the points in the source cloud and their correspondences in the 
-        * target.                                                                                           
-        */                                                                                                  
-      std::vector<float> correspondence_distances_;                                                              
+      /** \brief The set of correspondences determined at this ICP step. */
+      CorrespondencesPtr correspondences_;
 
       /** \brief A TransformationEstimation object, used to calculate the 4x4 rigid transformation. */
       TransformationEstimationPtr transformation_estimation_;
