@@ -68,14 +68,12 @@ pcl::IterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransformat
   // Pass in the default source and target for the Correspondence Estimation/Rejection code
   correspondence_estimation_->setInputSource (input_transformed);
   correspondence_estimation_->setInputTarget (target_);
-  //for (size_t i = 0; i < correspondence_rejectors_.size (); ++i)
-  //{
-  //  correspondence_rejectors_[i]->setInputCloud (input_transformed);
-  //  correspondence_rejectors_[i]->setInputTarget (target_);
-  //}
 
   pcl::registration::DefaultConvergenceCriteria<Scalar> converged (nr_iterations_, transformation_, *correspondences_);
   converged.setMaximumIterations (max_iterations_);
+  converged.setRelativeMSE (euclidean_fitness_epsilon_);
+  converged.setTranslationThreshold (transformation_epsilon_);
+  converged.setRotationThreshold (1.0 - transformation_epsilon_);
   
   // Repeat until convergence
   do
@@ -99,7 +97,6 @@ pcl::IterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransformat
       if (i < correspondence_rejectors_.size () - 1)
         *temp_correspondences = *correspondences_;
     }
-    //}
 
     size_t cnt = correspondences_->size ();
     // Check whether we have enough correspondences
@@ -109,13 +106,13 @@ pcl::IterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransformat
       break;
     }
 
-    PCL_DEBUG ("[pcl::%s::computeTransformation] Number of correspondences %d [%f%%] out of %zu points [100.0%%], RANSAC rejected: %zu [%f%%].\n", 
-        getClassName ().c_str (), 
-        cnt, 
-        (static_cast<float> (cnt) * 100.0f) / static_cast<float> (indices_->size ()), 
-        indices_->size (), 
-        indices_->size () - cnt, 
-        static_cast<float> (indices_->size () - cnt) * 100.0f / static_cast<float> (indices_->size ()));
+    //PCL_DEBUG ("[pcl::%s::computeTransformation] Number of correspondences %d [%f%%] out of %zu points [100.0%%], RANSAC rejected: %zu [%f%%].\n", 
+    //    getClassName ().c_str (), 
+    //    cnt, 
+    //    (static_cast<float> (cnt) * 100.0f) / static_cast<float> (indices_->size ()), 
+    //    indices_->size (), 
+    //    indices_->size () - cnt, 
+    //    static_cast<float> (indices_->size () - cnt) * 100.0f / static_cast<float> (indices_->size ()));
   
     // Estimate the transform
     transformation_estimation_->estimateRigidTransformation (*input_transformed, *target_, *correspondences_, transformation_);
