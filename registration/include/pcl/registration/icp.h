@@ -115,8 +115,8 @@ namespace pcl
       using Registration<PointSource, PointTarget, Scalar>::inlier_threshold_;
       using Registration<PointSource, PointTarget, Scalar>::min_number_correspondences_;
       using Registration<PointSource, PointTarget, Scalar>::update_visualizer_;
-      using Registration<PointSource, PointTarget, Scalar>::correspondence_distances_;
       using Registration<PointSource, PointTarget, Scalar>::euclidean_fitness_epsilon_;
+      using Registration<PointSource, PointTarget, Scalar>::correspondences_;
       using Registration<PointSource, PointTarget, Scalar>::transformation_estimation_;
       using Registration<PointSource, PointTarget, Scalar>::correspondence_estimation_;
       using Registration<PointSource, PointTarget, Scalar>::correspondence_rejectors_;

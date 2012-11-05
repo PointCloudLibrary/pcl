@@ -74,9 +74,7 @@ pcl::IterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransformat
   //  correspondence_rejectors_[i]->setInputTarget (target_);
   //}
 
-  CorrespondencesPtr correspondences (new Correspondences);
-
-  pcl::registration::DefaultConvergenceCriteria<Scalar> converged (nr_iterations_, transformation_, *correspondences);
+  pcl::registration::DefaultConvergenceCriteria<Scalar> converged (nr_iterations_, transformation_, *correspondences_);
   converged.setMaximumIterations (max_iterations_);
   
   // Repeat until convergence
@@ -85,28 +83,25 @@ pcl::IterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransformat
     // Save the previously estimated transformation
     previous_transformation_ = transformation_;
 
-    // And the previous set of distances
-    //previous_correspondence_distances = correspondence_distances_;
-
     // Estimate correspondences
     correspondence_estimation_->updateSource (transformation_);
-    correspondence_estimation_->determineCorrespondences (*correspondences, corr_dist_threshold_);
+    correspondence_estimation_->determineCorrespondences (*correspondences_, corr_dist_threshold_);
 
     //if (correspondence_rejectors_.empty ())
-    CorrespondencesPtr temp_correspondences (new Correspondences (*correspondences));
+    CorrespondencesPtr temp_correspondences (new Correspondences (*correspondences_));
     for (size_t i = 0; i < correspondence_rejectors_.size (); ++i)
     {
       PCL_DEBUG ("Applying a correspondence rejector method: %s.\n", correspondence_rejectors_[i]->getClassName ().c_str ());
       correspondence_rejectors_[i]->setInputCorrespondences (temp_correspondences);
       correspondence_rejectors_[i]->updateSource (transformation_.template cast<double> ());
-      correspondence_rejectors_[i]->getCorrespondences (*correspondences);
+      correspondence_rejectors_[i]->getCorrespondences (*correspondences_);
       // Modify input for the next iteration
       if (i < correspondence_rejectors_.size () - 1)
-        *temp_correspondences = *correspondences;
+        *temp_correspondences = *correspondences_;
     }
     //}
 
-    size_t cnt = correspondences->size ();
+    size_t cnt = correspondences_->size ();
     // Check whether we have enough correspondences
     if (cnt < min_number_correspondences_)
     {
@@ -123,7 +118,7 @@ pcl::IterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransformat
         static_cast<float> (indices_->size () - cnt) * 100.0f / static_cast<float> (indices_->size ()));
   
     // Estimate the transform
-    transformation_estimation_->estimateRigidTransformation (*input_transformed, *target_, *correspondences, transformation_);
+    transformation_estimation_->estimateRigidTransformation (*input_transformed, *target_, *correspondences_, transformation_);
 
     // Tranform the data
     transformPointCloud (*input_transformed, *input_transformed, transformation_);
