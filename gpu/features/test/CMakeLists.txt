@@ -1,5 +1,10 @@
 if(BUILD_TESTS)
 
+    include_directories(${PCL_SOURCE_DIR}/test/gtest-1.6.0/include)
+    include_directories(${PCL_SOURCE_DIR}/test/gtest-1.6.0)
+    
+    set(pcl_gtest_souces ${PCL_SOURCE_DIR}/test/gtest-1.6.0/src/gtest-all.cc)
+
     set(the_test_target test_gpu_features)
     
     get_filename_component(DIR ${CMAKE_CURRENT_LIST_FILE} PATH)
@@ -17,8 +22,9 @@ if(BUILD_TESTS)
     #set(INC6 "d:/svn/pcl_3rdparty/vtk-5.6.1/Common/" "d:/svn/pcl_3rdparty/vtk-5.6.1/bin/" "d:/svn/pcl_3rdparty/vtk-5.6.1/Rendering/")
     
     FILE(GLOB test_src *.cpp *.hpp)
+    list(APPEND test_src ${pcl_gtest_souces})    
     include_directories(${INC1} ${INC2} ${INC3} ${INC4} ${INC5} ${INC6} ${INC7} ${VTK_INCLUDE_DIRS})
-    #PCL_ADD_TEST(a_gpu_octree_test ${the_test_target} FILES ${test_src} LINK_WITH pcl_gpu_containers pcl_gpu_octree pcl_gpu_features pcl_io pcl_features pcl_visualization pcl_common)
+    PCL_ADD_TEST(a_gpu_features_test ${the_test_target} FILES ${test_src} LINK_WITH pcl_gpu_containers pcl_gpu_octree pcl_gpu_features pcl_io pcl_features pcl_visualization pcl_common)
     
     #add_dependencies(${the_test_target} pcl_gpu_octree pcl_gpu_containes pcl_gpu_features pcl_io pcl_features pcl_visualization pcl_common)    
 endif(BUILD_TESTS)
