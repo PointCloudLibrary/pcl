@@ -136,7 +136,7 @@ namespace pcl
                     if (computePairFeatures(centroid_p, centroid_n, p, n, f1, f2, f3, f4))
                     {
                         // Normalize the f1, f2, f3, f4 features and push them in the histogram
-                        h_index = floorf(bins1 * ((f1 + M_PI) * (1.f / (2.f * M_PI))));
+                        h_index = floor (bins1 * ((f1 + M_PI) * (1.f / (2.f * M_PI))));
                         h_index = min(bins1 - 1, max(0, h_index));  
                         atomicAdd(shist_b1 + h_index, hist_incr);    
 
@@ -159,7 +159,7 @@ namespace pcl
 
                     // viewpoint component
                     float alfa = ((dot(n, d_vp_p) + 1.f) * 0.5f);                    
-                    h_index = floorf(bins_vp * alfa);
+                    h_index = floor (bins_vp * alfa);
                     h_index = min(bins_vp - 1, max (0, h_index));
                     atomicAdd(shist_vp + h_index, hist_incr_vp);
                 

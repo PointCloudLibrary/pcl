@@ -58,19 +58,18 @@ namespace pcl
             float3 n1_copy = n1, n2_copy = n2;
             float angle1 = dot(n1_copy, dp2p1) / f4;
             
-#if 0 // disabled this to pass the unit tests
-            float angle2 = -dot(n2_copy, dp2p1) / f4;
-            if (acosf (angle1) > acosf(angle2))
+
+            float angle2 = dot(n2_copy, dp2p1) / f4;
+            if (acos (fabs (angle1)) > acos (fabs (angle2)))
             {
-                // switch p1 and p2
-                n1_copy = n2;
-                n2_copy = n1;                
-                dp2p1 *= -1;
-                f3 = angle2;
+              // switch p1 and p2
+              n1_copy = n2;
+              n2_copy = n1;
+              dp2p1 *= (-1);
+              f3 = -angle2;
             }
             else
-#endif
-            f3 = angle1;
+              f3 = angle1;
 
             // Create a Darboux frame coordinate system u-v-w
             // u = n1; v = (p_idx - q_idx) x u / || (p_idx - q_idx) x u ||; w = u x v
