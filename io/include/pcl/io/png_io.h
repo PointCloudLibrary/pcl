@@ -42,6 +42,7 @@
 
 #include <pcl/pcl_macros.h>
 #include <pcl/point_cloud.h>
+#include <pcl/point_types.h>
 #include <string>
 #include <vector>
 
@@ -124,7 +125,25 @@ namespace pcl
         data[i*3 + 2] = cloud.points[i].b;        
       }
       saveRgbPNGFile(file_name, &data[0], cloud.width, cloud.height);
-    }        
+    } 
+    
+    /** \brief Saves Labeled Point cloud as image to PNG file. 
+     * \param[in] file_name the name of the file to write to disk
+     * \param[in] cloud point cloud to save
+     * \ingroup io
+     * Warning: Converts to 16 bit (for png), labels using more than 16 bits will cause problems
+     */
+    void
+    savePNGFile (const std::string& file_name, const pcl::PointCloud<pcl::PointXYZL>& cloud)
+    {
+      std::vector<unsigned short> data(cloud.width * cloud.height);
+      
+      for (size_t i = 0; i < cloud.points.size (); ++i)
+      {
+        data[i] = static_cast<unsigned short> (cloud.points[i].label);      
+      }
+      saveShortPNGFile(file_name, &data[0], cloud.width, cloud.height,1);
+    }  
   }
 }
 

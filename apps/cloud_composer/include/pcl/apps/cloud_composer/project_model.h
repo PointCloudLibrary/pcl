@@ -126,6 +126,10 @@ namespace pcl
         void 
         insertNewCloudFromFile ();
         
+        /** \brief Loads from rgb and depth file and inserts a new pointcloud into the model   */
+        void 
+        insertNewCloudFromRGBandDepth ();
+        
         /** \brief Opens a file dialog and saves selected cloud to file   */
         void 
         saveSelectedCloudToFile ();

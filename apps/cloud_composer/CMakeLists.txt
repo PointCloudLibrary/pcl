@@ -186,7 +186,7 @@ if(build)
     define_composer_tool (sanitize_cloud "${SAN_SOURCES}" "${SAN_HEADERS}" "${SAN_DEPS}")
     
      #Voxel SuperPixels
-    set (VSP_DEPS pcl_octree)
+    set (VSP_DEPS pcl_octree pcl_segmentation)
     set (VSP_SOURCES tools/voxel_superpixels.cpp include/pcl/apps/${SUBSYS_NAME}/tools/impl/voxel_superpixels.hpp)
     set (VSP_HEADERS include/pcl/apps/${SUBSYS_NAME}/tools/voxel_superpixels.h)
     define_composer_tool (voxel_superpixels "${VSP_SOURCES}" "${VSP_HEADERS}" "${VSP_DEPS}")

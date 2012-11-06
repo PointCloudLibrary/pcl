@@ -42,7 +42,7 @@
 #include <pcl/apps/cloud_composer/impl/cloud_item.hpp>
 #include <pcl/apps/cloud_composer/items/normals_item.h>
 #include <pcl/point_cloud.h>
-#include <pcl/octree/octree.h>
+#include <pcl/segmentation/voxel_superpixels.h>
 
 
 template <typename PointT> QList <pcl::cloud_composer::CloudComposerItem*>
@@ -52,11 +52,11 @@ pcl::cloud_composer::VoxelSuperpixelsTool::performTemplatedAction (QList <const 
   
   foreach (const CloudComposerItem* input_item, input_data)
   {
-    if ( !input_item->isSanitized () )
-    {
-      qCritical () << "VoxelSuperpixelsTool requires sanitized input!";
-      return output;
-    }
+   // if ( !input_item->isSanitized () )
+  //  {
+  //    qCritical () << "VoxelSuperpixelsTool requires sanitized input!";
+  //    return output;
+  //  }
     QVariant variant = input_item->data (ItemDataRole::CLOUD_TEMPLATED);
     if ( ! variant.canConvert <typename PointCloud<PointT>::Ptr> () )
     {  
@@ -70,37 +70,34 @@ pcl::cloud_composer::VoxelSuperpixelsTool::performTemplatedAction (QList <const 
   
 
   foreach (const CloudComposerItem* input_item, input_data)
-  {
-    //QList <CloudComposerItem*> normals_list = input_item->getChildren (CloudComposerItem::NORMALS_ITEM);
-    //Get the normals cloud, we just use the first normals that were found if there are more than one
-    //pcl::PointCloud<pcl::Normal>::ConstPtr input_normals = normals_list.value(0)->data(ItemDataRole::CLOUD_TEMPLATED).value <pcl::PointCloud<pcl::Normal>::ConstPtr> ();
-    
+  {  
     QVariant variant = input_item->data (ItemDataRole::CLOUD_TEMPLATED);
     typename PointCloud <PointT>::Ptr input_cloud = variant.value <typename PointCloud<PointT>::Ptr> ();
     
     float resolution = parameter_model_->getProperty("Resolution").toFloat ();
     qDebug () << "Octree resolution = "<<resolution;
-    pcl::octree::OctreePointCloudSearch <PointT> octree(resolution);
-    octree.setInputCloud (input_cloud);
-    octree.addPointsFromInputCloud ();
-    std::vector<int> pointIdxVec;
+    float seed_resolution = parameter_model_->getProperty("Seed Resolution").toFloat ();
+    qDebug () << "Seed resolution = "<<seed_resolution;
+    pcl::VoxelSuperpixels<PointT> super;
+    super.setInputCloud (input_cloud);
+    super.setVoxelResolution (resolution);
+    super.setSeedResolution (seed_resolution);
     
-    PointT searchPoint = input_cloud->at(100);
-    if (octree.voxelSearch (searchPoint, pointIdxVec))
-    {
-      qDebug () << "Neighbors within voxel search at (" << searchPoint.x 
-      << " " << searchPoint.y 
-      << " " << searchPoint.z << ")";
-
-      qDebug () << "Found "<<pointIdxVec.size () << " neighbors!";
-      //for (size_t i = 0; i < pointIdxVec.size (); ++i)
-      //  qDebug() << "    " << input_cloud->points[pointIdxVec[i]].x 
-       // << " " << input_cloud->points[pointIdxVec[i]].y 
-       // << " " << input_cloud->points[pointIdxVec[i]].z ;
-    }
+    std::vector <pcl::PointIndices> superpixels;
+    super.extract (superpixels);
     
-    //CloudItem*  leftover_cloud_item = CloudItem::createCloudItemFromTemplate<PointT>(input_item->text(),leftovers);
-    //output.append (leftover_cloud_item);
+    std::vector <int> seeds;
+    super.getSeedIndices (seeds);
+    
+    typename pcl::PointCloud<PointXYZRGB>::Ptr color_segments;
+    color_segments = super.getColoredCloud ();
+    
+    //typename pcl::PointCloud<PointXYZRGB>::Ptr seed_cloud;
+    //seed_cloud = super.getSeedCloud ();
+    
+    
+    CloudItem*  cloud_item_out = CloudItem::createCloudItemFromTemplate<PointXYZRGB>(input_item->text(),color_segments);
+    output.append (cloud_item_out);
   }
   
   
@@ -109,6 +106,8 @@ pcl::cloud_composer::VoxelSuperpixelsTool::performTemplatedAction (QList <const 
   return output;
   
 }
+
+
 
 
 #define PCL_INSTANTIATE_performTemplatedAction(T) template PCL_EXPORTS void pcl::cloud_composer::VoxelSuperpixelsTool::performTemplatedAction<T> (QList <const CloudComposerItem*>);

@@ -207,6 +207,11 @@ if(build)
 
     endif() # OPENNI_FOUND + BUILD_OPENNI
 
+    if (QT4_FOUND)  
+      PCL_ADD_EXECUTABLE(pcl_test_voxel_superpixels ${SUBSYS_NAME} src/test_voxel_superpixels.cpp)
+      target_link_libraries(pcl_test_voxel_superpixels pcl_common pcl_io pcl_kdtree pcl_segmentation ${QT_LIBRARIES} )
+    endif (QT4_FOUND)
+
   endif() # VTK_FOUND
 
   add_subdirectory(3d_rec_framework)

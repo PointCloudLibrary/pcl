@@ -29,8 +29,6 @@ pcl::cloud_composer::VoxelSuperpixelsTool::performAction (ConstItemList input_da
   {
     switch (type)
     {
-      case (PointTypeFlags::XYZ):
-        return this->performTemplatedAction<pcl::PointXYZ> (input_data);
       case (PointTypeFlags::XYZ | PointTypeFlags::RGB):
         return this->performTemplatedAction<pcl::PointXYZRGB> (input_data);
       case (PointTypeFlags::XYZ | PointTypeFlags::RGBA):
@@ -45,6 +43,10 @@ pcl::cloud_composer::VoxelSuperpixelsTool::performAction (ConstItemList input_da
   return output;
 } 
 
+template QList <pcl::cloud_composer::CloudComposerItem*> pcl::cloud_composer::VoxelSuperpixelsTool::performTemplatedAction <pcl::PointXYZRGB> (QList <const CloudComposerItem*>);
+//template QList <pcl::cloud_composer::CloudComposerItem*> pcl::cloud_composer::VoxelSuperpixelsTool::performTemplatedAction <pcl::PointXYZRGBA> (QList <const CloudComposerItem*>);
+
+
 /////////////////// PARAMETER MODEL /////////////////////////////////
 pcl::cloud_composer::PropertiesModel*
 pcl::cloud_composer::VoxelSuperpixelsToolFactory::createToolParameterModel (QObject* parent)
@@ -52,6 +54,8 @@ pcl::cloud_composer::VoxelSuperpixelsToolFactory::createToolParameterModel (QObj
   PropertiesModel* parameter_model = new PropertiesModel(parent);
   
   parameter_model->addProperty ("Resolution", 0.01,  Qt::ItemIsEditable | Qt::ItemIsEnabled);
+  parameter_model->addProperty ("Seed Resolution", 0.1,  Qt::ItemIsEditable | Qt::ItemIsEnabled);
+  
   //parameter_model->addProperty ("Min Plane Size", 10000,  Qt::ItemIsEditable | Qt::ItemIsEnabled);
   //parameter_model->addProperty ("Angular Threshold", 2.0,  Qt::ItemIsEditable | Qt::ItemIsEnabled);
   //parameter_model->addProperty ("Distance Threshold", 0.02,  Qt::ItemIsEditable | Qt::ItemIsEnabled);

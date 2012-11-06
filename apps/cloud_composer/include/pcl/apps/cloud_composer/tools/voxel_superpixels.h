@@ -61,7 +61,9 @@
        
        inline virtual QString
        getToolName () const { return "Voxel Superpixels Tool";}
-     };
+     
+       
+    };
      
      
      class VoxelSuperpixelsToolFactory : public QObject, public ToolFactory
@@ -97,7 +99,6 @@
        getRequiredInputChildrenTypes () const 
        {
          QList <CloudComposerItem::ItemType> input_types;
-         //return (input_types << CloudComposerItem::NORMALS_ITEM);
          return input_types;
        }
      };
@@ -112,4 +113,4 @@
  
  
  
- #endif //ORGANIZED_SEGMENTATION_H_
+ #endif //VOXEL_SUPERPIXELS_H_

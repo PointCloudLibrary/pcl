@@ -8,6 +8,7 @@
 #include <pcl/apps/cloud_composer/merge_selection.h>
 #include <pcl/apps/cloud_composer/transform_clouds.h>
 
+
 pcl::cloud_composer::ProjectModel::ProjectModel (QObject* parent)
   : QStandardItemModel (parent)
 {
@@ -207,6 +208,139 @@ pcl::cloud_composer::ProjectModel::insertNewCloudFromFile ()
   
 }
 
+void
+pcl::cloud_composer::ProjectModel::insertNewCloudFromRGBandDepth ()
+{
+  qDebug () << "Inserting cloud from RGB and Depth files...";
+  QString rgb_filename = QFileDialog::getOpenFileName (0,tr ("Select rgb image file to open"), last_directory_.absolutePath (), tr ("Images(*.png *.bmp *.tif *.ppm)"));
+  QString depth_filename;
+  if ( rgb_filename.isNull ())
+  {
+    qWarning () << "No file selected, no cloud loaded";
+    return;
+  }
+  else
+  {
+    QFileInfo file_info (rgb_filename);
+    last_directory_ = file_info.absoluteDir ();
+    QString base_name = file_info.baseName ();
+    QStringList depth_filter;
+    depth_filter << base_name.split("_").at(0) + "_depth.*";
+    last_directory_.setNameFilters (depth_filter);
+    QFileInfoList depth_info_list = last_directory_.entryInfoList ();
+    if (depth_info_list.size () == 0)
+    {
+      qCritical () << "Could not find depth file in format (rgb file base name)_depth.*";
+      return;
+    }
+    else if (depth_info_list.size () > 1)
+    {
+      qWarning () << "Found more than one file which matches depth naming format, using first one!";
+    }
+    depth_filename = depth_info_list.at (0).absoluteFilePath ();
+  }
+  
+  //Read the images
+  vtkSmartPointer<vtkImageReader2Factory> reader_factory = vtkSmartPointer<vtkImageReader2Factory>::New ();
+  vtkImageReader2* rgb_reader = reader_factory->CreateImageReader2 (rgb_filename.toStdString ().c_str ());
+  qDebug () << "RGB File="<<rgb_filename;
+  if ( ! rgb_reader->CanReadFile (rgb_filename.toStdString ().c_str ()))
+  {
+    qCritical () << "Cannot read rgb image file!";
+    return;
+  }
+  rgb_reader->SetFileName (rgb_filename.toStdString ().c_str ());
+  rgb_reader->Update ();
+  qDebug () << "Depth File="<<depth_filename;
+  vtkImageReader2* depth_reader = reader_factory->CreateImageReader2 (depth_filename.toStdString ().c_str ());
+  if ( ! depth_reader->CanReadFile (depth_filename.toStdString ().c_str ()))
+  {
+    qCritical () << "Cannot read depth image file!";
+    return;
+  }
+  depth_reader->SetFileName (depth_filename.toStdString ().c_str ());
+  depth_reader->Update ();
+
+  vtkSmartPointer<vtkImageData> rgb_image = rgb_reader->GetOutput ();
+  int *rgb_dims = rgb_image->GetDimensions ();
+  vtkSmartPointer<vtkImageData> depth_image = depth_reader->GetOutput ();
+  int *depth_dims = depth_image->GetDimensions ();
+  
+  if (rgb_dims[0] != depth_dims[0] || rgb_dims[1] != depth_dims[1])
+  {
+    qCritical () << "Depth and RGB dimensions to not match!";
+    qDebug () << "RGB Image is of size "<<rgb_dims[0] << " by "<<rgb_dims[1];
+    qDebug () << "Depth Image is of size "<<depth_dims[0] << " by "<<depth_dims[1];
+    return;
+  }
+  qDebug () << "Images loaded, making cloud";
+  PointCloud<PointXYZRGB>::Ptr cloud = boost::make_shared <PointCloud<PointXYZRGB> >();
+  cloud->points.reserve (depth_dims[0] * depth_dims[1]);
+  cloud->width = depth_dims[0];
+  cloud->height = depth_dims[1];
+  cloud->is_dense = false;
+ 
+
+  // Fill in image data
+  int centerX = static_cast<int>(cloud->width / 2.0);
+  int centerY = static_cast<int>(cloud->height / 2.0);
+  unsigned short* depth_pixel;
+  unsigned char* color_pixel;
+  float scale = 1.0f/1000.0f;
+  float focal_length = 525.0f;
+  float fl_const = 1.0f / focal_length;
+  depth_pixel = static_cast<unsigned short*>(depth_image->GetScalarPointer (depth_dims[0]-1,depth_dims[1]-1,0));
+  color_pixel = static_cast<unsigned char*> (rgb_image->GetScalarPointer (depth_dims[0]-1,depth_dims[1]-1,0));
+  
+  for (int y=0; y<cloud->height; ++y)
+  {
+    for (int x=0; x<cloud->width; ++x, --depth_pixel, color_pixel-=3)
+    {
+      PointXYZRGB new_point;
+      //  uint8_t* p_i = &(cloud_blob->data[y * cloud_blob->row_step + x * cloud_blob->point_step]);
+      float depth = (float)(*depth_pixel) * scale;
+    //  qDebug () << "Depth = "<<depth;
+      if (depth == 0.0f)
+      {
+        new_point.x = new_point.y = new_point.z = std::numeric_limits<float>::quiet_NaN ();
+      }
+      else
+      {
+        new_point.x = ((float)(x - centerX)) * depth * fl_const;
+        new_point.y = ((float)(centerY - y)) * depth * fl_const; // vtk seems to start at the bottom left image corner
+        new_point.z = depth;
+      }
+      
+      uint32_t rgb = (uint32_t)color_pixel[0] << 16 | (uint32_t)color_pixel[1] << 8 | (uint32_t)color_pixel[2];
+      new_point.rgb = *reinterpret_cast<float*> (&rgb);
+      cloud->points.push_back (new_point);
+      //   qDebug () << "depth = "<<depth << "x,y,z="<<data[0]<<","<<data[1]<<","<<data[2];
+      //qDebug() << "r ="<<color_pixel[0]<<" g="<<color_pixel[1]<<" b="<<color_pixel[2];
+      
+    }
+  }
+  qDebug () << "Done making cloud!";
+  QFileInfo file_info (rgb_filename);
+  QString short_filename = file_info.baseName ();
+  //Check if this name already exists in the project - if so, append digit
+  QList <QStandardItem*> items = findItems (short_filename);
+  if (items.size () > 0)
+  {
+    int k = 2;
+    items = findItems (short_filename+ tr ("-%1").arg (k));
+    while (items.size () > 0)
+    {  
+      ++k;
+      items = findItems (short_filename+ tr ("-%1").arg (k));
+    }
+    short_filename = short_filename+ tr ("-%1").arg (k);
+  }
+
+  CloudItem* new_item = CloudItem::createCloudItemFromTemplate<PointXYZRGB> (short_filename,cloud);
+  
+  insertNewCloudComposerItem (new_item, invisibleRootItem());
+  
+}
 void
 pcl::cloud_composer::ProjectModel::saveSelectedCloudToFile ()
 {

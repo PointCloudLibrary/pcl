@@ -53,6 +53,7 @@
      </property>
      <addaction name="action_insert_from_file_"/>
      <addaction name="action_insert_from_openNi_source_"/>
+     <addaction name="action_insert_from_rgb_depth_"/>
     </widget>
     <addaction name="menu_Insert_Cloud"/>
     <addaction name="separator"/>
@@ -104,6 +105,12 @@
    <property name="allowedAreas">
     <set>Qt::TopToolBarArea</set>
    </property>
+   <property name="iconSize">
+    <size>
+     <width>32</width>
+     <height>32</height>
+    </size>
+   </property>
    <attribute name="toolBarArea">
     <enum>TopToolBarArea</enum>
    </attribute>
@@ -117,6 +124,7 @@
    <addaction name="action_save_selected_cloud_"/>
    <addaction name="separator"/>
    <addaction name="action_insert_from_file_"/>
+   <addaction name="action_insert_from_rgb_depth_"/>
    <addaction name="action_insert_from_openNi_source_"/>
    <addaction name="action_delete_"/>
    <addaction name="separator"/>
@@ -526,6 +534,18 @@
    </property>
    <property name="toolTip">
     <string>Save the currently selected cloud to file</string>
+   </property>
+  </action>
+  <action name="action_insert_from_rgb_depth_">
+   <property name="icon">
+    <iconset resource="../resources/resources.qrc">
+     <normaloff>:/rgb_depth.png</normaloff>:/rgb_depth.png</iconset>
+   </property>
+   <property name="text">
+    <string>Insert Cloud from RGB and Depth Image</string>
+   </property>
+   <property name="toolTip">
+    <string>Select and RGB image with accompanying Depth to create Pointcloud</string>
    </property>
   </action>
  </widget>

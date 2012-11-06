@@ -85,6 +85,10 @@ namespace pcl
         void 
         insertNewCloudFromFile ();
         
+        /** \brief This signal tells the current project to insert a cloud from and RGB and Depth image using a file dialog box */
+        void 
+        insertNewCloudFromRGBandDepth ();
+        
         /** \brief This signal tells the current project to save currently selected cloud to file */
         void 
         saveSelectedCloudToFile ();
@@ -111,6 +115,8 @@ namespace pcl
         on_action_insert_from_file__triggered ();
         void
         on_action_insert_from_openNi_source__triggered ();
+        void
+        on_action_insert_from_rgb_depth__triggered ();
 
           
         

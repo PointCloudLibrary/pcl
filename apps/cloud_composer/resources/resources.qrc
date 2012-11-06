@@ -14,6 +14,7 @@
 		<file>click_move.png</file>
 		<file>camera_move.png</file>
 		<file>selection_move.png</file>
+		<file>rgb_depth.png</file>
         <file alias="normal_estimation.png">normal_estimation.png</file>
     </qresource>
 </RCC>

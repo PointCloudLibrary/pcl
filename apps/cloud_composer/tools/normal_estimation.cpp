@@ -84,7 +84,7 @@ pcl::cloud_composer::NormalEstimationToolFactory::createToolParameterModel (QObj
 {
   PropertiesModel* parameter_model = new PropertiesModel(parent);
   
-  parameter_model->addProperty ("Radius", 0.02,  Qt::ItemIsEditable | Qt::ItemIsEnabled);
+  parameter_model->addProperty ("Radius", 0.04,  Qt::ItemIsEditable | Qt::ItemIsEnabled);
   
   return parameter_model;
 }

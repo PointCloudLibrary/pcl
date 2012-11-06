@@ -86,6 +86,7 @@ pcl::cloud_composer::ComposerMainWindow::connectEditActions ()
   multiplexer_->connect (SIGNAL (deleteAvailable (bool)), action_delete_, SLOT (setEnabled (bool)));
   
   multiplexer_->connect (this, SIGNAL (insertNewCloudFromFile()), SLOT (insertNewCloudFromFile()));
+  multiplexer_->connect (this, SIGNAL (insertNewCloudFromRGBandDepth()), SLOT (insertNewCloudFromRGBandDepth()));
   multiplexer_->connect (this, SIGNAL (saveSelectedCloudToFile()), SLOT (saveSelectedCloudToFile()));
   
   
@@ -356,6 +357,16 @@ pcl::cloud_composer::ComposerMainWindow::on_action_insert_from_file__triggered (
     
   emit insertNewCloudFromFile ();   
 }
+
+void
+pcl::cloud_composer::ComposerMainWindow::on_action_insert_from_rgb_depth__triggered ()
+{
+  if (!current_model_)
+    action_new_project_->trigger ();
+  
+  emit insertNewCloudFromRGBandDepth ();   
+}
+
 
 void
 pcl::cloud_composer::ComposerMainWindow::on_action_insert_from_openNi_source__triggered ()
