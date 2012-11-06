@@ -59,6 +59,8 @@ pcl::registration::CorrespondenceEstimationBase<PointSource, PointTarget, Scalar
   // Set the internal point representation of choice
   if (point_representation_)
     tree_->setPointRepresentation (point_representation_);
+
+  target_cloud_updated_ = true;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -71,11 +73,17 @@ pcl::registration::CorrespondenceEstimationBase<PointSource, PointTarget, Scalar
     return (false);
   }
 
-  // If the target indices have been given via setIndicesTarget
-  if (target_indices_)
-    tree_->setInputCloud (target_, target_indices_);
-  else
-    tree_->setInputCloud (target_);
+  // Only update target kd-tree if a new target cloud was set
+  if (target_cloud_updated_)
+  {
+    // If the target indices have been given via setIndicesTarget
+    if (target_indices_)
+      tree_->setInputCloud (target_, target_indices_);
+    else
+      tree_->setInputCloud (target_);
+
+    target_cloud_updated_ = false;
+  }
 
   return (PCLBase<PointSource>::initCompute ());
 }

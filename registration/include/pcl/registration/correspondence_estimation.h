@@ -95,6 +95,7 @@ namespace pcl
           , point_representation_ ()
           , input_transformed_ ()
           , input_fields_ ()
+          , target_cloud_updated_ (true)
         {
         }
 
@@ -163,13 +164,13 @@ namespace pcl
         inline IndicesPtr const 
         getIndicesSource () { return (indices_); }
 
-        /** \brief Provide a pointer to the vector of indices that represent the 
-          * input target point cloud.
+        /** \brief Provide a pointer to the vector of indices that represent the input target point cloud.
           * \param[in] indices a pointer to the vector of indices 
           */
         inline void
         setIndicesTarget (const IndicesPtr &indices)
         {
+          target_cloud_updated_ = true;
           target_indices_ = indices;
         }
 
@@ -244,6 +245,11 @@ namespace pcl
         /** \brief Internal computation initalization. */
         bool
         initCompute ();
+
+        /** \brief Variable that stores whether we have a new target cloud, meaning we need to pre-process it again.
+         * This way, we avoid rebuilding the kd-tree for the target cloud every time the determineCorrespondences () method
+         * is called. */
+        bool target_cloud_updated_;
      };
 
     /** \brief @b CorrespondenceEstimation represents the base class for
