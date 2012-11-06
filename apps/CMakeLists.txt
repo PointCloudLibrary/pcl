@@ -88,11 +88,11 @@ if(build)
       PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_openni_recorder ${SUBSYS_NAME} src/openni_recorder.cpp)
       target_link_libraries(pcl_openni_recorder pcl_common pcl_io)
 
-      PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_openni_grab_frame ${SUBSYS_NAME} src/openni_grab_frame.cpp)
-      target_link_libraries(pcl_openni_grab_frame pcl_common pcl_io pcl_visualization)
+#      PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_openni_grab_frame ${SUBSYS_NAME} src/openni_grab_frame.cpp)
+#      target_link_libraries(pcl_openni_grab_frame pcl_common pcl_io pcl_visualization)
 
-      PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_openni_grab_images ${SUBSYS_NAME} src/openni_grab_images.cpp)
-      target_link_libraries(pcl_openni_grab_images pcl_common pcl_io pcl_visualization)
+#      PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_openni_grab_images ${SUBSYS_NAME} src/openni_grab_images.cpp)
+#      target_link_libraries(pcl_openni_grab_images pcl_common pcl_io pcl_visualization)
 
 
       PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_openni_fast_mesh ${SUBSYS_NAME} src/openni_fast_mesh.cpp)
@@ -154,6 +154,12 @@ if(build)
         QT4_WRAP_CPP(organized_segmentation_demo_moc include/pcl/apps/organized_segmentation_demo.h OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)
         PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_organized_segmentation_demo ${SUBSYS_NAME} ${organized_segmentation_demo_ui} ${organized_segmentation_demo_moc} src/organized_segmentation_demo.cpp)
         target_link_libraries(pcl_organized_segmentation_demo pcl_common pcl_io pcl_visualization pcl_segmentation pcl_features pcl_surface QVTK ${QT_LIBRARIES})
+
+        # Manual registration demo
+        QT4_WRAP_UI(manual_registration_ui src/manual_registration.ui)
+        QT4_WRAP_CPP(manual_registration_moc include/pcl/apps/manual_registration.h OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)
+        PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_manual_registration ${SUBSYS_NAME} ${manual_registration_ui} ${manual_registration_moc} src/manual_registration.cpp)
+        target_link_libraries(pcl_manual_registration pcl_common pcl_io pcl_visualization pcl_segmentation pcl_features pcl_surface QVTK ${QT_LIBRARIES})
       endif ()
 
       set(incs
