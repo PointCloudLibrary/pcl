@@ -348,7 +348,7 @@ public class Main extends Activity implements View.OnClickListener, CompoundButt
             public void newFrame(long timeMs, Bitmap frame) {
                 picture.setImageBitmap(frame);
 
-                textTiming.setText(String.format(getResources().getString(R.string.timing_ms), timeMs));
+                textTiming.setText(getResources().getString(R.string.timing_ms, timeMs));
                 Log.i(TAG, "Total: " + textTiming.getText());
 
                 if (checkLoop.isChecked()) loop.doOneFrame();
