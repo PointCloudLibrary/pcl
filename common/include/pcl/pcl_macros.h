@@ -51,6 +51,7 @@ namespace pcl
   using boost::uint32_t;
   using boost::int64_t;
   using boost::uint64_t;
+  using boost::int_fast16_t;
 }
 
 #if defined __INTEL_COMPILER
