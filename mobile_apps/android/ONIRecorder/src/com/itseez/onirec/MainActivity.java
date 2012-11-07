@@ -219,7 +219,7 @@ public class MainActivity extends Activity {
         private String status;
 
         public StateIdle(int formatId, Object... args) {
-            status = String.format(getResources().getString(formatId), args);
+            status = getResources().getString(formatId, args);
         }
 
         @Override
@@ -342,7 +342,7 @@ public class MainActivity extends Activity {
         final CaptureThreadManager.Feedback feedback = new CaptureThreadManager.Feedback() {
             @Override
             public void setFps(double fps) {
-                textFps.setText(String.format(getResources().getString(R.string.x_fps), fps));
+                textFps.setText(getResources().getString(R.string.x_fps, fps));
             }
 
             @Override
@@ -389,8 +389,8 @@ public class MainActivity extends Activity {
         public void enter() {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
             textFps.setVisibility(View.VISIBLE);
-            textFps.setText(String.format(getResources().getString(R.string.x_fps), 0.));
-            textStatus.setText(String.format(getResources().getString(R.string.status_replaying), recording.getName()));
+            textFps.setText(getResources().getString(R.string.x_fps, 0.));
+            textStatus.setText(getResources().getString(R.string.status_replaying, recording.getName()));
 
             manager = new CaptureThreadManager(surfaceColor.getHolder(), surfaceDepth.getHolder(), feedback,
                     new RecordingContextHolderFactory(recording));
@@ -442,7 +442,7 @@ public class MainActivity extends Activity {
         final CaptureThreadManager.Feedback feedback = new CaptureThreadManager.Feedback() {
             @Override
             public void setFps(double fps) {
-                textFps.setText(String.format(getResources().getString(R.string.x_fps), fps));
+                textFps.setText(getResources().getString(R.string.x_fps, fps));
             }
 
             @Override
@@ -461,7 +461,7 @@ public class MainActivity extends Activity {
                     case FailedToStartRecording:
                         setRecordingState(false, false);
                         Toast.makeText(MainActivity.this,
-                                String.format(getResources().getString(R.string.status_openni_error),
+                                getResources().getString(R.string.status_openni_error,
                                         getResources().getString(R.string.error_failed_to_start_recording),
                                         oniMessage),
                                 Toast.LENGTH_LONG).show();
@@ -543,7 +543,7 @@ public class MainActivity extends Activity {
         public void enter() {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
             textFps.setVisibility(View.VISIBLE);
-            textFps.setText(String.format(getResources().getString(R.string.x_fps), 0.));
+            textFps.setText(getResources().getString(R.string.x_fps, 0.));
             setRecordingState(false, false);
 
             textStatus.setText(R.string.status_previewing);
@@ -604,7 +604,7 @@ public class MainActivity extends Activity {
                     manager.startRecording(currentRecording);
 
                     setRecordingState(true, false);
-                    textStatus.setText(String.format(getResources().getString(R.string.status_recording_to),
+                    textStatus.setText(getResources().getString(R.string.status_recording_to,
                             currentRecording.getAbsolutePath()));
 
                     return true;

@@ -11,7 +11,7 @@ class MapModeWrapper {
         this.mode = mode;
         this.modeStr = mode == null
                 ? context.getResources().getString(R.string.mode_disabled)
-                : String.format(context.getResources().getString(R.string.mode_format),
+                : context.getResources().getString(R.string.mode_format,
                     mode.getXRes(), mode.getYRes(), mode.getFPS());
     }
 
