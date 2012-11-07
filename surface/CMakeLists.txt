@@ -34,12 +34,14 @@ if(build)
             include/pcl/${SUBSYS_NAME}/vtk_smoothing/vtk.h
             include/pcl/${SUBSYS_NAME}/vtk_smoothing/vtk_utils.h
             include/pcl/${SUBSYS_NAME}/vtk_smoothing/vtk_mesh_subdivision.h
+            include/pcl/${SUBSYS_NAME}/vtk_smoothing/vtk_mesh_quadric_decimation.h
             include/pcl/${SUBSYS_NAME}/vtk_smoothing/vtk_mesh_smoothing_laplacian.h
             include/pcl/${SUBSYS_NAME}/vtk_smoothing/vtk_mesh_smoothing_windowed_sinc.h)
 
         set(VTK_SMOOTHING_SOURCE 
             src/vtk_smoothing/vtk_utils.cpp
             src/vtk_smoothing/vtk_mesh_subdivision.cpp
+            src/vtk_smoothing/vtk_mesh_quadric_decimation.cpp
             src/vtk_smoothing/vtk_mesh_smoothing_laplacian.cpp
             src/vtk_smoothing/vtk_mesh_smoothing_windowed_sinc.cpp)
         set(VTK_SMOOTHING_TARGET_LINK_LIBRARIES vtkCommon vtkWidgets vtkGraphics)
