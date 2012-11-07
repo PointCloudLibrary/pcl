@@ -41,13 +41,10 @@
 #define PCL_SEGMENTATION_VOXEL_SUPERPIXELS_HPP_
 
 #include <pcl/segmentation/voxel_superpixels.h>
-
 #include <queue>
 #include <list>
 #include <cmath>
-#include <time.h>
-#include <boost/graph/buffer_concepts.hpp>
-#include "../../../../../common/include/pcl/impl/point_types.hpp"
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
