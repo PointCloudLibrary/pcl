@@ -719,15 +719,13 @@ pcl::VoxelSuperpixels<PointT>::calcVoxelLABValues ()
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> float
-pcl::VoxelSuperpixels<PointT>::calcColorDifference (PointT a, PointT b)
+pcl::VoxelSuperpixels<PointT>::calcColorDifference (const PointT &a, const PointT &b)
 {
   float difference = 0.0f;
   difference += float ((a.r - b.r)*(a.r - b.r));
   difference += float ((a.g - b.g)*(a.g - b.g));
   difference += float ((a.b - b.b)*(a.b - b.b));
   return (difference);
-  
-  
 }
 
 

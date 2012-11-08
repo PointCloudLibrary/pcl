@@ -178,7 +178,7 @@ namespace pcl
       
       /** \brief Returns the difference in color between two points */
       float
-      calcColorDifference (PointT a, PointT b);
+      calcColorDifference (const PointT &a, const PointT &b);
       
       /** \brief Returns the difference in LAB space of voxel cloud indices a and b */
       float 
