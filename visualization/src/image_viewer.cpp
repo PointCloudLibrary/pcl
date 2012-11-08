@@ -401,20 +401,29 @@ pcl::visualization::ImageViewer::showShortImage (
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-void 
+bool
 pcl::visualization::ImageViewer::spin ()
 {
+  if (stopped_)
+    return (false);
+
   render ();
   resetStoppedFlag ();
   // Render the window before we start the interactor
   //interactor_->Render ();
   interactor_->Start ();
+
+  return (true);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-void
+bool
 pcl::visualization::ImageViewer::spinOnce (int time, bool force_redraw)
 {
+  if (stopped_)
+    return (false);
+
+  resetStoppedFlag ();
   if (force_redraw)
   {
     render ();
@@ -429,6 +438,8 @@ pcl::visualization::ImageViewer::spinOnce (int time, bool force_redraw)
     interactor_->Start ();
     interactor_->DestroyTimer (exit_main_loop_timer_callback_->right_timer_id);
   );
+
+  return (true);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
