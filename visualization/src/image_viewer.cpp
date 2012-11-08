@@ -596,7 +596,7 @@ pcl::visualization::ImageViewer::createLayer (
   l.canvas->SetNumberOfScalarComponents (4);
   if (fill_box)
   {
-    l.canvas->SetDrawColor (0.0, 0.0, 0.0, opacity * 255.0);
+    l.canvas->SetDrawColor (0.0, 0.0, 0.0, 0.0); //opacity * 255.0);
     l.canvas->FillBox (0, width, 0, height);
     l.canvas->Update ();
     l.canvas->Modified ();
