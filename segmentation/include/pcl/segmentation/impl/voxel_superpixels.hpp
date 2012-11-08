@@ -42,7 +42,6 @@
 
 #include <pcl/segmentation/voxel_superpixels.h>
 #include <pcl/features/fpfh_omp.h>
-#include <eigen3/Eigen/Eigen>
 #include <queue>
 #include <list>
 #include <cmath>
