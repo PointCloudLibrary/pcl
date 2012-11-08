@@ -46,7 +46,7 @@
 #include <pcl/search/search.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
-#include <pcl/features/normal_3d.h>
+#include <pcl/features/normal_3d_omp.h>
 #include <pcl/filters/voxel_grid.h>
 #include <list>
 #include <math.h>
@@ -113,6 +113,18 @@ namespace pcl
       double 
       getSeedResolution () const;
       
+      /** \brief Set the importance of color for superpixels */
+      void
+      setColorImportance (float val);
+      
+      /** \brief Set the importance of spatial distance for superpixels */
+      void
+      setSpatialImportance (float val);
+      
+      /** \brief Set the importance of 3D shape for superpixels */
+      void
+      setFPFHImportance (float val);
+      
       /** \brief Gets the vector containing the seed point indices */
       void
       getSeedIndices (std::vector<int>& seed_indices);
@@ -157,8 +169,8 @@ namespace pcl
 
       //TODO: MOVE BACK TO PROTECTED, ONLY HERE FOR TESTING
       /** \brief This performs one iteration of evolving the superpixels */
-      virtual void
-      iterateEvolvingSet (float flow_r);
+      void
+      iterateSuperpixelClusters ();
       
     protected:
 
@@ -169,11 +181,19 @@ namespace pcl
       prepareForSegmentation ();
 
       /** \brief This method finds neighbors for each point and saves them to the array  */
-      virtual void
+      void
       findPointNeighbors ();
 
+      /** \brief This method finds connected voxels for each seed within radius S  */
+      void
+      findSeedConstituency (float edge_length);
+      
+      /** \brief Recursive function used to find all neighbors for a seed */
+      void 
+      recursiveFind (int index, std::vector<int> &possible_constituents,std::vector<std::pair<int,float> > &constituents);
+      
       /** \brief This method places seed voxels for superpixels based on regular grid */
-      virtual void
+      void
       placeSeedVoxels ();
       
       /** \brief Returns the difference in color between two points */
@@ -188,13 +208,37 @@ namespace pcl
       float 
       calcDifferenceCurvature (int index_a, int index_b);
       
+      /** \brief Returns the distance in space of voxel cloud indices a and b */
+      float 
+      calcDistanceSquared (int index_a, int index_b);
+      
+      /** \brief Calc distance between a point and a cluster center */
+      float
+      calcFeatureDistance (int point_index, int seed_index);
+      
       /** \brief Calculates the LAB values of each voxel point, used for evolving superpixels */
       void
       calcVoxelLABValues ();
       
+      /** \brief Calculates the FPFH values of each voxel point, used for evolving superpixels */
+      void
+      calcVoxelFPFHValues ();
+      
+      /** \brief Calculates gradient for a point */
+      float
+      calcGradient (int point_index);
+      
       /** \brief This performs the superpixel evolution */
-      virtual void
+      void
       evolveSuperpixels ();
+      
+      /** \brief Initialize superpixels using constituents within r */
+      void
+      initSuperpixelClusters (float search_radius);
+      
+      /** \brief Updates the values of the superpixel features */
+      void 
+      updateSuperpixelClusters ();
       
       /** \brief This computes the voxelized cloud */
       void 
@@ -224,6 +268,13 @@ namespace pcl
       /** \brief Octree Search structure */
       OctreeSearchPtr search_;
 
+      /** \brief Importance of color in clustering */
+      float color_importance_;
+      /** \brief Importance of distance from seed center in clustering */
+      float spatial_importance_;
+      /** \brief Importance of similarity in 3D shape for clustering */
+      float fpfh_importance_;
+      
       /** \brief Contains normals of the points that will be segmented. */
       pcl::PointCloud<pcl::Normal>::Ptr normals_;
       
@@ -236,6 +287,9 @@ namespace pcl
       /** \brief Contains a KDtree for the voxelized cloud */
       typename pcl::search::KdTree<PointT>::Ptr voxel_kdtree_;
       
+      /** \brief Contains the FPFH values for Voxel cloud */
+      pcl::PointCloud<pcl::FPFHSignature33>::Ptr voxel_fpfh_;
+      
       /** \brief Indices of the superpixel seed points */
       std::vector<int> seed_indices_;
       
@@ -247,18 +301,9 @@ namespace pcl
       
       /** \brief Contains neighbors of each point. */
       std::vector<std::vector<int> > point_neighbors_;
-
-      /** \brief Contains distances of each point's neighbors */
-      std::vector<std::vector<float> > point_neighbor_dist_;
-      
-      /** \brief Contains vector of each point's neighbors in pair (dist,idx) form */
-      std::vector<std::vector<std::pair<float, int> > > point_dist_neighbor_;
-      
-      /** \brief Contains the evolving set of each superpixel
-                 [label][evolvers][neighbors].first = remaining distance
-                 [label][evolvers][neighbors].second = neighbor index
-       */
-      std::vector<std::list<std::vector<std::pair<float, int> > > > evolving_set_;
+     
+      /** \brief Contains vector of each point's neighbors in pair (idx, dist) form */
+      std::vector<std::vector<std::pair<int, float> > > point_neighbor_dist_;
       
       /** \brief Point labels that tells to which superpixel each point belongs. */
       std::vector<int> point_labels_;
@@ -272,12 +317,24 @@ namespace pcl
       /** \brief Stores the CIELab values of the voxel points  */
       boost::multi_array<float, 2> voxel_LAB_;
       
+      /** \brief Stores the constituents for seeds and their distance from seed center*/
+      std::vector <std::vector <std::pair<int, float> > > seed_constituents_;
+      
+      /** \brief Stores the current vote and certainty for voxels */
+      std::vector <std::pair<int, float> > voxel_votes_;
+      
+      /** \brief Stores the feature vector for the superpixel clusters */
+      boost::multi_array<float, 2> superpixel_features_;
+      
       /** \brief Stores the number of superpixels. */
       int number_of_superpixels_;
       
       /** \brief Stores the colors used for the superpixel labels*/
       std::vector<uint32_t> superpixel_colors_;
 
+      float max_sd_, min_sd_;
+      float max_cd_, min_cd_;
+      float max_fd_, min_fd_;
     public:
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };

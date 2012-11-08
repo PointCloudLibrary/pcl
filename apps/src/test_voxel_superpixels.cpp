@@ -51,6 +51,19 @@ main (int argc, char ** argv)
   if (seed_res_specified)
     pcl::console::parse (argc, argv, "-s", seed_resolution);
   
+  float color_importance = 1.0;
+  if (pcl::console::find_switch (argc, argv, "-c"))
+    pcl::console::parse (argc, argv, "-c", color_importance);
+  
+  float spatial_importance = 1.0;
+  if (pcl::console::find_switch (argc, argv, "-z"))
+    pcl::console::parse (argc, argv, "-z", spatial_importance);
+  
+  float shape_importance = 1.0;
+  if (pcl::console::find_switch (argc, argv, "-f"))
+    pcl::console::parse (argc, argv, "-f", shape_importance);
+  
+  
   //Read the images
   vtkSmartPointer<vtkImageReader2Factory> reader_factory = vtkSmartPointer<vtkImageReader2Factory>::New ();
   vtkImageReader2* rgb_reader = reader_factory->CreateImageReader2 (rgb_path.c_str ());
@@ -146,12 +159,17 @@ main (int argc, char ** argv)
   super.setInputCloud (cloud);
   super.setVoxelResolution (voxel_resolution);
   super.setSeedResolution (seed_resolution);
+  super.setColorImportance (color_importance);
+  super.setFPFHImportance (shape_importance);
+  spatial_importance = 0.4 * (color_importance+shape_importance);
+  super.setSpatialImportance (spatial_importance);
   std::vector <pcl::PointIndices> superpixel_indices;
+  qDebug () << "Extracting superpixels!";
   super.extract (superpixel_indices);
   QString out_name;
   pcl::PointCloud<pcl::PointXYZRGB>::Ptr colored_cloud = super.getColoredCloud ();
   pcl::PointCloud<pcl::PointXYZL>::Ptr label_cloud = super.getLabeledCloud();
-  // pcl::PointCloud<pcl::PointXYZRGB>::Ptr seed_cloud = super.getSeedCloud (); 
+ // pcl::PointCloud<pcl::PointXYZRGB>::Ptr seed_cloud = super.getSeedCloud (); 
  // pcl::io::savePNGFile ("seed_cloud.png", *seed_cloud);
   /* //Debugging code to show effect of iterations
   out_name.sprintf ("%s%04d%s","test/",0,".png");
