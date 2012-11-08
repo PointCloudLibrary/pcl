@@ -20,14 +20,17 @@ if(BUILD_surface_on_nurbs)
             FILES example_nurbs_fitting_surface.cpp
                     LINK_WITH pcl_common pcl_io pcl_surface pcl_visualization)
                     
-    PCL_ADD_EXAMPLE(pcl_example_nurbs_fitting_curve
-        	FILES example_nurbs_fitting_curve.cpp
-                	LINK_WITH pcl_common pcl_io pcl_surface pcl_visualization)    
-    
-    PCL_ADD_EXAMPLE(pcl_example_nurbs_fitting_curve3d
-        	FILES example_nurbs_fitting_curve3d.cpp
+    PCL_ADD_EXAMPLE(pcl_example_nurbs_fitting_closed_curve
+        	FILES example_nurbs_fitting_closed_curve.cpp
                 	LINK_WITH pcl_common pcl_io pcl_surface pcl_visualization)
-
+                	
+	PCL_ADD_EXAMPLE(pcl_example_nurbs_fitting_curve2d
+        	FILES example_nurbs_fitting_curve2d.cpp
+                	LINK_WITH pcl_common pcl_io pcl_surface pcl_visualization)
+    
+    PCL_ADD_EXAMPLE(pcl_example_nurbs_fitting_closed_curve3d
+        	FILES example_nurbs_fitting_closed_curve3d.cpp
+                	LINK_WITH pcl_common pcl_io pcl_surface pcl_visualization)
                                        
 #	PCL_ADD_EXAMPLE(pcl_test_nurbs_fitting_object
 #					FILES test_nurbs_fitting_object.cpp

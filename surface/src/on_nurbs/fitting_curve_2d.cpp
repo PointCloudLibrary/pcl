@@ -35,13 +35,13 @@
  *
  */
 
-#include <pcl/surface/on_nurbs/fitting_curve_2d_pdm.h>
+#include <pcl/surface/on_nurbs/fitting_curve_2d.h>
 #include <stdexcept>
 
 using namespace pcl;
 using namespace on_nurbs;
 
-FittingCurve2dPDM::FittingCurve2dPDM (int order, NurbsDataCurve2d *data)
+FittingCurve2d::FittingCurve2d (int order, NurbsDataCurve2d *data)
 {
   if (order < 2)
     throw std::runtime_error ("[NurbsFittingCylinder::NurbsFittingCylinder] Error order to low (order<2).");
@@ -49,14 +49,14 @@ FittingCurve2dPDM::FittingCurve2dPDM (int order, NurbsDataCurve2d *data)
   ON::Begin ();
 
   m_data = data;
-  m_nurbs = initNurbsCurve2D (order, m_data->interior);
+  m_nurbs = initNurbsPCA (order, m_data);
 
   in_max_steps = 200;
   in_accuracy = 1e-6;
   m_quiet = true;
 }
 
-FittingCurve2dPDM::FittingCurve2dPDM (NurbsDataCurve2d *data, const ON_NurbsCurve &nc)
+FittingCurve2d::FittingCurve2d (NurbsDataCurve2d *data, const ON_NurbsCurve &nc)
 {
   ON::Begin ();
 
@@ -69,7 +69,7 @@ FittingCurve2dPDM::FittingCurve2dPDM (NurbsDataCurve2d *data, const ON_NurbsCurv
 }
 
 int
-FittingCurve2dPDM::findElement (double xi, const std::vector<double> &elements)
+FittingCurve2d::findElement (double xi, const std::vector<double> &elements)
 {
   if (xi >= elements.back ())
     return (int (elements.size ()) - 2);
@@ -88,7 +88,7 @@ FittingCurve2dPDM::findElement (double xi, const std::vector<double> &elements)
 }
 
 void
-FittingCurve2dPDM::refine ()
+FittingCurve2d::refine ()
 {
   std::vector<double> xi;
 
@@ -102,7 +102,7 @@ FittingCurve2dPDM::refine ()
 }
 
 void
-FittingCurve2dPDM::refine (double xi)
+FittingCurve2d::refine (double xi)
 {
   std::vector<double> elements = getElementVector (m_nurbs);
 
@@ -114,11 +114,10 @@ FittingCurve2dPDM::refine (double xi)
 }
 
 void
-FittingCurve2dPDM::assemble (const Parameter &parameter)
+FittingCurve2d::assemble (const Parameter &parameter)
 {
-  int cp_red = m_nurbs.m_order - 2;
-  int ncp = m_nurbs.m_cv_count - 2 * cp_red;
-  int nCageReg = m_nurbs.m_cv_count - 2 * cp_red;
+  int ncp = m_nurbs.m_cv_count;
+  int nCageReg = m_nurbs.m_cv_count - 2;
   int nInt = int (m_data->interior.size ());
 
   double wInt = 1.0;
@@ -141,12 +140,33 @@ FittingCurve2dPDM::assemble (const Parameter &parameter)
   {
     m_solver.resize (row);
     if (!m_quiet)
-      printf ("[FittingCurve2dPDM::assemble] Warning: rows do not match: %d %d\n", row, nrows);
+      printf ("[FittingCurve2d::assemble] Warning: rows do not match: %d %d\n", row, nrows);
   }
+}
+void
+FittingCurve2d::addControlPointConstraint (int i, Eigen::Vector2d f, double weight)
+{
+  if (i < 0 || i >= m_nurbs.CVCount ())
+  {
+    printf ("[FittingCurve2d::addControlPointConstraint] Warning, index out of bounds.\n");
+    return;
+  }
+
+  // resize solver
+  unsigned row, cols, dims;
+  m_solver.getSize (row, cols, dims);
+  m_solver.resize (row + 1);
+
+  // add constraint for control point
+  m_solver.f (row, 0, f (0) * weight);
+  m_solver.f (row, 1, f (1) * weight);
+  for (int j = 0; j < cols; j++)
+    m_solver.K (row, j, 0.0);
+  m_solver.K (row, i, weight);
 }
 
 double
-FittingCurve2dPDM::solve (double damp)
+FittingCurve2d::solve (double damp)
 {
   double cps_diff (0.0);
 
@@ -157,17 +177,15 @@ FittingCurve2dPDM::solve (double damp)
 }
 
 double
-FittingCurve2dPDM::updateCurve (double damp)
+FittingCurve2d::updateCurve (double damp)
 {
-  int cp_red = m_nurbs.m_order - 2;
-  int ncp = m_nurbs.m_cv_count - 2 * cp_red;
+  int ncp = m_nurbs.CVCount ();
 
   double cps_diff (0.0);
   double cps_diff_max (0.0);
 
   for (int j = 0; j < ncp; j++)
   {
-
     ON_3dPoint cp_prev;
     m_nurbs.GetCV (j, cp_prev);
 
@@ -175,7 +193,6 @@ FittingCurve2dPDM::updateCurve (double damp)
     double y = m_solver.x (j, 1);
 
     cps_diff = sqrt ((x - cp_prev.x) * (x - cp_prev.x) + (y - cp_prev.y) * (y - cp_prev.y));
-
     if (cps_diff > cps_diff_max)
       cps_diff_max = cps_diff;
 
@@ -185,141 +202,14 @@ FittingCurve2dPDM::updateCurve (double damp)
     cp.z = 0.0;
 
     m_nurbs.SetCV (j, cp);
-
-  }
-
-  for (int j = 0; j < 2 * cp_red; j++)
-  {
-    ON_3dPoint cp;
-    m_nurbs.GetCV (2 * cp_red - 1 - j, cp);
-    m_nurbs.SetCV (m_nurbs.m_cv_count - 1 - j, cp);
   }
 
   return cps_diff_max;
 }
 
 void
-FittingCurve2dPDM::addCPsOnClosestPointViolation (double max_error)
+FittingCurve2d::addPointConstraint (const double &param, const Eigen::Vector2d &point, double weight, unsigned &row)
 {
-  std::vector<double> elements = getElementVector (m_nurbs);
-  //  m_data->interior_line_start.clear ();
-  //  m_data->interior_line_end.clear ();
-
-  int nknots (0);
-
-  for (unsigned i = 0; i < elements.size () - 1; i++)
-  {
-
-    bool inserted (false);
-    double dxi = elements[i + 1] - elements[i];
-
-    {
-      double xi = elements[i];
-      double points[2];
-      Eigen::Vector2d p1, p2;
-      m_nurbs.Evaluate (xi, 0, 2, points);
-      p1 (0) = points[0];
-      p1 (1) = points[1];
-
-      unsigned idx = NurbsTools::getClosestPoint (p1, m_data->interior);
-      p2 = m_data->interior[idx];
-
-      double d = (p2 - p1).squaredNorm ();
-
-      if (d > (max_error * max_error))
-      {
-        m_nurbs.InsertKnot (xi + 0.5 * dxi, 1);
-        //        m_data->interior_line_start.push_back (p2);
-        //        m_data->interior_line_end.push_back (p1);
-        nknots++;
-        inserted = true;
-      }
-    }
-
-    if (!inserted)
-    {
-      double xi = elements[i] + 0.5 * dxi;
-      double points[2];
-      Eigen::Vector2d p1, p2;
-      m_nurbs.Evaluate (xi, 0, 2, points);
-      p1 (0) = points[0];
-      p1 (1) = points[1];
-
-      unsigned idx = NurbsTools::getClosestPoint (p1, m_data->interior);
-      p2 = m_data->interior[idx];
-
-      double d = (p2 - p1).squaredNorm ();
-
-      if (d > (max_error * max_error))
-      {
-        m_nurbs.InsertKnot (xi, 1);
-        //        m_data->interior_line_start.push_back (p2);
-        //        m_data->interior_line_end.push_back (p1);
-        nknots++;
-      }
-    }
-
-  }
-  //  printf("[FittingCurve2dPDM::addCPsOnClosestPointViolation] %d knots inserted (%d, %d)\n", nknots,
-  //      m_nurbs.CVCount(), m_nurbs.KnotCount());
-}
-
-ON_NurbsCurve
-FittingCurve2dPDM::removeCPsOnLine (const ON_NurbsCurve &nurbs, double min_curve_th)
-{
-  int cp_red = nurbs.Order () - 2;
-  int ncp = nurbs.CVCount () - 2 * cp_red;
-
-  std::vector<ON_3dPoint> cps;
-
-  for (int j = 1; j < ncp + 1; j++)
-  {
-    ON_3dPoint cp0, cp1, cp2;
-    nurbs.GetCV ((j + 0) % ncp, cp0);
-    nurbs.GetCV ((j - 1) % ncp, cp1);
-    nurbs.GetCV ((j + 1) % ncp, cp2);
-
-    Eigen::Vector3d v1 (cp1.x - cp0.x, cp1.y - cp0.y, cp1.z - cp0.z);
-    Eigen::Vector3d v2 (cp2.x - cp0.x, cp2.y - cp0.y, cp2.z - cp0.z);
-    v1.normalize ();
-    v2.normalize ();
-
-    double d = v1.dot (v2);
-
-    if (d >= min_curve_th)
-    {
-      cps.push_back (cp0);
-    }
-
-  }
-
-  int order = nurbs.Order ();
-  ON_NurbsCurve nurbs_opt = ON_NurbsCurve (2, false, order, int (cps.size ()) + 2 * cp_red);
-  nurbs_opt.MakePeriodicUniformKnotVector (1.0 / double (cps.size ()));
-  nurbs_opt.m_knot[cp_red] = 0.0;
-  nurbs_opt.m_knot[nurbs_opt.m_knot_capacity - cp_red - 1] = 1.0;
-
-  for (unsigned j = 0; j < cps.size (); j++)
-    nurbs_opt.SetCV (j + cp_red, cps[j]);
-
-  for (int j = 0; j < cp_red; j++)
-  {
-    ON_3dPoint cp;
-    nurbs_opt.GetCV (nurbs_opt.m_cv_count - 1 - cp_red + j, cp);
-    nurbs_opt.SetCV (j, cp);
-
-    nurbs_opt.GetCV (cp_red - j, cp);
-    nurbs_opt.SetCV (nurbs_opt.m_cv_count - 1 - j, cp);
-  }
-
-  return nurbs_opt;
-}
-
-void
-FittingCurve2dPDM::addPointConstraint (const double &param, const Eigen::Vector2d &point, double weight, unsigned &row)
-{
-  int cp_red = m_nurbs.m_order - 2;
-  int ncp = m_nurbs.m_cv_count - 2 * cp_red;
   double *N = new double[m_nurbs.m_order * m_nurbs.m_order];
 
   int E = ON_NurbsSpanIndex (m_nurbs.m_order, m_nurbs.m_cv_count, m_nurbs.m_knot, param, 0, 0);
@@ -330,111 +220,139 @@ FittingCurve2dPDM::addPointConstraint (const double &param, const Eigen::Vector2
   m_solver.f (row, 1, point (1) * weight);
 
   for (int i = 0; i < m_nurbs.m_order; i++)
-    m_solver.K (row, (E + i) % ncp, weight * N[i]);
+    m_solver.K (row, (E + i), weight * N[i]);
 
   row++;
 
-  delete [] N;
+  delete[] N;
 }
 
 void
-FittingCurve2dPDM::addCageRegularisation (double weight, unsigned &row)
+FittingCurve2d::addCageRegularisation (double weight, unsigned &row)
 {
-  int cp_red = (m_nurbs.m_order - 2);
-  int ncp = (m_nurbs.m_cv_count - 2 * cp_red);
+  int ncp = m_nurbs.m_cv_count;
 
-  //  m_data->interior_line_start.clear();
-  //  m_data->interior_line_end.clear();
-  for (int j = 1; j < ncp + 1; j++)
+  for (int j = 1; j < ncp - 1; j++)
   {
-
     m_solver.f (row, 0, 0.0);
     m_solver.f (row, 1, 0.0);
 
-    m_solver.K (row, (j + 0) % ncp, -2.0 * weight);
-    m_solver.K (row, (j - 1) % ncp, 1.0 * weight);
-    m_solver.K (row, (j + 1) % ncp, 1.0 * weight);
+    m_solver.K (row, (j + 0), -2.0 * weight);
+    m_solver.K (row, (j - 1), 1.0 * weight);
+    m_solver.K (row, (j + 1), 1.0 * weight);
 
     row++;
   }
 }
 
 ON_NurbsCurve
-FittingCurve2dPDM::initCPsNurbsCurve2D (int order, const vector_vec2d &cps)
+FittingCurve2d::initNurbsCPS (int order, const vector_vec2d &cps)
 {
-  int cp_red = order - 2;
   ON_NurbsCurve nurbs;
-  if (cps.size () < 3 || cps.size () < (2 * cp_red + 1))
+  if (cps.size () < order)
   {
-    printf ("[FittingCurve2dPDM::initCPsNurbsCurve2D] Warning, number of control points too low.\n");
+    printf ("[FittingCurve2d::initCPsNurbsCurve2D] Warning, number of control points too low.\n");
     return nurbs;
   }
 
-  int ncps = int (cps.size ()) + 2 * cp_red; // +2*cp_red for smoothness and +1 for closing
-  nurbs = ON_NurbsCurve (2, false, order, ncps);
-  nurbs.MakePeriodicUniformKnotVector (1.0 / (ncps - order + 1));
-
-  for (int j = 0; j < cps.size (); j++)
-    nurbs.SetCV (cp_red + j, ON_3dPoint (cps[j] (0), cps[j] (1), 0.0));
-
-  // close nurbs
-  nurbs.SetCV (cp_red + int (cps.size ()), ON_3dPoint (cps[0] (0), cps[0] (1), 0.0));
-
-  // make smooth at closing point
-  for (int j = 0; j < cp_red; j++)
-  {
-    ON_3dPoint cp;
-    nurbs.GetCV (nurbs.CVCount () - 1 - cp_red + j, cp);
-    nurbs.SetCV (j, cp);
-
-    nurbs.GetCV (cp_red - j, cp);
-    nurbs.SetCV (nurbs.CVCount () - 1 - j, cp);
-  }
+  printf ("[FittingCurve2d::initCPsNurbsCurve2D] Warning, this function is under development.\n");
+  //
+  //  size_t ncps = cps.size ();
+  //  nurbs = ON_NurbsCurve (2, false, order, ncps);
+  //  nurbs.MakePeriodicUniformKnotVector (1.0 / (ncps - order + 1));
+  //
+  //  for (int j = 0; j < cps.size (); j++)
+  //    nurbs.SetCV (cp_red + j, ON_3dPoint (cps[j] (0), cps[j] (1), 0.0));
+  //
+  //  // close nurbs
+  //  nurbs.SetCV (cp_red + int (cps.size ()), ON_3dPoint (cps[0] (0), cps[0] (1), 0.0));
+  //
+  //  // make smooth at closing point
+  //  for (int j = 0; j < cp_red; j++)
+  //  {
+  //    ON_3dPoint cp;
+  //    nurbs.GetCV (nurbs.CVCount () - 1 - cp_red + j, cp);
+  //    nurbs.SetCV (j, cp);
+  //
+  //    nurbs.GetCV (cp_red - j, cp);
+  //    nurbs.SetCV (nurbs.CVCount () - 1 - j, cp);
+  //  }
 
   return nurbs;
 }
 
 ON_NurbsCurve
-FittingCurve2dPDM::initNurbsCurve2D (int order, const vector_vec2d &data, int ncps, double radiusF)
+FittingCurve2d::initNurbsPCA (int order, NurbsDataCurve2d *data, int ncps)
 {
-  if (data.empty ())
-    printf ("[FittingCurve2dPDM::initNurbsCurve2D] Warning, no boundary parameters available\n");
+  Eigen::Vector2d mean;
+  Eigen::Matrix2d eigenvectors;
+  Eigen::Vector2d eigenvalues;
 
-  Eigen::Vector2d mean = NurbsTools::computeMean (data);
+  if (ncps < order)
+    ncps = order;
 
-  unsigned s = unsigned (data.size ());
+  unsigned s = static_cast<unsigned> (data->interior.size ());
+  data->interior_param.clear ();
 
-  double r (0.0);
+  NurbsTools::pca (data->interior, mean, eigenvectors, eigenvalues);
+
+  data->mean = mean;
+  data->eigenvectors = eigenvectors;
+
+  eigenvalues = eigenvalues / s; // seems that the eigenvalues are dependent on the number of points (???)
+  Eigen::Matrix2d eigenvectors_inv = eigenvectors.inverse ();
+
+  Eigen::Vector2d v_max (-DBL_MAX, -DBL_MAX);
+  Eigen::Vector2d v_min (DBL_MAX, DBL_MAX);
   for (unsigned i = 0; i < s; i++)
   {
-    Eigen::Vector2d d = data[i] - mean;
-    double sn = d.squaredNorm ();
-    if (sn > r)
-      r = sn;
+    Eigen::Vector2d p (eigenvectors_inv * (data->interior[i] - mean));
+    data->interior_param.push_back (p (0));
+
+    if (p (0) > v_max (0))
+      v_max (0) = p (0);
+    if (p (1) > v_max (1))
+      v_max (1) = p (1);
+
+    if (p (0) < v_min (0))
+      v_min (0) = p (0);
+    if (p (1) < v_min (1))
+      v_min (1) = p (1);
   }
-  r = radiusF * sqrt (r);
 
-  if (ncps < 2 * order)
-    ncps = 2 * order;
-
-  ON_NurbsCurve nurbs = ON_NurbsCurve (2, false, order, ncps);
-  nurbs.MakePeriodicUniformKnotVector (1.0 / (ncps - order + 1));
-
-  double dcv = (2.0 * M_PI) / (ncps - order + 1);
-  Eigen::Vector2d cv;
-  for (int j = 0; j < ncps; j++)
+  for (unsigned i = 0; i < s; i++)
   {
-    cv (0) = r * sin (dcv * j);
-    cv (1) = r * cos (dcv * j);
-    cv = cv + mean;
-    nurbs.SetCV (j, ON_3dPoint (cv (0), cv (1), 0.0));
+    double &p = data->interior_param[i];
+    if (v_max (0) > v_min (0))
+    {
+      p = (p - v_min (0)) / (v_max (0) - v_min (0));
+    }
+    else
+    {
+      throw std::runtime_error ("[FittingCurve2d::initNurbsPCABoundingBox] Error: v_max <= v_min");
+    }
+  }
+
+  ON_NurbsCurve nurbs (2, false, order, ncps);
+  double delta = 1.0 / (nurbs.KnotCount () - 3);
+  nurbs.MakeClampedUniformKnotVector (delta);
+
+  double dcu = (v_max (0) - v_min (0)) / (ncps - 1);
+
+  Eigen::Vector2d cv_t, cv;
+  for (int i = 0; i < ncps; i++)
+  {
+    cv (0) = v_min (0) + dcu * i;
+    cv (1) = 0.0;
+    cv_t = eigenvectors * cv + mean;
+    nurbs.SetCV (i, ON_3dPoint (cv_t (0), cv_t (1), 0.0));
   }
 
   return nurbs;
 }
 
 void
-FittingCurve2dPDM::reverse (ON_NurbsCurve &curve)
+FittingCurve2d::reverse (ON_NurbsCurve &curve)
 {
 
   ON_NurbsCurve curve2 = curve;
@@ -448,42 +366,8 @@ FittingCurve2dPDM::reverse (ON_NurbsCurve &curve)
   curve = curve2;
 }
 
-//ON_NurbsCurve FittingCurve2dPDM::initNurbsCurvePCA(int order, const vector_vec2d &data)
-//{
-//  if (data.empty())
-//    printf("[FittingCurve2dPDM::initNurbsCurvePCA] Warning, no boundary parameters available\n");
-//
-//  Eigen::Vector3d mean;
-//  Eigen::Matrix3d eigenvectors;
-//  Eigen::Vector3d eigenvalues;
-//
-//  unsigned s = data.size();
-//
-//  NurbsTools::pca(data, mean, eigenvectors, eigenvalues);
-//
-//  eigenvalues = eigenvalues / s; // seems that the eigenvalues are dependent on the number of points (???)
-//
-//  double r = 2.0 * sqrt(eigenvalues(0));
-//
-//  int ncpsV(2 * order);
-//  ON_NurbsCurve nurbs = ON_NurbsCurve(3, false, order, ncpsV);
-//  nurbs.MakePeriodicUniformKnotVector(1.0 / (ncpsV - order + 1));
-//
-//  double dcv = (2.0 * M_PI) / (ncpsV - order + 1);
-//  Eigen::Vector3d cv, cv_t;
-//  for (int j = 0; j < ncpsV; j++) {
-//    cv(0) = r * sin(dcv * j);
-//    cv(1) = r * cos(dcv * j);
-//    cv(2) = 0.0;
-//    cv_t = eigenvectors * cv + mean;
-//    nurbs.SetCV(j, ON_3dPoint(cv_t(0), cv_t(1), cv_t(2)));
-//  }
-//
-//  return nurbs;
-//}
-
 std::vector<double>
-FittingCurve2dPDM::getElementVector (const ON_NurbsCurve &nurbs)
+FittingCurve2d::getElementVector (const ON_NurbsCurve &nurbs)
 {
   std::vector<double> result;
 
@@ -512,7 +396,7 @@ FittingCurve2dPDM::getElementVector (const ON_NurbsCurve &nurbs)
 }
 
 void
-FittingCurve2dPDM::assembleInterior (double wInt, double rScale, unsigned &row)
+FittingCurve2d::assembleInterior (double wInt, double rScale, unsigned &row)
 {
   int nInt = int (m_data->interior.size ());
   m_data->interior_error.clear ();
@@ -554,15 +438,13 @@ FittingCurve2dPDM::assembleInterior (double wInt, double rScale, unsigned &row)
 }
 
 double
-FittingCurve2dPDM::inverseMapping (const ON_NurbsCurve &nurbs, const Eigen::Vector2d &pt, const double &hint,
-                                   double &error, Eigen::Vector2d &p, Eigen::Vector2d &t, double rScale, int maxSteps,
-                                   double accuracy, bool quiet)
+FittingCurve2d::inverseMapping (const ON_NurbsCurve &nurbs, const Eigen::Vector2d &pt, const double &hint,
+                                double &error, Eigen::Vector2d &p, Eigen::Vector2d &t, double rScale, int maxSteps,
+                                double accuracy, bool quiet)
 {
   if (nurbs.Order () == 2)
     return inverseMappingO2 (nurbs, pt, error, p, t);
 
-  //int cp_red = (nurbs.m_order - 2);
-  //int ncpj = int (nurbs.m_cv_count - 2 * cp_red);
   double pointAndTangents[4];
 
   double current, delta;
@@ -592,12 +474,6 @@ FittingCurve2dPDM::inverseMapping (const ON_NurbsCurve &nurbs, const Eigen::Vect
 
     delta = -(0.5 * e * rScale) * r.dot (t) / t.norm (); //  A.ldlt().solve(b);
 
-    //    e = 0.5 * std::abs<double> (e);
-    //    if (delta > e)
-    //      delta = e;
-    //    if (delta < -e)
-    //      delta = -e;
-
     if (std::abs (delta) < accuracy)
     {
 
@@ -610,10 +486,9 @@ FittingCurve2dPDM::inverseMapping (const ON_NurbsCurve &nurbs, const Eigen::Vect
       current = current + delta;
 
       if (current < minU)
-        current = maxU - (minU - current);
-      else if (current > maxU)
-        current = minU + (current - maxU);
-
+        current = minU;
+      if (current > maxU)
+        current = maxU;
     }
 
   }
@@ -622,20 +497,19 @@ FittingCurve2dPDM::inverseMapping (const ON_NurbsCurve &nurbs, const Eigen::Vect
 
   if (!quiet)
   {
-    printf ("[FittingCurve2dPDM::inverseMapping] Warning: Method did not converge (%e %d).\n", accuracy, maxSteps);
-    printf ("[FittingCurve2dPDM::inverseMapping] hint: %f current: %f delta: %f error: %f\n", hint, current, delta,
-            error);
+    printf ("[FittingCurve2d::inverseMapping] Warning: Method did not converge (%e %d).\n", accuracy, maxSteps);
+    printf ("[FittingCurve2d::inverseMapping] hint: %f current: %f delta: %f error: %f\n", hint, current, delta, error);
   }
 
   return current;
 }
 
 double
-FittingCurve2dPDM::inverseMappingO2 (const ON_NurbsCurve &nurbs, const Eigen::Vector2d &pt, double &error,
-                                     Eigen::Vector2d &p, Eigen::Vector2d &t)
+FittingCurve2d::inverseMappingO2 (const ON_NurbsCurve &nurbs, const Eigen::Vector2d &pt, double &error,
+                                  Eigen::Vector2d &p, Eigen::Vector2d &t)
 {
   if (nurbs.Order () != 2)
-    printf ("[FittingCurve2dPDM::inverseMappingO2] Error, order not 2 (polynomial degree 1)\n");
+    printf ("[FittingCurve2d::inverseMappingO2] Error, order not 2 (polynomial degree 1)\n");
 
   std::vector<double> elements = getElementVector (nurbs);
 
@@ -746,7 +620,7 @@ FittingCurve2dPDM::inverseMappingO2 (const ON_NurbsCurve &nurbs, const Eigen::Ve
 }
 
 //double
-//FittingCurve2dPDM::inverseMapping (const ON_NurbsCurve &nurbs, const Eigen::Vector2d &pt, double* phint, double &error,
+//FittingCurve2d::inverseMapping (const ON_NurbsCurve &nurbs, const Eigen::Vector2d &pt, double* phint, double &error,
 //                                Eigen::Vector2d &p, Eigen::Vector2d &t, int maxSteps, double accuracy, bool quiet)
 //{
 //  double hint;
@@ -787,7 +661,7 @@ FittingCurve2dPDM::inverseMappingO2 (const ON_NurbsCurve &nurbs, const Eigen::Ve
 //}
 
 double
-FittingCurve2dPDM::findClosestElementMidPoint (const ON_NurbsCurve &nurbs, const Eigen::Vector2d &pt, double hint)
+FittingCurve2d::findClosestElementMidPoint (const ON_NurbsCurve &nurbs, const Eigen::Vector2d &pt, double hint)
 {
   // evaluate hint
   double param = hint;
@@ -800,7 +674,7 @@ FittingCurve2dPDM::findClosestElementMidPoint (const ON_NurbsCurve &nurbs, const
   double d_shortest_elem (DBL_MAX);
 
   // evaluate elements
-  std::vector<double> elements = pcl::on_nurbs::FittingCurve2dPDM::getElementVector (nurbs);
+  std::vector<double> elements = pcl::on_nurbs::FittingCurve2d::getElementVector (nurbs);
   double seg = 1.0 / (nurbs.Order () - 1);
 
   for (unsigned i = 0; i < elements.size () - 1; i++)
@@ -836,11 +710,11 @@ FittingCurve2dPDM::findClosestElementMidPoint (const ON_NurbsCurve &nurbs, const
 }
 
 double
-FittingCurve2dPDM::findClosestElementMidPoint (const ON_NurbsCurve &nurbs, const Eigen::Vector2d &pt)
+FittingCurve2d::findClosestElementMidPoint (const ON_NurbsCurve &nurbs, const Eigen::Vector2d &pt)
 {
   double param (0.0);
   Eigen::Vector2d p, r;
-  std::vector<double> elements = pcl::on_nurbs::FittingCurve2dPDM::getElementVector (nurbs);
+  std::vector<double> elements = pcl::on_nurbs::FittingCurve2d::getElementVector (nurbs);
   double points[2];
 
   double d_shortest (DBL_MAX);

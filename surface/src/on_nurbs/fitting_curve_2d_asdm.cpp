@@ -89,7 +89,7 @@ FittingCurve2dASDM::assemble (const FittingCurve2dAPDM::Parameter &parameter)
 
   if (row < nrows)
   {
-    m_solver.resizeF (row);
+    m_solver.resize (row);
     if (!m_quiet)
       printf ("[FittingCurve2dASDM::assemble] Warning: rows do not match: %d %d\n", row, nrows);
   }

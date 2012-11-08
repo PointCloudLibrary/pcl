@@ -464,7 +464,7 @@ FittingSurface::initNurbsPCABoundingBox (int order, NurbsDataSurface *m_data, Ei
   eigenvalues = eigenvalues / s; // seems that the eigenvalues are dependent on the number of points (???)
   Eigen::Matrix3d eigenvectors_inv = eigenvectors.inverse ();
 
-  Eigen::Vector3d v_max (0.0, 0.0, 0.0);
+  Eigen::Vector3d v_max (-DBL_MAX, -DBL_MAX, -DBL_MAX);
   Eigen::Vector3d v_min (DBL_MAX, DBL_MAX, DBL_MAX);
   for (unsigned i = 0; i < s; i++)
   {

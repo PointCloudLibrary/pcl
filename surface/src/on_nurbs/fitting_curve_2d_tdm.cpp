@@ -77,7 +77,7 @@ FittingCurve2dTDM::assemble (const FittingCurve2dPDM::Parameter &parameter)
 
   if (row < nrows)
   {
-    m_solver.resizeF (row);
+    m_solver.resize (row);
     if (!m_quiet)
       printf ("[FittingCurve2dTDM::assemble] Warning: rows do not match: %d %d\n", row, nrows);
   }

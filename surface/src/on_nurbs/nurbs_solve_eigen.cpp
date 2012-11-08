@@ -85,9 +85,10 @@ NurbsSolve::f (unsigned i, unsigned j)
 }
 
 void
-NurbsSolve::resizeF (unsigned rows)
+NurbsSolve::resize (unsigned rows)
 {
   m_feig.conservativeResize (rows, m_feig.cols ());
+  m_Keig.conservativeResize (rows, m_Keig.cols ());
 }
 
 void
