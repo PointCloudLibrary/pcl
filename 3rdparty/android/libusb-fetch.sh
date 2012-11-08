@@ -2,14 +2,14 @@
 
 set -e
 
-rm -rf config libusb 2>&1
+rm -rf src/config src/libusb 2>&1
 
-git clone git://git.savannah.gnu.org/config.git config
-git clone git://git.libusb.org/libusb.git libusb
+git clone git://git.savannah.gnu.org/config.git src/config
+git clone git://git.libusb.org/libusb.git src/libusb
 
-cd libusb
+cd src/libusb
 git checkout 1.0.9
-patch -p1 -i ../libusb.patch
+patch -p1 -i ../../patches/libusb.patch
 
 libtoolize --copy --force && aclocal && autoheader && autoconf && automake -a -c
 

@@ -6,12 +6,12 @@ set -e
 
 will_normalize_eol
 
-rm -rf OpenNI Sensor 2> /dev/null
+rm -rf src/OpenNI src/Sensor 2> /dev/null
 
 echo 'Downloading OpenNI...'
 
-mkdir OpenNI
-cd OpenNI
+mkdir src/OpenNI
+cd src/OpenNI
 wget -vO- http://github.com/OpenNI/OpenNI/tarball/Stable-1.5.2.23 | tar -xz --strip-components=1
 
 echo 'Normalizing EOL characters to LF...'
@@ -20,7 +20,7 @@ normalize_eol
 
 echo 'Patching...'
 
-apply_patch_series ../openni-patches/series
+apply_patch_series ../../patches/openni/series
 
 rm -rv Wrappers/OpenNI.java/res
 
@@ -28,12 +28,12 @@ echo 'Updating Android project...'
 
 android update lib-project -p Wrappers/OpenNI.java
 
-cd ..
+cd ../..
 
 echo 'Downloading Sensor...'
 
-mkdir Sensor
-cd Sensor
+mkdir src/Sensor
+cd src/Sensor
 wget -vO- http://github.com/PrimeSense/Sensor/tarball/Unstable-5.1.0.41 | tar -xz --strip-components=1
 
 echo 'Normalizing EOL characters to LF...'
@@ -42,8 +42,8 @@ normalize_eol
 
 echo 'Patching...'
 
-apply_patch_series ../sensor-patches/series
+apply_patch_series ../../patches/sensor/series
 
-cd ..
+cd ../..
 
 echo 'Done.'
