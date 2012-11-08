@@ -45,6 +45,7 @@
 #include <pcl/visualization/vtk.h>
 #include <pcl/visualization/point_cloud_handlers.h>
 #include <pcl/visualization/pcl_visualizer.h>
+#include <pcl/visualization/image_viewer.h>
 #include <pcl/visualization/histogram_visualizer.h>
 #if VTK_MAJOR_VERSION==6 || (VTK_MAJOR_VERSION==5 && VTK_MINOR_VERSION>6)
 #include <pcl/visualization/pcl_plotter.h>
@@ -87,6 +88,14 @@ isMultiDimensionalFeatureField (const sensor_msgs::PointField &field)
   return (false);
 }
 
+bool
+isOnly2DImage (const sensor_msgs::PointField &field)
+{
+  if (field.name == "rgba" || field.name == "rgb")
+    return (true);
+  return (false);
+}
+  
 void
 printHelp (int, char **argv)
 {
@@ -135,6 +144,7 @@ printHelp (int, char **argv)
 pcl::visualization::PCLPlotter ph_global;
 #endif
 boost::shared_ptr<pcl::visualization::PCLVisualizer> p;
+std::vector<boost::shared_ptr<pcl::visualization::ImageViewer> > imgs;
 pcl::search::KdTree<pcl::PointXYZ> search;
 sensor_msgs::PointCloud2::Ptr cloud;
 pcl::PointCloud<pcl::PointXYZ>::Ptr xyzcloud;
@@ -405,6 +415,24 @@ main (int argc, char** argv)
       continue;
     }
 
+    // ---[ Special check for 2D images
+    if (cloud->fields.size () == 1 && isOnly2DImage (cloud->fields[0]))
+    {
+      print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%u", cloud->width * cloud->height); print_info (" points]\n");
+      print_info ("Available dimensions: "); print_value ("%s\n", pcl::getFieldsList (*cloud).c_str ());
+      
+      std::stringstream name;
+      name << "PCD Viewer :: " << argv[p_file_indices.at (i)];
+      pcl::visualization::ImageViewer::Ptr img (new pcl::visualization::ImageViewer (name.str ()));
+      pcl::PointCloud<pcl::RGB> rgb_cloud;
+      pcl::fromROSMsg (*cloud, rgb_cloud);
+
+      img->addRGBImage (rgb_cloud);
+      imgs.push_back (img);
+
+      continue;
+    }
+
     cloud_name << argv[p_file_indices.at (i)] << "-" << i;
 
     // Create the PCLVisualizer object here on the first encountered XYZ file
@@ -577,7 +605,7 @@ main (int argc, char** argv)
     print_info ("Available dimensions: "); print_value ("%s\n", pcl::getFieldsList (*cloud).c_str ());
   }
 
-  if (!mview)
+  if (!mview && p)
   {
     std::string str;
     if (!p_file_indices.empty ())
@@ -615,22 +643,52 @@ main (int argc, char** argv)
     xyzcloud.reset ();
   }
 
-#if VTK_MAJOR_VERSION==6 || (VTK_MAJOR_VERSION==5 && VTK_MINOR_VERSION>6)
-  if (ph)
+  // If we have been given images, create our own loop so that we can spin each individually
+  if (!imgs.empty ())
   {
-    //print_highlight ("Setting the global Y range for all histograms to: "); print_value ("%f -> %f\n", min_p, max_p);
-    //ph->setGlobalYRange (min_p, max_p);
-    //ph->updateWindowPositions ();
-    if (p)
-      p->spin ();
-    else
+    bool stopped = false;
+    do
     {
-      ph->spin ();
+#if VTK_MAJOR_VERSION==6 || (VTK_MAJOR_VERSION==5 && VTK_MINOR_VERSION>6)
+      if (ph) ph->spinOnce ();
+#endif
+
+      for (int i = 0; i < int (imgs.size ()); ++i)
+      {
+        if (!imgs[i]->spinOnce ())
+        {
+          stopped = true;
+          break;
+        }
+      }
+        
+      if (p && !p->spinOnce ())
+      {
+        stopped = true;
+        break;
+      }
+      boost::this_thread::sleep (boost::posix_time::microseconds (100));
     }
+    while (!stopped);
   }
   else
+  {
+    // If no images, continue
+#if VTK_MAJOR_VERSION==6 || (VTK_MAJOR_VERSION==5 && VTK_MINOR_VERSION>6)
+    if (ph)
+    {
+      //print_highlight ("Setting the global Y range for all histograms to: "); print_value ("%f -> %f\n", min_p, max_p);
+      //ph->setGlobalYRange (min_p, max_p);
+      //ph->updateWindowPositions ();
+      if (p)
+        p->spin ();
+      else
+        ph->spin ();
+    }
+    else
 #endif
-    if (p)
-      p->spin ();
+      if (p)
+        p->spin ();
+  }
 }
 /* ]--- */
