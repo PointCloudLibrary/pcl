@@ -15,4 +15,4 @@ libtoolize --copy --force && aclocal && autoheader && autoconf && automake -a -c
 
 cp ../config/config.guess ../config/config.sub .
 
-(cd android/LibusbSupport && android update lib-project -p .)
+(cd android/LibusbSupport && android update lib-project -p . --target android-14)

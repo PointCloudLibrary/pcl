@@ -26,7 +26,7 @@ rm -rv Wrappers/OpenNI.java/res
 
 echo 'Updating Android project...'
 
-android update lib-project -p Wrappers/OpenNI.java
+android update lib-project -p Wrappers/OpenNI.java --target android-14
 
 cd ../..
 
