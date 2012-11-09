@@ -57,7 +57,7 @@ pcl::ihs::Integration::Integration ()
     dot_normal_min_       (.6f),
     weight_min_           (.3f),
     age_max_              (30),
-    visconf_min_          (.12)
+    visconf_min_          (.12f)
 {
 }
 
