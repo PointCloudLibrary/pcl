@@ -5,7 +5,7 @@ From: Roman Donchenko <roman.donchenko@itseez.com>
 This patch is originally from <https://kforge.ros.org/openni/drivers/>.
 ---
  Samples/NiHandTracker/main.cpp |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/Samples/NiHandTracker/main.cpp b/Samples/NiHandTracker/main.cpp
 index dad16f3..4c79104 100644

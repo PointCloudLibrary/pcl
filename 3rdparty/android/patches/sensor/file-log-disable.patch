@@ -5,7 +5,7 @@ From: Roman Donchenko <roman.donchenko@itseez.com>
 <https://kforge.ros.org/openni/drivers/>.
 ---
  Data/GlobalDefaults.ini |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/Data/GlobalDefaults.ini b/Data/GlobalDefaults.ini
 index 0f53683..87dbe3b 100644

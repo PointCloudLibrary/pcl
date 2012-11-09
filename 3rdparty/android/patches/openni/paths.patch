@@ -5,7 +5,7 @@ From: Roman Donchenko <roman.donchenko@itseez.com>
 This patch is originally from <https://kforge.ros.org/openni/drivers/>.
 ---
  Source/OpenNI/XnOpenNI.cpp |    4 ++--
- 1 files changed, 2 insertions(+), 2 deletions(-)
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/Source/OpenNI/XnOpenNI.cpp b/Source/OpenNI/XnOpenNI.cpp
 index 92063cf..de4d7e7 100644

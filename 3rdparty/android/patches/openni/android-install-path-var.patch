@@ -5,7 +5,7 @@ From: Roman Donchenko <roman.donchenko@itseez.com>
 
 ---
  Source/OpenNI/XnOpenNI.cpp |    6 +++---
- 1 files changed, 3 insertions(+), 3 deletions(-)
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/Source/OpenNI/XnOpenNI.cpp b/Source/OpenNI/XnOpenNI.cpp
 index de4d7e7..3ceae9e 100644

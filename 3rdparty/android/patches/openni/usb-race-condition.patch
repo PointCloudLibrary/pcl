@@ -6,7 +6,7 @@ From: Roman Donchenko <roman.donchenko@itseez.com>
 ---
  Source/OpenNI/Linux/XnUSBLinux.cpp |   10 ++++++++++
  Source/OpenNI/Linux/XnUSBLinux.h   |    4 +++-
- 2 files changed, 13 insertions(+), 1 deletions(-)
+ 2 files changed, 13 insertions(+), 1 deletion(-)
 
 diff --git a/Source/OpenNI/Linux/XnUSBLinux.cpp b/Source/OpenNI/Linux/XnUSBLinux.cpp
 index 8d5f161..f809e92 100644

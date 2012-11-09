@@ -10,7 +10,7 @@ From: Roman Donchenko <roman.donchenko@itseez.com>
  Wrappers/OpenNI.java/res/drawable-mdpi/icon.png |  Bin
  Wrappers/OpenNI.java/res/layout/main.xml        |   12 ------------
  Wrappers/OpenNI.java/res/values/strings.xml     |    5 -----
- 6 files changed, 0 insertions(+), 22 deletions(-)
+ 6 files changed, 22 deletions(-)
  delete mode 100644 Wrappers/OpenNI.java/res/drawable-hdpi/icon.png
  delete mode 100644 Wrappers/OpenNI.java/res/drawable-ldpi/icon.png
  delete mode 100644 Wrappers/OpenNI.java/res/drawable-mdpi/icon.png

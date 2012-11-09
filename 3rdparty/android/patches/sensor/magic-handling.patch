@@ -5,7 +5,7 @@ From: Roman Donchenko <roman.donchenko@itseez.com>
 
 ---
  Source/XnDeviceSensorV2/XnDeviceSensorProtocol.cpp |   22 +++++++++++++-------
- 1 files changed, 14 insertions(+), 8 deletions(-)
+ 1 file changed, 14 insertions(+), 8 deletions(-)
 
 diff --git a/Source/XnDeviceSensorV2/XnDeviceSensorProtocol.cpp b/Source/XnDeviceSensorV2/XnDeviceSensorProtocol.cpp
 index c6ea7bb..8bfb9ac 100644

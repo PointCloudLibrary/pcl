@@ -1,7 +1,8 @@
-# This series applies on GIT commit 804fde6b6a5b588214e64a5e7bbab5109eed5912
+# This series applies on GIT commit 43b2a4cf5f2cca34152d18991b873914a14635f6
 kinect.patch
 file-log-disable.patch
 dynamic-linker.patch
 magic-handling.patch
 bayer-buffer.patch
 rules.patch
+build-flags.patch

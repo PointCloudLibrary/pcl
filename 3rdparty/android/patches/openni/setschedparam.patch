@@ -5,7 +5,7 @@ From: Roman Donchenko <roman.donchenko@itseez.com>
 
 ---
  Source/OpenNI/Linux/LinuxThreads.cpp |    4 ++--
- 1 files changed, 2 insertions(+), 2 deletions(-)
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/Source/OpenNI/Linux/LinuxThreads.cpp b/Source/OpenNI/Linux/LinuxThreads.cpp
 index 980236c..8b9b6b2 100644

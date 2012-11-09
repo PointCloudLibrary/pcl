@@ -5,7 +5,7 @@ From: Roman Donchenko <roman.donchenko@itseez.com>
 The Kinect rules are from <http://github.com/avin2/SensorKinect/>.
 ---
  Platform/Linux/Install/55-primesense-usb.rules |   19 +++++++++++++------
- 1 files changed, 13 insertions(+), 6 deletions(-)
+ 1 file changed, 13 insertions(+), 6 deletions(-)
 
 diff --git a/Platform/Linux/Install/55-primesense-usb.rules b/Platform/Linux/Install/55-primesense-usb.rules
 index 6294f40..621fe3b 100644

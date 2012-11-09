@@ -10,3 +10,4 @@ setschedparam.patch
 usb-race-condition.patch
 update-android-project.patch
 useless-android-files.patch
+build-flags.patch
