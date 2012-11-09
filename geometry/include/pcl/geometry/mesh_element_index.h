@@ -218,15 +218,14 @@ namespace pcl
       int idx_;
   };
 
-} // End namespace pcl
+  /** \brief ostream operator */
+  template <class DerivedT> std::ostream&
+  operator << (std::ostream& os, const pcl::BaseMeshElementIndex <DerivedT>& idx)
+  {
+    return (os << idx.getIndex ());
+  }
 
-// TODO: Doesn't work.
-/** \brief ostream operator */
-template <class DerivedT> std::ostream&
-operator << (std::ostream& os, const pcl::BaseMeshElementIndex <DerivedT>& idx)
-{
-  return (os << idx.getIndex ());
-}
+} // End namespace pcl
 
 ////////////////////////////////////////////////////////////////////////////////
 // VertexIndex

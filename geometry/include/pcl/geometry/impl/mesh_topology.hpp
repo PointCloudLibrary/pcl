@@ -43,6 +43,7 @@
 
 #include <stack>
 #include <algorithm>
+#include <deque>
 
 #include <pcl/geometry/boost.h>
 #include <pcl/geometry/impl/mesh_base.hpp>
@@ -170,12 +171,15 @@ namespace pcl
 
         FaceAroundVertexConstCirculator       circ     = Base::getFaceAroundVertexConstCirculator (vertex);
         const FaceAroundVertexConstCirculator circ_end = circ;
-
         assert (circ.isValid ());
-        do
+
+        std::deque <FaceIndex> fi;
+        do fi.push_back ((circ++).getDereferencedIndex ()); while (circ!=circ_end);
+
+        for (typename std::deque <FaceIndex>::const_iterator it = fi.begin (); it!=fi.end (); ++it)
         {
-          this->deleteFace ((circ++).getDereferencedIndex ());
-        } while (circ!=circ_end);
+          this->deleteFace (*it);
+        }
       }
 
       //////////////////////////////////////////////////////////////////////////
