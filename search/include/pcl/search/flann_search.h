@@ -127,6 +127,24 @@ namespace pcl
             unsigned int max_leaf_size_;
         };
 
+        /** \brief Creates a FLANN KdTreeSingleIndex from the given input data.
+          */
+        class KMeansIndexCreator: public FlannIndexCreator
+        {
+          public:
+          /** \param[in] max_leaf_size All FLANN kd trees created by this class will have
+            * a maximum of max_leaf_size points per leaf node. Higher values make index creation
+            * cheaper, but search more costly (and the other way around).
+            */
+            KMeansIndexCreator (){}
+          /** \brief Create a FLANN Index from the input data.
+            * \param[in] data The FLANN matrix containing the input.
+            * \return The FLANN index.
+            */
+            virtual IndexPtr createIndex (MatrixConstPtr data);
+          private:
+        };
+
         FlannSearch (bool sorted = true, FlannIndexCreatorPtr creator = FlannIndexCreatorPtr (new KdTreeIndexCreator ()));
 
         /** \brief Destructor for FlannSearch. */
@@ -217,7 +235,8 @@ namespace pcl
         setPointRepresentation (const PointRepresentationConstPtr &point_representation)
         {
           point_representation_ = point_representation;
-          setInputCloud (input_, indices_);  // re-create the tree, since point_represenation might change things such as the scaling of the point clouds.
+          if (input_) // re-create the tree, since point_represenation might change things such as the scaling of the point clouds.
+            setInputCloud (input_, indices_);
         }
 
         /** \brief Get a pointer to the point representation used when converting points into k-D vectors. */

@@ -51,6 +51,13 @@ pcl::search::FlannSearch<PointT, FlannDistance>::KdTreeIndexCreator::createIndex
   return (IndexPtr (new flann::KDTreeSingleIndex<FlannDistance> (*data,flann::KDTreeSingleIndexParams (max_leaf_size_))));
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT, typename FlannDistance>
+typename pcl::search::FlannSearch<PointT, FlannDistance>::IndexPtr
+pcl::search::FlannSearch<PointT, FlannDistance>::KMeansIndexCreator::createIndex (MatrixConstPtr data)
+{
+  return (IndexPtr (new flann::KMeansIndex<FlannDistance> (*data,flann::KMeansIndexParams ())));
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename FlannDistance>
