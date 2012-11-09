@@ -376,27 +376,19 @@ pcl::visualization::PCLVisualizer::registerPointPickingCallback (boost::function
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
-bool
+void
 pcl::visualization::PCLVisualizer::spin ()
 {
-  if (stopped_)
-    return (false);
-
   resetStoppedFlag ();
   // Render the window before we start the interactor
   win_->Render ();
   interactor_->Start ();
-
-  return (true);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
-bool
+void
 pcl::visualization::PCLVisualizer::spinOnce (int time, bool force_redraw)
 {
-  if (stopped_)
-    return (false);
-
   resetStoppedFlag ();
 
   if (time <= 0)
@@ -410,8 +402,6 @@ pcl::visualization::PCLVisualizer::spinOnce (int time, bool force_redraw)
     interactor_->Start ();
     interactor_->DestroyTimer (exit_main_loop_timer_callback_->right_timer_id);
   );
-
-  return (true);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////

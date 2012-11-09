@@ -655,17 +655,22 @@ main (int argc, char** argv)
 
       for (int i = 0; i < int (imgs.size ()); ++i)
       {
-        if (!imgs[i]->spinOnce ())
+        if (imgs[i]->wasStopped ())
         {
           stopped = true;
           break;
         }
+        imgs[i]->spinOnce ();
       }
         
-      if (p && !p->spinOnce ())
+      if (p)
       {
-        stopped = true;
-        break;
+        if (p->wasStopped ())
+        {
+          stopped = true;
+          break;
+        }
+        p->spinOnce ();
       }
       boost::this_thread::sleep (boost::posix_time::microseconds (100));
     }

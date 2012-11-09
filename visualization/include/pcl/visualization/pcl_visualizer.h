@@ -222,7 +222,7 @@ namespace pcl
         }
 
         /** \brief Spin method. Calls the interactor and runs an internal loop. */
-        bool
+        void
         spin ();
 
         /** \brief Spin once method. Calls the interactor and updates the screen once.
@@ -230,7 +230,7 @@ namespace pcl
           *  \param[in] force_redraw - if false it might return without doing anything if the
           *  interactor's framerate does not require a redraw yet.
           */
-        bool
+        void
         spinOnce (int time = 1, bool force_redraw = false);
 
         /** \brief Adds a widget which shows an interactive axes display for orientation
