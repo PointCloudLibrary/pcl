@@ -230,6 +230,7 @@ main(int argc, char ** argv)
 {
   std::string device_id ("");
   pcl::OpenNIGrabber::Mode image_mode = pcl::OpenNIGrabber::OpenNI_Default_Mode;
+  pcl::OpenNIGrabber::Mode depth_mode = pcl::OpenNIGrabber::OpenNI_Default_Mode;
   
   if (argc >= 2)
   {
@@ -284,11 +285,15 @@ main(int argc, char ** argv)
       cout << "Device Id not set, using first device." << endl;
   }
   
-  unsigned mode;
-  if (pcl::console::parse (argc, argv, "-imagemode", mode) != -1)
-    image_mode = pcl::OpenNIGrabber::Mode (mode);
+  unsigned imagemode;
+  if (pcl::console::parse (argc, argv, "-imagemode", imagemode) != -1)
+    image_mode = pcl::OpenNIGrabber::Mode (imagemode);
+  unsigned depthmode;
+  if (pcl::console::parse (argc, argv, "-depthmode", depthmode) != -1)
+    depth_mode = pcl::OpenNIGrabber::Mode (depthmode);
   
-  pcl::OpenNIGrabber grabber (device_id, pcl::OpenNIGrabber::OpenNI_Default_Mode, image_mode);
+
+  pcl::OpenNIGrabber grabber (device_id, depth_mode, image_mode);
   SimpleOpenNIViewer v (grabber);
   v.run ();
 
