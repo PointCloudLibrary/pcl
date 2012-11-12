@@ -50,7 +50,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/visualization/object.h
         include/pcl/${SUBSYS_NAME}/visualization/outofcore_cloud.h
         include/pcl/${SUBSYS_NAME}/visualization/scene.h
-        include/pcl/${SUBSYS_NAME}/visualization/viewport.
+        include/pcl/${SUBSYS_NAME}/visualization/viewport.h
         )
     set(LIB_NAME pcl_${SUBSYS_NAME})
     
