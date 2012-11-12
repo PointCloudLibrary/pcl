@@ -13,6 +13,8 @@ else(NOT VTK_FOUND)
   include (${VTK_USE_FILE})
   include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
   
+  if("${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}" VERSION_GREATER "5.8")
+  
   set(srcs outofcore_viewer.cpp
            ../src/visualization/camera.cpp
            ../src/visualization/common.cpp
@@ -34,6 +36,8 @@ else(NOT VTK_FOUND)
   PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_outofcore_viewer ${SUBSYS_NAME} ${srcs})
   PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs})
   target_link_libraries(pcl_outofcore_viewer pcl_common pcl_io pcl_outofcore pcl_visualization pcl_octree pcl_filters)
+  
+  endif("${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}" VERSION_GREATER "5.6")
   
   
   
