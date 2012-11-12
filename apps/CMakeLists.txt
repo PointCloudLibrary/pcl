@@ -88,8 +88,8 @@ if(build)
       PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_openni_recorder ${SUBSYS_NAME} src/openni_recorder.cpp)
       target_link_libraries(pcl_openni_recorder pcl_common pcl_io)
 
-#      PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_openni_grab_frame ${SUBSYS_NAME} src/openni_grab_frame.cpp)
-#      target_link_libraries(pcl_openni_grab_frame pcl_common pcl_io pcl_visualization)
+      PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_openni_grab_frame ${SUBSYS_NAME} src/openni_grab_frame.cpp)
+      target_link_libraries(pcl_openni_grab_frame pcl_common pcl_io pcl_visualization)
 
 #      PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_openni_grab_images ${SUBSYS_NAME} src/openni_grab_images.cpp)
 #      target_link_libraries(pcl_openni_grab_images pcl_common pcl_io pcl_visualization)
