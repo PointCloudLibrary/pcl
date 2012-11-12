@@ -41,7 +41,17 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/octree_disk_container.hpp
         include/pcl/${SUBSYS_NAME}/impl/octree_ram_container.hpp
         )
-
+    set(visualization_incs
+        include/pcl/${SUBSYS_NAME}/visualization/axes.h
+        include/pcl/${SUBSYS_NAME}/visualization/camera.h
+        include/pcl/${SUBSYS_NAME}/visualization/common.h
+        include/pcl/${SUBSYS_NAME}/visualization/geometry.h
+        include/pcl/${SUBSYS_NAME}/visualization/grid.h
+        include/pcl/${SUBSYS_NAME}/visualization/object.h
+        include/pcl/${SUBSYS_NAME}/visualization/outofcore_cloud.h
+        include/pcl/${SUBSYS_NAME}/visualization/scene.h
+        include/pcl/${SUBSYS_NAME}/visualization/viewport.
+        )
     set(LIB_NAME pcl_${SUBSYS_NAME})
     
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
@@ -53,6 +63,7 @@ if(build)
     # Install include files
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${impl_incs})
+    PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/visualization ${visualization_incs})
 
     add_subdirectory(tools)
     
