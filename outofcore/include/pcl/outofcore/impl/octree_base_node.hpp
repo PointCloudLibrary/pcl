@@ -48,12 +48,8 @@
 #include <string>
 #include <exception>
 
-// PCL - visualziation
 #include <pcl/visualization/common/common.h>
-
-// PCL (Urban Robotics)
 #include <pcl/outofcore/octree_base_node.h>
-
 #include <pcl/filters/random_sample.h>
 #include <pcl/filters/extract_indices.h>
 
