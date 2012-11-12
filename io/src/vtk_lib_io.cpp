@@ -472,7 +472,9 @@ pcl::io::saveRangeImagePlanarFilePNG (
 void
 pcl::io::pointCloudTovtkPolyData(const sensor_msgs::PointCloud2Ptr& cloud, vtkSmartPointer<vtkPolyData>& poly_data)
 {
-  poly_data = vtkSmartPointer<vtkPolyData>::New (); // OR poly_data->Reset();
+  if (!poly_data.GetPointer())
+    poly_data = vtkSmartPointer<vtkPolyData>::New (); // OR poly_data->Reset();
+
 
   // Add Points
   size_t x_idx = pcl::getFieldIndex (*cloud, std::string ("x") );
