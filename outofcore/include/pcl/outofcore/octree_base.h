@@ -295,7 +295,7 @@ namespace pcl
         queryFrustum(const double *planes, std::list<std::string>& file_names, const boost::uint32_t query_depth) const;
 
 	void
-        queryFrustum(const double *planes, Eigen::Vector3d eye, Eigen::Matrix4d view_projection_matrix,
+        queryFrustum(const double *planes, const Eigen::Vector3d &eye, const Eigen::Matrix4d &view_projection_matrix,
                      std::list<std::string>& file_names, const boost::uint32_t query_depth) const;
         
         //--------------------------------------------------------------------------------

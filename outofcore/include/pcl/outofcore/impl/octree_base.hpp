@@ -296,7 +296,12 @@ namespace pcl
     ////////////////////////////////////////////////////////////////////////////////
 
     template<typename Container, typename PointT> void
-    OutofcoreOctreeBase<Container, PointT>::queryFrustum(const double *planes, Eigen::Vector3d eye, Eigen::Matrix4d view_projection_matrix, std::list<std::string>& file_names, const boost::uint32_t query_depth) const
+    OutofcoreOctreeBase<Container, PointT>::queryFrustum (
+        const double *planes, 
+        const Eigen::Vector3d &eye, 
+        const Eigen::Matrix4d &view_projection_matrix, 
+        std::list<std::string>& file_names, 
+        const boost::uint32_t query_depth) const
     {
       boost::shared_lock < boost::shared_mutex > lock (read_write_mutex_);
       root_node_->queryFrustum (planes, eye, view_projection_matrix, file_names, query_depth);
