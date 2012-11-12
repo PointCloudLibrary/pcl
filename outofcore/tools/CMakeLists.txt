@@ -14,8 +14,9 @@ else(NOT VTK_FOUND)
   include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
   
   if("${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}" VERSION_GREATER "5.8")
+    # pcl_outofcore_viewer uses some functions not present in vtk 5.8
   
-  set(srcs outofcore_viewer.cpp
+    set(srcs outofcore_viewer.cpp
            ../src/visualization/camera.cpp
            ../src/visualization/common.cpp
            ../src/visualization/object.cpp
@@ -24,7 +25,7 @@ else(NOT VTK_FOUND)
            ../src/visualization/scene.cpp
            ../src/visualization/viewport.cpp)
   
-  set(incs include/pcl/${SUBSYS_NAME}/visualization/camera.h
+    set(incs include/pcl/${SUBSYS_NAME}/visualization/camera.h
            include/pcl/${SUBSYS_NAME}/visualization/common.h
            include/pcl/${SUBSYS_NAME}/visualization/grid.h
            include/pcl/${SUBSYS_NAME}/visualization/object.h
@@ -32,12 +33,12 @@ else(NOT VTK_FOUND)
            include/pcl/${SUBSYS_NAME}/visualization/scene.h
            include/pcl/${SUBSYS_NAME}/visualization/viewport.h)
 
-  # pcl_outofcore_viewer
-  PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_outofcore_viewer ${SUBSYS_NAME} ${srcs})
-  PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs})
-  target_link_libraries(pcl_outofcore_viewer pcl_common pcl_io pcl_outofcore pcl_visualization pcl_octree pcl_filters)
+    # pcl_outofcore_viewer
+    PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_outofcore_viewer ${SUBSYS_NAME} ${srcs})
+    PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs})
+    target_link_libraries(pcl_outofcore_viewer pcl_common pcl_io pcl_outofcore pcl_visualization pcl_octree pcl_filters)
   
-  endif("${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}" VERSION_GREATER "5.6")
+  endif("${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}" VERSION_GREATER "5.8")
   
   
   
