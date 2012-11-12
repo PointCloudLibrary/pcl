@@ -70,7 +70,7 @@ public:
   }
 
   void
-  setProjectionMatrix (Eigen::Matrix4d projection_matrix)
+  setProjectionMatrix (const Eigen::Matrix4d &projection_matrix)
   {
     projection_matrix_ = projection_matrix;
   }
@@ -82,7 +82,7 @@ public:
   }
 
   void
-  setModelViewMatrix (Eigen::Matrix4d model_view_matrix)
+  setModelViewMatrix (const Eigen::Matrix4d &model_view_matrix)
   {
     model_view_matrix_ = model_view_matrix;
   }

@@ -94,30 +94,28 @@ pcl::visualization::vtkToEigen (vtkMatrix4x4* vtk_matrix)
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
-
 Eigen::Vector2i
-pcl::visualization::worldToView (Eigen::Vector4d world_pt, Eigen::Matrix4d view_projection_matrix, int width, int height)
+pcl::visualization::worldToView (const Eigen::Vector4d &world_pt, const Eigen::Matrix4d &view_projection_matrix, int width, int height)
 {
-
   // Transform world to clipping coordinates
-  world_pt = view_projection_matrix * world_pt;
+  Eigen::Vector4d world (view_projection_matrix * world_pt);
   // Normalize w-component
-  world_pt = world_pt/world_pt.w ();
+  world /= world_pt.w ();
 
   // X/Y screen space coordinate
-  int screen_x = (int) floor ( (double) (((world_pt.x () + 1) / 2.0) * width) + 0.5);
-  int screen_y = (int) floor ( (double) (((world_pt.y () + 1) / 2.0) * height) + 0.5);
+  int screen_x = int (floor (double (((world_pt.x () + 1) / 2.0) * width) + 0.5));
+  int screen_y = int (floor (double (((world_pt.y () + 1) / 2.0) * height) + 0.5));
 
   // Calculate -world_pt.y () because the screen Y axis is oriented top->down, ie 0 is top-left
   //int winY = (int) floor ( (double) (((1 - world_pt.y ()) / 2.0) * height) + 0.5); // top left
 
-  return Eigen::Vector2i (screen_x, screen_y);
+  return (Eigen::Vector2i (screen_x, screen_y));
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::visualization::getViewFrustum (Eigen::Matrix4d view_projection_matrix, double planes[24])
+pcl::visualization::getViewFrustum (const Eigen::Matrix4d &view_projection_matrix, double planes[24])
 {
-
   // Set up the normals
   Eigen::Vector4d normals[6];
   for (int i=0; i < 6; i++)
@@ -129,12 +127,12 @@ pcl::visualization::getViewFrustum (Eigen::Matrix4d view_projection_matrix, doub
   }
 
   // Transpose the matrix for use with normals
-  view_projection_matrix.transposeInPlace ();
+  Eigen::Matrix4d view_matrix = view_projection_matrix.transpose ();
 
   // Transform the normals to world coordinates
   for (int i=0; i < 6; i++)
   {
-    normals[i] = view_projection_matrix * normals[i];
+    normals[i] = view_matrix * normals[i];
 
     double f = 1.0/sqrt (normals[i].x () * normals[i].x () +
                          normals[i].y () * normals[i].y () +
@@ -216,10 +214,13 @@ int hull_vertex_table[43][7] = {
   { 1, 2, 3, 7, 4, 5, 6 }  // back, top, right
 };
 
+/////////////////////////////////////////////////////////////////////////////////////////////
 float
-pcl::visualization::viewScreenArea (Eigen::Vector3d eye, Eigen::Vector3d min_bb, Eigen::Vector3d max_bb, Eigen::Matrix4d view_projection_matrix, int width, int height)
+pcl::visualization::viewScreenArea (
+    const Eigen::Vector3d &eye, 
+    const Eigen::Vector3d &min_bb, const Eigen::Vector3d &max_bb, 
+    const Eigen::Matrix4d &view_projection_matrix, int width, int height)
 {
-
   Eigen::Vector4d bounding_box[8];
   bounding_box[0] = Eigen::Vector4d(min_bb.x (), min_bb.y (), min_bb.z (), 1.0);
   bounding_box[1] = Eigen::Vector4d(max_bb.x (), min_bb.y (), min_bb.z (), 1.0);
@@ -294,11 +295,9 @@ pcl::visualization::viewScreenArea (Eigen::Vector3d eye, Eigen::Vector3d min_bb,
 //    case 42:  cout << "back, top, right" << endl; break;
 //  }
 
-
-
   //return -1 if inside
   Eigen::Vector2d dst[8];
-  for(int i=0; i < num; i++)
+  for (int i = 0; i < num; i++)
   {
     Eigen::Vector4d world_pt = bounding_box[hull_vertex_table[pos][i]];
     Eigen::Vector2i screen_pt = pcl::visualization::worldToView(world_pt, view_projection_matrix, width, height);
@@ -316,9 +315,8 @@ pcl::visualization::viewScreenArea (Eigen::Vector3d eye, Eigen::Vector3d min_bb,
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
-
 void
-pcl::visualization::Camera::computeViewMatrix(Eigen::Matrix4d& view_mat) const
+pcl::visualization::Camera::computeViewMatrix (Eigen::Matrix4d &view_mat) const
 {
 //constructs view matrix from camera pos, view up, and the point it is looking at
 //this code is based off of gluLookAt http://www.opengl.org/wiki/GluLookAt_code

@@ -93,7 +93,7 @@ OutofcoreCloud::updateVoxelData ()
 }
 
 void
-OutofcoreCloud::updateView (double frustum[24], Eigen::Vector3d eye, Eigen::Matrix4d view_projection_matrix)
+OutofcoreCloud::updateView (double frustum[24], const Eigen::Vector3d &eye, const Eigen::Matrix4d &view_projection_matrix)
 {
 
 //}

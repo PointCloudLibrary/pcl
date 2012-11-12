@@ -51,7 +51,7 @@ public:
   updateCloudData ();
 
   void
-  updateView (double frustum[24], Eigen::Vector3d eye, Eigen::Matrix4d view_projection_matrix);
+  updateView (double frustum[24], const Eigen::Vector3d &eye, const Eigen::Matrix4d &view_projection_matrix);
 
   // Accessors
   // -----------------------------------------------------------------------------
@@ -144,13 +144,13 @@ public:
   }
 
   void
-  setModelViewMatrix (Eigen::Matrix4d model_view_matrix)
+  setModelViewMatrix (const Eigen::Matrix4d &model_view_matrix)
   {
     model_view_matrix_ = model_view_matrix;
   }
 
   void
-  setProjectionMatrix (Eigen::Matrix4d projection_matrix)
+  setProjectionMatrix (const Eigen::Matrix4d &projection_matrix)
   {
     projection_matrix_ = projection_matrix;
   }
