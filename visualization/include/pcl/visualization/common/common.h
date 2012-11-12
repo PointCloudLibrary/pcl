@@ -65,6 +65,18 @@ namespace pcl
     PCL_EXPORTS void
     getRandomColors (pcl::RGB &rgb, double min = 0.2, double max = 2.8);
 
+    PCL_EXPORTS Eigen::Matrix4d
+    vtkToEigen(vtkMatrix4x4* vtk_matrix);
+
+    PCL_EXPORTS Eigen::Vector2i
+    worldToView (Eigen::Vector4d world_pt, Eigen::Matrix4d view_projection_matrix, int width, int height);
+
+    PCL_EXPORTS void
+    getViewFrustum (Eigen::Matrix4d view_projection_matrix, double planes[24]);
+
+    PCL_EXPORTS float
+    viewScreenArea(Eigen::Vector3d eye, Eigen::Vector3d min_bb, Eigen::Vector3d max_bb, Eigen::Matrix4d view_projection_matrix, int width, int height);
+
     enum RenderingProperties
     {
       PCL_VISUALIZER_POINT_SIZE,
