@@ -35,9 +35,9 @@
  *  \author Justin Rosen (jmylesrosen@gmail.com)
  * */
 
-
 // C++
 #include <iostream>
+#include <string>
 
 // PCL
 #include <pcl/common/time.h>
@@ -47,7 +47,6 @@
 #include <sensor_msgs/PointCloud2.h>
 
 #include <pcl/io/pcd_io.h>
-#include <pcl/io/vtk_io.h>
 #include <pcl/io/vtk_lib_io.h>
 #include <pcl/pcl_macros.h>
 
@@ -56,17 +55,22 @@
 
 // PCL - visualziation
 //#include <pcl/visualization/pcl_visualizer.h>
-#include "pcl/visualization/vtk/vtkVertexBufferObjectMapper.h"
+#include <pcl/visualization/common/common.h>
+#include <pcl/visualization/vtk/vtkVertexBufferObjectMapper.h>
+
+//#include "vtkVBOPolyDataMapper.h"
 
 // PCL - outofcore
 #include <pcl/outofcore/outofcore.h>
 #include <pcl/outofcore/outofcore_impl.h>
 
-// VTK
-#include "vtkgl.h"
-#include "vtkShaderProgram2.h"
-#include "vtkShader2.h"
-#include "vtkShader2Collection.h"
+#include <pcl/outofcore/visualization/axes.h>
+#include <pcl/outofcore/visualization/camera.h>
+#include <pcl/outofcore/visualization/grid.h>
+#include <pcl/outofcore/visualization/object.h>
+#include <pcl/outofcore/visualization/outofcore_cloud.h>
+#include <pcl/outofcore/visualization/scene.h>
+#include <pcl/outofcore/visualization/viewport.h>
 
 using namespace pcl;
 using namespace pcl::outofcore;
@@ -78,323 +82,385 @@ using pcl::console::print_error;
 using pcl::console::print_warn;
 using pcl::console::print_info;
 
-typedef PointXYZ PointT;
 //typedef PointCloud2 PointT;
-typedef OutofcoreOctreeBase<OutofcoreOctreeDiskContainer<PointT> , PointT> octree_disk;
-typedef OutofcoreOctreeBaseNode<OutofcoreOctreeDiskContainer<PointT> , PointT> octree_disk_node;
+typedef PointXYZ PointT;
+
+typedef OutofcoreOctreeBase<OutofcoreOctreeDiskContainer<PointT>, PointT> octree_disk;
+typedef OutofcoreOctreeBaseNode<OutofcoreOctreeDiskContainer<PointT>, PointT> octree_disk_node;
+
+//typedef octree_base<OutofcoreOctreeDiskContainer<PointT> , PointT> octree_disk;
+typedef boost::shared_ptr<octree_disk> OctreeDiskPtr;
+//typedef octree_base_node<octree_disk_container<PointT> , PointT> octree_disk_node;
 typedef Eigen::aligned_allocator<PointT> AlignedPointT;
 
 // VTK
 #include <vtkActor.h>
+#include <vtkActorCollection.h>
+#include <vtkActor2DCollection.h>
 #include <vtkAppendPolyData.h>
+#include <vtkAppendFilter.h>
+#include <vtkCamera.h>
+#include <vtkCameraActor.h>
 #include <vtkCellArray.h>
 #include <vtkCellData.h>
+#include <vtkCommand.h>
+#include <vtkConeSource.h>
 #include <vtkCubeSource.h>
 #include <vtkDataSetMapper.h>
-#include <vtkDoubleArray.h>
+#include <vtkHull.h>
+#include <vtkInformation.h>
+#include <vtkInformationStringKey.h>
 #include <vtkInteractorStyleTrackballCamera.h>
+#include <vtkLODActor.h>
+#include <vtkMath.h>
+#include <vtkMatrix4x4.h>
+#include <vtkMutexLock.h>
+#include <vtkObjectFactory.h>
 #include <vtkPolyData.h>
 #include <vtkProperty.h>
+#include <vtkTextActor.h>
 #include <vtkRectilinearGrid.h>
 #include <vtkRenderer.h>
 #include <vtkRenderWindow.h>
 #include <vtkRenderWindowInteractor.h>
 #include <vtkSmartPointer.h>
 #include <vtkUnsignedCharArray.h>
-#include <vtkUniformVariables.h>
+
+#include <vtkInteractorStyleRubberBand3D.h>
+#include <vtkParallelCoordinatesInteractorStyle.h>
 
 // Boost
+#include <boost/date_time.hpp>
 #include <boost/filesystem.hpp>
+#include <boost/thread.hpp>
 
 // Definitions
 const int MAX_DEPTH (-1);
 
-vtkSmartPointer<vtkPolyData>
-getCuboid (double x_min, double x_max, double y_min, double y_max, double z_min, double z_max)
-{
-  vtkSmartPointer<vtkCubeSource> cube = vtkSmartPointer<vtkCubeSource>::New ();
-  cube->SetBounds (x_min, x_max, y_min, y_max, z_min, z_max);
-  return cube->GetOutput ();
-}
+// Threading
+boost::condition camera_changed;
+boost::mutex camera_changed_mutex;
 
-vtkSmartPointer<vtkActor>
-getOctreeActor (std::vector<Eigen::Vector3d, Eigen::aligned_allocator<Eigen::Vector3d> > &voxel_centers, double voxel_side_length)
-{
-  vtkSmartPointer<vtkAppendPolyData> treeWireframe = vtkSmartPointer<vtkAppendPolyData>::New ();
+// Globals
+vtkSmartPointer<vtkRenderWindow> window;
 
-  double s = voxel_side_length / 2;
-  for (size_t i = 0; i < voxel_centers.size (); i++)
-  {
-    double x = voxel_centers[i].x ();
-    double y = voxel_centers[i].y ();
-    double z = voxel_centers[i].z ();
-
-    treeWireframe->AddInput (getCuboid (x - s, x + s, y - s, y + s, z - s, z + s));
-  }
-
-  vtkSmartPointer<vtkActor> treeActor = vtkSmartPointer<vtkActor>::New ();
-  vtkSmartPointer<vtkDataSetMapper> mapper = vtkSmartPointer<vtkDataSetMapper>::New ();
-  mapper->SetInput (treeWireframe->GetOutput ());
-  treeActor->SetMapper (mapper);
-
-  treeActor->GetProperty ()->SetRepresentationToWireframe ();
-  treeActor->GetProperty ()->SetColor (0.0, 1.0, 0.0);
-  treeActor->GetProperty ()->SetLighting (false);
-
-  return treeActor;
-}
-
-vtkSmartPointer<vtkActor>
-getGridActor(int size=10, double spacing=1.0){
-
-// Create a grid
-  vtkSmartPointer<vtkRectilinearGrid> grid =
-    vtkSmartPointer<vtkRectilinearGrid>::New();
-
-  grid->SetDimensions(size, size, 1);
-
-  vtkSmartPointer<vtkDoubleArray> array = vtkSmartPointer<vtkDoubleArray>::New();
-  for (int i=-size/2; i <= size/2; i++){
-    array->InsertNextValue (static_cast<double> (i)*spacing);
-  }
-
-//  vtkSmartPointer<vtkDoubleArray> yArray =
-//    vtkSmartPointer<vtkDoubleArray>::New();
-//  yArray->InsertNextValue(0.0);
-//  yArray->InsertNextValue(1.0);
-//  yArray->InsertNextValue(2.0);
+//class PointCloud : public Object
+//{
+//  PointCloud(std::string name) : Object(name)
+//  {
 //
-  vtkSmartPointer<vtkDoubleArray> zArray =
-    vtkSmartPointer<vtkDoubleArray>::New();
-  zArray->InsertNextValue(0.0);
+//  }
+//};
 
-  grid->SetXCoordinates(array);
-  grid->SetYCoordinates(array);
-  grid->SetZCoordinates(zArray);
+void
+workerFunc ()
+{
 
+  Scene *scene = Scene::instance ();
+  Camera *octree_camera = scene->getCamera ("octree");
+  OutofcoreCloud *cloud = static_cast<OutofcoreCloud*> (scene->getObjectByName ("my_octree"));
 
-  std::cout << "There are " << grid->GetNumberOfPoints()
-            << " points." << std::endl;
-  std::cout << "There are " << grid->GetNumberOfCells()
-            << " cells." << std::endl;
-
-  for(vtkIdType id = 0; id < grid->GetNumberOfPoints(); id++)
+  while (true)
+  {
     {
-    double p[3];
-    grid->GetPoint(id, p);
-    std::cout << "Point " << id
-              << " : (" << p[0] << " , " << p[1] << " , " << p[2] << ")" << std::endl;
+      boost::mutex::scoped_lock lock (camera_changed_mutex);
+      camera_changed.wait (lock);
     }
 
-  // Create a mapper and actor
-  vtkSmartPointer<vtkDataSetMapper> mapper =
-    vtkSmartPointer<vtkDataSetMapper>::New();
-#if VTK_MAJOR_VERSION <= 5
-  mapper->SetInputConnection(grid->GetProducerPort());
-#else
-  mapper->SetInputData(grid);
-#endif
+    double frustum[24];
+    octree_camera->getFrustum (frustum);
 
-  vtkSmartPointer<vtkActor> actor =
-    vtkSmartPointer<vtkActor>::New();
-  actor->SetMapper(mapper);
+    Eigen::Vector3d eye = octree_camera->getPosition ();
+    Eigen::Matrix4d view_projection_matrix = octree_camera->getViewProjectionMatrix ();
 
-  actor->GetProperty ()->SetRepresentationToWireframe ();
-  actor->GetProperty ()->SetColor (0.3, 0.3, 0.3);
-  actor->GetProperty ()->SetLighting (false);
+    cloud->updateView (frustum, eye, view_projection_matrix);
 
-  return actor;
+    window->Render ();
+
+//    std::list<std::string> file_names;
+//    cloud->getOctree()->queryFrustum(frustum, file_names, cloud->getDisplayDepth());
+//    cout << "bins: " << file_names.size() << endl;
+  }
 }
 
-// Shaders
-// ----------------------------------------------------------------------------
-
-const vtkgl::GLchar* VertexShader =
-  "#version 120\n"
-
-//  "varying vec4 normals;"
-
-  "void main(void){\n"
-  "  gl_Position = ftransform();\n"
-  "  gl_FrontColor = gl_Color;\n"
-  "  gl_BackColor = gl_Color;\n"
-  "}\0";
-
-const vtkgl::GLchar* IntensityShader =
-  "#version 120\n"
-
-  "void main(void){"
-  "  gl_Position = ftransform();"
-  "  gl_FrontColor = vec4(gl_Color[0], gl_Color[0], gl_Color[0], gl_Color[3]);"
-  "  gl_BackColor = vec4(gl_Color[0], gl_Color[0], gl_Color[0], gl_Color[3]);"
-  "}\0";
-
-// Display Intensity data as RGB
-const vtkgl::GLchar* NormalColorShader =
-  "#version 120\n"
-
-  "void main(void){"
-  "  gl_Position = ftransform();"
-  "  gl_FrontColor = vec4(abs(gl_Color[0]), abs(gl_Color[1]), abs(gl_Color[2]), gl_Color[3]);"
-  "  gl_BackColor = vec4(abs(gl_Color[0]), abs(gl_Color[1]), abs(gl_Color[2]), gl_Color[3]);"
-  "}\0";
-
-
-const vtkgl::GLchar* FragmentShader =
-  "#version 120\n"
-
-  "void main(void){\n"
-  "   gl_FragColor = gl_Color;\n"
-  "}\0";
-
-const vtkgl::GLchar* NormalsVertexShader =
-  "#version 120\n"
-
-  "varying vec4 normals;"
-
-  "void main(void){\n"
-  "  gl_Position = gl_Vertex;\n"
-  "  normals = vec4(gl_Normal, 0);"
-  "}\0";
-
-const vtkgl::GLchar* NormalsGeometryShader =
-  "#version 120\n"
-  "#extension GL_EXT_geometry_shader4 : enable\n"
-
-  "varying in vec4 normals[];"
-
-  "void main(void){"
-  "  for(int i = 0; i < gl_VerticesIn; i=i++){"
-  "    if (mod(i,1000) == 0){"
-  "      gl_Position = gl_ModelViewProjectionMatrix * gl_PositionIn[i];"
-  "      gl_FrontColor = vec4(0.0, 0.698, 0.0, 1.0);"
-  "      gl_BackColor = vec4(0.0, 0.698, 0.0, 1.0);"
-  "      EmitVertex();"
-
-  "      gl_Position = gl_ModelViewProjectionMatrix * (gl_PositionIn[i] + (normals[i] * 0.05));"
-  "      gl_FrontColor = vec4(0.0, 0.698, 0.0, 1.0);"
-  "      gl_BackColor = vec4(0.0, 0.698, 0.0, 1.0);"
-  "      EmitVertex();"
-  "    }"
-  "    EndPrimitive();"
-  "  }"
-  "}\0";
-
-vtkSmartPointer<vtkActor>
-getCloudActor (const PointCloud2Ptr &cloud)
+class CameraChangeCallback : public vtkCommand
 {
+public:
+  vtkTypeMacro(CameraChangeCallback, vtkCommand)
+  ;
 
-  vtkSmartPointer<vtkPolyData> vtkCloud;
-  pcl::io::pointCloudTovtkPolyData(cloud, vtkCloud);
+  CameraChangeCallback ()
+  {
+    prevUp[0] = prevUp[1] = prevUp[2] = 0;
+    prevFocal[0] = prevFocal[1] = prevFocal[2] = 0;
+    prevPos[0] = prevPos[1] = prevPos[2] = 0;
+    viewpointChanged = false;
+  }
 
-  vtkSmartPointer<vtkActor> cloud_actor = vtkSmartPointer<vtkActor>::New ();
-  vtkSmartPointer<vtkVertexBufferObjectMapper> mapper = vtkSmartPointer<vtkVertexBufferObjectMapper>::New ();
+  static CameraChangeCallback *
+  New ()
+  {
+    return new CameraChangeCallback;
+  }
 
-  mapper->SetInput (vtkCloud);
+  void
+  Execute (vtkObject *caller, unsigned long vtkNotUsed(eventId), void* vtkNotUsed(callData))
+  {
 
-  vtkSmartPointer<vtkShaderProgram2> program = vtkSmartPointer<vtkShaderProgram2>::New();
+    vtkRenderer *renderer = vtkRenderer::SafeDownCast (caller);
+    vtkSmartPointer<vtkCamera> active_camera = renderer->GetActiveCamera ();
 
-  vtkShader2 *vertexShader = vtkShader2::New();
-  vertexShader->SetType(VTK_SHADER_TYPE_VERTEX);
-  vertexShader->SetSourceCode(VertexShader);
-  //vertexShader->SetSourceCode(IntensityShader);
-  //vertexShader->SetSourceCode(NormalColorShader);
+    Scene *scene = Scene::instance ();
+    Camera *camera = scene->getCamera (active_camera);
 
-  vtkShader2 *fragmentShader = vtkShader2::New();
-  fragmentShader->SetType(VTK_SHADER_TYPE_FRAGMENT);
-  fragmentShader->SetSourceCode(FragmentShader);
+    if (camera->getName () != "octree")
+      return;
 
-  // Geometry shaders available in 5.8+
-//  vtkShader2 *geometryShader = vtkShader2::New();
-//  geometryShader->SetType(VTK_SHADER_TYPE_GEOMETRY);
-//  geometryShader->SetSourceCode(NormalsGeometryShader);
+    double *up = active_camera->GetViewUp ();
+    double *focal = active_camera->GetFocalPoint ();
+    double *pos = active_camera->GetPosition ();
+
+    viewpointChanged = false;
+
+    // Check up vector
+    if (up[0] != prevUp[0] || up[1] != prevUp[1] || up[2] != prevUp[2])
+      viewpointChanged = true;
+
+    // Check focal point
+    if (focal[0] != prevFocal[0] || focal[1] != prevFocal[1] || focal[2] != prevFocal[2])
+      viewpointChanged = true;
+
+    // Check position
+    if (pos[0] != prevPos[0] || pos[1] != prevPos[1] || pos[2] != prevPos[2])
+      viewpointChanged = true;
+
+    // Break loop if the viewpoint hasn't changed
+    if (viewpointChanged)
+    {
+
+      prevUp[0] = up[0];
+      prevUp[1] = up[1];
+      prevUp[2] = up[2];
+      prevFocal[0] = focal[0];
+      prevFocal[1] = focal[1];
+      prevFocal[2] = focal[2];
+      prevPos[0] = pos[0];
+      prevPos[1] = pos[1];
+      prevPos[2] = pos[2];
+
+//        std::cout << "View Changed" << std::endl;
+//        std::cout << "Up: <" << up[0] << ", " << up[1] << ", " << up[2] << ">" << std::endl;
+//        std::cout << "Focal: <" << focal[0] << ", " << focal[1] << ", " << focal[2] << ">" << std::endl;
+//        std::cout << "Pos: <" << pos[0] << ", " << pos[1] << ", " << pos[2] << ">" << std::endl;
+
+      {
+
+        renderer->ComputeAspect ();
+        double *aspect = renderer->GetAspect ();
+        int *size = renderer->GetSize ();
+
+        Eigen::Matrix4d projection_matrix = pcl::visualization::vtkToEigen (
+            active_camera->GetProjectionTransformMatrix (aspect[0] / aspect[1], 0.0, 1.0));
+
+        Eigen::Matrix4d model_view_matrix = pcl::visualization::vtkToEigen (
+            active_camera->GetModelViewTransformMatrix ());
+
+        camera->setProjectionMatrix (projection_matrix);
+        camera->setModelViewMatrix (model_view_matrix);
+
+        boost::mutex::scoped_lock lock (camera_changed_mutex);
+
+        camera->computeFrustum ();
+
+      }
+
+      // Test query in main loop
+//        {
+//          OutofcoreCloud *cloud = static_cast<OutofcoreCloud*>(scene->getObjectByName("my_octree"));
 //
-//  program->SetGeometryTypeIn(VTK_GEOMETRY_SHADER_IN_TYPE_POINTS);
-//  program->SetGeometryTypeOut(VTK_GEOMETRY_SHADER_OUT_TYPE_LINE_STRIP);
+//          double frustum[24];
+//          camera->getFrustum(frustum);
+//
+//          Eigen::Vector3d eye = camera->getPosition();
+//          Eigen::Matrix4d view_projection_matrix = camera->getViewProjectionMatrix();
+//
+//          cloud->updateView(frustum, eye, view_projection_matrix);
+//        }
 
-//  int maxVertices;
-//  glGetIntegerv(vtkgl::MAX_GEOMETRY_OUTPUT_VERTICES_EXT, &maxVertices);
-//  program->SetGeometryVerticesOut(maxVertices);
+      camera_changed.notify_one ();
 
-  program->GetShaders()->AddItem(vertexShader);
-  program->GetShaders()->AddItem(fragmentShader);
-//  program->GetShaders()->AddItem(geometryShader);
+    }
+  }
+protected:
+  bool viewpointChanged;
+  double prevUp[3];
+  double prevFocal[3];
+  double prevPos[3];
 
-  std::cout << "Created Shaders" << std::endl;
+};
 
-  mapper->SetProgram(program);
-  cloud_actor->SetMapper (mapper);
-  cloud_actor->GetProperty ()->SetColor (0.0, 0.0, 1.0);
-  cloud_actor->GetProperty ()->SetOpacity (1.0);
-  cloud_actor->GetProperty ()->SetPointSize (1.0);
+class KeyboardCallback : public vtkCommand
+{
+public:
+  vtkTypeMacro(KeyboardCallback, vtkCommand)
+  ;
 
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION >= 4))
-  cloud_actor->GetProperty ()->SetLighting (0);
-#endif
-  cloud_actor->Modified ();
+  static KeyboardCallback *
+  New ()
+  {
+    return new KeyboardCallback;
+  }
 
-  return cloud_actor;
+  void
+  Execute (vtkObject *caller, unsigned long vtkNotUsed(eventId), void* vtkNotUsed(callData))
+  {
+    vtkRenderWindowInteractor *interactor = vtkRenderWindowInteractor::SafeDownCast (caller);
+    vtkRenderer *renderer = interactor->FindPokedRenderer (interactor->GetEventPosition ()[0],
+                                                           interactor->GetEventPosition ()[1]);
 
-}
+    std::string key (interactor->GetKeySym ());
+
+    cout << "Key Pressed: " << key << endl;
+
+    Scene *scene = Scene::instance ();
+    OutofcoreCloud *cloud = static_cast<OutofcoreCloud*> (scene->getObjectByName ("my_octree"));
+
+//      if (key == "c"){
+//        std::vector<Camera> cameras = scene->getCameras();
+//
+//        int currCamIndex = 0;
+//        int nextCamIndex = 0;
+//
+//        for (int i=0; i < cameras.size(); i++){
+//          if (cameras[i]->getCamera() == renderer->GetActiveCamera()){
+//            currCamIndex = i;
+//            nextCamIndex = (i+1) % cameras.size();
+//            break;
+//          }
+//        }
+//
+//        renderer->AddActor(cameras[currCamIndex].getCameraActor());
+//        renderer->AddActor(cameras[currCamIndex].getHullActor());
+//        renderer->RemoveActor(cameras[nextCamIndex].getCameraActor());
+//        renderer->RemoveActor(cameras[nextCamIndex].getHullActor());
+//        renderer->SetActiveCamera(cameras[nextCamIndex].getCamera());
+//
+//        interactor->Render();
+//      }
+
+    if (key == "Up" || key == "Down")
+    {
+      if (key == "Up" && cloud)
+      {
+        cloud->setDisplayDepth (cloud->getDisplayDepth () + 1);
+      }
+
+      if (key == "Down" && cloud)
+      {
+        cloud->setDisplayDepth (cloud->getDisplayDepth () - 1);
+      }
+    }
+
+    if (key == "f")
+    {
+      Eigen::Vector3d min (cloud->getBoundingBoxMin ());
+      Eigen::Vector3d max (cloud->getBoundingBoxMax ());
+      renderer->ResetCamera (min.x (), max.x (), min.y (), max.y (), min.z (), max.z ());
+    }
+
+    interactor->Render ();
+  }
+};
+
+//void
+//renderStartCallback(vtkObject* vtkNotUsed(caller), unsigned long int vtkNotUsed(eventId), void* clientData, void* vtkNotUsed(callData))
+//{
+//  //std::cout << "Start" << std::endl;
+//  Scene::instance()->lock();
+//}
+//
+//void
+//renderEndCallback(vtkObject* vtkNotUsed(caller), unsigned long int vtkNotUsed(eventId), void* clientData, void* vtkNotUsed(callData))
+//{
+//  //std::cout << "End" << std::endl;
+//  Scene::instance()->unlock();
+//}
 
 int
-outofcoreViewer (boost::filesystem::path tree_root, size_t depth, bool display_octree=true)
+outofcoreViewer (boost::filesystem::path tree_root, int depth, bool display_octree = true)
 {
   cout << boost::filesystem::absolute (tree_root) << endl;
-  octree_disk octree (tree_root, true);
 
-  Eigen::Vector3d min, max;
-  octree.getBoundingBox (min, max);
-  cout << " Bounds: (" << min[0] << ", " << min[1] << ", " << min[2] << ") - " << max[0] << ", " << max[1] << ", "
-      << max[2] << ")" << endl;
+  // Create top level scene
+  Scene *scene = Scene::instance ();
 
-  // Get tree LOD
-  cout << " Depth: " << octree.getDepth () << endl;
+  // Clouds
+  OutofcoreCloud *cloud = new OutofcoreCloud ("my_octree", tree_root);
+  cloud->setDisplayDepth (depth);
+  cloud->setDisplayVoxels (display_octree);
+  scene->addObject (cloud);
 
-  // Get point count every LOD
-  cout << " LOD Points: [";
-  std::vector<boost::uint64_t> lodPoints = octree.getNumPointsVector ();
-  for (boost::uint64_t i = 0; i < lodPoints.size () - 1; i++)
-    cout << lodPoints[i] << " ";
-  cout << lodPoints[lodPoints.size () - 1] << "]" << endl;
+  // Add Scene Renderables
+  Grid *grid = new Grid ("origin_grid");
+  Axes *axes = new Axes ("origin_axes");
+  scene->addObject (grid);
+  scene->addObject (axes);
 
-  // Get voxel size and divide by 2 - we +/- from the center for bounding cubes
-  double voxel_side_length = octree.getVoxelSideLength (depth);
-  cout << " Voxel Side Length: " << voxel_side_length << endl;
+  // Create smart pointer with arguments
+//  Grid *grid_raw = new Grid("origin_grid");
+//  vtkSmartPointer<Grid> grid;
+//  grid.Take(grid_raw);
 
-  // Print bounding box info
-  //octree.printBBox();
+// Create window and interactor
+  vtkSmartPointer<vtkRenderWindowInteractor> interactor = vtkSmartPointer<vtkRenderWindowInteractor>::New ();
+  window = vtkSmartPointer<vtkRenderWindow>::New ();
+  window->SetSize (1000, 500);
 
-  // Print voxel count
-  //std::vector<PointT, AlignedPointT> voxel_centers;
-  std::vector<Eigen::Vector3d, Eigen::aligned_allocator<Eigen::Vector3d> > voxel_centers;
-  octree.getOccupiedVoxelCenters (voxel_centers, depth);
-  cout << " Voxel Count: " << voxel_centers.size () << endl;
-
-  PointCloud2Ptr cloud(new PointCloud2);
-  octree.queryBBIncludes (min, max, depth, cloud);
-  cout << " Point Count: " << cloud->width * cloud->height << endl;
-
-  vtkRenderer *renderer = vtkRenderer::New ();
-  vtkRenderWindowInteractor *interactor = vtkRenderWindowInteractor::New ();
-  vtkSmartPointer<vtkRenderWindow> window = vtkSmartPointer<vtkRenderWindow>::New ();
-
-  // Generate voxel boxes
-  vtkSmartPointer<vtkActor> octree_actor = getOctreeActor (voxel_centers, voxel_side_length);
-  vtkSmartPointer<vtkActor> cloud_actor = getCloudActor (cloud);
-
-  renderer->AddActor (cloud_actor);
-  if (display_octree)
-    renderer->AddActor (octree_actor);
-
-  window->AddRenderer (renderer);
-  window->SetSize (500, 500);
   interactor->SetRenderWindow (window);
+  interactor->Initialize ();
+  interactor->CreateRepeatingTimer (100);
+
+  // Viewports
+  Viewport octree_viewport (window, 0.0, 0.0, 0.5, 1.0);
+  Viewport persp_viewport (window, 0.5, 0.0, 1.0, 1.0);
+
+  // Cameras
+  Camera *persp_camera = new Camera ("persp", persp_viewport.getRenderer ()->GetActiveCamera ());
+  Camera *octree_camera = new Camera ("octree", octree_viewport.getRenderer ()->GetActiveCamera ());
+  scene->addCamera (persp_camera);
+  scene->addCamera (octree_camera);
+
+  // Set viewport cameras
+  persp_viewport.setCamera (persp_camera);
+  octree_viewport.setCamera (octree_camera);
+
+  vtkSmartPointer<CameraChangeCallback> camera_change_callback = vtkSmartPointer<CameraChangeCallback>::New ();
+  octree_viewport.getRenderer ()->AddObserver (vtkCommand::EndEvent, camera_change_callback);
+
+//  vtkSmartPointer<vtkCallbackCommand> render_start_callback = vtkSmartPointer<vtkCallbackCommand>::New();
+//  render_start_callback->SetCallback(renderStartCallback);
+//  window->AddObserver(vtkCommand::StartEvent, render_start_callback);
+//
+//  vtkSmartPointer<vtkCallbackCommand> render_end_callback = vtkSmartPointer<vtkCallbackCommand>::New();
+//  render_end_callback->SetCallback(renderEndCallback);
+//  window->AddObserver(vtkCommand::EndEvent, render_end_callback);
 
   window->Render ();
 
+  // Frame cameras
+  Eigen::Vector3d min (cloud->getBoundingBoxMin ());
+  Eigen::Vector3d max (cloud->getBoundingBoxMax ());
+
+  octree_viewport.getRenderer ()->ResetCamera (min.x (), max.x (), min.y (), max.y (), min.z (), max.z ());
+  persp_viewport.getRenderer ()->ResetCamera (min.x (), max.x (), min.y (), max.y (), min.z (), max.z ());
+
+  boost::thread workerThread (workerFunc);
+
   vtkSmartPointer<vtkInteractorStyleTrackballCamera> style = vtkSmartPointer<vtkInteractorStyleTrackballCamera>::New ();
   interactor->SetInteractorStyle (style);
+
+  vtkSmartPointer<KeyboardCallback> keyboard_callback = vtkSmartPointer<KeyboardCallback>::New ();
+  interactor->AddObserver (vtkCommand::KeyPressEvent, keyboard_callback);
 
   interactor->Start ();
 
@@ -402,8 +468,11 @@ outofcoreViewer (boost::filesystem::path tree_root, size_t depth, bool display_o
 }
 
 void
-print_help (int, char **argv)
+print_help (int argc, char **argv)
 {
+  //suppress unused parameter warning
+  assert(argc == argc);
+
   print_info ("This program is used to visualize outofcore data structure");
   print_info ("%s <options> <input_tree_dir> \n", argv[0]);
   print_info ("\n");
@@ -468,5 +537,5 @@ main (int argc, char* argv[])
     }
   }
 
-  return outofcoreViewer (tree_root, static_cast<size_t>(depth), display_octree);
+  return outofcoreViewer (tree_root, depth, display_octree);
 }
