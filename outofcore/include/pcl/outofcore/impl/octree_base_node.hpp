@@ -34,7 +34,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- *  $Id: octree_base_node.hpp 6927M 2012-08-24 20:42:45Z (local) $
+ *  $Id$
  *
  */
 
@@ -47,6 +47,9 @@
 #include <sstream>
 #include <string>
 #include <exception>
+
+// PCL - visualziation
+#include <pcl/visualization/common/common.h>
 
 // PCL (Urban Robotics)
 #include <pcl/outofcore/octree_base_node.h>
@@ -1008,6 +1011,324 @@ namespace pcl
     }
 
     ////////////////////////////////////////////////////////////////////////////////
+//    Eigen::Vector3d cornerOffsets[] =
+//    {
+//      Eigen::Vector3d(-1.0, -1.0, -1.0),     // - - -
+//      Eigen::Vector3d( 1.0, -1.0, -1.0),     // - - +
+//      Eigen::Vector3d(-1.0,  1.0, -1.0),     // - + -
+//      Eigen::Vector3d( 1.0,  1.0, -1.0),     // - + +
+//      Eigen::Vector3d(-1.0, -1.0,  1.0),     // + - -
+//      Eigen::Vector3d( 1.0, -1.0,  1.0),     // + - +
+//      Eigen::Vector3d(-1.0,  1.0,  1.0),     // + + -
+//      Eigen::Vector3d( 1.0,  1.0,  1.0)      // + + +
+//    };
+//
+//    // Note that the input vector must already be negated when using this code for halfplane tests
+//    int
+//    vectorToIndex(Eigen::Vector3d normal)
+//    {
+//      int index = 0;
+//
+//      if (normal.z () >= 0) index |= 1;
+//      if (normal.y () >= 0) index |= 2;
+//      if (normal.x () >= 0) index |= 4;
+//
+//      return index;
+//    }
+//
+//    void
+//    get_np_vertices(Eigen::Vector3d normal, Eigen::Vector3d &p_vertex, Eigen::Vector3d &n_vertex, Eigen::Vector3d min_bb, Eigen::Vector3d max_bb)
+//    {
+//
+//      p_vertex = min_bb;
+//      n_vertex = max_bb;
+//
+//      if (normal.x () >= 0)
+//      {
+//        n_vertex.x () = min_bb.x ();
+//        p_vertex.x () = max_bb.x ();
+//      }
+//
+//      if (normal.y () >= 0)
+//      {
+//        n_vertex.y () = min_bb.y ();
+//        p_vertex.y () = max_bb.y ();
+//      }
+//
+//      if (normal.z () >= 0)
+//      {
+//        p_vertex.z () = max_bb.z ();
+//        n_vertex.z () = min_bb.z ();
+//      }
+//    }
+
+    template<typename Container, typename PointT> void
+    OutofcoreOctreeBaseNode<Container, PointT>::queryFrustum (const double planes[24], std::list<std::string>& file_names)
+    {
+      queryFrustum(planes, file_names, this->m_tree_->getTreeDepth());
+    }
+
+    template<typename Container, typename PointT> void
+    OutofcoreOctreeBaseNode<Container, PointT>::queryFrustum (const double planes[24], std::list<std::string>& file_names, const boost::uint32_t query_depth, const bool skip_vfc_check=false)
+    {
+
+      enum {INSIDE, INTERSECT, OUTSIDE};
+
+      int result = INSIDE;
+
+      if (this->depth_ > query_depth)
+      {
+        return;
+      }
+
+//      if (this->depth_ > query_depth)
+//        return;
+
+      if (!skip_vfc_check)
+      {
+        for(int i =0; i < 6; i++){
+          double a = planes[(i*4)];
+          double b = planes[(i*4)+1];
+          double c = planes[(i*4)+2];
+          double d = planes[(i*4)+3];
+
+          //cout << i << ": " << a << "x + " << b << "y + " << c << "z + " << d << endl;
+
+          Eigen::Vector3d normal(a, b, c);
+
+          Eigen::Vector3d min_bb;
+          Eigen::Vector3d max_bb;
+          node_metadata_->getBoundingBox(min_bb, max_bb);
+
+          //  Basic VFC algorithm
+          Eigen::Vector3d center = node_metadata_->getVoxelCenter();
+          Eigen::Vector3d radius (fabs (static_cast<double> (max_bb.x () - center.x ())),
+                                  fabs (static_cast<double> (max_bb.y () - center.y ())),
+                                  fabs (static_cast<double> (max_bb.z () - center.z ())));
+
+          double m = (center.x () * a) + (center.y () * b) + (center.z () * c) + d;
+          double n = (radius.x () * fabs(a)) + (radius.y () * fabs(b)) + (radius.z () * fabs(c));
+
+          if (m + n < 0){
+            result = OUTSIDE;
+            break;
+          }
+
+          if (m - n < 0) result = INTERSECT;
+
+  //        // n-p implementation
+  //        Eigen::Vector3d p_vertex; //pos vertex
+  //        Eigen::Vector3d n_vertex; //neg vertex
+  //        get_np_vertices(normal, p_vertex, n_vertex, min_bb, max_bb);
+  //
+  //        cout << "n_vertex: " << n_vertex.x () << ", " << n_vertex.y () << ", " << n_vertex.z () << endl;
+  //        cout << "p_vertex: " << p_vertex.x () << ", " << p_vertex.y () << ", " << p_vertex.z () << endl;
+
+          // is the positive vertex outside?
+  //        if (pl[i].distance(b.getVertexP(pl[i].normal)) < 0)
+  //        {
+  //          result = OUTSIDE;
+  //        }
+  //        // is the negative vertex outside?
+  //        else if (pl[i].distance(b.getVertexN(pl[i].normal)) < 0)
+  //        {
+  //          result = INTERSECT;
+  //        }
+
+  //
+  //
+  //        // This should be the same as below
+  //        if (normal.dot(n_vertex) + d > 0)
+  //        {
+  //          result = OUTSIDE;
+  //        }
+  //
+  //        if (normal.dot(p_vertex) + d >= 0)
+  //        {
+  //          result = INTERSECT;
+  //        }
+
+          // This should be the same as above
+  //        double m = (a * n_vertex.x ()) + (b * n_vertex.y ()) + (c * n_vertex.z ());
+  //        cout << "m = " << m << endl;
+  //        if (m > -d)
+  //        {
+  //          result = OUTSIDE;
+  //        }
+  //
+  //        double n = (a * p_vertex.x ()) + (b * p_vertex.y ()) + (c * p_vertex.z ());
+  //        cout << "n = " << n << endl;
+  //        if (n > -d)
+  //        {
+  //          result = INTERSECT;
+  //        }
+        }
+      }
+
+      if (result == OUTSIDE)
+      {
+        return;
+      }
+
+//      switch(result){
+//        case OUTSIDE:
+//          //cout << this->depth_ << " [OUTSIDE]: " << node_metadata_->getPCDFilename() << endl;
+//          return;
+//        case INTERSECT:
+//          //cout << this->depth_ << " [INTERSECT]: " << node_metadata_->getPCDFilename() << endl;
+//          break;
+//        case INSIDE:
+//          //cout << this->depth_ << " [INSIDE]: " << node_metadata_->getPCDFilename() << endl;
+//          break;
+//      }
+
+      // Add files breadth first
+      if (this->depth_ == query_depth && payload_->getDataSize () > 0)
+      //if (payload_->getDataSize () > 0)
+      {
+        file_names.push_back (this->node_metadata_->getMetadataFilename ().string ());
+      }
+
+      if (hasUnloadedChildren ())
+      {
+        loadChildren (false);
+      }
+
+      if (this->getNumChildren () > 0)
+      {
+        for (size_t i = 0; i < 8; i++)
+        {
+          if (children_[i])
+            children_[i]->queryFrustum (planes, file_names, query_depth, (result == INSIDE) /*skip_vfc_check*/);
+        }
+      }
+//      else if (hasUnloadedChildren ())
+//      {
+//        loadChildren (false);
+//
+//        for (size_t i = 0; i < 8; i++)
+//        {
+//          if (children_[i])
+//            children_[i]->queryFrustum (planes, file_names, query_depth);
+//        }
+//      }
+      //}
+    }
+
+////////////////////////////////////////////////////////////////////////////////
+
+    template<typename Container, typename PointT> void
+    OutofcoreOctreeBaseNode<Container, PointT>::queryFrustum (const double planes[24], Eigen::Vector3d eye, Eigen::Matrix4d view_projection_matrix, std::list<std::string>& file_names, const boost::uint32_t query_depth, const bool skip_vfc_check=false)
+    {
+
+      // If we're above our query depth
+      if (this->depth_ > query_depth)
+      {
+        return;
+      }
+
+      // Bounding Box
+      Eigen::Vector3d min_bb;
+      Eigen::Vector3d max_bb;
+      node_metadata_->getBoundingBox(min_bb, max_bb);
+
+      // Frustum Culling
+      enum {INSIDE, INTERSECT, OUTSIDE};
+
+      int result = INSIDE;
+
+      if (!skip_vfc_check)
+      {
+        for(int i =0; i < 6; i++){
+          double a = planes[(i*4)];
+          double b = planes[(i*4)+1];
+          double c = planes[(i*4)+2];
+          double d = planes[(i*4)+3];
+
+          //cout << i << ": " << a << "x + " << b << "y + " << c << "z + " << d << endl;
+
+          Eigen::Vector3d normal(a, b, c);
+
+          //  Basic VFC algorithm
+          Eigen::Vector3d center = node_metadata_->getVoxelCenter();
+          Eigen::Vector3d radius (fabs (static_cast<double> (max_bb.x () - center.x ())),
+                                  fabs (static_cast<double> (max_bb.y () - center.y ())),
+                                  fabs (static_cast<double> (max_bb.z () - center.z ())));
+
+          double m = (center.x () * a) + (center.y () * b) + (center.z () * c) + d;
+          double n = (radius.x () * fabs(a)) + (radius.y () * fabs(b)) + (radius.z () * fabs(c));
+
+          if (m + n < 0){
+            result = OUTSIDE;
+            break;
+          }
+
+          if (m - n < 0) result = INTERSECT;
+
+        }
+      }
+
+      if (result == OUTSIDE)
+      {
+        return;
+      }
+
+      // Bounding box projection
+      //      3--------2
+      //     /|       /|       Y      0 = xmin, ymin, zmin
+      //    / |      / |       |      6 = xmax, ymax. zmax
+      //   7--------6  |       |
+      //   |  |     |  |       |
+      //   |  0-----|--1       +------X
+      //   | /      | /       /
+      //   |/       |/       /
+      //   4--------5       Z
+
+//      bounding_box[0] = Eigen::Vector4d(min_bb.x (), min_bb.y (), min_bb.z (), 1.0);
+//      bounding_box[1] = Eigen::Vector4d(max_bb.x (), min_bb.y (), min_bb.z (), 1.0);
+//      bounding_box[2] = Eigen::Vector4d(max_bb.x (), max_bb.y (), min_bb.z (), 1.0);
+//      bounding_box[3] = Eigen::Vector4d(min_bb.x (), max_bb.y (), min_bb.z (), 1.0);
+//      bounding_box[4] = Eigen::Vector4d(min_bb.x (), min_bb.y (), max_bb.z (), 1.0);
+//      bounding_box[5] = Eigen::Vector4d(max_bb.x (), min_bb.y (), max_bb.z (), 1.0);
+//      bounding_box[6] = Eigen::Vector4d(max_bb.x (), max_bb.y (), max_bb.z (), 1.0);
+//      bounding_box[7] = Eigen::Vector4d(min_bb.x (), max_bb.y (), max_bb.z (), 1.0);
+
+      int width = 500;
+      int height = 500;
+
+      float coverage = pcl::visualization::viewScreenArea(eye, min_bb, max_bb, view_projection_matrix, width, height);
+      //float coverage = pcl::visualization::viewScreenArea(eye, bounding_box, view_projection_matrix);
+
+//      for (int i=0; i < this->depth_; i++) std::cout << " ";
+//      std::cout << this->depth_ << ": " << coverage << std::endl;
+
+      // Add files breadth first
+      if (this->depth_ <= query_depth && payload_->getDataSize () > 0)
+      //if (payload_->getDataSize () > 0)
+      {
+        file_names.push_back (this->node_metadata_->getMetadataFilename ().string ());
+      }
+
+      //if (coverage <= 0.075)
+      if (coverage <= 10000)
+        return;
+
+      if (hasUnloadedChildren ())
+      {
+        loadChildren (false);
+      }
+
+      if (this->getNumChildren () > 0)
+      {
+        for (size_t i = 0; i < 8; i++)
+        {
+          if (children_[i])
+            children_[i]->queryFrustum (planes, eye, view_projection_matrix, file_names, query_depth, (result == INSIDE) /*skip_vfc_check*/);
+        }
+      }
+    }
+
+////////////////////////////////////////////////////////////////////////////////
     template<typename ContainerT, typename PointT> void
     OutofcoreOctreeBaseNode<ContainerT, PointT>::getOccupiedVoxelCentersRecursive (std::vector<Eigen::Vector3d, Eigen::aligned_allocator<Eigen::Vector3d> > &voxel_centers, const size_t query_depth)
     {

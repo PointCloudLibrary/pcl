@@ -277,6 +277,33 @@ namespace pcl
 
     ////////////////////////////////////////////////////////////////////////////////
 
+    template<typename Container, typename PointT> void
+    OutofcoreOctreeBase<Container, PointT>::queryFrustum (const double planes[24], std::list<std::string>& file_names) const
+    {
+      boost::shared_lock < boost::shared_mutex > lock (read_write_mutex_);
+      root_node_->queryFrustum (planes, file_names, this->getTreeDepth());
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////
+
+    template<typename Container, typename PointT> void
+    OutofcoreOctreeBase<Container, PointT>::queryFrustum(const double *planes, std::list<std::string>& file_names, const boost::uint32_t query_depth) const
+    {
+      boost::shared_lock < boost::shared_mutex > lock (read_write_mutex_);
+      root_node_->queryFrustum (planes, file_names, query_depth);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////
+
+    template<typename Container, typename PointT> void
+    OutofcoreOctreeBase<Container, PointT>::queryFrustum(const double *planes, Eigen::Vector3d eye, Eigen::Matrix4d view_projection_matrix, std::list<std::string>& file_names, const boost::uint32_t query_depth) const
+    {
+      boost::shared_lock < boost::shared_mutex > lock (read_write_mutex_);
+      root_node_->queryFrustum (planes, eye, view_projection_matrix, file_names, query_depth);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////
+
     template<typename ContainerT, typename PointT> void
     OutofcoreOctreeBase<ContainerT, PointT>::queryBBIncludes (const Eigen::Vector3d& min, const Eigen::Vector3d& max, const boost::uint64_t query_depth, AlignedPointTVector& dst) const
     {

@@ -34,7 +34,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- *  $Id: octree_base.h 6927M 2012-08-25 00:09:53Z (local) $
+ *  $Id$
  */
 
 #ifndef PCL_OUTOFCORE_OUTOFCOREOCTREEBASE_H_
@@ -288,7 +288,16 @@ namespace pcl
 
         // Frustrum/Box/Region REQUESTS/QUERIES: DB Accessors
         // -----------------------------------------------------------------------
+        void
+        queryFrustum(const double *planes, std::list<std::string>& file_names) const;
 
+	void
+        queryFrustum(const double *planes, std::list<std::string>& file_names, const boost::uint32_t query_depth) const;
+
+	void
+        queryFrustum(const double *planes, Eigen::Vector3d eye, Eigen::Matrix4d view_projection_matrix,
+                     std::list<std::string>& file_names, const boost::uint32_t query_depth) const;
+        
         //--------------------------------------------------------------------------------
         //templated PointT methods
         //--------------------------------------------------------------------------------
