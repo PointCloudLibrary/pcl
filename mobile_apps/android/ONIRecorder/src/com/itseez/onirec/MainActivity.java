@@ -488,7 +488,7 @@ public class MainActivity extends Activity {
             }
 
             private void configureModeSpinner(MapOutputMode[] modes, MapOutputMode currentMode,
-                                              Spinner spinner, ArrayAdapter<MapModeWrapper> adapter) {
+                                              Spinner spinner, final ArrayAdapter<MapModeWrapper> adapter) {
                 adapter.clear();
                 adapter.add(new MapModeWrapper(MainActivity.this, null));
                 MapModeWrapper current_mode_wrapper = new MapModeWrapper(MainActivity.this, currentMode);
@@ -511,15 +511,23 @@ public class MainActivity extends Activity {
                 spinner.setSelection(current_mode_index);
                 spinner.setVisibility(View.VISIBLE);
                 spinner.setEnabled(true);
+
+                final int current_mode_index_final = current_mode_index;
+
                 spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    int last_position = current_mode_index_final;
+
                     @Override
                     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                        if (position == last_position) return;
+                        last_position = position;
+
                         switch (parent.getId()) {
                             case R.id.spinner_color_mode:
-                                manager.setColorMode(spinnerAdapterColor.getItem(position).getMode());
+                                manager.setColorMode(adapter.getItem(position).getMode());
                                 break;
                             case R.id.spinner_depth_mode:
-                                manager.setDepthMode(spinnerAdapterDepth.getItem(position).getMode());
+                                manager.setDepthMode(adapter.getItem(position).getMode());
                                 break;
                         }
                     }
