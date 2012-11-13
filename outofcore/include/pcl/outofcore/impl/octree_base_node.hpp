@@ -1065,7 +1065,7 @@ namespace pcl
     }
 
     template<typename Container, typename PointT> void
-    OutofcoreOctreeBaseNode<Container, PointT>::queryFrustum (const double planes[24], std::list<std::string>& file_names, const boost::uint32_t query_depth, const bool skip_vfc_check=false)
+    OutofcoreOctreeBaseNode<Container, PointT>::queryFrustum (const double planes[24], std::list<std::string>& file_names, const boost::uint32_t query_depth, const bool skip_vfc_check)
     {
 
       enum {INSIDE, INTERSECT, OUTSIDE};
@@ -1214,7 +1214,7 @@ namespace pcl
 ////////////////////////////////////////////////////////////////////////////////
 
     template<typename Container, typename PointT> void
-    OutofcoreOctreeBaseNode<Container, PointT>::queryFrustum (const double planes[24], Eigen::Vector3d eye, Eigen::Matrix4d view_projection_matrix, std::list<std::string>& file_names, const boost::uint32_t query_depth, const bool skip_vfc_check=false)
+    OutofcoreOctreeBaseNode<Container, PointT>::queryFrustum (const double planes[24], Eigen::Vector3d eye, Eigen::Matrix4d view_projection_matrix, std::list<std::string>& file_names, const boost::uint32_t query_depth, const bool skip_vfc_check)
     {
 
       // If we're above our query depth
