@@ -1,4 +1,4 @@
-# This series applies on GIT commit 43b2a4cf5f2cca34152d18991b873914a14635f6
+# This series applies on GIT commit 3e4305dcd433f5f26a0e4d5a63b2e3acfe0c5174
 kinect.patch
 file-log-disable.patch
 dynamic-linker.patch

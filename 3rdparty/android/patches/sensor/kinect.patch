@@ -1,13 +1,15 @@
-Add Kinect support. This patch is originally from
+Add Kinect support.
 
 From: Roman Donchenko <roman.donchenko@itseez.com>
 
-<https://kforge.ros.org/openni/drivers/>.
+This patch is originally from <https://kforge.ros.org/openni/drivers/>,
+modified by me.
 ---
  Source/XnDeviceSensorV2/Bayer.cpp                  | 1233 +++++++++++++++++++-
  Source/XnDeviceSensorV2/Registration.cpp           |   41 -
  Source/XnDeviceSensorV2/XnDataProcessor.h          |    3 
- Source/XnDeviceSensorV2/XnDeviceSensorIO.cpp       |   43 -
+ Source/XnDeviceSensorV2/XnDeviceSensorIO.cpp       |   46 -
+ Source/XnDeviceSensorV2/XnDeviceSensorIO.h         |   11 
  Source/XnDeviceSensorV2/XnDeviceSensorProtocol.h   |    4 
  Source/XnDeviceSensorV2/XnFirmwareStreams.cpp      |   17 
  Source/XnDeviceSensorV2/XnHostProtocol.h           |    4 
@@ -15,9 +17,9 @@ From: Roman Donchenko <roman.donchenko@itseez.com>
  Source/XnDeviceSensorV2/XnSensorDepthStream.h      |    4 
  Source/XnDeviceSensorV2/XnSensorFirmwareParams.cpp |    8 
  Source/XnDeviceSensorV2/XnSensorIRStream.cpp       |    2 
- Source/XnDeviceSensorV2/XnSensorImageStream.cpp    |   58 +
+ Source/XnDeviceSensorV2/XnSensorImageStream.cpp    |  103 +-
  Source/XnDeviceSensorV2/XnSensorImageStream.h      |    4 
- 13 files changed, 1296 insertions(+), 127 deletions(-)
+ 14 files changed, 1348 insertions(+), 134 deletions(-)
 
 diff --git a/Source/XnDeviceSensorV2/Bayer.cpp b/Source/XnDeviceSensorV2/Bayer.cpp
 index ab27c86..cead14f 100644
@@ -1439,24 +1441,25 @@ index 49e045d..7301837 100644
  	const XnChar* m_csName;
  
 diff --git a/Source/XnDeviceSensorV2/XnDeviceSensorIO.cpp b/Source/XnDeviceSensorV2/XnDeviceSensorIO.cpp
-index 6b01050..1a9eced 100644
+index 6b01050..13c16e0 100644
 --- a/Source/XnDeviceSensorV2/XnDeviceSensorIO.cpp
 +++ b/Source/XnDeviceSensorV2/XnDeviceSensorIO.cpp
-@@ -30,9 +30,12 @@
- // Defines
- //---------------------------------------------------------------------------
- #define XN_SENSOR_VENDOR_ID			0x1D27
-+#define XN_SENSOR_2_0_PRODUCT_ID	0x0200
- #define XN_SENSOR_5_0_PRODUCT_ID	0x0500
- #define XN_SENSOR_6_0_PRODUCT_ID	0x0600
--#define XN_SENSOR_6_0_1_PRODUCT_ID	0x0601
-+#define XN_SENSOR_6_0_1_PRODUCT_ID      0x0601
-+#define XN_SENSOR_MSK_VENDOR_ID   0x045E
-+#define XN_SENSOR_MSK_PRODUCT_ID  0x02AE
+@@ -27,14 +27,6 @@
+ #include <XnStringsHash.h>
  
  //---------------------------------------------------------------------------
+-// Defines
+-//---------------------------------------------------------------------------
+-#define XN_SENSOR_VENDOR_ID			0x1D27
+-#define XN_SENSOR_5_0_PRODUCT_ID	0x0500
+-#define XN_SENSOR_6_0_PRODUCT_ID	0x0600
+-#define XN_SENSOR_6_0_1_PRODUCT_ID	0x0601
+-
+-//---------------------------------------------------------------------------
  // Enums
-@@ -147,9 +150,11 @@ XnStatus XnSensorIO::OpenDataEndPoints(XnSensorUsbInterface nInterface, const Xn
+ //---------------------------------------------------------------------------
+ typedef enum
+@@ -147,9 +139,11 @@ XnStatus XnSensorIO::OpenDataEndPoints(XnSensorUsbInterface nInterface, const Xn
  			XN_LOG_WARNING_RETURN(XN_STATUS_USB_INTERFACE_NOT_SUPPORTED, XN_MASK_DEVICE_IO, "Unknown interface type: %d", nInterface);
  		}
  
@@ -1468,7 +1471,7 @@ index 6b01050..1a9eced 100644
  	}
  
  	xnLogVerbose(XN_MASK_DEVICE_IO, "Opening endpoints...");
-@@ -356,14 +361,14 @@ XnStatus XnSensorIO::CloseDevice()
+@@ -356,14 +350,14 @@ XnStatus XnSensorIO::CloseDevice()
  	return (XN_STATUS_OK);
  }
  
@@ -1485,7 +1488,7 @@ index 6b01050..1a9eced 100644
  	XN_IS_STATUS_OK(nRetVal);
  
  	for (XnUInt32 i = 0; i < nCount; ++i)
-@@ -391,28 +396,35 @@ XnStatus XnSensorIO::EnumerateSensors(XnConnectionString* aConnectionStrings, Xn
+@@ -391,28 +385,35 @@ XnStatus XnSensorIO::EnumerateSensors(XnConnectionString* aConnectionStrings, Xn
  	
  	if (devicesSet.Size() == 0)
  	{
@@ -1532,7 +1535,7 @@ index 6b01050..1a9eced 100644
  #endif
  	
  	// now copy back
-@@ -470,7 +482,8 @@ XnStatus XnSensorIO::SetCallback(XnUSBEventCallbackFunctionPtr pCallbackPtr, voi
+@@ -470,7 +471,8 @@ XnStatus XnSensorIO::SetCallback(XnUSBEventCallbackFunctionPtr pCallbackPtr, voi
  	XnStatus nRetVal = XN_STATUS_OK;
  	
  	// try to register callback to a 5.0 device
@@ -1542,6 +1545,28 @@ index 6b01050..1a9eced 100644
  
  	return nRetVal;
  }
+diff --git a/Source/XnDeviceSensorV2/XnDeviceSensorIO.h b/Source/XnDeviceSensorV2/XnDeviceSensorIO.h
+index 4c995ec..2067527 100644
+--- a/Source/XnDeviceSensorV2/XnDeviceSensorIO.h
++++ b/Source/XnDeviceSensorV2/XnDeviceSensorIO.h
+@@ -32,6 +32,17 @@
+ #include "XnFirmwareInfo.h"
+ 
+ //---------------------------------------------------------------------------
++// Defines
++//---------------------------------------------------------------------------
++#define XN_SENSOR_VENDOR_ID			0x1D27
++#define XN_SENSOR_2_0_PRODUCT_ID	0x0200
++#define XN_SENSOR_5_0_PRODUCT_ID	0x0500
++#define XN_SENSOR_6_0_PRODUCT_ID	0x0600
++#define XN_SENSOR_6_0_1_PRODUCT_ID      0x0601
++#define XN_SENSOR_MSK_VENDOR_ID   0x045E
++#define XN_SENSOR_MSK_PRODUCT_ID  0x02AE
++
++//---------------------------------------------------------------------------
+ // Structures & Enums
+ //---------------------------------------------------------------------------
+ typedef struct XnUsbConnection
 diff --git a/Source/XnDeviceSensorV2/XnDeviceSensorProtocol.h b/Source/XnDeviceSensorV2/XnDeviceSensorProtocol.h
 index f00469e..87b4a45 100644
 --- a/Source/XnDeviceSensorV2/XnDeviceSensorProtocol.h
@@ -1678,7 +1703,7 @@ index 4ede944..6014b7e 100644
  		nRetVal = AddSupportedModes(aSupportedModesSXGA, sizeof(aSupportedModesSXGA)/sizeof(aSupportedModesSXGA[0]));
  		XN_IS_STATUS_OK(nRetVal);
 diff --git a/Source/XnDeviceSensorV2/XnSensorImageStream.cpp b/Source/XnDeviceSensorV2/XnSensorImageStream.cpp
-index a2c0e90..44728f9 100644
+index a2c0e90..e36933f 100644
 --- a/Source/XnDeviceSensorV2/XnSensorImageStream.cpp
 +++ b/Source/XnDeviceSensorV2/XnSensorImageStream.cpp
 @@ -39,7 +39,7 @@
@@ -1703,7 +1728,17 @@ index a2c0e90..44728f9 100644
  		&m_Exposure, &m_Pan, &m_Tilt, &m_LowLightCompensation,
  		&m_SharedBufferName, &m_ActualRead);
  
-@@ -173,7 +173,7 @@ XnStatus XnSensorImageStream::Init()
+@@ -139,6 +139,9 @@ XnStatus XnSensorImageStream::Init()
+ 	XN_IS_STATUS_OK(nRetVal);
+ 
+ 	// register supported modes
++	int nVid, nPid;
++	sscanf(m_Helper.GetPrivateData()->DeviceConfig.cpConnectionString, "%x/%x", &nVid, &nPid);
++
+ 	if (m_Helper.GetFirmwareVersion() >= XN_SENSOR_FW_VER_5_4)
+ 	{
+ 		// ask the firmware
+@@ -173,7 +176,7 @@ XnStatus XnSensorImageStream::Init()
  				if (aSupportedModes[i].nFormat == XN_IMAGE_STREAM_DEFAULT_INPUT_FORMAT)
  				{
  					nValidInputFormat = XN_IMAGE_STREAM_DEFAULT_INPUT_FORMAT;
@@ -1712,11 +1747,15 @@ index a2c0e90..44728f9 100644
  				}
  			}
  		}
-@@ -214,6 +214,14 @@ XnStatus XnSensorImageStream::Init()
- 		nRetVal = AddSupportedMode(supportedModes, XN_IO_IMAGE_FORMAT_YUV422, XN_RESOLUTION_VGA, 30);
+@@ -199,6 +202,79 @@ XnStatus XnSensorImageStream::Init()
+ 		nRetVal = AddSupportedModes(aSupportedModes, nCount);
  		XN_IS_STATUS_OK(nRetVal);
- 
-+		// Suat: Enable Bayer images
+ 	}
++	else if (nVid == XN_SENSOR_MSK_VENDOR_ID && nPid == XN_SENSOR_MSK_PRODUCT_ID)
++	{
++		XnArray<XnCmosPreset> supportedModes(30);
++
++		// Enable Bayer images
 +		nRetVal = AddSupportedMode(supportedModes, XN_IO_IMAGE_FORMAT_BAYER, XN_RESOLUTION_QVGA, 30);
 +		XN_IS_STATUS_OK(nRetVal);
 +		nRetVal = AddSupportedMode(supportedModes, XN_IO_IMAGE_FORMAT_BAYER, XN_RESOLUTION_QVGA, 60);
@@ -1724,23 +1763,71 @@ index a2c0e90..44728f9 100644
 +		nRetVal = AddSupportedMode(supportedModes, XN_IO_IMAGE_FORMAT_BAYER, XN_RESOLUTION_VGA, 30);
 +		XN_IS_STATUS_OK(nRetVal);
 +
- 		// add uncompressed ones
- 		if (bUncompressedAllowed)
- 		{
-@@ -223,15 +231,31 @@ XnStatus XnSensorImageStream::Init()
- 			XN_IS_STATUS_OK(nRetVal);
- 			nRetVal = AddSupportedMode(supportedModes, XN_IO_IMAGE_FORMAT_UNCOMPRESSED_YUV422, XN_RESOLUTION_VGA, 30);
- 			XN_IS_STATUS_OK(nRetVal);
++		// Enable uncompressed Bayer
++		nRetVal = AddSupportedMode(supportedModes, XN_IO_IMAGE_FORMAT_UNCOMPRESSED_BAYER, XN_RESOLUTION_SXGA, 15);
++		XN_IS_STATUS_OK(nRetVal);
++		nRetVal = AddSupportedMode(supportedModes, XN_IO_IMAGE_FORMAT_UNCOMPRESSED_BAYER, XN_RESOLUTION_VGA, 30);
++		XN_IS_STATUS_OK(nRetVal);
++		nRetVal = AddSupportedMode(supportedModes, XN_IO_IMAGE_FORMAT_UNCOMPRESSED_BAYER, XN_RESOLUTION_QVGA, 60);
++		XN_IS_STATUS_OK(nRetVal);
++		nRetVal = AddSupportedMode(supportedModes, XN_IO_IMAGE_FORMAT_UNCOMPRESSED_BAYER, XN_RESOLUTION_QVGA, 30);
++		XN_IS_STATUS_OK(nRetVal);
 +
-+			// Suat: Enable umcompressed Bayer
-+			nRetVal = AddSupportedMode(supportedModes, XN_IO_IMAGE_FORMAT_UNCOMPRESSED_BAYER, XN_RESOLUTION_SXGA, 15);
++		// starting with FW 5.2, 25 FPS is also supported
++		//Suat: changed to 5_1 since out 5_1_6 works good with 25Hz
++		if (m_Helper.GetFirmwareVersion() >= XN_SENSOR_FW_VER_5_1)
++		{
++			nRetVal = AddSupportedMode(supportedModes, XN_IO_IMAGE_FORMAT_BAYER, XN_RESOLUTION_QVGA, 25);
 +			XN_IS_STATUS_OK(nRetVal);
-+			nRetVal = AddSupportedMode(supportedModes, XN_IO_IMAGE_FORMAT_UNCOMPRESSED_BAYER, XN_RESOLUTION_VGA, 30);
++			nRetVal = AddSupportedMode(supportedModes, XN_IO_IMAGE_FORMAT_BAYER, XN_RESOLUTION_VGA, 25);
 +			XN_IS_STATUS_OK(nRetVal);
-+			nRetVal = AddSupportedMode(supportedModes, XN_IO_IMAGE_FORMAT_UNCOMPRESSED_BAYER, XN_RESOLUTION_QVGA, 60);
++
++			nRetVal = AddSupportedMode(supportedModes, XN_IO_IMAGE_FORMAT_UNCOMPRESSED_BAYER, XN_RESOLUTION_QVGA, 25);
 +			XN_IS_STATUS_OK(nRetVal);
-+			nRetVal = AddSupportedMode(supportedModes, XN_IO_IMAGE_FORMAT_UNCOMPRESSED_BAYER, XN_RESOLUTION_QVGA, 30);
++			nRetVal = AddSupportedMode(supportedModes, XN_IO_IMAGE_FORMAT_UNCOMPRESSED_BAYER, XN_RESOLUTION_VGA, 25);
 +			XN_IS_STATUS_OK(nRetVal);
++		}
++
++		// high-res
++		if (m_Helper.GetFirmwareVersion() >= XN_SENSOR_FW_VER_5_3)
++		{
++			nRetVal = AddSupportedMode(supportedModes, XN_IO_IMAGE_FORMAT_BAYER, XN_RESOLUTION_SXGA, 30);
++			XN_IS_STATUS_OK(nRetVal);
++
++			// starting with 5.3.28, YUV is also supported in high-res
++			if (m_Helper.GetPrivateData()->Version.nMajor > 5 ||
++				(m_Helper.GetPrivateData()->Version.nMajor == 5 && m_Helper.GetPrivateData()->Version.nMinor > 3) ||
++				(m_Helper.GetPrivateData()->Version.nMajor == 5 && m_Helper.GetPrivateData()->Version.nMinor == 3 && m_Helper.GetPrivateData()->Version.nBuild >= 28))
++			{
++				nRetVal = AddSupportedMode(supportedModes, XN_IO_IMAGE_FORMAT_BAYER, XN_RESOLUTION_SXGA, 30);
++				XN_IS_STATUS_OK(nRetVal);
++
++				nRetVal = AddSupportedMode(supportedModes, XN_IO_IMAGE_FORMAT_UNCOMPRESSED_BAYER, XN_RESOLUTION_SXGA, 30);
++				XN_IS_STATUS_OK(nRetVal);
++			}
++		}
++		else if (m_Helper.GetFirmwareVersion() >= XN_SENSOR_FW_VER_5_2)
++		{
++			// on 5.2, high-res was UXGA
++			nRetVal = AddSupportedMode(supportedModes, XN_IO_IMAGE_FORMAT_BAYER, XN_RESOLUTION_UXGA, 30);
++			XN_IS_STATUS_OK(nRetVal);
++		}
++
++		// Add all supported modes to the stream
++		nRetVal = AddSupportedModes(supportedModes.GetData(), supportedModes.GetSize());
++		XN_IS_STATUS_OK(nRetVal);
++
++		if (m_InputFormat.GetValue() != XN_IO_IMAGE_FORMAT_BAYER && m_InputFormat.GetValue() != XN_IO_IMAGE_FORMAT_UNCOMPRESSED_BAYER)
++		{
++			// update default input format
++			nRetVal = m_InputFormat.UnsafeUpdateValue(XN_IO_IMAGE_FORMAT_UNCOMPRESSED_BAYER);
++			XN_IS_STATUS_OK(nRetVal);
++		}
++	}
+ 	else
+ 	{
+ 		XnArray<XnCmosPreset> supportedModes(30);
+@@ -226,7 +302,8 @@ XnStatus XnSensorImageStream::Init()
  		}
  
  		// starting with FW 5.2, 25 FPS is also supported
@@ -1750,44 +1837,7 @@ index a2c0e90..44728f9 100644
  		{
  			nRetVal = AddSupportedMode(supportedModes, XN_IO_IMAGE_FORMAT_YUV422, XN_RESOLUTION_QVGA, 25);
  			XN_IS_STATUS_OK(nRetVal);
- 			nRetVal = AddSupportedMode(supportedModes, XN_IO_IMAGE_FORMAT_YUV422, XN_RESOLUTION_VGA, 25);
- 			XN_IS_STATUS_OK(nRetVal);
-+			// Suat: Enable Bayer
-+			nRetVal = AddSupportedMode(supportedModes, XN_IO_IMAGE_FORMAT_BAYER, XN_RESOLUTION_QVGA, 25);
-+			XN_IS_STATUS_OK(nRetVal);
-+			nRetVal = AddSupportedMode(supportedModes, XN_IO_IMAGE_FORMAT_BAYER, XN_RESOLUTION_VGA, 25);
-+			XN_IS_STATUS_OK(nRetVal);
- 
- 			if (bUncompressedAllowed)
- 			{
-@@ -239,6 +263,10 @@ XnStatus XnSensorImageStream::Init()
- 				XN_IS_STATUS_OK(nRetVal);
- 				nRetVal = AddSupportedMode(supportedModes, XN_IO_IMAGE_FORMAT_UNCOMPRESSED_YUV422, XN_RESOLUTION_VGA, 25);
- 				XN_IS_STATUS_OK(nRetVal);
-+				nRetVal = AddSupportedMode(supportedModes, XN_IO_IMAGE_FORMAT_UNCOMPRESSED_BAYER, XN_RESOLUTION_QVGA, 25);
-+				XN_IS_STATUS_OK(nRetVal);
-+				nRetVal = AddSupportedMode(supportedModes, XN_IO_IMAGE_FORMAT_UNCOMPRESSED_BAYER, XN_RESOLUTION_VGA, 25);
-+				XN_IS_STATUS_OK(nRetVal);
- 			}
- 		}
- 
-@@ -255,11 +283,15 @@ XnStatus XnSensorImageStream::Init()
- 			{
- 				nRetVal = AddSupportedMode(supportedModes, XN_IO_IMAGE_FORMAT_YUV422, XN_RESOLUTION_SXGA, 30);
- 				XN_IS_STATUS_OK(nRetVal);
-+				nRetVal = AddSupportedMode(supportedModes, XN_IO_IMAGE_FORMAT_BAYER, XN_RESOLUTION_SXGA, 30);
-+				XN_IS_STATUS_OK(nRetVal);
- 
- 				if (bUncompressedAllowed)
- 				{
- 					nRetVal = AddSupportedMode(supportedModes, XN_IO_IMAGE_FORMAT_UNCOMPRESSED_YUV422, XN_RESOLUTION_SXGA, 30);
- 					XN_IS_STATUS_OK(nRetVal);
-+					nRetVal = AddSupportedMode(supportedModes, XN_IO_IMAGE_FORMAT_UNCOMPRESSED_BAYER, XN_RESOLUTION_SXGA, 30);
-+					XN_IS_STATUS_OK(nRetVal);
- 				}
- 			}
- 		}
-@@ -355,7 +387,7 @@ XnStatus XnSensorImageStream::MapPropertiesToFirmware()
+@@ -355,7 +432,7 @@ XnStatus XnSensorImageStream::MapPropertiesToFirmware()
  XnStatus XnSensorImageStream::ValidateMode()
  {
  	XnStatus nRetVal = XN_STATUS_OK;
@@ -1796,7 +1846,7 @@ index a2c0e90..44728f9 100644
  	// validity checks
  	XnIOImageFormats nInputFormat = (XnIOImageFormats)m_InputFormat.GetValue();
  	XnOutputFormats nOutputFormat = GetOutputFormat();
-@@ -370,7 +402,7 @@ XnStatus XnSensorImageStream::ValidateMode()
+@@ -370,7 +447,7 @@ XnStatus XnSensorImageStream::ValidateMode()
  			nInputFormat != XN_IO_IMAGE_FORMAT_UNCOMPRESSED_YUV422 &&
  			nInputFormat != XN_IO_IMAGE_FORMAT_BAYER)
  		{
@@ -1805,7 +1855,7 @@ index a2c0e90..44728f9 100644
  		}
  		break;
  	case XN_OUTPUT_FORMAT_YUV422:
-@@ -561,7 +593,7 @@ XnStatus XnSensorImageStream::SetOutputFormat(XnOutputFormats nOutputFormat)
+@@ -561,7 +638,7 @@ XnStatus XnSensorImageStream::SetOutputFormat(XnOutputFormats nOutputFormat)
  
  	nRetVal = m_Helper.AfterSettingDataProcessorProperty();
  	XN_IS_STATUS_OK(nRetVal);
@@ -1814,7 +1864,7 @@ index a2c0e90..44728f9 100644
  	return (XN_STATUS_OK);
  }
  
-@@ -647,10 +679,10 @@ XnStatus XnSensorImageStream::SetInputFormat(XnIOImageFormats nInputFormat)
+@@ -647,10 +724,10 @@ XnStatus XnSensorImageStream::SetInputFormat(XnIOImageFormats nInputFormat)
  XnStatus XnSensorImageStream::SetAntiFlicker(XnUInt32 nFrequency)
  {
  	XnStatus nRetVal = XN_STATUS_OK;
@@ -1827,7 +1877,7 @@ index a2c0e90..44728f9 100644
  	return (XN_STATUS_OK);
  }
  
-@@ -661,7 +693,7 @@ XnStatus XnSensorImageStream::SetImageQuality(XnUInt32 /*nQuality*/)
+@@ -661,7 +738,7 @@ XnStatus XnSensorImageStream::SetImageQuality(XnUInt32 /*nQuality*/)
  	{
  		XN_LOG_WARNING_RETURN(XN_STATUS_DEVICE_UNSUPPORTED_PARAMETER, XN_MASK_DEVICE_SENSOR, "Image quality is only supported when input format is JPEG");
  	}
@@ -1836,7 +1886,7 @@ index a2c0e90..44728f9 100644
  	return (XN_STATUS_OK);
  }
  
-@@ -826,7 +858,7 @@ XnStatus XnSensorImageStream::ReallocTripleFrameBuffer()
+@@ -826,7 +903,7 @@ XnStatus XnSensorImageStream::ReallocTripleFrameBuffer()
  
  	if (IsOpen())
  	{
@@ -1846,17 +1896,22 @@ index a2c0e90..44728f9 100644
  		nRetVal = m_Helper.GetFirmware()->GetStreams()->LockStreamProcessor(GetType(), this);
  		XN_IS_STATUS_OK(nRetVal);
 diff --git a/Source/XnDeviceSensorV2/XnSensorImageStream.h b/Source/XnDeviceSensorV2/XnSensorImageStream.h
-index a975820..7f60e99 100644
+index a975820..fea1f51 100644
 --- a/Source/XnDeviceSensorV2/XnSensorImageStream.h
 +++ b/Source/XnDeviceSensorV2/XnSensorImageStream.h
-@@ -33,8 +33,8 @@
+@@ -33,7 +33,7 @@
  // Defines
  //---------------------------------------------------------------------------
  #define XN_IMAGE_STREAM_DEFAULT_FPS				30
 -#define XN_IMAGE_STREAM_DEFAULT_RESOLUTION		XN_RESOLUTION_QVGA
--#define XN_IMAGE_STREAM_DEFAULT_INPUT_FORMAT	XN_IO_IMAGE_FORMAT_UNCOMPRESSED_YUV422
 +#define XN_IMAGE_STREAM_DEFAULT_RESOLUTION		XN_RESOLUTION_VGA
-+#define XN_IMAGE_STREAM_DEFAULT_INPUT_FORMAT	XN_IO_IMAGE_FORMAT_UNCOMPRESSED_BAYER
+ #define XN_IMAGE_STREAM_DEFAULT_INPUT_FORMAT	XN_IO_IMAGE_FORMAT_UNCOMPRESSED_YUV422
  #define XN_IMAGE_STREAM_DEFAULT_OUTPUT_FORMAT	XN_OUTPUT_FORMAT_RGB24
  #define XN_IMAGE_STREAM_DEFAULT_FLICKER			0
- #define XN_IMAGE_STREAM_DEFAULT_QUALITY			3
+@@ -169,4 +169,4 @@ private:
+ 	XnActualIntProperty m_ActualRead;
+ };
+ 
+-#endif //__XN_SENSOR_IMAGE_STREAM_H__
+\ No newline at end of file
++#endif //__XN_SENSOR_IMAGE_STREAM_H__
