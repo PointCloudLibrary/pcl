@@ -2365,6 +2365,27 @@ pcl::visualization::PCLVisualizer::createViewPort (double xmin, double ymin, dou
   win_->Modified ();
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::visualization::PCLVisualizer::createViewPortCamera (const int viewport)
+{
+  vtkSmartPointer<vtkCamera> cam = vtkSmartPointer<vtkCamera>::New ();
+  rens_->InitTraversal ();
+  vtkRenderer* renderer = NULL;
+  int i = 0;
+  while ((renderer = rens_->GetNextItem ()) != NULL)
+  {
+    if (viewport == 0)
+      continue;
+    else if (viewport == i)
+    {
+      renderer->SetActiveCamera (cam);
+      renderer->ResetCamera ();
+    }
+    ++i;
+  }
+}
+
 /////////////////////////////////////////////////////////////////////////////////////////////
 bool
 pcl::visualization::PCLVisualizer::addText (const std::string &text, int xpos, int ypos, const std::string &id, int viewport)

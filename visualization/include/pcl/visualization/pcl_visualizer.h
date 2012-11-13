@@ -1065,6 +1065,12 @@ namespace pcl
         void
         createViewPort (double xmin, double ymin, double xmax, double ymax, int &viewport);
 
+        /** \brief Create a new separate camera for the given viewport.
+          * \param[in] viewport the viewport to create a new camera for.
+          */
+        void
+        createViewPortCamera (const int viewport);
+
         /** \brief Add a polygon (polyline) that represents the input point cloud (connects all
           * points in order)
           * \param[in] cloud the point cloud dataset representing the polygon
