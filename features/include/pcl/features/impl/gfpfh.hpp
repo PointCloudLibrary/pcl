@@ -209,7 +209,7 @@ pcl::GFPFHEstimation<PointInT, PointNT, PointOutT>::computeDistanceHistogram (co
   const int max_bin = descriptorSize () - 1;
   for (size_t i = 0; i < distances.size (); ++i)
   {
-    const float raw_bin = descriptorSize() * (distances[i] - min_value) / range;
+    const float raw_bin = static_cast<float> (descriptorSize ()) * (distances[i] - min_value) / range;
     int bin = std::min (max_bin, static_cast<int> (floor (raw_bin)));
     histogram[bin] += 1;
   }
