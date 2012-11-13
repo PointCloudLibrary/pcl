@@ -1527,6 +1527,7 @@ void
 pcl::visualization::PCLVisualizer::updateCamera ()
 {
   PCL_WARN ("[pcl::visualization::PCLVisualizer::updateCamera()] This method was deprecated, just re-rendering all scenes now.");
+  rens_->InitTraversal ();
   // Update the camera parameters
   vtkRenderer* renderer = NULL;
   while ((renderer = rens_->GetNextItem ()) != NULL)
@@ -1640,10 +1641,8 @@ pcl::visualization::PCLVisualizer::resetCamera ()
   // Update the camera parameters
   rens_->InitTraversal ();
   vtkRenderer* renderer = NULL;
-  if ((renderer = rens_->GetNextItem ()) != NULL)
-  {
-      renderer->ResetCamera ();
-  }
+  while ((renderer = rens_->GetNextItem ()) != NULL)
+    renderer->ResetCamera ();
 }
 
 
