@@ -143,10 +143,10 @@ namespace pcl
         queryFrustum (const double planes[24], std::list<std::string>& file_names);
 
         void
-        queryFrustum (const double planes[24], std::list<std::string>& file_names, const boost::uint32_t query_depth, const bool skip_vfc_check);
+        queryFrustum (const double planes[24], std::list<std::string>& file_names, const boost::uint32_t query_depth, const bool skip_vfc_check = false);
 
         void
-        queryFrustum (const double planes[24], Eigen::Vector3d eye, Eigen::Matrix4d view_projection_matrix, std::list<std::string>& file_names, const boost::uint32_t query_depth, const bool skip_vfc_check);
+        queryFrustum (const double planes[24], Eigen::Vector3d eye, Eigen::Matrix4d view_projection_matrix, std::list<std::string>& file_names, const boost::uint32_t query_depth, const bool skip_vfc_check = false);
 
         //point extraction
         /** \brief Recursively add points that fall into the queried bounding box up to the \b query_depth 

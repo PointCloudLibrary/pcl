@@ -289,14 +289,14 @@ namespace pcl
         // Frustrum/Box/Region REQUESTS/QUERIES: DB Accessors
         // -----------------------------------------------------------------------
         void
-        queryFrustum(const double *planes, std::list<std::string>& file_names) const;
+        queryFrustum (const double *planes, std::list<std::string>& file_names) const;
 
-	void
-        queryFrustum(const double *planes, std::list<std::string>& file_names, const boost::uint32_t query_depth) const;
+	      void
+        queryFrustum (const double *planes, std::list<std::string>& file_names, const boost::uint32_t query_depth) const;
 
-	void
-        queryFrustum(const double *planes, const Eigen::Vector3d &eye, const Eigen::Matrix4d &view_projection_matrix,
-                     std::list<std::string>& file_names, const boost::uint32_t query_depth) const;
+	      void
+        queryFrustum (const double *planes, const Eigen::Vector3d &eye, const Eigen::Matrix4d &view_projection_matrix,
+                      std::list<std::string>& file_names, const boost::uint32_t query_depth) const;
         
         //--------------------------------------------------------------------------------
         //templated PointT methods
