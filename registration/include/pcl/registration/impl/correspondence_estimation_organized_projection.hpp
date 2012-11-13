@@ -47,6 +47,8 @@
 template <typename PointSource, typename PointTarget, typename Scalar> bool
 pcl::registration::CorrespondenceEstimationOrganizedProjection<PointSource, PointTarget, Scalar>::initCompute ()
 {
+  // Set the target_cloud_updated_ variable to true, so that the kd-tree is not built - it is not needed for this class
+  target_cloud_updated_ = false;
   if (!CorrespondenceEstimationBase<PointSource, PointTarget>::initCompute ())
     return (false);
 
@@ -117,7 +119,7 @@ pcl::registration::CorrespondenceEstimationOrganizedProjection<PointSource, Poin
     pcl::Correspondences &correspondences,
     double max_distance)
 {
-  /// Call the normal determineCorrespondences (...), as doing it both ways will not improve the results
+  // Call the normal determineCorrespondences (...), as doing it both ways will not improve the results
   determineCorrespondences (correspondences, max_distance);
 }
 
