@@ -113,7 +113,7 @@ saveCloud (const std::string &filename, const sensor_msgs::PointCloud2 &output)
   print_highlight ("Saving "); print_value ("%s ", filename.c_str ());
 
   pcl::PCDWriter w;
-  w.writeBinaryCompressed (filename, output, translation, orientation);
+  w.writeBinary (filename, output, translation, orientation);
   
   print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", output.width * output.height); print_info (" points]\n");
 }
@@ -143,6 +143,7 @@ main (int argc, char** argv)
     //pcl::io::loadPCDFile (argv[file_indices[i]], cloud);
     //cloud_all += cloud;
     pcl::concatenatePointCloud (cloud_all, cloud, cloud_all);
+    PCL_INFO ("Total number of points so far: %u. Total data size: %zu bytes.\n", cloud_all.width * cloud_all.height, cloud_all.data.size ());
   }
 
   saveCloud ("output.pcd", cloud_all);
