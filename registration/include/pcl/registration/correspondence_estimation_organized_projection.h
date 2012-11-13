@@ -68,6 +68,7 @@ namespace pcl
         using PCLBase<PointSource>::indices_;
         using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::getClassName;
         using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::point_representation_;
+        using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::target_cloud_updated_;
 
         typedef pcl::PointCloud<PointSource> PointCloudSource;
         typedef typename PointCloudSource::Ptr PointCloudSourcePtr;
