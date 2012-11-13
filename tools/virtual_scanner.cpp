@@ -382,18 +382,20 @@ main (int argc, char** argv)
 
     std::stringstream ss;
     std::string output_dir = st.at (st.size () - 1);
-    boost::filesystem::path outpath (output_dir);
+    ss << output_dir << "_output";
+
+    boost::filesystem::path outpath (ss.str ());
     if (!boost::filesystem::exists (outpath))
     {
       if (!boost::filesystem::create_directories (outpath))
       {
-        PCL_ERROR ("Error creating directory %s.\n", output_dir.c_str ());
+        PCL_ERROR ("Error creating directory %s.\n", ss.str ().c_str ());
         return (-1);
       }
-      PCL_INFO ("Creating directory %s\n", output_dir.c_str ());
+      PCL_INFO ("Creating directory %s\n", ss.str ().c_str ());
     }
 
-    fname = st.at (st.size () - 1) + "/" + seq + ".pcd";
+    fname = ss.str () + "/" + seq + ".pcd";
 
     if (organized)
     {
@@ -407,8 +409,8 @@ main (int argc, char** argv)
     }
 
     pcl::PCDWriter writer;
-    writer.writeBinaryCompressed (fname.c_str (), cloud);
     PCL_INFO ("Wrote %zu points (%d x %d) to %s\n", cloud.points.size (), cloud.width, cloud.height, fname.c_str ());
+    writer.writeBinaryCompressed (fname.c_str (), cloud);
   } // sphere
   return (0);
 }
