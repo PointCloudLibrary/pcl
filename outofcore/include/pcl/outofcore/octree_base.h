@@ -49,9 +49,9 @@
 #include <pcl/outofcore/octree_ram_container.h>
 
 //outofcore iterators
-#include <pcl/outofcore/OutofcoreIteratorBase.h>
-#include <pcl/outofcore/OutofcoreDepthFirstIterator.h>
-#include <pcl/outofcore/impl/OutofcoreDepthFirstIterator.hpp>
+#include <pcl/outofcore/outofcore_iterator_base.h>
+#include <pcl/outofcore/outofcore_depth_first_iterator.h>
+#include <pcl/outofcore/impl/outofcore_depth_first_iterator.hpp>
 
 //outofcore metadata
 #include <pcl/outofcore/metadata.h>

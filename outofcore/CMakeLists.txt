@@ -19,8 +19,8 @@ if(build)
         include/pcl/${SUBSYS_NAME}/metadata.h
         include/pcl/${SUBSYS_NAME}/outofcore_base_data.h
         include/pcl/${SUBSYS_NAME}/outofcore_node_data.h
-        include/pcl/${SUBSYS_NAME}/OutofcoreIteratorBase.h
-        include/pcl/${SUBSYS_NAME}/OutofcoreDepthFirstIterator.h
+        include/pcl/${SUBSYS_NAME}/outofcore_iterator_base.h
+        include/pcl/${SUBSYS_NAME}/outofcore_depth_first_iterator.h
         include/pcl/${SUBSYS_NAME}/boost.h
         include/pcl/${SUBSYS_NAME}/cJSON.h
         include/pcl/${SUBSYS_NAME}/octree_base.h
@@ -30,12 +30,10 @@ if(build)
         include/pcl/${SUBSYS_NAME}/octree_ram_container.h
         include/pcl/${SUBSYS_NAME}/outofcore.h
         include/pcl/${SUBSYS_NAME}/outofcore_impl.h
-        include/pcl/${SUBSYS_NAME}/OutofcoreOctreeBase.h
         )
 
     set(impl_incs
-        include/pcl/${SUBSYS_NAME}/impl/OutofcoreIteratorBase.hpp
-        include/pcl/${SUBSYS_NAME}/impl/OutofcoreDepthFirstIterator.hpp
+        include/pcl/${SUBSYS_NAME}/impl/outofcore_depth_first_iterator.hpp
         include/pcl/${SUBSYS_NAME}/impl/octree_base.hpp
         include/pcl/${SUBSYS_NAME}/impl/octree_base_node.hpp
         include/pcl/${SUBSYS_NAME}/impl/octree_disk_container.hpp
