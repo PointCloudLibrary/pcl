@@ -53,6 +53,7 @@
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
 #include <pcl/io/pcd_io.h>
+#include <pcl/io/vtk_io.h>
 #include <pcl/visualization/pcl_visualizer.h>
 
 typedef pcl::ihs::PointModel         PointModel;
@@ -68,13 +69,20 @@ typedef pcl::ihs::CloudProcessedConstPtr CloudProcessedConstPtr;
 typedef pcl::ihs::Integration             Integration;
 typedef pcl::visualization::PCLVisualizer Visualizer;
 
-typedef Integration::Mesh                     Mesh;
-typedef Integration::MeshPtr                  MeshPtr;
-typedef Integration::MeshConstPtr             MeshConstPtr;
-typedef Mesh::Vertex                          Vertex;
-typedef Mesh::VertexConstIterator             VCI;
-typedef Mesh::FaceConstIterator               FCI;
-typedef Mesh::VertexAroundFaceConstCirculator VAFCCirc;
+typedef Integration::Mesh                           Mesh;
+typedef Integration::MeshPtr                        MeshPtr;
+typedef Integration::MeshConstPtr                   MeshConstPtr;
+typedef Mesh::SizeType                              SizeType;
+typedef Mesh::Vertex                                Vertex;
+typedef Mesh::HalfEdge                              HalfEdge;
+typedef Mesh::HalfEdgeIndex                         HalfEdgeIndex;
+typedef Mesh::FaceIndex                             FaceIndex;
+typedef Mesh::FaceIndexes                           FaceIndexes;
+typedef Mesh::VertexConstIterator                   VCI;
+typedef Mesh::HalfEdgeConstIterator                 HECI;
+typedef Mesh::FaceConstIterator                     FCI;
+typedef Mesh::VertexAroundFaceConstCirculator       VAFCCirc;
+typedef Mesh::HalfEdgeAroundBoundaryConstCirculator HEABCC;
 
 typedef pcl::Vertices      Face;
 typedef std::vector <Face> Faces;
@@ -106,7 +114,42 @@ drawMesh (const MeshConstPtr& mesh, pcl::visualization::PCLVisualizer& visualize
 
   if (update) visualizer.updatePolygonMesh <PointModel> (vertexes, triangles);
   else        visualizer.addPolygonMesh <PointModel> (vertexes, triangles);
+
   visualizer.spinOnce (ms);
+}
+
+void saveVTK (const MeshConstPtr& mesh, const std::string& filename)
+{
+  Face          triangle; triangle.vertices.resize (3);
+  Faces         triangles;
+  CloudModelPtr vertexes (new CloudModel ());
+
+  // Convert to polygon mesh for visualization
+  vertexes->reserve (mesh->sizeVertexes ());
+  triangles.reserve (3 * mesh->sizeFaces ());
+
+  for (VCI it=mesh->beginVertexes (); it!=mesh->endVertexes (); ++it)
+  {
+    vertexes->push_back (*it);
+  }
+
+  for (FCI it=mesh->beginFaces (); it!=mesh->endFaces (); ++it)
+  {
+    VAFCCirc circ = mesh->getVertexAroundFaceConstCirculator (*it);
+    triangle.vertices [0] = (circ++).getDereferencedIndex ().getIndex ();
+    triangle.vertices [1] = (circ++).getDereferencedIndex ().getIndex ();
+    triangle.vertices [2] = (circ  ).getDereferencedIndex ().getIndex ();
+    triangles.push_back (triangle);
+  }
+
+  sensor_msgs::PointCloud2 pc2;
+  pcl::toROSMsg (*vertexes, pc2);
+
+  pcl::PolygonMesh pm;
+  pm.cloud    = pc2;
+  pm.polygons = triangles;
+
+  pcl::io::saveVTKFile (filename, pm);
 }
 
 void
@@ -120,6 +163,50 @@ disableNormalWeighting (const CloudProcessedPtr& cloud)
       it->normal_y =  0.f;
       it->normal_z = -1.f;
     }
+  }
+}
+
+// remove outliers (regions with a small boundary)
+void
+simpleOutlierRemoval (const MeshPtr& mesh, const SizeType n, const bool cleanup=true)
+{
+  // TODO: maybe put the deleted faces into another vector
+  // -> don't delete anything while going through this loop
+  for (HalfEdgeIndex ind=0; ind<mesh->sizeHalfEdges (); ++ind)
+  {
+    const HalfEdge& he = mesh->getElement (ind);
+    if (he.isBoundary () && !he.getDeleted ())
+    {
+      HEABCC       circ     = mesh->getHalfEdgeAroundBoundaryConstCirculator (ind);
+      const HEABCC circ_end = circ;
+
+      FaceIndexes  deleted_faces; deleted_faces.reserve (n);
+      bool         delete_faces = false;
+
+      for (SizeType i=0; i<n; ++i)
+      {
+        ++circ;
+        deleted_faces.push_back (circ->getOppositeFaceIndex (*mesh));
+        if (circ == circ_end)
+        {
+          delete_faces = true;
+          break;
+        }
+      }
+
+      if (delete_faces)
+      {
+        for (FaceIndexes::const_iterator it = deleted_faces.begin (); it!=deleted_faces.end (); ++it)
+        {
+          mesh->deleteFace (*it);
+        }
+      }
+    }
+  }
+
+  if (cleanup)
+  {
+    mesh->cleanUp ();
   }
 }
 
@@ -144,7 +231,6 @@ main (int argc, char** argv)
   float squared_distance_threshold = 0.f;
   if (pcl::console::parse (argc, argv, "-d", squared_distance_threshold) != -1)
   {
-    std::cerr << squared_distance_threshold << std::endl;
     integration.setDistanceThreshold (squared_distance_threshold);
   }
 
@@ -168,6 +254,20 @@ main (int argc, char** argv)
       integration.merge (cloud_data, mesh_model, pcl::ihs::Transformation::Identity ());
       drawMesh(mesh_model, visualizer, 1);
     }
+  }
+
+  std::cerr << "simple outlier removal ... ";
+  drawMesh(mesh_model, visualizer, 500);
+  simpleOutlierRemoval (mesh_model, 10); // TODO: hard coded threshold
+  std::cerr << "done\n";
+  drawMesh(mesh_model, visualizer, 1);
+
+  std::string filename;
+  if (pcl::console::parse (argc, argv, "-f", filename) != -1)
+  {
+    std::cerr << "saving '" << filename << "' ... ";
+    saveVTK (mesh_model, filename);
+    std::cerr << "done" << "\n";
   }
 
   visualizer.spin ();
