@@ -142,7 +142,7 @@ class SimpleOpenNIViewer
       cout << (*message) << " :: ";
 
       // Space toggle saving the file
-      if (event.getKeySym () == " ")
+      if (event.getKeyCode () == ' ')
         save_data_ = !save_data_;
 
       if (event.getKeyCode ())
@@ -215,7 +215,7 @@ class SimpleOpenNIViewer
           }
           else
           {
-            data = (void*)rgb_data;
+            data = (void*)rgb_data_;
             image_viewer_.addRGBImage (rgb_data_, image->getWidth (), image->getHeight ());         
           }
 
