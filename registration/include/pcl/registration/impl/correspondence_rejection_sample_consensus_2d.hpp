@@ -38,7 +38,7 @@
 #ifndef PCL_REGISTRATION_IMPL_CORRESPONDENCE_REJECTION_SAMPLE_CONSENSUS_2D_HPP_
 #define PCL_REGISTRATION_IMPL_CORRESPONDENCE_REJECTION_SAMPLE_CONSENSUS_2D_HPP_
 
-#include <pcl/sample_consensus/sac_model_registration.h>
+#include <pcl/sample_consensus/sac_model_registration_2d.h>
 #include <pcl/sample_consensus/ransac.h>
 #include <pcl/registration/correspondence_rejection_sample_consensus_2d.h>
 
@@ -82,13 +82,12 @@ pcl::registration::CorrespondenceRejectorSampleConsensus2D<PointT>::getRemaining
   std::vector<int> target_indices_good;
 
   // From the set of correspondences found, attempt to remove outliers
-  typename pcl::SampleConsensusModelRegistration<PointT>::Ptr model (new pcl::SampleConsensusModelRegistration<PointT> (input_, source_indices));
+  typename pcl::SampleConsensusModelRegistration2D<PointT>::Ptr model (new pcl::SampleConsensusModelRegistration2D<PointT> (input_, source_indices));
   // Pass the target_indices
   model->setInputTarget (target_, target_indices);
   model->setProjectionMatrix (projection_matrix_);
 
   // Create a RANSAC model
-  //pcl::MEstimatorSampleConsensus<PointT> sac (model, inlier_threshold_);
   pcl::RandomSampleConsensus<PointT> sac (model, inlier_threshold_);
   sac.setMaxIterations (max_iterations_);
 
