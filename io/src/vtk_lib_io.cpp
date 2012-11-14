@@ -500,7 +500,7 @@ pcl::io::pointCloudTovtkPolyData(const sensor_msgs::PointCloud2Ptr& cloud, vtkSm
 
   // Add RGB
   int rgb_idx = pcl::getFieldIndex (*cloud, "rgb");
-  if (rgb_idx > 0)
+  if (rgb_idx != -1)
   {
     //std::cout << "Adding rgb" << std::endl;
     vtkSmartPointer<vtkUnsignedCharArray> colors = vtkSmartPointer<vtkUnsignedCharArray>::New ();
@@ -524,7 +524,7 @@ pcl::io::pointCloudTovtkPolyData(const sensor_msgs::PointCloud2Ptr& cloud, vtkSm
 
   // Add Intensity
   int intensity_idx = pcl::getFieldIndex (*cloud, "intensity");
-  if (intensity_idx > 0)
+  if (intensity_idx != -1)
   {
     //std::cout << "Adding intensity" << std::endl;
     vtkSmartPointer<vtkFloatArray> cloud_intensity = vtkSmartPointer<vtkFloatArray>::New ();
@@ -543,13 +543,13 @@ pcl::io::pointCloudTovtkPolyData(const sensor_msgs::PointCloud2Ptr& cloud, vtkSm
     }
 
     poly_data->GetCellData()->AddArray(cloud_intensity);
-    if (!rgb_idx > 0)
+    if (rgb_idx == -1)
       poly_data->GetCellData()->SetActiveAttribute("intensity", vtkDataSetAttributes::SCALARS);
   }
+
   // Add Normals
   int normal_x_idx = pcl::getFieldIndex (*cloud, std::string ("normal_x") );
-
-  if (normal_x_idx > 0)
+  if (normal_x_idx != -1)
   {
     //std::cout << "Adding normals" << std::endl;
     vtkSmartPointer<vtkFloatArray> normals = vtkSmartPointer<vtkFloatArray>::New();
