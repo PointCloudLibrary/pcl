@@ -374,6 +374,8 @@ macro(sort_relative _list _sorted_list _to_sort_relative)
   list(LENGTH ${_to_sort_relative} to_sort_list_length)
 
   if(NOT (list_length EQUAL sorted_list_length))
+    message(STATUS "Original list: ${${_list}}")
+    message(STATUS "Sorted list: ${${_sorted_list}}")
     message(FATAL_ERROR "size mismatch between ${_sorted_list} (length ${sorted_list_length}) and ${_list} (length ${list_length})")
   endif(NOT (list_length EQUAL sorted_list_length))
 
