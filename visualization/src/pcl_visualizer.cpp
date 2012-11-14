@@ -3434,61 +3434,64 @@ pcl::visualization::PCLVisualizer::renderView (int xres, int yres, pcl::PointClo
     return;
   }
 
-  //create render window with first element of rens_ (viewport 0)
-//  vtkSmartPointer<vtkRenderWindow> render_win = vtkSmartPointer<vtkRenderWindow>::New ();
-//  rens_->InitTraversal ();
-//  vtkSmartPointer<vtkRenderer> renderer = rens_->GetNextItem ();;
-//  render_win->AddRenderer (renderer);
-//  render_win->SetSize (xres, yres);
-//  renderer->SetBackground (1.0, 0.5, 0.5);
-
-  vtkSmartPointer<vtkWorldPointPicker> worldPicker = vtkSmartPointer<vtkWorldPointPicker>::New ();
   win_->SetSize (xres, yres);
   win_->Render ();
 
-//  render_win->Render ();
+  float dwidth = 2.0f / float (xres),
+        dheight = 2.0f / float (yres);
 
   cloud->points.resize (xres * yres);
   cloud->width = xres;
-  cloud->height = yres;;
+  cloud->height = yres;
 
-  double coords[3];
-  float * depth = new float[xres * yres];
-//  render_win->GetZbufferData (0, 0, xres - 1, yres - 1, &(depth[0]));
+  float *depth = new float[xres * yres];
   win_->GetZbufferData (0, 0, xres - 1, yres - 1, &(depth[0]));
 
-  //transform cloud to give camera coordinates instead of world coordinates!
-  vtkSmartPointer<vtkMatrix4x4> view_transform = rens_->GetFirstRenderer ()->GetActiveCamera ()->GetViewTransformMatrix ();
-  Eigen::Matrix4f trans_view (Eigen::Matrix4f::Identity ());
+  // Transform cloud to give camera coordinates instead of world coordinates!
+  vtkRenderer *ren = rens_->GetFirstRenderer ();
+  vtkCamera *camera = ren->GetActiveCamera ();
+  vtkSmartPointer<vtkMatrix4x4> composite_projection_transform = camera->GetCompositeProjectionTransformMatrix (ren->GetTiledAspectRatio (), 0, 1);
+  vtkSmartPointer<vtkMatrix4x4> view_transform = camera->GetViewTransformMatrix ();
 
-  for (int x = 0; x < 4; x++)
-    for (int y = 0; y < 4; y++)
-      trans_view (x, y) = static_cast<float> (view_transform->GetElement (x, y));
-
-
-  float bad_value = std::numeric_limits<float>::quiet_NaN ();
-  for (size_t x = 0; x < size_t (xres); x++)
-  {
-    for (size_t y = 0; y < size_t (yres); y++)
+  Eigen::Matrix4f mat1, mat2;
+  for (int i = 0; i < 4; ++i)
+    for (int j = 0; j < 4; ++j)
     {
-      float value = depth[y * xres + x];
+      mat1 (i, j) = static_cast<float> (composite_projection_transform->Element[i][j]);
+      mat2 (i, j) = static_cast<float> (view_transform->Element[i][j]); 
+    }
 
-      if (value == 1.0)
+  mat1 = mat1.inverse ();
+
+  int ptr = 0;
+  for (int y = 0; y < yres; ++y)
+  {
+    for (int x = 0; x < xres; ++x, ++ptr)
+    {
+      pcl::PointXYZ &pt = (*cloud)[ptr];
+
+      if (depth[ptr] == 1.0)
       {
-        (*cloud) (x, y).x = (*cloud) (x, y).y = (*cloud) (x, y).z = bad_value;
+        pt.x = pt.y = pt.z = std::numeric_limits<float>::quiet_NaN ();
         continue;
       }
 
-      worldPicker->Pick (static_cast<double> (x), static_cast<double> (y), value, rens_->GetFirstRenderer ());
-      worldPicker->GetPickPosition (coords);
+      Eigen::Vector4f world_coords (dwidth  * float (x) - 1.0f, 
+                                    dheight * float (y) - 1.0f,
+                                    depth[ptr],
+                                    1.0f);
+      world_coords = mat1 * world_coords;
 
+      float w3 = 1.0f / world_coords[3];
+      world_coords[0] *= w3;
+      // vtk view coordinate system is different than the standard camera coordinates (z forward, y down, x right), thus, the fliping in y and z
+      world_coords[1] *= -w3;
+      world_coords[2] *= -w3;
 
-      //NOTE: vtk view coordinate system is different than the standard camera coordinates (z forward, y down, x right)
-      //thus, the fliping in y and z
-      (*cloud)(x, y).getVector4fMap () = trans_view * Eigen::Vector4f (coords[0], coords[1], coords[2], 1.f);
-
-      (*cloud)(x, y).y *= -1.f;
-      (*cloud)(x, y).z *= -1.f;
+      world_coords = mat2 * world_coords;
+      pt.x = static_cast<float> (world_coords[0]);
+      pt.y = static_cast<float> (world_coords[1]);
+      pt.z = static_cast<float> (world_coords[2]);
     }
   }
 
