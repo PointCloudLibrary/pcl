@@ -89,7 +89,10 @@ class SimpleOpenNIViewer
         depth_image_viewer_ ("PCL/OpenNI depth image viewer"),
         image_cld_init_ (false), depth_image_cld_init_ (false),
         rgb_data_ (0), depth_data_ (0), rgb_data_size_ (0),
-        save_data_ (false)
+        save_data_ (false),
+        importer_ (vtkSmartPointer<vtkImageImport>::New ()),
+        depth_importer_ (vtkSmartPointer<vtkImageImport>::New ()),
+        writer_ (vtkSmartPointer<vtkTIFFWriter>::New ())
     {
       importer_->SetNumberOfScalarComponents (3);
       importer_->SetDataScalarTypeToUnsignedChar ();
@@ -179,7 +182,6 @@ class SimpleOpenNIViewer
       grabber_.start ();
            
       unsigned char* rgb_data = 0;
-      unsigned rgb_data_size = 0;
       void* data;
       while (!image_viewer_.wasStopped () && !depth_image_viewer_.wasStopped ())
       {
@@ -208,7 +210,7 @@ class SimpleOpenNIViewer
         {
           if (image->getEncoding() == openni_wrapper::Image::RGB)
           {
-            data = (void*)image->getMetaData ().Data ();
+            data = (void*)(image->getMetaData ().Data ());
             image_viewer_.addRGBImage (image->getMetaData ().Data (), image->getWidth (), image->getHeight ());
           }
           else
@@ -248,7 +250,7 @@ class SimpleOpenNIViewer
 
             depth_importer_->SetWholeExtent (0, depth_image->getWidth () - 1, 0, depth_image->getHeight () - 1, 0, 0);
             depth_importer_->SetDataExtentToWholeExtent ();
-            depth_importer_->SetImportVoidPointer ((void*)depth_image->getDepthMetaData ().Data (), 1);
+            depth_importer_->SetImportVoidPointer ((void*)(depth_image->getDepthMetaData ().Data ()), 1);
             depth_importer_->Update ();
             writer_->SetFileName (ss.str ().c_str ());
             writer_->SetInputConnection (depth_importer_->GetOutputPort ());
