@@ -61,6 +61,7 @@ namespace pcl
     SACMODEL_NORMAL_PLANE,
     SACMODEL_NORMAL_SPHERE,
     SACMODEL_REGISTRATION,
+    SACMODEL_REGISTRATION_2D,
     SACMODEL_PARALLEL_PLANE,
     SACMODEL_NORMAL_PARALLEL_PLANE,
     SACMODEL_STICK
@@ -83,6 +84,7 @@ const static SampleSizeModel sample_size_pairs[] = {SampleSizeModel (pcl::SACMOD
                                                     SampleSizeModel (pcl::SACMODEL_NORMAL_PLANE, 3),
                                                     SampleSizeModel (pcl::SACMODEL_NORMAL_SPHERE, 4),
                                                     SampleSizeModel (pcl::SACMODEL_REGISTRATION, 3),
+                                                    SampleSizeModel (pcl::SACMODEL_REGISTRATION_2D, 3),
                                                     SampleSizeModel (pcl::SACMODEL_PARALLEL_PLANE, 3),
                                                     SampleSizeModel (pcl::SACMODEL_NORMAL_PARALLEL_PLANE, 3),
                                                     SampleSizeModel (pcl::SACMODEL_STICK, 2)};
