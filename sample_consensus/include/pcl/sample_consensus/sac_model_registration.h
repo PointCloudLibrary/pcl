@@ -110,7 +110,7 @@ namespace pcl
       }
 
       /** \brief Set the input point cloud target.
-        * \param target the input point cloud target
+        * \param[in] target the input point cloud target
         */
       inline void
       setInputTarget (const PointCloudConstPtr &target)
@@ -221,7 +221,7 @@ namespace pcl
         * indices.
         * \param[in] samples the resultant index samples
         */
-      bool
+      virtual bool
       isSampleGood (const std::vector<int> &samples) const;
 
       /** \brief Computes an "optimal" sample distance threshold based on the
