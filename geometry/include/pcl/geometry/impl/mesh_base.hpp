@@ -689,7 +689,7 @@ namespace pcl
       getHalfEdgeAroundBoundaryConstCirculator (const HalfEdgeIndex& idx_boundary_half_edge) const
       {
         assert (this->validateMeshElementIndex (idx_boundary_half_edge));
-        assert (this->getElement (idx_boundary_half_edge).isBoundary (*this));
+        assert (this->getElement (idx_boundary_half_edge).isBoundary ());
         return (this->getInnerHalfEdgeAroundFaceConstCirculator (idx_boundary_half_edge));
       }
 
