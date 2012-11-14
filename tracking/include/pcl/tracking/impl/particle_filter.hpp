@@ -134,7 +134,7 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::normalizeWeight ()
       {
         if (particles_->points[i].weight != 0.0)
         {
-          particles_->points[i].weight = normalizeParticleWeight (particles_->points[i].weight, w_min, w_max);
+          particles_->points[i].weight = static_cast<float> (normalizeParticleWeight (particles_->points[i].weight, w_min, w_max));
         }
       }
     }
