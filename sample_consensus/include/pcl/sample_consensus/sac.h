@@ -196,6 +196,9 @@ namespace pcl
           // Select the new inliers based on the optimized coefficients and new threshold
           sac_model_->selectWithinDistance (model_coefficients_, error_threshold, new_inliers);
           PCL_DEBUG ("[pcl::SampleConsensus::refineModel] Number of inliers found (before/after): %zu/%zu\n", inliers_.size (), new_inliers.size ());
+        
+          if (new_inliers.empty ())
+            return (false);
 
           // Estimate the variance and the new threshold
           double variance = sac_model_->computeVariance ();

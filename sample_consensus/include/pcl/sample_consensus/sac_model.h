@@ -193,14 +193,17 @@ namespace pcl
         for (unsigned int iter = 0; iter < max_sample_checks_; ++iter)
         {
           // Choose the random indices
-          if(samples_radius_ < std::numeric_limits<double>::epsilon())
+          if (samples_radius_ < std::numeric_limits<double>::epsilon ())
         	  SampleConsensusModel<PointT>::drawIndexSample (samples);
           else
         	  SampleConsensusModel<PointT>::drawIndexSampleRadius (samples);
 
           // If it's a good sample, stop here
           if (isSampleGood (samples))
+          {
+            PCL_DEBUG ("[pcl::SampleConsensusModel::getSamples] Selected %zu samples.\n", samples.size ());
             return;
+          }
         }
         PCL_DEBUG ("[pcl::SampleConsensusModel::getSamples] WARNING: Could not select %d sample points in %d iterations!\n", getSampleSize (), max_sample_checks_);
         samples.clear ();

@@ -280,8 +280,6 @@ namespace pcl
         PCL_DEBUG ("[pcl::SampleConsensusModelRegistration::setInputCloud] Estimated a sample selection distance threshold of: %f\n", sample_dist_thresh_);
       }
 
-    private:
-
     /** \brief Estimate a rigid transformation between a source and a target point cloud using an SVD closed-form
       * solution of absolute orientation using unit quaternions
       * \param[in] cloud_src the source point cloud dataset
