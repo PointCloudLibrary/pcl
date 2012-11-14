@@ -47,6 +47,12 @@
 #include <pcl/io/openni_camera/openni_driver.h>
 #include <pcl/console/parse.h>
 #include <pcl/visualization/mouse_event.h>
+#include <vtkImageViewer.h>
+#include <vtkImageImport.h>
+#include <vtkJPEGWriter.h>
+#include <vtkBMPWriter.h>
+#include <vtkPNGWriter.h>
+#include <vtkTIFFWriter.h>
 
 using namespace std;
 
@@ -82,8 +88,14 @@ class SimpleOpenNIViewer
         image_viewer_ ("PCL/OpenNI RGB image viewer"),
         depth_image_viewer_ ("PCL/OpenNI depth image viewer"),
         image_cld_init_ (false), depth_image_cld_init_ (false),
-        rgb_data_ (0), depth_data_ (0), rgb_data_size_ (0)
+        rgb_data_ (0), depth_data_ (0), rgb_data_size_ (0),
+        save_data_ (false)
     {
+      importer_->SetNumberOfScalarComponents (3);
+      importer_->SetDataScalarTypeToUnsignedChar ();
+      depth_importer_->SetNumberOfScalarComponents (1);
+      depth_importer_->SetDataScalarTypeToUnsignedShort ();
+      writer_->SetCompressionToPackBits ();
     }
 
     void
@@ -125,6 +137,11 @@ class SimpleOpenNIViewer
     {
       string* message = static_cast<string*> (cookie);
       cout << (*message) << " :: ";
+
+      // Space toggle saving the file
+      if (event.getKeySym () == " ")
+        save_data_ = !save_data_;
+
       if (event.getKeyCode ())
         cout << "the key \'" << event.getKeyCode () << "\' (" << event.getKeyCode () << ") was";
       else
@@ -161,6 +178,9 @@ class SimpleOpenNIViewer
       
       grabber_.start ();
            
+      unsigned char* rgb_data = 0;
+      unsigned rgb_data_size = 0;
+      void* data;
       while (!image_viewer_.wasStopped () && !depth_image_viewer_.wasStopped ())
       {
         boost::shared_ptr<openni_wrapper::Image> image;
@@ -181,13 +201,35 @@ class SimpleOpenNIViewer
           image_mutex_.unlock ();
         }
 
+        std::string time = boost::posix_time::to_iso_string (boost::posix_time::microsec_clock::local_time ());
+
         // Add to renderer
         if (image)
         {
           if (image->getEncoding() == openni_wrapper::Image::RGB)
+          {
+            data = (void*)image->getMetaData ().Data ();
             image_viewer_.addRGBImage (image->getMetaData ().Data (), image->getWidth (), image->getHeight ());
+          }
           else
-            image_viewer_.addRGBImage (rgb_data_, image->getWidth (), image->getHeight ());
+          {
+            data = (void*)rgb_data;
+            image_viewer_.addRGBImage (rgb_data_, image->getWidth (), image->getHeight ());         
+          }
+
+          // If save data is enabled
+          if (save_data_)
+          {
+            std::stringstream ss;
+            ss << "frame_" + time + "_rgb.tiff";
+
+            importer_->SetImportVoidPointer (data, 1);
+            importer_->Update ();
+
+            writer_->SetFileName (ss.str ().c_str ());
+            writer_->SetInputConnection (importer_->GetOutputPort ());
+            writer_->Write ();
+          }
         }
 
         if (depth_image)
@@ -197,6 +239,20 @@ class SimpleOpenNIViewer
           {
             depth_image_viewer_.setPosition (depth_image->getWidth (), 0);
             depth_image_cld_init_ = !depth_image_cld_init_;
+          }
+
+          if (save_data_)
+          {
+            std::stringstream ss;
+            ss << "frame_" + time + "_depth.tiff";
+
+            depth_importer_->SetWholeExtent (0, depth_image->getWidth () - 1, 0, depth_image->getHeight () - 1, 0, 0);
+            depth_importer_->SetDataExtentToWholeExtent ();
+            depth_importer_->SetImportVoidPointer ((void*)depth_image->getDepthMetaData ().Data (), 1);
+            depth_importer_->Update ();
+            writer_->SetFileName (ss.str ().c_str ());
+            writer_->SetInputConnection (depth_importer_->GetOutputPort ());
+            writer_->Write ();
           }
         }
 
@@ -225,6 +281,9 @@ class SimpleOpenNIViewer
     bool image_cld_init_, depth_image_cld_init_;
     unsigned char* rgb_data_, *depth_data_;
     unsigned rgb_data_size_;
+    bool save_data_;
+    vtkSmartPointer<vtkImageImport> importer_, depth_importer_;
+    vtkSmartPointer<vtkTIFFWriter> writer_;
 };
 
 void
