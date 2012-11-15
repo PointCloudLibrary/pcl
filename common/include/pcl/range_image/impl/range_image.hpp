@@ -1218,8 +1218,7 @@ template <typename PointCloudType> void
 RangeImage::integrateFarRanges (const PointCloudType& far_ranges)
 {
   float x_real, y_real, range_of_current_point;
-  for (PointCloud<PointWithViewpoint>::const_iterator it  = far_ranges.points.begin ();
-                                                      it != far_ranges.points.end (); ++it)
+  for (typename PointCloudType::const_iterator it  = far_ranges.points.begin (); it != far_ranges.points.end (); ++it)
   {
     //if (!isFinite (*it))  // Check for NAN etc
       //continue;
