@@ -160,8 +160,14 @@ pcl_round (float number)
   return (number < 0.0f ? ceilf (number - 0.5f) : floorf (number + 0.5f));
 }
 
+#ifdef __GNUC__
+#define pcl_lrint(x) (lrint(static_cast<double> (x)))
+#define pcl_lrintf(x) (lrintf(static_cast<float> (x)))
+#else
 #define pcl_lrint(x) (static_cast<long int>(pcl_round(x)))
 #define pcl_lrintf(x) (static_cast<long int>(pcl_round(x)))
+#endif
+
 
 #ifdef _WIN32
 __inline float
