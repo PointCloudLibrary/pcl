@@ -169,43 +169,6 @@ RangeImage::createEmpty (float angular_resolution_x, float angular_resolution_y,
 
 /////////////////////////////////////////////////////////////////////////
 void 
-RangeImage::integrateFarRanges (const PointCloud<PointWithViewpoint>& far_ranges)
-{
-  float x_real, y_real, range_of_current_point;
-  for (PointCloud<PointWithViewpoint>::const_iterator it
-       =far_ranges.points.begin (); it!=far_ranges.points.end (); ++it)
-  {
-    //if (!isFinite (*it))  // Check for NAN etc
-      //continue;
-    Vector3fMapConst current_point = it->getVector3fMap ();
-    
-    this->getImagePoint (current_point, x_real, y_real, range_of_current_point);
-    
-    int floor_x = static_cast<int> (pcl_lrint (floor (x_real))), 
-        floor_y = static_cast<int> (pcl_lrint (floor (y_real))),
-        ceil_x  = static_cast<int> (pcl_lrint (ceil (x_real))),
-        ceil_y  = static_cast<int> (pcl_lrint (ceil (y_real)));
-    
-    int neighbor_x[4], neighbor_y[4];
-    neighbor_x[0]=floor_x; neighbor_y[0]=floor_y;
-    neighbor_x[1]=floor_x; neighbor_y[1]=ceil_y;
-    neighbor_x[2]=ceil_x;  neighbor_y[2]=floor_y;
-    neighbor_x[3]=ceil_x;  neighbor_y[3]=ceil_y;
-    
-    for (int i=0; i<4; ++i)
-    {
-      int x=neighbor_x[i], y=neighbor_y[i];
-      if (!isInImage (x, y))
-        continue;
-      PointWithRange& image_point = getPoint (x, y);
-      if (!pcl_isfinite (image_point.range))
-        image_point.range = std::numeric_limits<float>::infinity ();
-    }
-  }
-}
-
-/////////////////////////////////////////////////////////////////////////
-void 
 RangeImage::cropImage (int borderSize, int top, int right, int bottom, int left) {
   //MEASURE_FUNCTION_TIME;
   

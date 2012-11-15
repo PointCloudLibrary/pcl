@@ -314,8 +314,8 @@ namespace pcl
                  float min_range, int& top, int& right, int& bottom, int& left);
       
       /** \brief Integrates the given far range measurements into the range image */
-      PCL_EXPORTS void
-      integrateFarRanges (const PointCloud<PointWithViewpoint>& far_ranges);
+      template <typename PointCloudType> void
+      integrateFarRanges (const PointCloudType& far_ranges);
       
       /** \brief Cut the range image to the minimal size so that it still contains all actual range readings.
         * \param border_size allows increase from the minimal size by the specified number of pixels (defaults to 0)
