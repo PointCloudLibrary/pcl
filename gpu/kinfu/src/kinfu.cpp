@@ -220,7 +220,8 @@ pcl::gpu::KinfuTracker::allocateBufffers (int rows, int cols)
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl::gpu::KinfuTracker::operator() (const DepthMap& depth_raw)
+pcl::gpu::KinfuTracker::operator() (const DepthMap& depth_raw, 
+    Eigen::Affine3f *hint)
 {  
   device::Intr intr (fx_, fy_, cx_, cy_);
 
@@ -278,9 +279,18 @@ pcl::gpu::KinfuTracker::operator() (const DepthMap& depth_raw)
       //Mat33&  device_Rprev     = device_cast<Mat33> (Rprev);
       Mat33&  device_Rprev_inv = device_cast<Mat33> (Rprev_inv);
       float3& device_tprev     = device_cast<float3> (tprev);
-
-      Matrix3frm Rcurr = Rprev; // tranform to global coo for ith camera pose
-      Vector3f   tcurr = tprev;
+      Matrix3frm Rcurr;
+      Vector3f tcurr;
+      if(hint)
+      {
+        Rcurr = hint->rotation().matrix();
+        tcurr = hint->translation().matrix();
+      }
+      else
+      {
+        Matrix3frm Rcurr = Rprev; // tranform to global coo for ith camera pose
+        Vector3f   tcurr = tprev;
+      }
       {
         //ScopeTime time("icp-all");
         for (int level_index = LEVELS-1; level_index>=0; --level_index)

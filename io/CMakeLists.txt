@@ -96,6 +96,7 @@ if(build)
 
     set(srcs 
         src/pcd_grabber.cpp
+        src/image_grabber.cpp
         src/pcd_io.cpp
         src/vtk_io.cpp
         src/ply_io.cpp
