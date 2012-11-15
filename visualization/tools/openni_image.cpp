@@ -51,7 +51,7 @@
 #include <vtkImageImport.h>
 #include <vtkJPEGWriter.h>
 #include <vtkBMPWriter.h>
-#include <vtkPNGWriter.h>
+#include <vtkPNMWriter.h>
 #include <vtkTIFFWriter.h>
 
 using namespace std;
@@ -112,12 +112,12 @@ class SimpleOpenNIViewer
       image_ = image;
       if (image->getEncoding() != openni_wrapper::Image::RGB)
       {
-        if (rgb_data_size_ < image->getWidth () * image->getHeight ())
+        if (rgb_data_size_ != (image->getWidth () * image->getHeight () * 3))
         {
           if (rgb_data_)
             delete [] rgb_data_;
-          rgb_data_size_ = image->getWidth () * image->getHeight ();
-          rgb_data_ = new unsigned char [rgb_data_size_ * 3];
+          rgb_data_size_ = image->getWidth () * image->getHeight () * 3;
+          rgb_data_ = new unsigned char [rgb_data_size_];
         }
         image_->fillRGB (image_->getWidth (), image_->getHeight (), rgb_data_);
       }
@@ -126,6 +126,7 @@ class SimpleOpenNIViewer
       depth_image_ = depth_image;
       if (depth_data_)
         delete[] depth_data_;
+      depth_data_size_ = depth_image->getWidth () * depth_image->getHeight () * 2;
       depth_data_ = pcl::visualization::FloatImageUtils::getVisualImage (
           reinterpret_cast<const unsigned short*> (depth_image->getDepthMetaData ().Data ()),
             depth_image->getWidth (), depth_image->getHeight (),
@@ -142,7 +143,7 @@ class SimpleOpenNIViewer
       cout << (*message) << " :: ";
 
       // Space toggle saving the file
-      if (event.getKeyCode () == ' ')
+      if (event.getKeySym () == "space" && event.keyDown ())
         save_data_ = !save_data_;
 
       if (event.getKeyCode ())
@@ -180,13 +181,16 @@ class SimpleOpenNIViewer
       boost::signals2::connection image_connection = grabber_.registerCallback (image_cb);
       
       grabber_.start ();
-           
-      unsigned char* rgb_data = 0;
+
+      int nr_frames_total = 0;
+      unsigned char* rgb_data = NULL;
+      int rgb_data_size = 0;
       void* data;
       while (!image_viewer_.wasStopped () && !depth_image_viewer_.wasStopped ())
       {
         boost::shared_ptr<openni_wrapper::Image> image;
         boost::shared_ptr<openni_wrapper::DepthImage> depth_image;
+
         if (!image_cld_init_)
         {
           image_viewer_.setPosition (0, 0);
@@ -198,6 +202,19 @@ class SimpleOpenNIViewer
           // Swap data
           image_.swap (image);
           depth_image_.swap (depth_image);
+
+          if (!rgb_data)
+          {
+            rgb_data_size = rgb_data_size_;
+            rgb_data = new unsigned char[rgb_data_size];
+          }
+          else if (rgb_data_size != rgb_data_size_)
+          {
+            rgb_data_size = rgb_data_size_;
+            delete[] rgb_data;
+            rgb_data = new unsigned char[rgb_data_size];
+          }
+          memcpy (&rgb_data[0], &rgb_data_[0], rgb_data_size);
 
           // Unlock
           image_mutex_.unlock ();
@@ -215,23 +232,28 @@ class SimpleOpenNIViewer
           }
           else
           {
-            data = (void*)rgb_data_;
-            image_viewer_.addRGBImage (rgb_data_, image->getWidth (), image->getHeight ());         
+            data = (void*)rgb_data;
+            image_viewer_.addRGBImage (rgb_data, image->getWidth (), image->getHeight ());
           }
 
           // If save data is enabled
           if (save_data_)
           {
             std::stringstream ss;
-            ss << "frame_" + time + "_rgb.tiff";
+            ss << "frame_" << time << "_rgb.tiff";
 
+            importer_->SetWholeExtent (0, image->getWidth () - 1, 0, image->getHeight () - 1, 0, 0);
+            importer_->SetDataExtentToWholeExtent ();
             importer_->SetImportVoidPointer (data, 1);
             importer_->Update ();
 
             writer_->SetFileName (ss.str ().c_str ());
             writer_->SetInputConnection (importer_->GetOutputPort ());
             writer_->Write ();
+            FPS_CALC ("visualization + I/O callback");
           }
+          else
+            FPS_CALC ("visualization callback");
         }
 
         if (depth_image)
@@ -255,7 +277,10 @@ class SimpleOpenNIViewer
             writer_->SetFileName (ss.str ().c_str ());
             writer_->SetInputConnection (depth_importer_->GetOutputPort ());
             writer_->Write ();
+
+            ++nr_frames_total;
           }
+
         }
 
         image_viewer_.spinOnce ();
@@ -267,7 +292,9 @@ class SimpleOpenNIViewer
       grabber_.stop ();
       
       image_connection.disconnect ();
-      
+    
+      PCL_INFO ("Total number of frames written: %d.\n", nr_frames_total);
+
       if (rgb_data_)
         delete[] rgb_data_;
       if (depth_data_)
@@ -282,7 +309,7 @@ class SimpleOpenNIViewer
     pcl::visualization::ImageViewer depth_image_viewer_;
     bool image_cld_init_, depth_image_cld_init_;
     unsigned char* rgb_data_, *depth_data_;
-    unsigned rgb_data_size_;
+    unsigned rgb_data_size_, depth_data_size_;
     bool save_data_;
     vtkSmartPointer<vtkImageImport> importer_, depth_importer_;
     vtkSmartPointer<vtkTIFFWriter> writer_;
