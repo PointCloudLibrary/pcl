@@ -128,7 +128,7 @@ OutofcoreCloud::updateView (double frustum[24], const Eigen::Vector3d &eye, cons
     pcl::outofcore::OutofcoreOctreeNodeMetadata node_meta_data;
     node_meta_data.loadMetadataFromDisk (*it_bins);
 
-    std::string cloud_file = node_meta_data.getPCDFilename ().c_str ();
+    std::string cloud_file = node_meta_data.getPCDFilename ().string ();
 
     if (cloud_actors_map_.find (cloud_file) == cloud_actors_map_.end ())
     {

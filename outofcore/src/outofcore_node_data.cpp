@@ -33,7 +33,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- *  $Id: outofcore_node_data.cpp 6913 2012-08-22 09:37:26Z stfox88 $
+ *  $Id$
  *
  */
 
@@ -343,7 +343,7 @@ namespace pcl
     ////////////////////////////////////////////////////////////////////////////////    
 
     std::ostream& 
-    operator<<(std::ostream& os, const OutofcoreOctreeNodeMetadata& metadata_arg)
+    operator<<(std::ostream&, const OutofcoreOctreeNodeMetadata&)
     {
       //todo: implement me
       PCL_THROW_EXCEPTION (PCLException, "Not implemented\n");
