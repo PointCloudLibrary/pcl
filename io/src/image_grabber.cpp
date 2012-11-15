@@ -269,8 +269,8 @@ pcl::ImageGrabberBase::ImageGrabberImpl::loadDepthAndRGBFiles(const std::string 
       pathname = itr->path().string();
       basename = boost::filesystem::basename(itr->path());
 #else
-      extension = boost::algorithm::to_upper_copy(boost::filesystem::extension (itr->leaf()));
-      pathname = itr->leaf().string();
+      extension = boost::algorithm::to_upper_copy(boost::filesystem::extension (itr->path()));
+      pathname = itr->path();
       basename = boost::filesystem::basename(itr->leaf());
 #endif
     if (!boost::filesystem::is_directory (itr->status ()) 
