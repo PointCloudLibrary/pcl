@@ -135,7 +135,7 @@ namespace pcl
           * \param[in] colors next RGB frame
           * \return true if can render 3D view.
           */
-        bool operator() (const DepthMap& depth, const View& colors, Eigen::Affine3f* hint=NULL);
+        bool operator() (const DepthMap& depth, const View& colors);
 
         /** \brief Returns camera pose at given time, default the last pose
           * \param[in] time Index of frame for which camera pose is returned.
