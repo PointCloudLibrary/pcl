@@ -2,7 +2,7 @@
  * Software License Agreement (BSD License)
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
- *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -16,7 +16,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -269,9 +269,9 @@ pcl::ImageGrabberBase::ImageGrabberImpl::loadDepthAndRGBFiles(const std::string 
       pathname = itr->path().string();
       basename = boost::filesystem::basename(itr->path());
 #else
-      extension = boost::algorithm::to_upper_copy(boost::filesystem::extension (itr->path()));
-      pathname = itr->path();
-      basename = boost::filesystem::basename(itr->leaf());
+      extension = boost::algorithm::to_upper_copy(boost::filesystem::extension (itr->leaf()));
+      pathname = itr->path ().filename ();
+      basename = boost::filesystem::basename (itr->leaf ());
 #endif
     if (!boost::filesystem::is_directory (itr->status ()) 
         && isValidExtension(extension))
