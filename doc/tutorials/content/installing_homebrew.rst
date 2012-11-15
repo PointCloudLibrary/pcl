@@ -37,7 +37,7 @@ which parts of PCL are installed.
 
    The PCL formula is currently in development. It will be submitted to
    Homebrew shortly. Until then, you can download it from
-   `PCL.RB <http://dev.pointclouds.org/attachments/download/876/pcl.rb>`_. To prepare it,
+   `PCL.RB <http://dev.pointclouds.org/attachments/download/1052/pcl.rb>`_. To prepare it,
    follow these steps:
 
 
