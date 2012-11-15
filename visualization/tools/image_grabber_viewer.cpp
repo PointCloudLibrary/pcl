@@ -206,7 +206,7 @@ main (int argc, char** argv)
   std::string mouse_msg_2D ("Mouse coordinates in image viewer");
   std::string key_msg_2D ("Key event for image viewer");
 
-#if DISPLAY_IMAGE
+#ifdef DISPLAY_IMAGE
   img_viewer->registerMouseCallback (&mouse_callback, static_cast<void*> (&mouse_msg_2D));
   img_viewer->registerKeyboardCallback(&keyboard_callback, static_cast<void*> (&key_msg_2D));
 #endif
