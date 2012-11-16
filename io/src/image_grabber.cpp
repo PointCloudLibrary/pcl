@@ -59,13 +59,15 @@ struct pcl::ImageGrabberBase::ImageGrabberImpl
 
   void 
   readAhead ();
+
   //! Scrapes a directory for image files which contain "rgb" or "depth" and
   //! updates our list accordingly
   void
-  loadDepthAndRGBFiles(const std::string &dir);
-  //! True iff it is an image we know how to read
+  loadDepthAndRGBFiles (const std::string &dir);
+
+  //! True if it is an image we know how to read
   bool
-  isValidExtension(const std::string &extension);
+  isValidExtension (const std::string &extension);
   
   
   pcl::ImageGrabberBase& grabber_;
@@ -106,9 +108,9 @@ pcl::ImageGrabberBase::ImageGrabberImpl::ImageGrabberImpl (pcl::ImageGrabberBase
   , constant_ (1.0f / 525.0f)
 {
   //depth_image_files_.push_back (depth_image_file);
-  loadDepthAndRGBFiles(dir);
+  loadDepthAndRGBFiles (dir);
   depth_image_iterator_ = depth_image_files_.begin ();
-  if(rgb_image_files_.size() > 0)
+  i f(rgb_image_files_.size () > 0)
     rgb_image_iterator_ = rgb_image_files_.begin ();
 }
 
@@ -149,17 +151,17 @@ pcl::ImageGrabberBase::ImageGrabberImpl::readAhead ()
     {
       if (rgb_image_iterator_ == rgb_image_files_.end ())
       {
-	PCL_ERROR ("[pcl::ImageGrabber::setRGBImageFiles] Number of depth images %d != number of rgb images %d \n", 
-		   depth_image_files_.size (), rgb_image_files_.size ());
-	valid_ = false;
-	return;
+        PCL_ERROR ("[pcl::ImageGrabber::setRGBImageFiles] Number of depth images %d != number of rgb images %d \n", 
+            depth_image_files_.size (), rgb_image_files_.size ());
+        valid_ = false;
+        return;
       }
       else
       {
-	vtkImageReader2* rgb_reader = reader_factory->CreateImageReader2 ((*rgb_image_iterator_).c_str ());
-	rgb_reader->SetFileName ((*rgb_image_iterator_).c_str ());
-	rgb_reader->Update ();
-	rgb_image = rgb_reader->GetOutput ();
+        vtkImageReader2* rgb_reader = reader_factory->CreateImageReader2 ((*rgb_image_iterator_).c_str ());
+        rgb_reader->SetFileName ((*rgb_image_iterator_).c_str ());
+        rgb_reader->Update ();
+        rgb_image = rgb_reader->GetOutput ();
       }
     }
     vtkImageReader2* depth_reader = reader_factory->CreateImageReader2 ((*depth_image_iterator_).c_str ());
@@ -170,20 +172,18 @@ pcl::ImageGrabberBase::ImageGrabberImpl::readAhead ()
 
     // Set up next_cloud_ meta data:
     size_t point_size;
-    next_cloud_.fields.clear();
+    next_cloud_.fields.clear ();
     if (rgb_image_files_.size () == 0)
     {
-      point_size = sizeof(pcl::PointXYZ);
-      for_each_type<traits::fieldList<pcl::PointXYZ>::type> 
-	(detail::FieldAdder<pcl::PointXYZ>(next_cloud_.fields));
+      point_size = sizeof (pcl::PointXYZ);
+      for_each_type<traits::fieldList<pcl::PointXYZ>::type> (detail::FieldAdder<pcl::PointXYZ>(next_cloud_.fields));
     }
     else 
     {
-      point_size = sizeof(pcl::PointXYZRGBA);
-      for_each_type<traits::fieldList<pcl::PointXYZRGBA>::type> 
-	(detail::FieldAdder<pcl::PointXYZRGBA>(next_cloud_.fields));
+      point_size = sizeof (pcl::PointXYZRGBA);
+      for_each_type<traits::fieldList<pcl::PointXYZRGBA>::type> (detail::FieldAdder<pcl::PointXYZRGBA>(next_cloud_.fields));
     }
-    next_cloud_.data.clear();
+    next_cloud_.data.clear ();
     next_cloud_.data.resize (point_size * depth_image->GetNumberOfPoints ());
     next_cloud_.width = dims[0];
     next_cloud_.height = dims[1];
@@ -195,46 +195,46 @@ pcl::ImageGrabberBase::ImageGrabberImpl::readAhead ()
     int centerX = (next_cloud_.width >> 1);
     int centerY = (next_cloud_.height >> 1);
     depth_pixel = static_cast<unsigned short*>(depth_image->GetScalarPointer ());
-    for (int y=0; y<dims[1]; ++y)
+    float *data = new [point_size / sizeof(float)];
+    for (int y = 0; y < dims[1]; ++y)
     {
-      for (int x=0; x<dims[0]; ++x, ++depth_pixel)
+      for (int x = 0; x < dims[0]; ++x, ++depth_pixel)
       {
-	uint8_t* p_i = &(next_cloud_.data[y * next_cloud_.row_step + x * next_cloud_.point_step]);
-	float data[point_size / sizeof(float)];
-	float depth = (float)(*depth_pixel) * depth_image_units_;
-	if (depth == 0.0f) 
-	  data[0] = data[1] = data[2] = std::numeric_limits<float>::quiet_NaN ();
-	else
-	{
-	  data[0] = ((float)(x - centerX)) * constant_ * depth;
-	  data[1] = ((float)(y - centerY)) * constant_ * depth; 
-	  data[2] = depth;
-	}
-	data[3] = 1.0f;
+        uint8_t* p_i = &(next_cloud_.data[y * next_cloud_.row_step + x * next_cloud_.point_step]);
+        float depth = static_cast<float> (*depth_pixel) * depth_image_units_;
+        if (depth == 0.0f) 
+          data[0] = data[1] = data[2] = std::numeric_limits<float>::quiet_NaN ();
+        else
+        {
+          data[0] = (static_cast<float>(x - centerX)) * constant_ * depth;
+          data[1] = (static_cast<float>(y - centerY)) * constant_ * depth; 
+          data[2] = depth;
+        }
+        data[3] = 1.0f;
 
-	if (rgb_image_files_.size () != 0)
-	{
-	  color_pixel = static_cast<unsigned char*> (rgb_image->GetScalarPointer (x,y,0));
-	  uint32_t rgb = (uint32_t)color_pixel[0] << 16 | (uint32_t)color_pixel[1] << 8 | (uint32_t)color_pixel[2];
-	  data[4] = *reinterpret_cast<float*> (&rgb);
-	}
-	memcpy(p_i, &data, sizeof(data));
+        if (rgb_image_files_.size () != 0)
+        {
+          color_pixel = static_cast<unsigned char*> (rgb_image->GetScalarPointer (x,y,0));
+          uint32_t rgb = static_cast<uint32_t> (color_pixel[0]) << 16 | static_cast<uint32_t> (color_pixel[1]) << 8 | static_cast<uint32_t> (color_pixel[2]);
+          data[4] = *reinterpret_cast<float*> (&rgb);
+        }
+        memcpy (p_i, &data, sizeof (data));
       }
     }
+    delete[] data;
 
     valid_ = true;
     if (++depth_image_iterator_ == depth_image_files_.end () && repeat_)
       depth_image_iterator_ = depth_image_files_.begin ();
+    
     if (rgb_image_files_.size () != 0)
     {
       if (++rgb_image_iterator_ == rgb_image_files_.end () && repeat_)
-	rgb_image_iterator_ = rgb_image_files_.begin ();
+        rgb_image_iterator_ = rgb_image_files_.begin ();
     }
   }
   else
-  {
     valid_ = false;
-  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -248,14 +248,13 @@ pcl::ImageGrabberBase::ImageGrabberImpl::trigger ()
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-
 void
-pcl::ImageGrabberBase::ImageGrabberImpl::loadDepthAndRGBFiles(const std::string &dir)
+pcl::ImageGrabberBase::ImageGrabberImpl::loadDepthAndRGBFiles (const std::string &dir)
 {
-  if(!boost::filesystem::exists( dir ) || !boost::filesystem::is_directory( dir ) )
+  if (!boost::filesystem::exists (dir) || !boost::filesystem::is_directory (dir))
   {
-    PCL_ERROR("Error: attempted to instantiate a pcl::ImageGrabber from a path which"
-        " is not a directory: %s", dir.c_str());
+    PCL_ERROR ("Error: attempted to instantiate a pcl::ImageGrabber from a path which"
+               " is not a directory: %s", dir.c_str ());
     return;
   }
   std::string pathname;
@@ -265,39 +264,34 @@ pcl::ImageGrabberBase::ImageGrabberImpl::loadDepthAndRGBFiles(const std::string 
   for (boost::filesystem::directory_iterator itr (dir); itr != end_itr; ++itr)
   {
 #if BOOST_FILESYSTEM_VERSION == 3
-      extension = boost::algorithm::to_upper_copy(boost::filesystem::extension (itr->path()));
-      pathname = itr->path().string();
-      basename = boost::filesystem::basename(itr->path());
+    extension = boost::algorithm::to_upper_copy(boost::filesystem::extension (itr->path ()));
+    pathname = itr->path ().string ();
+    basename = boost::filesystem::basename (itr->path ());
 #else
-      extension = boost::algorithm::to_upper_copy(boost::filesystem::extension (itr->leaf()));
-      pathname = itr->path ().filename ();
-      basename = boost::filesystem::basename (itr->leaf ());
+    extension = boost::algorithm::to_upper_copy(boost::filesystem::extension (itr->leaf ()));
+    pathname = itr->path ().filename ();
+    basename = boost::filesystem::basename (itr->leaf ());
 #endif
     if (!boost::filesystem::is_directory (itr->status ()) 
-        && isValidExtension(extension))
+        && isValidExtension (extension))
     {
-      if(basename.find("rgb") < basename.npos)
-      {
+      if (basename.find ("rgb") < basename.npos)
         rgb_image_files_.push_back (pathname);
-      }
-      else if(basename.find("depth") < basename.npos)
-      {
+      else if (basename.find ("depth") < basename.npos)
         depth_image_files_.push_back (pathname);
-      }
     }
   }
-  sort(depth_image_files_.begin(), depth_image_files_.end());
-  if(rgb_image_files_.size() > 0)
-    sort(rgb_image_files_.begin(), rgb_image_files_.end());
+  sort (depth_image_files_.begin (), depth_image_files_.end ());
+  if (rgb_image_files_.size () > 0)
+    sort (rgb_image_files_.begin (), rgb_image_files_.end ());
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl::ImageGrabberBase::ImageGrabberImpl::isValidExtension(const std::string &extension)
+pcl::ImageGrabberBase::ImageGrabberImpl::isValidExtension (const std::string &extension)
 {
-  bool valid = 
-    extension == ".TIFF" || extension == ".PNG" 
-    || extension == ".JPG" || extension == ".PPM";
+  bool valid = extension == ".TIFF" || extension == ".PNG" 
+             || extension == ".JPG" || extension == ".PPM";
   return (valid);
 }
 
@@ -408,7 +402,7 @@ pcl::ImageGrabberBase::setFocalLength (const float focal_length)
 float
 pcl::ImageGrabberBase::getFocalLength() const
 {
-  return 1./impl_->constant_;
+  return (1. / impl_->constant_);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -417,3 +411,4 @@ pcl::ImageGrabberBase::setDepthImageUnits (const float units)
 {
   impl_->depth_image_units_ = units;
 }
+
