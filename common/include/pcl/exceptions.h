@@ -76,11 +76,13 @@ namespace pcl
                     const std::string& file_name = "",
                     const std::string& function_name = "" ,
                     unsigned line_number = 0) throw ()
-      : std::runtime_error (error_description)
-      , file_name_ (file_name)
-      , function_name_ (function_name)
-      , line_number_ (line_number)
-      {}
+        : std::runtime_error (error_description)
+        , file_name_ (file_name)
+        , function_name_ (function_name)
+        , line_number_ (line_number) 
+      {
+        message_ = detailedMessage ();
+      }
       
       virtual ~PCLException () throw ()
       {}
@@ -88,19 +90,19 @@ namespace pcl
       const std::string&
       getFileName () const throw ()
       {
-        return file_name_;
+        return (file_name_);
       }
 
       const std::string&
       getFunctionName () const throw ()
       {
-        return function_name_;
+        return (function_name_);
       }
 
       unsigned
       getLineNumber () const throw ()
       {
-        return line_number_;
+        return (line_number_);
       }
 
       std::string 
@@ -118,12 +120,19 @@ namespace pcl
         }
         sstream << ":" << what ();
         
-        return sstream.str ();
+        return (sstream.str ());
+      }
+
+      char const* 
+      what () const throw () 
+      {
+        return (message_.c_str ());
       }
 
     protected:
       std::string file_name_;
       std::string function_name_;
+      std::string message_;
       unsigned line_number_;
   } ;
 
