@@ -110,7 +110,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::ImageGrabberImpl (pcl::ImageGrabberBase
   //depth_image_files_.push_back (depth_image_file);
   loadDepthAndRGBFiles (dir);
   depth_image_iterator_ = depth_image_files_.begin ();
-  i f(rgb_image_files_.size () > 0)
+  if (rgb_image_files_.size () > 0)
     rgb_image_iterator_ = rgb_image_files_.begin ();
 }
 
