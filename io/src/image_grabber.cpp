@@ -195,7 +195,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::readAhead ()
     int centerX = (next_cloud_.width >> 1);
     int centerY = (next_cloud_.height >> 1);
     depth_pixel = static_cast<unsigned short*>(depth_image->GetScalarPointer ());
-    float *data = new [point_size / sizeof(float)];
+    float *data = new float[point_size / sizeof(float)];
     for (int y = 0; y < dims[1]; ++y)
     {
       for (int x = 0; x < dims[0]; ++x, ++depth_pixel)
