@@ -184,11 +184,14 @@ pcl::PCDWriter::writeBinary (const std::string &file_name,
 
 #else
   // Stretch the file size to the size of the data
-  int result = static_cast<int> (pcl_lseek (fd, getpagesize () + data_size - 1, SEEK_SET));
+  off_t result = pcl_lseek (fd, getpagesize () + data_size - 1, SEEK_SET);
+
   if (result < 0)
   {
     pcl_close (fd);
     resetLockingPermissions (file_name, file_lock);
+    PCL_ERROR ("[pcl::PCDWriter::writeBinary] lseek errno: %d strerror: %s\n", errno, strerror (errno));
+
     throw pcl::IOException ("[pcl::PCDWriter::writeBinary] Error during lseek ()!");
     return (-1);
   }
@@ -376,11 +379,13 @@ pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name,
 
 #if !_WIN32
   // Stretch the file size to the size of the data
-  int result = static_cast<int> (pcl_lseek (fd, getpagesize () + data_size - 1, SEEK_SET));
+  off_t result = pcl_lseek (fd, getpagesize () + data_size - 1, SEEK_SET);
   if (result < 0)
   {
     pcl_close (fd);
     resetLockingPermissions (file_name, file_lock);
+    PCL_ERROR ("[pcl::PCDWriter::writeBinary] lseek errno: %d strerror: %s\n", errno, strerror (errno));
+    
     throw pcl::IOException ("[pcl::PCDWriter::writeBinaryCompressed] Error during lseek ()!");
     return (-1);
   }
@@ -674,11 +679,13 @@ pcl::PCDWriter::writeBinary (const std::string &file_name,
 
 #else
   // Stretch the file size to the size of the data
-  int result = static_cast<int> (pcl_lseek (fd, getpagesize () + data_size - 1, SEEK_SET));
+  off_t result = pcl_lseek (fd, getpagesize () + data_size - 1, SEEK_SET);
   if (result < 0)
   {
     pcl_close (fd);
     resetLockingPermissions (file_name, file_lock);
+    PCL_ERROR ("[pcl::PCDWriter::writeBinary] lseek errno: %d strerror: %s\n", errno, strerror (errno));
+    
     throw pcl::IOException ("[pcl::PCDWriter::writeBinary] Error during lseek ()!");
     return (-1);
   }

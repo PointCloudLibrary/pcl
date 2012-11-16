@@ -1086,10 +1086,11 @@ pcl::PCDReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
     }
     
     // Seek at the given offset
-    int result = static_cast<int> (pcl_lseek (fd, offset, SEEK_SET));
+    off_t result = pcl_lseek (fd, offset, SEEK_SET);
     if (result < 0)
     {
       pcl_close (fd);
+      PCL_ERROR ("[pcl::PCDWriter::read] lseek errno: %d strerror: %s\n", errno, strerror (errno));
       PCL_ERROR ("[pcl::PCDReader::read] Error during lseek ()!\n");
       return (-1);
     }
@@ -1396,10 +1397,11 @@ pcl::PCDReader::readEigen (const std::string &file_name, pcl::PointCloud<Eigen::
     
 
     // Seek at the given offset
-    int result = static_cast<int> (pcl_lseek (fd, offset, SEEK_SET));
+    off_t result = pcl_lseek (fd, offset, SEEK_SET);
     if (result < 0)
     {
       pcl_close (fd);
+      PCL_ERROR ("[pcl::PCDWriter::read] lseek errno: %d strerror: %s\n", errno, strerror (errno));
       PCL_ERROR ("[pcl::PCDReader::readEigen] Error during lseek ()!\n");
       return (-1);
     }
@@ -1893,11 +1895,12 @@ pcl::PCDWriter::writeBinary (const std::string &file_name, const sensor_msgs::Po
   setLockingPermissions (file_name, file_lock);
 
   // Stretch the file size to the size of the data
-  int result = static_cast<int> (pcl_lseek (fd, getpagesize () + cloud.data.size () - 1, SEEK_SET));
+  off_t result = pcl_lseek (fd, getpagesize () + cloud.data.size () - 1, SEEK_SET);
   if (result < 0)
   {
     pcl_close (fd);
     resetLockingPermissions (file_name, file_lock);
+    PCL_ERROR ("[pcl::PCDWriter::writeBinary] lseek errno: %d strerror: %s\n", errno, strerror (errno));
     PCL_ERROR ("[pcl::PCDWriter::writeBinary] Error during lseek ()!\n");
     return (-1);
   }
@@ -2083,11 +2086,12 @@ pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name, const senso
 
 #if !_WIN32
   // Stretch the file size to the size of the data
-  int result = static_cast<int> (pcl_lseek (fd, getpagesize () + data_size - 1, SEEK_SET));
+  off_t result = pcl_lseek (fd, getpagesize () + data_size - 1, SEEK_SET);
   if (result < 0)
   {
     pcl_close (fd);
     resetLockingPermissions (file_name, file_lock);
+    PCL_ERROR ("[pcl::PCDWriter::writeBinaryCompressed] lseek errno: %d strerror: %s\n", errno, strerror (errno));
     PCL_ERROR ("[pcl::PCDWriter::writeBinaryCompressed] Error during lseek ()!\n");
     return (-1);
   }
@@ -2313,11 +2317,12 @@ pcl::PCDWriter::writeBinaryEigen (const std::string &file_name,
 
 #else
   // Stretch the file size to the size of the data
-  int result = static_cast<int> (pcl_lseek (fd, getpagesize () + data_size - 1, SEEK_SET));
+  off_t result = pcl_lseek (fd, getpagesize () + data_size - 1, SEEK_SET);
   if (result < 0)
   {
     pcl_close (fd);
     resetLockingPermissions (file_name, file_lock);
+    PCL_ERROR ("[pcl::PCDWriter::writeBinary] lseek errno: %d strerror: %s\n", errno, strerror (errno));
     throw pcl::IOException ("[pcl::PCDWriter::writeBinary] Error during lseek ()!");
     return (-1);
   }
@@ -2455,11 +2460,12 @@ pcl::PCDWriter::writeBinaryCompressedEigen (
 
 #if !_WIN32
   // Stretch the file size to the size of the data
-  int result = static_cast<int> (pcl_lseek (fd, getpagesize () + data_size - 1, SEEK_SET));
+  off_t result = pcl_lseek (fd, getpagesize () + data_size - 1, SEEK_SET);
   if (result < 0)
   {
     pcl_close (fd);
     resetLockingPermissions (file_name, file_lock);
+    PCL_ERROR ("[pcl::PCDWriter::writeBinaryCompressed] lseek errno: %d strerror: %s\n", errno, strerror (errno));
     throw pcl::IOException ("[pcl::PCDWriter::writeBinaryCompressed] Error during lseek ()!");
     return (-1);
   }
