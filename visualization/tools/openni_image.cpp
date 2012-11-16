@@ -2,7 +2,6 @@
  * Software License Agreement (BSD License)
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
- *  Copyright (c) 2011, Willow Garage, Inc.
  *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
@@ -17,7 +16,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -40,6 +39,7 @@
 #include <pcl/point_types.h>
 #include <pcl/common/time.h> //fps calculations
 #include <pcl/io/openni_grabber.h>
+#include <pcl/io/lzf.h>
 #include <pcl/visualization/boost.h>
 #include <pcl/visualization/common/float_image_utils.h>
 #include <pcl/visualization/cloud_viewer.h>
@@ -53,6 +53,20 @@
 #include <vtkBMPWriter.h>
 #include <vtkPNMWriter.h>
 #include <vtkTIFFWriter.h>
+#include "snappy.h"
+
+#ifdef _WIN32
+# include <io.h>
+# include <windows.h>
+# define pcl_open                    _open
+# define pcl_close(fd)               _close(fd)
+# define pcl_lseek(fd,offset,origin) _lseek(fd,offset,origin)
+#else
+# include <sys/mman.h>
+# define pcl_open                    open
+# define pcl_close(fd)               close(fd)
+# define pcl_lseek(fd,offset,origin) lseek(fd,offset,origin)
+#endif
 
 using namespace std;
 
@@ -83,87 +97,317 @@ do \
 class SimpleOpenNIViewer
 {
   public:
-    SimpleOpenNIViewer (pcl::OpenNIGrabber& grabber)
-      : grabber_ (grabber),
-        image_viewer_ ("PCL/OpenNI RGB image viewer"),
-        depth_image_viewer_ ("PCL/OpenNI depth image viewer"),
-        image_cld_init_ (false), depth_image_cld_init_ (false),
-        rgb_data_ (0), depth_data_ (0), rgb_data_size_ (0),
-        save_data_ (false),
-        importer_ (vtkSmartPointer<vtkImageImport>::New ()),
-        depth_importer_ (vtkSmartPointer<vtkImageImport>::New ()),
-        writer_ (vtkSmartPointer<vtkTIFFWriter>::New ())
+    SimpleOpenNIViewer (
+        pcl::OpenNIGrabber& grabber)
+      : grabber_ (grabber)
+      , image_viewer_ ("PCL/OpenNI RGB image viewer")
+      , depth_image_viewer_ ("PCL/OpenNI depth image viewer")
+      , image_cld_init_ (false), depth_image_cld_init_ (false)
+      , rgb_data_ (0)
+      , depth_data_ (0)
+      , rgb_width_ (0), rgb_height_ (0)
+      , depth_width_ (0), depth_height_ (0)
+      , save_data_ (false)
+      , importer_ (vtkSmartPointer<vtkImageImport>::New ())
+      , depth_importer_ (vtkSmartPointer<vtkImageImport>::New ())
+      , writer_ (vtkSmartPointer<vtkTIFFWriter>::New ())
+      , nr_frames_total_ (0)
     {
       importer_->SetNumberOfScalarComponents (3);
       importer_->SetDataScalarTypeToUnsignedChar ();
       depth_importer_->SetNumberOfScalarComponents (1);
       depth_importer_->SetDataScalarTypeToUnsignedShort ();
-      writer_->SetCompressionToPackBits ();
+      //writer_->SetCompressionToNoCompression ();
+      //writer_->SetCompressionToPackBits ();
     }
 
+    //////////////////////////////////////////////////////////////////////////
+    // Realtime LZF compression
+    uint32_t
+    compress (const char* input, uint32_t input_size, char *output)
+    {
+      unsigned int compressed_size = pcl::lzfCompress (
+          input,
+          input_size,
+          &output[8],
+          uint32_t (float (input_size) * 1.5f));
+
+      uint32_t compressed_final_size = 0;
+      if (compressed_size)
+      {
+        char *header = &output[0];
+        memcpy (&header[0], &compressed_size, sizeof (unsigned int));
+        memcpy (&header[4], &input_size, sizeof (unsigned int));
+        compressed_final_size = uint32_t (compressed_size + 8);
+      }
+
+      return (compressed_final_size);
+    }
+
+    //////////////////////////////////////////////////////////////////////////
+    bool
+    saveImage (const char* data, size_t data_size, 
+               const std::string &filename)
+    {
+#if _WIN32
+      HANDLE h_native_file = CreateFile (file_name.c_str (), GENERIC_READ | GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+      if (h_native_file == INVALID_HANDLE_VALUE)
+        return (false);
+      HANDLE fm = CreateFileMapping (h_native_file, NULL, PAGE_READWRITE, 0, data_size, NULL);
+      char *map = static_cast<char*> (MapViewOfFile (fm, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, data_size));
+      CloseHandle (fm);
+      memcpy (&map[0], data, data_size);
+      UnmapViewOfFile (map);
+      CloseHandle (h_native_file);
+#else
+      int fd = pcl_open (filename.c_str (), O_RDWR | O_CREAT | O_TRUNC, static_cast<mode_t> (0600));
+      if (fd < 0)
+        return (false);
+      // Stretch the file size to the size of the data
+      off_t result = pcl_lseek (fd, data_size - 1, SEEK_SET);
+      if (result < 0)
+      {
+        pcl_close (fd);
+        return (false);
+      }
+      // Write a bogus entry so that the new file size comes in effect
+      result = static_cast<int> (::write (fd, "", 1));
+      if (result != 1)
+      {
+        pcl_close (fd);
+        return (false);
+      }
+      char *map = static_cast<char*> (mmap (0, data_size, PROT_WRITE, MAP_SHARED, fd, 0));
+      if (map == reinterpret_cast<char*> (-1))    // MAP_FAILED
+      {
+        pcl_close (fd);
+        return (false);
+      }
+      memcpy (&map[0], data, data_size);
+      if (munmap (map, (data_size)) == -1)
+      {
+        pcl_close (fd);
+        return (false);
+      }
+      pcl_close (fd);
+#endif
+      return (true);
+    }
+
+    //////////////////////////////////////////////////////////////////////////
+    bool
+    saveDepth (const char* data,
+               int width, int height,
+               const std::string &filename)
+    {
+      // Save compressed depth to disk
+      unsigned int depth_size = width * height * 2;
+      char* compressed_depth = static_cast<char*> (malloc (size_t (float (depth_size) * 1.5f + 8.0f)));
+      size_t compressed_final_size = compress (
+          data,
+          depth_size,
+          compressed_depth);
+
+      saveImage (compressed_depth, compressed_final_size, filename);
+      free (compressed_depth);
+      return (true);
+    }
+
+    //////////////////////////////////////////////////////////////////////////
+    void
+    saveRGB (const char *data, 
+             int width, int height,
+             const std::string &filename)
+    {
+      // Transform RGBRGB into RRGGBB for better compression
+      vector<char> rrggbb (width * height * 3);
+      int ptr1 = 0,
+          ptr2 = width * height,
+          ptr3 = ptr2 + width * height;
+      for (int i = 0; i < width * height; ++i, ++ptr1, ++ptr2, ++ptr3)
+      {
+        rrggbb[ptr1] = data[i * 3 + 0];
+        rrggbb[ptr2] = data[i * 3 + 1];
+        rrggbb[ptr3] = data[i * 3 + 2];
+      }
+
+      char* compressed_rgb = static_cast<char*> (malloc (size_t (float (rrggbb.size ()) * 1.5f + 8.0f)));
+      size_t compressed_final_size = compress (
+          reinterpret_cast<const char*> (&rrggbb[0]), 
+          uint32_t (rrggbb.size ()),
+          compressed_rgb);
+
+      // Save compressed RGB to disk
+      saveImage (compressed_rgb, compressed_final_size, filename);
+      free (compressed_rgb);
+    }
+
+    //////////////////////////////////////////////////////////////////////////
     void
     image_callback (const boost::shared_ptr<openni_wrapper::Image> &image, 
                     const boost::shared_ptr<openni_wrapper::DepthImage> &depth_image, float)
     {
-      FPS_CALC ("image callback");
-      boost::mutex::scoped_lock lock (image_mutex_);
-
-      // Copy data
-      image_ = image;
-      if (image->getEncoding() != openni_wrapper::Image::RGB)
       {
-        if (rgb_data_size_ != (image->getWidth () * image->getHeight () * 3))
+        FPS_CALC ("image callback");
+        boost::mutex::scoped_lock lock (image_mutex_);
+
+        // Copy data
+        rgb_width_  = image->getWidth ();
+        rgb_height_ = image->getHeight ();
+        rgb_data_.resize (rgb_width_ * rgb_height_ * 3);
+        depth_width_  = depth_image->getWidth ();
+        depth_height_ = depth_image->getHeight ();
+        depth_data_.resize (depth_width_ * depth_height_ * 2);
+
+        if (image->getEncoding () != openni_wrapper::Image::RGB)
+          image->fillRGB (rgb_width_, rgb_height_, &rgb_data_[0]);
+        else
+          memcpy (&rgb_data_[0], image->getMetaData ().Data (), rgb_data_.size ());
+
+        // Copy data
+        memcpy (&depth_data_[0], reinterpret_cast<const unsigned char*> (&depth_image->getDepthMetaData ().Data ()[0]), depth_data_.size ());
+      }
+
+      // If save data is enabled
+      if (save_data_)
+      {
+        pcl::console::TicToc tt;
+        tt.tic ();
+        nr_frames_total_++;
+        std::string time = boost::posix_time::to_iso_string (boost::posix_time::microsec_clock::local_time ());
+        std::stringstream ss1, ss2;
+        ss1 << "frame_" << time << "_rgb.pclzf";
+        saveRGB (reinterpret_cast<char*> (&rgb_data_[0]), rgb_width_, rgb_height_, ss1.str ());
+        ss2 << "frame_" + time + "_depth.pclzf";
+        saveDepth (reinterpret_cast<char*> (&depth_data_[0]), depth_width_, depth_height_, ss2.str ());
+
+#if 0
+        importer_->SetWholeExtent (0, image->getWidth () - 1, 0, image->getHeight () - 1, 0, 0);
+        importer_->SetDataExtentToWholeExtent ();
+        importer_->SetImportVoidPointer (data, 1);
+        importer_->Update ();
+
+      writer_->SetCompressionToPackBits ();
+        writer_->SetFileName (ss1.str ().c_str ());
+        writer_->SetInputConnection (importer_->GetOutputPort ());
+        writer_->Write ();
+#endif   
+#if 0
+        // Compress the valid data
+        unsigned int data_size = image->getWidth () * image->getHeight () * 3;
+        char* compressed_rgb = static_cast<char*> (malloc (size_t (float (data_size) * 1.5f + 8.0f)));
+        char *data2 = new char[data_size];
+        char *data3 = (char*)data;
+        for (int i = 0; i < image->getWidth () * image->getHeight (); ++i)
         {
-          if (rgb_data_)
-            delete [] rgb_data_;
-          rgb_data_size_ = image->getWidth () * image->getHeight () * 3;
-          rgb_data_ = new unsigned char [rgb_data_size_];
+          data2[i] = data3[i * 3];
+          data2[i + image->getWidth () * image->getHeight ()] = data3[i * 3 + 1];
+          data2[i + image->getWidth () * image->getHeight ()  * 2] = data3[i * 3 + 2];
         }
-        image_->fillRGB (image_->getWidth (), image_->getHeight (), rgb_data_);
-      }
+        // Compress the valid data
+        pcl::console::TicToc tt;
+        tt.tic ();
+        size_t rgb_compressed_size = compress (
+            reinterpret_cast<const char*> (data), 
+            data_size,
+            compressed_rgb);
+        cerr << "RGB compressed 1 : " << rgb_compressed_size << " (" << tt.toc () << ")\n";
+        free (compressed_rgb);
+#endif
 
-      // Copy data
-      depth_image_ = depth_image;
-      if (depth_data_)
-        delete[] depth_data_;
-      depth_data_size_ = depth_image->getWidth () * depth_image->getHeight () * 2;
-      depth_data_ = pcl::visualization::FloatImageUtils::getVisualImage (
-          reinterpret_cast<const unsigned short*> (depth_image->getDepthMetaData ().Data ()),
-            depth_image->getWidth (), depth_image->getHeight (),
-            std::numeric_limits<unsigned short>::min (), 
-            // Scale so that the colors look brigher on screen
-            std::numeric_limits<unsigned short>::max () / 10, 
-            true);
+#if 0
+        vector<uint16_t> depth_raw (depth_image->getWidth () * depth_image->getHeight ());
+        memcpy (&depth_raw[0], &depth_image->getDepthMetaData ().Data ()[0], depth_raw.size ());
+        vector<uint8_t> depth_compressed;
+        pcl::io::encodeMonoImageToPNG (depth_raw, depth_image->getWidth (), 
+                                       depth_image->getHeight (), depth_compressed, 
+                                       depth_png_compression_);
+      
+        vector<uint8_t> rgb_raw (image->getWidth () * image->getHeight () );
+        //memcpy (&rgb_raw[0], &image->getMetaData ().Data ()[0], rgb_raw.size ());
+        //memcpy (&rgb_raw[0], reinterpret_cast<const char*> (&data[0]), rgb_raw.size ());
+        //memcpy (&rgb_raw[0], &rgb_data_[0], rgb_raw.size ());
+        for (int i = 0; i < image->getWidth () * image->getHeight (); ++i)
+          rgb_raw[i] = rgb_data_[i * 3];
+        vector<uint8_t> rgb_compressed;
+#endif
+#if 0
+        char* output = new char[snappy::MaxCompressedLength(data_size)];
+        tt.tic ();
+        size_t output_length;
+        snappy::RawCompress (
+            reinterpret_cast<const char*> (data),
+            data_size,
+            output, 
+            &output_length);
+        cerr << "RGB compressed 2 : " << output_length << " (" << tt.toc () << ")\n";
+        
+        delete[] output;
+#endif
+        //for (int i = 0; i < 9; ++i)
+        //{
+        //  tt.tic ();
+        //  pcl::io::encodeMonoImageToPNG (
+        //      rgb_raw,
+        //      image->getWidth (),
+        //      image->getHeight (),
+        //      rgb_compressed, i);
+        //  cerr << "[" << i << "] RGB compressed : " << rgb_compressed.size () << " (" << tt.toc () << ")\n";
+        //}
+
+#if 0
+        depth_importer_->SetWholeExtent (0, depth_image->getWidth () - 1, 0, depth_image->getHeight () - 1, 0, 0);
+        depth_importer_->SetDataExtentToWholeExtent ();
+        depth_importer_->SetImportVoidPointer ((void*)(depth_image->getDepthMetaData ().Data ()), 1);
+        //depth_importer_->CopyImportVoidPointer (compressed_depth, depth_compressed_size);
+        depth_importer_->Update ();
+        writer_->SetFileName (ss2.str ().c_str ());
+        writer_->SetInputConnection (depth_importer_->GetOutputPort ());
+        writer_->SetCompressionToPackBits ();
+        writer_->Write ();
+#endif
+        //tt.toc_print ();
+      }
     }
     
     void 
-    keyboard_callback (const pcl::visualization::KeyboardEvent& event, void* cookie)
+    keyboard_callback (const pcl::visualization::KeyboardEvent& event, void*)
     {
-      string* message = static_cast<string*> (cookie);
-      cout << (*message) << " :: ";
-
       // Space toggle saving the file
-      if (event.getKeySym () == "space" && event.keyDown ())
-        save_data_ = !save_data_;
+      if (event.getKeySym () == "space")
+      {
+        if (event.keyDown ())
+        {
+          save_data_ = !save_data_;
+          PCL_INFO ("Toggled recording state: %s.\n", save_data_ ? "enabled" : "disabled");
+        }
+        return;
+      }
 
-      if (event.getKeyCode ())
-        cout << "the key \'" << event.getKeyCode () << "\' (" << event.getKeyCode () << ") was";
-      else
-        cout << "the special key \'" << event.getKeySym () << "\' was";
-      if (event.keyDown ())
-        cout << " pressed" << endl;
-      else
-        cout << " released" << endl;
+      // Q quits
+      if (event.getKeyCode () == 'q')
+        return;
+
+      //string* message = static_cast<string*> (cookie);
+      //cout << (*message) << " :: ";
+      //if (event.getKeyCode ())
+      //  cout << "the key \'" << event.getKeyCode () << "\' (" << event.getKeyCode () << ") was";
+      //else
+      //  cout << "the special key \'" << event.getKeySym () << "\' was";
+      //if (event.keyDown ())
+      //  cout << " pressed" << endl;
+      //else
+      //  cout << " released" << endl;
     }
     
     void 
-    mouse_callback (const pcl::visualization::MouseEvent& mouse_event, void* cookie)
+    mouse_callback (const pcl::visualization::MouseEvent&, void*)
     {
-      string* message = static_cast<string*> (cookie);
-      if (mouse_event.getType () == pcl::visualization::MouseEvent::MouseButtonPress && mouse_event.getButton () == pcl::visualization::MouseEvent::LeftButton)
-      {
-        cout << (*message) << " :: " << mouse_event.getX () << " , " << mouse_event.getY () << endl;
-      }
+      //string* message = static_cast<string*> (cookie);
+      //if (mouse_event.getType () == pcl::visualization::MouseEvent::MouseButtonPress && mouse_event.getButton () == pcl::visualization::MouseEvent::LeftButton)
+      //{
+      //  cout << (*message) << " :: " << mouse_event.getX () << " , " << mouse_event.getY () << endl;
+      //}
     }
 
     void
@@ -182,14 +426,9 @@ class SimpleOpenNIViewer
       
       grabber_.start ();
 
-      int nr_frames_total = 0;
-      unsigned char* rgb_data = NULL;
-      int rgb_data_size = 0;
-      void* data;
       while (!image_viewer_.wasStopped () && !depth_image_viewer_.wasStopped ())
       {
-        boost::shared_ptr<openni_wrapper::Image> image;
-        boost::shared_ptr<openni_wrapper::DepthImage> depth_image;
+        boost::this_thread::sleep (boost::posix_time::microseconds (100));
 
         if (!image_cld_init_)
         {
@@ -197,122 +436,52 @@ class SimpleOpenNIViewer
           image_cld_init_ = !image_cld_init_;
         }
 
-        if (image_mutex_.try_lock ())
-        {
-          // Swap data
-          image_.swap (image);
-          depth_image_.swap (depth_image);
-
-          if (!rgb_data)
-          {
-            rgb_data_size = rgb_data_size_;
-            rgb_data = new unsigned char[rgb_data_size];
-          }
-          else if (rgb_data_size != rgb_data_size_)
-          {
-            rgb_data_size = rgb_data_size_;
-            delete[] rgb_data;
-            rgb_data = new unsigned char[rgb_data_size];
-          }
-          memcpy (&rgb_data[0], &rgb_data_[0], rgb_data_size);
-
-          // Unlock
-          image_mutex_.unlock ();
-        }
-
-        std::string time = boost::posix_time::to_iso_string (boost::posix_time::microsec_clock::local_time ());
-
-        // Add to renderer
-        if (image)
-        {
-          if (image->getEncoding() == openni_wrapper::Image::RGB)
-          {
-            data = (void*)(image->getMetaData ().Data ());
-            image_viewer_.addRGBImage (image->getMetaData ().Data (), image->getWidth (), image->getHeight ());
-          }
-          else
-          {
-            data = (void*)rgb_data;
-            image_viewer_.addRGBImage (rgb_data, image->getWidth (), image->getHeight ());
-          }
-
-          // If save data is enabled
-          if (save_data_)
-          {
-            std::stringstream ss;
-            ss << "frame_" << time << "_rgb.tiff";
-
-            importer_->SetWholeExtent (0, image->getWidth () - 1, 0, image->getHeight () - 1, 0, 0);
-            importer_->SetDataExtentToWholeExtent ();
-            importer_->SetImportVoidPointer (data, 1);
-            importer_->Update ();
-
-            writer_->SetFileName (ss.str ().c_str ());
-            writer_->SetInputConnection (importer_->GetOutputPort ());
-            writer_->Write ();
-            FPS_CALC ("visualization + I/O callback");
-          }
-          else
-            FPS_CALC ("visualization callback");
-        }
-
-        if (depth_image)
-        {
-          depth_image_viewer_.addRGBImage (depth_data_, depth_image->getWidth (), depth_image->getHeight ());
-          if (!depth_image_cld_init_)
-          {
-            depth_image_viewer_.setPosition (depth_image->getWidth (), 0);
-            depth_image_cld_init_ = !depth_image_cld_init_;
-          }
-
-          if (save_data_)
-          {
-            std::stringstream ss;
-            ss << "frame_" + time + "_depth.tiff";
-
-            depth_importer_->SetWholeExtent (0, depth_image->getWidth () - 1, 0, depth_image->getHeight () - 1, 0, 0);
-            depth_importer_->SetDataExtentToWholeExtent ();
-            depth_importer_->SetImportVoidPointer ((void*)(depth_image->getDepthMetaData ().Data ()), 1);
-            depth_importer_->Update ();
-            writer_->SetFileName (ss.str ().c_str ());
-            writer_->SetInputConnection (depth_importer_->GetOutputPort ());
-            writer_->Write ();
-
-            ++nr_frames_total;
-          }
-
-        }
-
         image_viewer_.spinOnce ();
         depth_image_viewer_.spinOnce ();
         
-        boost::this_thread::sleep (boost::posix_time::microseconds (100));
+        FPS_CALC ("visualization callback");
+        // Add to renderer
+        if (!rgb_data_.empty ())
+          image_viewer_.addRGBImage (reinterpret_cast<unsigned char*> (&rgb_data_[0]), rgb_width_, rgb_height_);
+
+        if (!depth_data_.empty ())
+        {
+          unsigned char* data = pcl::visualization::FloatImageUtils::getVisualImage (
+              reinterpret_cast<unsigned short*> (&depth_data_[0]),
+                depth_width_, depth_height_,
+                std::numeric_limits<unsigned short>::min (), 
+                // Scale so that the colors look brigher on screen
+                std::numeric_limits<unsigned short>::max () / 10, 
+                true);
+
+          depth_image_viewer_.addRGBImage (data, depth_width_, depth_height_);
+          if (!depth_image_cld_init_)
+          {
+            depth_image_viewer_.setPosition (depth_width_, 0);
+            depth_image_cld_init_ = !depth_image_cld_init_;
+          }
+          delete[] data;
+        }
       }
 
       grabber_.stop ();
       
       image_connection.disconnect ();
     
-      PCL_INFO ("Total number of frames written: %d.\n", nr_frames_total);
-
-      if (rgb_data_)
-        delete[] rgb_data_;
-      if (depth_data_)
-        delete[] depth_data_;
+      PCL_INFO ("Total number of frames written: %d.\n", nr_frames_total_);
     }
 
     pcl::OpenNIGrabber& grabber_;
     boost::mutex image_mutex_;
-    boost::shared_ptr<openni_wrapper::Image> image_;
-    boost::shared_ptr<openni_wrapper::DepthImage> depth_image_;
     pcl::visualization::ImageViewer image_viewer_;
     pcl::visualization::ImageViewer depth_image_viewer_;
     bool image_cld_init_, depth_image_cld_init_;
-    unsigned char* rgb_data_, *depth_data_;
-    unsigned rgb_data_size_, depth_data_size_;
+    vector<unsigned char> rgb_data_, depth_data_;
+    unsigned rgb_width_, rgb_height_, depth_width_, depth_height_;
     bool save_data_;
     vtkSmartPointer<vtkImageImport> importer_, depth_importer_;
     vtkSmartPointer<vtkTIFFWriter> writer_;
+    int nr_frames_total_;
 };
 
 void
