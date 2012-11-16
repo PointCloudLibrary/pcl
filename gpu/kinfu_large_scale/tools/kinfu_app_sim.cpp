@@ -75,8 +75,8 @@
 
 #include <pcl/common/angles.h>
 
-#include "tsdf_volume.h"
-#include "tsdf_volume.hpp"
+//#include "tsdf_volume.h"
+//#include "tsdf_volume.hpp"
 
 #ifdef HAVE_OPENCV  
   #include <opencv2/highgui/highgui.hpp>
@@ -1146,14 +1146,18 @@ struct KinFuApp
 	    {
 	      ScopeTimeT time ("tsdf volume download");
 	      cout << "Downloading TSDF volume from device ... " << flush;
-	      kinfu_.volume().downloadTsdfAndWeighs (tsdf_volume_.volumeWriteable (), tsdf_volume_.weightsWriteable ());
-	      tsdf_volume_.setHeader (Eigen::Vector3i (pcl::device::VOLUME_X, pcl::device::VOLUME_Y, pcl::device::VOLUME_Z), kinfu_.volume().getSize ());
-	      cout << "done [" << tsdf_volume_.size () << " voxels]" << endl << endl;
+	      // kinfu_.volume().downloadTsdfAndWeighs (tsdf_volume_.volumeWriteable (), tsdf_volume_.weightsWriteable ());
+              kinfu_.volume ().downloadTsdfAndWeighsLocal ();
+	      // tsdf_volume_.setHeader (Eigen::Vector3i (pcl::device::VOLUME_X, pcl::device::VOLUME_Y, pcl::device::VOLUME_Z), kinfu_.volume().getSize ());
+              kinfu_.volume ().setHeader (Eigen::Vector3i (pcl::device::VOLUME_X, pcl::device::VOLUME_Y, pcl::device::VOLUME_Z), kinfu_.volume().getSize ());
+	      // cout << "done [" << tsdf_volume_.size () << " voxels]" << endl << endl;
+              cout << "done [" << kinfu_.volume ().size () << " voxels]" << endl << endl;
 	    }
 	    {
 	      ScopeTimeT time ("converting");
 	      cout << "Converting volume to TSDF cloud ... " << flush;
-	      tsdf_volume_.convertToTsdfCloud (tsdf_cloud_ptr_);
+	      // tsdf_volume_.convertToTsdfCloud (tsdf_cloud_ptr_);
+              kinfu_.volume ().convertToTsdfCloud (tsdf_cloud_ptr_);
 	      cout << "done [" << tsdf_cloud_ptr_->size () << " points]" << endl << endl;
 	    }
 	  }
@@ -1267,7 +1271,7 @@ struct KinFuApp
 
   KinfuTracker::DepthMap depth_device_;
 
-  pcl::TSDFVolume<float, short> tsdf_volume_;
+  // pcl::TSDFVolume<float, short> tsdf_volume_;
   pcl::PointCloud<pcl::PointXYZI>::Ptr tsdf_cloud_ptr_;
 
   Evaluation::Ptr evaluation_ptr_;
@@ -1301,8 +1305,10 @@ struct KinFuApp
         break;
       case (int)'v': case (int)'V':
         cout << "Saving TSDF volume to tsdf_volume.dat ... " << flush;
-        app->tsdf_volume_.save ("tsdf_volume.dat", true);
-        cout << "done [" << app->tsdf_volume_.size () << " voxels]" << endl;
+        // app->tsdf_volume_.save ("tsdf_volume.dat", true);
+        app->kinfu_.volume ().save ("tsdf_volume.dat", true);
+        //cout << "done [" << app->tsdf_volume_.size () << " voxels]" << endl;
+        cout << "done [" << app->app->kinfu_.volume ().size () << " voxels]" << endl;
         cout << "Saving TSDF volume cloud to tsdf_cloud.pcd ... " << flush;
         pcl::io::savePCDFile<pcl::PointXYZI> ("tsdf_cloud.pcd", *app->tsdf_cloud_ptr_, true);
         cout << "done [" << app->tsdf_cloud_ptr_->size () << " points]" << endl;

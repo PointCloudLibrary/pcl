@@ -41,8 +41,9 @@
 #include <pcl/gpu/kinfu_large_scale/cyclical_buffer.h>
 #include "../../../../../src/internal.h"
 
+
 bool 
-pcl::gpu::CyclicalBuffer::checkForShift (const pcl::gpu::TsdfVolume::Ptr volume, const Eigen::Affine3f &cam_pose, const double distance_camera_target, const bool perform_shift, const bool last_shift)
+pcl::gpu::kinfuLS::CyclicalBuffer::checkForShift (const TsdfVolume::Ptr volume, const Eigen::Affine3f &cam_pose, const double distance_camera_target, const bool perform_shift, const bool last_shift)
 {
   bool result = false;
 
@@ -74,7 +75,7 @@ pcl::gpu::CyclicalBuffer::checkForShift (const pcl::gpu::TsdfVolume::Ptr volume,
 
 
 void
-pcl::gpu::CyclicalBuffer::performShift (const pcl::gpu::TsdfVolume::Ptr volume, const pcl::PointXYZ &target_point, const bool last_shift)
+pcl::gpu::kinfuLS::CyclicalBuffer::performShift (const TsdfVolume::Ptr volume, const pcl::PointXYZ &target_point, const bool last_shift)
 {
   // compute new origin and offsets
   int offset_x, offset_y, offset_z;
@@ -152,7 +153,7 @@ pcl::gpu::CyclicalBuffer::performShift (const pcl::gpu::TsdfVolume::Ptr volume, 
   PCL_INFO ("world contains %d points after cleaning\n", world_model_.getWorldSize ());
 
   // clear buffer slice and update the world model
-  pcl::device::clearTSDFSlice (volume->data (), &buffer_, offset_x, offset_y, offset_z);
+  pcl::device::kinfuLS::clearTSDFSlice (volume->data (), &buffer_, offset_x, offset_y, offset_z);
 
   // insert current slice in the world if it contains any points
   if (current_slice->points.size () != 0) {
@@ -169,7 +170,7 @@ pcl::gpu::CyclicalBuffer::performShift (const pcl::gpu::TsdfVolume::Ptr volume, 
 }
 
 void 
-pcl::gpu::CyclicalBuffer::computeAndSetNewCubeMetricOrigin (const pcl::PointXYZ &target_point, int &shiftX, int &shiftY, int &shiftZ)
+pcl::gpu::kinfuLS::CyclicalBuffer::computeAndSetNewCubeMetricOrigin (const pcl::PointXYZ &target_point, int &shiftX, int &shiftY, int &shiftZ)
 {
   // compute new origin for the cube, based on the target point
   float3 new_cube_origin_meters;

@@ -44,76 +44,67 @@
 
 #include "internal.h"
 
+#include "pointer_shift.cu" // contains primitive needed by all cuda functions dealing with rolling tsdf buffer
+
 namespace pcl
 {
   namespace device
-  {   
-    #define INV_DIV 3.051850947599719e-5f
+  {
+    namespace kinfuLS
+    {   
+      #define INV_DIV 3.051850947599719e-5f
 
-    __device__ __forceinline__ static void
-    shift_tsdf_pointer(short2 ** value, pcl::gpu::tsdf_buffer buffer)
-    {
-      ///Shift the pointer by (@origin - @start)
-      *value += (buffer.tsdf_rolling_buff_origin - buffer.tsdf_memory_start);
-      
-      ///If we land outside of the memory, make sure to "modulo" the new value
-      if(*value > buffer.tsdf_memory_end)
+      __device__ __forceinline__ void
+      pack_tsdf (float tsdf, int weight, short2& value)
       {
-        *value -= (buffer.tsdf_memory_end - buffer.tsdf_memory_start);
-      }       
-    }
+        int fixedp = max (-DIVISOR, min (DIVISOR, __float2int_rz (tsdf * DIVISOR)));
+        //int fixedp = __float2int_rz(tsdf * DIVISOR);
+        value = make_short2 (fixedp, weight);
+      }
+
+      __device__ __forceinline__ void
+      unpack_tsdf (short2 value, float& tsdf, int& weight)
+      {
+        weight = value.y;
+        tsdf = __int2float_rn (value.x) / DIVISOR;   //*/ * INV_DIV;
+      }
+
+      __device__ __forceinline__ float
+      unpack_tsdf (short2 value)
+      {
+        return static_cast<float>(value.x) / DIVISOR;    //*/ * INV_DIV;
+      }
 
 
-    __device__ __forceinline__ void
-    pack_tsdf (float tsdf, int weight, short2& value)
-    {
-      int fixedp = max (-DIVISOR, min (DIVISOR, __float2int_rz (tsdf * DIVISOR)));
-      //int fixedp = __float2int_rz(tsdf * DIVISOR);
-      value = make_short2 (fixedp, weight);
-    }
-
-    __device__ __forceinline__ void
-    unpack_tsdf (short2 value, float& tsdf, int& weight)
-    {
-      weight = value.y;
-      tsdf = __int2float_rn (value.x) / DIVISOR;   //*/ * INV_DIV;
-    }
-
-    __device__ __forceinline__ float
-    unpack_tsdf (short2 value)
-    {
-      return static_cast<float>(value.x) / DIVISOR;    //*/ * INV_DIV;
-    }
+      __device__ __forceinline__ float3
+      operator* (const Mat33& m, const float3& vec)
+      {
+        return make_float3 (dot (m.data[0], vec), dot (m.data[1], vec), dot (m.data[2], vec));
+      }
 
 
-    __device__ __forceinline__ float3
-    operator* (const Mat33& m, const float3& vec)
-    {
-      return make_float3 (dot (m.data[0], vec), dot (m.data[1], vec), dot (m.data[2], vec));
-    }
+      ////////////////////////////////////////////////////////////////////////////////////////
+      ///// Prefix Scan utility
 
+      enum ScanKind { exclusive, inclusive };
 
-    ////////////////////////////////////////////////////////////////////////////////////////
-    ///// Prefix Scan utility
+      template<ScanKind Kind, class T>
+      __device__ __forceinline__ T
+      scan_warp ( volatile T *ptr, const unsigned int idx = threadIdx.x )
+      {
+        const unsigned int lane = idx & 31;       // index of thread in warp (0..31) 
 
-    enum ScanKind { exclusive, inclusive };
+        if (lane >=  1) ptr[idx] = ptr[idx -  1] + ptr[idx];
+        if (lane >=  2) ptr[idx] = ptr[idx -  2] + ptr[idx];
+        if (lane >=  4) ptr[idx] = ptr[idx -  4] + ptr[idx];
+        if (lane >=  8) ptr[idx] = ptr[idx -  8] + ptr[idx];
+        if (lane >= 16) ptr[idx] = ptr[idx - 16] + ptr[idx];
 
-    template<ScanKind Kind, class T>
-    __device__ __forceinline__ T
-    scan_warp ( volatile T *ptr, const unsigned int idx = threadIdx.x )
-    {
-      const unsigned int lane = idx & 31;       // index of thread in warp (0..31) 
-
-      if (lane >=  1) ptr[idx] = ptr[idx -  1] + ptr[idx];
-      if (lane >=  2) ptr[idx] = ptr[idx -  2] + ptr[idx];
-      if (lane >=  4) ptr[idx] = ptr[idx -  4] + ptr[idx];
-      if (lane >=  8) ptr[idx] = ptr[idx -  8] + ptr[idx];
-      if (lane >= 16) ptr[idx] = ptr[idx - 16] + ptr[idx];
-
-      if (Kind == inclusive)
-        return ptr[idx];
-      else
-        return (lane > 0) ? ptr[idx - 1] : 0;
+        if (Kind == inclusive)
+          return ptr[idx];
+        else
+          return (lane > 0) ? ptr[idx - 1] : 0;
+      }
     }
   }
 }

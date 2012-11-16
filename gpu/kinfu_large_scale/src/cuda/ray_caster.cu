@@ -35,322 +35,325 @@
  *
  */
 #include "device.hpp"
+#include <boost/graph/buffer_concepts.hpp>
+
 
 namespace pcl
 {
   namespace device
   {
-    __device__ __forceinline__ float
-    getMinTime (const float3& volume_max, const float3& origin, const float3& dir)
+    namespace kinfuLS
     {
-      float txmin = ( (dir.x > 0 ? 0.f : volume_max.x) - origin.x) / dir.x;
-      float tymin = ( (dir.y > 0 ? 0.f : volume_max.y) - origin.y) / dir.y;
-      float tzmin = ( (dir.z > 0 ? 0.f : volume_max.z) - origin.z) / dir.z;
-
-      return fmax ( fmax (txmin, tymin), tzmin);
-    }
-
-    __device__ __forceinline__ float
-    getMaxTime (const float3& volume_max, const float3& origin, const float3& dir)
-    {
-      float txmax = ( (dir.x > 0 ? volume_max.x : 0.f) - origin.x) / dir.x;
-      float tymax = ( (dir.y > 0 ? volume_max.y : 0.f) - origin.y) / dir.y;
-      float tzmax = ( (dir.z > 0 ? volume_max.z : 0.f) - origin.z) / dir.z;
-
-      return fmin (fmin (txmax, tymax), tzmax);
-    }
-
-    struct RayCaster
-    {
-      enum { CTA_SIZE_X = 32, CTA_SIZE_Y = 8 };
-
-      Mat33 Rcurr;
-      float3 tcurr;
-
-      float time_step;
-      float3 volume_size;
-
-      float3 cell_size;
-      int cols, rows;
-
-      PtrStep<short2> volume;
-
-      Intr intr;
-
-      mutable PtrStep<float> nmap;
-      mutable PtrStep<float> vmap;
-
-      __device__ __forceinline__ float3
-      get_ray_next (int x, int y) const
+      __device__ __forceinline__ float
+      getMinTime (const float3& volume_max, const float3& origin, const float3& dir)
       {
-        float3 ray_next;
-        ray_next.x = (x - intr.cx) / intr.fx;
-        ray_next.y = (y - intr.cy) / intr.fy;
-        ray_next.z = 1;
-        return ray_next;
-      }
+        float txmin = ( (dir.x > 0 ? 0.f : volume_max.x) - origin.x) / dir.x;
+        float tymin = ( (dir.y > 0 ? 0.f : volume_max.y) - origin.y) / dir.y;
+        float tzmin = ( (dir.z > 0 ? 0.f : volume_max.z) - origin.z) / dir.z;
 
-      __device__ __forceinline__ bool
-      checkInds (const int3& g) const
-      {
-        return (g.x >= 0 && g.y >= 0 && g.z >= 0 && g.x < VOLUME_X && g.y < VOLUME_Y && g.z < VOLUME_Z);
+        return fmax ( fmax (txmin, tymin), tzmin);
       }
 
       __device__ __forceinline__ float
-      readTsdf (int x, int y, int z, pcl::gpu::tsdf_buffer buffer) const
+      getMaxTime (const float3& volume_max, const float3& origin, const float3& dir)
       {
-        const short2* tmp_pos = &(volume.ptr (buffer.voxels_size.y * z + y)[x]);
-        short2* pos = const_cast<short2*> (tmp_pos);
-        shift_tsdf_pointer(&pos, buffer);
-        return unpack_tsdf (*pos);
+        float txmax = ( (dir.x > 0 ? volume_max.x : 0.f) - origin.x) / dir.x;
+        float tymax = ( (dir.y > 0 ? volume_max.y : 0.f) - origin.y) / dir.y;
+        float tzmax = ( (dir.z > 0 ? volume_max.z : 0.f) - origin.z) / dir.z;
+
+        return fmin (fmin (txmax, tymax), tzmax);
       }
 
-      __device__ __forceinline__ int3
-      getVoxel (float3 point) const
+      struct RayCaster
       {
-        int vx = __float2int_rd (point.x / cell_size.x);        // round to negative infinity
-        int vy = __float2int_rd (point.y / cell_size.y);
-        int vz = __float2int_rd (point.z / cell_size.z);
+        enum { CTA_SIZE_X = 32, CTA_SIZE_Y = 8 };
 
-        return make_int3 (vx, vy, vz);
-      }
+        Mat33 Rcurr;
+        float3 tcurr;
 
-      __device__ __forceinline__ float
-      interpolateTrilineary (const float3& origin, const float3& dir, float time, pcl::gpu::tsdf_buffer buffer) const
-      {
-        return interpolateTrilineary (origin + dir * time, buffer);
-      }
+        float time_step;
+        float3 volume_size;
 
-      __device__ __forceinline__ float
-      interpolateTrilineary (const float3& point, pcl::gpu::tsdf_buffer buffer) const
-      {
-        int3 g = getVoxel (point);
+        float3 cell_size;
+        int cols, rows;
 
-        if (g.x <= 0 || g.x >= buffer.voxels_size.x - 1)
-          return numeric_limits<float>::quiet_NaN ();
+        PtrStep<short2> volume;
 
-        if (g.y <= 0 || g.y >= buffer.voxels_size.y - 1)
-          return numeric_limits<float>::quiet_NaN ();
+        Intr intr;
 
-        if (g.z <= 0 || g.z >= buffer.voxels_size.z - 1)
-          return numeric_limits<float>::quiet_NaN ();
+        mutable PtrStep<float> nmap;
+        mutable PtrStep<float> vmap;
 
-/*      //OLD CODE
-        float vx = (g.x + 0.5f) * cell_size.x;
-        float vy = (g.y + 0.5f) * cell_size.y;
-        float vz = (g.z + 0.5f) * cell_size.z;
-
-        g.x = (point.x < vx) ? (g.x - 1) : g.x;
-        g.y = (point.y < vy) ? (g.y - 1) : g.y;
-        g.z = (point.z < vz) ? (g.z - 1) : g.z;
-
-        float a = (point.x - (g.x + 0.5f) * cell_size.x) / cell_size.x;
-        float b = (point.y - (g.y + 0.5f) * cell_size.y) / cell_size.y;
-        float c = (point.z - (g.z + 0.5f) * cell_size.z) / cell_size.z;
-
-        float res = readTsdf (g.x + 0, g.y + 0, g.z + 0, buffer) * (1 - a) * (1 - b) * (1 - c) +
-                    readTsdf (g.x + 0, g.y + 0, g.z + 1, buffer) * (1 - a) * (1 - b) * c +
-                    readTsdf (g.x + 0, g.y + 1, g.z + 0, buffer) * (1 - a) * b * (1 - c) +
-                    readTsdf (g.x + 0, g.y + 1, g.z + 1, buffer) * (1 - a) * b * c +
-                    readTsdf (g.x + 1, g.y + 0, g.z + 0, buffer) * a * (1 - b) * (1 - c) +
-                    readTsdf (g.x + 1, g.y + 0, g.z + 1, buffer) * a * (1 - b) * c +
-                    readTsdf (g.x + 1, g.y + 1, g.z + 0, buffer) * a * b * (1 - c) +
-                    readTsdf (g.x + 1, g.y + 1, g.z + 1, buffer) * a * b * c;
-*/
-        //NEW CODE
-		float a = point.x/ cell_size.x - (g.x + 0.5f); if (a<0) { g.x--; a+=1.0f; };
-        float b = point.y/ cell_size.y - (g.y + 0.5f); if (b<0) { g.y--; b+=1.0f; };
-        float c = point.z/ cell_size.z - (g.z + 0.5f); if (c<0) { g.z--; c+=1.0f; };
-
-        float res = (1 - a) * (
-						(1 - b) * (
-							readTsdf (g.x + 0, g.y + 0, g.z + 0, buffer) * (1 - c) +
-							readTsdf (g.x + 0, g.y + 0, g.z + 1, buffer) *      c 
-							)
-						+ b * (
-							readTsdf (g.x + 0, g.y + 1, g.z + 0, buffer) * (1 - c) +
-							readTsdf (g.x + 0, g.y + 1, g.z + 1, buffer) *      c  
-							)
-						)
-					+ a * (
-						(1 - b) * (
-							readTsdf (g.x + 1, g.y + 0, g.z + 0, buffer) * (1 - c) +
-							readTsdf (g.x + 1, g.y + 0, g.z + 1, buffer) *      c 
-							)
-						+ b * (
-							readTsdf (g.x + 1, g.y + 1, g.z + 0, buffer) * (1 - c) +
-							readTsdf (g.x + 1, g.y + 1, g.z + 1, buffer) *      c 
-							)
-						)
-					;
-        return res;
-      }
-
-
-      __device__ __forceinline__ void
-      operator () (pcl::gpu::tsdf_buffer buffer) const
-      {
-        int x = threadIdx.x + blockIdx.x * CTA_SIZE_X;
-        int y = threadIdx.y + blockIdx.y * CTA_SIZE_Y;
-
-        if (x >= cols || y >= rows)
-          return;
-
-        vmap.ptr (y)[x] = numeric_limits<float>::quiet_NaN ();
-        nmap.ptr (y)[x] = numeric_limits<float>::quiet_NaN ();
-
-        float3 ray_start = tcurr;
-        float3 ray_next = Rcurr * get_ray_next (x, y) + tcurr;
-
-        float3 ray_dir = normalized (ray_next - ray_start);
-
-        //ensure that it isn't a degenerate case
-        ray_dir.x = (ray_dir.x == 0.f) ? 1e-15 : ray_dir.x;
-        ray_dir.y = (ray_dir.y == 0.f) ? 1e-15 : ray_dir.y;
-        ray_dir.z = (ray_dir.z == 0.f) ? 1e-15 : ray_dir.z;
-
-        // computer time when entry and exit volume
-        float time_start_volume = getMinTime (volume_size, ray_start, ray_dir);
-        float time_exit_volume = getMaxTime (volume_size, ray_start, ray_dir);
-
-        const float min_dist = 0.f;         //in meters
-        time_start_volume = fmax (time_start_volume, min_dist);
-        if (time_start_volume >= time_exit_volume)
-          return;
-
-        float time_curr = time_start_volume;
-        int3 g = getVoxel (ray_start + ray_dir * time_curr);
-        g.x = max (0, min (g.x, buffer.voxels_size.x - 1));
-        g.y = max (0, min (g.y, buffer.voxels_size.y - 1));
-        g.z = max (0, min (g.z, buffer.voxels_size.z - 1));
-
-        float tsdf = readTsdf (g.x, g.y, g.z, buffer);
-
-        //infinite loop guard
-        const float max_time = 3 * (volume_size.x + volume_size.y + volume_size.z);
-
-        for (; time_curr < max_time; time_curr += time_step)
+        __device__ __forceinline__ float3
+        get_ray_next (int x, int y) const
         {
-          float tsdf_prev = tsdf;
+          float3 ray_next;
+          ray_next.x = (x - intr.cx) / intr.fx;
+          ray_next.y = (y - intr.cy) / intr.fy;
+          ray_next.z = 1;
+          return ray_next;
+        }
 
-          int3 g = getVoxel (  ray_start + ray_dir * (time_curr + time_step)  );
-          if (!checkInds (g))
-            break;
+        __device__ __forceinline__ bool
+        checkInds (const int3& g) const
+        {
+          return (g.x >= 0 && g.y >= 0 && g.z >= 0 && g.x < VOLUME_X && g.y < VOLUME_Y && g.z < VOLUME_Z);
+        }
 
-          tsdf = readTsdf (g.x, g.y, g.z, buffer);
+        __device__ __forceinline__ float
+        readTsdf (int x, int y, int z, pcl::gpu::kinfuLS::tsdf_buffer buffer) const
+        {
+          const short2* tmp_pos = &(volume.ptr (buffer.voxels_size.y * z + y)[x]);
+          short2* pos = const_cast<short2*> (tmp_pos);
+          shift_tsdf_pointer(&pos, buffer);
+          return unpack_tsdf (*pos);
+        }
 
-          if (tsdf_prev < 0.f && tsdf > 0.f)
-            break;
+        __device__ __forceinline__ int3
+        getVoxel (float3 point) const
+        {
+          int vx = __float2int_rd (point.x / cell_size.x);        // round to negative infinity
+          int vy = __float2int_rd (point.y / cell_size.y);
+          int vz = __float2int_rd (point.z / cell_size.z);
 
-          if (tsdf_prev > 0.f && tsdf < 0.f)           //zero crossing
+          return make_int3 (vx, vy, vz);
+        }
+
+        __device__ __forceinline__ float
+        interpolateTrilineary (const float3& origin, const float3& dir, float time, pcl::gpu::kinfuLS::tsdf_buffer buffer) const
+        {
+          return interpolateTrilineary (origin + dir * time, buffer);
+        }
+
+        __device__ __forceinline__ float
+        interpolateTrilineary (const float3& point, pcl::gpu::kinfuLS::tsdf_buffer buffer) const
+        {
+          int3 g = getVoxel (point);
+
+          if (g.x <= 0 || g.x >= buffer.voxels_size.x - 1)
+            return numeric_limits<float>::quiet_NaN ();
+
+          if (g.y <= 0 || g.y >= buffer.voxels_size.y - 1)
+            return numeric_limits<float>::quiet_NaN ();
+
+          if (g.z <= 0 || g.z >= buffer.voxels_size.z - 1)
+            return numeric_limits<float>::quiet_NaN ();
+
+  /*      //OLD CODE
+          float vx = (g.x + 0.5f) * cell_size.x;
+          float vy = (g.y + 0.5f) * cell_size.y;
+          float vz = (g.z + 0.5f) * cell_size.z;
+
+          g.x = (point.x < vx) ? (g.x - 1) : g.x;
+          g.y = (point.y < vy) ? (g.y - 1) : g.y;
+          g.z = (point.z < vz) ? (g.z - 1) : g.z;
+
+          float a = (point.x - (g.x + 0.5f) * cell_size.x) / cell_size.x;
+          float b = (point.y - (g.y + 0.5f) * cell_size.y) / cell_size.y;
+          float c = (point.z - (g.z + 0.5f) * cell_size.z) / cell_size.z;
+
+          float res = readTsdf (g.x + 0, g.y + 0, g.z + 0, buffer) * (1 - a) * (1 - b) * (1 - c) +
+                      readTsdf (g.x + 0, g.y + 0, g.z + 1, buffer) * (1 - a) * (1 - b) * c +
+                      readTsdf (g.x + 0, g.y + 1, g.z + 0, buffer) * (1 - a) * b * (1 - c) +
+                      readTsdf (g.x + 0, g.y + 1, g.z + 1, buffer) * (1 - a) * b * c +
+                      readTsdf (g.x + 1, g.y + 0, g.z + 0, buffer) * a * (1 - b) * (1 - c) +
+                      readTsdf (g.x + 1, g.y + 0, g.z + 1, buffer) * a * (1 - b) * c +
+                      readTsdf (g.x + 1, g.y + 1, g.z + 0, buffer) * a * b * (1 - c) +
+                      readTsdf (g.x + 1, g.y + 1, g.z + 1, buffer) * a * b * c;
+  */
+          //NEW CODE
+                  float a = point.x/ cell_size.x - (g.x + 0.5f); if (a<0) { g.x--; a+=1.0f; };
+          float b = point.y/ cell_size.y - (g.y + 0.5f); if (b<0) { g.y--; b+=1.0f; };
+          float c = point.z/ cell_size.z - (g.z + 0.5f); if (c<0) { g.z--; c+=1.0f; };
+
+          float res = (1 - a) * (
+                                  (1 - b) * (
+                                          readTsdf (g.x + 0, g.y + 0, g.z + 0, buffer) * (1 - c) +
+                                          readTsdf (g.x + 0, g.y + 0, g.z + 1, buffer) *      c 
+                                          )
+                                  + b * (
+                                          readTsdf (g.x + 0, g.y + 1, g.z + 0, buffer) * (1 - c) +
+                                          readTsdf (g.x + 0, g.y + 1, g.z + 1, buffer) *      c  
+                                          )
+                                  )
+                          + a * (
+                                  (1 - b) * (
+                                          readTsdf (g.x + 1, g.y + 0, g.z + 0, buffer) * (1 - c) +
+                                          readTsdf (g.x + 1, g.y + 0, g.z + 1, buffer) *      c 
+                                          )
+                                  + b * (
+                                          readTsdf (g.x + 1, g.y + 1, g.z + 0, buffer) * (1 - c) +
+                                          readTsdf (g.x + 1, g.y + 1, g.z + 1, buffer) *      c 
+                                          )
+                                  )
+                                          ;
+          return res;
+        }
+
+
+        __device__ __forceinline__ void
+        operator () (pcl::gpu::kinfuLS::tsdf_buffer buffer) const
+        {
+          int x = threadIdx.x + blockIdx.x * CTA_SIZE_X;
+          int y = threadIdx.y + blockIdx.y * CTA_SIZE_Y;
+
+          if (x >= cols || y >= rows)
+            return;
+
+          vmap.ptr (y)[x] = numeric_limits<float>::quiet_NaN ();
+          nmap.ptr (y)[x] = numeric_limits<float>::quiet_NaN ();
+
+          float3 ray_start = tcurr;
+          float3 ray_next = Rcurr * get_ray_next (x, y) + tcurr;
+
+          float3 ray_dir = normalized (ray_next - ray_start);
+
+          //ensure that it isn't a degenerate case
+          ray_dir.x = (ray_dir.x == 0.f) ? 1e-15 : ray_dir.x;
+          ray_dir.y = (ray_dir.y == 0.f) ? 1e-15 : ray_dir.y;
+          ray_dir.z = (ray_dir.z == 0.f) ? 1e-15 : ray_dir.z;
+
+          // computer time when entry and exit volume
+          float time_start_volume = getMinTime (volume_size, ray_start, ray_dir);
+          float time_exit_volume = getMaxTime (volume_size, ray_start, ray_dir);
+
+          const float min_dist = 0.f;         //in meters
+          time_start_volume = fmax (time_start_volume, min_dist);
+          if (time_start_volume >= time_exit_volume)
+            return;
+
+          float time_curr = time_start_volume;
+          int3 g = getVoxel (ray_start + ray_dir * time_curr);
+          g.x = max (0, min (g.x, buffer.voxels_size.x - 1));
+          g.y = max (0, min (g.y, buffer.voxels_size.y - 1));
+          g.z = max (0, min (g.z, buffer.voxels_size.z - 1));
+
+          float tsdf = readTsdf (g.x, g.y, g.z, buffer);
+
+          //infinite loop guard
+          const float max_time = 3 * (volume_size.x + volume_size.y + volume_size.z);
+
+          for (; time_curr < max_time; time_curr += time_step)
           {
-            float Ftdt = interpolateTrilineary (ray_start, ray_dir, time_curr + time_step, buffer);
-            if (isnan (Ftdt))
+            float tsdf_prev = tsdf;
+
+            int3 g = getVoxel (  ray_start + ray_dir * (time_curr + time_step)  );
+            if (!checkInds (g))
               break;
 
-            float Ft = interpolateTrilineary (ray_start, ray_dir, time_curr, buffer);
-            if (isnan (Ft))
+            tsdf = readTsdf (g.x, g.y, g.z, buffer);
+
+            if (tsdf_prev < 0.f && tsdf > 0.f)
               break;
 
-            //float Ts = time_curr - time_step * Ft/(Ftdt - Ft);
-            float Ts = time_curr - time_step * Ft / (Ftdt - Ft);
-
-            float3 vetex_found = ray_start + ray_dir * Ts;
-
-            vmap.ptr (y       )[x] = vetex_found.x;
-            vmap.ptr (y + rows)[x] = vetex_found.y;
-            vmap.ptr (y + 2 * rows)[x] = vetex_found.z;
-
-            int3 g = getVoxel ( ray_start + ray_dir * time_curr );
-            if (g.x > 1 && g.y > 1 && g.z > 1 && g.x < buffer.voxels_size.x - 2 && g.y < buffer.voxels_size.y - 2 && g.z < buffer.voxels_size.z - 2)
+            if (tsdf_prev > 0.f && tsdf < 0.f)           //zero crossing
             {
-              float3 t;
-              float3 n;
+              float Ftdt = interpolateTrilineary (ray_start, ray_dir, time_curr + time_step, buffer);
+              if (isnan (Ftdt))
+                break;
 
-              t = vetex_found;
-              t.x += cell_size.x;
-              float Fx1 = interpolateTrilineary (t, buffer);
+              float Ft = interpolateTrilineary (ray_start, ray_dir, time_curr, buffer);
+              if (isnan (Ft))
+                break;
 
-              t = vetex_found;
-              t.x -= cell_size.x;
-              float Fx2 = interpolateTrilineary (t, buffer);
+              //float Ts = time_curr - time_step * Ft/(Ftdt - Ft);
+              float Ts = time_curr - time_step * Ft / (Ftdt - Ft);
 
-              n.x = (Fx1 - Fx2);
+              float3 vetex_found = ray_start + ray_dir * Ts;
 
-              t = vetex_found;
-              t.y += cell_size.y;
-              float Fy1 = interpolateTrilineary (t, buffer);
+              vmap.ptr (y       )[x] = vetex_found.x;
+              vmap.ptr (y + rows)[x] = vetex_found.y;
+              vmap.ptr (y + 2 * rows)[x] = vetex_found.z;
 
-              t = vetex_found;
-              t.y -= cell_size.y;
-              float Fy2 = interpolateTrilineary (t, buffer);
+              int3 g = getVoxel ( ray_start + ray_dir * time_curr );
+              if (g.x > 1 && g.y > 1 && g.z > 1 && g.x < buffer.voxels_size.x - 2 && g.y < buffer.voxels_size.y - 2 && g.z < buffer.voxels_size.z - 2)
+              {
+                float3 t;
+                float3 n;
 
-              n.y = (Fy1 - Fy2);
+                t = vetex_found;
+                t.x += cell_size.x;
+                float Fx1 = interpolateTrilineary (t, buffer);
 
-              t = vetex_found;
-              t.z += cell_size.z;
-              float Fz1 = interpolateTrilineary (t, buffer);
+                t = vetex_found;
+                t.x -= cell_size.x;
+                float Fx2 = interpolateTrilineary (t, buffer);
 
-              t = vetex_found;
-              t.z -= cell_size.z;
-              float Fz2 = interpolateTrilineary (t, buffer);
+                n.x = (Fx1 - Fx2);
 
-              n.z = (Fz1 - Fz2);
+                t = vetex_found;
+                t.y += cell_size.y;
+                float Fy1 = interpolateTrilineary (t, buffer);
 
-              n = normalized (n);
+                t = vetex_found;
+                t.y -= cell_size.y;
+                float Fy2 = interpolateTrilineary (t, buffer);
 
-              nmap.ptr (y       )[x] = n.x;
-              nmap.ptr (y + rows)[x] = n.y;
-              nmap.ptr (y + 2 * rows)[x] = n.z;
+                n.y = (Fy1 - Fy2);
+
+                t = vetex_found;
+                t.z += cell_size.z;
+                float Fz1 = interpolateTrilineary (t, buffer);
+
+                t = vetex_found;
+                t.z -= cell_size.z;
+                float Fz2 = interpolateTrilineary (t, buffer);
+
+                n.z = (Fz1 - Fz2);
+
+                n = normalized (n);
+
+                nmap.ptr (y       )[x] = n.x;
+                nmap.ptr (y + rows)[x] = n.y;
+                nmap.ptr (y + 2 * rows)[x] = n.z;
+              }
+              break;
             }
-            break;
-          }
 
-        }          /* for(;;)  */
+          }          /* for(;;)  */
+        }
+      };
+
+      __global__ void
+      rayCastKernel (const RayCaster rc, pcl::gpu::kinfuLS::tsdf_buffer buffer) {
+        rc (buffer);
       }
-    };
 
-    __global__ void
-    rayCastKernel (const RayCaster rc, pcl::gpu::tsdf_buffer buffer) {
-      rc (buffer);
+      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      void
+      raycast (const Intr& intr, const Mat33& Rcurr, const float3& tcurr, 
+                            float tranc_dist, const float3& volume_size,
+                            const PtrStep<short2>& volume, const pcl::gpu::kinfuLS::tsdf_buffer* buffer, MapArr& vmap, MapArr& nmap)
+      {
+        RayCaster rc;
+
+        rc.Rcurr = Rcurr;
+        rc.tcurr = tcurr;
+
+        rc.time_step = tranc_dist * 0.8f;
+
+        rc.volume_size = volume_size;
+
+        rc.cell_size.x = volume_size.x / buffer->voxels_size.x;
+        rc.cell_size.y = volume_size.y / buffer->voxels_size.y;
+        rc.cell_size.z = volume_size.z / buffer->voxels_size.z;
+
+        rc.cols = vmap.cols ();
+        rc.rows = vmap.rows () / 3;
+
+        rc.intr = intr;
+
+        rc.volume = volume;
+        rc.vmap = vmap;
+        rc.nmap = nmap;
+
+        dim3 block (RayCaster::CTA_SIZE_X, RayCaster::CTA_SIZE_Y);
+        dim3 grid (divUp (rc.cols, block.x), divUp (rc.rows, block.y));
+
+        rayCastKernel<<<grid, block>>>(rc, *buffer);
+        cudaSafeCall (cudaGetLastError ());
+        //cudaSafeCall(cudaDeviceSynchronize());
+      }
     }
   }
 }
-
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void
-pcl::device::raycast (const Intr& intr, const Mat33& Rcurr, const float3& tcurr, 
-                      float tranc_dist, const float3& volume_size,
-                      const PtrStep<short2>& volume, const pcl::gpu::tsdf_buffer* buffer, MapArr& vmap, MapArr& nmap)
-{
-  RayCaster rc;
-
-  rc.Rcurr = Rcurr;
-  rc.tcurr = tcurr;
-
-  rc.time_step = tranc_dist * 0.8f;
-
-  rc.volume_size = volume_size;
-
-  rc.cell_size.x = volume_size.x / buffer->voxels_size.x;
-  rc.cell_size.y = volume_size.y / buffer->voxels_size.y;
-  rc.cell_size.z = volume_size.z / buffer->voxels_size.z;
-
-  rc.cols = vmap.cols ();
-  rc.rows = vmap.rows () / 3;
-
-  rc.intr = intr;
-
-  rc.volume = volume;
-  rc.vmap = vmap;
-  rc.nmap = nmap;
-
-  dim3 block (RayCaster::CTA_SIZE_X, RayCaster::CTA_SIZE_Y);
-  dim3 grid (divUp (rc.cols, block.x), divUp (rc.rows, block.y));
-
-  rayCastKernel<<<grid, block>>>(rc, *buffer);
-  cudaSafeCall (cudaGetLastError ());
-  //cudaSafeCall(cudaDeviceSynchronize());
-}
-

@@ -41,11 +41,9 @@
 
 #include <pcl/gpu/kinfu_large_scale/world_model.h>
 
-
-
 template <typename PointT>
 void 
-pcl::WorldModel<PointT>::addSlice ( PointCloudPtr new_cloud)
+pcl::kinfuLS::WorldModel<PointT>::addSlice ( PointCloudPtr new_cloud)
 {
   PCL_DEBUG ("Adding new cloud. Current world contains %d points.\n", world_->points.size ());
 
@@ -59,7 +57,7 @@ pcl::WorldModel<PointT>::addSlice ( PointCloudPtr new_cloud)
 
 template <typename PointT>
 void 
-pcl::WorldModel<PointT>::getExistingData(const double previous_origin_x, const double previous_origin_y, const double previous_origin_z, const double offset_x, const double offset_y, const double offset_z, const double volume_x, const double volume_y, const double volume_z, pcl::PointCloud<PointT> &existing_slice)
+pcl::kinfuLS::WorldModel<PointT>::getExistingData(const double previous_origin_x, const double previous_origin_y, const double previous_origin_z, const double offset_x, const double offset_y, const double offset_z, const double volume_x, const double volume_y, const double volume_z, pcl::PointCloud<PointT> &existing_slice)
 {
   double newOriginX = previous_origin_x + offset_x; 
   double newOriginY = previous_origin_y + offset_y; 
@@ -130,7 +128,7 @@ pcl::WorldModel<PointT>::getExistingData(const double previous_origin_x, const d
 
 template <typename PointT>
 void
-pcl::WorldModel<PointT>::getWorldAsCubes (const double size, std::vector<typename pcl::WorldModel<PointT>::PointCloudPtr> &cubes, std::vector<Eigen::Vector3f> &transforms, double overlap)
+pcl::kinfuLS::WorldModel<PointT>::getWorldAsCubes (const double size, std::vector<typename WorldModel<PointT>::PointCloudPtr> &cubes, std::vector<Eigen::Vector3f> &transforms, double overlap)
 {
   
   if(world_->points.size () == 0)
@@ -144,7 +142,7 @@ pcl::WorldModel<PointT>::getWorldAsCubes (const double size, std::vector<typenam
   // remove nans from world cloud
   world_->is_dense = false;
   std::vector<int> indices;
-  pcl::removeNaNFromPointCloud	(	*world_, *world_, indices);
+  pcl::removeNaNFromPointCloud ( *world_, *world_, indices);
 	
   PCL_INFO ("World contains %d points after nan removal.\n", world_->points.size ());
   
@@ -251,7 +249,7 @@ pcl::WorldModel<PointT>::getWorldAsCubes (const double size, std::vector<typenam
 
 template <typename PointT>
 inline void 
-pcl::WorldModel<PointT>::setIndicesAsNans (PointCloudPtr cloud, IndicesConstPtr indices)
+pcl::kinfuLS::WorldModel<PointT>::setIndicesAsNans (PointCloudPtr cloud, IndicesConstPtr indices)
 {
   std::vector<sensor_msgs::PointField> fields; 
   pcl::for_each_type<FieldList> (pcl::detail::FieldAdder<PointT> (fields));
@@ -268,9 +266,9 @@ pcl::WorldModel<PointT>::setIndicesAsNans (PointCloudPtr cloud, IndicesConstPtr 
 
 template <typename PointT>
 void 
-pcl::WorldModel<PointT>::setSliceAsNans (const double origin_x, const double origin_y, const double origin_z, const double offset_x, const double offset_y, const double offset_z, const int size_x, const int size_y, const int size_z)
+pcl::kinfuLS::WorldModel<PointT>::setSliceAsNans (const double origin_x, const double origin_y, const double origin_z, const double offset_x, const double offset_y, const double offset_z, const int size_x, const int size_y, const int size_z)
 { 
-  PCL_DEBUG ("IN SETSLICE AS NANS\n");
+  // PCL_DEBUG ("IN SETSLICE AS NANS\n");
   
   PointCloudPtr slice (new pcl::PointCloud<PointT>);
   
@@ -303,7 +301,7 @@ pcl::WorldModel<PointT>::setSliceAsNans (const double origin_x, const double ori
     upper_limit_x = previous_limit_x;    
   }
   
-  PCL_DEBUG ("Limit X: [%f - %f]\n", lower_limit_x, upper_limit_x);
+  // PCL_DEBUG ("Limit X: [%f - %f]\n", lower_limit_x, upper_limit_x);
   
   ConditionOrPtr range_cond_OR_x (new pcl::ConditionOr<PointT> ());
   range_cond_OR_x->addComparison (FieldComparisonConstPtr (new pcl::FieldComparison<PointT> ("x", pcl::ComparisonOps::GE,  upper_limit_x ))); // filtered dimension
@@ -324,7 +322,8 @@ pcl::WorldModel<PointT>::setSliceAsNans (const double origin_x, const double ori
   
   //set outliers (so our slice points) to nan
   setIndicesAsNans(world_, indices_x);
-  PCL_DEBUG("%d points set to nan on X\n", indices_x->size ());
+  
+  // PCL_DEBUG("%d points set to nan on X\n", indices_x->size ());
   
   // get points of slice on Y (we actually set a negative filter and set the ouliers (so, our slice points) to nan)
   double lower_limit_y, upper_limit_y;
@@ -339,7 +338,7 @@ pcl::WorldModel<PointT>::setSliceAsNans (const double origin_x, const double ori
     upper_limit_y = previous_limit_y;    
   }
   
-  PCL_DEBUG ("Limit Y: [%f - %f]\n", lower_limit_y, upper_limit_y);
+  // PCL_DEBUG ("Limit Y: [%f - %f]\n", lower_limit_y, upper_limit_y);
   
   ConditionOrPtr range_cond_OR_y (new pcl::ConditionOr<PointT> ());
   range_cond_OR_y->addComparison (FieldComparisonConstPtr (new pcl::FieldComparison<PointT> ("x", pcl::ComparisonOps::GE,  previous_limit_x )));
@@ -360,7 +359,7 @@ pcl::WorldModel<PointT>::setSliceAsNans (const double origin_x, const double ori
   
   //set outliers (so our slice points) to nan
   setIndicesAsNans(world_, indices_y);
-  PCL_DEBUG ("%d points set to nan on Y\n", indices_y->size ());
+  // PCL_DEBUG ("%d points set to nan on Y\n", indices_y->size ());
   
   // get points of slice on Z (we actually set a negative filter and set the ouliers (so, our slice points) to nan)
   double lower_limit_z, upper_limit_z;
@@ -375,7 +374,7 @@ pcl::WorldModel<PointT>::setSliceAsNans (const double origin_x, const double ori
     upper_limit_z = previous_limit_z;    
   }
   
-  PCL_DEBUG ("Limit Z: [%f - %f]\n", lower_limit_z, upper_limit_z);
+  // PCL_DEBUG ("Limit Z: [%f - %f]\n", lower_limit_z, upper_limit_z);
   
   ConditionOrPtr range_cond_OR_z (new pcl::ConditionOr<PointT> ());
   range_cond_OR_z->addComparison (FieldComparisonConstPtr (new pcl::FieldComparison<PointT> ("x", pcl::ComparisonOps::GE,  previous_limit_x )));
@@ -396,11 +395,11 @@ pcl::WorldModel<PointT>::setSliceAsNans (const double origin_x, const double ori
   
   //set outliers (so our slice points) to nan
   setIndicesAsNans(world_, indices_z);
-  PCL_DEBUG("%d points set to nan on Z\n", indices_z->size ());
+  // PCL_DEBUG("%d points set to nan on Z\n", indices_z->size ());
   
   
 }
 
-#define PCL_INSTANTIATE_WorldModel(T) template class PCL_EXPORTS pcl::WorldModel<T>;
+#define PCL_INSTANTIATE_WorldModel(T) template class PCL_EXPORTS pcl::kinfuLS::WorldModel<T>;
 
 #endif // PCL_WORLD_MODEL_IMPL_HPP_

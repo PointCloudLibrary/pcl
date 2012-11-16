@@ -101,7 +101,7 @@ namespace pcl
 
     /** \brief Camera intrinsics structure
       */
-    struct Intr
+   /* struct Intr
     {
       float fx, fy, cx, cy;
       Intr () {};
@@ -122,7 +122,7 @@ namespace pcl
       }
 
     };
-
+*/
 
     ////////////////////////////////////////////////////////////////////////////////////////
     // Constructors

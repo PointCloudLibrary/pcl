@@ -49,7 +49,7 @@ class Evaluation
 {
 public:
   typedef boost::shared_ptr<Evaluation> Ptr; 
-  typedef /*pcl::gpu::KinfuTracker::PixelRGB*/ pcl::gpu::PixelRGB RGB;
+  typedef /*pcl::gpu::KinfuTracker::PixelRGB*/ pcl::gpu::kinfuLS::PixelRGB RGB;
 
   Evaluation(const std::string& folder);
 
@@ -74,7 +74,7 @@ public:
   const static float fx, fy, cx, cy;
 
 
-  void saveAllPoses(const pcl::gpu::KinfuTracker& kinfu, int frame_number = -1, const std::string& logfile = "kinfu_poses.txt") const;
+  void saveAllPoses(const pcl::gpu::kinfuLS::KinfuTracker& kinfu, int frame_number = -1, const std::string& logfile = "kinfu_poses.txt") const;
 
 private:
   std::string folder_;

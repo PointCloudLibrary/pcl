@@ -75,7 +75,7 @@ using namespace xn;
 
 #define REPORT_ERROR(msg) pcl::gpu::error ((msg), __FILE__, __LINE__)
 
-struct pcl::gpu::CaptureOpenNI::Impl
+struct pcl::gpu::kinfuLS::CaptureOpenNI::Impl
 {
   Context context;
   ScriptNode scriptNode;
@@ -90,13 +90,13 @@ struct pcl::gpu::CaptureOpenNI::Impl
   bool has_image;
 };
 
-pcl::gpu::CaptureOpenNI::CaptureOpenNI() : depth_focal_length_VGA (0.f), baseline (0.f), shadow_value (0), no_sample_value (0), pixelSize (0.0), max_depth (0) {}
-pcl::gpu::CaptureOpenNI::CaptureOpenNI(int device) {open (device); }
-pcl::gpu::CaptureOpenNI::CaptureOpenNI(const string& filename) {open (filename); }
-pcl::gpu::CaptureOpenNI::~CaptureOpenNI() { release (); }
+pcl::gpu::kinfuLS::CaptureOpenNI::CaptureOpenNI() : depth_focal_length_VGA (0.f), baseline (0.f), shadow_value (0), no_sample_value (0), pixelSize (0.0), max_depth (0) {}
+pcl::gpu::kinfuLS::CaptureOpenNI::CaptureOpenNI(int device) {open (device); }
+pcl::gpu::kinfuLS::CaptureOpenNI::CaptureOpenNI(const string& filename) {open (filename); }
+pcl::gpu::kinfuLS::CaptureOpenNI::~CaptureOpenNI() { release (); }
 
 void
-pcl::gpu::CaptureOpenNI::open (int device)
+pcl::gpu::kinfuLS::CaptureOpenNI::open (int device)
 {
   impl_.reset ( new Impl () );
 
@@ -179,7 +179,7 @@ pcl::gpu::CaptureOpenNI::open (int device)
 }
 
 void
-pcl::gpu::CaptureOpenNI::open (const std::string& filename)
+pcl::gpu::kinfuLS::CaptureOpenNI::open (const std::string& filename)
 {
   impl_.reset ( new Impl () );
 
@@ -222,7 +222,7 @@ pcl::gpu::CaptureOpenNI::open (const std::string& filename)
 }
 
 void
-pcl::gpu::CaptureOpenNI::release ()
+pcl::gpu::kinfuLS::CaptureOpenNI::release ()
 {
   if (impl_)
   {
@@ -239,7 +239,7 @@ pcl::gpu::CaptureOpenNI::release ()
 }
 
 bool
-pcl::gpu::CaptureOpenNI::grab (PtrStepSz<const unsigned short>& depth, PtrStepSz<const RGB>& rgb24)
+pcl::gpu::kinfuLS::CaptureOpenNI::grab (PtrStepSz<const unsigned short>& depth, PtrStepSz<const RGB>& rgb24)
 {
   XnStatus rc = XN_STATUS_OK;
 
@@ -284,7 +284,7 @@ pcl::gpu::CaptureOpenNI::grab (PtrStepSz<const unsigned short>& depth, PtrStepSz
 }
 
 void
-pcl::gpu::CaptureOpenNI::getParams ()
+pcl::gpu::kinfuLS::CaptureOpenNI::getParams ()
 {
   XnStatus rc = XN_STATUS_OK;
 
@@ -341,7 +341,7 @@ pcl::gpu::CaptureOpenNI::getParams ()
 }
 
 bool
-pcl::gpu::CaptureOpenNI::setRegistration (bool value)
+pcl::gpu::kinfuLS::CaptureOpenNI::setRegistration (bool value)
 {
   XnStatus rc = XN_STATUS_OK;
 

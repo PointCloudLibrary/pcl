@@ -40,7 +40,7 @@
 
 #include <pcl/common/time.h>
 #include <pcl/gpu/kinfu_large_scale/kinfu.h>
-#include "internal.h"
+
 
 #include <Eigen/Core>
 #include <Eigen/SVD>
@@ -55,9 +55,9 @@
 #endif
 
 using namespace std;
-using namespace pcl::device;
-using namespace pcl::gpu;
+using namespace pcl::device::kinfuLS;
 
+using pcl::device::kinfuLS::device_cast;
 using Eigen::AngleAxisf;
 using Eigen::Array3f;
 using Eigen::Vector3i;
@@ -67,12 +67,16 @@ namespace pcl
 {
   namespace gpu
   {
-    Eigen::Vector3f rodrigues2(const Eigen::Matrix3f& matrix);
+    namespace kinfuLS
+    {
+      Eigen::Vector3f rodrigues2(const Eigen::Matrix3f& matrix);
+    }
   }
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-pcl::gpu::KinfuTracker::KinfuTracker (const Eigen::Vector3f &volume_size, const float shiftingDistance, int rows, int cols) : cyclical_( DISTANCE_THRESHOLD, pcl::device::VOLUME_SIZE, VOLUME_X), rows_(rows), cols_(cols), global_time_(0), max_icp_distance_(0), integration_metric_threshold_(0.f), perform_last_scan_ (false), finished_(false)
+pcl::gpu::kinfuLS::KinfuTracker::KinfuTracker (const Eigen::Vector3f &volume_size, const float shiftingDistance, int rows, int cols) : 
+  cyclical_( DISTANCE_THRESHOLD, VOLUME_SIZE, VOLUME_X), rows_(rows), cols_(cols), global_time_(0), max_icp_distance_(0), integration_metric_threshold_(0.f), perform_last_scan_ (false), finished_(false)
 {
   //const Vector3f volume_size = Vector3f::Constant (VOLUME_SIZE);
   const Vector3i volume_resolution (VOLUME_X, VOLUME_Y, VOLUME_Z);
@@ -117,7 +121,7 @@ pcl::gpu::KinfuTracker::KinfuTracker (const Eigen::Vector3f &volume_size, const 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::gpu::KinfuTracker::setDepthIntrinsics (float fx, float fy, float cx, float cy)
+pcl::gpu::kinfuLS::KinfuTracker::setDepthIntrinsics (float fx, float fy, float cx, float cy)
 {
   fx_ = fx;
   fy_ = fy;
@@ -127,7 +131,7 @@ pcl::gpu::KinfuTracker::setDepthIntrinsics (float fx, float fy, float cx, float 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::gpu::KinfuTracker::setInitialCameraPose (const Eigen::Affine3f& pose)
+pcl::gpu::kinfuLS::KinfuTracker::setInitialCameraPose (const Eigen::Affine3f& pose)
 {
   init_Rcam_ = pose.rotation ();
   init_tcam_ = pose.translation ();
@@ -136,21 +140,21 @@ pcl::gpu::KinfuTracker::setInitialCameraPose (const Eigen::Affine3f& pose)
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::gpu::KinfuTracker::setDepthTruncationForICP (float max_icp_distance)
+pcl::gpu::kinfuLS::KinfuTracker::setDepthTruncationForICP (float max_icp_distance)
 {
   max_icp_distance_ = max_icp_distance;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::gpu::KinfuTracker::setCameraMovementThreshold(float threshold)
+pcl::gpu::kinfuLS::KinfuTracker::setCameraMovementThreshold(float threshold)
 {
   integration_metric_threshold_ = threshold;  
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::gpu::KinfuTracker::setIcpCorespFilteringParams (float distThreshold, float sineOfAngle)
+pcl::gpu::kinfuLS::KinfuTracker::setIcpCorespFilteringParams (float distThreshold, float sineOfAngle)
 {
   distThres_  = distThreshold; //mm
   angleThres_ = sineOfAngle;
@@ -158,20 +162,20 @@ pcl::gpu::KinfuTracker::setIcpCorespFilteringParams (float distThreshold, float 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 int
-pcl::gpu::KinfuTracker::cols ()
+pcl::gpu::kinfuLS::KinfuTracker::cols ()
 {
   return (cols_);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 int
-pcl::gpu::KinfuTracker::rows ()
+pcl::gpu::kinfuLS::KinfuTracker::rows ()
 {
   return (rows_);
 }
 
 void
-pcl::gpu::KinfuTracker::extractAndMeshWorld ()
+pcl::gpu::kinfuLS::KinfuTracker::extractAndMeshWorld ()
 {
   finished_ = true;
   int cloud_size = 0;
@@ -193,7 +197,7 @@ pcl::gpu::KinfuTracker::extractAndMeshWorld ()
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::gpu::KinfuTracker::reset ()
+pcl::gpu::kinfuLS::KinfuTracker::reset ()
 {
   if (global_time_)
     PCL_WARN ("Reset\n");
@@ -221,17 +225,13 @@ pcl::gpu::KinfuTracker::reset ()
   // reset cyclical buffer as well
   cyclical_.resetBuffer (tsdf_volume_);
   
-
-   
-
-    
   if (color_volume_) // color integration mode is enabled
     color_volume_->reset ();    
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::gpu::KinfuTracker::allocateBufffers (int rows, int cols)
+pcl::gpu::kinfuLS::KinfuTracker::allocateBufffers (int rows, int cols)
 {    
   depths_curr_.resize (LEVELS);
   vmaps_g_curr_.resize (LEVELS);
@@ -269,30 +269,41 @@ pcl::gpu::KinfuTracker::allocateBufffers (int rows, int cols)
   sumbuf_.create (27);
 }
 
+
+
+inline void 
+pcl::gpu::kinfuLS::KinfuTracker::convertTransforms (Matrix3frm&  transformIn1, Matrix3frm transformIn2, Vector3f translationIn1, Vector3f translationIn2, Mat33& transformOut1, Mat33& transformOut2, float3& translationOut1, float3& translationOut2)
+{
+  transformOut1 = device_cast<Mat33> (transformIn1);
+  transformOut2 = device_cast<Mat33> (transformIn2);
+  
+  translationOut1 = device_cast<float3>(translationIn1);
+  translationOut2 = device_cast<float3>(translationIn2);
+}
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl::gpu::KinfuTracker::operator() (const DepthMap& depth_raw)
+pcl::gpu::kinfuLS::KinfuTracker::operator() (const DepthMap& depth_raw)
 {  
   
-  device::Intr intr (fx_, fy_, cx_, cy_);
+  Intr intr (fx_, fy_, cx_, cy_);
   {
     //ScopeTime time(">>> Bilateral, pyr-down-all, create-maps-all");
     //depth_raw.copyTo(depths_curr[0]);
-    device::bilateralFilter (depth_raw, depths_curr_[0]);
+    bilateralFilter (depth_raw, depths_curr_[0]);
 
 	if (max_icp_distance_ > 0)
-		device::truncateDepth(depths_curr_[0], max_icp_distance_);
+		truncateDepth(depths_curr_[0], max_icp_distance_);
 
     for (int i = 1; i < LEVELS; ++i)
-      device::pyrDown (depths_curr_[i-1], depths_curr_[i]);
+      pyrDown (depths_curr_[i-1], depths_curr_[i]);
 
     for (int i = 0; i < LEVELS; ++i)
     {
-      device::createVMap (intr(i), depths_curr_[i], vmaps_curr_[i]);
+      createVMap (intr(i), depths_curr_[i], vmaps_curr_[i]);
       //device::createNMap(vmaps_curr_[i], nmaps_curr_[i]);
       computeNormalsEigen (vmaps_curr_[i], nmaps_curr_[i]);
     }
-    pcl::device::sync ();
+    pcl::device::kinfuLS::sync ();
   }
 
   //can't perform more on first frame
@@ -309,7 +320,7 @@ pcl::gpu::KinfuTracker::operator() (const DepthMap& depth_raw)
          
     float3 device_volume_size = device_cast<const float3>(tsdf_volume_->getSize());
 
-    device::integrateTsdfVolume(depth_raw, intr, device_volume_size, device_initial_cam_rot_inv, device_initial_cam_trans, tsdf_volume_->getTsdfTruncDist(), tsdf_volume_->data(), getCyclicalBufferStructure (), depthRawScaled_);
+    integrateTsdfVolume(depth_raw, intr, device_volume_size, device_initial_cam_rot_inv, device_initial_cam_trans, tsdf_volume_->getTsdfTruncDist(), tsdf_volume_->data(), getCyclicalBufferStructure (), depthRawScaled_);
     
     /*
     Matrix3frm init_Rcam = rmats_[0]; //  [Ri|ti] - pos of camera, i.e.
@@ -327,7 +338,7 @@ pcl::gpu::KinfuTracker::operator() (const DepthMap& depth_raw)
     */
     
     for (int i = 0; i < LEVELS; ++i)
-      device::tranformMaps (vmaps_curr_[i], nmaps_curr_[i], device_initial_cam_rot, device_initial_cam_trans, vmaps_g_prev_[i], nmaps_g_prev_[i]);
+      tranformMaps (vmaps_curr_[i], nmaps_curr_[i], device_initial_cam_rot, device_initial_cam_trans, vmaps_g_prev_[i], nmaps_g_prev_[i]);
 
 
     if(perform_last_scan_)
@@ -400,7 +411,7 @@ pcl::gpu::KinfuTracker::operator() (const DepthMap& depth_raw)
       
       MapArr& vmap_temp = vmap_g_prev;
       MapArr& nmap_temp = nmap_g_prev;
-      device::tranformMaps (vmap_temp, nmap_temp, rotation_id, cube_origin, vmap_g_prev, nmap_g_prev); 
+      tranformMaps (vmap_temp, nmap_temp, rotation_id, cube_origin, vmap_g_prev, nmap_g_prev); 
          
       /*
       MapArr& vmap_curr = vmaps_curr_[level_index];
@@ -445,8 +456,7 @@ pcl::gpu::KinfuTracker::operator() (const DepthMap& depth_raw)
 
 
     
-  
-		if ( fabs (det) < 1e-15 || pcl_isnan (det) )
+        if ( fabs (det) < 1e-15 || pcl_isnan (det) )
         {
           if (pcl_isnan (det)) cout << "qnan" << endl;
           
@@ -485,7 +495,7 @@ pcl::gpu::KinfuTracker::operator() (const DepthMap& depth_raw)
   */
   
   //check for shift
-  bool has_shifted = cyclical_.checkForShift(tsdf_volume_, getCameraPose (), 0.6 * volume_size_, true, perform_last_scan_);
+  bool has_shifted = cyclical_.checkForShift(tsdf_volume_, getCameraPose (), 0.6 * volume_size_, true, perform_last_scan_); // TODO make distance from center a global parameter
 
   if(has_shifted)
     PCL_WARN ("SHIFTING\n");
@@ -542,14 +552,14 @@ pcl::gpu::KinfuTracker::operator() (const DepthMap& depth_raw)
     MapArr& vmap_temp = vmaps_g_prev_[0];
     MapArr& nmap_temp = nmaps_g_prev_[0];
     
-    device::tranformMaps (vmap_temp, nmap_temp, rotation_id, cube_origin, vmaps_g_prev_[0], nmaps_g_prev_[0]);
+    tranformMaps (vmap_temp, nmap_temp, rotation_id, cube_origin, vmaps_g_prev_[0], nmaps_g_prev_[0]);
     
     for (int i = 1; i < LEVELS; ++i)
     {
       resizeVMap (vmaps_g_prev_[i-1], vmaps_g_prev_[i]);
       resizeNMap (nmaps_g_prev_[i-1], nmaps_g_prev_[i]);
     }
-    pcl::device::sync ();
+    pcl::device::kinfuLS::sync ();
   }
 
   if(has_shifted && perform_last_scan_)
@@ -561,7 +571,7 @@ pcl::gpu::KinfuTracker::operator() (const DepthMap& depth_raw)
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 Eigen::Affine3f
-pcl::gpu::KinfuTracker::getCameraPose (int time) const
+pcl::gpu::kinfuLS::KinfuTracker::getCameraPose (int time) const
 {
   if (time > (int)rmats_.size () || time < 0)
     time = rmats_.size () - 1;
@@ -574,51 +584,51 @@ pcl::gpu::KinfuTracker::getCameraPose (int time) const
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 size_t
-pcl::gpu::KinfuTracker::getNumberOfPoses () const
+pcl::gpu::kinfuLS::KinfuTracker::getNumberOfPoses () const
 {
   return rmats_.size();
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-const TsdfVolume& 
-pcl::gpu::KinfuTracker::volume() const 
+const pcl::gpu::kinfuLS::TsdfVolume& 
+pcl::gpu::kinfuLS::KinfuTracker::volume() const 
 { 
   return *tsdf_volume_; 
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-TsdfVolume& 
-pcl::gpu::KinfuTracker::volume()
+pcl::gpu::kinfuLS::TsdfVolume& 
+pcl::gpu::kinfuLS::KinfuTracker::volume()
 {
   return *tsdf_volume_;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-const ColorVolume& 
-pcl::gpu::KinfuTracker::colorVolume() const
+const pcl::gpu::kinfuLS::ColorVolume& 
+pcl::gpu::kinfuLS::KinfuTracker::colorVolume() const
 {
   return *color_volume_;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-ColorVolume& 
-pcl::gpu::KinfuTracker::colorVolume()
+pcl::gpu::kinfuLS::ColorVolume& 
+pcl::gpu::kinfuLS::KinfuTracker::colorVolume()
 {
   return *color_volume_;
 }
      
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::gpu::KinfuTracker::getImage (View& view) const
+pcl::gpu::kinfuLS::KinfuTracker::getImage (View& view) const
 {
   //Eigen::Vector3f light_source_pose = tsdf_volume_->getSize() * (-3.f);
   Eigen::Vector3f light_source_pose = tvecs_[tvecs_.size () - 1];
 
-  device::LightSource light;
+  LightSource light;
   light.number = 1;
   light.pos[0] = device_cast<const float3>(light_source_pose);
 
@@ -628,40 +638,40 @@ pcl::gpu::KinfuTracker::getImage (View& view) const
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::gpu::KinfuTracker::getLastFrameCloud (DeviceArray2D<PointType>& cloud) const
+pcl::gpu::kinfuLS::KinfuTracker::getLastFrameCloud (DeviceArray2D<PointType>& cloud) const
 {
   cloud.create (rows_, cols_);
   DeviceArray2D<float4>& c = (DeviceArray2D<float4>&)cloud;
-  device::convert (vmaps_g_prev_[0], c);
+  convert (vmaps_g_prev_[0], c);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::gpu::KinfuTracker::getLastFrameNormals (DeviceArray2D<NormalType>& normals) const
+pcl::gpu::kinfuLS::KinfuTracker::getLastFrameNormals (DeviceArray2D<NormalType>& normals) const
 {
   normals.create (rows_, cols_);
   DeviceArray2D<float8>& n = (DeviceArray2D<float8>&)normals;
-  device::convert (nmaps_g_prev_[0], n);
+  convert (nmaps_g_prev_[0], n);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-pcl::gpu::KinfuTracker::initColorIntegration(int max_weight)
+pcl::gpu::kinfuLS::KinfuTracker::initColorIntegration(int max_weight)
 {     
-  color_volume_ = pcl::gpu::ColorVolume::Ptr( new ColorVolume(*tsdf_volume_, max_weight) );  
+  color_volume_ = pcl::gpu::kinfuLS::ColorVolume::Ptr( new ColorVolume(*tsdf_volume_, max_weight) );  
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 bool 
-pcl::gpu::KinfuTracker::operator() (const DepthMap& depth, const View& colors)
+pcl::gpu::kinfuLS::KinfuTracker::operator() (const DepthMap& depth, const View& colors)
 { 
   bool res = (*this)(depth);
 
   if (res && color_volume_)
   {
     const float3 device_volume_size = device_cast<const float3> (tsdf_volume_->getSize());
-    device::Intr intr(fx_, fy_, cx_, cy_);
+    Intr intr(fx_, fy_, cx_, cy_);
 
     Matrix3frm R_inv = rmats_.back().inverse();
     Vector3f   t     = tvecs_.back();
@@ -669,7 +679,7 @@ pcl::gpu::KinfuTracker::operator() (const DepthMap& depth, const View& colors)
     Mat33&  device_Rcurr_inv = device_cast<Mat33> (R_inv);
     float3& device_tcurr = device_cast<float3> (t);
     
-    device::updateColorVolume(intr, tsdf_volume_->getTsdfTruncDist(), device_Rcurr_inv, device_tcurr, vmaps_g_prev_[0], 
+    updateColorVolume(intr, tsdf_volume_->getTsdfTruncDist(), device_Rcurr_inv, device_tcurr, vmaps_g_prev_[0], 
         colors, device_volume_size, color_volume_->data(), color_volume_->getMaxWeight());
   }
 
@@ -682,69 +692,72 @@ namespace pcl
 {
   namespace gpu
   {
-    PCL_EXPORTS void 
-    paint3DView(const KinfuTracker::View& rgb24, KinfuTracker::View& view, float colors_weight = 0.5f)
+    namespace kinfuLS
     {
-      device::paint3DView(rgb24, view, colors_weight);
-    }
-
-    PCL_EXPORTS void
-    mergePointNormal(const DeviceArray<PointXYZ>& cloud, const DeviceArray<Normal>& normals, DeviceArray<PointNormal>& output)
-    {
-      const size_t size = min(cloud.size(), normals.size());
-      output.create(size);
-
-      const DeviceArray<float4>& c = (const DeviceArray<float4>&)cloud;
-      const DeviceArray<float8>& n = (const DeviceArray<float8>&)normals;
-      const DeviceArray<float12>& o = (const DeviceArray<float12>&)output;
-      device::mergePointNormal(c, n, o);           
-    }
-
-    Eigen::Vector3f rodrigues2(const Eigen::Matrix3f& matrix)
-    {
-      Eigen::JacobiSVD<Eigen::Matrix3f> svd(matrix, Eigen::ComputeFullV | Eigen::ComputeFullU);    
-      Eigen::Matrix3f R = svd.matrixU() * svd.matrixV().transpose();
-
-      double rx = R(2, 1) - R(1, 2);
-      double ry = R(0, 2) - R(2, 0);
-      double rz = R(1, 0) - R(0, 1);
-
-      double s = sqrt((rx*rx + ry*ry + rz*rz)*0.25);
-      double c = (R.trace() - 1) * 0.5;
-      c = c > 1. ? 1. : c < -1. ? -1. : c;
-
-      double theta = acos(c);
-
-      if( s < 1e-5 )
+      PCL_EXPORTS void 
+      paint3DView(const KinfuTracker::View& rgb24, KinfuTracker::View& view, float colors_weight = 0.5f)
       {
-        double t;
+        pcl::device::kinfuLS::paint3DView(rgb24, view, colors_weight);
+      }
 
-        if( c > 0 )
-          rx = ry = rz = 0;
+      PCL_EXPORTS void
+      mergePointNormal(const DeviceArray<PointXYZ>& cloud, const DeviceArray<Normal>& normals, DeviceArray<PointNormal>& output)
+      {
+        const size_t size = min(cloud.size(), normals.size());
+        output.create(size);
+
+        const DeviceArray<float4>& c = (const DeviceArray<float4>&)cloud;
+        const DeviceArray<float8>& n = (const DeviceArray<float8>&)normals;
+        const DeviceArray<float12>& o = (const DeviceArray<float12>&)output;
+        pcl::device::kinfuLS::mergePointNormal(c, n, o);           
+      }
+
+      Eigen::Vector3f rodrigues2(const Eigen::Matrix3f& matrix)
+      {
+        Eigen::JacobiSVD<Eigen::Matrix3f> svd(matrix, Eigen::ComputeFullV | Eigen::ComputeFullU);    
+        Eigen::Matrix3f R = svd.matrixU() * svd.matrixV().transpose();
+
+        double rx = R(2, 1) - R(1, 2);
+        double ry = R(0, 2) - R(2, 0);
+        double rz = R(1, 0) - R(0, 1);
+
+        double s = sqrt((rx*rx + ry*ry + rz*rz)*0.25);
+        double c = (R.trace() - 1) * 0.5;
+        c = c > 1. ? 1. : c < -1. ? -1. : c;
+
+        double theta = acos(c);
+
+        if( s < 1e-5 )
+        {
+          double t;
+
+          if( c > 0 )
+            rx = ry = rz = 0;
+          else
+          {
+            t = (R(0, 0) + 1)*0.5;
+            rx = sqrt( std::max(t, 0.0) );
+            t = (R(1, 1) + 1)*0.5;
+            ry = sqrt( std::max(t, 0.0) ) * (R(0, 1) < 0 ? -1.0 : 1.0);
+            t = (R(2, 2) + 1)*0.5;
+            rz = sqrt( std::max(t, 0.0) ) * (R(0, 2) < 0 ? -1.0 : 1.0);
+
+            if( fabs(rx) < fabs(ry) && fabs(rx) < fabs(rz) && (R(1, 2) > 0) != (ry*rz > 0) )
+              rz = -rz;
+            theta /= sqrt(rx*rx + ry*ry + rz*rz);
+            rx *= theta;
+            ry *= theta;
+            rz *= theta;
+          }
+        }
         else
         {
-          t = (R(0, 0) + 1)*0.5;
-          rx = sqrt( std::max(t, 0.0) );
-          t = (R(1, 1) + 1)*0.5;
-          ry = sqrt( std::max(t, 0.0) ) * (R(0, 1) < 0 ? -1.0 : 1.0);
-          t = (R(2, 2) + 1)*0.5;
-          rz = sqrt( std::max(t, 0.0) ) * (R(0, 2) < 0 ? -1.0 : 1.0);
-
-          if( fabs(rx) < fabs(ry) && fabs(rx) < fabs(rz) && (R(1, 2) > 0) != (ry*rz > 0) )
-            rz = -rz;
-          theta /= sqrt(rx*rx + ry*ry + rz*rz);
-          rx *= theta;
-          ry *= theta;
-          rz *= theta;
+          double vth = 1/(2*s);
+          vth *= theta;
+          rx *= vth; ry *= vth; rz *= vth;
         }
+        return Eigen::Vector3d(rx, ry, rz).cast<float>();
       }
-      else
-      {
-        double vth = 1/(2*s);
-        vth *= theta;
-        rx *= vth; ry *= vth; rz *= vth;
-      }
-      return Eigen::Vector3d(rx, ry, rz).cast<float>();
     }
   }
 }

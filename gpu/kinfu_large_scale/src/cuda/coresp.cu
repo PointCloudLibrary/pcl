@@ -36,197 +36,201 @@
  */
 
 #include "device.hpp"
+#include <boost/graph/buffer_concepts.hpp>
 //#include <pcl/gpu/utils/device/block.hpp>
 
 namespace pcl
 {
   namespace device
   {
-    __device__ unsigned int count = 0;
-
-    struct CorespSearch
+    namespace kinfuLS
     {
-      enum { CTA_SIZE_X = 32, CTA_SIZE_Y = 8, CTA_SIZE = CTA_SIZE_X * CTA_SIZE_Y };
+      __device__ unsigned int count = 0;
 
-      struct plus
+      struct CorespSearch
       {
-        __forceinline__ __device__ int
-        operator () (const int &lhs, const volatile int& rhs) const {
-          return lhs + rhs;
-        }
-      };
+        enum { CTA_SIZE_X = 32, CTA_SIZE_Y = 8, CTA_SIZE = CTA_SIZE_X * CTA_SIZE_Y };
 
-      PtrStep<float> vmap_g_curr;
-      PtrStep<float> nmap_g_curr;
-
-      Mat33 Rprev_inv;
-      float3 tprev;
-
-      Intr intr;
-
-      PtrStep<float> vmap_g_prev;
-      PtrStep<float> nmap_g_prev;
-
-      float distThres;
-      float angleThres;
-
-      mutable PtrStepSz<short2> coresp;
-
-      mutable int* gbuf;
-
-      __device__ __forceinline__ int
-      search () const
-      {
-        int x = threadIdx.x + blockIdx.x * blockDim.x;
-        int y = threadIdx.y + blockIdx.y * blockDim.y;
-
-        if (x >= coresp.cols || y >= coresp.rows)
-          return 0;
-
-        coresp.ptr (y)[x] = make_short2 (-1, -1);
-
-        float3 ncurr_g;
-        ncurr_g.x = nmap_g_curr.ptr (y)[x];
-
-        if (isnan (ncurr_g.x))
-          return 0;
-
-        float3 vcurr_g;
-        vcurr_g.x = vmap_g_curr.ptr (y              )[x];
-        vcurr_g.y = vmap_g_curr.ptr (y + coresp.rows)[x];
-        vcurr_g.z = vmap_g_curr.ptr (y + 2 * coresp.rows)[x];
-
-        float3 vcurr_cp = Rprev_inv * (vcurr_g - tprev);         // prev camera coo space
-
-        int2 ukr;         //projection
-        ukr.x = __float2int_rn (vcurr_cp.x * intr.fx / vcurr_cp.z + intr.cx);      //4
-        ukr.y = __float2int_rn (vcurr_cp.y * intr.fy / vcurr_cp.z + intr.cy);                      //4
-
-        if (ukr.x < 0 || ukr.y < 0 || ukr.x >= coresp.cols || ukr.y >= coresp.rows)
-          return 0;
-
-        float3 nprev_g;
-        nprev_g.x = nmap_g_prev.ptr (ukr.y)[ukr.x];
-
-        if (isnan (nprev_g.x))
-          return 0;
-
-        float3 vprev_g;
-        vprev_g.x = vmap_g_prev.ptr (ukr.y              )[ukr.x];
-        vprev_g.y = vmap_g_prev.ptr (ukr.y + coresp.rows)[ukr.x];
-        vprev_g.z = vmap_g_prev.ptr (ukr.y + 2 * coresp.rows)[ukr.x];
-
-        float dist = norm (vcurr_g - vprev_g);
-        if (dist > distThres)
-          return 0;
-
-        ncurr_g.y = nmap_g_curr.ptr (y + coresp.rows)[x];
-        ncurr_g.z = nmap_g_curr.ptr (y + 2 * coresp.rows)[x];
-
-        nprev_g.y = nmap_g_prev.ptr (ukr.y + coresp.rows)[ukr.x];
-        nprev_g.z = nmap_g_prev.ptr (ukr.y + 2 * coresp.rows)[ukr.x];
-
-        float sine = norm (cross (ncurr_g, nprev_g));
-
-        /*if (sine >= 1 || asinf(sine) >= angleThres)
-            return 0;*/
-
-        if (/*sine >= 1 || */ sine >= angleThres)
-          return 0;
-
-        coresp.ptr (y)[x] = make_short2 (ukr.x, ukr.y);
-        return 1;
-      }
-
-      __device__ __forceinline__ void
-      reduce (int i) const
-      {
-        __shared__ volatile int smem[CTA_SIZE];
-
-        int tid = Block::flattenedThreadId ();
-
-        smem[tid] = i;
-        __syncthreads ();
-
-        Block::reduce<CTA_SIZE>(smem, plus ());
-
-        __shared__ bool isLastBlockDone;
-
-        if (tid == 0)
+        struct plus
         {
-          gbuf[blockIdx.x + gridDim.x * blockIdx.y] = smem[0];
-          __threadfence ();
+          __forceinline__ __device__ int
+          operator () (const int &lhs, const volatile int& rhs) const {
+            return lhs + rhs;
+          }
+        };
 
-          unsigned int value = atomicInc (&count, gridDim.x * gridDim.y);
+        PtrStep<float> vmap_g_curr;
+        PtrStep<float> nmap_g_curr;
 
-          isLastBlockDone = (value == (gridDim.x * gridDim.y - 1));
-        }
-        __syncthreads ();
+        Mat33 Rprev_inv;
+        float3 tprev;
 
-        if (isLastBlockDone)
+        Intr intr;
+
+        PtrStep<float> vmap_g_prev;
+        PtrStep<float> nmap_g_prev;
+
+        float distThres;
+        float angleThres;
+
+        mutable PtrStepSz<short2> coresp;
+
+        mutable int* gbuf;
+
+        __device__ __forceinline__ int
+        search () const
         {
-          int sum = 0;
-          int stride = Block::stride ();
-          for (int pos = tid; pos < gridDim.x * gridDim.y; pos += stride)
-            sum += gbuf[pos];
+          int x = threadIdx.x + blockIdx.x * blockDim.x;
+          int y = threadIdx.y + blockIdx.y * blockDim.y;
 
-          smem[tid] = sum;
+          if (x >= coresp.cols || y >= coresp.rows)
+            return 0;
+
+          coresp.ptr (y)[x] = make_short2 (-1, -1);
+
+          float3 ncurr_g;
+          ncurr_g.x = nmap_g_curr.ptr (y)[x];
+
+          if (isnan (ncurr_g.x))
+            return 0;
+
+          float3 vcurr_g;
+          vcurr_g.x = vmap_g_curr.ptr (y              )[x];
+          vcurr_g.y = vmap_g_curr.ptr (y + coresp.rows)[x];
+          vcurr_g.z = vmap_g_curr.ptr (y + 2 * coresp.rows)[x];
+
+          float3 vcurr_cp = Rprev_inv * (vcurr_g - tprev);         // prev camera coo space
+
+          int2 ukr;         //projection
+          ukr.x = __float2int_rn (vcurr_cp.x * intr.fx / vcurr_cp.z + intr.cx);      //4
+          ukr.y = __float2int_rn (vcurr_cp.y * intr.fy / vcurr_cp.z + intr.cy);                      //4
+
+          if (ukr.x < 0 || ukr.y < 0 || ukr.x >= coresp.cols || ukr.y >= coresp.rows)
+            return 0;
+
+          float3 nprev_g;
+          nprev_g.x = nmap_g_prev.ptr (ukr.y)[ukr.x];
+
+          if (isnan (nprev_g.x))
+            return 0;
+
+          float3 vprev_g;
+          vprev_g.x = vmap_g_prev.ptr (ukr.y              )[ukr.x];
+          vprev_g.y = vmap_g_prev.ptr (ukr.y + coresp.rows)[ukr.x];
+          vprev_g.z = vmap_g_prev.ptr (ukr.y + 2 * coresp.rows)[ukr.x];
+
+          float dist = norm (vcurr_g - vprev_g);
+          if (dist > distThres)
+            return 0;
+
+          ncurr_g.y = nmap_g_curr.ptr (y + coresp.rows)[x];
+          ncurr_g.z = nmap_g_curr.ptr (y + 2 * coresp.rows)[x];
+
+          nprev_g.y = nmap_g_prev.ptr (ukr.y + coresp.rows)[ukr.x];
+          nprev_g.z = nmap_g_prev.ptr (ukr.y + 2 * coresp.rows)[ukr.x];
+
+          float sine = norm (cross (ncurr_g, nprev_g));
+
+          /*if (sine >= 1 || asinf(sine) >= angleThres)
+              return 0;*/
+
+          if (/*sine >= 1 || */ sine >= angleThres)
+            return 0;
+
+          coresp.ptr (y)[x] = make_short2 (ukr.x, ukr.y);
+          return 1;
+        }
+
+        __device__ __forceinline__ void
+        reduce (int i) const
+        {
+          __shared__ volatile int smem[CTA_SIZE];
+
+          int tid = Block::flattenedThreadId ();
+
+          smem[tid] = i;
           __syncthreads ();
+
           Block::reduce<CTA_SIZE>(smem, plus ());
+
+          __shared__ bool isLastBlockDone;
 
           if (tid == 0)
           {
-            gbuf[0] = smem[0];
-            count = 0;
+            gbuf[blockIdx.x + gridDim.x * blockIdx.y] = smem[0];
+            __threadfence ();
+
+            unsigned int value = atomicInc (&count, gridDim.x * gridDim.y);
+
+            isLastBlockDone = (value == (gridDim.x * gridDim.y - 1));
+          }
+          __syncthreads ();
+
+          if (isLastBlockDone)
+          {
+            int sum = 0;
+            int stride = Block::stride ();
+            for (int pos = tid; pos < gridDim.x * gridDim.y; pos += stride)
+              sum += gbuf[pos];
+
+            smem[tid] = sum;
+            __syncthreads ();
+            Block::reduce<CTA_SIZE>(smem, plus ());
+
+            if (tid == 0)
+            {
+              gbuf[0] = smem[0];
+              count = 0;
+            }
           }
         }
+
+        __device__ __forceinline__ void
+        operator () () const
+        {
+          int mask = search ();
+          //reduce(mask); if uncomment -> need to allocate and set gbuf
+        }
+      };
+
+      __global__ void
+      corespKernel (const CorespSearch cs) {
+        cs ();
       }
 
-      __device__ __forceinline__ void
-      operator () () const
+      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      void
+      findCoresp (const MapArr& vmap_g_curr, const MapArr& nmap_g_curr, 
+                              const Mat33& Rprev_inv, const float3& tprev, const Intr& intr,
+                              const MapArr& vmap_g_prev, const MapArr& nmap_g_prev, 
+                              float distThres, float angleThres, PtrStepSz<short2> coresp)
       {
-        int mask = search ();
-        //reduce(mask); if uncomment -> need to allocate and set gbuf
-      }
-    };
+        CorespSearch cs;
 
-    __global__ void
-    corespKernel (const CorespSearch cs) {
-      cs ();
+        cs.vmap_g_curr = vmap_g_curr;
+        cs.nmap_g_curr = nmap_g_curr;
+
+        cs.Rprev_inv = Rprev_inv;
+        cs.tprev = tprev;
+
+        cs.intr = intr;
+
+        cs.vmap_g_prev = vmap_g_prev;
+        cs.nmap_g_prev = nmap_g_prev;
+
+        cs.distThres = distThres;
+        cs.angleThres = angleThres;
+
+        cs.coresp = coresp;
+
+        dim3 block (CorespSearch::CTA_SIZE_X, CorespSearch::CTA_SIZE_Y);
+        dim3 grid (divUp (coresp.cols, block.x), divUp (coresp.rows, block.y));
+
+        corespKernel<<<grid, block>>>(cs);
+
+        cudaSafeCall ( cudaGetLastError () );
+        cudaSafeCall (cudaDeviceSynchronize ());
+      }
     }
   }
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void
-pcl::device::findCoresp (const MapArr& vmap_g_curr, const MapArr& nmap_g_curr, 
-                         const Mat33& Rprev_inv, const float3& tprev, const Intr& intr,
-                         const MapArr& vmap_g_prev, const MapArr& nmap_g_prev, 
-                         float distThres, float angleThres, PtrStepSz<short2> coresp)
-{
-  CorespSearch cs;
-
-  cs.vmap_g_curr = vmap_g_curr;
-  cs.nmap_g_curr = nmap_g_curr;
-
-  cs.Rprev_inv = Rprev_inv;
-  cs.tprev = tprev;
-
-  cs.intr = intr;
-
-  cs.vmap_g_prev = vmap_g_prev;
-  cs.nmap_g_prev = nmap_g_prev;
-
-  cs.distThres = distThres;
-  cs.angleThres = angleThres;
-
-  cs.coresp = coresp;
-
-  dim3 block (CorespSearch::CTA_SIZE_X, CorespSearch::CTA_SIZE_Y);
-  dim3 grid (divUp (coresp.cols, block.x), divUp (coresp.rows, block.y));
-
-  corespKernel<<<grid, block>>>(cs);
-
-  cudaSafeCall ( cudaGetLastError () );
-  cudaSafeCall (cudaDeviceSynchronize ());
 }

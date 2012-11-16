@@ -76,9 +76,6 @@
 
 #include <pcl/common/angles.h>
 
-#include "tsdf_volume.h"
-#include "tsdf_volume.hpp"
-
 #ifdef HAVE_OPENCV  
   #include <opencv2/highgui/highgui.hpp>
   #include <opencv2/imgproc/imgproc.hpp>
@@ -90,16 +87,25 @@
 
 using namespace std;
 using namespace pcl;
-using namespace pcl::gpu;
 using namespace Eigen;
+
+using namespace pcl::gpu::kinfuLS;
+
+using pcl::gpu::DeviceArray;
+using pcl::gpu::DeviceArray2D;
+using pcl::gpu::PtrStepSz;
+
 namespace pc = pcl::console;
 
 namespace pcl
 {
   namespace gpu
   {
-    void paint3DView (const KinfuTracker::View& rgb24, KinfuTracker::View& view, float colors_weight = 0.5f);
-    void mergePointNormal (const DeviceArray<PointXYZ>& cloud, const DeviceArray<Normal>& normals, DeviceArray<PointNormal>& output);
+    namespace kinfuLS
+    {
+      void paint3DView (const KinfuTracker::View& rgb24, KinfuTracker::View& view, float colors_weight = 0.5f);
+      void mergePointNormal (const DeviceArray<PointXYZ>& cloud, const DeviceArray<Normal>& normals, DeviceArray<PointNormal>& output);
+    }
   }
 }
 
@@ -293,7 +299,7 @@ struct ImageView
   }
 
   void
-  showScene (KinfuTracker& kinfu, const PtrStepSz<const pcl::gpu::PixelRGB>& rgb24, bool registration, Eigen::Affine3f* pose_ptr = 0)
+  showScene (KinfuTracker& kinfu, const PtrStepSz<const pcl::gpu::kinfuLS::PixelRGB>& rgb24, bool registration, Eigen::Affine3f* pose_ptr = 0)
   {
     if (pose_ptr)
     {
@@ -361,7 +367,7 @@ struct ImageView
 
   KinfuTracker::View view_device_;
   KinfuTracker::View colors_device_;
-  vector<pcl::gpu::PixelRGB> view_host_;
+  vector<pcl::gpu::kinfuLS::PixelRGB> view_host_;
 
   RayCaster::Ptr raycaster_ptr_;
 
@@ -417,7 +423,7 @@ struct SceneCloudView
       if (compute_normals_)
       {
         kinfu.volume().fetchNormals (extracted, normals_device_);
-        pcl::gpu::mergePointNormal (extracted, normals_device_, combined_device_);
+        pcl::gpu::kinfuLS::mergePointNormal (extracted, normals_device_, combined_device_);
         combined_device_.download (combined_ptr_->points);
         combined_ptr_->width = (int)combined_ptr_->points.size ();
         combined_ptr_->height = 1;
@@ -568,7 +574,7 @@ struct KinFuLSApp
     if(shiftDistance > 2.5 * vsz)
       PCL_WARN ("WARNING Shifting distance (%.2f) is very large compared to the volume size (%.2f).\nYou can modify it using --shifting_distance.\n", shiftDistance, vsz);
 
-    kinfu_ = new pcl::gpu::KinfuTracker(volume_size, shiftDistance);
+    kinfu_ = new pcl::gpu::kinfuLS::KinfuTracker(volume_size, shiftDistance);
 
     Eigen::Matrix3f R = Eigen::Matrix3f::Identity ();   // * AngleAxisf( pcl::deg2rad(-30.f), Vector3f::UnitX());
     Eigen::Vector3f t = volume_size * 0.5f - Vector3f (0, 0, volume_size (2) / 2 * 1.2f);
@@ -599,7 +605,7 @@ struct KinFuLSApp
     
     float height = 480.0f;
     float width = 640.0f;
-    screenshot_manager_.setCameraIntrinsics (pcl::device::FOCAL_LENGTH, height, width);
+    screenshot_manager_.setCameraIntrinsics (pcl::device::kinfuLS::FOCAL_LENGTH, height, width);
     snapshot_rate_ = snapshotRate;
   }
 
@@ -655,7 +661,7 @@ struct KinFuLSApp
         evaluation_ptr_->fx, evaluation_ptr_->fy, evaluation_ptr_->cx, evaluation_ptr_->cy) );
   }
   
-  void execute(const PtrStepSz<const unsigned short>& depth, const PtrStepSz<const pcl::gpu::PixelRGB>& rgb24, bool has_data)
+  void execute(const PtrStepSz<const unsigned short>& depth, const PtrStepSz<const pcl::gpu::kinfuLS::PixelRGB>& rgb24, bool has_data)
   {        
     bool has_image = false;
     frame_counter_++;
@@ -688,13 +694,18 @@ struct KinFuLSApp
       if (scan_volume_)
       {                
         cout << "Downloading TSDF volume from device ... " << flush;
-        kinfu_->volume().downloadTsdfAndWeighs (tsdf_volume_.volumeWriteable (), tsdf_volume_.weightsWriteable ());
-        tsdf_volume_.setHeader (Eigen::Vector3i (pcl::device::VOLUME_X, pcl::device::VOLUME_Y, pcl::device::VOLUME_Z), kinfu_->volume().getSize ());
-        cout << "done [" << tsdf_volume_.size () << " voxels]" << endl << endl;
+        // kinfu_->volume().downloadTsdfAndWeighs (tsdf_volume_.volumeWriteable (), tsdf_volume_.weightsWriteable ());
+        kinfu_->volume ().downloadTsdfAndWeightsLocal ();
+        // tsdf_volume_.setHeader (Eigen::Vector3i (pcl::device::kinfuLS::VOLUME_X, pcl::device::kinfuLS::VOLUME_Y, pcl::device::kinfuLS::VOLUME_Z), kinfu_->volume().getSize ());
+        kinfu_->volume ().setHeader (Eigen::Vector3i (pcl::device::kinfuLS::VOLUME_X, pcl::device::kinfuLS::VOLUME_Y, pcl::device::kinfuLS::VOLUME_Z), kinfu_->volume().getSize ());
+        // cout << "done [" << tsdf_volume_.size () << " voxels]" << endl << endl;
+        cout << "done [" << kinfu_->volume ().size () << " voxels]" << endl << endl;
                 
         cout << "Converting volume to TSDF cloud ... " << flush;
-        tsdf_volume_.convertToTsdfCloud (tsdf_cloud_ptr_);
-        cout << "done [" << tsdf_cloud_ptr_->size () << " points]" << endl << endl;        
+        // tsdf_volume_.convertToTsdfCloud (tsdf_cloud_ptr_);
+        kinfu_->volume ().convertToTsdfCloud (tsdf_cloud_ptr_);
+        // cout << "done [" << tsdf_cloud_ptr_->size () << " points]" << endl << endl;        
+        cout << "done [" << kinfu_->volume ().size () << " points]" << endl << endl;
       }
       else
         cout << "[!] tsdf volume download is disabled" << endl << endl;
@@ -774,93 +785,93 @@ struct KinFuLSApp
     data_ready_cond_.notify_one();
   }
 
-	void source_cb3(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr & DC3)
-	{
-		{
-            //std::cout << "Giving colors1\n";
-			boost::mutex::scoped_try_lock lock(data_ready_mutex_);
-			std::cout << lock << std::endl;
-			if (exit_ || !lock)
-				return;
-            //std::cout << "Giving colors2\n";
-			int width  = DC3->width;
-			int height = DC3->height;
-			depth_.cols = width;
-			depth_.rows = height;
-			depth_.step = depth_.cols * depth_.elemSize();
-			source_depth_data_.resize(depth_.cols * depth_.rows);   
+  void source_cb3(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr & DC3)
+  {
+    {                             
+      //std::cout << "Giving colors1\n";
+      boost::mutex::scoped_try_lock lock(data_ready_mutex_);
+      std::cout << lock << std::endl;
+      if (exit_ || !lock)
+        return;
+      //std::cout << "Giving colors2\n";
+      int width  = DC3->width;
+      int height = DC3->height;
+      depth_.cols = width;
+      depth_.rows = height;
+      depth_.step = depth_.cols * depth_.elemSize();
+      source_depth_data_.resize(depth_.cols * depth_.rows);   
 
-			rgb24_.cols = width;
-			rgb24_.rows = height;
-			rgb24_.step = rgb24_.cols * rgb24_.elemSize(); 
-			source_image_data_.resize(rgb24_.cols * rgb24_.rows);
+      rgb24_.cols = width;
+      rgb24_.rows = height;
+      rgb24_.step = rgb24_.cols * rgb24_.elemSize(); 
+      source_image_data_.resize(rgb24_.cols * rgb24_.rows);
 
-			unsigned char *rgb    = (unsigned char *)  &source_image_data_[0];
-			unsigned short *depth = (unsigned short *) &source_depth_data_[0];  
+      unsigned char *rgb    = (unsigned char *)  &source_image_data_[0];
+      unsigned short *depth = (unsigned short *) &source_depth_data_[0];  
 
-            //std::cout << "Giving colors3\n";
-			for (int i=0; i<width*height; i++) {
-				PointXYZRGBA pt = DC3->at(i);
-				rgb[3*i +0] = pt.r;
-				rgb[3*i +1] = pt.g;
-				rgb[3*i +2] = pt.b;
-				depth[i]    = pt.z/0.001;
-			}
-            //std::cout << "Giving colors4\n";
-			rgb24_.data = &source_image_data_[0];   
-			depth_.data = &source_depth_data_[0];      
-		}	
-		data_ready_cond_.notify_one();
-	}
+        //std::cout << "Giving colors3\n";
+      for (int i=0; i<width*height; i++) {
+        PointXYZRGBA pt = DC3->at(i);
+        rgb[3*i +0] = pt.r;
+        rgb[3*i +1] = pt.g;
+        rgb[3*i +2] = pt.b;
+        depth[i]    = pt.z/0.001;
+      }
+      //std::cout << "Giving colors4\n";
+      rgb24_.data = &source_image_data_[0];   
+      depth_.data = &source_depth_data_[0];      
+    }	
+    data_ready_cond_.notify_one();
+  }
 
-	void
-	startMainLoop (bool triggered_capture)
-	{   
-		using namespace openni_wrapper;
-		typedef boost::shared_ptr<DepthImage> DepthImagePtr;
-		typedef boost::shared_ptr<Image>      ImagePtr;
+  void
+  startMainLoop (bool triggered_capture)
+  {   
+    using namespace openni_wrapper;
+    typedef boost::shared_ptr<DepthImage> DepthImagePtr;
+    typedef boost::shared_ptr<Image>      ImagePtr;
 
-		boost::function<void (const ImagePtr&, const DepthImagePtr&, float constant)> func1 = boost::bind (&KinFuLSApp::source_cb2, this, _1, _2, _3);
-	 	boost::function<void (const DepthImagePtr&)> func2 = boost::bind (&KinFuLSApp::source_cb1, this, _1);
-		boost::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&) > func3 = boost::bind (&KinFuLSApp::source_cb3, this, _1);
+    boost::function<void (const ImagePtr&, const DepthImagePtr&, float constant)> func1 = boost::bind (&KinFuLSApp::source_cb2, this, _1, _2, _3);
+    boost::function<void (const DepthImagePtr&)> func2 = boost::bind (&KinFuLSApp::source_cb1, this, _1);
+    boost::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&) > func3 = boost::bind (&KinFuLSApp::source_cb3, this, _1);
 
-		bool need_colors = integrate_colors_ || registration_;
+    bool need_colors = integrate_colors_ || registration_;
 
-		if ( pcd_source_ && !capture_.providesCallback<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)>() ) {
-			std::cout << "grabber doesn't provide pcl::PointCloud<pcl::PointXYZRGBA> callback !\n";
-		}
+    if ( pcd_source_ && !capture_.providesCallback<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)>() ) {
+      std::cout << "grabber doesn't provide pcl::PointCloud<pcl::PointXYZRGBA> callback !\n";
+    }
 
-		boost::signals2::connection c = 
-			pcd_source_? capture_.registerCallback (func3) : need_colors ? capture_.registerCallback (func1) : capture_.registerCallback (func2);
+    boost::signals2::connection c = 
+      pcd_source_? capture_.registerCallback (func3) : need_colors ? capture_.registerCallback (func1) : capture_.registerCallback (func2);
 
-		{
-			boost::unique_lock<boost::mutex> lock(data_ready_mutex_);
+    {
+      boost::unique_lock<boost::mutex> lock(data_ready_mutex_);
 
-			if (!triggered_capture) 
-				capture_.start ();
+      if (!triggered_capture) 
+        capture_.start ();
 
-			while (!exit_ && !scene_cloud_view_.cloud_viewer_.wasStopped () && !image_view_.viewerScene_.wasStopped () && !this->kinfu_->isFinished ())
-			{ 
-				if (triggered_capture)
-					capture_.start(); // Triggers new frame
+      while (!exit_ && !scene_cloud_view_.cloud_viewer_.wasStopped () && !image_view_.viewerScene_.wasStopped () && !this->kinfu_->isFinished ())
+      { 
+        if (triggered_capture)
+          capture_.start(); // Triggers new frame
 
-				bool has_data = data_ready_cond_.timed_wait (lock, boost::posix_time::millisec(100));
+        bool has_data = data_ready_cond_.timed_wait (lock, boost::posix_time::millisec(100));
 
-				try { this->execute (depth_, rgb24_, has_data); }
-				catch (const std::bad_alloc& /*e*/) { cout << "Bad alloc" << endl; break; }
-				catch (const std::exception& /*e*/) { cout << "Exception" << endl; break; }
+        try { this->execute (depth_, rgb24_, has_data); }
+        catch (const std::bad_alloc& /*e*/) { cout << "Bad alloc" << endl; break; }
+        catch (const std::exception& /*e*/) { cout << "Exception" << endl; break; }
 
-				scene_cloud_view_.cloud_viewer_.spinOnce (3);
-				//~ cout << "In main loop" << endl;                  
-			} 
-			exit_ = true;
-			boost::this_thread::sleep (boost::posix_time::millisec (100));
+        scene_cloud_view_.cloud_viewer_.spinOnce (3);
+        //~ cout << "In main loop" << endl;                  
+      } 
+      exit_ = true;
+      boost::this_thread::sleep (boost::posix_time::millisec (100));
 
-			if (!triggered_capture)     
-				capture_.stop (); // Stop stream
-		}
-		c.disconnect();
-	}
+      if (!triggered_capture)     
+        capture_.stop (); // Stop stream
+    }
+    c.disconnect();
+  }
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   void
@@ -925,7 +936,7 @@ struct KinFuLSApp
   bool independent_camera_;
   int frame_counter_;
   bool enable_texture_extraction_;
-  pcl::gpu::ScreenshotManager screenshot_manager_;
+  pcl::kinfuLS::ScreenshotManager screenshot_manager_;
   int snapshot_rate_;
 
   bool registration_;
@@ -942,7 +953,6 @@ struct KinFuLSApp
 
   KinfuTracker::DepthMap depth_device_;
 
-  pcl::TSDFVolume<float, short> tsdf_volume_;
   pcl::PointCloud<pcl::PointXYZI>::Ptr tsdf_cloud_ptr_;
 
   Evaluation::Ptr evaluation_ptr_;
@@ -950,10 +960,10 @@ struct KinFuLSApp
   boost::mutex data_ready_mutex_;
   boost::condition_variable data_ready_cond_;
  
-  std::vector<pcl::gpu::PixelRGB> source_image_data_;
+  std::vector<pcl::gpu::kinfuLS::PixelRGB> source_image_data_;
   std::vector<unsigned short> source_depth_data_;
   PtrStepSz<const unsigned short> depth_;
-  PtrStepSz<const pcl::gpu::PixelRGB> rgb24_;  
+  PtrStepSz<const pcl::gpu::kinfuLS::PixelRGB> rgb24_;  
 
   int time_ms_;
 
@@ -978,7 +988,7 @@ struct KinFuLSApp
       case (int)'i': case (int)'I': app->toggleIndependentCamera (); break;
       case (int)'b': case (int)'B': app->scene_cloud_view_.toggleCube(app->kinfu_->volume().getSize()); break;
       case (int)'l': case (int)'L': app->kinfu_->performLastScan (); break;
-	  case (int)'s': case (int)'S': app->kinfu_->extractAndMeshWorld (); break;
+      case (int)'s': case (int)'S': app->kinfu_->extractAndMeshWorld (); break;
       case (int)'7': case (int)'8': app->writeMesh (key - (int)'0'); break;  
       case (int)'1': case (int)'2': case (int)'3': app->writeCloud (key - (int)'0'); break;      
       case '*': app->image_view_.toggleImagePaint (); break;
@@ -989,8 +999,10 @@ struct KinFuLSApp
         break;
       case (int)'v': case (int)'V':
         cout << "Saving TSDF volume to tsdf_volume.dat ... " << flush;
-        app->tsdf_volume_.save ("tsdf_volume.dat", true);
-        cout << "done [" << app->tsdf_volume_.size () << " voxels]" << endl;
+        // app->tsdf_volume_.save ("tsdf_volume.dat", true);
+        app->kinfu_->volume ().save ("tsdf_volume.dat", true);
+        // cout << "done [" << app->tsdf_volume_.size () << " voxels]" << endl;
+        cout << "done [" << app->kinfu_->volume ().size () << " voxels]" << endl;
         cout << "Saving TSDF volume cloud to tsdf_cloud.pcd ... " << flush;
         pcl::io::savePCDFile<pcl::PointXYZI> ("tsdf_cloud.pcd", *app->tsdf_cloud_ptr_, true);
         cout << "done [" << app->tsdf_cloud_ptr_->size () << " points]" << endl;
@@ -1134,15 +1146,15 @@ main (int argc, char* argv[])
   }
   catch (const pcl::PCLException& /*e*/) { return cout << "Can't open depth source" << endl, -1; }
 
-  float volume_size = pcl::device::VOLUME_SIZE;
+  float volume_size = pcl::device::kinfuLS::VOLUME_SIZE;
   pc::parse_argument (argc, argv, "--volume_size", volume_size);
   pc::parse_argument (argc, argv, "-vs", volume_size);
 
-  float shift_distance = pcl::device::DISTANCE_THRESHOLD;
+  float shift_distance = pcl::device::kinfuLS::DISTANCE_THRESHOLD;
   pc::parse_argument (argc, argv, "--shifting_distance", shift_distance);
   pc::parse_argument (argc, argv, "-sd", shift_distance);
   
-  int snapshot_rate = pcl::device::SNAPSHOT_RATE; // defined in internal.h
+  int snapshot_rate = pcl::device::kinfuLS::SNAPSHOT_RATE; // defined in internal.h
   pc::parse_argument (argc, argv, "--snapshot_rate", snapshot_rate);
   pc::parse_argument (argc, argv, "-sr", snapshot_rate);
 

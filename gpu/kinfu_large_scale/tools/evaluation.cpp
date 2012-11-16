@@ -55,7 +55,7 @@ void Evaluation::setMatchFile(const std::string&) { }
 bool Evaluation::grab (double stamp, pcl::gpu::PtrStepSz<const RGB>& rgb24) { return false; }
 bool Evaluation::grab (double stamp, pcl::gpu::PtrStepSz<const unsigned short>& depth) { return false; }
 bool Evaluation::grab (double stamp, pcl::gpu::PtrStepSz<const unsigned short>& depth, pcl::gpu::PtrStepSz<const RGB>& rgb24) { return false; }
-void Evaluation::saveAllPoses(const pcl::gpu::KinfuTracker& kinfu, int frame_number, const std::string& logfile) const {}
+void Evaluation::saveAllPoses(const pcl::gpu::kinfuLS::KinfuTracker& kinfu, int frame_number, const std::string& logfile) const {}
 
 #else
 
