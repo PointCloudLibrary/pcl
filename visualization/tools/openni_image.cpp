@@ -47,13 +47,6 @@
 #include <pcl/io/openni_camera/openni_driver.h>
 #include <pcl/console/parse.h>
 #include <pcl/visualization/mouse_event.h>
-#include <vtkImageViewer.h>
-#include <vtkImageImport.h>
-#include <vtkJPEGWriter.h>
-#include <vtkBMPWriter.h>
-#include <vtkPNMWriter.h>
-#include <vtkTIFFWriter.h>
-#include "snappy.h"
 
 #ifdef _WIN32
 # include <io.h>
@@ -108,17 +101,8 @@ class SimpleOpenNIViewer
       , rgb_width_ (0), rgb_height_ (0)
       , depth_width_ (0), depth_height_ (0)
       , save_data_ (false)
-      , importer_ (vtkSmartPointer<vtkImageImport>::New ())
-      , depth_importer_ (vtkSmartPointer<vtkImageImport>::New ())
-      , writer_ (vtkSmartPointer<vtkTIFFWriter>::New ())
       , nr_frames_total_ (0)
     {
-      importer_->SetNumberOfScalarComponents (3);
-      importer_->SetDataScalarTypeToUnsignedChar ();
-      depth_importer_->SetNumberOfScalarComponents (1);
-      depth_importer_->SetDataScalarTypeToUnsignedShort ();
-      //writer_->SetCompressionToNoCompression ();
-      //writer_->SetCompressionToPackBits ();
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -280,93 +264,6 @@ class SimpleOpenNIViewer
         saveRGB (reinterpret_cast<char*> (&rgb_data_[0]), rgb_width_, rgb_height_, ss1.str ());
         ss2 << "frame_" + time + "_depth.pclzf";
         saveDepth (reinterpret_cast<char*> (&depth_data_[0]), depth_width_, depth_height_, ss2.str ());
-
-#if 0
-        importer_->SetWholeExtent (0, image->getWidth () - 1, 0, image->getHeight () - 1, 0, 0);
-        importer_->SetDataExtentToWholeExtent ();
-        importer_->SetImportVoidPointer (data, 1);
-        importer_->Update ();
-
-      writer_->SetCompressionToPackBits ();
-        writer_->SetFileName (ss1.str ().c_str ());
-        writer_->SetInputConnection (importer_->GetOutputPort ());
-        writer_->Write ();
-#endif   
-#if 0
-        // Compress the valid data
-        unsigned int data_size = image->getWidth () * image->getHeight () * 3;
-        char* compressed_rgb = static_cast<char*> (malloc (size_t (float (data_size) * 1.5f + 8.0f)));
-        char *data2 = new char[data_size];
-        char *data3 = (char*)data;
-        for (int i = 0; i < image->getWidth () * image->getHeight (); ++i)
-        {
-          data2[i] = data3[i * 3];
-          data2[i + image->getWidth () * image->getHeight ()] = data3[i * 3 + 1];
-          data2[i + image->getWidth () * image->getHeight ()  * 2] = data3[i * 3 + 2];
-        }
-        // Compress the valid data
-        pcl::console::TicToc tt;
-        tt.tic ();
-        size_t rgb_compressed_size = compress (
-            reinterpret_cast<const char*> (data), 
-            data_size,
-            compressed_rgb);
-        cerr << "RGB compressed 1 : " << rgb_compressed_size << " (" << tt.toc () << ")\n";
-        free (compressed_rgb);
-#endif
-
-#if 0
-        vector<uint16_t> depth_raw (depth_image->getWidth () * depth_image->getHeight ());
-        memcpy (&depth_raw[0], &depth_image->getDepthMetaData ().Data ()[0], depth_raw.size ());
-        vector<uint8_t> depth_compressed;
-        pcl::io::encodeMonoImageToPNG (depth_raw, depth_image->getWidth (), 
-                                       depth_image->getHeight (), depth_compressed, 
-                                       depth_png_compression_);
-      
-        vector<uint8_t> rgb_raw (image->getWidth () * image->getHeight () );
-        //memcpy (&rgb_raw[0], &image->getMetaData ().Data ()[0], rgb_raw.size ());
-        //memcpy (&rgb_raw[0], reinterpret_cast<const char*> (&data[0]), rgb_raw.size ());
-        //memcpy (&rgb_raw[0], &rgb_data_[0], rgb_raw.size ());
-        for (int i = 0; i < image->getWidth () * image->getHeight (); ++i)
-          rgb_raw[i] = rgb_data_[i * 3];
-        vector<uint8_t> rgb_compressed;
-#endif
-#if 0
-        char* output = new char[snappy::MaxCompressedLength(data_size)];
-        tt.tic ();
-        size_t output_length;
-        snappy::RawCompress (
-            reinterpret_cast<const char*> (data),
-            data_size,
-            output, 
-            &output_length);
-        cerr << "RGB compressed 2 : " << output_length << " (" << tt.toc () << ")\n";
-        
-        delete[] output;
-#endif
-        //for (int i = 0; i < 9; ++i)
-        //{
-        //  tt.tic ();
-        //  pcl::io::encodeMonoImageToPNG (
-        //      rgb_raw,
-        //      image->getWidth (),
-        //      image->getHeight (),
-        //      rgb_compressed, i);
-        //  cerr << "[" << i << "] RGB compressed : " << rgb_compressed.size () << " (" << tt.toc () << ")\n";
-        //}
-
-#if 0
-        depth_importer_->SetWholeExtent (0, depth_image->getWidth () - 1, 0, depth_image->getHeight () - 1, 0, 0);
-        depth_importer_->SetDataExtentToWholeExtent ();
-        depth_importer_->SetImportVoidPointer ((void*)(depth_image->getDepthMetaData ().Data ()), 1);
-        //depth_importer_->CopyImportVoidPointer (compressed_depth, depth_compressed_size);
-        depth_importer_->Update ();
-        writer_->SetFileName (ss2.str ().c_str ());
-        writer_->SetInputConnection (depth_importer_->GetOutputPort ());
-        writer_->SetCompressionToPackBits ();
-        writer_->Write ();
-#endif
-        //tt.toc_print ();
       }
     }
     
@@ -479,8 +376,6 @@ class SimpleOpenNIViewer
     vector<unsigned char> rgb_data_, depth_data_;
     unsigned rgb_width_, rgb_height_, depth_width_, depth_height_;
     bool save_data_;
-    vtkSmartPointer<vtkImageImport> importer_, depth_importer_;
-    vtkSmartPointer<vtkTIFFWriter> writer_;
     int nr_frames_total_;
 };
 
