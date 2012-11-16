@@ -42,7 +42,6 @@
 #include <pcl/io/lzf.h>
 #include <pcl/visualization/boost.h>
 #include <pcl/visualization/common/float_image_utils.h>
-#include <pcl/visualization/cloud_viewer.h>
 #include <pcl/visualization/image_viewer.h>
 #include <pcl/io/openni_camera/openni_driver.h>
 #include <pcl/console/parse.h>
@@ -102,6 +101,7 @@ class SimpleOpenNIViewer
       , depth_width_ (0), depth_height_ (0)
       , save_data_ (false)
       , nr_frames_total_ (0)
+      , new_data_ (false)
     {
     }
 
@@ -250,6 +250,8 @@ class SimpleOpenNIViewer
 
         // Copy data
         memcpy (&depth_data_[0], reinterpret_cast<const unsigned char*> (&depth_image->getDepthMetaData ().Data ()[0]), depth_data_.size ());
+
+        new_data_ = true;
       }
 
       // If save data is enabled
@@ -336,6 +338,9 @@ class SimpleOpenNIViewer
         image_viewer_.spinOnce ();
         depth_image_viewer_.spinOnce ();
         
+        if (!new_data_)
+          continue;
+
         FPS_CALC ("visualization callback");
         // Add to renderer
         if (!rgb_data_.empty ())
@@ -359,6 +364,7 @@ class SimpleOpenNIViewer
           }
           delete[] data;
         }
+        new_data_ = false;
       }
 
       grabber_.stop ();
@@ -377,6 +383,7 @@ class SimpleOpenNIViewer
     unsigned rgb_width_, rgb_height_, depth_width_, depth_height_;
     bool save_data_;
     int nr_frames_total_;
+    bool new_data_;
 };
 
 void
