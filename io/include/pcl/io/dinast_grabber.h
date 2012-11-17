@@ -33,6 +33,8 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
+ * $Id$
+ *
  */
 
 #ifndef __PCL_IO_DINAST_GRABBER__
@@ -52,12 +54,9 @@ namespace pcl
     * \author Marco A. Gutierrez <marcog@unex.es>
     * \ingroup io
     */
-  
   class PCL_EXPORTS DinastGrabber: public Grabber
   {
-
     public:
- 
       /** \brief Constructor. */
       DinastGrabber ();
 
@@ -117,8 +116,8 @@ namespace pcl
       readImage (unsigned char *image);
       
       /** \brief Obtains the image and the corresponding XYZI Point Cloud
-	*  \param[out] the image data in unsigned short format and the corresponding point cloud from the camera
-	*/
+        *  \param[out] the image data in unsigned short format and the corresponding point cloud from the camera
+        */
       void
       getData (unsigned char *image, pcl::PointCloud<pcl::PointXYZI>::Ptr cloud);
       
@@ -153,7 +152,7 @@ namespace pcl
         * \return DinastGrabber.
         */
       std::string
-      getName() const;
+      getName () const;
       
       /** \brief Width of image */
       const static int IMAGE_WIDTH = 320;
@@ -171,25 +170,23 @@ namespace pcl
       enum pixel_syze { RAW8=1, RGB16=2, RGB24=3, RGB32=4 };
       
       /** \brief The libusb context*/
-      libusb_context *context;
+      libusb_context *context_;
       
       /** \brief the actual device_handle for the camera */
-      struct libusb_device_handle* device_handle;
+      struct libusb_device_handle *device_handle_;
       
       /** \brief Temporary USB read buffer, since we read two RGB16 images at a time size is the double of two images plus a sync packet */
-      unsigned char raw_buffer[(RGB16 * (IMAGE_SIZE) + SYNC_PACKET)*2];
+      unsigned char raw_buffer_[(RGB16 * (IMAGE_SIZE) + SYNC_PACKET)*2];
 
       /** \brief Global buffer */
-      boost::circular_buffer<unsigned char> g_buffer;
+      boost::circular_buffer<unsigned char> g_buffer_;
 
       /**  \brief Bulk endpoint address value */
-      unsigned char bulk_ep;
+      unsigned char bulk_ep_;
 
       // Since there is no header after the first image, we need to save the state
-      bool second_image;
-      bool running;
-
-      
+      bool second_image_;
+      bool running_;
   };
 } //namespace pcl
 

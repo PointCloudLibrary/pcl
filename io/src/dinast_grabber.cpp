@@ -33,6 +33,8 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
+ * $Id$
+ *
  */
 
 #include <pcl/pcl_config.h>
@@ -53,25 +55,25 @@ using namespace std;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 pcl::DinastGrabber::DinastGrabber ()
-  : second_image (false)
-  , running (false)
+  : second_image_ (false)
+  , running_ (false)
 {
-  bulk_ep = -1;
-  context = NULL;
+  bulk_ep_ = std::numeric_limits<unsigned char>::max ();
+  context_ = NULL;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 pcl::DinastGrabber::~DinastGrabber () throw ()
 {
   stop ();
-  libusb_exit (context);
+  libusb_exit (context_);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 bool
 pcl::DinastGrabber::isRunning () const
 {
-  return (running);
+  return (running_);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -93,7 +95,7 @@ pcl::DinastGrabber::findDevice (int device_position, const int id_vendor, const 
   int device_position_counter = 0;
   
   //Initialize libusb
-  int ret=libusb_init (&context);
+  int ret=libusb_init (&context_);
   std::stringstream sstream;
   if (ret != 0)
   {
@@ -101,11 +103,11 @@ pcl::DinastGrabber::findDevice (int device_position, const int id_vendor, const 
     PCL_THROW_EXCEPTION (pcl::IOException, sstream.str());
   }
   
-  libusb_set_debug (context, 3);
+  libusb_set_debug (context_, 3);
   libusb_device **devs = NULL;
   
   // Get the list of USB devices
-  ssize_t cnt = libusb_get_device_list (context, &devs);
+  ssize_t cnt = libusb_get_device_list (context_, &devs);
 
   if (cnt < 0)
     PCL_THROW_EXCEPTION (pcl::IOException, "No usb devices found!");
@@ -141,7 +143,7 @@ pcl::DinastGrabber::findDevice (int device_position, const int id_vendor, const 
           if (config->interface[f].altsetting[j].endpoint[k].bmAttributes == LIBUSB_TRANSFER_TYPE_BULK)
           {
             // Initialize the bulk end point
-            bulk_ep = config->interface[f].altsetting[j].endpoint[k].bEndpointAddress;
+            bulk_ep_ = config->interface[f].altsetting[j].endpoint[k].bEndpointAddress;
             break;
           }
         }
@@ -149,7 +151,7 @@ pcl::DinastGrabber::findDevice (int device_position, const int id_vendor, const 
     }
     device_position_counter++;
     if (device_position_counter == device_position)
-      libusb_open(devs[i], &device_handle);
+      libusb_open(devs[i], &device_handle_);
     // Free the configuration descriptor
     libusb_free_config_descriptor (config);
   }
@@ -158,7 +160,7 @@ pcl::DinastGrabber::findDevice (int device_position, const int id_vendor, const 
   libusb_free_device_list (devs, 1);
   
   //Check if device founded if not notify
-  if (device_handle == NULL)
+  if (device_handle_ == NULL)
     PCL_THROW_EXCEPTION (pcl::IOException, "Failed to find any DINAST devices attached");
 
 }
@@ -168,7 +170,7 @@ void
 pcl::DinastGrabber::openDevice ()
 {
 
-  if(libusb_claim_interface(device_handle, 0) < 0)
+  if(libusb_claim_interface(device_handle_, 0) < 0)
      PCL_THROW_EXCEPTION (pcl::IOException, "Failed to open device");  
 }
 
@@ -177,9 +179,9 @@ void
 pcl::DinastGrabber::closeDevice ()
 {
   // Release the interface
-  libusb_release_interface (device_handle, 0);
+  libusb_release_interface (device_handle_, 0);
   // Close it
-  libusb_close (device_handle);
+  libusb_close (device_handle_);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -204,7 +206,7 @@ pcl::DinastGrabber::start ()
   unsigned char ctrl_buf[3];
   if (!USBTxControlData (CMD_READ_START, ctrl_buf, 1))
     PCL_THROW_EXCEPTION (pcl::IOException, "Could not start the USB data reading");
-  running = true;
+  running_ = true;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -214,7 +216,7 @@ pcl::DinastGrabber::stop ()
   unsigned char ctrl_buf[3];
   if (!USBTxControlData (CMD_READ_START, ctrl_buf, 1))
     PCL_THROW_EXCEPTION (pcl::IOException, "Could not start the USB data reading");
-  running = false;
+  running_ = false;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -222,15 +224,14 @@ int
 pcl::DinastGrabber::readImage (unsigned char *image)
 {
   // Do we have enough data in the buffer for the second image?
-  if (second_image)
+  if (second_image_)
   {
-
     for (int i = 0; i < IMAGE_SIZE; ++i)
-      image[i] = g_buffer[i];
+      image[i] = g_buffer_[i];
 
-    g_buffer.rerase (g_buffer.begin(), g_buffer.begin() + IMAGE_SIZE);
+    g_buffer_.rerase (g_buffer_.begin(), g_buffer_.begin() + IMAGE_SIZE);
 
-    second_image = false;
+    second_image_ = false;
     
     return (IMAGE_SIZE);
   }
@@ -238,11 +239,11 @@ pcl::DinastGrabber::readImage (unsigned char *image)
   // Read data in two image blocks until we get a header
   bool first_image = false;
   int data_adr = -1;
-  while (!second_image)
+  while (!second_image_)
   {
     // Read at least two images in synchronous mode
     int actual_length;
-    int res = libusb_bulk_transfer (device_handle, bulk_ep, raw_buffer, 
+    int res = libusb_bulk_transfer (device_handle_, bulk_ep_, raw_buffer_,
                                     RGB16 * (IMAGE_SIZE) + SYNC_PACKET, &actual_length, 1000);
     if (res != 0 || actual_length == 0)
     {
@@ -252,14 +253,14 @@ pcl::DinastGrabber::readImage (unsigned char *image)
     }
 
     // Copy data from the USB port if we actually read anything
-    //std::cerr << "read " << actual_length << ", buf size: " << g_buffer.size () <<  std::endl;
+    //std::cerr << "read " << actual_length << ", buf size: " << g_buffer_.size () <<  std::endl;
     // Copy data into the buffer
-    int back = int (g_buffer.size ());
-    g_buffer.resize (back + actual_length);
-    //memcpy (&g_buffer[back], &raw_buffer[0], actual_length);
+    int back = int (g_buffer_.size ());
+    g_buffer_.resize (back + actual_length);
+    //memcpy (&g_buffer_[back], &raw_buffer_[0], actual_length);
     for (int i = 0; i < actual_length; ++i)
-      g_buffer[back++] = raw_buffer[i];
-    //std::cerr << "buf size: " << g_buffer.size () << std::endl;
+      g_buffer_[back++] = raw_buffer_[i];
+    //std::cerr << "buf size: " << g_buffer_.size () << std::endl;
 
     // Check if the header is set already
     if (!first_image && data_adr == -1)
@@ -270,19 +271,19 @@ pcl::DinastGrabber::readImage (unsigned char *image)
 
     // Is there enough data in the buffer to return one image, and did we find the header?
     // If not, go back and read some more data off the USB port
-    // Else, read the data, clean the g_buffer, return to the user
-    if (!first_image && (g_buffer.size () >= IMAGE_SIZE + data_adr) && data_adr != -1)
+    // Else, read the data, clean the g_buffer_, return to the user
+    if (!first_image && (g_buffer_.size () >= IMAGE_SIZE + data_adr) && data_adr != -1)
     {
       // An image found. Copy it from the buffer into the user given buffer
 
       for (int i = 0; i < IMAGE_SIZE; ++i)
-        image[i] = g_buffer[data_adr + i];
+        image[i] = g_buffer_[data_adr + i];
       // Pop the data from the global buffer. 
-      g_buffer.rerase (g_buffer.begin(), g_buffer.begin() + data_adr + IMAGE_SIZE);
+      g_buffer_.rerase (g_buffer_.begin(), g_buffer_.begin() + data_adr + IMAGE_SIZE);
       first_image = true;
     }
 
-    if (first_image && g_buffer.size () >= IMAGE_SIZE)
+    if (first_image && g_buffer_.size () >= IMAGE_SIZE)
     {
       break;
      }
@@ -372,7 +373,7 @@ pcl::DinastGrabber::USBRxControlData (const unsigned char req_code,
   // for an unlimited timeout, use value 0.
   uint16_t timeout = 1000;
   
-  int nr_read = libusb_control_transfer (device_handle, requesttype, 
+  int nr_read = libusb_control_transfer (device_handle_, requesttype,
                                          req_code, value, index, buffer, uint16_t(length), timeout);
   if (nr_read != int(length))
     PCL_THROW_EXCEPTION (pcl::IOException, "control data error");
@@ -396,7 +397,7 @@ pcl::DinastGrabber::USBTxControlData (const unsigned char req_code,
   // for an unlimited timeout, use value 0.
   uint16_t timeout = 1000;
   
-  int nr_read = libusb_control_transfer (device_handle, requesttype, 
+  int nr_read = libusb_control_transfer (device_handle_, requesttype,
                                          req_code, value, index, buffer, uint16_t(length), timeout);
   if (nr_read != int(length))
   {
@@ -413,18 +414,18 @@ int
 pcl::DinastGrabber::checkHeader ()
 {
   // We need at least 2 full sync packets, in case the header starts at the end of the first sync packet to 
-  // guarantee that the index returned actually exists in g_buffer (we perform no checking in the rest of the code)
-  if (g_buffer.size () < 2 * SYNC_PACKET)
+  // guarantee that the index returned actually exists in g_buffer_ (we perform no checking in the rest of the code)
+  if (g_buffer_.size () < 2 * SYNC_PACKET)
     return (-1);
 
   int data_ptr = -1;
 
-  for (size_t i = 0; i < g_buffer.size (); ++i)
+  for (size_t i = 0; i < g_buffer_.size (); ++i)
   {
-    if ((g_buffer[i + 0] == 0xAA) && (g_buffer[i + 1] == 0xAA) && 
-        (g_buffer[i + 2] == 0x44) && (g_buffer[i + 3] == 0x44) &&
-        (g_buffer[i + 4] == 0xBB) && (g_buffer[i + 5] == 0xBB) &&
-        (g_buffer[i + 6] == 0x77) && (g_buffer[i + 7] == 0x77))
+    if ((g_buffer_[i + 0] == 0xAA) && (g_buffer_[i + 1] == 0xAA) &&
+        (g_buffer_[i + 2] == 0x44) && (g_buffer_[i + 3] == 0x44) &&
+        (g_buffer_[i + 4] == 0xBB) && (g_buffer_[i + 5] == 0xBB) &&
+        (g_buffer_[i + 6] == 0x77) && (g_buffer_[i + 7] == 0x77))
     {
       data_ptr = int (i) + SYNC_PACKET;
       break;
