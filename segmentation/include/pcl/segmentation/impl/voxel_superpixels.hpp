@@ -323,7 +323,7 @@ pcl::VoxelSuperpixels<PointT>::placeSeedVoxels ()
   for (int i = 0; i < num_seeds; ++i)  
   {
     PointT center_point = voxel_centers[i];
-    int num = voxel_kdtree_->nearestKSearch (center_point, 1, closest_index, distance);
+//    int num = voxel_kdtree_->nearestKSearch (center_point, 1, closest_index, distance);
     seed_indices_orig_[i] = closest_index[0];
   }
   
@@ -340,7 +340,7 @@ pcl::VoxelSuperpixels<PointT>::placeSeedVoxels ()
   pcl::PointIndices superpixel;
   
   float search_radius = 0.1*seed_resolution_;
-  float search_volume = 4.0/3.0 * 3.1415926536 * search_radius * search_radius * search_radius;
+//  float search_volume = 4.0/3.0 * 3.1415926536 * search_radius * search_radius * search_radius;
   // This is number of voxels which fit in a planar slice through search volume
   // Area of planar slice / area of voxel side
   float min_points = 0.45 * (search_radius)*(search_radius) * 3.1415926536  / (resolution_*resolution_);
@@ -397,7 +397,7 @@ pcl::VoxelSuperpixels<PointT>::calcGradient (int point_index)
 template <typename PointT> void
 pcl::VoxelSuperpixels<PointT>::findSeedConstituency (float edge_length)
 {
-  int number_of_points = static_cast<int> (voxel_cloud_->points.size ());
+//  int number_of_points = static_cast<int> (voxel_cloud_->points.size ());
   int number_of_seeds = seed_indices_.size();
 
   std::vector< std::pair<int,float> > constituents;
@@ -681,7 +681,7 @@ pcl::VoxelSuperpixels<PointT>::getColoredCloud ()
 
     pcl::PointCloud <pcl::PointXYZRGB>::iterator i_colored;
     typename pcl::PointCloud <PointT>::const_iterator i_input = input_->begin ();
-    int num_points_not_in_voxel = 0;
+//    int num_points_not_in_voxel = 0;
     for (i_colored = colored_cloud->begin (); i_colored != colored_cloud->end (); ++i_colored,++i_input)
     {
       int index;
@@ -722,7 +722,7 @@ pcl::VoxelSuperpixels<PointT>::getLabeledCloud ()
 
     pcl::PointCloud <pcl::PointXYZL>::iterator i_labeled;
     typename pcl::PointCloud <PointT>::const_iterator i_input = input_->begin ();
-    int next_color = 0;
+//    int next_color = 0;
     for (i_labeled = labeled_cloud->begin (); i_labeled != labeled_cloud->end (); ++i_labeled, ++i_input)
     {
       int index;
@@ -966,11 +966,11 @@ pcl::VoxelSuperpixels<PointT>::getSeedCloud ()
     uint8_t r = 0;
     uint8_t g = 255;
     uint8_t b = 0;
-    uint32_t green = ((uint32_t)r << 16 | (uint32_t)g << 8 | (uint32_t)b);
+    uint32_t green = (static_cast<uint32_t> (r) << 16) | (static_cast<uint32_t> (g) << 8) | static_cast<uint32_t> (b);
     r = 255; g = 0;
-    uint32_t red = ((uint32_t)r << 16 | (uint32_t)g << 8 | (uint32_t)b);
+    uint32_t red = (static_cast<uint32_t> (r) << 16) | (static_cast<uint32_t> (g) << 8) | static_cast<uint32_t> (b);
     r = 0; b = 255;
-    uint32_t blue = ((uint32_t)r << 16 | (uint32_t)g << 8 | (uint32_t)b);
+    uint32_t blue = (static_cast<uint32_t> (r) << 16) | (static_cast<uint32_t> (g) << 8) | static_cast<uint32_t> (b);
     std::vector<int> neighbors;
     std::vector<float> sqr_distances;
 
