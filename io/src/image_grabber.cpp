@@ -81,9 +81,15 @@ struct pcl::ImageGrabberBase::ImageGrabberImpl
   TimeTrigger time_trigger_;
 
   sensor_msgs::PointCloud2 next_cloud_;
+  //! Two cases, for depth only and depth+color
+  pcl::PointCloud<pcl::PointXYZ> next_cloud_depth_;
+  pcl::PointCloud<pcl::PointXYZRGBA> next_cloud_color_;
   Eigen::Vector4f origin_;
   Eigen::Quaternionf orientation_;
   bool valid_;
+  //! Flag to say if a user set the focal length by hand
+  //  (so we don't attempt to adjust for QVGA, QQVGA, etc).
+  bool manual_focal_length_;
 
   float depth_image_units_;
   float constant_;
@@ -106,6 +112,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::ImageGrabberImpl (pcl::ImageGrabberBase
   , valid_ (false)
   , depth_image_units_ (1E-3)
   , constant_ (1.0f / 525.0f)
+  , manual_focal_length_ (false)
 {
   //depth_image_files_.push_back (depth_image_file);
   loadDepthAndRGBFiles (dir);
@@ -170,64 +177,77 @@ pcl::ImageGrabberBase::ImageGrabberImpl::readAhead ()
     depth_image = depth_reader->GetOutput ();
     int* dims = depth_image->GetDimensions ();
 
-    // Set up next_cloud_ meta data:
-    size_t point_size;
-    next_cloud_.fields.clear ();
-    if (rgb_image_files_.size () == 0)
-    {
-      point_size = sizeof (pcl::PointXYZ);
-      for_each_type<traits::fieldList<pcl::PointXYZ>::type> (detail::FieldAdder<pcl::PointXYZ>(next_cloud_.fields));
-    }
-    else 
-    {
-      point_size = sizeof (pcl::PointXYZRGBA);
-      for_each_type<traits::fieldList<pcl::PointXYZRGBA>::type> (detail::FieldAdder<pcl::PointXYZRGBA>(next_cloud_.fields));
-    }
-    next_cloud_.data.clear ();
-    next_cloud_.data.resize (point_size * depth_image->GetNumberOfPoints ());
-    next_cloud_.width = dims[0];
-    next_cloud_.height = dims[1];
-    next_cloud_.is_dense = false;
-    next_cloud_.point_step = point_size;
-    next_cloud_.row_step = next_cloud_.width * next_cloud_.point_step;
-
     // Fill in image data
-    int centerX = (next_cloud_.width >> 1);
-    int centerY = (next_cloud_.height >> 1);
     depth_pixel = static_cast<unsigned short*>(depth_image->GetScalarPointer ());
-    float *data = new float[point_size / sizeof(float)];
-    for (int y = 0; y < dims[1]; ++y)
+    // Would like to not have two copies of the same logic floating around, 
+    // but unsure of a better (readable) way to do this
+    if(rgb_image_files_.size() > 0)
     {
-      for (int x = 0; x < dims[0]; ++x, ++depth_pixel)
+      next_cloud_color_.width = dims[0];
+      next_cloud_color_.height = dims[1];
+      next_cloud_color_.is_dense = false;
+      next_cloud_color_.points.resize(depth_image->GetNumberOfPoints());
+      int centerX = (next_cloud_color_.width >> 1);
+      int centerY = (next_cloud_color_.height >> 1);
+      // The 525 factor default is only true for VGA. If not, we should scale
+      float scaleFactor = manual_focal_length_ ? constant_ : constant_ * 640./dims[0];
+      for (int y = 0; y < dims[1]; ++y)
       {
-        uint8_t* p_i = &(next_cloud_.data[y * next_cloud_.row_step + x * next_cloud_.point_step]);
-        float depth = static_cast<float> (*depth_pixel) * depth_image_units_;
-        if (depth == 0.0f) 
-          data[0] = data[1] = data[2] = std::numeric_limits<float>::quiet_NaN ();
-        else
+        for (int x = 0; x < dims[0]; ++x, ++depth_pixel)
         {
-          data[0] = (static_cast<float>(x - centerX)) * constant_ * depth;
-          data[1] = (static_cast<float>(y - centerY)) * constant_ * depth; 
-          data[2] = depth;
-        }
-        data[3] = 1.0f;
+          pcl::PointXYZRGBA &pt = next_cloud_color_.at(x,y);
+          float depth = static_cast<float> (*depth_pixel) * depth_image_units_;
+          if (depth == 0.0f) 
+            pt.x = pt.y = pt.z = std::numeric_limits<float>::quiet_NaN ();
+          else
+          {
+            pt.x = (static_cast<float>(x - centerX)) * scaleFactor * depth;
+            pt.y = (static_cast<float>(y - centerY)) * scaleFactor * depth; 
+            pt.z = depth;
+          }
 
-        if (rgb_image_files_.size () != 0)
-        {
-          color_pixel = static_cast<unsigned char*> (rgb_image->GetScalarPointer (x,y,0));
-          uint32_t rgb = static_cast<uint32_t> (color_pixel[0]) << 16 | static_cast<uint32_t> (color_pixel[1]) << 8 | static_cast<uint32_t> (color_pixel[2]);
-          data[4] = *reinterpret_cast<float*> (&rgb);
+          color_pixel = reinterpret_cast<unsigned char*> (rgb_image->GetScalarPointer (x, y, 0));
+          pt.r = color_pixel[0];
+          pt.g = color_pixel[1];
+          pt.b = color_pixel[2];
         }
-        memcpy (p_i, &data, sizeof (data));
       }
+      pcl::toROSMsg(next_cloud_color_, next_cloud_);
     }
-    delete[] data;
+    else
+    {
+      next_cloud_depth_.width = dims[0];
+      next_cloud_depth_.height = dims[1];
+      next_cloud_depth_.is_dense = false;
+      next_cloud_depth_.points.resize(depth_image->GetNumberOfPoints());
+      int centerX = (next_cloud_depth_.width >> 1);
+      int centerY = (next_cloud_depth_.height >> 1);
+      // The 525 factor default is only true for VGA. If not, we should scale
+      float scaleFactor = manual_focal_length_ ? constant_ : constant_ * 640./dims[0];
+      for (int y = 0; y < dims[1]; ++y)
+      {
+        for (int x = 0; x < dims[0]; ++x, ++depth_pixel)
+        {
+          pcl::PointXYZ &pt = next_cloud_depth_.at(x,y);
+          float depth = static_cast<float> (*depth_pixel) * depth_image_units_;
+          if (depth == 0.0f) 
+            pt.x = pt.y = pt.z = std::numeric_limits<float>::quiet_NaN ();
+          else
+          {
+            pt.x = (static_cast<float>(x - centerX)) * scaleFactor * depth;
+            pt.y = (static_cast<float>(y - centerY)) * scaleFactor * depth; 
+            pt.z = depth;
+          }
+        }
+      }
+      pcl::toROSMsg(next_cloud_depth_, next_cloud_);
+    }
 
     valid_ = true;
     if (++depth_image_iterator_ == depth_image_files_.end () && repeat_)
       depth_image_iterator_ = depth_image_files_.begin ();
     
-    if (rgb_image_files_.size () != 0)
+    if (rgb_image_files_.size () > 0)
     {
       if (++rgb_image_iterator_ == rgb_image_files_.end () && repeat_)
         rgb_image_iterator_ = rgb_image_files_.begin ();
@@ -242,7 +262,9 @@ void
 pcl::ImageGrabberBase::ImageGrabberImpl::trigger ()
 {
   if (valid_)
+  {
     grabber_.publish (next_cloud_,origin_,orientation_);
+  }
   // use remaining time, if there is time left!
   readAhead ();
 }
@@ -395,6 +417,7 @@ void
 pcl::ImageGrabberBase::setFocalLength (const float focal_length)
 {
   impl_->constant_ = 1./focal_length;
+  impl_->manual_focal_length_ = true;
 }
 
 
