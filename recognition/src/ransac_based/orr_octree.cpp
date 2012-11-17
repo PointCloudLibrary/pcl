@@ -116,7 +116,7 @@ pcl::recognition::ORROctree::build (const PointCloudIn& points, float voxelsize,
   if ( arg > 1.0f )
     tree_levels_ = static_cast<int> (ceil (log (arg)/log (2.0)) + 0.5);
   else
-    tree_levels_ = 0.0f;
+    tree_levels_ = 0;
 
 #ifdef PCL_REC_ORR_OCTREE_VERBOSE
   printf("tree levels = %i\n", tree_levels_);
