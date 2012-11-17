@@ -45,7 +45,7 @@ Viewport::Viewport (vtkSmartPointer<vtkRenderWindow> window, double xmin/*=0.0*/
   int *size = window->GetSize ();
   double viewport_xmin = size[0] * xmin;
   double viewport_xmax = size[0] * xmax;
-  double viewport_ymin = size[1] * ymin;
+//  double viewport_ymin = size[1] * ymin;
   double viewport_ymax = size[1] * ymax;
 
   // HUD - Camera Name
@@ -130,7 +130,7 @@ Viewport::viewportModified ()
 
 // Viewport Actor Update
 void
-Viewport::viewportActorUpdateCallback (vtkObject* caller, unsigned long int vtkNotUsed (eventId), void* clientData,
+Viewport::viewportActorUpdateCallback (vtkObject* /*caller*/, unsigned long int vtkNotUsed (eventId), void* clientData,
                                        void* vtkNotUsed (callData))
 {
   Viewport *viewport = reinterpret_cast<Viewport*> (clientData);

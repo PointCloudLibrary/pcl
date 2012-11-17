@@ -30,7 +30,7 @@ Camera::Camera (std::string name) :
   camera_actor_ = vtkSmartPointer<vtkCameraActor>::New ();
   camera_actor_->SetCamera (camera_);
   camera_actor_->GetProperty ()->SetLighting (0);
-  camera_actor_->GetProperty ()->SetLineStipplePattern (0101010101010101);
+  camera_actor_->GetProperty ()->SetLineStipplePattern (1010101010101010);
 
   for (int i = 0; i < 24; i++)
     frustum_[i] = 0;

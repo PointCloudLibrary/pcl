@@ -96,7 +96,7 @@ public:
   Eigen::Matrix4d
   getViewProjectionMatrix ()
   {
-    return projection_matrix_ * model_view_matrix_;
+    return Eigen::Matrix4d (projection_matrix_ * model_view_matrix_);
   }
 
   Eigen::Vector3d
@@ -134,7 +134,6 @@ private:
   double frustum_[24];
   Eigen::Matrix4d projection_matrix_;
   Eigen::Matrix4d model_view_matrix_;
-
 };
 
 #endif
