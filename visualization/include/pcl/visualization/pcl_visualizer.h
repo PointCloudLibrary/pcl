@@ -564,11 +564,6 @@ namespace pcl
                           const PointCloudColorHandler<PointT> &color_handler,
                           const std::string &id = "cloud");
 
-//        bool
-//        updatePointCloud (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud,
-//                          const PointCloudColorHandlerRGBField<pcl::PointXYZRGB> &color_handler,
-//                          const std::string &id = "cloud");
-
         /** \brief Add a Point Cloud (templated) to screen.
           * \param[in] cloud the input point cloud dataset
           * \param[in] geometry_handler use a geometry handler object to extract the XYZ data
