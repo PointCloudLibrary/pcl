@@ -134,7 +134,7 @@ class SimpleOpenNIViewer
                const std::string &filename)
     {
 #if _WIN32
-      HANDLE h_native_file = CreateFile (file_name.c_str (), GENERIC_READ | GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+      HANDLE h_native_file = CreateFile (filename.c_str (), GENERIC_READ | GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
       if (h_native_file == INVALID_HANDLE_VALUE)
         return (false);
       HANDLE fm = CreateFileMapping (h_native_file, NULL, PAGE_READWRITE, 0, data_size, NULL);
