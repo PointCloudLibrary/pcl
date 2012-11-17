@@ -396,8 +396,8 @@ class NILinemod
       search_.nearestKSearch (picked_pt, 1, indices, distances);
 
       // Get the [u, v] in pixel coordinates for the ImageViewer. Remember that 0,0 is bottom left.
-      uint32_t width  = search_.getInputCloud ()->width,
-               height = search_.getInputCloud ()->height;
+      uint32_t width  = search_.getInputCloud ()->width;
+//               height = search_.getInputCloud ()->height;
       int v = indices[0] / width,
           u = indices[0] % width;
 

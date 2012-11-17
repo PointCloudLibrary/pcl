@@ -132,7 +132,7 @@ main (int argc, char ** argv)
     {
       PointXYZRGB new_point;
       //  uint8_t* p_i = &(cloud_blob->data[y * cloud_blob->row_step + x * cloud_blob->point_step]);
-      float depth = (float)(*depth_pixel) * scale;
+      float depth = static_cast<float> (*depth_pixel) * scale;
     //  qDebug () << "Depth = "<<depth;
       if (depth == 0.0f)
       {
@@ -140,12 +140,12 @@ main (int argc, char ** argv)
       }
       else
       {
-        new_point.x = ((float)(x - centerX)) * depth * fl_const;
-        new_point.y = ((float)(centerY - y)) * depth * fl_const; // vtk seems to start at the bottom left image corner
+        new_point.x = (static_cast<float> (x - centerX)) * depth * fl_const;
+        new_point.y = (static_cast<float> (centerY - y)) * depth * fl_const; // vtk seems to start at the bottom left image corner
         new_point.z = depth;
       }
       
-      uint32_t rgb = (uint32_t)color_pixel[0] << 16 | (uint32_t)color_pixel[1] << 8 | (uint32_t)color_pixel[2];
+      uint32_t rgb = (static_cast<uint32_t> (color_pixel[0]) << 16) | (static_cast<uint32_t> (color_pixel[1]) << 8) | static_cast<uint32_t> (color_pixel[2]);
       new_point.rgb = *reinterpret_cast<float*> (&rgb);
       cloud->points.push_back (new_point);
       //   qDebug () << "depth = "<<depth << "x,y,z="<<data[0]<<","<<data[1]<<","<<data[2];
