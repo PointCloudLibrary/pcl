@@ -47,8 +47,7 @@
 template<typename PointT, typename NormalT> void
 pcl::NormalSpaceSampling<PointT, NormalT>::applyFilter (PointCloud &output)
 {
-  // If sample size is 0 or if the sample size is greater then input cloud size
-  //   then return entire copy of cloud
+  // If sample size is 0 or if the sample size is greater then input cloud size then return entire copy of cloud
   if (sample_ >= input_->size ())
   {
     output = *input_;
@@ -60,10 +59,10 @@ pcl::NormalSpaceSampling<PointT, NormalT>::applyFilter (PointCloud &output)
   output.width = sample_;
   output.height = 1;
   
-  // allocate memory for the histogram of normals.. Normals will then be sampled from each bin..
+  // Allocate memory for the histogram of normals. Normals will then be sampled from each bin.
   unsigned int n_bins = binsx_ * binsy_ * binsz_;
-  // list<int> holds the indices of points in that bin.. Using list to avoid repeated resizing of vectors.. Helps when the point cloud is
-  // large..
+  // list<int> holds the indices of points in that bin. Using list to avoid repeated resizing of vectors.
+  // Helps when the point cloud is large.
   std::vector< std::list <int> > normals_hg;
   normals_hg.reserve (n_bins);
   for (unsigned int i = 0; i < n_bins; i++) 
@@ -75,8 +74,8 @@ pcl::NormalSpaceSampling<PointT, NormalT>::applyFilter (PointCloud &output)
     normals_hg[bin_number].push_back (i);
   }
 
-  // Setting up random access for the list created above.. Maintaining the iterators to individual elements of the list in a vector.. Using
-  // vector now as the size of the list is known..
+  // Setting up random access for the list created above. Maintaining the iterators to individual elements of the list
+  // in a vector. Using vector now as the size of the list is known.
   std::vector< std::vector <std::list<int>::iterator> > random_access (normals_hg.size ());
   for (unsigned int i = 0; i < normals_hg.size (); i++)
   {
@@ -98,18 +97,18 @@ pcl::NormalSpaceSampling<PointT, NormalT>::applyFilter (PointCloud &output)
     prev_index = start_index[i];
   }
 
-  // maintaining flags to check if a point is sampled
+  // Maintaining flags to check if a point is sampled
   boost::dynamic_bitset<> is_sampled_flag (input_normals_->points.size ());
-  // maintaining flags to check if all points in the bin are sampled 
+  // Maintaining flags to check if all points in the bin are sampled
   boost::dynamic_bitset<> bin_empty_flag (normals_hg.size ());
   unsigned int i = 0;
   while (i < sample_)
   {
-    // iterating through every bin and picking one point at random, until the required number of points are sampled..
+    // Iterating through every bin and picking one point at random, until the required number of points are sampled.
     for (unsigned int j = 0; j < normals_hg.size (); j++)
     {
       unsigned int M = static_cast<unsigned int> (normals_hg[j].size ());
-      if (M == 0 || bin_empty_flag.test (j))// bin_empty_flag(i) is set if all points in that bin are sampled..
+      if (M == 0 || bin_empty_flag.test (j)) // bin_empty_flag(i) is set if all points in that bin are sampled.
       {
         continue;
       }
@@ -125,7 +124,7 @@ pcl::NormalSpaceSampling<PointT, NormalT>::applyFilter (PointCloud &output)
 
       is_sampled_flag.flip (start_index[j] + random_index);
 
-      // checking if all points in bin j are sampled..
+      // Checking if all points in bin j are sampled.
       if (isEntireBinSampled (is_sampled_flag, start_index[j], static_cast<unsigned int> (normals_hg[j].size ())))
       {
         bin_empty_flag.flip (j);
@@ -160,7 +159,7 @@ template<typename PointT, typename NormalT> unsigned int
 pcl::NormalSpaceSampling<PointT, NormalT>::findBin (float *normal, unsigned int)
 {
   unsigned int bin_number = 0;
-  // holds the bin numbers for direction cosines in x,y,z directions
+  // Holds the bin numbers for direction cosines in x,y,z directions
   unsigned int t[3] = {0,0,0};
   
   // dcos is the direction cosine.
@@ -173,7 +172,7 @@ pcl::NormalSpaceSampling<PointT, NormalT>::findBin (float *normal, unsigned int)
   dcos = cosf (normal[0]);
   bin_size = (max_cos - min_cos) / static_cast<float> (binsx_);
 
-  // finding bin number for direction cosine in x direction
+  // Finding bin number for direction cosine in x direction
   unsigned int k = 0;
   for (float i = min_cos; (i + bin_size) < (max_cos - bin_size); i += bin_size , k++)
   {
@@ -187,7 +186,7 @@ pcl::NormalSpaceSampling<PointT, NormalT>::findBin (float *normal, unsigned int)
   dcos = cosf (normal[1]);
   bin_size = (max_cos - min_cos) / static_cast<float> (binsy_);
 
-  // finding bin number for direction cosine in y direction
+  // Finding bin number for direction cosine in y direction
   k = 0;
   for (float i = min_cos; (i + bin_size) < (max_cos - bin_size); i += bin_size , k++)
   {
@@ -201,7 +200,7 @@ pcl::NormalSpaceSampling<PointT, NormalT>::findBin (float *normal, unsigned int)
   dcos = cosf (normal[2]);
   bin_size = (max_cos - min_cos) / static_cast<float> (binsz_);
 
-  // finding bin number for direction cosine in z direction
+  // Finding bin number for direction cosine in z direction
   k = 0;
   for (float i = min_cos; (i + bin_size) < (max_cos - bin_size); i += bin_size , k++)
   {
@@ -221,8 +220,7 @@ template<typename PointT, typename NormalT>
 void
 pcl::NormalSpaceSampling<PointT, NormalT>::applyFilter (std::vector<int> &indices)
 {
-  // If sample size is 0 or if the sample size is greater then input cloud size
-  //   then return all indices
+  // If sample size is 0 or if the sample size is greater then input cloud size then return all indices
   if (sample_ >= input_->width * input_->height)
   {
     indices = *indices_;
@@ -232,23 +230,23 @@ pcl::NormalSpaceSampling<PointT, NormalT>::applyFilter (std::vector<int> &indice
   // Resize output indices to sample size
   indices.resize (sample_);
   
-  // allocate memory for the histogram of normals.. Normals will then be sampled from each bin..
+  // Allocate memory for the histogram of normals. Normals will then be sampled from each bin.
   unsigned int n_bins = binsx_ * binsy_ * binsz_;
-  // list<int> holds the indices of points in that bin.. Using list to avoid repeated resizing of vectors.. Helps when the point cloud is
-  // large..
+  // list<int> holds the indices of points in that bin. Using list to avoid repeated resizing of vectors.
+  // Helps when the point cloud is large.
   std::vector< std::list <int> > normals_hg;
   normals_hg.reserve (n_bins);
   for (unsigned int i = 0; i < n_bins; i++)
     normals_hg.push_back (std::list<int> ());
   
-  for (unsigned int i=0; i < input_normals_->points.size (); i++)
+  for (unsigned int i = 0; i < input_normals_->points.size (); i++)
   {
     unsigned int bin_number = findBin (input_normals_->points[i].normal, n_bins);
     normals_hg[bin_number].push_back (i);
   }
 
-  // Setting up random access for the list created above.. Maintaining the iterators to individual elements of the list in a vector.. Using
-  // vector now as the size of the list is known..
+  // Setting up random access for the list created above. Maintaining the iterators to individual elements of the list
+  // in a vector. Using vector now as the size of the list is known.
   std::vector< std::vector <std::list<int>::iterator> > random_access (normals_hg.size ());
   for (unsigned int i = 0; i < normals_hg.size (); i++)
   {
@@ -270,18 +268,18 @@ pcl::NormalSpaceSampling<PointT, NormalT>::applyFilter (std::vector<int> &indice
     prev_index = start_index[i];
   }
 
-  // maintaining flags to check if a point is sampled
+  // Maintaining flags to check if a point is sampled
   boost::dynamic_bitset<> is_sampled_flag (input_normals_->points.size ());
-  // maintaining flags to check if all points in the bin are sampled 
+  // Maintaining flags to check if all points in the bin are sampled
   boost::dynamic_bitset<> bin_empty_flag (normals_hg.size ());
-  unsigned int i=0;
+  unsigned int i = 0;
   while (i < sample_)
   {
-    // iterating through every bin and picking one point at random, until the required number of points are sampled..
+    // Iterating through every bin and picking one point at random, until the required number of points are sampled.
     for (unsigned int j = 0; j < normals_hg.size (); j++)
     {
       unsigned int M = static_cast<unsigned int> (normals_hg[j].size ());
-      if (M==0 || bin_empty_flag.test (j)) // bin_empty_flag(i) is set if all points in that bin are sampled..
+      if (M == 0 || bin_empty_flag.test (j)) // bin_empty_flag(i) is set if all points in that bin are sampled..
       {
         continue;
       }
@@ -289,7 +287,7 @@ pcl::NormalSpaceSampling<PointT, NormalT>::applyFilter (std::vector<int> &indice
       unsigned int pos = 0;
       unsigned int random_index = 0;
 
-      //picking up a sample at random from jth bin
+      // Picking up a sample at random from jth bin
       do
       {
         random_index = std::rand () % M;
@@ -298,10 +296,10 @@ pcl::NormalSpaceSampling<PointT, NormalT>::applyFilter (std::vector<int> &indice
 
       is_sampled_flag.flip (start_index[j] + random_index);
 
-      // checking if all points in bin j are sampled..
+      // Checking if all points in bin j are sampled.
       if (isEntireBinSampled (is_sampled_flag, start_index[j], static_cast<unsigned int> (normals_hg[j].size ()))) 
       {
-	bin_empty_flag.flip (j);
+        bin_empty_flag.flip (j);
       }
 
       unsigned int index = *(random_access[j][random_index]);
