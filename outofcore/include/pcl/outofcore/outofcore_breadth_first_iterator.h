@@ -33,25 +33,26 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id$
+ * $Id: outofcore_depth_first_iterator.h 7938 2012-11-14 06:27:39Z jrosen $
  */
 
-#ifndef PCL_OUTOFCORE_DEPTH_FIRST_ITERATOR_H_
-#define PCL_OUTOFCORE_DEPTH_FIRST_ITERATOR_H_
+#ifndef PCL_OUTOFCORE_BREADTH_FIRST_ITERATOR_H_
+#define PCL_OUTOFCORE_BREADTH_FIRST_ITERATOR_H_
 
 #include <pcl/outofcore/outofcore_iterator_base.h>
 namespace pcl
 {
   namespace outofcore
   {
-    /** \class OutofcoreDepthFirstIterator
+
+    /** \class OutofcoreBreadthFirstIterator
      *
      *  \ingroup outofcore
-     *  \author Stephen Fox (foxstephend@gmail.com)
+     *  \author Justin Rosen (jmylesrosen@gmail.com)
      *  \note Code adapted from \ref octree_iterator.h in Module \ref pcl_octree written by Julius Kammerl
      */
     template<typename PointT=pcl::PointXYZ, typename ContainerT=OutofcoreOctreeDiskContainer<pcl::PointXYZ> >
-    class OutofcoreDepthFirstIterator : public OutofcoreIteratorBase<PointT, ContainerT>
+    class OutofcoreBreadthFirstIterator : public OutofcoreIteratorBase<PointT, ContainerT>
     {
       public:
         typedef typename pcl::outofcore::OutofcoreOctreeBase<ContainerT, PointT> OctreeDisk;
@@ -60,31 +61,57 @@ namespace pcl
         typedef typename pcl::outofcore::OutofcoreOctreeBaseNode<ContainerT, PointT> LeafNode;
         typedef typename pcl::outofcore::OutofcoreOctreeBaseNode<ContainerT, PointT> BranchNode;
 
+        typedef std::deque<OctreeDiskNode*> FIFO;
+        //typedef std::deque<std::pair<OctreeDiskNode*, unsigned char> > FIFO;
+        //typedef std::pair<OutofcoreOctreeBaseNode<ContainerT, PointT>*, unsigned char> FIFOEntry;
+
         explicit
-        OutofcoreDepthFirstIterator (OctreeDisk& octree_arg);
+        OutofcoreBreadthFirstIterator (OctreeDisk& octree_arg);
 
         virtual
-        ~OutofcoreDepthFirstIterator ();
+        ~OutofcoreBreadthFirstIterator ();
       
-        OutofcoreDepthFirstIterator&
+        OutofcoreBreadthFirstIterator&
         operator++ ();
       
-        inline OutofcoreDepthFirstIterator
+        inline OutofcoreBreadthFirstIterator
         operator++ (int)
         {
-          OutofcoreDepthFirstIterator _Tmp = *this;
+          OutofcoreBreadthFirstIterator _Tmp = *this;
           ++*this;
           return (_Tmp);
         }
+
+        virtual inline void
+        reset ()
+        {
+          OutofcoreIteratorBase<PointT, ContainerT>::reset();
+
+          // init FIFO
+          FIFO_.clear ();
+//          FIFOEntry fifo_entry;
+//
+//          // pushing root node to stack
+//          fifo_entry.first = this->currentNode_;
+//          fifo_entry.second = 0;
+//          FIFO_.push_back(fifo_entry);
+          FIFO_.push_back(this->currentNode_);
+          skip_child_voxels_ = false;
+
+        }
       
         void
-        skipChildVoxels ();
+        skipChildVoxels ()
+        {
+          skip_child_voxels_ = true;
+        }
       
       protected:
-        unsigned char currentChildIdx_;
-        std::vector<std::pair<OctreeDiskNode*, unsigned char> > stack_;
+        /** FIFO list */
+        std::deque<OctreeDiskNode*> FIFO_;
+        bool skip_child_voxels_;
     };
   }
 }
 
-#endif //PCL_OUTOFCORE_DEPTH_FIRST_ITERATOR_H_
+#endif //PCL_OUTOFCORE_BREADTH_FIRST_ITERATOR_H_

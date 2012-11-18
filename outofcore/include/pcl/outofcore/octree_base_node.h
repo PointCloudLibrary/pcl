@@ -139,6 +139,19 @@ namespace pcl
           node_metadata_->getBoundingBox (min_bb, max_bb);
         }
 
+
+        const boost::filesystem::path&
+        getPCDFilename () const
+        {
+          return node_metadata_->getPCDFilename ();
+        }
+
+        const boost::filesystem::path&
+        getMetadataFilename () const
+        {
+          return node_metadata_->getMetadataFilename ();
+        }
+
         void
         queryFrustum (const double planes[24], std::list<std::string>& file_names);
 

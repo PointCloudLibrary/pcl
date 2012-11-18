@@ -20,6 +20,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/outofcore_base_data.h
         include/pcl/${SUBSYS_NAME}/outofcore_node_data.h
         include/pcl/${SUBSYS_NAME}/outofcore_iterator_base.h
+        include/pcl/${SUBSYS_NAME}/outofcore_breadth_first_iterator.h
         include/pcl/${SUBSYS_NAME}/outofcore_depth_first_iterator.h
         include/pcl/${SUBSYS_NAME}/boost.h
         include/pcl/${SUBSYS_NAME}/cJSON.h
@@ -33,6 +34,7 @@ if(build)
         )
 
     set(impl_incs
+        include/pcl/${SUBSYS_NAME}/impl/outofcore_breadth_first_iterator.hpp
         include/pcl/${SUBSYS_NAME}/impl/outofcore_depth_first_iterator.hpp
         include/pcl/${SUBSYS_NAME}/impl/octree_base.hpp
         include/pcl/${SUBSYS_NAME}/impl/octree_base_node.hpp

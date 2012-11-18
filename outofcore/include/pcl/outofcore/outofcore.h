@@ -52,6 +52,7 @@
 #include <pcl/outofcore/octree_ram_container.h>
 
 #include <pcl/outofcore/outofcore_iterator_base.h>
+#include <pcl/outofcore/outofcore_breadth_first_iterator.h>
 #include <pcl/outofcore/outofcore_depth_first_iterator.h>
 
 #endif // OUTOFCORE_H_

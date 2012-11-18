@@ -50,7 +50,9 @@
 
 //outofcore iterators
 #include <pcl/outofcore/outofcore_iterator_base.h>
+#include <pcl/outofcore/outofcore_breadth_first_iterator.h>
 #include <pcl/outofcore/outofcore_depth_first_iterator.h>
+#include <pcl/outofcore/impl/outofcore_breadth_first_iterator.hpp>
 #include <pcl/outofcore/impl/outofcore_depth_first_iterator.hpp>
 
 //outofcore metadata
@@ -165,6 +167,12 @@ namespace pcl
 
         typedef OutofcoreDepthFirstIterator<PointT, ContainerT> Iterator;
         typedef const OutofcoreDepthFirstIterator<PointT, ContainerT> ConstIterator;
+
+        typedef OutofcoreBreadthFirstIterator<PointT, ContainerT> BreadthFirstIterator;
+        typedef const OutofcoreBreadthFirstIterator<PointT, ContainerT> BreadthFirstConstIterator;
+
+        typedef OutofcoreDepthFirstIterator<PointT, ContainerT> DepthFirstIterator;
+        typedef const OutofcoreDepthFirstIterator<PointT, ContainerT> DepthFirstConstIterator;
 
         typedef boost::shared_ptr<OutofcoreOctreeBase<ContainerT, PointT> > Ptr;
         typedef boost::shared_ptr<const OutofcoreOctreeBase<ContainerT, PointT> > ConstPtr;
