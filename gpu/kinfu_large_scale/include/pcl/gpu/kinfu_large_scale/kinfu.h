@@ -49,6 +49,7 @@
 
 #include "internal.h"
 
+#include <pcl/gpu/kinfu_large_scale/float3_operations.h>
 #include <pcl/gpu/containers/device_array.h>
 #include <pcl/gpu/kinfu_large_scale/pixel_rgb.h>
 #include <pcl/gpu/kinfu_large_scale/tsdf_volume.h>
@@ -113,8 +114,8 @@ namespace pcl
           void
           setInitialCameraPose (const Eigen::Affine3f& pose);
                           
-                  /** \brief Sets truncation threshold for depth image for ICP step only! This helps 
-                    *  to filter measurements that are outside tsdf volume. Pass zero to disable the truncation.
+          /** \brief Sets truncation threshold for depth image for ICP step only! This helps 
+            *  to filter measurements that are outside tsdf volume. Pass zero to disable the truncation.
             * \param[in] max_icp_distance_ Maximal distance, higher values are reset to zero (means no measurement). 
             */
           void
@@ -242,7 +243,7 @@ namespace pcl
           typedef Eigen::Matrix<float, 3, 3, Eigen::RowMajor> Matrix3frm;
           typedef Eigen::Vector3f Vector3f;
           
-          /** \brief helper function that convert transforms from host to device types
+          /** \brief helper function that converts transforms from host to device types
             * \param[in] transformIn1 first transform to convert
             * \param[in] transformIn2 second transform to convert
             * \param[in] translationIn1 first translation to convert
@@ -255,6 +256,33 @@ namespace pcl
           inline void convertTransforms (Matrix3frm&  transformIn1, Matrix3frm transformIn2, Eigen::Vector3f translationIn1, Eigen::Vector3f translationIn2,
                                          pcl::device::kinfuLS::Mat33& transformOut1, pcl::device::kinfuLS::Mat33& transformOut2, float3& translationOut1, float3& translationOut2);
           
+          /** \brief helper function that converts transforms from host to device types
+            * \param[in] transformIn1 first transform to convert
+            * \param[in] transformIn2 second transform to convert
+            * \param[in] translationIn translation to convert
+            * \param[out] transformOut1 result of first transform conversion
+            * \param[out] transformOut2 result of second transform conversion
+            * \param[out] translationOut result of translation conversion
+            */
+          inline void convertTransforms (Matrix3frm&  transformIn1, Matrix3frm transformIn2, Eigen::Vector3f translationIn,
+                                         pcl::device::kinfuLS::Mat33& transformOut1, pcl::device::kinfuLS::Mat33& transformOut2, float3& translationOut);
+          
+          /** \brief helper function that converts transforms from host to device types
+            * \param[in] transformIn transform to convert
+            * \param[in] translationIn translation to convert
+            * \param[out] transformOut result of transform conversion
+            * \param[out] translationOut result of translation conversion
+            */
+          inline void convertTransforms (Matrix3frm&  transformIn, Eigen::Vector3f translationIn,
+                                         pcl::device::kinfuLS::Mat33& transformOut, float3& translationOut);
+          
+          /** \brief helper function that pre-process a raw detph map the kinect fusion algorithm.
+            * The raw depth map is first blured, eventually truncated, and downsampled for each pyramid level.
+            * Then, vertex and normal maps are computed for each pyramid level.
+            * \param[in] depth_raw the raw depth map to process
+            * \param[in] cam_intrinsics intrinsics of the camera used to acquire the depth map
+            */
+          inline void prepareMaps (const DepthMap& depth_raw, const pcl::device::kinfuLS::Intr cam_intrinsics);
           
           /** \brief Cyclical buffer object */
           CyclicalBuffer cyclical_;
