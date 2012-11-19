@@ -43,5 +43,5 @@
 #include <pcl/point_types.h>
 #include <pcl/filters/impl/covariance_sampling.hpp>
 
-PCL_INSTANTIATE_PRODUCT(CovarianceSampling, ((pcl::PointXYZ)(pcl::PointXYZRGB)(pcl::PointXYZRGBNormal))
-                                            ((pcl::PointNormal)(pcl::PointXYZRGBNormal)))
+PCL_INSTANTIATE_PRODUCT(CovarianceSampling, ((pcl::PointXYZ)(pcl::PointNormal)(pcl::PointXYZRGB)(pcl::PointXYZRGBA)(pcl::PointXYZRGBNormal))
+                                            ((pcl::Normal)(pcl::PointNormal)(pcl::PointXYZRGBNormal)))

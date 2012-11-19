@@ -46,6 +46,18 @@
 
 namespace pcl
 {
+  /** \brief Point Cloud sampling based on the 6D covariances. It selects the points such that the resulting cloud is
+    * as stable as possible for being registered (against a copy of itself) with ICP. The algorithm adds points to the
+    * resulting cloud incrementally, while trying to keep all the 6 eigenvalues of the covariance matrix as close to each
+    * other as possible.
+    * This class also comes with the \a computeConditionNumber method that returns a number which shows how stable a point
+    * cloud will be when used as input for ICP (the closer the value it is to 1.0, the better).
+    *
+    * Based on the following publication:
+    *    * "Geometrically Stable Sampling for the ICP Algorithm" - N. Gelfand, L. Ikemoto, S. Rusinkiewicz, M. Levoy
+    *
+    * \author Alexandru E. Ichim, alex.e.ichim@gmail.com
+    */
   template <typename PointT, typename PointNT>
   class CovarianceSampling : public FilterIndices<PointT>
   {
