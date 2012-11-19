@@ -70,7 +70,7 @@ namespace pcl
       typedef typename FilterIndices<PointT>::PointCloud Cloud;
       typedef typename Cloud::Ptr CloudPtr;
       typedef typename Cloud::ConstPtr CloudConstPtr;
-      typedef typename PointCloud<PointNT>::Ptr NormalsPtr;
+      typedef typename pcl::PointCloud<PointNT>::Ptr NormalsPtr;
 
     public:
       /** \brief Empty constructor. */
