@@ -74,6 +74,16 @@ namespace pcl
     PCL_EXPORTS void
     getViewFrustum (const Eigen::Matrix4d &view_projection_matrix, double planes[24]);
 
+    enum FrustumCull
+    {
+      PCL_INSIDE_FRUSTUM,
+      PCL_INTERSECT_FRUSTUM,
+      PCL_OUTSIDE_FRUSTUM
+    };
+
+    PCL_EXPORTS int
+    cullFrustum (double planes[24], const Eigen::Vector3d &min_bb, const Eigen::Vector3d &max_bb);
+
     PCL_EXPORTS float
     viewScreenArea (const Eigen::Vector3d &eye, const Eigen::Vector3d &min_bb, const Eigen::Vector3d &max_bb, const Eigen::Matrix4d &view_projection_matrix, int width, int height);
 

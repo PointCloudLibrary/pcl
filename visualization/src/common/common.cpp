@@ -100,11 +100,11 @@ pcl::visualization::worldToView (const Eigen::Vector4d &world_pt, const Eigen::M
   // Transform world to clipping coordinates
   Eigen::Vector4d world (view_projection_matrix * world_pt);
   // Normalize w-component
-  world /= world_pt.w ();
+  world /= world.w ();
 
   // X/Y screen space coordinate
-  int screen_x = int (floor (double (((world_pt.x () + 1) / 2.0) * width) + 0.5));
-  int screen_y = int (floor (double (((world_pt.y () + 1) / 2.0) * height) + 0.5));
+  int screen_x = int (floor (double (((world.x () + 1) / 2.0) * width) + 0.5));
+  int screen_y = int (floor (double (((world.y () + 1) / 2.0) * height) + 0.5));
 
   // Calculate -world_pt.y () because the screen Y axis is oriented top->down, ie 0 is top-left
   //int winY = (int) floor ( (double) (((1 - world_pt.y ()) / 2.0) * height) + 0.5); // top left
@@ -143,6 +143,45 @@ pcl::visualization::getViewFrustum (const Eigen::Matrix4d &view_projection_matri
     planes[4*i + 2] = normals[i].z ()*f;
     planes[4*i + 3] = normals[i].w ()*f;
   }
+}
+
+int
+pcl::visualization::cullFrustum (double frustum[24], const Eigen::Vector3d &min_bb, const Eigen::Vector3d &max_bb)
+{
+  int result = PCL_INSIDE_FRUSTUM;
+
+  for(int i =0; i < 6; i++){
+    double a = frustum[(i*4)];
+    double b = frustum[(i*4)+1];
+    double c = frustum[(i*4)+2];
+    double d = frustum[(i*4)+3];
+
+    //cout << i << ": " << a << "x + " << b << "y + " << c << "z + " << d << endl;
+
+    //  Basic VFC algorithm
+    Eigen::Vector3d center ((max_bb.x () - min_bb.x ()) / 2 + min_bb.x (),
+                            (max_bb.y () - min_bb.y ()) / 2 + min_bb.y (),
+                            (max_bb.z () - min_bb.z ()) / 2 + min_bb.z ());
+
+    Eigen::Vector3d radius (fabs (static_cast<double> (max_bb.x () - center.x ())),
+                            fabs (static_cast<double> (max_bb.y () - center.y ())),
+                            fabs (static_cast<double> (max_bb.z () - center.z ())));
+
+    double m = (center.x () * a) + (center.y () * b) + (center.z () * c) + d;
+    double n = (radius.x () * fabs(a)) + (radius.y () * fabs(b)) + (radius.z () * fabs(c));
+
+    if (m + n < 0){
+      result = PCL_OUTSIDE_FRUSTUM;
+      break;
+    }
+
+    if (m - n < 0)
+    {
+      result = PCL_INTERSECT_FRUSTUM;
+    }
+  }
+
+  return result;
 }
 
 //void
