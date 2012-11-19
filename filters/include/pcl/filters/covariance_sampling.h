@@ -116,7 +116,7 @@ namespace pcl
       /** \brief The normals computed at each point in the input cloud */
       NormalsPtr input_normals_;
 
-      std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > scaled_points_;
+      std::vector<Eigen::Vector3f> scaled_points_;
 
       bool
       initCompute ();
