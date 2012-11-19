@@ -63,11 +63,22 @@ namespace pcl
 
     public:
       /** \brief Empty constructor. */
-      NormalSpaceSampling () : 
-        sample_ (UINT_MAX), seed_ (static_cast<unsigned int> (time (NULL))), binsx_ (), binsy_ (), binsz_ (), input_normals_ ()
+      NormalSpaceSampling ()
+        : sample_ (UINT_MAX)
+        , seed_ (static_cast<unsigned int> (time (NULL)))
+        , binsx_ ()
+        , binsy_ ()
+        , binsz_ ()
+        , input_normals_ ()
+        , rng_uniform_distribution_ (NULL)
       {
         filter_name_ = "NormalSpaceSampling";
-        std::srand (seed_);
+      }
+
+      ~NormalSpaceSampling ()
+      {
+        if (rng_uniform_distribution_ != NULL)
+          delete rng_uniform_distribution_;
       }
 
       /** \brief Set number of indices to be sampled.
@@ -75,33 +86,24 @@ namespace pcl
         */
       inline void
       setSample (unsigned int sample)
-      {
-        sample_ = sample;
-      }
+      { sample_ = sample; }
 
       /** \brief Get the value of the internal \a sample parameter. */
       inline unsigned int
       getSample () const
-      {
-        return (sample_);
-      }
+      { return (sample_); }
 
       /** \brief Set seed of random function.
         * \param[in] seed the input seed
         */
       inline void
       setSeed (unsigned int seed)
-      {
-        seed_ = seed;
-        std::srand (seed_);
-      }
+      { seed_ = seed; }
 
       /** \brief Get the value of the internal \a seed parameter. */
       inline unsigned int
       getSeed () const
-      {
-        return (seed_);
-      }
+      { return (seed_); }
 
       /** \brief Set the number of bins in x, y and z direction
         * \param[in] binsx number of bins in x direction
@@ -167,6 +169,9 @@ namespace pcl
       void
       applyFilter (std::vector<int> &indices);
 
+      bool
+      initCompute ();
+
     private:
       /** \brief Finds the bin number of the input normal, returns the bin number
         * \param[in] normal the input normal 
@@ -183,6 +188,8 @@ namespace pcl
       bool
       isEntireBinSampled (boost::dynamic_bitset<> &array, unsigned int start_index, unsigned int length);
 
+
+      boost::variate_generator<boost::mt19937, boost::uniform_int<size_t> > *rng_uniform_distribution_;
   };
 }
 

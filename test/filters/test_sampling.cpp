@@ -122,11 +122,11 @@ TEST (NormalSpaceSampling, Filters)
 
   EXPECT_NEAR (cond_num_walls_sampled, 7.8289, 0.5);
 
-  EXPECT_EQ ((*walls_indices)[0], 2314);
-  EXPECT_EQ ((*walls_indices)[walls_indices->size () / 4], 1876);
-  EXPECT_EQ ((*walls_indices)[walls_indices->size () / 2], 2230);
-  EXPECT_EQ ((*walls_indices)[walls_indices->size () * 3 / 4], 1538);
-  EXPECT_EQ ((*walls_indices)[walls_indices->size () - 1], 805);
+  EXPECT_EQ ((*walls_indices)[0], 2472);
+  EXPECT_EQ ((*walls_indices)[walls_indices->size () / 4], 2854);
+  EXPECT_EQ ((*walls_indices)[walls_indices->size () / 2], 1566);
+  EXPECT_EQ ((*walls_indices)[walls_indices->size () * 3 / 4], 2981);
+  EXPECT_EQ ((*walls_indices)[walls_indices->size () - 1], 2577);
 }
 
 /* ---[ */

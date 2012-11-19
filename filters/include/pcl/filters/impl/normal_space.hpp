@@ -43,12 +43,36 @@
 #include <vector>
 #include <list>
 
+
+///////////////////////////////////////////////////////////////////////////////
+template<typename PointT, typename NormalT> bool
+pcl::NormalSpaceSampling<PointT, NormalT>::initCompute ()
+{
+  if (!FilterIndices<PointT>::initCompute ())
+    return false;
+
+  // If sample size is 0 or if the sample size is greater then input cloud size then return entire copy of cloud
+  if (sample_ >= input_->size ())
+  {
+    PCL_ERROR ("[NormalSpaceSampling::initCompute] Requested more samples than the input cloud size: %d vs %zu\n",
+               sample_, input_->size ());
+    return false;
+  }
+
+  boost::mt19937 *rng = new boost::mt19937 (static_cast<size_t> (seed_));
+  boost::uniform_int<size_t> *uniform_distrib = new boost::uniform_int<size_t> (0, input_->size ());
+  rng_uniform_distribution_ = new boost::variate_generator<boost::mt19937, boost::uniform_int<size_t> > (*rng, *uniform_distrib);
+
+  return true;
+}
+
+
+
 ///////////////////////////////////////////////////////////////////////////////
 template<typename PointT, typename NormalT> void
 pcl::NormalSpaceSampling<PointT, NormalT>::applyFilter (PointCloud &output)
 {
-  // If sample size is 0 or if the sample size is greater then input cloud size then return entire copy of cloud
-  if (sample_ >= input_->size ())
+  if (!initCompute ())
   {
     output = *input_;
     return;
@@ -118,7 +142,7 @@ pcl::NormalSpaceSampling<PointT, NormalT>::applyFilter (PointCloud &output)
       //picking up a sample at random from jth bin
       do
       {
-        random_index = std::rand () % M;
+        random_index = (*rng_uniform_distribution_) () % M;
         pos = start_index[j] + random_index;
       } while (is_sampled_flag.test (pos));
 
@@ -220,8 +244,8 @@ template<typename PointT, typename NormalT>
 void
 pcl::NormalSpaceSampling<PointT, NormalT>::applyFilter (std::vector<int> &indices)
 {
-  // If sample size is 0 or if the sample size is greater then input cloud size then return all indices
-  if (sample_ >= input_->width * input_->height)
+
+  if (!initCompute ())
   {
     indices = *indices_;
     return;
@@ -290,7 +314,7 @@ pcl::NormalSpaceSampling<PointT, NormalT>::applyFilter (std::vector<int> &indice
       // Picking up a sample at random from jth bin
       do
       {
-        random_index = std::rand () % M;
+        random_index = (*rng_uniform_distribution_) () % M;
         pos = start_index[j] + random_index;
       } while (is_sampled_flag.test (pos));
 
