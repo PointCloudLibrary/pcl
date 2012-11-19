@@ -81,6 +81,7 @@ namespace pcl
       using SampleConsensusModelFromNormals<PointT, PointNT>::normals_;
       using SampleConsensusModelFromNormals<PointT, PointNT>::normal_distance_weight_;
       using SampleConsensusModel<PointT>::error_sqr_dists_;
+      using SampleConsensusModelPlane<PointT>::isModelValid;
 
       typedef typename SampleConsensusModel<PointT>::PointCloud PointCloud;
       typedef typename SampleConsensusModel<PointT>::PointCloudPtr PointCloudPtr;
@@ -143,14 +144,6 @@ namespace pcl
       getModelType () const { return (SACMODEL_NORMAL_PLANE); }
 
     	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-
-    protected:
-      /** \brief Check whether a model is valid given the user constraints.
-        * \param[in] model_coefficients the set of model coefficients
-        */
-      bool 
-      isModelValid (const Eigen::VectorXf &model_coefficients);
-
   };
 }
 
