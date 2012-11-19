@@ -225,7 +225,7 @@ pcl::VoxelSuperpixels<PointT>::extract (std::vector<pcl::PointIndices>& superpix
   findPointNeighbors ();
   placeSeedVoxels ();
 
-  findSeedConstituency (seed_resolution_*1.5);
+  findSeedConstituency (float (seed_resolution_) * 1.5f);
   evolveSuperpixels ();
   
   superpixels_ = superpixels;
@@ -290,11 +290,10 @@ pcl::VoxelSuperpixels<PointT>::findPointNeighbors ()
     
     std::pair <float, int> dist_index;
     actual_neighbor_distances.resize (actual_neighbors.size (), dist_index);
-    PointT point = voxel_cloud_->points[point_index];
     for (int i_neighbor = 0; i_neighbor < actual_neighbors.size(); ++i_neighbor)
     {
       int neighbor_index = actual_neighbors[i_neighbor];
-      PointT neighbor_point = voxel_cloud_->points[neighbor_index];
+      //PointT neighbor_point = voxel_cloud_->points[neighbor_index];
       actual_neighbor_distances[i_neighbor].first = neighbor_index;
       actual_neighbor_distances[i_neighbor].second = calcColorDifferenceLAB(neighbor_index,point_index) ;
     }
@@ -322,7 +321,7 @@ pcl::VoxelSuperpixels<PointT>::placeSeedVoxels ()
   distance.resize(1,0);
   for (int i = 0; i < num_seeds; ++i)  
   {
-    PointT center_point = voxel_centers[i];
+    //PointT center_point = voxel_centers[i];
 //    int num = voxel_kdtree_->nearestKSearch (center_point, 1, closest_index, distance);
     seed_indices_orig_[i] = closest_index[0];
   }
@@ -339,11 +338,11 @@ pcl::VoxelSuperpixels<PointT>::placeSeedVoxels ()
 
   pcl::PointIndices superpixel;
   
-  float search_radius = 0.1*seed_resolution_;
+  float search_radius = 0.1f * float (seed_resolution_);
 //  float search_volume = 4.0/3.0 * 3.1415926536 * search_radius * search_radius * search_radius;
   // This is number of voxels which fit in a planar slice through search volume
   // Area of planar slice / area of voxel side
-  float min_points = 0.45 * (search_radius)*(search_radius) * 3.1415926536  / (resolution_*resolution_);
+  float min_points = 0.45f * search_radius * search_radius * 3.1415926536f / (float (resolution_ * resolution_));
   //old = 0.5 * search_volume / (resolution_*resolution_*resolution_);
   for (int i = 0; i < seed_indices_orig_.size (); ++i)
   {
@@ -383,14 +382,14 @@ template <typename PointT> float
 pcl::VoxelSuperpixels<PointT>::calcGradient (int point_index)
 {
   float gradient = 0.0f; 
-  int num_neighbors = point_neighbor_dist_[point_index].size();
+  size_t num_neighbors = point_neighbor_dist_[point_index].size ();
   if (num_neighbors <= 4 )
     return std::numeric_limits<float>::max();
   for (int i = 0; i < num_neighbors; ++i)
   {
     gradient += point_neighbor_dist_[point_index][i].second;
   }
-  return gradient/num_neighbors;
+  return (gradient / float (num_neighbors));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -398,7 +397,7 @@ template <typename PointT> void
 pcl::VoxelSuperpixels<PointT>::findSeedConstituency (float edge_length)
 {
 //  int number_of_points = static_cast<int> (voxel_cloud_->points.size ());
-  int number_of_seeds = seed_indices_.size();
+  size_t number_of_seeds = seed_indices_.size ();
 
   std::vector< std::pair<int,float> > constituents;
   std::vector< int > possible_constituents;
@@ -478,13 +477,13 @@ pcl::VoxelSuperpixels<PointT>::recursiveFind (int index, std::vector<int> &possi
 template <typename PointT> void
 pcl::VoxelSuperpixels<PointT>::evolveSuperpixels ()
 {
-  int num_superpixels = superpixels_.size ();
+  size_t num_superpixels = superpixels_.size ();
   
   point_labels_.resize (voxel_cloud_->points.size (), -1);
   num_pts_in_superpixel_.resize (num_superpixels, 0);
   
   //Calculate initial values for clusters
-  initSuperpixelClusters (resolution_*2);
+  initSuperpixelClusters (float (resolution_) * 2.0f);
   
   int num_itr = 5;
   for (int i = 0; i < num_itr; ++i)
@@ -508,7 +507,7 @@ pcl::VoxelSuperpixels<PointT>::evolveSuperpixels ()
 template <typename PointT> void
 pcl::VoxelSuperpixels<PointT>::initSuperpixelClusters (float search_radius)
 {
-  int num_seeds = seed_indices_.size ();
+  size_t num_seeds = seed_indices_.size ();
   //Features are {L a b x y z FPFHx33}
   superpixel_features_.resize (boost::extents[num_seeds][39]);
   std::pair <int, float> def(-1,std::numeric_limits<float>::max());
@@ -552,7 +551,7 @@ pcl::VoxelSuperpixels<PointT>::initSuperpixelClusters (float search_radius)
 template <typename PointT> void
 pcl::VoxelSuperpixels<PointT>::iterateSuperpixelClusters ()
 {
-  int num_seeds = seed_indices_.size ();
+  size_t num_seeds = seed_indices_.size ();
   //Features are {L a b x y z FPFHx33}
   superpixel_features_.resize (boost::extents[num_seeds][39]);
   
@@ -577,7 +576,7 @@ pcl::VoxelSuperpixels<PointT>::iterateSuperpixelClusters ()
 template <typename PointT> void
 pcl::VoxelSuperpixels<PointT>::updateSuperpixelClusters ()
 {
-  int num_seeds = seed_indices_.size ();
+  size_t num_seeds = seed_indices_.size ();
   //Features are {L a b x y z FPFHx33}
   
   for (int i=0; i<num_seeds; ++i)
@@ -671,10 +670,10 @@ pcl::VoxelSuperpixels<PointT>::getColoredCloud ()
       superpixel_colors_.push_back (0);
       for (size_t i_segment = 0; i_segment < superpixels_.size (); i_segment++)
       {
-        uint8_t r = (static_cast<unsigned char> (rand () % 200) + 50);
-        uint8_t g = (static_cast<unsigned char> (rand () % 256));
-        uint8_t b = (static_cast<unsigned char> (rand () % 256));
-        superpixel_colors_.push_back ((uint32_t)r << 16 | (uint32_t)g << 8 | (uint32_t)b);
+        uint8_t r = static_cast<unsigned char> (rand () % 200 + 50);
+        uint8_t g = static_cast<unsigned char> (rand () % 256);
+        uint8_t b = static_cast<unsigned char> (rand () % 256);
+        superpixel_colors_.push_back (uint32_t (r) << 16 | uint32_t (g) << 8 | uint32_t (b));
       }
     }
     pcl::copyPointCloud (*input_,*colored_cloud);
@@ -875,7 +874,7 @@ pcl::VoxelSuperpixels<PointT>::calcFeatureDistance (int point_index, int seed_in
   spatial_distance_squared += (voxel_cloud_->points[point_index].x - superpixel_features_[seed_index][3]) * (voxel_cloud_->points[point_index].x - superpixel_features_[seed_index][3]);
   spatial_distance_squared += (voxel_cloud_->points[point_index].y - superpixel_features_[seed_index][4]) * (voxel_cloud_->points[point_index].y - superpixel_features_[seed_index][4]);
   spatial_distance_squared += (voxel_cloud_->points[point_index].z - superpixel_features_[seed_index][5]) * (voxel_cloud_->points[point_index].z - superpixel_features_[seed_index][5]);
-  spatial_distance_squared /= (seed_resolution_*seed_resolution_*9);
+  spatial_distance_squared /= (float (seed_resolution_*seed_resolution_) * 9.0f);
   
   float fpfh_distance = 1.0f;
   //Histogram intersection kernel
@@ -898,7 +897,7 @@ pcl::VoxelSuperpixels<PointT>::calcFeatureDistance (int point_index, int seed_in
   distance += (color_distance_squared)/10000.0f * color_importance_*color_importance_;
   distance += spatial_distance_squared * spatial_importance_*spatial_importance_;
   distance += fpfh_distance * fpfh_importance_*fpfh_importance_;
-  return sqrt(distance);
+  return (sqrtf (distance));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -920,7 +919,7 @@ pcl::VoxelSuperpixels<PointT>::calcColorDifferenceLAB (int index_a, int index_b)
   difference += float ((voxel_LAB_[index_a][0] - voxel_LAB_[index_b][0])*(voxel_LAB_[index_a][0] - voxel_LAB_[index_b][0]));
   difference += float ((voxel_LAB_[index_a][1] - voxel_LAB_[index_b][1])*(voxel_LAB_[index_a][1] - voxel_LAB_[index_b][1]));
   difference += float ((voxel_LAB_[index_a][2] - voxel_LAB_[index_b][2])*(voxel_LAB_[index_a][2] - voxel_LAB_[index_b][2]));
-  return sqrt(difference);
+  return (sqrtf (difference));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -930,8 +929,6 @@ pcl::VoxelSuperpixels<PointT>::calcDifferenceCurvature (int index_a, int index_b
   float difference = 0.0f;
   difference = (normals_->points[index_a].curvature - normals_->points[index_b].curvature);
   return (difference * difference);
-  
-  
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
