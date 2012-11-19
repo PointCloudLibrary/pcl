@@ -6,20 +6,22 @@ This patch is originally from <https://kforge.ros.org/openni/drivers/>,
 modified by me.
 ---
  Source/XnDeviceSensorV2/Bayer.cpp                  | 1233 +++++++++++++++++++-
- Source/XnDeviceSensorV2/Registration.cpp           |   41 -
+ Source/XnDeviceSensorV2/Registration.cpp           |   49 +
  Source/XnDeviceSensorV2/XnDataProcessor.h          |    3 
+ Source/XnDeviceSensorV2/XnDeviceSensor.h           |    2 
  Source/XnDeviceSensorV2/XnDeviceSensorIO.cpp       |   46 -
  Source/XnDeviceSensorV2/XnDeviceSensorIO.h         |   11 
  Source/XnDeviceSensorV2/XnDeviceSensorProtocol.h   |    4 
  Source/XnDeviceSensorV2/XnFirmwareStreams.cpp      |   17 
- Source/XnDeviceSensorV2/XnHostProtocol.h           |    4 
- Source/XnDeviceSensorV2/XnSensorDepthStream.cpp    |    2 
- Source/XnDeviceSensorV2/XnSensorDepthStream.h      |    4 
+ Source/XnDeviceSensorV2/XnHostProtocol.cpp         |    5 
+ Source/XnDeviceSensorV2/XnHostProtocol.h           |    2 
+ Source/XnDeviceSensorV2/XnSensorDepthStream.cpp    |    5 
+ Source/XnDeviceSensorV2/XnSensorDepthStream.h      |    2 
  Source/XnDeviceSensorV2/XnSensorFirmwareParams.cpp |    8 
  Source/XnDeviceSensorV2/XnSensorIRStream.cpp       |    2 
  Source/XnDeviceSensorV2/XnSensorImageStream.cpp    |   79 +
  Source/XnDeviceSensorV2/XnSensorImageStream.h      |    4 
- 14 files changed, 1324 insertions(+), 134 deletions(-)
+ 16 files changed, 1337 insertions(+), 135 deletions(-)
 
 diff --git a/Source/XnDeviceSensorV2/Bayer.cpp b/Source/XnDeviceSensorV2/Bayer.cpp
 index ab27c86..cead14f 100644
@@ -1299,7 +1301,7 @@ index ab27c86..cead14f 100644
 +	fillRGB(nXRes, nYRes, pBayerImage, pRGBImage, DebayeringMethod(1), nDownSampleStep); // DebayeringMethod(0) == bilinear, (1) == edge aware, (2) == edge aware weighted
  }
 diff --git a/Source/XnDeviceSensorV2/Registration.cpp b/Source/XnDeviceSensorV2/Registration.cpp
-index 49f1925..5c10a98 100644
+index 49f1925..5dc700e 100644
 --- a/Source/XnDeviceSensorV2/Registration.cpp
 +++ b/Source/XnDeviceSensorV2/Registration.cpp
 @@ -55,7 +55,7 @@ inline XnDouble XnXRegistrationFunction1000(XnRegistrationInformation1000& regIn
@@ -1355,7 +1357,7 @@ index 49f1925..5c10a98 100644
  
  	XnDouble dPelSize = 1.0 / (dPlanePixelSize * nXScale * S2D_PEL_CONST);
  	XnDouble dPelDCC = dDCRCDist * dPelSize * S2D_PEL_CONST;
-@@ -269,7 +267,7 @@ void BuildDepthToShiftTable(XnUInt16* pDepth2Shift, XnSensorDepthStream* m_pStre
+@@ -269,14 +267,18 @@ void BuildDepthToShiftTable(XnUInt16* pDepth2Shift, XnSensorDepthStream* m_pStre
  XnStatus XnRegistration::BuildRegTable1080()
  {
  	XnStatus nRetVal = XN_STATUS_OK;
@@ -1363,8 +1365,21 @@ index 49f1925..5c10a98 100644
 +
  	// take needed parameters to perform registration
  	XnRegistrationInformation1080 RegData;
- 	nRetVal = XnHostProtocolAlgorithmParams(m_pDevicePrivateData, XN_HOST_PROTOCOL_ALGORITHM_REGISTRATION, &RegData, sizeof(RegData), m_pDepthStream->GetResolution(), (XnUInt16)m_pDepthStream->GetFPS());
-@@ -361,7 +359,7 @@ XnStatus XnRegistration::BuildRegTable1080()
+-	nRetVal = XnHostProtocolAlgorithmParams(m_pDevicePrivateData, XN_HOST_PROTOCOL_ALGORITHM_REGISTRATION, &RegData, sizeof(RegData), m_pDepthStream->GetResolution(), (XnUInt16)m_pDepthStream->GetFPS());
++	nRetVal = XnHostProtocolAlgorithmParams(m_pDevicePrivateData,
++		m_pDevicePrivateData->bKinect ? XN_HOST_PROTOCOL_ALGORITHM_REGISTRATION_MSK : XN_HOST_PROTOCOL_ALGORITHM_REGISTRATION,
++		&RegData, sizeof(RegData), m_pDepthStream->GetResolution(), (XnUInt16)m_pDepthStream->GetFPS());
+ 	XN_IS_STATUS_OK(nRetVal);
+ 
+ 	xnOSMemSet(&m_padInfo, 0, sizeof(m_padInfo));
+-	nRetVal = XnHostProtocolAlgorithmParams(m_pDevicePrivateData, XN_HOST_PROTOCOL_ALGORITHM_PADDING, &m_padInfo, sizeof(m_padInfo), m_pDepthStream->GetResolution(), (XnUInt16)m_pDepthStream->GetFPS());
++	nRetVal = XnHostProtocolAlgorithmParams(m_pDevicePrivateData,
++		m_pDevicePrivateData->bKinect ? XN_HOST_PROTOCOL_ALGORITHM_PADDING_MSK : XN_HOST_PROTOCOL_ALGORITHM_PADDING,
++		&m_padInfo, sizeof(m_padInfo), m_pDepthStream->GetResolution(), (XnUInt16)m_pDepthStream->GetFPS());
+ 	XN_IS_STATUS_OK(nRetVal);
+ 
+ 	XN_VALIDATE_ALIGNED_CALLOC(m_pDepthToShiftTable, XnUInt16, m_pDepthStream->GetXRes()*m_pDepthStream->GetYRes(), XN_DEFAULT_MEM_ALIGN);
+@@ -361,7 +363,7 @@ XnStatus XnRegistration::BuildRegTable1080()
  FinishLoop:
  	XN_DELETE_ARR(RegXTable);
  	XN_DELETE_ARR(RegYTable);
@@ -1373,7 +1388,7 @@ index 49f1925..5c10a98 100644
  	return (XN_STATUS_OK);
  }
  
-@@ -472,13 +470,28 @@ void XnRegistration::Apply1000(XnDepthPixel* pInput, XnDepthPixel* pOutput)
+@@ -472,13 +474,28 @@ void XnRegistration::Apply1000(XnDepthPixel* pInput, XnDepthPixel* pOutput)
  			nNewX = (XnInt32)(XnDouble(*pRegTable)/XN_REG_X_SCALE + XnInt32(pDepth2ShiftTable[nValue]/XN_REG_PARAB_COEFF - nConstShift) * dShiftFactor);
  			nNewY = *(pRegTable+1);
  
@@ -1403,7 +1418,7 @@ index 49f1925..5c10a98 100644
  					pOutput[nArrPos] = nValue;
  					pOutput[nArrPos-1] = nValue;
  					pOutput[nArrPos-nDepthXRes] = nValue;
-@@ -495,7 +508,7 @@ void XnRegistration::Apply1000(XnDepthPixel* pInput, XnDepthPixel* pOutput)
+@@ -495,7 +512,7 @@ void XnRegistration::Apply1000(XnDepthPixel* pInput, XnDepthPixel* pOutput)
  void XnRegistration::Apply1080(XnDepthPixel* pInput, XnDepthPixel* pOutput)
  {
  	XnInt16* pRegTable = (XnInt16*)m_pRegistrationTable;
@@ -1412,7 +1427,7 @@ index 49f1925..5c10a98 100644
  	XnDepthPixel nValue = 0;
  	XnDepthPixel nOutValue = 0;
  	XnUInt32 nNewX = 0;
-@@ -523,11 +536,11 @@ void XnRegistration::Apply1080(XnDepthPixel* pInput, XnDepthPixel* pOutput)
+@@ -523,11 +540,11 @@ void XnRegistration::Apply1080(XnDepthPixel* pInput, XnDepthPixel* pOutput)
  				nNewX = (XnUInt32)(*pRegTable + pRGBRegDepthToShiftTable[nValue]) / RGB_REG_X_VAL_SCALE;
  				nNewY = *(pRegTable+1);
  
@@ -1440,6 +1455,19 @@ index 49e045d..7301837 100644
  	/* The name of the stream. */
  	const XnChar* m_csName;
  
+diff --git a/Source/XnDeviceSensorV2/XnDeviceSensor.h b/Source/XnDeviceSensorV2/XnDeviceSensor.h
+index 7666922..65481c5 100644
+--- a/Source/XnDeviceSensorV2/XnDeviceSensor.h
++++ b/Source/XnDeviceSensorV2/XnDeviceSensor.h
+@@ -333,7 +333,7 @@ typedef struct XnDevicePrivateData
+ 
+ 	XN_MUTEX_HANDLE hExecuteMutex;
+ 
+-
++	XnBool bKinect;
+ } XnDevicePrivateData;
+ 
+ #pragma pack (push, 1)
 diff --git a/Source/XnDeviceSensorV2/XnDeviceSensorIO.cpp b/Source/XnDeviceSensorV2/XnDeviceSensorIO.cpp
 index 6b01050..13c16e0 100644
 --- a/Source/XnDeviceSensorV2/XnDeviceSensorIO.cpp
@@ -1617,23 +1645,38 @@ index 16cca8d..b8d84e5 100644
  		}
  	}
  	else if (strcmp(strType, XN_STREAM_TYPE_IMAGE) == 0)
+diff --git a/Source/XnDeviceSensorV2/XnHostProtocol.cpp b/Source/XnDeviceSensorV2/XnHostProtocol.cpp
+index 6828970..aea43bc 100644
+--- a/Source/XnDeviceSensorV2/XnHostProtocol.cpp
++++ b/Source/XnDeviceSensorV2/XnHostProtocol.cpp
+@@ -892,6 +892,11 @@ XnStatus XnHostProtocolGetVersion(XnDevicePrivateData* pDevicePrivateData, XnVer
+ 		}	
+ 	}
+ 
++	int nVid, nPid;
++	sscanf(pDevicePrivateData->DeviceConfig.cpConnectionString, "%x/%x", &nVid, &nPid);
++
++	pDevicePrivateData->bKinect = nVid == XN_SENSOR_MSK_VENDOR_ID && nPid == XN_SENSOR_MSK_PRODUCT_ID;
++
+ 	xnLogInfo(XN_MASK_SENSOR_PROTOCOL, "Hardware versions: FW=%d.%d.%d (%d) HW=%d Chip=%d Sensor=%d SYS=%d", Version.nMajor, Version.nMinor, Version.nBuild, Version.FWVer, Version.HWVer, Version.ChipVer, Version.SensorVer, Version.nSystemVersion);
+ 
+ 	return XN_STATUS_OK;
 diff --git a/Source/XnDeviceSensorV2/XnHostProtocol.h b/Source/XnDeviceSensorV2/XnHostProtocol.h
-index fafca1c..ea49f0a 100644
+index fafca1c..96ee023 100644
 --- a/Source/XnDeviceSensorV2/XnHostProtocol.h
 +++ b/Source/XnDeviceSensorV2/XnHostProtocol.h
-@@ -108,8 +108,8 @@ enum EPsProtocolOpCodes_V017
- typedef enum
+@@ -109,7 +109,9 @@ typedef enum
  {
  	XN_HOST_PROTOCOL_ALGORITHM_DEPTH_INFO	= 0x00,
--	XN_HOST_PROTOCOL_ALGORITHM_REGISTRATION	= 0x02,
--	XN_HOST_PROTOCOL_ALGORITHM_PADDING		= 0x03,
-+	XN_HOST_PROTOCOL_ALGORITHM_REGISTRATION	= 0x40,
-+	XN_HOST_PROTOCOL_ALGORITHM_PADDING		= 0x41,
+ 	XN_HOST_PROTOCOL_ALGORITHM_REGISTRATION	= 0x02,
++	XN_HOST_PROTOCOL_ALGORITHM_REGISTRATION_MSK	= 0x40,
+ 	XN_HOST_PROTOCOL_ALGORITHM_PADDING		= 0x03,
++	XN_HOST_PROTOCOL_ALGORITHM_PADDING_MSK	= 0x41,
  	XN_HOST_PROTOCOL_ALGORITHM_BLANKING		= 0x06,
  	XN_HOST_PROTOCOL_ALGORITHM_DEVICE_INFO	= 0x07,
  	XN_HOST_PROTOCOL_ALGORITHM_FREQUENCY	= 0x80
 diff --git a/Source/XnDeviceSensorV2/XnSensorDepthStream.cpp b/Source/XnDeviceSensorV2/XnSensorDepthStream.cpp
-index 0e9c409..8ab2b37 100644
+index 0e9c409..633869c 100644
 --- a/Source/XnDeviceSensorV2/XnSensorDepthStream.cpp
 +++ b/Source/XnDeviceSensorV2/XnSensorDepthStream.cpp
 @@ -319,6 +319,8 @@ XnStatus XnSensorDepthStream::ConfigureStreamImpl()
@@ -1645,11 +1688,21 @@ index 0e9c409..8ab2b37 100644
  	return XN_STATUS_OK;
  }
  
+@@ -792,7 +794,8 @@ XnStatus XnSensorDepthStream::DecideFirmwareRegistration(XnBool bRegistration, X
+ 	{
+ 		// old chip (PS1000) does not support registration for VGA
+ 		XnBool bHardwareRegistrationSupported = 
+-			m_Helper.GetPrivateData()->ChipInfo.nChipVer != XN_SENSOR_CHIP_VER_PS1000 || nRes == XN_RESOLUTION_QVGA;
++			(m_Helper.GetPrivateData()->ChipInfo.nChipVer != XN_SENSOR_CHIP_VER_PS1000 || nRes == XN_RESOLUTION_QVGA)
++			&& !m_Helper.GetPrivateData()->bKinect;
+ 
+ 		switch (registrationType)
+ 		{
 diff --git a/Source/XnDeviceSensorV2/XnSensorDepthStream.h b/Source/XnDeviceSensorV2/XnSensorDepthStream.h
-index 32aa364..d2ae80c 100644
+index 32aa364..45d1a50 100644
 --- a/Source/XnDeviceSensorV2/XnSensorDepthStream.h
 +++ b/Source/XnDeviceSensorV2/XnSensorDepthStream.h
-@@ -36,11 +36,11 @@
+@@ -36,7 +36,7 @@
  // Defines
  //---------------------------------------------------------------------------
  #define XN_DEPTH_STREAM_DEFAULT_INPUT_FORMAT				XN_IO_DEPTH_FORMAT_UNCOMPRESSED_11_BIT
@@ -1658,11 +1711,6 @@ index 32aa364..d2ae80c 100644
  #define XN_DEPTH_STREAM_DEFAULT_FPS							30
  #define XN_DEPTH_STREAM_DEFAULT_OUTPUT_FORMAT				XN_OUTPUT_FORMAT_DEPTH_VALUES
  #define XN_DEPTH_STREAM_DEFAULT_REGISTRATION				FALSE
--#define XN_DEPTH_STREAM_DEFAULT_REGISTRATION_TYPE			XN_PROCESSING_DONT_CARE
-+#define XN_DEPTH_STREAM_DEFAULT_REGISTRATION_TYPE	 		XN_PROCESSING_SOFTWARE
- #define XN_DEPTH_STREAM_DEFAULT_HOLE_FILLER					TRUE
- #define XN_DEPTH_STREAM_DEFAULT_WHITE_BALANCE				TRUE
- #define XN_DEPTH_STREAM_DEFAULT_GAIN_OLD					50
 diff --git a/Source/XnDeviceSensorV2/XnSensorFirmwareParams.cpp b/Source/XnDeviceSensorV2/XnSensorFirmwareParams.cpp
 index 4349d8c..6fee21e 100644
 --- a/Source/XnDeviceSensorV2/XnSensorFirmwareParams.cpp
@@ -1703,7 +1751,7 @@ index 4ede944..6014b7e 100644
  		nRetVal = AddSupportedModes(aSupportedModesSXGA, sizeof(aSupportedModesSXGA)/sizeof(aSupportedModesSXGA[0]));
  		XN_IS_STATUS_OK(nRetVal);
 diff --git a/Source/XnDeviceSensorV2/XnSensorImageStream.cpp b/Source/XnDeviceSensorV2/XnSensorImageStream.cpp
-index a2c0e90..41eaeb2 100644
+index a2c0e90..9ee69c8 100644
 --- a/Source/XnDeviceSensorV2/XnSensorImageStream.cpp
 +++ b/Source/XnDeviceSensorV2/XnSensorImageStream.cpp
 @@ -39,7 +39,7 @@
@@ -1751,7 +1799,7 @@ index a2c0e90..41eaeb2 100644
  		nRetVal = AddSupportedModes(aSupportedModes, nCount);
  		XN_IS_STATUS_OK(nRetVal);
  	}
-+	else if (nVid == XN_SENSOR_MSK_VENDOR_ID && nPid == XN_SENSOR_MSK_PRODUCT_ID)
++	else if (m_Helper.GetPrivateData()->bKinect)
 +	{
 +		XnArray<XnCmosPreset> supportedModes(30);
 +
