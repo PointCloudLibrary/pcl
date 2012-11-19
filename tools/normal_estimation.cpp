@@ -130,7 +130,6 @@ saveCloud (const string &filename, const sensor_msgs::PointCloud2 &output,
 int
 batchProcess (const vector<string> &pcd_files, string &output_dir, int k, double radius)
 {
-  vector<string> st;
 #if _OPENMP
 #pragma omp parallel for
 #endif
@@ -150,6 +149,7 @@ batchProcess (const vector<string> &pcd_files, string &output_dir, int k, double
     // Prepare output file name
     string filename = pcd_files[i];
     boost::trim (filename);
+    vector<string> st;
     boost::split (st, filename, boost::is_any_of ("/\\"), boost::token_compress_on);
     
     // Save into the second file
