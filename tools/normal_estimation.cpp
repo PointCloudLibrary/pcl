@@ -133,7 +133,7 @@ batchProcess (const vector<string> &pcd_files, string &output_dir, int k, double
 #if _OPENMP
 #pragma omp parallel for
 #endif
-  for (size_t i = 0; i < pcd_files.size (); ++i)
+  for (int i = 0; i < int (pcd_files.size ()); ++i)
   {
     // Load the first file
     Eigen::Vector4f translation;
