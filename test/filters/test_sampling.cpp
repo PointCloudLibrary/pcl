@@ -64,14 +64,14 @@ TEST (CovarianceSampling, Filters)
   covariance_sampling.setNormals (cloud_walls_normals);
   covariance_sampling.setNumberOfSamples (static_cast<unsigned int> (cloud_walls_normals->size ()) / 4);
   double cond_num_walls = covariance_sampling.computeConditionNumber ();
-  EXPECT_NEAR (cond_num_walls, 19.3518, 1e-4);
+  EXPECT_NEAR (cond_num_walls, 19.3518, 0.5);
 
   IndicesPtr walls_indices (new std::vector<int> ());
   covariance_sampling.filter (*walls_indices);
 
   covariance_sampling.setIndices (walls_indices);
   double cond_num_walls_sampled = covariance_sampling.computeConditionNumber ();
-  EXPECT_NEAR (cond_num_walls_sampled, 4.0298, 1e-4);
+  EXPECT_NEAR (cond_num_walls_sampled, 4.0298, 0.5);
 
   EXPECT_EQ ((*walls_indices)[0], 316);
   EXPECT_EQ ((*walls_indices)[walls_indices->size () / 4], 3208);
@@ -84,13 +84,13 @@ TEST (CovarianceSampling, Filters)
   covariance_sampling.setIndices (IndicesPtr ());
   covariance_sampling.setNumberOfSamples (static_cast<unsigned int> (cloud_turtle_normals->size ()) / 8);
   double cond_num_turtle = covariance_sampling.computeConditionNumber ();
-  EXPECT_NEAR (cond_num_turtle, 20661.7663, 1e-4);
+  EXPECT_NEAR (cond_num_turtle, 20661.7663, 0.5);
 
   IndicesPtr turtle_indices (new std::vector<int> ());
   covariance_sampling.filter (*turtle_indices);
   covariance_sampling.setIndices (turtle_indices);
   double cond_num_turtle_sampled = covariance_sampling.computeConditionNumber ();
-  EXPECT_NEAR (cond_num_turtle_sampled, 5795.5057, 1e-4);
+  EXPECT_NEAR (cond_num_turtle_sampled, 5795.5057, 0.5);
 
   EXPECT_EQ ((*turtle_indices)[0], 80344);
   EXPECT_EQ ((*turtle_indices)[turtle_indices->size () / 4], 145982);
@@ -120,7 +120,7 @@ TEST (NormalSpaceSampling, Filters)
   double cond_num_walls_sampled = covariance_sampling.computeConditionNumber ();
 
 
-  EXPECT_NEAR (cond_num_walls_sampled, 7.8289, 1e-4);
+  EXPECT_NEAR (cond_num_walls_sampled, 7.8289, 0.5);
 
   EXPECT_EQ ((*walls_indices)[0], 2314);
   EXPECT_EQ ((*walls_indices)[walls_indices->size () / 4], 1876);
