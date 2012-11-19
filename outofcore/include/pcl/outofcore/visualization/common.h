@@ -1,5 +1,5 @@
-#ifndef PCL_OUTOFCORE_CAMERA_H_
-#define PCL_OUTOFCORE_CAMERA_H_
+#ifndef PCL_OUTOFCORE_COMMON_H_
+#define PCL_OUTOFCORE_COMMON_H_
 
 // VTK
 #include <vtkPolyData.h>

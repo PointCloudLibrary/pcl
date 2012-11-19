@@ -63,7 +63,7 @@ Object::hasActor (vtkActor *actor)
 void
 Object::addActor (vtkActor *actor)
 {
-  Scene::instance ()->lock ();
+//  Scene::instance ()->lock ();
   boost::mutex::scoped_lock lock (actors_mutex_);
 
   if (!actors_->IsItemPresent (actor))
@@ -76,7 +76,7 @@ Object::addActor (vtkActor *actor)
   {
     associated_renderers_[actor] = std::set<vtkRenderer*> ();
   }
-  Scene::instance ()->unlock ();
+//  Scene::instance ()->unlock ();
 
 //  Scene *scene = Scene::instance();
 //  std::vector<Viewport*> viewports = scene->getViewports();
@@ -98,7 +98,7 @@ Object::addActor (vtkActor *actor)
 void
 Object::removeActor (vtkActor *actor)
 {
-  Scene::instance ()->lock ();
+//  Scene::instance ()->lock ();
   //std::cout << "Removing Actor" << std::endl;
   boost::mutex::scoped_lock lock (actors_mutex_);
   actors_->RemoveItem (actor);
@@ -117,5 +117,5 @@ Object::removeActor (vtkActor *actor)
     associated_renderers_.erase (actor);
   }
   //std::cout << "Removing Actor - DONE" << std::endl;
-  Scene::instance ()->unlock ();
+//  Scene::instance ()->unlock ();
 }

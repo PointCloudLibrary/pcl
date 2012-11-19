@@ -61,9 +61,6 @@ namespace pcl
         typedef typename pcl::outofcore::OutofcoreOctreeBaseNode<ContainerT, PointT> LeafNode;
         typedef typename pcl::outofcore::OutofcoreOctreeBaseNode<ContainerT, PointT> BranchNode;
 
-        typedef std::deque<OctreeDiskNode*> FIFO;
-        //typedef std::deque<std::pair<OctreeDiskNode*, unsigned char> > FIFO;
-        //typedef std::pair<OutofcoreOctreeBaseNode<ContainerT, PointT>*, unsigned char> FIFOEntry;
 
         explicit
         OutofcoreBreadthFirstIterator (OctreeDisk& octree_arg);
@@ -87,17 +84,12 @@ namespace pcl
         {
           OutofcoreIteratorBase<PointT, ContainerT>::reset();
 
-          // init FIFO
+          // Clear the FIFO queue and add the root as the first node
           FIFO_.clear ();
-//          FIFOEntry fifo_entry;
-//
-//          // pushing root node to stack
-//          fifo_entry.first = this->currentNode_;
-//          fifo_entry.second = 0;
-//          FIFO_.push_back(fifo_entry);
           FIFO_.push_back(this->currentNode_);
-          skip_child_voxels_ = false;
 
+          // Don't skip children
+          skip_child_voxels_ = false;
         }
       
         void

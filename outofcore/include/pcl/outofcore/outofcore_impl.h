@@ -34,7 +34,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  * 
- *  $Id: outofcore_impl.h 6802 2012-08-13 05:31:09Z stfox88 $
+ *  $Id$
  */
 
 #ifndef OUTOFCORE_IMPL_H_
@@ -42,10 +42,13 @@
 
 #include <pcl/outofcore/outofcore.h>
 
+#include <pcl/outofcore/impl/monitor_queue.hpp>
+
 #include <pcl/outofcore/impl/octree_base.hpp>
 #include <pcl/outofcore/impl/octree_base_node.hpp>
 
 #include <pcl/outofcore/impl/octree_disk_container.hpp>
 #include <pcl/outofcore/impl/octree_ram_container.hpp>
+
 
 #endif //OUTOFCORE_IMPL_H_

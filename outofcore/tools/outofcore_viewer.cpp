@@ -173,7 +173,7 @@ workerFunc ()
     Eigen::Vector3d eye = octree_camera->getPosition ();
     Eigen::Matrix4d view_projection_matrix = octree_camera->getViewProjectionMatrix ();
 
-    cloud->updateView (frustum, eye, view_projection_matrix);
+    //cloud->updateView (frustum, eye, view_projection_matrix);
 
     window->Render ();
 
@@ -299,6 +299,26 @@ protected:
 
 };
 
+//class TimerCallback : public vtkCommand
+//{
+//public:
+//  vtkTypeMacro(TimerCallback, vtkCommand)
+//  ;
+//
+//  static TimerCallback *
+//  New ()
+//  {
+//    return new TimerCallback;
+//  }
+//
+//  void
+//  Execute (vtkObject *caller, unsigned long vtkNotUsed(eventId), void* vtkNotUsed(callData))
+//  {
+//    vtkRenderWindowInteractor *interactor = vtkRenderWindowInteractor::SafeDownCast (caller);
+//    interactor->Render ();
+//  }
+//};
+
 class KeyboardCallback : public vtkCommand
 {
 public:
@@ -372,19 +392,24 @@ public:
   }
 };
 
-//void
-//renderStartCallback(vtkObject* vtkNotUsed(caller), unsigned long int vtkNotUsed(eventId), void* clientData, void* vtkNotUsed(callData))
-//{
-//  //std::cout << "Start" << std::endl;
-//  Scene::instance()->lock();
-//}
-//
-//void
-//renderEndCallback(vtkObject* vtkNotUsed(caller), unsigned long int vtkNotUsed(eventId), void* clientData, void* vtkNotUsed(callData))
-//{
-//  //std::cout << "End" << std::endl;
-//  Scene::instance()->unlock();
-//}
+void
+renderTimerCallback(vtkObject* caller, unsigned long int vtkNotUsed(eventId), void* clientData, void* vtkNotUsed(callData))
+{
+  vtkRenderWindowInteractor *interactor = vtkRenderWindowInteractor::SafeDownCast (caller);
+  interactor->Render ();
+}
+
+void
+renderStartCallback(vtkObject* vtkNotUsed(caller), unsigned long int vtkNotUsed(eventId), void* clientData, void* vtkNotUsed(callData))
+{
+  //std::cout << "Start...";
+}
+
+void
+renderEndCallback(vtkObject* vtkNotUsed(caller), unsigned long int vtkNotUsed(eventId), void* clientData, void* vtkNotUsed(callData))
+{
+  //std::cout << "End" << std::endl;
+}
 
 int
 outofcoreViewer (boost::filesystem::path tree_root, int depth, bool display_octree = true)
@@ -399,6 +424,11 @@ outofcoreViewer (boost::filesystem::path tree_root, int depth, bool display_octr
   cloud->setDisplayDepth (depth);
   cloud->setDisplayVoxels (display_octree);
   scene->addObject (cloud);
+
+//  OutofcoreCloud *cloud2 = new OutofcoreCloud ("my_octree2", tree_root);
+//  cloud2->setDisplayDepth (depth);
+//  cloud2->setDisplayVoxels (display_octree);
+//  scene->addObject (cloud2);
 
   // Add Scene Renderables
   Grid *grid = new Grid ("origin_grid");
@@ -430,6 +460,8 @@ outofcoreViewer (boost::filesystem::path tree_root, int depth, bool display_octr
   scene->addCamera (persp_camera);
   scene->addCamera (octree_camera);
 
+  cloud->setRenderCamera(octree_camera);
+
   // Set viewport cameras
   persp_viewport.setCamera (persp_camera);
   octree_viewport.setCamera (octree_camera);
@@ -437,13 +469,13 @@ outofcoreViewer (boost::filesystem::path tree_root, int depth, bool display_octr
   vtkSmartPointer<CameraChangeCallback> camera_change_callback = vtkSmartPointer<CameraChangeCallback>::New ();
   octree_viewport.getRenderer ()->AddObserver (vtkCommand::EndEvent, camera_change_callback);
 
-//  vtkSmartPointer<vtkCallbackCommand> render_start_callback = vtkSmartPointer<vtkCallbackCommand>::New();
-//  render_start_callback->SetCallback(renderStartCallback);
-//  window->AddObserver(vtkCommand::StartEvent, render_start_callback);
-//
-//  vtkSmartPointer<vtkCallbackCommand> render_end_callback = vtkSmartPointer<vtkCallbackCommand>::New();
-//  render_end_callback->SetCallback(renderEndCallback);
-//  window->AddObserver(vtkCommand::EndEvent, render_end_callback);
+  vtkSmartPointer<vtkCallbackCommand> render_start_callback = vtkSmartPointer<vtkCallbackCommand>::New();
+  render_start_callback->SetCallback(renderStartCallback);
+  window->AddObserver(vtkCommand::StartEvent, render_start_callback);
+
+  vtkSmartPointer<vtkCallbackCommand> render_end_callback = vtkSmartPointer<vtkCallbackCommand>::New();
+  render_end_callback->SetCallback(renderEndCallback);
+  window->AddObserver(vtkCommand::EndEvent, render_end_callback);
 
   window->Render ();
 
@@ -462,7 +494,21 @@ outofcoreViewer (boost::filesystem::path tree_root, int depth, bool display_octr
   vtkSmartPointer<KeyboardCallback> keyboard_callback = vtkSmartPointer<KeyboardCallback>::New ();
   interactor->AddObserver (vtkCommand::KeyPressEvent, keyboard_callback);
 
+
+  interactor->CreateRepeatingTimer(1000);
+
+
+  //vtkSmartPointer<TimerCallback> timer_callback = vtkSmartPointer<TimerCallback>::New();
+
+  vtkSmartPointer<vtkCallbackCommand> render_timer_callback = vtkSmartPointer<vtkCallbackCommand>::New();
+  render_timer_callback->SetCallback(renderTimerCallback);
+  interactor->AddObserver(vtkCommand::TimerEvent, render_timer_callback);
+
+  //interactor->AddObserver ( vtkCommand::TimerEvent, timer_callback );
+
   interactor->Start ();
+
+
 
   return 0;
 }

@@ -9,6 +9,11 @@
 // PCL - outofcore
 #include <pcl/outofcore/outofcore.h>
 #include <pcl/outofcore/outofcore_impl.h>
+#include <pcl/outofcore/impl/monitor_queue.hpp>
+
+// PCL
+#include "camera.h"
+//#include <pcl/outofcore/visualization/object.h>
 
 // VTK
 #include <vtkActor.h>
@@ -24,19 +29,38 @@
 //#include <vtkProperty.h>
 #include <vtkSmartPointer.h>
 
+//class Camera;
+
 class OutofcoreCloud : public Object
 {
     // Typedefs
     // -----------------------------------------------------------------------------
     typedef pcl::PointXYZ PointT;
-    typedef pcl::outofcore::OutofcoreOctreeBase<pcl::outofcore::OutofcoreOctreeDiskContainer<PointT>, PointT> octree_disk;
-    typedef pcl::outofcore::OutofcoreOctreeBaseNode<pcl::outofcore::OutofcoreOctreeDiskContainer<PointT>, PointT> octree_disk_node;
-    typedef boost::shared_ptr<octree_disk> OctreeDiskPtr;
+//    typedef pcl::outofcore::OutofcoreOctreeBase<pcl::outofcore::OutofcoreOctreeDiskContainer<PointT>, PointT> octree_disk;
+//    typedef pcl::outofcore::OutofcoreOctreeBaseNode<pcl::outofcore::OutofcoreOctreeDiskContainer<PointT>, PointT> octree_disk_node;
+
+    typedef pcl::outofcore::OutofcoreOctreeBase<> OctreeDisk;
+    typedef pcl::outofcore::OutofcoreOctreeBaseNode<> OctreeDiskNode;
+//    typedef pcl::outofcore::OutofcoreBreadthFirstIterator<> OctreeBreadthFirstIterator;
+
+    typedef boost::shared_ptr<OctreeDisk> OctreeDiskPtr;
     typedef Eigen::aligned_allocator<PointT> AlignedPointT;
+
+
 
     typedef std::map<std::string, vtkSmartPointer<vtkActor> > CloudActorMap;
 
   public:
+
+    typedef std::map<std::string, vtkSmartPointer<vtkPolyData> > CloudDataCache;
+    typedef std::map<std::string, vtkSmartPointer<vtkPolyData> >::iterator CloudDataCacheIterator;
+
+    static boost::shared_ptr<boost::thread> pcd_reader_thread;
+    static MonitorQueue<std::string> pcd_queue;
+    static CloudDataCache cloud_data_map;
+    static boost::mutex cloud_data_map_mutex;
+
+    static void pcdReaderThread();
 
     // Operators
     // -----------------------------------------------------------------------------
@@ -46,8 +70,8 @@ class OutofcoreCloud : public Object
     // -----------------------------------------------------------------------------
     void
     updateVoxelData ();
-    void
-    updateCloudData ();
+//    void
+//    updateCloudData ();
 
     void
     updateView (double frustum[24], const Eigen::Vector3d &eye, const Eigen::Matrix4d &view_projection_matrix);
@@ -122,37 +146,46 @@ class OutofcoreCloud : public Object
       voxel_actor_->SetVisibility (display_voxels);
     }
 
-    bool
-    setFrustum (double *frustum)
-    {
-      if (!frustum_)
-        frustum_ = new double[24];
-
-      bool frustum_changed = false;
-      for (int i = 0; i < 24; i++)
-      {
-        if (frustum_[i] != frustum[i])
-          frustum_changed = true;
-        frustum_[i] = frustum[i];
-      }
-
-  //    if (frustum_changed)
-  //        updateCloudData();
-
-      return frustum_changed;
-    }
-
     void
-    setModelViewMatrix (const Eigen::Matrix4d &model_view_matrix)
+    setRenderCamera(Camera *render_camera)
     {
-      model_view_matrix_ = model_view_matrix;
+      render_camera_ = render_camera;
     }
 
-    void
-    setProjectionMatrix (const Eigen::Matrix4d &projection_matrix)
-    {
-      projection_matrix_ = projection_matrix;
-    }
+//    bool
+//    setFrustum (double *frustum)
+//    {
+//      if (!frustum_)
+//        frustum_ = new double[24];
+//
+//      bool frustum_changed = false;
+//      for (int i = 0; i < 24; i++)
+//      {
+//        if (frustum_[i] != frustum[i])
+//          frustum_changed = true;
+//        frustum_[i] = frustum[i];
+//      }
+//
+//  //    if (frustum_changed)
+//  //        updateCloudData();
+//
+//      return frustum_changed;
+//    }
+//
+//    void
+//    setModelViewMatrix (const Eigen::Matrix4d &model_view_matrix)
+//    {
+//      model_view_matrix_ = model_view_matrix;
+//    }
+//
+//    void
+//    setProjectionMatrix (const Eigen::Matrix4d &projection_matrix)
+//    {
+//      projection_matrix_ = projection_matrix;
+//    }
+
+    virtual void
+    render (vtkRenderer* renderer);
 
   private:
 
@@ -165,9 +198,11 @@ class OutofcoreCloud : public Object
 
     Eigen::Vector3d bbox_min_, bbox_max_;
 
-    double *frustum_;
-    Eigen::Matrix4d model_view_matrix_;
-    Eigen::Matrix4d projection_matrix_;
+    Camera *render_camera_;
+
+//    double *frustum_;
+//    Eigen::Matrix4d model_view_matrix_;
+//    Eigen::Matrix4d projection_matrix_;
 
     vtkSmartPointer<vtkActor> voxel_actor_;
 

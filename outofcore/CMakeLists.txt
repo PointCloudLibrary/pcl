@@ -40,6 +40,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/octree_base_node.hpp
         include/pcl/${SUBSYS_NAME}/impl/octree_disk_container.hpp
         include/pcl/${SUBSYS_NAME}/impl/octree_ram_container.hpp
+        include/pcl/${SUBSYS_NAME}/impl/monitor_queue.hpp
         )
     set(visualization_incs
         include/pcl/${SUBSYS_NAME}/visualization/axes.h

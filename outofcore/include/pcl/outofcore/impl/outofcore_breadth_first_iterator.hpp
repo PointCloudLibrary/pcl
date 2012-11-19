@@ -66,41 +66,36 @@ namespace pcl
     {
       if (FIFO_.size ())
       {
-        // get fifo entry
-        //FIFOEntry current_entry = FIFO_.front ();
+        // Get the first entry from the FIFO queue
         OctreeDiskNode *node = FIFO_.front ();
         FIFO_.pop_front ();
 
-//        if ( (current_entry.second < this->max_depth_) &&
-//            (current_entry.first->getNodeType () == pcl::octree::BRANCH_NODE) )
+        // If not skipping children, not at the max specified depth and we're a branch then iterate over children
         if (!skip_child_voxels_ && node->getDepth () < this->max_depth_ && node->getNodeType () == pcl::octree::BRANCH_NODE)
         {
-          // current node is a branch node
-          //BranchNode* branch = static_cast<BranchNode*> (current_entry.first);
+          // Get the branch node
           BranchNode* branch = static_cast<BranchNode*> (node);
           OctreeDiskNode* child = 0;
 
-          // iterate over all children
+          // Iterate over the branches children
           for (unsigned char child_idx = 0; child_idx < 8 ; child_idx++)
           {
+            // If child/index exists add it to FIFO queue
             child = this->octree_.getBranchChildPtr (*branch, child_idx);
             if (child)
             {
-//              FIFOEntry fifo_entry;
-//              fifo_entry.first = child;
-//              fifo_entry.second = current_entry.second + 1;
-//              FIFO_.push_back(fifo_entry);
               FIFO_.push_back (child);
             }
           }
         }
       }
 
+      // Reset skipped children
       skip_child_voxels_ = false;
 
+      // If there's a queue, set the current node to the first entry
       if (FIFO_.size ())
       {
-        //this->currentNode_ = FIFO_.front ().first;
         this->currentNode_ = FIFO_.front ();
       }
       else

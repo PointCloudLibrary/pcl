@@ -40,7 +40,7 @@ public:
   void
   setName (std::string name);
 
-  void
+  virtual void
   render (vtkRenderer* renderer);
 
   bool
