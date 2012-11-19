@@ -111,6 +111,9 @@ namespace pcl
         * \brief the affine transformation that is applied before clipping is done on the unit cube.
         */
       Eigen::Affine3f transformation_;
+
+    public:
+      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 }
 

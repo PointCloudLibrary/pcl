@@ -137,6 +137,9 @@ namespace pcl
       sort_dot_list_function (std::pair<int, double> a,
                               std::pair<int, double> b)
       { return (a.second > b.second); }
+
+    public:
+      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 }
 
