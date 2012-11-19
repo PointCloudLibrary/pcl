@@ -64,7 +64,7 @@ pcl::CovarianceSampling<PointT, PointNT>::initCompute ()
   Eigen::Vector3f centroid (0.f, 0.f, 0.f);
   for (size_t p_i = 0; p_i < indices_->size (); ++p_i)
     centroid += (*input_)[(*indices_)[p_i]].getVector3fMap ();
-  centroid /= indices_->size ();
+  centroid /= float (indices_->size ());
 
   scaled_points_.resize (indices_->size ());
   double average_norm = 0.0;
@@ -73,11 +73,11 @@ pcl::CovarianceSampling<PointT, PointNT>::initCompute ()
     scaled_points_[p_i] = (*input_)[(*indices_)[p_i]].getVector3fMap () - centroid;
     average_norm += scaled_points_[p_i].norm ();
   }
-  average_norm /= scaled_points_.size ();
+  average_norm /= double (scaled_points_.size ());
   for (size_t p_i = 0; p_i < scaled_points_.size (); ++p_i)
-    scaled_points_[p_i] /= average_norm;
+    scaled_points_[p_i] /= float (average_norm);
 
-  return true;
+  return (true);
 }
 
 
@@ -99,7 +99,7 @@ pcl::CovarianceSampling<PointT, PointNT>::computeConditionNumber ()
   }
 
   // Compute the covariance matrix C and its 6 eigenvectors (initially complex, move them to a double matrix)
-  Eigen::Matrix<double, 6, 6> c_mat = f_mat * f_mat.transpose ();
+  Eigen::Matrix<double, 6, 6> c_mat (f_mat * f_mat.transpose ());
 
   Eigen::EigenSolver<Eigen::Matrix<double, 6, 6> > eigen_solver;
   eigen_solver.compute (c_mat, true);
@@ -139,7 +139,7 @@ pcl::CovarianceSampling<PointT, PointNT>::applyFilter (std::vector<int> &sampled
   }
 
   // Compute the covariance matrix C and its 6 eigenvectors (initially complex, move them to a double matrix)
-  Eigen::Matrix<double, 6, 6> c_mat = f_mat * f_mat.transpose ();
+  Eigen::Matrix<double, 6, 6> c_mat (f_mat * f_mat.transpose ());
 
   Eigen::EigenSolver<Eigen::Matrix<double, 6, 6> > eigen_solver;
   eigen_solver.compute (c_mat, true);
@@ -153,13 +153,14 @@ pcl::CovarianceSampling<PointT, PointNT>::applyFilter (std::vector<int> &sampled
 
   //--- Part B from the paper
   /// TODO figure out how to fill the candidate_indices - see subsequent paper paragraphs
-  std::vector<int> candidate_indices;
+  std::vector<size_t> candidate_indices;
   candidate_indices.resize (indices_->size ());
   for (size_t p_i = 0; p_i < candidate_indices.size (); ++p_i)
     candidate_indices[p_i] = p_i;
 
   // Compute the v 6-vectors
-  std::vector<Eigen::Matrix<double, 6, 1> > v;
+  typedef Eigen::Matrix<double, 6, 1> Vector6d;
+  std::vector<Vector6d, Eigen::aligned_allocator<Vector6d> > v;
   v.resize (candidate_indices.size ());
   for (size_t p_i = 0; p_i < candidate_indices.size (); ++p_i)
   {
@@ -230,7 +231,7 @@ pcl::CovarianceSampling<PointT, PointNT>::applyFilter (Cloud &output)
   output.resize (sampled_indices.size ());
   output.header = input_->header;
   output.height = 1;
-  output.width = output.size ();
+  output.width = uint32_t (output.size ());
   output.is_dense = true;
   for (size_t i = 0; i < sampled_indices.size (); ++i)
     output[i] = (*input_)[sampled_indices[i]];
