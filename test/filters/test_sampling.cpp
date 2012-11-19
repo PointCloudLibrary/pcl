@@ -62,7 +62,7 @@ TEST (CovarianceSampling, Filters)
   CovarianceSampling<PointNormal, PointNormal> covariance_sampling;
   covariance_sampling.setInputCloud (cloud_walls_normals);
   covariance_sampling.setNormals (cloud_walls_normals);
-  covariance_sampling.setNumberOfSamples (cloud_walls_normals->size () / 4);
+  covariance_sampling.setNumberOfSamples (static_cast<unsigned int> (cloud_walls_normals->size ()) / 4);
   double cond_num_walls = covariance_sampling.computeConditionNumber ();
   EXPECT_NEAR (cond_num_walls, 19.3518, 1e-4);
 
@@ -82,7 +82,7 @@ TEST (CovarianceSampling, Filters)
   covariance_sampling.setInputCloud (cloud_turtle_normals);
   covariance_sampling.setNormals (cloud_turtle_normals);
   covariance_sampling.setIndices (IndicesPtr ());
-  covariance_sampling.setNumberOfSamples (cloud_turtle_normals->size () / 8);
+  covariance_sampling.setNumberOfSamples (static_cast<unsigned int> (cloud_turtle_normals->size ()) / 8);
   double cond_num_turtle = covariance_sampling.computeConditionNumber ();
   EXPECT_NEAR (cond_num_turtle, 20661.7663, 1e-4);
 
@@ -107,7 +107,7 @@ TEST (NormalSpaceSampling, Filters)
   normal_space_sampling.setNormals (cloud_walls_normals);
   normal_space_sampling.setBins (16, 16, 16);
   normal_space_sampling.setSeed (0);
-  normal_space_sampling.setSample (cloud_walls_normals->size () / 4);
+  normal_space_sampling.setSample (static_cast<unsigned int> (cloud_walls_normals->size ()) / 4);
 
   IndicesPtr walls_indices (new std::vector<int> ());
   normal_space_sampling.filter (*walls_indices);
