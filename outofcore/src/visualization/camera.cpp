@@ -26,7 +26,7 @@ Camera::Camera (std::string name) :
     Object (name), display_ (false)
 {
   camera_ = vtkSmartPointer<vtkCamera>::New ();
-  camera_->SetClippingRange(0.0001, 100);
+  camera_->SetClippingRange(0.0001, 100000);
 
   camera_actor_ = vtkSmartPointer<vtkCameraActor>::New ();
   camera_actor_->SetCamera (camera_);
@@ -49,7 +49,7 @@ Camera::Camera (std::string name, vtkSmartPointer<vtkCamera> camera) :
     Object (name), display_ (false)
 {
   camera_ = camera;
-  camera_->SetClippingRange(0.0001, 10000);
+  camera_->SetClippingRange(0.0001, 100000);
 
   camera_actor_ = vtkSmartPointer<vtkCameraActor>::New ();
   camera_actor_->SetCamera (camera_);
@@ -183,6 +183,7 @@ Camera::render (vtkRenderer* renderer)
       projection_matrix_ = pcl::visualization::vtkToEigen (active_camera->GetProjectionTransformMatrix (aspect[0] / aspect[1], 0.0, 1.0));
       model_view_matrix_ = pcl::visualization::vtkToEigen (active_camera->GetModelViewTransformMatrix ());
 
+      //computeFrustum (renderer->GetTiledAspectRatio());
       computeFrustum ();
     }
   }

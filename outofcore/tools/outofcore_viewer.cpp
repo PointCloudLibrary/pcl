@@ -205,8 +205,6 @@ public:
       Eigen::Vector3d max (cloud->getBoundingBoxMax ());
       renderer->ResetCamera (min.x (), max.x (), min.y (), max.y (), min.z (), max.z ());
     }
-
-    interactor->Render ();
   }
 };
 

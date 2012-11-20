@@ -114,7 +114,7 @@ public:
   }
 
   void
-  setClippingRange(float near=0.0001, float far=10000)
+  setClippingRange(float near=0.0001, float far=100000)
   {
     camera_->SetClippingRange(near, far);
   }
@@ -127,6 +127,7 @@ public:
   //void computeFrustum(double aspect);
   void
   computeFrustum ();
+  //computeFrustum(double aspect);
   void
   printFrustum ();
 
