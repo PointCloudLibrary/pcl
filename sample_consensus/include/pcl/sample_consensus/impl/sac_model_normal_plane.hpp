@@ -73,17 +73,22 @@ pcl::SampleConsensusModelNormalPlane<PointT, PointNT>::selectWithinDistance (
   // Iterate through the 3d points and calculate the distances from them to the plane
   for (size_t i = 0; i < indices_->size (); ++i)
   {
+    const PointT  &pt = input_->points[(*indices_)[i]];
+    const PointNT &nt = normals_->points[(*indices_)[i]];
     // Calculate the distance from the point to the plane normal as the dot product
     // D = (P-A).N/|N|
-    Eigen::Vector4f p (input_->points[(*indices_)[i]].x, input_->points[(*indices_)[i]].y, input_->points[(*indices_)[i]].z, 0);
-    Eigen::Vector4f n (normals_->points[(*indices_)[i]].normal[0], normals_->points[(*indices_)[i]].normal[1], normals_->points[(*indices_)[i]].normal[2], 0);
+    Eigen::Vector4f p (pt.x, pt.y, pt.z, 0);
+    Eigen::Vector4f n (nt.normal_x, nt.normal_y, nt.normal_z, 0);
     double d_euclid = fabs (coeff.dot (p) + model_coefficients[3]);
 
     // Calculate the angular distance between the point normal and the plane normal
     double d_normal = fabs (getAngle3D (n, coeff));
     d_normal = (std::min) (d_normal, M_PI - d_normal);
 
-    double distance = fabs (normal_distance_weight_ * d_normal + (1 - normal_distance_weight_) * d_euclid); 
+    // Weight with the point curvature. On flat surfaces, curvature -> 0, which means the normal will have a higher influence
+    double weight = normal_distance_weight_ * (1.0 - nt.curvature);
+
+    double distance = fabs (weight * d_normal + (1.0 - weight) * d_euclid); 
     if (distance < threshold)
     {
       // Returns the indices of the points whose distances are smaller than the threshold
@@ -120,17 +125,22 @@ pcl::SampleConsensusModelNormalPlane<PointT, PointNT>::countWithinDistance (
   // Iterate through the 3d points and calculate the distances from them to the plane
   for (size_t i = 0; i < indices_->size (); ++i)
   {
+    const PointT  &pt = input_->points[(*indices_)[i]];
+    const PointNT &nt = normals_->points[(*indices_)[i]];
     // Calculate the distance from the point to the plane normal as the dot product
     // D = (P-A).N/|N|
-    Eigen::Vector4f p (input_->points[(*indices_)[i]].x, input_->points[(*indices_)[i]].y, input_->points[(*indices_)[i]].z, 0);
-    Eigen::Vector4f n (normals_->points[(*indices_)[i]].normal[0], normals_->points[(*indices_)[i]].normal[1], normals_->points[(*indices_)[i]].normal[2], 0);
+    Eigen::Vector4f p (pt.x, pt.y, pt.z, 0);
+    Eigen::Vector4f n (nt.normal_x, nt.normal_y, nt.normal_z, 0);
     double d_euclid = fabs (coeff.dot (p) + model_coefficients[3]);
 
     // Calculate the angular distance between the point normal and the plane normal
     double d_normal = fabs (getAngle3D (n, coeff));
     d_normal = (std::min) (d_normal, M_PI - d_normal);
 
-    if (fabs (normal_distance_weight_ * d_normal + (1 - normal_distance_weight_) * d_euclid) < threshold)
+    // Weight with the point curvature. On flat surfaces, curvature -> 0, which means the normal will have a higher influence
+    double weight = normal_distance_weight_ * (1.0 - nt.curvature);
+
+    if (fabs (weight * d_normal + (1.0 - weight) * d_euclid) < threshold)
       nr_p++;
   }
   return (nr_p);
@@ -163,17 +173,22 @@ pcl::SampleConsensusModelNormalPlane<PointT, PointNT>::getDistancesToModel (
   // Iterate through the 3d points and calculate the distances from them to the plane
   for (size_t i = 0; i < indices_->size (); ++i)
   {
+    const PointT  &pt = input_->points[(*indices_)[i]];
+    const PointNT &nt = normals_->points[(*indices_)[i]];
     // Calculate the distance from the point to the plane normal as the dot product
     // D = (P-A).N/|N|
-    Eigen::Vector4f p (input_->points[(*indices_)[i]].x, input_->points[(*indices_)[i]].y, input_->points[(*indices_)[i]].z, 0);
-    Eigen::Vector4f n (normals_->points[(*indices_)[i]].normal[0], normals_->points[(*indices_)[i]].normal[1], normals_->points[(*indices_)[i]].normal[2], 0);
+    Eigen::Vector4f p (pt.x, pt.y, pt.z, 0);
+    Eigen::Vector4f n (nt.normal_x, nt.normal_y, nt.normal_z, 0);
     double d_euclid = fabs (coeff.dot (p) + model_coefficients[3]);
 
     // Calculate the angular distance between the point normal and the plane normal
     double d_normal = fabs (getAngle3D (n, coeff));
     d_normal = (std::min) (d_normal, M_PI - d_normal);
 
-    distances[i] = fabs (normal_distance_weight_ * d_normal + (1 - normal_distance_weight_) * d_euclid);
+    // Weight with the point curvature. On flat surfaces, curvature -> 0, which means the normal will have a higher influence
+    double weight = normal_distance_weight_ * (1.0 - nt.curvature);
+
+    distances[i] = fabs (weight * d_normal + (1.0 - weight) * d_euclid);
   }
 }
 
