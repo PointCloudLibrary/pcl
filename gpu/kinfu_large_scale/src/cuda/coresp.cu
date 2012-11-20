@@ -36,7 +36,7 @@
  */
 
 #include "device.hpp"
-#include <boost/graph/buffer_concepts.hpp>
+//#include <boost/graph/buffer_concepts.hpp>
 //#include <pcl/gpu/utils/device/block.hpp>
 
 namespace pcl

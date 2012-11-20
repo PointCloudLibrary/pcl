@@ -39,7 +39,7 @@
 #define PCL_TSDF_BUFFER_STRUCT_H_
 
 #include <cuda_runtime.h>
-#include <boost/graph/buffer_concepts.hpp>
+//#include <boost/graph/buffer_concepts.hpp>
     
 namespace pcl
 {

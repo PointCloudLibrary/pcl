@@ -409,7 +409,7 @@ pcl::console::initVerbosityLevel ()
     else if (s_pcl_verbosity_level.find ("INFO") != std::string::npos)       s_VerbosityLevel = L_INFO;
     else if (s_pcl_verbosity_level.find ("DEBUG") != std::string::npos)      s_VerbosityLevel = L_DEBUG;
     else if (s_pcl_verbosity_level.find ("VERBOSE") != std::string::npos)    s_VerbosityLevel = L_VERBOSE;
-    else std::cout << "Warning: invalid PCL_VERBOSITY_LEVEL set (" << s_pcl_verbosity_level << ")" << std::endl;
+    else printf ("Warning: invalid PCL_VERBOSITY_LEVEL set (%s)\n", s_pcl_verbosity_level.c_str ());
   }
 
   s_NeedVerbosityInit = false;

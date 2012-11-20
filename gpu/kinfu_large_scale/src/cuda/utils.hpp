@@ -38,7 +38,7 @@
 
 #ifndef PCL_GPU_KINFU_CUDA_UTILS_HPP_
 #define PCL_GPU_KINFU_CUDA_UTILS_HPP_
-#include <boost/graph/buffer_concepts.hpp>
+//#include <boost/graph/buffer_concepts.hpp>
 
 
 namespace pcl

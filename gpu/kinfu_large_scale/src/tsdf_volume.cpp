@@ -472,7 +472,7 @@ pcl::gpu::kinfuLS::TsdfVolume::save (const std::string &filename, bool binary) c
       file << sizeof (float) << " " << sizeof(short) << std::endl;
 
       // write data
-      for (typename std::vector<float>::const_iterator iter = volume_host_->begin(); iter != volume_host_->end(); ++iter)
+      for (std::vector<float>::const_iterator iter = volume_host_->begin(); iter != volume_host_->end(); ++iter)
         file << *iter << std::endl;
     }
 

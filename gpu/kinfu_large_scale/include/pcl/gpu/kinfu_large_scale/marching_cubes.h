@@ -41,7 +41,7 @@
 #include <pcl/pcl_macros.h>
 #include <pcl/gpu/containers/device_array.h>
 #include <Eigen/Core>
-#include <boost/graph/buffer_concepts.hpp>
+//#include <boost/graph/buffer_concepts.hpp>
 
 
 namespace pcl

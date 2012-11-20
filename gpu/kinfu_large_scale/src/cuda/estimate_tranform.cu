@@ -36,7 +36,7 @@
  */
 
 #include "device.hpp"
-#include <boost/graph/buffer_concepts.hpp>
+//#include <boost/graph/buffer_concepts.hpp>
 //#include <pcl/gpu/utils/device/block.hpp>
 //#include <pcl/gpu/utils/device/funcattrib.hpp>
 //#include <pcl/gpu/utils/timers_cuda.hpp>

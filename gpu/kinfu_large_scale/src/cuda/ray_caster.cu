@@ -35,7 +35,7 @@
  *
  */
 #include "device.hpp"
-#include <boost/graph/buffer_concepts.hpp>
+//#include <boost/graph/buffer_concepts.hpp>
 
 
 namespace pcl
