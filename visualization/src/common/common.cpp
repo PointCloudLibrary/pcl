@@ -280,9 +280,12 @@ pcl::visualization::viewScreenArea (
 
   // Look up number of vertices
   int num = hull_vertex_table[pos][6];
-  if (!num)
-    return 0.0;
-    //return width*height;// 0.0;
+  if (num == 0)
+  {
+    return width*height;
+  }
+    //return 0.0;
+
 
 //  cout << "eye: " << eye.x() << " " << eye.y() << " " << eye.z() << endl;
 //  cout << "min: " << bounding_box[0].x() << " " << bounding_box[0].y() << " " << bounding_box[0].z() << endl;
@@ -350,7 +353,7 @@ pcl::visualization::viewScreenArea (
     sum += (dst[i].x () - dst[(i+1) % num].x ()) * (dst[i].y () + dst[(i+1) % num].y ());
   }
 
-  return sum * 0.5;
+  return fabs(sum * 0.5);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////

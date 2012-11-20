@@ -113,6 +113,15 @@ public:
     return position;
   }
 
+  void
+  setClippingRange(float near=0.0001, float far=10000)
+  {
+    camera_->SetClippingRange(near, far);
+  }
+
+  virtual void
+  render (vtkRenderer* renderer);
+
   // Methods
   // -----------------------------------------------------------------------------
   //void computeFrustum(double aspect);
@@ -134,6 +143,10 @@ private:
   double frustum_[24];
   Eigen::Matrix4d projection_matrix_;
   Eigen::Matrix4d model_view_matrix_;
+
+  double prevUp_[3];
+  double prevFocal_[3];
+  double prevPos_[3];
 };
 
 #endif

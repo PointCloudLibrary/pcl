@@ -137,187 +137,9 @@ typedef Eigen::aligned_allocator<PointT> AlignedPointT;
 // Definitions
 const int MAX_DEPTH (-1);
 
-// Threading
-boost::condition camera_changed;
-boost::mutex camera_changed_mutex;
-
 // Globals
 vtkSmartPointer<vtkRenderWindow> window;
 
-//class PointCloud : public Object
-//{
-//  PointCloud(std::string name) : Object(name)
-//  {
-//
-//  }
-//};
-
-void
-workerFunc ()
-{
-
-  Scene *scene = Scene::instance ();
-  Camera *octree_camera = scene->getCamera ("octree");
-  OutofcoreCloud *cloud = static_cast<OutofcoreCloud*> (scene->getObjectByName ("my_octree"));
-
-  while (true)
-  {
-    {
-      boost::mutex::scoped_lock lock (camera_changed_mutex);
-      camera_changed.wait (lock);
-    }
-
-    double frustum[24];
-    octree_camera->getFrustum (frustum);
-
-    Eigen::Vector3d eye = octree_camera->getPosition ();
-    Eigen::Matrix4d view_projection_matrix = octree_camera->getViewProjectionMatrix ();
-
-    //cloud->updateView (frustum, eye, view_projection_matrix);
-
-    window->Render ();
-
-//    std::list<std::string> file_names;
-//    cloud->getOctree()->queryFrustum(frustum, file_names, cloud->getDisplayDepth());
-//    cout << "bins: " << file_names.size() << endl;
-  }
-}
-
-class CameraChangeCallback : public vtkCommand
-{
-public:
-  vtkTypeMacro(CameraChangeCallback, vtkCommand)
-  ;
-
-  CameraChangeCallback ()
-  {
-    prevUp[0] = prevUp[1] = prevUp[2] = 0;
-    prevFocal[0] = prevFocal[1] = prevFocal[2] = 0;
-    prevPos[0] = prevPos[1] = prevPos[2] = 0;
-    viewpointChanged = false;
-  }
-
-  static CameraChangeCallback *
-  New ()
-  {
-    return new CameraChangeCallback;
-  }
-
-  void
-  Execute (vtkObject *caller, unsigned long vtkNotUsed(eventId), void* vtkNotUsed(callData))
-  {
-
-    vtkRenderer *renderer = vtkRenderer::SafeDownCast (caller);
-    vtkSmartPointer<vtkCamera> active_camera = renderer->GetActiveCamera ();
-
-    Scene *scene = Scene::instance ();
-    Camera *camera = scene->getCamera (active_camera);
-
-    if (camera->getName () != "octree")
-      return;
-
-    double *up = active_camera->GetViewUp ();
-    double *focal = active_camera->GetFocalPoint ();
-    double *pos = active_camera->GetPosition ();
-
-    viewpointChanged = false;
-
-    // Check up vector
-    if (up[0] != prevUp[0] || up[1] != prevUp[1] || up[2] != prevUp[2])
-      viewpointChanged = true;
-
-    // Check focal point
-    if (focal[0] != prevFocal[0] || focal[1] != prevFocal[1] || focal[2] != prevFocal[2])
-      viewpointChanged = true;
-
-    // Check position
-    if (pos[0] != prevPos[0] || pos[1] != prevPos[1] || pos[2] != prevPos[2])
-      viewpointChanged = true;
-
-    // Break loop if the viewpoint hasn't changed
-    if (viewpointChanged)
-    {
-
-      prevUp[0] = up[0];
-      prevUp[1] = up[1];
-      prevUp[2] = up[2];
-      prevFocal[0] = focal[0];
-      prevFocal[1] = focal[1];
-      prevFocal[2] = focal[2];
-      prevPos[0] = pos[0];
-      prevPos[1] = pos[1];
-      prevPos[2] = pos[2];
-
-//        std::cout << "View Changed" << std::endl;
-//        std::cout << "Up: <" << up[0] << ", " << up[1] << ", " << up[2] << ">" << std::endl;
-//        std::cout << "Focal: <" << focal[0] << ", " << focal[1] << ", " << focal[2] << ">" << std::endl;
-//        std::cout << "Pos: <" << pos[0] << ", " << pos[1] << ", " << pos[2] << ">" << std::endl;
-
-      {
-
-        renderer->ComputeAspect ();
-        double *aspect = renderer->GetAspect ();
-        int *size = renderer->GetSize ();
-
-        Eigen::Matrix4d projection_matrix = pcl::visualization::vtkToEigen (
-            active_camera->GetProjectionTransformMatrix (aspect[0] / aspect[1], 0.0, 1.0));
-
-        Eigen::Matrix4d model_view_matrix = pcl::visualization::vtkToEigen (
-            active_camera->GetModelViewTransformMatrix ());
-
-        camera->setProjectionMatrix (projection_matrix);
-        camera->setModelViewMatrix (model_view_matrix);
-
-        boost::mutex::scoped_lock lock (camera_changed_mutex);
-
-        camera->computeFrustum ();
-
-      }
-
-      // Test query in main loop
-//        {
-//          OutofcoreCloud *cloud = static_cast<OutofcoreCloud*>(scene->getObjectByName("my_octree"));
-//
-//          double frustum[24];
-//          camera->getFrustum(frustum);
-//
-//          Eigen::Vector3d eye = camera->getPosition();
-//          Eigen::Matrix4d view_projection_matrix = camera->getViewProjectionMatrix();
-//
-//          cloud->updateView(frustum, eye, view_projection_matrix);
-//        }
-
-      camera_changed.notify_one ();
-
-    }
-  }
-protected:
-  bool viewpointChanged;
-  double prevUp[3];
-  double prevFocal[3];
-  double prevPos[3];
-
-};
-
-//class TimerCallback : public vtkCommand
-//{
-//public:
-//  vtkTypeMacro(TimerCallback, vtkCommand)
-//  ;
-//
-//  static TimerCallback *
-//  New ()
-//  {
-//    return new TimerCallback;
-//  }
-//
-//  void
-//  Execute (vtkObject *caller, unsigned long vtkNotUsed(eventId), void* vtkNotUsed(callData))
-//  {
-//    vtkRenderWindowInteractor *interactor = vtkRenderWindowInteractor::SafeDownCast (caller);
-//    interactor->Render ();
-//  }
-//};
 
 class KeyboardCallback : public vtkCommand
 {
@@ -339,49 +161,45 @@ public:
                                                            interactor->GetEventPosition ()[1]);
 
     std::string key (interactor->GetKeySym ());
+    bool shift_down = interactor->GetShiftKey();
 
     cout << "Key Pressed: " << key << endl;
 
     Scene *scene = Scene::instance ();
     OutofcoreCloud *cloud = static_cast<OutofcoreCloud*> (scene->getObjectByName ("my_octree"));
 
-//      if (key == "c"){
-//        std::vector<Camera> cameras = scene->getCameras();
-//
-//        int currCamIndex = 0;
-//        int nextCamIndex = 0;
-//
-//        for (int i=0; i < cameras.size(); i++){
-//          if (cameras[i]->getCamera() == renderer->GetActiveCamera()){
-//            currCamIndex = i;
-//            nextCamIndex = (i+1) % cameras.size();
-//            break;
-//          }
-//        }
-//
-//        renderer->AddActor(cameras[currCamIndex].getCameraActor());
-//        renderer->AddActor(cameras[currCamIndex].getHullActor());
-//        renderer->RemoveActor(cameras[nextCamIndex].getCameraActor());
-//        renderer->RemoveActor(cameras[nextCamIndex].getHullActor());
-//        renderer->SetActiveCamera(cameras[nextCamIndex].getCamera());
-//
-//        interactor->Render();
-//      }
-
     if (key == "Up" || key == "Down")
     {
       if (key == "Up" && cloud)
       {
-        cloud->setDisplayDepth (cloud->getDisplayDepth () + 1);
+        if (shift_down)
+        {
+          cloud->increaseLodPixelThreshold();
+        }
+        else
+        {
+          cloud->setDisplayDepth (cloud->getDisplayDepth () + 1);
+        }
       }
-
-      if (key == "Down" && cloud)
+      else if (key == "Down" && cloud)
       {
-        cloud->setDisplayDepth (cloud->getDisplayDepth () - 1);
+        if (shift_down)
+        {
+          cloud->decreaseLodPixelThreshold();
+        }
+        else
+        {
+          cloud->setDisplayDepth (cloud->getDisplayDepth () - 1);
+        }
       }
     }
 
-    if (key == "f")
+    if (key == "o")
+    {
+      cloud->setDisplayVoxels(1-static_cast<int> (cloud->getDisplayVoxels()));
+    }
+
+    if (key == "Escape")
     {
       Eigen::Vector3d min (cloud->getBoundingBoxMin ());
       Eigen::Vector3d max (cloud->getBoundingBoxMax ());
@@ -393,20 +211,20 @@ public:
 };
 
 void
-renderTimerCallback(vtkObject* caller, unsigned long int vtkNotUsed(eventId), void* clientData, void* vtkNotUsed(callData))
+renderTimerCallback(vtkObject* caller, unsigned long int vtkNotUsed(eventId), void* vtkNotUsed(clientData), void* vtkNotUsed(callData))
 {
   vtkRenderWindowInteractor *interactor = vtkRenderWindowInteractor::SafeDownCast (caller);
   interactor->Render ();
 }
 
 void
-renderStartCallback(vtkObject* vtkNotUsed(caller), unsigned long int vtkNotUsed(eventId), void* clientData, void* vtkNotUsed(callData))
+renderStartCallback(vtkObject* vtkNotUsed(caller), unsigned long int vtkNotUsed(eventId), void* vtkNotUsed(clientData), void* vtkNotUsed(callData))
 {
   //std::cout << "Start...";
 }
 
 void
-renderEndCallback(vtkObject* vtkNotUsed(caller), unsigned long int vtkNotUsed(eventId), void* clientData, void* vtkNotUsed(callData))
+renderEndCallback(vtkObject* vtkNotUsed(caller), unsigned long int vtkNotUsed(eventId), void* vtkNotUsed(clientData), void* vtkNotUsed(callData))
 {
   //std::cout << "End" << std::endl;
 }
@@ -441,7 +259,7 @@ outofcoreViewer (boost::filesystem::path tree_root, int depth, bool display_octr
 //  vtkSmartPointer<Grid> grid;
 //  grid.Take(grid_raw);
 
-// Create window and interactor
+  // Create window and interactor
   vtkSmartPointer<vtkRenderWindowInteractor> interactor = vtkSmartPointer<vtkRenderWindowInteractor>::New ();
   window = vtkSmartPointer<vtkRenderWindow>::New ();
   window->SetSize (1000, 500);
@@ -460,15 +278,30 @@ outofcoreViewer (boost::filesystem::path tree_root, int depth, bool display_octr
   scene->addCamera (persp_camera);
   scene->addCamera (octree_camera);
 
+  octree_camera->setDisplay(true);
   cloud->setRenderCamera(octree_camera);
 
   // Set viewport cameras
   persp_viewport.setCamera (persp_camera);
   octree_viewport.setCamera (octree_camera);
 
-  vtkSmartPointer<CameraChangeCallback> camera_change_callback = vtkSmartPointer<CameraChangeCallback>::New ();
-  octree_viewport.getRenderer ()->AddObserver (vtkCommand::EndEvent, camera_change_callback);
+  // Render once
+  window->Render ();
 
+  // Frame cameras
+  Eigen::Vector3d min (cloud->getBoundingBoxMin ());
+  Eigen::Vector3d max (cloud->getBoundingBoxMax ());
+  octree_viewport.getRenderer ()->ResetCamera (min.x (), max.x (), min.y (), max.y (), min.z (), max.z ());
+  persp_viewport.getRenderer ()->ResetCamera (min.x (), max.x (), min.y (), max.y (), min.z (), max.z ());
+
+  // Interactor
+  // -------------------------------------------------------------------------
+  vtkSmartPointer<vtkInteractorStyleTrackballCamera> style = vtkSmartPointer<vtkInteractorStyleTrackballCamera>::New ();
+  style->SetAutoAdjustCameraClippingRange(false);
+  interactor->SetInteractorStyle (style);
+
+  // Callbacks
+  // -------------------------------------------------------------------------
   vtkSmartPointer<vtkCallbackCommand> render_start_callback = vtkSmartPointer<vtkCallbackCommand>::New();
   render_start_callback->SetCallback(renderStartCallback);
   window->AddObserver(vtkCommand::StartEvent, render_start_callback);
@@ -477,38 +310,15 @@ outofcoreViewer (boost::filesystem::path tree_root, int depth, bool display_octr
   render_end_callback->SetCallback(renderEndCallback);
   window->AddObserver(vtkCommand::EndEvent, render_end_callback);
 
-  window->Render ();
-
-  // Frame cameras
-  Eigen::Vector3d min (cloud->getBoundingBoxMin ());
-  Eigen::Vector3d max (cloud->getBoundingBoxMax ());
-
-  octree_viewport.getRenderer ()->ResetCamera (min.x (), max.x (), min.y (), max.y (), min.z (), max.z ());
-  persp_viewport.getRenderer ()->ResetCamera (min.x (), max.x (), min.y (), max.y (), min.z (), max.z ());
-
-  boost::thread workerThread (workerFunc);
-
-  vtkSmartPointer<vtkInteractorStyleTrackballCamera> style = vtkSmartPointer<vtkInteractorStyleTrackballCamera>::New ();
-  interactor->SetInteractorStyle (style);
-
   vtkSmartPointer<KeyboardCallback> keyboard_callback = vtkSmartPointer<KeyboardCallback>::New ();
   interactor->AddObserver (vtkCommand::KeyPressEvent, keyboard_callback);
 
-
   interactor->CreateRepeatingTimer(1000);
-
-
-  //vtkSmartPointer<TimerCallback> timer_callback = vtkSmartPointer<TimerCallback>::New();
-
   vtkSmartPointer<vtkCallbackCommand> render_timer_callback = vtkSmartPointer<vtkCallbackCommand>::New();
   render_timer_callback->SetCallback(renderTimerCallback);
   interactor->AddObserver(vtkCommand::TimerEvent, render_timer_callback);
 
-  //interactor->AddObserver ( vtkCommand::TimerEvent, timer_callback );
-
   interactor->Start ();
-
-
 
   return 0;
 }

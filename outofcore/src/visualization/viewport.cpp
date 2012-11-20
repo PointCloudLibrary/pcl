@@ -146,14 +146,15 @@ Viewport::viewportActorUpdate ()
 
   for (int i = 0; i < cameras.size (); i++)
   {
-    if (cameras[i]->getCamera () != renderer_->GetActiveCamera ())
-    {
-      renderer_->AddActor (cameras[i]->getCameraActor ());
-      if (cameras[i]->getName () == "octree")
-      {
-        renderer_->AddActor (cameras[i]->getHullActor ());
-      }
-    }
+    cameras[i]->render (renderer_);
+//    if (cameras[i]->getCamera () != renderer_->GetActiveCamera ())
+//    {
+//      renderer_->AddActor (cameras[i]->getCameraActor ());
+//      if (cameras[i]->getName () == "octree")
+//      {
+//        renderer_->AddActor (cameras[i]->getHullActor ());
+//      }
+//    }
   }
 
   std::vector<Object*> objects = scene->getObjects ();

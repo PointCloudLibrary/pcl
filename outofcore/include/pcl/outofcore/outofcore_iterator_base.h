@@ -115,15 +115,15 @@ namespace pcl
         {
           currentNode_ = static_cast<OctreeDiskNode*> (octree_.getRootNode ());
           currentOctreeDepth_ = 0;
-          max_depth_ = octree_.getDepth ();
+          max_depth_ = static_cast<unsigned int> (octree_.getDepth ());
         }
 
         inline void
         setMaxDepth (unsigned int max_depth)
         {
-          if (max_depth > octree_.getDepth ())
+          if (max_depth > static_cast<unsigned int> (octree_.getDepth ()))
           {
-            max_depth = octree_.getDepth ();
+            max_depth = static_cast<unsigned int> (octree_.getDepth ());
           }
 
           max_depth_ = max_depth;

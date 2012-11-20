@@ -70,11 +70,6 @@ class OutofcoreCloud : public Object
     // -----------------------------------------------------------------------------
     void
     updateVoxelData ();
-//    void
-//    updateCloudData ();
-
-    void
-    updateView (double frustum[24], const Eigen::Vector3d &eye, const Eigen::Matrix4d &view_projection_matrix);
 
     // Accessors
     // -----------------------------------------------------------------------------
@@ -146,43 +141,68 @@ class OutofcoreCloud : public Object
       voxel_actor_->SetVisibility (display_voxels);
     }
 
+    bool
+    getDisplayVoxels()
+    {
+      return voxel_actor_->GetVisibility ();
+    }
+
     void
     setRenderCamera(Camera *render_camera)
     {
       render_camera_ = render_camera;
     }
 
-//    bool
-//    setFrustum (double *frustum)
-//    {
-//      if (!frustum_)
-//        frustum_ = new double[24];
-//
-//      bool frustum_changed = false;
-//      for (int i = 0; i < 24; i++)
-//      {
-//        if (frustum_[i] != frustum[i])
-//          frustum_changed = true;
-//        frustum_[i] = frustum[i];
-//      }
-//
-//  //    if (frustum_changed)
-//  //        updateCloudData();
-//
-//      return frustum_changed;
-//    }
-//
-//    void
-//    setModelViewMatrix (const Eigen::Matrix4d &model_view_matrix)
-//    {
-//      model_view_matrix_ = model_view_matrix;
-//    }
-//
-//    void
-//    setProjectionMatrix (const Eigen::Matrix4d &projection_matrix)
-//    {
-//      projection_matrix_ = projection_matrix;
-//    }
+    int
+    getLodPixelThreshold ()
+    {
+      return lod_pixel_threshold_;
+    }
+
+    void
+    setLodPixelThreshold (int lod_pixel_threshold)
+    {
+      if (lod_pixel_threshold <= 1000)
+        lod_pixel_threshold = 1000;
+
+      lod_pixel_threshold_ = lod_pixel_threshold;
+    }
+
+    void
+    increaseLodPixelThreshold ()
+    {
+      int value = 1000;
+
+      if (lod_pixel_threshold_ >= 50000)
+        value = 10000;
+      if (lod_pixel_threshold_ >= 10000)
+        value = 5000;
+      else if (lod_pixel_threshold_ >= 1000)
+        value = 100;
+
+      lod_pixel_threshold_ += value;
+      std::cout << "Increasing lod pixel threshold: " << lod_pixel_threshold_ << endl;
+    }
+
+    void
+    decreaseLodPixelThreshold ()
+    {
+      int value = 1000;
+      if (lod_pixel_threshold_ > 50000)
+        value = 10000;
+      else if (lod_pixel_threshold_ > 10000)
+        value = 5000;
+      else if (lod_pixel_threshold_ > 1000)
+        value = 100;
+
+
+
+      lod_pixel_threshold_ -= value;
+
+      if (lod_pixel_threshold_ < 100)
+        lod_pixel_threshold_ = 100;
+      std::cout << "Decreasing lod pixel threshold: " << lod_pixel_threshold_ << endl;
+    }
 
     virtual void
     render (vtkRenderer* renderer);
@@ -200,9 +220,7 @@ class OutofcoreCloud : public Object
 
     Camera *render_camera_;
 
-//    double *frustum_;
-//    Eigen::Matrix4d model_view_matrix_;
-//    Eigen::Matrix4d projection_matrix_;
+    int lod_pixel_threshold_;
 
     vtkSmartPointer<vtkActor> voxel_actor_;
 
