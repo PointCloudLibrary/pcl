@@ -282,7 +282,7 @@ pcl::visualization::viewScreenArea (
   int num = hull_vertex_table[pos][6];
   if (num == 0)
   {
-    return width*height;
+    return (float (width * height));
   }
     //return 0.0;
 
@@ -347,13 +347,13 @@ pcl::visualization::viewScreenArea (
     dst[i] = Eigen::Vector2d(screen_pt.x (), screen_pt.y ());
   }
 
-  float sum = 0.0;
-  for(int i=0; i < num; i++)
+  double sum = 0.0;
+  for (int i = 0; i < num; ++i)
   {
     sum += (dst[i].x () - dst[(i+1) % num].x ()) * (dst[i].y () + dst[(i+1) % num].y ());
   }
 
-  return fabs(sum * 0.5);
+  return (fabsf (float (sum * 0.5f)));
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
