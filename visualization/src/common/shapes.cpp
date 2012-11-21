@@ -169,6 +169,35 @@ pcl::visualization::createPlane (const pcl::ModelCoefficients &coefficients)
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 vtkSmartPointer<vtkDataSet> 
+pcl::visualization::createPlane (const pcl::ModelCoefficients &coefficients, double x, double y, double z)
+{
+  vtkSmartPointer<vtkPlaneSource> plane = vtkSmartPointer<vtkPlaneSource>::New ();
+  
+
+  double norm_sqr = 1.0 / (coefficients.values[0] * coefficients.values[0] +
+                           coefficients.values[1] * coefficients.values[1] +
+                           coefficients.values[2] * coefficients.values[2] );
+
+//  double nx = coefficients.values [0] * norm;
+//  double ny = coefficients.values [1] * norm;
+//  double nz = coefficients.values [2] * norm;
+//  double d  = coefficients.values [3] * norm;
+  
+//  plane->SetNormal (nx, ny, nz);
+  plane->SetNormal (coefficients.values[0], coefficients.values[1], coefficients.values[2]);
+
+  double t = x * coefficients.values[0] + y * coefficients.values[1] + z * coefficients.values[2] + coefficients.values[3];
+  x -= coefficients.values[0] * t * norm_sqr;
+  y -= coefficients.values[1] * t * norm_sqr;
+  z -= coefficients.values[2] * t * norm_sqr;
+  plane->SetCenter (x, y, z);
+  
+  return (plane->GetOutput ());
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////
+vtkSmartPointer<vtkDataSet> 
 pcl::visualization::create2DCircle (const pcl::ModelCoefficients &coefficients, double z)
 {
   vtkSmartPointer<vtkDiskSource> disk = vtkSmartPointer<vtkDiskSource>::New ();

@@ -188,6 +188,14 @@ namespace pcl
     PCL_EXPORTS vtkSmartPointer<vtkDataSet> 
     createPlane (const pcl::ModelCoefficients &coefficients);
 
+    /** \brief Create a planar shape from a set of model coefficients.
+      * \param[in] coefficients the model coefficients (a, b, c, d with ax+by+cz+d=0)
+      * \param[in] x,y,z projection of this point on the plane is used to get the center of the plane.
+      * \ingroup visualization
+      */
+    PCL_EXPORTS vtkSmartPointer<vtkDataSet> 
+    createPlane (const pcl::ModelCoefficients &coefficients, double x, double y, double z);
+    
     /** \brief Create a 2d circle shape from a set of model coefficients.
       * \param[in] coefficients the model coefficients (x, y, radius)
       * \param[in] z (optional) specify a z value (default: 0)

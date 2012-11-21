@@ -1345,6 +1345,10 @@ namespace pcl
                   const std::string &id = "plane",
                   int viewport = 0);
 
+        bool
+        addPlane (const pcl::ModelCoefficients &coefficients, double x, double y, double z,
+                  const std::string &id = "plane",
+                  int viewport = 0);
         /** \brief Add a circle from a set of given model coefficients
           * \param[in] coefficients the model coefficients (x, y, radius)
           * \param[in] id the circle id/name (default: "circle")
