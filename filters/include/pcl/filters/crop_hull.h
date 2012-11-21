@@ -61,6 +61,10 @@ namespace pcl
     typedef typename PointCloud::ConstPtr PointCloudConstPtr;
 
     public:
+
+      typedef boost::shared_ptr< CropHull<PointT> > Ptr;
+      typedef boost::shared_ptr< const CropHull<PointT> > ConstPtr;
+
       /** \brief Empty Constructor. */
       CropHull () :
         hull_polygons_(),

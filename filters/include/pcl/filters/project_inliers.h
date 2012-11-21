@@ -79,6 +79,11 @@ namespace pcl
 
     typedef typename SampleConsensusModel<PointT>::Ptr SampleConsensusModelPtr;
     public:
+
+      typedef boost::shared_ptr< ProjectInliers<PointT> > Ptr;
+      typedef boost::shared_ptr< const ProjectInliers<PointT> > ConstPtr;
+
+
       /** \brief Empty constructor. */
       ProjectInliers () : model_ (), sacmodel_ (), model_type_ (), copy_all_data_ (false)
       {

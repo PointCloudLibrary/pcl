@@ -56,7 +56,8 @@ namespace pcl
     {
       public:
         typedef boost::shared_ptr<ConvolvingKernel<PointInT, PointOutT> > Ptr;
-        typedef boost::shared_ptr<ConvolvingKernel<PointInT, PointOutT> > ConstPtr;
+        typedef boost::shared_ptr<const ConvolvingKernel<PointInT, PointOutT> > ConstPtr;
+ 
         typedef typename PointCloud<PointInT>::ConstPtr PointCloudInConstPtr;
 
         /// \brief empty constructor

@@ -51,6 +51,11 @@ namespace pcl
   class BoxClipper3D : public Clipper3D<PointT>
   {
     public:
+
+      typedef boost::shared_ptr< BoxClipper3D<PointT> > Ptr;
+      typedef boost::shared_ptr< const BoxClipper3D<PointT> > ConstPtr;
+
+
       /**
         * \author Suat Gedikli <gedikli@willowgarage.com>
         * \brief Constructor taking an affine transformation matrix, which allows also shearing of the clipping area

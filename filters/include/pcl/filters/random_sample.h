@@ -66,8 +66,8 @@ namespace pcl
 
     public:
 
-      typedef boost::shared_ptr<RandomSample<PointT> > Ptr;
-      typedef boost::shared_ptr<const RandomSample<PointT> > ConstPtr;
+      typedef boost::shared_ptr< RandomSample<PointT> > Ptr;
+      typedef boost::shared_ptr< const RandomSample<PointT> > ConstPtr;
 
       /** \brief Empty constructor. */
       RandomSample () : sample_ (UINT_MAX), seed_ (static_cast<unsigned int> (time (NULL)))

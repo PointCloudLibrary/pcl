@@ -71,6 +71,10 @@ namespace pcl
       using Filter<PointT>::extract_removed_indices_;
       typedef pcl::PointCloud<PointT> PointCloud;
 
+      typedef boost::shared_ptr< FilterIndices<PointT> > Ptr;
+      typedef boost::shared_ptr< const FilterIndices<PointT> > ConstPtr;
+
+
       /** \brief Constructor.
         * \param[in] extract_removed_indices Set to true if you want to be able to extract the indices of points being removed (default = false).
         */

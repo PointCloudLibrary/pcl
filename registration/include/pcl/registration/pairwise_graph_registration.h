@@ -61,6 +61,8 @@ namespace pcl
       typedef typename Registration<PointT, PointT>::Ptr RegistrationPtr;
       typedef typename pcl::registration::GraphHandler<GraphT>::Vertex GraphHandlerVertex;
 
+
+
       /** \brief Empty constructor */
       PairwiseGraphRegistration () : registration_method_ (), incremental_ (true)
       {}

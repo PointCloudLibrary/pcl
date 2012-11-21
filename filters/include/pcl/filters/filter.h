@@ -89,6 +89,7 @@ namespace pcl
       typedef boost::shared_ptr< Filter<PointT> > Ptr;
       typedef boost::shared_ptr< const Filter<PointT> > ConstPtr;
 
+
       typedef pcl::PointCloud<PointT> PointCloud;
       typedef typename PointCloud::Ptr PointCloudPtr;
       typedef typename PointCloud::ConstPtr PointCloudConstPtr;

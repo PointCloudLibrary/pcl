@@ -118,6 +118,11 @@ namespace pcl
       };
 
     public:
+
+      typedef boost::shared_ptr< ApproximateVoxelGrid<PointT> > Ptr;
+      typedef boost::shared_ptr< const ApproximateVoxelGrid<PointT> > ConstPtr;
+
+
       /** \brief Empty constructor. */
       ApproximateVoxelGrid () : 
         pcl::Filter<PointT> (),

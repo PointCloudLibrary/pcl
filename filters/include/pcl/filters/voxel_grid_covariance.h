@@ -83,6 +83,11 @@ namespace pcl
       typedef typename PointCloud::ConstPtr PointCloudConstPtr;
 
     public:
+
+      typedef boost::shared_ptr< VoxelGrid<PointT> > Ptr;
+      typedef boost::shared_ptr< const VoxelGrid<PointT> > ConstPtr;
+
+
       /** \brief Simple structure to hold a centroid, covarince and the number of points in a leaf.
         * Inverse covariance, eigen vectors and engen values are precomputed. */
       struct Leaf

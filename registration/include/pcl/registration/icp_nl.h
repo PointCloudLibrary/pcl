@@ -73,6 +73,10 @@ namespace pcl
     using IterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransformation;
 
     public:
+
+      typedef boost::shared_ptr< IterativeClosestPointNonLinear<PointSource, PointTarget, Scalar> > Ptr;
+      typedef boost::shared_ptr< const IterativeClosestPointNonLinear<PointSource, PointTarget, Scalar> > ConstPtr;
+
       typedef typename Registration<PointSource, PointTarget, Scalar>::Matrix4 Matrix4;
 
       /** \brief Empty constructor. */

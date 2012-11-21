@@ -69,6 +69,10 @@ namespace pcl
     typedef PointIndices::ConstPtr PointIndicesConstPtr;
 
     public:
+
+        typedef boost::shared_ptr< NormalDistributionsTransform2D<PointSource, PointTarget> > Ptr;
+        typedef boost::shared_ptr< const NormalDistributionsTransform2D<PointSource, PointTarget> > ConstPtr;
+
       /** \brief Empty constructor. */
       NormalDistributionsTransform2D ()
         : Registration<PointSource,PointTarget> (),

@@ -82,6 +82,11 @@ namespace pcl
     typedef typename PointCloud::ConstPtr PointCloudConstPtr;
 
     public:
+
+      typedef boost::shared_ptr< FrustumCulling<PointT> > Ptr;
+      typedef boost::shared_ptr< const FrustumCulling<PointT> > ConstPtr;
+
+
       using Filter<PointT>::getClassName;
 
       FrustumCulling (bool extract_removed_indices = false) 

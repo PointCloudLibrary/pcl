@@ -87,6 +87,11 @@ namespace pcl
       typedef typename pcl::search::Search<PointT>::Ptr SearcherPtr;
 
     public:
+
+      typedef boost::shared_ptr< StatisticalOutlierRemoval<PointT> > Ptr;
+      typedef boost::shared_ptr< const StatisticalOutlierRemoval<PointT> > ConstPtr;
+
+
       /** \brief Constructor.
         * \param[in] extract_removed_indices Set to true if you want to be able to extract the indices of points being removed (default = false).
         */

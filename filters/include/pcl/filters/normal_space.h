@@ -62,6 +62,10 @@ namespace pcl
     typedef typename pcl::PointCloud<NormalT>::Ptr NormalsPtr;
 
     public:
+      
+      typedef boost::shared_ptr< NormalSpaceSampling<PointT, NormalT> > Ptr;
+      typedef boost::shared_ptr< const NormalSpaceSampling<PointT, NormalT> > ConstPtr;
+
       /** \brief Empty constructor. */
       NormalSpaceSampling ()
         : sample_ (UINT_MAX)

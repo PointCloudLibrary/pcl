@@ -52,6 +52,10 @@ namespace pcl
   {
     public:
 
+      typedef boost::shared_ptr< VoxelGridLabel > Ptr;
+      typedef boost::shared_ptr< const VoxelGridLabel > ConstPtr;
+
+
       /** \brief Constructor.
        * Sets \ref leaf_size_ to 0 and \ref searchable_ to false.
        */

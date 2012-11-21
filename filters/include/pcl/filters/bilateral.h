@@ -60,6 +60,11 @@ namespace pcl
     typedef typename pcl::search::Search<PointT>::Ptr KdTreePtr;
 
     public:
+
+      typedef boost::shared_ptr< BilateralFilter<PointT> > Ptr;
+      typedef boost::shared_ptr< const BilateralFilter<PointT> > ConstPtr;
+ 
+
       /** \brief Constructor. 
         * Sets sigma_s_ to 0 and sigma_r_ to MAXDBL
         */

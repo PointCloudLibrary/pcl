@@ -64,6 +64,10 @@ namespace pcl
     typedef typename pcl::PointCloud<NormalT>::Ptr NormalsPtr;
 
     public:
+
+      typedef boost::shared_ptr< ShadowPoints<PointT, NormalT> > Ptr;
+      typedef boost::shared_ptr< const ShadowPoints<PointT, NormalT> > ConstPtr;
+
       /** \brief Empty constructor. */
       ShadowPoints () : input_normals_ (), threshold_ (0.1f)
       {

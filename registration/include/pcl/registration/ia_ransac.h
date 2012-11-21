@@ -80,6 +80,9 @@ namespace pcl
       typedef typename FeatureCloud::Ptr FeatureCloudPtr;
       typedef typename FeatureCloud::ConstPtr FeatureCloudConstPtr;
 
+      typedef boost::shared_ptr<SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT> > Ptr;
+      typedef boost::shared_ptr<const SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT> > ConstPtr;
+
 
       class ErrorFunctor
       {

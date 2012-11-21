@@ -66,6 +66,10 @@ namespace pcl
     typedef typename Eigen::Matrix<float, Eigen::Dynamic, 1> Vector;
 
     public:
+
+      typedef boost::shared_ptr< SamplingSurfaceNormal<PointT> > Ptr;
+      typedef boost::shared_ptr< const SamplingSurfaceNormal<PointT> > ConstPtr;
+
       /** \brief Empty constructor. */
       SamplingSurfaceNormal () : 
         sample_ (10), seed_ (static_cast<unsigned int> (time (NULL))), ratio_ ()

@@ -100,7 +100,13 @@ namespace pcl
     typedef PointIndices::Ptr PointIndicesPtr;
     typedef PointIndices::ConstPtr PointIndicesConstPtr;
 
+
+
     public:
+
+      typedef boost::shared_ptr< IterativeClosestPoint<PointSource, PointTarget, Scalar> > Ptr;
+      typedef boost::shared_ptr< const IterativeClosestPoint<PointSource, PointTarget, Scalar> > ConstPtr;
+
       using Registration<PointSource, PointTarget, Scalar>::reg_name_;
       using Registration<PointSource, PointTarget, Scalar>::getClassName;
       using Registration<PointSource, PointTarget, Scalar>::input_;

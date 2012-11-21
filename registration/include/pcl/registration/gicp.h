@@ -92,6 +92,10 @@ namespace pcl
       typedef typename pcl::KdTree<PointSource> InputKdTree;
       typedef typename pcl::KdTree<PointSource>::Ptr InputKdTreePtr;
 
+      typedef boost::shared_ptr< GeneralizedIterativeClosestPoint<PointSource, PointTarget> > Ptr;
+      typedef boost::shared_ptr< const GeneralizedIterativeClosestPoint<PointSource, PointTarget> > ConstPtr;
+
+
       typedef Eigen::Matrix<double, 6, 1> Vector6d;
 
       /** \brief Empty constructor. */

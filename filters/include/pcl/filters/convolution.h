@@ -81,6 +81,9 @@ namespace pcl
         typedef typename PointCloudIn::Ptr PointCloudInPtr;
         typedef typename PointCloudIn::ConstPtr PointCloudInConstPtr;
         typedef typename pcl::PointCloud<PointOut> PointCloudOut;
+        typedef boost::shared_ptr< Convolution<PointIn, PointOut> > Ptr;
+        typedef boost::shared_ptr< const Convolution<PointIn, PointOut> > ConstPtr;
+
 
         /// The borders policy available
         enum BORDERS_POLICY

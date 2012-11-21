@@ -78,6 +78,10 @@ namespace pcl
         typedef typename PointCloudTarget::Ptr PointCloudTargetPtr;
         typedef typename PointCloudTarget::ConstPtr PointCloudTargetConstPtr;
 
+        typedef boost::shared_ptr< CorrespondenceEstimationOrganizedProjection<PointSource, PointTarget, Scalar> > Ptr;
+        typedef boost::shared_ptr< const CorrespondenceEstimationOrganizedProjection<PointSource, PointTarget, Scalar> > ConstPtr;
+
+
 
         /** \brief Empty constructor that sets all the intrinsic calibration to the default Kinect values. */
         CorrespondenceEstimationOrganizedProjection ()

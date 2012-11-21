@@ -63,6 +63,10 @@ namespace pcl
     typedef typename Filter<PointT>::PointCloud PointCloud;
 
     public:
+    
+      typedef boost::shared_ptr< FastBilateralFilter<PointT> > Ptr;
+      typedef boost::shared_ptr< const FastBilateralFilter<PointT> > ConstPtr;
+
       FastBilateralFilter ()
         :  sigma_s_ (15.0f)
          , sigma_r_ (0.05f)

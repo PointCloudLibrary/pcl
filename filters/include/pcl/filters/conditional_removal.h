@@ -88,8 +88,8 @@ namespace pcl
   class ComparisonBase
   {
     public:
-      typedef boost::shared_ptr<ComparisonBase<PointT> > Ptr;
-      typedef boost::shared_ptr<const ComparisonBase<PointT> > ConstPtr;
+      typedef boost::shared_ptr< ComparisonBase<PointT> > Ptr;
+      typedef boost::shared_ptr< const ComparisonBase<PointT> > ConstPtr;
 
       /** \brief Constructor. */
       ComparisonBase () : capable_ (false), field_name_ (), offset_ (), op_ () {}
@@ -132,8 +132,9 @@ namespace pcl
     using ComparisonBase<PointT>::capable_;
 
     public:
-      typedef boost::shared_ptr<FieldComparison<PointT> > Ptr;
-      typedef boost::shared_ptr<const FieldComparison<PointT> > ConstPtr;
+      typedef boost::shared_ptr< FieldComparison<PointT> > Ptr;
+      typedef boost::shared_ptr< const FieldComparison<PointT> > ConstPtr;
+
 
       /** \brief Construct a FieldComparison
         * \param field_name the name of the field that contains the data we want to compare
@@ -195,6 +196,9 @@ namespace pcl
     using ComparisonBase<PointT>::op_;
 
     public:
+      typedef boost::shared_ptr< PackedRGBComparison<PointT> > Ptr;
+      typedef boost::shared_ptr< const PackedRGBComparison<PointT> > ConstPtr;
+
       /** \brief Construct a PackedRGBComparison
         * \param component_name either "r", "g" or "b"
         * \param op the operator to use when making the comparison
@@ -239,6 +243,9 @@ namespace pcl
     using ComparisonBase<PointT>::op_;
 
     public:
+      typedef boost::shared_ptr< PackedHSIComparison<PointT> > Ptr;
+      typedef boost::shared_ptr< const PackedHSIComparison<PointT> > ConstPtr;
+ 
       /** \brief Construct a PackedHSIComparison 
         * \param component_name either "h", "s" or "i"
         * \param op the operator to use when making the comparison
