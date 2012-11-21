@@ -142,7 +142,7 @@ pcl::NormalSpaceSampling<PointT, NormalT>::applyFilter (PointCloud &output)
       //picking up a sample at random from jth bin
       do
       {
-        random_index = (*rng_uniform_distribution_) () % M;
+        random_index = static_cast<unsigned int> ((*rng_uniform_distribution_) () % M);
         pos = start_index[j] + random_index;
       } while (is_sampled_flag.test (pos));
 
@@ -314,7 +314,7 @@ pcl::NormalSpaceSampling<PointT, NormalT>::applyFilter (std::vector<int> &indice
       // Picking up a sample at random from jth bin
       do
       {
-        random_index = (*rng_uniform_distribution_) () % M;
+        random_index = static_cast<unsigned int> ((*rng_uniform_distribution_) () % M);
         pos = start_index[j] + random_index;
       } while (is_sampled_flag.test (pos));
 
