@@ -166,7 +166,7 @@ namespace pcl
     namespace kinfuLS
     {
       __global__ void
-      tranformMapsKernel (int rows, int cols, const PtrStep<float> vmap_src, const PtrStep<float> nmap_src,
+      transformMapsKernel (int rows, int cols, const PtrStep<float> vmap_src, const PtrStep<float> nmap_src,
                           const Mat33 Rmat, const float3 tvec, PtrStepSz<float> vmap_dst, PtrStep<float> nmap_dst)
       {
         int x = threadIdx.x + blockIdx.x * blockDim.x;
@@ -215,7 +215,7 @@ namespace pcl
 
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       void
-      tranformMaps (const MapArr& vmap_src, const MapArr& nmap_src,
+      transformMaps (const MapArr& vmap_src, const MapArr& nmap_src,
                                 const Mat33& Rmat, const float3& tvec,
                                 MapArr& vmap_dst, MapArr& nmap_dst)
       {
@@ -230,7 +230,7 @@ namespace pcl
         grid.x = divUp (cols, block.x);
         grid.y = divUp (rows, block.y);
 
-        tranformMapsKernel<<<grid, block>>>(rows, cols, vmap_src, nmap_src, Rmat, tvec, vmap_dst, nmap_dst);
+        transformMapsKernel<<<grid, block>>>(rows, cols, vmap_src, nmap_src, Rmat, tvec, vmap_dst, nmap_dst);
         cudaSafeCall (cudaGetLastError ());
 
         cudaSafeCall (cudaDeviceSynchronize ());

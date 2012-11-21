@@ -51,7 +51,7 @@
 #include <pcl/gpu/kinfu_large_scale/pixel_rgb.h> 
 #include <boost/lexical_cast.hpp>
 #include <boost/filesystem.hpp> 
-#include <boost/graph/buffer_concepts.hpp>
+//#include <boost/graph/buffer_concepts.hpp>
 
 #include <pcl/io/png_io.h>
 

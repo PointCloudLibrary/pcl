@@ -856,7 +856,7 @@ struct KinFuLSApp
           capture_.start(); // Triggers new frame
 
         bool has_data = data_ready_cond_.timed_wait (lock, boost::posix_time::millisec(100));
-
+        
         try { this->execute (depth_, rgb24_, has_data); }
         catch (const std::bad_alloc& /*e*/) { cout << "Bad alloc" << endl; break; }
         catch (const std::exception& /*e*/) { cout << "Exception" << endl; break; }
@@ -978,38 +978,38 @@ struct KinFuLSApp
     if (e.keyUp ())    
       switch (key)
       {
-      case 27: app->exit_ = true; break;
-      case (int)'t': case (int)'T': app->scan_ = true; break;
-      case (int)'a': case (int)'A': app->scan_mesh_ = true; break;
-      case (int)'h': case (int)'H': app->printHelp (); break;
-      case (int)'m': case (int)'M': app->scene_cloud_view_.toggleExctractionMode (); break;
-      case (int)'n': case (int)'N': app->scene_cloud_view_.toggleNormals (); break;      
-      case (int)'c': case (int)'C': app->scene_cloud_view_.clearClouds (true); break;
-      case (int)'i': case (int)'I': app->toggleIndependentCamera (); break;
-      case (int)'b': case (int)'B': app->scene_cloud_view_.toggleCube(app->kinfu_->volume().getSize()); break;
-      case (int)'l': case (int)'L': app->kinfu_->performLastScan (); break;
-      case (int)'s': case (int)'S': app->kinfu_->extractAndMeshWorld (); break;
-      case (int)'7': case (int)'8': app->writeMesh (key - (int)'0'); break;  
-      case (int)'1': case (int)'2': case (int)'3': app->writeCloud (key - (int)'0'); break;      
-      case '*': app->image_view_.toggleImagePaint (); break;
+        case 27: app->exit_ = true; break;
+        case (int)'t': case (int)'T': app->scan_ = true; break;
+        case (int)'a': case (int)'A': app->scan_mesh_ = true; break;
+        case (int)'h': case (int)'H': app->printHelp (); break;
+        case (int)'m': case (int)'M': app->scene_cloud_view_.toggleExctractionMode (); break;
+        case (int)'n': case (int)'N': app->scene_cloud_view_.toggleNormals (); break;      
+        case (int)'c': case (int)'C': app->scene_cloud_view_.clearClouds (true); break;
+        case (int)'i': case (int)'I': app->toggleIndependentCamera (); break;
+        case (int)'b': case (int)'B': app->scene_cloud_view_.toggleCube(app->kinfu_->volume().getSize()); break;
+        case (int)'l': case (int)'L': app->kinfu_->performLastScan (); break;
+        case (int)'s': case (int)'S': app->kinfu_->extractAndSaveWorld (); break;
+        case (int)'7': case (int)'8': app->writeMesh (key - (int)'0'); break;  
+        case (int)'1': case (int)'2': case (int)'3': app->writeCloud (key - (int)'0'); break;      
+        case '*': app->image_view_.toggleImagePaint (); break;
 
-      case (int)'x': case (int)'X':
-        app->scan_volume_ = !app->scan_volume_;
-        cout << endl << "Volume scan: " << (app->scan_volume_ ? "enabled" : "disabled") << endl << endl;
-        break;
-      case (int)'v': case (int)'V':
-        cout << "Saving TSDF volume to tsdf_volume.dat ... " << flush;
-        // app->tsdf_volume_.save ("tsdf_volume.dat", true);
-        app->kinfu_->volume ().save ("tsdf_volume.dat", true);
-        // cout << "done [" << app->tsdf_volume_.size () << " voxels]" << endl;
-        cout << "done [" << app->kinfu_->volume ().size () << " voxels]" << endl;
-        cout << "Saving TSDF volume cloud to tsdf_cloud.pcd ... " << flush;
-        pcl::io::savePCDFile<pcl::PointXYZI> ("tsdf_cloud.pcd", *app->tsdf_cloud_ptr_, true);
-        cout << "done [" << app->tsdf_cloud_ptr_->size () << " points]" << endl;
-        break;
+        case (int)'x': case (int)'X':
+          app->scan_volume_ = !app->scan_volume_;
+          cout << endl << "Volume scan: " << (app->scan_volume_ ? "enabled" : "disabled") << endl << endl;
+          break;
+        case (int)'v': case (int)'V':
+          cout << "Saving TSDF volume to tsdf_volume.dat ... " << flush;
+          // app->tsdf_volume_.save ("tsdf_volume.dat", true);
+          app->kinfu_->volume ().save ("tsdf_volume.dat", true);
+          // cout << "done [" << app->tsdf_volume_.size () << " voxels]" << endl;
+          cout << "done [" << app->kinfu_->volume ().size () << " voxels]" << endl;
+          cout << "Saving TSDF volume cloud to tsdf_cloud.pcd ... " << flush;
+          pcl::io::savePCDFile<pcl::PointXYZI> ("tsdf_cloud.pcd", *app->tsdf_cloud_ptr_, true);
+          cout << "done [" << app->tsdf_cloud_ptr_->size () << " points]" << endl;
+          break;
 
-      default:
-        break;
+        default:
+          break;
       }    
   }
 
@@ -1112,21 +1112,21 @@ main (int argc, char* argv[])
     }
     else if (pc::parse_argument (argc, argv, "-oni", oni_file) > 0)
     {
-		triggered_capture = true;
-		bool repeat = false; // Only run ONI file once
-		capture.reset (new pcl::ONIGrabber (oni_file, repeat, !triggered_capture));
+      triggered_capture = true;
+      bool repeat = false; // Only run ONI file once
+      capture.reset (new pcl::ONIGrabber (oni_file, repeat, !triggered_capture));
     }
     else if (pc::parse_argument (argc, argv, "-pcd", pcd_dir) > 0)
     {
-       float fps_pcd = 15.0f;
-     pc::parse_argument (argc, argv, "-pcd_fps", fps_pcd);
+      float fps_pcd = 15.0f;
+      pc::parse_argument (argc, argv, "-pcd_fps", fps_pcd);
 
-		vector<string> pcd_files = getPcdFilesInDir(pcd_dir);    
-		// Sort the read files by name
-		sort (pcd_files.begin (), pcd_files.end ());
-		capture.reset (new pcl::PCDGrabber<pcl::PointXYZRGBA> (pcd_files, fps_pcd, false));
-		triggered_capture = true;
-		pcd_input = true;
+      vector<string> pcd_files = getPcdFilesInDir(pcd_dir);    
+      // Sort the read files by name
+      sort (pcd_files.begin (), pcd_files.end ());
+      capture.reset (new pcl::PCDGrabber<pcl::PointXYZRGBA> (pcd_files, fps_pcd, false));
+      triggered_capture = true;
+      pcd_input = true;
     }
     else if (pc::parse_argument (argc, argv, "-eval", eval_folder) > 0)
     {
@@ -1170,12 +1170,12 @@ main (int argc, char* argv[])
     app.image_view_.accumulate_views_ = true;  //will cause bad alloc after some time  
   
   if (pc::find_switch (argc, argv, "--registration") || pc::find_switch (argc, argv, "-r"))  {
-	if (pcd_input) {
-		app.pcd_source_   = true;
-		app.registration_ = true; // since pcd provides registered rgbd
-	} else {
-		app.initRegistration();
-	}
+    if (pcd_input) {
+      app.pcd_source_   = true;
+      app.registration_ = true; // since pcd provides registered rgbd
+    } else {
+      app.initRegistration();
+    }
   }
       
   if (pc::find_switch (argc, argv, "--integrate-colors") || pc::find_switch (argc, argv, "-ic"))      

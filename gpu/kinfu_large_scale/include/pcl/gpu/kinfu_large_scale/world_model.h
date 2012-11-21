@@ -48,8 +48,9 @@
 #include <pcl/filters/conditional_removal.h>
 #include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
-#include <pcl/gpu/kinfu_large_scale/tsdf_buffer.h>
-#include <boost/graph/buffer_concepts.hpp>
+//#include <pcl/gpu/kinfu_large_scale/tsdf_buffer.h>
+//#include <boost/graph/buffer_concepts.hpp>
+
 
 namespace pcl
 {
@@ -91,8 +92,11 @@ namespace pcl
           */
         void reset()
         {
-          PCL_WARN("Clearing world model");
-          world_->points.clear ();
+          if(world_->points.size () != 0)
+          {
+            PCL_WARN("Clearing world model\n");
+            world_->points.clear ();
+          }
         }
 
         /** \brief Append a new point cloud (slice) to the world.

@@ -44,7 +44,7 @@
 // #include <pcl/gpu/utils/safe_call.hpp> 
 #include "safe_call.hpp"
 
-#include <pcl/console/print.h> // used by operator << in Struct Intr
+#include <iostream> // used by operator << in Struct Intr
 
 #include <pcl/gpu/kinfu_large_scale/tsdf_buffer.h>
 
@@ -168,14 +168,14 @@ namespace pcl
         * \param[out] nmap_dst destination vertex map
         */
       void 
-      tranformMaps (const MapArr& vmap_src, const MapArr& nmap_src, const Mat33& Rmat, const float3& tvec, MapArr& vmap_dst, MapArr& nmap_dst);
+      transformMaps (const MapArr& vmap_src, const MapArr& nmap_src, const Mat33& Rmat, const float3& tvec, MapArr& vmap_dst, MapArr& nmap_dst);
 
-          /** \brief Performs depth truncation
+      /** \brief Performs depth truncation
         * \param[out] depth depth map to truncation
         * \param[in] max_distance truncation threshold, values that are higher than the threshold are reset to zero (means not measurement)
         */
-          void 
-          truncateDepth(DepthMap& depth, float max_distance);
+      void 
+      truncateDepth(DepthMap& depth, float max_distance);
 
       ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       //   ICP 

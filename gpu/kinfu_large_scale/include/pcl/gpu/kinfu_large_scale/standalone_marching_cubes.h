@@ -61,7 +61,7 @@
 //Eigen Geometry and Transforms
 #include <pcl/common/transforms.h>
 #include <Eigen/Geometry>
-#include <boost/graph/buffer_concepts.hpp>
+//#include <boost/graph/buffer_concepts.hpp>
 
 namespace pcl
 {

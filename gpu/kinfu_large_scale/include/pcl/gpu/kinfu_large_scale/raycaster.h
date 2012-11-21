@@ -45,7 +45,7 @@
 #include <pcl/gpu/containers/device_array.h>
 #include <pcl/gpu/kinfu_large_scale/pixel_rgb.h>
 #include <boost/shared_ptr.hpp>
-#include <boost/graph/buffer_concepts.hpp>
+//#include <boost/graph/buffer_concepts.hpp>
 #include <Eigen/Geometry>
 
 #include <pcl/gpu/kinfu_large_scale/tsdf_buffer.h>

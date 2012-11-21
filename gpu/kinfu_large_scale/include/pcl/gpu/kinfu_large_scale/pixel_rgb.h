@@ -37,7 +37,7 @@
 
 #ifndef PCL_KINFU_PIXEL_RGB_HPP_
 #define PCL_KINFU_PIXEL_RGB_HPP_
-#include <boost/graph/buffer_concepts.hpp>
+//#include <boost/graph/buffer_concepts.hpp>
 
 namespace pcl
 {
