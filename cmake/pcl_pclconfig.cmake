@@ -39,6 +39,18 @@ foreach(_ss ${PCL_SUBSYSTEMS_MODULES})
     endif(_status)
 endforeach(_ss)
 
+#Boost modules
+set(PCLCONFIG_AVAILABLE_BOOST_MODULES "system filesystem thread date_time iostreams")
+if(Boost_MPI_FOUND)
+  set(PCLCONFIG_AVAILABLE_BOOST_MODULES "${PCLCONFIG_AVAILABLE_BOOST_MODULES} mpi")
+endif(Boost_MPI_FOUND)
+if(Boost_SERIALIZATION_FOUND)
+  set(PCLCONFIG_AVAILABLE_BOOST_MODULES "${PCLCONFIG_AVAILABLE_BOOST_MODULES} serialization")
+endif(Boost_SERIALIZATION_FOUND)
+if(Boost_CHRONO_FOUND)
+  set(PCLCONFIG_AVAILABLE_BOOST_MODULES "${PCLCONFIG_AVAILABLE_BOOST_MODULES} chrono")
+endif(Boost_CHRONO_FOUND)
+
 configure_file("${PCL_SOURCE_DIR}/PCLConfig.cmake.in"
                "${PCL_BINARY_DIR}/PCLConfig.cmake" @ONLY)
 configure_file("${PCL_SOURCE_DIR}/PCLConfigVersion.cmake.in"
