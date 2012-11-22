@@ -63,7 +63,11 @@ void processAndSave( vtkSmartPointer<vtkImageData>  depth_data,
                      vtkSmartPointer<vtkImageData>  rgb_data,
                      std::string                    time,
                      float                          focal_length,
-                     bool                           format)
+                     bool                           format,
+                     bool                           color,
+                     bool                           depth,
+                     bool                           use_output_path,
+                     std::string                    output_path)
 {
   // Retrieve the entries from the image data and copy them into the output RGB cloud
   int rgb_components = rgb_data->GetNumberOfScalarComponents();
@@ -146,17 +150,31 @@ void processAndSave( vtkSmartPointer<vtkImageData>  depth_data,
   } // for v
 
   std::stringstream ss;
-  ss << "frame_" << time << "_depth.pcd";
-  pcl::io::savePCDFile (ss.str(), pc_depth, format);
 
-  ss.str(""); //empty
+  if(depth)
+  {
+    if(use_output_path)
+      ss << output_path << "/frame_" << time << "_depth.pcd";
+    else
+      ss << "frame_" << time << "_depth.pcd";
+    pcl::io::savePCDFile (ss.str(), pc_depth, format);
+    ss.str(""); //empty
+  }
 
-  ss << "frame_" << time << "_color.pcd";
-  pcl::io::savePCDFile (ss.str(), pc_image, format);
+  if(color)
+  {
+    if(use_output_path)
+      ss << output_path << "/frame_" << time << "_color.pcd";
+    else
+      ss << "frame_" << time << "_color.pcd";
+    pcl::io::savePCDFile (ss.str(), pc_image, format);
+    ss.str(""); //empty
+  }
 
-  ss.str(""); //empty
-
-  ss << "frame_" << time << "_xyzrgba.pcd";
+  if(use_output_path)
+    ss << output_path << "/frame_" << time << "_xyzrgba.pcd";
+  else
+    ss << "frame_" << time << "_xyzrgba.pcd";
   pcl::io::savePCDFile (ss.str(), pc_xyzrgba, format);
 
   std::cout << "Saved " << time << " to pcd" << std::endl;
@@ -165,10 +183,12 @@ void processAndSave( vtkSmartPointer<vtkImageData>  depth_data,
 
 void print_usage(void)
 {
-  PCL_INFO("usage: convert -rgb <rgb_path> -depth <depth_path> options\n");
+  PCL_INFO("usage: convert -rgb <rgb_path> -depth <depth_path> -out <output_path> options\n");
   PCL_INFO("This program converts rgb and depth tiff files to pcd files");
   PCL_INFO("Options:\n");
   PCL_INFO("\t -v \t Set verbose output\n");
+  PCL_INFO("\t -c \t Create color pcd output\n");
+  PCL_INFO("\t -d \t Create depth output\n");
   PCL_INFO("\t -b \t Set to save pcd binary, otherwise ascii\n");
   PCL_INFO("\t -f \t Focal length, default 525\n");
   PCL_INFO("\t -h \t This help\n");
@@ -189,7 +209,13 @@ int main(int argc, char ** argv)
   bool format = 0;
   pcl::console::parse_argument (argc, argv, "-b", format);
 
-  std::string rgb_path_, depth_path_;
+  bool color = 0;
+  pcl::console::parse_argument (argc, argv, "-c", format);
+
+  bool depth = 0;
+  pcl::console::parse_argument (argc, argv, "-d", format);
+
+  std::string rgb_path_, depth_path_, output_path_;
 
   if(pcl::console::parse_argument (argc, argv, "-rgb", rgb_path_) == 0)
   {
@@ -202,6 +228,17 @@ int main(int argc, char ** argv)
     PCL_ERROR("No Depth Path given\n");
     print_usage();
     exit(-1);
+  }
+  bool use_output_path = false;
+  if(pcl::console::parse_argument (argc, argv, "-out", output_path_) == 0)
+  {
+    PCL_ERROR("No Output Path given\n");
+    print_usage();
+    exit(-1);
+  }
+  else
+  {
+    use_output_path = true;
   }
 
   float focal_length = 525.0;
@@ -346,7 +383,7 @@ int main(int argc, char ** argv)
             depth_data = depth_reader->GetOutput ();
             depth_data->Update ();
 
-            processAndSave(depth_data, rgb_data, depth_time, focal_length, format);
+            processAndSave(depth_data, rgb_data, depth_time, focal_length, format, color, depth, use_output_path, output_path_);
           }
 
           // TODO: remove this depth entry from vector before break > speed up search time
