@@ -263,6 +263,10 @@ namespace pcl
         CloudProcessedPtr           cloud_data_draw_;
         MeshPtr                     mesh_model_draw_;
         MeshPtr                     mesh_model_;
+
+      public:
+
+        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     };
 
   } // End namespace ihs
