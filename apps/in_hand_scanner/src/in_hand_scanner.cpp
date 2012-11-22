@@ -366,10 +366,23 @@ pcl::ihs::InHandScanner::drawMesh ()
     triangles.push_back (triangle);
   }
 
-  if (!visualizer_->updatePolygonMesh <PointModel> (vertexes, triangles, "mesh_model"))
+  sensor_msgs::PointCloud2 pc2;
+  pcl::toROSMsg (*vertexes, pc2);
+
+  pcl::PolygonMesh pm;
+  pm.cloud = pc2;
+  pm.polygons = triangles;
+
+  if (!visualizer_->updatePolygonMesh (pm, "mesh_model"))
   {
-    visualizer_->addPolygonMesh <PointModel> (vertexes, triangles, "mesh_model");
+    visualizer_->addPolygonMesh (pm, "mesh_model");
   }
+
+  // Doesn't add the color
+  //  if (!visualizer_->updatePolygonMesh <PointModel> (vertexes, triangles, "mesh_model"))
+  //  {
+  //    visualizer_->addPolygonMesh <PointModel> (vertexes, triangles, "mesh_model");
+  //  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
