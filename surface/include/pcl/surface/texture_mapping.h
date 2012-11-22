@@ -336,6 +336,19 @@ namespace pcl
         */
       inline void
       getTriangleCircumcenterAndSize (const pcl::PointXY &p1, const pcl::PointXY &p2, const pcl::PointXY &p3, pcl::PointXY &circomcenter, double &radius);
+ 
+      
+      /** \brief Returns the centroid of a triangle and the corresponding circumscribed circle's radius.
+        * \details yield a tighter circle than getTriangleCircumcenterAndSize.
+        * \param[in] p1 first point of the triangle.
+        * \param[in] p2 second point of the triangle.
+        * \param[in] p3 third point of the triangle.
+        * \param[out] circumcenter resulting circumcenter
+        * \param[out] radius the radius of the circumscribed circle.
+        */
+      inline void 
+      getTriangleCircumcscribedCircleCentroid ( const pcl::PointXY &p1, const pcl::PointXY &p2, const pcl::PointXY &p3, pcl::PointXY &circumcenter, double &radius);
+ 
 
       /** \brief computes UV coordinates of point, observed by one particular camera
         * \param[in] pt XYZ point to project on camera plane

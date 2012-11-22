@@ -872,7 +872,8 @@ pcl::TextureMapping<PointInT>::textureMeshwithMultipleCameras (pcl::TextureMesh 
               //get its circumsribed circle
               double radius;
               pcl::PointXY center;
-              getTriangleCircumcenterAndSize (uv_coord1, uv_coord2, uv_coord3, center, radius);
+              // getTriangleCircumcenterAndSize (uv_coord1, uv_coord2, uv_coord3, center, radius);
+              getTriangleCircumcscribedCircleCentroid(uv_coord1, uv_coord2, uv_coord3, center, radius); // this function yields faster results than getTriangleCircumcenterAndSize
 
               // get points inside circ.circle
               if (kdtree.radiusSearch (center, radius, idxNeighbors, neighborsSquaredDistance) > 0 )
@@ -1014,6 +1015,22 @@ pcl::TextureMapping<PointInT>::getTriangleCircumcenterAndSize(const pcl::PointXY
 
   radius = sqrt( (circomcenter.x - p1.x)*(circomcenter.x - p1.x)  + (circomcenter.y - p1.y)*(circomcenter.y - p1.y));//2.0* (p1.x*(p2.y - p3.y)  + p2.x*(p3.y - p1.y) + p3.x*(p1.y - p2.y));
 }
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+template<typename PointInT> inline void
+pcl::TextureMapping<PointInT>::getTriangleCircumcscribedCircleCentroid ( const pcl::PointXY &p1, const pcl::PointXY &p2, const pcl::PointXY &p3, pcl::PointXY &circumcenter, double &radius)
+{
+  // compute centroid's coordinates (translate back to original coordinates)
+  circumcenter.x = static_cast<float> (p1.x + p2.x + p3.x ) / 3;
+  circumcenter.y = static_cast<float> (p1.y + p2.y + p3.y ) / 3;
+  double r1 = (circumcenter.x - p1.x) * (circumcenter.x - p1.x) + (circumcenter.y - p1.y) * (circumcenter.y - p1.y)  ;
+  double r2 = (circumcenter.x - p2.x) * (circumcenter.x - p2.x) + (circumcenter.y - p2.y) * (circumcenter.y - p2.y)  ;
+  double r3 = (circumcenter.x - p3.x) * (circumcenter.x - p3.x) + (circumcenter.y - p3.y) * (circumcenter.y - p3.y)  ;
+
+  // radius
+  radius = std::sqrt( std::max( r1, std::max( r2, r3) )) ;
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointInT> inline bool
