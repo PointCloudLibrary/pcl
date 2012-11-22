@@ -73,6 +73,7 @@ if(build)
         set(VTK_IO_INCLUDES 
             include/pcl/${SUBSYS_NAME}/vtk_lib_io.h
             include/pcl/${SUBSYS_NAME}/png_io.h 
+            include/pcl/${SUBSYS_NAME}/image_grabber.h 
            )
         set(VTK_IO_INCLUDES_IMPL
             include/pcl/${SUBSYS_NAME}/impl/vtk_lib_io.hpp
@@ -80,6 +81,7 @@ if(build)
         set(VTK_IO_SOURCE 
             src/vtk_lib_io.cpp
             src/png_io.cpp
+            src/image_grabber.cpp
            )
         set(VTK_IO_TARGET_LINK_LIBRARIES vtkCommon vtkWidgets vtkIO vtkImaging)
     endif ()
@@ -96,11 +98,10 @@ if(build)
 
     set(srcs 
         src/pcd_grabber.cpp
-        src/image_grabber.cpp
         src/pcd_io.cpp
         src/vtk_io.cpp
         src/ply_io.cpp
-	src/ascii_io.cpp
+        src/ascii_io.cpp
         src/compression.cpp
         src/lzf.cpp
         src/obj_io.cpp
