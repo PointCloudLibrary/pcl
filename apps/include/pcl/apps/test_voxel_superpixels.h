@@ -2,7 +2,7 @@
  * Software License Agreement (BSD License)
  * 
  * Point Cloud Library (PCL) - www.pointclouds.org
- * Copyright (c) 2012-, Jeremie Papon
+ * Copyright (c) 2012-, jpapon@gmail.com
  * 
  * All rights reserved.
  * 

@@ -33,7 +33,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * Author : Jeremie Papon
+ * Author : jpapon@gmail.com
  * Email  : jpapon@gmail.com
  *
  */
@@ -48,9 +48,6 @@
 #include <pcl/point_types.h>
 #include <pcl/features/normal_3d_omp.h>
 #include <pcl/filters/voxel_grid.h>
-#include <list>
-#include <math.h>
-#include <time.h>
 
 namespace pcl
 {
@@ -73,7 +70,7 @@ namespace pcl
     public:
 
       /** \brief Constructor that sets default values for member variables. */
-      VoxelSuperpixels ();
+      VoxelSuperpixels (float voxel_resolution, float seed_resolution);
 
       /** \brief This destructor destroys the cloud, normals and search method used for
         * finding neighbors. In other words it frees memory.
@@ -81,37 +78,46 @@ namespace pcl
       virtual
       ~VoxelSuperpixels ();
 
-      /** \brief Get the minimum number of points that a Superpixel needs to contain in order to be considered valid. */
-      int
-      getMinSuperpixelSize () const;
-
-      /** \brief Set the minimum number of points that a Superpixel needs to contain in order to be considered valid. */
-      void
-      setMinSuperpixelSize (int min_superpixel_size);
-
-      /** \brief Get the maximum number of points that a Superpixel needs to contain in order to be considered valid. */
-      int
-      getMaxSuperpixelSize () const;
-
-      /** \brief Set the maximum number of points that a Superpixel needs to contain in order to be considered valid. */
-      void
-      setMaxSuperpixelSize (int max_superpixel_size);
-
       /** \brief Set the resolution of the octree voxels */
       void
-      setVoxelResolution (double resolution);
+      setVoxelResolution (float resolution);
       
       /** \brief Get the resolution of the octree voxels */
-      double 
+      float 
       getVoxelResolution () const;
+      
+      /** \brief Set the radius used for normals */
+      void
+      setNormalRadius (float radius);
+      
+      /** \brief Get the radius used for normals */
+      float 
+      getNormalRadius () const;
+      
+            /** \brief Set the radius used for FPFH features */
+      void
+      setFPFHRadius (float radius);
+      
+      /** \brief Get the radius used for FPFH features */
+      float 
+      getFPFHRadius () const;
       
       /** \brief Set the resolution of the octree seed voxels */
       void
-      setSeedResolution (double seed_resolution);
+      setSeedResolution (float seed_resolution);
       
       /** \brief Get the resolution of the octree seed voxels */
-      double 
+      float 
       getSeedResolution () const;
+      
+      
+      /** \brief Get the size of the voxel cloud */
+      int 
+      getVoxelCloudSize () const;
+      
+      /** \brief Returns the voxel cloud */
+      typename pcl::PointCloud<PointT>::Ptr
+      getVoxelCloud ();
       
       /** \brief Set the importance of color for superpixels */
       void
@@ -125,24 +131,19 @@ namespace pcl
       void
       setFPFHImportance (float val);
       
-      /** \brief Gets the vector containing the seed point indices */
-      void
-      getSeedIndices (std::vector<int>& seed_indices);
-      
-      /** \brief Returns normals. */
+      /** \brief Returns normals calculated in the Voxel Cloud. */
       pcl::PointCloud<pcl::Normal>::ConstPtr
       getNormals () const;
 
-      
       /** \brief This method launches the segmentation algorithm and returns the superpixels that were
-        * obtained during the segmentation.
-        * \param[out] superpixels superpixels that were obtained. Each superpixel is an array of point indices.
-        */
+       * obtained during the segmentation.
+       * \param[out] superpixels superpixels that were obtained. Each superpixel is an array of point indices.
+       */
       virtual void
       extract (std::vector <pcl::PointIndices>& superpixels);
 
-      /** \brief If the cloud was successfully segmented, then function
-        * returns colored cloud. Otherwise it returns an empty pointer.
+      /** \brief Returns an RGB colorized cloud showing superpixels
+        * Otherwise it returns an empty pointer.
         * Points that belong to the same segment have the same color.
         * But this function doesn't guarantee that different segments will have different
         * color(it all depends on RNG). Points that were not listed in the indices array will have red color.
@@ -150,30 +151,43 @@ namespace pcl
       typename pcl::PointCloud<PointXYZRGB>::Ptr
       getColoredCloud ();
       
-      /** \brief If the cloud was successfully segmented, then function
-        * returns labeled cloud. Otherwise it returns an empty pointer.
+      /** \brief Returns labeled cloud
         * Points that belong to the same segment have the same label.
+        * Labels for segments start from 1, unlabled points have label 0
         */
       typename pcl::PointCloud<PointXYZL>::Ptr
       getLabeledCloud ();
       
-      /** \brief This function cleans the superpixels
-       * Eliminates small pixels, cleans up edges
+      /** \brief Returns an RGB colorized voxelized cloud showing superpixels
+       * Otherwise it returns an empty pointer.
+       * Points that belong to the same segment have the same color.
+       * But this function doesn't guarantee that different segments will have different
+       * color(it all depends on RNG). Points that were not listed in the indices array will have red color.
        */
-      void
-      cleanSuperpixels ();
+      pcl::PointCloud<pcl::PointXYZRGB>::Ptr
+      getColoredVoxelCloud ();
       
+      /** \brief Returns labeled voxelized cloud
+       * Points that belong to the same segment have the same label.
+       * Labels for segments start from 1, unlabled points have label 0
+       */      
+      pcl::PointCloud<pcl::PointXYZL>::Ptr
+      getLabeledVoxelCloud ();
+      
+
       /** \brief Function for testing - returns an RGB labeled cloud showing seeds and search*/
       typename pcl::PointCloud<PointXYZRGB>::Ptr
       getSeedCloud ();
 
-      //TODO: MOVE BACK TO PROTECTED, ONLY HERE FOR TESTING
-      /** \brief This performs one iteration of evolving the superpixels */
+      /** \brief Get a vector of the sets of neighbors for each superpixel */
       void
-      iterateSuperpixelClusters ();
+      getSuperpixelNeighbors (std::vector <std::set<int> > &superpixel_neighbors);
+      
+      /** \brief Get a vector of points specifying the spatial "center" of each superpixel */
+      void 
+      getSuperpixelCenters (std::vector <pcl::PointXYZ> &centers);
       
     protected:
-
       /** \brief This method simply checks if it is possible to execute the segmentation algorithm with
         * the current settings. If it is possible then it returns true.
         */
@@ -190,7 +204,7 @@ namespace pcl
       
       /** \brief Recursive function used to find all neighbors for a seed */
       void 
-      recursiveFind (int index, std::vector<int> &possible_constituents,std::vector<std::pair<int,float> > &constituents);
+      recursiveFind (int index, std::vector<int> &possible_constituents,std::vector<int> &constituents);
       
       /** \brief This method places seed voxels for superpixels based on regular grid */
       void
@@ -236,6 +250,10 @@ namespace pcl
       void
       initSuperpixelClusters (float search_radius);
       
+      /** \brief This performs one iteration of evolving the superpixels */
+      void
+      iterateSuperpixelClusters ();
+      
       /** \brief Updates the values of the superpixel features */
       void 
       updateSuperpixelClusters ();
@@ -247,23 +265,25 @@ namespace pcl
       /** \brief This computes the normals on the voxelized cloud */
       void 
       computeNormals ();
-      
-      /** \brief Computes the labeled voxel cloud */
-      void
-      computeLabeledVoxelCloud ();
- 
-  private:
-      /** \brief Stores the minimum number of points that a superpixel needs to contain in order to be considered valid. */
-      int min_pts_per_superpixel_;
 
-      /** \brief Stores the maximum number of points that a superpixel needs to contain in order to be considered valid. */
-      int max_pts_per_superpixel_;
+      /** \brief This function eliminates unnecessary labels, ie seeds that have no points
+       */
+      void
+      cleanSuperpixels ();
+      
+  private:
 
       /** \brief Stores the resolution used in the octree */
-      double resolution_;
+      float resolution_;
       
       /** \brief Stores the resolution used to seed the superpixels */
-      double seed_resolution_;
+      float seed_resolution_;
+      
+      /** \brief Stores the radius used for calculating normals, default resolution_*2.0 */
+      float normal_radius_;
+      
+      /** \brief Stores the radius used for calculating fpfh features, default resolution_*2.0 */
+      float fpfh_radius_;
       
       /** \brief Octree Search structure */
       OctreeSearchPtr search_;
@@ -277,9 +297,6 @@ namespace pcl
       
       /** \brief Contains normals of the points that will be segmented. */
       pcl::PointCloud<pcl::Normal>::Ptr normals_;
-      
-      /** \brief Cloud which contains the output labeled pointcloud */
-      pcl::PointCloud<pcl::PointXYZL>::Ptr labeled_voxel_cloud_;
       
       /** \brief Contains the Voxelized Cloud */
       typename pcl::PointCloud<PointT>::Ptr voxel_cloud_;
@@ -297,11 +314,8 @@ namespace pcl
       std::vector<int> seed_indices_orig_;
       
       /** \brief Indices of the superpixel seed points after adjustment */
-      std::vector<int> seed_indices_shifted_;
+      std::vector<int> seed_indices_unshifted_;
       
-      /** \brief Contains neighbors of each point. */
-      std::vector<std::vector<int> > point_neighbors_;
-     
       /** \brief Contains vector of each point's neighbors in pair (idx, dist) form */
       std::vector<std::vector<std::pair<int, float> > > point_neighbor_dist_;
       
@@ -318,7 +332,7 @@ namespace pcl
       boost::multi_array<float, 2> voxel_LAB_;
       
       /** \brief Stores the constituents for seeds and their distance from seed center*/
-      std::vector <std::vector <std::pair<int, float> > > seed_constituents_;
+      std::vector <std::vector < int > > seed_constituents_;
       
       /** \brief Stores the current vote and certainty for voxels */
       std::vector <std::pair<int, float> > voxel_votes_;
@@ -331,11 +345,11 @@ namespace pcl
       
       /** \brief Stores the colors used for the superpixel labels*/
       std::vector<uint32_t> superpixel_colors_;
+  
 
-      float max_sd_, min_sd_;
-      float max_cd_, min_cd_;
-      float max_fd_, min_fd_;
-    public:
+      
+
+      public:
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 

@@ -78,16 +78,13 @@ pcl::cloud_composer::VoxelSuperpixelsTool::performTemplatedAction (QList <const 
     qDebug () << "Octree resolution = "<<resolution;
     float seed_resolution = parameter_model_->getProperty("Seed Resolution").toFloat ();
     qDebug () << "Seed resolution = "<<seed_resolution;
-    pcl::VoxelSuperpixels<PointT> super;
+    pcl::VoxelSuperpixels<PointT> super (resolution, seed_resolution);
     super.setInputCloud (input_cloud);
-    super.setVoxelResolution (resolution);
-    super.setSeedResolution (seed_resolution);
+
     
     std::vector <pcl::PointIndices> superpixels;
     super.extract (superpixels);
     
-    std::vector <int> seeds;
-    super.getSeedIndices (seeds);
     
     typename pcl::PointCloud<PointXYZRGB>::Ptr color_segments;
     color_segments = super.getColoredCloud ();

@@ -32,7 +32,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * Author : Jeremie Papon
+ * Author : jpapon@gmail.com
  * Email  : jpapon@gmail.com
  *
  */
@@ -42,31 +42,26 @@
 
 #include <pcl/segmentation/voxel_superpixels.h>
 #include <pcl/features/fpfh_omp.h>
-#include <queue>
-#include <list>
-#include <cmath>
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-pcl::VoxelSuperpixels<PointT>::VoxelSuperpixels () :
-  min_pts_per_superpixel_ (1),
-  max_pts_per_superpixel_ (std::numeric_limits<int>::max ()),
-  resolution_ (0.01),
-  seed_resolution_ (0.1),
+pcl::VoxelSuperpixels<PointT>::VoxelSuperpixels (float voxel_resolution, float seed_resolution) :
+  resolution_ (voxel_resolution),
+  seed_resolution_ (seed_resolution),
+  normal_radius_(resolution_*2.0f),
+  fpfh_radius_(resolution_*2.0f),
   search_ (),
-  color_importance_(1.0),
-  spatial_importance_(1.0),
-  fpfh_importance_(1.0),
+  color_importance_(10.0f),
+  spatial_importance_(10.0f),
+  fpfh_importance_(2.0f),
   normals_ (),
-  labeled_voxel_cloud_ (),
   voxel_cloud_ (),
   voxel_kdtree_ (),
   voxel_fpfh_(),
   seed_indices_ (0),
   seed_indices_orig_ (0),
-  seed_indices_shifted_ (0),
-  point_neighbors_ (0),
+  seed_indices_unshifted_ (0),
   point_neighbor_dist_ (0),
   point_labels_ (0),
   num_pts_in_superpixel_ (0),
@@ -77,9 +72,9 @@ pcl::VoxelSuperpixels<PointT>::VoxelSuperpixels () :
   superpixel_features_(boost::extents[0][0]),
   number_of_superpixels_ (0),
   superpixel_colors_ (0)
+
 {
-  max_cd_=max_sd_=max_fd_= 0.0f;
-  min_cd_=min_sd_=min_fd_= 0;
+
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -91,7 +86,6 @@ pcl::VoxelSuperpixels<PointT>::~VoxelSuperpixels ()
   if (normals_ != 0)
     normals_.reset ();
 
-  point_neighbors_.clear ();
   point_neighbor_dist_.clear ();
   point_labels_.clear ();
   num_pts_in_superpixel_.clear ();
@@ -99,35 +93,35 @@ pcl::VoxelSuperpixels<PointT>::~VoxelSuperpixels ()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> int
-pcl::VoxelSuperpixels<PointT>::getMinSuperpixelSize () const
+template <typename PointT> float
+pcl::VoxelSuperpixels<PointT>::getNormalRadius () const
 {
-  return (min_pts_per_superpixel_);
+  return (normal_radius_);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
-pcl::VoxelSuperpixels<PointT>::setMinSuperpixelSize (int min_superpixel_size)
+pcl::VoxelSuperpixels<PointT>::setNormalRadius (float radius)
 {
-  min_pts_per_superpixel_ = min_superpixel_size;
+  normal_radius_ = radius;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> int
-pcl::VoxelSuperpixels<PointT>::getMaxSuperpixelSize () const
+template <typename PointT> float
+pcl::VoxelSuperpixels<PointT>::getFPFHRadius () const
 {
-  return (max_pts_per_superpixel_);
+  return (fpfh_radius_);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
-pcl::VoxelSuperpixels<PointT>::setMaxSuperpixelSize (int max_superpixel_size)
+pcl::VoxelSuperpixels<PointT>::setFPFHRadius (float radius)
 {
-  max_pts_per_superpixel_ = max_superpixel_size;
+  fpfh_radius_ = radius;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> double
+template <typename PointT> float
 pcl::VoxelSuperpixels<PointT>::getVoxelResolution () const
 {
   return (resolution_);
@@ -135,7 +129,7 @@ pcl::VoxelSuperpixels<PointT>::getVoxelResolution () const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
-pcl::VoxelSuperpixels<PointT>::setVoxelResolution (double resolution)
+pcl::VoxelSuperpixels<PointT>::setVoxelResolution (float resolution)
 {
   resolution_ = resolution;
   // if search set
@@ -145,7 +139,7 @@ pcl::VoxelSuperpixels<PointT>::setVoxelResolution (double resolution)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> double
+template <typename PointT> float
 pcl::VoxelSuperpixels<PointT>::getSeedResolution () const
 {
   return (resolution_);
@@ -153,12 +147,29 @@ pcl::VoxelSuperpixels<PointT>::getSeedResolution () const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
-pcl::VoxelSuperpixels<PointT>::setSeedResolution (double seed_resolution)
+pcl::VoxelSuperpixels<PointT>::setSeedResolution (float seed_resolution)
 {
   seed_resolution_ = seed_resolution;
  
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT> int
+pcl::VoxelSuperpixels<PointT>::getVoxelCloudSize () const
+{
+  if (voxel_cloud_)
+    return voxel_cloud_->width;
+  else
+    return 0;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT> typename pcl::PointCloud<PointT>::Ptr
+pcl::VoxelSuperpixels<PointT>::getVoxelCloud ()
+{
+  return voxel_cloud_;
+}
+  
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
 pcl::VoxelSuperpixels<PointT>::setColorImportance (float val)
@@ -189,25 +200,16 @@ pcl::VoxelSuperpixels<PointT>::getNormals () const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
-pcl::VoxelSuperpixels<PointT>::getSeedIndices (std::vector<int>& seed_indices)
-{
-  seed_indices.reserve (seed_indices_.size ());
-  std::copy (seed_indices_.begin (), seed_indices_.end (), std::back_inserter (seed_indices));
-}
-
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> void
-pcl::VoxelSuperpixels<PointT>::extract (std::vector<pcl::PointIndices>& superpixels)
+pcl::VoxelSuperpixels<PointT>::extract (std::vector <pcl::PointIndices>& superpixels)
 {
   superpixels_.clear ();
   superpixels.clear ();
-  point_neighbors_.clear ();
   point_neighbor_dist_.clear ();
   point_labels_.clear ();
   num_pts_in_superpixel_.clear ();
   number_of_superpixels_ = 0;
 
+  std::cout << "Init compute  \n";
   bool segmentation_is_possible = initCompute ();
   if ( !segmentation_is_possible )
   {
@@ -215,6 +217,7 @@ pcl::VoxelSuperpixels<PointT>::extract (std::vector<pcl::PointIndices>& superpix
     return;
   }
 
+  std::cout << "Preparing for segmentation \n";
   segmentation_is_possible = prepareForSegmentation ();
   if ( !segmentation_is_possible )
   {
@@ -222,13 +225,21 @@ pcl::VoxelSuperpixels<PointT>::extract (std::vector<pcl::PointIndices>& superpix
     return;
   }
 
+  std::cout << "Finding neighbors" << std::endl;
   findPointNeighbors ();
+  std::cout << "Placing Seeds" << std::endl;
   placeSeedVoxels ();
-
-  findSeedConstituency (float (seed_resolution_) * 1.5f);
-  evolveSuperpixels ();
   
-  superpixels_ = superpixels;
+  std::cout << "Finding seed constituents" << std::endl;
+  findSeedConstituency (seed_resolution_*1.5f);
+  std::cout << "Evolving the superpixels" << std::endl;
+  evolveSuperpixels ();
+  //std::cout << "Max cd="<<max_cd_<<"   min cd="<<min_cd_<<std::endl;
+  //std::cout << "Max sd="<<max_sd_<<"   min sd="<<min_sd_<<std::endl;
+  cleanSuperpixels ();
+//  std::cout << "Copying superpixels into output array" << std::endl;
+  superpixels.reserve (superpixels_.size ());
+  std::copy (superpixels_.begin (), superpixels_.end (), std::back_inserter (superpixels));
 
   deinitCompute ();
 }
@@ -241,12 +252,16 @@ pcl::VoxelSuperpixels<PointT>::prepareForSegmentation ()
   if ( input_->points.size () == 0 )
     return (false);
 
+  std::cout << "Computing voxel cloud \n";
   // Voxelize the input cloud
   computeVoxelCloud ();
+  std::cout << "Computing Normals \n";
   // Compute normals for voxel cloud
   computeNormals ();
+  std::cout << "Computing FPFH \n";
   calcVoxelFPFHValues ();
   
+  std::cout << "Computing Lab values \n";
   calcVoxelLABValues();
   
   // if search not set
@@ -267,7 +282,7 @@ pcl::VoxelSuperpixels<PointT>::findPointNeighbors ()
   std::vector<float> k_sqr_distances;
   std::vector<std::pair <int, float> > actual_neighbor_distances;
   
-  int num_neighbors = 9;
+  int num_neighbors = 26;
   point_neighbor_dist_.resize (voxel_cloud_->points.size (), actual_neighbor_distances);
 
   k_neighbors.resize (num_neighbors, 0);
@@ -278,18 +293,21 @@ pcl::VoxelSuperpixels<PointT>::findPointNeighbors ()
     //Searching the voxel cloud here
     voxel_kdtree_->nearestKSearch (i_point, num_neighbors, k_neighbors, k_sqr_distances);
     std::vector<int> actual_neighbors;
-    double max_dist_sqr = (resolution_)*(resolution_)*3.0; //sqrt(3) = 1.732
+    double max_dist_sqr = (resolution_)*(resolution_)*2.0; //sqrt(3) = 1.732
     //Start at one since search returns original point as nearest neighbor
     for (int j = 0; j<k_neighbors.size(); ++j)
     {
       if (k_sqr_distances[j] < max_dist_sqr)
       {
         actual_neighbors.push_back (k_neighbors[j]);
+      //  std::cout << k_sqr_distances[j] <<" < "<<max_dist_sqr<<std::endl;
       }
     }
+   // std::cout << "Point "<<i_point<<" has "<<actual_neighbors.size ()<< " neighbors touching it"<<std::endl;
     
     std::pair <float, int> dist_index;
     actual_neighbor_distances.resize (actual_neighbors.size (), dist_index);
+    //PointT point = voxel_cloud_->points[point_index];
     for (int i_neighbor = 0; i_neighbor < actual_neighbors.size(); ++i_neighbor)
     {
       int neighbor_index = actual_neighbors[i_neighbor];
@@ -311,6 +329,7 @@ pcl::VoxelSuperpixels<PointT>::placeSeedVoxels ()
   
   std::vector<PointT, Eigen::aligned_allocator<PointT> > voxel_centers; 
   int num_seeds = search_->getOccupiedVoxelCenters(voxel_centers); 
+  std::cout << "Number of seed points before filtering="<<num_seeds<<std::endl;
   
   
   seed_indices_orig_.resize (num_seeds, 0);
@@ -321,56 +340,66 @@ pcl::VoxelSuperpixels<PointT>::placeSeedVoxels ()
   distance.resize(1,0);
   for (int i = 0; i < num_seeds; ++i)  
   {
-    //PointT center_point = voxel_centers[i];
-//    int num = voxel_kdtree_->nearestKSearch (center_point, 1, closest_index, distance);
+    PointT center_point = voxel_centers[i];
+    int num = voxel_kdtree_->nearestKSearch (center_point, 1, closest_index, distance);
+    //  std::cout << "dist to closest ="<<distance[0]<<std::endl;
     seed_indices_orig_[i] = closest_index[0];
   }
   
   //search_->deleteTree ();
+  // std::cout << "Setting resolu";
   //search_.reset ();
   //search_ = boost::make_shared<pcl::octree::OctreePointCloudSearch <PointT> > (resolution_);
   //search_->setInputCloud (voxel_cloud_);
   //search_->setResolution (resolution_);
   //search_->addPointsFromInputCloud ();
+  // std::cout << "Done...";
   //search_->addPointsFromInputCloud ();
   std::vector<int> neighbors;
   std::vector<float> sqr_distances;
 
-  pcl::PointIndices superpixel;
   
-  float search_radius = 0.1f * float (seed_resolution_);
-//  float search_volume = 4.0/3.0 * 3.1415926536 * search_radius * search_radius * search_radius;
+  
+  float search_radius = 0.25f*seed_resolution_;
+  //float search_volume = 4.0f/3.0f * 3.1415926536f * search_radius * search_radius * search_radius;
   // This is number of voxels which fit in a planar slice through search volume
   // Area of planar slice / area of voxel side
-  float min_points = 0.45f * search_radius * search_radius * 3.1415926536f / (float (resolution_ * resolution_));
+  float min_points = 0.5f * (search_radius)*(search_radius) * 3.1415926536f  / (resolution_*resolution_);
   //old = 0.5 * search_volume / (resolution_*resolution_*resolution_);
+  std::cout << "Min points search volume = "<<min_points<<std::endl;
   for (int i = 0; i < seed_indices_orig_.size (); ++i)
   {
     int num = voxel_kdtree_->radiusSearch (seed_indices_orig_[i], search_radius , neighbors, sqr_distances);
+    //  std::cout << "Found " << neighbors.size () << " points within radius "<<search_radius<<std::endl;
     float min_gradient = calcGradient(seed_indices_orig_[i]);
     int min_index = seed_indices_orig_[i];
     float neighbor_gradient;
     for (int j = 1; j < num; ++j)
     {
+      if (sqr_distances[j] < (search_radius*search_radius))
+      {
       neighbor_gradient = calcGradient(neighbors[j]);
       if (neighbor_gradient < min_gradient) 
       {
         min_gradient = neighbor_gradient;
         min_index = neighbors[j];
       }
-      
+      }
     }
     if ( num > min_points)
     {
-      //seed_indices_.push_back (seed_indices_orig_[i]);
       seed_indices_.push_back (min_index);
+      seed_indices_unshifted_.push_back (seed_indices_orig_[i]);
     }
     
     //PointT point = voxel_cloud_->points[min_index];
+    // std::cout << point.x<<","<<point.y<<"  idx="<<min_index<<"  ent="<<min_entropy<<std::endl;
     //  superpixels_[i].indices[ii] = neighbors[ii];
     
     //superpixels_[i].indices.swap (neighbors);
   }
+  std::cout << "Number of seed points after filtering="<<seed_indices_.size ()<<std::endl;
+  pcl::PointIndices superpixel;
   superpixels_.resize(seed_indices_.size (), superpixel);
   for (int i = 0; i < seed_indices_.size (); ++i)
     superpixels_[i].indices.push_back (seed_indices_[i]);
@@ -382,27 +411,26 @@ template <typename PointT> float
 pcl::VoxelSuperpixels<PointT>::calcGradient (int point_index)
 {
   float gradient = 0.0f; 
-  size_t num_neighbors = point_neighbor_dist_[point_index].size ();
+  int num_neighbors = point_neighbor_dist_[point_index].size();
   if (num_neighbors <= 4 )
     return std::numeric_limits<float>::max();
   for (int i = 0; i < num_neighbors; ++i)
   {
     gradient += point_neighbor_dist_[point_index][i].second;
   }
-  return (gradient / float (num_neighbors));
+  return gradient/num_neighbors;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
 pcl::VoxelSuperpixels<PointT>::findSeedConstituency (float edge_length)
 {
-//  int number_of_points = static_cast<int> (voxel_cloud_->points.size ());
-  size_t number_of_seeds = seed_indices_.size ();
+ // int number_of_points = static_cast<int> (voxel_cloud_->points.size ());
+  int number_of_seeds = seed_indices_.size();
 
-  std::vector< std::pair<int,float> > constituents;
+  std::vector< int > constituents;
   std::vector< int > possible_constituents;
   seed_constituents_.resize (number_of_seeds, constituents);
-  
   
   for ( int i = 0; i < number_of_seeds; ++i)
   {
@@ -420,17 +448,20 @@ pcl::VoxelSuperpixels<PointT>::findSeedConstituency (float edge_length)
     seed_constituents_[i].reserve (num);
     //Now go through and find which ones are flow connected to this seed
     //Start at seed point, find all of its connected neighbors
-    std::pair<int,float> seed_index_dist(seed_index, 0.0f);
-    seed_constituents_[i].push_back (seed_index_dist);
+    seed_constituents_[i].push_back (seed_index);
     recursiveFind (seed_index, possible_constituents, seed_constituents_[i]);
+    //std::cout << "Seed "<<i<<" has "<<seed_constituents_[i].size()<<" constituents\n"; 
+    //Sort the constituents based on index (so we can do a binary search on them)
+    std::sort (seed_constituents_[i].begin (), seed_constituents_[i].end ());
+    
   }
-  
+  //
   
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void 
-pcl::VoxelSuperpixels<PointT>::recursiveFind (int index, std::vector<int> &possible_constituents, std::vector<std::pair<int,float> > &constituents)
+pcl::VoxelSuperpixels<PointT>::recursiveFind (int index, std::vector<int> &possible_constituents, std::vector<int > &constituents)
 {
   std::vector<std::pair<int,float> >::iterator it_neighbors = point_neighbor_dist_[index].begin ();
   
@@ -438,10 +469,10 @@ pcl::VoxelSuperpixels<PointT>::recursiveFind (int index, std::vector<int> &possi
   for ( ; it_neighbors != point_neighbor_dist_[index].end (); ++it_neighbors)
   {
     bool already_added = false;
-    std::vector<std::pair<int,float> >::iterator it_constituents = constituents.begin ();
+    std::vector< int >::iterator it_constituents = constituents.begin ();
     //Check if this neighbor is already in the list
     for ( ; it_constituents!=constituents.end(); ++it_constituents)
-      if ( (*it_constituents).first == (*it_neighbors).first)
+      if ( (*it_constituents) == (*it_neighbors).first)
       {
         already_added = true;
         break;
@@ -457,8 +488,7 @@ pcl::VoxelSuperpixels<PointT>::recursiveFind (int index, std::vector<int> &possi
         {
           //Add this index to constituents
           //constituent[0] is seed point
-          std::pair<int,float> index_dist_pair ((*it_neighbors).first, calcDistanceSquared((*it_neighbors).first,constituents[0].first));
-          constituents.push_back (index_dist_pair);
+          constituents.push_back ((*it_neighbors).first);
           //Do a recursive call on the neighbor
           recursiveFind ((*it_neighbors).first,possible_constituents,constituents);
           break;
@@ -477,50 +507,66 @@ pcl::VoxelSuperpixels<PointT>::recursiveFind (int index, std::vector<int> &possi
 template <typename PointT> void
 pcl::VoxelSuperpixels<PointT>::evolveSuperpixels ()
 {
-  size_t num_superpixels = superpixels_.size ();
+  int num_superpixels = superpixels_.size ();
   
   point_labels_.resize (voxel_cloud_->points.size (), -1);
   num_pts_in_superpixel_.resize (num_superpixels, 0);
-  
+  std::pair <int,float> vote_pair (-1, std::numeric_limits<float>::max());;
+  voxel_votes_.resize (voxel_cloud_->points.size (),vote_pair);
   //Calculate initial values for clusters
-  initSuperpixelClusters (float (resolution_) * 2.0f);
+  std::cout << "Initializing Superpixel Clusters...\n";
+  initSuperpixelClusters (resolution_*2);
   
   int num_itr = 5;
   for (int i = 0; i < num_itr; ++i)
   {
+    //Reset all votes!
+    for (int k = 0; k < voxel_votes_.size (); ++k)
+    {
+      voxel_votes_[i].first = -1;
+      voxel_votes_[i].second = std::numeric_limits<float>::max();
+    }
     //Iterate through, assigning constituents to closest center
+    std::cout << "Iterating Superpixel Clusters...\n";
     iterateSuperpixelClusters ();
-    //Update Superpixel features
-    updateSuperpixelClusters ();
+    
+    if (i != num_itr-1) //Don't bother updating on the last iteration
+    {
+      //Update Superpixel features
+      std::cout << "Updating Superpixel Clusters...\n";
+      updateSuperpixelClusters ();  
+    }
+
   }
-  
   //Set the label vector based on votes
   for (int i = 0; i < voxel_votes_.size (); ++i)
   {
     point_labels_[i] = voxel_votes_[i].first;
-    
   }
-  
+
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
 pcl::VoxelSuperpixels<PointT>::initSuperpixelClusters (float search_radius)
 {
-  size_t num_seeds = seed_indices_.size ();
+  int num_seeds = seed_indices_.size ();
   //Features are {L a b x y z FPFHx33}
   superpixel_features_.resize (boost::extents[num_seeds][39]);
   std::pair <int, float> def(-1,std::numeric_limits<float>::max());
   voxel_votes_.resize (voxel_cloud_->points.size (),def);
+  //std::cout << "Seed Const size="<<seed_constituents_.size ()<<"\n";
   for (int i=0; i<num_seeds; ++i)
   {
+    //std::cout <<"Working seed "<<i<<std::endl;
     std::vector <double> temp_sums(39,0);
-    std::vector<std::pair<int,float> >::iterator it_constituents = seed_constituents_[i].begin ();
+    std::vector<int >::iterator it_constituents = seed_constituents_[i].begin ();
     int num_in_radius = 0;
+    //std::cout <<"Seed has "<<seed_constituents_[i].size ()<<"\n";
     for ( ; it_constituents!=seed_constituents_[i].end() ; ++it_constituents)
     {
-      int index = (*it_constituents).first;
-      float dist = (*it_constituents).second;
+      int index = (*it_constituents);
+      float dist = sqrt(calcDistanceSquared(index, seed_indices_[i]));
       if ( dist < search_radius)
       {
         num_in_radius++;
@@ -543,7 +589,19 @@ pcl::VoxelSuperpixels<PointT>::initSuperpixelClusters (float search_radius)
     for (int k =0; k<39; ++k)
     {
       superpixel_features_[i][k] = static_cast<float>(temp_sums[k]/num_in_radius);
+     // std::cout<<k<<"     "<<superpixel_features_[i][k]<<std::endl;
     }
+    //Move cluster seeds to point nearest center of superpixel
+    PointT point;
+    point.x = superpixel_features_[i][3];
+    point.y = superpixel_features_[i][4];
+    point.z = superpixel_features_[i][5];
+    std::vector <float> sqr_dist;
+    std::vector <int> index;
+    //SHIFT THE CENTER?
+   // voxel_kdtree_->nearestKSearch (point,1, index, sqr_dist);
+    //seed_indices_[i] = index[0];
+    //std::cout<<"--------------------------------------------------\n";
   }
 }
 
@@ -551,13 +609,106 @@ pcl::VoxelSuperpixels<PointT>::initSuperpixelClusters (float search_radius)
 template <typename PointT> void
 pcl::VoxelSuperpixels<PointT>::iterateSuperpixelClusters ()
 {
-  size_t num_seeds = seed_indices_.size ();
+  int num_seeds = seed_indices_.size ();
   //Features are {L a b x y z FPFHx33}
-  superpixel_features_.resize (boost::extents[num_seeds][39]);
   
+  int num_levels = 1.2 * seed_resolution_/resolution_;
+  std::vector<std::set<int> >checked;
+  std::set<int> temp_set;
+  checked.resize (num_seeds, temp_set);
+  std::vector<std::queue <std::pair<int,float> > >existing_queue;
+  std::queue <std::pair<int,float> > temp_queue;
+  existing_queue.resize (num_seeds, temp_queue);
+  
+  #pragma omp parallel for
   for (int i=0; i<num_seeds; ++i)
   {
-    std::vector <double> temp_sums(39,0);
+    if (seed_indices_[i] == -1)
+      continue;
+    int debug_count = 0;
+  //  std::vector<int>::iterator it_constituents = seed_constituents_[i].begin ();
+    //std::vector<int>::iterator it_constituents_end = seed_constituents_[i].end ();
+    
+    std::vector<std::pair<int,float> >::iterator it_neighbors;
+    std::vector<std::pair<int,float> >::iterator it_neighbors_end;
+    std::pair<std::set<int>::iterator,bool> checked_ret;
+    std::queue <std::pair<int,float> > check_queue;
+    //Set seed pixel to label
+    float dist = calcFeatureDistance (seed_indices_[i], i);
+    if (dist <= voxel_votes_[seed_indices_[i]].second)
+    {
+      voxel_votes_[seed_indices_[i]].second = dist;  
+      voxel_votes_[seed_indices_[i]].first = i;
+      checked[i].insert (seed_indices_[i]);
+      it_neighbors = point_neighbor_dist_[seed_indices_[i]].begin ();
+      it_neighbors_end = point_neighbor_dist_[seed_indices_[i]].end ();
+      //Push seed neighbors onto queue - pair = {voxel index, consitutent index}
+      for (; it_neighbors!=it_neighbors_end; ++it_neighbors)
+      {
+        existing_queue[i].push ((*it_neighbors));
+        checked[i].insert ((*it_neighbors).first);
+        ++debug_count;
+      }
+    }
+    else
+    {
+      //std::cout << "SEED "<<i<<" IS NOT USING OWN POINT, dist="<<dist<<"  other dist="<< voxel_votes_[seed_indices_[i]].second<<std::endl;
+      seed_indices_[i] = -1;
+    }
+  }
+  
+  for (int level = 1; level < num_levels; ++level)
+  {
+    
+   // #pragma omp parallel for
+    for (int i=0; i<num_seeds; ++i)
+    {
+      if (seed_indices_[i] == -1)
+        continue;
+      int debug_count = 0;
+      std::vector<int>::iterator it_constituents = seed_constituents_[i].begin ();
+      std::vector<int>::iterator it_constituents_end = seed_constituents_[i].end ();
+      
+      std::vector<std::pair<int,float> >::iterator it_neighbors;
+      std::vector<std::pair<int,float> >::iterator it_neighbors_end;
+      std::pair<std::set<int>::iterator,bool> checked_ret;
+      std::queue <std::pair<int,float> > check_queue;
+           
+      //Keep going until we have no more voxels to check 
+      //This will be empty if seed doesn't own it's own point
+      while (!existing_queue[i].empty ())
+      {
+        std::pair<int,float> constituent = existing_queue[i].front ();
+        existing_queue[i].pop ();
+        float dist = calcFeatureDistance (constituent.first, i);
+        if (dist < voxel_votes_[constituent.first].second)
+        {
+          voxel_votes_[constituent.first].second = dist;  
+          voxel_votes_[constituent.first].first = i;
+          //Find neighbors, if they haven't been checked and are constituents add to check_queue
+          it_neighbors = point_neighbor_dist_[constituent.first].begin ();
+          it_neighbors_end = point_neighbor_dist_[constituent.first].end ();
+          for ( ; it_neighbors != it_neighbors_end; ++it_neighbors)
+          {
+            //True returned from set::insert means it wasn't in the set before
+            if (checked[i].insert((*it_neighbors).first).second == true
+              && std::binary_search(it_constituents, it_constituents_end,(*it_neighbors).first))
+            {
+              check_queue.push (*it_neighbors);
+              ++debug_count;
+            }
+          }
+        }
+      }
+      //Copy check queue into existing_queue for next round
+      existing_queue[i] = check_queue;
+      //std::cout << "Seed "<<i<<" checked "<<debug_count<<" points\n";
+    }
+  }
+  
+  /*
+  for (int i=0; i<num_seeds; ++i)
+  {
     std::vector<std::pair<int,float> >::iterator it_constituents = seed_constituents_[i].begin ();
     for ( ; it_constituents != seed_constituents_[i].end(); ++it_constituents)
     {
@@ -569,33 +720,42 @@ pcl::VoxelSuperpixels<PointT>::iterateSuperpixelClusters ()
       }
     }
   }
-  
+ */
 }
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
 pcl::VoxelSuperpixels<PointT>::updateSuperpixelClusters ()
 {
-  size_t num_seeds = seed_indices_.size ();
+  int num_seeds = seed_indices_.size ();
   //Features are {L a b x y z FPFHx33}
   
+  //std::cout << "Seed Const size="<<seed_constituents_.size ()<<"\n";
   for (int i=0; i<num_seeds; ++i)
   {
+    if (seed_indices_[i] == -1)
+      continue;
+    //std::cout <<"Working seed "<<i<<std::endl;
     std::vector <double> temp_sums(39,0);
-    std::vector<std::pair<int,float> >::iterator it_constituents = seed_constituents_[i].begin ();
+    std::vector<int>::iterator it_constituents = seed_constituents_[i].begin ();
     int num_votes = 0;
+    temp_sums[3] = superpixel_features_[i][3];
+    temp_sums[4] = superpixel_features_[i][4];
+    temp_sums[5] = superpixel_features_[i][5];
+    //std::cout <<"Seed has "<<seed_constituents_[i].size ()<<"\n";
     for ( ; it_constituents!=seed_constituents_[i].end() ; ++it_constituents)
     {
-      int index = (*it_constituents).first;
+      int index = (*it_constituents);
       if (voxel_votes_[index].first == i)
       {
         num_votes++;
         temp_sums[0] += voxel_LAB_[index][0];
         temp_sums[1] += voxel_LAB_[index][1];
         temp_sums[2] += voxel_LAB_[index][2];
-        temp_sums[3] += voxel_cloud_->points[index].x;
-        temp_sums[4] += voxel_cloud_->points[index].y;
-        temp_sums[5] += voxel_cloud_->points[index].z;
+       // temp_sums[3] += voxel_cloud_->points[index].x;
+      //  temp_sums[4] += voxel_cloud_->points[index].y;
+      //  temp_sums[5] += voxel_cloud_->points[index].z;
         if (pcl::isFinite<pcl::FPFHSignature33>(voxel_fpfh_->points[index]))
         {
           for (int k =6; k<39; ++k)
@@ -608,50 +768,119 @@ pcl::VoxelSuperpixels<PointT>::updateSuperpixelClusters ()
     for (int k =0; k<39; ++k)
     {
       superpixel_features_[i][k] = static_cast<float>(temp_sums[k]/num_votes);
+      // std::cout<<k<<"     "<<superpixel_features_[i][k]<<std::endl;
     }
+    superpixel_features_[i][3] = temp_sums[3];
+    superpixel_features_[i][4] = temp_sums[4];
+    superpixel_features_[i][5] = temp_sums[5];
+    //Move cluster seeds to point nearest center of superpixel that has this label
+    PointT point;
+    point.x = superpixel_features_[i][3];
+    point.y = superpixel_features_[i][4];
+    point.z = superpixel_features_[i][5];
+    std::vector <float> sqr_dist;
+    std::vector <int> index;
+    voxel_kdtree_->nearestKSearch (point,100, index, sqr_dist);
+    for (int k = 0; k < index.size(); ++k)
+    {
+      if (voxel_votes_[index[k]].first == i)
+      {
+        //Shift seed center??
+        //seed_indices_[i] = index[k];
+        //break;
+      }
+     // if (k == 99)
+     //   std::cout<<"Problems SHIFTING!!"<<std::endl;
+    }
+    
+    //std::cout<<"--------------------------------------------------\n";
   }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT> void
+pcl::VoxelSuperpixels<PointT>::getSuperpixelNeighbors (std::vector <std::set<int> > &superpixel_neighbors)
+{
+  std::set<int> neighbors;
+  superpixel_neighbors.resize (superpixels_.size (), neighbors);
+  std::cout<< "Finding neighbors, superpixel size="<<superpixel_neighbors.size ()<<"\n";
+  for (int i = 0; i < superpixels_.size(); ++i)
+  {
+    superpixel_neighbors[i].insert (i); //Always touchs itself
+    //std::cout << "Finding neighbors for superpixels of "<<i<<"\n";
+    for (int k = 0; k < superpixels_[i].indices.size(); ++k)
+    {
+      int point_index = superpixels_[i].indices[k];
+      for (int j = 0; j < point_neighbor_dist_[point_index].size() ; ++j)
+      {
+        int neighbor_idx = point_neighbor_dist_[point_index][j].first;
+        int neighbor_label = voxel_votes_[neighbor_idx].first;
+        if (neighbor_label != i && neighbor_label != -1)
+          superpixel_neighbors[i].insert(neighbor_label);
+  
+      }
+    }
+    
+  }
+}
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT> void
+pcl::VoxelSuperpixels<PointT>::getSuperpixelCenters (std::vector <pcl::PointXYZ> &centers)
+{
+  pcl::PointXYZ center_point;
+  centers.resize (superpixels_.size(), center_point);
+  for (int i = 0; i < superpixels_.size(); ++i)
+  {
+    centers[i].x = superpixel_features_[i][3];
+    centers[i].y = superpixel_features_[i][4];
+    centers[i].z = superpixel_features_[i][5];
+  }
+  
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
 pcl::VoxelSuperpixels<PointT>::cleanSuperpixels ()
 {
- 
-  // TODO
   
-  
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> void
-pcl::VoxelSuperpixels<PointT>::computeLabeledVoxelCloud ()
-{
-  if (!superpixels_.empty ())
+  if (!point_labels_.empty ())
   {
-    labeled_voxel_cloud_ = boost::make_shared< pcl::PointCloud<pcl::PointXYZL> > ();
-    
-    pcl::copyPointCloud (*voxel_cloud_,*labeled_voxel_cloud_);
-
-    /*std::vector< pcl::PointIndices >::iterator i_segment;
-    for (i_segment = superpixels_.begin (); i_segment != superpixels_.end (); i_segment++)
+    //Find all seeds which actually have points 
+    std::vector<int> label_exists;
+    label_exists.resize (seed_indices_.size(), -1);
+    int num_labels = 0;
+    for (int i = 0; i < seed_indices_.size (); ++i)
     {
-      std::vector<int>::iterator i_point;
-      for (i_point = i_segment->indices.begin (); i_point != i_segment->indices.end (); i_point++)
+      for(int k = 0; k < point_labels_.size(); ++k)
       {
-        int index;
-        index = *i_point;
-        labeled_voxel_cloud_->points[index].l = i_segment.index;
+        if (point_labels_[k] == i)
+        {
+          label_exists[i] = num_labels;
+          num_labels++;
+          break;
+        }
       }
-    }*/
-    //Set all voxel point labels
-    for (int i= 0; i < point_labels_.size (); ++i)
-    {
-      labeled_voxel_cloud_->points[i].label = point_labels_[i] + 1;
     }
-  }
+    //Relabel to skip any unused labels
+    for (int i = 0; i < point_labels_.size (); ++i)
+      if (point_labels_[i] != -1)
+        point_labels_[i] = label_exists[point_labels_[i]];
+     
+    pcl::PointIndices superpixel;
+    superpixels_.resize(num_labels, superpixel);
   
+    //Set the superpixel vector based on new labels
+    for (int i = 0; i < point_labels_.size (); ++i)
+    {
+      if ( point_labels_[i] != -1)
+        superpixels_[point_labels_[i]].indices.push_back(i);
+    }  
+ }
   
 }
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> pcl::PointCloud<pcl::PointXYZRGB>::Ptr
@@ -666,21 +895,18 @@ pcl::VoxelSuperpixels<PointT>::getColoredCloud ()
     if (superpixel_colors_.size () == 0)
     {
       srand (static_cast<unsigned int> (time (0)));
-      //label 0 is unlabeled, should be black
-      superpixel_colors_.push_back (0);
-      for (size_t i_segment = 0; i_segment < superpixels_.size (); i_segment++)
+      for (size_t i_segment = 0; i_segment < superpixels_.size ()+1; i_segment++)
       {
-        uint8_t r = static_cast<unsigned char> (rand () % 200 + 50);
-        uint8_t g = static_cast<unsigned char> (rand () % 256);
-        uint8_t b = static_cast<unsigned char> (rand () % 256);
-        superpixel_colors_.push_back (uint32_t (r) << 16 | uint32_t (g) << 8 | uint32_t (b));
+        uint8_t r = static_cast<uint8_t>( (rand () % 256));
+        uint8_t g = static_cast<uint8_t>( (rand () % 256));
+        uint8_t b = static_cast<uint8_t>( (rand () % 256));
+        superpixel_colors_.push_back (static_cast<uint32_t>(r) << 16 | static_cast<uint32_t>(g) << 8 | static_cast<uint32_t>(b));
       }
     }
     pcl::copyPointCloud (*input_,*colored_cloud);
 
     pcl::PointCloud <pcl::PointXYZRGB>::iterator i_colored;
     typename pcl::PointCloud <PointT>::const_iterator i_input = input_->begin ();
-//    int num_points_not_in_voxel = 0;
     for (i_colored = colored_cloud->begin (); i_colored != colored_cloud->end (); ++i_colored,++i_input)
     {
       int index;
@@ -691,21 +917,73 @@ pcl::VoxelSuperpixels<PointT>::getColoredCloud ()
       else
       {
         search_->approxNearestSearch (*i_input, index, sqr_dist);
-      //  if (sqr_dist > resolution_ * resolution_*3.0f)
-      //  {
-        //  num_points_not_in_voxel++;
-          //i_colored->rgb = 0;
-      //  }
-       // else
-      //  {
-          if (point_labels_[index] != -1)
-            i_colored->rgb = *reinterpret_cast<float*>(&superpixel_colors_ [point_labels_[index] + 1]);
-       // }
+        //Unlabeled points (-1) just stay black
+        if (point_labels_[index] != -1)
+          i_colored->rgb = *reinterpret_cast<float*>(&superpixel_colors_ [point_labels_[index]]);
       }
 
     }
   }
   return (colored_cloud);
+}
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT> pcl::PointCloud<pcl::PointXYZRGB>::Ptr
+pcl::VoxelSuperpixels<PointT>::getColoredVoxelCloud ()
+{
+  pcl::PointCloud<pcl::PointXYZRGB>::Ptr colored_cloud;
+  if (!superpixels_.empty ())
+  {
+    colored_cloud = boost::make_shared< pcl::PointCloud<pcl::PointXYZRGB> > ();
+    if (superpixel_colors_.size () == 0)
+    {
+      srand (static_cast<unsigned int> (time (0)));
+      for (size_t i_segment = 0; i_segment < superpixels_.size ()+1; i_segment++)
+      {
+        uint8_t r = static_cast<uint8_t>( (rand () % 256));
+        uint8_t g = static_cast<uint8_t>( (rand () % 256));
+        uint8_t b = static_cast<uint8_t>( (rand () % 256));
+        superpixel_colors_.push_back (static_cast<uint32_t>(r) << 16 | static_cast<uint32_t>(g) << 8 | static_cast<uint32_t>(b));
+        
+      }
+    }
+    pcl::copyPointCloud (*voxel_cloud_,*colored_cloud);
+    
+    pcl::PointCloud <pcl::PointXYZRGB>::iterator i_colored;
+    typename pcl::PointCloud <PointT>::const_iterator i_input = voxel_cloud_->begin ();
+    int index = 0;
+    for (i_colored = colored_cloud->begin (); i_colored != colored_cloud->end (); ++i_colored,++i_input)
+    {
+      i_colored->rgb = 0;
+      std::pair <int,float> vote = voxel_votes_[index];
+      if (vote.first != -1)
+        i_colored->rgb = *reinterpret_cast<float*>(&superpixel_colors_ [vote.first]);
+      index++;
+    }
+  }
+  return colored_cloud;
+}
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT> pcl::PointCloud<pcl::PointXYZL>::Ptr
+pcl::VoxelSuperpixels<PointT>::getLabeledVoxelCloud ()
+{
+  pcl::PointCloud<pcl::PointXYZL>::Ptr labeled_voxel_cloud;
+  if (!superpixels_.empty ())
+  {
+    labeled_voxel_cloud = boost::make_shared< pcl::PointCloud<pcl::PointXYZL> > ();
+    
+    pcl::copyPointCloud (*voxel_cloud_,*labeled_voxel_cloud);
+    //Set all voxel point labels
+    for (int i= 0; i < point_labels_.size (); ++i)
+    {
+      labeled_voxel_cloud->points[i].label = point_labels_[i] + 1;
+    }
+  }
+  
+  return labeled_voxel_cloud;  
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -716,12 +994,9 @@ pcl::VoxelSuperpixels<PointT>::getLabeledCloud ()
   if (!superpixels_.empty ())
   {
     labeled_cloud = boost::make_shared< pcl::PointCloud<pcl::PointXYZL> > ();
-
     pcl::copyPointCloud (*input_,*labeled_cloud);
-
     pcl::PointCloud <pcl::PointXYZL>::iterator i_labeled;
     typename pcl::PointCloud <PointT>::const_iterator i_input = input_->begin ();
-//    int next_color = 0;
     for (i_labeled = labeled_cloud->begin (); i_labeled != labeled_cloud->end (); ++i_labeled, ++i_input)
     {
       int index;
@@ -732,16 +1007,13 @@ pcl::VoxelSuperpixels<PointT>::getLabeledCloud ()
         search_->approxNearestSearch (*i_input, index, sqr_dist);
         if (point_labels_[index] != -1)
           i_labeled->label = point_labels_[index] + 1;
-          
       }
-      
-
     }
-    
   }
-
   return (labeled_cloud);
 }
+
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
 pcl::VoxelSuperpixels<PointT>::computeVoxelCloud ()
@@ -775,7 +1047,7 @@ pcl::VoxelSuperpixels<PointT>::computeNormals ()
   
   normals_ = boost::make_shared< pcl::PointCloud<pcl::Normal> >();
   
-  ne.setRadiusSearch (resolution_*1.8f);
+  ne.setRadiusSearch (normal_radius_);
   ne.compute (*normals_);
 }
 
@@ -784,20 +1056,34 @@ template <typename PointT> void
 pcl::VoxelSuperpixels<PointT>::calcVoxelFPFHValues ()
 {
   //Calculate FPFH for all voxels
-  pcl::FPFHEstimationOMP<PointT, pcl::Normal, pcl::FPFHSignature33> fpfh;
-  fpfh.setInputCloud (voxel_cloud_);
-  fpfh.setInputNormals (normals_);
-  fpfh.setSearchMethod (voxel_kdtree_);
-  voxel_fpfh_ = boost::make_shared<pcl::PointCloud<pcl::FPFHSignature33> >();
-  fpfh.setRadiusSearch (resolution_*2.0f);
-  fpfh.compute (*voxel_fpfh_);
-  for (int i = 0; i < voxel_fpfh_->points.size (); ++i)
+  if (fpfh_importance_ > 0.0f)
   {
-    //Normalize
-    for (int k = 0; k < 33; ++k)
-      voxel_fpfh_->points[i].histogram[k] /= 300.0f;
+    pcl::FPFHEstimationOMP<PointT, pcl::Normal, pcl::FPFHSignature33> fpfh;
+    fpfh.setInputCloud (voxel_cloud_);
+    fpfh.setInputNormals (normals_);
+    fpfh.setSearchMethod (voxel_kdtree_);
+    voxel_fpfh_ = boost::make_shared<pcl::PointCloud<pcl::FPFHSignature33> >();
+    fpfh.setRadiusSearch (fpfh_radius_);
+    fpfh.compute (*voxel_fpfh_);
+    for (int i = 0; i < voxel_fpfh_->points.size (); ++i)
+    {
+      //Normalize
+      for (int k = 0; k < 33; ++k)
+        voxel_fpfh_->points[i].histogram[k] /= 300.0f;
+    }
   }
-  
+  else
+  {
+    voxel_fpfh_ = boost::make_shared<pcl::PointCloud<pcl::FPFHSignature33> >();
+    pcl::FPFHSignature33 fpfh_point;
+    voxel_fpfh_->points.resize (voxel_cloud_->points.size(),fpfh_point);
+    for (int i = 0; i < voxel_fpfh_->points.size (); ++i)
+    {
+      
+      for (int k = 0; k < 33; ++k)
+        voxel_fpfh_->points[i].histogram[k] = 0.0f;
+    }
+  }
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
@@ -874,7 +1160,7 @@ pcl::VoxelSuperpixels<PointT>::calcFeatureDistance (int point_index, int seed_in
   spatial_distance_squared += (voxel_cloud_->points[point_index].x - superpixel_features_[seed_index][3]) * (voxel_cloud_->points[point_index].x - superpixel_features_[seed_index][3]);
   spatial_distance_squared += (voxel_cloud_->points[point_index].y - superpixel_features_[seed_index][4]) * (voxel_cloud_->points[point_index].y - superpixel_features_[seed_index][4]);
   spatial_distance_squared += (voxel_cloud_->points[point_index].z - superpixel_features_[seed_index][5]) * (voxel_cloud_->points[point_index].z - superpixel_features_[seed_index][5]);
-  spatial_distance_squared /= (float (seed_resolution_*seed_resolution_) * 9.0f);
+  spatial_distance_squared /= (seed_resolution_*seed_resolution_*9);
   
   float fpfh_distance = 1.0f;
   //Histogram intersection kernel
@@ -885,19 +1171,12 @@ pcl::VoxelSuperpixels<PointT>::calcFeatureDistance (int point_index, int seed_in
     else
       fpfh_distance -= superpixel_features_[seed_index][i+6];
   }
-  
-
-  if ( color_distance_squared > max_cd_)
-    max_cd_ = color_distance_squared;
-  if ( spatial_distance_squared > max_sd_)
-    max_sd_ = spatial_distance_squared;
-
   //10000 balances so white to black dist = 1.0
   // Others are already balance to 0 to 1.0 range
   distance += (color_distance_squared)/10000.0f * color_importance_*color_importance_;
   distance += spatial_distance_squared * spatial_importance_*spatial_importance_;
   distance += fpfh_distance * fpfh_importance_*fpfh_importance_;
-  return (sqrtf (distance));
+  return sqrt(distance);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -919,7 +1198,7 @@ pcl::VoxelSuperpixels<PointT>::calcColorDifferenceLAB (int index_a, int index_b)
   difference += float ((voxel_LAB_[index_a][0] - voxel_LAB_[index_b][0])*(voxel_LAB_[index_a][0] - voxel_LAB_[index_b][0]));
   difference += float ((voxel_LAB_[index_a][1] - voxel_LAB_[index_b][1])*(voxel_LAB_[index_a][1] - voxel_LAB_[index_b][1]));
   difference += float ((voxel_LAB_[index_a][2] - voxel_LAB_[index_b][2])*(voxel_LAB_[index_a][2] - voxel_LAB_[index_b][2]));
-  return (sqrtf (difference));
+  return sqrt(difference);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -942,68 +1221,63 @@ pcl::VoxelSuperpixels<PointT>::calcDistanceSquared (int index_a, int index_b)
   
   return (distance);
   
-  
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> pcl::PointCloud<pcl::PointXYZRGB>::Ptr
 pcl::VoxelSuperpixels<PointT>::getSeedCloud ()
 {
-  
   pcl::PointCloud<pcl::PointXYZRGB>::Ptr seed_cloud;
   if (!superpixels_.empty ())
   {
     seed_cloud = boost::make_shared< pcl::PointCloud<pcl::PointXYZRGB> > ();
-    
     srand (static_cast<unsigned int> (time (0)));
+    pcl::copyPointCloud (*voxel_cloud_,*seed_cloud);
 
-    
-    pcl::copyPointCloud (*input_,*seed_cloud);
-
-    uint8_t r = 0;
-    uint8_t g = 255;
-    uint8_t b = 0;
-    uint32_t green = (static_cast<uint32_t> (r) << 16) | (static_cast<uint32_t> (g) << 8) | static_cast<uint32_t> (b);
-    r = 255; g = 0;
-    uint32_t red = (static_cast<uint32_t> (r) << 16) | (static_cast<uint32_t> (g) << 8) | static_cast<uint32_t> (b);
-    r = 0; b = 255;
-    uint32_t blue = (static_cast<uint32_t> (r) << 16) | (static_cast<uint32_t> (g) << 8) | static_cast<uint32_t> (b);
+    uint8_t r = static_cast<uint8_t> (0);
+    uint8_t g = static_cast<uint8_t> (255);
+    uint8_t b = static_cast<uint8_t> (0);
+    uint32_t green = (static_cast<uint32_t>(r) << 16 | static_cast<uint32_t>(g) << 8 | static_cast<uint32_t>(b));
+    r = static_cast<uint8_t> (255); g = static_cast<uint8_t> (0);
+    uint32_t red = (static_cast<uint32_t>(r) << 16 | static_cast<uint32_t>(g) << 8 | static_cast<uint32_t>(b));
+    r = static_cast<uint8_t> (0); b = static_cast<uint8_t> (255);
+    uint32_t blue = (static_cast<uint32_t>(r) << 16 | static_cast<uint32_t>(g) << 8 | static_cast<uint32_t>(b));
     std::vector<int> neighbors;
     std::vector<float> sqr_distances;
 
     typename pcl::search::KdTree<PointT>::Ptr orig_kdtree = boost::make_shared< pcl::search::KdTree<PointT> >();
     orig_kdtree->setInputCloud (input_);
-
-      
     for (int i = 0; i < seed_indices_orig_.size (); ++i)
     {
       PointT point = voxel_cloud_->points[seed_indices_orig_[i]];
-      int num = orig_kdtree->radiusSearch (point, 0.5*seed_resolution_, neighbors, sqr_distances);
+      int num = voxel_kdtree_->radiusSearch (point, 0.25*seed_resolution_, neighbors, sqr_distances);
       for (int j = 0; j < num; ++j)
       {
         seed_cloud->points[neighbors[j]].rgb = *reinterpret_cast<float*>(&red);
       }
     }
-    
-    for (int i = 0; i < seed_indices_.size (); ++i)
+    for (int i = 0; i < seed_indices_unshifted_.size (); ++i)
     {
-      PointT point = voxel_cloud_->points[seed_indices_[i]];
-      int num = orig_kdtree->radiusSearch (point, 0.5*seed_resolution_, neighbors, sqr_distances);
+      if(seed_indices_[i] == -1)
+        continue;
+      PointT point = voxel_cloud_->points[seed_indices_unshifted_[i]];
+      int num = voxel_kdtree_->radiusSearch (point, 0.25*seed_resolution_, neighbors, sqr_distances);
       for (int j = 0; j < num; ++j)
       {
         seed_cloud->points[neighbors[j]].rgb = *reinterpret_cast<float*>(&green);
       }
     }
-    for (int i = 0; i < seed_indices_shifted_.size (); ++i)
+    for (int i = 0; i < seed_indices_.size (); ++i)
     {
-      PointT point = voxel_cloud_->points[seed_indices_shifted_[i]];
-      int num = orig_kdtree->radiusSearch (point, resolution_, neighbors, sqr_distances);
+      if(seed_indices_[i] == -1)
+        continue;
+      PointT point = voxel_cloud_->points[seed_indices_[i]];
+      int num = voxel_kdtree_->radiusSearch (point, resolution_, neighbors, sqr_distances);
       for (int j = 0; j < num; ++j)
       {
         seed_cloud->points[neighbors[j]].rgb = *reinterpret_cast<float*>(&blue);
       }
     }
-  
   }
   return (seed_cloud);
 }
