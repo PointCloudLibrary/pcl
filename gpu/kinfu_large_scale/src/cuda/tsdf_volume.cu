@@ -106,8 +106,9 @@ namespace pcl
                   ///If we went outside of the memory, make sure we go back to the begining of it
                   if(pos > buffer.tsdf_memory_end)
                     pos = pos - size;
-                    
-                  pack_tsdf (0.f, 0, *pos);
+                  
+                  if (pos >= buffer.tsdf_memory_start && pos <= buffer.tsdf_memory_end) // quickfix for http://dev.pointclouds.org/issues/894
+                    pack_tsdf (0.f, 0, *pos);
                 }
             }
             else /* if( idX > maxBounds.x && idY > maxBounds.y)*/
@@ -143,8 +144,9 @@ namespace pcl
                   ///If we went outside of the memory, make sure we go back to the begining of it
                   if(pos > buffer.tsdf_memory_end)
                     pos = pos - size;
-                    
-                  pack_tsdf (0.f, 0, *pos);
+                  
+                  if (pos >= buffer.tsdf_memory_start && pos <= buffer.tsdf_memory_end) // quickfix for http://dev.pointclouds.org/issues/894
+                    pack_tsdf (0.f, 0, *pos);
                 }
             } //else /* if( idX > maxBounds.x && idY > maxBounds.y)*/
         } // if ( x < VOLUME_X && y < VOLUME_Y)
