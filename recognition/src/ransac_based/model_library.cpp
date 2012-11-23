@@ -154,7 +154,7 @@ ModelLibrary::addModel (PointCloudIn* points, PointCloudN* normals, const std::s
 //============================================================================================================================================
 
 void
-ModelLibrary::addToHashTable (const ModelLibrary::Model* model, ORROctree::Node::Data* data1, ORROctree::Node::Data* data2)
+ModelLibrary::addToHashTable (ModelLibrary::Model* model, ORROctree::Node::Data* data1, ORROctree::Node::Data* data2)
 {
   float key[3];
 

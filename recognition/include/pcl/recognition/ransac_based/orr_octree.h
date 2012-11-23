@@ -47,6 +47,7 @@
 #define PCL_RECOGNITION_ORR_OCTREE_H_
 
 #include "auxiliary.h"
+#include <pcl/common/random.h>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 #include <pcl/pcl_exports.h>
@@ -81,19 +82,46 @@ namespace pcl
                 Data (){ n_[0] = n_[1] = n_[2] = p_[0] = p_[1] = p_[2] = 0.0;}
                 virtual~ Data (){}
 
-                void addToPoint (float x, float y, float z) { p_[0] += x; p_[1] += y; p_[2] += z;}
-                void addToNormal (float x, float y, float z) { n_[0] += x; n_[1] += y; n_[2] += z;}
-                void addPointId (int id) { point_ids_.push_back(id);}
-                size_t getNumberOfPoints () const { return point_ids_.size();}
+                inline void
+                addToPoint (float x, float y, float z) { p_[0] += x; p_[1] += y; p_[2] += z;}
 
-                const float* getPoint () const { return p_;}
-                float* getPoint (){ return p_;}
-                const float* getNormal () const { return n_;}
-                float* getNormal (){ return n_;}
+                inline void
+                addToNormal (float x, float y, float z) { n_[0] += x; n_[1] += y; n_[2] += z;}
+
+                inline void
+                addPointId (int id) { point_ids_.push_back(id);}
+
+                inline size_t
+                getNumberOfPoints () const { return point_ids_.size();}
+
+                inline const float*
+                getPoint () const { return p_;}
+
+                inline float*
+                getPoint (){ return p_;}
+
+                inline const float*
+                getNormal () const { return n_;}
+
+                inline float*
+                getNormal (){ return n_;}
+
+                inline void
+                set3dId (int x, int y, int z){ id_x_ = x; id_y_ = y; id_z_ = z;}
+
+                inline int
+                get3dIdX () const {return id_x_;}
+
+                inline int
+                get3dIdY () const {return id_y_;}
+
+                inline int
+                get3dIdZ () const {return id_z_;}
 
               protected:
-            	float n_[3], p_[3];
-            	std::list<int> point_ids_;
+                float n_[3], p_[3];
+                std::list<int> point_ids_;
+                int id_x_, id_y_, id_z_;
             };
 
             Node (): data_ (NULL), children_(NULL) {}
@@ -107,7 +135,7 @@ namespace pcl
             inline void computeRadius()
             {
               float v[3] = {0.5f*(bounds_[1]-bounds_[0]), 0.5f*(bounds_[3]-bounds_[2]), 0.5f*(bounds_[5]-bounds_[4])};
-              radius_ = static_cast<float> (vecLength3 (v));
+              radius_ = static_cast<float> (aux::vecLength3 (v));
             }
 
             const float* getCenter() const { return  center_;}
@@ -131,33 +159,51 @@ namespace pcl
         ORROctree ();
         virtual ~ORROctree (){ this->clear ();}
 
-        void clear ();
+        void
+        clear ();
 
-        void build (const PointCloudIn& points, float voxelsize, const PointCloudN* normals = NULL);
+        void
+        build (const PointCloudIn& points, float voxelsize, const PointCloudN* normals = NULL);
 
     	/** \brief This method returns a super set of the full leavess which are intersected by the sphere
-    	 * with radius 'radius' and centered at 'p'. Pointers to the intersected full leaves are saved in
-    	 * 'out'. The method computes a super set in the sense that in general not all leaves saved in 'out'
-    	 * are really intersected by the sphere. The intersection test is based on the leaf radius (since
-    	 * its faster than checking all leaf corners and sides), so we report more leaves than we should, but
-    	 * still, this is a fair approximation. */
-        void getFullLeavesIntersectedBySphere (const float* p, float radius, std::list<ORROctree::Node*>& out);
+    	  * with radius 'radius' and centered at 'p'. Pointers to the intersected full leaves are saved in
+    	  * 'out'. The method computes a super set in the sense that in general not all leaves saved in 'out'
+    	  * are really intersected by the sphere. The intersection test is based on the leaf radius (since
+    	  * its faster than checking all leaf corners and sides), so we report more leaves than we should,
+    	  * but still, this is a fair approximation. */
+        void
+        getFullLeavesIntersectedBySphere (const float* p, float radius, std::list<ORROctree::Node*>& out) const;
+
+    	/** \brief Randomly chooses and returns a full leaf that is intersected by the sphere with center 'p'
+    	  * and 'radius'. Returns NULL if no leaf is intersected by that sphere. */
+        ORROctree::Node*
+        getRandomFullLeafOnSphere (const float* p, float radius);
 
         /** \brief Returns a vector with all octree leaves which contain at least one point. */
         std::vector<ORROctree::Node*>&
         getFullLeaves () { return full_leaves_;}
 
-        void getFullLeafPoints (PointCloudOut& out);
-        void getNormalsOfFullLeaves (PointCloudN& out);
+        const std::vector<ORROctree::Node*>&
+        getFullLeaves () const { return full_leaves_;}
+
+        void
+        getFullLeafPoints (PointCloudOut& out);
+
+        void
+        getNormalsOfFullLeaves (PointCloudN& out);
 
         ORROctree::Node*
         getRoot (){ return root_;}
+
+        float
+        getVoxelSize () const { return voxel_size_;}
 
       protected:
         float voxel_size_, bounds_[6];
         int tree_levels_, full_leaf_counter_;
         Node* root_;
         std::vector<Node*> full_leaves_;
+        pcl::common::UniformGenerator<int> randgen_;
 
         const PointCloudIn *points_;
     };

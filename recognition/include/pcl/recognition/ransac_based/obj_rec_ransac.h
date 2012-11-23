@@ -40,6 +40,9 @@
 #define PCL_RECOGNITION_OBJ_REC_RANSAC_H_
 
 #include "model_library.h"
+#include "orr_octree.h"
+#include "orr_octree_zprojection.h"
+#include "orr_graph.h"
 #include "auxiliary.h"
 #include <pcl/pcl_exports.h>
 #include <pcl/point_cloud.h>
@@ -94,14 +97,45 @@ namespace pcl
               object_name_ (object_name),
               rigid_transform_ (rigid_transform),
               match_confidence_ (match_confidence)
-            { }
-            virtual ~Output (){ }
+            {}
+            virtual ~Output (){}
 
           public:
             std::string object_name_;
             Eigen::Matrix4f rigid_transform_;
             double match_confidence_;
         };
+
+    	class OrientedPointPair
+    	{
+    	  public:
+            OrientedPointPair (const float *p1, const float *n1, const float *p2, const float *n2)
+            {
+              memcpy(p1_, p1, 3*sizeof (float));
+              memcpy(n1_, n1, 3*sizeof (float));
+              memcpy(p2_, p2, 3*sizeof (float));
+              memcpy(n2_, n2, 3*sizeof (float));
+            }
+            virtual ~OrientedPointPair (){}
+            float p1_[3], n1_[3], p2_[3], n2_[3];
+    	};
+
+    	class Hypothesis
+    	{
+          public:
+            Hypothesis (ModelLibrary::Model* obj_model): obj_model_ (obj_model){}
+            Hypothesis (const Hypothesis& src)
+             : obj_model_ (src.obj_model_)
+            {
+              for ( int i = 0 ; i < 12 ; ++i )
+                this->rigid_transform_[i] = src.rigid_transform_[i];
+            }
+            virtual ~Hypothesis (){}
+
+          public:
+            float rigid_transform_[12];
+            ModelLibrary::Model* obj_model_;
+    	};
 
       public:
         /** \brief Constructor with some important parameters which can not be changed once an instance of that class is created.
@@ -149,10 +183,11 @@ namespace pcl
           * \param[in]  scene is the 3d scene in which the object should be recognized.
           * \param[in]  normals are the scene normals.
           * \param[out] recognized_objects is the list of output items each one containing the recognized model instance, its name, the aligning rigid transform
+          * \param[in]  success_probability is the user-defined probability of detecting all objects in the scene.
           * and the match confidence (see ObjRecRANSAC::Output for further explanations).
           */
         void
-        recognize (const pcl::PointCloud<Eigen::Vector3d>& scene, const pcl::PointCloud<Eigen::Vector3d>& normals, std::list<ObjRecRANSAC::Output>& recognized_objects);
+        recognize (const PointCloudIn* scene, const PointCloudN* normals, std::list<ObjRecRANSAC::Output>& recognized_objects, double success_probability = 0.99);
 
         /** \brief Computes the signature of the oriented point pair ((p1, n1), (p2, n2)) consisting of the angles between
           * n1 and (p2-p1),
@@ -171,8 +206,44 @@ namespace pcl
         }
 
       protected:
-        float pair_width_;
+        int
+        computeNumberOfIterations (double success_probability);
+
+        void
+        sampleOrientedPointPairs(ORROctree::Node** leaves1, int num_leaves, std::list<OrientedPointPair>& output);
+
+        int
+        generateHypotheses(const std::list<OrientedPointPair>& pairs, std::list<Hypothesis>& out);
+
+        void
+        testHypotheses (std::list<Hypothesis>& hypotheses);
+
+        void
+        buildConflictGraph (std::list<Hypothesis>& hypotheses, ORRGraph& graph);
+
+        void
+        filterWeakHypotheses (ORRGraph& graph, std::list<ObjRecRANSAC::Output>& recognized_objects);
+
+
+    	/** \brief Computes the rigid transform in that maps the line (a1, b1) to (a2, b2).
+    	 * The computation is based on the corresponding points 'a1' <-> 'a2' and 'b1' <-> 'b2'
+    	 * and	the normals 'a1_n', 'b1_n', 'a2_n', and 'b2_n'. The result is saved in
+    	 * 'rigid_transform' which is an array of length 12. The first 9 elements are the
+    	 * rotational part (row major order) and the last 3 are the translation. */
+        void
+        computeRigidTransform(
+          const float *a1, const float *a1_n, const float *b1, const float* b1_n,
+          const float *a2, const float *a2_n, const float *b2, const float* b2_n,
+          float* rigid_transform) const;
+
+      protected:
+        float pair_width_, voxel_size_, fraction_of_pairs_in_hash_table_, relative_obj_size_;
+        float abs_zdist_thresh_;
+    	float visibility_, relative_num_of_illegal_pts_;
+
         ModelLibrary model_library_;
+        ORROctree scene_octree_;
+        ORROctreeZProjection scene_octree_proj_;
     };
 
 // === inline methods ===================================================================================================================================
@@ -182,11 +253,11 @@ namespace pcl
     {
       // Get the line from p1 to p2
       float line[3] = {p2[0] - p1[0], p2[1] - p1[1], p2[2] - p1[2]};
-      vecNormalize3 (line);
+      aux::vecNormalize3 (line);
 
-      signature[0] = static_cast<float> (acos (vecDot3 (n1,line))); line[0] = -line[0]; line[1] = -line[1]; line[2] = -line[2];
-      signature[1] = static_cast<float> (acos (vecDot3 (n2,line)));
-      signature[2] = static_cast<float> (acos (vecDot3 (n1,n2)));
+      signature[0] = static_cast<float> (acos (aux::vecDot3 (n1,line))); line[0] = -line[0]; line[1] = -line[1]; line[2] = -line[2];
+      signature[1] = static_cast<float> (acos (aux::vecDot3 (n2,line)));
+      signature[2] = static_cast<float> (acos (aux::vecDot3 (n1,n2)));
     }
   } // namespace recognition
 } // namespace pcl

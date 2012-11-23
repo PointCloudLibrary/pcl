@@ -50,20 +50,24 @@ namespace pcl
     class VoxelStructure
     {
     public:
-      VoxelStructure (): voxels_(NULL){}
-      virtual ~VoxelStructure (){ this->clear();}
+      inline VoxelStructure (): voxels_(NULL){}
+      inline virtual ~VoxelStructure (){ this->clear();}
 
       /** \brief Call this method before using an instance of this class. Parameter meaning is obvious. */
-      void
+      inline void
       build (const REAL bounds[6], int num_of_voxels[3]);
 
       /** \brief Release the memory allocated for the voxels. */
-      void
+      inline void
       clear (){ if ( voxels_ ){ delete[] voxels_; voxels_ = NULL;}}
 
       /** \brief Returns a pointer to the voxel which contains p or NULL if p is not inside the structure. */
       inline T*
       getVoxel (const REAL p[3]);
+
+      /** \brief Returns a pointer to the voxel with integer id (x,y,z) or NULL if (x,y,z) is out of bounds. */
+      inline T*
+      getVoxel (int x, int y, int z) const;
 
       /** \brief Returns the linear voxel array. */
       const inline T*
@@ -83,7 +87,7 @@ namespace pcl
         *
         * \param[in]  linear_id the position of the voxel in the internal voxel array.
         * \param[out] id3d an array of 3 integers for the integer coordinates of the voxel. */
-      void
+      inline void
       compute3dId (int linear_id, int id3d[3]) const
       {
         // Compute the z axis id
@@ -96,7 +100,7 @@ namespace pcl
       }
 
       /** \brief Returns the number of voxels in x, y and z direction. */
-      const int*
+      inline const int*
       getNumberOfVoxelsXYZ() const
       {
         return (num_of_voxels_);
@@ -106,7 +110,7 @@ namespace pcl
        *
        * \param[in]  id3 the integer coordinates along the x, y and z axis.
        * \param[out] center */
-      void
+      inline void
       computeVoxelCenter (const int id3[3], REAL center[3]) const
       {
         center[0] = min_center_[0] + static_cast<float> (id3[0])*spacing_[0];
@@ -115,21 +119,21 @@ namespace pcl
       }
 
       /** \brief Returns the total number of voxels. */
-      int
+      inline int
       getNumberOfVoxels() const
       {
         return (total_num_of_voxels_);
       }
 
       /** \brief Returns the bounds of the voxel structure, which is pointer to the internal array of 6 doubles: (min_x, max_x, min_y, max_y, min_z, max_z). */
-      const float*
+      inline const float*
       getBounds() const
       {
         return (bounds_);
       }
 
       /** \brief Copies the bounds of the voxel structure to 'b'. */
-      void
+      inline void
       getBounds(REAL b[6]) const
       {
         b[0] = bounds_[0];
@@ -147,6 +151,11 @@ namespace pcl
         return (spacing_);
       }
 
+      /** \brief Saves pointers to the voxels which are neighbors of the voxels which contains 'p'. The containing voxel is returned too.
+        * 'neighs' has to be an array of pointers with space for at least 27 pointers (27 = 3^3 which is the max number of neighbors). The */
+      inline int
+      getNeighbors (const REAL* p, T **neighs) const;
+
     protected:
       T *voxels_;
       int num_of_voxels_[3], num_of_voxels_xy_plane_, total_num_of_voxels_;
@@ -154,23 +163,6 @@ namespace pcl
       REAL spacing_[3]; // spacing betwen the voxel in x, y and z direction = voxel size in x, y and z direction
       REAL min_center_[3]; // the center of the voxel with integer coordinates (0, 0, 0)
     };
-
-// === inline methods ======================================================================================================================
-
-    template<class T, typename REAL>
-    inline T*
-    VoxelStructure<T,REAL>::getVoxel(const REAL p[3])
-    {
-      if ( p[0] < bounds_[0] || p[0] >= bounds_[1] || p[1] < bounds_[2] || p[1] >= bounds_[3] || p[2] < bounds_[4] || p[2] >= bounds_[5] )
-        return NULL;
-
-      int x = static_cast<int> ((p[0] - bounds_[0])/spacing_[0]);
-      int y = static_cast<int> ((p[1] - bounds_[2])/spacing_[1]);
-      int z = static_cast<int> ((p[2] - bounds_[4])/spacing_[2]);
-
-      return &voxels_[z*num_of_voxels_xy_plane_ + y*num_of_voxels_[0] + x];
-    }
-
   } // namespace recognition
 } // namespace pcl
 

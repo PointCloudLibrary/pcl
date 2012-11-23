@@ -85,7 +85,7 @@ namespace pcl
         };
 
         typedef std::list<std::pair<ORROctree::Node::Data*,ORROctree::Node::Data*> > node_data_pair_list;
-        typedef std::map<const Model*, node_data_pair_list> HashTableCell;
+        typedef std::map<Model*, node_data_pair_list> HashTableCell;
         typedef VoxelStructure<HashTableCell, float> HashTable;
 
       public:
@@ -120,7 +120,7 @@ namespace pcl
 
       protected:
         void
-        addToHashTable (const Model* model, ORROctree::Node::Data* data1, ORROctree::Node::Data* data2);
+        addToHashTable (Model* model, ORROctree::Node::Data* data1, ORROctree::Node::Data* data2);
 
       protected:
         std::map<std::string,Model*> models_;

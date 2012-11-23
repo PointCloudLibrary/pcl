@@ -48,12 +48,17 @@
 #include <pcl/common/common.h>
 #include <algorithm>
 #include <cmath>
+#include <ctime>
 #include <list>
 
 using namespace std;
+using namespace pcl::recognition;
 
 pcl::recognition::ORROctree::ORROctree ()
-: voxel_size_ (-1.0), tree_levels_ (-1), root_ (NULL)
+: voxel_size_ (-1.0),
+  tree_levels_ (-1),
+  root_ (NULL),
+  randgen_ (0, 1, static_cast<uint32_t> (time (NULL)))
 {
 //  mInputPoints = NULL;
 //  // Set illegal bounds
@@ -161,21 +166,21 @@ pcl::recognition::ORROctree::build (const PointCloudIn& points, float voxelsize,
       if ( points[i].y >= c[1] ) id |= 2;
       if ( points[i].z >= c[2] ) id |= 1;
 
-//      node->fullDescendantsFlagsBitwiseOR ((unsigned char)0x01 << id);
       node = node->getChild (id);
     }
 
     // Now, that we have the right leaf -> fill it
     if ( node->getData() == NULL )
     {
-      node->setData (new Node::Data ());
+      Node::Data* data = new Node::Data ();
+      // Compute the 3d integer id of the leaf
+      data->set3dId(
+        static_cast<int> ((node->getCenter ()[0] - bounds_[0])/voxel_size_),
+        static_cast<int> ((node->getCenter ()[1] - bounds_[2])/voxel_size_),
+        static_cast<int> ((node->getCenter ()[2] - bounds_[4])/voxel_size_));
+      // Save the data
+      node->setData (data);
       full_leaves_.push_back (node);
-      // Compute the 3d id of the leaf
-  //    data->set3dId(
-  //    (int)((leaf->getCenter()[0] - mBounds[0])/mVoxelSize),
-  //    (int)((leaf->getCenter()[1] - mBounds[2])/mVoxelSize),
-  //    (int)((leaf->getCenter()[2] - mBounds[4])/mVoxelSize));
-  //    leaf->setFullLeafId (mFullLeafIdCounter++);
     }
 
     node->getData ()->addToPoint (points[i].x, points[i].y, points[i].z);
@@ -187,9 +192,9 @@ pcl::recognition::ORROctree::build (const PointCloudIn& points, float voxelsize,
   // Now iterate over all full leaves and compute the normals and average points
   for ( vector<ORROctree::Node*>::iterator it = full_leaves_.begin() ; it != full_leaves_.end() ; ++it )
   {
-    vecMult3 ((*it)->getData ()->getPoint (), 1.0f/static_cast<float> ((*it)->getData ()->getNumberOfPoints ()));
+    aux::vecMult3 ((*it)->getData ()->getPoint (), 1.0f/static_cast<float> ((*it)->getData ()->getNumberOfPoints ()));
     if ( normals )
-      vecNormalize3 ((*it)->getData ()->getNormal ());
+      aux::vecNormalize3 ((*it)->getData ()->getNormal ());
   }
 
   // Save pointers to all full leafs in a list and build a neighbourhood structure
@@ -290,7 +295,7 @@ pcl::recognition::ORROctree::Node::createChildren()
 //====================================================================================================
 
 void
-pcl::recognition::ORROctree::getFullLeavesIntersectedBySphere (const float* p, float radius, std::list<ORROctree::Node*>& out)
+pcl::recognition::ORROctree::getFullLeavesIntersectedBySphere (const float* p, float radius, std::list<ORROctree::Node*>& out) const
 {
   list<ORROctree::Node*> nodes;
   nodes.push_back (root_);
@@ -307,7 +312,7 @@ pcl::recognition::ORROctree::getFullLeavesIntersectedBySphere (const float* p, f
     nodes.pop_back ();
 
     // Check if the sphere intersects the current node
-    if ( fabs (radius - vecDistance3 (p, node->getCenter ())) <= node->getRadius () )
+    if ( fabs (radius - aux::vecDistance3 (p, node->getCenter ())) <= node->getRadius () )
     {
       // We have an intersection -> push back the children of the current node
       if ( node->hasChildren () )
@@ -324,6 +329,53 @@ pcl::recognition::ORROctree::getFullLeavesIntersectedBySphere (const float* p, f
         out.push_back (node); // We got a full leaf
     }
   }
+}
+
+//================================================================================================================================================================
+
+ORROctree::Node*
+pcl::recognition::ORROctree::getRandomFullLeafOnSphere (const float* p, float radius)
+{
+  int i, rand_id;
+  vector<int> tmp_ids;
+  tmp_ids.reserve (8);
+
+  list<ORROctree::Node*> nodes;
+  nodes.push_back (root_);
+
+  while ( !nodes.empty () )
+  {
+    // Get the last element in the list
+    ORROctree::Node* node = nodes.back ();
+    // Remove the last element from the list
+    nodes.pop_back ();
+
+    // Check if the sphere intersects the current node
+    if ( fabs (radius - aux::vecDistance3<float> (p, node->getCenter ())) <= node->getRadius () )
+    {
+      // We have an intersection -> push back the children of the current node
+      if ( node->hasChildren () )
+      {
+        // Prepare the tmp id vector
+        for ( i = 0 ; i < 8 ; ++i )
+          tmp_ids.push_back (i);
+
+        // Push back the children in random order
+        for ( i = 0 ; i < 8 ; ++i )
+        {
+          randgen_.setParameters (0, static_cast<int> (tmp_ids.size ()));
+          rand_id = randgen_.run ();
+          nodes.push_back (node->getChild (tmp_ids[rand_id]));
+          // Remove the randomly selected id
+          tmp_ids.erase (tmp_ids.begin () + rand_id);
+        }
+      }
+      else if ( node->getData () )
+        return node;
+    }
+  }
+
+  return NULL;
 }
 
 //================================================================================================================================================================

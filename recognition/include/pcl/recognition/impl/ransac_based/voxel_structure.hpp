@@ -39,8 +39,7 @@
 #ifndef PCL_RECOGNITION_VOXEL_STRUCTURE_HPP_
 #define PCL_RECOGNITION_VOXEL_STRUCTURE_HPP_
 
-template<class T, typename REAL>
-void
+template<class T, typename REAL> inline void
 pcl::recognition::VoxelStructure<T,REAL>::build (const REAL bounds[6], int num_of_voxels[3])
 {
   this->clear();
@@ -72,5 +71,82 @@ pcl::recognition::VoxelStructure<T,REAL>::build (const REAL bounds[6], int num_o
   min_center_[1] = bounds_[2] + static_cast<REAL> (0.5)*spacing_[1];
   min_center_[2] = bounds_[4] + static_cast<REAL> (0.5)*spacing_[2];
 }
+
+//================================================================================================================================
+
+template<class T, typename REAL> inline T*
+pcl::recognition::VoxelStructure<T,REAL>::getVoxel (const REAL p[3])
+{
+  if ( p[0] < bounds_[0] || p[0] >= bounds_[1] || p[1] < bounds_[2] || p[1] >= bounds_[3] || p[2] < bounds_[4] || p[2] >= bounds_[5] )
+    return NULL;
+
+  int x = static_cast<int> ((p[0] - bounds_[0])/spacing_[0]);
+  int y = static_cast<int> ((p[1] - bounds_[2])/spacing_[1]);
+  int z = static_cast<int> ((p[2] - bounds_[4])/spacing_[2]);
+
+  return &voxels_[z*num_of_voxels_xy_plane_ + y*num_of_voxels_[0] + x];
+}
+
+//================================================================================================================================
+
+template<class T, typename REAL> inline T*
+pcl::recognition::VoxelStructure<T,REAL>::getVoxel (int x, int y, int z) const
+{
+  if ( 0 < x || x >= num_of_voxels_[0] ) return NULL;
+  if ( 0 < y || y >= num_of_voxels_[1] ) return NULL;
+  if ( 0 < z || z >= num_of_voxels_[2] ) return NULL;
+
+  return &voxels_[z*num_of_voxels_xy_plane_ + y*num_of_voxels_[0] + x];
+}
+
+//================================================================================================================================
+
+template<class T, typename REAL> inline int
+pcl::recognition::VoxelStructure<T,REAL>::getNeighbors (const REAL* p, T **neighs) const
+{
+  if ( p[0] < bounds_[0] || p[0] >= bounds_[1] || p[1] < bounds_[2] || p[1] >= bounds_[3] || p[2] < bounds_[4] || p[2] >= bounds_[5] )
+    return 0;
+
+  int x = static_cast<int> ((p[0] - bounds_[0])/spacing_[0]);
+  int y = static_cast<int> ((p[1] - bounds_[2])/spacing_[1]);
+  int z = static_cast<int> ((p[2] - bounds_[4])/spacing_[2]);
+
+  T* voxel;
+  int num_neighs = 0;
+
+  voxel = this->getVoxel (x+1, y+1, z+1); if ( voxel ) neighs[num_neighs++] = voxel;
+  voxel = this->getVoxel (x+1, y+1, z  ); if ( voxel ) neighs[num_neighs++] = voxel;
+  voxel = this->getVoxel (x+1, y+1, z-1); if ( voxel ) neighs[num_neighs++] = voxel;
+  voxel = this->getVoxel (x+1, y  , z+1); if ( voxel ) neighs[num_neighs++] = voxel;
+  voxel = this->getVoxel (x+1, y  , z  ); if ( voxel ) neighs[num_neighs++] = voxel;
+  voxel = this->getVoxel (x+1, y  , z-1); if ( voxel ) neighs[num_neighs++] = voxel;
+  voxel = this->getVoxel (x+1, y-1, z+1); if ( voxel ) neighs[num_neighs++] = voxel;
+  voxel = this->getVoxel (x+1, y-1, z  ); if ( voxel ) neighs[num_neighs++] = voxel;
+  voxel = this->getVoxel (x+1, y-1, z-1); if ( voxel ) neighs[num_neighs++] = voxel;
+
+  voxel = this->getVoxel (x  , y+1, z+1); if ( voxel ) neighs[num_neighs++] = voxel;
+  voxel = this->getVoxel (x  , y+1, z  ); if ( voxel ) neighs[num_neighs++] = voxel;
+  voxel = this->getVoxel (x  , y+1, z-1); if ( voxel ) neighs[num_neighs++] = voxel;
+  voxel = this->getVoxel (x  , y  , z+1); if ( voxel ) neighs[num_neighs++] = voxel;
+  voxel = this->getVoxel (x  , y  , z  ); if ( voxel ) neighs[num_neighs++] = voxel;
+  voxel = this->getVoxel (x  , y  , z-1); if ( voxel ) neighs[num_neighs++] = voxel;
+  voxel = this->getVoxel (x  , y-1, z+1); if ( voxel ) neighs[num_neighs++] = voxel;
+  voxel = this->getVoxel (x  , y-1, z  ); if ( voxel ) neighs[num_neighs++] = voxel;
+  voxel = this->getVoxel (x  , y-1, z-1); if ( voxel ) neighs[num_neighs++] = voxel;
+
+  voxel = this->getVoxel (x-1, y+1, z+1); if ( voxel ) neighs[num_neighs++] = voxel;
+  voxel = this->getVoxel (x-1, y+1, z  ); if ( voxel ) neighs[num_neighs++] = voxel;
+  voxel = this->getVoxel (x-1, y+1, z-1); if ( voxel ) neighs[num_neighs++] = voxel;
+  voxel = this->getVoxel (x-1, y  , z+1); if ( voxel ) neighs[num_neighs++] = voxel;
+  voxel = this->getVoxel (x-1, y  , z  ); if ( voxel ) neighs[num_neighs++] = voxel;
+  voxel = this->getVoxel (x-1, y  , z-1); if ( voxel ) neighs[num_neighs++] = voxel;
+  voxel = this->getVoxel (x-1, y-1, z+1); if ( voxel ) neighs[num_neighs++] = voxel;
+  voxel = this->getVoxel (x-1, y-1, z  ); if ( voxel ) neighs[num_neighs++] = voxel;
+  voxel = this->getVoxel (x-1, y-1, z-1); if ( voxel ) neighs[num_neighs++] = voxel;
+
+  return num_neighs;
+}
+
+//================================================================================================================================
 
 #endif // PCL_RECOGNITION_VOXEL_STRUCTURE_HPP_
