@@ -288,8 +288,8 @@ pcl::gpu::KinfuTracker::operator() (const DepthMap& depth_raw,
       }
       else
       {
-        Matrix3frm Rcurr = Rprev; // tranform to global coo for ith camera pose
-        Vector3f   tcurr = tprev;
+        Rcurr = Rprev; // tranform to global coo for ith camera pose
+        tcurr = tprev;
       }
       {
         //ScopeTime time("icp-all");
