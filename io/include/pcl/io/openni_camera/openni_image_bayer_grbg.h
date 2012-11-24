@@ -76,6 +76,32 @@ namespace openni_wrapper
     inline void setDebayeringMethod (const DebayeringMethod& method) throw ();
     inline DebayeringMethod getDebayeringMethod () const throw ();
     inline static bool resizingSupported (unsigned input_width, unsigned input_height, unsigned output_width, unsigned output_height);
+
+    // Debayering methods
+    void
+    debayerBilinear (
+        const unsigned char *bayer_pixel, unsigned char *rgb_buffer,
+        unsigned width, unsigned height, 
+        int bayer_line_step = 0,
+        int bayer_line_step2 = 0,
+        unsigned rgb_line_step = 0) const;
+
+    void
+    debayerEdgeAware (
+        const unsigned char *bayer_pixel, unsigned char *rgb_buffer,
+        unsigned width, unsigned height, 
+        int bayer_line_step = 0,
+        int bayer_line_step2 = 0,
+        unsigned rgb_line_step = 0) const;
+
+    void
+    debayerEdgeAwareWeighted (
+        const unsigned char *bayer_pixel, unsigned char *rgb_buffer,
+        unsigned width, unsigned height, 
+        int bayer_line_step = 0,
+        int bayer_line_step2 = 0,
+        unsigned rgb_line_step = 0) const;
+
   protected:
     DebayeringMethod debayering_method_;
   } ;
