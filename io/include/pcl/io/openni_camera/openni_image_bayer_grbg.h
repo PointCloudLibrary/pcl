@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2011 Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2011, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -43,13 +45,10 @@
 
 namespace openni_wrapper
 {
-
-  /**
-   * @brief This class provides methods to fill a RGB or Grayscale image buffer from underlying Bayer pattern image.
-   * @author Suat Gedikli
-   * @date 02.january 2011
-   * @ingroup io
-   */
+  /** \brief This class provides methods to fill a RGB or Grayscale image buffer from underlying Bayer pattern image.
+    * \author Suat Gedikli <gedikli@willowgarage.com>
+    * \ingroup io
+    */
   class PCL_EXPORTS ImageBayerGRBG : public Image
   {
   public:
