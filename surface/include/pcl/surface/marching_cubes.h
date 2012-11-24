@@ -363,6 +363,9 @@ namespace pcl
   class MarchingCubes : public SurfaceReconstruction<PointNT>
   {
     public:
+      typedef boost::shared_ptr<MarchingCubes<PointNT> > Ptr;
+      typedef boost::shared_ptr<const MarchingCubes<PointNT> > ConstPtr;
+
       using SurfaceReconstruction<PointNT>::input_;
       using SurfaceReconstruction<PointNT>::tree_;
 

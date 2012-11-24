@@ -106,9 +106,9 @@ pcl::ConvexHull<PointInT>::performReconstruction2D (PointCloud &hull, std::vecto
   Eigen::Vector3d::Scalar eigen_value;
   Eigen::Vector3d plane_params;
   pcl::eigen33 (normal_calc_covariance, eigen_value, plane_params);
-  float theta_x = fabs (plane_params.dot (x_axis_));
-  float theta_y = fabs (plane_params.dot (y_axis_));
-  float theta_z = fabs (plane_params.dot (z_axis_));
+  float theta_x = fabsf (plane_params.dot (x_axis_));
+  float theta_y = fabsf (plane_params.dot (y_axis_));
+  float theta_z = fabsf (plane_params.dot (z_axis_));
 
   // Check for degenerate cases of each projection
   // We must avoid projections in which the plane projects as a line

@@ -72,6 +72,9 @@ namespace pcl
   class GridProjection : public SurfaceReconstruction<PointNT>
   {
     public:
+      typedef boost::shared_ptr<GridProjection<PointNT> > Ptr;
+      typedef boost::shared_ptr<const GridProjection<PointNT> > ConstPtr;
+
       using SurfaceReconstruction<PointNT>::input_;
       using SurfaceReconstruction<PointNT>::tree_;
 

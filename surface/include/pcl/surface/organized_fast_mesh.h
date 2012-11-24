@@ -65,6 +65,9 @@ namespace pcl
   class OrganizedFastMesh : public MeshConstruction<PointInT>
   {
     public:
+      typedef boost::shared_ptr<OrganizedFastMesh<PointInT> > Ptr;
+      typedef boost::shared_ptr<const OrganizedFastMesh<PointInT> > ConstPtr;
+
       using MeshConstruction<PointInT>::input_;
       using MeshConstruction<PointInT>::check_tree_;
 

@@ -70,6 +70,9 @@ namespace pcl
     using Keypoint<PointInT, int>::getClassName;
 
     public:
+      typedef boost::shared_ptr<UniformSampling<PointInT> > Ptr;
+      typedef boost::shared_ptr<const UniformSampling<PointInT> > ConstPtr;
+
       /** \brief Empty constructor. */
       UniformSampling () :
         leaves_ (),

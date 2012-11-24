@@ -72,6 +72,9 @@ namespace pcl
   class BriskKeypoint2D: public Keypoint<PointInT, PointOutT>
   {
     public:
+      typedef boost::shared_ptr<BriskKeypoint2D<PointInT, PointOutT, IntensityT> > Ptr;
+      typedef boost::shared_ptr<const BriskKeypoint2D<PointInT, PointOutT, IntensityT> > ConstPtr;
+
       typedef typename Keypoint<PointInT, PointOutT>::PointCloudIn PointCloudIn;
       typedef typename Keypoint<PointInT, PointOutT>::PointCloudOut PointCloudOut;
       typedef typename Keypoint<PointInT, PointOutT>::KdTree KdTree;

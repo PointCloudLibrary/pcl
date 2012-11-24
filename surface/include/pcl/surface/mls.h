@@ -64,6 +64,9 @@ namespace pcl
   class MovingLeastSquares: public CloudSurfaceProcessing<PointInT, PointOutT>
   {
     public:
+      typedef boost::shared_ptr<MovingLeastSquares<PointInT, PointOutT> > Ptr;
+      typedef boost::shared_ptr<const MovingLeastSquares<PointInT, PointOutT> > ConstPtr;
+
       using PCLBase<PointInT>::input_;
       using PCLBase<PointInT>::indices_;
       using PCLBase<PointInT>::fake_indices_;

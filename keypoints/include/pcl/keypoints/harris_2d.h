@@ -50,10 +50,13 @@ namespace pcl
     * \author Nizar Sallem
     * \ingroup keypoints
     */
-  template <typename PointInT, typename PointOutT, typename IntensityT= pcl::common::IntensityFieldAccessor<PointInT> >
+  template <typename PointInT, typename PointOutT, typename IntensityT = pcl::common::IntensityFieldAccessor<PointInT> >
   class HarrisKeypoint2D : public Keypoint<PointInT, PointOutT>
   {
     public:
+      typedef boost::shared_ptr<HarrisKeypoint2D<PointInT, PointOutT, IntensityT> > Ptr;
+      typedef boost::shared_ptr<const HarrisKeypoint2D<PointInT, PointOutT, IntensityT> > ConstPtr;
+
       typedef typename Keypoint<PointInT, PointOutT>::PointCloudIn PointCloudIn;
       typedef typename Keypoint<PointInT, PointOutT>::PointCloudOut PointCloudOut;
       typedef typename Keypoint<PointInT, PointOutT>::KdTree KdTree;

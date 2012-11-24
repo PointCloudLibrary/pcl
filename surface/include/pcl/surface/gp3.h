@@ -142,6 +142,9 @@ namespace pcl
   class GreedyProjectionTriangulation : public MeshConstruction<PointInT>
   {
     public:
+      typedef boost::shared_ptr<GreedyProjectionTriangulation<PointInT> > Ptr;
+      typedef boost::shared_ptr<const GreedyProjectionTriangulation<PointInT> > ConstPtr;
+
       using MeshConstruction<PointInT>::tree_;
       using MeshConstruction<PointInT>::input_;
       using MeshConstruction<PointInT>::indices_;

@@ -50,6 +50,9 @@ namespace pcl
     using PCLBase<PointT>::initCompute;
 
     public:
+      typedef boost::shared_ptr<SurfelSmoothing<PointT, PointNT> > Ptr;
+      typedef boost::shared_ptr<const SurfelSmoothing<PointT, PointNT> > ConstPtr;
+
       typedef pcl::PointCloud<PointT> PointCloudIn;
       typedef typename pcl::PointCloud<PointT>::Ptr PointCloudInPtr;
       typedef pcl::PointCloud<PointNT> NormalCloud;
