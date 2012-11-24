@@ -140,6 +140,9 @@ namespace pcl
 
       /** \brief Last passed volume size */
       Eigen::Vector3f volume_size_;
+
+public:
+EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     };
     
     /** \brief Converts from map representation to organized not-dence point cloud. */

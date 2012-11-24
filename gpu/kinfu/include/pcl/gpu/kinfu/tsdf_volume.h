@@ -158,6 +158,10 @@ namespace pcl
 
       /** \brief tsdf truncation distance */
       float tranc_dist_;
+
+public:
+EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
     };
   }
 }
