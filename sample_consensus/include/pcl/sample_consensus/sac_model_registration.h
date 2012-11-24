@@ -70,13 +70,15 @@ namespace pcl
 
       /** \brief Constructor for base SampleConsensusModelRegistration.
         * \param[in] cloud the input point cloud dataset
+        * \param[in] random if true set the random seed to the current time, else set to 12345 (default: false)
         */
-      SampleConsensusModelRegistration (const PointCloudConstPtr &cloud) : 
-        SampleConsensusModel<PointT> (cloud),
-        target_ (),
-        indices_tgt_ (),
-        correspondences_ (),
-        sample_dist_thresh_ (0)
+      SampleConsensusModelRegistration (const PointCloudConstPtr &cloud, 
+                                        bool random = false) 
+        : SampleConsensusModel<PointT> (cloud, random)
+        , target_ ()
+        , indices_tgt_ ()
+        , correspondences_ ()
+        , sample_dist_thresh_ (0)
       {
         // Call our own setInputCloud
         setInputCloud (cloud);
@@ -85,14 +87,16 @@ namespace pcl
       /** \brief Constructor for base SampleConsensusModelRegistration.
         * \param[in] cloud the input point cloud dataset
         * \param[in] indices a vector of point indices to be used from \a cloud
+        * \param[in] random if true set the random seed to the current time, else set to 12345 (default: false)
         */
       SampleConsensusModelRegistration (const PointCloudConstPtr &cloud,
-                                        const std::vector<int> &indices) :
-        SampleConsensusModel<PointT> (cloud, indices),
-        target_ (),
-        indices_tgt_ (),
-        correspondences_ (),
-        sample_dist_thresh_ (0)
+                                        const std::vector<int> &indices,
+                                        bool random = false) 
+        : SampleConsensusModel<PointT> (cloud, indices, random)
+        , target_ ()
+        , indices_tgt_ ()
+        , correspondences_ ()
+        , sample_dist_thresh_ (0)
       {
         computeOriginalIndexMapping ();
         computeSampleDistanceThreshold (cloud, indices);

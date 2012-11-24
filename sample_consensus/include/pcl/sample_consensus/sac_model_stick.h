@@ -78,14 +78,21 @@ namespace pcl
 
       /** \brief Constructor for base SampleConsensusModelStick.
         * \param[in] cloud the input point cloud dataset
+        * \param[in] random if true set the random seed to the current time, else set to 12345 (default: false)
         */
-      SampleConsensusModelStick (const PointCloudConstPtr &cloud) : SampleConsensusModel<PointT> (cloud) {};
+      SampleConsensusModelStick (const PointCloudConstPtr &cloud,
+                                 bool random = false) 
+        : SampleConsensusModel<PointT> (cloud, random) {};
 
       /** \brief Constructor for base SampleConsensusModelStick.
         * \param[in] cloud the input point cloud dataset
         * \param[in] indices a vector of point indices to be used from \a cloud
+        * \param[in] random if true set the random seed to the current time, else set to 12345 (default: false)
         */
-      SampleConsensusModelStick (const PointCloudConstPtr &cloud, const std::vector<int> &indices) : SampleConsensusModel<PointT> (cloud, indices) {};
+      SampleConsensusModelStick (const PointCloudConstPtr &cloud, 
+                                 const std::vector<int> &indices,
+                                 bool random = false) 
+        : SampleConsensusModel<PointT> (cloud, indices, random) {};
 
       /** \brief Check whether the given index samples can form a valid stick model, compute the model coefficients from
         * these samples and store them internally in model_coefficients_. The stick coefficients are represented by a

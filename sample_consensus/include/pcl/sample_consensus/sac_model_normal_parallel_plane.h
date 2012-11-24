@@ -103,26 +103,35 @@ namespace pcl
 
       /** \brief Constructor for base SampleConsensusModelNormalParallelPlane.
         * \param[in] cloud the input point cloud dataset
+        * \param[in] random if true set the random seed to the current time, else set to 12345 (default: false)
         */
-      SampleConsensusModelNormalParallelPlane (const PointCloudConstPtr &cloud) : 
-        SampleConsensusModelPlane<PointT> (cloud),
-        SampleConsensusModelFromNormals<PointT, PointNT> (),
-        axis_ (Eigen::Vector4f::Zero ()),
-        distance_from_origin_ (0),
-        eps_angle_ (-1.0), cos_angle_ (-1.0), eps_dist_ (0.0)
+      SampleConsensusModelNormalParallelPlane (const PointCloudConstPtr &cloud,
+                                               bool random = false) 
+        : SampleConsensusModelPlane<PointT> (cloud, random)
+        , SampleConsensusModelFromNormals<PointT, PointNT> ()
+        , axis_ (Eigen::Vector4f::Zero ())
+        , distance_from_origin_ (0)
+        , eps_angle_ (-1.0)
+        , cos_angle_ (-1.0)
+        , eps_dist_ (0.0)
       {
       }
 
       /** \brief Constructor for base SampleConsensusModelNormalParallelPlane.
         * \param[in] cloud the input point cloud dataset
         * \param[in] indices a vector of point indices to be used from \a cloud
+        * \param[in] random if true set the random seed to the current time, else set to 12345 (default: false)
         */
-      SampleConsensusModelNormalParallelPlane (const PointCloudConstPtr &cloud, const std::vector<int> &indices) : 
-        SampleConsensusModelPlane<PointT> (cloud, indices),
-        SampleConsensusModelFromNormals<PointT, PointNT> (),
-        axis_ (Eigen::Vector4f::Zero ()),
-        distance_from_origin_ (0),
-        eps_angle_ (-1.0), cos_angle_ (-1.0), eps_dist_ (0.0)
+      SampleConsensusModelNormalParallelPlane (const PointCloudConstPtr &cloud, 
+                                               const std::vector<int> &indices,
+                                               bool random = false) 
+        : SampleConsensusModelPlane<PointT> (cloud, indices, random)
+        , SampleConsensusModelFromNormals<PointT, PointNT> ()
+        , axis_ (Eigen::Vector4f::Zero ())
+        , distance_from_origin_ (0)
+        , eps_angle_ (-1.0)
+        , cos_angle_ (-1.0)
+        , eps_dist_ (0.0)
       {
       }
 

@@ -79,23 +79,27 @@ namespace pcl
 
       /** \brief Constructor for base SampleConsensusModelPerpendicularPlane.
         * \param[in] cloud the input point cloud dataset
+        * \param[in] random if true set the random seed to the current time, else set to 12345 (default: false)
         */
-      SampleConsensusModelPerpendicularPlane (const PointCloudConstPtr &cloud) : 
-        SampleConsensusModelPlane<PointT> (cloud), 
-        axis_ (Eigen::Vector3f::Zero ()),
-        eps_angle_ (0.0)
+      SampleConsensusModelPerpendicularPlane (const PointCloudConstPtr &cloud,
+                                              bool random = false) 
+        : SampleConsensusModelPlane<PointT> (cloud, random)
+        , axis_ (Eigen::Vector3f::Zero ())
+        , eps_angle_ (0.0)
       {
       }
 
       /** \brief Constructor for base SampleConsensusModelPerpendicularPlane.
         * \param[in] cloud the input point cloud dataset
         * \param[in] indices a vector of point indices to be used from \a cloud
+        * \param[in] random if true set the random seed to the current time, else set to 12345 (default: false)
         */
       SampleConsensusModelPerpendicularPlane (const PointCloudConstPtr &cloud, 
-                                              const std::vector<int> &indices) : 
-        SampleConsensusModelPlane<PointT> (cloud, indices), 
-        axis_ (Eigen::Vector3f::Zero ()),
-        eps_angle_ (0.0)
+                                              const std::vector<int> &indices,
+                                              bool random = false) 
+        : SampleConsensusModelPlane<PointT> (cloud, indices, random)
+        , axis_ (Eigen::Vector3f::Zero ())
+        , eps_angle_ (0.0)
       {
       }
 

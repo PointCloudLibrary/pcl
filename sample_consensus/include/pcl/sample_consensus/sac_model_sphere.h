@@ -74,17 +74,22 @@ namespace pcl
 
       /** \brief Constructor for base SampleConsensusModelSphere.
         * \param[in] cloud the input point cloud dataset
+        * \param[in] random if true set the random seed to the current time, else set to 12345 (default: false)
         */
-      SampleConsensusModelSphere (const PointCloudConstPtr &cloud) : 
-        SampleConsensusModel<PointT> (cloud), tmp_inliers_ ()
+      SampleConsensusModelSphere (const PointCloudConstPtr &cloud,
+                                  bool random = false) 
+        : SampleConsensusModel<PointT> (cloud, random), tmp_inliers_ ()
       {}
 
       /** \brief Constructor for base SampleConsensusModelSphere.
         * \param[in] cloud the input point cloud dataset
         * \param[in] indices a vector of point indices to be used from \a cloud
+        * \param[in] random if true set the random seed to the current time, else set to 12345 (default: false)
         */
-      SampleConsensusModelSphere (const PointCloudConstPtr &cloud, const std::vector<int> &indices) : 
-        SampleConsensusModel<PointT> (cloud, indices), tmp_inliers_ ()
+      SampleConsensusModelSphere (const PointCloudConstPtr &cloud, 
+                                  const std::vector<int> &indices,
+                                  bool random = false) 
+        : SampleConsensusModel<PointT> (cloud, indices, random), tmp_inliers_ ()
       {}
 
       /** \brief Copy constructor.

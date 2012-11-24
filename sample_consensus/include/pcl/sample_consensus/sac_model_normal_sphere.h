@@ -88,9 +88,11 @@ namespace pcl
 
       /** \brief Constructor for base SampleConsensusModelNormalSphere.
         * \param[in] cloud the input point cloud dataset
+        * \param[in] random if true set the random seed to the current time, else set to 12345 (default: false)
         */
-      SampleConsensusModelNormalSphere (const PointCloudConstPtr &cloud) 
-        : SampleConsensusModelSphere<PointT> (cloud)
+      SampleConsensusModelNormalSphere (const PointCloudConstPtr &cloud, 
+                                        bool random = false) 
+        : SampleConsensusModelSphere<PointT> (cloud, random)
         , SampleConsensusModelFromNormals<PointT, PointNT> ()
       {
       }
@@ -98,9 +100,12 @@ namespace pcl
       /** \brief Constructor for base SampleConsensusModelNormalSphere.
         * \param[in] cloud the input point cloud dataset
         * \param[in] indices a vector of point indices to be used from \a cloud
+        * \param[in] random if true set the random seed to the current time, else set to 12345 (default: false)
         */
-      SampleConsensusModelNormalSphere (const PointCloudConstPtr &cloud, const std::vector<int> &indices) 
-        : SampleConsensusModelSphere<PointT> (cloud, indices)
+      SampleConsensusModelNormalSphere (const PointCloudConstPtr &cloud, 
+                                        const std::vector<int> &indices,
+                                        bool random = false) 
+        : SampleConsensusModelSphere<PointT> (cloud, indices, random)
         , SampleConsensusModelFromNormals<PointT, PointNT> ()
       {
       }

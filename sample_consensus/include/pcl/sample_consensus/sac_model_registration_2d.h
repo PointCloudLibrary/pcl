@@ -69,9 +69,11 @@ namespace pcl
 
       /** \brief Constructor for base SampleConsensusModelRegistration2D.
         * \param[in] cloud the input point cloud dataset
+        * \param[in] random if true set the random seed to the current time, else set to 12345 (default: false)
         */
-      SampleConsensusModelRegistration2D (const PointCloudConstPtr &cloud) 
-        : pcl::SampleConsensusModelRegistration<PointT> (cloud)
+      SampleConsensusModelRegistration2D (const PointCloudConstPtr &cloud,
+                                          bool random = false) 
+        : pcl::SampleConsensusModelRegistration<PointT> (cloud, random)
         , projection_matrix_ (Eigen::Matrix3f::Identity ())
       {
         // Call our own setInputCloud
@@ -81,10 +83,12 @@ namespace pcl
       /** \brief Constructor for base SampleConsensusModelRegistration2D.
         * \param[in] cloud the input point cloud dataset
         * \param[in] indices a vector of point indices to be used from \a cloud
+        * \param[in] random if true set the random seed to the current time, else set to 12345 (default: false)
         */
       SampleConsensusModelRegistration2D (const PointCloudConstPtr &cloud,
-                                          const std::vector<int> &indices)
-        : pcl::SampleConsensusModelRegistration<PointT> (cloud, indices)
+                                          const std::vector<int> &indices,
+                                          bool random = false)
+        : pcl::SampleConsensusModelRegistration<PointT> (cloud, indices, random)
         , projection_matrix_ (Eigen::Matrix3f::Identity ())
       {
         computeOriginalIndexMapping ();

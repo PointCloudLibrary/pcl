@@ -81,24 +81,34 @@ namespace pcl
 
       /** \brief Constructor for base SampleConsensusModelCone.
         * \param[in] cloud the input point cloud dataset
+        * \param[in] random if true set the random seed to the current time, else set to 12345 (default: false)
         */
-      SampleConsensusModelCone (const PointCloudConstPtr &cloud) : 
-        SampleConsensusModel<PointT> (cloud), 
-        SampleConsensusModelFromNormals<PointT, PointNT> (), 
-        axis_ (Eigen::Vector3f::Zero ()), eps_angle_ (0), min_angle_ (-std::numeric_limits<double>::max()), max_angle_ (std::numeric_limits<double>::max()),
-        tmp_inliers_ ()
+      SampleConsensusModelCone (const PointCloudConstPtr &cloud, bool random = false) 
+        : SampleConsensusModel<PointT> (cloud, random)
+        , SampleConsensusModelFromNormals<PointT, PointNT> ()
+        , axis_ (Eigen::Vector3f::Zero ())
+        , eps_angle_ (0)
+        , min_angle_ (-std::numeric_limits<double>::max ())
+        , max_angle_ (std::numeric_limits<double>::max ())
+        , tmp_inliers_ ()
       {
       }
 
       /** \brief Constructor for base SampleConsensusModelCone.
         * \param[in] cloud the input point cloud dataset
         * \param[in] indices a vector of point indices to be used from \a cloud
+        * \param[in] random if true set the random seed to the current time, else set to 12345 (default: false)
         */
-      SampleConsensusModelCone (const PointCloudConstPtr &cloud, const std::vector<int> &indices) : 
-        SampleConsensusModel<PointT> (cloud, indices),
-        SampleConsensusModelFromNormals<PointT, PointNT> (),
-        axis_ (Eigen::Vector3f::Zero ()), eps_angle_ (0), min_angle_ (-std::numeric_limits<double>::max()), max_angle_ (std::numeric_limits<double>::max()),
-        tmp_inliers_ ()
+      SampleConsensusModelCone (const PointCloudConstPtr &cloud, 
+                                const std::vector<int> &indices,
+                                bool random = false) 
+        : SampleConsensusModel<PointT> (cloud, indices, random)
+        , SampleConsensusModelFromNormals<PointT, PointNT> ()
+        , axis_ (Eigen::Vector3f::Zero ())
+        , eps_angle_ (0)
+        , min_angle_ (-std::numeric_limits<double>::max ())
+        , max_angle_ (std::numeric_limits<double>::max ())
+        , tmp_inliers_ ()
       {
       }
 
