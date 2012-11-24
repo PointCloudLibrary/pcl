@@ -39,26 +39,13 @@
 #include <pcl/point_types.h>
 #include <pcl/common/time.h> //fps calculations
 #include <pcl/io/openni_grabber.h>
-#include <pcl/io/lzf.h>
+#include <pcl/io/lzf_image_io.h>
 #include <pcl/visualization/boost.h>
 #include <pcl/visualization/common/float_image_utils.h>
 #include <pcl/visualization/image_viewer.h>
 #include <pcl/io/openni_camera/openni_driver.h>
 #include <pcl/console/parse.h>
 #include <pcl/visualization/mouse_event.h>
-
-#ifdef _WIN32
-# include <io.h>
-# include <windows.h>
-# define pcl_open                    _open
-# define pcl_close(fd)               _close(fd)
-# define pcl_lseek(fd,offset,origin) _lseek(fd,offset,origin)
-#else
-# include <sys/mman.h>
-# define pcl_open                    open
-# define pcl_close(fd)               close(fd)
-# define pcl_lseek(fd,offset,origin) lseek(fd,offset,origin)
-#endif
 
 using namespace std;
 
@@ -102,128 +89,8 @@ class SimpleOpenNIViewer
       , save_data_ (false)
       , nr_frames_total_ (0)
       , new_data_ (false)
+      , toggle_one_frame_capture_ (false)
     {
-    }
-
-    //////////////////////////////////////////////////////////////////////////
-    // Realtime LZF compression
-    uint32_t
-    compress (const char* input, uint32_t input_size, char *output)
-    {
-      unsigned int compressed_size = pcl::lzfCompress (
-          input,
-          input_size,
-          &output[8],
-          uint32_t (float (input_size) * 1.5f));
-
-      uint32_t compressed_final_size = 0;
-      if (compressed_size)
-      {
-        char *header = &output[0];
-        memcpy (&header[0], &compressed_size, sizeof (unsigned int));
-        memcpy (&header[4], &input_size, sizeof (unsigned int));
-        compressed_final_size = uint32_t (compressed_size + 8);
-      }
-
-      return (compressed_final_size);
-    }
-
-    //////////////////////////////////////////////////////////////////////////
-    bool
-    saveImage (const char* data, size_t data_size, 
-               const std::string &filename)
-    {
-#if _WIN32
-      HANDLE h_native_file = CreateFile (filename.c_str (), GENERIC_READ | GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-      if (h_native_file == INVALID_HANDLE_VALUE)
-        return (false);
-      HANDLE fm = CreateFileMapping (h_native_file, NULL, PAGE_READWRITE, 0, data_size, NULL);
-      char *map = static_cast<char*> (MapViewOfFile (fm, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, data_size));
-      CloseHandle (fm);
-      memcpy (&map[0], data, data_size);
-      UnmapViewOfFile (map);
-      CloseHandle (h_native_file);
-#else
-      int fd = pcl_open (filename.c_str (), O_RDWR | O_CREAT | O_TRUNC, static_cast<mode_t> (0600));
-      if (fd < 0)
-        return (false);
-      // Stretch the file size to the size of the data
-      off_t result = pcl_lseek (fd, data_size - 1, SEEK_SET);
-      if (result < 0)
-      {
-        pcl_close (fd);
-        return (false);
-      }
-      // Write a bogus entry so that the new file size comes in effect
-      result = static_cast<int> (::write (fd, "", 1));
-      if (result != 1)
-      {
-        pcl_close (fd);
-        return (false);
-      }
-      char *map = static_cast<char*> (mmap (0, data_size, PROT_WRITE, MAP_SHARED, fd, 0));
-      if (map == reinterpret_cast<char*> (-1))    // MAP_FAILED
-      {
-        pcl_close (fd);
-        return (false);
-      }
-      memcpy (&map[0], data, data_size);
-      if (munmap (map, (data_size)) == -1)
-      {
-        pcl_close (fd);
-        return (false);
-      }
-      pcl_close (fd);
-#endif
-      return (true);
-    }
-
-    //////////////////////////////////////////////////////////////////////////
-    bool
-    saveDepth (const char* data,
-               int width, int height,
-               const std::string &filename)
-    {
-      // Save compressed depth to disk
-      unsigned int depth_size = width * height * 2;
-      char* compressed_depth = static_cast<char*> (malloc (size_t (float (depth_size) * 1.5f + 8.0f)));
-      size_t compressed_final_size = compress (
-          data,
-          depth_size,
-          compressed_depth);
-
-      saveImage (compressed_depth, compressed_final_size, filename);
-      free (compressed_depth);
-      return (true);
-    }
-
-    //////////////////////////////////////////////////////////////////////////
-    void
-    saveRGB (const char *data, 
-             int width, int height,
-             const std::string &filename)
-    {
-      // Transform RGBRGB into RRGGBB for better compression
-      vector<char> rrggbb (width * height * 3);
-      int ptr1 = 0,
-          ptr2 = width * height,
-          ptr3 = ptr2 + width * height;
-      for (int i = 0; i < width * height; ++i, ++ptr1, ++ptr2, ++ptr3)
-      {
-        rrggbb[ptr1] = data[i * 3 + 0];
-        rrggbb[ptr2] = data[i * 3 + 1];
-        rrggbb[ptr3] = data[i * 3 + 2];
-      }
-
-      char* compressed_rgb = static_cast<char*> (malloc (size_t (float (rrggbb.size ()) * 1.5f + 8.0f)));
-      size_t compressed_final_size = compress (
-          reinterpret_cast<const char*> (&rrggbb[0]), 
-          uint32_t (rrggbb.size ()),
-          compressed_rgb);
-
-      // Save compressed RGB to disk
-      saveImage (compressed_rgb, compressed_final_size, filename);
-      free (compressed_rgb);
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -255,17 +122,42 @@ class SimpleOpenNIViewer
       }
 
       // If save data is enabled
-      if (save_data_)
+      if (save_data_ || toggle_one_frame_capture_)
       {
         pcl::console::TicToc tt;
         tt.tic ();
         nr_frames_total_++;
+        
         std::string time = boost::posix_time::to_iso_string (boost::posix_time::microsec_clock::local_time ());
-        std::stringstream ss1, ss2;
+        std::stringstream ss1, ss2, ss3;
+
         ss1 << "frame_" << time << "_rgb.pclzf";
-        saveRGB (reinterpret_cast<char*> (&rgb_data_[0]), rgb_width_, rgb_height_, ss1.str ());
+        pcl::io::LZFRGB24ImageWriter lrgb;
+        lrgb.write (reinterpret_cast<char*> (&rgb_data_[0]), rgb_width_, rgb_height_, ss1.str ());
+        //pcl::io::LZFBayer8ImageWriter lrgb;
+        //lrgb.write (reinterpret_cast<const char*> (&image->getMetaData ().Data ()[0]), rgb_width_, rgb_height_, ss1.str ());
+
+        pcl::io::LZFDepth16ImageWriter ld;
         ss2 << "frame_" + time + "_depth.pclzf";
-        saveDepth (reinterpret_cast<char*> (&depth_data_[0]), depth_width_, depth_height_, ss2.str ());
+        ld.write (reinterpret_cast<char*> (&depth_data_[0]), depth_width_, depth_height_, ss2.str ());
+        
+        ss3 << "frame_" << time << ".xml";
+        pcl::io::CameraParameters parameters_rgb;
+        parameters_rgb.focal_length_x = parameters_rgb.focal_length_y = grabber_.getDevice ()->getImageFocalLength (depth_image->getWidth ());
+        parameters_rgb.principal_point_x = image->getWidth () >> 1;
+        parameters_rgb.principal_point_y = image->getHeight () >> 1;
+
+        pcl::io::CameraParameters parameters_depth;
+        parameters_depth.focal_length_x = parameters_depth.focal_length_y = grabber_.getDevice ()->getDepthFocalLength (depth_image->getWidth ());
+        parameters_depth.principal_point_x = depth_image->getWidth () >> 1;
+        parameters_depth.principal_point_y = depth_image->getHeight () >> 1;
+          
+        lrgb.writeParameters (parameters_rgb, ss3.str ());
+        ld.writeParameters (parameters_depth, ss3.str ());
+        // By default, the z-value depth multiplication factor is written as part of the LZFDepthImageWriter's writeParameters as 0.001
+        // If you want to change that, uncomment the next line and change the value
+        //ld.writeParameter (0.001, "depth.z_multiplication_factor", ss3.str ());
+        toggle_one_frame_capture_ = false;
       }
     }
     
@@ -300,13 +192,15 @@ class SimpleOpenNIViewer
     }
     
     void 
-    mouse_callback (const pcl::visualization::MouseEvent&, void*)
+    mouse_callback (const pcl::visualization::MouseEvent& mouse_event, void*)
     {
       //string* message = static_cast<string*> (cookie);
-      //if (mouse_event.getType () == pcl::visualization::MouseEvent::MouseButtonPress && mouse_event.getButton () == pcl::visualization::MouseEvent::LeftButton)
-      //{
+      if (mouse_event.getType () == pcl::visualization::MouseEvent::MouseButtonPress && mouse_event.getButton () == pcl::visualization::MouseEvent::LeftButton)
+      {
+        toggle_one_frame_capture_ = true;
+        PCL_INFO ("Toggled single frame capture state.\n");
       //  cout << (*message) << " :: " << mouse_event.getX () << " , " << mouse_event.getY () << endl;
-      //}
+      }
     }
 
     void
@@ -384,6 +278,7 @@ class SimpleOpenNIViewer
     bool save_data_;
     int nr_frames_total_;
     bool new_data_;
+    bool toggle_one_frame_capture_;
 };
 
 void
@@ -422,6 +317,11 @@ usage (char ** argv)
 int
 main (int argc, char ** argv)
 {
+  bool debug = false;
+  pcl::console::parse_argument (argc, argv, "-debug", debug);
+  if (debug)
+    pcl::console::setVerbosityLevel (pcl::console::L_DEBUG);
+
   std::string device_id ("");
   pcl::OpenNIGrabber::Mode image_mode = pcl::OpenNIGrabber::OpenNI_Default_Mode;
   pcl::OpenNIGrabber::Mode depth_mode = pcl::OpenNIGrabber::OpenNI_Default_Mode;
@@ -496,6 +396,9 @@ main (int argc, char ** argv)
   
   int depthformat = openni_wrapper::OpenNIDevice::OpenNI_12_bit_depth;
   pcl::console::parse_argument (argc, argv, "-depthformat", depthformat);
+
+  //int imageformat = 0;
+  //pcl::console::parse_argument (argc, argv, "-imageformat", imageformat);
 
   pcl::OpenNIGrabber grabber (device_id, depth_mode, image_mode);
   // Set the depth output format
