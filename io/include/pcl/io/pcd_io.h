@@ -46,16 +46,17 @@
 namespace pcl
 {
   /** \brief Point Cloud Data (PCD) file format reader.
-    * \author Radu Bogdan Rusu
+    * \author Radu B. Rusu
     * \ingroup io
     */
   class PCL_EXPORTS PCDReader : public FileReader
   {
     public:
-      /** Empty constructor */      
+      /** Empty constructor */
       PCDReader () : FileReader () {}
-      /** Empty destructor */      
+      /** Empty destructor */
       ~PCDReader () {}
+
       /** \brief Various PCD file versions.
         *
         * PCD_V6 represents PCD files with version 0.6, which contain the following fields:

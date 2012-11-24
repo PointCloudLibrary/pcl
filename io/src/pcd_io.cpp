@@ -1090,7 +1090,7 @@ pcl::PCDReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
     if (result < 0)
     {
       pcl_close (fd);
-      PCL_ERROR ("[pcl::PCDWriter::read] lseek errno: %d strerror: %s\n", errno, strerror (errno));
+      PCL_ERROR ("[pcl::PCDReader::read] lseek errno: %d strerror: %s\n", errno, strerror (errno));
       PCL_ERROR ("[pcl::PCDReader::read] Error during lseek ()!\n");
       return (-1);
     }
@@ -1098,12 +1098,11 @@ pcl::PCDReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
     size_t data_size = data_idx + cloud.data.size ();
     // Prepare the map
 #ifdef _WIN32
-    // map te whole file
-    // As we don't know the real size of data (compressed or not), we set dwMaximumSizeHigh = dwMaximumSizeLow = 0
-    // so as to map the whole file
+    // As we don't know the real size of data (compressed or not), 
+    // we set dwMaximumSizeHigh = dwMaximumSizeLow = 0 so as to map the whole file
     HANDLE fm = CreateFileMapping ((HANDLE) _get_osfhandle (fd), NULL, PAGE_READONLY, 0, 0, NULL);
-    // As we don't know the real size of data (compressed or not), we set dwNumberOfBytesToMap = 0
-    // so as to map the whole file
+    // As we don't know the real size of data (compressed or not), 
+    // we set dwNumberOfBytesToMap = 0 so as to map the whole file
     char *map = static_cast<char*>(MapViewOfFile (fm, FILE_MAP_READ, 0, 0, 0));
     if (map == NULL)
     {
