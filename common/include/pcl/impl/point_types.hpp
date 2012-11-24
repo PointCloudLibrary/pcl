@@ -41,6 +41,8 @@
 #ifndef PCL_IMPL_POINT_TYPES_HPP_
 #define PCL_IMPL_POINT_TYPES_HPP_
 
+#include <pcl/console/print.h>
+
 // Define all PCL point types
 #define PCL_POINT_TYPES         \
   (pcl::PointXYZ)               \
@@ -259,7 +261,7 @@ namespace pcl
   {
     PCL_ADD_RGB;
   };
-  
+
   /** \brief A structure representing RGB color information.
     *
     * The RGBA information is available either as separate r, g, b, or as a
@@ -487,9 +489,17 @@ namespace pcl
       r = g = b = 0;
       a = 255;
     }
-    inline Eigen::Vector3i getRGBVector3i () { return (Eigen::Vector3i (r, g, b)); }
+    inline Eigen::Vector3i getRGBVector3i ()
+    {
+      PCL_WARN ("[pcl::PointXYZRGBA::getRGBVector3i] The non-const version of this method is deprecated (no Eigen::Map!)\n");
+      return (Eigen::Vector3i (r, g, b));
+    }
     inline const Eigen::Vector3i getRGBVector3i () const { return (Eigen::Vector3i (r, g, b)); }
-    inline Eigen::Vector4i getRGBVector4i () { return (Eigen::Vector4i (r, g, b, a)); }
+    inline Eigen::Vector4i getRGBVector4i ()
+    {
+      PCL_WARN ("[pcl::PointXYZRGBA::getRGBVector4i] The non-const version of this method is deprecated (no Eigen::Map!)\n");
+      return (Eigen::Vector4i (r, g, b, a));
+    }
     inline const Eigen::Vector4i getRGBVector4i () const { return (Eigen::Vector4i (r, g, b, a)); }
   };
 
@@ -576,9 +586,17 @@ namespace pcl
       a = 255;
     }
 
-    inline Eigen::Vector3i getRGBVector3i () { return (Eigen::Vector3i (r, g, b)); }
+    inline Eigen::Vector3i getRGBVector3i ()
+    {
+      PCL_WARN ("[pcl::PointXYZRGB::getRGBVector3i] The non-const version of this method is deprecated (no Eigen::Map!)\n");
+      return (Eigen::Vector3i (r, g, b));
+    }
     inline const Eigen::Vector3i getRGBVector3i () const { return (Eigen::Vector3i (r, g, b)); }
-    inline Eigen::Vector4i getRGBVector4i () { return (Eigen::Vector4i (r, g, b, a)); }
+    inline Eigen::Vector4i getRGBVector4i ()
+    {
+      PCL_WARN ("[pcl::PointXYZRGB::getRGBVector4i] The non-const version of this method is deprecated (no Eigen::Map!)\n");
+      return (Eigen::Vector4i (r, g, b, a));
+    }
     inline const Eigen::Vector4i getRGBVector4i () const { return (Eigen::Vector4i (r, g, b, a)); }
 
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
@@ -933,9 +951,17 @@ namespace pcl
       curvature = 0;
     }
 
-    inline Eigen::Vector3i getRGBVector3i () { return (Eigen::Vector3i (r, g, b)); }
+    inline Eigen::Vector3i getRGBVector3i ()
+    {
+      PCL_WARN ("[pcl::PointXYZRGBNormal::getRGBVector3i] The non-const version of this method is deprecated (no Eigen::Map!)\n");
+      return (Eigen::Vector3i (r, g, b));
+    }
     inline const Eigen::Vector3i getRGBVector3i () const { return (Eigen::Vector3i (r, g, b)); }
-    inline Eigen::Vector4i getRGBVector4i () { return (Eigen::Vector4i (r, g, b, a)); }
+    inline Eigen::Vector4i getRGBVector4i ()
+    {
+      PCL_WARN ("[pcl::PointXYZRGBNormal::getRGBVector4i] The non-const version of this method is deprecated (no Eigen::Map!)\n");
+      return (Eigen::Vector4i (r, g, b, a));
+    }
     inline const Eigen::Vector4i getRGBVector4i () const { return (Eigen::Vector4i (r, g, b, a)); }
   };
   inline std::ostream& operator << (std::ostream& os, const PointXYZRGBNormal& p)
