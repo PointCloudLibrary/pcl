@@ -1134,7 +1134,7 @@ pcl::PCDReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
       if (data_size < compressed_size || uncompressed_size < compressed_size)
       {
         PCL_DEBUG ("[pcl::PCDReader::read] Allocated data size (%zu) or uncompressed size (%zu) smaller than compressed size (%u). Need to remap.\n", data_size, uncompressed_size, compressed_size);
-#if _WIN32
+#ifdef _WIN32
         UnmapViewOfFile (map);
         data_size = compressed_size + data_idx + 8;
         map = static_cast<char*>(MapViewOfFile (fm, FILE_MAP_READ, 0, 0, data_size));
@@ -1206,7 +1206,7 @@ pcl::PCDReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
       memcpy (&cloud.data[0], &map[0] + data_idx, cloud.data.size ());
 
     // Unmap the pages of memory
-#if _WIN32
+#ifdef _WIN32
     UnmapViewOfFile (map);
     CloseHandle (fm);
 #else
@@ -1451,7 +1451,7 @@ pcl::PCDReader::readEigen (const std::string &file_name, pcl::PointCloud<Eigen::
     }
 
     // Unmap the pages of memory
-#if _WIN32
+#ifdef _WIN32
     UnmapViewOfFile (map);
     CloseHandle (fm);
 #else
@@ -1871,7 +1871,7 @@ pcl::PCDWriter::writeBinary (const std::string &file_name, const sensor_msgs::Po
   oss.flush();
   data_idx = static_cast<unsigned int> (oss.tellp ());
 
-#if _WIN32
+#ifdef _WIN32
   HANDLE h_native_file = CreateFile (file_name.c_str (), GENERIC_READ | GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
   if (h_native_file == INVALID_HANDLE_VALUE)
   {
@@ -1936,14 +1936,14 @@ pcl::PCDWriter::writeBinary (const std::string &file_name, const sensor_msgs::Po
   // Copy the data
   memcpy (&map[0] + data_idx, &cloud.data[0], cloud.data.size ());
 
-#if !_WIN32
+#ifndef _WIN32
   // If the user set the synchronization flag on, call msync
   if (map_synchronization_)
     msync (map, static_cast<size_t> (data_idx + cloud.data.size ()), MS_SYNC);
 #endif
 
   // Unmap the pages of memory
-#if _WIN32
+#ifdef _WIN32
     UnmapViewOfFile (map);
 #else
   if (munmap (map, static_cast<size_t> (data_idx + cloud.data.size ())) == -1)
@@ -1955,7 +1955,7 @@ pcl::PCDWriter::writeBinary (const std::string &file_name, const sensor_msgs::Po
   }
 #endif
   // Close file
-#if _WIN32
+#ifdef _WIN32
   CloseHandle(h_native_file);
 #else
   pcl_close (fd);
@@ -1982,7 +1982,7 @@ pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name, const senso
   oss.flush ();
   data_idx = oss.tellp ();
 
-#if _WIN32
+#ifdef _WIN32
   HANDLE h_native_file = CreateFile (file_name.c_str (), GENERIC_READ | GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
   if (h_native_file == INVALID_HANDLE_VALUE)
   {
@@ -2075,7 +2075,7 @@ pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name, const senso
   }
   else
   {
-#if !_WIN32
+#ifndef _WIN32
     pcl_close (fd);
 #endif
     resetLockingPermissions (file_name, file_lock);
@@ -2083,7 +2083,7 @@ pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name, const senso
     return (-1);
   }
 
-#if !_WIN32
+#ifndef _WIN32
   // Stretch the file size to the size of the data
   off_t result = pcl_lseek (fd, getpagesize () + data_size - 1, SEEK_SET);
   if (result < 0)
@@ -2127,14 +2127,14 @@ pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name, const senso
   // Copy the compressed data
   memcpy (&map[data_idx], temp_buf, data_size);
 
-#if !_WIN32
+#ifndef _WIN32
   // If the user set the synchronization flag on, call msync
   if (map_synchronization_)
     msync (map, compressed_final_size, MS_SYNC);
 #endif
 
   // Unmap the pages of memory
-#if _WIN32
+#ifdef _WIN32
     UnmapViewOfFile (map);
 #else
   if (munmap (map, (compressed_final_size)) == -1)
@@ -2146,7 +2146,7 @@ pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name, const senso
   }
 #endif
   // Close file
-#if _WIN32
+#ifdef _WIN32
   CloseHandle (h_native_file);
 #else
   pcl_close (fd);
@@ -2287,7 +2287,7 @@ pcl::PCDWriter::writeBinaryEigen (const std::string &file_name,
   oss.flush ();
   data_idx = static_cast<int> (oss.tellp ());
 
-#if _WIN32
+#ifdef _WIN32
   HANDLE h_native_file = CreateFileA (file_name.c_str (), GENERIC_READ | GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
   if (h_native_file == INVALID_HANDLE_VALUE)
   {
@@ -2309,7 +2309,7 @@ pcl::PCDWriter::writeBinaryEigen (const std::string &file_name,
   size_t data_size = cloud.points.rows () * cloud.points.cols () * sizeof (float);
 
   // Prepare the map
-#if _WIN32
+#ifdef _WIN32
   HANDLE fm = CreateFileMappingA (h_native_file, NULL, PAGE_READWRITE, 0, (DWORD) (data_idx + data_size), NULL);
   char *map = static_cast<char*> (MapViewOfFile (fm, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, data_idx + data_size));
   CloseHandle (fm);
@@ -2358,13 +2358,13 @@ pcl::PCDWriter::writeBinaryEigen (const std::string &file_name,
   memcpy (&map[0] + data_idx, reinterpret_cast<const char*> (pts.data ()), data_size);
 
   // If the user set the synchronization flag on, call msync
-#if !_WIN32
+#ifndef _WIN32
   if (map_synchronization_)
     msync (map, data_idx + data_size, MS_SYNC);
 #endif
 
   // Unmap the pages of memory
-#if _WIN32
+#ifdef _WIN32
     UnmapViewOfFile (map);
 #else
   if (munmap (map, (data_idx + data_size)) == -1)
@@ -2376,7 +2376,7 @@ pcl::PCDWriter::writeBinaryEigen (const std::string &file_name,
   }
 #endif
   // Close file
-#if _WIN32
+#ifdef _WIN32
   CloseHandle (h_native_file);
 #else
   pcl_close (fd);
@@ -2402,7 +2402,7 @@ pcl::PCDWriter::writeBinaryCompressedEigen (
   oss.flush ();
   data_idx = oss.tellp ();
 
-#if _WIN32
+#ifdef _WIN32
   HANDLE h_native_file = CreateFileA (file_name.c_str (), GENERIC_READ | GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
   if (h_native_file == INVALID_HANDLE_VALUE)
   {
@@ -2449,7 +2449,7 @@ pcl::PCDWriter::writeBinaryCompressedEigen (
   }
   else
   {
-#if !_WIN32
+#ifndef _WIN32
     pcl_close (fd);
 #endif
     resetLockingPermissions (file_name, file_lock);
@@ -2457,7 +2457,7 @@ pcl::PCDWriter::writeBinaryCompressedEigen (
     return (-1);
   }
 
-#if !_WIN32
+#ifndef _WIN32
   // Stretch the file size to the size of the data
   off_t result = pcl_lseek (fd, getpagesize () + data_size - 1, SEEK_SET);
   if (result < 0)
@@ -2480,7 +2480,7 @@ pcl::PCDWriter::writeBinaryCompressedEigen (
 #endif
 
   // Prepare the map
-#if _WIN32
+#ifdef _WIN32
   HANDLE fm = CreateFileMapping (h_native_file, NULL, PAGE_READWRITE, 0, compressed_final_size, NULL);
   char *map = static_cast<char*> (MapViewOfFile (fm, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, compressed_final_size));
   CloseHandle (fm);
@@ -2501,14 +2501,14 @@ pcl::PCDWriter::writeBinaryCompressedEigen (
   // Copy the compressed data
   memcpy (&map[data_idx], temp_buf, static_cast<size_t> (data_size));
 
-#if !_WIN32
+#ifndef _WIN32
   // If the user set the synchronization flag on, call msync
   if (map_synchronization_)
     msync (map, compressed_final_size, MS_SYNC);
 #endif
 
   // Unmap the pages of memory
-#if _WIN32
+#ifdef _WIN32
     UnmapViewOfFile (map);
 #else
   if (munmap (map, (compressed_final_size)) == -1)
@@ -2520,7 +2520,7 @@ pcl::PCDWriter::writeBinaryCompressedEigen (
   }
 #endif
   // Close file
-#if _WIN32
+#ifdef _WIN32
   CloseHandle (h_native_file);
 #else
   pcl_close (fd);
