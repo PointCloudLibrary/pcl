@@ -195,14 +195,14 @@ namespace pcl
             * \param[in] y the V coordinate of the pixel
             * \param[in] threshold the threshold to use for cutting the response
             */
-          inline uint8_t 
+          uint8_t 
           getAgastScore (int x, int y, uint8_t threshold);
           /** \brief Get the AGAST keypoint score for a given pixel using a threshold
             * \param[in] x the U coordinate of the pixel
             * \param[in] y the V coordinate of the pixel
             * \param[in] threshold the threshold to use for cutting the response
             */
-          inline uint8_t 
+          uint8_t 
           getAgastScore_5_8 (int x, int y, uint8_t threshold);
           /** \brief Get the AGAST keypoint score for a given pixel using a threshold
             * \param[in] xf the X coordinate of the pixel
@@ -210,7 +210,7 @@ namespace pcl
             * \param[in] threshold the threshold to use for cutting the response
             * \param[in] scale the scale
             */
-          inline uint8_t 
+          uint8_t 
           getAgastScore (float xf, float yf, uint8_t threshold, float scale = 1.0f);
 
           /** \brief Access gray values (smoothed/interpolated) 
@@ -221,33 +221,33 @@ namespace pcl
             * \param[in] yf the y coordinate
             * \param[in] scale the scale
             */
-          inline uint8_t 
+          uint8_t 
           getValue (const std::vector<unsigned char>& mat, 
                     int width, int height, float xf, float yf, float scale);
          
           /** \brief Get the image used. */
-          inline const std::vector<unsigned char>&
+          const std::vector<unsigned char>&
           getImage () const
           {
             return (img_);
           }
 
           /** \brief Get the width of the image used. */
-          inline int
+          int
           getImageWidth () const
           {
             return (img_width_);
           }
 
           /** \brief Get the height of the image used. */
-          inline int
+          int
           getImageHeight () const
           {
             return (img_height_);
           }
 
           /** \brief Get the scale used. */
-          inline float
+          float
           getScale () const
           {
             return (scale_);
