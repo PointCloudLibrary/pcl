@@ -101,12 +101,13 @@ namespace pcl
                               upsample_method_ (NONE),
                               upsampling_radius_ (0.0),
                               upsampling_step_ (0.0),
-                              rng_uniform_distribution_ (),
                               desired_num_points_in_radius_ (0),
                               mls_results_ (),
                               voxel_size_ (1.0),
                               dilation_iteration_num_ (0),
-                              nr_coeff_ ()
+                              nr_coeff_ (),
+                              rng_alg_ (),
+                              rng_uniform_distribution_ ()
                               {};
 
 
@@ -320,11 +321,6 @@ namespace pcl
         */
       double upsampling_step_;
 
-      /** \brief Random number generator using an uniform distribution of floats
-        * \note Used only in the case of RANDOM_UNIFORM_DENSITY upsampling
-        */
-      boost::variate_generator<boost::mt19937, boost::uniform_real<float> > *rng_uniform_distribution_;
-
       /** \brief Parameter that specifies the desired number of points within the search radius
         * \note Used only in the case of RANDOM_UNIFORM_DENSITY upsampling
         */
@@ -485,6 +481,16 @@ namespace pcl
         * \param[out] output the result of the reconstruction 
         */
       virtual void performProcessing (PointCloudOut &output);
+
+      /** \brief Boost-based random number generator algorithm. */
+      boost::mt19937 rng_alg_;
+
+      /** \brief Random number generator using an uniform distribution of floats
+        * \note Used only in the case of RANDOM_UNIFORM_DENSITY upsampling
+        */
+      boost::shared_ptr<boost::variate_generator<boost::mt19937&, 
+                                                 boost::uniform_real<float> > 
+                       > rng_uniform_distribution_;
 
       /** \brief Abstract class get name method. */
       std::string getClassName () const { return ("MovingLeastSquares"); }

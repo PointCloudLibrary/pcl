@@ -103,13 +103,14 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::process (PointCloudOut &output)
   {
     // Initialize random number generator if necessary
     case (RANDOM_UNIFORM_DENSITY):
-      {
-      boost::mt19937 *rng = new boost::mt19937 (static_cast<unsigned int>(std::time(0)));
+    {
+      rng_alg_.seed (static_cast<unsigned> (std::time (0)));
       float tmp = static_cast<float> (search_radius_ / 2.0f);
-      boost::uniform_real<float> *uniform_distrib = new boost::uniform_real<float> (-tmp, tmp);
-      rng_uniform_distribution_ = new boost::variate_generator<boost::mt19937, boost::uniform_real<float> > (*rng, *uniform_distrib);
+      boost::uniform_real<float> uniform_distrib (-tmp, tmp);
+      rng_uniform_distribution_.reset (new boost::variate_generator<boost::mt19937&, boost::uniform_real<float> > (rng_alg_, uniform_distrib));
+
       break;
-      }
+    }
     case (VOXEL_GRID_DILATION):
     case (DISTINCT_CLOUD):
       {
