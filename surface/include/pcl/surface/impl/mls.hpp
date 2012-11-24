@@ -51,6 +51,9 @@
 template <typename PointInT, typename PointOutT> void
 pcl::MovingLeastSquares<PointInT, PointOutT>::process (PointCloudOut &output)
 {
+  // Reset or initialize the collection of indices
+  corresponding_input_indices_.reset(new PointIndices);
+
   // Check if normals have to be computed/saved
   if (compute_normals_)
   {
@@ -177,10 +180,10 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::computeMLSPointNormal (int index,
   double distance = point.dot (model_coefficients.head<3> ()) + model_coefficients[3];
   point -= distance * model_coefficients.head<3> ();
 
-  float curvature = covariance_matrix.trace ();
+  float curvature = static_cast<float> (covariance_matrix.trace ());
   // Compute the curvature surface change
   if (curvature != 0)
-    curvature = fabsf (eigen_value / curvature);
+    curvature = fabsf (float (eigen_value / double (curvature)));
 
 
   // Get a copy of the plane normal easy access
@@ -256,7 +259,7 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::computeMLSPointNormal (int index,
   switch (upsample_method_)
   {
     case (NONE):
-      {
+    {
       Eigen::Vector3d normal = plane_normal;
 
       if (polynomial_fit_ && static_cast<int> (nn_indices.size ()) >= nr_coeff_ && pcl_isfinite (c_vec[0]))
@@ -269,9 +272,9 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::computeMLSPointNormal (int index,
       }
 
       PointOutT aux;
-      aux.x = point[0];
-      aux.y = point[1];
-      aux.z = point[2];
+      aux.x = static_cast<float> (point[0]);
+      aux.y = static_cast<float> (point[1]);
+      aux.z = static_cast<float> (point[2]);
       projected_points.push_back (aux);
 
       if (compute_normals_)
@@ -282,13 +285,14 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::computeMLSPointNormal (int index,
         aux_normal.normal_z = static_cast<float> (normal[2]);
         aux_normal.curvature = curvature;
         projected_points_normals.push_back (aux_normal);
+        corresponding_input_indices_->indices.push_back (index);
       }
 
       break;
-      }
+    }
 
     case (SAMPLE_LOCAL_PLANE):
-      {
+    {
       // Uniformly sample a circle around the query point using the radius and step parameters
       for (float u_disp = -static_cast<float> (upsampling_radius_); u_disp <= upsampling_radius_; u_disp += static_cast<float> (upsampling_step_))
         for (float v_disp = -static_cast<float> (upsampling_radius_); v_disp <= upsampling_radius_; v_disp += static_cast<float> (upsampling_step_))
@@ -302,14 +306,15 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::computeMLSPointNormal (int index,
                                       projected_point, projected_normal);
 
             projected_points.push_back (projected_point);
+            corresponding_input_indices_->indices.push_back (index);
             if (compute_normals_)
               projected_points_normals.push_back (projected_normal);
           }
       break;
-      }
+    }
 
     case (RANDOM_UNIFORM_DENSITY):
-      {
+    {
       // Compute the local point density and add more samples if necessary
       int num_points_to_add = static_cast<int> (floor (desired_num_points_in_radius_ / 2.0 / static_cast<double> (nn_indices.size ())));
 
@@ -327,10 +332,11 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::computeMLSPointNormal (int index,
             normal = plane_normal - c_vec[order_ + 1] * u_axis - c_vec[1] * v_axis;
         }
         PointOutT aux;
-        aux.x = point[0];
-        aux.y = point[1];
-        aux.z = point[2];
+        aux.x = static_cast<float> (point[0]);
+        aux.y = static_cast<float> (point[1]);
+        aux.z = static_cast<float> (point[2]);
         projected_points.push_back (aux);
+        corresponding_input_indices_->indices.push_back (index);
 
         if (compute_normals_)
         {
@@ -362,6 +368,7 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::computeMLSPointNormal (int index,
                                     projected_point, projected_normal);
 
           projected_points.push_back (projected_point);
+          corresponding_input_indices_->indices.push_back (index);
           if (compute_normals_)
             projected_points_normals.push_back (projected_normal);
 
@@ -369,7 +376,7 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::computeMLSPointNormal (int index,
         }
       }
       break;
-      }
+    }
 
     case (VOXEL_GRID_DILATION):
     case (DISTINCT_CLOUD):
@@ -460,6 +467,7 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::performProcessing (PointCloudOut &
     if (!searchForNeighbors ((*indices_)[cp], nn_indices, nn_sqr_dists))
       continue;
 
+
     // Check the number of nearest neighbors for normal estimation (and later
     // for polynomial fit as well)
     if (nn_indices.size () < 3)
@@ -506,8 +514,8 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::performProcessing (PointCloudOut &
 
       Eigen::Vector3d add_point = distinct_cloud_->points[dp_i].getVector3fMap ().template cast<double> ();
 
-      float u_disp = (add_point - mls_results_[input_index].mean).dot (mls_results_[input_index].u_axis),
-            v_disp = (add_point - mls_results_[input_index].mean).dot (mls_results_[input_index].v_axis);
+      float u_disp = static_cast<float> ((add_point - mls_results_[input_index].mean).dot (mls_results_[input_index].u_axis)),
+            v_disp = static_cast<float> ((add_point - mls_results_[input_index].mean).dot (mls_results_[input_index].v_axis));
 
       PointOutT result_point;
       pcl::Normal result_normal;
@@ -523,12 +531,14 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::performProcessing (PointCloudOut &
       // Copy additional point information if available
       copyMissingFields (input_->points[input_index], result_point);
 
+      // Store the id of the original point
+      corresponding_input_indices_->indices.push_back (input_index);
+
       output.push_back (result_point);
       if (compute_normals_)
         normals_->push_back (result_normal);
     }
   }
-
 
   // For the voxel grid upsampling method, generate the voxel grid and dilate it
   // Then, project the newly obtained points to the MLS surface
@@ -560,8 +570,8 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::performProcessing (PointCloudOut &
         continue;
 
       Eigen::Vector3d add_point = p.getVector3fMap ().template cast<double> ();
-      float u_disp = (add_point - mls_results_[input_index].mean).dot (mls_results_[input_index].u_axis),
-            v_disp = (add_point - mls_results_[input_index].mean).dot (mls_results_[input_index].v_axis);
+      float u_disp = static_cast<float> ((add_point - mls_results_[input_index].mean).dot (mls_results_[input_index].u_axis)),
+            v_disp = static_cast<float> ((add_point - mls_results_[input_index].mean).dot (mls_results_[input_index].v_axis));
 
       PointOutT result_point;
       pcl::Normal result_normal;
@@ -574,10 +584,14 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::performProcessing (PointCloudOut &
                                 mls_results_[input_index].num_neighbors,
                                 result_point, result_normal);
 
-      /// Copy additional point information if available
+      // Copy additional point information if available
       copyMissingFields (input_->points[input_index], result_point);
 
+      // Store the id of the original point
+      corresponding_input_indices_->indices.push_back(input_index);
+
       output.push_back (result_point);
+
       if (compute_normals_)
         normals_->push_back (result_normal);
     }
@@ -634,7 +648,7 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::MLSVoxelGrid::dilate ()
     Eigen::Vector3i index;
     getIndexIn3D (m_it->first, index);
 
-    /// Now dilate all of its voxels
+    // Now dilate all of its voxels
     for (int x = -1; x <= 1; ++x)
       for (int y = -1; y <= 1; ++y)
         for (int z = -1; z <= 1; ++z)

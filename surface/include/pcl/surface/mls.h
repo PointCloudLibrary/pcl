@@ -106,6 +106,7 @@ namespace pcl
                               voxel_size_ (1.0),
                               dilation_iteration_num_ (0),
                               nr_coeff_ (),
+                              corresponding_input_indices_ (),
                               rng_alg_ (),
                               rng_uniform_distribution_ ()
                               {};
@@ -279,6 +280,12 @@ namespace pcl
         */
       void 
       process (PointCloudOut &output);
+
+
+      /** \brief Get the set of indices with each point in output having the 
+        * corresponding point in input */
+      inline PointIndicesPtr
+      getCorrespondingIndices () { return (corresponding_input_indices_); }
 
     protected:
       /** \brief The point cloud that will hold the estimated normals, if set. */
@@ -481,6 +488,9 @@ namespace pcl
         * \param[out] output the result of the reconstruction 
         */
       virtual void performProcessing (PointCloudOut &output);
+
+      /** \brief Collects for each point in output the corrseponding point in the input. */
+      PointIndicesPtr corresponding_input_indices_;
 
       /** \brief Boost-based random number generator algorithm. */
       boost::mt19937 rng_alg_;
