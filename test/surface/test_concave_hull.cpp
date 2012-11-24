@@ -127,10 +127,10 @@ TEST (PCL, ConcaveHull_planar_bunny)
 
   ModelCoefficients::Ptr plane_coefficients (new ModelCoefficients ());
   plane_coefficients->values.resize (4);
-  plane_coefficients->values[0] = -0.010666;
-  plane_coefficients->values[1] = -0.793771;
-  plane_coefficients->values[2] = -0.607779;
-  plane_coefficients->values[3] = 0.993252;
+  plane_coefficients->values[0] = -0.010666f;
+  plane_coefficients->values[1] = -0.793771f;
+  plane_coefficients->values[2] = -0.607779f;
+  plane_coefficients->values[3] = 0.993252f;
 
   /// Project segmented object points onto plane
   ProjectInliers<PointXYZ> project_inliers_filter;
