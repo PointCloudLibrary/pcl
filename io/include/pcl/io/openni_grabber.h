@@ -3,6 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2009-2011, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -16,7 +17,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -138,6 +139,78 @@ namespace pcl
       /** \brief Obtain a list of the available image modes that this device supports. */
       std::vector<std::pair<int, XnMapOutputMode> >
       getAvailableImageModes () const;
+
+      /** \brief Set the RGB image focal length (fx = fy).
+        * \param[in] rgb_focal_length the RGB focal length (assumes fx = fy)
+        * Setting the parameter to a non-finite value (e.g., NaN, Inf) invalidates it
+        * and the grabber will use the default values from the camera instead.
+        * These parameters will be used for XYZRGBA clouds.
+        */
+      inline void
+      setRGBFocalLength (const double rgb_focal_length)
+      {
+        rgb_focal_length_x_ = rgb_focal_length_y_ = rgb_focal_length;
+      }
+
+      /** \brief Set the RGB image focal length
+        * \param[in] rgb_focal_length_x the RGB focal length (fx)
+        * \param[in] rgb_focal_ulength_y the RGB focal length (fy)
+        * Setting the parameters to non-finite values (e.g., NaN, Inf) invalidates them
+        * and the grabber will use the default values from the camera instead.
+        * These parameters will be used for XYZRGBA clouds.
+        */
+      inline void
+      setRGBFocalLength (const double rgb_focal_length_x, const double rgb_focal_length_y)
+      {
+        rgb_focal_length_x_ = rgb_focal_length_x;
+        rgb_focal_length_y_ = rgb_focal_length_y;
+      }
+
+      /** \brief Return the RGB focal length parameters (fx, fy)
+        * \param[out] rgb_focal_length_x the RGB focal length (fx)
+        * \param[out] rgb_focal_length_y the RGB focal length (fy)
+        */
+      inline void
+      getRGBFocalLength (double &rgb_focal_length_x, double &rgb_focal_length_y) const
+      {
+        rgb_focal_length_x = rgb_focal_length_x_;
+        rgb_focal_length_y = rgb_focal_length_y_;
+      }
+
+      /** \brief Set the Depth image focal length (fx = fy).
+        * \param[in] depth_focal_length the Depth focal length (assumes fx = fy)
+        * Setting the parameter to a non-finite value (e.g., NaN, Inf) invalidates it
+        * and the grabber will use the default values from the camera instead.
+        */
+      inline void
+      setDepthFocalLength (const double depth_focal_length)
+      {
+        depth_focal_length_x_ = depth_focal_length_y_ = depth_focal_length;
+      }
+
+      /** \brief Set the Depth image focal length
+        * \param[in] depth_focal_length_x the Depth focal length (fx)
+        * \param[in] depth_focal_length_y the Depth focal length (fy)
+        * Setting the parameter to non-finite values (e.g., NaN, Inf) invalidates them
+        * and the grabber will use the default values from the camera instead.
+        */
+      inline void
+      setDepthFocalLength (const double depth_focal_length_x, const double depth_focal_length_y)
+      {
+        depth_focal_length_x_ = depth_focal_length_x;
+        depth_focal_length_y_ = depth_focal_length_y;
+      }
+
+      /** \brief Return the Depth focal length parameters (fx, fy)
+        * \param[out] depth_focal_length_x the Depth focal length (fx)
+        * \param[out] depth_focal_length_y the Depth focal length (fy)
+        */
+      inline void
+      getDepthFocalLength (double &depth_focal_length_x, double &depth_focal_length_y) const
+      {
+        depth_focal_length_x = depth_focal_length_x_;
+        depth_focal_length_y = depth_focal_length_y_;
+      }
 
     protected:
       /** \brief On initialization processing. */
@@ -294,6 +367,15 @@ namespace pcl
       openni_wrapper::OpenNIDevice::CallbackHandle image_callback_handle;
       openni_wrapper::OpenNIDevice::CallbackHandle ir_callback_handle;
       bool running_;
+
+      /** \brief The RGB image focal length (fx). */
+      double rgb_focal_length_x_;
+      /** \brief The RGB image focal length (fy). */
+      double rgb_focal_length_y_;
+      /** \brief The depth image focal length (fx). */
+      double depth_focal_length_x_;
+      /** \brief The depth image focal length (fy). */
+      double depth_focal_length_y_;
 
     public:
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
