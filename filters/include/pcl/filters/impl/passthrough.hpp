@@ -63,6 +63,7 @@ pcl::PassThrough<PointT>::applyFilter (PointCloud &output)
   }
   else
   {
+    output.is_dense = true;
     applyFilterIndices (indices);
     copyPointCloud (*input_, indices, output);
   }

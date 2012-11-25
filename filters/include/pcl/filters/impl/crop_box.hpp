@@ -41,88 +41,32 @@
 #define PCL_FILTERS_IMPL_CROP_BOX_H_
 
 #include <pcl/filters/crop_box.h>
-
+#include <pcl/common/io.h>
 
 ///////////////////////////////////////////////////////////////////////////////
-template<typename PointT>
-void
+template<typename PointT> void
 pcl::CropBox<PointT>::applyFilter (PointCloud &output)
 {
-  output.resize (input_->points.size ());
-  removed_indices_->resize (input_->points.size ());
-  int indices_count = 0;
-  int removed_indices_count = 0;
-
-  // We filter out invalid points
-  output.is_dense = true;
-
-  Eigen::Affine3f transform = Eigen::Affine3f::Identity();
-  Eigen::Affine3f inverse_transform = Eigen::Affine3f::Identity();
-
-  if (rotation_ != Eigen::Vector3f::Zero ())
+  std::vector<int> indices;
+  if (keep_organized_)
   {
-    pcl::getTransformation (0, 0, 0,
-                            rotation_ (0), rotation_ (1), rotation_ (2),
-                            transform);
-    inverse_transform = transform.inverse ();
-  }
+    bool temp = extract_removed_indices_;
+    extract_removed_indices_ = true;
+    applyFilter (indices);
+    extract_removed_indices_ = temp;
 
-  for (size_t index = 0; index < indices_->size (); ++index)
+    output = *input_;
+    for (int rii = 0; rii < static_cast<int> (removed_indices_->size ()); ++rii)  // rii = removed indices iterator
+      output.points[(*removed_indices_)[rii]].x = output.points[(*removed_indices_)[rii]].y = output.points[(*removed_indices_)[rii]].z = user_filter_value_;
+    if (!pcl_isfinite (user_filter_value_))
+      output.is_dense = false;
+  }
+  else
   {
-    if (!input_->is_dense)
-      // Check if the point is invalid
-      if (!isFinite (input_->points[index]))
-        continue;
-
-    // Get local point
-    PointT local_pt = input_->points[(*indices_)[index]];
-
-    // Transform point to world space
-    if (!(transform_.matrix ().isIdentity ()))
-      local_pt = pcl::transformPoint<PointT> (local_pt, transform_);
-
-    if (translation_ != Eigen::Vector3f::Zero ())
-    {
-      local_pt.x -= translation_ (0);
-      local_pt.y -= translation_ (1);
-      local_pt.z -= translation_ (2);
-    }
-
-    // Transform point to local space of crop box
-    if (!(inverse_transform.matrix ().isIdentity ()))
-      local_pt = pcl::transformPoint<PointT> (local_pt, inverse_transform);
-
-    // If outside the cropbox
-    if ( (local_pt.x < min_pt_[0] || local_pt.y < min_pt_[1] || local_pt.z < min_pt_[2]) ||
-         (local_pt.x > max_pt_[0] || local_pt.y > max_pt_[1] || local_pt.z > max_pt_[2]))
-    {
-      if (negative_)
-      {
-        output.points[indices_count++] = input_->points[(*indices_)[index]];
-      }
-      else if (extract_removed_indices_)
-      {
-        (*removed_indices_)[removed_indices_count++] = static_cast<int> (index);
-      }
-    }
-    // If inside the cropbox
-    else
-    {
-      if (negative_ && extract_removed_indices_)
-      {
-        (*removed_indices_)[removed_indices_count++] = static_cast<int> (index);
-      }
-      else if (!negative_) {
-        output.points[indices_count++] = input_->points[(*indices_)[index]];
-      }
-    }
-
-
+    output.is_dense = true;
+    applyFilter (indices);
+    pcl::copyPointCloud (*input_, indices, output);
   }
-  output.width = indices_count;
-  output.height = 1;
-  output.resize (output.width * output.height);
-  removed_indices_->resize (removed_indices_count);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -175,24 +119,17 @@ pcl::CropBox<PointT>::applyFilter (std::vector<int> &indices)
          (local_pt.x > max_pt_[0] || local_pt.y > max_pt_[1] || local_pt.z > max_pt_[2]))
     {
       if (negative_)
-      {
         indices[indices_count++] = (*indices_)[index];
-      }
       else if (extract_removed_indices_)
-      {
         (*removed_indices_)[removed_indices_count++] = static_cast<int> (index);
-      }
     }
     // If inside the cropbox
     else
     {
       if (negative_ && extract_removed_indices_)
-      {
         (*removed_indices_)[removed_indices_count++] = static_cast<int> (index);
-      }
-      else if (!negative_) {
+      else if (!negative_) 
         indices[indices_count++] = (*indices_)[index];
-      }
     }
   }
   indices.resize (indices_count);
