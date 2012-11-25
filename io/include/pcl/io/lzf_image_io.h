@@ -166,7 +166,7 @@ namespace pcl
       * \author Radu B. Rusu
       * \ingroup io
       */
-    class LZFDepth16ImageReader : public LZFImageReader
+    class PCL_EXPORTS LZFDepth16ImageReader : public LZFImageReader
     {
       public:
         using LZFImageReader::readParameters;
@@ -211,7 +211,7 @@ namespace pcl
       * \author Radu B. Rusu
       * \ingroup io
       */
-    class LZFRGB24ImageReader : public LZFImageReader
+    class PCL_EXPORTS LZFRGB24ImageReader : public LZFImageReader
     {
       public:
         using LZFImageReader::readParameters;
@@ -248,7 +248,7 @@ namespace pcl
       * \author Radu B. Rusu
       * \ingroup io
       */
-    class LZFBayer8ImageReader : public LZFRGB24ImageReader
+    class PCL_EXPORTS LZFBayer8ImageReader : public LZFRGB24ImageReader
     {
       public:
         using LZFRGB24ImageReader::readParameters;
