@@ -52,6 +52,7 @@
 #include <pcl/sample_consensus/sac_model_cone.h>
 #include <pcl/sample_consensus/sac_model_cylinder.h>
 #include <pcl/sample_consensus/sac_model_circle.h>
+#include <pcl/sample_consensus/sac_model_circle3d.h>
 #include <pcl/sample_consensus/sac_model_line.h>
 #include <pcl/sample_consensus/sac_model_normal_plane.h>
 #include <pcl/sample_consensus/sac_model_normal_sphere.h>
@@ -69,6 +70,7 @@ typedef SampleConsensusModelSphere<PointXYZ>::Ptr SampleConsensusModelSpherePtr;
 typedef SampleConsensusModelCylinder<PointXYZ, Normal>::Ptr SampleConsensusModelCylinderPtr;
 typedef SampleConsensusModelCone<PointXYZ, Normal>::Ptr SampleConsensusModelConePtr;
 typedef SampleConsensusModelCircle2D<PointXYZ>::Ptr SampleConsensusModelCircle2DPtr;
+typedef SampleConsensusModelCircle3D<PointXYZ>::Ptr SampleConsensusModelCircle3DPtr;
 typedef SampleConsensusModelLine<PointXYZ>::Ptr SampleConsensusModelLinePtr;
 typedef SampleConsensusModelNormalPlane<PointXYZ, Normal>::Ptr SampleConsensusModelNormalPlanePtr;
 typedef SampleConsensusModelNormalSphere<PointXYZ, Normal>::Ptr SampleConsensusModelNormalSpherePtr;
@@ -726,6 +728,77 @@ TEST (RANSAC, SampleConsensusModelCircle2D)
   EXPECT_NEAR (coeff_refined[0],  3, 1e-3);
   EXPECT_NEAR (coeff_refined[1], -5, 1e-3);
   EXPECT_NEAR (coeff_refined[2],  1, 1e-3);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (RANSAC, SampleConsensusModelCircle3D)
+{
+  srand (0);
+
+  // Use a custom point cloud for these tests until we need something better
+  PointCloud<PointXYZ> cloud;
+  cloud.points.resize (20);
+
+  cloud.points[0].x = 1.0f;  	    cloud.points[0].y = 5.0f;        cloud.points[0].z = -2.9000001f;
+  cloud.points[1].x = 1.034202f;    cloud.points[1].y = 5.0f;        cloud.points[1].z = -2.9060307f;
+  cloud.points[2].x = 1.0642787f;   cloud.points[2].y = 5.0f;        cloud.points[2].z = -2.9233956f;
+  cloud.points[3].x = 1.0866026f;   cloud.points[3].y = 5.0f;  	     cloud.points[3].z = -2.95f;
+  cloud.points[4].x = 1.0984808f;   cloud.points[4].y = 5.0f;  	     cloud.points[4].z = -2.9826353f;
+  cloud.points[5].x = 1.0984808f;   cloud.points[5].y = 5.0f;        cloud.points[5].z = -3.0173647f;
+  cloud.points[6].x = 1.0866026f;   cloud.points[6].y = 5.0f;  	     cloud.points[6].z = -3.05f;
+  cloud.points[7].x = 1.0642787f;   cloud.points[7].y = 5.0f;  	     cloud.points[7].z = -3.0766044f;
+  cloud.points[8].x = 1.034202f;    cloud.points[8].y = 5.0f;  	     cloud.points[8].z = -3.0939693f;
+  cloud.points[9].x = 1.0f;         cloud.points[9].y = 5.0f;  	     cloud.points[9].z = -3.0999999f;
+  cloud.points[10].x = 0.96579796f; cloud.points[10].y = 5.0f; 	     cloud.points[10].z = -3.0939693f;
+  cloud.points[11].x = 0.93572122f; cloud.points[11].y = 5.0f; 	     cloud.points[11].z = -3.0766044f;
+  cloud.points[12].x = 0.91339743f; cloud.points[12].y = 5.0f; 	     cloud.points[12].z = -3.05f;
+  cloud.points[13].x = 0.90151924f; cloud.points[13].y = 5.0f; 	     cloud.points[13].z = -3.0173647f;
+  cloud.points[14].x = 0.90151924f; cloud.points[14].y = 5.0f; 	     cloud.points[14].z = -2.9826353f;
+  cloud.points[15].x = 0.91339743f; cloud.points[15].y = 5.0f; 	     cloud.points[15].z = -2.95f;
+  cloud.points[16].x = 0.93572122f; cloud.points[16].y = 5.0f; 	     cloud.points[16].z = -2.9233956f;
+  cloud.points[17].x = 0.96579796f; cloud.points[17].y = 5.0;        cloud.points[17].z = -2.9060307f;
+  cloud.points[18].x = 0.85000002f; cloud.points[18].y = 4.8499999f; cloud.points[18].z = -3.1500001f;
+  cloud.points[19].x = 1.15f; 	    cloud.points[19].y = 5.1500001f; cloud.points[19].z = -2.8499999f;
+
+  // Create a shared 3d circle model pointer directly
+  SampleConsensusModelCircle3DPtr model (new SampleConsensusModelCircle3D<PointXYZ> (cloud.makeShared ()));
+
+  // Create the RANSAC object
+  RandomSampleConsensus<PointXYZ> sac (model, 0.03);
+
+  // Algorithm tests
+  bool result = sac.computeModel ();
+  ASSERT_EQ (result, true);
+
+  std::vector<int> sample;
+  sac.getModel (sample);
+  EXPECT_EQ (int (sample.size ()), 3);
+
+  std::vector<int> inliers;
+  sac.getInliers (inliers);
+  EXPECT_EQ (int (inliers.size ()), 18);
+
+  Eigen::VectorXf coeff;
+  sac.getModelCoefficients (coeff);
+  EXPECT_EQ (int (coeff.size ()), 7);
+  EXPECT_NEAR (coeff[0],  1, 1e-3);
+  EXPECT_NEAR (coeff[1],  5, 1e-3);
+  EXPECT_NEAR (coeff[2], -3, 1e-3);
+  EXPECT_NEAR (coeff[3],0.1, 1e-3);
+  EXPECT_NEAR (coeff[4],  0, 1e-3);
+  EXPECT_NEAR (coeff[5], -1, 1e-3);
+  EXPECT_NEAR (coeff[6],  0, 1e-3);
+
+  Eigen::VectorXf coeff_refined;
+  model->optimizeModelCoefficients (inliers, coeff, coeff_refined);
+  EXPECT_EQ (int (coeff_refined.size ()), 7);
+  EXPECT_NEAR (coeff_refined[0],  1, 1e-3);
+  EXPECT_NEAR (coeff_refined[1],  5, 1e-3);
+  EXPECT_NEAR (coeff_refined[2], -3, 1e-3);
+  EXPECT_NEAR (coeff_refined[3],0.1, 1e-3);
+  EXPECT_NEAR (coeff_refined[4],  0, 1e-3);
+  EXPECT_NEAR (coeff_refined[5], -1, 1e-3);
+  EXPECT_NEAR (coeff_refined[6],  0, 1e-3);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////

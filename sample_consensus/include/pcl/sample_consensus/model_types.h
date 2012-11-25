@@ -73,7 +73,7 @@ typedef std::map<pcl::SacModel, unsigned int>::value_type SampleSizeModel;
 const static SampleSizeModel sample_size_pairs[] = {SampleSizeModel (pcl::SACMODEL_PLANE, 3),
                                                     SampleSizeModel (pcl::SACMODEL_LINE, 2),
                                                     SampleSizeModel (pcl::SACMODEL_CIRCLE2D, 3),
-                                                    //SampleSizeModel (pcl::SACMODEL_CIRCLE3D, 3),
+                                                    SampleSizeModel (pcl::SACMODEL_CIRCLE3D, 3),
                                                     SampleSizeModel (pcl::SACMODEL_SPHERE, 4),
                                                     SampleSizeModel (pcl::SACMODEL_CYLINDER, 2),
                                                     SampleSizeModel (pcl::SACMODEL_CONE, 3),
