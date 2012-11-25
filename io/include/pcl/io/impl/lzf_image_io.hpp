@@ -42,6 +42,12 @@
 #include <pcl/io/openni_camera/openni_image_bayer_grbg.h>
 
 //////////////////////////////////////////////////////////////////////////////
+namespace xn
+{
+  class ImageMetaData;
+}
+
+//////////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool
 pcl::io::LZFDepth16ImageReader::read (
     const std::string &filename, pcl::PointCloud<PointT> &cloud)
