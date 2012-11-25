@@ -54,6 +54,43 @@ vector<int> indices;
 KdTreePtr tree;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, computePointNormal)
+{
+  Eigen::Vector4f plane_parameters;
+  float curvature;
+
+  PointCloud<PointXYZ> c;
+  
+  PointXYZ p11 (706952.31, 4087.6958, 0.00000000),
+           p21 (707002.31, 6037.6958, 0.00000000),
+           p31 (706952.31, 7937.6958, 0.00000000);
+  c.push_back (p11); c.push_back (p21); c.push_back (p31);
+
+  computePointNormal (cloud, plane_parameters, curvature);
+  cerr << plane_parameters << "\n";
+  
+  c.clear ();
+  PointXYZ p12 (-439747.72, -43597.250, 0.0000000),
+           p22 (-439847.72, -41697.250, 0.0000000),
+           p32 (-439747.72, -39797.250, 0.0000000);
+
+  c.push_back (p12); c.push_back (p22); c.push_back (p32);
+
+  computePointNormal (cloud, plane_parameters, curvature);
+  cerr << plane_parameters << "\n";
+
+  c.clear ();
+  PointXYZ p13 (567011.56, -7741.8179, 0.00000000),
+           p23 (567361.56, -5841.8179, 0.00000000),
+           p33 (567011.56, -3941.8179, 0.00000000);
+
+  c.push_back (p13); c.push_back (p23); c.push_back (p33);
+
+  computePointNormal (cloud, plane_parameters, curvature);
+  cerr << plane_parameters << "\n";
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, NormalEstimation)
 {
   Eigen::Vector4f plane_parameters;
