@@ -113,10 +113,10 @@ public:
     return position;
   }
 
-  void
-  setClippingRange(float near=0.0001, float far=100000)
+  inline void
+  setClippingRange (float near_value = 0.0001f, float far_value = 100000.f)
   {
-    camera_->SetClippingRange(near, far);
+    camera_->SetClippingRange (near_value, far_value);
   }
 
   virtual void
