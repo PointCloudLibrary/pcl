@@ -2,7 +2,7 @@
  * Software License Agreement (BSD License)
  * 
  * Point Cloud Library (PCL) - www.pointclouds.org
- * Copyright (c) 2009-2011, Willow Garage, Inc.
+ * Copyright (c) 2012-, Open Perception, Inc.
  * 
  * All rights reserved.
  * 
@@ -55,6 +55,10 @@ namespace pcl
     using FilterIndices<PointT>::getClassName;
     using FilterIndices<PointT>::indices_;
     using FilterIndices<PointT>::input_;
+    using FilterIndices<PointT>::keep_organized_;
+    using FilterIndices<PointT>::extract_removed_indices_;
+    using FilterIndices<PointT>::removed_indices_;
+    using FilterIndices<PointT>::user_filter_value_;
 
     typedef typename FilterIndices<PointT>::PointCloud PointCloud;
     typedef typename PointCloud::Ptr PointCloudPtr;
@@ -63,12 +67,12 @@ namespace pcl
 
     public:
       
-      typedef boost::shared_ptr< NormalSpaceSampling<PointT, NormalT> > Ptr;
-      typedef boost::shared_ptr< const NormalSpaceSampling<PointT, NormalT> > ConstPtr;
+      typedef boost::shared_ptr<NormalSpaceSampling<PointT, NormalT> > Ptr;
+      typedef boost::shared_ptr<const NormalSpaceSampling<PointT, NormalT> > ConstPtr;
 
       /** \brief Empty constructor. */
       NormalSpaceSampling ()
-        : sample_ (UINT_MAX)
+        : sample_ (std::numeric_limits<unsigned int>::max ())
         , seed_ (static_cast<unsigned int> (time (NULL)))
         , binsx_ ()
         , binsy_ ()
@@ -79,6 +83,7 @@ namespace pcl
         filter_name_ = "NormalSpaceSampling";
       }
 
+      /** \brief Destructor. */
       ~NormalSpaceSampling ()
       {
         if (rng_uniform_distribution_ != NULL)
@@ -192,7 +197,7 @@ namespace pcl
       bool
       isEntireBinSampled (boost::dynamic_bitset<> &array, unsigned int start_index, unsigned int length);
 
-
+      /** \brief Uniform random distribution. */
       boost::variate_generator<boost::mt19937, boost::uniform_int<size_t> > *rng_uniform_distribution_;
   };
 }
