@@ -51,11 +51,11 @@
 
 namespace pcl
 {
-  /** \brief
-    * Implements a superpixel algorithm based on voxel structure, normals, and rgb values
+  /** \brief Implements a superpixel algorithm based on voxel structure, normals, 
+    * and rgb values
     */
   template <typename PointT>
-  class PCL_EXPORTS VoxelSuperpixels : public pcl::PCLBase<PointT>
+  class VoxelSuperpixels : public pcl::PCLBase<PointT>
   {
     public:
 
@@ -140,7 +140,7 @@ namespace pcl
        * \param[out] superpixels superpixels that were obtained. Each superpixel is an array of point indices.
        */
       virtual void
-      extract (std::vector <pcl::PointIndices>& superpixels);
+      extract (std::vector<pcl::PointIndices>& superpixels);
 
       /** \brief Returns an RGB colorized cloud showing superpixels
         * Otherwise it returns an empty pointer.
@@ -185,7 +185,7 @@ namespace pcl
       
       /** \brief Get a vector of points specifying the spatial "center" of each superpixel */
       void 
-      getSuperpixelCenters (std::vector <pcl::PointXYZ> &centers);
+      getSuperpixelCenters (std::vector<pcl::PointXYZ, Eigen::aligned_allocator<pcl::PointXYZ> > &centers);
       
     protected:
       /** \brief This method simply checks if it is possible to execute the segmentation algorithm with
@@ -202,9 +202,15 @@ namespace pcl
       void
       findSeedConstituency (float edge_length);
       
-      /** \brief Recursive function used to find all neighbors for a seed */
+      /** \brief Recursive function used to find all neighbors for a seed 
+        * \param[in] index
+        * \param[out] possible_constituents
+        * \param[out] constituents
+        */
       void 
-      recursiveFind (int index, std::vector<int> &possible_constituents,std::vector<int> &constituents);
+      recursiveFind (int index, 
+                     std::vector<int> &possible_constituents,
+                     std::vector<int> &constituents);
       
       /** \brief This method places seed voxels for superpixels based on regular grid */
       void
@@ -272,7 +278,6 @@ namespace pcl
       cleanSuperpixels ();
       
   private:
-
       /** \brief Stores the resolution used in the octree */
       float resolution_;
       
@@ -326,13 +331,13 @@ namespace pcl
       std::vector<int> num_pts_in_superpixel_;
 
       /** \brief After the iterations this will contain the superpixels. */
-      std::vector <pcl::PointIndices> superpixels_;
+      std::vector<pcl::PointIndices> superpixels_;
 
       /** \brief Stores the CIELab values of the voxel points  */
       boost::multi_array<float, 2> voxel_LAB_;
       
       /** \brief Stores the constituents for seeds and their distance from seed center*/
-      std::vector <std::vector < int > > seed_constituents_;
+      std::vector<std::vector<int> > seed_constituents_;
       
       /** \brief Stores the current vote and certainty for voxels */
       std::vector <std::pair<int, float> > voxel_votes_;
@@ -345,11 +350,7 @@ namespace pcl
       
       /** \brief Stores the colors used for the superpixel labels*/
       std::vector<uint32_t> superpixel_colors_;
-  
-
-      
-
-      public:
+    public:
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 

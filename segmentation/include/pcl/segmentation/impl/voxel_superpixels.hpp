@@ -827,17 +827,16 @@ pcl::VoxelSuperpixels<PointT>::getSuperpixelNeighbors (std::vector <std::set<int
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
-pcl::VoxelSuperpixels<PointT>::getSuperpixelCenters (std::vector <pcl::PointXYZ> &centers)
+pcl::VoxelSuperpixels<PointT>::getSuperpixelCenters (std::vector<pcl::PointXYZ, Eigen::aligned_allocator<pcl::PointXYZ> > &centers)
 {
   pcl::PointXYZ center_point;
-  centers.resize (superpixels_.size(), center_point);
+  centers.resize (superpixels_.size (), center_point);
   for (int i = 0; i < superpixels_.size(); ++i)
   {
     centers[i].x = superpixel_features_[i][3];
     centers[i].y = superpixel_features_[i][4];
     centers[i].z = superpixel_features_[i][5];
   }
-  
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
