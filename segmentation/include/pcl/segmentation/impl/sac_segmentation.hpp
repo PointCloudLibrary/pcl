@@ -329,6 +329,12 @@ pcl::SACSegmentation<PointT>::initSAC (const int method_type)
     PCL_DEBUG ("[pcl::%s::initSAC] Setting the maximum number of iterations to %d\n", getClassName ().c_str (), max_iterations_);
     sac_->setMaxIterations (max_iterations_);
   }
+  if (samples_radius_ > 0.)
+  {
+    PCL_DEBUG ("[pcl::%s::initSAC] Setting the maximum sample radius to %f\n", getClassName ().c_str (), samples_radius_);
+    // Set maximum distance for radius search during random sampling
+    model_->setSamplesMaxDist (samples_radius_, samples_radius_search_);
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -488,13 +494,6 @@ pcl::SACSegmentationFromNormals<PointT, PointNT>::initSACModel (const int model_
     {
       return (pcl::SACSegmentation<PointT>::initSACModel (model_type));
     }
-  }
-
-  if (SACSegmentation<PointT>::samples_radius_ > 0. )
-  {
-    PCL_DEBUG ("[pcl::%s::initSAC] Setting the maximum distance to %f\n", getClassName ().c_str (), SACSegmentation<PointT>::samples_radius_);
-    // Set maximum distance for radius search during random sampling
-    model_->setSamplesMaxDist(SACSegmentation<PointT>::samples_radius_, SACSegmentation<PointT>::samples_radius_search_);
   }
 
   return (true);
