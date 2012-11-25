@@ -55,7 +55,7 @@ namespace pcl
     * and rgb values
     */
   template <typename PointT>
-  class VoxelSuperpixels : public pcl::PCLBase<PointT>
+  class PCL_EXPORTS VoxelSuperpixels : public pcl::PCLBase<PointT>
   {
     public:
 
