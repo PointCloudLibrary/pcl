@@ -18,6 +18,7 @@ if(build)
         src/rransac.cpp
         src/prosac.cpp
         src/sac_model_circle.cpp
+        src/sac_model_circle3d.cpp
         src/sac_model_cylinder.cpp
         src/sac_model_cone.cpp
         src/sac_model_line.cpp
@@ -49,6 +50,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/sac.h
         include/pcl/${SUBSYS_NAME}/sac_model.h
         include/pcl/${SUBSYS_NAME}/sac_model_circle.h
+        include/pcl/${SUBSYS_NAME}/sac_model_circle3d.h
         include/pcl/${SUBSYS_NAME}/sac_model_cylinder.h
         include/pcl/${SUBSYS_NAME}/sac_model_cone.h
         include/pcl/${SUBSYS_NAME}/sac_model_line.h
@@ -74,6 +76,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/rransac.hpp
         include/pcl/${SUBSYS_NAME}/impl/prosac.hpp
         include/pcl/${SUBSYS_NAME}/impl/sac_model_circle.hpp
+        include/pcl/${SUBSYS_NAME}/impl/sac_model_circle3d.hpp
         include/pcl/${SUBSYS_NAME}/impl/sac_model_cylinder.hpp
         include/pcl/${SUBSYS_NAME}/impl/sac_model_cone.hpp
         include/pcl/${SUBSYS_NAME}/impl/sac_model_line.hpp
