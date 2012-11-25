@@ -1,7 +1,10 @@
 /*
  * Software License Agreement (BSD License)
  *
+ *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2009, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -14,7 +17,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -53,17 +56,18 @@
 // Sample Consensus models
 #include <pcl/sample_consensus/sac_model.h>
 #include <pcl/sample_consensus/sac_model_circle.h>
-#include <pcl/sample_consensus/sac_model_cylinder.h>
+#include <pcl/sample_consensus/sac_model_circle3d.h>
 #include <pcl/sample_consensus/sac_model_cone.h>
+#include <pcl/sample_consensus/sac_model_cylinder.h>
 #include <pcl/sample_consensus/sac_model_line.h>
 #include <pcl/sample_consensus/sac_model_normal_plane.h>
-#include <pcl/sample_consensus/sac_model_normal_sphere.h>
 #include <pcl/sample_consensus/sac_model_parallel_plane.h>
 #include <pcl/sample_consensus/sac_model_normal_parallel_plane.h>
 #include <pcl/sample_consensus/sac_model_parallel_line.h>
 #include <pcl/sample_consensus/sac_model_perpendicular_plane.h>
 #include <pcl/sample_consensus/sac_model_plane.h>
 #include <pcl/sample_consensus/sac_model_sphere.h>
+#include <pcl/sample_consensus/sac_model_normal_sphere.h>
 #include <pcl/sample_consensus/sac_model_stick.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -173,6 +177,20 @@ pcl::SACSegmentation<PointT>::initSACModel (const int model_type)
       }
       break;
     }
+    case SACMODEL_CIRCLE3D:
+    {
+      PCL_DEBUG ("[pcl::%s::initSACModel] Using a model of type: SACMODEL_CIRCLE3D\n", getClassName ().c_str ());
+      model_.reset (new SampleConsensusModelCircle3D<PointT> (input_, *indices_));
+      typename SampleConsensusModelCircle3D<PointT>::Ptr model_circle3d = boost::static_pointer_cast<SampleConsensusModelCircle3D<PointT> > (model_);
+      double min_radius, max_radius;
+      model_circle3d->getRadiusLimits (min_radius, max_radius);
+      if (radius_min_ != min_radius && radius_max_ != max_radius)
+      {
+        PCL_DEBUG ("[pcl::%s::initSACModel] Setting radius limits to %f/%f\n", getClassName ().c_str (), radius_min_, radius_max_);
+        model_circle3d->setRadiusLimits (radius_min_, radius_max_);
+      }
+      break;
+    }
     case SACMODEL_SPHERE:
     {
       PCL_DEBUG ("[pcl::%s::initSACModel] Using a model of type: SACMODEL_SPHERE\n", getClassName ().c_str ());
@@ -244,14 +262,6 @@ pcl::SACSegmentation<PointT>::initSACModel (const int model_type)
       return (false);
     }
   }
-  
-  if (samples_radius_ > 0. )
-  {
-    PCL_DEBUG ("[pcl::%s::initSAC] Setting the maximum distance to %f\n", getClassName ().c_str (), samples_radius_);
-    // Set maximum distance for radius search during random sampling
-    model_->setSamplesMaxDist(samples_radius_, samples_radius_search_);
-  }
-
   return (true);
 }
 
@@ -421,7 +431,7 @@ pcl::SACSegmentationFromNormals<PointT, PointNT>::initSACModel (const int model_
     case SACMODEL_CONE:
     {
       PCL_DEBUG ("[pcl::%s::initSACModel] Using a model of type: SACMODEL_CONE\n", getClassName ().c_str ());
-      model_.reset (new SampleConsensusModelCone<PointT, PointNT > (input_, *indices_, random_));
+      model_.reset (new SampleConsensusModelCone<PointT, PointNT> (input_, *indices_, random_));
       typename SampleConsensusModelCone<PointT, PointNT>::Ptr model_cone = boost::static_pointer_cast<SampleConsensusModelCone<PointT, PointNT> > (model_);
 
       // Set the input normals
