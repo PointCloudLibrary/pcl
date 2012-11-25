@@ -42,6 +42,7 @@
 #include <pcl/visualization/boost.h>
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/visualization/image_viewer.h>
+#include <pcl/io/pcd_io.h>
 
 #if (PCL_LINEAR_VERSION(VTK_MAJOR_VERSION,VTK_MINOR_VERSION,0)<=PCL_LINEAR_VERSION(5,4,0))
   #define DISPLAY_IMAGE
@@ -61,9 +62,9 @@ printHelp (int, char **argv)
   //print_error ("Syntax is: %s <file_name 1..N>.tiff <options>\n", argv[0]);
   print_error ("Syntax is: %s <options>\n", argv[0]);
   print_info ("  where options are:\n");
-  print_info ("                     -file file_name          = tiff file(s) to be read from\n");
-  print_info ("                     -dir directory_path      = directory path to TIFF file(s) to be read from\n");
+  print_info ("                     -dir directory_path      = directory path to image or pclzf file(s) to be read from\n");
   print_info ("                     -fps frequency           = frames per second\n");
+  print_info ("                     -pclzf                   = Load pclzf files instead\n");
   print_info ("                     -repeat                  = optional parameter that tells wheter the TIFF file(s) should be \"grabbed\" in a endless loop.\n");
   print_info ("\n");
   print_info ("                     -cam (*)                 = use given camera settings as initial view\n");
@@ -178,17 +179,19 @@ main (int argc, char** argv)
 
   bool repeat = (pcl::console::find_argument (argc, argv, "-repeat") != -1);
 
+  bool use_pclzf = (pcl::console::find_argument (argc, argv, "-pclzf") != -1);
+
   std::cout << "fps: " << frames_per_second << " , repeat: " << repeat << std::endl;
   std::string path = "";
-  pcl::console::parse_argument (argc, argv, "-file", path);
+  pcl::console::parse_argument (argc, argv, "-dir", path);
   std::cout << "path: " << path << std::endl;
   if (path != "" && boost::filesystem::exists (path))
   {
-    grabber.reset (new pcl::ImageGrabber<pcl::PointXYZRGBA> (path, frames_per_second, repeat));
+    grabber.reset (new pcl::ImageGrabber<pcl::PointXYZRGBA> (path, frames_per_second, repeat, use_pclzf));
   }
   else
   {
-    std::cout << "Neither a TIFF file given using the \"-file\" option, nor given a directory containing TIFF files using the \"-dir\" option." << std::endl;
+    std::cout << "No directory was given with the -dir flag." << std::endl;
   }
   grabber->setDepthImageUnits(1E-3);
   grabber->setFocalLength(focal_length);
@@ -238,7 +241,7 @@ main (int argc, char** argv)
       if (!cloud_viewer->updatePointCloud (temp_cloud, "PCDCloud"))
       {
         cloud_viewer->addPointCloud (temp_cloud, "PCDCloud");
-        //cloud_viewer->resetCameraViewpoint ("PCDCloud");
+        cloud_viewer->resetCameraViewpoint ("PCDCloud");
       }
     }
   }

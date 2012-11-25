@@ -73,7 +73,6 @@ if(build)
         set(VTK_IO_INCLUDES 
             include/pcl/${SUBSYS_NAME}/vtk_lib_io.h
             include/pcl/${SUBSYS_NAME}/png_io.h 
-            include/pcl/${SUBSYS_NAME}/image_grabber.h 
            )
         set(VTK_IO_INCLUDES_IMPL
             include/pcl/${SUBSYS_NAME}/impl/vtk_lib_io.hpp
@@ -81,9 +80,10 @@ if(build)
         set(VTK_IO_SOURCE 
             src/vtk_lib_io.cpp
             src/png_io.cpp
-            src/image_grabber.cpp
            )
         set(VTK_IO_TARGET_LINK_LIBRARIES vtkCommon vtkWidgets vtkIO vtkImaging)
+        # Indicates that we can rely on VTK to be present
+        set(VTK_DEFINES -DPCL_BUILT_WITH_VTK)
     endif ()
 
     set(PLY_SOURCES src/ply/ply_parser.cpp)
@@ -106,6 +106,7 @@ if(build)
         src/lzf.cpp
         src/lzf_image_io.cpp
         src/obj_io.cpp
+        src/image_grabber.cpp
         ${VTK_IO_SOURCE}
         ${OPENNI_GRABBER_SOURCES}
         ${DINAST_GRABBER_SOURCES}
@@ -132,6 +133,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/tar.h
         include/pcl/${SUBSYS_NAME}/obj_io.h
         include/pcl/${SUBSYS_NAME}/ascii_io.h
+        include/pcl/${SUBSYS_NAME}/image_grabber.h 
         ${VTK_IO_INCLUDES}
         ${OPENNI_GRABBER_INCLUDES}
         ${DINAST_GRABBER_INCLUDES}
@@ -170,6 +172,7 @@ if(build)
     set(LIB_NAME pcl_${SUBSYS_NAME})
 
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include ${VTK_INCLUDE_DIRECTORIES})
+    add_definitions(${VTK_DEFINES})
     PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${compression_incs} ${impl_incs} ${OPENNI_INCLUDES})
     link_directories(${VTK_LINK_DIRECTORIES})
     target_link_libraries(${LIB_NAME} pcl_common pcl_io_ply ${VTK_IO_TARGET_LINK_LIBRARIES})

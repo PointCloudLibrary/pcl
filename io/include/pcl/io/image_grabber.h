@@ -24,7 +24,7 @@ namespace pcl
      * \param[in] frames_per_second frames per second. If 0, start() functions like a trigger, publishing the next PCD in the list.
      * \param[in] repeat whether to play PCD file in an endless loop or not.
      */
-    ImageGrabberBase (const std::string& directory, float frames_per_second, bool repeat);
+    ImageGrabberBase (const std::string& directory, float frames_per_second, bool repeat, bool pclzf_mode);
 
     /** \brief Constructor taking a list of paths to PCD files, that are played in the order they appear in the list.
      * \param[in] depth_image_files Path to the depth image files files.
@@ -124,7 +124,7 @@ namespace pcl
   template <typename PointT> class ImageGrabber : public ImageGrabberBase
   {
     public:
-    ImageGrabber (const std::string& depth_image_file, float frames_per_second = 0, bool repeat = false);
+    ImageGrabber (const std::string& dir, float frames_per_second = 0, bool repeat = false, bool pclzf_mode = false);
     ImageGrabber (const std::vector<std::string>& depth_image_files, float frames_per_second = 0, bool repeat = false);
     
 
@@ -139,8 +139,8 @@ namespace pcl
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   template<typename PointT>
-    ImageGrabber<PointT>::ImageGrabber (const std::string& depth_image_file, float frames_per_second, bool repeat)
-    : ImageGrabberBase (depth_image_file, frames_per_second, repeat)
+    ImageGrabber<PointT>::ImageGrabber (const std::string& dir, float frames_per_second, bool repeat, bool pclzf_mode)
+    : ImageGrabberBase (dir, frames_per_second, repeat, pclzf_mode)
   {
     signal_ = createSignal<void (const boost::shared_ptr<const pcl::PointCloud<PointT> >&)>();
   }
