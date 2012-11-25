@@ -76,8 +76,9 @@ pcl::io::LZFDepth16ImageReader::read (
   }
 
   // Copy to PointT
-  cloud.width  = getWidth ();
-  cloud.height = getHeight ();
+  cloud.width    = getWidth ();
+  cloud.height   = getHeight ();
+  cloud.is_dense = true;
   cloud.resize (getWidth () * getHeight ());
   register int depth_idx = 0, point_idx = 0;
   double constant_x = 1.0 / parameters_.focal_length_x,
@@ -92,6 +93,7 @@ pcl::io::LZFDepth16ImageReader::read (
       if (val == 0)
       {
         pt.x = pt.y = pt.z = std::numeric_limits<float>::quiet_NaN ();
+        cloud.is_dense = false;
         continue;
       }
 
