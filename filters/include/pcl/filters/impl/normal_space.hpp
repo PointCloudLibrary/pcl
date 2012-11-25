@@ -179,7 +179,6 @@ pcl::NormalSpaceSampling<PointT, NormalT>::applyFilter (std::vector<int> &indice
   // Resize output indices to sample size
   indices.resize (max_values);
   removed_indices_->resize (max_values);
-  int removed_indices_count = 0;
   
   // Allocate memory for the histogram of normals. Normals will then be sampled from each bin.
   unsigned int n_bins = binsx_ * binsy_ * binsz_;
