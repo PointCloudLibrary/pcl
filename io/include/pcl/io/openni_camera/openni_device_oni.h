@@ -74,7 +74,12 @@ namespace openni_wrapper
 
     virtual bool isImageResizeSupported (unsigned input_width, unsigned input_height, unsigned output_width, unsigned output_height) const throw ();
 
-    bool trigger ();
+    /** \brief Trigger a new frame in the ONI stream.
+      * \param[in] relative_offset the relative offset in case we want to seek in the file
+      */
+    bool 
+    trigger (int relative_offset = 0);
+
     bool isStreaming () const throw ();
 
     /** \brief Check if there is any data left in the ONI file to process. */
@@ -100,8 +105,7 @@ namespace openni_wrapper
     bool depth_stream_running_;
     bool image_stream_running_;
     bool ir_stream_running_;
-  } ;
-
+  };
 } //namespace openni_wrapper
 #endif //__OPENNI_DEVICE_ONI__
 #endif //HAVE_OPENNI

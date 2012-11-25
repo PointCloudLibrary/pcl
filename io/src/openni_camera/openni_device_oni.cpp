@@ -45,54 +45,57 @@
 #include <pcl/io/openni_camera/openni_device_oni.h>
 #include <pcl/io/openni_camera/openni_image_rgb24.h>
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-openni_wrapper::DeviceONI::DeviceONI(xn::Context& context, const std::string& file_name, bool repeat, bool streaming)
-  : OpenNIDevice(context)
-  , streaming_ (streaming)
+///////////////////////////////////////////////////////////////////////////////////////////
+openni_wrapper::DeviceONI::DeviceONI (
+    xn::Context& context, 
+    const std::string& file_name, 
+    bool repeat, 
+    bool streaming)
+  : OpenNIDevice (context)
+  , streaming_  (streaming)
   , depth_stream_running_ (false)
   , image_stream_running_ (false)
   , ir_stream_running_ (false)
 {
   XnStatus status;
 #if (XN_MINOR_VERSION >= 3)
-  status = context_.OpenFileRecording(file_name.c_str(), player_);
+  status = context_.OpenFileRecording (file_name.c_str(), player_);
   if (status != XN_STATUS_OK)
-    THROW_OPENNI_EXCEPTION("Could not open ONI file. Reason: %s", xnGetStatusString(status));
+    THROW_OPENNI_EXCEPTION ("Could not open ONI file. Reason: %s", xnGetStatusString (status));
 #else
-  status = context_.OpenFileRecording(file_name.c_str());
+  status = context_.OpenFileRecording (file_name.c_str());
   if (status != XN_STATUS_OK)
-    THROW_OPENNI_EXCEPTION("Could not open ONI file. Reason: %s", xnGetStatusString(status));
+    THROW_OPENNI_EXCEPTION ("Could not open ONI file. Reason: %s", xnGetStatusString (status));
 
-  status = context.FindExistingNode(XN_NODE_TYPE_PLAYER, player_);
+  status = context_.FindExistingNode (XN_NODE_TYPE_PLAYER, player_);
   if (status != XN_STATUS_OK)
-    THROW_OPENNI_EXCEPTION("Failed to find player node: %s\n", xnGetStatusString(status));
+    THROW_OPENNI_EXCEPTION ("Failed to find player node: %s\n", xnGetStatusString (status));
 #endif
 
-  status = context.FindExistingNode(XN_NODE_TYPE_DEPTH, depth_generator_);
+  status = context_.FindExistingNode (XN_NODE_TYPE_DEPTH, depth_generator_);
   if (status != XN_STATUS_OK)
-    THROW_OPENNI_EXCEPTION("could not find depth stream in file %s. Reason: %s", file_name.c_str(), xnGetStatusString(status));
+    THROW_OPENNI_EXCEPTION ("could not find depth stream in file %s. Reason: %s", file_name.c_str(), xnGetStatusString (status));
   else
   {
-    available_depth_modes_.push_back(getDepthOutputMode());
+    available_depth_modes_.push_back (getDepthOutputMode ());
     depth_generator_.RegisterToNewDataAvailable (static_cast<xn::StateChangedHandler> (NewONIDepthDataAvailable), this, depth_callback_handle_);
   }
 
-  status = context.FindExistingNode(XN_NODE_TYPE_IMAGE, image_generator_);
+  status = context_.FindExistingNode (XN_NODE_TYPE_IMAGE, image_generator_);
   if (status == XN_STATUS_OK)
   {
-    available_image_modes_.push_back(getImageOutputMode());
+    available_image_modes_.push_back (getImageOutputMode ());
     image_generator_.RegisterToNewDataAvailable (static_cast<xn::StateChangedHandler> (NewONIImageDataAvailable), this, image_callback_handle_);
   }
 
-  status = context.FindExistingNode(XN_NODE_TYPE_IR, ir_generator_);
+  status = context_.FindExistingNode(XN_NODE_TYPE_IR, ir_generator_);
   if (status == XN_STATUS_OK)
     ir_generator_.RegisterToNewDataAvailable (static_cast<xn::StateChangedHandler> (NewONIIRDataAvailable), this, ir_callback_handle_);
 
-  device_node_info_ = player_.GetInfo();
-
+  device_node_info_ = player_.GetInfo ();
   Init ();
 
-  player_.SetRepeat(repeat);
+  player_.SetRepeat (repeat);
   if (streaming_)
     player_thread_ = boost::thread (&DeviceONI::PlayerThreadFunction, this);
 }
@@ -178,13 +181,22 @@ openni_wrapper::DeviceONI::isIRStreamRunning () const throw ()
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 bool 
-openni_wrapper::DeviceONI::trigger ()
+openni_wrapper::DeviceONI::trigger (int relative_offset)
 {
-  if (player_.IsEOF ())
-    return (false);
-
   if (streaming_)
     THROW_OPENNI_EXCEPTION ("Virtual device is in streaming mode. Trigger not available.");
+
+  if (relative_offset < 0)
+  {
+    XnStatus res = player_.SeekToFrame (depth_generator_.GetName (), relative_offset, XN_PLAYER_SEEK_CUR);
+    if (res != XN_STATUS_OK) 
+      return (false); 
+  }
+  else
+  {
+    if (player_.IsEOF ())
+      return (false);
+  }
 
   player_.ReadNext ();
   return (true);
