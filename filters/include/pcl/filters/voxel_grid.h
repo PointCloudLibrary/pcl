@@ -144,6 +144,24 @@ namespace pcl
                const std::string &distance_field_name, float min_distance, float max_distance,
                Eigen::Vector4f &min_pt, Eigen::Vector4f &max_pt, bool limit_negative = false);
 
+  /** \brief Get the minimum and maximum values on each of the 3 (x-y-z) dimensions
+    * in a given pointcloud, without considering points outside of a distance threshold from the laser origin
+    * \param[in] cloud the point cloud data message
+    * \param[in] indices the vector of indices to use
+    * \param[in] distance_field_name the field name that contains the distance values
+    * \param[in] min_distance the minimum distance a point will be considered from
+    * \param[in] max_distance the maximum distance a point will be considered to
+    * \param[out] min_pt the resultant minimum bounds
+    * \param[out] max_pt the resultant maximum bounds
+    * \param[in] limit_negative if set to true, then all points outside of the interval (min_distance;max_distace) are considered
+    * \ingroup filters
+    */
+  template <typename PointT> void 
+  getMinMax3D (const typename pcl::PointCloud<PointT>::ConstPtr &cloud, 
+               const std::vector<int> &indices,
+               const std::string &distance_field_name, float min_distance, float max_distance,
+               Eigen::Vector4f &min_pt, Eigen::Vector4f &max_pt, bool limit_negative = false);
+
   /** \brief VoxelGrid assembles a local 3D grid over a given PointCloud, and downsamples + filters the data.
     *
     * The VoxelGrid class creates a *3D voxel grid* (think about a voxel
