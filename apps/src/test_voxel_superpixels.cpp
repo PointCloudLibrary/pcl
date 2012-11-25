@@ -198,7 +198,7 @@ main (int argc, char ** argv)
   pcl::PointCloud<pcl::PointXYZRGB>::Ptr seed_cloud = super.getSeedCloud ();
   
   std::vector <std::set<int> > superpixel_neighbors;
-  std::vector <pcl::PointXYZ> superpixel_centers;
+  std::vector<pcl::PointXYZ, Eigen::aligned_allocator<pcl::PointXYZ> > superpixel_centers;
   qDebug () << "Getting neighbors";
   super.getSuperpixelNeighbors (superpixel_neighbors);
   qDebug () << "Getting Centers";
