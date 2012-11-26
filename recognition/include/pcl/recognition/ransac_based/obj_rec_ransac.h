@@ -39,11 +39,11 @@
 #ifndef PCL_RECOGNITION_OBJ_REC_RANSAC_H_
 #define PCL_RECOGNITION_OBJ_REC_RANSAC_H_
 
-#include "model_library.h"
-#include "orr_octree.h"
-#include "orr_octree_zprojection.h"
-#include "orr_graph.h"
-#include "auxiliary.h"
+#include <pcl/recognition/ransac_based/model_library.h>
+#include <pcl/recognition/ransac_based/orr_octree.h>
+#include <pcl/recognition/ransac_based/orr_octree_zprojection.h>
+#include <pcl/recognition/ransac_based/orr_graph.h>
+#include <pcl/recognition/ransac_based/auxiliary.h>
 #include <pcl/pcl_exports.h>
 #include <pcl/point_cloud.h>
 #include <cmath>

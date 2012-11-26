@@ -42,10 +42,6 @@
 #include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/kdtree/impl/kdtree_flann.hpp>
 #include <pcl/console/print.h>
-#include <cmath>
-#include <vector>
-
-#define PIf 3.14159265358979323846f
 
 using namespace std;
 using namespace pcl;
@@ -63,8 +59,9 @@ ModelLibrary::ModelLibrary (float pair_width, float voxel_size)
 
   // Compute the bounds of the hash table
   float eps = 0.000001f; // To be sure that an angle of 0 or PI will not be excluded because it lies on the boundary of the voxel structure
-  float bounds[6] = {-eps, PIf+eps, -eps, PIf+eps, -eps, PIf+eps};
-
+  float bounds[6] = {-eps, M_PI + eps, -eps,
+                     M_PI + eps, -eps, M_PI + eps};
+ 
   hash_table_.build (bounds, num_of_cells_);
 }
 

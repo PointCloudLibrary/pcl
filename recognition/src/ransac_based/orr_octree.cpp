@@ -37,13 +37,6 @@
  *
  */
 
-/*
- * orr_octree.cpp
- *
- *  Created on: Oct 23, 2012
- *      Author: papazov
- */
-
 #include <pcl/recognition/ransac_based/orr_octree.h>
 #include <pcl/common/common.h>
 #include <algorithm>
