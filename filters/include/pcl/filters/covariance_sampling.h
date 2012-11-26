@@ -70,10 +70,9 @@ namespace pcl
       typedef typename FilterIndices<PointT>::PointCloud Cloud;
       typedef typename Cloud::Ptr CloudPtr;
       typedef typename Cloud::ConstPtr CloudConstPtr;
-      typedef typename pcl::PointCloud<PointNT>::Ptr NormalsPtr;
+      typedef typename pcl::PointCloud<PointNT>::ConstPtr NormalsConstPtr;
 
     public:
-
       typedef boost::shared_ptr< CovarianceSampling<PointT, PointNT> > Ptr;
       typedef boost::shared_ptr< const CovarianceSampling<PointT, PointNT> > ConstPtr;
  
@@ -97,11 +96,11 @@ namespace pcl
         * \param[in] normals the normals computed for the input cloud
         */
       inline void
-      setNormals (const NormalsPtr &normals)
+      setNormals (const NormalsConstPtr &normals)
       { input_normals_ = normals; }
 
       /** \brief Get the normals computed on the input point cloud */
-      inline NormalsPtr
+      inline NormalsConstPtr
       getNormals () const
       { return (input_normals_); }
 
@@ -118,7 +117,7 @@ namespace pcl
       unsigned int num_samples_;
 
       /** \brief The normals computed at each point in the input cloud */
-      NormalsPtr input_normals_;
+      NormalsConstPtr input_normals_;
 
       std::vector<Eigen::Vector3f> scaled_points_;
 
