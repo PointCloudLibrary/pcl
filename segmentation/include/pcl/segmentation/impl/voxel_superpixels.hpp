@@ -308,7 +308,7 @@ pcl::VoxelSuperpixels<PointT>::findPointNeighbors ()
     }
    // std::cout << "Point "<<i_point<<" has "<<actual_neighbors.size ()<< " neighbors touching it"<<std::endl;
     
-    std::pair <float, int> dist_index;
+    std::pair <int, float> dist_index;
     actual_neighbor_distances.resize (actual_neighbors.size (), dist_index);
     //PointT point = voxel_cloud_->points[point_index];
     for (int i_neighbor = 0; i_neighbor < actual_neighbors.size(); ++i_neighbor)
