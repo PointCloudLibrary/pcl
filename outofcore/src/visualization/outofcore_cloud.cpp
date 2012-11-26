@@ -11,6 +11,7 @@
 #include <pcl/outofcore/outofcore.h>
 #include <pcl/outofcore/outofcore_impl.h>
 #include <pcl/outofcore/impl/monitor_queue.hpp>
+#include <pcl/outofcore/impl/lru_cache.hpp>
 
 #include <pcl/outofcore/visualization/camera.h>
 #include <pcl/outofcore/visualization/common.h>
@@ -35,60 +36,77 @@
 
 // Forward Declarations
 
+boost::condition OutofcoreCloud::pcd_queue_ready;
+boost::mutex OutofcoreCloud::pcd_queue_mutex;
+
 boost::shared_ptr<boost::thread> OutofcoreCloud::pcd_reader_thread;
-MonitorQueue<std::string> OutofcoreCloud::pcd_queue;
-std::map<std::string, vtkSmartPointer<vtkPolyData> > OutofcoreCloud::cloud_data_map;
-boost::mutex OutofcoreCloud::cloud_data_map_mutex;
+//MonitorQueue<std::string> OutofcoreCloud::pcd_queue;
+
+//std::map<std::string, vtkSmartPointer<vtkPolyData> > OutofcoreCloud::cloud_data_cache;
+OutofcoreCloud::CloudDataCache OutofcoreCloud::cloud_data_cache(524288);
+boost::mutex OutofcoreCloud::cloud_data_cache_mutex;
+
+OutofcoreCloud::PcdQueue OutofcoreCloud::pcd_queue;
 
 void
 OutofcoreCloud::pcdReaderThread ()
 {
 
-//  Scene *scene = Scene::instance ();
-//  Camera *octree_camera = scene->getCamera ("octree");
-//  OutofcoreCloud *cloud = static_cast<OutofcoreCloud*> (scene->getObjectByName ("my_octree"));
-//
   std::string pcd_file;
+  size_t timestamp = 0;
 
   while (true)
   {
-    pcd_file = pcd_queue.pop();
+    //{
+      //boost::mutex::scoped_lock lock (pcd_queue_mutex);
+      //pcd_queue_mutex.wait (lock);
+      pcd_queue_ready.wait(pcd_queue_mutex);
+    //}
+    //pcd_queue_ready
 
-    if (cloud_data_map.find (pcd_file) == cloud_data_map.end ())
+    int queue_size = pcd_queue.size ();
+    for (int i=0; i < queue_size; i++)
     {
-      vtkSmartPointer<vtkPolyData> cloud_data = vtkSmartPointer<vtkPolyData>::New ();
+      const PcdQueueItem *pcd_queue_item = &pcd_queue.top();
 
-      sensor_msgs::PointCloud2Ptr cloud (new sensor_msgs::PointCloud2);
-      pcl::io::loadPCDFile (pcd_file, *cloud);
-      pcl::io::pointCloudTovtkPolyData (cloud, cloud_data);
+      if (cloud_data_cache.hasKey(pcd_queue_item->pcd_file))
+      {
+        CloudDataCacheItem *cloud_data_cache_item = &cloud_data_cache.get(pcd_queue_item->pcd_file);
+        cloud_data_cache_item->timestamp = timestamp;
+      }
+      else
+      {
+        vtkSmartPointer<vtkPolyData> cloud_data = vtkSmartPointer<vtkPolyData>::New ();
 
-      cloud_data_map_mutex.lock();
-      cloud_data_map[pcd_file] = cloud_data;
-      cloud_data_map_mutex.unlock();
-      std::cout << "Loaded: " << pcd_file << std::endl;
+        sensor_msgs::PointCloud2Ptr cloud (new sensor_msgs::PointCloud2);
+
+        pcl::io::loadPCDFile (pcd_queue_item->pcd_file, *cloud);
+        pcl::io::pointCloudTovtkPolyData (cloud, cloud_data);
+
+        CloudDataCacheItem cloud_data_cache_item(pcd_queue_item->pcd_file, pcd_queue_item->coverage, cloud_data, timestamp);
+
+        cloud_data_cache_mutex.lock();
+        bool inserted = cloud_data_cache.insert(pcd_queue_item->pcd_file, cloud_data_cache_item);
+        cloud_data_cache_mutex.unlock();
+
+        if (!inserted)
+        {
+          //std::cout << "CACHE FILLED" << std::endl;
+          while (!pcd_queue.empty())
+          {
+            //const PcdQueueItem *pcd_queue_item = &pcd_queue.top();
+            //std::cout << "Skipping: " << pcd_queue_item->pcd_file <<std::endl;
+            pcd_queue.pop();
+          }
+          break;
+        }
+        //std::cout << "Loaded: " << pcd_queue_item->pcd_file << std::endl;
+      }
+
+      pcd_queue.pop();
     }
 
-
-
-
-//    {
-//      boost::mutex::scoped_lock lock (camera_changed_mutex);
-//      camera_changed.wait (lock);
-//    }
-//
-//    double frustum[24];
-//    octree_camera->getFrustum (frustum);
-//
-//    Eigen::Vector3d eye = octree_camera->getPosition ();
-//    Eigen::Matrix4d view_projection_matrix = octree_camera->getViewProjectionMatrix ();
-//
-//    //cloud->updateView (frustum, eye, view_projection_matrix);
-//
-//    window->Render ();
-//
-////    std::list<std::string> file_names;
-////    cloud->getOctree()->queryFrustum(frustum, file_names, cloud->getDisplayDepth());
-////    cout << "bins: " << file_names.size() << endl;
+    timestamp++;
   }
 }
 
@@ -96,7 +114,7 @@ OutofcoreCloud::pcdReaderThread ()
 // Operators
 // -----------------------------------------------------------------------------
 OutofcoreCloud::OutofcoreCloud (std::string name, boost::filesystem::path& tree_root) :
-    Object (name), display_depth_ (1), points_loaded_ (0), render_camera_(NULL), lod_pixel_threshold_(10000)
+    Object (name), display_depth_ (1), points_loaded_ (0), data_loaded_(0), render_camera_(NULL), lod_pixel_threshold_(10000)
 {
 
   // Create the pcd reader thread once for all outofcore nodes
@@ -113,24 +131,8 @@ OutofcoreCloud::OutofcoreCloud (std::string name, boost::filesystem::path& tree_
 
   updateVoxelData ();
 
-//    cloud_data_ = vtkSmartPointer<vtkPolyData>::New ();
-//    cloud_actor_ = vtkSmartPointer<vtkActor>::New ();
   cloud_actors_ = vtkSmartPointer<vtkActorCollection>::New ();
 
-  //updateCloudData();
-
-//    if (!cloud_actor_)
-//      cout << "Not initialized" << endl;
-//
-//    if (!cloud_actor_.GetPointer())
-//      cout << "GetPointer - Not initialized" << endl;
-//
-//    if (cloud_actor_.GetPointer())
-//          cout << "GetPointer - Initialized" << endl;
-
-//poly_data.GetPointer()
-
-//pcl::io::pointCloudTovtkPolyData(const sensor_msgs::PointCloud2Ptr& cloud, vtkSmartPointer<vtkPolyData>& poly_data)
   addActor (voxel_actor_);
 }
 
@@ -217,26 +219,33 @@ OutofcoreCloud::render (vtkRenderer* renderer)
 
 //      for (int i=0; i < node->getDepth(); i++)
 //        std::cout << " ";
-//      std::cout << coverage << endl;//" : " << (coverage > (size[0] * size[1])) << endl;
+//      std::cout << coverage << "-" << pcd_file << endl;//" : " << (coverage > (size[0] * size[1])) << endl;
 
       std::string pcd_file = node->getPCDFilename ().string ();
 
-      cloud_data_map_mutex.lock();
-      CloudDataCacheIterator cloud_data_it = cloud_data_map.find (pcd_file);
+      cloud_data_cache_mutex.lock();
 
-      if (cloud_data_it == cloud_data_map.end ())
+      PcdQueueItem pcd_queue_item(pcd_file, coverage);
+
+      // If we can lock the queue add another item
+      if (pcd_queue_mutex.try_lock())
       {
-        pcd_queue.push(pcd_file);
+        pcd_queue.push(pcd_queue_item);
+        pcd_queue_mutex.unlock();
       }
-      else
+
+      if (cloud_data_cache.hasKey(pcd_file))
       {
+        //std::cout << "Has Key for: " << pcd_file << std::endl;
         if (cloud_actors_map_.find (pcd_file) == cloud_actors_map_.end ())
         {
 
           vtkSmartPointer<vtkActor> cloud_actor = vtkSmartPointer<vtkActor>::New ();
           vtkSmartPointer<vtkVertexBufferObjectMapper> mapper = vtkSmartPointer<vtkVertexBufferObjectMapper>::New ();
 
-          mapper->SetInput (cloud_data_it->second);
+          CloudDataCacheItem *cloud_data_cache_item = &cloud_data_cache.get(pcd_file);
+
+          mapper->SetInput (cloud_data_cache_item->item);
           cloud_actor->SetMapper (mapper);
           cloud_actor->GetProperty ()->SetColor (0.0, 0.0, 1.0);
           cloud_actor->GetProperty ()->SetPointSize (1);
@@ -246,16 +255,24 @@ OutofcoreCloud::render (vtkRenderer* renderer)
         }
 
         if (!hasActor (cloud_actors_map_[pcd_file]))
+        {
           points_loaded_ += cloud_actors_map_[pcd_file]->GetMapper ()->GetInput ()->GetNumberOfPoints ();
+          data_loaded_ += cloud_actors_map_[pcd_file]->GetMapper ()->GetInput ()->GetActualMemorySize();
+        }
+
+        //std::cout << "Adding Actor: " << pcd_file << std::endl;
 
         cloud_actors_->AddItem (cloud_actors_map_[pcd_file]);
         addActor (cloud_actors_map_[pcd_file]);
       }
 
-      cloud_data_map_mutex.unlock();
+      cloud_data_cache_mutex.unlock();
 
       breadth_first_it++;
     }
+
+    // We're done culling, notify the pcd_reader thread the queue is read
+    pcd_queue_ready.notify_one();
 
     std::vector<vtkActor*> actors_to_remove;
     {
@@ -289,6 +306,7 @@ OutofcoreCloud::render (vtkRenderer* renderer)
     for (int i = 0; i < actors_to_remove.size (); i++)
     {
       points_loaded_ -= actors_to_remove.back ()->GetMapper ()->GetInput ()->GetNumberOfPoints ();
+      data_loaded_ -= actors_to_remove.back ()->GetMapper ()->GetInput ()->GetActualMemorySize();
       removeActor (actors_to_remove.back ());
       actors_to_remove.pop_back ();
     }

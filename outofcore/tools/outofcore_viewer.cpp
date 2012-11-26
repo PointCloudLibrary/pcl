@@ -228,7 +228,7 @@ renderEndCallback(vtkObject* vtkNotUsed(caller), unsigned long int vtkNotUsed(ev
 }
 
 int
-outofcoreViewer (boost::filesystem::path tree_root, int depth, bool display_octree = true)
+outofcoreViewer (boost::filesystem::path tree_root, int depth, bool display_octree=true, unsigned int gpu_cache_size=512)
 {
   cout << boost::filesystem::absolute (tree_root) << endl;
 
@@ -239,6 +239,7 @@ outofcoreViewer (boost::filesystem::path tree_root, int depth, bool display_octr
   OutofcoreCloud *cloud = new OutofcoreCloud ("my_octree", tree_root);
   cloud->setDisplayDepth (depth);
   cloud->setDisplayVoxels (display_octree);
+  OutofcoreCloud::cloud_data_cache.setCapacity(gpu_cache_size*1024);
   scene->addObject (cloud);
 
 //  OutofcoreCloud *cloud2 = new OutofcoreCloud ("my_octree2", tree_root);
@@ -275,9 +276,7 @@ outofcoreViewer (boost::filesystem::path tree_root, int depth, bool display_octr
   Camera *octree_camera = new Camera ("octree", octree_viewport.getRenderer ()->GetActiveCamera ());
   scene->addCamera (persp_camera);
   scene->addCamera (octree_camera);
-
   octree_camera->setDisplay(true);
-  cloud->setRenderCamera(octree_camera);
 
   // Set viewport cameras
   persp_viewport.setCamera (persp_camera);
@@ -291,6 +290,8 @@ outofcoreViewer (boost::filesystem::path tree_root, int depth, bool display_octr
   Eigen::Vector3d max (cloud->getBoundingBoxMax ());
   octree_viewport.getRenderer ()->ResetCamera (min.x (), max.x (), min.y (), max.y (), min.z (), max.z ());
   persp_viewport.getRenderer ()->ResetCamera (min.x (), max.x (), min.y (), max.y (), min.z (), max.z ());
+
+  cloud->setRenderCamera(octree_camera);
 
   // Interactor
   // -------------------------------------------------------------------------
@@ -333,6 +334,9 @@ print_help (int argc, char **argv)
   print_info ("Options:\n");
   print_info ("\t -depth <depth>                \t Octree depth\n");
   print_info ("\t -display_octree               \t Toggles octree display\n");
+//  print_info ("\t -mem_cache_size <size>        \t Size of pointcloud memory cache in MB (Defaults to 1024MB)\n");
+  print_info ("\t -gpu_cache_size <size>        \t Size of pointcloud gpu cache in MB (Defaults to 512MB)\n");
+  print_info ("\t -lod_threshold <pixels>       \t Bounding box screen projection threshold (Defaults to 10000\n");
   print_info ("\t -v                            \t Print more verbosity\n");
   print_info ("\t -h                            \t Display help\n");
   print_info ("\n");
@@ -366,10 +370,16 @@ main (int argc, char* argv[])
 
   // Defaults
   int depth = 4;
+//  unsigned int mem_cache_size = 1024;
+  unsigned int gpu_cache_size = 512;
+  unsigned int lod_threshold = 10000;
   bool display_octree = find_switch (argc, argv, "-display_octree");
 
   // Parse options
   parse_argument (argc, argv, "-depth", depth);
+//  parse_argument (argc, argv, "-mem_cache_size", mem_cache_size);
+  parse_argument (argc, argv, "-gpu_cache_size", gpu_cache_size);
+  parse_argument (argc, argv, "-lod_threshold", lod_threshold);
 
   // Parse non-option arguments
   boost::filesystem::path tree_root (argv[argc - 1]);
@@ -391,5 +401,5 @@ main (int argc, char* argv[])
     }
   }
 
-  return outofcoreViewer (tree_root, depth, display_octree);
+  return outofcoreViewer (tree_root, depth, display_octree, gpu_cache_size);
 }

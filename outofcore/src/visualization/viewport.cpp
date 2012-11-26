@@ -70,7 +70,7 @@ Viewport::Viewport (vtkSmartPointer<vtkRenderWindow> window, double xmin/*=0.0*/
   points_hud_actor_->GetTextProperty ()->SetFontSize (12);
   points_hud_actor_->GetTextProperty ()->SetColor (0.8, 0.8, 0.8);
   points_hud_actor_->GetTextProperty ()->SetJustificationToRight ();
-  points_hud_actor_->SetInput ("points");
+  points_hud_actor_->SetInput ("points/mb");
   points_hud_actor_->SetPosition ((viewport_xmax - viewport_xmin) - 10, viewport_ymax - 20);
   renderer_->AddActor2D (points_hud_actor_);
 
@@ -188,16 +188,20 @@ Viewport::viewportHudUpdate ()
   std::vector<Object*> objects = scene->getObjects ();
 
   uint64_t points_loaded = 0;
+  uint64_t data_loaded = 0;
   for (int i = 0; i < objects.size (); i++)
   {
     //TYPE& dynamic_cast<TYPE&> (object);
     OutofcoreCloud* cloud = dynamic_cast<OutofcoreCloud*> (objects[i]);
     if (cloud != NULL)
+    {
       points_loaded += cloud->getPointsLoaded ();
+      data_loaded += cloud->getDataLoaded ();
+    }
   }
 
   char points_loaded_str[50];
-  sprintf (points_loaded_str, "%llu points", points_loaded);
+  sprintf (points_loaded_str, "%llu points/%llu mb", points_loaded, data_loaded/1024);
   points_hud_actor_->SetInput (points_loaded_str);
 }
 

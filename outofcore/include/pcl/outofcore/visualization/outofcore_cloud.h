@@ -9,7 +9,8 @@
 // PCL - outofcore
 #include <pcl/outofcore/outofcore.h>
 #include <pcl/outofcore/outofcore_impl.h>
-#include <pcl/outofcore/impl/monitor_queue.hpp>
+//#include <pcl/outofcore/impl/monitor_queue.hpp>
+#include <pcl/outofcore/impl/lru_cache.hpp>
 
 // PCL
 #include "camera.h"
@@ -52,13 +53,67 @@ class OutofcoreCloud : public Object
 
   public:
 
-    typedef std::map<std::string, vtkSmartPointer<vtkPolyData> > CloudDataCache;
-    typedef std::map<std::string, vtkSmartPointer<vtkPolyData> >::iterator CloudDataCacheIterator;
+//    typedef std::map<std::string, vtkSmartPointer<vtkPolyData> > CloudDataCache;
+//    typedef std::map<std::string, vtkSmartPointer<vtkPolyData> >::iterator CloudDataCacheIterator;
+
 
     static boost::shared_ptr<boost::thread> pcd_reader_thread;
-    static MonitorQueue<std::string> pcd_queue;
-    static CloudDataCache cloud_data_map;
-    static boost::mutex cloud_data_map_mutex;
+    //static MonitorQueue<std::string> pcd_queue;
+
+    struct PcdQueueItem
+    {
+      PcdQueueItem (std::string pcd_file, float coverage)
+      {
+       this->pcd_file = pcd_file;
+       this->coverage = coverage;
+      }
+
+      bool operator< (const PcdQueueItem& rhs) const
+      {
+       if (coverage < rhs.coverage)
+       {
+         return true;
+       }
+       return false;
+      }
+
+      std::string pcd_file;
+      float coverage;
+    };
+
+    typedef std::priority_queue<PcdQueueItem> PcdQueue;
+    static PcdQueue pcd_queue;
+    static boost::mutex pcd_queue_mutex;
+    static boost::condition pcd_queue_ready;
+
+    class CloudDataCacheItem : public LRUCacheItem< vtkSmartPointer<vtkPolyData> >
+    {
+    public:
+
+      CloudDataCacheItem (std::string pcd_file, float coverage, vtkSmartPointer<vtkPolyData> cloud_data, size_t timestamp)
+      {
+       this->pcd_file = pcd_file;
+       this->coverage = coverage;
+       this->item = cloud_data;
+       this->timestamp = timestamp;
+      }
+
+      virtual size_t
+      sizeOf() const
+      {
+        return item->GetActualMemorySize();
+      }
+
+      std::string pcd_file;
+      float coverage;
+    };
+
+
+//    static CloudDataCache cloud_data_map;
+//    static boost::mutex cloud_data_map_mutex;
+    typedef LRUCache<std::string, CloudDataCacheItem> CloudDataCache;
+    static CloudDataCache cloud_data_cache;
+    static boost::mutex cloud_data_cache_mutex;
 
     static void pcdReaderThread();
 
@@ -121,6 +176,12 @@ class OutofcoreCloud : public Object
     getPointsLoaded ()
     {
       return points_loaded_;
+    }
+
+    uint64_t
+    getDataLoaded ()
+    {
+      return data_loaded_;
     }
 
     Eigen::Vector3d
@@ -195,8 +256,6 @@ class OutofcoreCloud : public Object
       else if (lod_pixel_threshold_ > 1000)
         value = 100;
 
-
-
       lod_pixel_threshold_ -= value;
 
       if (lod_pixel_threshold_ < 100)
@@ -215,6 +274,7 @@ class OutofcoreCloud : public Object
 
     uint64_t display_depth_;
     uint64_t points_loaded_;
+    uint64_t data_loaded_;
 
     Eigen::Vector3d bbox_min_, bbox_max_;
 
