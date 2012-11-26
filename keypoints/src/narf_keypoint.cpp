@@ -771,7 +771,7 @@ NarfKeypoint::calculateInterestPoints ()
     {
       int index = y*width + x;
       float interest_value = interest_image_[index];
-      if (interest_value < parameters_.min_interest_value)
+      if (!range_image.isValid (index) || interest_value < parameters_.min_interest_value)
         continue;
       const PointWithRange& point = range_image.getPoint (index);
       bool is_maximum = true;
@@ -864,7 +864,6 @@ NarfKeypoint::calculateInterestPoints ()
       InterestPoint interest_point;
       interest_point.getVector3fMap () = keypoint_3d.getVector3fMap ();
       interest_point.strength = interest_value;
-      interest_point.strength = interest_value;
       tmp_interest_points.push_back (interest_point);
     }
   }
@@ -893,6 +892,7 @@ NarfKeypoint::calculateInterestPoints ()
       continue;
     interest_points_->points.push_back (interest_point);
     int image_x, image_y;
+    //std::cout << interest_point.x<<","<<interest_point.y<<","<<interest_point.z<<", "<<std::flush;
     range_image.getImagePoint (interest_point.getVector3fMap (), image_x, image_y);
     if (range_image.isValid (image_x, image_y))
       is_interest_point_image_[image_y*width + image_x] = true;
