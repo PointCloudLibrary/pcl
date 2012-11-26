@@ -41,7 +41,7 @@
 #define PCL_POINT_TRAITS_H_
 
 #ifdef __GNUC__
-#pragma GCC system_header 
+#pragma GCC system_header
 #endif
 
 #include <sensor_msgs/PointField.h>
@@ -271,7 +271,7 @@ namespace pcl
       const std::string &name_;
       const InT &value_;
   };
- 
+
   /** \brief Set the value at a specified field in a point
     * \param[out] pt the point to set the value to
     * \param[in] field_offset the offset of the field
@@ -292,8 +292,8 @@ namespace pcl
   template <typename PointT, typename ValT> inline void
   getFieldValue (const PointT &pt, size_t field_offset, ValT &value)
   {
-    uint8_t* data_ptr = reinterpret_cast<uint8_t*>(&pt) + field_offset;
-    value = *reinterpret_cast<ValT*>(data_ptr);
+    const uint8_t* data_ptr = reinterpret_cast<const uint8_t*>(&pt) + field_offset;
+    value = *reinterpret_cast<const ValT*>(data_ptr);
   }
 }
 
