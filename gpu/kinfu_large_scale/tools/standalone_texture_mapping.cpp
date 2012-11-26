@@ -424,7 +424,7 @@ main (int argc, char** argv)
   // read mesh from plyfile
   PCL_INFO ("\nLoading mesh from file %s...\n", argv[1]);
   pcl::PolygonMesh triangles;
-  pcl::io::loadPolygonFile(argv[1], triangles);
+  pcl::io::loadPolygonFilePLY(argv[1], triangles);
 
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
   pcl::fromROSMsg(triangles.cloud, *cloud);

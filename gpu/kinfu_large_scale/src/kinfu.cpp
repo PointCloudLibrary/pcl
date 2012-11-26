@@ -276,7 +276,7 @@ pcl::gpu::kinfuLS::KinfuTracker::allocateBufffers (int rows, int cols)
 }
 
 inline void 
-pcl::gpu::kinfuLS::KinfuTracker::convertTransforms (Matrix3frm  transform_in_1, Matrix3frm transform_in_2, Vector3f translation_in_1, Vector3f translation_in_2, Mat33& transform_out_1, Mat33& transform_out_2, float3& translation_out_1, float3& translation_out_2)
+pcl::gpu::kinfuLS::KinfuTracker::convertTransforms (Matrix3frm& transform_in_1, Matrix3frm& transform_in_2, Vector3f& translation_in_1, Vector3f& translation_in_2, Mat33& transform_out_1, Mat33& transform_out_2, float3& translation_out_1, float3& translation_out_2)
 {
   transform_out_1 = device_cast<Mat33> (transform_in_1);
   transform_out_2 = device_cast<Mat33> (transform_in_2);
@@ -285,7 +285,7 @@ pcl::gpu::kinfuLS::KinfuTracker::convertTransforms (Matrix3frm  transform_in_1, 
 }
 
 inline void 
-pcl::gpu::kinfuLS::KinfuTracker::convertTransforms (Matrix3frm  transform_in_1, Matrix3frm transform_in_2, Vector3f translation_in, Mat33& transform_out_1, Mat33& transform_out_2, float3& translation_out)
+pcl::gpu::kinfuLS::KinfuTracker::convertTransforms (Matrix3frm& transform_in_1, Matrix3frm& transform_in_2, Vector3f& translation_in, Mat33& transform_out_1, Mat33& transform_out_2, float3& translation_out)
 {
   transform_out_1 = device_cast<Mat33> (transform_in_1);
   transform_out_2 = device_cast<Mat33> (transform_in_2);
@@ -293,14 +293,14 @@ pcl::gpu::kinfuLS::KinfuTracker::convertTransforms (Matrix3frm  transform_in_1, 
 }
 
 inline void 
-pcl::gpu::kinfuLS::KinfuTracker::convertTransforms (Matrix3frm  transform_in, Vector3f translation_in, Mat33& transform_out, float3& translation_out)
+pcl::gpu::kinfuLS::KinfuTracker::convertTransforms (Matrix3frm& transform_in, Vector3f& translation_in, Mat33& transform_out, float3& translation_out)
 {
   transform_out = device_cast<Mat33> (transform_in);  
   translation_out = device_cast<float3>(translation_in);
 }
 
 inline void
-pcl::gpu::kinfuLS::KinfuTracker::prepareMaps (const DepthMap& depth_raw, const Intr cam_intrinsics)
+pcl::gpu::kinfuLS::KinfuTracker::prepareMaps (const DepthMap& depth_raw, const Intr& cam_intrinsics)
 {
   // blur raw map
   bilateralFilter (depth_raw, depths_curr_[0]);
@@ -323,7 +323,7 @@ pcl::gpu::kinfuLS::KinfuTracker::prepareMaps (const DepthMap& depth_raw, const I
 
 
 inline bool 
-pcl::gpu::kinfuLS::KinfuTracker::performICP(const Intr cam_intrinsics, Matrix3frm previous_global_rotation, Vector3f previous_global_translation, Matrix3frm& current_global_rotation , Vector3f& current_global_translation)
+pcl::gpu::kinfuLS::KinfuTracker::performICP(const Intr& cam_intrinsics, Matrix3frm &previous_global_rotation, Vector3f &previous_global_translation, Matrix3frm& current_global_rotation , Vector3f& current_global_translation)
 {
   // Compute inverse rotation
   Matrix3frm previous_global_rotation_inv = previous_global_rotation.inverse ();  // Rprev.t();  

@@ -253,7 +253,7 @@ namespace pcl
             * \param[out] translationOut1 result of first translation conversion
             * \param[out] translationOut2 result of second translation conversion
             */
-          inline void convertTransforms (Matrix3frm  transform_in_1, Matrix3frm transform_in_2, Eigen::Vector3f translation_in_1, Eigen::Vector3f translation_in_2,
+          inline void convertTransforms (Matrix3frm& transform_in_1, Matrix3frm& transform_in_2, Eigen::Vector3f& translation_in_1, Eigen::Vector3f& translation_in_2,
                                          pcl::device::kinfuLS::Mat33& transform_out_1, pcl::device::kinfuLS::Mat33& transform_out_2, float3& translation_out_1, float3& translation_out_2);
           
           /** \brief helper function that converts transforms from host to device types
@@ -264,7 +264,7 @@ namespace pcl
             * \param[out] transformOut2 result of second transform conversion
             * \param[out] translationOut result of translation conversion
             */
-          inline void convertTransforms (Matrix3frm  transform_in_1, Matrix3frm transform_in_2, Eigen::Vector3f translation_in,
+          inline void convertTransforms (Matrix3frm& transform_in_1, Matrix3frm& transform_in_2, Eigen::Vector3f& translation_in,
                                          pcl::device::kinfuLS::Mat33& transform_out_1, pcl::device::kinfuLS::Mat33& transform_out_2, float3& translation_out);
           
           /** \brief helper function that converts transforms from host to device types
@@ -273,7 +273,7 @@ namespace pcl
             * \param[out] transformOut result of transform conversion
             * \param[out] translationOut result of translation conversion
             */
-          inline void convertTransforms (Matrix3frm  transform_in, Eigen::Vector3f translation_in,
+          inline void convertTransforms (Matrix3frm& transform_in, Eigen::Vector3f& translation_in,
                                          pcl::device::kinfuLS::Mat33& transform_out, float3& translation_out);
           
           /** \brief helper function that pre-process a raw detph map the kinect fusion algorithm.
@@ -282,7 +282,7 @@ namespace pcl
             * \param[in] depth_raw the raw depth map to process
             * \param[in] cam_intrinsics intrinsics of the camera used to acquire the depth map
             */
-          inline void prepareMaps (const DepthMap& depth_raw, const pcl::device::kinfuLS::Intr cam_intrinsics);
+          inline void prepareMaps (const DepthMap& depth_raw, const pcl::device::kinfuLS::Intr& cam_intrinsics);
  
           /** \brief helper function that performs GPU-based ICP, using vertex and normal maps stored in v/nmaps_curr_ and v/nmaps_g_prev_
             * The function requires the previous local camera pose (translation and inverted rotation) as well as camera intrinsics.
@@ -294,7 +294,7 @@ namespace pcl
             * \param[in] current_global_translation computed global translation
             * \return true if ICP has converged.
             */
-          inline bool performICP(const pcl::device::kinfuLS::Intr cam_intrinsics, Matrix3frm previous_global_rotation, Vector3f previous_global_translation, Matrix3frm& current_global_rotation, Vector3f& current_global_translation);
+          inline bool performICP(const pcl::device::kinfuLS::Intr& cam_intrinsics, Matrix3frm& previous_global_rotation, Vector3f& previous_global_translation, Matrix3frm& current_global_rotation, Vector3f& current_global_translation);
           
           /** \brief Cyclical buffer object */
           CyclicalBuffer cyclical_;

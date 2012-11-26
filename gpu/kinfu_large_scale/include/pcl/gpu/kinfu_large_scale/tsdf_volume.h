@@ -82,7 +82,7 @@ namespace pcl
               weights_element_size (sizeof(short))
           {};
 
-          Header (Eigen::Vector3i res, Eigen::Vector3f size)
+          Header (const Eigen::Vector3i &res, const Eigen::Vector3f &size)
             : resolution (res),
               volume_size (size),
               volume_element_size (sizeof(float)),
@@ -99,6 +99,9 @@ namespace pcl
             os << "(resolution = " << h.resolution.transpose() << ", volume size = " << h.volume_size.transpose() << ")";
             return (os);
           }
+
+		  public:
+EIGEN_MAKE_ALIGNED_OPERATOR_NEW
         };        
         
         /** \brief Default buffer size for fetching cloud. It limits max number of points that can be extracted */
@@ -226,7 +229,7 @@ namespace pcl
         
         /** \brief Set the header for data stored on host directly. Useful if directly writing into volume and weights */
         inline void
-        setHeader (Eigen::Vector3i resolution, Eigen::Vector3f volume_size) {
+        setHeader (const Eigen::Vector3i& resolution, const Eigen::Vector3f& volume_size) {
           header_ = Header (resolution, volume_size);
           if (volume_host_->size() != this->size())
             pcl::console::print_warn ("[TSDFVolume::setHeader] Header volume size (%d) doesn't fit underlying data size (%d)", volume_host_->size(), size());
@@ -275,7 +278,8 @@ namespace pcl
         Header header_;
         VolumePtr volume_host_;
         WeightsPtr weights_host_;
-        
+public:
+EIGEN_MAKE_ALIGNED_OPERATOR_NEW        
       };
     }
   }
