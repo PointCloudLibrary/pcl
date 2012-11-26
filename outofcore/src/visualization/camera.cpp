@@ -88,23 +88,23 @@ Camera::computeFrustum ()
 
   pcl::visualization::getViewFrustum (getViewProjectionMatrix (), frustum_);
 
-  vtkSmartPointer<vtkHull> hull = vtkSmartPointer<vtkHull>::New ();
-  vtkSmartPointer<vtkPlanes> planes = vtkSmartPointer<vtkPlanes>::New ();
-  vtkSmartPointer<vtkPolyData> hullData = vtkSmartPointer<vtkPolyData>::New ();
-
-  planes->SetFrustumPlanes (frustum_);
-  hull->SetPlanes (planes);
-  hull->GenerateHull (hullData, -200, 200, -200, 200, -200, 200);
-
-  vtkSmartPointer<vtkPolyDataMapper> hull_mapper = static_cast<vtkPolyDataMapper*> (hull_actor_->GetMapper ());
-
-#if VTK_MAJOR_VERSION <= 5
-  hull_mapper->SetInput (hullData);
-#else
-  hull_mapper->SetInputData(hullData);
-#endif
-
-  hull_actor_->SetMapper (hull_mapper);
+//  vtkSmartPointer<vtkHull> hull = vtkSmartPointer<vtkHull>::New ();
+//  vtkSmartPointer<vtkPlanes> planes = vtkSmartPointer<vtkPlanes>::New ();
+//  vtkSmartPointer<vtkPolyData> hullData = vtkSmartPointer<vtkPolyData>::New ();
+//
+//  planes->SetFrustumPlanes (frustum_);
+//  hull->SetPlanes (planes);
+//  hull->GenerateHull (hullData, -200, 200, -200, 200, -200, 200);
+//
+//  vtkSmartPointer<vtkPolyDataMapper> hull_mapper = static_cast<vtkPolyDataMapper*> (hull_actor_->GetMapper ());
+//
+//#if VTK_MAJOR_VERSION <= 5
+//  hull_mapper->SetInput (hullData);
+//#else
+//  hull_mapper->SetInputData(hullData);
+//#endif
+//
+//  hull_actor_->SetMapper (hull_mapper);
 }
 
 void
@@ -122,20 +122,20 @@ Camera::render (vtkRenderer* renderer)
 {
   vtkSmartPointer<vtkCamera> active_camera = renderer->GetActiveCamera ();
 
-  if (camera_.GetPointer() != active_camera.GetPointer())
-  {
-    if (display_)
-    {
-      renderer->AddActor (camera_actor_);
-      renderer->AddActor (hull_actor_);
-    }
-    else
-    {
-      renderer->RemoveActor (camera_actor_);
-      renderer->RemoveActor (hull_actor_);
-    }
-    return;
-  }
+//  if (camera_.GetPointer() != active_camera.GetPointer())
+//  {
+//    if (display_)
+//    {
+//      renderer->AddActor (camera_actor_);
+//      renderer->AddActor (hull_actor_);
+//    }
+//    else
+//    {
+//      renderer->RemoveActor (camera_actor_);
+//      renderer->RemoveActor (hull_actor_);
+//    }
+//    return;
+//  }
 
   // Reset clipping range
   setClippingRange();
