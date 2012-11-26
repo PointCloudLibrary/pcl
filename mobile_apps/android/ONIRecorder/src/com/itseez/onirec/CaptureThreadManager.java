@@ -94,78 +94,115 @@ class CaptureThreadManager {
         @Override
         public void run() {
             try {
-                contextHolder.getContext().waitAndUpdateAll();
-            } catch (final StatusException se) {
-                final String message = "Failed to acquire a frame.";
-                Log.e(TAG, message, se);
-                reportError(Feedback.Error.FailedDuringCapture, se.getMessage());
-                return;
-            }
-
-            if (color != null) {
-                int frame_width = color.getMetaData().getXRes();
-                int frame_height = color.getMetaData().getYRes();
-
-                if (colorBitmap.getWidth() != frame_width || colorBitmap.getHeight() != frame_height) {
-                    colorBitmap.recycle();
-                    colorBitmap = Bitmap.createBitmap(frame_width, frame_height, Bitmap.Config.ARGB_8888);
-                    colorBitmap.setHasAlpha(false);
-                }
-
-                imageBufferToBitmap(color.getMetaData().getData().createByteBuffer(), colorBitmap);
-
-                Canvas canvas = holderColor.lockCanvas();
-
-                if (canvas != null) {
-                    Rect canvas_size = holderColor.getSurfaceFrame();
-
-                    canvas.drawBitmap(colorBitmap, null, canvas_size, null);
-
-                    holderColor.unlockCanvasAndPost(canvas);
-                }
-            }
-
-            if (depth != null) {
-                int frame_width = depth.getMetaData().getXRes();
-                int frame_height = depth.getMetaData().getYRes();
-
-                if (depthBitmap.getWidth() != frame_width || depthBitmap.getHeight() != frame_height) {
-                    depthBitmap.recycle();
-                    depthBitmap = Bitmap.createBitmap(frame_width, frame_height, Bitmap.Config.ARGB_8888);
-                    depthBitmap.setHasAlpha(false);
-                }
-
-                depthBufferToBitmap(depth.getMetaData().getData().createShortBuffer(), depthBitmap,
-                        depth.getMetaData().getZRes() - 1);
-
-                Canvas canvas = holderDepth.lockCanvas();
-
-                if (canvas != null) {
-                    Rect canvas_size = holderDepth.getSurfaceFrame();
-
-                    canvas.drawBitmap(depthBitmap, null, canvas_size, new Paint(Paint.DITHER_FLAG));
-
-                    holderDepth.unlockCanvasAndPost(canvas);
-                }
-            }
-
-            ++frameCount;
-            final long new_time = SystemClock.uptimeMillis();
-            if (new_time >= lastUpdateTime + 500) {
-                final double fps = frameCount / (double) (new_time - lastUpdateTime) * 1000;
-
-                uiHandler.post(new Runnable() {
+                Timer.time("processFrame", new Timer.Timeable() {
                     @Override
-                    public void run() {
-                        feedback.setFps(fps);
+                    public void run() throws Timer.ReturnException {
+                        Timer.time("waitAndUpdateAll", new Timer.Timeable() {
+                            @Override
+                            public void run() throws Timer.ReturnException {
+                                try {
+                                    contextHolder.getContext().waitAndUpdateAll();
+                                } catch (final StatusException se) {
+                                    final String message = "Failed to acquire a frame.";
+                                    Log.e(TAG, message, se);
+                                    reportError(Feedback.Error.FailedDuringCapture, se.getMessage());
+                                    throw new Timer.ReturnException();
+                                }
+                            }
+                        });
+
+                        if (color != null)
+                            Timer.time("colorVis", new Timer.Timeable() {
+                                @Override
+                                public void run() throws Timer.ReturnException {
+                                    final int frame_width = color.getMetaData().getXRes();
+                                    final int frame_height = color.getMetaData().getYRes();
+
+                                    Timer.time("colorConvert", new Timer.Timeable() {
+                                        @Override
+                                        public void run() {
+                                            if (colorBitmap.getWidth() != frame_width || colorBitmap.getHeight() != frame_height) {
+                                                colorBitmap.recycle();
+                                                colorBitmap = Bitmap.createBitmap(frame_width, frame_height, Bitmap.Config.ARGB_8888);
+                                                colorBitmap.setHasAlpha(false);
+                                            }
+
+                                            imageBufferToBitmap(color.getMetaData().getData().createByteBuffer(), colorBitmap);
+                                        }
+                                    });
+
+                                    Timer.time("colorDraw", new Timer.Timeable() {
+                                        @Override
+                                        public void run() {
+                                            Canvas canvas = holderColor.lockCanvas();
+
+                                            if (canvas != null) {
+                                                Rect canvas_size = holderColor.getSurfaceFrame();
+                                                canvas.drawBitmap(colorBitmap, null, canvas_size, null);
+                                                holderColor.unlockCanvasAndPost(canvas);
+                                            }
+                                        }
+                                    });
+                                }
+                            });
+
+                        if (depth != null)
+                            Timer.time("depthVis", new Timer.Timeable() {
+                                @Override
+                                public void run() throws Timer.ReturnException {
+                                    final int frame_width = depth.getMetaData().getXRes();
+                                    final int frame_height = depth.getMetaData().getYRes();
+
+                                    Timer.time("depthConvert", new Timer.Timeable() {
+                                        @Override
+                                        public void run() throws Timer.ReturnException {
+                                            if (depthBitmap.getWidth() != frame_width || depthBitmap.getHeight() != frame_height) {
+                                                depthBitmap.recycle();
+                                                depthBitmap = Bitmap.createBitmap(frame_width, frame_height, Bitmap.Config.ARGB_8888);
+                                                depthBitmap.setHasAlpha(false);
+                                            }
+
+                                            depthBufferToBitmap(depth.getMetaData().getData().createShortBuffer(), depthBitmap,
+                                                    depth.getMetaData().getZRes() - 1);
+                                        }
+                                    });
+
+                                    Timer.time("depthDraw", new Timer.Timeable() {
+                                        @Override
+                                        public void run() throws Timer.ReturnException {
+                                            Canvas canvas = holderDepth.lockCanvas();
+
+                                            if (canvas != null) {
+                                                Rect canvas_size = holderDepth.getSurfaceFrame();
+                                                canvas.drawBitmap(depthBitmap, null, canvas_size, new Paint(Paint.DITHER_FLAG));
+                                                holderDepth.unlockCanvasAndPost(canvas);
+                                            }
+                                        }
+                                    });
+                                }
+                            });
+
+                        ++frameCount;
+                        final long new_time = SystemClock.uptimeMillis();
+                        if (new_time >= lastUpdateTime + 500) {
+                            final double fps = frameCount / (double) (new_time - lastUpdateTime) * 1000;
+
+                            uiHandler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    feedback.setFps(fps);
+                                }
+                            });
+
+                            frameCount = 0;
+                            lastUpdateTime = new_time;
+                        }
+
+                        handler.post(processFrame);
                     }
                 });
-
-                frameCount = 0;
-                lastUpdateTime = new_time;
+            } catch (Timer.ReturnException ignored) {
             }
-
-            handler.post(processFrame);
         }
     };
 
