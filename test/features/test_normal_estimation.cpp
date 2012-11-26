@@ -61,18 +61,18 @@ TEST (PCL, computePointNormal)
 
   PointCloud<PointXYZ> c;
   
-  PointXYZ p11 (706952.31, 4087.6958, 0.00000000),
-           p21 (707002.31, 6037.6958, 0.00000000),
-           p31 (706952.31, 7937.6958, 0.00000000);
+  PointXYZ p11 (706952.31f, 4087.6958f, 0.00000000f),
+           p21 (707002.31f, 6037.6958f, 0.00000000f),
+           p31 (706952.31f, 7937.6958f, 0.00000000f);
   c.push_back (p11); c.push_back (p21); c.push_back (p31);
 
   computePointNormal (cloud, plane_parameters, curvature);
   cerr << plane_parameters << "\n";
   
   c.clear ();
-  PointXYZ p12 (-439747.72, -43597.250, 0.0000000),
-           p22 (-439847.72, -41697.250, 0.0000000),
-           p32 (-439747.72, -39797.250, 0.0000000);
+  PointXYZ p12 (-439747.72f, -43597.250f, 0.0000000f),
+           p22 (-439847.72f, -41697.250f, 0.0000000f),
+           p32 (-439747.72f, -39797.250f, 0.0000000f);
 
   c.push_back (p12); c.push_back (p22); c.push_back (p32);
 
@@ -80,9 +80,9 @@ TEST (PCL, computePointNormal)
   cerr << plane_parameters << "\n";
 
   c.clear ();
-  PointXYZ p13 (567011.56, -7741.8179, 0.00000000),
-           p23 (567361.56, -5841.8179, 0.00000000),
-           p33 (567011.56, -3941.8179, 0.00000000);
+  PointXYZ p13 (567011.56f, -7741.8179f, 0.00000000f),
+           p23 (567361.56f, -5841.8179f, 0.00000000f),
+           p33 (567011.56f, -3941.8179f, 0.00000000f);
 
   c.push_back (p13); c.push_back (p23); c.push_back (p33);
 
