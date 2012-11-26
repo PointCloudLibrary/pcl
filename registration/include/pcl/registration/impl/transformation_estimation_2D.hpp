@@ -149,7 +149,7 @@ pcl::registration::TransformationEstimation2D<PointSource, PointTarget, Scalar>:
   // Assemble the correlation matrix H = source * target'
   Eigen::Matrix<Scalar, 3, 3> H = (cloud_src_demean * cloud_tgt_demean.transpose ()).topLeftCorner (3, 3);
   
-  float angle = atan2 ( - (H(0, 0) + H (1, 1)), H (0, 1) + H (1, 0));
+  float angle = atan2 ((H (0, 1) - H (1, 0)), (H(0, 0) + H (1, 1)));
   
   Eigen::Matrix<Scalar, 3, 3> R (Eigen::Matrix<Scalar, 3, 3>::Identity ());
   R (0, 0) = R (1, 1) = cos (angle);
