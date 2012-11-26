@@ -64,6 +64,7 @@ pcl::ihs::InHandScanner::InHandScanner (int argc, char** argv)
     interactor_style_      (),
     draw_crop_box_         (false),
     pivot_                 (0.f, 0.f, 0.f, 1.f),
+    display_mode_          (DM_POINTS),
 
     grabber_               (),
     new_data_connection_   (),
@@ -76,7 +77,7 @@ pcl::ihs::InHandScanner::InHandScanner (int argc, char** argv)
     integration_           (new Integration ()),
 
     cloud_data_draw_       (),
-    mesh_model_draw_       (new Mesh ()),
+    mesh_vec_draw_         (),
     mesh_model_            (new Mesh ())
 
 {
@@ -134,21 +135,23 @@ pcl::ihs::InHandScanner::run ()
   {
     this->calcFPS (visualization_fps_);
 
-    visualizer_->spinOnce ();
-
-    this->drawClouds ();
-    this->drawMesh ();
+    this->draw ();
     this->drawCropBox ();
     this->drawFPS ();
 
-    interactor_style_->setPivot (pivot_.cast <double> ().head <3> ());
+    if (mutex_.try_lock ())
+    {
+      interactor_style_->setPivot (pivot_.cast <double> ().head <3> ());
+      mutex_.unlock ();
 
-    // TODO: Test if this works
-    //  vtkCamera*const cam = visualizer_->getRenderWindow ()->GetRenderers ()->GetFirstRenderer ()->GetActiveCamera ();
-    //  const Eigen::Vector3d pos = Eigen::Map<Eigen::Vector3d> (cam->GetPosition ());
-    //  cam->SetFocalPoint (pivot_.cast <double> ().data ());
-    //  cam->SetPosition (pos.cast <double> ().data ());
+      // TODO: Test if this works
+      //  vtkCamera*const cam = visualizer_->getRenderWindow ()->GetRenderers ()->GetFirstRenderer ()->GetActiveCamera ();
+      //  const Eigen::Vector3d pos = Eigen::Map<Eigen::Vector3d> (cam->GetPosition ());
+      //  cam->SetFocalPoint (pivot_.cast <double> ().data ());
+      //  cam->SetPosition (pos.cast <double> ().data ());
+    }
 
+    visualizer_->spinOnce ();
     boost::this_thread::sleep (boost::posix_time::microseconds (100));
   }
 }
@@ -170,9 +173,7 @@ pcl::ihs::InHandScanner::setRunningMode (const RunningMode& mode)
 {
   boost::mutex::scoped_lock lock (mutex_);
 
-  running_mode_ = mode;
-
-  switch (running_mode_)
+  switch (mode)
   {
     case RM_SHOW_MODEL:
     {
@@ -207,10 +208,29 @@ pcl::ihs::InHandScanner::setRunningMode (const RunningMode& mode)
     default:
     {
       std::cerr << "ERROR in in_hand_scanner.cpp: Unknown command!\n";
-      exit (EXIT_FAILURE);
-      break;
+      return;
     }
   }
+
+  running_mode_ = mode;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+void
+pcl::ihs::InHandScanner::setDisplayMode (const DisplayMode& mode)
+{
+  boost::mutex::scoped_lock lock (mutex_);
+
+  switch (mode)
+  {
+    case DM_POINTS: std::cerr << "Displaying the points\n";                          break;
+    case DM_EDGES:  std::cerr << "Displaying the edges.\n";                          break;
+    case DM_MESH:   std::cerr << "Displaying the mesh\n";                            break;
+    default:        std::cerr << "ERROR in in_hand_scanner.cpp: Unknown command!\n"; return;
+  }
+
+  display_mode_ = mode;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -223,7 +243,7 @@ pcl::ihs::InHandScanner::resetRegistration ()
   running_mode_    = RM_PROCESSED;
   iteration_       = 0;
   transformation_  = Transformation::Identity ();
-  mesh_model_draw_ = MeshPtr (new Mesh ());
+  mesh_vec_draw_.clear ();
   mesh_model_->clear ();
 }
 
@@ -286,103 +306,129 @@ pcl::ihs::InHandScanner::newDataCallback (const CloudInputConstPtr& cloud_in)
     }
   }
 
-  // Set the clouds for visualization
+  // Visualization
   cloud_data_draw_ = cloud_data;
-  if (!mesh_model_draw_)                mesh_model_draw_ = MeshPtr (new Mesh ());
-  if (running_mode_ != RM_UNPROCESSED) *mesh_model_draw_ = *mesh_model_;
+  MeshPtr mesh_model_draw (new Mesh ());
+  if (running_mode_ != RM_UNPROCESSED) *mesh_model_draw = *mesh_model_;
+  mesh_vec_draw_.push_back (mesh_model_draw);
 
   // TODO: put this into the visualization thread.
   Eigen::Vector4f pivot (0.f, 0.f, 0.f, 1.f);
-  if (mesh_model_draw_->sizeVertexes () && pcl::compute3DCentroid (*mesh_model_draw_, pivot)) pivot_ = pivot;
-  else if (pcl::compute3DCentroid (*cloud_data_draw_, pivot))                                 pivot_ = pivot;
+  if (mesh_model_draw->sizeVertexes () && pcl::compute3DCentroid (*mesh_model_draw, pivot)) pivot_ = pivot;
+  else if (pcl::compute3DCentroid (*cloud_data_draw_, pivot))                               pivot_ = pivot;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 void
-pcl::ihs::InHandScanner::drawClouds ()
+pcl::ihs::InHandScanner::draw ()
 {
-  // Get the clouds
-  CloudProcessedPtr cloud_data_temp;
+  CloudProcessedPtr cloud_temp;
+  MeshPtrVec mesh_vec_temp;
   if (mutex_.try_lock ())
   {
-    cloud_data_temp.swap (cloud_data_draw_);
+    cloud_temp.swap (cloud_data_draw_);
+
+    mesh_vec_temp.reserve (mesh_vec_draw_.size ());
+    for (MeshPtrVec::iterator it=mesh_vec_draw_.begin (); it<mesh_vec_draw_.end (); ++it)
+    {
+      MeshPtr mesh_temp;
+      mesh_temp.swap (*it);
+      mesh_vec_temp.push_back (mesh_temp);
+    }
+    mesh_vec_draw_.clear ();
+
     mutex_.unlock ();
   }
-  if (!cloud_data_temp) return;
 
-  // Draw the clouds
-  pcl::visualization::PointCloudColorHandlerRGBField <PointProcessed> ch (cloud_data_temp);
-  if (!visualizer_->updatePointCloud <PointProcessed> (cloud_data_temp, ch, "cloud_data"))
+  if (cloud_temp)
   {
-    visualizer_->addPointCloud <PointProcessed> (cloud_data_temp, ch, "cloud_data");
+    if (display_mode_==DM_POINTS)
+    {
+      pcl::visualization::PointCloudColorHandlerRGBField <PointProcessed> ch (cloud_temp);
+      if (!visualizer_->updatePointCloud <PointProcessed> (cloud_temp, ch))
+      {
+        visualizer_->addPointCloud <PointProcessed> (cloud_temp, ch);
+      }
+    }
+    else
+    {
+      MeshPtr mesh_temp (new Mesh ());
+      integration_->reconstructMesh (cloud_temp, mesh_temp);
+      mesh_vec_temp.push_back (mesh_temp);
+    }
   }
-}
 
-////////////////////////////////////////////////////////////////////////////////
+  for (MeshPtrVec::const_iterator it_m=mesh_vec_temp.begin (); it_m!=mesh_vec_temp.end (); ++it_m)
+  {
+    if (!(*it_m))          continue;
+    if ((*it_m)->empty ()) continue;
 
-void
-pcl::ihs::InHandScanner::drawMesh ()
-{
-  // Get the mesh
-  MeshPtr mesh_model_temp;
-  if (mutex_.try_lock ())
-  {
-    mesh_model_temp.swap (mesh_model_draw_);
-    mutex_.unlock ();
-  }
-  if (!mesh_model_temp) return;
-  if (!mesh_model_temp->sizeVertexes ())
-  {
-    // TODO: addPolygonMesh does not remove the mesh if it is empty: "[0;m[1;31m[addPolygonMesh] No vertices given!"
+    // Convert to cloud + indices for visualization
+    typedef pcl::Vertices                         Face;
+    typedef std::vector <Face>                    Faces;
+    typedef Mesh::VertexConstIterator             VCI;
+    typedef Mesh::FaceConstIterator               FCI;
+    typedef Mesh::VertexAroundFaceConstCirculator VAFCCirc;
+
+    Face          triangle; triangle.vertices.resize (3);
+    CloudModelPtr vertexes (new CloudModel ());
+    Faces         triangles;
+    vertexes->reserve ((*it_m)->sizeVertexes ());
+    triangles.reserve (3 * (*it_m)->sizeFaces ());
+
+    for (VCI it=(*it_m)->beginVertexes (); it!=(*it_m)->endVertexes (); ++it)
+    {
+      vertexes->push_back (*it);
+    }
+
+    for (FCI it=(*it_m)->beginFaces (); it!=(*it_m)->endFaces (); ++it)
+    {
+      VAFCCirc circ = (*it_m)->getVertexAroundFaceConstCirculator (*it);
+      triangle.vertices [0] = (circ++).getDereferencedIndex ().getIndex ();
+      triangle.vertices [1] = (circ++).getDereferencedIndex ().getIndex ();
+      triangle.vertices [2] = (circ  ).getDereferencedIndex ().getIndex ();
+      triangles.push_back (triangle);
+    }
+
+    sensor_msgs::PointCloud2 pc2;
+    pcl::toROSMsg (*vertexes, pc2);
+
+    pcl::PolygonMesh pm;
+    pm.cloud    = pc2;
+    pm.polygons = triangles;
+
+    // TODO: There is likely a bug in updatePolygonMesh.
     visualizer_->removePolygonMesh ("mesh_model");
-    return;
+
+    if (!visualizer_->updatePolygonMesh (pm, "mesh_model"))
+    {
+      visualizer_->addPolygonMesh (pm, "mesh_model");
+    }
+
+    vtkSmartPointer <vtkProperty> prop = visualizer_->getRendererCollection ()->GetFirstRenderer ()->GetActors ()->GetLastActor ()->GetProperty ();
+    switch (display_mode_)
+    {
+      case DM_POINTS: prop->SetRepresentationToPoints ();    break;
+      case DM_EDGES:  prop->SetRepresentationToWireframe (); break;
+      case DM_MESH:   prop->SetRepresentationToSurface ();   break;
+    }
+
+    // Doesn't add the color
+    //  if (!visualizer_->updatePolygonMesh <PointModel> (vertexes, triangles, "mesh_model"))
+    //  {
+    //    visualizer_->addPolygonMesh <PointModel> (vertexes, triangles, "mesh_model");
+    //  }
   }
 
-  // Convert to cloud + indices for visualization
-  typedef pcl::Vertices                         Face;
-  typedef std::vector <Face>                    Faces;
-  typedef Mesh::VertexConstIterator             VCI;
-  typedef Mesh::FaceConstIterator               FCI;
-  typedef Mesh::VertexAroundFaceConstCirculator VAFCCirc;
 
-  Face          triangle; triangle.vertices.resize (3);
-  CloudModelPtr vertexes (new CloudModel ());
-  Faces         triangles;
-  vertexes->reserve (mesh_model_temp->sizeVertexes ());
-  triangles.reserve (3 * mesh_model_temp->sizeFaces ());
-
-  for (VCI it=mesh_model_temp->beginVertexes (); it!=mesh_model_temp->endVertexes (); ++it)
-  {
-    vertexes->push_back (*it);
-  }
-
-  for (FCI it=mesh_model_temp->beginFaces (); it!=mesh_model_temp->endFaces (); ++it)
-  {
-    VAFCCirc circ = mesh_model_temp->getVertexAroundFaceConstCirculator (*it);
-    triangle.vertices [0] = (circ++).getDereferencedIndex ().getIndex ();
-    triangle.vertices [1] = (circ++).getDereferencedIndex ().getIndex ();
-    triangle.vertices [2] = (circ  ).getDereferencedIndex ().getIndex ();
-    triangles.push_back (triangle);
-  }
-
-  sensor_msgs::PointCloud2 pc2;
-  pcl::toROSMsg (*vertexes, pc2);
-
-  pcl::PolygonMesh pm;
-  pm.cloud = pc2;
-  pm.polygons = triangles;
-
-  if (!visualizer_->updatePolygonMesh (pm, "mesh_model"))
-  {
-    visualizer_->addPolygonMesh (pm, "mesh_model");
-  }
-
-  // Doesn't add the color
-  //  if (!visualizer_->updatePolygonMesh <PointModel> (vertexes, triangles, "mesh_model"))
-  //  {
-  //    visualizer_->addPolygonMesh <PointModel> (vertexes, triangles, "mesh_model");
-  //  }
+//  if (!mesh_model_temp) return;
+//  if (!mesh_model_temp->sizeVertexes ())
+//  {
+//    // TODO: addPolygonMesh does not remove the mesh if it is empty: "[0;m[1;31m[addPolygonMesh] No vertices given!"
+//    visualizer_->removePolygonMesh ("mesh_model");
+//    return;
+//  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -398,7 +444,7 @@ pcl::ihs::InHandScanner::drawCropBox ()
     visualizer_->addCube (x_min, x_max, y_min, y_max, z_min, z_max, 1., 1., 1., "crop_box");
     crop_box_added = true;
   }
-  else  if (!draw_crop_box_ && crop_box_added)
+  else if (!draw_crop_box_ && crop_box_added)
   {
     visualizer_->removeShape ("crop_box");
     crop_box_added = false;
@@ -461,13 +507,11 @@ pcl::ihs::InHandScanner::keyboardCallback (const pcl::visualization::KeyboardEve
                 << "0     : Reset the registration\n"
                 << "----------------------------------------------------------------------\n"
                 << "c     : Reset the camera\n"
+                << "d     : Switching the representation between points, edges and a mesh\n"
                 << "======================================================================\n";
       break;
     }
-    case   0: // Special key
-    {
-      break;
-    }
+    case   0:                                                break; // Special key
     case  27: // ESC
     case 'q': this->quit ();                                 break;
     case '1': this->setRunningMode (RM_UNPROCESSED);         break;
@@ -477,6 +521,15 @@ pcl::ihs::InHandScanner::keyboardCallback (const pcl::visualization::KeyboardEve
     case '5': this->setRunningMode (RM_SHOW_MODEL);          break;
     case '0': this->resetRegistration ();                    break;
     case 'c': this->resetCamera ();                          break;
+    case 'd':
+    {
+      switch (display_mode_)
+      {
+        case DM_POINTS: this->setDisplayMode (DM_EDGES);     break;
+        case DM_EDGES:  this->setDisplayMode (DM_MESH);      break;
+        case DM_MESH:   this->setDisplayMode (DM_POINTS);    break;
+      }                                                      break;
+    }
     default:                                                 break;
   }
 }
