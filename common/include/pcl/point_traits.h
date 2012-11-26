@@ -273,7 +273,7 @@ namespace pcl
   };
  
   /** \brief Set the value at a specified field in a point
-    * \param[in] pt the point to set the value to
+    * \param[out] pt the point to set the value to
     * \param[in] field_offset the offset of the field
     * \param[in] value the value to set
     */
@@ -282,6 +282,18 @@ namespace pcl
   {
     uint8_t* data_ptr = reinterpret_cast<uint8_t*>(&pt) + field_offset;
     *reinterpret_cast<ValT*>(data_ptr) = value;
+  }
+
+  /** \brief Get the value at a specified field in a point
+    * \param[in] pt the point to get the value from
+    * \param[in] field_offset the offset of the field
+    * \param[out] value the value to retreive
+    */
+  template <typename PointT, typename ValT> inline void
+  getFieldValue (const PointT &pt, size_t field_offset, ValT &value)
+  {
+    uint8_t* data_ptr = reinterpret_cast<uint8_t*>(&pt) + field_offset;
+    value = *reinterpret_cast<ValT*>(data_ptr);
   }
 }
 
