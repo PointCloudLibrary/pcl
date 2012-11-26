@@ -271,6 +271,18 @@ namespace pcl
       const std::string &name_;
       const InT &value_;
   };
+ 
+  /** \brief Set the value at a specified field in a point
+    * \param[in] pt the point to set the value to
+    * \param[in] field_offset the offset of the field
+    * \param[in] value the value to set
+    */
+  template <typename PointT, typename ValT> inline void
+  setFieldValue (PointT &pt, size_t field_offset, const ValT &value)
+  {
+    uint8_t* data_ptr = reinterpret_cast<uint8_t*>(&pt) + field_offset;
+    *reinterpret_cast<ValT*>(data_ptr) = value;
+  }
 }
 
 #endif  //#ifndef PCL_POINT_TRAITS_H_
