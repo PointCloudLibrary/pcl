@@ -50,12 +50,13 @@
 #include <pcl/pcl_exports.h>
 #include <set>
 
-class ORROctree;
 
 namespace pcl
 {
   namespace recognition
   {
+    class ORROctree;
+
     class PCL_EXPORTS ORROctreeZProjection
     {
       public:
