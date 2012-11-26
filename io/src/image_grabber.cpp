@@ -134,10 +134,10 @@ pcl::ImageGrabberBase::ImageGrabberImpl::ImageGrabberImpl (pcl::ImageGrabberBase
   , origin_ ()
   , orientation_ ()
   , valid_ (false)
-  , depth_image_units_ (1E-3)
-  , constant_ (1.0f / 525.0f)
   , manual_focal_length_ (false)
   , pclzf_mode_(pclzf_mode)
+  , depth_image_units_ (1E-3)
+  , constant_ (1.0f / 525.0f)
 {
   if(pclzf_mode_)
   {
@@ -171,9 +171,10 @@ pcl::ImageGrabberBase::ImageGrabberImpl::ImageGrabberImpl (pcl::ImageGrabberBase
   , origin_ ()
   , orientation_ ()
   , valid_ (false)
+  , manual_focal_length_ (false)
+  , pclzf_mode_(false)
   , depth_image_units_ (1E-3)
   , constant_ (1.0f / 525.0f)
-  , pclzf_mode_(false)
 {
   depth_image_files_ = depth_image_files;
   depth_image_iterator_ = depth_image_files_.begin ();
