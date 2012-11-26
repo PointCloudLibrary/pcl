@@ -41,6 +41,7 @@
 #ifndef PCL_IN_HAND_SCANNER_VISIBILITY_CONFIDENCE_H
 #define PCL_IN_HAND_SCANNER_VISIBILITY_CONFIDENCE_H
 
+#include <pcl/pcl_exports.h>
 #include <pcl/apps/in_hand_scanner/eigen.h>
 
 namespace pcl
@@ -48,7 +49,7 @@ namespace pcl
   namespace ihs
   {
 
-    class VisibilityConfidence
+    class PCL_EXPORTS VisibilityConfidence
     {
       public:
 

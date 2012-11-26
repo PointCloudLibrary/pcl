@@ -41,6 +41,7 @@
 #ifndef PCL_IN_HAND_SCANNER_INPUT_DATA_PROCESSING_H
 #define PCL_IN_HAND_SCANNER_INPUT_DATA_PROCESSING_H
 
+#include <pcl/pcl_exports.h>
 #include <pcl/apps/in_hand_scanner/common_types.h>
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -62,7 +63,7 @@ namespace pcl
   namespace ihs
   {
 
-    class InputDataProcessing
+    class PCL_EXPORTS InputDataProcessing
     {
 
       public:

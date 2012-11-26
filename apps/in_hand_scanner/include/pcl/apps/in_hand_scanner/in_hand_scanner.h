@@ -45,6 +45,7 @@
 #include <sstream>
 #include <iomanip>
 
+#include <pcl/pcl_exports.h>
 #include <pcl/common/time.h>
 #include <pcl/apps/in_hand_scanner/boost.h>
 #include <pcl/apps/in_hand_scanner/common_types.h>
@@ -82,7 +83,7 @@ namespace pcl
   namespace ihs
   {
 
-    class InHandScanner
+    class PCL_EXPORTS InHandScanner
     {
 
       public:
@@ -96,6 +97,13 @@ namespace pcl
           RM_REGISTRATION_CONT   = 3, /**< Registers new data to the first acquired data continuously */
           RM_REGISTRATION_SINGLE = 4  /**< Registers new data once and returns to showing the processed data */
         } RunningMode;
+
+        typedef enum DisplayMode
+        {
+          DM_POINTS = 0,
+          DM_EDGES  = 1,
+          DM_MESH   = 2
+        } DisplayMode;
 
       private:
 
@@ -117,6 +125,7 @@ namespace pcl
         typedef pcl::ihs::Mesh         Mesh;
         typedef pcl::ihs::MeshPtr      MeshPtr;
         typedef pcl::ihs::MeshConstPtr MeshConstPtr;
+        typedef std::vector <MeshPtr>  MeshPtrVec;
         typedef Mesh::Vertex           Vertex;
         typedef Mesh::Face             Face;
 
@@ -196,6 +205,9 @@ namespace pcl
         setRunningMode (const RunningMode& mode);
 
         void
+        setDisplayMode (const DisplayMode& mode);
+
+        void
         resetRegistration ();
 
         void
@@ -207,10 +219,7 @@ namespace pcl
         newDataCallback (const CloudInputConstPtr& cloud_in);
 
         void
-        drawClouds ();
-
-        void
-        drawMesh ();
+        draw ();
 
         void
         drawCropBox ();
@@ -249,6 +258,8 @@ namespace pcl
         InteractorStylePtr          interactor_style_;
         bool                        draw_crop_box_;
         Eigen::Vector4f             pivot_;
+        DisplayMode                 display_mode_;
+
 
         GrabberPtr                  grabber_;
         boost::signals2::connection new_data_connection_;
@@ -261,7 +272,7 @@ namespace pcl
         IntegrationPtr              integration_;
 
         CloudProcessedPtr           cloud_data_draw_;
-        MeshPtr                     mesh_model_draw_;
+        MeshPtrVec                  mesh_vec_draw_;
         MeshPtr                     mesh_model_;
 
       public:

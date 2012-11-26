@@ -49,7 +49,7 @@ namespace pcl
   namespace ihs
   {
 
-    class CustomInteractorStyle : public pcl::visualization::PCLVisualizerInteractorStyle
+    class PCL_EXPORTS CustomInteractorStyle : public pcl::visualization::PCLVisualizerInteractorStyle
     {
 
       public:
