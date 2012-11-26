@@ -64,11 +64,11 @@ main (int argc, char ** argv)
   if (seed_res_specified)
     pcl::console::parse (argc, argv, "-s", seed_resolution);
   
-  float color_importance = 1.0f;
+  float color_importance = 5.0f;
   if (pcl::console::find_switch (argc, argv, "-c"))
     pcl::console::parse (argc, argv, "-c", color_importance);
   
-  float spatial_importance = 1.0f;
+  float spatial_importance = 5.0f;
   if (pcl::console::find_switch (argc, argv, "-z"))
     pcl::console::parse (argc, argv, "-z", spatial_importance);
   
@@ -178,19 +178,21 @@ main (int argc, char ** argv)
 
 
   
-  
   pcl::VoxelSuperpixels<pcl::PointXYZRGB> super (voxel_resolution, seed_resolution);
   super.setInputCloud (cloud);
   super.setColorImportance (color_importance);
   super.setFPFHImportance (shape_importance);
   super.setSpatialImportance (spatial_importance);
   std::vector <pcl::PointIndices> superpixel_indices;
+  pcl::PointCloud<pcl::PointXYZRGB>::Ptr voxel_cloud;
+  
   qDebug () << "Extracting superpixels!";
   
 //  timeval t1, t2;
 //  double elapsedTime;
 //  gettimeofday(&t1,NULL);
-  super.extract (superpixel_indices);
+  super.extract (voxel_cloud, superpixel_indices);
+  qDebug () << "Num Superpixels = "<<superpixel_indices.size ();
 //  gettimeofday(&t2,NULL);
 //  elapsedTime = (t2.tv_sec - t1.tv_sec) * 1000.0;      // sec to ms
  // elapsedTime += (t2.tv_usec - t1.tv_usec) / 1000.0;   // us to ms
@@ -206,9 +208,10 @@ main (int argc, char ** argv)
 
 
   QString out_name;
-  pcl::PointCloud<pcl::PointXYZL>::Ptr label_cloud = super.getLabeledCloud();
+  qDebug () << "Getting Labeled Cloud";
+  pcl::PointCloud<pcl::PointXYZL>::Ptr label_cloud = super.getLabeledVoxelCloud();
+  qDebug () << "Getting colorized voxel cloud";
   pcl::PointCloud<pcl::PointXYZRGB>::Ptr colored_cloud = super.getColoredVoxelCloud ();
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr voxel_cloud = super.getVoxelCloud ();
   // pcl::PointCloud<pcl::PointXYZRGB>::Ptr seed_cloud = super.getSeedCloud (); 
   
   // THESE ONLY MAKE SENSE FOR ORGANIZED CLOUDS
@@ -220,11 +223,10 @@ main (int argc, char ** argv)
  
   boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer (new pcl::visualization::PCLVisualizer ("3D Viewer"));
   viewer->setBackgroundColor (0, 0, 0);
-  
   pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGB> rgb(colored_cloud);
   viewer->addPointCloud<pcl::PointXYZRGB> (colored_cloud,rgb, "colored");
-  viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1.5, "colored");
   
+  viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1.5, "colored");
   //Draw lines connecting superpixel centers
   int linecount = 0;
   for (int i = 0; i < superpixel_neighbors.size(); ++i)
@@ -243,7 +245,7 @@ main (int argc, char ** argv)
       }
     }
   }
- 
+  qDebug () << "Loading viewer...";
   while (!viewer->wasStopped ())
   {
     viewer->spinOnce (100);

@@ -137,10 +137,11 @@ namespace pcl
 
       /** \brief This method launches the segmentation algorithm and returns the superpixels that were
        * obtained during the segmentation.
-       * \param[out] superpixels superpixels that were obtained. Each superpixel is an array of point indices.
+       * \param[out] voxel_cloud voxelized cloud which was segmented
+       * \param[out] superpixels superpixels that were obtained. Each superpixel is an array of point indices in the voxelized cloud.
        */
       virtual void
-      extract (std::vector<pcl::PointIndices>& superpixels);
+      extract (typename pcl::PointCloud<PointT>::Ptr voxel_cloud, std::vector<pcl::PointIndices>& superpixels);
 
       /** \brief Returns an RGB colorized cloud showing superpixels
         * Otherwise it returns an empty pointer.
@@ -350,6 +351,9 @@ namespace pcl
       
       /** \brief Stores the colors used for the superpixel labels*/
       std::vector<uint32_t> superpixel_colors_;
+      
+      /** \brief Stores a remapping of labels once they are cleaned */
+      std::vector<int> label_remapping_;
     public:
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };

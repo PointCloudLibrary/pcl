@@ -83,7 +83,8 @@ pcl::cloud_composer::VoxelSuperpixelsTool::performTemplatedAction (QList <const 
 
     
     std::vector <pcl::PointIndices> superpixels;
-    super.extract (superpixels);
+    typename pcl::PointCloud<PointT>::Ptr voxel_cloud;
+    super.extract (voxel_cloud, superpixels);
     
     
     typename pcl::PointCloud<PointXYZRGB>::Ptr color_segments;
