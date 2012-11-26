@@ -35,8 +35,12 @@ if(build)
         include/pcl/${SUBSYS_NAME}/sparse_quantized_multi_mod_template.h
         include/pcl/${SUBSYS_NAME}/surface_normal_modality.h
         include/pcl/${SUBSYS_NAME}/linemod/line_rgbd.h
-        include/pcl/${SUBSYS_NAME}/ransac_based/obj_rec_ransac.h
+        include/pcl/${SUBSYS_NAME}/ransac_based/auxiliary.h
         include/pcl/${SUBSYS_NAME}/ransac_based/model_library.h
+        include/pcl/${SUBSYS_NAME}/ransac_based/obj_rec_ransac.h
+        include/pcl/${SUBSYS_NAME}/ransac_based/orr_graph.h
+        include/pcl/${SUBSYS_NAME}/ransac_based/orr_octree_zprojection.h
+        include/pcl/${SUBSYS_NAME}/ransac_based/orr_octree.h
         include/pcl/${SUBSYS_NAME}/ransac_based/voxel_structure.h
 		include/pcl/${SUBSYS_NAME}/implicit_shape_model.h
         )

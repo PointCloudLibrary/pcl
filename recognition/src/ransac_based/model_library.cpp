@@ -39,7 +39,6 @@
 
 #include <pcl/recognition/ransac_based/model_library.h>
 #include <pcl/recognition/ransac_based/obj_rec_ransac.h>
-#include <pcl/recognition/ransac_based/voxel_structure.h>
 #include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/kdtree/impl/kdtree_flann.hpp>
 #include <pcl/console/print.h>
@@ -51,7 +50,7 @@
 using namespace std;
 using namespace pcl;
 using namespace console;
-using namespace recognition;
+using namespace pcl::recognition;
 
 //============================================================================================================================================
 
