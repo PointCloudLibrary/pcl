@@ -44,11 +44,12 @@
 #include <pcl/common/io.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>
+#include <pcl/point_traits.h>
 
 // VTK
 // Ignore warnings in the above headers
 #ifdef __GNUC__
-#pragma GCC system_header 
+#pragma GCC system_header
 #endif
 #include <vtkFloatArray.h>
 #include <vtkPointData.h>
@@ -263,8 +264,7 @@ pcl::io::vtkStructuredGridToPointCloud (vtkStructuredGrid* const structured_grid
           colors->GetTupleValue (i, color);
           pcl::RGB rgb;
           rgb.r = color[0]; rgb.g = color[1]; rgb.b = color[2];
-          rgb.r = color[0]; rgb.g = color[1]; rgb.b = color[2];
-          pcl::setFieldValue<PointT, uint32_t> (cloud.points (i, j), rgb_idx, rgb.rgba);
+          pcl::setFieldValue<PointT, uint32_t> (cloud (i, j), rgb_idx, rgb.rgba);
         }
         else
         {
@@ -284,7 +284,7 @@ pcl::io::pointCloudTovtkPolyData (const pcl::PointCloud<PointT>& cloud, vtkPolyD
   pcl::for_each_type<typename pcl::traits::fieldList<PointT>::type>(pcl::detail::FieldAdder<PointT>(fields));
 
   // Coordinates (always must have coordinates)
-  vtkIdType nr_points = cloud->points.size ();
+  vtkIdType nr_points = cloud.points.size ();
   vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New ();
   points->SetNumberOfPoints (nr_points);
   // Get a pointer to the beginning of the data array
@@ -368,7 +368,7 @@ pcl::io::pointCloudTovtkPolyData (const pcl::PointCloud<PointT>& cloud, vtkPolyD
     {
       unsigned char color[3];
       pcl::RGB rgb;
-      pcl::getFieldValue<PointT, float> (cloud[i], rgb_idx, rgb.rgba);
+      pcl::getFieldValue<PointT, uint32_t> (cloud[i], rgb_idx, rgb.rgba);
       color[0] = rgb.r; color[1] = rgb.g; color[2] = rgb.b;
       colors->SetTupleValue (i, color);
     }
@@ -394,14 +394,12 @@ pcl::io::pointCloudTovtkStructuredGrid (const pcl::PointCloud<PointT>& cloud, vt
   // Get a list of all the fields available
   std::vector<sensor_msgs::PointField> fields;
   pcl::for_each_type<typename pcl::traits::fieldList<PointT>::type>(pcl::detail::FieldAdder<PointT>(fields));
-  
+
   int dimensions[3] = {cloud.width, cloud.height, 1};
   structured_grid->SetDimensions (dimensions);
 
   vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New ();
   points->SetNumberOfPoints (cloud.width * cloud.height);
-
-  unsigned int numberOfInvalidPoints = 0;
 
   for (size_t i = 0; i < cloud.width; ++i)
   {
@@ -409,7 +407,7 @@ pcl::io::pointCloudTovtkStructuredGrid (const pcl::PointCloud<PointT>& cloud, vt
     {
       int queryPoint[3] = {i, j, 0};
       vtkIdType pointId = vtkStructuredData::ComputePointId (dimensions, queryPoint);
-      PointT &point = cloud (i, j);
+      const PointT &point = cloud (i, j);
 
       if (pcl::isFinite (point))
       {
@@ -448,13 +446,13 @@ pcl::io::pointCloudTovtkStructuredGrid (const pcl::PointCloud<PointT>& cloud, vt
       {
         int queryPoint[3] = {i, j, 0};
         vtkIdType pointId = vtkStructuredData::ComputePointId (dimensions, queryPoint);
-        PointT &point = cloud (i, j);
+        const PointT &point = cloud (i, j);
 
         float normal[3];
-        pcl::getFieldValue<PointT, float> (cloud[i], normal_x_idx, normal[0]);
-        pcl::getFieldValue<PointT, float> (cloud[i], normal_y_idx, normal[1]);
-        pcl::getFieldValue<PointT, float> (cloud[i], normal_z_idx, normal[2]);
-          normals->SetTupleValue (pointId, normal);
+        pcl::getFieldValue<PointT, float> (point, normal_x_idx, normal[0]);
+        pcl::getFieldValue<PointT, float> (point, normal_y_idx, normal[1]);
+        pcl::getFieldValue<PointT, float> (point, normal_z_idx, normal[2]);
+        normals->SetTupleValue (pointId, normal);
       }
     }
 
@@ -471,7 +469,7 @@ pcl::io::pointCloudTovtkStructuredGrid (const pcl::PointCloud<PointT>& cloud, vt
       break;
     }
   }
-  
+
   if (rgb_idx != -1)
   {
     vtkSmartPointer<vtkUnsignedCharArray> colors = vtkSmartPointer<vtkUnsignedCharArray>::New();
@@ -484,15 +482,16 @@ pcl::io::pointCloudTovtkStructuredGrid (const pcl::PointCloud<PointT>& cloud, vt
       {
         int queryPoint[3] = {i, j, 0};
         vtkIdType pointId = vtkStructuredData::ComputePointId (dimensions, queryPoint);
-        PointT &point = cloud (i, j);
+        const PointT &point = cloud (i, j);
 
         if (pcl::isFinite (point))
         {
+
           unsigned char color[3];
           pcl::RGB rgb;
-          pcl::getFieldValue<PointT, float> (cloud[i], rgb_idx, rgb.rgba);
+          pcl::getFieldValue<PointT, uint32_t> (cloud[i], rgb_idx, rgb.rgba);
           color[0] = rgb.r; color[1] = rgb.g; color[2] = rgb.b;
-          colors->SetTupleValue (i, color);
+          colors->SetTupleValue (pointId, color);
         }
         else
         {
