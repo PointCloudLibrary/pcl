@@ -335,8 +335,8 @@ print_help (int argc, char **argv)
   print_info ("\t -depth <depth>                \t Octree depth\n");
   print_info ("\t -display_octree               \t Toggles octree display\n");
 //  print_info ("\t -mem_cache_size <size>        \t Size of pointcloud memory cache in MB (Defaults to 1024MB)\n");
-  print_info ("\t -gpu_cache_size <size>        \t Size of pointcloud gpu cache in MB (Defaults to 512MB)\n");
-  print_info ("\t -lod_threshold <pixels>       \t Bounding box screen projection threshold (Defaults to 10000\n");
+  print_info ("\t -gpu_cache_size <size>        \t Size of pointcloud gpu cache in MB (512MB)\n");
+  print_info ("\t -lod_threshold <pixels>       \t Bounding box screen projection threshold (10000)\n");
   print_info ("\t -v                            \t Print more verbosity\n");
   print_info ("\t -h                            \t Display help\n");
   print_info ("\n");

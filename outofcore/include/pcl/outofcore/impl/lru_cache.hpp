@@ -110,12 +110,13 @@ public:
     // Evict enough items to make room for the new item
     evict (evict_count);
 
+    size_ += item_size;
+
     // Insert most-recently-used key at the end of our key index
     KeyIndexIterator it = key_index_.insert (key_index_.end (), key);
 
     // Add to cache
     cache_.insert (std::make_pair (key, std::make_pair (value, it)));
-    size_ += item_size;
 
     return true;
   }
@@ -141,21 +142,21 @@ public:
 
   // Evict the least-recently-used item from the cache
   bool
-  evict (int count=1)
+  evict (int item_count=1)
   {
-    for(int i=0; i < count; i++)
+    for (int i=0; i < item_count; i++)
     {
       if (key_index_.empty ())
         return false;
 
       // Get LRU item
       const CacheIterator it = cache_.find (key_index_.front ());
-      assert(it != cache_.end ());
+      assert(it != cache_.end());
 
       // Remove LRU item from cache and key index
+      size_ -= it->second.first.sizeOf ();
       cache_.erase (it);
       key_index_.pop_front ();
-      size_ -= it->second.first.sizeOf ();
     }
 
     return true;
