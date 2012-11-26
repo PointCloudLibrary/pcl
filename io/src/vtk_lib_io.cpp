@@ -49,15 +49,9 @@
 int
 pcl::io::loadPolygonFile (const std::string &file_name, pcl::PolygonMesh& mesh)
 {
-  if (!boost::filesystem::exists(file_name) || boost::filesystem::is_directory(file_name))
-  {
-    PCL_ERROR ("[pcl::io::loadPolygonFile]: No such file or directory.\n");
-    return (0);
-  }
+  std::string extension = file_name.substr (file_name.find_last_of (".") + 1);
 
-  // TODO: how to adequately catch exceptions thrown by the vtk readers?!
-  std::string extension = boost::filesystem::extension(file_name);
-  if ( extension == ".pcd" ) // no Polygon, but only a point cloud
+  if (extension == ".pcd") // no Polygon, but only a point cloud
   {
     pcl::io::loadPCDFile (file_name, mesh.cloud);
     mesh.polygons.resize (0);
@@ -84,10 +78,8 @@ pcl::io::savePolygonFile (const std::string &file_name, const pcl::PolygonMesh& 
 {
   // TODO: what about binary/ASCII modes?!?!?!
   // TODO: what about sensor position and orientation?!?!?!?
-
   // TODO: how to adequately catch exceptions thrown by the vtk writers?!
-
-  std::string extension = boost::filesystem::extension (file_name);
+  std::string extension = file_name.substr (file_name.find_last_of (".") + 1);
   if (extension == ".pcd") // no Polygon, but only a point cloud
   {
     int error_code = pcl::io::savePCDFile (file_name, mesh.cloud);
@@ -203,7 +195,7 @@ pcl::io::savePolygonFileSTL (const std::string &file_name, const pcl::PolygonMes
   vtkSmartPointer<vtkPolyData> poly_data = vtkSmartPointer<vtkPolyData>::New ();
 
   pcl::io::mesh2vtk (mesh, poly_data);
-
+  poly_data->Update ();
   vtkSmartPointer<vtkSTLWriter> poly_writer = vtkSmartPointer<vtkSTLWriter>::New ();
   poly_writer->SetInput (poly_data);
   poly_writer->SetFileName (file_name.c_str ());
