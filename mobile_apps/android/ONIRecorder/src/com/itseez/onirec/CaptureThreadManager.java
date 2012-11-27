@@ -51,6 +51,7 @@ class CaptureThreadManager {
     private final SurfaceHolder holderColor;
     private final SurfaceHolder holderDepth;
     private final Feedback feedback;
+    private boolean enableVisualization;
 
     private ContextHolder contextHolder;
     private ImageGenerator color;
@@ -111,7 +112,7 @@ class CaptureThreadManager {
                             }
                         });
 
-                        if (color != null)
+                        if (color != null && enableVisualization)
                             Timer.time("colorVis", new Timer.Timeable() {
                                 @Override
                                 public void run() throws Timer.ReturnException {
@@ -146,7 +147,7 @@ class CaptureThreadManager {
                                 }
                             });
 
-                        if (depth != null)
+                        if (depth != null && enableVisualization)
                             Timer.time("depthVis", new Timer.Timeable() {
                                 @Override
                                 public void run() throws Timer.ReturnException {
@@ -207,10 +208,11 @@ class CaptureThreadManager {
     };
 
     public CaptureThreadManager(SurfaceHolder holderColor, SurfaceHolder holderDepth, Feedback feedback,
-                                final ContextHolderFactory contextHolderFactory) {
+                                final ContextHolderFactory contextHolderFactory, boolean enableVisualization) {
         this.holderColor = holderColor;
         this.holderDepth = holderDepth;
         this.feedback = feedback;
+        this.enableVisualization = enableVisualization;
 
         thread = new HandlerThread("Capture Thread");
         thread.start();

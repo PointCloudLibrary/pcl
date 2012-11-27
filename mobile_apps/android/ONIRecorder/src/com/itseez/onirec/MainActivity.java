@@ -7,6 +7,7 @@ import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 import android.os.Bundle;
 import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.*;
 import android.widget.*;
@@ -47,11 +48,16 @@ public class MainActivity extends Activity {
     public boolean onPrepareOptionsMenu(Menu menu) {
         for (int i = 0; i < menu.size(); ++i)
             menu.getItem(i).setVisible(false);
+        menu.findItem(R.id.menu_item_preferences).setVisible(true);
         return state.prepareMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.menu_item_preferences) {
+            startActivity(new Intent(this, PreferencesActivity.class));
+            return true;
+        }
         return state.menuItemClicked(item);
     }
 
@@ -81,6 +87,7 @@ public class MainActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 
         textStatus = (TextView) findViewById(R.id.text_status);
         textFps = (TextView) findViewById(R.id.text_fps);
@@ -392,8 +399,10 @@ public class MainActivity extends Activity {
             textFps.setText(getResources().getString(R.string.x_fps, 0.));
             textStatus.setText(getResources().getString(R.string.status_replaying, recording.getName()));
 
+            boolean enable_vis = PreferenceManager.getDefaultSharedPreferences(MainActivity.this)
+                    .getBoolean(PreferencesActivity.KEY_PREF_ENABLE_VISUALIZATION, true);
             manager = new CaptureThreadManager(surfaceColor.getHolder(), surfaceDepth.getHolder(), feedback,
-                    new RecordingContextHolderFactory(recording));
+                    new RecordingContextHolderFactory(recording), enable_vis);
         }
 
         @Override
@@ -555,8 +564,10 @@ public class MainActivity extends Activity {
             setRecordingState(false, false);
 
             textStatus.setText(R.string.status_previewing);
+            boolean enable_vis = PreferenceManager.getDefaultSharedPreferences(MainActivity.this)
+                    .getBoolean(PreferencesActivity.KEY_PREF_ENABLE_VISUALIZATION, true);
             manager = new CaptureThreadManager(surfaceColor.getHolder(), surfaceDepth.getHolder(), feedback,
-                    new LiveContextHolderFactory());
+                    new LiveContextHolderFactory(), enable_vis);
         }
 
         @Override

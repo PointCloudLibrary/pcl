@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <CheckBoxPreference
+            android:key="enable_visualization"
+            android:title="@string/pref_enable_visualization"
+            android:defaultValue="true" />
+</PreferenceScreen>

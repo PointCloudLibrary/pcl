@@ -22,7 +22,9 @@
     <string name="menu_item_stop_replaying">Stop replaying</string>
     <string name="menu_item_record">Record</string>
     <string name="menu_item_stop_recording">Stop recording</string>
+    <string name="menu_item_preferences">Preferences</string>
     <string name="title_select_recording">Select recording</string>
     <string name="mode_disabled">Disabled</string>
     <string name="mode_format">%1$dx%2$d @ %3$d FPS</string>
+    <string name="pref_enable_visualization">Enable visualization</string>
 </resources>
