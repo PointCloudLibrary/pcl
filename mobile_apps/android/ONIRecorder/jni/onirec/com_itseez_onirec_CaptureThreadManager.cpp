@@ -78,14 +78,23 @@ Java_com_itseez_onirec_CaptureThreadManager_depthMapToBitmap
 
   unsigned int * buf_int = reinterpret_cast<unsigned int *>(ptr);
 
+  int shift = -8;
+
+  while (maxZ != 0) { maxZ >>= 1; ++shift; }
+
+  if (shift < 0) shift = 0; // this shouldn't happen for supported sensors, but let's stay safe anyway
+
   for (int i = 0; i < info.height; ++i) {
     int * pixel = bm_pixels_int + i * info.stride / sizeof(int);
 
     // we will assume width is a multiple of 2 (as is the case with all Kinect output formats)
     for (int j = 0; j < info.width; j += 2, pixel += 2, buf_int += 1) {
       unsigned int depths = *buf_int;
-      unsigned char gray1 = unsigned(double(depths >> 16) / double(maxZ) * 255.);
-      unsigned char gray2 = unsigned(double(depths & 0xFFFF) / double(maxZ) * 255.);
+
+      // doing it this way is less accurate than dividing by (255 / maxZ),
+      // but it's ~2 times faster, and for display we don't care
+      unsigned char gray1 = (depths >> 16) >> shift;
+      unsigned char gray2 = (depths & 0xFFFF) >> shift;
 
       pixel[0] = 0xFF000000 | (gray1 << 16) | (gray1 << 8) | gray1;
       pixel[1] = 0xFF000000 | (gray2 << 16) | (gray2 << 8) | gray2;
