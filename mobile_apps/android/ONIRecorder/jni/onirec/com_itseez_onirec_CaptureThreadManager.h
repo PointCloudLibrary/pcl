@@ -9,19 +9,19 @@ extern "C" {
 #endif
 /*
  * Class:     com_itseez_onirec_CaptureThreadManager
- * Method:    imageBufferToBitmap
- * Signature: (Ljava/nio/ByteBuffer;Landroid/graphics/Bitmap;)V
+ * Method:    imageMapToBitmap
+ * Signature: (JLandroid/graphics/Bitmap;)V
  */
-JNIEXPORT void JNICALL Java_com_itseez_onirec_CaptureThreadManager_imageBufferToBitmap
-  (JNIEnv *, jclass, jobject, jobject);
+JNIEXPORT void JNICALL Java_com_itseez_onirec_CaptureThreadManager_imageMapToBitmap
+  (JNIEnv *, jclass, jlong, jobject);
 
 /*
  * Class:     com_itseez_onirec_CaptureThreadManager
- * Method:    depthBufferToBitmap
- * Signature: (Ljava/nio/ShortBuffer;Landroid/graphics/Bitmap;I)V
+ * Method:    depthMapToBitmap
+ * Signature: (JLandroid/graphics/Bitmap;I)V
  */
-JNIEXPORT void JNICALL Java_com_itseez_onirec_CaptureThreadManager_depthBufferToBitmap
-  (JNIEnv *, jclass, jobject, jobject, jint);
+JNIEXPORT void JNICALL Java_com_itseez_onirec_CaptureThreadManager_depthMapToBitmap
+  (JNIEnv *, jclass, jlong, jobject, jint);
 
 #ifdef __cplusplus
 }

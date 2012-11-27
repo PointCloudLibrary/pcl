@@ -4,17 +4,12 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.os.Handler;
-import android.os.HandlerThread;
-import android.os.Looper;
-import android.os.SystemClock;
+import android.os.*;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import org.OpenNI.*;
 
 import java.io.File;
-import java.nio.ByteBuffer;
-import java.nio.ShortBuffer;
 
 class CaptureThreadManager {
     public interface Feedback {
@@ -73,9 +68,8 @@ class CaptureThreadManager {
     private int frameCount = 0;
     private long lastUpdateTime = SystemClock.uptimeMillis();
 
-    private native static void imageBufferToBitmap(ByteBuffer buf, Bitmap bm);
-
-    private native static void depthBufferToBitmap(ShortBuffer buf, Bitmap bm, int maxZ);
+    private native static void imageMapToBitmap(long ptr, Bitmap bm);
+    private native static void depthMapToBitmap(long ptr, Bitmap bm, int maxZ);
 
     static {
         System.loadLibrary("onirec");
@@ -116,8 +110,9 @@ class CaptureThreadManager {
                             Timer.time("colorVis", new Timer.Timeable() {
                                 @Override
                                 public void run() throws Timer.ReturnException {
-                                    final int frame_width = color.getMetaData().getXRes();
-                                    final int frame_height = color.getMetaData().getYRes();
+                                    final ImageMetaData md = color.getMetaData();
+                                    final int frame_width = md.getXRes();
+                                    final int frame_height = md.getYRes();
 
                                     Timer.time("colorConvert", new Timer.Timeable() {
                                         @Override
@@ -128,7 +123,7 @@ class CaptureThreadManager {
                                                 colorBitmap.setHasAlpha(false);
                                             }
 
-                                            imageBufferToBitmap(color.getMetaData().getData().createByteBuffer(), colorBitmap);
+                                            imageMapToBitmap(md.getDataPtr(), colorBitmap);
                                         }
                                     });
 
@@ -151,8 +146,9 @@ class CaptureThreadManager {
                             Timer.time("depthVis", new Timer.Timeable() {
                                 @Override
                                 public void run() throws Timer.ReturnException {
-                                    final int frame_width = depth.getMetaData().getXRes();
-                                    final int frame_height = depth.getMetaData().getYRes();
+                                    final DepthMetaData md = depth.getMetaData();
+                                    final int frame_width = md.getXRes();
+                                    final int frame_height = md.getYRes();
 
                                     Timer.time("depthConvert", new Timer.Timeable() {
                                         @Override
@@ -163,8 +159,7 @@ class CaptureThreadManager {
                                                 depthBitmap.setHasAlpha(false);
                                             }
 
-                                            depthBufferToBitmap(depth.getMetaData().getData().createShortBuffer(), depthBitmap,
-                                                    depth.getMetaData().getZRes() - 1);
+                                            depthMapToBitmap(md.getDataPtr(), depthBitmap, md.getZRes() - 1);
                                         }
                                     });
 

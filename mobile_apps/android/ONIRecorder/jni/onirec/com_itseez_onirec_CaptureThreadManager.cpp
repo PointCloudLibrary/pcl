@@ -8,8 +8,8 @@ namespace {
 }
 
 JNIEXPORT void JNICALL
-Java_com_itseez_onirec_CaptureThreadManager_imageBufferToBitmap
-  (JNIEnv * env, jclass clazz, jobject buf, jobject bm)
+Java_com_itseez_onirec_CaptureThreadManager_imageMapToBitmap
+  (JNIEnv * env, jclass clazz, jlong ptr, jobject bm)
 {
   AndroidBitmapInfo info;
   if (AndroidBitmap_getInfo(env, bm, &info) != ANDROID_BITMAP_RESUT_SUCCESS) {
@@ -30,7 +30,7 @@ Java_com_itseez_onirec_CaptureThreadManager_imageBufferToBitmap
 
   int * bm_pixels_int = static_cast<int *>(bm_pixels);
 
-  unsigned int * buf_int = static_cast<unsigned int *>(env->GetDirectBufferAddress(buf));
+  unsigned int * buf_int = reinterpret_cast<unsigned int *>(ptr);
 
   for (int i = 0; i < info.height; ++i) {
     int * pixel = bm_pixels_int + i * info.stride / sizeof(int);
@@ -54,8 +54,8 @@ Java_com_itseez_onirec_CaptureThreadManager_imageBufferToBitmap
 }
 
 JNIEXPORT void JNICALL
-Java_com_itseez_onirec_CaptureThreadManager_depthBufferToBitmap
-  (JNIEnv * env, jclass clazz, jobject buf, jobject bm, jint maxZ)
+Java_com_itseez_onirec_CaptureThreadManager_depthMapToBitmap
+  (JNIEnv * env, jclass clazz, jlong ptr, jobject bm, jint maxZ)
 {
   AndroidBitmapInfo info;
   if (AndroidBitmap_getInfo(env, bm, &info) != ANDROID_BITMAP_RESUT_SUCCESS) {
@@ -76,7 +76,7 @@ Java_com_itseez_onirec_CaptureThreadManager_depthBufferToBitmap
 
   int * bm_pixels_int = static_cast<int *>(bm_pixels);
 
-  unsigned int * buf_int = static_cast<unsigned int *>(env->GetDirectBufferAddress(buf));
+  unsigned int * buf_int = reinterpret_cast<unsigned int *>(ptr);
 
   for (int i = 0; i < info.height; ++i) {
     int * pixel = bm_pixels_int + i * info.stride / sizeof(int);
