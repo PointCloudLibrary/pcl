@@ -345,8 +345,8 @@ pcl::search::OrganizedNeighbor<PointT>::estimateProjectionMatrix ()
     return;
   }
   
-  const unsigned ySkip = (input_->height >> pyramid_level_);
-  const unsigned xSkip = (input_->width >> pyramid_level_);
+  const unsigned ySkip = (std::max) (input_->height >> pyramid_level_, unsigned (1));
+  const unsigned xSkip = (std::max) (input_->width >> pyramid_level_, unsigned (1));
 
   std::vector<int> indices;
   indices.reserve (input_->size () >> (pyramid_level_ << 1));
