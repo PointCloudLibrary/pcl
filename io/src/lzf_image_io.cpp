@@ -114,7 +114,7 @@ pcl::io::LZFImageWriter::saveImageBlob (const char* data,
 }
 
 //////////////////////////////////////////////////////////////////////////////
-uint32_t
+pcl::uint32_t
 pcl::io::LZFImageWriter::compress (const char* input, 
                                    uint32_t uncompressed_size, 
                                    uint32_t width,
@@ -385,7 +385,10 @@ pcl::io::LZFImageReader::loadImageBlob (const std::string &filename,
   if (std::string (header_string).substr (0, 5) != "PCLZF")
   {
     PCL_ERROR ("[pcl::io::LZFImageReader::loadImage] Wrong signature header! Should be 'P'C'L'Z'F'.\n");
-#ifndef _WIN32
+#ifdef _WIN32
+  UnmapViewOfFile (map);
+  CloseHandle (fm);
+#else
     munmap (map, data_size);
 #endif
     return (false);
@@ -404,7 +407,10 @@ pcl::io::LZFImageReader::loadImageBlob (const std::string &filename,
   if (compressed_size + header_size != data_size)
   {
     PCL_ERROR ("[pcl::io::LZFImageReader::loadImage] Number of bytes to decompress written in file (%u) differs from what it should be (%u)!\n", compressed_size, data_size - header_size);
-#ifndef _WIN32
+#ifdef _WIN32
+  UnmapViewOfFile (map);
+  CloseHandle (fm);
+#else
     munmap (map, data_size);
 #endif
     return (false);
