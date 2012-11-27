@@ -158,7 +158,7 @@ EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     /** \brief Resizes the internal storage and updates the header accordingly */
     inline void
-    resize (Eigen::Vector3i &grid_resolution, Eigen::Vector3f &volume_size = Eigen::Vector3f (DEFAULT_VOLUME_SIZE_X, DEFAULT_VOLUME_SIZE_Y, DEFAULT_VOLUME_SIZE_Z)) {
+    resize (Eigen::Vector3i &grid_resolution, const Eigen::Vector3f& volume_size = Eigen::Vector3f (DEFAULT_VOLUME_SIZE_X, DEFAULT_VOLUME_SIZE_Y, DEFAULT_VOLUME_SIZE_Z)) {
       int lin_size = grid_resolution[0] * grid_resolution[1] * grid_resolution[2];
       volume_->resize (lin_size);
       weights_->resize (lin_size);
