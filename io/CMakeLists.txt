@@ -81,7 +81,7 @@ if(build)
             src/vtk_lib_io.cpp
             src/png_io.cpp
            )
-        set(VTK_IO_TARGET_LINK_LIBRARIES vtkCommon vtkWidgets vtkIO vtkImaging)
+        set(VTK_IO_TARGET_LINK_LIBRARIES vtkCommon vtkWidgets vtkIO vtkImaging vtkHybrid vtkGraphics vtkRendering vtkFiltering vtkVolumeRendering)
         # Indicates that we can rely on VTK to be present
         set(VTK_DEFINES -DPCL_BUILT_WITH_VTK)
     endif ()
