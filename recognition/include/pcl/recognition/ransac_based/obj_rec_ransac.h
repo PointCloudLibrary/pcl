@@ -48,6 +48,7 @@
 #include <pcl/point_cloud.h>
 #include <cmath>
 #include <string>
+#include <vector>
 #include <list>
 
 #define OBJ_REC_RANSAC_VERBOSE
@@ -125,7 +126,7 @@ namespace pcl
           public:
             Hypothesis (ModelLibrary::Model* obj_model): obj_model_ (obj_model){}
             Hypothesis (const Hypothesis& src)
-             : obj_model_ (src.obj_model_)
+             : obj_model_ (src.obj_model_), support_ (0)
             {
               for ( int i = 0 ; i < 12 ; ++i )
                 this->rigid_transform_[i] = src.rigid_transform_[i];
@@ -135,6 +136,7 @@ namespace pcl
           public:
             float rigid_transform_[12];
             ModelLibrary::Model* obj_model_;
+            int support_;
     	};
 
       public:
@@ -216,14 +218,13 @@ namespace pcl
         generateHypotheses(const std::list<OrientedPointPair>& pairs, std::list<Hypothesis>& out);
 
         void
-        testHypotheses (std::list<Hypothesis>& hypotheses);
+        testHypotheses (std::list<Hypothesis>& hypotheses, std::vector<Hypothesis>& accepted_hypotheses);
 
         void
-        buildConflictGraph (std::list<Hypothesis>& hypotheses, ORRGraph& graph);
+        buildConflictGraph (std::vector<Hypothesis>& hypotheses, ORRGraph& graph);
 
         void
         filterWeakHypotheses (ORRGraph& graph, std::list<ObjRecRANSAC::Output>& recognized_objects);
-
 
     	/** \brief Computes the rigid transform in that maps the line (a1, b1) to (a2, b2).
     	 * The computation is based on the corresponding points 'a1' <-> 'a2' and 'b1' <-> 'b2'

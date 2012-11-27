@@ -72,7 +72,7 @@ namespace pcl
           public:
             float z1_, z2_;
             /** \brief These are the ids of the hypotheses at this pixel. */
-            std::list<int> hypotheses_ids_;
+            std::set<int> hypotheses_ids_;
         };
 
       public:
@@ -137,12 +137,16 @@ namespace pcl
           return (pixels_[x][y]);
         }
 
+        inline std::list<Pixel*>&
+        getFullPixels (){ return full_pixels_;}
+
       protected:
         float pixel_size_, inv_pixel_size_, bounds_[4], extent_x_, extent_y_;
         int num_pixels_x_, num_pixels_y_, num_pixels_;
         Pixel ***pixels_;
         Set ***sets_;
         std::list<Set*> full_sets_;
+        std::list<Pixel*> full_pixels_;
     };
   } // namespace recognition
 } // namespace pcl

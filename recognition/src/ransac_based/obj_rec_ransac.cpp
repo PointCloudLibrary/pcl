@@ -107,13 +107,14 @@ pcl::recognition::ObjRecRANSAC::recognize (const PointCloudIn* scene, const Poin
 
   list<OrientedPointPair> opp;
   list<Hypothesis> hypotheses;
+  vector<Hypothesis> accepted_hypotheses;
   ORRGraph graph;
 
-  // Sample the oriented point pairs
   this->sampleOrientedPointPairs (leaves, num_iterations, opp);
   this->generateHypotheses (opp, hypotheses);
-  this->testHypotheses (hypotheses);
-  this->buildConflictGraph (hypotheses, graph);
+  this->testHypotheses (hypotheses, accepted_hypotheses);
+  hypotheses.clear (); // From now on we need only the accepted hypotheses -> kill the rest to free memory
+  this->buildConflictGraph (accepted_hypotheses, graph);
   this->filterWeakHypotheses (graph, recognized_objects);
 
   // Clean up
@@ -259,7 +260,7 @@ pcl::recognition::ObjRecRANSAC::generateHypotheses (const list<OrientedPointPair
 //=========================================================================================================================================================================
 
 void
-pcl::recognition::ObjRecRANSAC::testHypotheses (list<Hypothesis>& hypotheses)
+pcl::recognition::ObjRecRANSAC::testHypotheses (list<Hypothesis>& hypotheses, vector<Hypothesis>& accepted_hypotheses)
 {
   float transformed_point[3];
   int match, penalty, match_thresh, penalty_thresh;
@@ -270,7 +271,7 @@ pcl::recognition::ObjRecRANSAC::testHypotheses (list<Hypothesis>& hypotheses)
   printf("ObjRecRANSAC::%s(): checking the hypotheses ... ", __func__); fflush(stdout);
 #endif
 
-  for ( list<Hypothesis>::iterator hypo_it = hypotheses.begin () ; hypo_it != hypotheses.end () ; )
+  for ( list<Hypothesis>::iterator hypo_it = hypotheses.begin () ; hypo_it != hypotheses.end () ; ++hypo_it )
   {
     // Todo: Perform an ICP iteration
 
@@ -299,37 +300,38 @@ pcl::recognition::ObjRecRANSAC::testHypotheses (list<Hypothesis>& hypotheses)
       if ( transformed_point[2] < pixel->z1_ ) // The transformed model point overshadows a pixel -> penalize the hypothesis
         ++penalty;
       else if ( transformed_point[2] <= pixel->z2_ ) // The point is OK
+      {
         ++match;
+        // Todo: insert the id of the pixel in the id set of the hypothesis
+      }
     }
 
     // Check if we should accept this hypothesis
     if ( match >= match_thresh && penalty <= penalty_thresh )
-      ++hypo_it; // We accept this hypothesis -> leave it in the list
-    else
-      hypo_it = hypotheses.erase (hypo_it); // Delete the current hypothesis and go to the next one
+      accepted_hypotheses.push_back (*hypo_it);
   }
 
 #ifdef OBJ_REC_RANSAC_VERBOSE
-	printf("%i accepted.\n", static_cast<int> (hypotheses.size ())); fflush (stdout);
+	printf("%i accepted.\n", static_cast<int> (accepted_hypotheses.size ())); fflush (stdout);
 #endif
 }
 
 //=========================================================================================================================================================================
 
 void
-pcl::recognition::ObjRecRANSAC::buildConflictGraph (list<Hypothesis>& /*hypotheses*/, ORRGraph& /*graph*/)
+pcl::recognition::ObjRecRANSAC::buildConflictGraph (vector<Hypothesis>& hypotheses, ORRGraph& graph)
 {
-#if 0
-  float transformed_point[3];
-  int support;
+  int hypothesis_id = 0, support;
   ORROctreeZProjection::Pixel* pixel;
   const float *rigid_transform;
+  float transformed_point[3];
 
 #ifdef OBJ_REC_RANSAC_VERBOSE
-  printf("ObjRecRANSAC::%s(): checking the hypotheses ... ", __func__); fflush(stdout);
+  printf ("ObjRecRANSAC::%s(): building the conflict graph ... ", __func__); fflush (stdout);
 #endif
 
-  for ( list<Hypothesis>::iterator hypo_it = hypotheses.begin () ; hypo_it != hypotheses.end () ; )
+  // Project the hypotheses onto the "range image" and store in each pixel the corresponding hypothesis id
+  for ( vector<Hypothesis>::iterator hypo_it = hypotheses.begin () ; hypo_it != hypotheses.end () ; ++hypo_it, ++hypothesis_id )
   {
     support = 0;
 
@@ -342,29 +344,70 @@ pcl::recognition::ObjRecRANSAC::buildConflictGraph (list<Hypothesis>& /*hypothes
       // Transform the model point with the current rigid transform
       aux::transform_point (rigid_transform, (*leaf_it)->getData ()->getPoint (), transformed_point);
 
-      // Get the pixel the point 'out' lies in
+      // Get the pixel containing 'transformed_point'
       pixel = scene_octree_proj_.getPixel (transformed_point);
       // Check if we have a valid pixel
       if ( pixel == NULL )
         continue;
 
-      if ( pixel->z1_ <= p[2] && p[2] <= pixel->z2_ )
+      if ( pixel->z1_ <= transformed_point[2] && transformed_point[2] <= pixel->z2_ )
       {
         ++support;
-        pixel->hypotheses_ids_.pu
+        pixel->hypotheses_ids_.insert (hypothesis_id); // 'hypothesis_id' is the position of the hypothesis in the vector
       }
     }
 
-	// Check if we should accept this hypothesis
-    if ( match >= match_thresh && penalty <= penalty_thresh )
-      ++hypo_it; // We accept this hypothesis -> leave it in the list
-    else
-      hypo_it = hypotheses.erase (hypo_it); // Delete the current hypothesis and go to the next one
+    // Save the number of pixels explained by the current hypothesis
+    (*hypo_it).support_ = support;
   }
+
+  list<ORROctreeZProjection::Pixel*>& full_pixels = scene_octree_proj_.getFullPixels ();
+  set<int>::iterator id1, id2, last_id;
+
+  // Resize the graph such that it has the right number of vertices
+  graph.resize (static_cast<int> (hypotheses.size ()));
+
+  // Now, iterate through all full pixels and build the conflict graph, i.e., create its connectivity
+  for ( list<ORROctreeZProjection::Pixel*>::iterator it = full_pixels.begin () ; it != full_pixels.end () ; ++it )
+  {
+    // For better code readability
+    pixel = *it;
+
+    if ( pixel->hypotheses_ids_.empty () )
+      continue;
+
+    // Get the last id in the set
+    last_id = pixel->hypotheses_ids_.end ();
+    --last_id;
+
+    // All hypotheses which explain the same pixel are conflicting
+    for ( id1 = pixel->hypotheses_ids_.begin () ; id1 != last_id ; ++id1 )
+    {
+      id2 = id1;
+      for ( ++id2 ; id2 != pixel->hypotheses_ids_.end () ; ++id2 )
+        graph.insertEdge (*id1, *id2);
+    }
+  }
+
+#if 0
+  vector<ORRGraph::Node*> graph_nodes = graph.getNodes ();
+  ORRGraph::Node *node;
+
+  // Now, that we have the graph connectivity, we want to check if each two neighbors are
+  // really in conflict. This requires set intersection operations which are expensive,
+  // that's why we are performing them now, and not prior to computing the graph connectivity
+  for ( vector<ORRGraph::Node*>::iterator it = graph_nodes.begin () ; it != graph_nodes.end () ; ++it )
+  {
+    node = *it;
+    for ( set<ORRGraph::Node*>::iterator neigh = node->neighbors_.begin () ; neigh != node->neighbors_.end () ; ++neigh )
+    {
+      // Compute the ids intersection of 'node' and its neighbor
+    }
+  }
+#endif
 
 #ifdef OBJ_REC_RANSAC_VERBOSE
 	printf("%i accepted.\n", static_cast<int> (hypotheses.size ())); fflush (stdout);
-#endif
 #endif
 }
 
@@ -379,7 +422,7 @@ pcl::recognition::ObjRecRANSAC::filterWeakHypotheses (ORRGraph& /*graph*/, list<
 //=========================================================================================================================================================================
 
 void
-pcl::recognition::ObjRecRANSAC::computeRigidTransform(
+pcl::recognition::ObjRecRANSAC::computeRigidTransform (
   const float *a1, const float *a1_n, const float *b1, const float* b1_n,
   const float *a2, const float *a2_n, const float *b2, const float* b2_n,
   float* rigid_transform) const

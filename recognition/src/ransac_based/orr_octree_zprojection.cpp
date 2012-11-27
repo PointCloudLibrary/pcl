@@ -86,6 +86,7 @@ pcl::recognition::ORROctreeZProjection::clear ()
   }
 
   full_sets_.clear ();
+  full_pixels_.clear ();
 }
 
 //=========================================================================================================================================
@@ -153,11 +154,12 @@ pcl::recognition::ORROctreeZProjection::build (const ORROctree& input, float eps
   for ( fl_it = full_leaves.begin () ; fl_it != full_leaves.end () ; ++fl_it )
   {
     this->getPixelCoordinates ((*fl_it)->getCenter(), i, j);
-    // If there is no set and at this position -> create one
+    // If there is no set/pixel and at this position -> create one
     if ( sets_[i][j] == NULL )
     {
       pixels_[i][j] = new Pixel ();
       sets_[i][j] = new Set (i, j);
+      full_pixels_.push_back (pixels_[i][j]);
       full_sets_.push_back (sets_[i][j]);
     }
 

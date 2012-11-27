@@ -46,13 +46,61 @@
 #ifndef PCL_RECOGNITION_ORR_GRAPH_H_
 #define PCL_RECOGNITION_ORR_GRAPH_H_
 
+#include <vector>
+
 namespace pcl
 {
   namespace recognition
   {
     class ORRGraph
     {
+      public:
+    	class Node
+    	{
+    	  public:
+            Node (){}
+            virtual ~Node (){}
 
+    	  public:
+            std::set<Node*> neighbors_;
+    	};
+
+      public:
+        ORRGraph (){}
+        virtual ~ORRGraph (){}
+
+        /** \brief Drops all existing graph nodes and creates 'n' new ones. */
+        inline void
+        resize (int n)
+        {
+          for ( std::vector<Node*>::iterator nit = nodes_.begin () ; nit != nodes_.end () ; ++nit )
+            delete *nit;
+
+          nodes_.resize (static_cast<size_t> (n));
+
+          for ( int i = 0 ; i < n ; ++i )
+            nodes_[i] = new Node ();
+        }
+
+        inline void
+        insertEdge (int id1, int id2)
+        {
+          nodes_[id1]->neighbors_.insert (nodes_[id2]);
+          nodes_[id2]->neighbors_.insert (nodes_[id1]);
+        }
+
+        inline void
+        deleteEdge (int id1, int id2)
+        {
+          nodes_[id1]->neighbors_.erase (nodes_[id2]);
+          nodes_[id2]->neighbors_.erase (nodes_[id1]);
+        }
+
+        inline std::vector<Node*>&
+        getNodes (){ return nodes_;}
+
+      public:
+        std::vector<Node*> nodes_;
     };
   } // namespace recognition
 } // namespace pcl
