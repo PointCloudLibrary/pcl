@@ -193,7 +193,7 @@ void pcl::RFFaceDetectorTrainer::faceVotesClustering()
       std::vector < std::pair<int, float> > uncertainty;
       for (size_t j = 0; j < votes_indices[i].size (); j++)
       {
-        uncertainty.push_back (std::make_pair<int, float> (votes_indices[i][j], uncertainties_[votes_indices[i][j]]));
+        uncertainty.push_back (std::make_pair (votes_indices[i][j], uncertainties_[votes_indices[i][j]]));
       }
 
       std::sort (uncertainty.begin (), uncertainty.end (), boost::bind (&std::pair<int, float>::second, _1) < boost::bind (&std::pair<int, float>::second, _2));

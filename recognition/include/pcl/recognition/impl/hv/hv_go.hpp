@@ -667,7 +667,7 @@ void pcl::GlobalHypothesesVerification<ModelT, SceneT>::computeClutterCue(boost:
         for (size_t k = 0; k < nn_distances.size (); k++)
         {
           if (nn_indices[k] != i)
-            neighborhood_indices.push_back (std::make_pair<int, int> (nn_indices[k], i));
+            neighborhood_indices.push_back (std::make_pair (nn_indices[k], i));
         }
       }
     }
