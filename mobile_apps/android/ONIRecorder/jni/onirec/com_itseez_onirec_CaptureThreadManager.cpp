@@ -34,7 +34,7 @@ Java_com_itseez_onirec_CaptureThreadManager_imageMapToBitmap
 
   for (int i = 0; i < info.height; ++i) {
     int * pixel = bm_pixels_int + i * info.stride / sizeof(int);
-    
+
     // we will assume width is a multiple of 4 (as is the case with all Kinect output formats)
     for (int j = 0; j < info.width; j += 4, pixel += 4, buf_int += 3) {
       // buf_int -> R1 G1 B1 R2 G2 B2 R3 G3 B3 R4 G4 B4
