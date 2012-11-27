@@ -51,59 +51,34 @@ namespace openni_wrapper
     */
   class PCL_EXPORTS ImageBayerGRBG : public Image
   {
-  public:
+    public:
+      typedef enum
+      {
+        Bilinear = 0,
+        EdgeAware,
+        EdgeAwareWeighted
+      } DebayeringMethod;
 
-    typedef enum
-    {
-      Bilinear = 0,
-      EdgeAware,
-      EdgeAwareWeighted
-    } DebayeringMethod;
+      ImageBayerGRBG (boost::shared_ptr<xn::ImageMetaData> image_meta_data, DebayeringMethod method) throw ();
+      virtual ~ImageBayerGRBG () throw ();
 
-    ImageBayerGRBG (boost::shared_ptr<xn::ImageMetaData> image_meta_data, DebayeringMethod method) throw ();
-    virtual ~ImageBayerGRBG () throw ();
+      inline virtual Encoding
+      getEncoding () const
+      {
+        return (BAYER_GRBG);
+      }
 
-    inline virtual Encoding
-    getEncoding () const
-    {
-      return (BAYER_GRBG);
-    }
+      virtual void fillRGB (unsigned width, unsigned height, unsigned char* rgb_buffer, unsigned rgb_line_step = 0) const;
+      virtual void fillGrayscale (unsigned width, unsigned height, unsigned char* gray_buffer, unsigned gray_line_step = 0) const;
+      virtual bool isResizingSupported (unsigned input_width, unsigned input_height, unsigned output_width, unsigned output_height) const;
+      inline void setDebayeringMethod (const DebayeringMethod& method) throw ();
+      inline DebayeringMethod getDebayeringMethod () const throw ();
+      inline static bool resizingSupported (unsigned input_width, unsigned input_height, unsigned output_width, unsigned output_height);
 
-    virtual void fillRGB (unsigned width, unsigned height, unsigned char* rgb_buffer, unsigned rgb_line_step = 0) const;
-    virtual void fillGrayscale (unsigned width, unsigned height, unsigned char* gray_buffer, unsigned gray_line_step = 0) const;
-    virtual bool isResizingSupported (unsigned input_width, unsigned input_height, unsigned output_width, unsigned output_height) const;
-    inline void setDebayeringMethod (const DebayeringMethod& method) throw ();
-    inline DebayeringMethod getDebayeringMethod () const throw ();
-    inline static bool resizingSupported (unsigned input_width, unsigned input_height, unsigned output_width, unsigned output_height);
 
-    // Debayering methods
-    void
-    debayerBilinear (
-        const unsigned char *bayer_pixel, unsigned char *rgb_buffer,
-        unsigned width, unsigned height, 
-        int bayer_line_step = 0,
-        int bayer_line_step2 = 0,
-        unsigned rgb_line_step = 0) const;
-
-    void
-    debayerEdgeAware (
-        const unsigned char *bayer_pixel, unsigned char *rgb_buffer,
-        unsigned width, unsigned height, 
-        int bayer_line_step = 0,
-        int bayer_line_step2 = 0,
-        unsigned rgb_line_step = 0) const;
-
-    void
-    debayerEdgeAwareWeighted (
-        const unsigned char *bayer_pixel, unsigned char *rgb_buffer,
-        unsigned width, unsigned height, 
-        int bayer_line_step = 0,
-        int bayer_line_step2 = 0,
-        unsigned rgb_line_step = 0) const;
-
-  protected:
-    DebayeringMethod debayering_method_;
-  } ;
+    protected:
+      DebayeringMethod debayering_method_;
+  };
 
   void
   ImageBayerGRBG::setDebayeringMethod (const ImageBayerGRBG::DebayeringMethod& method) throw ()

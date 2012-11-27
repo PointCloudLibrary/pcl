@@ -97,6 +97,7 @@ if(build)
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/ply ${PLY_INCLUDES})
 
     set(srcs 
+        src/debayer.cpp
         src/pcd_grabber.cpp
         src/pcd_io.cpp
         src/vtk_io.cpp
@@ -121,6 +122,7 @@ if(build)
     set(incs 
         include/pcl/${SUBSYS_NAME}/boost.h
         include/pcl/${SUBSYS_NAME}/eigen.h
+        include/pcl/${SUBSYS_NAME}/debayer.h
         include/pcl/${SUBSYS_NAME}/file_io.h
         include/pcl/${SUBSYS_NAME}/lzf.h
         include/pcl/${SUBSYS_NAME}/lzf_image_io.h

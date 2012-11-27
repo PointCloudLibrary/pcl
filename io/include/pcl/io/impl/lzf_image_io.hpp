@@ -39,13 +39,7 @@
 #define PCL_LZF_IMAGE_IO_HPP_
 
 #include <pcl/console/print.h>
-#include <pcl/io/openni_camera/openni_image_bayer_grbg.h>
-
-//////////////////////////////////////////////////////////////////////////////
-namespace xn
-{
-  class ImageMetaData;
-}
+#include <pcl/io/debayer.h>
 
 //////////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool
@@ -188,8 +182,7 @@ pcl::io::LZFBayer8ImageReader::read (
 
   // Convert Bayer8 to RGB24
   std::vector<unsigned char> rgb_buffer (getWidth () * getHeight () * 3);
-  boost::shared_ptr<xn::ImageMetaData> image_meta_data;
-  openni_wrapper::ImageBayerGRBG i (image_meta_data, openni_wrapper::ImageBayerGRBG::EdgeAware);
+  pcl::io::DeBayer i;
   i.debayerEdgeAware (reinterpret_cast<unsigned char*> (&uncompressed_data[0]), 
                      static_cast<unsigned char*> (&rgb_buffer[0]), 
                      getWidth (), getHeight ());
