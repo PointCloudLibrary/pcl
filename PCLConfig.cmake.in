@@ -561,7 +561,10 @@ if(NOT "${PCL_LIBRARY_DIRS}" STREQUAL "")
 endif(NOT "${PCL_LIBRARY_DIRS}" STREQUAL "")
 
 # We need to export march=native for tutorials or user code
+if(NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
 list (APPEND PCL_DEFINITIONS "@SSE_FLAGS@")
+endif()
+
 if(NOT MSVC)
 list (APPEND PCL_DEFINITIONS "-Wno-invalid-offsetof")
 endif(NOT MSVC)
