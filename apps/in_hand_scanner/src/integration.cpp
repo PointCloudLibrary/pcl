@@ -50,6 +50,60 @@
 #include <pcl/apps/in_hand_scanner/impl/common_functions.hpp>
 
 ////////////////////////////////////////////////////////////////////////////////
+// Integration::Dome
+////////////////////////////////////////////////////////////////////////////////
+
+pcl::ihs::Integration::Dome::Dome ()
+{
+  vertexes_.col ( 0) = Eigen::Vector4f (-0.000000119f,  0.000000000f, 1.000000000f, 0.f);
+  vertexes_.col ( 1) = Eigen::Vector4f ( 0.894427180f,  0.000000000f, 0.447213739f, 0.f);
+  vertexes_.col ( 2) = Eigen::Vector4f ( 0.276393145f,  0.850650907f, 0.447213650f, 0.f);
+  vertexes_.col ( 3) = Eigen::Vector4f (-0.723606884f,  0.525731146f, 0.447213531f, 0.f);
+  vertexes_.col ( 4) = Eigen::Vector4f (-0.723606884f, -0.525731146f, 0.447213531f, 0.f);
+  vertexes_.col ( 5) = Eigen::Vector4f ( 0.276393145f, -0.850650907f, 0.447213650f, 0.f);
+  vertexes_.col ( 6) = Eigen::Vector4f ( 0.343278527f,  0.000000000f, 0.939233720f, 0.f);
+  vertexes_.col ( 7) = Eigen::Vector4f ( 0.686557174f,  0.000000000f, 0.727075875f, 0.f);
+  vertexes_.col ( 8) = Eigen::Vector4f ( 0.792636156f,  0.326477438f, 0.514918089f, 0.f);
+  vertexes_.col ( 9) = Eigen::Vector4f ( 0.555436373f,  0.652954817f, 0.514918029f, 0.f);
+  vertexes_.col (10) = Eigen::Vector4f ( 0.106078848f,  0.326477438f, 0.939233720f, 0.f);
+  vertexes_.col (11) = Eigen::Vector4f ( 0.212157741f,  0.652954817f, 0.727075756f, 0.f);
+  vertexes_.col (12) = Eigen::Vector4f (-0.065560505f,  0.854728878f, 0.514917910f, 0.f);
+  vertexes_.col (13) = Eigen::Vector4f (-0.449357629f,  0.730025530f, 0.514917850f, 0.f);
+  vertexes_.col (14) = Eigen::Vector4f (-0.277718395f,  0.201774135f, 0.939233661f, 0.f);
+  vertexes_.col (15) = Eigen::Vector4f (-0.555436671f,  0.403548241f, 0.727075696f, 0.f);
+  vertexes_.col (16) = Eigen::Vector4f (-0.833154857f,  0.201774105f, 0.514917850f, 0.f);
+  vertexes_.col (17) = Eigen::Vector4f (-0.833154857f, -0.201774150f, 0.514917850f, 0.f);
+  vertexes_.col (18) = Eigen::Vector4f (-0.277718395f, -0.201774135f, 0.939233661f, 0.f);
+  vertexes_.col (19) = Eigen::Vector4f (-0.555436671f, -0.403548241f, 0.727075696f, 0.f);
+  vertexes_.col (20) = Eigen::Vector4f (-0.449357659f, -0.730025649f, 0.514917910f, 0.f);
+  vertexes_.col (21) = Eigen::Vector4f (-0.065560460f, -0.854728937f, 0.514917850f, 0.f);
+  vertexes_.col (22) = Eigen::Vector4f ( 0.106078848f, -0.326477438f, 0.939233720f, 0.f);
+  vertexes_.col (23) = Eigen::Vector4f ( 0.212157741f, -0.652954817f, 0.727075756f, 0.f);
+  vertexes_.col (24) = Eigen::Vector4f ( 0.555436373f, -0.652954757f, 0.514917970f, 0.f);
+  vertexes_.col (25) = Eigen::Vector4f ( 0.792636156f, -0.326477349f, 0.514918089f, 0.f);
+  vertexes_.col (26) = Eigen::Vector4f ( 0.491123378f,  0.356822133f, 0.794654608f, 0.f);
+  vertexes_.col (27) = Eigen::Vector4f (-0.187592626f,  0.577350259f, 0.794654429f, 0.f);
+  vertexes_.col (28) = Eigen::Vector4f (-0.607062101f, -0.000000016f, 0.794654369f, 0.f);
+  vertexes_.col (29) = Eigen::Vector4f (-0.187592626f, -0.577350378f, 0.794654489f, 0.f);
+  vertexes_.col (30) = Eigen::Vector4f ( 0.491123348f, -0.356822133f, 0.794654548f, 0.f);
+
+  for (unsigned int i=0; i<vertexes_.cols (); ++i)
+  {
+    vertexes_.col (i).head <3> ().normalize ();
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+const pcl::ihs::Integration::Dome::Vertexes&
+pcl::ihs::Integration::Dome::getVertexes () const
+{
+  return (vertexes_);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Integration
+////////////////////////////////////////////////////////////////////////////////
 
 pcl::ihs::Integration::Integration ()
   : kd_tree_              (new pcl::KdTreeFLANN <PointXYZ> ()),
@@ -57,7 +111,8 @@ pcl::ihs::Integration::Integration ()
     dot_normal_min_       (.6f),
     weight_min_           (.3f),
     age_max_              (30),
-    visconf_min_          (.12f)
+    count_min_            (5),
+    dome_                 ()
 {
 }
 
@@ -311,8 +366,8 @@ pcl::ihs::Integration::merge (const CloudProcessedConstPtr& cloud_data,
             // Point has been observed again -> give it some extra time to live
             v_m.age = 0;
 
-            // add a direction to the visibility confidence
-            v_m.visconf.addDirection (v_m.getNormalVector4fMap (), sensor_eye-v_m.getVector4fMap (), w);
+            // Add a direction
+            this->addDirection (v_m.getNormalVector4fMap (), sensor_eye-v_m.getVector4fMap (), v_m.directions);
 
           } // dot normals
         } // squared distance
@@ -353,14 +408,14 @@ pcl::ihs::Integration::age (const MeshPtr& mesh, const bool cleanup) const
 {
   for (Mesh::VertexIterator it = mesh->beginVertexes (); it!=mesh->endVertexes (); ++it)
   {
-    if(it->age < age_max_)
+    if (it->age < age_max_)
     {
        // Point survives
        ++it->age;
     }
-    else if(it->age == age_max_) // Judgement Day
+    else if (it->age == age_max_) // Judgement Day
     {
-      if(it->visconf.getValue () < visconf_min_)
+      if (this->countDirections (it->directions) < count_min_)
       {
         // Point dies (no need to transform it)
         mesh->deleteVertex (*it);
@@ -472,24 +527,17 @@ pcl::ihs::Integration::getMaximumAge () const
 ////////////////////////////////////////////////////////////////////////////////
 
 void
-pcl::ihs::Integration::setMinimumVisibilityConfidence (const float visconf_min)
+pcl::ihs::Integration::setMinimumCount (const unsigned int count_min)
 {
-  if (visconf_min < 0.f || visconf_min > 1.f)
-  {
-    PCL_ERROR ("'visconf_min' must be between 0 and 1\n");
-  }
-  else
-  {
-    visconf_min_ = visconf_min;
-  }
+  count_min_ = count_min;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-float
-pcl::ihs::Integration::getMinimumVisibilityConfidence () const
+unsigned int
+pcl::ihs::Integration::getMinimumCount () const
 {
-  return (visconf_min_);
+  return (count_min_);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -584,6 +632,54 @@ pcl::ihs::Integration::distanceThreshold (const PointModel& pt_0,
   if ((pt_2.getVector3fMap () - pt_3.getVector3fMap ()).squaredNorm () > squared_distance_max_) return (false);
   if ((pt_3.getVector3fMap () - pt_0.getVector3fMap ()).squaredNorm () > squared_distance_max_) return (false);
   return (true);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+void
+pcl::ihs::Integration::addDirection (const Eigen::Vector4f& normal,
+                                     const Eigen::Vector4f& direction,
+                                     unsigned int&          directions) const
+{
+  // Find the rotation that aligns the normal with [0; 0; 1]
+  const float dot = normal.z ();
+
+  Eigen::Isometry3f R = Eigen::Isometry3f::Identity ();
+
+  // No need to transform if the normal is already very close to [0; 0; 1] (also avoids numerical issues)
+  // TODO: The value .969 (actually 0.9696) is hard coded for a frequency=3.
+  //       It can be calculated with 1-(1-max(dome_vertexes_.z))/2
+  if (dot <= .969f)
+  {
+    R = Eigen::Isometry3f (Eigen::AngleAxisf(std::acos(dot), Eigen::Vector3f(normal.y(), -normal.x(), 0.f).normalized()));
+  }
+
+  // Transform the direction into the dome coordinate system (which is aligned with the normal)
+  Eigen::Vector4f aligned_direction = (R * direction);
+  aligned_direction.head <3> ().normalize ();
+
+  // Find the closest viewing direction
+  // Note: cos(0deg) = 1 = max
+  //       acos(angle) = dot(a,b) / (norm(a) * norm(b)
+  //       m_sphere_vertexes are already normalized
+  unsigned int index = 0;
+  (aligned_direction.transpose () * dome_.getVertexes ()).maxCoeff (&index);
+
+  // Set the observed direction bit at 'index'
+  // http://stackoverflow.com/questions/47981/how-do-you-set-clear-and-toggle-a-single-bit-in-c/47990#47990
+  directions |= 1 << index;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+unsigned int
+pcl::ihs::Integration::countDirections (const unsigned int directions) const
+{
+  // http://stackoverflow.com/questions/109023/best-algorithm-to-count-the-number-of-set-bits-in-a-32-bit-integer/109025#109025
+  unsigned int i = directions - ((directions >> 1) & 0x55555555);
+  i = (i & 0x33333333) + ((i >> 2) & 0x33333333);
+
+  return ((((i + (i >> 4)) & 0x0F0F0F0F) * 0x01010101) >> 24);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

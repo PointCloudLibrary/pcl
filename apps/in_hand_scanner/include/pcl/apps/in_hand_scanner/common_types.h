@@ -74,7 +74,7 @@ namespace pcl
 
 #include <pcl/apps/in_hand_scanner/impl/common_types.hpp>
 
-POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::ihs::PointModel,
+POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::ihs::_PointModel,
                                    (float, x, x)
                                    (float, y, y)
                                    (float, z, z)
@@ -84,7 +84,9 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::ihs::PointModel,
                                    (float, rgb, rgb)
                                    (float, weight, weight)
                                    (unsigned int, age, age)
+                                   (unsigned int, directions, directions)
                                   )
+POINT_CLOUD_REGISTER_POINT_WRAPPER (pcl::ihs::PointModel, pcl::ihs::_PointModel)
 
 namespace pcl
 {

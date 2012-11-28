@@ -97,6 +97,32 @@ namespace pcl
         typedef boost::shared_ptr <KdTree>       KdTreePtr;
         typedef boost::shared_ptr <const KdTree> KdTreeConstPtr;
 
+      private:
+
+        // - Frequency 3 Icosahedron where each vertex corresponds to a viewing direction
+        // - First vertex aligned to z-axis
+        // - Removed vertexes with z < 0.3
+        // -> 31 directions, fitting nicely into a 32 bit integer
+        // -> Very oblique angles are not considered
+        class Dome
+        {
+          public:
+
+            static const int                                NumDirections = 31;
+            typedef Eigen::Matrix <float, 4, NumDirections> Vertexes;
+
+          public:
+
+            Dome ();
+
+            const Vertexes&
+            getVertexes () const;
+
+          private:
+
+            Vertexes vertexes_;
+        };
+
       public:
 
         Integration ();
@@ -125,8 +151,8 @@ namespace pcl
         void         setMaximumAge (const unsigned int age_max);
         unsigned int getMaximumAge () const;
 
-        void  setMinimumVisibilityConfidence (const float visconf_min);
-        float getMinimumVisibilityConfidence () const;
+        void         setMinimumCount (const unsigned int count_min);
+        unsigned int getMinimumCount () const;
 
       private:
 
@@ -167,23 +193,34 @@ namespace pcl
                            const PointModel& pt_2,
                            const PointModel& pt_3) const;
 
+        void
+        addDirection (const Eigen::Vector4f& normal,
+                      const Eigen::Vector4f& direction,
+                      unsigned int&          directions) const;
+
+        unsigned int
+        countDirections (const unsigned int directions) const;
+
       private:
 
-        // Nearest neighbor search
+        // Nearest neighbor search.
         KdTreePtr kd_tree_;
 
-        // Maximum squared distance below which points are averaged out
+        // Maximum squared distance below which points are averaged out.
         float squared_distance_max_;
 
-        // Minium dot product between normals above which points are averaged out
+        // Minium dot product between normals above which points are averaged out.
         float dot_normal_min_;
 
         // Minimum weight above which points are added.
         float weight_min_;
 
-        // A point dies if it has not been updated in the last age_max_ frames and the visibility confidence is below visconf_min
+        // A point dies if it has not been updated in the last age_max_ frames and the number of observed directions are below count_min_.
         unsigned int age_max_;
-        float        visconf_min_; // [0 1]
+        unsigned int count_min_;
+
+        // Dome to check from which direction the point has been observed
+        Dome dome_;
     };
 
   } // End namespace ihs
