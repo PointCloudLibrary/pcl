@@ -59,9 +59,9 @@ pcl::NormalSpaceSampling<PointT, NormalT>::initCompute ()
     return false;
   }
 
-  boost::mt19937 *rng = new boost::mt19937 (static_cast<size_t> (seed_));
-  boost::uniform_int<size_t> *uniform_distrib = new boost::uniform_int<size_t> (0, input_->size ());
-  rng_uniform_distribution_ = new boost::variate_generator<boost::mt19937, boost::uniform_int<size_t> > (*rng, *uniform_distrib);
+  boost::mt19937 *rng = new boost::mt19937 (static_cast<unsigned int> (seed_));
+  boost::uniform_int<unsigned int> *uniform_distrib = new boost::uniform_int<unsigned int> (0, input_->size ());
+  rng_uniform_distribution_ = new boost::variate_generator<boost::mt19937, boost::uniform_int<unsigned int> > (*rng, *uniform_distrib);
 
   return (true);
 }
@@ -94,7 +94,9 @@ pcl::NormalSpaceSampling<PointT, NormalT>::applyFilter (PointCloud &output)
 
 ///////////////////////////////////////////////////////////////////////////////
 template<typename PointT, typename NormalT> bool 
-pcl::NormalSpaceSampling<PointT, NormalT>::isEntireBinSampled (boost::dynamic_bitset<> &array, unsigned int start_index, unsigned int length)
+pcl::NormalSpaceSampling<PointT, NormalT>::isEntireBinSampled (boost::dynamic_bitset<> &array,
+                                                               unsigned int start_index,
+                                                               unsigned int length)
 {
   bool status = true;
   for (unsigned int i = start_index; i < start_index + length; i++)
@@ -106,7 +108,7 @@ pcl::NormalSpaceSampling<PointT, NormalT>::isEntireBinSampled (boost::dynamic_bi
 
 ///////////////////////////////////////////////////////////////////////////////
 template<typename PointT, typename NormalT> unsigned int 
-pcl::NormalSpaceSampling<PointT, NormalT>::findBin (float *normal, unsigned int)
+pcl::NormalSpaceSampling<PointT, NormalT>::findBin (const float *normal, unsigned int)
 {
   unsigned int bin_number = 0;
   // Holds the bin numbers for direction cosines in x,y,z directions

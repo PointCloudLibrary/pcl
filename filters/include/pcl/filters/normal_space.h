@@ -63,7 +63,7 @@ namespace pcl
     typedef typename FilterIndices<PointT>::PointCloud PointCloud;
     typedef typename PointCloud::Ptr PointCloudPtr;
     typedef typename PointCloud::ConstPtr PointCloudConstPtr;
-    typedef typename pcl::PointCloud<NormalT>::Ptr NormalsPtr;
+    typedef typename pcl::PointCloud<NormalT>::ConstPtr NormalsConstPtr;
 
     public:
       
@@ -144,10 +144,10 @@ namespace pcl
         * \param[in] normals the normals computed for the input cloud
         */
       inline void 
-      setNormals (const NormalsPtr &normals) { input_normals_ = normals; }
+      setNormals (const NormalsConstPtr &normals) { input_normals_ = normals; }
 
       /** \brief Get the normals computed on the input point cloud */
-      inline NormalsPtr
+      inline NormalsConstPtr
       getNormals () const { return (input_normals_); }
 
     protected:
@@ -164,7 +164,7 @@ namespace pcl
       unsigned int binsz_;
      
       /** \brief The normals computed at each point in the input cloud */
-      NormalsPtr input_normals_; 
+      NormalsConstPtr input_normals_;
 
       /** \brief Sample of point indices into a separate PointCloud
         * \param[out] output the resultant point cloud
@@ -187,7 +187,7 @@ namespace pcl
         * \param[in] nbins total number of bins
         */
       unsigned int 
-      findBin (float *normal, unsigned int nbins);
+      findBin (const float *normal, unsigned int nbins);
 
       /** \brief Checks of the entire bin is sampled, returns true or false
         * \param[out] array flag which says whether a point is sampled or not
@@ -198,7 +198,7 @@ namespace pcl
       isEntireBinSampled (boost::dynamic_bitset<> &array, unsigned int start_index, unsigned int length);
 
       /** \brief Uniform random distribution. */
-      boost::variate_generator<boost::mt19937, boost::uniform_int<size_t> > *rng_uniform_distribution_;
+      boost::variate_generator<boost::mt19937, boost::uniform_int<unsigned int> > *rng_uniform_distribution_;
   };
 }
 
