@@ -45,7 +45,6 @@
 #include <pcl/point_types.h>
 #include <pcl/geometry/impl/triangle_mesh.hpp>
 #include <pcl/apps/in_hand_scanner/eigen.h>
-#include <pcl/apps/in_hand_scanner/visibility_confidence.h>
 
 namespace pcl
 {

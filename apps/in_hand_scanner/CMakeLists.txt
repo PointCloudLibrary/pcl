@@ -49,7 +49,7 @@ if(BUILD)
   pcl_add_executable_opt_bundle(${EXE_NAME} ${SUBSYS_NAME} ${SRCS} ${INCS} ${IMPL_INCS})
   target_link_libraries(${EXE_NAME} ${SUBSYS_LIBS})
 
-  pcl_add_executable_opt_bundle(pcl_test_integration ${SUBSYS_NAME} src/test_integration.cpp src/integration.cpp src/visibility_confidence.cpp)
+  pcl_add_executable_opt_bundle(pcl_test_integration ${SUBSYS_NAME} src/test_integration.cpp src/integration.cpp)
   target_link_libraries(pcl_test_integration pcl_common pcl_geometry pcl_io pcl_visualization)
 
   pcl_add_includes(${SUBSYS_NAME} ${SUBSYS_NAME} ${INCS})
