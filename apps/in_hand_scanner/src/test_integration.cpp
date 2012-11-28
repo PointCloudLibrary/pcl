@@ -172,7 +172,7 @@ simpleOutlierRemoval (const MeshPtr& mesh, const SizeType n, const bool cleanup=
 {
   // TODO: maybe put the deleted faces into another vector
   // -> don't delete anything while going through this loop
-  for (HalfEdgeIndex ind=0; ind<mesh->sizeHalfEdges (); ++ind)
+  for (HalfEdgeIndex ind=HalfEdgeIndex (0); ind<HalfEdgeIndex (mesh->sizeHalfEdges ()); ++ind)
   {
     const HalfEdge& he = mesh->getElement (ind);
     if (he.isBoundary () && !he.getDeleted ())

@@ -61,64 +61,64 @@ namespace pcl
 
     struct PointModel : public pcl::ihs::_PointModel
     {
-        // NOTE: I rely on NaN in the default constructor!
-        inline PointModel ()
-        {
-          this->x = this->y = this->z = std::numeric_limits<float>::quiet_NaN ();
-          this->data[3] = 1.f;
+      // NOTE: I rely on NaN in the default constructor!
+      inline PointModel ()
+      {
+        this->x = this->y = this->z = std::numeric_limits<float>::quiet_NaN ();
+        this->data[3] = 1.f;
 
-          this->normal_x = this->normal_y = this->normal_z = std::numeric_limits<float>::quiet_NaN ();
-          this->data_n[3] = 0.f;
+        this->normal_x = this->normal_y = this->normal_z = std::numeric_limits<float>::quiet_NaN ();
+        this->data_n[3] = 0.f;
 
-          this->b = this->g = this->r = 0; this->a = 255;
+        this->b = this->g = this->r = 0; this->a = 255;
 
-          this->weight     = 0.f;
-          this->age        = 0;
-          this->directions = 0;
-        }
+        this->weight     = 0.f;
+        this->age        = 0;
+        this->directions = 0;
+      }
 
-        inline PointModel (const PointModel& other)
-        {
-          this->x       = other.x;
-          this->y       = other.y;
-          this->z       = other.z;
-          this->data[3] = other.data[3];
+      inline PointModel (const PointModel& other)
+      {
+        this->x       = other.x;
+        this->y       = other.y;
+        this->z       = other.z;
+        this->data[3] = other.data[3];
 
-          this->normal_x  = other.normal_x;
-          this->normal_y  = other.normal_y;
-          this->normal_z  = other.normal_z;
-          this->data_n[3] = other.data_n[3];
+        this->normal_x  = other.normal_x;
+        this->normal_y  = other.normal_y;
+        this->normal_z  = other.normal_z;
+        this->data_n[3] = other.data_n[3];
 
-          this->rgba = other.rgba;
+        this->rgba = other.rgba;
 
-          this->weight     = other.weight;
-          this->age        = other.age;
-          this->directions = other.directions;
-        }
+        this->weight     = other.weight;
+        this->age        = other.age;
+        this->directions = other.directions;
+      }
 
-        inline PointModel (const pcl::PointXYZRGBNormal& other, const float weight)
-        {
-          this->x       = other.x;
-          this->y       = other.y;
-          this->z       = other.z;
-          this->data[3] = other.data[3];
+      inline PointModel (const pcl::PointXYZRGBNormal& other, const float weight)
+      {
+        this->x       = other.x;
+        this->y       = other.y;
+        this->z       = other.z;
+        this->data[3] = other.data[3];
 
-          this->normal_x  = other.normal_x;
-          this->normal_y  = other.normal_y;
-          this->normal_z  = other.normal_z;
-          this->data_n[3] = other.data_n[3];
+        this->normal_x  = other.normal_x;
+        this->normal_y  = other.normal_y;
+        this->normal_z  = other.normal_z;
+        this->data_n[3] = other.data_n[3];
 
-          this->rgba = other.rgba;
+        this->rgba = other.rgba;
 
-          this->weight     = weight;
-          this->age        = 0;
-          this->directions = 0;
-        }
+        this->weight     = weight;
+        this->age        = 0;
+        this->directions = 0;
+      }
 
-     // inline       Eigen::Vector3i getRGBVector3i ()       {return (Eigen::Vector3i (r, g, b));}
-        inline const Eigen::Vector3i getRGBVector3i () const {return (Eigen::Vector3i (r, g, b));}
-     // inline       Eigen::Vector4i getRGBVector4i ()       {return (Eigen::Vector4i (r, g, b, a));}
-        inline const Eigen::Vector4i getRGBVector4i () const {return (Eigen::Vector4i (r, g, b, a));}
+   // inline       Eigen::Vector3i getRGBVector3i ()       {return (Eigen::Vector3i (r, g, b));}
+      inline const Eigen::Vector3i getRGBVector3i () const {return (Eigen::Vector3i (r, g, b));}
+   // inline       Eigen::Vector4i getRGBVector4i ()       {return (Eigen::Vector4i (r, g, b, a));}
+      inline const Eigen::Vector4i getRGBVector4i () const {return (Eigen::Vector4i (r, g, b, a));}
     };
 
   } // End namespace ihs
