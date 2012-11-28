@@ -1,0 +1,15 @@
+============
+FAQ:
+============
+
+To compile libusb,
+
+./libusb-fetch.sh
+export SYSROOT=${ANDROID_NDK}/platforms/android-14/arch-arm/
+export CC="${ANDROID_NDK}/toolchains/arm-linux-androideabi-4.4.3/prebuilt/linux-x86/bin/arm-linux-androideabi-gcc --sysroot=$SYSROOT"
+export PATH=$PATH:${ANDROID_NDK}/toolchains/arm-linux-androideabi-4.4.3/prebuilt/linux-x86/bin/
+#FOR NVIDIA NDK: NDKROOT
+#export SYSROOT=${NDKROOT}/platforms/android-14/arch-arm/
+#export CC="${NDKROOT}/toolchains/arm-linux-androideabi-4.4.3/prebuilt/linux-x86/bin/arm-linux-androideabi-gcc --sysroot=$SYSROOT"
+#export PATH=$PATH:${NDKROOT}/toolchains/arm-linux-androideabi-4.4.3/prebuilt/linux-x86/bin/
+./libusb-build.sh
