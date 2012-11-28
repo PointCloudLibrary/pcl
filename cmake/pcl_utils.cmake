@@ -50,7 +50,7 @@ macro(DISSECT_VERSION)
         PCL_MAJOR_VERSION "${PCL_VERSION}")
     string(REGEX REPLACE "^[0-9]+\\.([0-9]+).*" "\\1"
         PCL_MINOR_VERSION "${PCL_VERSION}")
-    string(REGEX REPLACE "^[0-9]+\\.[0-9]+\\.([0-9]+)" "\\1"
+    string(REGEX REPLACE "^[0-9]+\\.[0-9]+\\.([0-9]+).*" "\\1"
         PCL_REVISION_VERSION "${PCL_VERSION}")
     string(REGEX REPLACE "^[0-9]+\\.[0-9]+\\.[0-9]+(.*)" "\\1"
         PCL_CANDIDATE_VERSION "${PCL_VERSION}")
