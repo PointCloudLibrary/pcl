@@ -198,7 +198,7 @@ template<typename CloudT> void
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void 
-	writePoligonMeshFile (int format, const pcl::PolygonMesh& mesh);
+	writePolygonMeshFile (int format, const pcl::PolygonMesh& mesh);
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -476,7 +476,7 @@ struct SceneCloudView
 	}
 
 	void
-		toggleExctractionMode ()
+		toggleExtractionMode ()
 	{
 		extraction_mode_ = (extraction_mode_ + 1) % 3;
 
@@ -904,7 +904,7 @@ struct KinFuLSApp
 		writeMesh(int format) const
 	{
 		if (scene_cloud_view_.mesh_ptr_) 
-			writePoligonMeshFile(format, *scene_cloud_view_.mesh_ptr_);
+			writePolygonMeshFile(format, *scene_cloud_view_.mesh_ptr_);
 	}
 
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -986,7 +986,7 @@ struct KinFuLSApp
 			case (int)'t': case (int)'T': app->scan_ = true; break;
 			case (int)'a': case (int)'A': app->scan_mesh_ = true; break;
 			case (int)'h': case (int)'H': app->printHelp (); break;
-			case (int)'m': case (int)'M': app->scene_cloud_view_.toggleExctractionMode (); break;
+			case (int)'m': case (int)'M': app->scene_cloud_view_.toggleExtractionMode (); break;
 			case (int)'n': case (int)'N': app->scene_cloud_view_.toggleNormals (); break;      
 			case (int)'c': case (int)'C': app->scene_cloud_view_.clearClouds (true); break;
 			case (int)'i': case (int)'I': app->toggleIndependentCamera (); break;
@@ -1046,7 +1046,7 @@ template<typename CloudPtr> void
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-	writePoligonMeshFile (int format, const pcl::PolygonMesh& mesh)
+	writePolygonMeshFile (int format, const pcl::PolygonMesh& mesh)
 {
 	if (format == KinFuLSApp::MESH_PLY)
 	{
