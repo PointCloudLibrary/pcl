@@ -40,34 +40,5 @@
 #ifndef PCL_REGISTRATION_IMPL_CORRESPONDENCE_REJECTION_DISTANCE_HPP_
 #define PCL_REGISTRATION_IMPL_CORRESPONDENCE_REJECTION_DISTANCE_HPP_
 
-//////////////////////////////////////////////////////////////////////////////////////////////
-void
-pcl::registration::CorrespondenceRejectorDistance::getRemainingCorrespondences (
-    const pcl::Correspondences& original_correspondences, 
-    pcl::Correspondences& remaining_correspondences)
-{
-  unsigned int number_valid_correspondences = 0;
-  remaining_correspondences.resize (original_correspondences.size ());
-  for (size_t i = 0; i < original_correspondences.size (); ++i)
-  {
-    if (data_container_)
-    {
-      if (data_container_->getCorrespondenceScore (original_correspondences[i]) < max_distance_)
-      {
-        remaining_correspondences[number_valid_correspondences] = original_correspondences[i];
-        ++number_valid_correspondences;
-      }
-    }
-    else
-    {
-      if (original_correspondences[i].distance < max_distance_)
-      {
-        remaining_correspondences[number_valid_correspondences] = original_correspondences[i];
-        ++number_valid_correspondences;
-      }
-    }
-  }
-  remaining_correspondences.resize (number_valid_correspondences);
-}
 
 #endif /* PCL_REGISTRATION_IMPL_CORRESPONDENCE_REJECTION_DISTANCE_HPP_ */

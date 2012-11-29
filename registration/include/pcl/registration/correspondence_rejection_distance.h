@@ -58,7 +58,7 @@ namespace pcl
       * \author Dirk Holz, Radu B. Rusu
       * \ingroup registration
       */
-    class CorrespondenceRejectorDistance: public CorrespondenceRejector
+    class PCL_EXPORTS CorrespondenceRejectorDistance: public CorrespondenceRejector
     {
       using CorrespondenceRejector::input_correspondences_;
       using CorrespondenceRejector::rejection_name_;
@@ -79,7 +79,7 @@ namespace pcl
           * \param[in] original_correspondences the set of initial correspondences given
           * \param[out] remaining_correspondences the resultant filtered set of remaining correspondences
           */
-        inline void 
+        void
         getRemainingCorrespondences (const pcl::Correspondences& original_correspondences, 
                                      pcl::Correspondences& remaining_correspondences);
 
