@@ -990,6 +990,22 @@ pcl::visualization::PCLVisualizer::removeActorFromRenderer (const vtkSmartPointe
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
+namespace
+{
+// Helper function called by createActorFromVTKDataSet () methods.
+// This function determines the default setting of vtkMapper::InterpolateScalarsBeforeMapping.
+// Return 0, interpolation off, if data is a vtkPolyData that contains only vertices.
+// Return 1, interpolation on, for anything else.
+int
+getDefaultScalarInterpolationForDataSet (vtkDataSet* data)
+{
+  vtkPolyData* polyData = vtkPolyData::SafeDownCast (data);
+  return (polyData && polyData->GetNumberOfCells () != polyData->GetNumberOfVerts ());
+}
+
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::visualization::PCLVisualizer::createActorFromVTKDataSet (const vtkSmartPointer<vtkDataSet> &data,
                                                               vtkSmartPointer<vtkLODActor> &actor,
@@ -1015,7 +1031,7 @@ pcl::visualization::PCLVisualizer::createActorFromVTKDataSet (const vtkSmartPoin
         mapper->SetScalarRange (minmax);
 
         mapper->SetScalarModeToUsePointData ();
-        mapper->InterpolateScalarsBeforeMappingOn ();
+        mapper->SetInterpolateScalarsBeforeMapping (getDefaultScalarInterpolationForDataSet (data));
         mapper->ScalarVisibilityOn ();
       }
     }
@@ -1045,7 +1061,7 @@ pcl::visualization::PCLVisualizer::createActorFromVTKDataSet (const vtkSmartPoin
         mapper->SetScalarRange (minmax);
 
         mapper->SetScalarModeToUsePointData ();
-        mapper->InterpolateScalarsBeforeMappingOn ();
+        mapper->SetInterpolateScalarsBeforeMapping (getDefaultScalarInterpolationForDataSet (data));
         mapper->ScalarVisibilityOn ();
       }
     }
@@ -1089,7 +1105,7 @@ pcl::visualization::PCLVisualizer::createActorFromVTKDataSet (const vtkSmartPoin
         mapper->SetScalarRange (minmax);
 
         mapper->SetScalarModeToUsePointData ();
-        mapper->InterpolateScalarsBeforeMappingOn ();
+        mapper->SetInterpolateScalarsBeforeMapping (getDefaultScalarInterpolationForDataSet (data));
         mapper->ScalarVisibilityOn ();
       }
     }
@@ -1119,7 +1135,7 @@ pcl::visualization::PCLVisualizer::createActorFromVTKDataSet (const vtkSmartPoin
         mapper->SetScalarRange (minmax);
 
         mapper->SetScalarModeToUsePointData ();
-        mapper->InterpolateScalarsBeforeMappingOn ();
+        mapper->SetInterpolateScalarsBeforeMapping (getDefaultScalarInterpolationForDataSet (data));
         mapper->ScalarVisibilityOn ();
       }
     }
