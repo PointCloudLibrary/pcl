@@ -38,6 +38,8 @@
  *
  */
 
+// NOTE: This file has been created with 'pcl_src/geometry/include/pcl/geometry/mesh_circulators.py'
+
 #ifndef PCL_GEOMETRY_MESH_CIRCULATORS_HPP
 #define PCL_GEOMETRY_MESH_CIRCULATORS_HPP
 
@@ -126,7 +128,7 @@ namespace pcl
       bool
       isValid () const
       {
-        return (this->getDereferencedIndex ().isValid ());
+        return (this->getCurrentHalfEdgeIndex ().isValid ());
       }
 
     private:
@@ -137,7 +139,7 @@ namespace pcl
       template <class OtherMeshT> bool
       equal (const pcl::VertexAroundVertexCirculator <OtherMeshT>& other) const
       {
-        return (idx_outgoing_half_edge_ == other.idx_outgoing_half_edge_);
+        return (mesh_ == other.mesh_ && idx_outgoing_half_edge_ == other.idx_outgoing_half_edge_);
       }
 
       void
@@ -155,7 +157,7 @@ namespace pcl
       reference
       dereference () const
       {
-        return (mesh_->getElement (idx_outgoing_half_edge_).getTerminatingVertex (*mesh_));
+        return (mesh_->getElement (this->getDereferencedIndex ()));
       }
 
     private:
@@ -243,13 +245,13 @@ namespace pcl
       const HalfEdgeIndex&
       getDereferencedIndex () const
       {
-        return (this->getCurrentHalfEdgeIndex ());
+        return (idx_outgoing_half_edge_);
       }
 
       bool
       isValid () const
       {
-        return (this->getDereferencedIndex ().isValid ());
+        return (this->getCurrentHalfEdgeIndex ().isValid ());
       }
 
     private:
@@ -260,7 +262,7 @@ namespace pcl
       template <class OtherMeshT> bool
       equal (const pcl::OutgoingHalfEdgeAroundVertexCirculator <OtherMeshT>& other) const
       {
-        return (idx_outgoing_half_edge_ == other.idx_outgoing_half_edge_);
+        return (mesh_ == other.mesh_ && idx_outgoing_half_edge_ == other.idx_outgoing_half_edge_);
       }
 
       void
@@ -278,7 +280,7 @@ namespace pcl
       reference
       dereference () const
       {
-        return (mesh_->getElement (idx_outgoing_half_edge_));
+        return (mesh_->getElement (this->getDereferencedIndex ()));
       }
 
     private:
@@ -328,30 +330,30 @@ namespace pcl
 
       IncomingHalfEdgeAroundVertexCirculator (const Vertex& vertex,
                                               Mesh*const    mesh)
-        : mesh_                  (mesh),
-          idx_incoming_half_edge (vertex.getOutgoingHalfEdge (*mesh_).getOppositeHalfEdgeIndex ())
+        : mesh_                   (mesh),
+          idx_incoming_half_edge_ (vertex.getIncomingHalfEdgeIndex (*mesh_))
       {
       }
 
       IncomingHalfEdgeAroundVertexCirculator (const VertexIndex& idx_vertex,
                                               Mesh*const         mesh)
-        : mesh_                  (mesh),
-          idx_incoming_half_edge (mesh->getElement (idx_vertex).getIncomingHalfEdgeIndex (*mesh_))
+        : mesh_                   (mesh),
+          idx_incoming_half_edge_ (mesh->getElement (idx_vertex).getIncomingHalfEdgeIndex (*mesh_))
       {
       }
 
       IncomingHalfEdgeAroundVertexCirculator (const HalfEdgeIndex& idx_incoming_half_edge,
                                               Mesh*const           mesh)
-        : mesh_                  (mesh),
-          idx_incoming_half_edge (idx_incoming_half_edge)
+        : mesh_                   (mesh),
+          idx_incoming_half_edge_ (idx_incoming_half_edge)
       {
       }
 
       template <class OtherMeshT>
       IncomingHalfEdgeAroundVertexCirculator (const pcl::IncomingHalfEdgeAroundVertexCirculator <OtherMeshT>& other,
                                               typename boost::enable_if <boost::is_convertible <OtherMeshT*, Mesh*>, enabler>::type = enabler ())
-        : mesh_                  (other.mesh_),
-          idx_incoming_half_edge (other.idx_incoming_half_edge)
+        : mesh_                   (other.mesh_),
+          idx_incoming_half_edge_ (other.idx_incoming_half_edge_)
       {
       }
 
@@ -360,19 +362,19 @@ namespace pcl
       const HalfEdgeIndex&
       getCurrentHalfEdgeIndex () const
       {
-        return (idx_incoming_half_edge);
+        return (idx_incoming_half_edge_);
       }
 
       const HalfEdgeIndex&
       getDereferencedIndex () const
       {
-        return (this->getCurrentHalfEdgeIndex ());
+        return (idx_incoming_half_edge_);
       }
 
       bool
       isValid () const
       {
-        return (this->getDereferencedIndex ().isValid ());
+        return (this->getCurrentHalfEdgeIndex ().isValid ());
       }
 
     private:
@@ -383,31 +385,31 @@ namespace pcl
       template <class OtherMeshT> bool
       equal (const pcl::IncomingHalfEdgeAroundVertexCirculator <OtherMeshT>& other) const
       {
-        return (idx_incoming_half_edge == other.idx_incoming_half_edge);
+        return (mesh_ == other.mesh_ && idx_incoming_half_edge_ == other.idx_incoming_half_edge_);
       }
 
       void
       increment ()
       {
-        idx_incoming_half_edge = mesh_->getElement (idx_incoming_half_edge).getOppositeHalfEdge (*mesh_).getPrevHalfEdgeIndex ();
+        idx_incoming_half_edge_ = mesh_->getElement (idx_incoming_half_edge_).getOppositeHalfEdge (*mesh_).getPrevHalfEdgeIndex ();
       }
 
       void
       decrement ()
       {
-        idx_incoming_half_edge = mesh_->getElement (idx_incoming_half_edge).getNextHalfEdge (*mesh_).getOppositeHalfEdgeIndex ();
+        idx_incoming_half_edge_ = mesh_->getElement (idx_incoming_half_edge_).getNextHalfEdge (*mesh_).getOppositeHalfEdgeIndex ();
       }
 
       reference
       dereference () const
       {
-        return (mesh_->getElement (idx_incoming_half_edge));
+        return (mesh_->getElement (this->getDereferencedIndex ()));
       }
 
     private:
 
       Mesh*         mesh_;
-      HalfEdgeIndex idx_incoming_half_edge;
+      HalfEdgeIndex idx_incoming_half_edge_;
   };
 
 } // End namespace pcl
@@ -495,7 +497,7 @@ namespace pcl
       bool
       isValid () const
       {
-        return (this->getDereferencedIndex ().isValid ());
+        return (this->getCurrentHalfEdgeIndex ().isValid ());
       }
 
     private:
@@ -506,7 +508,7 @@ namespace pcl
       template <class OtherMeshT> bool
       equal (const pcl::FaceAroundVertexCirculator <OtherMeshT>& other) const
       {
-        return (idx_outgoing_half_edge_ == other.idx_outgoing_half_edge_);
+        return (mesh_ == other.mesh_ && idx_outgoing_half_edge_ == other.idx_outgoing_half_edge_);
       }
 
       void
@@ -524,7 +526,7 @@ namespace pcl
       reference
       dereference () const
       {
-        return (mesh_->getElement (idx_outgoing_half_edge_).getFace (*mesh_));
+        return (mesh_->getElement (this->getDereferencedIndex ()));
       }
 
     private:
@@ -618,7 +620,7 @@ namespace pcl
       bool
       isValid () const
       {
-        return (this->getDereferencedIndex ().isValid ());
+        return (this->getCurrentHalfEdgeIndex ().isValid ());
       }
 
     private:
@@ -629,7 +631,7 @@ namespace pcl
       template <class OtherMeshT> bool
       equal (const pcl::VertexAroundFaceCirculator <OtherMeshT>& other) const
       {
-        return (idx_inner_half_edge_ == other.idx_inner_half_edge_);
+        return (mesh_ == other.mesh_ && idx_inner_half_edge_ == other.idx_inner_half_edge_);
       }
 
       void
@@ -647,7 +649,7 @@ namespace pcl
       reference
       dereference () const
       {
-        return (mesh_->getElement (idx_inner_half_edge_).getTerminatingVertex (*mesh_));
+        return (mesh_->getElement (this->getDereferencedIndex ()));
       }
 
     private:
@@ -735,13 +737,13 @@ namespace pcl
       const HalfEdgeIndex&
       getDereferencedIndex () const
       {
-        return (this->getCurrentHalfEdgeIndex ());
+        return (idx_inner_half_edge_);
       }
 
       bool
       isValid () const
       {
-        return (this->getDereferencedIndex ().isValid ());
+        return (this->getCurrentHalfEdgeIndex ().isValid ());
       }
 
     private:
@@ -752,7 +754,7 @@ namespace pcl
       template <class OtherMeshT> bool
       equal (const pcl::InnerHalfEdgeAroundFaceCirculator <OtherMeshT>& other) const
       {
-        return (idx_inner_half_edge_ == other.idx_inner_half_edge_);
+        return (mesh_ == other.mesh_ && idx_inner_half_edge_ == other.idx_inner_half_edge_);
       }
 
       void
@@ -770,7 +772,7 @@ namespace pcl
       reference
       dereference () const
       {
-        return (mesh_->getElement (idx_inner_half_edge_));
+        return (mesh_->getElement (this->getDereferencedIndex ()));
       }
 
     private:
@@ -864,7 +866,7 @@ namespace pcl
       bool
       isValid () const
       {
-        return (this->getDereferencedIndex ().isValid ());
+        return (this->getCurrentHalfEdgeIndex ().isValid ());
       }
 
     private:
@@ -875,7 +877,7 @@ namespace pcl
       template <class OtherMeshT> bool
       equal (const pcl::OuterHalfEdgeAroundFaceCirculator <OtherMeshT>& other) const
       {
-        return (idx_inner_half_edge_ == other.idx_inner_half_edge_);
+        return (mesh_ == other.mesh_ && idx_inner_half_edge_ == other.idx_inner_half_edge_);
       }
 
       void
@@ -893,7 +895,7 @@ namespace pcl
       reference
       dereference () const
       {
-        return (mesh_->getElement (idx_inner_half_edge_).getOppositeHalfEdge (*mesh_));
+        return (mesh_->getElement (this->getDereferencedIndex ()));
       }
 
     private:
@@ -987,7 +989,7 @@ namespace pcl
       bool
       isValid () const
       {
-        return (this->getDereferencedIndex ().isValid ());
+        return (this->getCurrentHalfEdgeIndex ().isValid ());
       }
 
     private:
@@ -998,7 +1000,7 @@ namespace pcl
       template <class OtherMeshT> bool
       equal (const pcl::FaceAroundFaceCirculator <OtherMeshT>& other) const
       {
-        return (idx_inner_half_edge_ == other.idx_inner_half_edge_);
+        return (mesh_ == other.mesh_ && idx_inner_half_edge_ == other.idx_inner_half_edge_);
       }
 
       void
@@ -1016,7 +1018,7 @@ namespace pcl
       reference
       dereference () const
       {
-        return (mesh_->getElement (idx_inner_half_edge_).getOppositeFace (*mesh_));
+        return (mesh_->getElement (this->getDereferencedIndex ()));
       }
 
     private:
