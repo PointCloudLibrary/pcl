@@ -32,4 +32,4 @@ void main()
     v_texCoord = a_texCoord;
     v_texCoord_depth = a_texCoord;
     v_depth = a_depth;
-};
+}

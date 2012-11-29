@@ -29,4 +29,4 @@ void main()
  	//gl_Position = a_position;
  	gl_Position = MVPMat*a_position;
     v_texCoord = a_texCoord;
-};
+}
