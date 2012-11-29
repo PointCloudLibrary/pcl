@@ -14,7 +14,7 @@ public class PreferencesActivity extends Activity {
                 .commit();
     }
 
-    private class Fragment extends PreferenceFragment {
+    public static class Fragment extends PreferenceFragment {
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
