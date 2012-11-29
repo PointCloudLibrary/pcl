@@ -1,4 +1,4 @@
-package com.itseez.onirec;
+package com.pcl.onirec;
 
 import org.OpenNI.*;
 

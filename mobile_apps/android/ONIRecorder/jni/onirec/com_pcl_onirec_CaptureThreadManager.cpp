@@ -1,14 +1,14 @@
 #include <android/bitmap.h>
 #include <android/log.h>
 
-#include "com_itseez_onirec_CaptureThreadManager.h"
+#include "com_pcl_onirec_CaptureThreadManager.h"
 
 namespace {
   const char * TAG = "CaptureThreadManager";
 }
 
 JNIEXPORT void JNICALL
-Java_com_itseez_onirec_CaptureThreadManager_imageMapToBitmap
+Java_com_pcl_onirec_CaptureThreadManager_imageMapToBitmap
   (JNIEnv * env, jclass clazz, jlong ptr, jobject bm)
 {
   AndroidBitmapInfo info;
@@ -54,7 +54,7 @@ Java_com_itseez_onirec_CaptureThreadManager_imageMapToBitmap
 }
 
 JNIEXPORT void JNICALL
-Java_com_itseez_onirec_CaptureThreadManager_depthMapToBitmap
+Java_com_pcl_onirec_CaptureThreadManager_depthMapToBitmap
   (JNIEnv * env, jclass clazz, jlong ptr, jobject bm, jint maxZ)
 {
   AndroidBitmapInfo info;
