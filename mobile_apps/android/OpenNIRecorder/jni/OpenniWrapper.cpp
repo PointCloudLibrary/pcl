@@ -45,7 +45,7 @@ bool OpenniWrapper::WaitAndUpdate(){ //we will wait and process the RGB and dept
 //	g_image.WaitAndUpdateData();
 //	g_depth.WaitAndUpdateData();
 
-	rc = g_context.WaitAndUpdateAll(); //this was buggy! keep getting seg faults here when using other updates
+	rc = g_context.WaitAnyUpdateAll(); //this was buggy! keep getting seg faults here when using other updates
 //
 //
 	//usleep(300000);

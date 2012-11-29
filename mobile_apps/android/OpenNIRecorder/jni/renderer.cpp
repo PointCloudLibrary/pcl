@@ -304,7 +304,7 @@ void Renderer::displayTextureDirect(int offset_x, int offset_y, float scale, flo
 //			-1.0f/aspect_ratio_w, -1.0f/aspect_ratio_h, 0.0f, // Position 1
 //			0.0f, 0.0f, // TexCoord 1
 //			1.0f/aspect_ratio_w, -1.0f/aspect_ratio_h, 0.0f, // Position 2
-//			1.0f, 0.0f, // TexCoord 2
+//			1.0f, 0.0f, // TexCoord 2i
 //			1.0f/aspect_ratio_w, 1.0f/aspect_ratio_h, 0.0f, // Position 3
 //			1.0f, 1.0f // TexCoord 3
 //			};
@@ -862,9 +862,9 @@ void DepthToRGBD(unsigned short *depth, unsigned char *rgbd){
         		unsigned short depth_v = *depth;
         		//use bit shifting instead of dividing.
                 *(rgbd+0)=(depth_v)>>4;
-                *(rgbd+1)=(depth_v)>>2;
-                *(rgbd+2)=(depth_v)>>1;
-                *(rgbd+3)=100;
+                *(rgbd+1)=(depth_v)>>4;
+                *(rgbd+2)=(depth_v)>>4;
+                *(rgbd+3)=255;
                 depth+=1;
                 rgbd+=4;
         }
@@ -1165,7 +1165,9 @@ void Renderer::showBar(float x, float y){
 	glDisable(GL_DEPTH_TEST);
 }
 void Renderer::render(float x, float y, float w, float h){
-    glViewport(x, y, w, h);
+	//trackFinger = 1;
+	//isTouched = 1;
+    //glViewport(x, y, w, h);
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 //    //glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 #ifdef USE_OPENNI
@@ -1187,7 +1189,8 @@ void Renderer::render(float x, float y, float w, float h){
     if(trackFinger){
     	fingerTracker->runTracking(depth_short_info, rgb_info, -200, 400);
     	fingerTracker->getPosition(&my_x, &my_y);
-    	float isGrasp=fingerTracker->isGrasp();
+    	//fingerTracker->blobTracking(depth_short_info);
+    	//float isGrasp=fingerTracker->isGrasp();
     	RGBToRGBD(rgb_info, depth_info);
     	rotate = -20.0*(my_x-320)/480.0;
     }

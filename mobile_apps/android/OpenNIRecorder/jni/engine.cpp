@@ -81,27 +81,29 @@ Engine::Engine(NvEGLUtil& egl, struct android_app* app) :
 	m_uiText[1] = NULL;
 
 	//acelerometer
-    m_sensorManager = ASensorManager_getInstance();
-    m_accelerometerSensor = ASensorManager_getDefaultSensor(m_sensorManager,
-            ASENSOR_TYPE_ACCELEROMETER);
-    m_sensorEventQueue = ASensorManager_createEventQueue(m_sensorManager,
-            mApp->looper, LOOPER_ID_USER, NULL, NULL);
-
-    m_rawAccelerometer.x = 0.0f;
-    m_rawAccelerometer.y = -9.8f;
-    m_rawAccelerometer.z = 0.0f;
-
-    m_worldAccelerometer.x = 0.0f;
-    m_worldAccelerometer.y = -9.8f;
-    m_worldAccelerometer.z = 0.0f;
+//    m_sensorManager = ASensorManager_getInstance();
+//    if(m_sensorManager){
+//    m_accelerometerSensor = ASensorManager_getDefaultSensor(m_sensorManager,
+//            ASENSOR_TYPE_ACCELEROMETER);
+//    m_sensorEventQueue = ASensorManager_createEventQueue(m_sensorManager,
+//            mApp->looper, LOOPER_ID_USER, NULL, NULL);
+//
+//    m_rawAccelerometer.x = 0.0f;
+//    m_rawAccelerometer.y = -9.8f;
+//    m_rawAccelerometer.z = 0.0f;
+//
+//    m_worldAccelerometer.x = 0.0f;
+//    m_worldAccelerometer.y = -9.8f;
+//    m_worldAccelerometer.z = 0.0f;
+//
+//
+//    ASensorEventQueue_enableSensor(m_sensorEventQueue,
+//            m_accelerometerSensor);
+//    // We'd like to get 30 events per second (in us).
+//    ASensorEventQueue_setEventRate(m_sensorEventQueue,
+//            m_accelerometerSensor, (1000L/30)*1000);
 
 	mOrientation = nv_app_get_display_rotation(mApp);
-
-    ASensorEventQueue_enableSensor(m_sensorEventQueue,
-            m_accelerometerSensor);
-    // We'd like to get 30 events per second (in us).
-    ASensorEventQueue_setEventRate(m_sensorEventQueue,
-            m_accelerometerSensor, (1000L/30)*1000);
 }
 
 Engine::~Engine()
@@ -391,7 +393,6 @@ bool Engine::renderFrame(bool allocateIfNeeded)
 	}
 
 	resizeIfNeeded();
-
 	my_display->setScreenSize(mEgl.getWidth(), mEgl.getHeight());
 
     struct timeval start, end;
@@ -400,7 +401,8 @@ bool Engine::renderFrame(bool allocateIfNeeded)
     gettimeofday(&start, NULL);
     int i;
     static int count=0;
-    const int MAX_COUNT=10;
+    const int MAX_COUNT=15;
+	char buf[512];
 
 //
 //	//	// set up viewport
@@ -450,18 +452,16 @@ bool Engine::renderFrame(bool allocateIfNeeded)
 
 
 	    char my_path[512];
-	    RGBpack *filepack = (RGBpack*)(malloc(sizeof(RGBpack)));
-
-	    filepack->width=IMAGE_WIDTH;
-	    filepack->height=IMAGE_HEIGHT;
-	    filepack->depth_data=NULL;
-	    filepack->rgb_data=NULL;
-
+	    RGBpack *filepack = NULL;
 	    if(my_display->recordRGB()||my_display->recordDepth()){
+	    	filepack = (RGBpack*)(malloc(sizeof(RGBpack)));
+	    	filepack->width=IMAGE_WIDTH;
+	    	filepack->height=IMAGE_HEIGHT;
+	    	filepack->depth_data=NULL;
+	    	filepack->rgb_data=NULL;
 	    	counter++;
+	    	filepack->frame_count=counter;
 	    }
-
-	    filepack->frame_count=counter;
 	    if(my_display->recordRGB()){
 	    	filepack->rgb_data = (unsigned char*)malloc(IMAGE_WIDTH*IMAGE_HEIGHT*3*sizeof(unsigned char));
 	    	ni_wrapper->getRGB(filepack->rgb_data);
@@ -470,9 +470,11 @@ bool Engine::renderFrame(bool allocateIfNeeded)
 	    	filepack->depth_data = (unsigned short*)malloc(IMAGE_WIDTH*IMAGE_HEIGHT*sizeof(unsigned short));
 		    ni_wrapper->getDepth(filepack->depth_data);
 	    }
-	    //adding each of the frame packages to the thread, blocking call if the threadpool is full.
-	    int ret = threadpool_add_task(pool,fast_task,filepack,1); //this will also free the memory
-
+	    int ret = 0;
+	    if(my_display->recordRGB()||my_display->recordDepth()){
+	    	//adding each of the frame packages to the thread, blocking call if the threadpool is full.
+	    	ret = threadpool_add_task(pool,fast_task,filepack,1); //this will also free the memory
+	    }
 	    if(ret==-1){
 		    __android_log_write(ANDROID_LOG_INFO, "THREAD POOL:", "POOL ERROR?\n");
 		    if(filepack!=NULL){
@@ -493,8 +495,8 @@ bool Engine::renderFrame(bool allocateIfNeeded)
 			    free(filepack);
 		    }
 	    }
+	    my_display->render(0,0,screenWidth, screenHeight);
     }
-    my_display->render(0,0,screenWidth, screenHeight);
 #else
     //obtain the latest data from the kinect.
     getRGBData(my_display->getDepthInfoPtr());
@@ -516,7 +518,6 @@ bool Engine::renderFrame(bool allocateIfNeeded)
 	elapsed_sec += (t2-t1);
 	count++;
 	if(count>=MAX_COUNT){
-		char buf[512];
 		sprintf(buf, "Display loop %f (s), %f fps\n", (elapsed_sec)/MAX_COUNT, MAX_COUNT/elapsed_sec);
 		__android_log_write(ANDROID_LOG_INFO, "Render Loop:", buf);
 	    sprintf(buf, "%d frames, %lf fps", counter, MAX_COUNT/elapsed_sec);

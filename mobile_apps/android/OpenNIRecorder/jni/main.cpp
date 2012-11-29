@@ -21,6 +21,9 @@ void android_main(struct android_app* app)
     // Make sure glue isn't stripped.
     app_dummy();
 
+    //ultimate hack
+    //system("su -c \"mount -o devmode=0666 -t usbfs none /proc/bus/usb\"");
+
 	NvEGLUtil* egl = NvEGLUtil::create();
     if (!egl) 
     {
