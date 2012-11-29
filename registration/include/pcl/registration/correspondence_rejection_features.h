@@ -49,8 +49,7 @@ namespace pcl
 {
   namespace registration
   {
-    /**
-      * @b CorrespondenceRejectorFeatures implements a correspondence rejection method based on a set of feature
+    /** \brief CorrespondenceRejectorFeatures implements a correspondence rejection method based on a set of feature
       * descriptors. Given an input feature space, the method checks if each feature in the source cloud has a
       * correspondence in the target cloud, either by checking the first K (given) point correspondences, or 
       * by defining a tolerance threshold via a radius in feature space.
@@ -58,7 +57,7 @@ namespace pcl
       * \author Radu B. Rusu
       * \ingroup registration
       */
-    class CorrespondenceRejectorFeatures: public CorrespondenceRejector
+    class PCL_EXPORTS CorrespondenceRejectorFeatures: public CorrespondenceRejector
     {
       using CorrespondenceRejector::input_correspondences_;
       using CorrespondenceRejector::rejection_name_;

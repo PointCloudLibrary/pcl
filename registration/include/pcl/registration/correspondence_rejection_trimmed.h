@@ -60,7 +60,7 @@ namespace pcl
       * \author Dirk Holz
       * \ingroup registration
       */
-    class CorrespondenceRejectorTrimmed: public CorrespondenceRejector
+    class PCL_EXPORTS CorrespondenceRejectorTrimmed: public CorrespondenceRejector
     {
       using CorrespondenceRejector::input_correspondences_;
       using CorrespondenceRejector::rejection_name_;

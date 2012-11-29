@@ -57,7 +57,7 @@ namespace pcl
       * \author Aravindhan K Krishnan (original code from libpointmatcher: https://github.com/ethz-asl/libpointmatcher)
       * \ingroup registration
       */
-    class CorrespondenceRejectorSurfaceNormal: public CorrespondenceRejector
+    class PCL_EXPORTS CorrespondenceRejectorSurfaceNormal: public CorrespondenceRejector
     {
       using CorrespondenceRejector::input_correspondences_;
       using CorrespondenceRejector::rejection_name_;

@@ -55,7 +55,7 @@ namespace pcl
       * \author Dirk Holz
       * \ingroup registration
       */
-    class CorrespondenceRejectorOneToOne: public CorrespondenceRejector
+    class PCL_EXPORTS CorrespondenceRejectorOneToOne: public CorrespondenceRejector
     {
       using CorrespondenceRejector::input_correspondences_;
       using CorrespondenceRejector::rejection_name_;

@@ -47,8 +47,7 @@ namespace pcl
 {
   namespace registration
   {
-    /**
-      * @b CorrespondenceRejectorMedianDistance implements a simple correspondence
+    /** \brief CorrespondenceRejectorMedianDistance implements a simple correspondence
       * rejection method based on thresholding based on the median distance between the
       * correspondences.
       *
@@ -59,7 +58,7 @@ namespace pcl
       * \author Aravindhan K Krishnan. This code is ported from libpointmatcher (https://github.com/ethz-asl/libpointmatcher)
       * \ingroup registration
       */
-    class CorrespondenceRejectorMedianDistance: public CorrespondenceRejector
+    class PCL_EXPORTS CorrespondenceRejectorMedianDistance: public CorrespondenceRejector
     {
       using CorrespondenceRejector::input_correspondences_;
       using CorrespondenceRejector::rejection_name_;
