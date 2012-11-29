@@ -38,3 +38,28 @@
  */
 
 #include <pcl/registration/correspondence_rejection_surface_normal.h>
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::registration::CorrespondenceRejectorSurfaceNormal::getRemainingCorrespondences (
+    const pcl::Correspondences& original_correspondences,
+    pcl::Correspondences& remaining_correspondences)
+{
+  if (!data_container_)
+  {
+    PCL_ERROR ("[pcl::registratin::%s::getRemainingCorrespondences] DataContainer object is not initialized!\n", getClassName ().c_str ());
+    return;
+  }
+
+  unsigned int number_valid_correspondences = 0;
+  remaining_correspondences.resize (original_correspondences.size ());
+
+  // Test each correspondence
+  for (size_t i = 0; i < original_correspondences.size (); ++i)
+  {
+    if (boost::static_pointer_cast<DataContainer<pcl::PointXYZ, pcl::PointNormal> >
+        (data_container_)->getCorrespondenceScoreFromNormals (original_correspondences[i]) > threshold_)
+      remaining_correspondences[number_valid_correspondences++] = original_correspondences[i];
+  }
+  remaining_correspondences.resize (number_valid_correspondences);
+}

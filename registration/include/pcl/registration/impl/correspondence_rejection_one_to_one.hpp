@@ -40,32 +40,4 @@
 #ifndef PCL_REGISTRATION_IMPL_CORRESPONDENCE_REJECTION_ONE_TO_ONE_HPP_
 #define PCL_REGISTRATION_IMPL_CORRESPONDENCE_REJECTION_ONE_TO_ONE_HPP_
 
-//////////////////////////////////////////////////////////////////////////////////////////////
-void
-pcl::registration::CorrespondenceRejectorOneToOne::getRemainingCorrespondences (
-    const pcl::Correspondences& original_correspondences, 
-    pcl::Correspondences& remaining_correspondences)
-{
-  /* not really an efficient implementation */
-  pcl::Correspondences input = original_correspondences;
-
-  std::sort (input.begin (), input.end (), pcl::registration::sortCorrespondencesByMatchIndexAndDistance ());
-
-  remaining_correspondences.resize (input.size ());
-  int index_last = -1;
-  unsigned int number_valid_correspondences = 0;
-  for (size_t i = 0; i < input.size (); ++i)
-  {
-    if (input[i].index_match < 0)
-      continue;
-    else if (input[i].index_match != index_last)
-    {
-      remaining_correspondences[number_valid_correspondences] = input[i];
-      index_last = input[i].index_match;
-      ++number_valid_correspondences;
-    }
-  }
-  remaining_correspondences.resize (number_valid_correspondences);
-}
-
 #endif /* PCL_REGISTRATION_IMPL_CORRESPONDENCE_REJECTION_ONE_TO_ONE_HPP_ */
