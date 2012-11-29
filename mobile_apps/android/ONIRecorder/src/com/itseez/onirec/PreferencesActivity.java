@@ -6,6 +6,7 @@ import android.preference.PreferenceFragment;
 
 public class PreferencesActivity extends Activity {
     public static final String KEY_PREF_ENABLE_VISUALIZATION = "enable_visualization";
+    public static final String KEY_PREF_USE_DUMMY_GRABBER = "use_dummy_grabber";
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

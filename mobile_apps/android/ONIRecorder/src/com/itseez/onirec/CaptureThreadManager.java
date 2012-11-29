@@ -345,7 +345,7 @@ public class CaptureThreadManager {
 
     private void initOpenNI(ContextFactory factory) {
         try {
-            context = factory.createHolder();
+            context = factory.createContext();
 
             try {
                 color = context.createColorGenerator();

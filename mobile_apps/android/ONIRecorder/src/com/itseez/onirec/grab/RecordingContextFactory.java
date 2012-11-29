@@ -12,7 +12,7 @@ public class RecordingContextFactory implements ContextFactory {
     }
 
     @Override
-    public Context createHolder() throws GeneralException {
+    public Context createContext() throws GeneralException {
         return new OpenNIContext() {
             private Player player;
 

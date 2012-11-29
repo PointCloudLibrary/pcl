@@ -6,5 +6,9 @@
                 android:key="enable_visualization"
                 android:title="@string/pref_enable_visualization"
                 android:defaultValue="true"/>
+        <CheckBoxPreference
+                android:key="use_dummy_grabber"
+                android:title="@string/pref_use_dummy_grabber"
+                android:defaultValue="false"/>
     </PreferenceCategory>
 </PreferenceScreen>

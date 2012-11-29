@@ -11,6 +11,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.*;
 import android.widget.*;
+import com.itseez.onirec.grab.DummyContextFactory;
 import com.itseez.onirec.grab.LiveContextFactory;
 import com.itseez.onirec.grab.RecordingContextFactory;
 import org.OpenNI.MapOutputMode;
@@ -396,10 +397,12 @@ public class MainActivity extends Activity {
             textFps.setText(getResources().getString(R.string.x_fps, 0.));
             textStatus.setText(getResources().getString(R.string.status_replaying, recording.getName()));
 
-            boolean enable_vis = PreferenceManager.getDefaultSharedPreferences(MainActivity.this)
-                    .getBoolean(PreferencesActivity.KEY_PREF_ENABLE_VISUALIZATION, true);
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+            boolean enable_vis = prefs.getBoolean(PreferencesActivity.KEY_PREF_ENABLE_VISUALIZATION, true);
+            boolean fake_grabber = prefs.getBoolean(PreferencesActivity.KEY_PREF_USE_DUMMY_GRABBER, false);
+
             manager = new CaptureThreadManager(surfaceColor.getHolder(), surfaceDepth.getHolder(), feedback,
-                    new RecordingContextFactory(recording), enable_vis);
+                    fake_grabber ? new DummyContextFactory() : new RecordingContextFactory(recording), enable_vis);
         }
 
         @Override
@@ -561,10 +564,13 @@ public class MainActivity extends Activity {
             setRecordingState(false, false);
 
             textStatus.setText(R.string.status_previewing);
-            boolean enable_vis = PreferenceManager.getDefaultSharedPreferences(MainActivity.this)
-                    .getBoolean(PreferencesActivity.KEY_PREF_ENABLE_VISUALIZATION, true);
+
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+            boolean enable_vis = prefs.getBoolean(PreferencesActivity.KEY_PREF_ENABLE_VISUALIZATION, true);
+            boolean fake_grabber = prefs.getBoolean(PreferencesActivity.KEY_PREF_USE_DUMMY_GRABBER, false);
+
             manager = new CaptureThreadManager(surfaceColor.getHolder(), surfaceDepth.getHolder(), feedback,
-                    new LiveContextFactory(), enable_vis);
+                    fake_grabber ? new DummyContextFactory() : new LiveContextFactory(), enable_vis);
         }
 
         @Override
