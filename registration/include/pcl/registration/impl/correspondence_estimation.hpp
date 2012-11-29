@@ -162,12 +162,11 @@ pcl::registration::CorrespondenceEstimation<PointSource, PointTarget, Scalar>::d
   typedef typename pcl::intersect<FieldListSource, FieldListTarget>::type FieldList;
   
   // setup tree for reciprocal search
-  pcl::KdTreeFLANN<PointSource> tree_reciprocal;
   // Set the internal point representation of choice
   if (point_representation_)
-    tree_reciprocal.setPointRepresentation (point_representation_);
+    tree_reciprocal_->setPointRepresentation (point_representation_);
 
-  tree_reciprocal.setInputCloud (input_, indices_);
+  tree_reciprocal_->setInputCloud (input_, indices_);
 
   double max_dist_sqr = max_distance * max_distance;
 
@@ -193,7 +192,7 @@ pcl::registration::CorrespondenceEstimation<PointSource, PointTarget, Scalar>::d
 
       target_idx = index[0];
 
-      tree_reciprocal.nearestKSearch (target_->points[target_idx], 1, index_reciprocal, distance_reciprocal);
+      tree_reciprocal_->nearestKSearch (target_->points[target_idx], 1, index_reciprocal, distance_reciprocal);
       if (distance_reciprocal[0] > max_dist_sqr || *idx != index_reciprocal[0])
         continue;
 
@@ -227,7 +226,7 @@ pcl::registration::CorrespondenceEstimation<PointSource, PointTarget, Scalar>::d
             target_->points[target_idx],
             pt_tgt));
 
-      tree_reciprocal.nearestKSearch (pt_tgt, 1, index_reciprocal, distance_reciprocal);
+      tree_reciprocal_->nearestKSearch (pt_tgt, 1, index_reciprocal, distance_reciprocal);
       if (distance_reciprocal[0] > max_dist_sqr || *idx != index_reciprocal[0])
         continue;
 

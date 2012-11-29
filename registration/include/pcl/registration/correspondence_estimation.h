@@ -73,8 +73,11 @@ namespace pcl
         using PCLBase<PointSource>::indices_;
         using PCLBase<PointSource>::setIndices;
 
-        typedef typename pcl::KdTree<PointTarget> KdTree;
-        typedef typename pcl::KdTree<PointTarget>::Ptr KdTreePtr;
+        typedef pcl::KdTree<PointTarget> KdTree;
+        typedef typename KdTree::Ptr KdTreePtr;
+
+        typedef pcl::KdTree<PointSource> KdTreeReciprocal;
+        typedef typename KdTree::Ptr KdTreeReciprocalPtr;
 
         typedef pcl::PointCloud<PointSource> PointCloudSource;
         typedef typename PointCloudSource::Ptr PointCloudSourcePtr;
@@ -90,6 +93,7 @@ namespace pcl
         CorrespondenceEstimationBase () 
           : corr_name_ ("CorrespondenceEstimationBase")
           , tree_ (new pcl::KdTreeFLANN<PointTarget>)
+          , tree_reciprocal_ (new pcl::KdTreeFLANN<PointSource>)
           , target_ ()
           , target_indices_ ()
           , point_representation_ ()
@@ -108,8 +112,7 @@ namespace pcl
         setInputCloud (const PointCloudSourceConstPtr &cloud)
         {
           PCL_WARN ("[pcl::registration::%s::setInputCloud] setInputCloud is deprecated. Please use setInputSource instead.\n", getClassName ().c_str ());
-          PCLBase<PointSource>::setInputCloud (cloud);
-          pcl::getFields (*cloud, input_fields_);
+          setInputSource (cloud);
         }
 
         /** \brief Get a pointer to the input point cloud dataset target. */
@@ -117,7 +120,7 @@ namespace pcl
         getInputCloud () 
         { 
           PCL_WARN ("[pcl::registration::%s::getInputCloud] getInputCloud is deprecated. Please use getInputSource instead.\n", getClassName ().c_str ());
-          return (input_ ); 
+          return (getInputSource ()); 
         }
 
         /** \brief Provide a pointer to the input source 
@@ -178,6 +181,36 @@ namespace pcl
         inline IndicesPtr const 
         getIndicesTarget () { return (target_indices_); }
 
+        /** \brief Provide a pointer to the search object used to find correspondences in
+          * the target cloud.
+          * \param[in] tree a pointer to the spatial search object.
+          */
+        inline void
+        setSearchMethodTarget (const KdTreePtr &tree) { tree_ = tree; }
+
+        /** \brief Get a pointer to the search method used to find correspondences in the
+          * target cloud. */
+        inline KdTreePtr
+        getSearchMethodTarget () const
+        {
+          return (tree_);
+        }
+
+        /** \brief Provide a pointer to the search object used to find correspondences in
+          * the source cloud (usually used by reciprocal correspondence finding).
+          * \param[in] tree a pointer to the spatial search object.
+          */
+        inline void
+        setSearchMethodSource (const KdTreeReciprocalPtr &tree) { tree_ = tree; }
+
+        /** \brief Get a pointer to the search method used to find correspondences in the
+          * source cloud. */
+        inline KdTreeReciprocalPtr
+        getSearchMethodSource () const
+        {
+          return (tree_);
+        }
+
         /** \brief Determine the correspondences between input and target cloud.
           * \param[out] correspondences the found correspondences (index of query point, index of target point, distance)
           * \param[in] max_distance maximum allowed distance between correspondences
@@ -220,9 +253,12 @@ namespace pcl
         /** \brief The correspondence estimation method name. */
         std::string corr_name_;
 
-        /** \brief A pointer to the spatial search object. */
+        /** \brief A pointer to the spatial search object used for the target dataset. */
         KdTreePtr tree_;
 
+        /** \brief A pointer to the spatial search object used for the source dataset. */
+        KdTreeReciprocalPtr tree_reciprocal_;
+        
         /** \brief The input point cloud dataset target. */
         PointCloudTargetConstPtr target_;
 
@@ -283,6 +319,7 @@ namespace pcl
         using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::point_representation_;
         using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::input_transformed_;
         using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::tree_;
+        using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::tree_reciprocal_;
         using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::target_;
         using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::corr_name_;
         using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::target_indices_;
