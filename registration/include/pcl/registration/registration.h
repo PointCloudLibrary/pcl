@@ -73,8 +73,11 @@ namespace pcl
       typedef boost::shared_ptr< const Registration<PointSource, PointTarget, Scalar> > ConstPtr;
 
       typedef typename pcl::registration::CorrespondenceRejector::Ptr CorrespondenceRejectorPtr;
-      typedef typename pcl::search::KdTree<PointTarget> KdTree;
+      typedef pcl::search::KdTree<PointTarget> KdTree;
       typedef typename pcl::search::KdTree<PointTarget>::Ptr KdTreePtr;
+
+      typedef pcl::search::KdTree<PointSource> KdTreeReciprocal;
+      typedef typename KdTree::Ptr KdTreeReciprocalPtr;
      
       typedef pcl::PointCloud<PointSource> PointCloudSource;
       typedef typename PointCloudSource::Ptr PointCloudSourcePtr;
@@ -97,7 +100,8 @@ namespace pcl
       /** \brief Empty constructor. */
       Registration () 
         : reg_name_ ()
-        , tree_ (new pcl::search::KdTree<PointTarget>)
+        , tree_ (new KdTree)
+        , tree_reciprocal_ (new KdTreeReciprocal)
         , nr_iterations_ (0)
         , max_iterations_ (10)
         , ransac_iterations_ (0)
@@ -117,6 +121,10 @@ namespace pcl
         , correspondence_rejectors_ ()
         , update_visualizer_ (NULL)
         , point_representation_ ()
+        , target_cloud_updated_ (true)
+        , source_cloud_updated_ (true)
+        , force_no_recompute_ (false)
+        , force_no_recompute_reciprocal_ (false)
       {
       }
 
@@ -193,6 +201,7 @@ namespace pcl
       virtual void
       setInputSource (const PointCloudSourceConstPtr &cloud)
       {
+        source_cloud_updated_ = true;
         PCLBase<PointSource>::setInputCloud (cloud);
       }
 
@@ -204,11 +213,64 @@ namespace pcl
         * \param[in] cloud the input point cloud target
         */
       virtual inline void 
-      setInputTarget (const PointCloudTargetConstPtr &cloud);
+      setInputTarget (const PointCloudTargetConstPtr &cloud); //TODO make sure this works
 
       /** \brief Get a pointer to the input point cloud dataset target. */
       inline PointCloudTargetConstPtr const 
       getInputTarget () { return (target_ ); }
+
+
+      /** \brief Provide a pointer to the search object used to find correspondences in
+        * the target cloud.
+        * \param[in] tree a pointer to the spatial search object.
+        * \param[in] force_no_recompute If set to true, this tree will NEVER be 
+        * recomputed, regardless of calls to setInputTarget. Only use if you are 
+        * confident that the tree will be set correctly.
+        */
+      inline void
+      setSearchMethodTarget (const KdTreePtr &tree, 
+                             bool force_no_recompute = false) 
+      { 
+        tree_ = tree; 
+        if (force_no_recompute)
+        {
+          force_no_recompute_ = true;
+        }
+      }
+
+      /** \brief Get a pointer to the search method used to find correspondences in the
+        * target cloud. */
+      inline KdTreePtr
+      getSearchMethodTarget () const
+      {
+        return (tree_);
+      }
+
+      /** \brief Provide a pointer to the search object used to find correspondences in
+        * the source cloud (usually used by reciprocal correspondence finding).
+        * \param[in] tree a pointer to the spatial search object.
+        * \param[in] force_no_recompute If set to true, this tree will NEVER be 
+        * recomputed, regardless of calls to setInputSource. Only use if you are 
+        * extremely confident that the tree will be set correctly.
+        */
+      inline void
+      setSearchMethodSource (const KdTreeReciprocalPtr &tree, 
+                             bool force_no_recompute = false) 
+      { 
+        tree_reciprocal_ = tree; 
+        if ( force_no_recompute )
+        {
+          force_no_recompute_reciprocal_ = true;
+        }
+      }
+
+      /** \brief Get a pointer to the search method used to find correspondences in the
+        * source cloud. */
+      inline KdTreeReciprocalPtr
+      getSearchMethodSource () const
+      {
+        return (tree_reciprocal_);
+      }
 
       /** \brief Get the final transformation matrix estimated by the registration method. */
       inline Matrix4
@@ -360,6 +422,10 @@ namespace pcl
       /** \brief Abstract class get name method. */
       inline const std::string&
       getClassName () const { return (reg_name_); }
+        
+      /** \brief Internal computation initalization. */
+      bool
+      initCompute ();
 
       /** \brief Add a new correspondence rejector to the list
         * \param[in] rejector the new correspondence rejector to concatenate
@@ -415,6 +481,9 @@ namespace pcl
 
       /** \brief A pointer to the spatial search object. */
       KdTreePtr tree_;
+      
+      /** \brief A pointer to the spatial search object of the source. */
+      KdTreeReciprocalPtr tree_reciprocal_;
 
       /** \brief The number of iterations the internal optimization ran for (used internally). */
       int nr_iterations_;
@@ -480,6 +549,22 @@ namespace pcl
 
       /** \brief The list of correspondence rejectors to use. */
       std::vector<CorrespondenceRejectorPtr> correspondence_rejectors_;
+
+      /** \brief Variable that stores whether we have a new target cloud, meaning we need to pre-process it again.
+       * This way, we avoid rebuilding the kd-tree for the target cloud every time the determineCorrespondences () method
+       * is called. */
+      bool target_cloud_updated_;
+      /** \brief Variable that stores whether we have a new source cloud, meaning we need to pre-process it again.
+       * This way, we avoid rebuilding the reciprocal kd-tree for the source cloud every time the determineCorrespondences () method
+       * is called. */
+      bool source_cloud_updated_;
+      /** \brief A flag which, if set, means the tree operating on the target cloud 
+       * will never be recomputed*/
+      bool force_no_recompute_;
+      
+      /** \brief A flag which, if set, means the tree operating on the source cloud 
+       * will never be recomputed*/
+      bool force_no_recompute_reciprocal_;
 
       /** \brief Callback function to update intermediate source point cloud position during it's registration
         * to the target point cloud.

@@ -155,6 +155,21 @@ namespace pcl
           boost::static_pointer_cast<DataContainer<PointT> > (data_container_)->setInputTarget (target);
         }
 
+        /** \brief Provide a pointer to the search object used to find correspondences in
+          * the target cloud.
+          * \param[in] tree a pointer to the spatial search object.
+          * \param[in] force_no_recompute If set to true, this tree will NEVER be 
+          * recomputed, regardless of calls to setInputTarget. Only use if you are 
+          * confident that the tree will be set correctly.
+          */
+        template <typename PointT> inline void
+        setSearchMethodTarget (const boost::shared_ptr<pcl::search::KdTree<PointT> > &tree, 
+                               bool force_no_recompute = false) 
+        { 
+          boost::static_pointer_cast< DataContainer<PointT> > 
+            (data_container_)->setSearchMethodTarget (tree, force_no_recompute );
+        }
+
         /** \brief Get the target input point cloud */
         template <typename PointT> inline typename pcl::PointCloud<PointT>::ConstPtr
         getInputTarget () const 
