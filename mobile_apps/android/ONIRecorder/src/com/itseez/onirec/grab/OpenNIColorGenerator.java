@@ -4,7 +4,7 @@ import org.OpenNI.ImageGenerator;
 import org.OpenNI.ImageMetaData;
 
 public class OpenNIColorGenerator extends OpenNIGenerator implements ColorGenerator {
-    private ImageGenerator wrapped;
+    private final ImageGenerator wrapped;
 
     public OpenNIColorGenerator(ImageGenerator wrapped) {
         super(wrapped);

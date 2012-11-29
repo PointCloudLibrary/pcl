@@ -38,7 +38,7 @@ public class CaptureThreadManager {
     private final SurfaceHolder holderColor;
     private final SurfaceHolder holderDepth;
     private final Feedback feedback;
-    private boolean enableVisualization;
+    private final boolean enableVisualization;
 
     private com.itseez.onirec.grab.Context context;
     private ColorGenerator color;

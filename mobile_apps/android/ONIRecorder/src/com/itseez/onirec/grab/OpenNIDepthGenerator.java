@@ -3,7 +3,7 @@ package com.itseez.onirec.grab;
 import org.OpenNI.DepthMetaData;
 
 public class OpenNIDepthGenerator extends OpenNIGenerator implements DepthGenerator {
-    private org.OpenNI.DepthGenerator wrapped;
+    private final org.OpenNI.DepthGenerator wrapped;
 
     public OpenNIDepthGenerator(org.OpenNI.DepthGenerator wrapped) {
         super(wrapped);

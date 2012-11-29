@@ -114,11 +114,6 @@ public class MainActivity extends Activity {
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-    }
-
-    @Override
     protected void onStart() {
         super.onStart();
         state.start();
@@ -225,7 +220,7 @@ public class MainActivity extends Activity {
     }
 
     private class StateIdle extends State {
-        private String status;
+        private final String status;
 
         public StateIdle(int formatId, Object... args) {
             status = getResources().getString(formatId, args);
@@ -268,7 +263,7 @@ public class MainActivity extends Activity {
     }
 
     private class StateWaiting extends State {
-        private State stateOnSuccess;
+        private final State stateOnSuccess;
         PendingIntent permIntent;
         private final Set<UsbDevice> awaitingPermission;
 

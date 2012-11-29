@@ -4,10 +4,10 @@ import org.OpenNI.MapGenerator;
 import org.OpenNI.MapOutputMode;
 import org.OpenNI.StatusException;
 
-public class OpenNIGenerator implements Generator {
-    private MapGenerator wrapped;
+class OpenNIGenerator implements Generator {
+    private final MapGenerator wrapped;
 
-    public OpenNIGenerator(MapGenerator wrapped) {
+    OpenNIGenerator(MapGenerator wrapped) {
         this.wrapped = wrapped;
     }
 

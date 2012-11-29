@@ -5,7 +5,7 @@ import android.os.Bundle;
 import android.preference.PreferenceFragment;
 
 public class PreferencesActivity extends Activity {
-    public static String KEY_PREF_ENABLE_VISUALIZATION = "enable_visualization";
+    public static final String KEY_PREF_ENABLE_VISUALIZATION = "enable_visualization";
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
