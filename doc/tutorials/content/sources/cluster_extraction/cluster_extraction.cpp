@@ -65,7 +65,7 @@ main (int argc, char** argv)
     // Remove the planar inliers, extract the rest
     extract.setNegative (true);
     extract.filter (*cloud_f);
-    cloud_filtered = cloud_f;
+    *cloud_filtered = *cloud_f;
   }
 
   // Creating the KdTree object for the search method of the extraction
