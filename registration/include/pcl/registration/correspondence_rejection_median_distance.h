@@ -137,12 +137,6 @@ namespace pcl
         inline double
         getMedianFactor () const { return factor_; };
 
-        virtual bool
-        updateSource (const Eigen::Matrix4d &)
-        {
-          return (true);
-        }
-
       protected:
 
         /** \brief Apply the rejection algorithm.

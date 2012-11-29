@@ -42,7 +42,77 @@
 #include <pcl/correspondence.h>
 #include <pcl/registration/default_convergence_criteria.h>
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointSource, typename PointTarget, typename Scalar> void
+pcl::IterativeClosestPoint<PointSource, PointTarget, Scalar>::transformCloud (
+    const PointCloudSource &input, 
+    PointCloudSource &output, 
+    const Matrix4 &transform)
+{
+  Eigen::Vector4f pt (0.0f, 0.0f, 0.0f, 1.0f), pt_t;
+  Eigen::Matrix4f tr = transform.template cast<float> ();
+
+  // XYZ is ALWAYS present due to the templatization, so we only have to check for normals
+  if (source_has_normals_)
+  {
+    Eigen::Vector3f nt, nt_t;
+    Eigen::Matrix3f rot = tr.block<3, 3> (0, 0);
+
+    for (size_t i = 0; i < input.size (); ++i)
+    {
+      const uint8_t* data_in = reinterpret_cast<const uint8_t*> (&input[i]);
+      uint8_t* data_out = reinterpret_cast<uint8_t*> (&output[i]);
+      memcpy (&pt[0], data_in + x_idx_offset_, sizeof (float));
+      memcpy (&pt[1], data_in + y_idx_offset_, sizeof (float));
+      memcpy (&pt[2], data_in + z_idx_offset_, sizeof (float));
+
+      if (!pcl_isfinite (pt[0]) || !pcl_isfinite (pt[1]) || !pcl_isfinite (pt[2])) 
+        continue;
+
+      pt_t = tr * pt;
+
+      memcpy (data_out + x_idx_offset_, &pt_t[0], sizeof (float));
+      memcpy (data_out + y_idx_offset_, &pt_t[1], sizeof (float));
+      memcpy (data_out + z_idx_offset_, &pt_t[2], sizeof (float));
+
+      memcpy (&nt[0], data_in + nx_idx_offset_, sizeof (float));
+      memcpy (&nt[1], data_in + ny_idx_offset_, sizeof (float));
+      memcpy (&nt[2], data_in + nz_idx_offset_, sizeof (float));
+
+      if (!pcl_isfinite (nt[0]) || !pcl_isfinite (nt[1]) || !pcl_isfinite (nt[2])) 
+        continue;
+
+      nt_t = rot * nt;
+
+      memcpy (data_out + nx_idx_offset_, &nt_t[0], sizeof (float));
+      memcpy (data_out + ny_idx_offset_, &nt_t[1], sizeof (float));
+      memcpy (data_out + nz_idx_offset_, &nt_t[2], sizeof (float));
+    }
+  }
+  else
+  {
+    for (size_t i = 0; i < input.size (); ++i)
+    {
+      const uint8_t* data_in = reinterpret_cast<const uint8_t*> (&input[i]);
+      uint8_t* data_out = reinterpret_cast<uint8_t*> (&output[i]);
+      memcpy (&pt[0], data_in + x_idx_offset_, sizeof (float));
+      memcpy (&pt[1], data_in + y_idx_offset_, sizeof (float));
+      memcpy (&pt[2], data_in + z_idx_offset_, sizeof (float));
+
+      if (!pcl_isfinite (pt[0]) || !pcl_isfinite (pt[1]) || !pcl_isfinite (pt[2])) 
+        continue;
+
+      pt_t = tr * pt;
+
+      memcpy (data_out + x_idx_offset_, &pt_t[0], sizeof (float));
+      memcpy (data_out + y_idx_offset_, &pt_t[1], sizeof (float));
+      memcpy (data_out + z_idx_offset_, &pt_t[2], sizeof (float));
+    }
+  }
+  
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget, typename Scalar> void
 pcl::IterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransformation (
     PointCloudSource &output, const Matrix4 &guess)
@@ -82,7 +152,6 @@ pcl::IterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransformat
     previous_transformation_ = transformation_;
 
     // Estimate correspondences
-    correspondence_estimation_->updateSource (transformation_);
     correspondence_estimation_->determineCorrespondences (*correspondences_, corr_dist_threshold_);
 
     //if (correspondence_rejectors_.empty ())
@@ -91,7 +160,6 @@ pcl::IterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransformat
     {
       PCL_DEBUG ("Applying a correspondence rejector method: %s.\n", correspondence_rejectors_[i]->getClassName ().c_str ());
       correspondence_rejectors_[i]->setInputCorrespondences (temp_correspondences);
-      correspondence_rejectors_[i]->updateSource (transformation_.template cast<double> ());
       correspondence_rejectors_[i]->getCorrespondences (*correspondences_);
       // Modify input for the next iteration
       if (i < correspondence_rejectors_.size () - 1)
@@ -106,19 +174,11 @@ pcl::IterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransformat
       break;
     }
 
-    //PCL_DEBUG ("[pcl::%s::computeTransformation] Number of correspondences %d [%f%%] out of %zu points [100.0%%], RANSAC rejected: %zu [%f%%].\n", 
-    //    getClassName ().c_str (), 
-    //    cnt, 
-    //    (static_cast<float> (cnt) * 100.0f) / static_cast<float> (indices_->size ()), 
-    //    indices_->size (), 
-    //    indices_->size () - cnt, 
-    //    static_cast<float> (indices_->size () - cnt) * 100.0f / static_cast<float> (indices_->size ()));
-  
     // Estimate the transform
     transformation_estimation_->estimateRigidTransformation (*input_transformed, *target_, *correspondences_, transformation_);
 
     // Tranform the data
-    transformPointCloud (*input_transformed, *input_transformed, transformation_);
+    transformCloud (*input_transformed, *input_transformed, transformation_);
 
     // Obtain the final transformation    
     final_transformation_ = transformation_ * final_transformation_;
@@ -139,6 +199,21 @@ pcl::IterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransformat
       final_transformation_ (1, 0), final_transformation_ (1, 1), final_transformation_ (1, 2), final_transformation_ (1, 3),
       final_transformation_ (2, 0), final_transformation_ (2, 1), final_transformation_ (2, 2), final_transformation_ (2, 3),
       final_transformation_ (3, 0), final_transformation_ (3, 1), final_transformation_ (3, 2), final_transformation_ (3, 3));
+
+  // Copy all the values
+  output = *input_;
+  // Transform the XYZ + normals
   transformPointCloud (*input_, output, final_transformation_);
 }
+
+///////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointSource, typename PointTarget, typename Scalar> void
+pcl::IterativeClosestPointWithNormals<PointSource, PointTarget, Scalar>::transformCloud (
+    const PointCloudSource &input, 
+    PointCloudSource &output, 
+    const Matrix4 &transform)
+{
+  pcl::transformPointCloudWithNormals (input, output, transform);
+}
+
 

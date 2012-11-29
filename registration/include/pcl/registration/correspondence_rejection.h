@@ -134,13 +134,6 @@ namespace pcl
         inline const std::string& 
         getClassName () const { return (rejection_name_); }
 
-        /** \brief Provide a simple mechanism to update the internal source cloud
-          * using a given transformation. Used in registration loops.
-          * \param[in] transform the transform to apply over the source cloud
-          */
-        virtual bool
-        updateSource (const Eigen::Matrix4d &transform) = 0;
-
       protected:
 
         /** \brief The name of the rejection method. */
@@ -164,7 +157,6 @@ namespace pcl
         virtual ~DataContainerInterface () {}
         virtual double getCorrespondenceScore (int index) = 0;
         virtual double getCorrespondenceScore (const pcl::Correspondence &) = 0;
-        virtual bool updateSource (const Eigen::Matrix4d &transform) = 0;
      };
 
     /** @b DataContainer is a container for the input and target point clouds and implements the interface 
@@ -310,47 +302,7 @@ namespace pcl
           return (double ((src.normal[0] * tgt.normal[0]) + (src.normal[1] * tgt.normal[1]) + (src.normal[2] * tgt.normal[2])));
         }
 
-        /** \brief Provide a simple mechanism to update the internal source cloud
-          * using a given transformation. Used in registration loops.
-          * \param[in] transform the transform to apply over the source cloud
-          */
-        virtual bool
-        updateSource (const Eigen::Matrix4d &transform)
-        {
-          if (!input_)
-          {
-            PCL_ERROR ("[pcl::registration::%s::updateSource] No input XYZ dataset given. Please specify the input source cloud using setInputSource.\n", getClassName ().c_str ());
-            return (false);
-          }
-          if (needs_normals_ && !input_normals_)
-          {
-            PCL_ERROR ("[pcl::registration::%s::updateSource] No input normals dataset given. Please specify the input normal cloud using setInputNormals.\n", getClassName ().c_str ());
-            return (false);
-          }
-          input_transformed_.reset (new PointCloud);
-          pcl::transformPointCloud<PointT, double> (*input_, *input_transformed_, transform);
-          input_ = input_transformed_;
-          
-          if (!needs_normals_)
-            return (true);
-
-          input_normals_transformed_.reset (new Normals);
-          rotatePointCloudNormals (*input_normals_, *input_normals_transformed_, transform);
-          input_normals_ = input_normals_transformed_;
-          return (true);
-        }
-
-      private:
-        /** \brief Rotate the normals in a point cloud.
-          * \param[in] cloud_in the input point cloud
-          * \param[out] cloud_out the resultant output cloud containing rotated normals
-          * \param[in] transform the 4x4 rigid transformation holding the rotation
-          */
-        void
-        rotatePointCloudNormals (const pcl::PointCloud<NormalT> &cloud_in, 
-                                 pcl::PointCloud<NormalT> &cloud_out,
-                                 const Eigen::Matrix4d &transform);
-
+     private:
         /** \brief The input point cloud dataset */
         PointCloudConstPtr input_;
 

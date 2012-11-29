@@ -79,12 +79,6 @@ namespace pcl
         getRemainingCorrespondences (const pcl::Correspondences& original_correspondences, 
                                      pcl::Correspondences& remaining_correspondences);
 
-        virtual bool
-        updateSource (const Eigen::Matrix4d &)
-        {
-          return (true);
-        }
-
       protected:
         /** \brief Apply the rejection algorithm.
           * \param[out] correspondences the set of resultant correspondences.

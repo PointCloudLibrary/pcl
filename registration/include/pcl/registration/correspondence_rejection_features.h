@@ -135,12 +135,6 @@ namespace pcl
         setFeatureRepresentation (const typename pcl::PointRepresentation<FeatureT>::ConstPtr &fr,
                                   const std::string &key);
 
-        virtual bool
-        updateSource (const Eigen::Matrix4d &)
-        {
-          return (true);
-        }
-
       protected:
 
         /** \brief Apply the rejection algorithm.

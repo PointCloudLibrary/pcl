@@ -158,22 +158,6 @@ namespace pcl
         inline double
         getMaxRatio () const { return max_ratio_; }
 
-        /** \brief Provide a simple mechanism to update the internal source cloud
-          * using a given transformation. Used in registration loops.
-          * \param[in] transform the transform to apply over the source cloud
-          */
-        virtual bool
-        updateSource (const Eigen::Matrix4d &transform)
-        {
-          if (!data_container_)
-          {
-            PCL_ERROR ("[pcl::registration::%s::updateSource] Data container is not initialized! Please initialize the data container using setInputSource or setInputTarget.\n", getClassName ().c_str ());
-            return (false);
-          }
-
-          return (data_container_->updateSource (transform));
-        }
-
       protected:
 
         /** \brief Apply the rejection algorithm.

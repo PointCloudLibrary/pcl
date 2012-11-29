@@ -189,7 +189,7 @@ namespace pcl
         *
         * \param[in] cloud the input point cloud source
         */
-      inline void
+      virtual void
       setInputSource (const PointCloudSourceConstPtr &cloud)
       {
         PCLBase<PointSource>::setInputCloud (cloud);
@@ -387,6 +387,25 @@ namespace pcl
       getCorrespondenceRejectors ()
       {
         return (correspondence_rejectors_);
+      }
+
+      /** \brief Remove the i-th correspondence rejector in the list
+        * \param[in] i the position of the correspondence rejector in the list to remove
+        */
+      inline bool
+      removeCorrespondenceRejector (unsigned int i)
+      {
+        if (i >= correspondence_rejectors_.size ())
+          return (false);
+        correspondence_rejectors_.erase (correspondence_rejectors_.begin () + i);
+        return (true);
+      }
+
+      /** \brief Clear the list of correspondence rejectors. */
+      inline void
+      clearCorrespondenceRejectors ()
+      {
+        correspondence_rejectors_.clear ();
       }
 
     protected:

@@ -165,33 +165,6 @@ namespace pcl
         inline void
         getKSearch () const { return (k_); }
 
-        /** \brief Provide a simple mechanism to update the internal source cloud
-          * using a given transformation. Used in registration loops.
-          * \param[in] transform the transform to apply over the source cloud
-          */
-        virtual bool
-        updateSource (const Eigen::Matrix<Scalar, 4, 4> &transform)
-        {
-          if (!input_)
-          {
-            PCL_ERROR ("[pcl::registration::%s::updateSource] No input XYZ dataset given. Please specify the input source cloud using setInputSource.\n", getClassName ().c_str ());
-            return (false);
-          }
-          if (!source_normals_)
-          {
-            PCL_ERROR ("[pcl::registration::%s::updateSource] No input normals dataset given. Please specify the input normal cloud using setSourceNormals.\n");
-            return (false);
-          }
-          input_transformed_.reset (new PointCloudSource);
-          pcl::transformPointCloud<PointSource, Scalar> (*input_, *input_transformed_, transform);
-          input_ = input_transformed_;
-          
-          source_normals_transformed_.reset (new PointCloudNormals);
-          rotatePointCloudNormals (*source_normals_, *source_normals_transformed_, transform);
-          source_normals_ = source_normals_transformed_;
-          return (true);
-        }
-
       protected:
 
         using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::corr_name_;

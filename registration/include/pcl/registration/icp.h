@@ -46,6 +46,7 @@
 #include <pcl/sample_consensus/sac_model_registration.h>
 #include <pcl/registration/registration.h>
 #include <pcl/registration/transformation_estimation_svd.h>
+#include <pcl/registration/transformation_estimation_point_to_plane_lls.h>
 #include <pcl/registration/correspondence_estimation.h>
 
 namespace pcl
@@ -100,12 +101,9 @@ namespace pcl
     typedef PointIndices::Ptr PointIndicesPtr;
     typedef PointIndices::ConstPtr PointIndicesConstPtr;
 
-
-
     public:
-
-      typedef boost::shared_ptr< IterativeClosestPoint<PointSource, PointTarget, Scalar> > Ptr;
-      typedef boost::shared_ptr< const IterativeClosestPoint<PointSource, PointTarget, Scalar> > ConstPtr;
+      typedef boost::shared_ptr<IterativeClosestPoint<PointSource, PointTarget, Scalar> > Ptr;
+      typedef boost::shared_ptr<const IterativeClosestPoint<PointSource, PointTarget, Scalar> > ConstPtr;
 
       using Registration<PointSource, PointTarget, Scalar>::reg_name_;
       using Registration<PointSource, PointTarget, Scalar>::getClassName;
@@ -114,7 +112,6 @@ namespace pcl
       using Registration<PointSource, PointTarget, Scalar>::target_;
       using Registration<PointSource, PointTarget, Scalar>::nr_iterations_;
       using Registration<PointSource, PointTarget, Scalar>::max_iterations_;
-      using Registration<PointSource, PointTarget, Scalar>::ransac_iterations_;
       using Registration<PointSource, PointTarget, Scalar>::previous_transformation_;
       using Registration<PointSource, PointTarget, Scalar>::final_transformation_;
       using Registration<PointSource, PointTarget, Scalar>::transformation_;
@@ -134,20 +131,127 @@ namespace pcl
 
       /** \brief Empty constructor. */
       IterativeClosestPoint () 
+        : x_idx_offset_ (0)
+        , y_idx_offset_ (0)
+        , z_idx_offset_ (0)
+        , nx_idx_offset_ (0)
+        , ny_idx_offset_ (0)
+        , nz_idx_offset_ (0)
+        , source_has_normals_ (false)
       {
         reg_name_ = "IterativeClosestPoint";
-        ransac_iterations_ = 1000;
         transformation_estimation_.reset (new pcl::registration::TransformationEstimationSVD<PointSource, PointTarget, Scalar> ());
         correspondence_estimation_.reset (new pcl::registration::CorrespondenceEstimation<PointSource, PointTarget, Scalar>);
       };
 
+      /** \brief Provide a pointer to the input source 
+        * (e.g., the point cloud that we want to align to the target)
+        *
+        * \param[in] cloud the input point cloud source
+        */
+      virtual void
+      setInputSource (const PointCloudSourceConstPtr &cloud)
+      {
+        Registration<PointSource, PointTarget, Scalar>::setInputCloud (cloud);
+        std::vector<sensor_msgs::PointField> fields;
+        pcl::getFields (*cloud, fields);
+        for (size_t i = 0; i < fields.size (); ++i)
+        {
+          source_has_normals_ = false;
+          if      (fields[i].name == "x") x_idx_offset_ = fields[i].offset;
+          else if (fields[i].name == "y") y_idx_offset_ = fields[i].offset;
+          else if (fields[i].name == "z") z_idx_offset_ = fields[i].offset;
+          else if (fields[i].name == "normal_x") 
+          {
+            source_has_normals_ = true;
+            nx_idx_offset_ = fields[i].offset;
+          }
+          else if (fields[i].name == "normal_y") 
+          {
+            source_has_normals_ = true;
+            ny_idx_offset_ = fields[i].offset;
+          }
+          else if (fields[i].name == "normal_z") 
+          {
+            source_has_normals_ = true;
+            nz_idx_offset_ = fields[i].offset;
+          }
+        }
+      }
+
     protected:
+
+      /** \brief Apply a rigid transform to a given dataset. Here we check whether whether
+        * the dataset has surface normals in addition to XYZ, and rotate normals as well.
+        * \param[in] input the input point cloud
+        * \param[out] output the resultant output point cloud
+        * \param[in] transform a 4x4 rigid transformation
+        * \note Can be used with cloud_in equal to cloud_out
+        */
+      virtual void 
+      transformCloud (const PointCloudSource &input, 
+                      PointCloudSource &output, 
+                      const Matrix4 &transform);
+
       /** \brief Rigid transformation computation method  with initial guess.
         * \param output the transformed input point cloud dataset using the rigid transformation found
         * \param guess the initial guess of the transformation to compute
         */
       virtual void 
       computeTransformation (PointCloudSource &output, const Matrix4 &guess);
+
+      /** \brief XYZ fields offset. */
+      size_t x_idx_offset_, y_idx_offset_, z_idx_offset_;
+
+      /** \brief Normal fields offset. */
+      size_t nx_idx_offset_, ny_idx_offset_, nz_idx_offset_;
+
+      /** \brief Internal check whether dataset has normals or not. */
+      bool source_has_normals_;
+  };
+
+  /** \brief @b IterativeClosestPointWithNormals is a special case of
+    * IterativeClosestPoint, that uses a transformation estimated based on
+    * Point to Plane distances by default.
+    *
+    * \author Radu B. Rusu
+    * \ingroup registration
+    */
+  template <typename PointSource, typename PointTarget, typename Scalar = float>
+  class IterativeClosestPointWithNormals : public IterativeClosestPoint<PointSource, PointTarget, Scalar>
+  {
+    public:
+      typedef typename IterativeClosestPoint<PointSource, PointTarget, Scalar>::PointCloudSource PointCloudSource;
+      typedef typename IterativeClosestPoint<PointSource, PointTarget, Scalar>::PointCloudTarget PointCloudTarget;
+      typedef typename IterativeClosestPoint<PointSource, PointTarget, Scalar>::Matrix4 Matrix4;
+
+      using IterativeClosestPoint<PointSource, PointTarget, Scalar>::reg_name_;
+      using IterativeClosestPoint<PointSource, PointTarget, Scalar>::transformation_estimation_;
+      using IterativeClosestPoint<PointSource, PointTarget, Scalar>::correspondence_rejectors_;
+
+      typedef boost::shared_ptr<IterativeClosestPoint<PointSource, PointTarget, Scalar> > Ptr;
+      typedef boost::shared_ptr<const IterativeClosestPoint<PointSource, PointTarget, Scalar> > ConstPtr;
+
+      /** \brief Empty constructor. */
+      IterativeClosestPointWithNormals () 
+      {
+        reg_name_ = "IterativeClosestPointWithNormals";
+        transformation_estimation_.reset (new pcl::registration::TransformationEstimationPointToPlaneLLS<PointSource, PointTarget, Scalar> ());
+        //correspondence_rejectors_.add
+      };
+
+    protected:
+
+      /** \brief Apply a rigid transform to a given dataset
+        * \param[in] input the input point cloud
+        * \param[out] output the resultant output point cloud
+        * \param[in] transform a 4x4 rigid transformation
+        * \note Can be used with cloud_in equal to cloud_out
+        */
+      virtual void 
+      transformCloud (const PointCloudSource &input, 
+                      PointCloudSource &output, 
+                      const Matrix4 &transform);
   };
 }
 
