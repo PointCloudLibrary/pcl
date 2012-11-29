@@ -178,7 +178,7 @@ int main ()
   mesh.addFace (vi[0], vi[3], vi[4]);
   mesh.addFace (vi[0], vi[4], vi[5]);
   mesh.addFace (vi[0], vi[5], vi[6]);
-  mesh.addFace (0, 6, 1); // Converted to VertexIndex
+  mesh.addFace (vi[0], vi[6], vi[1]);
 
   printVertexes (mesh);
   printFaces (mesh);
@@ -220,7 +220,7 @@ int main ()
   std::cout << std::endl << "Deleting face 1 and 4 ...\n";
   std::cout << "(If the mesh is set to manifold further faces are removed automatically)\n\n";
   mesh.deleteFace (FaceIndex (1));
-  mesh.deleteFace (4); // Converted to FaceIndex
+  mesh.deleteFace (FaceIndex (4));
 
   mesh.cleanUp (false); // Delete (true) or don't delete (false) isolated vertexes
   vi.clear (); // The vertex indexes are no longer synchronized with the mesh!
