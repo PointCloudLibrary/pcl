@@ -126,24 +126,23 @@ pcl::ihs::Integration::reconstructMesh (const CloudProcessedConstPtr& cloud_data
     std::cerr << "ERROR in integration.cpp: Cloud is not organized\n";
     return (false);
   }
-  const uint32_t width  = cloud_data->width;
-  const uint32_t height = cloud_data->height;
-  const size_t   size   = cloud_data->size ();
+  const int width  = static_cast <int> (cloud_data->width);
+  const int height = static_cast <int> (cloud_data->height);
 
   mesh_model->clear ();
-  mesh_model->reserveVertexes (size);
+  mesh_model->reserveVertexes (cloud_data->size ());
   mesh_model->reserveFaces (2 * (width-1) * (height-1));
 
   // Store which vertex is set at which position (initialized with invalid indexes)
-  VertexIndexes vertex_indexes (size, VertexIndex ());
+  VertexIndexes vertex_indexes (cloud_data->size (), VertexIndex ());
 
   // Convert to the model cloud type. This is actually not needed but avoids code duplication (see merge). And reconstructMesh is called only the first reconstruction step anyway.
   // NOTE: The default constructor of PointModel has to initialize with NaNs!
   CloudModelPtr cloud_model (new CloudModel ());
-  cloud_model->resize (size);
+  cloud_model->resize (cloud_data->size ());
 
   // Set the model points not reached by the main loop
-  for (uint32_t c=0; c<width; ++c)
+  for (int c=0; c<width; ++c)
   {
     const PointProcessed& pt_d = cloud_data->operator [] (c);
     const float weight = -pt_d.normal_z; // weight = -dot (normal, [0; 0; 1])
@@ -153,9 +152,9 @@ pcl::ihs::Integration::reconstructMesh (const CloudProcessedConstPtr& cloud_data
       cloud_model->operator [] (c) = PointModel (pt_d, weight);
     }
   }
-  for (uint32_t r=1; r<height; ++r)
+  for (int r=1; r<height; ++r)
   {
-    for (uint32_t c=0; c<2; ++c)
+    for (int c=0; c<2; ++c)
     {
       const PointProcessed& pt_d = cloud_data->operator [] (r*width + c);
       const float weight = -pt_d.normal_z; // weight = -dot (normal, [0; 0; 1])
@@ -174,46 +173,51 @@ pcl::ihs::Integration::reconstructMesh (const CloudProcessedConstPtr& cloud_data
   // 4 - 2   1  //
   //   \   \    //
   // *   3 - 0  //
-  CloudProcessed::const_iterator it_d_0 = cloud_data->begin ()  + width + 2;
-  CloudModel::iterator           it_m_0 = cloud_model->begin () + width + 2;
-  CloudModel::const_iterator     it_m_1 = cloud_model->begin ()         + 2;
-  CloudModel::const_iterator     it_m_2 = cloud_model->begin ()         + 1;
-  CloudModel::const_iterator     it_m_3 = cloud_model->begin () + width + 1;
-  CloudModel::const_iterator     it_m_4 = cloud_model->begin ()            ;
+  static const int offset_1 = -width;
+  static const int offset_2 = -width - 1;
+  static const int offset_3 =        - 1;
+  static const int offset_4 = -width - 2;
 
-  VertexIndexes::iterator it_vi_0 = vertex_indexes.begin () + width + 2;
-  VertexIndexes::iterator it_vi_1 = vertex_indexes.begin ()         + 2;
-  VertexIndexes::iterator it_vi_2 = vertex_indexes.begin ()         + 1;
-  VertexIndexes::iterator it_vi_3 = vertex_indexes.begin () + width + 1;
-  VertexIndexes::iterator it_vi_4 = vertex_indexes.begin ()            ;
-
-  for (uint32_t r=1; r<height; ++r)
+  for (int r=1; r<height; ++r)
   {
-    for (uint32_t c=2; c<width; ++c)
+    for (int c=2; c<width; ++c)
     {
-      const float weight = -it_d_0->normal_z; // weight = -dot (normal, [0; 0; 1])
+      const int ind_0 = r*width + c;
+      const int ind_1 = ind_0 + offset_1;
+      const int ind_2 = ind_0 + offset_2;
+      const int ind_3 = ind_0 + offset_3;
+      const int ind_4 = ind_0 + offset_4;
 
-      if (pcl::isFinite(*it_d_0) && weight >= weight_min_)
+      assert (ind_0 >= 0 && ind_0 < static_cast <int> (cloud_data->size ()));
+      assert (ind_1 >= 0 && ind_1 < static_cast <int> (cloud_data->size ()));
+      assert (ind_2 >= 0 && ind_2 < static_cast <int> (cloud_data->size ()));
+      assert (ind_3 >= 0 && ind_3 < static_cast <int> (cloud_data->size ()));
+      assert (ind_4 >= 0 && ind_4 < static_cast <int> (cloud_data->size ()));
+
+      const PointProcessed& pt_d_0 = cloud_data->operator  [] (ind_0);
+      PointModel&           pt_m_0 = cloud_model->operator [] (ind_0);
+      const PointModel&     pt_m_1 = cloud_model->operator [] (ind_1);
+      const PointModel&     pt_m_2 = cloud_model->operator [] (ind_2);
+      const PointModel&     pt_m_3 = cloud_model->operator [] (ind_3);
+      const PointModel&     pt_m_4 = cloud_model->operator [] (ind_4);
+
+      VertexIndex& vi_0 = vertex_indexes [ind_0];
+      VertexIndex& vi_1 = vertex_indexes [ind_1];
+      VertexIndex& vi_2 = vertex_indexes [ind_2];
+      VertexIndex& vi_3 = vertex_indexes [ind_3];
+      VertexIndex& vi_4 = vertex_indexes [ind_4];
+
+      const float weight = -pt_d_0.normal_z; // weight = -dot (normal, [0; 0; 1])
+
+      if (pcl::isFinite (pt_d_0) && weight >= weight_min_)
       {
-        *it_m_0 = PointModel (*it_d_0, weight);
+        pt_m_0 = PointModel (pt_d_0, weight);
       }
 
-      this->addToMesh (it_m_0,  it_m_1,  it_m_2,  it_m_3,
-                       it_vi_0, it_vi_1, it_vi_2, it_vi_3,
-                       mesh_model);
-      this->addToMesh (it_m_0,  it_m_2,  it_m_4,  it_m_3,
-                       it_vi_0, it_vi_2, it_vi_4, it_vi_3,
-                       mesh_model);
-
-      ++it_d_0;
-      ++it_m_0;  ++it_m_1;  ++it_m_2;  ++it_m_3;  ++it_m_4;
-      ++it_vi_0; ++it_vi_1; ++it_vi_2; ++it_vi_3; ++it_vi_4;
-    } // for (uint32_t c=2; c<width; ++c)
-
-    it_d_0  += 2;
-    it_m_0  += 2; it_m_1  += 2; it_m_2  += 2; it_m_3  += 2, it_m_4  += 2;
-    it_vi_0 += 2; it_vi_1 += 2; it_vi_2 += 2; it_vi_3 += 2, it_vi_4 += 2;
-  } // for (uint32_t r=1; r<height; ++r)
+      this->addToMesh (pt_m_0,pt_m_1,pt_m_2,pt_m_3, vi_0,vi_1,vi_2,vi_3, mesh_model);
+      this->addToMesh (pt_m_0,pt_m_2,pt_m_4,pt_m_3, vi_0,vi_2,vi_4,vi_3, mesh_model);
+    }
+  }
 
   return (true);
 }
@@ -230,9 +234,8 @@ pcl::ihs::Integration::merge (const CloudProcessedConstPtr& cloud_data,
     std::cerr << "ERROR in integration.cpp: Data cloud is not organized\n";
     return (false);
   }
-  const uint32_t width  = cloud_data->width;
-  const uint32_t height = cloud_data->height;
-  const size_t   size   = cloud_data->size ();
+  const int width  = static_cast <int> (cloud_data->width);
+  const int height = static_cast <int> (cloud_data->height);
 
   if (!mesh_model->sizeVertexes ())
   {
@@ -257,16 +260,16 @@ pcl::ihs::Integration::merge (const CloudProcessedConstPtr& cloud_data,
 
   // Data cloud in model coordinates (this does not change the connectivity information) and weights
   CloudModelPtr cloud_data_transformed (new CloudModel ());
-  cloud_data_transformed->resize (size);
+  cloud_data_transformed->resize (cloud_data->size ());
 
   // Sensor position in model coordinates
   const Eigen::Vector4f& sensor_eye = T * Eigen::Vector4f (0.f, 0.f, 0.f, 1.f);
 
   // Store which vertex is set at which position (initialized with invalid indexes)
-  VertexIndexes vertex_indexes (size, VertexIndex ());
+  VertexIndexes vertex_indexes (cloud_data->size (), VertexIndex ());
 
   // Set the transformed points not reached by the main loop
-  for (uint32_t c=0; c<width; ++c)
+  for (int c=0; c<width; ++c)
   {
     const PointProcessed& pt_d = cloud_data->operator [] (c);
     const float weight = -pt_d.normal_z; // weight = -dot (normal, [0; 0; 1])
@@ -279,9 +282,9 @@ pcl::ihs::Integration::merge (const CloudProcessedConstPtr& cloud_data,
       pt_d_t.getNormalVector4fMap () = T * pt_d_t.getNormalVector4fMap ();
     }
   }
-  for (uint32_t r=1; r<height; ++r)
+  for (int r=1; r<height; ++r)
   {
-    for (uint32_t c=0; c<2; ++c)
+    for (int c=0; c<2; ++c)
     {
       const PointProcessed& pt_d = cloud_data->operator [] (r*width + c);
       const float weight = -pt_d.normal_z; // weight = -dot (normal, [0; 0; 1])
@@ -303,32 +306,49 @@ pcl::ihs::Integration::merge (const CloudProcessedConstPtr& cloud_data,
   // 4 - 2   1  //
   //   \   \    //
   // *   3 - 0  //
-  CloudProcessed::const_iterator it_d_0   = cloud_data->begin ()             + width + 2;
-  CloudModel::iterator           it_d_t_0 = cloud_data_transformed->begin () + width + 2;
-  CloudModel::const_iterator     it_d_t_1 = cloud_data_transformed->begin ()         + 2;
-  CloudModel::const_iterator     it_d_t_2 = cloud_data_transformed->begin ()         + 1;
-  CloudModel::const_iterator     it_d_t_3 = cloud_data_transformed->begin () + width + 1;
-  CloudModel::const_iterator     it_d_t_4 = cloud_data_transformed->begin ()            ;
+  static const int offset_1 = -width;
+  static const int offset_2 = -width - 1;
+  static const int offset_3 =        - 1;
+  static const int offset_4 = -width - 2;
 
-  VertexIndexes::iterator it_vi_0 = vertex_indexes.begin () + width + 2;
-  VertexIndexes::iterator it_vi_1 = vertex_indexes.begin ()         + 2;
-  VertexIndexes::iterator it_vi_2 = vertex_indexes.begin ()         + 1;
-  VertexIndexes::iterator it_vi_3 = vertex_indexes.begin () + width + 1;
-  VertexIndexes::iterator it_vi_4 = vertex_indexes.begin ()            ;
-
-  for (uint32_t r=1; r<height; ++r)
+  for (int r=1; r<height; ++r)
   {
-    for (uint32_t c=2; c<width; ++c)
+    for (int c=2; c<width; ++c)
     {
-      const float weight = -it_d_0->normal_z; // weight = -dot (normal, [0; 0; 1])
+      const int ind_0 = r*width + c;
+      const int ind_1 = ind_0 + offset_1;
+      const int ind_2 = ind_0 + offset_2;
+      const int ind_3 = ind_0 + offset_3;
+      const int ind_4 = ind_0 + offset_4;
 
-      if (pcl::isFinite (*it_d_0) && weight >= weight_min_)
+      assert (ind_0 >= 0 && ind_0 < static_cast <int> (cloud_data->size ()));
+      assert (ind_1 >= 0 && ind_1 < static_cast <int> (cloud_data->size ()));
+      assert (ind_2 >= 0 && ind_2 < static_cast <int> (cloud_data->size ()));
+      assert (ind_3 >= 0 && ind_3 < static_cast <int> (cloud_data->size ()));
+      assert (ind_4 >= 0 && ind_4 < static_cast <int> (cloud_data->size ()));
+
+      const PointProcessed& pt_d_0   = cloud_data->operator             [] (ind_0);
+      PointModel&           pt_d_t_0 = cloud_data_transformed->operator [] (ind_0);
+      const PointModel&     pt_d_t_1 = cloud_data_transformed->operator [] (ind_1);
+      const PointModel&     pt_d_t_2 = cloud_data_transformed->operator [] (ind_2);
+      const PointModel&     pt_d_t_3 = cloud_data_transformed->operator [] (ind_3);
+      const PointModel&     pt_d_t_4 = cloud_data_transformed->operator [] (ind_4);
+
+      VertexIndex& vi_0 = vertex_indexes [ind_0];
+      VertexIndex& vi_1 = vertex_indexes [ind_1];
+      VertexIndex& vi_2 = vertex_indexes [ind_2];
+      VertexIndex& vi_3 = vertex_indexes [ind_3];
+      VertexIndex& vi_4 = vertex_indexes [ind_4];
+
+      const float weight = -pt_d_0.normal_z; // weight = -dot (normal, [0; 0; 1])
+
+      if (pcl::isFinite (pt_d_0) && weight >= weight_min_)
       {
-        *it_d_t_0 = PointModel (*it_d_0, weight);
-        it_d_t_0->getVector4fMap ()       = T * it_d_t_0->getVector4fMap ();
-        it_d_t_0->getNormalVector4fMap () = T * it_d_t_0->getNormalVector4fMap ();
+        pt_d_t_0 = PointModel (pt_d_0, weight);
+        pt_d_t_0.getVector4fMap ()       = T * pt_d_t_0.getVector4fMap ();
+        pt_d_t_0.getNormalVector4fMap () = T * pt_d_t_0.getNormalVector4fMap ();
 
-        pcl::PointXYZ tmp; tmp.getVector4fMap () = it_d_t_0->getVector4fMap ();
+        pcl::PointXYZ tmp; tmp.getVector4fMap () = pt_d_t_0.getVector4fMap ();
 
         // NN search
         if (!kd_tree_->nearestKSearch (tmp, 1, index, squared_distance))
@@ -342,24 +362,24 @@ pcl::ihs::Integration::merge (const CloudProcessedConstPtr& cloud_data,
         {
           Vertex& v_m = mesh_model->getElement (VertexIndex (index[0])); // Non-const reference!
 
-          if (v_m.getNormalVector4fMap ().dot (it_d_t_0->getNormalVector4fMap ()) >= dot_normal_min_)
+          if (v_m.getNormalVector4fMap ().dot (pt_d_t_0.getNormalVector4fMap ()) >= dot_normal_min_)
           {
-            *it_vi_0 = VertexIndex (index[0]);
+            vi_0 = VertexIndex (index[0]);
 
             const float W   = v_m.weight;         // Old accumulated weight
-            const float w   = it_d_t_0->weight;   // Weight of new point
+            const float w   = pt_d_t_0.weight;    // Weight of new point
             const float WW  = v_m.weight = W + w; // New accumulated weight
 
             const float r_m = static_cast <float> (v_m.r);
             const float g_m = static_cast <float> (v_m.g);
             const float b_m = static_cast <float> (v_m.b);
 
-            const float r_d = static_cast <float> (it_d_t_0->r);
-            const float g_d = static_cast <float> (it_d_t_0->g);
-            const float b_d = static_cast <float> (it_d_t_0->b);
+            const float r_d = static_cast <float> (pt_d_t_0.r);
+            const float g_d = static_cast <float> (pt_d_t_0.g);
+            const float b_d = static_cast <float> (pt_d_t_0.b);
 
-            v_m.getVector4fMap ()       = ( W*v_m.getVector4fMap ()       + w*it_d_t_0->getVector4fMap ())       / WW;
-            v_m.getNormalVector4fMap () = ((W*v_m.getNormalVector4fMap () + w*it_d_t_0->getNormalVector4fMap ()) / WW).normalized ();
+            v_m.getVector4fMap ()       = ( W*v_m.getVector4fMap ()       + w*pt_d_t_0.getVector4fMap ())       / WW;
+            v_m.getNormalVector4fMap () = ((W*v_m.getNormalVector4fMap () + w*pt_d_t_0.getNormalVector4fMap ()) / WW).normalized ();
             v_m.r                       = this->trimRGB ((W*r_m + w*r_d) / WW);
             v_m.g                       = this->trimRGB ((W*g_m + w*g_d) / WW);
             v_m.b                       = this->trimRGB ((W*b_m + w*b_d) / WW);
@@ -382,22 +402,10 @@ pcl::ihs::Integration::merge (const CloudProcessedConstPtr& cloud_data,
       // 4 - 2   1  //
       //   \   \    //
       // *   3 - 0  //
-      this->addToMesh (it_d_t_0, it_d_t_1, it_d_t_2, it_d_t_3,
-                       it_vi_0,  it_vi_1,  it_vi_2,  it_vi_3,
-                       mesh_model);
-      this->addToMesh (it_d_t_0, it_d_t_2, it_d_t_4, it_d_t_3,
-                       it_vi_0,  it_vi_2,  it_vi_4,  it_vi_3,
-                       mesh_model);
-
-      ++it_d_0;
-      ++it_d_t_0; ++it_d_t_1; ++it_d_t_2; ++it_d_t_3; ++it_d_t_4;
-      ++it_vi_0;  ++it_vi_1;  ++it_vi_2;  ++it_vi_3;  ++it_vi_4;
-    } // for (uint32_t c=2; c<width; ++c)
-
-    it_d_0   += 2;
-    it_d_t_0 += 2; it_d_t_1 += 2; it_d_t_2 += 2; it_d_t_3 += 2, it_d_t_4 += 2;
-    it_vi_0  += 2; it_vi_1  += 2; it_vi_2  += 2; it_vi_3  += 2, it_vi_4  += 2;
-  } // for (uint32_t r=1; r<height; ++r)
+      this->addToMesh (pt_d_t_0,pt_d_t_1,pt_d_t_2,pt_d_t_3, vi_0,vi_1,vi_2,vi_3, mesh_model);
+      this->addToMesh (pt_d_t_0,pt_d_t_2,pt_d_t_4,pt_d_t_3, vi_0,vi_2,vi_4,vi_3, mesh_model);
+    }
+  }
 
   return (true);
 }
@@ -552,36 +560,36 @@ pcl::ihs::Integration::trimRGB (const float val) const
 ////////////////////////////////////////////////////////////////////////////////
 
 void
-pcl::ihs::Integration::addToMesh (const CloudModel::const_iterator& it_pt_0,
-                                  const CloudModel::const_iterator& it_pt_1,
-                                  const CloudModel::const_iterator& it_pt_2,
-                                  const CloudModel::const_iterator& it_pt_3,
-                                  const VertexIndexes::iterator&    it_vi_0,
-                                  const VertexIndexes::iterator&    it_vi_1,
-                                  const VertexIndexes::iterator&    it_vi_2,
-                                  const VertexIndexes::iterator&    it_vi_3,
-                                  const MeshPtr&                    mesh) const
+pcl::ihs::Integration::addToMesh (const PointModel& pt_0,
+                                  const PointModel& pt_1,
+                                  const PointModel& pt_2,
+                                  const PointModel& pt_3,
+                                  VertexIndex&      vi_0,
+                                  VertexIndex&      vi_1,
+                                  VertexIndex&      vi_2,
+                                  VertexIndex&      vi_3,
+                                  const MeshPtr&    mesh) const
 {
   // Treated bitwise
   // 2 - 1
   // |   |
   // 3 - 0
-  const unsigned char is_finite = static_cast <unsigned char> ((1 * pcl::isFinite (*it_pt_0)) | (2 * pcl::isFinite (*it_pt_1)) | (4 * pcl::isFinite (*it_pt_2)) | (8 * pcl::isFinite (*it_pt_3)));
+  const unsigned char is_finite = static_cast <unsigned char> ((1 * pcl::isFinite (pt_0)) | (2 * pcl::isFinite (pt_1)) | (4 * pcl::isFinite (pt_2)) | (8 * pcl::isFinite (pt_3)));
 
   switch (is_finite)
   {
-    case  7: this->addToMesh (it_pt_0, it_pt_1, it_pt_2, it_vi_0, it_vi_1, it_vi_2, mesh); break; // 0-1-2
-    case 11: this->addToMesh (it_pt_0, it_pt_1, it_pt_3, it_vi_0, it_vi_1, it_vi_3, mesh); break; // 0-1-3
-    case 13: this->addToMesh (it_pt_0, it_pt_2, it_pt_3, it_vi_0, it_vi_2, it_vi_3, mesh); break; // 0-2-3
-    case 14: this->addToMesh (it_pt_1, it_pt_2, it_pt_3, it_vi_1, it_vi_2, it_vi_3, mesh); break; // 1-2-3
+    case  7: this->addToMesh (pt_0, pt_1, pt_2, vi_0, vi_1, vi_2, mesh); break; // 0-1-2
+    case 11: this->addToMesh (pt_0, pt_1, pt_3, vi_0, vi_1, vi_3, mesh); break; // 0-1-3
+    case 13: this->addToMesh (pt_0, pt_2, pt_3, vi_0, vi_2, vi_3, mesh); break; // 0-2-3
+    case 14: this->addToMesh (pt_1, pt_2, pt_3, vi_1, vi_2, vi_3, mesh); break; // 1-2-3
     case 15: // 0-1-2-3
     {
-      if (!distanceThreshold (*it_pt_0, *it_pt_1, *it_pt_2, *it_pt_3)) break;
-      if (!it_vi_0->isValid ()) *it_vi_0 = mesh->addVertex (*it_pt_0);
-      if (!it_vi_1->isValid ()) *it_vi_1 = mesh->addVertex (*it_pt_1);
-      if (!it_vi_2->isValid ()) *it_vi_2 = mesh->addVertex (*it_pt_2);
-      if (!it_vi_3->isValid ()) *it_vi_3 = mesh->addVertex (*it_pt_3);
-      mesh->addFace (*it_vi_0, *it_vi_1, *it_vi_2, *it_vi_3);
+      if (!distanceThreshold (pt_0, pt_1, pt_2, pt_3)) break;
+      if (!vi_0.isValid ()) vi_0 = mesh->addVertex (pt_0);
+      if (!vi_1.isValid ()) vi_1 = mesh->addVertex (pt_1);
+      if (!vi_2.isValid ()) vi_2 = mesh->addVertex (pt_2);
+      if (!vi_3.isValid ()) vi_3 = mesh->addVertex (pt_3);
+      mesh->addFace (vi_0, vi_1, vi_2, vi_3);
       break;
     }
   }
@@ -590,21 +598,21 @@ pcl::ihs::Integration::addToMesh (const CloudModel::const_iterator& it_pt_0,
 ////////////////////////////////////////////////////////////////////////////////
 
 void
-pcl::ihs::Integration::addToMesh (const CloudModel::const_iterator& it_pt_0,
-                                  const CloudModel::const_iterator& it_pt_1,
-                                  const CloudModel::const_iterator& it_pt_2,
-                                  const VertexIndexes::iterator&    it_vi_0,
-                                  const VertexIndexes::iterator&    it_vi_1,
-                                  const VertexIndexes::iterator&    it_vi_2,
-                                  const MeshPtr&                    mesh) const
+pcl::ihs::Integration::addToMesh (const PointModel& pt_0,
+                                  const PointModel& pt_1,
+                                  const PointModel& pt_2,
+                                  VertexIndex&      vi_0,
+                                  VertexIndex&      vi_1,
+                                  VertexIndex&      vi_2,
+                                  const MeshPtr&    mesh) const
 {
-  if (!distanceThreshold (*it_pt_0, *it_pt_1, *it_pt_2)) return;
+  if (!distanceThreshold (pt_0, pt_1, pt_2)) return;
 
-  if (!it_vi_0->isValid ()) *it_vi_0 = mesh->addVertex (*it_pt_0);
-  if (!it_vi_1->isValid ()) *it_vi_1 = mesh->addVertex (*it_pt_1);
-  if (!it_vi_2->isValid ()) *it_vi_2 = mesh->addVertex (*it_pt_2);
+  if (!vi_0.isValid ()) vi_0 = mesh->addVertex (pt_0);
+  if (!vi_1.isValid ()) vi_1 = mesh->addVertex (pt_1);
+  if (!vi_2.isValid ()) vi_2 = mesh->addVertex (pt_2);
 
-  mesh->addFace (*it_vi_0, *it_vi_1, *it_vi_2);
+  mesh->addFace (vi_0, vi_1, vi_2);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

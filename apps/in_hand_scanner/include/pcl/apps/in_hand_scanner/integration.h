@@ -163,24 +163,24 @@ namespace pcl
         // | / |
         // 3 - 0
         void
-        addToMesh (const CloudModel::const_iterator& it_pt_0,
-                   const CloudModel::const_iterator& it_pt_1,
-                   const CloudModel::const_iterator& it_pt_2,
-                   const CloudModel::const_iterator& it_pt_3,
-                   const VertexIndexes::iterator&    it_vi_0,
-                   const VertexIndexes::iterator&    it_vi_1,
-                   const VertexIndexes::iterator&    it_vi_2,
-                   const VertexIndexes::iterator&    it_vi_3,
-                   const MeshPtr&                    mesh) const;
+        addToMesh (const PointModel& pt_0,
+                   const PointModel& pt_1,
+                   const PointModel& pt_2,
+                   const PointModel& pt_3,
+                   VertexIndex&      vi_0,
+                   VertexIndex&      vi_1,
+                   VertexIndex&      vi_2,
+                   VertexIndex&      vi_3,
+                   const MeshPtr&    mesh) const;
 
         void
-        addToMesh (const CloudModel::const_iterator& it_pt_0,
-                   const CloudModel::const_iterator& it_pt_1,
-                   const CloudModel::const_iterator& it_pt_2,
-                   const VertexIndexes::iterator&    it_vi_0,
-                   const VertexIndexes::iterator&    it_vi_1,
-                   const VertexIndexes::iterator&    it_vi_2,
-                   const MeshPtr&                    mesh) const;
+        addToMesh (const PointModel& pt_0,
+                   const PointModel& pt_1,
+                   const PointModel& pt_2,
+                   VertexIndex&      vi_0,
+                   VertexIndex&      vi_1,
+                   VertexIndex&      vi_2,
+                   const MeshPtr&    mesh) const;
 
         bool
         distanceThreshold (const PointModel& pt_0,
