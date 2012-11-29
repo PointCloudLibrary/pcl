@@ -14,6 +14,7 @@ public class PreferencesActivity extends Activity {
                 .commit();
     }
 
+    @SuppressWarnings("WeakerAccess") // this has to be public, otherwise it breaks in subtle ways
     public static class Fragment extends PreferenceFragment {
         @Override
         public void onCreate(Bundle savedInstanceState) {

@@ -11,6 +11,8 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.*;
 import android.widget.*;
+import com.itseez.onirec.grab.LiveContextFactory;
+import com.itseez.onirec.grab.RecordingContextFactory;
 import org.OpenNI.MapOutputMode;
 import org.libusb.UsbHelper;
 
@@ -402,7 +404,7 @@ public class MainActivity extends Activity {
             boolean enable_vis = PreferenceManager.getDefaultSharedPreferences(MainActivity.this)
                     .getBoolean(PreferencesActivity.KEY_PREF_ENABLE_VISUALIZATION, true);
             manager = new CaptureThreadManager(surfaceColor.getHolder(), surfaceDepth.getHolder(), feedback,
-                    new RecordingContextHolderFactory(recording), enable_vis);
+                    new RecordingContextFactory(recording), enable_vis);
         }
 
         @Override
@@ -567,7 +569,7 @@ public class MainActivity extends Activity {
             boolean enable_vis = PreferenceManager.getDefaultSharedPreferences(MainActivity.this)
                     .getBoolean(PreferencesActivity.KEY_PREF_ENABLE_VISUALIZATION, true);
             manager = new CaptureThreadManager(surfaceColor.getHolder(), surfaceDepth.getHolder(), feedback,
-                    new LiveContextHolderFactory(), enable_vis);
+                    new LiveContextFactory(), enable_vis);
         }
 
         @Override

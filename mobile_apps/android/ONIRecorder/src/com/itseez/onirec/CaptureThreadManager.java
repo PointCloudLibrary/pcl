@@ -4,14 +4,20 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.os.*;
+import android.os.Handler;
+import android.os.HandlerThread;
+import android.os.Looper;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.SurfaceHolder;
+import com.itseez.onirec.grab.ColorGenerator;
+import com.itseez.onirec.grab.ContextFactory;
+import com.itseez.onirec.grab.DepthGenerator;
 import org.OpenNI.*;
 
 import java.io.File;
 
-class CaptureThreadManager {
+public class CaptureThreadManager {
     public interface Feedback {
         public enum Error {FailedToStartCapture, FailedDuringCapture, FailedToStartRecording}
 
@@ -25,20 +31,6 @@ class CaptureThreadManager {
                                   MapOutputMode[] depthModes, MapOutputMode currentDepthMode);
     }
 
-    public interface ContextHolder {
-        Context getContext();
-
-        ImageGenerator createImageGenerator() throws GeneralException;
-
-        DepthGenerator createDepthGenerator() throws GeneralException;
-
-        void dispose();
-    }
-
-    public interface ContextHolderFactory {
-        ContextHolder createHolder() throws GeneralException;
-    }
-
     private static final String TAG = "onirec.CaptureThreadManager";
     private final HandlerThread thread;
     private final Handler handler;
@@ -48,10 +40,9 @@ class CaptureThreadManager {
     private final Feedback feedback;
     private boolean enableVisualization;
 
-    private ContextHolder contextHolder;
-    private ImageGenerator color;
+    private com.itseez.onirec.grab.Context context;
+    private ColorGenerator color;
     private DepthGenerator depth;
-    private Recorder recorder;
 
     private Bitmap colorBitmap;
     private Bitmap depthBitmap;
@@ -96,7 +87,7 @@ class CaptureThreadManager {
                             @Override
                             public void run() throws Timer.ReturnException {
                                 try {
-                                    contextHolder.getContext().waitAndUpdateAll();
+                                    context.waitAndUpdateAll();
                                 } catch (final StatusException se) {
                                     final String message = "Failed to acquire a frame.";
                                     Log.e(TAG, message, se);
@@ -203,7 +194,7 @@ class CaptureThreadManager {
     };
 
     public CaptureThreadManager(SurfaceHolder holderColor, SurfaceHolder holderDepth, Feedback feedback,
-                                final ContextHolderFactory contextHolderFactory, boolean enableVisualization) {
+                                final ContextFactory contextFactory, boolean enableVisualization) {
         this.holderColor = holderColor;
         this.holderDepth = holderDepth;
         this.feedback = feedback;
@@ -217,7 +208,7 @@ class CaptureThreadManager {
         handler.post(new Runnable() {
             @Override
             public void run() {
-                initOpenNI(contextHolderFactory);
+                initOpenNI(contextFactory);
             }
         });
     }
@@ -245,12 +236,8 @@ class CaptureThreadManager {
             @Override
             public void run() {
                 try {
-                    recorder = Recorder.create(contextHolder.getContext(), "oni");
-                    recorder.setDestination(RecordMedium.FILE, file.getAbsolutePath());
-                    if (color != null) recorder.addNodeToRecording(color);
-                    recorder.addNodeToRecording(depth);
+                    context.startRecording(file);
                 } catch (final GeneralException ge) {
-                    if (recorder != null) recorder.dispose();
                     final String message = "Failed to start recording.";
                     Log.e(TAG, message, ge);
                     reportError(Feedback.Error.FailedToStartRecording, ge.getMessage());
@@ -263,16 +250,13 @@ class CaptureThreadManager {
         handler.post(new Runnable() {
             @Override
             public void run() {
-                if (recorder != null) {
-                    recorder.dispose();
-                    recorder = null;
-                    uiHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            feedback.reportRecordingFinished();
-                        }
-                    });
-                }
+                context.stopRecording();
+                uiHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        feedback.reportRecordingFinished();
+                    }
+                });
             }
         });
     }
@@ -285,7 +269,7 @@ class CaptureThreadManager {
 
                 try {
                     if (depth != null || color != null) {
-                        contextHolder.getContext().stopGeneratingAll();
+                        context.stopAll();
                         handler.removeCallbacks(processFrame);
                     }
 
@@ -293,14 +277,14 @@ class CaptureThreadManager {
                         color.dispose();
                         color = null;
                     } else if (color == null) {
-                        color = contextHolder.createImageGenerator();
-                        color.setMapOutputMode(mode);
+                        color = context.createColorGenerator();
+                        color.setMode(mode);
                     } else {
-                        color.setMapOutputMode(mode);
+                        color.setMode(mode);
                     }
 
                     if (depth != null || color != null) {
-                        contextHolder.getContext().startGeneratingAll();
+                        context.startAll();
                         handler.post(processFrame);
                     }
                 } catch (GeneralException ge) {
@@ -319,7 +303,7 @@ class CaptureThreadManager {
 
                 try {
                     if (depth != null || color != null) {
-                        contextHolder.getContext().stopGeneratingAll();
+                        context.stopAll();
                         handler.removeCallbacks(processFrame);
                     }
 
@@ -327,14 +311,14 @@ class CaptureThreadManager {
                         depth.dispose();
                         depth = null;
                     } else if (depth == null) {
-                        depth = contextHolder.createDepthGenerator();
-                        depth.setMapOutputMode(mode);
+                        depth = context.createDepthGenerator();
+                        depth.setMode(mode);
                     } else {
-                        depth.setMapOutputMode(mode);
+                        depth.setMode(mode);
                     }
 
                     if (depth != null || color != null) {
-                        contextHolder.getContext().startGeneratingAll();
+                        context.startAll();
                         handler.post(processFrame);
                     }
                 } catch (GeneralException ge) {
@@ -346,10 +330,10 @@ class CaptureThreadManager {
     }
 
     private void reportCaptureStart() throws StatusException {
-        final MapOutputMode[] color_modes = color == null ? null : color.getSupportedMapOutputModes();
-        final MapOutputMode color_current_mode = color == null ? null : color.getMapOutputMode();
-        final MapOutputMode[] depth_modes = depth == null ? null : depth.getSupportedMapOutputModes();
-        final MapOutputMode depth_current_mode = depth == null ? null : depth.getMapOutputMode();
+        final MapOutputMode[] color_modes = color == null ? null : color.getSupportedModes();
+        final MapOutputMode color_current_mode = color == null ? null : color.getMode();
+        final MapOutputMode[] depth_modes = depth == null ? null : depth.getSupportedModes();
+        final MapOutputMode depth_current_mode = depth == null ? null : depth.getMode();
 
         uiHandler.post(new Runnable() {
             @Override
@@ -359,24 +343,24 @@ class CaptureThreadManager {
         });
     }
 
-    private void initOpenNI(ContextHolderFactory factory) {
+    private void initOpenNI(ContextFactory factory) {
         try {
-            contextHolder = factory.createHolder();
+            context = factory.createHolder();
 
             try {
-                color = contextHolder.createImageGenerator();
+                color = context.createColorGenerator();
             } catch (StatusException ste) {
                 // There is no color output. Or there's an error, but we can't distinguish between the two cases.
             }
 
             try {
-                depth = contextHolder.createDepthGenerator();
+                depth = context.createDepthGenerator();
             } catch (StatusException ste) {
                 // If there's no depth or color, let's bail.
                 if (color == null) throw ste;
             }
 
-            contextHolder.getContext().startGeneratingAll();
+            context.startAll();
             reportCaptureStart();
         } catch (final GeneralException ge) {
             final String message = "Failed to initialize OpenNI.";
@@ -389,17 +373,16 @@ class CaptureThreadManager {
     }
 
     private void terminateOpenNI() {
-        if (contextHolder != null)
+        if (context != null)
             try {
-                contextHolder.getContext().stopGeneratingAll();
+                context.stopAll();
             } catch (StatusException e) {
                 Log.e(TAG, "OpenNI context failed to stop generating.", e);
             }
 
-        if (recorder != null) recorder.dispose();
         if (depth != null) depth.dispose();
         if (color != null) color.dispose();
-        if (contextHolder != null) contextHolder.dispose();
+        if (context != null) context.dispose();
     }
 
     public boolean hasError() {
