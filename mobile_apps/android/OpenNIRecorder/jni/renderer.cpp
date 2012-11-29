@@ -1165,8 +1165,6 @@ void Renderer::showBar(float x, float y){
 	glDisable(GL_DEPTH_TEST);
 }
 void Renderer::render(float x, float y, float w, float h){
-	//trackFinger = 1;
-	//isTouched = 1;
     //glViewport(x, y, w, h);
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 //    //glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -1188,7 +1186,7 @@ void Renderer::render(float x, float y, float w, float h){
     	scale=0.5;
     if(trackFinger){
     	fingerTracker->runTracking(depth_short_info, rgb_info, -200, 400);
-    	fingerTracker->getPosition(&my_x, &my_y);
+    	fingerTracker->getPositionXY(&my_x, &my_y);
     	//fingerTracker->blobTracking(depth_short_info);
     	//float isGrasp=fingerTracker->isGrasp();
     	RGBToRGBD(rgb_info, depth_info);

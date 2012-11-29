@@ -36,6 +36,7 @@ int main_found;
     ~FingerTracker();
     int isGrasp(); //return 1 if we detected two hands
     void getPosition(int *x, int  *y, int *z); //return the distance between two hands
+    void getPositionXY(float *x, float *y);
     void runTracking(unsigned short *raw_depth, unsigned char *rgba_buffer, int min_range, int max_range);
     void getBoundingBox(int *box);
     void blobTracking(unsigned short *raw_depth);

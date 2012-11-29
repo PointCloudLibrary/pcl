@@ -94,6 +94,11 @@ void FingerTracker::getPosition(int  *x, int  *y, int *z){
 	*z = z_track_his[0];
 }
 
+void FingerTracker::getPositionXY(float *x, float *y){
+	*x = this->x;
+	*y = this->y;
+}
+
 //generate a mask that shows the slope of the frames
 //by performing linear regression on the position time (buf frames)
 
@@ -835,7 +840,6 @@ void FingerTracker::blobTracking(unsigned short *raw_depth){
 	if(!hasSeeds){
 		hasSeeds = getSeeds(); //this will initialize all history to the seed
                 if (hasSeeds)
-                HandFound();
                 main_found=1;	
        }else{
 
@@ -891,8 +895,7 @@ void FingerTracker::blobTracking(unsigned short *raw_depth){
 			printf("Tracking Failed... Resetting\n");
 			hasSeeds = 0;
 			fail = 0;
-                        main_fail=1;
-                        HandLost();
+            main_fail=1;
 		}
 		//TODO:
 	}
