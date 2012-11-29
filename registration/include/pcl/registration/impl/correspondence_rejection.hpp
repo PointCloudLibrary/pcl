@@ -38,36 +38,5 @@
 #ifndef PCL_REGISTRATION_CORRESPONDENCE_REJECTION_IMPL_HPP_
 #define PCL_REGISTRATION_CORRESPONDENCE_REJECTION_IMPL_HPP_
 
-#include <pcl/registration/correspondence_rejection.h>
-
-///////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT, typename NormalT> void
-pcl::registration::DataContainer<PointT, NormalT>::rotatePointCloudNormals (
-    const pcl::PointCloud<NormalT> &cloud_in,
-    pcl::PointCloud<NormalT> &cloud_out,
-    const Eigen::Matrix4d &transform)
-{
-  if (&cloud_in != &cloud_out)
-  {
-    // Note: could be replaced by cloud_out = cloud_in
-    cloud_out.header   = cloud_in.header;
-    cloud_out.width    = cloud_in.width;
-    cloud_out.height   = cloud_in.height;
-    cloud_out.is_dense = cloud_in.is_dense;
-    cloud_out.points.reserve (cloud_out.points.size ());
-    cloud_out.points.assign (cloud_in.points.begin (), cloud_in.points.end ());
-  }
-
-  // If the data is dense, we don't need to check for NaN
-  for (size_t i = 0; i < cloud_out.points.size (); ++i)
-  {
-    // Rotate normals (WARNING: transform.rotation () uses SVD internally!)
-    Eigen::Vector3d nt (cloud_in[i].normal_x, cloud_in[i].normal_y, cloud_in[i].normal_z);
-    cloud_out[i].normal_x = static_cast<float> (transform (0, 0) * nt.coeffRef (0) + transform (0, 1) * nt.coeffRef (1) + transform (0, 2) * nt.coeffRef (2));
-    cloud_out[i].normal_y = static_cast<float> (transform (1, 0) * nt.coeffRef (0) + transform (1, 1) * nt.coeffRef (1) + transform (1, 2) * nt.coeffRef (2));
-    cloud_out[i].normal_z = static_cast<float> (transform (2, 0) * nt.coeffRef (0) + transform (2, 1) * nt.coeffRef (1) + transform (2, 2) * nt.coeffRef (2));
-  }
-}
-
 #endif    // PCL_REGISTRATION_CORRESPONDENCE_REJECTION_IMPL_HPP_
 

@@ -165,16 +165,7 @@ namespace pcl
         bool
         initCompute ();
 
-        /** \brief Rotate the normals in a point cloud.
-          * \param[in] cloud_in the input point cloud
-          * \param[out] cloud_out the resultant output cloud containing rotated normals
-          * \param[in] transform the 4x4 rigid transformation holding the rotation
-          */
-        void
-        rotatePointCloudNormals (const pcl::PointCloud<NormalT> &cloud_in, 
-                                 pcl::PointCloud<NormalT> &cloud_out,
-                                 const Eigen::Matrix<Scalar, 4, 4> &transform);
-        private:
+      private:
 
         /** \brief The normals computed at each point in the source cloud */
         NormalsConstPtr source_normals_; 
