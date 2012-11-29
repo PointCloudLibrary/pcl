@@ -13,7 +13,7 @@
     <string name="status_permission_denied">USB permission denied.</string>
     <string name="status_openni_error">Error: %1$s; OpenNI says: \"%2$s\".</string>
     <string name="status_replaying">Replaying %1$s…</string>
-    <string name="x_fps">%1$.2f FPS</string>
+    <string name="x_fps" translatable="false">%1$.2f FPS</string>
     <string name="error_failed_to_start_capture">failed to start capture</string>
     <string name="error_failed_during_capture">capture has terminated abnormally</string>
     <string name="error_failed_to_start_recording">failed to start recording</string>
@@ -27,7 +27,7 @@
     <string name="menu_item_preferences">Preferences</string>
     <string name="title_select_recording">Select recording</string>
     <string name="mode_disabled">Disabled</string>
-    <string name="mode_format">%1$dx%2$d @ %3$d FPS</string>
+    <string name="mode_format" translatable="false">%1$dx%2$d @ %3$d FPS</string>
     <string name="pref_cat_debug">Debug options</string>
     <string name="pref_enable_visualization">Enable visualization</string>
     <string name="pref_use_dummy_grabber">Use dummy grabber</string>
