@@ -42,6 +42,7 @@
 #include <pcl/search/search.h>
 #include <pcl/kdtree/kdtree.h>
 #include <pcl/kdtree/kdtree_flann.h>
+#include <pcl/point_representation.h>
 
 namespace pcl
 {
@@ -78,6 +79,7 @@ namespace pcl
 
         typedef boost::shared_ptr<pcl::KdTreeFLANN<PointT> > KdTreeFLANNPtr;
         typedef boost::shared_ptr<const pcl::KdTreeFLANN<PointT> > KdTreeFLANNConstPtr;
+        typedef typename pcl::KdTreeFLANN<PointT>::PointRepresentationConstPtr PointRepresentationConstPtr;
 
         /** \brief Constructor for KdTree. 
           *
@@ -96,6 +98,22 @@ namespace pcl
         virtual
         ~KdTree ()
         {
+        }
+
+        /** \brief Provide a pointer to the point representation to use to convert points into k-D vectors. 
+          * \param[in] point_representation the const boost shared pointer to a PointRepresentation
+          */
+        inline void
+        setPointRepresentation (const PointRepresentationConstPtr &point_representation)
+        {
+          tree_->setPointRepresentation (point_representation);
+        }
+
+        /** \brief Get a pointer to the point representation used when converting points into k-D vectors. */
+        inline PointRepresentationConstPtr
+        getPointRepresentation () const
+        {
+          return (tree_->getPointRepresentation ());
         }
 
         /** \brief Sets whether the results have to be sorted or not.
