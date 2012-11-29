@@ -45,8 +45,7 @@
 
 #include <pcl/pcl_base.h>
 #include <pcl/common/transforms.h>
-#include <pcl/kdtree/kdtree.h>
-#include <pcl/kdtree/kdtree_flann.h>
+#include <pcl/search/kdtree.h>
 #include <pcl/pcl_macros.h>
 
 #include <pcl/registration/correspondence_types.h>
@@ -73,10 +72,10 @@ namespace pcl
         using PCLBase<PointSource>::indices_;
         using PCLBase<PointSource>::setIndices;
 
-        typedef pcl::KdTree<PointTarget> KdTree;
+        typedef pcl::search::KdTree<PointTarget> KdTree;
         typedef typename KdTree::Ptr KdTreePtr;
 
-        typedef pcl::KdTree<PointSource> KdTreeReciprocal;
+        typedef pcl::search::KdTree<PointSource> KdTreeReciprocal;
         typedef typename KdTree::Ptr KdTreeReciprocalPtr;
 
         typedef pcl::PointCloud<PointSource> PointCloudSource;
@@ -92,14 +91,17 @@ namespace pcl
         /** \brief Empty constructor. */
         CorrespondenceEstimationBase () 
           : corr_name_ ("CorrespondenceEstimationBase")
-          , tree_ (new pcl::KdTreeFLANN<PointTarget>)
-          , tree_reciprocal_ (new pcl::KdTreeFLANN<PointSource>)
+          , tree_ (new pcl::search::KdTree<PointTarget>)
+          , tree_reciprocal_ (new pcl::search::KdTree<PointSource>)
           , target_ ()
           , target_indices_ ()
           , point_representation_ ()
           , input_transformed_ ()
           , input_fields_ ()
           , target_cloud_updated_ (true)
+          , source_cloud_updated_ (true)
+          , force_no_recompute_ (false)
+          , force_no_recompute_reciprocal_ (false)
         {
         }
 
@@ -131,6 +133,7 @@ namespace pcl
         inline void 
         setInputSource (const PointCloudSourceConstPtr &cloud)
         {
+          source_cloud_updated_ = true;
           PCLBase<PointSource>::setInputCloud (cloud);
           pcl::getFields (*cloud, input_fields_);
         }
@@ -184,9 +187,20 @@ namespace pcl
         /** \brief Provide a pointer to the search object used to find correspondences in
           * the target cloud.
           * \param[in] tree a pointer to the spatial search object.
+          * \param[in] force_no_recompute If set to true, this tree will NEVER be 
+          * recomputed, regardless of calls to setInputTarget. Only use if you are 
+          * confident that the tree will be set correctly.
           */
         inline void
-        setSearchMethodTarget (const KdTreePtr &tree) { tree_ = tree; }
+        setSearchMethodTarget (const KdTreePtr &tree, 
+                               bool force_no_recompute = false) 
+        { 
+          tree_ = tree; 
+          if (force_no_recompute)
+          {
+            force_no_recompute_ = true;
+          }
+        }
 
         /** \brief Get a pointer to the search method used to find correspondences in the
           * target cloud. */
@@ -199,16 +213,27 @@ namespace pcl
         /** \brief Provide a pointer to the search object used to find correspondences in
           * the source cloud (usually used by reciprocal correspondence finding).
           * \param[in] tree a pointer to the spatial search object.
+          * \param[in] force_no_recompute If set to true, this tree will NEVER be 
+          * recomputed, regardless of calls to setInputSource. Only use if you are 
+          * extremely confident that the tree will be set correctly.
           */
         inline void
-        setSearchMethodSource (const KdTreeReciprocalPtr &tree) { tree_ = tree; }
+        setSearchMethodSource (const KdTreeReciprocalPtr &tree, 
+                               bool force_no_recompute = false) 
+        { 
+          tree_reciprocal_ = tree; 
+          if ( force_no_recompute )
+          {
+            force_no_recompute_reciprocal_ = true;
+          }
+        }
 
         /** \brief Get a pointer to the search method used to find correspondences in the
           * source cloud. */
         inline KdTreeReciprocalPtr
         getSearchMethodSource () const
         {
-          return (tree_);
+          return (tree_reciprocal_);
         }
 
         /** \brief Determine the correspondences between input and target cloud.
@@ -251,6 +276,8 @@ namespace pcl
 
         /** \brief A pointer to the spatial search object used for the source dataset. */
         KdTreeReciprocalPtr tree_reciprocal_;
+
+
         
         /** \brief The input point cloud dataset target. */
         PointCloudTargetConstPtr target_;
@@ -274,11 +301,27 @@ namespace pcl
         /** \brief Internal computation initalization. */
         bool
         initCompute ();
+        
+        /** \brief Internal computation initalization for reciprocal correspondences. */
+        bool
+        initComputeReciprocal ();
 
         /** \brief Variable that stores whether we have a new target cloud, meaning we need to pre-process it again.
          * This way, we avoid rebuilding the kd-tree for the target cloud every time the determineCorrespondences () method
          * is called. */
         bool target_cloud_updated_;
+        /** \brief Variable that stores whether we have a new source cloud, meaning we need to pre-process it again.
+         * This way, we avoid rebuilding the reciprocal kd-tree for the source cloud every time the determineCorrespondences () method
+         * is called. */
+        bool source_cloud_updated_;
+        /** \brief A flag which, if set, means the tree operating on the target cloud 
+         * will never be recomputed*/
+        bool force_no_recompute_;
+        
+        /** \brief A flag which, if set, means the tree operating on the source cloud 
+         * will never be recomputed*/
+        bool force_no_recompute_reciprocal_;
+
      };
 
     /** \brief @b CorrespondenceEstimation represents the base class for
@@ -318,6 +361,7 @@ namespace pcl
         using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::target_indices_;
         using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::getClassName;
         using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::initCompute;
+        using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::initComputeReciprocal;
         using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::input_;
         using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::indices_;
         using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::input_fields_;

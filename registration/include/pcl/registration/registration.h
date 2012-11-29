@@ -45,6 +45,7 @@
 #include <pcl/pcl_base.h>
 #include <pcl/common/transforms.h>
 #include <pcl/pcl_macros.h>
+#include <pcl/search/kdtree.h>
 #include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/registration/boost.h>
 #include <pcl/registration/transformation_estimation.h>
@@ -72,8 +73,8 @@ namespace pcl
       typedef boost::shared_ptr< const Registration<PointSource, PointTarget, Scalar> > ConstPtr;
 
       typedef typename pcl::registration::CorrespondenceRejector::Ptr CorrespondenceRejectorPtr;
-      typedef typename pcl::KdTree<PointTarget> KdTree;
-      typedef typename pcl::KdTree<PointTarget>::Ptr KdTreePtr;
+      typedef typename pcl::search::KdTree<PointTarget> KdTree;
+      typedef typename pcl::search::KdTree<PointTarget>::Ptr KdTreePtr;
      
       typedef pcl::PointCloud<PointSource> PointCloudSource;
       typedef typename PointCloudSource::Ptr PointCloudSourcePtr;
@@ -96,7 +97,7 @@ namespace pcl
       /** \brief Empty constructor. */
       Registration () 
         : reg_name_ ()
-        , tree_ (new pcl::KdTreeFLANN<PointTarget>)
+        , tree_ (new pcl::search::KdTree<PointTarget>)
         , nr_iterations_ (0)
         , max_iterations_ (10)
         , ransac_iterations_ (0)

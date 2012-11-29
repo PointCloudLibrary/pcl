@@ -46,7 +46,7 @@
 #include <pcl/console/print.h>
 #include <pcl/common/transforms.h>
 #include <pcl/point_cloud.h>
-#include <pcl/kdtree/kdtree_flann.h>
+#include <pcl/search/kdtree.h>
 
 namespace pcl
 {
@@ -170,7 +170,7 @@ namespace pcl
       typedef typename PointCloud::Ptr PointCloudPtr;
       typedef typename PointCloud::ConstPtr PointCloudConstPtr;
 
-      typedef typename pcl::KdTree<PointT>::Ptr KdTreePtr;
+      typedef typename pcl::search::KdTree<PointT>::Ptr KdTreePtr;
       
       typedef pcl::PointCloud<NormalT> Normals;
       typedef typename Normals::Ptr NormalsPtr;
@@ -186,9 +186,11 @@ namespace pcl
           , input_normals_ ()
           , input_normals_transformed_ ()
           , target_normals_ ()
-          , tree_ (new pcl::KdTreeFLANN<PointT>)
+          , tree_ (new pcl::search::KdTree<PointT>)
           , class_name_ ("DataContainer")
           , needs_normals_ (needs_normals)
+          , target_cloud_updated_ (true)
+          , force_no_recompute_ (false)
         {
         }
 
@@ -233,12 +235,30 @@ namespace pcl
         setInputTarget (const PointCloudConstPtr &target)
         {
           target_ = target;
-          tree_->setInputCloud (target_);
+          target_cloud_updated_ = true;
         }
 
         /** \brief Get a pointer to the input point cloud dataset target. */
         inline PointCloudConstPtr const 
         getInputTarget () { return (target_); }
+        
+        /** \brief Provide a pointer to the search object used to find correspondences in
+          * the target cloud.
+          * \param[in] tree a pointer to the spatial search object.
+          * \param[in] force_no_recompute If set to true, this tree will NEVER be 
+          * recomputed, regardless of calls to setInputTarget. Only use if you are 
+          * confident that the tree will be set correctly.
+          */
+        inline void
+        setSearchMethodTarget (const KdTreePtr &tree, 
+                               bool force_no_recompute = false) 
+        { 
+          tree_ = tree; 
+          if (force_no_recompute)
+          {
+            force_no_recompute_ = true;
+          }
+        }
 
         /** \brief Set the normals computed on the input point cloud
           * \param[in] normals the normals computed for the input cloud
@@ -266,6 +286,10 @@ namespace pcl
         inline double 
         getCorrespondenceScore (int index)
         {
+          if ( target_cloud_updated_ && !force_no_recompute_ )
+          {
+            tree_->setInputCloud (target_);
+          }
           std::vector<int> indices (1);
           std::vector<float> distances (1);
           if (tree_->nearestKSearch (input_->points[index], 1, indices, distances))
@@ -329,6 +353,16 @@ namespace pcl
 
         /** \brief Should the current data container use normals? */
         bool needs_normals_;
+
+        /** \brief Variable that stores whether we have a new target cloud, meaning we need to pre-process it again.
+         * This way, we avoid rebuilding the kd-tree */
+        bool target_cloud_updated_;
+
+        /** \brief A flag which, if set, means the tree operating on the target cloud 
+         * will never be recomputed*/
+        bool force_no_recompute_;
+
+
 
         /** \brief Get a string representation of the name of this class. */
         inline const std::string& 

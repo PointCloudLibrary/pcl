@@ -83,6 +83,7 @@ namespace pcl
         typedef boost::shared_ptr<const CorrespondenceEstimationNormalShooting<PointSource, PointTarget, NormalT, Scalar> > ConstPtr;
 
         using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::initCompute;
+        using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::initComputeReciprocal;
         using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::input_transformed_;
         using PCLBase<PointSource>::deinitCompute;
         using PCLBase<PointSource>::input_;
@@ -91,8 +92,8 @@ namespace pcl
         using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::point_representation_;
         using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::target_indices_;
 
-        typedef typename pcl::KdTree<PointTarget> KdTree;
-        typedef typename pcl::KdTree<PointTarget>::Ptr KdTreePtr;
+        typedef typename pcl::search::KdTree<PointTarget> KdTree;
+        typedef typename pcl::search::KdTree<PointTarget>::Ptr KdTreePtr;
 
         typedef pcl::PointCloud<PointSource> PointCloudSource;
         typedef typename PointCloudSource::Ptr PointCloudSourcePtr;

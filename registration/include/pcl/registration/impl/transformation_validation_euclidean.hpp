@@ -65,8 +65,11 @@ pcl::registration::TransformationValidationEuclidean<PointSource, PointTarget, S
    }
 
   typename MyPointRepresentation::ConstPtr point_rep (new MyPointRepresentation);
-  tree_->setPointRepresentation (point_rep);
-  tree_->setInputCloud (cloud_tgt);
+  if (!force_no_recompute_)
+  {
+    tree_->setPointRepresentation (point_rep);
+    tree_->setInputCloud (cloud_tgt);
+  }
 
   std::vector<int> nn_indices (1);
   std::vector<float> nn_dists (1);

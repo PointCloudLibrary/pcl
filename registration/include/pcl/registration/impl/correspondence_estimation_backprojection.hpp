@@ -168,10 +168,8 @@ pcl::registration::CorrespondenceEstimationBackProjection<PointSource, PointTarg
   typedef typename pcl::intersect<FieldListSource, FieldListTarget>::type FieldList;
   
   // Set the internal point representation of choice
-  if (point_representation_)
-    tree_reciprocal_->setPointRepresentation (point_representation_);
-
-  tree_reciprocal_->setInputCloud (input_, indices_);
+  if(!initComputeReciprocal())
+    return;
 
   correspondences.resize (indices_->size ());
 

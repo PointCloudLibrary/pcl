@@ -74,7 +74,7 @@ pcl::registration::CorrespondenceEstimationBase<PointSource, PointTarget, Scalar
   }
 
   // Only update target kd-tree if a new target cloud was set
-  if (target_cloud_updated_)
+  if (target_cloud_updated_ && !force_no_recompute_)
   {
     // If the target indices have been given via setIndicesTarget
     if (target_indices_)
@@ -86,6 +86,27 @@ pcl::registration::CorrespondenceEstimationBase<PointSource, PointTarget, Scalar
   }
 
   return (PCLBase<PointSource>::initCompute ());
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointSource, typename PointTarget, typename Scalar> bool
+pcl::registration::CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::initComputeReciprocal ()
+{
+  // Only update source kd-tree if a new target cloud was set
+  if (source_cloud_updated_ && !force_no_recompute_reciprocal_)
+  {
+    if (point_representation_)
+      tree_reciprocal_->setPointRepresentation (point_representation_);
+    // If the target indices have been given via setIndicesTarget
+    if (indices_)
+      tree_reciprocal_->setInputCloud (getInputSource(), getIndicesSource());
+    else
+      tree_reciprocal_->setInputCloud (getInputSource());
+
+    source_cloud_updated_ = false;
+  }
+
+  return (true);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -163,11 +184,8 @@ pcl::registration::CorrespondenceEstimation<PointSource, PointTarget, Scalar>::d
   
   // setup tree for reciprocal search
   // Set the internal point representation of choice
-  if (point_representation_)
-    tree_reciprocal_->setPointRepresentation (point_representation_);
-
-  tree_reciprocal_->setInputCloud (input_, indices_);
-
+  if (!initComputeReciprocal())
+    return;
   double max_dist_sqr = max_distance * max_distance;
 
   correspondences.resize (indices_->size());

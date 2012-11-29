@@ -186,10 +186,8 @@ pcl::registration::CorrespondenceEstimationNormalShooting<PointSource, PointTarg
   
   // setup tree for reciprocal search
   // Set the internal point representation of choice
-  if (point_representation_)
-    tree_reciprocal_->setPointRepresentation (point_representation_);
-
-  tree_reciprocal_->setInputCloud (input_, indices_);
+  if (!initComputeReciprocal ())
+    return;
 
   correspondences.resize (indices_->size ());
 
