@@ -1,9 +1,9 @@
 #include <stdlib.h>
 
-#include "com_pcl_onirec_Application.h"
+#include "com_itseez_onirec_Application.h"
 
 JNIEXPORT void JNICALL
-Java_com_pcl_onirec_Application_setenv
+Java_com_itseez_onirec_Application_setenv
   (JNIEnv * env, jclass, jstring name, jstring value)
 {
   const char * name_chars = env->GetStringUTFChars(name, NULL);

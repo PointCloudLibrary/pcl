@@ -1,4 +1,4 @@
-package com.pcl.onirec;
+package com.itseez.onirec;
 
 import android.app.Activity;
 import android.app.PendingIntent;
@@ -29,7 +29,7 @@ public class MainActivity extends Activity {
 
     private ArrayAdapter<MapModeWrapper> spinnerAdapterColor, spinnerAdapterDepth;
 
-    private static final String ACTION_USB_PERMISSION = "com.pcl.onirec.USB_PERMISSION";
+    private static final String ACTION_USB_PERMISSION = "com.itseez.onirec.USB_PERMISSION";
 
     private State state;
 

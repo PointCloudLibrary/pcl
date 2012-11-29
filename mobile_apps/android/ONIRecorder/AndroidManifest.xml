@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.pcl.onirec">
+          package="com.itseez.onirec">
     <uses-sdk android:minSdkVersion="12" android:targetSdkVersion="16"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-feature android:name="android.hardware.usb.host" />

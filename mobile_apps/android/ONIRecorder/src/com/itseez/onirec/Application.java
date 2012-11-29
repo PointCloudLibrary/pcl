@@ -1,4 +1,4 @@
-package com.pcl.onirec;
+package com.itseez.onirec;
 
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
