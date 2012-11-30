@@ -273,6 +273,13 @@ public class CaptureThreadManager {
                         handler.removeCallbacks(processFrame);
                     }
 
+                    uiHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            feedback.setFps(0);
+                        }
+                    });
+
                     if (mode == null) {
                         color.dispose();
                         color = null;
@@ -306,6 +313,13 @@ public class CaptureThreadManager {
                         context.stopAll();
                         handler.removeCallbacks(processFrame);
                     }
+
+                    uiHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            feedback.setFps(0);
+                        }
+                    });
 
                     if (mode == null) {
                         depth.dispose();
