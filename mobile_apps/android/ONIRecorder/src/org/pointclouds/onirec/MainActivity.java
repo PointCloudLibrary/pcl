@@ -477,6 +477,7 @@ public class MainActivity extends Activity {
 
                         //noinspection ResultOfMethodCallIgnored
                         currentRecording.delete();
+                        textStatus.setText(R.string.status_previewing);
                         return;
                     default:
                         throw new IllegalStateException();

@@ -44,9 +44,11 @@ abstract class OpenNIContext implements Context {
         try {
             recorder.setDestination(RecordMedium.FILE, fileName.getAbsolutePath());
 
-            for (NodeInfo node_info: context.enumerateExistingNodes()) {
+            for (NodeInfo node_info: context.enumerateExistingNodes(NodeType.IMAGE))
                 recorder.addNodeToRecording(node_info.getInstance());
-            }
+
+            for (NodeInfo node_info: context.enumerateExistingNodes(NodeType.DEPTH))
+                recorder.addNodeToRecording(node_info.getInstance());
         } catch (GeneralException e) {
             recorder.dispose();
             throw e;
