@@ -49,7 +49,7 @@ pcl::registration::CorrespondenceEstimationOrganizedProjection<PointSource, Poin
 {
   // Set the target_cloud_updated_ variable to true, so that the kd-tree is not built - it is not needed for this class
   target_cloud_updated_ = false;
-  if (!CorrespondenceEstimationBase<PointSource, PointTarget>::initCompute ())
+  if (!CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::initCompute ())
     return (false);
 
   /// Check if the target cloud is organized

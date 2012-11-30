@@ -177,7 +177,7 @@ namespace pcl
         determineReciprocalCorrespondences (Correspondences &correspondences, double max_distance);
 
       protected:
-        using CorrespondenceEstimationBase<PointSource, PointTarget>::target_;
+        using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::target_;
 
         bool
         initCompute ();
