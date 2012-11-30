@@ -15,3 +15,8 @@ PCL_ADD_TEST(registration_warp_api test_warps
 PCL_ADD_TEST(correspondence_estimation test_correspondence_estimation
              FILES test_correspondence_estimation.cpp
              LINK_WITH pcl_gtest pcl_io pcl_registration pcl_features)
+
+PCL_ADD_TEST(correspondence_rejectors test_correspondence_rejectors
+             FILES test_correspondence_rejectors.cpp
+             LINK_WITH pcl_gtest pcl_io pcl_registration pcl_features)
+
