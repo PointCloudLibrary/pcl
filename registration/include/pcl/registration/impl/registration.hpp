@@ -48,7 +48,37 @@ pcl::Registration<PointSource, PointTarget, Scalar>::setInputTarget (const Point
     return;
   }
   target_ = cloud;
-  tree_->setInputCloud (target_);
+  target_cloud_updated_ = true;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointSource, typename PointTarget, typename Scalar> bool
+pcl::Registration<PointSource, PointTarget, Scalar>::initCompute ()
+{
+  if (!target_)
+  {
+    PCL_ERROR ("[pcl::registration::%s::compute] No input target dataset was given!\n", getClassName ().c_str ());
+    return (false);
+  }
+
+  // Only update target kd-tree if a new target cloud was set
+  if (target_cloud_updated_ && !force_no_recompute_)
+  {
+    tree_->setInputCloud (target_);
+    target_cloud_updated_ = false;
+  }
+  
+  // Update the correspondence estimation
+  if (force_no_recompute_)
+  {
+    correspondence_estimation_->setSearchMethodTarget (tree_, force_no_recompute_);
+    correspondence_estimation_->setSearchMethodSource (tree_reciprocal_, force_no_recompute_reciprocal_);
+  }
+  
+  // Note: we /cannot/ update the search method on all correspondence rejectors, because we know 
+  // nothing about them. If they should be cached, they must be cached individually.
+
+  return (PCLBase<PointSource>::initCompute ());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -67,6 +97,7 @@ pcl::Registration<PointSource, PointTarget, Scalar>::getFitnessScore (
 template <typename PointSource, typename PointTarget, typename Scalar> inline double
 pcl::Registration<PointSource, PointTarget, Scalar>::getFitnessScore (double max_range)
 {
+
   double fitness_score = 0.0;
 
   // Transform the input dataset using the final transformation
@@ -127,12 +158,6 @@ pcl::Registration<PointSource, PointTarget, Scalar>::align (PointCloudSource &ou
   if (!initCompute ()) 
     return;
 
-  if (!target_)
-  {
-    PCL_WARN ("[pcl::%s::compute] No input target dataset was given!\n", getClassName ().c_str ());
-    return;
-  }
-
   // Resize the output dataset
   if (output.points.size () != indices_->size ())
     output.points.resize (indices_->size ());
@@ -155,8 +180,8 @@ pcl::Registration<PointSource, PointTarget, Scalar>::align (PointCloudSource &ou
   for (size_t i = 0; i < indices_->size (); ++i)
     output.points[i] = input_->points[(*indices_)[i]];
 
-  // Set the internal point representation of choice
-  if (point_representation_)
+  // Set the internal point representation of choice unless otherwise noted
+  if (point_representation_ && !force_no_recompute_) 
     tree_->setPointRepresentation (point_representation_);
 
   // Perform the actual transformation computation
