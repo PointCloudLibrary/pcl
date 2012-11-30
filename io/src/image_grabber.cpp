@@ -44,7 +44,6 @@
 #include <pcl/io/lzf_image_io.h>
 
 #ifdef PCL_BUILT_WITH_VTK
-  #include <vtkSmartPointer.h>
   #include <vtkImageReader2.h>
   #include <vtkImageReader2Factory.h>
   #include <vtkImageData.h>
@@ -256,7 +255,6 @@ pcl::ImageGrabberBase::ImageGrabberImpl::loadNextCloudVTK ()
   vtkImageData* depth_image;
   vtkImageData* rgb_image;
   vtkImageReader2Factory* reader_factory = vtkImageReader2Factory::New ();
-  int ret;
   if (rgb_image_files_.size () != 0)
   {
     if (rgb_image_iterator_ == rgb_image_files_.end ())
@@ -269,48 +267,15 @@ pcl::ImageGrabberBase::ImageGrabberImpl::loadNextCloudVTK ()
     else
     {
       vtkImageReader2* rgb_reader = reader_factory->CreateImageReader2 ((*rgb_image_iterator_).c_str ());
-      if(rgb_reader == NULL)
-      {
-        PCL_ERROR("Unable to create vtkImageReader*");
-        exit(-1); // TODO: Solve this, I know this is to drastic!
-      }
-      ret = rgb_reader->CanReadFile ((*rgb_image_iterator_).c_str ());
-      if(ret == 0 || ret == 1)
-      {
-        PCL_ERROR ("RGB Image file is broken: %s", (*rgb_image_iterator_).c_str ());
-        return;
-      }
-      else if(ret == 2 || 3)
-      {
-        rgb_reader->SetFileName ((*rgb_image_iterator_).c_str ());
-        rgb_reader->Update ();
-        rgb_image = rgb_reader->GetOutput ();
-      }
-      else
-      {
-        PCL_ERROR ("RGB Image file can't be read: %s", (*rgb_image_iterator_).c_str ());
-        return;
-      }
+      rgb_reader->SetFileName ((*rgb_image_iterator_).c_str ());
+      rgb_reader->Update ();
+      rgb_image = rgb_reader->GetOutput ();
     }
   }
   vtkImageReader2* depth_reader = reader_factory->CreateImageReader2 ((*depth_image_iterator_).c_str ());
-  ret = depth_reader->CanReadFile ((*depth_image_iterator_).c_str ());
-  if(ret == 0 || ret == 1)
-  {
-    PCL_ERROR ("Depth Image file is broken: %s", (*depth_image_iterator_).c_str ());
-    return;
-  }
-  else if(ret == 2 || 3)
-  {
-    depth_reader->SetFileName ((*depth_image_iterator_).c_str ());
-    depth_reader->Update ();
-    depth_image = depth_reader->GetOutput ();
-  }
-  else
-  {
-    PCL_ERROR ("Depth Image file can't be read: %s", (*depth_image_iterator_).c_str ());
-    return;
-  }
+  depth_reader->SetFileName ((*depth_image_iterator_).c_str ());
+  depth_reader->Update ();
+  depth_image = depth_reader->GetOutput ();
   int* dims = depth_image->GetDimensions ();
 
   // Fill in image data
