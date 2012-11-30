@@ -213,7 +213,7 @@ namespace pcl
         * \param[in] cloud the input point cloud target
         */
       virtual inline void 
-      setInputTarget (const PointCloudTargetConstPtr &cloud); //TODO make sure this works
+      setInputTarget (const PointCloudTargetConstPtr &cloud); 
 
       /** \brief Get a pointer to the input point cloud dataset target. */
       inline PointCloudTargetConstPtr const 
@@ -231,6 +231,7 @@ namespace pcl
       setSearchMethodTarget (const KdTreePtr &tree, 
                              bool force_no_recompute = false) 
       { 
+        PCL_WARN ("[pcl::registration::%s::setSearchMethodTarget] Is currently unstable. Be extremely cautious!\n", getClassName ().c_str ());
         tree_ = tree; 
         if (force_no_recompute)
         {
@@ -257,6 +258,7 @@ namespace pcl
       setSearchMethodSource (const KdTreeReciprocalPtr &tree, 
                              bool force_no_recompute = false) 
       { 
+        PCL_WARN ("[pcl::registration::%s::setSearchMethodSource] Is currently unstable. Be extremely cautious!\n", getClassName ().c_str ());
         tree_reciprocal_ = tree; 
         if ( force_no_recompute )
         {
