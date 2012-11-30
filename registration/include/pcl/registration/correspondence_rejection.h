@@ -258,6 +258,7 @@ namespace pcl
           {
             force_no_recompute_ = true;
           }
+          target_cloud_updated_ = true;
         }
 
         /** \brief Set the normals computed on the input point cloud

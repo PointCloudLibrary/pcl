@@ -69,10 +69,11 @@ pcl::Registration<PointSource, PointTarget, Scalar>::initCompute ()
   }
   
   // Update the correspondence estimation
-  if (force_no_recompute_)
+  if (correspondence_estimation_)
+  {
     correspondence_estimation_->setSearchMethodTarget (tree_, force_no_recompute_);
-  if (force_no_recompute_reciprocal_)
     correspondence_estimation_->setSearchMethodSource (tree_reciprocal_, force_no_recompute_reciprocal_);
+  }
   
   // Note: we /cannot/ update the search method on all correspondence rejectors, because we know 
   // nothing about them. If they should be cached, they must be cached individually.
@@ -141,6 +142,7 @@ pcl::Registration<PointSource, PointTarget, Scalar>::getFitnessScore (double max
     return (fitness_score / nr);
   else
     return (std::numeric_limits<double>::max ());
+
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

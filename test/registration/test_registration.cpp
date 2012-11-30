@@ -205,7 +205,6 @@ TEST (PCL, IterativeClosestPointNonLinear)
   // Register
   reg.align (output);
   EXPECT_EQ (int (output.points.size ()), int (cloud_source.points.size ()));
-
   // We get different results on 32 vs 64-bit systems.  To address this, we've removed the explicit output test
   // on the transformation matrix.  Instead, we're testing to make sure the algorithm converges to a sufficiently
   // low error by checking the fitness score.
@@ -233,6 +232,29 @@ TEST (PCL, IterativeClosestPointNonLinear)
   EXPECT_EQ (transformation (3, 3), 1);
   */
   EXPECT_LT (reg.getFitnessScore (), 0.001);
+ 
+  // Check again, for all possible caching schemes
+  for (int iter = 0; iter < 4; iter++)
+  {
+    bool force_cache = (bool) iter/2;
+    bool force_cache_reciprocal = (bool) iter%2;
+    pcl::search::KdTree<PointT>::Ptr tree(new pcl::search::KdTree<PointT>);
+    // Ensure that, when force_cache is not set, we are robust to the wrong input
+    if(force_cache)
+      tree->setInputCloud(temp_tgt);
+    reg.setSearchMethodTarget(tree, force_cache);
+
+    pcl::search::KdTree<PointT>::Ptr tree_recip(new pcl::search::KdTree<PointT>);
+    if(force_cache_reciprocal)
+      tree_recip->setInputCloud(temp_src);
+    reg.setSearchMethodSource(tree_recip, force_cache_reciprocal);
+    
+    // Register
+    reg.align (output);
+    EXPECT_EQ (int (output.points.size ()), int (cloud_source.points.size ()));
+    EXPECT_LT (reg.getFitnessScore (), 0.001);
+  }
+
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -263,6 +285,31 @@ TEST (PCL, IterativeClosestPoint_PointToPlane)
   // Register
   reg.align (output);
   EXPECT_EQ (int (output.points.size ()), int (cloud_source.points.size ()));
+  EXPECT_LT (reg.getFitnessScore (), 0.001);
+
+  // Check again, for all possible caching schemes
+  for (int iter = 0; iter < 4; iter++)
+  {
+    bool force_cache = (bool) iter/2;
+    bool force_cache_reciprocal = (bool) iter%2;
+    pcl::search::KdTree<PointT>::Ptr tree(new pcl::search::KdTree<PointT>);
+    // Ensure that, when force_cache is not set, we are robust to the wrong input
+    if(force_cache)
+      tree->setInputCloud(tgt);
+    reg.setSearchMethodTarget(tree, force_cache);
+
+    pcl::search::KdTree<PointT>::Ptr tree_recip(new pcl::search::KdTree<PointT>);
+    if(force_cache_reciprocal)
+      tree_recip->setInputCloud(src);
+    reg.setSearchMethodSource(tree_recip, force_cache_reciprocal);
+    
+    // Register
+    reg.align (output);
+    EXPECT_EQ (int (output.points.size ()), int (cloud_source.points.size ()));
+    EXPECT_LT (reg.getFitnessScore (), 0.001);
+  }
+  
+
 
   // We get different results on 32 vs 64-bit systems.  To address this, we've removed the explicit output test
   // on the transformation matrix.  Instead, we're testing to make sure the algorithm converges to a sufficiently
@@ -290,7 +337,6 @@ TEST (PCL, IterativeClosestPoint_PointToPlane)
   EXPECT_EQ (transformation (3, 2), 0);
   EXPECT_EQ (transformation (3, 3), 1);
   */
-  EXPECT_LT (reg.getFitnessScore (), 0.001);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -310,12 +356,32 @@ TEST (PCL, NormalDistributionsTransform)
   reg.setInputTarget (tgt);
   reg.setMaximumIterations (50);
   reg.setTransformationEpsilon (1e-8);
-
   // Register
   reg.align (output);
   EXPECT_EQ (int (output.points.size ()), int (cloud_source.points.size ()));
-
   EXPECT_LT (reg.getFitnessScore (), 0.001);
+  
+  // Check again, for all possible caching schemes
+  for (int iter = 0; iter < 4; iter++)
+  {
+    bool force_cache = (bool) iter/2;
+    bool force_cache_reciprocal = (bool) iter%2;
+    pcl::search::KdTree<PointT>::Ptr tree(new pcl::search::KdTree<PointT>);
+    // Ensure that, when force_cache is not set, we are robust to the wrong input
+    if(force_cache)
+      tree->setInputCloud(tgt);
+    reg.setSearchMethodTarget(tree, force_cache);
+
+    pcl::search::KdTree<PointT>::Ptr tree_recip(new pcl::search::KdTree<PointT>);
+    if(force_cache_reciprocal)
+      tree_recip->setInputCloud(src);
+    reg.setSearchMethodSource(tree_recip, force_cache_reciprocal);
+    
+    // Register
+    reg.align (output);
+    EXPECT_EQ (int (output.points.size ()), int (cloud_source.points.size ()));
+    EXPECT_LT (reg.getFitnessScore (), 0.001);
+  }
 }
 
 
@@ -376,6 +442,29 @@ TEST (PCL, SampleConsensusInitialAlignment)
   reg.align (cloud_reg);
   EXPECT_EQ (int (cloud_reg.points.size ()), int (cloud_source.points.size ()));
   EXPECT_LT (reg.getFitnessScore (), 0.0005);
+  
+  // Check again, for all possible caching schemes
+  typedef pcl::PointXYZ PointT;
+  for (int iter = 0; iter < 4; iter++)
+  {
+    bool force_cache = (bool) iter/2;
+    bool force_cache_reciprocal = (bool) iter%2;
+    pcl::search::KdTree<PointT>::Ptr tree(new pcl::search::KdTree<PointT>);
+    // Ensure that, when force_cache is not set, we are robust to the wrong input
+    if(force_cache)
+      tree->setInputCloud(cloud_target_ptr);
+    reg.setSearchMethodTarget(tree, force_cache);
+
+    pcl::search::KdTree<PointT>::Ptr tree_recip(new pcl::search::KdTree<PointT>);
+    if(force_cache_reciprocal)
+      tree_recip->setInputCloud(cloud_source_ptr);
+    reg.setSearchMethodSource(tree_recip, force_cache_reciprocal);
+    
+    // Register
+    reg.align (cloud_reg);
+    EXPECT_EQ (int (cloud_reg.points.size ()), int (cloud_source.points.size ()));
+    EXPECT_LT (reg.getFitnessScore (), 0.0005);
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////

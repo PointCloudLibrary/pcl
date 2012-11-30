@@ -200,6 +200,8 @@ namespace pcl
           {
             force_no_recompute_ = true;
           }
+          // Since we just set a new tree, we need to check for updates
+          target_cloud_updated_ = true;
         }
 
         /** \brief Get a pointer to the search method used to find correspondences in the
@@ -226,6 +228,8 @@ namespace pcl
           {
             force_no_recompute_reciprocal_ = true;
           }
+          // Since we just set a new tree, we need to check for updates
+          source_cloud_updated_ = true;
         }
 
         /** \brief Get a pointer to the search method used to find correspondences in the
