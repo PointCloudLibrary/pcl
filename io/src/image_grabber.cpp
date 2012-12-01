@@ -533,9 +533,9 @@ pcl::ImageGrabberBase::ImageGrabberImpl::getVtkImage (
   }
   else if (upper.find (".PPM") < upper.npos)
   {
-    vtkSmartPointer<vtkPNMReader> ppmg_reader = vtkSmartPointer<vtkPNMReader>::New();
-    retval = ppmg_reader->CanReadFile (filename.c_str ());
-    reader = ppmg_reader;
+    vtkSmartPointer<vtkPNMReader> ppm_reader = vtkSmartPointer<vtkPNMReader>::New();
+    retval = ppm_reader->CanReadFile (filename.c_str ());
+    reader = ppm_reader;
   }
   else
   {
