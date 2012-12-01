@@ -88,9 +88,11 @@ struct pcl::ImageGrabberBase::ImageGrabberImpl
   bool
   isValidExtension (const std::string &extension);
   
+#ifdef PCL_BUILT_WITH_VTK
   //! Load an image file, return the vtkImageReader2, return false if it couldn't be opened
   bool
   getVtkImage (const std::string &filename, vtkSmartPointer<vtkImageData> &image) const;
+#endif//PCL_BUILT_WITH_VTK
   
   pcl::ImageGrabberBase& grabber_;
   float frames_per_second_;
@@ -373,7 +375,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::loadNextCloudVTK ()
     PCL_ERROR("[pcl::ImageGrabber::loadNextCloudVTK] Attempted to read image files, but PCL was not built with VTK [no -DPCL_BUILT_WITH_VTK]. \n");
     valid_ = false;
     return;
-#endif
+#endif //PCL_BUILT_WITH_VTK
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -503,6 +505,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::isValidExtension (const std::string &ex
 
 ////////////////////////////////////////////////////////////////////////
 //
+#ifdef PCL_BUILT_WITH_VTK
 bool
 pcl::ImageGrabberBase::ImageGrabberImpl::getVtkImage (
     const std::string &filename, 
@@ -557,6 +560,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::getVtkImage (
   image = reader->GetOutput ();
   return (true);
 }
+#endif //PCL_BUILT_WITH_VTK
 
 //////////////////////// GrabberBase //////////////////////
 pcl::ImageGrabberBase::ImageGrabberBase (const std::string& directory, float frames_per_second, bool repeat, bool pclzf_mode)
