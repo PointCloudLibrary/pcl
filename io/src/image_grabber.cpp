@@ -47,6 +47,11 @@
   #include <vtkImageReader2.h>
   #include <vtkImageReader2Factory.h>
   #include <vtkImageData.h>
+  #include <vtkSmartPointer.h>
+  #include <vtkTIFFReader.h>
+  #include <vtkPNGReader.h>
+  #include <vtkJPEGReader.h>
+  #include <vtkPNMReader.h>
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -83,6 +88,9 @@ struct pcl::ImageGrabberBase::ImageGrabberImpl
   bool
   isValidExtension (const std::string &extension);
   
+  //! Load an image file, return the vtkImageReader2, return false if it couldn't be opened
+  bool
+  getVtkImage (const std::string &filename, vtkSmartPointer<vtkImageData> &image) const;
   
   pcl::ImageGrabberBase& grabber_;
   float frames_per_second_;
@@ -252,30 +260,37 @@ pcl::ImageGrabberBase::ImageGrabberImpl::loadNextCloudVTK ()
   }
   unsigned short* depth_pixel;
   unsigned char* color_pixel;
-  vtkImageData* depth_image;
-  vtkImageData* rgb_image;
-  vtkImageReader2Factory* reader_factory = vtkImageReader2Factory::New ();
+  vtkSmartPointer<vtkImageData> depth_image;
+  vtkSmartPointer<vtkImageData> rgb_image;
+  // If there are RGB files, load an rgb image
   if (rgb_image_files_.size () != 0)
   {
+    // If we've gone through the rgb iterator but not finished depth, throw error
     if (rgb_image_iterator_ == rgb_image_files_.end ())
     {
-      PCL_ERROR ("[pcl::ImageGrabber::setRGBImageFiles] Number of depth images %d != number of rgb images %d \n", 
-          depth_image_files_.size (), rgb_image_files_.size ());
+      PCL_ERROR ("[pcl::ImageGrabber::loadNextCloudVTK] Hit the end of all"
+          "RGB files before Depth files\n");
       valid_ = false;
       return;
     }
-    else
+    // If we were unable to pull a Vtk image, throw an error
+    if (!getVtkImage (*rgb_image_iterator_, rgb_image) )
     {
-      vtkImageReader2* rgb_reader = reader_factory->CreateImageReader2 ((*rgb_image_iterator_).c_str ());
-      rgb_reader->SetFileName ((*rgb_image_iterator_).c_str ());
-      rgb_reader->Update ();
-      rgb_image = rgb_reader->GetOutput ();
+      valid_ = false;
+      if (++depth_image_iterator_ == depth_image_files_.end () && repeat_)
+        depth_image_iterator_ = depth_image_files_.begin ();
+      if (++rgb_image_iterator_ == rgb_image_files_.end () && repeat_)
+        rgb_image_iterator_ = rgb_image_files_.begin ();
+      return;
     }
   }
-  vtkImageReader2* depth_reader = reader_factory->CreateImageReader2 ((*depth_image_iterator_).c_str ());
-  depth_reader->SetFileName ((*depth_image_iterator_).c_str ());
-  depth_reader->Update ();
-  depth_image = depth_reader->GetOutput ();
+  if (!getVtkImage (*depth_image_iterator_, depth_image) )
+  {
+    valid_ = false;
+    if (++depth_image_iterator_ == depth_image_files_.end () && repeat_)
+      depth_image_iterator_ = depth_image_files_.begin ();
+    return;
+  }
   int* dims = depth_image->GetDimensions ();
 
   // Fill in image data
@@ -402,9 +417,13 @@ pcl::ImageGrabberBase::ImageGrabberImpl::loadDepthAndRGBFiles (const std::string
         && isValidExtension (extension))
     {
       if (basename.find ("rgb") < basename.npos)
+      {
         rgb_image_files_.push_back (pathname);
+      }
       else if (basename.find ("depth") < basename.npos)
+      {
         depth_image_files_.push_back (pathname);
+      }
     }
   }
   sort (depth_image_files_.begin (), depth_image_files_.end ());
@@ -476,9 +495,67 @@ pcl::ImageGrabberBase::ImageGrabberImpl::isValidExtension (const std::string &ex
   else
   {
     valid = extension == ".TIFF" || extension == ".PNG" 
-         || extension == ".JPG" || extension == ".PPM";
+         || extension == ".JPG" || extension == ".JPEG"
+         || extension == ".PPM";
   }
   return (valid);
+}
+
+////////////////////////////////////////////////////////////////////////
+//
+bool
+pcl::ImageGrabberBase::ImageGrabberImpl::getVtkImage (
+    const std::string &filename, 
+    vtkSmartPointer<vtkImageData> &image) const
+{
+
+  vtkSmartPointer<vtkImageReader2> reader;
+  // Check extension to generate the proper reader
+  int retval;
+  std::string upper = boost::algorithm::to_upper_copy (filename);
+  if (upper.find (".TIFF") < upper.npos)
+  {
+    vtkSmartPointer<vtkTIFFReader> tiff_reader = vtkSmartPointer<vtkTIFFReader>::New();
+    retval = tiff_reader->CanReadFile (filename.c_str ());
+    reader = tiff_reader;
+  }
+  else if (upper.find (".PNG") < upper.npos)
+  {
+    vtkSmartPointer<vtkPNGReader> png_reader = vtkSmartPointer<vtkPNGReader>::New();
+    retval = png_reader->CanReadFile (filename.c_str ());
+    reader = png_reader;
+  }
+  else if (upper.find (".JPG") < upper.npos || upper.find (".JPEG") < upper.npos)
+  {
+    vtkSmartPointer<vtkJPEGReader> jpg_reader = vtkSmartPointer<vtkJPEGReader>::New();
+    retval = jpg_reader->CanReadFile (filename.c_str ());
+    reader = jpg_reader;
+  }
+  else if (upper.find (".PPM") < upper.npos)
+  {
+    vtkSmartPointer<vtkPNMReader> ppmg_reader = vtkSmartPointer<vtkPNMReader>::New();
+    retval = ppmg_reader->CanReadFile (filename.c_str ());
+    reader = ppmg_reader;
+  }
+  else
+  {
+    PCL_ERROR ("Attempted to access an invalid filetype: %s\n", filename.c_str ());
+    return (false);
+  }
+  if (retval == 0)
+  {
+    PCL_ERROR ("Image file can't be read: %s\n", filename.c_str ());
+    return (false);
+  }
+  else if (retval == 1)
+  {
+    PCL_ERROR ("Can't prove that I can read: %s\n", filename.c_str ());
+    return (false);
+  }
+  reader->SetFileName (filename.c_str ());
+  reader->Update ();
+  image = reader->GetOutput ();
+  return (true);
 }
 
 //////////////////////// GrabberBase //////////////////////

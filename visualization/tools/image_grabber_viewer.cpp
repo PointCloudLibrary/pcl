@@ -241,7 +241,7 @@ main (int argc, char** argv)
       if (!cloud_viewer->updatePointCloud (temp_cloud, "PCDCloud"))
       {
         cloud_viewer->addPointCloud (temp_cloud, "PCDCloud");
-        cloud_viewer->resetCameraViewpoint ("PCDCloud");
+        cloud_viewer->setCameraPosition (0, 0, 0, 0, 0, 1, 0, -1, 0);
       }
     }
   }
