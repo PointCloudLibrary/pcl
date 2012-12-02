@@ -64,7 +64,7 @@ TEST (CovarianceSampling, Filters)
   covariance_sampling.setNormals (cloud_walls_normals);
   covariance_sampling.setNumberOfSamples (static_cast<unsigned int> (cloud_walls_normals->size ()) / 4);
   double cond_num_walls = covariance_sampling.computeConditionNumber ();
-  EXPECT_NEAR (cond_num_walls, 19.3518, 0.5);
+  EXPECT_NEAR (cond_num_walls, 20.8774, 0.5);
 
   IndicesPtr walls_indices (new std::vector<int> ());
   covariance_sampling.filter (*walls_indices);
@@ -73,11 +73,11 @@ TEST (CovarianceSampling, Filters)
   double cond_num_walls_sampled = covariance_sampling.computeConditionNumber ();
   EXPECT_NEAR (cond_num_walls_sampled, 4.0298, 0.5);
 
-  EXPECT_EQ ((*walls_indices)[0], 316);
-  EXPECT_EQ ((*walls_indices)[walls_indices->size () / 4], 3208);
-  EXPECT_EQ ((*walls_indices)[walls_indices->size () / 2], 2546);
-  EXPECT_EQ ((*walls_indices)[walls_indices->size () * 3 / 4], 1886);
-  EXPECT_EQ ((*walls_indices)[walls_indices->size () - 1], 321);
+  EXPECT_EQ ((*walls_indices)[0], 315);
+  EXPECT_EQ ((*walls_indices)[walls_indices->size () / 4], 275);
+  EXPECT_EQ ((*walls_indices)[walls_indices->size () / 2], 1846);
+  EXPECT_EQ ((*walls_indices)[walls_indices->size () * 3 / 4], 1241);
+  EXPECT_EQ ((*walls_indices)[walls_indices->size () - 1], 2632);
 
   covariance_sampling.setInputCloud (cloud_turtle_normals);
   covariance_sampling.setNormals (cloud_turtle_normals);
@@ -120,13 +120,13 @@ TEST (NormalSpaceSampling, Filters)
   double cond_num_walls_sampled = covariance_sampling.computeConditionNumber ();
 
 
-  EXPECT_NEAR (cond_num_walls_sampled, 7.8289, 0.5);
+  EXPECT_NEAR (cond_num_walls_sampled, 9.0989, 0.5);
 
-  EXPECT_EQ ((*walls_indices)[0], 2472);
-  EXPECT_EQ ((*walls_indices)[walls_indices->size () / 4], 2854);
-  EXPECT_EQ ((*walls_indices)[walls_indices->size () / 2], 1566);
-  EXPECT_EQ ((*walls_indices)[walls_indices->size () * 3 / 4], 2981);
-  EXPECT_EQ ((*walls_indices)[walls_indices->size () - 1], 2577);
+  EXPECT_EQ ((*walls_indices)[0], 2432);
+  EXPECT_EQ ((*walls_indices)[walls_indices->size () / 4], 1947);
+  EXPECT_EQ ((*walls_indices)[walls_indices->size () / 2], 3148);
+  EXPECT_EQ ((*walls_indices)[walls_indices->size () * 3 / 4], 2443);
+  EXPECT_EQ ((*walls_indices)[walls_indices->size () - 1], 2396);
 }
 
 /* ---[ */
