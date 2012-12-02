@@ -63,7 +63,8 @@ namespace pcl
     // 16-bytes aligned placeholder for the XYZ centroid of a surface patch
     Eigen::Vector4f xyz_centroid;
 
-    if (computeMeanAndCovarianceMatrix (cloud, covariance_matrix, xyz_centroid) == 0)
+    if (cloud.size () < 3 ||
+        computeMeanAndCovarianceMatrix (cloud, covariance_matrix, xyz_centroid) == 0)
     {
       plane_parameters.setConstant (std::numeric_limits<float>::quiet_NaN ());
       curvature = std::numeric_limits<float>::quiet_NaN ();
@@ -93,7 +94,8 @@ namespace pcl
     EIGEN_ALIGN16 Eigen::Matrix3f covariance_matrix;
     // 16-bytes aligned placeholder for the XYZ centroid of a surface patch
     Eigen::Vector4f xyz_centroid;
-    if (computeMeanAndCovarianceMatrix (cloud, indices, covariance_matrix, xyz_centroid) == 0)
+    if (indices.size () < 3 ||
+        computeMeanAndCovarianceMatrix (cloud, indices, covariance_matrix, xyz_centroid) == 0)
     {
       plane_parameters.setConstant (std::numeric_limits<float>::quiet_NaN ());
       curvature = std::numeric_limits<float>::quiet_NaN ();
@@ -230,9 +232,11 @@ namespace pcl
         * \f]
         */
       inline void
-      computePointNormal (const pcl::PointCloud<PointInT> &cloud, const std::vector<int> &indices, Eigen::Vector4f &plane_parameters, float &curvature)
+      computePointNormal (const pcl::PointCloud<PointInT> &cloud, const std::vector<int> &indices,
+                          Eigen::Vector4f &plane_parameters, float &curvature)
       {
-        if (computeMeanAndCovarianceMatrix (cloud, indices, covariance_matrix_, xyz_centroid_) == 0)
+        if (indices.size () < 3 ||
+            computeMeanAndCovarianceMatrix (cloud, indices, covariance_matrix_, xyz_centroid_) == 0)
         {
           plane_parameters.setConstant (std::numeric_limits<float>::quiet_NaN ());
           curvature = std::numeric_limits<float>::quiet_NaN ();
@@ -256,9 +260,11 @@ namespace pcl
         * \f]
         */
       inline void
-      computePointNormal (const pcl::PointCloud<PointInT> &cloud, const std::vector<int> &indices, float &nx, float &ny, float &nz, float &curvature)
+      computePointNormal (const pcl::PointCloud<PointInT> &cloud, const std::vector<int> &indices,
+                          float &nx, float &ny, float &nz, float &curvature)
       {
-        if (computeMeanAndCovarianceMatrix (cloud, indices, covariance_matrix_, xyz_centroid_) == 0)
+        if (indices.size () < 3 ||
+            computeMeanAndCovarianceMatrix (cloud, indices, covariance_matrix_, xyz_centroid_) == 0)
         {
           nx = ny = nz = curvature = std::numeric_limits<float>::quiet_NaN ();
           return;
