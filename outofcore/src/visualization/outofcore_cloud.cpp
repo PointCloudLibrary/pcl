@@ -120,7 +120,8 @@ OutofcoreCloud::OutofcoreCloud (std::string name, boost::filesystem::path& tree_
   // Create the pcd reader thread once for all outofcore nodes
   if (OutofcoreCloud::pcd_reader_thread.get() == NULL)
   {
-    OutofcoreCloud::pcd_reader_thread = boost::shared_ptr<boost::thread>(new boost::thread(&OutofcoreCloud::pcdReaderThread, this));
+//    OutofcoreCloud::pcd_reader_thread = boost::shared_ptr<boost::thread>(new boost::thread(&OutofcoreCloud::pcdReaderThread, this));
+    OutofcoreCloud::pcd_reader_thread = boost::shared_ptr<boost::thread>(new boost::thread(OutofcoreCloud::pcdReaderThread));
   }
 
 
