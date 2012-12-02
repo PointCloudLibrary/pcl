@@ -224,6 +224,7 @@ if(build)
   add_subdirectory(modeler)
   add_subdirectory(cloud_composer)
   add_subdirectory(in_hand_scanner)
+  add_subdirectory(point_cloud_editor)
 
 endif(build)
 
