@@ -43,7 +43,7 @@
 
 
 bool 
-pcl::gpu::kinfuLS::CyclicalBuffer::checkForShift (const TsdfVolume::Ptr volume, const Eigen::Affine3f &cam_pose, const double distance_camera_target, const bool perform_shift, const bool last_shift)
+pcl::gpu::kinfuLS::CyclicalBuffer::checkForShift (const TsdfVolume::Ptr volume, const Eigen::Affine3f &cam_pose, const double distance_camera_target, const bool perform_shift, const bool last_shift, const bool force_shift)
 {
   bool result = false;
 
@@ -63,11 +63,11 @@ pcl::gpu::kinfuLS::CyclicalBuffer::checkForShift (const TsdfVolume::Ptr volume, 
   if (pcl::euclideanDistance (targetPoint, center_cube) > distance_threshold_)
     result = true;
   
-  if (!perform_shift)
+  if (!perform_shift && !force_shift)
     return (result);
 
   // perform shifting operations
-  if (result)
+  if (result || force_shift)
     performShift (volume, targetPoint, last_shift);
 
   return (result);

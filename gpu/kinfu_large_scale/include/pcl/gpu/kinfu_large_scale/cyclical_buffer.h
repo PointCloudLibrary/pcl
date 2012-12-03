@@ -110,11 +110,12 @@ namespace pcl
             * \param[in] volume pointer to the TSDFVolume living in GPU
             * \param[in] cam_pose global pose of the camera in the world
             * \param[in] distance_camera_target distance from the camera's origin to the target point
-            * \param[in] perform_shift if set to true, shifting is performed automatically (checkForAndPerformShift is called) .
+            * \param[in] perform_shift if set to false, shifting is not performed. The function will return true if shifting is needed.
             * \param[in] last_shift if set to true, the whole cube will be shifted. This is used to push the whole cube to the world model.
+            * \param[in] force_shift if set to true, shifting is forced.
             * \return true is the cube needs to be or has been shifted.
             */
-          bool checkForShift (const TsdfVolume::Ptr volume, const Eigen::Affine3f &cam_pose, const double distance_camera_target, const bool perform_shift = true, const bool last_shift = false);
+          bool checkForShift (const TsdfVolume::Ptr volume, const Eigen::Affine3f &cam_pose, const double distance_camera_target, const bool perform_shift = true, const bool last_shift = false, const bool force_shift = false);
           
           /** \brief Perform shifting operations:
               Compute offsets.

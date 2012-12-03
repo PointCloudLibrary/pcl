@@ -60,7 +60,7 @@ namespace pcl
       ScreenshotManager::saveImage(const Eigen::Affine3f &camPose, pcl::gpu::PtrStepSz<const PixelRGB> rgb24)
       {
 
-        PCL_INFO ("[o] [o] [o] [o] Saving screenshot [o] [o] [o] [o]\n");
+        PCL_WARN ("[o] [o] [o] [o] Saving screenshot [o] [o] [o] [o]\n");
 
         std::string file_extension_image = ".png";
         std::string file_extension_pose = ".txt";

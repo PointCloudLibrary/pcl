@@ -168,6 +168,9 @@ namespace pcl
             */
           Eigen::Affine3f
           getCameraPose (int time = -1) const;
+          
+          Eigen::Affine3f
+          getLastEstimatedPose () const;
 
           /** \brief Returns number of poses including initial */
           size_t
@@ -216,6 +219,24 @@ namespace pcl
             */
           void
           extractAndSaveWorld ();
+          
+          /** \brief Returns true if ICP is currently lost */
+          bool
+          icpIsLost ()
+          {
+            return (lost_);
+          }
+          
+          /** \brief Performs the tracker reset to initial  state. It's used if camera tracking fails. */
+          void
+          reset ();
+          
+          void
+          setDisableICP () 
+          { 
+            disable_icp_ = !disable_icp_;
+            PCL_WARN("ICP is %s\n", !disable_icp_?"ENABLED":"DISABLED");
+          }
 
         private:
           
@@ -225,11 +246,6 @@ namespace pcl
             */
           void
           allocateBufffers (int rows_arg, int cols_arg);
-
-          /** \brief Performs the tracker reset to initial  state. It's used if camera tracking fails.
-            */
-          void
-          reset ();
                    
           /** \brief Number of pyramid levels */
           enum { LEVELS = 3 };
@@ -253,7 +269,8 @@ namespace pcl
             * \param[out] translationOut1 result of first translation conversion
             * \param[out] translationOut2 result of second translation conversion
             */
-          inline void convertTransforms (Matrix3frm& transform_in_1, Matrix3frm& transform_in_2, Eigen::Vector3f& translation_in_1, Eigen::Vector3f& translation_in_2,
+          inline void 
+          convertTransforms (Matrix3frm& transform_in_1, Matrix3frm& transform_in_2, Eigen::Vector3f& translation_in_1, Eigen::Vector3f& translation_in_2,
                                          pcl::device::kinfuLS::Mat33& transform_out_1, pcl::device::kinfuLS::Mat33& transform_out_2, float3& translation_out_1, float3& translation_out_2);
           
           /** \brief helper function that converts transforms from host to device types
@@ -264,7 +281,8 @@ namespace pcl
             * \param[out] transformOut2 result of second transform conversion
             * \param[out] translationOut result of translation conversion
             */
-          inline void convertTransforms (Matrix3frm& transform_in_1, Matrix3frm& transform_in_2, Eigen::Vector3f& translation_in,
+          inline void 
+          convertTransforms (Matrix3frm& transform_in_1, Matrix3frm& transform_in_2, Eigen::Vector3f& translation_in,
                                          pcl::device::kinfuLS::Mat33& transform_out_1, pcl::device::kinfuLS::Mat33& transform_out_2, float3& translation_out);
           
           /** \brief helper function that converts transforms from host to device types
@@ -273,7 +291,8 @@ namespace pcl
             * \param[out] transformOut result of transform conversion
             * \param[out] translationOut result of translation conversion
             */
-          inline void convertTransforms (Matrix3frm& transform_in, Eigen::Vector3f& translation_in,
+          inline void 
+          convertTransforms (Matrix3frm& transform_in, Eigen::Vector3f& translation_in,
                                          pcl::device::kinfuLS::Mat33& transform_out, float3& translation_out);
           
           /** \brief helper function that pre-process a raw detph map the kinect fusion algorithm.
@@ -282,7 +301,8 @@ namespace pcl
             * \param[in] depth_raw the raw depth map to process
             * \param[in] cam_intrinsics intrinsics of the camera used to acquire the depth map
             */
-          inline void prepareMaps (const DepthMap& depth_raw, const pcl::device::kinfuLS::Intr& cam_intrinsics);
+          inline void 
+          prepareMaps (const DepthMap& depth_raw, const pcl::device::kinfuLS::Intr& cam_intrinsics);
  
           /** \brief helper function that performs GPU-based ICP, using vertex and normal maps stored in v/nmaps_curr_ and v/nmaps_g_prev_
             * The function requires the previous local camera pose (translation and inverted rotation) as well as camera intrinsics.
@@ -290,11 +310,28 @@ namespace pcl
             * \param[in] cam_intrinsics intrinsics of the camera
             * \param[in] previous_global_rotation previous local rotation of the camera
             * \param[in] previous_global_translation previous local translation of the camera
-            * \param[in] current_global_rotation computed global rotation
-            * \param[in] current_global_translation computed global translation
+            * \param[out] current_global_rotation computed global rotation
+            * \param[out] current_global_translation computed global translation
             * \return true if ICP has converged.
             */
-          inline bool performICP(const pcl::device::kinfuLS::Intr& cam_intrinsics, Matrix3frm& previous_global_rotation, Vector3f& previous_global_translation, Matrix3frm& current_global_rotation, Vector3f& current_global_translation);
+          inline bool 
+          performICP(const pcl::device::kinfuLS::Intr& cam_intrinsics, Matrix3frm& previous_global_rotation, Vector3f& previous_global_translation, Matrix3frm& current_global_rotation, Vector3f& current_global_translation);
+          
+          
+          /** \brief helper function that performs GPU-based ICP, using the current and the previous depth-maps (i.e. not using the synthetic depth map generated from the tsdf-volume)
+            * The function requires camera intrinsics.
+            * It will return the transformation between the previous and the current depth map.
+            * \param[in] cam_intrinsics intrinsics of the camera
+            * \param[out] resulting_rotation computed global rotation
+            * \param[out] resulting_translation computed global translation
+            * \return true if ICP has converged.
+            */
+          inline bool 
+          performPairWiseICP(const pcl::device::kinfuLS::Intr cam_intrinsics, Matrix3frm& resulting_rotation, Vector3f& resulting_translation);
+          
+          /** \brief Helper function that copies v_maps_curr and n_maps_curr to v_maps_prev_ and n_maps_prev_ */
+          inline void 
+          saveCurrentMaps();
           
           /** \brief Cyclical buffer object */
           CyclicalBuffer cyclical_;
@@ -355,6 +392,12 @@ namespace pcl
           
           /** \brief Normal maps pyramid for current frame in current coordinate space. */
           std::vector<MapArr> nmaps_curr_;
+          
+          /** \brief Vertex maps pyramid for previous frame in current coordinate space. */
+          std::vector<MapArr> vmaps_prev_;
+          
+          /** \brief Normal maps pyramid for previous frame in current coordinate space. */
+          std::vector<MapArr> nmaps_prev_;
 
           /** \brief Array of buffers with ICP correspondences for each pyramid level. */
           std::vector<CorespMap> coresps_;
@@ -388,6 +431,18 @@ namespace pcl
 
           /** \brief Size of the TSDF volume in meters. */
           float volume_size_;
+          
+          /** \brief True if ICP is lost */
+          bool lost_;
+          
+          /** \brief Last estimated rotation (estimation is done via pairwise alignment when ICP is failing) */
+          Matrix3frm last_estimated_rotation_;
+          
+          /** \brief Last estimated translation (estimation is done via pairwise alignment when ICP is failing) */
+          Vector3f last_estimated_translation_;
+               
+          
+          bool disable_icp_;
           
         public:
           EIGEN_MAKE_ALIGNED_OPERATOR_NEW
