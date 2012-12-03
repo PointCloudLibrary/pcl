@@ -186,9 +186,16 @@ namespace pcl
         * \param[in] use_reciprocal_correspondence whether to use reciprocal correspondence or not
         */
       inline void
-      setUseReciprocalCorrespondence(bool use_reciprocal_correspondence)
+      setUseReciprocalCorrespondences (bool use_reciprocal_correspondence)
       {
         use_reciprocal_correspondence_ = use_reciprocal_correspondence;
+      }
+
+      /** \brief Obtain whether reciprocal correspondence are used or not */
+      inline bool
+      getUseReciprocalCorrespondences () const
+      {
+        return (use_reciprocal_correspondence_);
       }
 
     protected:
