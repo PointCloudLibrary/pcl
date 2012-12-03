@@ -36,6 +36,9 @@ if (build)
   PCL_ADD_EXECUTABLE (pcl_ply2pcd ${SUBSYS_NAME} ply2pcd.cpp)
   target_link_libraries (pcl_ply2pcd pcl_common pcl_io)
 
+  PCL_ADD_EXECUTABLE (pcl_xyz2pcd ${SUBSYS_NAME} xyz2pcd.cpp)
+  target_link_libraries (pcl_xyz2pcd pcl_common pcl_io)
+
   PCL_ADD_EXECUTABLE (pcl_pclzf2pcd ${SUBSYS_NAME} pclzf2pcd.cpp)
   target_link_libraries (pcl_pclzf2pcd pcl_common pcl_io)
 
