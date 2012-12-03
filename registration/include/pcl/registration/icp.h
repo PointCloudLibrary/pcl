@@ -138,6 +138,7 @@ namespace pcl
         , nx_idx_offset_ (0)
         , ny_idx_offset_ (0)
         , nz_idx_offset_ (0)
+        , use_reciprocal_correspondence_ (false)
         , source_has_normals_ (false)
       {
         reg_name_ = "IterativeClosestPoint";
@@ -180,6 +181,16 @@ namespace pcl
         }
       }
 
+      /** \brief Set whether to use reciprocal correspondence or not
+        *
+        * \param[in] use_reciprocal_correspondence whether to use reciprocal correspondence or not
+        */
+      inline void
+      setUseReciprocalCorrespondence(bool use_reciprocal_correspondence)
+      {
+        use_reciprocal_correspondence_ = use_reciprocal_correspondence;
+      }
+
     protected:
 
       /** \brief Apply a rigid transform to a given dataset. Here we check whether whether
@@ -206,6 +217,9 @@ namespace pcl
 
       /** \brief Normal fields offset. */
       size_t nx_idx_offset_, ny_idx_offset_, nz_idx_offset_;
+
+      /** \brief The correspondence type used for correspondence estimation. */
+      bool use_reciprocal_correspondence_;
 
       /** \brief Internal check whether dataset has normals or not. */
       bool source_has_normals_;

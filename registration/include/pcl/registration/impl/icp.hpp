@@ -152,7 +152,10 @@ pcl::IterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransformat
     previous_transformation_ = transformation_;
 
     // Estimate correspondences
-    correspondence_estimation_->determineCorrespondences (*correspondences_, corr_dist_threshold_);
+    if (use_reciprocal_correspondence_)
+      correspondence_estimation_->determineReciprocalCorrespondences (*correspondences_, corr_dist_threshold_);
+    else
+      correspondence_estimation_->determineCorrespondences (*correspondences_, corr_dist_threshold_);
 
     //if (correspondence_rejectors_.empty ())
     CorrespondencesPtr temp_correspondences (new Correspondences (*correspondences_));
