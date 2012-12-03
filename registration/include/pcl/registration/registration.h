@@ -119,12 +119,12 @@ namespace pcl
         , transformation_estimation_ ()
         , correspondence_estimation_ ()
         , correspondence_rejectors_ ()
-        , update_visualizer_ (NULL)
-        , point_representation_ ()
         , target_cloud_updated_ (true)
         , source_cloud_updated_ (true)
         , force_no_recompute_ (false)
         , force_no_recompute_reciprocal_ (false)
+        , update_visualizer_ (NULL)
+        , point_representation_ ()
       {
       }
 
