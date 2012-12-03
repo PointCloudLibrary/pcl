@@ -396,7 +396,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::loadDepthAndRGBFiles (const std::string
 {
   if (!boost::filesystem::exists (dir) || !boost::filesystem::is_directory (dir))
   {
-    PCL_ERROR ("Error: attempted to instantiate a pcl::ImageGrabber from a path which"
+    PCL_ERROR ("[pcl::ImageGrabber::loadDepthAndRGBFiles] Error: attempted to instantiate a pcl::ImageGrabber from a path which"
                " is not a directory: %s", dir.c_str ());
     return;
   }
@@ -439,7 +439,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::loadPCLZFFiles (const std::string &dir)
 {
   if (!boost::filesystem::exists (dir) || !boost::filesystem::is_directory (dir))
   {
-    PCL_ERROR ("Error: attempted to instantiate a pcl::ImageGrabber from a path which"
+    PCL_ERROR ("[pcl::ImageGrabber::loadPCLZFFiles] Error: attempted to instantiate a pcl::ImageGrabber from a path which"
                " is not a directory: %s", dir.c_str ());
     return;
   }
@@ -542,17 +542,17 @@ pcl::ImageGrabberBase::ImageGrabberImpl::getVtkImage (
   }
   else
   {
-    PCL_ERROR ("Attempted to access an invalid filetype: %s\n", filename.c_str ());
+    PCL_ERROR ("[pcl::ImageGrabber::getVtkImage] Attempted to access an invalid filetype: %s\n", filename.c_str ());
     return (false);
   }
   if (retval == 0)
   {
-    PCL_ERROR ("Image file can't be read: %s\n", filename.c_str ());
+    PCL_ERROR ("[pcl::ImageGrabber::getVtkImage] Image file can't be read: %s\n", filename.c_str ());
     return (false);
   }
   else if (retval == 1)
   {
-    PCL_ERROR ("Can't prove that I can read: %s\n", filename.c_str ());
+    PCL_ERROR ("[pcl::ImageGrabber::getVtkImage] Can't prove that I can read: %s\n", filename.c_str ());
     return (false);
   }
   reader->SetFileName (filename.c_str ());
