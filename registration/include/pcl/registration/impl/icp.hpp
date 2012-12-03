@@ -38,6 +38,9 @@
  *
  */
 
+#ifndef PCL_REGISTRATION_IMPL_ICP_HPP_
+#define PCL_REGISTRATION_IMPL_ICP_HPP_
+
 #include <pcl/registration/boost.h>
 #include <pcl/correspondence.h>
 #include <pcl/registration/default_convergence_criteria.h>
@@ -219,4 +222,4 @@ pcl::IterativeClosestPointWithNormals<PointSource, PointTarget, Scalar>::transfo
   pcl::transformPointCloudWithNormals (input, output, transform);
 }
 
-
+#endif /* PCL_REGISTRATION_IMPL_ICP_HPP_ */

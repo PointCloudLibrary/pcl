@@ -270,6 +270,8 @@ namespace pcl
   };
 }
 
+#ifdef PCL_NO_PRECOMPILE
 #include <pcl/registration/impl/icp.hpp>
+#endif
 
 #endif  //#ifndef PCL_ICP_H_
