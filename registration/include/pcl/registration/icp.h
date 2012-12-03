@@ -92,16 +92,16 @@ namespace pcl
   template <typename PointSource, typename PointTarget, typename Scalar = float>
   class IterativeClosestPoint : public Registration<PointSource, PointTarget, Scalar>
   {
-    typedef typename Registration<PointSource, PointTarget, Scalar>::PointCloudSource PointCloudSource;
-    typedef typename PointCloudSource::Ptr PointCloudSourcePtr;
-    typedef typename PointCloudSource::ConstPtr PointCloudSourceConstPtr;
-
-    typedef typename Registration<PointSource, PointTarget, Scalar>::PointCloudTarget PointCloudTarget;
-
-    typedef PointIndices::Ptr PointIndicesPtr;
-    typedef PointIndices::ConstPtr PointIndicesConstPtr;
-
     public:
+      typedef typename Registration<PointSource, PointTarget, Scalar>::PointCloudSource PointCloudSource;
+      typedef typename PointCloudSource::Ptr PointCloudSourcePtr;
+      typedef typename PointCloudSource::ConstPtr PointCloudSourceConstPtr;
+
+      typedef typename Registration<PointSource, PointTarget, Scalar>::PointCloudTarget PointCloudTarget;
+
+      typedef PointIndices::Ptr PointIndicesPtr;
+      typedef PointIndices::ConstPtr PointIndicesConstPtr;
+
       typedef boost::shared_ptr<IterativeClosestPoint<PointSource, PointTarget, Scalar> > Ptr;
       typedef boost::shared_ptr<const IterativeClosestPoint<PointSource, PointTarget, Scalar> > ConstPtr;
 
@@ -270,8 +270,6 @@ namespace pcl
   };
 }
 
-#ifdef PCL_NO_PRECOMPILE
 #include <pcl/registration/impl/icp.hpp>
-#endif
 
 #endif  //#ifndef PCL_ICP_H_
