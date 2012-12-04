@@ -149,6 +149,61 @@ TEST (PCL, ConcaveHull_planar_bunny)
   EXPECT_EQ (concave_hull_2d.getDimension (), 2);
 }
 
+
+TEST (PCL, ConcaveHull_3points)
+{
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_4 (new pcl::PointCloud<pcl::PointXYZ> ());
+  pcl::PointXYZ p;
+  p.x = p.y = p.z = 0.f;
+  cloud_4->push_back (p);
+
+  p.x = 1.f;
+  p.y = 0.f;
+  p.z = 0.f;
+  cloud_4->push_back (p);
+
+  p.x = 0.f;
+  p.y = 1.f;
+  p.z = 0.f;
+  cloud_4->push_back (p);
+
+  p.x = 1.f;
+  p.y = 1.f;
+  p.z = 0.f;
+  cloud_4->push_back (p);
+
+  cloud_4->height = 1;
+  cloud_4->width = cloud_4->size ();
+
+  ConcaveHull<PointXYZ> concave_hull;
+  concave_hull.setInputCloud (cloud_4);
+  concave_hull.setAlpha (10.);
+  PolygonMesh mesh;
+  concave_hull.reconstruct (mesh);
+
+  EXPECT_EQ (mesh.polygons.size (), 1);
+  EXPECT_EQ (mesh.polygons[0].vertices.size (), 4);
+
+  PointCloud<PointXYZ> mesh_cloud;
+  fromROSMsg (mesh.cloud, mesh_cloud);
+
+  EXPECT_NEAR (mesh_cloud[0].x, 1.f, 1e-6);
+  EXPECT_NEAR (mesh_cloud[0].y, 0.f, 1e-6);
+  EXPECT_NEAR (mesh_cloud[0].z, 0.f, 1e-6);
+
+  EXPECT_NEAR (mesh_cloud[1].x, 0.f, 1e-6);
+  EXPECT_NEAR (mesh_cloud[1].y, 0.f, 1e-6);
+  EXPECT_NEAR (mesh_cloud[1].z, 0.f, 1e-6);
+
+  EXPECT_NEAR (mesh_cloud[2].x, 0.f, 1e-6);
+  EXPECT_NEAR (mesh_cloud[2].y, 1.f, 1e-6);
+  EXPECT_NEAR (mesh_cloud[2].z, 0.f, 1e-6);
+
+  EXPECT_NEAR (mesh_cloud[3].x, 1.f, 1e-6);
+  EXPECT_NEAR (mesh_cloud[3].y, 1.f, 1e-6);
+  EXPECT_NEAR (mesh_cloud[3].z, 0.f, 1e-6);
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, ConcaveHull_LTable)
 {

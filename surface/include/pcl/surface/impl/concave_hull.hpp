@@ -518,16 +518,21 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
 
     alpha_shape.points = alpha_shape_sorted.points;
 
-    polygons.resize (pcd_idx_start_polygons.size () - 1);
+    polygons.reserve (pcd_idx_start_polygons.size () - 1);
 
-    for (size_t poly_id = 0; poly_id < polygons.size (); poly_id++)
+    for (size_t poly_id = 0; poly_id < pcd_idx_start_polygons.size () - 1; poly_id++)
     {
-      polygons[poly_id].vertices.resize (pcd_idx_start_polygons[poly_id + 1] - pcd_idx_start_polygons[poly_id] + 1);
-      // populate points in the corresponding polygon
-      for (int j = pcd_idx_start_polygons[poly_id]; j < pcd_idx_start_polygons[poly_id + 1]; ++j)
-        polygons[poly_id].vertices[j - pcd_idx_start_polygons[poly_id]] = static_cast<uint32_t> (j);
+      // Check if we actually have a polygon, and not some degenerated output from QHull
+      if (pcd_idx_start_polygons[poly_id + 1] - pcd_idx_start_polygons[poly_id] >= 3)
+      {
+        pcl::Vertices vertices;
+        vertices.vertices.resize (pcd_idx_start_polygons[poly_id + 1] - pcd_idx_start_polygons[poly_id]);
+        // populate points in the corresponding polygon
+        for (int j = pcd_idx_start_polygons[poly_id]; j < pcd_idx_start_polygons[poly_id + 1]; ++j)
+          vertices.vertices[j - pcd_idx_start_polygons[poly_id]] = static_cast<uint32_t> (j);
 
-      polygons[poly_id].vertices[polygons[poly_id].vertices.size () - 1] = pcd_idx_start_polygons[poly_id];
+        polygons.push_back (vertices);
+      }
     }
 
     if (voronoi_centers_)
