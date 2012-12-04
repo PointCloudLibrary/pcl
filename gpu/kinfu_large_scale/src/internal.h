@@ -130,7 +130,7 @@ namespace pcl
       void 
       bilateralFilter (const DepthMap& src, DepthMap& dst);
       
-          /** \brief Computes depth pyramid
+      /** \brief Computes depth pyramid
         * \param[in] src source
         * \param[out] dst destination
         */
@@ -145,14 +145,14 @@ namespace pcl
       void 
       createVMap (const Intr& intr, const DepthMap& depth, MapArr& vmap);
       
-          /** \brief Computes normal map using cross product
+      /** \brief Computes normal map using cross product
         * \param[in] vmap vertex map
         * \param[out] nmap normal map
         */
       void 
       createNMap (const MapArr& vmap, MapArr& nmap);
       
-          /** \brief Computes normal map using Eigen/PCA approach
+      /** \brief Computes normal map using Eigen/PCA approach
         * \param[in] vmap vertex map
         * \param[out] nmap normal map
         */
@@ -307,7 +307,6 @@ namespace pcl
       /** \brief Initialzied color volume
         * \param[out] color_volume color volume for initialization
         */
-
       void 
       initColorVolume(PtrStep<uchar4> color_volume);    
 
