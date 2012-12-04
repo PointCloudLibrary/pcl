@@ -426,6 +426,64 @@ TEST (PCL, ConvexHull_3dcube)
   }
 }
 
+TEST (PCL, ConvexHull_4points)
+{
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_4 (new pcl::PointCloud<pcl::PointXYZ> ());
+  pcl::PointXYZ p;
+  p.x = p.y = p.z = 0.f;
+  cloud_4->push_back (p);
+
+  p.x = 1.f;
+  p.y = 0.f;
+  p.z = 0.f;
+  cloud_4->push_back (p);
+
+  p.x = 0.f;
+  p.y = 1.f;
+  p.z = 0.f;
+  cloud_4->push_back (p);
+
+  p.x = 1.f;
+  p.y = 1.f;
+  p.z = 0.f;
+  cloud_4->push_back (p);
+
+  cloud_4->height = 1;
+  cloud_4->width = cloud_4->size ();
+
+  ConvexHull<PointXYZ> convex_hull;
+  convex_hull.setComputeAreaVolume (true);
+  convex_hull.setInputCloud (cloud_4);
+  PolygonMesh mesh;
+  convex_hull.reconstruct (mesh);
+
+  EXPECT_EQ (mesh.polygons.size (), 1);
+
+  /// TODO this should be 4, not 5 as it is now - fix that!!!
+  // EXPECT_EQ (mesh.polygons[0].vertices.size (), 4);
+
+  PointCloud<PointXYZ> mesh_cloud;
+  fromROSMsg (mesh.cloud, mesh_cloud);
+
+  EXPECT_NEAR (mesh_cloud[0].x, 0.f, 1e-6);
+  EXPECT_NEAR (mesh_cloud[0].y, 1.f, 1e-6);
+  EXPECT_NEAR (mesh_cloud[0].z, 0.f, 1e-6);
+
+  EXPECT_NEAR (mesh_cloud[1].x, 1.f, 1e-6);
+  EXPECT_NEAR (mesh_cloud[1].y, 1.f, 1e-6);
+  EXPECT_NEAR (mesh_cloud[1].z, 0.f, 1e-6);
+
+  EXPECT_NEAR (mesh_cloud[2].x, 1.f, 1e-6);
+  EXPECT_NEAR (mesh_cloud[2].y, 0.f, 1e-6);
+  EXPECT_NEAR (mesh_cloud[2].z, 0.f, 1e-6);
+
+  EXPECT_NEAR (mesh_cloud[3].x, 0.f, 1e-6);
+  EXPECT_NEAR (mesh_cloud[3].y, 0.f, 1e-6);
+  EXPECT_NEAR (mesh_cloud[3].z, 0.f, 1e-6);
+
+  EXPECT_NEAR (convex_hull.getTotalArea (), 1.0f, 1e-6);
+}
+
 /* ---[ */
 int
 main (int argc, char** argv)

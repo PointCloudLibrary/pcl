@@ -150,7 +150,7 @@ TEST (PCL, ConcaveHull_planar_bunny)
 }
 
 
-TEST (PCL, ConcaveHull_3points)
+TEST (PCL, ConcaveHull_4points)
 {
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_4 (new pcl::PointCloud<pcl::PointXYZ> ());
   pcl::PointXYZ p;
