@@ -250,14 +250,13 @@ pcl::ConvexHull<PointInT>::performReconstruction2D (PointCloud &hull, std::vecto
   std::sort (idx_points.begin (), idx_points.end (), comparePoints2D);
     
   polygons.resize (1);
-  polygons[0].vertices.resize (hull.points.size () + 1);  
+  polygons[0].vertices.resize (hull.points.size ());
 
   for (int j = 0; j < static_cast<int> (hull.points.size ()); j++)
   {
     hull.points[j] = input_->points[(*indices_)[idx_points[j].first]];
     polygons[0].vertices[j] = static_cast<unsigned int> (j);
   }
-  polygons[0].vertices[hull.points.size ()] = 0;
     
   qh_freeqhull (!qh_ALL);
   int curlong, totlong;

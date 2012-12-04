@@ -460,7 +460,7 @@ TEST (PCL, ConvexHull_4points)
   EXPECT_EQ (mesh.polygons.size (), 1);
 
   /// TODO this should be 4, not 5 as it is now - fix that!!!
-  // EXPECT_EQ (mesh.polygons[0].vertices.size (), 4);
+   EXPECT_EQ (mesh.polygons[0].vertices.size (), 4);
 
   PointCloud<PointXYZ> mesh_cloud;
   fromROSMsg (mesh.cloud, mesh_cloud);
