@@ -47,7 +47,6 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/features/normal_3d_omp.h>
-#include <pcl/filters/voxel_grid.h>
 
 namespace pcl
 {
@@ -119,17 +118,21 @@ namespace pcl
       typename pcl::PointCloud<PointT>::Ptr
       getVoxelCloud ();
       
-      /** \brief Set the importance of color for superpixels */
+      /** \brief Set the importance of color for supervoxels */
       void
       setColorImportance (float val);
       
-      /** \brief Set the importance of spatial distance for superpixels */
+      /** \brief Set the importance of spatial distance for supervoxels */
       void
       setSpatialImportance (float val);
       
-      /** \brief Set the importance of 3D shape for superpixels */
+      /** \brief Set the importance of 3D shape for supervoxels */
       void
       setFPFHImportance (float val);
+      
+      /** \brief Set the importance of scalar normal product for supervoxels */
+      void
+      setNormalImportance (float val);
       
       /** \brief Returns normals calculated in the Voxel Cloud. */
       pcl::PointCloud<pcl::Normal>::ConstPtr
@@ -143,6 +146,17 @@ namespace pcl
       virtual void
       extract (typename pcl::PointCloud<PointT>::Ptr voxel_cloud, std::vector<pcl::PointIndices>& superpixels);
 
+      ////////////////////////////////////////////////////////////
+      /** \brief Compute hierarchical segmentation tree from superpixels 
+       *  This is similar to the method of Felzenszwalb and Huttenlocher, 
+       *  "Efficient Graph-Based Image Segmentation".
+       *  It computes a hierarchical segmentation tree starting with the
+       *  supervoxels by iteratively merging them.
+       */
+      void
+      computeHierarchicalSegmentation ();
+      
+      ////////////////////////////////////////////////////////////
       /** \brief Returns an RGB colorized cloud showing superpixels
         * Otherwise it returns an empty pointer.
         * Points that belong to the same segment have the same color.
@@ -175,10 +189,14 @@ namespace pcl
       pcl::PointCloud<pcl::PointXYZL>::Ptr
       getLabeledVoxelCloud ();
       
-
+            
       /** \brief Function for testing - returns an RGB labeled cloud showing seeds and search*/
       typename pcl::PointCloud<PointXYZRGB>::Ptr
       getSeedCloud ();
+      
+      /** \brief Function for testing - returns an RGB labeled cloud showing seeds and search*/
+      typename pcl::PointCloud<PointXYZRGB>::Ptr
+      getVoxelSeedCloud ();
 
       /** \brief Get a vector of the sets of neighbors for each superpixel */
       void
@@ -187,6 +205,14 @@ namespace pcl
       /** \brief Get a vector of points specifying the spatial "center" of each superpixel */
       void 
       getSuperpixelCenters (std::vector<pcl::PointXYZ, Eigen::aligned_allocator<pcl::PointXYZ> > &centers);
+      
+      /** \brief Get the adjacency list of voxels 
+          adjacency_list[0..voxel_cloud_size][0..n neighbors]
+          This gives you the indices of the neighbors of voxels
+      */
+      void 
+      getAdjacencyList (std::vector<std::vector<int> > &adjacency_list);
+      
       
     protected:
       /** \brief This method simply checks if it is possible to execute the segmentation algorithm with
@@ -233,6 +259,10 @@ namespace pcl
       float 
       calcDistanceSquared (int index_a, int index_b);
       
+      /** \brief Returns the abs value of scalar product of normals a and b */
+      float 
+      calcNormalScalarProduct (int index_a, int index_b);
+      
       /** \brief Calc distance between a point and a cluster center */
       float
       calcFeatureDistance (int point_index, int seed_index);
@@ -259,7 +289,7 @@ namespace pcl
       
       /** \brief This performs one iteration of evolving the superpixels */
       void
-      iterateSuperpixelClusters ();
+      iterateSuperpixelClusters (int max_depth);
       
       /** \brief Updates the values of the superpixel features */
       void 
@@ -267,7 +297,7 @@ namespace pcl
       
       /** \brief This computes the voxelized cloud */
       void 
-      computeVoxelCloud ();
+      computeVoxelCloud (typename pcl::PointCloud<PointT>::ConstPtr input, typename pcl::PointCloud<PointT>::Ptr &output, typename pcl::octree::OctreePointCloudSearch<PointT>::Ptr &octree,float resolution);
       
       /** \brief This computes the normals on the voxelized cloud */
       void 
@@ -278,21 +308,42 @@ namespace pcl
       void
       cleanSuperpixels ();
       
-  private:
       /** \brief Stores the resolution used in the octree */
       float resolution_;
       
       /** \brief Stores the resolution used to seed the superpixels */
       float seed_resolution_;
       
+      /** \brief After the iterations this will contain the superpixels. */
+      std::vector<pcl::PointIndices> superpixels_;
+      
+      /** \brief Point labels that tells to which superpixel each point belongs. */
+      std::vector<int> point_labels_;
+      
+      /** \brief Contains the Voxelized Cloud at voxel resolution */
+      typename pcl::PointCloud<PointT>::Ptr voxel_cloud_;
+      
+      /** \brief Contains the Voxelized Cloud at seed resolution */
+      typename pcl::PointCloud<PointT>::Ptr seed_cloud_;
+      
+      /** \brief Stores the feature vector for the superpixel clusters */
+      boost::multi_array<float, 2> superpixel_features_;
+      
+      /** \brief Indices of the superpixel seed points */
+      std::vector<int> seed_indices_;
+      
+      /** \brief Contains a KDtree for the voxelized cloud */
+      typename pcl::search::KdTree<PointT>::Ptr voxel_kdtree_;
+      
+      /** \brief Octree Search structure */
+      OctreeSearchPtr search_;
+  private:
+   
       /** \brief Stores the radius used for calculating normals, default resolution_*2.0 */
       float normal_radius_;
       
       /** \brief Stores the radius used for calculating fpfh features, default resolution_*2.0 */
       float fpfh_radius_;
-      
-      /** \brief Octree Search structure */
-      OctreeSearchPtr search_;
 
       /** \brief Importance of color in clustering */
       float color_importance_;
@@ -300,21 +351,14 @@ namespace pcl
       float spatial_importance_;
       /** \brief Importance of similarity in 3D shape for clustering */
       float fpfh_importance_;
+      /** \brief Importance of similarity in normals for clustering */
+      float normal_importance_;
       
       /** \brief Contains normals of the points that will be segmented. */
       pcl::PointCloud<pcl::Normal>::Ptr normals_;
-      
-      /** \brief Contains the Voxelized Cloud */
-      typename pcl::PointCloud<PointT>::Ptr voxel_cloud_;
 
-      /** \brief Contains a KDtree for the voxelized cloud */
-      typename pcl::search::KdTree<PointT>::Ptr voxel_kdtree_;
-      
       /** \brief Contains the FPFH values for Voxel cloud */
       pcl::PointCloud<pcl::FPFHSignature33>::Ptr voxel_fpfh_;
-      
-      /** \brief Indices of the superpixel seed points */
-      std::vector<int> seed_indices_;
       
       /** \brief Indices of the superpixel seed points before they are adjusted */
       std::vector<int> seed_indices_orig_;
@@ -322,18 +366,9 @@ namespace pcl
       /** \brief Indices of the superpixel seed points after adjustment */
       std::vector<int> seed_indices_unshifted_;
       
-      /** \brief Contains vector of each point's neighbors in pair (idx, dist) form */
+      /** \brief Contains vector of each point's neighbors in pair (idx, color dist) form */
       std::vector<std::vector<std::pair<int, float> > > point_neighbor_dist_;
       
-      /** \brief Point labels that tells to which superpixel each point belongs. */
-      std::vector<int> point_labels_;
-
-      /** \brief Tells how many points each superpixel contains. Used for reserving memory. */
-      std::vector<int> num_pts_in_superpixel_;
-
-      /** \brief After the iterations this will contain the superpixels. */
-      std::vector<pcl::PointIndices> superpixels_;
-
       /** \brief Stores the CIELab values of the voxel points  */
       boost::multi_array<float, 2> voxel_LAB_;
       
@@ -343,17 +378,12 @@ namespace pcl
       /** \brief Stores the current vote and certainty for voxels */
       std::vector <std::pair<int, float> > voxel_votes_;
       
-      /** \brief Stores the feature vector for the superpixel clusters */
-      boost::multi_array<float, 2> superpixel_features_;
-      
-      /** \brief Stores the number of superpixels. */
-      int number_of_superpixels_;
-      
       /** \brief Stores the colors used for the superpixel labels*/
       std::vector<uint32_t> superpixel_colors_;
       
       /** \brief Stores a remapping of labels once they are cleaned */
       std::vector<int> label_remapping_;
+
     public:
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
