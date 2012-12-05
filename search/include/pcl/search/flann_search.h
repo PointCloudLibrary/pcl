@@ -235,6 +235,7 @@ namespace pcl
         setPointRepresentation (const PointRepresentationConstPtr &point_representation)
         {
           point_representation_ = point_representation;
+          dim_ = point_representation->getNumberOfDimensions ();
           if (input_) // re-create the tree, since point_represenation might change things such as the scaling of the point clouds.
             setInputCloud (input_, indices_);
         }
