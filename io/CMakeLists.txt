@@ -108,6 +108,7 @@ if(build)
         src/lzf_image_io.cpp
         src/obj_io.cpp
         src/image_grabber.cpp
+        src/hdl_grabber.cpp
         ${VTK_IO_SOURCE}
         ${OPENNI_GRABBER_SOURCES}
         ${DINAST_GRABBER_SOURCES}
@@ -118,6 +119,10 @@ if(build)
           src/libpng_wrapper.cpp
           )
     endif(PNG_FOUND)
+
+	if(PCAP_FOUND)
+	  set(PCAP_DEFINES -DUSE_PCAP)
+	endif(PCAP_FOUND)
 
     set(incs 
         include/pcl/${SUBSYS_NAME}/boost.h
@@ -136,6 +141,8 @@ if(build)
         include/pcl/${SUBSYS_NAME}/obj_io.h
         include/pcl/${SUBSYS_NAME}/ascii_io.h
         include/pcl/${SUBSYS_NAME}/image_grabber.h 
+        include/pcl/${SUBSYS_NAME}/hdl_grabber.h
+        include/pcl/${SUBSYS_NAME}/synchronized_queue.h
         ${VTK_IO_INCLUDES}
         ${OPENNI_GRABBER_INCLUDES}
         ${DINAST_GRABBER_INCLUDES}
@@ -173,11 +180,11 @@ if(build)
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
 
-    include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include ${VTK_INCLUDE_DIRECTORIES})
-    add_definitions(${VTK_DEFINES})
+    include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include ${VTK_INCLUDE_DIRECTORIES} ${PCAP_INCLUDE_DIRS})
+    add_definitions(${VTK_DEFINES} ${PCAP_DEFINES})
     PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${compression_incs} ${impl_incs} ${OPENNI_INCLUDES})
     link_directories(${VTK_LINK_DIRECTORIES})
-    target_link_libraries(${LIB_NAME} pcl_common pcl_io_ply ${VTK_IO_TARGET_LINK_LIBRARIES})
+    target_link_libraries(${LIB_NAME} pcl_common pcl_io_ply ${VTK_IO_TARGET_LINK_LIBRARIES} )
     if(PNG_FOUND)
       target_link_libraries(${LIB_NAME} ${PNG_LIBRARY})
     endif(PNG_FOUND)
@@ -189,6 +196,10 @@ if(build)
     if(OPENNI_FOUND)
       target_link_libraries(${LIB_NAME} ${OPENNI_LIBRARIES})
     endif(OPENNI_FOUND)
+    
+	if (PCAP_FOUND)
+      target_link_libraries(${LIB_NAME} ${PCAP_LIBRARIES})
+	endif(PCAP_FOUND)
 
     set(EXT_DEPS eigen3)
     if(OPENNI_FOUND)

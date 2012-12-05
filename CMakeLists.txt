@@ -275,6 +275,8 @@ find_package(Doxygen)
 if(DOXYGEN_FOUND)
   find_package(HTMLHelp)
 endif(DOXYGEN_FOUND)
+#Find PCAP
+find_package(Pcap)
 
 ### ---[ Create the config.h file
 set(pcl_config_h_in "${CMAKE_CURRENT_SOURCE_DIR}/pcl_config.h.in")

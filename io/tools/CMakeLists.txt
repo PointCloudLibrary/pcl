@@ -11,7 +11,9 @@ endif(OPENNI_FOUND)
 
 PCL_ADD_EXECUTABLE(pcl_pcd_convert_NaN_nan ${SUBSYS_NAME} pcd_convert_NaN_nan.cpp)
 PCL_ADD_EXECUTABLE(pcl_convert_pcd_ascii_binary ${SUBSYS_NAME} convert_pcd_ascii_binary.cpp)
+PCL_ADD_EXECUTABLE(pcl_hdl_grabber ${SUBSYS_NAME} hdl_grabber_example.cpp)
 target_link_libraries(pcl_convert_pcd_ascii_binary pcl_common pcl_io)
+target_link_libraries(pcl_hdl_grabber pcl_common pcl_io pcl_visualization)
 
 #libply inherited tools
 add_subdirectory(ply)
