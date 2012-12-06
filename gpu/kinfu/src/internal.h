@@ -53,10 +53,10 @@ namespace pcl
     typedef DeviceArray2D<ushort> DepthMap;
     typedef float4 PointType;
 
-    //Tsdf fixed point divisor (if old format is enabled)
+    //TSDF fixed point divisor (if old format is enabled)
     const int DIVISOR = 32767;     // SHRT_MAX;
 
-	//should be multiple of 32
+	//Should be multiple of 32
     enum { VOLUME_X = 512, VOLUME_Y = 512, VOLUME_Z = 512 };
 
 	
