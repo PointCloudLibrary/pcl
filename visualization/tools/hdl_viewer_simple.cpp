@@ -47,6 +47,7 @@
 #include <vector>
 #include <string>
 #include <boost/algorithm/string.hpp>
+#include <typeinfo>
 
 using namespace std;
 
@@ -75,124 +76,155 @@ do \
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointType>
-class SimpleHDLViewer {
-public:
-	typedef pcl::PointCloud<PointType> Cloud;
-	typedef typename Cloud::ConstPtr CloudConstPtr;
+class SimpleHDLViewer
+{
+  public:
+    typedef pcl::PointCloud<PointType> Cloud;
+    typedef typename Cloud::ConstPtr CloudConstPtr;
 
-	SimpleHDLViewer(pcl::Grabber& grabber) :
-		 cloud_viewer_ (new pcl::visualization::PCLVisualizer ("PCL HDL Cloud")), grabber_ (grabber){
-	}
+    SimpleHDLViewer (pcl::Grabber& grabber) :
+        cloud_viewer_ (new pcl::visualization::PCLVisualizer ("PCL HDL Cloud")), grabber_ (
+            grabber)
+    {
+    }
 
-	void cloud_callback(const CloudConstPtr& cloud) {
-		FPS_CALC("cloud callback");
-		boost::mutex::scoped_lock lock(cloud_mutex_);
-		cloud_ = cloud;
-		//std::cout << cloud->points[0] << " " << cloud->size() << std::endl;
-	}
+    void cloud_callback (const CloudConstPtr& cloud)
+    {
+      FPS_CALC("cloud callback");
+      boost::mutex::scoped_lock lock (cloud_mutex_);
+      cloud_ = cloud;
+      //std::cout << cloud->points[0] << " " << cloud->size () << std::endl;
+    }
 
-	void keyboard_callback(const pcl::visualization::KeyboardEvent& event, void* cookie) {
-		if (event.getKeyCode())
-			cout << "the key \'" << event.getKeyCode() << "\' (" << static_cast<int>(event.getKeyCode()) << ") was";
-		else
-			cout << "the special key \'" << event.getKeySym() << "\' was";
-		if (event.keyDown())
-			cout << " pressed" << endl;
-		else
-			cout << " released" << endl;
-	}
+    void cloud_callback (const CloudConstPtr& cloud, float startAngle,
+        float endAngle)
+    {
+      FPS_CALC("cloud callback");
+      boost::mutex::scoped_lock lock (cloud_mutex_);
+      cloud_ = cloud;
+    }
 
-	void mouse_callback(const pcl::visualization::MouseEvent& mouse_event, void* cookie) {
-		if (mouse_event.getType() == pcl::visualization::MouseEvent::MouseButtonPress
-				&& mouse_event.getButton() == pcl::visualization::MouseEvent::LeftButton) {
-			cout << mouse_event.getX() << " , " << mouse_event.getY() << endl;
-		}
-	}
+    void keyboard_callback (const pcl::visualization::KeyboardEvent& event,
+        void* cookie)
+    {
+      if (event.keyUp ())
+      {
+        return;
+      }
+    }
 
-	void run() {
-		cloud_viewer_->addCoordinateSystem(300.0);
-		cloud_viewer_->setBackgroundColor(0, 0, 0);
-		cloud_viewer_->initCameraParameters();
-		cloud_viewer_->setCameraPosition(0.0, 0.0, 3000.0, 0.0, 1.0, 0.0, 0);
-		cloud_viewer_->setCameraClipDistances(0.0, 5000.0);
-		//cloud_viewer_->registerMouseCallback(&SimpleHDLViewer::mouse_callback, *this);
-		//cloud_viewer_->registerKeyboardCallback(&SimpleHDLViewer::keyboard_callback, *this);
+    void mouse_callback (const pcl::visualization::MouseEvent& mouse_event,
+        void* cookie)
+    {
+      if (mouse_event.getType ()
+          == pcl::visualization::MouseEvent::MouseButtonPress
+          && mouse_event.getButton ()
+              == pcl::visualization::MouseEvent::LeftButton)
+      {
+        cout << mouse_event.getX () << " , " << mouse_event.getY () << endl;
+      }
+    }
 
-		boost::function<void(const CloudConstPtr&)> cloud_cb = boost::bind(&SimpleHDLViewer::cloud_callback, this, _1);
-		boost::signals2::connection cloud_connection = grabber_.registerCallback(cloud_cb);
+    void run ()
+    {
+      cloud_viewer_->addCoordinateSystem (300.0);
+      cloud_viewer_->setBackgroundColor (0, 0, 0);
+      cloud_viewer_->initCameraParameters ();
+      cloud_viewer_->setCameraPosition (0.0, 0.0, 3000.0, 0.0, 1.0, 0.0, 0);
+      cloud_viewer_->setCameraClipDistances (0.0, 5000.0);
+      //cloud_viewer_->registerMouseCallback(&SimpleHDLViewer::mouse_callback, *this);
+      //cloud_viewer_->registerKeyboardCallback (&SimpleHDLViewer::keyboard_callback, *this);
 
-		grabber_.start();
+      //boost::function<void(const CloudConstPtr&, float, float)> cloud_cb = boost::bind(&SimpleHDLViewer::cloud_callback, this, _1, _2, _3);
+      boost::function<void (const CloudConstPtr&)> cloud_cb = boost::bind (
+          &SimpleHDLViewer::cloud_callback, this, _1);
+      boost::signals2::connection cloud_connection = grabber_.registerCallback (
+          cloud_cb);
 
-		while (!cloud_viewer_->wasStopped()) {
-			CloudConstPtr cloud;
+      grabber_.start ();
 
-			// See if we can get a cloud
-			if (cloud_mutex_.try_lock()) {
-				cloud_.swap(cloud);
-				cloud_mutex_.unlock();
-			}
+      while (!cloud_viewer_->wasStopped ())
+      {
+        CloudConstPtr cloud;
 
-			if (cloud) {
-				FPS_CALC("drawing cloud");
-				//if (!cloud_viewer_->updatePointCloud(cloud, "HDL")) {
-				//	cloud_viewer_->addPointCloud(cloud, "HDL");
-				//}
-				if (!cloud_viewer_->updatePointCloud(cloud, "HDL")) {
-					cloud_viewer_->addPointCloud(cloud, "HDL");
-				}
-				cloud_viewer_->spinOnce();
-			}
+        // See if we can get a cloud
+        if (cloud_mutex_.try_lock ())
+        {
+          cloud_.swap (cloud);
+          cloud_mutex_.unlock ();
+        }
 
-			if (!grabber_.isRunning()) {
-				cloud_viewer_->spin();
-			}
+        if (cloud)
+        {
+          FPS_CALC("drawing cloud");
+          //if (!cloud_viewer_->updatePointCloud(cloud, "HDL")) {
+          //	cloud_viewer_->addPointCloud(cloud, "HDL");
+          //}
+          if (!cloud_viewer_->updatePointCloud (cloud, "HDL"))
+          {
+            cloud_viewer_->addPointCloud (cloud, "HDL");
+          }
+          cloud_viewer_->spinOnce ();
+        }
 
-			boost::this_thread::sleep(boost::posix_time::microseconds(100));
-		}
+        if (!grabber_.isRunning ())
+        {
+          cloud_viewer_->spin ();
+        }
 
-		grabber_.stop();
+        boost::this_thread::sleep (boost::posix_time::microseconds (100));
+      }
 
-		cloud_connection.disconnect();
-	}
+      grabber_.stop ();
 
-	boost::shared_ptr<pcl::visualization::PCLVisualizer> cloud_viewer_;
-	boost::shared_ptr<pcl::visualization::ImageViewer> image_viewer_;
+      cloud_connection.disconnect ();
+    }
 
-	pcl::Grabber& grabber_;
-	boost::mutex cloud_mutex_;
-	boost::mutex image_mutex_;
+    boost::shared_ptr<pcl::visualization::PCLVisualizer> cloud_viewer_;
+    boost::shared_ptr<pcl::visualization::ImageViewer> image_viewer_;
 
-	CloudConstPtr cloud_;
+    pcl::Grabber& grabber_;
+    boost::mutex cloud_mutex_;
+    boost::mutex image_mutex_;
+
+    CloudConstPtr cloud_;
 };
 
-void usage(char ** argv) {
-	cout << "usage: " << argv[0]
-			<< " [-hdlCalibration <path-to-calibration-file>] [-pcapFile <path-to-pcap-file>] [-h | --help] [-format XYZ|XYZRGB]" << endl;
-	cout << argv[0] << " -h | --help : shows this help" << endl;
-	return;
+void usage (char ** argv)
+{
+  cout << "usage: " << argv[0]
+      << " [-hdlCalibration <path-to-calibration-file>] [-pcapFile <path-to-pcap-file>] [-h | --help] [-format XYZ|XYZRGB]"
+      << endl;
+  cout << argv[0] << " -h | --help : shows this help" << endl;
+  return;
 }
 
-int main(int argc, char ** argv) {
-	std::string hdlCalibration, pcapFile, format("XYZ");
+int main (int argc, char ** argv)
+{
+  std::string hdlCalibration, pcapFile, format ("XYZ");
 
-	if (pcl::console::find_switch(argc, argv, "-h") || pcl::console::find_switch(argc, argv, "--help")) {
-		usage(argv);
-		return (0);
-	}
+  if (pcl::console::find_switch (argc, argv, "-h")
+      || pcl::console::find_switch (argc, argv, "--help"))
+  {
+    usage (argv);
+    return (0);
+  }
 
-	pcl::console::parse_argument(argc, argv, "-calibrationFile", hdlCalibration);
-	pcl::console::parse_argument(argc, argv, "-pcapFile", pcapFile);
-	pcl::console::parse_argument(argc, argv, "-format", format);
+  pcl::console::parse_argument (argc, argv, "-calibrationFile", hdlCalibration);
+  pcl::console::parse_argument (argc, argv, "-pcapFile", pcapFile);
+  pcl::console::parse_argument (argc, argv, "-format", format);
 
-	pcl::HDL_Grabber grabber(hdlCalibration, pcapFile);
+  pcl::HDL_Grabber grabber (hdlCalibration, pcapFile);
 
-	if (boost::iequals(format, std::string("XYZ"))) {
-		SimpleHDLViewer<pcl::PointXYZ> v(grabber);
-		v.run();
-	}
-	else if (boost::iequals(format, std::string("XYZRGB"))) {
-		SimpleHDLViewer<pcl::PointXYZRGB> v(grabber);
-		v.run();
-	}
-	return (0);
+  if (boost::iequals (format, std::string ("XYZ")))
+  {
+    SimpleHDLViewer<pcl::PointXYZ> v (grabber);
+    v.run ();
+  }
+  else if (boost::iequals (format, std::string ("XYZRGB")))
+  {
+    SimpleHDLViewer<pcl::PointXYZRGB> v (grabber);
+    v.run ();
+  }
+  return (0);
 }
