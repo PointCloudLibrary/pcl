@@ -122,6 +122,8 @@ if(build)
 
 	if(PCAP_FOUND)
 	  set(PCAP_DEFINES -DUSE_PCAP)
+          include_directories(${PCAP_INCLUDE_DIRS})
+	  add_definitions(${PCAP_DEFINES})
 	endif(PCAP_FOUND)
 
     set(incs 
@@ -180,8 +182,8 @@ if(build)
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
 
-    include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include ${VTK_INCLUDE_DIRECTORIES} ${PCAP_INCLUDE_DIRS})
-    add_definitions(${VTK_DEFINES} ${PCAP_DEFINES})
+    include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include ${VTK_INCLUDE_DIRECTORIES})
+    add_definitions(${VTK_DEFINES})
     PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${compression_incs} ${impl_incs} ${OPENNI_INCLUDES})
     link_directories(${VTK_LINK_DIRECTORIES})
     target_link_libraries(${LIB_NAME} pcl_common pcl_io_ply ${VTK_IO_TARGET_LINK_LIBRARIES} )
@@ -197,9 +199,9 @@ if(build)
       target_link_libraries(${LIB_NAME} ${OPENNI_LIBRARIES})
     endif(OPENNI_FOUND)
     
-	if (PCAP_FOUND)
+    if (PCAP_FOUND)
       target_link_libraries(${LIB_NAME} ${PCAP_LIBRARIES})
-	endif(PCAP_FOUND)
+    endif(PCAP_FOUND)
 
     set(EXT_DEPS eigen3)
     if(OPENNI_FOUND)
