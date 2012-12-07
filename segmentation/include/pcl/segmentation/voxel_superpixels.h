@@ -144,7 +144,7 @@ namespace pcl
        * \param[out] superpixels superpixels that were obtained. Each superpixel is an array of point indices in the voxelized cloud.
        */
       virtual void
-      extract (typename pcl::PointCloud<PointT>::Ptr voxel_cloud, std::vector<pcl::PointIndices>& superpixels);
+      extract (typename pcl::PointCloud<PointT>::Ptr &voxel_cloud, std::vector<pcl::PointIndices>& superpixels);
 
       ////////////////////////////////////////////////////////////
       /** \brief Compute hierarchical segmentation tree from superpixels 
@@ -335,8 +335,15 @@ namespace pcl
       /** \brief Contains a KDtree for the voxelized cloud */
       typename pcl::search::KdTree<PointT>::Ptr voxel_kdtree_;
       
-      /** \brief Octree Search structure */
-      OctreeSearchPtr search_;
+      /** \brief Octree Search structure with leaves at voxel resolution */
+      OctreeSearchPtr input_octree_;
+      
+      /** \brief Octree Search structure with leaves at voxel resolution */
+      OctreeSearchPtr voxel_octree_;
+            
+      /** \brief Octree Search structure with leaves at seed resolution */
+      OctreeSearchPtr seed_octree_;
+      
   private:
    
       /** \brief Stores the radius used for calculating normals, default resolution_*2.0 */

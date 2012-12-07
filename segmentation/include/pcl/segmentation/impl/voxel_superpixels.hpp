@@ -57,7 +57,8 @@ pcl::VoxelSuperpixels<PointT>::VoxelSuperpixels (float voxel_resolution, float s
   superpixel_features_(boost::extents[0][0]),
   seed_indices_ (0),
   voxel_kdtree_ (),
-  search_ (),
+  voxel_octree_ (),
+  seed_octree_ (),
   normal_radius_(resolution_*3.0f),
   fpfh_radius_(resolution_*3.0f),
   color_importance_(0.1f),
@@ -82,10 +83,6 @@ pcl::VoxelSuperpixels<PointT>::VoxelSuperpixels (float voxel_resolution, float s
 template <typename PointT>
 pcl::VoxelSuperpixels<PointT>::~VoxelSuperpixels ()
 {
-  if (search_ != 0)
-    search_.reset ();
-  if (normals_ != 0)
-    normals_.reset ();
 
   point_neighbor_dist_.clear ();
   point_labels_.clear ();
@@ -132,9 +129,6 @@ template <typename PointT> void
 pcl::VoxelSuperpixels<PointT>::setVoxelResolution (float resolution)
 {
   resolution_ = resolution;
-  // if search set
-  if (search_ != 0)
-    search_->setResolution (resolution);
  
 }
 
@@ -207,7 +201,7 @@ pcl::VoxelSuperpixels<PointT>::getNormals () const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
-pcl::VoxelSuperpixels<PointT>::extract (typename pcl::PointCloud<PointT>::Ptr voxel_cloud, std::vector <pcl::PointIndices>& superpixels)
+pcl::VoxelSuperpixels<PointT>::extract (typename pcl::PointCloud<PointT>::Ptr &voxel_cloud, std::vector <pcl::PointIndices>& superpixels)
 {
   superpixels_.clear ();
   point_labels_.clear ();
@@ -353,7 +347,7 @@ pcl::VoxelSuperpixels<PointT>::getColoredCloud ()
         i_colored->rgb = 0;
       else
       {     
-        search_->approxNearestSearch (*i_input, index, sqr_dist);
+        seed_octree_->approxNearestSearch (*i_input, index, sqr_dist);
         //Unlabeled points (-1) just stay black
         if (point_labels_[index] != -1)
           i_colored->rgb = *reinterpret_cast<float*>(&superpixel_colors_ [point_labels_[index]]);
@@ -439,7 +433,7 @@ pcl::VoxelSuperpixels<PointT>::getLabeledCloud ()
       i_labeled->label = 0;
       if ( pcl::isFinite<PointT> (*i_input))
       {  
-        search_->approxNearestSearch (*i_input, index, sqr_dist);
+        seed_octree_->approxNearestSearch (*i_input, index, sqr_dist);
         if (point_labels_[index] != -1)
           i_labeled->label = point_labels_[index] + 1;
       }
@@ -463,8 +457,9 @@ pcl::VoxelSuperpixels<PointT>::prepareForSegmentation ()
   
   std::cout << "Computing voxel cloud \n";
   // Voxelize the input cloud
-  computeVoxelCloud (input_, voxel_cloud_, search_, resolution_);
-  computeVoxelCloud (voxel_cloud_, seed_cloud_, search_, seed_resolution_);
+  computeVoxelCloud (input_, voxel_cloud_, input_octree_, resolution_);
+  computeVoxelCloud (voxel_cloud_, voxel_cloud_, voxel_octree_, resolution_);
+  computeVoxelCloud (voxel_cloud_, seed_cloud_, seed_octree_, seed_resolution_);
   
   std::cout << "Computing Normals \n";
   // Compute normals for voxel cloud
@@ -474,13 +469,6 @@ pcl::VoxelSuperpixels<PointT>::prepareForSegmentation ()
   
   std::cout << "Computing Lab values \n";
   calcVoxelLABValues();
-  
-  // if search not set
-  if (search_ == 0)
-  {
-    search_ = boost::make_shared<pcl::octree::OctreePointCloudSearch <PointT> > (resolution_);
-    search_->setInputCloud (voxel_cloud_);
-  }
   
   return (true);
 }
@@ -537,11 +525,9 @@ pcl::VoxelSuperpixels<PointT>::findPointNeighbors ()
 template <typename PointT> void
 pcl::VoxelSuperpixels<PointT>::placeSeedVoxels ()
 {
- // search_->setResolution (seed_resolution_);
-//  search_->addPointsFromInputCloud ();
   
   std::vector<PointT, Eigen::aligned_allocator<PointT> > voxel_centers; 
-  int num_seeds = search_->getOccupiedVoxelCenters(voxel_centers); 
+  int num_seeds = seed_octree_->getOccupiedVoxelCenters(voxel_centers); 
   std::cout << "Number of seed points before filtering="<<num_seeds<<std::endl;
   
   
@@ -559,15 +545,6 @@ pcl::VoxelSuperpixels<PointT>::placeSeedVoxels ()
     seed_indices_orig_[i] = closest_index[0];
   }
   
-  //search_->deleteTree ();
-  // std::cout << "Setting resolu";
-  //search_.reset ();
-  //search_ = boost::make_shared<pcl::octree::OctreePointCloudSearch <PointT> > (resolution_);
-  //search_->setInputCloud (voxel_cloud_);
-  //search_->setResolution (resolution_);
-  //search_->addPointsFromInputCloud ();
-  // std::cout << "Done...";
-  //search_->addPointsFromInputCloud ();
   std::vector<int> neighbors;
   std::vector<float> sqr_distances;
 
@@ -678,7 +655,7 @@ pcl::VoxelSuperpixels<PointT>::findSeedConstituency (float edge_length)
                            seed_point.z + edge_length/2.0f);
     
     //Find all voxels within the search volume
-    int num = search_->boxSearch (min_pt,max_pt , possible_constituents);
+    int num = seed_octree_->boxSearch (min_pt,max_pt , possible_constituents);
     seed_constituents_[i].reserve (num);
     //Now go through and find which ones are flow connected to this seed
     //Start at seed point, find all of its connected neighbors
@@ -758,7 +735,7 @@ pcl::VoxelSuperpixels<PointT>::evolveSuperpixels ()
       for (int k = 0; k < voxel_votes_.size (); ++k)
       {
         voxel_votes_[k].first = -1;
-        voxel_votes_[k].second = (color_importance_+spatial_importance_+fpfh_importance_+normal_importance_);
+        voxel_votes_[k].second = std::numeric_limits<float>::max();
       }
       //Iterate through, assigning constituents to closest center
       iterateSuperpixelClusters (i);
@@ -1073,7 +1050,10 @@ pcl::VoxelSuperpixels<PointT>::cleanSuperpixels ()
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
-pcl::VoxelSuperpixels<PointT>::computeVoxelCloud (typename pcl::PointCloud<PointT>::ConstPtr input_cloud, typename pcl::PointCloud<PointT>::Ptr& output_cloud, typename pcl::octree::OctreePointCloudSearch<PointT>::Ptr &octree, float resolution)
+pcl::VoxelSuperpixels<PointT>::computeVoxelCloud (typename pcl::PointCloud<PointT>::ConstPtr input_cloud, 
+                                                  typename pcl::PointCloud<PointT>::Ptr& output_cloud,
+                                                  typename pcl::octree::OctreePointCloudSearch<PointT>::Ptr &octree, 
+                                                  float resolution)
 {
   if (output_cloud != 0)
   {
@@ -1100,6 +1080,14 @@ pcl::VoxelSuperpixels<PointT>::computeVoxelCloud (typename pcl::PointCloud<Point
   //Use center of voxels, not centroid - faster, and makes touching easier to calculate
   //std::vector<PointT, Eigen::aligned_allocator<PointT> > center_vector;
   octree->getOccupiedVoxelCenters (output_cloud->points);
+  int index;
+  float sqr_dist;
+  for (int i = 0; i < output_cloud->points.size(); ++i)
+  {
+    octree->approxNearestSearch (output_cloud->points[i],index,sqr_dist);
+    output_cloud->points[i].rgba = input_cloud->points[index].rgba;
+  }
+  //  std::cout <<i<<" color="<< output_cloud->points[i].r<<" "<<output_cloud->points[i].g<<" "<<output_cloud->points[i].b<<std::endl;
   output_cloud->width = static_cast<uint32_t> (output_cloud->points.size ());
   output_cloud->height = 1;
   output_cloud->is_dense = true;
@@ -1259,11 +1247,11 @@ pcl::VoxelSuperpixels<PointT>::calcFeatureDistance (int point_index, int seed_in
   }
    //10000 balances so white to black dist = 1.0
   // Others are already balance to 0 to 1.0 range
-  distance += (color_distance_squared)/10000.0f * color_importance_*color_importance_;
-  distance += spatial_distance_squared * spatial_importance_*spatial_importance_;
-  distance += fpfh_distance * fpfh_importance_*fpfh_importance_;
-  distance += (1.0f - similarity) * (1.0f - similarity);
-  return (sqrtf (distance));
+  distance += (color_distance_squared)/10000.0f * color_importance_;
+  distance += spatial_distance_squared * spatial_importance_;
+  distance += fpfh_distance * fpfh_importance_;
+  distance += (1.0f - similarity) * (1.0f - similarity)*normal_importance_;
+  return ((distance));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1407,6 +1395,7 @@ pcl::VoxelSuperpixels<PointT>::getSeedCloud ()
     r = static_cast<uint8_t> (0); b = static_cast<uint8_t> (255);
     uint32_t blue = (static_cast<uint32_t>(r) << 16 | static_cast<uint32_t>(g) << 8 | static_cast<uint32_t>(b));
     */
+    
     std::vector<int> neighbors;
     std::vector<float> sqr_distances;
     

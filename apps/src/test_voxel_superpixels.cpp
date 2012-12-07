@@ -54,12 +54,12 @@ main (int argc, char ** argv)
   else
     out_label_path = "test_output_labels.png";
   
-  float voxel_resolution = 0.01f;
+  float voxel_resolution = 0.008f;
   bool voxel_res_specified = pcl::console::find_switch (argc, argv, "-v");
   if (voxel_res_specified)
     pcl::console::parse (argc, argv, "-v", voxel_resolution);
     
-  float seed_resolution = 0.1f;
+  float seed_resolution = 0.08f;
   bool seed_res_specified = pcl::console::find_switch (argc, argv, "-s");
   if (seed_res_specified)
     pcl::console::parse (argc, argv, "-s", seed_resolution);
@@ -237,6 +237,8 @@ main (int argc, char ** argv)
   
   viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1.5, "colored");
   //Draw lines connecting superpixel centers
+  qDebug () << "Superpixel neighbor size="<<superpixel_neighbors.size ()<<"\n";
+  
   int linecount = 0;
   for (int i = 0; i < superpixel_neighbors.size(); ++i)
   {
