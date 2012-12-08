@@ -310,7 +310,7 @@ NurbsTools::computeBoundingBox (const ON_NurbsSurface &nurbs, Eigen::Vector3d &_
 }
 
 double
-NurbsTools::computeRScale (Eigen::Vector3d _min, Eigen::Vector3d _max)
+NurbsTools::computeRScale (const Eigen::Vector3d &_min, const Eigen::Vector3d &_max)
 {
   Eigen::Vector3d a = _max - _min;
 

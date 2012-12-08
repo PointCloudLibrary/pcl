@@ -110,7 +110,7 @@ namespace pcl
       computeBoundingBox (const ON_NurbsSurface &nurbs, Eigen::Vector3d &_min, Eigen::Vector3d &_max);
 
       static double
-      computeRScale (Eigen::Vector3d _min, Eigen::Vector3d _max);
+      computeRScale (const Eigen::Vector3d &_min, const Eigen::Vector3d &_max);
 
       /** \brief PCA - principal-component-analysis
        *  \param[in] data Set of points.

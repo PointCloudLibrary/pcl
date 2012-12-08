@@ -274,7 +274,9 @@ SequentialFitter::setCorners (pcl::PointIndices::Ptr &corners, bool flip_on_dema
 }
 
 void
-SequentialFitter::setProjectionMatrix (Eigen::Matrix4d &intrinsic, Eigen::Matrix4d &extrinsic)
+SequentialFitter::setProjectionMatrix (
+    const Eigen::Matrix4d &intrinsic, 
+    const Eigen::Matrix4d &extrinsic)
 {
   m_intrinsic = intrinsic;
   m_extrinsic = extrinsic;
@@ -457,8 +459,12 @@ SequentialFitter::getBoundaryNormals (std::vector<Eigen::Vector3d, Eigen::aligne
 }
 
 void
-SequentialFitter::getClosestPointOnNurbs (ON_NurbsSurface nurbs, Eigen::Vector3d pt, Eigen::Vector2d& params,
-                                          int maxSteps, double accuracy)
+SequentialFitter::getClosestPointOnNurbs (
+    ON_NurbsSurface nurbs, 
+    const Eigen::Vector3d &pt, 
+    Eigen::Vector2d& params,
+    int maxSteps, 
+    double accuracy)
 {
   Eigen::Vector3d p, tu, tv;
   double error;

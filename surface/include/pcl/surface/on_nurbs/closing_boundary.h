@@ -98,21 +98,21 @@ namespace pcl
        * 'start' point on both of the NURBS.   */
       static Eigen::Vector3d
       commonBoundaryPoint1 (ON_NurbsSurface &n1, ON_NurbsSurface &n2, Eigen::Vector2d &params1,
-                            Eigen::Vector2d &params2, Eigen::Vector3d start, unsigned nsteps, double &error,
+                            Eigen::Vector2d &params2, const Eigen::Vector3d &start, unsigned nsteps, double &error,
                             double accuracy);
 
       /** \brief calculate common boundary by iteratively calculating the intersections of the tangent of the closest points
        *  to the 'start' point.   */
       static Eigen::Vector3d
       commonBoundaryPoint2 (ON_NurbsSurface &n1, ON_NurbsSurface &n2, Eigen::Vector2d &params1,
-                            Eigen::Vector2d &params2, Eigen::Vector3d start, unsigned nsteps, double &error,
+                            Eigen::Vector2d &params2, const Eigen::Vector3d &start, unsigned nsteps, double &error,
                             double accuracy);
 
       /** \brief calculate common boundary by iteratively calculating the intersection of the tangent planes at the closest points
        *  and the plane defined by the 'start' and the 2 closest points.  */
       static Eigen::Vector3d
       commonBoundaryPoint3 (ON_NurbsSurface &n1, ON_NurbsSurface &n2, Eigen::Vector2d &params1,
-                            Eigen::Vector2d &params2, Eigen::Vector3d start, unsigned nsteps, double &error,
+                            Eigen::Vector2d &params2, const Eigen::Vector3d &start, unsigned nsteps, double &error,
                             double accuracy);
 
       /** \brief sample points from nurbs surface patch, uniform distributed */

@@ -144,7 +144,7 @@ FittingCurve2d::assemble (const Parameter &parameter)
   }
 }
 void
-FittingCurve2d::addControlPointConstraint (int i, Eigen::Vector2d f, double weight)
+FittingCurve2d::addControlPointConstraint (int i, const Eigen::Vector2d &f, double weight)
 {
   if (i < 0 || i >= m_nurbs.CVCount ())
   {

@@ -120,7 +120,7 @@ namespace pcl
         assemble (const Parameter &parameter);
 
         virtual void
-        addControlPointConstraint(int i, Eigen::Vector2d f, double weight);
+        addControlPointConstraint (int i, const Eigen::Vector2d &f, double weight);
 
         /** \brief Solve system of equations using Eigen or UmfPack (can be defined in on_nurbs.cmake),
           * and updates B-Spline curve if a solution can be obtained. 
