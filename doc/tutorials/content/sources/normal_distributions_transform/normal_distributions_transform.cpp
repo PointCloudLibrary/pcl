@@ -53,7 +53,7 @@ main (int argc, char** argv)
   ndt.setMaximumIterations (35);
 
   // Setting point cloud to be aligned.
-  ndt.setInputCloud (filtered_cloud);
+  ndt.setInputSource (filtered_cloud);
   // Setting point cloud to be aligned to.
   ndt.setInputTarget (target_cloud);
 
