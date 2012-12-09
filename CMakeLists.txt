@@ -1,6 +1,8 @@
 ### ---[ PCL global CMake
 cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
+
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "possible configurations" FORCE)
+
 # In case the user does not setup CMAKE_BUILD_TYPE, assume it's RelWithDebInfo
 if("${CMAKE_BUILD_TYPE}" STREQUAL "")
   set(CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING "build type default to RelWithDebInfo, set to Release to improve performance" FORCE)
@@ -59,6 +61,13 @@ endif()
 include(${PCL_SOURCE_DIR}/cmake/pcl_verbosity.cmake)
 include(${PCL_SOURCE_DIR}/cmake/pcl_targets.cmake)
 include(${PCL_SOURCE_DIR}/cmake/pcl_options.cmake)
+
+# Enable verbose timing display?
+if(CMAKE_TIMING_VERBOSE AND UNIX)
+  set_property(GLOBAL PROPERTY RULE_MESSAGES OFF)
+  set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CMAKE_SOURCE_DIR}/cmake/custom_output.sh")
+endif(CMAKE_TIMING_VERBOSE AND UNIX)
+
 # ---[ Unix/Darwin/Windows specific flags
 if(CMAKE_COMPILER_IS_GNUCXX)
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wno-unknown-pragmas -Wconversion -Wold-style-cast -fno-strict-aliasing -Wno-format-extra-args -Wno-sign-compare -Wno-invalid-offsetof")
