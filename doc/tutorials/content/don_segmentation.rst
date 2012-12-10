@@ -190,7 +190,7 @@ Finally, we are usually left with a number of objects or regions with good isola
 
 After the segmentation the cloud viewer window will be opened and you will see something similar to those images:
 
-.. image:: images/don_clusters.png
+.. image:: images/don_clusters.jpg
    :height: 360px
 
 

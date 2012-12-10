@@ -18,7 +18,7 @@ This section describes the TSDF Cloud, which is the expected output of KinFu Lar
 
 You may be wondering: *"What is the difference between a TSDF cloud and a normal point cloud?"* Well, a TSDF cloud *is* a point cloud. However, the TSDF cloud makes use of how the data is stored within GPU at KinFu runtime. 
 
-  .. image:: images/using_kinfu_large_scale/11.png
+  .. image:: images/using_kinfu_large_scale/11.jpg
     :align: center
     :width: 696 pt
     :height: 326 pt
@@ -29,7 +29,7 @@ As you may already know, the way in which the TSDF volume is stored in GPU is a 
   
 At the time of data extraction, the grid is traversed from front to back, and the TSDF values are checked for each voxel. In the figure below, you may notice that the values range from -1 to 1. 
 
-  .. image:: images/using_kinfu_large_scale/12.png
+  .. image:: images/using_kinfu_large_scale/12.jpg
     :align: center
     :width: 400 pt
     :height: 350 pt
@@ -113,13 +113,13 @@ The viewer below displays a sample of the output obtained after the entire pipel
 
 .. raw:: html
 
-    <iframe src="http://pointclouds.org/assets/viewer/pcl_viewer.html?load=http://svn.pointclouds.org/pcl/trunk/doc/tutorials/content/images/using_kinfu_large_scale/Tutorial_Cloud_Couch_bin_compressed.pcd&scale=0.004&psize=1" align="center" width="600" height="400" marginwidth="0" marginheight="0" frameborder='no' allowfullscreen mozallowfullscreen webkitallowfullscreen style="max-width: 100%;"></iframe>
+    <iframe src="http://pointclouds.org/assets/viewer/pcl_viewer.html?load=http://svn.pointclouds.org/data/tutorials/kinfu_large_scale/Tutorial_Cloud_Couch_bin_compressed.pcd&scale=0.004&psize=1" align="center" width="600" height="400" marginwidth="0" marginheight="0" frameborder='no' allowfullscreen mozallowfullscreen webkitallowfullscreen style="max-width: 100%;"></iframe>
 
 To further demonstrate the capabilities of KinFu Large Scale, we made another example with a room.
 
 .. raw:: html
 
-    <iframe src="http://pointclouds.org/assets/viewer/pcl_viewer.html?load=http://svn.pointclouds.org/pcl/trunk/doc/tutorials/content/images/using_kinfu_large_scale/using_kinfu_large_scale_output.pcd&scale=0.004&psize=1" align="center" width="600" height="400" marginwidth="0" marginheight="0" frameborder='no' allowfullscreen mozallowfullscreen webkitallowfullscreen style="max-width: 100%;"></iframe>
+    <iframe src="http://pointclouds.org/assets/viewer/pcl_viewer.html?load=http://svn.pointclouds.org/data/tutorials/kinfu_large_scale/using_kinfu_large_scale_output.pcd&scale=0.004&psize=1" align="center" width="600" height="400" marginwidth="0" marginheight="0" frameborder='no' allowfullscreen mozallowfullscreen webkitallowfullscreen style="max-width: 100%;"></iframe>
 
 
 General Recommendations

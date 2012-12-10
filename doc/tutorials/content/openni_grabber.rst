@@ -15,7 +15,7 @@ keep it short :).
 The cameras that we have tested so far are the `Primesense Reference Design <http://www.primesense.com/?p=514>`_, `Microsoft Kinect <http://www.xbox.com/kinect/>`_ and `Asus Xtion Pro <http://event.asus.com/wavi/product/WAVI_Pro.aspx>`_ cameras:
 
 
-.. image:: images/openni_cams.png
+.. image:: images/openni_cams.jpg
    :height: 390px
 
 Simple Example

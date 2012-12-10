@@ -12,7 +12,7 @@ we therefore need a system that is able to align them together into a single
 point cloud model, so that subsequent processing steps such as segmentation and
 object reconstruction can be applied. 
 
-.. image:: images/registration/scans.png
+.. image:: images/registration/scans.jpg
     :align: center
 
 A motivation example in this sense is given in the figure above, where a set of
@@ -21,7 +21,7 @@ each individual scan represents only a small part of the surrounding world, it
 is imperative to find ways to register them together, thus creating the complete
 point cloud model as shown in the figure below.
 
-.. image:: images/registration/s1-6.png
+.. image:: images/registration/s1-6.jpg
     :align: center
 
 The algorithmic work in the PCL registration library is motivated by finding
@@ -55,7 +55,7 @@ The steps performed in a *pairwise registration* step are shown in the diagram
 below. Please note that we are representing a single iteration of the algorithm.
 The programmer can decide to loop over any or all of the steps.
 
-.. image:: images/registration/block_diagram_single_iteration.png
+.. image:: images/registration/block_diagram_single_iteration.jpg
     :align: center
 
 The computational steps for two datasets are straighforward:

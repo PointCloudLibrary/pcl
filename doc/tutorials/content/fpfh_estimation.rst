@@ -1,7 +1,7 @@
 .. _fpfh_estimation:
 
 Fast Point Feature Histograms (FPFH) descriptors
------------------------------------------------
+------------------------------------------------
 
 The theoretical computational complexity of the Point Feature Histogram (see
 :ref:`pfh_estimation`) for a given point cloud :math:`P` with :math:`n` points

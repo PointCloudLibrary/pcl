@@ -70,9 +70,9 @@ We begin the training by assuming that the *objects* are already separated as
 individual clusters (see :ref:`cluster_extraction`), as shown in the figure
 below:
 
-.. image:: images/vfh_recognition/scene_raw.png
+.. image:: images/vfh_recognition/scene_raw.jpg
 
-.. image:: images/vfh_recognition/scene_segmented.png
+.. image:: images/vfh_recognition/scene_segmented.jpg
 
 
 Since we're only trying to cover the explicity training/testing of VFH
@@ -85,7 +85,7 @@ to acquire the data.
 
 .. image:: images/vfh_recognition/objects.jpg
 
-.. image:: images/vfh_recognition/training.png
+.. image:: images/vfh_recognition/training.jpg
 
 Next, copy and paste the following code into your editor and save it as
 ``build_tree.cpp``.

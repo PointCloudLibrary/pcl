@@ -22,7 +22,7 @@ points. By performing resampling, these small errors can be corrected and the
 "double walls" artifacts resulted from registering multiple scans together can
 be smoothed. 
 
-.. image:: images/resampling_1.png
+.. image:: images/resampling_1.jpg
 
 On the left side of the figure above, we see the effect or estimating surface
 normals in a dataset comprised of two registered point clouds together. Due to
@@ -32,7 +32,7 @@ smoothed with a Moving Least Squares algorithm. Plotting the curvatures at each
 point as a measure of the eigenvalue relationship before and after resampling,
 we obtain:
 
-.. image:: images/resampling_2.png
+.. image:: images/resampling_2.jpg
 
 To approximate the surface defined by a local neighborhood of points 
 **p1**, **p2** ... **pk** at a point **q** we use a bivariate polynomial height function

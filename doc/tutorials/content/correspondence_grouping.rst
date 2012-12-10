@@ -203,14 +203,14 @@ After a few seconds, you will see an output similar to::
 	  
 The output window should look like this (depending on the command line options used):
 
-.. image:: images/correspondence_grouping/correspondence_grouping.png
+.. image:: images/correspondence_grouping/correspondence_grouping.jpg
   :height: 400
 
-.. image:: images/correspondence_grouping/correspondence_grouping_k.png
+.. image:: images/correspondence_grouping/correspondence_grouping_k.jpg
   :height: 400
 
-.. image:: images/correspondence_grouping/correspondence_grouping_c.png
+.. image:: images/correspondence_grouping/correspondence_grouping_c.jpg
   :height: 400
 
-.. image:: images/correspondence_grouping/correspondence_grouping_k_c.png
+.. image:: images/correspondence_grouping/correspondence_grouping_k_c.jpg
   :height: 400

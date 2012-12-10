@@ -111,7 +111,7 @@ And you should see something like this:
 
 |octreeChangeViewer|
 
-     .. |octreeChangeViewer| image:: images/changedetectionViewer.png
+     .. |octreeChangeViewer| image:: images/changedetectionViewer.jpg
      
 Conclusion
 ----------

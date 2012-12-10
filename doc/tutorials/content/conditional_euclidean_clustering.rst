@@ -1,7 +1,7 @@
 .. _conditional_euclidean_clustering:
 
 Conditional Euclidean Clustering
-----------------------------
+--------------------------------
 
 This tutorial describes how to use the ``pcl::ConditionalEuclideanClustering`` class:
 A segmentation algorithm that clusters points based on Euclidean distance and a user-customizable condition that needs to hold.
@@ -117,7 +117,7 @@ The resulting output point cloud can be opened like so:
 
 You should see something similar to this:
 
-.. image:: images/conditional_euclidean_clustering.png
+.. image:: images/conditional_euclidean_clustering.jpg
    :alt: Output Cluster Extraction
    :align: center
 

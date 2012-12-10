@@ -210,14 +210,14 @@ You can also use the `pcd_viewer <http://www.pointclouds.org/documentation/overv
 
 The clouds should look something like this:
 
-.. image:: images/template_alignment_1.png
+.. image:: images/template_alignment_1.jpg
   :height: 200
 
-.. image:: images/template_alignment_2.png
+.. image:: images/template_alignment_2.jpg
   :height: 200
 
-.. image:: images/template_alignment_3.png
+.. image:: images/template_alignment_3.jpg
   :height: 200
 
-.. image:: images/template_alignment_4.png
+.. image:: images/template_alignment_4.jpg
   :height: 200

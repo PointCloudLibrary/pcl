@@ -27,7 +27,7 @@ From [RusuDissertation]_:
 
    * **noise** - *the point feature representation must retain the same or very similar values in its feature vector in the presence of mild noise in the data.*
 
-   .. image:: images/good_features.png
+   .. image:: images/good_features.jpg
       :align: center
 
 

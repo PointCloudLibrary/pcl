@@ -211,7 +211,7 @@ Features
              This document presents a basic introduction to the 3D feature estimation methodologies in PCL.
      ======  ======
      
-     .. |fe_1| image:: images/good_features_small.png
+     .. |fe_1| image:: images/good_features_small.jpg
                :height: 100px
 
   * :ref:`normal_estimation`
@@ -623,7 +623,7 @@ Recognition
              This tutorial aims at explaining how to perform 3D Object Recognition based on the pcl_recognition module.
      ======  ======
 
-     .. |rc_1| image:: images/correspondence_grouping/correspondence_grouping.png
+     .. |rc_1| image:: images/correspondence_grouping/correspondence_grouping.jpg
                :height: 100px
 
   * :ref:`implicit_shape_model`
@@ -834,7 +834,7 @@ Segmentation
              A segmentation algorithm that clusters points based on Euclidean distance and a user-customizable condition that needs to hold.
      ======  ======
 
-     .. |se_7| image:: images/conditional_euclidean_clustering.png
+     .. |se_7| image:: images/conditional_euclidean_clustering.jpg
                :height: 100px
 
   * :ref:`don_segmentation`
@@ -984,7 +984,7 @@ Applications
              This tutorial gives an example of how some of the tools covered in the previous tutorials can be combined to solve a higher level problem --- aligning a previously captured model of an object to some newly captured data.
      ======  ======
 
-     .. |ap_1| image:: images/template_alignment_1.png
+     .. |ap_1| image:: images/template_alignment_1.jpg
                :height: 100px
 
   * :ref:`vfh_recognition`
@@ -1014,7 +1014,7 @@ Applications
              This tutorial describes how to send point cloud data over the network from a desktop server to a client running on a mobile device.
      ======  ======
      
-     .. |ap_3| image:: images/mobile_streaming_1.png
+     .. |ap_3| image:: images/mobile_streaming_1.jpg
                :height: 100px
                
   * :ref:`using_kinfu_large_scale`
@@ -1029,7 +1029,7 @@ Applications
              This tutorial demonstrates how to use KinFu Large Scale to produce a mesh from a room, and apply texture information in post-processing for a more appealing visual result.
      ======  ======
      
-     .. |ap_4| image:: images/using_kinfu_large_scale.png
+     .. |ap_4| image:: images/using_kinfu_large_scale.jpg
                :height: 100px
 .. _gpu:
 
@@ -1063,7 +1063,7 @@ GPU
              This tutorial presents a method for people and pose detection.
      ======  ======
      
-     .. |gp_2| image:: images/gpu/people/c2_100.png
+     .. |gp_2| image:: images/gpu/people/c2_100.jpg
                :height: 100px
  ..
   * :ref:`normal_estimation_integral_images`

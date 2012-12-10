@@ -104,7 +104,7 @@ between neighboring points increases from the viewpoint. Therefore, omitting
 **d** for scans where the local point density influences this feature dimension
 has proved to be beneficial. 
 
-.. image:: images/pfh_estimation/example_pfhs.png
+.. image:: images/pfh_estimation/example_pfhs.jpg
    :align: center
 
 .. note::

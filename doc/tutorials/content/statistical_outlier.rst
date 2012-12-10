@@ -33,7 +33,7 @@ removal: the original dataset is shown on the left, while the resultant one on
 the right. The graphic shows the mean k-nearest neighbor distances in a point
 neighborhood before and after filtering.
 
-.. image:: images/statistical_removal_2.png
+.. image:: images/statistical_removal_2.jpg
 
 
 The code

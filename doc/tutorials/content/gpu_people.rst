@@ -16,10 +16,10 @@ working on oni and pcd files can be found in trunk.
 The code assumes a organised and projectable pointcloud, and should work with other 
 sensors then the Primesense device.
 
-  .. image:: images/gpu/people/ss26_1.png
+  .. image:: images/gpu/people/ss26_1.jpg
     :width: 400 pt
     :height: 372 pt
-  .. image:: images/gpu/people/ss26_2.png
+  .. image:: images/gpu/people/ss26_2.jpg
     :width: 400 pt
     :height: 372 pt
 

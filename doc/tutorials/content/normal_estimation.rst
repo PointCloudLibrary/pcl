@@ -86,13 +86,13 @@ viewpoint, normals should be present only on half of the sphere in the EGI.
 However, due to the orientation inconsistency, they are spread across the
 entire sphere.
 
-.. image:: images/normal_estimation/unflipped_scene1.png
+.. image:: images/normal_estimation/unflipped_scene1.jpg
   :height: 200
 
-.. image:: images/normal_estimation/unflipped_scene2.png
+.. image:: images/normal_estimation/unflipped_scene2.jpg
   :height: 200
 
-.. image:: images/normal_estimation/unflipped_sphere.png
+.. image:: images/normal_estimation/unflipped_sphere.jpg
   :height: 200
 
 The solution to this problem is trivial if the viewpoint :math:`{\mathsf v}_p`
@@ -106,13 +106,13 @@ consistently towards the viewpoint, they need to satisfy the equation:
 The figure below presents the results after all normals in the datasets from
 the above figure have been consistently oriented towards the viewpoint.
 
-.. image:: images/normal_estimation/flipped_scene1.png
+.. image:: images/normal_estimation/flipped_scene1.jpg
   :height: 200
 
-.. image:: images/normal_estimation/flipped_scene2.png
+.. image:: images/normal_estimation/flipped_scene2.jpg
   :height: 200
 
-.. image:: images/normal_estimation/flipped_sphere.png
+.. image:: images/normal_estimation/flipped_sphere.jpg
   :height: 200
 
 To re-orient a given point normal manually in PCL, you can use:
@@ -151,10 +151,10 @@ surfaces, the estimated point feature representations get distorted, with
 rotated surface normals at the edges of the two planar surfaces, and smeared
 edges and suppressed fine details.
 
-.. image:: images/normal_estimation/normals_different_radii.png
+.. image:: images/normal_estimation/normals_different_radii.jpg
   :height: 180
 
-.. image:: images/normal_estimation/curvature_different_radii.png
+.. image:: images/normal_estimation/curvature_different_radii.jpg
   :height: 180
 
 Without going into too many details, it suffices to assume that for now, the
