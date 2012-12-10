@@ -1,8 +1,0 @@
-<Modules>
- <Module path="/sdcard/libnimMockNodes.so" />
- <Module path="/sdcard/libnimCodecs.so" />
- <Module path="/sdcard/libnimRecorder.so" />
- <Module path="/sdcard/libXnDeviceSensorV2.so" configDir="/sdcard/" />
- <Module path="/sdcard/libXnDeviceFile.so" configDir="/sdcard/" />
- <Module path="/sdcard/libXnCore.so" configDir="/sdcard/" />
-</Modules>
