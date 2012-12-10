@@ -85,6 +85,10 @@ struct EventHelper
   void 
   cloud_cb (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr & cloud)
   {
+    if (cloud->header.stamp != 0)
+    {
+      PCL_INFO ("Acquired cloud with timestamp of %lu\n", cloud->header.stamp);
+    }
     if (mutex_.try_lock ())
     {
       cloud_ = cloud;

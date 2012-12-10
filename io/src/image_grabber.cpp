@@ -87,6 +87,11 @@ struct pcl::ImageGrabberBase::ImageGrabberImpl
   //! True if it is an image we know how to read
   bool
   isValidExtension (const std::string &extension);
+
+  //! Checks if a timestamp is given in the filename
+  //! And returns if so
+  bool
+  getTimestampFromFilepath (const std::string &filepath, uint64_t &timestamp) const;
   
 #ifdef PCL_BUILT_WITH_VTK
   //! Load an image file, return the vtkImageReader2, return false if it couldn't be opened
@@ -195,9 +200,9 @@ void
 pcl::ImageGrabberBase::ImageGrabberImpl::loadNextCloud ()
 {
   if(depth_image_files_.size() > 0)
-    loadNextCloudVTK();
+    loadNextCloudVTK ();
   else if(depth_pclzf_files_.size() > 0)
-    loadNextCloudPCLZF();
+    loadNextCloudPCLZF ();
   else
   {
     PCL_ERROR ("[pcl::ImageGrabber::loadNextCloud] Attempted to read ahead, but no VTK or PCLZF files were found. \n");
@@ -225,6 +230,11 @@ pcl::ImageGrabberBase::ImageGrabberImpl::loadNextCloudPCLZF ()
     if (!rgb.read (*rgb_pclzf_iterator_, next_cloud_color_))
       bayer.read(*rgb_pclzf_iterator_, next_cloud_color_);
     depth.read(*depth_pclzf_iterator_, next_cloud_color_);
+    // Handle timestamps
+    uint64_t timestamp;
+    if (getTimestampFromFilepath (*depth_pclzf_iterator_, timestamp))
+      next_cloud_color_.header.stamp = timestamp;
+
     pcl::toROSMsg(next_cloud_color_, next_cloud_);
   }
   else
@@ -233,6 +243,11 @@ pcl::ImageGrabberBase::ImageGrabberImpl::loadNextCloudPCLZF ()
     depth.readParameters (*xml_iterator_);
     next_cloud_depth_.is_dense = false;
     depth.read(*depth_pclzf_iterator_, next_cloud_depth_);
+    // Handle timestamps
+    uint64_t timestamp;
+    if (getTimestampFromFilepath (*depth_pclzf_iterator_, timestamp))
+      next_cloud_depth_.header.stamp = timestamp;
+
     pcl::toROSMsg(next_cloud_depth_, next_cloud_);
   }
     
@@ -330,6 +345,11 @@ pcl::ImageGrabberBase::ImageGrabberImpl::loadNextCloudVTK ()
         pt.b = color_pixel[2];
       }
     }
+    // Handle timestamps
+    uint64_t timestamp;
+    if (getTimestampFromFilepath (*depth_image_iterator_, timestamp))
+      next_cloud_color_.header.stamp = timestamp;
+
     pcl::toROSMsg(next_cloud_color_, next_cloud_);
   }
   else
@@ -358,6 +378,11 @@ pcl::ImageGrabberBase::ImageGrabberImpl::loadNextCloudVTK ()
         }
       }
     }
+    // Handle timestamps
+    uint64_t timestamp;
+    if (getTimestampFromFilepath (*depth_image_iterator_, timestamp))
+      next_cloud_depth_.header.stamp = timestamp;
+
     pcl::toROSMsg(next_cloud_depth_, next_cloud_);
   }
 
@@ -501,6 +526,29 @@ pcl::ImageGrabberBase::ImageGrabberImpl::isValidExtension (const std::string &ex
          || extension == ".PPM";
   }
   return (valid);
+}
+  
+//////////////////////////////////////////////////////////////////////////
+bool
+pcl::ImageGrabberBase::ImageGrabberImpl::getTimestampFromFilepath (
+    const std::string &filepath, 
+    uint64_t &timestamp) const
+{
+  // For now, we assume the file is of the form frame_[22-char POSIX timestamp]_*
+  char timestamp_str[256];
+  int result = std::sscanf (boost::filesystem::basename (filepath).c_str (), 
+                            "frame_%22s_%*s",
+                            timestamp_str);
+  if (result > 0)
+  {
+    // Convert to uint64_t, microseconds since 1970-01-01
+    boost::posix_time::ptime cur_date = boost::posix_time::from_iso_string (timestamp_str);
+    boost::posix_time::ptime zero_date (
+        boost::gregorian::date (1970,boost::gregorian::Jan,1));
+    timestamp = (cur_date - zero_date).total_microseconds ();
+    return (true);
+  }
+  return (false);
 }
 
 ////////////////////////////////////////////////////////////////////////
