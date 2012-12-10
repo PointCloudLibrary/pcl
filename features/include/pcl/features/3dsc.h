@@ -3,6 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -16,7 +17,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -231,83 +232,6 @@ namespace pcl
       {
         return ((*rng_) ());
       }
-    private:
-      /** \brief Make the computeFeature (&Eigen::MatrixXf); inaccessible from outside the class
-        * \param[out] output the output point cloud
-        */
-      void
-      computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &) {}
-  };
-
-  /** \brief ShapeContext3DEstimation implements the 3D shape context descriptor as
-    * described in:
-    *   - Andrea Frome, Daniel Huber, Ravi Kolluri and Thomas Bülow, Jitendra Malik
-    *     Recognizing Objects in Range Data Using Regional Point Descriptors,
-    *     In proceedings of the 8th European Conference on Computer Vision (ECCV),
-    *     Prague, May 11-14, 2004
-    *
-    * The 3DSC computed feature has the following structure
-    *   - rf float[9] = x_axis | y_axis | normal and represents the local frame
-    *   - desc std::vector<float> which size is determined by the number of bins
-    *     radius_bins_ + elevation_bins_ + azimuth_bins_. If shift is required then the
-    *     computed descriptor will be shift along the azimuthal direction.
-    *
-    * \attention
-    * The convention for a 3D shape context descriptor is:
-    *   - if a query point's nearest neighbors cannot be estimated, the feature descriptor will be set to NaN (not a number), and the RF to 0
-    *   - it is impossible to estimate a 3D shape context descriptor for a
-    *     point that doesn't have finite 3D coordinates. Therefore, any point
-    *     that contains NaN data on x, y, or z, will have its boundary feature
-    *     property set to NaN.
-    *
-    * \author Alessandro Franchi, Samuele Salti, Federico Tombari (original code)
-    * \author Nizar Sallem (port to PCL)
-    * \ingroup features
-    */
-  template <typename PointInT, typename PointNT>
-  class ShapeContext3DEstimation<PointInT, PointNT, Eigen::MatrixXf> : public ShapeContext3DEstimation<PointInT, PointNT, pcl::ShapeContext1980>
-  {
-    public:
-      using ShapeContext3DEstimation<PointInT, PointNT, pcl::ShapeContext1980>::feature_name_;
-      using ShapeContext3DEstimation<PointInT, PointNT, pcl::ShapeContext1980>::indices_;
-      using ShapeContext3DEstimation<PointInT, PointNT, pcl::ShapeContext1980>::descriptor_length_;
-      using ShapeContext3DEstimation<PointInT, PointNT, pcl::ShapeContext1980>::normals_;
-      using ShapeContext3DEstimation<PointInT, PointNT, pcl::ShapeContext1980>::input_;
-      using ShapeContext3DEstimation<PointInT, PointNT, pcl::ShapeContext1980>::compute;
-      using ShapeContext3DEstimation<PointInT, PointNT, pcl::ShapeContext1980>::azimuth_bins_;
-      using ShapeContext3DEstimation<PointInT, PointNT, pcl::ShapeContext1980>::elevation_bins_;
-      using ShapeContext3DEstimation<PointInT, PointNT, pcl::ShapeContext1980>::radius_bins_;
-
-      /** \brief Set the number of bins along the azimuth dimension
-        * \param[in] bins the number of bins
-        */
-      inline void
-      setAzimuthBins (size_t bins) { azimuth_bins_ = bins; }
-
-      /** \brief Set the number of bins along the elevation dimension
-        * \param[in] bins the number of bins
-        */
-      inline void
-      setElevationBins (size_t bins) { elevation_bins_ = bins; }
-
-      /** \brief Set the number of bins along the radius dimension
-        * \param[in] bins the number of bins
-        */
-      inline void
-      setRadiusBins (size_t bins) { radius_bins_ = bins; }
-
-    private:
-      /** \brief Estimate the actual feature.
-        * \param[out] output the resultant feature
-        */
-      void
-      computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &output);
-
-      /** \brief Make the compute (&PointCloudOut); inaccessible from outside the class
-        * \param[out] output the output point cloud
-        */
-      void
-      compute (pcl::PointCloud<pcl::ShapeContext1980> &) {}
   };
 }
 

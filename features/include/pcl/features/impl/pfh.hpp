@@ -3,6 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -16,7 +17,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -32,8 +33,6 @@
  *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
- *
- * $Id$
  *
  */
 
@@ -214,68 +213,6 @@ pcl::PFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
       // Copy into the resultant cloud
       for (int d = 0; d < pfh_histogram_.size (); ++d)
         output.points[idx].histogram[d] = pfh_histogram_[d];
-    }
-  }
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointInT, typename PointNT> void
-pcl::PFHEstimation<PointInT, PointNT, Eigen::MatrixXf>::computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &output)
-{
-  // Set up the output channels
-  output.channels["pfh"].name     = "pfh";
-  output.channels["pfh"].offset   = 0;
-  output.channels["pfh"].size     = 4;
-  output.channels["pfh"].count    = nr_subdiv_ * nr_subdiv_ * nr_subdiv_;
-  output.channels["pfh"].datatype = sensor_msgs::PointField::FLOAT32;
-
-  // Clear the feature map
-  feature_map_.clear ();
-  std::queue<std::pair<int, int> > empty;
-  std::swap (key_list_, empty);
-  pfh_histogram_.setZero (nr_subdiv_ * nr_subdiv_ * nr_subdiv_);
-
-  // Allocate enough space to hold the results
-  output.points.resize (indices_->size (), nr_subdiv_ * nr_subdiv_ * nr_subdiv_);
-  // \note This resize is irrelevant for a radiusSearch ().
-  std::vector<int> nn_indices (k_);
-  std::vector<float> nn_dists (k_);
-
-  output.is_dense = true;
-  // Save a few cycles by not checking every point for NaN/Inf values if the cloud is set to dense
-  if (input_->is_dense)
-  {
-    // Iterating over the entire index vector
-    for (size_t idx = 0; idx < indices_->size (); ++idx)
-    {
-      if (this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0)
-      {
-        output.points.row (idx).setConstant (std::numeric_limits<float>::quiet_NaN ());
-        output.is_dense = false;
-        continue;
-      }
-
-      // Estimate the PFH signature at each patch
-      computePointPFHSignature (*surface_, *normals_, nn_indices, nr_subdiv_, pfh_histogram_);
-      output.points.row (idx) = pfh_histogram_;
-    }
-  }
-  else
-  {
-    // Iterating over the entire index vector
-    for (size_t idx = 0; idx < indices_->size (); ++idx)
-    {
-      if (!isFinite ((*input_)[(*indices_)[idx]]) ||
-          this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0)
-      {
-        output.points.row (idx).setConstant (std::numeric_limits<float>::quiet_NaN ());
-        output.is_dense = false;
-        continue;
-      }
-
-      // Estimate the PFH signature at each patch
-      computePointPFHSignature (*surface_, *normals_, nn_indices, nr_subdiv_, pfh_histogram_);
-      output.points.row (idx) = pfh_histogram_;
     }
   }
 }

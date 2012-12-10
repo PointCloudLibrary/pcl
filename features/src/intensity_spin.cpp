@@ -47,6 +47,5 @@
   PCL_INSTANTIATE_PRODUCT(IntensitySpinEstimation, ((pcl::PointXYZI))((pcl::Histogram<20>)))
 #else
   PCL_INSTANTIATE_PRODUCT(IntensitySpinEstimation, ((pcl::PointXYZI)(pcl::PointXYZINormal))((pcl::Histogram<20>)))
-  PCL_INSTANTIATE_PRODUCT(IntensitySpinEstimation, ((pcl::PointXYZI)(pcl::PointXYZINormal))((Eigen::MatrixXf)))
 #endif
 

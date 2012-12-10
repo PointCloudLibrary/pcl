@@ -3,6 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -16,7 +17,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -825,75 +826,6 @@ pcl::SHOTEstimation<PointInT, PointNT, PointOutT, PointRFT>::computeFeature (pcl
 //////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointInT, typename PointNT, typename PointRFT> void
-pcl::SHOTEstimation<PointInT, PointNT, Eigen::MatrixXf, PointRFT>::computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &output)
-{
-  descLength_ = nr_grid_sector_ * (nr_shape_bins_+1);
-
-  // Set up the output channels
-  output.channels["shot"].name     = "shot";
-  output.channels["shot"].offset   = 0;
-  output.channels["shot"].size     = 4;
-  output.channels["shot"].count    = descLength_ + 9;
-  output.channels["shot"].datatype = sensor_msgs::PointField::FLOAT32;
-
-  sqradius_ = search_radius_ * search_radius_;
-  radius3_4_ = (search_radius_*3) / 4;
-  radius1_4_ = search_radius_ / 4;
-  radius1_2_ = search_radius_ / 2;
-
-  shot_.setZero (descLength_);
-
-  output.points.resize (indices_->size (), descLength_ + 9);
-
-  // Allocate enough space to hold the results
-  // \note This resize is irrelevant for a radiusSearch ().
-  std::vector<int> nn_indices (k_);
-  std::vector<float> nn_dists (k_);
-
-  output.is_dense = true;
-  // Iterating over the entire index vector
-  for (size_t idx = 0; idx < indices_->size (); ++idx)
-  {
-    bool lrf_is_nan = false;
-    const PointRFT& current_frame = (*frames_)[idx];
-    if (!pcl_isfinite (current_frame.x_axis[0]) ||
-        !pcl_isfinite (current_frame.y_axis[0]) ||
-        !pcl_isfinite (current_frame.z_axis[0]))
-    {
-      PCL_WARN ("[pcl::%s::computeFeature] The local reference frame is not valid! Aborting description of point with index %d\n",
-        getClassName ().c_str (), (*indices_)[idx]);
-      lrf_is_nan = true;
-    }
-
-    if (!isFinite ((*input_)[(*indices_)[idx]]) ||
-        lrf_is_nan ||
-        this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0)
-    {
-      output.points.row (idx).setConstant (std::numeric_limits<float>::quiet_NaN ());
-
-      output.is_dense = false;
-      continue;
-     }
-
-    // Estimate the SHOT at each patch
-    this->computePointSHOT (static_cast<int> (idx), nn_indices, nn_dists, shot_);
-
-    // Copy into the resultant cloud
-    for (int d = 0; d < descLength_; ++d)
-      output.points (idx, d) = shot_[d];
-    for (int d = 0; d < 3; ++d)
-    {
-      output.points (idx, shot_.size () + 0 + d) = frames_->points[idx].x_axis[d];
-      output.points (idx, shot_.size () + 3 + d) = frames_->points[idx].y_axis[d];
-      output.points (idx, shot_.size () + 6 + d) = frames_->points[idx].z_axis[d];
-    }
-  }
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT, typename PointOutT, typename PointRFT> void
 pcl::SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::computeFeature (pcl::PointCloud<PointOutT> &output)
 {
@@ -959,78 +891,6 @@ pcl::SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::computeFeature
       output.points[idx].rf[d + 0] = frames_->points[idx].x_axis[d];
       output.points[idx].rf[d + 3] = frames_->points[idx].y_axis[d];
       output.points[idx].rf[d + 6] = frames_->points[idx].z_axis[d];
-    }
-  }
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointInT, typename PointNT, typename PointRFT> void
-pcl::SHOTColorEstimation<PointInT, PointNT, Eigen::MatrixXf, PointRFT>::computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &output)
-{
-  // Compute the current length of the descriptor
-  descLength_ = (b_describe_shape_) ? nr_grid_sector_*(nr_shape_bins_+1) : 0;
-  descLength_ +=   (b_describe_color_) ? nr_grid_sector_*(nr_color_bins_+1) : 0;
-
-  // Set up the output channels
-  output.channels["shot"].name     = "shot";
-  output.channels["shot"].offset   = 0;
-  output.channels["shot"].size     = 4;
-  output.channels["shot"].count    = descLength_ + 9;
-  output.channels["shot"].datatype = sensor_msgs::PointField::FLOAT32;
-
-  // Useful values
-  sqradius_ = search_radius_*search_radius_;
-  radius3_4_ = (search_radius_*3) / 4;
-  radius1_4_ = search_radius_ / 4;
-  radius1_2_ = search_radius_ / 2;
-
-  shot_.setZero (descLength_);
-
-  output.points.resize (indices_->size (), descLength_ + 9);
-
-  // Allocate enough space to hold the results
-  // \note This resize is irrelevant for a radiusSearch ().
-  std::vector<int> nn_indices (k_);
-  std::vector<float> nn_dists (k_);
-
-  output.is_dense = true;
-  // Iterating over the entire index vector
-  for (size_t idx = 0; idx < indices_->size (); ++idx)
-  {
-    bool lrf_is_nan = false;
-    const PointRFT& current_frame = (*frames_)[idx];
-    if (!pcl_isfinite (current_frame.x_axis[0]) ||
-        !pcl_isfinite (current_frame.y_axis[0]) ||
-        !pcl_isfinite (current_frame.z_axis[0]))
-    {
-      PCL_WARN ("[pcl::%s::computeFeature] The local reference frame is not valid! Aborting description of point with index %d\n",
-        getClassName ().c_str (), (*indices_)[idx]);
-      lrf_is_nan = true;
-    }
-
-    if (!isFinite ((*input_)[(*indices_)[idx]]) ||
-        lrf_is_nan ||
-        this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0)
-    {
-      output.points.row (idx).setConstant (std::numeric_limits<float>::quiet_NaN ());
-
-      output.is_dense = false;
-      continue;
-     }
-
-    // Compute the SHOT descriptor for the current 3D feature
-    this->computePointSHOT (static_cast<int> (idx), nn_indices, nn_dists, shot_);
-
-    // Copy into the resultant cloud
-    for (int d = 0; d < descLength_; ++d)
-      output.points (idx, d) = shot_[d];
-    for (int d = 0; d < 3; ++d)
-    {
-      output.points (idx, shot_.size () + 0 + d) = frames_->points[idx].x_axis[d];
-      output.points (idx, shot_.size () + 3 + d) = frames_->points[idx].y_axis[d];
-      output.points (idx, shot_.size () + 6 + d) = frames_->points[idx].z_axis[d];
     }
   }
 }

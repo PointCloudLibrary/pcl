@@ -3,6 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -16,7 +17,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -156,58 +157,6 @@ pcl::PrincipalCurvaturesEstimation<PointInT, PointNT, PointOutT>::computeFeature
       computePointPrincipalCurvatures (*normals_, (*indices_)[idx], nn_indices,
                                        output.points[idx].principal_curvature[0], output.points[idx].principal_curvature[1], output.points[idx].principal_curvature[2],
                                        output.points[idx].pc1, output.points[idx].pc2);
-    }
-  }
-}
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointInT, typename PointNT> void
-pcl::PrincipalCurvaturesEstimation<PointInT, PointNT, Eigen::MatrixXf>::computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &output)
-{
-  // Resize the output dataset
-  output.points.resize (indices_->size (), 5);
-
-  // Allocate enough space to hold the results
-  // \note This resize is irrelevant for a radiusSearch ().
-  std::vector<int> nn_indices (k_);
-  std::vector<float> nn_dists (k_);
-
-  output.is_dense = true;
-  // Save a few cycles by not checking every point for NaN/Inf values if the cloud is set to dense
-  if (input_->is_dense)
-  {
-    // Iterating over the entire index vector
-    for (size_t idx = 0; idx < indices_->size (); ++idx)
-    {
-      if (this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0)
-      {
-        output.points.row (idx).setConstant (std::numeric_limits<float>::quiet_NaN ());
-        output.is_dense = false;
-        continue;
-      }
-
-      // Estimate the principal curvatures at each patch
-      this->computePointPrincipalCurvatures (*normals_, (*indices_)[idx], nn_indices,
-                                       output.points (idx, 0), output.points (idx, 1), output.points (idx, 2),
-                                       output.points (idx, 3), output.points (idx, 4));
-    }
-  }
-  else
-  {
-    // Iterating over the entire index vector
-    for (size_t idx = 0; idx < indices_->size (); ++idx)
-    {
-      if (!isFinite ((*input_)[(*indices_)[idx]]) ||
-          this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0)
-      {
-        output.points.row (idx).setConstant (std::numeric_limits<float>::quiet_NaN ());
-        output.is_dense = false;
-        continue;
-      }
-
-      // Estimate the principal curvatures at each patch
-      this->computePointPrincipalCurvatures (*normals_, (*indices_)[idx], nn_indices,
-                                       output.points (idx, 0), output.points (idx, 1), output.points (idx, 2),
-                                       output.points (idx, 3), output.points (idx, 4));
     }
   }
 }

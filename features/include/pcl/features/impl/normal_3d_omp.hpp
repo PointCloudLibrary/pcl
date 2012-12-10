@@ -3,6 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -16,7 +17,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -41,55 +42,6 @@
 #define PCL_FEATURES_IMPL_NORMAL_3D_OMP_H_
 
 #include <pcl/features/normal_3d_omp.h>
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointInT> void
-pcl::NormalEstimationOMP<PointInT, Eigen::MatrixXf>::computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &output)
-{
-  float vpx, vpy, vpz;
-  getViewPoint (vpx, vpy, vpz);
-  output.is_dense = true;
-
-  // Resize the output dataset
-  output.points.resize (indices_->size (), 4);
-
-  // Allocate enough space to hold the results
-  // \note This resize is irrelevant for a radiusSearch ().
-  std::vector<int> nn_indices (k_);
-  std::vector<float> nn_dists (k_);
-
-#ifdef _OPENMP
-#pragma omp parallel for shared (output) private (nn_indices, nn_dists) num_threads(threads_)
-#endif
-  // Iterating over the entire index vector
-  for (int idx = 0; idx < static_cast<int> (indices_->size ()); ++idx)
-  {
-    if (!isFinite ((*input_)[(*indices_)[idx]]) ||
-        this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0)
-    {
-      output.points (idx, 0) = output.points (idx, 1) = output.points (idx, 2) = output.points (idx, 3) = std::numeric_limits<float>::quiet_NaN ();
-      output.is_dense = false;
-      continue;
-    }
-
-    // 16-bytes aligned placeholder for the XYZ centroid of a surface patch
-    Eigen::Vector4f xyz_centroid;
-    // Estimate the XYZ centroid
-    compute3DCentroid (*surface_, nn_indices, xyz_centroid);
-
-    // Placeholder for the 3x3 covariance matrix at each surface patch
-    EIGEN_ALIGN16 Eigen::Matrix3f covariance_matrix;
-    // Compute the 3x3 covariance matrix
-    computeCovarianceMatrix (*surface_, nn_indices, xyz_centroid, covariance_matrix);
-
-    // Get the plane normal and surface curvature
-    solvePlaneParameters (covariance_matrix,
-                          output.points (idx, 0), output.points (idx, 1), output.points (idx, 2), output.points (idx, 3));
-
-    flipNormalTowardsViewpoint (input_->points[(*indices_)[idx]], vpx, vpy, vpz,
-                                output.points (idx, 0), output.points (idx, 1), output.points (idx, 2));
-  }
-}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT> void

@@ -3,6 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *  
  *  All rights reserved.
  *
@@ -16,7 +17,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -176,56 +177,6 @@ namespace pcl
 
       /** \brief The decision boundary (angle threshold) that marks points as boundary or regular. (default \f$\pi / 2.0\f$) */
       float angle_threshold_;
-
-    private:
-      /** \brief Make the computeFeature (&Eigen::MatrixXf); inaccessible from outside the class
-        * \param[out] output the output point cloud 
-        */
-      void 
-      computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &) {}
-  };
-
-  /** \brief BoundaryEstimation estimates whether a set of points is lying on surface boundaries using an angle
-    * criterion. The code makes use of the estimated surface normals at each point in the input dataset.
-    *
-    * \attention 
-    * The convention for Boundary features is:
-    *   - if a query point's nearest neighbors cannot be estimated, the boundary feature property will be set to NaN (not a number)
-    *   - it is impossible to estimate a boundary property for a point that
-    *     doesn't have finite 3D coordinates. Therefore, any point that contains
-    *     NaN data on x, y, or z, will have its boundary feature property set to
-    *     NaN.
-    *
-    * \author Radu B. Rusu
-    * \ingroup features
-    */
-  template <typename PointInT, typename PointNT>
-  class BoundaryEstimation<PointInT, PointNT, Eigen::MatrixXf>: public BoundaryEstimation<PointInT, PointNT, pcl::Boundary>
-  {
-    public:
-      using BoundaryEstimation<PointInT, PointNT, pcl::Boundary>::k_;
-      using BoundaryEstimation<PointInT, PointNT, pcl::Boundary>::indices_;
-      using BoundaryEstimation<PointInT, PointNT, pcl::Boundary>::input_;
-      using BoundaryEstimation<PointInT, PointNT, pcl::Boundary>::surface_;
-      using BoundaryEstimation<PointInT, PointNT, pcl::Boundary>::angle_threshold_;
-      using BoundaryEstimation<PointInT, PointNT, pcl::Boundary>::normals_;
-      using BoundaryEstimation<PointInT, PointNT, pcl::Boundary>::search_parameter_;
-      using BoundaryEstimation<PointInT, PointNT, pcl::Boundary>::compute;
-
-    private:
-      /** \brief Estimate whether a set of points is lying on surface boundaries using an angle criterion for all points
-        * given in <setInputCloud (), setIndices ()> using the surface in setSearchSurface () and the spatial locator in
-        * setSearchMethod ()
-        * \param[out] output the resultant point cloud model dataset that contains boundary point estimates
-        */
-      void 
-      computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &output);
-
-      /** \brief Make the compute (&PointCloudOut); inaccessible from outside the class
-        * \param[out] output the output point cloud 
-        */
-      void 
-      compute (pcl::PointCloud<pcl::Boundary> &) {}
   };
 }
 

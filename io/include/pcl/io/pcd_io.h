@@ -142,36 +142,6 @@ namespace pcl
       int 
       readHeader (const std::string &file_name, sensor_msgs::PointCloud2 &cloud, const int offset = 0);
 
-      /** \brief Read a point cloud data header from a PCD file. 
-        *
-        * Load only the meta information (number of points, their types, etc),
-        * and not the points themselves, from a given PCD file. Useful for fast
-        * evaluation of the underlying data structure.
-        *
-        * \attention The PCD data is \b always stored in ROW major format! The
-        * read/write PCD methods will detect column major input and automatically convert it.
-        *
-        * \param[in] file_name the name of the file to load
-        * \param[out] cloud the resultant point cloud dataset (only the properties will be filled)
-        * \param[out] pcd_version the PCD version of the file (either PCD_V6 or PCD_V7)
-        * \param[out] data_type the type of data (0 = ASCII, 1 = Binary, 2 = Binary compressed) 
-        * \param[out] data_idx the offset of cloud data within the file
-        * \param[in] offset the offset of where to expect the PCD Header in the
-        * file (optional parameter). One usage example for setting the offset
-        * parameter is for reading data from a TAR "archive containing multiple
-        * PCD files: TAR files always add a 512 byte header in front of the
-        * actual file, so set the offset to the next byte after the header
-        * (e.g., 513).
-        *
-        * \return
-        *  * < 0 (-1) on error
-        *  * == 0 on success
-        *
-        */
-      int 
-      readHeaderEigen (const std::string &file_name, pcl::PointCloud<Eigen::MatrixXf> &cloud,
-                       int &pcd_version, int &data_type, unsigned int &data_idx, const int offset = 0);
-
       /** \brief Read a point cloud data from a PCD file and store it into a sensor_msgs/PointCloud2.
         * \param[in] file_name the name of the file containing the actual PointCloud data
         * \param[out] cloud the resultant PointCloud message read from disk
@@ -244,29 +214,7 @@ namespace pcl
         return (res);
       }
 
-      /** \brief Read a point cloud data from any PCD file, and convert it to a pcl::PointCloud<Eigen::MatrixXf> format.
-        * \attention The PCD data is \b always stored in ROW major format! The
-        * read/write PCD methods will detect column major input and automatically convert it.
-        *
-        * \param[in] file_name the name of the file containing the actual PointCloud data
-        * \param[out] cloud the resultant PointCloud message read from disk
-        * \param[in] offset the offset of where to expect the PCD Header in the
-        * file (optional parameter). One usage example for setting the offset
-        * parameter is for reading data from a TAR "archive containing multiple
-        * PCD files: TAR files always add a 512 byte header in front of the
-        * actual file, so set the offset to the next byte after the header
-        * (e.g., 513).
-        *
-        * \return
-        *  * < 0 (-1) on error
-        *  * == 0 on success
-        */
-      int
-      readEigen (const std::string &file_name, pcl::PointCloud<Eigen::MatrixXf> &cloud, const int offset = 0);
-      
-    
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-
   };
 
   /** \brief Point Cloud Data (PCD) file format writer.
@@ -331,19 +279,6 @@ namespace pcl
       template <typename PointT> static std::string
       generateHeader (const pcl::PointCloud<PointT> &cloud, 
                       const int nr_points = std::numeric_limits<int>::max ());
-
-      /** \brief Generate the header of a PCD file format
-        * \note This version is specialized for PointCloud<Eigen::MatrixXf> data types. 
-        * \attention The PCD data is \b always stored in ROW major format! The
-        * read/write PCD methods will detect column major input and automatically convert it.
-        *
-        * \param[in] cloud the point cloud data message
-        * \param[in] nr_points if given, use this to fill in WIDTH, HEIGHT (=1), and POINTS in the header
-        * By default, nr_points is set to INTMAX, and the data in the header is used instead.
-        */
-      std::string
-      generateHeaderEigen (const pcl::PointCloud<Eigen::MatrixXf> &cloud, 
-                           const int nr_points = std::numeric_limits<int>::max ());
 
       /** \brief Save point cloud data to a PCD file containing n-D points, in ASCII format
         * \param[in] file_name the output file name
@@ -450,18 +385,6 @@ namespace pcl
       writeBinary (const std::string &file_name, 
                    const pcl::PointCloud<PointT> &cloud);
 
-      /** \brief Save point cloud data to a PCD file containing n-D points, in BINARY format
-        * \note This version is specialized for PointCloud<Eigen::MatrixXf> data types. 
-        * \attention The PCD data is \b always stored in ROW major format! The
-        * read/write PCD methods will detect column major input and automatically convert it.
-        *
-        * \param[in] file_name the output file name
-        * \param[in] cloud the point cloud data
-        */
-      int 
-      writeBinaryEigen (const std::string &file_name, 
-                        const pcl::PointCloud<Eigen::MatrixXf> &cloud);
-
       /** \brief Save point cloud data to a binary comprssed PCD file
         * \param[in] file_name the output file name
         * \param[in] cloud the point cloud data message
@@ -469,18 +392,6 @@ namespace pcl
       template <typename PointT> int 
       writeBinaryCompressed (const std::string &file_name, 
                              const pcl::PointCloud<PointT> &cloud);
-
-      /** \brief Save point cloud data to a binary comprssed PCD file.
-        * \note This version is specialized for PointCloud<Eigen::MatrixXf> data types. 
-        * \attention The PCD data is \b always stored in ROW major format! The
-        * read/write PCD methods will detect column major input and automatically convert it.
-        *
-        * \param[in] file_name the output file name
-        * \param[in] cloud the point cloud data message
-        */
-      int 
-      writeBinaryCompressedEigen (const std::string &file_name, 
-                                  const pcl::PointCloud<Eigen::MatrixXf> &cloud);
 
       /** \brief Save point cloud data to a PCD file containing n-D points, in BINARY format
         * \param[in] file_name the output file name
@@ -501,20 +412,6 @@ namespace pcl
       writeASCII (const std::string &file_name, 
                   const pcl::PointCloud<PointT> &cloud,
                   const int precision = 8);
-
-      /** \brief Save point cloud data to a PCD file containing n-D points, in ASCII format
-        * \note This version is specialized for PointCloud<Eigen::MatrixXf> data types. 
-        * \attention The PCD data is \b always stored in ROW major format! The
-        * read/write PCD methods will detect column major input and automatically convert it.
-        *
-        * \param[in] file_name the output file name
-        * \param[in] cloud the point cloud data message
-        * \param[in] precision the specified output numeric stream precision (default: 8)
-        */
-      int 
-      writeASCIIEigen (const std::string &file_name, 
-                       const pcl::PointCloud<Eigen::MatrixXf> &cloud,
-                       const int precision = 8);
 
        /** \brief Save point cloud data to a PCD file containing n-D points, in ASCII format
         * \param[in] file_name the output file name
@@ -598,19 +495,6 @@ namespace pcl
     private:
       /** \brief Set to true if msync() should be called before munmap(). Prevents data loss on NFS systems. */
       bool map_synchronization_;
-
-      typedef std::pair<std::string, pcl::ChannelProperties> pair_channel_properties;
-      /** \brief Internal structure used to sort the ChannelProperties in the
-        * cloud.channels map based on their offset. 
-        */
-      struct ChannelPropertiesComparator
-      {
-        bool 
-        operator()(const pair_channel_properties &lhs, const pair_channel_properties &rhs) 
-        {
-          return (lhs.second.offset < rhs.second.offset);
-        }
-      };
   };
 
   namespace io

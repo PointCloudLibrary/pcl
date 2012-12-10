@@ -45,7 +45,6 @@
 #include <string>
 #include <stdlib.h>
 #include <pcl/io/boost.h>
-#include <pcl/channel_properties.h>
 #include <pcl/console/print.h>
 #include <pcl/io/pcd_io.h>
 

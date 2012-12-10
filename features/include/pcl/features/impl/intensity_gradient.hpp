@@ -3,6 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -16,7 +17,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -230,57 +231,6 @@ pcl::IntensityGradientEstimation<PointInT, PointNT, PointOutT, IntensitySelector
     }
   }
 }
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointInT, typename PointNT> void
-pcl::IntensityGradientEstimation<PointInT, PointNT, Eigen::MatrixXf>::computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &output)
-{
-  // Resize the output dataset
-  output.points.resize (indices_->size (), 3);
-
-  // Allocate enough space to hold the results
-  // \note This resize is irrelevant for a radiusSearch ().
-  std::vector<int> nn_indices (k_);
-  std::vector<float> nn_dists (k_);
-
-  output.is_dense = true;
-  // Iterating over the entire index vector
-  for (size_t idx = 0; idx < indices_->size (); ++idx)
-  {
-    if (this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0)
-    {
-      output.points.row (idx).setConstant (std::numeric_limits<float>::quiet_NaN ());
-      output.is_dense = false;
-      continue;
-    }
-
-    Eigen::Vector4f centroid;
-    compute3DCentroid (*surface_, nn_indices, centroid);
-
-    float mean_intensity = 0;
-    unsigned valid_neighbor_count = 0;
-    for (size_t nIdx = 0; nIdx < nn_indices.size (); ++nIdx)
-    {
-      const PointInT& p = (*surface_)[nn_indices[nIdx]];
-      if (!pcl_isfinite (p.intensity))
-        continue;
-
-      mean_intensity += p.intensity;
-      ++valid_neighbor_count;
-    }
-
-    mean_intensity /= static_cast<float> (valid_neighbor_count);
-
-    Eigen::Vector3f normal = Eigen::Vector3f::Map (normals_->points[idx].normal);
-    Eigen::Vector3f gradient;
-    this->computePointIntensityGradient (*surface_, nn_indices, centroid.head<3> (), mean_intensity, normal, gradient);
-
-    output.points (idx, 0) = gradient[0];
-    output.points (idx, 1) = gradient[1];
-    output.points (idx, 2) = gradient[2];
-  }
-}
-
 
 #define PCL_INSTANTIATE_IntensityGradientEstimation(InT,NT,OutT) template class PCL_EXPORTS pcl::IntensityGradientEstimation<InT,NT,OutT>;
 

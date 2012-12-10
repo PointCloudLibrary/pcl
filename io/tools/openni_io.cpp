@@ -119,24 +119,6 @@ class OpenNIIO
       }
     }
 
-    void
-    runEigen ()
-    {
-      while (true)
-      {
-        if (cloud_)
-        {
-          //boost::mutex::scoped_lock lock (mtx_);
-          FPS_CALC ("write");
-
-          CloudConstPtr temp_cloud;
-          temp_cloud.swap (cloud_);
-          writer_.writeBinaryCompressedEigen ("test_binary.pcd", *temp_cloud);
-        }
-        boost::this_thread::sleep (boost::posix_time::milliseconds (1));
-      }
-    }
-
     std::string device_id_;
     boost::mutex mtx_;
     CloudConstPtr cloud_;
@@ -179,14 +161,7 @@ main (int argc, char ** argv)
   }
 
   pcl::OpenNIGrabber grabber ("");
-  if (grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_eigen> ())
-  {
-    PCL_INFO ("Eigen mode enabled.\n");
-    OpenNIIO<Eigen::MatrixXf> v ("");
-    v.init ();
-    v.runEigen ();
-  }
-  else if (grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgba> ())
+  if (grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgba> ())
   {
     PCL_INFO ("PointXYZRGBA mode enabled.\n");
     OpenNIIO<pcl::PointXYZRGBA> v ("");

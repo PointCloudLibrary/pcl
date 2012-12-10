@@ -3,6 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -16,7 +17,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -141,53 +142,6 @@ namespace pcl
 
       /** \brief The standard deviation of the Gaussian smoothing kernel used to construct the spin images. */
       float sigma_;
-
-    private:
-      /** \brief Make the computeFeature (&Eigen::MatrixXf); inaccessible from outside the class
-        * \param[out] output the output point cloud 
-        */
-      void 
-      computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &) {}
-  };
-
-  /** \brief IntensitySpinEstimation estimates the intensity-domain spin image descriptors for a given point cloud 
-    * dataset containing points and intensity.  For more information about the intensity-domain spin image descriptor, 
-    * see:
-    *
-    *   Svetlana Lazebnik, Cordelia Schmid, and Jean Ponce. 
-    *   A sparse texture representation using local affine regions. 
-    *   In IEEE Transactions on Pattern Analysis and Machine Intelligence, volume 27, pages 1265-1278, August 2005.
-    * \author Michael Dixon
-    * \ingroup features
-    */
-  template <typename PointInT>
-  class IntensitySpinEstimation<PointInT, Eigen::MatrixXf>: public IntensitySpinEstimation<PointInT, pcl::Histogram<20> >
-  {
-    public:
-      using IntensitySpinEstimation<PointInT, pcl::Histogram<20> >::getClassName;
-      using IntensitySpinEstimation<PointInT, pcl::Histogram<20> >::input_;
-      using IntensitySpinEstimation<PointInT, pcl::Histogram<20> >::indices_;
-      using IntensitySpinEstimation<PointInT, pcl::Histogram<20> >::surface_;
-      using IntensitySpinEstimation<PointInT, pcl::Histogram<20> >::search_radius_;
-      using IntensitySpinEstimation<PointInT, pcl::Histogram<20> >::nr_intensity_bins_;
-      using IntensitySpinEstimation<PointInT, pcl::Histogram<20> >::nr_distance_bins_;
-      using IntensitySpinEstimation<PointInT, pcl::Histogram<20> >::tree_;
-      using IntensitySpinEstimation<PointInT, pcl::Histogram<20> >::sigma_;
-      using IntensitySpinEstimation<PointInT, pcl::Histogram<20> >::compute;
-
-    private:
-      /** \brief Estimate the intensity-domain descriptors at a set of points given by <setInputCloud (), setIndices ()>
-        *  using the surface in setSearchSurface (), and the spatial locator in setSearchMethod ().
-        * \param[out] output the resultant point cloud model dataset that contains the intensity-domain spin image features
-        */
-      void 
-      computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &output);
-    
-      /** \brief Make the compute (&PointCloudOut); inaccessible from outside the class
-        * \param[out] output the output point cloud 
-        */
-      void 
-      compute (pcl::PointCloud<pcl::Normal> &) {}
   };
 }
 

@@ -3,6 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -16,7 +17,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -318,46 +319,6 @@ pcl::ShapeContext3DEstimation<PointInT, PointNT, PointOutT>::computeFeature (Poi
       output.is_dense = false;
     for (size_t j = 0; j < descriptor_length_; ++j)
       output[point_index].descriptor[j] = descriptor[j];
-  }
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointInT, typename PointNT> void
-pcl::ShapeContext3DEstimation<PointInT, PointNT, Eigen::MatrixXf>::computeFeatureEigen (
-    pcl::PointCloud<Eigen::MatrixXf> &output)
-{
-
-  // Set up the output channels
-  output.channels["3dsc"].name     = "3dsc";
-  output.channels["3dsc"].offset   = 0;
-  output.channels["3dsc"].size     = 4;
-  output.channels["3dsc"].count    = static_cast<uint32_t> (descriptor_length_) + 9;
-  output.channels["3dsc"].datatype = sensor_msgs::PointField::FLOAT32;
-
-  // Resize the output dataset
-  output.points.resize (indices_->size (), descriptor_length_ + 9);
-
-  float rf[9];
-
-  output.is_dense = true;
-  // Iterate over all points and compute the descriptors
-	for (size_t point_index = 0; point_index < indices_->size (); point_index++)
-  {
-    // If the point is not finite, set the descriptor to NaN and continue
-    if (!isFinite ((*input_)[(*indices_)[point_index]]))
-    {
-      output.points.row (point_index).setConstant (std::numeric_limits<float>::quiet_NaN ());
-      output.is_dense = false;
-      continue;
-    }
-
-    std::vector<float> descriptor (descriptor_length_);
-    if (!this->computePoint (point_index, *normals_, rf, descriptor))
-      output.is_dense = false;
-    for (int j = 0; j < 9; ++j)
-      output.points (point_index, j) = rf[j];
-    for (size_t j = 0; j < descriptor_length_; ++j)
-      output.points (point_index, 9 + j) = descriptor[j];
   }
 }
 

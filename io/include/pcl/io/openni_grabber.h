@@ -94,7 +94,6 @@ namespace pcl
       typedef void (sig_cb_openni_point_cloud_rgb) (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZRGB> >&);
       typedef void (sig_cb_openni_point_cloud_rgba) (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZRGBA> >&);
       typedef void (sig_cb_openni_point_cloud_i) (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZI> >&);
-      typedef void (sig_cb_openni_point_cloud_eigen) (const boost::shared_ptr<const pcl::PointCloud<Eigen::MatrixXf> >&);
 
     public:
       /** \brief Constructor
@@ -304,15 +303,6 @@ namespace pcl
       convertToXYZIPointCloud (const boost::shared_ptr<openni_wrapper::IRImage> &image,
                                const boost::shared_ptr<openni_wrapper::DepthImage> &depth_image) const;
 
-      /** \brief Convert a pair of depth + RGB images to a PointCloud<MatrixXf> dataset.
-        * \param[in] image the RGB image
-        * \param[in] depth_image the depth image
-        * \return a PointCloud<MatrixXf> dataset
-        */
-      boost::shared_ptr<pcl::PointCloud<Eigen::MatrixXf> >
-      convertToEigenPointCloud (const boost::shared_ptr<openni_wrapper::Image> &image,
-                                const boost::shared_ptr<openni_wrapper::DepthImage> &depth_image) const;
-      
       Synchronizer<boost::shared_ptr<openni_wrapper::Image>, boost::shared_ptr<openni_wrapper::DepthImage> > rgb_sync_;
       Synchronizer<boost::shared_ptr<openni_wrapper::IRImage>, boost::shared_ptr<openni_wrapper::DepthImage> > ir_sync_;
 
@@ -340,7 +330,6 @@ namespace pcl
       boost::signals2::signal<sig_cb_openni_point_cloud_i>* point_cloud_i_signal_;
       boost::signals2::signal<sig_cb_openni_point_cloud_rgb>* point_cloud_rgb_signal_;
       boost::signals2::signal<sig_cb_openni_point_cloud_rgba>* point_cloud_rgba_signal_;
-      boost::signals2::signal<sig_cb_openni_point_cloud_eigen>* point_cloud_eigen_signal_;
 
       struct modeComp
       {

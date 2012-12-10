@@ -284,15 +284,7 @@ namespace pcl
       std::vector<Eigen::Vector3f> centroids_dominant_orientations_;
       /** \brief Normal centroids that were used to compute different CVFH descriptors */
       std::vector<Eigen::Vector3f> dominant_normals_;
-
-    private:
-      /** \brief Make the computeFeature (&Eigen::MatrixXf); inaccessible from outside the class
-        * \param[out] output the output point cloud 
-        */
-      void 
-      computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &) {}
   };
-
 }
 
 #ifdef PCL_NO_PRECOMPILE

@@ -47,5 +47,4 @@
   PCL_INSTANTIATE_PRODUCT(IntensityGradientEstimation, ((pcl::PointXYZI))((pcl::Normal))((pcl::IntensityGradient)))
 #else
   PCL_INSTANTIATE_PRODUCT(IntensityGradientEstimation, ((pcl::PointXYZI)(pcl::PointXYZINormal))(PCL_NORMAL_POINT_TYPES)((pcl::IntensityGradient)))
-  PCL_INSTANTIATE_PRODUCT(IntensityGradientEstimation, ((pcl::PointXYZI)(pcl::PointXYZINormal))(PCL_NORMAL_POINT_TYPES)((Eigen::MatrixXf)))
 #endif

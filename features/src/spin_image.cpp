@@ -46,5 +46,4 @@
   PCL_INSTANTIATE_PRODUCT(SpinImageEstimation, ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointNormal))((pcl::Normal)(pcl::PointNormal))((pcl::Histogram<153>)))
 #else
   PCL_INSTANTIATE_PRODUCT(SpinImageEstimation, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((pcl::Histogram<153>)))
-  PCL_INSTANTIATE_PRODUCT(SpinImageEstimation, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((Eigen::MatrixXf)))
 #endif

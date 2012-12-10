@@ -3,6 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -16,7 +17,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -110,45 +111,6 @@ namespace pcl
 
       /** \brief Internal data vector. */
       Eigen::Vector4f temp_pt_;
-
-      /** \brief Make the computeFeature (&Eigen::MatrixXf); inaccessible from outside the class
-        * \param[out] output the output point cloud 
-        */
-      void 
-      computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &) {}
-  };
-
-  /** \brief MomentInvariantsEstimation estimates the 3 moment invariants (j1, j2, j3) at each 3D point.
-    *
-    * \note The code is stateful as we do not expect this class to be multicore parallelized. Please look at
-    * \ref NormalEstimationOMP for an example on how to extend this to parallel implementations.
-    * \author Radu B. Rusu
-    * \ingroup features
-    */
-  template <typename PointInT>
-  class MomentInvariantsEstimation<PointInT, Eigen::MatrixXf>: public MomentInvariantsEstimation<PointInT, pcl::MomentInvariants>
-  {
-    public:
-      using MomentInvariantsEstimation<PointInT, pcl::MomentInvariants>::k_;
-      using MomentInvariantsEstimation<PointInT, pcl::MomentInvariants>::indices_;
-      using MomentInvariantsEstimation<PointInT, pcl::MomentInvariants>::search_parameter_;
-      using MomentInvariantsEstimation<PointInT, pcl::MomentInvariants>::surface_;
-      using MomentInvariantsEstimation<PointInT, pcl::MomentInvariants>::input_;
-      using MomentInvariantsEstimation<PointInT, pcl::MomentInvariants>::compute;
-
-   private:
-      /** \brief Estimate moment invariants for all points given in <setInputCloud (), setIndices ()> using the surface
-        * in setSearchSurface () and the spatial locator in setSearchMethod ()
-        * \param[out] output the resultant point cloud model dataset that contains the moment invariants
-        */
-      void 
-      computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &output);
-
-      /** \brief Make the compute (&PointCloudOut); inaccessible from outside the class
-        * \param[out] output the output point cloud 
-        */
-      void 
-      compute (pcl::PointCloud<pcl::Normal> &) {}
   };
 }
 

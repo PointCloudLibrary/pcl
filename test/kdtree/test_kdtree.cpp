@@ -54,7 +54,6 @@ struct MyPoint : public PointXYZ
 };
 
 PointCloud<MyPoint> cloud, cloud_big;
-PointCloud<Eigen::MatrixXf> cloud_eigen;
 
 // Includ the implementation so that KdTree<MyPoint> works
 #include <pcl/kdtree/impl/kdtree_flann.hpp>
@@ -78,22 +77,6 @@ init ()
     cloud_big.points.push_back (MyPoint (static_cast<float> (1024 * rand () / (RAND_MAX + 1.0)),
                                          static_cast<float> (1024 * rand () / (RAND_MAX + 1.0)),
                                          static_cast<float> (1024 * rand () / (RAND_MAX + 1.0))));
-}
-
-void 
-initEigen ()
-{
-  cloud_eigen.width  = 640;
-  cloud_eigen.height = 480;
-  cloud_eigen.points.resize (cloud_eigen.width * cloud_eigen.height, 3);
-  srand (static_cast<unsigned int> (time (NULL)));
-  // Randomly create a new point cloud
-  for (int i = 0; i < cloud_eigen.points.rows (); ++i)
-  {
-    cloud_eigen.points (i, 0) = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
-    cloud_eigen.points (i, 1) = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
-    cloud_eigen.points (i, 2) = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
-  }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -165,58 +148,6 @@ TEST (PCL, KdTreeFLANN_radiusSearch)
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST (PCL, KdTreeFLANN_radiusSearchEigen)
-{
-  KdTreeFLANN<Eigen::MatrixXf> kdtree;
-  kdtree.setInputCloud (cloud_eigen.makeShared ());
-
-  kdtree.setInputCloud (cloud_eigen.makeShared ());
-  Eigen::VectorXf test_point = Eigen::Vector3f (0.0f, 0.0f, 0.0f);
-  double max_dist = 0.15;
-  set<int> brute_force_result;
-  for (int i = 0; i < cloud_eigen.points.rows (); ++i)
-    if ((cloud_eigen.points.row (i) - test_point.transpose ()).norm () < max_dist)
-      brute_force_result.insert (i);
-  vector<int> k_indices;
-  vector<float> k_distances;
-  kdtree.radiusSearch (test_point, max_dist, k_indices, k_distances);
-  
-  for (size_t i = 0; i < k_indices.size (); ++i)
-  {
-    set<int>::iterator brute_force_result_it = brute_force_result.find (k_indices[i]);
-    bool ok = brute_force_result_it != brute_force_result.end ();
-    EXPECT_EQ (ok, true);
-    if (ok)
-      brute_force_result.erase (brute_force_result_it);
-  }
-  
-  bool error = brute_force_result.size () > 0;
-  EXPECT_EQ (error, false);
-
-  {
-    KdTreeFLANN<Eigen::MatrixXf> kdtree;
-    kdtree.setInputCloud (cloud_eigen.makeShared ());
-
-    ScopeTime scopeTime ("FLANN radiusSearch");
-    {
-      for (int i = 0; i < cloud_eigen.points.rows (); ++i)
-        kdtree.radiusSearch (cloud_eigen.points.row (i), 0.1, k_indices, k_distances);
-    }
-  }
-  
-  {
-    KdTreeFLANN<Eigen::MatrixXf> kdtree (false);
-    kdtree.setInputCloud (cloud_eigen.makeShared ());
-
-    ScopeTime scopeTime ("FLANN radiusSearch (unsorted results)");
-    {
-      for (int i = 0; i < cloud_eigen.points.rows (); ++i)
-        kdtree.radiusSearch (cloud_eigen.points.row (i), 0.1, k_indices, k_distances);
-    }
-  }
-}
-
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, KdTreeFLANN_nearestKSearch)
 {
@@ -264,56 +195,6 @@ TEST (PCL, KdTreeFLANN_nearestKSearch)
     kdtree.setInputCloud (cloud_big.makeShared ());
     for (size_t i = 0; i < cloud_big.points.size (); ++i)
       kdtree.nearestKSearch (cloud_big.points[i], no_of_neighbors, k_indices, k_distances);
-  }
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST (PCL, KdTreeFLANN_nearestKSearchEigen)
-{
-  KdTreeFLANN<Eigen::MatrixXf> kdtree;
-  kdtree.setInputCloud (cloud_eigen.makeShared ());
-  Eigen::VectorXf test_point = Eigen::Vector3f (0.01f, 0.01f, 0.01f);
-  unsigned int no_of_neighbors = 20;
-  multimap<float, int> sorted_brute_force_result;
-  for (int i = 0; i < cloud_eigen.points.rows (); ++i)
-  {
-    float distance = (cloud_eigen.points.row (i) - test_point.transpose ()).norm ();
-    sorted_brute_force_result.insert (make_pair (distance, static_cast<int> (i)));
-  }
-  float max_dist = 0.0f;
-  unsigned int counter = 0;
-  for (multimap<float, int>::iterator it = sorted_brute_force_result.begin (); it != sorted_brute_force_result.end () && counter < no_of_neighbors; ++it)
-  {
-    max_dist = max (max_dist, it->first);
-    ++counter;
-  }
-
-  vector<int> k_indices;
-  k_indices.resize (no_of_neighbors);
-  vector<float> k_distances;
-  k_distances.resize (no_of_neighbors);
-  kdtree.nearestKSearch (test_point, no_of_neighbors, k_indices, k_distances);
-  //if (k_indices.size() != no_of_neighbors)  cerr << "Found "<<k_indices.size()<<" instead of "<<no_of_neighbors<<" neighbors.\n";
-  EXPECT_EQ (k_indices.size (), no_of_neighbors);
-
-  // Check if all found neighbors have distance smaller than max_dist
-  for (size_t i = 0; i < k_indices.size (); ++i)
-  {
-    const Eigen::VectorXf& point = cloud_eigen.points.row (k_indices[i]);
-    bool ok = (test_point - point).norm () <= max_dist;
-    if (!ok)
-      ok = (fabs ((test_point - point).norm () - max_dist)) <= 1e-6;
-    //if (!ok)  cerr << k_indices[i] << " is not correct...\n";
-    //else      cerr << k_indices[i] << " is correct...\n";
-    EXPECT_EQ (ok, true);
-  }
-
-  ScopeTime scopeTime ("FLANN nearestKSearch");
-  {
-    KdTreeFLANN<Eigen::MatrixXf> kdtree;
-    kdtree.setInputCloud (cloud_eigen.makeShared ());
-    for (int i = 0; i < cloud_eigen.points.rows (); ++i)
-      kdtree.nearestKSearch (cloud_eigen.points.row (i), no_of_neighbors, k_indices, k_distances);
   }
 }
 
@@ -403,7 +284,6 @@ main (int argc, char** argv)
 {
   testing::InitGoogleTest (&argc, argv);
   init ();
-  initEigen ();
   return (RUN_ALL_TESTS ());
 }
 /* ]--- */

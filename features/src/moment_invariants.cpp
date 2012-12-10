@@ -47,6 +47,5 @@
   PCL_INSTANTIATE_PRODUCT(MomentInvariantsEstimation, ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA))((pcl::MomentInvariants)))
 #else
   PCL_INSTANTIATE_PRODUCT(MomentInvariantsEstimation, (PCL_XYZ_POINT_TYPES)((pcl::MomentInvariants)))
-  PCL_INSTANTIATE_PRODUCT(MomentInvariantsEstimation, (PCL_XYZ_POINT_TYPES)((Eigen::MatrixXf)))
 #endif
 

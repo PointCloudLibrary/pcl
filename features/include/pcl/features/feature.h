@@ -3,6 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -16,7 +17,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -210,14 +211,6 @@ namespace pcl
       void
       compute (PointCloudOut &output);
 
-      /** \brief Base method for feature estimation for all points given in
-        * <setInputCloud (), setIndices ()> using the surface in setSearchSurface ()
-        * and the spatial locator in setSearchMethod ()
-        * \param[out] output the resultant point cloud model dataset containing the estimated features
-        */
-      void
-      computeEigen (pcl::PointCloud<Eigen::MatrixXf> &output);
-
     protected:
       /** \brief The feature name. */
       std::string feature_name_;
@@ -298,12 +291,6 @@ namespace pcl
         */
       virtual void
       computeFeature (PointCloudOut &output) = 0;
-
-      /** \brief Abstract feature estimation method.
-        * \param[out] output the resultant features
-        */
-      virtual void
-      computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &output) = 0;
 
     public:
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW

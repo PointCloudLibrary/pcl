@@ -3,6 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -16,7 +17,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -279,48 +280,6 @@ pcl::UniqueShapeContext<PointInT, PointOutT, PointRFT>::computeFeature (PointClo
     computePointDescriptor (point_index, descriptor);
     for (size_t j = 0; j < descriptor_length_; ++j)
       output [point_index].descriptor[j] = descriptor[j];
-  }
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointInT, typename PointRFT> void
-pcl::UniqueShapeContext<PointInT, Eigen::MatrixXf, PointRFT>::computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &output)
-{
-  // Set up the output channels
-  output.channels["usc"].name     = "usc";
-  output.channels["usc"].offset   = 0;
-  output.channels["usc"].size     = 4;
-  output.channels["usc"].count    = static_cast<uint32_t> (descriptor_length_) + 9;
-  output.channels["usc"].datatype = sensor_msgs::PointField::FLOAT32;
-
-  output.is_dense = true;
-  output.points.resize (indices_->size (), descriptor_length_ + 9);
-
-  for (size_t point_index = 0; point_index < indices_->size (); ++point_index)
-  {
-    // If the point is not finite, set the descriptor to NaN and continue
-    const PointRFT& current_frame = (*frames_)[point_index];
-    if (!isFinite ((*input_)[(*indices_)[point_index]]) ||
-        !pcl_isfinite (current_frame.x_axis[0]) ||
-        !pcl_isfinite (current_frame.y_axis[0]) ||
-        !pcl_isfinite (current_frame.z_axis[0])  )
-    {
-      output.points.row (point_index).setConstant (std::numeric_limits<float>::quiet_NaN ());
-      output.is_dense = false;
-      continue;
-    }
-
-    for (int d = 0; d < 3; ++d)
-    {
-      output.points (point_index, 0 + d) = current_frame.x_axis[d];
-      output.points (point_index, 3 + d) = current_frame.y_axis[d];
-      output.points (point_index, 6 + d) = current_frame.z_axis[d];
-    }
-
-    std::vector<float> descriptor (descriptor_length_);
-    computePointDescriptor (point_index, descriptor);
-    for (size_t j = 0; j < descriptor_length_; ++j)
-      output.points (point_index, 9 + j) = descriptor[j];
   }
 }
 

@@ -47,5 +47,4 @@
   PCL_INSTANTIATE_PRODUCT(UniqueShapeContext, ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA))((pcl::ShapeContext1980))((pcl::ReferenceFrame)))
 #else
   PCL_INSTANTIATE_PRODUCT(UniqueShapeContext, (PCL_XYZ_POINT_TYPES)((pcl::ShapeContext1980))((pcl::ReferenceFrame)))
-  PCL_INSTANTIATE_PRODUCT(UniqueShapeContext, (PCL_XYZ_POINT_TYPES)((Eigen::MatrixXf))((pcl::ReferenceFrame)))
 #endif

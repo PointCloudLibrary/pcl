@@ -3,6 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -16,7 +17,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -363,54 +364,8 @@ namespace pcl
       /** whether the sensor origin of the input cloud or a user given viewpoint should be used.*/
       bool use_sensor_origin_;
 
-    private:
-      /** \brief Make the computeFeature (&Eigen::MatrixXf); inaccessible from outside the class
-        * \param[out] output the output point cloud
-        */
-      void
-      computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &) {}
-
     public:
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-  };
-
-  /** \brief NormalEstimation estimates local surface properties at each 3D point, such as surface normals and
-    * curvatures.
-    *
-    * \note The code is stateful as we do not expect this class to be multicore parallelized. Please look at
-    * \ref NormalEstimationOMP for a parallel implementation.
-    * \author Radu B. Rusu
-    * \ingroup features
-    */
-  template <typename PointInT>
-  class NormalEstimation<PointInT, Eigen::MatrixXf>: public NormalEstimation<PointInT, pcl::Normal>
-  {
-    public:
-      using NormalEstimation<PointInT, pcl::Normal>::indices_;
-      using NormalEstimation<PointInT, pcl::Normal>::input_;
-      using NormalEstimation<PointInT, pcl::Normal>::surface_;
-      using NormalEstimation<PointInT, pcl::Normal>::k_;
-      using NormalEstimation<PointInT, pcl::Normal>::search_parameter_;
-      using NormalEstimation<PointInT, pcl::Normal>::vpx_;
-      using NormalEstimation<PointInT, pcl::Normal>::vpy_;
-      using NormalEstimation<PointInT, pcl::Normal>::vpz_;
-      using NormalEstimation<PointInT, pcl::Normal>::computePointNormal;
-      using NormalEstimation<PointInT, pcl::Normal>::compute;
-
-    private:
-      /** \brief Estimate normals for all points given in <setInputCloud (), setIndices ()> using the surface in
-        * setSearchSurface () and the spatial locator in setSearchMethod ()
-        * \note In situations where not enough neighbors are found, the normal and curvature values are set to NaN
-        * \param[out] output the resultant point cloud model dataset that contains surface normals and curvatures
-        */
-      void
-      computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &output);
-
-      /** \brief Make the compute (&PointCloudOut); inaccessible from outside the class
-        * \param[out] output the output point cloud
-        */
-      void
-      compute (pcl::PointCloud<pcl::Normal> &) {}
   };
 }
 

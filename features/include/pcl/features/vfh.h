@@ -266,56 +266,7 @@ namespace pcl
     private:
       /** \brief Float constant = 1.0 / (2.0 * M_PI) */
       float d_pi_;
-
-      /** \brief Make the computeFeature (&Eigen::MatrixXf); inaccessible from outside the class
-        * \param[out] output the output point cloud
-        */
-      void
-      computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &) {}
   };
-
-  /** \brief VFHEstimation estimates the <b>Viewpoint Feature Histogram (VFH)</b> descriptor for a given point cloud
-    * dataset containing points and normals.
-    *
-    * \note If you use this code in any academic work, please cite:
-    *
-    *   - R.B. Rusu, G. Bradski, R. Thibaux, J. Hsu.
-    *     Fast 3D Recognition and Pose Using the Viewpoint Feature Histogram.
-    *     In Proceedings of International Conference on Intelligent Robots and Systems (IROS)
-    *     Taipei, Taiwan, October 18-22 2010.
-    *
-    * \note The code is stateful as we do not expect this class to be multicore parallelized. Please look at
-    * \ref FPFHEstimationOMP for an example of a parallel implementation of the FPFH (Fast Point Feature Histogram).
-    * \author Radu B. Rusu
-    * \ingroup features
-    */
-//  template<typename PointInT, typename PointNT>
-//  class VFHEstimation<PointInT, PointNT, Eigen::MatrixXf> : public VFHEstimation<PointInT, PointNT, pcl::VFHSignature263>
-//  {
-//    public:
-////      using Feature<PointInT, PointOutT>::feature_name_;
-////      using Feature<PointInT, PointOutT>::getClassName;
-////      using Feature<PointInT, PointOutT>::indices_;
-////      using Feature<PointInT, PointOutT>::k_;
-////      using Feature<PointInT, PointOutT>::search_radius_;
-////      using Feature<PointInT, PointOutT>::surface_;
-////      using FeatureFromNormals<PointInT, PointNT, PointOutT>::normals_;
-//
-//    private:
-//      /** \brief Estimate the Viewpoint Feature Histograms (VFH) descriptors at a set of points given by
-//        * <setInputCloud (), setIndices ()> using the surface in setSearchSurface () and the spatial locator in
-//        * setSearchMethod ()
-//        * \param[out] output the resultant point cloud model dataset that contains the VFH feature estimates
-//        */
-//      void
-//      computeFeature (pcl::PointCloud<Eigen::MatrixXf> &output);
-//
-//      /** \brief Make the compute (&PointCloudOut); inaccessible from outside the class
-//        * \param[out] output the output point cloud
-//        */
-//      void
-//      compute (pcl::PointCloud<pcl::Normal> &output) {}
-//  };
 }
 
 #ifdef PCL_NO_PRECOMPILE

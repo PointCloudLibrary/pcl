@@ -47,5 +47,4 @@
   PCL_INSTANTIATE_PRODUCT(ShapeContext3DEstimation, ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA))((pcl::Normal))((pcl::ShapeContext1980)))
 #else
   PCL_INSTANTIATE_PRODUCT(ShapeContext3DEstimation, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((pcl::ShapeContext1980)))
-  PCL_INSTANTIATE_PRODUCT(ShapeContext3DEstimation, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((Eigen::MatrixXf)))
 #endif

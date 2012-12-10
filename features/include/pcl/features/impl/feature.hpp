@@ -3,6 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -16,7 +17,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -215,44 +216,6 @@ pcl::Feature<PointInT, PointOutT>::compute (PointCloudOut &output)
 
   // Perform the actual feature computation
   computeFeature (output);
-
-  deinitCompute ();
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointInT, typename PointOutT> void
-pcl::Feature<PointInT, PointOutT>::computeEigen (pcl::PointCloud<Eigen::MatrixXf> &output)
-{
-  if (!initCompute ())
-  {
-    output.width = output.height = 0;
-    output.points.resize (0, 0);
-    return;
-  }
-
-  // Copy the properties
-//#ifndef USE_ROS
-//  output.properties.acquisition_time = input_->header.stamp;
-//#endif
-  output.properties.sensor_origin = input_->sensor_origin_;
-  output.properties.sensor_orientation = input_->sensor_orientation_;
-
-  // Check if the output will be computed for all points or only a subset
-  if (indices_->size () != input_->points.size ())
-  {
-    output.width = static_cast<int> (indices_->size ());
-    output.height = 1;
-  }
-  else
-  {
-    output.width = input_->width;
-    output.height = input_->height;
-  }
-
-  output.is_dense = input_->is_dense;
-
-  // Perform the actual feature computation
-  computeFeatureEigen (output);
 
   deinitCompute ();
 }

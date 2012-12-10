@@ -3,6 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2012, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -16,7 +17,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -336,34 +337,6 @@ pcl::SpinImageEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointClo
     }   
   } 
 }
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointInT, typename PointNT> void 
-pcl::SpinImageEstimation<PointInT, PointNT, Eigen::MatrixXf>::computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &output)
-{ 
-  // Set up the output channels
-  output.channels["spin_image"].name     = "spin_image";
-  output.channels["spin_image"].offset   = 0;
-  output.channels["spin_image"].size     = 4;
-  output.channels["spin_image"].count    = 153;
-  output.channels["spin_image"].datatype = sensor_msgs::PointField::FLOAT32;
-
-  output.points.resize (indices_->size (), 153);
-  for (int i_input = 0; i_input < static_cast<int> (indices_->size ()); ++i_input)
-  {
-    Eigen::ArrayXXd res = this->computeSiForPoint (indices_->at (i_input));
-
-    // Copy into the resultant cloud
-    for (int iRow = 0; iRow < res.rows () ; iRow++)
-    {
-      for (int iCol = 0; iCol < res.cols () ; iCol++)
-      {
-        output.points (i_input, iRow*res.cols () + iCol) = static_cast<float> (res (iRow, iCol));
-      }
-    }   
-  } 
-}
-
 
 #define PCL_INSTANTIATE_SpinImageEstimation(T,NT,OutT) template class PCL_EXPORTS pcl::SpinImageEstimation<T,NT,OutT>;
 

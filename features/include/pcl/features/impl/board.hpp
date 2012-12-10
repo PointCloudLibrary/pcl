@@ -3,6 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -16,7 +17,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -595,48 +596,6 @@ pcl::BOARDLocalReferenceFrameEstimation<PointInT, PointNT, PointOutT>::computeFe
       rf.y_axis[d] = currentLrf (1, d);
       rf.z_axis[d] = currentLrf (2, d);
     }
-  }
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template<typename PointInT, typename PointNT> void
-pcl::BOARDLocalReferenceFrameEstimation<PointInT, PointNT, Eigen::MatrixXf>::computeFeatureEigen (
-                                                                                                  pcl::PointCloud<
-                                                                                                      Eigen::MatrixXf> &output)
-{
-  //check whether used with search radius or search k-neighbors
-  if (this->getKSearch () != 0)
-  {
-    PCL_ERROR(
-        "[pcl::%s::computeFeatureEigen] Error! Search method set to k-neighborhood. Call setKSearch(0) and setRadiusSearch( radius ) to use this class.\n",
-        getClassName().c_str());
-    return;
-  }
-
-  this->resetData ();
-
-  // Set up the output channels
-  output.channels["board"].name     = "board";
-  output.channels["board"].offset   = 0;
-  output.channels["board"].size     = 4;
-  output.channels["board"].count    = 9;
-  output.channels["board"].datatype = sensor_msgs::PointField::FLOAT32;
-
-  //output.points.resize (indices_->size (), 10);
-  output.points.resize (indices_->size (), 9);
-  for (size_t point_idx = 0; point_idx < indices_->size (); ++point_idx)
-  {
-    Eigen::Matrix3f currentLrf;
-    //output.points (point_idx, 9) = computePointLRF (*indices_[point_idx], currentLrf);
-    //if (output.points (point_idx, 9) == std::numeric_limits<float>::max ())
-    if (this->computePointLRF ((*indices_)[point_idx], currentLrf) == std::numeric_limits<float>::max ())
-    {
-      output.is_dense = false;
-    }
-
-    output.points.block<1, 3> (point_idx, 0).matrix () = currentLrf.row (0);
-    output.points.block<1, 3> (point_idx, 3).matrix () = currentLrf.row (1);
-    output.points.block<1, 3> (point_idx, 6).matrix () = currentLrf.row (2);
   }
 }
 

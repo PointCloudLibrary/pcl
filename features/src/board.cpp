@@ -45,5 +45,4 @@
   PCL_INSTANTIATE_PRODUCT(BOARDLocalReferenceFrameEstimation, ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA))((pcl::Normal))((pcl::ReferenceFrame)))
 #else
   PCL_INSTANTIATE_PRODUCT(BOARDLocalReferenceFrameEstimation, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((pcl::ReferenceFrame)))
-  PCL_INSTANTIATE_PRODUCT(BOARDLocalReferenceFrameEstimation, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((Eigen::MatrixXf)))
 #endif

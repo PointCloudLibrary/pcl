@@ -3,7 +3,8 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2011, Alexandru-Eugen Ichim
- *                      Willow Garage, Inc
+ *  Copyright (c) 2012-, Open Perception, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -16,7 +17,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -33,7 +34,6 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- *  $Id$
  */
 
 #ifndef PCL_PPF_H_
@@ -99,50 +99,6 @@ namespace pcl
         */
       void
       computeFeature (PointCloudOut &output);
-
-      /** \brief Make the computeFeature (&Eigen::MatrixXf); inaccessible from outside the class
-        * \param[out] output the output point cloud 
-        */
-      void 
-      computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &) {}
-  };
-
-  /** \brief Class that calculates the "surflet" features for each pair in the given
-    * pointcloud. Please refer to the following publication for more details:
-    *    B. Drost, M. Ulrich, N. Navab, S. Ilic
-    *    Model Globally, Match Locally: Efficient and Robust 3D Object Recognition
-    *    2010 IEEE Conference on Computer Vision and Pattern Recognition (CVPR)
-    *    13-18 June 2010, San Francisco, CA
-    *
-    * PointOutT is meant to be pcl::PPFSignature - contains the 4 values of the Surflet
-    * feature and in addition, alpha_m for the respective pair - optimization proposed by
-    * the authors (see above)
-    *
-    * \author Alexandru-Eugen Ichim
-    */
-  template <typename PointInT, typename PointNT>
-  class PPFEstimation<PointInT, PointNT, Eigen::MatrixXf> : public PPFEstimation<PointInT, PointNT, pcl::PPFSignature>
-  {
-    public:
-      using PPFEstimation<PointInT, PointNT, pcl::PPFSignature>::getClassName;
-      using PPFEstimation<PointInT, PointNT, pcl::PPFSignature>::input_;
-      using PPFEstimation<PointInT, PointNT, pcl::PPFSignature>::normals_;
-      using PPFEstimation<PointInT, PointNT, pcl::PPFSignature>::indices_;
-
-    private:
-      /** \brief The method called for actually doing the computations
-        * \param[out] output the resulting point cloud
-        * its size is the size of the input cloud, squared (i.e., one point for each pair in
-        * the input cloud);
-        */
-      void
-      computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &output);
-
-      /** \brief Make the compute (&PointCloudOut); inaccessible from outside the class
-        * \param[out] output the output point cloud 
-        */
-      void 
-      compute (pcl::PointCloud<pcl::Normal> &) {}
   };
 }
 
