@@ -519,7 +519,7 @@ void pcl::HDL_Grabber::setLaserColorRGB (const pcl::RGB& color,
 
 bool pcl::HDL_Grabber::isAddressUnspecified (const boost::asio::ip::address& ip_address)
 {
-#if BOOST_VERSION>104600
+#if BOOST_VERSION>=104700
   return(ip_address.is_unspecified());
 #else
   if (ip_address.is_v4()) {
