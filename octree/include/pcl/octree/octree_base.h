@@ -121,7 +121,7 @@ namespace pcl
           branchCount_ (source.branchCount_),
           objectCount_ (source.objectCount_),
           rootNode_ (new (BranchNode) (*(source.rootNode_))),
-          depthMask_ (source.depthMask_),
+          maxObjsPerLeaf_(0), depthMask_ (source.depthMask_),
           octreeDepth_ (source.octreeDepth_),
           maxKey_ (source.maxKey_),
           branchNodePool_ (),
@@ -137,6 +137,7 @@ namespace pcl
           branchCount_ = source.branchCount_;
           objectCount_ = source.objectCount_;
           rootNode_ = new (BranchNode) (*(source.rootNode_));
+          maxObjsPerLeaf_ = source.maxObjsPerLeaf_;
           depthMask_ = source.depthMask_;
           maxKey_ = source.maxKey_;
           octreeDepth_ = source.octreeDepth_;

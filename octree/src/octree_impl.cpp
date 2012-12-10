@@ -63,18 +63,18 @@ PCL_INSTANTIATE(OctreePointCloudDoubleBufferWithLeafDataTVector,
 PCL_INSTANTIATE(OctreePointCloudSearch, PCL_XYZ_POINT_TYPES)
 
 
-// PCL_INSTANTIATE(OctreePointCloudSingleBufferWithLeafDataT, PCL_XYZ_POINT_TYPES);
+// PCL_INSTANTIATE(OctreePointCloudSingleBufferWithLeafDataT, PCL_XYZ_POINT_TYPES)
 
-// PCL_INSTANTIATE(OctreePointCloudSingleBufferWithEmptyLeaf, PCL_XYZ_POINT_TYPES);
+// PCL_INSTANTIATE(OctreePointCloudSingleBufferWithEmptyLeaf, PCL_XYZ_POINT_TYPES)
 
-// PCL_INSTANTIATE(OctreePointCloudDensity, PCL_XYZ_POINT_TYPES);
-// PCL_INSTANTIATE(OctreePointCloudSingleBufferWithDensityLeaf, PCL_XYZ_POINT_TYPES);
-// PCL_INSTANTIATE(OctreePointCloudDoubleBufferWithDensityLeaf, PCL_XYZ_POINT_TYPES);
+// PCL_INSTANTIATE(OctreePointCloudDensity, PCL_XYZ_POINT_TYPES)
+// PCL_INSTANTIATE(OctreePointCloudSingleBufferWithDensityLeaf, PCL_XYZ_POINT_TYPES)
+// PCL_INSTANTIATE(OctreePointCloudDoubleBufferWithDensityLeaf, PCL_XYZ_POINT_TYPES)
 
-// PCL_INSTANTIATE(OctreePointCloudOccupancy, PCL_XYZ_POINT_TYPES);
-// PCL_INSTANTIATE(OctreePointCloudSinglePoint, PCL_XYZ_POINT_TYPES);
-// PCL_INSTANTIATE(OctreePointCloudPointVector, PCL_XYZ_POINT_TYPES);
-PCL_INSTANTIATE(OctreePointCloudChangeDetector, PCL_XYZ_POINT_TYPES);
-// PCL_INSTANTIATE(OctreePointCloudVoxelCentroid, PCL_XYZ_POINT_TYPES);
+// PCL_INSTANTIATE(OctreePointCloudOccupancy, PCL_XYZ_POINT_TYPES)
+// PCL_INSTANTIATE(OctreePointCloudSinglePoint, PCL_XYZ_POINT_TYPES)
+// PCL_INSTANTIATE(OctreePointCloudPointVector, PCL_XYZ_POINT_TYPES)
+PCL_INSTANTIATE(OctreePointCloudChangeDetector, PCL_XYZ_POINT_TYPES)
+// PCL_INSTANTIATE(OctreePointCloudVoxelCentroid, PCL_XYZ_POINT_TYPES)
 
 
