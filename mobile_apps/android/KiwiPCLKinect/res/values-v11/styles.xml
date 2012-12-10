@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <style name="ThemeHoloDialog" parent="android:style/Theme.Holo.Dialog"/>
-    <style name="ThemeDialogWhenLarge" parent="android:style/Theme.Holo.DialogWhenLarge"/>
-    <style name="ThemeFullscreen" parent="android:style/Theme.Holo.NoActionBar.Fullscreen"/>
-</resources>

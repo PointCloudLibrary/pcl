@@ -1,2 +1,0 @@
-data/GlobalDefaultsKinect.ini
-data/GlobalDefaults.ini
