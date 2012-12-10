@@ -1,8 +1,0 @@
-# This series applies on GIT commit 9864d868fa54724c00e147ac60f3fc79ee97450e
-kinect.patch
-file-log-disable.patch
-dynamic-linker.patch
-magic-handling.patch
-bayer-buffer.patch
-rules.patch
-build-flags.patch
