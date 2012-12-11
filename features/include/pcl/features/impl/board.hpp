@@ -346,6 +346,12 @@ pcl::BOARDLocalReferenceFrameEstimation<PointInT, PointNT, PointOutT>::computePo
       }
     }//for each neighbor
 
+    // Check if we are not in a degenerate case (all the neighboring normals are NaNs)
+    if (min_normal_index == -1)
+    {
+      lrf.setConstant (std::numeric_limits<float>::quiet_NaN ());
+      return (std::numeric_limits<float>::max ());
+    }
     //find orthogonal axis directed to minNormalIndex point projection on plane with fittedNormal as axis
     directedOrthogonalAxis (fitted_normal, input_->at (index).getVector3fMap (),
                             surface_->at (min_normal_index).getVector3fMap (), x_axis);
@@ -372,6 +378,13 @@ pcl::BOARDLocalReferenceFrameEstimation<PointInT, PointNT, PointOutT>::computePo
       //z axis already set
 
       return (min_normal_cos);
+    }
+
+    // Check if we are not in a degenerate case (all the neighboring normals are NaNs)
+    if (min_normal_index == -1)
+    {
+      lrf.setConstant (std::numeric_limits<float>::quiet_NaN ());
+      return (std::numeric_limits<float>::max ());
     }
 
     directedOrthogonalAxis (fitted_normal, input_->at (index).getVector3fMap (),
@@ -409,6 +422,13 @@ pcl::BOARDLocalReferenceFrameEstimation<PointInT, PointNT, PointOutT>::computePo
       //z axis already set
 
       return (min_normal_cos);
+    }
+
+    // Check if we are not in a degenerate case (all the neighboring normals are NaNs)
+    if (min_normal_index == -1)
+    {
+      lrf.setConstant (std::numeric_limits<float>::quiet_NaN ());
+      return (std::numeric_limits<float>::max ());
     }
 
     //find orthogonal axis directed to minNormalIndex point projection on plane with fittedNormal as axis
@@ -549,6 +569,13 @@ pcl::BOARDLocalReferenceFrameEstimation<PointInT, PointNT, PointOutT>::computePo
     }
     else
     {
+      // Check if we are not in a degenerate case (all the neighboring normals are NaNs)
+      if (min_normal_index == -1)
+      {
+        lrf.setConstant (std::numeric_limits<float>::quiet_NaN ());
+        return (std::numeric_limits<float>::max ());
+      }
+
       //find orthogonal axis directed to minNormalIndex point projection on plane with fittedNormal as axis
       directedOrthogonalAxis (fitted_normal, input_->at (index).getVector3fMap (),
                               surface_->at (min_normal_index).getVector3fMap (), x_axis);
