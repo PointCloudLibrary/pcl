@@ -67,13 +67,13 @@ TEST (FastBilateralFilter, Filters_Bilateral)
 
   for (size_t dim = 0; dim < 3; ++dim)
   {
-    EXPECT_NEAR (p_84737[dim], (*cloud_filtered)[84737].getVector3fMap ()[dim], 1e-5);
-    EXPECT_NEAR (p_57966[dim], (*cloud_filtered)[57966].getVector3fMap ()[dim], 1e-5);
-    EXPECT_NEAR (p_39543[dim], (*cloud_filtered)[39543].getVector3fMap ()[dim], 1e-5);
-    EXPECT_NEAR (p_17766[dim], (*cloud_filtered)[17766].getVector3fMap ()[dim], 1e-5);
-    EXPECT_NEAR (p_70202[dim], (*cloud_filtered)[70202].getVector3fMap ()[dim], 1e-5);
-    EXPECT_NEAR (p_102219[dim], (*cloud_filtered)[102219].getVector3fMap ()[dim], 1e-5);
-    EXPECT_NEAR (p_81765[dim], (*cloud_filtered)[81765].getVector3fMap ()[dim], 1e-5);
+    EXPECT_NEAR (p_84737[dim], (*cloud_filtered)[84737].getVector3fMap ()[dim], 1e-3);
+    EXPECT_NEAR (p_57966[dim], (*cloud_filtered)[57966].getVector3fMap ()[dim], 1e-3);
+    EXPECT_NEAR (p_39543[dim], (*cloud_filtered)[39543].getVector3fMap ()[dim], 1e-3);
+    EXPECT_NEAR (p_17766[dim], (*cloud_filtered)[17766].getVector3fMap ()[dim], 1e-3);
+    EXPECT_NEAR (p_70202[dim], (*cloud_filtered)[70202].getVector3fMap ()[dim], 1e-3);
+    EXPECT_NEAR (p_102219[dim], (*cloud_filtered)[102219].getVector3fMap ()[dim], 1e-3);
+    EXPECT_NEAR (p_81765[dim], (*cloud_filtered)[81765].getVector3fMap ()[dim], 1e-3);
   }
 }
 
