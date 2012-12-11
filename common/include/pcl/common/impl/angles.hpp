@@ -1,7 +1,10 @@
 /*
  * Software License Agreement (BSD License)
  *
+ *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -33,8 +36,10 @@
  *
  */
 
+#ifndef PCL_COMMON_ANGLES_IMPL_HPP_
+#define PCL_COMMON_ANGLES_IMPL_HPP_
+
 #include <cmath>
-#include <pcl/pcl_macros.h>
 
 namespace pcl
 {
@@ -75,3 +80,6 @@ namespace pcl
     return (alpha * 0.017453293);
   }
 }
+
+#endif  // PCL_COMMON_ANGLES_IMPL_HPP_
+

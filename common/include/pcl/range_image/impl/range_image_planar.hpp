@@ -1,7 +1,10 @@
 /*
  * Software License Agreement (BSD License)
  *
+ *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -32,6 +35,9 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
+
+#ifndef PCL_RANGE_IMAGE_PLANAR_IMPL_HPP_
+#define PCL_RANGE_IMAGE_PLANAR_IMPL_HPP_
 
 #include <pcl/pcl_macros.h>
 #include <pcl/common/eigen.h>
@@ -111,3 +117,6 @@ RangeImagePlanar::getImagePoint (const Eigen::Vector3f& point, float& image_x, f
 }
 
 }  // namespace end
+
+#endif
+

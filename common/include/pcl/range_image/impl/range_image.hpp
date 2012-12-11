@@ -3,6 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2012, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -34,6 +35,9 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
+
+#ifndef PCL_RANGE_IMAGE_IMPL_HPP_
+#define PCL_RANGE_IMAGE_IMPL_HPP_
 
 #include <pcl/pcl_macros.h>
 #include <pcl/common/distances.h>
@@ -1249,5 +1253,6 @@ RangeImage::integrateFarRanges (const PointCloudType& far_ranges)
   }
 }
 
-
 }  // namespace end
+#endif
+

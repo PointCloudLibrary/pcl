@@ -36,6 +36,9 @@
  *
  */
 
+#ifndef PCL_COMMON_EIGEN_IMPL_HPP_
+#define PCL_COMMON_EIGEN_IMPL_HPP_
+
 #include <pcl/pcl_macros.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -295,4 +298,6 @@ pcl::umeyama (const Eigen::MatrixBase<Derived>& src, const Eigen::MatrixBase<Oth
 
   return (Rt);
 }
+
+#endif  //PCL_COMMON_EIGEN_IMPL_HPP_
 

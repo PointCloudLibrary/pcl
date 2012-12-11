@@ -3,6 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2012, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -34,8 +35,8 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef PCL_VECTOR_AVERAGE_H
-#define PCL_VECTOR_AVERAGE_H
+#ifndef PCL_COMMON_VECTOR_AVERAGE_H
+#define PCL_COMMON_VECTOR_AVERAGE_H
 
 #include <pcl/common/eigen.h>
 

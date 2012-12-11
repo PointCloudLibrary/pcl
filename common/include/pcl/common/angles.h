@@ -3,6 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2012, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -35,8 +36,8 @@
  *
  */
 
-#ifndef PCL_ANGLES_H_
-#define PCL_ANGLES_H_
+#ifndef PCL_COMMON_ANGLES_H_
+#define PCL_COMMON_ANGLES_H_
 
 /**
   * \file pcl/common/angles.h
@@ -85,4 +86,4 @@ namespace pcl
 /*@}*/
 #include <pcl/common/impl/angles.hpp>
 
-#endif  //#ifndef PCL_NORMS_H_
+#endif  // PCL_COMMON_ANGLES_H_

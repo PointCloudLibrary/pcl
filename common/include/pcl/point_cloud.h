@@ -34,22 +34,19 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id$
- *
  */
 
 #ifndef PCL_POINT_CLOUD_H_
 #define PCL_POINT_CLOUD_H_
 
-#include <pcl/common/boost.h>
-#include <pcl/common/eigen.h>
-#include <cstddef>
+#ifdef __GNUC__
+#pragma GCC system_header 
+#endif
+
+#include <Eigen/Geometry>
 #include <std_msgs/Header.h>
-#include <pcl/pcl_macros.h>
 #include <pcl/exceptions.h>
 #include <pcl/point_traits.h>
-#include <pcl/for_each_type.h>
-#include <map>
 
 namespace pcl
 {
@@ -66,8 +63,7 @@ namespace pcl
   // Forward declarations
   template <typename PointT> class PointCloud;
   typedef std::vector<detail::FieldMapping> MsgFieldMap;
- 
-  ////////////////////////////////////////////////////////////////////////////////////////////////
+  
   /** \brief Helper functor structure for copying data between an Eigen type and a PointT. */
   template <typename PointOutT>
   struct NdCopyEigenPointFunctor
@@ -101,7 +97,6 @@ namespace pcl
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
    };
 
-  ////////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief Helper functor structure for copying data between an Eigen type and a PointT. */
   template <typename PointInT>
   struct NdCopyPointEigenFunctor
@@ -243,7 +238,6 @@ namespace pcl
       /** \brief Destructor. */
       virtual ~PointCloud () {}
 
-      ////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Add a point cloud to the current cloud.
         * \param[in] rhs the cloud to add to the current cloud
         * \return the new cloud as a concatenation of the current cloud and the new given cloud
@@ -269,7 +263,6 @@ namespace pcl
         return (*this);
       }
 
-      ////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Add a point cloud to another cloud.
         * \param[in] rhs the cloud to add to the current cloud
         * \return the new cloud as a concatenation of the current cloud and the new given cloud
@@ -280,7 +273,6 @@ namespace pcl
         return (PointCloud (*this) += rhs);
       }
       
-      ////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Obtain the point given by the (column, row) coordinates. Only works on organized 
         * datasets (those that have height != 1).
         * \param[in] column the column coordinate
@@ -309,7 +301,6 @@ namespace pcl
           throw IsNotDenseException ("Can't use 2D indexing with a unorganized point cloud");
       }
 
-      ////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Obtain the point given by the (column, row) coordinates. Only works on organized 
         * datasets (those that have height != 1).
         * \param[in] column the column coordinate
@@ -332,7 +323,6 @@ namespace pcl
         return (points[row * this->width + column]);
       }
 
-      ////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Return whether a dataset is organized (e.g., arranged in a structured grid).
         * \note The height value must be different than 1 for a dataset to be organized.
         */
@@ -342,7 +332,6 @@ namespace pcl
         return (height != 1);
       }
       
-      ////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Return an Eigen MatrixXf (assumes float values) mapped to the specified dimensions of the PointCloud.
         * \anchor getMatrixXfMap
         * \note This method is for advanced users only! Use with care!
@@ -386,12 +375,11 @@ namespace pcl
       getMatrixXfMap (int dim, int stride, int offset) const
       {
         if (Eigen::MatrixXf::Flags & Eigen::RowMajorBit)
-          return (Eigen::Map<const Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> >(reinterpret_cast<float*>(&points[0])+offset, points.size (), dim, Eigen::OuterStride<> (stride)));
+          return (Eigen::Map<const Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> >(reinterpret_cast<float*>(const_cast<PointT*>(&points[0]))+offset, points.size (), dim, Eigen::OuterStride<> (stride)));
         else
-          return (Eigen::Map<const Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> >(reinterpret_cast<float*>(&points[0])+offset, dim, points.size (), Eigen::OuterStride<> (stride)));                
+          return (Eigen::Map<const Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> >(reinterpret_cast<float*>(const_cast<PointT*>(&points[0]))+offset, dim, points.size (), Eigen::OuterStride<> (stride)));                
       }
 
-      ////////////////////////////////////////////////////////////////////////////////////////
       /** \brief Return an Eigen MatrixXf (assumes float values) mapped to the PointCloud.
         * \note This method is for advanced users only! Use with care!
         * \attention PointT types are most of the time aligned, so the offsets are not continuous! 
@@ -600,7 +588,6 @@ namespace pcl
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 
-  ////////////////////////////////////////////////////////////////////////////////////////////////
   namespace detail
   {
     template <typename PointT> boost::shared_ptr<pcl::MsgFieldMap>&
@@ -629,5 +616,7 @@ namespace pcl
     return (s);
   }
 }
+
+#define PCL_INSTANTIATE_PointCloud(T) template class PCL_EXPORTS pcl::PointCloud<T>;
 
 #endif  //#ifndef PCL_POINT_CLOUD_H_
