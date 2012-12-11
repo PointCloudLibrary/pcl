@@ -71,6 +71,7 @@ endif(CMAKE_TIMING_VERBOSE AND UNIX)
 # ---[ Unix/Darwin/Windows specific flags
 if(CMAKE_COMPILER_IS_GNUCXX)
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wno-unknown-pragmas -Wconversion -fno-strict-aliasing -Wno-format-extra-args -Wno-sign-compare -Wno-invalid-offsetof")
+  SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O4")
 
   # Enable -Wabi for GCC > 4.3, and -Wno-deprecated for GCC < 4.3 
   # to disable a lot of warnings which are not fixable
@@ -97,6 +98,7 @@ if(CMAKE_COMPILER_IS_GNUCXX)
 endif()
 
 if(MSVC)
+  SET(CMAKE_COMPILER_IS_MSVC 1)
   add_definitions ("-DBOOST_ALL_NO_LIB -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS -DNOMINMAX")
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj /EHsc /fp:fast /wd4800 /wd4521 /wd4251 /wd4275 /wd4305 /wd4355")
   SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /GL /wd4800")
@@ -114,21 +116,24 @@ if(MSVC)
   endif()
 endif()
 
+if (__COMPILER_PATHSCALE)
+  SET(CMAKE_COMPILER_IS_PATHSCALE 1)
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-uninitialized -zerouv -pthread -mp")
+endif()
+
+if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+  SET(CMAKE_COMPILER_IS_CLANG 1)
+  SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O4")
+  SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Qunused-arguments")
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Qunused-arguments -Wno-invalid-offsetof") # Unfortunately older Clang versions do not have this: -Wno-unnamed-type-template-args
+  SET(CLANG_LIBRARIES "stdc++")
+endif()
+
 # check for SSE flags
 include(${PCL_SOURCE_DIR}/cmake/pcl_find_sse.cmake)
 if (PCL_ENABLE_SSE)
   PCL_CHECK_FOR_SSE()
 endif (PCL_ENABLE_SSE)
-
-if (__COMPILER_PATHSCALE)
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-uninitialized -zerouv -pthread -mp")
-endif()
-
-if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-  SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Qunused-arguments")
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Qunused-arguments -Wno-invalid-offsetof") # Unfortunately older Clang versions do not have this: -Wno-unnamed-type-template-args
-  SET(CLANG_LIBRARIES "stdc++")
-endif()
 
 # ---[ Project folders
 option(USE_PROJECT_FOLDERS "Use folders to organize PCL projects in an IDE." OFF)
