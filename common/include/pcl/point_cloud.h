@@ -43,6 +43,7 @@
 #pragma GCC system_header 
 #endif
 
+#include <Eigen/StdVector>
 #include <Eigen/Geometry>
 #include <std_msgs/Header.h>
 #include <pcl/exceptions.h>
