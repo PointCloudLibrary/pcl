@@ -38,6 +38,10 @@
 #ifndef PCL_ML_PERMUTOHEDRAL_H_
 #define PCL_ML_PERMUTOHEDRAL_H_
 
+#ifdef __GNUC__
+#pragma GCC system_header 
+#endif
+
 #include <vector>
 #include <map>
 #include <pcl/common/eigen.h>
