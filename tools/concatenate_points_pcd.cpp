@@ -113,7 +113,7 @@ saveCloud (const std::string &filename, const sensor_msgs::PointCloud2 &output)
   print_highlight ("Saving "); print_value ("%s ", filename.c_str ());
 
   pcl::PCDWriter w;
-  w.writeBinary (filename, output, translation, orientation);
+  w.writeBinaryCompressed (filename, output, translation, orientation);
   
   print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", output.width * output.height); print_info (" points]\n");
 }
