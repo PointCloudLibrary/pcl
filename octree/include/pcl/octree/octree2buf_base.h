@@ -616,8 +616,8 @@ namespace pcl
           nodeBits = 0;
           for (i = 0; i < 8; i++)
           {
-            nodeBits |= static_cast<char> ( (!!branch_arg.getChildPtr (
-                bufferSelector_, i)) << i);
+            const OctreeNode* child = branch_arg.getChildPtr(bufferSelector_, i);
+            nodeBits |= static_cast<char> ( (!!child) << i);
           }
 
           return (nodeBits);
@@ -638,8 +638,8 @@ namespace pcl
           nodeBits = 0;
           for (i = 0; i < 8; i++)
           {
-            nodeBits |= static_cast<char> ( (!!branch_arg.getChildPtr (
-                bufferSelector_arg, i)) << i);
+            const OctreeNode* child = branch_arg.getChildPtr(bufferSelector_arg, i);
+            nodeBits |= static_cast<char> ( (!!child) << i);
           }
 
           return (nodeBits);
@@ -660,10 +660,11 @@ namespace pcl
 
           for (i = 0; i < 8; i++)
           {
-            nodeBits[0] |= static_cast<char> ( (!!branch_arg.getChildPtr (0, i))
-                << i);
-            nodeBits[1] |= static_cast<char> ( (!!branch_arg.getChildPtr (1, i))
-                << i);
+            const OctreeNode* childA = branch_arg.getChildPtr(0, i);
+            const OctreeNode* childB = branch_arg.getChildPtr(1, i);
+
+            nodeBits[0] |= static_cast<char> ( (!!childA) << i);
+            nodeBits[1] |= static_cast<char> ( (!!childB) << i);
           }
 
           return nodeBits[0] ^ nodeBits[1];
