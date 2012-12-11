@@ -50,6 +50,9 @@ namespace pcl
   class RangeImage;
 
   /** @b Computes NARF feature descriptors for points in a range image
+    * See B. Steder, R. B. Rusu, K. Konolige, and W. Burgard
+    *     Point Feature Extraction on 3D Range Scans Taking into Account Object Boundaries
+    *     In Proc. of the IEEE Int. Conf. on Robotics &Automation (ICRA). 2011. 
     * \author Bastian Steder
     * \ingroup features
     */

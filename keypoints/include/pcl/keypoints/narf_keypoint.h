@@ -51,6 +51,9 @@ class RangeImageBorderExtractor;
 
 /** \brief @b NARF (Normal Aligned Radial Feature) keypoints. Input is a range image,
   *           output the indices of the keypoints
+  * See B. Steder, R. B. Rusu, K. Konolige, and W. Burgard
+  *     Point Feature Extraction on 3D Range Scans Taking into Account Object Boundaries
+  *     In Proc. of the IEEE Int. Conf. on Robotics &Automation (ICRA). 2011. 
   * \author Bastian Steder
   * \ingroup keypoints
   */

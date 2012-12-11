@@ -52,11 +52,14 @@ namespace pcl
 #define NARF_DEFAULT_SURFACE_PATCH_PIXEL_SIZE 10
 
   /**
-   * \brief NARF (Normal Aligned Radial Features) is a point feature descriptor type for 3D data.
-   *        Please refer to pcl/features/narf_descriptor.h if you want the class derived from pcl Feature.
-   * \author Bastian Steder
-   * \ingroup features
-   */
+    * \brief NARF (Normal Aligned Radial Features) is a point feature descriptor type for 3D data.
+    * Please refer to pcl/features/narf_descriptor.h if you want the class derived from pcl Feature.
+    * See B. Steder, R. B. Rusu, K. Konolige, and W. Burgard
+    *     Point Feature Extraction on 3D Range Scans Taking into Account Object Boundaries
+    *     In Proc. of the IEEE Int. Conf. on Robotics &Automation (ICRA). 2011. 
+    * \author Bastian Steder
+    * \ingroup features
+    */
   class PCL_EXPORTS Narf
   {
     public:
