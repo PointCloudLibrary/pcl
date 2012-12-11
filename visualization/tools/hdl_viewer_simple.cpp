@@ -214,7 +214,7 @@ int main (int argc, char ** argv)
   pcl::console::parse_argument (argc, argv, "-pcapFile", pcapFile);
   pcl::console::parse_argument (argc, argv, "-format", format);
 
-  pcl::HDL_Grabber grabber (hdlCalibration, pcapFile);
+  pcl::HDLGrabber grabber (hdlCalibration, pcapFile);
 
   if (boost::iequals (format, std::string ("XYZ")))
   {

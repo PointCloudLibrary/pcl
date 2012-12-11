@@ -45,7 +45,7 @@ public:
 	}
 
 	void run() {
-		pcl::HDL_Grabber interface(calibrationFile, pcapFile);
+		pcl::HDLGrabber interface(calibrationFile, pcapFile);
 
 		// make callback function from member function
 		boost::function<void(const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZI> >&, float, float)> f =
