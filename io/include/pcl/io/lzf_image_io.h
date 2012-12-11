@@ -96,6 +96,22 @@ namespace pcl
         bool
         readParameters (const std::string &filename);
 
+        /** \brief Read the parameters from a struct instead
+         *  \param[in] parameters Camera parameters to use */
+        inline void
+        setParameters (const CameraParameters &parameters)
+        {
+          parameters_ = parameters;
+        }
+
+        /** \brief Get the camera parameters currently being used
+         *  returns a CameraParameters struct */
+        inline CameraParameters
+        getParameters () const
+        {
+          return parameters_;
+        }
+
         /** \brief Get the image width as read from disk. */
         inline uint32_t
         getWidth () const

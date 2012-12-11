@@ -127,11 +127,15 @@ struct pcl::ImageGrabberBase::ImageGrabberImpl
   bool valid_;
   //! Flag to say if a user set the focal length by hand
   //  (so we don't attempt to adjust for QVGA, QQVGA, etc).
-  bool manual_focal_length_;
   bool pclzf_mode_;
 
   float depth_image_units_;
-  float constant_;
+
+  bool manual_intrinsics_;
+  float fx_;
+  float fy_;
+  float cx_;
+  float cy_;
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -149,10 +153,13 @@ pcl::ImageGrabberBase::ImageGrabberImpl::ImageGrabberImpl (pcl::ImageGrabberBase
   , origin_ ()
   , orientation_ ()
   , valid_ (false)
-  , manual_focal_length_ (false)
   , pclzf_mode_(pclzf_mode)
   , depth_image_units_ (1E-3)
-  , constant_ (1.0f / 525.0f)
+  , manual_intrinsics_ (false)
+  , fx_ (525)
+  , fy_ (525)
+  , cx_ (320)
+  , cy_ (240)
 {
   if(pclzf_mode_)
   {
@@ -186,10 +193,13 @@ pcl::ImageGrabberBase::ImageGrabberImpl::ImageGrabberImpl (pcl::ImageGrabberBase
   , origin_ ()
   , orientation_ ()
   , valid_ (false)
-  , manual_focal_length_ (false)
   , pclzf_mode_(false)
   , depth_image_units_ (1E-3)
-  , constant_ (1.0f / 525.0f)
+  , manual_intrinsics_ (false)
+  , fx_ (525)
+  , fy_ (525)
+  , cx_ (320)
+  , cy_ (240)
 {
   depth_image_files_ = depth_image_files;
   depth_image_iterator_ = depth_image_files_.begin ();
@@ -223,9 +233,29 @@ pcl::ImageGrabberBase::ImageGrabberImpl::loadNextCloudPCLZF ()
     pcl::io::LZFRGB24ImageReader rgb;
     pcl::io::LZFBayer8ImageReader bayer;
     pcl::io::LZFDepth16ImageReader depth;
-    rgb.readParameters (*xml_iterator_);
-    bayer.readParameters (*xml_iterator_);
-    depth.readParameters (*xml_iterator_);
+    if (manual_intrinsics_)
+    {
+      pcl::io::CameraParameters manual_params;
+      manual_params.focal_length_x = fx_;
+      manual_params.focal_length_y = fy_;
+      manual_params.principal_point_x = cx_;
+      manual_params.principal_point_y = cy_;
+      rgb.setParameters (manual_params); 
+      bayer.setParameters (manual_params); 
+      depth.setParameters (manual_params); 
+    }
+    else
+    {
+      rgb.readParameters (*xml_iterator_);
+      bayer.readParameters (*xml_iterator_);
+      depth.readParameters (*xml_iterator_);
+      // Update intrinsics
+      pcl::io::CameraParameters loaded_params = depth.getParameters ();
+      fx_ = loaded_params.focal_length_x;
+      fy_ = loaded_params.focal_length_y;
+      cx_ = loaded_params.principal_point_x;
+      cy_ = loaded_params.principal_point_y;
+    }
     next_cloud_color_.is_dense = false;
     if (!rgb.read (*rgb_pclzf_iterator_, next_cloud_color_))
       bayer.read(*rgb_pclzf_iterator_, next_cloud_color_);
@@ -240,7 +270,26 @@ pcl::ImageGrabberBase::ImageGrabberImpl::loadNextCloudPCLZF ()
   else
   {
     pcl::io::LZFDepth16ImageReader depth;
-    depth.readParameters (*xml_iterator_);
+    // Handle intrinsics
+    if (manual_intrinsics_)
+    {
+      pcl::io::CameraParameters manual_params;
+      manual_params.focal_length_x = fx_;
+      manual_params.focal_length_y = fy_;
+      manual_params.principal_point_x = cx_;
+      manual_params.principal_point_y = cy_;
+      depth.setParameters (manual_params); 
+    }
+    else
+    {
+      depth.readParameters (*xml_iterator_);
+      // Update intrinsics
+      pcl::io::CameraParameters loaded_params = depth.getParameters ();
+      fx_ = loaded_params.focal_length_x;
+      fy_ = loaded_params.focal_length_y;
+      cx_ = loaded_params.principal_point_x;
+      cy_ = loaded_params.principal_point_y;
+    }
     next_cloud_depth_.is_dense = false;
     depth.read(*depth_pclzf_iterator_, next_cloud_depth_);
     // Handle timestamps
@@ -312,18 +361,32 @@ pcl::ImageGrabberBase::ImageGrabberImpl::loadNextCloudVTK ()
 
   // Fill in image data
   depth_pixel = static_cast<unsigned short*>(depth_image->GetScalarPointer ());
-  // Would like to not have two copies of the same logic floating around, 
-  // but unsure of a better (readable) way to do this
+  
+  // Set up intrinsics
+  float scaleFactorX, scaleFactorY;
+  float centerX, centerY;
+  if (manual_intrinsics_)
+  {
+    scaleFactorX = 1./fx_;
+    scaleFactorY = 1./fy_;
+    centerX = cx_;
+    centerY = cy_;
+  }
+  else
+  {
+    // The 525 factor default is only true for VGA. If not, we should scale
+    scaleFactorX = scaleFactorY = 1/525. * 640./dims[0];
+    centerX = dims[0] >> 1;
+    centerY = dims[1] >> 1;
+  }
+
   if(rgb_image_files_.size() > 0)
   {
     next_cloud_color_.width = dims[0];
     next_cloud_color_.height = dims[1];
     next_cloud_color_.is_dense = false;
     next_cloud_color_.points.resize(depth_image->GetNumberOfPoints());
-    int centerX = (next_cloud_color_.width >> 1);
-    int centerY = (next_cloud_color_.height >> 1);
-    // The 525 factor default is only true for VGA. If not, we should scale
-    float scaleFactor = manual_focal_length_ ? constant_ : constant_ * 640./dims[0];
+
     for (int y = 0; y < dims[1]; ++y)
     {
       for (int x = 0; x < dims[0]; ++x, ++depth_pixel)
@@ -334,8 +397,8 @@ pcl::ImageGrabberBase::ImageGrabberImpl::loadNextCloudVTK ()
           pt.x = pt.y = pt.z = std::numeric_limits<float>::quiet_NaN ();
         else
         {
-          pt.x = (static_cast<float>(x - centerX)) * scaleFactor * depth;
-          pt.y = (static_cast<float>(y - centerY)) * scaleFactor * depth; 
+          pt.x = ((float)x - centerX) * scaleFactorX * depth;
+          pt.y = ((float)y - centerY) * scaleFactorY * depth; 
           pt.z = depth;
         }
 
@@ -358,10 +421,6 @@ pcl::ImageGrabberBase::ImageGrabberImpl::loadNextCloudVTK ()
     next_cloud_depth_.height = dims[1];
     next_cloud_depth_.is_dense = false;
     next_cloud_depth_.points.resize(depth_image->GetNumberOfPoints());
-    int centerX = (next_cloud_depth_.width >> 1);
-    int centerY = (next_cloud_depth_.height >> 1);
-    // The 525 factor default is only true for VGA. If not, we should scale
-    float scaleFactor = manual_focal_length_ ? constant_ : constant_ * 640./dims[0];
     for (int y = 0; y < dims[1]; ++y)
     {
       for (int x = 0; x < dims[0]; ++x, ++depth_pixel)
@@ -372,8 +431,8 @@ pcl::ImageGrabberBase::ImageGrabberImpl::loadNextCloudVTK ()
           pt.x = pt.y = pt.z = std::numeric_limits<float>::quiet_NaN ();
         else
         {
-          pt.x = (static_cast<float>(x - centerX)) * scaleFactor * depth;
-          pt.y = (static_cast<float>(y - centerY)) * scaleFactor * depth; 
+          pt.x = ((float)x - centerX) * scaleFactorX * depth;
+          pt.y = ((float)y - centerY) * scaleFactorY * depth; 
           pt.z = depth;
         }
       }
@@ -705,26 +764,48 @@ pcl::ImageGrabberBase::setRGBImageFiles (const std::vector<std::string>& rgb_ima
   impl_->rgb_image_iterator_ = impl_->rgb_image_files_.begin ();
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////
 void
-pcl::ImageGrabberBase::setFocalLength (const float focal_length)
+pcl::ImageGrabberBase::setCameraIntrinsics (float fx, 
+                                            float fy, 
+                                            float cx, 
+                                            float cy)
 {
-  impl_->constant_ = 1./focal_length;
-  impl_->manual_focal_length_ = true;
+  impl_->fx_ = fx;
+  impl_->fy_ = fy;
+  impl_->cx_ = cx;
+  impl_->cy_ = cy;
+  impl_->manual_intrinsics_ = true;
+}
+
+void
+pcl::ImageGrabberBase::getCameraIntrinsics (float &fx, 
+                                            float &fy, 
+                                            float &cx, 
+                                            float &cy) const
+{
+  fx = impl_->fx_;
+  fy = impl_->fy_;
+  cx = impl_->cx_;
+  cy = impl_->cy_;
 }
 
 
-///////////////////////////////////////////////////////////////////////////////////////////
-float
-pcl::ImageGrabberBase::getFocalLength() const
-{
-  return (1. / impl_->constant_);
-}
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::ImageGrabberBase::setDepthImageUnits (const float units)
 {
   impl_->depth_image_units_ = units;
+}
+///////////////////////////////////////////////////////////////////////////////////////////
+size_t
+pcl::ImageGrabberBase::numFrames () const
+{
+  if (impl_->pclzf_mode_)
+    return (impl_->depth_pclzf_files_.size ());
+  else
+    return (impl_->depth_image_files_.size ());
 }
 

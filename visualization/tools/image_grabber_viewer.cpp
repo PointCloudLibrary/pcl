@@ -177,8 +177,6 @@ main (int argc, char** argv)
   if (frames_per_second < 0)
     frames_per_second = 0.0;
 
-  float focal_length = 525.0;
-  pcl::console::parse (argc, argv, "-focal", focal_length);
 
 
   bool repeat = (pcl::console::find_argument (argc, argv, "-repeat") != -1);
@@ -198,7 +196,17 @@ main (int argc, char** argv)
     std::cout << "No directory was given with the -dir flag." << std::endl;
   }
   grabber->setDepthImageUnits(1E-3);
-  grabber->setFocalLength(focal_length);
+
+  // Before manually setting
+  float fx, fy, cx, cy;
+  grabber->getCameraIntrinsics (fx, fy, cx, cy);
+  PCL_INFO ("Factory default intrinsics: %f, %f, %f, %f\n", 
+      fx, fy, cx, cy);
+  float focal_length;
+  if (pcl::console::parse (argc, argv, "-focal", focal_length) != -1)
+    grabber->setCameraIntrinsics (focal_length, focal_length, 320, 240);
+  
+  
 
   EventHelper h;
   boost::function<void(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&) > f = boost::bind (&EventHelper::cloud_cb, &h, _1);
@@ -219,6 +227,11 @@ main (int argc, char** argv)
 #endif
 
   grabber->start ();
+
+  grabber->getCameraIntrinsics (fx, fy, cx, cy);
+  PCL_INFO ("Grabber is using intrinsics: %f, %f, %f, %f\n", 
+      fx, fy, cx, cy);
+
   while (!cloud_viewer->wasStopped ())
   {
     cloud_viewer->spinOnce ();
