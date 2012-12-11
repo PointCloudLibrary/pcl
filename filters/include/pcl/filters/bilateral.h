@@ -95,41 +95,31 @@ namespace pcl
         */
       inline void 
       setHalfSize (const double sigma_s)
-      {
-        sigma_s_ = sigma_s;
-      }
+      { sigma_s_ = sigma_s; }
 
       /** \brief Get the half size of the Gaussian bilateral filter window as set by the user. */
-      double 
-      getHalfSize ()
-      {
-        return (sigma_s_);
-      }
+      inline double
+      getHalfSize () const
+      { return (sigma_s_); }
 
       /** \brief Set the standard deviation parameter
         * \param[in] sigma_r the new standard deviation parameter
         */
-      void
+      inline void
       setStdDev (const double sigma_r)
-      {
-        sigma_r_ = sigma_r;
-      }
+      { sigma_r_ = sigma_r;}
 
       /** \brief Get the value of the current standard deviation parameter of the bilateral filter. */
-      double 
-      getStdDev ()
-      {
-        return (sigma_r_);
-      }
+      inline double
+      getStdDev () const
+      { return (sigma_r_); }
 
       /** \brief Provide a pointer to the search object.
         * \param[in] tree a pointer to the spatial search object.
         */
-      void
+      inline void
       setSearchMethod (const KdTreePtr &tree)
-      {
-        tree_ = tree;
-      }
+      { tree_ = tree; }
 
     private:
 
@@ -139,9 +129,7 @@ namespace pcl
         */
       inline double
       kernel (double x, double sigma)
-      {
-        return (exp (- (x*x)/(2*sigma*sigma)));
-      }
+      { return (exp (- (x*x)/(2*sigma*sigma))); }
 
       /** \brief The half size of the Gaussian bilateral filter window (e.g., spatial extents in Euclidean). */
       double sigma_s_;
