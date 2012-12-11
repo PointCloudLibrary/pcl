@@ -225,6 +225,7 @@ if(build)
   add_subdirectory(cloud_composer)
   add_subdirectory(in_hand_scanner)
   add_subdirectory(point_cloud_editor)
+  add_subdirectory(optronic_viewer)
 
 endif(build)
 
