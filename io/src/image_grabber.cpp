@@ -132,10 +132,10 @@ struct pcl::ImageGrabberBase::ImageGrabberImpl
   float depth_image_units_;
 
   bool manual_intrinsics_;
-  float fx_;
-  float fy_;
-  float cx_;
-  float cy_;
+  float focal_length_x_;
+  float focal_length_y_;
+  float principal_point_x_;
+  float principal_point_y_;
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -156,10 +156,10 @@ pcl::ImageGrabberBase::ImageGrabberImpl::ImageGrabberImpl (pcl::ImageGrabberBase
   , pclzf_mode_(pclzf_mode)
   , depth_image_units_ (1E-3)
   , manual_intrinsics_ (false)
-  , fx_ (525)
-  , fy_ (525)
-  , cx_ (320)
-  , cy_ (240)
+  , focal_length_x_ (525)
+  , focal_length_y_ (525)
+  , principal_point_x_ (320)
+  , principal_point_y_ (240)
 {
   if(pclzf_mode_)
   {
@@ -196,10 +196,10 @@ pcl::ImageGrabberBase::ImageGrabberImpl::ImageGrabberImpl (pcl::ImageGrabberBase
   , pclzf_mode_(false)
   , depth_image_units_ (1E-3)
   , manual_intrinsics_ (false)
-  , fx_ (525)
-  , fy_ (525)
-  , cx_ (320)
-  , cy_ (240)
+  , focal_length_x_ (525)
+  , focal_length_y_ (525)
+  , principal_point_x_ (320)
+  , principal_point_y_ (240)
 {
   depth_image_files_ = depth_image_files;
   depth_image_iterator_ = depth_image_files_.begin ();
@@ -236,10 +236,10 @@ pcl::ImageGrabberBase::ImageGrabberImpl::loadNextCloudPCLZF ()
     if (manual_intrinsics_)
     {
       pcl::io::CameraParameters manual_params;
-      manual_params.focal_length_x = fx_;
-      manual_params.focal_length_y = fy_;
-      manual_params.principal_point_x = cx_;
-      manual_params.principal_point_y = cy_;
+      manual_params.focal_length_x = focal_length_x_;
+      manual_params.focal_length_y = focal_length_y_;
+      manual_params.principal_point_x = principal_point_x_;
+      manual_params.principal_point_y = principal_point_y_;
       rgb.setParameters (manual_params); 
       bayer.setParameters (manual_params); 
       depth.setParameters (manual_params); 
@@ -251,10 +251,10 @@ pcl::ImageGrabberBase::ImageGrabberImpl::loadNextCloudPCLZF ()
       depth.readParameters (*xml_iterator_);
       // Update intrinsics
       pcl::io::CameraParameters loaded_params = depth.getParameters ();
-      fx_ = loaded_params.focal_length_x;
-      fy_ = loaded_params.focal_length_y;
-      cx_ = loaded_params.principal_point_x;
-      cy_ = loaded_params.principal_point_y;
+      focal_length_x_ = loaded_params.focal_length_x;
+      focal_length_y_ = loaded_params.focal_length_y;
+      principal_point_x_ = loaded_params.principal_point_x;
+      principal_point_y_ = loaded_params.principal_point_y;
     }
     next_cloud_color_.is_dense = false;
     if (!rgb.read (*rgb_pclzf_iterator_, next_cloud_color_))
@@ -280,10 +280,10 @@ pcl::ImageGrabberBase::ImageGrabberImpl::loadNextCloudPCLZF ()
     if (manual_intrinsics_)
     {
       pcl::io::CameraParameters manual_params;
-      manual_params.focal_length_x = fx_;
-      manual_params.focal_length_y = fy_;
-      manual_params.principal_point_x = cx_;
-      manual_params.principal_point_y = cy_;
+      manual_params.focal_length_x = focal_length_x_;
+      manual_params.focal_length_y = focal_length_y_;
+      manual_params.principal_point_x = principal_point_x_;
+      manual_params.principal_point_y = principal_point_y_;
       depth.setParameters (manual_params); 
     }
     else
@@ -291,10 +291,10 @@ pcl::ImageGrabberBase::ImageGrabberImpl::loadNextCloudPCLZF ()
       depth.readParameters (*xml_iterator_);
       // Update intrinsics
       pcl::io::CameraParameters loaded_params = depth.getParameters ();
-      fx_ = loaded_params.focal_length_x;
-      fy_ = loaded_params.focal_length_y;
-      cx_ = loaded_params.principal_point_x;
-      cy_ = loaded_params.principal_point_y;
+      focal_length_x_ = loaded_params.focal_length_x;
+      focal_length_y_ = loaded_params.focal_length_y;
+      principal_point_x_ = loaded_params.principal_point_x;
+      principal_point_y_ = loaded_params.principal_point_y;
     }
     next_cloud_depth_.is_dense = false;
     depth.read(*depth_pclzf_iterator_, next_cloud_depth_);
@@ -379,10 +379,10 @@ pcl::ImageGrabberBase::ImageGrabberImpl::loadNextCloudVTK ()
   float centerX, centerY;
   if (manual_intrinsics_)
   {
-    scaleFactorX = 1./fx_;
-    scaleFactorY = 1./fy_;
-    centerX = cx_;
-    centerY = cy_;
+    scaleFactorX = 1./focal_length_x_;
+    scaleFactorY = 1./focal_length_y_;
+    centerX = principal_point_x_;
+    centerY = principal_point_y_;
   }
   else
   {
@@ -791,28 +791,28 @@ pcl::ImageGrabberBase::setRGBImageFiles (const std::vector<std::string>& rgb_ima
 
 ///////////////////////////////////////////////////////
 void
-pcl::ImageGrabberBase::setCameraIntrinsics (float fx, 
-                                            float fy, 
-                                            float cx, 
-                                            float cy)
+pcl::ImageGrabberBase::setCameraIntrinsics (float focal_length_x, 
+                                            float focal_length_y, 
+                                            float principal_point_x, 
+                                            float principal_point_y)
 {
-  impl_->fx_ = fx;
-  impl_->fy_ = fy;
-  impl_->cx_ = cx;
-  impl_->cy_ = cy;
+  impl_->focal_length_x_ = focal_length_x;
+  impl_->focal_length_y_ = focal_length_y;
+  impl_->principal_point_x_ = principal_point_x;
+  impl_->principal_point_y_ = principal_point_y;
   impl_->manual_intrinsics_ = true;
 }
 
 void
-pcl::ImageGrabberBase::getCameraIntrinsics (float &fx, 
-                                            float &fy, 
-                                            float &cx, 
-                                            float &cy) const
+pcl::ImageGrabberBase::getCameraIntrinsics (float &focal_length_x, 
+                                            float &focal_length_y, 
+                                            float &principal_point_x, 
+                                            float &principal_point_y) const
 {
-  fx = impl_->fx_;
-  fy = impl_->fy_;
-  cx = impl_->cx_;
-  cy = impl_->cy_;
+  focal_length_x = impl_->focal_length_x_;
+  focal_length_y = impl_->focal_length_y_;
+  principal_point_x = impl_->principal_point_x_;
+  principal_point_y = impl_->principal_point_y_;
 }
 
 

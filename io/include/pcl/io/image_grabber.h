@@ -95,22 +95,22 @@ namespace pcl
     setRGBImageFiles (const std::vector<std::string>& rgb_image_files);
 
     /** \brief Define custom focal length and center pixel. This will override ANY other setting of parameters for the duration of the grabber's life, whether by factory defaults or explicitly read from a frame_[timestamp].xml file. 
-     *  \param[in] fx Horizontal focal length
-     *  \param[in] fy Vertical focal length
-     *  \param[in] cx Horizontal coordinates of the principal point
-     *  \param[in] cy Vertical coordinates of the principal point
+     *  \param[in] focal_length_x Horizontal focal length (fx)
+     *  \param[in] focal_length_y Vertical focal length (fy)
+     *  \param[in] principal_point_x Horizontal coordinates of the principal point (cx)
+     *  \param[in] principal_point_y Vertical coordinates of the principal point (cy)
      */
     virtual void
-    setCameraIntrinsics (float fx, float fy, float cx, float cy);
+    setCameraIntrinsics (float focal_length_x, float focal_length_y, float principal_point_x, float principal_point_y);
     
     /** \brief Get the current focal length and center pixel. If the intrinsics have been manually set with @setCameraIntrinsics@, this will return those values. Else, if start () has been called and the grabber has found a frame_[timestamp].xml file, this will return the most recent values read. Else, returns factory defaults.
-     *  \param[out] fx Horizontal focal length
-     *  \param[out] fy Vertical focal length
-     *  \param[out] cx Horizontal coordinates of the principal point
-     *  \param[out] cy Vertical coordinates of the principal point
+     *  \param[out] focal_length_x Horizontal focal length (fx)
+     *  \param[out] focal_length_y Vertical focal length (fy)
+     *  \param[out] principal_point_x Horizontal coordinates of the principal point (cx)
+     *  \param[out] principal_point_y Vertical coordinates of the principal point (cy)
      */
     virtual void
-    getCameraIntrinsics (float &fx, float &fy, float &cx, float &cy) const;
+    getCameraIntrinsics (float &focal_length_x, float &focal_length_y, float &principal_point_x, float &principal_point_y) const;
 
     /** \brief Define the units the depth data is stored in.
      *  Defaults to mm (0.001), meaning a brightness of 1000 corresponds to 1 m*/
