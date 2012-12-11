@@ -101,7 +101,10 @@ namespace pcl
      *  \param[in] principal_point_y Vertical coordinates of the principal point (cy)
      */
     virtual void
-    setCameraIntrinsics (float focal_length_x, float focal_length_y, float principal_point_x, float principal_point_y);
+    setCameraIntrinsics (const double focal_length_x, 
+                         const double focal_length_y, 
+                         const double principal_point_x, 
+                         const double principal_point_y);
     
     /** \brief Get the current focal length and center pixel. If the intrinsics have been manually set with @setCameraIntrinsics@, this will return those values. Else, if start () has been called and the grabber has found a frame_[timestamp].xml file, this will return the most recent values read. Else, returns factory defaults.
      *  \param[out] focal_length_x Horizontal focal length (fx)
@@ -110,7 +113,10 @@ namespace pcl
      *  \param[out] principal_point_y Vertical coordinates of the principal point (cy)
      */
     virtual void
-    getCameraIntrinsics (float &focal_length_x, float &focal_length_y, float &principal_point_x, float &principal_point_y) const;
+    getCameraIntrinsics (double &focal_length_x, 
+                         double &focal_length_y, 
+                         double &principal_point_x, 
+                         double &principal_point_y) const;
 
     /** \brief Define the units the depth data is stored in.
      *  Defaults to mm (0.001), meaning a brightness of 1000 corresponds to 1 m*/

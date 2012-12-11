@@ -86,8 +86,12 @@ pcl::OpenNIGrabber::OpenNIGrabber (const std::string& device_id, const Mode& dep
   , running_ (false)
   , rgb_focal_length_x_ (std::numeric_limits<double>::quiet_NaN ())
   , rgb_focal_length_y_ (std::numeric_limits<double>::quiet_NaN ())
+  , rgb_principal_point_x_ (std::numeric_limits<double>::quiet_NaN ())
+  , rgb_principal_point_y_ (std::numeric_limits<double>::quiet_NaN ())
   , depth_focal_length_x_ (std::numeric_limits<double>::quiet_NaN ())
   , depth_focal_length_y_ (std::numeric_limits<double>::quiet_NaN ())
+  , depth_principal_point_x_ (std::numeric_limits<double>::quiet_NaN ())
+  , depth_principal_point_y_ (std::numeric_limits<double>::quiet_NaN ())
 {
   // initialize driver
   onInit (device_id, depth_mode, image_mode);
@@ -551,20 +555,26 @@ pcl::OpenNIGrabber::convertToXYZPointCloud (const boost::shared_ptr<openni_wrapp
 
   register float constant_x = 1.0f / device_->getDepthFocalLength (depth_width_);
   register float constant_y = 1.0f / device_->getDepthFocalLength (depth_width_);
+  register float centerX = (cloud->width >> 1);
+  register float centerY = (cloud->height >> 1);
 
   if (pcl_isfinite (depth_focal_length_x_))
     constant_x =  1.0f / static_cast<float> (depth_focal_length_x_);
 
   if (pcl_isfinite (depth_focal_length_y_))
     constant_y =  1.0f / static_cast<float> (depth_focal_length_y_);
+  
+  if (pcl_isfinite (depth_principal_point_x_))
+    centerX =  depth_principal_point_x_;
+  
+  if (pcl_isfinite (depth_principal_point_y_))
+    centerY =  depth_principal_point_y_;
 
   if (device_->isDepthRegistered ())
     cloud->header.frame_id = rgb_frame_id_;
   else
     cloud->header.frame_id = depth_frame_id_;
 
-  register int centerX = (cloud->width >> 1);
-  int centerY = (cloud->height >> 1);
 
   float bad_point = std::numeric_limits<float>::quiet_NaN ();
 
@@ -633,15 +643,20 @@ pcl::OpenNIGrabber::convertToXYZRGBPointCloud (const boost::shared_ptr<openni_wr
   //float constant = 1.0f / device_->getImageFocalLength (depth_width_);
   register float constant_x = 1.0f / device_->getImageFocalLength (depth_width_);
   register float constant_y = 1.0f / device_->getImageFocalLength (depth_width_);
+  register float centerX = (depth_width_ >> 1);
+  register float centerY = (depth_height_ >> 1);
 
   if (pcl_isfinite (rgb_focal_length_x_))
     constant_x =  1.0f / static_cast<float> (rgb_focal_length_x_);
 
   if (pcl_isfinite (rgb_focal_length_y_))
     constant_y =  1.0f / static_cast<float> (rgb_focal_length_y_);
-
-  register int centerX = (depth_width_ >> 1);
-  int centerY = (depth_height_ >> 1);
+  
+  if (pcl_isfinite (rgb_principal_point_x_))
+    centerX =  rgb_principal_point_x_;
+  
+  if (pcl_isfinite (rgb_principal_point_y_))
+    centerY =  rgb_principal_point_y_;
 
   register const XnDepthPixel* depth_map = depth_image->getDepthMetaData ().Data ();
   if (depth_image->getWidth () != depth_width_ || depth_image->getHeight() != depth_height_)
@@ -755,6 +770,8 @@ pcl::OpenNIGrabber::convertToXYZIPointCloud (const boost::shared_ptr<openni_wrap
   //float constant = 1.0f / device_->getImageFocalLength (cloud->width);
   register float constant_x = 1.0f / device_->getImageFocalLength (cloud->width);
   register float constant_y = 1.0f / device_->getImageFocalLength (cloud->width);
+  register float centerX = (cloud->width >> 1);
+  register float centerY = (cloud->height >> 1);
 
   if (pcl_isfinite (rgb_focal_length_x_))
     constant_x =  1.0f / static_cast<float> (rgb_focal_length_x_);
@@ -762,8 +779,11 @@ pcl::OpenNIGrabber::convertToXYZIPointCloud (const boost::shared_ptr<openni_wrap
   if (pcl_isfinite (rgb_focal_length_y_))
     constant_y =  1.0f / static_cast<float> (rgb_focal_length_y_);
 
-  register int centerX = (cloud->width >> 1);
-  int centerY = (cloud->height >> 1);
+  if (pcl_isfinite (rgb_principal_point_x_))
+    centerX = rgb_principal_point_x_;
+  
+  if (pcl_isfinite (rgb_principal_point_y_))
+    centerY = rgb_principal_point_y_;
 
   register const XnDepthPixel* depth_map = depth_image->getDepthMetaData ().Data ();
   register const XnIRPixel* ir_map = ir_image->getMetaData ().Data ();

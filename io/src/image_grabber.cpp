@@ -132,10 +132,10 @@ struct pcl::ImageGrabberBase::ImageGrabberImpl
   float depth_image_units_;
 
   bool manual_intrinsics_;
-  float focal_length_x_;
-  float focal_length_y_;
-  float principal_point_x_;
-  float principal_point_y_;
+  double focal_length_x_;
+  double focal_length_y_;
+  double principal_point_x_;
+  double principal_point_y_;
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -791,10 +791,10 @@ pcl::ImageGrabberBase::setRGBImageFiles (const std::vector<std::string>& rgb_ima
 
 ///////////////////////////////////////////////////////
 void
-pcl::ImageGrabberBase::setCameraIntrinsics (float focal_length_x, 
-                                            float focal_length_y, 
-                                            float principal_point_x, 
-                                            float principal_point_y)
+pcl::ImageGrabberBase::setCameraIntrinsics (const double focal_length_x, 
+                                            const double focal_length_y, 
+                                            const double principal_point_x, 
+                                            const double principal_point_y)
 {
   impl_->focal_length_x_ = focal_length_x;
   impl_->focal_length_y_ = focal_length_y;
@@ -804,10 +804,10 @@ pcl::ImageGrabberBase::setCameraIntrinsics (float focal_length_x,
 }
 
 void
-pcl::ImageGrabberBase::getCameraIntrinsics (float &focal_length_x, 
-                                            float &focal_length_y, 
-                                            float &principal_point_x, 
-                                            float &principal_point_y) const
+pcl::ImageGrabberBase::getCameraIntrinsics (double &focal_length_x, 
+                                            double &focal_length_y, 
+                                            double &principal_point_x, 
+                                            double &principal_point_y) const
 {
   focal_length_x = impl_->focal_length_x_;
   focal_length_y = impl_->focal_length_y_;

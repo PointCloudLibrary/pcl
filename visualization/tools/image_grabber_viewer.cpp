@@ -202,7 +202,7 @@ main (int argc, char** argv)
   grabber->setDepthImageUnits(1E-3);
 
   // Before manually setting
-  float fx, fy, cx, cy;
+  double fx, fy, cx, cy;
   grabber->getCameraIntrinsics (fx, fy, cx, cy);
   PCL_INFO ("Factory default intrinsics: %f, %f, %f, %f\n", 
       fx, fy, cx, cy);

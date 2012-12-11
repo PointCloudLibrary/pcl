@@ -139,6 +139,45 @@ namespace pcl
       std::vector<std::pair<int, XnMapOutputMode> >
       getAvailableImageModes () const;
 
+      /** \brief Set the RGB camera parameters (fx, fy, cx, cy)
+        * \param[in] rgb_focal_length_x the RGB focal length (fx)
+        * \param[in] rgb_focal_length_y the RGB focal length (fy)
+        * \param[in] rgb_principal_point_x the RGB principal point (cx)
+        * \param[in] rgb_principal_point_y the RGB principal point (cy)
+        * Setting the parameters to non-finite values (e.g., NaN, Inf) invalidates them
+        * and the grabber will use the default values from the camera instead.
+        */
+      inline void
+      setRGBCameraIntrinsics (const double rgb_focal_length_x, 
+                              const double rgb_focal_length_y, 
+                              const double rgb_principal_point_x,
+                              const double rgb_principal_point_y)
+      {
+        rgb_focal_length_x_ = rgb_focal_length_x;
+        rgb_focal_length_y_ = rgb_focal_length_y;
+        rgb_principal_point_x_ = rgb_principal_point_x;
+        rgb_principal_point_y_ = rgb_principal_point_y;
+      }
+      
+      /** \brief Get the RGB camera parameters (fx, fy, cx, cy)
+        * \param[out] rgb_focal_length_x the RGB focal length (fx)
+        * \param[out] rgb_focal_length_y the RGB focal length (fy)
+        * \param[out] rgb_principal_point_x the RGB principal point (cx)
+        * \param[out] rgb_principal_point_y the RGB principal point (cy)
+        */
+      inline void
+      getRGBCameraIntrinsics (double &rgb_focal_length_x, 
+                              double &rgb_focal_length_y, 
+                              double &rgb_principal_point_x,
+                              double &rgb_principal_point_y) const
+      {
+        rgb_focal_length_x = rgb_focal_length_x_;
+        rgb_focal_length_y = rgb_focal_length_y_;
+        rgb_principal_point_x = rgb_principal_point_x_;
+        rgb_principal_point_y = rgb_principal_point_y_;
+      }
+
+
       /** \brief Set the RGB image focal length (fx = fy).
         * \param[in] rgb_focal_length the RGB focal length (assumes fx = fy)
         * Setting the parameter to a non-finite value (e.g., NaN, Inf) invalidates it
@@ -175,6 +214,44 @@ namespace pcl
         rgb_focal_length_x = rgb_focal_length_x_;
         rgb_focal_length_y = rgb_focal_length_y_;
       }
+      
+      /** \brief Set the Depth camera parameters (fx, fy, cx, cy)
+        * \param[in] depth_focal_length_x the Depth focal length (fx)
+        * \param[in] depth_focal_length_y the Depth focal length (fy)
+        * \param[in] depth_principal_point_x the Depth principal point (cx)
+        * \param[in] depth_principal_point_y the Depth principal point (cy)
+        * Setting the parameters to non-finite values (e.g., NaN, Inf) invalidates them
+        * and the grabber will use the default values from the camera instead.
+        */
+      inline void
+      setDepthCameraIntrinsics (const double depth_focal_length_x, 
+                                const double depth_focal_length_y, 
+                                const double depth_principal_point_x,
+                                const double depth_principal_point_y)
+      {
+        depth_focal_length_x_ = depth_focal_length_x;
+        depth_focal_length_y_ = depth_focal_length_y;
+        depth_principal_point_x_ = depth_principal_point_x;
+        depth_principal_point_y_ = depth_principal_point_y;
+      }
+      
+      /** \brief Get the Depth camera parameters (fx, fy, cx, cy)
+        * \param[out] depth_focal_length_x the Depth focal length (fx)
+        * \param[out] depth_focal_length_y the Depth focal length (fy)
+        * \param[out] depth_principal_point_x the Depth principal point (cx)
+        * \param[out] depth_principal_point_y the Depth principal point (cy)
+        */
+      inline void
+      getDepthCameraIntrinsics (double &depth_focal_length_x, 
+                                double &depth_focal_length_y, 
+                                double &depth_principal_point_x,
+                                double &depth_principal_point_y) const
+      {
+        depth_focal_length_x = depth_focal_length_x_;
+        depth_focal_length_y = depth_focal_length_y_;
+        depth_principal_point_x = depth_principal_point_x_;
+        depth_principal_point_y = depth_principal_point_y_;
+      }
 
       /** \brief Set the Depth image focal length (fx = fy).
         * \param[in] depth_focal_length the Depth focal length (assumes fx = fy)
@@ -186,6 +263,7 @@ namespace pcl
       {
         depth_focal_length_x_ = depth_focal_length_y_ = depth_focal_length;
       }
+      
 
       /** \brief Set the Depth image focal length
         * \param[in] depth_focal_length_x the Depth focal length (fx)
@@ -361,10 +439,18 @@ namespace pcl
       double rgb_focal_length_x_;
       /** \brief The RGB image focal length (fy). */
       double rgb_focal_length_y_;
+      /** \brief The RGB image principal point (cx). */
+      double rgb_principal_point_x_;
+      /** \brief The RGB image principal point (cy). */
+      double rgb_principal_point_y_;
       /** \brief The depth image focal length (fx). */
       double depth_focal_length_x_;
       /** \brief The depth image focal length (fy). */
       double depth_focal_length_y_;
+      /** \brief The depth image principal point (cx). */
+      double depth_principal_point_x_;
+      /** \brief The depth image principal point (cy). */
+      double depth_principal_point_y_;
 
     public:
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
