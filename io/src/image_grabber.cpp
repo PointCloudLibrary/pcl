@@ -422,7 +422,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::loadNextCloudVTK ()
     }
     // Handle timestamps
     uint64_t timestamp;
-    if (getTimestampFromFilepath (*depth_pclzf_iterator_, timestamp))
+    if (getTimestampFromFilepath (*depth_image_iterator_, timestamp))
     {
 #ifdef USE_ROS
       next_cloud_color_.header.stamp.fromNSec (timestamp * 1000);
