@@ -13,7 +13,7 @@ PCL_ADD_TEST(filters_sampling test_filters_sampling
 PCL_ADD_TEST(filters_bilateral test_filters_bilateral
              FILES test_bilateral.cpp
              LINK_WITH pcl_gtest pcl_filters pcl_io pcl_kdtree
-             ARGUMENTS ${PCL_SOURCE_DIR}/test/sac_plane_test.pcd ${PCL_SOURCE_DIR}/test/milk_cartoon_all_small_clorox.pcd)
+             ARGUMENTS ${PCL_SOURCE_DIR}/test/milk_cartoon_all_small_clorox.pcd)
 
     
 
