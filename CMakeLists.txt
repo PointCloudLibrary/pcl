@@ -123,7 +123,9 @@ endif()
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
   SET(CMAKE_COMPILER_IS_CLANG 1)
-  SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O4")
+  if(NOT APPLE)
+    SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O4")
+  endif ()
   SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Qunused-arguments")
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Qunused-arguments -Wno-invalid-offsetof") # Unfortunately older Clang versions do not have this: -Wno-unnamed-type-template-args
   SET(CLANG_LIBRARIES "stdc++")
