@@ -40,6 +40,7 @@
 #define PCL_COMMON_ANGLES_IMPL_HPP_
 
 #include <cmath>
+#include <pcl/pcl_macros.h>
 
 namespace pcl
 {
