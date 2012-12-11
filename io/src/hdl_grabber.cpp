@@ -571,7 +571,8 @@ void pcl::HDL_Grabber::readPacketsFromPcap()
     stringStream << " and src host " << sourceAddress.to_string();
   }
 
-  if (pcap_compile(pcap, &filter, stringStream.str().c_str(), 0, PCAP_NETMASK_UNKNOWN) == -1)
+  // PCAP_NETMASK_UNKNOWN should be 0xffffffff, but it's undefined in older PCAP versions
+  if (pcap_compile(pcap, &filter, stringStream.str().c_str(), 0, 0xffffffff) == -1)
   {
     std::cout << "Issue compiling filter " << pcap_geterr(pcap) << std::endl;
   }
