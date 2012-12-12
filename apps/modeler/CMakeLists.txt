@@ -1,7 +1,6 @@
-set(SUBSYS_NAME modeler)
+set(SUBSYS_NAME app_modeler)
 set(SUBSYS_DESC "PCLModeler: PCL based reconstruction platform")
 set(SUBSYS_DEPS common geometry io filters sample_consensus segmentation visualization kdtree features surface octree registration keypoints tracking search)
-set(DEFAULT OFF)
 set(REASON "")
 
 # Find VTK and QVTK
@@ -19,6 +18,9 @@ elseif(NOT VTK_USE_QVTK)
 endif(VTK_FOUND AND VTK_USE_QVTK)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
+
+# Default to not building for now
+set(DEFAULT FALSE)
 
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ${DEFAULT} ${REASON})
 PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} EXT_DEPS vtk)

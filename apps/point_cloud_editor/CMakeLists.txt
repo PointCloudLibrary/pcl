@@ -1,6 +1,4 @@
-
-
-SET(SUBSYS_NAME point_cloud_editor)
+SET(SUBSYS_NAME app_point_cloud_editor)
 SET(SUBSYS_DESC "Point Cloud Editor - Simple editor for 3D point clouds")
 SET(SUBSYS_DEPS common filters io)
 
@@ -75,7 +73,9 @@ ELSE(NOT OPENGL_FOUND)
   SET(REASON)
 ENDIF(NOT OPENGL_FOUND)
 
-SET(DEFAULT OFF)
+
+# Default to not building for now
+set(DEFAULT FALSE)
 SET(REASON "")
 
 PCL_SUBSYS_OPTION(BUILD ${SUBSYS_NAME} ${SUBSYS_DESC} ${DEFAULT} ${REASON})
