@@ -284,7 +284,7 @@ TEST (PCL, KdTreeFLANN_setPointRepresentation)
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST (PCL, KdTreeFLANN_32_vs_64)
+TEST (PCL, KdTreeFLANN_32_vs_64_bit)
 {
   KdTreeFLANN<PointXYZ> tree;
   tree.setInputCloud (cloud_in);
