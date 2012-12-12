@@ -199,7 +199,7 @@ main(int argc, char ** argv)
   }
   else
   {
-    SimpleONIViewer<pcl::PointXYZI> v(*grabber);
+    SimpleONIViewer<pcl::PointXYZ> v(*grabber);
     v.run();
   }
 
