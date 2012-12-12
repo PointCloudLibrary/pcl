@@ -221,12 +221,12 @@ if(build)
 
   endif() # VTK_FOUND
 
-  add_subdirectory(app_3d_rec_framework)
-  add_subdirectory(app_modeler)
-  add_subdirectory(app_cloud_composer)
-  add_subdirectory(app_in_hand_scanner)
-  add_subdirectory(app_point_cloud_editor)
-  add_subdirectory(app_optronic_viewer)
+  add_subdirectory(3d_rec_framework)
+  add_subdirectory(modeler)
+  add_subdirectory(cloud_composer)
+  add_subdirectory(in_hand_scanner)
+  add_subdirectory(point_cloud_editor)
+  add_subdirectory(optronic_viewer)
 
 endif(build)
 

@@ -3,7 +3,7 @@
 #  string(REGEX REPLACE "-Wconversion(.+)" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 #endif()
 
-set(SUBSYS_NAME app_cloud_composer)
+set(SUBSYS_NAME cloud_composer)
 set(SUBSYS_DESC "Cloud Composer - Application for Manipulating Point Clouds")
 set(SUBSYS_DEPS common io visualization filters apps)
 
@@ -38,8 +38,8 @@ endif(NOT VTK_USE_QVTK)
 #Default to not building for now
 set(DEFAULT FALSE)
 
-PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ${DEFAULT} ${REASON})
-PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} ${SUBSYS_DEPS})
+PCL_SUBSYS_OPTION(build app_${SUBSYS_NAME} ${SUBSYS_DESC} ${DEFAULT} ${REASON})
+PCL_SUBSYS_DEPEND(build app_${SUBSYS_NAME} ${SUBSYS_DEPS})
 
 PCL_ADD_DOC(${SUBSYS_NAME})
 

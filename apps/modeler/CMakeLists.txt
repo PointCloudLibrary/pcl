@@ -1,4 +1,4 @@
-set(SUBSYS_NAME app_modeler)
+set(SUBSYS_NAME modeler)
 set(SUBSYS_DESC "PCLModeler: PCL based reconstruction platform")
 set(SUBSYS_DEPS common geometry io filters sample_consensus segmentation visualization kdtree features surface octree registration keypoints tracking search apps)
 set(REASON "")
@@ -22,8 +22,8 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 # Default to not building for now
 set(DEFAULT FALSE)
 
-PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ${DEFAULT} ${REASON})
-PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} EXT_DEPS vtk)
+PCL_SUBSYS_OPTION(build app_${SUBSYS_NAME} ${SUBSYS_DESC} ${DEFAULT} ${REASON})
+PCL_SUBSYS_DEPEND(build app_${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} EXT_DEPS vtk)
 
 PCL_ADD_DOC(${SUBSYS_NAME})
 

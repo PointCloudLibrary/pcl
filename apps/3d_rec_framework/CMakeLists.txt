@@ -1,4 +1,4 @@
-set(SUBSYS_NAME app_3d_rec_framework)
+set(SUBSYS_NAME 3d_rec_framework)
 set(SUBSYS_DESC "3D recognition framework")
 set(SUBSYS_DEPS common geometry io filters sample_consensus segmentation visualization kdtree features surface octree registration keypoints tracking search recognition ml)
 
@@ -24,8 +24,8 @@ endif()
 # Default to not building for now
 set(DEFAULT FALSE)
 
-PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ${DEFAULT} ${REASON})
-PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} EXT_DEPS vtk openni)
+PCL_SUBSYS_OPTION(build app_${SUBSYS_NAME} ${SUBSYS_DESC} ${DEFAULT} ${REASON})
+PCL_SUBSYS_DEPEND(build app_${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} EXT_DEPS vtk openni)
 
 if(build)
 
