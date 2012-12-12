@@ -595,9 +595,9 @@ pcl::OpenNIGrabber::convertToXYZPointCloud (const boost::shared_ptr<openni_wrapp
   }
 
   register int depth_idx = 0;
-  for (int v = -centerY; v < (depth_height_ - centerY); ++v)
+  for (int v = 0; v < depth_height_; ++v)
   {
-    for (register int u = -centerX; u < (depth_width_ - centerX); ++u, ++depth_idx)
+    for (register int u = 0; u < depth_width_; ++u, ++depth_idx)
     {
       pcl::PointXYZ& pt = cloud->points[depth_idx];
       // Check for invalid measurements
@@ -610,8 +610,8 @@ pcl::OpenNIGrabber::convertToXYZPointCloud (const boost::shared_ptr<openni_wrapp
         continue;
       }
       pt.z = depth_map[depth_idx] * 0.001f;
-      pt.x = static_cast<float> (u) * pt.z * constant_x;
-      pt.y = static_cast<float> (v) * pt.z * constant_y;
+      pt.x = (static_cast<float> (u) - centerX) * pt.z * constant_x;
+      pt.y = (static_cast<float> (v) - centerY) * pt.z * constant_y;
     }
   }
   cloud->sensor_origin_.setZero ();
@@ -700,9 +700,9 @@ pcl::OpenNIGrabber::convertToXYZRGBPointCloud (const boost::shared_ptr<openni_wr
   
   int value_idx = 0;
   int point_idx = 0;
-  for (int v = -centerY; v < (depth_height_ - centerY); ++v, point_idx += skip)
+  for (int v = 0; v < depth_height_; ++v, point_idx += skip)
   {
-    for (register int u = -centerX; u < (depth_width_ - centerX); ++u, ++value_idx, point_idx += step)
+    for (register int u = 0; u < depth_width_; ++u, ++value_idx, point_idx += step)
     {
       PointT& pt = cloud->points[point_idx];
       /// @todo Different values for these cases
@@ -713,8 +713,8 @@ pcl::OpenNIGrabber::convertToXYZRGBPointCloud (const boost::shared_ptr<openni_wr
           depth_map[value_idx] != depth_image->getShadowValue ())
       {
         pt.z = depth_map[value_idx] * 0.001f;
-        pt.x = static_cast<float> (u) * pt.z * constant_x;
-        pt.y = static_cast<float> (v) * pt.z * constant_y;
+        pt.x = (static_cast<float> (u) - centerX) * pt.z * constant_x;
+        pt.y = (static_cast<float> (v) - centerY) * pt.z * constant_y;
       }
       else
       {
@@ -811,9 +811,9 @@ pcl::OpenNIGrabber::convertToXYZIPointCloud (const boost::shared_ptr<openni_wrap
   register int depth_idx = 0;
   float bad_point = std::numeric_limits<float>::quiet_NaN ();
 
-  for (int v = -centerY; v < (depth_height_ - centerY); ++v)
+  for (int v = 0; v < depth_height_; ++v)
   {
-    for (register int u = -centerX; u < (depth_width_ - centerX); ++u, ++depth_idx)
+    for (register int u = 0; u < depth_width_; ++u, ++depth_idx)
     {
       pcl::PointXYZI& pt = cloud->points[depth_idx];
       /// @todo Different values for these cases
@@ -827,8 +827,8 @@ pcl::OpenNIGrabber::convertToXYZIPointCloud (const boost::shared_ptr<openni_wrap
       else
       {
         pt.z = depth_map[depth_idx] * 0.001f;
-        pt.x = static_cast<float> (u) * pt.z * constant_x;
-        pt.y = static_cast<float> (v) * pt.z * constant_y;
+        pt.x = (static_cast<float> (u) - centerX) * pt.z * constant_x;
+        pt.y = (static_cast<float> (v) - centerY) * pt.z * constant_y;
       }
 
       pt.data_c[0] = pt.data_c[1] = pt.data_c[2] = pt.data_c[3] = 0;
