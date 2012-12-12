@@ -90,7 +90,7 @@ endmacro(PCL_SUBSYS_DEPEND)
 # ARGN The include files.
 macro(PCL_ADD_INCLUDES _component _subdir)
     install(FILES ${ARGN} DESTINATION ${INCLUDE_INSTALL_DIR}/${_subdir}
-        COMPONENT ${_component})
+        COMPONENT pcl_${_component})
 endmacro(PCL_ADD_INCLUDES)
 
 
@@ -133,9 +133,9 @@ macro(PCL_ADD_LIBRARY _name _component)
     endif(USE_PROJECT_FOLDERS)
 
     install(TARGETS ${_name}
-        RUNTIME DESTINATION ${BIN_INSTALL_DIR} COMPONENT ${_component}
-        LIBRARY DESTINATION ${LIB_INSTALL_DIR} COMPONENT ${_component}
-        ARCHIVE DESTINATION ${LIB_INSTALL_DIR} COMPONENT ${_component})
+        RUNTIME DESTINATION ${BIN_INSTALL_DIR} COMPONENT pcl_${_component}
+        LIBRARY DESTINATION ${LIB_INSTALL_DIR} COMPONENT pcl_${_component}
+        ARCHIVE DESTINATION ${LIB_INSTALL_DIR} COMPONENT pcl_${_component})
 
 endmacro(PCL_ADD_LIBRARY)
 
@@ -176,9 +176,9 @@ macro(PCL_CUDA_ADD_LIBRARY _name _component)
     endif(USE_PROJECT_FOLDERS)
 
     install(TARGETS ${_name}
-        RUNTIME DESTINATION ${BIN_INSTALL_DIR} COMPONENT ${_component}
-        LIBRARY DESTINATION ${LIB_INSTALL_DIR} COMPONENT ${_component}
-        ARCHIVE DESTINATION ${LIB_INSTALL_DIR} COMPONENT ${_component})
+        RUNTIME DESTINATION ${BIN_INSTALL_DIR} COMPONENT pcl_${_component}
+        LIBRARY DESTINATION ${LIB_INSTALL_DIR} COMPONENT pcl_${_component}
+        ARCHIVE DESTINATION ${LIB_INSTALL_DIR} COMPONENT pcl_${_component})
 endmacro(PCL_CUDA_ADD_LIBRARY)
 
 
@@ -217,7 +217,7 @@ macro(PCL_ADD_EXECUTABLE _name _component)
 
     set(PCL_EXECUTABLES ${PCL_EXECUTABLES} ${_name})
     install(TARGETS ${_name} RUNTIME DESTINATION ${BIN_INSTALL_DIR}
-        COMPONENT ${_component})
+        COMPONENT pcl_${_component})
 endmacro(PCL_ADD_EXECUTABLE)
 
 ###############################################################################
@@ -267,9 +267,9 @@ if(APPLE AND VTK_USE_COCOA)
 #                         COMMAND ${CMAKE_COMMAND} -E create_symlink ${PCL_OUTPUT_BIN_DIR}/${_name}.app/Contents/MacOS/${_name} ${PCL_OUTPUT_BIN_DIR}/${_name}
 # #			WORKING_DIRECTORY 
 #                         COMMENT "Creating an alias for ${_name}.app to ${_name}")
-    install(TARGETS ${_name} BUNDLE DESTINATION ${BIN_INSTALL_DIR} COMPONENT ${_component})
+    install(TARGETS ${_name} BUNDLE DESTINATION ${BIN_INSTALL_DIR} COMPONENT pcl_${_component})
 else(APPLE AND VTK_USE_COCOA)
-    install(TARGETS ${_name} RUNTIME DESTINATION ${BIN_INSTALL_DIR} COMPONENT ${_component})
+    install(TARGETS ${_name} RUNTIME DESTINATION ${BIN_INSTALL_DIR} COMPONENT pcl_${_component})
 endif(APPLE AND VTK_USE_COCOA)
 endmacro(PCL_ADD_EXECUTABLE_OPT_BUNDLE)
 
@@ -303,7 +303,7 @@ macro(PCL_CUDA_ADD_EXECUTABLE _name _component)
   
     set(PCL_EXECUTABLES ${PCL_EXECUTABLES} ${_name})
     install(TARGETS ${_name} RUNTIME DESTINATION ${BIN_INSTALL_DIR}
-        COMPONENT ${_component})
+        COMPONENT pcl_${_component})
 endmacro(PCL_CUDA_ADD_EXECUTABLE)
 
 ###############################################################################
@@ -439,7 +439,7 @@ macro(PCL_MAKE_PKGCONFIG _name _component _desc _pcl_deps _ext_deps _int_deps _c
     configure_file(${PROJECT_SOURCE_DIR}/cmake/pkgconfig.cmake.in ${_pc_file}
         @ONLY)
     install(FILES ${_pc_file} DESTINATION ${PKGCFG_INSTALL_DIR}
-        COMPONENT ${_component})
+        COMPONENT pcl_${_component})
 endmacro(PCL_MAKE_PKGCONFIG)
 
 
@@ -574,7 +574,7 @@ macro(PCL_WRITE_STATUS_REPORT)
     message(STATUS "The following subsystems will not be built:")
     foreach(_ss ${PCL_SUBSYSTEMS})
         PCL_GET_SUBSYS_STATUS(_status ${_ss})
-        PCL_GET_SUBSYS_STATUS(_hyper_status ${_ss})
+        PCL_GET_SUBSYS_HYPERSTATUS(_hyper_status ${_ss})
         if(NOT _status OR ("${_hyper_status}" STREQUAL "AUTO_OFF"))
             GET_IN_MAP(_reason PCL_SUBSYS_REASONS ${_ss})
             message(STATUS "  ${_ss}: ${_reason}")
