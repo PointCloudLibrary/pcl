@@ -41,7 +41,6 @@
 #define PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_H_
 
 #include <pcl/correspondence.h>
-#include <pcl/features/feature.h>
 #include <pcl/common/transforms.h>
 #include <pcl/registration/correspondence_types.h>
 
