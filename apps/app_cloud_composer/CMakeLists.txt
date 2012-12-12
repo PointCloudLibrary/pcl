@@ -5,7 +5,7 @@
 
 set(SUBSYS_NAME app_cloud_composer)
 set(SUBSYS_DESC "Cloud Composer - Application for Manipulating Point Clouds")
-set(SUBSYS_DEPS common io visualization filters)
+set(SUBSYS_DEPS common io visualization filters apps)
 
 # Find VTK 
 if(NOT VTK_FOUND)

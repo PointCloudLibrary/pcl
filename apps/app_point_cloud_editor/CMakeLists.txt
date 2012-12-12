@@ -1,6 +1,6 @@
 SET(SUBSYS_NAME app_point_cloud_editor)
 SET(SUBSYS_DESC "Point Cloud Editor - Simple editor for 3D point clouds")
-SET(SUBSYS_DEPS common filters io)
+SET(SUBSYS_DEPS common filters io apps)
 
 SET(MOC_INCS include/pcl/apps/${SUBSYS_NAME}/cloudEditorWidget.h 
     	 	 include/pcl/apps/${SUBSYS_NAME}/mainWindow.h 

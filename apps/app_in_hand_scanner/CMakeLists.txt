@@ -1,6 +1,6 @@
 set(SUBSYS_NAME app_in_hand_scanner)
 set(SUBSYS_DESC "In-hand scanner for small objects")
-set(SUBSYS_DEPS     common     features     geometry     io     kdtree      visualization)
+set(SUBSYS_DEPS     common     features     geometry     io     kdtree      visualization apps)
 set(SUBSYS_LIBS pcl_common pcl_features pcl_geometry pcl_io pcl_kdtree  pcl_visualization)
 
 ################################################################################

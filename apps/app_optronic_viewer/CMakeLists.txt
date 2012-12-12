@@ -1,6 +1,6 @@
 set(SUBSYS_NAME app_optronic_viewer)
 set(SUBSYS_DESC "PCL Optronic Viewer")
-set(SUBSYS_DEPS common geometry io filters sample_consensus segmentation visualization kdtree features surface octree registration keypoints tracking search)
+set(SUBSYS_DEPS common geometry io filters sample_consensus segmentation visualization kdtree features surface octree registration keypoints tracking search apps)
 set(DEFAULT OFF)
 set(REASON "")
 

@@ -1,6 +1,6 @@
 set(SUBSYS_NAME app_modeler)
 set(SUBSYS_DESC "PCLModeler: PCL based reconstruction platform")
-set(SUBSYS_DEPS common geometry io filters sample_consensus segmentation visualization kdtree features surface octree registration keypoints tracking search)
+set(SUBSYS_DEPS common geometry io filters sample_consensus segmentation visualization kdtree features surface octree registration keypoints tracking search apps)
 set(REASON "")
 
 # Find VTK and QVTK
