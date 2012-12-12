@@ -1,8 +1,8 @@
- 
 /*
  * Software License Agreement (BSD License)
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -33,9 +33,6 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * Author : jpapon@gmail.com
- * Email  : jpapon@gmail.com
- *
  */
 
 #ifndef PCL_VOXEL_SUPERPIXELS_H_
@@ -52,6 +49,7 @@ namespace pcl
 {
   /** \brief Implements a superpixel algorithm based on voxel structure, normals, 
     * and rgb values
+    * \author Jeremie Papon (jpapon@gmail.com)
     */
   template <typename PointT>
   class PCL_EXPORTS VoxelSuperpixels : public pcl::PCLBase<PointT>
