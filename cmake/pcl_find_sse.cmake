@@ -4,11 +4,11 @@ macro(PCL_CHECK_FOR_SSE)
     set(SSE_FLAGS)
 
     # Test CLANG
-    if(CMAKE_COMPILER_IS_CLANG)
-      if(APPLE)
-        SET(SSE_FLAGS "${SSE_FLAGS} -march=native")
-      endif(APPLE)
-    endif(CMAKE_COMPILER_IS_CLANG)
+    #if(CMAKE_COMPILER_IS_CLANG)
+    #  if(APPLE)
+    #    SET(SSE_FLAGS "${SSE_FLAGS} -march=native")
+    #  endif(APPLE)
+    #endif(CMAKE_COMPILER_IS_CLANG)
 
     # Test GCC/G++
     if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
