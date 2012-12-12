@@ -64,20 +64,20 @@ TEST (CovarianceSampling, Filters)
   covariance_sampling.setNormals (cloud_walls_normals);
   covariance_sampling.setNumberOfSamples (static_cast<unsigned int> (cloud_walls_normals->size ()) / 4);
   double cond_num_walls = covariance_sampling.computeConditionNumber ();
-  EXPECT_NEAR (cond_num_walls, 20.8774, 0.5);
+  EXPECT_NEAR (113.29773, cond_num_walls, 1e-1);
 
   IndicesPtr walls_indices (new std::vector<int> ());
   covariance_sampling.filter (*walls_indices);
 
   covariance_sampling.setIndices (walls_indices);
   double cond_num_walls_sampled = covariance_sampling.computeConditionNumber ();
-  EXPECT_NEAR (cond_num_walls_sampled, 4.0298, 0.5);
+  EXPECT_NEAR (22.11506, cond_num_walls_sampled, 1e-1);
 
-  EXPECT_EQ ((*walls_indices)[0], 315);
-  EXPECT_EQ ((*walls_indices)[walls_indices->size () / 4], 275);
-  EXPECT_EQ ((*walls_indices)[walls_indices->size () / 2], 1846);
-  EXPECT_EQ ((*walls_indices)[walls_indices->size () * 3 / 4], 1241);
-  EXPECT_EQ ((*walls_indices)[walls_indices->size () - 1], 2632);
+  EXPECT_EQ (686, (*walls_indices)[0]);
+  EXPECT_EQ (1900, (*walls_indices)[walls_indices->size () / 4]);
+  EXPECT_EQ (1278, (*walls_indices)[walls_indices->size () / 2]);
+  EXPECT_EQ (2960, (*walls_indices)[walls_indices->size () * 3 / 4]);
+  EXPECT_EQ (2060, (*walls_indices)[walls_indices->size () - 1]);
 
   covariance_sampling.setInputCloud (cloud_turtle_normals);
   covariance_sampling.setNormals (cloud_turtle_normals);
@@ -105,7 +105,7 @@ TEST (NormalSpaceSampling, Filters)
   NormalSpaceSampling<PointNormal, PointNormal> normal_space_sampling;
   normal_space_sampling.setInputCloud (cloud_walls_normals);
   normal_space_sampling.setNormals (cloud_walls_normals);
-  normal_space_sampling.setBins (16, 16, 16);
+  normal_space_sampling.setBins (4, 4, 4);
   normal_space_sampling.setSeed (0);
   normal_space_sampling.setSample (static_cast<unsigned int> (cloud_walls_normals->size ()) / 4);
 
@@ -120,13 +120,13 @@ TEST (NormalSpaceSampling, Filters)
   double cond_num_walls_sampled = covariance_sampling.computeConditionNumber ();
 
 
-  EXPECT_NEAR (cond_num_walls_sampled, 9.0989, 0.5);
+  EXPECT_NEAR (33.04893, cond_num_walls_sampled, 1e-1);
 
-  EXPECT_EQ ((*walls_indices)[0], 2432);
-  EXPECT_EQ ((*walls_indices)[walls_indices->size () / 4], 1947);
-  EXPECT_EQ ((*walls_indices)[walls_indices->size () / 2], 3148);
-  EXPECT_EQ ((*walls_indices)[walls_indices->size () * 3 / 4], 2443);
-  EXPECT_EQ ((*walls_indices)[walls_indices->size () - 1], 2396);
+  EXPECT_EQ (1412, (*walls_indices)[0]);
+  EXPECT_EQ (1943, (*walls_indices)[walls_indices->size () / 4]);
+  EXPECT_EQ (2771, (*walls_indices)[walls_indices->size () / 2]);
+  EXPECT_EQ (3215, (*walls_indices)[walls_indices->size () * 3 / 4]);
+  EXPECT_EQ (2503, (*walls_indices)[walls_indices->size () - 1]);
 }
 
 /* ---[ */
@@ -149,7 +149,7 @@ main (int argc, char** argv)
   // Compute the normals for each cloud, and then clean them up of any NaN values
   NormalEstimation<PointXYZ,PointNormal> ne;
   ne.setInputCloud (cloud_walls);
-  ne.setRadiusSearch (0.02);
+  ne.setRadiusSearch (0.05);
   ne.compute (*cloud_walls_normals);
   copyPointCloud (*cloud_walls, *cloud_walls_normals);
 

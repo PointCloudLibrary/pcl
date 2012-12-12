@@ -198,7 +198,7 @@ namespace pcl
       isEntireBinSampled (boost::dynamic_bitset<> &array, unsigned int start_index, unsigned int length);
 
       /** \brief Uniform random distribution. */
-      boost::variate_generator<boost::mt19937, boost::uniform_int<unsigned int> > *rng_uniform_distribution_;
+      boost::variate_generator<boost::mt19937, boost::uniform_int<uint32_t> > *rng_uniform_distribution_;
   };
 }
 

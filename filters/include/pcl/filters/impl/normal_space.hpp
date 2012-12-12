@@ -121,7 +121,8 @@ pcl::NormalSpaceSampling<PointT, NormalT>::findBin (const float *normal, unsigne
   float max_cos = 1.0;
   float min_cos = -1.0;
 
-  dcos = cosf (normal[0]);
+//  dcos = cosf (normal[0]);
+  dcos = normal[0];
   bin_size = (max_cos - min_cos) / static_cast<float> (binsx_);
 
   // Finding bin number for direction cosine in x direction
@@ -135,7 +136,8 @@ pcl::NormalSpaceSampling<PointT, NormalT>::findBin (const float *normal, unsigne
   }
   t[0] = k;
 
-  dcos = cosf (normal[1]);
+//  dcos = cosf (normal[1]);
+  dcos = normal[1];
   bin_size = (max_cos - min_cos) / static_cast<float> (binsy_);
 
   // Finding bin number for direction cosine in y direction
@@ -149,7 +151,8 @@ pcl::NormalSpaceSampling<PointT, NormalT>::findBin (const float *normal, unsigne
   }
   t[1] = k;
     
-  dcos = cosf (normal[2]);
+//  dcos = cosf (normal[2]);
+  dcos = normal[2];
   bin_size = (max_cos - min_cos) / static_cast<float> (binsz_);
 
   // Finding bin number for direction cosine in z direction
@@ -190,12 +193,13 @@ pcl::NormalSpaceSampling<PointT, NormalT>::applyFilter (std::vector<int> &indice
   normals_hg.reserve (n_bins);
   for (unsigned int i = 0; i < n_bins; i++)
     normals_hg.push_back (std::list<int> ());
-  
+
   for (std::vector<int>::const_iterator it = indices_->begin (); it != indices_->end (); ++it)
   {
     unsigned int bin_number = findBin (input_normals_->points[*it].normal, n_bins);
     normals_hg[bin_number].push_back (*it);
   }
+
 
   // Setting up random access for the list created above. Maintaining the iterators to individual elements of the list
   // in a vector. Using vector now as the size of the list is known.
