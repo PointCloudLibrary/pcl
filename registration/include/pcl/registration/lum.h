@@ -46,7 +46,7 @@
 #include <pcl/registration/boost.h>
 #include <pcl/common/transforms.h>
 #include <pcl/correspondence.h>
-#include <boost/graph/adjacency_list.hpp>
+#include <pcl/registration/boost_graph.h>
 
 namespace Eigen
 {
@@ -131,7 +131,7 @@ namespace pcl
           EIGEN_MAKE_ALIGNED_OPERATOR_NEW
         };
 
-        typedef boost::adjacency_list<boost::vecS, boost::vecS, boost::bidirectionalS, VertexProperties, EdgeProperties> SLAMGraph;
+        typedef boost::adjacency_list<boost::eigen_vecS, boost::eigen_vecS, boost::bidirectionalS, VertexProperties, EdgeProperties> SLAMGraph;
         typedef boost::shared_ptr<SLAMGraph> SLAMGraphPtr;
         typedef typename SLAMGraph::vertex_descriptor Vertex;
         typedef typename SLAMGraph::edge_descriptor Edge;

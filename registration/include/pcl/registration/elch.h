@@ -48,7 +48,7 @@
 #include <pcl/registration/boost.h>
 #include <pcl/registration/eigen.h>
 #include <pcl/registration/icp.h>
-#include <boost/graph/adjacency_list.hpp>
+#include <pcl/registration/boost_graph.h>
 
 namespace pcl
 {
@@ -77,7 +77,7 @@ namespace pcl
 
         /** \brief graph structure to hold the SLAM graph */
         typedef boost::adjacency_list<
-          boost::listS, boost::vecS, boost::undirectedS,
+          boost::listS, boost::eigen_vecS, boost::undirectedS,
           Vertex,
           boost::no_property>
         LoopGraph;
