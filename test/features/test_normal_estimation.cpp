@@ -50,6 +50,8 @@ using namespace std;
 typedef search::KdTree<PointXYZ>::Ptr KdTreePtr;
 
 PointCloud<PointXYZ> cloud;
+PointCloud<PointXYZ>::Ptr cloud_big (new PointCloud<PointXYZ> ());
+PointCloud<Normal> expected_normal_estimation_32_vs_64_bit;
 vector<int> indices;
 KdTreePtr tree;
 
@@ -62,8 +64,8 @@ TEST (PCL, computePointNormal)
   PointCloud<PointXYZ> c;
   
   PointXYZ p11 (706952.31f, 4087.6958f, 0.00000000f),
-           p21 (707002.31f, 6037.6958f, 0.00000000f),
-           p31 (706952.31f, 7937.6958f, 0.00000000f);
+      p21 (707002.31f, 6037.6958f, 0.00000000f),
+      p31 (706952.31f, 7937.6958f, 0.00000000f);
   c.push_back (p11); c.push_back (p21); c.push_back (p31);
 
   computePointNormal (cloud, plane_parameters, curvature);
@@ -71,8 +73,8 @@ TEST (PCL, computePointNormal)
   
   c.clear ();
   PointXYZ p12 (-439747.72f, -43597.250f, 0.0000000f),
-           p22 (-439847.72f, -41697.250f, 0.0000000f),
-           p32 (-439747.72f, -39797.250f, 0.0000000f);
+      p22 (-439847.72f, -41697.250f, 0.0000000f),
+      p32 (-439747.72f, -39797.250f, 0.0000000f);
 
   c.push_back (p12); c.push_back (p22); c.push_back (p32);
 
@@ -81,8 +83,8 @@ TEST (PCL, computePointNormal)
 
   c.clear ();
   PointXYZ p13 (567011.56f, -7741.8179f, 0.00000000f),
-           p23 (567361.56f, -5841.8179f, 0.00000000f),
-           p33 (567011.56f, -3941.8179f, 0.00000000f);
+      p23 (567361.56f, -5841.8179f, 0.00000000f),
+      p33 (567011.56f, -3941.8179f, 0.00000000f);
 
   c.push_back (p13); c.push_back (p23); c.push_back (p33);
 
@@ -213,19 +215,51 @@ TEST (PCL, NormalEstimationOpenMP)
   }
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, NormalEstimation_BigTest_32_vs_64_bit)
+{
+  NormalEstimation<PointXYZ, Normal> ne;
+  ne.setInputCloud (cloud_big);
+  ne.setRadiusSearch (0.02);
+
+  PointCloud<Normal> cloud_normals;
+  ne.compute (cloud_normals);
+
+  EXPECT_EQ (expected_normal_estimation_32_vs_64_bit.size (), cloud_normals.size ());
+
+  for (size_t i = 0; i < cloud_normals.size (); ++i)
+  {
+    if (pcl_isnan (expected_normal_estimation_32_vs_64_bit[i].normal_x))
+    {
+      EXPECT_EQ (pcl_isnan (expected_normal_estimation_32_vs_64_bit[i].normal_x), pcl_isnan (cloud_normals[i].normal_x));
+      EXPECT_EQ (pcl_isnan (expected_normal_estimation_32_vs_64_bit[i].normal_y), pcl_isnan (cloud_normals[i].normal_y));
+      EXPECT_EQ (pcl_isnan (expected_normal_estimation_32_vs_64_bit[i].normal_z), pcl_isnan (cloud_normals[i].normal_z));
+    }
+    else
+    {
+      EXPECT_NEAR (expected_normal_estimation_32_vs_64_bit[i].normal_x, cloud_normals[i].normal_x, 1e-4);
+      EXPECT_NEAR (expected_normal_estimation_32_vs_64_bit[i].normal_y, cloud_normals[i].normal_y, 1e-4);
+      EXPECT_NEAR (expected_normal_estimation_32_vs_64_bit[i].normal_z, cloud_normals[i].normal_z, 1e-4);
+    }
+  }
+}
+
+
 /* ---[ */
 int
 main (int argc, char** argv)
 {
-  if (argc < 2)
+  if (argc < 4)
   {
-    std::cerr << "No test file given. Please download `bun0.pcd` and pass its path to the test." << std::endl;
+    std::cerr << "No test files given. Please download `bun0.pcd`, `sac_plane_test.pcd`, and 'expected_normal_estimation_32_vs_64_bit.pcd' and pass their paths to the test." << std::endl;
     return (-1);
   }
 
-  if (loadPCDFile<PointXYZ> (argv[1], cloud) < 0)
+  if (loadPCDFile<PointXYZ> (argv[1], cloud) < 0 ||
+      loadPCDFile<PointXYZ> (argv[2], *cloud_big) < 0 ||
+      loadPCDFile<Normal> (argv[3], expected_normal_estimation_32_vs_64_bit) < 0)
   {
-    std::cerr << "Failed to read test file. Please download `bun0.pcd` and pass its path to the test." << std::endl;
+    std::cerr << "Failed to read tests files. Please download `bun0.pcd`, `sac_plane_test.pcd`, and 'expected_normal_estimation_32_vs_64_bit.pcd' and pass their paths to the test." << std::endl;
     return (-1);
   }
 
