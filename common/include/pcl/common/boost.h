@@ -52,7 +52,7 @@
 #include <boost/mpl/size.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/function.hpp>
-#include <boost/timer.hpp>
+//#include <boost/timer.hpp>
 #include <boost/thread.hpp>
 #include <boost/thread/condition.hpp>
 #include <boost/signals2.hpp>
