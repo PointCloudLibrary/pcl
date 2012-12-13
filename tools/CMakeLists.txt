@@ -137,6 +137,9 @@ if (build)
   if (QHULL_FOUND)
     PCL_ADD_EXECUTABLE(pcl_crop_to_hull ${SUBSYS_NAME} crop_to_hull.cpp)
     target_link_libraries(pcl_crop_to_hull pcl_common pcl_io pcl_filters pcl_surface)
+
+    PCL_ADD_EXECUTABLE(pcl_compute_hull ${SUBSYS_NAME} compute_hull.cpp)
+    target_link_libraries(pcl_compute_hull pcl_common pcl_io pcl_surface)
   endif (QHULL_FOUND)
 
   if(NOT VTK_FOUND)
