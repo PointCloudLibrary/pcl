@@ -90,7 +90,7 @@ main (int argc, char **argv)
             std::cout << "add connection between " << i << " (" << clouds[i].first << ") and " << j << " (" << clouds[j].first << ")" << std::endl;
           pcl::registration::CorrespondenceEstimation<PointType, PointType> ce;
           ce.setInputTarget (clouds[i].second);
-          ce.setInputCloud (clouds[j].second);
+          ce.setInputSource (clouds[j].second);
           pcl::CorrespondencesPtr corr (new pcl::Correspondences);
           ce.determineCorrespondences (*corr, 2.5f);
           if (corr->size () > 2)
