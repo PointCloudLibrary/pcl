@@ -49,6 +49,7 @@ TEST (PCL, ImageGrabberTIFF)
       boost::this_thread::sleep (boost::posix_time::microseconds (10000));
     }
     tiff_clouds.push_back (cloud_buffer);
+    signal_received = false;
   }
 
   // Make sure they match
@@ -97,6 +98,7 @@ TEST (PCL, ImageGrabberPCLZF)
       boost::this_thread::sleep (boost::posix_time::microseconds (10000));
     }
     pclzf_clouds.push_back (cloud_buffer);
+    signal_received = false;
   }
 
   // Make sure they match
