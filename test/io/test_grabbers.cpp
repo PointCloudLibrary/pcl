@@ -44,9 +44,15 @@ TEST (PCL, ImageGrabberTIFF)
   for (size_t i = 0; i < grabber.numFrames (); i++)
   {
     grabber.trigger ();
+    size_t niter = 0;
     while (!signal_received)
     {
       boost::this_thread::sleep (boost::posix_time::microseconds (10000));
+      if (++niter > 100)
+      {
+        ASSERT_TRUE (false);
+        return;
+      }
     }
     tiff_clouds.push_back (cloud_buffer);
     signal_received = false;
@@ -94,9 +100,15 @@ TEST (PCL, ImageGrabberPCLZF)
   for (size_t i = 0; i < grabber.numFrames (); i++)
   {
     grabber.trigger ();
+    size_t niter = 0;
     while (!signal_received)
     {
       boost::this_thread::sleep (boost::posix_time::microseconds (10000));
+      if (++niter > 100)
+      {
+        ASSERT_TRUE (false);
+        return;
+      }
     }
     pclzf_clouds.push_back (cloud_buffer);
     signal_received = false;
@@ -158,9 +170,15 @@ TEST (PCL, ImageGrabberSetIntrinsicsTIFF)
   for (size_t i = 0; i < grabber.numFrames (); i++)
   {
     grabber.trigger ();
+    size_t niter = 0;
     while (!signal_received)
     {
       boost::this_thread::sleep (boost::posix_time::microseconds (10000));
+      if (++niter > 100)
+      {
+        ASSERT_TRUE (false);
+        return;
+      }
     }
     tiff_clouds.push_back (cloud_buffer);
     signal_received = false;
@@ -224,9 +242,15 @@ TEST (PCL, ImageGrabberSetIntrinsicsPCLZF)
   for (size_t i = 0; i < grabber.numFrames (); i++)
   {
     grabber.trigger ();
+    size_t niter = 0;
     while (!signal_received)
     {
       boost::this_thread::sleep (boost::posix_time::microseconds (10000));
+      if (++niter > 100)
+      {
+        ASSERT_TRUE (false);
+        return;
+      }
     }
     pclzf_clouds.push_back (cloud_buffer);
     signal_received = false;
