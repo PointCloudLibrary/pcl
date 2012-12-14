@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rgb>
+	<focal_length_x>525</focal_length_x>
+	<focal_length_y>525</focal_length_y>
+	<principal_point_x>320</principal_point_x>
+	<principal_point_y>240</principal_point_y>
+</rgb>
+<depth>
+	<focal_length_x>525</focal_length_x>
+	<focal_length_y>525</focal_length_y>
+	<principal_point_x>320</principal_point_x>
+	<principal_point_y>240</principal_point_y>
+	<z_multiplication_factor>0.001</z_multiplication_factor>
+</depth>
