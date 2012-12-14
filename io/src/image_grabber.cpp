@@ -88,6 +88,10 @@ struct pcl::ImageGrabberBase::ImageGrabberImpl
   bool
   isValidExtension (const std::string &extension);
 
+  //! Convenience function to rewind to the last frame
+  void
+  rewindOnce ();
+
   //! Checks if a timestamp is given in the filename
   //! And returns if so
   bool
@@ -611,6 +615,31 @@ pcl::ImageGrabberBase::ImageGrabberImpl::isValidExtension (const std::string &ex
   return (valid);
 }
   
+void
+pcl::ImageGrabberBase::ImageGrabberImpl::rewindOnce ()
+{
+  if (depth_image_files_.size () > 0 && 
+      depth_image_iterator_ != depth_image_files_.begin ())
+  {
+    depth_image_iterator_ --;
+  }
+  if (rgb_image_files_.size () > 0 && 
+      rgb_image_iterator_ != rgb_image_files_.begin ())
+  {
+    rgb_image_iterator_ --;
+  }
+  if (depth_pclzf_files_.size () > 0 && 
+      depth_pclzf_iterator_ != depth_pclzf_files_.begin ())
+  {
+    depth_pclzf_iterator_ --;
+  }
+  if (rgb_pclzf_files_.size () > 0 && 
+      rgb_pclzf_iterator_ != rgb_pclzf_files_.begin ())
+  {
+    rgb_pclzf_iterator_ --;
+  }
+}
+  
 //////////////////////////////////////////////////////////////////////////
 bool
 pcl::ImageGrabberBase::ImageGrabberImpl::getTimestampFromFilepath (
@@ -721,7 +750,7 @@ pcl::ImageGrabberBase::start ()
     impl_->running_ = true;
     impl_->time_trigger_.start ();
   }
-  else // manual trigger
+  else // manual trigger to preload the first cloud
     impl_->trigger ();
 }
 
@@ -801,6 +830,12 @@ pcl::ImageGrabberBase::setCameraIntrinsics (const double focal_length_x,
   impl_->principal_point_x_ = principal_point_x;
   impl_->principal_point_y_ = principal_point_y;
   impl_->manual_intrinsics_ = true;
+  // If we've already preloaded a valid cloud, we need to recompute it
+  if (impl_->valid_)
+  {
+    impl_->rewindOnce ();
+    impl_->loadNextCloud ();
+  }
 }
 
 void
