@@ -69,7 +69,7 @@ TEST (PCL, ImageGrabberTIFF)
       else
         EXPECT_FLOAT_EQ (pcd_pt.y, tiff_pt.y);
       if (pcl_isnan (pcd_pt.z))
-        EXPECT_TRUE (pcl_isnan (tiff_pt.x));
+        EXPECT_TRUE (pcl_isnan (tiff_pt.z));
       else
         EXPECT_FLOAT_EQ (pcd_pt.z, tiff_pt.z);
       EXPECT_EQ (pcd_pt.r, tiff_pt.r);
@@ -119,13 +119,144 @@ TEST (PCL, ImageGrabberPCLZF)
       else
         EXPECT_FLOAT_EQ (pcd_pt.y, pclzf_pt.y);
       if (pcl_isnan (pcd_pt.z))
-        EXPECT_TRUE (pcl_isnan (pclzf_pt.x));
+        EXPECT_TRUE (pcl_isnan (pclzf_pt.z));
       else
         EXPECT_FLOAT_EQ (pcd_pt.z, pclzf_pt.z);
       EXPECT_EQ (pcd_pt.r, pclzf_pt.r);
       EXPECT_EQ (pcd_pt.g, pclzf_pt.g);
       EXPECT_EQ (pcd_pt.b, pclzf_pt.b);
       EXPECT_EQ (pcd_pt.a, pclzf_pt.a);
+    }
+  }
+}
+
+TEST (PCL, ImageGrabberSetIntrinsicsTIFF)
+{
+  pcl::ImageGrabber<PointT> grabber (tiff_dir_, 0, false, false);
+
+  // Get all clouds from the grabber
+  vector <CloudT::ConstPtr> tiff_clouds;
+  CloudT::ConstPtr cloud_buffer;
+  bool signal_received = false;
+  boost::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> 
+    fxn = boost::bind (cloud_callback, &signal_received, &cloud_buffer, _1);
+  grabber.registerCallback (fxn);
+  grabber.start ();
+  // Change the camera parameters
+  double fx_multiplier = 1.2;
+  double fy_multiplier = 0.5;
+  double cx_multiplier = 0.8;
+  double cy_multiplier = 1.3;
+  double fx_old, fy_old, cx_old, cy_old;
+  grabber.getCameraIntrinsics (fx_old, fy_old, cx_old, cy_old);
+  double fx_new = fx_multiplier * fx_old;
+  double fy_new = fy_multiplier * fy_old;
+  double cx_new = cx_multiplier * cx_old;
+  double cy_new = cy_multiplier * cy_old;
+  grabber.setCameraIntrinsics (fx_new, fy_new, cx_new, cy_new);
+  // Collect the clouds
+  for (size_t i = 0; i < grabber.numFrames (); i++)
+  {
+    grabber.trigger ();
+    while (!signal_received)
+    {
+      boost::this_thread::sleep (boost::posix_time::microseconds (10000));
+    }
+    tiff_clouds.push_back (cloud_buffer);
+    signal_received = false;
+  }
+
+  // Make sure they match
+  EXPECT_EQ (pcds_.size (), tiff_clouds.size ());
+  for (size_t i = 0; i < pcds_.size (); i++)
+  {
+    EXPECT_EQ (pcds_[i]->width, tiff_clouds[i]->width);
+    EXPECT_EQ (pcds_[i]->height, tiff_clouds[i]->height);
+    for (int x = 0; x < pcds_[i]->width; x++)
+    {
+      for (int y = 0; y < pcds_[i]->height; y++)
+      {
+        const PointT &pcd_pt = pcds_[i]->operator()(x,y);
+        const PointT &tiff_pt = tiff_clouds[i]->operator()(x,y);
+        if (pcl_isnan (pcd_pt.x))
+          EXPECT_TRUE (pcl_isnan (tiff_pt.x));
+        else
+          EXPECT_NEAR ( pcd_pt.x * (x-cx_new), tiff_pt.x * fx_multiplier * (x-cx_old), 1E-4);
+        if (pcl_isnan (pcd_pt.y))
+          EXPECT_TRUE (pcl_isnan (tiff_pt.y));
+        else
+          EXPECT_NEAR ( pcd_pt.y * (y-cy_new), tiff_pt.y * fy_multiplier * (y-cy_old), 1E-4);
+        if (pcl_isnan (pcd_pt.z))
+          EXPECT_TRUE (pcl_isnan (tiff_pt.z));
+        else
+          EXPECT_FLOAT_EQ (pcd_pt.z, tiff_pt.z);
+      }
+    }
+  }
+
+}
+
+TEST (PCL, ImageGrabberSetIntrinsicsPCLZF)
+{
+  pcl::ImageGrabber<PointT> grabber (pclzf_dir_, 0, false, true);
+
+  // Get all clouds from the grabber
+  vector <CloudT::ConstPtr> pclzf_clouds;
+  CloudT::ConstPtr cloud_buffer;
+  bool signal_received = false;
+  boost::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> 
+    fxn = boost::bind (cloud_callback, &signal_received, &cloud_buffer, _1);
+  grabber.registerCallback (fxn);
+  grabber.start ();
+  // Change the camera parameters
+  double fx_multiplier = 1.2;
+  double fy_multiplier = 0.5;
+  double cx_multiplier = 0.8;
+  double cy_multiplier = 1.3;
+  double fx_old, fy_old, cx_old, cy_old;
+  grabber.getCameraIntrinsics (fx_old, fy_old, cx_old, cy_old);
+  double fx_new = fx_multiplier * fx_old;
+  double fy_new = fy_multiplier * fy_old;
+  double cx_new = cx_multiplier * cx_old;
+  double cy_new = cy_multiplier * cy_old;
+  grabber.setCameraIntrinsics (fx_new, fy_new, cx_new, cy_new);
+  // Collect the clouds
+  for (size_t i = 0; i < grabber.numFrames (); i++)
+  {
+    grabber.trigger ();
+    while (!signal_received)
+    {
+      boost::this_thread::sleep (boost::posix_time::microseconds (10000));
+    }
+    pclzf_clouds.push_back (cloud_buffer);
+    signal_received = false;
+  }
+
+  // Make sure they match
+  EXPECT_EQ (pcds_.size (), pclzf_clouds.size ());
+  for (size_t i = 0; i < pcds_.size (); i++)
+  {
+    EXPECT_EQ (pcds_[i]->width, pclzf_clouds[i]->width);
+    EXPECT_EQ (pcds_[i]->height, pclzf_clouds[i]->height);
+    for (int x = 0; x < pcds_[i]->width; x++)
+    {
+      for (int y = 0; y < pcds_[i]->height; y++)
+      {
+        const PointT &pcd_pt = pcds_[i]->operator()(x,y);
+        const PointT &pclzf_pt = pclzf_clouds[i]->operator()(x,y);
+        if (pcl_isnan (pcd_pt.x))
+          EXPECT_TRUE (pcl_isnan (pclzf_pt.x));
+        else
+          EXPECT_NEAR ( pcd_pt.x * (x-cx_new), pclzf_pt.x * fx_multiplier * (x-cx_old), 1E-4);
+        if (pcl_isnan (pcd_pt.y))
+          EXPECT_TRUE (pcl_isnan (pclzf_pt.y));
+        else
+          EXPECT_NEAR ( pcd_pt.y * (y-cy_new), pclzf_pt.y * fy_multiplier * (y-cy_old), 1E-4);
+        if (pcl_isnan (pcd_pt.z))
+          EXPECT_TRUE (pcl_isnan (pclzf_pt.z));
+        else
+          EXPECT_FLOAT_EQ (pcd_pt.z, pclzf_pt.z);
+      }
     }
   }
 }

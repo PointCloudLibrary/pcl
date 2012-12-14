@@ -77,9 +77,9 @@ pcl::io::LZFDepth16ImageReader::read (
   register int depth_idx = 0, point_idx = 0;
   double constant_x = 1.0 / parameters_.focal_length_x,
          constant_y = 1.0 / parameters_.focal_length_y;
-  for (int v = static_cast<int> (-parameters_.principal_point_y); v < static_cast<int> (parameters_.principal_point_y); ++v)
+  for (int v = 0; v < cloud.height; ++v)
   {
-    for (register int u = static_cast<int> (-parameters_.principal_point_x); u < static_cast<int> (parameters_.principal_point_x); ++u, ++point_idx, depth_idx += 2)
+    for (register int u = 0; u < cloud.width; ++u, ++point_idx, depth_idx += 2)
     {
       PointT &pt = cloud.points[point_idx];
       unsigned short val;
@@ -92,8 +92,10 @@ pcl::io::LZFDepth16ImageReader::read (
       }
 
       pt.z = static_cast<float> (val * z_multiplication_factor_);
-      pt.x = static_cast<float> (u) * pt.z * static_cast<float> (constant_x);
-      pt.y = static_cast<float> (v) * pt.z * static_cast<float> (constant_y);
+      pt.x = (static_cast<float> (u) - static_cast<float> (parameters_.principal_point_x)) 
+        * pt.z * static_cast<float> (constant_x);
+      pt.y = (static_cast<float> (v) - static_cast<float> (parameters_.principal_point_y)) 
+        * pt.z * static_cast<float> (constant_y);
     }
   }
   cloud.sensor_origin_.setZero ();
