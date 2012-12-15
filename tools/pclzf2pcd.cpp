@@ -83,8 +83,27 @@ loadPCLZF (const std::string &filename_rgb,
   return (true);
 }
 
-void
-saveCloud (const std::string &filename, const pcl::PointCloud<pcl::PointXYZRGBA> &cloud)
+bool
+loadPCLZF (const std::string &filename_depth,
+           const std::string &filename_params,
+           pcl::PointCloud<pcl::PointXYZ> &cloud)
+{
+  TicToc tt;
+  print_highlight ("Loading "); print_value ("%s ", filename_depth.c_str ());
+  tt.tic ();
+
+  pcl::io::LZFDepth16ImageReader depth;
+  depth.readParameters (filename_params);
+  depth.read (filename_depth, cloud);
+
+  print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", cloud.width * cloud.height); print_info (" points]\n");
+  print_info ("Available dimensions: "); print_value ("%s\n", pcl::getFieldsList (cloud).c_str ());
+
+  return (true);
+}
+
+template <typename T> void
+saveCloud (const std::string &filename, const pcl::PointCloud<T> &cloud)
 {
   TicToc tt;
   tt.tic ();
@@ -118,20 +137,34 @@ main (int argc, char** argv)
   std::vector<int> pcd_file_indices = parse_file_extension_argument (argc, argv, ".pcd");
   std::vector<int> pclzf_file_indices = parse_file_extension_argument (argc, argv, ".pclzf");
   std::vector<int> xml_file_indices = parse_file_extension_argument (argc, argv, ".xml");
-  if (pcd_file_indices.size () != 1 || pclzf_file_indices.size () != 2 || xml_file_indices.size () != 1)
+  if (pcd_file_indices.size () != 1 || pclzf_file_indices.size () < 1 || xml_file_indices.size () != 1)
   {
-    print_error ("Need two input PCLZF files, one input XML file, and one output PCD file.\n");
+    print_error ("Need at least 1 input PCLZF file, one input XML file, and one output PCD file.\n");
     return (-1);
   }
 
-  std::string filename_rgb (argv[pclzf_file_indices[1]]), filename_depth (argv[pclzf_file_indices[0]]);
+  std::string filename_depth (argv[pclzf_file_indices[0]]);
+  if (pclzf_file_indices.size () > 1)
+  {
+    std::string filename_rgb (argv[pclzf_file_indices[1]]);
 
-  // Load the data
-  pcl::PointCloud<pcl::PointXYZRGBA> cloud;
-  if (!loadPCLZF (filename_rgb, filename_depth, argv[xml_file_indices[0]], cloud)) 
-    return (-1);
+    // Load the data
+    pcl::PointCloud<pcl::PointXYZRGBA> cloud;
+    if (!loadPCLZF (filename_rgb, filename_depth, argv[xml_file_indices[0]], cloud)) 
+      return (-1);
 
-  // Convert to PCD and save
-  saveCloud (argv[pcd_file_indices[0]], cloud);
+    // Convert to PCD and save
+    saveCloud (argv[pcd_file_indices[0]], cloud);
+  }
+  else
+  {
+    // Load the data
+    pcl::PointCloud<pcl::PointXYZ> cloud;
+    if (!loadPCLZF (filename_depth, argv[xml_file_indices[0]], cloud)) 
+      return (-1);
+
+    // Convert to PCD and save
+    saveCloud (argv[pcd_file_indices[0]], cloud);
+  }
 }
 
