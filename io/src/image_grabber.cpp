@@ -128,6 +128,7 @@ struct pcl::ImageGrabberBase::ImageGrabberImpl
   pcl::PointCloud<pcl::PointXYZRGBA> next_cloud_color_;
   Eigen::Vector4f origin_;
   Eigen::Quaternionf orientation_;
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   bool valid_;
   //! Flag to say if a user set the focal length by hand
   //  (so we don't attempt to adjust for QVGA, QQVGA, etc).
