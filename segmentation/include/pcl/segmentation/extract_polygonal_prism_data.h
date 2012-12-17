@@ -76,6 +76,25 @@ namespace pcl
     * An example of its usage is to extract the data lying within a set of 3D
     * boundaries (e.g., objects supported by a plane).
     *
+    * Example usage:
+    * \code{.cpp}
+    * double z_min = 0., z_max = 0.05; // we want the points above the plane, no farther than 5 cm from the surface
+    * pcl::PointCloud<pcl::PointXYZ>::Ptr hull_points (new pcl::PointCloud<pcl::PointXYZ> ());
+    * pcl::ConvexHull<pcl::PointXYZ> hull;
+    * // hull.setDimension (2); // not necessarily needed, but we need to check the dimensionality of the output
+    * hull.setInputCloud (cloud);
+    * hull.reconstruct (hull_points);
+    * if (hull.getDimension () == 2)
+    * {
+    *   pcl::ExtractPolygonalPrismData<pcl::PointXYZ> prism;
+    *   prism.setInputCloud (point_cloud);
+    *   prism.setInputPlanarHull (hull_points);
+    *   prism.setHeightLimits (z_min, z_max);
+    *   prism_.segment (cloud_indices);
+    * }
+    * else
+    *  PCL_ERROR ("The input cloud does not represent a planar surface.\n");
+    * \endcode
     * \author Radu Bogdan Rusu
     * \ingroup segmentation
     */
@@ -102,6 +121,7 @@ namespace pcl
       {};
 
       /** \brief Provide a pointer to the input planar hull dataset.
+        * \note Please see the example in the class description for how to obtain this.
         * \param[in] hull the input planar hull dataset
         */
       inline void 
