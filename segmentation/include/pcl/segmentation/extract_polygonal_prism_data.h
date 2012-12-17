@@ -90,7 +90,7 @@ namespace pcl
     *   prism.setInputCloud (point_cloud);
     *   prism.setInputPlanarHull (hull_points);
     *   prism.setHeightLimits (z_min, z_max);
-    *   prism_.segment (cloud_indices);
+    *   prism.segment (cloud_indices);
     * }
     * else
     *  PCL_ERROR ("The input cloud does not represent a planar surface.\n");
