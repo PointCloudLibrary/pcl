@@ -545,44 +545,6 @@ pcl::BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::compute (
     }
   }
 
- // cv::Mat image (height, width, CV_8U);
- // for (size_t row_index = 0; row_index < height; ++row_index)
- // {
- //   for (size_t col_index = 0; col_index < width; ++col_index)
- //   {
- //     image.at<unsigned char> (row_index, col_index) = image_data[row_index*width + col_index];
- //   }
- // }
-
-
-	//cv::Mat _integral; // the integral image
-	//cv::integral(image, _integral);
-
- // for (size_t row_index = 0; row_index < height+1; ++row_index)
- // {
- //   for (size_t col_index = 0; col_index < width+1; ++col_index)
- //   {
- //     integral[row_index*(width+1)+col_index] = _integral.at<int> (row_index, col_index);;
- //   }
- // }
-
-  // std::cerr << "size of _integral: " << _integral.cols << " x " << _integral.rows << std::endl;
-
-  //for (size_t row_index = 0; row_index < height; ++row_index)
-  //{
-  //  for (size_t col_index = 0; col_index < width; ++col_index)
-  //  {
-  //    const int ref_ii = _integral.at<int> (row_index, col_index);
-  //    const int pcl_ii = integral[row_index*(width+1)+col_index];
-  //    const int image_val = image_data[row_index*width+col_index];
-
-  //    if (ref_ii != pcl_ii)
-  //    {
-  //      std::cerr << col_index << "," << row_index << ": " << ref_ii << " - " << pcl_ii << " -- " << image_val << std::endl;
-  //    }
-  //  }
-  //}
-
   int* values = new int[points_]; // for temporary use
 
   // resize the descriptors:
