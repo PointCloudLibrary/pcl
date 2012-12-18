@@ -138,7 +138,7 @@ namespace pcl
        * \param polydata vtkPolyData object
        */
       void
-      addModelFromPolyData (vtkSmartPointer<vtkPolyData> polydata)
+      addModelFromPolyData (vtkSmartPointer<vtkPolyData> &polydata)
       {
         polydata_ = polydata;
       }
