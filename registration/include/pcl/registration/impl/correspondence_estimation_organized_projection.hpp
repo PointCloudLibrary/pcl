@@ -95,8 +95,8 @@ pcl::registration::CorrespondenceEstimationOrganizedProjection<PointSource, Poin
       int u = static_cast<int> (uv[0] / uv[2]);
       int v = static_cast<int> (uv[1] / uv[2]);
 
-      if (u >= 0 && u < int (target_->width) &&
-          v >= 0 && v < int (target_->height) &&
+      if (u >= 0 && u < static_cast<int> (target_->width) &&
+          v >= 0 && v < static_cast<int> (target_->height) &&
           isFinite ((*target_) (u, v)))
       {
         /// Check if the depth difference is larger than the threshold
