@@ -74,6 +74,7 @@ printHelp (int, char **argv)
   print_value ("%f", default_std_dev_mul); print_info (")\n");
   print_info ("                     -inliers X = (StatisticalOutlierRemoval only) decides whether the inliers should be returned (1), or the outliers (0). (default: ");
   print_value ("%d", default_negative); print_info (")\n");
+  print_info ("                     -keep_organized");
 }
 
 bool
@@ -95,16 +96,17 @@ void
 compute (const sensor_msgs::PointCloud2::ConstPtr &input, sensor_msgs::PointCloud2 &output,
          std::string method,
          int min_pts, double radius,
-         int mean_k, double std_dev_mul, bool negative)
+         int mean_k, double std_dev_mul, bool negative, bool keep_organized)
 {
 
   PointCloud<PointXYZ>::Ptr xyz_cloud_pre (new pcl::PointCloud<PointXYZ> ()),
       xyz_cloud (new pcl::PointCloud<PointXYZ> ());
   fromROSMsg (*input, *xyz_cloud_pre);
   
-  std::vector<int> index_vector;
-  removeNaNFromPointCloud<PointXYZ> (*xyz_cloud_pre, *xyz_cloud, index_vector);
+  //std::vector<int> index_vector;
+  //removeNaNFromPointCloud<PointXYZ> (*xyz_cloud_pre, *xyz_cloud, index_vector);
 
+  xyz_cloud = xyz_cloud_pre;
       
   TicToc tt;
   tt.tic ();
@@ -116,6 +118,7 @@ compute (const sensor_msgs::PointCloud2::ConstPtr &input, sensor_msgs::PointClou
     filter.setMeanK (mean_k);
     filter.setStddevMulThresh (std_dev_mul);
     filter.setNegative (negative);
+    filter.setKeepOrganized (keep_organized);
     PCL_INFO ("Computing filtered cloud with mean_k %d, std_dev_mul %f, inliers %d\n", filter.getMeanK (), filter.getStddevMulThresh (), filter.getNegative ());
     filter.filter (*xyz_cloud_filtered);
   }
@@ -125,6 +128,7 @@ compute (const sensor_msgs::PointCloud2::ConstPtr &input, sensor_msgs::PointClou
     filter.setInputCloud (xyz_cloud);
     filter.setRadiusSearch (radius);
     filter.setMinNeighborsInRadius (min_pts);
+    filter.setKeepOrganized (keep_organized);
     PCL_INFO ("Computing filtered cloud with radius %f, min_pts %d\n", radius, min_pts);
     filter.filter (*xyz_cloud_filtered);
   }
@@ -189,6 +193,7 @@ main (int argc, char** argv)
   parse_argument (argc, argv, "-mean_k", mean_k);
   parse_argument (argc, argv, "-std_dev_mul", std_dev_mul);
   parse_argument (argc, argv, "-inliers", negative);
+  bool keep_organized = find_switch (argc, argv, "-keep_organized");
   
   
 
@@ -199,7 +204,7 @@ main (int argc, char** argv)
 
   // Do the smoothing
   sensor_msgs::PointCloud2 output;
-  compute (cloud, output, method, min_pts, radius, mean_k, std_dev_mul, negative);
+  compute (cloud, output, method, min_pts, radius, mean_k, std_dev_mul, negative, keep_organized);
 
   // Save into the second file
   saveCloud (argv[p_file_indices[1]], output);
