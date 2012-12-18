@@ -106,18 +106,10 @@ pcl::keypoints::brisk::ScaleSpace::getKeypoints (
     // call OAST16_9 without nms
     pcl::keypoints::brisk::Layer& l = pyramid_[i];
     l.getAgastPoints (safe_threshold_, agast_points[i]);
-
-#ifdef PCL_BRISK_DEBUG_OUTPUT
-    std::cerr << "pcl_layer " << i << ": " << agast_points[i].size () << std::endl;
-#endif
   }
 
   if (layers_ == 1)
   {
-#ifdef PCL_BRISK_DEBUG_OUTPUT
-    std::cerr << "layers_ == 1" << std::endl;
-#endif
-
     // just do a simple 2d subpixel refinement...
     const int num = int (agast_points[0].size ());
     for (int n = 0; n < num; n++)
@@ -153,26 +145,14 @@ pcl::keypoints::brisk::ScaleSpace::getKeypoints (
   float x, y, scale, score;
   for (uint8_t i = 0; i < layers_; i++)
   {
-#ifdef PCL_BRISK_DEBUG_OUTPUT
-    std::cerr << "layer: " << static_cast<int> (i) << std::endl;
-#endif
-
     pcl::keypoints::brisk::Layer& l = pyramid_[i];
     const int num = int (agast_points[i].size ());
     
     if (i == layers_ - 1)
     {
-#ifdef PCL_BRISK_DEBUG_OUTPUT
-      std::cerr << "i==layers_-1" << std::endl;
-#endif
-
       for (int n = 0; n < num; n++)
       {
         const pcl::PointUV& point = agast_points.at (i)[n];
-
-#ifdef PCL_BRISK_DEBUG_OUTPUT
-        std::cerr << (point.u) << ", " << (point.v) << " - "  << int (point.u) << ", " << int (point.v) << " - " << threshold_ << std::endl;
-#endif
 
         // consider only 2D maxima...
         if (!isMax2D (i, int (point.u), int (point.v)))
@@ -202,10 +182,6 @@ pcl::keypoints::brisk::ScaleSpace::getKeypoints (
                                 s_2_0, s_2_1, s_2_2,
                                 delta_x, delta_y);
 
-#ifdef PCL_BRISK_DEBUG_OUTPUT
-        std::cerr << keypoints.size () << ": " << (point.u + delta_x) * l.getScale () + l.getOffset () << ", " << (point.v + delta_y) * l.getScale () + l.getOffset () << " - " << basic_size_ * l.getScale () << " - " << max << " - " << i << std::endl;
-#endif
-
         // store:
         keypoints.push_back (pcl::PointWithScale ((point.u + delta_x) * l.getScale () + l.getOffset (),     // x
                                                   (point.v + delta_y) * l.getScale () + l.getOffset (),     // y
@@ -223,16 +199,9 @@ pcl::keypoints::brisk::ScaleSpace::getKeypoints (
       {
         const pcl::PointUV& point = agast_points.at (i)[n];
 
-#ifdef PCL_BRISK_DEBUG_OUTPUT
-        std::cerr << (point.u) << ", " << (point.v) << " - "  << int (point.u) << ", " << int (point.v) << " - " << float (threshold_);// << std::endl;
-#endif
-
         // first check if it is a maximum:
         if (!isMax2D (i, int (point.u), int (point.v)))
         {
-#ifdef PCL_BRISK_DEBUG_OUTPUT
-          std::cerr << std::endl;
-#endif
           continue;
         }
 
@@ -240,28 +209,16 @@ pcl::keypoints::brisk::ScaleSpace::getKeypoints (
         bool ismax;
         score = refine3D (i, int (point.u), int (point.v), x, y, scale, ismax);
 
-#ifdef PCL_BRISK_DEBUG_OUTPUT
-        std::cerr << " .. " << score << std::endl;
-#endif
-
         if (!ismax)
           continue;
 
         // finally store the detected keypoint:
         if (score > float (threshold_))
         {
-#ifdef PCL_BRISK_DEBUG_OUTPUT
-          std::cerr << keypoints.size () << ": " << x << ", " << y << " - " << basic_size_ * scale << " - " << score << " - " << i << std::endl;
-#endif
-
           keypoints.push_back (pcl::PointWithScale (x, y, 0.0f, basic_size_ * scale, -1, score, i));
         }
       }
     }
-
-#ifdef PCL_BRISK_DEBUG_OUTPUT
-    std::cerr << "2) pcl_layer " << i << ": " << keypoints.size () << std::endl;
-#endif
   }
 }
 
@@ -542,17 +499,6 @@ pcl::keypoints::brisk::ScaleSpace::refine3D (
                                       center, ismax,
                                       delta_x_above, delta_y_above);
 
-#ifdef PCL_BRISK_DEBUG_OUTPUT
-  std::cerr << "getScoreMaxAbove: " 
-    << static_cast<int> (layer) << ", " 
-    << x_layer << ", " 
-    << y_layer << ", " 
-    << center << ", " 
-    << ismax << ", "
-    << delta_x_above << ", "
-    << delta_y_above << std::endl;
-#endif
-
   if (!ismax) return (0.0);
 
   float max; // to be returned
@@ -747,11 +693,6 @@ pcl::keypoints::brisk::ScaleSpace::getScoreMaxAbove (
     y1  = float (6 * (y_layer) - 1 + 3) / 8.0f;
   }
 
-#ifdef PCL_BRISK_DEBUG_OUTPUT
-  std::cerr << "threshold: " << threshold << std::endl;
-  std::cerr << x_1 << ", " << x1 << ", " << y_1 << ", " << y1 << std::endl;
-#endif
-
   // check the first row
   //int max_x = int (x_1) + 1;
   //int max_y = int (y_1) + 1;
@@ -760,19 +701,11 @@ pcl::keypoints::brisk::ScaleSpace::getScoreMaxAbove (
   float tmp_max = 0;
   float max = layer_above.getAgastScore (x_1, y_1, 1,1.0f);
 
-#ifdef PCL_BRISK_DEBUG_OUTPUT
-  std::cerr << "max: " << tmp_max << ", " << max << "; " << max_x << ", " << max_y << std::endl;
-#endif
-
   if (max > threshold) return (0);
   //for (int x = int (x_1) + 1; x <= int (x1); x++)
   for (int x = x_1 + 1; x <= int (x1); x++)
   {
     tmp_max = layer_above.getAgastScore (float (x), y_1, 1,1.0f);
-
-#ifdef PCL_BRISK_DEBUG_OUTPUT
-    std::cerr << "max: " << tmp_max << ", " << max << "; " << max_x << ", " << max_y << std::endl;
-#endif
 
     if (tmp_max > threshold) return (0);
     if (tmp_max > max)
@@ -783,10 +716,6 @@ pcl::keypoints::brisk::ScaleSpace::getScoreMaxAbove (
   }
   tmp_max = layer_above.getAgastScore (x1, y_1, 1,1.0f);
   
-#ifdef PCL_BRISK_DEBUG_OUTPUT
-  std::cerr << "max: " << tmp_max << ", " << max << "; " << max_x << ", " << max_y << std::endl;
-#endif
-
   if (tmp_max > threshold) return (0);
   if (tmp_max > max)
   {
@@ -799,10 +728,6 @@ pcl::keypoints::brisk::ScaleSpace::getScoreMaxAbove (
   {
     tmp_max = layer_above.getAgastScore (x_1, float (y), 1);
     
-#ifdef PCL_BRISK_DEBUG_OUTPUT
-    std::cerr << "max: " << tmp_max << ", " << max << std::endl;
-#endif
-
     if (tmp_max > threshold) return (0);
     if (tmp_max > max)
     {
@@ -814,10 +739,6 @@ pcl::keypoints::brisk::ScaleSpace::getScoreMaxAbove (
     {
       tmp_max = layer_above.getAgastScore (x, y, 1);
 
-#ifdef PCL_BRISK_DEBUG_OUTPUT
-      std::cerr << "max: " << tmp_max << ", " << max << std::endl;
-#endif
-
       if (tmp_max > threshold) return (0);
       if (tmp_max > max)
       {
@@ -827,10 +748,6 @@ pcl::keypoints::brisk::ScaleSpace::getScoreMaxAbove (
       }
     }
     tmp_max = layer_above.getAgastScore(x1,float(y),1);
-
-#ifdef PCL_BRISK_DEBUG_OUTPUT
-    std::cerr << "max: " << tmp_max << ", " << max << std::endl;
-#endif
 
     if (tmp_max > threshold) return 0;
     if (tmp_max > max)
@@ -844,10 +761,6 @@ pcl::keypoints::brisk::ScaleSpace::getScoreMaxAbove (
   // bottom row
   tmp_max = layer_above.getAgastScore (x_1, y1, 1);
 
-#ifdef PCL_BRISK_DEBUG_OUTPUT
-  std::cerr << "max: " << tmp_max << ", " << max << std::endl;
-#endif
-
   if (tmp_max > max)
   {
     max   = tmp_max;
@@ -858,10 +771,6 @@ pcl::keypoints::brisk::ScaleSpace::getScoreMaxAbove (
   {
     tmp_max = layer_above.getAgastScore (float (x), y1, 1);
 
-#ifdef PCL_BRISK_DEBUG_OUTPUT
-    std::cerr << "max: " << tmp_max << ", " << max << std::endl;
-#endif
-
     if (tmp_max > max)
     {
       max   = tmp_max;
@@ -870,10 +779,6 @@ pcl::keypoints::brisk::ScaleSpace::getScoreMaxAbove (
     }
   }
   tmp_max = layer_above.getAgastScore (x1, y1, 1);
-
-#ifdef PCL_BRISK_DEBUG_OUTPUT
-  std::cerr << "max: " << tmp_max << ", " << max << std::endl;
-#endif
 
   if (tmp_max > max)
   {
@@ -1466,32 +1371,20 @@ pcl::keypoints::brisk::Layer::getAgastScore (int x, int y, uint8_t threshold)
 {
   if (x < 3 || y < 3) 
   {
-#ifdef PCL_BRISK_DEBUG_OUTPUT
-    std::cerr << "getAgastScore: " << x << ", " << y << " = " << 0 << std::endl;
-#endif
     return (0);
   }
   if (x >= img_width_ - 3 || y >= img_height_ - 3) 
   {
-#ifdef PCL_BRISK_DEBUG_OUTPUT
-    std::cerr << "getAgastScore: " << x << ", " << y << " = " << 0 << std::endl;
-#endif
     return (0);
   }
   uint8_t& score = *(&scores_[0] + x + y * img_width_);
   if (score > 2) 
   {
-#ifdef PCL_BRISK_DEBUG_OUTPUT
-    std::cerr << "getAgastScore: " << x << ", " << y << " = " << static_cast<int> (score) << std::endl;
-#endif
     return (score);
   }
   oast_detector_->setThreshold (threshold - 1);
   score = uint8_t (oast_detector_->computeCornerScore (&img_[0] + x + y * img_width_));
   if (score < threshold) score = 0;
-#ifdef PCL_BRISK_DEBUG_OUTPUT
-  std::cerr << "getAgastScore: " << x << ", " << y << " = " << static_cast<int> (score) << std::endl;
-#endif
   return (score);
 }
 
@@ -1501,26 +1394,17 @@ pcl::keypoints::brisk::Layer::getAgastScore_5_8 (int x, int y, uint8_t threshold
 {
   if (x < 2 || y < 2)
   {
-#ifdef PCL_BRISK_DEBUG_OUTPUT
-    std::cerr << "getAgaastScore_5_8: " << x << ", " << y << " - " << static_cast<int> (threshold) << ": " << 0 << std::endl;
-#endif
     return 0;
   }
 
   if (x >= img_width_ - 2 || y >= img_height_ - 2) 
   {
-#ifdef PCL_BRISK_DEBUG_OUTPUT
-    std::cerr << "getAgaastScore_5_8: " << x << ", " << y << " - " << static_cast<int> (threshold) << ": " << 0 << std::endl;
-#endif
     return 0;
   }
 
   agast_detector_5_8_->setThreshold (threshold - 1);
   uint8_t score = uint8_t (agast_detector_5_8_->computeCornerScore (&img_[0] + x + y * img_width_));
   if (score < threshold) score = 0;
-#ifdef PCL_BRISK_DEBUG_OUTPUT
-  std::cerr << "getAgaastScore_5_8: " << x << ", " << y << " - " << static_cast<int> (threshold) << ": " << static_cast<int> (score) << std::endl;
-#endif
   return (score);
 }
 
@@ -1543,9 +1427,6 @@ pcl::keypoints::brisk::Layer::getAgastScore (float xf, float yf, uint8_t thresho
             rx  * ry1 * getAgastScore (x,     y + 1, threshold)+
             rx1 * ry1 * getAgastScore (x + 1, y + 1, threshold);
 
-#ifdef PCL_BRISK_DEBUG_OUTPUT
-    std::cerr << "getAgastScore_interp: " << xf << ", " << yf << "; " << x << ", " << y << "; " << rx << " - " << rx1 << ", " << ry << " - " << ry1 << ": " << value << std::endl;
-#endif
 
     return (static_cast<uint8_t> (value));
   }
