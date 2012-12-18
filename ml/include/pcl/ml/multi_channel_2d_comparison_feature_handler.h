@@ -279,6 +279,9 @@ namespace pcl
       else
         scale = static_cast<float> (data_set (example.data_set_id, center_col_index, center_row_index)[SCALE_CHANNEL]);
 
+
+
+
       const size_t p1_col = static_cast<size_t> (scale * feature.p1.x + center_col_index);
       const size_t p1_row = static_cast<size_t> (scale * feature.p1.y + center_row_index);
 

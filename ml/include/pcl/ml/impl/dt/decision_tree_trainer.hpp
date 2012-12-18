@@ -49,6 +49,7 @@ pcl::DecisionTreeTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType
   , data_set_ ()
   , label_data_ ()
   , examples_ ()
+  , decision_tree_trainer_data_provider_ ()
   , random_features_at_split_node_(false)
 {
   
@@ -77,8 +78,10 @@ pcl::DecisionTreeTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType
   NodeType root_node; 
   tree.setRoot (root_node);
 
-  if (decision_tree_trainer_data_provider_ != 0)
+  if (decision_tree_trainer_data_provider_)
   {
+    std::cerr << "use decision_tree_trainer_data_provider_" << std::endl;
+
     decision_tree_trainer_data_provider_->getDatasetAndLabels (data_set_, label_data_, examples_);
     trainDecisionTreeNode (features, examples_, label_data_, max_tree_depth_, tree.getRoot ());
     label_data_.clear ();
@@ -105,7 +108,7 @@ pcl::DecisionTreeTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType
   const size_t num_of_examples = examples.size ();
   if (num_of_examples == 0)
   {
-    PCL_ERROR ("Reached invalid point in decision tree training");
+    PCL_ERROR ("Reached invalid point in decision tree training: Number of examples is 0!");
     return;
   };
 
@@ -217,7 +220,7 @@ pcl::DecisionTreeTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType
                                             flags,
                                             best_feature_threshold,
                                             branch_indices);
- } 
+  } 
 
   stats_estimator_->computeAndSetNodeStats (data_set_, examples, label_data, node);
 

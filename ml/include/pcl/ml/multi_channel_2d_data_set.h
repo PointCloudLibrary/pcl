@@ -68,6 +68,16 @@ namespace pcl
         width_ = width;
         height_ = height;
       }
+
+      /** \brief Clears the internal data storage and sets width and height to 0.
+        */
+      void
+      clear ()
+      {
+        width_ = 0;
+        height_ = 0;
+        data_.clear ();
+      }
   
       /** \brief Returns a pointer to the internal data at the specified location.
         * \param[in] col_index The column index.
@@ -155,6 +165,13 @@ namespace pcl
         {
           delete data_set_[data_set_index];
         }
+      }
+
+      /** \brief Releases the data stored in the data set. */
+      void
+      clear ()
+      {
+        releaseDataSet ();
       }
 
       /** \brief Returns a pointer to the specified data block at the specified location.
