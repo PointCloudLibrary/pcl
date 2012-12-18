@@ -104,6 +104,8 @@ namespace pcl
       getNormals () const
       { return (input_normals_); }
 
+
+
       /** \brief Compute the condition number of the input point cloud. The condition number is the ratio between the
         * largest and smallest eigenvalues of the 6x6 covariance matrix of the cloud. The closer this number is to 1.0,
         * the more stable the cloud is for ICP registration.
@@ -111,6 +113,22 @@ namespace pcl
         */
       double
       computeConditionNumber ();
+
+      /** \brief Compute the condition number of the input point cloud. The condition number is the ratio between the
+        * largest and smallest eigenvalues of the 6x6 covariance matrix of the cloud. The closer this number is to 1.0,
+        * the more stable the cloud is for ICP registration.
+        * \param[in] covariance_matrix user given covariance matrix
+        * \return the condition number
+        */
+      static double
+      computeConditionNumber (const Eigen::Matrix<double, 6, 6> &covariance_matrix);
+
+      /** \brief Computes the covariance matrix of the input cloud.
+        * \param[out] covariance_matrix the computed covariance matrix.
+        * \return whether the computation succeeded or not
+        */
+      bool
+      computeCovarianceMatrix (Eigen::Matrix<double, 6, 6> &covariance_matrix);
 
     protected:
       /** \brief Number of indices that will be returned. */
