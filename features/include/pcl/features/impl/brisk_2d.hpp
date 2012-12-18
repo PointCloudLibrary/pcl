@@ -503,6 +503,7 @@ pcl::BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::compute (
 
     if (RoiPredicate (float (border), float (border), float (border_x), float (border_y), keypoints_->points[k]))
     {
+      std::cerr << "remove keypoint" << std::endl;
       keypoints_->points.erase (beginning + k);
       kscales.erase (beginningkscales + k);
       if (k == 0)
@@ -517,30 +518,70 @@ pcl::BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::compute (
 
   // first, calculate the integral image over the whole image:
   // current integral image
-  std::vector<int> integral (width*height, 0);    // the integral image
+  std::vector<int> integral ((width+1)*(height+1), 0);    // the integral image
   //integral (image, integral);
   //pcl::IntegralImage2D integral_image_2d (false);
   //integral_image_2d.setInputData (image_data, width, height, width, width);
   
-  for (size_t row_index = 1; row_index < height; ++row_index)
-    integral[row_index*width] = image_data[row_index*width] + integral[row_index*width-width];
+  //integral[0] = static_cast<int> (image_data[0]);
 
-  for (size_t col_index = 1; col_index < width; ++col_index)
-    integral[col_index] = image_data[col_index] + integral[col_index-1];
+  //for (size_t row_index = 1; row_index < height; ++row_index)
+  //  integral[row_index*width] = static_cast<int> (image_data[row_index*width]) + integral[(row_index-1)*width];
+
+  //for (size_t col_index = 1; col_index < width; ++col_index)
+  //  integral[col_index] = static_cast<int> (image_data[col_index]) + integral[col_index-1];
 
   for (size_t row_index = 1; row_index < height; ++row_index)
   {
     for (size_t col_index = 1; col_index < width; ++col_index)
     {
       const size_t index = row_index*width+col_index;
+      const size_t index2 = (row_index)*(width+1)+(col_index);
 
-      integral[index] = image_data[index]
-        - integral[index-1-width]
-        + integral[index-width]
-        + integral[index-1];
+      integral[index2] = static_cast<int> (image_data[index])
+        - integral[index2-1-(width+1)]
+        + integral[index2-(width+1)]
+        + integral[index2-1];
     }
   }
 
+ // cv::Mat image (height, width, CV_8U);
+ // for (size_t row_index = 0; row_index < height; ++row_index)
+ // {
+ //   for (size_t col_index = 0; col_index < width; ++col_index)
+ //   {
+ //     image.at<unsigned char> (row_index, col_index) = image_data[row_index*width + col_index];
+ //   }
+ // }
+
+
+	//cv::Mat _integral; // the integral image
+	//cv::integral(image, _integral);
+
+ // for (size_t row_index = 0; row_index < height+1; ++row_index)
+ // {
+ //   for (size_t col_index = 0; col_index < width+1; ++col_index)
+ //   {
+ //     integral[row_index*(width+1)+col_index] = _integral.at<int> (row_index, col_index);;
+ //   }
+ // }
+
+  // std::cerr << "size of _integral: " << _integral.cols << " x " << _integral.rows << std::endl;
+
+  //for (size_t row_index = 0; row_index < height; ++row_index)
+  //{
+  //  for (size_t col_index = 0; col_index < width; ++col_index)
+  //  {
+  //    const int ref_ii = _integral.at<int> (row_index, col_index);
+  //    const int pcl_ii = integral[row_index*(width+1)+col_index];
+  //    const int image_val = image_data[row_index*width+col_index];
+
+  //    if (ref_ii != pcl_ii)
+  //    {
+  //      std::cerr << col_index << "," << row_index << ": " << ref_ii << " - " << pcl_ii << " -- " << image_val << std::endl;
+  //    }
+  //  }
+  //}
 
   int* values = new int[points_]; // for temporary use
 
@@ -557,9 +598,13 @@ pcl::BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::compute (
   int direction0;
   int direction1;
 
-  unsigned char* ptr = &output.points[0].descriptor[0];
+  output.resize (ksize);
+  //output.width = ksize;
+  //output.height = 1;
   for (size_t k = 0; k < ksize; k++)
   {
+    unsigned char* ptr = &output.points[k].descriptor[0];
+
     int theta;
     KeypointT &kp    = keypoints_->points[k];
     const int& scale = kscales[k];
@@ -635,6 +680,7 @@ pcl::BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::compute (
 #ifdef _MSC_VER
       // Todo: find the equivalent to may_alias
       #define UCHAR_ALIAS uint32_t //__declspec(noalias)
+      #define UINT32_ALIAS uint32_t //__declspec(noalias)
 #endif
 
     // now iterate through all the pairings
@@ -660,11 +706,11 @@ pcl::BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::compute (
       }
     }
 
-    ptr += strings_;
+    //ptr += strings_;
  
-    // Account for the scale + orientation;
-    ptr += sizeof (output.points[0].scale);
-    ptr += sizeof (output.points[0].orientation);
+    //// Account for the scale + orientation;
+    //ptr += sizeof (output.points[0].scale);
+    //ptr += sizeof (output.points[0].orientation);
   }
 
   // we do not change the denseness
