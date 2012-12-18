@@ -183,7 +183,7 @@ namespace pcl
 
 
   /** \brief Feature utility class that handles the creation and evaluation of RGBD comparison features. */
-  template <class DATA_TYPE, size_t NUM_OF_CHANNELS, size_t SCALE_CHANNEL>
+  template <class DATA_TYPE, size_t NUM_OF_CHANNELS, size_t SCALE_CHANNEL, bool INVERT_SCALE>
   class PCL_EXPORTS ScaledMultiChannel2DComparisonFeatureHandler
     : public pcl::FeatureHandler<pcl::MultiChannel2DComparisonFeature<pcl::PointXY32f>, pcl::MultiChannel2DDataSet<DATA_TYPE, NUM_OF_CHANNELS>, pcl::MultipleData2DExampleIndex>
   {
@@ -273,7 +273,11 @@ namespace pcl
       const int center_col_index = example.x;
       const int center_row_index = example.y;
 
-      const float scale = static_cast<float> (data_set (example.data_set_id, center_col_index, center_row_index)[SCALE_CHANNEL]);
+      float scale;
+      if (INVERT_SCALE)
+        scale = 1.0f / static_cast<float> (data_set (example.data_set_id, center_col_index, center_row_index)[SCALE_CHANNEL]);
+      else
+        scale = static_cast<float> (data_set (example.data_set_id, center_col_index, center_row_index)[SCALE_CHANNEL]);
 
       const size_t p1_col = static_cast<size_t> (scale * feature.p1.x + center_col_index);
       const size_t p1_row = static_cast<size_t> (scale * feature.p1.y + center_row_index);
@@ -299,7 +303,13 @@ namespace pcl
       const MultiChannel2DComparisonFeature<PointXY32f> & feature,
       std::ostream & stream) const
     {
-      stream << "ERROR: RegressionVarianceStatsEstimator does not implement generateCodeForBranchIndex(...)";
+      stream << "ERROR: ScaledMultiChannel2DComparisonFeatureHandler does not implement generateCodeForBranchIndex(...)" << std::endl;
+
+      //pcl::PointXY32f p1 = feature.p1;
+      //pcl::PointXY32f p2 = feature.p2;
+
+      //stream << "const float eval_value = data_ptr + " << p1.x << " + " << p1.y << " * width;
+
       //stream << "const float value = ( (*dataSet)(dataSetId, centerY+" << feature.p1.y << ", centerX+" << feature.p1.x << ")[" << static_cast<int>(feature.colorChannel) << "]"
       //  << " - " << "(*dataSet)(dataSetId, centerY+" << feature.p2.y << ", centerX+" << feature.p2.x << ")[" << static_cast<int>(feature.colorChannel) << "] );" << ::std::endl;
     }
@@ -313,14 +323,72 @@ namespace pcl
   };
 
 
+  template <class DATA_TYPE, size_t NUM_OF_CHANNELS, size_t SCALE_CHANNEL, bool INVERT_SCALE>
+  class PCL_EXPORTS ScaledMultiChannel2DComparisonFeatureHandlerCCodeGenerator
+    : public pcl::FeatureHandlerCodeGenerator<pcl::MultiChannel2DComparisonFeature<pcl::PointXY32f>, pcl::MultiChannel2DDataSet<DATA_TYPE, NUM_OF_CHANNELS>, pcl::MultipleData2DExampleIndex>
+  {
+    public:
+      ScaledMultiChannel2DComparisonFeatureHandlerCCodeGenerator () {}
+      virtual ~ScaledMultiChannel2DComparisonFeatureHandlerCCodeGenerator () {}
+
+      void
+      generateEvalFunctionCode (
+        std::ostream & stream) const;
+
+      void
+      generateEvalCode (
+        const MultiChannel2DComparisonFeature<PointXY32f> & feature,
+        std::ostream & stream) const;
+  };
+
+  template <class DATA_TYPE, size_t NUM_OF_CHANNELS, size_t SCALE_CHANNEL, bool INVERT_SCALE>
+  void
+  ScaledMultiChannel2DComparisonFeatureHandlerCCodeGenerator<DATA_TYPE, NUM_OF_CHANNELS, SCALE_CHANNEL, INVERT_SCALE>::generateEvalFunctionCode (
+    std::ostream & stream) const
+  {
+    if (NUM_OF_CHANNELS == 1 && SCALE_CHANNEL == 0 && INVERT_SCALE)
+    {
+      stream << "const float scale  = 1.0f / static_cast<float> (*data_ptr);" << std::endl;
+      stream << "" << std::endl;
+      stream << "struct LocalFeatureHandler" << std::endl;
+      stream << "{" << std::endl;
+      stream << "  static inline void eval (" << typeid (DATA_TYPE).name () << " * a_ptr, const float a_x1, const float a_y1, const float a_x2, const float a_y2, const float a_scale, const int a_width, float & a_result, unsigned char & a_flags)" << std::endl;
+      stream << "  {" << std::endl;
+      stream << "    a_result = *(a_ptr + static_cast<int> (a_scale*a_x1) + (static_cast<int> (a_scale*a_y1)*a_width)) - *(a_ptr + static_cast<int> (a_scale*a_x2) + (static_cast<int> (a_scale*a_y2)*a_width));" << std::endl;
+      stream << "  }" << std::endl;
+      stream << "};" << std::endl;
+    }
+    else
+    {
+      stream << "ERROR: generateEvalFunctionCode not implemented" << std::endl;
+    }
+  }
+
+  template <class DATA_TYPE, size_t NUM_OF_CHANNELS, size_t SCALE_CHANNEL, bool INVERT_SCALE>
+  void
+  ScaledMultiChannel2DComparisonFeatureHandlerCCodeGenerator<DATA_TYPE, NUM_OF_CHANNELS, SCALE_CHANNEL, INVERT_SCALE>::generateEvalCode (
+    const MultiChannel2DComparisonFeature<PointXY32f> & feature,
+    std::ostream & stream) const
+  {
+    stream << "LocalFeatureHandler::eval (data_ptr, " 
+      << feature.p1.x << ", " 
+      << feature.p1.y << ", "
+      << feature.p2.x << ", "
+      << feature.p2.y << ", "
+      << "scale, width, result, flags);" << std::endl;
+  }
+
+
   typedef MultiChannel2DComparisonFeatureHandler<float, 1> Depth2DComparisonFeatureHandler;
   typedef MultiChannel2DComparisonFeatureHandler<float, 2> IntensityDepth2DComparisonFeatureHandler;
   typedef MultiChannel2DComparisonFeatureHandler<float, 3> RGB2DComparisonFeatureHandler;
   typedef MultiChannel2DComparisonFeatureHandler<float, 4> RGBD2DComparisonFeatureHandler;
 
-  typedef ScaledMultiChannel2DComparisonFeatureHandler<float, 1, 0> ScaledDepth2DComparisonFeatureHandler;
-  typedef ScaledMultiChannel2DComparisonFeatureHandler<float, 2, 1> ScaledIntensityDepth2DComparisonFeatureHandler;
-  typedef ScaledMultiChannel2DComparisonFeatureHandler<float, 4, 3> ScaledRGBD2DComparisonFeatureHandler;
+  typedef ScaledMultiChannel2DComparisonFeatureHandler<float, 1, 0, true> ScaledDepth2DComparisonFeatureHandler;
+  typedef ScaledMultiChannel2DComparisonFeatureHandler<float, 2, 1, true> ScaledIntensityDepth2DComparisonFeatureHandler;
+  typedef ScaledMultiChannel2DComparisonFeatureHandler<float, 4, 3, true> ScaledRGBD2DComparisonFeatureHandler;
+
+  typedef ScaledMultiChannel2DComparisonFeatureHandlerCCodeGenerator<float, 1, 0, true> ScaledDepth2DComparisonFeatureHandlerCCodeGenerator;
 
 }
 
