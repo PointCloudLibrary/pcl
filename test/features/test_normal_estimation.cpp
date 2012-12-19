@@ -237,9 +237,9 @@ TEST (PCL, NormalEstimation_BigTest_32_vs_64_bit)
     }
     else
     {
-      EXPECT_NEAR (expected_normal_estimation_32_vs_64_bit[i].normal_x, cloud_normals[i].normal_x, 1e-4);
-      EXPECT_NEAR (expected_normal_estimation_32_vs_64_bit[i].normal_y, cloud_normals[i].normal_y, 1e-4);
-      EXPECT_NEAR (expected_normal_estimation_32_vs_64_bit[i].normal_z, cloud_normals[i].normal_z, 1e-4);
+      EXPECT_NEAR (expected_normal_estimation_32_vs_64_bit[i].normal_x, cloud_normals[i].normal_x, 2e-4);
+      EXPECT_NEAR (expected_normal_estimation_32_vs_64_bit[i].normal_y, cloud_normals[i].normal_y, 2e-4);
+      EXPECT_NEAR (expected_normal_estimation_32_vs_64_bit[i].normal_z, cloud_normals[i].normal_z, 2e-4);
     }
   }
 }
