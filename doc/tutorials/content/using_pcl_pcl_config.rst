@@ -55,7 +55,7 @@ invoking cmake (MY_GRAND_PROJECT_BINARY_DIR).
 
    find_package(PCL 1.3 REQUIRED COMPONENTS common io)
 
-We are requesting to find the PCL package at minimum version 1.0. We
+We are requesting to find the PCL package at minimum version 1.3. We
 also says that it is ``REQUIRED`` meaning that cmake will fail
 gracefully if it can't be found. As PCL is modular one can request:
 
