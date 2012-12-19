@@ -310,7 +310,7 @@ TEST (PCL, KdTreeFLANN_32_vs_64_bit)
   for (size_t vec_i = 0; vec_i < nn_indices_vector.size (); ++vec_i)
   {
     char str[512];
-    sprintf (str, "point_%zu", vec_i);
+    sprintf (str, "point_%d", int (vec_i));
     boost::optional<boost::property_tree::ptree&> tree = xml_property_tree.get_child_optional (str);
     if (!tree)
       FAIL ();
@@ -320,7 +320,7 @@ TEST (PCL, KdTreeFLANN_32_vs_64_bit)
 
     for (size_t n_i = 0; n_i < nn_indices_vector[vec_i].size (); ++n_i)
     {
-      sprintf (str, "nn_%zu", n_i);
+      sprintf (str, "nn_%d", int (n_i));
       int neighbor_index = tree.get ().get<int> (str);
       EXPECT_EQ (neighbor_index, nn_indices_vector[vec_i][n_i]);
     }
