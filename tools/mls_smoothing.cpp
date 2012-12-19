@@ -59,7 +59,7 @@ printHelp (int, char **argv)
 {
   print_error ("Syntax is: %s input.pcd output.pcd <options>\n", argv[0]);
   print_info ("  where options are:\n");
-  print_info ("                     -search_radius X = sphere radius to be used for finding the k-nearest neighbors used for fitting (default: ");
+  print_info ("                     -radius X          = sphere radius to be used for finding the k-nearest neighbors used for fitting (default: ");
   print_value ("%f", default_search_radius); print_info (")\n");
   print_info ("                     -sqr_gauss_param X = parameter used for the distance based weighting of neighbors (recommended = search_radius^2) (default: ");
   print_value ("%f", default_sqr_gauss_param); print_info (")\n");
@@ -180,7 +180,7 @@ main (int argc, char** argv)
   int polynomial_order = default_polynomial_order;
   bool use_polynomial_fit = default_use_polynomial_fit;
 
-  parse_argument (argc, argv, "-search_radius", search_radius);
+  parse_argument (argc, argv, "-radius", search_radius);
   if (parse_argument (argc, argv, "-sqr_gauss_param", sqr_gauss_param) == -1)
     sqr_gauss_param_set = false;
   if (parse_argument (argc, argv, "-polynomial_order", polynomial_order) != -1 )
