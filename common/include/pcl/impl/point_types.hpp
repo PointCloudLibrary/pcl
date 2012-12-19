@@ -92,8 +92,7 @@
   (pcl::PointXYZRGB)            \
   (pcl::PointXYZRGBL)           \
   (pcl::PointXYZRGBNormal)      \
-  (pcl::PointSurfel)            \
-  (pcl::PointSuperVoxel)
+  (pcl::PointSurfel)            
 
 // Define all point types that include XYZ data
 #define PCL_XYZ_POINT_TYPES   \
@@ -111,8 +110,7 @@
   (pcl::PointWithRange)       \
   (pcl::PointWithViewpoint)   \
   (pcl::PointWithScale)       \
-  (pcl::PointSurfel)          \
-  (pcl::PointSuperVoxel)
+  (pcl::PointSurfel)          
 
 // Define all point types with XYZ and label
 #define PCL_XYZL_POINT_TYPES  \
@@ -125,8 +123,7 @@
   (pcl::PointNormal)            \
   (pcl::PointXYZRGBNormal)      \
   (pcl::PointXYZINormal)        \
-  (pcl::PointSurfel)            \
-  (pcl::PointSuperVoxel)
+  (pcl::PointSurfel)            
 
 // Define all point types that represent features
 #define PCL_FEATURE_POINT_TYPES \

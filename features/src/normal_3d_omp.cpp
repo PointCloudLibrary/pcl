@@ -47,5 +47,6 @@
   PCL_INSTANTIATE_PRODUCT(NormalEstimationOMP, ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA))((pcl::Normal)))
 #else
   PCL_INSTANTIATE_PRODUCT(NormalEstimationOMP, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES))
+  template class pcl::NormalEstimationOMP<pcl::PointSuperVoxel, pcl::PointSuperVoxel>;
 #endif
 
