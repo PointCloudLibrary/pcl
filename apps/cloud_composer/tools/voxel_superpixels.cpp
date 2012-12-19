@@ -1,12 +1,10 @@
-#include <pcl/apps/cloud_composer/tools/voxel_superpixels.h>
-#include <pcl/apps/cloud_composer/items/cloud_item.h>
-
 #include <pcl/point_types.h>
 #include <pcl/filters/extract_indices.h>
 #include <pcl/kdtree/kdtree.h>
 #include <pcl/segmentation/extract_clusters.h>
 
-
+#include <pcl/apps/cloud_composer/tools/voxel_superpixels.h>
+#include <pcl/apps/cloud_composer/items/cloud_item.h>
 #include <pcl/apps/cloud_composer/tools/impl/voxel_superpixels.hpp>
 
 Q_EXPORT_PLUGIN2(cloud_composer_voxel_superpixels_tool, pcl::cloud_composer::VoxelSuperpixelsToolFactory)

@@ -1,8 +1,13 @@
-#include <pcl/apps/test_voxel_superpixels.h>
-
+#include <pcl/common/time.h>
+#include <pcl/console/parse.h>
+#include <pcl/point_cloud.h>
+#include <pcl/point_types.h>
+#include <pcl/io/png_io.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/visualization/pcl_visualizer.h>
-//#include <sys/time.h>
+#include <pcl/segmentation/supervoxels.h>
+
+#include "boost.h"
 using namespace pcl;
 
 int
@@ -10,7 +15,7 @@ main (int argc, char ** argv)
 {
   if (argc < 2)
   {
-    pcl::console::print_info ("Syntax is: %s {-p <pcd-file> OR -r <rgb-file> -d <depth-file>} [-o <output-file> -l <output-label-file> -v <voxel resolution> -s <seed resolution> -c <color weight> -z <spatial weight> -f <fpfh weight> -n <normal_weight>] \n", argv[0]);
+    pcl::console::print_info ("Syntax is: %s {-p <pcd-file> OR -r <rgb-file> -d <depth-file>} [-o <output-file> -l <output-label-file> -v <voxel resolution> -s <seed resolution> -c <color weight> -z <spatial weight> -n <normal_weight>] \n", argv[0]);
     return (1);
   }
   
@@ -29,10 +34,10 @@ main (int argc, char ** argv)
   std::string pcd_path;
   if (!depth_file_specified || !rgb_file_specified)
   {
-    qDebug () << "Using point cloud";
+    std::cout << "Using point cloud";
     if (!pcd_file_specified)
     {
-      qDebug () << "No cloud specified!";
+      std::cout << "No cloud specified!";
       return (1);
     }else
     {
@@ -72,10 +77,6 @@ main (int argc, char ** argv)
   if (pcl::console::find_switch (argc, argv, "-z"))
     pcl::console::parse (argc, argv, "-z", spatial_importance);
   
-  float shape_importance = 0.1f;
-  if (pcl::console::find_switch (argc, argv, "-f"))
-    pcl::console::parse (argc, argv, "-f", shape_importance);
-  
   float normal_importance = 1.0f;
   if (pcl::console::find_switch (argc, argv, "-n"))
     pcl::console::parse (argc, argv, "-n", normal_importance);
@@ -88,7 +89,7 @@ main (int argc, char ** argv)
     //qDebug () << "RGB File="<< QString::fromStdString(rgb_path);
     if ( ! rgb_reader->CanReadFile (rgb_path.c_str ()))
     {
-      qCritical () << "Cannot read rgb image file!";
+      std::cout << "Cannot read rgb image file!";
       return (1);
     }
     rgb_reader->SetFileName (rgb_path.c_str ());
@@ -97,7 +98,7 @@ main (int argc, char ** argv)
     vtkImageReader2* depth_reader = reader_factory->CreateImageReader2 (depth_path.c_str ());
     if ( ! depth_reader->CanReadFile (depth_path.c_str ()))
     {
-      qCritical () << "Cannot read depth image file!";
+      std::cout << "Cannot read depth image file!";
       return (1);
     }
     depth_reader->SetFileName (depth_path.c_str ());
@@ -120,13 +121,12 @@ main (int argc, char ** argv)
     
     if (rgb_dims[0] != depth_dims[0] || rgb_dims[1] != depth_dims[1])
     {
-      qCritical () << "Depth and RGB dimensions to not match!";
-      qDebug () << "RGB Image is of size "<<rgb_dims[0] << " by "<<rgb_dims[1];
-      qDebug () << "Depth Image is of size "<<depth_dims[0] << " by "<<depth_dims[1];
+      std::cout << "Depth and RGB dimensions to not match!";
+      std::cout << "RGB Image is of size "<<rgb_dims[0] << " by "<<rgb_dims[1];
+      std::cout << "Depth Image is of size "<<depth_dims[0] << " by "<<depth_dims[1];
       return (1);
     }
-  //qDebug () << "Images loaded, making cloud";
-  
+ 
     cloud->points.reserve (depth_dims[0] * depth_dims[1]);
     cloud->width = depth_dims[0];
     cloud->height = depth_dims[1];
@@ -151,7 +151,6 @@ main (int argc, char ** argv)
         PointXYZRGB new_point;
         //  uint8_t* p_i = &(cloud_blob->data[y * cloud_blob->row_step + x * cloud_blob->point_step]);
         float depth = static_cast<float>(*depth_pixel) * scale;
-      //  qDebug () << "Depth = "<<depth;
         if (depth == 0.0f)
         {
           new_point.x = new_point.y = new_point.z = std::numeric_limits<float>::quiet_NaN ();
@@ -166,69 +165,57 @@ main (int argc, char ** argv)
         uint32_t rgb = static_cast<uint32_t>(color_pixel[0]) << 16 |  static_cast<uint32_t>(color_pixel[1]) << 8 |  static_cast<uint32_t>(color_pixel[2]);
         new_point.rgb = *reinterpret_cast<float*> (&rgb);
         cloud->points.push_back (new_point);
-        //   qDebug () << "depth = "<<depth << "x,y,z="<<data[0]<<","<<data[1]<<","<<data[2];
-        //qDebug() << "r ="<<color_pixel[0]<<" g="<<color_pixel[1]<<" b="<<color_pixel[2];
         
       }
     }
   }
   else
   {
-    qDebug () << "Loading pointcloud...";
+    std::cout << "Loading pointcloud...";
     pcl::io::loadPCDFile (pcd_path, *cloud);
   }
     
-  qDebug () << "Done making cloud!";
+  std::cout << "Done making cloud!";
 
 
   
-  pcl::VoxelSuperpixels<pcl::PointXYZRGB> super (voxel_resolution, seed_resolution);
+  pcl::SuperVoxels<pcl::PointXYZRGB> super (voxel_resolution, seed_resolution);
   super.setInputCloud (cloud);
   super.setColorImportance (color_importance);
-  super.setFPFHImportance (shape_importance);
   super.setSpatialImportance (spatial_importance);
-  super.setNormalImportance (spatial_importance);
+  super.setNormalImportance (normal_importance);
   std::vector <pcl::PointIndices> superpixel_indices;
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr voxel_cloud;
+  pcl::PointCloud<pcl::PointSuperVoxel>::Ptr supervoxel_cloud;
   
-  qDebug () << "Extracting superpixels!";
+  std::cout << "Extracting superpixels!\n";
   
-//  timeval t1, t2;
-//  double elapsedTime;
-//  gettimeofday(&t1,NULL);
-  super.extract (voxel_cloud, superpixel_indices);
-  qDebug () << "Num Superpixels = "<<superpixel_indices.size ();
-//  gettimeofday(&t2,NULL);
-//  elapsedTime = (t2.tv_sec - t1.tv_sec) * 1000.0;      // sec to ms
- // elapsedTime += (t2.tv_usec - t1.tv_usec) / 1000.0;   // us to ms
-  std::cerr << voxel_resolution << " "<<seed_resolution <<" "<< super.getVoxelCloudSize() <<"\n";
-
-  
-  std::vector <std::set<int> > superpixel_neighbors;
-  std::vector<pcl::PointXYZ, Eigen::aligned_allocator<pcl::PointXYZ> > superpixel_centers;
-  qDebug () << "Getting neighbors";
-  super.getSuperpixelNeighbors (superpixel_neighbors);
-  qDebug () << "Getting Centers";
-  super.getSuperpixelCenters (superpixel_centers);
-  qDebug () << "Getting Adjacency List";
-  std::vector<std::vector<int> > voxel_adjacency_list;
-  super.getAdjacencyList (voxel_adjacency_list);
-  QString out_name;
-  qDebug () << "Getting Labeled Cloud";
-  pcl::PointCloud<pcl::PointXYZL>::Ptr label_cloud = super.getLabeledVoxelCloud();
-  qDebug () << "Getting colorized voxel cloud";
+  super.extract (supervoxel_cloud);
+  std::cout << "Getting colorized voxel cloud\n";
   pcl::PointCloud<pcl::PointXYZRGB>::Ptr colored_cloud = super.getColoredVoxelCloud ();
-  qDebug () << "Getting colorized original cloud";
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr full_colored = super.getColoredCloud (); 
+  std::cout << "Getting labeled voxel cloud\n";
+  pcl::PointCloud<pcl::PointXYZL>::Ptr labeled_cloud = super.getLabeledVoxelCloud ();
   
- // pcl::PointCloud<pcl::PointXYZRGB>::Ptr seed_cloud = super.getSeedCloud ();
- // pcl::io::savePNGFile ("seed_cloud.png", *seed_cloud);
-  
+  std::cout << "Getting colorized full cloud\n";
+  pcl::PointCloud<pcl::PointXYZRGB>::Ptr full_colored_cloud = super.getColoredCloud ();
+  std::cout << "Getting labeled full cloud\n";
+  pcl::PointCloud<pcl::PointXYZL>::Ptr full_labeled_cloud = super.getLabeledCloud ();
   // THESE ONLY MAKE SENSE FOR ORGANIZED CLOUDS
-   qDebug () << "Writing out file to " << QString::fromStdString (out_path);
-   qDebug () << "Output cloud size:"<<full_colored->width<<"x"<<full_colored->height;
-  pcl::io::savePNGFile (out_path, *full_colored);
-  //pcl::io::savePNGFile (out_label_path, *label_cloud);
+  //pcl::io::savePNGFile (out_path, *full_colored_cloud);
+  //pcl::io::savePNGFile (out_label_path, *full_labeled_cloud);
+  
+  
+  typedef std::pair<uint32_t, PointSuperVoxel> LabelCenterT;
+  typedef boost::adjacency_list<boost::setS, boost::setS, boost::undirectedS, PointSuperVoxel, octree::EdgeProperties> VoxelAdjacencyList;
+  typedef VoxelAdjacencyList::vertex_descriptor VoxelID;
+  typedef VoxelAdjacencyList::edge_descriptor EdgeID;
+  std::map<uint32_t, PointSuperVoxel> label_centers;  
+  VoxelAdjacencyList supervoxel_adjacency_list;
+  std::cout <<"Getting Supervoxel Adjacency List\n";
+  super.getSuperVoxelAdjacencyList (supervoxel_adjacency_list);
+  std::cout <<"Getting Supervoxel centers\n";
+  super.getSuperVoxelCenters (label_centers);
+      
+  
   
   boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer (new pcl::visualization::PCLVisualizer ("3D Viewer"));
   viewer->setBackgroundColor (0, 0, 0);
@@ -236,27 +223,36 @@ main (int argc, char ** argv)
   viewer->addPointCloud<pcl::PointXYZRGB> (colored_cloud,rgb, "colored");
   
   viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1.5, "colored");
-  //Draw lines connecting superpixel centers
-  qDebug () << "Superpixel neighbor size="<<superpixel_neighbors.size ()<<"\n";
-  
-  int linecount = 0;
-  for (int i = 0; i < superpixel_neighbors.size(); ++i)
+ 
+  //The vertices in the supervoxel adjacency list are the supervoxel centroids
+  //This iterates through them, finding the edges
+  typedef boost::graph_traits<VoxelAdjacencyList>::vertex_iterator VertexIterator;
+  typedef boost::graph_traits<VoxelAdjacencyList>::adjacency_iterator AdjacencyIterator;
+     
+  std::pair<VertexIterator, VertexIterator> vertex_iterator_range;
+  vertex_iterator_range = boost::vertices(supervoxel_adjacency_list);
+  for(VertexIterator itr=vertex_iterator_range.first ; itr != vertex_iterator_range.second; ++itr)
   {
-    std::set<int>::iterator it;
-    for (it = superpixel_neighbors[i].begin (); it != superpixel_neighbors[i].end (); ++it)
+    PointSuperVoxel label_centroid = supervoxel_adjacency_list[*itr];
+    std::cout << "Label "<<label_centroid.label<<" is at ("<<label_centroid.x<<","<<label_centroid.y<<","<<label_centroid.z<<")\n";
+    std::pair<AdjacencyIterator, AdjacencyIterator> neighbors = boost::adjacent_vertices(*itr, supervoxel_adjacency_list);
+    std::cout << "Connections: labels --- weight :\n";
+    for(AdjacencyIterator itr_neighbor = neighbors.first; itr_neighbor != neighbors.second; ++itr_neighbor)
     {
-      if ( *it != i && i < *it)
-      {
-        pcl::PointXYZ p1 = superpixel_centers[i];
-        pcl::PointXYZ p2 = superpixel_centers[*it];
-        QString linename;
-        linename.sprintf("%05d",linecount);
-        viewer->addLine (p1, p2,1.0,1.0,1.0, linename.toStdString());
-        linecount++;
-      }
+      //Get the edge connecting these supervoxels
+      EdgeID connecting_edge = boost::edge (*itr,*itr_neighbor, supervoxel_adjacency_list).first;
+      PointSuperVoxel neighbor_point = supervoxel_adjacency_list[*itr_neighbor];
+      std::cout <<"            "<< neighbor_point.label << " --- "<<supervoxel_adjacency_list[connecting_edge].weight<<"\n";
+
+      std::stringstream ss;
+      ss << label_centroid.label<<neighbor_point.label;
+      //Draw lines connecting supervoxel centers
+      viewer->addLine (label_centroid, neighbor_point,1.0,1.0,1.0, ss.str ());
     }
+    std::cout << "\n------------------------------------\n";
   }
-  qDebug () << "Loading viewer...";
+  
+  std::cout << "Loading viewer...";
   while (!viewer->wasStopped ())
   {
     viewer->spinOnce (100);

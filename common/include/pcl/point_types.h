@@ -308,6 +308,11 @@ namespace pcl
     * \ingroup common
     */
   struct PointSurfel;
+  
+  /** \brief Point structure used for supervoxel segmentation - contains xyz coordinates, normal coordinates, a RGBA color, a label, a distance to label, and a counter for time since last observation (for supervoxel tracking).
+    * \ingroup common
+    */
+  struct PointSuperVoxel;
 }
 
 /** @} */
@@ -593,6 +598,23 @@ POINT_CLOUD_REGISTER_POINT_STRUCT(pcl::PointSurfel,
     (float, confidence, confidence)
     (float, curvature, curvature)
 )
+
+POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::PointSuperVoxel,
+                                     (float, x, x)
+                                     (float, y, y)
+                                     (float, z, z)
+                                     (float, normal_x, normal_x)
+                                     (float, normal_y, normal_y)
+                                     (float, normal_z, normal_z)
+                                     (float, curvature, curvature)
+                                     (uint32_t, rgba, rgba)
+                                     (float, distance, distance)
+                                     (uint32_t, label, label)
+                                     (float, R, R)
+                                     (float, G, G)
+                                     (float, B, B)
+)
+
 
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::_ReferenceFrame,
     (float[3], x_axis, x_axis)

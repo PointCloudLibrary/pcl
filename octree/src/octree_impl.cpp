@@ -76,5 +76,3 @@ PCL_INSTANTIATE(OctreePointCloudSearch, PCL_XYZ_POINT_TYPES)
 // PCL_INSTANTIATE(OctreePointCloudPointVector, PCL_XYZ_POINT_TYPES)
 PCL_INSTANTIATE(OctreePointCloudChangeDetector, PCL_XYZ_POINT_TYPES)
 // PCL_INSTANTIATE(OctreePointCloudVoxelCentroid, PCL_XYZ_POINT_TYPES)
-
-

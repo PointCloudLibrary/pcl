@@ -55,6 +55,9 @@
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/date_time/posix_time/posix_time_types.hpp>
 #include <boost/thread/thread.hpp>
+#include <boost/filesystem.hpp>
+#include <boost/regex.hpp>
+#include <boost/format.hpp>
 //#include <boost/uuid/uuid.hpp>
 //#include <boost/uuid/uuid_generators.hpp>
 
