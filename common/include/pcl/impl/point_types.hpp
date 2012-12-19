@@ -83,8 +83,7 @@
   (pcl::SHOT352)                \
   (pcl::SHOT1344)               \
   (pcl::PointUV)                \
-  (pcl::ReferenceFrame)         \
-  (pcl::PointSuperVoxel)
+  (pcl::ReferenceFrame)
 
 // Define all point types that include RGB data
 #define PCL_RGB_POINT_TYPES     \
@@ -92,7 +91,7 @@
   (pcl::PointXYZRGB)            \
   (pcl::PointXYZRGBL)           \
   (pcl::PointXYZRGBNormal)      \
-  (pcl::PointSurfel)            
+  (pcl::PointSurfel)            \
 
 // Define all point types that include XYZ data
 #define PCL_XYZ_POINT_TYPES   \
@@ -110,7 +109,7 @@
   (pcl::PointWithRange)       \
   (pcl::PointWithViewpoint)   \
   (pcl::PointWithScale)       \
-  (pcl::PointSurfel)          
+  (pcl::PointSurfel)
 
 // Define all point types with XYZ and label
 #define PCL_XYZL_POINT_TYPES  \
@@ -123,7 +122,7 @@
   (pcl::PointNormal)            \
   (pcl::PointXYZRGBNormal)      \
   (pcl::PointXYZINormal)        \
-  (pcl::PointSurfel)            
+  (pcl::PointSurfel)
 
 // Define all point types that represent features
 #define PCL_FEATURE_POINT_TYPES \
@@ -1617,113 +1616,6 @@ namespace pcl
     p.radius << " - " << p.confidence << " - " << p.curvature << ")";
     return (os);
   }
-  
-  
-  
-  struct EIGEN_ALIGN16 _PointSuperVoxel
-  {
-    PCL_ADD_POINT4D; // This adds the members x,y,z which can also be accessed using the point (which is float[4])
-    PCL_ADD_NORMAL4D; // This adds the member normal[3] which can also be accessed using the point (which is float[4])
-    union
-    {
-      struct
-      {
-        // RGB union
-        union
-        {
-          struct
-          {
-            uint8_t b;
-            uint8_t g;
-            uint8_t r;
-            uint8_t a;
-          };
-          float rgb;
-          uint32_t rgba;
-        };
-        uint32_t label; //Label this point belongs to 
-        float distance; //Distance to current label center 
-        float curvature;
-        
-      };
-      float data_c[4];
-    };
-    EIGEN_ALIGN16 
-    union 
-    { 
-      float RGB[3]; 
-      struct 
-      { 
-        float R; 
-        float G; 
-        float B; 
-      }; 
-    }; 
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-  };
-
-  /** \brief Point structure used for supervoxel segmentation - contains xyz coordinates, normal coordinates, a RGBA color, a label, a distance to label, and a counter for time since last observation (for supervoxel tracking).
-    * \ingroup common
-    */
-  struct PointSuperVoxel : public _PointSuperVoxel
-  {
-    inline PointSuperVoxel (const _PointSuperVoxel &p)
-    {
-      x = p.x; y = p.y; z = p.z; data[3] = 1.0f;
-      normal_x = p.normal_x; normal_y = p.normal_y; normal_z = p.normal_z; data_n[3] = 0.0f;
-      rgba = p.rgba;
-      label = p.label;
-      distance = p.distance;
-      curvature = p.curvature;
-      R = p.R; G = p.G; B = p.B;
-    }
-
-    inline PointSuperVoxel ()
-    {
-      x = y = z = 0.0f;
-      data[3] = 1.0f;
-      normal_x = normal_y = normal_z = data_n[3] = 0.0f;
-      curvature = 0.0f;
-      rgba = 0;
-      label = 0;
-      distance = std::numeric_limits<float>::max ();
-      R = 0.0f; G = 0.0f; B = 0.0f;
-    }
-    
-    inline bool
-    operator<(const PointSuperVoxel &p) const
-    { 
-      if (x < p.x)
-      {
-        return true;
-      }
-      else if (x == p.x)
-      {
-        if (y < p.y)
-        {
-          return true;
-        }
-        else if (y == p.y)
-        {
-          if (z < p.z)
-            return true;
-        }
-      }
-      // If all are equal or if any of the ifs failed, then false
-      return false;
-    }
-  };
-
-  inline std::ostream& operator << (std::ostream& os, const PointSuperVoxel& p)
-  {
-    os <<
-    "(" << p.x << "," << p.y << "," << p.z << " - " <<
-    p.normal_x << "," << p.normal_y << "," << p.normal_z <<",curv="<<p.curvature<<" - "
-    << p.R << ","<< p.G << "," << p.B << " - " <<
-    p.label << " - " << p.distance << " - " << ")";
-    return (os);
-  }
-  
 
 } // End namespace
 

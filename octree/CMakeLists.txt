@@ -30,7 +30,6 @@ if(build)
         include/pcl/${SUBSYS_NAME}/octree_search.h        
         include/pcl/${SUBSYS_NAME}/octree.h
         include/pcl/${SUBSYS_NAME}/octree2buf_base.h
-        include/pcl/${SUBSYS_NAME}/octree_pointcloud_supervoxel.h
         )
 
     set(impl_incs    
@@ -40,7 +39,6 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/octree_iterator.hpp      
         include/pcl/${SUBSYS_NAME}/impl/octree_search.hpp        
         include/pcl/${SUBSYS_NAME}/impl/octree_pointcloud_voxelcentroid.hpp
-        include/pcl/${SUBSYS_NAME}/impl/octree_pointcloud_supervoxel.hpp
         )
 
     set(LIB_NAME pcl_${SUBSYS_NAME})

@@ -63,6 +63,5 @@
 #include <boost/random/uniform_int.hpp>
 #include <boost/random/normal_distribution.hpp>
 #include <boost/random/variate_generator.hpp>
-#include <boost/graph/adjacency_list.hpp>
 
 #endif    // PCL_COMMON_BOOST_H_

@@ -43,5 +43,4 @@
 
 // Instantiations of specific point types
 PCL_INSTANTIATE(OrganizedNeighbor, PCL_XYZ_POINT_TYPES)
-template class pcl::search::OrganizedNeighbor<pcl::PointSuperVoxel>;
 

@@ -42,7 +42,7 @@
 #include <pcl/apps/cloud_composer/impl/cloud_item.hpp>
 #include <pcl/apps/cloud_composer/items/normals_item.h>
 #include <pcl/point_cloud.h>
-#include <pcl/segmentation/supervoxels.h>
+#include <pcl/segmentation/voxel_superpixels.h>
 
 
 template <typename PointT> QList <pcl::cloud_composer::CloudComposerItem*>
@@ -78,11 +78,13 @@ pcl::cloud_composer::VoxelSuperpixelsTool::performTemplatedAction (QList <const 
     qDebug () << "Octree resolution = "<<resolution;
     float seed_resolution = parameter_model_->getProperty("Seed Resolution").toFloat ();
     qDebug () << "Seed resolution = "<<seed_resolution;
-    pcl::SuperVoxels<PointT> super (resolution, seed_resolution);
+    pcl::VoxelSuperpixels<PointT> super (resolution, seed_resolution);
     super.setInputCloud (input_cloud);
-	pcl::PointCloud<pcl::PointSuperVoxel>::Ptr supervoxel_cloud;
+
     
-    super.extract (supervoxel_cloud);
+    std::vector <pcl::PointIndices> superpixels;
+    typename pcl::PointCloud<PointT>::Ptr voxel_cloud;
+    super.extract (voxel_cloud, superpixels);
     
     
     typename pcl::PointCloud<PointXYZRGB>::Ptr color_segments;

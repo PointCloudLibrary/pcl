@@ -195,9 +195,6 @@ if (build)
         PCL_ADD_EXECUTABLE(pcl_virtual_scanner ${SUBSYS_NAME} virtual_scanner.cpp)
         target_link_libraries(pcl_virtual_scanner pcl_common pcl_io pcl_filters pcl_visualization vtkCommon vtkGraphics)
         
-        PCL_ADD_EXECUTABLE(pcl_supervoxels ${SUBSYS_NAME} supervoxels.cpp)
-        target_link_libraries(pcl_supervoxels pcl_common pcl_io pcl_kdtree pcl_segmentation pcl_visualization vtkCommon)
-        
         if(BUILD_OPENNI AND OPENNI_FOUND)
           PCL_ADD_EXECUTABLE(pcl_openni_save_image ${SUBSYS_NAME} openni_save_image.cpp)
           target_link_libraries(pcl_openni_save_image pcl_common pcl_io pcl_visualization)  
