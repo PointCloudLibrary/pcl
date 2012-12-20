@@ -47,6 +47,8 @@
 #include <pcl/common/common.h>
 #include <pcl/common/io.h>
 
+#include <pcl/io/openni_camera/openni_shift_to_depth_conversion.h>
+
 #include <vector>
 
 namespace pcl
@@ -139,6 +141,9 @@ namespace pcl
       private:
         // frame header identifier
         static const char* frameHeaderIdentifier_;
+
+        //
+        openni_wrapper::ShiftToDepthConverter sd_converter_;
     };
 
     // define frame identifier

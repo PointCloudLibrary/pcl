@@ -341,16 +341,43 @@ namespace pcl
         decodePNGToImage (compressedColor, colorData, png_width, png_height, png_channels);
       }
 
-      // reconstruct point cloud
-      OrganizedConversion<PointT>::convert (disparityData,
-                                            colorData,
-                                            static_cast<bool>(png_channels==1),
-                                            cloud_width,
-                                            cloud_height,
-                                            focalLength,
-                                            disparityShift,
-                                            disparityScale,
-                                            *cloud_arg);
+      if (disparityShift==0.0f)
+      {
+        // reconstruct point cloud
+        OrganizedConversion<PointT>::convert (disparityData,
+                                              colorData,
+                                              static_cast<bool>(png_channels==1),
+                                              cloud_width,
+                                              cloud_height,
+                                              focalLength,
+                                              disparityShift,
+                                              disparityScale,
+                                              *cloud_arg);
+      } else
+      {
+
+        // we need to decode a raw shift image
+        std::size_t size = disparityData.size();
+        std::vector<float> depthData;
+        depthData.resize(size);
+
+        // initialize shift-to-depth converter
+        if (!sd_converter_.isInitialized())
+          sd_converter_.generateLookupTable();
+
+        // convert shift to depth image
+        for (std::size_t i=0; i<size; ++i)
+          depthData[i] = sd_converter_.shiftToDepth(disparityData[i]);
+
+        // reconstruct point cloud
+        OrganizedConversion<PointT>::convert (depthData,
+                                              colorData,
+                                              static_cast<bool>(png_channels==1),
+                                              cloud_width,
+                                              cloud_height,
+                                              focalLength,
+                                              *cloud_arg);
+      }
 
       if (bShowStatistics_arg)
       {
