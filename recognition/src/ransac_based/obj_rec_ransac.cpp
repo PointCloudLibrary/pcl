@@ -39,6 +39,7 @@
 
 #include <pcl/common/random.h>
 #include <pcl/recognition/ransac_based/obj_rec_ransac.h>
+#include <pcl/recognition/ransac_based/orr_graph.h>
 #include <ctime>
 
 using namespace std;
@@ -51,6 +52,7 @@ pcl::recognition::ObjRecRANSAC::ObjRecRANSAC (float pair_width, float voxel_size
   relative_obj_size_ (0.05f),
   visibility_ (0.06f),
   relative_num_of_illegal_pts_ (0.02f),
+  intersection_fraction_ (0.03f),
   model_library_ (pair_width, voxel_size)
 {
   abs_zdist_thresh_ = 1.5f*voxel_size_;
@@ -279,19 +281,19 @@ pcl::recognition::ObjRecRANSAC::testHypotheses (list<Hypothesis>& hypotheses, ve
     match = penalty = 0;
 
     // For better code readability
-    vector<ORROctree::Node*>& full_leaves = (*hypo_it).obj_model_->getOctree ().getFullLeaves ();
+    vector<ORROctree::Node*>& full_model_leaves = (*hypo_it).obj_model_->getOctree ().getFullLeaves ();
     rigid_transform = (*hypo_it).rigid_transform_;
 
-	match_thresh = static_cast<int> (static_cast<float> (full_leaves.size ())*visibility_ + 0.5f);
-	penalty_thresh = static_cast<int> (static_cast<float> (full_leaves.size ())*relative_num_of_illegal_pts_ + 0.5f);
+	match_thresh = static_cast<int> (static_cast<float> (full_model_leaves.size ())*visibility_ + 0.5f);
+	penalty_thresh = static_cast<int> (static_cast<float> (full_model_leaves.size ())*relative_num_of_illegal_pts_ + 0.5f);
 
     // The match/penalty loop
-    for ( vector<ORROctree::Node*>::iterator leaf_it = full_leaves.begin () ; leaf_it != full_leaves.end () ; ++leaf_it )
+    for ( vector<ORROctree::Node*>::iterator leaf_it = full_model_leaves.begin () ; leaf_it != full_model_leaves.end () ; ++leaf_it )
     {
       // Transform the model point with the current rigid transform
       aux::transform_point (rigid_transform, (*leaf_it)->getData ()->getPoint (), transformed_point);
 
-      // Get the pixel the point 'out' lies in
+      // Get the pixel 'transformed_point' lies in
       pixel = scene_octree_proj_.getPixel (transformed_point);
       // Check if we have a valid pixel
       if ( pixel == NULL )
@@ -302,7 +304,8 @@ pcl::recognition::ObjRecRANSAC::testHypotheses (list<Hypothesis>& hypotheses, ve
       else if ( transformed_point[2] <= pixel->z2_ ) // The point is OK
       {
         ++match;
-        // Todo: insert the id of the pixel in the id set of the hypothesis
+        // 'hypo_it' explains 'pixel' => insert the pixel's id in the id set of 'hypo_it'
+        (*hypo_it).explained_pixels_.insert (pixel->id_);
       }
     }
 
@@ -330,6 +333,9 @@ pcl::recognition::ObjRecRANSAC::buildConflictGraph (vector<Hypothesis>& hypothes
   printf ("ObjRecRANSAC::%s(): building the conflict graph ... ", __func__); fflush (stdout);
 #endif
 
+  // There are as many graph nodes as hypotheses
+  graph.resize (static_cast<int> (hypotheses.size ()));
+
   // Project the hypotheses onto the "range image" and store in each pixel the corresponding hypothesis id
   for ( vector<Hypothesis>::iterator hypo_it = hypotheses.begin () ; hypo_it != hypotheses.end () ; ++hypo_it, ++hypothesis_id )
   {
@@ -338,6 +344,10 @@ pcl::recognition::ObjRecRANSAC::buildConflictGraph (vector<Hypothesis>& hypothes
 	// For better code readability
 	vector<ORROctree::Node*>& full_leaves = (*hypo_it).obj_model_->getOctree ().getFullLeaves ();
 	rigid_transform = (*hypo_it).rigid_transform_;
+
+	// The i-th node corresponds to the i-th hypothesis and has id i
+	graph.getNodes ()[hypothesis_id]->hypothesis_ = &(*hypo_it);
+	graph.getNodes ()[hypothesis_id]->id_ = hypothesis_id;
 
     for ( vector<ORROctree::Node*>::iterator leaf_it = full_leaves.begin () ; leaf_it != full_leaves.end () ; ++leaf_it )
     {
@@ -364,9 +374,6 @@ pcl::recognition::ObjRecRANSAC::buildConflictGraph (vector<Hypothesis>& hypothes
   list<ORROctreeZProjection::Pixel*>& full_pixels = scene_octree_proj_.getFullPixels ();
   set<int>::iterator id1, id2, last_id;
 
-  // Resize the graph such that it has the right number of vertices
-  graph.resize (static_cast<int> (hypotheses.size ()));
-
   // Now, iterate through all full pixels and build the conflict graph, i.e., create its connectivity
   for ( list<ORROctreeZProjection::Pixel*>::iterator it = full_pixels.begin () ; it != full_pixels.end () ; ++it )
   {
@@ -389,9 +396,10 @@ pcl::recognition::ObjRecRANSAC::buildConflictGraph (vector<Hypothesis>& hypothes
     }
   }
 
-#if 0
   vector<ORRGraph::Node*> graph_nodes = graph.getNodes ();
   ORRGraph::Node *node;
+  set<int> id_intersection;
+  float frac_1, frac_2;
 
   // Now, that we have the graph connectivity, we want to check if each two neighbors are
   // really in conflict. This requires set intersection operations which are expensive,
@@ -401,10 +409,22 @@ pcl::recognition::ObjRecRANSAC::buildConflictGraph (vector<Hypothesis>& hypothes
     node = *it;
     for ( set<ORRGraph::Node*>::iterator neigh = node->neighbors_.begin () ; neigh != node->neighbors_.end () ; ++neigh )
     {
+      id_intersection.clear ();
       // Compute the ids intersection of 'node' and its neighbor
+      std::set_intersection (node->hypothesis_->explained_pixels_.begin (),
+                             node->hypothesis_->explained_pixels_.end (),
+                             (*neigh)->hypothesis_->explained_pixels_.begin (),
+                             (*neigh)->hypothesis_->explained_pixels_.end (),
+                             std::inserter (id_intersection, id_intersection.begin ()));
+
+      frac_1 = static_cast<float> (id_intersection.size ())/static_cast <float> (node->hypothesis_->explained_pixels_.size ());
+      frac_2 = static_cast<float> (id_intersection.size ())/static_cast <float> ((*neigh)->hypothesis_->explained_pixels_.size ());
+      // Check if the intersection set is large enough, i.e., is there a conflict
+      if ( frac_1 <= intersection_fraction_ && frac_2 <= intersection_fraction_ )
+        // The intersection set is too small => no conflict, detach these tqwo neighboring nodes
+        graph.deleteEdge (node->id_, (*neigh)->id_);
     }
   }
-#endif
 
 #ifdef OBJ_REC_RANSAC_VERBOSE
 	printf("%i accepted.\n", static_cast<int> (hypotheses.size ())); fflush (stdout);

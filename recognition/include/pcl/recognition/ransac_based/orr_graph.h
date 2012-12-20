@@ -46,6 +46,7 @@
 #ifndef PCL_RECOGNITION_ORR_GRAPH_H_
 #define PCL_RECOGNITION_ORR_GRAPH_H_
 
+#include "obj_rec_ransac.h"
 #include <vector>
 
 namespace pcl
@@ -58,11 +59,13 @@ namespace pcl
     	class Node
     	{
     	  public:
-            Node (){}
+            Node (): id_ (-1){}
             virtual ~Node (){}
 
     	  public:
             std::set<Node*> neighbors_;
+            ObjRecRANSAC::Hypothesis* hypothesis_;
+            int id_;
     	};
 
       public:

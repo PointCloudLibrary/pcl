@@ -42,7 +42,6 @@
 #include <pcl/recognition/ransac_based/model_library.h>
 #include <pcl/recognition/ransac_based/orr_octree.h>
 #include <pcl/recognition/ransac_based/orr_octree_zprojection.h>
-#include <pcl/recognition/ransac_based/orr_graph.h>
 #include <pcl/recognition/ransac_based/auxiliary.h>
 #include <pcl/pcl_exports.h>
 #include <pcl/point_cloud.h>
@@ -57,6 +56,8 @@ namespace pcl
 {
   namespace recognition
   {
+    class ORRGraph;
+
     /** \brief This is a RANSAC-based 3D object recognition method. Do the following to use it: (i) call addModel() k times with k different models
       * representing the objects to be recognized and (ii) call recognize() with the 3D scene in which the objects should be recognized. Recognition means both
       * object identification and pose (position + orientation) estimation. Check the method descriptions for more details.
@@ -137,6 +138,7 @@ namespace pcl
             float rigid_transform_[12];
             ModelLibrary::Model* obj_model_;
             int support_;
+            std::set<int> explained_pixels_;
     	};
 
       public:
@@ -240,7 +242,7 @@ namespace pcl
       protected:
         float pair_width_, voxel_size_, fraction_of_pairs_in_hash_table_, relative_obj_size_;
         float abs_zdist_thresh_;
-    	float visibility_, relative_num_of_illegal_pts_;
+    	float visibility_, relative_num_of_illegal_pts_, intersection_fraction_;
 
         ModelLibrary model_library_;
         ORROctree scene_octree_;

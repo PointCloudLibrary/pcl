@@ -150,6 +150,8 @@ pcl::recognition::ORROctreeZProjection::build (const ORROctree& input, float eps
     }
   }
 
+  int pixel_id = 0;
+
   // Project the octree full leaves onto the xy-plane
   for ( fl_it = full_leaves.begin () ; fl_it != full_leaves.end () ; ++fl_it )
   {
@@ -157,7 +159,7 @@ pcl::recognition::ORROctreeZProjection::build (const ORROctree& input, float eps
     // If there is no set/pixel and at this position -> create one
     if ( sets_[i][j] == NULL )
     {
-      pixels_[i][j] = new Pixel ();
+      pixels_[i][j] = new Pixel (pixel_id++);
       sets_[i][j] = new Set (i, j);
       full_pixels_.push_back (pixels_[i][j]);
       full_sets_.push_back (sets_[i][j]);

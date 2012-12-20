@@ -48,6 +48,8 @@ using namespace pcl;
 using namespace console;
 using namespace pcl::recognition;
 
+#define M_PIf 3.14159265358979323846f
+
 //============================================================================================================================================
 
 ModelLibrary::ModelLibrary (float pair_width, float voxel_size)
@@ -59,8 +61,8 @@ ModelLibrary::ModelLibrary (float pair_width, float voxel_size)
 
   // Compute the bounds of the hash table
   float eps = 0.000001f; // To be sure that an angle of 0 or PI will not be excluded because it lies on the boundary of the voxel structure
-  float bounds[6] = {-eps, M_PI + eps, -eps,
-                     M_PI + eps, -eps, M_PI + eps};
+  float bounds[6] = {-eps, M_PIf + eps, -eps,
+                     M_PIf + eps, -eps, M_PIf + eps};
  
   hash_table_.build (bounds, num_of_cells_);
 }

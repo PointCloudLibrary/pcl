@@ -63,6 +63,8 @@ namespace pcl
         class Pixel
         {
           public:
+            Pixel (int id): id_ (id) {}
+
             inline void
             set_z1 (float z1) { z1_ = z1;}
 
@@ -73,6 +75,7 @@ namespace pcl
             float z1_, z2_;
             /** \brief These are the ids of the hypotheses at this pixel. */
             std::set<int> hypotheses_ids_;
+            int id_;
         };
 
       public:
