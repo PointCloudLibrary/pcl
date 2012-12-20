@@ -2,6 +2,8 @@
  * Software License Agreement (BSD License)
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -32,16 +34,17 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * Author : Jeremie Papon 
- * Email  : jpapon@gmail.com
  *
  */
 
-#include <pcl/point_types.h>
-#include <pcl/impl/instantiate.hpp>
-#include <pcl/segmentation/voxel_superpixels.h>
-#include <pcl/segmentation/impl/voxel_superpixels.hpp>
+#ifndef PCL_SEGMENTATION_BOOST_H_
+#define PCL_SEGMENTATION_BOOST_H_
 
-// Instantiations of specific point types
-template class pcl::VoxelSuperpixels<pcl::PointXYZRGBA>;
-template class pcl::VoxelSuperpixels<pcl::PointXYZRGB>;
+#ifdef __GNUC__
+#pragma GCC system_header 
+#endif
+
+// Marking all Boost headers as system headers to remove warnings
+#include <boost/graph/adjacency_list.hpp>
+
+#endif    // PCL_OCTREE_BOOST_H_

@@ -208,7 +208,7 @@
      <item row="1" column="0">
       <widget class="QPushButton" name="action_run_tool_">
        <property name="text">
-        <string>Action - Run Tool (to be removed)</string>
+        <string>Run Tool</string>
        </property>
       </widget>
      </item>

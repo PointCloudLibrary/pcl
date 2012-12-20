@@ -42,7 +42,7 @@
 #include <pcl/apps/cloud_composer/impl/cloud_item.hpp>
 #include <pcl/apps/cloud_composer/items/normals_item.h>
 #include <pcl/point_cloud.h>
-#include <pcl/segmentation/voxel_superpixels.h>
+#include <pcl/segmentation/supervoxels.h>
 
 
 template <typename PointT> QList <pcl::cloud_composer::CloudComposerItem*>
@@ -78,17 +78,22 @@ pcl::cloud_composer::VoxelSuperpixelsTool::performTemplatedAction (QList <const 
     qDebug () << "Octree resolution = "<<resolution;
     float seed_resolution = parameter_model_->getProperty("Seed Resolution").toFloat ();
     qDebug () << "Seed resolution = "<<seed_resolution;
-    pcl::VoxelSuperpixels<PointT> super (resolution, seed_resolution);
-    super.setInputCloud (input_cloud);
-
     
-    std::vector <pcl::PointIndices> superpixels;
-    typename pcl::PointCloud<PointT>::Ptr voxel_cloud;
-    super.extract (voxel_cloud, superpixels);
+    float rgb_weight = parameter_model_->getProperty("RGB Weight").toFloat ();
+    float normal_weight = parameter_model_->getProperty("Normals Weight").toFloat ();
+    float spatial_weight = parameter_model_->getProperty("Spatial Weight").toFloat ();
+    
+    pcl::SuperVoxels<PointT> super (resolution, seed_resolution);
+    super.setInputCloud (input_cloud);
+    super.setColorImportance (rgb_weight);
+    super.setSpatialImportance (spatial_weight);
+    super.setNormalImportance (normal_weight);
+    pcl::PointCloud<pcl::PointSuperVoxel>::Ptr supervoxel_cloud;
+    super.extract (supervoxel_cloud);
     
     
     typename pcl::PointCloud<PointXYZRGB>::Ptr color_segments;
-    color_segments = super.getColoredCloud ();
+    color_segments = super.getColoredVoxelCloud ();
     
     //typename pcl::PointCloud<PointXYZRGB>::Ptr seed_cloud;
     //seed_cloud = super.getSeedCloud ();
