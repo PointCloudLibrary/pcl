@@ -139,7 +139,7 @@ pcl::io::LZFRGB24ImageReader::read (
   // Copy to PointT
   cloud.width  = getWidth ();
   cloud.height = getHeight ();
-  cloud.reserve (getWidth () * getHeight ());
+  cloud.resize (getWidth () * getHeight ());
 
   register int rgb_idx = 0;
   char *color_r = &uncompressed_data[0];
@@ -148,12 +148,11 @@ pcl::io::LZFRGB24ImageReader::read (
 
   for (size_t i = 0; i < cloud.size (); ++i, ++rgb_idx)
   {
-    PointT pt;
+    PointT &pt = cloud.points[i];
 
     pt.b = color_b[rgb_idx];
     pt.g = color_g[rgb_idx];
     pt.r = color_r[rgb_idx];
-    cloud.points.push_back (pt);
   }
   return (true);
 }
@@ -190,7 +189,7 @@ pcl::io::LZFYUV422ImageReader::read (
   // Convert YUV422 to RGB24 and copy to PointT
   cloud.width  = getWidth ();
   cloud.height = getHeight ();
-  cloud.reserve (getWidth () * getHeight ());
+  cloud.resize (getWidth () * getHeight ());
 
   int wh2 = getWidth () * getHeight () / 2;
   char *color_u = &uncompressed_data[0];
@@ -200,21 +199,19 @@ pcl::io::LZFYUV422ImageReader::read (
   register int y_idx = 0;
   for (size_t i = 0; i < wh2; ++i, y_idx += 2)
   {
-    PointT pt;
+    PointT &pt1 = cloud.points[y_idx + 0];
     int v = color_v[i] - 128;
     int u = color_u[i] - 128;
 
-    pt.r =  CLIP_CHAR (color_y[y_idx + 0] + ((v * 18678 + 8192 ) >> 14));
-    pt.g =  CLIP_CHAR (color_y[y_idx + 0] + ((v * -9519 - u * 6472 + 8192) >> 14));
-    pt.b =  CLIP_CHAR (color_y[y_idx + 0] + ((u * 33292 + 8192 ) >> 14));
+    pt1.r =  CLIP_CHAR (color_y[y_idx + 0] + ((v * 18678 + 8192 ) >> 14));
+    pt1.g =  CLIP_CHAR (color_y[y_idx + 0] + ((v * -9519 - u * 6472 + 8192) >> 14));
+    pt1.b =  CLIP_CHAR (color_y[y_idx + 0] + ((u * 33292 + 8192 ) >> 14));
 
-    cloud.points.push_back (pt);
+    PointT &pt2 = cloud.points[y_idx + 1];
 
-    pt.r =  CLIP_CHAR (color_y[y_idx + 1] + ((v * 18678 + 8192 ) >> 14));
-    pt.g =  CLIP_CHAR (color_y[y_idx + 1] + ((v * -9519 - u * 6472 + 8192) >> 14));
-    pt.b =  CLIP_CHAR (color_y[y_idx + 1] + ((u * 33292 + 8192 ) >> 14));
-    
-    cloud.points.push_back (pt);
+    pt2.r =  CLIP_CHAR (color_y[y_idx + 1] + ((v * 18678 + 8192 ) >> 14));
+    pt2.g =  CLIP_CHAR (color_y[y_idx + 1] + ((v * -9519 - u * 6472 + 8192) >> 14));
+    pt2.b =  CLIP_CHAR (color_y[y_idx + 1] + ((u * 33292 + 8192 ) >> 14));
   }
 
   return (true);
@@ -257,16 +254,15 @@ pcl::io::LZFBayer8ImageReader::read (
   // Copy to PointT
   cloud.width  = getWidth ();
   cloud.height = getHeight ();
-  cloud.reserve (getWidth () * getHeight ());
+  cloud.resize (getWidth () * getHeight ());
   register int rgb_idx = 0;
   for (size_t i = 0; i < cloud.size (); ++i, rgb_idx += 3)
   {
-    PointT pt;
+    PointT &pt = cloud.points[i];
 
     pt.b = rgb_buffer[rgb_idx + 2];
     pt.g = rgb_buffer[rgb_idx + 1];
     pt.r = rgb_buffer[rgb_idx + 0];
-    cloud.points.push_back (pt);
   }
   return (true);
 }
