@@ -127,11 +127,11 @@ class SimpleHDLViewer
 
     void run ()
     {
-      cloud_viewer_->addCoordinateSystem (300.0);
+      cloud_viewer_->addCoordinateSystem (3.0);
       cloud_viewer_->setBackgroundColor (0, 0, 0);
       cloud_viewer_->initCameraParameters ();
-      cloud_viewer_->setCameraPosition (0.0, 0.0, 3000.0, 0.0, 1.0, 0.0, 0);
-      cloud_viewer_->setCameraClipDistances (0.0, 5000.0);
+      cloud_viewer_->setCameraPosition (0.0, 0.0, 30.0, 0.0, 1.0, 0.0, 0);
+      cloud_viewer_->setCameraClipDistances (0.0, 50.0);
       //cloud_viewer_->registerMouseCallback(&SimpleHDLViewer::mouse_callback, *this);
       //cloud_viewer_->registerKeyboardCallback (&SimpleHDLViewer::keyboard_callback, *this);
 
@@ -220,7 +220,12 @@ int main (int argc, char ** argv)
   {
     SimpleHDLViewer<pcl::PointXYZ> v (grabber);
     v.run ();
-  }
+  }/*
+  else if (boost::iequals (format, std::string ("XYZI")))
+  {
+    SimpleHDLViewer<pcl::PointXYZI> v (grabber);
+    v.run ();
+  }*/
   else if (boost::iequals (format, std::string ("XYZRGB")))
   {
     SimpleHDLViewer<pcl::PointXYZRGB> v (grabber);
