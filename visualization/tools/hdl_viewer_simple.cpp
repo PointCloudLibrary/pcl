@@ -160,9 +160,9 @@ class SimpleHDLViewer
           //if (!cloud_viewer_->updatePointCloud(cloud, "HDL")) {
           //	cloud_viewer_->addPointCloud(cloud, "HDL");
           //}
-          if (!cloud_viewer_->updatePointCloud (cloud, "HDL"))
+          if (!cloud_viewer_->updatePointCloud<PointType> (cloud, "HDL"))
           {
-            cloud_viewer_->addPointCloud (cloud, "HDL");
+            cloud_viewer_->addPointCloud<PointType> (cloud, "HDL");
           }
           cloud_viewer_->spinOnce ();
         }
@@ -220,12 +220,12 @@ int main (int argc, char ** argv)
   {
     SimpleHDLViewer<pcl::PointXYZ> v (grabber);
     v.run ();
-  }/*
+  }
   else if (boost::iequals (format, std::string ("XYZI")))
   {
     SimpleHDLViewer<pcl::PointXYZI> v (grabber);
     v.run ();
-  }*/
+  }
   else if (boost::iequals (format, std::string ("XYZRGB")))
   {
     SimpleHDLViewer<pcl::PointXYZRGB> v (grabber);
