@@ -239,7 +239,7 @@ pcl::io::LZFRGB24ImageWriter::write (const char *data,
   std::vector<char> rrggbb (width * height * 3);
   int ptr1 = 0,
       ptr2 = width * height,
-      ptr3 = ptr2 + width * height;
+      ptr3 = 2 * width * height;
   for (int i = 0; i < width * height; ++i, ++ptr1, ++ptr2, ++ptr3)
   {
     rrggbb[ptr1] = data[i * 3 + 0];
@@ -298,9 +298,9 @@ pcl::io::LZFYUV422ImageWriter::write (const char *data,
   // Transform YUV422 into UUUYYYYYYVVV for better compression
   std::vector<char> uuyyvv (width * height * 2);
   int wh2 = width * height / 2,
-      ptr1 = 0,                         // u
-      ptr2 = wh2,                       // y
-      ptr3 = ptr2 + width * height;     // v
+      ptr1 = 0,                        // u
+      ptr2 = wh2,                      // y
+      ptr3 = wh2 + width * height;     // v
   for (int i = 0; i < wh2; ++i, ++ptr1, ptr2 += 2, ++ptr3)
   {
     uuyyvv[ptr1] = data[i * 4 + 0];       // u

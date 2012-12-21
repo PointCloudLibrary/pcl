@@ -132,10 +132,21 @@ class SimpleOpenNIViewer
         std::stringstream ss1, ss2, ss3;
 
         ss1 << "frame_" << time << "_rgb.pclzf";
-        pcl::io::LZFRGB24ImageWriter lrgb;
-        lrgb.write (reinterpret_cast<char*> (&rgb_data_[0]), rgb_width_, rgb_height_, ss1.str ());
-        //pcl::io::LZFBayer8ImageWriter lrgb;
-        //lrgb.write (reinterpret_cast<const char*> (&image->getMetaData ().Data ()[0]), rgb_width_, rgb_height_, ss1.str ());
+        if (image->getEncoding () == openni_wrapper::Image::YUV422)
+        {
+          pcl::io::LZFYUV422ImageWriter lrgb;
+          lrgb.write (reinterpret_cast<const char*> (&image->getMetaData ().Data ()[0]), rgb_width_, rgb_height_, ss1.str ());
+        }
+        else if (image->getEncoding () == openni_wrapper::Image::RGB)
+        {
+          pcl::io::LZFRGB24ImageWriter lrgb;
+          lrgb.write (reinterpret_cast<char*> (&rgb_data_[0]), rgb_width_, rgb_height_, ss1.str ());
+        }
+        else if (image->getEncoding () == openni_wrapper::Image::BAYER_GRBG)
+        {
+          pcl::io::LZFBayer8ImageWriter lrgb;
+          lrgb.write (reinterpret_cast<const char*> (&image->getMetaData ().Data ()[0]), rgb_width_, rgb_height_, ss1.str ());
+        }
 
         pcl::io::LZFDepth16ImageWriter ld;
         ss2 << "frame_" + time + "_depth.pclzf";
@@ -152,6 +163,7 @@ class SimpleOpenNIViewer
         parameters_depth.principal_point_x = depth_image->getWidth () >> 1;
         parameters_depth.principal_point_y = depth_image->getHeight () >> 1;
           
+        pcl::io::LZFRGB24ImageWriter lrgb;
         lrgb.writeParameters (parameters_rgb, ss3.str ());
         ld.writeParameters (parameters_depth, ss3.str ());
         // By default, the z-value depth multiplication factor is written as part of the LZFDepthImageWriter's writeParameters as 0.001

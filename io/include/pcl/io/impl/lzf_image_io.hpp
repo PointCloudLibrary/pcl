@@ -142,9 +142,9 @@ pcl::io::LZFRGB24ImageReader::read (
   cloud.resize (getWidth () * getHeight ());
 
   register int rgb_idx = 0;
-  char *color_r = &uncompressed_data[0];
-  char *color_g = &uncompressed_data[getWidth () * getHeight ()];
-  char *color_b = &uncompressed_data[2 * getWidth () * getHeight ()];
+  unsigned char *color_r = reinterpret_cast<unsigned char*> (&uncompressed_data[0]);
+  unsigned char *color_g = reinterpret_cast<unsigned char*> (&uncompressed_data[getWidth () * getHeight ()]);
+  unsigned char *color_b = reinterpret_cast<unsigned char*> (&uncompressed_data[2 * getWidth () * getHeight ()]);
 
   for (size_t i = 0; i < cloud.size (); ++i, ++rgb_idx)
   {
@@ -185,30 +185,28 @@ pcl::io::LZFYUV422ImageReader::read (
     return (false);
   }
 
-  unsigned char *yuv_buffer = reinterpret_cast<unsigned char*>(&uncompressed_data[0]);
   // Convert YUV422 to RGB24 and copy to PointT
   cloud.width  = getWidth ();
   cloud.height = getHeight ();
   cloud.resize (getWidth () * getHeight ());
 
   int wh2 = getWidth () * getHeight () / 2;
-  char *color_u = &uncompressed_data[0];
-  char *color_y = &uncompressed_data[wh2];
-  char *color_v = &uncompressed_data[wh2 + getWidth () * getHeight ()];
+  unsigned char *color_u = reinterpret_cast<unsigned char*> (&uncompressed_data[0]);
+  unsigned char *color_y = reinterpret_cast<unsigned char*> (&uncompressed_data[wh2]);
+  unsigned char *color_v = reinterpret_cast<unsigned char*> (&uncompressed_data[wh2 + getWidth () * getHeight ()]);
   
   register int y_idx = 0;
   for (size_t i = 0; i < wh2; ++i, y_idx += 2)
   {
-    PointT &pt1 = cloud.points[y_idx + 0];
     int v = color_v[i] - 128;
     int u = color_u[i] - 128;
 
+    PointT &pt1 = cloud.points[y_idx + 0];
     pt1.r =  CLIP_CHAR (color_y[y_idx + 0] + ((v * 18678 + 8192 ) >> 14));
     pt1.g =  CLIP_CHAR (color_y[y_idx + 0] + ((v * -9519 - u * 6472 + 8192) >> 14));
     pt1.b =  CLIP_CHAR (color_y[y_idx + 0] + ((u * 33292 + 8192 ) >> 14));
 
     PointT &pt2 = cloud.points[y_idx + 1];
-
     pt2.r =  CLIP_CHAR (color_y[y_idx + 1] + ((v * 18678 + 8192 ) >> 14));
     pt2.g =  CLIP_CHAR (color_y[y_idx + 1] + ((v * -9519 - u * 6472 + 8192) >> 14));
     pt2.b =  CLIP_CHAR (color_y[y_idx + 1] + ((u * 33292 + 8192 ) >> 14));
