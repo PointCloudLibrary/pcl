@@ -295,27 +295,6 @@ pcl::io::LZFYUV422ImageWriter::write (const char *data,
                                       uint32_t width, uint32_t height,
                                       const std::string &filename)
 {
-#if 0
-  unsigned int yuv_size = width * height * 2;
-  char* compressed_bayer = static_cast<char*> (malloc (size_t (float (yuv_size) * 1.5f + float (LZF_HEADER_SIZE))));
-  size_t compressed_size = compress (data,
-                                     yuv_size,
-                                     width, height,
-                                     "yuv422",
-                                     compressed_bayer);
-
-  if (compressed_size == 0)
-  {
-    free (compressed_bayer);
-    return (false);
-  }
-
-  // Save the actual image
-  saveImageBlob (compressed_bayer, compressed_size, filename);
-  free (compressed_bayer);
-  return (true);
-#endif
-#if 1
   // Transform YUV422 into UUUYYYYYYVVV for better compression
   std::vector<char> uuyyvv (width * height * 2);
   int wh2 = width * height / 2,
@@ -334,7 +313,7 @@ pcl::io::LZFYUV422ImageWriter::write (const char *data,
   size_t compressed_size = compress (reinterpret_cast<const char*> (&uuyyvv[0]), 
                                      uint32_t (uuyyvv.size ()),
                                      width, height,
-                                     "rgb24",
+                                     "yuv422",
                                      compressed_yuv);
 
   if (compressed_size == 0)
@@ -347,7 +326,6 @@ pcl::io::LZFYUV422ImageWriter::write (const char *data,
   saveImageBlob (compressed_yuv, compressed_size, filename);
   free (compressed_yuv);
   return (true);
-#endif
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -356,10 +334,6 @@ pcl::io::LZFBayer8ImageWriter::write (const char *data,
                                       uint32_t width, uint32_t height,
                                       const std::string &filename)
 {
-#if 0
-  pcl::console::TicToc tt;
-  tt.tic ();
-#endif
   unsigned int bayer_size = width * height;
   char* compressed_bayer = static_cast<char*> (malloc (size_t (float (bayer_size) * 1.5f + float (LZF_HEADER_SIZE))));
   size_t compressed_size = compress (data,
@@ -377,50 +351,6 @@ pcl::io::LZFBayer8ImageWriter::write (const char *data,
   // Save the actual image
   saveImageBlob (compressed_bayer, compressed_size, filename);
   free (compressed_bayer);
-#if 0
-  std::cerr << "Time[1]: " << tt.toc () << "ms, size: " << compressed_size << "\n";
-  tt.tic ();
-
-  // Transform Bayer8 for better compression
-  std::vector<char> rrggbb (width * height);
-  unsigned width2 = width >> 1;
-  unsigned height2 = height >> 1;
-  int ptr0 = 0, // original data
-      ptr1 = 0, // odd green lines
-      ptr2 = width2, // red line
-      ptr3 = width2 * (height + 1); // blue line
-
-  for (unsigned y = 0; y < height2; ++y, ptr0 += width, ptr1 += width, ptr2 += width2, ptr3 += width2)
-  {
-    for (unsigned x = 0; x < width2; ++x, ptr0 += 2, ++ptr1, ++ptr2, ++ptr3)
-    {
-      rrggbb[ptr1] = data[ptr0];                  // first  green line starting with green (GRGRGR)
-      rrggbb[ptr2] = data[ptr0 + 1];              // red line from line GRGRGR
-      rrggbb[ptr1+width] = data[ptr0 + width + 1];  // second green line (BGBGBG)
-      rrggbb[ptr3] = data[ptr0 + width];           // blue line from BGBGBG
-    }
-    // skip the red/blue images
-    ptr1 += width2;
-  }
-
-  char* compressed_rgb = static_cast<char*> (malloc (size_t (float (rrggbb.size ()) * 1.5f + float (LZF_HEADER_SIZE))));
-  size_t rgb_compressed_size = compress (reinterpret_cast<const char*> (&rrggbb[0]), 
-                                         uint32_t (rrggbb.size ()),
-                                         width, height,
-                                         "rgb24",
-                                         compressed_rgb);
-  if (rgb_compressed_size == 0)
-  {
-    free (compressed_rgb);
-    return (false);
-  }
-
-  // Save the actual image
-  saveImageBlob (compressed_rgb, rgb_compressed_size, filename);
-  free (compressed_rgb);
-  
-  std::cerr << "Time[2]: " << tt.toc () << "ms, size: " << rgb_compressed_size << "\n";
-#endif
   return (true);
 }
 
@@ -554,7 +484,6 @@ pcl::io::LZFImageReader::decompress (const std::vector<char> &input,
     PCL_ERROR ("[pcl::io::LZFImageReader::decompress] Output array needs to be preallocated! The correct uncompressed array value should have been stored during the compression.\n");
     return (false);
   }
-  //char *uncompressed_data = static_cast<char*> (malloc (uncompressed_size));
   unsigned int tmp_size = pcl::lzfDecompress (static_cast<const char*>(&input[0]), 
                                               uint32_t (input.size ()), 
                                               static_cast<char*>(&output[0]), 

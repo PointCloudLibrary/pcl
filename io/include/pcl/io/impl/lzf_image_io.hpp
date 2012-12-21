@@ -139,7 +139,8 @@ pcl::io::LZFRGB24ImageReader::read (
   // Copy to PointT
   cloud.width  = getWidth ();
   cloud.height = getHeight ();
-  cloud.resize (getWidth () * getHeight ());
+  cloud.reserve (getWidth () * getHeight ());
+
   register int rgb_idx = 0;
   char *color_r = &uncompressed_data[0];
   char *color_g = &uncompressed_data[getWidth () * getHeight ()];
@@ -147,11 +148,12 @@ pcl::io::LZFRGB24ImageReader::read (
 
   for (size_t i = 0; i < cloud.size (); ++i, ++rgb_idx)
   {
-    PointT &pt = cloud.points[i];
+    PointT pt;
 
     pt.b = color_b[rgb_idx];
     pt.g = color_g[rgb_idx];
     pt.r = color_r[rgb_idx];
+    cloud.points.push_back (pt);
   }
   return (true);
 }
@@ -189,30 +191,30 @@ pcl::io::LZFYUV422ImageReader::read (
   cloud.width  = getWidth ();
   cloud.height = getHeight ();
   cloud.reserve (getWidth () * getHeight ());
-   
-  //std::vector<unsigned char> rgb_buffer (getWidth () * getHeight () * 3);
-  //unsigned char *rgb = reinterpret_cast<unsigned char*>(&rgb_buffer[0]);
-  for (register unsigned y_idx = 0; y_idx < getHeight (); ++y_idx)
+
+  int wh2 = getWidth () * getHeight () / 2;
+  char *color_u = &uncompressed_data[0];
+  char *color_y = &uncompressed_data[wh2];
+  char *color_v = &uncompressed_data[wh2 + getWidth () * getHeight ()];
+  
+  register int y_idx = 0;
+  for (size_t i = 0; i < wh2; ++i, y_idx += 2)
   {
-    for (register unsigned x_idx = 0; x_idx < getWidth (); x_idx += 2, yuv_buffer += 4)
-    {
-      PointT pt;
+    PointT pt;
+    int v = color_v[i] - 128;
+    int u = color_u[i] - 128;
 
-      int v = yuv_buffer[2] - 128;
-      int u = yuv_buffer[0] - 128;
+    pt.r =  CLIP_CHAR (color_y[y_idx + 0] + ((v * 18678 + 8192 ) >> 14));
+    pt.g =  CLIP_CHAR (color_y[y_idx + 0] + ((v * -9519 - u * 6472 + 8192) >> 14));
+    pt.b =  CLIP_CHAR (color_y[y_idx + 0] + ((u * 33292 + 8192 ) >> 14));
 
-      pt.r =  CLIP_CHAR (yuv_buffer[1] + ((v * 18678 + 8192 ) >> 14));
-      pt.g =  CLIP_CHAR (yuv_buffer[1] + ((v * -9519 - u * 6472 + 8192) >> 14));
-      pt.b =  CLIP_CHAR (yuv_buffer[1] + ((u * 33292 + 8192 ) >> 14));
+    cloud.points.push_back (pt);
 
-      cloud.points.push_back (pt);
-
-      pt.r =  CLIP_CHAR (yuv_buffer[3] + ((v * 18678 + 8192 ) >> 14));
-      pt.g =  CLIP_CHAR (yuv_buffer[3] + ((v * -9519 - u * 6472 + 8192) >> 14));
-      pt.b =  CLIP_CHAR (yuv_buffer[3] + ((u * 33292 + 8192 ) >> 14));
-      
-      cloud.points.push_back (pt);
-    }
+    pt.r =  CLIP_CHAR (color_y[y_idx + 1] + ((v * 18678 + 8192 ) >> 14));
+    pt.g =  CLIP_CHAR (color_y[y_idx + 1] + ((v * -9519 - u * 6472 + 8192) >> 14));
+    pt.b =  CLIP_CHAR (color_y[y_idx + 1] + ((u * 33292 + 8192 ) >> 14));
+    
+    cloud.points.push_back (pt);
   }
 
   return (true);
@@ -249,50 +251,22 @@ pcl::io::LZFBayer8ImageReader::read (
   // Convert Bayer8 to RGB24
   std::vector<unsigned char> rgb_buffer (getWidth () * getHeight () * 3);
   pcl::io::DeBayer i;
-
-#if 0
-  // Convert to Bayer8
-  std::vector<unsigned char> bayer (getWidth () * getHeight ());
-  unsigned width2 = getWidth () >> 1;
-  unsigned height2 = getHeight () >> 1;
-  int ptr0 = 0, // original data
-      ptr1 = 0, // odd green lines
-      ptr2 = width2, // red line
-      ptr3 = width2 * (getHeight () + 1); // blue line
-
-  for (unsigned y = 0; y < height2; ++y, ptr0 += getWidth (), ptr1 += getWidth (), ptr2 += width2, ptr3 += width2)
-  {
-    for (unsigned x = 0; x < width2; ++x, ptr0 += 2, ++ptr1, ++ptr2, ++ptr3)
-    {
-      bayer [ptr0] = uncompressed_data[ptr1];
-      bayer [ptr0 + 1] = uncompressed_data[ptr2];
-      bayer [ptr0 + getWidth () + 1] = uncompressed_data[ptr1 + getWidth ()];
-      bayer [ptr0 + getWidth ()] = uncompressed_data[ptr3];
-    }
-    // skip the red/blue images
-    ptr1 += width2;
-  }
-
-  i.debayerEdgeAware (reinterpret_cast<unsigned char*> (&bayer[0]), 
-                     static_cast<unsigned char*> (&rgb_buffer[0]), 
-                     getWidth (), getHeight ());
-#endif
-
   i.debayerEdgeAware (reinterpret_cast<unsigned char*> (&uncompressed_data[0]), 
                      static_cast<unsigned char*> (&rgb_buffer[0]), 
                      getWidth (), getHeight ());
   // Copy to PointT
   cloud.width  = getWidth ();
   cloud.height = getHeight ();
-  cloud.resize (getWidth () * getHeight ());
+  cloud.reserve (getWidth () * getHeight ());
   register int rgb_idx = 0;
   for (size_t i = 0; i < cloud.size (); ++i, rgb_idx += 3)
   {
-    PointT &pt = cloud.points[i];
+    PointT pt;
 
     pt.b = rgb_buffer[rgb_idx + 2];
     pt.g = rgb_buffer[rgb_idx + 1];
     pt.r = rgb_buffer[rgb_idx + 0];
+    cloud.points.push_back (pt);
   }
   return (true);
 }
