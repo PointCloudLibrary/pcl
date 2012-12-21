@@ -68,6 +68,7 @@ namespace pcl
       * The current list of compressors/decompressors include:
       *  * LZF compressed 24-bit [RR...RGG...GBB...B] data
       *  * LZF compressed 8-bit Bayer data
+      *  * LZF compressed 16-bit YUV422 data
       *  * LZF compressed 16-bit depth data
       *
       * Please note that files found using the above mentioned extensions will be treated
@@ -264,6 +265,34 @@ namespace pcl
       * \author Radu B. Rusu
       * \ingroup io
       */
+    class PCL_EXPORTS LZFYUV422ImageReader : public LZFRGB24ImageReader
+    {
+      public:
+        using LZFRGB24ImageReader::readParameters;
+
+        /** Empty constructor */
+        LZFYUV422ImageReader () : LZFRGB24ImageReader () {}
+        /** Empty destructor */
+        ~LZFYUV422ImageReader () {}
+
+        /** \brief Read the data stored in a PCLZF YUV422 16bit file and convert it to a pcl::PointCloud type.
+          * \param[in] filename the file name to read the data from
+          * \param[out] cloud the resultant output point cloud
+          */
+        template<typename PointT> bool
+        read (const std::string &filename, pcl::PointCloud<PointT> &cloud);
+    };
+
+    /** \brief PCL-LZF 8-bit Bayer image format reader.
+      *
+      * The main advantage of using the PCL-LZF image I/O routines is a very good file size 
+      * versus I/O speed ratio. Tests performed using LZF, Snappy, ZIP, GZ2, BZIP2, as well 
+      * as PNG, JPEG, and TIFF compression have shown that the internal PCL LZF methods 
+      * provide the best score for the types of applications PCL is suited for.
+      *
+      * \author Radu B. Rusu
+      * \ingroup io
+      */
     class PCL_EXPORTS LZFBayer8ImageReader : public LZFRGB24ImageReader
     {
       public:
@@ -291,6 +320,7 @@ namespace pcl
       * The current list of compressors/decompressors include:
       *  * LZF compressed 24-bit [RR...RGG...GBB...B] data
       *  * LZF compressed 8-bit Bayer data
+      *  * LZF compressed 16-bit YUV422 data
       *  * LZF compressed 16-bit depth data
       *
       * Please note that files found using the above mentioned extensions will be treated
@@ -495,6 +525,37 @@ namespace pcl
                          const std::string &filename);
 
       protected:
+    };
+
+    /** \brief PCL-LZF 16-bit YUV422 image format writer.
+      *
+      * The main advantage of using the PCL-LZF image I/O routines is a very good file size 
+      * versus I/O speed ratio. Tests performed using LZF, Snappy, ZIP, GZ2, BZIP2, as well 
+      * as PNG, JPEG, and TIFF compression have shown that the internal PCL LZF methods 
+      * provide the best score for the types of applications PCL is suited for.
+      *
+      * \author Radu B. Rusu
+      * \ingroup io
+      */
+    class PCL_EXPORTS LZFYUV422ImageWriter : public LZFRGB24ImageWriter
+    {
+      public:
+        /** Empty constructor */
+        LZFYUV422ImageWriter () : LZFRGB24ImageWriter () {}
+        /** Empty destructor */
+        ~LZFYUV422ImageWriter () {}
+
+        /** \brief Save a 16-bit YUV422 image into PCL-LZF format.
+          * \param[in] data the array holding the YUV422 image (as [YUYV...YUYV])
+          * \param[in] width the with of the data array
+          * \param[in] height the height of the data array
+          * \param[in] filename the file name to write (preferred extension: .pclzf)
+          * \return true if operation successful, false otherwise
+          */
+        virtual bool
+        write (const char *data, 
+               uint32_t width, uint32_t height,
+               const std::string &filename);
     };
 
     /** \brief PCL-LZF 8-bit Bayer image format writer.

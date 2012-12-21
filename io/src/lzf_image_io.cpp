@@ -291,6 +291,67 @@ pcl::io::LZFRGB24ImageWriter::writeParameters (const pcl::io::CameraParameters &
 
 //////////////////////////////////////////////////////////////////////////////
 bool
+pcl::io::LZFYUV422ImageWriter::write (const char *data, 
+                                      uint32_t width, uint32_t height,
+                                      const std::string &filename)
+{
+#if 0
+  unsigned int yuv_size = width * height * 2;
+  char* compressed_bayer = static_cast<char*> (malloc (size_t (float (yuv_size) * 1.5f + float (LZF_HEADER_SIZE))));
+  size_t compressed_size = compress (data,
+                                     yuv_size,
+                                     width, height,
+                                     "yuv422",
+                                     compressed_bayer);
+
+  if (compressed_size == 0)
+  {
+    free (compressed_bayer);
+    return (false);
+  }
+
+  // Save the actual image
+  saveImageBlob (compressed_bayer, compressed_size, filename);
+  free (compressed_bayer);
+  return (true);
+#endif
+#if 1
+  // Transform YUV422 into UUUYYYYYYVVV for better compression
+  std::vector<char> uuyyvv (width * height * 2);
+  int wh2 = width * height / 2,
+      ptr1 = 0,                         // u
+      ptr2 = wh2,                       // y
+      ptr3 = ptr2 + width * height;     // v
+  for (int i = 0; i < wh2; ++i, ++ptr1, ptr2 += 2, ++ptr3)
+  {
+    uuyyvv[ptr1] = data[i * 4 + 0];       // u
+    uuyyvv[ptr2 + 0] = data[i * 4 + 1];   // y
+    uuyyvv[ptr2 + 1] = data[i * 4 + 3];   // y
+    uuyyvv[ptr3] = data[i * 4 + 2];       // v
+  }
+
+  char* compressed_yuv = static_cast<char*> (malloc (size_t (float (uuyyvv.size ()) * 1.5f + float (LZF_HEADER_SIZE))));
+  size_t compressed_size = compress (reinterpret_cast<const char*> (&uuyyvv[0]), 
+                                     uint32_t (uuyyvv.size ()),
+                                     width, height,
+                                     "rgb24",
+                                     compressed_yuv);
+
+  if (compressed_size == 0)
+  {
+    free (compressed_yuv);
+    return (false);
+  }
+
+  // Save the actual image
+  saveImageBlob (compressed_yuv, compressed_size, filename);
+  free (compressed_yuv);
+  return (true);
+#endif
+}
+
+//////////////////////////////////////////////////////////////////////////////
+bool
 pcl::io::LZFBayer8ImageWriter::write (const char *data, 
                                       uint32_t width, uint32_t height,
                                       const std::string &filename)

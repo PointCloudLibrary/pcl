@@ -41,6 +41,8 @@
 #include <pcl/console/print.h>
 #include <pcl/io/debayer.h>
 
+#define CLIP_CHAR(c) static_cast<unsigned char> ((c)>255?255:(c)<0?0:(c))
+
 //////////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool
 pcl::io::LZFDepth16ImageReader::read (
@@ -151,6 +153,68 @@ pcl::io::LZFRGB24ImageReader::read (
     pt.g = color_g[rgb_idx];
     pt.r = color_r[rgb_idx];
   }
+  return (true);
+}
+
+//////////////////////////////////////////////////////////////////////////////
+template <typename PointT> bool
+pcl::io::LZFYUV422ImageReader::read (
+    const std::string &filename, pcl::PointCloud<PointT> &cloud)
+{
+  uint32_t uncompressed_size;
+  std::vector<char> compressed_data;
+  if (!loadImageBlob (filename, compressed_data, uncompressed_size))
+  {
+    PCL_ERROR ("[pcl::io::LZFYUV422ImageReader::read] Unable to read image data from %s.\n", filename.c_str ());
+    return (false);
+  }
+
+  if (uncompressed_size != getWidth () * getHeight () * 2)
+  {
+    PCL_DEBUG ("[pcl::io::LZFYUV422ImageReader::read] Uncompressed data has wrong size (%u), while in fact it should be %u bytes. \n[pcl::io::LZFYUV422ImageReader::read] Are you sure %s is a 16-bit YUV422 PCLZF file? Identifier says: %s\n", uncompressed_size, getWidth () * getHeight (), filename.c_str (), getImageType ().c_str ());
+    return (false);
+  }
+
+  std::vector<char> uncompressed_data (uncompressed_size);
+  decompress (compressed_data, uncompressed_data);
+
+  if (uncompressed_data.empty ())
+  {
+    PCL_ERROR ("[pcl::io::LZFYUV422ImageReader::read] Error uncompressing data stored in %s!\n", filename.c_str ());
+    return (false);
+  }
+
+  unsigned char *yuv_buffer = reinterpret_cast<unsigned char*>(&uncompressed_data[0]);
+  // Convert YUV422 to RGB24 and copy to PointT
+  cloud.width  = getWidth ();
+  cloud.height = getHeight ();
+  cloud.reserve (getWidth () * getHeight ());
+   
+  //std::vector<unsigned char> rgb_buffer (getWidth () * getHeight () * 3);
+  //unsigned char *rgb = reinterpret_cast<unsigned char*>(&rgb_buffer[0]);
+  for (register unsigned y_idx = 0; y_idx < getHeight (); ++y_idx)
+  {
+    for (register unsigned x_idx = 0; x_idx < getWidth (); x_idx += 2, yuv_buffer += 4)
+    {
+      PointT pt;
+
+      int v = yuv_buffer[2] - 128;
+      int u = yuv_buffer[0] - 128;
+
+      pt.r =  CLIP_CHAR (yuv_buffer[1] + ((v * 18678 + 8192 ) >> 14));
+      pt.g =  CLIP_CHAR (yuv_buffer[1] + ((v * -9519 - u * 6472 + 8192) >> 14));
+      pt.b =  CLIP_CHAR (yuv_buffer[1] + ((u * 33292 + 8192 ) >> 14));
+
+      cloud.points.push_back (pt);
+
+      pt.r =  CLIP_CHAR (yuv_buffer[3] + ((v * 18678 + 8192 ) >> 14));
+      pt.g =  CLIP_CHAR (yuv_buffer[3] + ((v * -9519 - u * 6472 + 8192) >> 14));
+      pt.b =  CLIP_CHAR (yuv_buffer[3] + ((u * 33292 + 8192 ) >> 14));
+      
+      cloud.points.push_back (pt);
+    }
+  }
+
   return (true);
 }
 
