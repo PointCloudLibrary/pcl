@@ -48,14 +48,10 @@
 #include <pcl/kdtree/kdtree.h>
 #include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/PolygonMesh.h>
-#include <pcl/TextureMesh.h>
 
 #include <fstream>
 #include <iostream>
 
-// add by ktran to export update function
-#include <pcl/pcl_macros.h>
-#include <pcl/point_types.h>
 
 
 namespace pcl

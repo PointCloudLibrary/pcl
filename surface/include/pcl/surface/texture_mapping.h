@@ -156,13 +156,13 @@ namespace pcl
       void
       mapTexture2Mesh (pcl::TextureMesh &tex_mesh);
 
-      /** \brief map texture to a mesh UV mapping
+      /** \brief Map texture to a mesh UV mapping
         * \param[in] tex_mesh texture mesh
         */
       void
       mapTexture2MeshUV (pcl::TextureMesh &tex_mesh);
 
-      /** \brief map textures aquired from a set of cameras onto a mesh.
+      /** \brief Map textures acquired from a set of cameras onto a mesh.
         * \details With UV mapping, the mesh must be divided into NbCamera + 1 sub-meshes.
         * Each sub-mesh corresponding to the faces visible by one camera. The last submesh containing all non-visible faces
         * \param[in] tex_mesh texture mesh
