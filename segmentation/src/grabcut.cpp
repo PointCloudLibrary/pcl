@@ -40,13 +40,13 @@
 #include <pcl/segmentation/grabcut.h>
 
 float 
-pcl::grabcut::distance2(const Color &c1, const Color &c2)
+pcl::segmentation::grabcut::distance2(const Color &c1, const Color &c2)
 {
   return ((c1.r-c2.r)*(c1.r-c2.r)+(c1.g-c2.g)*(c1.g-c2.g)+(c1.b-c2.b)*(c1.b-c2.b));
 }
 
 void
-pcl::grabcut::GaussianFitter::add (const Color &c)
+pcl::segmentation::grabcut::GaussianFitter::add (const Color &c)
 {
   sum_.r += c.r; sum_.g += c.g; sum_.b += c.b;
 
@@ -59,7 +59,7 @@ pcl::grabcut::GaussianFitter::add (const Color &c)
 
 // Build the gaussian out of all the added colors
 void
-pcl::grabcut::GaussianFitter::fit (Gaussian& g, uint32_t total_count, bool compute_eigens) const
+pcl::segmentation::grabcut::GaussianFitter::fit (Gaussian& g, uint32_t total_count, bool compute_eigens) const
 {
   if (count_==0)
   {
@@ -118,7 +118,7 @@ pcl::grabcut::GaussianFitter::fit (Gaussian& g, uint32_t total_count, bool compu
 }
 
 float 
-pcl::grabcut::GMM::probabilityDensity (const Color &c)
+pcl::segmentation::grabcut::GMM::probabilityDensity (const Color &c)
 {
   float result = 0;
   
@@ -129,10 +129,10 @@ pcl::grabcut::GMM::probabilityDensity (const Color &c)
 }
 
 float 
-pcl::grabcut::GMM::probabilityDensity (uint32_t i, const Color &c)
+pcl::segmentation::grabcut::GMM::probabilityDensity (uint32_t i, const Color &c)
 {
   float result = 0;
-  const pcl::grabcut::Gaussian &G = gaussians_[i];
+  const pcl::segmentation::grabcut::Gaussian &G = gaussians_[i];
   if (G.pi > 0 )
   {
     if (G.determinant > 0)
@@ -153,7 +153,7 @@ pcl::grabcut::GMM::probabilityDensity (uint32_t i, const Color &c)
 }
 
 void 
-pcl::grabcut::buildGMMs (const Image& image, 
+pcl::segmentation::grabcut::buildGMMs (const Image& image, 
                          const pcl::PointCloud<SegmentationValue>& hard_segmentation,
                          pcl::PointCloud<uint32_t>& components,
                          GMM& background_GMM, GMM& foreground_GMM)
@@ -271,7 +271,7 @@ pcl::grabcut::buildGMMs (const Image& image,
 }
 
 void 
-pcl::grabcut::learnGMMs (const Image& image, 
+pcl::segmentation::grabcut::learnGMMs (const Image& image, 
                          const pcl::PointCloud<SegmentationValue>& hard_segmentation,
                          pcl::PointCloud<uint32_t>& components,
                          GMM& background_GMM, GMM& foreground_GMM)
@@ -356,8 +356,22 @@ pcl::grabcut::learnGMMs (const Image& image,
   fore_fitters.clear ();
 }
 
+template <typename PointT> void
+pcl::segmentation::grabcut::setInputCloud (const pcl::PointCloud<PointT>::ConstPtr cloud)
+{
+  using namespace pcl::segmentation::grabcut;
+  
+  image_.reset (new Image);
+  image_->width = cloud->width;
+  image_->height = cloud->height;
+  for (std::size_t i = 0; i < cloud->size (); ++i)
+  {
+    (*image_) [i] = Color ((*cloud) [i]);
+  }
+}
+
 void
-pcl::GrabCut::addEdge (vertex_descriptor &v1, vertex_descriptor &v2, float capacity, float rev_capacity)
+pcl::segmentation::grabcut::addEdge (vertex_descriptor &v1, vertex_descriptor &v2, float capacity, float rev_capacity)
 {
   edge_descriptor e1 = add_edge (v1, v2, graph_).first;
   edge_descriptor e2 = add_edge (v2, v1, graph_).first;
@@ -369,16 +383,21 @@ pcl::GrabCut::addEdge (vertex_descriptor &v1, vertex_descriptor &v2, float capac
 }
 
 void
-pcl::GrabCut::setTerminalWeights (vertex_descriptor& v, float source_capacity, float sink_capacity)
+pcl::segmentation::grabcut::setTerminalWeights (vertex_descriptor& v, float source_capacity, float sink_capacity)
 {
   addEdge (graph_source_, v, source_capacity, source_capacity);
   addEdge (v, graph_sink_, sink_capacity, sink_capacity);
 }
 
 bool
-pcl::GrabCut::initCompute ()
+pcl::segmentation::grabcut::initCompute ()
 {
-  using namespace pcl::grabcut;
+  using namespace pcl::segmentation::grabcut;
+  if (!image_->isOrganized ())
+  {
+    PCL_ERROR ("[pcl::segmentation::grabcut::initCompute ()] Need an organized point cloud to proceed!");
+    return (false);
+  }
   
   width_ = image_->width;
   height_ = image_->height;
@@ -389,8 +408,7 @@ pcl::GrabCut::initCompute ()
 
   hard_segmentation_.reset (new pcl::PointCloud<SegmentationValue> (width_, height_, SegmentationBackground));
 
-//  soft_segmentation_ = 0;		// Not yet implemented
-
+  //  soft_segmentation_ = 0;		// Not yet implemented
   t_links_image_.reset (new Image (width_, height_, Color (0,0,0)));
   // t_links_image_->fill (Color (0,0,0));
   n_links_image_.reset (new pcl::PointCloud<float> (width_, height_, 0));
@@ -415,9 +433,9 @@ pcl::GrabCut::initCompute ()
 }
 
 void 
-pcl::GrabCut::initialize (uint32_t x1, uint32_t y1, uint32_t x2, uint32_t y2)
+pcl::segmentation::grabcut::initialize (uint32_t x1, uint32_t y1, uint32_t x2, uint32_t y2)
 {
-  using namespace pcl::grabcut;
+  using namespace pcl::segmentation::grabcut;
   
   // Step 1: User creates inital Trimap with rectangle, Background outside, Unknown inside
   fill (*trimap_, TrimapBackground);
@@ -429,7 +447,7 @@ pcl::GrabCut::initialize (uint32_t x1, uint32_t y1, uint32_t x2, uint32_t y2)
 }
 
 void 
-pcl::GrabCut::fitGMMs ()
+pcl::segmentation::grabcut::fitGMMs ()
 {
   // Step 3: Build GMMs using Orchard-Bouman clustering algorithm
   buildGMMs (*image_, *hard_segmentation_, *GMM_component_, background_GMM_, foreground_GMM_);
@@ -442,7 +460,7 @@ pcl::GrabCut::fitGMMs ()
 }
 
 int 
-pcl::GrabCut::refineOnce ()
+pcl::segmentation::grabcut::refineOnce ()
 {
   float flow = 0;
 
@@ -464,7 +482,7 @@ pcl::GrabCut::refineOnce ()
 }
 
 void 
-pcl::GrabCut::refine ()
+pcl::segmentation::grabcut::refine ()
 {
   int changed = width_*height_;
 
@@ -473,9 +491,9 @@ pcl::GrabCut::refine ()
 }
 
 int 
-pcl::GrabCut::updateHardSegmentation ()
+pcl::segmentation::grabcut::updateHardSegmentation ()
 {
-  using namespace pcl::grabcut;
+  using namespace pcl::segmentation::grabcut;
   
   int changed = 0;
 
@@ -508,9 +526,9 @@ pcl::GrabCut::updateHardSegmentation ()
 }
 
 void 
-pcl::GrabCut::setTrimap (int x1, int y1, int x2, int y2, const pcl::grabcut::TrimapValue& t)
+pcl::segmentation::grabcut::setTrimap (int x1, int y1, int x2, int y2, const pcl::segmentation::grabcut::TrimapValue& t)
 {
-  using namespace pcl::grabcut;
+  using namespace pcl::segmentation::grabcut;
   
   fillRectangle (*trimap_, x1, y1, x2, y2, t);
 
@@ -525,9 +543,9 @@ pcl::GrabCut::setTrimap (int x1, int y1, int x2, int y2, const pcl::grabcut::Tri
 }
 
 void 
-pcl::GrabCut::initGraph ()
+pcl::segmentation::grabcut::initGraph ()
 {
-  using namespace pcl::grabcut;
+  using namespace pcl::segmentation::grabcut;
   
   // Set up the graph (it can only be used once, so we have to recreate it each time the graph is updated)
   graph_.clear ();
@@ -599,7 +617,7 @@ pcl::GrabCut::initGraph ()
 }
 
 void 
-pcl::GrabCut::computeNLinks ()
+pcl::segmentation::grabcut::computeNLinks ()
 {
   for (uint32_t y = 0; y < height_; ++y )
   {
@@ -621,14 +639,14 @@ pcl::GrabCut::computeNLinks ()
 }
 
 float 
-pcl::GrabCut::computeNLink (uint32_t x1, uint32_t y1, uint32_t x2, uint32_t y2)
+pcl::segmentation::grabcut::computeNLink (uint32_t x1, uint32_t y1, uint32_t x2, uint32_t y2)
 {
   float d = static_cast<float> (sqrt ((x1-x2)*(x1-x2)+ (y1-y2)*(y1-y2)));
   return (static_cast<float> (lambda_ * exp (-beta_ * distance2((*image_)(x1,y1), (*image_)(x2,y2))) / d));
 }
 
 void 
-pcl::GrabCut::computeBeta ()
+pcl::segmentation::grabcut::computeBeta ()
 {
   float result = 0;
   int edges = 0;
@@ -668,15 +686,15 @@ pcl::GrabCut::computeBeta ()
 }
 
 void 
-pcl::GrabCut::computeL ()
+pcl::segmentation::grabcut::computeL ()
 {
   L_ = 8*lambda_ + 1;
 }
 
 void 
-pcl::GrabCut::buildImages ()
+pcl::segmentation::grabcut::buildImages ()
 {
-  using namespace pcl::grabcut;
+  using namespace pcl::segmentation::grabcut;
   
   fill (*n_links_image_, 0.f);
 
@@ -713,15 +731,22 @@ pcl::GrabCut::buildImages ()
       
       // GMM image
       if ((*hard_segmentation_)(x,y) == SegmentationForeground)
+      {
         (*GMM_image_)(x,y) = Color ((static_cast<float> ((*GMM_component_)(x,y))+1.f)/static_cast<float> (K_),0.f,0.f);
+      }
       else
+      {
         (*GMM_image_)(x,y) = Color (0.f,(static_cast<float> ((*GMM_component_)(x,y))+1.f)/static_cast<float> (K_),0.f);
-
+      }
       //Alpha image
       if ((*hard_segmentation_)(x,y) == SegmentationForeground)
+      {
         (*alpha_image_)(x,y) = 0.0;
+      }
       else
+      {
         (*alpha_image_)(x,y) = 0.75;
+      }
     }
   }
 }
