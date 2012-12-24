@@ -324,7 +324,7 @@ pcl::recognition::ObjRecRANSAC::testHypotheses (list<Hypothesis>& hypotheses, ve
 void
 pcl::recognition::ObjRecRANSAC::buildConflictGraph (vector<Hypothesis>& hypotheses, ORRGraph& graph)
 {
-  int hypothesis_id = 0, support;
+  int hypothesis_id = 0, score;
   ORROctreeZProjection::Pixel* pixel;
   const float *rigid_transform;
   float transformed_point[3];
@@ -339,8 +339,6 @@ pcl::recognition::ObjRecRANSAC::buildConflictGraph (vector<Hypothesis>& hypothes
   // Project the hypotheses onto the "range image" and store in each pixel the corresponding hypothesis id
   for ( vector<Hypothesis>::iterator hypo_it = hypotheses.begin () ; hypo_it != hypotheses.end () ; ++hypo_it, ++hypothesis_id )
   {
-    support = 0;
-
 	// For better code readability
 	vector<ORROctree::Node*>& full_leaves = (*hypo_it).obj_model_->getOctree ().getFullLeaves ();
 	rigid_transform = (*hypo_it).rigid_transform_;
@@ -348,6 +346,9 @@ pcl::recognition::ObjRecRANSAC::buildConflictGraph (vector<Hypothesis>& hypothes
 	// The i-th node corresponds to the i-th hypothesis and has id i
 	graph.getNodes ()[hypothesis_id]->hypothesis_ = &(*hypo_it);
 	graph.getNodes ()[hypothesis_id]->id_ = hypothesis_id;
+
+	// At the end of the next loop this will be the number of model points ending up in a range image pixel
+	score = 0;
 
     for ( vector<ORROctree::Node*>::iterator leaf_it = full_leaves.begin () ; leaf_it != full_leaves.end () ; ++leaf_it )
     {
@@ -362,13 +363,14 @@ pcl::recognition::ObjRecRANSAC::buildConflictGraph (vector<Hypothesis>& hypothes
 
       if ( pixel->z1_ <= transformed_point[2] && transformed_point[2] <= pixel->z2_ )
       {
-        ++support;
+        ++score;
         pixel->hypotheses_ids_.insert (hypothesis_id); // 'hypothesis_id' is the position of the hypothesis in the vector
       }
     }
 
-    // Save the number of pixels explained by the current hypothesis
-    (*hypo_it).support_ = support;
+    // Save the match confidence which is the number of model points falling within a range image pixel
+    // divided by the total number of model points
+    (*hypo_it).match_confidence_ = static_cast<float> (score)/static_cast<float> (full_leaves.size ());
   }
 
   list<ORROctreeZProjection::Pixel*>& full_pixels = scene_octree_proj_.getFullPixels ();
@@ -433,10 +435,55 @@ pcl::recognition::ObjRecRANSAC::buildConflictGraph (vector<Hypothesis>& hypothes
 
 //=========================================================================================================================================================================
 
-void
-pcl::recognition::ObjRecRANSAC::filterWeakHypotheses (ORRGraph& /*graph*/, list<ObjRecRANSAC::Output>& /*recognized_objects*/)
+bool
+compare_orr_graph_nodes (pcl::recognition::ORRGraph::Node* n1, pcl::recognition::ORRGraph::Node* n2)
 {
+  return static_cast<bool> (n1->penalty_ < n2->penalty_);
+}
 
+//=========================================================================================================================================================================
+
+void
+pcl::recognition::ObjRecRANSAC::filterWeakHypotheses (ORRGraph& graph, list<ObjRecRANSAC::Output>& recognized_objects)
+{
+  vector<ORRGraph::Node*> &nodes = graph.getNodes (), sorted_nodes (graph.getNodes ().size ());
+  size_t i = 0, num_of_explained;
+
+  // Compute the penalty for each graph node
+  for ( vector<ORRGraph::Node*>::iterator it = nodes.begin () ; it != nodes.end () ; ++it, ++i )
+  {
+    num_of_explained = 0;
+    // Accumulate the number of pixels the neighbors are explaining
+    for ( set<ORRGraph::Node*>::iterator neigh = (*it)->neighbors_.begin () ; neigh != (*it)->neighbors_.end () ; ++neigh )
+      num_of_explained += (*neigh)->hypothesis_->explained_pixels_.size ();
+
+    // Now compute the penalty for the node
+    (*it)->penalty_ = static_cast<int> (num_of_explained) - static_cast<int> ((*it)->hypothesis_->explained_pixels_.size ());
+
+    // Save the current node
+    sorted_nodes[i] = *it;
+  }
+
+  // Now sort the nodes according to the penalty
+  std::sort (sorted_nodes.begin (), sorted_nodes.end (), compare_orr_graph_nodes);
+
+  // Now run through the array and start switching nodes on and off
+  for ( vector<ORRGraph::Node*>::iterator it = sorted_nodes.begin () ; it != sorted_nodes.end () ; ++it )
+  {
+    if ( (*it)->state_ == ORRGraph::Node::OFF )
+      continue;
+
+    // Set the node to ON
+    (*it)->state_ = ORRGraph::Node::ON;
+    // save the hypothesis as an accepted solution
+    recognized_objects.push_back (
+      ObjRecRANSAC::Output ((*it)->hypothesis_->obj_model_->obj_name_, (*it)->hypothesis_->rigid_transform_, (*it)->hypothesis_->match_confidence_)
+    );
+
+    // and set all its neighbors to OFF
+    for ( set<ORRGraph::Node*>::iterator neigh = (*it)->neighbors_.begin () ; neigh != (*it)->neighbors_.end () ; ++neigh )
+      (*neigh)->state_ = ORRGraph::Node::OFF;
+  }
 }
 
 //=========================================================================================================================================================================

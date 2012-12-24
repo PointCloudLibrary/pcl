@@ -58,14 +58,17 @@ namespace pcl
       public:
     	class Node
     	{
-    	  public:
-            Node (): id_ (-1){}
+          public:
+            enum State {ON, OFF, UNDEF};
+
+            Node (): id_ (-1), state_(UNDEF){}
             virtual ~Node (){}
 
     	  public:
             std::set<Node*> neighbors_;
             ObjRecRANSAC::Hypothesis* hypothesis_;
-            int id_;
+            int id_, penalty_;
+            Node::State state_;
     	};
 
       public:

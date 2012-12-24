@@ -95,17 +95,18 @@ namespace pcl
         class Output
         {
           public:
-            Output (const std::string& object_name, const Eigen::Matrix4f& rigid_transform, double match_confidence) :
+            Output (const std::string& object_name, const float rigid_transform[12], float match_confidence) :
               object_name_ (object_name),
-              rigid_transform_ (rigid_transform),
               match_confidence_ (match_confidence)
-            {}
+            {
+              for ( int i = 0 ; i < 12 ; ++i )
+                rigid_transform_[i] = rigid_transform[i];
+            }
             virtual ~Output (){}
 
           public:
             std::string object_name_;
-            Eigen::Matrix4f rigid_transform_;
-            double match_confidence_;
+            float rigid_transform_[12], match_confidence_;
         };
 
     	class OrientedPointPair
@@ -127,7 +128,7 @@ namespace pcl
           public:
             Hypothesis (ModelLibrary::Model* obj_model): obj_model_ (obj_model){}
             Hypothesis (const Hypothesis& src)
-             : obj_model_ (src.obj_model_), support_ (0)
+             : match_confidence_ (0.0f), obj_model_ (src.obj_model_)
             {
               for ( int i = 0 ; i < 12 ; ++i )
                 this->rigid_transform_[i] = src.rigid_transform_[i];
@@ -135,9 +136,8 @@ namespace pcl
             virtual ~Hypothesis (){}
 
           public:
-            float rigid_transform_[12];
+            float rigid_transform_[12], match_confidence_;
             ModelLibrary::Model* obj_model_;
-            int support_;
             std::set<int> explained_pixels_;
     	};
 
