@@ -39,6 +39,7 @@
 #include <pcl/common/time.h> //fps calculations
 #include <pcl/io/hdl_grabber.h>
 #include <pcl/visualization/cloud_viewer.h>
+#include <pcl/visualization/point_cloud_color_handlers.h>
 #include <pcl/visualization/image_viewer.h>
 #include <pcl/io/openni_camera/openni_driver.h>
 #include <pcl/console/parse.h>
@@ -50,6 +51,9 @@
 #include <typeinfo>
 
 using namespace std;
+using namespace pcl;
+using namespace pcl::console;
+using namespace pcl::visualization;
 
 #define SHOW_FPS 0
 #if SHOW_FPS
@@ -57,8 +61,8 @@ using namespace std;
 do \
 { \
     static unsigned count = 0;\
-    static double last = pcl::getTime ();\
-    double now = pcl::getTime (); \
+    static double last = getTime ();\
+    double now = getTime (); \
     ++count; \
     if (now - last >= 1.0) \
     { \
@@ -79,33 +83,38 @@ template<typename PointType>
 class SimpleHDLViewer
 {
   public:
-    typedef pcl::PointCloud<PointType> Cloud;
+    typedef PointCloud<PointType> Cloud;
     typedef typename Cloud::ConstPtr CloudConstPtr;
 
-    SimpleHDLViewer (pcl::Grabber& grabber) :
-        cloud_viewer_ (new pcl::visualization::PCLVisualizer ("PCL HDL Cloud")), grabber_ (
-            grabber)
+    SimpleHDLViewer (Grabber& grabber,
+                     PointCloudColorHandler<PointType> &handler) 
+      : cloud_viewer_ (new PCLVisualizer ("PCL HDL Cloud"))
+      , grabber_ (grabber)
+      , handler_ (handler)
     {
     }
 
-    void cloud_callback (const CloudConstPtr& cloud)
+    void 
+    cloud_callback (const CloudConstPtr& cloud)
     {
-      FPS_CALC("cloud callback");
+      FPS_CALC ("cloud callback");
       boost::mutex::scoped_lock lock (cloud_mutex_);
       cloud_ = cloud;
       //std::cout << cloud->points[0] << " " << cloud->size () << std::endl;
     }
 
-    void cloud_callback (const CloudConstPtr& cloud, float startAngle,
-        float endAngle)
+    void 
+    cloud_callback (const CloudConstPtr& cloud, float startAngle,
+                    float endAngle)
     {
-      FPS_CALC("cloud callback");
+      FPS_CALC ("cloud callback");
       boost::mutex::scoped_lock lock (cloud_mutex_);
       cloud_ = cloud;
     }
 
-    void keyboard_callback (const pcl::visualization::KeyboardEvent& event,
-        void* cookie)
+    void 
+    keyboard_callback (const KeyboardEvent& event,
+                       void* cookie)
     {
       if (event.keyUp ())
       {
@@ -113,19 +122,19 @@ class SimpleHDLViewer
       }
     }
 
-    void mouse_callback (const pcl::visualization::MouseEvent& mouse_event,
-        void* cookie)
+    void 
+    mouse_callback (const MouseEvent& mouse_event,
+                    void* cookie)
     {
-      if (mouse_event.getType ()
-          == pcl::visualization::MouseEvent::MouseButtonPress
-          && mouse_event.getButton ()
-              == pcl::visualization::MouseEvent::LeftButton)
+      if (mouse_event.getType () == MouseEvent::MouseButtonPress && 
+          mouse_event.getButton () == MouseEvent::LeftButton)
       {
         cout << mouse_event.getX () << " , " << mouse_event.getY () << endl;
       }
     }
 
-    void run ()
+    void 
+    run ()
     {
       cloud_viewer_->addCoordinateSystem (3.0);
       cloud_viewer_->setBackgroundColor (0, 0, 0);
@@ -157,20 +166,17 @@ class SimpleHDLViewer
         if (cloud)
         {
           FPS_CALC("drawing cloud");
-          //if (!cloud_viewer_->updatePointCloud(cloud, "HDL")) {
-          //	cloud_viewer_->addPointCloud(cloud, "HDL");
-          //}
-          if (!cloud_viewer_->updatePointCloud<PointType> (cloud, "HDL"))
-          {
-            cloud_viewer_->addPointCloud<PointType> (cloud, "HDL");
-          }
+          handler_.setInputCloud (cloud);
+          if (!cloud_viewer_->updatePointCloud (cloud, handler_, "HDL"))
+            cloud_viewer_->addPointCloud (cloud, handler_, "HDL");
+
+          //if (!cloud_viewer_->updatePointCloud<PointType> (cloud, "HDL"))
+          //  cloud_viewer_->addPointCloud<PointType> (cloud, "HDL");
           cloud_viewer_->spinOnce ();
         }
 
         if (!grabber_.isRunning ())
-        {
           cloud_viewer_->spin ();
-        }
 
         boost::this_thread::sleep (boost::posix_time::microseconds (100));
       }
@@ -180,17 +186,19 @@ class SimpleHDLViewer
       cloud_connection.disconnect ();
     }
 
-    boost::shared_ptr<pcl::visualization::PCLVisualizer> cloud_viewer_;
-    boost::shared_ptr<pcl::visualization::ImageViewer> image_viewer_;
+    boost::shared_ptr<PCLVisualizer> cloud_viewer_;
+    boost::shared_ptr<ImageViewer> image_viewer_;
 
-    pcl::Grabber& grabber_;
+    Grabber& grabber_;
     boost::mutex cloud_mutex_;
     boost::mutex image_mutex_;
 
     CloudConstPtr cloud_;
+    PointCloudColorHandler<PointType> &handler_;
 };
 
-void usage (char ** argv)
+void
+usage (char ** argv)
 {
   cout << "usage: " << argv[0]
       << " [-hdlCalibration <path-to-calibration-file>] [-pcapFile <path-to-pcap-file>] [-h | --help] [-format XYZ|XYZRGB]"
@@ -199,37 +207,47 @@ void usage (char ** argv)
   return;
 }
 
-int main (int argc, char ** argv)
+int 
+main (int argc, char ** argv)
 {
   std::string hdlCalibration, pcapFile, format ("XYZ");
 
-  if (pcl::console::find_switch (argc, argv, "-h")
-      || pcl::console::find_switch (argc, argv, "--help"))
+  if (find_switch (argc, argv, "-h") || 
+      find_switch (argc, argv, "--help"))
   {
     usage (argv);
     return (0);
   }
 
-  pcl::console::parse_argument (argc, argv, "-calibrationFile", hdlCalibration);
-  pcl::console::parse_argument (argc, argv, "-pcapFile", pcapFile);
-  pcl::console::parse_argument (argc, argv, "-format", format);
+  parse_argument (argc, argv, "-calibrationFile", hdlCalibration);
+  parse_argument (argc, argv, "-pcapFile", pcapFile);
+  parse_argument (argc, argv, "-format", format);
 
-  pcl::HDLGrabber grabber (hdlCalibration, pcapFile);
+  HDLGrabber grabber (hdlCalibration, pcapFile);
 
   if (boost::iequals (format, std::string ("XYZ")))
   {
-    SimpleHDLViewer<pcl::PointXYZ> v (grabber);
+    std::vector<double> fcolor (3); fcolor[0] = fcolor[1] = fcolor[2] = 255.0;
+    pcl::console::parse_3x_arguments (argc, argv, "-fc", fcolor[0], fcolor[1], fcolor[2]);
+    PointCloudColorHandlerCustom<PointXYZ> color_handler (fcolor[0], fcolor[1], fcolor[2]);
+
+    SimpleHDLViewer<PointXYZ> v (grabber, color_handler);
     v.run ();
   }
   else if (boost::iequals (format, std::string ("XYZI")))
   {
-    SimpleHDLViewer<pcl::PointXYZI> v (grabber);
+    PointCloudColorHandlerGenericField<PointXYZI> color_handler ("intensity");
+
+    SimpleHDLViewer<PointXYZI> v (grabber, color_handler);
     v.run ();
   }
   else if (boost::iequals (format, std::string ("XYZRGB")))
   {
-    SimpleHDLViewer<pcl::PointXYZRGB> v (grabber);
+    PointCloudColorHandlerRGBField<PointXYZRGBA> color_handler;
+
+    SimpleHDLViewer<PointXYZRGBA> v (grabber, color_handler);
     v.run ();
   }
   return (0);
 }
+
