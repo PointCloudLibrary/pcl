@@ -1058,7 +1058,11 @@ namespace pcl
 
           // Check if the input indices are valid and unique.
           boost::unordered_set <VertexIndex, Hash> unique_checker;
+#if BOOST_VERSION >= 105000
+          // reserve does not exist in older boost versions
+          // https://svn.boost.org/trac/boost/ticket/6857
           unique_checker.reserve (n);
+#endif
 
           bool all_vertices_isolated = true;
 
