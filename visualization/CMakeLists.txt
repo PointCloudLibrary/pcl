@@ -78,6 +78,8 @@ if(build)
         include/pcl/${SUBSYS_NAME}/pcl_painter2D.h
         include/pcl/${SUBSYS_NAME}/registration_visualizer.h
         include/pcl/${SUBSYS_NAME}/point_cloud_handlers.h
+        include/pcl/${SUBSYS_NAME}/point_cloud_color_handlers.h
+        include/pcl/${SUBSYS_NAME}/point_cloud_geometry_handlers.h
         include/pcl/${SUBSYS_NAME}/keyboard_event.h
         include/pcl/${SUBSYS_NAME}/point_picking_event.h
         include/pcl/${SUBSYS_NAME}/mouse_event.h
@@ -109,6 +111,8 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/image_viewer.hpp
         include/pcl/${SUBSYS_NAME}/impl/registration_visualizer.hpp
         include/pcl/${SUBSYS_NAME}/impl/point_cloud_handlers.hpp
+        include/pcl/${SUBSYS_NAME}/impl/point_cloud_color_handlers.hpp
+        include/pcl/${SUBSYS_NAME}/impl/point_cloud_geometry_handlers.hpp
         )
     if("${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}" VERSION_GREATER "5.6")
         set(impl_incs

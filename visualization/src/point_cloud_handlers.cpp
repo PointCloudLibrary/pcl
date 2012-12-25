@@ -42,11 +42,11 @@
 #include <pcl/common/io.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void
+bool
 pcl::visualization::PointCloudColorHandlerCustom<sensor_msgs::PointCloud2>::getColor (vtkSmartPointer<vtkDataArray> &scalars) const
 {
-  if (!capable_)
-    return;
+  if (!capable_ || !cloud_)
+    return (false);
   
   if (!scalars)
     scalars = vtkSmartPointer<vtkUnsignedCharArray>::New ();
@@ -66,14 +66,15 @@ pcl::visualization::PointCloudColorHandlerCustom<sensor_msgs::PointCloud2>::getC
     colors[cp * 3 + 2] = static_cast<unsigned char> (b_);
   }
   reinterpret_cast<vtkUnsignedCharArray*>(&(*scalars))->SetArray (colors, 3 * nr_points, 0);
+  return (true);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void
+bool
 pcl::visualization::PointCloudColorHandlerRandom<sensor_msgs::PointCloud2>::getColor (vtkSmartPointer<vtkDataArray> &scalars) const
 {
-  if (!capable_)
-    return;
+  if (!capable_ || !cloud_)
+    return (false);
   
   if (!scalars)
     scalars = vtkSmartPointer<vtkUnsignedCharArray>::New ();
@@ -97,6 +98,7 @@ pcl::visualization::PointCloudColorHandlerRandom<sensor_msgs::PointCloud2>::getC
     colors[cp * 3 + 2] = static_cast<unsigned char> (b_);
   }
   reinterpret_cast<vtkUnsignedCharArray*>(&(*scalars))->SetArray (colors, 3 * nr_points, 0);
+  return (true);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -122,11 +124,11 @@ pcl::visualization::PointCloudColorHandlerRGBField<sensor_msgs::PointCloud2>::Po
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void 
+bool
 pcl::visualization::PointCloudColorHandlerRGBField<sensor_msgs::PointCloud2>::getColor (vtkSmartPointer<vtkDataArray> &scalars) const
 {
-  if (!capable_)
-    return;
+  if (!capable_ || !cloud_)
+    return (false);
 
   if (!scalars)
     scalars = vtkSmartPointer<vtkUnsignedCharArray>::New ();
@@ -189,6 +191,7 @@ pcl::visualization::PointCloudColorHandlerRGBField<sensor_msgs::PointCloud2>::ge
   else
     reinterpret_cast<vtkUnsignedCharArray*>(&(*scalars))->SetNumberOfTuples (0);
   //delete [] colors;
+  return (true);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -224,11 +227,11 @@ pcl::visualization::PointCloudColorHandlerHSVField<sensor_msgs::PointCloud2>::Po
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void 
+bool
 pcl::visualization::PointCloudColorHandlerHSVField<sensor_msgs::PointCloud2>::getColor (vtkSmartPointer<vtkDataArray> &scalars) const
 {
-  if (!capable_)
-    return;
+  if (!capable_ || !cloud_)
+    return (false);
 
   if (!scalars)
     scalars = vtkSmartPointer<vtkUnsignedCharArray>::New ();
@@ -412,6 +415,7 @@ pcl::visualization::PointCloudColorHandlerHSVField<sensor_msgs::PointCloud2>::ge
   }
   // Set array takes over allocation (Set save to 1 to keep the class from deleting the array when it cleans up or reallocates memory.)
   reinterpret_cast<vtkUnsignedCharArray*>(&(*scalars))->SetArray (colors, 3 * j, 0);
+  return (true);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -429,11 +433,11 @@ pcl::visualization::PointCloudColorHandlerGenericField<sensor_msgs::PointCloud2>
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void 
+bool
 pcl::visualization::PointCloudColorHandlerGenericField<sensor_msgs::PointCloud2>::getColor (vtkSmartPointer<vtkDataArray> &scalars) const
 {
-  if (!capable_)
-    return;
+  if (!capable_ || !cloud_)
+    return (false);
 
   if (!scalars)
     scalars = vtkSmartPointer<vtkFloatArray>::New ();
@@ -488,6 +492,7 @@ pcl::visualization::PointCloudColorHandlerGenericField<sensor_msgs::PointCloud2>
     }
   }
   reinterpret_cast<vtkFloatArray*>(&(*scalars))->SetArray (colors, j, 0);
+  return (true);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
