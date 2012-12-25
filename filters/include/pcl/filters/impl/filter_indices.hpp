@@ -39,7 +39,7 @@
 #define PCL_FILTERS_IMPL_FILTER_INDICES_H_
 
 #include <pcl/pcl_macros.h>
-
+#include <pcl/filters/filter_indices.h>
 
 template <typename PointT> void
 pcl::removeNaNFromPointCloud (const pcl::PointCloud<PointT> &cloud_in,

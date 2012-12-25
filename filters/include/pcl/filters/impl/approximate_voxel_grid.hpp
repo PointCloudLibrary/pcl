@@ -39,6 +39,7 @@
 #define PCL_FILTERS_IMPL_FAST_VOXEL_GRID_H_
 
 #include <pcl/common/common.h>
+#include <pcl/common/io.h>
 #include <pcl/filters/approximate_voxel_grid.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////

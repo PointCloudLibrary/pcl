@@ -39,6 +39,7 @@
 #define PCL_FILTERS_IMPL_FILTER_H_
 
 #include <pcl/pcl_macros.h>
+#include <pcl/filters/filter.h>
 
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> void

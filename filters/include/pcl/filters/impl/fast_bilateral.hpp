@@ -38,14 +38,11 @@
  * $Id$
  *
  */
-
 #ifndef FAST_BILATERAL_HPP_
 #define FAST_BILATERAL_HPP_
 
 #include <pcl/filters/fast_bilateral.h>
 #include <pcl/common/io.h>
-
-
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
