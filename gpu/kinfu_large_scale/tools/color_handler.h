@@ -64,10 +64,11 @@ namespace pcl
         capable_ = true;
       }
             
-      virtual void getColor (vtkSmartPointer<vtkDataArray> &scalars) const
+      virtual bool 
+      getColor (vtkSmartPointer<vtkDataArray> &scalars) const
       {
         if (!capable_)
-          return;
+          return (false);
       
         if (!scalars)
           scalars = vtkSmartPointer<vtkUnsignedCharArray>::New ();
@@ -88,6 +89,7 @@ namespace pcl
             colors[idx + 1] = rgb_->points[cp].g;
             colors[idx + 2] = rgb_->points[cp].b;
           }
+        return (true);
       }
     
     private:

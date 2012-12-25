@@ -180,43 +180,6 @@ pcl::visualization::PointCloudColorHandlerRGBField<PointT>::getColor (vtkSmartPo
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-pcl::visualization::PointCloudColorHandlerRGBCloud<PointT>::PointCloudColorHandlerRGBCloud(const PointCloudConstPtr& cloud, const RgbCloudConstPtr& colors) : 
-PointCloudColorHandler<PointT> (cloud), rgb_ (colors)
-{
-  capable_ = true;
-}
-
-///////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> bool
-pcl::visualization::PointCloudColorHandlerRGBCloud<PointT>::getColor (vtkSmartPointer<vtkDataArray> &scalars) const
-{
-  if (!capable_ || !cloud_)
-    return (false);
-  
-  if (!scalars)
-    scalars = vtkSmartPointer<vtkUnsignedCharArray>::New ();
-  scalars->SetNumberOfComponents (3);
-    
-  vtkIdType nr_points = vtkIdType (cloud_->points.size ());
-  reinterpret_cast<vtkUnsignedCharArray*>(&(*scalars))->SetNumberOfTuples (nr_points);
-  unsigned char* colors = reinterpret_cast<vtkUnsignedCharArray*>(&(*scalars))->GetPointer (0);
-    
-  // Color every point
-  if (nr_points != int (rgb_->points.size ()))
-    std::fill (colors, colors + nr_points * 3, static_cast<unsigned char> (0xFF));
-  else
-    for (vtkIdType cp = 0; cp < nr_points; ++cp)
-    {
-      int idx = cp * 3;
-      colors[idx + 0] = rgb_->points[cp].r;
-      colors[idx + 1] = rgb_->points[cp].g;
-      colors[idx + 2] = rgb_->points[cp].b;
-    }
-  return (false);
-}
-
-///////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
 pcl::visualization::PointCloudColorHandlerHSVField<PointT>::PointCloudColorHandlerHSVField (const PointCloudConstPtr &cloud) : 
   pcl::visualization::PointCloudColorHandler<PointT>::PointCloudColorHandler (cloud)
 {
