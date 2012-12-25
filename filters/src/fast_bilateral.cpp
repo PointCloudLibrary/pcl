@@ -5,9 +5,9 @@
  * Copyright (c) 2009-2012, Willow Garage, Inc.
  * Copyright (c) 2012-, Open Perception, Inc.
  * Copyright (c) 2004, Sylvain Paris and Francois Sillion
-
+ *
  * All rights reserved.
-
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
@@ -39,13 +39,13 @@
  *
  */
 
+#include <pcl/filters/impl/fast_bilateral.hpp>
 
+#ifndef PCL_NO_PRECOMPILE
 #include <pcl/point_types.h>
 #include <pcl/impl/instantiate.hpp>
-#include <pcl/filters/fast_bilateral.h>
-#include <pcl/filters/impl/fast_bilateral.hpp>
 
 PCL_INSTANTIATE (FastBilateralFilter, (pcl::PointXYZ)(pcl::PointXYZRGB)(pcl::PointXYZRGBA))
 
-
+#endif    // PCL_NO_PRECOMPILE
 

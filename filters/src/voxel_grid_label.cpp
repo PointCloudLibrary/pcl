@@ -3,6 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -16,7 +17,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -40,6 +41,7 @@
 #include <pcl/filters/voxel_grid_label.h>
 #include <pcl/filters/impl/voxel_grid.hpp>
 
+//////////////////////////////////////////////////////////////////////////////
 void
 pcl::VoxelGridLabel::applyFilter (PointCloud &output)
 {
@@ -352,3 +354,4 @@ pcl::VoxelGridLabel::applyFilter (PointCloud &output)
   }
   output.width = static_cast<uint32_t> (output.points.size ());
 }
+

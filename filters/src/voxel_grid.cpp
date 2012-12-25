@@ -1,7 +1,10 @@
 /*
  * Software License Agreement (BSD License)
  *
+ *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2009, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -14,7 +17,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -36,15 +39,12 @@
  */
 
 #include <iostream>
-#include <pcl/impl/instantiate.hpp>
-#include <pcl/point_types.h>
 #include <pcl/common/io.h>
-#include <pcl/filters/voxel_grid.h>
 #include <pcl/filters/impl/voxel_grid.hpp>
 
 typedef Eigen::Array<size_t, 4, 1> Array4size_t;
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::getMinMax3D (const sensor_msgs::PointCloud2ConstPtr &cloud, int x_idx, int y_idx, int z_idx,
                   Eigen::Vector4f &min_pt, Eigen::Vector4f &max_pt)
@@ -89,7 +89,7 @@ pcl::getMinMax3D (const sensor_msgs::PointCloud2ConstPtr &cloud, int x_idx, int 
   max_pt = max_p;
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::getMinMax3D (const sensor_msgs::PointCloud2ConstPtr &cloud, int x_idx, int y_idx, int z_idx,
                   const std::string &distance_field_name, float min_distance, float max_distance,
@@ -172,7 +172,7 @@ pcl::getMinMax3D (const sensor_msgs::PointCloud2ConstPtr &cloud, int x_idx, int 
   max_pt = max_p;
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::VoxelGrid<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
 {
@@ -229,9 +229,9 @@ pcl::VoxelGrid<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
   if( (dx*dy*dz) > static_cast<int64_t>(std::numeric_limits<int32_t>::max()) )
   {
     PCL_WARN("[pcl::%s::applyFilter] Leaf size is too small for the input dataset. Integer indices would overflow.", getClassName().c_str());
-    output.width = output.height = 0;
-    output.data.clear();
-    return;
+    //output.width = output.height = 0;
+    //output.data.clear();
+    //return;
   }
 
   // Compute the minimum and maximum bounding box values
@@ -536,7 +536,13 @@ pcl::VoxelGrid<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
   }
 }
 
+#ifndef PCL_NO_PRECOMPILE
+#include <pcl/impl/instantiate.hpp>
+#include <pcl/point_types.h>
+
 // Instantiations of specific point types
 PCL_INSTANTIATE(getMinMax3D, PCL_XYZ_POINT_TYPES)
 PCL_INSTANTIATE(VoxelGrid, PCL_XYZ_POINT_TYPES)
+
+#endif    // PCL_NO_PRECOMPILE
 
