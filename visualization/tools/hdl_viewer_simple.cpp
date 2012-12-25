@@ -170,8 +170,6 @@ class SimpleHDLViewer
           if (!cloud_viewer_->updatePointCloud (cloud, handler_, "HDL"))
             cloud_viewer_->addPointCloud (cloud, handler_, "HDL");
 
-          //if (!cloud_viewer_->updatePointCloud<PointType> (cloud, "HDL"))
-          //  cloud_viewer_->addPointCloud<PointType> (cloud, "HDL");
           cloud_viewer_->spinOnce ();
         }
 
