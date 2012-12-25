@@ -37,13 +37,17 @@
 #ifndef PCL_POINT_CLOUD_GEOMETRY_HANDLERS_H_
 #define PCL_POINT_CLOUD_GEOMETRY_HANDLERS_H_
 
-#include <pcl/visualization/common/common.h>
+#if defined __GNUC__
+#pragma GCC system_header
+#endif
+
 // PCL includes
-#include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 #include <pcl/common/io.h>
 // VTK includes
-#include <pcl/visualization/vtk.h>
+#include <vtkSmartPointer.h>
+#include <vtkPoints.h>
+#include <vtkFloatArray.h>
 
 namespace pcl
 {
@@ -239,7 +243,20 @@ namespace pcl
         PointCloudGeometryHandlerCustom (const PointCloudConstPtr &cloud,
                                          const std::string &x_field_name,
                                          const std::string &y_field_name,
-                                         const std::string &z_field_name);
+                                         const std::string &z_field_name)
+        {
+          field_x_idx_ = pcl::getFieldIndex (*cloud, x_field_name, fields_);
+          if (field_x_idx_ == -1)
+            return;
+          field_y_idx_ = pcl::getFieldIndex (*cloud, y_field_name, fields_);
+          if (field_y_idx_ == -1)
+            return;
+          field_z_idx_ = pcl::getFieldIndex (*cloud, z_field_name, fields_);
+          if (field_z_idx_ == -1)
+            return;
+          field_name_ = x_field_name + y_field_name + z_field_name;
+          capable_ = true;
+        }
 
         /** \brief Class getName method. */
         virtual std::string
@@ -253,7 +270,35 @@ namespace pcl
           * \param[out] points the resultant geometry
           */
         virtual void
-        getGeometry (vtkSmartPointer<vtkPoints> &points) const;
+        getGeometry (vtkSmartPointer<vtkPoints> &points) const
+        {
+          if (!capable_)
+            return;
+
+          if (!points)
+            points = vtkSmartPointer<vtkPoints>::New ();
+          points->SetDataTypeToFloat ();
+          points->SetNumberOfPoints (cloud_->points.size ());
+
+          float data;
+          // Add all points
+          double p[3];
+          for (vtkIdType i = 0; i < static_cast<vtkIdType> (cloud_->points.size ()); ++i)
+          {
+            // Copy the value at the specified field
+            const uint8_t* pt_data = reinterpret_cast<const uint8_t*> (&cloud_->points[i]);
+            memcpy (&data, pt_data + fields_[field_x_idx_].offset, sizeof (float));
+            p[0] = data;
+
+            memcpy (&data, pt_data + fields_[field_y_idx_].offset, sizeof (float));
+            p[1] = data;
+
+            memcpy (&data, pt_data + fields_[field_z_idx_].offset, sizeof (float));
+            p[2] = data;
+
+            points->SetPoint (i, p);
+          }
+        }
 
       private:
         // Members derived from the base class
@@ -448,7 +493,9 @@ namespace pcl
   }
 }
 
+#ifdef PCL_NO_PRECOMPILE
 #include <pcl/visualization/impl/point_cloud_geometry_handlers.hpp>
+#endif
 
 #endif    // PCL_POINT_CLOUD_GEOMETRY_HANDLERS_H_
 

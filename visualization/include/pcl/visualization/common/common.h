@@ -37,11 +37,14 @@
 #ifndef PCL_PCL_VISUALIZER_COMMON_H_
 #define PCL_PCL_VISUALIZER_COMMON_H_
 
-#include <pcl/visualization/vtk.h>
+#if defined __GNUC__
+#pragma GCC system_header
+#endif
 
 #include <pcl/pcl_macros.h>
 #include <pcl/point_types.h>
 #include <pcl/visualization/eigen.h>
+#include <vtkMatrix4x4.h>
 
 namespace pcl
 {

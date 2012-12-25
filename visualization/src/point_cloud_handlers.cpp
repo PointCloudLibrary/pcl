@@ -1,47 +1,49 @@
 /*
-* Software License Agreement (BSD License)
-*
-*  Copyright (c) 2010, Willow Garage, Inc.
-*  All rights reserved.
-*
-*  Redistribution and use in source and binary forms, with or without
-*  modification, are permitted provided that the following conditions
-*  are met:
-*
-*   * Redistributions of source code must retain the above copyright
-*     notice, this list of conditions and the following disclaimer.
-*   * Redistributions in binary form must reproduce the above
-*     copyright notice, this list of conditions and the following
-*     disclaimer in the documentation and/or other materials provided
-*     with the distribution.
-*   * Neither the name of Willow Garage, Inc. nor the names of its
-*     contributors may be used to endorse or promote products derived
-*     from this software without specific prior written permission.
-*
-*  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-*  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-*  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
-*  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
-*  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
-*  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
-*  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-*  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-*  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-*  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
-*  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-*  POSSIBILITY OF SUCH DAMAGE.
-*
-* $Id$
-*
-*/
+ * Software License Agreement (BSD License)
+ *
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
+ *
+ *  All rights reserved.
+ *
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions
+ *  are met:
+ *
+ *   * Redistributions of source code must retain the above copyright
+ *     notice, this list of conditions and the following disclaimer.
+ *   * Redistributions in binary form must reproduce the above
+ *     copyright notice, this list of conditions and the following
+ *     disclaimer in the documentation and/or other materials provided
+ *     with the distribution.
+ *   * Neither the name of the copyright holder(s) nor the names of its
+ *     contributors may be used to endorse or promote products derived
+ *     from this software without specific prior written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ *  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ *  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ *  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ *  POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
 
-#include <pcl/visualization/vtk.h>
 #include <pcl/visualization/point_cloud_handlers.h>
-#include <pcl/console/time.h>
+#include <pcl/visualization/impl/point_cloud_geometry_handlers.hpp>
 #include <pcl/pcl_macros.h>
 #include <pcl/common/io.h>
+#include <pcl/impl/instantiate.hpp>
+#include <pcl/point_types.h>
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////
 bool
 pcl::visualization::PointCloudColorHandlerCustom<sensor_msgs::PointCloud2>::getColor (vtkSmartPointer<vtkDataArray> &scalars) const
 {
@@ -69,7 +71,7 @@ pcl::visualization::PointCloudColorHandlerCustom<sensor_msgs::PointCloud2>::getC
   return (true);
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////
 bool
 pcl::visualization::PointCloudColorHandlerRandom<sensor_msgs::PointCloud2>::getColor (vtkSmartPointer<vtkDataArray> &scalars) const
 {
@@ -101,7 +103,7 @@ pcl::visualization::PointCloudColorHandlerRandom<sensor_msgs::PointCloud2>::getC
   return (true);
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////
 pcl::visualization::PointCloudColorHandlerRGBField<sensor_msgs::PointCloud2>::PointCloudColorHandlerRGBField (
     const pcl::visualization::PointCloudColorHandler<sensor_msgs::PointCloud2>::PointCloudConstPtr &cloud) : 
   pcl::visualization::PointCloudColorHandler<sensor_msgs::PointCloud2>::PointCloudColorHandler (cloud)
@@ -123,7 +125,7 @@ pcl::visualization::PointCloudColorHandlerRGBField<sensor_msgs::PointCloud2>::Po
   }
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////
 bool
 pcl::visualization::PointCloudColorHandlerRGBField<sensor_msgs::PointCloud2>::getColor (vtkSmartPointer<vtkDataArray> &scalars) const
 {
@@ -194,7 +196,7 @@ pcl::visualization::PointCloudColorHandlerRGBField<sensor_msgs::PointCloud2>::ge
   return (true);
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////
 pcl::visualization::PointCloudColorHandlerHSVField<sensor_msgs::PointCloud2>::PointCloudColorHandlerHSVField (
     const pcl::visualization::PointCloudColorHandler<sensor_msgs::PointCloud2>::PointCloudConstPtr &cloud) : 
   pcl::visualization::PointCloudColorHandler<sensor_msgs::PointCloud2>::PointCloudColorHandler (cloud),
@@ -226,7 +228,7 @@ pcl::visualization::PointCloudColorHandlerHSVField<sensor_msgs::PointCloud2>::Po
   capable_ = true;
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////
 bool
 pcl::visualization::PointCloudColorHandlerHSVField<sensor_msgs::PointCloud2>::getColor (vtkSmartPointer<vtkDataArray> &scalars) const
 {
@@ -418,7 +420,7 @@ pcl::visualization::PointCloudColorHandlerHSVField<sensor_msgs::PointCloud2>::ge
   return (true);
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////
 pcl::visualization::PointCloudColorHandlerGenericField<sensor_msgs::PointCloud2>::PointCloudColorHandlerGenericField (
     const pcl::visualization::PointCloudColorHandler<sensor_msgs::PointCloud2>::PointCloudConstPtr &cloud, 
     const std::string &field_name) : 
@@ -432,7 +434,7 @@ pcl::visualization::PointCloudColorHandlerGenericField<sensor_msgs::PointCloud2>
     capable_ = false;
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////
 bool
 pcl::visualization::PointCloudColorHandlerGenericField<sensor_msgs::PointCloud2>::getColor (vtkSmartPointer<vtkDataArray> &scalars) const
 {
@@ -495,7 +497,7 @@ pcl::visualization::PointCloudColorHandlerGenericField<sensor_msgs::PointCloud2>
   return (true);
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////
 void 
 pcl::visualization::PointCloudGeometryHandler<sensor_msgs::PointCloud2>::getGeometry (vtkSmartPointer<vtkPoints> &points) const
 {
@@ -562,7 +564,7 @@ pcl::visualization::PointCloudGeometryHandler<sensor_msgs::PointCloud2>::getGeom
   }
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////
 pcl::visualization::PointCloudGeometryHandlerXYZ<sensor_msgs::PointCloud2>::PointCloudGeometryHandlerXYZ (const PointCloudConstPtr &cloud)
 : pcl::visualization::PointCloudGeometryHandler<sensor_msgs::PointCloud2>::PointCloudGeometryHandler (cloud)
 {
@@ -578,7 +580,7 @@ pcl::visualization::PointCloudGeometryHandlerXYZ<sensor_msgs::PointCloud2>::Poin
   capable_ = true;
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////
 pcl::visualization::PointCloudGeometryHandlerSurfaceNormal<sensor_msgs::PointCloud2>::PointCloudGeometryHandlerSurfaceNormal (const PointCloudConstPtr &cloud) 
 : pcl::visualization::PointCloudGeometryHandler<sensor_msgs::PointCloud2>::PointCloudGeometryHandler (cloud)
 {
@@ -594,7 +596,7 @@ pcl::visualization::PointCloudGeometryHandlerSurfaceNormal<sensor_msgs::PointClo
   capable_ = true;
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////
 pcl::visualization::PointCloudGeometryHandlerCustom<sensor_msgs::PointCloud2>::PointCloudGeometryHandlerCustom (
     const PointCloudConstPtr &cloud, const std::string &x_field_name, const std::string &y_field_name, const std::string &z_field_name) 
 : pcl::visualization::PointCloudGeometryHandler<sensor_msgs::PointCloud2>::PointCloudGeometryHandler (cloud), field_name_ ()
@@ -611,4 +613,13 @@ pcl::visualization::PointCloudGeometryHandlerCustom<sensor_msgs::PointCloud2>::P
   field_name_ = x_field_name + y_field_name + z_field_name;
   capable_ = true;
 }
+
+// Instantiations of specific point types
+#ifdef PCL_ONLY_CORE_POINT_TYPES
+  PCL_INSTANTIATE(PointCloudGeometryHandlerXYZ, ((pcl::PointSurfel)(pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGB)(pcl::PointXYZRGBA)(pcl::PointNormal)(pcl::PointXYZRGBNormal)))
+  PCL_INSTANTIATE(PointCloudGeometryHandlerSurfaceNormal, ((pcl::Normal)(pcl::PointNormal)(pcl::PointXYZRGBNormal)))
+#else
+  PCL_INSTANTIATE(PointCloudGeometryHandlerXYZ, PCL_XYZ_POINT_TYPES)
+  PCL_INSTANTIATE(PointCloudGeometryHandlerSurfaceNormal, PCL_NORMAL_POINT_TYPES)
+#endif
 

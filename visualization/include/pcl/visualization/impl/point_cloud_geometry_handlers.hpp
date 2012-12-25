@@ -39,7 +39,6 @@
 #ifndef PCL_POINT_CLOUD_GEOMETRY_HANDLERS_IMPL_HPP_
 #define PCL_POINT_CLOUD_GEOMETRY_HANDLERS_IMPL_HPP_
 
-#include <pcl/console/time.h>
 #include <pcl/pcl_macros.h>
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -151,56 +150,8 @@ pcl::visualization::PointCloudGeometryHandlerSurfaceNormal<PointT>::getGeometry 
   }
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
-pcl::visualization::PointCloudGeometryHandlerCustom<PointT>::PointCloudGeometryHandlerCustom (const PointCloudConstPtr &cloud,
-    const std::string &x_field_name, const std::string &y_field_name, const std::string &z_field_name) : pcl::visualization::PointCloudGeometryHandler<PointT>::PointCloudGeometryHandler (cloud)
-{
-  field_x_idx_ = pcl::getFieldIndex (*cloud, x_field_name, fields_);
-  if (field_x_idx_ == -1)
-    return;
-  field_y_idx_ = pcl::getFieldIndex (*cloud, y_field_name, fields_);
-  if (field_y_idx_ == -1)
-    return;
-  field_z_idx_ = pcl::getFieldIndex (*cloud, z_field_name, fields_);
-  if (field_z_idx_ == -1)
-    return;
-  field_name_ = x_field_name + y_field_name + z_field_name;
-  capable_ = true;
-}
-
-///////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> void 
-pcl::visualization::PointCloudGeometryHandlerCustom<PointT>::getGeometry (vtkSmartPointer<vtkPoints> &points) const
-{
-  if (!capable_)
-    return;
-
-  if (!points)
-    points = vtkSmartPointer<vtkPoints>::New ();
-  points->SetDataTypeToFloat ();
-  points->SetNumberOfPoints (cloud_->points.size ());
-
-  float data;
-  // Add all points
-  double p[3];
-  for (vtkIdType i = 0; i < static_cast<vtkIdType> (cloud_->points.size ()); ++i)
-  {
-    // Copy the value at the specified field
-    const uint8_t* pt_data = reinterpret_cast<const uint8_t*> (&cloud_->points[i]);
-    memcpy (&data, pt_data + fields_[field_x_idx_].offset, sizeof (float));
-    p[0] = data;
-
-    memcpy (&data, pt_data + fields_[field_y_idx_].offset, sizeof (float));
-    p[1] = data;
-
-    memcpy (&data, pt_data + fields_[field_z_idx_].offset, sizeof (float));
-    p[2] = data;
-
-    points->SetPoint (i, p);
-  }
-}
+#define PCL_INSTANTIATE_PointCloudGeometryHandlerXYZ(T) template class PCL_EXPORTS pcl::visualization::PointCloudGeometryHandlerXYZ<T>;
+#define PCL_INSTANTIATE_PointCloudGeometryHandlerSurfaceNormal(T) template class PCL_EXPORTS pcl::visualization::PointCloudGeometryHandlerSurfaceNormal<T>;
 
 #endif      // PCL_POINT_CLOUD_GEOMETRY_HANDLERS_IMPL_HPP_
-
 

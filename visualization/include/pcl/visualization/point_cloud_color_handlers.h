@@ -37,13 +37,19 @@
 #ifndef PCL_POINT_CLOUD_COLOR_HANDLERS_H_
 #define PCL_POINT_CLOUD_COLOR_HANDLERS_H_
 
-#include <pcl/visualization/common/common.h>
+#if defined __GNUC__
+#pragma GCC system_header
+#endif
+
 // PCL includes
-#include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 #include <pcl/common/io.h>
+#include <pcl/visualization/common/common.h>
 // VTK includes
-#include <pcl/visualization/vtk.h>
+#include <vtkSmartPointer.h>
+#include <vtkDataArray.h>
+#include <vtkFloatArray.h>
+#include <vtkUnsignedCharArray.h>
 
 namespace pcl
 {
