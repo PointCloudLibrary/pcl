@@ -46,43 +46,71 @@
 #ifdef USE_PCAP
 #include <pcap.h>
 #endif // #ifdef USE_PCAP
-const boost::asio::ip::address pcl::HDLGrabber::DEFAULT_NETWORK_ADDRESS =
-    boost::asio::ip::address::from_string ("192.168.3.255");
+
+const boost::asio::ip::address pcl::HDLGrabber::DEFAULT_NETWORK_ADDRESS = boost::asio::ip::address::from_string ("192.168.3.255");
 double *pcl::HDLGrabber::cos_lookup_table_ = NULL;
 double *pcl::HDLGrabber::sin_lookup_table_ = NULL;
 
 using boost::asio::ip::udp;
 
+/////////////////////////////////////////////////////////////////////////////
 pcl::HDLGrabber::HDLGrabber (const std::string& correctionsFile,
-    const std::string& pcapFile) :
-    hdl_data_ (), udp_listener_endpoint_ (DEFAULT_NETWORK_ADDRESS, DATA_PORT), source_address_filter_ (), source_port_filter_ (
-        443), hdl_read_socket_ (NULL), pcap_file_name_ (pcapFile), queue_consumer_thread_ (
-        NULL), hdl_read_packet_thread_ (NULL), current_scan_xyz_ (
-        new pcl::PointCloud<pcl::PointXYZ> ()), current_sweep_xyz_ (
-        new pcl::PointCloud<pcl::PointXYZ> ()), current_scan_xyzi_ (
-        new pcl::PointCloud<pcl::PointXYZI> ()), current_sweep_xyzi_ (
-        new pcl::PointCloud<pcl::PointXYZI> ()), current_scan_xyzrgb_ (
-        new pcl::PointCloud<pcl::PointXYZRGB> ()), current_sweep_xyzrgb_ (
-        new pcl::PointCloud<pcl::PointXYZRGB> ()), last_azimuth_ (65000), sweep_xyz_signal_ (), sweep_xyzrgb_signal_ (), sweep_xyzi_signal_ (), scan_xyz_signal_ (), scan_xyzrgb_signal_ (), scan_xyzi_signal_ ()
+                             const std::string& pcapFile) 
+  : hdl_data_ ()
+  , udp_listener_endpoint_ (DEFAULT_NETWORK_ADDRESS, DATA_PORT)
+  , source_address_filter_ ()
+  , source_port_filter_ (443)
+  , hdl_read_socket_ (NULL)
+  , pcap_file_name_ (pcapFile)
+  , queue_consumer_thread_ (NULL)
+  , hdl_read_packet_thread_ (NULL)
+  , current_scan_xyz_ (new pcl::PointCloud<pcl::PointXYZ> ())
+  , current_sweep_xyz_ (new pcl::PointCloud<pcl::PointXYZ> ())
+  , current_scan_xyzi_ (new pcl::PointCloud<pcl::PointXYZI> ())
+  , current_sweep_xyzi_ (new pcl::PointCloud<pcl::PointXYZI> ())
+  , current_scan_xyzrgb_ (new pcl::PointCloud<pcl::PointXYZRGBA> ())
+  , current_sweep_xyzrgb_ (new pcl::PointCloud<pcl::PointXYZRGBA> ())
+  , last_azimuth_ (65000)
+  , sweep_xyz_signal_ ()
+  , sweep_xyzrgb_signal_ ()
+  , sweep_xyzi_signal_ ()
+  , scan_xyz_signal_ ()
+  , scan_xyzrgb_signal_ ()
+  , scan_xyzi_signal_ ()
 {
   initialize (correctionsFile);
 }
 
+/////////////////////////////////////////////////////////////////////////////
 pcl::HDLGrabber::HDLGrabber (const boost::asio::ip::address& ipAddress,
-    const unsigned short int port, const std::string& correctionsFile) :
-    hdl_data_ (), udp_listener_endpoint_ (ipAddress, port), source_address_filter_ (), source_port_filter_ (
-        443), hdl_read_socket_ (NULL), pcap_file_name_ (), queue_consumer_thread_ (
-        NULL), hdl_read_packet_thread_ (NULL), current_scan_xyz_ (
-        new pcl::PointCloud<pcl::PointXYZ> ()), current_sweep_xyz_ (
-        new pcl::PointCloud<pcl::PointXYZ> ()), current_scan_xyzi_ (
-        new pcl::PointCloud<pcl::PointXYZI> ()), current_sweep_xyzi_ (
-        new pcl::PointCloud<pcl::PointXYZI> ()), current_scan_xyzrgb_ (
-        new pcl::PointCloud<pcl::PointXYZRGB> ()), current_sweep_xyzrgb_ (
-        new pcl::PointCloud<pcl::PointXYZRGB> ()), last_azimuth_ (65000), sweep_xyz_signal_ (), sweep_xyzrgb_signal_ (), sweep_xyzi_signal_ (), scan_xyz_signal_ (), scan_xyzrgb_signal_ (), scan_xyzi_signal_ ()
+                             const unsigned short int port, 
+                             const std::string& correctionsFile) 
+  : hdl_data_ ()
+  , udp_listener_endpoint_ (ipAddress, port)
+  , source_address_filter_ ()
+  , source_port_filter_ (443)
+  , hdl_read_socket_ (NULL)
+  , pcap_file_name_ ()
+  , queue_consumer_thread_ (NULL)
+  , hdl_read_packet_thread_ (NULL)
+  , current_scan_xyz_ (new pcl::PointCloud<pcl::PointXYZ> ())
+  , current_sweep_xyz_ (new pcl::PointCloud<pcl::PointXYZ> ())
+  , current_scan_xyzi_ (new pcl::PointCloud<pcl::PointXYZI> ())
+  , current_sweep_xyzi_ (new pcl::PointCloud<pcl::PointXYZI> ())
+  , current_scan_xyzrgb_ (new pcl::PointCloud<pcl::PointXYZRGBA> ())
+  , current_sweep_xyzrgb_ (new pcl::PointCloud<pcl::PointXYZRGBA> ())
+  , last_azimuth_ (65000)
+  , sweep_xyz_signal_ ()
+  , sweep_xyzrgb_signal_ ()
+  , sweep_xyzi_signal_ ()
+  , scan_xyz_signal_ ()
+  , scan_xyzrgb_signal_ ()
+  , scan_xyzi_signal_ ()
 {
   initialize (correctionsFile);
 }
 
+/////////////////////////////////////////////////////////////////////////////
 pcl::HDLGrabber::~HDLGrabber () throw ()
 {
   stop ();
@@ -95,15 +123,14 @@ pcl::HDLGrabber::~HDLGrabber () throw ()
   disconnect_all_slots<sig_cb_velodyne_hdl_scan_point_cloud_xyzi> ();
 }
 
+/////////////////////////////////////////////////////////////////////////////
 void
 pcl::HDLGrabber::initialize (const std::string& correctionsFile)
 {
   if (cos_lookup_table_ == NULL && sin_lookup_table_ == NULL)
   {
-    cos_lookup_table_ = static_cast<double *> (malloc (
-        HDL_NUM_ROT_ANGLES * sizeof (*cos_lookup_table_)));
-    sin_lookup_table_ = static_cast<double *> (malloc (
-        HDL_NUM_ROT_ANGLES * sizeof (*sin_lookup_table_)));
+    cos_lookup_table_ = static_cast<double *> (malloc (HDL_NUM_ROT_ANGLES * sizeof (*cos_lookup_table_)));
+    sin_lookup_table_ = static_cast<double *> (malloc (HDL_NUM_ROT_ANGLES * sizeof (*sin_lookup_table_)));
     for (unsigned int i = 0; i < HDL_NUM_ROT_ANGLES; i++)
     {
       double rad = (M_PI / 180.0) * (static_cast<double> (i) / 100.0);
@@ -118,21 +145,16 @@ pcl::HDLGrabber::initialize (const std::string& correctionsFile)
   {
     HDLLaserCorrection correction = laser_corrections_[i];
     correction.sinVertOffsetCorrection = correction.verticalOffsetCorrection
-        * correction.sinVertCorrection;
+                                       * correction.sinVertCorrection;
     correction.cosVertOffsetCorrection = correction.verticalOffsetCorrection
-        * correction.cosVertCorrection;
+                                       * correction.cosVertCorrection;
   }
-  sweep_xyz_signal_ =
-      createSignal<sig_cb_velodyne_hdl_sweep_point_cloud_xyz> ();
-  sweep_xyzrgb_signal_ = createSignal<
-      sig_cb_velodyne_hdl_sweep_point_cloud_xyzrgb> ();
-  sweep_xyzi_signal_ =
-      createSignal<sig_cb_velodyne_hdl_sweep_point_cloud_xyzi> ();
+  sweep_xyz_signal_ = createSignal<sig_cb_velodyne_hdl_sweep_point_cloud_xyz> ();
+  sweep_xyzrgb_signal_ = createSignal<sig_cb_velodyne_hdl_sweep_point_cloud_xyzrgb> ();
+  sweep_xyzi_signal_ =createSignal<sig_cb_velodyne_hdl_sweep_point_cloud_xyzi> ();
   scan_xyz_signal_ = createSignal<sig_cb_velodyne_hdl_scan_point_cloud_xyz> ();
-  scan_xyzrgb_signal_ =
-      createSignal<sig_cb_velodyne_hdl_scan_point_cloud_xyzrgb> ();
-  scan_xyzi_signal_ =
-      createSignal<sig_cb_velodyne_hdl_scan_point_cloud_xyzi> ();
+  scan_xyzrgb_signal_ = createSignal<sig_cb_velodyne_hdl_scan_point_cloud_xyzrgb> ();
+  scan_xyzi_signal_ = createSignal<sig_cb_velodyne_hdl_scan_point_cloud_xyzi> ();
 
   current_scan_xyz_.reset (new pcl::PointCloud<pcl::PointXYZ>);
   current_scan_xyzi_.reset (new pcl::PointCloud<pcl::PointXYZI>);
@@ -140,17 +162,14 @@ pcl::HDLGrabber::initialize (const std::string& correctionsFile)
   current_sweep_xyzi_.reset (new pcl::PointCloud<pcl::PointXYZI>);
 
   for (int i = 0; i < HDL_MAX_NUM_LASERS; i++)
-  {
-    laser_rgb_mapping_[i].r = laser_rgb_mapping_[i].g =
-        laser_rgb_mapping_[i].b = 0;
-  }
+    laser_rgb_mapping_[i].r = laser_rgb_mapping_[i].g = laser_rgb_mapping_[i].b = 0;
+
   if (laser_corrections_[32].distanceCorrection == 0.0)
   {
     for (int i = 0; i < 16; i++)
     {
       laser_rgb_mapping_[i * 2].b = static_cast<uint8_t> (i * 6 + 64);
-      laser_rgb_mapping_[i * 2 + 1].b =
-          static_cast<uint8_t> ( (i + 16) * 6 + 64);
+      laser_rgb_mapping_[i * 2 + 1].b = static_cast<uint8_t> ( (i + 16) * 6 + 64);
     }
   }
   else
@@ -158,18 +177,17 @@ pcl::HDLGrabber::initialize (const std::string& correctionsFile)
     for (int i = 0; i < 16; i++)
     {
       laser_rgb_mapping_[i * 2].b = static_cast<uint8_t> (i * 3 + 64);
-      laser_rgb_mapping_[i * 2 + 1].b =
-          static_cast<uint8_t> ( (i + 16) * 3 + 64);
+      laser_rgb_mapping_[i * 2 + 1].b = static_cast<uint8_t> ( (i + 16) * 3 + 64);
     }
     for (int i = 0; i < 16; i++)
     {
       laser_rgb_mapping_[i * 2 + 32].b = static_cast<uint8_t> (i * 3 + 160);
-      laser_rgb_mapping_[i * 2 + 33].b = static_cast<uint8_t> ( (i + 16) * 3
-          + 160);
+      laser_rgb_mapping_[i * 2 + 33].b = static_cast<uint8_t> ( (i + 16) * 3 + 160);
     }
   }
 }
 
+/////////////////////////////////////////////////////////////////////////////
 void
 pcl::HDLGrabber::loadCorrectionsFile (const std::string& correctionsFile)
 {
@@ -182,17 +200,15 @@ pcl::HDLGrabber::loadCorrectionsFile (const std::string& correctionsFile)
   boost::property_tree::ptree pt;
   try
   {
-    read_xml (correctionsFile, pt,
-        boost::property_tree::xml_parser::trim_whitespace);
+    read_xml (correctionsFile, pt, boost::property_tree::xml_parser::trim_whitespace);
   }
   catch (boost::exception const& ex)
   {
-    std::cerr << "Error reading calibration file " << correctionsFile << "."
-        << std::endl;
+    PCL_ERROR ("[pcl::HDLGrabber::loadCorrectionsFile] Error reading calibration file %s!\n", correctionsFile.c_str ());
     return;
   }
 
-  BOOST_FOREACH(boost::property_tree::ptree::value_type &v, pt.get_child("boost_serialization.DB.points_"))
+  BOOST_FOREACH (boost::property_tree::ptree::value_type &v, pt.get_child ("boost_serialization.DB.points_"))
   {
     if (v.first == "item")
     {
@@ -204,9 +220,9 @@ pcl::HDLGrabber::loadCorrectionsFile (const std::string& correctionsFile)
           boost::property_tree::ptree calibrationData = px.second;
           int index = -1;
           double azimuth = 0, vertCorrection = 0, distCorrection = 0,
-              vertOffsetCorrection = 0, horizOffsetCorrection = 0;
+                 vertOffsetCorrection = 0, horizOffsetCorrection = 0;
 
-          BOOST_FOREACH(boost::property_tree::ptree::value_type &item, calibrationData)
+          BOOST_FOREACH (boost::property_tree::ptree::value_type &item, calibrationData)
           {
             if (item.first == "id_")
               index = atoi (item.second.data ().c_str ());
@@ -225,19 +241,12 @@ pcl::HDLGrabber::loadCorrectionsFile (const std::string& correctionsFile)
           {
             laser_corrections_[index].azimuthCorrection = azimuth;
             laser_corrections_[index].verticalCorrection = vertCorrection;
-            laser_corrections_[index].distanceCorrection = distCorrection
-                / 100.0;
-            laser_corrections_[index].verticalOffsetCorrection =
-                vertOffsetCorrection / 100.0;
-            laser_corrections_[index].horizontalOffsetCorrection =
-                horizOffsetCorrection / 100.0;
+            laser_corrections_[index].distanceCorrection = distCorrection / 100.0;
+            laser_corrections_[index].verticalOffsetCorrection = vertOffsetCorrection / 100.0;
+            laser_corrections_[index].horizontalOffsetCorrection = horizOffsetCorrection / 100.0;
 
-            laser_corrections_[index].cosVertCorrection =
-                std::cos (
-                    HDL_Grabber_toRadians(laser_corrections_[index].verticalCorrection));
-            laser_corrections_[index].sinVertCorrection =
-                std::sin (
-                    HDL_Grabber_toRadians(laser_corrections_[index].verticalCorrection));
+            laser_corrections_[index].cosVertCorrection = std::cos (HDL_Grabber_toRadians(laser_corrections_[index].verticalCorrection));
+            laser_corrections_[index].sinVertCorrection = std::sin (HDL_Grabber_toRadians(laser_corrections_[index].verticalCorrection));
           }
         }
       }
@@ -245,13 +254,15 @@ pcl::HDLGrabber::loadCorrectionsFile (const std::string& correctionsFile)
   }
 }
 
+/////////////////////////////////////////////////////////////////////////////
 void
 pcl::HDLGrabber::loadHDL32Corrections ()
 {
-  double hdl32VerticalCorrections[] = { -30.67, -9.3299999, -29.33, -8, -28,
-      -6.6700001, -26.67, -5.3299999, -25.33, -4, -24, -2.6700001, -22.67,
-      -1.33, -21.33, 0, -20, 1.33, -18.67, 2.6700001, -17.33, 4, -16, 5.3299999,
-      -14.67, 6.6700001, -13.33, 8, -12, 9.3299999, -10.67, 10.67 };
+  double hdl32VerticalCorrections[] = { 
+    -30.67, -9.3299999, -29.33, -8, -28,
+    -6.6700001, -26.67, -5.3299999, -25.33, -4, -24, -2.6700001, -22.67,
+    -1.33, -21.33, 0, -20, 1.33, -18.67, 2.6700001, -17.33, 4, -16, 5.3299999,
+    -14.67, 6.6700001, -13.33, 8, -12, 9.3299999, -10.67, 10.67 };
   for (int i = 0; i < HDL_LASER_PER_FIRING; i++)
   {
     laser_corrections_[i].azimuthCorrection = 0.0;
@@ -259,10 +270,8 @@ pcl::HDLGrabber::loadHDL32Corrections ()
     laser_corrections_[i].horizontalOffsetCorrection = 0.0;
     laser_corrections_[i].verticalOffsetCorrection = 0.0;
     laser_corrections_[i].verticalCorrection = hdl32VerticalCorrections[i];
-    laser_corrections_[i].sinVertCorrection = std::sin (
-        HDL_Grabber_toRadians(hdl32VerticalCorrections[i]));
-    laser_corrections_[i].cosVertCorrection = std::cos (
-        HDL_Grabber_toRadians(hdl32VerticalCorrections[i]));
+    laser_corrections_[i].sinVertCorrection = std::sin (HDL_Grabber_toRadians(hdl32VerticalCorrections[i]));
+    laser_corrections_[i].cosVertCorrection = std::cos (HDL_Grabber_toRadians(hdl32VerticalCorrections[i]));
   }
   for (int i = HDL_LASER_PER_FIRING; i < HDL_MAX_NUM_LASERS; i++)
   {
@@ -276,6 +285,7 @@ pcl::HDLGrabber::loadHDL32Corrections ()
   }
 }
 
+/////////////////////////////////////////////////////////////////////////////
 void
 pcl::HDLGrabber::processVelodynePackets ()
 {
@@ -283,9 +293,7 @@ pcl::HDLGrabber::processVelodynePackets ()
   {
     unsigned char *data;
     if (!hdl_data_.Dequeue (data))
-    {
       return;
-    }
 
     toPointClouds (reinterpret_cast<HDLDataPacket *> (data));
 
@@ -293,18 +301,18 @@ pcl::HDLGrabber::processVelodynePackets ()
   }
 }
 
+/////////////////////////////////////////////////////////////////////////////
 void
 pcl::HDLGrabber::toPointClouds (HDLDataPacket *dataPacket)
 {
-  if (sizeof(HDLLaserReturn) != 3)
-  {
+  if (sizeof (HDLLaserReturn) != 3)
     return;
-  }
+
   current_scan_xyz_.reset (new pcl::PointCloud<pcl::PointXYZ> ());
-  current_scan_xyzrgb_.reset (new pcl::PointCloud<pcl::PointXYZRGB> ());
+  current_scan_xyzrgb_.reset (new pcl::PointCloud<pcl::PointXYZRGBA> ());
   current_scan_xyzi_.reset (new pcl::PointCloud<pcl::PointXYZI> ());
 
-  for (int i = 0; i < HDL_FIRING_PER_PKT; i++)
+  for (int i = 0; i < HDL_FIRING_PER_PKT; ++i)
   {
     HDLFiringData firingData = dataPacket->firingData[i];
     int offset = (firingData.blockIdentifier == BLOCK_0_TO_31) ? 0 : 32;
@@ -315,21 +323,19 @@ pcl::HDLGrabber::toPointClouds (HDLDataPacket *dataPacket)
       {
         if (current_sweep_xyzrgb_->size () > 0)
         {
-          current_sweep_xyz_->is_dense = current_sweep_xyzrgb_->is_dense =
-              current_sweep_xyzi_->is_dense = false;
+          current_sweep_xyz_->is_dense = current_sweep_xyzrgb_->is_dense = current_sweep_xyzi_->is_dense = false;
 
           fireCurrentSweep ();
         }
         current_sweep_xyz_.reset (new pcl::PointCloud<pcl::PointXYZ> ());
-        current_sweep_xyzrgb_.reset (new pcl::PointCloud<pcl::PointXYZRGB> ());
+        current_sweep_xyzrgb_.reset (new pcl::PointCloud<pcl::PointXYZRGBA> ());
         current_sweep_xyzi_.reset (new pcl::PointCloud<pcl::PointXYZI> ());
       }
 
       PointXYZ xyz;
       PointXYZI xyzi;
-      PointXYZRGB xyzrgb;
-      computeXYZI (xyzi, firingData.rotationalPosition,
-          firingData.laserReturns[j], laser_corrections_[j + offset]);
+      PointXYZRGBA xyzrgb;
+      computeXYZI (xyzi, firingData.rotationalPosition, firingData.laserReturns[j], laser_corrections_[j + offset]);
 
       xyz.x = xyzrgb.x = xyzi.x;
       xyz.y = xyzrgb.y = xyzi.y;
@@ -349,16 +355,16 @@ pcl::HDLGrabber::toPointClouds (HDLDataPacket *dataPacket)
     }
   }
 
-  current_scan_xyz_->is_dense = current_scan_xyzrgb_->is_dense =
-      current_scan_xyzi_->is_dense = false;
+  current_scan_xyz_->is_dense = current_scan_xyzrgb_->is_dense = current_scan_xyzi_->is_dense = true;
 
-  fireCurrentScan (dataPacket->firingData[0].rotationalPosition,
-      dataPacket->firingData[11].rotationalPosition);
+  fireCurrentScan (dataPacket->firingData[0].rotationalPosition, 
+                   dataPacket->firingData[11].rotationalPosition);
 }
 
+/////////////////////////////////////////////////////////////////////////////
 void
-pcl::HDLGrabber::computeXYZI (pcl::PointXYZI& pointXYZI, int azimuth,
-    HDLLaserReturn laserReturn, HDLLaserCorrection correction)
+pcl::HDLGrabber::computeXYZI (pcl::PointXYZI& point, int azimuth, 
+                              HDLLaserReturn laserReturn, HDLLaserCorrection correction)
 {
   double cosAzimuth, sinAzimuth;
   if (correction.azimuthCorrection == 0)
@@ -368,43 +374,35 @@ pcl::HDLGrabber::computeXYZI (pcl::PointXYZI& pointXYZI, int azimuth,
   }
   else
   {
-    double azimuthInRadians =
-        HDL_Grabber_toRadians((static_cast<double>(azimuth) / 100.0) - correction.azimuthCorrection);
+    double azimuthInRadians = HDL_Grabber_toRadians ((static_cast<double> (azimuth) / 100.0) - correction.azimuthCorrection);
     cosAzimuth = std::cos (azimuthInRadians);
     sinAzimuth = std::sin (azimuthInRadians);
   }
-  double distanceCM = laserReturn.distance * 0.2
-      + correction.distanceCorrection;
+  double distanceCM = laserReturn.distance * 0.2 + correction.distanceCorrection;
 
-  double xyDistance = distanceCM * correction.cosVertCorrection
-      - correction.sinVertOffsetCorrection;
+  double xyDistance = distanceCM * correction.cosVertCorrection - correction.sinVertOffsetCorrection;
 
-  pointXYZI.x = static_cast<float> (xyDistance * sinAzimuth
-      - correction.horizontalOffsetCorrection * cosAzimuth);
-  pointXYZI.y = static_cast<float> (xyDistance * cosAzimuth
-      + correction.horizontalOffsetCorrection * sinAzimuth);
-  pointXYZI.z = static_cast<float> (distanceCM * correction.sinVertCorrection
-      + correction.cosVertOffsetCorrection);
-  pointXYZI.intensity = static_cast<float> (laserReturn.intensity);
+  point.x = static_cast<float> (xyDistance * sinAzimuth - correction.horizontalOffsetCorrection * cosAzimuth);
+  point.y = static_cast<float> (xyDistance * cosAzimuth + correction.horizontalOffsetCorrection * sinAzimuth);
+  point.z = static_cast<float> (distanceCM * correction.sinVertCorrection + correction.cosVertOffsetCorrection);
+  point.intensity = static_cast<float> (laserReturn.intensity);
 }
 
+/////////////////////////////////////////////////////////////////////////////
 void
 pcl::HDLGrabber::fireCurrentSweep ()
 {
   if (sweep_xyz_signal_->num_slots () > 0)
-  {
     sweep_xyz_signal_->operator() (current_sweep_xyz_);
-  }
+  
   if (sweep_xyzrgb_signal_->num_slots () > 0)
-  {
     sweep_xyzrgb_signal_->operator() (current_sweep_xyzrgb_);
-  }
+
   if (sweep_xyzi_signal_->num_slots () > 0)
-  {
     sweep_xyzi_signal_->operator() (current_sweep_xyzi_);
-  }
 }
 
+/////////////////////////////////////////////////////////////////////////////
 void
 pcl::HDLGrabber::fireCurrentScan (const unsigned short startAngle,
     const unsigned short endAngle)
@@ -413,45 +411,39 @@ pcl::HDLGrabber::fireCurrentScan (const unsigned short startAngle,
   const float end = static_cast<float> (endAngle) / 100.0f;
 
   if (scan_xyz_signal_->num_slots () > 0)
-  {
     scan_xyz_signal_->operator () (current_scan_xyz_, start, end);
-  }
+
   if (scan_xyzrgb_signal_->num_slots () > 0)
-  {
     scan_xyzrgb_signal_->operator () (current_scan_xyzrgb_, start, end);
-  }
+
   if (scan_xyzi_signal_->num_slots () > 0)
-  {
     scan_xyzi_signal_->operator() (current_scan_xyzi_, start, end);
-  }
 }
 
+/////////////////////////////////////////////////////////////////////////////
 void
 pcl::HDLGrabber::enqueueHDLPacket (const unsigned char *data,
     std::size_t bytesReceived)
 {
   if (bytesReceived == 1206)
   {
-    unsigned char *dup = static_cast<unsigned char *> (malloc (
-        bytesReceived * sizeof(unsigned char)));
+    unsigned char *dup = static_cast<unsigned char *> (malloc (bytesReceived * sizeof(unsigned char)));
     memcpy (dup, data, bytesReceived * sizeof(unsigned char));
 
     hdl_data_.Enqueue (dup);
   }
 }
 
+/////////////////////////////////////////////////////////////////////////////
 void
 pcl::HDLGrabber::start ()
 {
   terminate_read_packet_thread_ = false;
 
   if (isRunning ())
-  {
     return;
-  }
 
-  queue_consumer_thread_ = new boost::thread (
-      boost::bind (&HDLGrabber::processVelodynePackets, this));
+  queue_consumer_thread_ = new boost::thread (boost::bind (&HDLGrabber::processVelodynePackets, this));
 
   if (pcap_file_name_.empty ())
   {
@@ -463,11 +455,10 @@ pcl::HDLGrabber::start ()
     }
     catch (std::exception &e)
     {
-      std::cerr << "Unable to bind to " << udp_listener_endpoint_ << std::endl;
+      PCL_ERROR ("[pcl::HDLGrabber::start] Unable to bind to socket!\n");
       return;
     }
-    hdl_read_packet_thread_ = new boost::thread (
-        boost::bind (&HDLGrabber::readPacketsFromSocket, this));
+    hdl_read_packet_thread_ = new boost::thread (boost::bind (&HDLGrabber::readPacketsFromSocket, this));
   }
   else
   {
@@ -476,6 +467,8 @@ pcl::HDLGrabber::start ()
 #endif // #ifdef USE_PCAP
   }
 }
+
+/////////////////////////////////////////////////////////////////////////////
 void
 pcl::HDLGrabber::stop ()
 {
@@ -503,60 +496,63 @@ pcl::HDLGrabber::stop ()
   }
 }
 
+/////////////////////////////////////////////////////////////////////////////
 bool
 pcl::HDLGrabber::isRunning () const
 {
-  return (hdl_read_packet_thread_ != NULL
-      && !hdl_read_packet_thread_->timed_join (
-          boost::posix_time::milliseconds (10)));
+  return (hdl_read_packet_thread_ != NULL && 
+         !hdl_read_packet_thread_->timed_join (boost::posix_time::milliseconds (10)));
 }
 
+/////////////////////////////////////////////////////////////////////////////
 std::string
 pcl::HDLGrabber::getName () const
 {
   return (std::string ("Velodyne High Definition Laser (HDL) Grabber"));
 }
 
+/////////////////////////////////////////////////////////////////////////////
 float
 pcl::HDLGrabber::getFramesPerSecond () const
 {
   return (0.0f);
 }
 
+/////////////////////////////////////////////////////////////////////////////
 void
 pcl::HDLGrabber::filterPackets (const boost::asio::ip::address& ipAddress,
-    const unsigned short port)
+                                const unsigned short port)
 {
   source_address_filter_ = ipAddress;
   source_port_filter_ = port;
 }
 
+/////////////////////////////////////////////////////////////////////////////
 void
 pcl::HDLGrabber::setLaserColorRGB (const pcl::RGB& color,
-    unsigned int laserNumber)
+                                   unsigned int laserNumber)
 {
   if (laserNumber >= HDL_MAX_NUM_LASERS)
-  {
     return;
-  }
+
   laser_rgb_mapping_[laserNumber] = color;
 }
 
+/////////////////////////////////////////////////////////////////////////////
 bool
-pcl::HDLGrabber::isAddressUnspecified (
-    const boost::asio::ip::address& ip_address)
+pcl::HDLGrabber::isAddressUnspecified (const boost::asio::ip::address& ip_address)
 {
 #if BOOST_VERSION>=104700
   return (ip_address.is_unspecified ());
 #else
-  if (ip_address.is_v4())
-  {
-    return(ip_address.to_v4().to_ulong() == 0);
-  }
-  return(false);
+  if (ip_address.is_v4 ())
+    return (ip_address.to_v4 ().to_ulong() == 0);
+
+  return (false);
 #endif
 }
 
+/////////////////////////////////////////////////////////////////////////////
 void
 pcl::HDLGrabber::readPacketsFromSocket ()
 {
@@ -565,15 +561,11 @@ pcl::HDLGrabber::readPacketsFromSocket ()
 
   while (!terminate_read_packet_thread_)
   {
-    size_t length = hdl_read_socket_->receive_from (
-        boost::asio::buffer (data, 1500), sender_endpoint);
+    size_t length = hdl_read_socket_->receive_from (boost::asio::buffer (data, 1500), sender_endpoint);
 
-    if (isAddressUnspecified (source_address_filter_)
-        || (source_address_filter_ == sender_endpoint.address ()
-            && source_port_filter_ == sender_endpoint.port ()))
-    {
+    if (isAddressUnspecified (source_address_filter_) || 
+        (source_address_filter_ == sender_endpoint.address () && source_port_filter_ == sender_endpoint.port ()))
       enqueueHDLPacket (data, length);
-    }
     else
     {
       std::cout << "-";
@@ -582,15 +574,16 @@ pcl::HDLGrabber::readPacketsFromSocket ()
   }
 }
 
+/////////////////////////////////////////////////////////////////////////////
 #ifdef USE_PCAP
 void
-pcl::HDLGrabber::readPacketsFromPcap()
+pcl::HDLGrabber::readPacketsFromPcap ()
 {
   struct pcap_pkthdr *header;
   const unsigned char *data;
   char errbuff[PCAP_ERRBUF_SIZE];
 
-  pcap_t *pcap = pcap_open_offline(pcap_file_name_.c_str(), errbuff);
+  pcap_t *pcap = pcap_open_offline (pcap_file_name_.c_str (), errbuff);
 
   struct bpf_program filter;
   std::ostringstream stringStream;
@@ -602,13 +595,13 @@ pcl::HDLGrabber::readPacketsFromPcap()
   }
 
   // PCAP_NETMASK_UNKNOWN should be 0xffffffff, but it's undefined in older PCAP versions
-  if (pcap_compile(pcap, &filter, stringStream.str().c_str(), 0, 0xffffffff) == -1)
+  if (pcap_compile (pcap, &filter, stringStream.str ().c_str(), 0, 0xffffffff) == -1)
   {
-    std::cout << "Issue compiling filter " << pcap_geterr(pcap) << std::endl;
+    PCL_WARN ("[pcl::HDLGrabber::readPacketsFromPcap] Issue compiling filter: %s.\n", pcap_geterr (pcap));
   }
   else if (pcap_setfilter(pcap, &filter) == -1)
   {
-    std::cout << "Issue setting filter" << pcap_geterr(pcap) << std::endl;
+    PCL_WARN ("[pcl::HDLGrabber::readPacketsFromPcap] Issue setting filter: %s.\n", pcap_geterr (pcap));
   }
 
   struct timeval lasttime;
@@ -644,3 +637,4 @@ pcl::HDLGrabber::readPacketsFromPcap()
   }
 }
 #endif //#ifdef USE_PCAP
+

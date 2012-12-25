@@ -68,7 +68,7 @@ namespace pcl
        *         Represents 1 corrected packet from the HDL Velodyne.  Each laser has a different RGB
        */
       typedef void (sig_cb_velodyne_hdl_scan_point_cloud_xyzrgb) (
-          const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZRGB> >&,
+          const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZRGBA> >&,
           float, float);
       /** \brief Signal used for a single sector
        *         Represents 1 corrected packet from the HDL Velodyne with the returned intensity.
@@ -93,7 +93,7 @@ namespace pcl
        *         This signal is sent when the Velodyne passes angle "0".  Each laser has a different RGB
        */
       typedef void (sig_cb_velodyne_hdl_sweep_point_cloud_xyzrgb) (
-          const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZRGB> >&);
+          const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZRGBA> >&);
 
       /** \brief Constructor taking an optional path to an HDL corrections file.  The Grabber will listen on the default IP/port for data packets [192.168.3.255/2368]
        * \param[in] correctionsFile Path to a file which contains the correction parameters for the HDL.  This parameter is mandatory for the HDL-64, optional for the HDL-32
@@ -209,7 +209,7 @@ namespace pcl
           current_sweep_xyz_;
       boost::shared_ptr<pcl::PointCloud<pcl::PointXYZI> > current_scan_xyzi_,
           current_sweep_xyzi_;
-      boost::shared_ptr<pcl::PointCloud<pcl::PointXYZRGB> > current_scan_xyzrgb_,
+      boost::shared_ptr<pcl::PointCloud<pcl::PointXYZRGBA> > current_scan_xyzrgb_,
           current_sweep_xyzrgb_;
       unsigned int last_azimuth_;
       boost::signals2::signal<sig_cb_velodyne_hdl_sweep_point_cloud_xyz>* sweep_xyz_signal_;
