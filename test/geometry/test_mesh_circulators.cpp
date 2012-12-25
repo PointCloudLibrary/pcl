@@ -83,7 +83,6 @@ class TestMeshCirculators : public ::testing::Test
     void
     SetUp ()
     {
-      std::cout << "SetUp 0\n";
       for (int i=0; i<7; ++i) mesh_.addVertex ();
 
       VertexIndices vi;
@@ -96,17 +95,13 @@ class TestMeshCirculators : public ::testing::Test
       vi.push_back (VI (0)); vi.push_back (VI (6)); vi.push_back (VI (1)); faces_.push_back (vi); vi.clear ();
       for (int i=0; i<faces_.size (); ++i)
       {
-        std::cout << "SetUp 1 index " << i << "\n";
         ASSERT_TRUE (mesh_.addFace (faces_ [i]).isValid ()) << "Face number " << i;
       }
-      std::cout << "SetUp 2\n";
       for (int i=1; i<=6; ++i)
       {
-        std::cout << "SetUp 3 index " << i << "\n";
         expected_123456_.push_back (VertexIndex (i));
         expected_654321_.push_back (VertexIndex (7-i));
       }
-      std::cout << "SetUp 4\n";
     }
 
     /** \brief Check if the input is a circular permutation of the expected (only clockwise).
@@ -115,17 +110,14 @@ class TestMeshCirculators : public ::testing::Test
     template <class ContainerT> bool
     isCircularPermutation (const ContainerT& actual, const ContainerT& expected)
     {
-      std::cout << "iCP 0" << std::endl;
       const unsigned int n = expected.size ();
       EXPECT_EQ (n, actual.size ());
       if (n != actual.size ()) return (false);
-      std::cout << "iCP 1" << std::endl;
       for (unsigned int i=0; i<n; ++i)
       {
         bool all_equal = true;
         for (unsigned int j=0; j<n; ++j)
         {
-          std::cout << "iCP 2: " << ((i+j)%n) << " " << j << "\n";
           if (actual [(i+j)%n] != expected [j])
           {
             all_equal = false;
@@ -133,11 +125,9 @@ class TestMeshCirculators : public ::testing::Test
         }
         if (all_equal)
         {
-          std::cout << "iCP 3" << std::endl;
           return (true);
         }
       }
-      std::cout << "iCP 4" << std::endl;
       return (false);
     }
 
@@ -145,17 +135,14 @@ class TestMeshCirculators : public ::testing::Test
     template <class ContainerT> bool
     isCircularPermutationVec (const std::vector <ContainerT> actual, const std::vector <ContainerT> expected)
     {
-      std::cout<< "iCPV 0" << std::endl;
       const unsigned int n = expected.size ();
       EXPECT_EQ (n, actual.size ());
       if (n != actual.size ()) return (false);
-std::cout<< "iCPV 1" << std::endl;
       for (unsigned int i=0; i<n; ++i)
       {
         bool all_equal = true;
         for (unsigned int j=0; j<n; ++j)
         {
-          std::cout << "iCPV 2: " << j << " " << ((i+1)%n) << std::endl;
           if (!this->isCircularPermutation (expected [j], actual [(i+j)%n]))
           {
             all_equal = false;
@@ -163,11 +150,9 @@ std::cout<< "iCPV 1" << std::endl;
         }
         if (all_equal)
         {
-          std::cout<< "iCPV 3" << std::endl;
           return (true);
         }
       }
-      std::cout<< "iCPV 4" << std::endl;
       return (false);
     }
 
@@ -183,31 +168,22 @@ std::cout<< "iCPV 1" << std::endl;
 
 TEST_F (TestMeshCirculators, VertexAroundVertexIncrement)
 {
-  std::cout << "VertexAroundVertexIncrement" << std::endl;
   VertexIndices actual;
-  std::cout << "VAVI 0\n";
   VAVC       circ     = mesh_.getVertexAroundVertexCirculator (VertexIndex (0));
-  std::cout << "VAVI 1\n";
   const VAVC circ_end = circ;
-  std::cout << "VAVI 2\n";
   int counter = 0;
   do
   {
-    std::cout << "VAVI 3 " << counter << "\n";
     ASSERT_LE (++counter, 6); // Avoid infinite loop if connectivity is wrong
     actual.push_back (circ.getTargetIndex ());
-    std::cout << "VAVI 4 " << counter << "\n";
   } while (++circ != circ_end);
-  std::cout << "VAVI 5 " << counter << "\n";
   EXPECT_TRUE (this->isCircularPermutation (expected_654321_, actual));
-  std::cout << "VertexAroundVertexIncrement end" << std::endl;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 TEST_F (TestMeshCirculators, VertexAroundVertexDecrement)
 {
-  std::cout << "VertexAroundVertexDecrement" << std::endl;
   VertexIndices actual;
   VAVC       circ     = mesh_.getVertexAroundVertexCirculator (VertexIndex (0));
   const VAVC circ_end = circ;
@@ -218,14 +194,12 @@ TEST_F (TestMeshCirculators, VertexAroundVertexDecrement)
     actual.push_back (circ.getTargetIndex ());
   } while (--circ != circ_end);
   EXPECT_TRUE (this->isCircularPermutation (expected_123456_, actual));
-  std::cout << "VertexAroundVertexDecrement end" << std::endl;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 TEST_F (TestMeshCirculators, OutgoingHalfEdgeAroundVertexIncrement)
 {
-  std::cout << "OutgoingHalfEdgeAroundVertexIncrement" << std::endl;
   VertexIndices actual;
   OHEAVC       circ     = mesh_.getOutgoingHalfEdgeAroundVertexCirculator (VertexIndex (0));
   const OHEAVC circ_end = circ;
@@ -238,14 +212,12 @@ TEST_F (TestMeshCirculators, OutgoingHalfEdgeAroundVertexIncrement)
     actual.push_back (mesh_.getTerminatingVertexIndex (he));
   } while (++circ != circ_end);
   EXPECT_TRUE (this->isCircularPermutation (expected_654321_, actual));
-  std::cout << "OutgoingHalfEdgeAroundVertexIncrement end" << std::endl;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 TEST_F (TestMeshCirculators, OutgoingHalfEdgeAroundVertexDecrement)
 {
-  std::cout << "OutgoingHalfEdgeAroundVertexDecrement\n";
   VertexIndices actual;
   OHEAVC       circ     = mesh_.getOutgoingHalfEdgeAroundVertexCirculator (VertexIndex (0));
   const OHEAVC circ_end = circ;
@@ -258,14 +230,12 @@ TEST_F (TestMeshCirculators, OutgoingHalfEdgeAroundVertexDecrement)
     actual.push_back (mesh_.getTerminatingVertexIndex (he));
   } while (--circ != circ_end);
   EXPECT_TRUE (this->isCircularPermutation (expected_123456_, actual));
-  std::cout << "OutgoingHalfEdgeAroundVertexDecrement end\n";
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 TEST_F (TestMeshCirculators, IncomingHalfEdgeAroundVertexIncrement)
 {
-  std::cout << "IncomingHalfEdgeAroundVertexIncrement\n";
   VertexIndices actual;
   IHEAVC       circ     = mesh_.getIncomingHalfEdgeAroundVertexCirculator (VertexIndex (0));
   const IHEAVC circ_end = circ;
@@ -278,14 +248,12 @@ TEST_F (TestMeshCirculators, IncomingHalfEdgeAroundVertexIncrement)
     actual.push_back (mesh_.getOriginatingVertexIndex (he));
   } while (++circ != circ_end);
   EXPECT_TRUE (this->isCircularPermutation (expected_654321_, actual));
-  std::cout << "IncomingHalfEdgeAroundVertexIncrement end\n";
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 TEST_F (TestMeshCirculators, IncomingHalfEdgeAroundVertexDecrement)
 {
-  std::cout << "IncomingHalfEdgeAroundVertexDecrement\n";
   VertexIndices actual;
   IHEAVC       circ     = mesh_.getIncomingHalfEdgeAroundVertexCirculator (VertexIndex (0));
   const IHEAVC circ_end = circ;
@@ -298,14 +266,12 @@ TEST_F (TestMeshCirculators, IncomingHalfEdgeAroundVertexDecrement)
     actual.push_back (mesh_.getOriginatingVertexIndex (he));
   } while (--circ != circ_end);
   EXPECT_TRUE (this->isCircularPermutation (expected_123456_, actual));
-  std::cout << "IncomingHalfEdgeAroundVertexDecrement end\n";
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 TEST_F (TestMeshCirculators, FaceAroundVertexIncrement)
 {
-  std::cout << "FaceAroundVertexIncrement\n";
   std::vector <VertexIndices> actual;
   FAVC       circ_fav     = mesh_.getFaceAroundVertexCirculator (VertexIndex (0));
   const FAVC circ_fav_end = circ_fav;
@@ -325,14 +291,12 @@ TEST_F (TestMeshCirculators, FaceAroundVertexIncrement)
     actual.push_back (vi);
   } while (++circ_fav != circ_fav_end);
   EXPECT_TRUE (this->isCircularPermutationVec (std::vector <VertexIndices> (faces_.rbegin (), faces_.rend ()), actual));
-  std::cout << "FaceAroundVertexIncrement end\n";
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 TEST_F (TestMeshCirculators, FaceAroundVertexDecrement)
 {
-  std::cout << "FaceAroundVertexDecrement\n";
   std::vector <VertexIndices> actual;
   FAVC       circ_fav     = mesh_.getFaceAroundVertexCirculator (VertexIndex (0));
   const FAVC circ_fav_end = circ_fav;
@@ -352,14 +316,12 @@ TEST_F (TestMeshCirculators, FaceAroundVertexDecrement)
     actual.push_back (vi);
   } while (--circ_fav != circ_fav_end);
   EXPECT_TRUE (this->isCircularPermutationVec (faces_, actual));
-  std::cout << "FaceAroundVertexDecrement end\n";
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 TEST_F (TestMeshCirculators, VertexAroundFaceIncrement)
 {
-  std::cout << "VertexAroundFaceIncrement\n";
   VertexIndices actual;
   for (unsigned int i=0; i<mesh_.sizeFaces (); ++i)
   {
@@ -374,14 +336,12 @@ TEST_F (TestMeshCirculators, VertexAroundFaceIncrement)
     } while (++circ != circ_end);
     EXPECT_TRUE (this->isCircularPermutation (faces_ [i], actual)) << "Face number " << i;
   }
-  std::cout << "VertexAroundFaceIncrement end\n";
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 TEST_F (TestMeshCirculators, VertexAroundFaceDecrement)
 {
-  std::cout << "VertexAroundFaceDecrement\n";
   VertexIndices actual;
   for (unsigned int i=0; i<mesh_.sizeFaces (); ++i)
   {
@@ -396,14 +356,12 @@ TEST_F (TestMeshCirculators, VertexAroundFaceDecrement)
     } while (--circ != circ_end);
     EXPECT_TRUE (this->isCircularPermutation (VertexIndices (faces_ [i].rbegin (), faces_ [i].rend ()), actual)) << "Face number " << i;
   }
-  std::cout << "VertexAroundFaceDecrement end\n";
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 TEST_F (TestMeshCirculators, InnerHalfEdgeAroundFaceForAllFacesIncrement)
 {
-  std::cout << "InnerHalfEdgeAroundFaceForAllFacesIncrement\n";
   VertexIndices actual;
   for (unsigned int i=0; i<mesh_.sizeFaces (); ++i)
   {
@@ -419,14 +377,12 @@ TEST_F (TestMeshCirculators, InnerHalfEdgeAroundFaceForAllFacesIncrement)
     } while (++circ != circ_end);
     EXPECT_TRUE (this->isCircularPermutation (faces_ [i], actual)) << "Face number " << i;
   }
-  std::cout << "InnerHalfEdgeAroundFaceForAllFacesIncrement end\n";
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 TEST_F (TestMeshCirculators, InnerHalfEdgeAroundFaceForAllFacesDecrement)
 {
-  std::cout << "InnerHalfEdgeAroundFaceForAllFacesDecrement\n";
   VertexIndices actual;
   for (unsigned int i=0; i<mesh_.sizeFaces (); ++i)
   {
@@ -442,14 +398,12 @@ TEST_F (TestMeshCirculators, InnerHalfEdgeAroundFaceForAllFacesDecrement)
     } while (--circ != circ_end);
     EXPECT_TRUE (this->isCircularPermutation (VertexIndices (faces_ [i].rbegin (), faces_ [i].rend ()), actual)) << "Face number " << i;
   }
-  std::cout << "InnerHalfEdgeAroundFaceForAllFacesDecrement end\n";
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 TEST_F (TestMeshCirculators, InnerHalfEdgeAroundFaceForBoundaryIncrement)
 {
-  std::cout << "InnerHalfEdgeAroundFaceForBoundaryIncrement\n";
   VertexIndices actual;
   IHEAFC       circ     = mesh_.getInnerHalfEdgeAroundFaceCirculator (mesh_.getOutgoingHalfEdgeIndex (VertexIndex (1)));
   const IHEAFC circ_end = circ;
@@ -461,14 +415,12 @@ TEST_F (TestMeshCirculators, InnerHalfEdgeAroundFaceForBoundaryIncrement)
     actual.push_back (mesh_.getTerminatingVertexIndex (circ.getTargetIndex ()));
   } while (++circ != circ_end);
   EXPECT_TRUE (this->isCircularPermutation (expected_654321_, actual));
-  std::cout << "InnerHalfEdgeAroundFaceForBoundaryIncrement end\n";
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 TEST_F (TestMeshCirculators, InnerHalfEdgeAroundFaceForBoundaryDecrement)
 {
-  std::cout << "InnerHalfEdgeAroundFaceForBoundaryDecrement\n";
   VertexIndices actual;
   IHEAFC       circ     = mesh_.getInnerHalfEdgeAroundFaceCirculator (mesh_.getOutgoingHalfEdgeIndex (VertexIndex (1)));
   const IHEAFC circ_end = circ;
@@ -480,14 +432,12 @@ TEST_F (TestMeshCirculators, InnerHalfEdgeAroundFaceForBoundaryDecrement)
     actual.push_back (mesh_.getTerminatingVertexIndex (circ.getTargetIndex ()));
   } while (--circ != circ_end);
   EXPECT_TRUE (this->isCircularPermutation (expected_123456_, actual));
-  std::cout << "InnerHalfEdgeAroundFaceForBoundaryDecrement end\n";
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 TEST_F (TestMeshCirculators, OuterHalfEdgeAroundFaceIncrement)
 {
-  std::cout << "OuterHalfEdgeAroundFaceIncrement\n";
   VertexIndices actual;
   for (unsigned int i=0; i<mesh_.sizeFaces (); ++i)
   {
@@ -507,14 +457,12 @@ TEST_F (TestMeshCirculators, OuterHalfEdgeAroundFaceIncrement)
     EXPECT_EQ   (2, num_not_boundary)                              << "Face number " << i;
     EXPECT_TRUE (this->isCircularPermutation (faces_ [i], actual)) << "Face number " << i;
   }
-  std::cout << "OuterHalfEdgeAroundFaceIncrement end\n";
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 TEST_F (TestMeshCirculators, OuterHalfEdgeAroundFaceDecrement)
 {
-  std::cout << "OuterHalfEdgeAroundFaceDecrement\n";
   VertexIndices actual;
   for (unsigned int i=0; i<mesh_.sizeFaces (); ++i)
   {
@@ -534,14 +482,12 @@ TEST_F (TestMeshCirculators, OuterHalfEdgeAroundFaceDecrement)
     EXPECT_EQ   (2, num_not_boundary) << "Face number " << i;
     EXPECT_TRUE (this->isCircularPermutation (VertexIndices (faces_ [i].rbegin (), faces_ [i].rend ()), actual)) << "Face number " << i;
   }
-  std::cout << "OuterHalfEdgeAroundFaceDecrement end\n";
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 TEST_F (TestMeshCirculators, FaceAroundFaceIncrement)
 {
-  std::cout << "FaceAroundFaceIncrement\n";
   FaceIndices expected, actual;
   const int n = mesh_.sizeFaces ();
   for (unsigned int i=0; i<mesh_.sizeFaces (); ++i)
@@ -562,14 +508,12 @@ TEST_F (TestMeshCirculators, FaceAroundFaceIncrement)
     } while (++circ != circ_end);
     EXPECT_TRUE (this->isCircularPermutation (expected, actual)) << "Face number " << i;
   }
-  std::cout << "FaceAroundFaceIncrement end\n";
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 TEST_F (TestMeshCirculators, FaceAroundFaceDecrement)
 {
-  std::cout << "FaceAroundFaceDecrement\n";
   FaceIndices expected, actual;
   const int n = mesh_.sizeFaces ();
   for (unsigned int i=0; i<mesh_.sizeFaces (); ++i)
@@ -590,7 +534,6 @@ TEST_F (TestMeshCirculators, FaceAroundFaceDecrement)
     } while (--circ != circ_end);
     EXPECT_TRUE (this->isCircularPermutation (expected, actual)) << "Face number " << i;
   }
-  std::cout << "FaceAroundFaceDecrement end\n";
 }
 
 ////////////////////////////////////////////////////////////////////////////////
