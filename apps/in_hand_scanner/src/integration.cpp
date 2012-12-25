@@ -46,7 +46,6 @@
 
 #include <pcl/console/print.h>
 #include <pcl/kdtree/kdtree_flann.h>
-#include <pcl/apps/in_hand_scanner/impl/common_functions.hpp>
 
 ////////////////////////////////////////////////////////////////////////////////
 // Integration::Dome
@@ -54,50 +53,50 @@
 
 pcl::ihs::Integration::Dome::Dome ()
 {
-  vertexes_.col ( 0) = Eigen::Vector4f (-0.000000119f,  0.000000000f, 1.000000000f, 0.f);
-  vertexes_.col ( 1) = Eigen::Vector4f ( 0.894427180f,  0.000000000f, 0.447213739f, 0.f);
-  vertexes_.col ( 2) = Eigen::Vector4f ( 0.276393145f,  0.850650907f, 0.447213650f, 0.f);
-  vertexes_.col ( 3) = Eigen::Vector4f (-0.723606884f,  0.525731146f, 0.447213531f, 0.f);
-  vertexes_.col ( 4) = Eigen::Vector4f (-0.723606884f, -0.525731146f, 0.447213531f, 0.f);
-  vertexes_.col ( 5) = Eigen::Vector4f ( 0.276393145f, -0.850650907f, 0.447213650f, 0.f);
-  vertexes_.col ( 6) = Eigen::Vector4f ( 0.343278527f,  0.000000000f, 0.939233720f, 0.f);
-  vertexes_.col ( 7) = Eigen::Vector4f ( 0.686557174f,  0.000000000f, 0.727075875f, 0.f);
-  vertexes_.col ( 8) = Eigen::Vector4f ( 0.792636156f,  0.326477438f, 0.514918089f, 0.f);
-  vertexes_.col ( 9) = Eigen::Vector4f ( 0.555436373f,  0.652954817f, 0.514918029f, 0.f);
-  vertexes_.col (10) = Eigen::Vector4f ( 0.106078848f,  0.326477438f, 0.939233720f, 0.f);
-  vertexes_.col (11) = Eigen::Vector4f ( 0.212157741f,  0.652954817f, 0.727075756f, 0.f);
-  vertexes_.col (12) = Eigen::Vector4f (-0.065560505f,  0.854728878f, 0.514917910f, 0.f);
-  vertexes_.col (13) = Eigen::Vector4f (-0.449357629f,  0.730025530f, 0.514917850f, 0.f);
-  vertexes_.col (14) = Eigen::Vector4f (-0.277718395f,  0.201774135f, 0.939233661f, 0.f);
-  vertexes_.col (15) = Eigen::Vector4f (-0.555436671f,  0.403548241f, 0.727075696f, 0.f);
-  vertexes_.col (16) = Eigen::Vector4f (-0.833154857f,  0.201774105f, 0.514917850f, 0.f);
-  vertexes_.col (17) = Eigen::Vector4f (-0.833154857f, -0.201774150f, 0.514917850f, 0.f);
-  vertexes_.col (18) = Eigen::Vector4f (-0.277718395f, -0.201774135f, 0.939233661f, 0.f);
-  vertexes_.col (19) = Eigen::Vector4f (-0.555436671f, -0.403548241f, 0.727075696f, 0.f);
-  vertexes_.col (20) = Eigen::Vector4f (-0.449357659f, -0.730025649f, 0.514917910f, 0.f);
-  vertexes_.col (21) = Eigen::Vector4f (-0.065560460f, -0.854728937f, 0.514917850f, 0.f);
-  vertexes_.col (22) = Eigen::Vector4f ( 0.106078848f, -0.326477438f, 0.939233720f, 0.f);
-  vertexes_.col (23) = Eigen::Vector4f ( 0.212157741f, -0.652954817f, 0.727075756f, 0.f);
-  vertexes_.col (24) = Eigen::Vector4f ( 0.555436373f, -0.652954757f, 0.514917970f, 0.f);
-  vertexes_.col (25) = Eigen::Vector4f ( 0.792636156f, -0.326477349f, 0.514918089f, 0.f);
-  vertexes_.col (26) = Eigen::Vector4f ( 0.491123378f,  0.356822133f, 0.794654608f, 0.f);
-  vertexes_.col (27) = Eigen::Vector4f (-0.187592626f,  0.577350259f, 0.794654429f, 0.f);
-  vertexes_.col (28) = Eigen::Vector4f (-0.607062101f, -0.000000016f, 0.794654369f, 0.f);
-  vertexes_.col (29) = Eigen::Vector4f (-0.187592626f, -0.577350378f, 0.794654489f, 0.f);
-  vertexes_.col (30) = Eigen::Vector4f ( 0.491123348f, -0.356822133f, 0.794654548f, 0.f);
+  vertices_.col ( 0) = Eigen::Vector4f (-0.000000119f,  0.000000000f, 1.000000000f, 0.f);
+  vertices_.col ( 1) = Eigen::Vector4f ( 0.894427180f,  0.000000000f, 0.447213739f, 0.f);
+  vertices_.col ( 2) = Eigen::Vector4f ( 0.276393145f,  0.850650907f, 0.447213650f, 0.f);
+  vertices_.col ( 3) = Eigen::Vector4f (-0.723606884f,  0.525731146f, 0.447213531f, 0.f);
+  vertices_.col ( 4) = Eigen::Vector4f (-0.723606884f, -0.525731146f, 0.447213531f, 0.f);
+  vertices_.col ( 5) = Eigen::Vector4f ( 0.276393145f, -0.850650907f, 0.447213650f, 0.f);
+  vertices_.col ( 6) = Eigen::Vector4f ( 0.343278527f,  0.000000000f, 0.939233720f, 0.f);
+  vertices_.col ( 7) = Eigen::Vector4f ( 0.686557174f,  0.000000000f, 0.727075875f, 0.f);
+  vertices_.col ( 8) = Eigen::Vector4f ( 0.792636156f,  0.326477438f, 0.514918089f, 0.f);
+  vertices_.col ( 9) = Eigen::Vector4f ( 0.555436373f,  0.652954817f, 0.514918029f, 0.f);
+  vertices_.col (10) = Eigen::Vector4f ( 0.106078848f,  0.326477438f, 0.939233720f, 0.f);
+  vertices_.col (11) = Eigen::Vector4f ( 0.212157741f,  0.652954817f, 0.727075756f, 0.f);
+  vertices_.col (12) = Eigen::Vector4f (-0.065560505f,  0.854728878f, 0.514917910f, 0.f);
+  vertices_.col (13) = Eigen::Vector4f (-0.449357629f,  0.730025530f, 0.514917850f, 0.f);
+  vertices_.col (14) = Eigen::Vector4f (-0.277718395f,  0.201774135f, 0.939233661f, 0.f);
+  vertices_.col (15) = Eigen::Vector4f (-0.555436671f,  0.403548241f, 0.727075696f, 0.f);
+  vertices_.col (16) = Eigen::Vector4f (-0.833154857f,  0.201774105f, 0.514917850f, 0.f);
+  vertices_.col (17) = Eigen::Vector4f (-0.833154857f, -0.201774150f, 0.514917850f, 0.f);
+  vertices_.col (18) = Eigen::Vector4f (-0.277718395f, -0.201774135f, 0.939233661f, 0.f);
+  vertices_.col (19) = Eigen::Vector4f (-0.555436671f, -0.403548241f, 0.727075696f, 0.f);
+  vertices_.col (20) = Eigen::Vector4f (-0.449357659f, -0.730025649f, 0.514917910f, 0.f);
+  vertices_.col (21) = Eigen::Vector4f (-0.065560460f, -0.854728937f, 0.514917850f, 0.f);
+  vertices_.col (22) = Eigen::Vector4f ( 0.106078848f, -0.326477438f, 0.939233720f, 0.f);
+  vertices_.col (23) = Eigen::Vector4f ( 0.212157741f, -0.652954817f, 0.727075756f, 0.f);
+  vertices_.col (24) = Eigen::Vector4f ( 0.555436373f, -0.652954757f, 0.514917970f, 0.f);
+  vertices_.col (25) = Eigen::Vector4f ( 0.792636156f, -0.326477349f, 0.514918089f, 0.f);
+  vertices_.col (26) = Eigen::Vector4f ( 0.491123378f,  0.356822133f, 0.794654608f, 0.f);
+  vertices_.col (27) = Eigen::Vector4f (-0.187592626f,  0.577350259f, 0.794654429f, 0.f);
+  vertices_.col (28) = Eigen::Vector4f (-0.607062101f, -0.000000016f, 0.794654369f, 0.f);
+  vertices_.col (29) = Eigen::Vector4f (-0.187592626f, -0.577350378f, 0.794654489f, 0.f);
+  vertices_.col (30) = Eigen::Vector4f ( 0.491123348f, -0.356822133f, 0.794654548f, 0.f);
 
-  for (unsigned int i=0; i<vertexes_.cols (); ++i)
+  for (unsigned int i=0; i<vertices_.cols (); ++i)
   {
-    vertexes_.col (i).head <3> ().normalize ();
+    vertices_.col (i).head <3> ().normalize ();
   }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-const pcl::ihs::Integration::Dome::Vertexes&
-pcl::ihs::Integration::Dome::getVertexes () const
+const pcl::ihs::Integration::Dome::Vertices&
+pcl::ihs::Integration::Dome::getVertices () const
 {
-  return (vertexes_);
+  return (vertices_);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -118,8 +117,8 @@ pcl::ihs::Integration::Integration ()
 ////////////////////////////////////////////////////////////////////////////////
 
 bool
-pcl::ihs::Integration::reconstructMesh (const CloudProcessedConstPtr& cloud_data,
-                                        const MeshPtr&                mesh_model) const
+pcl::ihs::Integration::reconstructMesh (const CloudXYZRGBNormalConstPtr& cloud_data,
+                                        const MeshPtr&                   mesh_model) const
 {
   if (!cloud_data->isOrganized ())
   {
@@ -130,38 +129,38 @@ pcl::ihs::Integration::reconstructMesh (const CloudProcessedConstPtr& cloud_data
   const int height = static_cast <int> (cloud_data->height);
 
   mesh_model->clear ();
-  mesh_model->reserveVertexes (cloud_data->size ());
+  mesh_model->reserveVertices (cloud_data->size ());
   mesh_model->reserveFaces (2 * (width-1) * (height-1));
 
-  // Store which vertex is set at which position (initialized with invalid indexes)
-  VertexIndexes vertex_indexes (cloud_data->size (), VertexIndex ());
+  // Store which vertex is set at which position (initialized with invalid indices)
+  VertexIndices vertex_indices (cloud_data->size (), VertexIndex ());
 
   // Convert to the model cloud type. This is actually not needed but avoids code duplication (see merge). And reconstructMesh is called only the first reconstruction step anyway.
-  // NOTE: The default constructor of PointModel has to initialize with NaNs!
-  CloudModelPtr cloud_model (new CloudModel ());
+  // NOTE: The default constructor of PointIHS has to initialize with NaNs!
+  CloudIHSPtr cloud_model (new CloudIHS ());
   cloud_model->resize (cloud_data->size ());
 
   // Set the model points not reached by the main loop
   for (int c=0; c<width; ++c)
   {
-    const PointProcessed& pt_d = cloud_data->operator [] (c);
+    const PointXYZRGBNormal& pt_d = cloud_data->operator [] (c);
     const float weight = -pt_d.normal_z; // weight = -dot (normal, [0; 0; 1])
 
     if (pcl::isFinite (pt_d) && weight >= weight_min_)
     {
-      cloud_model->operator [] (c) = PointModel (pt_d, weight);
+      cloud_model->operator [] (c) = PointIHS (pt_d, weight);
     }
   }
   for (int r=1; r<height; ++r)
   {
     for (int c=0; c<2; ++c)
     {
-      const PointProcessed& pt_d = cloud_data->operator [] (r*width + c);
+      const PointXYZRGBNormal& pt_d = cloud_data->operator [] (r*width + c);
       const float weight = -pt_d.normal_z; // weight = -dot (normal, [0; 0; 1])
 
       if (pcl::isFinite (pt_d) && weight >= weight_min_)
       {
-        cloud_model->operator [] (r*width + c) = PointModel (pt_d, weight);
+        cloud_model->operator [] (r*width + c) = PointIHS (pt_d, weight);
       }
     }
   }
@@ -194,24 +193,24 @@ pcl::ihs::Integration::reconstructMesh (const CloudProcessedConstPtr& cloud_data
       assert (ind_3 >= 0 && ind_3 < static_cast <int> (cloud_data->size ()));
       assert (ind_4 >= 0 && ind_4 < static_cast <int> (cloud_data->size ()));
 
-      const PointProcessed& pt_d_0 = cloud_data->operator  [] (ind_0);
-      PointModel&           pt_m_0 = cloud_model->operator [] (ind_0);
-      const PointModel&     pt_m_1 = cloud_model->operator [] (ind_1);
-      const PointModel&     pt_m_2 = cloud_model->operator [] (ind_2);
-      const PointModel&     pt_m_3 = cloud_model->operator [] (ind_3);
-      const PointModel&     pt_m_4 = cloud_model->operator [] (ind_4);
+      const PointXYZRGBNormal& pt_d_0 = cloud_data->operator  [] (ind_0);
+      PointIHS&                pt_m_0 = cloud_model->operator [] (ind_0);
+      const PointIHS&          pt_m_1 = cloud_model->operator [] (ind_1);
+      const PointIHS&          pt_m_2 = cloud_model->operator [] (ind_2);
+      const PointIHS&          pt_m_3 = cloud_model->operator [] (ind_3);
+      const PointIHS&          pt_m_4 = cloud_model->operator [] (ind_4);
 
-      VertexIndex& vi_0 = vertex_indexes [ind_0];
-      VertexIndex& vi_1 = vertex_indexes [ind_1];
-      VertexIndex& vi_2 = vertex_indexes [ind_2];
-      VertexIndex& vi_3 = vertex_indexes [ind_3];
-      VertexIndex& vi_4 = vertex_indexes [ind_4];
+      VertexIndex& vi_0 = vertex_indices [ind_0];
+      VertexIndex& vi_1 = vertex_indices [ind_1];
+      VertexIndex& vi_2 = vertex_indices [ind_2];
+      VertexIndex& vi_3 = vertex_indices [ind_3];
+      VertexIndex& vi_4 = vertex_indices [ind_4];
 
       const float weight = -pt_d_0.normal_z; // weight = -dot (normal, [0; 0; 1])
 
       if (pcl::isFinite (pt_d_0) && weight >= weight_min_)
       {
-        pt_m_0 = PointModel (pt_d_0, weight);
+        pt_m_0 = PointIHS (pt_d_0, weight);
       }
 
       this->addToMesh (pt_m_0,pt_m_1,pt_m_2,pt_m_3, vi_0,vi_1,vi_2,vi_3, mesh_model);
@@ -225,9 +224,9 @@ pcl::ihs::Integration::reconstructMesh (const CloudProcessedConstPtr& cloud_data
 ////////////////////////////////////////////////////////////////////////////////
 
 bool
-pcl::ihs::Integration::merge (const CloudProcessedConstPtr& cloud_data,
-                              const MeshPtr&                mesh_model,
-                              const Transformation&         T) const
+pcl::ihs::Integration::merge (const CloudXYZRGBNormalConstPtr& cloud_data,
+                              const MeshPtr&                   mesh_model,
+                              const Eigen::Matrix4f&           T) const
 {
   if (!cloud_data->isOrganized ())
   {
@@ -237,47 +236,48 @@ pcl::ihs::Integration::merge (const CloudProcessedConstPtr& cloud_data,
   const int width  = static_cast <int> (cloud_data->width);
   const int height = static_cast <int> (cloud_data->height);
 
-  if (!mesh_model->sizeVertexes ())
+  if (!mesh_model->sizeVertices ())
   {
     std::cerr << "ERROR in integration.cpp: Model mesh is empty\n";
     return (false);
   }
 
   // Nearest neighbor search
-  // TODO: remove this unnecessary copy
+  // TODO: remove this unnecessary copy (I currently keep it because I'm not sure if
   CloudXYZPtr xyz_model (new CloudXYZ ());
-  xyz_model->reserve (mesh_model->sizeVertexes ());
-  for (VertexConstIterator it=mesh_model->beginVertexes (); it!=mesh_model->endVertexes (); ++it)
+  xyz_model->reserve (mesh_model->sizeVertices ());
+  for (unsigned int i=0; i<mesh_model->sizeVertices (); ++i)
   {
-    xyz_model->push_back (PointXYZ (it->x, it->y, it->z));
+    const PointIHS& pt = mesh_model->getVertexDataCloud () [i];
+    xyz_model->push_back (PointXYZ (pt.x, pt.y, pt.z));
   }
   kd_tree_->setInputCloud (xyz_model);
   std::vector <int>   index (1);
   std::vector <float> squared_distance (1);
 
-  mesh_model->reserveVertexes (mesh_model->sizeVertexes () + cloud_data->size ());
+  mesh_model->reserveVertices (mesh_model->sizeVertices () + cloud_data->size ());
   mesh_model->reserveFaces (mesh_model->sizeFaces () + 2 * (width-1) * (height-1));
 
   // Data cloud in model coordinates (this does not change the connectivity information) and weights
-  CloudModelPtr cloud_data_transformed (new CloudModel ());
+  CloudIHSPtr cloud_data_transformed (new CloudIHS ());
   cloud_data_transformed->resize (cloud_data->size ());
 
   // Sensor position in model coordinates
   const Eigen::Vector4f& sensor_eye = T * Eigen::Vector4f (0.f, 0.f, 0.f, 1.f);
 
-  // Store which vertex is set at which position (initialized with invalid indexes)
-  VertexIndexes vertex_indexes (cloud_data->size (), VertexIndex ());
+  // Store which vertex is set at which position (initialized with invalid indices)
+  VertexIndices vertex_indices (cloud_data->size (), VertexIndex ());
 
   // Set the transformed points not reached by the main loop
   for (int c=0; c<width; ++c)
   {
-    const PointProcessed& pt_d = cloud_data->operator [] (c);
+    const PointXYZRGBNormal& pt_d = cloud_data->operator [] (c);
     const float weight = -pt_d.normal_z; // weight = -dot (normal, [0; 0; 1])
 
     if (pcl::isFinite (pt_d) && weight >= weight_min_)
     {
-      PointModel& pt_d_t = cloud_data_transformed->operator [] (c);
-      pt_d_t = PointModel (pt_d, weight);
+      PointIHS& pt_d_t = cloud_data_transformed->operator [] (c);
+      pt_d_t = PointIHS (pt_d, weight);
       pt_d_t.getVector4fMap ()       = T * pt_d_t.getVector4fMap ();
       pt_d_t.getNormalVector4fMap () = T * pt_d_t.getNormalVector4fMap ();
     }
@@ -286,13 +286,13 @@ pcl::ihs::Integration::merge (const CloudProcessedConstPtr& cloud_data,
   {
     for (int c=0; c<2; ++c)
     {
-      const PointProcessed& pt_d = cloud_data->operator [] (r*width + c);
+      const PointXYZRGBNormal& pt_d = cloud_data->operator [] (r*width + c);
       const float weight = -pt_d.normal_z; // weight = -dot (normal, [0; 0; 1])
 
       if (pcl::isFinite (pt_d) && weight >= weight_min_)
       {
-        PointModel& pt_d_t = cloud_data_transformed->operator [] (r*width + c);
-        pt_d_t = PointModel (pt_d, weight);
+        PointIHS& pt_d_t = cloud_data_transformed->operator [] (r*width + c);
+        pt_d_t = PointIHS (pt_d, weight);
         pt_d_t.getVector4fMap ()       = T * pt_d_t.getVector4fMap ();
         pt_d_t.getNormalVector4fMap () = T * pt_d_t.getNormalVector4fMap ();
       }
@@ -327,24 +327,24 @@ pcl::ihs::Integration::merge (const CloudProcessedConstPtr& cloud_data,
       assert (ind_3 >= 0 && ind_3 < static_cast <int> (cloud_data->size ()));
       assert (ind_4 >= 0 && ind_4 < static_cast <int> (cloud_data->size ()));
 
-      const PointProcessed& pt_d_0   = cloud_data->operator             [] (ind_0);
-      PointModel&           pt_d_t_0 = cloud_data_transformed->operator [] (ind_0);
-      const PointModel&     pt_d_t_1 = cloud_data_transformed->operator [] (ind_1);
-      const PointModel&     pt_d_t_2 = cloud_data_transformed->operator [] (ind_2);
-      const PointModel&     pt_d_t_3 = cloud_data_transformed->operator [] (ind_3);
-      const PointModel&     pt_d_t_4 = cloud_data_transformed->operator [] (ind_4);
+      const PointXYZRGBNormal& pt_d_0   = cloud_data->operator             [] (ind_0);
+      PointIHS&                pt_d_t_0 = cloud_data_transformed->operator [] (ind_0);
+      const PointIHS&          pt_d_t_1 = cloud_data_transformed->operator [] (ind_1);
+      const PointIHS&          pt_d_t_2 = cloud_data_transformed->operator [] (ind_2);
+      const PointIHS&          pt_d_t_3 = cloud_data_transformed->operator [] (ind_3);
+      const PointIHS&          pt_d_t_4 = cloud_data_transformed->operator [] (ind_4);
 
-      VertexIndex& vi_0 = vertex_indexes [ind_0];
-      VertexIndex& vi_1 = vertex_indexes [ind_1];
-      VertexIndex& vi_2 = vertex_indexes [ind_2];
-      VertexIndex& vi_3 = vertex_indexes [ind_3];
-      VertexIndex& vi_4 = vertex_indexes [ind_4];
+      VertexIndex& vi_0 = vertex_indices [ind_0];
+      VertexIndex& vi_1 = vertex_indices [ind_1];
+      VertexIndex& vi_2 = vertex_indices [ind_2];
+      VertexIndex& vi_3 = vertex_indices [ind_3];
+      VertexIndex& vi_4 = vertex_indices [ind_4];
 
       const float weight = -pt_d_0.normal_z; // weight = -dot (normal, [0; 0; 1])
 
       if (pcl::isFinite (pt_d_0) && weight >= weight_min_)
       {
-        pt_d_t_0 = PointModel (pt_d_0, weight);
+        pt_d_t_0 = PointIHS (pt_d_0, weight);
         pt_d_t_0.getVector4fMap ()       = T * pt_d_t_0.getVector4fMap ();
         pt_d_t_0.getNormalVector4fMap () = T * pt_d_t_0.getNormalVector4fMap ();
 
@@ -360,35 +360,35 @@ pcl::ihs::Integration::merge (const CloudProcessedConstPtr& cloud_data,
         // Average out corresponding points
         if (squared_distance[0] <= squared_distance_max_)
         {
-          Vertex& v_m = mesh_model->getElement (VertexIndex (index[0])); // Non-const reference!
+          PointIHS& pt_m = mesh_model->getVertexDataCloud () [index [0]]; // Non-const reference!
 
-          if (v_m.getNormalVector4fMap ().dot (pt_d_t_0.getNormalVector4fMap ()) >= dot_normal_min_)
+          if (pt_m.getNormalVector4fMap ().dot (pt_d_t_0.getNormalVector4fMap ()) >= dot_normal_min_)
           {
-            vi_0 = VertexIndex (index[0]);
+            vi_0 = VertexIndex (index [0]);
 
-            const float W   = v_m.weight;         // Old accumulated weight
+            const float W   = pt_m.weight;         // Old accumulated weight
             const float w   = pt_d_t_0.weight;    // Weight of new point
-            const float WW  = v_m.weight = W + w; // New accumulated weight
+            const float WW  = pt_m.weight = W + w; // New accumulated weight
 
-            const float r_m = static_cast <float> (v_m.r);
-            const float g_m = static_cast <float> (v_m.g);
-            const float b_m = static_cast <float> (v_m.b);
+            const float r_m = static_cast <float> (pt_m.r);
+            const float g_m = static_cast <float> (pt_m.g);
+            const float b_m = static_cast <float> (pt_m.b);
 
             const float r_d = static_cast <float> (pt_d_t_0.r);
             const float g_d = static_cast <float> (pt_d_t_0.g);
             const float b_d = static_cast <float> (pt_d_t_0.b);
 
-            v_m.getVector4fMap ()       = ( W*v_m.getVector4fMap ()       + w*pt_d_t_0.getVector4fMap ())       / WW;
-            v_m.getNormalVector4fMap () = ((W*v_m.getNormalVector4fMap () + w*pt_d_t_0.getNormalVector4fMap ()) / WW).normalized ();
-            v_m.r                       = this->trimRGB ((W*r_m + w*r_d) / WW);
-            v_m.g                       = this->trimRGB ((W*g_m + w*g_d) / WW);
-            v_m.b                       = this->trimRGB ((W*b_m + w*b_d) / WW);
+            pt_m.getVector4fMap ()       = ( W*pt_m.getVector4fMap ()       + w*pt_d_t_0.getVector4fMap ())       / WW;
+            pt_m.getNormalVector4fMap () = ((W*pt_m.getNormalVector4fMap () + w*pt_d_t_0.getNormalVector4fMap ()) / WW).normalized ();
+            pt_m.r                       = this->trimRGB ((W*r_m + w*r_d) / WW);
+            pt_m.g                       = this->trimRGB ((W*g_m + w*g_d) / WW);
+            pt_m.b                       = this->trimRGB ((W*b_m + w*b_d) / WW);
 
             // Point has been observed again -> give it some extra time to live
-            v_m.age = 0;
+            pt_m.age = 0;
 
             // Add a direction
-            this->addDirection (v_m.getNormalVector4fMap (), sensor_eye-v_m.getVector4fMap (), v_m.directions);
+            this->addDirection (pt_m.getNormalVector4fMap (), sensor_eye-pt_m.getVector4fMap (), pt_m.directions);
 
           } // dot normals
         } // squared distance
@@ -415,24 +415,25 @@ pcl::ihs::Integration::merge (const CloudProcessedConstPtr& cloud_data,
 void
 pcl::ihs::Integration::age (const MeshPtr& mesh, const bool cleanup) const
 {
-  for (Mesh::VertexIterator it = mesh->beginVertexes (); it!=mesh->endVertexes (); ++it)
+  for (unsigned int i=0; i<mesh->sizeVertices (); ++i)
   {
-    if (it->age < age_max_)
+    PointIHS& pt = mesh->getVertexDataCloud () [i];
+    if (pt.age < age_max_)
     {
-       // Point survives
-       ++it->age;
+      // Point survives
+      ++(pt.age);
     }
-    else if (it->age == age_max_) // Judgement Day
+    else if (pt.age == age_max_) // Judgement Day
     {
-      if (this->countDirections (it->directions) < count_min_)
+      if (this->countDirections (pt.directions) < count_min_)
       {
         // Point dies (no need to transform it)
-        mesh->deleteVertex (*it);
+        mesh->deleteVertex (VertexIndex (i));
       }
       else
       {
         // Point becomes immortal
-        it->age = std::numeric_limits <unsigned int>::max ();
+        pt.age = std::numeric_limits <unsigned int>::max ();
       }
     }
   }
@@ -560,15 +561,15 @@ pcl::ihs::Integration::trimRGB (const float val) const
 ////////////////////////////////////////////////////////////////////////////////
 
 void
-pcl::ihs::Integration::addToMesh (const PointModel& pt_0,
-                                  const PointModel& pt_1,
-                                  const PointModel& pt_2,
-                                  const PointModel& pt_3,
-                                  VertexIndex&      vi_0,
-                                  VertexIndex&      vi_1,
-                                  VertexIndex&      vi_2,
-                                  VertexIndex&      vi_3,
-                                  const MeshPtr&    mesh) const
+pcl::ihs::Integration::addToMesh (const PointIHS& pt_0,
+                                  const PointIHS& pt_1,
+                                  const PointIHS& pt_2,
+                                  const PointIHS& pt_3,
+                                  VertexIndex&    vi_0,
+                                  VertexIndex&    vi_1,
+                                  VertexIndex&    vi_2,
+                                  VertexIndex&    vi_3,
+                                  const MeshPtr&  mesh) const
 {
   // Treated bitwise
   // 2 - 1
@@ -589,7 +590,7 @@ pcl::ihs::Integration::addToMesh (const PointModel& pt_0,
       if (!vi_1.isValid ()) vi_1 = mesh->addVertex (pt_1);
       if (!vi_2.isValid ()) vi_2 = mesh->addVertex (pt_2);
       if (!vi_3.isValid ()) vi_3 = mesh->addVertex (pt_3);
-      mesh->addFace (vi_0, vi_1, vi_2, vi_3);
+      mesh->addTrianglePair (vi_0, vi_1, vi_2, vi_3);
       break;
     }
   }
@@ -598,13 +599,13 @@ pcl::ihs::Integration::addToMesh (const PointModel& pt_0,
 ////////////////////////////////////////////////////////////////////////////////
 
 void
-pcl::ihs::Integration::addToMesh (const PointModel& pt_0,
-                                  const PointModel& pt_1,
-                                  const PointModel& pt_2,
-                                  VertexIndex&      vi_0,
-                                  VertexIndex&      vi_1,
-                                  VertexIndex&      vi_2,
-                                  const MeshPtr&    mesh) const
+pcl::ihs::Integration::addToMesh (const PointIHS& pt_0,
+                                  const PointIHS& pt_1,
+                                  const PointIHS& pt_2,
+                                  VertexIndex&    vi_0,
+                                  VertexIndex&    vi_1,
+                                  VertexIndex&    vi_2,
+                                  const MeshPtr&  mesh) const
 {
   if (!distanceThreshold (pt_0, pt_1, pt_2)) return;
 
@@ -618,9 +619,9 @@ pcl::ihs::Integration::addToMesh (const PointModel& pt_0,
 ////////////////////////////////////////////////////////////////////////////////
 
 bool
-pcl::ihs::Integration::distanceThreshold (const PointModel& pt_0,
-                                          const PointModel& pt_1,
-                                          const PointModel& pt_2) const
+pcl::ihs::Integration::distanceThreshold (const PointIHS& pt_0,
+                                          const PointIHS& pt_1,
+                                          const PointIHS& pt_2) const
 {
   if ((pt_0.getVector3fMap () - pt_1.getVector3fMap ()).squaredNorm () > squared_distance_max_) return (false);
   if ((pt_1.getVector3fMap () - pt_2.getVector3fMap ()).squaredNorm () > squared_distance_max_) return (false);
@@ -631,10 +632,10 @@ pcl::ihs::Integration::distanceThreshold (const PointModel& pt_0,
 ////////////////////////////////////////////////////////////////////////////////
 
 bool
-pcl::ihs::Integration::distanceThreshold (const PointModel& pt_0,
-                                          const PointModel& pt_1,
-                                          const PointModel& pt_2,
-                                          const PointModel& pt_3) const
+pcl::ihs::Integration::distanceThreshold (const PointIHS& pt_0,
+                                          const PointIHS& pt_1,
+                                          const PointIHS& pt_2,
+                                          const PointIHS& pt_3) const
 {
   if ((pt_0.getVector3fMap () - pt_1.getVector3fMap ()).squaredNorm () > squared_distance_max_) return (false);
   if ((pt_1.getVector3fMap () - pt_2.getVector3fMap ()).squaredNorm () > squared_distance_max_) return (false);
@@ -648,7 +649,7 @@ pcl::ihs::Integration::distanceThreshold (const PointModel& pt_0,
 void
 pcl::ihs::Integration::addDirection (const Eigen::Vector4f& normal,
                                      const Eigen::Vector4f& direction,
-                                     unsigned int&          directions) const
+                                     uint32_t&              directions) const
 {
   // Find the rotation that aligns the normal with [0; 0; 1]
   const float dot = normal.z ();
@@ -657,7 +658,7 @@ pcl::ihs::Integration::addDirection (const Eigen::Vector4f& normal,
 
   // No need to transform if the normal is already very close to [0; 0; 1] (also avoids numerical issues)
   // TODO: The value .969 (actually 0.9696) is hard coded for a frequency=3.
-  //       It can be calculated with 1-(1-max(dome_vertexes_.z))/2
+  //       It can be calculated with 1-(1-max(dome_vertices_.z))/2
   if (dot <= .969f)
   {
     R = Eigen::Isometry3f (Eigen::AngleAxisf(std::acos(dot), Eigen::Vector3f(normal.y(), -normal.x(), 0.f).normalized()));
@@ -668,11 +669,11 @@ pcl::ihs::Integration::addDirection (const Eigen::Vector4f& normal,
   aligned_direction.head <3> ().normalize ();
 
   // Find the closest viewing direction
-  // Note: cos(0deg) = 1 = max
+  // NOTE: cos(0deg) = 1 = max
   //       acos(angle) = dot(a,b) / (norm(a) * norm(b)
-  //       m_sphere_vertexes are already normalized
+  //       m_sphere_vertices are already normalized
   unsigned int index = 0;
-  (aligned_direction.transpose () * dome_.getVertexes ()).maxCoeff (&index);
+  (aligned_direction.transpose () * dome_.getVertices ()).maxCoeff (&index);
 
   // Set the observed direction bit at 'index'
   // http://stackoverflow.com/questions/47981/how-do-you-set-clear-and-toggle-a-single-bit-in-c/47990#47990

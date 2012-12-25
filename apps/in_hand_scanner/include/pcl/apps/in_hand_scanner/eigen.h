@@ -42,7 +42,7 @@
 #define PCL_IN_HAND_SCANNER_EIGEN_H
 
 #ifdef __GNUC__
-  #pragma GCC system_header
+#  pragma GCC system_header
 #endif
 
 #include <Eigen/Core>

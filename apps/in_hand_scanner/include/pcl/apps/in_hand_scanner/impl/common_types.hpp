@@ -38,8 +38,8 @@
  *
  */
 
-#ifndef PCL_IN_HAND_SCANNER_COMMON_TYPES_HPP
-#define PCL_IN_HAND_SCANNER_COMMON_TYPES_HPP
+#ifndef PCL_APPS_IN_HAND_SCANNER_IMPL_COMMON_TYPES_HPP
+#define PCL_APPS_IN_HAND_SCANNER_IMPL_COMMON_TYPES_HPP
 
 #include <limits>
 
@@ -47,22 +47,22 @@ namespace pcl
 {
   namespace ihs
   {
-    struct EIGEN_ALIGN16 _PointModel
+    struct EIGEN_ALIGN16 _PointIHS
     {
       PCL_ADD_POINT4D
       PCL_ADD_NORMAL4D
       PCL_ADD_RGB
       float        weight;
       unsigned int age;
-      unsigned int directions;
+      uint32_t     directions;
 
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     };
 
-    struct PointModel : public pcl::ihs::_PointModel
+    struct PointIHS : public pcl::ihs::_PointIHS
     {
       // NOTE: I rely on NaN in the default constructor!
-      inline PointModel ()
+      inline PointIHS ()
       {
         this->x = this->y = this->z = std::numeric_limits<float>::quiet_NaN ();
         this->data[3] = 1.f;
@@ -77,7 +77,7 @@ namespace pcl
         this->directions = 0;
       }
 
-      inline PointModel (const PointModel& other)
+      inline PointIHS (const PointIHS& other)
       {
         this->x       = other.x;
         this->y       = other.y;
@@ -96,7 +96,7 @@ namespace pcl
         this->directions = other.directions;
       }
 
-      inline PointModel (const pcl::PointXYZRGBNormal& other, const float weight)
+      inline PointIHS (const pcl::PointXYZRGBNormal& other, const float weight)
       {
         this->x       = other.x;
         this->y       = other.y;
@@ -124,4 +124,4 @@ namespace pcl
   } // End namespace ihs
 } // End namespace pcl
 
-#endif // PCL_IN_HAND_SCANNER_COMMON_TYPES_HPP
+#endif // PCL_APPS_IN_HAND_SCANNER_IMPL_COMMON_TYPES_HPP

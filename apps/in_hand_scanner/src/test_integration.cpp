@@ -56,33 +56,28 @@
 #include <pcl/io/vtk_io.h>
 #include <pcl/visualization/pcl_visualizer.h>
 
-typedef pcl::ihs::PointModel         PointModel;
-typedef pcl::ihs::CloudModel         CloudModel;
-typedef pcl::ihs::CloudModelPtr      CloudModelPtr;
-typedef pcl::ihs::CloudModelConstPtr CloudModelConstPtr;
+typedef pcl::ihs::PointIHS         PointIHS;
+typedef pcl::ihs::CloudIHS         CloudIHS;
+typedef pcl::ihs::CloudIHSPtr      CloudIHSPtr;
+typedef pcl::ihs::CloudIHSConstPtr CloudIHSConstPtr;
 
-typedef pcl::ihs::PointProcessed         PointProcessed;
-typedef pcl::ihs::CloudProcessed         CloudProcessed;
-typedef pcl::ihs::CloudProcessedPtr      CloudProcessedPtr;
-typedef pcl::ihs::CloudProcessedConstPtr CloudProcessedConstPtr;
+typedef pcl::PointXYZRGBNormal              PointXYZRGBNormal;
+typedef pcl::PointCloud <PointXYZRGBNormal> CloudXYZRGBNormal;
+typedef CloudXYZRGBNormal::Ptr              CloudXYZRGBNormalPtr;
+typedef CloudXYZRGBNormal::ConstPtr         CloudXYZRGBNormalConstPtr;
 
 typedef pcl::ihs::Integration             Integration;
 typedef pcl::visualization::PCLVisualizer Visualizer;
 
-typedef Integration::Mesh                           Mesh;
-typedef Integration::MeshPtr                        MeshPtr;
-typedef Integration::MeshConstPtr                   MeshConstPtr;
-typedef Mesh::SizeType                              SizeType;
-typedef Mesh::Vertex                                Vertex;
-typedef Mesh::HalfEdge                              HalfEdge;
-typedef Mesh::HalfEdgeIndex                         HalfEdgeIndex;
-typedef Mesh::FaceIndex                             FaceIndex;
-typedef Mesh::FaceIndexes                           FaceIndexes;
-typedef Mesh::VertexConstIterator                   VCI;
-typedef Mesh::HalfEdgeConstIterator                 HECI;
-typedef Mesh::FaceConstIterator                     FCI;
-typedef Mesh::VertexAroundFaceConstCirculator       VAFCCirc;
-typedef Mesh::HalfEdgeAroundBoundaryConstCirculator HEABCC;
+typedef Integration::Mesh                       Mesh;
+typedef Integration::MeshPtr                    MeshPtr;
+typedef Integration::MeshConstPtr               MeshConstPtr;
+typedef Mesh::VertexIndex                       VertexIndex;
+typedef Mesh::HalfEdgeIndex                     HalfEdgeIndex;
+typedef Mesh::FaceIndex                         FaceIndex;
+typedef Mesh::FaceIndices                       FaceIndices;
+typedef Mesh::VertexAroundFaceCirculator        VAFC;
+typedef Mesh::InnerHalfEdgeAroundFaceCirculator IHEAFC;
 
 typedef pcl::Vertices      Face;
 typedef std::vector <Face> Faces;
@@ -90,72 +85,66 @@ typedef std::vector <Face> Faces;
 void
 drawMesh (const MeshConstPtr& mesh, pcl::visualization::PCLVisualizer& visualizer, int ms, const bool update=true)
 {
-  Face          triangle; triangle.vertices.resize (3);
-  Faces         triangles;
-  CloudModelPtr vertexes (new CloudModel ());
+  Face        face; face.vertices.reserve (3);
+  Faces       faces;
+  CloudIHSPtr vertices (new CloudIHS ());
 
   // Convert to polygon mesh for visualization
-  vertexes->reserve (mesh->sizeVertexes ());
-  triangles.reserve (3 * mesh->sizeFaces ());
+  *vertices = mesh->getVertexDataCloud ();
+  faces.reserve (3 * mesh->sizeFaces ());
 
-  for (VCI it=mesh->beginVertexes (); it!=mesh->endVertexes (); ++it)
+  for (unsigned int i=0; i<mesh->sizeVertices (); ++i)
   {
-    vertexes->push_back (*it);
+    VAFC       circ     = mesh->getVertexAroundFaceCirculator (FaceIndex (i));
+    const VAFC circ_end = circ;
+    face.vertices.clear ();
+    do
+    {
+      face.vertices.push_back (circ.getTargetIndex ().get ());
+    } while (++circ != circ_end);
+    faces.push_back (face);
   }
 
-  for (FCI it=mesh->beginFaces (); it!=mesh->endFaces (); ++it)
-  {
-    VAFCCirc circ = mesh->getVertexAroundFaceConstCirculator (*it);
-    triangle.vertices [0] = (circ++).getDereferencedIndex ().getIndex ();
-    triangle.vertices [1] = (circ++).getDereferencedIndex ().getIndex ();
-    triangle.vertices [2] = (circ  ).getDereferencedIndex ().getIndex ();
-    triangles.push_back (triangle);
-  }
-
-  if (update) visualizer.updatePolygonMesh <PointModel> (vertexes, triangles);
-  else        visualizer.addPolygonMesh <PointModel> (vertexes, triangles);
+  if (update) visualizer.updatePolygonMesh <PointIHS> (vertices, faces);
+  else        visualizer.addPolygonMesh    <PointIHS> (vertices, faces);
 
   visualizer.spinOnce (ms);
 }
 
 void saveVTK (const MeshConstPtr& mesh, const std::string& filename)
 {
-  Face          triangle; triangle.vertices.resize (3);
-  Faces         triangles;
-  CloudModelPtr vertexes (new CloudModel ());
+  Face  face; face.vertices.reserve (3);
+  Faces faces;
 
   // Convert to polygon mesh for visualization
-  vertexes->reserve (mesh->sizeVertexes ());
-  triangles.reserve (3 * mesh->sizeFaces ());
+  faces.reserve (3 * mesh->sizeFaces ());
 
-  for (VCI it=mesh->beginVertexes (); it!=mesh->endVertexes (); ++it)
+  for (unsigned int i=0; i<mesh->sizeVertices (); ++i)
   {
-    vertexes->push_back (*it);
-  }
-
-  for (FCI it=mesh->beginFaces (); it!=mesh->endFaces (); ++it)
-  {
-    VAFCCirc circ = mesh->getVertexAroundFaceConstCirculator (*it);
-    triangle.vertices [0] = (circ++).getDereferencedIndex ().getIndex ();
-    triangle.vertices [1] = (circ++).getDereferencedIndex ().getIndex ();
-    triangle.vertices [2] = (circ  ).getDereferencedIndex ().getIndex ();
-    triangles.push_back (triangle);
+    VAFC       circ     = mesh->getVertexAroundFaceCirculator (FaceIndex (i));
+    const VAFC circ_end = circ;
+    face.vertices.clear ();
+    do
+    {
+      face.vertices.push_back (circ.getTargetIndex ().get ());
+    } while (++circ != circ_end);
+    faces.push_back (face);
   }
 
   sensor_msgs::PointCloud2 pc2;
-  pcl::toROSMsg (*vertexes, pc2);
+  pcl::toROSMsg (mesh->getVertexDataCloud (), pc2);
 
   pcl::PolygonMesh pm;
   pm.cloud    = pc2;
-  pm.polygons = triangles;
+  pm.polygons = faces;
 
   pcl::io::saveVTKFile (filename, pm);
 }
 
 void
-disableNormalWeighting (const CloudProcessedPtr& cloud)
+disableNormalWeighting (const CloudXYZRGBNormalPtr& cloud)
 {
-  for (CloudProcessed::iterator it=cloud->begin (); it!=cloud->end (); ++it)
+  for (CloudXYZRGBNormal::iterator it=cloud->begin (); it!=cloud->end (); ++it)
   {
     if (pcl::isFinite (*it))
     {
@@ -168,25 +157,24 @@ disableNormalWeighting (const CloudProcessedPtr& cloud)
 
 // remove outliers (regions with a small boundary)
 void
-simpleOutlierRemoval (const MeshPtr& mesh, const SizeType n, const bool cleanup=true)
+simpleOutlierRemoval (const MeshPtr& mesh, const size_t n, const bool cleanup=true)
 {
   // TODO: maybe put the deleted faces into another vector
   // -> don't delete anything while going through this loop
-  for (HalfEdgeIndex ind=HalfEdgeIndex (0); ind<HalfEdgeIndex (mesh->sizeHalfEdges ()); ++ind)
+  for (HalfEdgeIndex ind (0); ind<HalfEdgeIndex (mesh->sizeHalfEdges ()); ++ind)
   {
-    const HalfEdge& he = mesh->getElement (ind);
-    if (he.isBoundary () && !he.getDeleted ())
+    if (mesh->isBoundary (ind) && !mesh->isDeleted (ind))
     {
-      HEABCC       circ     = mesh->getHalfEdgeAroundBoundaryConstCirculator (ind);
-      const HEABCC circ_end = circ;
+      IHEAFC       circ     = mesh->getInnerHalfEdgeAroundFaceCirculator (ind);
+      const IHEAFC circ_end = circ;
 
-      FaceIndexes  deleted_faces; deleted_faces.reserve (n);
+      FaceIndices  deleted_faces; deleted_faces.reserve (n);
       bool         delete_faces = false;
 
-      for (SizeType i=0; i<n; ++i)
+      for (size_t i=0; i<n; ++i)
       {
         ++circ;
-        deleted_faces.push_back (circ->getOppositeFaceIndex (*mesh));
+        deleted_faces.push_back (mesh->getOppositeFaceIndex (circ.getTargetIndex ()));
         if (circ == circ_end)
         {
           delete_faces = true;
@@ -196,7 +184,7 @@ simpleOutlierRemoval (const MeshPtr& mesh, const SizeType n, const bool cleanup=
 
       if (delete_faces)
       {
-        for (FaceIndexes::const_iterator it = deleted_faces.begin (); it!=deleted_faces.end (); ++it)
+        for (FaceIndices::const_iterator it = deleted_faces.begin (); it!=deleted_faces.end (); ++it)
         {
           mesh->deleteFace (*it);
         }
@@ -240,7 +228,7 @@ main (int argc, char** argv)
     const std::string filename = argv[file_indices.at (i)];
     std::cerr << filename << std::endl;
 
-    CloudProcessedPtr cloud_data (new CloudProcessed ());
+    CloudXYZRGBNormalPtr cloud_data (new CloudXYZRGBNormal ());
     reader.read (filename, *cloud_data);
     disableNormalWeighting (cloud_data);
 
@@ -251,7 +239,7 @@ main (int argc, char** argv)
     }
     else
     {
-      integration.merge (cloud_data, mesh_model, pcl::ihs::Transformation::Identity ());
+      integration.merge (cloud_data, mesh_model, Eigen::Matrix4f::Identity ());
       drawMesh(mesh_model, visualizer, 1);
     }
   }

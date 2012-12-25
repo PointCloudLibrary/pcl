@@ -82,10 +82,8 @@ namespace pcl
 {
   namespace ihs
   {
-
     class PCL_EXPORTS InHandScanner
     {
-
       public:
 
         /** \brief Mode in which the scanner is currently running */
@@ -107,27 +105,25 @@ namespace pcl
 
       private:
 
-        typedef pcl::ihs::PointInput         PointInput;
-        typedef pcl::ihs::CloudInput         CloudInput;
-        typedef pcl::ihs::CloudInputPtr      CloudInputPtr;
-        typedef pcl::ihs::CloudInputConstPtr CloudInputConstPtr;
+        typedef pcl::PointXYZRGBA              PointXYZRGBA;
+        typedef pcl::PointCloud <PointXYZRGBA> CloudXYZRGBA;
+        typedef CloudXYZRGBA::Ptr              CloudXYZRGBAPtr;
+        typedef CloudXYZRGBA::ConstPtr         CloudXYZRGBAConstPtr;
 
-        typedef pcl::ihs::PointProcessed         PointProcessed;
-        typedef pcl::ihs::CloudProcessed         CloudProcessed;
-        typedef pcl::ihs::CloudProcessedPtr      CloudProcessedPtr;
-        typedef pcl::ihs::CloudProcessedConstPtr CloudProcessedConstPtr;
+        typedef pcl::PointXYZRGBNormal              PointXYZRGBNormal;
+        typedef pcl::PointCloud <PointXYZRGBNormal> CloudXYZRGBNormal;
+        typedef CloudXYZRGBNormal::Ptr              CloudXYZRGBNormalPtr;
+        typedef CloudXYZRGBNormal::ConstPtr         CloudXYZRGBNormalConstPtr;
 
-        typedef pcl::ihs::PointModel         PointModel;
-        typedef pcl::ihs::CloudModel         CloudModel;
-        typedef pcl::ihs::CloudModelPtr      CloudModelPtr;
-        typedef pcl::ihs::CloudModelConstPtr CloudModelConstPtr;
+        typedef pcl::ihs::PointIHS         PointIHS;
+        typedef pcl::ihs::CloudIHS         CloudIHS;
+        typedef pcl::ihs::CloudIHSPtr      CloudIHSPtr;
+        typedef pcl::ihs::CloudIHSConstPtr CloudIHSConstPtr;
 
         typedef pcl::ihs::Mesh         Mesh;
         typedef pcl::ihs::MeshPtr      MeshPtr;
         typedef pcl::ihs::MeshConstPtr MeshConstPtr;
         typedef std::vector <MeshPtr>  MeshPtrVec;
-        typedef Mesh::Vertex           Vertex;
-        typedef Mesh::Face             Face;
 
         typedef pcl::OpenNIGrabber                Grabber;
         typedef boost::shared_ptr <Grabber>       GrabberPtr;
@@ -140,7 +136,6 @@ namespace pcl
         typedef pcl::ihs::ICP                 ICP;
         typedef boost::shared_ptr <ICP>       ICPPtr;
         typedef boost::shared_ptr <const ICP> ICPConstPtr;
-        typedef pcl::ihs::Transformation      Transformation;
 
         typedef pcl::ihs::Integration                 Integration;
         typedef boost::shared_ptr <Integration>       IntegrationPtr;
@@ -216,7 +211,7 @@ namespace pcl
       private:
 
         void
-        newDataCallback (const CloudInputConstPtr& cloud_in);
+        newDataCallback (const CloudXYZRGBAConstPtr& cloud_in);
 
         void
         draw ();
@@ -267,11 +262,11 @@ namespace pcl
         InputDataProcessingPtr      input_data_processing_;
 
         ICPPtr                      icp_;
-        Transformation              transformation_;
+        Eigen::Matrix4f             transformation_;
 
         IntegrationPtr              integration_;
 
-        CloudProcessedPtr           cloud_data_draw_;
+        CloudXYZRGBNormalPtr        cloud_data_draw_;
         MeshPtrVec                  mesh_vec_draw_;
         MeshPtr                     mesh_model_;
 
@@ -279,7 +274,6 @@ namespace pcl
 
         EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     };
-
   } // End namespace ihs
 } // End namespace pcl
 

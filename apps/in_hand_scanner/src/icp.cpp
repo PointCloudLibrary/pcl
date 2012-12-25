@@ -66,16 +66,16 @@ pcl::ihs::ICP::ICP ()
 ////////////////////////////////////////////////////////////////////////////////
 
 bool
-pcl::ihs::ICP::findTransformation (const MeshConstPtr&           mesh_model,
-                                   const CloudProcessedConstPtr& cloud_data,
-                                   const Transformation&         T_init,
-                                   Transformation&               T_final)
+pcl::ihs::ICP::findTransformation (const MeshConstPtr&              mesh_model,
+                                   const CloudXYZRGBNormalConstPtr& cloud_data,
+                                   const Eigen::Matrix4f&           T_init,
+                                   Eigen::Matrix4f&                 T_final)
 {
   // Check the input
   // TODO: Double check the minimum number of points necessary for icp
   const size_t n_min = 4;
 
-  if(mesh_model->sizeVertexes () < n_min || cloud_data->size () < n_min)
+  if(mesh_model->sizeVertices () < n_min || cloud_data->size () < n_min)
   {
     std::cerr << "ERROR in icp.cpp: Not enough input points!\n";
     return (false);
@@ -91,7 +91,7 @@ pcl::ihs::ICP::findTransformation (const MeshConstPtr&           mesh_model,
   float squared_distance_threshold = std::numeric_limits<float>::max();
 
   // Transformation
-  Transformation T_cur = T_init;
+  Eigen::Matrix4f T_cur = T_init;
 
   // Point selection
   const CloudNormalConstPtr cloud_model_selected = this->selectModelPoints (mesh_model, T_init.inverse ());
@@ -185,7 +185,7 @@ pcl::ihs::ICP::findTransformation (const MeshConstPtr&           mesh_model,
     //              << " | delta fitness: " << std::setprecision(5) << std::setw(10) << delta_fitness << std::endl;
 
     // Minimize the point to plane distance
-    Transformation T_delta = Transformation::Identity ();
+    Eigen::Matrix4f T_delta = Eigen::Matrix4f::Identity ();
     if (!this->minimizePointPlane (cloud_data_corr, cloud_model_corr, T_delta))
     {
       std::cerr << "ERROR in icp.cpp: minimizePointPlane failed!\n";
@@ -232,21 +232,22 @@ pcl::ihs::ICP::findTransformation (const MeshConstPtr&           mesh_model,
 ////////////////////////////////////////////////////////////////////////////////
 
 pcl::ihs::ICP::CloudNormalConstPtr
-pcl::ihs::ICP::selectModelPoints (const MeshConstPtr&   mesh_model,
-                                  const Transformation& T_init_inv) const
+pcl::ihs::ICP::selectModelPoints (const MeshConstPtr&    mesh_model,
+                                  const Eigen::Matrix4f& T_init_inv) const
 {
   const CloudNormalPtr cloud_model_out (new CloudNormal ());
-  cloud_model_out->reserve (mesh_model->sizeVertexes ());
+  cloud_model_out->reserve (mesh_model->sizeVertices ());
 
-  Mesh::VertexConstIterator it_in = mesh_model->beginVertexes ();
-  for (; it_in!=mesh_model->endVertexes (); ++it_in)
+  const Mesh::VertexDataCloud& cloud = mesh_model->getVertexDataCloud ();
+
+  for (Mesh::VertexDataCloud::const_iterator it=cloud.begin (); it!=cloud.end (); ++it)
   {
-    // Don't consider points that are facing away from the cameara.
-    if ((T_init_inv * it_in->getNormalVector4fMap ()).z () < 0.f)
+    // Don't consider points that are facing away from the camera.
+    if ((T_init_inv * it->getNormalVector4fMap ()).z () < 0.f)
     {
       PointNormal pt;
-      pt.getVector4fMap ()       = it_in->getVector4fMap ();
-      pt.getNormalVector4fMap () = it_in->getNormalVector4fMap ();
+      pt.getVector4fMap ()       = it->getVector4fMap ();
+      pt.getNormalVector4fMap () = it->getNormalVector4fMap ();
 
       // NOTE: Not the transformed points!!
       cloud_model_out->push_back (pt);
@@ -262,12 +263,12 @@ pcl::ihs::ICP::selectModelPoints (const MeshConstPtr&   mesh_model,
 ////////////////////////////////////////////////////////////////////////////////
 
 pcl::ihs::ICP::CloudNormalConstPtr
-pcl::ihs::ICP::selectDataPoints (const CloudProcessedConstPtr& cloud_data) const
+pcl::ihs::ICP::selectDataPoints (const CloudXYZRGBNormalConstPtr& cloud_data) const
 {
   const CloudNormalPtr cloud_data_out (new CloudNormal ());
   cloud_data_out->reserve (cloud_data->size ());
 
-  CloudProcessed::const_iterator it_in = cloud_data->begin ();
+  CloudXYZRGBNormal::const_iterator it_in = cloud_data->begin ();
   for (; it_in!=cloud_data->end (); ++it_in)
   {
     if (pcl::isFinite (*it_in))
@@ -291,7 +292,7 @@ pcl::ihs::ICP::selectDataPoints (const CloudProcessedConstPtr& cloud_data) const
 bool
 pcl::ihs::ICP::minimizePointPlane (const CloudNormalConstPtr& cloud_source,
                                    const CloudNormalConstPtr& cloud_target,
-                                   Transformation&            T) const
+                                   Eigen::Matrix4f&           T) const
 {
   // Check the input
   // n < n_min already checked in the icp main loop

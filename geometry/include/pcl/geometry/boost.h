@@ -42,15 +42,14 @@
 #define PCL_GEOMETRY_BOOST_H
 
 #ifdef __GNUC__
-  #pragma GCC system_header
+#  pragma GCC system_header
 #endif
 
-#include <boost/iterator/iterator_facade.hpp>
-#include <boost/utility/enable_if.hpp>
-#include <boost/type_traits/add_const.hpp>
-#include <boost/type_traits/conditional.hpp>
+#include <boost/concept_check.hpp>
+#include <boost/operators.hpp>
+#include <boost/unordered_set.hpp>
 #include <boost/type_traits/integral_constant.hpp>
-#include <boost/type_traits/is_const.hpp>
-#include <boost/type_traits/is_convertible.hpp>
+#include <boost/type_traits/is_same.hpp>
+#include <boost/shared_ptr.hpp>
 
 #endif // PCL_GEOMETRY_BOOST_H

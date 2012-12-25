@@ -64,10 +64,10 @@ pcl::ihs::InputDataProcessing::InputDataProcessing ()
 
 ////////////////////////////////////////////////////////////////////////////////
 
-pcl::ihs::InputDataProcessing::CloudProcessedPtr
-pcl::ihs::InputDataProcessing::process (const CloudInputConstPtr& cloud) const
+pcl::ihs::InputDataProcessing::CloudXYZRGBNormalPtr
+pcl::ihs::InputDataProcessing::process (const CloudXYZRGBAConstPtr& cloud) const
 {
-  const CloudProcessedPtr cloud_out (new CloudProcessed ());
+  const CloudXYZRGBNormalPtr cloud_out (new CloudXYZRGBNormal ());
 
   // Calculate the normals
   CloudNormalsPtr cloud_normals (new CloudNormals ());
@@ -84,9 +84,9 @@ pcl::ihs::InputDataProcessing::process (const CloudInputConstPtr& cloud) const
   cloud_out->sensor_origin_      = cloud->sensor_origin_;
   cloud_out->sensor_orientation_ = cloud->sensor_orientation_;
 
-  CloudInput::const_iterator   it_in  = cloud->begin ();
+  CloudXYZRGBA::const_iterator it_in  = cloud->begin ();
   CloudNormals::const_iterator it_n   = cloud_normals->begin ();
-  CloudProcessed::iterator     it_out = cloud_out->begin ();
+  CloudXYZRGBNormal::iterator  it_out = cloud_out->begin ();
 
   for (; it_in!=cloud->end (); ++it_in, ++it_n, ++it_out)
   {
@@ -125,10 +125,10 @@ pcl::ihs::InputDataProcessing::process (const CloudInputConstPtr& cloud) const
 
 ////////////////////////////////////////////////////////////////////////////////
 
-pcl::ihs::InputDataProcessing::CloudProcessedPtr
-pcl::ihs::InputDataProcessing::calculateNormals (const CloudInputConstPtr& cloud) const
+pcl::ihs::InputDataProcessing::CloudXYZRGBNormalPtr
+pcl::ihs::InputDataProcessing::calculateNormals (const CloudXYZRGBAConstPtr& cloud) const
 {
-  const CloudProcessedPtr cloud_out (new CloudProcessed ());
+  const CloudXYZRGBNormalPtr cloud_out (new CloudXYZRGBNormal ());
 
   // Calculate the normals
   CloudNormalsPtr cloud_normals (new CloudNormals ());
@@ -136,7 +136,6 @@ pcl::ihs::InputDataProcessing::calculateNormals (const CloudInputConstPtr& cloud
   normal_estimation_->compute (*cloud_normals);
 
   // Copy the input cloud and normals into the output cloud.
-  // While we are already iterating over the whole input we can also remove some points.
   cloud_out->resize (cloud->size ());
   cloud_out->header              = cloud->header;
   cloud_out->width               = cloud->width;
@@ -145,9 +144,9 @@ pcl::ihs::InputDataProcessing::calculateNormals (const CloudInputConstPtr& cloud
   cloud_out->sensor_origin_      = cloud->sensor_origin_;
   cloud_out->sensor_orientation_ = cloud->sensor_orientation_;
 
-  CloudInput::const_iterator   it_in  = cloud->begin ();
+  CloudXYZRGBA::const_iterator it_in  = cloud->begin ();
   CloudNormals::const_iterator it_n   = cloud_normals->begin ();
-  CloudProcessed::iterator     it_out = cloud_out->begin ();
+  CloudXYZRGBNormal::iterator  it_out = cloud_out->begin ();
 
   for (; it_in!=cloud->end (); ++it_in, ++it_n, ++it_out)
   {
@@ -158,6 +157,18 @@ pcl::ihs::InputDataProcessing::calculateNormals (const CloudInputConstPtr& cloud
   }
 
   return (cloud_out);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+void
+pcl::ihs::InputDataProcessing::setCropBox (const float x_min, const float x_max,
+                                           const float y_min, const float y_max,
+                                           const float z_min, const float z_max)
+{
+  x_min_ = x_min; x_max_ = x_max;
+  y_min_ = y_min; y_max_ = y_max;
+  z_min_ = z_min; z_max_ = z_max;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -1,0 +1,356 @@
+/*
+ * Software License Agreement (BSD License)
+ *
+ * Point Cloud Library (PCL) - www.pointclouds.org
+ * Copyright (c) 2009-2012, Willow Garage, Inc.
+ * Copyright (c) 2012-, Open Perception, Inc.
+ *
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *
+ *  * Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ *  * Redistributions in binary form must reproduce the above
+ *    copyright notice, this list of conditions and the following
+ *    disclaimer in the documentation and/or other materials provided
+ *    with the distribution.
+ *  * Neither the name of the copyright holder(s) nor the names of its
+ *    contributors may be used to endorse or promote products derived
+ *    from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ *
+ * $Id$
+ *
+ */
+
+#ifndef PCL_GEOMETRY_TRIANGLE_MESH_H
+#define PCL_GEOMETRY_TRIANGLE_MESH_H
+
+#include <utility>
+
+#include <pcl/geometry/mesh_base.h>
+
+namespace pcl
+{
+  namespace geometry
+  {
+    /** \brief Half-edge mesh that can only store triangles.
+      * \tparam MeshTraitsT Please have a look at pcl::geometry::DefaultMeshTraits.
+      * \author Martin Saelzle
+      * \ingroup geometry
+      */
+    template <class MeshTraitsT>
+    class TriangleMesh : public pcl::geometry::MeshBase <TriangleMesh <MeshTraitsT>, MeshTraitsT>
+    {
+      public:
+
+        typedef pcl::geometry::MeshBase <TriangleMesh <MeshTraitsT>, MeshTraitsT> Base;
+
+        typedef TriangleMesh <MeshTraitsT>     Self;
+        typedef boost::shared_ptr <Self>       Ptr;
+        typedef boost::shared_ptr <const Self> ConstPtr;
+
+        typedef typename Base::VertexData   VertexData;
+        typedef typename Base::HalfEdgeData HalfEdgeData;
+        typedef typename Base::EdgeData     EdgeData;
+        typedef typename Base::FaceData     FaceData;
+        typedef typename Base::IsManifold   IsManifold;
+
+        typedef typename Base::HasVertexData   HasVertexData;
+        typedef typename Base::HasHalfEdgeData HasHalfEdgeData;
+        typedef typename Base::HasEdgeData     HasEdgeData;
+        typedef typename Base::HasFaceData     HasFaceData;
+
+        typedef typename Base::VertexDataCloud   VertexDataCloud;
+        typedef typename Base::HalfEdgeDataCloud HalfEdgeDataCloud;
+        typedef typename Base::EdgeDataCloud     EdgeDataCloud;
+        typedef typename Base::FaceDataCloud     FaceDataCloud;
+
+        // Indices
+        typedef typename Base::VertexIndex       VertexIndex;
+        typedef typename Base::HalfEdgeIndex     HalfEdgeIndex;
+        typedef typename Base::EdgeIndex         EdgeIndex;
+        typedef typename Base::FaceIndex         FaceIndex;
+        typedef std::pair <FaceIndex, FaceIndex> FaceIndexPair;
+
+        typedef typename Base::VertexIndices   VertexIndices;
+        typedef typename Base::HalfEdgeIndices HalfEdgeIndices;
+        typedef typename Base::EdgeIndices     EdgeIndices;
+        typedef typename Base::FaceIndices     FaceIndices;
+
+        // Circulators
+        typedef typename Base::VertexAroundVertexCirculator           VertexAroundVertexCirculator;
+        typedef typename Base::OutgoingHalfEdgeAroundVertexCirculator OutgoingHalfEdgeAroundVertexCirculator;
+        typedef typename Base::IncomingHalfEdgeAroundVertexCirculator IncomingHalfEdgeAroundVertexCirculator;
+        typedef typename Base::FaceAroundVertexCirculator             FaceAroundVertexCirculator;
+        typedef typename Base::VertexAroundFaceCirculator             VertexAroundFaceCirculator;
+        typedef typename Base::InnerHalfEdgeAroundFaceCirculator      InnerHalfEdgeAroundFaceCirculator;
+        typedef typename Base::OuterHalfEdgeAroundFaceCirculator      OuterHalfEdgeAroundFaceCirculator;
+        typedef typename Base::FaceAroundFaceCirculator               FaceAroundFaceCirculator;
+
+        /** \brief Constructor. */
+        TriangleMesh ()
+          : Base ()
+        {
+        }
+
+        /** \brief The base method of addFace is hidden because of the overloads in this class. */
+        using Base::addFace;
+
+        /** \brief Add a triangle to the mesh. Data is only added if it is associated with the elements. The vertices must be valid and unique (each vertex may be contained only once). The last vertex is connected with the first one.
+          * \param[in] idx_v_0        Index to the first vertex.
+          * \param[in] idx_v_1        Index to the second vertex.
+          * \param[in] idx_v_2        Index to the third vertex.
+          * \param[in] face_data      Data that is set for the face.
+          * \param[in] half_edge_data Data that is set for all added half-edges.
+          * \param[in] edge_data      Data that is set for all added edges.
+          * \return Index to the new face. Failure is signaled by returning an invalid face index.
+          */
+        inline FaceIndex
+        addFace (const VertexIndex&   idx_v_0,
+                 const VertexIndex&   idx_v_1,
+                 const VertexIndex&   idx_v_2,
+                 const FaceData&      face_data      = FaceData (),
+                 const EdgeData&      edge_data      = EdgeData (),
+                 const HalfEdgeData&  half_edge_data = HalfEdgeData ())
+        {
+          VertexIndices vi; vi.reserve (3);
+          vi.push_back (idx_v_0);
+          vi.push_back (idx_v_1);
+          vi.push_back (idx_v_2);
+
+          return (this->addFaceImplBase (vi, face_data, edge_data, half_edge_data));
+        }
+
+        /** \brief Add two triangles for the four given input vertices. When using a manifold triangle mesh it is not possible to connect two bounded regions without going through a non-manifold intermediate step. This method first tries to add the triangles individually and if this fails connects the whole configuration at once (if possible).
+          * \param[in] vertices       Indices to the vertices of the new face. (The size must be equal to four).
+          * \param[in] face_data      Data that is set for the face.
+          * \param[in] half_edge_data Data that is set for all added half-edges.
+          * \param[in] edge_data      Data that is set for all added edges.
+          * \return Pair of face indices. The first index is valid if one triangle was added. Both indices are valid if two triangles were added.
+          */
+        FaceIndexPair
+        addTrianglePair (const VertexIndices& vertices,
+                         const FaceData&      face_data      = FaceData (),
+                         const EdgeData&      edge_data      = EdgeData (),
+                         const HalfEdgeData&  half_edge_data = HalfEdgeData ())
+        {
+          if (vertices.size () != 4)
+          {
+            return (std::make_pair (FaceIndex (), FaceIndex ()));
+          }
+          else
+          {
+            return (this->addTrianglePair (vertices [0], vertices [1], vertices [2], vertices [3], face_data, edge_data, half_edge_data));
+          }
+        }
+
+        /** \brief Add two triangles for the four given input vertices. When using a manifold triangle mesh it is not possible to connect two bounded regions without going through a non-manifold intermediate step. This method first tries to add the triangles individually and if this fails connects the whole configuration at once (if possible).
+          * \param[in] idx_v_0        Index to the first vertex.
+          * \param[in] idx_v_1        Index to the second vertex.
+          * \param[in] idx_v_2        Index to the third vertex.
+          * \param[in] idx_v_3        Index to the fourth vertex.
+          * \param[in] face_data      Data that is set for the face.
+          * \param[in] half_edge_data Data that is set for all added half-edges.
+          * \param[in] edge_data      Data that is set for all added edges.
+          * \return Pair of face indices. The first index is valid if one triangle was added. Both indices are valid if two triangles were added.
+          */
+        inline FaceIndexPair
+        addTrianglePair (const VertexIndex&   idx_v_0,
+                         const VertexIndex&   idx_v_1,
+                         const VertexIndex&   idx_v_2,
+                         const VertexIndex&   idx_v_3,
+                         const FaceData&      face_data      = FaceData (),
+                         const EdgeData&      edge_data      = EdgeData (),
+                         const HalfEdgeData&  half_edge_data = HalfEdgeData ())
+        {
+          // Try to add two faces
+          // 3 - 2
+          // | / |
+          // 0 - 1
+          FaceIndex idx_face_0 = this->addFace (idx_v_0, idx_v_1, idx_v_2, face_data);
+          FaceIndex idx_face_1 = this->addFace (idx_v_0, idx_v_2, idx_v_3, face_data);
+
+          if (idx_face_0.isValid ())
+          {
+            return (std::make_pair (idx_face_0, idx_face_1));
+          }
+          else if (idx_face_1.isValid ())
+          {
+            idx_face_0 = this->addFace (idx_v_0, idx_v_1, idx_v_2, face_data); // might be possible to add now
+            return (std::make_pair (idx_face_1, idx_face_0));
+          }
+
+          // Try to add two faces
+          // 3 - 2
+          // | \ |
+          // 0 - 1
+          idx_face_0 = this->addFace (idx_v_1, idx_v_2, idx_v_3, face_data);
+          idx_face_1 = this->addFace (idx_v_0, idx_v_1, idx_v_3, face_data);
+
+          if (idx_face_0.isValid ())
+          {
+            return (std::make_pair (idx_face_0, idx_face_1));
+          }
+          else if (idx_face_1.isValid ())
+          {
+            idx_face_0 = this->addFace (idx_v_1, idx_v_2, idx_v_3, face_data); // might be possible to add now
+            return (std::make_pair (idx_face_1, idx_face_0));
+          }
+
+          if (!IsManifold::value)
+          {
+            return (std::make_pair (FaceIndex (), FaceIndex ()));
+          }
+
+          // Check if the input indices are valid and unique.
+          if (!idx_v_0.isValid () || !idx_v_1.isValid () || !idx_v_2.isValid () || !idx_v_3.isValid ())
+          {
+            return (std::make_pair (FaceIndex (), FaceIndex ()));
+          }
+
+          boost::unordered_set <VertexIndex, typename Base::Hash> unique_checker;
+          unique_checker.reserve (4);
+
+          if (!unique_checker.insert (idx_v_0).second) return (std::make_pair (FaceIndex (), FaceIndex ()));
+          if (!unique_checker.insert (idx_v_1).second) return (std::make_pair (FaceIndex (), FaceIndex ()));
+          if (!unique_checker.insert (idx_v_2).second) return (std::make_pair (FaceIndex (), FaceIndex ()));
+          if (!unique_checker.insert (idx_v_3).second) return (std::make_pair (FaceIndex (), FaceIndex ()));
+
+          // Check manifoldness
+          HalfEdgeIndices    inner_he (4, HalfEdgeIndex ());
+          std::vector <bool> is_new   (4, true);
+
+          if (!Base::checkTopology1 (idx_v_0,idx_v_1, inner_he [0], is_new [0], IsManifold ()) ||
+              !Base::checkTopology1 (idx_v_1,idx_v_2, inner_he [1], is_new [1], IsManifold ()) ||
+              !Base::checkTopology1 (idx_v_2,idx_v_3, inner_he [2], is_new [2], IsManifold ()) ||
+              !Base::checkTopology1 (idx_v_3,idx_v_0, inner_he [3], is_new [3], IsManifold ()))
+          {
+            return (std::make_pair (FaceIndex (), FaceIndex ()));
+          }
+
+          // Connect the triangle pair
+          if (!is_new [0] && is_new [1] && !is_new [2] && is_new [3])
+          {
+            return (this->connectTrianglePair (inner_he [0], inner_he [2], idx_v_0, idx_v_1, idx_v_2, idx_v_3, face_data, edge_data, half_edge_data));
+          }
+          else if (is_new [0] && !is_new [1] && is_new [2] && !is_new [3])
+          {
+            return (this->connectTrianglePair (inner_he [1], inner_he [3], idx_v_1, idx_v_2, idx_v_3, idx_v_0, face_data, edge_data, half_edge_data));
+          }
+          else
+          {
+            return (std::make_pair (FaceIndex (), FaceIndex ()));
+          }
+        }
+
+      private:
+
+        // NOTE: Can't use the typedef of Base as a friend.
+        friend class pcl::geometry::MeshBase <TriangleMesh <MeshTraitsT>, MeshTraitsT>;
+
+        /** \brief addFace for the triangular mesh. */
+        inline FaceIndex
+        addFaceImpl (const VertexIndices& vertices,
+                     const FaceData&      face_data,
+                     const EdgeData&      edge_data,
+                     const HalfEdgeData&  half_edge_data)
+        {
+          if (vertices.size () == 3)
+            return (this->addFaceImplBase (vertices, face_data, edge_data, half_edge_data));
+          else
+            return (FaceIndex ());
+        }
+
+        /** \brief Connect the triangles a-b-c and a-c-d. The edges a-b and c-d must be old and the edges b-c and d-a must be new. */
+        // d - c
+        // | / |
+        // a - b
+        FaceIndexPair
+        connectTrianglePair (const HalfEdgeIndex& idx_he_ab,
+                             const HalfEdgeIndex& idx_he_cd,
+                             const VertexIndex&   idx_v_a,
+                             const VertexIndex&   idx_v_b,
+                             const VertexIndex&   idx_v_c,
+                             const VertexIndex&   idx_v_d,
+                             const FaceData&      face_data,
+                             const EdgeData&      edge_data,
+                             const HalfEdgeData&  he_data)
+        {
+          // Add new half-edges
+          const HalfEdgeIndex idx_he_bc = Base::addEdge (idx_v_b, idx_v_c, he_data, edge_data);
+          const HalfEdgeIndex idx_he_da = Base::addEdge (idx_v_d, idx_v_a, he_data, edge_data);
+          const HalfEdgeIndex idx_he_ca = Base::addEdge (idx_v_c, idx_v_a, he_data, edge_data);
+
+          const HalfEdgeIndex idx_he_cb = Base::getOppositeHalfEdgeIndex (idx_he_bc);
+          const HalfEdgeIndex idx_he_ad = Base::getOppositeHalfEdgeIndex (idx_he_da);
+          const HalfEdgeIndex idx_he_ac = Base::getOppositeHalfEdgeIndex (idx_he_ca);
+
+          // Get the existing half-edges
+          const HalfEdgeIndex idx_he_ab_prev = Base::getPrevHalfEdgeIndex (idx_he_ab); // No reference!
+          const HalfEdgeIndex idx_he_ab_next = Base::getNextHalfEdgeIndex (idx_he_ab); // No reference!
+
+          const HalfEdgeIndex idx_he_cd_prev = Base::getPrevHalfEdgeIndex (idx_he_cd); // No reference!
+          const HalfEdgeIndex idx_he_cd_next = Base::getNextHalfEdgeIndex (idx_he_cd); // No reference!
+
+          // Connect the outer half-edges
+          Base::connectPrevNext (idx_he_ab_prev, idx_he_ad     );
+          Base::connectPrevNext (idx_he_ad     , idx_he_cd_next);
+          Base::connectPrevNext (idx_he_cd_prev, idx_he_cb     );
+          Base::connectPrevNext (idx_he_cb     , idx_he_ab_next);
+
+          // Connect the inner half-edges
+          Base::connectPrevNext (idx_he_ab, idx_he_bc);
+          Base::connectPrevNext (idx_he_bc, idx_he_ca);
+          Base::connectPrevNext (idx_he_ca, idx_he_ab);
+
+          Base::connectPrevNext (idx_he_ac, idx_he_cd);
+          Base::connectPrevNext (idx_he_cd, idx_he_da);
+          Base::connectPrevNext (idx_he_da, idx_he_ac);
+
+          // Connect the vertices to the boundary half-edges
+          Base::setOutgoingHalfEdgeIndex (idx_v_a, idx_he_ad     );
+          Base::setOutgoingHalfEdgeIndex (idx_v_b, idx_he_ab_next);
+          Base::setOutgoingHalfEdgeIndex (idx_v_c, idx_he_cb     );
+          Base::setOutgoingHalfEdgeIndex (idx_v_d, idx_he_cd_next);
+
+          // Add and connect the faces
+          HalfEdgeIndices inner_he_abc; inner_he_abc.reserve (3);
+          inner_he_abc.push_back (idx_he_ab);
+          inner_he_abc.push_back (idx_he_bc);
+          inner_he_abc.push_back (idx_he_ca);
+
+          HalfEdgeIndices inner_he_acd; inner_he_acd.reserve (3);
+          inner_he_acd.push_back (idx_he_ac);
+          inner_he_acd.push_back (idx_he_cd);
+          inner_he_acd.push_back (idx_he_da);
+
+          const FaceIndex idx_f_abc = Base::connectFace (inner_he_abc, face_data);
+          const FaceIndex idx_f_acd = Base::connectFace (inner_he_acd, face_data);
+
+          return (std::make_pair (idx_f_abc, idx_f_acd));
+        }
+
+      public:
+
+        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    };
+  } // End namespace geom
+} // End namespace pcl
+
+#endif // PCL_GEOMETRY_TRIANGLE_MESH_H

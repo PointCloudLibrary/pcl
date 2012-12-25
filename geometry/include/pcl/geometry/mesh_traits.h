@@ -38,49 +38,41 @@
  *
  */
 
-#ifndef PCL_IN_HAND_SCANNER_COMMON_FUNCTIONS_HPP
-#define PCL_IN_HAND_SCANNER_COMMON_FUNCTIONS_HPP
+#ifndef PCL_GEOMETRY_MESH_TRAITS_H
+#define PCL_GEOMETRY_MESH_TRAITS_H
 
-#include <pcl/geometry/impl/mesh_base.hpp>
-#include <algorithm>
+#include <pcl/geometry/boost.h>
 
-// Keep these functions in here until they are properly tested
 namespace pcl
-{
-
-  /** \brief Compute the 3D (X-Y-Z) centroid of the mesh and return it as a 3D vector.
-    * \param[in] mesh the input mesh
-    * \param[out] centroid the output centroid
-    * \return number of valid points used to determine the centroid.
-    * \note if return value is 0, the centroid is not changed, thus not valid.
-    * \note no check for NaN or Inf is performed!
-    * \ingroup common
-    */
-  template <class VertexDataT, class FaceDataT, class HalfEdgeDataT, class ScalarT> inline unsigned int
-  compute3DCentroid (const MeshBase <VertexDataT, FaceDataT, HalfEdgeDataT>& mesh,
-                     Eigen::Matrix<ScalarT, 4, 1>&                           centroid)
+{ 
+  namespace geometry
   {
-    typedef MeshBase <VertexDataT, FaceDataT, HalfEdgeDataT> Mesh;
-    typedef typename Mesh::VertexConstIterator               VertexConstIterator;
-    typedef Eigen::Matrix<ScalarT, 4, 1>                     Vec4;
+    /** \brief No data is associated with the vertices / half-edges / edges / faces. */
+    struct NoData {};
 
-    ScalarT x = 0.;
-    ScalarT y = 0.;
-    ScalarT z = 0.;
-
-    for (VertexConstIterator it = mesh.beginVertexes (); it!=mesh.endVertexes (); ++it)
+    /** \brief The mesh traits are used to set up compile time settings for the mesh.
+      * \tparam VertexDataT   Data stored for each vertex. Defaults to pcl::NoData.
+      * \tparam HalfEdgeDataT Data stored for each half-edge. Defaults to pcl::NoData.
+      * \tparam EdgeDataT     Data stored for each edge. Defaults to pcl::NoData.
+      * \tparam FaceDataT     Data stored for each face. Defaults to pcl::NoData.
+      * \author Martin Saelzle
+      * \ingroup geometry
+      */
+    template <class VertexDataT   = pcl::geometry::NoData,
+              class HalfEdgeDataT = pcl::geometry::NoData,
+              class EdgeDataT     = pcl::geometry::NoData,
+              class FaceDataT     = pcl::geometry::NoData>
+    struct DefaultMeshTraits
     {
-      x += it->x;
-      y += it->y;
-      z += it->z;
-    }
+      typedef VertexDataT   VertexData;
+      typedef HalfEdgeDataT HalfEdgeData;
+      typedef EdgeDataT     EdgeData;
+      typedef FaceDataT     FaceData;
 
-    ScalarT n = static_cast <ScalarT> (mesh.sizeVertexes ());
-
-    if (mesh.sizeVertexes ()) centroid = Vec4 (x/n, y/n, z/n, 1.);
-
-    return (static_cast<unsigned int> (mesh.sizeVertexes ()));
-  }
+      /** \brief Specifies wether the mesh is manifold or not (only non-manifold vertices can be represented). */
+      typedef boost::false_type IsManifold;
+    };
+  } // End namespace geometry
 } // End namespace pcl
 
-#endif // PCL_IN_HAND_SCANNER_COMMON_FUNCTIONS_HPP
+#endif // PCL_GEOMETRY_MESH_TRAITS_H

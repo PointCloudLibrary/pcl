@@ -42,9 +42,10 @@
 #define PCL_IN_HAND_SCANNER_BOOST_H
 
 #ifdef __GNUC__
-  #pragma GCC system_header
+#  pragma GCC system_header
 #endif
 
 #include <boost/thread/mutex.hpp>
+#include <boost/shared_ptr.hpp>
 
 #endif // PCL_IN_HAND_SCANNER_BOOST_H

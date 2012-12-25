@@ -41,39 +41,26 @@
 #ifndef PCL_IN_HAND_SCANNER_COMMON_TYPES_H
 #define PCL_IN_HAND_SCANNER_COMMON_TYPES_H
 
+#include <stdint.h>
+
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
-#include <pcl/geometry/impl/triangle_mesh.hpp>
-#include <pcl/apps/in_hand_scanner/eigen.h>
+#include <pcl/geometry/triangle_mesh.h>
 
 namespace pcl
 {
   namespace ihs
   {
-
-    typedef pcl::PointXYZRGBA            PointInput;
-    typedef pcl::PointCloud <PointInput> CloudInput;
-    typedef CloudInput::Ptr              CloudInputPtr;
-    typedef CloudInput::ConstPtr         CloudInputConstPtr;
-
-    typedef pcl::PointXYZRGBNormal           PointProcessed;
-    typedef pcl::PointCloud <PointProcessed> CloudProcessed;
-    typedef CloudProcessed::Ptr              CloudProcessedPtr;
-    typedef CloudProcessed::ConstPtr         CloudProcessedConstPtr;
-
-    struct PointModel;
-    typedef pcl::PointCloud <PointModel> CloudModel;
-    typedef CloudModel::Ptr              CloudModelPtr;
-    typedef CloudModel::ConstPtr         CloudModelConstPtr;
-
-    typedef Eigen::Matrix4f Transformation;
-
+    struct PointIHS;
+    typedef pcl::PointCloud <PointIHS> CloudIHS;
+    typedef CloudIHS::Ptr              CloudIHSPtr;
+    typedef CloudIHS::ConstPtr         CloudIHSConstPtr;
   } // End namespace ihs
 } // End namespace pcl
 
 #include <pcl/apps/in_hand_scanner/impl/common_types.hpp>
 
-POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::ihs::_PointModel,
+POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::ihs::_PointIHS,
                                    (float, x, x)
                                    (float, y, y)
                                    (float, z, z)
@@ -83,17 +70,26 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::ihs::_PointModel,
                                    (float, rgb, rgb)
                                    (float, weight, weight)
                                    (unsigned int, age, age)
-                                   (unsigned int, directions, directions)
+                                   (uint32_t, directions, directions)
                                   )
-POINT_CLOUD_REGISTER_POINT_WRAPPER (pcl::ihs::PointModel, pcl::ihs::_PointModel)
+POINT_CLOUD_REGISTER_POINT_WRAPPER (pcl::ihs::PointIHS, pcl::ihs::_PointIHS)
 
 namespace pcl
 {
   namespace ihs
   {
-    typedef pcl::TriangleMesh <false, PointModel> Mesh;
-    typedef boost::shared_ptr <Mesh>              MeshPtr;
-    typedef boost::shared_ptr <const Mesh>        MeshConstPtr;
+    struct MeshTraits
+    {
+      typedef PointIHS              VertexData;
+      typedef pcl::geometry::NoData HalfEdgeData;
+      typedef pcl::geometry::NoData EdgeData;
+      typedef pcl::geometry::NoData FaceData;
+      typedef boost::false_type     IsManifold;
+    };
+
+    typedef pcl::geometry::TriangleMesh <MeshTraits> Mesh;
+    typedef Mesh::Ptr                                MeshPtr;
+    typedef Mesh::ConstPtr                           MeshConstPtr;
   } // End namespace ihs
 } // End namespace pcl
 

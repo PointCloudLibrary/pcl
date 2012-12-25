@@ -41,6 +41,8 @@
 #ifndef PCL_IN_HAND_SCANNER_INTEGRATION_H
 #define PCL_IN_HAND_SCANNER_INTEGRATION_H
 
+#include <stdint.h>
+
 #include <pcl/pcl_exports.h>
 #include <pcl/apps/in_hand_scanner/common_types.h>
 
@@ -62,10 +64,8 @@ namespace pcl
 {
   namespace ihs
   {
-
     class PCL_EXPORTS Integration
     {
-
       public:
 
         typedef pcl::PointXYZ              PointXYZ;
@@ -73,68 +73,36 @@ namespace pcl
         typedef CloudXYZ::Ptr              CloudXYZPtr;
         typedef CloudXYZ::ConstPtr         CloudXYZConstPtr;
 
-        typedef pcl::ihs::PointProcessed         PointProcessed;
-        typedef pcl::ihs::CloudProcessed         CloudProcessed;
-        typedef pcl::ihs::CloudProcessedPtr      CloudProcessedPtr;
-        typedef pcl::ihs::CloudProcessedConstPtr CloudProcessedConstPtr;
+        typedef pcl::PointXYZRGBNormal              PointXYZRGBNormal;
+        typedef pcl::PointCloud <PointXYZRGBNormal> CloudXYZRGBNormal;
+        typedef CloudXYZRGBNormal::Ptr              CloudXYZRGBNormalPtr;
+        typedef CloudXYZRGBNormal::ConstPtr         CloudXYZRGBNormalConstPtr;
 
-        typedef pcl::ihs::PointModel         PointModel;
-        typedef pcl::ihs::CloudModel         CloudModel;
-        typedef pcl::ihs::CloudModelPtr      CloudModelPtr;
-        typedef pcl::ihs::CloudModelConstPtr CloudModelConstPtr;
+        typedef pcl::ihs::PointIHS         PointIHS;
+        typedef pcl::ihs::CloudIHS         CloudIHS;
+        typedef pcl::ihs::CloudIHSPtr      CloudIHSPtr;
+        typedef pcl::ihs::CloudIHSConstPtr CloudIHSConstPtr;
 
         typedef pcl::ihs::Mesh            Mesh;
         typedef pcl::ihs::MeshPtr         MeshPtr;
         typedef pcl::ihs::MeshConstPtr    MeshConstPtr;
-        typedef Mesh::Vertex              Vertex;
         typedef Mesh::VertexIndex         VertexIndex;
-        typedef Mesh::VertexIndexes       VertexIndexes;
-        typedef Mesh::VertexConstIterator VertexConstIterator;
-
-        typedef pcl::ihs::Transformation Transformation;
+        typedef Mesh::VertexIndices       VertexIndices;
 
         typedef pcl::KdTree <PointXYZ>           KdTree;
         typedef boost::shared_ptr <KdTree>       KdTreePtr;
         typedef boost::shared_ptr <const KdTree> KdTreeConstPtr;
 
-      private:
-
-        // - Frequency 3 Icosahedron where each vertex corresponds to a viewing direction
-        // - First vertex aligned to z-axis
-        // - Removed vertexes with z < 0.3
-        // -> 31 directions, fitting nicely into a 32 bit integer
-        // -> Very oblique angles are not considered
-        class Dome
-        {
-          public:
-
-            static const int                                NumDirections = 31;
-            typedef Eigen::Matrix <float, 4, NumDirections> Vertexes;
-
-          public:
-
-            Dome ();
-
-            const Vertexes&
-            getVertexes () const;
-
-          private:
-
-            Vertexes vertexes_;
-        };
-
-      public:
-
         Integration ();
 
         bool
-        reconstructMesh (const CloudProcessedConstPtr& cloud_data,
-                         const MeshPtr&                mesh_model) const;
+        reconstructMesh (const CloudXYZRGBNormalConstPtr& cloud_data,
+                         const MeshPtr&                   mesh_model) const;
 
         bool
-        merge (const CloudProcessedConstPtr& cloud_data,
-               const MeshPtr&                mesh_model,
-               const Transformation&         T) const;
+        merge (const CloudXYZRGBNormalConstPtr& cloud_data,
+               const MeshPtr&                   mesh_model,
+               const Eigen::Matrix4f&           T) const;
 
         void
         age (const MeshPtr& mesh, const bool cleanup=true) const;
@@ -156,6 +124,30 @@ namespace pcl
 
       private:
 
+        // - Frequency 3 Icosahedron where each vertex corresponds to a viewing direction
+        // - First vertex aligned to z-axis
+        // - Removed vertices with z < 0.3
+        // -> 31 directions, fitting nicely into a 32 bit integer
+        // -> Very oblique angles are not considered
+        class Dome
+        {
+          public:
+
+            static const int                                NumDirections = 31;
+            typedef Eigen::Matrix <float, 4, NumDirections> Vertices;
+
+          public:
+
+            Dome ();
+
+            const Vertices&
+            getVertices () const;
+
+          private:
+
+            Vertices vertices_;
+        };
+
         uint8_t
         trimRGB (const float val) const;
 
@@ -163,45 +155,43 @@ namespace pcl
         // | / |
         // 3 - 0
         void
-        addToMesh (const PointModel& pt_0,
-                   const PointModel& pt_1,
-                   const PointModel& pt_2,
-                   const PointModel& pt_3,
-                   VertexIndex&      vi_0,
-                   VertexIndex&      vi_1,
-                   VertexIndex&      vi_2,
-                   VertexIndex&      vi_3,
-                   const MeshPtr&    mesh) const;
+        addToMesh (const PointIHS& pt_0,
+                   const PointIHS& pt_1,
+                   const PointIHS& pt_2,
+                   const PointIHS& pt_3,
+                   VertexIndex&    vi_0,
+                   VertexIndex&    vi_1,
+                   VertexIndex&    vi_2,
+                   VertexIndex&    vi_3,
+                   const MeshPtr&  mesh) const;
 
         void
-        addToMesh (const PointModel& pt_0,
-                   const PointModel& pt_1,
-                   const PointModel& pt_2,
-                   VertexIndex&      vi_0,
-                   VertexIndex&      vi_1,
-                   VertexIndex&      vi_2,
-                   const MeshPtr&    mesh) const;
+        addToMesh (const PointIHS& pt_0,
+                   const PointIHS& pt_1,
+                   const PointIHS& pt_2,
+                   VertexIndex&    vi_0,
+                   VertexIndex&    vi_1,
+                   VertexIndex&    vi_2,
+                   const MeshPtr&  mesh) const;
 
         bool
-        distanceThreshold (const PointModel& pt_0,
-                           const PointModel& pt_1,
-                           const PointModel& pt_2) const;
+        distanceThreshold (const PointIHS& pt_0,
+                           const PointIHS& pt_1,
+                           const PointIHS& pt_2) const;
 
         bool
-        distanceThreshold (const PointModel& pt_0,
-                           const PointModel& pt_1,
-                           const PointModel& pt_2,
-                           const PointModel& pt_3) const;
+        distanceThreshold (const PointIHS& pt_0,
+                           const PointIHS& pt_1,
+                           const PointIHS& pt_2,
+                           const PointIHS& pt_3) const;
 
         void
         addDirection (const Eigen::Vector4f& normal,
                       const Eigen::Vector4f& direction,
-                      unsigned int&          directions) const;
+                      uint32_t&              directions) const;
 
         unsigned int
         countDirections (const unsigned int directions) const;
-
-      private:
 
         // Nearest neighbor search.
         KdTreePtr kd_tree_;
@@ -222,7 +212,6 @@ namespace pcl
         // Dome to check from which direction the point has been observed
         Dome dome_;
     };
-
   } // End namespace ihs
 } // End namespace pcl
 

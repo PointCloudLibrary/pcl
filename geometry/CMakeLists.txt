@@ -13,10 +13,18 @@ if(build)
   set(incs
       include/pcl/${SUBSYS_NAME}/boost.h
       include/pcl/${SUBSYS_NAME}/eigen.h
-      include/pcl/${SUBSYS_NAME}/planar_polygon.h
-      include/pcl/${SUBSYS_NAME}/organized_index_iterator.h
       include/pcl/${SUBSYS_NAME}/line_iterator.h
+      include/pcl/${SUBSYS_NAME}/mesh_base.h
+      include/pcl/${SUBSYS_NAME}/mesh_circulators.h
+      include/pcl/${SUBSYS_NAME}/mesh_elements.h
+      include/pcl/${SUBSYS_NAME}/mesh_indices.h
+      include/pcl/${SUBSYS_NAME}/mesh_traits.h
+      include/pcl/${SUBSYS_NAME}/organized_index_iterator.h
+      include/pcl/${SUBSYS_NAME}/planar_polygon.h
       include/pcl/${SUBSYS_NAME}/polygon_operations.h
+      include/pcl/${SUBSYS_NAME}/polygon_mesh.h
+      include/pcl/${SUBSYS_NAME}/triangle_mesh.h
+      include/pcl/${SUBSYS_NAME}/quad_mesh.h
      )
 
   set(impl_incs
@@ -26,34 +34,6 @@ if(build)
   set(srcs
       src/geometry.cpp
      )
-
-  set(half_edge_mesh_incs
-      include/pcl/${SUBSYS_NAME}/mesh_element_index.h
-     )
-
-  set(half_edge_mesh_impl_incs
-      include/pcl/${SUBSYS_NAME}/impl/face.hpp
-      include/pcl/${SUBSYS_NAME}/impl/half_edge.hpp
-      include/pcl/${SUBSYS_NAME}/impl/mesh_base.hpp
-      include/pcl/${SUBSYS_NAME}/impl/mesh_circulators.hpp
-      include/pcl/${SUBSYS_NAME}/impl/mesh_topology.hpp
-      include/pcl/${SUBSYS_NAME}/impl/triangle_mesh.hpp
-      include/pcl/${SUBSYS_NAME}/impl/vertex.hpp
-     )
-
-  set(half_edge_mesh_srcs
-      src/mesh_element_index.cpp
-     )
-
-  # NOTE: mesh_circulators.hpp currently uses boost::conditional which only exists for versions > 1.44
-  if(Boost_MAJOR_VERSION GREATER 1 OR Boost_MINOR_VERSION GREATER 44)
-    set(BUILD_pcl_half_edge_mesh TRUE)
-    list(APPEND incs      ${half_edge_mesh_incs})
-    list(APPEND srcs      ${half_edge_mesh_srcs})
-    list(APPEND impl_incs ${half_edge_mesh_impl_incs})
-  else()
-    set(BUILD_pcl_half_edge_mesh FALSE)
-  endif()
 
   set(LIB_NAME pcl_${SUBSYS_NAME})
   include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)

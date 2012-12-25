@@ -62,30 +62,28 @@ namespace pcl
 {
   namespace ihs
   {
-
     class PCL_EXPORTS InputDataProcessing
     {
-
       public:
 
-        typedef pcl::ihs::PointInput         PointInput;
-        typedef pcl::ihs::CloudInput         CloudInput;
-        typedef pcl::ihs::CloudInputPtr      CloudInputPtr;
-        typedef pcl::ihs::CloudInputConstPtr CloudInputConstPtr;
+        typedef pcl::PointXYZRGBA              PointXYZRGBA;
+        typedef pcl::PointCloud <PointXYZRGBA> CloudXYZRGBA;
+        typedef CloudXYZRGBA::Ptr              CloudXYZRGBAPtr;
+        typedef CloudXYZRGBA::ConstPtr         CloudXYZRGBAConstPtr;
 
-        typedef pcl::ihs::PointProcessed         PointProcessed;
-        typedef pcl::ihs::CloudProcessed         CloudProcessed;
-        typedef pcl::ihs::CloudProcessedPtr      CloudProcessedPtr;
-        typedef pcl::ihs::CloudProcessedConstPtr CloudProcessedConstPtr;
+        typedef pcl::PointXYZRGBNormal              PointXYZRGBNormal;
+        typedef pcl::PointCloud <PointXYZRGBNormal> CloudXYZRGBNormal;
+        typedef CloudXYZRGBNormal::Ptr              CloudXYZRGBNormalPtr;
+        typedef CloudXYZRGBNormal::ConstPtr         CloudXYZRGBNormalConstPtr;
 
         typedef pcl::Normal                            Normal;
         typedef pcl::PointCloud <Normal>               CloudNormals;
         typedef boost::shared_ptr <CloudNormals>       CloudNormalsPtr;
         typedef boost::shared_ptr <const CloudNormals> CloudNormalsConstPtr;
 
-        typedef pcl::IntegralImageNormalEstimation <PointInput, Normal> NormalEstimation;
-        typedef boost::shared_ptr <NormalEstimation>                    NormalEstimationPtr;
-        typedef boost::shared_ptr <const NormalEstimation>              NormalEstimationConstPtr;
+        typedef pcl::IntegralImageNormalEstimation <PointXYZRGBA, Normal> NormalEstimation;
+        typedef boost::shared_ptr <NormalEstimation>                      NormalEstimationPtr;
+        typedef boost::shared_ptr <const NormalEstimation>                NormalEstimationConstPtr;
 
       public:
 
@@ -93,11 +91,16 @@ namespace pcl
 
       public:
 
-        CloudProcessedPtr
-        process (const CloudInputConstPtr& cloud) const;
+        CloudXYZRGBNormalPtr
+        process (const CloudXYZRGBAConstPtr& cloud) const;
 
-        CloudProcessedPtr
-        calculateNormals (const CloudInputConstPtr& cloud) const;
+        CloudXYZRGBNormalPtr
+        calculateNormals (const CloudXYZRGBAConstPtr& cloud) const;
+
+        void
+        setCropBox (const float x_min, const float x_max,
+                    const float y_min, const float y_max,
+                    const float z_min, const float z_max);
 
         void
         getCropBox (float& x_min, float& x_max,
@@ -108,14 +111,13 @@ namespace pcl
 
         NormalEstimationPtr normal_estimation_;
 
-        float               x_min_;
-        float               x_max_;
-        float               y_min_;
-        float               y_max_;
-        float               z_min_;
-        float               z_max_;
+        float x_min_;
+        float x_max_;
+        float y_min_;
+        float y_max_;
+        float z_min_;
+        float z_max_;
     };
-
   } // End namespace ihs
 } // End namespace pcl
 

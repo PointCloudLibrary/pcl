@@ -41,9 +41,8 @@
 #ifndef PCL_IN_HAND_SCANNER_ICP_H
 #define PCL_IN_HAND_SCANNER_ICP_H
 
-#include <boost/shared_ptr.hpp>
-
 #include <pcl/pcl_exports.h>
+#include <pcl/apps/in_hand_scanner/boost.h>
 #include <pcl/apps/in_hand_scanner/eigen.h>
 #include <pcl/apps/in_hand_scanner/common_types.h>
 
@@ -65,25 +64,26 @@ namespace pcl
 {
   namespace ihs
   {
-
     class PCL_EXPORTS ICP
     {
-
       public:
 
-        typedef pcl::ihs::PointProcessed         PointProcessed;
-        typedef pcl::ihs::CloudProcessed         CloudProcessed;
-        typedef pcl::ihs::CloudProcessedPtr      CloudProcessedPtr;
-        typedef pcl::ihs::CloudProcessedConstPtr CloudProcessedConstPtr;
+        typedef pcl::PointXYZRGBNormal              PointXYZRGBNormal;
+        typedef pcl::PointCloud <PointXYZRGBNormal> CloudXYZRGBNormal;
+        typedef CloudXYZRGBNormal::Ptr              CloudXYZRGBNormalPtr;
+        typedef CloudXYZRGBNormal::ConstPtr         CloudXYZRGBNormalConstPtr;
 
-        typedef pcl::ihs::PointModel   PointModel;
         typedef pcl::ihs::Mesh         Mesh;
         typedef pcl::ihs::MeshPtr      MeshPtr;
         typedef pcl::ihs::MeshConstPtr MeshConstPtr;
-        typedef Mesh::Vertex           Vertex;
-        typedef Mesh::Face             Face;
 
-        typedef pcl::ihs::Transformation Transformation;
+        ICP ();
+
+        bool
+        findTransformation (const MeshConstPtr&              mesh_model,
+                            const CloudXYZRGBNormalConstPtr& cloud_data,
+                            const Eigen::Matrix4f&           T_init,
+                            Eigen::Matrix4f&                 T_final);
 
       private:
 
@@ -96,31 +96,18 @@ namespace pcl
         typedef boost::shared_ptr <KdTree>       KdTreePtr;
         typedef boost::shared_ptr <const KdTree> KdTreeConstPtr;
 
-      public:
-
-        ICP ();
-
-        bool
-        findTransformation (const MeshConstPtr&           mesh_model,
-                            const CloudProcessedConstPtr& cloud_data,
-                            const Transformation&         T_init,
-                            Transformation&               T_final);
-
-      private:
 
         CloudNormalConstPtr
-        selectModelPoints (const MeshConstPtr&   mesh_model,
-                           const Transformation& T_init_inv) const;
+        selectModelPoints (const MeshConstPtr&    mesh_model,
+                           const Eigen::Matrix4f& T_init_inv) const;
 
         CloudNormalConstPtr
-        selectDataPoints (const CloudProcessedConstPtr& cloud_data) const;
+        selectDataPoints (const CloudXYZRGBNormalConstPtr& cloud_data) const;
 
         bool
         minimizePointPlane (const CloudNormalConstPtr& cloud_source,
                             const CloudNormalConstPtr& cloud_target,
-                            Transformation&            T) const;
-
-      private:
+                            Eigen::Matrix4f&           T) const;
 
         // Nearest neighbor search
         KdTreePtr    kd_tree_;
@@ -137,7 +124,6 @@ namespace pcl
         float        squared_distance_threshold_factor_;
         float        normals_threshold_; // cos(angle)
     };
-
   } // End namespace ihs
 } // End namespace pcl
 

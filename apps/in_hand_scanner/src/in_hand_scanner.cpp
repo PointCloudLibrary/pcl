@@ -41,6 +41,8 @@
 #include <pcl/apps/in_hand_scanner/in_hand_scanner.h>
 
 #include <pcl/common/transforms.h>
+#include <pcl/common/centroid.h>
+#include <pcl/common/impl/centroid.hpp> // TODO: PointIHS is not registered
 #include <pcl/exceptions.h>
 #include <pcl/io/openni_grabber.h>
 #include <pcl/visualization/pcl_visualizer.h>
@@ -48,7 +50,6 @@
 #include <pcl/apps/in_hand_scanner/icp.h>
 #include <pcl/apps/in_hand_scanner/input_data_processing.h>
 #include <pcl/apps/in_hand_scanner/integration.h>
-#include <pcl/apps/in_hand_scanner/impl/common_functions.hpp>
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -72,7 +73,7 @@ pcl::ihs::InHandScanner::InHandScanner (int argc, char** argv)
     input_data_processing_ (new InputDataProcessing ()),
 
     icp_                   (new ICP ()),
-    transformation_        (Transformation::Identity ()),
+    transformation_        (Eigen::Matrix4f::Identity ()),
 
     integration_           (new Integration ()),
 
@@ -125,7 +126,7 @@ pcl::ihs::InHandScanner::run ()
   visualizer_->registerKeyboardCallback (&pcl::ihs::InHandScanner::keyboardCallback, *this);
 
   // Grabber callbacks
-  boost::function <void (const CloudInputConstPtr&)> new_data_cb = boost::bind (&pcl::ihs::InHandScanner::newDataCallback, this, _1);
+  boost::function <void (const CloudXYZRGBAConstPtr&)> new_data_cb = boost::bind (&pcl::ihs::InHandScanner::newDataCallback, this, _1);
   new_data_connection_ = grabber_->registerCallback (new_data_cb);
 
   grabber_->start ();
@@ -242,7 +243,7 @@ pcl::ihs::InHandScanner::resetRegistration ()
 
   running_mode_    = RM_PROCESSED;
   iteration_       = 0;
-  transformation_  = Transformation::Identity ();
+  transformation_  = Eigen::Matrix4f::Identity ();
   mesh_vec_draw_.clear ();
   mesh_model_->clear ();
 }
@@ -260,7 +261,7 @@ pcl::ihs::InHandScanner::resetCamera ()
 ////////////////////////////////////////////////////////////////////////////////
 
 void
-pcl::ihs::InHandScanner::newDataCallback (const CloudInputConstPtr& cloud_in)
+pcl::ihs::InHandScanner::newDataCallback (const CloudXYZRGBAConstPtr& cloud_in)
 {
   boost::mutex::scoped_lock lock (mutex_);
   if (!run_) return;
@@ -268,8 +269,8 @@ pcl::ihs::InHandScanner::newDataCallback (const CloudInputConstPtr& cloud_in)
   this->calcFPS (computation_fps_);
 
   // Input data processing
-  CloudProcessedPtr cloud_data;
-  if      (running_mode_ == RM_SHOW_MODEL)  cloud_data = CloudProcessedPtr (new CloudProcessed ());
+  CloudXYZRGBNormalPtr cloud_data;
+  if      (running_mode_ == RM_SHOW_MODEL)  cloud_data = CloudXYZRGBNormalPtr (new CloudXYZRGBNormal ());
   else if (running_mode_ == RM_UNPROCESSED) cloud_data = input_data_processing_->calculateNormals (cloud_in);
   else if (running_mode_ >= RM_PROCESSED)   cloud_data = input_data_processing_->process (cloud_in);
 
@@ -283,20 +284,20 @@ pcl::ihs::InHandScanner::newDataCallback (const CloudInputConstPtr& cloud_in)
 
     if (iteration_ == 0)
     {
-      transformation_ = Transformation::Identity ();
+      transformation_ = Eigen::Matrix4f::Identity ();
       integration_->reconstructMesh (cloud_data, mesh_model_);
-      cloud_data = CloudProcessedPtr (new CloudProcessed ());
+      cloud_data = CloudXYZRGBNormalPtr (new CloudXYZRGBNormal ());
       ++iteration_;
     }
     else
     {
-      Transformation T = Transformation::Identity ();
+      Eigen::Matrix4f T = Eigen::Matrix4f::Identity ();
       if (icp_->findTransformation (mesh_model_, cloud_data, transformation_, T))
       {
         transformation_ = T;
         integration_->merge (cloud_data, mesh_model_, transformation_);
         integration_->age (mesh_model_);
-        cloud_data = CloudProcessedPtr (new CloudProcessed ());
+        cloud_data = CloudXYZRGBNormalPtr (new CloudXYZRGBNormal ());
 
         // Does not work here because multiple threads!
         // interactor_style_->transformCamera (InteractorStyle::Quaternion (T.topLeftCorner <3, 3> ().cast <double> ()), T.topRightCorner <3, 1> ().cast <double> ());
@@ -314,8 +315,15 @@ pcl::ihs::InHandScanner::newDataCallback (const CloudInputConstPtr& cloud_in)
 
   // TODO: put this into the visualization thread.
   Eigen::Vector4f pivot (0.f, 0.f, 0.f, 1.f);
-  if (mesh_model_draw->sizeVertexes () && pcl::compute3DCentroid (*mesh_model_draw, pivot)) pivot_ = pivot;
-  else if (pcl::compute3DCentroid (*cloud_data_draw_, pivot))                               pivot_ = pivot;
+  if (mesh_model_draw->sizeVertices () &&
+      pcl::compute3DCentroid (mesh_model_draw->getVertexDataCloud (), pivot))
+  {
+    pivot_ = pivot;
+  }
+  else if (pcl::compute3DCentroid (*cloud_data_draw_, pivot))
+  {
+    pivot_ = pivot;
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -323,7 +331,7 @@ pcl::ihs::InHandScanner::newDataCallback (const CloudInputConstPtr& cloud_in)
 void
 pcl::ihs::InHandScanner::draw ()
 {
-  CloudProcessedPtr cloud_temp;
+  CloudXYZRGBNormalPtr cloud_temp;
   MeshPtrVec mesh_vec_temp;
   if (mutex_.try_lock ())
   {
@@ -345,10 +353,10 @@ pcl::ihs::InHandScanner::draw ()
   {
     if (display_mode_==DM_POINTS)
     {
-      pcl::visualization::PointCloudColorHandlerRGBField <PointProcessed> ch (cloud_temp);
-      if (!visualizer_->updatePointCloud <PointProcessed> (cloud_temp, ch))
+      pcl::visualization::PointCloudColorHandlerRGBField <PointXYZRGBNormal> ch (cloud_temp);
+      if (!visualizer_->updatePointCloud <PointXYZRGBNormal> (cloud_temp, ch))
       {
-        visualizer_->addPointCloud <PointProcessed> (cloud_temp, ch);
+        visualizer_->addPointCloud <PointXYZRGBNormal> (cloud_temp, ch);
       }
     }
     else
@@ -364,39 +372,37 @@ pcl::ihs::InHandScanner::draw ()
     if (!(*it_m))          continue;
     if ((*it_m)->empty ()) continue;
 
+    const Mesh& mesh = **it_m;
+
     // Convert to cloud + indices for visualization
-    typedef pcl::Vertices                         Face;
-    typedef std::vector <Face>                    Faces;
-    typedef Mesh::VertexConstIterator             VCI;
-    typedef Mesh::FaceConstIterator               FCI;
-    typedef Mesh::VertexAroundFaceConstCirculator VAFCCirc;
+    typedef pcl::Vertices                    Face;
+    typedef std::vector <Face>               Faces;
+    typedef Mesh::VertexAroundFaceCirculator VAFC;
+    typedef Mesh::VertexDataCloud            VDC;
 
-    Face          triangle; triangle.vertices.resize (3);
-    CloudModelPtr vertexes (new CloudModel ());
-    Faces         triangles;
-    vertexes->reserve ((*it_m)->sizeVertexes ());
-    triangles.reserve (3 * (*it_m)->sizeFaces ());
+    Face  face; face.vertices.reserve (4);
+    Faces faces;
 
-    for (VCI it=(*it_m)->beginVertexes (); it!=(*it_m)->endVertexes (); ++it)
+    faces.reserve (3 * mesh.sizeFaces ());
+
+    for (unsigned int i=0; i<mesh.sizeFaces (); ++i)
     {
-      vertexes->push_back (*it);
-    }
-
-    for (FCI it=(*it_m)->beginFaces (); it!=(*it_m)->endFaces (); ++it)
-    {
-      VAFCCirc circ = (*it_m)->getVertexAroundFaceConstCirculator (*it);
-      triangle.vertices [0] = (circ++).getDereferencedIndex ().getIndex ();
-      triangle.vertices [1] = (circ++).getDereferencedIndex ().getIndex ();
-      triangle.vertices [2] = (circ  ).getDereferencedIndex ().getIndex ();
-      triangles.push_back (triangle);
+      VAFC       circ = mesh.getVertexAroundFaceCirculator (Mesh::FaceIndex (i));
+      const VAFC circ_end = circ;
+      face.vertices.clear ();
+      do
+      {
+        face.vertices.push_back (circ.getTargetIndex ().get ());
+      } while (++circ != circ_end);
+      faces.push_back (face);
     }
 
     sensor_msgs::PointCloud2 pc2;
-    pcl::toROSMsg (*vertexes, pc2);
+    pcl::toROSMsg (mesh.getVertexDataCloud (), pc2);
 
     pcl::PolygonMesh pm;
     pm.cloud    = pc2;
-    pm.polygons = triangles;
+    pm.polygons = faces;
 
     // TODO: There is likely a bug in updatePolygonMesh.
     visualizer_->removePolygonMesh ("mesh_model");
@@ -415,15 +421,15 @@ pcl::ihs::InHandScanner::draw ()
     }
 
     // Doesn't add the color
-    //  if (!visualizer_->updatePolygonMesh <PointModel> (vertexes, triangles, "mesh_model"))
+    //  if (!visualizer_->updatePolygonMesh <PointModel> (vertices, triangles, "mesh_model"))
     //  {
-    //    visualizer_->addPolygonMesh <PointModel> (vertexes, triangles, "mesh_model");
+    //    visualizer_->addPolygonMesh <PointModel> (vertices, triangles, "mesh_model");
     //  }
   }
 
 
 //  if (!mesh_model_temp) return;
-//  if (!mesh_model_temp->sizeVertexes ())
+//  if (!mesh_model_temp->sizeVertices ())
 //  {
 //    // TODO: addPolygonMesh does not remove the mesh if it is empty: "[0;m[1;31m[addPolygonMesh] No vertices given!"
 //    visualizer_->removePolygonMesh ("mesh_model");
@@ -497,7 +503,7 @@ pcl::ihs::InHandScanner::keyboardCallback (const pcl::visualization::KeyboardEve
       std::cerr << "======================================================================\n"
                 << "Help:\n"
                 << "----------------------------------------------------------------------\n"
-                << "q, ESC: Quit the application\n"
+                << "ESC   : Quit the application\n"
                 << "----------------------------------------------------------------------\n"
                 << "1     : Shows the unprocessed input data\n"
                 << "2     : Shows the processed input data\n"
@@ -512,8 +518,7 @@ pcl::ihs::InHandScanner::keyboardCallback (const pcl::visualization::KeyboardEve
       break;
     }
     case   0:                                                break; // Special key
-    case  27: // ESC
-    case 'q': this->quit ();                                 break;
+    case  27: this->quit ();                                 break;
     case '1': this->setRunningMode (RM_UNPROCESSED);         break;
     case '2': this->setRunningMode (RM_PROCESSED);           break;
     case '3': this->setRunningMode (RM_REGISTRATION_CONT);   break;

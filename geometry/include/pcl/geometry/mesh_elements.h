@@ -1,0 +1,188 @@
+/*
+ * Software License Agreement (BSD License)
+ *
+ * Point Cloud Library (PCL) - www.pointclouds.org
+ * Copyright (c) 2009-2012, Willow Garage, Inc.
+ * Copyright (c) 2012-, Open Perception, Inc.
+ *
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *
+ *  * Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ *  * Redistributions in binary form must reproduce the above
+ *    copyright notice, this list of conditions and the following
+ *    disclaimer in the documentation and/or other materials provided
+ *    with the distribution.
+ *  * Neither the name of the copyright holder(s) nor the names of its
+ *    contributors may be used to endorse or promote products derived
+ *    from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ *
+ * $Id$
+ *
+ */
+
+#ifndef PCL_GEOMETRY_MESH_ELEMENTS_H
+#define PCL_GEOMETRY_MESH_ELEMENTS_H
+
+#include <pcl/geometry/mesh_indices.h>
+
+namespace pcl
+{
+  namespace geometry
+  {
+    template <class DerivedT, class MeshTraitsT>
+    class MeshBase;
+  } // End namespace geometry
+} // End namespace pcl
+
+////////////////////////////////////////////////////////////////////////////////
+// Vertex
+////////////////////////////////////////////////////////////////////////////////
+
+namespace pcl
+{
+  namespace geometry
+  {
+    /** \brief A vertex is a node in the mesh.
+      * \author Martin Saelzle
+      * \ingroup geometry
+      */
+    class Vertex
+    {
+      private:
+
+        typedef pcl::geometry::HalfEdgeIndex HalfEdgeIndex;
+
+        /** \brief Constructor. Initializes with an invalid index. */
+        Vertex ()
+          : idx_outgoing_half_edge_ (HalfEdgeIndex ())
+        {}
+
+        /** \brief Constructor.
+          * \param[in] idx_outgoing_half_edge Index to the outgoing half-edge.
+          */
+        explicit Vertex (const HalfEdgeIndex& idx_outgoing_half_edge)
+          : idx_outgoing_half_edge_ (idx_outgoing_half_edge)
+        {}
+
+        /** \brief Index to the outgoing half-edge. The vertex is considered to be deleted if it stores an invalid outgoing half-edge index. */
+        HalfEdgeIndex idx_outgoing_half_edge_;
+
+        template <class DerivedT, class MeshTraitsT> friend class pcl::geometry::MeshBase;
+    };
+  } // End namespace geometry
+} // End namespace pcl
+
+////////////////////////////////////////////////////////////////////////////////
+// HalfEdge
+////////////////////////////////////////////////////////////////////////////////
+
+namespace pcl
+{
+  namespace geometry
+  {
+    /** \brief An edge is a connection between two vertices. In a half-edge mesh the edge is split into two half-edges with opposite orientation. Each half-edge stores the index to the terminating vertex, the next half-edge, the previous half-edge and the face it belongs to. The opposite half-edge is accessed implicitly.
+      * \author Martin Saelzle
+      * \ingroup geometry
+      */
+    class HalfEdge
+    {
+      private:
+
+        typedef pcl::geometry::VertexIndex   VertexIndex;
+        typedef pcl::geometry::HalfEdgeIndex HalfEdgeIndex;
+        typedef pcl::geometry::FaceIndex     FaceIndex;
+
+        /** \brief Constructor. Initializes with invalid indices. */
+        HalfEdge ()
+          : idx_terminating_vertex_ (VertexIndex   ()),
+            idx_next_half_edge_     (HalfEdgeIndex ()),
+            idx_prev_half_edge_     (HalfEdgeIndex ()),
+            idx_face_               (FaceIndex     ())
+        {
+        }
+
+        /** \brief Constructor. All indices except those provided are initialized with invalid indices.
+          * \param[in] idx_terminating_vertex Index to the terminating vertex.
+          */
+        explicit HalfEdge (const VertexIndex& idx_terminating_vertex)
+          : idx_terminating_vertex_ (idx_terminating_vertex),
+            idx_next_half_edge_     (HalfEdgeIndex ()),
+            idx_prev_half_edge_     (HalfEdgeIndex ()),
+            idx_face_               (FaceIndex     ())
+        {
+        }
+
+        /** \brief Index to the terminating vertex. The half-edge is considered to be deleted if it stores an invalid terminating vertex index. */
+        VertexIndex idx_terminating_vertex_;
+
+        /** \brief Index to the next half-edge. */
+        HalfEdgeIndex idx_next_half_edge_;
+
+        /** \brief Index to the previous half-edge. */
+        HalfEdgeIndex idx_prev_half_edge_;
+
+        /** \brief Index to the face. The half-edge is considered to be on the boundary if it stores an invalid face index. */
+        FaceIndex idx_face_;
+
+        template <class DerivedT, class MeshTraitsT> friend class pcl::geometry::MeshBase;
+    };
+  } // End namespace geometry
+} // End namespace pcl
+
+////////////////////////////////////////////////////////////////////////////////
+// Face
+////////////////////////////////////////////////////////////////////////////////
+
+namespace pcl
+{
+  namespace geometry
+  {
+    /** \brief A face is a closed loop of edges.
+      * \author Martin Saelzle
+      * \ingroup geometry
+      */
+    class Face
+    {
+      private:
+
+        typedef pcl::geometry::HalfEdgeIndex HalfEdgeIndex;
+
+        /** \brief Constructor. Initializes with an invalid index. */
+        Face ()
+          : idx_inner_half_edge_ (HalfEdgeIndex ())
+        {}
+
+        /** \brief Constructor.
+          * \param[in] inner_half_edge_idx Index to the outgoing half-edge.
+          */
+        explicit Face (const HalfEdgeIndex& idx_inner_half_edge)
+          : idx_inner_half_edge_ (idx_inner_half_edge)
+        {}
+
+        /** \brief Index to the inner half-edge. The face is considered to be deleted if it stores an invalid inner half-edge index. */
+        HalfEdgeIndex idx_inner_half_edge_;
+
+        template <class DerivedT, class MeshTraitsT> friend class pcl::geometry::MeshBase;
+    };
+  } // End namespace geometry
+} // End namespace pcl
+
+#endif // PCL_GEOMETRY_MESH_ELEMENTS_H
