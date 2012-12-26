@@ -162,6 +162,8 @@ class TestMeshCirculators : public ::testing::Test
     // expected sequences
     VertexIndices expected_123456_;
     VertexIndices expected_654321_;
+  public:
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 ////////////////////////////////////////////////////////////////////////////////
