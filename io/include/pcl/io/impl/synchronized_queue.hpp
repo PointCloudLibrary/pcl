@@ -44,71 +44,91 @@
 
 #include <queue>
 
-namespace pcl {
+namespace pcl
+{
 
-template<typename T>
-class SynchronizedQueue {
-public:
+  template<typename T>
+  class SynchronizedQueue
+  {
+    public:
 
-	SynchronizedQueue() {
-		RequestToEnd = false;
-		EnqueueData = true;
-	}
-	void Enqueue(const T& data) {
-		boost::unique_lock<boost::mutex> lock(m_mutex);
+      SynchronizedQueue () :
+        queue_(), mutex_(), cond_(), request_to_end_(false), enqueue_data_(true) { }
 
-		if (EnqueueData) {
-			m_queue.push(data);
-			m_cond.notify_one();
-		}
+      void
+      enqueue (const T& data)
+      {
+        boost::unique_lock<boost::mutex> lock (mutex_);
 
-	}
+        if (enqueue_data_)
+        {
+          queue_.push (data);
+          cond_.notify_one ();
+        }
+      }
 
-	bool Dequeue(T& result) {
-		boost::unique_lock<boost::mutex> lock(m_mutex);
+      bool
+      dequeue (T& result)
+      {
+        boost::unique_lock<boost::mutex> lock (mutex_);
 
-		while (m_queue.empty() && (!RequestToEnd)) {
-			m_cond.wait(lock);
-		}
+        while (queue_.empty () && (!request_to_end_))
+        {
+          cond_.wait (lock);
+        }
 
-		if (RequestToEnd) {
-			DoEndActions();
-			return false;
-		}
+        if (request_to_end_)
+        {
+          doEndActions ();
+          return false;
+        }
 
-		result = m_queue.front();
-		m_queue.pop();
+        result = queue_.front ();
+        queue_.pop ();
 
-		return true;
-	}
+        return true;
+      }
 
-	void StopQueue() {
-        boost::unique_lock<boost::mutex> lock(m_mutex);
-        RequestToEnd =  true;
-        m_cond.notify_one();
-	}
+      void
+      stopQueue ()
+      {
+        boost::unique_lock<boost::mutex> lock (mutex_);
+        request_to_end_ = true;
+        cond_.notify_one ();
+      }
 
-	int Size() {
-		boost::unique_lock<boost::mutex> lock(m_mutex);
-		return m_queue.size();
+      unsigned int
+      size ()
+      {
+        boost::unique_lock<boost::mutex> lock (mutex_);
+        return static_cast<unsigned int> (queue_.size ());
+      }
 
-	}
+      bool
+      isEmpty () const
+      {
+        boost::unique_lock<boost::mutex> lock (mutex_);
+        return (queue_.empty ());
+      }
 
-private:
-	void DoEndActions() {
-		EnqueueData = false;
+    private:
+      void
+      doEndActions ()
+      {
+        enqueue_data_ = false;
 
-		while (!m_queue.empty()) {
-			m_queue.pop();
-		}
-	}
+        while (!queue_.empty ())
+        {
+          queue_.pop ();
+        }
+      }
 
-	std::queue<T> m_queue;              // Use STL queue to store data
-	boost::mutex m_mutex;               // The mutex to synchronise on
-	boost::condition_variable m_cond;            // The condition to wait for
+      std::queue<T> queue_;              // Use STL queue to store data
+      mutable boost::mutex mutex_;       // The mutex to synchronise on
+      boost::condition_variable cond_;   // The condition to wait for
 
-	bool RequestToEnd;
-	bool EnqueueData;
-};
+      bool request_to_end_;
+      bool enqueue_data_;
+  };
 }
 #endif /* SYNCHRONIZED_QUEUE_H_ */

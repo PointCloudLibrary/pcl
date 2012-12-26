@@ -43,9 +43,13 @@
 #include <boost/property_tree/xml_parser.hpp>
 #include <boost/array.hpp>
 #include <boost/bind.hpp>
+#include <boost/math/special_functions.hpp>
 #ifdef USE_PCAP
 #include <pcap.h>
 #endif // #ifdef USE_PCAP
+#ifdef _WIN32
+    // TODO: Add Windows headers for sleep capability
+#endif
 
 const boost::asio::ip::address pcl::HDLGrabber::DEFAULT_NETWORK_ADDRESS = boost::asio::ip::address::from_string ("192.168.3.255");
 double *pcl::HDLGrabber::cos_lookup_table_ = NULL;
@@ -292,7 +296,7 @@ pcl::HDLGrabber::processVelodynePackets ()
   while (true)
   {
     unsigned char *data;
-    if (!hdl_data_.Dequeue (data))
+    if (!hdl_data_.dequeue (data))
       return;
 
     toPointClouds (reinterpret_cast<HDLDataPacket *> (data));
@@ -343,6 +347,12 @@ pcl::HDLGrabber::toPointClouds (HDLDataPacket *dataPacket)
 
       xyzrgb.rgba = laser_rgb_mapping_[j + offset].rgba;
 
+      if ((boost::math::isnan)(xyz.x) ||
+          (boost::math::isnan)(xyz.y) ||
+          (boost::math::isnan)(xyz.z)) {
+        continue;
+      }
+
       current_scan_xyz_->push_back (xyz);
       current_scan_xyzi_->push_back (xyzi);
       current_scan_xyzrgb_->push_back (xyzrgb);
@@ -378,13 +388,13 @@ pcl::HDLGrabber::computeXYZI (pcl::PointXYZI& point, int azimuth,
     cosAzimuth = std::cos (azimuthInRadians);
     sinAzimuth = std::sin (azimuthInRadians);
   }
-  double distanceCM = laserReturn.distance * 0.2 + correction.distanceCorrection;
+  double distanceM = laserReturn.distance * 0.002 + correction.distanceCorrection;
 
-  double xyDistance = distanceCM * correction.cosVertCorrection - correction.sinVertOffsetCorrection;
+  double xyDistance = distanceM * correction.cosVertCorrection - correction.sinVertOffsetCorrection;
 
   point.x = static_cast<float> (xyDistance * sinAzimuth - correction.horizontalOffsetCorrection * cosAzimuth);
   point.y = static_cast<float> (xyDistance * cosAzimuth + correction.horizontalOffsetCorrection * sinAzimuth);
-  point.z = static_cast<float> (distanceCM * correction.sinVertCorrection + correction.cosVertOffsetCorrection);
+  point.z = static_cast<float> (distanceM * correction.sinVertCorrection + correction.cosVertOffsetCorrection);
   point.intensity = static_cast<float> (laserReturn.intensity);
 }
 
@@ -430,7 +440,7 @@ pcl::HDLGrabber::enqueueHDLPacket (const unsigned char *data,
     unsigned char *dup = static_cast<unsigned char *> (malloc (bytesReceived * sizeof(unsigned char)));
     memcpy (dup, data, bytesReceived * sizeof(unsigned char));
 
-    hdl_data_.Enqueue (dup);
+    hdl_data_.enqueue (dup);
   }
 }
 
@@ -473,7 +483,7 @@ void
 pcl::HDLGrabber::stop ()
 {
   terminate_read_packet_thread_ = true;
-  hdl_data_.StopQueue ();
+  hdl_data_.stopQueue ();
 
   if (hdl_read_packet_thread_ != NULL)
   {
@@ -625,8 +635,11 @@ pcl::HDLGrabber::readPacketsFromPcap ()
     }
     delay.tv_sec = header->ts.tv_sec - lasttime.tv_sec;
     delay.tv_nsec = (header->ts.tv_usec - lasttime.tv_usec) * 1000;
+#ifdef _WIN32
+    // TODO: add in a Win32 sleep capability
+#else
     nanosleep(&delay, NULL);
-
+#endif
     lasttime.tv_sec = header->ts.tv_sec;
     lasttime.tv_usec = header->ts.tv_usec;
 

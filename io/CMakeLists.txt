@@ -144,7 +144,6 @@ if(build)
         include/pcl/${SUBSYS_NAME}/ascii_io.h
         include/pcl/${SUBSYS_NAME}/image_grabber.h 
         include/pcl/${SUBSYS_NAME}/hdl_grabber.h
-        include/pcl/${SUBSYS_NAME}/synchronized_queue.h
         ${VTK_IO_INCLUDES}
         ${OPENNI_GRABBER_INCLUDES}
         ${DINAST_GRABBER_INCLUDES}
@@ -169,6 +168,7 @@ if(build)
     set(impl_incs 
         include/pcl/${SUBSYS_NAME}/impl/pcd_io.hpp
         include/pcl/${SUBSYS_NAME}/impl/lzf_image_io.hpp
+        include/pcl/${SUBSYS_NAME}/impl/synchronized_queue.hpp
         include/pcl/compression/impl/entropy_range_coder.hpp
         include/pcl/compression/impl/octree_pointcloud_compression.hpp
         ${VTK_IO_INCLUDES_IMPL}

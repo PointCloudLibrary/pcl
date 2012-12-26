@@ -41,7 +41,7 @@
 #define PCL_IO_HDL_GRABBER_H_
 
 #include <pcl/io/grabber.h>
-#include <pcl/io/synchronized_queue.h>
+#include <pcl/io/impl/synchronized_queue.hpp>
 #include <pcl/point_types.h>
 #include <boost/asio.hpp>
 #include <string>
