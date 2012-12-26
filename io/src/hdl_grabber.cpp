@@ -47,9 +47,6 @@
 #ifdef USE_PCAP
 #include <pcap.h>
 #endif // #ifdef USE_PCAP
-#ifdef _WIN32
-    // TODO: Add Windows headers for sleep capability
-#endif
 
 const boost::asio::ip::address pcl::HDLGrabber::DEFAULT_NETWORK_ADDRESS = boost::asio::ip::address::from_string ("192.168.3.255");
 double *pcl::HDLGrabber::cos_lookup_table_ = NULL;
@@ -615,7 +612,7 @@ pcl::HDLGrabber::readPacketsFromPcap ()
   }
 
   struct timeval lasttime;
-  struct timespec delay;
+  unsigned long long uSecDelay;
 
   lasttime.tv_sec = 0;
 
@@ -633,13 +630,11 @@ pcl::HDLGrabber::readPacketsFromPcap ()
       lasttime.tv_usec -= 1000000;
       lasttime.tv_sec++;
     }
-    delay.tv_sec = header->ts.tv_sec - lasttime.tv_sec;
-    delay.tv_nsec = (header->ts.tv_usec - lasttime.tv_usec) * 1000;
-#ifdef _WIN32
-    // TODO: add in a Win32 sleep capability
-#else
-    nanosleep(&delay, NULL);
-#endif
+    uSecDelay = ((header->ts.tv_sec - lasttime.tv_sec) * 1000000) +
+                (header->ts.tv_usec - lasttime.tv_usec);
+
+    boost::this_thread::sleep(boost::posix_time::microseconds(uSecDelay));
+
     lasttime.tv_sec = header->ts.tv_sec;
     lasttime.tv_usec = header->ts.tv_usec;
 
