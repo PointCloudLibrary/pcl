@@ -10,6 +10,7 @@
 
 // VTK
 #include <vtkActor.h>
+#include <vtkTubeFilter.h>
 #include <vtkAxes.h>
 //#include <vtkDataSetMapper.h>
 #include <vtkFloatArray.h>
