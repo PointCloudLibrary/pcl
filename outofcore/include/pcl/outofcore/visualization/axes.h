@@ -14,6 +14,7 @@
 #include <vtkAxes.h>
 //#include <vtkDataSetMapper.h>
 #include <vtkFloatArray.h>
+#include <vtkProperty.h>
 #include <vtkPolyData.h>
 #include <vtkPolyDataMapper.h>
 #include <vtkSmartPointer.h>
