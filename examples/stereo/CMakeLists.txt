@@ -14,6 +14,6 @@ if(BUILD_visualization)
 	  endif(NOT VTK_FOUND)
 	  
   PCL_ADD_EXAMPLE(pcl_example_stereo_baseline FILES example_stereo_baseline.cpp
-		                LINK_WITH pcl_common pcl_geometry pcl_visualization pcl_stereo pcl_io )
+		                LINK_WITH pcl_common pcl_visualization pcl_stereo pcl_io )
 						
 endif(BUILD_visualization)

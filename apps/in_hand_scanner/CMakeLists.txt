@@ -1,7 +1,7 @@
 set(SUBSYS_NAME in_hand_scanner)
 set(SUBSYS_DESC "In-hand scanner for small objects")
 set(SUBSYS_DEPS     common     features     geometry     io     kdtree      visualization apps)
-set(SUBSYS_LIBS pcl_common pcl_features pcl_geometry pcl_io pcl_kdtree  pcl_visualization)
+set(SUBSYS_LIBS pcl_common pcl_features pcl_io pcl_kdtree  pcl_visualization)
 
 ################################################################################
 
@@ -49,7 +49,7 @@ if(BUILD)
   target_link_libraries(${EXE_NAME} ${SUBSYS_LIBS})
 
   pcl_add_executable_opt_bundle(pcl_test_integration ${SUBSYS_NAME} src/test_integration.cpp src/integration.cpp)
-  target_link_libraries(pcl_test_integration pcl_common pcl_geometry pcl_io pcl_visualization)
+  target_link_libraries(pcl_test_integration pcl_common pcl_io pcl_visualization)
 
   pcl_add_includes(${SUBSYS_NAME} ${SUBSYS_NAME} ${INCS})
   pcl_add_includes(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${IMPL_INCS})
