@@ -49,12 +49,12 @@
 pcl::ihs::InputDataProcessing::InputDataProcessing ()
   : normal_estimation_ (new NormalEstimation ()),
 
-    x_min_             (-15.f),
-    x_max_             ( 15.f),
-    y_min_             (-15.f),
-    y_max_             ( 15.f),
-    z_min_             ( 48.f),
-    z_max_             ( 70.f)
+    x_min_ (-15.f),
+    x_max_ ( 15.f),
+    y_min_ (-15.f),
+    y_max_ ( 15.f),
+    z_min_ ( 48.f),
+    z_max_ ( 70.f)
 {
   // Normal estimation
   normal_estimation_->setNormalEstimationMethod (NormalEstimation::AVERAGE_3D_GRADIENT);

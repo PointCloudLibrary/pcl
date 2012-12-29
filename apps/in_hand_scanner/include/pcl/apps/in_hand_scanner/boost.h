@@ -38,14 +38,15 @@
  *
  */
 
-#ifndef PCL_IN_HAND_SCANNER_BOOST_H
-#define PCL_IN_HAND_SCANNER_BOOST_H
+#ifndef PCL_APPS_IN_HAND_SCANNER_BOOST_H
+#define PCL_APPS_IN_HAND_SCANNER_BOOST_H
 
 #ifdef __GNUC__
 #  pragma GCC system_header
 #endif
 
+#include <boost/bind/bind.hpp>
 #include <boost/thread/mutex.hpp>
 #include <boost/shared_ptr.hpp>
 
-#endif // PCL_IN_HAND_SCANNER_BOOST_H
+#endif // PCL_APPS_IN_HAND_SCANNER_BOOST_H

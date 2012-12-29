@@ -113,6 +113,7 @@ class TestMeshCirculators : public ::testing::Test
       const unsigned int n = expected.size ();
       EXPECT_EQ (n, actual.size ());
       if (n != actual.size ()) return (false);
+
       for (unsigned int i=0; i<n; ++i)
       {
         bool all_equal = true;
@@ -138,6 +139,7 @@ class TestMeshCirculators : public ::testing::Test
       const unsigned int n = expected.size ();
       EXPECT_EQ (n, actual.size ());
       if (n != actual.size ()) return (false);
+
       for (unsigned int i=0; i<n; ++i)
       {
         bool all_equal = true;

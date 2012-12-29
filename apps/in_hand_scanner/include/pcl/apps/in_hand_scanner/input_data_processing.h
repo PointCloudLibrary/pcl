@@ -38,8 +38,8 @@
  *
  */
 
-#ifndef PCL_IN_HAND_SCANNER_INPUT_DATA_PROCESSING_H
-#define PCL_IN_HAND_SCANNER_INPUT_DATA_PROCESSING_H
+#ifndef PCL_APPS_IN_HAND_SCANNER_INPUT_DATA_PROCESSING_H
+#define PCL_APPS_IN_HAND_SCANNER_INPUT_DATA_PROCESSING_H
 
 #include <pcl/pcl_exports.h>
 #include <pcl/apps/in_hand_scanner/common_types.h>
@@ -121,4 +121,4 @@ namespace pcl
   } // End namespace ihs
 } // End namespace pcl
 
-#endif // PCL_IN_HAND_SCANNER_INPUT_DATA_PROCESSING_H
+#endif // PCL_APPS_IN_HAND_SCANNER_INPUT_DATA_PROCESSING_H

@@ -38,13 +38,16 @@
  *
  */
 
-#include <cstdlib>
+#include <QApplication>
+#include <QTimer>
+
 #include <pcl/apps/in_hand_scanner/in_hand_scanner.h>
 
 int main (int argc, char** argv)
 {
-  pcl::ihs::InHandScanner scanner (argc, argv);
-  scanner.run ();
-
-  return (EXIT_SUCCESS);
+  QApplication app (argc, argv);
+  pcl::ihs::InHandScanner scanner;
+  QTimer::singleShot(0, &scanner, SLOT (startGrabber ()));
+  scanner.show ();
+  return (app.exec ());
 }

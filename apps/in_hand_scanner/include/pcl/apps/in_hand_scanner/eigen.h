@@ -38,8 +38,8 @@
  *
  */
 
-#ifndef PCL_IN_HAND_SCANNER_EIGEN_H
-#define PCL_IN_HAND_SCANNER_EIGEN_H
+#ifndef PCL_APPS_IN_HAND_SCANNER_EIGEN_H
+#define PCL_APPS_IN_HAND_SCANNER_EIGEN_H
 
 #ifdef __GNUC__
 #  pragma GCC system_header
@@ -49,4 +49,4 @@
 #include <Eigen/Geometry>
 #include <Eigen/Cholesky>
 
-#endif // PCL_IN_HAND_SCANNER_EIGEN_H
+#endif // PCL_APPS_IN_HAND_SCANNER_EIGEN_H

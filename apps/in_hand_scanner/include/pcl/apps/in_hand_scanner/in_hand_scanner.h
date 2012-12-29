@@ -38,12 +38,16 @@
  *
  */
 
-#ifndef PCL_IN_HAND_SCANNER_IN_HAND_SCANNER_H
-#define PCL_IN_HAND_SCANNER_IN_HAND_SCANNER_H
+#ifndef PCL_APPS_IN_HAND_SCANNER_IN_HAND_SCANNER_H
+#define PCL_APPS_IN_HAND_SCANNER_IN_HAND_SCANNER_H
 
 #include <string>
 #include <sstream>
 #include <iomanip>
+
+#include <QGLWidget>
+#include <QQuaternion>
+#include <QVector3D>
 
 #include <pcl/pcl_exports.h>
 #include <pcl/common/time.h>
@@ -60,18 +64,10 @@ namespace pcl
 
   namespace ihs
   {
-    class CustomInteractorStyle;
     class ICP;
     class InputDataProcessing;
     class Integration;
   } // End namespace ihs
-
-  namespace visualization
-  {
-    class PCLVisualizer;
-    class KeyboardEvent;
-  } // End namespace visualization
-
 } // End namespace pcl
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -82,26 +78,72 @@ namespace pcl
 {
   namespace ihs
   {
-    class PCL_EXPORTS InHandScanner
+    /** \brief
+      * \todo Add Documentation
+      */
+    class PCL_EXPORTS InHandScanner : public QGLWidget
     {
+      Q_OBJECT
+
       public:
 
-        /** \brief Mode in which the scanner is currently running */
+        /** \brief Switch between different branches of the scanning pipeline. */
         typedef enum RunningMode
         {
-          RM_SHOW_MODEL          = 0, /**< Show the model shape (if one is available) */
-          RM_UNPROCESSED         = 1, /**< Shows the unprocessed input data */
-          RM_PROCESSED           = 2, /**< Shows the processed input data */
-          RM_REGISTRATION_CONT   = 3, /**< Registers new data to the first acquired data continuously */
-          RM_REGISTRATION_SINGLE = 4  /**< Registers new data once and returns to showing the processed data */
+          RM_SHOW_MODEL          = 0, /**< Show the model shape (if one is available). */
+          RM_UNPROCESSED         = 1, /**< Shows the unprocessed input data. */
+          RM_PROCESSED           = 2, /**< Shows the processed input data. */
+          RM_REGISTRATION_CONT   = 3, /**< Registers new data to the first acquired data continuously. */
+          RM_REGISTRATION_SINGLE = 4  /**< Registers new data once and returns to showing the processed data. */
         } RunningMode;
 
+        /** \brief How to draw the object. */
         typedef enum DisplayMode
         {
-          DM_POINTS = 0,
-          DM_EDGES  = 1,
-          DM_MESH   = 2
+          DM_POINTS = 0, /**< Draw the points. */
+          DM_EDGES  = 1, /**< Draw the edges of the mesh. */
+          DM_FACES  = 2  /**< Draw the faces of the mesh without edges. */
         } DisplayMode;
+
+        /** \brief Constructor. */
+        explicit InHandScanner (QWidget* parent=0);
+
+        /** \brief Destructor. */
+        ~InHandScanner ();
+
+        /** \see http://doc.qt.digia.com/qt/qwidget.html#minimumSizeHint-prop */
+        virtual QSize
+        minimumSizeHint () const;
+
+        /** \see http://doc.qt.digia.com/qt/qwidget.html#sizeHint-prop */
+        virtual QSize
+        sizeHint () const;
+
+     public slots:
+
+        /** \brief Start the grabber (enables the scanning pipeline). */
+        void
+        startGrabber ();
+
+        /** \brief Requests the scene to be re-drawn (called preiodically from a timer). */
+        void
+        timerCallback ();
+
+        /** \brief Set which branches of the scanning pipeline is executed. */
+        void
+        setRunningMode (const RunningMode& mode);
+
+        /** \brief Specify how the object is drawn. */
+        void
+        setDisplayMode (const DisplayMode& mode);
+
+        /** \brief Reset the scanning pipeline. */
+        void
+        reset ();
+
+        /** \brief Reset the virtual camera position and orientation to that of the sensor. */
+        void
+        resetCamera ();
 
       private:
 
@@ -141,26 +183,17 @@ namespace pcl
         typedef boost::shared_ptr <Integration>       IntegrationPtr;
         typedef boost::shared_ptr <const Integration> IntegrationConstPtr;
 
-        typedef pcl::visualization::PCLVisualizer       PCLVisualizer;
-        typedef boost::shared_ptr <PCLVisualizer>       PCLVisualizerPtr;
-        typedef boost::shared_ptr <const PCLVisualizer> PCLVisualizerConstPtr;
-
-        typedef pcl::ihs::CustomInteractorStyle InteractorStyle;
-        typedef InteractorStyle*                InteractorStylePtr;
-        typedef const InteractorStyle*          InteractorStyleConstPtr;
-
+        /** \brief Please have a look at the documentation of calcFPS. */
         class FPS
         {
           public:
+
             FPS () : fps_ (0.) {}
-          protected:
-            ~FPS () {}
 
-          public:
-            double& value ()       {return (fps_);}
-            double  value () const {return (fps_);}
+            inline double& value ()       {return (fps_);}
+            inline double  value () const {return (fps_);}
 
-            std::string
+            inline std::string
             str () const
             {
               std::stringstream ss;
@@ -168,16 +201,16 @@ namespace pcl
               return (ss.str ());
             }
 
+          protected:
+
+            ~FPS () {}
+
           private:
+
             double fps_;
         };
 
-        class VisualizationFPS : public FPS
-        {
-          public:
-            VisualizationFPS () : FPS () {}
-            ~VisualizationFPS () {}
-        };
+        /** \brief Helper object for the computation thread. Please have a look at the documentation of calcFPS. */
         class ComputationFPS : public FPS
         {
           public:
@@ -185,46 +218,15 @@ namespace pcl
             ~ComputationFPS () {}
         };
 
-      public:
+        /** \brief Helper object for the visualization thread. Please have a look at the documentation of calcFPS. */
+        class VisualizationFPS : public FPS
+        {
+          public:
+            VisualizationFPS () : FPS () {}
+            ~VisualizationFPS () {}
+        };
 
-        InHandScanner (int argc, char** argv);
-        ~InHandScanner ();
-
-        void
-        run ();
-
-        void
-        quit ();
-
-        void
-        setRunningMode (const RunningMode& mode);
-
-        void
-        setDisplayMode (const DisplayMode& mode);
-
-        void
-        resetRegistration ();
-
-        void
-        resetCamera ();
-
-      private:
-
-        void
-        newDataCallback (const CloudXYZRGBAConstPtr& cloud_in);
-
-        void
-        draw ();
-
-        void
-        drawCropBox ();
-
-        void
-        drawFPS ();
-
-        void
-        keyboardCallback (const pcl::visualization::KeyboardEvent& event, void*);
-
+        /** Measures the performance of the current thread (selected by passing the corresponding 'fps' helper object). The resulting value is stored in the fps object. */
         template <class FPS> void
         calcFPS (FPS& fps) const
         {
@@ -240,35 +242,146 @@ namespace pcl
           }
         }
 
-      private:
+        /** \brief Actual implementeation of startGrabber (needed so it can be run in a different thread and doesn't block the application when starting up). */
+        void
+        startGrabberImpl ();
 
-        boost::mutex                mutex_;
-        bool                        run_;
-        VisualizationFPS            visualization_fps_;
-        ComputationFPS              computation_fps_;
-        RunningMode                 running_mode_;
-        unsigned int                iteration_;
+        /** \brief Called when new data arries from the grabber. The grabbing - registration - integration pipeline is implemented here. */
+        void
+        newDataCallback (const CloudXYZRGBAConstPtr& cloud_in);
 
-        PCLVisualizerPtr            visualizer_;
-        InteractorStylePtr          interactor_style_;
-        bool                        draw_crop_box_;
-        Eigen::Vector4f             pivot_;
-        DisplayMode                 display_mode_;
+        /** \see http://doc.qt.digia.com/qt/qglwidget.html#initializeGL */
+        void
+        initializeGL ();
 
+        /** \brief Set the lighting of the scene. */
+        void
+        setupLighting ();
 
-        GrabberPtr                  grabber_;
+        /** \see http://www.opengl.org/sdk/docs/man/xhtml/glViewport.xml */
+        void
+        setupViewport (const int w, const int h);
+
+        /** \see http://doc.qt.digia.com/qt/qglwidget.html#resizeGL */
+        void
+        resizeGL (int w, int h);
+
+        /** \see http://doc.qt.digia.com/qt/qwidget.html#paintEvent
+          * \see http://doc.qt.digia.com/qt/opengl-overpainting.html
+          */
+//        void
+//        paintEvent (QPaintEvent* event);
+        void
+        paintGL ();
+
+        /** \brief Draw cloud if it is available. */
+        void
+        drawCloud ();
+
+        /** \brief Draw a wireframe box that shows where the data is cropped during input data processing. */
+        void
+        drawCropBox ();
+
+        /** \brief Draw the current framerate. */
+        void
+        drawFPS ();
+
+        /** \see http://doc.qt.digia.com/qt/qwidget.html#mousePressEvent */
+        void
+        mousePressEvent (QMouseEvent* event);
+
+        /** \see http://doc.qt.digia.com/qt/qwidget.html#mouseMoveEvent */
+        void
+        mouseMoveEvent (QMouseEvent* event);
+
+        /** \see http://doc.qt.digia.com/qt/qwidget.html#wheelEvent */
+        void
+        wheelEvent (QWheelEvent* event);
+
+        /** \see http://doc.qt.digia.com/qt/qwidget.html#keyPressEvent */
+        void
+        keyPressEvent (QKeyEvent* event);
+
+        ////////////////////////////////////////////////////////////////////////
+        // Members
+        ////////////////////////////////////////////////////////////////////////
+
+        /** \brief Synchronization between the computation and visualization thread. */
+        boost::mutex mutex_comp_vis_;
+
+        /** \brief Synchronization between the computation thread and user events. */
+        boost::mutex mutex_comp_events_;
+
+        /** \brief Synchronization between the visualization thread and user events. */
+        boost::mutex mutex_vis_events_;
+
+        /** \brief Please have a look at the documentation of ComputationFPS. */
+        ComputationFPS computation_fps_;
+
+        /** \brief Please have a look at the documentation of VisualizationFPS. */
+        VisualizationFPS visualization_fps_;
+
+        /** \brief Switch between different branches of the scanning pipeline. */
+        RunningMode running_mode_;
+
+        /** \brief The iteration of the scanning pipeline (grab - register - integrate). */
+        unsigned int iteration_;
+
+        /** \brief Used to get new data from the sensor. */
+        GrabberPtr grabber_;
+
+        /** \brief Connection of the grabber signal with the data processing thread. */
         boost::signals2::connection new_data_connection_;
 
-        InputDataProcessingPtr      input_data_processing_;
+        /** \brief Used to pass the cloud from the computation to the visualization thread. */
+        CloudXYZRGBNormalPtr cloud_draw_tmp_;
 
-        ICPPtr                      icp_;
-        Eigen::Matrix4f             transformation_;
+        /** \brief Cloud stored for visualization. */
+        // TODO: Use Vertex Buffer Objects and upload everything to the GPU.
+        CloudXYZRGBNormal cloud_draw_;
 
-        IntegrationPtr              integration_;
+        /** \brief Processes the data from the sensor. Output is input to the registration. */
+        InputDataProcessingPtr input_data_processing_;
 
-        CloudXYZRGBNormalPtr        cloud_data_draw_;
-        MeshPtrVec                  mesh_vec_draw_;
-        MeshPtr                     mesh_model_;
+        /** \brief Draw a wireframe box that shows where the data is cropped during input data processing. */
+        bool draw_crop_box_;
+
+        /** \brief Registration (Iterative Closest Point). */
+//        ICPPtr icp_;
+
+        /** \brief Transformation that brings the data cloud into model coordinates. */
+//        Eigen::Matrix4f transformation_;
+
+        /** \brief Integrate the data cloud into a common model (model cloud). */
+//        IntegrationPtr integration_;
+
+        /** \brief Model to which new data is registered to (stored as a mesh). */
+//        MeshPtr mesh_model_;
+
+        /** \brief Model mesh stored for visualization. */
+        // TODO: Use Vertex Buffer Objects and upload everything to the GPU.
+//        MeshPtr mesh_model_draw_;
+
+        /** \brief How to draw the object. */
+        DisplayMode display_mode_;
+
+        /** \brief Rotation of the camera. */
+        QQuaternion cam_R_;
+
+        /** \brief Translation of the camera. */
+        QVector3D cam_t_;
+
+        /** \brief Center of rotation during mouse navigation. */
+        QVector3D cam_pivot_;
+
+        /** \brief Set to true right after the mouse got pressed and false if the mouse got moved. */
+        bool mouse_pressed_begin_;
+
+        /** \brief Mouse x-position of the previous mouse move event. */
+        int x_prev_;
+
+        /** \brief Mouse y-position of the previous mouse move event. */
+        int y_prev_;
 
       public:
 
@@ -277,4 +390,4 @@ namespace pcl
   } // End namespace ihs
 } // End namespace pcl
 
-#endif // PCL_IN_HAND_SCANNER_IN_HAND_SCANNER_H
+#endif // PCL_APPS_IN_HAND_SCANNER_IN_HAND_SCANNER_H

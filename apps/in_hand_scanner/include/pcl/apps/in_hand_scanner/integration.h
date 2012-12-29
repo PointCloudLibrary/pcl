@@ -38,8 +38,8 @@
  *
  */
 
-#ifndef PCL_IN_HAND_SCANNER_INTEGRATION_H
-#define PCL_IN_HAND_SCANNER_INTEGRATION_H
+#ifndef PCL_APPS_IN_HAND_SCANNER_INTEGRATION_H
+#define PCL_APPS_IN_HAND_SCANNER_INTEGRATION_H
 
 #include <stdint.h>
 
@@ -215,4 +215,4 @@ namespace pcl
   } // End namespace ihs
 } // End namespace pcl
 
-#endif // PCL_IN_HAND_SCANNER_INTEGRATION_H
+#endif // PCL_APPS_IN_HAND_SCANNER_INTEGRATION_H
