@@ -51,11 +51,11 @@
 #endif
 
 #include <QtOpenGL>
-//#include <QPainter>
+#include <QPainter>
 
 #include <pcl/common/transforms.h>
 //#include <pcl/common/centroid.h>
-#include <pcl/common/impl/centroid.hpp> // TODO: PointIHS is not registered
+//#include <pcl/common/impl/centroid.hpp> // TODO: PointIHS is not registered
 #include <pcl/exceptions.h>
 #include <pcl/io/openni_grabber.h>
 #include <pcl/apps/in_hand_scanner/icp.h>
@@ -74,6 +74,7 @@ pcl::ihs::InHandScanner::InHandScanner (QWidget* parent)
     running_mode_          (RM_UNPROCESSED),
     iteration_             (0),
     grabber_               (),
+    starting_grabber_      (false),
     new_data_connection_   (),
     cloud_draw_tmp_        (),
     cloud_draw_            (),
@@ -90,7 +91,8 @@ pcl::ihs::InHandScanner::InHandScanner (QWidget* parent)
     cam_pivot_             (0., 0., 0.),
     mouse_pressed_begin_   (false),
     x_prev_                (0),
-    y_prev_                (0)
+    y_prev_                (0),
+    destructor_called_     (false)
 {
   // Initialize the pivot
   float x_min, x_max, y_min, y_max, z_min, z_max;
@@ -103,12 +105,15 @@ pcl::ihs::InHandScanner::InHandScanner (QWidget* parent)
   QTimer* timer = new QTimer (this);
   connect (timer, SIGNAL (timeout ()), this, SLOT (timerCallback ()));
   timer->start (33);
+
+  setAutoFillBackground (false);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 pcl::ihs::InHandScanner::~InHandScanner ()
 {
+  destructor_called_ = true;
   if (grabber_ && grabber_->isRunning ()) grabber_->stop ();
   if (new_data_connection_.connected ())  new_data_connection_.disconnect ();
 }
@@ -126,7 +131,7 @@ pcl::ihs::InHandScanner::startGrabber ()
 void
 pcl::ihs::InHandScanner::timerCallback ()
 {
-  this->updateGL ();
+  this->update ();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -230,21 +235,32 @@ pcl::ihs::InHandScanner::resetCamera ()
 void
 pcl::ihs::InHandScanner::startGrabberImpl ()
 {
-  std::cerr << "Initializing the grabber ...\n  ";
+  starting_grabber_ = true;
   try
   {
     grabber_ = GrabberPtr (new Grabber ());
   }
   catch (const pcl::PCLException& e)
   {
-    std::cerr << "  ERROR in in_hand_scanner.cpp: " << e.what () << std::endl;
+    std::cerr << "ERROR in in_hand_scanner.cpp: " << e.what () << std::endl;
     exit (EXIT_FAILURE);
   }
-  std::cerr << "  DONE\n";
+
+  if (destructor_called_) return;
 
   boost::function <void (const CloudXYZRGBAConstPtr&)> new_data_cb = boost::bind (&pcl::ihs::InHandScanner::newDataCallback, this, _1);
+
+  if (destructor_called_) return;
+
   new_data_connection_ = grabber_->registerCallback (new_data_cb);
+
+  if (destructor_called_) return;
+
   grabber_->start ();
+
+  if (destructor_called_) return;
+
+  starting_grabber_ = false;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -252,14 +268,14 @@ pcl::ihs::InHandScanner::startGrabberImpl ()
 void
 pcl::ihs::InHandScanner::newDataCallback (const CloudXYZRGBAConstPtr& cloud_in)
 {
-  this->calcFPS (computation_fps_);
-
   RunningMode running_mode;
   unsigned int iteration;
   {
     boost::mutex::scoped_lock lock_ce (mutex_comp_events_);
     running_mode = running_mode_;
     iteration    = iteration_;
+
+    this->calcFPS (computation_fps_);
   }
 
   // Input data processing
@@ -420,7 +436,7 @@ pcl::ihs::InHandScanner::newDataCallback (const CloudXYZRGBAConstPtr& cloud_in)
 QSize
 pcl::ihs::InHandScanner::minimumSizeHint () const
 {
-  return (QSize (64, 48));
+  return (QSize (160, 120));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -436,20 +452,6 @@ pcl::ihs::InHandScanner::sizeHint () const
 void
 pcl::ihs::InHandScanner::initializeGL ()
 {
-  glClearColor (0.f, 0.f, 0.f, 0.f);
-
-  this->setupLighting ();
-
-  // Projection matrix
-  glMatrixMode   (GL_PROJECTION);
-  glLoadIdentity ();
-  gluPerspective (43., 4./3., 1., 5000.);
-  glMatrixMode   (GL_MODELVIEW);
-
-  // View matrix
-  glMatrixMode (GL_MODELVIEW);
-  glLoadIdentity();
-  gluLookAt (0., 0., 0., 0., 0., 1., 0., -1., 0.);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -495,7 +497,6 @@ pcl::ihs::InHandScanner::setupLighting ()
 
   // Enable depth test, color and lighting
   glEnable (GL_COLOR_MATERIAL);
-  glEnable (GL_DEPTH_TEST);
   glEnable (GL_LIGHTING);
   glEnable (GL_LIGHT0);
   glEnable (GL_LIGHT1);
@@ -541,17 +542,33 @@ pcl::ihs::InHandScanner::resizeGL (int w, int h)
 ////////////////////////////////////////////////////////////////////////////////
 
 void
-pcl::ihs::InHandScanner::paintGL ()
+pcl::ihs::InHandScanner::paintEvent (QPaintEvent* /*event*/)
 {
-  this->calcFPS (visualization_fps_);
+  {
+    boost::mutex::scoped_lock lock_ve (mutex_vis_events_);
+    this->calcFPS (visualization_fps_);
+  }
+  this->makeCurrent ();
 
   // Clear information from the last draw
   glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  glClearColor (0.f, 0.f, 0.f, 0.f);
+
+  this->setupLighting ();
+  this->setupViewport (this->width (), this->height ());
+
+  glEnable (GL_DEPTH_TEST);
+
+  // Projection matrix
+  glMatrixMode   (GL_PROJECTION);
+  glLoadIdentity ();
+  gluPerspective (43., 4./3., 1., 5000.);
+  glMatrixMode   (GL_MODELVIEW);
 
   // Draw everything
   this->drawCloud ();
   this->drawCropBox ();
-  this->drawFPS ();
+  this->drawText (); // NOTE: Must come AFTER the opengl calls
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -779,9 +796,36 @@ pcl::ihs::InHandScanner::drawCropBox ()
 ////////////////////////////////////////////////////////////////////////////////
 
 void
-pcl::ihs::InHandScanner::drawFPS ()
+pcl::ihs::InHandScanner::drawText ()
 {
+  QPainter painter (this);
+  painter.setPen (Qt::white);
+  QFont font;
 
+  if (starting_grabber_)
+  {
+    font.setPointSize (this->width () / 20);
+    painter.setFont (font);
+    painter.drawText (0, 0, this->width (), this->height (), Qt::AlignHCenter | Qt::AlignVCenter, "Starting the grabber.\n Please wait.");
+  }
+  else
+  {
+    std::string vis_fps ("Visualization: "), comp_fps ("Computation: ");
+    {
+      boost::mutex::scoped_lock lock_ve (mutex_vis_events_);
+      boost::mutex::scoped_lock lock_ce (mutex_comp_events_);
+
+      vis_fps.append  (visualization_fps_.str ()).append (" fps");
+      comp_fps.append (computation_fps_.str   ()).append (" fps");
+    }
+
+    const std::string str = std::string (comp_fps).append ("\n").append (vis_fps);
+
+    font.setPointSize (this->width () / 50);
+
+    painter.setFont (font);
+    painter.drawText (0, 0, this->width (), this->height (), Qt::AlignBottom | Qt::AlignLeft, str.c_str ());
+  }
 }
 //{
 //  std::string vis_fps ("Visualization: "), comp_fps ("Computation: ");
@@ -898,6 +942,9 @@ pcl::ihs::InHandScanner::wheelEvent (QWheelEvent* event)
 void
 pcl::ihs::InHandScanner::keyPressEvent (QKeyEvent* event)
 {
+  // Don't allow keyboard callbacks when the grabber is starting up.
+  if (starting_grabber_) return;
+
   DisplayMode mode;
   {
     boost::mutex::scoped_lock lock_ve (mutex_vis_events_);

@@ -269,10 +269,8 @@ namespace pcl
         /** \see http://doc.qt.digia.com/qt/qwidget.html#paintEvent
           * \see http://doc.qt.digia.com/qt/opengl-overpainting.html
           */
-//        void
-//        paintEvent (QPaintEvent* event);
         void
-        paintGL ();
+        paintEvent (QPaintEvent* event);
 
         /** \brief Draw cloud if it is available. */
         void
@@ -282,9 +280,11 @@ namespace pcl
         void
         drawCropBox ();
 
-        /** \brief Draw the current framerate. */
+        /** \brief Draw text over the opengl scene.
+          * \see http://doc.qt.digia.com/qt/opengl-overpainting.html
+          */
         void
-        drawFPS ();
+        drawText ();
 
         /** \see http://doc.qt.digia.com/qt/qwidget.html#mousePressEvent */
         void
@@ -329,6 +329,9 @@ namespace pcl
 
         /** \brief Used to get new data from the sensor. */
         GrabberPtr grabber_;
+
+        /** \brief This variable is true if the grabber is starting. */
+        bool starting_grabber_;
 
         /** \brief Connection of the grabber signal with the data processing thread. */
         boost::signals2::connection new_data_connection_;
@@ -382,6 +385,9 @@ namespace pcl
 
         /** \brief Mouse y-position of the previous mouse move event. */
         int y_prev_;
+
+        /** \brief The application crashed if it was closed while starting the grabber. */
+        bool destructor_called_;
 
       public:
 
