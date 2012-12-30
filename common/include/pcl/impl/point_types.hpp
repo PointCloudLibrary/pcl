@@ -290,8 +290,7 @@ namespace pcl
 
     inline RGB ()
     {
-      r = g = b = 0;
-      a = 255;
+      r = g = b = a = 0;
     }
   };
   inline std::ostream&
@@ -486,8 +485,7 @@ namespace pcl
     {
       x = y = z = 0.0f;
       data[3] = 1.0f;
-      r = g = b = 0;
-      a = 255;
+      r = g = b = a = 0;
     }
     inline Eigen::Vector3i getRGBVector3i ()
     {
@@ -573,8 +571,7 @@ namespace pcl
     {
       x = y = z = 0.0f;
       data[3] = 1.0f;
-      r = g = b = 0;
-      a = 255;
+      r = g = b = a = 0;
     }
     inline PointXYZRGB (uint8_t _r, uint8_t _g, uint8_t _b)
     {
@@ -583,7 +580,7 @@ namespace pcl
       r = _r;
       g = _g;
       b = _b;
-      a = 255;
+      a = 0;
     }
 
     inline Eigen::Vector3i getRGBVector3i ()
@@ -624,7 +621,7 @@ namespace pcl
       x = y = z = 0.0f;
       data[3] = 1.0f;
       r = g = b = 0;
-      a = 255;
+      a = 0;
       label = 255;
     }
     inline PointXYZRGBL (uint8_t _r, uint8_t _g, uint8_t _b, uint32_t _label)
@@ -634,7 +631,7 @@ namespace pcl
       r = _r;
       g = _g;
       b = _b;
-      a = 255;
+      a = 0;
       label = _label;
     }
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
@@ -945,8 +942,7 @@ namespace pcl
     {
       x = y = z = 0.0f;
       data[3] = 1.0f;
-      r = g = b = 0;
-      a = 255;
+      r = g = b = a = 0;
       normal_x = normal_y = normal_z = data_n[3] = 0.0f;
       curvature = 0;
     }
