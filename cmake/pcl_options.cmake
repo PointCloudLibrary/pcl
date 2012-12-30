@@ -34,3 +34,7 @@ mark_as_advanced(PCL_ENABLE_SSE)
 option(CMAKE_TIMING_VERBOSE "Enable the display of timing information for each compiler instance." OFF)
 mark_as_advanced(CMAKE_TIMING_VERBOSE)
 
+# MSVC extra optimization options. Might lead to increasingly larger compile/link times.
+option(CMAKE_MSVC_CODE_LINK_OPTIMIZATION "Enable the /GL and /LTCG code and link optimization options for MSVC. Enabled by default." ON)
+mark_as_advanced(CMAKE_MSVC_CODE_LINK_OPTIMIZATION)
+
