@@ -721,6 +721,46 @@ TEST (PCL, PCDReaderWriter)
   EXPECT_FLOAT_EQ (cloud.points[nr_p - 1].intensity, last.intensity); // test for fromROSMsg ()
 }
 
+TEST (PCL, PCDReaderWriterASCIIColorPrecision)
+{
+  PointCloud<PointXYZRGB> cloud;
+  for (size_t r_i = 0; r_i < 256; r_i += 5)
+    for (size_t g_i = 0; g_i < 256; g_i += 5)
+      for (size_t b_i = 0; b_i < 256; b_i += 5)
+      {
+        PointXYZRGB p;
+        p.r = r_i;
+        p.g = g_i;
+        p.b = b_i;
+        p.x = p.y = p.z = 0.f;
+
+        cloud.push_back (p);
+      }
+  cloud.height = 1;
+  cloud.width = cloud.size ();
+  cloud.is_dense = true;
+
+  io::savePCDFile ("temp_binary_color.pcd", cloud, true);
+  PointCloud<PointXYZRGB> cloud_binary;
+  io::loadPCDFile ("temp_binary_color.pcd", cloud_binary);
+  for (size_t i = 0; i < cloud.size (); ++i)
+  {
+    EXPECT_EQ (cloud[i].r, cloud_binary[i].r);
+    EXPECT_EQ (cloud[i].g, cloud_binary[i].g);
+    EXPECT_EQ (cloud[i].b, cloud_binary[i].b);
+  }
+
+  io::savePCDFile ("temp_ascii_color.pcd", cloud, false);
+  PointCloud<PointXYZRGB> cloud_ascii;
+  io::loadPCDFile ("temp_ascii_color.pcd", cloud_ascii);
+  for (size_t i = 0; i < cloud.size (); ++i)
+  {
+    EXPECT_EQ (cloud[i].r, cloud_ascii[i].r);
+    EXPECT_EQ (cloud[i].g, cloud_ascii[i].g);
+    EXPECT_EQ (cloud[i].b, cloud_ascii[i].b);
+  }
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, ASCIIReader)
