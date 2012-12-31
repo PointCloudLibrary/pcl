@@ -232,9 +232,9 @@ TEST (PCL, Matrix4Affine3Transform)
 
   PointXYZ pt = pcl::transformPoint (p, affine);
 
-  EXPECT_FLOAT_EQ (pt.x, v3t.x ()); EXPECT_FLOAT_EQ (pt.x, v4t.x ());
-  EXPECT_FLOAT_EQ (pt.y, v3t.y ()); EXPECT_FLOAT_EQ (pt.y, v4t.y ());
-  EXPECT_FLOAT_EQ (pt.z, v3t.z ()); EXPECT_FLOAT_EQ (pt.z, v4t.z ());
+  EXPECT_NEAR (pt.x, v3t.x (), 1e-4); EXPECT_NEAR (pt.x, v4t.x (), 1e-4);
+  EXPECT_NEAR (pt.y, v3t.y (), 1e-4); EXPECT_NEAR (pt.y, v4t.y (), 1e-4);
+  EXPECT_NEAR (pt.z, v3t.z (), 1e-4); EXPECT_NEAR (pt.z, v4t.z (), 1e-4);
 
   PointCloud<PointXYZ> c, ct;
   c.push_back (p);
