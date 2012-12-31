@@ -1909,9 +1909,7 @@ TEST (ShadowPoints, Filters)
   }
 
   // Adding a shadow point
-  unsigned int N = static_cast<unsigned int> (input->points.size ());
-  PointXYZ pt = input->points[N];
-  pt.z = input->points[N].z + 0.1f;
+  PointXYZ pt (.0f, .0f, .1f);
   input->points.push_back (pt);
 
   input->width = 1;
