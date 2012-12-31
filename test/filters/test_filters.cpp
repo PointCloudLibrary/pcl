@@ -983,14 +983,13 @@ TEST (VoxelGridCovariance, Filters)
   EXPECT_EQ (int (output.height), 1);
   EXPECT_EQ (bool (output.is_dense), true);
 
+  EXPECT_NEAR (output.points[0].x, -0.073619894683361053, 1e-4);
+  EXPECT_NEAR (output.points[0].y,  0.16789889335632324,  1e-4);
+  EXPECT_NEAR (output.points[0].z, -0.03018110990524292,  1e-4);
 
-  EXPECT_NEAR (output.points[0].x, -0.064583674073219299, 1e-2);
-  EXPECT_NEAR (output.points[0].y,  0.04627450555562973,  1e-4);
-  EXPECT_NEAR (output.points[0].z,  0.011529932729899883, 1e-4);
-
-  EXPECT_NEAR (output.points[13].x, -0.0857542, 1e-4);
-  EXPECT_NEAR (output.points[13].y, 0.149493, 1e-4);
-  EXPECT_NEAR (output.points[13].z, 0.0286718, 1e-4);
+  EXPECT_NEAR (output.points[13].x, -0.06865914911031723, 1e-4);
+  EXPECT_NEAR (output.points[13].y,  0.15243285894393921, 1e-4);
+  EXPECT_NEAR (output.points[13].z,  0.03266800194978714, 1e-4);
 
   grid.setSaveLeafLayout (true);
   grid.filter (output);

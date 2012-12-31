@@ -302,7 +302,7 @@ namespace pcl
       inline LeafConstPtr
       getLeaf (int index)
       {
-        typename boost::unordered_map<size_t, Leaf>::iterator leaf_iter = leaves_.find (index);
+        typename std::map<size_t, Leaf>::iterator leaf_iter = leaves_.find (index);
         if (leaf_iter != leaves_.end ())
         {
           LeafConstPtr ret (&(leaf_iter->second));
@@ -328,7 +328,7 @@ namespace pcl
         int idx = ijk0 * divb_mul_[0] + ijk1 * divb_mul_[1] + ijk2 * divb_mul_[2];
 
         // Find leaf associated with index
-        typename boost::unordered_map<size_t, Leaf>::iterator leaf_iter = leaves_.find (idx);
+        typename std::map<size_t, Leaf>::iterator leaf_iter = leaves_.find (idx);
         if (leaf_iter != leaves_.end ())
         {
           // If such a leaf exists return the pointer to the leaf structure
@@ -355,7 +355,7 @@ namespace pcl
         int idx = ijk0 * divb_mul_[0] + ijk1 * divb_mul_[1] + ijk2 * divb_mul_[2];
 
         // Find leaf associated with index
-        typename boost::unordered_map<size_t, Leaf>::iterator leaf_iter = leaves_.find (idx);
+        typename std::map<size_t, Leaf>::iterator leaf_iter = leaves_.find (idx);
         if (leaf_iter != leaves_.end ())
         {
           // If such a leaf exists return the pointer to the leaf structure
@@ -379,7 +379,7 @@ namespace pcl
       /** \brief Get the leaf structure map
        * \return a map contataining all leaves
        */
-      inline const boost::unordered_map<size_t, Leaf>&
+      inline const std::map<size_t, Leaf>&
       getLeaves ()
       {
         return leaves_;
@@ -524,7 +524,7 @@ namespace pcl
       double min_covar_eigvalue_mult_;
 
       /** \brief Voxel structure containing all leaf nodes (includes voxels with less than a sufficient number of points). */
-      boost::unordered_map<size_t, Leaf> leaves_;
+      std::map<size_t, Leaf> leaves_;
 
       /** \brief Point cloud containing centroids of voxels containing atleast minimum number of points. */
       PointCloudPtr voxel_centroids_;

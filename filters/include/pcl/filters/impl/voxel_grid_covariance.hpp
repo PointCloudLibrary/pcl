@@ -221,7 +221,7 @@ pcl::VoxelGridCovariance<PointT>::applyFilter (PointCloud &output)
       // Compute the centroid leaf index
       int idx = ijk0 * divb_mul_[0] + ijk1 * divb_mul_[1] + ijk2 * divb_mul_[2];
 
-      //int idx = (((input_->points[cp].getArray4fMap () * inverse_leaf_size_).template cast<int> ()).matrix () - min_b_).dot (divb_mul_);
+      //int idx = (((input_->points[cp].getArray4fmap () * inverse_leaf_size_).template cast<int> ()).matrix () - min_b_).dot (divb_mul_);
       Leaf& leaf = leaves_[idx];
       if (leaf.nr_points == 0)
       {
@@ -278,7 +278,7 @@ pcl::VoxelGridCovariance<PointT>::applyFilter (PointCloud &output)
   // Eigen values less than a threshold of max eigen value are inflated to a set fraction of the max eigen value.
   double min_covar_eigvalue;
 
-  for (typename boost::unordered_map<size_t, Leaf>::iterator it = leaves_.begin (); it != leaves_.end (); ++it)
+  for (typename std::map<size_t, Leaf>::iterator it = leaves_.begin (); it != leaves_.end (); ++it)
   {
 
     // Normalize the centroid
@@ -391,7 +391,7 @@ pcl::VoxelGridCovariance<PointT>::getNeighborhoodAtPoint (const PointT& referenc
     // Checking if the specified cell is in the grid
     if ((diff2min <= displacement.array ()).all () && (diff2max >= displacement.array ()).all ())
     {
-      typename boost::unordered_map<size_t, Leaf>::iterator leaf_iter = leaves_.find (((ijk + displacement - min_b_).dot (divb_mul_)));
+      typename std::map<size_t, Leaf>::iterator leaf_iter = leaves_.find (((ijk + displacement - min_b_).dot (divb_mul_)));
       if (leaf_iter != leaves_.end () && leaf_iter->second.nr_points >= min_points_per_voxel_)
       {
         LeafConstPtr leaf = &(leaf_iter->second);
@@ -421,7 +421,7 @@ pcl::VoxelGridCovariance<PointT>::getDisplayCloud (pcl::PointCloud<PointXYZ>& ce
   Eigen::Vector3d dist_point;
 
   // Generate points for each occupied voxel with sufficient points.
-  for (typename boost::unordered_map<size_t, Leaf>::iterator it = leaves_.begin (); it != leaves_.end (); ++it)
+  for (typename std::map<size_t, Leaf>::iterator it = leaves_.begin (); it != leaves_.end (); ++it)
   {
     Leaf& leaf = it->second;
 
