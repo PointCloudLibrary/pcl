@@ -2,12 +2,12 @@ set(SUBSYS_NAME 2d)
 set(SUBSYS_DESC "Point cloud 2d")
 set(SUBSYS_DEPS common io filters)
 
+set(build TRUE)
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
 PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS vtk)
 
 PCL_ADD_DOC(${SUBSYS_NAME})
 
-set(build TRUE)
 if(build)
 
     set(srcs
