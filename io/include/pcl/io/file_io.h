@@ -327,7 +327,8 @@ namespace pcl
     {
       std::istringstream is (st);
       is.imbue (std::locale::classic ());
-      is >> value;
+      if (!(is >> value))
+        value = static_cast<Type> (atof (st.c_str ()));
     }
 
     memcpy (&cloud.data[point_index * cloud.point_step + 
@@ -350,7 +351,9 @@ namespace pcl
       int val;
       std::istringstream is (st);
       is.imbue (std::locale::classic ());
-      is >> val;
+      //is >> val;  -- unfortunately this fails on older GCC versions and CLANG on MacOS
+      if (!(is >> val))
+        val = static_cast<int> (atof (st.c_str ()));
       value = static_cast<int8_t> (val);
     }
 
@@ -374,7 +377,9 @@ namespace pcl
       int val;
       std::istringstream is (st);
       is.imbue (std::locale::classic ());
-      is >> val;
+      //is >> val;  -- unfortunately this fails on older GCC versions and CLANG on MacOS
+      if (!(is >> val))
+        val = static_cast<int> (atof (st.c_str ()));
       value = static_cast<uint8_t> (val);
     }
 
