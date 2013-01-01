@@ -74,7 +74,7 @@ printHelp (int, char **argv)
   print_value ("%f", default_std_dev_mul); print_info (")\n");
   print_info ("                     -inliers X = (StatisticalOutlierRemoval only) decides whether the inliers should be returned (1), or the outliers (0). (default: ");
   print_value ("%d", default_negative); print_info (")\n");
-  print_info ("                     -keep_organized");
+  print_info ("                     -keep_organized = keep the filtered points in organized format.\n");
 }
 
 bool
@@ -102,9 +102,12 @@ compute (const sensor_msgs::PointCloud2::ConstPtr &input, sensor_msgs::PointClou
   PointCloud<PointXYZ>::Ptr xyz_cloud_pre (new pcl::PointCloud<PointXYZ> ()),
       xyz_cloud (new pcl::PointCloud<PointXYZ> ());
   fromROSMsg (*input, *xyz_cloud_pre);
-  
-  //std::vector<int> index_vector;
-  //removeNaNFromPointCloud<PointXYZ> (*xyz_cloud_pre, *xyz_cloud, index_vector);
+
+  if (!keep_organized)
+  {
+    std::vector<int> index_vector;
+    removeNaNFromPointCloud<PointXYZ> (*xyz_cloud_pre, *xyz_cloud, index_vector);
+  }
 
   xyz_cloud = xyz_cloud_pre;
       
@@ -194,8 +197,6 @@ main (int argc, char** argv)
   parse_argument (argc, argv, "-std_dev_mul", std_dev_mul);
   parse_argument (argc, argv, "-inliers", negative);
   bool keep_organized = find_switch (argc, argv, "-keep_organized");
-  
-  
 
   // Load the first file
   sensor_msgs::PointCloud2::Ptr cloud (new sensor_msgs::PointCloud2);
