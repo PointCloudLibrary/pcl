@@ -44,11 +44,11 @@
 #include <boost/array.hpp>
 #include <boost/bind.hpp>
 #include <boost/math/special_functions.hpp>
-#ifdef USE_PCAP
+#ifdef HAVE_PCAP
 #include <pcap.h>
-#endif // #ifdef USE_PCAP
+#endif // #ifdef HAVE_PCAP
 
-const boost::asio::ip::address pcl::HDLGrabber::DEFAULT_NETWORK_ADDRESS = boost::asio::ip::address::from_string ("192.168.3.255");
+const boost::asio::ip::address pcl::HDLGrabber::HDL_DEFAULT_NETWORK_ADDRESS = boost::asio::ip::address::from_string ("192.168.3.255");
 double *pcl::HDLGrabber::cos_lookup_table_ = NULL;
 double *pcl::HDLGrabber::sin_lookup_table_ = NULL;
 
@@ -58,9 +58,10 @@ using boost::asio::ip::udp;
 pcl::HDLGrabber::HDLGrabber (const std::string& correctionsFile,
                              const std::string& pcapFile) 
   : hdl_data_ ()
-  , udp_listener_endpoint_ (DEFAULT_NETWORK_ADDRESS, DATA_PORT)
+  , udp_listener_endpoint_ (HDL_DEFAULT_NETWORK_ADDRESS, HDL_DATA_PORT)
   , source_address_filter_ ()
   , source_port_filter_ (443)
+  , hdl_read_socket_service_ ()
   , hdl_read_socket_ (NULL)
   , pcap_file_name_ (pcapFile)
   , queue_consumer_thread_ (NULL)
@@ -90,6 +91,7 @@ pcl::HDLGrabber::HDLGrabber (const boost::asio::ip::address& ipAddress,
   , udp_listener_endpoint_ (ipAddress, port)
   , source_address_filter_ ()
   , source_port_filter_ (443)
+  , hdl_read_socket_service_ ()
   , hdl_read_socket_ (NULL)
   , pcap_file_name_ ()
   , queue_consumer_thread_ (NULL)
@@ -203,7 +205,7 @@ pcl::HDLGrabber::loadCorrectionsFile (const std::string& correctionsFile)
   {
     read_xml (correctionsFile, pt, boost::property_tree::xml_parser::trim_whitespace);
   }
-  catch (boost::exception const& ex)
+  catch (boost::exception const&)
   {
     PCL_ERROR ("[pcl::HDLGrabber::loadCorrectionsFile] Error reading calibration file %s!\n", correctionsFile.c_str ());
     return;
@@ -456,22 +458,27 @@ pcl::HDLGrabber::start ()
   {
     try
     {
-      boost::asio::io_service io_service;
-      hdl_read_socket_ = new udp::socket (io_service, udp_listener_endpoint_);
-      io_service.run ();
+      try {
+		  hdl_read_socket_ = new udp::socket (hdl_read_socket_service_, udp_listener_endpoint_);
+	  }
+	  catch (std::exception bind) {
+		  delete hdl_read_socket_;
+		  hdl_read_socket_ = new udp::socket (hdl_read_socket_service_, udp::endpoint(boost::asio::ip::address_v4::any(), udp_listener_endpoint_.port()));
+	  }
+      hdl_read_socket_service_.run ();
     }
     catch (std::exception &e)
     {
-      PCL_ERROR ("[pcl::HDLGrabber::start] Unable to bind to socket!\n");
-      return;
+		PCL_ERROR ("[pcl::HDLGrabber::start] Unable to bind to socket! %s\n", e.what());
+        return;
     }
     hdl_read_packet_thread_ = new boost::thread (boost::bind (&HDLGrabber::readPacketsFromSocket, this));
   }
   else
   {
-#ifdef USE_PCAP
+#ifdef HAVE_PCAP
     hdl_read_packet_thread_ = new boost::thread(boost::bind(&HDLGrabber::readPacketsFromPcap, this));
-#endif // #ifdef USE_PCAP
+#endif // #ifdef HAVE_PCAP
   }
 }
 
@@ -507,8 +514,8 @@ pcl::HDLGrabber::stop ()
 bool
 pcl::HDLGrabber::isRunning () const
 {
-  return (hdl_read_packet_thread_ != NULL && 
-         !hdl_read_packet_thread_->timed_join (boost::posix_time::milliseconds (10)));
+	return (!hdl_data_.isEmpty() || (hdl_read_packet_thread_ != NULL && 
+         !hdl_read_packet_thread_->timed_join (boost::posix_time::milliseconds (10))));
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -566,23 +573,20 @@ pcl::HDLGrabber::readPacketsFromSocket ()
   unsigned char data[1500];
   udp::endpoint sender_endpoint;
 
-  while (!terminate_read_packet_thread_)
+  while (!terminate_read_packet_thread_ && hdl_read_socket_->is_open())
   {
     size_t length = hdl_read_socket_->receive_from (boost::asio::buffer (data, 1500), sender_endpoint);
 
     if (isAddressUnspecified (source_address_filter_) || 
         (source_address_filter_ == sender_endpoint.address () && source_port_filter_ == sender_endpoint.port ()))
+	{
       enqueueHDLPacket (data, length);
-    else
-    {
-      std::cout << "-";
-      std::flush (std::cout);
-    }
+	}
   }
 }
 
 /////////////////////////////////////////////////////////////////////////////
-#ifdef USE_PCAP
+#ifdef HAVE_PCAP
 void
 pcl::HDLGrabber::readPacketsFromPcap ()
 {
@@ -644,5 +648,5 @@ pcl::HDLGrabber::readPacketsFromPcap ()
     returnValue = pcap_next_ex(pcap, &header, &data);
   }
 }
-#endif //#ifdef USE_PCAP
+#endif //#ifdef HAVE_PCAP
 

@@ -43,7 +43,11 @@
 # PCAP_INCLUDE_DIRS - where to find pcap.h, etc.
 # PCAP_LIBRARIES - List of libraries when using pcap.
 # PCAP_FOUND - True if pcap found.
-
+if(WIN32)
+  set(_PCAP_LIBRARY_NAME wpcap)
+else(WIN32)
+  set(_PCAP_LIBRARY_NAME pcap)
+endif(WIN32)
 
 IF(EXISTS $ENV{PCAPDIR})
 FIND_PATH(PCAP_INCLUDE_DIR
@@ -57,7 +61,7 @@ NO_DEFAULT_PATH
 
 FIND_LIBRARY(PCAP_LIBRARY
 NAMES
-pcap
+${_PCAP_LIBRARY_NAME}
 PATHS
 $ENV{PCAPDIR}
 NO_DEFAULT_PATH
@@ -73,7 +77,7 @@ pcap.h
 
 FIND_LIBRARY(PCAP_LIBRARY
 NAMES
-pcap
+${_PCAP_LIBRARY_NAME}
 )
 
 ENDIF(EXISTS $ENV{PCAPDIR})

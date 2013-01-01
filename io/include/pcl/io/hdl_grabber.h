@@ -144,12 +144,12 @@ namespace pcl
       void setLaserColorRGB (const pcl::RGB& color, unsigned int laserNumber);
 
     protected:
-      static const int DATA_PORT = 2368;
+      static const int HDL_DATA_PORT = 2368;
       static const int HDL_NUM_ROT_ANGLES = 36000;
       static const int HDL_LASER_PER_FIRING = 32;
       static const int HDL_MAX_NUM_LASERS = 64;
       static const int HDL_FIRING_PER_PKT = 12;
-      static const boost::asio::ip::address DEFAULT_NETWORK_ADDRESS;
+      static const boost::asio::ip::address HDL_DEFAULT_NETWORK_ADDRESS;
 
       enum HDLBlock
       {
@@ -199,6 +199,7 @@ namespace pcl
       boost::asio::ip::udp::endpoint udp_listener_endpoint_;
       boost::asio::ip::address source_address_filter_;
       unsigned short source_port_filter_;
+	  boost::asio::io_service hdl_read_socket_service_;
       boost::asio::ip::udp::socket *hdl_read_socket_;
       std::string pcap_file_name_;
       boost::thread *queue_consumer_thread_;
@@ -227,9 +228,9 @@ namespace pcl
       void loadCorrectionsFile (const std::string& correctionsFile);
       void loadHDL32Corrections ();
       void readPacketsFromSocket ();
-#ifdef USE_PCAP
+#ifdef HAVE_PCAP
       void readPacketsFromPcap();
-#endif //#ifdef USE_PCAP
+#endif //#ifdef HAVE_PCAP
       void toPointClouds (HDLDataPacket *dataPacket);
       void fireCurrentSweep ();
       void fireCurrentScan (const unsigned short startAngle,

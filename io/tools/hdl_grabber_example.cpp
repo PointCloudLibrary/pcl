@@ -59,7 +59,7 @@ public:
 				&SimpleHDLGrabber::sweepScan, this, _1);
 		boost::signals2::connection c2 = interface.registerCallback(f2);
 
-		interface.filterPackets(boost::asio::ip::address_v4::from_string("192.168.18.38"));
+		//interface.filterPackets(boost::asio::ip::address_v4::from_string("192.168.18.38"));
 
 		// start receiving point clouds
 		interface.start();

@@ -121,7 +121,7 @@ if(build)
     endif(PNG_FOUND)
 
 	if(PCAP_FOUND)
-	  set(PCAP_DEFINES -DUSE_PCAP)
+	  set(PCAP_DEFINES -DHAVE_PCAP)
           include_directories(${PCAP_INCLUDE_DIRS})
 	  add_definitions(${PCAP_DEFINES})
 	endif(PCAP_FOUND)
