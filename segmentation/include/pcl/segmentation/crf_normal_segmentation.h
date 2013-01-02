@@ -32,17 +32,17 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * Author : Christian Potthast
- * Email  : potthast@usc.edu
- *
  */
 
 #ifndef PCL_CRF_NORMAL_SEGMENTATION_H_
 #define PCL_CRF_NORMAL_SEGMENTATION_H_
 
+#include <pcl/point_cloud.h>
+
 namespace pcl
 {
   /** \brief
+    * \author Christian Potthast
     * 
     */
   template <typename PointT>

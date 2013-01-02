@@ -40,13 +40,10 @@
 #ifndef PCL_UNARY_CLASSIFIER_HPP_
 #define PCL_UNARY_CLASSIFIER_HPP_
 
+#include <Eigen/Core>
 #include <pcl/segmentation/unary_classifier.h>
-
 #include <pcl/common/io.h>
-
-//#include <stdio.h>
-//#include <stdlib.h>
-//#include <time.h>
+#include <pcl/kdtree/flann.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
