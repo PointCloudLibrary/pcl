@@ -43,6 +43,7 @@
 
 #include <pcl/common/eigen.h>
 #include <pcl/filters/covariance_sampling.h>
+#include <list>
 
 ///////////////////////////////////////////////////////////////////////////////
 template<typename PointT, typename PointNT> bool
