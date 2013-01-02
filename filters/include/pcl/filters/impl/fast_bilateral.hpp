@@ -2,7 +2,6 @@
  * Software License Agreement (BSD License)
  *
  * Point Cloud Library (PCL) - www.pointclouds.org
- * Copyright (c) 2009-2012, Willow Garage, Inc.
  * Copyright (c) 2012-, Open Perception, Inc.
  * Copyright (c) 2004, Sylvain Paris and Francois Sillion
 
@@ -38,8 +37,8 @@
  * $Id$
  *
  */
-#ifndef FAST_BILATERAL_HPP_
-#define FAST_BILATERAL_HPP_
+#ifndef PCL_FILTERS_IMPL_FAST_BILATERAL_HPP_
+#define PCL_FILTERS_IMPL_FAST_BILATERAL_HPP_
 
 #include <pcl/filters/fast_bilateral.h>
 #include <pcl/common/io.h>
@@ -206,4 +205,4 @@ pcl::FastBilateralFilter<PointT>::Array3D::trilinear_interpolation (const float 
       x_alpha        * y_alpha        * z_alpha        * (*this)(xx_index, yy_index, zz_index);
 }
 
-#endif /* FAST_BILATERAL_HPP_ */
+#endif /* PCL_FILTERS_IMPL_FAST_BILATERAL_HPP_ */
