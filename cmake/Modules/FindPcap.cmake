@@ -1,6 +1,7 @@
 ###################################################################
 #
 # Copyright (c) 2006 Frederic Heem, <frederic.heem@telsey.it>
+# Copyright (c) 2012 Keven Ring
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -40,9 +41,13 @@
 # The environment variable PCAPDIR allows to specficy where to find
 # libpcap in non standard location.
 #
+# 2012/01/02 - KEVEN RING
+#              Modified to find include/libs for WinPCAP
+#
 # PCAP_INCLUDE_DIRS - where to find pcap.h, etc.
 # PCAP_LIBRARIES - List of libraries when using pcap.
 # PCAP_FOUND - True if pcap found.
+
 if(WIN32)
   set(_PCAP_LIBRARY_NAME wpcap)
 else(WIN32)
@@ -56,6 +61,8 @@ pcap/pcap.h
 pcap.h
 PATHS
 $ENV{PCAPDIR}
+PATHS
+$ENV{PCAPDIR}/include
 NO_DEFAULT_PATH
 )
 
@@ -64,9 +71,10 @@ NAMES
 ${_PCAP_LIBRARY_NAME}
 PATHS
 $ENV{PCAPDIR}
+PATHS
+$ENV{PCAPDIR}/lib
 NO_DEFAULT_PATH
 )
-
 
 ELSE(EXISTS $ENV{PCAPDIR})
 FIND_PATH(PCAP_INCLUDE_DIR
