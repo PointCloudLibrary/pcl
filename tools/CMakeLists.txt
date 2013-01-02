@@ -61,7 +61,7 @@ if (build)
   target_link_libraries (pcl_extract_feature pcl_common pcl_io pcl_features pcl_kdtree)
   
   PCL_ADD_EXECUTABLE (pcl_compute_cloud_error ${SUBSYS_NAME} compute_cloud_error.cpp)
-  target_link_libraries (pcl_compute_cloud_error pcl_common pcl_io pcl_kdtree)
+  target_link_libraries (pcl_compute_cloud_error pcl_common pcl_io pcl_kdtree pcl_search)
 
   PCL_ADD_EXECUTABLE (pcl_train_unary_classifier ${SUBSYS_NAME} train_unary_classifier.cpp)
   target_link_libraries (pcl_train_unary_classifier pcl_common pcl_io pcl_segmentation)
