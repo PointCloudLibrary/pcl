@@ -38,7 +38,12 @@
 #ifndef PCL_OCTREE_POINTCLOUD_SUPERVOXEL_HPP_
 #define PCL_OCTREE_POINTCLOUD_SUPERVOXEL_HPP_
 
+#ifdef __GNUC__
+#pragma GCC system_header 
+#endif
+
 #include <pcl/octree/octree_pointcloud_supervoxel.h>
+#include <boost/make_shared.hpp>
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT, typename LeafContainerT, typename BranchContainerT> 

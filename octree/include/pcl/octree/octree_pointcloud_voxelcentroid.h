@@ -45,7 +45,9 @@
 #include "octree2buf_base.h"
 #include "octree_container.h"
 
-#include "pcl/common/point_operators.h"
+#include <pcl/common/point_operators.h>
+#include <pcl/point_types.h>
+#include <pcl/ros/register_point_struct.h>
 
 namespace pcl
 {
