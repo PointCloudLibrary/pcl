@@ -3,6 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2012, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -16,7 +17,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -40,13 +41,21 @@
 #ifndef PCL_KDTREE_KDTREE_FLANN_H_
 #define PCL_KDTREE_KDTREE_FLANN_H_
 
-#include <cstdio>
-#include <pcl/point_representation.h>
 #include <pcl/kdtree/kdtree.h>
-#include <pcl/kdtree/flann.h>
+
+// Forward declarations
+namespace flann
+{
+  class SearchParams;
+  template <typename T> class L2_Simple;
+  template <typename T> class Index;
+}
 
 namespace pcl
 {
+  // Forward declarations
+  template <typename T> class PointRepresentation;
+
   /** \brief KdTreeFLANN is a generic type of 3D spatial locator using kD-tree structures. The class is making use of
     * the FLANN (Fast Library for Approximate Nearest Neighbor) project by Marius Muja and David Lowe.
     *
@@ -82,29 +91,12 @@ namespace pcl
         *
         * By setting sorted to false, the \ref radiusSearch operations will be faster.
         */
-      KdTreeFLANN (bool sorted = true) : 
-        pcl::KdTree<PointT> (sorted), 
-        flann_index_ (NULL), cloud_ (NULL), 
-        index_mapping_ (), identity_mapping_ (false),
-        dim_ (0), total_nr_points_ (0),
-        param_k_ (::flann::SearchParams (-1 , epsilon_)),
-        param_radius_ (::flann::SearchParams (-1, epsilon_, sorted))
-      {
-      }
+      KdTreeFLANN (bool sorted = true);
 
       /** \brief Copy constructor
         * \param[in] tree the tree to copy into this
         */
-      KdTreeFLANN (const KdTreeFLANN<PointT> &k) : 
-        pcl::KdTree<PointT> (false), 
-        flann_index_ (NULL), cloud_ (NULL), 
-        index_mapping_ (), identity_mapping_ (false),
-        dim_ (0), total_nr_points_ (0),
-        param_k_ (::flann::SearchParams (-1 , epsilon_)),
-        param_radius_ (::flann::SearchParams (-1, epsilon_, false))
-      {
-        *this = k;
-      }
+      KdTreeFLANN (const KdTreeFLANN<PointT> &k);
 
       /** \brief Copy operator
         * \param[in] tree the tree to copy into this
@@ -127,21 +119,11 @@ namespace pcl
       /** \brief Set the search epsilon precision (error bound) for nearest neighbors searches.
         * \param[in] eps precision (error bound) for nearest neighbors searches
         */
-      inline void
-      setEpsilon (float eps)
-      {
-        epsilon_ = eps;
-        param_k_ = ::flann::SearchParams (-1 , epsilon_);
-        param_radius_ = ::flann::SearchParams (-1 , epsilon_, sorted_);
-      }
+      void
+      setEpsilon (float eps);
 
-      inline void 
-      setSortedResults (bool sorted)
-      {
-        sorted_ = sorted;
-        param_k_ = ::flann::SearchParams (-1, epsilon_);
-        param_radius_ = ::flann::SearchParams (-1, epsilon_, sorted_);
-      }
+      void 
+      setSortedResults (bool sorted);
       
       inline Ptr makeShared () { return Ptr (new KdTreeFLANN<PointT> (*this)); } 
 
@@ -224,7 +206,7 @@ namespace pcl
       getName () const { return ("KdTreeFLANN"); }
 
       /** \brief A FLANN index object. */
-      FLANNIndex* flann_index_;
+      boost::shared_ptr<FLANNIndex> flann_index_;
 
       /** \brief Internal pointer to data. */
       float* cloud_;
@@ -242,10 +224,10 @@ namespace pcl
       int total_nr_points_;
 
       /** \brief The KdTree search parameters for K-nearest neighbors. */
-      ::flann::SearchParams param_k_;
+      boost::shared_ptr<flann::SearchParams> param_k_;
 
       /** \brief The KdTree search parameters for radius search. */
-      ::flann::SearchParams param_radius_;
+      boost::shared_ptr<flann::SearchParams> param_radius_;
   };
 }
 
