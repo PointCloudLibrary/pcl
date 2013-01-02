@@ -41,6 +41,7 @@
 #ifndef PCL_FILTERS_IMPL_COVARIANCE_SAMPLING_H_
 #define PCL_FILTERS_IMPL_COVARIANCE_SAMPLING_H_
 
+#include <pcl/common/eigen.h>
 #include <pcl/filters/covariance_sampling.h>
 
 ///////////////////////////////////////////////////////////////////////////////

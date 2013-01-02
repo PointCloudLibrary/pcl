@@ -40,7 +40,7 @@
 
 #include <iostream>
 #include <vector>
-
+#include <pcl/common/eigen.h>
 #include <pcl/filters/sampling_surface_normal.h>
 
 ///////////////////////////////////////////////////////////////////////////////

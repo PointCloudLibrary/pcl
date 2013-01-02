@@ -41,6 +41,7 @@
 #define PCL_FILTERS_CONVOLUTION_IMPL_HPP
 
 #include <pcl/pcl_config.h>
+#include <pcl/common/distances.h>
 
 template <typename PointIn, typename PointOut>
 pcl::filters::Convolution<PointIn, PointOut>::Convolution ()
