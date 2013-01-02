@@ -129,7 +129,6 @@ namespace pcl
     private:
 
       /** \brief ... */
-      //boost::multi_array<int, 3> lut_;
       std::vector<std::vector<std::vector<int> > > lut_;
       
       /** \brief ... */

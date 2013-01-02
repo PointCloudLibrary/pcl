@@ -111,7 +111,6 @@ if(build)
         src/crh.cpp
         src/don.cpp
         src/fpfh.cpp
-        src/fpfh_omp.cpp
         src/gfpfh.cpp
         src/integral_image_normal.cpp
         src/intensity_gradient.cpp
@@ -120,19 +119,13 @@ if(build)
         src/moment_invariants.cpp
         src/multiscale_feature_persistence.cpp
         src/narf.cpp
-        src/narf_descriptor.cpp
         src/normal_3d.cpp
-        src/normal_3d_omp.cpp
         src/normal_based_signature.cpp
         src/organized_edge_detection.cpp
         src/pfh.cpp
-        src/pfhrgb.cpp
         src/ppf.cpp
-        src/ppfrgb.cpp
         src/shot.cpp
-        src/shot_omp.cpp
         src/shot_lrf.cpp
-        src/shot_lrf_omp.cpp
         src/spin_image.cpp
         src/principal_curvatures.cpp
         src/rift.cpp
@@ -143,7 +136,7 @@ if(build)
         src/3dsc.cpp
         src/usc.cpp
         src/range_image_border_extractor.cpp
-        )
+       )
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
     PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${impl_incs})

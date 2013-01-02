@@ -42,7 +42,7 @@
 #define PCL_FEATURES_IMPL_FPFH_H_
 
 #include <pcl/features/fpfh.h>
-#include <pcl/features/pfh.h>
+#include <pcl/features/pfh_tools.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT, typename PointOutT> bool

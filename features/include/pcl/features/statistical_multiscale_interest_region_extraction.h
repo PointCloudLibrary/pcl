@@ -41,9 +41,7 @@
 #define STATISTICAL_MULTISCALE_INTEREST_REGION_EXTRACTION_H_
 
 #include <pcl/pcl_base.h>
-#include <pcl/point_types.h>
 #include <list>
-
 
 namespace pcl
 {

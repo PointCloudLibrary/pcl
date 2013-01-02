@@ -34,8 +34,6 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- *  $Id$
- *
  */
 
 #ifndef PCL_FEATURES_IMPL_3DSC_HPP_
@@ -275,21 +273,6 @@ pcl::ShapeContext3DEstimation<PointInT, PointNT, PointOutT>::computePoint (
   memset (rf, 0, sizeof (rf[0]) * 9);
   return (true);
 }
-/*
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointInT, typename PointNT, typename PointOutT> void
-pcl::ShapeContext3DEstimation<PointInT, PointNT, PointOutT>::shiftAlongAzimuth (
-    size_t block_size, std::vector<float>& desc)
-{
-  assert (desc.size () == descriptor_length_);
-  // L rotations for each descriptor
-  desc.resize (descriptor_length_ * azimuth_bins_);
-  // Create L azimuth rotated descriptors from reference descriptor
-  // The descriptor_length_ first ones are the same so start at 1
-  for (size_t l = 1; l < azimuth_bins_; l++)
-    for (size_t bin = 0; bin < descriptor_length_; bin++)
-      desc[(l * descriptor_length_) + bin] = desc[(l*block_size + bin) % descriptor_length_];
-}*/
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT, typename PointOutT> void

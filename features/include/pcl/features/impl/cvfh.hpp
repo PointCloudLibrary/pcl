@@ -42,7 +42,7 @@
 #define PCL_FEATURES_IMPL_CVFH_H_
 
 #include <pcl/features/cvfh.h>
-#include <pcl/features/pfh.h>
+#include <pcl/features/pfh_tools.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointInT, typename PointNT, typename PointOutT> void

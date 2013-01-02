@@ -35,10 +35,10 @@
  *
  *
  */
-#include <pcl/point_types.h>
-#include <pcl/impl/instantiate.hpp>
-#include <pcl/features/brisk_2d.h>
-#include <pcl/features/impl/brisk_2d.hpp>
+//#include <pcl/point_types.h>
+//#include <pcl/impl/instantiate.hpp>
+//#include <pcl/features/brisk_2d.h>
+//#include <pcl/features/impl/brisk_2d.hpp>
 
 // Instantiations of specific point types
 

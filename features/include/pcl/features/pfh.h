@@ -43,31 +43,11 @@
 
 #include <pcl/point_types.h>
 #include <pcl/features/feature.h>
+#include <pcl/features/pfh_tools.h>
 #include <map>
 
 namespace pcl
 {
-  /** \brief Compute the 4-tuple representation containing the three angles and one distance between two points
-    * represented by Cartesian coordinates and normals.
-    * \note For explanations about the features, please see the literature mentioned above (the order of the
-    * features might be different).
-    * \param[in] p1 the first XYZ point
-    * \param[in] n1 the first surface normal
-    * \param[in] p2 the second XYZ point
-    * \param[in] n2 the second surface normal
-    * \param[out] f1 the first angular feature (angle between the projection of nq_idx and u)
-    * \param[out] f2 the second angular feature (angle between nq_idx and v)
-    * \param[out] f3 the third angular feature (angle between np_idx and |p_idx - q_idx|)
-    * \param[out] f4 the distance feature (p_idx - q_idx)
-    *
-    * \note For efficiency reasons, we assume that the point data passed to the method is finite.
-    * \ingroup features
-    */
-  PCL_EXPORTS bool 
-  computePairFeatures (const Eigen::Vector4f &p1, const Eigen::Vector4f &n1, 
-                       const Eigen::Vector4f &p2, const Eigen::Vector4f &n2, 
-                       float &f1, float &f2, float &f3, float &f4);
-
   /** \brief PFHEstimation estimates the Point Feature Histogram (PFH) descriptor for a given point cloud dataset
     * containing points and normals.
     *

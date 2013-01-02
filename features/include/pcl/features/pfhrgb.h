@@ -41,15 +41,10 @@
 #define PCL_PFHRGB_H_
 
 #include <pcl/features/feature.h>
+#include <pcl/features/pfh_tools.h>
 
 namespace pcl
 {
-  PCL_EXPORTS bool
-  computeRGBPairFeatures (const Eigen::Vector4f &p1, const Eigen::Vector4f &n1, const Eigen::Vector4i &colors1,
-                          const Eigen::Vector4f &p2, const Eigen::Vector4f &n2, const Eigen::Vector4i &colors2,
-                          float &f1, float &f2, float &f3, float &f4, float &f5, float &f6, float &f7);
-
-
   template <typename PointInT, typename PointNT, typename PointOutT = pcl::PFHRGBSignature250>
   class PFHRGBEstimation : public FeatureFromNormals<PointInT, PointNT, PointOutT>
   {

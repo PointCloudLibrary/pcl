@@ -42,9 +42,10 @@
 #define PCL_FEATURES_IMPL_OURCVFH_H_
 
 #include <pcl/features/our_cvfh.h>
-#include <pcl/features/pfh.h>
+#include <pcl/features/pfh_tools.h>
 #include <pcl/common/transforms.h>
 
+//////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointInT, typename PointNT, typename PointOutT> void
 pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::compute (PointCloudOut &output)
 {
@@ -367,9 +368,10 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::sgurf (Eigen::Vector3f & c
   return true;
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointInT, typename PointNT, typename PointOutT> void
 pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::computeRFAndShapeDistribution (PointInTPtr & processed, PointCloudOut & output,
-                                                                                       std::vector<pcl::PointIndices> & cluster_indices)
+                                                                                     std::vector<pcl::PointIndices> & cluster_indices)
 {
   PointCloudOut ourcvfh_output;
   for (size_t i = 0; i < centroids_dominant_orientations_.size (); i++)
