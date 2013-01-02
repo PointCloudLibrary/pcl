@@ -44,6 +44,7 @@
 #include <pcl/sample_consensus/sac_model_registration.h>
 #include <pcl/common/point_operators.h>
 #include <pcl/common/eigen.h>
+#include <pcl/point_types.h>
 
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool

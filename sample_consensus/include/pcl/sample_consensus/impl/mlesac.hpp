@@ -42,6 +42,7 @@
 #define PCL_SAMPLE_CONSENSUS_IMPL_MLESAC_H_
 
 #include <pcl/sample_consensus/mlesac.h>
+#include <pcl/point_types.h>
 
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool
