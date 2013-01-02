@@ -48,6 +48,7 @@
 #include <string>
 #include <exception>
 
+#include <pcl/common/common.h>
 #include <pcl/visualization/common/common.h>
 #include <pcl/outofcore/octree_base_node.h>
 #include <pcl/filters/random_sample.h>
