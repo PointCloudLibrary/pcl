@@ -42,11 +42,11 @@
 #define PCL_SAMPLE_CONSENSUS_MODEL_REGISTRATION_H_
 
 #include <pcl/sample_consensus/eigen.h>
-#include <pcl/sample_consensus/boost.h>
 #include <pcl/sample_consensus/sac_model.h>
 #include <pcl/sample_consensus/model_types.h>
 #include <pcl/common/eigen.h>
 #include <pcl/common/centroid.h>
+#include <map>
 
 namespace pcl
 {
@@ -319,7 +319,7 @@ namespace pcl
       boost::shared_ptr <std::vector<int> > indices_tgt_;
 
       /** \brief Given the index in the original point cloud, give the matching original index in the target cloud */
-      boost::unordered_map<int, int> correspondences_;
+      std::map<int, int> correspondences_;
 
       /** \brief Internal distance threshold used for the sample selection step. */
       double sample_dist_thresh_;

@@ -41,7 +41,11 @@
 #ifndef PCL_SAMPLE_CONSENSUS_IMPL_PROSAC_H_
 #define PCL_SAMPLE_CONSENSUS_IMPL_PROSAC_H_
 
-#include <pcl/sample_consensus/boost.h>
+#if defined __GNUC__
+#  pragma GCC system_header 
+#endif
+
+#include <boost/math/distributions/binomial.hpp>
 #include <pcl/sample_consensus/prosac.h>
 
 //////////////////////////////////////////////////////////////////////////

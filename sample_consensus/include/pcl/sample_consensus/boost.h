@@ -45,7 +45,5 @@
 #endif
 
 #include <boost/random.hpp>
-#include <boost/unordered_map.hpp>
-#include <boost/math/distributions/binomial.hpp>
 
 #endif    // PCL_SAMPLE_CONSENSUS_BOOST_H_

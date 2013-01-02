@@ -34,19 +34,24 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id$
- *
  */
 
+#include <pcl/sample_consensus/impl/sac_model_plane.hpp>
+#include <pcl/sample_consensus/impl/sac_model_perpendicular_plane.hpp>
+#include <pcl/sample_consensus/impl/sac_model_parallel_plane.hpp>
+
+#ifndef PCL_NO_PRECOMPILE
 #include <pcl/impl/instantiate.hpp>
 #include <pcl/point_types.h>
-#include <pcl/sample_consensus/sac_model_plane.h>
-#include <pcl/sample_consensus/impl/sac_model_plane.hpp>
-
 // Instantiations of specific point types
 #ifdef PCL_ONLY_CORE_POINT_TYPES
   PCL_INSTANTIATE(SampleConsensusModelPlane, (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGB))
+  PCL_INSTANTIATE(SampleConsensusModelPerpendicularPlane, (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGB))
+  PCL_INSTANTIATE(SampleConsensusModelParallelPlane, (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGB))
 #else
   PCL_INSTANTIATE(SampleConsensusModelPlane, PCL_XYZ_POINT_TYPES)
+  PCL_INSTANTIATE(SampleConsensusModelPerpendicularPlane, PCL_XYZ_POINT_TYPES)
+  PCL_INSTANTIATE(SampleConsensusModelParallelPlane, PCL_XYZ_POINT_TYPES)
 #endif
+#endif    // PCL_NO_PRECOMPILE
 

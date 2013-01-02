@@ -10,13 +10,7 @@ PCL_ADD_DOC(${SUBSYS_NAME})
 
 if(build)
    set(srcs 
-        src/lmeds.cpp
-        src/mlesac.cpp
-        src/msac.cpp
-        src/ransac.cpp
-        src/rmsac.cpp
-        src/rransac.cpp
-        src/prosac.cpp
+        src/sac.cpp
         src/sac_model_circle.cpp
         src/sac_model_circle3d.cpp
         src/sac_model_cylinder.cpp
@@ -26,12 +20,8 @@ if(build)
         src/sac_model_normal_parallel_plane.cpp
         src/sac_model_normal_plane.cpp
         src/sac_model_normal_sphere.cpp
-        src/sac_model_parallel_line.cpp
-        src/sac_model_parallel_plane.cpp
-        src/sac_model_perpendicular_plane.cpp
         src/sac_model_plane.cpp
         src/sac_model_registration.cpp
-        src/sac_model_registration_2d.cpp
         src/sac_model_sphere.cpp
         )
 

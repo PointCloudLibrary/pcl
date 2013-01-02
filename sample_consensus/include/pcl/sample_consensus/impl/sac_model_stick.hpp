@@ -41,7 +41,7 @@
 #ifndef PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_STICK_H_
 #define PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_STICK_H_
 
-#include <pcl/sample_consensus/sac_model_line.h>
+#include <pcl/sample_consensus/sac_model_stick.h>
 #include <pcl/common/centroid.h>
 #include <pcl/common/concatenate.h>
 
