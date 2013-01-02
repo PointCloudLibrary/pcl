@@ -10,6 +10,7 @@ PCL_ADD_DOC(${SUBSYS_NAME})
 
 if(build)
     set(srcs
+        src/search.cpp
         src/kdtree.cpp
         src/brute_force.cpp
         src/organized.cpp
@@ -27,6 +28,7 @@ if(build)
         )
 
     set(impl_incs
+        include/pcl/${SUBSYS_NAME}/impl/search.hpp
         include/pcl/${SUBSYS_NAME}/impl/flann_search.hpp
         include/pcl/${SUBSYS_NAME}/impl/brute_force.hpp
         include/pcl/${SUBSYS_NAME}/impl/organized.hpp

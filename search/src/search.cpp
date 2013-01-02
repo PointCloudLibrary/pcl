@@ -2,7 +2,6 @@
  * Software License Agreement (BSD License)
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
- *  Copyright (c) 2010-2011, Willow Garage, Inc.
  *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
@@ -35,12 +34,12 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#include <pcl/search/impl/kdtree.hpp>
+
+#include <pcl/search/impl/search.hpp>
 
 #ifndef PCL_NO_PRECOMPILE
 #include <pcl/impl/instantiate.hpp>
 #include <pcl/point_types.h>
-// Instantiations of specific point types
-PCL_INSTANTIATE(KdTree, PCL_POINT_TYPES)
+PCL_INSTANTIATE(Search, PCL_POINT_TYPES)
 #endif    // PCL_NO_PRECOMPILE
 

@@ -3,6 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -16,7 +17,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -33,15 +34,14 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id$
- *
  */
 
 #ifndef PCL_SEARCH_SEARCH_H_
 #define PCL_SEARCH_SEARCH_H_
 
 #include <pcl/point_cloud.h>
-#include <pcl/common/io.h>
+#include <pcl/for_each_type.h>
+#include <pcl/common/concatenate.h>
 
 namespace pcl
 {
@@ -84,13 +84,7 @@ namespace pcl
         typedef boost::shared_ptr<const std::vector<int> > IndicesConstPtr;
 
         /** Constructor. */
-        Search (const std::string& name = "", bool sorted = false)
-          : input_ () 
-          , indices_ ()
-          , sorted_results_ (sorted)
-          , name_ (name)
-        {
-        }
+        Search (const std::string& name = "", bool sorted = false);
 
         /** Destructor. */
         virtual
@@ -98,34 +92,25 @@ namespace pcl
         {
         }
 
-        /** \brief returns the search method name
+        /** \brief Returns the search method name
           */
         virtual const std::string& 
-        getName () const
-        {
-          return (name_);
-        }
+        getName () const;
 
         /** \brief sets whether the results should be sorted (ascending in the distance) or not
           * \param[in] sorted should be true if the results should be sorted by the distance in ascending order.
           * Otherwise the results may be returned in any order.
           */
         virtual void 
-        setSortedResults (bool sorted)
-        {
-          sorted_results_ = sorted;
-        }
+        setSortedResults (bool sorted);
         
         /** \brief Pass the input dataset that the search will be performed on.
           * \param[in] cloud a const pointer to the PointCloud data
           * \param[in] indices the point indices subset that is to be used from the cloud
           */
         virtual void
-        setInputCloud (const PointCloudConstPtr& cloud, const IndicesConstPtr &indices = IndicesConstPtr ())
-        {
-          input_ = cloud;
-          indices_ = indices;
-        }
+        setInputCloud (const PointCloudConstPtr& cloud, 
+                       const IndicesConstPtr &indices = IndicesConstPtr ());
 
         /** \brief Get a pointer to the input point cloud dataset. */
         virtual PointCloudConstPtr
@@ -193,11 +178,8 @@ namespace pcl
           */
         virtual int
         nearestKSearch (const PointCloud &cloud, int index, int k,
-                        std::vector<int> &k_indices, std::vector<float> &k_sqr_distances) const
-        {
-          assert (index >= 0 && index < static_cast<int> (cloud.points.size ()) && "Out-of-bounds error in nearestKSearch!");
-          return (nearestKSearch (cloud.points[index], k, k_indices, k_sqr_distances));
-        }
+                        std::vector<int> &k_indices, 
+                        std::vector<float> &k_sqr_distances) const;
 
         /** \brief Search for k-nearest neighbors for the given query point (zero-copy).
           *
@@ -218,21 +200,8 @@ namespace pcl
           */
         virtual int
         nearestKSearch (int index, int k,
-                        std::vector<int> &k_indices, std::vector<float> &k_sqr_distances) const
-        {
-          if (indices_ == NULL)
-          {
-            assert (index >= 0 && index < static_cast<int> (input_->points.size ()) && "Out-of-bounds error in nearestKSearch!");
-            return (nearestKSearch (input_->points[index], k, k_indices, k_sqr_distances));
-          }
-          else
-          {
-            assert (index >= 0 && index < static_cast<int> (indices_->size ()) && "Out-of-bounds error in nearestKSearch!");
-            if (index >= static_cast<int> (indices_->size ()) || index < 0)
-              return (0);
-            return (nearestKSearch (input_->points[(*indices_)[index]], k, k_indices, k_sqr_distances));
-          }
-        }
+                        std::vector<int> &k_indices, 
+                        std::vector<float> &k_sqr_distances) const;
 
         /** \brief Search for the k-nearest neighbors for the given query point.
           * \param[in] cloud the point cloud data
@@ -242,24 +211,9 @@ namespace pcl
           * \param[out] k_sqr_distances the resultant squared distances to the neighboring points, k_sqr_distances[i] corresponds to the neighbors of the query point i
           */
         virtual void
-        nearestKSearch (const PointCloud& cloud, const std::vector<int>& indices, int k, std::vector< std::vector<int> >& k_indices,
-                        std::vector< std::vector<float> >& k_sqr_distances) const
-        {
-          if (indices.empty ())
-          {
-            k_indices.resize (cloud.size ());
-            k_sqr_distances.resize (cloud.size ());
-            for (size_t i = 0; i < cloud.size (); i++)
-              nearestKSearch (cloud, static_cast<int> (i), k, k_indices[i], k_sqr_distances[i]);
-          }
-          else
-          {
-            k_indices.resize (indices.size ());
-            k_sqr_distances.resize (indices.size ());
-            for (size_t i = 0; i < indices.size (); i++)
-              nearestKSearch (cloud, indices[i], k, k_indices[i], k_sqr_distances[i]);
-          }
-        }
+        nearestKSearch (const PointCloud& cloud, const std::vector<int>& indices, 
+                        int k, std::vector< std::vector<int> >& k_indices,
+                        std::vector< std::vector<float> >& k_sqr_distances) const;
 
         /** \brief Search for the k-nearest neighbors for the given query point. Use this method if the query points are of a different type than the points in the data set (e.g. PointXYZRGBA instead of PointXYZ).
           * \param[in] cloud the point cloud data
@@ -358,11 +312,7 @@ namespace pcl
         virtual int
         radiusSearch (const PointCloud &cloud, int index, double radius,
                       std::vector<int> &k_indices, std::vector<float> &k_sqr_distances,
-                      unsigned int max_nn = 0) const
-        {
-          assert (index >= 0 && index < static_cast<int> (cloud.points.size ()) && "Out-of-bounds error in radiusSearch!");
-          return (radiusSearch(cloud.points[index], radius, k_indices, k_sqr_distances, max_nn));
-        }
+                      unsigned int max_nn = 0) const;
 
         /** \brief Search for all the nearest neighbors of the query point in a given radius (zero-copy).
           *
@@ -385,19 +335,7 @@ namespace pcl
           */
         virtual int
         radiusSearch (int index, double radius, std::vector<int> &k_indices,
-                      std::vector<float> &k_sqr_distances, unsigned int max_nn = 0) const
-        {
-          if (indices_ == NULL)
-          {
-            assert (index >= 0 && index < static_cast<int> (input_->points.size ()) && "Out-of-bounds error in radiusSearch!");
-            return (radiusSearch (input_->points[index], radius, k_indices, k_sqr_distances, max_nn));
-          }
-          else
-          {
-            assert (index >= 0 && index < static_cast<int> (indices_->size ()) && "Out-of-bounds error in radiusSearch!");
-            return (radiusSearch (input_->points[(*indices_)[index]], radius, k_indices, k_sqr_distances, max_nn));
-          }
-        }
+                      std::vector<float> &k_sqr_distances, unsigned int max_nn = 0) const;
 
         /** \brief Search for all the nearest neighbors of the query point in a given radius.
           * \param[in] cloud the point cloud data
@@ -415,24 +353,7 @@ namespace pcl
                       double radius,
                       std::vector< std::vector<int> >& k_indices,
                       std::vector< std::vector<float> > &k_sqr_distances,
-                      unsigned int max_nn = 0) const
-        {
-          if (indices.empty ())
-          {
-            k_indices.resize (cloud.size ());
-            k_sqr_distances.resize (cloud.size ());
-            for (size_t i = 0; i < cloud.size (); i++)
-              radiusSearch (cloud, static_cast<int> (i), radius,k_indices[i], k_sqr_distances[i], max_nn);
-          }
-          else
-          {
-            k_indices.resize (indices.size ());
-            k_sqr_distances.resize (indices.size ());
-            for (size_t i = 0; i < indices.size (); i++)
-              radiusSearch (cloud,indices[i],radius,k_indices[i],k_sqr_distances[i], max_nn);
-          }
-        }
-
+                      unsigned int max_nn = 0) const;
 
         /** \brief Search for all the nearest neighbors of the query points in a given radius.
           * \param[in] cloud the point cloud data
@@ -476,7 +397,9 @@ namespace pcl
         }
 
       protected:
-        void sortResults (std::vector<int>& indices, std::vector<float>& distances) const;
+        void 
+        sortResults (std::vector<int>& indices, std::vector<float>& distances) const;
+
         PointCloudConstPtr input_;
         IndicesConstPtr indices_;
         bool sorted_results_;
@@ -490,36 +413,20 @@ namespace pcl
           {
           }
           
-          bool operator () (int first, int second) const
+          bool 
+          operator () (int first, int second) const
           {
-            return distances_ [first] < distances_[second];
+            return (distances_ [first] < distances_[second]);
           }
-          
+
           const std::vector<float>& distances_;
         };
-    }; // class Search
-    
-    // implementation
-    template<typename PointT> void
-    Search<PointT>::sortResults (std::vector<int>& indices, std::vector<float>& distances) const
-    {
-      std::vector<int> order (indices.size ());
-      for (size_t idx = 0; idx < order.size (); ++idx)
-        order [idx] = static_cast<int> (idx);
-
-      Compare compare (distances);
-      sort (order.begin (), order.end (), compare);
-
-      std::vector<int> sorted (indices.size ());
-      for (size_t idx = 0; idx < order.size (); ++idx)
-        sorted [idx] = indices[order [idx]];
-
-      indices = sorted;
-  
-      // sort  the according distances.
-      sort (distances.begin (), distances.end ());
-    }
+    }; // class Search    
   } // namespace search
 } // namespace pcl
 
-#endif  //#ifndef _PCL_SEARCH_GENERIC_SEARCH_H_
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/search/impl/search.hpp>
+#endif
+
+#endif  //#ifndef _PCL_SEARCH_SEARCH_H_
