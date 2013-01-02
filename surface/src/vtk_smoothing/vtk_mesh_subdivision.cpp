@@ -35,7 +35,7 @@
  * $Id$
  *
  */
-
+#include <pcl/console/print.h>
 #include <pcl/surface/vtk_smoothing/vtk_mesh_subdivision.h>
 #include <pcl/surface/vtk_smoothing/vtk_utils.h>
 
