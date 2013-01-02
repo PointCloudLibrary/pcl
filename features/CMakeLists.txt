@@ -38,6 +38,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/normal_based_signature.h
         include/pcl/${SUBSYS_NAME}/organized_edge_detection.h
         include/pcl/${SUBSYS_NAME}/pfh.h
+        include/pcl/${SUBSYS_NAME}/pfh_tools.h
         include/pcl/${SUBSYS_NAME}/pfhrgb.h
         include/pcl/${SUBSYS_NAME}/ppf.h
         include/pcl/${SUBSYS_NAME}/ppfrgb.h
