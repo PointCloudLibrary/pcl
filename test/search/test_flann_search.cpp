@@ -38,6 +38,7 @@
 
 #include <iostream>
 #include <gtest/gtest.h>
+#include <pcl/common/distances.h>
 #include <pcl/common/time.h>
 #include <pcl/search/pcl_search.h>
 #include <pcl/search/flann_search.h>

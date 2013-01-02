@@ -188,7 +188,6 @@ TEST (PCL, UpdateMesh_With_TextureMapping)
 
     // initialize texture mesh
     TextureMesh tex_mesh;
-    tex_mesh.header = triangles.header;
     tex_mesh.cloud = triangles.cloud;
 
     // add the 1st mesh

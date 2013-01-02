@@ -41,6 +41,7 @@
 #include <pcl/point_cloud.h>
 #include <pcl/features/feature.h>
 #include <pcl/io/pcd_io.h>
+#include <pcl/common/centroid.h>
 
 using namespace pcl;
 using namespace pcl::io;
