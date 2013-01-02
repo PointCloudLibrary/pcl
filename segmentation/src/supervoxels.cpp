@@ -46,9 +46,14 @@
 #include <pcl/features/impl/normal_3d.hpp>
 #include <pcl/search/impl/organized.hpp>
 #include <pcl/kdtree/impl/kdtree_flann.hpp>
-
+#include <pcl/impl/pcl_base.hpp>
+#include <pcl/search/impl/kdtree.hpp>
+#include <pcl/search/impl/search.hpp>
 
 // Instantiations of specific point types
+template class pcl::PCLBase<pcl::PointSuperVoxel>;
+template class pcl::search::Search<pcl::PointSuperVoxel>;
+template class pcl::search::KdTree<pcl::PointSuperVoxel>;
 template class pcl::SuperVoxels<pcl::PointXYZRGBA>;
 template class pcl::SuperVoxels<pcl::PointXYZRGB>;
 template class pcl::NormalEstimationOMP<pcl::PointSuperVoxel,pcl::PointSuperVoxel>;
