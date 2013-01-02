@@ -56,6 +56,7 @@
 #include <pcl/filters/conditional_removal.h>
 #include <pcl/filters/random_sample.h>
 #include <pcl/filters/crop_box.h>
+#include <pcl/filters/median_filter.h>
 
 #include <pcl/common/transforms.h>
 #include <pcl/common/eigen.h>
@@ -70,6 +71,9 @@ using namespace Eigen;
 PointCloud2::Ptr cloud_blob (new PointCloud2);
 PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>);
 vector<int> indices_;
+
+PointCloud<PointXYZRGB>::Ptr cloud_organized (new PointCloud<PointXYZRGB>);
+
 
 //pcl::IndicesConstPtr indices;
 
@@ -2076,14 +2080,134 @@ TEST (ConditionalRemovalTfQuadraticXYZComparison, Filters)
   EXPECT_EQ (input->points[5].z, output.points[5].z);
 }
 
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+TEST (MedianFilter, Filters)
+{
+  // Create the following cloud
+  /* 1   2   3   4   5
+   * 6   7   8   9   10
+   * 10  9   8   7   6
+   * 5   4   3   2   1
+   * 100 100 500 100 100
+   */
+  PointCloud<PointXYZ> cloud_manual;
+  cloud_manual.height = 5;
+  cloud_manual.width = 5;
+  cloud_manual.is_dense = false;
+  cloud_manual.resize (5 * 5);
+
+  for (size_t i = 0; i < 5; ++i)
+  {
+    cloud_manual (i, 0).z = static_cast<float> (i + 1);
+    cloud_manual (i, 1).z = static_cast<float> (i + 6);
+    cloud_manual (i, 2).z = static_cast<float> (10 - i);
+    cloud_manual (i, 3).z = static_cast<float> (5 - i);
+    cloud_manual (i, 4).z = static_cast<float> (100);
+  }
+  cloud_manual (2, 4).z = 500;
+
+
+  MedianFilter<PointXYZ> median_filter;
+  median_filter.setInputCloud (cloud_manual.makeShared ());
+  median_filter.setWindowSize (3);
+
+  PointCloud<PointXYZ> out_1;
+  median_filter.filter (out_1);
+
+  // The result should look like this
+  /* 6   6   7   8   9
+   * 7   7   7   7   7
+   * 7   7   7   7   7
+   * 10  9   8   7   7
+   * 100 100 500 100 100
+   */
+  PointCloud<PointXYZ> out_1_correct;
+  out_1_correct.height = 5;
+  out_1_correct.width = 5;
+  out_1_correct.is_dense = false;
+  out_1_correct.resize (5 * 5);
+  out_1_correct (0, 0).z = 6.f;
+  out_1_correct (1, 0).z = 6.f;
+  out_1_correct (2, 0).z = 7.f;
+  out_1_correct (3, 0).z = 8.f;
+  out_1_correct (4, 0).z = 9.f;
+
+  out_1_correct (0, 1).z = 7.f;
+  out_1_correct (1, 1).z = 7.f;
+  out_1_correct (2, 1).z = 7.f;
+  out_1_correct (3, 1).z = 7.f;
+  out_1_correct (4, 1).z = 7.f;
+
+  out_1_correct (0, 2).z = 7.f;
+  out_1_correct (1, 2).z = 7.f;
+  out_1_correct (2, 2).z = 7.f;
+  out_1_correct (3, 2).z = 7.f;
+  out_1_correct (4, 2).z = 7.f;
+
+  out_1_correct (0, 3).z = 10.f;
+  out_1_correct (1, 3).z = 9.f;
+  out_1_correct (2, 3).z = 8.f;
+  out_1_correct (3, 3).z = 7.f;
+  out_1_correct (4, 3).z = 7.f;
+
+  out_1_correct (0, 4).z = 100.f;
+  out_1_correct (1, 4).z = 100.f;
+  out_1_correct (2, 4).z = 100.f;
+  out_1_correct (3, 4).z = 100.f;
+  out_1_correct (4, 4).z = 100.f;
+
+  for (size_t i = 0; i < 5 * 5; ++i)
+    EXPECT_NEAR (out_1_correct[i].z, out_1[i].z, 1e-5);
+
+
+  // Now limit the maximum value a dexel can change
+  PointCloud<PointXYZ> out_2;
+  median_filter.setMaxAllowedMovement (50.f);
+  median_filter.filter (out_2);
+
+  // The result should look like this
+  /* 6   6   7   8   9
+   * 7   7   7   7   7
+   * 7   7   7   7   7
+   * 10  9   8   7   7
+   * 100 100 450 100 100
+   */
+  PointCloud<PointXYZ> out_2_correct;
+  out_2_correct = out_1_correct;
+  out_2_correct (2, 4).z = 450.f;
+
+  for (size_t i = 0; i < 5 * 5; ++i)
+    EXPECT_NEAR (out_2_correct[i].z, out_2[i].z, 1e-5);
+
+
+  // Now load a bigger Kinect cloud and filter it
+  MedianFilter<PointXYZRGB> median_filter_xyzrgb;
+  median_filter_xyzrgb.setInputCloud (cloud_organized);
+  median_filter_xyzrgb.setWindowSize (7);
+  median_filter_xyzrgb.setMaxAllowedMovement (0.01f);
+  PointCloud<PointXYZRGB> out_3;
+  median_filter_xyzrgb.filter (out_3);
+
+  // Check some positions for their values
+  EXPECT_NEAR (1.300999999f, out_3(30, 100).z, 1e-5);
+  EXPECT_NEAR (1.300999999f, out_3(50, 100).z, 1e-5);
+  EXPECT_NEAR (1.305999994f, out_3(90, 100).z, 1e-5);
+  EXPECT_NEAR (0.908000111f, out_3(50, 200).z, 1e-5);
+  EXPECT_NEAR (0.695000112f, out_3(100, 300).z, 1e-5);
+  EXPECT_NEAR (1.177000045f, out_3(128, 128).z, 1e-5);
+  EXPECT_NEAR (0.778999984f, out_3(256, 256).z, 1e-5);
+  EXPECT_NEAR (0.703000009f, out_3(428, 300).z, 1e-5);
+}
+
 /* ---[ */
 int
 main (int argc, char** argv)
 {
   // Load a standard PCD file from disk
-  if (argc < 2)
+  if (argc < 3)
   {
-    std::cerr << "No test file given. Please download `bun0.pcd` and pass its path to the test." << std::endl;
+    std::cerr << "No test file given. Please download `bun0.pcd` and `milk_cartoon_all_small_clorox.pcd` and pass their paths to the test." << std::endl;
     return (-1);
   }
 
@@ -2095,6 +2219,10 @@ main (int argc, char** argv)
   indices_.resize (cloud->points.size ());
   for (int i = 0; i < static_cast<int> (indices_.size ()); ++i)
     indices_[i] = i;
+
+
+  loadPCDFile (argv[2], *cloud_organized);
+
 
   testing::InitGoogleTest (&argc, argv);
   return (RUN_ALL_TESTS ());

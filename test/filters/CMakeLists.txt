@@ -3,7 +3,7 @@
 PCL_ADD_TEST(filters_filters test_filters
              FILES test_filters.cpp
              LINK_WITH pcl_gtest pcl_filters pcl_io pcl_sample_consensus pcl_kdtree pcl_features
-             ARGUMENTS ${PCL_SOURCE_DIR}/test/bun0.pcd)
+             ARGUMENTS ${PCL_SOURCE_DIR}/test/bun0.pcd ${PCL_SOURCE_DIR}/test/milk_cartoon_all_small_clorox.pcd)
 
 PCL_ADD_TEST(filters_sampling test_filters_sampling
              FILES test_sampling.cpp
