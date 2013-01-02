@@ -59,12 +59,12 @@ if(build)
     
     PCL_ADD_TEST(a_segmentation_test test_segmentation
                  FILES test_segmentation.cpp
-                 LINK_WITH pcl_gtest pcl_io pcl_segmentation pcl_features
+                 LINK_WITH pcl_gtest pcl_io pcl_segmentation pcl_features pcl_kdtree pcl_search pcl_common
                  ARGUMENTS ${PCL_SOURCE_DIR}/test/bun0.pcd ${PCL_SOURCE_DIR}/test/car6.pcd ${PCL_SOURCE_DIR}/test/colored_cloud.pcd)
     
     PCL_ADD_TEST(test_non_linear test_non_linear
                  FILES test_non_linear.cpp
-                 LINK_WITH pcl_gtest pcl_common pcl_io pcl_sample_consensus pcl_segmentation
+                 LINK_WITH pcl_gtest pcl_common pcl_io pcl_sample_consensus pcl_segmentation pcl_kdtree pcl_search 
                  ARGUMENTS ${PCL_SOURCE_DIR}/test/noisy_slice_displaced.pcd)
 
     PCL_ADD_TEST(a_recognition_cg_test test_recognition_cg
