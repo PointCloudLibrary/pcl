@@ -42,6 +42,7 @@
 #define PCL_FEATURES_IMPL_MOMENT_INVARIANTS_H_
 
 #include <pcl/features/moment_invariants.h>
+#include <pcl/common/centroid.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT> void

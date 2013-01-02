@@ -44,6 +44,7 @@
 #include <pcl/features/vfh.h>
 #include <pcl/features/pfh_tools.h>
 #include <pcl/common/common.h>
+#include <pcl/common/centroid.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointInT, typename PointNT, typename PointOutT> bool

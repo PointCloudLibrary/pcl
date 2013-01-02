@@ -41,12 +41,15 @@
 #ifndef PCL_FEATURE_H_
 #define PCL_FEATURE_H_
 
+#if defined __GNUC__
+#  pragma GCC system_header 
+#endif
+
+#include <boost/function.hpp>
+#include <boost/bind.hpp>
 // PCL includes
 #include <pcl/pcl_base.h>
-#include <pcl/common/eigen.h>
-#include <pcl/common/centroid.h>
 #include <pcl/search/search.h>
-#include <pcl/features/boost.h>
 
 namespace pcl
 {

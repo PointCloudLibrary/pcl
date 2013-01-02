@@ -43,6 +43,7 @@
 
 #include <pcl/features/cvfh.h>
 #include <pcl/features/pfh_tools.h>
+#include <pcl/common/centroid.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointInT, typename PointNT, typename PointOutT> void

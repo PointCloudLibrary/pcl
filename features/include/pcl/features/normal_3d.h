@@ -42,6 +42,7 @@
 #define PCL_NORMAL_3D_H_
 
 #include <pcl/features/feature.h>
+#include <pcl/common/centroid.h>
 
 namespace pcl
 {
