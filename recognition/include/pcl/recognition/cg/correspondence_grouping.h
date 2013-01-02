@@ -42,6 +42,7 @@
 
 #include <pcl/pcl_base.h>
 #include <pcl/correspondence.h>
+#include <pcl/console/print.h>
 
 namespace pcl
 {
