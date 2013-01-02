@@ -51,7 +51,7 @@ namespace pcl
     *   * ACM Transations in Graphics, July 2007
     *
     * Takes in a colored organized point cloud (i.e. PointXYZRGB or PointXYZRGBA), that might contain nan values for the
-    * depth information, and it will returned an upsampled version of this cloud, based on the formula:
+    * depth information, and it will return an upsampled version of this cloud, based on the formula:
     * \f[
     *    \tilde{S}_p = \frac{1}{k_p} \sum_{q_d \in \Omega} {S_{q_d} f(||p_d - q_d|| g(||\tilde{I}_p-\tilde{I}_q||})
     * \f]

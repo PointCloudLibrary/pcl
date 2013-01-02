@@ -2,7 +2,6 @@
  * Software License Agreement (BSD License)
  *
  * Point Cloud Library (PCL) - www.pointclouds.org
- * Copyright (c) 2009-2012, Willow Garage, Inc.
  * Copyright (c) 2012-, Open Perception, Inc.
  * Copyright (c) 2004, Sylvain Paris and Francois Sillion
 
@@ -40,9 +39,8 @@
  */
 
 
-#ifndef FAST_BILATERAL_H_
-#define FAST_BILATERAL_H_
-
+#ifndef PCL_FILTERS_FAST_BILATERAL_H_
+#define PCL_FILTERS_FAST_BILATERAL_H_
 
 #include <pcl/filters/filter.h>
 
@@ -69,9 +67,9 @@ namespace pcl
 
       /** \brief Empty constructor. */
       FastBilateralFilter ()
-        :  sigma_s_ (15.0f)
-         , sigma_r_ (0.05f)
-         , early_division_ (false)
+        : sigma_s_ (15.0f)
+        , sigma_r_ (0.05f)
+        , early_division_ (false)
       { }
 
       /** \brief Set the standard deviation of the Gaussian used by the bilateral filter for
@@ -194,4 +192,4 @@ namespace pcl
 #endif
 
 
-#endif /* FAST_BILATERAL_H_ */
+#endif /* PCL_FILTERS_FAST_BILATERAL_H_ */
