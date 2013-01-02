@@ -97,23 +97,23 @@ pcl::RadiusOutlierRemoval<PointT>::applyFilterIndices (std::vector<int> &indices
   removed_indices_->resize (indices_->size ());
   int oii = 0, rii = 0;  // oii = output indices iterator, rii = removed indices iterator
 
-  for (int iii = 0; iii < static_cast<int> (indices_->size ()); ++iii)  // iii = input indices iterator
+  for (std::vector<int>::const_iterator it = indices_->begin (); it != indices_->end (); ++it)
   {
     // Perform the radius search
     // Note: k includes the query point, so is always at least 1
-    int k = searcher_->radiusSearch ((*indices_)[iii], search_radius_, nn_indices, nn_dists);
+    int k = searcher_->radiusSearch (*it, search_radius_, nn_indices, nn_dists);
 
     // Points having too few neighbors are outliers and are passed to removed indices
     // Unless negative was set, then it's the opposite condition
     if ((!negative_ && k <= min_pts_radius_) || (negative_ && k > min_pts_radius_))
     {
       if (extract_removed_indices_)
-        (*removed_indices_)[rii++] = (*indices_)[iii];
+        (*removed_indices_)[rii++] = *it;
       continue;
     }
 
     // Otherwise it was a normal point for output (inlier)
-    indices[oii++] = (*indices_)[iii];
+    indices[oii++] = *it;
   }
 
   // Resize the output arrays
