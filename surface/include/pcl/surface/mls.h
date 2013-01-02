@@ -48,6 +48,7 @@
 #include <pcl/surface/boost.h>
 #include <pcl/surface/eigen.h>
 #include <pcl/surface/processing.h>
+#include <map>
 
 namespace pcl
 {
