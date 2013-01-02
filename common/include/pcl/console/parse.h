@@ -3,6 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2012, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -33,18 +34,12 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id$
- *
  */
 #ifndef PCL_CONSOLE_PARSE_H_
 #define PCL_CONSOLE_PARSE_H_
 
 #include <vector>
-#include <string>
-#include <string.h>
-#include <stdlib.h>
 #include <sstream>
-#include <pcl/common/boost.h>
 #include <pcl/pcl_macros.h>
 
 namespace pcl

@@ -1,7 +1,10 @@
 /*
  * Software License Agreement (BSD License)
  *
+ *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -31,8 +34,6 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id$
- *
  */
 #ifndef PCL_IMPL_INSTANTIATE_H_
 #define PCL_IMPL_INSTANTIATE_H_
@@ -42,11 +43,6 @@
 #endif
 
 #include <pcl/pcl_config.h>
-#include <boost/preprocessor/seq/for_each.hpp>
-#include <boost/preprocessor/seq/for_each_product.hpp>
-#include <boost/preprocessor/seq/to_tuple.hpp>
-#include <boost/preprocessor/cat.hpp>
-#include <boost/preprocessor/expand.hpp>
 
 //#define PCL_POINT_TYPES (bool)(int)(float)(double)
 //#define PCL_TEMPLATES (Type)(Othertype)
@@ -58,8 +54,6 @@
 
 #ifdef PCL_NO_PRECOMPILE
 
-//#pragma message("WARNING: PCL compiled with PCL_NO_PRECOMPILE support. Remember to include the impl/foo.hpp headers in your code.")
-
 #define PCL_INSTANTIATE_PRODUCT_IMPL(r, product)
 #define PCL_INSTANTIATE_IMPL(r, TEMPLATE, POINT_TYPE) 
 #define PCL_INSTANTIATE(TEMPLATE, POINT_TYPES)
@@ -67,6 +61,12 @@
 #define PCL_INSTANTIATE_PRODUCT(TEMPLATE, PRODUCT)
 
 #else
+
+#include <boost/preprocessor/seq/for_each.hpp>
+#include <boost/preprocessor/seq/for_each_product.hpp>
+#include <boost/preprocessor/seq/to_tuple.hpp>
+#include <boost/preprocessor/cat.hpp>
+#include <boost/preprocessor/expand.hpp>
 
 #define PCL_INSTANTIATE_IMPL(r, TEMPLATE, POINT_TYPE) \
   BOOST_PP_CAT(PCL_INSTANTIATE_, TEMPLATE)(POINT_TYPE)

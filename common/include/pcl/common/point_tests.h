@@ -40,7 +40,9 @@
 #ifndef PCL_COMMON_POINT_TESTS_H_
 #define PCL_COMMON_POINT_TESTS_H_
 
+#ifdef _MSC_VER
 #include <Eigen/src/StlSupport/details.h>
+#endif
 
 namespace pcl
 {

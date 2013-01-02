@@ -27,6 +27,7 @@ if(build)
         )
 
     set(srcs 
+        src/point_types.cpp
         src/pcl_base.cpp
         src/io.cpp
         src/common.cpp
@@ -136,12 +137,15 @@ if(build)
         include/pcl/common/impl/projection_matrix.hpp
         )
 
-    set(impl_incs include/pcl/impl/instantiate.hpp
+    set(impl_incs 
+        include/pcl/impl/pcl_base.hpp
+        include/pcl/impl/instantiate.hpp
         include/pcl/impl/point_types.hpp
         include/pcl/impl/cloud_iterator.hpp
         )
 
-    set(ros_incs include/pcl/ros/conversions.h
+    set(ros_incs 
+        include/pcl/ros/conversions.h
         include/pcl/ros/register_point_struct.h
         )
 

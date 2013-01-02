@@ -3,6 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2012, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -33,14 +34,15 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- *
  */
 
-#ifndef __PCL_TIME_TRIGGER__
-#define __PCL_TIME_TRIGGER__
+#ifndef PCL_COMMON_TIME_TRIGGER_H_
+#define PCL_COMMON_TIME_TRIGGER_H_
 
-#include <pcl/common/boost.h>
 #include <pcl/pcl_macros.h>
+#include <boost/function.hpp>
+#include <boost/thread.hpp>
+#include <boost/signals2.hpp>
 
 namespace pcl
 {

@@ -3,6 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2012, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -33,14 +34,13 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id$
- *
  */
 
 #include <ctype.h>
 #include <stdio.h>
 #include <pcl/console/parse.h>
 #include <pcl/console/print.h>
+#include <boost/algorithm/string.hpp>
 
 ////////////////////////////////////////////////////////////////////////////////
 bool

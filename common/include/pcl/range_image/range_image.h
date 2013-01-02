@@ -38,7 +38,6 @@
 #ifndef PCL_RANGE_IMAGE_H_
 #define PCL_RANGE_IMAGE_H_
 
-#include <pcl/common/eigen.h>
 #include <pcl/point_cloud.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/point_types.h>

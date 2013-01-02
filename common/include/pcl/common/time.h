@@ -3,6 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2012, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -38,9 +39,13 @@
 #ifndef PCL_TIME_H_
 #define PCL_TIME_H_
 
+#ifdef __GNUC__
+#pragma GCC system_header 
+#endif
+
 #include <cmath>
 #include <string>
-#include <pcl/common/boost.h>
+#include <boost/date_time/posix_time/posix_time.hpp>
 
 /**
   * \file pcl/common/time.h
@@ -51,7 +56,6 @@
 /*@{*/
 namespace pcl
 {
-
   /** \brief Simple stopwatch.
     * \ingroup common
     */

@@ -3,6 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -33,14 +34,17 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- *  $Id$
  */
 #ifndef PCL_COMMON_CORRESPONDENCE_H_
 #define PCL_COMMON_CORRESPONDENCE_H_
 
-#include <pcl/common/boost.h>
-#include <pcl/common/eigen.h>
-#include <vector>
+#ifdef __GNUC__
+#pragma GCC system_header 
+#endif
+
+#include <boost/shared_ptr.hpp>
+#include <Eigen/StdVector>
+#include <Eigen/Geometry>
 
 namespace pcl
 {
@@ -82,12 +86,7 @@ namespace pcl
   };
   
   /** \brief overloaded << operator */
-  inline std::ostream& 
-  operator << (std::ostream& os, const Correspondence& c)
-  {
-    os << c.index_query << " " << c.index_match << " " << c.distance;
-    return (os);
-  }
+  std::ostream& operator << (std::ostream& os, const Correspondence& c);
 
   typedef std::vector< pcl::Correspondence, Eigen::aligned_allocator<pcl::Correspondence> > Correspondences;
   typedef boost::shared_ptr<Correspondences> CorrespondencesPtr;

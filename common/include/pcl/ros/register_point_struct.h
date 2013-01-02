@@ -54,17 +54,11 @@
 #include <pcl/pcl_macros.h>
 #include <pcl/point_traits.h>
 #include <boost/mpl/vector.hpp>
-#include <boost/mpl/for_each.hpp>
-#include <boost/mpl/assert.hpp>
 #include <boost/preprocessor/seq/enum.hpp>
 #include <boost/preprocessor/seq/for_each.hpp>
 #include <boost/preprocessor/seq/transform.hpp>
 #include <boost/preprocessor/cat.hpp>
 #include <boost/preprocessor/comparison.hpp>
-#include <boost/preprocessor/if.hpp>
-#include <boost/preprocessor/tuple/eat.hpp>
-#include <boost/preprocessor/list/adt.hpp>
-#include <boost/preprocessor/repetition/repeat_from_to.hpp>
 #include <boost/utility.hpp>
 #include <boost/type_traits.hpp>
 #include <stddef.h> //offsetof
@@ -362,21 +356,6 @@ namespace pcl
     typedef boost::mpl::vector<BOOST_PP_SEQ_ENUM(seq)> type;    \
   };                                                            \
   /***/
-
-// Disabling barely-used Fusion registration of point types for now.
-#if 0
-#define POINT_CLOUD_EXPAND_TAG_OP(s, data, elem)                \
-  (boost::mpl::identity<BOOST_PP_TUPLE_ELEM(3, 0, elem)>::type, \
-   BOOST_PP_TUPLE_ELEM(3, 1, elem),                             \
-   pcl::fields::BOOST_PP_TUPLE_ELEM(3, 2, elem))                \
-  /***/
-
-#define POINT_CLOUD_EXPAND_TAGS(seq) BOOST_PP_SEQ_TRANSFORM(POINT_CLOUD_EXPAND_TAG_OP, _, seq)
-
-#define POINT_CLOUD_REGISTER_WITH_FUSION(name, seq)                     \
-  BOOST_FUSION_ADAPT_ASSOC_STRUCT_I(name, POINT_CLOUD_EXPAND_TAGS(seq)) \
-  /***/
-#endif
 
 #if defined _MSC_VER
   #pragma warning (pop)

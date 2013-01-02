@@ -3,6 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2012, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -33,26 +34,25 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id$
- *
  */
 #ifndef PCL_PCL_BASE_H_
 #define PCL_PCL_BASE_H_
 
+#if defined __GNUC__
+#  pragma GCC system_header
+#endif
+
 // Include PCL macros such as PCL_ERROR, etc
 #include <pcl/pcl_macros.h>
 
-#include <cstddef>
-#include <pcl/common/eigen.h>
-#include <pcl/common/boost.h>
-// STD includes
-#include <vector>
+#include <boost/shared_ptr.hpp>
+#include <Eigen/StdVector>
+#include <Eigen/Core>
 
 // Point Cloud message includes. Needed everywhere.
-#include <sensor_msgs/PointCloud2.h>
 #include <pcl/point_cloud.h>
 #include <pcl/PointIndices.h>
-#include <pcl/console/print.h>
+#include <sensor_msgs/PointCloud2.h>
 
 namespace pcl
 {
@@ -60,8 +60,8 @@ namespace pcl
   typedef boost::shared_ptr <std::vector<int> > IndicesPtr;
   typedef boost::shared_ptr <const std::vector<int> > IndicesConstPtr;
 
-  ////////////////////////////////////////////////////////////////////////////////////////////
-  /** \brief PCL base class. Implements methods that are used by all PCL objects. 
+  /////////////////////////////////////////////////////////////////////////////////////////
+  /** \brief PCL base class. Implements methods that are used by most PCL algorithms. 
     * \ingroup common 
     */
   template <typename PointT>
@@ -72,115 +72,56 @@ namespace pcl
       typedef typename PointCloud::Ptr PointCloudPtr;
       typedef typename PointCloud::ConstPtr PointCloudConstPtr;
 
-      typedef PointIndices::Ptr PointIndicesPtr;
-      typedef PointIndices::ConstPtr PointIndicesConstPtr;
+      typedef boost::shared_ptr<PointIndices> PointIndicesPtr;
+      typedef boost::shared_ptr<PointIndices const> PointIndicesConstPtr;
 
       /** \brief Empty constructor. */
-      PCLBase () : input_ (), indices_ (), use_indices_ (false), fake_indices_ (false) {}
+      PCLBase ();
       
       /** \brief Copy constructor. */
-      PCLBase (const PCLBase& base)
-        : input_ (base.input_)
-        , indices_ (base.indices_)
-        , use_indices_ (base.use_indices_)
-        , fake_indices_ (base.fake_indices_)
-      {}
+      PCLBase (const PCLBase& base);
 
-      /** \brief destructor. */
-      virtual ~PCLBase() 
-      {
-        input_.reset ();
-        indices_.reset ();
-      }
+      /** \brief Destructor. */
+      virtual ~PCLBase (); 
       
       /** \brief Provide a pointer to the input dataset
-        * \param cloud the const boost shared pointer to a PointCloud message
+        * \param[in] cloud the const boost shared pointer to a PointCloud message
         */
-      virtual inline void 
-      setInputCloud (const PointCloudConstPtr &cloud) { input_ = cloud; }
+      virtual void 
+      setInputCloud (const PointCloudConstPtr &cloud);
 
       /** \brief Get a pointer to the input point cloud dataset. */
       inline PointCloudConstPtr const 
       getInputCloud () { return (input_); }
 
       /** \brief Provide a pointer to the vector of indices that represents the input data.
-        * \param indices a pointer to the vector of indices that represents the input data.
+        * \param[in] indices a pointer to the indices that represent the input data.
         */
-      inline void
-      setIndices (const IndicesPtr &indices)
-      {
-        indices_ = indices;
-        fake_indices_ = false;
-        use_indices_  = true;
-      }
+      virtual void
+      setIndices (const IndicesPtr &indices);
 
       /** \brief Provide a pointer to the vector of indices that represents the input data.
-        * \param indices a pointer to the vector of indices that represents the input data.
+        * \param[in] indices a pointer to the indices that represent the input data.
         */
-      inline void
-      setIndices (const IndicesConstPtr &indices)
-      {
-        indices_.reset (new std::vector<int> (*indices));
-        fake_indices_ = false;
-        use_indices_  = true;
-      }
+      virtual void
+      setIndices (const IndicesConstPtr &indices);
 
       /** \brief Provide a pointer to the vector of indices that represents the input data.
-        * \param indices a pointer to the vector of indices that represents the input data.
+        * \param[in] indices a pointer to the indices that represent the input data.
         */
-      inline void
-      setIndices (const PointIndicesConstPtr &indices)
-      {
-        indices_.reset (new std::vector<int> (indices->indices));
-        fake_indices_ = false;
-        use_indices_  = true;
-      }
+      virtual void
+      setIndices (const PointIndicesConstPtr &indices);
 
       /** \brief Set the indices for the points laying within an interest region of 
         * the point cloud.
         * \note you shouldn't call this method on unorganized point clouds!
-        * \param row_start the offset on rows
-        * \param col_start the offset on columns
-        * \param nb_rows the number of rows to be considered row_start included
-        * \param nb_cols the number of columns to be considered col_start included
+        * \param[in] row_start the offset on rows
+        * \param[in] col_start the offset on columns
+        * \param[in] nb_rows the number of rows to be considered row_start included
+        * \param[in] nb_cols the number of columns to be considered col_start included
         */
-      inline void 
-      setIndices (size_t row_start, size_t col_start, size_t nb_rows, size_t nb_cols)
-      {
-        if ((nb_rows > input_->height) || (row_start > input_->height))
-        {
-          PCL_ERROR ("[PCLBase::setIndices] cloud is only %d height", input_->height);
-          return;
-        }
-
-        if ((nb_cols > input_->width) || (col_start > input_->width))
-        {
-          PCL_ERROR ("[PCLBase::setIndices] cloud is only %d width", input_->width);
-          return;
-        }
-
-        size_t row_end = row_start + nb_rows;
-        if (row_end > input_->height)
-        {
-          PCL_ERROR ("[PCLBase::setIndices] %d is out of rows range %d", row_end, input_->height);
-          return;
-        }
-
-        size_t col_end = col_start + nb_cols;
-        if (col_end > input_->width)
-        {
-          PCL_ERROR ("[PCLBase::setIndices] %d is out of columns range %d", col_end, input_->width);
-          return;
-        }
-
-        indices_.reset (new std::vector<int>);
-        indices_->reserve (nb_cols * nb_rows);
-        for(size_t i = row_start; i < row_end; i++)
-          for(size_t j = col_start; j < col_end; j++)
-            indices_->push_back (static_cast<int> ((i * input_->width) + j));
-        fake_indices_ = false;
-        use_indices_  = true;
-      }
+      virtual void 
+      setIndices (size_t row_start, size_t col_start, size_t nb_rows, size_t nb_cols);
 
       /** \brief Get a pointer to the vector of indices used. */
       inline IndicesPtr const 
@@ -189,9 +130,9 @@ namespace pcl
       /** \brief Override PointCloud operator[] to shorten code
         * \note this method can be called instead of (*input_)[(*indices_)[pos]]
         * or input_->points[(*indices_)[pos]]
-        * \param pos position in indices_ vector
+        * \param[in] pos position in indices_ vector
         */
-      const PointT& operator[] (size_t pos)
+      inline const PointT& operator[] (size_t pos)
       {
         return ((*input_)[(*indices_)[pos]]);
       }
@@ -218,76 +159,35 @@ namespace pcl
         *     - either a new set is given via setIndices(), or 
         *     - a new cloud is given that has a different set of points. This will trigger an update on the set of fake indices
         */
-      inline bool
-      initCompute ()
-      {
-        // Check if input was set
-        if (!input_)
-          return (false);
-
-        // If no point indices have been given, construct a set of indices for the entire input point cloud
-        if (!indices_)
-        {
-          fake_indices_ = true;
-          indices_.reset (new std::vector<int>);
-          try
-          {
-            indices_->resize (input_->points.size ());
-          }
-          catch (std::bad_alloc)
-          {
-            PCL_ERROR ("[initCompute] Failed to allocate %zu indices.\n", input_->points.size ());
-          }
-          for (size_t i = 0; i < indices_->size (); ++i) { (*indices_)[i] = static_cast<int>(i); }
-        }
-
-        // If we have a set of fake indices, but they do not match the number of points in the cloud, update them
-        if (fake_indices_ && indices_->size () != input_->points.size ())
-        {
-          size_t indices_size = indices_->size ();
-          indices_->resize (input_->points.size ());
-          for (size_t i = indices_size; i < indices_->size (); ++i) { (*indices_)[i] = static_cast<int>(i); }
-        }
-
-        return (true);
-      }
+      bool
+      initCompute ();
 
       /** \brief This method should get called after finishing the actual computation. 
-        *
         */
-      inline bool
-      deinitCompute ()
-      {
-        return (true);
-      }
+      bool
+      deinitCompute ();
+
     public:
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 
-  ////////////////////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////////////////
   template <>
   class PCL_EXPORTS PCLBase<sensor_msgs::PointCloud2>
   {
     public:
       typedef sensor_msgs::PointCloud2 PointCloud2;
-      typedef PointCloud2::Ptr PointCloud2Ptr;
-      typedef PointCloud2::ConstPtr PointCloud2ConstPtr;
+      typedef boost::shared_ptr<PointCloud2> PointCloud2Ptr;
+      typedef boost::shared_ptr<PointCloud2 const> PointCloud2ConstPtr;
 
-      typedef PointIndices::Ptr PointIndicesPtr;
-      typedef PointIndices::ConstPtr PointIndicesConstPtr;
+      typedef boost::shared_ptr<PointIndices> PointIndicesPtr;
+      typedef boost::shared_ptr<PointIndices const> PointIndicesConstPtr;
 
       /** \brief Empty constructor. */
-      PCLBase () : input_ (), indices_ (), use_indices_ (false), fake_indices_ (false),
-                   field_sizes_ (0), x_idx_ (-1), y_idx_ (-1), z_idx_ (-1),
-                   x_field_name_ ("x"), y_field_name_ ("y"), z_field_name_ ("z")
-      {};
-
+      PCLBase ();
+     
       /** \brief destructor. */
-      virtual ~PCLBase() 
-      {
-        input_.reset ();
-        indices_.reset ();
-      }
+      virtual ~PCLBase();
 
       /** \brief Provide a pointer to the input dataset
         * \param cloud the const boost shared pointer to a PointCloud message
@@ -300,26 +200,16 @@ namespace pcl
       getInputCloud () { return (input_); }
 
       /** \brief Provide a pointer to the vector of indices that represents the input data.
-        * \param indices a pointer to the vector of indices that represents the input data.
+        * \param[in] indices a pointer to the indices that represent the input data.
         */
-      inline void
-      setIndices (const IndicesPtr &indices)
-      {
-        indices_ = indices;
-        fake_indices_ = false;
-        use_indices_  = true;
-      }
+      void
+      setIndices (const IndicesPtr &indices);
 
       /** \brief Provide a pointer to the vector of indices that represents the input data.
-        * \param indices a pointer to the vector of indices that represents the input data.
+        * \param[in] indices a pointer to the indices that represent the input data.
         */
-      inline void
-      setIndices (const PointIndicesConstPtr &indices)
-      {
-        indices_.reset (new std::vector<int> (indices->indices));
-        fake_indices_ = false;
-        use_indices_  = true;
-      }
+      void
+      setIndices (const PointIndicesConstPtr &indices);
 
       /** \brief Get a pointer to the vector of indices used. */
       inline IndicesPtr const 
@@ -353,5 +243,9 @@ namespace pcl
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 }
+
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/impl/pcl_base.hpp>
+#endif
 
 #endif  //#ifndef PCL_PCL_BASE_H_

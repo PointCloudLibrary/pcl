@@ -3,6 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2012, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -33,13 +34,15 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id$
- *
  */
 #ifndef TERMINAL_TOOLS_TIME_H_
 #define TERMINAL_TOOLS_TIME_H_
 
-#include <pcl/common/boost.h>
+#ifdef __GNUC__
+#pragma GCC system_header 
+#endif
+
+#include <boost/date_time/posix_time/posix_time.hpp>
 #include <pcl/console/print.h>
 
 namespace pcl

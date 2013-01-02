@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2011, www.pointclouds.org
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2012-, Open Perception, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -31,13 +33,16 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id$
  */
 
 #ifndef PCL_GEOMETRY_H_
 #define PCL_GEOMETRY_H_
 
-#include <pcl/common/eigen.h>
+#if defined __GNUC__
+#  pragma GCC system_header
+#endif
+
+#include <Eigen/Core>
 
 /**
   * \file common/geometry.h
@@ -51,40 +56,46 @@ namespace pcl
   namespace geometry
   {
     /** @return the euclidean distance between 2 points */
-    template<typename PointT>
-    inline float distance( const PointT& p1, const PointT& p2)
+    template <typename PointT> inline float 
+    distance (const PointT& p1, const PointT& p2)
     {
       Eigen::Vector3f diff = p1 -p2;
-      return diff.norm ();
+      return (diff.norm ());
     }
+
     /** @return the squared euclidean distance between 2 points */
-    template<typename PointT>
-    inline float squaredDistance( const PointT& p1, const PointT& p2)
+    template<typename PointT> inline float 
+    squaredDistance (const PointT& p1, const PointT& p2)
     {
       Eigen::Vector3f diff = p1 -p2;
-      return diff.squaredNorm ();
+      return (diff.squaredNorm ());
     }
+
     /** @return the point projection on a plane defined by its origin and normal vector 
-      * \param point Point to be projected
-      * \param plane_origin The plane origin
-      * \param plane_normal The plane normal 
-      * \param projected The returned projected point
+      * \param[in] point Point to be projected
+      * \param[in] plane_origin The plane origin
+      * \param[in] plane_normal The plane normal 
+      * \param[out] projected The returned projected point
       */
-    template<typename PointT, typename NormalT>
-    inline void project(const PointT& point, const PointT &plane_origin, const NormalT& plane_normal, PointT& projected)
+    template<typename PointT, typename NormalT> inline void 
+    project (const PointT& point, const PointT &plane_origin, 
+             const NormalT& plane_normal, PointT& projected)
     {
       Eigen::Vector3f po = point - plane_origin;
       const Eigen::Vector3f normal = plane_normal.getVector3fMapConst ();
       float lambda = normal.dot(po);
       projected.getVector3fMap () = point.getVector3fMapConst () - (lambda * normal);
     }
+
     /** @return the point projection on a plane defined by its origin and normal vector 
-      * \param point Point to be projected
-      * \param plane_origin The plane origin
-      * \param plane_normal The plane normal 
-      * \param projected The returned projected point
+      * \param[in] point Point to be projected
+      * \param[in] plane_origin The plane origin
+      * \param[in] plane_normal The plane normal 
+      * \param[out] projected The returned projected point
       */
-    inline void project(const Eigen::Vector3f& point, const Eigen::Vector3f &plane_origin, const Eigen::Vector3f& plane_normal, Eigen::Vector3f& projected)
+    inline void 
+    project (const Eigen::Vector3f& point, const Eigen::Vector3f &plane_origin, 
+             const Eigen::Vector3f& plane_normal, Eigen::Vector3f& projected)
     {
       Eigen::Vector3f po = point - plane_origin;
       float lambda = plane_normal.dot(po);

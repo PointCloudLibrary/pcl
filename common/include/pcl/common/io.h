@@ -41,7 +41,6 @@
 #ifndef PCL_COMMON_IO_H_
 #define PCL_COMMON_IO_H_
 
-#include <pcl/common/boost.h>
 #include <string>
 #include <pcl/pcl_base.h>
 #include <pcl/PointIndices.h>

@@ -41,8 +41,9 @@
 #ifndef PCL_COMMON_IMPL_CENTROID_H_
 #define PCL_COMMON_IMPL_CENTROID_H_
 
+#include <pcl/common/centroid.h>
 #include <pcl/ros/conversions.h>
-#include <pcl/common/boost.h>
+#include <boost/mpl/size.hpp>
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename Scalar> inline unsigned int

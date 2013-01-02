@@ -3,6 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2012, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -33,8 +34,6 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id$
- *
  */
 
 #ifndef PCL_POINT_TRAITS_H_
@@ -48,7 +47,9 @@
 #include <boost/type_traits/remove_all_extents.hpp>
 #include <boost/type_traits/is_same.hpp>
 #include <boost/mpl/assert.hpp>
+#if PCL_LINEAR_VERSION(__GNUC__,__GNUC_MINOR__,__GNUC_PATCHLEVEL__) == PCL_LINEAR_VERSION(4,4,3)
 #include <boost/mpl/bool.hpp>
+#endif
 
 namespace pcl
 {
@@ -155,7 +156,7 @@ namespace pcl
       BOOST_MPL_ASSERT_MSG((!boost::is_same<PointT, typename POD<PointT>::type>::value),
                            POINT_TYPE_NOT_PROPERLY_REGISTERED, (PointT&));
     };
-
+#if PCL_LINEAR_VERSION(__GNUC__,__GNUC_MINOR__,__GNUC_PATCHLEVEL__) == PCL_LINEAR_VERSION(4,4,3)
     /*
       At least on GCC 4.4.3, but not later versions, some valid usages of the above traits for
       non-POD (but registered) point types fail with:
@@ -165,6 +166,7 @@ namespace pcl
      */
     //BOOST_MPL_ASSERT_MSG((!bool (mpl_::bool_<false>::value)), WTF_GCC443, (bool));
     BOOST_MPL_ASSERT_MSG((!bool (boost::mpl::bool_<false>::value)), WTF_GCC443, (bool));
+#endif
   } //namespace traits
 
   // Return true if the PointField matches the expected name and data type.

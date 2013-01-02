@@ -40,9 +40,7 @@
 #define PCL_DATA_TYPES_H_
 
 #include <pcl/pcl_macros.h>
-#include <pcl/common/eigen.h>
 #include <bitset>
-#include <vector>
 #include <pcl/ros/register_point_struct.h>
 
 /**
@@ -55,17 +53,8 @@
 // be able to fix them anyway
 #pragma warning(disable: 4201)
 //#pragma warning(push, 1)
-#ifdef BUILD_Maintainer
-#  if defined __GNUC__
-#    include <features.h>
-#    if __GNUC_PREREQ(4, 3)
-#      pragma GCC diagnostic ignored "-Weffc++"
-#      pragma GCC diagnostic ignored "-pedantic"
-#    else
-#      pragma GCC system_header
-#    endif
-//#  elif defined _MSC_VER
-#  endif
+#if defined __GNUC__
+#  pragma GCC system_header
 #endif
 
 /** @{*/

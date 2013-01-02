@@ -40,6 +40,8 @@
 #ifndef PCL_COMMON_GENERATE_HPP_
 #define PCL_COMMON_GENERATE_HPP_
 
+#include <pcl/console/print.h>
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename GeneratorT>
 pcl::common::CloudGenerator<PointT, GeneratorT>::CloudGenerator ()

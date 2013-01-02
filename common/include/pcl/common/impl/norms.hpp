@@ -40,6 +40,7 @@
 #define PCL_COMMON_NORMS_IMPL_HPP_
 
 #include <pcl/pcl_macros.h>
+#include <pcl/console/print.h>
 
 namespace pcl
 {

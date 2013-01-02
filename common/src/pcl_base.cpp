@@ -3,6 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -33,13 +34,34 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id$
- *
  */
 
-#include <pcl/pcl_base.h>
+#include <pcl/impl/pcl_base.hpp>
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////
+pcl::PCLBase<sensor_msgs::PointCloud2>::PCLBase ()
+  : input_ ()
+  , indices_ ()
+  , use_indices_ (false)
+  , fake_indices_ (false)
+  , field_sizes_ (0)
+  , x_idx_ (-1)
+  , y_idx_ (-1)
+  , z_idx_ (-1)
+  , x_field_name_ ("x")
+  , y_field_name_ ("y")
+  , z_field_name_ ("z")
+{
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+pcl::PCLBase<sensor_msgs::PointCloud2>::~PCLBase ()
+{
+  input_.reset ();
+  indices_.reset ();
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::PCLBase<sensor_msgs::PointCloud2>::setInputCloud (const PointCloud2ConstPtr &cloud)
 {
@@ -101,14 +123,14 @@ pcl::PCLBase<sensor_msgs::PointCloud2>::setInputCloud (const PointCloud2ConstPtr
   }
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////
 bool
 pcl::PCLBase<sensor_msgs::PointCloud2>::deinitCompute ()
 {
   return (true);
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////
 bool
 pcl::PCLBase<sensor_msgs::PointCloud2>::initCompute ()
 {
@@ -141,4 +163,28 @@ pcl::PCLBase<sensor_msgs::PointCloud2>::initCompute ()
 
   return (true);
 }
+
+///////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::PCLBase<sensor_msgs::PointCloud2>::setIndices (const IndicesPtr &indices)
+{
+  indices_ = indices;
+  fake_indices_ = false;
+  use_indices_  = true;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::PCLBase<sensor_msgs::PointCloud2>::setIndices (const PointIndicesConstPtr &indices)
+{
+  indices_.reset (new std::vector<int> (indices->indices));
+  fake_indices_ = false;
+  use_indices_  = true;
+}
+
+#ifndef PCL_NO_PRECOMPILE
+#include <pcl/impl/instantiate.hpp>
+#include <pcl/point_types.h>
+PCL_INSTANTIATE(PCLBase, PCL_POINT_TYPES)
+#endif    // PCL_NO_PRECOMPILE
 
