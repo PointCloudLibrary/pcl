@@ -2,6 +2,7 @@
 #define PCL_TRACKING_IMPL_DISTANCE_COHERENCE_H_
 
 #include <Eigen/Dense>
+#include <pcl/tracking/distance_coherence.h>
 
 namespace pcl
 {

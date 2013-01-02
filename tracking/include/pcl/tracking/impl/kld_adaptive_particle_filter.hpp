@@ -1,6 +1,8 @@
 #ifndef PCL_TRACKING_IMPL_KLD_ADAPTIVE_PARTICLE_FILTER_H_
 #define PCL_TRACKING_IMPL_KLD_ADAPTIVE_PARTICLE_FILTER_H_
 
+#include <pcl/tracking/kld_adaptive_particle_filter.h>
+
 template <typename PointInT, typename StateT> bool
 pcl::tracking::KLDAdaptiveParticleFilterTracker<PointInT, StateT>::initCompute ()
 {

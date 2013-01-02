@@ -39,15 +39,12 @@
 #ifndef PCL_TRACKING_IMPL_HSV_COLOR_COHERENCE_H_
 #define PCL_TRACKING_IMPL_HSV_COLOR_COHERENCE_H_
 
-#include <Eigen/Dense>
-
-#ifdef BUILD_Maintainer
-#  if defined __GNUC__
-#      pragma GCC system_header 
-#  elif defined _MSC_VER
-#    pragma warning(push, 1)
-#  endif
+#if defined __GNUC__
+#  pragma GCC system_header 
 #endif
+
+#include <pcl/tracking/hsv_color_coherence.h>
+#include <Eigen/Dense>
 
 namespace pcl
 {
@@ -175,11 +172,5 @@ namespace pcl
 }
 
 #define PCL_INSTANTIATE_HSVColorCoherence(T) template class PCL_EXPORTS pcl::tracking::HSVColorCoherence<T>;
-
-#ifdef BUILD_Maintainer
-#  if defined _MSC_VER
-#    pragma warning(pop)
-#  endif
-#endif
 
 #endif

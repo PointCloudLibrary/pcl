@@ -1,6 +1,8 @@
 #ifndef PCL_TRACKING_IMPL_PARTICLE_OMP_FILTER_H_
 #define PCL_TRACKING_IMPL_PARTICLE_OMP_FILTER_H_
 
+#include <pcl/tracking/particle_filter_omp.h>
+
 template <typename PointInT, typename StateT> void
 pcl::tracking::ParticleFilterOMPTracker<PointInT, StateT>::weight ()
 {

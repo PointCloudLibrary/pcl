@@ -12,14 +12,8 @@ if(build)
     set(srcs 
         src/tracking.cpp
         src/particle_filter.cpp
-        src/particle_filter_omp.cpp
         src/kld_adaptive_particle_filter.cpp
-        src/kld_adaptive_particle_filter_omp.cpp
-        src/nearest_pair_point_cloud_coherence.cpp
-        src/approx_nearest_pair_point_cloud_coherence.cpp
-        src/distance_coherence.cpp
-        src/normal_coherence.cpp
-        src/hsv_color_coherence.cpp
+        src/coherence.cpp
         )
 
     set(incs 

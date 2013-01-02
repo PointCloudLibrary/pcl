@@ -2,6 +2,7 @@
 #define PCL_TRACKING_IMPL_APPROX_NEAREST_PAIR_POINT_CLOUD_COHERENCE_H_
 
 #include <pcl/search/octree.h>
+#include <pcl/tracking/approx_nearest_pair_point_cloud_coherence.h>
 
 namespace pcl
 {

@@ -41,6 +41,7 @@
 #define PCL_TRACKING_TRACKER_H_
 
 #include <pcl/tracking/tracking.h>
+#include <pcl/pcl_base.h>
 #include <pcl/search/search.h>
 
 namespace pcl

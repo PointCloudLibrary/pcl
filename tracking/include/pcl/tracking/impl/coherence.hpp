@@ -1,6 +1,9 @@
 #ifndef PCL_TRACKING_IMPL_COHERENCE_H_
 #define PCL_TRACKING_IMPL_COHERENCE_H_
 
+#include <pcl/console/print.h>
+#include <pcl/tracking/coherence.h>
+
 namespace pcl
 {
   namespace tracking

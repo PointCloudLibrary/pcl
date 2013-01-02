@@ -2,9 +2,9 @@
  * Software License Agreement (BSD License)
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
- *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *
- *  All rights reserved. 
+ *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -16,7 +16,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -33,15 +33,20 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- *  $Id$
- *
  */
+#include <pcl/tracking/impl/approx_nearest_pair_point_cloud_coherence.hpp>
+#include <pcl/tracking/impl/distance_coherence.hpp>
+#include <pcl/tracking/impl/hsv_color_coherence.hpp>
+#include <pcl/tracking/impl/nearest_pair_point_cloud_coherence.hpp>
+#include <pcl/tracking/impl/normal_coherence.hpp>
 
+#ifndef PCL_NO_PRECOMPILE
 #include <pcl/impl/instantiate.hpp>
 #include <pcl/point_types.h>
-#include <pcl/point_cloud.h>
+PCL_INSTANTIATE(ApproxNearestPairPointCloudCoherence, PCL_XYZ_POINT_TYPES)
+PCL_INSTANTIATE(DistanceCoherence, PCL_XYZ_POINT_TYPES)
+PCL_INSTANTIATE(HSVColorCoherence, (pcl::PointXYZRGB)(pcl::PointXYZRGBNormal)(pcl::PointXYZRGBA))
+PCL_INSTANTIATE(NearestPairPointCloudCoherence, PCL_XYZ_POINT_TYPES)
+PCL_INSTANTIATE(NormalCoherence, PCL_NORMAL_POINT_TYPES)
+#endif    // PCL_NO_PRECOMPILE
 
-#include <pcl/tracking/nearest_pair_point_cloud_coherence.h>
-#include <pcl/tracking/impl/nearest_pair_point_cloud_coherence.hpp>
-
-PCL_INSTANTIATE_PRODUCT(NearestPairPointCloudCoherence, (PCL_XYZ_POINT_TYPES))

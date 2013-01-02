@@ -5,6 +5,7 @@
 #include <pcl/common/eigen.h>
 #include <pcl/common/transforms.h>
 #include <pcl/tracking/boost.h>
+#include <pcl/tracking/particle_filter.h>
 
 template <typename PointInT, typename StateT> bool
 pcl::tracking::ParticleFilterTracker<PointInT, StateT>::initCompute ()

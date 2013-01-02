@@ -3,6 +3,7 @@
 
 #include <pcl/search/kdtree.h>
 #include <pcl/search/organized.h>
+#include <pcl/tracking/nearest_pair_point_cloud_coherence.h>
 
 namespace pcl
 {

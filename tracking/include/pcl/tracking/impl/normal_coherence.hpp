@@ -2,6 +2,8 @@
 #define PCL_TRACKING_IMPL_NORMAL_COHERENCE_H_
 
 #include <pcl/common/common.h>
+#include <pcl/console/print.h>
+#include <pcl/tracking/normal_coherence.h>
 
 template <typename PointInT> double 
 pcl::tracking::NormalCoherence<PointInT>::computeCoherence (PointInT &source, PointInT &target)
