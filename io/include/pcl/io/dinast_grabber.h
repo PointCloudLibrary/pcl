@@ -42,6 +42,7 @@
 
 #include <pcl/pcl_config.h>
 #include <pcl/point_types.h>
+#include <pcl/point_cloud.h>
 #include <pcl/io/grabber.h>
 #include <pcl/common/time.h>
 #include <libusb-1.0/libusb.h>

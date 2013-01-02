@@ -43,6 +43,7 @@
 #include <pcl/io/grabber.h>
 #include <pcl/io/impl/synchronized_queue.hpp>
 #include <pcl/point_types.h>
+#include <pcl/point_cloud.h>
 #include <boost/asio.hpp>
 #include <string>
 

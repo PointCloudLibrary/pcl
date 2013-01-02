@@ -39,6 +39,8 @@
 #define OBJ_IO_H_
 #include <pcl/pcl_macros.h>
 #include <pcl/TextureMesh.h>
+#include <pcl/PolygonMesh.h>
+
 namespace pcl
 {
   namespace io
