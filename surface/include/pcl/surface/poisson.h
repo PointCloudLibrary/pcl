@@ -45,7 +45,7 @@ namespace pcl
   namespace poisson
   {
     class CoredVectorMeshData;
-    template <class Real> class Point3D;
+    template <class Real> struct Point3D;
   }
 
   /** \brief The Poisson surface reconstruction algorithm.
