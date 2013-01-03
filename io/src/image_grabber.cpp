@@ -159,12 +159,12 @@ pcl::ImageGrabberBase::ImageGrabberImpl::ImageGrabberImpl (pcl::ImageGrabberBase
   , orientation_ ()
   , valid_ (false)
   , pclzf_mode_(pclzf_mode)
-  , depth_image_units_ (1E-3)
+  , depth_image_units_ (1E-3f)
   , manual_intrinsics_ (false)
-  , focal_length_x_ (525)
-  , focal_length_y_ (525)
-  , principal_point_x_ (320)
-  , principal_point_y_ (240)
+  , focal_length_x_ (525.)
+  , focal_length_y_ (525.)
+  , principal_point_x_ (320.)
+  , principal_point_y_ (240.)
 {
   if(pclzf_mode_)
   {
@@ -199,12 +199,12 @@ pcl::ImageGrabberBase::ImageGrabberImpl::ImageGrabberImpl (pcl::ImageGrabberBase
   , orientation_ ()
   , valid_ (false)
   , pclzf_mode_(false)
-  , depth_image_units_ (1E-3)
+  , depth_image_units_ (1E-3f)
   , manual_intrinsics_ (false)
-  , focal_length_x_ (525)
-  , focal_length_y_ (525)
-  , principal_point_x_ (320)
-  , principal_point_y_ (240)
+  , focal_length_x_ (525.)
+  , focal_length_y_ (525.)
+  , principal_point_x_ (320.)
+  , principal_point_y_ (240.)
 {
   depth_image_files_ = depth_image_files;
   depth_image_iterator_ = depth_image_files_.begin ();
@@ -384,17 +384,17 @@ pcl::ImageGrabberBase::ImageGrabberImpl::loadNextCloudVTK ()
   float centerX, centerY;
   if (manual_intrinsics_)
   {
-    scaleFactorX = 1./focal_length_x_;
-    scaleFactorY = 1./focal_length_y_;
-    centerX = principal_point_x_;
-    centerY = principal_point_y_;
+    scaleFactorX = 1.f / static_cast<float> (focal_length_x_);
+    scaleFactorY = 1.f / static_cast<float> (focal_length_y_);
+    centerX = static_cast<float> (principal_point_x_);
+    centerY = static_cast<float> (principal_point_y_);
   }
   else
   {
     // The 525 factor default is only true for VGA. If not, we should scale
-    scaleFactorX = scaleFactorY = 1/525. * 640./dims[0];
-    centerX = dims[0] >> 1;
-    centerY = dims[1] >> 1;
+    scaleFactorX = scaleFactorY = 1/525.f * 640.f / static_cast<float> (dims[0]);
+    centerX = static_cast<float> (dims[0] >> 1);
+    centerY = static_cast<float> (dims[1] >> 1);
   }
 
   if(rgb_image_files_.size() > 0)
@@ -414,8 +414,8 @@ pcl::ImageGrabberBase::ImageGrabberImpl::loadNextCloudVTK ()
           pt.x = pt.y = pt.z = std::numeric_limits<float>::quiet_NaN ();
         else
         {
-          pt.x = ((float)x - centerX) * scaleFactorX * depth;
-          pt.y = ((float)y - centerY) * scaleFactorY * depth; 
+          pt.x = (static_cast<float> (x) - centerX) * scaleFactorX * depth;
+          pt.y = (static_cast<float> (y) - centerY) * scaleFactorY * depth; 
           pt.z = depth;
         }
 

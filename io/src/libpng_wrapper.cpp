@@ -148,9 +148,11 @@ namespace pcl
       }
 
       // Write header
-      png_set_IHDR (png_ptr, info_ptr, width_arg, height_arg, sizeof(T) * 8,
-          image_format_arg, PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_DEFAULT,
-          PNG_FILTER_TYPE_DEFAULT);
+      png_set_IHDR (png_ptr, info_ptr,
+                    static_cast<png_uint_32> (width_arg), static_cast<png_uint_32> (height_arg),
+                    sizeof(T) * 8,
+                    image_format_arg, PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_DEFAULT,
+                    PNG_FILTER_TYPE_DEFAULT);
 
       png_write_info (png_ptr, info_ptr);
 
@@ -262,9 +264,11 @@ pcl::io::encodeMonoImageToPNG (std::vector<uint8_t>& image_arg,
                                size_t width_arg,
                                size_t height_arg,
                                std::vector<uint8_t>& pngData_arg,
-                              int png_level_arg)
+                               int png_level_arg)
 {
-  encodeImageToPNG<uint8_t>(image_arg, width_arg, height_arg, PNG_COLOR_TYPE_GRAY, pngData_arg, png_level_arg);
+  encodeImageToPNG<uint8_t> (image_arg, 
+                             static_cast<png_uint_32> (width_arg), static_cast<png_uint_32> (height_arg),
+                             PNG_COLOR_TYPE_GRAY, pngData_arg, png_level_arg);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -275,7 +279,9 @@ pcl::io::encodeMonoImageToPNG (std::vector<uint16_t>& image_arg,
                                std::vector<uint8_t>& pngData_arg,
                                int png_level_arg)
 {
-  encodeImageToPNG<uint16_t>(image_arg, width_arg, height_arg, PNG_COLOR_TYPE_GRAY, pngData_arg, png_level_arg);
+  encodeImageToPNG<uint16_t> (image_arg,
+                              static_cast<png_uint_32> (width_arg), static_cast<png_uint_32> (height_arg),
+                              PNG_COLOR_TYPE_GRAY, pngData_arg, png_level_arg);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -286,7 +292,9 @@ pcl::io::encodeRGBImageToPNG (std::vector<uint8_t>& image_arg,
                               std::vector<uint8_t>& pngData_arg,
                               int png_level_arg)
 {
-  encodeImageToPNG<uint8_t>(image_arg, width_arg, height_arg, PNG_COLOR_TYPE_RGB, pngData_arg, png_level_arg);
+  encodeImageToPNG<uint8_t>(image_arg,
+                            static_cast<png_uint_32> (width_arg), static_cast<png_uint_32> (height_arg),
+                            PNG_COLOR_TYPE_RGB, pngData_arg, png_level_arg);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -297,7 +305,9 @@ pcl::io::encodeRGBImageToPNG (std::vector<uint16_t>& image_arg,
                               std::vector<uint8_t>& pngData_arg,
                               int png_level_arg)
 {
-  encodeImageToPNG<uint16_t>(image_arg, width_arg, height_arg, PNG_COLOR_TYPE_RGB, pngData_arg, png_level_arg);
+  encodeImageToPNG<uint16_t>(image_arg,
+                             static_cast<png_uint_32> (width_arg), static_cast<png_uint_32> (height_arg),
+                             PNG_COLOR_TYPE_RGB, pngData_arg, png_level_arg);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
