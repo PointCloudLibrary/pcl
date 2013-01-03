@@ -46,8 +46,8 @@
 // Forward declarations
 namespace flann
 {
-  class SearchParams;
-  template <typename T> class L2_Simple;
+  struct SearchParams;
+  template <typename T> struct L2_Simple;
   template <typename T> class Index;
 }
 

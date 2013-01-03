@@ -40,8 +40,8 @@
 #define PCL_KDTREE_KDTREE_IMPL_FLANN_H_
 
 #include <cstdio>
-#include <pcl/kdtree/flann.h>
 #include <pcl/kdtree/kdtree_flann.h>
+#include <pcl/kdtree/flann.h>
 #include <pcl/console/print.h>
 
 ///////////////////////////////////////////////////////////////////////////////////////////
