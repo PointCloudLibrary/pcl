@@ -38,6 +38,7 @@
 #ifndef PCL_CYCLICAL_BUFFER_IMPL_HPP_
 #define PCL_CYCLICAL_BUFFER_IMPL_HPP_
 
+#include <pcl/common/distances.h>
 #include <pcl/gpu/kinfu_large_scale/cyclical_buffer.h>
 #include "../../../../../src/internal.h"
 
