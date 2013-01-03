@@ -68,6 +68,7 @@ namespace pcl
         computeDepthMap (typename pcl::PointCloud<SceneT>::ConstPtr & scene, bool compute_focal = false, bool smooth = false, int wsize = 3);
         void
         filter (typename pcl::PointCloud<ModelT>::ConstPtr & model, typename pcl::PointCloud<ModelT>::Ptr & filtered, float thres = 0.01);
+        void filter (typename pcl::PointCloud<ModelT>::ConstPtr & model, std::vector<int> & indices, float thres = 0.01);
       };
 
     template<typename ModelT, typename SceneT> typename pcl::PointCloud<ModelT>::Ptr

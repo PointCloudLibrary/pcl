@@ -89,10 +89,14 @@ namespace pcl
 	 * the coordinate system is that of the scene cloud
      */
     typename std::vector<typename pcl::PointCloud<ModelT>::ConstPtr> visible_models_;
+
+    std::vector<typename pcl::PointCloud<pcl::Normal>::ConstPtr> visible_normal_models_;
     /*
      * \brief Vector of point clouds representing the complete 3D model (in same coordinates as the scene cloud)
      */
     typename std::vector<typename pcl::PointCloud<ModelT>::ConstPtr> complete_models_;
+
+    std::vector<typename pcl::PointCloud<pcl::Normal>::ConstPtr> complete_normal_models_;
     /*
      * \brief Resolutions in pixel for the depth scene buffer
      */
@@ -115,6 +119,16 @@ namespace pcl
      * \brief Threshold to consider a point being occluded
      */
     float occlusion_thres_;
+
+    /*
+     * \brief Whether the HV method requires normals or not, by default = false
+     */
+    bool requires_normals_;
+
+    /*
+     * \brief Whether the normals have been set
+     */
+    bool normals_set_;
   public:
 
     HypothesisVerification ()
@@ -125,6 +139,12 @@ namespace pcl
       inliers_threshold_ = static_cast<float>(resolution_);
       occlusion_cloud_set_ = false;
       occlusion_thres_ = 0.005f;
+      normals_set_ = false;
+      requires_normals_ = false;
+    }
+
+    bool getRequiresNormals() {
+      return requires_normals_;
     }
 
     /*
@@ -178,6 +198,18 @@ namespace pcl
     }
 
     /*
+     *  \brief Sets the normals of the 3D complete models and sets normals_set_ to true.
+     *  Normals need to be added before calling the addModels method.
+     *  complete_models The normals of the models.
+     */
+    void
+    addNormalsClouds (std::vector<pcl::PointCloud<pcl::Normal>::ConstPtr> & complete_models)
+    {
+      complete_normal_models_ = complete_models;
+      normals_set_ = true;
+    }
+
+    /*
      *  \brief Sets the models (recognition hypotheses) - requires the scene_cloud_ to be set first if reasoning about occlusions
      *  mask models Vector of point clouds representing the models (in same coordinates as the scene_cloud_)
      */
@@ -219,7 +251,15 @@ namespace pcl
           typename pcl::PointCloud<ModelT>::Ptr filtered (new pcl::PointCloud<ModelT> ());
           typename pcl::occlusion_reasoning::ZBuffering<ModelT, SceneT> zbuffer_self_occlusion (75, 75, 1.f);
           zbuffer_self_occlusion.computeDepthMap (models[i], true);
-          zbuffer_self_occlusion.filter (models[i], filtered, 0.005f);
+          std::vector<int> indices;
+          zbuffer_self_occlusion.filter (models[i], indices, 0.005f);
+          pcl::copyPointCloud (*models[i], indices, *filtered);
+
+          if(normals_set_ && requires_normals_) {
+            pcl::PointCloud<pcl::Normal>::Ptr filtered_normals (new pcl::PointCloud<pcl::Normal> ());
+            pcl::copyPointCloud(*complete_normal_models_[i], indices, *filtered_normals);
+            visible_normal_models_.push_back(filtered_normals);
+          }
 
           typename pcl::PointCloud<ModelT>::ConstPtr const_filtered(new pcl::PointCloud<ModelT> (*filtered));
           //typename pcl::PointCloud<ModelT>::ConstPtr const_filtered(new pcl::PointCloud<ModelT> (*models[i]));
@@ -240,6 +280,7 @@ namespace pcl
       }
 
       occlusion_cloud_set_ = false;
+      normals_set_ = false;
     }
 
     /*
@@ -253,6 +294,7 @@ namespace pcl
 
       complete_models_.clear();
       visible_models_.clear();
+      visible_normal_models_.clear();
 
       scene_cloud_ = scene_cloud;
       scene_cloud_downsampled_.reset(new pcl::PointCloud<SceneT>());
@@ -268,7 +310,8 @@ namespace pcl
       scene_downsampled_tree_->setInputCloud(scene_cloud_downsampled_);
     }
 
-    void setOcclusionCloud (const typename pcl::PointCloud<SceneT>::Ptr & occ_cloud) {
+    void setOcclusionCloud (const typename pcl::PointCloud<SceneT>::Ptr & occ_cloud)
+    {
       occlusion_cloud_ = occ_cloud;
       occlusion_cloud_set_ = true;
     }
