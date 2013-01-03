@@ -39,9 +39,6 @@
 #define PCL_FILTER_IMPL_FIELD_VAL_CONDITION_H_
 
 #include <pcl/common/io.h>
-#include <pcl/filters/boost.h>
-#include <vector>
-#include <Eigen/Geometry>
 #include <pcl/filters/conditional_removal.h>
 
 //////////////////////////////////////////////////////////////////////////
