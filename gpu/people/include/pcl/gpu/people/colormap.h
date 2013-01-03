@@ -40,6 +40,7 @@
 #ifndef PCL_GPU_PEOPLE_COLORMAP_H_
 #define PCL_GPU_PEOPLE_COLORMAP_H_
 
+#include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/gpu/people/tree.h>
 #include <pcl/gpu/containers/device_array.h>
