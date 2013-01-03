@@ -45,6 +45,7 @@
 #include <boost/shared_ptr.hpp>
 #include <Eigen/StdVector>
 #include <Eigen/Geometry>
+#include <pcl/pcl_exports.h>
 
 namespace pcl
 {
@@ -86,7 +87,7 @@ namespace pcl
   };
   
   /** \brief overloaded << operator */
-  std::ostream& operator << (std::ostream& os, const Correspondence& c);
+  PCL_EXPORTS std::ostream& operator << (std::ostream& os, const Correspondence& c);
 
   typedef std::vector< pcl::Correspondence, Eigen::aligned_allocator<pcl::Correspondence> > Correspondences;
   typedef boost::shared_ptr<Correspondences> CorrespondencesPtr;
