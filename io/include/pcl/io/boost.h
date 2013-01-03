@@ -49,8 +49,6 @@
 #include <boost/thread/thread.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/bind.hpp>
-#include <boost/signals2.hpp>
-#include <boost/signals2/slot.hpp>
 #include <boost/cstdint.hpp>
 #include <boost/function.hpp>
 #include <boost/tuple/tuple.hpp>
@@ -71,6 +69,9 @@
 #if BOOST_VERSION >= 104900
 #include <boost/interprocess/permissions.hpp>
 #endif
+#define BOOST_PARAMETER_MAX_ARITY 7
+#include <boost/signals2.hpp>
+#include <boost/signals2/slot.hpp>
 
 #endif    // _PCL_IO_BOOST_H_
 
