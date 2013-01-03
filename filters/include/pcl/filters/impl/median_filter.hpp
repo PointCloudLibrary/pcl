@@ -82,7 +82,7 @@ pcl::MedianFilter<PointT>::applyFilter (PointCloud &output)
           output (x, y).z = new_depth;
         else
           output (x, y).z = (*input_)(x, y).z +
-                            max_allowed_movement_ * (new_depth - (*input_)(x, y).z) / fabs (new_depth - (*input_)(x, y).z);
+                            max_allowed_movement_ * (new_depth - (*input_)(x, y).z) / fabsf (new_depth - (*input_)(x, y).z);
       }
 }
 
