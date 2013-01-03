@@ -44,6 +44,7 @@
 #endif
 
 #include <Eigen/Core>
+#include <ostream>
 
 // Define all PCL point types
 #define PCL_POINT_TYPES         \
@@ -224,6 +225,7 @@ namespace pcl
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 
+  std::ostream& operator << (std::ostream& os, const PointXYZ& p);
   /** \brief A point structure representing Euclidean xyz coordinates. (SSE friendly)
     * \ingroup common
     */
@@ -246,6 +248,7 @@ namespace pcl
       data[3] = 1.0f;
     }
 
+    friend std::ostream& operator << (std::ostream& os, const PointXYZ& p);
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 
@@ -258,6 +261,7 @@ namespace pcl
     PCL_ADD_RGB;
   };
 
+  std::ostream& operator << (std::ostream& os, const RGB& p);
   /** \brief A structure representing RGB color information.
     *
     * The RGBA information is available either as separate r, g, b, or as a
@@ -288,6 +292,8 @@ namespace pcl
     {
       r = g = b = a = 0;
     }
+  
+    friend std::ostream& operator << (std::ostream& os, const RGB& p);
   };
   
 
@@ -296,6 +302,7 @@ namespace pcl
     PCL_ADD_INTENSITY;
   };
 
+  std::ostream& operator << (std::ostream& os, const Intensity& p);
   /** \brief A point structure representing the grayscale intensity in single-channel images.
     * Intensity is represented as a float value.
     * \ingroup common
@@ -311,6 +318,8 @@ namespace pcl
     {
       intensity = 0.0f;
     }
+  
+    friend std::ostream& operator << (std::ostream& os, const Intensity& p);
   };
   
 
@@ -319,6 +328,7 @@ namespace pcl
     PCL_ADD_INTENSITY_8U;
   };
 
+  std::ostream& operator << (std::ostream& os, const Intensity8u& p);
   /** \brief A point structure representing the grayscale intensity in single-channel images.
     * Intensity is represented as a uint8_t value.
     * \ingroup common
@@ -334,6 +344,8 @@ namespace pcl
     {
       intensity = 0;
     }
+  
+    friend std::ostream& operator << (std::ostream& os, const Intensity8u& p);
   };
 
 
@@ -354,6 +366,7 @@ namespace pcl
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 
+  std::ostream& operator << (std::ostream& os, const PointXYZI& p);
   struct PointXYZI : public _PointXYZI
   {
     inline PointXYZI (const _PointXYZI &p)
@@ -374,6 +387,7 @@ namespace pcl
       data[3] = 1.0f;
       intensity = _intensity;
     }
+    friend std::ostream& operator << (std::ostream& os, const PointXYZI& p);
   };
   
 
@@ -384,6 +398,7 @@ namespace pcl
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 
+  std::ostream& operator << (std::ostream& os, const PointXYZL& p);
   struct PointXYZL : public _PointXYZL
   {
     inline PointXYZL (const _PointXYZL &p)
@@ -398,12 +413,17 @@ namespace pcl
       data[3] = 1.0f;
       label = 0;
     }
+  
+    friend std::ostream& operator << (std::ostream& os, const PointXYZL& p);
   };
 
 
+  std::ostream& operator << (std::ostream& os, const Label& p);
   struct Label
   {
     uint32_t label;
+  
+    friend std::ostream& operator << (std::ostream& os, const Label& p);
   };
 
 
@@ -414,6 +434,7 @@ namespace pcl
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 
+  std::ostream& operator << (std::ostream& os, const PointXYZRGBA& p);
   /** \brief A point structure representing Euclidean xyz coordinates, and the RGBA color.
     *
     * The RGBA information is available either as separate r, g, b, or as a
@@ -458,8 +479,9 @@ namespace pcl
       return (Eigen::Vector4i (r, g, b, a));
     }
     inline const Eigen::Vector4i getRGBVector4i () const { return (Eigen::Vector4i (r, g, b, a)); }
+  
+    friend std::ostream& operator << (std::ostream& os, const PointXYZRGBA& p);
   };
-
 
 
   struct EIGEN_ALIGN16 _PointXYZRGB
@@ -477,6 +499,7 @@ namespace pcl
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 
+  std::ostream& operator << (std::ostream& os, const PointXYZRGB& p);
   /** \brief A point structure representing Euclidean xyz coordinates, and the RGB color.
     *
     * Due to historical reasons (PCL was first developed as a ROS package), the
@@ -543,10 +566,13 @@ namespace pcl
     }
     inline const Eigen::Vector4i getRGBVector4i () const { return (Eigen::Vector4i (r, g, b, a)); }
 
+  
+    friend std::ostream& operator << (std::ostream& os, const PointXYZRGB& p);
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 
 
+  std::ostream& operator << (std::ostream& os, const PointXYZRGBL& p);
   struct EIGEN_ALIGN16 PointXYZRGBL : public _PointXYZRGBL
   {
     inline PointXYZRGBL (const _PointXYZRGBL &p)
@@ -574,6 +600,8 @@ namespace pcl
       a = 0;
       label = _label;
     }
+  
+    friend std::ostream& operator << (std::ostream& os, const PointXYZRGBL& p);
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 
@@ -594,6 +622,7 @@ namespace pcl
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   } EIGEN_ALIGN16;
 
+  std::ostream& operator << (std::ostream& os, const PointXYZHSV& p);
   struct EIGEN_ALIGN16 PointXYZHSV : public _PointXYZHSV
   {
     inline PointXYZHSV (const _PointXYZHSV &p)
@@ -615,11 +644,14 @@ namespace pcl
       h = _h; v = _v; s = _s;
       data_c[3] = 0;
     }
+  
+    friend std::ostream& operator << (std::ostream& os, const PointXYZHSV& p);
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 
 
 
+  std::ostream& operator << (std::ostream& os, const PointXY& p);
   /** \brief A 2D point structure representing Euclidean xy coordinates.
     * \ingroup common
     */
@@ -627,8 +659,11 @@ namespace pcl
   {
     float x;
     float y;
+  
+    friend std::ostream& operator << (std::ostream& os, const PointXY& p);
   };
 
+  std::ostream& operator << (std::ostream& os, const PointUV& p);
   /** \brief A 2D point structure representing pixel image coordinates.
     * \note We use float to be able to represent subpixels.
     * \ingroup common
@@ -637,8 +672,11 @@ namespace pcl
   {
     float u;
     float v;
+  
+    friend std::ostream& operator << (std::ostream& os, const PointUV& p);
   };
 
+  std::ostream& operator << (std::ostream& os, const InterestPoint& p);
   /** \brief A point structure representing an interest point with Euclidean xyz coordinates, and an interest value.
     * \ingroup common
     */
@@ -654,6 +692,8 @@ namespace pcl
       float data_c[4];
     };
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+  
+    friend std::ostream& operator << (std::ostream& os, const InterestPoint& p);
   };
 
   struct EIGEN_ALIGN16 _Normal
@@ -670,6 +710,7 @@ namespace pcl
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 
+  std::ostream& operator << (std::ostream& os, const Normal& p);
   /** \brief A point structure representing normal coordinates and the surface curvature estimate. (SSE friendly)
     * \ingroup common
     */
@@ -695,6 +736,7 @@ namespace pcl
       data_n[3] = 0.0f;
     }
 
+    friend std::ostream& operator << (std::ostream& os, const Normal& p);
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 
@@ -702,9 +744,10 @@ namespace pcl
   struct EIGEN_ALIGN16 _Axis
   {
     PCL_ADD_NORMAL4D;
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW 
   };
 
+  std::ostream& operator << (std::ostream& os, const Axis& p);
   /** \brief A point structure representing an Axis using its normal coordinates. (SSE friendly)
     *  \ingroup common
     */
@@ -727,6 +770,7 @@ namespace pcl
       data_n[3] = 0.0f;
     }
 
+    friend std::ostream& operator << (std::ostream& os, const Axis& p);
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 
@@ -746,6 +790,7 @@ namespace pcl
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 
+  std::ostream& operator << (std::ostream& os, const PointNormal& p);
   /** \brief A point structure representing Euclidean xyz coordinates, together with normal coordinates and the surface curvature estimate. (SSE friendly)
     * \ingroup common
     */
@@ -764,6 +809,8 @@ namespace pcl
       data[3] = 1.0f;
       normal_x = normal_y = normal_z = data_n[3] = 0.0f;
     }
+  
+    friend std::ostream& operator << (std::ostream& os, const PointNormal& p);
   };
 
 
@@ -795,6 +842,7 @@ namespace pcl
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 
+  std::ostream& operator << (std::ostream& os, const PointXYZRGBNormal& p);
   /** \brief A point structure representing Euclidean xyz coordinates, and the RGB color, together with normal coordinates and the surface curvature estimate.
     * Due to historical reasons (PCL was first developed as a ROS package), the
     * RGB information is packed into an integer and casted to a float. This is
@@ -853,6 +901,8 @@ namespace pcl
       return (Eigen::Vector4i (r, g, b, a));
     }
     inline const Eigen::Vector4i getRGBVector4i () const { return (Eigen::Vector4i (r, g, b, a)); }
+  
+    friend std::ostream& operator << (std::ostream& os, const PointXYZRGBNormal& p);
   };
 
   struct EIGEN_ALIGN16 _PointXYZINormal
@@ -870,7 +920,8 @@ namespace pcl
     };
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
-
+  
+  std::ostream& operator << (std::ostream& os, const PointXYZINormal& p);
   /** \brief A point structure representing Euclidean xyz coordinates, intensity, together with normal coordinates and the surface curvature estimate.
     * \ingroup common
     */
@@ -891,6 +942,8 @@ namespace pcl
       normal_x = normal_y = normal_z = data_n[3] = 0.0f;
       intensity = 0.0f;
     }
+  
+    friend std::ostream& operator << (std::ostream& os, const PointXYZINormal& p);
   };
 
 
@@ -908,6 +961,7 @@ namespace pcl
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 
+  std::ostream& operator << (std::ostream& os, const PointWithRange& p);
   /** \brief A point structure representing Euclidean xyz coordinates, padded with an extra range float.
     * \ingroup common
     */
@@ -925,6 +979,8 @@ namespace pcl
       data[3] = 1.0f;
       range = 0.0f;
     }
+  
+    friend std::ostream& operator << (std::ostream& os, const PointWithRange& p);
   };
 
 
@@ -944,6 +1000,7 @@ namespace pcl
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 
+  std::ostream& operator << (std::ostream& os, const PointWithViewpoint& p);
   /** \brief A point structure representing Euclidean xyz coordinates together with the viewpoint from which it was seen.
     * \ingroup common
     */
@@ -962,32 +1019,44 @@ namespace pcl
       data[3] = 1.0f;
       vp_x = _vp_x; vp_y = _vp_y; vp_z = _vp_z;
     }
+  
+    friend std::ostream& operator << (std::ostream& os, const PointWithViewpoint& p);
   };
 
+  std::ostream& operator << (std::ostream& os, const MomentInvariants& p);
   /** \brief A point structure representing the three moment invariants.
     * \ingroup common
     */
   struct MomentInvariants
   {
     float j1, j2, j3;
+  
+    friend std::ostream& operator << (std::ostream& os, const MomentInvariants& p);
   };
 
+  std::ostream& operator << (std::ostream& os, const PrincipalRadiiRSD& p);
   /** \brief A point structure representing the minimum and maximum surface radii (in meters) computed using RSD.
     * \ingroup common
     */
   struct PrincipalRadiiRSD
   {
     float r_min, r_max;
+  
+    friend std::ostream& operator << (std::ostream& os, const PrincipalRadiiRSD& p);
   };
 
+  std::ostream& operator << (std::ostream& os, const Boundary& p);
   /** \brief A point structure representing a description of whether a point is lying on a surface boundary or not.
     * \ingroup common
     */
   struct Boundary
   {
     uint8_t boundary_point;
+  
+    friend std::ostream& operator << (std::ostream& os, const Boundary& p);
   };
 
+  std::ostream& operator << (std::ostream& os, const PrincipalCurvatures& p);
   /** \brief A point structure representing the principal curvatures and their magnitudes.
     * \ingroup common
     */
@@ -1005,24 +1074,33 @@ namespace pcl
     };
     float pc1;
     float pc2;
+  
+    friend std::ostream& operator << (std::ostream& os, const PrincipalCurvatures& p);
   };
 
+  std::ostream& operator << (std::ostream& os, const PFHSignature125& p);
   /** \brief A point structure representing the Point Feature Histogram (PFH).
     * \ingroup common
     */
   struct PFHSignature125
   {
     float histogram[125];
+  
+    friend std::ostream& operator << (std::ostream& os, const PFHSignature125& p);
   };
 
+  std::ostream& operator << (std::ostream& os, const PFHRGBSignature250& p);
   /** \brief A point structure representing the Point Feature Histogram with colors (PFHRGB).
     * \ingroup common
     */
   struct PFHRGBSignature250
   {
     float histogram[250];
+  
+    friend std::ostream& operator << (std::ostream& os, const PFHRGBSignature250& p);
   };
 
+  std::ostream& operator << (std::ostream& os, const PPFSignature& p);
   /** \brief A point structure for storing the Point Pair Feature (PPF) values
     * \ingroup common
     */
@@ -1030,8 +1108,11 @@ namespace pcl
   {
     float f1, f2, f3, f4;
     float alpha_m;
+  
+    friend std::ostream& operator << (std::ostream& os, const PPFSignature& p);
   };
 
+  std::ostream& operator << (std::ostream& os, const PPFRGBSignature& p);
   /** \brief A point structure for storing the Point Pair Color Feature (PPFRGB) values
     * \ingroup common
     */
@@ -1040,8 +1121,11 @@ namespace pcl
      float f1, f2, f3, f4;
      float r_ratio, g_ratio, b_ratio;
      float alpha_m;
+  
+     friend std::ostream& operator << (std::ostream& os, const PPFRGBSignature& p);
    };
 
+  std::ostream& operator << (std::ostream& os, const NormalBasedSignature12& p);
   /** \brief A point structure representing the Normal Based Signature for
     * a feature matrix of 4-by-3
     * \ingroup common
@@ -1049,8 +1133,11 @@ namespace pcl
   struct NormalBasedSignature12
   {
     float values[12];
+  
+    friend std::ostream& operator << (std::ostream& os, const NormalBasedSignature12& p);
   };
 
+  std::ostream& operator << (std::ostream& os, const ShapeContext1980& p);
   /** \brief A point structure representing a Shape Context.
     * \ingroup common
     */
@@ -1058,9 +1145,12 @@ namespace pcl
   {
     float descriptor[1980];
     float rf[9];
+  
+    friend std::ostream& operator << (std::ostream& os, const ShapeContext1980& p);
   };
 
 
+  std::ostream& operator << (std::ostream& os, const SHOT352& p);
   /** \brief A point structure representing the generic Signature of Histograms of OrienTations (SHOT) - shape only.
     * \ingroup common
     */
@@ -1068,9 +1158,12 @@ namespace pcl
   {
     float descriptor[352];
     float rf[9];
+  
+    friend std::ostream& operator << (std::ostream& os, const SHOT352& p);
   };
 
 
+  std::ostream& operator << (std::ostream& os, const SHOT1344& p);
   /** \brief A point structure representing the generic Signature of Histograms of OrienTations (SHOT) - shape+color.
     * \ingroup common
     */
@@ -1078,6 +1171,8 @@ namespace pcl
   {
     float descriptor[1344];
     float rf[9];
+  
+    friend std::ostream& operator << (std::ostream& os, const SHOT1344& p);
   };
 
 
@@ -1100,6 +1195,7 @@ namespace pcl
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 
+  std::ostream& operator << (std::ostream& os, const ReferenceFrame& p);
   struct EIGEN_ALIGN16 ReferenceFrame : public _ReferenceFrame
   {
     inline ReferenceFrame (const _ReferenceFrame &p)
@@ -1114,26 +1210,34 @@ namespace pcl
         x_axis[d] = y_axis[d] = z_axis[d] = 0;
     }
 
+    friend std::ostream& operator << (std::ostream& os, const ReferenceFrame& p);
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 
 
+  std::ostream& operator << (std::ostream& os, const FPFHSignature33& p);
   /** \brief A point structure representing the Fast Point Feature Histogram (FPFH).
     * \ingroup common
     */
   struct FPFHSignature33
   {
     float histogram[33];
+  
+    friend std::ostream& operator << (std::ostream& os, const FPFHSignature33& p);
   };
 
+  std::ostream& operator << (std::ostream& os, const VFHSignature308& p);
   /** \brief A point structure representing the Viewpoint Feature Histogram (VFH).
     * \ingroup common
     */
   struct VFHSignature308
   {
     float histogram[308];
+  
+    friend std::ostream& operator << (std::ostream& os, const VFHSignature308& p);
   };
 
+  std::ostream& operator << (std::ostream& os, const BRISKSignature512& p);
   /** \brief A point structure representing the Binary Robust Invariant Scalable Keypoints (BRISK).
     * \ingroup common
     */
@@ -1142,25 +1246,34 @@ namespace pcl
     float scale;
     float orientation;
     unsigned char descriptor[64];
+  
+    friend std::ostream& operator << (std::ostream& os, const BRISKSignature512& p);
   };
 
+  std::ostream& operator << (std::ostream& os, const ESFSignature640& p);
   /** \brief A point structure representing the Ensemble of Shape Functions (ESF).
     * \ingroup common
     */
   struct ESFSignature640
   {
     float histogram[640];
+  
+    friend std::ostream& operator << (std::ostream& os, const ESFSignature640& p);
   };
 
+  std::ostream& operator << (std::ostream& os, const GFPFHSignature16& p);
   /** \brief A point structure representing the GFPFH descriptor with 16 bins.
     * \ingroup common
     */
   struct GFPFHSignature16
   {
-      float histogram[16];
-      static int descriptorSize() { return 16; }
+    float histogram[16];
+    static int descriptorSize() { return 16; }
+    
+    friend std::ostream& operator << (std::ostream& os, const GFPFHSignature16& p);
   };
 
+  std::ostream& operator << (std::ostream& os, const Narf36& p);
   /** \brief A point structure representing the Narf descriptor.
     * \ingroup common
     */
@@ -1168,8 +1281,11 @@ namespace pcl
   {
     float x, y, z, roll, pitch, yaw;
     float descriptor[36];
+  
+    friend std::ostream& operator << (std::ostream& os, const Narf36& p);
   };
 
+  std::ostream& operator << (std::ostream& os, const BorderDescription& p);
   /** \brief A structure to store if a point in a range image lies on a border between an obstacle and the background.
     * \ingroup common
     */
@@ -1178,9 +1294,12 @@ namespace pcl
     int x, y;
     BorderTraits traits;
     //std::vector<const BorderDescription*> neighbors;
+  
+    friend std::ostream& operator << (std::ostream& os, const BorderDescription& p);
   };
 
 
+  std::ostream& operator << (std::ostream& os, const IntensityGradient& p);
   /** \brief A point structure representing the intensity gradient of an XYZI point cloud.
     * \ingroup common
     */
@@ -1196,6 +1315,8 @@ namespace pcl
         float gradient_z;
       };
     };
+  
+    friend std::ostream& operator << (std::ostream& os, const IntensityGradient& p);
   };
 
   /** \brief A point structure representing an N-D histogram.
@@ -1228,6 +1349,7 @@ namespace pcl
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 
+  std::ostream& operator << (std::ostream& os, const PointWithScale& p);
   /** \brief A point structure representing a 3-D position and scale.
     * \ingroup common
     */
@@ -1275,6 +1397,8 @@ namespace pcl
       octave = _octave;
       data[3] = 1.0f;
     }
+  
+    friend std::ostream& operator << (std::ostream& os, const PointWithScale& p);
   };
 
 
@@ -1308,6 +1432,7 @@ namespace pcl
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 
+  std::ostream& operator << (std::ostream& os, const PointSurfel& p);
   /** \brief A surfel, that is, a point structure representing Euclidean xyz coordinates, together with normal coordinates, a RGBA color, a radius, a confidence value and the surface curvature estimate.
     * \ingroup common
     */
@@ -1330,60 +1455,18 @@ namespace pcl
       rgba = 0;
       radius = confidence = curvature = 0.0f;
     }
+  
+    friend std::ostream& operator << (std::ostream& os, const PointSurfel& p);
   };
-} // End namespace
 
-std::ostream& operator << (std::ostream& os, const pcl::PointXYZ& p);
-std::ostream& operator << (std::ostream& os, const pcl::RGB& p);
-std::ostream& operator << (std::ostream& os, const pcl::Intensity& p);
-std::ostream& operator << (std::ostream& os, const pcl::Intensity8u& p);
-std::ostream& operator << (std::ostream& os, const pcl::PointXYZI& p);
-std::ostream& operator << (std::ostream& os, const pcl::PointXYZL& p);
-std::ostream& operator << (std::ostream& os, const pcl::Label& p);
-std::ostream& operator << (std::ostream& os, const pcl::PointXYZRGBA& p);
-std::ostream& operator << (std::ostream& os, const pcl::PointXYZRGB& p);
-std::ostream& operator << (std::ostream& os, const pcl::PointXYZRGBL& p);
-std::ostream& operator << (std::ostream& os, const pcl::PointXYZHSV& p);
-std::ostream& operator << (std::ostream& os, const pcl::PointXY& p);
-std::ostream& operator << (std::ostream& os, const pcl::PointUV& p);
-std::ostream& operator << (std::ostream& os, const pcl::InterestPoint& p);
-std::ostream& operator << (std::ostream& os, const pcl::Normal& p);
-std::ostream& operator << (std::ostream& os, const pcl::_Axis& p);
-std::ostream& operator << (std::ostream& os, const pcl::PointNormal& p);
-std::ostream& operator << (std::ostream& os, const pcl::PointXYZRGBNormal& p);
-std::ostream& operator << (std::ostream& os, const pcl::PointXYZINormal& p);
-std::ostream& operator << (std::ostream& os, const pcl::PointWithRange& p);
-std::ostream& operator << (std::ostream& os, const pcl::PointWithViewpoint& p);
-std::ostream& operator << (std::ostream& os, const pcl::MomentInvariants& p);
-std::ostream& operator << (std::ostream& os, const pcl::PrincipalRadiiRSD& p);
-std::ostream& operator << (std::ostream& os, const pcl::Boundary& p);
-std::ostream& operator << (std::ostream& os, const pcl::PrincipalCurvatures& p);
-std::ostream& operator << (std::ostream& os, const pcl::PFHSignature125& p);
-std::ostream& operator << (std::ostream& os, const pcl::PFHRGBSignature250& p);
-std::ostream& operator << (std::ostream& os, const pcl::PPFSignature& p);
-std::ostream& operator << (std::ostream& os, const pcl::PPFRGBSignature& p);
-std::ostream& operator << (std::ostream& os, const pcl::NormalBasedSignature12& p);
-std::ostream& operator << (std::ostream& os, const pcl::ShapeContext1980& p);
-std::ostream& operator << (std::ostream& os, const pcl::SHOT352& p);
-std::ostream& operator << (std::ostream& os, const pcl::SHOT1344& p);
-std::ostream& operator << (std::ostream& os, const pcl::ReferenceFrame& p);
-std::ostream& operator << (std::ostream& os, const pcl::FPFHSignature33& p);
-std::ostream& operator << (std::ostream& os, const pcl::VFHSignature308& p);
-std::ostream& operator << (std::ostream& os, const pcl::BRISKSignature512& p);
-std::ostream& operator << (std::ostream& os, const pcl::ESFSignature640& p);
-std::ostream& operator << (std::ostream& os, const pcl::GFPFHSignature16& p);
-std::ostream& operator << (std::ostream& os, const pcl::Narf36& p);
-std::ostream& operator << (std::ostream& os, const pcl::BorderDescription& p);
-std::ostream& operator << (std::ostream& os, const pcl::IntensityGradient& p);
-std::ostream& operator << (std::ostream& os, const pcl::PointWithScale& p);
-std::ostream& operator << (std::ostream& os, const pcl::PointSurfel& p);
-template <int N> std::ostream& 
-operator << (std::ostream& os, const pcl::Histogram<N>& p)
-{
-  for (int i = 0; i < N; ++i)
-  os << (i == 0 ? "(" : "") << p.histogram[i] << (i < N-1 ? ", " : ")");
-  return (os);
-}
+  template <int N> std::ostream& 
+  operator << (std::ostream& os, const Histogram<N>& p)
+  {
+    for (int i = 0; i < N; ++i)
+    os << (i == 0 ? "(" : "") << p.histogram[i] << (i < N-1 ? ", " : ")");
+    return (os);
+  }
+} // End namespace
 
 // Preserve API for PCL users < 1.4
 #include <pcl/common/point_tests.h>

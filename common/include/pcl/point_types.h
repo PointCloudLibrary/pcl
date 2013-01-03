@@ -234,7 +234,7 @@ namespace pcl
     * \ingroup common
     */
   struct FPFHSignature33;
-
+  
   /** \brief Members: float vfh[308]
     * \ingroup common
     */
@@ -244,6 +244,11 @@ namespace pcl
     * \ingroup common
     */
   struct ESFSignature640;
+
+  /** \brief Members: float histogram[16]
+    * \ingroup common
+    */
+  struct GFPFHSignature16;
 
   /** \brief Members: float scale; float orientation; uint8_t descriptor[64]
     * \ingroup common
@@ -634,14 +639,5 @@ namespace pcl
 
 #pragma warning(default: 4201)
 //#pragma warning(pop)
-#ifdef BUILD_Maintainer
-#  if defined __GNUC__
-#    if __GNUC_PREREQ(4, 3)
-#      pragma GCC diagnostic warning "-Weffc++"
-#      pragma GCC diagnostic warning "-pedantic"
-#    endif
-//#  elif defined _MSC_VER
-#  endif
-#endif
 
 #endif  //#ifndef PCL_DATA_TYPES_H_
