@@ -199,7 +199,7 @@ void
 usage (char ** argv)
 {
   cout << "usage: " << argv[0]
-      << " [-hdlCalibration <path-to-calibration-file>] [-pcapFile <path-to-pcap-file>] [-h | --help] [-format XYZ|XYZRGB]"
+      << " [-hdlCalibration <path-to-calibration-file>] [-pcapFile <path-to-pcap-file>] [-h | --help] [-format XYZ|XYZI|XYZRGB]"
       << endl;
   cout << argv[0] << " -h | --help : shows this help" << endl;
   return;
