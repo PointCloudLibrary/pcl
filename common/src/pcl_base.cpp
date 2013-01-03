@@ -55,13 +55,6 @@ pcl::PCLBase<sensor_msgs::PointCloud2>::PCLBase ()
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-pcl::PCLBase<sensor_msgs::PointCloud2>::~PCLBase ()
-{
-  input_.reset ();
-  indices_.reset ();
-}
-
-///////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::PCLBase<sensor_msgs::PointCloud2>::setInputCloud (const PointCloud2ConstPtr &cloud)
 {

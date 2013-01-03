@@ -62,14 +62,6 @@ pcl::PCLBase<PointT>::PCLBase (const PCLBase& base)
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
-pcl::PCLBase<PointT>::~PCLBase ()
-{
-  input_.reset ();
-  indices_.reset ();
-}
-
-///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
 pcl::PCLBase<PointT>::setInputCloud (const PointCloudConstPtr &cloud)
 { 
