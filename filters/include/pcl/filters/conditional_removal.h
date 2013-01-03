@@ -37,7 +37,7 @@
 
 #ifndef PCL_FILTER_FIELD_VAL_CONDITION_H_
 #define PCL_FILTER_FIELD_VAL_CONDITION_H_
-
+#include <pcl/common/eigen.h>
 #include <pcl/filters/filter.h>
 
 namespace pcl
