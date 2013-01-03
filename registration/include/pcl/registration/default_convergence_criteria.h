@@ -76,7 +76,8 @@ namespace pcl
           CONVERGENCE_CRITERIA_ITERATIONS,
           CONVERGENCE_CRITERIA_TRANSFORM,
           CONVERGENCE_CRITERIA_ABS_MSE,
-          CONVERGENCE_CRITERIA_REL_MSE
+          CONVERGENCE_CRITERIA_REL_MSE,
+          CONVERGENCE_CRITERIA_NO_CORRESPONDENCES
         };
 
         /** \brief Empty constructor.
@@ -193,6 +194,17 @@ namespace pcl
         getConvergenceState ()
         {
           return (convergence_state_);
+        }
+
+        /** \brief Sets the convergence state externally (for example, when ICP does not find
+         * enough correspondences to estimate a transformation, the function is called setting
+         * the convergence state to ConvergenceState::CONVERGENCE_CRITERIA_NO_CORRESPONDENCES)
+         * \param[in] c the convergence state
+         */
+        inline void
+        setConvergenceState(ConvergenceState c)
+        {
+          convergence_state_ = c;
         }
 
       protected:

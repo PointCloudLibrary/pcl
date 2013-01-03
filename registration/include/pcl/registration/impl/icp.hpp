@@ -43,7 +43,6 @@
 
 #include <pcl/registration/boost.h>
 #include <pcl/correspondence.h>
-#include <pcl/registration/default_convergence_criteria.h>
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget, typename Scalar> void
@@ -142,12 +141,11 @@ pcl::IterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransformat
   correspondence_estimation_->setInputSource (input_transformed);
   correspondence_estimation_->setInputTarget (target_);
 
-  pcl::registration::DefaultConvergenceCriteria<Scalar> converged (nr_iterations_, transformation_, *correspondences_);
-  converged.setMaximumIterations (max_iterations_);
-  converged.setRelativeMSE (euclidean_fitness_epsilon_);
-  converged.setTranslationThreshold (transformation_epsilon_);
-  converged.setRotationThreshold (1.0 - transformation_epsilon_);
-  
+  convergence_criteria_->setMaximumIterations (max_iterations_);
+  convergence_criteria_->setRelativeMSE (euclidean_fitness_epsilon_);
+  convergence_criteria_->setTranslationThreshold (transformation_epsilon_);
+  convergence_criteria_->setRotationThreshold (1.0 - transformation_epsilon_);
+
   // Repeat until convergence
   do
   {
@@ -177,6 +175,8 @@ pcl::IterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransformat
     if (cnt < min_number_correspondences_)
     {
       PCL_ERROR ("[pcl::%s::computeTransformation] Not enough correspondences found. Relax your threshold parameters.\n", getClassName ().c_str ());
+      convergence_criteria_->setConvergenceState(pcl::registration::DefaultConvergenceCriteria<Scalar>::CONVERGENCE_CRITERIA_NO_CORRESPONDENCES);
+      converged_ = false;
       break;
     }
 
@@ -194,10 +194,10 @@ pcl::IterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransformat
     // Update the vizualization of icp convergence
     //if (update_visualizer_ != 0)
     //  update_visualizer_(output, source_indices_good, *target_, target_indices_good );
-  }
-  while (!converged);
 
-  converged_ = static_cast<bool> (converged);
+    converged_ = static_cast<bool> ((*convergence_criteria_));
+  }
+  while (!converged_);
 
   // Transform the input cloud using the final transformation
   PCL_DEBUG ("Transformation is:\n\t%5f\t%5f\t%5f\t%5f\n\t%5f\t%5f\t%5f\t%5f\n\t%5f\t%5f\t%5f\t%5f\n\t%5f\t%5f\t%5f\t%5f\n", 

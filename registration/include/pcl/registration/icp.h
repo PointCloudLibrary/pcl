@@ -48,6 +48,7 @@
 #include <pcl/registration/transformation_estimation_svd.h>
 #include <pcl/registration/transformation_estimation_point_to_plane_lls.h>
 #include <pcl/registration/correspondence_estimation.h>
+#include <pcl/registration/default_convergence_criteria.h>
 
 namespace pcl
 {
@@ -128,6 +129,7 @@ namespace pcl
       using Registration<PointSource, PointTarget, Scalar>::correspondence_estimation_;
       using Registration<PointSource, PointTarget, Scalar>::correspondence_rejectors_;
 
+      typename pcl::registration::DefaultConvergenceCriteria<Scalar>::Ptr convergence_criteria_;
       typedef typename Registration<PointSource, PointTarget, Scalar>::Matrix4 Matrix4;
 
       /** \brief Empty constructor. */
@@ -144,7 +146,22 @@ namespace pcl
         reg_name_ = "IterativeClosestPoint";
         transformation_estimation_.reset (new pcl::registration::TransformationEstimationSVD<PointSource, PointTarget, Scalar> ());
         correspondence_estimation_.reset (new pcl::registration::CorrespondenceEstimation<PointSource, PointTarget, Scalar>);
+        convergence_criteria_.reset(new pcl::registration::DefaultConvergenceCriteria<Scalar> (nr_iterations_, transformation_, *correspondences_));
       };
+
+      /** \brief Returns a pointer to the DefaultConvergenceCriteria used by the IterativeClosestPoint class.
+        * This allows to check the convergence state after the align() method as well as to configure
+        * DefaultConvergenceCriteria's parameters not available through the ICP API before the align()
+        * method is called. Please note that the align method sets max_iterations_,
+        * euclidean_fitness_epsilon_ and transformation_epsilon_ and therefore overrides the default / set
+        * values of the DefaultConvergenceCriteria instance.
+        * \param[out] Pointer to the IterativeClosestPoint's DefaultConvergenceCriteria.
+        */
+      inline typename pcl::registration::DefaultConvergenceCriteria<Scalar>::Ptr
+      getConvergeCriteria ()
+      {
+        return convergence_criteria_;
+      }
 
       /** \brief Provide a pointer to the input source 
         * (e.g., the point cloud that we want to align to the target)
