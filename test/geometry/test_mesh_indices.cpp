@@ -38,20 +38,38 @@
  *
  */
 
+#include <string>
+#include <sstream>
+
 #include <gtest/gtest.h>
 #include <pcl/geometry/mesh_indices.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 
-TEST (TestMesh, MeshIndices)
-{
-  typedef pcl::geometry::VertexIndex   VertexIndex;
-  typedef pcl::geometry::HalfEdgeIndex HalfEdgeIndex;
-  typedef pcl::geometry::EdgeIndex     EdgeIndex;
-  typedef pcl::geometry::FaceIndex     FaceIndex;
+typedef pcl::geometry::VertexIndex   VertexIndex;
+typedef pcl::geometry::HalfEdgeIndex HalfEdgeIndex;
+typedef pcl::geometry::EdgeIndex     EdgeIndex;
+typedef pcl::geometry::FaceIndex     FaceIndex;
 
-  // The other indices should behave the same because they have a common base.
-  VertexIndex vi0, vi1 (-5), vi2 (0), vi3 (5), vi4 (5), vi5 (6);
+////////////////////////////////////////////////////////////////////////////////
+
+template <class MeshIndexT>
+class TestMeshIndicesTyped : public testing::Test
+{
+  protected:
+    typedef MeshIndexT MeshIndex;
+};
+
+typedef testing::Types <VertexIndex, HalfEdgeIndex, EdgeIndex, FaceIndex> MeshIndexTypes;
+
+TYPED_TEST_CASE (TestMeshIndicesTyped, MeshIndexTypes);
+
+////////////////////////////////////////////////////////////////////////////////
+
+TYPED_TEST (TestMeshIndicesTyped, General)
+{
+  typedef typename TestFixture::MeshIndex MeshIndex;
+  MeshIndex vi0, vi1 (-5), vi2 (0), vi3 (5), vi4 (5), vi5 (6);
 
   EXPECT_FALSE (vi0.isValid ());
   EXPECT_FALSE (vi1.isValid ());
@@ -70,10 +88,14 @@ TEST (TestMesh, MeshIndices)
 
   EXPECT_EQ (3, (++vi3).get ());
   EXPECT_EQ (2, (--vi3).get ());
-  EXPECT_EQ (9, (vi3 += VertexIndex (7)).get ());
-  EXPECT_EQ (2, (vi3 -= VertexIndex (7)).get ());
+  EXPECT_EQ (9, (vi3 += MeshIndex (7)).get ());
+  EXPECT_EQ (2, (vi3 -= MeshIndex (7)).get ());
+}
 
-  // Conversions
+////////////////////////////////////////////////////////////////////////////////
+
+TEST (TestMeshIndices, Conversions)
+{
   HalfEdgeIndex he0, he1 (-9), he2 (4), he3 (5);
   EdgeIndex     e0 , e1  (-9), e2  (4), e3  (5);
 
@@ -86,6 +108,35 @@ TEST (TestMesh, MeshIndices)
   EXPECT_FALSE  (pcl::geometry::toHalfEdgeIndex (e1).isValid ());
   EXPECT_EQ (8 , pcl::geometry::toHalfEdgeIndex (e2).get ());
   EXPECT_EQ (10, pcl::geometry::toHalfEdgeIndex (e3).get ());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+TEST (TestMeshIndices, Streams)
+{
+  // Output
+  std::ostringstream oss;
+  oss << "VertexIndex "   << VertexIndex   (1) << " "
+      << "HalfEdgeIndex " << HalfEdgeIndex (2) << " "
+      << "EdgeIndex "     << EdgeIndex     (3) << " "
+      << "FaceIndex "     << FaceIndex     (4) << ".";
+
+  EXPECT_EQ ("VertexIndex 1 HalfEdgeIndex 2 EdgeIndex 3 FaceIndex 4.", oss.str ());
+
+  // Input
+  VertexIndex   vi;
+  HalfEdgeIndex hei;
+  EdgeIndex     ei;
+  FaceIndex     fi;
+  std::istringstream iss ("1 2 3 4");
+  EXPECT_TRUE (iss >> vi >> hei >> ei >> fi);
+
+  EXPECT_EQ (1, vi.get  ());
+  EXPECT_EQ (2, hei.get ());
+  EXPECT_EQ (3, ei.get  ());
+  EXPECT_EQ (4, fi.get  ());
+
+  EXPECT_FALSE (iss.good ());
 }
 
 ////////////////////////////////////////////////////////////////////////////////

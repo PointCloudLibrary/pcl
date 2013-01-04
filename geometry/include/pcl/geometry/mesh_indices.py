@@ -89,7 +89,7 @@ f.write ("// NOTE: This file has been created with 'pcl_src/geometry/include/pcl
 f.write ('#ifndef PCL_GEOMETRY_MESH_INDICES_H\n')
 f.write ('#define PCL_GEOMETRY_MESH_INDICES_H\n\n')
 
-f.write ('#include <ostream>\n\n')
+f.write ('#include <iostream>\n\n')
 
 f.write ('#include <pcl/geometry/boost.h>\n\n')
 
@@ -211,7 +211,10 @@ for cn in class_names:
     f.write ('      private:\n\n')
 
     f.write ('        /** \\brief Stored index. */\n')
-    f.write ('        int index_;\n')
+    f.write ('        int index_;\n\n')
+
+    f.write ('        friend std::istream&\n')
+    f.write ('        operator >> (std::istream& is, pcl::geometry::' + cn + '& index);\n')
     f.write ('    };\n\n')
 
     f.write ('    /** \\brief ostream operator. */\n')
@@ -219,6 +222,13 @@ for cn in class_names:
     f.write ('    operator << (std::ostream& os, const pcl::geometry::' + cn + '& index)\n')
     f.write ('    {\n')
     f.write ('      return (os << index.get ());\n')
+    f.write ('    }\n\n')
+
+    f.write ('    /** \\brief istream operator. */\n')
+    f.write ('    inline std::istream&\n')
+    f.write ('    operator >> (std::istream& is, pcl::geometry::' + cn + '& index)\n')
+    f.write ('    {\n')
+    f.write ('      return (is >> index.index_);\n')
     f.write ('    }\n\n')
 
     f.write ('  } // End namespace geometry\n')

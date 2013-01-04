@@ -53,6 +53,23 @@
 #include <pcl/geometry/mesh_traits.h>
 #include <pcl/point_cloud.h>
 
+////////////////////////////////////////////////////////////////////////////////
+// Forward declarations
+////////////////////////////////////////////////////////////////////////////////
+
+namespace pcl
+{
+  namespace geometry
+  {
+    template <class MeshT>
+    class MeshIO;
+  } // End namespace geometry
+} // End namespace pcl
+
+////////////////////////////////////////////////////////////////////////////////
+// MeshBase
+////////////////////////////////////////////////////////////////////////////////
+
 namespace pcl
 {
   namespace geometry
@@ -2034,6 +2051,9 @@ namespace pcl
         Faces faces_;
 
       public:
+
+        template <class MeshT>
+        friend class pcl::geometry::MeshIO;
 
         EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     };

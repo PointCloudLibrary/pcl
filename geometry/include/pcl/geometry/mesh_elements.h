@@ -49,6 +49,9 @@ namespace pcl
   {
     template <class DerivedT, class MeshTraitsT>
     class MeshBase;
+
+    template <class MeshT>
+    class MeshIO;
   } // End namespace geometry
 } // End namespace pcl
 
@@ -70,22 +73,21 @@ namespace pcl
 
         typedef pcl::geometry::HalfEdgeIndex HalfEdgeIndex;
 
-        /** \brief Constructor. Initializes with an invalid index. */
-        Vertex ()
-          : idx_outgoing_half_edge_ (HalfEdgeIndex ())
-        {}
-
         /** \brief Constructor.
-          * \param[in] idx_outgoing_half_edge Index to the outgoing half-edge.
+          * \param[in] idx_outgoing_half_edge Index to the outgoing half-edge. Defaults to an invalid index.
           */
-        explicit Vertex (const HalfEdgeIndex& idx_outgoing_half_edge)
+        explicit Vertex (const HalfEdgeIndex& idx_outgoing_half_edge = HalfEdgeIndex ())
           : idx_outgoing_half_edge_ (idx_outgoing_half_edge)
         {}
 
         /** \brief Index to the outgoing half-edge. The vertex is considered to be deleted if it stores an invalid outgoing half-edge index. */
         HalfEdgeIndex idx_outgoing_half_edge_;
 
-        template <class DerivedT, class MeshTraitsT> friend class pcl::geometry::MeshBase;
+        template <class DerivedT, class MeshTraitsT>
+        friend class pcl::geometry::MeshBase;
+
+        template <class MeshT>
+        friend class pcl::geometry::MeshIO;
     };
   } // End namespace geometry
 } // End namespace pcl
@@ -110,23 +112,20 @@ namespace pcl
         typedef pcl::geometry::HalfEdgeIndex HalfEdgeIndex;
         typedef pcl::geometry::FaceIndex     FaceIndex;
 
-        /** \brief Constructor. Initializes with invalid indices. */
-        HalfEdge ()
-          : idx_terminating_vertex_ (VertexIndex   ()),
-            idx_next_half_edge_     (HalfEdgeIndex ()),
-            idx_prev_half_edge_     (HalfEdgeIndex ()),
-            idx_face_               (FaceIndex     ())
-        {
-        }
-
-        /** \brief Constructor. All indices except those provided are initialized with invalid indices.
-          * \param[in] idx_terminating_vertex Index to the terminating vertex.
+        /** \brief Constructor.
+          * \param[in] idx_terminating_vertex Index to the terminating vertex. Defaults to an invalid index.
+          * \param[in] idx_next_half_edge     Index to the next half-edge. Defaults to an invalid index.
+          * \param[in] idx_prev_half_edge     Index to the previous half-edge. Defaults to an invalid index.
+          * \param[in] idx_face               Index to the face. Defaults to an invalid index.
           */
-        explicit HalfEdge (const VertexIndex& idx_terminating_vertex)
+        explicit HalfEdge (const VertexIndex&   idx_terminating_vertex = VertexIndex   (),
+                           const HalfEdgeIndex& idx_next_half_edge     = HalfEdgeIndex (),
+                           const HalfEdgeIndex& idx_prev_half_edge     = HalfEdgeIndex (),
+                           const FaceIndex&     idx_face               = FaceIndex     ())
           : idx_terminating_vertex_ (idx_terminating_vertex),
-            idx_next_half_edge_     (HalfEdgeIndex ()),
-            idx_prev_half_edge_     (HalfEdgeIndex ()),
-            idx_face_               (FaceIndex     ())
+            idx_next_half_edge_     (idx_next_half_edge),
+            idx_prev_half_edge_     (idx_prev_half_edge),
+            idx_face_               (idx_face)
         {
         }
 
@@ -142,7 +141,11 @@ namespace pcl
         /** \brief Index to the face. The half-edge is considered to be on the boundary if it stores an invalid face index. */
         FaceIndex idx_face_;
 
-        template <class DerivedT, class MeshTraitsT> friend class pcl::geometry::MeshBase;
+        template <class DerivedT, class MeshTraitsT>
+        friend class pcl::geometry::MeshBase;
+
+        template <class MeshT>
+        friend class pcl::geometry::MeshIO;
     };
   } // End namespace geometry
 } // End namespace pcl
@@ -165,22 +168,21 @@ namespace pcl
 
         typedef pcl::geometry::HalfEdgeIndex HalfEdgeIndex;
 
-        /** \brief Constructor. Initializes with an invalid index. */
-        Face ()
-          : idx_inner_half_edge_ (HalfEdgeIndex ())
-        {}
-
         /** \brief Constructor.
-          * \param[in] inner_half_edge_idx Index to the outgoing half-edge.
+          * \param[in] inner_half_edge_idx Index to the outgoing half-edge. Defaults to an invalid index
           */
-        explicit Face (const HalfEdgeIndex& idx_inner_half_edge)
+        explicit Face (const HalfEdgeIndex& idx_inner_half_edge = HalfEdgeIndex ())
           : idx_inner_half_edge_ (idx_inner_half_edge)
         {}
 
         /** \brief Index to the inner half-edge. The face is considered to be deleted if it stores an invalid inner half-edge index. */
         HalfEdgeIndex idx_inner_half_edge_;
 
-        template <class DerivedT, class MeshTraitsT> friend class pcl::geometry::MeshBase;
+        template <class DerivedT, class MeshTraitsT>
+        friend class pcl::geometry::MeshBase;
+
+        template <class MeshT>
+        friend class pcl::geometry::MeshIO;
     };
   } // End namespace geometry
 } // End namespace pcl

@@ -43,7 +43,7 @@
 #ifndef PCL_GEOMETRY_MESH_INDICES_H
 #define PCL_GEOMETRY_MESH_INDICES_H
 
-#include <ostream>
+#include <iostream>
 
 #include <pcl/geometry/boost.h>
 
@@ -164,6 +164,9 @@ namespace pcl
 
         /** \brief Stored index. */
         int index_;
+
+        friend std::istream&
+        operator >> (std::istream& is, pcl::geometry::VertexIndex& index);
     };
 
     /** \brief ostream operator. */
@@ -171,6 +174,13 @@ namespace pcl
     operator << (std::ostream& os, const pcl::geometry::VertexIndex& index)
     {
       return (os << index.get ());
+    }
+
+    /** \brief istream operator. */
+    inline std::istream&
+    operator >> (std::istream& is, pcl::geometry::VertexIndex& index)
+    {
+      return (is >> index.index_);
     }
 
   } // End namespace geometry
@@ -293,6 +303,9 @@ namespace pcl
 
         /** \brief Stored index. */
         int index_;
+
+        friend std::istream&
+        operator >> (std::istream& is, pcl::geometry::HalfEdgeIndex& index);
     };
 
     /** \brief ostream operator. */
@@ -300,6 +313,13 @@ namespace pcl
     operator << (std::ostream& os, const pcl::geometry::HalfEdgeIndex& index)
     {
       return (os << index.get ());
+    }
+
+    /** \brief istream operator. */
+    inline std::istream&
+    operator >> (std::istream& is, pcl::geometry::HalfEdgeIndex& index)
+    {
+      return (is >> index.index_);
     }
 
   } // End namespace geometry
@@ -422,6 +442,9 @@ namespace pcl
 
         /** \brief Stored index. */
         int index_;
+
+        friend std::istream&
+        operator >> (std::istream& is, pcl::geometry::EdgeIndex& index);
     };
 
     /** \brief ostream operator. */
@@ -429,6 +452,13 @@ namespace pcl
     operator << (std::ostream& os, const pcl::geometry::EdgeIndex& index)
     {
       return (os << index.get ());
+    }
+
+    /** \brief istream operator. */
+    inline std::istream&
+    operator >> (std::istream& is, pcl::geometry::EdgeIndex& index)
+    {
+      return (is >> index.index_);
     }
 
   } // End namespace geometry
@@ -551,6 +581,9 @@ namespace pcl
 
         /** \brief Stored index. */
         int index_;
+
+        friend std::istream&
+        operator >> (std::istream& is, pcl::geometry::FaceIndex& index);
     };
 
     /** \brief ostream operator. */
@@ -558,6 +591,13 @@ namespace pcl
     operator << (std::ostream& os, const pcl::geometry::FaceIndex& index)
     {
       return (os << index.get ());
+    }
+
+    /** \brief istream operator. */
+    inline std::istream&
+    operator >> (std::istream& is, pcl::geometry::FaceIndex& index)
+    {
+      return (is >> index.index_);
     }
 
   } // End namespace geometry
