@@ -54,6 +54,9 @@ namespace pcl
     *
     * \note This algorithm filters only the depth (z-component) of _organized_ and untransformed (i.e., in camera coordinates)
     * point clouds. An error will be outputted if an unorganized cloud is given to the class instance.
+    *
+    * \author Alexandru E. Ichim
+    * \ingroup filters
     */
   template <typename PointT>
   class MedianFilter : public pcl::Filter<PointT>
