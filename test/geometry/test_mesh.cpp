@@ -211,8 +211,9 @@ hasFaces (const MeshT& mesh, const std::vector <std::vector <int> > faces, const
     for (unsigned int j=0; j<vv.size (); ++j)
     {
       if (verbose) std::cerr << std::setw (2) << faces [i][j] << " ";
-      if (vv [j] != faces [i][j] )
+      if (vv [j] != faces [i][j])
       {
+        if (verbose) std::cerr << "\n";
         return (false);
       }
     }
@@ -1606,6 +1607,77 @@ TEST (TestAddDeleteFace, Manifold)
   expected_boundary.push_back ( 9);
   expected_boundary.push_back (10);
   EXPECT_EQ (expected_boundary, getBoundaryVertices (mesh, 8));
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+TEST (TestDelete, VertexAndEdge)
+{
+  typedef NonManifoldTriangleMesh Mesh;
+  typedef VertexIndex             VI;
+  Mesh mesh;
+  for (unsigned int i=0; i<7; ++i) mesh.addVertex (i);
+
+  //   2 - 1          2 - 1  //
+  //  / \ / \        / \ /   //
+  // 3 - 0 - 6  ->  3 - 0    //
+  //  \ / \ /        \ / \   //
+  //   4 - 5          4 - 5  //
+  std::vector <VertexIndices> faces;
+  std::vector <std::vector <int> > expected;
+  VertexIndices vi;
+  vi.push_back (VI (0)); vi.push_back (VI (1)); vi.push_back (VI (2)); faces.push_back (vi); vi.clear ();
+  vi.push_back (VI (0)); vi.push_back (VI (2)); vi.push_back (VI (3)); faces.push_back (vi); vi.clear ();
+  vi.push_back (VI (0)); vi.push_back (VI (3)); vi.push_back (VI (4)); faces.push_back (vi); vi.clear ();
+  vi.push_back (VI (0)); vi.push_back (VI (4)); vi.push_back (VI (5)); faces.push_back (vi); vi.clear ();
+  vi.push_back (VI (0)); vi.push_back (VI (5)); vi.push_back (VI (6)); faces.push_back (vi); vi.clear ();
+  vi.push_back (VI (0)); vi.push_back (VI (6)); vi.push_back (VI (1)); faces.push_back (vi); vi.clear ();
+
+  for (unsigned int i=0; i<faces.size (); ++i)
+  {
+    std::vector <int> tmp (faces [i].size ());
+    for (unsigned int j=0; j<faces [i].size (); ++j)
+    {
+      tmp [j] = faces [i][j].get ();
+    }
+    expected.push_back (tmp);
+    ASSERT_TRUE (mesh.addFace (faces [i]).isValid ()) << "Face " << i;
+  }
+  ASSERT_TRUE (hasFaces (mesh, faces));
+  ASSERT_TRUE (hasFaces (mesh, expected));
+
+  // Search edge 0-6
+  Mesh::VertexAroundVertexCirculator       circ     = mesh.getVertexAroundVertexCirculator (VI (0));
+  const Mesh::VertexAroundVertexCirculator circ_end = circ;
+  HalfEdgeIndex idx_he_06;
+  do
+  {
+    if (circ.getTargetIndex () == VI (6))
+    {
+      idx_he_06 = circ.getCurrentHalfEdgeIndex ();
+      break;
+    }
+  } while (++circ != circ_end);
+
+  // Delete
+  Mesh mesh_deleted_vertex    = mesh;
+  Mesh mesh_deleted_half_edge = mesh;
+  Mesh mesh_deleted_edge      = mesh;
+  expected.pop_back ();
+  expected.pop_back ();
+
+  mesh_deleted_vertex.deleteVertex (VI (6));
+  mesh_deleted_vertex.cleanUp ();
+
+  mesh_deleted_half_edge.deleteEdge (idx_he_06);
+  mesh_deleted_half_edge.cleanUp ();
+
+  mesh_deleted_edge.deleteEdge (pcl::geometry::toEdgeIndex (idx_he_06));
+  mesh_deleted_edge.cleanUp ();
+
+  EXPECT_TRUE (hasFaces (mesh_deleted_vertex,    expected));
+  EXPECT_TRUE (hasFaces (mesh_deleted_half_edge, expected));
+  EXPECT_TRUE (hasFaces (mesh_deleted_edge,      expected));
 }
 
 ////////////////////////////////////////////////////////////////////////////////

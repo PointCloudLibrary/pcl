@@ -193,7 +193,10 @@ namespace pcl
           const FaceAroundVertexCirculator circ_end = circ;
           do
           {
-            fi.push_back (circ.getTargetIndex ());
+            if (circ.getTargetIndex ().isValid ()) // Check for boundary.
+            {
+              fi.push_back (circ.getTargetIndex ());
+            }
           } while (++circ!=circ_end);
 
           for (std::deque <FaceIndex>::const_iterator it = fi.begin (); it!=fi.end (); ++it)
@@ -226,8 +229,8 @@ namespace pcl
         deleteEdge (const EdgeIndex& idx_edge)
         {
           assert (this->isValid (idx_edge));
-          if (this->isDeleted (idx_edge)) return;
           this->deleteEdge (pcl::geometry::toHalfEdgeIndex (idx_edge));
+          assert (this->isDeleted (pcl::geometry::toHalfEdgeIndex (idx_edge, false))); // Bug in this class!
         }
 
         /** \brief Mark the given face as deleted. More faces are deleted if the manifold mesh would become non-manifold.
@@ -1542,6 +1545,7 @@ namespace pcl
                     std::stack <FaceIndex>& delete_faces,
                     boost::true_type       /*is_manifold*/)
         {
+          assert (this->isValid (idx_face));
           delete_faces.push (idx_face);
 
           while (!delete_faces.empty ())
@@ -1560,6 +1564,7 @@ namespace pcl
                     std::stack <FaceIndex>& delete_faces,
                     boost::false_type       /*is_manifold*/)
         {
+          assert (this->isValid (idx_face));
           if (this->isDeleted (idx_face)) return;
 
           // Store all half-edges in the face
