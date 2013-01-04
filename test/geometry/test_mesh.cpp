@@ -42,6 +42,7 @@
 #include <vector>
 
 #include <gtest/gtest.h>
+
 #include <pcl/geometry/polygon_mesh.h>
 #include <pcl/geometry/triangle_mesh.h>
 #include <pcl/geometry/quad_mesh.h>

@@ -522,6 +522,48 @@ namespace pcl
           return (FaceAroundFaceCirculator (idx_inner_half_edge, this));
         }
 
+        //////////////////////////////////////////////////////////////////////////
+        // isEqualTopology
+        //////////////////////////////////////////////////////////////////////////
+
+        /** \brief Check if the other mesh has the same topology as this mesh. */
+        bool
+        isEqualTopology (const Self& other) const
+        {
+          if (this->sizeVertices  () != other.sizeVertices  ()) return (false);
+          if (this->sizeHalfEdges () != other.sizeHalfEdges ()) return (false);
+          if (this->sizeFaces     () != other.sizeFaces     ()) return (false);
+
+          for (unsigned int i=0; i<this->sizeVertices (); ++i)
+          {
+            if (this->getOutgoingHalfEdgeIndex (VertexIndex (i)) !=
+                other.getOutgoingHalfEdgeIndex (VertexIndex (i))) return (false);
+          }
+
+          for (unsigned int i=0; i<this->sizeHalfEdges (); ++i)
+          {
+            if (this->getTerminatingVertexIndex (HalfEdgeIndex (i)) !=
+                other.getTerminatingVertexIndex (HalfEdgeIndex (i))) return (false);
+
+            if (this->getNextHalfEdgeIndex (HalfEdgeIndex (i)) !=
+                other.getNextHalfEdgeIndex (HalfEdgeIndex (i))) return (false);
+
+            if (this->getPrevHalfEdgeIndex (HalfEdgeIndex (i)) !=
+                other.getPrevHalfEdgeIndex (HalfEdgeIndex (i))) return (false);
+
+            if (this->getFaceIndex (HalfEdgeIndex (i)) !=
+                other.getFaceIndex (HalfEdgeIndex (i))) return (false);
+          }
+
+          for (unsigned int i=0; i<this->sizeFaces (); ++i)
+          {
+            if (this->getInnerHalfEdgeIndex (FaceIndex (i)) !=
+                other.getInnerHalfEdgeIndex (FaceIndex (i))) return (false);
+          }
+
+          return (true);
+        }
+
         ////////////////////////////////////////////////////////////////////////
         // isValid
         ////////////////////////////////////////////////////////////////////////

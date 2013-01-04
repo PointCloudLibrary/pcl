@@ -18,6 +18,7 @@ if(build)
       include/pcl/${SUBSYS_NAME}/mesh_circulators.h
       include/pcl/${SUBSYS_NAME}/mesh_elements.h
       include/pcl/${SUBSYS_NAME}/mesh_indices.h
+      include/pcl/${SUBSYS_NAME}/mesh_io.h
       include/pcl/${SUBSYS_NAME}/mesh_traits.h
       include/pcl/${SUBSYS_NAME}/organized_index_iterator.h
       include/pcl/${SUBSYS_NAME}/planar_polygon.h
