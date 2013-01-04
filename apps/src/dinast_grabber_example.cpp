@@ -109,16 +109,11 @@ int
 main (int argc, char** argv) 
 {
 
-  pcl::DinastGrabber grabber;
+  pcl::DinastGrabber interface;
   
-  grabber.findDevice (1);
+  std::cerr << "Device version/revision number: " << interface.getDeviceVersion () << "Hz" << std::endl;
   
-  grabber.openDevice();
 
-  
-  std::cerr << "Device version/revision number: " << grabber.getDeviceVersion () << "Hz" << std::endl;
-  
-  grabber.start ();
 
   pcl::visualization::ImageViewer vis_img ("Dinast Image Viewer");
   pcl::visualization::PCLVisualizer vis_cld (argc, argv, "Dinast Cloud Viewer");
@@ -128,9 +123,10 @@ main (int argc, char** argv)
   
   while (true)
   {
-
-    grabber.getData(image, cloud);
+    interface.start ();
     
+    interface.getData (image, cloud);
+      
     FPS_CALC ("grabber + visualization");
     
     vis_img.showMonoImage (image, IMAGE_WIDTH, IMAGE_HEIGHT);
@@ -145,9 +141,7 @@ main (int argc, char** argv)
     vis_img.spinOnce ();
     vis_cld.spinOnce ();
     
+    interface.stop ();
   }
-  
-  grabber.stop ();
-  grabber.closeDevice ();
 
 }

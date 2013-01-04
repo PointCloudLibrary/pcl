@@ -58,57 +58,44 @@ namespace pcl
   class PCL_EXPORTS DinastGrabber: public Grabber
   {
     public:
-      /** \brief Constructor. */
-      DinastGrabber ();
+      /** \brief Constructor. 
+        * \param[in] device_position Number corresponding the device to grab
+        */
+      DinastGrabber (const int device_position=1);
 
-      /** \brief Destructor */
-      ~DinastGrabber () throw ();
+      /** \brief Destructor. It never throws. */
+      virtual ~DinastGrabber () throw ();
 
       /** \brief Check if the grabber is running
         * \return true if grabber is running / streaming. False otherwise.
         */
-      bool 
+      virtual bool 
       isRunning () const;
+      
+      /** \brief Returns the name of the concrete subclass, DinastGrabber.
+        * \return DinastGrabber.
+        */
+      virtual std::string
+      getName () const;
+      
+      /** \brief Start the data acquisition process.
+        */
+      virtual void
+      start ();
 
+      /** \brief Stop the data acquisition process.
+        */
+      virtual void
+      stop ();
+      
       /** \brief Obtain the number of frames per second (FPS). */
-      float 
+      virtual float 
       getFramesPerSecond () const;
-
-
-      /** \brief Find the specified Dinast 3D camera device
-        * \param[in] device_position Number corresponding to the device to grab
-        * \param[in] id_vendor the ID of the camera vendor (should be 0x18d1)
-        * \param[in] id_product the ID of the product (should be 0x1402)
-        */
-      void
-      findDevice (int device_position,
-                  const int id_vendor = 0x18d1, 
-                  const int id_product = 0x1402);
-
-      /** \brief Claims the interface for an already founded device
-        */
-      void
-      openDevice ();
-
-      /** \brief Close the DINAST camera device
-        */
-      void
-      closeDevice ();
 
       /** \brief Get the version number of the currently opened device
         */
       std::string
       getDeviceVersion ();
-
-      /** \brief Start the data acquisition process.
-        */
-      void
-      start ();
-
-      /** \brief Stop the data acquisition process.
-        */
-      void
-      stop ();
 
       /** \brief Read image data
         * \param[out] the image data in unsigned short format
@@ -117,12 +104,26 @@ namespace pcl
       readImage (unsigned char *image);
       
       /** \brief Obtains the image and the corresponding XYZI Point Cloud
-        *  \param[out] the image data in unsigned short format and the corresponding point cloud from the camera
+        * \param[out] the image data in unsigned short format and the corresponding point cloud from the camera
         */
       void
       getData (unsigned char *image, pcl::PointCloud<pcl::PointXYZI>::Ptr cloud);
       
-    protected:      
+    protected:  
+      /** \brief On initialization processing. */
+      void
+      onInit (const int device_id);
+      
+      /** \brief Setup a Dinast 3D camera device
+        * \param[in] device_position Number corresponding the device to grab
+        * \param[in] id_vendor The ID of the camera vendor (should be 0x18d1)
+        * \param[in] id_product The ID of the product (should be 0x1402)
+        */
+      void
+      setupDevice (int device_position,
+                  const int id_vendor = 0x18d1, 
+                  const int id_product = 0x1402);
+      
       /** \brief Send a RX data packet request
         * \param[in] req_code the request to send (the request field for the setup packet)
         * \param[in] length the length field for the setup packet. The data buffer should be at least this size.
@@ -149,12 +150,6 @@ namespace pcl
       int
       checkHeader ();
       
-      /** \brief Returns the name of the concrete subclass, DinastGrabber.
-        * \return DinastGrabber.
-        */
-      std::string
-      getName () const;
-      
       /** \brief Width of image */
       const static int IMAGE_WIDTH = 320;
       
@@ -165,7 +160,7 @@ namespace pcl
       const static int IMAGE_SIZE = IMAGE_HEIGHT * IMAGE_WIDTH;
       
       /** \brief Length of a sync packet */
-      const static int SYNC_PACKET = 512;
+      const static int SYNC_PACKET_SIZE = 512;
       
       /** \brief Size of pixel */
       enum pixel_syze { RAW8=1, RGB16=2, RGB24=3, RGB32=4 };
@@ -177,13 +172,16 @@ namespace pcl
       struct libusb_device_handle *device_handle_;
       
       /** \brief Temporary USB read buffer, since we read two RGB16 images at a time size is the double of two images plus a sync packet */
-      unsigned char raw_buffer_[(RGB16 * (IMAGE_SIZE) + SYNC_PACKET)*2];
+      unsigned char raw_buffer_[(RGB16 * (IMAGE_SIZE) + SYNC_PACKET_SIZE)*2];
 
-      /** \brief Global buffer */
+      /** \brief Global circular buffer */
       boost::circular_buffer<unsigned char> g_buffer_;
 
-      /**  \brief Bulk endpoint address value */
+      /** \brief Bulk endpoint address value */
       unsigned char bulk_ep_;
+      
+      /** \brief Device command values */
+      enum { CMD_READ_START=0xC7, CMD_READ_STOP=0xC8, CMD_GET_VERSION=0xDC, CMD_SEND_DATA=0xDE };
 
       // Since there is no header after the first image, we need to save the state
       bool second_image_;

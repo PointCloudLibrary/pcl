@@ -41,32 +41,37 @@
 #include <pcl/io/dinast_grabber.h>
 #include <iostream>
 
-// In: device-to-host.
-#define CTRL_TO_HOST   (LIBUSB_RECIPIENT_DEVICE | LIBUSB_REQUEST_TYPE_VENDOR | LIBUSB_ENDPOINT_IN)
-// Out: host-to-device
-#define CTRL_TO_DEVICE  (LIBUSB_RECIPIENT_DEVICE | LIBUSB_REQUEST_TYPE_VENDOR | LIBUSB_ENDPOINT_OUT)
-
-#define CMD_READ_START  0xC7
-#define CMD_READ_STOP   0xC8
-#define CMD_GET_VERSION 0xDC
-#define CMD_SEND_DATA   0xDE
-
 using namespace std;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-pcl::DinastGrabber::DinastGrabber ()
+pcl::DinastGrabber::DinastGrabber (const int device_position)
   : context_ (NULL)
   , bulk_ep_ (std::numeric_limits<unsigned char>::max ())
   , second_image_ (false)
   , running_ (false)
 {
+  onInit(device_position);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 pcl::DinastGrabber::~DinastGrabber () throw ()
 {
-  stop ();
-  libusb_exit (context_);
+  try
+  {
+    stop ();
+
+    libusb_exit (context_);
+    
+    // Release the interface
+    libusb_release_interface (device_handle_, 0);
+    // Close it
+    libusb_close (device_handle_);
+    
+  }
+  catch (...)
+  {
+    //destructor never throws
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -90,7 +95,14 @@ pcl::DinastGrabber::getFramesPerSecond () const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::DinastGrabber::findDevice (int device_position, const int id_vendor, const int id_product)
+pcl::DinastGrabber::onInit (const int device_position)
+{
+  setupDevice (device_position);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::DinastGrabber::setupDevice (int device_position, const int id_vendor, const int id_product)
 {
   int device_position_counter = 0;
   
@@ -107,13 +119,13 @@ pcl::DinastGrabber::findDevice (int device_position, const int id_vendor, const 
   libusb_device **devs = NULL;
   
   // Get the list of USB devices
-  ssize_t cnt = libusb_get_device_list (context_, &devs);
+  ssize_t number_devices = libusb_get_device_list (context_, &devs);
 
-  if (cnt < 0)
+  if (number_devices < 0)
     PCL_THROW_EXCEPTION (pcl::IOException, "No usb devices found!");
   
   // Iterate over all devices
-  for (ssize_t i = 0; i < cnt; ++i)
+  for (ssize_t i = 0; i < number_devices; ++i)
   {
     libusb_device_descriptor desc;
 
@@ -162,26 +174,11 @@ pcl::DinastGrabber::findDevice (int device_position, const int id_vendor, const 
   //Check if device founded if not notify
   if (device_handle_ == NULL)
     PCL_THROW_EXCEPTION (pcl::IOException, "Failed to find any DINAST devices attached");
-
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void
-pcl::DinastGrabber::openDevice ()
-{
-
+  
+  //Claim device interface
   if(libusb_claim_interface(device_handle_, 0) < 0)
-     PCL_THROW_EXCEPTION (pcl::IOException, "Failed to open device");  
-}
+     PCL_THROW_EXCEPTION (pcl::IOException, "Failed to open DINAST device");  
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void
-pcl::DinastGrabber::closeDevice ()
-{
-  // Release the interface
-  libusb_release_interface (device_handle_, 0);
-  // Close it
-  libusb_close (device_handle_);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -214,8 +211,8 @@ void
 pcl::DinastGrabber::stop ()
 {
   unsigned char ctrl_buf[3];
-  if (!USBTxControlData (CMD_READ_START, ctrl_buf, 1))
-    PCL_THROW_EXCEPTION (pcl::IOException, "Could not start the USB data reading");
+  if (!USBTxControlData (CMD_READ_STOP, ctrl_buf, 1))
+    PCL_THROW_EXCEPTION (pcl::IOException, "Could not stop the USB data reading");
   running_ = false;
 }
 
@@ -244,7 +241,7 @@ pcl::DinastGrabber::readImage (unsigned char *image)
     // Read at least two images in synchronous mode
     int actual_length;
     int res = libusb_bulk_transfer (device_handle_, bulk_ep_, raw_buffer_,
-                                    RGB16 * (IMAGE_SIZE) + SYNC_PACKET, &actual_length, 1000);
+                                    RGB16 * (IMAGE_SIZE) + SYNC_PACKET_SIZE, &actual_length, 1000);
     if (res != 0 || actual_length == 0)
     {
 
@@ -364,7 +361,7 @@ pcl::DinastGrabber::USBRxControlData (const unsigned char req_code,
                                       int length)
 {
   // the direction of the transfer is inferred from the requesttype field of the setup packet.
-  unsigned char requesttype = CTRL_TO_HOST;
+  unsigned char requesttype = (LIBUSB_RECIPIENT_DEVICE | LIBUSB_REQUEST_TYPE_VENDOR | LIBUSB_ENDPOINT_IN);
   // the value field for the setup packet
   uint16_t value = 0x02;
   // the index field for the setup packet
@@ -388,7 +385,7 @@ pcl::DinastGrabber::USBTxControlData (const unsigned char req_code,
                                       int length)
 {
   // the direction of the transfer is inferred from the requesttype field of the setup packet.
-  unsigned char requesttype = CTRL_TO_DEVICE;
+  unsigned char requesttype = (LIBUSB_RECIPIENT_DEVICE | LIBUSB_REQUEST_TYPE_VENDOR | LIBUSB_ENDPOINT_OUT);
   // the value field for the setup packet
   uint16_t value = 0x01;
   // the index field for the setup packet
@@ -415,7 +412,7 @@ pcl::DinastGrabber::checkHeader ()
 {
   // We need at least 2 full sync packets, in case the header starts at the end of the first sync packet to 
   // guarantee that the index returned actually exists in g_buffer_ (we perform no checking in the rest of the code)
-  if (g_buffer_.size () < 2 * SYNC_PACKET)
+  if (g_buffer_.size () < 2 * SYNC_PACKET_SIZE)
     return (-1);
 
   int data_ptr = -1;
@@ -427,7 +424,7 @@ pcl::DinastGrabber::checkHeader ()
         (g_buffer_[i + 4] == 0xBB) && (g_buffer_[i + 5] == 0xBB) &&
         (g_buffer_[i + 6] == 0x77) && (g_buffer_[i + 7] == 0x77))
     {
-      data_ptr = int (i) + SYNC_PACKET;
+      data_ptr = int (i) + SYNC_PACKET_SIZE;
       break;
     }
   }
