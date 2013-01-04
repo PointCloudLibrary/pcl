@@ -109,6 +109,8 @@ TEST (TestMeshIndices, Conversions)
   EXPECT_FALSE  (pcl::geometry::toHalfEdgeIndex (e1).isValid ());
   EXPECT_EQ (8 , pcl::geometry::toHalfEdgeIndex (e2).get ());
   EXPECT_EQ (10, pcl::geometry::toHalfEdgeIndex (e3).get ());
+  EXPECT_EQ (9 , pcl::geometry::toHalfEdgeIndex (e2, false).get ());
+  EXPECT_EQ (11, pcl::geometry::toHalfEdgeIndex (e3, false).get ());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
