@@ -97,18 +97,18 @@ namespace pcl
 
         bool
         reconstructMesh (const CloudXYZRGBNormalConstPtr& cloud_data,
-                         const MeshPtr&                   mesh_model) const;
+                         MeshPtr&                         mesh_model) const;
 
         bool
         merge (const CloudXYZRGBNormalConstPtr& cloud_data,
-               const MeshPtr&                   mesh_model,
+               MeshPtr&                         mesh_model,
                const Eigen::Matrix4f&           T) const;
 
         void
         age (const MeshPtr& mesh, const bool cleanup=true) const;
 
-        void  setDistanceThreshold (const float squared_distance_max);
-        float getDistanceThreshold () const;
+        void  setSquaredDistanceThreshold (const float squared_distance_max);
+        float getSquaredDistanceThreshold () const;
 
         void  setAngleThreshold (const float dot_normal_min);
         float getAngleThreshold () const;

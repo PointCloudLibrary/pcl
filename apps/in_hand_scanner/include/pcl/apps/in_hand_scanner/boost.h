@@ -45,8 +45,12 @@
 #  pragma GCC system_header
 #endif
 
+#include <boost/unordered_map.hpp>
 #include <boost/bind/bind.hpp>
-#include <boost/thread/mutex.hpp>
+#include <boost/math/special_functions/fpclassify.hpp>
 #include <boost/shared_ptr.hpp>
+#include <boost/signals2/connection.hpp>
+//#include <boost/signals2/signal.hpp>
+#include <boost/thread/mutex.hpp>
 
 #endif // PCL_APPS_IN_HAND_SCANNER_BOOST_H

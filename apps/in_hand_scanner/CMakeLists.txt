@@ -16,6 +16,7 @@ set(INCS
 
 set(QT_MOC_INCS
     include/pcl/apps/${SUBSYS_NAME}/in_hand_scanner.h
+    include/pcl/apps/${SUBSYS_NAME}/opengl_viewer.h
 )
 
 set(IMPL_INCS
@@ -28,6 +29,7 @@ set(SRCS
     src/in_hand_scanner.cpp
     src/input_data_processing.cpp
     src/integration.cpp
+    src/opengl_viewer.cpp
 )
 
 ################################################################################

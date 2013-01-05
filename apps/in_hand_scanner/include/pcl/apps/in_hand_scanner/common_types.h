@@ -87,6 +87,7 @@ namespace pcl
       typedef boost::false_type     IsManifold;
     };
 
+    // NOTE: The drawMesh method in pcl::ihs::InHandScanner only supports triangles!
     typedef pcl::geometry::TriangleMesh <MeshTraits> Mesh;
     typedef Mesh::Ptr                                MeshPtr;
     typedef Mesh::ConstPtr                           MeshConstPtr;

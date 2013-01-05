@@ -43,7 +43,6 @@
 #include <pcl/common/point_tests.h>
 #include <pcl/features/integral_image_normal.h>
 
-
 ////////////////////////////////////////////////////////////////////////////////
 
 pcl::ihs::InputDataProcessing::InputDataProcessing ()
@@ -58,7 +57,7 @@ pcl::ihs::InputDataProcessing::InputDataProcessing ()
 {
   // Normal estimation
   normal_estimation_->setNormalEstimationMethod (NormalEstimation::AVERAGE_3D_GRADIENT);
-  normal_estimation_->setMaxDepthChangeFactor (0.02f);
+  normal_estimation_->setMaxDepthChangeFactor (0.02f); // in meters
   normal_estimation_->setNormalSmoothingSize (10.0f);
 }
 

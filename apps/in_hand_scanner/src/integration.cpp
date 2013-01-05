@@ -47,6 +47,8 @@
 #include <pcl/console/print.h>
 #include <pcl/kdtree/kdtree_flann.h>
 
+#include <pcl/apps/in_hand_scanner/boost.h>
+
 ////////////////////////////////////////////////////////////////////////////////
 // Integration::Dome
 ////////////////////////////////////////////////////////////////////////////////
@@ -105,7 +107,7 @@ pcl::ihs::Integration::Dome::getVertices () const
 
 pcl::ihs::Integration::Integration ()
   : kd_tree_              (new pcl::KdTreeFLANN <PointXYZ> ()),
-    squared_distance_max_ (4e-2f),
+    squared_distance_max_ (0.04f), // 0.2cm
     dot_normal_min_       (.6f),
     weight_min_           (.3f),
     age_max_              (30),
@@ -118,8 +120,13 @@ pcl::ihs::Integration::Integration ()
 
 bool
 pcl::ihs::Integration::reconstructMesh (const CloudXYZRGBNormalConstPtr& cloud_data,
-                                        const MeshPtr&                   mesh_model) const
+                                        MeshPtr&                         mesh_model) const
 {
+  if (!cloud_data)
+  {
+    std::cerr << "ERROR in integration.cpp: Cloud pointer is invalid\n";
+    return (false);
+  }
   if (!cloud_data->isOrganized ())
   {
     std::cerr << "ERROR in integration.cpp: Cloud is not organized\n";
@@ -127,6 +134,8 @@ pcl::ihs::Integration::reconstructMesh (const CloudXYZRGBNormalConstPtr& cloud_d
   }
   const int width  = static_cast <int> (cloud_data->width);
   const int height = static_cast <int> (cloud_data->height);
+
+  if (!mesh_model) mesh_model = MeshPtr (new Mesh ());
 
   mesh_model->clear ();
   mesh_model->reserveVertices (cloud_data->size ());
@@ -146,7 +155,7 @@ pcl::ihs::Integration::reconstructMesh (const CloudXYZRGBNormalConstPtr& cloud_d
     const PointXYZRGBNormal& pt_d = cloud_data->operator [] (c);
     const float weight = -pt_d.normal_z; // weight = -dot (normal, [0; 0; 1])
 
-    if (pcl::isFinite (pt_d) && weight >= weight_min_)
+    if (!boost::math::isnan (pt_d.x) && weight >= weight_min_)
     {
       cloud_model->operator [] (c) = PointIHS (pt_d, weight);
     }
@@ -158,7 +167,7 @@ pcl::ihs::Integration::reconstructMesh (const CloudXYZRGBNormalConstPtr& cloud_d
       const PointXYZRGBNormal& pt_d = cloud_data->operator [] (r*width + c);
       const float weight = -pt_d.normal_z; // weight = -dot (normal, [0; 0; 1])
 
-      if (pcl::isFinite (pt_d) && weight >= weight_min_)
+      if (!boost::math::isnan (pt_d.x) && weight >= weight_min_)
       {
         cloud_model->operator [] (r*width + c) = PointIHS (pt_d, weight);
       }
@@ -172,10 +181,10 @@ pcl::ihs::Integration::reconstructMesh (const CloudXYZRGBNormalConstPtr& cloud_d
   // 4 - 2   1  //
   //   \   \    //
   // *   3 - 0  //
-  static const int offset_1 = -width;
-  static const int offset_2 = -width - 1;
-  static const int offset_3 =        - 1;
-  static const int offset_4 = -width - 2;
+  const int offset_1 = -width;
+  const int offset_2 = -width - 1;
+  const int offset_3 =        - 1;
+  const int offset_4 = -width - 2;
 
   for (int r=1; r<height; ++r)
   {
@@ -208,7 +217,7 @@ pcl::ihs::Integration::reconstructMesh (const CloudXYZRGBNormalConstPtr& cloud_d
 
       const float weight = -pt_d_0.normal_z; // weight = -dot (normal, [0; 0; 1])
 
-      if (pcl::isFinite (pt_d_0) && weight >= weight_min_)
+      if (!boost::math::isnan (pt_d_0.x) && weight >= weight_min_)
       {
         pt_m_0 = PointIHS (pt_d_0, weight);
       }
@@ -225,22 +234,32 @@ pcl::ihs::Integration::reconstructMesh (const CloudXYZRGBNormalConstPtr& cloud_d
 
 bool
 pcl::ihs::Integration::merge (const CloudXYZRGBNormalConstPtr& cloud_data,
-                              const MeshPtr&                   mesh_model,
+                              MeshPtr&                         mesh_model,
                               const Eigen::Matrix4f&           T) const
 {
+  if (!cloud_data)
+  {
+    std::cerr << "ERROR in integration.cpp: Cloud pointer is invalid\n";
+    return (false);
+  }
   if (!cloud_data->isOrganized ())
   {
     std::cerr << "ERROR in integration.cpp: Data cloud is not organized\n";
     return (false);
   }
-  const int width  = static_cast <int> (cloud_data->width);
-  const int height = static_cast <int> (cloud_data->height);
-
+  if (!mesh_model)
+  {
+    std::cerr << "ERROR in integration.cpp: Mesh pointer is invalid\n";
+    return (false);
+  }
   if (!mesh_model->sizeVertices ())
   {
     std::cerr << "ERROR in integration.cpp: Model mesh is empty\n";
     return (false);
   }
+
+  const int width  = static_cast <int> (cloud_data->width);
+  const int height = static_cast <int> (cloud_data->height);
 
   // Nearest neighbor search
   // TODO: remove this unnecessary copy (I currently keep it because I'm not sure if
@@ -274,7 +293,7 @@ pcl::ihs::Integration::merge (const CloudXYZRGBNormalConstPtr& cloud_data,
     const PointXYZRGBNormal& pt_d = cloud_data->operator [] (c);
     const float weight = -pt_d.normal_z; // weight = -dot (normal, [0; 0; 1])
 
-    if (pcl::isFinite (pt_d) && weight >= weight_min_)
+    if (!boost::math::isnan (pt_d.x) && weight >= weight_min_)
     {
       PointIHS& pt_d_t = cloud_data_transformed->operator [] (c);
       pt_d_t = PointIHS (pt_d, weight);
@@ -289,7 +308,7 @@ pcl::ihs::Integration::merge (const CloudXYZRGBNormalConstPtr& cloud_data,
       const PointXYZRGBNormal& pt_d = cloud_data->operator [] (r*width + c);
       const float weight = -pt_d.normal_z; // weight = -dot (normal, [0; 0; 1])
 
-      if (pcl::isFinite (pt_d) && weight >= weight_min_)
+      if (!boost::math::isnan (pt_d.x) && weight >= weight_min_)
       {
         PointIHS& pt_d_t = cloud_data_transformed->operator [] (r*width + c);
         pt_d_t = PointIHS (pt_d, weight);
@@ -306,10 +325,10 @@ pcl::ihs::Integration::merge (const CloudXYZRGBNormalConstPtr& cloud_data,
   // 4 - 2   1  //
   //   \   \    //
   // *   3 - 0  //
-  static const int offset_1 = -width;
-  static const int offset_2 = -width - 1;
-  static const int offset_3 =        - 1;
-  static const int offset_4 = -width - 2;
+  const int offset_1 = -width;
+  const int offset_2 = -width - 1;
+  const int offset_3 =        - 1;
+  const int offset_4 = -width - 2;
 
   for (int r=1; r<height; ++r)
   {
@@ -342,7 +361,7 @@ pcl::ihs::Integration::merge (const CloudXYZRGBNormalConstPtr& cloud_data,
 
       const float weight = -pt_d_0.normal_z; // weight = -dot (normal, [0; 0; 1])
 
-      if (pcl::isFinite (pt_d_0) && weight >= weight_min_)
+      if (!boost::math::isnan (pt_d_0.x) && weight >= weight_min_)
       {
         pt_d_t_0 = PointIHS (pt_d_0, weight);
         pt_d_t_0.getVector4fMap ()       = T * pt_d_t_0.getVector4fMap ();
@@ -358,7 +377,7 @@ pcl::ihs::Integration::merge (const CloudXYZRGBNormalConstPtr& cloud_data,
         }
 
         // Average out corresponding points
-        if (squared_distance[0] <= squared_distance_max_)
+        if (squared_distance [0] <= squared_distance_max_)
         {
           PointIHS& pt_m = mesh_model->getVertexDataCloud () [index [0]]; // Non-const reference!
 
@@ -392,7 +411,7 @@ pcl::ihs::Integration::merge (const CloudXYZRGBNormalConstPtr& cloud_data,
 
           } // dot normals
         } // squared distance
-      } // isfinite && min weight
+      } // !isnan && min weight
 
       // Connect
       // 4   2 - 1  //
@@ -447,7 +466,7 @@ pcl::ihs::Integration::age (const MeshPtr& mesh, const bool cleanup) const
 ////////////////////////////////////////////////////////////////////////////////
 
 void
-pcl::ihs::Integration::setDistanceThreshold (const float squared_distance_max)
+pcl::ihs::Integration::setSquaredDistanceThreshold (const float squared_distance_max)
 {
   if (squared_distance_max <= 0.f)
   {
@@ -462,7 +481,7 @@ pcl::ihs::Integration::setDistanceThreshold (const float squared_distance_max)
 ////////////////////////////////////////////////////////////////////////////////
 
 float
-pcl::ihs::Integration::getDistanceThreshold () const
+pcl::ihs::Integration::getSquaredDistanceThreshold () const
 {
   return (squared_distance_max_);
 }
@@ -472,13 +491,13 @@ pcl::ihs::Integration::getDistanceThreshold () const
 void
 pcl::ihs::Integration::setAngleThreshold (const float dot_normal_min)
 {
-  if (dot_normal_min < -1.f || dot_normal_min > 1.f)
+  if (dot_normal_min >= -1.f && dot_normal_min <= 1.f)
   {
-    PCL_ERROR ("'dot_normal_min' must be between -1 and 1.\n");
+    dot_normal_min_ = dot_normal_min;
   }
   else
   {
-    dot_normal_min_ = dot_normal_min;
+    PCL_ERROR ("'dot_normal_min' must be between -1 and 1.\n");
   }
 }
 
@@ -495,13 +514,13 @@ pcl::ihs::Integration::getAngleThreshold () const
 void
 pcl::ihs::Integration::setMinimumWeight (const float weight_min)
 {
-  if (weight_min <= 0.f || weight_min > 1.f)
+  if (weight_min >= -1 && weight_min <= 1.f)
   {
-    PCL_ERROR ("'weight_min' must be between 0 (excluded) and 1.\n");
+    weight_min_ = weight_min;
   }
   else
   {
-    weight_min_ = weight_min;
+    PCL_ERROR ("'weight_min' must be between -1 and 1.\n");
   }
 }
 
@@ -575,7 +594,11 @@ pcl::ihs::Integration::addToMesh (const PointIHS& pt_0,
   // 2 - 1
   // |   |
   // 3 - 0
-  const unsigned char is_finite = static_cast <unsigned char> ((1 * pcl::isFinite (pt_0)) | (2 * pcl::isFinite (pt_1)) | (4 * pcl::isFinite (pt_2)) | (8 * pcl::isFinite (pt_3)));
+  const unsigned char is_finite = static_cast <unsigned char> (
+                                    (1 * !boost::math::isnan (pt_0.x)) |
+                                    (2 * !boost::math::isnan (pt_1.x)) |
+                                    (4 * !boost::math::isnan (pt_2.x)) |
+                                    (8 * !boost::math::isnan (pt_3.x)));
 
   switch (is_finite)
   {

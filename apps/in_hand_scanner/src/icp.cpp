@@ -217,7 +217,7 @@ pcl::ihs::ICP::findTransformation (const MeshConstPtr&              mesh_model,
   {
     return (false);
   }
-  else if (delta_fitness <=epsilon_)
+  else if (delta_fitness <= epsilon_)
   {
     T_final = T_cur;
     return (true);
