@@ -219,7 +219,7 @@ main (int argc, char** argv)
   float squared_distance_threshold = 0.f;
   if (pcl::console::parse (argc, argv, "-d", squared_distance_threshold) != -1)
   {
-    integration.setDistanceThreshold (squared_distance_threshold);
+    integration.setSquaredDistanceThreshold (squared_distance_threshold);
   }
 
   // merge
