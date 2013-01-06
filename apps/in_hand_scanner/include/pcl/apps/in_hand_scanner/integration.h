@@ -124,30 +124,6 @@ namespace pcl
 
       private:
 
-        // - Frequency 3 Icosahedron where each vertex corresponds to a viewing direction
-        // - First vertex aligned to z-axis
-        // - Removed vertices with z < 0.3
-        // -> 31 directions, fitting nicely into a 32 bit integer
-        // -> Very oblique angles are not considered
-        class Dome
-        {
-          public:
-
-            static const int                                NumDirections = 31;
-            typedef Eigen::Matrix <float, 4, NumDirections> Vertices;
-
-          public:
-
-            Dome ();
-
-            const Vertices&
-            getVertices () const;
-
-          private:
-
-            Vertices vertices_;
-        };
-
         uint8_t
         trimRGB (const float val) const;
 
@@ -185,14 +161,6 @@ namespace pcl
                            const PointIHS& pt_2,
                            const PointIHS& pt_3) const;
 
-        void
-        addDirection (const Eigen::Vector4f& normal,
-                      const Eigen::Vector4f& direction,
-                      uint32_t&              directions) const;
-
-        unsigned int
-        countDirections (const unsigned int directions) const;
-
         // Nearest neighbor search.
         KdTreePtr kd_tree_;
 
@@ -208,9 +176,6 @@ namespace pcl
         // A point dies if it has not been updated in the last age_max_ frames and the number of observed directions are below count_min_.
         unsigned int age_max_;
         unsigned int count_min_;
-
-        // Dome to check from which direction the point has been observed
-        Dome dome_;
     };
   } // End namespace ihs
 } // End namespace pcl

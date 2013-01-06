@@ -60,16 +60,18 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 pcl::ihs::OpenGLViewer::FaceVertexMesh::FaceVertexMesh ()
-  : vertices  (),
-    triangles ()
+  : vertices       (),
+    triangles      (),
+    transformation (Eigen::Isometry3d::Identity ())
 {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-pcl::ihs::OpenGLViewer::FaceVertexMesh::FaceVertexMesh (const Mesh& mesh)
-  : vertices (mesh.getVertexDataCloud ()),
-    triangles ()
+pcl::ihs::OpenGLViewer::FaceVertexMesh::FaceVertexMesh (const Mesh& mesh, const Eigen::Isometry3d& T)
+  : vertices       (mesh.getVertexDataCloud ()),
+    triangles      (),
+    transformation (T)
 {
   for (CloudIHS::iterator it=vertices.begin (); it!=vertices.end (); ++it)
   {
@@ -98,14 +100,12 @@ pcl::ihs::OpenGLViewer::OpenGLViewer (QWidget* parent)
   : QGLWidget            (parent),
     mutex_vis_           (),
     timer_               (new QTimer (this)),
-    T_object_            (Eigen::Matrix4f::Identity ()),
-    drawn_clouds_        (),
     drawn_meshes_        (),
     display_mode_        (DM_POINTS),
     draw_cube_           (false),
     cube_coefficients_   (),
-    cam_R_               (1., 0., 0., 0.),
-    cam_t_               (0., 0., 0.),
+    R_cam_               (1., 0., 0., 0.),
+    t_cam_               (0., 0., 0.),
     cam_pivot_           (0., 0., 0.),
     cam_pivot_id_        (""),
     mouse_pressed_begin_ (false),
@@ -131,88 +131,17 @@ pcl::ihs::OpenGLViewer::~OpenGLViewer ()
 ////////////////////////////////////////////////////////////////////////////////
 
 bool
-pcl::ihs::OpenGLViewer::addCloud (const CloudXYZRGBNormalConstPtr& cloud, const std::string& id)
+pcl::ihs::OpenGLViewer::addMesh (const MeshConstPtr& mesh, const std::string& id, const Eigen::Isometry3d& T)
 {
   boost::mutex::scoped_lock lock (mutex_vis_);
-
-  if (drawn_meshes_.find (id) != drawn_meshes_.end ())
-  {
-    std::cerr << "Trying to add a cloud with the id '" << id << "' although a mesh with the same id already exists!\n";
-    return (false);
-  }
-
-  CloudXYZRGBNormalPtr c (new CloudXYZRGBNormal ());
-  c->reserve (cloud->size ());
-
-  for (CloudXYZRGBNormal::const_iterator it=cloud->begin (); it!=cloud->end (); ++it)
-  {
-    if (!boost::math::isnan (it->x))
-    {
-      c->push_back (*it);
-      std::swap (c->back ().r, c->back ().b);
-    }
-  }
-
-  if (drawn_clouds_.find (id) == drawn_clouds_.end ())
-  {
-    drawn_clouds_.insert (std::make_pair (id, c));
-  }
-  else
-  {
-    drawn_clouds_ [id] = c;
-  }
-
-  return (true);
-}
-
-////////////////////////////////////////////////////////////////////////////////
-
-bool
-pcl::ihs::OpenGLViewer::removeCloud (const std::string& id)
-{
-  boost::mutex::scoped_lock lock (mutex_vis_);
-
-  if (drawn_clouds_.find (id) == drawn_clouds_.end ())
-  {
-    return (false);
-  }
-  else
-  {
-    drawn_clouds_.erase (id);
-    return (true);
-  }
-}
-
-////////////////////////////////////////////////////////////////////////////////
-
-void
-pcl::ihs::OpenGLViewer::removeAllClouds ()
-{
-  boost::mutex::scoped_lock lock (mutex_vis_);
-
-  drawn_clouds_.clear ();
-}
-
-////////////////////////////////////////////////////////////////////////////////
-
-bool
-pcl::ihs::OpenGLViewer::addMesh (const MeshConstPtr& mesh, const std::string& id)
-{
-  boost::mutex::scoped_lock lock (mutex_vis_);
-
-  if (drawn_clouds_.find (id) != drawn_clouds_.end ())
-  {
-    std::cerr << "Trying to add a cloud with the id '" << id << "' although a mesh with the same id already exists!\n";
-    return (false);
-  }
 
   if (drawn_meshes_.find (id) == drawn_meshes_.end ())
   {
-    drawn_meshes_.insert (std::make_pair (id, FaceVertexMeshPtr (new FaceVertexMesh (*mesh))));
+    drawn_meshes_.insert (std::make_pair (id, FaceVertexMeshPtr (new FaceVertexMesh (*mesh, T))));
   }
   else
   {
-    drawn_meshes_ [id] = FaceVertexMeshPtr (new FaceVertexMesh (*mesh));
+    drawn_meshes_ [id] = FaceVertexMeshPtr (new FaceVertexMesh (*mesh, T));
   }
 
   return (true);
@@ -221,20 +150,12 @@ pcl::ihs::OpenGLViewer::addMesh (const MeshConstPtr& mesh, const std::string& id
 ////////////////////////////////////////////////////////////////////////////////
 
 bool
-pcl::ihs::OpenGLViewer::addMesh (const CloudXYZRGBNormalConstPtr& cloud, const std::string& id)
+pcl::ihs::OpenGLViewer::addMesh (const CloudXYZRGBNormalConstPtr& cloud, const std::string& id, const Eigen::Isometry3d& T)
 {
-  boost::mutex::scoped_lock lock (mutex_vis_);
-
   if (!cloud->isOrganized ())
   {
     return (false);
   }
-
-  if (drawn_clouds_.find (id) != drawn_clouds_.end ())
-  {
-    drawn_clouds_.erase (id);
-  }
-  lock.unlock ();
 
   // Convert the cloud to a mesh using the following pattern
   // 2 - 1 //
@@ -247,6 +168,8 @@ pcl::ihs::OpenGLViewer::addMesh (const CloudXYZRGBNormalConstPtr& cloud, const s
   const int offset_3 =    - 1;
 
   FaceVertexMeshPtr mesh (new FaceVertexMesh ());
+  mesh->transformation = T;
+
   std::vector <int> indices (w * h, -1); // Map the original indices to the vertex indices.
   CloudIHS& vertices = mesh->vertices;
   std::vector <FaceVertexMesh::Triangle>& triangles = mesh->triangles;
@@ -319,7 +242,7 @@ pcl::ihs::OpenGLViewer::addMesh (const CloudXYZRGBNormalConstPtr& cloud, const s
   }
 
   // Finally add the mesh.
-  lock.lock ();
+  boost::mutex::scoped_lock lock (mutex_vis_);
   if (drawn_meshes_.find (id) == drawn_meshes_.end ())
   {
     drawn_meshes_.insert (std::make_pair (id, mesh));
@@ -393,13 +316,11 @@ pcl::ihs::OpenGLViewer::disableDrawCube ()
 ////////////////////////////////////////////////////////////////////////////////
 
 void
-pcl::ihs::OpenGLViewer::setPivot (const qreal x, const qreal y, const qreal z)
+pcl::ihs::OpenGLViewer::setPivot (const Eigen::Vector3d& pivot)
 {
   boost::mutex::scoped_lock lock (mutex_vis_);
 
-  cam_pivot_.setX (x);
-  cam_pivot_.setY (y);
-  cam_pivot_.setZ (z);
+  cam_pivot_ = pivot;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -444,18 +365,8 @@ pcl::ihs::OpenGLViewer::resetCamera ()
 {
   boost::mutex::scoped_lock lock (mutex_vis_);
 
-  cam_R_ = QQuaternion (1., 0., 0., 0.);
-  cam_t_ = QVector3D   (0., 0., 0.);
-}
-
-////////////////////////////////////////////////////////////////////////////////
-
-void
-pcl::ihs::OpenGLViewer::setObjectTransformation (const Eigen::Matrix4f& T)
-{
-  boost::mutex::scoped_lock lock (mutex_vis_);
-
-  T_object_ = T;
+  R_cam_ = Eigen::Quaterniond (1., 0., 0., 0.);
+  t_cam_ = Eigen::Vector3d    (0., 0., 0.);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -516,21 +427,21 @@ pcl::ihs::OpenGLViewer::paintEvent (QPaintEvent* /*event*/)
   glMatrixMode   (GL_MODELVIEW);
 
   // ModelView matrix
-  QQuaternion cam_R;
-  QVector3D   cam_t;
+  Eigen::Quaterniond R_cam;
+  Eigen::Vector3d    t_cam;
   {
     boost::mutex::scoped_lock lock (mutex_vis_);
-    cam_R = cam_R_;
-    cam_t = cam_t_;
+    R_cam = R_cam_;
+    t_cam = t_cam_;
   }
 
-  const QVector3D o  (0., 0., 0.);
-  const QVector3D ey (0., 1., 0.);
-  const QVector3D ez (0., 0., 1.);
+  const Eigen::Vector3d o  = Eigen::Vector3d::Zero  ();
+  const Eigen::Vector3d ey = Eigen::Vector3d::UnitY ();
+  const Eigen::Vector3d ez = Eigen::Vector3d::UnitZ ();
 
-  const QVector3D eye    = cam_R.rotatedVector ( o ) + cam_t;
-  const QVector3D center = cam_R.rotatedVector ( ez) + cam_t;
-  const QVector3D up     = cam_R.rotatedVector (-ey).normalized ();
+  const Eigen::Vector3d eye    =  R_cam * o  + t_cam;
+  const Eigen::Vector3d center =  R_cam * ez + t_cam;
+  const Eigen::Vector3d up     = (R_cam * -ey).normalized ();
 
   glMatrixMode (GL_MODELVIEW);
   gluLookAt (eye.   x (), eye.   y (), eye.   z (),
@@ -538,13 +449,7 @@ pcl::ihs::OpenGLViewer::paintEvent (QPaintEvent* /*event*/)
              up.    x (), up.    y (), up.    z ());
 
   // Draw everything
-  glPushMatrix ();
-  {
-    glMultMatrixf (T_object_.data ());
-    this->drawClouds ();
-    this->drawMeshes ();
-  }
-  glPopMatrix ();
+  this->drawMeshes ();
 
   glDisable (GL_LIGHTING); // This is needed so the color is right.
   this->drawCube ();
@@ -558,53 +463,15 @@ pcl::ihs::OpenGLViewer::calcPivot ()
   boost::mutex::scoped_lock lock (mutex_vis_);
   Eigen::Vector4f pivot;
 
-  if (drawn_clouds_.find (cam_pivot_id_) != drawn_clouds_.end ())
-  {
-    if (pcl::compute3DCentroid (*(drawn_clouds_ [cam_pivot_id_]), pivot))
-    {
-      lock.unlock ();
-      this->setPivot (pivot.x (), pivot.y (), pivot.z ());
-    }
-  }
-  else if (drawn_meshes_.find (cam_pivot_id_) != drawn_meshes_.end ())
+  if (drawn_meshes_.find (cam_pivot_id_) != drawn_meshes_.end ())
   {
     if (pcl::compute3DCentroid (drawn_meshes_ [cam_pivot_id_]->vertices, pivot))
     {
       lock.unlock ();
-      this->setPivot (pivot.x (), pivot.y (), pivot.z ());
+      this->setPivot (pivot.head <3> ().cast <double> ());
     }
   }
   cam_pivot_id_.clear ();
-}
-
-////////////////////////////////////////////////////////////////////////////////
-
-void
-pcl::ihs::OpenGLViewer::drawClouds ()
-{
-  boost::mutex::scoped_lock lock (mutex_vis_);
-
-  glEnableClientState (GL_VERTEX_ARRAY);
-  glEnableClientState (GL_COLOR_ARRAY);
-  glEnableClientState (GL_NORMAL_ARRAY);
-
-  for (CloudXYZRGBNormalMap::const_iterator it=drawn_clouds_.begin (); it!=drawn_clouds_.end (); ++it)
-  {
-    if (it->second && !it->second->empty ())
-    {
-      const CloudXYZRGBNormal& cloud = *it->second;
-
-      glVertexPointer (3, GL_FLOAT        , sizeof (PointXYZRGBNormal), &(cloud [0].x       ));
-      glColorPointer  (3, GL_UNSIGNED_BYTE, sizeof (PointXYZRGBNormal), &(cloud [0].b       ));
-      glNormalPointer (   GL_FLOAT        , sizeof (PointXYZRGBNormal), &(cloud [0].normal_x));
-
-      glDrawArrays (GL_POINTS, 0, cloud.size ());
-    }
-  }
-
-  glDisableClientState (GL_VERTEX_ARRAY);
-  glDisableClientState (GL_COLOR_ARRAY);
-  glDisableClientState (GL_NORMAL_ARRAY);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -628,19 +495,25 @@ pcl::ihs::OpenGLViewer::drawMeshes ()
       glColorPointer  (3, GL_UNSIGNED_BYTE, sizeof (PointIHS), &(mesh.vertices [0].b       ));
       glNormalPointer (   GL_FLOAT        , sizeof (PointIHS), &(mesh.vertices [0].normal_x));
 
-      switch (display_mode_)
+      glPushMatrix ();
       {
-        case DM_POINTS:
+        glMultMatrixd (mesh.transformation.matrix ().data ());
+
+        switch (display_mode_)
         {
-          glDrawArrays (GL_POINTS, 0, mesh.vertices.size ());
-          break;
-        }
-        case DM_FACES:
-        {
-          glDrawElements (GL_TRIANGLES, 3*mesh.triangles.size (), GL_UNSIGNED_INT, &mesh.triangles [0]);
-          break;
+          case DM_POINTS:
+          {
+            glDrawArrays (GL_POINTS, 0, mesh.vertices.size ());
+            break;
+          }
+          case DM_FACES:
+          {
+            glDrawElements (GL_TRIANGLES, 3*mesh.triangles.size (), GL_UNSIGNED_INT, &mesh.triangles [0]);
+            break;
+          }
         }
       }
+      glPopMatrix ();
     }
   }
 
@@ -664,44 +537,50 @@ pcl::ihs::OpenGLViewer::drawCube ()
 
   glColor3f (1.f, 1.f, 1.f);
 
-  // Front
-  glBegin(GL_LINE_STRIP);
+  glPushMatrix ();
   {
-    glVertex3f (coeffs.x_min, coeffs.y_min, coeffs.z_min);
-    glVertex3f (coeffs.x_max, coeffs.y_min, coeffs.z_min);
-    glVertex3f (coeffs.x_max, coeffs.y_max, coeffs.z_min);
-    glVertex3f (coeffs.x_min, coeffs.y_max, coeffs.z_min);
-    glVertex3f (coeffs.x_min, coeffs.y_min, coeffs.z_min);
+    glMultMatrixd (coeffs.transformation.matrix ().data ());
+
+    // Front
+    glBegin(GL_LINE_STRIP);
+    {
+      glVertex3f (coeffs.x_min, coeffs.y_min, coeffs.z_min);
+      glVertex3f (coeffs.x_max, coeffs.y_min, coeffs.z_min);
+      glVertex3f (coeffs.x_max, coeffs.y_max, coeffs.z_min);
+      glVertex3f (coeffs.x_min, coeffs.y_max, coeffs.z_min);
+      glVertex3f (coeffs.x_min, coeffs.y_min, coeffs.z_min);
+    }
+    glEnd();
+
+    // Back
+    glBegin (GL_LINE_STRIP);
+    {
+      glVertex3f (coeffs.x_min, coeffs.y_min, coeffs.z_max);
+      glVertex3f (coeffs.x_max, coeffs.y_min, coeffs.z_max);
+      glVertex3f (coeffs.x_max, coeffs.y_max, coeffs.z_max);
+      glVertex3f (coeffs.x_min, coeffs.y_max, coeffs.z_max);
+      glVertex3f (coeffs.x_min, coeffs.y_min, coeffs.z_max);
+    }
+    glEnd();
+
+    // Sides
+    glBegin (GL_LINES);
+    {
+      glVertex3f (coeffs.x_min, coeffs.y_min, coeffs.z_min);
+      glVertex3f (coeffs.x_min, coeffs.y_min, coeffs.z_max);
+
+      glVertex3f (coeffs.x_max, coeffs.y_min, coeffs.z_min);
+      glVertex3f (coeffs.x_max, coeffs.y_min, coeffs.z_max);
+
+      glVertex3f (coeffs.x_max, coeffs.y_max, coeffs.z_min);
+      glVertex3f (coeffs.x_max, coeffs.y_max, coeffs.z_max);
+
+      glVertex3f (coeffs.x_min, coeffs.y_max, coeffs.z_min);
+      glVertex3f (coeffs.x_min, coeffs.y_max, coeffs.z_max);
+    }
+    glEnd();
   }
-  glEnd();
-
-  // Back
-  glBegin (GL_LINE_STRIP);
-  {
-    glVertex3f (coeffs.x_min, coeffs.y_min, coeffs.z_max);
-    glVertex3f (coeffs.x_max, coeffs.y_min, coeffs.z_max);
-    glVertex3f (coeffs.x_max, coeffs.y_max, coeffs.z_max);
-    glVertex3f (coeffs.x_min, coeffs.y_max, coeffs.z_max);
-    glVertex3f (coeffs.x_min, coeffs.y_min, coeffs.z_max);
-  }
-  glEnd();
-
-  // Sides
-  glBegin (GL_LINES);
-  {
-    glVertex3f (coeffs.x_min, coeffs.y_min, coeffs.z_min);
-    glVertex3f (coeffs.x_min, coeffs.y_min, coeffs.z_max);
-
-    glVertex3f (coeffs.x_max, coeffs.y_min, coeffs.z_min);
-    glVertex3f (coeffs.x_max, coeffs.y_min, coeffs.z_max);
-
-    glVertex3f (coeffs.x_max, coeffs.y_max, coeffs.z_min);
-    glVertex3f (coeffs.x_max, coeffs.y_max, coeffs.z_max);
-
-    glVertex3f (coeffs.x_min, coeffs.y_max, coeffs.z_min);
-    glVertex3f (coeffs.x_min, coeffs.y_max, coeffs.z_max);
-  }
-  glEnd();
+  glPopMatrix ();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -774,36 +653,36 @@ pcl::ihs::OpenGLViewer::mouseMoveEvent (QMouseEvent* event)
   if (event->pos ().x () == x_prev_ && event->pos ().y () == y_prev_) return;
   if (this->width () == 0 || this->height () == 0)                    return;
 
-  const qreal dx = static_cast <qreal> (event->pos ().x ()) - static_cast <qreal> (x_prev_);
-  const qreal dy = static_cast <qreal> (event->pos ().y ()) - static_cast <qreal> (y_prev_);
-  const qreal w  = static_cast <qreal> (this->width ());
-  const qreal h  = static_cast <qreal> (this->height ());
-  const qreal d  = std::sqrt (w*w + h*h);
+  const double dx = static_cast <double> (event->pos ().x ()) - static_cast <double> (x_prev_);
+  const double dy = static_cast <double> (event->pos ().y ()) - static_cast <double> (y_prev_);
+  const double w  = static_cast <double> (this->width ());
+  const double h  = static_cast <double> (this->height ());
+  const double d  = std::sqrt (w*w + h*h);
 
-  const QVector3D o  (0., 0., 0.);
-  const QVector3D ex (1., 0., 0.);
-  const QVector3D ey (0., 1., 0.);
-  const QVector3D ez (0., 0., 1.);
+  const Eigen::Vector3d o  = Eigen::Vector3d::Zero  ();
+  const Eigen::Vector3d ex = Eigen::Vector3d::UnitX ();
+  const Eigen::Vector3d ey = Eigen::Vector3d::UnitY ();
+  const Eigen::Vector3d ez = Eigen::Vector3d::UnitZ ();
 
   // Scale with the distance between the pivot and camera eye.
-  const qreal scale = std::max ((cam_pivot_ - cam_R_.rotatedVector (o) - cam_t_).length (), 10.) / d;
+  const double scale = std::max ((cam_pivot_ - R_cam_ * o - t_cam_).norm (), 10.) / d;
 
   if (QApplication::mouseButtons () == Qt::LeftButton)
   {
-    const QVector3D rot_axis  = (cam_R_.rotatedVector (ex) * dy - cam_R_.rotatedVector (ey) * dx).normalized ();
-    const qreal     rot_angle = -400. * std::atan (std::sqrt ((dx*dx + dy*dy)) / d);
+    const double          rot_angle = -7. * std::atan (std::sqrt ((dx*dx + dy*dy)) / d);
+    const Eigen::Vector3d rot_axis  = (R_cam_ * ex * dy - R_cam_ * ey * dx).normalized ();
 
-    const QQuaternion dR = QQuaternion::fromAxisAndAngle (rot_axis, rot_angle);
-    cam_t_ = dR.rotatedVector (cam_t_ - cam_pivot_) + cam_pivot_;
-    cam_R_ = (dR * cam_R_).normalized ();
+    const Eigen::Quaterniond dR (Eigen::AngleAxisd (rot_angle, rot_axis));
+    t_cam_ = dR * (t_cam_ - cam_pivot_) + cam_pivot_;
+    R_cam_ = (dR * R_cam_).normalized ();
   }
   else if (QApplication::mouseButtons () == Qt::MiddleButton)
   {
-    cam_t_ += 1.3 * scale * cam_R_.rotatedVector (ey * -dy + ex * -dx);
+    t_cam_ += 1.3 * scale * Eigen::Vector3d (R_cam_ * (ey * -dy + ex * -dx));
   }
   else if (QApplication::mouseButtons () == Qt::RightButton)
   {
-    cam_t_ += 2.6 * scale * cam_R_.rotatedVector (ez * -dy);
+    t_cam_ += 2.6 * scale * Eigen::Vector3d (R_cam_ * (ez * -dy));
   }
 
   x_prev_ = event->pos ().x ();
@@ -820,15 +699,15 @@ pcl::ihs::OpenGLViewer::wheelEvent (QWheelEvent* event)
     boost::mutex::scoped_lock lock (mutex_vis_);
 
     // Scale with the distance between the pivot and camera eye.
-    const QVector3D o  (0., 0., 0.);
-    const QVector3D ez (0., 0., 1.);
-    const qreal w     = static_cast <qreal> (this->width ());
-    const qreal h     = static_cast <qreal> (this->height ());
-    const qreal d     = std::sqrt (w*w + h*h);
-    const qreal scale = std::max ((cam_pivot_ - cam_R_.rotatedVector (o) - cam_t_).length (), 10.) / d;
+    const Eigen::Vector3d o     = Eigen::Vector3d::Zero  ();
+    const Eigen::Vector3d ez    = Eigen::Vector3d::UnitZ ();
+    const double          w     = static_cast <double> (this->width ());
+    const double          h     = static_cast <double> (this->height ());
+    const double          d     = std::sqrt (w*w + h*h);
+    const double          scale = std::max ((cam_pivot_ - R_cam_ * o - t_cam_).norm (), 10.) / d;
 
     // http://doc.qt.digia.com/qt/qwheelevent.html#delta
-    cam_t_ += scale * cam_R_.rotatedVector (ez * event->delta ());
+    t_cam_ += scale * Eigen::Vector3d (R_cam_ * (ez * static_cast <double> (event->delta ())));
   }
 }
 

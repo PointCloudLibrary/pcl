@@ -44,8 +44,6 @@
 #include <string>
 
 #include <QGLWidget>
-#include <QQuaternion>
-#include <QVector3D>
 
 #include <pcl/pcl_exports.h>
 #include <pcl/apps/in_hand_scanner/boost.h>
@@ -86,22 +84,30 @@ namespace pcl
             CubeCoefficients ()
               : x_min (0), x_max (0),
                 y_min (0), y_max (0),
-                z_min (0), z_max (0)
+                z_min (0), z_max (0),
+                transformation (Eigen::Isometry3d::Identity ())
             {
             }
 
             CubeCoefficients (const float x_min, const float x_max,
                               const float y_min, const float y_max,
-                              const float z_min, const float z_max)
+                              const float z_min, const float z_max,
+                              const Eigen::Isometry3d& T = Eigen::Isometry3d::Identity ())
               : x_min (x_min), x_max (x_max),
                 y_min (y_min), y_max (y_max),
-                z_min (z_min), z_max (z_max)
+                z_min (z_min), z_max (z_max),
+                transformation (T)
             {
             }
 
             float x_min; float x_max;
             float y_min; float y_max;
             float z_min; float z_max;
+            Eigen::Isometry3d transformation;
+
+          public:
+
+            EIGEN_MAKE_ALIGNED_OPERATOR_NEW
         };
 
         /** \brief Constructor. */
@@ -110,43 +116,25 @@ namespace pcl
         /** \brief Destructor. */
         ~OpenGLViewer ();
 
-        /** \brief Add a cloud to be drawn.
-          * \param[in] cloud The input cloud.
-          * \param[in] id Unique identifier for the cloud. The internal cloud is replaced by the input cloud the id already exists. Fails if a MESH with the given id already exists.
-          * \return true if success.
-          * \note Converts the input cloud from rgb to bgr format and removes NaN
-          */
-        bool
-        addCloud (const CloudXYZRGBNormalConstPtr& cloud, const std::string& id);
-
-        /** \brief Remove the cloud with the given id.
-          * \param[in] id Identifier of the cloud (results in a failure if the id does not exist).
-          * \return true if success.
-          */
-        bool
-        removeCloud (const std::string& id);
-
-        /** \brief Remove all clouds that are currently drawn. */
-        void
-        removeAllClouds ();
-
         /** \brief Add a mesh to be drawn.
           * \param[in] mesh The input mesh.
-          * \param[in] id Unique identifier for the mesh. The internal mesh is replaced by the input mesh if the id already exists. Fails if a CLOUD with the given id already exists.
+          * \param[in] id Unique identifier for the mesh. The internal mesh is replaced by the input mesh if the id already exists.
+          * \param[in] T Transformation applied to the mesh. Defaults to an identity transformation.
           * \return true if success.
           * \note Converts the mesh to the internal representation better suited for visualization. Therefore this method takes some time.
           */
         bool
-        addMesh (const MeshConstPtr& mesh, const std::string& id);
+        addMesh (const MeshConstPtr& mesh, const std::string& id, const Eigen::Isometry3d& T = Eigen::Isometry3d::Identity ());
 
         /** \brief Convert an organized cloud to a mesh and draw it.
           * \param[in] cloud Organized input cloud.
-          * \param[in] id Unique identifier for the mesh. The internal mesh is replaced by the input mesh if the id already exists. If a cloud with the given id is already drawn  the old cloud is removed.
+          * \param[in] id Unique identifier for the mesh. The internal mesh is replaced by the converted input mesh if the id already exists.
+          ** \param[in] T Transformation applied to the mesh. Defaults to an identity transformation.
           * \return true if success.
-          * \note Converts the mesh to the internal representation better suited for visualization. Therefore this method takes some time.
+          * \note This method takes some time for the conversion).
           */
         bool
-        addMesh (const CloudXYZRGBNormalConstPtr& cloud, const std::string& id);
+        addMesh (const CloudXYZRGBNormalConstPtr& cloud, const std::string& id, const Eigen::Isometry3d& T = Eigen::Isometry3d::Identity ());
 
         /** \brief Remove the mesh with the given id.
           * \param[in] id Identifier of the mesh (results in a failure if the id does not exist).
@@ -173,9 +161,9 @@ namespace pcl
 
         /** \brief Set the point around which the camera rotates during mouse navigation. */
         void
-        setPivot (const qreal x, const qreal y, const qreal z);
+        setPivot (const Eigen::Vector3d& pivot);
 
-        /** \brief Searches the given id in the drawn clouds and meshes and calculates the pivot as the centroid of the found geometry.
+        /** \brief Searches the given id in the drawn meshes and calculates the pivot as the centroid of the found geometry.
           * \note Returns immediately and computes the pivot in another thread.
           */
         void
@@ -192,10 +180,6 @@ namespace pcl
         /** \brief Reset the virtual camera position and orientation. */
         void
         resetCamera ();
-
-        /** \brief Set the transformation applied to all clouds and meshes. */
-        void
-        setObjectTransformation (const Eigen::Matrix4f& T);
 
      public slots:
 
@@ -247,10 +231,15 @@ namespace pcl
             FaceVertexMesh ();
 
             /** \brief Constructor. Converts the input mesh into a face vertex mesh. */
-            explicit FaceVertexMesh (const Mesh& mesh);
+            FaceVertexMesh (const Mesh& mesh, const Eigen::Isometry3d& T);
 
             pcl::ihs::OpenGLViewer::CloudIHS vertices;
             std::vector <Triangle>           triangles;
+            Eigen::Isometry3d                transformation;
+
+          public:
+
+            EIGEN_MAKE_ALIGNED_OPERATOR_NEW
         };
 
         typedef boost::shared_ptr <      FaceVertexMesh>                         FaceVertexMeshPtr;
@@ -260,10 +249,6 @@ namespace pcl
         /** \brief Calculate the pivot for the stored id. */
         void
         calcPivot ();
-
-        /** \brief Draw all clouds. */
-        void
-        drawClouds ();
 
         /** \brief Draw all meshes.
           * \note Only triangle meshes are currently supported.
@@ -309,12 +294,6 @@ namespace pcl
         /** \brief Visualization timer. */
         boost::shared_ptr <QTimer> timer_;
 
-        /** \brief Transformation applied to all clouds and meshes. */
-        Eigen::Matrix4f T_object_;
-
-        /** \brief Clouds stored for visualization. */
-        CloudXYZRGBNormalMap drawn_clouds_;
-
         /** \brief Meshes stored for visualization. */
         FaceVertexMeshMap drawn_meshes_;
 
@@ -328,15 +307,15 @@ namespace pcl
         CubeCoefficients cube_coefficients_;
 
         /** \brief Rotation of the camera. */
-        QQuaternion cam_R_;
+        Eigen::Quaterniond R_cam_;
 
         /** \brief Translation of the camera. */
-        QVector3D cam_t_;
+        Eigen::Vector3d t_cam_;
 
         /** \brief Center of rotation during mouse navigation. */
-        QVector3D cam_pivot_;
+        Eigen::Vector3d cam_pivot_;
 
-        /** \brief Compute the pivot for the cloud or mesh with the given id. */
+        /** \brief Compute the pivot for the mesh with the given id. */
         std::string cam_pivot_id_;
 
         /** \brief Set to true right after the mouse got pressed and false if the mouse got moved. */

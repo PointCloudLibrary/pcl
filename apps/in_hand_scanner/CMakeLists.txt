@@ -12,6 +12,7 @@ set(INCS
     include/pcl/apps/${SUBSYS_NAME}/icp.h
     include/pcl/apps/${SUBSYS_NAME}/input_data_processing.h
     include/pcl/apps/${SUBSYS_NAME}/integration.h
+    include/pcl/apps/${SUBSYS_NAME}/visibility_confidence.h
 )
 
 set(QT_MOC_INCS
@@ -30,6 +31,7 @@ set(SRCS
     src/input_data_processing.cpp
     src/integration.cpp
     src/opengl_viewer.cpp
+    src/visibility_confidence.cpp
 )
 
 ################################################################################

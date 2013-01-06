@@ -45,8 +45,8 @@
 #include <QPainter>
 #include <QtCore>
 
-#include <pcl/common/transforms.h>
 #include <pcl/exceptions.h>
+#include <pcl/common/transforms.h>
 #include <pcl/io/openni_grabber.h>
 #include <pcl/apps/in_hand_scanner/icp.h>
 #include <pcl/apps/in_hand_scanner/input_data_processing.h>
@@ -78,7 +78,7 @@ pcl::ihs::InHandScanner::InHandScanner (Base* parent)
   float x_min, x_max, y_min, y_max, z_min, z_max;
   input_data_processing_->getCropBox (x_min, x_max, y_min, y_max, z_min, z_max);
 
-  Base::setPivot ((x_min + x_max) / 2., (y_min + y_max) / 2., (z_min + z_max) / 2.);
+  Base::setPivot (Eigen::Vector3d ((x_min + x_max) / 2., (y_min + y_max) / 2., (z_min + z_max) / 2.));
   Base::setCubeCoefficients (Base::CubeCoefficients (x_min, x_max, y_min, y_max, z_min, z_max));
 }
 
@@ -182,9 +182,13 @@ void
 pcl::ihs::InHandScanner::newDataCallback (const CloudXYZRGBAConstPtr& cloud_in)
 {
   RunningMode running_mode;
+  double time_wait_lock = 0;
+
   unsigned int iteration;
   {
+    pcl::StopWatch sw_wait_lock;
     boost::mutex::scoped_lock lock (mutex_ihs_);
+    time_wait_lock += sw_wait_lock.getTime ();
 
     if (destructor_called_)
     {
@@ -201,7 +205,6 @@ pcl::ihs::InHandScanner::newDataCallback (const CloudXYZRGBAConstPtr& cloud_in)
       transformation_  = Eigen::Matrix4f::Identity ();
 
       Base::resetCamera ();
-      Base::removeAllClouds ();
       Base::removeAllMeshes ();
 
       reset_ = false;
@@ -212,20 +215,30 @@ pcl::ihs::InHandScanner::newDataCallback (const CloudXYZRGBAConstPtr& cloud_in)
     this->calcFPS (computation_fps_);
   }
 
+  pcl::StopWatch sw;
+
   // Input data processing
   CloudXYZRGBNormalPtr cloud_data;
-  if      (running_mode == RM_SHOW_MODEL)  cloud_data = CloudXYZRGBNormalPtr (new CloudXYZRGBNormal ());
+  if      (running_mode == RM_SHOW_MODEL)  return;
   else if (running_mode == RM_UNPROCESSED) cloud_data = input_data_processing_->calculateNormals (cloud_in);
   else if (running_mode >= RM_PROCESSED)   cloud_data = input_data_processing_->process (cloud_in);
+
+  std::cerr << "\nGlobal iteration " << iteration_ << "\n";
+  std::cerr << "Input data processing:\n"
+            << "  - time                           : "
+            << std::setw (8) << std::right << sw.getTime () << " ms\n";
 
   // Registration & integration
   if (running_mode >= RM_REGISTRATION_CONT)
   {
-    std::cerr << "\nGlobal iteration " << iteration_ << "\n";
     if (iteration == 0)
     {
       transformation_ = Eigen::Matrix4f::Identity ();
+      sw.reset ();
       integration_->reconstructMesh (cloud_data, mesh_model_);
+      std::cerr << "Integration:\n"
+                << "  - time reconstruct mesh          : "
+                << std::setw (8) << std::right << sw.getTime () << " ms\n";
       cloud_data = CloudXYZRGBNormalPtr (new CloudXYZRGBNormal ());
       ++iteration;
     }
@@ -235,11 +248,17 @@ pcl::ihs::InHandScanner::newDataCallback (const CloudXYZRGBAConstPtr& cloud_in)
       if (icp_->findTransformation (mesh_model_, cloud_data, transformation_, T_final))
       {
         transformation_ = T_final;
+        sw.reset ();
         integration_->merge (cloud_data, mesh_model_, transformation_);
+        std::cerr << "Integration:\n"
+                  << "  - time merge                     : "
+                  << std::setw (8) << std::right << sw.getTime () << " ms\n";
+        sw.reset ();
         integration_->age (mesh_model_);
+        std::cerr << "  - time age                       : "
+                  << std::setw (8) << std::right << sw.getTime () << " ms\n";
         cloud_data = CloudXYZRGBNormalPtr (new CloudXYZRGBNormal ());
 
-        Base::setObjectTransformation (transformation_.inverse ());
 
         ++iteration;
       }
@@ -248,7 +267,9 @@ pcl::ihs::InHandScanner::newDataCallback (const CloudXYZRGBAConstPtr& cloud_in)
 
   // Visualization & copy back some variables
   {
+    pcl::StopWatch sw_wait_lock;
     boost::mutex::scoped_lock lock (mutex_ihs_);
+    time_wait_lock += sw_wait_lock.getTime ();
 
     if (destructor_called_)
     {
@@ -258,8 +279,15 @@ pcl::ihs::InHandScanner::newDataCallback (const CloudXYZRGBAConstPtr& cloud_in)
     if (mesh_model_->empty ()) Base::setPivot ("data");
     else                       Base::setPivot ("model");
 
+    sw.reset ();
+    Base::addMesh (mesh_model_, "model", Eigen::Isometry3d (transformation_.inverse ().cast <double> ()));
+    std::cerr << "Copy to visualization thread:\n"
+              << "  - time model                     : "
+              << std::setw (8) << std::right << sw.getTime () << " ms\n";
+    sw.reset ();
     Base::addMesh (cloud_data , "data"); // Converts to a mesh for visualization
-    Base::addMesh (mesh_model_, "model");
+    std::cerr << "  - time data                      : "
+              << std::setw (8) << std::right << sw.getTime () << " ms\n";
 
     iteration_ = iteration;
 
@@ -268,6 +296,10 @@ pcl::ihs::InHandScanner::newDataCallback (const CloudXYZRGBAConstPtr& cloud_in)
       running_mode_ = RM_PROCESSED;
     }
   }
+
+  std::cerr << "Synchronization:\n"
+            << "  - time to wait for locking       : "
+            << std::setw (8) << std::right << time_wait_lock << " ms\n";
 }
 
 ////////////////////////////////////////////////////////////////////////////////

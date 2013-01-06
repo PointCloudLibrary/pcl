@@ -42,11 +42,11 @@
 
 #include <limits>
 #include <cstdlib>
-
-// #include <iomanip>
+#include <iomanip>
 
 #include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/common/centroid.h>
+#include <pcl/common/time.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -81,6 +81,14 @@ pcl::ihs::ICP::findTransformation (const MeshConstPtr&              mesh_model,
     return (false);
   }
 
+  // Time measurements
+  pcl::StopWatch sw;
+  pcl::StopWatch sw_total;
+  double t_select     = 0.;
+  double t_build      = 0.;
+  double t_nn_search  = 0.;
+  double t_calc_trafo = 0.;
+
   // Convergence and registration failure
   float current_fitness  = 0.f;
   float previous_fitness = std::numeric_limits <float>::max ();
@@ -94,8 +102,10 @@ pcl::ihs::ICP::findTransformation (const MeshConstPtr&              mesh_model,
   Eigen::Matrix4f T_cur = T_init;
 
   // Point selection
+  sw.reset ();
   const CloudNormalConstPtr cloud_model_selected = this->selectModelPoints (mesh_model, T_init.inverse ());
   const CloudNormalConstPtr cloud_data_selected  = this->selectDataPoints (cloud_data);
+  t_select = sw.getTime ();
 
   const size_t n_model = cloud_model_selected->size ();
   const size_t n_data  = cloud_data_selected->size ();
@@ -103,7 +113,9 @@ pcl::ihs::ICP::findTransformation (const MeshConstPtr&              mesh_model,
   if(n_data < n_min)  {std::cerr << "ERROR in icp.cpp: Not enough data points after selection!\n"; return (false);}
 
   // Build a kd-tree
+  sw.reset ();
   kd_tree_->setInputCloud (cloud_model_selected);
+  t_build = sw.getTime ();
 
   // ICP main loop
   unsigned int iter = 1;
@@ -123,6 +135,7 @@ pcl::ihs::ICP::findTransformation (const MeshConstPtr&              mesh_model,
     std::vector <int>   index (1);
     std::vector <float> squared_distance (1);
 
+    sw.reset ();
     CloudNormal::const_iterator it_d = cloud_data_selected->begin ();
     for (; it_d!=cloud_data_selected->end (); ++it_d)
     {
@@ -165,6 +178,8 @@ pcl::ihs::ICP::findTransformation (const MeshConstPtr&              mesh_model,
     CloudNormal (*cloud_model_corr).swap (*cloud_model_corr);
     CloudNormal (*cloud_data_corr).swap (*cloud_data_corr);
 
+    t_nn_search += sw.getTime ();
+
     const size_t n_corr = cloud_data_corr->size ();
     if (n_corr < n_min)
     {
@@ -185,12 +200,14 @@ pcl::ihs::ICP::findTransformation (const MeshConstPtr&              mesh_model,
     //              << " | delta fitness: " << std::setprecision(5) << std::setw(10) << delta_fitness << std::endl;
 
     // Minimize the point to plane distance
+    sw.reset ();
     Eigen::Matrix4f T_delta = Eigen::Matrix4f::Identity ();
     if (!this->minimizePointPlane (cloud_data_corr, cloud_model_corr, T_delta))
     {
       std::cerr << "ERROR in icp.cpp: minimizePointPlane failed!\n";
       return (false);
     }
+    t_calc_trafo += sw.getTime ();
 
     T_cur = T_delta * T_cur;
 
@@ -202,16 +219,52 @@ pcl::ihs::ICP::findTransformation (const MeshConstPtr&              mesh_model,
   } // End ICP main loop
 
   // Some output
-  std::cerr << "\nRegistration:\n"
-            << "  - num model     / num data   : " << n_model         << " / " << n_data << "\n"
-            << "  - delta fitness / epsilon    : " << delta_fitness   << " / " << epsilon_
-            << (delta_fitness   < epsilon_        ? " <-- :-)\n" : "\n")
-            << "  - fitness       / max fitness: " << current_fitness << " / " << max_fitness_
-            << (current_fitness > max_fitness_    ? " <-- :-(\n" : "\n")
-            << "  - iter          / max iter   : " << iter            << " / " << max_iterations_
-            << (iter            > max_iterations_ ? " <-- :-(\n" : "\n")
-            << "  - overlap       / min overlap: " << overlap         << " / " << min_overlap_
-            << (overlap         < min_overlap_    ? " <-- :-(\n" : "\n");
+  std::cerr << "Registration:\n"
+
+            << "  - num model     / num data       : "
+            << std::setw (8) << std::right << n_model << " / "
+            << std::setw (8) << std::left  << n_data << "\n"
+
+            << std::scientific << std::setprecision (1)
+
+            << "  - delta fitness / epsilon        : "
+            << std::setw (8) << std::right << delta_fitness << " / "
+            << std::setw (8) << std::left  << epsilon_
+            << (delta_fitness < epsilon_ ? " <-- :-)\n" : "\n")
+
+            << "  - fitness       / max fitness    : "
+            << std::setw (8) << std::right << current_fitness << " / "
+            << std::setw (8) << std::left  << max_fitness_
+            << (current_fitness > max_fitness_ ? " <-- :-(\n" : "\n")
+
+            << std::fixed << std::setprecision (2)
+
+            << "  - iter          / max iter       : "
+            << std::setw (8) << std::right << iter << " / "
+            << std::setw (8) << std::left  << max_iterations_
+            << (iter > max_iterations_ ? " <-- :-(\n" : "\n")
+
+            << "  - overlap       / min overlap    : "
+            << std::setw (8) << std::right << overlap << " / "
+            << std::setw (8) << std::left  << min_overlap_
+            << (overlap < min_overlap_ ? " <-- :-(\n" : "\n")
+
+            << std::fixed << std::setprecision (0)
+
+            << "  - time select                    : "
+            << std::setw (8) << std::right << t_select << " ms\n"
+
+            << "  - time build kd-tree             : "
+            << std::setw (8) << std::right << t_build << " ms\n"
+
+            << "  - time nn-search / trafo / reject: "
+            << std::setw (8) << std::right << t_nn_search << " ms\n"
+
+            << "  - time minimize                  : "
+            << std::setw (8) << std::right << t_calc_trafo << " ms\n"
+
+            << "  - total time                     : "
+            << std::setw (8) << std::right << sw_total.getTime () << " ms\n";
 
   if (iter > max_iterations_ || overlap <  min_overlap_ || current_fitness > max_fitness_)
   {
