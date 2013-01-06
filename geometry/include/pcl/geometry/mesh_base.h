@@ -413,6 +413,7 @@ namespace pcl
         // Circulators
         ////////////////////////////////////////////////////////////////////////
 
+        /** \see pcl::geometry::VertexAroundVertexCirculator */
         inline VertexAroundVertexCirculator
         getVertexAroundVertexCirculator (const VertexIndex& idx_vertex) const
         {
@@ -420,6 +421,7 @@ namespace pcl
           return (VertexAroundVertexCirculator (idx_vertex, this));
         }
 
+        /** \see pcl::geometry::VertexAroundVertexCirculator */
         inline VertexAroundVertexCirculator
         getVertexAroundVertexCirculator (const HalfEdgeIndex& idx_outgoing_half_edge) const
         {
@@ -427,6 +429,7 @@ namespace pcl
           return (VertexAroundVertexCirculator (idx_outgoing_half_edge, this));
         }
 
+        /** \see pcl::geometry::OutgoingHalfEdgeAroundVertexCirculator */
         inline OutgoingHalfEdgeAroundVertexCirculator
         getOutgoingHalfEdgeAroundVertexCirculator (const VertexIndex& idx_vertex) const
         {
@@ -434,6 +437,7 @@ namespace pcl
           return (OutgoingHalfEdgeAroundVertexCirculator (idx_vertex, this));
         }
 
+        /** \see pcl::geometry::OutgoingHalfEdgeAroundVertexCirculator */
         inline OutgoingHalfEdgeAroundVertexCirculator
         getOutgoingHalfEdgeAroundVertexCirculator (const HalfEdgeIndex& idx_outgoing_half_edge) const
         {
@@ -441,6 +445,7 @@ namespace pcl
           return (OutgoingHalfEdgeAroundVertexCirculator (idx_outgoing_half_edge, this));
         }
 
+        /** \see pcl::geometry::IncomingHalfEdgeAroundVertexCirculator */
         inline IncomingHalfEdgeAroundVertexCirculator
         getIncomingHalfEdgeAroundVertexCirculator (const VertexIndex& idx_vertex) const
         {
@@ -448,6 +453,7 @@ namespace pcl
           return (IncomingHalfEdgeAroundVertexCirculator (idx_vertex, this));
         }
 
+        /** \see pcl::geometry::IncomingHalfEdgeAroundVertexCirculator */
         inline IncomingHalfEdgeAroundVertexCirculator
         getIncomingHalfEdgeAroundVertexCirculator (const HalfEdgeIndex& idx_incoming_half_edge) const
         {
@@ -455,6 +461,7 @@ namespace pcl
           return (IncomingHalfEdgeAroundVertexCirculator (idx_incoming_half_edge, this));
         }
 
+        /** \see pcl::geometry::FaceAroundVertexCirculator */
         inline FaceAroundVertexCirculator
         getFaceAroundVertexCirculator (const VertexIndex& idx_vertex) const
         {
@@ -462,6 +469,7 @@ namespace pcl
           return (FaceAroundVertexCirculator (idx_vertex, this));
         }
 
+        /** \see pcl::geometry::FaceAroundVertexCirculator */
         inline FaceAroundVertexCirculator
         getFaceAroundVertexCirculator (const HalfEdgeIndex& idx_outgoing_half_edge) const
         {
@@ -469,6 +477,7 @@ namespace pcl
           return (FaceAroundVertexCirculator (idx_outgoing_half_edge, this));
         }
 
+        /** \see pcl::geometry::VertexAroundFaceCirculator */
         inline VertexAroundFaceCirculator
         getVertexAroundFaceCirculator (const FaceIndex& idx_face) const
         {
@@ -476,6 +485,7 @@ namespace pcl
           return (VertexAroundFaceCirculator (idx_face, this));
         }
 
+        /** \see pcl::geometry::VertexAroundFaceCirculator */
         inline VertexAroundFaceCirculator
         getVertexAroundFaceCirculator (const HalfEdgeIndex& idx_inner_half_edge) const
         {
@@ -483,6 +493,7 @@ namespace pcl
           return (VertexAroundFaceCirculator (idx_inner_half_edge, this));
         }
 
+        /** \see pcl::geometry::InnerHalfEdgeAroundFaceCirculator */
         inline InnerHalfEdgeAroundFaceCirculator
         getInnerHalfEdgeAroundFaceCirculator (const FaceIndex& idx_face) const
         {
@@ -490,6 +501,7 @@ namespace pcl
           return (InnerHalfEdgeAroundFaceCirculator (idx_face, this));
         }
 
+        /** \see pcl::geometry::InnerHalfEdgeAroundFaceCirculator */
         inline InnerHalfEdgeAroundFaceCirculator
         getInnerHalfEdgeAroundFaceCirculator (const HalfEdgeIndex& idx_inner_half_edge) const
         {
@@ -497,6 +509,7 @@ namespace pcl
           return (InnerHalfEdgeAroundFaceCirculator (idx_inner_half_edge, this));
         }
 
+        /** \see pcl::geometry::OuterHalfEdgeAroundFaceCirculator */
         inline OuterHalfEdgeAroundFaceCirculator
         getOuterHalfEdgeAroundFaceCirculator (const FaceIndex& idx_face) const
         {
@@ -504,6 +517,7 @@ namespace pcl
           return (OuterHalfEdgeAroundFaceCirculator (idx_face, this));
         }
 
+        /** \see pcl::geometry::OuterHalfEdgeAroundFaceCirculator */
         inline OuterHalfEdgeAroundFaceCirculator
         getOuterHalfEdgeAroundFaceCirculator (const HalfEdgeIndex& idx_inner_half_edge) const
         {
@@ -511,6 +525,7 @@ namespace pcl
           return (OuterHalfEdgeAroundFaceCirculator (idx_inner_half_edge, this));
         }
 
+        /** \see pcl::geometry::FaceAroundFaceCirculator */
         inline FaceAroundFaceCirculator
         getFaceAroundFaceCirculator (const FaceIndex& idx_face) const
         {
@@ -518,6 +533,7 @@ namespace pcl
           return (FaceAroundFaceCirculator (idx_face, this));
         }
 
+        /** \see pcl::geometry::FaceAroundFaceCirculator */
         inline FaceAroundFaceCirculator
         getFaceAroundFaceCirculator (const HalfEdgeIndex& idx_inner_half_edge) const
         {
