@@ -219,7 +219,7 @@ pcl::ihs::InHandScanner::newDataCallback (const CloudXYZRGBAConstPtr& cloud_in)
 
   // Input data processing
   CloudXYZRGBNormalPtr cloud_data;
-  if      (running_mode == RM_SHOW_MODEL)  return;
+  if      (running_mode == RM_SHOW_MODEL)  cloud_data = CloudXYZRGBNormalPtr (new CloudXYZRGBNormal ());
   else if (running_mode == RM_UNPROCESSED) cloud_data = input_data_processing_->calculateNormals (cloud_in);
   else if (running_mode >= RM_PROCESSED)   cloud_data = input_data_processing_->process (cloud_in);
 
