@@ -38,6 +38,7 @@
  */
 
 #include <pcl/pcl_config.h>
+#include <pcl/pcl_macros.h>
 #include <pcl/keypoints/brisk_2d.h>
 #include <pcl/point_types.h>
 #include <pcl/impl/instantiate.hpp>
@@ -1564,15 +1565,16 @@ pcl::keypoints::brisk::Layer::halfsample (
     const std::vector<unsigned char>& srcimg, 
     int srcwidth, int srcheight,
     std::vector<unsigned char>& dstimg,
-    int dstwidth, int)
+    int dstwidth, int dstheight)
 {
+  (void)dstheight;
 #ifdef HAVE_SSE4_1_EXTENSIONS
   const unsigned short leftoverCols = static_cast<unsigned short> ((srcwidth % 16) / 2); // take care with border...
   const bool noleftover = (srcwidth % 16) == 0; // note: leftoverCols can be zero but this still false...
 
   // make sure the destination image is of the right size:
-  assert (srcwidth / 2 == dstwidth);
-  assert (srcheight / 2 == dstheight);
+  assert (floor (double (srcwidth) / 2.0) == dstwidth);
+  assert (floor (double (srcheight) / 2.0) == dstheight);
 
   // mask needed later:
   register __m128i mask = _mm_set_epi32 (0x00FF00FF, 0x00FF00FF, 0x00FF00FF, 0x00FF00FF);
@@ -1723,14 +1725,15 @@ pcl::keypoints::brisk::Layer::twothirdsample (
     const std::vector<unsigned char>& srcimg, 
     int srcwidth, int srcheight,
     std::vector<unsigned char>& dstimg,
-    int dstwidth, int)
+    int dstwidth, int dstheight)
 {
+  (void)dstheight;
 #ifdef HAVE_SSE4_1_EXTENSIONS
   const unsigned short leftoverCols = static_cast<unsigned short> (((srcwidth / 3) * 3) % 15);// take care with border...
 
   // make sure the destination image is of the right size:
-  assert ((srcwidth / 3) * 2 == dstwidth);
-  assert ((srcheight / 3) * 2 == dstheight);
+  assert (floor (double (srcwidth) / 3.0 * 2.0) == dstwidth);
+  assert (floor (double (srcheight) / 3.0 * 2.0) == dstheight);
 
   // masks:
   register __m128i mask1 = _mm_set_epi8 (char(0x80),char(0x80),char(0x80),char(0x80),char(0x80),char(0x80),char(0x80),12,char(0x80),10,char(0x80),7,char(0x80),4,char(0x80),1);

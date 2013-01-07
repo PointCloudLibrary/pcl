@@ -18,7 +18,7 @@ if(build)
         src/harris_6d.cpp
         src/agast_2d.cpp
         src/susan.cpp
-	src/iss_3d.cpp
+        src/iss_3d.cpp
         )
     set(incs
         include/pcl/${SUBSYS_NAME}/keypoint.h
@@ -46,7 +46,7 @@ if(build)
     
     if (PCL_ENABLE_SSE)
       PCL_CHECK_FOR_SSE4_1()
-      if(HAVE_SSE4_1_EXTENSIONS)
+      if(HAVE_SSE4_1_EXTENSIONS AND CMAKE_SIZEOF_VOID_P MATCHES 8)
         message(STATUS "[pcl_keypoints] SSE4.1 status: found. Enabling BriskKeypoint2D.")
         set(srcs ${srcs} src/brisk_2d.cpp)
         set(incs ${incs} include/pcl/${SUBSYS_NAME}/brisk_2d.h)
