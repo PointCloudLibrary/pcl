@@ -114,7 +114,7 @@ namespace pcl
         * \param[in] keypoints the input cloud containing the keypoints.
         */
       inline void
-      setKeypoints (const KeypointPointCloudTConstPtr &keypoints)
+      setKeypoints (const KeypointPointCloudTPtr &keypoints)
       {
         // Make a copy as we will have to erase keypoints that we don't use
         // TO DO: change this later

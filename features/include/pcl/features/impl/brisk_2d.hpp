@@ -503,7 +503,7 @@ pcl::BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::compute (
 
     if (RoiPredicate (float (border), float (border), float (border_x), float (border_y), keypoints_->points[k]))
     {
-      std::cerr << "remove keypoint" << std::endl;
+      //std::cerr << "remove keypoint" << std::endl;
       keypoints_->points.erase (beginning + k);
       kscales.erase (beginningkscales + k);
       if (k == 0)
