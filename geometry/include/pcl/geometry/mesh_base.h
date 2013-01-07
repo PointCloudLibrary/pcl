@@ -1595,8 +1595,8 @@ namespace pcl
           } while (++circ != circ_end);
           assert (inner_he.size () >= 3); // Minimum should be a triangle.
 
-          const unsigned int n = inner_he.size ();
-          for (unsigned int i=0; i<n; ++i)
+          const unsigned int n = static_cast<unsigned int> (inner_he.size ());
+          for (unsigned int i = 0; i < n; ++i)
           {
             this->reconnect (inner_he [i], inner_he [(i+1)%n], is_boundary [i], is_boundary [(i+1)%n], delete_faces);
             this->getHalfEdge (inner_he [i]).idx_face_.invalidate ();

@@ -329,7 +329,7 @@ checkSizeData (const MeshT& mesh, const size_t n_v, const size_t n_he, const siz
 template <class ContainerT> bool
 isCircularPermutation (const ContainerT& actual, const ContainerT& expected)
 {
-  const unsigned int n = expected.size ();
+  const unsigned int n = static_cast<unsigned int> (expected.size ());
   EXPECT_EQ (n, actual.size ());
   if (n != actual.size ()) return (false);
 
