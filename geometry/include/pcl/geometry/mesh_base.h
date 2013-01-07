@@ -591,7 +591,7 @@ namespace pcl
         inline bool
         isValid (const VertexIndex& idx_vertex) const
         {
-          return (idx_vertex >= VertexIndex (0) && idx_vertex < VertexIndex (vertices_.size ()));
+          return (idx_vertex >= VertexIndex (0) && idx_vertex < VertexIndex (int (vertices_.size ())));
         }
 
         /** \brief Check if the given half-edge index is a valid index into the mesh.  */
@@ -1131,7 +1131,7 @@ namespace pcl
                          const EdgeData&      edge_data,
                          const HalfEdgeData&  half_edge_data)
         {
-          const unsigned int n = vertices.size ();
+          const unsigned int n = static_cast<unsigned int> (vertices.size ());
           if (n < 3) return (FaceIndex ());
 
           // Check if the input indices are valid and unique.

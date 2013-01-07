@@ -111,7 +111,7 @@ class TestMeshCirculators : public ::testing::Test
     template <class ContainerT> bool
     isCircularPermutation (const ContainerT& actual, const ContainerT& expected)
     {
-      const unsigned int n = expected.size ();
+      const unsigned int n = static_cast<unsigned int> (expected.size ());
       EXPECT_EQ (n, actual.size ());
       if (n != actual.size ()) return (false);
 
@@ -137,7 +137,7 @@ class TestMeshCirculators : public ::testing::Test
     template <class ContainerT> bool
     isCircularPermutationVec (const std::vector <ContainerT> actual, const std::vector <ContainerT> expected)
     {
-      const unsigned int n = expected.size ();
+      const unsigned int n = static_cast<unsigned int> (expected.size ());
       EXPECT_EQ (n, actual.size ());
       if (n != actual.size ()) return (false);
 
@@ -494,8 +494,8 @@ TEST_F (TestMeshCirculators, OuterHalfEdgeAroundFaceDecrement)
 TEST_F (TestMeshCirculators, FaceAroundFaceIncrement)
 {
   FaceIndices expected, actual;
-  const int n = mesh_.sizeFaces ();
-  for (unsigned int i=0; i<mesh_.sizeFaces (); ++i)
+  const int n = static_cast<int> (mesh_.sizeFaces ());
+  for (unsigned int i = 0; i < mesh_.sizeFaces (); ++i)
   {
     expected.clear ();
     expected.push_back (FaceIndex (i==(n-1) ?  0    : (i+1)));
@@ -520,8 +520,8 @@ TEST_F (TestMeshCirculators, FaceAroundFaceIncrement)
 TEST_F (TestMeshCirculators, FaceAroundFaceDecrement)
 {
   FaceIndices expected, actual;
-  const int n = mesh_.sizeFaces ();
-  for (unsigned int i=0; i<mesh_.sizeFaces (); ++i)
+  const int n = static_cast<int> (mesh_.sizeFaces ());
+  for (unsigned int i = 0; i < mesh_.sizeFaces (); ++i)
   {
     expected.clear ();
     expected.push_back (FaceIndex (i== 0    ? (n-1) : (i-1)));
