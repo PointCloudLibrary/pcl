@@ -102,8 +102,8 @@ namespace pcl
 
 void
 pcl::ihs::addDirection (const Eigen::Vector4f& normal,
-                                     const Eigen::Vector4f& direction,
-                                     uint32_t&              directions)
+                        const Eigen::Vector4f& direction,
+                        uint32_t&              directions)
 {
   // Find the rotation that aligns the normal with [0; 0; 1]
   const float dot = normal.z ();
@@ -111,27 +111,37 @@ pcl::ihs::addDirection (const Eigen::Vector4f& normal,
   Eigen::Isometry3f R = Eigen::Isometry3f::Identity ();
 
   // No need to transform if the normal is already very close to [0; 0; 1] (also avoids numerical issues)
-  // TODO: The value .969 (actually 0.9696) is hard coded for a frequency=3.
-  //       It can be calculated with 1-(1-max(dome_vertices_.z))/2
-  if (dot <= .969f)
+  // TODO: The threshold is hard coded for a frequency=3.
+  //       It can be calculated with
+  //       - max_z = maximum z value of the dome vertices (excluding [0; 0; 1])
+  //       - thresh = cos (acos (max_z) / 2)
+  //       - always round up!
+  //       - with max_z = 0.939 -> thresh = 0.9847 ~ 0.985
+  if (dot <= .985f)
   {
-    R = Eigen::Isometry3f (Eigen::AngleAxisf(std::acos(dot), Eigen::Vector3f(normal.y(), -normal.x(), 0.f).normalized()));
+    const Eigen::Vector3f axis = Eigen::Vector3f (normal.y (), -normal.x (), 0.f).normalized ();
+    R = Eigen::Isometry3f (Eigen::AngleAxisf (std::acos (dot), axis));
   }
 
   // Transform the direction into the dome coordinate system (which is aligned with the normal)
   Eigen::Vector4f aligned_direction = (R * direction);
   aligned_direction.head <3> ().normalize ();
 
+  if (aligned_direction.z () < 0)
+  {
+    return;
+  }
+
   // Find the closest viewing direction
-  // NOTE: cos(0deg) = 1 = max
-  //       acos(angle) = dot(a,b) / (norm(a) * norm(b)
+  // NOTE: cos (0deg) = 1 = max
+  //       acos (angle) = dot (a, b) / (norm (a) * norm (b)
   //       m_sphere_vertices are already normalized
   unsigned int index = 0;
   (aligned_direction.transpose () * pcl::ihs::dome.getVertices ()).maxCoeff (&index);
 
   // Set the observed direction bit at 'index'
   // http://stackoverflow.com/questions/47981/how-do-you-set-clear-and-toggle-a-single-bit-in-c/47990#47990
-  directions |= 1 << index;
+  directions |= (1 << index);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

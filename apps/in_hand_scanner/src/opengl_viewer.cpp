@@ -54,6 +54,7 @@
 
 #include <pcl/common/centroid.h>
 #include <pcl/common/impl/centroid.hpp> // TODO: PointIHS is not registered
+#include <pcl/apps/in_hand_scanner/visibility_confidence.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 // Internal classes
@@ -100,8 +101,11 @@ pcl::ihs::OpenGLViewer::OpenGLViewer (QWidget* parent)
   : QGLWidget            (parent),
     mutex_vis_           (),
     timer_               (new QTimer (this)),
+    colormap_            (Colormap::Constant (255)),
+    vis_conf_norm_       (1),
     drawn_meshes_        (),
-    display_mode_        (DM_POINTS),
+    mesh_representation_ (MR_POINTS),
+    coloring_            (COL_RGB),
     draw_cube_           (false),
     cube_coefficients_   (),
     R_cam_               (1., 0., 0., 0.),
@@ -117,6 +121,306 @@ pcl::ihs::OpenGLViewer::OpenGLViewer (QWidget* parent)
   timer_->start (33);
 
   QWidget::setAutoFillBackground (false);
+
+  //////////////////////////////////////////////////////////////////////////////
+  // Code to generate the colormap (I don't want to link against vtk just for the colormap).
+  //////////////////////////////////////////////////////////////////////////////
+
+  //#include <cstdlib>
+  //#include <iomanip>
+
+  //#include <vtkColorTransferFunction.h>
+  //#include <vtkSmartPointer.h>
+
+  //int
+  //main ()
+  //{
+  //  static const unsigned int n = 256;
+  //  // double rgb_1 [] = { 59./255., 76./255., 192./255.};
+  //  // double rgb_2 [] = {180./255.,  4./255.,  38./255.};
+  //  double rgb_1 [] = {180./255.,   0./255.,  0./255.};
+  //  double rgb_2 [] = {  0./255., 180./255.,  0./255.};
+
+  //  vtkSmartPointer <vtkColorTransferFunction> ctf = vtkColorTransferFunction::New ();
+  //  ctf->SetColorSpaceToDiverging ();
+  //  ctf->AddRGBPoint (  0., rgb_1 [0], rgb_1 [1], rgb_1 [2]);
+  //  ctf->AddRGBPoint (  1., rgb_2 [0], rgb_2 [1], rgb_2 [2]);
+  //  ctf->Build ();
+
+  //  const unsigned char* colormap = ctf->GetTable (0., 1., n);
+
+  //  for (unsigned int i=0; i<n; ++i)
+  //  {
+  //    const unsigned int r = static_cast <unsigned int> (colormap [3 * i    ]);
+  //    const unsigned int g = static_cast <unsigned int> (colormap [3 * i + 1]);
+  //    const unsigned int b = static_cast <unsigned int> (colormap [3 * i + 2]);
+
+  //    std::cerr << "colormap_.col ("
+  //              << std::setw (3) << i << ") = Color ("
+  //              << std::setw (3) << r << ", "
+  //              << std::setw (3) << g << ", "
+  //              << std::setw (3) << b << ");\n";
+  //  }
+
+  //  return (EXIT_SUCCESS);
+  //}
+
+  colormap_.col (  0) = Color (180,   0,   0);
+  colormap_.col (  1) = Color (182,   9,   1);
+  colormap_.col (  2) = Color (184,  17,   1);
+  colormap_.col (  3) = Color (186,  24,   2);
+  colormap_.col (  4) = Color (188,  29,   2);
+  colormap_.col (  5) = Color (190,  33,   3);
+  colormap_.col (  6) = Color (192,  38,   4);
+  colormap_.col (  7) = Color (194,  42,   5);
+  colormap_.col (  8) = Color (196,  46,   6);
+  colormap_.col (  9) = Color (197,  49,   7);
+  colormap_.col ( 10) = Color (199,  53,   9);
+  colormap_.col ( 11) = Color (201,  56,  10);
+  colormap_.col ( 12) = Color (203,  59,  12);
+  colormap_.col ( 13) = Color (205,  63,  13);
+  colormap_.col ( 14) = Color (207,  66,  15);
+  colormap_.col ( 15) = Color (208,  69,  17);
+  colormap_.col ( 16) = Color (210,  72,  18);
+  colormap_.col ( 17) = Color (212,  75,  20);
+  colormap_.col ( 18) = Color (214,  78,  21);
+  colormap_.col ( 19) = Color (215,  81,  23);
+  colormap_.col ( 20) = Color (217,  84,  25);
+  colormap_.col ( 21) = Color (219,  87,  26);
+  colormap_.col ( 22) = Color (221,  89,  28);
+  colormap_.col ( 23) = Color (222,  92,  30);
+  colormap_.col ( 24) = Color (224,  95,  32);
+  colormap_.col ( 25) = Color (225,  98,  33);
+  colormap_.col ( 26) = Color (227, 101,  35);
+  colormap_.col ( 27) = Color (229, 103,  37);
+  colormap_.col ( 28) = Color (230, 106,  39);
+  colormap_.col ( 29) = Color (232, 109,  40);
+  colormap_.col ( 30) = Color (233, 112,  42);
+  colormap_.col ( 31) = Color (235, 114,  44);
+  colormap_.col ( 32) = Color (236, 117,  46);
+  colormap_.col ( 33) = Color (238, 120,  48);
+  colormap_.col ( 34) = Color (239, 122,  50);
+  colormap_.col ( 35) = Color (241, 125,  52);
+  colormap_.col ( 36) = Color (242, 127,  54);
+  colormap_.col ( 37) = Color (244, 130,  56);
+  colormap_.col ( 38) = Color (245, 133,  58);
+  colormap_.col ( 39) = Color (246, 135,  60);
+  colormap_.col ( 40) = Color (248, 138,  62);
+  colormap_.col ( 41) = Color (249, 140,  64);
+  colormap_.col ( 42) = Color (250, 143,  66);
+  colormap_.col ( 43) = Color (252, 145,  68);
+  colormap_.col ( 44) = Color (253, 148,  70);
+  colormap_.col ( 45) = Color (254, 150,  73);
+  colormap_.col ( 46) = Color (255, 153,  75);
+  colormap_.col ( 47) = Color (255, 154,  76);
+  colormap_.col ( 48) = Color (255, 156,  78);
+  colormap_.col ( 49) = Color (255, 158,  80);
+  colormap_.col ( 50) = Color (255, 159,  82);
+  colormap_.col ( 51) = Color (255, 161,  84);
+  colormap_.col ( 52) = Color (255, 163,  86);
+  colormap_.col ( 53) = Color (255, 164,  88);
+  colormap_.col ( 54) = Color (255, 166,  90);
+  colormap_.col ( 55) = Color (255, 168,  92);
+  colormap_.col ( 56) = Color (255, 169,  93);
+  colormap_.col ( 57) = Color (255, 171,  95);
+  colormap_.col ( 58) = Color (255, 172,  97);
+  colormap_.col ( 59) = Color (255, 174,  99);
+  colormap_.col ( 60) = Color (255, 176, 101);
+  colormap_.col ( 61) = Color (255, 177, 103);
+  colormap_.col ( 62) = Color (255, 179, 105);
+  colormap_.col ( 63) = Color (255, 180, 107);
+  colormap_.col ( 64) = Color (255, 182, 109);
+  colormap_.col ( 65) = Color (255, 183, 111);
+  colormap_.col ( 66) = Color (255, 185, 113);
+  colormap_.col ( 67) = Color (255, 186, 115);
+  colormap_.col ( 68) = Color (255, 188, 117);
+  colormap_.col ( 69) = Color (255, 189, 119);
+  colormap_.col ( 70) = Color (255, 191, 122);
+  colormap_.col ( 71) = Color (255, 192, 124);
+  colormap_.col ( 72) = Color (255, 194, 126);
+  colormap_.col ( 73) = Color (255, 195, 128);
+  colormap_.col ( 74) = Color (255, 196, 130);
+  colormap_.col ( 75) = Color (255, 198, 132);
+  colormap_.col ( 76) = Color (255, 199, 134);
+  colormap_.col ( 77) = Color (255, 201, 136);
+  colormap_.col ( 78) = Color (255, 202, 139);
+  colormap_.col ( 79) = Color (255, 203, 141);
+  colormap_.col ( 80) = Color (255, 205, 143);
+  colormap_.col ( 81) = Color (255, 206, 145);
+  colormap_.col ( 82) = Color (255, 207, 147);
+  colormap_.col ( 83) = Color (255, 209, 149);
+  colormap_.col ( 84) = Color (255, 210, 152);
+  colormap_.col ( 85) = Color (255, 211, 154);
+  colormap_.col ( 86) = Color (255, 213, 156);
+  colormap_.col ( 87) = Color (255, 214, 158);
+  colormap_.col ( 88) = Color (255, 215, 161);
+  colormap_.col ( 89) = Color (255, 216, 163);
+  colormap_.col ( 90) = Color (255, 218, 165);
+  colormap_.col ( 91) = Color (255, 219, 168);
+  colormap_.col ( 92) = Color (255, 220, 170);
+  colormap_.col ( 93) = Color (255, 221, 172);
+  colormap_.col ( 94) = Color (255, 223, 175);
+  colormap_.col ( 95) = Color (255, 224, 177);
+  colormap_.col ( 96) = Color (255, 225, 179);
+  colormap_.col ( 97) = Color (255, 226, 182);
+  colormap_.col ( 98) = Color (255, 227, 184);
+  colormap_.col ( 99) = Color (255, 228, 186);
+  colormap_.col (100) = Color (255, 230, 189);
+  colormap_.col (101) = Color (255, 231, 191);
+  colormap_.col (102) = Color (255, 232, 193);
+  colormap_.col (103) = Color (255, 233, 196);
+  colormap_.col (104) = Color (255, 234, 198);
+  colormap_.col (105) = Color (255, 235, 201);
+  colormap_.col (106) = Color (255, 236, 203);
+  colormap_.col (107) = Color (255, 237, 205);
+  colormap_.col (108) = Color (255, 238, 208);
+  colormap_.col (109) = Color (255, 239, 210);
+  colormap_.col (110) = Color (255, 240, 213);
+  colormap_.col (111) = Color (255, 241, 215);
+  colormap_.col (112) = Color (255, 242, 218);
+  colormap_.col (113) = Color (255, 243, 220);
+  colormap_.col (114) = Color (255, 244, 222);
+  colormap_.col (115) = Color (255, 245, 225);
+  colormap_.col (116) = Color (255, 246, 227);
+  colormap_.col (117) = Color (255, 247, 230);
+  colormap_.col (118) = Color (255, 248, 232);
+  colormap_.col (119) = Color (255, 249, 235);
+  colormap_.col (120) = Color (255, 249, 237);
+  colormap_.col (121) = Color (255, 250, 239);
+  colormap_.col (122) = Color (255, 251, 242);
+  colormap_.col (123) = Color (255, 252, 244);
+  colormap_.col (124) = Color (255, 253, 247);
+  colormap_.col (125) = Color (255, 253, 249);
+  colormap_.col (126) = Color (255, 254, 251);
+  colormap_.col (127) = Color (255, 255, 254);
+  colormap_.col (128) = Color (255, 255, 254);
+  colormap_.col (129) = Color (254, 255, 253);
+  colormap_.col (130) = Color (253, 255, 252);
+  colormap_.col (131) = Color (252, 255, 250);
+  colormap_.col (132) = Color (251, 255, 249);
+  colormap_.col (133) = Color (250, 255, 248);
+  colormap_.col (134) = Color (249, 255, 246);
+  colormap_.col (135) = Color (248, 255, 245);
+  colormap_.col (136) = Color (247, 255, 244);
+  colormap_.col (137) = Color (246, 255, 242);
+  colormap_.col (138) = Color (245, 255, 241);
+  colormap_.col (139) = Color (244, 255, 240);
+  colormap_.col (140) = Color (243, 255, 238);
+  colormap_.col (141) = Color (242, 255, 237);
+  colormap_.col (142) = Color (241, 255, 236);
+  colormap_.col (143) = Color (240, 255, 235);
+  colormap_.col (144) = Color (239, 255, 233);
+  colormap_.col (145) = Color (238, 255, 232);
+  colormap_.col (146) = Color (237, 255, 231);
+  colormap_.col (147) = Color (236, 255, 229);
+  colormap_.col (148) = Color (235, 255, 228);
+  colormap_.col (149) = Color (234, 255, 227);
+  colormap_.col (150) = Color (234, 255, 225);
+  colormap_.col (151) = Color (233, 255, 224);
+  colormap_.col (152) = Color (232, 255, 223);
+  colormap_.col (153) = Color (231, 255, 221);
+  colormap_.col (154) = Color (230, 255, 220);
+  colormap_.col (155) = Color (229, 255, 219);
+  colormap_.col (156) = Color (228, 255, 218);
+  colormap_.col (157) = Color (227, 255, 216);
+  colormap_.col (158) = Color (226, 255, 215);
+  colormap_.col (159) = Color (225, 255, 214);
+  colormap_.col (160) = Color (224, 255, 212);
+  colormap_.col (161) = Color (223, 255, 211);
+  colormap_.col (162) = Color (222, 255, 210);
+  colormap_.col (163) = Color (221, 255, 208);
+  colormap_.col (164) = Color (220, 255, 207);
+  colormap_.col (165) = Color (219, 255, 206);
+  colormap_.col (166) = Color (218, 255, 204);
+  colormap_.col (167) = Color (217, 255, 203);
+  colormap_.col (168) = Color (216, 255, 202);
+  colormap_.col (169) = Color (215, 255, 201);
+  colormap_.col (170) = Color (214, 255, 199);
+  colormap_.col (171) = Color (213, 255, 198);
+  colormap_.col (172) = Color (211, 255, 197);
+  colormap_.col (173) = Color (210, 255, 195);
+  colormap_.col (174) = Color (209, 255, 194);
+  colormap_.col (175) = Color (208, 255, 193);
+  colormap_.col (176) = Color (207, 255, 191);
+  colormap_.col (177) = Color (206, 255, 190);
+  colormap_.col (178) = Color (205, 255, 188);
+  colormap_.col (179) = Color (204, 255, 187);
+  colormap_.col (180) = Color (203, 255, 186);
+  colormap_.col (181) = Color (202, 255, 184);
+  colormap_.col (182) = Color (201, 255, 183);
+  colormap_.col (183) = Color (199, 255, 182);
+  colormap_.col (184) = Color (198, 255, 180);
+  colormap_.col (185) = Color (197, 255, 179);
+  colormap_.col (186) = Color (196, 255, 177);
+  colormap_.col (187) = Color (195, 255, 176);
+  colormap_.col (188) = Color (194, 255, 174);
+  colormap_.col (189) = Color (192, 255, 173);
+  colormap_.col (190) = Color (191, 255, 172);
+  colormap_.col (191) = Color (190, 255, 170);
+  colormap_.col (192) = Color (189, 255, 169);
+  colormap_.col (193) = Color (188, 255, 167);
+  colormap_.col (194) = Color (186, 255, 166);
+  colormap_.col (195) = Color (185, 255, 164);
+  colormap_.col (196) = Color (184, 255, 163);
+  colormap_.col (197) = Color (183, 255, 161);
+  colormap_.col (198) = Color (181, 255, 160);
+  colormap_.col (199) = Color (180, 255, 158);
+  colormap_.col (200) = Color (179, 255, 157);
+  colormap_.col (201) = Color (177, 255, 155);
+  colormap_.col (202) = Color (176, 255, 154);
+  colormap_.col (203) = Color (175, 255, 152);
+  colormap_.col (204) = Color (173, 255, 150);
+  colormap_.col (205) = Color (172, 255, 149);
+  colormap_.col (206) = Color (170, 255, 147);
+  colormap_.col (207) = Color (169, 255, 145);
+  colormap_.col (208) = Color (166, 253, 143);
+  colormap_.col (209) = Color (164, 252, 141);
+  colormap_.col (210) = Color (162, 251, 138);
+  colormap_.col (211) = Color (159, 250, 136);
+  colormap_.col (212) = Color (157, 248, 134);
+  colormap_.col (213) = Color (155, 247, 131);
+  colormap_.col (214) = Color (152, 246, 129);
+  colormap_.col (215) = Color (150, 245, 127);
+  colormap_.col (216) = Color (148, 243, 124);
+  colormap_.col (217) = Color (145, 242, 122);
+  colormap_.col (218) = Color (143, 240, 119);
+  colormap_.col (219) = Color (140, 239, 117);
+  colormap_.col (220) = Color (138, 238, 114);
+  colormap_.col (221) = Color (135, 236, 112);
+  colormap_.col (222) = Color (133, 235, 110);
+  colormap_.col (223) = Color (130, 233, 107);
+  colormap_.col (224) = Color (128, 232, 105);
+  colormap_.col (225) = Color (125, 230, 102);
+  colormap_.col (226) = Color (122, 229, 100);
+  colormap_.col (227) = Color (120, 227,  97);
+  colormap_.col (228) = Color (117, 226,  94);
+  colormap_.col (229) = Color (114, 224,  92);
+  colormap_.col (230) = Color (111, 223,  89);
+  colormap_.col (231) = Color (109, 221,  87);
+  colormap_.col (232) = Color (106, 220,  84);
+  colormap_.col (233) = Color (103, 218,  82);
+  colormap_.col (234) = Color (100, 217,  79);
+  colormap_.col (235) = Color ( 97, 215,  76);
+  colormap_.col (236) = Color ( 94, 213,  73);
+  colormap_.col (237) = Color ( 91, 212,  71);
+  colormap_.col (238) = Color ( 88, 210,  68);
+  colormap_.col (239) = Color ( 85, 208,  65);
+  colormap_.col (240) = Color ( 82, 207,  62);
+  colormap_.col (241) = Color ( 78, 205,  59);
+  colormap_.col (242) = Color ( 75, 203,  57);
+  colormap_.col (243) = Color ( 71, 201,  54);
+  colormap_.col (244) = Color ( 68, 200,  50);
+  colormap_.col (245) = Color ( 64, 198,  47);
+  colormap_.col (246) = Color ( 60, 196,  44);
+  colormap_.col (247) = Color ( 56, 195,  41);
+  colormap_.col (248) = Color ( 52, 193,  37);
+  colormap_.col (249) = Color ( 47, 191,  33);
+  colormap_.col (250) = Color ( 42, 189,  29);
+  colormap_.col (251) = Color ( 37, 187,  25);
+  colormap_.col (252) = Color ( 31, 186,  20);
+  colormap_.col (253) = Color ( 24, 184,  15);
+  colormap_.col (254) = Color ( 14, 182,   7);
+  colormap_.col (255) = Color (  0, 180,   0);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -347,15 +651,42 @@ pcl::ihs::OpenGLViewer::stopTimer ()
 ////////////////////////////////////////////////////////////////////////////////
 
 void
-pcl::ihs::OpenGLViewer::toggleDisplayMode ()
+pcl::ihs::OpenGLViewer::toggleMeshRepresentation ()
 {
   boost::mutex::scoped_lock lock (mutex_vis_);
 
-  switch (display_mode_)
+  switch (mesh_representation_)
   {
-    case DM_POINTS: display_mode_ = DM_FACES;  std::cerr << "Drawing the faces.\n";  break;
-    case DM_FACES:  display_mode_ = DM_POINTS; std::cerr << "Drawing the points.\n"; break;
+    case MR_POINTS: mesh_representation_ = MR_FACES;  std::cerr << "Drawing the faces.\n";  break;
+    case MR_FACES:  mesh_representation_ = MR_POINTS; std::cerr << "Drawing the points.\n"; break;
+    default: std::cerr << "ERROR in opengl_viewer.cpp: Unknown mesh representation\n"; exit (EXIT_FAILURE);
   }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+void
+pcl::ihs::OpenGLViewer::toggleColoring ()
+{
+  boost::mutex::scoped_lock lock (mutex_vis_);
+
+  switch (coloring_)
+  {
+    case COL_RGB:       coloring_ = COL_ONE_COLOR; std::cerr << "Use one color for all points.\n";                    break;
+    case COL_ONE_COLOR: coloring_ = COL_VISCONF;   std::cerr << "Coloring according to the visibility confidence.\n"; break;
+    case COL_VISCONF:   coloring_ = COL_RGB;       std::cerr << "Coloring according to the rgb values.\n";            break;
+    default: std::cerr << "ERROR in opengl_viewer.cpp: Unknown coloring\n"; exit (EXIT_FAILURE);
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+void
+pcl::ihs::OpenGLViewer::setVisibilityConfidenceNormalization (const float vis_conf_norm)
+{
+  boost::mutex::scoped_lock lock (mutex_vis_);
+
+  vis_conf_norm_ = vis_conf_norm < 1 ? 1 : vis_conf_norm;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -465,10 +796,13 @@ pcl::ihs::OpenGLViewer::calcPivot ()
 
   if (drawn_meshes_.find (cam_pivot_id_) != drawn_meshes_.end ())
   {
-    if (pcl::compute3DCentroid (drawn_meshes_ [cam_pivot_id_]->vertices, pivot))
+    const FaceVertexMeshConstPtr mesh = drawn_meshes_ [cam_pivot_id_];
+
+    if (pcl::compute3DCentroid (mesh->vertices, pivot))
     {
+      const Eigen::Vector3d p = mesh->transformation * pivot.head <3> ().cast <double> ();
       lock.unlock ();
-      this->setPivot (pivot.head <3> ().cast <double> ());
+      this->setPivot (p);
     }
   }
   cam_pivot_id_.clear ();
@@ -482,8 +816,18 @@ pcl::ihs::OpenGLViewer::drawMeshes ()
   boost::mutex::scoped_lock lock (mutex_vis_);
 
   glEnableClientState (GL_VERTEX_ARRAY);
-  glEnableClientState (GL_COLOR_ARRAY);
   glEnableClientState (GL_NORMAL_ARRAY);
+  switch (coloring_)
+  {
+    case COL_RGB:       glEnableClientState  (GL_COLOR_ARRAY); break;
+    case COL_ONE_COLOR: glDisableClientState (GL_COLOR_ARRAY); break;
+    case COL_VISCONF:   glEnableClientState  (GL_COLOR_ARRAY); break;
+    default:
+    {
+      std::cerr << "ERROR in opengl_viewer.cpp: Unknown coloring\n";
+      exit (EXIT_FAILURE);
+    }
+  }
 
   for (FaceVertexMeshMap::const_iterator it=drawn_meshes_.begin (); it!=drawn_meshes_.end (); ++it)
   {
@@ -491,22 +835,52 @@ pcl::ihs::OpenGLViewer::drawMeshes ()
     {
       const FaceVertexMesh& mesh = *it->second;
 
-      glVertexPointer (3, GL_FLOAT        , sizeof (PointIHS), &(mesh.vertices [0].x       ));
-      glColorPointer  (3, GL_UNSIGNED_BYTE, sizeof (PointIHS), &(mesh.vertices [0].b       ));
-      glNormalPointer (   GL_FLOAT        , sizeof (PointIHS), &(mesh.vertices [0].normal_x));
+      glVertexPointer (3, GL_FLOAT, sizeof (PointIHS), &(mesh.vertices [0].x       ));
+      glNormalPointer (   GL_FLOAT, sizeof (PointIHS), &(mesh.vertices [0].normal_x));
+
+      Colors colors (3, mesh.vertices.size ());
+
+      switch (coloring_)
+      {
+        case COL_RGB:
+        {
+          glColorPointer (3, GL_UNSIGNED_BYTE, sizeof (PointIHS), &(mesh.vertices [0].b));
+          break;
+        }
+        case COL_ONE_COLOR:
+        {
+          glColor3f (.75f, .75f, .75f);
+          break;
+        }
+        case COL_VISCONF:
+        {
+          for (unsigned int i=0; i<mesh.vertices.size (); ++i)
+          {
+            const unsigned int n = pcl::ihs::countDirections (mesh.vertices [i].directions);
+            const unsigned int index = static_cast <unsigned int> (
+                                         static_cast <float> (colormap_.cols ()) *
+                                         static_cast <float> (n) / vis_conf_norm_);
+
+            colors.col (i) = colormap_.col (index < 256 ? index : 255);
+          }
+
+          glColorPointer (3, GL_UNSIGNED_BYTE, 0, colors.data ());
+        }
+      }
+
 
       glPushMatrix ();
       {
         glMultMatrixd (mesh.transformation.matrix ().data ());
 
-        switch (display_mode_)
+        switch (mesh_representation_)
         {
-          case DM_POINTS:
+          case MR_POINTS:
           {
             glDrawArrays (GL_POINTS, 0, mesh.vertices.size ());
             break;
           }
-          case DM_FACES:
+          case MR_FACES:
           {
             glDrawElements (GL_TRIANGLES, 3*mesh.triangles.size (), GL_UNSIGNED_INT, &mesh.triangles [0]);
             break;
@@ -518,8 +892,13 @@ pcl::ihs::OpenGLViewer::drawMeshes ()
   }
 
   glDisableClientState (GL_VERTEX_ARRAY);
-  glDisableClientState (GL_COLOR_ARRAY);
   glDisableClientState (GL_NORMAL_ARRAY);
+  switch (coloring_)
+  {
+    case COL_RGB:       glDisableClientState (GL_COLOR_ARRAY);  break;
+    case COL_ONE_COLOR:                                         break;
+    case COL_VISCONF:   glDisableClientState (GL_COLOR_ARRAY);  break;
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////

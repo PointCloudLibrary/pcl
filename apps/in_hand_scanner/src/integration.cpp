@@ -58,7 +58,7 @@ pcl::ihs::Integration::Integration ()
     dot_normal_min_       (.6f),
     weight_min_           (.3f),
     age_max_              (30),
-    count_min_            (5)
+    count_min_            (4)
 {
 }
 

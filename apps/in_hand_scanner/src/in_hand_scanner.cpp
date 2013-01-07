@@ -74,6 +74,8 @@ pcl::ihs::InHandScanner::InHandScanner (Base* parent)
     mesh_model_            (new Mesh ()),
     destructor_called_     (false)
 {
+  Base::setVisibilityConfidenceNormalization (static_cast <float> (integration_->getMinimumCount ()));
+
   // Initialize the pivot and crop box
   float x_min, x_max, y_min, y_max, z_min, z_max;
   input_data_processing_->getCropBox (x_min, x_max, y_min, y_max, z_min, z_max);
@@ -174,6 +176,9 @@ pcl::ihs::InHandScanner::reset ()
 
   // The actual reset is done in newDataCallback
   reset_ = true;
+
+  lock.unlock ();
+  this->setRunningMode (RM_PROCESSED);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -200,11 +205,9 @@ pcl::ihs::InHandScanner::newDataCallback (const CloudXYZRGBAConstPtr& cloud_in)
       std::cerr << "Reset the scanning pipeline.\n";
 
       mesh_model_->clear ();
-      running_mode_    = RM_UNPROCESSED;
       iteration_       = 0;
       transformation_  = Eigen::Matrix4f::Identity ();
 
-      Base::resetCamera ();
       Base::removeAllMeshes ();
 
       reset_ = false;
@@ -223,14 +226,16 @@ pcl::ihs::InHandScanner::newDataCallback (const CloudXYZRGBAConstPtr& cloud_in)
   else if (running_mode == RM_UNPROCESSED) cloud_data = input_data_processing_->calculateNormals (cloud_in);
   else if (running_mode >= RM_PROCESSED)   cloud_data = input_data_processing_->process (cloud_in);
 
-  std::cerr << "\nGlobal iteration " << iteration_ << "\n";
-  std::cerr << "Input data processing:\n"
-            << "  - time                           : "
-            << std::setw (8) << std::right << sw.getTime () << " ms\n";
+  double time_input_data_processing = sw.getTime ();
 
   // Registration & integration
   if (running_mode >= RM_REGISTRATION_CONT)
   {
+    std::cerr << "\nGlobal iteration " << iteration_ << "\n";
+    std::cerr << "Input data processing:\n"
+              << "  - time                           : "
+              << std::setw (8) << std::right << time_input_data_processing << " ms\n";
+
     if (iteration == 0)
     {
       transformation_ = Eigen::Matrix4f::Identity ();
@@ -259,13 +264,14 @@ pcl::ihs::InHandScanner::newDataCallback (const CloudXYZRGBAConstPtr& cloud_in)
                   << std::setw (8) << std::right << sw.getTime () << " ms\n";
         cloud_data = CloudXYZRGBNormalPtr (new CloudXYZRGBNormal ());
 
-
         ++iteration;
       }
     }
   }
 
   // Visualization & copy back some variables
+  double time_model = 0;
+  double time_data  = 0;
   {
     pcl::StopWatch sw_wait_lock;
     boost::mutex::scoped_lock lock (mutex_ihs_);
@@ -281,13 +287,11 @@ pcl::ihs::InHandScanner::newDataCallback (const CloudXYZRGBAConstPtr& cloud_in)
 
     sw.reset ();
     Base::addMesh (mesh_model_, "model", Eigen::Isometry3d (transformation_.inverse ().cast <double> ()));
-    std::cerr << "Copy to visualization thread:\n"
-              << "  - time model                     : "
-              << std::setw (8) << std::right << sw.getTime () << " ms\n";
+    time_model = sw.getTime ();
+
     sw.reset ();
     Base::addMesh (cloud_data , "data"); // Converts to a mesh for visualization
-    std::cerr << "  - time data                      : "
-              << std::setw (8) << std::right << sw.getTime () << " ms\n";
+    time_data = sw.getTime ();
 
     iteration_ = iteration;
 
@@ -297,9 +301,19 @@ pcl::ihs::InHandScanner::newDataCallback (const CloudXYZRGBAConstPtr& cloud_in)
     }
   }
 
-  std::cerr << "Synchronization:\n"
-            << "  - time to wait for locking       : "
-            << std::setw (8) << std::right << time_wait_lock << " ms\n";
+  if (running_mode >= RM_REGISTRATION_CONT)
+  {
+    std::cerr << "Copy to visualization thread:\n"
+              << "  - time model                     : "
+              << std::setw (8) << std::right << time_model << " ms\n"
+
+              << "  - time data                      : "
+              << std::setw (8) << std::right << time_data << " ms\n"
+              << "Synchronization:\n"
+
+              << "  - time to wait for locking       : "
+              << std::setw (8) << std::right << time_wait_lock << " ms\n";
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -410,7 +424,8 @@ pcl::ihs::InHandScanner::keyPressEvent (QKeyEvent* event)
                 << "5  : Shows the model shape.\n"
                 << "0  : Reset the scanning pipeline.\n"
                 << "----------------------------------------------------------------------\n"
-                << "c  : Reset the camera.\n"
+                << "c  : Toggle the coloring (rgb, one color, visibility-confidence).\n"
+                << "r  : Reset the camera.\n"
                 << "s  : Toggle the mesh representation between points and faces.\n"
                 << "======================================================================\n";
       break;
@@ -421,8 +436,9 @@ pcl::ihs::InHandScanner::keyPressEvent (QKeyEvent* event)
     case Qt::Key_4: this->setRunningMode (RM_REGISTRATION_SINGLE); break;
     case Qt::Key_5: this->setRunningMode (RM_SHOW_MODEL);          break;
     case Qt::Key_0: this->reset ();                                break;
-    case Qt::Key_C: Base::resetCamera ();                          break;
-    case Qt::Key_S: Base::toggleDisplayMode ();                    break;
+    case Qt::Key_C: Base::toggleColoring ();                       break;
+    case Qt::Key_R: Base::resetCamera ();                          break;
+    case Qt::Key_S: Base::toggleMeshRepresentation ();             break;
     default:                                                       break;
   }
 }

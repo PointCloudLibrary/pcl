@@ -71,11 +71,19 @@ namespace pcl
         typedef pcl::ihs::MeshConstPtr MeshConstPtr;
 
         /** \brief How to draw the mesh. */
-        typedef enum DisplayMode
+        typedef enum MeshRepresentation
         {
-          DM_POINTS, /**< Draw the points. */
-          DM_FACES   /**< Draw the faces of the mesh without edges. */
-        } DisplayMode;
+          MR_POINTS, /**< Draw the points. */
+          MR_FACES   /**< Draw the faces of the mesh without edges. */
+        } MeshRepresentation;
+
+        /** \brief How to color the shapes. */
+        typedef enum Coloring
+        {
+          COL_RGB,       /**< Coloring according to the rgb values. */
+          COL_ONE_COLOR, /**< Use one color for all points. */
+          COL_VISCONF    /**< Coloring according to the visibility confidence. */
+        } Coloring;
 
         /** \brief Coefficients for the wireframe cube. */
         class CubeCoefficients
@@ -175,7 +183,15 @@ namespace pcl
 
         /** \brief Toggle the display mode. */
         void
-        toggleDisplayMode ();
+        toggleMeshRepresentation ();
+
+        /** \brief Toggle the coloring mode. */
+        void
+        toggleColoring ();
+
+        /** \brief The visibility confidence is normalized with this value (must be greater than 1). */
+        void
+        setVisibilityConfidenceNormalization (const float vis_conf_norm);
 
         /** \brief Reset the virtual camera position and orientation. */
         void
@@ -196,6 +212,10 @@ namespace pcl
         paintEvent (QPaintEvent* event);
 
       private:
+
+        typedef Eigen::Matrix <unsigned char, 3, 1             > Color;
+        typedef Eigen::Matrix <unsigned char, 3, Eigen::Dynamic> Colors;
+        typedef Eigen::Matrix <unsigned char, 3, 256           > Colormap;
 
         typedef boost::unordered::unordered_map <std::string, CloudXYZRGBNormalPtr> CloudXYZRGBNormalMap;
 
@@ -294,11 +314,20 @@ namespace pcl
         /** \brief Visualization timer. */
         boost::shared_ptr <QTimer> timer_;
 
+        /** \brief Colormap. */
+        Colormap colormap_;
+
+        /** \brief The visibility confidence is normalized with this value. */
+        float vis_conf_norm_;
+
         /** \brief Meshes stored for visualization. */
         FaceVertexMeshMap drawn_meshes_;
 
         /** \brief How to draw the mesh. */
-        DisplayMode display_mode_;
+        MeshRepresentation mesh_representation_;
+
+        /** \brief How to color the shapes. */
+        Coloring coloring_;
 
         /** \brief A cube is drawn if this value is true. */
         bool draw_cube_;
