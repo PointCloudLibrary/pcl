@@ -37,6 +37,7 @@
  *
  */
 
+#include <pcl/pcl_config.h>
 #include <pcl/keypoints/brisk_2d.h>
 #include <pcl/point_types.h>
 #include <pcl/impl/instantiate.hpp>
