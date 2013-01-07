@@ -89,8 +89,8 @@ namespace pcl
       typedef PointIndices::Ptr PointIndicesPtr;
       typedef PointIndices::ConstPtr PointIndicesConstPtr;
 
-      typedef typename pcl::KdTree<PointSource> InputKdTree;
-      typedef typename pcl::KdTree<PointSource>::Ptr InputKdTreePtr;
+      typedef typename Registration<PointSource, PointTarget>::KdTree InputKdTree;
+      typedef typename Registration<PointSource, PointTarget>::KdTreePtr InputKdTreePtr;
 
       typedef boost::shared_ptr< GeneralizedIterativeClosestPoint<PointSource, PointTarget> > Ptr;
       typedef boost::shared_ptr< const GeneralizedIterativeClosestPoint<PointSource, PointTarget> > ConstPtr;
@@ -116,7 +116,7 @@ namespace pcl
         rigid_transformation_estimation_ = 
           boost::bind (&GeneralizedIterativeClosestPoint<PointSource, PointTarget>::estimateRigidTransformationBFGS, 
                        this, _1, _2, _3, _4, _5); 
-        input_tree_.reset (new pcl::KdTreeFLANN<PointSource>);
+        input_tree_.reset (new InputKdTree);
       }
 
       /** \brief Provide a pointer to the input dataset
@@ -278,7 +278,7 @@ namespace pcl
         */
       template<typename PointT>
       void computeCovariances(typename pcl::PointCloud<PointT>::ConstPtr cloud, 
-                              const typename pcl::KdTree<PointT>::Ptr tree,
+                              const typename pcl::search::KdTree<PointT>::Ptr tree,
                               std::vector<Eigen::Matrix3d>& cloud_covariances);
 
       /** \return trace of mat1^t . mat2 

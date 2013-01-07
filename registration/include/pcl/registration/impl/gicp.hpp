@@ -45,7 +45,7 @@
 template <typename PointSource, typename PointTarget> 
 template<typename PointT> void
 pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeCovariances(typename pcl::PointCloud<PointT>::ConstPtr cloud, 
-                                                                                    const typename pcl::KdTree<PointT>::Ptr kdtree,
+                                                                                    const typename pcl::search::KdTree<PointT>::Ptr kdtree,
                                                                                     std::vector<Eigen::Matrix3d>& cloud_covariances)
 {
   if (k_correspondences_ > int (cloud->size ()))
