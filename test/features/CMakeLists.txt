@@ -61,12 +61,12 @@ PCL_ADD_TEST(feature_shot_lrf_estimation test_shot_lrf_estimation
 
 # Only test BRISK if SSE3++ is available
 if (PCL_ENABLE_SSE)
-  PCL_CHECK_FOR_SSE4_1()
-  if(HAVE_SSE4_1_EXTENSIONS)
+  PCL_CHECK_FOR_SSE3()
+  if(HAVE_SSE3_EXTENSIONS)
     PCL_ADD_TEST(feature_brisk test_brisk
                  FILES test_brisk.cpp
-               LINK_WITH pcl_gtest pcl_io pcl_kdtree pcl_filters pcl_keypoints pcl_common pcl_features pcl_search 
-               ARGUMENTS ${PCL_SOURCE_DIR}/test/brisk_image_gt.pcd ${PCL_SOURCE_DIR}/test/brisk_keypoints_gt.pcd ${PCL_SOURCE_DIR}/test/brisk_descriptors_gt.pcd)
+                 LINK_WITH pcl_gtest pcl_io pcl_kdtree pcl_filters pcl_keypoints pcl_common pcl_features pcl_search 
+                 ARGUMENTS ${PCL_SOURCE_DIR}/test/brisk_image_gt.pcd ${PCL_SOURCE_DIR}/test/brisk_keypoints_gt.pcd ${PCL_SOURCE_DIR}/test/brisk_descriptors_gt.pcd)
   endif()
 endif (PCL_ENABLE_SSE)
 

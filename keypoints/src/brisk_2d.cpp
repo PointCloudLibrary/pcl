@@ -40,7 +40,7 @@
 #include <pcl/keypoints/brisk_2d.h>
 #include <pcl/point_types.h>
 #include <pcl/impl/instantiate.hpp>
-#ifdef __SSE3__
+#ifdef HAVE_SSE3_EXTENSIONS
 #include <tmmintrin.h>
 #endif
 
@@ -679,10 +679,10 @@ pcl::keypoints::brisk::ScaleSpace::getScoreMaxAbove (
   if (layer % 2 == 0) 
   {
     // octave
-    x_1  = float (4 * (x_layer) - 1 - 2) / 6.0;
-    x1   = float (4 * (x_layer) - 1 + 2) / 6.0;
-    y_1  = float (4 * (y_layer) - 1 - 2) / 6.0;
-    y1   = float (4 * (y_layer) - 1 + 2) / 6.0;
+    x_1  = float (4 * (x_layer) - 1 - 2) / 6.0f;
+    x1   = float (4 * (x_layer) - 1 + 2) / 6.0f;
+    y_1  = float (4 * (y_layer) - 1 - 2) / 6.0f;
+    y1   = float (4 * (y_layer) - 1 + 2) / 6.0f;
   }
   else
   {
@@ -696,14 +696,14 @@ pcl::keypoints::brisk::ScaleSpace::getScoreMaxAbove (
   // check the first row
   //int max_x = int (x_1) + 1;
   //int max_y = int (y_1) + 1;
-  int max_x = x_1 + 1;
-  int max_y = y_1 + 1;
+  int max_x = int (x_1 + 1.0f);
+  int max_y = int (y_1 + 1.0f);
   float tmp_max = 0;
   float max = layer_above.getAgastScore (x_1, y_1, 1,1.0f);
 
   if (max > threshold) return (0);
   //for (int x = int (x_1) + 1; x <= int (x1); x++)
-  for (int x = x_1 + 1; x <= int (x1); x++)
+  for (int x = int (x_1 + 1.0f); x <= int (x1); x++)
   {
     tmp_max = layer_above.getAgastScore (float (x), y_1, 1,1.0f);
 
@@ -1563,9 +1563,9 @@ pcl::keypoints::brisk::Layer::halfsample (
     const std::vector<unsigned char>& srcimg, 
     int srcwidth, int srcheight,
     std::vector<unsigned char>& dstimg,
-    int dstwidth, int dstheight)
+    int dstwidth, int)
 {
-#ifdef __SSE3__
+#ifdef HAVE_SSE3_EXTENSIONS
   const unsigned short leftoverCols = static_cast<unsigned short> ((srcwidth % 16) / 2); // take care with border...
   const bool noleftover = (srcwidth % 16) == 0; // note: leftoverCols can be zero but this still false...
 
@@ -1722,9 +1722,9 @@ pcl::keypoints::brisk::Layer::twothirdsample (
     const std::vector<unsigned char>& srcimg, 
     int srcwidth, int srcheight,
     std::vector<unsigned char>& dstimg,
-    int dstwidth, int dstheight)
+    int dstwidth, int)
 {
-#ifdef __SSE3__
+#ifdef HAVE_SSE3_EXTENSIONS
   const unsigned short leftoverCols = static_cast<unsigned short> (((srcwidth / 3) * 3) % 15);// take care with border...
 
   // make sure the destination image is of the right size:

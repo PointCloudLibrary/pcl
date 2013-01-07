@@ -212,3 +212,27 @@ macro(PCL_CHECK_FOR_SSE4_1)
       }"
       HAVE_SSE4_1_EXTENSIONS)
 endmacro(PCL_CHECK_FOR_SSE4_1)
+
+###############################################################################
+# Check for the presence of SSE 3
+macro(PCL_CHECK_FOR_SSE3)
+  include(CheckCXXSourceRuns)
+  set(CMAKE_REQUIRED_FLAGS)
+
+  if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANG)
+      set(CMAKE_REQUIRED_FLAGS "-msse3")
+  endif(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANG)
+
+  check_cxx_source_runs("
+      #include <pmmintrin.h>
+      int main ()
+      {
+          __m128d a, b;
+          double vals[2] = {0};
+          a = _mm_loadu_pd (vals);
+          b = _mm_hadd_pd (a,a);
+          _mm_storeu_pd (vals, b);
+          return (0);
+      }"
+      HAVE_SSE3_EXTENSIONS)
+endmacro(PCL_CHECK_FOR_SSE3)
