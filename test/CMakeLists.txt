@@ -70,13 +70,7 @@ if(build)
     PCL_ADD_TEST(a_recognition_cg_test test_recognition_cg
                  FILES test_recognition_cg.cpp
                  LINK_WITH pcl_gtest pcl_common pcl_io pcl_kdtree pcl_features pcl_recognition pcl_keypoints
-                 ARGUMENTS ${PCL_SOURCE_DIR}/test/milk.pcd ${PCL_SOURCE_DIR}/test/milk_cartoon_all_small_clorox.pcd)
-
-    PCL_ADD_TEST(a_brisk_test test_brisk
-                 FILES test_brisk.cpp
-                 LINK_WITH pcl_gtest pcl_io pcl_kdtree pcl_filters pcl_keypoints pcl_common pcl_visualization pcl_segmentation pcl_sample_consensus pcl_features pcl_surface pcl_search pcl_registration pcl_recognition
-                 ARGUMENTS ${PCL_SOURCE_DIR}/test/brisk_image_gt.pcd ${PCL_SOURCE_DIR}/test/brisk_keypoints_gt.pcd ${PCL_SOURCE_DIR}/test/brisk_descriptors_gt.pcd)
-    
+                 ARGUMENTS ${PCL_SOURCE_DIR}/test/milk.pcd ${PCL_SOURCE_DIR}/test/milk_cartoon_all_small_clorox.pcd)   
 
 
     if(BUILD_visualization AND (NOT UNIX OR (UNIX AND DEFINED ENV{DISPLAY})))
