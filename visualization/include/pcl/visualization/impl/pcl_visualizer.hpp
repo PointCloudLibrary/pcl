@@ -735,7 +735,8 @@ pcl::visualization::PCLVisualizer::addPointCloudNormals (
   if (cloud->isOrganized () && normals->isOrganized ())
   {
     vtkIdType point_step = static_cast<vtkIdType> (sqrt (level));
-    nr_normals = (cloud->points.size () - 1) / (point_step * point_step) + 1 ;
+    nr_normals = (static_cast<vtkIdType> ((cloud->width - 1)/ point_step) + 1) *
+                 (static_cast<vtkIdType> ((cloud->height - 1) / point_step) + 1);
     pts = new float[2 * nr_normals * 3];
 
     vtkIdType cell_count = 0;
