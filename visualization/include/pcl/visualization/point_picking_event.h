@@ -36,7 +36,7 @@
  */
 
 #ifndef PCL_VISUALIZATION_POINT_PICKING_EVENT_H_
-#define	PCL_VISUALIZATION_POINT_PICKING_EVENT_H_
+#define PCL_VISUALIZATION_POINT_PICKING_EVENT_H_
 
 #include <pcl/pcl_macros.h>
 #include <pcl/visualization/vtk.h>
@@ -118,6 +118,21 @@ namespace pcl
           return (true);
         }
 
+        /** \brief For situations where multiple points are selected in a sequence, return the points indices.
+          * \param[out] index_1 index of the first point selected by user
+          * \param[out] index_2 index of the second point selected by user
+          * \return true, if two points are available and have been clicked by the user, false otherwise
+          */
+        inline bool
+        getPointIndices (int &index_1, int &index_2) const
+        {
+          if (idx2_ == -1)
+            return (false);
+          index_1 = idx_;
+          index_2 = idx2_;
+          return (true);
+        }
+
       private:
         int idx_, idx2_;
 
@@ -127,5 +142,5 @@ namespace pcl
   } //namespace visualization
 } //namespace pcl
 
-#endif	/* PCL_VISUALIZATION_POINT_PICKING_EVENT_H_ */
+#endif  /* PCL_VISUALIZATION_POINT_PICKING_EVENT_H_ */
 
