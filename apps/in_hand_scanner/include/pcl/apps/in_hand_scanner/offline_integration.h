@@ -38,16 +38,17 @@
  *
  */
 
-#ifndef PCL_APPS_IN_HAND_SCANNER_IN_HAND_SCANNER_H
-#define PCL_APPS_IN_HAND_SCANNER_IN_HAND_SCANNER_H
+#ifndef PCL_APPS_IN_HAND_SCANNER_OFFLINE_INTEGRATION_H
+#define PCL_APPS_IN_HAND_SCANNER_OFFLINE_INTEGRATION_H
 
+#include <vector>
 #include <string>
-#include <sstream>
-#include <iomanip>
 
 #include <pcl/pcl_exports.h>
-#include <pcl/apps/in_hand_scanner/boost.h>
+#include <pcl/common/time.h>
 #include <pcl/apps/in_hand_scanner/common_types.h>
+#include <pcl/apps/in_hand_scanner/boost.h>
+#include <pcl/apps/in_hand_scanner/eigen.h>
 #include <pcl/apps/in_hand_scanner/opengl_viewer.h>
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -56,65 +57,52 @@
 
 namespace pcl
 {
-  class OpenNIGrabber;
+  template <class PointInT, class PointOutT>
+  class IntegralImageNormalEstimation;
 
   namespace ihs
   {
-    class ICP;
-    class InputDataProcessing;
     class Integration;
   } // End namespace ihs
 } // End namespace pcl
 
 ////////////////////////////////////////////////////////////////////////////////
-// InHandScanner
+// OfflineIntegration
 ////////////////////////////////////////////////////////////////////////////////
 
 namespace pcl
 {
   namespace ihs
   {
-    /** \brief
+    /** \brief Read the clouds and transformations from files and integrate them into one common model.
       * \todo Add Documentation
       */
-    class PCL_EXPORTS InHandScanner : public pcl::ihs::OpenGLViewer
+    class PCL_EXPORTS OfflineIntegration : public pcl::ihs::OpenGLViewer
     {
       Q_OBJECT
 
       public:
 
-        typedef pcl::ihs::OpenGLViewer  Base;
-        typedef pcl::ihs::InHandScanner Self;
-
-        /** \brief Switch between different branches of the scanning pipeline. */
-        typedef enum RunningMode
-        {
-          RM_SHOW_MODEL          = 0, /**< Show the model shape (if one is available). */
-          RM_UNPROCESSED         = 1, /**< Shows the unprocessed input data. */
-          RM_PROCESSED           = 2, /**< Shows the processed input data. */
-          RM_REGISTRATION_CONT   = 3, /**< Registers new data to the first acquired data continuously. */
-          RM_REGISTRATION_SINGLE = 4  /**< Registers new data once and returns to showing the processed data. */
-        } RunningMode;
+        typedef pcl::ihs::OpenGLViewer       Base;
+        typedef pcl::ihs::OfflineIntegration Self;
 
         /** \brief Constructor. */
-        explicit InHandScanner (Base* parent=0);
+        explicit OfflineIntegration (Base* parent=0);
 
         /** \brief Destructor. */
-        ~InHandScanner ();
+        ~OfflineIntegration ();
 
       public slots:
 
-        /** \brief Start the grabber (enables the scanning pipeline). */
+        /** \brief Start the procedure from a path. */
         void
-        startGrabber ();
+        start ();
 
-        /** \brief Set which branches of the scanning pipeline is executed. */
-        void
-        setRunningMode (const RunningMode& mode);
+      private slots:
 
-        /** \brief Reset the scanning pipeline. */
+        /** \brief Loads in new data. */
         void
-        reset ();
+        computationThread ();
 
       private:
 
@@ -128,30 +116,17 @@ namespace pcl
         typedef CloudXYZRGBNormal::Ptr              CloudXYZRGBNormalPtr;
         typedef CloudXYZRGBNormal::ConstPtr         CloudXYZRGBNormalConstPtr;
 
-        typedef pcl::ihs::PointIHS         PointIHS;
-        typedef pcl::ihs::CloudIHS         CloudIHS;
-        typedef pcl::ihs::CloudIHSPtr      CloudIHSPtr;
-        typedef pcl::ihs::CloudIHSConstPtr CloudIHSConstPtr;
-
         typedef pcl::ihs::Mesh         Mesh;
         typedef pcl::ihs::MeshPtr      MeshPtr;
         typedef pcl::ihs::MeshConstPtr MeshConstPtr;
 
-        typedef pcl::OpenNIGrabber                Grabber;
-        typedef boost::shared_ptr <Grabber>       GrabberPtr;
-        typedef boost::shared_ptr <const Grabber> GrabberConstPtr;
-
-        typedef pcl::ihs::InputDataProcessing                 InputDataProcessing;
-        typedef boost::shared_ptr <InputDataProcessing>       InputDataProcessingPtr;
-        typedef boost::shared_ptr <const InputDataProcessing> InputDataProcessingConstPtr;
-
-        typedef pcl::ihs::ICP                 ICP;
-        typedef boost::shared_ptr <ICP>       ICPPtr;
-        typedef boost::shared_ptr <const ICP> ICPConstPtr;
-
         typedef pcl::ihs::Integration                 Integration;
         typedef boost::shared_ptr <Integration>       IntegrationPtr;
         typedef boost::shared_ptr <const Integration> IntegrationConstPtr;
+
+        typedef pcl::IntegralImageNormalEstimation <PointXYZRGBA, PointXYZRGBNormal> NormalEstimation;
+        typedef boost::shared_ptr <NormalEstimation>                                 NormalEstimationPtr;
+        typedef boost::shared_ptr <const NormalEstimation>                           NormalEstimationConstPtr;
 
         /** \brief Helper object for the computation thread. Please have a look at the documentation of calcFPS. */
         class ComputationFPS : public Base::FPS
@@ -161,6 +136,7 @@ namespace pcl
             ~ComputationFPS () {}
         };
 
+
         /** \brief Helper object for the visualization thread. Please have a look at the documentation of calcFPS. */
         class VisualizationFPS : public Base::FPS
         {
@@ -169,9 +145,36 @@ namespace pcl
             ~VisualizationFPS () {}
         };
 
-        /** \brief Called when new data arries from the grabber. The grabbing - registration - integration pipeline is implemented here. */
-        void
-        newDataCallback (const CloudXYZRGBAConstPtr& cloud_in);
+        /** \brief Get a list of files with from a given directory.
+          * \param[in] path_dir Path to search for the files.
+          * \param[in] extension File extension (must start with a dot). E.g. '.pcd'.
+          * \param[out] files Paths to the files.
+          * \return True if success.
+          */
+        bool
+        getFilesFromDirectory (const std::string          path_dir,
+                               const std::string          extension,
+                               std::vector <std::string>& files) const;
+
+        /** \brief Load the transformation matrix from the given file.
+          * \param[in] filename Path to the file.
+          * \param[out] transform The loaded transform.
+          * \return True if success.
+          */
+        bool
+        loadTransform (const std::string& filename,
+                       Eigen::Matrix4f&   transform) const;
+
+        /** \brief Load the cloud and transformation from the files and compute the normals.
+          * \param[in] filename Path to the pcd file.
+          * \param[out] cloud Cloud with computed normals.
+          * \param[out] T Loaded transformation.
+          * \return True if success.
+          */
+        bool
+        load (const std::string&    filename,
+              CloudXYZRGBNormalPtr& cloud,
+              Eigen::Matrix4f&      T) const;
 
         /** \see http://doc.qt.digia.com/qt/qwidget.html#paintEvent
           * \see http://doc.qt.digia.com/qt/opengl-overpainting.html
@@ -179,26 +182,19 @@ namespace pcl
         void
         paintEvent (QPaintEvent* event);
 
-        /** \brief Draw text over the opengl scene.
-          * \see http://doc.qt.digia.com/qt/opengl-overpainting.html
-          */
-        void
-        drawText ();
-
-        /** \brief Actual implementeation of startGrabber (needed so it can be run in a different thread and doesn't block the application when starting up). */
-        void
-        startGrabberImpl ();
-
         /** \see http://doc.qt.digia.com/qt/qwidget.html#keyPressEvent */
         void
         keyPressEvent (QKeyEvent* event);
 
-        ////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////
         // Members
-        ////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////
 
         /** \brief Synchronization. */
         boost::mutex mutex_;
+
+        /** \brief Wait until the data finished processing. */
+        boost::mutex mutex_quit_;
 
         /** \brief Please have a look at the documentation of ComputationFPS. */
         ComputationFPS computation_fps_;
@@ -206,38 +202,17 @@ namespace pcl
         /** \brief Please have a look at the documentation of VisualizationFPS. */
         VisualizationFPS visualization_fps_;
 
-        /** \brief Set to true if the scanning pipeline should be reset. */
-        bool reset_;
-
-        /** \brief Switch between different branches of the scanning pipeline. */
-        RunningMode running_mode_;
-
-        /** \brief The iteration of the scanning pipeline (grab - register - integrate). */
-        unsigned int iteration_;
-
-        /** \brief Used to get new data from the sensor. */
-        GrabberPtr grabber_;
-
-        /** \brief This variable is true if the grabber is starting. */
-        bool starting_grabber_;
-
-        /** \brief Connection of the grabber signal with the data processing thread. */
-        boost::signals2::connection new_data_connection_;
-
-        /** \brief Processes the data from the sensor. Output is input to the registration. */
-        InputDataProcessingPtr input_data_processing_;
-
-        /** \brief Registration (Iterative Closest Point). */
-        ICPPtr icp_;
-
-        /** \brief Transformation that brings the data cloud into model coordinates. */
-        Eigen::Matrix4f transformation_;
-
-        /** \brief Integrate the data cloud into a common model. */
-        IntegrationPtr integration_;
+        /** \brief Path to the pcd and transformation files. */
+        std::string path_dir_;
 
         /** \brief Model to which new data is registered to (stored as a mesh). */
         MeshPtr mesh_model_;
+
+        /** \brief Compute the normals for the input clouds. */
+        NormalEstimationPtr normal_estimation_;
+
+        /** \brief Integrate the data cloud into a common model. */
+        IntegrationPtr integration_;
 
         /** \brief Prevent the application to crash while closing. */
         bool destructor_called_;
@@ -249,4 +224,4 @@ namespace pcl
   } // End namespace ihs
 } // End namespace pcl
 
-#endif // PCL_APPS_IN_HAND_SCANNER_IN_HAND_SCANNER_H
+#endif // PCL_APPS_IN_HAND_SCANNER_OFFLINE_INTEGRATION_H

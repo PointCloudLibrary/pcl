@@ -41,11 +41,12 @@
 #include <pcl/apps/in_hand_scanner/in_hand_scanner.h>
 
 #include <QApplication>
+#include <QtCore>
 #include <QKeyEvent>
 #include <QPainter>
-#include <QtCore>
 
 #include <pcl/exceptions.h>
+#include <pcl/common/time.h>
 #include <pcl/common/transforms.h>
 #include <pcl/io/openni_grabber.h>
 #include <pcl/apps/in_hand_scanner/icp.h>
@@ -58,7 +59,7 @@
 
 pcl::ihs::InHandScanner::InHandScanner (Base* parent)
   : Base                   (parent),
-    mutex_ihs_             (),
+    mutex_                 (),
     computation_fps_       (),
     visualization_fps_     (),
     reset_                 (false),
@@ -74,6 +75,8 @@ pcl::ihs::InHandScanner::InHandScanner (Base* parent)
     mesh_model_            (new Mesh ()),
     destructor_called_     (false)
 {
+  Base::setScalingFactor (0.01);
+
   Base::setVisibilityConfidenceNormalization (static_cast <float> (integration_->getMinimumCount ()));
 
   // Initialize the pivot and crop box
@@ -88,27 +91,11 @@ pcl::ihs::InHandScanner::InHandScanner (Base* parent)
 
 pcl::ihs::InHandScanner::~InHandScanner ()
 {
-  boost::mutex::scoped_lock lock (mutex_ihs_);
+  boost::mutex::scoped_lock lock (mutex_);
   destructor_called_ = true;
 
   if (grabber_ && grabber_->isRunning ()) grabber_->stop ();
   if (new_data_connection_.connected ())  new_data_connection_.disconnect ();
-}
-
-////////////////////////////////////////////////////////////////////////////////
-
-QSize
-pcl::ihs::InHandScanner::minimumSizeHint () const
-{
-  return (QSize (160, 120));
-}
-
-////////////////////////////////////////////////////////////////////////////////
-
-QSize
-pcl::ihs::InHandScanner::sizeHint () const
-{
-  return (QSize (640, 480));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -163,7 +150,7 @@ pcl::ihs::InHandScanner::setRunningMode (const RunningMode& mode)
     }
   }
 
-  boost::mutex::scoped_lock lock (mutex_ihs_);
+  boost::mutex::scoped_lock lock (mutex_);
   running_mode_ = mode;
 }
 
@@ -172,7 +159,7 @@ pcl::ihs::InHandScanner::setRunningMode (const RunningMode& mode)
 void
 pcl::ihs::InHandScanner::reset ()
 {
-  boost::mutex::scoped_lock lock (mutex_ihs_);
+  boost::mutex::scoped_lock lock (mutex_);
 
   // The actual reset is done in newDataCallback
   reset_ = true;
@@ -192,7 +179,7 @@ pcl::ihs::InHandScanner::newDataCallback (const CloudXYZRGBAConstPtr& cloud_in)
   unsigned int iteration;
   {
     pcl::StopWatch sw_wait_lock;
-    boost::mutex::scoped_lock lock (mutex_ihs_);
+    boost::mutex::scoped_lock lock (mutex_);
     time_wait_lock += sw_wait_lock.getTime ();
 
     if (destructor_called_)
@@ -215,7 +202,7 @@ pcl::ihs::InHandScanner::newDataCallback (const CloudXYZRGBAConstPtr& cloud_in)
 
     running_mode   = running_mode_;
     iteration      = iteration_;
-    this->calcFPS (computation_fps_);
+    Base::calcFPS (computation_fps_);
   }
 
   pcl::StopWatch sw;
@@ -274,7 +261,7 @@ pcl::ihs::InHandScanner::newDataCallback (const CloudXYZRGBAConstPtr& cloud_in)
   double time_data  = 0;
   {
     pcl::StopWatch sw_wait_lock;
-    boost::mutex::scoped_lock lock (mutex_ihs_);
+    boost::mutex::scoped_lock lock (mutex_);
     time_wait_lock += sw_wait_lock.getTime ();
 
     if (destructor_called_)
@@ -322,8 +309,8 @@ void
 pcl::ihs::InHandScanner::paintEvent (QPaintEvent* event)
 {
   {
-    boost::mutex::scoped_lock lock (mutex_ihs_);
-    this->calcFPS (visualization_fps_);
+    boost::mutex::scoped_lock lock (mutex_);
+    Base::calcFPS (visualization_fps_);
   }
 
   Base::paintEvent (event);
@@ -349,7 +336,7 @@ pcl::ihs::InHandScanner::drawText ()
   {
     std::string vis_fps ("Visualization: "), comp_fps ("Computation: ");
     {
-      boost::mutex::scoped_lock lock (mutex_ihs_);
+      boost::mutex::scoped_lock lock (mutex_);
 
       vis_fps.append  (visualization_fps_.str ()).append (" fps");
       comp_fps.append (computation_fps_.str   ()).append (" fps");
@@ -369,7 +356,7 @@ pcl::ihs::InHandScanner::drawText ()
 void
 pcl::ihs::InHandScanner::startGrabberImpl ()
 {
-  boost::mutex::scoped_lock lock (mutex_ihs_);
+  boost::mutex::scoped_lock lock (mutex_);
   starting_grabber_ = true;
   lock.unlock ();
 
@@ -403,7 +390,7 @@ pcl::ihs::InHandScanner::keyPressEvent (QKeyEvent* event)
 
   if (event->key () == Qt::Key_Escape)
   {
-    boost::mutex::scoped_lock lock (mutex_ihs_);
+    boost::mutex::scoped_lock lock (mutex_);
     QApplication::quit ();
     return;
   }

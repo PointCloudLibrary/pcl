@@ -100,7 +100,7 @@ pcl::ihs::OpenGLViewer::FaceVertexMesh::FaceVertexMesh (const Mesh& mesh, const 
 pcl::ihs::OpenGLViewer::OpenGLViewer (QWidget* parent)
   : QGLWidget            (parent),
     mutex_vis_           (),
-    timer_               (new QTimer (this)),
+    timer_vis_           (new QTimer (this)),
     colormap_            (Colormap::Constant (255)),
     vis_conf_norm_       (1),
     drawn_meshes_        (),
@@ -108,6 +108,7 @@ pcl::ihs::OpenGLViewer::OpenGLViewer (QWidget* parent)
     coloring_            (COL_RGB),
     draw_cube_           (false),
     cube_coefficients_   (),
+    scaling_factor_      (1.),
     R_cam_               (1., 0., 0., 0.),
     t_cam_               (0., 0., 0.),
     cam_pivot_           (0., 0., 0.),
@@ -117,8 +118,8 @@ pcl::ihs::OpenGLViewer::OpenGLViewer (QWidget* parent)
     y_prev_              (0)
 {
   // Timer: Defines the update rate for the visualization
-  connect (timer_.get (), SIGNAL (timeout ()), this, SLOT (timerCallback ()));
-  timer_->start (33);
+  connect (timer_vis_.get (), SIGNAL (timeout ()), this, SLOT (timerCallback ()));
+  timer_vis_->start (33);
 
   QWidget::setAutoFillBackground (false);
 
@@ -427,9 +428,7 @@ pcl::ihs::OpenGLViewer::OpenGLViewer (QWidget* parent)
 
 pcl::ihs::OpenGLViewer::~OpenGLViewer ()
 {
-  boost::mutex::scoped_lock lock (mutex_vis_);
-
-  timer_->stop ();
+  this->stopTimer ();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -458,6 +457,7 @@ pcl::ihs::OpenGLViewer::addMesh (const CloudXYZRGBNormalConstPtr& cloud, const s
 {
   if (!cloud->isOrganized ())
   {
+    std::cerr << "ERROR in opengl_viewer.cpp: Input cloud is not organized.\n";
     return (false);
   }
 
@@ -642,9 +642,10 @@ pcl::ihs::OpenGLViewer::setPivot (const std::string& id)
 void
 pcl::ihs::OpenGLViewer::stopTimer ()
 {
-  if (timer_)
+  boost::mutex::scoped_lock lock (mutex_vis_);
+  if (timer_vis_)
   {
-    timer_->stop ();
+    timer_vis_->stop ();
   }
 }
 
@@ -702,6 +703,31 @@ pcl::ihs::OpenGLViewer::resetCamera ()
 
 ////////////////////////////////////////////////////////////////////////////////
 
+QSize
+pcl::ihs::OpenGLViewer::minimumSizeHint () const
+{
+  return (QSize (160, 120));
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+QSize
+pcl::ihs::OpenGLViewer::sizeHint () const
+{
+  return (QSize (640, 480));
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+void
+pcl::ihs::OpenGLViewer::setScalingFactor (const double scale)
+{
+  boost::mutex::scoped_lock lock (mutex_vis_);
+  scaling_factor_ = scale;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
 void
 pcl::ihs::OpenGLViewer::timerCallback ()
 {
@@ -717,8 +743,8 @@ pcl::ihs::OpenGLViewer::paintEvent (QPaintEvent* /*event*/)
   this->makeCurrent ();
 
   // Clear information from the last draw
-  glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glClearColor (0.f, 0.f, 0.f, 0.f);
+  glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   this->setupViewport (this->width (), this->height ());
 
@@ -754,7 +780,7 @@ pcl::ihs::OpenGLViewer::paintEvent (QPaintEvent* /*event*/)
   // Projection matrix
   glMatrixMode   (GL_PROJECTION);
   glLoadIdentity ();
-  gluPerspective (43., 4./3., 1., 5000.);
+  gluPerspective (43., 4./3., 0.05 / scaling_factor_, 10. / scaling_factor_);
   glMatrixMode   (GL_MODELVIEW);
 
   // ModelView matrix
@@ -1044,7 +1070,7 @@ pcl::ihs::OpenGLViewer::mouseMoveEvent (QMouseEvent* event)
   const Eigen::Vector3d ez = Eigen::Vector3d::UnitZ ();
 
   // Scale with the distance between the pivot and camera eye.
-  const double scale = std::max ((cam_pivot_ - R_cam_ * o - t_cam_).norm (), 10.) / d;
+  const double scale = std::max ((cam_pivot_ - R_cam_ * o - t_cam_).norm (), .1 / scaling_factor_) / d;
 
   if (QApplication::mouseButtons () == Qt::LeftButton)
   {
@@ -1083,7 +1109,7 @@ pcl::ihs::OpenGLViewer::wheelEvent (QWheelEvent* event)
     const double          w     = static_cast <double> (this->width ());
     const double          h     = static_cast <double> (this->height ());
     const double          d     = std::sqrt (w*w + h*h);
-    const double          scale = std::max ((cam_pivot_ - R_cam_ * o - t_cam_).norm (), 10.) / d;
+    const double          scale = std::max ((cam_pivot_ - R_cam_ * o - t_cam_).norm (), .1 / scaling_factor_) / d;
 
     // http://doc.qt.digia.com/qt/qwheelevent.html#delta
     t_cam_ += scale * Eigen::Vector3d (R_cam_ * (ez * static_cast <double> (event->delta ())));

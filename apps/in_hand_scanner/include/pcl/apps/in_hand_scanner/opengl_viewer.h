@@ -46,6 +46,7 @@
 #include <QGLWidget>
 
 #include <pcl/pcl_exports.h>
+#include <pcl/common/time.h>
 #include <pcl/apps/in_hand_scanner/boost.h>
 #include <pcl/apps/in_hand_scanner/common_types.h>
 #include <pcl/apps/in_hand_scanner/eigen.h>
@@ -54,7 +55,9 @@ namespace pcl
 {
   namespace ihs
   {
-    /** \brief Viewer for the in-hand scanner based on Qt and OpenGL. */
+    /** \brief Viewer for the in-hand scanner based on Qt and OpenGL.
+      * \note Currently you have to derive from this class to use it. Implement the paintEvent: Call the paint event of this class and declare a QPainter.
+      */
     class PCL_EXPORTS OpenGLViewer : public QGLWidget
     {
       Q_OBJECT
@@ -197,6 +200,18 @@ namespace pcl
         void
         resetCamera ();
 
+        /** \see http://doc.qt.digia.com/qt/qwidget.html#minimumSizeHint-prop */
+        virtual QSize
+        minimumSizeHint () const;
+
+        /** \see http://doc.qt.digia.com/qt/qwidget.html#sizeHint-prop */
+        virtual QSize
+        sizeHint () const;
+
+        /** \brief Set the scaling factor to convert from meters to the unit of the drawn files. */
+        void
+        setScalingFactor (const double scale);
+
      public slots:
 
         /** \brief Requests the scene to be re-drawn (called periodically from a timer). */
@@ -204,6 +219,49 @@ namespace pcl
         timerCallback ();
 
       protected:
+
+        /** \brief Please have a look at the documentation of calcFPS. */
+        class FPS
+        {
+          public:
+
+            FPS () : fps_ (0.) {}
+
+            inline double& value ()       {return (fps_);}
+            inline double  value () const {return (fps_);}
+
+            inline std::string
+            str () const
+            {
+              std::stringstream ss;
+              ss << std::setprecision (1) << std::fixed << fps_;
+              return (ss.str ());
+            }
+
+          protected:
+
+            ~FPS () {}
+
+          private:
+
+            double fps_;
+        };
+
+        /** Measures the performance of the current thread (selected by passing the corresponding 'fps' helper object). The resulting value is stored in the fps object. */
+        template <class FPS> void
+        calcFPS (FPS& fps) const
+        {
+          static pcl::StopWatch sw;
+          static unsigned int count = 0;
+
+          ++count;
+          if (sw.getTimeSeconds () >= 1.)
+          {
+            fps.value () = static_cast <double> (count) / sw.getTimeSeconds ();
+            count = 0;
+            sw.reset ();
+          }
+        }
 
         /** \see http://doc.qt.digia.com/qt/qwidget.html#paintEvent
           * \see http://doc.qt.digia.com/qt/opengl-overpainting.html
@@ -312,7 +370,7 @@ namespace pcl
         boost::mutex mutex_vis_;
 
         /** \brief Visualization timer. */
-        boost::shared_ptr <QTimer> timer_;
+        boost::shared_ptr <QTimer> timer_vis_;
 
         /** \brief Colormap. */
         Colormap colormap_;
@@ -334,6 +392,9 @@ namespace pcl
 
         /** \brief Coefficients of the drawn cube. */
         CubeCoefficients cube_coefficients_;
+
+        /** \brief Scaling factor to convert from meters to the unit of the drawn files. */
+        double scaling_factor_;
 
         /** \brief Rotation of the camera. */
         Eigen::Quaterniond R_cam_;
