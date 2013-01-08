@@ -82,17 +82,26 @@ pcl::recognition::ObjRecRANSAC::recognize (const PointCloudIn* scene, const Poin
   printf("ObjRecRANSAC::%s(): recognizing objects [%i iteration(s)]\n", __func__, num_iterations);
 #endif
 
-  list<OrientedPointPair> opp;
+  list<OrientedPointPair> point_pairs;
   list<Hypothesis> hypotheses;
   vector<Hypothesis> accepted_hypotheses;
   ORRGraph graph;
 
-  this->sampleOrientedPointPairs (num_iterations, full_leaves, opp);
-  this->generateHypotheses (opp, hypotheses);
+  this->sampleOrientedPointPairs (num_iterations, full_leaves, point_pairs);
+  this->generateHypotheses (point_pairs, hypotheses);
+  point_pairs.clear (); // Free memory
+
   this->testHypotheses (hypotheses, accepted_hypotheses);
-  hypotheses.clear (); // From now on we need only the accepted hypotheses -> kill the rest to free memory
+  hypotheses.clear (); // Free memory
+
   this->buildConflictGraph (accepted_hypotheses, graph);
+  accepted_hypotheses.clear (); // Free memory
+
   this->filterWeakHypotheses (graph, recognized_objects);
+
+#ifdef OBJ_REC_RANSAC_VERBOSE
+  printf("ObjRecRANSAC::%s(): done [%i object(s)]\n", __func__, static_cast<int> (recognized_objects.size ()));
+#endif
 }
 
 //=========================================================================================================================================================================
