@@ -802,8 +802,10 @@ openni_wrapper::OpenNIDevice::IRDataThreadFunction ()
       return;
 
     ir_generator_.WaitAndUpdateData ();
+    xn::IRMetaData id_md;
+    ir_generator_.GetMetaData (ir_md);
     boost::shared_ptr<xn::IRMetaData> ir_data (new xn::IRMetaData);
-    ir_generator_.GetMetaData (*ir_data);
+    ir_data->CopyFrom (ir_md);
     ir_lock.unlock ();
 
     boost::shared_ptr<IRImage> ir_image ( new IRImage (ir_data) );
