@@ -45,6 +45,7 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
 #include <pcl/point_types.h>
+#include <pcl/point_cloud.h>
 
 // Forward declaration for commonly used objects
 class Command;
