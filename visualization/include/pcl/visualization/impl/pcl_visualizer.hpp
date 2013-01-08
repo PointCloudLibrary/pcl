@@ -581,10 +581,13 @@ pcl::visualization::PCLVisualizer::addSphere (const PointT &center, double radiu
   vtkSmartPointer<vtkLODActor> actor = vtkSmartPointer<vtkLODActor>::New ();
   actor->SetMapper (mapper);
   //createActorFromVTKDataSet (data, actor);
-  actor->GetProperty ()->SetRepresentationToWireframe ();
-  actor->GetProperty ()->SetInterpolationToGouraud ();
-  actor->GetMapper ()->ScalarVisibilityOff ();
+  actor->GetProperty ()->SetRepresentationToSurface ();
+  actor->GetProperty ()->SetInterpolationToFlat ();
   actor->GetProperty ()->SetColor (r, g, b);
+  actor->GetMapper ()->ImmediateModeRenderingOn ();
+  actor->GetMapper ()->StaticOn ();
+  actor->GetMapper ()->ScalarVisibilityOff ();
+  actor->GetMapper ()->Update ();
   addActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
@@ -734,7 +737,7 @@ pcl::visualization::PCLVisualizer::addPointCloudNormals (
   // If the cloud is organized, then distribute the normal step in both directions
   if (cloud->isOrganized () && normals->isOrganized ())
   {
-    vtkIdType point_step = static_cast<vtkIdType> (sqrt (level));
+    vtkIdType point_step = static_cast<vtkIdType> (sqrt (double (level)));
     nr_normals = (static_cast<vtkIdType> ((cloud->width - 1)/ point_step) + 1) *
                  (static_cast<vtkIdType> ((cloud->height - 1) / point_step) + 1);
     pts = new float[2 * nr_normals * 3];
