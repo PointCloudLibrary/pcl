@@ -83,9 +83,6 @@ namespace pcl
         typedef ModelLibrary::PointCloudIn PointCloudIn;
         typedef ModelLibrary::PointCloudN PointCloudN;
 
-//        typedef ModelLibrary::PointCloudInConstPtr PointCloudInConstPtr;
-//        typedef ModelLibrary::PointCloudNConstPtr PointCloudNConstPtr;
-
         /** \brief This is an output item of the ObjRecRANSAC::recognize() method. It contains the recognized model, its name (the ones passed to
           * ObjRecRANSAC::addModel()), the rigid transform which aligns the model with the input scene and the match confidence which is a number
           * in the interval (0, 1] which gives the fraction of the model surface area matched to the scene. E.g., a match confidence of 0.3 means
@@ -165,6 +162,8 @@ namespace pcl
         clear()
         {
           model_library_.clear();
+          scene_octree_.clear ();
+          scene_octree_proj_.clear ();
         }
 
         /** \brief Add an object model to be recognized.
@@ -192,15 +191,6 @@ namespace pcl
           */
         void
         recognize (const PointCloudIn* scene, const PointCloudN* normals, std::list<ObjRecRANSAC::Output>& recognized_objects, double success_probability = 0.99);
-
-        /** \brief Computes the signature of the oriented point pair ((p1, n1), (p2, n2)) consisting of the angles between
-          * n1 and (p2-p1),
-          * n2 and (p1-p2),
-          * n1 and n2
-          *
-          * \param[out] signature is an array of three doubles saving the three angles in the order shown above. */
-        static inline void
-        compute_oriented_point_pair_signature (const float *p1, const float *n1, const float *p2, const float *n2, float signature[3]);
 
         /** \brief Returns the hash table in the model library. */
         const pcl::recognition::ModelLibrary::HashTable*
@@ -238,6 +228,17 @@ namespace pcl
           const float *a1, const float *a1_n, const float *b1, const float* b1_n,
           const float *a2, const float *a2_n, const float *b2, const float* b2_n,
           float* rigid_transform) const;
+
+        /** \brief Computes the signature of the oriented point pair ((p1, n1), (p2, n2)) consisting of the angles between
+          * n1 and (p2-p1),
+          * n2 and (p1-p2),
+          * n1 and n2
+          *
+          * \param[out] signature is an array of three doubles saving the three angles in the order shown above. */
+        static inline void
+        compute_oriented_point_pair_signature (const float *p1, const float *n1, const float *p2, const float *n2, float signature[3]);
+
+        friend class ModelLibrary;
 
       protected:
         float pair_width_, voxel_size_, fraction_of_pairs_in_hash_table_, relative_obj_size_;

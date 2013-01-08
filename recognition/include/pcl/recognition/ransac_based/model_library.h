@@ -60,12 +60,6 @@ namespace pcl
         typedef pcl::PointCloud<pcl::PointXYZ> PointCloudIn;
         typedef pcl::PointCloud<pcl::Normal> PointCloudN;
 
-//        typedef boost::shared_ptr<PointCloudIn> PointCloudInPtr;
-//        typedef boost::shared_ptr<PointCloudN> PointCloudNPtr;
-//
-//        typedef boost::shared_ptr<const PointCloudIn> PointCloudInConstPtr;
-//        typedef boost::shared_ptr<const PointCloudN> PointCloudNConstPtr;
-
         /** \brief Stores some information about the model. */
         class Model
         {

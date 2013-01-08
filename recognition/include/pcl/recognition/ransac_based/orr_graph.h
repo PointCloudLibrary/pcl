@@ -73,7 +73,16 @@ namespace pcl
 
       public:
         ORRGraph (){}
-        virtual ~ORRGraph (){}
+        virtual ~ORRGraph (){ this->clear ();}
+
+        inline void
+        clear ()
+        {
+          for ( std::vector<Node*>::iterator nit = nodes_.begin () ; nit != nodes_.end () ; ++nit )
+            delete *nit;
+
+          nodes_.clear ();
+        }
 
         /** \brief Drops all existing graph nodes and creates 'n' new ones. */
         inline void

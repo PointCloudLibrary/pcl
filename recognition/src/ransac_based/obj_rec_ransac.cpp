@@ -65,7 +65,7 @@ pcl::recognition::ObjRecRANSAC::recognize (const PointCloudIn* scene, const Poin
 {
   // First, build the scene octree
   scene_octree_.build(*scene, voxel_size_, normals);
-  // Project it on the xy-plane (which riughly corresonds to the projection plane of the scanning device)
+  // Project it on the xy-plane (which roughly corresponds to the projection plane of the scanning device)
   scene_octree_proj_.build(scene_octree_, abs_zdist_thresh_, abs_zdist_thresh_);
 
   if ( success_probability >= 1.0 )
@@ -239,22 +239,6 @@ pcl::recognition::ObjRecRANSAC::generateHypotheses (const list<OrientedPointPair
 #ifdef OBJ_REC_RANSAC_VERBOSE
   printf("%i hypotheses\n", num_hypotheses);
 #endif
-
-//	mRigidTransforms = new double[12*mNumOfHypotheses];
-//	mPointSetPointers = new const double*[mNumOfHypotheses];
-//	mPairIds = new int[mNumOfHypotheses];
-//	mModelEntryPointers = new DatabaseModelEntry*[mNumOfHypotheses];
-//
-//	double *rigid_transform = mRigidTransforms;
-//	list<Hypothesis*>::iterator hypo;
-//
-//	for ( i = 0, hypo = mHypotheses.begin() ; hypo != mHypotheses.end() ; ++i, ++hypo, rigid_transform += 12 )
-//	{
-//		vec_copy12<double>((*hypo)->rigid_transform, rigid_transform);
-//		mPointSetPointers[i] = (*hypo)->model_entry->getOwnPointSet()->getPoints_const();
-//		mPairIds[i] = (*hypo)->pair_id;
-//		mModelEntryPointers[i] = (*hypo)->model_entry;
-//	}
 
   return (num_hypotheses);
 }
@@ -470,6 +454,7 @@ pcl::recognition::ObjRecRANSAC::filterWeakHypotheses (ORRGraph& graph, list<ObjR
   // Now run through the array and start switching nodes on and off
   for ( vector<ORRGraph::Node*>::iterator it = sorted_nodes.begin () ; it != sorted_nodes.end () ; ++it )
   {
+    // Ignore graph nodes which are already OFF
     if ( (*it)->state_ == ORRGraph::Node::OFF )
       continue;
 

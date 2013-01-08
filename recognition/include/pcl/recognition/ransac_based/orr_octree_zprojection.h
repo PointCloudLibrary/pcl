@@ -114,7 +114,7 @@ namespace pcl
         : pixels_(NULL),
           sets_(NULL)
         {}
-        virtual ~ORROctreeZProjection (){}
+        virtual ~ORROctreeZProjection (){ this->clear();}
 
         void
         build (const ORROctree& input, float eps_front, float eps_back);
