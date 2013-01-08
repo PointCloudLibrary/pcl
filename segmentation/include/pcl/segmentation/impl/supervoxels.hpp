@@ -228,7 +228,7 @@ pcl::SuperVoxels<PointT>::extract (typename pcl::PointCloud<PointSuperVoxel>::Pt
 template <typename PointT> void
 pcl::SuperVoxels<PointT>::getSuperVoxelAdjacencyList (VoxelAdjacencyList &adjacency_list_arg)
 {
-  voxel_octree_->computeSuperVoxelAdjacencyGraph (label_centers_, adjacency_list_arg);
+  adjacency_list_arg = supervoxel_adjacency_graph_;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

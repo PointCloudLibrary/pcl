@@ -65,10 +65,17 @@ pcl::octree::OctreePointCloudSuperVoxel<PointT, LeafContainerT, BranchContainerT
   typename OctreeSuperVoxelT::LeafNodeIterator leaf_itr;
   LeafContainerT *leaf_container, *neighbor_container;
   //Now iterate through finding neighbors, and create edges
+  //This is to avoid connecting voxels where centroids are on the outer edges
+  //of the voxels, which can lead to "neighbors" that really aren't
+  //1.2 is just a fudging coefficient - this means it's sqrt(1.2) times the 
+  //maximum distance from voxel center to voxel center (ie voxels that share only a vertex)
+  float max_dist_squared = this->resolution_ * this->resolution_ * 3.0f * 1.2f;
   for ( leaf_itr = this->leaf_begin () ; leaf_itr != this->leaf_end (); ++leaf_itr)
   {
     current_key = leaf_itr.getCurrentOctreeKey ();  
     leaf_container = dynamic_cast<LeafContainerT*> (*leaf_itr);
+    PointSuperVoxel leaf_centroid = leaf_container->getCentroid ();
+    PointSuperVoxel neighbor_centroid;
     for (int dx = -1; dx <= 1; ++dx)
     {
       for (int dy = -1; dy <= 1; ++dy)
@@ -82,7 +89,12 @@ pcl::octree::OctreePointCloudSuperVoxel<PointT, LeafContainerT, BranchContainerT
           if (neighbor)
           {
             neighbor_container = dynamic_cast<LeafContainerT*> (neighbor);
-            leaf_container->addNeighbor (neighbor_container);
+            neighbor_centroid = neighbor_container->getCentroid ();
+            float dist = pow((neighbor_centroid.x - leaf_centroid.x),2) 
+                        +pow((neighbor_centroid.y - leaf_centroid.y),2) 
+                        +pow((neighbor_centroid.z - leaf_centroid.z),2);
+            if ( dist < max_dist_squared)
+              leaf_container->addNeighbor (neighbor_container);
           }
         }
       }
@@ -475,10 +487,10 @@ pcl::octree::OctreePointCloudSuperVoxel<PointT, LeafContainerT, BranchContainerT
   normal_sim += p1.normal_x * p2.normal_x;
   normal_sim += p1.normal_y * p2.normal_y;
   normal_sim += p1.normal_z * p2.normal_z;
-  normal_sim = normal_sim * normal_sim;
-  normal_sim = std::sqrt (normal_sim);
+  //normal_sim = normal_sim * normal_sim;
+  //normal_sim = std::sqrt (normal_sim);
   //std::cout <<"retval="<<(1.0f - normal_sim) * normal_weight_ + color_dist * color_weight_+ spatial_dist * spatial_weight_;
-  return  (1.0f - normal_sim) * normal_weight_ + color_dist * color_weight_+ spatial_dist * spatial_weight_;
+  return  0.5*(1.0f - normal_sim) * normal_weight_ + color_dist * color_weight_+ spatial_dist * spatial_weight_;
         
 }
 
@@ -510,6 +522,7 @@ pcl::octree::OctreePointCloudSuperVoxel<PointT, LeafContainerT, BranchContainerT
   return  (1.0f - normal_sim) * normal_weight_ + color_dist * color_weight_+ spatial_dist * spatial_weight_;
   
 }
+
 
 
 

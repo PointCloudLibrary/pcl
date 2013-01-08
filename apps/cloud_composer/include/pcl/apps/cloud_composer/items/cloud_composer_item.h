@@ -106,6 +106,9 @@ namespace pcl
         QList <CloudComposerItem*>
         getChildren (ItemType type) const;
         
+        void 
+        addChild (CloudComposerItem* item_arg);
+        
         virtual CloudComposerItem*
         clone () const;
 

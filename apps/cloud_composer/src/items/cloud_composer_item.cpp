@@ -53,6 +53,12 @@ pcl::cloud_composer::CloudComposerItem::getChildren (CloudComposerItem::ItemType
   return items;
 }
 
+void 
+pcl::cloud_composer::CloudComposerItem::addChild (CloudComposerItem *item_arg)
+{
+  this->appendRow (item_arg);
+}
+
 void
 pcl::cloud_composer::CloudComposerItem::paintView (boost::shared_ptr<pcl::visualization::PCLVisualizer> vis) const
 {
