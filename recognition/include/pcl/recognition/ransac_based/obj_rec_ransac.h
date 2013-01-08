@@ -204,7 +204,7 @@ namespace pcl
         computeNumberOfIterations (double success_probability);
 
         void
-        sampleOrientedPointPairs(ORROctree::Node** leaves1, int num_leaves, std::list<OrientedPointPair>& output);
+        sampleOrientedPointPairs (int num_iterations, std::vector<ORROctree::Node*>& full_scene_leaves, std::list<OrientedPointPair>& output);
 
         int
         generateHypotheses(const std::list<OrientedPointPair>& pairs, std::list<Hypothesis>& out);

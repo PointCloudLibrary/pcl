@@ -73,7 +73,7 @@ pcl::recognition::ObjRecRANSAC::recognize (const PointCloudIn* scene, const Poin
 
   // Compute the number of iterations
   vector<ORROctree::Node*>& full_leaves = scene_octree_.getFullLeaves();
-  int i, num_iterations = this->computeNumberOfIterations(success_probability), num_full_leaves = static_cast<int> (full_leaves.size ());
+  int num_iterations = this->computeNumberOfIterations(success_probability), num_full_leaves = static_cast<int> (full_leaves.size ());
 
   if ( num_full_leaves < num_iterations )
     num_iterations = num_full_leaves;
@@ -82,45 +82,17 @@ pcl::recognition::ObjRecRANSAC::recognize (const PointCloudIn* scene, const Poin
   printf("ObjRecRANSAC::%s(): recognizing objects [%i iteration(s)]\n", __func__, num_iterations);
 #endif
 
-  // This array will contain pointers to randomly selected full octree leaves
-  ORROctree::Node** leaves = new ORROctree::Node*[num_iterations];
-  // The random generator
-  UniformGenerator<int> randgen (0, num_full_leaves, static_cast<uint32_t> (time (NULL)));
-
-  // Init the vector with the ids
-  vector<int> ids (num_full_leaves);
-  for ( i = 0 ; i < num_full_leaves ; ++i )
-    ids[i] = i;
-
-  // Sample 'num_iterations' number of leaves at random
-  for ( i = 0 ; i < num_iterations ; ++i )
-  {
-    // Choose a random position within the array of ids
-    randgen.setParameters (0, static_cast<int> (ids.size ()));
-    int rand_pos = randgen.run ();
-
-    // Get the id at that random position
-    leaves[i] = full_leaves[ids[rand_pos]];
-    // Delete the selected id
-    ids.erase (ids.begin() + rand_pos);
-  }
-  // We do not need the id array any more -> free the memory
-  ids.clear ();
-
   list<OrientedPointPair> opp;
   list<Hypothesis> hypotheses;
   vector<Hypothesis> accepted_hypotheses;
   ORRGraph graph;
 
-  this->sampleOrientedPointPairs (leaves, num_iterations, opp);
+  this->sampleOrientedPointPairs (num_iterations, full_leaves, opp);
   this->generateHypotheses (opp, hypotheses);
   this->testHypotheses (hypotheses, accepted_hypotheses);
   hypotheses.clear (); // From now on we need only the accepted hypotheses -> kill the rest to free memory
   this->buildConflictGraph (accepted_hypotheses, graph);
   this->filterWeakHypotheses (graph, recognized_objects);
-
-  // Clean up
-  delete[] leaves;
 }
 
 //=========================================================================================================================================================================
@@ -143,20 +115,38 @@ pcl::recognition::ObjRecRANSAC::computeNumberOfIterations (double success_probab
 //=========================================================================================================================================================================
 
 void
-pcl::recognition::ObjRecRANSAC::sampleOrientedPointPairs (ORROctree::Node** leaves1, int num_leaves, std::list<OrientedPointPair>& output)
+pcl::recognition::ObjRecRANSAC::sampleOrientedPointPairs (int num_iterations, vector<ORROctree::Node*>& full_scene_leaves, std::list<OrientedPointPair>& output)
 {
-  ORROctree::Node *leaf2;
-  const float *p1, *p2, *n1, *n2;
-
 #ifdef OBJ_REC_RANSAC_VERBOSE
   printf ("ObjRecRANSAC::%s(): sampling oriented point pairs ... ", __func__); fflush (stdout);
 #endif
 
-  for ( int i = 0 ; i < num_leaves ; ++i )
+  int i, num_full_leaves = static_cast<int> (full_scene_leaves.size ());
+  ORROctree::Node *leaf1, *leaf2;
+  const float *p1, *p2, *n1, *n2;
+  // The random generator
+  UniformGenerator<int> randgen (0, num_full_leaves, static_cast<uint32_t> (time (NULL)));
+
+  // Init the vector with the ids
+  vector<int> ids (num_full_leaves);
+  for ( i = 0 ; i < num_full_leaves ; ++i )
+    ids[i] = i;
+
+  // Sample 'num_iterations' number of oriented point pairs
+  for ( i = 0 ; i < num_iterations ; ++i )
   {
+    // Choose a random position within the array of ids
+    randgen.setParameters (0, static_cast<int> (ids.size ()));
+    int rand_pos = randgen.run ();
+
+    // Get the leaf at that random position
+    leaf1 = full_scene_leaves[ids[rand_pos]];
+    // Delete the selected id
+    ids.erase (ids.begin() + rand_pos);
+
     // Get the leaf's point and normal
-    p1 = leaves1[i]->getData ()->getPoint ();
-    n1 = leaves1[i]->getData ()->getNormal ();
+    p1 = leaf1->getData ()->getPoint ();
+    n1 = leaf1->getData ()->getNormal ();
 
     // Randomly select a leaf at the right distance from 'leaves[i]'
     leaf2 = scene_octree_.getRandomFullLeafOnSphere (p1, pair_width_);
