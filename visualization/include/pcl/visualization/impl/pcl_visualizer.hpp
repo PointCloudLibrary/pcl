@@ -727,34 +727,70 @@ pcl::visualization::PCLVisualizer::addPointCloudNormals (
   vtkSmartPointer<vtkFloatArray> data = vtkSmartPointer<vtkFloatArray>::New ();
   data->SetNumberOfComponents (3);
 
-  vtkIdType nr_normals = (cloud->points.size () - 1) / level + 1 ;
-  float* pts = new float[2 * nr_normals * 3];
 
-  for (vtkIdType i = 0, j = 0; j < nr_normals; j++, i = j * level)
+  vtkIdType nr_normals = 0;
+  float* pts = 0;
+
+  // If the cloud is organized, then distribute the normal step in both directions
+  if (cloud->isOrganized () && normals->isOrganized ())
   {
-    PointT p = cloud->points[i];
-    p.x += normals->points[i].normal[0] * scale;
-    p.y += normals->points[i].normal[1] * scale;
-    p.z += normals->points[i].normal[2] * scale;
+    vtkIdType point_step = static_cast<vtkIdType> (sqrt (level));
+    nr_normals = (cloud->points.size () - 1) / (point_step * point_step) + 1 ;
+    pts = new float[2 * nr_normals * 3];
 
-    pts[2 * j * 3 + 0] = cloud->points[i].x;
-    pts[2 * j * 3 + 1] = cloud->points[i].y;
-    pts[2 * j * 3 + 2] = cloud->points[i].z;
-    pts[2 * j * 3 + 3] = p.x;
-    pts[2 * j * 3 + 4] = p.y;
-    pts[2 * j * 3 + 5] = p.z;
+    vtkIdType cell_count = 0;
+    for (vtkIdType y = 0; y < normals->height; y += point_step)
+      for (vtkIdType x = 0; x < normals->width; x += point_step)
+      {
+        PointT p = (*cloud)(x, y);
+        p.x += (*normals)(x, y).normal[0] * scale;
+        p.y += (*normals)(x, y).normal[1] * scale;
+        p.z += (*normals)(x, y).normal[2] * scale;
 
-    lines->InsertNextCell (2);
-    lines->InsertCellPoint (2 * j);
-    lines->InsertCellPoint (2 * j + 1);
+        pts[2 * cell_count * 3 + 0] = (*cloud)(x, y).x;
+        pts[2 * cell_count * 3 + 1] = (*cloud)(x, y).y;
+        pts[2 * cell_count * 3 + 2] = (*cloud)(x, y).z;
+        pts[2 * cell_count * 3 + 3] = p.x;
+        pts[2 * cell_count * 3 + 4] = p.y;
+        pts[2 * cell_count * 3 + 5] = p.z;
+
+        lines->InsertNextCell (2);
+        lines->InsertCellPoint (2 * cell_count);
+        lines->InsertCellPoint (2 * cell_count + 1);
+        cell_count ++;
+    }
+  }
+  else
+  {
+    nr_normals = (cloud->points.size () - 1) / level + 1 ;
+    pts = new float[2 * nr_normals * 3];
+
+    for (vtkIdType i = 0, j = 0; j < nr_normals; j++, i = j * level)
+    {
+      PointT p = cloud->points[i];
+      p.x += normals->points[i].normal[0] * scale;
+      p.y += normals->points[i].normal[1] * scale;
+      p.z += normals->points[i].normal[2] * scale;
+
+      pts[2 * j * 3 + 0] = cloud->points[i].x;
+      pts[2 * j * 3 + 1] = cloud->points[i].y;
+      pts[2 * j * 3 + 2] = cloud->points[i].z;
+      pts[2 * j * 3 + 3] = p.x;
+      pts[2 * j * 3 + 4] = p.y;
+      pts[2 * j * 3 + 5] = p.z;
+
+      lines->InsertNextCell (2);
+      lines->InsertCellPoint (2 * j);
+      lines->InsertCellPoint (2 * j + 1);
+    }
   }
 
   data->SetArray (&pts[0], 2 * nr_normals * 3, 0);
   points->SetData (data);
 
   vtkSmartPointer<vtkPolyData> polyData = vtkSmartPointer<vtkPolyData>::New();
-  polyData->SetPoints(points);
-  polyData->SetLines(lines);
+  polyData->SetPoints (points);
+  polyData->SetLines (lines);
 
   vtkSmartPointer<vtkDataSetMapper> mapper = vtkSmartPointer<vtkDataSetMapper>::New ();
   mapper->SetInput (polyData);
