@@ -197,6 +197,52 @@ namespace pcl
       out.points.push_back (p);
     }
   }
+
+  /** \brief Convert registered Depth image and RGB image to PointCloudXYZRGBA
+   *  \param[in] depth the input depth image as intensity points in float
+   *  \param[in] image the input RGB image
+   *  \param[in] focal the focal length
+   *  \param[out] out the output pointcloud
+   *  **/
+  void
+  PointCloudDepthAndRGBtoXYZRGBA (PointCloud<Intensity>&  depth,
+                                  PointCloud<RGB>&        image,
+                                  float&                  focal,
+                                  PointCloud<PointXYZRGBA>&     out)
+  {
+    float bad_point = std::numeric_limits<float>::quiet_NaN();
+    int width_ = depth.width;
+    int height_ = depth.height;
+    float constant_ = 1.0f / focal;
+
+    for(unsigned int v = 0; v < height_; v++)
+    {
+      for(unsigned int u = 0; u < width_; u++)
+      {
+        PointXYZRGBA pt;
+        pt.a = 0;
+        float depth_ = depth.at(u,v).intensity;
+
+        if (depth_ == 0)
+        {
+          pt.x = pt.y = pt.z = bad_point;
+        }
+        else
+        {
+          pt.z = depth_ * 0.001f;
+          pt.x = static_cast<float> (u) * pt.z * constant_;
+          pt.y = static_cast<float> (v) * pt.z * constant_;
+        }
+        pt.r = image.at(u,v).r;
+        pt.g = image.at(u,v).g;
+        pt.b = image.at(u,v).b;
+
+        out.points.push_back(pt);
+      }
+    }
+    out.width = width_;
+    out.height = height_;
+  }
 }
 
 #endif //#ifndef PCL_TYPE_CONVERSIONS_H
