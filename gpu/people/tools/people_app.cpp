@@ -351,7 +351,7 @@ void print_help()
   cout << "\t -dev         \t<Kinect_device_id>" << endl;  
   cout << "\t -pcd         \t<path_to_pcd_file>" << endl;
   cout << "\t -oni         \t<path_to_oni_file>" << endl;  
-  cout << "\t -pcd_folder  \t<path_to_folder_with_pcf_files>" << endl;
+  cout << "\t -pcd_folder  \t<path_to_folder_with_pcd_files>" << endl;
 }
 
 int main(int argc, char** argv)
