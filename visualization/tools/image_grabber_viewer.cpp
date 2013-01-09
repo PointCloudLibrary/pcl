@@ -62,13 +62,23 @@ printHelp (int, char **argv)
   //print_error ("Syntax is: %s <file_name 1..N>.tiff <options>\n", argv[0]);
   print_error ("Syntax is: %s <options>\n", argv[0]);
   print_info ("  where options are:\n");
-  print_info ("                     -dir directory_path      = directory path to image or pclzf file(s) to be read from\n");
-  print_info ("                     -fps frequency           = frames per second\n");
-  print_info ("                     -pclzf                   = Load pclzf files instead\n");
-  print_info ("                     -repeat                  = optional parameter that tells wheter the TIFF file(s) should be \"grabbed\" in a endless loop.\n");
+  print_info ("\t-dir directory_path      = directory path to image or pclzf file(s) to be read from\n");
+  print_info ("\t-fps frequency           = frames per second\n");
+  print_info ("\t-pclzf                   = Load pclzf files instead\n");
+  print_info ("\t-repeat                  = optional parameter that tells wheter the TIFF file(s) should be \"grabbed\" in a endless loop.\n");
   print_info ("\n");
-  print_info ("                     -cam (*)                 = use given camera settings as initial view\n");
+  print_info ("\t-cam (*)                 = use given camera settings as initial view\n");
   print_info (stderr, " (*) [Clipping Range / Focal Point / Position / ViewUp / Distance / Window Size / Window Pos] or use a <filename.cam> that contains the same information.\n");
+
+  print_info ("Additional options:\n");
+  print_info ("\t-bc col1 col2 col3       = background color\n");
+  print_info ("\t-ax                      = use custom coordinate system\n");
+  print_info ("\t-ax_pos pos1 pos2 pos3   = the axes coordinates\n");
+  print_info ("\t-focal focal_length      = ImageGrabber focal length\n");
+  // Following ones are not implemented
+//  print_info ("\t-fc col1 col2 col3       = foreground color\n");
+//  print_info ("\t-pc                      = point size\n");
+//  print_info ("\t-opaque                  = point opacity\n");
 }
 
 // Create the PCLVisualizer object
@@ -198,6 +208,8 @@ main (int argc, char** argv)
   else
   {
     std::cout << "No directory was given with the -dir flag." << std::endl;
+    printHelp (argc, argv);
+    return (-1);
   }
   grabber->setDepthImageUnits(1E-3);
 
