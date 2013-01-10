@@ -81,6 +81,8 @@
 #include <pcl/search/pcl_search.h>
 #include <pcl/common/transforms.h>
 
+#include <boost/format.hpp>
+
 #define FPS_CALC_BEGIN                          \
     static double duration = 0;                 \
     double start_time = pcl::getTime ();        \
