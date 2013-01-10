@@ -669,11 +669,12 @@ namespace pcl
         // isBoundary
         ////////////////////////////////////////////////////////////////////////
 
-        /** \brief Check if the given vertex lies on the boundary. */
+        /** \brief Check if the given vertex lies on the boundary. Isolated vertices are considered to be on the boundary. */
         inline bool
         isBoundary (const VertexIndex& idx_vertex) const
         {
           assert (this->isValid (idx_vertex));
+          if (this->isIsolated (idx_vertex)) return (true);
           return (this->isBoundary (this->getOutgoingHalfEdgeIndex (idx_vertex)));
         }
 
@@ -716,11 +717,12 @@ namespace pcl
         // isManifold
         ////////////////////////////////////////////////////////////////////////
 
-        /** \brief Check if the given vertex is manifold. */
+        /** \brief Check if the given vertex is manifold. Isolated vertices are manifold. */
         inline bool
         isManifold (const VertexIndex& idx_vertex) const
         {
           assert (this->isValid (idx_vertex));
+          if (this->isIsolated (idx_vertex)) return (true);
           return (this->isManifold (idx_vertex, IsManifold ()));
         }
 

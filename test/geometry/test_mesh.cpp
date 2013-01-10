@@ -351,6 +351,30 @@ isCircularPermutation (const ContainerT& actual, const ContainerT& expected)
   return (false);
 }
 
+/** \brief Search for the half-edge between the two input vertices.
+  * \return The half-edge index if the vertex are connected and an invalid index if not.
+  */
+template <class MeshT> HalfEdgeIndex
+findHalfEdge (const MeshT& mesh, const VertexIndex& idx_v_0, const VertexIndex& idx_v_1)
+{
+  if (mesh.isIsolated (idx_v_0) || mesh.isIsolated (idx_v_1))
+  {
+    return (HalfEdgeIndex ());
+  }
+  typedef typename MeshT::VertexAroundVertexCirculator VAVC;
+  VAVC       circ     = mesh.getVertexAroundVertexCirculator (idx_v_0);
+  const VAVC circ_end = circ;
+  do
+  {
+    if (circ.getTargetIndex () == idx_v_1)
+    {
+      return (circ.getCurrentHalfEdgeIndex ());
+    }
+  } while (++circ != circ_end);
+
+  return (HalfEdgeIndex ());
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 
 TYPED_TEST (TestTriangleMesh, CorrectNumberOfVertices)
@@ -1722,6 +1746,7 @@ TEST (TestMesh, IsBoundaryIsManifold)
   EXPECT_TRUE  (mesh.isManifold (VI (3)));
   EXPECT_TRUE  (mesh.isManifold (VI (4)));
   EXPECT_TRUE  (mesh.isManifold (VI (5)));
+  ASSERT_FALSE (mesh.isManifold ());
 
   for (unsigned int i=0; i<mesh.sizeEdges (); ++i)
   {
@@ -1736,6 +1761,23 @@ TEST (TestMesh, IsBoundaryIsManifold)
   EXPECT_TRUE  (mesh.isManifold ());
   EXPECT_TRUE  (mesh.isBoundary (FaceIndex (3)));         // This version checks the vertices
   EXPECT_FALSE (mesh.isBoundary <false> (FaceIndex (3))); // This version checks the edges
+
+  const HalfEdgeIndex idx_he_01 = findHalfEdge (mesh, VI (0), VI (1));
+  const HalfEdgeIndex idx_he_12 = findHalfEdge (mesh, VI (1), VI (2));
+  const HalfEdgeIndex idx_he_20 = findHalfEdge (mesh, VI (2), VI (0));
+
+  ASSERT_TRUE (idx_he_01.isValid ());
+  ASSERT_TRUE (idx_he_12.isValid ());
+  ASSERT_TRUE (idx_he_20.isValid ());
+
+  EXPECT_FALSE (mesh.isBoundary (pcl::geometry::toEdgeIndex (idx_he_01)));
+  EXPECT_FALSE (mesh.isBoundary (pcl::geometry::toEdgeIndex (idx_he_12)));
+  EXPECT_FALSE (mesh.isBoundary (pcl::geometry::toEdgeIndex (idx_he_20)));
+
+  // Isolated vertex
+  mesh.addVertex (6);
+  ASSERT_TRUE (mesh.isManifold (VI (6)));
+  ASSERT_TRUE (mesh.isBoundary (VI (6)));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
