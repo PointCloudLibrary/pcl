@@ -40,27 +40,20 @@
 #include <stdexcept>
 #include <sstream>
 #include <pcl/pcl_macros.h>
+#include <boost/current_function.hpp>
 
 /** PCL_THROW_EXCEPTION a helper macro to be used for throwing exceptions.
   * This is an example on how to use:
   * PCL_THROW_EXCEPTION(IOException,
   *                     "encountered an error while opening " << filename << " PCD file");
   */
-#ifdef WIN32
-  #define PCL_THROW_EXCEPTION(ExceptionName, message)         \
-  {                                                           \
-    std::ostringstream s;                                     \
-    s << message;                                             \
-    throw ExceptionName(s.str(), __FILE__, __FUNCSIG__, __LINE__);     \
-  }
-#else
-  #define PCL_THROW_EXCEPTION(ExceptionName, message)         \
-  {                                                           \
-    std::ostringstream s;                                     \
-    s << message;                                             \
-    throw ExceptionName(s.str(), __FILE__, __PRETTY_FUNCTION__, __LINE__);     \
-  }
-#endif
+#define PCL_THROW_EXCEPTION(ExceptionName, message)                         \
+{                                                                           \
+  std::ostringstream s;                                                     \
+  s << message;                                                             \
+  throw ExceptionName(s.str(), __FILE__, BOOST_CURRENT_FUNCTION, __LINE__); \
+}
+
 namespace pcl
 {
 
