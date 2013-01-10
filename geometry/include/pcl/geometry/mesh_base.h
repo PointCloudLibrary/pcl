@@ -162,12 +162,13 @@ namespace pcl
           return (VertexIndex (static_cast <int> (this->sizeVertices () - 1)));
         }
 
-        /** \brief Add a face to the mesh. Data is only added if it is associated with the elements. The vertices must be valid and unique. The last vertex is connected with the first one.
+        /** \brief Add a face to the mesh. Data is only added if it is associated with the elements. The last vertex is connected with the first one.
           * \param[in] vertices       Indices to the vertices of the new face.
           * \param[in] face_data      Data that is set for the face.
           * \param[in] half_edge_data Data that is set for all added half-edges.
           * \param[in] edge_data      Data that is set for all added edges.
           * \return Index to the new face. Failure is signaled by returning an invalid face index.
+          * \warning The vertices must be valid and unique (each vertex may be contained only once). Not complying with this requirement results in undefined behavior!
           */
         inline FaceIndex
         addFace (const VertexIndices& vertices,
@@ -1115,15 +1116,6 @@ namespace pcl
         typedef typename HalfEdges::const_iterator HalfEdgeConstIterator;
         typedef typename Faces::const_iterator     FaceConstIterator;
 
-        /** \brief Used to check if all vertices in a face are unique. */
-        struct Hash : public std::unary_function <VertexIndex, std::size_t>
-        {
-          std::size_t operator () (const VertexIndex& idx) const
-          {
-            return (idx.get ());
-          }
-        };
-
         /** \brief General implementation of addFace. */
         FaceIndex
         addFaceImplBase (const VertexIndices& vertices,
@@ -1134,19 +1126,12 @@ namespace pcl
           const unsigned int n = static_cast<unsigned int> (vertices.size ());
           if (n < 3) return (FaceIndex ());
 
-          // Check if the input indices are valid and unique.
-          boost::unordered_set <VertexIndex, Hash> unique_checker;
-#if BOOST_VERSION >= 105000
-          // reserve does not exist in older boost versions
-          // https://svn.boost.org/trac/boost/ticket/6857
-          unique_checker.reserve (n);
-#endif
-
+          // Check if the input indices are valid.
           bool all_vertices_isolated = true;
 
           for (VertexIndices::const_iterator it=vertices.begin (); it!=vertices.end (); ++it)
           {
-            if (!this->isValid (*it) || !unique_checker.insert (*it).second)
+            if (!this->isValid (*it))
             {
               return (FaceIndex ());
             }

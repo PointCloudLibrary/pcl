@@ -85,6 +85,7 @@ pcl::ihs::Integration::reconstructMesh (const CloudXYZRGBNormalConstPtr& cloud_d
 
   mesh_model->clear ();
   mesh_model->reserveVertices (cloud_data->size ());
+  mesh_model->reserveEdges ((width-1) * height + width * (height-1) + (width-1) * (height-1));
   mesh_model->reserveFaces (2 * (width-1) * (height-1));
 
   // Store which vertex is set at which position (initialized with invalid indices)
@@ -220,7 +221,8 @@ pcl::ihs::Integration::merge (const CloudXYZRGBNormalConstPtr& cloud_data,
   std::vector <float> squared_distance (1);
 
   mesh_model->reserveVertices (mesh_model->sizeVertices () + cloud_data->size ());
-  mesh_model->reserveFaces (mesh_model->sizeFaces () + 2 * (width-1) * (height-1));
+  mesh_model->reserveEdges    (mesh_model->sizeEdges    () + (width-1) * height + width * (height-1) + (width-1) * (height-1));
+  mesh_model->reserveFaces    (mesh_model->sizeFaces    () + 2 * (width-1) * (height-1));
 
   // Data cloud in model coordinates (this does not change the connectivity information) and weights
   CloudIHSPtr cloud_data_transformed (new CloudIHS ());
@@ -558,7 +560,12 @@ pcl::ihs::Integration::addToMesh (const PointIHS& pt_0,
       if (!vi_1.isValid ()) vi_1 = mesh->addVertex (pt_1);
       if (!vi_2.isValid ()) vi_2 = mesh->addVertex (pt_2);
       if (!vi_3.isValid ()) vi_3 = mesh->addVertex (pt_3);
+      if (vi_0==vi_1 || vi_0==vi_2 || vi_0==vi_3 || vi_1==vi_2 || vi_1==vi_3 || vi_2==vi_3)
+      {
+        return;
+      }
       mesh->addTrianglePair (vi_0, vi_1, vi_2, vi_3);
+
       break;
     }
   }
@@ -580,7 +587,10 @@ pcl::ihs::Integration::addToMesh (const PointIHS& pt_0,
   if (!vi_0.isValid ()) vi_0 = mesh->addVertex (pt_0);
   if (!vi_1.isValid ()) vi_1 = mesh->addVertex (pt_1);
   if (!vi_2.isValid ()) vi_2 = mesh->addVertex (pt_2);
-
+  if (vi_0==vi_1 || vi_0==vi_2 || vi_1==vi_2)
+  {
+    return;
+  }
   mesh->addFace (vi_0, vi_1, vi_2);
 }
 

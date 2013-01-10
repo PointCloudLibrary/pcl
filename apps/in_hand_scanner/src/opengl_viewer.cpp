@@ -875,7 +875,7 @@ pcl::ihs::OpenGLViewer::drawMeshes ()
         }
         case COL_ONE_COLOR:
         {
-          glColor3f (.75f, .75f, .75f);
+          glColor3f (.7f, .7f, .7f);
           break;
         }
         case COL_VISCONF:

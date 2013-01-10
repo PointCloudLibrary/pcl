@@ -102,14 +102,16 @@ namespace pcl
 
         /** \brief Constructor. */
         PolygonMesh ()
-          : Base ()
+          : Base (),
+            add_triangle_ (3),
+            add_quad_ (4)
         {
         }
 
         /** \brief The base method of addFace is hidden because of the overloads in this class. */
         using Base::addFace;
 
-        /** \brief Add a triangle to the mesh. Data is only added if it is associated with the elements. The vertices must be valid and unique (each vertex may be contained only once). The last vertex is connected with the first one.
+        /** \brief Add a triangle to the mesh. Data is only added if it is associated with the elements. The last vertex is connected with the first one.
           * \param[in] idx_v_0        Index to the first vertex.
           * \param[in] idx_v_1        Index to the second vertex.
           * \param[in] idx_v_2        Index to the third vertex.
@@ -117,6 +119,7 @@ namespace pcl
           * \param[in] half_edge_data Data that is set for all added half-edges.
           * \param[in] edge_data      Data that is set for all added edges.
           * \return Index to the new face. Failure is signaled by returning an invalid face index.
+          * \warning The vertices must be valid and unique (each vertex may be contained only once). Not complying with this requirement results in undefined behavior!
           */
         inline FaceIndex
         addFace (const VertexIndex&   idx_v_0,
@@ -126,15 +129,14 @@ namespace pcl
                  const EdgeData&      edge_data      = EdgeData (),
                  const HalfEdgeData&  half_edge_data = HalfEdgeData ())
         {
-          VertexIndices vi; vi.reserve (3);
-          vi.push_back (idx_v_0);
-          vi.push_back (idx_v_1);
-          vi.push_back (idx_v_2);
+          add_triangle_ [0] = idx_v_0;
+          add_triangle_ [1] = idx_v_1;
+          add_triangle_ [2] = idx_v_2;
 
-          return (this->addFaceImplBase (vi, face_data, edge_data, half_edge_data));
+          return (this->addFaceImplBase (add_triangle_, face_data, edge_data, half_edge_data));
         }
 
-        /** \brief Add a quad to the mesh. Data is only added if it is associated with the elements. The vertices must be valid and unique (each vertex may be contained only once). The last vertex is connected with the first one.
+        /** \brief Add a quad to the mesh. Data is only added if it is associated with the elements. The last vertex is connected with the first one.
           * \param[in] idx_v_0        Index to the first vertex.
           * \param[in] idx_v_1        Index to the second vertex.
           * \param[in] idx_v_2        Index to the third vertex.
@@ -143,6 +145,7 @@ namespace pcl
           * \param[in] half_edge_data Data that is set for all added half-edges.
           * \param[in] edge_data      Data that is set for all added edges.
           * \return Index to the new face. Failure is signaled by returning an invalid face index.
+          * \warning The vertices must be valid and unique (each vertex may be contained only once). Not complying with this requirement results in undefined behavior!
           */
         inline FaceIndex
         addFace (const VertexIndex&   idx_v_0,
@@ -153,13 +156,12 @@ namespace pcl
                  const EdgeData&      edge_data      = EdgeData (),
                  const HalfEdgeData&  half_edge_data = HalfEdgeData ())
         {
-          VertexIndices vi; vi.reserve (4);
-          vi.push_back (idx_v_0);
-          vi.push_back (idx_v_1);
-          vi.push_back (idx_v_2);
-          vi.push_back (idx_v_3);
+          add_quad_ [0] = idx_v_0;
+          add_quad_ [1] = idx_v_1;
+          add_quad_ [2] = idx_v_2;
+          add_quad_ [3] = idx_v_3;
 
-          return (this->addFaceImplBase (vi, face_data, edge_data, half_edge_data));
+          return (this->addFaceImplBase (add_quad_, face_data, edge_data, half_edge_data));
         }
 
       private:
@@ -176,6 +178,16 @@ namespace pcl
         {
           return (this->addFaceImplBase (vertices, face_data, edge_data, half_edge_data));
         }
+
+        ////////////////////////////////////////////////////////////////////////
+        // Members
+        ////////////////////////////////////////////////////////////////////////
+
+        /** \brief Storage for adding a triangle. */
+        VertexIndices add_triangle_;
+
+        /** \brief Storage for adding a quad. */
+        VertexIndices add_quad_;
 
       public:
 
