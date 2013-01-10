@@ -105,9 +105,9 @@ namespace pcl
         selectDataPoints (const CloudXYZRGBNormalConstPtr& cloud_data) const;
 
         bool
-        minimizePointPlane (const CloudNormalConstPtr& cloud_source,
-                            const CloudNormalConstPtr& cloud_target,
-                            Eigen::Matrix4f&           T) const;
+        minimizePointPlane (const CloudNormal& cloud_source,
+                            const CloudNormal& cloud_target,
+                            Eigen::Matrix4f&   T) const;
 
         // Nearest neighbor search
         KdTreePtr    kd_tree_;

@@ -255,7 +255,7 @@ namespace pcl
           static unsigned int count = 0;
 
           ++count;
-          if (sw.getTimeSeconds () >= 1.)
+          if (sw.getTimeSeconds () >= .2)
           {
             fps.value () = static_cast <double> (count) / sw.getTimeSeconds ();
             count = 0;

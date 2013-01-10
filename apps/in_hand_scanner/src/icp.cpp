@@ -117,30 +117,32 @@ pcl::ihs::ICP::findTransformation (const MeshConstPtr&              mesh_model,
   kd_tree_->setInputCloud (cloud_model_selected);
   t_build = sw.getTime ();
 
+  std::vector <int>   index (1);
+  std::vector <float> squared_distance (1);
+
+  // Clouds with one to one correspondences
+  CloudNormal cloud_model_corr;
+  CloudNormal cloud_data_corr;
+
+  cloud_model_corr.reserve (n_data);
+  cloud_data_corr.reserve (n_data);
+
   // ICP main loop
   unsigned int iter = 1;
+  PointNormal pt_d;
   while (true)
   {
-    // Clouds with one to one correspondences
-    CloudNormalPtr cloud_model_corr (new CloudNormal ());
-    CloudNormalPtr cloud_data_corr (new CloudNormal ());
-
-    cloud_model_corr->reserve (n_data);
-    cloud_data_corr->reserve (n_data);
-
     // Accumulated error
     float squared_distance_sum = 0.f;
 
     // NN search
-    std::vector <int>   index (1);
-    std::vector <float> squared_distance (1);
-
+    cloud_model_corr.clear ();
+    cloud_data_corr.clear ();
     sw.reset ();
-    CloudNormal::const_iterator it_d = cloud_data_selected->begin ();
-    for (; it_d!=cloud_data_selected->end (); ++it_d)
+    for (CloudNormal::const_iterator it_d = cloud_data_selected->begin (); it_d!=cloud_data_selected->end (); ++it_d)
     {
       // Transform the data point
-      PointNormal pt_d = *it_d;
+      pt_d = *it_d;
       pt_d.getVector4fMap ()       = T_cur * pt_d.getVector4fMap ();
       pt_d.getNormalVector4fMap () = T_cur * pt_d.getNormalVector4fMap ();
 
@@ -152,35 +154,31 @@ pcl::ihs::ICP::findTransformation (const MeshConstPtr&              mesh_model,
       }
 
       // Check the distance threshold
-      if (squared_distance[0] < squared_distance_threshold)
+      if (squared_distance [0] < squared_distance_threshold)
       {
-        if (index[0] >= cloud_model_selected->size ())
+        if (index [0] >= cloud_model_selected->size ())
         {
           std::cerr << "ERROR in icp.cpp: Segfault!\n";
-          std::cerr << "  Trying to access index " << index[0] << " >= " << cloud_model_selected->size () << std::endl;
+          std::cerr << "  Trying to access index " << index [0] << " >= " << cloud_model_selected->size () << std::endl;
           exit (EXIT_FAILURE);
         }
 
-        const PointNormal& pt_m = cloud_model_selected->operator [] (index[0]);
+        const PointNormal& pt_m = cloud_model_selected->operator [] (index [0]);
 
         // Check the normals threshold
         if (pt_m.getNormalVector4fMap ().dot (pt_d.getNormalVector4fMap ()) > normals_threshold_)
         {
-          squared_distance_sum += squared_distance[0];
+          squared_distance_sum += squared_distance [0];
 
-          cloud_model_corr->push_back (pt_m);
-          cloud_data_corr->push_back (pt_d);
+          cloud_model_corr.push_back (pt_m);
+          cloud_data_corr.push_back (pt_d);
         }
       }
     }
 
-    // Shrink to fit ("Scott Meyers swap trick")
-    CloudNormal (*cloud_model_corr).swap (*cloud_model_corr);
-    CloudNormal (*cloud_data_corr).swap (*cloud_data_corr);
-
     t_nn_search += sw.getTime ();
 
-    const size_t n_corr = cloud_data_corr->size ();
+    const size_t n_corr = cloud_data_corr.size ();
     if (n_corr < n_min)
     {
       std::cerr << "ERROR in icp.cpp: Not enough correspondences: " << n_corr << " < " << n_min << std::endl;
@@ -307,9 +305,6 @@ pcl::ihs::ICP::selectModelPoints (const MeshConstPtr&    mesh_model,
     }
   }
 
-  // Shrink to fit ("Scott Meyers swap trick")
-  CloudNormal (*cloud_model_out).swap (*cloud_model_out);
-
   return (cloud_model_out);
 }
 
@@ -334,23 +329,20 @@ pcl::ihs::ICP::selectDataPoints (const CloudXYZRGBNormalConstPtr& cloud_data) co
     }
   }
 
-  // Shrink to fit ("Scott Meyers swap trick")
-  CloudNormal (*cloud_data_out).swap (*cloud_data_out);
-
   return (cloud_data_out);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 bool
-pcl::ihs::ICP::minimizePointPlane (const CloudNormalConstPtr& cloud_source,
-                                   const CloudNormalConstPtr& cloud_target,
-                                   Eigen::Matrix4f&           T) const
+pcl::ihs::ICP::minimizePointPlane (const CloudNormal& cloud_source,
+                                   const CloudNormal& cloud_target,
+                                   Eigen::Matrix4f&   T) const
 {
   // Check the input
   // n < n_min already checked in the icp main loop
-  const size_t n = cloud_source->size ();
-  if (cloud_target->size () != n)
+  const size_t n = cloud_source.size ();
+  if (cloud_target.size () != n)
   {
     std::cerr << "ERROR in icp.cpp: Input must have the same size!\n";
     return (false);
@@ -365,8 +357,8 @@ pcl::ihs::ICP::minimizePointPlane (const CloudNormalConstPtr& cloud_source,
   // Subtract the centroid and calculate the scaling factor
   Eigen::Vector4f c_s (0.f, 0.f, 0.f, 1.f);
   Eigen::Vector4f c_t (0.f, 0.f, 0.f, 1.f);
-  pcl::compute3DCentroid (*cloud_source, c_s); c_s.w () = 1.f;
-  pcl::compute3DCentroid (*cloud_target, c_t); c_t.w () = 1.f;
+  pcl::compute3DCentroid (cloud_source, c_s); c_s.w () = 1.f;
+  pcl::compute3DCentroid (cloud_target, c_t); c_t.w () = 1.f;
 
   // The normals are only needed for the target
   typedef std::vector <Eigen::Vector4f, Eigen::aligned_allocator <Eigen::Vector4f> > Vec4Xf;
@@ -375,15 +367,16 @@ pcl::ihs::ICP::minimizePointPlane (const CloudNormalConstPtr& cloud_source,
   xyz_t.reserve (n);
   nor_t.reserve (n);
 
-  CloudNormal::const_iterator it_s = cloud_source->begin ();
-  CloudNormal::const_iterator it_t = cloud_target->begin ();
+  CloudNormal::const_iterator it_s = cloud_source.begin ();
+  CloudNormal::const_iterator it_t = cloud_target.begin ();
 
   float accum = 0.f;
-  for (; it_s!=cloud_source->end (); ++it_s, ++it_t)
+  Eigen::Vector4f pt_s, pt_t;
+  for (; it_s!=cloud_source.end (); ++it_s, ++it_t)
   {
     // Subtract the centroid
-    const Eigen::Vector4f pt_s = it_s->getVector4fMap () - c_s;
-    const Eigen::Vector4f pt_t = it_t->getVector4fMap () - c_t;
+    pt_s = it_s->getVector4fMap () - c_s;
+    pt_t = it_t->getVector4fMap () - c_t;
 
     xyz_s.push_back (pt_s);
     xyz_t.push_back (pt_t);
@@ -418,18 +411,20 @@ pcl::ihs::ICP::minimizePointPlane (const CloudNormalConstPtr& cloud_source,
   Vec4Xf::const_iterator it_xyz_t = xyz_t.begin ();
   Vec4Xf::const_iterator it_nor_t = nor_t.begin ();
 
+  Eigen::Vector4f cross;
+  float dot;
   for (; it_xyz_s!=xyz_s.end (); ++it_xyz_s, ++it_xyz_t, ++it_nor_t)
   {
-    const Eigen::Vector4f cross = it_xyz_s->cross3 (*it_nor_t);
+    cross    = it_xyz_s->cross3 (*it_nor_t);
 
-    C_tl           += cross     * cross.    transpose ();
-    C_tr_bl        += cross     * it_nor_t->transpose ();
-    C_br           += *it_nor_t * it_nor_t->transpose ();
+    C_tl    += cross     * cross.    transpose ();
+    C_tr_bl += cross     * it_nor_t->transpose ();
+    C_br    += *it_nor_t * it_nor_t->transpose ();
 
-    const float dot = (*it_xyz_t-*it_xyz_s).dot (*it_nor_t);
+    dot      = (*it_xyz_t-*it_xyz_s).dot (*it_nor_t);
 
-    b_t            += cross     * dot;
-    b_b            += *it_nor_t * dot;
+    b_t     += cross     * dot;
+    b_b     += *it_nor_t * dot;
   }
 
   // Scale with the factor and copy the 3x3 submatrixes into C and b

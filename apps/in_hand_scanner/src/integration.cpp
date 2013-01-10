@@ -208,7 +208,6 @@ pcl::ihs::Integration::merge (const CloudXYZRGBNormalConstPtr& cloud_data,
   const int height = static_cast <int> (cloud_data->height);
 
   // Nearest neighbor search
-  // TODO: remove this unnecessary copy (I currently keep it because I'm not sure if
   CloudXYZPtr xyz_model (new CloudXYZ ());
   xyz_model->reserve (mesh_model->sizeVertices ());
   for (unsigned int i=0; i<mesh_model->sizeVertices (); ++i)

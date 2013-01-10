@@ -42,6 +42,7 @@
 
 #include <pcl/common/point_tests.h>
 #include <pcl/features/integral_image_normal.h>
+#include <pcl/apps/in_hand_scanner/boost.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -92,10 +93,10 @@ pcl::ihs::InputDataProcessing::process (const CloudXYZRGBAConstPtr& cloud) const
     // m -> cm
     const Eigen::Vector3f xyz = 100.f * it_in->getVector3fMap ();
 
-    if (pcl::isFinite (*it_in) && pcl::isFinite (*it_n) &&
-        xyz.x () >= x_min_     && xyz.x () <= x_max_    &&
-        xyz.y () >= y_min_     && xyz.y () <= y_max_    &&
-        xyz.z () >= z_min_     && xyz.z () <= z_max_)
+    if (!boost::math::isnan (it_in->x) && !boost::math::isnan (it_n->normal_x) &&
+        xyz.x () >= x_min_             && xyz.x () <= x_max_                   &&
+        xyz.y () >= y_min_             && xyz.y () <= y_max_                   &&
+        xyz.z () >= z_min_             && xyz.z () <= z_max_)
     {
       it_out->getVector3fMap ()       = xyz;
       it_out->rgba                    = it_in->rgba;

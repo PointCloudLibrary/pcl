@@ -780,7 +780,7 @@ pcl::ihs::OpenGLViewer::paintEvent (QPaintEvent* /*event*/)
   // Projection matrix
   glMatrixMode   (GL_PROJECTION);
   glLoadIdentity ();
-  gluPerspective (43., 4./3., 0.05 / scaling_factor_, 10. / scaling_factor_);
+  gluPerspective (43., 4./3., 0.01 / scaling_factor_, 10. / scaling_factor_);
   glMatrixMode   (GL_MODELVIEW);
 
   // ModelView matrix
