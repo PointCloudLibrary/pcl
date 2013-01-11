@@ -480,7 +480,7 @@ namespace pcl
       /** \brief Method that returns the scalar value at the given grid position.
         * \param[in] pos The 3D position in the grid
         */
-      float
+      virtual float
       getGridValue (Eigen::Vector3i pos);
 
       /** \brief Method that returns the scalar values of the neighbors of a given 3D position in the grid.
