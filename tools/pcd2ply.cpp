@@ -118,5 +118,7 @@ main (int argc, char** argv)
 
   // Convert to PLY and save
   saveCloud (argv[ply_file_indices[0]], cloud, format, use_camera);
+
+  return (0);
 }
 

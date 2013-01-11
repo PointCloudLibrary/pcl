@@ -86,5 +86,7 @@ main (int argc, char** argv)
   writer->SetFileName (argv[vtk_file_indices[0]]);
   writer->SetFileTypeToBinary ();
   writer->Write ();
+
+  return (0);
 }
 

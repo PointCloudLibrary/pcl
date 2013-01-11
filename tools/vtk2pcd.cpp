@@ -125,5 +125,7 @@ main (int argc, char** argv)
     // Convert to pcd and save
     saveCloud (argv[pcd_file_indices[0]], cloud);
   }
+
+  return (0);
 }
 

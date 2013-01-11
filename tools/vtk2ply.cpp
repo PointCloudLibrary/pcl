@@ -86,5 +86,7 @@ main (int argc, char** argv)
   writer->SetFileTypeToASCII ();
   writer->SetFileName (argv[ply_file_indices[0]]);
   writer->Write ();
+
+  return (0);
 }
 

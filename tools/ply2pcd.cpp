@@ -116,5 +116,7 @@ main (int argc, char** argv)
 
   // Convert to PLY and save
   saveCloud (argv[pcd_file_indices[0]], cloud, format);
+
+  return (0);
 }
 
