@@ -41,6 +41,8 @@
 #define PCL_IO_PCD_GRABBER_H_
 
 #include <pcl/io/grabber.h>
+#include <pcl/io/openni_camera/openni_image.h>
+#include <pcl/io/openni_camera/openni_image_rgb24.h>
 #include <pcl/common/time_trigger.h>
 #include <string>
 #include <vector>
@@ -151,6 +153,8 @@ namespace pcl
 
 #ifdef HAVE_OPENNI
       boost::signals2::signal<void (const boost::shared_ptr<openni_wrapper::DepthImage>&)>*     depth_image_signal_;
+      boost::signals2::signal<void (const boost::shared_ptr<openni_wrapper::Image>&)>*     image_signal_;
+      boost::signals2::signal<void (const boost::shared_ptr<openni_wrapper::Image>&, const boost::shared_ptr<openni_wrapper::DepthImage>&, float constant)>*     image_depth_image_signal_;
 #endif
   };
 
@@ -162,6 +166,8 @@ namespace pcl
     signal_ = createSignal<void (const boost::shared_ptr<const pcl::PointCloud<PointT> >&)>();
 #ifdef HAVE_OPENNI
     depth_image_signal_ = createSignal <void (const boost::shared_ptr<openni_wrapper::DepthImage>&)> ();
+    image_signal_ = createSignal <void (const boost::shared_ptr<openni_wrapper::Image>&)> ();
+    image_depth_image_signal_ = createSignal <void (const boost::shared_ptr<openni_wrapper::Image>&, const boost::shared_ptr<openni_wrapper::DepthImage>&, float constant)> ();
 #endif
   }
 
@@ -173,6 +179,8 @@ namespace pcl
     signal_ = createSignal<void (const boost::shared_ptr<const pcl::PointCloud<PointT> >&)>();
 #ifdef HAVE_OPENNI
     depth_image_signal_ = createSignal <void (const boost::shared_ptr<openni_wrapper::DepthImage>&)> ();
+    image_signal_ = createSignal <void (const boost::shared_ptr<openni_wrapper::Image>&)> ();
+    image_depth_image_signal_ = createSignal <void (const boost::shared_ptr<openni_wrapper::Image>&, const boost::shared_ptr<openni_wrapper::DepthImage>&, float constant)> ();
 #endif
   }
 
@@ -206,6 +214,26 @@ namespace pcl
     boost::shared_ptr<openni_wrapper::DepthImage> depth_image (new openni_wrapper::DepthImage (depth_meta_data, 0.075f, 525, 0, 0));
     if (depth_image_signal_->num_slots() > 0)
       depth_image_signal_->operator()(depth_image);
+
+    boost::shared_ptr<xn::ImageMetaData> image_meta_data (new xn::ImageMetaData);
+    image_meta_data->AllocateData (cloud->width, cloud->height, XN_PIXEL_FORMAT_RGB24);
+    XnRGB24Pixel* image_map = image_meta_data->WritableRGB24Data ();
+    k = 0;
+    for (uint32_t i = 0; i < cloud->height; ++i)
+      for (uint32_t j = 0; j < cloud->width; ++j)
+      {
+        image_map[k].nRed = static_cast<XnUInt8> ((*cloud)[k].r);
+        image_map[k].nGreen = static_cast<XnUInt8> ((*cloud)[k].g);
+        image_map[k].nBlue = static_cast<XnUInt8> ((*cloud)[k].b);
+        ++k;
+      }
+
+    boost::shared_ptr<openni_wrapper::Image> image (new openni_wrapper::ImageRGB24 (image_meta_data));
+    if (image_signal_->num_slots() > 0)
+      image_signal_->operator()(image);
+    
+    if (image_depth_image_signal_->num_slots() > 0)
+      image_depth_image_signal_->operator()(image, depth_image, 1.0f / 525.0f);
 #endif
   }
 }

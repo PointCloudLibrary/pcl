@@ -41,7 +41,7 @@
 #include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/io/tar.h>
-
+        
 #ifdef _WIN32
 # include <io.h>
 # include <windows.h>
@@ -111,6 +111,7 @@ pcl::PCDGrabberBase::PCDGrabberImpl::PCDGrabberImpl (pcl::PCDGrabberBase& grabbe
 {
   pcd_files_.push_back (pcd_path);
   pcd_iterator_ = pcd_files_.begin ();
+  readAhead ();
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -133,6 +134,7 @@ pcl::PCDGrabberBase::PCDGrabberImpl::PCDGrabberImpl (pcl::PCDGrabberBase& grabbe
 {
   pcd_files_ = pcd_files;
   pcd_iterator_ = pcd_files_.begin ();
+  readAhead ();
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -295,7 +297,9 @@ pcl::PCDGrabberBase::start ()
     impl_->time_trigger_.start ();
   }
   else // manual trigger
-    impl_->trigger ();
+  {
+    boost::thread non_blocking_call (boost::bind (&PCDGrabberBase::PCDGrabberImpl::trigger, impl_));
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -315,7 +319,9 @@ pcl::PCDGrabberBase::trigger ()
 {
   if (impl_->frames_per_second_ > 0)
     return;
-  impl_->trigger ();
+  boost::thread non_blocking_call (boost::bind (&PCDGrabberBase::PCDGrabberImpl::trigger, impl_));
+
+//  impl_->trigger ();
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
