@@ -42,7 +42,6 @@
 #define PCL_GEOMETRY_MESH_BASE_H
 
 #include <vector>
-#include <deque>
 #include <stack>
 
 #include <pcl/geometry/boost.h>
@@ -142,7 +141,13 @@ namespace pcl
             face_data_cloud_ (),
             vertices_ (),
             half_edges_ (),
-            faces_ ()
+            faces_ (),
+            inner_he_ (),
+            free_he_ (),
+            is_new_ (),
+            make_adjacent_ (),
+            is_boundary_ (),
+            face_indices_ ()
         {
         }
 
@@ -189,18 +194,18 @@ namespace pcl
           assert (this->isValid (idx_vertex));
           if (this->isDeleted (idx_vertex)) return;
 
-          std::deque <FaceIndex> fi;
+          face_indices_.clear ();
           FaceAroundVertexCirculator       circ     = this->getFaceAroundVertexCirculator (idx_vertex);
           const FaceAroundVertexCirculator circ_end = circ;
           do
           {
             if (circ.getTargetIndex ().isValid ()) // Check for boundary.
             {
-              fi.push_back (circ.getTargetIndex ());
+              face_indices_.push_back (circ.getTargetIndex ());
             }
           } while (++circ!=circ_end);
 
-          for (std::deque <FaceIndex>::const_iterator it = fi.begin (); it!=fi.end (); ++it)
+          for (FaceIndices::const_iterator it = face_indices_.begin (); it!=face_indices_.end (); ++it)
           {
             this->deleteFace (*it);
           }
@@ -1125,55 +1130,26 @@ namespace pcl
                          const EdgeData&      edge_data,
                          const HalfEdgeData&  half_edge_data)
         {
-          const unsigned int n = static_cast<unsigned int> (vertices.size ());
+          const int n = static_cast<int> (vertices.size ());
           if (n < 3) return (FaceIndex ());
 
-          // Check if the input indices are valid.
-          bool all_vertices_isolated = true;
-
-          for (VertexIndices::const_iterator it=vertices.begin (); it!=vertices.end (); ++it)
-          {
-            if (!this->isValid (*it))
-            {
-              return (FaceIndex ());
-            }
-            if (all_vertices_isolated && !this->isIsolated (*it))
-            {
-              all_vertices_isolated = false;
-            }
-          }
-
-          HalfEdgeIndices inner_he (n, HalfEdgeIndex ());
-
-          // Avoid the later tests for this special case
-          if (all_vertices_isolated)
-          {
-            for (unsigned int i=0; i<n; ++i)
-            {
-              inner_he [i] = this->addEdge (vertices [i], vertices [(i+1)%n], half_edge_data, edge_data);
-            }
-            for (unsigned int i=0; i<n; ++i)
-            {
-              this->connectNewNew (inner_he [i], inner_he [(i+1)%n], vertices [(i+1)%n], IsManifold ());
-            }
-
-            return (this->connectFace (inner_he, face_data));
-          }
-
           // Check for topological errors
-          HalfEdgeIndices    free_he       (n, HalfEdgeIndex ());
-          std::vector <bool> is_new        (n, true);
-          std::vector <bool> make_adjacent (n, false);
-          for (unsigned int i=0; i<n; ++i)
+          inner_he_.resize      (n);
+          free_he_.resize       (n);
+          is_new_.resize        (n);
+          make_adjacent_.resize (n);
+          int i, j;
+          for (i=0; i<n; ++i)
           {
-            if (!this->checkTopology1 (vertices [i], vertices [(i+1)%n], inner_he [i], is_new [i], IsManifold ()))
+            if (!this->checkTopology1 (vertices [i], vertices [(i+1)%n], inner_he_ [i], is_new_ [i], IsManifold ()))
             {
               return (FaceIndex ());
             }
           }
-          for (unsigned int i=0; i<n; ++i)
+          for (i=0; i<n; ++i)
           {
-            if (!this->checkTopology2 (inner_he [i], inner_he [(i+1)%n], is_new [i], is_new [(i+1)%n], this->isIsolated (vertices [(i+1)%n]), make_adjacent [i], free_he [i], IsManifold ()))
+            j = (i+1)%n;
+            if (!this->checkTopology2 (inner_he_ [i], inner_he_ [j], is_new_ [i], is_new_ [j], this->isIsolated (vertices [j]), make_adjacent_ [i], free_he_ [i], IsManifold ()))
             {
               return (FaceIndex ());
             }
@@ -1182,35 +1158,34 @@ namespace pcl
           // Reconnect the existing half-edges if needed
           if (!IsManifold::value)
           {
-            for (unsigned int i=0; i<n; ++i)
+            for (i=0; i<n; ++i)
             {
-              if (make_adjacent [i])
+              if (make_adjacent_ [i])
               {
-                this->makeAdjacent (inner_he [i], inner_he [(i+1)%n], free_he [i]);
+                this->makeAdjacent (inner_he_ [i], inner_he_ [(i+1)%n], free_he_ [i]);
               }
             }
           }
 
           // Add new half-edges if needed
-          for (unsigned int i=0; i<n; ++i)
+          for (i=0; i<n; ++i)
           {
-            if (is_new [i])
+            if (is_new_ [i])
             {
-              inner_he [i] = this->addEdge (vertices [i], vertices [(i+1)%n], half_edge_data, edge_data);
+              inner_he_ [i] = this->addEdge (vertices [i], vertices [(i+1)%n], half_edge_data, edge_data);
             }
           }
 
           // Connect
-          unsigned int j = 1;
-          for (unsigned int i=0; i<n; ++i)
+          for (i=0; i<n; ++i)
           {
             j = (i+1)%n;
-            if      ( is_new [i] &&  is_new [j]) this->connectNewNew (inner_he [i], inner_he [j], vertices [j], IsManifold ());
-            else if ( is_new [i] && !is_new [j]) this->connectNewOld (inner_he [i], inner_he [j], vertices [j]);
-            else if (!is_new [i] &&  is_new [j]) this->connectOldNew (inner_he [i], inner_he [j], vertices [j]);
-            else                                 this->connectOldOld (inner_he [i], inner_he [j], vertices [j], IsManifold ());
+            if      ( is_new_ [i] &&  is_new_ [j]) this->connectNewNew (inner_he_ [i], inner_he_ [j], vertices [j], IsManifold ());
+            else if ( is_new_ [i] && !is_new_ [j]) this->connectNewOld (inner_he_ [i], inner_he_ [j], vertices [j]);
+            else if (!is_new_ [i] &&  is_new_ [j]) this->connectOldNew (inner_he_ [i], inner_he_ [j], vertices [j]);
+            else                                   this->connectOldOld (inner_he_ [i], inner_he_ [j], vertices [j], IsManifold ());
           }
-          return (this->connectFace (inner_he, face_data));
+          return (this->connectFace (inner_he_, face_data));
         }
 
         ////////////////////////////////////////////////////////////////////////
@@ -1258,6 +1233,7 @@ namespace pcl
                         std::vector <bool>::reference is_new_ab,
                         boost::true_type              /*is_manifold*/) const
         {
+          is_new_ab = true;
           if (this->isIsolated (idx_v_a)) return (true);
 
           idx_he_ab = this->getOutgoingHalfEdgeIndex (idx_v_a);
@@ -1275,13 +1251,12 @@ namespace pcl
                         std::vector <bool>::reference is_new_ab,
                         boost::false_type              /*is_manifold*/) const
         {
+          is_new_ab = true;
           if (this->isIsolated (idx_v_a))                                   return (true);
           if (!this->isBoundary (this->getOutgoingHalfEdgeIndex (idx_v_a))) return (false);
 
           VertexAroundVertexCirculator       circ     = this->getVertexAroundVertexCirculator (this->getOutgoingHalfEdgeIndex (idx_v_a));
           const VertexAroundVertexCirculator circ_end = circ;
-
-          is_new_ab = true;
 
           do
           {
@@ -1571,22 +1546,24 @@ namespace pcl
           if (this->isDeleted (idx_face)) return;
 
           // Store all half-edges in the face
-          std::deque <HalfEdgeIndex> inner_he;
-          std::vector <bool>         is_boundary;
+          inner_he_.clear ();
+          is_boundary_.clear ();
           InnerHalfEdgeAroundFaceCirculator       circ     = this->getInnerHalfEdgeAroundFaceCirculator (idx_face);
           const InnerHalfEdgeAroundFaceCirculator circ_end = circ;
           do
           {
-            inner_he.push_back (circ.getTargetIndex ());
-            is_boundary.push_back (this->isBoundary (this->getOppositeHalfEdgeIndex (circ.getTargetIndex ())));
+            inner_he_.push_back (circ.getTargetIndex ());
+            is_boundary_.push_back (this->isBoundary (this->getOppositeHalfEdgeIndex (circ.getTargetIndex ())));
           } while (++circ != circ_end);
-          assert (inner_he.size () >= 3); // Minimum should be a triangle.
+          assert (inner_he_.size () >= 3); // Minimum should be a triangle.
 
-          const unsigned int n = static_cast<unsigned int> (inner_he.size ());
-          for (unsigned int i = 0; i < n; ++i)
+          const int n = static_cast <int> (inner_he_.size ());
+          int j;
+          for (int i = 0; i < n; ++i)
           {
-            this->reconnect (inner_he [i], inner_he [(i+1)%n], is_boundary [i], is_boundary [(i+1)%n], delete_faces);
-            this->getHalfEdge (inner_he [i]).idx_face_.invalidate ();
+            j = (i+1)%n;
+            this->reconnect (inner_he_ [i], inner_he_ [j], is_boundary_ [i], is_boundary_ [j], delete_faces);
+            this->getHalfEdge (inner_he_ [i]).idx_face_.invalidate ();
           }
           this->markDeleted (idx_face);
         }
@@ -2099,6 +2076,26 @@ namespace pcl
 
         /** \brief Connectivity information for the faces. */
         Faces faces_;
+
+        // NOTE: It is MUCH faster to store these variables permamently.
+
+        /** \brief Storage for addFaceImplBase and deleteFace. */
+        HalfEdgeIndices inner_he_;
+
+        /** \brief Storage for addFaceImplBase. */
+        HalfEdgeIndices free_he_;
+
+        /** \brief Storage for addFaceImplBase. */
+        std::vector <bool> is_new_;
+
+        /** \brief Storage for addFaceImplBase. */
+        std::vector <bool> make_adjacent_;
+
+        /** \brief Storage for deleteFace. */
+        std::vector <bool> is_boundary_;
+
+        /** \brief Storage for deleteVertex. */
+        FaceIndices face_indices_;
 
       public:
 

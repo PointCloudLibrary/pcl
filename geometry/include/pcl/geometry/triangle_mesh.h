@@ -106,7 +106,9 @@ namespace pcl
         /** \brief Constructor. */
         TriangleMesh ()
           : Base (),
-            add_triangle_ (3)
+            add_triangle_ (3),
+            inner_he_atp_ (4),
+            is_new_atp_   (4)
         {
         }
 
@@ -222,25 +224,22 @@ namespace pcl
           }
 
           // Check manifoldness
-          HalfEdgeIndices    inner_he (4, HalfEdgeIndex ());
-          std::vector <bool> is_new   (4, true);
-
-          if (!Base::checkTopology1 (idx_v_0,idx_v_1, inner_he [0], is_new [0], IsManifold ()) ||
-              !Base::checkTopology1 (idx_v_1,idx_v_2, inner_he [1], is_new [1], IsManifold ()) ||
-              !Base::checkTopology1 (idx_v_2,idx_v_3, inner_he [2], is_new [2], IsManifold ()) ||
-              !Base::checkTopology1 (idx_v_3,idx_v_0, inner_he [3], is_new [3], IsManifold ()))
+          if (!Base::checkTopology1 (idx_v_0,idx_v_1, inner_he_atp_ [0], is_new_atp_ [0], IsManifold ()) ||
+              !Base::checkTopology1 (idx_v_1,idx_v_2, inner_he_atp_ [1], is_new_atp_ [1], IsManifold ()) ||
+              !Base::checkTopology1 (idx_v_2,idx_v_3, inner_he_atp_ [2], is_new_atp_ [2], IsManifold ()) ||
+              !Base::checkTopology1 (idx_v_3,idx_v_0, inner_he_atp_ [3], is_new_atp_ [3], IsManifold ()))
           {
             return (std::make_pair (FaceIndex (), FaceIndex ()));
           }
 
           // Connect the triangle pair
-          if (!is_new [0] && is_new [1] && !is_new [2] && is_new [3])
+          if (!is_new_atp_ [0] && is_new_atp_ [1] && !is_new_atp_ [2] && is_new_atp_ [3])
           {
-            return (this->connectTrianglePair (inner_he [0], inner_he [2], idx_v_0, idx_v_1, idx_v_2, idx_v_3, face_data, edge_data, half_edge_data));
+            return (this->connectTrianglePair (inner_he_atp_ [0], inner_he_atp_ [2], idx_v_0, idx_v_1, idx_v_2, idx_v_3, face_data, edge_data, half_edge_data));
           }
-          else if (is_new [0] && !is_new [1] && is_new [2] && !is_new [3])
+          else if (is_new_atp_ [0] && !is_new_atp_ [1] && is_new_atp_ [2] && !is_new_atp_ [3])
           {
-            return (this->connectTrianglePair (inner_he [1], inner_he [3], idx_v_1, idx_v_2, idx_v_3, idx_v_0, face_data, edge_data, half_edge_data));
+            return (this->connectTrianglePair (inner_he_atp_ [1], inner_he_atp_ [3], idx_v_1, idx_v_2, idx_v_3, idx_v_0, face_data, edge_data, half_edge_data));
           }
           else
           {
@@ -341,6 +340,12 @@ namespace pcl
 
         /** \brief Storage for adding a triangle. */
         VertexIndices add_triangle_;
+
+        /** \brief Storage for addTrianglePair. */
+        HalfEdgeIndices inner_he_atp_;
+
+        /** \brief Storage for addTrianglePair. */
+        std::vector <bool> is_new_atp_;
 
       public:
 

@@ -347,14 +347,14 @@ pcl::ihs::OfflineIntegration::keyPressEvent (QKeyEvent* event)
                 << "Help:\n"
                 << "----------------------------------------------------------------------\n"
                 << "ESC: Quit the application.\n"
-                << "c  : Toggle the coloring (rgb, one color, visibility-confidence).\n"
-                << "r  : Reset the camera.\n"
+                << "c  : Reset the camera.\n"
+                << "k  : Toggle the coloring (rgb, one color, visibility-confidence).\n"
                 << "s  : Toggle the mesh representation between points and faces.\n"
                 << "======================================================================\n";
       break;
     }
-    case Qt::Key_C: Base::toggleColoring ();           break;
-    case Qt::Key_R: Base::resetCamera ();              break;
+    case Qt::Key_C: Base::resetCamera ();              break;
+    case Qt::Key_K: Base::toggleColoring ();           break;
     case Qt::Key_S: Base::toggleMeshRepresentation (); break;
     default:                                           break;
   }

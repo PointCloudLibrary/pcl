@@ -1161,27 +1161,29 @@ TYPED_TEST (TestQuadMesh, NineQuads)
 
 //////////////////////////////////////////////////////////////////////////////////
 
-TYPED_TEST (TestPolygonMesh, OutOfRange)
-{
-  typedef typename TestFixture::Mesh Mesh;
+// NOTE: It is the responsibility of the user to ensure that all vertex indices are valid.
 
-  Mesh mesh;
-  VertexIndices vi;
-  for (unsigned int i=0; i<3; ++i)
-  {
-    vi.push_back (VertexIndex (i));
-  }
-  EXPECT_FALSE (mesh.addFace (vi).isValid ());
+//TYPED_TEST (TestPolygonMesh, OutOfRange)
+//{
+//  typedef typename TestFixture::Mesh Mesh;
 
-  mesh.addVertex (0);
-  EXPECT_FALSE (mesh.addFace (vi).isValid ());
+//  Mesh mesh;
+//  VertexIndices vi;
+//  for (unsigned int i=0; i<3; ++i)
+//  {
+//    vi.push_back (VertexIndex (i));
+//  }
+//  EXPECT_FALSE (mesh.addFace (vi).isValid ());
 
-  mesh.addVertex (1);
-  EXPECT_FALSE (mesh.addFace (vi).isValid ());
+//  mesh.addVertex (0);
+//  EXPECT_FALSE (mesh.addFace (vi).isValid ());
 
-  mesh.addVertex (2);
-  EXPECT_TRUE (mesh.addFace (vi).isValid ());
-}
+//  mesh.addVertex (1);
+//  EXPECT_FALSE (mesh.addFace (vi).isValid ());
+
+//  mesh.addVertex (2);
+//  EXPECT_TRUE (mesh.addFace (vi).isValid ());
+//}
 
 //////////////////////////////////////////////////////////////////////////////////
 
