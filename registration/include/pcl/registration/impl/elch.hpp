@@ -74,7 +74,10 @@ pcl::registration::ELCH<PointT>::loopOptimizerAlgorithm (LOAGraph &g, double *we
     // find shortest crossing for all vertices on the loop
     for (crossings_it = crossings.begin (); crossings_it != crossings.end (); )
     {
-      dijkstra_shortest_paths (g, *crossings_it, boost::predecessor_map (p).distance_map (d));
+      dijkstra_shortest_paths (g, *crossings_it,
+          predecessor_map(boost::make_iterator_property_map(p, get(boost::vertex_index, g))).
+          distance_map(boost::make_iterator_property_map(d, get(boost::vertex_index, g))));
+
       end_it = crossings_it;
       end_it++;
       // find shortest crossing for one vertex
