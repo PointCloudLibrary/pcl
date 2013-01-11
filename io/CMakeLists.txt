@@ -159,10 +159,15 @@ if(build)
     if(PNG_FOUND)
       set(compression_incs
           ${compression_incs}
-          include/pcl/compression/organized_pointcloud_compression.h
           include/pcl/compression/organized_pointcloud_conversion.h
           include/pcl/compression/libpng_wrapper.h
           )
+      if(OPENNI_FOUND)
+        set(compression_incs
+          ${compression_incs}
+          include/pcl/compression/organized_pointcloud_compression.h
+          )
+      endif(OPENNI_FOUND)
     endif(PNG_FOUND)
 
     set(impl_incs 
@@ -173,12 +178,12 @@ if(build)
         include/pcl/compression/impl/octree_pointcloud_compression.hpp
         ${VTK_IO_INCLUDES_IMPL}
        )
-    if(PNG_FOUND)
-      set(impl_incs
-          ${impl_incs}
-          include/pcl/compression/impl/organized_pointcloud_compression.hpp
-          )
-    endif(PNG_FOUND)
+    if(PNG_FOUND AND OPENNI_FOUND)
+     set(impl_incs
+         ${impl_incs}
+         include/pcl/compression/impl/organized_pointcloud_compression.hpp
+        )
+    endif(PNG_FOUND AND OPENNI_FOUND)
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
 

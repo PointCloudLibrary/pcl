@@ -53,11 +53,13 @@ template class PCL_EXPORTS pcl::io::OctreePointCloudCompression<pcl::PointXYZRGB
 template class PCL_EXPORTS pcl::io::OctreePointCloudCompression<pcl::PointXYZRGBA>;
 
 #ifdef HAVE_PNG
+#ifdef HAVE_OPENNI
 #include <pcl/compression/organized_pointcloud_compression.h>
 #include <pcl/compression/impl/organized_pointcloud_compression.hpp>
 
 template class PCL_EXPORTS pcl::io::OrganizedPointCloudCompression<pcl::PointXYZ>;
 template class PCL_EXPORTS pcl::io::OrganizedPointCloudCompression<pcl::PointXYZRGB>;
 template class PCL_EXPORTS pcl::io::OrganizedPointCloudCompression<pcl::PointXYZRGBA>;
-#endif
+#endif //HAVE_OPENNI
+#endif //HAVE_PNG
 
