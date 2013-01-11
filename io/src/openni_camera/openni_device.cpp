@@ -105,33 +105,20 @@ openni_wrapper::OpenNIDevice::OpenNIDevice (
   {
     XnChar str_error[1024];
     errors.ToString (str_error, 1024);
-    PCL_ERROR ("[openni_wrapper::OpenNIDevice::OpenNIDevice] %s\n", str_error);
-    return;
+    THROW_OPENNI_EXCEPTION ("[openni_wrapper::OpenNIDevice::OpenNIDevice] %s\n", str_error);
   }
   else if (rc != XN_STATUS_OK)
-  {
-    PCL_ERROR ("[openni_wrapper::OpenNIDevice::OpenNIDevice] Cannot open %s! (OpenNI: %s)\n", config.c_str (), xnGetStatusString (rc));
-    return;
-  }
+    THROW_OPENNI_EXCEPTION ("[openni_wrapper::OpenNIDevice::OpenNIDevice] Cannot open %s! (OpenNI: %s)\n", config.c_str (), xnGetStatusString (rc));
 
   XnStatus status = context_.FindExistingNode (XN_NODE_TYPE_DEPTH, depth_generator_);
   if (status != XN_STATUS_OK)
-  {
-    PCL_ERROR ("[openni_wrapper::OpenNIDevice::OpenNIDevice] Cannot find any depth nodes!\n");
-    return;
-  }
+    THROW_OPENNI_EXCEPTION ("[openni_wrapper::OpenNIDevice::OpenNIDevice] Cannot find any depth nodes!\n");
   status = context_.FindExistingNode (XN_NODE_TYPE_IMAGE, image_generator_);
   if (status != XN_STATUS_OK)
-  {
-    PCL_ERROR ("[openni_wrapper::OpenNIDevice::OpenNIDevice] Cannot find any image nodes!\n");
-    return;
-  }
+    THROW_OPENNI_EXCEPTION ("[openni_wrapper::OpenNIDevice::OpenNIDevice] Cannot find any image nodes!\n");
   status = context_.FindExistingNode (XN_NODE_TYPE_IR, ir_generator_);
   if (status != XN_STATUS_OK)
-  {
-    PCL_ERROR ("[openni_wrapper::OpenNIDevice::OpenNIDevice] Cannot find any IR nodes!\n");
-    return;
-  }
+    THROW_OPENNI_EXCEPTION ("[openni_wrapper::OpenNIDevice::OpenNIDevice] Cannot find any IR nodes!\n");
 
 #else
 
@@ -229,30 +216,19 @@ openni_wrapper::OpenNIDevice::OpenNIDevice (xn::Context& context, const xn::Node
   rc = context_.InitFromXmlFile (config.c_str (), &errors);
   if (rc == XN_STATUS_NO_NODE_PRESENT)
   {
-    XnChar strError[1024];
-    errors.ToString(strError, 1024);
-    PCL_ERROR ("[openni_wrapper::OpenNIDevice::OpenNIDevice] %s\n", str_error);
-    return;
+    XnChar str_error[1024];
+    errors.ToString (str_error, 1024);
+    THROW_OPENNI_EXCEPTION ("[openni_wrapper::OpenNIDevice::OpenNIDevice] %s\n", str_error);
   }
   else if (rc != XN_STATUS_OK)
-  {
-    PCL_ERROR ("[openni_wrapper::OpenNIDevice::OpenNIDevice] Cannot open %s! (OpenNI: %s)\n", config.c_str (), xnGetStatusString (rc));
-    return;
-  }
+    THROW_OPENNI_EXCEPTION ("[openni_wrapper::OpenNIDevice::OpenNIDevice] Cannot open %s! (OpenNI: %s)\n", config.c_str (), xnGetStatusString (rc));
 
   XnStatus status = context_.FindExistingNode (XN_NODE_TYPE_DEPTH, depth_generator_);
   if (status != XN_STATUS_OK)
-  {
-    PCL_ERROR ("[openni_wrapper::OpenNIDevice::OpenNIDevice] Cannot find any depth nodes!\n");
-    return;
-  }
+    THROW_OPENNI_EXCEPTION ("[openni_wrapper::OpenNIDevice::OpenNIDevice] Cannot find any depth nodes!\n");
   status = context_.FindExistingNode (XN_NODE_TYPE_IR, ir_generator_);
   if (status != XN_STATUS_OK)
-  {
-    PCL_ERROR ("[openni_wrapper::OpenNIDevice::OpenNIDevice] Cannot find any IR nodes!\n");
-    return;
-  }
-  if (status != XN_STATUS_OK) {}
+    THROW_OPENNI_EXCEPTION ("[openni_wrapper::OpenNIDevice::OpenNIDevice] Cannot find any IR nodes!\n");
 
 #else
   XnStatus status;
