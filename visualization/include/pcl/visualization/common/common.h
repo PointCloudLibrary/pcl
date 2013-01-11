@@ -98,7 +98,8 @@ namespace pcl
       PCL_VISUALIZER_FONT_SIZE,
       PCL_VISUALIZER_COLOR,
       PCL_VISUALIZER_REPRESENTATION,
-      PCL_VISUALIZER_IMMEDIATE_RENDERING
+      PCL_VISUALIZER_IMMEDIATE_RENDERING,
+      PCL_VISUALIZER_SHADING
     };
 
     enum RenderingRepresentationProperties
@@ -106,6 +107,13 @@ namespace pcl
       PCL_VISUALIZER_REPRESENTATION_POINTS,
       PCL_VISUALIZER_REPRESENTATION_WIREFRAME,
       PCL_VISUALIZER_REPRESENTATION_SURFACE
+    };
+
+    enum ShadingRepresentationProperties
+    {
+      PCL_VISUALIZER_SHADING_FLAT,
+      PCL_VISUALIZER_SHADING_GOURAUD,
+      PCL_VISUALIZER_SHADING_PHONG
     };
 
     //////////////////////////////////////////////////////////////////////////////////////////////

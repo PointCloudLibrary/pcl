@@ -105,6 +105,7 @@ printHelp (int, char **argv)
   print_info ("                     -fc r,g,b                = foreground color\n");
   print_info ("                     -ps X                    = point size ("); print_value ("1..64"); print_info (") \n");
   print_info ("                     -opaque X                = rendered point cloud opacity ("); print_value ("0..1"); print_info (")\n");
+  print_info ("                     -shading X               = rendered surface shading ("); print_value ("'flat' (default), 'gouraud', 'phong'"); print_info (")\n");
 
   print_info ("                     -ax "); print_value ("n"); print_info ("                    = enable on-screen display of ");
   print_color (stdout, TT_BRIGHT, TT_RED, "X"); print_color (stdout, TT_BRIGHT, TT_GREEN, "Y"); print_color (stdout, TT_BRIGHT, TT_BLUE, "Z");
@@ -252,6 +253,9 @@ main (int argc, char** argv)
   std::vector<double> opaque;
   pcl::console::parse_multiple_arguments (argc, argv, "-opaque", opaque);
 
+  std::vector<std::string> shadings;
+  pcl::console::parse_multiple_arguments (argc, argv, "-shading", shadings);
+
   int mview = 0;
   pcl::console::parse_argument (argc, argv, "-multiview", mview);
 
@@ -318,6 +322,10 @@ main (int argc, char** argv)
     for (size_t i = opaque.size (); i < p_file_indices.size (); ++i)
       opaque.push_back (1.0);
 
+  if (shadings.size () != p_file_indices.size () && shadings.size () > 0)
+    for (size_t i = shadings.size (); i < p_file_indices.size (); ++i)
+      shadings.push_back ("flat");
+
   // Create the PCLVisualizer object
 #if VTK_MAJOR_VERSION==6 || (VTK_MAJOR_VERSION==5 && VTK_MINOR_VERSION>6)
   boost::shared_ptr<pcl::visualization::PCLPlotter> ph;
@@ -378,6 +386,17 @@ main (int argc, char** argv)
     // Change the shape rendered opacity
     if (opaque.size () > 0)
       p->setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_OPACITY, opaque.at (i), cloud_name.str ());
+
+    // Change the shape rendered shading
+    if (shadings.size () > 0)
+    {
+      if (shadings[i] == "flat")
+        p->setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_SHADING, pcl::visualization::PCL_VISUALIZER_SHADING_FLAT, cloud_name.str ());
+      else if (shadings[i] == "gouraud")
+        p->setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_SHADING, pcl::visualization::PCL_VISUALIZER_SHADING_GOURAUD, cloud_name.str ());
+      else if (shadings[i] == "phong")
+        p->setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_SHADING, pcl::visualization::PCL_VISUALIZER_SHADING_PHONG, cloud_name.str ());
+     }
   }
 
   sensor_msgs::PointCloud2::Ptr cloud;

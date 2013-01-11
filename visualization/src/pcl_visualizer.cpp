@@ -1488,6 +1488,29 @@ pcl::visualization::PCLVisualizer::setShapeRenderingProperties (
       actor->Modified ();
       break;
     }
+    case PCL_VISUALIZER_SHADING:
+    {
+      switch (int (value))
+      {
+        case PCL_VISUALIZER_SHADING_FLAT: 
+        {
+          actor->GetProperty ()->SetInterpolationToFlat ();
+          break;
+        }
+        case PCL_VISUALIZER_SHADING_GOURAUD:
+        {
+          actor->GetProperty ()->SetInterpolationToGouraud ();
+          break;
+        }
+        case PCL_VISUALIZER_SHADING_PHONG:
+        {
+          actor->GetProperty ()->SetInterpolationToPhong ();
+          break;
+        }
+      }
+      actor->Modified ();
+      break;
+    }
     default:
     {
       pcl::console::print_error ("[setShapeRenderingProperties] Unknown property (%d) specified!\n", property);
