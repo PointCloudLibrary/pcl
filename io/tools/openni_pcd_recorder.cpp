@@ -74,42 +74,42 @@ const int BUFFER_SIZE = 200;
 template <typename PointT>
 class PCDBuffer
 {
-	public:
+  public:
     PCDBuffer () {}
 
     bool 
     pushBack (typename PointCloud<PointT>::ConstPtr); // thread-save wrapper for push_back() method of ciruclar_buffer
 
-		typename PointCloud<PointT>::ConstPtr 
+    typename PointCloud<PointT>::ConstPtr 
     getFront (); // thread-save wrapper for front() method of ciruclar_buffer
-		
+
     inline bool 
     isFull ()
     {
       boost::mutex::scoped_lock buff_lock (bmutex_);
       return (buffer_.full ());
     }
-		
+
     inline bool
     isEmpty ()
     {
       boost::mutex::scoped_lock buff_lock (bmutex_);
-    	return (buffer_.empty ());
+      return (buffer_.empty ());
     }
-		
+
     inline int 
     getSize ()
     {
       boost::mutex::scoped_lock buff_lock (bmutex_);
       return (int (buffer_.size ()));
     }
-		
+
     inline int 
     getCapacity ()
     {
-	    return (int (buffer_.capacity ()));
+      return (int (buffer_.capacity ()));
     }
-		
+
     inline void 
     setCapacity (int buff_size)
     {
@@ -117,51 +117,51 @@ class PCDBuffer
       buffer_.set_capacity (buff_size);
     }
 
-	private:
-		PCDBuffer (const PCDBuffer&); // Disabled copy constructor
-		PCDBuffer& operator =(const PCDBuffer&); // Disabled assignment operator
-		
+  private:
+    PCDBuffer (const PCDBuffer&); // Disabled copy constructor
+    PCDBuffer& operator =(const PCDBuffer&); // Disabled assignment operator
+
     boost::mutex bmutex_;
-		boost::condition_variable buff_empty_;
-		boost::circular_buffer<typename PointCloud<PointT>::ConstPtr> buffer_;
+    boost::condition_variable buff_empty_;
+    boost::circular_buffer<typename PointCloud<PointT>::ConstPtr> buffer_;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool 
 PCDBuffer<PointT>::pushBack (typename PointCloud<PointT>::ConstPtr cloud)
 {
-	bool retVal = false;
-	{
-		boost::mutex::scoped_lock buff_lock (bmutex_);
-		if (!buffer_.full ())
-			retVal = true;
-		buffer_.push_back (cloud);
-	}
-	buff_empty_.notify_one ();
-	return (retVal);
+  bool retVal = false;
+  {
+    boost::mutex::scoped_lock buff_lock (bmutex_);
+    if (!buffer_.full ())
+      retVal = true;
+    buffer_.push_back (cloud);
+  }
+  buff_empty_.notify_one ();
+  return (retVal);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> typename PointCloud<PointT>::ConstPtr 
 PCDBuffer<PointT>::getFront ()
 {
-	typename PointCloud<PointT>::ConstPtr cloud;
-	{
-		boost::mutex::scoped_lock buff_lock (bmutex_);
-		while (buffer_.empty ())
-		{
-			if (is_done)
-				break;
-			{
-				boost::mutex::scoped_lock io_lock (io_mutex);
-				//cerr << "No data in buffer_ yet or buffer is empty." << endl;
-			}
-			buff_empty_.wait (buff_lock);
-		}
-		cloud = buffer_.front ();
-		buffer_.pop_front ();
-	}
-	return (cloud);
+  typename PointCloud<PointT>::ConstPtr cloud;
+  {
+    boost::mutex::scoped_lock buff_lock (bmutex_);
+    while (buffer_.empty ())
+    {
+      if (is_done)
+        break;
+      {
+        boost::mutex::scoped_lock io_lock (io_mutex);
+        //cerr << "No data in buffer_ yet or buffer is empty." << endl;
+      }
+      buff_empty_.wait (buff_lock);
+    }
+    cloud = buffer_.front ();
+    buffer_.pop_front ();
+  }
+  return (cloud);
 }
 
 #define FPS_CALC(_WHAT_, buff) \
@@ -207,7 +207,7 @@ class Producer
       boost::function<void (const typename PointCloud<PointT>::ConstPtr&)> f = boost::bind (&Producer::grabberCallBack, this, _1);
       interface->registerCallback (f);
       interface->start ();
-      
+
       while (true)
       {
         if (is_done)
@@ -301,9 +301,9 @@ class Consumer
 void 
 ctrlC (int)
 {
-	boost::mutex::scoped_lock io_lock (io_mutex);
-	print_info ("\nCtrl-C detected, exit condition set to true.\n");
-	is_done = true;
+  boost::mutex::scoped_lock io_lock (io_mutex);
+  print_info ("\nCtrl-C detected, exit condition set to true.\n");
+  is_done = true;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -311,7 +311,7 @@ int
 main (int argc, char** argv)
 {
   print_highlight ("PCL OpenNI Recorder for saving buffered PCD (binary compressed to disk). See %s -h for options.\n", argv[0]);
-	
+
   int buff_size = BUFFER_SIZE;
   
   if (find_switch (argc, argv, "-h") || find_switch (argc, argv, "--help"))
@@ -328,16 +328,16 @@ main (int argc, char** argv)
 
   if (parse_argument (argc, argv, "-buf", buff_size) != -1)
     print_highlight ("Setting buffer size to %d frames.\n", buff_size);
-	else
+  else
     print_highlight ("Using default buffer size of %d frames.\n", buff_size);
-	
-	print_highlight ("Starting the producer and consumer threads... Press Cltr+C to end\n");
+
+  print_highlight ("Starting the producer and consumer threads... Press Cltr+C to end\n");
  
   OpenNIGrabber grabber ("");
   if (grabber.providesCallback<OpenNIGrabber::sig_cb_openni_point_cloud_rgba> () && 
       !just_xyz)
   {
-	  print_highlight ("PointXYZRGBA enabled.\n");
+    print_highlight ("PointXYZRGBA enabled.\n");
     PCDBuffer<PointXYZRGBA> buf;
     buf.setCapacity (buff_size);
     Producer<PointXYZRGBA> producer (buf);
@@ -350,7 +350,7 @@ main (int argc, char** argv)
   }
   else
   {
-	  print_highlight ("PointXYZ enabled.\n");
+    print_highlight ("PointXYZ enabled.\n");
     PCDBuffer<PointXYZ> buf;
     buf.setCapacity (buff_size);
     Producer<PointXYZ> producer (buf);
@@ -361,6 +361,6 @@ main (int argc, char** argv)
     producer.stop ();
     consumer.stop ();
   }
-	return (0);
+  return (0);
 }
 
