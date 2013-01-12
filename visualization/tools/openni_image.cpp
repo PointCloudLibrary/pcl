@@ -55,7 +55,7 @@ using namespace std;
 using namespace pcl;
 using namespace pcl::console;
 
-bool is_done = false, save_data = false, toggle_one_frame_capture = false;
+bool is_done = false, save_data = false, toggle_one_frame_capture = false, visualize = true;
 boost::mutex io_mutex;
 int nr_frames_total = 0;
 
@@ -117,7 +117,10 @@ do \
     ++count; \
     if (now - last >= 1.0) \
     { \
-      cerr << "Average framerate("<< _WHAT_ << "): " << double(count)/double(now - last) << " Hz. Queue size: " << buff1.getSize () << " (w) / " << buff2.getSize () << " (v)\n"; \
+      if (visualize) \
+        cerr << "Average framerate("<< _WHAT_ << "): " << double(count)/double(now - last) << " Hz. Queue size: " << buff1.getSize () << " (w) / " << buff2.getSize () << " (v)\n"; \
+      else \
+        cerr << "Average framerate("<< _WHAT_ << "): " << double(count)/double(now - last) << " Hz. Queue size: " << buff1.getSize () << " (w)\n"; \
       count = 0; \
       last = now; \
     } \
@@ -373,7 +376,7 @@ class Driver
         print_warn ("Warning! Write buffer was full, overwriting data!\n");
       }
 
-      if (!buf_vis_.pushBack (frame))
+      if (visualize && !buf_vis_.pushBack (frame))
       {
         boost::mutex::scoped_lock io_lock (io_mutex);
         print_warn ("Warning! Visualization buffer was full, overwriting data!\n");
@@ -456,6 +459,13 @@ class Viewer
              !is_done)
       {
         boost::this_thread::sleep (boost::posix_time::milliseconds (1));
+
+        if (!visualize)
+        {
+          image_viewer_->spinOnce ();
+          depth_image_viewer_->spinOnce ();
+          continue;
+        }
 
         while (!buf_.isEmpty () && !is_done)
         {
@@ -541,6 +551,14 @@ class Viewer
           save_data = !save_data;
           PCL_INFO ("Toggled recording state: %s.\n", save_data ? "enabled" : "disabled");
         }
+        return;
+      }
+
+      // V turns visualization on/off
+      if (event.getKeyCode () == 'v' && event.keyDown ())
+      {
+        visualize = !visualize;
+        PCL_INFO ("Visualization state: %s.\n", (visualize ? "on" : "off"));
         return;
       }
 
