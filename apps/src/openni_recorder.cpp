@@ -40,21 +40,6 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/common/time.h> //fps calculations
 
-#define FPS_CALC(_WHAT_) \
-do \
-{ \
-    static unsigned count = 0;\
-    static double last = pcl::getTime ();\
-    double now = pcl::getTime (); \
-    ++count; \
-    if (now - last >= 1.0) \
-    { \
-      std::cerr << "Average framerate("<< _WHAT_ << "): " << double(count)/double(now - last) << " Hz" <<  std::endl; \
-      count = 0; \
-      last = now; \
-    } \
-}while(false)
-
 bool is_done = false;
 boost::mutex io_mutex;
 
@@ -155,6 +140,21 @@ PCDBuffer::getFront ()
 
 PCDBuffer buff;
 
+#define FPS_CALC(_WHAT_) \
+do \
+{ \
+    static unsigned count = 0;\
+    static double last = pcl::getTime ();\
+    double now = pcl::getTime (); \
+    ++count; \
+    if (now - last >= 1.0) \
+    { \
+      std::cerr << "Average framerate("<< _WHAT_ << "): " << double(count)/double(now - last) << " Hz. Queue size: " << buff.getSize () << "\n"; \
+      count = 0; \
+      last = now; \
+    } \
+}while(false)
+
 //////////////////////////////////////////////////////////////////////////////////////////
 void 
 grabberCallBack (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& cloud)
@@ -166,7 +166,7 @@ grabberCallBack (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& cloud)
 			std::cout << "Warning! Buffer was full, overwriting data" << std::endl;
 		}
 	}
-  FPS_CALC ("cloud callback");
+  FPS_CALC ("cloud callback.");
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -201,7 +201,7 @@ writeToDisk (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& cloud)
 	std::string fname = prefix + ss.str () + ext;
 	w.writeBinaryCompressed (fname, *cloud);
 	counter++;
-  FPS_CALC ("cloud write");
+  FPS_CALC ("cloud write.");
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
