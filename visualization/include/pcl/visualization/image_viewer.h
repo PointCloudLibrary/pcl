@@ -541,6 +541,15 @@ namespace pcl
         bool
         wasStopped () const { return (stopped_); }
 
+        /** \brief Stop the interaction and close the visualizaton window. */
+        void
+        close ()
+        {
+          stopped_ = true;
+          // This tends to close the window...
+          interactor_->TerminateApp ();
+        }
+
         /** \brief Add a circle shape from a point and a radius
           * \param[in] x the x coordinate of the circle center
           * \param[in] y the y coordinate of the circle center
