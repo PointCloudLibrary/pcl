@@ -40,6 +40,7 @@
 #ifndef PCL_IO_PCD_GRABBER_H_
 #define PCL_IO_PCD_GRABBER_H_
 
+#include <pcl/common/io.h>
 #include <pcl/io/grabber.h>
 #include <pcl/io/openni_camera/openni_image.h>
 #include <pcl/io/openni_camera/openni_image_rgb24.h>
@@ -215,25 +216,40 @@ namespace pcl
     if (depth_image_signal_->num_slots() > 0)
       depth_image_signal_->operator()(depth_image);
 
-    boost::shared_ptr<xn::ImageMetaData> image_meta_data (new xn::ImageMetaData);
-    image_meta_data->AllocateData (cloud->width, cloud->height, XN_PIXEL_FORMAT_RGB24);
-    XnRGB24Pixel* image_map = image_meta_data->WritableRGB24Data ();
-    k = 0;
-    for (uint32_t i = 0; i < cloud->height; ++i)
-      for (uint32_t j = 0; j < cloud->width; ++j)
+    // ---[ RGB special case
+    std::vector<sensor_msgs::PointField> fields;
+    int rgba_index = pcl::getFieldIndex (*cloud, "rgb", fields);
+    if (rgba_index == -1)
+      rgba_index = pcl::getFieldIndex (*cloud, "rgba", fields);
+    if (rgba_index >= 0)
+    {
+      rgba_index = fields[rgba_index].offset;
+
+      boost::shared_ptr<xn::ImageMetaData> image_meta_data (new xn::ImageMetaData);
+      image_meta_data->AllocateData (cloud->width, cloud->height, XN_PIXEL_FORMAT_RGB24);
+      XnRGB24Pixel* image_map = image_meta_data->WritableRGB24Data ();
+      k = 0;
+      for (uint32_t i = 0; i < cloud->height; ++i)
       {
-        image_map[k].nRed = static_cast<XnUInt8> ((*cloud)[k].r);
-        image_map[k].nGreen = static_cast<XnUInt8> ((*cloud)[k].g);
-        image_map[k].nBlue = static_cast<XnUInt8> ((*cloud)[k].b);
-        ++k;
+        for (uint32_t j = 0; j < cloud->width; ++j)
+        {
+          // Fill r/g/b data, assuming that the order is BGRA
+          pcl::RGB rgb;
+          memcpy (&rgb, reinterpret_cast<const char*> (&cloud->points[k]) + rgba_index, sizeof (RGB));
+          image_map[k].nRed = static_cast<XnUInt8> (rgb.r);
+          image_map[k].nGreen = static_cast<XnUInt8> (rgb.g);
+          image_map[k].nBlue = static_cast<XnUInt8> (rgb.b);
+          ++k;
+        }
       }
 
-    boost::shared_ptr<openni_wrapper::Image> image (new openni_wrapper::ImageRGB24 (image_meta_data));
-    if (image_signal_->num_slots() > 0)
-      image_signal_->operator()(image);
-    
-    if (image_depth_image_signal_->num_slots() > 0)
-      image_depth_image_signal_->operator()(image, depth_image, 1.0f / 525.0f);
+      boost::shared_ptr<openni_wrapper::Image> image (new openni_wrapper::ImageRGB24 (image_meta_data));
+      if (image_signal_->num_slots() > 0)
+        image_signal_->operator()(image);
+      
+      if (image_depth_image_signal_->num_slots() > 0)
+        image_depth_image_signal_->operator()(image, depth_image, 1.0f / 525.0f);
+    }
 #endif
   }
 }
