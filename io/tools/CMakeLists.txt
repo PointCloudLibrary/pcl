@@ -6,8 +6,8 @@ if(OPENNI_FOUND)
   target_link_libraries(pcl_openni_grabber_depth_example pcl_common pcl_io)
 
 
-  PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_openni_recorder ${SUBSYS_NAME} openni_recorder.cpp)
-  target_link_libraries(pcl_openni_recorder pcl_common pcl_io)
+  PCL_ADD_EXECUTABLE(pcl_openni_pcd_recorder ${SUBSYS_NAME} openni_pcd_recorder.cpp)
+  target_link_libraries(pcl_openni_pcd_recorder pcl_common pcl_io)
 
 endif(OPENNI_FOUND)
 
