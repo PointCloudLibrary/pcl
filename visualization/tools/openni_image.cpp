@@ -392,7 +392,7 @@ class Driver
         print_warn ("Warning! Write buffer was full, overwriting data!\n");
       }
 
-      if (visualize && !buf_vis_.pushBack (frame))
+      if (global_visualize && visualize && !buf_vis_.pushBack (frame))
       {
         boost::mutex::scoped_lock io_lock (io_mutex);
         print_warn ("Warning! Visualization buffer was full, overwriting data!\n");
