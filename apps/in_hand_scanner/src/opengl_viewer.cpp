@@ -658,7 +658,8 @@ pcl::ihs::OpenGLViewer::toggleMeshRepresentation ()
 
   switch (mesh_representation_)
   {
-    case MR_POINTS: mesh_representation_ = MR_FACES;  std::cerr << "Drawing the faces.\n";  break;
+    case MR_POINTS: mesh_representation_ = MR_EDGES;  std::cerr << "Drawing the edges\n";   break;
+    case MR_EDGES:  mesh_representation_ = MR_FACES;  std::cerr << "Drawing the faces.\n";  break;
     case MR_FACES:  mesh_representation_ = MR_POINTS; std::cerr << "Drawing the points.\n"; break;
     default: std::cerr << "ERROR in opengl_viewer.cpp: Unknown mesh representation\n"; exit (EXIT_FAILURE);
   }
@@ -848,11 +849,14 @@ pcl::ihs::OpenGLViewer::drawMeshes ()
     case COL_RGB:       glEnableClientState  (GL_COLOR_ARRAY); break;
     case COL_ONE_COLOR: glDisableClientState (GL_COLOR_ARRAY); break;
     case COL_VISCONF:   glEnableClientState  (GL_COLOR_ARRAY); break;
-    default:
-    {
-      std::cerr << "ERROR in opengl_viewer.cpp: Unknown coloring\n";
-      exit (EXIT_FAILURE);
-    }
+    default: std::cerr << "ERROR in opengl_viewer.cpp: Unknown coloring\n"; exit (EXIT_FAILURE);
+  }
+  switch (mesh_representation_)
+  {
+    case MR_POINTS:                                             break;
+    case MR_EDGES:  glPolygonMode (GL_FRONT_AND_BACK, GL_LINE); break;
+    case MR_FACES:  glPolygonMode (GL_FRONT_AND_BACK, GL_FILL); break;
+    default: std::cerr << "ERROR in opengl_viewer.cpp: Unknown mesh representation\n"; exit (EXIT_FAILURE);
   }
 
   for (FaceVertexMeshMap::const_iterator it=drawn_meshes_.begin (); it!=drawn_meshes_.end (); ++it)
@@ -906,7 +910,7 @@ pcl::ihs::OpenGLViewer::drawMeshes ()
             glDrawArrays (GL_POINTS, 0, mesh.vertices.size ());
             break;
           }
-          case MR_FACES:
+          case MR_EDGES: case MR_FACES:
           {
             glDrawElements (GL_TRIANGLES, 3*mesh.triangles.size (), GL_UNSIGNED_INT, &mesh.triangles [0]);
             break;
@@ -925,6 +929,7 @@ pcl::ihs::OpenGLViewer::drawMeshes ()
     case COL_ONE_COLOR:                                         break;
     case COL_VISCONF:   glDisableClientState (GL_COLOR_ARRAY);  break;
   }
+  glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

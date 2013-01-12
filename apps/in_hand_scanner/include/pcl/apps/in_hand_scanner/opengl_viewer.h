@@ -77,6 +77,7 @@ namespace pcl
         typedef enum MeshRepresentation
         {
           MR_POINTS, /**< Draw the points. */
+          MR_EDGES,  /**< Wireframe represen of the mesh. */
           MR_FACES   /**< Draw the faces of the mesh without edges. */
         } MeshRepresentation;
 
