@@ -143,6 +143,20 @@ pcl::io::loadPolygonFileOBJ (const std::string &file_name, pcl::PolygonMesh& mes
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 int
+pcl::io::loadPolygonFileOBJ (const std::string &file_name, pcl::TextureMesh& mesh)
+{
+  vtkSmartPointer<vtkOBJReader> ply_reader = vtkSmartPointer<vtkOBJReader>::New ();
+  ply_reader->SetFileName (file_name.c_str ());
+  ply_reader->Update ();
+
+  vtkSmartPointer<vtkPolyData> poly_data = ply_reader->GetOutput ();
+
+  return (pcl::io::vtk2mesh (poly_data, mesh));
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+int
 pcl::io::loadPolygonFileSTL (const std::string &file_name, pcl::PolygonMesh& mesh)
 {
   vtkSmartPointer<vtkPolyData> poly_data = vtkSmartPointer<vtkPolyData>::New ();
@@ -321,6 +335,47 @@ pcl::io::vtk2mesh (const vtkSmartPointer<vtkPolyData>& poly_data, pcl::PolygonMe
       mesh.polygons[id_poly].vertices[i] = static_cast<int> (cell_points[i]);
     ++id_poly;
   }
+
+  return (static_cast<int> (nr_points));
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+int
+pcl::io::vtk2mesh (const vtkSmartPointer<vtkPolyData>& poly_data, pcl::TextureMesh& mesh)
+{
+  /// TODO avoid copying here
+  PolygonMesh polygon_mesh;
+  vtk2mesh (poly_data, polygon_mesh);
+
+  mesh.cloud = polygon_mesh.cloud;
+  mesh.header = polygon_mesh.header;
+  /// TODO check for sub-meshes
+  mesh.tex_polygons.push_back (polygon_mesh.polygons);
+
+  // Add dummy material
+  mesh.tex_materials.push_back (pcl::TexMaterial ());
+  std::vector<Eigen::Vector2f> dummy;
+  mesh.tex_coordinates.push_back (dummy);
+
+  vtkIdType nr_points = poly_data->GetNumberOfPoints ();
+
+  // Handle the texture coordinates
+  vtkFloatArray* texture_coords = NULL;
+  if (poly_data->GetPointData () != NULL)
+    texture_coords = vtkFloatArray::SafeDownCast (poly_data->GetPointData ()->GetTCoords ());
+
+  if (texture_coords != NULL)
+  {
+    for (vtkIdType i = 0; i < nr_points; ++i)
+    {
+      float tex[2];
+      texture_coords->GetTupleValue (i, tex);
+      mesh.tex_coordinates.front ().push_back (Eigen::Vector2f (tex[0], tex[1]));
+    }
+  }
+  else
+    PCL_ERROR ("Could not find texture coordinates in the polydata\n");
 
   return (static_cast<int> (nr_points));
 }

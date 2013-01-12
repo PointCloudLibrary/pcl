@@ -44,6 +44,7 @@
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 #include <pcl/PolygonMesh.h>
+#include <pcl/TextureMesh.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/ros/conversions.h>
 #include <pcl/io/pcd_io.h>
@@ -83,6 +84,18 @@ namespace pcl
     PCL_EXPORTS int
     vtk2mesh (const vtkSmartPointer<vtkPolyData>& poly_data, 
               pcl::PolygonMesh& mesh);
+
+    /** \brief Convert vtkPolyData object to a PCL TextureMesh
+      * \note In addition to the vtk2mesh (const vtkSmartPointer<vtkPolyData>&, pcl::PolygonMesh&)
+      * method, it fills the mesh with the uv-coordinates.
+      * \param[in] poly_data Pointer (vtkSmartPointer) to a vtkPolyData object
+      * \param[out] mesh PCL TextureMesh to fill
+      * \return Number of points in the point cloud of mesh.
+      */
+    PCL_EXPORTS int
+    vtk2mesh (const vtkSmartPointer<vtkPolyData>& poly_data,
+              pcl::TextureMesh& mesh);
+
 
     /** \brief Convert a PCL PolygonMesh to a vtkPolyData object
       * \param[in] mesh Reference to PCL Polygon Mesh
@@ -137,6 +150,19 @@ namespace pcl
     PCL_EXPORTS int
     loadPolygonFileOBJ (const std::string &file_name, 
                         pcl::PolygonMesh& mesh);
+
+    /** \brief Load an OBJ file into a \ref TextureMesh object.
+      * \note In addition to the loadPolygonFileOBJ (const std::string, pcl::PolygonMesh&)
+      * method, this method also loads the uv-coordinates from the file. It does not
+      * load the material information.
+      * \param[in] file_name the name of the file that contains the data
+      * \param[out] mesh the object that we want to load the data in
+      * \ingroup io
+      */
+    PCL_EXPORTS int
+    loadPolygonFileOBJ (const std::string &file_name,
+                        pcl::TextureMesh& mesh);
+
 
     /** \brief Load an STL file into a \ref PolygonMesh object
       * \param[in] file_name the name of the file that contains the data
