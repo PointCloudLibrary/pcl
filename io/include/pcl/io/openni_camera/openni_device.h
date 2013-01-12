@@ -191,7 +191,7 @@ namespace openni_wrapper
       isSynchronized () const throw ();
 
       /** \return true if the Device supports hardware synchronization between Depth and RGB streams or not. */ 
-      bool 
+      virtual bool 
       isSynchronizationSupported () const throw ();
 
       /** \return true if depth stream is a cropped version of the native depth stream, false otherwise. */

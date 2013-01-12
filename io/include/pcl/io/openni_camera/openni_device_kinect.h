@@ -63,6 +63,8 @@ namespace openni_wrapper
     inline void setDebayeringMethod (const ImageBayerGRBG::DebayeringMethod& debayering_method) throw ();
     inline const ImageBayerGRBG::DebayeringMethod& getDebayeringMethod () const throw ();
 
+    virtual bool isSynchronizationSupported () const throw ();
+
   protected:
     virtual boost::shared_ptr<Image> getCurrentImage (boost::shared_ptr<xn::ImageMetaData> image_meta_data) const throw ();
     void enumAvailableModes () throw ();

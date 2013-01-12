@@ -48,6 +48,13 @@
 namespace openni_wrapper
 {
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+bool 
+openni_wrapper::DeviceKinect::isSynchronizationSupported () const throw ()
+{
+  return (false);
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 openni_wrapper::DeviceKinect::DeviceKinect (xn::Context& context, const xn::NodeInfo& device_node, const xn::NodeInfo& image_node, const xn::NodeInfo& depth_node, const xn::NodeInfo& ir_node)
 : OpenNIDevice (context, device_node, image_node, depth_node, ir_node)
