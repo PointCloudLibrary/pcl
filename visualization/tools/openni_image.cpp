@@ -59,9 +59,9 @@ bool global_visualize = true, is_done = false, save_data = false, toggle_one_fra
 boost::mutex io_mutex;
 int nr_frames_total = 0;
 
-#if defined(__linux__) || defined (TARGET_OS_MAC)
+#if defined(__linux__) 
 #include <unistd.h>
-// Get the available memory size on Linux/BSD systems
+// Get the available memory size on Linux systems
 
 size_t 
 getTotalSystemMemory ()
@@ -77,6 +77,8 @@ const int BUFFER_SIZE = int (getTotalSystemMemory () / (640 * 480) / 2);
 
 const int BUFFER_SIZE = 200;
 #endif
+
+int buff_size = BUFFER_SIZE;
 
 #define FPS_CALC_WRITER(_WHAT_, buff) \
 do \
@@ -616,6 +618,7 @@ usage (char ** argv)
   cout << "usage: " << argv[0] << " [(<device_id> [-visualize | -imagemode <mode>] | [-depthmode <mode>] | [-depthformat <format>] | -l [<device_id>]| -h | --help)]\n";
   cout << argv[0] << " -h | --help : shows this help\n";
   cout << argv[0] << " -l : list all available devices\n";
+  cout << argv[0] << " -buf X         : use a buffer size of X frames (default: " << buff_size << ")\n";
   cout << argv[0] << " -visualize 0/1 : turn the visualization off/on (WARNING: when visualization is disabled, data writing is enabled by default!)\n";
   cout << argv[0] << " -l <device-id> : list all available modes for specified device\n";
 
@@ -630,8 +633,6 @@ usage (char ** argv)
   cout << "examples:" << endl;
   cout << argv[0] << " \"#1\"" << endl;
   cout << "    uses the first device." << endl;
-  cout << argv[0] << " \"./temp/test.oni\"" << endl;
-  cout << "    uses the oni-player device to play back oni file given by path." << endl;
   cout << argv[0] << " -l" << endl;
   cout << "    lists all available devices." << endl;
   cout << argv[0] << " -l \"#2\"" << endl;
@@ -658,11 +659,15 @@ int
 main (int argc, char ** argv)
 {
   print_highlight ("PCL OpenNI Image Viewer/Recorder. See %s -h for options.\n", argv[0]);
-  int buff_size = BUFFER_SIZE;
   bool debug = false;
   console::parse_argument (argc, argv, "-debug", debug);
   if (debug)
     console::setVerbosityLevel (console::L_DEBUG);
+
+  if (parse_argument (argc, argv, "-buf", buff_size) != -1)
+    print_highlight ("Setting buffer size to %d frames.\n", buff_size);
+  else
+    print_highlight ("Using default buffer size of %d frames.\n", buff_size);
 
   string device_id ("");
   OpenNIGrabber::Mode image_mode = OpenNIGrabber::OpenNI_Default_Mode;
