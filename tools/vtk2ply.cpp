@@ -83,6 +83,7 @@ main (int argc, char** argv)
   // Convert to PLY and save
   vtkSmartPointer<vtkPLYWriter> writer = vtkSmartPointer<vtkPLYWriter>::New ();
   writer->SetInput (polydata);
+  writer->SetArrayName ("Colors");
   writer->SetFileTypeToASCII ();
   writer->SetFileName (argv[ply_file_indices[0]]);
   writer->Write ();
