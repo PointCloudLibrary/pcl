@@ -94,6 +94,8 @@ namespace pcl
       cloud (), tex_polygons (), tex_coordinates (), tex_materials () {}
 
     sensor_msgs::PointCloud2  cloud;
+    std_msgs::Header  header;
+
 
     std::vector<std::vector<pcl::Vertices> >    tex_polygons;     // polygon which is mapped with specific texture defined in TexMaterial
     std::vector<std::vector<Eigen::Vector2f> >  tex_coordinates;  // UV coordinates
