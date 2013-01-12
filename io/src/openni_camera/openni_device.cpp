@@ -111,14 +111,14 @@ openni_wrapper::OpenNIDevice::OpenNIDevice (
     THROW_OPENNI_EXCEPTION ("[openni_wrapper::OpenNIDevice::OpenNIDevice] Cannot open %s! (OpenNI: %s)\n", config.c_str (), xnGetStatusString (rc));
 
   XnStatus status = context_.FindExistingNode (XN_NODE_TYPE_DEPTH, depth_generator_);
-  if (status != XN_STATUS_OK)
-    THROW_OPENNI_EXCEPTION ("[openni_wrapper::OpenNIDevice::OpenNIDevice] Cannot find any depth nodes!\n");
+  //if (status != XN_STATUS_OK)
+  //  THROW_OPENNI_EXCEPTION ("[openni_wrapper::OpenNIDevice::OpenNIDevice] Cannot find any depth nodes!\n");
   status = context_.FindExistingNode (XN_NODE_TYPE_IMAGE, image_generator_);
-  if (status != XN_STATUS_OK)
-    THROW_OPENNI_EXCEPTION ("[openni_wrapper::OpenNIDevice::OpenNIDevice] Cannot find any image nodes!\n");
+  //if (status != XN_STATUS_OK)
+  //  THROW_OPENNI_EXCEPTION ("[openni_wrapper::OpenNIDevice::OpenNIDevice] Cannot find any image nodes!\n");
   status = context_.FindExistingNode (XN_NODE_TYPE_IR, ir_generator_);
-  if (status != XN_STATUS_OK)
-    THROW_OPENNI_EXCEPTION ("[openni_wrapper::OpenNIDevice::OpenNIDevice] Cannot find any IR nodes!\n");
+  //if (status != XN_STATUS_OK)
+  //  THROW_OPENNI_EXCEPTION ("[openni_wrapper::OpenNIDevice::OpenNIDevice] Cannot find any IR nodes!\n");
 
 #else
 
@@ -224,11 +224,11 @@ openni_wrapper::OpenNIDevice::OpenNIDevice (xn::Context& context, const xn::Node
     THROW_OPENNI_EXCEPTION ("[openni_wrapper::OpenNIDevice::OpenNIDevice] Cannot open %s! (OpenNI: %s)\n", config.c_str (), xnGetStatusString (rc));
 
   XnStatus status = context_.FindExistingNode (XN_NODE_TYPE_DEPTH, depth_generator_);
-  if (status != XN_STATUS_OK)
-    THROW_OPENNI_EXCEPTION ("[openni_wrapper::OpenNIDevice::OpenNIDevice] Cannot find any depth nodes!\n");
+  //if (status != XN_STATUS_OK)
+  //  THROW_OPENNI_EXCEPTION ("[openni_wrapper::OpenNIDevice::OpenNIDevice] Cannot find any depth nodes!\n");
   status = context_.FindExistingNode (XN_NODE_TYPE_IR, ir_generator_);
-  if (status != XN_STATUS_OK)
-    THROW_OPENNI_EXCEPTION ("[openni_wrapper::OpenNIDevice::OpenNIDevice] Cannot find any IR nodes!\n");
+  //if (status != XN_STATUS_OK)
+  //  THROW_OPENNI_EXCEPTION ("[openni_wrapper::OpenNIDevice::OpenNIDevice] Cannot find any IR nodes!\n");
 
 #else
   XnStatus status;
