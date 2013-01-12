@@ -43,6 +43,9 @@
 
 #include <gtest/gtest.h>
 
+// Needed for one test. Must be defined before including the mesh.
+#define PCL_GEOMETRY_MESH_BASE_TEST_DELETE_FACE_MANIFOLD_2
+
 #include <pcl/geometry/polygon_mesh.h>
 #include <pcl/geometry/triangle_mesh.h>
 #include <pcl/geometry/quad_mesh.h>
@@ -329,7 +332,7 @@ checkSizeData (const MeshT& mesh, const size_t n_v, const size_t n_he, const siz
 template <class ContainerT> bool
 isCircularPermutation (const ContainerT& actual, const ContainerT& expected)
 {
-  const unsigned int n = static_cast<unsigned int> (expected.size ());
+  const unsigned int n = static_cast <unsigned int> (expected.size ());
   EXPECT_EQ (n, actual.size ());
   if (n != actual.size ()) return (false);
 
@@ -1540,7 +1543,7 @@ TEST (TestAddDeleteFace, NonManifold2)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-TEST (TestAddDeleteFace, Manifold)
+TEST (TestAddDeleteFace, Manifold1)
 {
   typedef ManifoldTriangleMesh Mesh;
   typedef VertexIndex          VI;
@@ -1634,6 +1637,74 @@ TEST (TestAddDeleteFace, Manifold)
   expected_boundary.push_back (10);
   EXPECT_EQ (expected_boundary, getBoundaryVertices (mesh, 8));
 }
+
+////////////////////////////////////////////////////////////////////////////////
+
+#ifdef PCL_GEOMETRY_MESH_BASE_TEST_DELETE_FACE_MANIFOLD_2
+
+TEST (TestAddDeleteFace, Manifold2)
+{
+  typedef ManifoldTriangleMesh Mesh;
+  typedef VertexIndex          VI;
+
+  //  1 ----- 3  //
+  //  \ \   / /  //
+  //   \  0  /   //
+  //    \ | /    //
+  //      2      //
+  std::vector <VertexIndices> faces;
+  VertexIndices vi;
+  vi.push_back (VI (0)); vi.push_back (VI (1)); vi.push_back (VI (2)); faces.push_back (vi); vi.clear ();
+  vi.push_back (VI (0)); vi.push_back (VI (2)); vi.push_back (VI (3)); faces.push_back (vi); vi.clear ();
+  vi.push_back (VI (0)); vi.push_back (VI (3)); vi.push_back (VI (1)); faces.push_back (vi); vi.clear ();
+
+  // Try all possible combinations of adding the faces and deleting a vertex.
+  // NOTE: Some cases are redundant.
+  std::vector <int>                p;
+  std::vector <std::vector <int> > permutations;
+
+  p.push_back (0); p.push_back (1); p.push_back (2); permutations.push_back (p); p.clear ();
+  p.push_back (1); p.push_back (2); p.push_back (0); permutations.push_back (p); p.clear ();
+  p.push_back (2); p.push_back (0); p.push_back (1); permutations.push_back (p); p.clear ();
+
+  Mesh mesh_tmp;
+  vi.clear ();
+  for (int i=0; i<4; ++i)
+  {
+    vi.push_back (mesh_tmp.addVertex ());
+  }
+
+  for (size_t i=0; i<permutations.size (); ++i) // first face
+  {
+    for (size_t j=0; j<permutations.size (); ++j) // second face
+    {
+      for (size_t k=0; k<permutations.size (); ++k) // third face
+      {
+        for (VI l (0); l < VI (3); ++l) // deleted vertex
+        {
+          pcl::geometry::g_pcl_geometry_mesh_base_test_delete_face_manifold_2_success = true;
+
+          std::stringstream errormsg;
+          errormsg << "\n";
+          errormsg << faces [0] [permutations [i][0]] << faces [0] [permutations [i][1]] << faces [0] [permutations [i][2]] << " ";
+          errormsg << faces [1] [permutations [j][0]] << faces [1] [permutations [j][1]] << faces [1] [permutations [j][2]] << " ";
+          errormsg << faces [2] [permutations [k][0]] << faces [2] [permutations [k][1]] << faces [2] [permutations [k][2]] << " ";
+          errormsg << "v: " << l << "\n";
+
+          Mesh mesh = mesh_tmp;
+
+          mesh.addFace (faces [0] [permutations [i][0]], faces [0] [permutations [i][1]], faces [0] [permutations [i][2]]);
+          mesh.addFace (faces [1] [permutations [j][0]], faces [1] [permutations [j][1]], faces [1] [permutations [j][2]]);
+          mesh.addFace (faces [2] [permutations [k][0]], faces [2] [permutations [k][1]], faces [2] [permutations [k][2]]);
+
+          mesh.deleteVertex (VI (l));
+          ASSERT_TRUE (pcl::geometry::g_pcl_geometry_mesh_base_test_delete_face_manifold_2_success) << errormsg.str ();
+        }
+      }
+    }
+  }
+}
+#endif // PCL_GEOMETRY_MESH_BASE_TEST_DELETE_FACE_MANIFOLD_2
 
 ////////////////////////////////////////////////////////////////////////////////
 

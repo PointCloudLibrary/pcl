@@ -42,7 +42,6 @@
 #define PCL_GEOMETRY_MESH_BASE_H
 
 #include <vector>
-#include <stack>
 
 #include <pcl/geometry/boost.h>
 #include <pcl/geometry/eigen.h>
@@ -51,6 +50,20 @@
 #include <pcl/geometry/mesh_elements.h>
 #include <pcl/geometry/mesh_traits.h>
 #include <pcl/point_cloud.h>
+
+////////////////////////////////////////////////////////////////////////////////
+// Global variables used during testing
+////////////////////////////////////////////////////////////////////////////////
+
+#ifdef PCL_GEOMETRY_MESH_BASE_TEST_DELETE_FACE_MANIFOLD_2
+namespace pcl
+{
+  namespace geometry
+  {
+    bool g_pcl_geometry_mesh_base_test_delete_face_manifold_2_success;
+  } // End namespace geometry
+} // End namespace pcl
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////
 // Forward declarations
@@ -147,7 +160,8 @@ namespace pcl
             is_new_ (),
             make_adjacent_ (),
             is_boundary_ (),
-            face_indices_ ()
+            delete_faces_vertex_ (),
+            delete_faces_face_ ()
         {
         }
 
@@ -194,18 +208,18 @@ namespace pcl
           assert (this->isValid (idx_vertex));
           if (this->isDeleted (idx_vertex)) return;
 
-          face_indices_.clear ();
+          delete_faces_vertex_.clear ();
           FaceAroundVertexCirculator       circ     = this->getFaceAroundVertexCirculator (idx_vertex);
           const FaceAroundVertexCirculator circ_end = circ;
           do
           {
             if (circ.getTargetIndex ().isValid ()) // Check for boundary.
             {
-              face_indices_.push_back (circ.getTargetIndex ());
+              delete_faces_vertex_.push_back (circ.getTargetIndex ());
             }
           } while (++circ!=circ_end);
 
-          for (FaceIndices::const_iterator it = face_indices_.begin (); it!=face_indices_.end (); ++it)
+          for (FaceIndices::const_iterator it = delete_faces_vertex_.begin (); it!=delete_faces_vertex_.end (); ++it)
           {
             this->deleteFace (*it);
           }
@@ -248,8 +262,7 @@ namespace pcl
           assert (this->isValid (idx_face));
           if (this->isDeleted (idx_face)) return;
 
-          std::stack <FaceIndex> delete_faces; // This is only needed for the manifold mesh.
-          this->deleteFace (idx_face, delete_faces, IsManifold ());
+          this->deleteFace (idx_face, IsManifold ());
         }
 
         /** \brief Removes all mesh elements and data that are marked as deleted.
@@ -1517,30 +1530,29 @@ namespace pcl
         // deleteFace
         ////////////////////////////////////////////////////////////////////////
 
-        /** \brief Manifold version of deleteFace. If the mesh becomes non-manifold due to the delete operation the faces around the non-manifold vertex are deleted (put on the stack) until the mesh becomes manifold again. */
+        /** \brief Manifold version of deleteFace. If the mesh becomes non-manifold due to the delete operation the faces around the non-manifold vertex are deleted until the mesh becomes manifold again. */
         void
-        deleteFace (const FaceIndex&        idx_face,
-                    std::stack <FaceIndex>& delete_faces,
-                    boost::true_type       /*is_manifold*/)
+        deleteFace (const FaceIndex& idx_face,
+                    boost::true_type /*is_manifold*/)
         {
           assert (this->isValid (idx_face));
-          delete_faces.push (idx_face);
+          delete_faces_face_.clear ();
+          delete_faces_face_.push_back (idx_face);
 
-          while (!delete_faces.empty ())
+          while (!delete_faces_face_.empty ())
           {
-            const FaceIndex idx_face_cur = delete_faces.top ();
-            delete_faces.pop ();
+            const FaceIndex idx_face_cur = delete_faces_face_.back ();
+            delete_faces_face_.pop_back ();
 
             // This calls the non-manifold version of deleteFace, which will call the manifold version of reconnect.
-            this->deleteFace (idx_face_cur, delete_faces, boost::false_type ());
+            this->deleteFace (idx_face_cur, boost::false_type ());
           }
         }
 
-        /** \brief Non-manifold version of deleteFace. The stack is needed because this method is called by the manifold version as well. */
+        /** \brief Non-manifold version of deleteFace. */
         void
-        deleteFace (const FaceIndex&        idx_face,
-                    std::stack <FaceIndex>& delete_faces,
-                    boost::false_type       /*is_manifold*/)
+        deleteFace (const FaceIndex&  idx_face,
+                    boost::false_type /*is_manifold*/)
         {
           assert (this->isValid (idx_face));
           if (this->isDeleted (idx_face)) return;
@@ -1559,12 +1571,29 @@ namespace pcl
 
           const int n = static_cast <int> (inner_he_.size ());
           int j;
-          for (int i = 0; i < n; ++i)
+
+          if (IsManifold::value)
           {
-            j = (i+1)%n;
-            this->reconnect (inner_he_ [i], inner_he_ [j], is_boundary_ [i], is_boundary_ [j], delete_faces);
-            this->getHalfEdge (inner_he_ [i]).idx_face_.invalidate ();
+            for (int i=0; i<n; ++i)
+            {
+              j = (i+1)%n;
+              this->reconnect (inner_he_ [i], inner_he_ [j], is_boundary_ [i], is_boundary_ [j]);
+            }
+            for (int i=0; i<n; ++i)
+            {
+              this->getHalfEdge (inner_he_ [i]).idx_face_.invalidate ();
+            }
           }
+          else
+          {
+            for (int i=0; i<n; ++i)
+            {
+              j = (i+1)%n;
+              this->reconnect (inner_he_ [i], inner_he_ [j], is_boundary_ [i], is_boundary_ [j]);
+              this->getHalfEdge (inner_he_ [i]).idx_face_.invalidate ();
+            }
+          }
+
           this->markDeleted (idx_face);
         }
 
@@ -1574,11 +1603,10 @@ namespace pcl
 
         /** \brief Deconnect the input half-edges from the mesh and adjust the indices of the connected half-edges. */
         void
-        reconnect (const HalfEdgeIndex&    idx_he_ab,
-                   const HalfEdgeIndex&    idx_he_bc,
-                   const bool              is_boundary_ba,
-                   const bool              is_boundary_cb,
-                   std::stack <FaceIndex>& delete_faces)
+        reconnect (const HalfEdgeIndex& idx_he_ab,
+                   const HalfEdgeIndex& idx_he_bc,
+                   const bool           is_boundary_ba,
+                   const bool           is_boundary_cb)
         {
           const HalfEdgeIndex idx_he_ba = this->getOppositeHalfEdgeIndex  (idx_he_ab);
           const HalfEdgeIndex idx_he_cb = this->getOppositeHalfEdgeIndex  (idx_he_bc);
@@ -1617,17 +1645,16 @@ namespace pcl
           }
           else // no boundary - no boundary
           {
-            this->reconnectNBNB (idx_he_bc, idx_he_cb, idx_v_b, delete_faces, IsManifold ());
+            this->reconnectNBNB (idx_he_bc, idx_he_cb, idx_v_b, IsManifold ());
           }
         }
 
         /** \brief Both edges are not on the boundary. Manifold version. */
         void
-        reconnectNBNB (const HalfEdgeIndex&    idx_he_bc,
-                       const HalfEdgeIndex&    idx_he_cb,
-                       const VertexIndex&      idx_v_b,
-                       std::stack <FaceIndex>& delete_faces,
-                       boost::true_type        /*is_manifold*/)
+        reconnectNBNB (const HalfEdgeIndex& idx_he_bc,
+                       const HalfEdgeIndex& idx_he_cb,
+                       const VertexIndex&   idx_v_b,
+                       boost::true_type     /*is_manifold*/)
         {
           if (this->isBoundary (idx_v_b))
           {
@@ -1637,7 +1664,19 @@ namespace pcl
 
             while (!this->isBoundary (circ.getTargetIndex ()))
             {
-              delete_faces.push (this->getFaceIndex ((circ++).getTargetIndex ()));
+              delete_faces_face_.push_back (this->getFaceIndex ((circ++).getTargetIndex ()));
+
+#ifdef PCL_GEOMETRY_MESH_BASE_TEST_DELETE_FACE_MANIFOLD_2
+              if (circ == this->getIncomingHalfEdgeAroundVertexCirculator (idx_he_cb)) // Abort infinity loop
+              {
+                // In a manifold mesh we can't invalidate the face while reconnecting!
+                // See the implementation of
+                // deleteFace (const FaceIndex&  idx_face,
+                //             boost::false_type /*is_manifold*/)
+                pcl::geometry::g_pcl_geometry_mesh_base_test_delete_face_manifold_2_success = false;
+                return;
+              }
+#endif
             }
           }
           else
@@ -1648,11 +1687,10 @@ namespace pcl
 
         /** \brief Both edges are not on the boundary. Non-manifold version. */
         void
-        reconnectNBNB (const HalfEdgeIndex&    idx_he_bc,
-                       const HalfEdgeIndex&    /*idx_he_cb*/,
-                       const VertexIndex&      idx_v_b,
-                       std::stack <FaceIndex>& /*delete_faces*/,
-                       boost::false_type       /*is_manifold*/)
+        reconnectNBNB (const HalfEdgeIndex& idx_he_bc,
+                       const HalfEdgeIndex& /*idx_he_cb*/,
+                       const VertexIndex&   idx_v_b,
+                       boost::false_type    /*is_manifold*/)
         {
           if (!this->isBoundary (idx_v_b))
           {
@@ -2095,7 +2133,10 @@ namespace pcl
         std::vector <bool> is_boundary_;
 
         /** \brief Storage for deleteVertex. */
-        FaceIndices face_indices_;
+        FaceIndices delete_faces_vertex_;
+
+        /** \brief Storage for deleteFace. */
+        FaceIndices delete_faces_face_;
 
       public:
 
