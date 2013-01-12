@@ -229,7 +229,7 @@ pcl::OpenNIGrabber::start ()
     {
       block_signals ();
       device_->startImageStream ();
-      startSynchronization ();
+      //startSynchronization ();
     }
 
     if (depth_required_ && !device_->isDepthStreamRunning ())
@@ -240,7 +240,7 @@ pcl::OpenNIGrabber::start ()
         device_->setDepthRegistration (true);
       }
       device_->startDepthStream ();
-      startSynchronization ();
+      //startSynchronization ();
     }
 
     if (ir_required_ && !device_->isIRStreamRunning ())
