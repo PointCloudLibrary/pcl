@@ -55,7 +55,7 @@ using namespace std;
 using namespace pcl;
 using namespace pcl::console;
 
-bool is_done = false, save_data = false, toggle_one_frame_capture = false, visualize = true;
+bool global_visualize = true, is_done = false, save_data = false, toggle_one_frame_capture = false, visualize = true;
 boost::mutex io_mutex;
 int nr_frames_total = 0;
 
@@ -117,7 +117,7 @@ do \
     ++count; \
     if (now - last >= 1.0) \
     { \
-      if (visualize) \
+      if (visualize && global_visualize) \
         cerr << "Average framerate("<< _WHAT_ << "): " << double(count)/double(now - last) << " Hz. Queue size: " << buff1.getSize () << " (w) / " << buff2.getSize () << " (v)\n"; \
       else \
         cerr << "Average framerate("<< _WHAT_ << "): " << double(count)/double(now - last) << " Hz. Queue size: " << buff1.getSize () << " (w)\n"; \
@@ -228,6 +228,13 @@ class Buffer
       buffer_.set_capacity (buff_size);
     }
 
+    inline void 
+    clear ()
+    {
+      boost::mutex::scoped_lock buff_lock (bmutex_);
+      buffer_.clear ();
+    }
+
 	private:
 		Buffer (const Buffer&);            // Disabled copy constructor
 		Buffer& operator =(const Buffer&); // Disabled assignment operator
@@ -247,6 +254,8 @@ class Writer
     {
       if (!frame)
         return;
+
+      FPS_CALC_WRITER ("data write   ", buf_);
       nr_frames_total++;
       
       stringstream ss1, ss2, ss3;
@@ -292,7 +301,6 @@ class Writer
       // If you want to change that, uncomment the next line and change the value
       //ld.writeParameter (0.001, "depth.z_multiplication_factor", ss3.str ());
 
-      FPS_CALC_WRITER ("data write   ", buf_);
       toggle_one_frame_capture = false;
     }
 
@@ -300,23 +308,29 @@ class Writer
     void 
     receiveAndProcess ()
     {
-      while (true)
+      while (!is_done)
       {
-        if (is_done)
-          break;
-        
         if (save_data || toggle_one_frame_capture)
           writeToDisk (buf_.popFront ());
-        boost::this_thread::sleep (boost::posix_time::milliseconds (1));
+        else
+          boost::this_thread::sleep (boost::posix_time::microseconds (100));
       }
 
+      if (save_data && buf_.getSize () > 0)
       {
-        boost::mutex::scoped_lock io_lock (io_mutex);
-        print_info ("Writing remaing %ld clouds in the buffer to disk...\n", buf_.getSize ());
-      }
-      if (save_data)
+        {
+          boost::mutex::scoped_lock io_lock (io_mutex);
+          print_info ("Writing remaing %ld clouds in the buffer to disk...\n", buf_.getSize ());
+        }
         while (!buf_.isEmpty ())
+        {
+          {
+            boost::mutex::scoped_lock io_lock (io_mutex);
+            print_info ("Clearing buffer... %ld remaining...\n", buf_.getSize ());
+          }
           writeToDisk (buf_.popFront ());
+        }
+      }
     }
 
   public:
@@ -352,7 +366,7 @@ class Driver
                     float)
     {
       boost::posix_time::ptime time = boost::posix_time::microsec_clock::local_time ();
-      FPS_CALC_DRIVER ("image        ", buf_write_, buf_vis_);
+      FPS_CALC_DRIVER ("driver       ", buf_write_, buf_vis_);
 
       // Extract camera parameters
       io::CameraParameters parameters_rgb;
@@ -392,10 +406,8 @@ class Driver
 
       grabber_.start ();
       
-      while (true)
+      while (!is_done)
       {
-        if (is_done)
-          break;
         boost::this_thread::sleep (boost::posix_time::seconds (1));
       }
       grabber_.stop ();
@@ -458,7 +470,7 @@ class Viewer
              !depth_image_viewer_->wasStopped () && 
              !is_done)
       {
-        boost::this_thread::sleep (boost::posix_time::milliseconds (1));
+        boost::this_thread::sleep (boost::posix_time::microseconds (100));
 
         if (!visualize)
         {
@@ -558,6 +570,8 @@ class Viewer
       if (event.getKeyCode () == 'v' && event.keyDown ())
       {
         visualize = !visualize;
+        if (!visualize)
+          buf_.clear ();
         PCL_INFO ("Visualization state: %s.\n", (visualize ? "on" : "off"));
         return;
       }
@@ -599,10 +613,11 @@ class Viewer
 void
 usage (char ** argv)
 {
-  cout << "usage: " << argv[0] << " [(<device_id> [-imagemode <mode>] | [-depthmode <mode>] | [-depthformat <format>] | -l [<device_id>]| -h | --help)]" << endl;
-  cout << argv[0] << " -h | --help : shows this help" << endl;
-  cout << argv[0] << " -l : list all available devices" << endl;
-  cout << argv[0] << " -l <device-id> : list all available modes for specified device" << endl;
+  cout << "usage: " << argv[0] << " [(<device_id> [-visualize | -imagemode <mode>] | [-depthmode <mode>] | [-depthformat <format>] | -l [<device_id>]| -h | --help)]\n";
+  cout << argv[0] << " -h | --help : shows this help\n";
+  cout << argv[0] << " -l : list all available devices\n";
+  cout << argv[0] << " -visualize 0/1 : turn the visualization off/on (WARNING: when visualization is disabled, data writing is enabled by default!)\n";
+  cout << argv[0] << " -l <device-id> : list all available modes for specified device\n";
 
   cout << "                 device_id may be #1, #2, ... for the first, second etc device in the list"
 #ifndef _WIN32
@@ -723,6 +738,7 @@ main (int argc, char ** argv)
   
   int depthformat = openni_wrapper::OpenNIDevice::OpenNI_12_bit_depth;
   console::parse_argument (argc, argv, "-depthformat", depthformat);
+  console::parse_argument (argc, argv, "-visualize", global_visualize);
 
   OpenNIGrabber ni_grabber (device_id, depth_mode, image_mode);
   // Set the depth output format
@@ -737,13 +753,18 @@ main (int argc, char ** argv)
   
   Driver driver (ni_grabber, buf_write, buf_vis);
   Writer writer (buf_write);
-  Viewer viewer (buf_vis);
+  boost::shared_ptr<Viewer> viewer;
+  if (global_visualize)
+    viewer.reset (new Viewer (buf_vis));
+  else
+    save_data = true;
   
   signal (SIGINT, ctrlC);
 
   driver.stop ();
+  if (global_visualize)
+    viewer->stop ();
   writer.stop ();
-  viewer.stop ();
 
   print_highlight ("Total number of frames written: %d.\n", nr_frames_total);
   return (0);
