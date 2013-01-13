@@ -45,6 +45,8 @@
 #include <boost/filesystem.hpp>
 #include <pcl/visualization/pcl_visualizer.h>
 
+
+
 #define SHOW_FPS 1
 #if SHOW_FPS
 #define FPS_CALC(_WHAT_) \

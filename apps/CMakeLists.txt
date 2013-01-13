@@ -107,6 +107,9 @@ if(build)
         target_link_libraries(pcl_openni_organized_compression pcl_common pcl_io pcl_filters pcl_visualization pcl_octree)
       endif(HAVE_PNG)
 
+      PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_openni_shift_to_depth_conversion ${SUBSYS_NAME} src/openni_shift_to_depth_conversion.cpp)
+      target_link_libraries(pcl_openni_shift_to_depth_conversion pcl_common pcl_visualization)
+
       PCL_ADD_EXECUTABLE(pcl_openni_mobile_server ${SUBSYS_NAME} src/openni_mobile_server.cpp)
       target_link_libraries(pcl_openni_mobile_server pcl_common pcl_io pcl_filters pcl_visualization)
 
