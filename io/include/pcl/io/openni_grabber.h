@@ -289,6 +289,36 @@ namespace pcl
         depth_focal_length_y = depth_focal_length_y_;
       }
 
+      /** \brief Convert vector of raw shift values to depth values
+        * \param[in] shift_data_ptr input shift data
+        * \param[out] depth_data_ptr generated depth data
+        * \param[in] size of shift and depth buffer
+        */
+      inline void
+      convertShiftToDepth (
+          const uint16_t* shift_data_ptr,
+          uint16_t* depth_data_ptr,
+          std::size_t size) const
+      {
+        // get openni device instance
+        boost::shared_ptr<openni_wrapper::OpenNIDevice> openni_device =
+              this->getDevice ();
+
+        const uint16_t* shift_data_it = shift_data_ptr;
+        uint16_t* depth_data_it = depth_data_ptr;
+
+        // shift-to-depth lookup
+        for (std::size_t i=0; i<size; ++i)
+        {
+          *depth_data_it = openni_device->shiftToDepth(*shift_data_it);
+
+          shift_data_it++;
+          depth_data_it++;
+        }
+
+      }
+
+
     protected:
       /** \brief On initialization processing. */
       void
@@ -359,27 +389,29 @@ namespace pcl
       virtual inline void
       checkIRStreamRequired ();
 
+
       /** \brief Convert a Depth image to a pcl::PointCloud<pcl::PointXYZ>
-        * \param[in] depth the depth image to convert 
+        * \param[in] depth the depth image to convert
         */
       boost::shared_ptr<pcl::PointCloud<pcl::PointXYZ> >
       convertToXYZPointCloud (const boost::shared_ptr<openni_wrapper::DepthImage> &depth) const;
 
       /** \brief Convert a Depth + RGB image pair to a pcl::PointCloud<PointT>
-        * \param[in] image the RGB image to convert 
-        * \param[in] depth_image the depth image to convert 
+        * \param[in] image the RGB image to convert
+        * \param[in] depth_image the depth image to convert
         */
       template <typename PointT> typename pcl::PointCloud<PointT>::Ptr
       convertToXYZRGBPointCloud (const boost::shared_ptr<openni_wrapper::Image> &image,
                                  const boost::shared_ptr<openni_wrapper::DepthImage> &depth_image) const;
 
       /** \brief Convert a Depth + Intensity image pair to a pcl::PointCloud<pcl::PointXYZI>
-        * \param[in] image the IR image to convert 
-        * \param[in] depth_image the depth image to convert 
+        * \param[in] image the IR image to convert
+        * \param[in] depth_image the depth image to convert
         */
       boost::shared_ptr<pcl::PointCloud<pcl::PointXYZI> >
       convertToXYZIPointCloud (const boost::shared_ptr<openni_wrapper::IRImage> &image,
                                const boost::shared_ptr<openni_wrapper::DepthImage> &depth_image) const;
+
 
       Synchronizer<boost::shared_ptr<openni_wrapper::Image>, boost::shared_ptr<openni_wrapper::DepthImage> > rgb_sync_;
       Synchronizer<boost::shared_ptr<openni_wrapper::IRImage>, boost::shared_ptr<openni_wrapper::DepthImage> > ir_sync_;

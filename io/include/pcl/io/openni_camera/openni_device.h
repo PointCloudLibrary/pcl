@@ -416,6 +416,22 @@ namespace openni_wrapper
       XnUInt64 
       getDepthOutputFormat () const;
 
+
+      /** \brief Convert shift to depth value. */
+      inline uint16_t
+      shiftToDepth (uint16_t shift_value) const
+      {
+        assert (shift_conversion_parameters_.init_);
+
+        uint16_t ret = 0;
+
+        // lookup depth value in shift lookup table
+        if (shift_value<shift_to_depth_table_.size())
+          ret = shift_to_depth_table_[shift_value];
+
+        return ret;
+      }
+
     private:
       // make OpenNIDevice non copyable
       OpenNIDevice (OpenNIDevice const &);
@@ -454,6 +470,31 @@ namespace openni_wrapper
 
       void 
       Init ();
+
+      void InitShiftToDepthConversion();
+      void ReadDeviceParametersFromSensorNode();
+
+      struct ShiftConversion
+      {
+        ShiftConversion() : init_(false) {}
+
+        XnUInt16 zero_plane_distance_;
+        XnFloat zero_plane_pixel_size_;
+        XnFloat emitter_dcmos_distace_;
+        XnUInt32 max_shift_;
+        XnUInt32 device_max_shift_;
+        XnUInt32 const_shift_;
+        XnUInt32 pixel_size_factor_;
+        XnUInt32 param_coeff_;
+        XnUInt32 shift_scale_;
+        XnUInt32 min_depth_;
+        XnUInt32 max_depth_;
+        bool init_;
+
+      } shift_conversion_parameters_;
+
+      std::vector<uint16_t> shift_to_depth_table_;
+
       // holds the callback functions together with custom data
       // since same callback function can be registered multiple times with e.g. different custom data
       // we use a map structure with a handle as the key

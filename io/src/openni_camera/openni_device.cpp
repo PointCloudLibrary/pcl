@@ -168,6 +168,9 @@ openni_wrapper::OpenNIDevice::OpenNIDevice (
   image_generator_.RegisterToNewDataAvailable (static_cast<xn::StateChangedHandler> (NewImageDataAvailable), this, image_callback_handle_);
 
   Init ();
+
+  // read sensor configuration from device
+  InitShiftToDepthConversion();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -264,6 +267,9 @@ openni_wrapper::OpenNIDevice::OpenNIDevice (xn::Context& context, const xn::Node
   depth_generator_.RegisterToNewDataAvailable (static_cast <xn::StateChangedHandler> (NewDepthDataAvailable), this, depth_callback_handle_);
   // set up rest
   Init ();
+
+  // read sensor configuration from device
+  InitShiftToDepthConversion();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -400,6 +406,134 @@ openni_wrapper::OpenNIDevice::Init ()
   {
     boost::lock_guard<boost::mutex> ir_lock (ir_mutex_);
     ir_thread_ = boost::thread (&OpenNIDevice::IRDataThreadFunction, this);
+  }
+}
+
+void openni_wrapper::OpenNIDevice::InitShiftToDepthConversion ()
+{
+  // Read device configuration from OpenNI sensor node
+  ReadDeviceParametersFromSensorNode();
+
+  if (shift_conversion_parameters_.init_)
+  {
+    // Calculate shift conversion table
+
+    uint32_t nIndex = 0;
+    uint16_t nShiftValue = 0;
+    double dFixedRefX = 0;
+    double dMetric = 0;
+    double dDepth = 0;
+    double dPlanePixelSize = shift_conversion_parameters_.zero_plane_pixel_size_;
+    double dPlaneDsr = shift_conversion_parameters_.zero_plane_distance_;
+    double dPlaneDcl = shift_conversion_parameters_.emitter_dcmos_distace_;
+    uint32_t nConstShift = shift_conversion_parameters_.param_coeff_ *
+        shift_conversion_parameters_.const_shift_;
+
+    dPlanePixelSize *= shift_conversion_parameters_.pixel_size_factor_;
+    nConstShift /= shift_conversion_parameters_.pixel_size_factor_;
+
+    shift_to_depth_table_.resize(shift_conversion_parameters_.device_max_shift_+1);
+
+    for (nIndex = 1; nIndex < shift_conversion_parameters_.device_max_shift_; nIndex++)
+    {
+      nShiftValue = (uint16_t)nIndex;
+
+      dFixedRefX = (double) (nShiftValue - nConstShift) /
+                   (double) shift_conversion_parameters_.param_coeff_;
+      dFixedRefX -= 0.375;
+      dMetric = dFixedRefX * dPlanePixelSize;
+      dDepth = shift_conversion_parameters_.shift_scale_ *
+               ((dMetric * dPlaneDsr / (dPlaneDcl - dMetric)) + dPlaneDsr);
+
+      // check cut-offs
+      if ((dDepth > shift_conversion_parameters_.min_depth_) &&
+          (dDepth < shift_conversion_parameters_.max_depth_))
+      {
+        shift_to_depth_table_[nIndex] = (uint16_t)(dDepth);
+      }
+    }
+
+  }
+  else
+      THROW_OPENNI_EXCEPTION ("Shift-to-depth lookup calculation failed. Reason: Device configuration not initialized.");
+}
+
+void
+openni_wrapper::OpenNIDevice::ReadDeviceParametersFromSensorNode ()
+{
+  if (hasDepthStream ())
+  {
+
+    XnUInt64 nTemp;
+    XnDouble dTemp;
+
+    XnStatus status = depth_generator_.GetIntProperty ("ZPD", nTemp);
+    if (status != XN_STATUS_OK)
+      THROW_OPENNI_EXCEPTION ("reading the zero plane distance failed. Reason: %s", xnGetStatusString (status));
+
+    shift_conversion_parameters_.zero_plane_distance_ =  (XnUInt16)nTemp;
+
+    status = depth_generator_.GetRealProperty ("ZPPS", dTemp);
+    if (status != XN_STATUS_OK)
+      THROW_OPENNI_EXCEPTION ("reading the zero plane pixel size failed. Reason: %s", xnGetStatusString (status));
+
+    shift_conversion_parameters_.zero_plane_pixel_size_ =  (XnFloat)dTemp;
+
+    status = depth_generator_.GetRealProperty ("LDDIS", dTemp);
+    if (status != XN_STATUS_OK)
+      THROW_OPENNI_EXCEPTION ("reading the dcmos distance failed. Reason: %s", xnGetStatusString (status));
+
+    shift_conversion_parameters_.emitter_dcmos_distace_ =  (XnFloat)dTemp;
+
+    status = depth_generator_.GetIntProperty ("MaxShift", nTemp);
+    if (status != XN_STATUS_OK)
+      THROW_OPENNI_EXCEPTION ("reading the max shift parameter failed. Reason: %s", xnGetStatusString (status));
+
+    shift_conversion_parameters_.max_shift_ =  (XnUInt32)nTemp;
+
+    status = depth_generator_.GetIntProperty ("DeviceMaxDepth", nTemp);
+    if (status != XN_STATUS_OK)
+      THROW_OPENNI_EXCEPTION ("reading the device max depth parameter failed. Reason: %s", xnGetStatusString (status));
+
+    shift_conversion_parameters_.device_max_shift_ =  (XnUInt32)nTemp;
+
+    status = depth_generator_.GetIntProperty ("ConstShift", nTemp);
+    if (status != XN_STATUS_OK)
+      THROW_OPENNI_EXCEPTION ("reading the const shift parameter failed. Reason: %s", xnGetStatusString (status));
+
+    shift_conversion_parameters_.const_shift_ =  (XnUInt32)nTemp;
+
+    status = depth_generator_.GetIntProperty ("PixelSizeFactor", nTemp);
+    if (status != XN_STATUS_OK)
+      THROW_OPENNI_EXCEPTION ("reading the pixel size factor failed. Reason: %s", xnGetStatusString (status));
+
+    shift_conversion_parameters_.pixel_size_factor_ =  (XnUInt32)nTemp;
+
+    status = depth_generator_.GetIntProperty ("ParamCoeff", nTemp);
+    if (status != XN_STATUS_OK)
+      THROW_OPENNI_EXCEPTION ("reading the param coeff parameter failed. Reason: %s", xnGetStatusString (status));
+
+    shift_conversion_parameters_.param_coeff_ =  (XnUInt32)nTemp;
+
+    status = depth_generator_.GetIntProperty ("ShiftScale", nTemp);
+    if (status != XN_STATUS_OK)
+      THROW_OPENNI_EXCEPTION ("reading the shift scale parameter failed. Reason: %s", xnGetStatusString (status));
+
+    shift_conversion_parameters_.shift_scale_ =  (XnUInt32)nTemp;
+
+    status = depth_generator_.GetIntProperty ("MinDepthValue", nTemp);
+    if (status != XN_STATUS_OK)
+      THROW_OPENNI_EXCEPTION ("reading the min depth value parameter failed. Reason: %s", xnGetStatusString (status));
+
+    shift_conversion_parameters_.min_depth_ =  (XnUInt32)nTemp;
+
+    status = depth_generator_.GetIntProperty ("MaxDepthValue", nTemp);
+    if (status != XN_STATUS_OK)
+      THROW_OPENNI_EXCEPTION ("reading the max depth value parameter failed. Reason: %s", xnGetStatusString (status));
+
+    shift_conversion_parameters_.max_depth_ =  (XnUInt32)nTemp;
+
+    shift_conversion_parameters_.init_ = true;
   }
 }
 
