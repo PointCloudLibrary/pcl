@@ -452,9 +452,6 @@ class Viewer
       string mouseMsg2D ("Mouse coordinates in image viewer");
       string keyMsg2D ("Key event for image viewer");
 
-      image_viewer_.reset (new visualization::ImageViewer ("PCL/OpenNI RGB image viewer"));
-      depth_image_viewer_.reset (new visualization::ImageViewer ("PCL/OpenNI depth image viewer"));
-
       image_viewer_->registerMouseCallback (&Viewer::mouse_callback, *this, static_cast<void*> (&mouseMsg2D));
       image_viewer_->registerKeyboardCallback(&Viewer::keyboard_callback, *this, static_cast<void*> (&keyMsg2D));
       depth_image_viewer_->registerMouseCallback (&Viewer::mouse_callback, *this, static_cast<void*> (&mouseMsg2D));
@@ -539,16 +536,16 @@ class Viewer
       : buf_ (buf)
       , image_cld_init_ (false), depth_image_cld_init_ (false)
     {
-      thread_.reset (new boost::thread (boost::bind (&Viewer::receiveAndView, this)));
+      image_viewer_.reset (new visualization::ImageViewer ("PCL/OpenNI RGB image viewer"));
+      depth_image_viewer_.reset (new visualization::ImageViewer ("PCL/OpenNI depth image viewer"));
+
+      receiveAndView ();
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////
     void
     stop ()
     {
-      image_viewer_->close ();
-      depth_image_viewer_->close ();
-      thread_->join ();
       boost::mutex::scoped_lock io_lock (io_mutex);
       print_highlight ("Viewer done.\n");
     }
@@ -605,7 +602,6 @@ class Viewer
       }
     }
 
-    boost::shared_ptr<boost::thread> thread_;
     Buffer &buf_;
     boost::shared_ptr<visualization::ImageViewer> image_viewer_;
     boost::shared_ptr<visualization::ImageViewer> depth_image_viewer_;
@@ -756,6 +752,8 @@ main (int argc, char ** argv)
   buf_write.setCapacity (buff_size);
   buf_vis.setCapacity (buff_size);
   
+  signal (SIGINT, ctrlC);
+
   Driver driver (ni_grabber, buf_write, buf_vis);
   Writer writer (buf_write);
   boost::shared_ptr<Viewer> viewer;
@@ -763,9 +761,8 @@ main (int argc, char ** argv)
     viewer.reset (new Viewer (buf_vis));
   else
     save_data = true;
-  
-  signal (SIGINT, ctrlC);
 
+  // Exit here when the viewer ends (if enabled)
   driver.stop ();
   if (global_visualize)
     viewer->stop ();
