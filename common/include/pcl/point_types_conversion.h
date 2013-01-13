@@ -103,6 +103,7 @@ namespace pcl
   PointXYZHSVtoXYZRGB (PointXYZHSV&  in,
                        PointXYZRGB&  out)
   {
+    out.x = in.x; out.y = in.y; out.z = in.z;
     if (in.s == 0)
     {
       out.r = out.g = out.b = static_cast<uint8_t> (in.v);
