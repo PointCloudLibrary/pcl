@@ -138,11 +138,11 @@ pcl::recognition::ORROctree::build (const PointCloudIn& points, float voxelsize,
   root_->setParent(NULL);
   root_->computeRadius();
 
-  // Fill the leaves with the points
   const float *c;
   int i, l, id, num_points = static_cast<int> (points_->size ());
   ORROctree::Node* node;
 
+  // Fill the leaves with the points
   for ( i = 0 ; i < num_points ; ++i )
   {
     // Some initialization
@@ -189,9 +189,6 @@ pcl::recognition::ORROctree::build (const PointCloudIn& points, float voxelsize,
     if ( normals )
       aux::vecNormalize3 ((*it)->getData ()->getNormal ());
   }
-
-  // Save pointers to all full leafs in a list and build a neighbourhood structure
-//  this->buildFullLeafsVectorAndNeighbourhoodStructure();
 
 #ifdef PCL_REC_ORR_OCTREE_VERBOSE
   printf("ORROctree::%s(): end\n", __func__);
@@ -369,6 +366,42 @@ pcl::recognition::ORROctree::getRandomFullLeafOnSphere (const float* p, float ra
   }
 
   return NULL;
+}
+
+//================================================================================================================================================================
+
+void
+pcl::recognition::ORROctree::deleteBranch (Node* node)
+{
+  node->deleteChildren ();
+  node->deleteData ();
+
+  Node *children, *parent = node->getParent ();
+  int i;
+
+  // Go up until you reach a node which has other non-empty children (i.e., children with other children or with data)
+  while ( parent )
+  {
+    children = parent->getChildren ();
+    // Check the children
+	for ( i = 0 ; i < 8 ; ++i )
+    {
+      if ( children[i].hasData () || children[i].hasChildren () )
+        break;
+    }
+
+	// There are no children with other children or with data -> delete them all!
+	if ( i == 8 )
+    {
+      parent->deleteChildren ();
+      parent->deleteData ();
+      // Go one level up
+      parent = parent->getParent ();
+    }
+	else
+      // Terminate the deleting process
+      break;
+  }
 }
 
 //================================================================================================================================================================

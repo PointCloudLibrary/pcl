@@ -125,29 +125,70 @@ namespace pcl
             };
 
             Node (): data_ (NULL), children_(NULL) {}
-            virtual~ Node () { if ( data_ ) delete data_; if ( children_ ) delete[] children_;}
+            virtual~ Node () { this->deleteChildren (); this->deleteData ();}
 
             void setCenter(const float *c) { center_[0] = c[0]; center_[1] = c[1]; center_[2] = c[2];}
             void setBounds(const float *b) { bounds_[0] = b[0]; bounds_[1] = b[1]; bounds_[2] = b[2]; bounds_[3] = b[3]; bounds_[4] = b[4]; bounds_[5] = b[5];}
             void setParent(Node* parent) { parent_ = parent;}
             void setData(Node::Data* data) { data_ = data;}
             /** \brief Computes the "radius" of the node which is half the diagonal length. */
-            inline void computeRadius()
+            inline void
+            computeRadius()
             {
               float v[3] = {0.5f*(bounds_[1]-bounds_[0]), 0.5f*(bounds_[3]-bounds_[2]), 0.5f*(bounds_[5]-bounds_[4])};
               radius_ = static_cast<float> (aux::vecLength3 (v));
             }
 
-            const float* getCenter() const { return  center_;}
-            const float* getBounds() const { return bounds_;}
-            Node* getChild (int id) { return &children_[id];}
-            Node* getChildren () { return children_;}
-            Node::Data* getData() { return data_;}
-            bool hasChildren (){ return static_cast<bool> (children_);}
-            /** \brief Computes the "radius" of the node which is half the diagonal length. */
-            float getRadius (){ return radius_;}
+            inline const float*
+            getCenter() const { return  center_;}
 
-            void createChildren();
+            inline const float*
+            getBounds() const { return bounds_;}
+
+            inline Node*
+            getChild (int id) { return &children_[id];}
+
+            inline Node*
+            getChildren () { return children_;}
+
+            inline Node::Data*
+            getData() { return data_;}
+
+            inline Node*
+            getParent (){ return parent_;}
+
+            inline bool
+            hasData (){ return static_cast<bool> (data_);}
+
+            inline bool
+            hasChildren (){ return static_cast<bool> (children_);}
+
+            /** \brief Computes the "radius" of the node which is half the diagonal length. */
+            inline float
+            getRadius (){ return radius_;}
+
+            inline void
+            createChildren ();
+
+            inline void
+            deleteChildren ()
+            {
+              if ( children_ )
+              {
+                delete[] children_;
+                children_ = NULL;
+              }
+            }
+
+            inline void
+            deleteData ()
+            {
+              if ( data_ )
+              {
+                delete data_;
+                data_ = NULL;
+              }
+            }
 
           protected:
             Node::Data *data_;
@@ -178,6 +219,10 @@ namespace pcl
     	  * and 'radius'. Returns NULL if no leaf is intersected by that sphere. */
         ORROctree::Node*
         getRandomFullLeafOnSphere (const float* p, float radius);
+
+        /** \brief Deletes the branch 'node' is part of. */
+        void
+        deleteBranch (Node* node);
 
         /** \brief Returns a vector with all octree leaves which contain at least one point. */
         std::vector<ORROctree::Node*>&
