@@ -984,6 +984,11 @@ namespace pcl
         /** \brief Image reslice, used for flipping the image. */
         vtkSmartPointer<vtkImageFlip> algo_;
 
+        /** \brief Internal data array. Used everytime add***Image is called. 
+          * Cleared, everytime the render loop is executed. 
+          */
+        std::vector<unsigned char*> image_data_;
+
         struct LayerComparator
         {
           LayerComparator (const std::string &str) : str_ (str) {}

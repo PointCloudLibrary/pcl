@@ -66,6 +66,7 @@ pcl::visualization::ImageViewer::ImageViewer (const std::string& window_title)
   , blend_ (vtkSmartPointer<vtkImageBlend>::New ())
   , layer_map_ ()
   , algo_ (vtkSmartPointer<vtkImageFlip>::New ())
+  , image_data_ ()
 {
   interactor_ = vtkSmartPointer <vtkRenderWindowInteractor>::Take (vtkRenderWindowInteractorFixNew ());
   // Prepare for image flip
@@ -320,8 +321,8 @@ pcl::visualization::ImageViewer::addFloatImage (
   unsigned char* rgb_image = FloatImageUtils::getVisualImage (float_image, width, height,
                                                               min_value, max_value, grayscale);
   addRGBImage (rgb_image, width, height, layer_id, opacity);
-  delete[] rgb_image;  
- }
+  image_data_.push_back (rgb_image);  
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////
 void
@@ -341,8 +342,8 @@ pcl::visualization::ImageViewer::addAngleImage (
     const std::string &layer_id, double opacity)
 {
   unsigned char* rgb_image = FloatImageUtils::getVisualAngleImage (angle_image, width, height);
-  showRGBImage (rgb_image, width, height, layer_id, opacity);
-  delete[] rgb_image;
+  addRGBImage (rgb_image, width, height, layer_id, opacity);
+  image_data_.push_back (rgb_image);  
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -363,7 +364,7 @@ pcl::visualization::ImageViewer::addHalfAngleImage (
 {
   unsigned char* rgb_image = FloatImageUtils::getVisualHalfAngleImage (angle_image, width, height);
   addRGBImage (rgb_image, width, height, layer_id, opacity);
-  delete[] rgb_image;
+  image_data_.push_back (rgb_image);  
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -386,7 +387,7 @@ pcl::visualization::ImageViewer::addShortImage (
   unsigned char* rgb_image = FloatImageUtils::getVisualImage (short_image, width, height,
                                                               min_value, max_value, grayscale);
   addRGBImage (rgb_image, width, height, layer_id, opacity);
-  delete[] rgb_image;
+  image_data_.push_back (rgb_image);  
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -429,6 +430,7 @@ pcl::visualization::ImageViewer::spinOnce (int time, bool force_redraw)
     interactor_->Start ();
     interactor_->DestroyTimer (exit_main_loop_timer_callback_->right_timer_id);
   );
+  image_data_.clear ();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -585,7 +587,7 @@ pcl::visualization::ImageViewer::createLayer (
   l.canvas->SetNumberOfScalarComponents (4);
   if (fill_box)
   {
-    l.canvas->SetDrawColor (0.0, 0.0, 0.0, 0.0); //opacity * 255.0);
+    l.canvas->SetDrawColor (0.0, 0.0, 0.0, 255.0);
     l.canvas->FillBox (0, width, 0, height);
     l.canvas->Update ();
     l.canvas->Modified ();
@@ -1018,6 +1020,7 @@ pcl::visualization::ImageViewer::render ()
 #else
   win_->Render ();
 #endif
+  image_data_.clear ();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
