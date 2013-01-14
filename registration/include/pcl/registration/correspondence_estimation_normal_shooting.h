@@ -62,7 +62,6 @@ namespace pcl
       * est.setSourceNormals (source);
       *
       * est.setInputTarget (target);
-      * est.setTargetNormals (target);
       *
       * // Test the first 10 correspondences for each point in source, and return the best
       * est.setKSearch (10);
