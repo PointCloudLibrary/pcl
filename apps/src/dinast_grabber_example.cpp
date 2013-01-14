@@ -35,113 +35,68 @@
  *
  */
 
-#include <string>
-#include <string.h>
-#include <stdlib.h>
-#include <iostream>
-#include <cstdio>
-
-#include <Eigen/Core>
-#include <pcl/common/transforms.h>
 #include <pcl/common/time.h>
-#include <pcl/visualization/pcl_visualizer.h>
-#include <pcl/visualization/image_viewer.h>
 #include <pcl/point_types.h>
-#include <pcl/io/pcd_io.h>
 #include <pcl/io/dinast_grabber.h>
+#include <pcl/visualization/cloud_viewer.h>
 
-#define IMAGE_HEIGHT 240
-#define IMAGE_WIDTH 320
-
-#define FPS_CALC(_WHAT_) \
-static unsigned count = 0;\
-static double last = pcl::getTime ();\
-double now = pcl::getTime (); \
-++count; \
-if (now - last >= 1.0) \
-{ \
-  std::cout << "Average framerate("<< _WHAT_ << "): " << double(count)/double(now - last) << " Hz" <<  std::endl; \
-  count = 0; \
-  last = now; \
-} \
-
-void
-savePGM (const unsigned char *image, const std::string& filename)
+template <typename PointType>
+class DinastProcessor
 {
-  FILE *file = fopen (filename.c_str (), "w");
-  if (!file)
-  {
-    std::cerr << "Unable to open file '" << filename << "' for writing." << std::endl;
-    return;
-  }
+  public:
+    
+    typedef pcl::PointCloud<PointType> Cloud;
+    typedef typename Cloud::ConstPtr CloudConstPtr;
+    
+    DinastProcessor(pcl::Grabber& grabber) : interface(grabber), vis_cld("Dinast Cloud Viewer") {}
 
-  // PGM header
-  fprintf (file, "P2\n%d %d\n255\n", IMAGE_WIDTH, IMAGE_HEIGHT);
-
-  // Write data as ASCII
-  for (int i = 0; i < IMAGE_HEIGHT; ++i)
-  {
-    for (int j = 0; j < IMAGE_WIDTH; ++j)
+    void 
+    cloud_cb_ (CloudConstPtr cloud_cb)
     {
-      fprintf (file, "%3d ", int(*image++));
+      static unsigned count = 0;
+      static double last = pcl::getTime ();
+      if (++count == 30)
+      {
+        double now = pcl::getTime ();
+        std::cout << "Average framerate: " << double(count)/double(now - last) << " Hz" <<  std::endl;
+        count = 0;
+        last = now;
+      }
+      if (!vis_cld.wasStopped())
+        vis_cld.showCloud(cloud_cb);
     }
-    fprintf (file, "\n");
-  }
-
-  fclose (file);
-}
-
-void
-keyboardEventOccurred (const pcl::visualization::KeyboardEvent &event, void* data)
-{
-  static int NUM_IMAGES = 0;
-  if (event.getKeySym () == "s" && event.keyDown ())
-  {
-    char filename[16];
-    snprintf (filename, sizeof(filename), "image%.2d.pgm", NUM_IMAGES++);
-    unsigned char *image = reinterpret_cast<unsigned char*> (data);
-    savePGM (image, filename);
-    printf ("Wrote %s\n", filename);
-  }
-}
+    
+    int 
+    run ()
+    {
+      
+      interface.start ();
+      
+      boost::function<void (const CloudConstPtr&)> f =
+        boost::bind (&DinastProcessor::cloud_cb_, this, _1);
+      
+      boost::signals2::connection c = interface.registerCallback (f);
+      
+      while (true)
+      {
+        boost::this_thread::sleep (boost::posix_time::seconds (1));
+      }
+      
+      interface.stop ();
+      
+      return(0);
+    }
+    
+    pcl::Grabber& interface;
+    pcl::visualization::CloudViewer vis_cld;  
+    
+};
 
 int
-main (int argc, char** argv) 
+main () 
 {
-
-  pcl::DinastGrabber interface;
-  
-  std::cerr << "Device version/revision number: " << interface.getDeviceVersion () << "Hz" << std::endl;
-  
-
-
-  pcl::visualization::ImageViewer vis_img ("Dinast Image Viewer");
-  pcl::visualization::PCLVisualizer vis_cld (argc, argv, "Dinast Cloud Viewer");
-
-  unsigned char *image =  reinterpret_cast <unsigned char*> (malloc (IMAGE_HEIGHT*IMAGE_WIDTH));
-  pcl::PointCloud<pcl::PointXYZI>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZI>);
-  
-  while (true)
-  {
-    interface.start ();
-    
-    interface.getData (image, cloud);
-      
-    FPS_CALC ("grabber + visualization");
-    
-    vis_img.showMonoImage (image, IMAGE_WIDTH, IMAGE_HEIGHT);
-    
-    pcl::visualization::PointCloudColorHandlerGenericField<pcl::PointXYZI> handler (cloud, "intensity");
-    if (!vis_cld.updatePointCloud (cloud, handler, "DinastCloud"))
-    {
-      vis_cld.addPointCloud (cloud, handler, "DinastCloud");
-      vis_cld.resetCameraViewpoint ("DinastCloud");
-    }
-
-    vis_img.spinOnce ();
-    vis_cld.spinOnce ();
-    
-    interface.stop ();
-  }
-
+  pcl::DinastGrabber grabber;
+  DinastProcessor<pcl::PointXYZI> v (grabber);
+  v.run ();
+  return (0);
 }

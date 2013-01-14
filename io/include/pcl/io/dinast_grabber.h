@@ -40,14 +40,12 @@
 #ifndef __PCL_IO_DINAST_GRABBER__
 #define __PCL_IO_DINAST_GRABBER__
 
-#include <pcl/pcl_config.h>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 #include <pcl/io/grabber.h>
 #include <pcl/common/time.h>
 #include <libusb-1.0/libusb.h>
 #include <boost/circular_buffer.hpp>
-#include <string>
 
 namespace pcl
 {
@@ -57,6 +55,10 @@ namespace pcl
     */
   class PCL_EXPORTS DinastGrabber: public Grabber
   {
+    
+    //define callback signature typedefs
+    typedef void (sig_cb_dinast_point_cloud) (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZI> >&);
+    
     public:
       /** \brief Constructor. 
         * \param[in] device_position Number corresponding the device to grab
@@ -96,20 +98,9 @@ namespace pcl
         */
       std::string
       getDeviceVersion ();
-
-      /** \brief Read image data
-        * \param[out] the image data in unsigned short format
-        */
-      int
-      readImage (unsigned char *image);
-      
-      /** \brief Obtains the image and the corresponding XYZI Point Cloud
-        * \param[out] the image data in unsigned short format and the corresponding point cloud from the camera
-        */
-      void
-      getData (unsigned char *image, pcl::PointCloud<pcl::PointXYZI>::Ptr cloud);
       
     protected:  
+      
       /** \brief On initialization processing. */
       void
       onInit (const int device_id);
@@ -150,6 +141,23 @@ namespace pcl
       int
       checkHeader ();
       
+      /** \brief Read image data
+        * \param[out] the image data in unsigned short format
+        */
+      int
+      readImage ();
+      
+      /** \brief Obtains XYZI Point Cloud from the image of the camera
+        * \param[out] the point cloud from the image data
+        */
+      pcl::PointCloud<pcl::PointXYZI>::Ptr
+      getXYZIPointCloud ();
+      
+       /** \brief The function in charge of getting the data from the camera
+        */     
+      void 
+      captureThreadFunction ();
+      
       /** \brief Width of image */
       const static int IMAGE_WIDTH = 320;
       
@@ -183,9 +191,17 @@ namespace pcl
       /** \brief Device command values */
       enum { CMD_READ_START=0xC7, CMD_READ_STOP=0xC8, CMD_GET_VERSION=0xDC, CMD_SEND_DATA=0xDE };
 
-      // Since there is no header after the first image, we need to save the state
+      unsigned char *image_;
+      
+      /** \brief Since there is no header after the first image, we need to save the state */
       bool second_image_;
+      
       bool running_;
+      
+      boost::thread capture_thread_;
+      
+      mutable boost::mutex capture_mutex_;
+      boost::signals2::signal<sig_cb_dinast_point_cloud>* point_cloud_signal_;
   };
 } //namespace pcl
 

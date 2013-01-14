@@ -39,7 +39,6 @@
 
 #include <pcl/pcl_config.h>
 #include <pcl/io/dinast_grabber.h>
-#include <iostream>
 
 using namespace std;
 
@@ -51,6 +50,8 @@ pcl::DinastGrabber::DinastGrabber (const int device_position)
   , running_ (false)
 {
   onInit(device_position);
+  
+  point_cloud_signal_ = createSignal<sig_cb_dinast_point_cloud> ();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -98,6 +99,8 @@ void
 pcl::DinastGrabber::onInit (const int device_position)
 {
   setupDevice (device_position);
+  capture_thread_ = boost::thread (&DinastGrabber::captureThreadFunction, this);
+  image_ =  reinterpret_cast <unsigned char*> (malloc (IMAGE_HEIGHT*IMAGE_WIDTH));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -218,13 +221,13 @@ pcl::DinastGrabber::stop ()
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 int
-pcl::DinastGrabber::readImage (unsigned char *image)
+pcl::DinastGrabber::readImage ()
 {
   // Do we have enough data in the buffer for the second image?
   if (second_image_)
   {
     for (int i = 0; i < IMAGE_SIZE; ++i)
-      image[i] = g_buffer_[i];
+      image_[i] = g_buffer_[i];
 
     g_buffer_.rerase (g_buffer_.begin(), g_buffer_.begin() + IMAGE_SIZE);
 
@@ -245,7 +248,7 @@ pcl::DinastGrabber::readImage (unsigned char *image)
     if (res != 0 || actual_length == 0)
     {
 
-      memset (&image[0], 0x00, IMAGE_SIZE);
+      memset (&image_[0], 0x00, IMAGE_SIZE);
       PCL_THROW_EXCEPTION (pcl::IOException, "USB read error!");
     }
 
@@ -274,7 +277,7 @@ pcl::DinastGrabber::readImage (unsigned char *image)
       // An image found. Copy it from the buffer into the user given buffer
 
       for (int i = 0; i < IMAGE_SIZE; ++i)
-        image[i] = g_buffer_[data_adr + i];
+        image_[i] = g_buffer_[data_adr + i];
       // Pop the data from the global buffer. 
       g_buffer_.rerase (g_buffer_.begin(), g_buffer_.begin() + data_adr + IMAGE_SIZE);
       first_image = true;
@@ -290,23 +293,23 @@ pcl::DinastGrabber::readImage (unsigned char *image)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void
-pcl::DinastGrabber::getData (unsigned char *image, pcl::PointCloud<pcl::PointXYZI>::Ptr cloud)
+pcl::PointCloud<pcl::PointXYZI>::Ptr
+pcl::DinastGrabber::getXYZIPointCloud ()
 {
-  readImage(image);
+  pcl::PointCloud<pcl::PointXYZI>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZI>);
   
   cloud->points.resize (IMAGE_WIDTH * IMAGE_HEIGHT);
   cloud->width = IMAGE_WIDTH;
   cloud->height = IMAGE_HEIGHT;
   cloud->is_dense = false;
-
+  
   int depth_idx = 0;
 
   for (int x = 0; x < cloud->width; ++x)
   {
     for (int y = 0; y < cloud->height; ++y, ++depth_idx)
     {
-      double pixel = image[x + IMAGE_WIDTH * y]; //image[depth_idx];
+      double pixel = image_[x + IMAGE_WIDTH * y]; //image[depth_idx];
 
       float xc = float(x - 160);
       float yc = float(y - 120);
@@ -352,6 +355,7 @@ pcl::DinastGrabber::getData (unsigned char *image, pcl::PointCloud<pcl::PointXYZ
       }
     }
   }
+  return cloud;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -437,4 +441,22 @@ std::string
 pcl::DinastGrabber::getName () const
 {
     return (std::string ("DinastGrabber"));
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void 
+pcl::DinastGrabber::captureThreadFunction ()
+{
+  while (true)
+  {
+    // lock before checking running flag
+    boost::unique_lock<boost::mutex> capture_lock (capture_mutex_);
+    readImage();
+    
+    //Check for point clouds slots
+    if (num_slots<sig_cb_dinast_point_cloud> () > 0 )
+      point_cloud_signal_->operator()(getXYZIPointCloud());
+      
+    capture_lock.unlock ();
+  }
 }
