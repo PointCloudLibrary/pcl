@@ -51,6 +51,7 @@
 {                                                                           \
   std::ostringstream s;                                                     \
   s << message;                                                             \
+  s.flush ();                                                               \
   throw ExceptionName(s.str(), __FILE__, BOOST_CURRENT_FUNCTION, __LINE__); \
 }
 
@@ -72,6 +73,7 @@ namespace pcl
         : std::runtime_error (error_description)
         , file_name_ (file_name)
         , function_name_ (function_name)
+        , message_ (error_description)
         , line_number_ (line_number) 
       {
         message_ = detailedMessage ();
@@ -111,7 +113,7 @@ namespace pcl
           if (line_number_ != 0)
             sstream << "@ " << line_number_ << " ";
         }
-        sstream << ":" << what ();
+        sstream << ": " << what ();
         
         return (sstream.str ());
       }
