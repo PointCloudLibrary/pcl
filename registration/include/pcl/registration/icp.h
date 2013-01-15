@@ -196,7 +196,6 @@ namespace pcl
             nz_idx_offset_ = fields[i].offset;
           }
         }
-        PCL_INFO ("Source_has_normals_ = %d\n", source_has_normals_);
       }
 
       /** \brief Set whether to use reciprocal correspondence or not
