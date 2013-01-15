@@ -131,7 +131,7 @@ pcl::IterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransformat
   // If the guessed transformation is non identity
   if (guess != Matrix4::Identity ())
     // Apply guessed transformation prior to search for neighbours
-    transformPointCloud (*input_, *input_transformed, guess);
+    transformCloud (*input_, *input_transformed, guess);
   else
     *input_transformed = *input_;
  
@@ -209,7 +209,7 @@ pcl::IterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransformat
   // Copy all the values
   output = *input_;
   // Transform the XYZ + normals
-  transformPointCloud (*input_, output, final_transformation_);
+  transformCloud (*input_, output, final_transformation_);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
