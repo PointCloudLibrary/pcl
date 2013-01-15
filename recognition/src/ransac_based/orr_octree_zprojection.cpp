@@ -170,16 +170,16 @@ pcl::recognition::ORROctreeZProjection::build (const ORROctree& input, float eps
   }
 
   int len, maxlen, id_z1, id_z2;
-  float best_min, cur_max, best_max;
+  float cur_min, best_min, cur_max, best_max;
 
   // Now, at each occupied (i, j) position, get the longest connected component consisting of neighboring full leaves
   for ( list<Set*>::iterator current_set = full_sets_.begin () ; current_set != full_sets_.end () ; ++current_set )
   {
     // Get the first node in the set
     set<ORROctree::Node*>::iterator node = (*current_set)->get_nodes ().begin ();
-    // Init run
-    best_min = (*node)->getBounds ()[4];
-    best_max = cur_max = (*node)->getBounds ()[5];
+    // Initialize
+    cur_min = best_min = (*node)->getBounds ()[4];
+    cur_max = best_max = (*node)->getBounds ()[5];
     id_z1 = (*node)->getData ()->get3dIdZ ();
     maxlen = len = 1;
 
@@ -192,7 +192,7 @@ pcl::recognition::ORROctreeZProjection::build (const ORROctree& input, float eps
       if ( id_z2 - id_z1 > 1 ) // This connected component is over
       {
         // Start a new connected component
-        best_min = (*node)->getBounds ()[4];
+        cur_min = (*node)->getBounds ()[4];
         len = 1;
       }
       else // This connected component is still ongoing
@@ -202,6 +202,7 @@ pcl::recognition::ORROctreeZProjection::build (const ORROctree& input, float eps
         {
           // This connected component is the longest one
           maxlen = len;
+          best_min = cur_min;
           best_max = cur_max;
         }
       }
