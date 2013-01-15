@@ -455,6 +455,11 @@ pcl::ihs::OpenGLViewer::addMesh (const MeshConstPtr& mesh, const std::string& id
 bool
 pcl::ihs::OpenGLViewer::addMesh (const CloudXYZRGBNormalConstPtr& cloud, const std::string& id, const Eigen::Isometry3d& T)
 {
+  if (!cloud)
+  {
+    std::cerr << "ERROR in opengl_viewer.cpp: Input cloud is not valid.\n";
+    return (false);
+  }
   if (!cloud->isOrganized ())
   {
     std::cerr << "ERROR in opengl_viewer.cpp: Input cloud is not organized.\n";
