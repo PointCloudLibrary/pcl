@@ -143,6 +143,32 @@ namespace pcl
         inline std::list<Pixel*>&
         getFullPixels (){ return full_pixels_;}
 
+        inline const Pixel*
+        getPixel (int i, int j) const
+        {
+          return pixels_[i][j];
+        }
+
+        inline float
+        getPixelSize () const
+        {
+          return pixel_size_;
+        }
+
+        inline const float*
+        getBounds () const
+        {
+          return bounds_;
+        }
+
+        /** \brief Get the width ('num_x') and height ('num_y') of the image. */
+        inline void
+        getNumberOfPixels (int& num_x, int& num_y) const
+        {
+          num_x = num_pixels_x_;
+          num_y = num_pixels_y_;
+        }
+
       protected:
         float pixel_size_, inv_pixel_size_, bounds_[4], extent_x_, extent_y_;
         int num_pixels_x_, num_pixels_y_, num_pixels_;
