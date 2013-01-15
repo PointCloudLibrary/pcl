@@ -890,7 +890,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeature (PointCl
 
   // compute distance map
   //float *distanceMap = new float[input_->points.size ()];
-  if (distance_map_ != NULL) delete distance_map_;
+  if (distance_map_ != NULL) delete[] distance_map_;
   distance_map_ = new float[input_->points.size ()];
   float *distanceMap = distance_map_;
   for (size_t index = 0; index < input_->points.size (); ++index)
