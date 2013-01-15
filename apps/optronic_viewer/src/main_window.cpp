@@ -39,6 +39,10 @@
 #include <pcl/apps/optronic_viewer/openni_grabber.h>
 
 #include <pcl/io/openni_grabber.h>
+#include <pcl/io/fotonic_grabber.h>
+
+#include <fz_api.h>
+#include <fz_internal.h>
 
 #include <QFileInfo>
 #include <vtkActor.h>
@@ -52,9 +56,15 @@ MainWindow ()
   : grabber_ (NULL)
   , grabber_thread_ (NULL)
 {
+  // initialize API
+  pcl::FotonicGrabber::initAPI ();
+
+
+  // reset point cloud
   cloud_.reset (new pcl::PointCloud<pcl::PointXYZRGBA> ());
   
-  
+
+  // set window title
   this->setWindowTitle ("PCL Optronic Viewer");
 
 
@@ -69,9 +79,12 @@ MainWindow ()
   QComboBox * sensor_selection_combo_box = new QComboBox ();
   sensor_selection_combo_box->addItem (tr ("none"));
   this->findConnectedDevices ();
-  for (size_t device_idx = 0; device_idx < connected_openni_devices_.size (); ++device_idx)
+  for (size_t device_idx = 0; device_idx < connected_devices_.size (); ++device_idx)
   {
-    sensor_selection_combo_box->addItem (tr (connected_openni_devices_[device_idx].name.c_str ()));
+    if (connected_devices_[device_idx]->device_type == OPENNI_DEVICE)
+      sensor_selection_combo_box->addItem (tr (reinterpret_cast<OpenNIDevice*> (connected_devices_[device_idx])->name.c_str ()));
+    if (connected_devices_[device_idx]->device_type == FOTONIC_DEVICE)
+      sensor_selection_combo_box->addItem (tr (reinterpret_cast<FotonicDevice*> (connected_devices_[device_idx])->device_info.szPath));
   }
   connect (sensor_selection_combo_box, SIGNAL(activated (int)), this, SLOT(selectedSensorChanged (int)));
   
@@ -106,6 +119,8 @@ pcl::apps::optronic_viewer::
 MainWindow::
 ~MainWindow ()
 {
+  // exit Fotonic API
+  pcl::FotonicGrabber::exitAPI ();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -133,8 +148,9 @@ pcl::apps::optronic_viewer::
 MainWindow::
 findConnectedDevices ()
 {
-  connected_openni_devices_.clear ();
+  connected_devices_.clear ();
 
+  std::cerr << "Check for OpenNI devices..." << std::endl;
   openni_wrapper::OpenNIDriver& driver = openni_wrapper::OpenNIDriver::getInstance();
   if (driver.getNumberDevices() > 0)
   {
@@ -144,18 +160,39 @@ findConnectedDevices ()
       std::cout << "  Device: " << device_idx + 1 << ", vendor: " << driver.getVendorName(device_idx) << ", product: " << driver.getProductName(device_idx)
         << ", connected: " << driver.getBus(device_idx) << " @ " << driver.getAddress(device_idx) << ", serial number: \'" << driver.getSerialNumber(device_idx) << "\'" << endl;
 
-      OpenNIDevice device;
-      device.device_id = device_idx + 1;
-      device.name = driver.getProductName (device_idx);
-      device.vendor = driver.getVendorName(device_idx);
-      device.serial_number = driver.getSerialNumber(device_idx);
+      OpenNIDevice * device = new OpenNIDevice ();
+      device->device_id = device_idx + 1;
+      device->name = driver.getProductName (device_idx);
+      device->vendor = driver.getVendorName(device_idx);
+      device->serial_number = driver.getSerialNumber(device_idx);
 
-      connected_openni_devices_.push_back (device);
+      connected_devices_.push_back (device);
     }
 
   }
   else
     std::cout << "No devices connected." << endl;
+
+
+  std::cerr << "Check for Fotonic devices..." << std::endl;
+  std::vector<FZ_DEVICE_INFO> fotonic_devices = pcl::FotonicGrabber::enumDevices ();
+  for (int device_index = 0; device_index < fotonic_devices.size (); ++device_index)
+  {
+    FotonicDevice * device = new FotonicDevice ();
+
+    device->device_info.iDeviceType = fotonic_devices[device_index].iDeviceType;
+    memcpy (device->device_info.szPath, fotonic_devices[device_index].szPath, sizeof (fotonic_devices[device_index].szPath[0])*512);
+    memcpy (device->device_info.szSerial, fotonic_devices[device_index].szSerial, sizeof (fotonic_devices[device_index].szSerial[0])*16);
+    memcpy (device->device_info.szShortName, fotonic_devices[device_index].szShortName, sizeof (fotonic_devices[device_index].szShortName[0])*32);
+
+    std::cerr << "device id " << device_index << std::endl;
+    std::cerr << "  device type: " << fotonic_devices[device_index].iDeviceType << std::endl;
+    std::cerr << "  device path: " << fotonic_devices[device_index].szPath << std::endl;
+    std::cerr << "  device serial: " << fotonic_devices[device_index].szSerial << std::endl;
+    std::cerr << "  device short name: " << fotonic_devices[device_index].szShortName << std::endl;
+
+    connected_devices_.push_back (device);
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -192,10 +229,19 @@ selectedSensorChanged (int index)
 
   if (index != 0)
   {
-    std::stringstream ss;
-    ss << "#" << connected_openni_devices_[index-1].device_id;
+    if (connected_devices_[index-1]->device_type == OPENNI_DEVICE)
+    {
+      std::stringstream ss;
+      ss << "#" << reinterpret_cast<OpenNIDevice*> (connected_devices_[index-1])->device_id;
 
-    grabber_ = new pcl::OpenNIGrabber (ss.str ());
+      grabber_ = new pcl::OpenNIGrabber (ss.str ());
+
+    }
+
+    if (connected_devices_[index-1]->device_type == FOTONIC_DEVICE)
+    {
+      grabber_ = new pcl::FotonicGrabber (reinterpret_cast<FotonicDevice*> (connected_devices_[index-1])->device_info);
+    }
 
     grabber_thread_ = new pcl::apps::optronic_viewer::OpenNIGrabber (grabber_);
     grabber_thread_->start ();

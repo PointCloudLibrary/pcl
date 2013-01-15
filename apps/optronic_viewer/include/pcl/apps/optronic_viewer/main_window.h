@@ -38,12 +38,14 @@
 #ifndef PCL_APPS_OPTRONIC_VIEWER_MAIN_WINDOW_H_
 #define PCL_APPS_OPTRONIC_VIEWER_MAIN_WINDOW_H_
 
-#include <pcl/apps/optronic_viewer/qt.h>
 #include <boost/shared_ptr.hpp>
-#include <pcl/io/openni_grabber.h>
-#include <pcl/apps/optronic_viewer/openni_grabber.h>
 
+#include <pcl/apps/optronic_viewer/qt.h>
+#include <pcl/apps/optronic_viewer/openni_grabber.h>
+#include <pcl/io/openni_grabber.h>
 #include <pcl/visualization/pcl_visualizer.h>
+
+#include <fz_api.h>
 
 
 namespace pcl
@@ -53,14 +55,50 @@ namespace pcl
     namespace optronic_viewer
     {
       
-      struct OpenNIDevice
+      enum DeviceType
       {
-        int device_id;
+        OPENNI_DEVICE,
+        FOTONIC_DEVICE
+      };
 
+      class Device
+      {
+      public:
+        Device (DeviceType arg_device_type)
+          : device_type (arg_device_type)
+        {}
+        virtual ~Device () {}
+
+        DeviceType device_type;
+      };
+
+      class OpenNIDevice
+        : public Device
+      {
+      public:
+        OpenNIDevice ()
+          : Device (OPENNI_DEVICE)
+        {}
+        virtual ~OpenNIDevice () {}
+
+        int device_id;
         std::string name;
         std::string vendor;
         std::string serial_number;
       };
+
+      class FotonicDevice
+        : public Device
+      {
+      public:
+        FotonicDevice ()
+          : Device (FOTONIC_DEVICE)
+        {}
+        virtual ~FotonicDevice () {}
+
+        FZ_DEVICE_INFO device_info;
+      };
+
 
       class MainWindow : public QMainWindow
       {
@@ -100,10 +138,15 @@ namespace pcl
           pcl::visualization::PCLVisualizer * pcl_visualizer_;
           pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr cloud_;
 
-          // input stuff
-          std::vector<OpenNIDevice> connected_openni_devices_;
+          // connected devices
+          std::vector<Device*> connected_devices_;
+
+          // Grabber stuff
+          //std::vector<OpenNIDevice> connected_openni_devices_;
           pcl::Grabber * grabber_;
           pcl::apps::optronic_viewer::OpenNIGrabber * grabber_thread_;
+
+          // mutexes
           boost::mutex cloud_mutex_;
       };
     }

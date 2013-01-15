@@ -57,7 +57,19 @@ if(build)
             src/oni_grabber.cpp
             )
     endif(OPENNI_FOUND)
-   
+
+    if(FZAPI_FOUND)
+        set(FZAPI_GRABBER_INCLUDES
+            include/pcl/io/fotonic_grabber.h
+            )
+#        set(FZAPI_INCLUDES
+#            include/pcl/io/openni_camera/openni.h
+#            )
+        set(FZAPI_GRABBER_SOURCES 
+            src/fotonic_grabber.cpp
+            )
+    endif(FZAPI_FOUND)
+	
     if(LIBUSB_1_FOUND)
         set(DINAST_GRABBER_INCLUDES
             include/pcl/io/dinast_grabber.h
@@ -112,6 +124,7 @@ if(build)
         ${VTK_IO_SOURCE}
         ${OPENNI_GRABBER_SOURCES}
         ${DINAST_GRABBER_SOURCES}
+        ${FZAPI_GRABBER_SOURCES}
         )
     if(PNG_FOUND)
       set(srcs
@@ -147,6 +160,7 @@ if(build)
         ${VTK_IO_INCLUDES}
         ${OPENNI_GRABBER_INCLUDES}
         ${DINAST_GRABBER_INCLUDES}
+        ${FZAPI_GRABBER_INCLUDES}
         )
 
     set(compression_incs
@@ -203,6 +217,13 @@ if(build)
     if(OPENNI_FOUND)
       target_link_libraries(${LIB_NAME} ${OPENNI_LIBRARIES})
     endif(OPENNI_FOUND)
+	
+    if(FZAPI_FOUND)
+      target_link_libraries(${LIB_NAME} ${FZAPI_LIBS})
+	  if(WIN32)
+		target_link_libraries(${LIB_NAME} Version.lib)
+  	  endif(WIN32)
+    endif(FZAPI_FOUND)
     
     if (PCAP_FOUND)
       target_link_libraries(${LIB_NAME} ${PCAP_LIBRARIES})

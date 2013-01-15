@@ -240,6 +240,14 @@ if (OPENNI_FOUND)
   set(HAVE_OPENNI ON)
   include_directories(SYSTEM ${OPENNI_INCLUDE_DIRS})
 endif()
+
+# Fotonic (FZ_API)
+find_package(FZAPI)
+if (FZAPI_FOUND)
+  set(HAVE_FZAPI ON)
+  include_directories(SYSTEM ${FZAPI_INCLUDE_DIR})
+endif()
+
 # LibPNG
 find_package(PNG)
 if (PNG_FOUND)

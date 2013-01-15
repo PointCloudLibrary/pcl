@@ -44,6 +44,8 @@
 
 #include <pcl/visualization/pcl_visualizer.h>
 
+#include <fz_api.h>
+
 
 namespace pcl
 {
@@ -69,6 +71,25 @@ namespace pcl
 
         private:
           pcl::Grabber * grabber_;
+      };
+      
+      class FotonicGrabber : public QThread
+      {
+        Q_OBJECT
+
+        public:
+          FotonicGrabber (FZ_Device_Handle_t * fotonic_device_handle);
+          virtual ~FotonicGrabber ();
+
+          void run ();
+
+          //void cloudCallback (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr & cloud);
+
+        signals:
+          void cloudReceived (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr cloud);
+
+        private:
+          FZ_Device_Handle_t * fotonic_device_handle_;
       };
     }
   }
