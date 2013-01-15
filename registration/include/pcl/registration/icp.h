@@ -174,9 +174,9 @@ namespace pcl
         Registration<PointSource, PointTarget, Scalar>::setInputSource (cloud);
         std::vector<sensor_msgs::PointField> fields;
         pcl::getFields (*cloud, fields);
+        source_has_normals_ = false;
         for (size_t i = 0; i < fields.size (); ++i)
         {
-          source_has_normals_ = false;
           if      (fields[i].name == "x") x_idx_offset_ = fields[i].offset;
           else if (fields[i].name == "y") y_idx_offset_ = fields[i].offset;
           else if (fields[i].name == "z") z_idx_offset_ = fields[i].offset;
@@ -196,6 +196,7 @@ namespace pcl
             nz_idx_offset_ = fields[i].offset;
           }
         }
+        PCL_INFO ("Source_has_normals_ = %d\n", source_has_normals_);
       }
 
       /** \brief Set whether to use reciprocal correspondence or not
