@@ -52,5 +52,6 @@
 #include <boost/signals2/connection.hpp>
 //#include <boost/signals2/signal.hpp>
 #include <boost/thread/mutex.hpp>
+#include <boost/thread/thread.hpp>
 
 #endif // PCL_APPS_IN_HAND_SCANNER_BOOST_H

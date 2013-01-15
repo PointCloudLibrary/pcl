@@ -170,7 +170,10 @@ pcl::ihs::Integration::reconstructMesh (const CloudXYZRGBNormalConstPtr& cloud_d
       }
 
       this->addToMesh (pt_m_0,pt_m_1,pt_m_2,pt_m_3, vi_0,vi_1,vi_2,vi_3, mesh_model);
-      this->addToMesh (pt_m_0,pt_m_2,pt_m_4,pt_m_3, vi_0,vi_2,vi_4,vi_3, mesh_model);
+      if (Mesh::IsManifold::value) // Only needed for the manifold mesh
+      {
+        this->addToMesh (pt_m_0,pt_m_2,pt_m_4,pt_m_3, vi_0,vi_2,vi_4,vi_3, mesh_model);
+      }
     }
   }
 
@@ -369,7 +372,10 @@ pcl::ihs::Integration::merge (const CloudXYZRGBNormalConstPtr& cloud_data,
       //   \   \    //
       // *   3 - 0  //
       this->addToMesh (pt_d_t_0,pt_d_t_1,pt_d_t_2,pt_d_t_3, vi_0,vi_1,vi_2,vi_3, mesh_model);
-      this->addToMesh (pt_d_t_0,pt_d_t_2,pt_d_t_4,pt_d_t_3, vi_0,vi_2,vi_4,vi_3, mesh_model);
+      if (Mesh::IsManifold::value) // Only needed for the manifold mesh
+      {
+        this->addToMesh (pt_d_t_0,pt_d_t_2,pt_d_t_4,pt_d_t_3, vi_0,vi_2,vi_4,vi_3, mesh_model);
+      }
     }
   }
 

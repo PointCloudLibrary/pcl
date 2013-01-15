@@ -192,16 +192,16 @@ pcl::ihs::InHandScanner::newDataCallback (const CloudXYZRGBAConstPtr& cloud_in)
       std::cerr << "Reset the scanning pipeline.\n";
 
       mesh_model_->clear ();
-      iteration_       = 0;
-      transformation_  = Eigen::Matrix4f::Identity ();
+      iteration_      = 0;
+      transformation_ = Eigen::Matrix4f::Identity ();
 
       Base::removeAllMeshes ();
 
       reset_ = false;
     }
 
-    running_mode   = running_mode_;
-    iteration      = iteration_;
+    running_mode = running_mode_;
+    iteration    = iteration_;
     Base::calcFPS (computation_fps_);
   }
 
@@ -209,9 +209,20 @@ pcl::ihs::InHandScanner::newDataCallback (const CloudXYZRGBAConstPtr& cloud_in)
 
   // Input data processing
   CloudXYZRGBNormalPtr cloud_data;
-  if      (running_mode == RM_SHOW_MODEL)  cloud_data = CloudXYZRGBNormalPtr (new CloudXYZRGBNormal ());
-  else if (running_mode == RM_UNPROCESSED) cloud_data = input_data_processing_->calculateNormals (cloud_in);
-  else if (running_mode >= RM_PROCESSED)   cloud_data = input_data_processing_->process (cloud_in);
+  CloudXYZRGBNormalPtr cloud_discarded;
+  if (running_mode == RM_SHOW_MODEL)
+  {
+    cloud_data = CloudXYZRGBNormalPtr (new CloudXYZRGBNormal ());
+  }
+  else if (running_mode == RM_UNPROCESSED)
+  {
+    cloud_data = input_data_processing_->calculateNormals (cloud_in);
+  }
+  else if (running_mode >= RM_PROCESSED)
+  {
+    if (!input_data_processing_->segment (cloud_in, cloud_data, cloud_discarded))
+      return;
+  }
 
   double time_input_data_processing = sw.getTime ();
 
@@ -278,6 +289,15 @@ pcl::ihs::InHandScanner::newDataCallback (const CloudXYZRGBAConstPtr& cloud_in)
 
     sw.reset ();
     Base::addMesh (cloud_data , "data"); // Converts to a mesh for visualization
+
+    if (running_mode < RM_REGISTRATION_CONT && cloud_discarded)
+    {
+      Base::addMesh (cloud_discarded, "cloud_discarded");
+    }
+    else
+    {
+      Base::removeMesh ("cloud_discarded");
+    }
     time_data = sw.getTime ();
 
     iteration_ = iteration;

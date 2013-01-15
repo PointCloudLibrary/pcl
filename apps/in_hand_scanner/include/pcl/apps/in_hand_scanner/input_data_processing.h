@@ -91,8 +91,10 @@ namespace pcl
 
       public:
 
-        CloudXYZRGBNormalPtr
-        process (const CloudXYZRGBAConstPtr& cloud) const;
+        bool
+        segment (const CloudXYZRGBAConstPtr& cloud_in,
+                 CloudXYZRGBNormalPtr&       cloud_out,
+                 CloudXYZRGBNormalPtr&       cloud_discarded) const;
 
         CloudXYZRGBNormalPtr
         calculateNormals (const CloudXYZRGBAConstPtr& cloud) const;
@@ -107,7 +109,35 @@ namespace pcl
                     float& y_min, float& y_max,
                     float& z_min, float& z_max) const;
 
+        void
+        setColorRange (const float h_min, const float h_max,
+                       const float s_min, const float s_max,
+                       const float v_min, const float v_max);
+
+        void
+        getColorRange (float& h_min, float& h_max,
+                       float& s_min, float& s_max,
+                       float& v_min, float& v_max) const;
+
       private:
+
+        void
+        threadSegmentation (const PointXYZRGBA*const p_pt_in,
+                            const Normal*const       p_n_in,
+                            const PointXYZRGBNormal& invalid_pt,
+                            const uint32_t           color_discarded,
+                            const unsigned int       width,
+                            const unsigned int       n_rows,
+                            PointXYZRGBNormal*const  p_pt_out,
+                            PointXYZRGBNormal*const  p_pt_discarded) const;
+
+        void
+        RGBToHSV (const unsigned char r,
+                  const unsigned char g,
+                  const unsigned char b,
+                  float&              h,
+                  float&              s,
+                  float&              v) const;
 
         NormalEstimationPtr normal_estimation_;
 
@@ -117,6 +147,13 @@ namespace pcl
         float y_max_;
         float z_min_;
         float z_max_;
+
+        float h_min_;
+        float h_max_;
+        float s_min_;
+        float s_max_;
+        float v_min_;
+        float v_max_;
     };
   } // End namespace ihs
 } // End namespace pcl
