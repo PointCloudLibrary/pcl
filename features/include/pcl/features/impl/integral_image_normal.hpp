@@ -47,10 +47,10 @@
 template <typename PointInT, typename PointOutT>
 pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::~IntegralImageNormalEstimation ()
 {
-  if (diff_x_ != NULL) delete diff_x_;
-  if (diff_y_ != NULL) delete diff_y_;
-  if (depth_data_ != NULL) delete depth_data_;
-  if (distance_map_ != NULL) delete distance_map_;
+  if (diff_x_ != NULL) delete[] diff_x_;
+  if (diff_y_ != NULL) delete[] diff_y_;
+  if (depth_data_ != NULL) delete[] depth_data_;
+  if (distance_map_ != NULL) delete[] distance_map_;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -70,10 +70,10 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::initData ()
                          "[pcl::IntegralImageNormalEstimation::initData] unknown normal estimation method.");
 
   // compute derivatives
-  if (diff_x_ != NULL) delete diff_x_;
-  if (diff_y_ != NULL) delete diff_y_;
-  if (depth_data_ != NULL) delete depth_data_;
-  if (distance_map_ != NULL) delete distance_map_;
+  if (diff_x_ != NULL) delete[] diff_x_;
+  if (diff_y_ != NULL) delete[] diff_y_;
+  if (depth_data_ != NULL) delete[] depth_data_;
+  if (distance_map_ != NULL) delete[] distance_map_;
   diff_x_ = NULL;
   diff_y_ = NULL;
   depth_data_ = NULL;
