@@ -208,7 +208,7 @@ void run (const char* file_name, float voxel_size)
   viz.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_COLOR, 1.0, 0.0, 0.0, "cloud out");
 
   // Convert the octree to a VTK poly-data object
-//  show_octree(&octree, g_viz, true/*show full leaves only*/);
+//  show_octree(&octree, viz, true/*show full leaves only*/);
 
   updateViewer (octree, viz, leaf);
 
@@ -223,7 +223,7 @@ void run (const char* file_name, float voxel_size)
 
 //===============================================================================================================================
 
-bool vtk_to_pointcloud (const char* file_name, PointCloud<PointXYZ>& points_in, PointCloud<Normal>& normals_in)
+bool vtk_to_pointcloud (const char* file_name, PointCloud<PointXYZ>& pcl_points, PointCloud<Normal>& pcl_normals)
 {
   size_t len = strlen (file_name);
   if ( file_name[len-3] != 'v' || file_name[len-2] != 't' || file_name[len-1] != 'k' )
@@ -243,29 +243,29 @@ bool vtk_to_pointcloud (const char* file_name, PointCloud<PointXYZ>& points_in, 
   vtkIdType num_points = vtk_points->GetNumberOfPoints ();
   double p[3];
 
-  points_in.resize (num_points);
+  pcl_points.resize (num_points);
 
   // Copy the points
   for ( vtkIdType i = 0 ; i < num_points ; ++i )
   {
     vtk_points->GetPoint (i, p);
-    points_in[i].x = static_cast<float> (p[0]);
-    points_in[i].y = static_cast<float> (p[1]);
-    points_in[i].z = static_cast<float> (p[2]);
+    pcl_points[i].x = static_cast<float> (p[0]);
+    pcl_points[i].y = static_cast<float> (p[1]);
+    pcl_points[i].z = static_cast<float> (p[2]);
   }
 
   // Check if we have normals
   vtkDataArray *vtk_normals = vtk_poly->GetPointData ()->GetNormals ();
   if ( vtk_normals )
   {
-    normals_in.resize (num_points);
+    pcl_normals.resize (num_points);
     // Copy the normals
     for ( vtkIdType i = 0 ; i < num_points ; ++i )
     {
       vtk_normals->GetTuple (i, p);
-      normals_in[i].normal_x = static_cast<float> (p[0]);
-      normals_in[i].normal_y = static_cast<float> (p[1]);
-      normals_in[i].normal_z = static_cast<float> (p[2]);
+      pcl_normals[i].normal_x = static_cast<float> (p[0]);
+      pcl_normals[i].normal_y = static_cast<float> (p[1]);
+      pcl_normals[i].normal_z = static_cast<float> (p[2]);
     }
   }
 

@@ -72,7 +72,6 @@ pcl::recognition::ORROctree::clear ()
   }
 
   full_leaves_.clear();
-  full_leaf_counter_ = 0;
 }
 
 //================================================================================================================================================================
@@ -142,6 +141,10 @@ pcl::recognition::ORROctree::build (const PointCloudIn& points, float voxelsize,
   int i, l, id, num_points = static_cast<int> (points_->size ());
   ORROctree::Node* node;
 
+#ifdef PCL_REC_ORR_OCTREE_VERBOSE
+  printf("filling the leaves with points ...\n");
+#endif
+
   // Fill the leaves with the points
   for ( i = 0 ; i < num_points ; ++i )
   {
@@ -182,12 +185,37 @@ pcl::recognition::ORROctree::build (const PointCloudIn& points, float voxelsize,
       node->getData ()->addToNormal (normals->at(i).normal_x, normals->at(i).normal_y, normals->at(i).normal_z);
   }
 
-  // Now iterate over all full leaves and compute the normals and average points
-  for ( vector<ORROctree::Node*>::iterator it = full_leaves_.begin() ; it != full_leaves_.end() ; ++it )
+#ifdef PCL_REC_ORR_OCTREE_VERBOSE
+  printf("averaging the leaf points and eventually computing the normals ...\n");
+#endif
+
+  if ( normals )
   {
-    aux::vecMult3 ((*it)->getData ()->getPoint (), 1.0f/static_cast<float> ((*it)->getData ()->getNumberOfPoints ()));
-    if ( normals )
-      aux::vecNormalize3 ((*it)->getData ()->getNormal ());
+    for ( vector<ORROctree::Node*>::iterator it = full_leaves_.begin() ; it != full_leaves_.end() ; )
+    {
+      aux::vecMult3 ((*it)->getData ()->getPoint (), 1.0f/static_cast<float> ((*it)->getData ()->getNumberOfPoints ()));
+
+      // We are suppose to use normals. However, it could be that all normals in this leaf are "illegal", because,
+      // e.g., they were not available in the data set. In this case, remove the leaf from the octree.
+      if ( (*it)->getData ()->getNormal ()[0] <= numeric_limits<float>::epsilon () &&
+           (*it)->getData ()->getNormal ()[1] <= numeric_limits<float>::epsilon () &&
+           (*it)->getData ()->getNormal ()[2] <= numeric_limits<float>::epsilon () )
+      {
+        this->deleteBranch (*it);
+        it = full_leaves_.erase (it);
+      }
+      else
+      {
+        aux::vecNormalize3 ((*it)->getData ()->getNormal ());
+        ++it;
+      }
+    }
+  }
+  else
+  {
+    // Iterate over all full leaves and average points
+    for ( vector<ORROctree::Node*>::iterator it = full_leaves_.begin() ; it != full_leaves_.end() ; ++it )
+      aux::vecMult3 ((*it)->getData ()->getPoint (), 1.0f/static_cast<float> ((*it)->getData ()->getNumberOfPoints ()));
   }
 
 #ifdef PCL_REC_ORR_OCTREE_VERBOSE

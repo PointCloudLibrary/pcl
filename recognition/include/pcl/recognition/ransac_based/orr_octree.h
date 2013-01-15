@@ -79,7 +79,7 @@ namespace pcl
             class Data
             {
               public:
-                Data (){ n_[0] = n_[1] = n_[2] = p_[0] = p_[1] = p_[2] = 0.0;}
+                Data (){ n_[0] = n_[1] = n_[2] = p_[0] = p_[1] = p_[2] = 0.0f;}
                 virtual~ Data (){}
 
                 inline void
@@ -245,7 +245,7 @@ namespace pcl
 
       protected:
         float voxel_size_, bounds_[6];
-        int tree_levels_, full_leaf_counter_;
+        int tree_levels_;
         Node* root_;
         std::vector<Node*> full_leaves_;
         pcl::common::UniformGenerator<int> randgen_;
