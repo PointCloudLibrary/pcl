@@ -61,6 +61,9 @@ struct pcl::ImageGrabberBase::ImageGrabberImpl
   //! Implementation of ImageGrabber
   ImageGrabberImpl (pcl::ImageGrabberBase& grabber, const std::string& dir, 
       float frames_per_second, bool repeat, bool pclzf_mode=false);
+  //! Implementation of ImageGrabber
+  ImageGrabberImpl (pcl::ImageGrabberBase& grabber, const std::string& rgb_dir, const std::string& depth_dir, 
+      float frames_per_second, bool repeat);
   ImageGrabberImpl (pcl::ImageGrabberBase& grabber, const std::vector<std::string>& depth_image_files, float frames_per_second, bool repeat);
   
   void 
@@ -86,6 +89,10 @@ struct pcl::ImageGrabberBase::ImageGrabberImpl
   //! updates our list accordingly
   void
   loadDepthAndRGBFiles (const std::string &dir);
+  //! Scrapes a directory for image files which contain "rgb" or "depth" and
+  //! updates our list accordingly
+  void
+  loadDepthAndRGBFiles (const std::string &depth_dir, const std::string &rgb_dir);
   //! Scrapes a directory for pclzf files which contain "rgb" or "depth and updates
   //  our list accordingly
   void
@@ -180,6 +187,31 @@ pcl::ImageGrabberBase::ImageGrabberImpl::ImageGrabberImpl (pcl::ImageGrabberBase
   {
     loadDepthAndRGBFiles (dir);
   }
+  cur_frame_ = 0;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+pcl::ImageGrabberBase::ImageGrabberImpl::ImageGrabberImpl (pcl::ImageGrabberBase& grabber, const std::string& depth_dir, const std::string& rgb_dir, float frames_per_second, bool repeat)
+  : grabber_ (grabber)
+  , frames_per_second_ (frames_per_second)
+  , repeat_ (repeat)
+  , running_ (false)
+  , depth_image_files_ ()
+  , rgb_image_files_ ()
+  , time_trigger_ (1.0 / static_cast<double> (std::max (frames_per_second, 0.001f)), boost::bind (&ImageGrabberImpl::trigger, this))
+  , next_cloud_ ()
+  , origin_ ()
+  , orientation_ ()
+  , valid_ (false)
+  , pclzf_mode_(false)
+  , depth_image_units_ (1E-3f)
+  , manual_intrinsics_ (false)
+  , focal_length_x_ (525.)
+  , focal_length_y_ (525.)
+  , principal_point_x_ (320.)
+  , principal_point_y_ (240.)
+{
+  loadDepthAndRGBFiles (depth_dir, rgb_dir);
   cur_frame_ = 0;
 }
 
@@ -281,6 +313,80 @@ pcl::ImageGrabberBase::ImageGrabberImpl::loadDepthAndRGBFiles (const std::string
   if (rgb_image_files_.size () > 0)
     sort (rgb_image_files_.begin (), rgb_image_files_.end ());
 }
+
+void
+pcl::ImageGrabberBase::ImageGrabberImpl::loadDepthAndRGBFiles (const std::string &depth_dir, const std::string &rgb_dir)
+{
+  if (!boost::filesystem::exists (depth_dir) || !boost::filesystem::is_directory (depth_dir))
+  {
+    PCL_ERROR ("[pcl::ImageGrabber::loadDepthAndRGBFiles] Error: attempted to instantiate a pcl::ImageGrabber from a path which"
+               " is not a directory: %s", depth_dir.c_str ());
+    return;
+  }
+  if (!boost::filesystem::exists (rgb_dir) || !boost::filesystem::is_directory (rgb_dir))
+  {
+    PCL_ERROR ("[pcl::ImageGrabber::loadDepthAndRGBFiles] Error: attempted to instantiate a pcl::ImageGrabber from a path which"
+               " is not a directory: %s", rgb_dir.c_str ());
+    return;
+  }
+  std::string pathname;
+  std::string extension;
+  std::string basename;
+  boost::filesystem::directory_iterator end_itr;
+  // First iterate over depth images
+  for (boost::filesystem::directory_iterator itr (depth_dir); itr != end_itr; ++itr)
+  {
+#if BOOST_FILESYSTEM_VERSION == 3
+    extension = boost::algorithm::to_upper_copy(boost::filesystem::extension (itr->path ()));
+    pathname = itr->path ().string ();
+    basename = boost::filesystem::basename (itr->path ());
+#else
+    extension = boost::algorithm::to_upper_copy(boost::filesystem::extension (itr->leaf ()));
+    pathname = itr->path ().filename ();
+    basename = boost::filesystem::basename (itr->leaf ());
+#endif
+    if (!boost::filesystem::is_directory (itr->status ())
+        && isValidExtension (extension))
+    {
+      if (basename.find ("depth") < basename.npos)
+      {
+        depth_image_files_.push_back (pathname);
+      }
+    }
+  }
+  // Then iterate over RGB images
+  for (boost::filesystem::directory_iterator itr (rgb_dir); itr != end_itr; ++itr)
+  {
+#if BOOST_FILESYSTEM_VERSION == 3
+    extension = boost::algorithm::to_upper_copy(boost::filesystem::extension (itr->path ()));
+    pathname = itr->path ().string ();
+    basename = boost::filesystem::basename (itr->path ());
+#else
+    extension = boost::algorithm::to_upper_copy(boost::filesystem::extension (itr->leaf ()));
+    pathname = itr->path ().filename ();
+    basename = boost::filesystem::basename (itr->leaf ());
+#endif
+    if (!boost::filesystem::is_directory (itr->status ())
+        && isValidExtension (extension))
+    {
+      if (basename.find ("rgb") < basename.npos)
+      {
+        rgb_image_files_.push_back (pathname);
+      }
+    }
+  }
+  if (depth_image_files_.size () != rgb_image_files_.size () )
+    PCL_WARN("[pcl::ImageGrabberBase::ImageGrabberImpl::loadDepthAndRGBFiles] : Watch out not same amount of depth and rgb images");
+  if (depth_image_files_.size () > 0)
+    sort (depth_image_files_.begin (), depth_image_files_.end ());
+  else
+    PCL_ERROR("[pcl::ImageGrabberBase::ImageGrabberImpl::loadDepthAndRGBFiles] : no depth images added");
+  if (rgb_image_files_.size () > 0)
+    sort (rgb_image_files_.begin (), rgb_image_files_.end ());
+  else
+    PCL_ERROR("[pcl::ImageGrabberBase::ImageGrabberImpl::loadDepthAndRGBFiles] : no rgb images added");
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 void
@@ -745,6 +851,12 @@ pcl::ImageGrabberBase::ImageGrabberBase (const std::string& directory, float fra
 {
 }
 
+//////////////////////////////////////////////////////////
+pcl::ImageGrabberBase::ImageGrabberBase (const std::string& rgb_dir, const std::string &depth_dir, float frames_per_second, bool repeat)
+  : impl_ (new ImageGrabberImpl (*this, rgb_dir, depth_dir, frames_per_second, repeat))
+{
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////
 pcl::ImageGrabberBase::ImageGrabberBase (const std::vector<std::string>& depth_image_files, float frames_per_second, bool repeat)
   : impl_ (new ImageGrabberImpl (*this, depth_image_files, frames_per_second, repeat))
@@ -891,5 +1003,32 @@ pcl::ImageGrabberBase::getCloudAt (size_t idx,
 {
   double fx, fy, cx, cy;
   return impl_->getCloudAt (idx, blob, origin, orientation, fx, fy, cx, cy);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+bool
+pcl::ImageGrabberBase::atLastFrame () const
+{
+  if (impl_->cur_frame_ == numFrames () - 1)
+    return (true);
+  else
+    return (false);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+std::string
+pcl::ImageGrabberBase::getCurrentDepthFileName () const
+{
+  std::string pathname = impl_->depth_image_files_[impl_->cur_frame_];
+  std::string basename = boost::filesystem::basename (pathname);
+  return (basename);
+}
+//////////////////////////////////////////////////////////////////////////////////////////
+std::string
+pcl::ImageGrabberBase::getPrevDepthFileName () const
+{
+  std::string pathname = impl_->depth_image_files_[impl_->cur_frame_-1];
+  std::string basename = boost::filesystem::basename (pathname);
+  return (basename);
 }
 

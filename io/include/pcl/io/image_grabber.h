@@ -65,6 +65,7 @@ namespace pcl
      */
     ImageGrabberBase (const std::string& directory, float frames_per_second, bool repeat, bool pclzf_mode);
 
+    ImageGrabberBase (const std::string& depth_directory, const std::string& rgb_directory, float frames_per_second, bool repeat);
     /** \brief Constructor taking a list of paths to PCD files, that are played in the order they appear in the list.
      * \param[in] depth_image_files Path to the depth image files files.
      * \param[in] frames_per_second frames per second. If 0, start() functions like a trigger, publishing the next PCD in the list.
@@ -127,6 +128,19 @@ namespace pcl
     bool 
     isRepeatOn () const;
 
+    /** \brief Returns if the last frame is reached */
+    bool
+    atLastFrame () const;
+
+    /** \brief Returns the filename of the current indexed file */
+    std::string
+    getCurrentDepthFileName () const;
+
+    /** \brief Returns the filename of the previous indexed file 
+     *  SDM: adding this back in, but is this useful, or confusing? */
+    std::string
+    getPrevDepthFileName () const;
+
     /** \brief Manually set RGB image files.
      * \param[in] rgb_image_files A vector of [tiff/png/jpg/ppm] files to use as input. There must be a 1-to-1 correspondence between these and the depth images you set
      */
@@ -187,6 +201,9 @@ namespace pcl
   {
     public:
     ImageGrabber (const std::string& dir, float frames_per_second = 0, bool repeat = false, bool pclzf_mode = false);
+
+    ImageGrabber (const std::string& depth_dir, const std::string& rgb_dir, float frames_per_second = 0, bool repeat = false);
+
     ImageGrabber (const std::vector<std::string>& depth_image_files, float frames_per_second = 0, bool repeat = false);
     
     // Inherited from FileGrabber
@@ -207,6 +224,14 @@ namespace pcl
   template<typename PointT>
     ImageGrabber<PointT>::ImageGrabber (const std::string& dir, float frames_per_second, bool repeat, bool pclzf_mode)
     : ImageGrabberBase (dir, frames_per_second, repeat, pclzf_mode)
+  {
+    signal_ = createSignal<void (const boost::shared_ptr<const pcl::PointCloud<PointT> >&)>();
+  }
+  
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  template<typename PointT>
+    ImageGrabber<PointT>::ImageGrabber (const std::string& depth_dir, const std::string& rgb_dir, float frames_per_second, bool repeat)
+    : ImageGrabberBase (depth_dir, rgb_dir, frames_per_second, repeat)
   {
     signal_ = createSignal<void (const boost::shared_ptr<const pcl::PointCloud<PointT> >&)>();
   }
