@@ -497,14 +497,14 @@ namespace pcl
       /** \brief Extract the surface.
         * \param[out] output the resultant polygonal mesh
         */
-       void
+       virtual void
        performReconstruction (pcl::PolygonMesh &output);
 
        /** \brief Extract the surface.
          * \param[out] points the points of the extracted mesh
          * \param[out] polygons the connectivity between the point of the extracted mesh.
          */
-       void
+       virtual void
        performReconstruction (pcl::PointCloud<PointNT> &points,
                               std::vector<pcl::Vertices> &polygons);
 
