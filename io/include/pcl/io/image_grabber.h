@@ -200,11 +200,19 @@ namespace pcl
   template <typename PointT> class ImageGrabber : public ImageGrabberBase, public FileGrabber<PointT>
   {
     public:
-    ImageGrabber (const std::string& dir, float frames_per_second = 0, bool repeat = false, bool pclzf_mode = false);
+    ImageGrabber (const std::string& dir, 
+                  float frames_per_second = 0, 
+                  bool repeat = false, 
+                  bool pclzf_mode = false);
 
-    ImageGrabber (const std::string& depth_dir, const std::string& rgb_dir, float frames_per_second = 0, bool repeat = false);
+    ImageGrabber (const std::string& depth_dir, 
+                  const std::string& rgb_dir, 
+                  float frames_per_second = 0, 
+                  bool repeat = false);
 
-    ImageGrabber (const std::vector<std::string>& depth_image_files, float frames_per_second = 0, bool repeat = false);
+    ImageGrabber (const std::vector<std::string>& depth_image_files, 
+                  float frames_per_second = 0, 
+                  bool repeat = false);
     
     // Inherited from FileGrabber
     boost::shared_ptr< const pcl::PointCloud<PointT> >
@@ -216,13 +224,18 @@ namespace pcl
 
     protected:
     virtual void 
-      publish (const sensor_msgs::PointCloud2& blob, const Eigen::Vector4f& origin, const Eigen::Quaternionf& orientation) const;
+    publish (const sensor_msgs::PointCloud2& blob, 
+             const Eigen::Vector4f& origin, 
+             const Eigen::Quaternionf& orientation) const;
     boost::signals2::signal<void (const boost::shared_ptr<const pcl::PointCloud<PointT> >&)>* signal_;
   };
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   template<typename PointT>
-    ImageGrabber<PointT>::ImageGrabber (const std::string& dir, float frames_per_second, bool repeat, bool pclzf_mode)
+  ImageGrabber<PointT>::ImageGrabber (const std::string& dir, 
+                                      float frames_per_second, 
+                                      bool repeat, 
+                                      bool pclzf_mode)
     : ImageGrabberBase (dir, frames_per_second, repeat, pclzf_mode)
   {
     signal_ = createSignal<void (const boost::shared_ptr<const pcl::PointCloud<PointT> >&)>();
@@ -230,7 +243,10 @@ namespace pcl
   
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   template<typename PointT>
-    ImageGrabber<PointT>::ImageGrabber (const std::string& depth_dir, const std::string& rgb_dir, float frames_per_second, bool repeat)
+  ImageGrabber<PointT>::ImageGrabber (const std::string& depth_dir, 
+                                      const std::string& rgb_dir, 
+                                      float frames_per_second, 
+                                      bool repeat)
     : ImageGrabberBase (depth_dir, rgb_dir, frames_per_second, repeat)
   {
     signal_ = createSignal<void (const boost::shared_ptr<const pcl::PointCloud<PointT> >&)>();
@@ -238,7 +254,9 @@ namespace pcl
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   template<typename PointT>
-    ImageGrabber<PointT>::ImageGrabber (const std::vector<std::string>& depth_image_files, float frames_per_second, bool repeat)
+  ImageGrabber<PointT>::ImageGrabber (const std::vector<std::string>& depth_image_files, 
+                                      float frames_per_second, 
+                                      bool repeat)
     : ImageGrabberBase (depth_image_files, frames_per_second, repeat), signal_ ()
   {
     signal_ = createSignal<void (const boost::shared_ptr<const pcl::PointCloud<PointT> >&)>();
@@ -267,8 +285,8 @@ namespace pcl
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  template<typename PointT>
-    void ImageGrabber<PointT>::publish (const sensor_msgs::PointCloud2& blob, const Eigen::Vector4f& origin, const Eigen::Quaternionf& orientation) const
+  template<typename PointT> void
+  ImageGrabber<PointT>::publish (const sensor_msgs::PointCloud2& blob, const Eigen::Vector4f& origin, const Eigen::Quaternionf& orientation) const
   {
     typename pcl::PointCloud<PointT>::Ptr cloud (new pcl::PointCloud<PointT> ());
     pcl::fromROSMsg (blob, *cloud);
