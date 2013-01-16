@@ -89,11 +89,11 @@ namespace pcl
           COL_VISCONF    /**< Coloring according to the visibility confidence. */
         } Coloring;
 
-        /** \brief Coefficients for the wireframe cube. */
-        class CubeCoefficients
+        /** \brief Coefficients for the wireframe box. */
+        class BoxCoefficients
         {
           public:
-            CubeCoefficients ()
+            BoxCoefficients ()
               : x_min (0), x_max (0),
                 y_min (0), y_max (0),
                 z_min (0), z_max (0),
@@ -101,7 +101,7 @@ namespace pcl
             {
             }
 
-            CubeCoefficients (const float x_min, const float x_max,
+            BoxCoefficients (const float x_min, const float x_max,
                               const float y_min, const float y_max,
                               const float z_min, const float z_max,
                               const Eigen::Isometry3d& T = Eigen::Isometry3d::Identity ())
@@ -159,17 +159,17 @@ namespace pcl
         void
         removeAllMeshes ();
 
-        /** \brief Set the cube coefficients. */
+        /** \brief Set the coefficients for the box. */
         void
-        setCubeCoefficients (const CubeCoefficients& coeffs);
+        setBoxCoefficients (const BoxCoefficients& coeffs);
 
-        /** \brief Enable drawing the cube. */
+        /** \brief Enable drawing the box. */
         void
-        enableDrawCube ();
+        enableDrawBox ();
 
-        /** \brief Disable drawing the cube. */
+        /** \brief Disable drawing the box. */
         void
-        disableDrawCube ();
+        disableDrawBox ();
 
         /** \brief Set the point around which the camera rotates during mouse navigation. */
         void
@@ -335,9 +335,9 @@ namespace pcl
         void
         drawMeshes ();
 
-        /** \brief Draw a wireframe cube. */
+        /** \brief Draw a wireframe box. */
         void
-        drawCube ();
+        drawBox ();
 
         /** \see http://doc.qt.digia.com/qt/qglwidget.html#initializeGL */
         void
@@ -388,11 +388,11 @@ namespace pcl
         /** \brief How to color the shapes. */
         Coloring coloring_;
 
-        /** \brief A cube is drawn if this value is true. */
-        bool draw_cube_;
+        /** \brief A box is drawn if this value is true. */
+        bool draw_box_;
 
-        /** \brief Coefficients of the drawn cube. */
-        CubeCoefficients cube_coefficients_;
+        /** \brief Coefficients of the drawn box. */
+        BoxCoefficients box_coefficients_;
 
         /** \brief Scaling factor to convert from meters to the unit of the drawn files. */
         double scaling_factor_;

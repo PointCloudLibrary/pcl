@@ -79,12 +79,15 @@ pcl::ihs::InHandScanner::InHandScanner (Base* parent)
 
   Base::setVisibilityConfidenceNormalization (static_cast <float> (integration_->getMinimumCount ()));
 
-  // Initialize the pivot and crop box
-  float x_min, x_max, y_min, y_max, z_min, z_max;
-  input_data_processing_->getCropBox (x_min, x_max, y_min, y_max, z_min, z_max);
+  // Initialize the pivot
+  const float x_min = input_data_processing_->getXMin ();
+  const float x_max = input_data_processing_->getXMax ();
+  const float y_min = input_data_processing_->getYMin ();
+  const float y_max = input_data_processing_->getYMax ();
+  const float z_min = input_data_processing_->getZMin ();
+  const float z_max = input_data_processing_->getZMax ();
 
   Base::setPivot (Eigen::Vector3d ((x_min + x_max) / 2., (y_min + y_max) / 2., (z_min + z_max) / 2.));
-  Base::setCubeCoefficients (Base::CubeCoefficients (x_min, x_max, y_min, y_max, z_min, z_max));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -115,31 +118,31 @@ pcl::ihs::InHandScanner::setRunningMode (const RunningMode& mode)
   {
     case RM_SHOW_MODEL:
     {
-      Base::disableDrawCube ();
+      Base::disableDrawBox ();
       std::cerr << "Show the model\n";
       break;
     }
     case RM_UNPROCESSED:
     {
-      Base::disableDrawCube ();
+      Base::disableDrawBox ();
       std::cerr << "Showing the unprocessed input data.\n";
       break;
     }
     case RM_PROCESSED:
     {
-      Base::enableDrawCube ();
+      Base::enableDrawBox ();
       std::cerr << "Showing the processed input data.\n";
       break;
     }
     case RM_REGISTRATION_CONT:
     {
-      Base::enableDrawCube ();
+      Base::enableDrawBox ();
       std::cerr << "Continuous registration.\n";
       break;
     }
     case RM_REGISTRATION_SINGLE:
     {
-      Base::enableDrawCube ();
+      Base::enableDrawBox ();
       std::cerr << "Single registration.\n";
       break;
     }
@@ -216,7 +219,8 @@ pcl::ihs::InHandScanner::newDataCallback (const CloudXYZRGBAConstPtr& cloud_in)
   }
   else if (running_mode == RM_UNPROCESSED)
   {
-    cloud_data = input_data_processing_->calculateNormals (cloud_in);
+    if (!input_data_processing_->calculateNormals (cloud_in, cloud_data))
+      return;
   }
   else if (running_mode >= RM_PROCESSED)
   {
@@ -331,6 +335,13 @@ pcl::ihs::InHandScanner::paintEvent (QPaintEvent* event)
   {
     boost::mutex::scoped_lock lock (mutex_);
     Base::calcFPS (visualization_fps_);
+    Base::BoxCoefficients coeffs (input_data_processing_->getXMin (),
+                                  input_data_processing_->getXMax (),
+                                  input_data_processing_->getYMin (),
+                                  input_data_processing_->getYMax (),
+                                  input_data_processing_->getZMin (),
+                                  input_data_processing_->getZMax ());
+    Base::setBoxCoefficients (coeffs);
   }
 
   Base::paintEvent (event);

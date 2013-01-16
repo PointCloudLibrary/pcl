@@ -38,15 +38,20 @@
  *
  */
 
-#include <QApplication>
+#ifndef PCL_APPS_IN_HAND_SCANNER_UTILS_H
+#define PCL_APPS_IN_HAND_SCANNER_UTILS_H
 
-#include <pcl/apps/in_hand_scanner/main_window.h>
-
-int
-main (int argc, char** argv)
+namespace pcl
 {
-  QApplication app (argc, argv);
-  pcl::ihs::MainWindow mw;
-  mw.show ();
-  return (app.exec ());
-}
+  namespace ihs
+  {
+    /** \brief Clamp the value to the given range. All values smaller than min are set to min and all values bigger than max are set to max. */
+    template <class T> inline T
+    clamp (const T value, const T min, const T max)
+    {
+      return (value < min ? min : value > max ? max : value);
+    }
+  } // End namespace ihs
+} // End namespace pcl
+
+#endif // PCL_APPS_IN_HAND_SCANNER_UTILS_H

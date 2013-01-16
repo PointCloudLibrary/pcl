@@ -61,7 +61,9 @@ pcl::ihs::InputDataProcessing::InputDataProcessing ()
     s_min_ (  0.2f),
     s_max_ (  1.f),
     v_min_ (  0.2f),
-    v_max_ (  1.f)
+    v_max_ (  1.f),
+
+    hsv_inverted_ (true)
 {
   // Normal estimation
   normal_estimation_->setNormalEstimationMethod (NormalEstimation::AVERAGE_3D_GRADIENT);
@@ -118,7 +120,7 @@ pcl::ihs::InputDataProcessing::segment (const CloudXYZRGBAConstPtr& cloud_in,
   cloud_out->header   = cloud_in->header;
   cloud_out->width    = w;
   cloud_out->height   = h;
-  cloud_out->is_dense = false; /*cloud->is_dense && cloud_normals->is_dense;*/
+  cloud_out->is_dense = false;
   *cloud_discarded    = *cloud_out;
 
   const unsigned int dH = h / n_threads;
@@ -152,86 +154,61 @@ pcl::ihs::InputDataProcessing::segment (const CloudXYZRGBAConstPtr& cloud_in,
 
 ////////////////////////////////////////////////////////////////////////////////
 
-pcl::ihs::InputDataProcessing::CloudXYZRGBNormalPtr
-pcl::ihs::InputDataProcessing::calculateNormals (const CloudXYZRGBAConstPtr& cloud) const
+bool
+pcl::ihs::InputDataProcessing::calculateNormals (const CloudXYZRGBAConstPtr& cloud_in,
+                                                 CloudXYZRGBNormalPtr&       cloud_out) const
 {
-  const CloudXYZRGBNormalPtr cloud_out (new CloudXYZRGBNormal ());
+  if (!cloud_in)
+  {
+    std::cerr << "ERROR in input_data_processing.cpp: Input cloud is invalid.\n";
+    return (false);
+  }
+
+  if (!cloud_out)
+    cloud_out = CloudXYZRGBNormalPtr (new CloudXYZRGBNormal ());
 
   // Calculate the normals
   CloudNormalsPtr cloud_normals (new CloudNormals ());
-  normal_estimation_->setInputCloud (cloud);
+  normal_estimation_->setInputCloud (cloud_in);
   normal_estimation_->compute (*cloud_normals);
 
   // Copy the input cloud and normals into the output cloud.
-  cloud_out->resize (cloud->size ());
-  cloud_out->header              = cloud->header;
-  cloud_out->width               = cloud->width;
-  cloud_out->height              = cloud->height;
-  cloud_out->is_dense            = cloud->is_dense && cloud_normals->is_dense;
-  cloud_out->sensor_origin_      = cloud->sensor_origin_;
-  cloud_out->sensor_orientation_ = cloud->sensor_orientation_;
+  cloud_out->resize (cloud_in->size ());
+  cloud_out->header              = cloud_in->header;
+  cloud_out->width               = cloud_in->width;
+  cloud_out->height              = cloud_in->height;
+  cloud_out->is_dense            = false;
+  cloud_out->sensor_origin_      = cloud_in->sensor_origin_;
+  cloud_out->sensor_orientation_ = cloud_in->sensor_orientation_;
 
-  CloudXYZRGBA::const_iterator it_in  = cloud->begin ();
+  CloudXYZRGBA::const_iterator it_in  = cloud_in->begin ();
   CloudNormals::const_iterator it_n   = cloud_normals->begin ();
   CloudXYZRGBNormal::iterator  it_out = cloud_out->begin ();
 
-  for (; it_in!=cloud->end (); ++it_in, ++it_n, ++it_out)
+  PointXYZRGBNormal invalid_pt;
+  invalid_pt.x = invalid_pt.y = invalid_pt.z =
+      std::numeric_limits <float>::quiet_NaN ();
+  invalid_pt.normal_x = invalid_pt.normal_y = invalid_pt.normal_z =
+      std::numeric_limits <float>::quiet_NaN ();
+  invalid_pt.data   [3] = 1.f;
+  invalid_pt.data_n [3] = 0.f;
+
+  for (; it_in!=cloud_in->end (); ++it_in, ++it_n, ++it_out)
   {
-    // m -> cm
-    it_out->getVector4fMap ()       = 100.f * it_in->getVector4fMap ();
-    it_out->rgba                    = it_in->rgba;
-    it_out->getNormalVector4fMap () = it_n->getNormalVector4fMap ();
+    if (!boost::math::isnan (it_n->getNormalVector4fMap ()))
+    {
+      // m -> cm
+      it_out->getVector4fMap ()       = 100.f * it_in->getVector4fMap ();
+      it_out->rgba                    = it_in->rgba;
+      it_out->getNormalVector4fMap () = it_n->getNormalVector4fMap ();
+    }
+    else
+    {
+      *it_out = invalid_pt;
+    }
   }
 
-  return (cloud_out);
-}
-
-////////////////////////////////////////////////////////////////////////////////
-
-void
-pcl::ihs::InputDataProcessing::setCropBox (const float x_min, const float x_max,
-                                           const float y_min, const float y_max,
-                                           const float z_min, const float z_max)
-{
-  x_min_ = x_min; x_max_ = x_max;
-  y_min_ = y_min; y_max_ = y_max;
-  z_min_ = z_min; z_max_ = z_max;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-
-void
-pcl::ihs::InputDataProcessing::getCropBox (float& x_min, float& x_max,
-                                           float& y_min, float& y_max,
-                                           float& z_min, float& z_max) const
-{
-  x_min = x_min_; x_max = x_max_;
-  y_min = y_min_; y_max = y_max_;
-  z_min = z_min_; z_max = z_max_;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-
-void
-pcl::ihs::InputDataProcessing::setColorRange (const float h_min, const float h_max,
-                                              const float s_min, const float s_max,
-                                              const float v_min, const float v_max)
-{
-  h_min_ = h_min; h_max_ = h_max;
-  s_min_ = s_min; s_max_ = s_max;
-  v_min_ = v_min; v_max_ = v_max;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-
-void
-pcl::ihs::InputDataProcessing::getColorRange (float& h_min, float& h_max,
-                                              float& s_min, float& s_max,
-                                              float& v_min, float& v_max) const
-{
-  h_min = h_min_; h_max = h_max_;
-  s_min = s_min_; s_max = s_max_;
-  v_min = v_min_; v_max = v_max_;
+  return (true);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -249,6 +226,7 @@ pcl::ihs::InputDataProcessing::threadSegmentation (const PointXYZRGBA*const p_pt
   unsigned int offset;
   Eigen::Vector3f xyz;
   float h, s, v;
+  bool between_hsv;
 
   for (unsigned int r=0; r<n_rows; ++r)
   {
@@ -264,15 +242,26 @@ pcl::ihs::InputDataProcessing::threadSegmentation (const PointXYZRGBA*const p_pt
       xyz = 100.f * pt_in.getVector3fMap ();
 
       if (!boost::math::isnan (pt_in.x) && !boost::math::isnan (n_in.normal_x) &&
-          xyz.x () >= x_min_            && xyz.x () <= x_max_                   &&
-          xyz.y () >= y_min_            && xyz.y () <= y_max_                   &&
+          xyz.x () >= x_min_            && xyz.x () <= x_max_                  &&
+          xyz.y () >= y_min_            && xyz.y () <= y_max_                  &&
           xyz.z () >= z_min_            && xyz.z () <= z_max_)
       {
         this->RGBToHSV (pt_in.r, pt_in.g, pt_in.b, h, s, v);
 
-        if (!(h >= h_min_ && h <= h_max_ &&
-              s >= s_min_ && s <= s_max_ &&
-              v >= v_min_ && v <= v_max_))
+        if (h >= h_min_ && h <= h_max_ && s >= s_min_ && s <= s_max_ && v >= v_min_ && v <= v_max_)
+          between_hsv = true;
+        else
+          between_hsv = false;
+
+        if (hsv_inverted_ && between_hsv)
+        {
+          pt_out = invalid_pt;
+
+          pt_dis.getVector3fMap ()       = xyz;
+          pt_dis.getNormalVector4fMap () = n_in.getNormalVector4fMap ();
+          pt_dis.rgba                    = color_discarded;
+        }
+        else if (hsv_inverted_ && !between_hsv)
         {
           pt_out.getVector3fMap ()       = xyz;
           pt_out.getNormalVector4fMap () = n_in.getNormalVector4fMap ();
@@ -280,7 +269,15 @@ pcl::ihs::InputDataProcessing::threadSegmentation (const PointXYZRGBA*const p_pt
 
           pt_dis = invalid_pt;
         }
-        else
+        else if (!hsv_inverted_ && between_hsv)
+        {
+          pt_out.getVector3fMap ()       = xyz;
+          pt_out.getNormalVector4fMap () = n_in.getNormalVector4fMap ();
+          pt_out.rgba                    = pt_in.rgba;
+
+          pt_dis = invalid_pt;
+        }
+        else // !hsv_inverted_ && !between_hsv
         {
           pt_out = invalid_pt;
 

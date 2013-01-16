@@ -43,6 +43,7 @@
 
 #include <pcl/pcl_exports.h>
 #include <pcl/apps/in_hand_scanner/common_types.h>
+#include <pcl/apps/in_hand_scanner/utils.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 // Forward declarations
@@ -62,6 +63,10 @@ namespace pcl
 {
   namespace ihs
   {
+    /** \brief Bundles methods that are applied to the input data from the sensor.
+      * \author Martin Saelzle
+      * \ingroup apps
+      */
     class PCL_EXPORTS InputDataProcessing
     {
       public:
@@ -76,6 +81,75 @@ namespace pcl
         typedef CloudXYZRGBNormal::Ptr              CloudXYZRGBNormalPtr;
         typedef CloudXYZRGBNormal::ConstPtr         CloudXYZRGBNormalConstPtr;
 
+        /** \brief Constructor */
+        InputDataProcessing ();
+
+        /** \brief Apply the segmentation on the input cloud (XYZ and HSV).
+          * \param[in] cloud_in The input cloud.
+          * \param[out] cloud_out The segmented cloud.
+          * \param[out] cloud_discarded Cloud containing all points that were removed during the HSV segmentation. The points in the XYZ segmentation are NOT used!
+          * \return true if success.
+          * \note Converts from m to cm.
+          */
+        bool
+        segment (const CloudXYZRGBAConstPtr& cloud_in,
+                 CloudXYZRGBNormalPtr&       cloud_out,
+                 CloudXYZRGBNormalPtr&       cloud_discarded) const;
+
+        /** \brief Calculate the normals of the input cloud.
+          * \param[in] cloud_in The input cloud.
+          * \param[out] cloud_out Input cloud with normals appended.
+          * \return true if success.
+          * \note Converts from m to cm.
+          */
+        bool
+        calculateNormals (const CloudXYZRGBAConstPtr& cloud_in,
+                          CloudXYZRGBNormalPtr&       cloud_out) const;
+
+        /** @{ */
+        /** \brief Everything outside of X - Y - Z - min / max is discarded. The unit is cm.*/
+        inline void setXMin (const float x_min) {x_min_ = x_min;}
+        inline void setXMax (const float x_max) {x_max_ = x_max;}
+        inline void setYMin (const float y_min) {y_min_ = y_min;}
+        inline void setYMax (const float y_max) {y_max_ = y_max;}
+        inline void setZMin (const float z_min) {z_min_ = z_min;}
+        inline void setZMax (const float z_max) {z_max_ = z_max;}
+
+        inline float getXMin () const {return (x_min_);}
+        inline float getXMax () const {return (x_max_);}
+        inline float getYMin () const {return (y_min_);}
+        inline float getYMax () const {return (y_max_);}
+        inline float getZMin () const {return (z_min_);}
+        inline float getZMax () const {return (z_max_);}
+        /** @} */
+
+        /** @{ */
+        /** \brief Simple color segmentation in the HSV color space. Everything outside of H - S - V min / max is discarded. H must be in the range 0 and 360, S and V in the range 0 and 1.
+          * \note If you set values outside of the allowed range the member variables are clamped to the next best value. E.g. H is set to 0 if you pass -1.
+          */
+        inline void setHMin (const float h_min) {h_min_ = pcl::ihs::clamp (h_min, 0.f, 360.f);}
+        inline void setHMax (const float h_max) {h_max_ = pcl::ihs::clamp (h_max, 0.f, 360.f);}
+        inline void setSMin (const float s_min) {s_min_ = pcl::ihs::clamp (s_min, 0.f,   1.f);}
+        inline void setSMax (const float s_max) {s_max_ = pcl::ihs::clamp (s_max, 0.f,   1.f);}
+        inline void setVMin (const float v_min) {v_min_ = pcl::ihs::clamp (v_min, 0.f,   1.f);}
+        inline void setVMax (const float v_max) {v_max_ = pcl::ihs::clamp (v_max, 0.f,   1.f);}
+
+        inline float getHMin () const {return (h_min_);}
+        inline float getHMax () const {return (h_max_);}
+        inline float getSMin () const {return (s_min_);}
+        inline float getSMax () const {return (s_max_);}
+        inline float getVMin () const {return (v_min_);}
+        inline float getVMax () const {return (v_max_);}
+        /** @} */
+
+        /** @{ */
+        /** \brief If true the color values outside of H - S - V min / max are accepted instead of discarded. */
+        inline void setColorSegmentationInverted (const bool hsv_inverted) {hsv_inverted_ = hsv_inverted;}
+        inline bool getColorSegmentationInverted () const                  {return (hsv_inverted_);}
+        /** @} */
+
+      private:
+
         typedef pcl::Normal                            Normal;
         typedef pcl::PointCloud <Normal>               CloudNormals;
         typedef boost::shared_ptr <CloudNormals>       CloudNormalsPtr;
@@ -85,42 +159,7 @@ namespace pcl
         typedef boost::shared_ptr <NormalEstimation>                      NormalEstimationPtr;
         typedef boost::shared_ptr <const NormalEstimation>                NormalEstimationConstPtr;
 
-      public:
-
-        InputDataProcessing ();
-
-      public:
-
-        bool
-        segment (const CloudXYZRGBAConstPtr& cloud_in,
-                 CloudXYZRGBNormalPtr&       cloud_out,
-                 CloudXYZRGBNormalPtr&       cloud_discarded) const;
-
-        CloudXYZRGBNormalPtr
-        calculateNormals (const CloudXYZRGBAConstPtr& cloud) const;
-
-        void
-        setCropBox (const float x_min, const float x_max,
-                    const float y_min, const float y_max,
-                    const float z_min, const float z_max);
-
-        void
-        getCropBox (float& x_min, float& x_max,
-                    float& y_min, float& y_max,
-                    float& z_min, float& z_max) const;
-
-        void
-        setColorRange (const float h_min, const float h_max,
-                       const float s_min, const float s_max,
-                       const float v_min, const float v_max);
-
-        void
-        getColorRange (float& h_min, float& h_max,
-                       float& s_min, float& s_max,
-                       float& v_min, float& v_max) const;
-
-      private:
-
+        /** \brief Thread that performs the segmentation. */
         void
         threadSegmentation (const PointXYZRGBA*const p_pt_in,
                             const Normal*const       p_n_in,
@@ -131,6 +170,7 @@ namespace pcl
                             PointXYZRGBNormal*const  p_pt_out,
                             PointXYZRGBNormal*const  p_pt_discarded) const;
 
+        /** \brief Conversion from the RGB to HSV color space. */
         void
         RGBToHSV (const unsigned char r,
                   const unsigned char g,
@@ -138,6 +178,10 @@ namespace pcl
                   float&              h,
                   float&              s,
                   float&              v) const;
+
+        ////////////////////////////////////////////////////////////////////////
+        // Members
+        ////////////////////////////////////////////////////////////////////////
 
         NormalEstimationPtr normal_estimation_;
 
@@ -154,6 +198,8 @@ namespace pcl
         float s_max_;
         float v_min_;
         float v_max_;
+
+        bool hsv_inverted_;
     };
   } // End namespace ihs
 } // End namespace pcl

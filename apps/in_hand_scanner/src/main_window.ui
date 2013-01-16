@@ -1,0 +1,746 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1000</width>
+    <height>500</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralWidget"/>
+  <widget class="QDockWidget" name="dockWidget">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>324</width>
+     <height>228</height>
+    </size>
+   </property>
+   <property name="features">
+    <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>2</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents">
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
+      <widget class="QToolBox" name="toolBox">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="currentIndex">
+        <number>0</number>
+       </property>
+       <widget class="QWidget" name="page_input_data_processing">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>300</width>
+          <height>348</height>
+         </rect>
+        </property>
+        <attribute name="label">
+         <string>Input data processing</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="verticalLayout_2">
+         <item>
+          <widget class="QGroupBox" name="groupBox_crop_xyz">
+           <property name="title">
+            <string>Crop coordinates</string>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_3">
+            <item row="0" column="1">
+             <widget class="QSpinBox" name="spinBox_x_min">
+              <property name="minimum">
+               <number>-100</number>
+              </property>
+              <property name="maximum">
+               <number>100</number>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="2">
+             <widget class="QLabel" name="label_z_max">
+              <property name="text">
+               <string>z max</string>
+              </property>
+              <property name="buddy">
+               <cstring>spinBox_z_max</cstring>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="QLabel" name="label_z_min">
+              <property name="text">
+               <string>z min</string>
+              </property>
+              <property name="buddy">
+               <cstring>spinBox_z_min</cstring>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QSpinBox" name="spinBox_y_min">
+              <property name="minimum">
+               <number>-100</number>
+              </property>
+              <property name="maximum">
+               <number>100</number>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="label_y_min">
+              <property name="text">
+               <string>y min</string>
+              </property>
+              <property name="buddy">
+               <cstring>spinBox_y_min</cstring>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="2">
+             <widget class="QLabel" name="label_x_max">
+              <property name="text">
+               <string>x max</string>
+              </property>
+              <property name="buddy">
+               <cstring>spinBox_x_max</cstring>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="1">
+             <widget class="QSpinBox" name="spinBox_z_min">
+              <property name="minimum">
+               <number>0</number>
+              </property>
+              <property name="maximum">
+               <number>1000</number>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="2">
+             <widget class="QLabel" name="label_y_max">
+              <property name="text">
+               <string>y max</string>
+              </property>
+              <property name="buddy">
+               <cstring>spinBox_y_max</cstring>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="3">
+             <widget class="QSpinBox" name="spinBox_x_max">
+              <property name="minimum">
+               <number>-100</number>
+              </property>
+              <property name="maximum">
+               <number>100</number>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="3">
+             <widget class="QSpinBox" name="spinBox_z_max">
+              <property name="minimum">
+               <number>0</number>
+              </property>
+              <property name="maximum">
+               <number>1000</number>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="3">
+             <widget class="QSpinBox" name="spinBox_y_max">
+              <property name="minimum">
+               <number>-100</number>
+              </property>
+              <property name="maximum">
+               <number>100</number>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="QLabel" name="label_x_min">
+              <property name="text">
+               <string>x min</string>
+              </property>
+              <property name="buddy">
+               <cstring>spinBox_x_min</cstring>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="groupBox_segment_hsv">
+           <property name="title">
+            <string>Color segmentation</string>
+           </property>
+           <layout class="QGridLayout" name="gridLayout">
+            <item row="0" column="1">
+             <widget class="QSpinBox" name="spinBox_h_min">
+              <property name="maximum">
+               <number>360</number>
+              </property>
+              <property name="singleStep">
+               <number>10</number>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="2">
+             <widget class="QLabel" name="label_h_max">
+              <property name="text">
+               <string>H max</string>
+              </property>
+              <property name="buddy">
+               <cstring>spinBox_h_max</cstring>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QSpinBox" name="spinBox_s_min">
+              <property name="maximum">
+               <number>100</number>
+              </property>
+              <property name="singleStep">
+               <number>10</number>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="2">
+             <widget class="QLabel" name="label_s_max">
+              <property name="text">
+               <string>S max</string>
+              </property>
+              <property name="buddy">
+               <cstring>spinBox_s_max</cstring>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="QLabel" name="label_v_min">
+              <property name="text">
+               <string>V min</string>
+              </property>
+              <property name="buddy">
+               <cstring>spinBox_v_min</cstring>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="1">
+             <widget class="QSpinBox" name="spinBox_v_min">
+              <property name="maximum">
+               <number>100</number>
+              </property>
+              <property name="singleStep">
+               <number>10</number>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="2">
+             <widget class="QLabel" name="label_v_max">
+              <property name="text">
+               <string>V max</string>
+              </property>
+              <property name="buddy">
+               <cstring>spinBox_v_max</cstring>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="3">
+             <widget class="QSpinBox" name="spinBox_v_max">
+              <property name="maximum">
+               <number>100</number>
+              </property>
+              <property name="singleStep">
+               <number>10</number>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="3">
+             <widget class="QSpinBox" name="spinBox_s_max">
+              <property name="maximum">
+               <number>100</number>
+              </property>
+              <property name="singleStep">
+               <number>10</number>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="3">
+             <widget class="QSpinBox" name="spinBox_h_max">
+              <property name="maximum">
+               <number>360</number>
+              </property>
+              <property name="singleStep">
+               <number>10</number>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="QLabel" name="label_h_min">
+              <property name="text">
+               <string>H min</string>
+              </property>
+              <property name="buddy">
+               <cstring>spinBox_h_min</cstring>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="label_s_min">
+              <property name="text">
+               <string>S min</string>
+              </property>
+              <property name="buddy">
+               <cstring>spinBox_s_min</cstring>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="0" colspan="3">
+             <widget class="QCheckBox" name="checkBox_inverted">
+              <property name="text">
+               <string>Inverted</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+           <zorder>spinBox_h_min</zorder>
+           <zorder>label_s_min</zorder>
+           <zorder>spinBox_v_min</zorder>
+           <zorder>spinBox_v_max</zorder>
+           <zorder>label_s_max</zorder>
+           <zorder>label_v_max</zorder>
+           <zorder>spinBox_h_max</zorder>
+           <zorder>label_h_min</zorder>
+           <zorder>label_h_max</zorder>
+           <zorder>label_v_min</zorder>
+           <zorder>spinBox_s_max</zorder>
+           <zorder>spinBox_s_min</zorder>
+           <zorder>checkBox_inverted</zorder>
+          </widget>
+         </item>
+         <item>
+          <spacer name="verticalSpacer_input_data_processing">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="page_registration">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>300</width>
+          <height>348</height>
+         </rect>
+        </property>
+        <attribute name="label">
+         <string>Registration</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="verticalLayout_3">
+         <item>
+          <widget class="QGroupBox" name="groupBox_convergence">
+           <property name="title">
+            <string>Convergence</string>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_4">
+            <item row="0" column="0">
+             <widget class="QLabel" name="label_epsilon">
+              <property name="text">
+               <string>Epsilon</string>
+              </property>
+              <property name="buddy">
+               <cstring>doubleSpinBox_epsilon</cstring>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QDoubleSpinBox" name="doubleSpinBox_epsilon"/>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="label_max_iterations">
+              <property name="text">
+               <string>Max iterations</string>
+              </property>
+              <property name="buddy">
+               <cstring>doubleSpinBox_max_iterations</cstring>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QDoubleSpinBox" name="doubleSpinBox_max_iterations"/>
+            </item>
+            <item row="2" column="0">
+             <widget class="QLabel" name="label_min_overlap">
+              <property name="text">
+               <string>Min overlap</string>
+              </property>
+              <property name="buddy">
+               <cstring>doubleSpinBox_min_overlap</cstring>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="1">
+             <widget class="QDoubleSpinBox" name="doubleSpinBox_min_overlap"/>
+            </item>
+            <item row="3" column="0">
+             <widget class="QLabel" name="label_max_fitness">
+              <property name="text">
+               <string>Max fitness</string>
+              </property>
+              <property name="buddy">
+               <cstring>doubleSpinBox_max_fitness</cstring>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="1">
+             <widget class="QDoubleSpinBox" name="doubleSpinBox_max_fitness"/>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="groupBox_correspondence_rejection">
+           <property name="title">
+            <string>Correspondence rejection</string>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_2">
+            <item row="0" column="0">
+             <widget class="QLabel" name="label_factor">
+              <property name="text">
+               <string>Factor</string>
+              </property>
+              <property name="buddy">
+               <cstring>doubleSpinBox_factor</cstring>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QDoubleSpinBox" name="doubleSpinBox_factor"/>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="label_normals_threshold">
+              <property name="text">
+               <string>Normals threshold</string>
+              </property>
+              <property name="buddy">
+               <cstring>doubleSpinBox_normals_threshold</cstring>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QDoubleSpinBox" name="doubleSpinBox_normals_threshold"/>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <spacer name="verticalSpacer_registration">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="page_integration">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>300</width>
+          <height>348</height>
+         </rect>
+        </property>
+        <attribute name="label">
+         <string>Integration</string>
+        </attribute>
+       </widget>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <tabstops>
+  <tabstop>spinBox_x_min</tabstop>
+  <tabstop>spinBox_x_max</tabstop>
+  <tabstop>spinBox_y_min</tabstop>
+  <tabstop>spinBox_y_max</tabstop>
+  <tabstop>spinBox_z_min</tabstop>
+  <tabstop>spinBox_z_max</tabstop>
+  <tabstop>spinBox_h_min</tabstop>
+  <tabstop>spinBox_h_max</tabstop>
+  <tabstop>spinBox_s_min</tabstop>
+  <tabstop>spinBox_s_max</tabstop>
+  <tabstop>spinBox_v_min</tabstop>
+  <tabstop>spinBox_v_max</tabstop>
+  <tabstop>checkBox_inverted</tabstop>
+  <tabstop>doubleSpinBox_epsilon</tabstop>
+  <tabstop>doubleSpinBox_max_iterations</tabstop>
+  <tabstop>doubleSpinBox_min_overlap</tabstop>
+  <tabstop>doubleSpinBox_max_fitness</tabstop>
+  <tabstop>doubleSpinBox_factor</tabstop>
+  <tabstop>doubleSpinBox_normals_threshold</tabstop>
+ </tabstops>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>spinBox_x_min</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>setXMin(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>779</x>
+     <y>119</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>565</x>
+     <y>106</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox_x_max</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>setXMax(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>924</x>
+     <y>123</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>665</x>
+     <y>120</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox_y_min</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>setYMin(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>800</x>
+     <y>154</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>570</x>
+     <y>144</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox_y_max</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>setYMax(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>908</x>
+     <y>158</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>669</x>
+     <y>156</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox_z_min</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>setZMin(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>821</x>
+     <y>189</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>574</x>
+     <y>176</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox_z_max</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>setZMax(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>930</x>
+     <y>189</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>671</x>
+     <y>191</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox_h_min</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>setHMin(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>782</x>
+     <y>269</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>570</x>
+     <y>249</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox_h_max</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>setHMax(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>942</x>
+     <y>260</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>668</x>
+     <y>259</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox_s_min</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>setSMin(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>813</x>
+     <y>296</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>567</x>
+     <y>284</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox_s_max</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>setSMax(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>925</x>
+     <y>296</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>668</x>
+     <y>296</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox_v_min</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>setVMin(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>784</x>
+     <y>336</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>569</x>
+     <y>319</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox_v_max</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>setVMax(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>935</x>
+     <y>323</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>667</x>
+     <y>331</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>checkBox_inverted</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>setColorSegmentationInverted(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>717</x>
+     <y>364</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>668</x>
+     <y>369</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>setXMin(int)</slot>
+  <slot>setXMax(int)</slot>
+  <slot>setYMin(int)</slot>
+  <slot>setYMax(int)</slot>
+  <slot>setZMin(int)</slot>
+  <slot>setZMax(int)</slot>
+  <slot>setHMin(int)</slot>
+  <slot>setHMax(int)</slot>
+  <slot>setSMin(int)</slot>
+  <slot>setSMax(int)</slot>
+  <slot>setVMin(int)</slot>
+  <slot>setVMax(int)</slot>
+  <slot>setColorSegmentationInverted(bool)</slot>
+ </slots>
+</ui>

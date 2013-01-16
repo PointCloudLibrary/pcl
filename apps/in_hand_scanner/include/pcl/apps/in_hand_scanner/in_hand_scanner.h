@@ -86,6 +86,19 @@ namespace pcl
         typedef pcl::ihs::OpenGLViewer  Base;
         typedef pcl::ihs::InHandScanner Self;
 
+        typedef pcl::ihs::InputDataProcessing                 InputDataProcessing;
+        typedef boost::shared_ptr <InputDataProcessing>       InputDataProcessingPtr;
+        typedef boost::shared_ptr <const InputDataProcessing> InputDataProcessingConstPtr;
+
+        typedef pcl::ihs::ICP                 ICP;
+        typedef boost::shared_ptr <ICP>       ICPPtr;
+        typedef boost::shared_ptr <const ICP> ICPConstPtr;
+
+        typedef pcl::ihs::Integration                 Integration;
+        typedef boost::shared_ptr <Integration>       IntegrationPtr;
+        typedef boost::shared_ptr <const Integration> IntegrationConstPtr;
+
+
         /** \brief Switch between different branches of the scanning pipeline. */
         typedef enum RunningMode
         {
@@ -101,6 +114,18 @@ namespace pcl
 
         /** \brief Destructor. */
         ~InHandScanner ();
+
+        /** \brief Get the input data processing. */
+        inline InputDataProcessing&
+        getInputDataProcessing () {return (*input_data_processing_);}
+
+        /** \brief Get the registration. */
+        inline ICP&
+        getICP () {return (*icp_);}
+
+        /** \brief Get the integration. */
+        inline Integration&
+        getIntegration () {return (*integration_);}
 
       public slots:
 
@@ -140,18 +165,6 @@ namespace pcl
         typedef pcl::OpenNIGrabber                Grabber;
         typedef boost::shared_ptr <Grabber>       GrabberPtr;
         typedef boost::shared_ptr <const Grabber> GrabberConstPtr;
-
-        typedef pcl::ihs::InputDataProcessing                 InputDataProcessing;
-        typedef boost::shared_ptr <InputDataProcessing>       InputDataProcessingPtr;
-        typedef boost::shared_ptr <const InputDataProcessing> InputDataProcessingConstPtr;
-
-        typedef pcl::ihs::ICP                 ICP;
-        typedef boost::shared_ptr <ICP>       ICPPtr;
-        typedef boost::shared_ptr <const ICP> ICPConstPtr;
-
-        typedef pcl::ihs::Integration                 Integration;
-        typedef boost::shared_ptr <Integration>       IntegrationPtr;
-        typedef boost::shared_ptr <const Integration> IntegrationConstPtr;
 
         /** \brief Helper object for the computation thread. Please have a look at the documentation of calcFPS. */
         class ComputationFPS : public Base::FPS

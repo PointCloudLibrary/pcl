@@ -12,6 +12,7 @@ set(INCS
     include/pcl/apps/${SUBSYS_NAME}/icp.h
     include/pcl/apps/${SUBSYS_NAME}/input_data_processing.h
     include/pcl/apps/${SUBSYS_NAME}/integration.h
+    include/pcl/apps/${SUBSYS_NAME}/utils.h
     include/pcl/apps/${SUBSYS_NAME}/visibility_confidence.h
 )
 
@@ -21,6 +22,7 @@ set(IMPL_INCS
 
 set(SRCS
     src/main.cpp
+    src/main_window.cpp
     src/icp.cpp
     src/in_hand_scanner.cpp
     src/input_data_processing.cpp
@@ -33,6 +35,9 @@ set(SRCS
 set(MOC_IN_HAND_SCANNER_INC     include/pcl/apps/${SUBSYS_NAME}/in_hand_scanner.h)
 set(MOC_OPENGL_VIEWER_INC       include/pcl/apps/${SUBSYS_NAME}/opengl_viewer.h)
 set(MOC_OFFLINE_INTEGRATION_INC include/pcl/apps/${SUBSYS_NAME}/offline_integration.h)
+
+set(MOC_MAIN_WINDOW_INC include/pcl/apps/${SUBSYS_NAME}/main_window.h)
+set(UI_MAIN_WINDOW      src/main_window.ui)
 
 # Offline integration
 set(OI_INCS
@@ -79,18 +84,24 @@ endif()
 
 if(BUILD)
 
-  # Qt http://qtnode.net/wiki/Qt4_with_cmake
+  # Qt
+  # http://qtnode.net/wiki/Qt4_with_cmake
+  # http://qt-project.org/quarterly/view/using_cmake_to_build_qt_projects
   set(QT_USE_QTOPENGL TRUE)
   include(${QT_USE_FILE})
   qt4_wrap_cpp(MOC_IN_HAND_SCANNER_SRC     ${MOC_IN_HAND_SCANNER_INC})
   qt4_wrap_cpp(MOC_OPENGL_VIEWER_SRC       ${MOC_OPENGL_VIEWER_INC})
   qt4_wrap_cpp(MOC_OFFLINE_INTEGRATION_SRC ${MOC_OFFLINE_INTEGRATION_INC})
 
+  qt4_wrap_cpp(MOC_MAIN_WINDOW_SRC ${MOC_MAIN_WINDOW_INC})
+  qt4_wrap_ui(UI_MAIN_WINDOW_INC   ${UI_MAIN_WINDOW})
+
   list(APPEND ADDITIONAL_LIBS ${QT_LIBRARIES})
+  include_directories(${CMAKE_CURRENT_BINARY_DIR}) # For the ui files
 
   # In-hand scanner
-  list(APPEND INCS ${MOC_IN_HAND_SCANNER_INC} ${MOC_OPENGL_VIEWER_INC})
-  list(APPEND SRCS ${MOC_IN_HAND_SCANNER_SRC} ${MOC_OPENGL_VIEWER_SRC})
+  list(APPEND INCS ${MOC_IN_HAND_SCANNER_INC} ${MOC_OPENGL_VIEWER_INC} ${MOC_MAIN_WINDOW_INC} ${UI_MAIN_WINDOW_INC})
+  list(APPEND SRCS ${MOC_IN_HAND_SCANNER_SRC} ${MOC_OPENGL_VIEWER_SRC} ${MOC_MAIN_WINDOW_SRC})
 
   include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 

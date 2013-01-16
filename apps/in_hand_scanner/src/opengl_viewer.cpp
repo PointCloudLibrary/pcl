@@ -106,8 +106,8 @@ pcl::ihs::OpenGLViewer::OpenGLViewer (QWidget* parent)
     drawn_meshes_        (),
     mesh_representation_ (MR_POINTS),
     coloring_            (COL_RGB),
-    draw_cube_           (false),
-    cube_coefficients_   (),
+    draw_box_            (false),
+    box_coefficients_    (),
     scaling_factor_      (1.),
     R_cam_               (1., 0., 0., 0.),
     t_cam_               (0., 0., 0.),
@@ -121,7 +121,11 @@ pcl::ihs::OpenGLViewer::OpenGLViewer (QWidget* parent)
   connect (timer_vis_.get (), SIGNAL (timeout ()), this, SLOT (timerCallback ()));
   timer_vis_->start (33);
 
+  // http://doc.qt.digia.com/qt/opengl-overpainting.html
   QWidget::setAutoFillBackground (false);
+
+  // http://doc.qt.digia.com/qt/qwidget.html#keyPressEvent
+  this->setFocusPolicy (Qt::StrongFocus);
 
   //////////////////////////////////////////////////////////////////////////////
   // Code to generate the colormap (I don't want to link against vtk just for the colormap).
@@ -595,31 +599,31 @@ pcl::ihs::OpenGLViewer::removeAllMeshes ()
 ////////////////////////////////////////////////////////////////////////////////
 
 void
-pcl::ihs::OpenGLViewer::setCubeCoefficients (const CubeCoefficients& coeffs)
+pcl::ihs::OpenGLViewer::setBoxCoefficients (const BoxCoefficients& coeffs)
 {
   boost::mutex::scoped_lock lock (mutex_vis_);
 
-  cube_coefficients_ = coeffs;
+  box_coefficients_ = coeffs;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 void
-pcl::ihs::OpenGLViewer::enableDrawCube ()
+pcl::ihs::OpenGLViewer::enableDrawBox ()
 {
   boost::mutex::scoped_lock lock (mutex_vis_);
 
-  draw_cube_ = true;
+  draw_box_ = true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 void
-pcl::ihs::OpenGLViewer::disableDrawCube ()
+pcl::ihs::OpenGLViewer::disableDrawBox ()
 {
   boost::mutex::scoped_lock lock (mutex_vis_);
 
-  draw_cube_ = false;
+  draw_box_ = false;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -815,7 +819,7 @@ pcl::ihs::OpenGLViewer::paintEvent (QPaintEvent* /*event*/)
   this->drawMeshes ();
 
   glDisable (GL_LIGHTING); // This is needed so the color is right.
-  this->drawCube ();
+  this->drawBox ();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -940,14 +944,14 @@ pcl::ihs::OpenGLViewer::drawMeshes ()
 ////////////////////////////////////////////////////////////////////////////////
 
 void
-pcl::ihs::OpenGLViewer::drawCube ()
+pcl::ihs::OpenGLViewer::drawBox ()
 {
-  CubeCoefficients coeffs;
+  BoxCoefficients coeffs;
   {
     boost::mutex::scoped_lock lock (mutex_vis_);
 
-    if (draw_cube_) coeffs = cube_coefficients_;
-    else            return;
+    if (draw_box_) coeffs = box_coefficients_;
+    else           return;
   }
 
   glColor3f (1.f, 1.f, 1.f);

@@ -38,15 +38,72 @@
  *
  */
 
-#include <QApplication>
+#ifndef MAIN_WINDOW_H
+#define MAIN_WINDOW_H
 
-#include <pcl/apps/in_hand_scanner/main_window.h>
+#include <QMainWindow>
 
-int
-main (int argc, char** argv)
+////////////////////////////////////////////////////////////////////////////////
+// Forward declarations
+////////////////////////////////////////////////////////////////////////////////
+
+namespace Ui
 {
-  QApplication app (argc, argv);
-  pcl::ihs::MainWindow mw;
-  mw.show ();
-  return (app.exec ());
+  class MainWindow;
 }
+
+namespace pcl
+{
+  namespace ihs
+  {
+    class InHandScanner;
+  } // End namespace ihs
+} // End namespace pcl
+
+////////////////////////////////////////////////////////////////////////////////
+// MainWindow
+////////////////////////////////////////////////////////////////////////////////
+
+namespace pcl
+{
+  namespace ihs
+  {
+    class MainWindow : public QMainWindow
+    {
+        Q_OBJECT
+
+      public:
+
+        explicit MainWindow (QWidget* parent = 0);
+        ~MainWindow ();
+
+      public slots:
+
+        // Input data processing.
+        void setXMin (const int x_min);
+        void setXMax (const int x_max);
+        void setYMin (const int y_min);
+        void setYMax (const int y_max);
+        void setZMin (const int z_min);
+        void setZMax (const int z_max);
+
+        void setHMin (const int h_min);
+        void setHMax (const int h_max);
+        void setSMin (const int s_min);
+        void setSMax (const int s_max);
+        void setVMin (const int v_min);
+        void setVMax (const int v_max);
+
+        void setColorSegmentationInverted (const bool is_inverted);
+
+      private:
+
+        typedef pcl::ihs::InHandScanner InHandScanner;
+
+        Ui::MainWindow* ui_;
+        InHandScanner* ihs_;
+    };
+  } // End namespace ihs
+} // End namespace pcl
+
+#endif // MAIN_WINDOW_H
