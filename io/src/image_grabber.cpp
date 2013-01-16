@@ -34,7 +34,6 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
 // Looking for PCL_BUILT_WITH_VTK
 #include <pcl/pcl_config.h>
 #include <pcl/io/image_grabber.h>
@@ -55,18 +54,13 @@
   #include <vtkPNMReader.h>
 #endif
 
+///////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////// GrabberImplementation //////////////////////
 struct pcl::ImageGrabberBase::ImageGrabberImpl
 {
   //! Implementation of ImageGrabber
   ImageGrabberImpl (pcl::ImageGrabberBase& grabber, const std::string& dir, 
       float frames_per_second, bool repeat, bool pclzf_mode=false);
-
-  ImageGrabberImpl (pcl::ImageGrabberBase& grabber,
-                    const std::string& depth_dir,
-                    const std::string& rgb_dir,
-                    float frames_per_second, bool repeat);
-
   ImageGrabberImpl (pcl::ImageGrabberBase& grabber, const std::vector<std::string>& depth_image_files, float frames_per_second, bool repeat);
   
   void 
@@ -74,21 +68,24 @@ struct pcl::ImageGrabberBase::ImageGrabberImpl
   //! Read ahead -- figure out whether we are in VTK image or PCLZF mode
   void 
   loadNextCloud ();
-  //! Read ahead, assuming depth_images and rgb_images are being set
-  void
-  loadNextCloudVTK ();
-  //! Read ahead, assuming pclzf and xml files are set
-  void
-  loadNextCloudPCLZF ();
+  
+  //! Get cloud at a particular location
+  bool
+  getCloudAt (size_t idx, sensor_msgs::PointCloud2 &blob, Eigen::Vector4f &origin, Eigen::Quaternionf &orientation, 
+              double &fx, double &fy, double &cx, double &cy) const;
+  
+  //! Get cloud at a particular location
+  bool
+  getCloudVTK (size_t idx, sensor_msgs::PointCloud2 &blob, Eigen::Vector4f &origin, Eigen::Quaternionf &orientation) const;
+  //! Get cloud at a particular location
+  bool
+  getCloudPCLZF (size_t idx, sensor_msgs::PointCloud2 &blob, Eigen::Vector4f &origin, Eigen::Quaternionf &orientation, 
+                 double &fx, double &fy, double &cx, double &cy) const;
 
   //! Scrapes a directory for image files which contain "rgb" or "depth" and
   //! updates our list accordingly
   void
   loadDepthAndRGBFiles (const std::string &dir);
-
-  void
-  loadDepthAndRGBFiles (const std::string &depth_dir, const std::string &rgb_dir);
-
   //! Scrapes a directory for pclzf files which contain "rgb" or "depth and updates
   //  our list accordingly
   void
@@ -106,6 +103,10 @@ struct pcl::ImageGrabberBase::ImageGrabberImpl
   //! And returns if so
   bool
   getTimestampFromFilepath (const std::string &filepath, uint64_t &timestamp) const;
+
+  size_t
+  numFrames () const;
+
   
 #ifdef PCL_BUILT_WITH_VTK
   //! Load an image file, return the vtkImageReader2, return false if it couldn't be opened
@@ -119,21 +120,17 @@ struct pcl::ImageGrabberBase::ImageGrabberImpl
   bool running_;
   // VTK
   std::vector<std::string> depth_image_files_;
-  std::vector<std::string>::iterator depth_image_iterator_;
   std::vector<std::string> rgb_image_files_;
-  std::vector<std::string>::iterator rgb_image_iterator_;
   // PCLZF
   std::vector<std::string> depth_pclzf_files_;
-  std::vector<std::string>::iterator depth_pclzf_iterator_;
   std::vector<std::string> rgb_pclzf_files_;
-  std::vector<std::string>::iterator rgb_pclzf_iterator_;
   std::vector<std::string> xml_files_;
-  std::vector<std::string>::iterator xml_iterator_;
+
+  size_t cur_frame_;
 
   TimeTrigger time_trigger_;
 
   sensor_msgs::PointCloud2 next_cloud_;
-
   //! Two cases, for depth only and depth+color
   pcl::PointCloud<pcl::PointXYZ> next_cloud_depth_;
   pcl::PointCloud<pcl::PointXYZRGBA> next_cloud_color_;
@@ -161,9 +158,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::ImageGrabberImpl (pcl::ImageGrabberBase
   , repeat_ (repeat)
   , running_ (false)
   , depth_image_files_ ()
-  , depth_image_iterator_ ()
   , rgb_image_files_ ()
-  , rgb_image_iterator_ ()
   , time_trigger_ (1.0 / static_cast<double> (std::max (frames_per_second, 0.001f)), boost::bind (&ImageGrabberImpl::trigger, this))
   , next_cloud_ ()
   , origin_ ()
@@ -180,48 +175,12 @@ pcl::ImageGrabberBase::ImageGrabberImpl::ImageGrabberImpl (pcl::ImageGrabberBase
   if(pclzf_mode_)
   {
     loadPCLZFFiles(dir);
-    depth_pclzf_iterator_ = depth_pclzf_files_.begin();
-    if (rgb_pclzf_files_.size() > 0)
-      rgb_pclzf_iterator_ = rgb_pclzf_files_.begin();
-    xml_iterator_ = xml_files_.begin();
   }
   else
   {
     loadDepthAndRGBFiles (dir);
-    depth_image_iterator_ = depth_image_files_.begin ();
-    if (rgb_image_files_.size () > 0)
-      rgb_image_iterator_ = rgb_image_files_.begin ();
   }
-}
-
-pcl::ImageGrabberBase::ImageGrabberImpl::ImageGrabberImpl (pcl::ImageGrabberBase& grabber,
-                                                           const std::string& depth_dir,
-                                                           const std::string& rgb_dir,
-                                                           float frames_per_second, bool repeat)
-  : grabber_ (grabber)
-  , frames_per_second_ (frames_per_second)
-  , repeat_ (repeat)
-  , running_ (false)
-  , depth_image_files_ ()
-  , depth_image_iterator_ ()
-  , rgb_image_files_ ()
-  , rgb_image_iterator_ ()
-  , time_trigger_ (1.0 / static_cast<double> (std::max (frames_per_second, 0.001f)), boost::bind (&ImageGrabberImpl::trigger, this))
-  , next_cloud_ ()
-  , origin_ ()
-  , orientation_ ()
-  , valid_ (false)
-  , pclzf_mode_(false)
-  , depth_image_units_ (1E-3f)
-  , manual_intrinsics_ (false)
-  , focal_length_x_ (525.)
-  , focal_length_y_ (525.)
-  , principal_point_x_ (320.)
-  , principal_point_y_ (240.)
-{
-  loadDepthAndRGBFiles (depth_dir, rgb_dir);
-  depth_image_iterator_ = depth_image_files_.begin ();
-  rgb_image_iterator_ = rgb_image_files_.begin ();
+  cur_frame_ = 0;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -231,9 +190,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::ImageGrabberImpl (pcl::ImageGrabberBase
   , repeat_ (repeat)
   , running_ (false)
   , depth_image_files_ ()
-  , depth_image_iterator_ ()
   , rgb_image_files_ ()
-  , rgb_image_iterator_ ()
   , time_trigger_ (1.0 / static_cast<double> (std::max (frames_per_second, 0.001f)), boost::bind (&ImageGrabberImpl::trigger, this))
   , next_cloud_ ()
   , origin_ ()
@@ -248,290 +205,26 @@ pcl::ImageGrabberBase::ImageGrabberImpl::ImageGrabberImpl (pcl::ImageGrabberBase
   , principal_point_y_ (240.)
 {
   depth_image_files_ = depth_image_files;
-  depth_image_iterator_ = depth_image_files_.begin ();
+  cur_frame_ = 0;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 void 
 pcl::ImageGrabberBase::ImageGrabberImpl::loadNextCloud ()
 {
-  if(depth_image_files_.size() > 0)
-    loadNextCloudVTK ();
-  else if(depth_pclzf_files_.size() > 0)
-    loadNextCloudPCLZF ();
-  else
+  if (cur_frame_ >= numFrames ())
   {
-    PCL_ERROR ("[pcl::ImageGrabber::loadNextCloud] Attempted to read ahead, but no VTK or PCLZF files were found. \n");
-    return;
-  }
-}
-
-///////////////////////////////////////////////////////////////////////////////////////////
-void 
-pcl::ImageGrabberBase::ImageGrabberImpl::loadNextCloudPCLZF ()
-{
-  if(depth_pclzf_iterator_ == depth_pclzf_files_.end())
-  {
-    valid_ = false;
-    return;
-  }
-  if(rgb_pclzf_files_.size() > 0)
-  {
-    pcl::io::LZFRGB24ImageReader rgb;
-    pcl::io::LZFBayer8ImageReader bayer;
-    pcl::io::LZFDepth16ImageReader depth;
-    if (manual_intrinsics_)
-    {
-      pcl::io::CameraParameters manual_params;
-      manual_params.focal_length_x = focal_length_x_;
-      manual_params.focal_length_y = focal_length_y_;
-      manual_params.principal_point_x = principal_point_x_;
-      manual_params.principal_point_y = principal_point_y_;
-      rgb.setParameters (manual_params); 
-      bayer.setParameters (manual_params); 
-      depth.setParameters (manual_params); 
-    }
+    if (repeat_)
+      cur_frame_ = 0;
     else
     {
-      rgb.readParameters (*xml_iterator_);
-      bayer.readParameters (*xml_iterator_);
-      depth.readParameters (*xml_iterator_);
-      // Update intrinsics
-      pcl::io::CameraParameters loaded_params = depth.getParameters ();
-      focal_length_x_ = loaded_params.focal_length_x;
-      focal_length_y_ = loaded_params.focal_length_y;
-      principal_point_x_ = loaded_params.principal_point_x;
-      principal_point_y_ = loaded_params.principal_point_y;
-    }
-    next_cloud_color_.is_dense = false;
-    if (!rgb.read (*rgb_pclzf_iterator_, next_cloud_color_))
-      bayer.read(*rgb_pclzf_iterator_, next_cloud_color_);
-    depth.read(*depth_pclzf_iterator_, next_cloud_color_);
-    // Handle timestamps
-    uint64_t timestamp;
-    if (getTimestampFromFilepath (*depth_pclzf_iterator_, timestamp))
-    {
-#ifdef USE_ROS
-      next_cloud_color_.header.stamp.fromNSec (timestamp * 1000);
-#else
-      next_cloud_color_.header.stamp = timestamp;
-#endif //USE_ROS
-    }
-
-    pcl::toROSMsg(next_cloud_color_, next_cloud_);
-  }
-  else
-  {
-    pcl::io::LZFDepth16ImageReader depth;
-    // Handle intrinsics
-    if (manual_intrinsics_)
-    {
-      pcl::io::CameraParameters manual_params;
-      manual_params.focal_length_x = focal_length_x_;
-      manual_params.focal_length_y = focal_length_y_;
-      manual_params.principal_point_x = principal_point_x_;
-      manual_params.principal_point_y = principal_point_y_;
-      depth.setParameters (manual_params); 
-    }
-    else
-    {
-      depth.readParameters (*xml_iterator_);
-      // Update intrinsics
-      pcl::io::CameraParameters loaded_params = depth.getParameters ();
-      focal_length_x_ = loaded_params.focal_length_x;
-      focal_length_y_ = loaded_params.focal_length_y;
-      principal_point_x_ = loaded_params.principal_point_x;
-      principal_point_y_ = loaded_params.principal_point_y;
-    }
-    next_cloud_depth_.is_dense = false;
-    depth.read(*depth_pclzf_iterator_, next_cloud_depth_);
-    // Handle timestamps
-    uint64_t timestamp;
-    if (getTimestampFromFilepath (*depth_pclzf_iterator_, timestamp))
-    {
-#ifdef USE_ROS
-      next_cloud_depth_.header.stamp.fromNSec (timestamp * 1000);
-#else
-      next_cloud_depth_.header.stamp = timestamp;
-#endif //USE_ROS
-    }
-
-    pcl::toROSMsg(next_cloud_depth_, next_cloud_);
-  }
-    
-  valid_ = true;
-  // Increment iterators
-  if (++depth_pclzf_iterator_ == depth_pclzf_files_.end () && repeat_)
-      depth_pclzf_iterator_ = depth_pclzf_files_.begin ();
-  if (++xml_iterator_ == xml_files_.end() && repeat_)
-    xml_iterator_ = xml_files_.begin();
-    
-  if (rgb_pclzf_files_.size () > 0)
-  {
-    if (++rgb_pclzf_iterator_ == rgb_pclzf_files_.end () && repeat_)
-      rgb_pclzf_iterator_ = rgb_pclzf_files_.begin ();
-  }
-
-}
-
-///////////////////////////////////////////////////////////////////////////////////////////
-void 
-pcl::ImageGrabberBase::ImageGrabberImpl::loadNextCloudVTK ()
-{
-#ifdef PCL_BUILT_WITH_VTK
-  if (depth_image_iterator_ == depth_image_files_.end())
-  {
-    valid_ = false;
-    return;
-  }
-  unsigned short* depth_pixel;
-  unsigned char* color_pixel;
-  vtkSmartPointer<vtkImageData> depth_image;
-  vtkSmartPointer<vtkImageData> rgb_image;
-  // If there are RGB files, load an rgb image
-  if (rgb_image_files_.size () != 0)
-  {
-    // If we've gone through the rgb iterator but not finished depth, throw error
-    if (rgb_image_iterator_ == rgb_image_files_.end ())
-    {
-      PCL_ERROR ("[pcl::ImageGrabber::loadNextCloudVTK] Hit the end of all"
-          "RGB files before Depth files\n");
       valid_ = false;
       return;
     }
-    // If we were unable to pull a Vtk image, throw an error
-    if (!getVtkImage (*rgb_image_iterator_, rgb_image) )
-    {
-      valid_ = false;
-      if (++depth_image_iterator_ == depth_image_files_.end () && repeat_)
-        depth_image_iterator_ = depth_image_files_.begin ();
-      if (++rgb_image_iterator_ == rgb_image_files_.end () && repeat_)
-        rgb_image_iterator_ = rgb_image_files_.begin ();
-      return;
-    }
   }
-  if (!getVtkImage (*depth_image_iterator_, depth_image) )
-  {
-    valid_ = false;
-    if (++depth_image_iterator_ == depth_image_files_.end () && repeat_)
-      depth_image_iterator_ = depth_image_files_.begin ();
-    return;
-  }
-  int* dims = depth_image->GetDimensions ();
-
-  // Fill in image data
-  depth_pixel = static_cast<unsigned short*>(depth_image->GetScalarPointer ());
-  
-  // Set up intrinsics
-  float scaleFactorX, scaleFactorY;
-  float centerX, centerY;
-  if (manual_intrinsics_)
-  {
-    scaleFactorX = 1.f / static_cast<float> (focal_length_x_);
-    scaleFactorY = 1.f / static_cast<float> (focal_length_y_);
-    centerX = static_cast<float> (principal_point_x_);
-    centerY = static_cast<float> (principal_point_y_);
-  }
-  else
-  {
-    // The 525 factor default is only true for VGA. If not, we should scale
-    scaleFactorX = scaleFactorY = 1/525.f * 640.f / static_cast<float> (dims[0]);
-    centerX = static_cast<float> (dims[0] >> 1);
-    centerY = static_cast<float> (dims[1] >> 1);
-  }
-
-  if(rgb_image_files_.size() > 0)
-  {
-    next_cloud_color_.width = dims[0];
-    next_cloud_color_.height = dims[1];
-    next_cloud_color_.is_dense = false;
-    next_cloud_color_.points.resize(depth_image->GetNumberOfPoints());
-
-    for (int y = 0; y < dims[1]; ++y)
-    {
-      for (int x = 0; x < dims[0]; ++x, ++depth_pixel)
-      {
-        pcl::PointXYZRGBA &pt = next_cloud_color_.at(x,y);
-        float depth = static_cast<float> (*depth_pixel) * depth_image_units_;
-        if (depth == 0.0f) 
-          pt.x = pt.y = pt.z = std::numeric_limits<float>::quiet_NaN ();
-        else
-        {
-          pt.x = (static_cast<float> (x) - centerX) * scaleFactorX * depth;
-          pt.y = (static_cast<float> (y) - centerY) * scaleFactorY * depth; 
-          pt.z = depth;
-        }
-
-        color_pixel = reinterpret_cast<unsigned char*> (rgb_image->GetScalarPointer (x, y, 0));
-        pt.r = color_pixel[0];
-        pt.g = color_pixel[1];
-        pt.b = color_pixel[2];
-      }
-    }
-    // Handle timestamps
-    uint64_t timestamp;
-    if (getTimestampFromFilepath (*depth_image_iterator_, timestamp))
-    {
-#ifdef USE_ROS
-      next_cloud_color_.header.stamp.fromNSec (timestamp * 1000);
-#else
-      next_cloud_color_.header.stamp = timestamp;
-#endif //USE_ROS
-    }
-
-    pcl::toROSMsg(next_cloud_color_, next_cloud_);
-  }
-  else
-  {
-    next_cloud_depth_.width = dims[0];
-    next_cloud_depth_.height = dims[1];
-    next_cloud_depth_.is_dense = false;
-    next_cloud_depth_.points.resize(depth_image->GetNumberOfPoints());
-    for (int y = 0; y < dims[1]; ++y)
-    {
-      for (int x = 0; x < dims[0]; ++x, ++depth_pixel)
-      {
-        pcl::PointXYZ &pt = next_cloud_depth_.at(x,y);
-        float depth = static_cast<float> (*depth_pixel) * depth_image_units_;
-        if (depth == 0.0f) 
-          pt.x = pt.y = pt.z = std::numeric_limits<float>::quiet_NaN ();
-        else
-        {
-          pt.x = ((float)x - centerX) * scaleFactorX * depth;
-          pt.y = ((float)y - centerY) * scaleFactorY * depth; 
-          pt.z = depth;
-        }
-      }
-    }
-    // Handle timestamps
-    uint64_t timestamp;
-    if (getTimestampFromFilepath (*depth_image_iterator_, timestamp))
-    {
-#ifdef USE_ROS
-      next_cloud_depth_.header.stamp.fromNSec (timestamp * 1000);
-#else
-      next_cloud_depth_.header.stamp = timestamp;
-#endif //USE_ROS
-    }
-
-    pcl::toROSMsg(next_cloud_depth_, next_cloud_);
-  }
-
-  valid_ = true;
-  if (++depth_image_iterator_ == depth_image_files_.end () && repeat_)
-    depth_image_iterator_ = depth_image_files_.begin ();
-  
-  if (rgb_image_files_.size () > 0)
-  {
-    if (++rgb_image_iterator_ == rgb_image_files_.end () && repeat_)
-      rgb_image_iterator_ = rgb_image_files_.begin ();
-  }
-
-#else
-    PCL_ERROR("[pcl::ImageGrabber::loadNextCloudVTK] Attempted to read image files, but PCL was not built with VTK [no -DPCL_BUILT_WITH_VTK]. \n");
-    valid_ = false;
-    return;
-#endif //PCL_BUILT_WITH_VTK
+  valid_ = getCloudAt (cur_frame_, next_cloud_, origin_, orientation_, 
+      focal_length_x_, focal_length_y_, principal_point_x_, principal_point_y_);
+  cur_frame_++;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -589,84 +282,6 @@ pcl::ImageGrabberBase::ImageGrabberImpl::loadDepthAndRGBFiles (const std::string
     sort (rgb_image_files_.begin (), rgb_image_files_.end ());
 }
 
-void
-pcl::ImageGrabberBase::ImageGrabberImpl::loadDepthAndRGBFiles (const std::string &depth_dir, const std::string &rgb_dir)
-{
-  if (!boost::filesystem::exists (depth_dir) || !boost::filesystem::is_directory (depth_dir))
-  {
-    PCL_ERROR ("[pcl::ImageGrabber::loadDepthAndRGBFiles] Error: attempted to instantiate a pcl::ImageGrabber from a path which"
-               " is not a directory: %s", depth_dir.c_str ());
-    return;
-  }
-
-  if (!boost::filesystem::exists (rgb_dir) || !boost::filesystem::is_directory (rgb_dir))
-  {
-    PCL_ERROR ("[pcl::ImageGrabber::loadDepthAndRGBFiles] Error: attempted to instantiate a pcl::ImageGrabber from a path which"
-               " is not a directory: %s", rgb_dir.c_str ());
-    return;
-  }
-
-  std::string pathname;
-  std::string extension;
-  std::string basename;
-  boost::filesystem::directory_iterator end_itr;
-
-  // First iterate over depth images
-  for (boost::filesystem::directory_iterator itr (depth_dir); itr != end_itr; ++itr)
-  {
-#if BOOST_FILESYSTEM_VERSION == 3
-    extension = boost::algorithm::to_upper_copy(boost::filesystem::extension (itr->path ()));
-    pathname = itr->path ().string ();
-    basename = boost::filesystem::basename (itr->path ());
-#else
-    extension = boost::algorithm::to_upper_copy(boost::filesystem::extension (itr->leaf ()));
-    pathname = itr->path ().filename ();
-    basename = boost::filesystem::basename (itr->leaf ());
-#endif
-    if (!boost::filesystem::is_directory (itr->status ())
-        && isValidExtension (extension))
-    {
-      if (basename.find ("depth") < basename.npos)
-      {
-        depth_image_files_.push_back (pathname);
-      }
-    }
-  }
-
-  // Then iterate over RGB images
-  for (boost::filesystem::directory_iterator itr (rgb_dir); itr != end_itr; ++itr)
-  {
-#if BOOST_FILESYSTEM_VERSION == 3
-    extension = boost::algorithm::to_upper_copy(boost::filesystem::extension (itr->path ()));
-    pathname = itr->path ().string ();
-    basename = boost::filesystem::basename (itr->path ());
-#else
-    extension = boost::algorithm::to_upper_copy(boost::filesystem::extension (itr->leaf ()));
-    pathname = itr->path ().filename ();
-    basename = boost::filesystem::basename (itr->leaf ());
-#endif
-    if (!boost::filesystem::is_directory (itr->status ())
-        && isValidExtension (extension))
-    {
-      if (basename.find ("rgb") < basename.npos)
-      {
-        rgb_image_files_.push_back (pathname);
-      }
-    }
-  }
-
-  if (depth_image_files_.size () != rgb_image_files_.size () )
-    PCL_WARN("[pcl::ImageGrabberBase::ImageGrabberImpl::loadDepthAndRGBFiles] : Watch out not same amount of depth and rgb images");
-  if (depth_image_files_.size () > 0)
-    sort (depth_image_files_.begin (), depth_image_files_.end ());
-  else
-    PCL_ERROR("[pcl::ImageGrabberBase::ImageGrabberImpl::loadDepthAndRGBFiles] : no depth images added");
-  if (rgb_image_files_.size () > 0)
-    sort (rgb_image_files_.begin (), rgb_image_files_.end ());
-  else
-    PCL_ERROR("[pcl::ImageGrabberBase::ImageGrabberImpl::loadDepthAndRGBFiles] : no rgb images added");
-}
-
 ///////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::ImageGrabberBase::ImageGrabberImpl::loadPCLZFFiles (const std::string &dir)
@@ -719,7 +334,6 @@ pcl::ImageGrabberBase::ImageGrabberImpl::loadPCLZFFiles (const std::string &dir)
     return;
   }
 }
-
 ///////////////////////////////////////////////////////////////////////////////////////////
 bool
 pcl::ImageGrabberBase::ImageGrabberImpl::isValidExtension (const std::string &extension)
@@ -741,26 +355,8 @@ pcl::ImageGrabberBase::ImageGrabberImpl::isValidExtension (const std::string &ex
 void
 pcl::ImageGrabberBase::ImageGrabberImpl::rewindOnce ()
 {
-  if (depth_image_files_.size () > 0 && 
-      depth_image_iterator_ != depth_image_files_.begin ())
-  {
-    depth_image_iterator_ --;
-  }
-  if (rgb_image_files_.size () > 0 && 
-      rgb_image_iterator_ != rgb_image_files_.begin ())
-  {
-    rgb_image_iterator_ --;
-  }
-  if (depth_pclzf_files_.size () > 0 && 
-      depth_pclzf_iterator_ != depth_pclzf_files_.begin ())
-  {
-    depth_pclzf_iterator_ --;
-  }
-  if (rgb_pclzf_files_.size () > 0 && 
-      rgb_pclzf_iterator_ != rgb_pclzf_files_.begin ())
-  {
-    rgb_pclzf_iterator_ --;
-  }
+  if (cur_frame_ > 0)
+    cur_frame_--;
 }
   
 //////////////////////////////////////////////////////////////////////////
@@ -785,7 +381,295 @@ pcl::ImageGrabberBase::ImageGrabberImpl::getTimestampFromFilepath (
   }
   return (false);
 }
+  
+/////////////////////////////////////////////////////////////////////////////
+bool
+pcl::ImageGrabberBase::ImageGrabberImpl::getCloudAt (size_t idx, 
+                                                     sensor_msgs::PointCloud2 &blob, 
+                                                     Eigen::Vector4f &origin, 
+                                                     Eigen::Quaternionf &orientation, 
+                                                     double &fx, 
+                                                     double &fy, 
+                                                     double &cx, 
+                                                     double &cy) const
+{
+  if (depth_image_files_.size () > 0)
+  {
+    fx = focal_length_x_;
+    fy = focal_length_y_;
+    cx = principal_point_x_;
+    cy = principal_point_y_;
+    return (getCloudVTK (idx, blob, origin, orientation) );
+  }
+  else if (depth_pclzf_files_.size () > 0)
+    return (getCloudPCLZF (idx, blob, origin, orientation, fx, fy, cx, cy) );
+  else
+  {
+    PCL_ERROR ("[pcl::ImageGrabber::getCloudAt] Could not find VTK or PCLZF files.\n");
+    return (false);
+  }
+}  
 
+bool
+pcl::ImageGrabberBase::ImageGrabberImpl::getCloudVTK (size_t idx, 
+                                                      sensor_msgs::PointCloud2 &blob, 
+                                                      Eigen::Vector4f &origin, 
+                                                      Eigen::Quaternionf &orientation) const
+{
+#ifdef PCL_BUILT_WITH_VTK
+  if (idx > depth_image_files_.size ())
+  {
+    return (false);
+  }
+  unsigned short* depth_pixel;
+  unsigned char* color_pixel;
+  vtkSmartPointer<vtkImageData> depth_image;
+  vtkSmartPointer<vtkImageData> rgb_image;
+  const std::string &depth_image_file = depth_image_files_[idx];
+  // If there are RGB files, load an rgb image
+  if (rgb_image_files_.size () != 0)
+  {
+    const std::string &rgb_image_file = rgb_image_files_[idx];
+    // If we were unable to pull a Vtk image, throw an error
+    if (!getVtkImage (rgb_image_file, rgb_image) )
+    {
+      return (false);
+    }
+  }
+  if (!getVtkImage (depth_image_file, depth_image) )
+  {
+    return (false);
+  }
+  int* dims = depth_image->GetDimensions ();
+
+  // Fill in image data
+  depth_pixel = static_cast<unsigned short*>(depth_image->GetScalarPointer ());
+  
+  // Set up intrinsics
+  float scaleFactorX, scaleFactorY;
+  float centerX, centerY;
+  if (manual_intrinsics_)
+  {
+    scaleFactorX = 1.f / static_cast<float> (focal_length_x_);
+    scaleFactorY = 1.f / static_cast<float> (focal_length_y_);
+    centerX = static_cast<float> (principal_point_x_);
+    centerY = static_cast<float> (principal_point_y_);
+  }
+  else
+  {
+    // The 525 factor default is only true for VGA. If not, we should scale
+    scaleFactorX = scaleFactorY = 1/525.f * 640.f / static_cast<float> (dims[0]);
+    centerX = static_cast<float> (dims[0] >> 1);
+    centerY = static_cast<float> (dims[1] >> 1);
+  }
+
+  if(rgb_image_files_.size() > 0)
+  {
+    pcl::PointCloud<pcl::PointXYZRGBA> cloud_color;
+    cloud_color.width = dims[0];
+    cloud_color.height = dims[1];
+    cloud_color.is_dense = false;
+    cloud_color.points.resize(depth_image->GetNumberOfPoints());
+
+    for (int y = 0; y < dims[1]; ++y)
+    {
+      for (int x = 0; x < dims[0]; ++x, ++depth_pixel)
+      {
+        pcl::PointXYZRGBA &pt = cloud_color.at(x,y);
+        float depth = static_cast<float> (*depth_pixel) * depth_image_units_;
+        if (depth == 0.0f) 
+          pt.x = pt.y = pt.z = std::numeric_limits<float>::quiet_NaN ();
+        else
+        {
+          pt.x = (static_cast<float> (x) - centerX) * scaleFactorX * depth;
+          pt.y = (static_cast<float> (y) - centerY) * scaleFactorY * depth; 
+          pt.z = depth;
+        }
+
+        color_pixel = reinterpret_cast<unsigned char*> (rgb_image->GetScalarPointer (x, y, 0));
+        pt.r = color_pixel[0];
+        pt.g = color_pixel[1];
+        pt.b = color_pixel[2];
+      }
+    }
+    // Handle timestamps
+    uint64_t timestamp;
+    if (getTimestampFromFilepath (depth_image_file, timestamp))
+    {
+#ifdef USE_ROS
+      cloud_color.header.stamp.fromNSec (timestamp * 1000);
+#else
+      cloud_color.header.stamp = timestamp;
+#endif //USE_ROS
+    }
+
+    pcl::toROSMsg(cloud_color, blob);
+  }
+  else
+  {
+    pcl::PointCloud<pcl::PointXYZ> cloud;
+    cloud.width = dims[0];
+    cloud.height = dims[1];
+    cloud.is_dense = false;
+    cloud.points.resize(depth_image->GetNumberOfPoints());
+    for (int y = 0; y < dims[1]; ++y)
+    {
+      for (int x = 0; x < dims[0]; ++x, ++depth_pixel)
+      {
+        pcl::PointXYZ &pt = cloud.at(x,y);
+        float depth = static_cast<float> (*depth_pixel) * depth_image_units_;
+        if (depth == 0.0f) 
+          pt.x = pt.y = pt.z = std::numeric_limits<float>::quiet_NaN ();
+        else
+        {
+          pt.x = ((float)x - centerX) * scaleFactorX * depth;
+          pt.y = ((float)y - centerY) * scaleFactorY * depth; 
+          pt.z = depth;
+        }
+      }
+    }
+    // Handle timestamps
+    uint64_t timestamp;
+    if (getTimestampFromFilepath (depth_image_file, timestamp))
+    {
+#ifdef USE_ROS
+      cloud.header.stamp.fromNSec (timestamp * 1000);
+#else
+      cloud.header.stamp = timestamp;
+#endif //USE_ROS
+    }
+
+    pcl::toROSMsg(cloud, blob);
+  }
+  // Origin 0, orientation is forward
+  origin = Eigen::Vector4f::Zero ();
+  orientation = Eigen::Quaternionf::Identity ();
+
+  return (true);
+#else
+    PCL_ERROR("[pcl::ImageGrabber::loadNextCloudVTK] Attempted to read image files, but PCL was not built with VTK [no -DPCL_BUILT_WITH_VTK]. \n");
+    return (false);
+#endif //PCL_BUILT_WITH_VTK
+
+}
+
+bool
+pcl::ImageGrabberBase::ImageGrabberImpl::getCloudPCLZF (size_t idx, 
+                                                        sensor_msgs::PointCloud2 &blob, 
+                                                        Eigen::Vector4f &origin, 
+                                                        Eigen::Quaternionf &orientation, 
+                                                        double &fx, 
+                                                        double &fy, 
+                                                        double &cx, 
+                                                        double &cy) const
+{
+  if (idx > depth_pclzf_files_.size ())
+  {
+    return (false);
+  }
+  // Get the proper files
+  const std::string &depth_pclzf_file = depth_pclzf_files_[idx];
+  const std::string &xml_file = xml_files_[idx];
+  if(rgb_pclzf_files_.size() > 0)
+  {
+    pcl::PointCloud<pcl::PointXYZRGBA> cloud_color;
+    const std::string &rgb_pclzf_file = rgb_pclzf_files_[idx];
+    pcl::io::LZFRGB24ImageReader rgb;
+    pcl::io::LZFBayer8ImageReader bayer;
+    pcl::io::LZFDepth16ImageReader depth;
+    if (manual_intrinsics_)
+    {
+      pcl::io::CameraParameters manual_params;
+      manual_params.focal_length_x = focal_length_x_;
+      manual_params.focal_length_y = focal_length_y_;
+      manual_params.principal_point_x = principal_point_x_;
+      manual_params.principal_point_y = principal_point_y_;
+      fx = focal_length_x_;
+      fy = focal_length_y_;
+      cx = principal_point_x_;
+      cy = principal_point_y_;
+      rgb.setParameters (manual_params); 
+      bayer.setParameters (manual_params); 
+      depth.setParameters (manual_params); 
+    }
+    else
+    {
+      rgb.readParameters (xml_file);
+      bayer.readParameters (xml_file);
+      depth.readParameters (xml_file);
+      // update intrinsics
+      pcl::io::CameraParameters loaded_params = depth.getParameters ();
+      // Set intrinsics so we can update our estimate, if necessary
+      fx = loaded_params.focal_length_x;
+      fy = loaded_params.focal_length_y;
+      cx = loaded_params.principal_point_x;
+      cy = loaded_params.principal_point_y;
+    }
+    cloud_color.is_dense = false;
+    if (!rgb.read (rgb_pclzf_file, cloud_color))
+      bayer.read (rgb_pclzf_file, cloud_color);
+    depth.read (depth_pclzf_file, cloud_color);
+    // handle timestamps
+    uint64_t timestamp;
+    if (getTimestampFromFilepath (depth_pclzf_file, timestamp))
+    {
+#ifdef USE_ROS
+      cloud_color.header.stamp.fromNSec (timestamp * 1000);
+#else
+      cloud_color.header.stamp = timestamp;
+#endif //USE_ROS
+    }
+    pcl::toROSMsg(cloud_color, blob);
+  }
+  else
+  {
+    pcl::PointCloud<pcl::PointXYZ> cloud;
+    pcl::io::LZFDepth16ImageReader depth;
+    if (manual_intrinsics_)
+    {
+      pcl::io::CameraParameters manual_params;
+      manual_params.focal_length_x = focal_length_x_;
+      manual_params.focal_length_y = focal_length_y_;
+      manual_params.principal_point_x = principal_point_x_;
+      manual_params.principal_point_y = principal_point_y_;
+      // Set intrinsics so we can update our estimate, if necessary
+      fx = focal_length_x_;
+      fy = focal_length_y_;
+      cx = principal_point_x_;
+      cy = principal_point_y_;
+      depth.setParameters (manual_params); 
+    }
+    else
+    {
+      depth.readParameters (xml_file);
+      // update intrinsics
+      pcl::io::CameraParameters loaded_params = depth.getParameters ();
+      fx = loaded_params.focal_length_x;
+      fy = loaded_params.focal_length_y;
+      cx = loaded_params.principal_point_x;
+      cy = loaded_params.principal_point_y;
+    }
+    cloud.is_dense = false;
+    depth.read (depth_pclzf_file, cloud);
+    // handle timestamps
+    uint64_t timestamp;
+    if (getTimestampFromFilepath (depth_pclzf_file, timestamp))
+    {
+#ifdef USE_ROS
+      cloud.header.stamp.fromNSec (timestamp * 1000);
+#else
+      cloud.header.stamp = timestamp;
+#endif //USE_ROS
+    }
+    pcl::toROSMsg(cloud, blob);
+  }
+
+  // Origin 0, orientation is forward
+  origin = Eigen::Vector4f::Zero ();
+  orientation = Eigen::Quaternionf::Identity ();
+  return (true);
+}     
+   
 ////////////////////////////////////////////////////////////////////////
 //
 #ifdef PCL_BUILT_WITH_VTK
@@ -845,16 +729,19 @@ pcl::ImageGrabberBase::ImageGrabberImpl::getVtkImage (
 }
 #endif //PCL_BUILT_WITH_VTK
 
+///////////////////////////////////////////////////////////////////////////////////////////
+size_t
+pcl::ImageGrabberBase::ImageGrabberImpl::numFrames () const
+{
+  if (pclzf_mode_)
+    return (depth_pclzf_files_.size ());
+  else
+    return (depth_image_files_.size ());
+}
+
 //////////////////////// GrabberBase //////////////////////
 pcl::ImageGrabberBase::ImageGrabberBase (const std::string& directory, float frames_per_second, bool repeat, bool pclzf_mode)
   : impl_ (new ImageGrabberImpl (*this, directory, frames_per_second, repeat, pclzf_mode))
-{
-}
-
-pcl::ImageGrabberBase::ImageGrabberBase (const std::string& depth_directory,
-                                         const std::string& rgb_directory,
-                                         float frames_per_second, bool repeat)
-  : impl_ (new ImageGrabberImpl (*this, depth_directory, rgb_directory, frames_per_second, repeat))
 {
 }
 
@@ -922,7 +809,7 @@ pcl::ImageGrabberBase::getName () const
 void 
 pcl::ImageGrabberBase::rewind ()
 {
-  impl_->depth_image_iterator_ = impl_->depth_image_files_.begin ();
+  impl_->cur_frame_ = 0;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -940,43 +827,13 @@ pcl::ImageGrabberBase::isRepeatOn () const
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-bool
-pcl::ImageGrabberBase::atLastFrame()
-{
-  if(impl_->depth_image_iterator_ == impl_->depth_image_files_.end ())
-    return (true);
-  else
-    return (false);
-}
-
-/** \brief Returns the filename of the current indexed file */
-std::string
-pcl::ImageGrabberBase::getCurrentDepthFileName()
-{
-  std::string pathname = *impl_->depth_image_iterator_;
-  std::string basename = boost::filesystem::basename (pathname);
-  return basename;
-}
-
-/** \brief Returns the filename of the current indexed file */
-std::string
-pcl::ImageGrabberBase::getPrevDepthFileName()
-{
-  impl_->depth_image_iterator_--;
-  std::string pathname = *impl_->depth_image_iterator_;
-  impl_->depth_image_iterator_++;
-  std::string basename = boost::filesystem::basename (pathname);
-  return basename;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::ImageGrabberBase::setRGBImageFiles (const std::vector<std::string>& rgb_image_files) 
 {
   impl_->rgb_image_files_ = rgb_image_files;
-  impl_->rgb_image_iterator_ = impl_->rgb_image_files_.begin ();
+  impl_->cur_frame_ = 0;
 }
+
 
 ///////////////////////////////////////////////////////
 void
@@ -1010,6 +867,8 @@ pcl::ImageGrabberBase::getCameraIntrinsics (double &focal_length_x,
   principal_point_y = impl_->principal_point_y_;
 }
 
+
+
 ///////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::ImageGrabberBase::setDepthImageUnits (const float units)
@@ -1020,9 +879,17 @@ pcl::ImageGrabberBase::setDepthImageUnits (const float units)
 size_t
 pcl::ImageGrabberBase::numFrames () const
 {
-  if (impl_->pclzf_mode_)
-    return (impl_->depth_pclzf_files_.size ());
-  else
-    return (impl_->depth_image_files_.size ());
+  return impl_->numFrames ();
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+bool
+pcl::ImageGrabberBase::getCloudAt (size_t idx,
+                                   sensor_msgs::PointCloud2 &blob, 
+                                   Eigen::Vector4f &origin, 
+                                   Eigen::Quaternionf &orientation) const
+{
+  double fx, fy, cx, cy;
+  return impl_->getCloudAt (idx, blob, origin, orientation, fx, fy, cx, cy);
 }
 
