@@ -50,6 +50,9 @@
 #include <vtkLoopSubdivisionFilter.h>
 #include <vtkTriangle.h>
 #include <vtkTransform.h>
+#include <vtkPolyDataNormals.h>
+#include <vtkMapper.h>
+#include <vtkDataSetMapper.h>
 
 #if VTK_MAJOR_VERSION==6 || (VTK_MAJOR_VERSION==5 && VTK_MINOR_VERSION>4)
 #include <vtkHardwareSelector.h>
@@ -1499,11 +1502,27 @@ pcl::visualization::PCLVisualizer::setShapeRenderingProperties (
         }
         case PCL_VISUALIZER_SHADING_GOURAUD:
         {
+          if (!actor->GetMapper ()->GetInput ()->GetPointData ()->GetNormals ()) 
+          {
+            PCL_INFO ("[pcl::visualization::PCLVisualizer::setShapeRenderingProperties] Normals do not exist in the dataset, but Gouraud shading was requested. Estimating normals...\n");
+            vtkSmartPointer<vtkPolyDataNormals> normals = vtkSmartPointer<vtkPolyDataNormals>::New ();
+            normals->SetInput (actor->GetMapper ()->GetInput ());
+            normals->Update ();
+            vtkDataSetMapper::SafeDownCast (actor->GetMapper ())->SetInput (normals->GetOutput ());
+          }
           actor->GetProperty ()->SetInterpolationToGouraud ();
           break;
         }
         case PCL_VISUALIZER_SHADING_PHONG:
         {
+          if (!actor->GetMapper ()->GetInput ()->GetPointData ()->GetNormals ()) 
+          {
+            PCL_INFO ("[pcl::visualization::PCLVisualizer::setShapeRenderingProperties] Normals do not exist in the dataset, but Phong shading was requested. Estimating normals...\n");
+            vtkSmartPointer<vtkPolyDataNormals> normals = vtkSmartPointer<vtkPolyDataNormals>::New ();
+            normals->SetInput (actor->GetMapper ()->GetInput ());
+            normals->Update ();
+            vtkDataSetMapper::SafeDownCast (actor->GetMapper ())->SetInput (normals->GetOutput ());
+          }
           actor->GetProperty ()->SetInterpolationToPhong ();
           break;
         }

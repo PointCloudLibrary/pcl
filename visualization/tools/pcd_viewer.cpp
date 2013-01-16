@@ -391,12 +391,21 @@ main (int argc, char** argv)
     if (shadings.size () > 0)
     {
       if (shadings[i] == "flat")
+      {
+        print_highlight (stderr, "Setting shading property for %s to FLAT.\n", argv[vtk_file_indices.at (i)]);
         p->setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_SHADING, pcl::visualization::PCL_VISUALIZER_SHADING_FLAT, cloud_name.str ());
+      }
       else if (shadings[i] == "gouraud")
+      {
+        print_highlight (stderr, "Setting shading property for %s to GOURAUD.\n", argv[vtk_file_indices.at (i)]);
         p->setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_SHADING, pcl::visualization::PCL_VISUALIZER_SHADING_GOURAUD, cloud_name.str ());
+      }
       else if (shadings[i] == "phong")
+      {
+        print_highlight (stderr, "Setting shading property for %s to PHONG.\n", argv[vtk_file_indices.at (i)]);
         p->setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_SHADING, pcl::visualization::PCL_VISUALIZER_SHADING_PHONG, cloud_name.str ());
-     }
+      }
+    }
   }
 
   sensor_msgs::PointCloud2::Ptr cloud;
