@@ -233,6 +233,8 @@ TEST (PCL, CorrespondenceRejectorSampleConsensus)
 
   boost::shared_ptr<pcl::Correspondences> correspondences_result_rej_sac (new pcl::Correspondences);
   pcl::registration::CorrespondenceRejectorSampleConsensus<PointXYZ> corr_rej_sac;
+  corr_rej_sac.setInputCloud (source);        // test for PCL_DEPRECATED
+  source = corr_rej_sac.getInputCloud ();     // test for PCL_DEPRECATED
   corr_rej_sac.setInputSource (source);
   corr_rej_sac.setInputTarget (target);
   corr_rej_sac.setInlierThreshold (rej_sac_max_dist);
@@ -272,10 +274,10 @@ TEST (PCL, CorrespondenceRejectorSurfaceNormal)
   corr_est.determineCorrespondences (*correspondences);
 
 
-  CloudNormalPtr source_normals(new CloudNormal ());
-  pcl::copyPointCloud(*source, *source_normals);
-  CloudNormalPtr target_normals(new CloudNormal ());
-  pcl::copyPointCloud(*target, *target_normals);
+  CloudNormalPtr source_normals (new CloudNormal ());
+  pcl::copyPointCloud (*source, *source_normals);
+  CloudNormalPtr target_normals (new CloudNormal ());
+  pcl::copyPointCloud (*target, *target_normals);
 
   pcl::NormalEstimation<PointNormal, PointNormal> norm_est_src;
   norm_est_src.setSearchMethod (pcl::search::KdTree<PointNormal>::Ptr (new pcl::search::KdTree<PointNormal>));

@@ -153,7 +153,10 @@ TEST (PCL, findFeatureCorrespondences)
 TEST (PCL, IterativeClosestPoint)
 {
   IterativeClosestPoint<PointXYZ, PointXYZ> reg;
-  reg.setInputSource (cloud_source.makeShared ());
+  PointCloud<PointXYZ>::ConstPtr source (cloud_source.makeShared ());
+  reg.setInputCloud (source);     // test for PCL_DEPRECATED
+  source = reg.getInputCloud ();  // test for PCL_DEPRECATED
+  reg.setInputSource (source);
   reg.setInputTarget (cloud_target.makeShared ());
   reg.setMaximumIterations (50);
   reg.setTransformationEpsilon (1e-8);
@@ -163,8 +166,7 @@ TEST (PCL, IterativeClosestPoint)
   reg.align (cloud_reg);
   EXPECT_EQ (int (cloud_reg.points.size ()), int (cloud_source.points.size ()));
 
-  Eigen::Matrix4f transformation = reg.getFinalTransformation ();
-
+  //Eigen::Matrix4f transformation = reg.getFinalTransformation ();
 //  EXPECT_NEAR (transformation (0, 0), 0.8806,  1e-3);
 //  EXPECT_NEAR (transformation (0, 1), 0.036481287330389023, 1e-2);
 //  EXPECT_NEAR (transformation (0, 2), -0.4724, 1e-3);
@@ -236,18 +238,18 @@ TEST (PCL, IterativeClosestPointNonLinear)
   // Check again, for all possible caching schemes
   for (int iter = 0; iter < 4; iter++)
   {
-    bool force_cache = (bool) iter/2;
-    bool force_cache_reciprocal = (bool) iter%2;
+    bool force_cache = static_cast<bool> (iter / 2);
+    bool force_cache_reciprocal = static_cast<bool> (iter % 2);
     pcl::search::KdTree<PointT>::Ptr tree(new pcl::search::KdTree<PointT>);
     // Ensure that, when force_cache is not set, we are robust to the wrong input
-    if(force_cache)
-      tree->setInputCloud(temp_tgt);
-    reg.setSearchMethodTarget(tree, force_cache);
+    if (force_cache)
+      tree->setInputCloud (temp_tgt);
+    reg.setSearchMethodTarget (tree, force_cache);
 
-    pcl::search::KdTree<PointT>::Ptr tree_recip(new pcl::search::KdTree<PointT>);
-    if(force_cache_reciprocal)
-      tree_recip->setInputCloud(temp_src);
-    reg.setSearchMethodSource(tree_recip, force_cache_reciprocal);
+    pcl::search::KdTree<PointT>::Ptr tree_recip (new pcl::search::KdTree<PointT>);
+    if (force_cache_reciprocal)
+      tree_recip->setInputCloud (temp_src);
+    reg.setSearchMethodSource (tree_recip, force_cache_reciprocal);
     
     // Register
     reg.align (output);
@@ -294,14 +296,14 @@ TEST (PCL, IterativeClosestPoint_PointToPlane)
     bool force_cache_reciprocal = (bool) iter%2;
     pcl::search::KdTree<PointT>::Ptr tree(new pcl::search::KdTree<PointT>);
     // Ensure that, when force_cache is not set, we are robust to the wrong input
-    if(force_cache)
-      tree->setInputCloud(tgt);
-    reg.setSearchMethodTarget(tree, force_cache);
+    if (force_cache)
+      tree->setInputCloud (tgt);
+    reg.setSearchMethodTarget (tree, force_cache);
 
-    pcl::search::KdTree<PointT>::Ptr tree_recip(new pcl::search::KdTree<PointT>);
-    if(force_cache_reciprocal)
-      tree_recip->setInputCloud(src);
-    reg.setSearchMethodSource(tree_recip, force_cache_reciprocal);
+    pcl::search::KdTree<PointT>::Ptr tree_recip (new pcl::search::KdTree<PointT>);
+    if (force_cache_reciprocal)
+      tree_recip->setInputCloud (src);
+    reg.setSearchMethodSource (tree_recip, force_cache_reciprocal);
     
     // Register
     reg.align (output);
@@ -368,14 +370,14 @@ TEST (PCL, NormalDistributionsTransform)
     bool force_cache_reciprocal = (bool) iter%2;
     pcl::search::KdTree<PointT>::Ptr tree(new pcl::search::KdTree<PointT>);
     // Ensure that, when force_cache is not set, we are robust to the wrong input
-    if(force_cache)
-      tree->setInputCloud(tgt);
-    reg.setSearchMethodTarget(tree, force_cache);
+    if (force_cache)
+      tree->setInputCloud (tgt);
+    reg.setSearchMethodTarget (tree, force_cache);
 
-    pcl::search::KdTree<PointT>::Ptr tree_recip(new pcl::search::KdTree<PointT>);
-    if(force_cache_reciprocal)
-      tree_recip->setInputCloud(src);
-    reg.setSearchMethodSource(tree_recip, force_cache_reciprocal);
+    pcl::search::KdTree<PointT>::Ptr tree_recip (new pcl::search::KdTree<PointT>);
+    if (force_cache_reciprocal)
+      tree_recip->setInputCloud (src);
+    reg.setSearchMethodSource (tree_recip, force_cache_reciprocal);
     
     // Register
     reg.align (output);
@@ -451,13 +453,13 @@ TEST (PCL, SampleConsensusInitialAlignment)
     bool force_cache_reciprocal = (bool) iter%2;
     pcl::search::KdTree<PointT>::Ptr tree(new pcl::search::KdTree<PointT>);
     // Ensure that, when force_cache is not set, we are robust to the wrong input
-    if(force_cache)
-      tree->setInputCloud(cloud_target_ptr);
-    reg.setSearchMethodTarget(tree, force_cache);
+    if (force_cache)
+      tree->setInputCloud (cloud_target_ptr);
+    reg.setSearchMethodTarget (tree, force_cache);
 
-    pcl::search::KdTree<PointT>::Ptr tree_recip(new pcl::search::KdTree<PointT>);
-    if(force_cache_reciprocal)
-      tree_recip->setInputCloud(cloud_source_ptr);
+    pcl::search::KdTree<PointT>::Ptr tree_recip (new pcl::search::KdTree<PointT>);
+    if (force_cache_reciprocal)
+      tree_recip->setInputCloud (cloud_source_ptr);
     reg.setSearchMethodSource(tree_recip, force_cache_reciprocal);
     
     // Register
