@@ -122,8 +122,8 @@ TEST (PCL, ConcaveHull_planar_bunny)
   PointCloud<PointXYZ> hull_3d;
   concave_hull_3d.reconstruct (hull_3d);
 
+  EXPECT_EQ (concave_hull_3d.getDim (), 3);         // test for PCL_DEPRECATED
   EXPECT_EQ (concave_hull_3d.getDimension (), 3);
-
 
   ModelCoefficients::Ptr plane_coefficients (new ModelCoefficients ());
   plane_coefficients->values.resize (4);
@@ -173,7 +173,7 @@ TEST (PCL, ConcaveHull_4points)
   cloud_4->push_back (p);
 
   cloud_4->height = 1;
-  cloud_4->width = cloud_4->size ();
+  cloud_4->width = uint32_t (cloud_4->size ());
 
   ConcaveHull<PointXYZ> concave_hull;
   concave_hull.setInputCloud (cloud_4);
