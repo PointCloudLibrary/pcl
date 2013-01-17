@@ -42,7 +42,6 @@
 #define PCL_FEATURES_CRH_H_
 
 #include <pcl/features/feature.h>
-#include <pcl/features/normal_3d.h>
 
 namespace pcl
 {

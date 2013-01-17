@@ -314,6 +314,39 @@ namespace pcl
       initData ();
 
     private:
+
+      /** \brief Flip (in place) the estimated normal of a point towards a given viewpoint
+        * \param point a given point
+        * \param vp_x the X coordinate of the viewpoint
+        * \param vp_y the X coordinate of the viewpoint
+        * \param vp_z the X coordinate of the viewpoint
+        * \param nx the resultant X component of the plane normal
+        * \param ny the resultant Y component of the plane normal
+        * \param nz the resultant Z component of the plane normal
+        * \ingroup features
+        */
+      inline void
+      flipNormalTowardsViewpoint (const PointInT &point, 
+                                  float vp_x, float vp_y, float vp_z,
+                                  float &nx, float &ny, float &nz)
+      {
+        // See if we need to flip any plane normals
+        vp_x -= point.x;
+        vp_y -= point.y;
+        vp_z -= point.z;
+
+        // Dot product between the (viewpoint - point) and the plane normal
+        float cos_theta = (vp_x * nx + vp_y * ny + vp_z * nz);
+
+        // Flip the plane normal
+        if (cos_theta < 0)
+        {
+          nx *= -1;
+          ny *= -1;
+          nz *= -1;
+        }
+      }
+
       /** \brief The normal estimation method to use. Currently, 3 implementations are provided:
         *
         * - COVARIANCE_MATRIX

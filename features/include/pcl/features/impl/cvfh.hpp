@@ -42,6 +42,7 @@
 #define PCL_FEATURES_IMPL_CVFH_H_
 
 #include <pcl/features/cvfh.h>
+#include <pcl/features/normal_3d.h>
 #include <pcl/features/pfh_tools.h>
 #include <pcl/common/centroid.h>
 
@@ -236,7 +237,8 @@ pcl::CVFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut
     KdTreePtr normals_tree_filtered (new pcl::search::KdTree<pcl::PointNormal> (false));
     normals_tree_filtered->setInputCloud (normals_filtered_cloud);
 
-    NormalEstimator n3d;
+
+    pcl::NormalEstimation<PointNormal, PointNormal> n3d;
     n3d.setRadiusSearch (radius_normals_);
     n3d.setSearchMethod (normals_tree_filtered);
     n3d.setInputCloud (normals_filtered_cloud);

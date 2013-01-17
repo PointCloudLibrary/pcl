@@ -42,6 +42,8 @@
 #define PCL_FEATURES_IMPL_OURCVFH_H_
 
 #include <pcl/features/our_cvfh.h>
+#include <pcl/features/vfh.h>
+#include <pcl/features/normal_3d.h>
 #include <pcl/features/pfh_tools.h>
 #include <pcl/common/transforms.h>
 
@@ -576,7 +578,7 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
     {
       KdTreePtr normals_tree_filtered (new pcl::search::KdTree<pcl::PointNormal> (false));
       normals_tree_filtered->setInputCloud (normals_filtered_cloud);
-      NormalEstimator n3d;
+      pcl::NormalEstimation<PointNormal, PointNormal> n3d;
       n3d.setRadiusSearch (radius_normals_);
       n3d.setSearchMethod (normals_tree_filtered);
       n3d.setInputCloud (normals_filtered_cloud);
@@ -642,7 +644,7 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
 
   }
 
-  VFHEstimator vfh;
+  pcl::VFHEstimation<PointInT, PointNT, pcl::VFHSignature308> vfh;
   vfh.setInputCloud (surface_);
   vfh.setInputNormals (normals_);
   vfh.setIndices (indices_);

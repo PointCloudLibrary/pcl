@@ -61,6 +61,9 @@ namespace pcl
       using NormalEstimation<PointInT, PointOutT>::indices_;
       using NormalEstimation<PointInT, PointOutT>::input_;
       using NormalEstimation<PointInT, PointOutT>::k_;
+      using NormalEstimation<PointInT, PointOutT>::vpx_;
+      using NormalEstimation<PointInT, PointOutT>::vpy_;
+      using NormalEstimation<PointInT, PointOutT>::vpz_;
       using NormalEstimation<PointInT, PointOutT>::search_parameter_;
       using NormalEstimation<PointInT, PointOutT>::surface_;
       using NormalEstimation<PointInT, PointOutT>::getViewPoint;

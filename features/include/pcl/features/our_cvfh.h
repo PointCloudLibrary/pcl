@@ -42,8 +42,6 @@
 #define PCL_FEATURES_OURCVFH_H_
 
 #include <pcl/features/feature.h>
-#include <pcl/features/normal_3d.h>
-#include <pcl/features/vfh.h>
 #include <pcl/search/pcl_search.h>
 #include <pcl/common/common.h>
 
@@ -76,8 +74,6 @@ namespace pcl
 
       typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
       typedef typename pcl::search::Search<PointNormal>::Ptr KdTreePtr;
-      typedef typename pcl::NormalEstimation<PointNormal, PointNormal> NormalEstimator;
-      typedef typename pcl::VFHEstimation<PointInT, PointNT, pcl::VFHSignature308> VFHEstimator;
       typedef typename pcl::PointCloud<PointInT>::Ptr PointInTPtr;
       /** \brief Empty constructor. */
       OURCVFHEstimation () :
