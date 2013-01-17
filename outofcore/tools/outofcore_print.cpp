@@ -78,20 +78,20 @@ typedef OutofcoreDepthFirstIterator<> OctreeDepthFirstIterator;
 typedef Eigen::aligned_allocator<PointT> AlignedPointT;
 
 void
-printDepth(int depth)
+printDepth(size_t depth)
 {
   for (int i=0; i < depth; i++)
     PCL_INFO ("  ");
 }
 
 void
-printNode(OctreeDiskNode *node)
+printNode(OctreeDiskNode *)
 {
   //
 }
 
 int
-outofcorePrint (boost::filesystem::path tree_root, int print_depth, bool bounding_box=false, bool breadth_first=false)
+outofcorePrint (boost::filesystem::path tree_root, size_t print_depth, bool bounding_box=false, bool breadth_first=false)
 {
   std::cout << boost::filesystem::absolute (tree_root) << std::endl;
 
@@ -105,8 +105,8 @@ outofcorePrint (boost::filesystem::path tree_root, int print_depth, bool boundin
   PCL_INFO (" Bounding Box: <%lf, %lf, %lf> - <%lf, %lf, %lf>\n", min[0], min[1], min[2], max[0], max[1], max[2]);
 
   // Cloud depth
-  int depth = octree->getTreeDepth ();
-  PCL_INFO (" Depth: %d\n", depth);
+  uint64_t depth = octree->getTreeDepth ();
+  PCL_INFO (" Depth: %ld\n", depth);
   if (print_depth > depth)
     print_depth = depth;
 
@@ -131,7 +131,7 @@ outofcorePrint (boost::filesystem::path tree_root, int print_depth, bool boundin
     while ( *depth_first_it !=0 )
     {
       OctreeDiskNode *node = *depth_first_it;
-      int node_depth = node->getDepth();
+      size_t node_depth = node->getDepth();
 
       printDepth(node_depth);
       std::string metadata_relative_file = node->getMetadataFilename ().string ();
@@ -158,11 +158,11 @@ outofcorePrint (boost::filesystem::path tree_root, int print_depth, bool boundin
   else
   {
     OctreeDisk::BreadthFirstIterator breadth_first_it (*octree);
-    breadth_first_it.setMaxDepth(print_depth);
+    breadth_first_it.setMaxDepth (static_cast<unsigned int> (print_depth));
     while ( *breadth_first_it !=0 )
     {
       OctreeDiskNode *node = *breadth_first_it;
-      int node_depth = node->getDepth();
+      size_t node_depth = node->getDepth();
 
       printDepth(node_depth);
       std::string metadata_relative_file = node->getMetadataFilename ().string ();

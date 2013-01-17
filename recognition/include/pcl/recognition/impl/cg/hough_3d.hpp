@@ -277,10 +277,10 @@ pcl::Hough3DGrouping<PointModelT, PointSceneT, PointModelRfT, PointSceneRfT>::cl
   pcl::copyPointCloud<PointSceneT, PointModelT> (*scene_, *temp_scene_cloud_ptr);
 
   pcl::registration::CorrespondenceRejectorSampleConsensus<PointModelT> corr_rejector;
-  corr_rejector.setMaxIterations (10000);
+  corr_rejector.setMaximumIterations (10000);
   corr_rejector.setInlierThreshold (hough_bin_size_);
-  corr_rejector.setInputCloud (input_);
-  corr_rejector.setTargetCloud (temp_scene_cloud_ptr);
+  corr_rejector.setInputSource (input_);
+  corr_rejector.setInputTarget (temp_scene_cloud_ptr);
 
   for (size_t j = 0; j < max_values.size (); ++j)
   {
