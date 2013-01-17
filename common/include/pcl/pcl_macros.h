@@ -295,6 +295,11 @@ log2f (float x)
 // use me instead
 // void NewFunc(int a, double b);
 
+//for clang cf. http://clang.llvm.org/docs/LanguageExtensions.html
+#ifndef __has_extension
+  #define __has_extension(x) 0 // Compatibility with pre-3.0 compilers.
+#endif
+
 #if (defined(__GNUC__) && PCL_LINEAR_VERSION(__GNUC__,__GNUC_MINOR__,__GNUC_PATCHLEVEL__) < PCL_LINEAR_VERSION(4,5,0) && ! defined(__clang__)) || defined(__INTEL_COMPILER)
 #define PCL_DEPRECATED(func, message) func __attribute__ ((deprecated))
 #endif
