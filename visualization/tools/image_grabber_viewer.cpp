@@ -211,7 +211,7 @@ main (int argc, char** argv)
     printHelp (argc, argv);
     return (-1);
   }
-  grabber->setDepthImageUnits(1E-3);
+  grabber->setDepthImageUnits (float (1E-3));
 
   // Before manually setting
   double fx, fy, cx, cy;
