@@ -632,7 +632,7 @@ pcl::GrayStereoMatching::compute (unsigned char* ref_img, unsigned char* trg_img
   for (int j = 0; j < height_; j++)
     for (int i = 0; i < width_; i++)
       if ( disp_map_[j * width_ + i] > 0)
-	    disp_map_[j * width_ + i] += x_off_ * 16;
+	    disp_map_[j * width_ + i] += static_cast<short int> (x_off_ * 16);
 
 }
 
