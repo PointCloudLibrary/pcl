@@ -176,7 +176,7 @@ pcl::recognition::ORROctreeZProjection::build (const ORROctree& input, float eps
   for ( list<Set*>::iterator current_set = full_sets_.begin () ; current_set != full_sets_.end () ; ++current_set )
   {
     // Get the first node in the set
-    set<ORROctree::Node*>::iterator node = (*current_set)->get_nodes ().begin ();
+    set<ORROctree::Node*, bool(*)(ORROctree::Node*,ORROctree::Node*)>::iterator node = (*current_set)->get_nodes ().begin ();
     // Initialize
     cur_min = best_min = (*node)->getBounds ()[4];
     cur_max = best_max = (*node)->getBounds ()[5];
