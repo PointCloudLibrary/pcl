@@ -729,15 +729,15 @@ TEST (PCL, PCDReaderWriterASCIIColorPrecision)
       for (size_t b_i = 0; b_i < 256; b_i += 5)
       {
         PointXYZRGB p;
-        p.r = r_i;
-        p.g = g_i;
-        p.b = b_i;
+        p.r = static_cast<unsigned char> (r_i);
+        p.g = static_cast<unsigned char> (g_i);
+        p.b = static_cast<unsigned char> (b_i);
         p.x = p.y = p.z = 0.f;
 
         cloud.push_back (p);
       }
   cloud.height = 1;
-  cloud.width = cloud.size ();
+  cloud.width = uint32_t (cloud.size ());
   cloud.is_dense = true;
 
   io::savePCDFile ("temp_binary_color.pcd", cloud, true);
