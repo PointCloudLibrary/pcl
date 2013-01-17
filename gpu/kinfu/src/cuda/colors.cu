@@ -136,7 +136,7 @@ namespace pcl
         if (x >= VOLUME_X || y >= VOLUME_Y)
           return;
 
-        for (int z = 0; z < VOLUME_X; ++z)
+        for (int z = 0; z < VOLUME_Z; ++z)
         {
           float3 v_g = getVoxelGCoo (x, y, z);
 
