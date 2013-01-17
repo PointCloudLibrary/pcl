@@ -109,7 +109,7 @@ namespace pcl
           PCL_WARN ("[pcl::registration::%s::setInputCloud] setInputCloud is deprecated. Please use setInputSource instead.\n", getClassName ().c_str ());
           if (!data_container_)
           {
-            PCL_ERROR ("[pcl::registration::%s::setInputCloud] Initilize the data container object by calling intializeDataContainer () before using this function.\n", getClassName ().c_str ());
+            PCL_ERROR ("[pcl::registration::%s::setInputCloud] Initialize the data container object by calling intializeDataContainer () before using this function.\n", getClassName ().c_str ());
             return;
           }
           boost::static_pointer_cast<DataContainer<PointT> > (data_container_)->setInputSource (input);
@@ -123,7 +123,7 @@ namespace pcl
         {
           if (!data_container_)
           {
-            PCL_ERROR ("[pcl::registration::%s::setInputCloud] Initilize the data container object by calling intializeDataContainer () before using this function.\n", getClassName ().c_str ());
+            PCL_ERROR ("[pcl::registration::%s::setInputCloud] Initialize the data container object by calling intializeDataContainer () before using this function.\n", getClassName ().c_str ());
             return;
           }
           boost::static_pointer_cast<DataContainer<PointT> > (data_container_)->setInputSource (input);
@@ -135,7 +135,7 @@ namespace pcl
         { 
           if (!data_container_)
           {
-            PCL_ERROR ("[pcl::registration::%s::getInputSource] Initilize the data container object by calling intializeDataContainer () before using this function.\n", getClassName ().c_str ());
+            PCL_ERROR ("[pcl::registration::%s::getInputSource] Initialize the data container object by calling intializeDataContainer () before using this function.\n", getClassName ().c_str ());
             return;
           }
           return (boost::static_pointer_cast<DataContainer<PointT> > (data_container_)->getInputSource ());
@@ -149,7 +149,7 @@ namespace pcl
         {
           if (!data_container_)
           {
-            PCL_ERROR ("[pcl::registration::%s::setInputTarget] Initilize the data container object by calling intializeDataContainer () before using this function.\n", getClassName ().c_str ());
+            PCL_ERROR ("[pcl::registration::%s::setInputTarget] Initialize the data container object by calling intializeDataContainer () before using this function.\n", getClassName ().c_str ());
             return;
           }
           boost::static_pointer_cast<DataContainer<PointT> > (data_container_)->setInputTarget (target);
@@ -176,7 +176,7 @@ namespace pcl
         { 
           if (!data_container_)
           {
-            PCL_ERROR ("[pcl::registration::%s::getInputTarget] Initilize the data container object by calling intializeDataContainer () before using this function.\n", getClassName ().c_str ());
+            PCL_ERROR ("[pcl::registration::%s::getInputTarget] Initialize the data container object by calling intializeDataContainer () before using this function.\n", getClassName ().c_str ());
             return;
           }
           return (boost::static_pointer_cast<DataContainer<PointT> > (data_container_)->getInputTarget ());
@@ -190,7 +190,7 @@ namespace pcl
         {
           if (!data_container_)
           {
-            PCL_ERROR ("[pcl::registration::%s::setInputNormals] Initilize the data container object by calling intializeDataContainer () before using this function.\n", getClassName ().c_str ());
+            PCL_ERROR ("[pcl::registration::%s::setInputNormals] Initialize the data container object by calling intializeDataContainer () before using this function.\n", getClassName ().c_str ());
             return;
           }
           boost::static_pointer_cast<DataContainer<PointT, NormalT> > (data_container_)->setInputNormals (normals);
@@ -202,7 +202,7 @@ namespace pcl
         { 
           if (!data_container_)
           {
-            PCL_ERROR ("[pcl::registration::%s::getInputNormals] Initilize the data container object by calling intializeDataContainer () before using this function.\n", getClassName ().c_str ());
+            PCL_ERROR ("[pcl::registration::%s::getInputNormals] Initialize the data container object by calling intializeDataContainer () before using this function.\n", getClassName ().c_str ());
             return;
           }
           return (boost::static_pointer_cast<DataContainer<pcl::PointXYZ, NormalT> > (data_container_)->getInputNormals ());
@@ -216,7 +216,7 @@ namespace pcl
         {
           if (!data_container_)
           {
-            PCL_ERROR ("[pcl::registration::%s::setTargetNormals] Initilize the data container object by calling intializeDataContainer () before using this function.\n", getClassName ().c_str ());
+            PCL_ERROR ("[pcl::registration::%s::setTargetNormals] Initialize the data container object by calling intializeDataContainer () before using this function.\n", getClassName ().c_str ());
             return;
           }
           boost::static_pointer_cast<DataContainer<PointT, NormalT> > (data_container_)->setTargetNormals (normals);
@@ -228,7 +228,7 @@ namespace pcl
         { 
           if (!data_container_)
           {
-            PCL_ERROR ("[pcl::registration::%s::getTargetNormals] Initilize the data container object by calling intializeDataContainer () before using this function.\n", getClassName ().c_str ());
+            PCL_ERROR ("[pcl::registration::%s::getTargetNormals] Initialize the data container object by calling intializeDataContainer () before using this function.\n", getClassName ().c_str ());
             return;
           }
           return (boost::static_pointer_cast<DataContainer<pcl::PointXYZ, NormalT> > (data_container_)->getTargetNormals ());

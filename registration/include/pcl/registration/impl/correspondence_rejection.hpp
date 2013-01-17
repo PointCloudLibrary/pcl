@@ -38,5 +38,21 @@
 #ifndef PCL_REGISTRATION_CORRESPONDENCE_REJECTION_IMPL_HPP_
 #define PCL_REGISTRATION_CORRESPONDENCE_REJECTION_IMPL_HPP_
 
+///////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT, typename NormalT> void
+pcl::registration::DataContainer<PointT, NormalT>::setInputCloud (const typename pcl::registration::DataContainer<PointT, NormalT>::PointCloudConstPtr &cloud)
+{
+  //input_ = cloud;
+  setInputSource (cloud);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT, typename NormalT> typename pcl::registration::DataContainer<PointT, NormalT>::PointCloudConstPtr const
+pcl::registration::DataContainer<PointT, NormalT>::getInputCloud ()
+{
+  return (getInputSource ()); 
+  //return (input_); 
+}
+
 #endif    // PCL_REGISTRATION_CORRESPONDENCE_REJECTION_IMPL_HPP_
 

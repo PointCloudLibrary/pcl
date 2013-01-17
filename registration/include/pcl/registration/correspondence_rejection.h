@@ -198,20 +198,10 @@ namespace pcl
           * data!), used to compute the correspondence distance.  
           * \param[in] cloud a cloud containing XYZ data
           */
-        inline void 
-        setInputCloud (const PointCloudConstPtr &cloud)
-        {
-          PCL_WARN ("[pcl::registration::%s::setInputCloud] setInputCloud is deprecated. Please use setInputSource instead.\n", getClassName ().c_str ());
-          input_ = cloud;
-        }
+        PCL_DEPRECATED (void setInputCloud (const PointCloudConstPtr &cloud), "[pcl::registration::DataContainer::setInputCloud] setInputCloud is deprecated. Please use setInputSource instead.");
 
         /** \brief Get a pointer to the input point cloud dataset target. */
-        inline PointCloudConstPtr const 
-        getInputCloud () 
-        { 
-          PCL_WARN ("[pcl::registration::%s::getInputCloud] getInputCloud is deprecated. Please use getInputSource instead.\n", getClassName ().c_str ());
-          return (input_); 
-        }
+        PCL_DEPRECATED (PointCloudConstPtr const getInputCloud (), "[pcl::registration::DataContainer::getInputCloud] getInputCloud is deprecated. Please use getInputSource instead.");
 
         /** \brief Provide a source point cloud dataset (must contain XYZ
           * data!), used to compute the correspondence distance.  

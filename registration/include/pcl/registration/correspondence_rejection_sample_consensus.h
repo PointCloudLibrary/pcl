@@ -99,20 +99,11 @@ namespace pcl
         /** \brief Provide a source point cloud dataset (must contain XYZ data!)
           * \param[in] cloud a cloud containing XYZ data
           */
-        virtual inline void 
-        setInputCloud (const PointCloudConstPtr &cloud) 
-        { 
-          PCL_WARN ("[pcl::registration::%s::setInputCloud] setInputCloud is deprecated. Please use setInputSource instead.\n", getClassName ().c_str ());
-          input_ = cloud; 
-        }
+        PCL_DEPRECATED (virtual void setInputCloud (const PointCloudConstPtr &cloud), 
+            "[pcl::registration::CorrespondenceRejectorSampleConsensus::setInputCloud] setInputCloud is deprecated. Please use setInputSource instead.");
 
         /** \brief Get a pointer to the input point cloud dataset target. */
-        inline PointCloudConstPtr const 
-        getInputCloud () 
-        { 
-          PCL_WARN ("[pcl::registration::%s::getInputCloud] getInputCloud is deprecated. Please use getInputSource instead.\n", getClassName ().c_str ());
-          return (input_); 
-        }
+        PCL_DEPRECATED (PointCloudConstPtr const getInputCloud (), "[pcl::registration::CorrespondenceRejectorSampleConsensus::getInputCloud] getInputCloud is deprecated. Please use getInputSource instead.");
 
         /** \brief Provide a source point cloud dataset (must contain XYZ data!)
           * \param[in] cloud a cloud containing XYZ data
@@ -130,12 +121,7 @@ namespace pcl
         /** \brief Provide a target point cloud dataset (must contain XYZ data!)
           * \param[in] cloud a cloud containing XYZ data
           */
-        virtual inline void 
-        setTargetCloud (const PointCloudConstPtr &cloud) 
-        { 
-          PCL_WARN ("[pcl::registration::%s::setTargetCloud] setTargetCloud is deprecated. Please use setInputTarget instead.\n", getClassName ().c_str ());
-          target_ = cloud; 
-        }
+        PCL_DEPRECATED (virtual void setTargetCloud (const PointCloudConstPtr &cloud), "[pcl::registration::CorrespondenceRejectorSampleConsensus::setTargetCloud] setTargetCloud is deprecated. Please use setInputTarget instead.");
 
         /** \brief Provide a target point cloud dataset (must contain XYZ data!)
           * \param[in] cloud a cloud containing XYZ data
@@ -163,12 +149,7 @@ namespace pcl
         /** \brief Set the maximum number of iterations.
           * \param[in] max_iterations Maximum number if iterations to run
           */
-        inline void 
-        setMaxIterations (int max_iterations) 
-        { 
-          PCL_WARN ("[pcl::registration::%s::setMaxIterations] setMaxIterations is deprecated. Please use setMaximumIterations instead.\n", getClassName ().c_str ());
-          max_iterations_ = std::max (max_iterations, 0); 
-        }
+        PCL_DEPRECATED (void setMaxIterations (int max_iterations), "[pcl::registration::CorrespondenceRejectorSampleConsensus::setMaxIterations] setMaxIterations is deprecated. Please use setMaximumIterations instead.");
 
         /** \brief Set the maximum number of iterations.
           * \param[in] max_iterations Maximum number if iterations to run
@@ -179,12 +160,7 @@ namespace pcl
         /** \brief Get the maximum number of iterations.
           * \return max_iterations Maximum number if iterations to run
           */
-        inline int 
-        getMaxIterations () 
-        {
-          PCL_WARN ("[pcl::registration::%s::getMaxIterations] getMaxIterations is deprecated. Please use getMaximumIterations instead.\n", getClassName ().c_str ());
-          return (max_iterations_); 
-        }
+        PCL_DEPRECATED (int getMaxIterations (), "[pcl::registration::CorrespondenceRejectorSampleConsensus::getMaxIterations] getMaxIterations is deprecated. Please use getMaximumIterations instead.");
 
         /** \brief Get the maximum number of iterations.
           * \return max_iterations Maximum number if iterations to run
