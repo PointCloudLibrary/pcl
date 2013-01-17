@@ -295,20 +295,24 @@ log2f (float x)
 // use me instead
 // void NewFunc(int a, double b);
 
-// gcc supports this starting from 4.5 : http://gcc.gnu.org/bugzilla/show_bug.cgi?id=43666
-#ifdef __GNUC__
-#if PCL_LINEAR_VERSION(__GNUC__,__GNUC_MINOR__,__GNUC_PATCHLEVEL__) < PCL_LINEAR_VERSION(4,5,0) || defined(__INTEL_COMPILER)
+#if (defined(__GNUC__) && PCL_LINEAR_VERSION(__GNUC__,__GNUC_MINOR__,__GNUC_PATCHLEVEL__) < PCL_LINEAR_VERSION(4,5,0) && ! defined(__clang__)) || defined(__INTEL_COMPILER)
 #define PCL_DEPRECATED(func, message) func __attribute__ ((deprecated))
-#else
+#endif
+
+// gcc supports this starting from 4.5 : http://gcc.gnu.org/bugzilla/show_bug.cgi?id=43666
+#if (defined(__GNUC__) && PCL_LINEAR_VERSION(__GNUC__,__GNUC_MINOR__,__GNUC_PATCHLEVEL__) >= PCL_LINEAR_VERSION(4,5,0)) || (defined(__clang__) && __has_extension(attribute_deprecated_with_message))
 #define PCL_DEPRECATED(func, message) func __attribute__ ((deprecated(message)))
 #endif
 
-#elif defined(_MSC_VER)
+#ifdef _MSC_VER
 #define PCL_DEPRECATED(func, message) __declspec(deprecated(message)) func
-#else
+#endif
+
+#ifndef PCL_DEPRECATED
 #pragma message("WARNING: You need to implement PCL_DEPRECATED for this compiler")
 #define PCL_DEPRECATED(func) func
 #endif
+
 
 // Macro to deprecate old classes/structs
 //
@@ -326,19 +330,21 @@ log2f (float x)
 //     NewClass() {}
 // };
 
-// gcc supports this starting from 4.5 : http://gcc.gnu.org/bugzilla/show_bug.cgi?id=43666
-#ifdef __GNUC__
-#if PCL_LINEAR_VERSION (__GNUC__, __GNU_MINOR__, __GNU_PATCHLEVEL__) < PCL_LINEAR_VERSION (4, 5, 0) || defined(__INTEL_COMPILER)
-
+#if (defined(__GNUC__) && PCL_LINEAR_VERSION(__GNUC__,__GNUC_MINOR__,__GNUC_PATCHLEVEL__) < PCL_LINEAR_VERSION(4,5,0) && ! defined(__clang__)) || defined(__INTEL_COMPILER)
 #define PCL_DEPRECATED_CLASS(func, message) __attribute__ ((deprecated)) func
-#else
+#endif
+
+// gcc supports this starting from 4.5 : http://gcc.gnu.org/bugzilla/show_bug.cgi?id=43666
+#if (defined(__GNUC__) && PCL_LINEAR_VERSION(__GNUC__,__GNUC_MINOR__,__GNUC_PATCHLEVEL__) >= PCL_LINEAR_VERSION(4,5,0)) || (defined(__clang__) && __has_extension(attribute_deprecated_with_message))
 #define PCL_DEPRECATED_CLASS(func, message) __attribute__ ((deprecated(message))) func
 #endif
 
-#elif defined(_MSC_VER)
+#ifdef _MSC_VER
 #define PCL_DEPRECATED_CLASS(func, message) __declspec(deprecated(message)) func
-#else
-#pragma message("WARNING: You need to implement PCL_DEPRECATED for this compiler")
+#endif
+
+#ifndef PCL_DEPRECATED_CLASS
+#pragma message("WARNING: You need to implement PCL_DEPRECATED_CLASS for this compiler")
 #define PCL_DEPRECATED_CLASS(func) func
 #endif
 
