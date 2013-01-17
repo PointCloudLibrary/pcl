@@ -310,8 +310,8 @@ void ICCVTutorial<FeatureType>::filterCorrespondences ()
   }
 
   pcl::registration::CorrespondenceRejectorSampleConsensus<pcl::PointXYZI> rejector;
-  rejector.setInputCloud(source_keypoints_);
-  rejector.setTargetCloud(target_keypoints_);
+  rejector.setInputSource (source_keypoints_);
+  rejector.setInputTarget (target_keypoints_);
   rejector.setInputCorrespondences(correspondences_);
   rejector.getCorrespondences(*correspondences_);
   cout << "OK" << endl;
@@ -334,8 +334,8 @@ void ICCVTutorial<FeatureType>::determineFinalTransformation ()
 {
   cout << "final registration..." << std::flush;
   pcl::Registration<pcl::PointXYZRGB, pcl::PointXYZRGB>::Ptr registration (new pcl::IterativeClosestPoint<pcl::PointXYZRGB, pcl::PointXYZRGB>);
-  registration->setInputCloud(source_transformed_);
-  //registration->setInputCloud(source_segmented_);
+  registration->setInputSource (source_transformed_);
+  //registration->setInputSource (source_segmented_);
   registration->setInputTarget (target_segmented_);
   registration->setMaxCorrespondenceDistance(0.05);
   registration->setRANSACOutlierRejectionThreshold (0.05);
