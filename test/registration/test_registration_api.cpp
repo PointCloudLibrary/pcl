@@ -130,15 +130,17 @@ TEST (PCL, CorrespondenceRejectorDistance)
   // re-do correspondence estimation
   boost::shared_ptr<pcl::Correspondences> correspondences (new pcl::Correspondences);
   pcl::registration::CorrespondenceEstimation<PointXYZ, PointXYZ> corr_est;
+  corr_est.setInputCloud (source);        // test for PCL_DEPRECATED
+  source = corr_est.getInputCloud ();     // test for PCL_DEPRECATED
   corr_est.setInputSource (source);
   corr_est.setInputTarget (target);
   corr_est.determineCorrespondences (*correspondences);
 
   boost::shared_ptr<pcl::Correspondences>  correspondences_result_rej_dist (new pcl::Correspondences);
   pcl::registration::CorrespondenceRejectorDistance corr_rej_dist;
-  corr_rej_dist.setInputCorrespondences(correspondences);
-  corr_rej_dist.setMaximumDistance(rej_dist_max_dist);
-  corr_rej_dist.getCorrespondences(*correspondences_result_rej_dist);
+  corr_rej_dist.setInputCorrespondences (correspondences);
+  corr_rej_dist.setMaximumDistance (rej_dist_max_dist);
+  corr_rej_dist.getCorrespondences (*correspondences_result_rej_dist);
 
   // check for correct matches and number of matches
   EXPECT_EQ (int (correspondences_result_rej_dist->size ()), nr_correspondences_result_rej_dist);
