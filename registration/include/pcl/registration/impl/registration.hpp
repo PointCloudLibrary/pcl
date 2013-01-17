@@ -38,7 +38,22 @@
  *
  */
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointSource, typename PointTarget, typename Scalar> void
+pcl::Registration<PointSource, PointTarget, Scalar>::setInputCloud (
+    const typename pcl::Registration<PointSource, PointTarget, Scalar>::PointCloudSourceConstPtr &cloud)
+{
+  setInputSource (cloud);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointSource, typename PointTarget, typename Scalar> typename pcl::Registration<PointSource, PointTarget, Scalar>::PointCloudSourceConstPtr const
+pcl::Registration<PointSource, PointTarget, Scalar>::getInputCloud ()
+{
+  return (getInputSource ());
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget, typename Scalar> inline void
 pcl::Registration<PointSource, PointTarget, Scalar>::setInputTarget (const PointCloudTargetConstPtr &cloud)
 {
@@ -51,7 +66,7 @@ pcl::Registration<PointSource, PointTarget, Scalar>::setInputTarget (const Point
   target_cloud_updated_ = true;
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget, typename Scalar> bool
 pcl::Registration<PointSource, PointTarget, Scalar>::initCompute ()
 {

@@ -200,7 +200,7 @@ pcl::registration::ELCH<PointT>::initCompute ()
 
     reg_->setInputTarget (meta_start);
 
-    reg_->setInputCloud (meta_end);
+    reg_->setInputSource (meta_end);
 
     reg_->align (*tmp);
 

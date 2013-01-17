@@ -56,6 +56,13 @@
 #include <pcl/surface/qhull.h>
 
 //////////////////////////////////////////////////////////////////////////
+template <typename PointInT> int
+pcl::ConcaveHull<PointInT>::getDim () const
+{
+  return (getDimension ());
+}
+
+//////////////////////////////////////////////////////////////////////////
 template <typename PointInT> void
 pcl::ConcaveHull<PointInT>::reconstruct (PointCloud &output)
 {

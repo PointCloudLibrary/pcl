@@ -131,18 +131,13 @@ namespace pcl
       }
 
       /** \brief Returns the dimensionality (2 or 3) of the calculated hull. */
-      inline int
-      getDim () const
-      {
-        PCL_WARN ("[pcl::%s::getDim] This method is deprecated. Please use getDimension () instead.\n", getClassName ().c_str ());
-        return dim_;
-      }
+      PCL_DEPRECATED (int getDim () const, "[pcl::ConcaveHull::getDim] This method is deprecated. Please use getDimension () instead.");
 
       /** \brief Returns the dimensionality (2 or 3) of the calculated hull. */
       inline int
       getDimension () const
       {
-        return dim_;
+        return (dim_);
       }
 
       /** \brief Sets the dimension on the input data, 2D or 3D.
