@@ -71,7 +71,7 @@ class ply_to_ply_converter
       bol_ (), ostream_ () {}
 
     bool 
-    convert(std::istream& istream, std::ostream& ostream);
+    convert (const std::string &filename, std::istream& istream, std::ostream& ostream);
 
   private:
     void
@@ -136,19 +136,19 @@ class ply_to_ply_converter
 void
 ply_to_ply_converter::info_callback(const std::string& filename, std::size_t line_number, const std::string& message)
 {
-  std::cerr << filename << ":" << line_number << ": " << "info: " << message << std::endl;
+  std::cerr << filename << ": " << line_number << ": " << "info: " << message << std::endl;
 }
 
 void
 ply_to_ply_converter::warning_callback(const std::string& filename, std::size_t line_number, const std::string& message)
 {
-  std::cerr << filename << ":" << line_number << ": " << "warning: " << message << std::endl;
+  std::cerr << filename << ": " << line_number << ": " << "warning: " << message << std::endl;
 }
 
 void
 ply_to_ply_converter::error_callback(const std::string& filename, std::size_t line_number, const std::string& message)
 {
-  std::cerr << filename << ":" << line_number << ": " << "error: " << message << std::endl;
+  std::cerr << filename << ": " << line_number << ": " << "error: " << message << std::endl;
 }
 
 void
@@ -337,13 +337,11 @@ ply_to_ply_converter::end_header_callback()
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 bool 
-ply_to_ply_converter::convert (std::istream&, std::ostream& ostream)
+ply_to_ply_converter::convert (const std::string &ifilename, std::istream&, std::ostream& ostream)
 {
   pcl::io::ply::ply_parser::flags_type ply_parser_flags = 0;
 
   pcl::io::ply::ply_parser ply_parser(ply_parser_flags);
-
-  std::string ifilename;
 
   ply_parser.info_callback(boost::bind(&ply_to_ply_converter::info_callback, this, boost::ref(ifilename), _1, _2));
   ply_parser.warning_callback(boost::bind(&ply_to_ply_converter::warning_callback, this, boost::ref(ifilename), _1, _2));
@@ -558,5 +556,5 @@ main(int argc, char* argv[])
   std::ostream& ostream = ofstream.is_open() ? ofstream : std::cout;
 
   class ply_to_ply_converter ply_to_ply_converter(ply_to_ply_converter_format);
-  return ply_to_ply_converter.convert(istream, ostream);
+  return ply_to_ply_converter.convert (ifilename, istream, ostream);
 }
