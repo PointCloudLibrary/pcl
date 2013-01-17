@@ -115,7 +115,7 @@ main (int argc, char **argv)
 
     icp->setInputTarget (model);
 
-    icp->setInputCloud (data);
+    icp->setInputSource (data);
 
     CloudPtr tmp (new Cloud);
     icp->align (*tmp);

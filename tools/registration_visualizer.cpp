@@ -126,7 +126,7 @@ main (int argc, char** argv)
 //  icp.setRANSACOutlierRejectionThreshold (1.5);
 //  icp.setRANSACOutlierRejectionThreshold (5.0);
 
-  icp.setInputCloud  (source);
+  icp.setInputSource (source);
   icp.setInputTarget (target);
 
   // Register the registration algorithm to the RegistrationVisualizer

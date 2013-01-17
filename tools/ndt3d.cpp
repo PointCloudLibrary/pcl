@@ -131,7 +131,7 @@ main (int argc, char **argv)
     voxel_filter.setInputCloud (data);
     voxel_filter.filter (*filtered_data);
 
-    ndt->setInputCloud (filtered_data);
+    ndt->setInputSource (filtered_data);
 
     CloudPtr tmp (new Cloud);
     ndt->align (*tmp);

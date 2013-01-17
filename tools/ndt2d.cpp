@@ -82,7 +82,7 @@ selfTest ()
   ndt.setTransformationEpsilon (1e-9);
 
   ndt.setInputTarget (model);
-  ndt.setInputCloud (data);
+  ndt.setInputSource (data);
 
   CloudPtr tmp (new Cloud);
   ndt.align (*tmp);
@@ -150,7 +150,7 @@ main (int argc, char **argv)
     ndt.setTransformationEpsilon (1e-5);
 
     ndt.setInputTarget (model);
-    ndt.setInputCloud (data);
+    ndt.setInputSource (data);
 
     CloudPtr tmp (new Cloud);
     ndt.align (*tmp);
