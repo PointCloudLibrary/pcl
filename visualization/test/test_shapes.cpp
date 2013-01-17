@@ -5,7 +5,7 @@ using pcl::PointCloud;
 using pcl::PointXYZ;
 
 int 
-  main (int argc, char **argv)
+main (int , char **)
 {
   srand (unsigned (time (0)));
 
@@ -14,9 +14,9 @@ int
   cloud->points.resize (5);
   for (size_t i = 0; i < cloud->points.size (); ++i)
   {
-    cloud->points[i].x = i; 
-    cloud->points[i].y = i / 2; 
-    cloud->points[i].z = 0;
+    cloud->points[i].x = float (i); 
+    cloud->points[i].y = float (i / 2);
+    cloud->points[i].z = 0.0f;
   }
 
   // Start the visualizer
