@@ -68,7 +68,12 @@ pcl::visualization::ImageViewer::ImageViewer (const std::string& window_title)
   , algo_ (vtkSmartPointer<vtkImageFlip>::New ())
   , image_data_ ()
 {
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
+  interactor_ = vtkSmartPointer<PCLVisualizerInteractor>::New ();
+#else
   interactor_ = vtkSmartPointer <vtkRenderWindowInteractor>::Take (vtkRenderWindowInteractorFixNew ());
+#endif
+
   // Prepare for image flip
   algo_->SetInterpolationModeToCubic ();
   algo_->PreserveImageExtentOn ();
@@ -98,7 +103,7 @@ pcl::visualization::ImageViewer::ImageViewer (const std::string& window_title)
   image_viewer_->GetRenderWindow ()->SetSize (640, 480);
   ren_ = image_viewer_->GetRenderer ();
   win_ = image_viewer_->GetRenderWindow ();
-  interactor_ = win_->GetInteractor ();
+  //interactor_ = win_->GetInteractor ();
 #else
   win_->SetSize (640, 480);
   win_->AddRenderer (ren_);

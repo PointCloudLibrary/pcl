@@ -42,6 +42,7 @@
 #include <pcl/pcl_macros.h>
 #include <pcl/point_types.h>
 #include <pcl/console/print.h>
+#include <pcl/visualization/interactor.h>
 #include <pcl/visualization/interactor_style.h>
 #include <pcl/visualization/vtk.h>
 #include <pcl/visualization/boost.h>
@@ -547,7 +548,11 @@ namespace pcl
         {
           stopped_ = true;
           // This tends to close the window...
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
+          interactor_->stopLoop ();
+#else
           interactor_->TerminateApp ();
+#endif
         }
 
         /** \brief Add a circle shape from a point and a radius
@@ -890,7 +895,11 @@ namespace pcl
             int timer_id = *static_cast<int*> (call_data);
             if (timer_id != right_timer_id)
               return;
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
+            window->interactor_->stopLoop ();
+#else
             window->interactor_->TerminateApp ();
+#endif
           }
           int right_timer_id;
           ImageViewer* window;
@@ -909,7 +918,11 @@ namespace pcl
             if (event_id != vtkCommand::ExitEvent)
               return;
             window->stopped_ = true;
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
+            window->interactor_->stopLoop ();
+#else
             window->interactor_->TerminateApp ();
+#endif
           }
           ImageViewer* window;
         };
@@ -939,7 +952,11 @@ namespace pcl
         boost::signals2::signal<void (const pcl::visualization::MouseEvent&)> mouse_signal_;
         boost::signals2::signal<void (const pcl::visualization::KeyboardEvent&)> keyboard_signal_;
         
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
+        vtkSmartPointer<PCLVisualizerInteractor> interactor_;
+#else
         vtkSmartPointer<vtkRenderWindowInteractor> interactor_;
+#endif
         vtkSmartPointer<vtkCallbackCommand> mouse_command_;
         vtkSmartPointer<vtkCallbackCommand> keyboard_command_;
 
