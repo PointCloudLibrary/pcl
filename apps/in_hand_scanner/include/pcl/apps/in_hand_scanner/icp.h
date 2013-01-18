@@ -141,7 +141,7 @@ namespace pcl
 
         /** @{ */
         /** \brief Correspondences are rejected if the angle between the normals is bigger than this threshold. Set in degrees.
-          * \note Must be between 180 degrees and 0.
+          * \note Must be between 180 degrees and 0. Values outside this range are clamped to the nearest valid value.
           */
         void
         setMaxAngle (const float angle);

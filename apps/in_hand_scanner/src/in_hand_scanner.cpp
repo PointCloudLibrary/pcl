@@ -77,8 +77,6 @@ pcl::ihs::InHandScanner::InHandScanner (Base* parent)
 {
   Base::setScalingFactor (0.01);
 
-  Base::setVisibilityConfidenceNormalization (static_cast <float> (integration_->getMinimumCount ()));
-
   // Initialize the pivot
   const float x_min = input_data_processing_->getXMin ();
   const float x_max = input_data_processing_->getXMax ();
@@ -342,6 +340,8 @@ pcl::ihs::InHandScanner::paintEvent (QPaintEvent* event)
                                   input_data_processing_->getZMin (),
                                   input_data_processing_->getZMax ());
     Base::setBoxCoefficients (coeffs);
+
+    Base::setVisibilityConfidenceNormalization (static_cast <float> (integration_->getMinDirections ()));
   }
 
   Base::paintEvent (event);

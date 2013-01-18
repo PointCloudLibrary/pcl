@@ -44,21 +44,20 @@
 #include <vector>
 #include <limits>
 
-#include <pcl/console/print.h>
 #include <pcl/kdtree/kdtree_flann.h>
-
 #include <pcl/apps/in_hand_scanner/boost.h>
 #include <pcl/apps/in_hand_scanner/visibility_confidence.h>
+#include <pcl/apps/in_hand_scanner/utils.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 
 pcl::ihs::Integration::Integration ()
   : kd_tree_              (new pcl::KdTreeFLANN <PointXYZ> ()),
-    squared_distance_max_ (0.04f), // 0.2cm
-    dot_normal_min_       (.6f),
-    weight_min_           (.3f),
-    age_max_              (30),
-    count_min_            (4)
+    max_squared_distance_ (0.04f), // 0.2cm
+    max_angle_            (45.f),
+    min_weight_           (.3f),
+    max_age_              (30),
+    min_directions_       (4)
 {
 }
 
@@ -102,7 +101,7 @@ pcl::ihs::Integration::reconstructMesh (const CloudXYZRGBNormalConstPtr& cloud_d
     const PointXYZRGBNormal& pt_d = cloud_data->operator [] (c);
     const float weight = -pt_d.normal_z; // weight = -dot (normal, [0; 0; 1])
 
-    if (!boost::math::isnan (pt_d.x) && weight >= weight_min_)
+    if (!boost::math::isnan (pt_d.x) && weight > min_weight_)
     {
       cloud_model->operator [] (c) = PointIHS (pt_d, weight);
     }
@@ -114,7 +113,7 @@ pcl::ihs::Integration::reconstructMesh (const CloudXYZRGBNormalConstPtr& cloud_d
       const PointXYZRGBNormal& pt_d = cloud_data->operator [] (r*width + c);
       const float weight = -pt_d.normal_z; // weight = -dot (normal, [0; 0; 1])
 
-      if (!boost::math::isnan (pt_d.x) && weight >= weight_min_)
+      if (!boost::math::isnan (pt_d.x) && weight > min_weight_)
       {
         cloud_model->operator [] (r*width + c) = PointIHS (pt_d, weight);
       }
@@ -164,7 +163,7 @@ pcl::ihs::Integration::reconstructMesh (const CloudXYZRGBNormalConstPtr& cloud_d
 
       const float weight = -pt_d_0.normal_z; // weight = -dot (normal, [0; 0; 1])
 
-      if (!boost::math::isnan (pt_d_0.x) && weight >= weight_min_)
+      if (!boost::math::isnan (pt_d_0.x) && weight > min_weight_)
       {
         pt_m_0 = PointIHS (pt_d_0, weight);
       }
@@ -243,7 +242,7 @@ pcl::ihs::Integration::merge (const CloudXYZRGBNormalConstPtr& cloud_data,
     const PointXYZRGBNormal& pt_d = cloud_data->operator [] (c);
     const float weight = -pt_d.normal_z; // weight = -dot (normal, [0; 0; 1])
 
-    if (!boost::math::isnan (pt_d.x) && weight >= weight_min_)
+    if (!boost::math::isnan (pt_d.x) && weight > min_weight_)
     {
       PointIHS& pt_d_t = cloud_data_transformed->operator [] (c);
       pt_d_t = PointIHS (pt_d, weight);
@@ -258,7 +257,7 @@ pcl::ihs::Integration::merge (const CloudXYZRGBNormalConstPtr& cloud_data,
       const PointXYZRGBNormal& pt_d = cloud_data->operator [] (r*width + c);
       const float weight = -pt_d.normal_z; // weight = -dot (normal, [0; 0; 1])
 
-      if (!boost::math::isnan (pt_d.x) && weight >= weight_min_)
+      if (!boost::math::isnan (pt_d.x) && weight > min_weight_)
       {
         PointIHS& pt_d_t = cloud_data_transformed->operator [] (r*width + c);
         pt_d_t = PointIHS (pt_d, weight);
@@ -279,6 +278,8 @@ pcl::ihs::Integration::merge (const CloudXYZRGBNormalConstPtr& cloud_data,
   const int offset_2 = -width - 1;
   const int offset_3 =        - 1;
   const int offset_4 = -width - 2;
+
+  const float dot_min = std::cos (max_angle_ * 17.45329252e-3); // deg to rad
 
   for (int r=1; r<height; ++r)
   {
@@ -311,7 +312,7 @@ pcl::ihs::Integration::merge (const CloudXYZRGBNormalConstPtr& cloud_data,
 
       const float weight = -pt_d_0.normal_z; // weight = -dot (normal, [0; 0; 1])
 
-      if (!boost::math::isnan (pt_d_0.x) && weight >= weight_min_)
+      if (!boost::math::isnan (pt_d_0.x) && weight > min_weight_)
       {
         pt_d_t_0 = PointIHS (pt_d_0, weight);
         pt_d_t_0.getVector4fMap ()       = T * pt_d_t_0.getVector4fMap ();
@@ -327,16 +328,16 @@ pcl::ihs::Integration::merge (const CloudXYZRGBNormalConstPtr& cloud_data,
         }
 
         // Average out corresponding points
-        if (squared_distance [0] <= squared_distance_max_)
+        if (squared_distance [0] <= max_squared_distance_)
         {
           PointIHS& pt_m = mesh_model->getVertexDataCloud () [index [0]]; // Non-const reference!
 
-          if (pt_m.getNormalVector4fMap ().dot (pt_d_t_0.getNormalVector4fMap ()) >= dot_normal_min_)
+          if (pt_m.getNormalVector4fMap ().dot (pt_d_t_0.getNormalVector4fMap ()) >= dot_min)
           {
             vi_0 = VertexIndex (index [0]);
 
             const float W   = pt_m.weight;         // Old accumulated weight
-            const float w   = pt_d_t_0.weight;    // Weight of new point
+            const float w   = pt_d_t_0.weight;     // Weight of new point
             const float WW  = pt_m.weight = W + w; // New accumulated weight
 
             const float r_m = static_cast <float> (pt_m.r);
@@ -390,14 +391,14 @@ pcl::ihs::Integration::age (const MeshPtr& mesh, const bool cleanup) const
   for (unsigned int i=0; i<mesh->sizeVertices (); ++i)
   {
     PointIHS& pt = mesh->getVertexDataCloud () [i];
-    if (pt.age < age_max_)
+    if (pt.age < max_age_)
     {
       // Point survives
       ++(pt.age);
     }
-    else if (pt.age == age_max_) // Judgement Day
+    else if (pt.age == max_age_) // Judgement Day
     {
-      if (pcl::ihs::countDirections (pt.directions) < count_min_)
+      if (pcl::ihs::countDirections (pt.directions) < min_directions_)
       {
         // Point dies (no need to transform it)
         mesh->deleteVertex (VertexIndex (i));
@@ -419,107 +420,57 @@ pcl::ihs::Integration::age (const MeshPtr& mesh, const bool cleanup) const
 ////////////////////////////////////////////////////////////////////////////////
 
 void
-pcl::ihs::Integration::setSquaredDistanceThreshold (const float squared_distance_max)
+pcl::ihs::Integration::setMaxSquaredDistance (const float squared_distance)
 {
-  if (squared_distance_max <= 0.f)
-  {
-    PCL_ERROR ("'squared_distance_max' must be greater than 0.\n");
-  }
-  else
-  {
-    squared_distance_max_ = squared_distance_max;
-  }
+  if (squared_distance > 0) max_squared_distance_ = squared_distance;
 }
 
-////////////////////////////////////////////////////////////////////////////////
-
 float
-pcl::ihs::Integration::getSquaredDistanceThreshold () const
+pcl::ihs::Integration::getMaxSquaredDistance () const
 {
-  return (squared_distance_max_);
+  return (max_squared_distance_);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 void
-pcl::ihs::Integration::setAngleThreshold (const float dot_normal_min)
+pcl::ihs::Integration::setMaxAngle (const float angle)
 {
-  if (dot_normal_min >= -1.f && dot_normal_min <= 1.f)
-  {
-    dot_normal_min_ = dot_normal_min;
-  }
-  else
-  {
-    PCL_ERROR ("'dot_normal_min' must be between -1 and 1.\n");
-  }
+  max_angle_ = pcl::ihs::clamp (angle, 0.f, 180.f);
 }
 
-////////////////////////////////////////////////////////////////////////////////
-
 float
-pcl::ihs::Integration::getAngleThreshold () const
+pcl::ihs::Integration::getMaxAngle () const
 {
-  return (dot_normal_min_);
+  return (max_angle_);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 void
-pcl::ihs::Integration::setMinimumWeight (const float weight_min)
+pcl::ihs::Integration::setMaxAge (const unsigned int age)
 {
-  if (weight_min >= -1 && weight_min <= 1.f)
-  {
-    weight_min_ = weight_min;
-  }
-  else
-  {
-    PCL_ERROR ("'weight_min' must be between -1 and 1.\n");
-  }
+  max_age_ = age < 1 ? 1 : age;
 }
-
-////////////////////////////////////////////////////////////////////////////////
-
-float
-pcl::ihs::Integration::getMinimumWeight () const
-{
-  return (weight_min_);
-}
-
-void
-pcl::ihs::Integration::setMaximumAge (const unsigned int age_max)
-{
-  if (age_max <= 0)
-  {
-    PCL_ERROR ("'age_max' must be greater than 0\n");
-  }
-  else
-  {
-    age_max_ = age_max;
-  }
-}
-
-////////////////////////////////////////////////////////////////////////////////
 
 unsigned int
-pcl::ihs::Integration::getMaximumAge () const
+pcl::ihs::Integration::getMaxAge () const
 {
-  return (age_max_);
+  return (max_age_);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 void
-pcl::ihs::Integration::setMinimumCount (const unsigned int count_min)
+pcl::ihs::Integration::setMinDirections (const unsigned int directions)
 {
-  count_min_ = count_min;
+  min_directions_ = directions < 1 ? 1 : directions;
 }
 
-////////////////////////////////////////////////////////////////////////////////
-
 unsigned int
-pcl::ihs::Integration::getMinimumCount () const
+pcl::ihs::Integration::getMinDirections () const
 {
-  return (count_min_);
+  return (min_directions_);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -607,9 +558,9 @@ pcl::ihs::Integration::distanceThreshold (const PointIHS& pt_0,
                                           const PointIHS& pt_1,
                                           const PointIHS& pt_2) const
 {
-  if ((pt_0.getVector3fMap () - pt_1.getVector3fMap ()).squaredNorm () > squared_distance_max_) return (false);
-  if ((pt_1.getVector3fMap () - pt_2.getVector3fMap ()).squaredNorm () > squared_distance_max_) return (false);
-  if ((pt_2.getVector3fMap () - pt_0.getVector3fMap ()).squaredNorm () > squared_distance_max_) return (false);
+  if ((pt_0.getVector3fMap () - pt_1.getVector3fMap ()).squaredNorm () > max_squared_distance_) return (false);
+  if ((pt_1.getVector3fMap () - pt_2.getVector3fMap ()).squaredNorm () > max_squared_distance_) return (false);
+  if ((pt_2.getVector3fMap () - pt_0.getVector3fMap ()).squaredNorm () > max_squared_distance_) return (false);
   return (true);
 }
 
@@ -621,10 +572,10 @@ pcl::ihs::Integration::distanceThreshold (const PointIHS& pt_0,
                                           const PointIHS& pt_2,
                                           const PointIHS& pt_3) const
 {
-  if ((pt_0.getVector3fMap () - pt_1.getVector3fMap ()).squaredNorm () > squared_distance_max_) return (false);
-  if ((pt_1.getVector3fMap () - pt_2.getVector3fMap ()).squaredNorm () > squared_distance_max_) return (false);
-  if ((pt_2.getVector3fMap () - pt_3.getVector3fMap ()).squaredNorm () > squared_distance_max_) return (false);
-  if ((pt_3.getVector3fMap () - pt_0.getVector3fMap ()).squaredNorm () > squared_distance_max_) return (false);
+  if ((pt_0.getVector3fMap () - pt_1.getVector3fMap ()).squaredNorm () > max_squared_distance_) return (false);
+  if ((pt_1.getVector3fMap () - pt_2.getVector3fMap ()).squaredNorm () > max_squared_distance_) return (false);
+  if ((pt_2.getVector3fMap () - pt_3.getVector3fMap ()).squaredNorm () > max_squared_distance_) return (false);
+  if ((pt_3.getVector3fMap () - pt_0.getVector3fMap ()).squaredNorm () > max_squared_distance_) return (false);
   return (true);
 }
 

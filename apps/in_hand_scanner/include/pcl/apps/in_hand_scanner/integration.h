@@ -64,24 +64,18 @@ namespace pcl
 {
   namespace ihs
   {
+    /** \brief Integrate several clouds into a common mesh.
+      * \author Martin Saelzle
+      * \ingroup apps
+      */
     class PCL_EXPORTS Integration
     {
       public:
-
-        typedef pcl::PointXYZ              PointXYZ;
-        typedef pcl::PointCloud <PointXYZ> CloudXYZ;
-        typedef CloudXYZ::Ptr              CloudXYZPtr;
-        typedef CloudXYZ::ConstPtr         CloudXYZConstPtr;
 
         typedef pcl::PointXYZRGBNormal              PointXYZRGBNormal;
         typedef pcl::PointCloud <PointXYZRGBNormal> CloudXYZRGBNormal;
         typedef CloudXYZRGBNormal::Ptr              CloudXYZRGBNormalPtr;
         typedef CloudXYZRGBNormal::ConstPtr         CloudXYZRGBNormalConstPtr;
-
-        typedef pcl::ihs::PointIHS         PointIHS;
-        typedef pcl::ihs::CloudIHS         CloudIHS;
-        typedef pcl::ihs::CloudIHSPtr      CloudIHSPtr;
-        typedef pcl::ihs::CloudIHSConstPtr CloudIHSConstPtr;
 
         typedef pcl::ihs::Mesh            Mesh;
         typedef pcl::ihs::MeshPtr         MeshPtr;
@@ -89,47 +83,85 @@ namespace pcl
         typedef Mesh::VertexIndex         VertexIndex;
         typedef Mesh::VertexIndices       VertexIndices;
 
-        typedef pcl::KdTree <PointXYZ>           KdTree;
-        typedef boost::shared_ptr <KdTree>       KdTreePtr;
-        typedef boost::shared_ptr <const KdTree> KdTreeConstPtr;
-
+        /** \brief Constructor. */
         Integration ();
 
+        /** \brief Reconstructs a mesh from an organized cloud.
+          * \param[in] cloud_data Input cloud. Must be organized.
+          * \param[in] mesh_model Reconstructed mesh.
+          * \return true if success.
+          */
         bool
         reconstructMesh (const CloudXYZRGBNormalConstPtr& cloud_data,
                          MeshPtr&                         mesh_model) const;
 
+        /** \brief Merge the organized cloud into the mesh.
+          * \param[in] cloud_data Input cloud. Must be organized.
+          * \param[in, out] mesh_model Mesh with new points integrated.
+          * \param[in] T Transformation that aligns the data cloud with the model mesh.
+          * \return true if success.
+          */
         bool
         merge (const CloudXYZRGBNormalConstPtr& cloud_data,
                MeshPtr&                         mesh_model,
                const Eigen::Matrix4f&           T) const;
 
+        /** \brief Outlier rejection. In each merge step points that have not been observed again age by one iteration. Points that are observed again get an age of 0. Once a point reaches the maximum age it is decided if the point is removed or kept in the mesh. A point is removed if it has not been observed from a minimum number of directions. */
         void
         age (const MeshPtr& mesh, const bool cleanup=true) const;
 
-        void  setSquaredDistanceThreshold (const float squared_distance_max);
-        float getSquaredDistanceThreshold () const;
+        /** @{ */
+        /** \brief Corresponding points are averaged out if their distance is below a distance threshold. Else the points are added to the mesh as new vertices.
+          * \note Must be greater than zero.
+          */
+        void  setMaxSquaredDistance (const float squared_distance);
+        float getMaxSquaredDistance () const;
+        /** @} */
 
-        void  setAngleThreshold (const float dot_normal_min);
-        float getAngleThreshold () const;
+        /** @{ */
+        /** \brief Corresponding points are only averaged out if the angle between the normals is smaller than an angle threshold.
+          * \note Must be between 0 and 180. Values outside this range are clamped to the nearest valid value.
+          */
+        void  setMaxAngle (const float angle);
+        float getMaxAngle () const;
+        /** @} */
 
-        void  setMinimumWeight (const float weight_min);
-        float getMinimumWeight () const;
+        /** @{  */
+        /** \brief Once a point reaches the maximum age it is decided if the point is removed or kept in the mesh.
+          * \note Must be greater than zero.
+          */
+        void         setMaxAge (const unsigned int age);
+        unsigned int getMaxAge () const;
+        /** @} */
 
-        void         setMaximumAge (const unsigned int age_max);
-        unsigned int getMaximumAge () const;
-
-        void         setMinimumCount (const unsigned int count_min);
-        unsigned int getMinimumCount () const;
+        /** @{  */
+        /** \brief A point is removed if it has not been observed from a minimum number of directions.
+          * \note Must be greater than zero.
+          */
+        void         setMinDirections (const unsigned int directions);
+        unsigned int getMinDirections () const;
+        /** @} */
 
       private:
+
+        typedef pcl::PointXYZ              PointXYZ;
+        typedef pcl::PointCloud <PointXYZ> CloudXYZ;
+        typedef CloudXYZ::Ptr              CloudXYZPtr;
+        typedef CloudXYZ::ConstPtr         CloudXYZConstPtr;
+
+        typedef pcl::ihs::PointIHS         PointIHS;
+        typedef pcl::ihs::CloudIHS         CloudIHS;
+        typedef pcl::ihs::CloudIHSPtr      CloudIHSPtr;
+        typedef pcl::ihs::CloudIHSConstPtr CloudIHSConstPtr;
+
+        typedef pcl::KdTree <PointXYZ>           KdTree;
+        typedef boost::shared_ptr <KdTree>       KdTreePtr;
+        typedef boost::shared_ptr <const KdTree> KdTreeConstPtr;
 
         uint8_t
         trimRGB (const float val) const;
 
-        // 2 - 1
-        // | / |
-        // 3 - 0
+        /** \brief Adds two triangles between points 0-1-3 and 1-2-3 to the mesh. */
         void
         addToMesh (const PointIHS& pt_0,
                    const PointIHS& pt_1,
@@ -141,6 +173,7 @@ namespace pcl
                    VertexIndex&    vi_3,
                    const MeshPtr&  mesh) const;
 
+        /** \brief Adds a triangle between the points 0-1-2 to the mesh. */
         void
         addToMesh (const PointIHS& pt_0,
                    const PointIHS& pt_1,
@@ -150,32 +183,40 @@ namespace pcl
                    VertexIndex&    vi_2,
                    const MeshPtr&  mesh) const;
 
+        /** \brief Returns true if the distance between the three points is below a threshold. */
         bool
         distanceThreshold (const PointIHS& pt_0,
                            const PointIHS& pt_1,
                            const PointIHS& pt_2) const;
 
+        /** \brief Returns true if the distance between the four points is below a threshold. */
         bool
         distanceThreshold (const PointIHS& pt_0,
                            const PointIHS& pt_1,
                            const PointIHS& pt_2,
                            const PointIHS& pt_3) const;
 
-        // Nearest neighbor search.
+        ////////////////////////////////////////////////////////////////////////
+        // Members
+        ////////////////////////////////////////////////////////////////////////
+
+        /** \brief Nearest neighbor search. */
         KdTreePtr kd_tree_;
 
-        // Maximum squared distance below which points are averaged out.
-        float squared_distance_max_;
+        /** \brief Maximum squared distance below which points are averaged out. */
+        float max_squared_distance_;
 
-        // Minium dot product between normals above which points are averaged out.
-        float dot_normal_min_;
+        /** \brief Maximum angle between normals below which points are averaged out. In degrees. */
+        float max_angle_;
 
-        // Minimum weight above which points are added.
-        float weight_min_;
+        /** \brief Minimum weight above which points are added. */
+        float min_weight_;
 
-        // A point dies if it has not been updated in the last age_max_ frames and the number of observed directions are below count_min_.
-        unsigned int age_max_;
-        unsigned int count_min_;
+        /** \brief Once a point reaches the maximum age it is decided if the point is removed or kept in the mesh. */
+        unsigned int max_age_;
+
+        /** \brief A point is removed if it has not been observed from a minimum number of directions. */
+        unsigned int min_directions_;
     };
   } // End namespace ihs
 } // End namespace pcl

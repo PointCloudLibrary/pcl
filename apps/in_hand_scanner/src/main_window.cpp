@@ -103,7 +103,15 @@ pcl::ihs::MainWindow::MainWindow (QWidget* parent)
   ui_->lineEdit_max_fitness->setText (QString ().setNum (ihs_->getICP ().getMaxFitness ()));
 
   ui_->doubleSpinBox_correspondence_rejection_factor->setValue (ihs_->getICP ().getCorrespondenceRejectionFactor ());
-  ui_->spinBox_max_angle->setValue (static_cast <int> (ihs_->getICP ().getMaxAngle ()));
+  ui_->spinBox_correspondence_rejection_max_angle->setValue (static_cast <int> (ihs_->getICP ().getMaxAngle ()));
+
+  // Integration
+  ui_->lineEdit_max_squared_distance->setValidator (new QDoubleValidator (0., max, 2));
+
+  ui_->lineEdit_max_squared_distance->setText (QString ().setNum (ihs_->getIntegration ().getMaxSquaredDistance ()));
+  ui_->spinBox_averaging_max_angle->setValue (static_cast <int> (ihs_->getIntegration ().getMaxAngle ()));
+  ui_->spinBox_max_age->setValue (static_cast <int> (ihs_->getIntegration ().getMaxAge ()));
+  ui_->spinBox_min_directions->setValue (static_cast <int> (ihs_->getIntegration ().getMinDirections ()));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -260,10 +268,40 @@ pcl::ihs::MainWindow::setCorrespondenceRejectionFactor (const double factor)
 }
 
 void
-pcl::ihs::MainWindow::setMaxAngle (const int angle)
+pcl::ihs::MainWindow::setCorrespondenceRejectionMaxAngle (const int angle)
 {
   ihs_->getICP ().setMaxAngle (static_cast <float> (angle));
-  ui_->spinBox_max_angle->setValue (static_cast <int> (ihs_->getICP ().getMaxAngle ()));
+  ui_->spinBox_correspondence_rejection_max_angle->setValue (static_cast <int> (ihs_->getICP ().getMaxAngle ()));
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+void
+pcl::ihs::MainWindow::setMaxSquaredDistance ()
+{
+  ihs_->getIntegration ().setMaxSquaredDistance (ui_->lineEdit_max_squared_distance->text ().toFloat ());
+  ui_->lineEdit_max_squared_distance->setText (QString ().setNum (ihs_->getIntegration ().getMaxSquaredDistance ()));
+}
+
+void
+pcl::ihs::MainWindow::setAveragingMaxAngle (const int angle)
+{
+  ihs_->getIntegration ().setMaxAngle (static_cast <float> (angle));
+  ui_->spinBox_averaging_max_angle->setValue (static_cast <int> (ihs_->getIntegration ().getMaxAngle ()));
+}
+
+void
+pcl::ihs::MainWindow::setMaxAge (const int age)
+{
+  ihs_->getIntegration ().setMaxAge (static_cast <unsigned int> (age));
+  ui_->spinBox_max_age->setValue (static_cast <int> (ihs_->getIntegration ().getMaxAge ()));
+}
+
+void
+pcl::ihs::MainWindow::setMinDirections (const int directions)
+{
+  ihs_->getIntegration ().setMinDirections (static_cast <unsigned int> (directions));
+  ui_->spinBox_min_directions->setValue (static_cast <int> (ihs_->getIntegration ().getMinDirections ()));
 }
 
 ////////////////////////////////////////////////////////////////////////////////

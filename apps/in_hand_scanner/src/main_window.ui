@@ -44,14 +44,14 @@
         </size>
        </property>
        <property name="currentIndex">
-        <number>1</number>
+        <number>2</number>
        </property>
        <widget class="QWidget" name="page_input_data_processing">
         <property name="geometry">
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>300</width>
+          <width>344</width>
           <height>448</height>
          </rect>
         </property>
@@ -411,7 +411,7 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>300</width>
+          <width>344</width>
           <height>448</height>
          </rect>
         </property>
@@ -512,17 +512,17 @@
              </widget>
             </item>
             <item row="1" column="0">
-             <widget class="QLabel" name="label_max_angle">
+             <widget class="QLabel" name="label_correspondence_rejection_max_angle">
               <property name="text">
                <string>Max angle</string>
               </property>
               <property name="buddy">
-               <cstring>spinBox_max_angle</cstring>
+               <cstring>spinBox_correspondence_rejection_max_angle</cstring>
               </property>
              </widget>
             </item>
             <item row="1" column="1">
-             <widget class="QSpinBox" name="spinBox_max_angle">
+             <widget class="QSpinBox" name="spinBox_correspondence_rejection_max_angle">
               <property name="maximum">
                <number>180</number>
               </property>
@@ -551,13 +551,104 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>300</width>
+          <width>344</width>
           <height>448</height>
          </rect>
         </property>
         <attribute name="label">
          <string>Integration</string>
         </attribute>
+        <layout class="QVBoxLayout" name="verticalLayout_4">
+         <item>
+          <widget class="QGroupBox" name="groupBox_averaging">
+           <property name="title">
+            <string>Averaging</string>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_5">
+            <item row="0" column="0">
+             <widget class="QLabel" name="label_max_squared_distance">
+              <property name="text">
+               <string>Max squared distance</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QLineEdit" name="lineEdit_max_squared_distance"/>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="label_averaging_max_angle">
+              <property name="text">
+               <string>Max angle</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QSpinBox" name="spinBox_averaging_max_angle">
+              <property name="maximum">
+               <number>180</number>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="groupBox_outlier_removal">
+           <property name="title">
+            <string>Outlier removal</string>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_6">
+            <item row="0" column="0">
+             <widget class="QLabel" name="label_max_age">
+              <property name="text">
+               <string>Max age</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QSpinBox" name="spinBox_max_age">
+              <property name="minimum">
+               <number>1</number>
+              </property>
+              <property name="maximum">
+               <number>100</number>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="label_min_directions">
+              <property name="text">
+               <string>Min directions</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QSpinBox" name="spinBox_min_directions">
+              <property name="minimum">
+               <number>1</number>
+              </property>
+              <property name="maximum">
+               <number>100</number>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <spacer name="verticalSpacer">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
        </widget>
       </widget>
      </item>
@@ -587,7 +678,11 @@
   <tabstop>spinBox_min_overlap</tabstop>
   <tabstop>lineEdit_max_fitness</tabstop>
   <tabstop>doubleSpinBox_correspondence_rejection_factor</tabstop>
-  <tabstop>spinBox_max_angle</tabstop>
+  <tabstop>spinBox_correspondence_rejection_max_angle</tabstop>
+  <tabstop>lineEdit_max_squared_distance</tabstop>
+  <tabstop>spinBox_averaging_max_angle</tabstop>
+  <tabstop>spinBox_max_age</tabstop>
+  <tabstop>spinBox_min_directions</tabstop>
  </tabstops>
  <resources/>
  <connections>
@@ -912,10 +1007,10 @@
    </hints>
   </connection>
   <connection>
-   <sender>spinBox_max_angle</sender>
+   <sender>spinBox_correspondence_rejection_max_angle</sender>
    <signal>valueChanged(int)</signal>
    <receiver>MainWindow</receiver>
-   <slot>setMaxAngle(int)</slot>
+   <slot>setCorrespondenceRejectionMaxAngle(int)</slot>
    <hints>
     <hint type="sourcelabel">
      <x>931</x>
@@ -924,6 +1019,70 @@
     <hint type="destinationlabel">
      <x>467</x>
      <y>355</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>lineEdit_max_squared_distance</sender>
+   <signal>editingFinished()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>setMaxSquaredDistance()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>882</x>
+     <y>186</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>236</x>
+     <y>180</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox_averaging_max_angle</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>setAveragingMaxAngle(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>891</x>
+     <y>220</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>237</x>
+     <y>217</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox_max_age</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>setMaxAge(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>857</x>
+     <y>293</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>237</x>
+     <y>281</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox_min_directions</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>setMinDirections(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>869</x>
+     <y>330</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>239</x>
+     <y>324</y>
     </hint>
    </hints>
   </connection>
@@ -949,6 +1108,10 @@
   <slot>setMinOverlap(int)</slot>
   <slot>setMaxFitness()</slot>
   <slot>setCorrespondenceRejectionFactor(double)</slot>
-  <slot>setMaxAngle(int)</slot>
+  <slot>setCorrespondenceRejectionMaxAngle(int)</slot>
+  <slot>setMaxSquaredDistance()</slot>
+  <slot>setAveragingMaxAngle(int)</slot>
+  <slot>setMaxAge(int)</slot>
+  <slot>setMinDirections(int)</slot>
  </slots>
 </ui>

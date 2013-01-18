@@ -62,7 +62,7 @@ pcl::ihs::ICP::ICP ()
     max_fitness_    (.1f),
 
     factor_ (9.f),
-    max_angle_ (45)
+    max_angle_ (45.f)
 {
 }
 

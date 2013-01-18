@@ -106,7 +106,13 @@ namespace pcl
         void setMaxFitness ();
 
         void setCorrespondenceRejectionFactor (const double factor);
-        void setMaxAngle (const int angle);
+        void setCorrespondenceRejectionMaxAngle (const int angle);
+
+        // Integration
+        void setMaxSquaredDistance ();
+        void setAveragingMaxAngle (const int angle);
+        void setMaxAge (const int age);
+        void setMinDirections (const int directions);
 
       private:
 
