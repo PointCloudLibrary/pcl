@@ -52,6 +52,14 @@
 #include <pcl/outofcore/outofcore.h>
 #include <pcl/outofcore/outofcore_impl.h>
 
+#include <boost/accumulators/accumulators.hpp>
+#include <boost/accumulators/statistics/min.hpp>
+#include <boost/accumulators/statistics/max.hpp>
+#include <boost/accumulators/statistics/mean.hpp>
+#include <boost/accumulators/statistics/variance.hpp>
+
+namespace ba = boost::accumulators;
+
 // todo: Read clouds as PointCloud2 so we don't need to define PointT explicitly.
 //       This also requires our octree to take PointCloud2 as an input.
 typedef pcl::PointXYZ PointT;
@@ -91,7 +99,8 @@ printNode(OctreeDiskNode *)
 }
 
 int
-outofcorePrint (boost::filesystem::path tree_root, size_t print_depth, bool bounding_box=false, bool breadth_first=false)
+outofcorePrint (boost::filesystem::path tree_root, size_t print_depth, bool bounding_box=false, bool pcd=false, 
+		bool point_count=false, bool breadth_first=false)
 {
   std::cout << boost::filesystem::absolute (tree_root) << std::endl;
 
@@ -124,6 +133,10 @@ outofcorePrint (boost::filesystem::path tree_root, size_t print_depth, bool boun
   octree->getOccupiedVoxelCenters(voxel_centers);
   PCL_INFO(" Voxel Count: %d\n", voxel_centers.size ());
 
+  // Point data for statistics
+  std::vector<boost::uint64_t> pointsPerVoxel;
+	ba::accumulator_set<boost::uint64_t, ba::features< ba::tag::min,  ba::tag::max, ba::tag::mean,  ba::tag::variance> > acc;
+
   if (!breadth_first)
   {
     OctreeDisk::DepthFirstIterator depth_first_it (*octree);
@@ -139,10 +152,14 @@ outofcorePrint (boost::filesystem::path tree_root, size_t print_depth, bool boun
       PCL_INFO ("..%s\n", metadata_relative_file.c_str());
 
       printDepth(node_depth);
-      std::string pcd_relative_file = node->getPCDFilename ().string ();
-      boost::replace_first(pcd_relative_file, tree_root.parent_path ().string (), "");
-      PCL_INFO ("  PCD: ..%s\n", pcd_relative_file.c_str());
-
+      
+      if (pcd)
+      {
+        std::string pcd_relative_file = node->getPCDFilename ().string ();
+        boost::replace_first(pcd_relative_file, tree_root.parent_path ().string (), "");
+        PCL_INFO ("  PCD: ..%s\n", pcd_relative_file.c_str());
+      }
+      
       if (bounding_box)
       {
         Eigen::Vector3d min, max;
@@ -150,6 +167,14 @@ outofcorePrint (boost::filesystem::path tree_root, size_t print_depth, bool boun
 
         printDepth(node_depth);
         PCL_INFO ("  Bounding Box: <%lf, %lf, %lf> - <%lf, %lf, %lf>\n", min[0], min[1], min[2], max[0], max[1], max[2]);
+      }
+
+      if (point_count)
+      {
+        printDepth(node_depth);
+        PCL_INFO ("  Points: %lu\n", node->getDataSize());
+        pointsPerVoxel.push_back( node->getDataSize());
+        acc(node->getDataSize());
       }
 
       depth_first_it++;
@@ -170,10 +195,14 @@ outofcorePrint (boost::filesystem::path tree_root, size_t print_depth, bool boun
       PCL_INFO ("..%s\n", metadata_relative_file.c_str());
 
       printDepth(node_depth);
-      std::string pcd_relative_file = node->getPCDFilename ().string ();
-      boost::replace_first(pcd_relative_file, tree_root.parent_path ().string (), "");
-      PCL_INFO ("  PCD: ..%s\n", pcd_relative_file.c_str());
-
+      
+      if(pcd)
+      {
+        std::string pcd_relative_file = node->getPCDFilename ().string ();
+        boost::replace_first(pcd_relative_file, tree_root.parent_path ().string (), "");
+        PCL_INFO ("  PCD: ..%s\n", pcd_relative_file.c_str());
+      }
+      
       if (bounding_box)
       {
         Eigen::Vector3d min, max;
@@ -183,10 +212,25 @@ outofcorePrint (boost::filesystem::path tree_root, size_t print_depth, bool boun
         PCL_INFO ("  Bounding Box: <%lf, %lf, %lf> - <%lf, %lf, %lf>\n", min[0], min[1], min[2], max[0], max[1], max[2]);
       }
 
+      if (point_count)
+      {
+        printDepth(node_depth);
+        PCL_INFO ("  Points: %lu\n", node->getDataSize());
+        pointsPerVoxel.push_back( node->getDataSize());
+        acc(node->getDataSize());
+      }
+
       breadth_first_it++;
     }
   }
 
+  if(point_count)
+  {
+    PCL_INFO("Points per Voxel:\n");
+    PCL_INFO("Min: %u, Max: %u, Mean: %f, StdDev %f\n", ba::min(acc), 
+             ba::max(acc), ba::mean(acc), sqrt(ba::variance(acc)));
+  }
+  
   return 0;
 }
 
@@ -201,6 +245,8 @@ printHelp (int, char **argv)
   print_info ("Options:\n");
   print_info ("\t -depth <depth>                \t Octree depth\n");
   print_info ("\t -bounding_box                 \t Print bounding box info\n");
+  print_info ("\t -point_count                  \t Print point count info\n");
+  print_info ("\t -pcd                          \t Print pcd file info\n");
   print_info ("\t -breadth                      \t Print nodes in breadth-first (Default depth-first)\n");
   print_info ("\t -h                            \t Display help\n");
   print_info ("\n");
@@ -234,6 +280,8 @@ main (int argc, char* argv[])
   int depth = INT_MAX;
   bool breadth_first = find_switch (argc, argv, "-breadth");
   bool bounding_box = find_switch (argc, argv, "-bounding_box");
+  bool pcd = find_switch (argc, argv, "-pcd");
+  bool point_count = find_switch (argc, argv, "-point_count");
 
   // Parse options
   parse_argument (argc, argv, "-depth", depth);
@@ -258,5 +306,5 @@ main (int argc, char* argv[])
     }
   }
 
-  return outofcorePrint (tree_root, depth, bounding_box, breadth_first);
+  return outofcorePrint (tree_root, depth, bounding_box, pcd, point_count, breadth_first);
 }
