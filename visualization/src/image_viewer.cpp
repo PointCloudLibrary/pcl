@@ -103,7 +103,9 @@ pcl::visualization::ImageViewer::ImageViewer (const std::string& window_title)
   image_viewer_->GetRenderWindow ()->SetSize (640, 480);
   ren_ = image_viewer_->GetRenderer ();
   win_ = image_viewer_->GetRenderWindow ();
-  //interactor_ = win_->GetInteractor ();
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION >= 5))
+  interactor_ = win_->GetInteractor ();
+#endif
 #else
   win_->SetSize (640, 480);
   win_->AddRenderer (ren_);
