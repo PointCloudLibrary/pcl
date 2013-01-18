@@ -96,6 +96,18 @@ namespace pcl
 
         void setColorSegmentationInverted (const bool is_inverted);
 
+        void setXYZErodeSize (const int size);
+        void setHSVDilateSize (const int size);
+
+        // Registration
+        void setEpsilon ();
+        void setMaxIterations (const int iterations);
+        void setMinOverlap (const int overlap);
+        void setMaxFitness ();
+
+        void setCorrespondenceRejectionFactor (const double factor);
+        void setMaxAngle (const int angle);
+
       private:
 
         typedef pcl::ihs::InHandScanner InHandScanner;

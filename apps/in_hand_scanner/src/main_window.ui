@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1000</width>
-    <height>500</height>
+    <height>600</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -44,7 +44,7 @@
         </size>
        </property>
        <property name="currentIndex">
-        <number>0</number>
+        <number>1</number>
        </property>
        <widget class="QWidget" name="page_input_data_processing">
         <property name="geometry">
@@ -52,7 +52,7 @@
           <x>0</x>
           <y>0</y>
           <width>300</width>
-          <height>348</height>
+          <height>448</height>
          </rect>
         </property>
         <attribute name="label">
@@ -65,23 +65,16 @@
             <string>Crop coordinates</string>
            </property>
            <layout class="QGridLayout" name="gridLayout_3">
-            <item row="0" column="1">
-             <widget class="QSpinBox" name="spinBox_x_min">
+            <item row="1" column="3">
+             <widget class="QSpinBox" name="spinBox_y_max">
               <property name="minimum">
                <number>-100</number>
               </property>
               <property name="maximum">
                <number>100</number>
               </property>
-             </widget>
-            </item>
-            <item row="2" column="2">
-             <widget class="QLabel" name="label_z_max">
-              <property name="text">
-               <string>z max</string>
-              </property>
-              <property name="buddy">
-               <cstring>spinBox_z_max</cstring>
+              <property name="singleStep">
+               <number>5</number>
               </property>
              </widget>
             </item>
@@ -95,6 +88,19 @@
               </property>
              </widget>
             </item>
+            <item row="0" column="3">
+             <widget class="QSpinBox" name="spinBox_x_max">
+              <property name="minimum">
+               <number>-100</number>
+              </property>
+              <property name="maximum">
+               <number>100</number>
+              </property>
+              <property name="singleStep">
+               <number>5</number>
+              </property>
+             </widget>
+            </item>
             <item row="1" column="1">
              <widget class="QSpinBox" name="spinBox_y_min">
               <property name="minimum">
@@ -102,6 +108,55 @@
               </property>
               <property name="maximum">
                <number>100</number>
+              </property>
+              <property name="singleStep">
+               <number>5</number>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="QLabel" name="label_x_min">
+              <property name="text">
+               <string>x min</string>
+              </property>
+              <property name="buddy">
+               <cstring>spinBox_x_min</cstring>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="3">
+             <widget class="QSpinBox" name="spinBox_z_max">
+              <property name="minimum">
+               <number>0</number>
+              </property>
+              <property name="maximum">
+               <number>1000</number>
+              </property>
+              <property name="singleStep">
+               <number>5</number>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QSpinBox" name="spinBox_x_min">
+              <property name="minimum">
+               <number>-100</number>
+              </property>
+              <property name="maximum">
+               <number>100</number>
+              </property>
+              <property name="singleStep">
+               <number>5</number>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="0" colspan="2">
+             <widget class="QLabel" name="label_xyz_erode_size">
+              <property name="text">
+               <string>Erode size</string>
+              </property>
+              <property name="buddy">
+               <cstring>spinBox_xyz_erode_size</cstring>
               </property>
              </widget>
             </item>
@@ -133,6 +188,9 @@
               <property name="maximum">
                <number>1000</number>
               </property>
+              <property name="singleStep">
+               <number>5</number>
+              </property>
              </widget>
             </item>
             <item row="1" column="2">
@@ -145,43 +203,20 @@
               </property>
              </widget>
             </item>
-            <item row="0" column="3">
-             <widget class="QSpinBox" name="spinBox_x_max">
-              <property name="minimum">
-               <number>-100</number>
-              </property>
-              <property name="maximum">
-               <number>100</number>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="3">
-             <widget class="QSpinBox" name="spinBox_z_max">
-              <property name="minimum">
-               <number>0</number>
-              </property>
-              <property name="maximum">
-               <number>1000</number>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="3">
-             <widget class="QSpinBox" name="spinBox_y_max">
-              <property name="minimum">
-               <number>-100</number>
-              </property>
-              <property name="maximum">
-               <number>100</number>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="0">
-             <widget class="QLabel" name="label_x_min">
+            <item row="2" column="2">
+             <widget class="QLabel" name="label_z_max">
               <property name="text">
-               <string>x min</string>
+               <string>z max</string>
               </property>
               <property name="buddy">
-               <cstring>spinBox_x_min</cstring>
+               <cstring>spinBox_z_max</cstring>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="2" colspan="2">
+             <widget class="QSpinBox" name="spinBox_xyz_erode_size">
+              <property name="maximum">
+               <number>50</number>
               </property>
              </widget>
             </item>
@@ -194,30 +229,10 @@
             <string>Color segmentation</string>
            </property>
            <layout class="QGridLayout" name="gridLayout">
-            <item row="0" column="1">
-             <widget class="QSpinBox" name="spinBox_h_min">
+            <item row="0" column="3">
+             <widget class="QSpinBox" name="spinBox_h_max">
               <property name="maximum">
                <number>360</number>
-              </property>
-              <property name="singleStep">
-               <number>10</number>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="2">
-             <widget class="QLabel" name="label_h_max">
-              <property name="text">
-               <string>H max</string>
-              </property>
-              <property name="buddy">
-               <cstring>spinBox_h_max</cstring>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="1">
-             <widget class="QSpinBox" name="spinBox_s_min">
-              <property name="maximum">
-               <number>100</number>
               </property>
               <property name="singleStep">
                <number>10</number>
@@ -234,60 +249,10 @@
               </property>
              </widget>
             </item>
-            <item row="2" column="0">
-             <widget class="QLabel" name="label_v_min">
-              <property name="text">
-               <string>V min</string>
-              </property>
-              <property name="buddy">
-               <cstring>spinBox_v_min</cstring>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="1">
-             <widget class="QSpinBox" name="spinBox_v_min">
+            <item row="1" column="1">
+             <widget class="QSpinBox" name="spinBox_s_min">
               <property name="maximum">
                <number>100</number>
-              </property>
-              <property name="singleStep">
-               <number>10</number>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="2">
-             <widget class="QLabel" name="label_v_max">
-              <property name="text">
-               <string>V max</string>
-              </property>
-              <property name="buddy">
-               <cstring>spinBox_v_max</cstring>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="3">
-             <widget class="QSpinBox" name="spinBox_v_max">
-              <property name="maximum">
-               <number>100</number>
-              </property>
-              <property name="singleStep">
-               <number>10</number>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="3">
-             <widget class="QSpinBox" name="spinBox_s_max">
-              <property name="maximum">
-               <number>100</number>
-              </property>
-              <property name="singleStep">
-               <number>10</number>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="3">
-             <widget class="QSpinBox" name="spinBox_h_max">
-              <property name="maximum">
-               <number>360</number>
               </property>
               <property name="singleStep">
                <number>10</number>
@@ -304,6 +269,16 @@
               </property>
              </widget>
             </item>
+            <item row="0" column="2">
+             <widget class="QLabel" name="label_h_max">
+              <property name="text">
+               <string>H max</string>
+              </property>
+              <property name="buddy">
+               <cstring>spinBox_h_max</cstring>
+              </property>
+             </widget>
+            </item>
             <item row="1" column="0">
              <widget class="QLabel" name="label_s_min">
               <property name="text">
@@ -314,10 +289,87 @@
               </property>
              </widget>
             </item>
-            <item row="3" column="0" colspan="3">
-             <widget class="QCheckBox" name="checkBox_inverted">
+            <item row="2" column="1">
+             <widget class="QSpinBox" name="spinBox_v_min">
+              <property name="maximum">
+               <number>100</number>
+              </property>
+              <property name="singleStep">
+               <number>10</number>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="QLabel" name="label_v_min">
+              <property name="text">
+               <string>V min</string>
+              </property>
+              <property name="buddy">
+               <cstring>spinBox_v_min</cstring>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="3">
+             <widget class="QSpinBox" name="spinBox_v_max">
+              <property name="maximum">
+               <number>100</number>
+              </property>
+              <property name="singleStep">
+               <number>10</number>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QSpinBox" name="spinBox_h_min">
+              <property name="maximum">
+               <number>360</number>
+              </property>
+              <property name="singleStep">
+               <number>10</number>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="2">
+             <widget class="QLabel" name="label_v_max">
+              <property name="text">
+               <string>V max</string>
+              </property>
+              <property name="buddy">
+               <cstring>spinBox_v_max</cstring>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="3">
+             <widget class="QSpinBox" name="spinBox_s_max">
+              <property name="maximum">
+               <number>100</number>
+              </property>
+              <property name="singleStep">
+               <number>10</number>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="0" colspan="3">
+             <widget class="QCheckBox" name="checkBox_color_segmentation_inverted">
               <property name="text">
                <string>Inverted</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="0" colspan="2">
+             <widget class="QLabel" name="label_hsv_dilate_size">
+              <property name="text">
+               <string>Dilate size</string>
+              </property>
+              <property name="buddy">
+               <cstring>spinBox_hsv_dilate_size</cstring>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="2" colspan="2">
+             <widget class="QSpinBox" name="spinBox_hsv_dilate_size">
+              <property name="maximum">
+               <number>50</number>
               </property>
              </widget>
             </item>
@@ -334,7 +386,9 @@
            <zorder>label_v_min</zorder>
            <zorder>spinBox_s_max</zorder>
            <zorder>spinBox_s_min</zorder>
-           <zorder>checkBox_inverted</zorder>
+           <zorder>checkBox_color_segmentation_inverted</zorder>
+           <zorder>label_hsv_dilate_size</zorder>
+           <zorder>spinBox_hsv_dilate_size</zorder>
           </widget>
          </item>
          <item>
@@ -358,7 +412,7 @@
           <x>0</x>
           <y>0</y>
           <width>300</width>
-          <height>348</height>
+          <height>448</height>
          </rect>
         </property>
         <attribute name="label">
@@ -368,7 +422,7 @@
          <item>
           <widget class="QGroupBox" name="groupBox_convergence">
            <property name="title">
-            <string>Convergence</string>
+            <string>Convergence and failure criteria</string>
            </property>
            <layout class="QGridLayout" name="gridLayout_4">
             <item row="0" column="0">
@@ -376,13 +430,7 @@
               <property name="text">
                <string>Epsilon</string>
               </property>
-              <property name="buddy">
-               <cstring>doubleSpinBox_epsilon</cstring>
-              </property>
              </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="QDoubleSpinBox" name="doubleSpinBox_epsilon"/>
             </item>
             <item row="1" column="0">
              <widget class="QLabel" name="label_max_iterations">
@@ -390,12 +438,9 @@
                <string>Max iterations</string>
               </property>
               <property name="buddy">
-               <cstring>doubleSpinBox_max_iterations</cstring>
+               <cstring>spinBox_max_iterations</cstring>
               </property>
              </widget>
-            </item>
-            <item row="1" column="1">
-             <widget class="QDoubleSpinBox" name="doubleSpinBox_max_iterations"/>
             </item>
             <item row="2" column="0">
              <widget class="QLabel" name="label_min_overlap">
@@ -403,25 +448,39 @@
                <string>Min overlap</string>
               </property>
               <property name="buddy">
-               <cstring>doubleSpinBox_min_overlap</cstring>
+               <cstring>spinBox_min_overlap</cstring>
               </property>
              </widget>
-            </item>
-            <item row="2" column="1">
-             <widget class="QDoubleSpinBox" name="doubleSpinBox_min_overlap"/>
             </item>
             <item row="3" column="0">
              <widget class="QLabel" name="label_max_fitness">
               <property name="text">
                <string>Max fitness</string>
               </property>
-              <property name="buddy">
-               <cstring>doubleSpinBox_max_fitness</cstring>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QSpinBox" name="spinBox_max_iterations">
+              <property name="minimum">
+               <number>1</number>
+              </property>
+              <property name="maximum">
+               <number>500</number>
               </property>
              </widget>
             </item>
+            <item row="2" column="1">
+             <widget class="QSpinBox" name="spinBox_min_overlap">
+              <property name="maximum">
+               <number>100</number>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QLineEdit" name="lineEdit_epsilon"/>
+            </item>
             <item row="3" column="1">
-             <widget class="QDoubleSpinBox" name="doubleSpinBox_max_fitness"/>
+             <widget class="QLineEdit" name="lineEdit_max_fitness"/>
             </item>
            </layout>
           </widget>
@@ -433,30 +492,41 @@
            </property>
            <layout class="QGridLayout" name="gridLayout_2">
             <item row="0" column="0">
-             <widget class="QLabel" name="label_factor">
+             <widget class="QLabel" name="label_correspondence_rejection_factor">
               <property name="text">
                <string>Factor</string>
               </property>
               <property name="buddy">
-               <cstring>doubleSpinBox_factor</cstring>
+               <cstring>doubleSpinBox_correspondence_rejection_factor</cstring>
               </property>
              </widget>
             </item>
             <item row="0" column="1">
-             <widget class="QDoubleSpinBox" name="doubleSpinBox_factor"/>
+             <widget class="QDoubleSpinBox" name="doubleSpinBox_correspondence_rejection_factor">
+              <property name="minimum">
+               <double>1.000000000000000</double>
+              </property>
+              <property name="maximum">
+               <double>100.000000000000000</double>
+              </property>
+             </widget>
             </item>
             <item row="1" column="0">
-             <widget class="QLabel" name="label_normals_threshold">
+             <widget class="QLabel" name="label_max_angle">
               <property name="text">
-               <string>Normals threshold</string>
+               <string>Max angle</string>
               </property>
               <property name="buddy">
-               <cstring>doubleSpinBox_normals_threshold</cstring>
+               <cstring>spinBox_max_angle</cstring>
               </property>
              </widget>
             </item>
             <item row="1" column="1">
-             <widget class="QDoubleSpinBox" name="doubleSpinBox_normals_threshold"/>
+             <widget class="QSpinBox" name="spinBox_max_angle">
+              <property name="maximum">
+               <number>180</number>
+              </property>
+             </widget>
             </item>
            </layout>
           </widget>
@@ -482,7 +552,7 @@
           <x>0</x>
           <y>0</y>
           <width>300</width>
-          <height>348</height>
+          <height>448</height>
          </rect>
         </property>
         <attribute name="label">
@@ -503,19 +573,21 @@
   <tabstop>spinBox_y_max</tabstop>
   <tabstop>spinBox_z_min</tabstop>
   <tabstop>spinBox_z_max</tabstop>
+  <tabstop>spinBox_xyz_erode_size</tabstop>
   <tabstop>spinBox_h_min</tabstop>
   <tabstop>spinBox_h_max</tabstop>
   <tabstop>spinBox_s_min</tabstop>
   <tabstop>spinBox_s_max</tabstop>
   <tabstop>spinBox_v_min</tabstop>
   <tabstop>spinBox_v_max</tabstop>
-  <tabstop>checkBox_inverted</tabstop>
-  <tabstop>doubleSpinBox_epsilon</tabstop>
-  <tabstop>doubleSpinBox_max_iterations</tabstop>
-  <tabstop>doubleSpinBox_min_overlap</tabstop>
-  <tabstop>doubleSpinBox_max_fitness</tabstop>
-  <tabstop>doubleSpinBox_factor</tabstop>
-  <tabstop>doubleSpinBox_normals_threshold</tabstop>
+  <tabstop>spinBox_hsv_dilate_size</tabstop>
+  <tabstop>checkBox_color_segmentation_inverted</tabstop>
+  <tabstop>lineEdit_epsilon</tabstop>
+  <tabstop>spinBox_max_iterations</tabstop>
+  <tabstop>spinBox_min_overlap</tabstop>
+  <tabstop>lineEdit_max_fitness</tabstop>
+  <tabstop>doubleSpinBox_correspondence_rejection_factor</tabstop>
+  <tabstop>spinBox_max_angle</tabstop>
  </tabstops>
  <resources/>
  <connections>
@@ -622,12 +694,12 @@
    <slot>setHMin(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>782</x>
-     <y>269</y>
+     <x>831</x>
+     <y>308</y>
     </hint>
     <hint type="destinationlabel">
-     <x>570</x>
-     <y>249</y>
+     <x>564</x>
+     <y>284</y>
     </hint>
    </hints>
   </connection>
@@ -638,12 +710,12 @@
    <slot>setHMax(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>942</x>
-     <y>260</y>
+     <x>960</x>
+     <y>308</y>
     </hint>
     <hint type="destinationlabel">
-     <x>668</x>
-     <y>259</y>
+     <x>662</x>
+     <y>295</y>
     </hint>
    </hints>
   </connection>
@@ -654,12 +726,12 @@
    <slot>setSMin(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>813</x>
-     <y>296</y>
+     <x>831</x>
+     <y>343</y>
     </hint>
     <hint type="destinationlabel">
-     <x>567</x>
-     <y>284</y>
+     <x>565</x>
+     <y>320</y>
     </hint>
    </hints>
   </connection>
@@ -670,12 +742,12 @@
    <slot>setSMax(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>925</x>
-     <y>296</y>
+     <x>960</x>
+     <y>343</y>
     </hint>
     <hint type="destinationlabel">
-     <x>668</x>
-     <y>296</y>
+     <x>664</x>
+     <y>332</y>
     </hint>
    </hints>
   </connection>
@@ -686,12 +758,12 @@
    <slot>setVMin(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>784</x>
-     <y>336</y>
+     <x>831</x>
+     <y>378</y>
     </hint>
     <hint type="destinationlabel">
      <x>569</x>
-     <y>319</y>
+     <y>355</y>
     </hint>
    </hints>
   </connection>
@@ -702,28 +774,156 @@
    <slot>setVMax(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>935</x>
-     <y>323</y>
+     <x>960</x>
+     <y>378</y>
     </hint>
     <hint type="destinationlabel">
-     <x>667</x>
-     <y>331</y>
+     <x>666</x>
+     <y>368</y>
     </hint>
    </hints>
   </connection>
   <connection>
-   <sender>checkBox_inverted</sender>
+   <sender>checkBox_color_segmentation_inverted</sender>
    <signal>toggled(bool)</signal>
    <receiver>MainWindow</receiver>
    <slot>setColorSegmentationInverted(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>717</x>
-     <y>364</y>
+     <x>902</x>
+     <y>440</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>669</x>
+     <y>432</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox_xyz_erode_size</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>setXYZErodeSize(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>875</x>
+     <y>225</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>666</x>
+     <y>225</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox_hsv_dilate_size</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>setHSVDilateSize(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>880</x>
+     <y>397</y>
     </hint>
     <hint type="destinationlabel">
      <x>668</x>
-     <y>369</y>
+     <y>398</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>lineEdit_epsilon</sender>
+   <signal>editingFinished()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>setEpsilon()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>836</x>
+     <y>146</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>467</x>
+     <y>146</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox_max_iterations</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>setMaxIterations(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>845</x>
+     <y>178</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>468</x>
+     <y>179</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox_min_overlap</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>setMinOverlap(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>879</x>
+     <y>221</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>470</x>
+     <y>217</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>lineEdit_max_fitness</sender>
+   <signal>editingFinished()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>setMaxFitness()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>850</x>
+     <y>248</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>471</x>
+     <y>253</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>doubleSpinBox_correspondence_rejection_factor</sender>
+   <signal>valueChanged(double)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>setCorrespondenceRejectionFactor(double)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>887</x>
+     <y>327</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>470</x>
+     <y>313</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBox_max_angle</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>setMaxAngle(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>931</x>
+     <y>356</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>467</x>
+     <y>355</y>
     </hint>
    </hints>
   </connection>
@@ -742,5 +942,13 @@
   <slot>setVMin(int)</slot>
   <slot>setVMax(int)</slot>
   <slot>setColorSegmentationInverted(bool)</slot>
+  <slot>setXYZErodeSize(int)</slot>
+  <slot>setHSVDilateSize(int)</slot>
+  <slot>setEpsilon()</slot>
+  <slot>setMaxIterations(int)</slot>
+  <slot>setMinOverlap(int)</slot>
+  <slot>setMaxFitness()</slot>
+  <slot>setCorrespondenceRejectionFactor(double)</slot>
+  <slot>setMaxAngle(int)</slot>
  </slots>
 </ui>

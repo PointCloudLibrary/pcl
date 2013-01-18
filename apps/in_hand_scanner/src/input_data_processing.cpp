@@ -63,7 +63,10 @@ pcl::ihs::InputDataProcessing::InputDataProcessing ()
     v_min_ (  0.2f),
     v_max_ (  1.f),
 
-    hsv_inverted_ (true)
+    hsv_inverted_ (false),
+
+    size_dilate_ (3),
+    size_erode_  (3)
 {
   // Normal estimation
   normal_estimation_->setNormalEstimationMethod (NormalEstimation::AVERAGE_3D_GRADIENT);
@@ -83,71 +86,122 @@ pcl::ihs::InputDataProcessing::segment (const CloudXYZRGBAConstPtr& cloud_in,
     std::cerr << "ERROR in input_data_processing.cpp: Input cloud is invalid.\n";
     return (false);
   }
-
-  const unsigned int n_threads = 5;
-  const unsigned int w         = cloud_in->width;
-  const unsigned int h         = cloud_in->height;
-
-  if (h % n_threads != 0)
+  if (!cloud_in->isOrganized ())
   {
-    std::cerr << "ERROR in input_data_processing.cpp: Input cloud must have a size multiple of " << n_threads << ".\n";
+    std::cerr << "ERROR in input_data_processing.cpp: Input cloud must be organized.\n";
     return (false);
   }
+
   if (!cloud_out)       cloud_out       = CloudXYZRGBNormalPtr (new CloudXYZRGBNormal ());
   if (!cloud_discarded) cloud_discarded = CloudXYZRGBNormalPtr (new CloudXYZRGBNormal ());
+
+  const unsigned int width  = cloud_in->width;
+  const unsigned int height = cloud_in->height;
 
   // Calculate the normals
   CloudNormalsPtr cloud_normals (new CloudNormals ());
   normal_estimation_->setInputCloud (cloud_in);
   normal_estimation_->compute (*cloud_normals);
 
-  // Copy the input cloud and normals into the output cloud.
-  // While we are already iterating over the whole input we can also remove some points.
-  PointXYZRGBNormal invalid_pt;
-  invalid_pt.x = invalid_pt.y = invalid_pt.z =
-      std::numeric_limits <float>::quiet_NaN ();
-  invalid_pt.normal_x = invalid_pt.normal_y = invalid_pt.normal_z =
-      std::numeric_limits <float>::quiet_NaN ();
-  invalid_pt.data   [3] = 1.f;
-  invalid_pt.data_n [3] = 0.f;
+  // Get the XYZ and HSV masks.
+  MatrixXb xyz_mask (height, width);
+  MatrixXb hsv_mask (height, width);
 
-  pcl::PointXYZRGB pt_discarded;
+  // cm -> m for the comparison
+  const float x_min = .01f * x_min_;
+  const float x_max = .01f * x_max_;
+  const float y_min = .01f * y_min_;
+  const float y_max = .01f * y_max_;
+  const float z_min = .01f * z_min_;
+  const float z_max = .01f * z_max_;
+
+  float h, s, v;
+  for (MatrixXb::Index r=0; r<xyz_mask.rows (); ++r)
+  {
+    for (MatrixXb::Index c=0; c<xyz_mask.cols (); ++c)
+    {
+      const PointXYZRGBA& xyzrgb = (*cloud_in)      [r*width + c];
+      const Normal&       normal = (*cloud_normals) [r*width + c];
+
+      xyz_mask (r, c) = hsv_mask (r, c) = false;
+
+      if (!boost::math::isnan (xyzrgb.x) && !boost::math::isnan (normal.normal_x) &&
+          xyzrgb.x  >= x_min             && xyzrgb.x  <= x_max                    &&
+          xyzrgb.y  >= y_min             && xyzrgb.y  <= y_max                    &&
+          xyzrgb.z  >= z_min             && xyzrgb.z  <= z_max)
+      {
+        xyz_mask (r, c) = true;
+
+        this->RGBToHSV (xyzrgb.r, xyzrgb.g, xyzrgb.b, h, s, v);
+        if (h >= h_min_ && h <= h_max_ && s >= s_min_ && s <= s_max_ && v >= v_min_ && v <= v_max_)
+        {
+          if (!hsv_inverted_) hsv_mask (r, c) = true;
+        }
+        else
+        {
+          if (hsv_inverted_) hsv_mask (r, c) = true;
+        }
+      }
+    }
+  }
+
+  this->erode  (xyz_mask, size_erode_);
+  this->dilate (hsv_mask, size_dilate_);
+
+  // Copy the normals into the clouds.
+  cloud_out->reserve (cloud_in->size ());
+  cloud_discarded->reserve (cloud_in->size ());
+
+  pcl::PointXYZRGBNormal pt_out, pt_discarded;
   pt_discarded.r = 50;
   pt_discarded.g = 50;
   pt_discarded.b = 230;
 
-  cloud_out->resize (cloud_in->size ());
-  cloud_out->header   = cloud_in->header;
-  cloud_out->width    = w;
-  cloud_out->height   = h;
-  cloud_out->is_dense = false;
-  *cloud_discarded    = *cloud_out;
+  PointXYZRGBA xyzrgb;
+  Normal       normal;
 
-  const unsigned int dH = h / n_threads;
-  unsigned int offset;
-
-  typedef boost::thread              Thread;
-  typedef boost::shared_ptr <Thread> ThreadPtr;
-  typedef std::vector <ThreadPtr>    ThreadPtrVec;
-  ThreadPtrVec threads;
-  threads.reserve (n_threads);
-
-  for (unsigned int thread=0; thread<n_threads; ++thread)
+  for (MatrixXb::Index r=0; r<xyz_mask.rows (); ++r)
   {
-    offset = thread * dH * w;
-    const PointXYZRGBA* p_in  = &cloud_in->front ()        + offset;
-    const Normal*       p_n   = &cloud_normals->front ()   + offset;
-    PointXYZRGBNormal*  p_out = &cloud_out->front ()       + offset;
-    PointXYZRGBNormal*  p_dis = &cloud_discarded->front () + offset;
+    for (MatrixXb::Index c=0; c<xyz_mask.cols (); ++c)
+    {
+      if (xyz_mask (r, c))
+      {
+        xyzrgb = (*cloud_in)      [r*width + c];
+        normal = (*cloud_normals) [r*width + c];
 
-    threads.push_back (ThreadPtr (new Thread (boost::bind (&pcl::ihs::InputDataProcessing::threadSegmentation, this,
-                                                           p_in, p_n, invalid_pt, pt_discarded.rgba, w, dH, p_out, p_dis))));
+        // m -> cm
+        xyzrgb.getVector3fMap () = 100.f * xyzrgb.getVector3fMap ();
+
+        if (hsv_mask (r, c))
+        {
+          pt_discarded.getVector4fMap ()       = xyzrgb.getVector4fMap ();
+          pt_discarded.getNormalVector4fMap () = normal.getNormalVector4fMap ();
+
+          pt_out.x = std::numeric_limits <float>::quiet_NaN ();
+        }
+        else
+        {
+          pt_out.getVector4fMap ()       = xyzrgb.getVector4fMap ();
+          pt_out.getNormalVector4fMap () = normal.getNormalVector4fMap ();
+          pt_out.rgba                    = xyzrgb.rgba;
+
+          pt_discarded.x = std::numeric_limits <float>::quiet_NaN ();
+        }
+      }
+      else
+      {
+        pt_out.x       = std::numeric_limits <float>::quiet_NaN ();
+        pt_discarded.x = std::numeric_limits <float>::quiet_NaN ();
+      }
+
+      cloud_out->push_back       (pt_out);
+      cloud_discarded->push_back (pt_discarded);
+    }
   }
 
-  for (ThreadPtrVec::iterator it=threads.begin (); it!=threads.end (); ++it)
-  {
-    (*it)->join ();
-  }
+  cloud_out->width    = cloud_discarded->width    = width;
+  cloud_out->height   = cloud_discarded->height   = height;
+  cloud_out->is_dense = cloud_discarded->is_dense = false;
 
   return (true);
 }
@@ -174,22 +228,17 @@ pcl::ihs::InputDataProcessing::calculateNormals (const CloudXYZRGBAConstPtr& clo
 
   // Copy the input cloud and normals into the output cloud.
   cloud_out->resize (cloud_in->size ());
-  cloud_out->header              = cloud_in->header;
-  cloud_out->width               = cloud_in->width;
-  cloud_out->height              = cloud_in->height;
-  cloud_out->is_dense            = false;
-  cloud_out->sensor_origin_      = cloud_in->sensor_origin_;
-  cloud_out->sensor_orientation_ = cloud_in->sensor_orientation_;
+  cloud_out->width    = cloud_in->width;
+  cloud_out->height   = cloud_in->height;
+  cloud_out->is_dense = false;
 
   CloudXYZRGBA::const_iterator it_in  = cloud_in->begin ();
   CloudNormals::const_iterator it_n   = cloud_normals->begin ();
   CloudXYZRGBNormal::iterator  it_out = cloud_out->begin ();
 
   PointXYZRGBNormal invalid_pt;
-  invalid_pt.x = invalid_pt.y = invalid_pt.z =
-      std::numeric_limits <float>::quiet_NaN ();
-  invalid_pt.normal_x = invalid_pt.normal_y = invalid_pt.normal_z =
-      std::numeric_limits <float>::quiet_NaN ();
+  invalid_pt.x        = invalid_pt.y        = invalid_pt.z        = std::numeric_limits <float>::quiet_NaN ();
+  invalid_pt.normal_x = invalid_pt.normal_y = invalid_pt.normal_z = std::numeric_limits <float>::quiet_NaN ();
   invalid_pt.data   [3] = 1.f;
   invalid_pt.data_n [3] = 0.f;
 
@@ -199,6 +248,7 @@ pcl::ihs::InputDataProcessing::calculateNormals (const CloudXYZRGBAConstPtr& clo
     {
       // m -> cm
       it_out->getVector4fMap ()       = 100.f * it_in->getVector4fMap ();
+      it_out->data [3]                = 1.f;
       it_out->rgba                    = it_in->rgba;
       it_out->getNormalVector4fMap () = it_n->getNormalVector4fMap ();
     }
@@ -214,85 +264,56 @@ pcl::ihs::InputDataProcessing::calculateNormals (const CloudXYZRGBAConstPtr& clo
 ////////////////////////////////////////////////////////////////////////////////
 
 void
-pcl::ihs::InputDataProcessing::threadSegmentation (const PointXYZRGBA*const p_pt_in,
-                                                   const Normal*const       p_n_in,
-                                                   const PointXYZRGBNormal& invalid_pt,
-                                                   const uint32_t           color_discarded,
-                                                   const unsigned int       width,
-                                                   const unsigned int       n_rows,
-                                                   PointXYZRGBNormal*const  p_pt_out,
-                                                   PointXYZRGBNormal*const  p_pt_discarded) const
+pcl::ihs::InputDataProcessing::erode (MatrixXb& mask, const int k) const
 {
-  unsigned int offset;
-  Eigen::Vector3f xyz;
-  float h, s, v;
-  bool between_hsv;
+  mask = manhattan (mask, false).array () > k;
+}
 
-  for (unsigned int r=0; r<n_rows; ++r)
+////////////////////////////////////////////////////////////////////////////////
+
+void
+pcl::ihs::InputDataProcessing::dilate (MatrixXb& mask, const int k) const
+{
+  mask = manhattan (mask, true).array () <= k;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+pcl::ihs::InputDataProcessing::MatrixXi
+pcl::ihs::InputDataProcessing::manhattan (const MatrixXb& mat, const bool comp) const
+{
+  MatrixXi dist (mat.rows (), mat.cols ());
+  const int d_max = dist.rows () + dist.cols ();
+
+  // Forward
+  for (MatrixXi::Index r = 0; r < dist.rows (); ++r)
   {
-    for (unsigned int c=0; c<width; ++c)
+    for (MatrixXi::Index c = 0; c < dist.cols (); ++c)
     {
-      offset = r*width + c;
-      const PointXYZRGBA& pt_in  = *(p_pt_in        + offset);
-      const Normal&       n_in   = *(p_n_in         + offset);
-      PointXYZRGBNormal&  pt_out = *(p_pt_out       + offset);
-      PointXYZRGBNormal&  pt_dis = *(p_pt_discarded + offset);
-
-      // m -> cm
-      xyz = 100.f * pt_in.getVector3fMap ();
-
-      if (!boost::math::isnan (pt_in.x) && !boost::math::isnan (n_in.normal_x) &&
-          xyz.x () >= x_min_            && xyz.x () <= x_max_                  &&
-          xyz.y () >= y_min_            && xyz.y () <= y_max_                  &&
-          xyz.z () >= z_min_            && xyz.z () <= z_max_)
+      if (mat (r, c) == comp)
       {
-        this->RGBToHSV (pt_in.r, pt_in.g, pt_in.b, h, s, v);
-
-        if (h >= h_min_ && h <= h_max_ && s >= s_min_ && s <= s_max_ && v >= v_min_ && v <= v_max_)
-          between_hsv = true;
-        else
-          between_hsv = false;
-
-        if (hsv_inverted_ && between_hsv)
-        {
-          pt_out = invalid_pt;
-
-          pt_dis.getVector3fMap ()       = xyz;
-          pt_dis.getNormalVector4fMap () = n_in.getNormalVector4fMap ();
-          pt_dis.rgba                    = color_discarded;
-        }
-        else if (hsv_inverted_ && !between_hsv)
-        {
-          pt_out.getVector3fMap ()       = xyz;
-          pt_out.getNormalVector4fMap () = n_in.getNormalVector4fMap ();
-          pt_out.rgba                    = pt_in.rgba;
-
-          pt_dis = invalid_pt;
-        }
-        else if (!hsv_inverted_ && between_hsv)
-        {
-          pt_out.getVector3fMap ()       = xyz;
-          pt_out.getNormalVector4fMap () = n_in.getNormalVector4fMap ();
-          pt_out.rgba                    = pt_in.rgba;
-
-          pt_dis = invalid_pt;
-        }
-        else // !hsv_inverted_ && !between_hsv
-        {
-          pt_out = invalid_pt;
-
-          pt_dis.getVector3fMap ()       = xyz;
-          pt_dis.getNormalVector4fMap () = n_in.getNormalVector4fMap ();
-          pt_dis.rgba                    = color_discarded;
-        }
+        dist (r, c) = 0;
       }
       else
       {
-        pt_out = invalid_pt;
-        pt_dis = invalid_pt;
+        dist (r, c) = d_max;
+        if (r > 0) dist (r, c) = std::min (dist (r, c), dist (r-1, c  ) + 1);
+        if (c > 0) dist (r, c) = std::min (dist (r, c), dist (r  , c-1) + 1);
       }
     }
   }
+
+  // Backward
+  for (int r = dist.rows () - 1; r >= 0; --r)
+  {
+    for (int c = dist.cols () - 1; c >= 0; --c)
+    {
+      if (r < dist.rows ()-1) dist (r, c) = std::min (dist (r, c), dist (r+1, c  ) + 1);
+      if (c < dist.cols ()-1) dist (r, c) = std::min (dist (r, c), dist (r  , c+1) + 1);
+    }
+  }
+
+  return (dist);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

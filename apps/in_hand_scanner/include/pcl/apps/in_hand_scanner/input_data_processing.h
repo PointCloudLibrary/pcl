@@ -42,6 +42,7 @@
 #define PCL_APPS_IN_HAND_SCANNER_INPUT_DATA_PROCESSING_H
 
 #include <pcl/pcl_exports.h>
+#include <pcl/apps/in_hand_scanner/eigen.h>
 #include <pcl/apps/in_hand_scanner/common_types.h>
 #include <pcl/apps/in_hand_scanner/utils.h>
 
@@ -107,13 +108,13 @@ namespace pcl
                           CloudXYZRGBNormalPtr&       cloud_out) const;
 
         /** @{ */
-        /** \brief Everything outside of X - Y - Z - min / max is discarded. The unit is cm.*/
-        inline void setXMin (const float x_min) {x_min_ = x_min;}
-        inline void setXMax (const float x_max) {x_max_ = x_max;}
-        inline void setYMin (const float y_min) {y_min_ = y_min;}
-        inline void setYMax (const float y_max) {y_max_ = y_max;}
-        inline void setZMin (const float z_min) {z_min_ = z_min;}
-        inline void setZMax (const float z_max) {z_max_ = z_max;}
+        /** \brief Everything outside of X - Y - Z - min / max is discarded. The unit is cm. The min values must be smaller than max values. */
+        inline void setXMin (const float x_min) {if (x_min < x_max_) x_min_ = x_min;}
+        inline void setXMax (const float x_max) {if (x_max > x_min_) x_max_ = x_max;}
+        inline void setYMin (const float y_min) {if (y_min < y_max_) y_min_ = y_min;}
+        inline void setYMax (const float y_max) {if (y_max > y_min_) y_max_ = y_max;}
+        inline void setZMin (const float z_min) {if (z_min < z_max_) z_min_ = z_min;}
+        inline void setZMax (const float z_max) {if (z_max > z_min_) z_max_ = z_max;}
 
         inline float getXMin () const {return (x_min_);}
         inline float getXMax () const {return (x_max_);}
@@ -124,7 +125,7 @@ namespace pcl
         /** @} */
 
         /** @{ */
-        /** \brief Simple color segmentation in the HSV color space. Everything outside of H - S - V min / max is discarded. H must be in the range 0 and 360, S and V in the range 0 and 1.
+        /** \brief Simple color segmentation in the HSV color space. Everything inside of H - S - V min / max is discarded. H must be in the range 0 and 360, S and V in the range 0 and 1.
           * \note If you set values outside of the allowed range the member variables are clamped to the next best value. E.g. H is set to 0 if you pass -1.
           */
         inline void setHMin (const float h_min) {h_min_ = pcl::ihs::clamp (h_min, 0.f, 360.f);}
@@ -143,9 +144,21 @@ namespace pcl
         /** @} */
 
         /** @{ */
-        /** \brief If true the color values outside of H - S - V min / max are accepted instead of discarded. */
+        /** \brief If true the color values inside of H - S - V min / max are accepted instead of discarded. */
         inline void setColorSegmentationInverted (const bool hsv_inverted) {hsv_inverted_ = hsv_inverted;}
-        inline bool getColorSegmentationInverted () const                  {return (hsv_inverted_);}
+        inline bool getColorSegmentationInverted () const {return (hsv_inverted_);}
+        /** @} */
+
+        /** @{ */
+        /** \brief The XYZ mask is eroded with a kernel of this size. */
+        inline void setXYZErodeSize (const unsigned int size) {size_erode_ = size;}
+        inline unsigned int getXYZErodeSize () const {return (size_erode_);}
+        /** @} */
+
+        /** @{ */
+        /** \brief The HSV mask is dilated with a kernel of this size. */
+        inline void setHSVDilateSize (const unsigned int size) {size_dilate_ = size;}
+        inline unsigned int getHSVDilateSize () const {return (size_dilate_);}
         /** @} */
 
       private:
@@ -159,16 +172,29 @@ namespace pcl
         typedef boost::shared_ptr <NormalEstimation>                      NormalEstimationPtr;
         typedef boost::shared_ptr <const NormalEstimation>                NormalEstimationConstPtr;
 
-        /** \brief Thread that performs the segmentation. */
+        typedef Eigen::Matrix <bool, Eigen::Dynamic, Eigen::Dynamic> MatrixXb;
+        typedef Eigen::MatrixXi                                      MatrixXi;
+
+        /** \brief Erodes the input mask k times with a diamond shaped structuring element.
+          * \see http://ostermiller.org/dilate_and_erode.html
+          */
         void
-        threadSegmentation (const PointXYZRGBA*const p_pt_in,
-                            const Normal*const       p_n_in,
-                            const PointXYZRGBNormal& invalid_pt,
-                            const uint32_t           color_discarded,
-                            const unsigned int       width,
-                            const unsigned int       n_rows,
-                            PointXYZRGBNormal*const  p_pt_out,
-                            PointXYZRGBNormal*const  p_pt_discarded) const;
+        erode (MatrixXb& mask, const int k) const;
+
+        /** \brief Dilates the input mask k times with a diamond shaped structuring element.
+          * \see http://ostermiller.org/dilate_and_erode.html
+          */
+        void
+        dilate (MatrixXb& mask, const int k) const;
+
+        /** \brief Calculates the manhattan distance map for the input matrix.
+          * \param[in] mat  Input matrix.
+          * \param[in] comp Compared value. mat==comp will have zero distance.
+          * \return Matrix containing the distances to mat==comp
+          * \see http://ostermiller.org/dilate_and_erode.html
+          */
+        MatrixXi
+        manhattan (const MatrixXb& mat, const bool comp) const;
 
         /** \brief Conversion from the RGB to HSV color space. */
         void
@@ -200,6 +226,9 @@ namespace pcl
         float v_max_;
 
         bool hsv_inverted_;
+
+        unsigned int size_dilate_;
+        unsigned int size_erode_;
     };
   } // End namespace ihs
 } // End namespace pcl

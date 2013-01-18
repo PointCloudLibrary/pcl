@@ -43,10 +43,13 @@
 #include <limits>
 #include <cstdlib>
 #include <iomanip>
+#include <cmath>
 
 #include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/common/centroid.h>
 #include <pcl/common/time.h>
+
+#include <pcl/apps/in_hand_scanner/utils.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -58,9 +61,93 @@ pcl::ihs::ICP::ICP ()
     min_overlap_    (.75f),
     max_fitness_    (.1f),
 
-    squared_distance_threshold_factor_ (9.f),
-    normals_threshold_                 (.7f)
+    factor_ (9.f),
+    max_angle_ (45)
 {
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+void
+pcl::ihs::ICP::setEpsilon (const float epsilon)
+{
+  if (epsilon > 0) epsilon_ = epsilon;
+}
+
+float
+pcl::ihs::ICP::getEpsilon () const
+{
+  return (epsilon_);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+void
+pcl::ihs::ICP::setMaxIterations (const unsigned int max_iter)
+{
+  max_iterations_ = max_iter < 1 ? 1 : max_iter;
+}
+
+unsigned int
+pcl::ihs::ICP::getMaxIterations () const
+{
+  return (max_iterations_);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+void
+pcl::ihs::ICP::setMinOverlap (const float overlap)
+{
+  min_overlap_ = pcl::ihs::clamp (overlap, 0.f, 1.f);
+}
+
+float
+pcl::ihs::ICP::getMinOverlap () const
+{
+  return (min_overlap_);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+void
+pcl::ihs::ICP::setMaxFitness (const float fitness)
+{
+  if (fitness > 0) max_fitness_ = fitness;
+}
+
+float
+pcl::ihs::ICP::getMaxFitness () const
+{
+  return (max_fitness_);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+void
+pcl::ihs::ICP::setCorrespondenceRejectionFactor (const float factor)
+{
+  factor_ = factor < 1.f ? 1.f : factor;
+}
+
+float
+pcl::ihs::ICP::getCorrespondenceRejectionFactor () const
+{
+  return (factor_);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+void
+pcl::ihs::ICP::setMaxAngle (const float angle)
+{
+  max_angle_ = pcl::ihs::clamp (angle, 0.f, 180.f);
+}
+
+float
+pcl::ihs::ICP::getMaxAngle () const
+{
+  return (max_angle_);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -130,6 +217,7 @@ pcl::ihs::ICP::findTransformation (const MeshConstPtr&              mesh_model,
   // ICP main loop
   unsigned int iter = 1;
   PointNormal pt_d;
+  const float dot_min = std::cos (max_angle_ * 17.45329252e-3); // deg to rad
   while (true)
   {
     // Accumulated error
@@ -166,7 +254,7 @@ pcl::ihs::ICP::findTransformation (const MeshConstPtr&              mesh_model,
         const PointNormal& pt_m = cloud_model_selected->operator [] (index [0]);
 
         // Check the normals threshold
-        if (pt_m.getNormalVector4fMap ().dot (pt_d.getNormalVector4fMap ()) > normals_threshold_)
+        if (pt_m.getNormalVector4fMap ().dot (pt_d.getNormalVector4fMap ()) > dot_min)
         {
           squared_distance_sum += squared_distance [0];
 
@@ -189,7 +277,7 @@ pcl::ihs::ICP::findTransformation (const MeshConstPtr&              mesh_model,
     previous_fitness           = current_fitness;
     current_fitness            = squared_distance_sum / static_cast <float> (n_corr);
     delta_fitness              = std::abs (previous_fitness - current_fitness);
-    squared_distance_threshold = squared_distance_threshold_factor_ * current_fitness;
+    squared_distance_threshold = factor_ * current_fitness;
     overlap                    = static_cast <float> (n_corr) / static_cast <float> (n_data);
 
     //    std::cerr << "Iter: " << std::left << std::setw(3) << iter
@@ -284,7 +372,7 @@ pcl::ihs::ICP::findTransformation (const MeshConstPtr&              mesh_model,
 
 pcl::ihs::ICP::CloudNormalConstPtr
 pcl::ihs::ICP::selectModelPoints (const MeshConstPtr&    mesh_model,
-                                  const Eigen::Matrix4f& T_init_inv) const
+                                  const Eigen::Matrix4f& T_inv) const
 {
   const CloudNormalPtr cloud_model_out (new CloudNormal ());
   cloud_model_out->reserve (mesh_model->sizeVertices ());
@@ -294,7 +382,7 @@ pcl::ihs::ICP::selectModelPoints (const MeshConstPtr&    mesh_model,
   for (Mesh::VertexDataCloud::const_iterator it=cloud.begin (); it!=cloud.end (); ++it)
   {
     // Don't consider points that are facing away from the camera.
-    if ((T_init_inv * it->getNormalVector4fMap ()).z () < 0.f)
+    if ((T_inv * it->getNormalVector4fMap ()).z () < 0.f)
     {
       PointNormal pt;
       pt.getVector4fMap ()       = it->getVector4fMap ();
@@ -319,7 +407,7 @@ pcl::ihs::ICP::selectDataPoints (const CloudXYZRGBNormalConstPtr& cloud_data) co
   CloudXYZRGBNormal::const_iterator it_in = cloud_data->begin ();
   for (; it_in!=cloud_data->end (); ++it_in)
   {
-    if (pcl::isFinite (*it_in))
+    if (!boost::math::isnan (it_in->x))
     {
       PointNormal pt;
       pt.getVector4fMap ()       = it_in->getVector4fMap ();
