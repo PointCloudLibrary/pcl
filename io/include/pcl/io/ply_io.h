@@ -287,6 +287,13 @@ namespace pcl
       inline void
       vertexFloatPropertyCallback (pcl::io::ply::float32 value);
 
+      /** Callback function for an anonymous vertex uint property.
+        * Writes down a uint value in cloud data.
+        * param[in] value uint value parsed
+        */      
+      inline void
+      vertexUnsignedIntPropertyCallback (pcl::io::ply::uint32 value);
+
       /** Callback function for vertex RGB color.
         * This callback is in charge of packing red green and blue in a single int
         * before writing it down in cloud data.
@@ -302,6 +309,13 @@ namespace pcl
         */
       inline void
       vertexIntensityCallback (pcl::io::ply::uint8 intensity);
+
+      /** Callback function for vertex alpha.
+        * extracts RGB value, append alpha and put it back
+        * param[in] alpha
+        */
+      inline void
+      vertexAlphaCallback (pcl::io::ply::uint8 alpha);
       
       /** Callback function for origin x component.
         * param[in] value origin x value
@@ -394,6 +408,22 @@ namespace pcl
         */
       void
       appendFloatProperty (const std::string& name, const size_t& count = 1);
+
+      /** Amend float property from cloud fields identified by \a old_name renaming 
+        * it \a new_name.
+        * param[in] old_name property old name
+        * param[in] new_name property new name
+        */
+      void
+      amendFloatProperty (const std::string& old_name, const std::string& new_name);
+
+      /** Append an unsigned int property to the cloud fields.
+        * param[in] name property name
+        * param[in] count property count: 1 for scalar properties and higher for a 
+        * list property.
+        */
+      void
+      appendUnsignedIntProperty (const std::string& name, const size_t& count = 1);
 
       /** Callback function for the begin of vertex line */
       void

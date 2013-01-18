@@ -111,6 +111,29 @@ pcl::PLYReader::appendFloatProperty (const std::string& name, const size_t& size
   cloud_->point_step += static_cast<uint32_t> (pcl::getFieldSize (::sensor_msgs::PointField::FLOAT32) * size);
 }
 
+void
+pcl::PLYReader::amendFloatProperty (const std::string& old_name, const std::string& new_name)
+{
+  std::vector< ::sensor_msgs::PointField>::reverse_iterator finder = cloud_->fields.rbegin ();
+  for (; finder != cloud_->fields.rend (); ++finder)
+    if (finder->name == old_name)
+      break;
+  assert (finder != cloud_->fields.rend ());
+  finder->name = new_name;
+}
+
+void
+pcl::PLYReader::appendUnsignedIntProperty (const std::string& name, const size_t& size)
+{
+  cloud_->fields.push_back (::sensor_msgs::PointField ());
+  ::sensor_msgs::PointField &current_field = cloud_->fields.back ();
+  current_field.name = name;
+  current_field.offset = cloud_->point_step;
+  current_field.datatype = ::sensor_msgs::PointField::UINT32;
+  current_field.count = static_cast<uint32_t> (size);
+  cloud_->point_step += static_cast<uint32_t> (pcl::getFieldSize (::sensor_msgs::PointField::UINT32) * size);
+}
+
 namespace pcl
 {
   template <>
@@ -189,11 +212,16 @@ namespace pcl
     if (element_name == "vertex")
     {
       if ((property_name == "red") || (property_name == "green") || (property_name == "blue") ||
-          (property_name == "diffuse_red") || (property_name == "diffuse_green") || (property_name == "diffuse_blue") )
+          (property_name == "diffuse_red") || (property_name == "diffuse_green") || (property_name == "diffuse_blue"))
       {
         if ((property_name == "red") || (property_name == "diffuse_red"))
           appendFloatProperty ("rgb");
         return boost::bind (&pcl::PLYReader::vertexColorCallback, this, property_name, _1);
+      }
+      else if (property_name == "alpha")
+      {
+        amendFloatProperty ("rgb", "rgba");
+        return boost::bind (&pcl::PLYReader::vertexAlphaCallback, this, _1);
       }
       else if (property_name == "intensity")
       {
@@ -227,6 +255,17 @@ namespace pcl
     }
     else
       return (0);
+  }
+
+  template <> boost::function<void (pcl::io::ply::uint32)>
+  PLYReader::scalarPropertyDefinitionCallback (const std::string& element_name, const std::string& property_name)
+  {
+    if (element_name == "vertex")
+    {
+      appendUnsignedIntProperty (property_name, 1);
+      return (boost::bind (&pcl::PLYReader::vertexUnsignedIntPropertyCallback, this, _1));
+    }
+    return (0);
   }
 
   template <>
@@ -263,6 +302,15 @@ pcl::PLYReader::vertexFloatPropertyCallback (pcl::io::ply::float32 value)
 }
 
 void
+pcl::PLYReader::vertexUnsignedIntPropertyCallback (pcl::io::ply::uint32 value)
+{
+  memcpy (&cloud_->data[vertex_count_ * cloud_->point_step + vertex_offset_before_],
+          &value,
+          sizeof (pcl::io::ply::uint32));
+  vertex_offset_before_ += static_cast<int> (sizeof (pcl::io::ply::uint32));
+}
+
+void
 pcl::PLYReader::vertexColorCallback (const std::string& color_name, pcl::io::ply::uint8 color)
 {
   static int32_t r, g, b;
@@ -284,6 +332,23 @@ pcl::PLYReader::vertexColorCallback (const std::string& color_name, pcl::io::ply
             sizeof (int32_t));
     vertex_offset_before_ += static_cast<int> (sizeof (int32_t));
   }
+}
+
+void
+pcl::PLYReader::vertexAlphaCallback (pcl::io::ply::uint8 alpha)
+{
+  int32_t a (alpha);
+  // get anscient rgb value and store it in rgba
+  int32_t rgba;
+  memcpy (&rgba,
+          &cloud_->data[vertex_count_ * cloud_->point_step + vertex_offset_before_],
+          sizeof (pcl::io::ply::float32));
+  // shift left and append alpha
+  rgba = rgba << 8 | a;
+  // put rgba back
+  memcpy (&cloud_->data[vertex_count_ * cloud_->point_step + rgb_offset_before_],
+          &rgba,
+          sizeof (int32_t));
 }
 
 void
@@ -372,6 +437,7 @@ pcl::PLYReader::parse (const std::string& istream_filename)
   pcl::io::ply::at<pcl::io::ply::float32> (scalar_property_definition_callbacks) = boost::bind (&pcl::PLYReader::scalarPropertyDefinitionCallback<pcl::io::ply::float32>, this, _1, _2);
   pcl::io::ply::at<pcl::io::ply::uint8> (scalar_property_definition_callbacks) = boost::bind (&pcl::PLYReader::scalarPropertyDefinitionCallback<pcl::io::ply::uint8>, this, _1, _2);
   pcl::io::ply::at<pcl::io::ply::int32> (scalar_property_definition_callbacks) = boost::bind (&pcl::PLYReader::scalarPropertyDefinitionCallback<pcl::io::ply::int32>, this, _1, _2);
+  pcl::io::ply::at<pcl::io::ply::uint32> (scalar_property_definition_callbacks) = boost::bind (&pcl::PLYReader::scalarPropertyDefinitionCallback<pcl::io::ply::uint32>, this, _1, _2);
   ply_parser.scalar_property_definition_callbacks (scalar_property_definition_callbacks);
 
   pcl::io::ply::ply_parser::list_property_definition_callbacks_type list_property_definition_callbacks;
@@ -429,11 +495,9 @@ pcl::PLYReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
       {
         for (size_t f = 0; f < cloud_->fields.size (); ++f)
           if (cloud_->fields[f].datatype == ::sensor_msgs::PointField::FLOAT32)
-            //memcpy (&data[r * cloud_->point_step + cloud_->fields[f].offset + cloud_->fields[f].count * sizeof (float)],
             memcpy (&data[r * cloud_->point_step + cloud_->fields[f].offset],
                     reinterpret_cast<const char*> (&f_nan), sizeof (float));
           else if (cloud_->fields[f].datatype == ::sensor_msgs::PointField::FLOAT64)
-            //memcpy (&data[r * cloud_->point_step + cloud_->fields[f].offset + cloud_->fields[f].count * sizeof (double)],
             memcpy (&data[r * cloud_->point_step + cloud_->fields[f].offset],
                     reinterpret_cast<const char*> (&d_nan), sizeof (double));
           else
@@ -526,6 +590,10 @@ pcl::PLYWriter::generateHeader (const sensor_msgs::PointCloud2 &cloud,
 
     if (fields_list.find ("rgba", xyz_found) != std::string::npos)
       oss << "\nproperty uchar alpha";
+
+    // Find label optional
+    if (fields_list.find ("label", xyz_found) != std::string::npos)
+      oss << "\nproperty uint label";
 
     if (fields_list.find ("normal_x normal_y normal_z", xyz_found) != std::string::npos)
       oss << "\nproperty float nx"
@@ -1267,25 +1335,24 @@ pcl::io::savePLYFile (const std::string &file_name, const pcl::PolygonMesh &mesh
   // Vertices
   fs << "\nelement vertex "<< mesh.cloud.width * mesh.cloud.height;
   fs << "\nproperty float x"
-    "\nproperty float y"
-    "\nproperty float z";
+        "\nproperty float y"
+        "\nproperty float z";
   // Check if we have color on vertices
-  int rgb_index = getFieldIndex (mesh.cloud, "rgb"),
-      rgba_index = getFieldIndex (mesh.cloud, "rgba");
-  if (rgb_index != -1)
-  {
-    fs << "\nproperty uchar red"
-          "\nproperty uchar green"
-          "\nproperty uchar blue";
-  }
-  else if (rgba_index != -1)
+  int rgba_index = getFieldIndex (mesh.cloud, "rgba"),
+  rgb_index = getFieldIndex (mesh.cloud, "rgb");
+  if (rgba_index != -1)
   {
     fs << "\nproperty uchar red"
           "\nproperty uchar green"
           "\nproperty uchar blue"
           "\nproperty uchar alpha";
   }
-
+  else if (rgb_index != -1)
+  {
+    fs << "\nproperty uchar red"
+          "\nproperty uchar green"
+          "\nproperty uchar blue";
+  }
   // Faces
   fs << "\nelement face "<< nr_faces;
   fs << "\nproperty list uchar int vertex_index";
@@ -1318,15 +1385,15 @@ pcl::io::savePLYFile (const std::string &file_name, const pcl::PolygonMesh &mesh
       else if (mesh.cloud.fields[d].datatype == sensor_msgs::PointField::FLOAT32 && mesh.cloud.fields[d].name.find ("rgb") != std::string::npos)
       {
         pcl::RGB color;
-        if(rgb_index != -1)
-        {
-          memcpy (&color, &mesh.cloud.data[i * point_size + mesh.cloud.fields[rgb_index].offset + c * sizeof (float)], sizeof (RGB));
-          fs << int (color.r) << " " << int (color.g) << " " << int (color.b);
-        }
-        else
+        if(rgba_index != -1)
         {
           memcpy (&color, &mesh.cloud.data[i * point_size + mesh.cloud.fields[rgba_index].offset + c * sizeof (float)], sizeof (RGB));
           fs << int (color.r) << " " << int (color.g) << " " << int (color.b) << " " << int (color.a);
+        }
+        else
+        {
+          memcpy (&color, &mesh.cloud.data[i * point_size + mesh.cloud.fields[rgb_index].offset + c * sizeof (float)], sizeof (RGB));
+          fs << int (color.r) << " " << int (color.g) << " " << int (color.b);
         }
       }
       fs << " ";
