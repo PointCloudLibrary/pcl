@@ -94,7 +94,7 @@ namespace pcl
 
         /** \brief Removes all models from the library and clears the hash table. */
         void
-        clear ();
+        removeAllModels ();
 
         /** \brief Adds a model to the hash table.
           *
@@ -114,6 +114,10 @@ namespace pcl
         }
 
       protected:
+        /** \brief Removes all models from the library and destroys the hash table. This method should be called upon destroying this object. */
+        void
+        clear ();
+
         void
         addToHashTable (Model* model, ORROctree::Node::Data* data1, ORROctree::Node::Data* data2);
 

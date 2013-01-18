@@ -37,10 +37,8 @@
  *
  */
 
-#include <pcl/common/random.h>
 #include <pcl/recognition/ransac_based/obj_rec_ransac.h>
 #include <pcl/recognition/ransac_based/orr_graph.h>
-#include <ctime>
 
 using namespace std;
 using namespace pcl::common;
@@ -53,7 +51,8 @@ pcl::recognition::ObjRecRANSAC::ObjRecRANSAC (float pair_width, float voxel_size
   visibility_ (0.06f),
   relative_num_of_illegal_pts_ (0.02f),
   intersection_fraction_ (0.03f),
-  model_library_ (pair_width, voxel_size)
+  model_library_ (pair_width, voxel_size),
+  rec_mode_ (ObjRecRANSAC::FULL_RECOGNITION)
 {
   abs_zdist_thresh_ = 1.5f*voxel_size_;
 }
@@ -63,7 +62,10 @@ pcl::recognition::ObjRecRANSAC::ObjRecRANSAC (float pair_width, float voxel_size
 void
 pcl::recognition::ObjRecRANSAC::recognize (const PointCloudIn* scene, const PointCloudN* normals, list<ObjRecRANSAC::Output>& recognized_objects, double success_probability)
 {
-  // First, build the scene octree
+  // Clear some stuff
+  sampled_oriented_point_pairs_.clear ();
+
+  // Build the scene octree
   scene_octree_.build(*scene, voxel_size_, normals);
   // Project it on the xy-plane (which roughly corresponds to the projection plane of the scanning device)
   scene_octree_proj_.build(scene_octree_, abs_zdist_thresh_, abs_zdist_thresh_);
@@ -82,26 +84,32 @@ pcl::recognition::ObjRecRANSAC::recognize (const PointCloudIn* scene, const Poin
   printf("ObjRecRANSAC::%s(): recognizing objects [%i iteration(s)]\n", __func__, num_iterations);
 #endif
 
-  list<OrientedPointPair> point_pairs;
   list<Hypothesis> hypotheses;
   vector<Hypothesis> accepted_hypotheses;
   ORRGraph graph;
 
-  this->sampleOrientedPointPairs (num_iterations, full_leaves, point_pairs);
-  this->generateHypotheses (point_pairs, hypotheses);
-  point_pairs.clear (); // Free memory
+  if ( rec_mode_ <= ObjRecRANSAC::SAMPLE_OPP )
+  {
+    this->sampleOrientedPointPairs (num_iterations, full_leaves, sampled_oriented_point_pairs_);
+    return;
+  }
 
-  this->testHypotheses (hypotheses, accepted_hypotheses);
-  hypotheses.clear (); // Free memory
+  if ( rec_mode_ <= ObjRecRANSAC::FULL_RECOGNITION )
+  {
+    this->generateHypotheses (sampled_oriented_point_pairs_, hypotheses);
 
-  this->buildConflictGraph (accepted_hypotheses, graph);
-  accepted_hypotheses.clear (); // Free memory
+    this->testHypotheses (hypotheses, accepted_hypotheses);
+    hypotheses.clear (); // Free memory
 
-  this->filterWeakHypotheses (graph, recognized_objects);
+    this->buildConflictGraph (accepted_hypotheses, graph);
+    accepted_hypotheses.clear (); // Free memory
+
+    this->filterWeakHypotheses (graph, recognized_objects);
 
 #ifdef OBJ_REC_RANSAC_VERBOSE
-  printf("ObjRecRANSAC::%s(): done [%i object(s)]\n", __func__, static_cast<int> (recognized_objects.size ()));
+    printf("ObjRecRANSAC::%s(): done [%i object(s)]\n", __func__, static_cast<int> (recognized_objects.size ()));
 #endif
+  }
 }
 
 //=========================================================================================================================================================================
@@ -134,7 +142,7 @@ pcl::recognition::ObjRecRANSAC::sampleOrientedPointPairs (int num_iterations, ve
   ORROctree::Node *leaf1, *leaf2;
   const float *p1, *p2, *n1, *n2;
   // The random generator
-  UniformGenerator<int> randgen (0, num_full_leaves, static_cast<uint32_t> (time (NULL)));
+//  UniformGenerator<int> randgen (0, num_full_leaves, static_cast<uint32_t> (time (NULL)));
 
   // Init the vector with the ids
   vector<int> ids (num_full_leaves);
@@ -145,11 +153,13 @@ pcl::recognition::ObjRecRANSAC::sampleOrientedPointPairs (int num_iterations, ve
   for ( i = 0 ; i < num_iterations ; ++i )
   {
     // Choose a random position within the array of ids
-    randgen.setParameters (0, static_cast<int> (ids.size ()));
-    int rand_pos = randgen.run ();
+//    randgen.setParameters (0, static_cast<int> (ids.size ()));
+//    int rand_pos = randgen.run ();
+    int rand_pos = aux::getRandomInteger (0, static_cast<int> (ids.size ()) - 1);
 
     // Get the leaf at that random position
     leaf1 = full_scene_leaves[ids[rand_pos]];
+
     // Delete the selected id
     ids.erase (ids.begin() + rand_pos);
 
@@ -157,17 +167,25 @@ pcl::recognition::ObjRecRANSAC::sampleOrientedPointPairs (int num_iterations, ve
     p1 = leaf1->getData ()->getPoint ();
     n1 = leaf1->getData ()->getNormal ();
 
+//    printf ("getting a random leaf an a sphere ...\n");
+
     // Randomly select a leaf at the right distance from 'leaves[i]'
     leaf2 = scene_octree_.getRandomFullLeafOnSphere (p1, pair_width_);
     if ( !leaf2 )
       continue;
 
+//    printf ("got it!\n");
+
     // Get the leaf's point and normal
     p2 = leaf2->getData ()->getPoint ();
     n2 = leaf2->getData ()->getNormal ();
 
+//    printf ("saving the opp ...\n");
+
     // Save the sampled point pair
     output.push_back (OrientedPointPair (p1, n1, p2, n2));
+
+//    printf ("done!\n");
   }
 
 #ifdef OBJ_REC_RANSAC_VERBOSE
@@ -253,7 +271,7 @@ pcl::recognition::ObjRecRANSAC::testHypotheses (list<Hypothesis>& hypotheses, ve
   const float *rigid_transform;
 
 #ifdef OBJ_REC_RANSAC_VERBOSE
-  printf("ObjRecRANSAC::%s(): checking the hypotheses ... ", __func__); fflush(stdout);
+  printf("ObjRecRANSAC::%s(): testing the hypotheses ... ", __func__); fflush(stdout);
 #endif
 
   for ( list<Hypothesis>::iterator hypo_it = hypotheses.begin () ; hypo_it != hypotheses.end () ; ++hypo_it )

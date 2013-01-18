@@ -72,6 +72,17 @@ ModelLibrary::ModelLibrary (float pair_width, float voxel_size)
 void
 ModelLibrary::clear ()
 {
+  this->removeAllModels ();
+
+  num_of_cells_[0] = num_of_cells_[1] = num_of_cells_[2] = 0;
+  hash_table_.clear ();
+}
+
+//============================================================================================================================================
+
+void
+ModelLibrary::removeAllModels ()
+{
   // Delete the model entries
   for ( map<string,Model*>::iterator it = models_.begin() ; it != models_.end() ; ++it )
     delete it->second;
@@ -81,12 +92,9 @@ ModelLibrary::clear ()
   HashTableCell* cells = hash_table_.getVoxels();
   int num_bins = num_of_cells_[0]*num_of_cells_[1]*num_of_cells_[2];
 
-  // Clear each cell entry
+  // Clear each cell
   for ( int i = 0 ; i < num_bins ; ++i )
     cells[i].clear();
-
-  num_of_cells_[0] = num_of_cells_[1] = num_of_cells_[2] = 0;
-  hash_table_.clear ();
 }
 
 //============================================================================================================================================

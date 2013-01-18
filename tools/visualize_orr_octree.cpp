@@ -139,24 +139,38 @@ void updateViewer (ORROctree& octree, PCLVisualizer& viz, std::vector<ORROctree:
 {
   viz.removeAllShapes();
 
-  const float *b = (*leaf)->getBounds ();
+  const float *b = (*leaf)->getBounds (), *center = (*leaf)->getData ()->getPoint ();
+  float radius = 0.1f*octree.getRoot ()->getRadius ();
 
   // Add the main leaf as a cube
   viz.addCube (b[0], b[1], b[2], b[3], b[4], b[5], 0.0, 0.0, 1.0, "main cube");
 
   // Get all full leaves intersecting a sphere with certain radius
   std::list<ORROctree::Node*> intersected_leaves;
-  octree.getFullLeavesIntersectedBySphere((*leaf)->getData ()->getPoint (), 0.1f*octree.getRoot ()->getRadius (), intersected_leaves);
+  octree.getFullLeavesIntersectedBySphere(center, radius, intersected_leaves);
 
   char cube_id[128];
   int i = 0;
 
+  // Show the cubes
   for ( std::list<ORROctree::Node*>::iterator it = intersected_leaves.begin () ; it != intersected_leaves.end () ; ++it )
   {
     sprintf(cube_id, "cube %i", ++i);
     b = (*it)->getBounds ();
-
     viz.addCube (b[0], b[1], b[2], b[3], b[4], b[5], 1.0, 1.0, 0.0, cube_id);
+  }
+
+  // Get a random full leaf on the sphere defined by 'center' and 'radius'
+  ORROctree::Node *rand_leaf = octree.getRandomFullLeafOnSphere (center, radius);
+  if ( rand_leaf )
+  {
+    pcl::ModelCoefficients sphere_coeffs;
+    sphere_coeffs.values.resize (4);
+    sphere_coeffs.values[0] = rand_leaf->getCenter ()[0];
+    sphere_coeffs.values[1] = rand_leaf->getCenter ()[1];
+    sphere_coeffs.values[2] = rand_leaf->getCenter ()[2];
+    sphere_coeffs.values[3] = 0.5f*(b[1] - b[0]);
+    viz.addSphere (sphere_coeffs, "random_full_leaf");
   }
 }
 

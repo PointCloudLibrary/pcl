@@ -39,6 +39,7 @@
 #define PCL_RECOGNITION_RANSAC_BASED_AUX_H_
 
 #include <cmath>
+#include <cstdlib>
 
 namespace pcl
 {
@@ -46,6 +47,15 @@ namespace pcl
   {
     namespace aux
     {
+      /** \brief Returns a random integer in [min, max] (including both min and max). This method uses rand() from
+       * the C Standard General Utilities Library <cstdlib>. That's why it uses a seed to generate the integers, which
+       * should be initialized to some distinctive value using srand(). */
+      inline int
+      getRandomInteger(int min, int max)
+      {
+        return static_cast<int>(static_cast<double>(min) + (static_cast<double>(rand())/static_cast<double>(RAND_MAX))*static_cast<double>(max-min) + 0.5);
+      }
+
       /** \brief c = a + b */
       template <typename T> void
       vecSum3 (const T a[3], const T b[3], T c[3])

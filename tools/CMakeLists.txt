@@ -180,6 +180,9 @@ if (build)
         PCL_ADD_EXECUTABLE(pcl_visualize_obj_rec_ransac_hash_table ${SUBSYS_NAME} visualize_obj_rec_ransac_hash_table.cpp)
         target_link_libraries(pcl_visualize_obj_rec_ransac_hash_table pcl_common pcl_visualization pcl_io pcl_recognition)
 
+        PCL_ADD_EXECUTABLE(pcl_visualize_obj_rec_ransac_opp ${SUBSYS_NAME} visualize_obj_rec_ransac_opp.cpp)
+        target_link_libraries(pcl_visualize_obj_rec_ransac_opp pcl_common pcl_visualization pcl_io pcl_recognition)
+
         PCL_ADD_EXECUTABLE(pcl_visualize_orr_octree ${SUBSYS_NAME} visualize_orr_octree.cpp)
         target_link_libraries(pcl_visualize_orr_octree pcl_common pcl_visualization pcl_io pcl_recognition)
 

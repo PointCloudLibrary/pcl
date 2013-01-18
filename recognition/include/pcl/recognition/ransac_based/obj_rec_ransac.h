@@ -147,7 +147,7 @@ namespace pcl
           *
           * \param[in] voxel_size is the size of the leafs of the octree, i.e., the "size" of the discretization. Tradeoff: High values lead to less
           * computation time but ignore object details. Small values allow to better distinguish between objects, but will introduce more holes in the resulting
-          * "voxel-surface" (especially for a sparsely sampled scene) and thus will make normal computation unreliable.
+          * "voxel-surface" (especially for a sparsely sampled scene).
           *
           * \param[in] fraction_of_pairs_in_hash_table determines how many pairs (as fraction of the total number) will be kept in the hashtable. Use the default
           * value (check the papers above for more details). */
@@ -157,13 +157,14 @@ namespace pcl
           this->clear();
         }
 
-        /** \brief Deletes all models from the model library and releases the memory dynamically allocated by this instance. */
+        /** \brief Removes all models from the model library and releases some memory dynamically allocated by this instance. */
         void
-        clear()
+        inline clear()
         {
-          model_library_.clear();
+          model_library_.removeAllModels ();
           scene_octree_.clear ();
           scene_octree_proj_.clear ();
+          sampled_oriented_point_pairs_.clear ();
         }
 
         /** \brief Add an object model to be recognized.
@@ -175,7 +176,7 @@ namespace pcl
           *
           * The method returns true if the model was successfully added to the model library and false otherwise (e.g., if 'object_name' is already in use).
           */
-        bool
+        inline bool
         addModel (PointCloudIn* points, PointCloudN* normals, const std::string& object_name)
         {
           return (model_library_.addModel (points, normals, object_name));
@@ -186,20 +187,48 @@ namespace pcl
           * \param[in]  scene is the 3d scene in which the object should be recognized.
           * \param[in]  normals are the scene normals.
           * \param[out] recognized_objects is the list of output items each one containing the recognized model instance, its name, the aligning rigid transform
-          * \param[in]  success_probability is the user-defined probability of detecting all objects in the scene.
           * and the match confidence (see ObjRecRANSAC::Output for further explanations).
+          * \param[in]  success_probability is the user-defined probability of detecting all objects in the scene.
           */
         void
         recognize (const PointCloudIn* scene, const PointCloudN* normals, std::list<ObjRecRANSAC::Output>& recognized_objects, double success_probability = 0.99);
 
+        inline void
+        enterTestModeSampleOPP ()
+        {
+          rec_mode_ = ObjRecRANSAC::SAMPLE_OPP;
+        }
+
+        inline void
+        leaveTestMode ()
+        {
+          rec_mode_ = ObjRecRANSAC::FULL_RECOGNITION;
+        }
+
         /** \brief Returns the hash table in the model library. */
-        const pcl::recognition::ModelLibrary::HashTable*
-        getHashTable()
+        inline const pcl::recognition::ModelLibrary::HashTable*
+        getHashTable ()
         {
           return (model_library_.getHashTable ());
         }
 
+        inline const ORROctree&
+        getSceneOctree ()
+        {
+          return (scene_octree_);
+        }
+
+        /** \brief This function is useful for testing purposes. It returns the otiented point pairs which were sampled from the
+          * scene during the recognition process. */
+        inline const std::list<ObjRecRANSAC::OrientedPointPair>&
+        getSampledOrientedPointPairs ()
+        {
+          return (sampled_oriented_point_pairs_);
+        }
+
       protected:
+        enum Recognition_Mode {SAMPLE_OPP = 0, /*GENERATE_HYPOTHESES, TEST_HYPOTHESES, BUILD_CONFLICT_GRAPH,*/ FULL_RECOGNITION};
+
         int
         computeNumberOfIterations (double success_probability);
 
@@ -248,6 +277,9 @@ namespace pcl
         ModelLibrary model_library_;
         ORROctree scene_octree_;
         ORROctreeZProjection scene_octree_proj_;
+
+        std::list<OrientedPointPair> sampled_oriented_point_pairs_;
+        Recognition_Mode rec_mode_;
     };
 
 // === inline methods ===================================================================================================================================
