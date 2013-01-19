@@ -69,6 +69,8 @@ namespace pcl
   class PCL_EXPORTS OpenNIGrabber : public Grabber
   {
     public:
+      typedef boost::shared_ptr<OpenNIGrabber> Ptr;
+      typedef boost::shared_ptr<const OpenNIGrabber> ConstPtr;
 
       typedef enum
       {
