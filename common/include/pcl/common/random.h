@@ -75,8 +75,8 @@ namespace pcl
       typedef boost::normal_distribution<T> type;
     };
 
-    /** \brief UniformGenerator class generates a random number from range [min, max[ at each run picked
-      * according to a uniform distribution i.e eaach number within [min, max[ has almost the same 
+    /** \brief UniformGenerator class generates a random number from range [min, max] at each run picked
+      * according to a uniform distribution i.e eaach number within [min, max] has almost the same 
       * probability of being drawn.
       *
       * \author Nizar Sallem
@@ -100,7 +100,7 @@ namespace pcl
 
         /** Constructor
           * \param min: included lower bound
-          * \param max: excluded higher bound
+          * \param max: included higher bound
           * \param seed: seeding value
           */
         UniformGenerator(T min = 0, T max = 1, uint32_t seed = -1);
@@ -118,7 +118,7 @@ namespace pcl
 
         /** Set the uniform number generator parameters
           * \param[in] min minimum allowed value
-          * \param[in] max maximum allowed value (exclusive)
+          * \param[in] max maximum allowed value
           * \param[in] seed random number generator seed (applied if != -1)
           */
         void 
@@ -134,7 +134,7 @@ namespace pcl
         const Parameters&
         getParameters () { return (parameters_); }
 
-        /// \return a randomly generated number in the interval [min, max[
+        /// \return a randomly generated number in the interval [min, max]
         inline T 
         run () { return (generator_ ()); }
 
