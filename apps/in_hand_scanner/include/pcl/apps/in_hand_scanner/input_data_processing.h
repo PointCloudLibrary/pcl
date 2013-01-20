@@ -108,7 +108,7 @@ namespace pcl
                           CloudXYZRGBNormalPtr&       cloud_out) const;
 
         /** @{ */
-        /** \brief Everything outside of X - Y - Z - min / max is discarded. The unit is cm. The min values must be smaller than max values. */
+        /** \brief Points outside of X - Y - Z - min / max are discarded. The unit is cm. The min values must be smaller than the max values. */
         inline void setXMin (const float x_min) {if (x_min < x_max_) x_min_ = x_min;}
         inline void setXMax (const float x_max) {if (x_max > x_min_) x_max_ = x_max;}
         inline void setYMin (const float y_min) {if (y_min < y_max_) y_min_ = y_min;}
@@ -125,7 +125,7 @@ namespace pcl
         /** @} */
 
         /** @{ */
-        /** \brief Simple color segmentation in the HSV color space. Everything inside of H - S - V min / max is discarded. H must be in the range 0 and 360, S and V in the range 0 and 1.
+        /** \brief Simple color segmentation in the HSV color space. Points inside of H - S - V min / max are discarded. H must be in the range 0 and 360, S and V in the range 0 and 1.
           * \note If you set values outside of the allowed range the member variables are clamped to the next best value. E.g. H is set to 0 if you pass -1.
           */
         inline void setHMin (const float h_min) {h_min_ = pcl::ihs::clamp (h_min, 0.f, 360.f);}
@@ -147,6 +147,12 @@ namespace pcl
         /** \brief If true the color values inside of H - S - V min / max are accepted instead of discarded. */
         inline void setColorSegmentationInverted (const bool hsv_inverted) {hsv_inverted_ = hsv_inverted;}
         inline bool getColorSegmentationInverted () const {return (hsv_inverted_);}
+        /** @} */
+
+        /** @{ */
+        /** \brief Enable / disable the color segmentation. */
+        inline void setColorSegmentationEnabled (const bool hsv_enabled) {hsv_enabled_ = hsv_enabled;}
+        inline bool getColorSegmentationEnabled () const {return (hsv_enabled_);}
         /** @} */
 
         /** @{ */
@@ -226,6 +232,7 @@ namespace pcl
         float v_max_;
 
         bool hsv_inverted_;
+        bool hsv_enabled_;
 
         unsigned int size_dilate_;
         unsigned int size_erode_;

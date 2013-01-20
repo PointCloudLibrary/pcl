@@ -6,14 +6,162 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1000</width>
+    <width>1008</width>
     <height>600</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
-  <widget class="QWidget" name="centralWidget"/>
+  <widget class="QWidget" name="centralWidget">
+   <layout class="QGridLayout" name="gridLayout_7">
+    <item row="0" column="0">
+     <layout class="QHBoxLayout" name="horizontalLayout_main_controls">
+      <item>
+       <widget class="QToolButton" name="toolButton_1">
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Shows the unprocessed input data (Shortcut: 1).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="text">
+         <string>Input</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+        <property name="autoExclusive">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QToolButton" name="toolButton_2">
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Shows the processed input data (Shortcut: 2).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="text">
+         <string>Processed</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+        <property name="autoExclusive">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QToolButton" name="toolButton_3">
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Continuous registration (Shortcut: 3).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="text">
+         <string>Continuous registration</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="autoExclusive">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QToolButton" name="toolButton_4">
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Registers new data once and returns to showing the processed input data (Shortcut: 4).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="text">
+         <string>Single registration</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="autoExclusive">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QToolButton" name="toolButton_5">
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Shows the acquired model (Shortcut: 5).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="text">
+         <string>Show model</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="autoExclusive">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QToolButton" name="toolButton_6">
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Removes all unfit points (Shortcut: 6)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="text">
+         <string>Clean</string>
+        </property>
+        <property name="checkable">
+         <bool>false</bool>
+        </property>
+        <property name="autoExclusive">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_main_controls">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QToolButton" name="toolButton_0">
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Reset the scanning pipeline (Shortcut: 0).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="text">
+         <string>Reset</string>
+        </property>
+        <property name="checkable">
+         <bool>false</bool>
+        </property>
+        <property name="autoExclusive">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item row="1" column="0">
+     <widget class="QWidget" name="placeholder_in_hand_scanner" native="true">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
   <widget class="QDockWidget" name="dockWidget">
    <property name="sizePolicy">
     <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -30,6 +178,9 @@
    <property name="features">
     <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
    </property>
+   <property name="windowTitle">
+    <string>Settings</string>
+   </property>
    <attribute name="dockWidgetArea">
     <number>2</number>
    </attribute>
@@ -43,16 +194,19 @@
          <height>0</height>
         </size>
        </property>
+       <property name="toolTip">
+        <string/>
+       </property>
        <property name="currentIndex">
-        <number>2</number>
+        <number>0</number>
        </property>
        <widget class="QWidget" name="page_input_data_processing">
         <property name="geometry">
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>344</width>
-          <height>448</height>
+          <width>300</width>
+          <height>423</height>
          </rect>
         </property>
         <attribute name="label">
@@ -61,6 +215,9 @@
         <layout class="QVBoxLayout" name="verticalLayout_2">
          <item>
           <widget class="QGroupBox" name="groupBox_crop_xyz">
+           <property name="toolTip">
+            <string/>
+           </property>
            <property name="title">
             <string>Crop coordinates</string>
            </property>
@@ -225,6 +382,9 @@
          </item>
          <item>
           <widget class="QGroupBox" name="groupBox_segment_hsv">
+           <property name="toolTip">
+            <string/>
+           </property>
            <property name="title">
             <string>Color segmentation</string>
            </property>
@@ -235,7 +395,7 @@
                <number>360</number>
               </property>
               <property name="singleStep">
-               <number>10</number>
+               <number>5</number>
               </property>
              </widget>
             </item>
@@ -255,7 +415,7 @@
                <number>100</number>
               </property>
               <property name="singleStep">
-               <number>10</number>
+               <number>5</number>
               </property>
              </widget>
             </item>
@@ -295,7 +455,7 @@
                <number>100</number>
               </property>
               <property name="singleStep">
-               <number>10</number>
+               <number>5</number>
               </property>
              </widget>
             </item>
@@ -315,7 +475,7 @@
                <number>100</number>
               </property>
               <property name="singleStep">
-               <number>10</number>
+               <number>5</number>
               </property>
              </widget>
             </item>
@@ -325,7 +485,7 @@
                <number>360</number>
               </property>
               <property name="singleStep">
-               <number>10</number>
+               <number>5</number>
               </property>
              </widget>
             </item>
@@ -345,14 +505,7 @@
                <number>100</number>
               </property>
               <property name="singleStep">
-               <number>10</number>
-              </property>
-             </widget>
-            </item>
-            <item row="4" column="0" colspan="3">
-             <widget class="QCheckBox" name="checkBox_color_segmentation_inverted">
-              <property name="text">
-               <string>Inverted</string>
+               <number>5</number>
               </property>
              </widget>
             </item>
@@ -373,6 +526,20 @@
               </property>
              </widget>
             </item>
+            <item row="4" column="0" colspan="2">
+             <widget class="QCheckBox" name="checkBox_color_segmentation_inverted">
+              <property name="text">
+               <string>Inverted</string>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="2">
+             <widget class="QCheckBox" name="checkBox_color_segmentation_enabled">
+              <property name="text">
+               <string>Enabled</string>
+              </property>
+             </widget>
+            </item>
            </layout>
            <zorder>spinBox_h_min</zorder>
            <zorder>label_s_min</zorder>
@@ -389,6 +556,7 @@
            <zorder>checkBox_color_segmentation_inverted</zorder>
            <zorder>label_hsv_dilate_size</zorder>
            <zorder>spinBox_hsv_dilate_size</zorder>
+           <zorder>checkBox_color_segmentation_enabled</zorder>
           </widget>
          </item>
          <item>
@@ -411,8 +579,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>344</width>
-          <height>448</height>
+          <width>300</width>
+          <height>423</height>
          </rect>
         </property>
         <attribute name="label">
@@ -551,8 +719,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>344</width>
-          <height>448</height>
+          <width>300</width>
+          <height>423</height>
          </rect>
         </property>
         <attribute name="label">
@@ -636,7 +804,7 @@
           </widget>
          </item>
          <item>
-          <spacer name="verticalSpacer">
+          <spacer name="verticalSpacer_integration">
            <property name="orientation">
             <enum>Qt::Vertical</enum>
            </property>
@@ -655,9 +823,59 @@
     </layout>
    </widget>
   </widget>
+  <widget class="QToolBar" name="toolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionReset_camera"/>
+   <addaction name="actionToggle_coloring"/>
+   <addaction name="actionMesh_representation"/>
+   <addaction name="actionHelp"/>
+  </widget>
+  <action name="actionHelp">
+   <property name="text">
+    <string>Help</string>
+   </property>
+  </action>
+  <action name="actionReset_camera">
+   <property name="text">
+    <string>Reset camera</string>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Reset the camera (Shortcut: c)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+  </action>
+  <action name="actionToggle_coloring">
+   <property name="text">
+    <string>Coloring</string>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Toggle the coloring (Shortcut: k):&lt;/p&gt;&lt;p&gt;- RGB&lt;/p&gt;&lt;p&gt;- One color&lt;/p&gt;&lt;p&gt;- Visibility-confidence&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+  </action>
+  <action name="actionMesh_representation">
+   <property name="text">
+    <string>Mesh representation</string>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Toggle the display of the mesh (Shortcut: s):&lt;/p&gt;&lt;p&gt;- Points&lt;/p&gt;&lt;p&gt;- Wireframe&lt;/p&gt;&lt;p&gt;- Closed surface&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <tabstops>
+  <tabstop>toolButton_1</tabstop>
+  <tabstop>toolButton_2</tabstop>
+  <tabstop>toolButton_3</tabstop>
+  <tabstop>toolButton_4</tabstop>
+  <tabstop>toolButton_5</tabstop>
+  <tabstop>toolButton_0</tabstop>
   <tabstop>spinBox_x_min</tabstop>
   <tabstop>spinBox_x_max</tabstop>
   <tabstop>spinBox_y_min</tabstop>
@@ -673,6 +891,7 @@
   <tabstop>spinBox_v_max</tabstop>
   <tabstop>spinBox_hsv_dilate_size</tabstop>
   <tabstop>checkBox_color_segmentation_inverted</tabstop>
+  <tabstop>checkBox_color_segmentation_enabled</tabstop>
   <tabstop>lineEdit_epsilon</tabstop>
   <tabstop>spinBox_max_iterations</tabstop>
   <tabstop>spinBox_min_overlap</tabstop>
@@ -693,8 +912,8 @@
    <slot>setXMin(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>779</x>
-     <y>119</y>
+     <x>840</x>
+     <y>129</y>
     </hint>
     <hint type="destinationlabel">
      <x>565</x>
@@ -789,7 +1008,7 @@
    <slot>setHMin(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>831</x>
+     <x>817</x>
      <y>308</y>
     </hint>
     <hint type="destinationlabel">
@@ -821,7 +1040,7 @@
    <slot>setSMin(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>831</x>
+     <x>817</x>
      <y>343</y>
     </hint>
     <hint type="destinationlabel">
@@ -853,7 +1072,7 @@
    <slot>setVMin(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>831</x>
+     <x>817</x>
      <y>378</y>
     </hint>
     <hint type="destinationlabel">
@@ -885,7 +1104,7 @@
    <slot>setColorSegmentationInverted(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>902</x>
+     <x>834</x>
      <y>440</y>
     </hint>
     <hint type="destinationlabel">
@@ -933,12 +1152,12 @@
    <slot>setEpsilon()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>836</x>
-     <y>146</y>
+     <x>921</x>
+     <y>160</y>
     </hint>
     <hint type="destinationlabel">
-     <x>467</x>
-     <y>146</y>
+     <x>675</x>
+     <y>145</y>
     </hint>
    </hints>
   </connection>
@@ -949,12 +1168,12 @@
    <slot>setMaxIterations(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>845</x>
-     <y>178</y>
+     <x>921</x>
+     <y>195</y>
     </hint>
     <hint type="destinationlabel">
-     <x>468</x>
-     <y>179</y>
+     <x>677</x>
+     <y>184</y>
     </hint>
    </hints>
   </connection>
@@ -965,12 +1184,12 @@
    <slot>setMinOverlap(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>879</x>
-     <y>221</y>
+     <x>921</x>
+     <y>230</y>
     </hint>
     <hint type="destinationlabel">
-     <x>470</x>
-     <y>217</y>
+     <x>676</x>
+     <y>220</y>
     </hint>
    </hints>
   </connection>
@@ -981,12 +1200,12 @@
    <slot>setMaxFitness()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>850</x>
-     <y>248</y>
+     <x>921</x>
+     <y>262</y>
     </hint>
     <hint type="destinationlabel">
-     <x>471</x>
-     <y>253</y>
+     <x>677</x>
+     <y>257</y>
     </hint>
    </hints>
   </connection>
@@ -997,12 +1216,12 @@
    <slot>setCorrespondenceRejectionFactor(double)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>887</x>
-     <y>327</y>
+     <x>949</x>
+     <y>336</y>
     </hint>
     <hint type="destinationlabel">
-     <x>470</x>
-     <y>313</y>
+     <x>676</x>
+     <y>315</y>
     </hint>
    </hints>
   </connection>
@@ -1013,12 +1232,12 @@
    <slot>setCorrespondenceRejectionMaxAngle(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>931</x>
-     <y>356</y>
+     <x>949</x>
+     <y>371</y>
     </hint>
     <hint type="destinationlabel">
-     <x>467</x>
-     <y>355</y>
+     <x>678</x>
+     <y>358</y>
     </hint>
    </hints>
   </connection>
@@ -1029,12 +1248,12 @@
    <slot>setMaxSquaredDistance()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>882</x>
-     <y>186</y>
+     <x>968</x>
+     <y>194</y>
     </hint>
     <hint type="destinationlabel">
-     <x>236</x>
-     <y>180</y>
+     <x>679</x>
+     <y>186</y>
     </hint>
    </hints>
   </connection>
@@ -1045,12 +1264,12 @@
    <slot>setAveragingMaxAngle(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>891</x>
-     <y>220</y>
+     <x>968</x>
+     <y>229</y>
     </hint>
     <hint type="destinationlabel">
-     <x>237</x>
-     <y>217</y>
+     <x>679</x>
+     <y>221</y>
     </hint>
    </hints>
   </connection>
@@ -1061,12 +1280,12 @@
    <slot>setMaxAge(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>857</x>
-     <y>293</y>
+     <x>949</x>
+     <y>303</y>
     </hint>
     <hint type="destinationlabel">
-     <x>237</x>
-     <y>281</y>
+     <x>678</x>
+     <y>285</y>
     </hint>
    </hints>
   </connection>
@@ -1077,12 +1296,28 @@
    <slot>setMinDirections(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>869</x>
-     <y>330</y>
+     <x>949</x>
+     <y>338</y>
     </hint>
     <hint type="destinationlabel">
-     <x>239</x>
-     <y>324</y>
+     <x>677</x>
+     <y>325</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>checkBox_color_segmentation_enabled</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>setColorSegmentationEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>882</x>
+     <y>436</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>674</x>
+     <y>475</y>
     </hint>
    </hints>
   </connection>
@@ -1113,5 +1348,6 @@
   <slot>setAveragingMaxAngle(int)</slot>
   <slot>setMaxAge(int)</slot>
   <slot>setMinDirections(int)</slot>
+  <slot>setColorSegmentationEnabled(bool)</slot>
  </slots>
 </ui>

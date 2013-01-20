@@ -185,21 +185,9 @@ namespace pcl
         void
         stopTimer ();
 
-        /** \brief Toggle the display mode. */
-        void
-        toggleMeshRepresentation ();
-
-        /** \brief Toggle the coloring mode. */
-        void
-        toggleColoring ();
-
         /** \brief The visibility confidence is normalized with this value (must be greater than 1). */
         void
         setVisibilityConfidenceNormalization (const float vis_conf_norm);
-
-        /** \brief Reset the virtual camera position and orientation. */
-        void
-        resetCamera ();
 
         /** \see http://doc.qt.digia.com/qt/qwidget.html#minimumSizeHint-prop */
         virtual QSize
@@ -218,6 +206,26 @@ namespace pcl
         /** \brief Requests the scene to be re-drawn (called periodically from a timer). */
         void
         timerCallback ();
+
+        /** \brief Reset the virtual camera position and orientation. */
+        void
+        resetCamera ();
+
+        /** \brief Toggle the mesh representation. */
+        void
+        toggleMeshRepresentation ();
+
+        /** \brief Set the mesh representation. */
+        void
+        setMeshRepresentation (const MeshRepresentation& representation);
+
+        /** \brief Toggle the coloring mode. */
+        void
+        toggleColoring ();
+
+        /** \brief Set the coloring mode. */
+        void
+        setColoring (const Coloring& coloring);
 
       protected:
 
@@ -424,5 +432,9 @@ namespace pcl
     };
   } // End namespace ihs
 } // End namespace pcl
+
+// http://doc.qt.digia.com/qt/qmetatype.html#Q_DECLARE_METATYPE
+Q_DECLARE_METATYPE (pcl::ihs::OpenGLViewer::MeshRepresentation)
+Q_DECLARE_METATYPE (pcl::ihs::OpenGLViewer::Coloring)
 
 #endif // PCL_APPS_IN_HAND_SCANNER_OPENGL_VIEWER_H

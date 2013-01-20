@@ -47,7 +47,9 @@
 #include <QDoubleValidator>
 #include <QString>
 #include <QTimer>
+#include <QMessageBox>
 
+#include <pcl/apps/in_hand_scanner/help_window.h>
 #include <pcl/apps/in_hand_scanner/in_hand_scanner.h>
 #include <pcl/apps/in_hand_scanner/input_data_processing.h>
 #include <pcl/apps/in_hand_scanner/icp.h>
@@ -56,20 +58,39 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 pcl::ihs::MainWindow::MainWindow (QWidget* parent)
-  : QMainWindow (parent),
-    ui_ (new Ui::MainWindow ()),
-    ihs_ (new InHandScanner ())
+  : QMainWindow  (parent),
+    ui_          (new Ui::MainWindow ()),
+    help_window_ (new HelpWindow (this)),
+    ihs_         (new InHandScanner ())
 {
   ui_->setupUi (this);
+
+  QWidget* spacer = new QWidget ();
+  spacer->setSizePolicy (QSizePolicy::Expanding, QSizePolicy::Expanding);
+  ui_->toolBar->insertWidget (ui_->actionHelp, spacer);
 
   const double max = std::numeric_limits <double>::max ();
 
   // In hand scanner
-  QHBoxLayout* layout = new QHBoxLayout ();
+  QHBoxLayout* layout = new QHBoxLayout (ui_->placeholder_in_hand_scanner);
   layout->addWidget (ihs_);
-  ui_->centralWidget->setLayout (layout);
+  // ui_->centralWidget->setLayout (layout);
 
   QTimer::singleShot (0, ihs_, SLOT (startGrabber ()));
+
+  connect (ui_->toolButton_1, SIGNAL (clicked ()), ihs_, SLOT (showUnprocessedData ()));
+  connect (ui_->toolButton_2, SIGNAL (clicked ()), ihs_, SLOT (showProcessedData ()));
+  connect (ui_->toolButton_3, SIGNAL (clicked ()), ihs_, SLOT (registerContinuously ()));
+  connect (ui_->toolButton_4, SIGNAL (clicked ()), ihs_, SLOT (registerOnce ()));
+  connect (ui_->toolButton_5, SIGNAL (clicked ()), ihs_, SLOT (showModel ()));
+  connect (ui_->toolButton_6, SIGNAL (clicked ()), ihs_, SLOT (removeUnfitVertices ()));
+  connect (ui_->toolButton_0, SIGNAL (clicked ()), ihs_, SLOT (reset ()));
+
+  connect (ui_->actionReset_camera,        SIGNAL (triggered ()), ihs_, SLOT (resetCamera ()));
+  connect (ui_->actionToggle_coloring,     SIGNAL (triggered ()), ihs_, SLOT (toggleColoring ()));
+  connect (ui_->actionMesh_representation, SIGNAL (triggered ()), ihs_, SLOT (toggleMeshRepresentation ()));
+
+  connect (ihs_, SIGNAL (runningModeChanged (RunningMode)), this, SLOT (runningModeChanged (RunningMode)));
 
   // Input data processing
   const pcl::ihs::InputDataProcessing& idp = ihs_->getInputDataProcessing ();
@@ -89,6 +110,7 @@ pcl::ihs::MainWindow::MainWindow (QWidget* parent)
   ui_->spinBox_v_max->setValue (static_cast <int> (idp.getVMax () * 100.f));
 
   ui_->checkBox_color_segmentation_inverted->setChecked (idp.getColorSegmentationInverted ());
+  ui_->checkBox_color_segmentation_enabled->setChecked (idp.getColorSegmentationEnabled ());
 
   ui_->spinBox_xyz_erode_size->setValue  (idp.getXYZErodeSize ());
   ui_->spinBox_hsv_dilate_size->setValue (idp.getHSVDilateSize ());
@@ -112,13 +134,47 @@ pcl::ihs::MainWindow::MainWindow (QWidget* parent)
   ui_->spinBox_averaging_max_angle->setValue (static_cast <int> (ihs_->getIntegration ().getMaxAngle ()));
   ui_->spinBox_max_age->setValue (static_cast <int> (ihs_->getIntegration ().getMaxAge ()));
   ui_->spinBox_min_directions->setValue (static_cast <int> (ihs_->getIntegration ().getMinDirections ()));
+
+  // Help
+  connect (ui_->actionHelp, SIGNAL (triggered ()), this, SLOT (showHelp ()));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-pcl::ihs::MainWindow::~MainWindow()
+pcl::ihs::MainWindow::~MainWindow ()
 {
   delete ui_;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+void
+pcl::ihs::MainWindow::showHelp ()
+{
+  help_window_->show ();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+void
+pcl::ihs::MainWindow::runningModeChanged (const RunningMode mode)
+{
+  switch (mode)
+  {
+    case InHandScanner::RM_UNPROCESSED:         ui_->toolButton_1->setChecked (true); break;
+    case InHandScanner::RM_PROCESSED:           ui_->toolButton_2->setChecked (true); break;
+    case InHandScanner::RM_REGISTRATION_CONT:   ui_->toolButton_3->setChecked (true); break;
+    case InHandScanner::RM_REGISTRATION_SINGLE:                                       break;
+    case InHandScanner::RM_SHOW_MODEL:          ui_->toolButton_5->setChecked (true); break;
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+void
+pcl::ihs::MainWindow::keyPressEvent (QKeyEvent* event)
+{
+  ihs_->keyPressEvent (event);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -214,6 +270,13 @@ pcl::ihs::MainWindow::setColorSegmentationInverted (const bool is_inverted)
 {
   ihs_->getInputDataProcessing ().setColorSegmentationInverted (is_inverted);
   ui_->checkBox_color_segmentation_inverted->setChecked (ihs_->getInputDataProcessing ().getColorSegmentationInverted ());
+}
+
+void
+pcl::ihs::MainWindow::setColorSegmentationEnabled (const bool is_enabled)
+{
+  ihs_->getInputDataProcessing ().setColorSegmentationEnabled (is_enabled);
+  ui_->checkBox_color_segmentation_enabled->setChecked (ihs_->getInputDataProcessing ().getColorSegmentationEnabled ());
 }
 
 void

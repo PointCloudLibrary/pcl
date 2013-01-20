@@ -97,7 +97,7 @@ namespace pcl
 
         /** \brief Merge the organized cloud into the mesh.
           * \param[in] cloud_data Input cloud. Must be organized.
-          * \param[in, out] mesh_model Mesh with new points integrated.
+          * \param[in,out] mesh_model Mesh with new points integrated.
           * \param[in] T Transformation that aligns the data cloud with the model mesh.
           * \return true if success.
           */
@@ -106,12 +106,22 @@ namespace pcl
                MeshPtr&                         mesh_model,
                const Eigen::Matrix4f&           T) const;
 
-        /** \brief Outlier rejection. In each merge step points that have not been observed again age by one iteration. Points that are observed again get an age of 0. Once a point reaches the maximum age it is decided if the point is removed or kept in the mesh. A point is removed if it has not been observed from a minimum number of directions. */
+        /** \brief Outlier rejection. In each merge step points that have not been observed again age by one iteration. Points that are observed again get an age of 0. Once a point reaches the maximum age it is decided if the point is removed or kept in the mesh. A point is removed if it has not been observed from a minimum number of directions.
+          * \param[in,out] mesh The which should be processed.
+          * \param[in] cleanup Calls mesh.cleanup () if true.
+          */
         void
         age (const MeshPtr& mesh, const bool cleanup=true) const;
 
+        /** \brief Removes unfit vertices regardless of their age. Unfit vertices are those that have not been observed from enough directions.
+          * \param[in,out] mesh The which should be processed.
+          * \param[in] cleanup Calls mesh.cleanup () if true.
+          */
+        void
+        removeUnfitVertices (const MeshPtr& mesh, const bool cleanup=true) const;
+
         /** @{ */
-        /** \brief Corresponding points are averaged out if their distance is below a distance threshold. Else the points are added to the mesh as new vertices.
+        /** \brief Corresponding points are averaged out if their distance is below a distance threshold. Else the points are added to the mesh as new vertices (Set in cm^2).
           * \note Must be greater than zero.
           */
         void  setMaxSquaredDistance (const float squared_distance);

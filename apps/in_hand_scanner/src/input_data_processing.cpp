@@ -64,6 +64,7 @@ pcl::ihs::InputDataProcessing::InputDataProcessing ()
     v_max_ (  1.f),
 
     hsv_inverted_ (false),
+    hsv_enabled_ (true),
 
     size_dilate_ (3),
     size_erode_  (3)
@@ -146,7 +147,8 @@ pcl::ihs::InputDataProcessing::segment (const CloudXYZRGBAConstPtr& cloud_in,
   }
 
   this->erode  (xyz_mask, size_erode_);
-  this->dilate (hsv_mask, size_dilate_);
+  if (hsv_enabled_) this->dilate (hsv_mask, size_dilate_);
+  else              hsv_mask.setZero ();
 
   // Copy the normals into the clouds.
   cloud_out->reserve (cloud_in->size ());

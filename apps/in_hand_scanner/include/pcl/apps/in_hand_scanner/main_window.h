@@ -38,10 +38,12 @@
  *
  */
 
-#ifndef MAIN_WINDOW_H
-#define MAIN_WINDOW_H
+#ifndef PCL_APPS_IN_HAND_SCANNER_MAIN_WINDOW_H
+#define PCL_APPS_IN_HAND_SCANNER_MAIN_WINDOW_H
 
 #include <QMainWindow>
+
+#include <pcl/apps/in_hand_scanner/in_hand_scanner.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 // Forward declarations
@@ -56,7 +58,7 @@ namespace pcl
 {
   namespace ihs
   {
-    class InHandScanner;
+    class HelpWindow;
   } // End namespace ihs
 } // End namespace pcl
 
@@ -70,14 +72,25 @@ namespace pcl
   {
     class MainWindow : public QMainWindow
     {
-        Q_OBJECT
+      Q_OBJECT
 
       public:
+
+        typedef pcl::ihs::InHandScanner    InHandScanner;
+        typedef pcl::ihs::HelpWindow       HelpWindow;
+        typedef InHandScanner::RunningMode RunningMode;
 
         explicit MainWindow (QWidget* parent = 0);
         ~MainWindow ();
 
       public slots:
+
+        // Help
+        void showHelp ();
+
+        // In hand scanner
+        void runningModeChanged (const RunningMode mode);
+        void keyPressEvent (QKeyEvent* event);
 
         // Input data processing.
         void setXMin (const int x_min);
@@ -95,6 +108,7 @@ namespace pcl
         void setVMax (const int v_max);
 
         void setColorSegmentationInverted (const bool is_inverted);
+        void setColorSegmentationEnabled (const bool is_enabled);
 
         void setXYZErodeSize (const int size);
         void setHSVDilateSize (const int size);
@@ -116,12 +130,11 @@ namespace pcl
 
       private:
 
-        typedef pcl::ihs::InHandScanner InHandScanner;
-
         Ui::MainWindow* ui_;
-        InHandScanner* ihs_;
+        HelpWindow*     help_window_;
+        InHandScanner*  ihs_;
     };
   } // End namespace ihs
 } // End namespace pcl
 
-#endif // MAIN_WINDOW_H
+#endif // PCL_APPS_IN_HAND_SCANNER_MAIN_WINDOW_H

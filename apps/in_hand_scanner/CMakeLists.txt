@@ -21,6 +21,7 @@ set(IMPL_INCS
 )
 
 set(SRCS
+    src/help_window.cpp
     src/main.cpp
     src/main_window.cpp
     src/icp.cpp
@@ -37,7 +38,9 @@ set(MOC_OPENGL_VIEWER_INC       include/pcl/apps/${SUBSYS_NAME}/opengl_viewer.h)
 set(MOC_OFFLINE_INTEGRATION_INC include/pcl/apps/${SUBSYS_NAME}/offline_integration.h)
 
 set(MOC_MAIN_WINDOW_INC include/pcl/apps/${SUBSYS_NAME}/main_window.h)
+set(MOC_HELP_WINDOW_INC include/pcl/apps/${SUBSYS_NAME}/help_window.h)
 set(UI_MAIN_WINDOW      src/main_window.ui)
+set(UI_HELP_WINDOW      src/help_window.ui)
 
 # Offline integration
 set(OI_INCS
@@ -94,14 +97,16 @@ if(BUILD)
   qt4_wrap_cpp(MOC_OFFLINE_INTEGRATION_SRC ${MOC_OFFLINE_INTEGRATION_INC})
 
   qt4_wrap_cpp(MOC_MAIN_WINDOW_SRC ${MOC_MAIN_WINDOW_INC})
+  qt4_wrap_cpp(MOC_HELP_WINDOW_SRC ${MOC_HELP_WINDOW_INC})
   qt4_wrap_ui(UI_MAIN_WINDOW_INC   ${UI_MAIN_WINDOW})
+  qt4_wrap_ui(UI_HELP_WINDOW_INC   ${UI_HELP_WINDOW})
 
   list(APPEND ADDITIONAL_LIBS ${QT_LIBRARIES})
   include_directories(${CMAKE_CURRENT_BINARY_DIR}) # For the ui files
 
   # In-hand scanner
-  list(APPEND INCS ${MOC_IN_HAND_SCANNER_INC} ${MOC_OPENGL_VIEWER_INC} ${MOC_MAIN_WINDOW_INC} ${UI_MAIN_WINDOW_INC})
-  list(APPEND SRCS ${MOC_IN_HAND_SCANNER_SRC} ${MOC_OPENGL_VIEWER_SRC} ${MOC_MAIN_WINDOW_SRC})
+  list(APPEND INCS ${MOC_IN_HAND_SCANNER_INC} ${MOC_OPENGL_VIEWER_INC} ${MOC_MAIN_WINDOW_INC} ${MOC_HELP_WINDOW_INC} ${UI_MAIN_WINDOW_INC} ${UI_HELP_WINDOW_INC})
+  list(APPEND SRCS ${MOC_IN_HAND_SCANNER_SRC} ${MOC_OPENGL_VIEWER_SRC} ${MOC_MAIN_WINDOW_SRC} ${MOC_HELP_WINDOW_SRC})
 
   include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 

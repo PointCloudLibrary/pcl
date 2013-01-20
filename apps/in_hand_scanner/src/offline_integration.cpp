@@ -74,11 +74,11 @@ pcl::ihs::OfflineIntegration::OfflineIntegration (Base* parent)
   normal_estimation_->setMaxDepthChangeFactor (0.02f); // in meters
   normal_estimation_->setNormalSmoothingSize (10.0f);
 
-  integration_->setSquaredDistanceThreshold (1e-4); // in m^2
-  integration_->setMinimumCount (2);
+  integration_->setMaxSquaredDistance (1e-4); // in m^2
+  integration_->setMinDirections (2);
 
 
-  Base::setVisibilityConfidenceNormalization (static_cast <float> (integration_->getMinimumCount ()));
+  Base::setVisibilityConfidenceNormalization (static_cast <float> (integration_->getMinDirections ()));
 }
 
 ////////////////////////////////////////////////////////////////////////////////

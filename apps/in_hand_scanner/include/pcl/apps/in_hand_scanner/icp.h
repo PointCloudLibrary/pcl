@@ -96,7 +96,7 @@ namespace pcl
         /** @} */
 
         /** @{ */
-        /** \brief The registration fails if the number of iterations exceeds the macimum number of iterations.
+        /** \brief The registration fails if the number of iterations exceeds the maximum number of iterations.
           * \note Must be greater than 0. Smaller values are set to 1.
           */
         void
@@ -107,7 +107,7 @@ namespace pcl
         /** @} */
 
         /** @{ */
-        /** \brief The registration fails at the state of convergence if the overlap between the model and data shape is smaller than a minimum overlap. The overlap is the fraction of correspondences (from model to data; after correspondence rejection) to the initial number of data points.
+        /** \brief The registration fails at the state of convergence if the overlap between the model and data shape is smaller than a minimum overlap. The overlap is the fraction of correspondences (after rejection) to the initial number of data points.
           * \note Must be between zero and one. Values outside this range are clamped to the nearest valid value.
           */
         void

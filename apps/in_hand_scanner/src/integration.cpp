@@ -57,7 +57,7 @@ pcl::ihs::Integration::Integration ()
     max_angle_            (45.f),
     min_weight_           (.3f),
     max_age_              (30),
-    min_directions_       (4)
+    min_directions_       (5)
 {
 }
 
@@ -408,6 +408,26 @@ pcl::ihs::Integration::age (const MeshPtr& mesh, const bool cleanup) const
         // Point becomes immortal
         pt.age = std::numeric_limits <unsigned int>::max ();
       }
+    }
+  }
+
+  if (cleanup)
+  {
+    mesh->cleanUp ();
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+void
+pcl::ihs::Integration::removeUnfitVertices (const MeshPtr& mesh, const bool cleanup) const
+{
+  for (unsigned int i=0; i<mesh->sizeVertices (); ++i)
+  {
+    if (pcl::ihs::countDirections (mesh->getVertexDataCloud () [i].directions) < min_directions_)
+    {
+      // Point dies (no need to transform it)
+      mesh->deleteVertex (VertexIndex (i));
     }
   }
 

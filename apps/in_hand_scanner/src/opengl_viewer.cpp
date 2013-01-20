@@ -127,6 +127,10 @@ pcl::ihs::OpenGLViewer::OpenGLViewer (QWidget* parent)
   // http://doc.qt.digia.com/qt/qwidget.html#keyPressEvent
   this->setFocusPolicy (Qt::StrongFocus);
 
+  // http://doc.qt.digia.com/qt/qmetatype.html#qRegisterMetaType
+  qRegisterMetaType <pcl::ihs::OpenGLViewer::MeshRepresentation> ("MeshRepresentation");
+  qRegisterMetaType <pcl::ihs::OpenGLViewer::Coloring>           ("Coloring");
+
   //////////////////////////////////////////////////////////////////////////////
   // Code to generate the colormap (I don't want to link against vtk just for the colormap).
   //////////////////////////////////////////////////////////////////////////////
@@ -661,54 +665,11 @@ pcl::ihs::OpenGLViewer::stopTimer ()
 ////////////////////////////////////////////////////////////////////////////////
 
 void
-pcl::ihs::OpenGLViewer::toggleMeshRepresentation ()
-{
-  boost::mutex::scoped_lock lock (mutex_vis_);
-
-  switch (mesh_representation_)
-  {
-    case MR_POINTS: mesh_representation_ = MR_EDGES;  std::cerr << "Drawing the edges\n";   break;
-    case MR_EDGES:  mesh_representation_ = MR_FACES;  std::cerr << "Drawing the faces.\n";  break;
-    case MR_FACES:  mesh_representation_ = MR_POINTS; std::cerr << "Drawing the points.\n"; break;
-    default: std::cerr << "ERROR in opengl_viewer.cpp: Unknown mesh representation\n"; exit (EXIT_FAILURE);
-  }
-}
-
-////////////////////////////////////////////////////////////////////////////////
-
-void
-pcl::ihs::OpenGLViewer::toggleColoring ()
-{
-  boost::mutex::scoped_lock lock (mutex_vis_);
-
-  switch (coloring_)
-  {
-    case COL_RGB:       coloring_ = COL_ONE_COLOR; std::cerr << "Use one color for all points.\n";                    break;
-    case COL_ONE_COLOR: coloring_ = COL_VISCONF;   std::cerr << "Coloring according to the visibility confidence.\n"; break;
-    case COL_VISCONF:   coloring_ = COL_RGB;       std::cerr << "Coloring according to the rgb values.\n";            break;
-    default: std::cerr << "ERROR in opengl_viewer.cpp: Unknown coloring\n"; exit (EXIT_FAILURE);
-  }
-}
-
-////////////////////////////////////////////////////////////////////////////////
-
-void
 pcl::ihs::OpenGLViewer::setVisibilityConfidenceNormalization (const float vis_conf_norm)
 {
   boost::mutex::scoped_lock lock (mutex_vis_);
 
   vis_conf_norm_ = vis_conf_norm < 1 ? 1 : vis_conf_norm;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-
-void
-pcl::ihs::OpenGLViewer::resetCamera ()
-{
-  boost::mutex::scoped_lock lock (mutex_vis_);
-
-  R_cam_ = Eigen::Quaterniond (1., 0., 0., 0.);
-  t_cam_ = Eigen::Vector3d    (0., 0., 0.);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -742,6 +703,80 @@ void
 pcl::ihs::OpenGLViewer::timerCallback ()
 {
   QWidget::update ();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+void
+pcl::ihs::OpenGLViewer::resetCamera ()
+{
+  boost::mutex::scoped_lock lock (mutex_vis_);
+
+  R_cam_ = Eigen::Quaterniond (1., 0., 0., 0.);
+  t_cam_ = Eigen::Vector3d    (0., 0., 0.);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+void
+pcl::ihs::OpenGLViewer::toggleMeshRepresentation ()
+{
+  switch (mesh_representation_)
+  {
+    case MR_POINTS: this->setMeshRepresentation (MR_EDGES);  break;
+    case MR_EDGES:  this->setMeshRepresentation (MR_FACES);  break;
+    case MR_FACES:  this->setMeshRepresentation (MR_POINTS); break;
+    default: std::cerr << "ERROR in opengl_viewer.cpp: Unknown mesh representation\n"; exit (EXIT_FAILURE);
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+void
+pcl::ihs::OpenGLViewer::setMeshRepresentation (const MeshRepresentation& representation)
+{
+  boost::mutex::scoped_lock lock (mutex_vis_);
+
+  switch (mesh_representation_)
+  {
+    case MR_POINTS: std::cerr << "Drawing the points.\n";   break;
+    case MR_EDGES:  std::cerr << "Drawing the edges.\n";  break;
+    case MR_FACES:  std::cerr << "Drawing the faces.\n"; break;
+    default: std::cerr << "ERROR in opengl_viewer.cpp: Unknown mesh representation\n"; exit (EXIT_FAILURE);
+  }
+
+  mesh_representation_ = representation;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+void
+pcl::ihs::OpenGLViewer::toggleColoring ()
+{
+  switch (coloring_)
+  {
+    case COL_RGB:       this->setColoring (COL_ONE_COLOR); break;
+    case COL_ONE_COLOR: this->setColoring (COL_VISCONF);   break;
+    case COL_VISCONF:   this->setColoring (COL_RGB);       break;
+    default: std::cerr << "ERROR in opengl_viewer.cpp: Unknown coloring\n"; exit (EXIT_FAILURE);
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+void
+pcl::ihs::OpenGLViewer::setColoring (const Coloring& coloring)
+{
+  boost::mutex::scoped_lock lock (mutex_vis_);
+
+  switch (coloring)
+  {
+    case COL_RGB:       std::cerr << "Coloring according to the rgb values.\n";            break;
+    case COL_ONE_COLOR: std::cerr << "Use one color for all points.\n";                    break;
+    case COL_VISCONF:   std::cerr << "Coloring according to the visibility confidence.\n"; break;
+    default: std::cerr << "ERROR in opengl_viewer.cpp: Unknown coloring\n"; exit (EXIT_FAILURE);
+  }
+  coloring_ = coloring;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

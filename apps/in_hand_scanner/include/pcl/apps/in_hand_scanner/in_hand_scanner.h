@@ -98,11 +98,10 @@ namespace pcl
         typedef boost::shared_ptr <Integration>       IntegrationPtr;
         typedef boost::shared_ptr <const Integration> IntegrationConstPtr;
 
-
         /** \brief Switch between different branches of the scanning pipeline. */
         typedef enum RunningMode
         {
-          RM_SHOW_MODEL          = 0, /**< Show the model shape (if one is available). */
+          RM_SHOW_MODEL          = 0, /**< Shows the model shape (if it is available). */
           RM_UNPROCESSED         = 1, /**< Shows the unprocessed input data. */
           RM_PROCESSED           = 2, /**< Shows the processed input data. */
           RM_REGISTRATION_CONT   = 3, /**< Registers new data to the first acquired data continuously. */
@@ -127,19 +126,49 @@ namespace pcl
         inline Integration&
         getIntegration () {return (*integration_);}
 
+      signals:
+
+        /** \brief Emitted when the running mode changes. */
+        void
+        runningModeChanged (RunningMode new_running_mode) const;
+
       public slots:
 
         /** \brief Start the grabber (enables the scanning pipeline). */
         void
         startGrabber ();
 
-        /** \brief Set which branches of the scanning pipeline is executed. */
+        /** \brief Shows the unprocessed input data. */
         void
-        setRunningMode (const RunningMode& mode);
+        showUnprocessedData ();
+
+        /** \brief Shows the processed input data. */
+        void
+        showProcessedData ();
+
+        /** \brief Registers new data to the first acquired data continuously. */
+        void
+        registerContinuously ();
+
+        /** \brief Registers new data once and returns to showing the processed data. */
+        void
+        registerOnce ();
+
+        /** \brief Show the model shape (if one is available). */
+        void
+        showModel ();
+
+        /** \brief Removes unfit vertices regardless of their age. Unfit vertices are those that have not been observed from enough directions. */
+        void
+        removeUnfitVertices ();
 
         /** \brief Reset the scanning pipeline. */
         void
         reset ();
+
+        /** \see http://doc.qt.digia.com/qt/qwidget.html#keyPressEvent */
+        void
+        keyPressEvent (QKeyEvent* event);
 
       private:
 
@@ -202,10 +231,6 @@ namespace pcl
         void
         startGrabberImpl ();
 
-        /** \see http://doc.qt.digia.com/qt/qwidget.html#keyPressEvent */
-        void
-        keyPressEvent (QKeyEvent* event);
-
         ////////////////////////////////////////////////////////////////////////
         // Members
         ////////////////////////////////////////////////////////////////////////
@@ -218,9 +243,6 @@ namespace pcl
 
         /** \brief Please have a look at the documentation of VisualizationFPS. */
         VisualizationFPS visualization_fps_;
-
-        /** \brief Set to true if the scanning pipeline should be reset. */
-        bool reset_;
 
         /** \brief Switch between different branches of the scanning pipeline. */
         RunningMode running_mode_;
@@ -261,5 +283,8 @@ namespace pcl
     };
   } // End namespace ihs
 } // End namespace pcl
+
+// http://doc.qt.digia.com/qt/qmetatype.html#Q_DECLARE_METATYPE
+Q_DECLARE_METATYPE (pcl::ihs::InHandScanner::RunningMode)
 
 #endif // PCL_APPS_IN_HAND_SCANNER_IN_HAND_SCANNER_H
