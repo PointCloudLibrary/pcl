@@ -69,6 +69,10 @@ void show_octree (const ORROctree& octree, PCLVisualizer& viz);
 bool vtk_to_pointcloud (const char* file_name, PointCloud<PointXYZ>& pcl_points, PointCloud<Normal>& pcl_normals);
 void node_to_cube (const ORROctree::Node* node, vtkAppendPolyData* additive_octree);
 
+#define _SHOW_INPUT_POINTS_
+#define _SHOW_OCTREE_POINTS_
+#define _SHOW_OCTREE_
+
 class CallbackParameters
 {
   public:
@@ -111,7 +115,7 @@ main (int argc, char** argv)
 void run (const char* file_name, float voxel_size)
 {
   PointCloud<PointXYZ>::Ptr points_in (new PointCloud<PointXYZ> ());
-  PointCloud<PointXYZ>::Ptr points_out (new PointCloud<PointXYZ> ());
+  PointCloud<PointXYZ>::Ptr points_octree (new PointCloud<PointXYZ> ());
   PointCloud<Normal>::Ptr normals_in (new PointCloud<Normal> ());
   PointCloud<Normal>::Ptr normals_out (new PointCloud<Normal> ());
 
@@ -130,20 +134,20 @@ void run (const char* file_name, float voxel_size)
   // The visualizer
   PCLVisualizer viz;
 
+#ifdef _SHOW_OCTREE_
   show_octree(objrec.getSceneOctree (), viz);
+#endif
 
-#ifdef _SHOW_POINTS_
-  // Get the point of every full octree leaf
-  objrec.getSceneOctree ().getFullLeafPoints (*points_out);
-
-  // Add the point clouds
+#ifdef _SHOW_INPUT_POINTS_
   viz.addPointCloud (points_in, "cloud in");
-  viz.addPointCloud (points_out, "cloud out");
-
-  // Change the appearance
   viz.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2, "cloud in");
-  viz.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 5, "cloud out");
-  viz.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_COLOR, 1.0, 0.0, 0.0, "cloud out");
+#endif
+
+#ifdef _SHOW_OCTREE_POINTS_
+  objrec.getSceneOctree ().getFullLeafPoints (*points_octree);
+  viz.addPointCloud (points_octree, "octree points");
+  viz.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 5, "octree points");
+  viz.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_COLOR, 1.0, 0.0, 0.0, "octree points");
 #endif
 
   // Enter the main loop

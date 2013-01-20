@@ -71,10 +71,12 @@ using namespace pcl::recognition;
 using namespace pcl::io;
 
 void run (const char *file_name, float voxel_size);
-bool vtk_to_pointcloud (const char* file_name, PointCloud<PointXYZ>& points_in, PointCloud<Normal>& normals_in);
+bool vtk_to_pointcloud (const char* file_name, PointCloud<PointXYZ>& pcl_points, PointCloud<Normal>* pcl_normals);
 void show_octree (ORROctree* octree, PCLVisualizer& viz, bool show_full_leaves_only);
 void node_to_cube (ORROctree::Node* node, vtkAppendPolyData* additive_octree);
 void updateViewer (ORROctree& octree, PCLVisualizer& viz, std::vector<ORROctree::Node*>::iterator leaf);
+
+#define _SHOW_OCTREE_NORMALS_
 
 class CallbackParameters
 {
@@ -95,7 +97,7 @@ int main (int argc, char ** argv)
   if ( argc != 3 )
   {
     fprintf(stderr, "\nERROR: Syntax is ./pcl_visualize_orr_octree <vtk file> <leaf_size>\n"
-                    "EXAMPLE: ./pcl_visualize_orr_octree ../../test/TUM_Rabbit.vtk 3\n\n");
+                    "EXAMPLE: ./pcl_visualize_orr_octree ../../test/TUM_Rabbit.vtk 6\n\n");
     return -1;
   }
 
@@ -184,8 +186,13 @@ void run (const char* file_name, float voxel_size)
   PointCloud<Normal>::Ptr normals_out (new PointCloud<Normal> ());
 
   // Get the points and normals from the input vtk file
-  if ( !vtk_to_pointcloud (file_name, *points_in, *normals_in) )
+#ifdef _SHOW_OCTREE_NORMALS_
+  if ( !vtk_to_pointcloud (file_name, *points_in, &(*normals_in)) )
     return;
+#else
+  if ( !vtk_to_pointcloud (file_name, *points_in, NULL) )
+    return;
+#endif
 
   // Build the octree with the desired resolution
   ORROctree octree;
@@ -237,7 +244,7 @@ void run (const char* file_name, float voxel_size)
 
 //===============================================================================================================================
 
-bool vtk_to_pointcloud (const char* file_name, PointCloud<PointXYZ>& pcl_points, PointCloud<Normal>& pcl_normals)
+bool vtk_to_pointcloud (const char* file_name, PointCloud<PointXYZ>& pcl_points, PointCloud<Normal>* pcl_normals)
 {
   size_t len = strlen (file_name);
   if ( file_name[len-3] != 'v' || file_name[len-2] != 't' || file_name[len-1] != 'k' )
@@ -270,16 +277,16 @@ bool vtk_to_pointcloud (const char* file_name, PointCloud<PointXYZ>& pcl_points,
 
   // Check if we have normals
   vtkDataArray *vtk_normals = vtk_poly->GetPointData ()->GetNormals ();
-  if ( vtk_normals )
+  if ( vtk_normals && pcl_normals )
   {
-    pcl_normals.resize (num_points);
+    pcl_normals->resize (num_points);
     // Copy the normals
     for ( vtkIdType i = 0 ; i < num_points ; ++i )
     {
       vtk_normals->GetTuple (i, p);
-      pcl_normals[i].normal_x = static_cast<float> (p[0]);
-      pcl_normals[i].normal_y = static_cast<float> (p[1]);
-      pcl_normals[i].normal_z = static_cast<float> (p[2]);
+      (*pcl_normals)[i].normal_x = static_cast<float> (p[0]);
+      (*pcl_normals)[i].normal_y = static_cast<float> (p[1]);
+      (*pcl_normals)[i].normal_z = static_cast<float> (p[2]);
     }
   }
 

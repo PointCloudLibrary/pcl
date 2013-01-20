@@ -234,7 +234,7 @@ namespace pcl
         getFullLeaves () const { return full_leaves_;}
 
         void
-        getFullLeafPoints (PointCloudOut& out);
+        getFullLeafPoints (PointCloudOut& out) const;
 
         void
         getNormalsOfFullLeaves (PointCloudN& out);
