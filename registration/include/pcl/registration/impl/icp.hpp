@@ -130,8 +130,11 @@ pcl::IterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransformat
 
   // If the guessed transformation is non identity
   if (guess != Matrix4::Identity ())
-    // Apply guessed transformation prior to search for neighbours
+  {
+    input_transformed->resize (input_->size ());
+     // Apply guessed transformation prior to search for neighbours
     transformCloud (*input_, *input_transformed, guess);
+  }
   else
     *input_transformed = *input_;
  
