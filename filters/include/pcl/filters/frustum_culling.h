@@ -102,6 +102,19 @@ namespace pcl
 
       /** \brief Set the pose of the camera w.r.t the origin
         * \param[in] camera_pose the camera pose
+        *
+        * Note: This assumes a coordinate system where X is forward, 
+        * Y is up, and Z is right. To convert from the traditional camera 
+        * coordinate system (X right, Y down, Z forward), one can use:
+        *
+        * \code
+        * Eigen::Matrix4f pose = //pose in camera coordinates
+        * Eigen::Matrix3f cam2robot;
+        * cam2robot << 0, 0, 1, 
+        *              0, -1, 0, 
+        *              1, 0, 0;
+        * pose.block (0, 0, 3, 3) = cam2robot.block (0, 0, 3, 3) * pose.block (0, 0, 3, 3); //rotate
+        * \endcode
         */
       void 
       setCameraPose (const Eigen::Matrix4f& camera_pose)

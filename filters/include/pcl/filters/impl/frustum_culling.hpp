@@ -137,9 +137,6 @@ pcl::FrustumCulling<PointT>::applyFilter (PointCloud& output)
 template <typename PointT> void
 pcl::FrustumCulling<PointT>::applyFilter (std::vector<int> &indices)
 {
-  int indices_count = 0;
-  int removed_indices_count = 0;
-
   Eigen::Vector4f pl_n; // near plane 
   Eigen::Vector4f pl_f; // far plane
   Eigen::Vector4f pl_t; // top plane
