@@ -83,7 +83,7 @@ namespace pcl
         bool stopped;
         int timer_id_;
 
-#ifdef _WIN32
+#if defined (_WIN32) && ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
         int BreakLoopFlag;                // if true quit the GetMessage loop
 
         virtual void 
