@@ -7,7 +7,7 @@
 
 #include <pcl/visualization/pcl_visualizer.h>
 
-pcl::visualization::PCLVisualizer viewer ("Curve Fitting PDM (red), SDM (green), TDM (blue)");
+pcl::visualization::PCLVisualizer viewer ("Curve Fitting 2D");
 
 void
 PointCloud2Vector2d (pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, pcl::on_nurbs::vector_vec2d &data)

@@ -36,26 +36,26 @@
  */
 
 #include <stdexcept>
-#include <pcl/surface/on_nurbs/fitting_cylinder_pdm.h>
+#include <pcl/surface/on_nurbs/fitting_sphere_pdm.h>
 
 using namespace pcl;
 using namespace on_nurbs;
 using namespace Eigen;
 
-FittingCylinder::FittingCylinder (int order, NurbsDataSurface *data)
+FittingSphere::FittingSphere (int order, NurbsDataSurface *data)
 {
   if (order < 2)
-    throw std::runtime_error ("[FittingCylinder::FittingCylinder] Error order to low (order<2).");
+    throw std::runtime_error ("[FittingSphere::FittingSphere] Error order to low (order<2).");
 
   ON::Begin ();
 
   m_data = data;
-  m_nurbs = initNurbsPCACylinder (order, m_data);
+  m_nurbs = initNurbsSphere (order, m_data);
 
   this->init ();
 }
 
-FittingCylinder::FittingCylinder (NurbsDataSurface *data, const ON_NurbsSurface &ns)
+FittingSphere::FittingSphere (NurbsDataSurface *data, const ON_NurbsSurface &ns)
 {
   ON::Begin ();
 
@@ -66,7 +66,7 @@ FittingCylinder::FittingCylinder (NurbsDataSurface *data, const ON_NurbsSurface 
 }
 
 void
-FittingCylinder::init ()
+FittingSphere::init ()
 {
   in_max_steps = 100;
   in_accuracy = 1e-4;
@@ -75,59 +75,7 @@ FittingCylinder::init ()
 }
 
 void
-FittingCylinder::refine (int dim)
-{
-  std::vector<double> xi;
-  std::vector<double> elements = getElementVector (m_nurbs, dim);
-
-  for (unsigned i = 0; i < elements.size () - 1; i++)
-    xi.push_back (elements[i] + 0.5 * (elements[i + 1] - elements[i]));
-
-  for (unsigned i = 0; i < xi.size (); i++)
-    m_nurbs.InsertKnot (dim, xi[i], 1);
-}
-
-void
-FittingCylinder::refine (int dim, double param)
-{
-  std::vector<double> elements = getElementVector (m_nurbs, dim);
-
-  if (param == elements[elements.size () - 1])
-  {
-    int i = int (elements.size ()) - 2;
-    double xi = elements[i] + 0.5 * (elements[i + 1] - elements[i]);
-    m_nurbs.InsertKnot (dim, xi);
-    return;
-  }
-
-  for (unsigned i = 0; i < elements.size () - 1; i++)
-  {
-    if (param >= elements[i] && param < elements[i + 1])
-    {
-      double xi = elements[i] + 0.5 * (elements[i + 1] - elements[i]);
-      m_nurbs.InsertKnot (dim, xi);
-    }
-  }
-}
-
-void
-FittingCylinder::refine (int dim, unsigned span_index)
-{
-  std::vector<double> elements = getElementVector (m_nurbs, dim);
-
-  if (span_index > int (elements.size ()) - 2)
-  {
-    printf ("[NurbsTools::refine(int, unsigned)] Warning span index out of bounds\n");
-    return;
-  }
-
-  double xi = elements[span_index] + 0.5 * (elements[span_index + 1] - elements[span_index]);
-
-  m_nurbs.InsertKnot (dim, xi);
-}
-
-void
-FittingCylinder::assemble (double smoothness)
+FittingSphere::assemble (double smoothness)
 {
   int cp_red = (m_nurbs.m_order[1] - 2);
   int ncp = m_nurbs.m_cv_count[0] * (m_nurbs.m_cv_count[1] - 2 * cp_red);
@@ -142,7 +90,7 @@ FittingCylinder::assemble (double smoothness)
   int nrows = nInt + nCageRegInt + nCageRegBnd;
 
   if (!m_quiet)
-    printf ("[FittingCylinder::assemble] %dx%d (invmap: %f %d)\n", nrows, ncp, in_accuracy, in_max_steps);
+    printf ("[FittingSphere::assemble] %dx%d (invmap: %f %d)\n", nrows, ncp, in_accuracy, in_max_steps);
 
   m_solver.assign (nrows, ncp, 3);
 
@@ -163,14 +111,14 @@ FittingCylinder::assemble (double smoothness)
 }
 
 void
-FittingCylinder::solve (double damp)
+FittingSphere::solve (double damp)
 {
   if (m_solver.solve ())
     updateSurf (damp);
 }
 
 void
-FittingCylinder::updateSurf (double)
+FittingSphere::updateSurf (double)
 {
   int cp_red = (m_nurbs.m_order[1] - 2);
 
@@ -206,79 +154,88 @@ FittingCylinder::updateSurf (double)
 }
 
 void
-FittingCylinder::setInvMapParams (int in_max_steps, double in_accuracy)
+FittingSphere::setInvMapParams (int in_max_steps, double in_accuracy)
 {
   this->in_max_steps = in_max_steps;
   this->in_accuracy = in_accuracy;
 }
 
 ON_NurbsSurface
-FittingCylinder::initNurbsPCACylinder (int order, NurbsDataSurface *data)
+FittingSphere::initNurbsSphere (int order, NurbsDataSurface *data, Eigen::Vector3d pole_axis)
 {
-  Eigen::Vector3d mean;
-  Eigen::Matrix3d eigenvectors;
-  Eigen::Vector3d eigenvalues;
+  Eigen::Vector3d mean = NurbsTools::computeMean (data->interior);
 
-  unsigned s = unsigned (data->interior.size ());
-
-  NurbsTools::pca (data->interior, mean, eigenvectors, eigenvalues);
-
-  data->mean = mean;
-  data->eigenvectors = eigenvectors;
-
-  eigenvalues = eigenvalues / s; // seems that the eigenvalues are dependent on the number of points (???)
-
-  Eigen::Vector3d v_max (0.0, 0.0, 0.0);
-  Eigen::Vector3d v_min (DBL_MAX, DBL_MAX, DBL_MAX);
-  for (unsigned i = 0; i < s; i++)
+  Eigen::Vector3d _min (DBL_MAX, DBL_MAX, DBL_MAX);
+  Eigen::Vector3d _max (-DBL_MAX, -DBL_MAX, -DBL_MAX);
+  for (int i = 0; i < data->interior.size (); i++)
   {
-    Eigen::Vector3d p (eigenvectors.inverse () * (data->interior[i] - mean));
+    Eigen::Vector3d p = data->interior[i] - mean;
 
-    if (p (0) > v_max (0))
-      v_max (0) = p (0);
-    if (p (1) > v_max (1))
-      v_max (1) = p (1);
-    if (p (2) > v_max (2))
-      v_max (2) = p (2);
+    if (p (0) < _min (0))
+      _min (0) = p (0);
+    if (p (1) < _min (1))
+      _min (1) = p (1);
+    if (p (2) < _min (2))
+      _min (2) = p (2);
 
-    if (p (0) < v_min (0))
-      v_min (0) = p (0);
-    if (p (1) < v_min (1))
-      v_min (1) = p (1);
-    if (p (2) < v_min (2))
-      v_min (2) = p (2);
+    if (p (0) > _max (0))
+      _max (0) = p (0);
+    if (p (1) > _max (1))
+      _max (1) = p (1);
+    if (p (2) > _max (2))
+      _max (2) = p (2);
   }
 
-  int ncpsU (order);
+  int ncpsU (order + 2);
   int ncpsV (2 * order + 4);
   ON_NurbsSurface nurbs (3, false, order, order, ncpsU, ncpsV);
   nurbs.MakeClampedUniformKnotVector (0, 1.0);
   nurbs.MakePeriodicUniformKnotVector (1, 1.0 / (ncpsV - order + 1));
 
-  double dcu = (v_max (0) - v_min (0)) / (ncpsU - 1);
+  double dcu = (_max (2) - _min (2)) / (ncpsU - 3);
   double dcv = (2.0 * M_PI) / (ncpsV - order + 1);
 
-  double ry = std::max<double> (std::fabs (v_min (1)), std::fabs (v_max (1)));
-  double rz = std::max<double> (std::fabs (v_min (2)), std::fabs (v_max (2)));
+  double rx = std::max<double> (std::fabs (_min (0)), std::fabs (_max (0)));
+  double ry = std::max<double> (std::fabs (_min (1)), std::fabs (_max (1)));
 
   Eigen::Vector3d cv_t, cv;
+  //  for (int i = 1; i < ncpsU - 1; i++)
   for (int i = 0; i < ncpsU; i++)
   {
     for (int j = 0; j < ncpsV; j++)
     {
-      cv (0) = v_min (0) + dcu * i;
-      cv (1) = ry * sin (dcv * j);
-      cv (2) = rz * cos (dcv * j);
-      cv_t = eigenvectors * cv + mean;
+
+      cv (0) = rx * sin (dcv * j);
+      cv (1) = ry * cos (dcv * j);
+      cv (2) = _min (2) + dcu * (i - 1);
+      cv_t = cv + mean;
       nurbs.SetCV (i, j, ON_3dPoint (cv_t (0), cv_t (1), cv_t (2)));
     }
   }
+
+  //  for (int j = 0; j < ncpsV; j++)
+  //  {
+  //    cv (0) = 0.0;
+  //    cv (1) = 0.0;
+  //    cv (2) = _min (2);
+  //    cv_t = cv + mean;
+  //    nurbs.SetCV (0, j, ON_3dPoint (cv_t (0), cv_t (1), cv_t (2)));
+  //  }
+  //
+  //  for (int j = 0; j < ncpsV; j++)
+  //  {
+  //    cv (0) = 0.0;
+  //    cv (1) = 0.0;
+  //    cv (2) = _max (2);
+  //    cv_t = cv + mean;
+  //    nurbs.SetCV (ncpsU - 1, j, ON_3dPoint (cv_t (0), cv_t (1), cv_t (2)));
+  //  }
 
   return nurbs;
 }
 
 std::vector<double>
-FittingCylinder::getElementVector (const ON_NurbsSurface &nurbs, int dim) // !
+FittingSphere::getElementVector (const ON_NurbsSurface &nurbs, int dim) // !
 {
   std::vector<double> result;
 
@@ -330,13 +287,13 @@ FittingCylinder::getElementVector (const ON_NurbsSurface &nurbs, int dim) // !
 
   }
   else
-    printf ("[FittingCylinder::getElementVector] Error, index exceeds problem dimensions!\n");
+    printf ("[FittingSphere::getElementVector] Error, index exceeds problem dimensions!\n");
 
   return result;
 }
 
 void
-FittingCylinder::assembleInterior (double wInt, unsigned &row)
+FittingSphere::assembleInterior (double wInt, unsigned &row)
 {
   m_data->interior_line_start.clear ();
   m_data->interior_line_end.clear ();
@@ -377,8 +334,8 @@ FittingCylinder::assembleInterior (double wInt, unsigned &row)
 }
 
 void
-FittingCylinder::addPointConstraint (const Eigen::Vector2d &params, const Eigen::Vector3d &point, double weight,
-                                     unsigned &row)
+FittingSphere::addPointConstraint (const Eigen::Vector2d &params, const Eigen::Vector3d &point, double weight,
+                                   unsigned &row)
 {
   double *N0 = new double[m_nurbs.m_order[0] * m_nurbs.m_order[0]];
   double *N1 = new double[m_nurbs.m_order[1] * m_nurbs.m_order[1]];
@@ -407,12 +364,12 @@ FittingCylinder::addPointConstraint (const Eigen::Vector2d &params, const Eigen:
 
   row++;
 
-  delete [] N1;
-  delete [] N0;
+  delete[] N1;
+  delete[] N0;
 }
 
 void
-FittingCylinder::addCageInteriorRegularisation (double weight, unsigned &row)
+FittingSphere::addCageInteriorRegularisation (double weight, unsigned &row)
 {
   int cp_red = (m_nurbs.m_order[1] - 2);
 
@@ -437,7 +394,7 @@ FittingCylinder::addCageInteriorRegularisation (double weight, unsigned &row)
 }
 
 void
-FittingCylinder::addCageBoundaryRegularisation (double weight, int side, unsigned &row)
+FittingSphere::addCageBoundaryRegularisation (double weight, int side, unsigned &row)
 {
   int cp_red = (m_nurbs.m_order[1] - 2);
   int i = 0;
@@ -466,10 +423,9 @@ FittingCylinder::addCageBoundaryRegularisation (double weight, int side, unsigne
 }
 
 Vector2d
-FittingCylinder::inverseMapping (const ON_NurbsSurface &nurbs, const Vector3d &pt, const Vector2d &hint, double &error,
-                                 Vector3d &p, Vector3d &tu, Vector3d &tv, int maxSteps, double accuracy, bool quiet)
+FittingSphere::inverseMapping (const ON_NurbsSurface &nurbs, const Vector3d &pt, const Vector2d &hint, double &error,
+                               Vector3d &p, Vector3d &tu, Vector3d &tv, int maxSteps, double accuracy, bool quiet)
 {
-
   double pointAndTangents[9];
 
   Vector2d current, delta;
@@ -538,7 +494,7 @@ FittingCylinder::inverseMapping (const ON_NurbsSurface &nurbs, const Vector3d &p
 
   if (!quiet)
   {
-    printf ("[FittingCylinder::inverseMapping] Warning: Method did not converge (%e %d)\n", accuracy, maxSteps);
+    printf ("[FittingSphere::inverseMapping] Warning: Method did not converge (%e %d)\n", accuracy, maxSteps);
     printf ("  %f %f ... %f %f\n", hint (0), hint (1), current (0), current (1));
   }
 
@@ -546,7 +502,7 @@ FittingCylinder::inverseMapping (const ON_NurbsSurface &nurbs, const Vector3d &p
 }
 
 Vector2d
-FittingCylinder::findClosestElementMidPoint (const ON_NurbsSurface &nurbs, const Vector3d &pt)
+FittingSphere::findClosestElementMidPoint (const ON_NurbsSurface &nurbs, const Vector3d &pt)
 {
   Vector2d hint;
   Vector3d r;
