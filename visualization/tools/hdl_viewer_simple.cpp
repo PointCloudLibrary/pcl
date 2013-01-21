@@ -223,6 +223,7 @@ main (int argc, char ** argv)
 
   HDLGrabber grabber (hdlCalibration, pcapFile);
 
+  cout << format << endl;
   if (boost::iequals (format, std::string ("XYZ")))
   {
     std::vector<double> fcolor (3); fcolor[0] = fcolor[1] = fcolor[2] = 255.0;
