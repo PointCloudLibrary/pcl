@@ -208,13 +208,16 @@ pcl::FrustumCulling<PointT>::applyFilter (std::vector<int> &indices)
   pl_t (3) = -T.dot (pl_t.block (0, 0, 3, 1));
   pl_b (3) = -T.dot (pl_b.block (0, 0, 3, 1));
 
-  removed_indices_->reserve (indices.size ());
-
-  for (int i = 0; i < int (indices.size ()); i++) 
+  removed_indices_->clear ();
+  removed_indices_->reserve (indices_->size ());
+  indices.clear ();
+  indices.reserve (indices_->size ());
+  for (size_t i = 0; i < indices_->size (); i++) 
   {
-    Eigen::Vector4f pt (input_->points[indices[i]].x,
-                        input_->points[indices[i]].y,
-                        input_->points[indices[i]].z,
+    int idx = indices_->at (i);
+    Eigen::Vector4f pt (input_->points[idx].x,
+                        input_->points[idx].y,
+                        input_->points[idx].z,
                         1.0f);
 
     if ( (pt.dot (pl_l) <= 0) && 
@@ -226,16 +229,11 @@ pcl::FrustumCulling<PointT>::applyFilter (std::vector<int> &indices)
     {
       if (extract_removed_indices_)
       {
-        (*removed_indices_)[removed_indices_count++] = static_cast<int> (i);
+        removed_indices_->push_back (idx);
       }
-      else 
-      {
-        indices[indices_count++] = (*indices_)[i];
-      }
+      indices.push_back (idx);
     }
   }
-  indices.resize (indices_count);
-  removed_indices_->resize (removed_indices_count);
 }
 
 #define PCL_INSTANTIATE_FrustumCulling(T) template class PCL_EXPORTS pcl::FrustumCulling<T>;
