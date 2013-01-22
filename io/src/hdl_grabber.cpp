@@ -148,9 +148,9 @@ pcl::HDLGrabber::initialize (const std::string& correctionsFile)
   for (int i = 0; i < HDL_MAX_NUM_LASERS; i++)
   {
     HDLLaserCorrection correction = laser_corrections_[i];
-    correction.sinVertOffsetCorrection = correction.verticalOffsetCorrection
+    laser_corrections_[i].sinVertOffsetCorrection = correction.verticalOffsetCorrection
                                        * correction.sinVertCorrection;
-    correction.cosVertOffsetCorrection = correction.verticalOffsetCorrection
+    laser_corrections_[i].cosVertOffsetCorrection = correction.verticalOffsetCorrection
                                        * correction.cosVertCorrection;
   }
   sweep_xyz_signal_ = createSignal<sig_cb_velodyne_hdl_sweep_point_cloud_xyz> ();
@@ -315,7 +315,6 @@ pcl::HDLGrabber::toPointClouds (HDLDataPacket *dataPacket)
   current_scan_xyz_.reset (new pcl::PointCloud<pcl::PointXYZ> ());
   current_scan_xyzrgb_.reset (new pcl::PointCloud<pcl::PointXYZRGBA> ());
   current_scan_xyzi_.reset (new pcl::PointCloud<pcl::PointXYZI> ());
-
   for (int i = 0; i < HDL_FIRING_PER_PKT; ++i)
   {
     HDLFiringData firingData = dataPacket->firingData[i];
@@ -346,7 +345,6 @@ pcl::HDLGrabber::toPointClouds (HDLDataPacket *dataPacket)
       xyz.z = xyzrgb.z = xyzi.z;
 
       xyzrgb.rgba = laser_rgb_mapping_[j + offset].rgba;
-
       if ((boost::math::isnan)(xyz.x) ||
           (boost::math::isnan)(xyz.y) ||
           (boost::math::isnan)(xyz.z)) {
@@ -366,7 +364,6 @@ pcl::HDLGrabber::toPointClouds (HDLDataPacket *dataPacket)
   }
 
   current_scan_xyz_->is_dense = current_scan_xyzrgb_->is_dense = current_scan_xyzi_->is_dense = true;
-
   fireCurrentScan (dataPacket->firingData[0].rotationalPosition, 
                    dataPacket->firingData[11].rotationalPosition);
 }
