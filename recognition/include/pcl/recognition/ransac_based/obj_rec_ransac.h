@@ -123,13 +123,10 @@ namespace pcl
     	class Hypothesis
     	{
           public:
-            Hypothesis (ModelLibrary::Model* obj_model): obj_model_ (obj_model){}
-            Hypothesis (const Hypothesis& src)
-             : match_confidence_ (0.0f), obj_model_ (src.obj_model_)
-            {
-              for ( int i = 0 ; i < 12 ; ++i )
-                this->rigid_transform_[i] = src.rigid_transform_[i];
-            }
+            Hypothesis (ModelLibrary::Model* obj_model)
+             : match_confidence_ (0.0f),
+               obj_model_ (obj_model)
+            {}
             virtual ~Hypothesis (){}
 
           public:
@@ -244,13 +241,13 @@ namespace pcl
         sampleOrientedPointPairs (int num_iterations, std::vector<ORROctree::Node*>& full_scene_leaves, std::list<OrientedPointPair>& output);
 
         int
-        generateHypotheses(const std::list<OrientedPointPair>& pairs, std::list<Hypothesis>& out);
+        generateHypotheses(const std::list<OrientedPointPair>& pairs, std::list<Hypothesis*>& out);
 
         void
-        testHypotheses (std::list<Hypothesis>& hypotheses, std::vector<Hypothesis>& accepted_hypotheses);
+        testHypotheses (std::list<Hypothesis*>& hypotheses, std::vector<Hypothesis*>& accepted_hypotheses);
 
         void
-        buildConflictGraph (std::vector<Hypothesis>& hypotheses, ORRGraph& graph);
+        buildConflictGraph (std::vector<Hypothesis*>& hypotheses, ORRGraph& graph);
 
         void
         filterWeakHypotheses (ORRGraph& graph, std::list<ObjRecRANSAC::Output>& recognized_objects);

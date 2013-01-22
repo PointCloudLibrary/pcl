@@ -172,7 +172,7 @@ namespace pcl
       /** The first 9 elements of 't' are treated as a 3x3 matrix (row major order) and the last 3 as a translation.
         * First, 'p' is multiplied by that matrix and then translated. The result is saved in 'out'. */
       template<class T> void
-      transform_point(const T t[12], const T p[3], T out[3])
+      transform(const T t[12], const T p[3], T out[3])
       {
         out[0] = t[0]*p[0] + t[1]*p[1] + t[2]*p[2] + t[9];
         out[1] = t[3]*p[0] + t[4]*p[1] + t[5]*p[2] + t[10];
