@@ -237,7 +237,7 @@ namespace pcl
         getFullLeafPoints (PointCloudOut& out) const;
 
         void
-        getNormalsOfFullLeaves (PointCloudN& out);
+        getNormalsOfFullLeaves (PointCloudN& out) const;
 
         ORROctree::Node*
         getRoot (){ return root_;}

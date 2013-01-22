@@ -444,13 +444,13 @@ pcl::recognition::ORROctree::getFullLeafPoints (PointCloudOut& out) const
 //================================================================================================================================================================
 
 void
-pcl::recognition::ORROctree::getNormalsOfFullLeaves (PointCloudN& out)
+pcl::recognition::ORROctree::getNormalsOfFullLeaves (PointCloudN& out) const
 {
   out.resize(full_leaves_.size ());
   size_t i = 0;
 
   // Now iterate over all full leaves and compute the normals and average points
-  for ( vector<ORROctree::Node*>::iterator it = full_leaves_.begin() ; it != full_leaves_.end() ; ++it, ++i )
+  for ( vector<ORROctree::Node*>::const_iterator it = full_leaves_.begin() ; it != full_leaves_.end() ; ++it, ++i )
   {
     out[i].normal_x = (*it)->getData ()->getNormal ()[0];
     out[i].normal_y = (*it)->getData ()->getNormal ()[1];

@@ -167,25 +167,17 @@ pcl::recognition::ObjRecRANSAC::sampleOrientedPointPairs (int num_iterations, ve
     p1 = leaf1->getData ()->getPoint ();
     n1 = leaf1->getData ()->getNormal ();
 
-//    printf ("getting a random leaf an a sphere ...\n");
-
     // Randomly select a leaf at the right distance from 'leaves[i]'
     leaf2 = scene_octree_.getRandomFullLeafOnSphere (p1, pair_width_);
     if ( !leaf2 )
       continue;
 
-//    printf ("got it!\n");
-
     // Get the leaf's point and normal
     p2 = leaf2->getData ()->getPoint ();
     n2 = leaf2->getData ()->getNormal ();
 
-//    printf ("saving the opp ...\n");
-
     // Save the sampled point pair
     output.push_back (OrientedPointPair (p1, n1, p2, n2));
-
-//    printf ("done!\n");
   }
 
 #ifdef OBJ_REC_RANSAC_VERBOSE
@@ -204,7 +196,6 @@ pcl::recognition::ObjRecRANSAC::generateHypotheses (const list<OrientedPointPair
   float hash_table_key[3];
   const float *model_p1, *model_n1, *model_p2, *model_n2;
   const float *scene_p1, *scene_n1, *scene_p2, *scene_n2;
-  list<OrientedPointPair>::const_iterator pair;
   int i, num_hypotheses = 0;
   ModelLibrary::Model* obj_model;
 
@@ -212,7 +203,7 @@ pcl::recognition::ObjRecRANSAC::generateHypotheses (const list<OrientedPointPair
   printf("ObjRecRANSAC::%s(): generating hypotheses ... ", __func__); fflush (stdout);
 #endif
 
-  for ( pair = pairs.begin () ; pair != pairs.end () ; ++pair )
+  for ( list<OrientedPointPair>::const_iterator pair = pairs.begin () ; pair != pairs.end () ; ++pair )
   {
     // Just to make the code more readable
     scene_p1 = (*pair).p1_;
@@ -230,6 +221,7 @@ pcl::recognition::ObjRecRANSAC::generateHypotheses (const list<OrientedPointPair
       // Check for all models in the current cell
       for ( cell_it = neigh_cells[i]->begin () ; cell_it != neigh_cells[i]->end () ; ++cell_it )
       {
+        // For better code readability
         obj_model = (*cell_it).first;
         ModelLibrary::node_data_pair_list& model_pairs = (*cell_it).second;
 
@@ -486,58 +478,6 @@ pcl::recognition::ObjRecRANSAC::filterWeakHypotheses (ORRGraph& graph, list<ObjR
     for ( set<ORRGraph::Node*>::iterator neigh = (*it)->neighbors_.begin () ; neigh != (*it)->neighbors_.end () ; ++neigh )
       (*neigh)->state_ = ORRGraph::Node::OFF;
   }
-}
-
-//=========================================================================================================================================================================
-
-void
-pcl::recognition::ObjRecRANSAC::computeRigidTransform (
-  const float *a1, const float *a1_n, const float *b1, const float* b1_n,
-  const float *a2, const float *a2_n, const float *b2, const float* b2_n,
-  float* rigid_transform) const
-{
-	// Some local variables
-	float o1[3], o2[3], x1[3], x2[3], y1[3], y2[3], z1[3], z2[3], tmp1[3], tmp2[3], Ro1[3];
-	float invFrame1[3][3], rot[3][3];
-
-	// Compute the origins
-	o1[0] = 0.5f*(a1[0] + b1[0]);
-	o1[1] = 0.5f*(a1[1] + b1[1]);
-	o1[2] = 0.5f*(a1[2] + b1[2]);
-
-	o2[0] = 0.5f*(a2[0] + b2[0]);
-	o2[1] = 0.5f*(a2[1] + b2[1]);
-	o2[2] = 0.5f*(a2[2] + b2[2]);
-
-	// Compute the x-axes
-	aux::vecDiff3 (b1, a1, x1); aux::vecNormalize3 (x1);
-	aux::vecDiff3 (b2, a2, x2); aux::vecNormalize3 (x2);
-	// Compute the y-axes. First y-axis
-	aux::projectOnPlane3 (a1_n, x1, tmp1); aux::vecNormalize3 (tmp1);
-	aux::projectOnPlane3 (b1_n, x1, tmp2); aux::vecNormalize3 (tmp2);
-	aux::vecSum3 (tmp1, tmp2, y1); aux::vecNormalize3 (y1);
-	// Second y-axis
-	aux::projectOnPlane3 (a2_n, x2, tmp1); aux::vecNormalize3 (tmp1);
-	aux::projectOnPlane3 (b2_n, x2, tmp2); aux::vecNormalize3 (tmp2);
-	aux::vecSum3 (tmp1, tmp2, y2); aux::vecNormalize3 (y2);
-	// Compute the z-axes
-	aux::vecCross3 (x1, y1, z1);
-	aux::vecCross3 (x2, y2, z2);
-
-	// 1. Invert [x1 y1 z1]
-	invFrame1[0][0] = x1[0]; invFrame1[0][1] = x1[1]; invFrame1[0][2] = x1[2];
-	invFrame1[1][0] = y1[0]; invFrame1[1][1] = y1[1]; invFrame1[1][2] = y1[2];
-	invFrame1[2][0] = z1[0]; invFrame1[2][1] = z1[1]; invFrame1[2][2] = z1[2];
-	// 2. Multiply
-	aux::mult3x3 (x2, y2, z2, invFrame1, rot);
-
-	// Construct the rotational part
-	aux::copy3x3 (rot, rigid_transform);
-	// Construct the translation
-	aux::mult3x3 (rot, o1, Ro1);
-	rigid_transform[9]  = o2[0] - Ro1[0];
-	rigid_transform[10] = o2[1] - Ro1[1];
-	rigid_transform[11] = o2[2] - Ro1[2];
 }
 
 //=========================================================================================================================================================================

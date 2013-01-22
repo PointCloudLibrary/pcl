@@ -130,8 +130,7 @@ namespace pcl
         return (v[0]*v[0] + v[1]*v[1] + v[2]*v[2]);
       }
 
-      /** Projects 'x' on the plane through 0 and with normal 'planeNormal' and saves the result in 'out'.
-        * All arrays are assumed to have enough space for three doubles. */
+      /** Projects 'x' on the plane through 0 and with normal 'planeNormal' and saves the result in 'out'. */
       template <typename T> void
       projectOnPlane3 (const T x[3], const T planeNormal[3], T out[3])
       {
@@ -141,38 +140,33 @@ namespace pcl
         vecSum3 (x, nproj, out);
       }
 
-      /** dst = src. 'src' is a 3x3 array and 'dst' is in row major order. */
+      /** \brief out = mat*v. 'm' is an 1D array of 9 elements treated as a 3x3 matrix (row major order). */
       template <typename T> void
-      copy3x3 (const T src[3][3], T dst[9])
+      mult3x3(const T m[9], const T v[3], T out[3])
       {
-        dst[0] = src[0][0]; dst[1] = src[0][1]; dst[2] = src[0][2];
-        dst[3] = src[1][0]; dst[4] = src[1][1]; dst[5] = src[1][2];
-        dst[6] = src[2][0]; dst[7] = src[2][1]; dst[8] = src[2][2];
+      	out[0] = v[0]*m[0] + v[1]*m[1] + v[2]*m[2];
+      	out[1] = v[0]*m[3] + v[1]*m[4] + v[2]*m[5];
+      	out[2] = v[0]*m[6] + v[1]*m[7] + v[2]*m[8];
       }
 
+      /** Let x, y, z be the columns of the matrix a = [x|y|z]. The method computes out = a*m.
+        * Note that 'out' is a 1D array of 9 elements and the resulting matrix is stored in row
+        * major order, i.e., the first matrix row is (out[0] out[1] out[2]), the second
+        * (out[3] out[4] out[5]) and the third (out[6] out[7] out[8]). */
       template <typename T> void
-      mult3x3(const T mat[3][3], const T v[3], T out[3])
+      mult3x3 (const T x[3], const T y[3], const T z[3], const T m[3][3], T out[9])
       {
-      	out[0] = v[0]*mat[0][0] + v[1]*mat[0][1] + v[2]*mat[0][2];
-      	out[1] = v[0]*mat[1][0] + v[1]*mat[1][1] + v[2]*mat[1][2];
-      	out[2] = v[0]*mat[2][0] + v[1]*mat[2][1] + v[2]*mat[2][2];
-      }
+        out[0] = x[0]*m[0][0] + y[0]*m[1][0] + z[0]*m[2][0];
+        out[1] = x[0]*m[0][1] + y[0]*m[1][1] + z[0]*m[2][1];
+        out[2] = x[0]*m[0][2] + y[0]*m[1][2] + z[0]*m[2][2];
 
-      /** Let x, y, z be the columns of the matrix a = [x y z]. The method computes out = a*m. */
-      template <typename T> void
-      mult3x3 (const T x[3], const T y[3], const T z[3], const T m[3][3], T out[3][3])
-      {
-        out[0][0] = x[0]*m[0][0] + y[0]*m[1][0] + z[0]*m[2][0];
-        out[0][1] = x[0]*m[0][1] + y[0]*m[1][1] + z[0]*m[2][1];
-        out[0][2] = x[0]*m[0][2] + y[0]*m[1][2] + z[0]*m[2][2];
+        out[3] = x[1]*m[0][0] + y[1]*m[1][0] + z[1]*m[2][0];
+        out[4] = x[1]*m[0][1] + y[1]*m[1][1] + z[1]*m[2][1];
+        out[5] = x[1]*m[0][2] + y[1]*m[1][2] + z[1]*m[2][2];
 
-        out[1][0] = x[1]*m[0][0] + y[1]*m[1][0] + z[1]*m[2][0];
-        out[1][1] = x[1]*m[0][1] + y[1]*m[1][1] + z[1]*m[2][1];
-        out[1][2] = x[1]*m[0][2] + y[1]*m[1][2] + z[1]*m[2][2];
-
-        out[2][0] = x[2]*m[0][0] + y[2]*m[1][0] + z[2]*m[2][0];
-        out[2][1] = x[2]*m[0][1] + y[2]*m[1][1] + z[2]*m[2][1];
-        out[2][2] = x[2]*m[0][2] + y[2]*m[1][2] + z[2]*m[2][2];
+        out[6] = x[2]*m[0][0] + y[2]*m[1][0] + z[2]*m[2][0];
+        out[7] = x[2]*m[0][1] + y[2]*m[1][1] + z[2]*m[2][1];
+        out[8] = x[2]*m[0][2] + y[2]*m[1][2] + z[2]*m[2][2];
       }
 
       /** The first 9 elements of 't' are treated as a 3x3 matrix (row major order) and the last 3 as a translation.

@@ -53,7 +53,7 @@
 #include <vtkDoubleArray.h>
 #include <vtkDataArray.h>
 #include <vtkPointData.h>
-#include <vtkGlyph3D.h>
+#include <vtkHedgeHog.h>
 #include <cstdio>
 #include <vector>
 
@@ -64,25 +64,33 @@ using namespace console;
 using namespace recognition;
 using namespace visualization;
 
+class CallbackParameters;
+
 void run (const char* file_name, float voxel_size);
 void show_octree (const ORROctree& octree, PCLVisualizer& viz);
 bool vtk_to_pointcloud (const char* file_name, PointCloud<PointXYZ>& pcl_points, PointCloud<Normal>& pcl_normals);
 void node_to_cube (const ORROctree::Node* node, vtkAppendPolyData* additive_octree);
+void update (CallbackParameters* params);
 
-#define _SHOW_INPUT_POINTS_
+//#define _SHOW_INPUT_POINTS_
 #define _SHOW_OCTREE_POINTS_
-#define _SHOW_OCTREE_
+//#define _SHOW_OCTREE_NORMALS_
+//#define _SHOW_OCTREE_
 
 class CallbackParameters
 {
   public:
-    CallbackParameters (list<ObjRecRANSAC::OrientedPointPair>& opps, PCLVisualizer& viz)
-    : opps_(opps),
-      viz_(viz)
+    CallbackParameters (ObjRecRANSAC& objrec, PCLVisualizer& viz, PointCloud<PointXYZ>* points, PointCloud<Normal>* normals)
+    : objrec_ (objrec),
+      viz_ (viz),
+      points_ (points),
+      normals_ (normals)
     { }
 
-    list<ObjRecRANSAC::OrientedPointPair>& opps_;
+    ObjRecRANSAC& objrec_;
     PCLVisualizer& viz_;
+    PointCloud<PointXYZ>* points_;
+    PointCloud<Normal>* normals_;
 };
 
 //===========================================================================================================================================
@@ -112,12 +120,78 @@ main (int argc, char** argv)
 
 //===============================================================================================================================
 
+void keyboardCB (const pcl::visualization::KeyboardEvent &event, void* params_void)
+{
+  if (event.getKeyCode () == 13 /*enter*/ && event.keyUp ())
+    update (static_cast<CallbackParameters*> (params_void));
+}
+
+//===============================================================================================================================
+
+void update (CallbackParameters* params)
+{
+  list<ObjRecRANSAC::Output> dummy_output;
+
+  // Run the recognition method
+  params->objrec_.recognize (params->points_, params->normals_, dummy_output);
+
+  // Build the vtk objects visualizing the lines between the opps
+  const list<ObjRecRANSAC::OrientedPointPair>& opps = params->objrec_.getSampledOrientedPointPairs ();
+  cout << "There is (are) " << opps.size () << " oriented point pair(s).\n";
+  // The opps points
+  vtkSmartPointer<vtkPolyData> vtk_opps = vtkSmartPointer<vtkPolyData>::New ();
+  vtkSmartPointer<vtkPoints> vtk_opps_points = vtkSmartPointer<vtkPoints>::New ();
+    vtk_opps_points->SetNumberOfPoints (2*static_cast<vtkIdType> (opps.size ()));
+  vtkSmartPointer<vtkCellArray> vtk_opps_lines = vtkSmartPointer<vtkCellArray>::New ();
+  // The opps normals
+  vtkSmartPointer<vtkDoubleArray> vtk_normals = vtkSmartPointer<vtkDoubleArray>::New ();
+  vtk_normals->SetNumberOfComponents (3);
+  vtk_normals->SetNumberOfTuples (2*static_cast<vtkIdType> (opps.size ()));
+  vtkIdType ids[2] = {0, 1};
+
+  // Insert the points and compute the lines
+  for ( list<ObjRecRANSAC::OrientedPointPair>::const_iterator it = opps.begin () ; it != opps.end () ; ++it )
+  {
+    vtk_opps_points->SetPoint (ids[0], it->p1_[0], it->p1_[1], it->p1_[2]);
+    vtk_opps_points->SetPoint (ids[1], it->p2_[0], it->p2_[1], it->p2_[2]);
+    vtk_opps_lines->InsertNextCell (2, ids);
+
+    vtk_normals->SetTuple3 (ids[0], it->n1_[0], it->n1_[1], it->n1_[2]);
+    vtk_normals->SetTuple3 (ids[1], it->n2_[0], it->n2_[1], it->n2_[2]);
+
+    ids[0] += 2;
+    ids[1] += 2;
+  }
+  vtk_opps->SetPoints (vtk_opps_points);
+  vtk_opps->GetPointData ()->SetNormals (vtk_normals);
+  vtk_opps->SetLines (vtk_opps_lines);
+
+  vtkSmartPointer<vtkHedgeHog> vtk_hh = vtkSmartPointer<vtkHedgeHog>::New ();
+  vtk_hh->SetVectorModeToUseNormal ();
+  vtk_hh->SetScaleFactor (0.3f*params->objrec_.getPairWidth ());
+  vtk_hh->SetInput (vtk_opps);
+  vtk_hh->Update ();
+
+  // The lines
+  string lines_str_id = "opps";
+  params->viz_.removeShape(lines_str_id);
+  params->viz_.addModelFromPolyData (vtk_opps, lines_str_id);
+  params->viz_.setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, 0.0, 0.0, 1.0, lines_str_id);
+  // The normals
+  string normals_str_id = "opps normals";
+  params->viz_.removeShape(normals_str_id);
+  params->viz_.addModelFromPolyData (vtk_hh->GetOutput (), normals_str_id);
+  params->viz_.setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, 1.0, 1.0, 0.0, normals_str_id);
+
+}
+
+//===============================================================================================================================
+
 void run (const char* file_name, float voxel_size)
 {
   PointCloud<PointXYZ>::Ptr points_in (new PointCloud<PointXYZ> ());
   PointCloud<PointXYZ>::Ptr points_octree (new PointCloud<PointXYZ> ());
   PointCloud<Normal>::Ptr normals_in (new PointCloud<Normal> ());
-  PointCloud<Normal>::Ptr normals_out (new PointCloud<Normal> ());
 
   // Get the points and normals from the input vtk file
   if ( !vtk_to_pointcloud (file_name, *points_in, *normals_in) )
@@ -128,11 +202,15 @@ void run (const char* file_name, float voxel_size)
   list<ObjRecRANSAC::Output> dummy_output;
   // Switch to the test mode in which only oriented point pairs from the scene are sampled
   objrec.enterTestModeSampleOPP ();
-  // Run the recognition method
-  objrec.recognize (&(*points_in), &(*normals_in), dummy_output);
 
   // The visualizer
   PCLVisualizer viz;
+
+  CallbackParameters params(objrec, viz, &(*points_in), &(*normals_in));
+  viz.registerKeyboardCallback (keyboardCB, static_cast<void*> (&params));
+
+  // Run the recognition and update the viewer
+  update (&params);
 
 #ifdef _SHOW_OCTREE_
   show_octree(objrec.getSceneOctree (), viz);
@@ -148,6 +226,12 @@ void run (const char* file_name, float voxel_size)
   viz.addPointCloud (points_octree, "octree points");
   viz.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 5, "octree points");
   viz.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_COLOR, 1.0, 0.0, 0.0, "octree points");
+#endif
+
+#if defined _SHOW_OCTREE_NORMALS_ && defined _SHOW_OCTREE_POINTS_
+  PointCloud<Normal>::Ptr normals_octree (new PointCloud<Normal> ());
+  objrec.getSceneOctree ().getNormalsOfFullLeaves (*normals_octree);
+  viz.addPointCloudNormals<PointXYZ,Normal> (points_octree, normals_octree, 1, 6.0f, "normals out");
 #endif
 
   // Enter the main loop

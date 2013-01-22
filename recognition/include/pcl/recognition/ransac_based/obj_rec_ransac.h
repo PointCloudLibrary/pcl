@@ -221,13 +221,21 @@ namespace pcl
         /** \brief This function is useful for testing purposes. It returns the otiented point pairs which were sampled from the
           * scene during the recognition process. */
         inline const std::list<ObjRecRANSAC::OrientedPointPair>&
-        getSampledOrientedPointPairs ()
+        getSampledOrientedPointPairs () const
         {
           return (sampled_oriented_point_pairs_);
         }
 
+        inline float
+        getPairWidth () const
+        {
+          return pair_width_;
+        }
+
       protected:
         enum Recognition_Mode {SAMPLE_OPP = 0, /*GENERATE_HYPOTHESES, TEST_HYPOTHESES, BUILD_CONFLICT_GRAPH,*/ FULL_RECOGNITION};
+
+        friend class ModelLibrary;
 
         int
         computeNumberOfIterations (double success_probability);
@@ -247,16 +255,57 @@ namespace pcl
         void
         filterWeakHypotheses (ORRGraph& graph, std::list<ObjRecRANSAC::Output>& recognized_objects);
 
-    	/** \brief Computes the rigid transform in that maps the line (a1, b1) to (a2, b2).
+    	/** \brief Computes the rigid transform that maps the line (a1, b1) to (a2, b2).
     	 * The computation is based on the corresponding points 'a1' <-> 'a2' and 'b1' <-> 'b2'
-    	 * and	the normals 'a1_n', 'b1_n', 'a2_n', and 'b2_n'. The result is saved in
+    	 * and the normals 'a1_n', 'b1_n', 'a2_n', and 'b2_n'. The result is saved in
     	 * 'rigid_transform' which is an array of length 12. The first 9 elements are the
     	 * rotational part (row major order) and the last 3 are the translation. */
-        void
+        inline void
         computeRigidTransform(
           const float *a1, const float *a1_n, const float *b1, const float* b1_n,
           const float *a2, const float *a2_n, const float *b2, const float* b2_n,
-          float* rigid_transform) const;
+          float* rigid_transform) const
+        {
+          // Some local variables
+          float o1[3], o2[3], x1[3], x2[3], y1[3], y2[3], z1[3], z2[3], tmp1[3], tmp2[3], Ro1[3], invFrame1[3][3];
+
+          // Compute the origins
+          o1[0] = 0.5f*(a1[0] + b1[0]);
+          o1[1] = 0.5f*(a1[1] + b1[1]);
+          o1[2] = 0.5f*(a1[2] + b1[2]);
+
+          o2[0] = 0.5f*(a2[0] + b2[0]);
+          o2[1] = 0.5f*(a2[1] + b2[1]);
+          o2[2] = 0.5f*(a2[2] + b2[2]);
+
+          // Compute the x-axes
+          aux::vecDiff3 (b1, a1, x1); aux::vecNormalize3 (x1);
+          aux::vecDiff3 (b2, a2, x2); aux::vecNormalize3 (x2);
+          // Compute the y-axes. First y-axis
+          aux::projectOnPlane3 (a1_n, x1, tmp1); aux::vecNormalize3 (tmp1);
+          aux::projectOnPlane3 (b1_n, x1, tmp2); aux::vecNormalize3 (tmp2);
+          aux::vecSum3 (tmp1, tmp2, y1); aux::vecNormalize3 (y1);
+          // Second y-axis
+          aux::projectOnPlane3 (a2_n, x2, tmp1); aux::vecNormalize3 (tmp1);
+          aux::projectOnPlane3 (b2_n, x2, tmp2); aux::vecNormalize3 (tmp2);
+          aux::vecSum3 (tmp1, tmp2, y2); aux::vecNormalize3 (y2);
+          // Compute the z-axes
+          aux::vecCross3 (x1, y1, z1);
+          aux::vecCross3 (x2, y2, z2);
+
+          // 1. Invert the matrix [x1|y1|z1] (note that x1, y1, and z1 are treated as columns!)
+          invFrame1[0][0] = x1[0]; invFrame1[0][1] = x1[1]; invFrame1[0][2] = x1[2];
+          invFrame1[1][0] = y1[0]; invFrame1[1][1] = y1[1]; invFrame1[1][2] = y1[2];
+          invFrame1[2][0] = z1[0]; invFrame1[2][1] = z1[1]; invFrame1[2][2] = z1[2];
+          // 2. Compute the desired rotation as rigid_transform = [x2|y2|z2]*invFrame1
+          aux::mult3x3 (x2, y2, z2, invFrame1, rigid_transform);
+
+          // Construct the translation which is the difference between the rotated o1 and o2
+          aux::mult3x3 (rigid_transform, o1, Ro1);
+          rigid_transform[9]  = o2[0] - Ro1[0];
+          rigid_transform[10] = o2[1] - Ro1[1];
+          rigid_transform[11] = o2[2] - Ro1[2];
+        }
 
         /** \brief Computes the signature of the oriented point pair ((p1, n1), (p2, n2)) consisting of the angles between
           * n1 and (p2-p1),
@@ -265,9 +314,16 @@ namespace pcl
           *
           * \param[out] signature is an array of three doubles saving the three angles in the order shown above. */
         static inline void
-        compute_oriented_point_pair_signature (const float *p1, const float *n1, const float *p2, const float *n2, float signature[3]);
+        compute_oriented_point_pair_signature (const float *p1, const float *n1, const float *p2, const float *n2, float signature[3])
+        {
+          // Get the line from p1 to p2
+          float line[3] = {p2[0] - p1[0], p2[1] - p1[1], p2[2] - p1[2]};
+          aux::vecNormalize3 (line);
 
-        friend class ModelLibrary;
+          signature[0] = static_cast<float> (acos (aux::vecDot3 (n1,line))); line[0] = -line[0]; line[1] = -line[1]; line[2] = -line[2];
+          signature[1] = static_cast<float> (acos (aux::vecDot3 (n2,line)));
+          signature[2] = static_cast<float> (acos (aux::vecDot3 (n1,n2)));
+        }
 
       protected:
         float pair_width_, voxel_size_, fraction_of_pairs_in_hash_table_, relative_obj_size_;
@@ -281,20 +337,6 @@ namespace pcl
         std::list<OrientedPointPair> sampled_oriented_point_pairs_;
         Recognition_Mode rec_mode_;
     };
-
-// === inline methods ===================================================================================================================================
-
-    inline void
-    ObjRecRANSAC::compute_oriented_point_pair_signature (const float *p1, const float *n1, const float *p2, const float *n2, float signature[3])
-    {
-      // Get the line from p1 to p2
-      float line[3] = {p2[0] - p1[0], p2[1] - p1[1], p2[2] - p1[2]};
-      aux::vecNormalize3 (line);
-
-      signature[0] = static_cast<float> (acos (aux::vecDot3 (n1,line))); line[0] = -line[0]; line[1] = -line[1]; line[2] = -line[2];
-      signature[1] = static_cast<float> (acos (aux::vecDot3 (n2,line)));
-      signature[2] = static_cast<float> (acos (aux::vecDot3 (n1,n2)));
-    }
   } // namespace recognition
 } // namespace pcl
 
