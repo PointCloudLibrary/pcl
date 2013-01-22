@@ -42,6 +42,7 @@
 #include <pcl/filters/filter_indices.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/filters/voxel_grid.h>
+#include <pcl/common/common.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::modeler::NormalEstimationWorker::NormalEstimationWorker(const QList<CloudMeshItem*>& cloud_mesh_items, QWidget* parent) :

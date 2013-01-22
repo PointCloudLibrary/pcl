@@ -38,6 +38,12 @@
 
 #include <pcl/apps/modeler/cloud_mesh.h>
 
+#include <vtkLODActor.h>
+#include <vtkPolyData.h>
+#include <vtkCellArray.h>
+#include <vtkDataSetMapper.h>
+#include <vtkPointData.h>
+#include <vtkProperty.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::modeler::SurfaceActorItem::SurfaceActorItem(QTreeWidgetItem* parent,

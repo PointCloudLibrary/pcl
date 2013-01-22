@@ -50,6 +50,7 @@
 #include <pcl/apps/in_hand_scanner/boost.h>
 #include <pcl/apps/in_hand_scanner/common_types.h>
 #include <pcl/apps/in_hand_scanner/eigen.h>
+#include <boost/unordered_map.hpp>
 
 namespace pcl
 {
@@ -284,7 +285,7 @@ namespace pcl
         typedef Eigen::Matrix <unsigned char, 3, Eigen::Dynamic> Colors;
         typedef Eigen::Matrix <unsigned char, 3, 256           > Colormap;
 
-        typedef boost::unordered::unordered_map <std::string, CloudXYZRGBNormalPtr> CloudXYZRGBNormalMap;
+        typedef boost::unordered_map <std::string, CloudXYZRGBNormalPtr> CloudXYZRGBNormalMap;
 
         typedef pcl::ihs::PointIHS         PointIHS;
         typedef pcl::ihs::CloudIHS         CloudIHS;
@@ -331,7 +332,7 @@ namespace pcl
 
         typedef boost::shared_ptr <      FaceVertexMesh>                         FaceVertexMeshPtr;
         typedef boost::shared_ptr <const FaceVertexMesh>                         FaceVertexMeshConstPtr;
-        typedef boost::unordered::unordered_map <std::string, FaceVertexMeshPtr> FaceVertexMeshMap;
+        typedef boost::unordered_map <std::string, FaceVertexMeshPtr> FaceVertexMeshMap;
 
         /** \brief Calculate the pivot for the stored id. */
         void

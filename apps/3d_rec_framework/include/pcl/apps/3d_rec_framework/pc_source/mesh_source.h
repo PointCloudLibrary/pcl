@@ -197,7 +197,8 @@ namespace pcl
             vtkSmartPointer < vtkPolyDataMapper > mapper = vtkSmartPointer<vtkPolyDataMapper>::New ();
             mapper->SetInputConnection (filter_scale->GetOutputPort ());
             mapper->Update ();
-
+            vtkSmartPointer < vtkPolyData > poly_data = vtkSmartPointer<vtkPolyData>::New ();
+            poly_data->Allocate(mapper->GetInput ());
             //generate views
             pcl::apps::RenderViewsTesselatedSphere render_views;
             render_views.setResolution (resolution_);
@@ -206,7 +207,7 @@ namespace pcl
             render_views.setComputeEntropies (true);
             render_views.setTesselationLevel (tes_level_);
             render_views.setViewAngle (view_angle_);
-            render_views.addModelFromPolyData (mapper->GetInput ());
+            render_views.addModelFromPolyData (poly_data);
             render_views.setGenOrganized(gen_organized_);
             render_views.setCamPosConstraints(campos_constraints_func_);
             render_views.generateViews ();

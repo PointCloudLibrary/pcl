@@ -39,6 +39,12 @@
 #include <pcl/apps/modeler/cloud_mesh.h>
 #include <pcl/filters/filter_indices.h>
 
+#include <vtkLODActor.h>
+#include <vtkPolyData.h>
+#include <vtkCellArray.h>
+#include <vtkDataSetMapper.h>
+#include <vtkPointData.h>
+
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::modeler::NormalsActorItem::NormalsActorItem(QTreeWidgetItem* parent,
                                                const boost::shared_ptr<CloudMesh>& cloud_mesh,

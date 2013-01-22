@@ -40,6 +40,7 @@
 #include <pcl/apps/modeler/cloud_mesh.h>
 #include <pcl/apps/modeler/cloud_mesh_item.h>
 #include <pcl/registration/icp.h>
+#include <pcl/common/common.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::modeler::ICPRegistrationWorker::ICPRegistrationWorker(CloudMesh::PointCloudPtr cloud, const QList<CloudMeshItem*>& cloud_mesh_items, QWidget* parent)

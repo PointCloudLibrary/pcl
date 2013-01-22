@@ -43,6 +43,7 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/io/obj_io.h>
 #include <vtkDataArray.h>
+#include <vtkCellArray.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::modeler::CloudMesh::CloudMesh()

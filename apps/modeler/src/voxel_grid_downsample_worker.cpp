@@ -40,6 +40,7 @@
 #include <pcl/apps/modeler/cloud_mesh.h>
 #include <pcl/apps/modeler/cloud_mesh_item.h>
 #include <pcl/filters/voxel_grid.h>
+#include <pcl/common/common.h>
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////

@@ -39,6 +39,10 @@
 #include <pcl/apps/modeler/cloud_mesh.h>
 
 #include <vtkVertexGlyphFilter.h>
+#include <vtkLODActor.h>
+#include <vtkDataSetMapper.h>
+#include <vtkPointData.h>
+#include <vtkProperty.h>
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
