@@ -55,8 +55,7 @@ namespace pcl
     */
   class PCL_EXPORTS DinastGrabber: public Grabber
   {
-    
-    //define callback signature typedefs
+    // Define callback signature typedefs
     typedef void (sig_cb_dinast_point_cloud) (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZI> >&);
     
     public:
@@ -179,7 +178,9 @@ namespace pcl
       /** \brief the actual device_handle for the camera */
       struct libusb_device_handle *device_handle_;
       
-      /** \brief Temporary USB read buffer, since we read two RGB16 images at a time size is the double of two images plus a sync packet */
+      /** \brief Temporary USB read buffer, since we read two RGB16 images at a time size is the double of two images
+        * plus a sync packet.
+        */
       unsigned char raw_buffer_[(RGB16 * (IMAGE_SIZE) + SYNC_PACKET_SIZE)*2];
 
       /** \brief Global circular buffer */

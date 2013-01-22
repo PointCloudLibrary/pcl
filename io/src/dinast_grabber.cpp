@@ -66,12 +66,11 @@ pcl::DinastGrabber::~DinastGrabber () throw ()
     // Release the interface
     libusb_release_interface (device_handle_, 0);
     // Close it
-    libusb_close (device_handle_);
-    
+    libusb_close (device_handle_); 
   }
   catch (...)
   {
-    //destructor never throws
+    // Destructor never throws
   }
 }
 
@@ -88,7 +87,7 @@ pcl::DinastGrabber::getFramesPerSecond () const
 { 
   static double last = pcl::getTime ();
   double now = pcl::getTime (); 
-  float rate = 1/float(now - last);
+  float rate = 1 / float(now - last);
   last = now; 
 
   return (rate);
@@ -109,13 +108,13 @@ pcl::DinastGrabber::setupDevice (int device_position, const int id_vendor, const
 {
   int device_position_counter = 0;
   
-  //Initialize libusb
+  // Initialize libusb
   int ret=libusb_init (&context_);
   std::stringstream sstream;
   if (ret != 0)
   {
-    sstream << "libusb initialization fialure, LIBUSB_ERROR: "<< ret;
-    PCL_THROW_EXCEPTION (pcl::IOException, sstream.str());
+    sstream << "libusb initialization failure, LIBUSB_ERROR: "<< ret;
+    PCL_THROW_EXCEPTION (pcl::IOException, sstream.str ());
   }
   
   libusb_set_debug (context_, 3);
@@ -125,7 +124,7 @@ pcl::DinastGrabber::setupDevice (int device_position, const int id_vendor, const
   ssize_t number_devices = libusb_get_device_list (context_, &devs);
 
   if (number_devices < 0)
-    PCL_THROW_EXCEPTION (pcl::IOException, "No usb devices found!");
+    PCL_THROW_EXCEPTION (pcl::IOException, "No USB devices found!");
   
   // Iterate over all devices
   for (ssize_t i = 0; i < number_devices; ++i)
@@ -174,12 +173,12 @@ pcl::DinastGrabber::setupDevice (int device_position, const int id_vendor, const
   // Free the list
   libusb_free_device_list (devs, 1);
   
-  //Check if device founded if not notify
+  // Check if device founded if not notify
   if (device_handle_ == NULL)
     PCL_THROW_EXCEPTION (pcl::IOException, "Failed to find any DINAST devices attached");
   
-  //Claim device interface
-  if(libusb_claim_interface(device_handle_, 0) < 0)
+  // Claim device interface
+  if (libusb_claim_interface(device_handle_, 0) < 0)
      PCL_THROW_EXCEPTION (pcl::IOException, "Failed to open DINAST device");  
 
 }
@@ -190,12 +189,9 @@ pcl::DinastGrabber::getDeviceVersion ()
 {
   unsigned char data[30];
   if (!USBRxControlData (CMD_GET_VERSION, data, 21))
-  {
      PCL_THROW_EXCEPTION (pcl::IOException, "Error trying to get device version");
-  }
  
   data[21] = 0;
-
   return (std::string (reinterpret_cast<const char*> (data)));
 }
 
@@ -230,7 +226,6 @@ pcl::DinastGrabber::readImage ()
       image_[i] = g_buffer_[i];
 
     g_buffer_.rerase (g_buffer_.begin(), g_buffer_.begin() + IMAGE_SIZE);
-
     second_image_ = false;
     
     return (IMAGE_SIZE);
@@ -247,7 +242,6 @@ pcl::DinastGrabber::readImage ()
                                     RGB16 * (IMAGE_SIZE) + SYNC_PACKET_SIZE, &actual_length, 1000);
     if (res != 0 || actual_length == 0)
     {
-
       memset (&image_[0], 0x00, IMAGE_SIZE);
       PCL_THROW_EXCEPTION (pcl::IOException, "USB read error!");
     }
@@ -284,9 +278,7 @@ pcl::DinastGrabber::readImage ()
     }
 
     if (first_image && g_buffer_.size () >= IMAGE_SIZE)
-    {
       break;
-     }
   }
 
   return (IMAGE_SIZE);
@@ -319,8 +311,7 @@ pcl::DinastGrabber::getXYZIPointCloud ()
       double A = -2e-5 * r3 + 0.004 * r2 + 0.1719 * r1 + 350.03;
       double B = -2e-9 * r3 + 3e-7 * r2 - 1e-5 * r1 - 0.01;
 
-      /// Compute distance
-
+      // Compute distance
       if (pixel > A)
         pixel = A;
       double dy = y*0.1;
@@ -336,16 +327,16 @@ pcl::DinastGrabber::getXYZIPointCloud ()
       double s_theta = sin (theta_colati);
       double c_ksai = (double(x - 160.)) / r1;
       double s_ksai = (double(y - 120.)) / r1;
-      cloud->points[depth_idx].x = float ((dist * s_theta * c_ksai) / 500.0 + 0.5); //cartesian x
-      cloud->points[depth_idx].y = float ((dist * s_theta * s_ksai) / 500.0 + 0.5); //cartesian y
-      cloud->points[depth_idx].z = float ((dist * c_theta));                        //cartesian z
+      cloud->points[depth_idx].x = float ((dist * s_theta * c_ksai) / 500.0 + 0.5);
+      cloud->points[depth_idx].y = float ((dist * s_theta * s_ksai) / 500.0 + 0.5);
+      cloud->points[depth_idx].z = float ((dist * c_theta));
       if (cloud->points[depth_idx].z < 0.01)
         cloud->points[depth_idx].z = float(0.01);
       cloud->points[depth_idx].z /= float(500.0);
       cloud->points[depth_idx].intensity = float(pixel);
 
       
-      //get rid of the noise
+      // Get rid of the noise
       if(cloud->points[depth_idx].z > 0.8 or cloud->points[depth_idx].z < 0.02)
       {
         cloud->points[depth_idx].x = std::numeric_limits<float>::quiet_NaN ();
@@ -364,14 +355,14 @@ pcl::DinastGrabber::USBRxControlData (const unsigned char req_code,
                                       unsigned char *buffer,
                                       int length)
 {
-  // the direction of the transfer is inferred from the requesttype field of the setup packet.
+  // The direction of the transfer is inferred from the requesttype field of the setup packet.
   unsigned char requesttype = (LIBUSB_RECIPIENT_DEVICE | LIBUSB_REQUEST_TYPE_VENDOR | LIBUSB_ENDPOINT_IN);
-  // the value field for the setup packet
+  // The value field for the setup packet
   uint16_t value = 0x02;
-  // the index field for the setup packet
+  // The index field for the setup packet
   uint16_t index = 0x08;
   // timeout (in ms) that this function should wait before giving up due to no response being received
-  // for an unlimited timeout, use value 0.
+  // For an unlimited timeout, use value 0.
   uint16_t timeout = 1000;
   
   int nr_read = libusb_control_transfer (device_handle_, requesttype,
@@ -388,14 +379,14 @@ pcl::DinastGrabber::USBTxControlData (const unsigned char req_code,
                                       unsigned char *buffer,
                                       int length)
 {
-  // the direction of the transfer is inferred from the requesttype field of the setup packet.
+  // The direction of the transfer is inferred from the requesttype field of the setup packet.
   unsigned char requesttype = (LIBUSB_RECIPIENT_DEVICE | LIBUSB_REQUEST_TYPE_VENDOR | LIBUSB_ENDPOINT_OUT);
-  // the value field for the setup packet
+  // The value field for the setup packet
   uint16_t value = 0x01;
-  // the index field for the setup packet
+  // The index field for the setup packet
   uint16_t index = 0x00;
   // timeout (in ms) that this function should wait before giving up due to no response being received
-  // for an unlimited timeout, use value 0.
+  // For an unlimited timeout, use value 0.
   uint16_t timeout = 1000;
   
   int nr_read = libusb_control_transfer (device_handle_, requesttype,
@@ -449,11 +440,11 @@ pcl::DinastGrabber::captureThreadFunction ()
 {
   while (true)
   {
-    // lock before checking running flag
+    // Lock before checking running flag
     boost::unique_lock<boost::mutex> capture_lock (capture_mutex_);
     readImage();
     
-    //Check for point clouds slots
+    // Check for point clouds slots
     if (num_slots<sig_cb_dinast_point_cloud> () > 0 )
       point_cloud_signal_->operator()(getXYZIPointCloud());
       
