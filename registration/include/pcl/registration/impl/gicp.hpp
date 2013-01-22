@@ -37,6 +37,8 @@
  * $Id$
  *
  */
+#ifndef PCL_REGISTRATION_IMPL_GICP_HPP_
+#define PCL_REGISTRATION_IMPL_GICP_HPP_
 
 #include <pcl/registration/boost.h>
 #include <pcl/registration/exceptions.h>
@@ -467,3 +469,4 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::applyState(Eige
   t.col (3) += T;
 }
 
+#endif //PCL_REGISTRATION_IMPL_GICP_HPP_

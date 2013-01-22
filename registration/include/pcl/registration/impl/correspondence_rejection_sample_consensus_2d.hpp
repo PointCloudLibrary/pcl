@@ -40,7 +40,6 @@
 
 #include <pcl/sample_consensus/sac_model_registration_2d.h>
 #include <pcl/sample_consensus/ransac.h>
-#include <pcl/registration/correspondence_rejection_sample_consensus_2d.h>
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void 

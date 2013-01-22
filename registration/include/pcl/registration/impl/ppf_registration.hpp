@@ -43,7 +43,6 @@
 #ifndef PCL_REGISTRATION_IMPL_PPF_REGISTRATION_H_
 #define PCL_REGISTRATION_IMPL_PPF_REGISTRATION_H_
 
-//#include <pcl/registration/ppf_registration.h>
 #include <pcl/features/ppf.h>
 #include <pcl/common/transforms.h>
 

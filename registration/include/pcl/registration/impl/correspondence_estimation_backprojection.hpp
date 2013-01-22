@@ -39,8 +39,6 @@
 #ifndef PCL_REGISTRATION_IMPL_CORRESPONDENCE_ESTIMATION_BACK_PROJECTION_HPP_
 #define PCL_REGISTRATION_IMPL_CORRESPONDENCE_ESTIMATION_BACK_PROJECTION_HPP_
 
-#include <pcl/registration/correspondence_estimation_normal_shooting.h>
-
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget, typename NormalT, typename Scalar> bool
 pcl::registration::CorrespondenceEstimationBackProjection<PointSource, PointTarget, NormalT, Scalar>::initCompute ()

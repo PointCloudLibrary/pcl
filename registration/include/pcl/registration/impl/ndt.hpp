@@ -41,8 +41,6 @@
 #ifndef PCL_REGISTRATION_NDT_IMPL_H_
 #define PCL_REGISTRATION_NDT_IMPL_H_
 
-//#include <pcl/registration/ndt.h>
-
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointSource, typename PointTarget>
 pcl::NormalDistributionsTransform<PointSource, PointTarget>::NormalDistributionsTransform () 

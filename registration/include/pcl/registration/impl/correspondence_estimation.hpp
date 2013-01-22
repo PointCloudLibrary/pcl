@@ -41,7 +41,6 @@
 #define PCL_REGISTRATION_IMPL_CORRESPONDENCE_ESTIMATION_H_
 
 #include <pcl/common/concatenate.h>
-#include <pcl/registration/correspondence_estimation.h>
 #include <pcl/common/io.h>
 
 ///////////////////////////////////////////////////////////////////////////////////////////

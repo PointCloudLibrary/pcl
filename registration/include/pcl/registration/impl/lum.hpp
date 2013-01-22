@@ -41,8 +41,6 @@
 #ifndef PCL_REGISTRATION_IMPL_LUM_HPP_
 #define PCL_REGISTRATION_IMPL_LUM_HPP_
 
-#include <pcl/registration/lum.h>
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT> inline void
 pcl::registration::LUM<PointT>::setLoopGraph (const SLAMGraphPtr &slam_graph)

@@ -37,6 +37,9 @@
  * $Id$
  *
  */
+#ifndef PCL_REGISTRATION_EXCEPTIONS_H_
+#define PCL_REGISTRATION_EXCEPTIONS_H_
+
 #include <pcl/exceptions.h>
 
 namespace pcl
@@ -70,3 +73,4 @@ namespace pcl
       : pcl::PCLException (error_description, file_name, function_name, line_number) { }
   } ;
 }
+#endif//PCL_REGISTRATION_EXCEPTIONS_H_

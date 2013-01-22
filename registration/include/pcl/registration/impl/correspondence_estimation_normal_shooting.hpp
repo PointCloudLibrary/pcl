@@ -40,8 +40,6 @@
 #ifndef PCL_REGISTRATION_IMPL_CORRESPONDENCE_ESTIMATION_NORMAL_SHOOTING_H_
 #define PCL_REGISTRATION_IMPL_CORRESPONDENCE_ESTIMATION_NORMAL_SHOOTING_H_
 
-#include <pcl/registration/correspondence_estimation_normal_shooting.h>
-
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget, typename NormalT, typename Scalar> bool
 pcl::registration::CorrespondenceEstimationNormalShooting<PointSource, PointTarget, NormalT, Scalar>::initCompute ()

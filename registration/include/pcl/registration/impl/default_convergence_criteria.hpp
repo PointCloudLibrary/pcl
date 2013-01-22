@@ -40,7 +40,6 @@
 #ifndef PCL_REGISTRATION_DEFAULT_CONVERGENCE_CRITERIA_HPP_
 #define PCL_REGISTRATION_DEFAULT_CONVERGENCE_CRITERIA_HPP_
 
-#include <pcl/registration/default_convergence_criteria.h>
 #include <pcl/console/print.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

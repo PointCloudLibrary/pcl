@@ -39,8 +39,6 @@
 #ifndef PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_SVD_SCALE_HPP_
 #define PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_SVD_SCALE_HPP_
 
-#include <pcl/registration/transformation_estimation_svd_scale.h>
-
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget, typename Scalar> void
 pcl::registration::TransformationEstimationSVDScale<PointSource, PointTarget, Scalar>::getTransformationFromCorrelation (
