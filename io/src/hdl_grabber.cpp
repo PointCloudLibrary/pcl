@@ -597,10 +597,10 @@ pcl::HDLGrabber::readPacketsFromPcap ()
   struct bpf_program filter;
   std::ostringstream stringStream;
 
-  stringStream << "udp and src port " << source_port_filter_;
+  stringStream << "udp ";
   if (!isAddressUnspecified(source_address_filter_))
   {
-    stringStream << " and src host " << source_address_filter_.to_string();
+    stringStream << " and src port " << source_port_filter_ << " and src host " << source_address_filter_.to_string();
   }
 
   // PCAP_NETMASK_UNKNOWN should be 0xffffffff, but it's undefined in older PCAP versions
