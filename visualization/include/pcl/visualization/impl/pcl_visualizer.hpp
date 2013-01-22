@@ -1515,6 +1515,32 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (
     return (false);
   }
 
+  int rgb_idx = -1;
+  std::vector<sensor_msgs::PointField> fields;
+  vtkSmartPointer<vtkUnsignedCharArray> colors;
+  rgb_idx = pcl::getFieldIndex (*cloud, "rgb", fields);
+  if (rgb_idx == -1)
+    rgb_idx = pcl::getFieldIndex (*cloud, "rgba", fields);
+  if (rgb_idx != -1)
+  {
+    colors = vtkSmartPointer<vtkUnsignedCharArray>::New ();
+    colors->SetNumberOfComponents (3);
+    colors->SetName ("Colors");
+
+    pcl::RGB rgb_data;
+    for (size_t i = 0; i < cloud->size (); ++i)
+    {
+      if (!isFinite (cloud->points[i]))
+        continue;
+      memcpy (&rgb_data, reinterpret_cast<const char*> (&cloud->points[i]) + fields[rgb_idx].offset, sizeof (pcl::RGB));
+      unsigned char color[3];
+      color[0] = rgb_data.r;
+      color[1] = rgb_data.g;
+      color[2] = rgb_data.b;
+      colors->InsertNextTupleValue (color);
+    }
+  }
+
   // Create points from polyMesh.cloud
   vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New ();
   vtkIdType nr_points = cloud->points.size ();
@@ -1593,6 +1619,9 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (
     cell_array->Squeeze ();
     polydata->SetStrips (cell_array);
     polydata->SetPoints (points);
+  
+    if (colors)
+      polydata->GetPointData ()->SetScalars (colors);
 
     createActorFromVTKDataSet (polydata, actor, false);
   }
@@ -1618,6 +1647,8 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (
     poly_grid->InsertNextCell (polygon->GetCellType (), polygon->GetPointIds ());
     poly_grid->SetPoints (points);
     poly_grid->Update ();
+    if (colors)
+      poly_grid->GetPointData ()->SetScalars (colors);
 
     createActorFromVTKDataSet (poly_grid, actor, false);
   }
@@ -1694,6 +1725,32 @@ pcl::visualization::PCLVisualizer::updatePolygonMesh (
     }
     nr_points = j;
     points->SetNumberOfPoints (nr_points);
+  }
+
+  // Update colors
+  vtkUnsignedCharArray* colors = vtkUnsignedCharArray::SafeDownCast (polydata->GetPointData ()->GetScalars ());
+  int rgb_idx = -1;
+  std::vector<sensor_msgs::PointField> fields;
+  rgb_idx = pcl::getFieldIndex (*cloud, "rgb", fields);
+  if (rgb_idx == -1)
+    rgb_idx = pcl::getFieldIndex (*cloud, "rgba", fields);
+  if (rgb_idx != -1 && colors)
+  {
+    pcl::RGB rgb_data;
+    int j = 0;
+    for (size_t i = 0; i < cloud->size (); ++i)
+    {
+      if (!isFinite (cloud->points[i]))
+        continue;
+      memcpy (&rgb_data, 
+              reinterpret_cast<const char*> (&cloud->points[i]) + fields[rgb_idx].offset,
+              sizeof (pcl::RGB));
+      unsigned char color[3];
+      color[0] = rgb_data.r;
+      color[1] = rgb_data.g;
+      color[2] = rgb_data.b;
+      colors->SetTupleValue (j++, color);
+    }
   }
 
   // Get the maximum size of a polygon
