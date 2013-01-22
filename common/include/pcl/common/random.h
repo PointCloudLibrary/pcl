@@ -157,7 +157,7 @@ namespace pcl
       * \author Nizar Sallem
       */
     template<typename T>
-   class NormalGenerator 
+    class NormalGenerator 
     {
       public:
         struct Parameters
