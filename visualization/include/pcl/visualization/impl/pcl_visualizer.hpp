@@ -1664,6 +1664,12 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (
   (*cloud_actor_map_)[id].actor = actor;
   //if (vertices.size () > 1)
   //  (*cloud_actor_map_)[id].cells = static_cast<vtkPolyDataMapper*>(actor->GetMapper ())->GetInput ()->GetVerts ()->GetData ();
+
+  // Save the viewpoint transformation matrix to the global actor map
+  vtkSmartPointer<vtkMatrix4x4> transformation = vtkSmartPointer<vtkMatrix4x4>::New();
+  convertToVtkMatrix (cloud->sensor_origin_, cloud->sensor_orientation_, transformation);
+  (*cloud_actor_map_)[id].viewpoint_transformation_ = transformation;
+
   return (true);
 }
 

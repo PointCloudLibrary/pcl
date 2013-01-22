@@ -1876,6 +1876,10 @@ pcl::visualization::PCLVisualizer::resetCameraViewpoint (const std::string &id)
   else
     return;
 
+  // Prevent a segfault
+  if (!camera_pose)
+    return;
+
   // set all renderer to this viewpoint
   rens_->InitTraversal ();
   vtkRenderer* renderer = NULL;
@@ -2827,6 +2831,12 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (const pcl::PolygonMesh &poly_
 
   // Save the pointer/ID pair to the global actor map
   (*cloud_actor_map_)[id].actor = actor;
+
+  // Save the viewpoint transformation matrix to the global actor map
+  vtkSmartPointer<vtkMatrix4x4> transformation = vtkSmartPointer<vtkMatrix4x4>::New ();
+  convertToVtkMatrix (point_cloud->sensor_origin_, point_cloud->sensor_orientation_, transformation);
+  (*cloud_actor_map_)[id].viewpoint_transformation_ = transformation;
+
   return (true);
 }
 
