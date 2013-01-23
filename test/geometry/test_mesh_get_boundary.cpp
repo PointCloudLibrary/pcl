@@ -34,7 +34,7 @@
  * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: test_mesh_indices.cpp 8417 2013-01-04 23:55:37Z Martin $
+ * $Id$
  *
  */
 
