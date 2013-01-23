@@ -155,9 +155,9 @@ for c in classes:
     f.write ('  namespace geometry\n')
     f.write ('  {\n')
 
-    f.write ('    /** \\brief ' + c.docstring + '\n')
+    f.write ('    /** \\brief ' + c.docstring + ' The best way to declare the circulator is to use the method pcl::geometry::MeshBase::get' + class_name + ' ().\n')
     f.write ("      * \\tparam MeshT Mesh to which this circulator belongs to.\n")
-    f.write ("      * \\note The circulator can't be used to change the connectivity in the mesh (only const circulators are valid). \n")
+    f.write ("      * \\note The circulator can't be used to change the connectivity in the mesh (only const circulators are valid).\n")
     f.write ('      * \\author Martin Saelzle\n')
     f.write ('      * \ingroup geometry\n')
     f.write ('      */\n')
@@ -181,6 +181,13 @@ for c in classes:
         f.write ('        typedef typename Mesh::' + around_type + 'Index ' + around_type + 'Index;\n')
     f.write ('        typedef typename Mesh::HalfEdgeIndex HalfEdgeIndex;\n\n')
 
+    f.write ('        /** \\brief Constructor resulting in an invalid circulator. */\n')
+    f.write ('        ' + class_name + ' ()\n')
+    f.write ('          : mesh_ ' + placeholder_gt + ' (NULL),\n')
+    f.write ('            '       + current_he_idx_ + ' ()\n')
+    f.write ('        {\n')
+    f.write ('        }\n\n')
+
     f.write ('        /** \\brief Construct from the ' + around_obj + ' around which we want to circulate. */\n')
     f.write ('        ' + class_name     + ' (const '      + around_type    + 'Index& ' + around_idx + ',\n')
     f.write ('        ' + placeholder_cn + '  Mesh*const ' + placeholder_at + '     '   + 'mesh)\n')
@@ -197,11 +204,20 @@ for c in classes:
     f.write ('        {\n')
     f.write ('        }\n\n')
 
-    f.write ('        /** \\brief Comparison operators (with boost::operators): == != */\n')
+    f.write ('        /** \\brief Check if the circulator is valid.\n')
+    f.write ('          * \\warning Does NOT check if the stored mesh pointer is valid. You have to ensure this yourself when constructing the circulator. */\n')
+    f.write ('        inline bool\n')
+    f.write ('        isValid () const\n')
+    f.write ('        {\n')
+    f.write ('          return (' + current_he_idx_ + '.isValid ());\n')
+    f.write ('        }\n\n')
+
+    f.write ('        /** \\brief Comparison operators (with boost::operators): == !=\n')
+    f.write ('          * \\warning Does NOT check if the circulators belong to the same mesh. Please check this yourself. */\n')
     f.write ('        inline bool\n')
     f.write ('        operator == (const Self& other) const\n')
     f.write ('        {\n')
-    f.write ('          return (mesh_ == other.mesh_ && ' + current_he_idx_ + ' == other.' + current_he_idx_ + ');\n')
+    f.write ('          return (' + current_he_idx_ + ' == other.' + current_he_idx_ + ');\n')
     f.write ('        }\n\n')
 
     tmp = 'mesh_->get' + inc1 + 'HalfEdgeIndex (' + current_he_idx_ + ')'

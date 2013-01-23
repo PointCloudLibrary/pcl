@@ -54,9 +54,9 @@ namespace pcl
 {
   namespace geometry
   {
-    /** \brief Circulates counter-clockwise around a vertex and returns an index to the terminating vertex of the outgoing half-edge (the target).
+    /** \brief Circulates counter-clockwise around a vertex and returns an index to the terminating vertex of the outgoing half-edge (the target). The best way to declare the circulator is to use the method pcl::geometry::MeshBase::getVertexAroundVertexCirculator ().
       * \tparam MeshT Mesh to which this circulator belongs to.
-      * \note The circulator can't be used to change the connectivity in the mesh (only const circulators are valid). 
+      * \note The circulator can't be used to change the connectivity in the mesh (only const circulators are valid).
       * \author Martin Saelzle
       * \ingroup geometry
       */
@@ -76,6 +76,13 @@ namespace pcl
         typedef typename Mesh::VertexIndex VertexIndex;
         typedef typename Mesh::HalfEdgeIndex HalfEdgeIndex;
 
+        /** \brief Constructor resulting in an invalid circulator. */
+        VertexAroundVertexCirculator ()
+          : mesh_                   (NULL),
+            idx_outgoing_half_edge_ ()
+        {
+        }
+
         /** \brief Construct from the vertex around which we want to circulate. */
         VertexAroundVertexCirculator (const VertexIndex& idx_vertex,
                                       Mesh*const         mesh)
@@ -92,11 +99,20 @@ namespace pcl
         {
         }
 
-        /** \brief Comparison operators (with boost::operators): == != */
+        /** \brief Check if the circulator is valid.
+          * \warning Does NOT check if the stored mesh pointer is valid. You have to ensure this yourself when constructing the circulator. */
+        inline bool
+        isValid () const
+        {
+          return (idx_outgoing_half_edge_.isValid ());
+        }
+
+        /** \brief Comparison operators (with boost::operators): == !=
+          * \warning Does NOT check if the circulators belong to the same mesh. Please check this yourself. */
         inline bool
         operator == (const Self& other) const
         {
-          return (mesh_ == other.mesh_ && idx_outgoing_half_edge_ == other.idx_outgoing_half_edge_);
+          return (idx_outgoing_half_edge_ == other.idx_outgoing_half_edge_);
         }
 
         /** \brief Increment operators (with boost::operators): ++ (pre and post) */
@@ -146,9 +162,9 @@ namespace pcl
 {
   namespace geometry
   {
-    /** \brief Circulates counter-clockwise around a vertex and returns an index to the outgoing half-edge (the target).
+    /** \brief Circulates counter-clockwise around a vertex and returns an index to the outgoing half-edge (the target). The best way to declare the circulator is to use the method pcl::geometry::MeshBase::getOutgoingHalfEdgeAroundVertexCirculator ().
       * \tparam MeshT Mesh to which this circulator belongs to.
-      * \note The circulator can't be used to change the connectivity in the mesh (only const circulators are valid). 
+      * \note The circulator can't be used to change the connectivity in the mesh (only const circulators are valid).
       * \author Martin Saelzle
       * \ingroup geometry
       */
@@ -168,6 +184,13 @@ namespace pcl
         typedef typename Mesh::VertexIndex VertexIndex;
         typedef typename Mesh::HalfEdgeIndex HalfEdgeIndex;
 
+        /** \brief Constructor resulting in an invalid circulator. */
+        OutgoingHalfEdgeAroundVertexCirculator ()
+          : mesh_                   (NULL),
+            idx_outgoing_half_edge_ ()
+        {
+        }
+
         /** \brief Construct from the vertex around which we want to circulate. */
         OutgoingHalfEdgeAroundVertexCirculator (const VertexIndex& idx_vertex,
                                                 Mesh*const         mesh)
@@ -184,11 +207,20 @@ namespace pcl
         {
         }
 
-        /** \brief Comparison operators (with boost::operators): == != */
+        /** \brief Check if the circulator is valid.
+          * \warning Does NOT check if the stored mesh pointer is valid. You have to ensure this yourself when constructing the circulator. */
+        inline bool
+        isValid () const
+        {
+          return (idx_outgoing_half_edge_.isValid ());
+        }
+
+        /** \brief Comparison operators (with boost::operators): == !=
+          * \warning Does NOT check if the circulators belong to the same mesh. Please check this yourself. */
         inline bool
         operator == (const Self& other) const
         {
-          return (mesh_ == other.mesh_ && idx_outgoing_half_edge_ == other.idx_outgoing_half_edge_);
+          return (idx_outgoing_half_edge_ == other.idx_outgoing_half_edge_);
         }
 
         /** \brief Increment operators (with boost::operators): ++ (pre and post) */
@@ -238,9 +270,9 @@ namespace pcl
 {
   namespace geometry
   {
-    /** \brief Circulates counter-clockwise around a vertex and returns an index to the incoming half-edge (the target).
+    /** \brief Circulates counter-clockwise around a vertex and returns an index to the incoming half-edge (the target). The best way to declare the circulator is to use the method pcl::geometry::MeshBase::getIncomingHalfEdgeAroundVertexCirculator ().
       * \tparam MeshT Mesh to which this circulator belongs to.
-      * \note The circulator can't be used to change the connectivity in the mesh (only const circulators are valid). 
+      * \note The circulator can't be used to change the connectivity in the mesh (only const circulators are valid).
       * \author Martin Saelzle
       * \ingroup geometry
       */
@@ -260,6 +292,13 @@ namespace pcl
         typedef typename Mesh::VertexIndex VertexIndex;
         typedef typename Mesh::HalfEdgeIndex HalfEdgeIndex;
 
+        /** \brief Constructor resulting in an invalid circulator. */
+        IncomingHalfEdgeAroundVertexCirculator ()
+          : mesh_                   (NULL),
+            idx_incoming_half_edge_ ()
+        {
+        }
+
         /** \brief Construct from the vertex around which we want to circulate. */
         IncomingHalfEdgeAroundVertexCirculator (const VertexIndex& idx_vertex,
                                                 Mesh*const         mesh)
@@ -276,11 +315,20 @@ namespace pcl
         {
         }
 
-        /** \brief Comparison operators (with boost::operators): == != */
+        /** \brief Check if the circulator is valid.
+          * \warning Does NOT check if the stored mesh pointer is valid. You have to ensure this yourself when constructing the circulator. */
+        inline bool
+        isValid () const
+        {
+          return (idx_incoming_half_edge_.isValid ());
+        }
+
+        /** \brief Comparison operators (with boost::operators): == !=
+          * \warning Does NOT check if the circulators belong to the same mesh. Please check this yourself. */
         inline bool
         operator == (const Self& other) const
         {
-          return (mesh_ == other.mesh_ && idx_incoming_half_edge_ == other.idx_incoming_half_edge_);
+          return (idx_incoming_half_edge_ == other.idx_incoming_half_edge_);
         }
 
         /** \brief Increment operators (with boost::operators): ++ (pre and post) */
@@ -330,9 +378,9 @@ namespace pcl
 {
   namespace geometry
   {
-    /** \brief Circulates counter-clockwise around a vertex and returns an index to the face of the outgoing half-edge (the target).
+    /** \brief Circulates counter-clockwise around a vertex and returns an index to the face of the outgoing half-edge (the target). The best way to declare the circulator is to use the method pcl::geometry::MeshBase::getFaceAroundVertexCirculator ().
       * \tparam MeshT Mesh to which this circulator belongs to.
-      * \note The circulator can't be used to change the connectivity in the mesh (only const circulators are valid). 
+      * \note The circulator can't be used to change the connectivity in the mesh (only const circulators are valid).
       * \author Martin Saelzle
       * \ingroup geometry
       */
@@ -353,6 +401,13 @@ namespace pcl
         typedef typename Mesh::VertexIndex VertexIndex;
         typedef typename Mesh::HalfEdgeIndex HalfEdgeIndex;
 
+        /** \brief Constructor resulting in an invalid circulator. */
+        FaceAroundVertexCirculator ()
+          : mesh_                   (NULL),
+            idx_outgoing_half_edge_ ()
+        {
+        }
+
         /** \brief Construct from the vertex around which we want to circulate. */
         FaceAroundVertexCirculator (const VertexIndex& idx_vertex,
                                     Mesh*const         mesh)
@@ -369,11 +424,20 @@ namespace pcl
         {
         }
 
-        /** \brief Comparison operators (with boost::operators): == != */
+        /** \brief Check if the circulator is valid.
+          * \warning Does NOT check if the stored mesh pointer is valid. You have to ensure this yourself when constructing the circulator. */
+        inline bool
+        isValid () const
+        {
+          return (idx_outgoing_half_edge_.isValid ());
+        }
+
+        /** \brief Comparison operators (with boost::operators): == !=
+          * \warning Does NOT check if the circulators belong to the same mesh. Please check this yourself. */
         inline bool
         operator == (const Self& other) const
         {
-          return (mesh_ == other.mesh_ && idx_outgoing_half_edge_ == other.idx_outgoing_half_edge_);
+          return (idx_outgoing_half_edge_ == other.idx_outgoing_half_edge_);
         }
 
         /** \brief Increment operators (with boost::operators): ++ (pre and post) */
@@ -423,9 +487,9 @@ namespace pcl
 {
   namespace geometry
   {
-    /** \brief Circulates clockwise around a face and returns an index to the terminating vertex of the inner half-edge (the target).
+    /** \brief Circulates clockwise around a face and returns an index to the terminating vertex of the inner half-edge (the target). The best way to declare the circulator is to use the method pcl::geometry::MeshBase::getVertexAroundFaceCirculator ().
       * \tparam MeshT Mesh to which this circulator belongs to.
-      * \note The circulator can't be used to change the connectivity in the mesh (only const circulators are valid). 
+      * \note The circulator can't be used to change the connectivity in the mesh (only const circulators are valid).
       * \author Martin Saelzle
       * \ingroup geometry
       */
@@ -446,6 +510,13 @@ namespace pcl
         typedef typename Mesh::FaceIndex FaceIndex;
         typedef typename Mesh::HalfEdgeIndex HalfEdgeIndex;
 
+        /** \brief Constructor resulting in an invalid circulator. */
+        VertexAroundFaceCirculator ()
+          : mesh_                (NULL),
+            idx_inner_half_edge_ ()
+        {
+        }
+
         /** \brief Construct from the face around which we want to circulate. */
         VertexAroundFaceCirculator (const FaceIndex& idx_face,
                                     Mesh*const       mesh)
@@ -462,11 +533,20 @@ namespace pcl
         {
         }
 
-        /** \brief Comparison operators (with boost::operators): == != */
+        /** \brief Check if the circulator is valid.
+          * \warning Does NOT check if the stored mesh pointer is valid. You have to ensure this yourself when constructing the circulator. */
+        inline bool
+        isValid () const
+        {
+          return (idx_inner_half_edge_.isValid ());
+        }
+
+        /** \brief Comparison operators (with boost::operators): == !=
+          * \warning Does NOT check if the circulators belong to the same mesh. Please check this yourself. */
         inline bool
         operator == (const Self& other) const
         {
-          return (mesh_ == other.mesh_ && idx_inner_half_edge_ == other.idx_inner_half_edge_);
+          return (idx_inner_half_edge_ == other.idx_inner_half_edge_);
         }
 
         /** \brief Increment operators (with boost::operators): ++ (pre and post) */
@@ -516,9 +596,9 @@ namespace pcl
 {
   namespace geometry
   {
-    /** \brief Circulates clockwise around a face and returns an index to the inner half-edge (the target).
+    /** \brief Circulates clockwise around a face and returns an index to the inner half-edge (the target). The best way to declare the circulator is to use the method pcl::geometry::MeshBase::getInnerHalfEdgeAroundFaceCirculator ().
       * \tparam MeshT Mesh to which this circulator belongs to.
-      * \note The circulator can't be used to change the connectivity in the mesh (only const circulators are valid). 
+      * \note The circulator can't be used to change the connectivity in the mesh (only const circulators are valid).
       * \author Martin Saelzle
       * \ingroup geometry
       */
@@ -538,6 +618,13 @@ namespace pcl
         typedef typename Mesh::FaceIndex FaceIndex;
         typedef typename Mesh::HalfEdgeIndex HalfEdgeIndex;
 
+        /** \brief Constructor resulting in an invalid circulator. */
+        InnerHalfEdgeAroundFaceCirculator ()
+          : mesh_                (NULL),
+            idx_inner_half_edge_ ()
+        {
+        }
+
         /** \brief Construct from the face around which we want to circulate. */
         InnerHalfEdgeAroundFaceCirculator (const FaceIndex& idx_face,
                                            Mesh*const       mesh)
@@ -554,11 +641,20 @@ namespace pcl
         {
         }
 
-        /** \brief Comparison operators (with boost::operators): == != */
+        /** \brief Check if the circulator is valid.
+          * \warning Does NOT check if the stored mesh pointer is valid. You have to ensure this yourself when constructing the circulator. */
+        inline bool
+        isValid () const
+        {
+          return (idx_inner_half_edge_.isValid ());
+        }
+
+        /** \brief Comparison operators (with boost::operators): == !=
+          * \warning Does NOT check if the circulators belong to the same mesh. Please check this yourself. */
         inline bool
         operator == (const Self& other) const
         {
-          return (mesh_ == other.mesh_ && idx_inner_half_edge_ == other.idx_inner_half_edge_);
+          return (idx_inner_half_edge_ == other.idx_inner_half_edge_);
         }
 
         /** \brief Increment operators (with boost::operators): ++ (pre and post) */
@@ -608,9 +704,9 @@ namespace pcl
 {
   namespace geometry
   {
-    /** \brief Circulates clockwise around a face and returns an index to the outer half-edge (the target).
+    /** \brief Circulates clockwise around a face and returns an index to the outer half-edge (the target). The best way to declare the circulator is to use the method pcl::geometry::MeshBase::getOuterHalfEdgeAroundFaceCirculator ().
       * \tparam MeshT Mesh to which this circulator belongs to.
-      * \note The circulator can't be used to change the connectivity in the mesh (only const circulators are valid). 
+      * \note The circulator can't be used to change the connectivity in the mesh (only const circulators are valid).
       * \author Martin Saelzle
       * \ingroup geometry
       */
@@ -630,6 +726,13 @@ namespace pcl
         typedef typename Mesh::FaceIndex FaceIndex;
         typedef typename Mesh::HalfEdgeIndex HalfEdgeIndex;
 
+        /** \brief Constructor resulting in an invalid circulator. */
+        OuterHalfEdgeAroundFaceCirculator ()
+          : mesh_                (NULL),
+            idx_inner_half_edge_ ()
+        {
+        }
+
         /** \brief Construct from the face around which we want to circulate. */
         OuterHalfEdgeAroundFaceCirculator (const FaceIndex& idx_face,
                                            Mesh*const       mesh)
@@ -646,11 +749,20 @@ namespace pcl
         {
         }
 
-        /** \brief Comparison operators (with boost::operators): == != */
+        /** \brief Check if the circulator is valid.
+          * \warning Does NOT check if the stored mesh pointer is valid. You have to ensure this yourself when constructing the circulator. */
+        inline bool
+        isValid () const
+        {
+          return (idx_inner_half_edge_.isValid ());
+        }
+
+        /** \brief Comparison operators (with boost::operators): == !=
+          * \warning Does NOT check if the circulators belong to the same mesh. Please check this yourself. */
         inline bool
         operator == (const Self& other) const
         {
-          return (mesh_ == other.mesh_ && idx_inner_half_edge_ == other.idx_inner_half_edge_);
+          return (idx_inner_half_edge_ == other.idx_inner_half_edge_);
         }
 
         /** \brief Increment operators (with boost::operators): ++ (pre and post) */
@@ -700,9 +812,9 @@ namespace pcl
 {
   namespace geometry
   {
-    /** \brief Circulates clockwise around a face and returns an index to the face of the outer half-edge (the target).
+    /** \brief Circulates clockwise around a face and returns an index to the face of the outer half-edge (the target). The best way to declare the circulator is to use the method pcl::geometry::MeshBase::getFaceAroundFaceCirculator ().
       * \tparam MeshT Mesh to which this circulator belongs to.
-      * \note The circulator can't be used to change the connectivity in the mesh (only const circulators are valid). 
+      * \note The circulator can't be used to change the connectivity in the mesh (only const circulators are valid).
       * \author Martin Saelzle
       * \ingroup geometry
       */
@@ -722,6 +834,13 @@ namespace pcl
         typedef typename Mesh::FaceIndex FaceIndex;
         typedef typename Mesh::HalfEdgeIndex HalfEdgeIndex;
 
+        /** \brief Constructor resulting in an invalid circulator. */
+        FaceAroundFaceCirculator ()
+          : mesh_                (NULL),
+            idx_inner_half_edge_ ()
+        {
+        }
+
         /** \brief Construct from the face around which we want to circulate. */
         FaceAroundFaceCirculator (const FaceIndex& idx_face,
                                   Mesh*const       mesh)
@@ -738,11 +857,20 @@ namespace pcl
         {
         }
 
-        /** \brief Comparison operators (with boost::operators): == != */
+        /** \brief Check if the circulator is valid.
+          * \warning Does NOT check if the stored mesh pointer is valid. You have to ensure this yourself when constructing the circulator. */
+        inline bool
+        isValid () const
+        {
+          return (idx_inner_half_edge_.isValid ());
+        }
+
+        /** \brief Comparison operators (with boost::operators): == !=
+          * \warning Does NOT check if the circulators belong to the same mesh. Please check this yourself. */
         inline bool
         operator == (const Self& other) const
         {
-          return (mesh_ == other.mesh_ && idx_inner_half_edge_ == other.idx_inner_half_edge_);
+          return (idx_inner_half_edge_ == other.idx_inner_half_edge_);
         }
 
         /** \brief Increment operators (with boost::operators): ++ (pre and post) */
