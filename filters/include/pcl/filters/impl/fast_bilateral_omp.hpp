@@ -34,7 +34,7 @@
  * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: fast_bilateral.hpp 8381 2013-01-02 23:12:44Z aichim $
+ * $Id: fast_bilateral_omp.hpp 8381 2013-01-02 23:12:44Z aichim $
  *
  */
 #ifndef PCL_FILTERS_IMPL_FAST_BILATERAL_OMP_HPP_
@@ -87,10 +87,10 @@ pcl::FastBilateralFilterOMP<PointT>::applyFilter (PointCloud &output)
 #ifdef _OPENMP
 #pragma omp parallel for num_threads (threads_)
 #endif
-  for (size_t i = 0; i < (small_width * small_height); i++)
+  for (long int i = 0; i < static_cast<long int> (small_width * small_height); i++)
   {
-    size_t small_x = i / small_height;
-    size_t small_y = i % small_height;
+    size_t small_x = static_cast<size_t> (i / small_height);
+    size_t small_y = static_cast<size_t> (i % small_height);
     size_t start_x = static_cast<size_t>( 
         std::max ((static_cast<float> (small_x) - static_cast<float> (padding_xy) - 0.5f) * sigma_s_ + 1, 0.f));
     size_t end_x = static_cast<size_t>( 
@@ -128,10 +128,10 @@ pcl::FastBilateralFilterOMP<PointT>::applyFilter (PointCloud &output)
 #ifdef _OPENMP
 #pragma omp parallel for num_threads (threads_)
 #endif
-      for(size_t i = 0; i < (small_width - 2)*(small_height - 2); ++i)
+      for(long int i = 0; i < static_cast<long int> ((small_width - 2)*(small_height - 2)); ++i)
       {
-        size_t x = i / (small_height - 2) + 1;
-        size_t y = i % (small_height - 2) + 1;
+        size_t x = static_cast<size_t> (i / (small_height - 2) + 1);
+        size_t y = static_cast<size_t> (i % (small_height - 2) + 1);
         const long int off = offset[dim];
         Eigen::Vector2f* d_ptr = &(current_data->operator() (x,y,1));
         Eigen::Vector2f* b_ptr = &(current_buffer->operator() (x,y,1));
@@ -153,10 +153,10 @@ pcl::FastBilateralFilterOMP<PointT>::applyFilter (PointCloud &output)
 #ifdef _OPENMP
 #pragma omp parallel for num_threads (threads_)
 #endif
-    for (size_t i = 0; i < input_->size (); ++i)
+    for (long int i = 0; i < static_cast<long int> (input_->size ()); ++i)
     {
-      size_t x = i / input_->height;
-      size_t y = i % input_->height;
+      size_t x = static_cast<size_t> (i / input_->height);
+      size_t y = static_cast<size_t> (i % input_->height);
       const float z = output (x,y).z - base_min;
       const Eigen::Vector2f D = data.trilinear_interpolation (static_cast<float> (x) / sigma_s_ + padding_xy,
                                                               static_cast<float> (y) / sigma_s_ + padding_xy,
@@ -169,10 +169,10 @@ pcl::FastBilateralFilterOMP<PointT>::applyFilter (PointCloud &output)
 #ifdef _OPENMP
 #pragma omp parallel for num_threads (threads_)
 #endif
-    for (size_t i = 0; i < input_->size (); ++i)
+    for (long i = 0; i < static_cast<long int> (input_->size ()); ++i)
     {
-      size_t x = i / input_->height;
-      size_t y = i % input_->height;
+      size_t x = static_cast<size_t> (i / input_->height);
+      size_t y = static_cast<size_t> (i % input_->height);
       const float z = output (x,y).z - base_min;
       const Eigen::Vector2f D = data.trilinear_interpolation (static_cast<float> (x) / sigma_s_ + padding_xy,
                                                               static_cast<float> (y) / sigma_s_ + padding_xy,
