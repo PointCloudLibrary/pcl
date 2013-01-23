@@ -1965,7 +1965,7 @@ TEST (FrustumCulling, Filters)
   input->width = 1;
   input->height = static_cast<uint32_t> (input->points.size ());
 
-  pcl::FrustumCulling<pcl::PointXYZ> fc;
+  pcl::FrustumCulling<pcl::PointXYZ> fc (true); // Extract removed indices
   fc.setInputCloud (input);
   fc.setVerticalFOV (90);
   fc.setHorizontalFOV (90);
@@ -1991,9 +1991,32 @@ TEST (FrustumCulling, Filters)
 
   pcl::PointCloud <pcl::PointXYZ>::Ptr output (new pcl::PointCloud <pcl::PointXYZ>);
   fc.filter (*output);
-
+  
   // Should filter all points in the input cloud
-  EXPECT_EQ (int (output->points.size ()), int (input->points.size ()));
+  EXPECT_EQ (output->points.size (), input->points.size ());
+  pcl::IndicesConstPtr removed;
+  removed = fc.getRemovedIndices ();
+  EXPECT_EQ (int (removed->size ()), 0);
+  // Check negative: no points should remain
+  fc.setNegative (true);
+  fc.filter (*output);
+  EXPECT_EQ (int (output->size ()), 0);
+  removed = fc.getRemovedIndices ();
+  EXPECT_EQ (removed->size (), input->size ());
+  // Make sure organized works
+  fc.setKeepOrganized (true);
+  fc.filter (*output);
+  EXPECT_EQ (output->size (), input->size ());
+  for (size_t i = 0; i < output->size (); i++)
+  {
+    EXPECT_TRUE (pcl_isnan (output->at (i).x)); 
+    EXPECT_TRUE (pcl_isnan (output->at (i).y));
+    EXPECT_TRUE (pcl_isnan (output->at (i).z));
+  }
+  removed = fc.getRemovedIndices ();
+  EXPECT_EQ (removed->size (), input->size ());
+  
+
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
