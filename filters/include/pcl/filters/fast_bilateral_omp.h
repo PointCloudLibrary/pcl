@@ -34,7 +34,7 @@
  * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: fast_bilateral_omp.h 8379 2013-01-02 23:12:21Z aichim $
+ * $Id: fast_bilateral_omp.h 8379 2013-01-02 23:12:21Z sdmiller $
  *
  */
 

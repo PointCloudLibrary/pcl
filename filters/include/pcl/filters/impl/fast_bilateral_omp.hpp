@@ -34,7 +34,7 @@
  * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: fast_bilateral_omp.hpp 8381 2013-01-02 23:12:44Z aichim $
+ * $Id: fast_bilateral_omp.hpp 8381 2013-01-02 23:12:44Z sdmiller $
  *
  */
 #ifndef PCL_FILTERS_IMPL_FAST_BILATERAL_OMP_HPP_
@@ -70,7 +70,7 @@ pcl::FastBilateralFilterOMP<PointT>::applyFilter (PointCloud &output)
 #ifdef _OPENMP
 #pragma omp parallel for num_threads (threads_)
 #endif
-  for (size_t i = 0; i < output.size (); ++i)
+  for (long int i = 0; i < static_cast<long int> (output.size ()); ++i)
     if (!pcl_isfinite (output.at(i).z))
       output.at(i).z = base_max;
 
@@ -87,7 +87,7 @@ pcl::FastBilateralFilterOMP<PointT>::applyFilter (PointCloud &output)
 #ifdef _OPENMP
 #pragma omp parallel for num_threads (threads_)
 #endif
-  for (long int i = 0; i < static_cast<long int> (small_width * small_height); i++)
+  for (long int i = 0; i < static_cast<long int> (small_width * small_height); ++i)
   {
     size_t small_x = static_cast<size_t> (i / small_height);
     size_t small_y = static_cast<size_t> (i % small_height);
