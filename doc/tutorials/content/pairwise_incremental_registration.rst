@@ -214,3 +214,6 @@ Visualize the final results by running::
   
 .. image:: images/pairwise_incremental_registration/5.png
   :height: 300
+
+NOTE: if you only see a black screen in your viewer, try adjusting the camera position with your mouse. This may happen with the sample PCD files of this tutorial.
+
