@@ -516,23 +516,12 @@ pcl::BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::compute (
     }
   }
 
-  keypoints_->width = keypoints_->size ();
+  keypoints_->width = uint32_t (keypoints_->size ());
   keypoints_->height = 1;
 
   // first, calculate the integral image over the whole image:
   // current integral image
   std::vector<int> integral ((width+1)*(height+1), 0);    // the integral image
-  //integral (image, integral);
-  //pcl::IntegralImage2D integral_image_2d (false);
-  //integral_image_2d.setInputData (image_data, width, height, width, width);
-  
-  //integral[0] = static_cast<int> (image_data[0]);
-
-  //for (size_t row_index = 1; row_index < height; ++row_index)
-  //  integral[row_index*width] = static_cast<int> (image_data[row_index*width]) + integral[(row_index-1)*width];
-
-  //for (size_t col_index = 1; col_index < width; ++col_index)
-  //  integral[col_index] = static_cast<int> (image_data[col_index]) + integral[col_index-1];
 
   for (size_t row_index = 1; row_index < height; ++row_index)
   {
