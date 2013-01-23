@@ -55,6 +55,9 @@ namespace pcl
     * BRISK: Binary Robust Invariant Scalable Keypoints, 
     * in Proceedings of the IEEE International Conference on Computer Vision (ICCV2011).
     *
+    * \warning The input keypoints cloud is not const, and it will be modified: keypoints for which descriptors can not
+    * be computed will be deleted from the cloud.
+    *
     * \author Radu B. Rusu, Stefan Holzer
     * \ingroup features
     */

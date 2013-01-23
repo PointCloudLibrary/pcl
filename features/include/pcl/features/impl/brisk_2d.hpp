@@ -469,7 +469,7 @@ pcl::BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::compute (
   kscales.resize (ksize);
  
   // initialize constants
-   static const float log2 = 0.693147180559945f;
+  static const float log2 = 0.693147180559945f;
   static const float lb_scalerange = std::log (scalerange_) / (log2);
 
   typename std::vector<KeypointT, Eigen::aligned_allocator<KeypointT> >::iterator beginning = keypoints_->points.begin ();
@@ -515,6 +515,9 @@ pcl::BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::compute (
       k--;
     }
   }
+
+  keypoints_->width = keypoints_->size ();
+  keypoints_->height = 1;
 
   // first, calculate the integral image over the whole image:
   // current integral image
