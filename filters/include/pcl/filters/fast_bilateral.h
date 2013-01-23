@@ -57,8 +57,9 @@ namespace pcl
   template<typename PointT>
   class FastBilateralFilter : public Filter<PointT>
   {
-    using Filter<PointT>::input_;
-    typedef typename Filter<PointT>::PointCloud PointCloud;
+    protected:
+      using Filter<PointT>::input_;
+      typedef typename Filter<PointT>::PointCloud PointCloud;
 
     public:
     
@@ -102,10 +103,10 @@ namespace pcl
       /** \brief Filter the input data and store the results into output.
         * \param[out] output the resultant point cloud
         */
-      void
+      virtual void
       applyFilter (PointCloud &output);
 
-    private:
+    protected:
       float sigma_s_;
       float sigma_r_;
       bool early_division_;

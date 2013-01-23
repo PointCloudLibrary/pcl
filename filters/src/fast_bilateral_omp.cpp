@@ -34,18 +34,18 @@
  * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id$
+ * $Id: fast_bilateral_omp.cpp 8379 2013-01-02 23:12:21Z aichim $
  *
  */
-
-#include <pcl/filters/fast_bilateral.h>
-#include <pcl/filters/impl/fast_bilateral.hpp>
+#include <pcl/filters/fast_bilateral_omp.h>
+#include <pcl/filters/impl/fast_bilateral_omp.hpp>
 
 #ifndef PCL_NO_PRECOMPILE
 #include <pcl/point_types.h>
 #include <pcl/impl/instantiate.hpp>
 
-PCL_INSTANTIATE (FastBilateralFilter, (pcl::PointXYZ)(pcl::PointXYZRGB)(pcl::PointXYZRGBA))
+PCL_INSTANTIATE (FastBilateralFilterOMP, (pcl::PointXYZ)(pcl::PointXYZRGB)(pcl::PointXYZRGBA))
 
 #endif    // PCL_NO_PRECOMPILE
+
 

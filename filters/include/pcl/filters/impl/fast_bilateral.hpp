@@ -40,7 +40,6 @@
 #ifndef PCL_FILTERS_IMPL_FAST_BILATERAL_HPP_
 #define PCL_FILTERS_IMPL_FAST_BILATERAL_HPP_
 
-#include <pcl/filters/fast_bilateral.h>
 #include <pcl/common/io.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////

@@ -27,6 +27,7 @@ if(build)
         src/approximate_voxel_grid.cpp
         src/bilateral.cpp
         src/fast_bilateral.cpp
+        src/fast_bilateral_omp.cpp
         src/crop_hull.cpp
         src/voxel_grid_covariance.cpp
 	    src/voxel_grid_label.cpp
@@ -58,6 +59,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/approximate_voxel_grid.h
         include/pcl/${SUBSYS_NAME}/bilateral.h
         include/pcl/${SUBSYS_NAME}/fast_bilateral.h
+        include/pcl/${SUBSYS_NAME}/fast_bilateral_omp.h
         include/pcl/${SUBSYS_NAME}/voxel_grid_covariance.h
         include/pcl/${SUBSYS_NAME}/convolution.h
         include/pcl/${SUBSYS_NAME}/convolution_3d.h
@@ -88,6 +90,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/approximate_voxel_grid.hpp
         include/pcl/${SUBSYS_NAME}/impl/bilateral.hpp
         include/pcl/${SUBSYS_NAME}/impl/fast_bilateral.hpp
+        include/pcl/${SUBSYS_NAME}/impl/fast_bilateral_omp.hpp
         include/pcl/${SUBSYS_NAME}/impl/voxel_grid_covariance.hpp
         include/pcl/${SUBSYS_NAME}/impl/convolution.hpp
         include/pcl/${SUBSYS_NAME}/impl/convolution_3d.hpp

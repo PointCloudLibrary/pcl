@@ -41,6 +41,8 @@
 #include <gtest/gtest.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/filters/fast_bilateral.h>
+#include <pcl/filters/fast_bilateral_omp.h>
+#include <pcl/console/time.h>
 
 using namespace pcl;
 
@@ -75,6 +77,54 @@ TEST (FastBilateralFilter, Filters_Bilateral)
     EXPECT_NEAR (p_102219[dim], (*cloud_filtered)[102219].getVector3fMap ()[dim], 1e-3);
     EXPECT_NEAR (p_81765[dim], (*cloud_filtered)[81765].getVector3fMap ()[dim], 1e-3);
   }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (FastBilateralFilterOMP, Filters_Bilateral)
+{
+  std::vector<float> sigma_s; 
+  sigma_s.push_back (2.341f);
+  sigma_s.push_back (5.2342f);
+  sigma_s.push_back (10.29380f);
+  std::vector<float> sigma_r; 
+  sigma_r.push_back (0.0123f);
+  sigma_r.push_back (0.023f);
+  sigma_r.push_back (0.0345f);
+  pcl::console::TicToc tt;
+  for (size_t i = 0; i < 3; i++)
+  {
+    FastBilateralFilter<PointXYZ> fbf;
+    fbf.setInputCloud (cloud);
+    fbf.setSigmaS (sigma_s[i]);
+    fbf.setSigmaR (sigma_r[i]);
+    PointCloud<PointXYZ>::Ptr cloud_filtered (new PointCloud<PointXYZ> ());
+    tt.tic ();
+    fbf.filter (*cloud_filtered);
+    PCL_INFO ("[FastBilateralFilter] filtering took %f ms\n", tt.toc ());
+
+    FastBilateralFilterOMP<PointXYZ> fbf_omp (0);
+    fbf_omp.setInputCloud (cloud);
+    fbf_omp.setSigmaS (sigma_s[i]);
+    fbf_omp.setSigmaR (sigma_r[i]);
+    PointCloud<PointXYZ>::Ptr cloud_filtered_omp (new PointCloud<PointXYZ> ());
+    tt.tic ();
+    fbf_omp.filter (*cloud_filtered_omp);
+    PCL_INFO ("[FastBilateralFilterOMP] filtering took %f ms\n", tt.toc ());
+
+    EXPECT_EQ (cloud_filtered_omp->points.size (), cloud_filtered->points.size ());
+    for (size_t j = 0; j < cloud_filtered_omp->size (); ++j)
+    {
+      if (pcl_isnan (cloud_filtered_omp->at (j).x))
+        EXPECT_TRUE (pcl_isnan (cloud_filtered->at (j).x));
+      else
+      {
+        EXPECT_NEAR (cloud_filtered_omp->at (j).x, cloud_filtered->at (j).x, 1e-3);
+        EXPECT_NEAR (cloud_filtered_omp->at (j).y, cloud_filtered->at (j).y, 1e-3);
+        EXPECT_NEAR (cloud_filtered_omp->at (j).z, cloud_filtered->at (j).z, 1e-3);
+      }
+    }
+  }
+
 }
 
 /* ---[ */
