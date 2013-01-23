@@ -91,7 +91,25 @@ pcl::BriskKeypoint2D<PointInT, PointOutT, IntensityT>::detectKeypoints (PointClo
   // we do not change the denseness
   output.width = int (output.points.size ());
   output.height = 1;
-  output.is_dense = true;
+  output.is_dense = false;      // set to false to be sure
+
+  // 2nd pass to remove the invalid set of 3D keypoints
+  if (remove_invalid_3D_keypoints_)
+  {
+    PointCloudOut output_clean;
+    for (size_t i = 0; i < output.size (); ++i)
+    {
+      PointOutT pt;
+      // Interpolate its position in 3D, as the "u" and "v" are subpixel accurate
+      bilinearInterpolation (input_, output[i].x, output[i].y, pt);
+
+      // Check if the point is finite
+      if (pcl::isFinite (pt))
+        output_clean.push_back (output[i]);
+    }
+    output = output_clean;
+    output.is_dense = true;      // set to true as there's no keypoint at an invalid XYZ
+  }
 }
 
 #endif 

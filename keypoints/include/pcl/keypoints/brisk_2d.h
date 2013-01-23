@@ -89,6 +89,7 @@ namespace pcl
       BriskKeypoint2D (int octaves = 4, int threshold = 60)
         : threshold_ (threshold)
         , octaves_ (octaves)
+        , remove_invalid_3D_keypoints_ (false)
       {
         k_ = 1;
         name_ = "BriskKeypoint2D";
@@ -131,11 +132,91 @@ namespace pcl
         return (octaves_);
       }
 
+      /** \brief Specify whether we should do a 2nd pass through the list of keypoints
+        * found, and remove the ones that do not have a valid 3D (x-y-z) position 
+        * (i.e., are NaN or Inf).
+        * \param[in] remove set to true whether we want the invalid 3D keypoints removed
+        */
+      inline void
+      setRemoveInvalid3DKeypoints (bool remove)
+      {
+        remove_invalid_3D_keypoints_ = remove;
+      }
+
+      /** \brief Specify whether the keypoints that do not have a valid 3D position are
+        * kept (false) or removed (true).
+        */
+      inline bool
+      getRemoveInvalid3DKeypoints ()
+      {
+        return (remove_invalid_3D_keypoints_);
+      }
+
+      /////////////////////////////////////////////////////////////////////////
+      inline void
+      bilinearInterpolation (const PointCloudInConstPtr &cloud, 
+                             float x, float y,
+                             PointOutT &pt)
+      {
+        int u = int (x);
+        int v = int (y);
+        
+        pt.x = pt.y = pt.z = 0;
+
+        const PointInT &p1 = (*cloud)(u,   v);
+        const PointInT &p2 = (*cloud)(u+1, v);
+        const PointInT &p3 = (*cloud)(u,   v+1);
+        const PointInT &p4 = (*cloud)(u+1, v+1);
+        
+        float fx = x - float (u), fy = y - float (v);
+        float fx1 = 1.0f - fx, fy1 = 1.0f - fy;
+
+        float w1 = fx1 * fy1, w2 = fx * fy1, w3 = fx1 * fy, w4 = fx * fy;
+        float weight = 0;
+        
+        if (pcl::isFinite (p1))
+        {
+          pt.x += p1.x * w1;
+          pt.y += p1.y * w1;
+          pt.z += p1.z * w1;
+          weight += w1;
+        }
+        if (pcl::isFinite (p2))
+        {
+          pt.x += p2.x * w2;
+          pt.y += p2.y * w2;
+          pt.z += p2.z * w2;
+          weight += w2;
+        }
+        if (pcl::isFinite (p3))
+        {
+          pt.x += p3.x * w3;
+          pt.y += p3.y * w3;
+          pt.z += p3.z * w3;
+          weight += w3;
+        }
+        if (pcl::isFinite (p4))
+        {
+          pt.x += p4.x * w4;
+          pt.y += p4.y * w4;
+          pt.z += p4.z * w4;
+          weight += w4;
+        }
+
+        if (weight == 0)
+          pt.x = pt.y = pt.z = std::numeric_limits<float>::quiet_NaN ();
+        else
+        {
+          weight = 1.0f / weight;
+          pt.x *= weight; pt.y *= weight; pt.z *= weight;
+        }
+      }
+
     protected:
       /** \brief Initializes everything and checks whether input data is fine. */
       bool 
       initCompute ();
-      
+
       /** \brief Detects the keypoints. */
       void 
       detectKeypoints (PointCloudOut &output);
@@ -148,6 +229,11 @@ namespace pcl
       int threshold_;
 
       int octaves_;
+
+      /** \brief Specify whether the keypoints that do not have a valid 3D position are
+        * kept (false) or removed (true).
+        */
+      bool remove_invalid_3D_keypoints_;
   };
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
