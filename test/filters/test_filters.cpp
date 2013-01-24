@@ -1165,7 +1165,7 @@ TEST (RandomSample, Filters)
 {
   // Test the PointCloud<PointT> method
   // Randomly sample 10 points from cloud
-  RandomSample<PointXYZ> sample;
+  RandomSample<PointXYZ> sample (true); // Extract removed indices
   sample.setInputCloud (cloud);
   sample.setSample (10);
 
@@ -1192,6 +1192,35 @@ TEST (RandomSample, Filters)
     EXPECT_NEAR (cloud->points[indices[i]].z, cloud_out.points[i].z, 1e-4);
   }
 
+  // Organized
+  sample.setKeepOrganized (true);
+  sample.filter(cloud_out);
+  IndicesConstPtr removed = sample.getRemovedIndices ();
+  EXPECT_EQ (int (removed->size ()), cloud->size () - 10);
+  for (size_t i = 0; i < removed->size (); ++i)
+  {
+    EXPECT_TRUE (pcl_isnan (cloud_out.at ((*removed)[i]).x));
+    EXPECT_TRUE (pcl_isnan (cloud_out.at ((*removed)[i]).y));
+    EXPECT_TRUE (pcl_isnan (cloud_out.at ((*removed)[i]).z));
+  }
+
+  EXPECT_EQ (cloud_out.width, cloud->width);
+  EXPECT_EQ (cloud_out.height, cloud->height);
+  // Negative
+  sample.setKeepOrganized (false);
+  sample.setNegative (true);
+  sample.filter(cloud_out);
+  removed = sample.getRemovedIndices ();
+  EXPECT_EQ (int (removed->size ()), 10);
+  EXPECT_EQ (int (cloud_out.size ()), int (cloud->size () - 10));
+
+  // Make sure sampling >N works
+  sample.setSample (static_cast<unsigned int> (cloud->size ()+10));
+  sample.setNegative (false);
+  sample.filter (cloud_out);
+  EXPECT_EQ (cloud_out.size (), cloud->size ());
+  removed = sample.getRemovedIndices ();
+  EXPECT_TRUE (removed->empty ());
 
   // Test the sensor_msgs::PointCloud2 method
   // Randomly sample 10 points from cloud
@@ -1930,7 +1959,7 @@ TEST (ShadowPoints, Filters)
 	ne.compute (*input_normals);
 
   PointCloud<PointXYZ> output;
-  ShadowPoints <PointXYZ, PointNormal> spfilter;
+  ShadowPoints <PointXYZ, PointNormal> spfilter (true); // Extract removed indices
   spfilter.setInputCloud (input);
   spfilter.setThreshold (0.1f);
   spfilter.setNormals (input_normals);
@@ -1939,6 +1968,27 @@ TEST (ShadowPoints, Filters)
 
   // Should filter out the one shadow point that was added.
   EXPECT_EQ (int (output.points.size ()), 10000);
+  pcl::IndicesConstPtr removed = spfilter.getRemovedIndices ();
+  EXPECT_EQ (int (removed->size ()), 1);
+  EXPECT_EQ (removed->at (0), output.points.size ());
+  // Try organized
+  spfilter.setKeepOrganized (true);
+  spfilter.filter (output);
+  EXPECT_EQ (output.size (), input->size ());
+  EXPECT_TRUE (pcl_isnan (output.at (input->size () - 1).x));
+  removed = spfilter.getRemovedIndices ();
+  EXPECT_EQ (int (removed->size ()), 1);
+
+  // Now try negative
+  spfilter.setKeepOrganized (false);
+  spfilter.setNegative (true);
+  spfilter.filter (output);
+  EXPECT_EQ (int (output.points.size ()), 1);
+  EXPECT_EQ (output.at (0).x, pt.x);
+  EXPECT_EQ (output.at (0).y, pt.y);
+  EXPECT_EQ (output.at (0).z, pt.z);
+  removed = spfilter.getRemovedIndices ();
+  EXPECT_EQ (int (removed->size ()), 10000);
 }
 
 

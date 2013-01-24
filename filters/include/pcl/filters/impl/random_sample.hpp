@@ -39,55 +39,48 @@
 #define PCL_FILTERS_IMPL_RANDOM_SAMPLE_H_
 
 #include <pcl/filters/random_sample.h>
+#include <pcl/common/io.h>
+#include <pcl/point_traits.h>
 
 
 ///////////////////////////////////////////////////////////////////////////////
 template<typename PointT> void
 pcl::RandomSample<PointT>::applyFilter (PointCloud &output)
 {
-  unsigned N = static_cast<unsigned> (input_->size ());
-  float one_over_N = 1.0f / float (N);
-
-  // If sample size is 0 or if the sample size is greater then input cloud size
-  //   then return entire copy of cloud
-  if (sample_ >= N)
+  std::vector<int> indices;
+  if (keep_organized_)
   {
-    output = *input_;
+    bool temp = extract_removed_indices_;
+    extract_removed_indices_ = true;
+    applyFilter (indices);
+    extract_removed_indices_ = temp;
+    copyPointCloud (*input_, output);
+    // Get all floating point fields
+    std::vector<sensor_msgs::PointField> fields;
+    pcl::getFields (output, fields);
+    std::vector<sensor_msgs::PointField> float_fields;
+    for (size_t i = 0; i < fields.size (); ++i)
+    {
+      if (fields[i].datatype == sensor_msgs::PointField::FLOAT32)
+        float_fields.push_back (fields[i]);
+    }
+    // For every "removed" point, set all floating point fields to NaN
+    for (size_t rii = 0; rii < removed_indices_->size (); ++rii)
+    {
+      uint8_t* pt_data = reinterpret_cast<uint8_t*> (&output.at ((*removed_indices_)[rii]));
+      for (size_t i = 0; i < float_fields.size (); ++i)
+      {
+        memcpy (pt_data + float_fields[i].offset, &user_filter_value_, sizeof (float));
+      }
+      if (!pcl_isfinite (user_filter_value_))
+        output.is_dense = false;
+    }
   }
   else
   {
-    // Resize output cloud to sample size
-    output.points.resize (sample_);
-    output.width = sample_;
-    output.height = 1;
-
-    // Set random seed so derived indices are the same each time the filter runs
-    std::srand (seed_);
-
-    unsigned top = N - sample_;
-    unsigned i = 0;
-    unsigned index = 0;
-
-    // Algorithm A
-    for (size_t n = sample_; n >= 2; n--)
-    {
-      unsigned int V = static_cast<unsigned int> (unifRand ());
-      unsigned S = 0;
-      float quot = static_cast<float> (top) * one_over_N;
-      while (quot > V)
-      {
-        S++;
-        top--;
-        N--;
-        quot = quot * float (top) * one_over_N;
-      }
-      index += S;
-      output.points[i++] = input_->points[index++];
-      N--;
-    }
-
-    index += N * static_cast<unsigned> (unifRand ());
-    output.points[i++] = input_->points[index++];
+    output.is_dense = true;
+    applyFilter (indices);
+    copyPointCloud (*input_, indices, output);
   }
 }
 
@@ -96,29 +89,35 @@ template<typename PointT>
 void
 pcl::RandomSample<PointT>::applyFilter (std::vector<int> &indices)
 {
-  unsigned N = static_cast<unsigned> (input_->size ());
+  unsigned N = static_cast<unsigned> (indices_->size ());
   float one_over_N = 1.0f / float (N);
-
+  
+  unsigned int sample_size = negative_ ? N - sample_ : sample_;
   // If sample size is 0 or if the sample size is greater then input cloud size
   //   then return all indices
-  if (sample_ >= N)
+  if (sample_size >= N)
   {
     indices = *indices_;
+    removed_indices_->clear ();
   }
   else
   {
     // Resize output indices to sample size
-    indices.resize (sample_);
+    indices.resize (sample_size);
+    if (extract_removed_indices_)
+      removed_indices_->resize (N - sample_size);
 
     // Set random seed so derived indices are the same each time the filter runs
     std::srand (seed_);
 
     // Algorithm A
-    unsigned top = N - sample_;
+    unsigned top = N - sample_size;
     unsigned i = 0;
     unsigned index = 0;
-
-    for (size_t n = sample_; n >= 2; n--)
+    std::vector<bool> added;
+    if (extract_removed_indices_)
+      added.resize (indices_->size (), false);
+    for (size_t n = sample_size; n >= 2; n--)
     {
       unsigned int V = static_cast<unsigned int>( unifRand () );
       unsigned S = 0;
@@ -132,11 +131,28 @@ pcl::RandomSample<PointT>::applyFilter (std::vector<int> &indices)
       }
       index += S;
       indices[i++] = (*indices_)[index++];
+      if (extract_removed_indices_)
+        added[index] = true;
       N--;
     }
 
     index += N * static_cast<unsigned> (unifRand ());
     indices[i++] = (*indices_)[index++];
+    if (extract_removed_indices_)
+      added[index] = true;
+
+    // Now populate removed_indices_ appropriately
+    if (extract_removed_indices_)
+    {
+      unsigned ri = 0;
+      for (size_t i = 0; i < added.size (); i++)
+      {
+        if (!added[i])
+        {
+          (*removed_indices_)[ri++] = (*indices_)[i];
+        }
+      }
+    }
   }
 }
 

@@ -59,6 +59,11 @@ namespace pcl
     using FilterIndices<PointT>::getClassName;
     using FilterIndices<PointT>::indices_;
     using FilterIndices<PointT>::input_;
+    using FilterIndices<PointT>::negative_;
+    using FilterIndices<PointT>::keep_organized_;
+    using FilterIndices<PointT>::user_filter_value_;
+    using FilterIndices<PointT>::extract_removed_indices_;
+    using FilterIndices<PointT>::removed_indices_;
 
     typedef typename FilterIndices<PointT>::PointCloud PointCloud;
     typedef typename PointCloud::Ptr PointCloudPtr;
@@ -70,7 +75,10 @@ namespace pcl
       typedef boost::shared_ptr< const RandomSample<PointT> > ConstPtr;
 
       /** \brief Empty constructor. */
-      RandomSample () : sample_ (UINT_MAX), seed_ (static_cast<unsigned int> (time (NULL)))
+      RandomSample (bool extract_removed_indices = false) : 
+        FilterIndices<PointT> (extract_removed_indices),
+        sample_ (UINT_MAX), 
+        seed_ (static_cast<unsigned int> (time (NULL)))
       {
         filter_name_ = "RandomSample";
       }
