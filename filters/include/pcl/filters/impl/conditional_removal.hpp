@@ -754,7 +754,7 @@ pcl::ConditionalRemoval<PointT>::applyFilter (PointCloud &output)
     {
       if (cp == static_cast<size_t> (indices[ci]))
       {
-        if (ci < indices.size ())
+        if (ci < indices.size () - 1)
         {
           ci++;
           if (cp == static_cast<size_t> (indices[ci]))   //check whether the next index will have the same value. TODO: necessary?
