@@ -808,6 +808,14 @@ namespace pcl
       */
     PCL_EXPORTS int
     savePLYFile (const std::string &file_name, const pcl::PolygonMesh &mesh, unsigned precision = 5);
+    
+    /** \brief Saves a PolygonMesh in binary PLY format.
+      * \param[in] file_name the name of the file to write to disk
+      * \param[in] mesh the polygonal mesh to save
+      * \ingroup io
+      */
+    PCL_EXPORTS int
+    savePLYFileBinary (const std::string &file_name, const pcl::PolygonMesh &mesh);
   }
 }
 

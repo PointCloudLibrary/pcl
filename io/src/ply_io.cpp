@@ -1420,3 +1420,145 @@ pcl::io::savePLYFile (const std::string &file_name, const pcl::PolygonMesh &mesh
   fs.close ();
   return (0);
 }
+
+////////////////////////////////////////////////////////////////////////////////////////
+int
+pcl::io::savePLYFileBinary (const std::string &file_name, const pcl::PolygonMesh &mesh)
+{
+  if (mesh.cloud.data.empty ())
+  {
+    PCL_ERROR ("[pcl::io::savePLYFile] Input point cloud has no data!\n");
+    return (-1);
+  }
+  // Open file
+  std::ofstream fs;
+  fs.open (file_name.c_str ());
+  if (!fs)
+  {
+    PCL_ERROR ("[pcl::io::savePLYFile] Error during opening (%s)!\n", file_name.c_str ());
+    return (-1);
+  }
+
+  // number of points
+  size_t nr_points  = mesh.cloud.width * mesh.cloud.height;
+  size_t point_size = mesh.cloud.data.size () / nr_points;
+
+  // number of faces
+  size_t nr_faces = mesh.polygons.size ();
+
+  // Write header
+  fs << "ply";
+  fs << "\nformat " << (mesh.cloud.is_bigendian ? "binary_big_endian" : "binary_little_endian") << " 1.0";
+  fs << "\ncomment PCL generated";
+  // Vertices
+  fs << "\nelement vertex "<< mesh.cloud.width * mesh.cloud.height;
+  fs << "\nproperty float x"
+        "\nproperty float y"
+        "\nproperty float z";
+  // Check if we have color on vertices
+  int rgba_index = getFieldIndex (mesh.cloud, "rgba"),
+  rgb_index = getFieldIndex (mesh.cloud, "rgb");
+  if (rgba_index != -1)
+  {
+    fs << "\nproperty uchar red"
+          "\nproperty uchar green"
+          "\nproperty uchar blue"
+          "\nproperty uchar alpha";
+  }
+  else if (rgb_index != -1)
+  {
+    fs << "\nproperty uchar red"
+          "\nproperty uchar green"
+          "\nproperty uchar blue";
+  }
+  // Faces
+  fs << "\nelement face "<< nr_faces;
+  fs << "\nproperty list uchar int vertex_index";
+  fs << "\nend_header\n";
+
+  // Close the file
+  fs.close ();
+  // Open file in binary appendable
+  std::ofstream fpout (file_name.c_str (), std::ios::app | std::ios::binary);
+  if (!fpout)
+  {
+    PCL_ERROR ("[pcl::io::writePLYFileBinary] Error during reopening (%s)!\n", file_name.c_str ());
+    return (-1);
+  }
+
+  // Write down vertices
+  for (size_t i = 0; i < nr_points; ++i)
+  {
+    int xyz = 0;
+    for (size_t d = 0; d < mesh.cloud.fields.size (); ++d)
+    {
+      int count = mesh.cloud.fields[d].count;
+      if (count == 0)
+        count = 1;          // we simply cannot tolerate 0 counts (coming from older converter code)
+      int c = 0;
+
+      // adding vertex
+      if ((mesh.cloud.fields[d].datatype == sensor_msgs::PointField::FLOAT32) && (
+          mesh.cloud.fields[d].name == "x" ||
+          mesh.cloud.fields[d].name == "y" ||
+          mesh.cloud.fields[d].name == "z"))
+      {
+        float value;
+        memcpy (&value, &mesh.cloud.data[i * point_size + mesh.cloud.fields[d].offset + c * sizeof (float)], sizeof (float));
+        fpout.write (reinterpret_cast<const char*> (&value), sizeof (float));
+        // if (++xyz == 3)
+        //   break;
+        ++xyz;
+      }
+      else if (mesh.cloud.fields[d].datatype == sensor_msgs::PointField::FLOAT32 && mesh.cloud.fields[d].name.find ("rgb") != std::string::npos)
+      {
+        pcl::RGB color;
+        if(rgba_index != -1)
+        {
+          memcpy (&color, &mesh.cloud.data[i * point_size + mesh.cloud.fields[rgba_index].offset + c * sizeof (float)], sizeof (RGB));
+          unsigned char r = color.r;
+          unsigned char g = color.g;
+          unsigned char b = color.b;
+          fpout.write (reinterpret_cast<const char*> (&r), sizeof (unsigned char));
+          fpout.write (reinterpret_cast<const char*> (&g), sizeof (unsigned char));
+          fpout.write (reinterpret_cast<const char*> (&b), sizeof (unsigned char));
+          unsigned char a = color.a;
+          fpout.write (reinterpret_cast<const char*> (&a), sizeof (unsigned char));
+        }
+        else
+        {
+          memcpy (&color, &mesh.cloud.data[i * point_size + mesh.cloud.fields[rgb_index].offset + c * sizeof (float)], sizeof (RGB));
+          unsigned char r = color.r;
+          unsigned char g = color.g;
+          unsigned char b = color.b;
+          fpout.write (reinterpret_cast<const char*> (&r), sizeof (unsigned char));
+          fpout.write (reinterpret_cast<const char*> (&g), sizeof (unsigned char));
+          fpout.write (reinterpret_cast<const char*> (&b), sizeof (unsigned char));
+        }
+      }
+    }
+    if (xyz != 3)
+    {
+      PCL_ERROR ("[pcl::io::savePLYFile] Input point cloud has no XYZ data!\n");
+      return (-2);
+    }
+  }
+
+  // Write down faces
+  for (size_t i = 0; i < nr_faces; i++)
+  {
+    unsigned char value = mesh.polygons[i].vertices.size ();
+    fpout.write (reinterpret_cast<const char*> (&value), sizeof (unsigned char));
+    size_t j = 0;
+    for (j = 0; j < mesh.polygons[i].vertices.size (); ++j)
+    {
+      //fs << mesh.polygons[i].vertices[j] << " ";
+      int value = mesh.polygons[i].vertices[j];
+      fpout.write (reinterpret_cast<const char*> (&value), sizeof (int));
+    }
+  }
+
+  // Close file
+  fs.close ();
+  return (0);
+}
