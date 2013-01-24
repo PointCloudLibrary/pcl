@@ -113,23 +113,6 @@ pcl::recognition::ObjRecRANSAC::recognize (const PointCloudIn* scene, const Poin
 
 //=========================================================================================================================================================================
 
-int
-pcl::recognition::ObjRecRANSAC::computeNumberOfIterations (double success_probability)
-{
-	// 'p_obj' is the probability that given that the first sample point belongs to an object,
-	// the second sample point will belong to the same object
-	double p, p_obj = 0.25f;
-
-	p = p_obj*relative_obj_size_*fraction_of_pairs_in_hash_table_;
-
-	if ( 1.0 - p <= 0.0 )
-		return 1;
-
-	return static_cast<int> (log (1.0-success_probability)/log (1.0-p) + 1.0);
-}
-
-//=========================================================================================================================================================================
-
 void
 pcl::recognition::ObjRecRANSAC::sampleOrientedPointPairs (int num_iterations, vector<ORROctree::Node*>& full_scene_leaves, list<OrientedPointPair>& output)
 {
