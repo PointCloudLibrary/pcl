@@ -38,7 +38,7 @@
 #ifndef PCL_FILTERS_SAMPLING_SURFACE_NORMAL_H_
 #define PCL_FILTERS_SAMPLING_SURFACE_NORMAL_H_
 
-#include <pcl/filters/filter_indices.h>
+#include <pcl/filters/filter.h>
 #include <time.h>
 #include <limits.h>
 
@@ -52,14 +52,14 @@ namespace pcl
     * \ingroup filters
     */
   template<typename PointT>
-  class SamplingSurfaceNormal: public FilterIndices<PointT>
+  class SamplingSurfaceNormal: public Filter<PointT>
   {
-    using FilterIndices<PointT>::filter_name_;
-    using FilterIndices<PointT>::getClassName;
-    using FilterIndices<PointT>::indices_;
-    using FilterIndices<PointT>::input_;
+    using Filter<PointT>::filter_name_;
+    using Filter<PointT>::getClassName;
+    using Filter<PointT>::indices_;
+    using Filter<PointT>::input_;
 
-    typedef typename FilterIndices<PointT>::PointCloud PointCloud;
+    typedef typename Filter<PointT>::PointCloud PointCloud;
     typedef typename PointCloud::Ptr PointCloudPtr;
     typedef typename PointCloud::ConstPtr PointCloudConstPtr;
 
@@ -141,14 +141,6 @@ namespace pcl
         */
       void
       applyFilter (PointCloud &output);
-
-      /** \brief Sample of point indices
-        * \param indices the resultant point cloud indices
-        */
-      void
-      applyFilter (std::vector<int>&)
-      {
-      }
 
     private:
 
