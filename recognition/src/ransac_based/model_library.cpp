@@ -55,14 +55,15 @@ using namespace pcl::recognition;
 ModelLibrary::ModelLibrary (float pair_width, float voxel_size)
 : pair_width_ (pair_width), pair_width_eps_ (0.1f*pair_width), voxel_size_(voxel_size)
 {
-  num_of_cells_[0] = 10; // 60
-  num_of_cells_[1] = 10; // 60
-  num_of_cells_[2] = 10; // 60
+  num_of_cells_[0] = 60;
+  num_of_cells_[1] = 60;
+  num_of_cells_[2] = 60;
 
   // Compute the bounds of the hash table
   float eps = 0.000001f; // To be sure that an angle of 0 or PI will not be excluded because it lies on the boundary of the voxel structure
-  float bounds[6] = {-eps, M_PIf + eps, -eps,
-                     M_PIf + eps, -eps, M_PIf + eps};
+  float bounds[6] = {-eps, M_PIf + eps,
+                     -eps, M_PIf + eps,
+                     -eps, M_PIf + eps};
  
   hash_table_.build (bounds, num_of_cells_);
 }
@@ -103,7 +104,7 @@ bool
 ModelLibrary::addModel (PointCloudIn* points, PointCloudN* normals, const std::string& object_name)
 {
 #ifdef OBJ_REC_RANSAC_VERBOSE
-  printf("ModelLibrary::%s(): begin\n", __func__);
+  printf("ModelLibrary::%s(): begin [%s]\n", __func__, object_name.c_str ());
 #endif
 
   // Try to insert a new model entry
@@ -129,10 +130,6 @@ ModelLibrary::addModel (PointCloudIn* points, PointCloudN* normals, const std::s
   ORROctree::Node::Data *node_data1;
   int num_of_pairs = 0;
 
-#ifdef OBJ_REC_RANSAC_VERBOSE
-  printf("\tfilling the hash table ... "); fflush(stdout);
-#endif
-
   // Run through all full leaves
   for ( vector<ORROctree::Node*>::iterator leaf1 = full_leaves.begin () ; leaf1 != full_leaves.end () ; ++leaf1 )
   {
@@ -152,7 +149,7 @@ ModelLibrary::addModel (PointCloudIn* points, PointCloudN* normals, const std::s
   }
 
 #ifdef OBJ_REC_RANSAC_VERBOSE
-  printf("OK\nModelLibrary::%s(): end\n", __func__);
+  printf("ModelLibrary::%s(): end [%i oriented point pairs]\n", __func__, num_of_pairs);
 #endif
 
   return (true);

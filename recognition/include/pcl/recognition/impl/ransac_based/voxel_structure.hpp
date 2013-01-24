@@ -92,9 +92,9 @@ pcl::recognition::VoxelStructure<T,REAL>::getVoxel (const REAL p[3])
 template<class T, typename REAL> inline T*
 pcl::recognition::VoxelStructure<T,REAL>::getVoxel (int x, int y, int z) const
 {
-  if ( 0 < x || x >= num_of_voxels_[0] ) return NULL;
-  if ( 0 < y || y >= num_of_voxels_[1] ) return NULL;
-  if ( 0 < z || z >= num_of_voxels_[2] ) return NULL;
+  if ( x < 0 || x >= num_of_voxels_[0] ) return NULL;
+  if ( y < 0 || y >= num_of_voxels_[1] ) return NULL;
+  if ( z < 0 || z >= num_of_voxels_[2] ) return NULL;
 
   return &voxels_[z*num_of_voxels_xy_plane_ + y*num_of_voxels_[0] + x];
 }
@@ -107,42 +107,46 @@ pcl::recognition::VoxelStructure<T,REAL>::getNeighbors (const REAL* p, T **neigh
   if ( p[0] < bounds_[0] || p[0] >= bounds_[1] || p[1] < bounds_[2] || p[1] >= bounds_[3] || p[2] < bounds_[4] || p[2] >= bounds_[5] )
     return 0;
 
-  int x = static_cast<int> ((p[0] - bounds_[0])/spacing_[0]);
-  int y = static_cast<int> ((p[1] - bounds_[2])/spacing_[1]);
-  int z = static_cast<int> ((p[2] - bounds_[4])/spacing_[2]);
+  const int x = static_cast<int> ((p[0] - bounds_[0])/spacing_[0]);
+  const int y = static_cast<int> ((p[1] - bounds_[2])/spacing_[1]);
+  const int z = static_cast<int> ((p[2] - bounds_[4])/spacing_[2]);
+
+  const int x_m1 = x-1, x_p1 = x+1;
+  const int y_m1 = y-1, y_p1 = y+1;
+  const int z_m1 = z-1, z_p1 = z+1;
 
   T* voxel;
   int num_neighs = 0;
 
-  voxel = this->getVoxel (x+1, y+1, z+1); if ( voxel ) neighs[num_neighs++] = voxel;
-  voxel = this->getVoxel (x+1, y+1, z  ); if ( voxel ) neighs[num_neighs++] = voxel;
-  voxel = this->getVoxel (x+1, y+1, z-1); if ( voxel ) neighs[num_neighs++] = voxel;
-  voxel = this->getVoxel (x+1, y  , z+1); if ( voxel ) neighs[num_neighs++] = voxel;
-  voxel = this->getVoxel (x+1, y  , z  ); if ( voxel ) neighs[num_neighs++] = voxel;
-  voxel = this->getVoxel (x+1, y  , z-1); if ( voxel ) neighs[num_neighs++] = voxel;
-  voxel = this->getVoxel (x+1, y-1, z+1); if ( voxel ) neighs[num_neighs++] = voxel;
-  voxel = this->getVoxel (x+1, y-1, z  ); if ( voxel ) neighs[num_neighs++] = voxel;
-  voxel = this->getVoxel (x+1, y-1, z-1); if ( voxel ) neighs[num_neighs++] = voxel;
+  voxel = this->getVoxel (x_p1, y_p1, z_p1); if ( voxel ) neighs[num_neighs++] = voxel;
+  voxel = this->getVoxel (x_p1, y_p1, z   ); if ( voxel ) neighs[num_neighs++] = voxel;
+  voxel = this->getVoxel (x_p1, y_p1, z_m1); if ( voxel ) neighs[num_neighs++] = voxel;
+  voxel = this->getVoxel (x_p1, y   , z_p1); if ( voxel ) neighs[num_neighs++] = voxel;
+  voxel = this->getVoxel (x_p1, y   , z   ); if ( voxel ) neighs[num_neighs++] = voxel;
+  voxel = this->getVoxel (x_p1, y   , z_m1); if ( voxel ) neighs[num_neighs++] = voxel;
+  voxel = this->getVoxel (x_p1, y_m1, z_p1); if ( voxel ) neighs[num_neighs++] = voxel;
+  voxel = this->getVoxel (x_p1, y_m1, z   ); if ( voxel ) neighs[num_neighs++] = voxel;
+  voxel = this->getVoxel (x_p1, y_m1, z_m1); if ( voxel ) neighs[num_neighs++] = voxel;
 
-  voxel = this->getVoxel (x  , y+1, z+1); if ( voxel ) neighs[num_neighs++] = voxel;
-  voxel = this->getVoxel (x  , y+1, z  ); if ( voxel ) neighs[num_neighs++] = voxel;
-  voxel = this->getVoxel (x  , y+1, z-1); if ( voxel ) neighs[num_neighs++] = voxel;
-  voxel = this->getVoxel (x  , y  , z+1); if ( voxel ) neighs[num_neighs++] = voxel;
-  voxel = this->getVoxel (x  , y  , z  ); if ( voxel ) neighs[num_neighs++] = voxel;
-  voxel = this->getVoxel (x  , y  , z-1); if ( voxel ) neighs[num_neighs++] = voxel;
-  voxel = this->getVoxel (x  , y-1, z+1); if ( voxel ) neighs[num_neighs++] = voxel;
-  voxel = this->getVoxel (x  , y-1, z  ); if ( voxel ) neighs[num_neighs++] = voxel;
-  voxel = this->getVoxel (x  , y-1, z-1); if ( voxel ) neighs[num_neighs++] = voxel;
+  voxel = this->getVoxel (x   , y_p1, z_p1); if ( voxel ) neighs[num_neighs++] = voxel;
+  voxel = this->getVoxel (x   , y_p1, z   ); if ( voxel ) neighs[num_neighs++] = voxel;
+  voxel = this->getVoxel (x   , y_p1, z_m1); if ( voxel ) neighs[num_neighs++] = voxel;
+  voxel = this->getVoxel (x   , y   , z_p1); if ( voxel ) neighs[num_neighs++] = voxel;
+  voxel = this->getVoxel (x   , y   , z   ); if ( voxel ) neighs[num_neighs++] = voxel;
+  voxel = this->getVoxel (x   , y   , z_m1); if ( voxel ) neighs[num_neighs++] = voxel;
+  voxel = this->getVoxel (x   , y_m1, z_p1); if ( voxel ) neighs[num_neighs++] = voxel;
+  voxel = this->getVoxel (x   , y_m1, z   ); if ( voxel ) neighs[num_neighs++] = voxel;
+  voxel = this->getVoxel (x   , y_m1, z_m1); if ( voxel ) neighs[num_neighs++] = voxel;
 
-  voxel = this->getVoxel (x-1, y+1, z+1); if ( voxel ) neighs[num_neighs++] = voxel;
-  voxel = this->getVoxel (x-1, y+1, z  ); if ( voxel ) neighs[num_neighs++] = voxel;
-  voxel = this->getVoxel (x-1, y+1, z-1); if ( voxel ) neighs[num_neighs++] = voxel;
-  voxel = this->getVoxel (x-1, y  , z+1); if ( voxel ) neighs[num_neighs++] = voxel;
-  voxel = this->getVoxel (x-1, y  , z  ); if ( voxel ) neighs[num_neighs++] = voxel;
-  voxel = this->getVoxel (x-1, y  , z-1); if ( voxel ) neighs[num_neighs++] = voxel;
-  voxel = this->getVoxel (x-1, y-1, z+1); if ( voxel ) neighs[num_neighs++] = voxel;
-  voxel = this->getVoxel (x-1, y-1, z  ); if ( voxel ) neighs[num_neighs++] = voxel;
-  voxel = this->getVoxel (x-1, y-1, z-1); if ( voxel ) neighs[num_neighs++] = voxel;
+  voxel = this->getVoxel (x_m1, y_p1, z_p1); if ( voxel ) neighs[num_neighs++] = voxel;
+  voxel = this->getVoxel (x_m1, y_p1, z   ); if ( voxel ) neighs[num_neighs++] = voxel;
+  voxel = this->getVoxel (x_m1, y_p1, z_m1); if ( voxel ) neighs[num_neighs++] = voxel;
+  voxel = this->getVoxel (x_m1, y   , z_p1); if ( voxel ) neighs[num_neighs++] = voxel;
+  voxel = this->getVoxel (x_m1, y   , z   ); if ( voxel ) neighs[num_neighs++] = voxel;
+  voxel = this->getVoxel (x_m1, y   , z_m1); if ( voxel ) neighs[num_neighs++] = voxel;
+  voxel = this->getVoxel (x_m1, y_m1, z_p1); if ( voxel ) neighs[num_neighs++] = voxel;
+  voxel = this->getVoxel (x_m1, y_m1, z   ); if ( voxel ) neighs[num_neighs++] = voxel;
+  voxel = this->getVoxel (x_m1, y_m1, z_m1); if ( voxel ) neighs[num_neighs++] = voxel;
 
   return num_neighs;
 }

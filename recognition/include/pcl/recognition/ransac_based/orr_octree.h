@@ -56,7 +56,7 @@
 #include <vector>
 #include <list>
 
-#define PCL_REC_ORR_OCTREE_VERBOSE
+//#define PCL_REC_ORR_OCTREE_VERBOSE
 
 namespace pcl
 {

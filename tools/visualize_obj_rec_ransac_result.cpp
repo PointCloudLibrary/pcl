@@ -34,13 +34,12 @@
  */
 
 /*
- * visualize_obj_rec_ransac_opp.cpp
+ * visualize_obj_rec_ransac_result.cpp
  *
- *  Created on: Jan 17, 2013
+ *  Created on: Jan 23, 2013
  *      Author: papazov
  *
- *  Calls recognize() of the ObjRecRANSAC class and visualizes the oriented point pairs (opp) sampled from the scene.
- *  Does NOT perform full recognition.
+ *  Visualizes the result of the ObjRecRANSAC class. STILL WORK IN PROGRESS!!
  */
 
 #include <pcl/recognition/ransac_based/obj_rec_ransac.h>
@@ -66,11 +65,11 @@ using namespace visualization;
 
 class CallbackParameters;
 
-void run (const char* file_name, float voxel_size);
 void show_octree (const ORROctree& octree, PCLVisualizer& viz);
 bool vtk_to_pointcloud (const char* file_name, PointCloud<PointXYZ>& pcl_points, PointCloud<Normal>& pcl_normals);
 void node_to_cube (const ORROctree::Node* node, vtkAppendPolyData* additive_octree);
 void update (CallbackParameters* params);
+void keyboardCB (const pcl::visualization::KeyboardEvent &event, void* params_void);
 
 //#define _SHOW_INPUT_POINTS_
 #define _SHOW_OCTREE_POINTS_
@@ -96,121 +95,39 @@ class CallbackParameters
 //===========================================================================================================================================
 
 int
-main (int argc, char** argv)
+main ()
 {
-  if ( argc != 3 )
-  {
-    fprintf(stderr, "\nERROR: Syntax is ./pcl_visualize_obj_rec_ransac_opp <vtk file> <leaf_size>\n"
-                    "EXAMPLE: ./pcl_visualize_obj_rec_ransac_opp ../../test/tum_table_scene.vtk 6\n\n");
+  // THIS IS STILL WORK IN PROGRESS!!
+
+  // The input to the object recognition instance
+  char scene_file_name[] = "../../test/tum_table_scene.vtk\0", model_file_name[] = "../../test/tum_amicelli_box.vtk\0";
+  float pair_width = 45.0f, voxel_size = 3.5f;
+
+  PointCloud<PointXYZ>::Ptr scene_points (new PointCloud<PointXYZ> ()), amicelli_points (new PointCloud<PointXYZ> ());
+  PointCloud<Normal>::Ptr scene_normals (new PointCloud<Normal> ()), amicelli_normals (new PointCloud<Normal> ());
+
+  // Get the points and normals from the input model
+  if ( !vtk_to_pointcloud (model_file_name, *amicelli_points, *amicelli_normals) )
     return (-1);
-  }
 
-  // Get the voxel size
-  float voxel_size = static_cast<float> (atof (argv[2]));
-  if ( voxel_size <= 0.0 )
-  {
-    fprintf(stderr, "ERROR: leaf_size has to be positive and not %lf\n", voxel_size);
+  // Get the points and normals from the input scene
+  if ( !vtk_to_pointcloud (scene_file_name, *scene_points, *scene_normals) )
     return (-1);
-  }
-
-  run(argv[1], voxel_size);
-
-  return (0);
-}
-
-//===============================================================================================================================
-
-void keyboardCB (const pcl::visualization::KeyboardEvent &event, void* params_void)
-{
-  if (event.getKeyCode () == 13 /*enter*/ && event.keyUp ())
-    update (static_cast<CallbackParameters*> (params_void));
-}
-
-//===============================================================================================================================
-
-void update (CallbackParameters* params)
-{
-  list<ObjRecRANSAC::Output> dummy_output;
-
-  // Run the recognition method
-  params->objrec_.recognize (params->points_, params->normals_, dummy_output);
-
-  // Build the vtk objects visualizing the lines between the opps
-  const list<ObjRecRANSAC::OrientedPointPair>& opps = params->objrec_.getSampledOrientedPointPairs ();
-  cout << "There is (are) " << opps.size () << " oriented point pair(s).\n";
-  // The opps points
-  vtkSmartPointer<vtkPolyData> vtk_opps = vtkSmartPointer<vtkPolyData>::New ();
-  vtkSmartPointer<vtkPoints> vtk_opps_points = vtkSmartPointer<vtkPoints>::New ();
-    vtk_opps_points->SetNumberOfPoints (2*static_cast<vtkIdType> (opps.size ()));
-  vtkSmartPointer<vtkCellArray> vtk_opps_lines = vtkSmartPointer<vtkCellArray>::New ();
-  // The opps normals
-  vtkSmartPointer<vtkDoubleArray> vtk_normals = vtkSmartPointer<vtkDoubleArray>::New ();
-  vtk_normals->SetNumberOfComponents (3);
-  vtk_normals->SetNumberOfTuples (2*static_cast<vtkIdType> (opps.size ()));
-  vtkIdType ids[2] = {0, 1};
-
-  // Insert the points and compute the lines
-  for ( list<ObjRecRANSAC::OrientedPointPair>::const_iterator it = opps.begin () ; it != opps.end () ; ++it )
-  {
-    vtk_opps_points->SetPoint (ids[0], it->p1_[0], it->p1_[1], it->p1_[2]);
-    vtk_opps_points->SetPoint (ids[1], it->p2_[0], it->p2_[1], it->p2_[2]);
-    vtk_opps_lines->InsertNextCell (2, ids);
-
-    vtk_normals->SetTuple3 (ids[0], it->n1_[0], it->n1_[1], it->n1_[2]);
-    vtk_normals->SetTuple3 (ids[1], it->n2_[0], it->n2_[1], it->n2_[2]);
-
-    ids[0] += 2;
-    ids[1] += 2;
-  }
-  vtk_opps->SetPoints (vtk_opps_points);
-  vtk_opps->GetPointData ()->SetNormals (vtk_normals);
-  vtk_opps->SetLines (vtk_opps_lines);
-
-  vtkSmartPointer<vtkHedgeHog> vtk_hh = vtkSmartPointer<vtkHedgeHog>::New ();
-  vtk_hh->SetVectorModeToUseNormal ();
-  vtk_hh->SetScaleFactor (0.3f*params->objrec_.getPairWidth ());
-  vtk_hh->SetInput (vtk_opps);
-  vtk_hh->Update ();
-
-  // The lines
-  string lines_str_id = "opps";
-  params->viz_.removeShape(lines_str_id);
-  params->viz_.addModelFromPolyData (vtk_opps, lines_str_id);
-  params->viz_.setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, 0.0, 0.0, 1.0, lines_str_id);
-  // The normals
-  string normals_str_id = "opps normals";
-  params->viz_.removeShape(normals_str_id);
-  params->viz_.addModelFromPolyData (vtk_hh->GetOutput (), normals_str_id);
-  params->viz_.setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, 1.0, 1.0, 0.0, normals_str_id);
-
-}
-
-//===============================================================================================================================
-
-void run (const char* file_name, float voxel_size)
-{
-  PointCloud<PointXYZ>::Ptr points_in (new PointCloud<PointXYZ> ());
-  PointCloud<PointXYZ>::Ptr points_octree (new PointCloud<PointXYZ> ());
-  PointCloud<Normal>::Ptr normals_in (new PointCloud<Normal> ());
-
-  // Get the points and normals from the input vtk file
-  if ( !vtk_to_pointcloud (file_name, *points_in, *normals_in) )
-    return;
 
   // The recognition object
-  ObjRecRANSAC objrec (40.0f, voxel_size);
-  // Switch to the test mode in which only oriented point pairs from the scene are sampled
-  objrec.enterTestModeSampleOPP ();
+  ObjRecRANSAC objrec (pair_width, voxel_size);
+  // Add a model
+  objrec.addModel (&(*amicelli_points), &(*amicelli_normals), "amicelli box");
 
   // The visualizer
   PCLVisualizer viz;
-
-  CallbackParameters params(objrec, viz, &(*points_in), &(*normals_in));
+  CallbackParameters params(objrec, viz, &(*scene_points), &(*scene_normals));
   viz.registerKeyboardCallback (keyboardCB, static_cast<void*> (&params));
 
-  // Run the recognition and update the viewer
+  // Run the recognition and update the viewer. Have a look at this method, to see how to start the recognition and use the result!
   update (&params);
 
+  // From this line on: visualization stuff only!
 #ifdef _SHOW_OCTREE_
   show_octree(objrec.getSceneOctree (), viz);
 #endif
@@ -221,8 +138,9 @@ void run (const char* file_name, float voxel_size)
 #endif
 
 #ifdef _SHOW_OCTREE_POINTS_
-  objrec.getSceneOctree ().getFullLeafPoints (*points_octree);
-  viz.addPointCloud (points_octree, "octree points");
+  PointCloud<PointXYZ>::Ptr octree_points (new PointCloud<PointXYZ> ());
+  objrec.getSceneOctree ().getFullLeafPoints (*octree_points);
+  viz.addPointCloud (octree_points, "octree points");
   viz.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 5, "octree points");
   viz.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_COLOR, 1.0, 0.0, 0.0, "octree points");
 #endif
@@ -240,6 +158,29 @@ void run (const char* file_name, float voxel_size)
     viz.spinOnce (100);
     boost::this_thread::sleep (boost::posix_time::microseconds (100000));
   }
+
+  return (0);
+}
+
+//===============================================================================================================================
+
+void keyboardCB (const pcl::visualization::KeyboardEvent &event, void* params_void)
+{
+  if (event.getKeyCode () == 13 /*enter*/ && event.keyUp ())
+    update (static_cast<CallbackParameters*> (params_void));
+}
+
+//===============================================================================================================================
+
+void update (CallbackParameters* params)
+{
+  // That will be the output of the recognition
+  list<ObjRecRANSAC::Output> rec_output;
+
+  // Run the recognition method
+  params->objrec_.recognize (params->points_, params->normals_, rec_output);
+
+  cout << "There is (are) " << rec_output.size () << " recognized object(s).\n";
 }
 
 //===============================================================================================================================

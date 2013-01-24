@@ -230,7 +230,7 @@ namespace pcl
         }
 
       protected:
-        enum Recognition_Mode {SAMPLE_OPP = 0, /*GENERATE_HYPOTHESES, TEST_HYPOTHESES, BUILD_CONFLICT_GRAPH,*/ FULL_RECOGNITION};
+        enum Recognition_Mode {SAMPLE_OPP, /*GENERATE_HYPOTHESES, TEST_HYPOTHESES, BUILD_CONFLICT_GRAPH,*/ FULL_RECOGNITION};
 
         friend class ModelLibrary;
 
@@ -250,7 +250,7 @@ namespace pcl
         }
 
         void
-        sampleOrientedPointPairs (int num_iterations, std::vector<ORROctree::Node*>& full_scene_leaves, std::list<OrientedPointPair>& output);
+        sampleOrientedPointPairs (int num_iterations, const std::vector<ORROctree::Node*>& full_scene_leaves, std::list<OrientedPointPair>& output);
 
         int
         generateHypotheses(const std::list<OrientedPointPair>& pairs, std::list<Hypothesis*>& out);

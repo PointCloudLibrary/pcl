@@ -88,13 +88,13 @@ pcl::recognition::ObjRecRANSAC::recognize (const PointCloudIn* scene, const Poin
   vector<Hypothesis*> accepted_hypotheses;
   ORRGraph graph;
 
-  if ( rec_mode_ <= ObjRecRANSAC::SAMPLE_OPP )
-  {
-    this->sampleOrientedPointPairs (num_iterations, full_leaves, sampled_oriented_point_pairs_);
-    return;
-  }
+  this->sampleOrientedPointPairs (num_iterations, full_leaves, sampled_oriented_point_pairs_);
 
-  if ( rec_mode_ <= ObjRecRANSAC::FULL_RECOGNITION )
+  // Leave if we are in the SAMPLE_OPP test mode
+  if ( rec_mode_ == ObjRecRANSAC::SAMPLE_OPP )
+    return;
+
+  if ( rec_mode_ == ObjRecRANSAC::FULL_RECOGNITION )
   {
     this->generateHypotheses (sampled_oriented_point_pairs_, hypotheses);
     this->testHypotheses (hypotheses, accepted_hypotheses);
@@ -114,15 +114,20 @@ pcl::recognition::ObjRecRANSAC::recognize (const PointCloudIn* scene, const Poin
 //=========================================================================================================================================================================
 
 void
-pcl::recognition::ObjRecRANSAC::sampleOrientedPointPairs (int num_iterations, vector<ORROctree::Node*>& full_scene_leaves, list<OrientedPointPair>& output)
+pcl::recognition::ObjRecRANSAC::sampleOrientedPointPairs (int num_iterations, const vector<ORROctree::Node*>& full_scene_leaves, list<OrientedPointPair>& output)
 {
 #ifdef OBJ_REC_RANSAC_VERBOSE
-  printf ("ObjRecRANSAC::%s(): sampling oriented point pairs ... ", __func__); fflush (stdout);
+  printf ("ObjRecRANSAC::%s(): sampling oriented point pairs (opps) ... ", __func__); fflush (stdout);
 #endif
 
   int i, num_full_leaves = static_cast<int> (full_scene_leaves.size ());
   ORROctree::Node *leaf1, *leaf2;
   const float *p1, *p2, *n1, *n2;
+
+#ifdef OBJ_REC_RANSAC_VERBOSE
+  int num_of_opps = 0;
+#endif
+
   // The random generator
 //  UniformGenerator<int> randgen (0, num_full_leaves, static_cast<uint32_t> (time (NULL)));
 
@@ -160,10 +165,14 @@ pcl::recognition::ObjRecRANSAC::sampleOrientedPointPairs (int num_iterations, ve
 
     // Save the sampled point pair
     output.push_back (OrientedPointPair (p1, n1, p2, n2));
+
+#ifdef OBJ_REC_RANSAC_VERBOSE
+    ++num_of_opps;
+#endif
   }
 
 #ifdef OBJ_REC_RANSAC_VERBOSE
-  printf ("done.\n"); fflush (stdout);
+  cout << "done [" << num_of_opps << " opps].\n";
 #endif
 }
 
