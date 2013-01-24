@@ -66,7 +66,7 @@ pcl::RandomSample<PointT>::applyFilter (PointCloud &output)
           fields[i].name == "z")
         offsets.push_back (fields[i].offset);
     }
-    // For every "removed" point, set all floating point fields to NaN
+    // For every "removed" point, set the x,y,z fields to user_filter_value_
     const static float user_filter_value = user_filter_value_;
     for (size_t rii = 0; rii < removed_indices_->size (); ++rii)
     {
@@ -106,9 +106,9 @@ pcl::RandomSample<PointT>::applyFilter (std::vector<int> &indices)
   else
   {
     // Resize output indices to sample size
-    indices.resize (sample_size);
+    indices.resize (static_cast<size_t> (sample_size));
     if (extract_removed_indices_)
-      removed_indices_->resize (N - sample_size);
+      removed_indices_->resize (static_cast<size_t> (N - sample_size));
 
     // Set random seed so derived indices are the same each time the filter runs
     std::srand (seed_);
@@ -133,16 +133,16 @@ pcl::RandomSample<PointT>::applyFilter (std::vector<int> &indices)
         quot = quot * float (top) * one_over_N;
       }
       index += S;
-      indices[i++] = (*indices_)[index++];
       if (extract_removed_indices_)
         added[index] = true;
+      indices[i++] = (*indices_)[index++];
       N--;
     }
 
     index += N * static_cast<unsigned> (unifRand ());
-    indices[i++] = (*indices_)[index++];
     if (extract_removed_indices_)
       added[index] = true;
+    indices[i++] = (*indices_)[index++];
 
     // Now populate removed_indices_ appropriately
     if (extract_removed_indices_)

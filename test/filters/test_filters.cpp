@@ -1196,19 +1196,19 @@ TEST (RandomSample, Filters)
   EXPECT_EQ (removed->size (), cloud->size () - 10);
   // Organized
   // (sdmiller) Removing for now, to debug the Linux 32-bit segfault offline
-  // sample.setKeepOrganized (true);
-  // sample.filter(cloud_out);
-  // removed = sample.getRemovedIndices ();
-  // EXPECT_EQ (int (removed->size ()), cloud->size () - 10);
-  // for (size_t i = 0; i < removed->size (); ++i)
-  // {
-  //   EXPECT_TRUE (pcl_isnan (cloud_out.at ((*removed)[i]).x));
-  //   EXPECT_TRUE (pcl_isnan (cloud_out.at ((*removed)[i]).y));
-  //   EXPECT_TRUE (pcl_isnan (cloud_out.at ((*removed)[i]).z));
-  // }
+  sample.setKeepOrganized (true);
+  sample.filter(cloud_out);
+  removed = sample.getRemovedIndices ();
+  EXPECT_EQ (int (removed->size ()), cloud->size () - 10);
+  for (size_t i = 0; i < removed->size (); ++i)
+  {
+    EXPECT_TRUE (pcl_isnan (cloud_out.at ((*removed)[i]).x));
+    EXPECT_TRUE (pcl_isnan (cloud_out.at ((*removed)[i]).y));
+    EXPECT_TRUE (pcl_isnan (cloud_out.at ((*removed)[i]).z));
+  }
 
-  // EXPECT_EQ (cloud_out.width, cloud->width);
-  // EXPECT_EQ (cloud_out.height, cloud->height);
+  EXPECT_EQ (cloud_out.width, cloud->width);
+  EXPECT_EQ (cloud_out.height, cloud->height);
   // Negative
   sample.setKeepOrganized (false);
   sample.setNegative (true);
