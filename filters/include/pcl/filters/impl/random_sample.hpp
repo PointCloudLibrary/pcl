@@ -55,24 +55,25 @@ pcl::RandomSample<PointT>::applyFilter (PointCloud &output)
     applyFilter (indices);
     extract_removed_indices_ = temp;
     copyPointCloud (*input_, output);
-    // Get all floating point fields
+    // Get X, Y, Z fields
     std::vector<sensor_msgs::PointField> fields;
-    pcl::getFields (output, fields);
-    std::vector<sensor_msgs::PointField> float_fields;
+    pcl::getFields (*input_, fields);
+    std::vector<size_t> offsets;
     for (size_t i = 0; i < fields.size (); ++i)
     {
-      if (fields[i].datatype == sensor_msgs::PointField::FLOAT32)
-        float_fields.push_back (fields[i]);
+      if (fields[i].name == "x" ||
+          fields[i].name == "y" ||
+          fields[i].name == "z")
+        offsets.push_back (fields[i].offset);
     }
     // For every "removed" point, set all floating point fields to NaN
     const static float user_filter_value = user_filter_value_;
     for (size_t rii = 0; rii < removed_indices_->size (); ++rii)
     {
-      uint8_t* pt_data = reinterpret_cast<uint8_t*> (&output.at ((*removed_indices_)[rii]));
-      for (size_t i = 0; i < float_fields.size (); ++i)
+      uint8_t* pt_data = reinterpret_cast<uint8_t*> (&output[(*removed_indices_)[rii]]);
+      for (size_t i = 0; i < offsets.size (); ++i)
       {
-        memcpy (pt_data + float_fields[i].offset, 
-                reinterpret_cast<const char*> (&user_filter_value), sizeof (float));
+        memcpy (pt_data + offsets[i], &user_filter_value, sizeof (float));
       }
       if (!pcl_isfinite (user_filter_value_))
         output.is_dense = false;
