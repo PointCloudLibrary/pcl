@@ -47,17 +47,20 @@ namespace pcl
 {
   namespace geometry
   {
+    /** \brief Tag describing the type of the mesh. */
+    struct QuadMeshTag {};
+
     /** \brief Half-edge mesh that can only store quads.
       * \tparam MeshTraitsT Please have a look at pcl::geometry::DefaultMeshTraits.
       * \author Martin Saelzle
       * \ingroup geometry
       */
     template <class MeshTraitsT>
-    class QuadMesh : public pcl::geometry::MeshBase <QuadMesh <MeshTraitsT>, MeshTraitsT>
+    class QuadMesh : public pcl::geometry::MeshBase <QuadMesh <MeshTraitsT>, MeshTraitsT, QuadMeshTag>
     {
       public:
 
-        typedef pcl::geometry::MeshBase <QuadMesh <MeshTraitsT>, MeshTraitsT> Base;
+        typedef pcl::geometry::MeshBase <QuadMesh <MeshTraitsT>, MeshTraitsT, QuadMeshTag> Base;
 
         typedef QuadMesh <MeshTraitsT>         Self;
         typedef boost::shared_ptr <Self>       Ptr;
@@ -68,6 +71,7 @@ namespace pcl
         typedef typename Base::EdgeData     EdgeData;
         typedef typename Base::FaceData     FaceData;
         typedef typename Base::IsManifold   IsManifold;
+        typedef typename Base::MeshTag      MeshTag;
 
         typedef typename Base::HasVertexData   HasVertexData;
         typedef typename Base::HasHalfEdgeData HasHalfEdgeData;
@@ -141,7 +145,7 @@ namespace pcl
       private:
 
         // NOTE: Can't use the typedef of Base as a friend.
-        friend class pcl::geometry::MeshBase <QuadMesh <MeshTraitsT>, MeshTraitsT>;
+        friend class pcl::geometry::MeshBase <QuadMesh <MeshTraitsT>, MeshTraitsT, pcl::geometry::QuadMeshTag>;
 
         /** \brief addFace for the quad mesh. */
         inline FaceIndex

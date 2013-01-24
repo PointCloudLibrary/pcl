@@ -89,18 +89,19 @@ namespace pcl
     /** \brief Base class for the half-edge mesh.
       * \tparam DerivedT Has to implement the method 'addFaceImpl'. Please have a look at pcl::geometry::TriangleMesh, pcl::geometry::QuadMesh and pcl::geometry::PolygonMesh.
       * \tparam MeshTraitsT Please have a look at pcl::geometry::DefaultMeshTraits.
+      * \tparam MeshTagT Tag describing the type of the mesh, e.g. TriangleMeshTag, QuadMeshTag, PolygonMeshTag.
       * \author Martin Saelzle
       * \ingroup geometry
       * \todo Add documentation
       */
-    template <class DerivedT, class MeshTraitsT>
+    template <class DerivedT, class MeshTraitsT, class MeshTagT>
     class MeshBase
     {
       public:
 
-        typedef MeshBase <DerivedT, MeshTraitsT> Self;
-        typedef boost::shared_ptr <Self>         Ptr;
-        typedef boost::shared_ptr <const Self>   ConstPtr;
+        typedef MeshBase <DerivedT, MeshTraitsT, MeshTagT> Self;
+        typedef boost::shared_ptr <Self>                   Ptr;
+        typedef boost::shared_ptr <const Self>             ConstPtr;
 
         typedef DerivedT Derived;
 
@@ -113,6 +114,8 @@ namespace pcl
 
         // Check if the mesh traits are defined correctly.
         BOOST_CONCEPT_ASSERT ((boost::Convertible <IsManifold, bool>));
+
+        typedef MeshTagT MeshTag;
 
         // Data
         typedef boost::integral_constant <bool, !boost::is_same <VertexData  , pcl::geometry::NoData>::value> HasVertexData;

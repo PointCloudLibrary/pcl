@@ -39,6 +39,7 @@
  */
 
 #include <vector>
+#include <typeinfo>
 
 #include <gtest/gtest.h>
 
@@ -80,6 +81,16 @@ class TestQuadMesh : public testing::Test
 };
 
 TYPED_TEST_CASE (TestQuadMesh, QuadMeshTypes);
+
+////////////////////////////////////////////////////////////////////////////////
+
+TYPED_TEST (TestQuadMesh, CorrectMeshTag)
+{
+  typedef typename TestFixture::Mesh Mesh;
+  typedef typename Mesh::MeshTag     MeshTag;
+
+  ASSERT_EQ (typeid (pcl::geometry::QuadMeshTag), typeid (MeshTag));
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 

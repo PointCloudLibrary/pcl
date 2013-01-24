@@ -49,17 +49,20 @@ namespace pcl
 {
   namespace geometry
   {
+    /** \brief Tag describing the type of the mesh. */
+    struct TriangleMeshTag {};
+
     /** \brief Half-edge mesh that can only store triangles.
       * \tparam MeshTraitsT Please have a look at pcl::geometry::DefaultMeshTraits.
       * \author Martin Saelzle
       * \ingroup geometry
       */
     template <class MeshTraitsT>
-    class TriangleMesh : public pcl::geometry::MeshBase <TriangleMesh <MeshTraitsT>, MeshTraitsT>
+    class TriangleMesh : public pcl::geometry::MeshBase <TriangleMesh <MeshTraitsT>, MeshTraitsT, TriangleMeshTag>
     {
       public:
 
-        typedef pcl::geometry::MeshBase <TriangleMesh <MeshTraitsT>, MeshTraitsT> Base;
+        typedef pcl::geometry::MeshBase <TriangleMesh <MeshTraitsT>, MeshTraitsT, TriangleMeshTag> Base;
 
         typedef TriangleMesh <MeshTraitsT>     Self;
         typedef boost::shared_ptr <Self>       Ptr;
@@ -70,6 +73,7 @@ namespace pcl
         typedef typename Base::EdgeData     EdgeData;
         typedef typename Base::FaceData     FaceData;
         typedef typename Base::IsManifold   IsManifold;
+        typedef typename Base::MeshTag      MeshTag;
 
         typedef typename Base::HasVertexData   HasVertexData;
         typedef typename Base::HasHalfEdgeData HasHalfEdgeData;
@@ -250,7 +254,7 @@ namespace pcl
       private:
 
         // NOTE: Can't use the typedef of Base as a friend.
-        friend class pcl::geometry::MeshBase <TriangleMesh <MeshTraitsT>, MeshTraitsT>;
+        friend class pcl::geometry::MeshBase <TriangleMesh <MeshTraitsT>, MeshTraitsT, pcl::geometry::TriangleMeshTag>;
 
         /** \brief addFace for the triangular mesh. */
         inline FaceIndex

@@ -39,6 +39,7 @@
  */
 
 #include <vector>
+#include <typeinfo>
 
 #include <gtest/gtest.h>
 
@@ -81,7 +82,17 @@ class TestPolygonMesh : public testing::Test
 
 TYPED_TEST_CASE (TestPolygonMesh, PolygonMeshTypes);
 
-//////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+TYPED_TEST (TestPolygonMesh, CorrectMeshTag)
+{
+  typedef typename TestFixture::Mesh Mesh;
+  typedef typename Mesh::MeshTag     MeshTag;
+
+  ASSERT_EQ (typeid (pcl::geometry::PolygonMeshTag), typeid (MeshTag));
+}
+
+////////////////////////////////////////////////////////////////////////////////
 
 // NOTE: It is the responsibility of the user to ensure that all vertex indices are valid.
 
@@ -107,7 +118,7 @@ TYPED_TEST_CASE (TestPolygonMesh, PolygonMeshTypes);
 //  EXPECT_TRUE (mesh.addFace (vi).isValid ());
 //}
 
-//////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
 TYPED_TEST (TestPolygonMesh, CorrectNumberOfVertices)
 {
@@ -130,7 +141,7 @@ TYPED_TEST (TestPolygonMesh, CorrectNumberOfVertices)
   }
 }
 
-//////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
 TYPED_TEST (TestPolygonMesh, ThreePolygons)
 {

@@ -47,7 +47,7 @@ namespace pcl
 {
   namespace geometry
   {
-    template <class DerivedT, class MeshTraitsT>
+    template <class DerivedT, class MeshTraitsT, class MeshTagT>
     class MeshBase;
 
     template <class MeshT>
@@ -83,7 +83,7 @@ namespace pcl
         /** \brief Index to the outgoing half-edge. The vertex is considered to be deleted if it stores an invalid outgoing half-edge index. */
         HalfEdgeIndex idx_outgoing_half_edge_;
 
-        template <class DerivedT, class MeshTraitsT>
+        template <class DerivedT, class MeshTraitsT, class MeshTagT>
         friend class pcl::geometry::MeshBase;
 
         template <class MeshT>
@@ -141,7 +141,7 @@ namespace pcl
         /** \brief Index to the face. The half-edge is considered to be on the boundary if it stores an invalid face index. */
         FaceIndex idx_face_;
 
-        template <class DerivedT, class MeshTraitsT>
+        template <class DerivedT, class MeshTraitsT, class MeshTagT>
         friend class pcl::geometry::MeshBase;
 
         template <class MeshT>
@@ -178,7 +178,7 @@ namespace pcl
         /** \brief Index to the inner half-edge. The face is considered to be deleted if it stores an invalid inner half-edge index. */
         HalfEdgeIndex idx_inner_half_edge_;
 
-        template <class DerivedT, class MeshTraitsT>
+        template <class DerivedT, class MeshTraitsT, class MeshTagT>
         friend class pcl::geometry::MeshBase;
 
         template <class MeshT>

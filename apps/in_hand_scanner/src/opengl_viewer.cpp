@@ -41,6 +41,8 @@
 #include <pcl/apps/in_hand_scanner/opengl_viewer.h>
 
 #include <cmath>
+#include <typeinfo>
+#include <cstdlib>
 
 #ifdef __APPLE__
 #  include <OpenGL/gl.h>
@@ -74,6 +76,12 @@ pcl::ihs::OpenGLViewer::FaceVertexMesh::FaceVertexMesh (const Mesh& mesh, const 
     triangles      (),
     transformation (T)
 {
+  if (typeid (Mesh::MeshTag) != typeid (pcl::geometry::TriangleMeshTag))
+  {
+    std::cerr << "In opengl_viewer.cpp: Only triangle meshes are currently supported!\n";
+    exit (EXIT_FAILURE);
+  }
+
   for (CloudIHS::iterator it=vertices.begin (); it!=vertices.end (); ++it)
   {
     std::swap (it->r, it->b);

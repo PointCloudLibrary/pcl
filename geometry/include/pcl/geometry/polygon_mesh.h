@@ -47,17 +47,20 @@ namespace pcl
 {
   namespace geometry
   {
+    /** \brief Tag describing the type of the mesh. */
+    struct PolygonMeshTag {};
+
     /** \brief General half-edge mesh that can store any polygon with a minimum number of vertices of 3.
       * \tparam MeshTraitsT Please have a look at pcl::geometry::DefaultMeshTraits.
       * \author Martin Saelzle
       * \ingroup geometry
       */
     template <class MeshTraitsT>
-    class PolygonMesh : public pcl::geometry::MeshBase <PolygonMesh <MeshTraitsT>, MeshTraitsT>
+    class PolygonMesh : public pcl::geometry::MeshBase <PolygonMesh <MeshTraitsT>, MeshTraitsT, PolygonMeshTag>
     {
       public:
 
-        typedef pcl::geometry::MeshBase <PolygonMesh <MeshTraitsT>, MeshTraitsT> Base;
+        typedef pcl::geometry::MeshBase <PolygonMesh <MeshTraitsT>, MeshTraitsT, PolygonMeshTag> Base;
 
         typedef PolygonMesh <MeshTraitsT>      Self;
         typedef boost::shared_ptr <Self>       Ptr;
@@ -68,6 +71,7 @@ namespace pcl
         typedef typename Base::EdgeData     EdgeData;
         typedef typename Base::FaceData     FaceData;
         typedef typename Base::IsManifold   IsManifold;
+        typedef typename Base::MeshTag      MeshTag;
 
         typedef typename Base::HasVertexData   HasVertexData;
         typedef typename Base::HasHalfEdgeData HasHalfEdgeData;
@@ -167,7 +171,7 @@ namespace pcl
       private:
 
         // NOTE: Can't use the typedef of Base as a friend.
-        friend class pcl::geometry::MeshBase <PolygonMesh <MeshTraitsT>, MeshTraitsT>;
+        friend class pcl::geometry::MeshBase <PolygonMesh <MeshTraitsT>, MeshTraitsT, pcl::geometry::PolygonMeshTag>;
 
         /** \brief addFace for the polygon mesh. */
         inline FaceIndex
