@@ -116,7 +116,7 @@ pcl::ihs::InHandScanner::showUnprocessedData ()
   if (destructor_called_) return;
 
   std::cerr << "Showing the unprocessed input data.\n";
-  Base::disableDrawBox ();
+  Base::setDrawBox (false);
   Base::setColoring (Base::COL_RGB);
 
   running_mode_ = RM_UNPROCESSED;
@@ -132,7 +132,7 @@ pcl::ihs::InHandScanner::showProcessedData ()
   if (destructor_called_) return;
 
   std::cerr << "Showing the processed input data.\n";
-  Base::enableDrawBox ();
+  Base::setDrawBox (true);
   Base::setColoring (Base::COL_RGB);
 
   running_mode_ = RM_PROCESSED;
@@ -148,7 +148,7 @@ pcl::ihs::InHandScanner::registerContinuously ()
   if (destructor_called_) return;
 
   std::cerr << "Continuous registration.\n";
-  Base::enableDrawBox ();
+  Base::setDrawBox (true);
   Base::setColoring (Base::COL_VISCONF);
 
   running_mode_ = RM_REGISTRATION_CONT;
@@ -164,7 +164,7 @@ pcl::ihs::InHandScanner::registerOnce ()
   if (destructor_called_) return;
 
   std::cerr << "Single registration.\n";
-  Base::enableDrawBox ();
+  Base::setDrawBox (true);
 
   running_mode_ = RM_REGISTRATION_SINGLE;
   emit runningModeChanged (running_mode_);
@@ -179,7 +179,7 @@ pcl::ihs::InHandScanner::showModel ()
   if (destructor_called_) return;
 
   std::cerr << "Show the model\n";
-  Base::disableDrawBox ();
+  Base::setDrawBox (false);
 
   running_mode_ = RM_SHOW_MODEL;
   emit runningModeChanged (running_mode_);

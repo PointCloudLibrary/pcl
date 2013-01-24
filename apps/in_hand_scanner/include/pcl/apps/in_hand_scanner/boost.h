@@ -45,6 +45,7 @@
 #  pragma GCC system_header
 #endif
 
+#include <boost/static_assert.hpp>
 #include <boost/unordered_map.hpp>
 #include <boost/bind/bind.hpp>
 #include <boost/math/special_functions/fpclassify.hpp>

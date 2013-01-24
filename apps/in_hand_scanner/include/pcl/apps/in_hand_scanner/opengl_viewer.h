@@ -93,6 +93,7 @@ namespace pcl
         class BoxCoefficients
         {
           public:
+
             BoxCoefficients ()
               : x_min (0), x_max (0),
                 y_min (0), y_max (0),
@@ -102,9 +103,9 @@ namespace pcl
             }
 
             BoxCoefficients (const float x_min, const float x_max,
-                              const float y_min, const float y_max,
-                              const float z_min, const float z_max,
-                              const Eigen::Isometry3d& T = Eigen::Isometry3d::Identity ())
+                             const float y_min, const float y_max,
+                             const float z_min, const float z_max,
+                             const Eigen::Isometry3d& T = Eigen::Isometry3d::Identity ())
               : x_min (x_min), x_max (x_max),
                 y_min (y_min), y_max (y_max),
                 z_min (z_min), z_max (z_max),
@@ -141,7 +142,7 @@ namespace pcl
         /** \brief Convert an organized cloud to a mesh and draw it.
           * \param[in] cloud Organized input cloud.
           * \param[in] id Unique identifier for the mesh. The internal mesh is replaced by the converted input mesh if the id already exists.
-          ** \param[in] T Transformation applied to the mesh. Defaults to an identity transformation.
+          * \param[in] T Transformation applied to the mesh. Defaults to an identity transformation.
           * \return true if success.
           * \note This method takes some time for the conversion).
           */
@@ -163,13 +164,13 @@ namespace pcl
         void
         setBoxCoefficients (const BoxCoefficients& coeffs);
 
-        /** \brief Enable drawing the box. */
+        /** \brief Enable / disable drawing the box. */
         void
-        enableDrawBox ();
+        setDrawBox (const bool enabled);
 
-        /** \brief Disable drawing the box. */
-        void
-        disableDrawBox ();
+        /** \brief Check if the box is drawn. */
+        bool
+        getDrawBox () const;
 
         /** \brief Set the point around which the camera rotates during mouse navigation. */
         void
@@ -201,7 +202,7 @@ namespace pcl
         void
         setScalingFactor (const double scale);
 
-     public slots:
+      public slots:
 
         /** \brief Requests the scene to be re-drawn (called periodically from a timer). */
         void
@@ -329,9 +330,15 @@ namespace pcl
             EIGEN_MAKE_ALIGNED_OPERATOR_NEW
         };
 
-        typedef boost::shared_ptr <      FaceVertexMesh>                         FaceVertexMeshPtr;
-        typedef boost::shared_ptr <const FaceVertexMesh>                         FaceVertexMeshConstPtr;
+        typedef boost::shared_ptr <      FaceVertexMesh>              FaceVertexMeshPtr;
+        typedef boost::shared_ptr <const FaceVertexMesh>              FaceVertexMeshConstPtr;
         typedef boost::unordered_map <std::string, FaceVertexMeshPtr> FaceVertexMeshMap;
+
+        /** \brief Check if the mesh with the given id is added.
+          * \note Must lock the mutex before calling this method.
+          */
+        bool
+        getMeshIsAdded (const std::string& id);
 
         /** \brief Calculate the pivot for the stored id. */
         void

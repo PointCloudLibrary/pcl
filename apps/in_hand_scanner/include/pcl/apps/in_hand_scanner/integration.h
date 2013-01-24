@@ -107,7 +107,7 @@ namespace pcl
                const Eigen::Matrix4f&           T) const;
 
         /** \brief Outlier rejection. In each merge step points that have not been observed again age by one iteration. Points that are observed again get an age of 0. Once a point reaches the maximum age it is decided if the point is removed or kept in the mesh. A point is removed if it has not been observed from a minimum number of directions.
-          * \param[in,out] mesh The which should be processed.
+          * \param[in,out] mesh The mesh which should be processed.
           * \param[in] cleanup Calls mesh.cleanup () if true.
           */
         void

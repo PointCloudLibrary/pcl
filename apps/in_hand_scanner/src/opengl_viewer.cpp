@@ -444,16 +444,18 @@ pcl::ihs::OpenGLViewer::~OpenGLViewer ()
 bool
 pcl::ihs::OpenGLViewer::addMesh (const MeshConstPtr& mesh, const std::string& id, const Eigen::Isometry3d& T)
 {
+  if (!mesh)
+  {
+    std::cerr << "ERROR in opengl_viewer.cpp: Input mesh is not valid.\n";
+    return (false);
+  }
+
   boost::mutex::scoped_lock lock (mutex_vis_);
 
-  if (drawn_meshes_.find (id) == drawn_meshes_.end ())
-  {
-    drawn_meshes_.insert (std::make_pair (id, FaceVertexMeshPtr (new FaceVertexMesh (*mesh, T))));
-  }
-  else
-  {
+  if (this->getMeshIsAdded (id))
     drawn_meshes_ [id] = FaceVertexMeshPtr (new FaceVertexMesh (*mesh, T));
-  }
+  else
+    drawn_meshes_.insert (std::make_pair (id, FaceVertexMeshPtr (new FaceVertexMesh (*mesh, T))));
 
   return (true);
 }
@@ -560,14 +562,11 @@ pcl::ihs::OpenGLViewer::addMesh (const CloudXYZRGBNormalConstPtr& cloud, const s
 
   // Finally add the mesh.
   boost::mutex::scoped_lock lock (mutex_vis_);
-  if (drawn_meshes_.find (id) == drawn_meshes_.end ())
-  {
-    drawn_meshes_.insert (std::make_pair (id, mesh));
-  }
-  else
-  {
+
+  if (this->getMeshIsAdded (id))
     drawn_meshes_ [id] = mesh;
-  }
+  else
+    drawn_meshes_.insert (std::make_pair (id, mesh));
 
   return (true);
 }
@@ -578,16 +577,11 @@ bool
 pcl::ihs::OpenGLViewer::removeMesh (const std::string& id)
 {
   boost::mutex::scoped_lock lock (mutex_vis_);
+  if (!this->getMeshIsAdded (id)) return (false);
 
-  if (drawn_meshes_.find (id) == drawn_meshes_.end ())
-  {
-    return (false);
-  }
-  else
-  {
-    drawn_meshes_.erase (id);
-    return (true);
-  }
+  drawn_meshes_.erase (id);
+
+  return (true);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -596,7 +590,6 @@ void
 pcl::ihs::OpenGLViewer::removeAllMeshes ()
 {
   boost::mutex::scoped_lock lock (mutex_vis_);
-
   drawn_meshes_.clear ();
 }
 
@@ -606,28 +599,24 @@ void
 pcl::ihs::OpenGLViewer::setBoxCoefficients (const BoxCoefficients& coeffs)
 {
   boost::mutex::scoped_lock lock (mutex_vis_);
-
   box_coefficients_ = coeffs;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 void
-pcl::ihs::OpenGLViewer::enableDrawBox ()
+pcl::ihs::OpenGLViewer::setDrawBox (const bool enabled)
 {
   boost::mutex::scoped_lock lock (mutex_vis_);
-
-  draw_box_ = true;
+  draw_box_ = enabled;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void
-pcl::ihs::OpenGLViewer::disableDrawBox ()
+bool
+pcl::ihs::OpenGLViewer::getDrawBox () const
 {
-  boost::mutex::scoped_lock lock (mutex_vis_);
-
-  draw_box_ = false;
+  return (draw_box_);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -636,7 +625,6 @@ void
 pcl::ihs::OpenGLViewer::setPivot (const Eigen::Vector3d& pivot)
 {
   boost::mutex::scoped_lock lock (mutex_vis_);
-
   cam_pivot_ = pivot;
 }
 
@@ -646,7 +634,6 @@ void
 pcl::ihs::OpenGLViewer::setPivot (const std::string& id)
 {
   boost::mutex::scoped_lock lock (mutex_vis_);
-
   cam_pivot_id_ = id;
 }
 
@@ -859,14 +846,22 @@ pcl::ihs::OpenGLViewer::paintEvent (QPaintEvent* /*event*/)
 
 ////////////////////////////////////////////////////////////////////////////////
 
+bool
+pcl::ihs::OpenGLViewer::getMeshIsAdded (const std::string& id)
+{
+  // boost::mutex::scoped_lock lock (mutex_vis_);
+  return (drawn_meshes_.find (id) != drawn_meshes_.end ());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
 void
 pcl::ihs::OpenGLViewer::calcPivot ()
 {
   boost::mutex::scoped_lock lock (mutex_vis_);
-  Eigen::Vector4f pivot;
-
-  if (drawn_meshes_.find (cam_pivot_id_) != drawn_meshes_.end ())
+  if (this->getMeshIsAdded (cam_pivot_id_))
   {
+    Eigen::Vector4f pivot;
     const FaceVertexMeshConstPtr mesh = drawn_meshes_ [cam_pivot_id_];
 
     if (pcl::compute3DCentroid (mesh->vertices, pivot))
@@ -942,7 +937,6 @@ pcl::ihs::OpenGLViewer::drawMeshes ()
         }
       }
 
-
       glPushMatrix ();
       {
         glMultMatrixd (mesh.transformation.matrix ().data ());
@@ -967,12 +961,7 @@ pcl::ihs::OpenGLViewer::drawMeshes ()
 
   glDisableClientState (GL_VERTEX_ARRAY);
   glDisableClientState (GL_NORMAL_ARRAY);
-  switch (coloring_)
-  {
-    case COL_RGB:       glDisableClientState (GL_COLOR_ARRAY);  break;
-    case COL_ONE_COLOR:                                         break;
-    case COL_VISCONF:   glDisableClientState (GL_COLOR_ARRAY);  break;
-  }
+  glDisableClientState (GL_COLOR_ARRAY);
   glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
 }
 
@@ -984,7 +973,6 @@ pcl::ihs::OpenGLViewer::drawBox ()
   BoxCoefficients coeffs;
   {
     boost::mutex::scoped_lock lock (mutex_vis_);
-
     if (draw_box_) coeffs = box_coefficients_;
     else           return;
   }
@@ -1086,7 +1074,6 @@ void
 pcl::ihs::OpenGLViewer::mousePressEvent (QMouseEvent* /*event*/)
 {
   boost::mutex::scoped_lock lock (mutex_vis_);
-
   mouse_pressed_begin_ = true;
 }
 
