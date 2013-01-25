@@ -12,6 +12,7 @@ set(INCS
     include/pcl/apps/${SUBSYS_NAME}/icp.h
     include/pcl/apps/${SUBSYS_NAME}/input_data_processing.h
     include/pcl/apps/${SUBSYS_NAME}/integration.h
+    include/pcl/apps/${SUBSYS_NAME}/mesh_processing.h
     include/pcl/apps/${SUBSYS_NAME}/utils.h
     include/pcl/apps/${SUBSYS_NAME}/visibility_confidence.h
 )
@@ -28,6 +29,7 @@ set(SRCS
     src/in_hand_scanner.cpp
     src/input_data_processing.cpp
     src/integration.cpp
+    src/mesh_processing.cpp
     src/opengl_viewer.cpp
     src/visibility_confidence.cpp
 )

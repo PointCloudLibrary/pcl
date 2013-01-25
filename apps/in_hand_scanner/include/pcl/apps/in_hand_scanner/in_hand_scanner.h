@@ -63,6 +63,7 @@ namespace pcl
     class ICP;
     class InputDataProcessing;
     class Integration;
+    class MeshProcessing;
   } // End namespace ihs
 } // End namespace pcl
 
@@ -97,6 +98,10 @@ namespace pcl
         typedef pcl::ihs::Integration                 Integration;
         typedef boost::shared_ptr <Integration>       IntegrationPtr;
         typedef boost::shared_ptr <const Integration> IntegrationConstPtr;
+
+        typedef pcl::ihs::MeshProcessing                 MeshProcessing;
+        typedef boost::shared_ptr <MeshProcessing>       MeshProcessingPtr;
+        typedef boost::shared_ptr <const MeshProcessing> MeshProcessingConstPtr;
 
         /** \brief Switch between different branches of the scanning pipeline. */
         typedef enum RunningMode
@@ -270,6 +275,9 @@ namespace pcl
 
         /** \brief Integrate the data cloud into a common model. */
         IntegrationPtr integration_;
+
+        /** \brief Methods called after the integration. */
+        MeshProcessingPtr mesh_processing_;
 
         /** \brief Model to which new data is registered to (stored as a mesh). */
         MeshPtr mesh_model_;

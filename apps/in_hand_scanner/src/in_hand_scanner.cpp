@@ -49,9 +49,11 @@
 #include <pcl/common/time.h>
 #include <pcl/common/transforms.h>
 #include <pcl/io/openni_grabber.h>
+#include <pcl/geometry/get_boundary.h>
 #include <pcl/apps/in_hand_scanner/icp.h>
 #include <pcl/apps/in_hand_scanner/input_data_processing.h>
 #include <pcl/apps/in_hand_scanner/integration.h>
+#include <pcl/apps/in_hand_scanner/mesh_processing.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -69,6 +71,7 @@ pcl::ihs::InHandScanner::InHandScanner (Base* parent)
     icp_                   (new ICP ()),
     transformation_        (Eigen::Matrix4f::Identity ()),
     integration_           (new Integration ()),
+    mesh_processing_       (new MeshProcessing ()),
     mesh_model_            (new Mesh ()),
     destructor_called_     (false)
 {
@@ -238,21 +241,12 @@ pcl::ihs::InHandScanner::keyPressEvent (QKeyEvent* event)
   if (starting_grabber_)  return;
   if (destructor_called_) return;
 
-  if (event->key () == Qt::Key_Escape)
-  {
-    boost::mutex::scoped_lock lock (mutex_);
-    QApplication::quit ();
-    return;
-  }
-
   switch (event->key ())
   {
     case Qt::Key_H:
     {
       std::cerr << "======================================================================\n"
                 << "Help:\n"
-                << "----------------------------------------------------------------------\n"
-                << "ESC: Quit the application.\n"
                 << "----------------------------------------------------------------------\n"
                 << "1  : Shows the unprocessed input data.\n"
                 << "2  : Shows the processed input data.\n"
@@ -325,11 +319,13 @@ pcl::ihs::InHandScanner::newDataCallback (const CloudXYZRGBAConstPtr& cloud_in)
     if (iteration_ == 0)
     {
       transformation_ = Eigen::Matrix4f::Identity ();
+
       sw.reset ();
       integration_->reconstructMesh (cloud_data, mesh_model_);
       std::cerr << "Integration:\n"
                 << "  - time reconstruct mesh          : "
                 << std::setw (8) << std::right << sw.getTime () << " ms\n";
+
       cloud_data = CloudXYZRGBNormalPtr (new CloudXYZRGBNormal ());
       ++iteration_;
     }
@@ -339,17 +335,30 @@ pcl::ihs::InHandScanner::newDataCallback (const CloudXYZRGBAConstPtr& cloud_in)
       if (icp_->findTransformation (mesh_model_, cloud_data, transformation_, T_final))
       {
         transformation_ = T_final;
+
         sw.reset ();
         integration_->merge (cloud_data, mesh_model_, transformation_);
         std::cerr << "Integration:\n"
                   << "  - time merge                     : "
                   << std::setw (8) << std::right << sw.getTime () << " ms\n";
+
         sw.reset ();
         integration_->age (mesh_model_);
         std::cerr << "  - time age                       : "
                   << std::setw (8) << std::right << sw.getTime () << " ms\n";
-        cloud_data = CloudXYZRGBNormalPtr (new CloudXYZRGBNormal ());
 
+        sw.reset ();
+        std::vector <Mesh::HalfEdgeIndices> boundary_collection;
+        pcl::geometry::getBoundBoundaryHalfEdges (*mesh_model_, boundary_collection, 1000);
+        std::cerr << "  - time compute boundary          : "
+                  << std::setw (8) << std::right << sw.getTime () << " ms\n";
+
+        sw.reset ();
+        mesh_processing_->processBoundary (*mesh_model_, boundary_collection);
+        std::cerr << "  - time mesh processing           : "
+                  << std::setw (8) << std::right << sw.getTime () << " ms\n";
+
+        cloud_data = CloudXYZRGBNormalPtr (new CloudXYZRGBNormal ());
         ++iteration_;
       }
     }
@@ -392,7 +401,6 @@ pcl::ihs::InHandScanner::newDataCallback (const CloudXYZRGBAConstPtr& cloud_in)
   {
     lock.unlock ();
     this->showProcessedData ();
-
   }
 }
 
