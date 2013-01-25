@@ -6,6 +6,10 @@ PCL_ADD_TEST(geometry_mesh_circulators test_mesh_circulators
              FILES test_mesh_circulators.cpp
              LINK_WITH pcl_gtest)
 
+PCL_ADD_TEST(geometry_mesh_conversion test_mesh_conversion
+             FILES test_mesh_conversion.cpp
+             LINK_WITH pcl_gtest pcl_common)
+
 PCL_ADD_TEST(geometry_mesh_data test_mesh_data
              FILES test_mesh_data.cpp
              LINK_WITH pcl_gtest)

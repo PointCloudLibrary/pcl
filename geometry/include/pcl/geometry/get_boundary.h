@@ -47,7 +47,6 @@ namespace pcl
 {
   namespace geometry
   {
-
     /** \brief Get a collection of boundary half-edges for the input mesh.
       * \param[in] mesh The input mesh.
       * \param[out] boundary_he_collection Collection of boundary half-edges. Each element in the vector is one connected boundary. The whole boundary is the union of all elements.

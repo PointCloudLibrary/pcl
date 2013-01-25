@@ -16,6 +16,7 @@ if(build)
       include/pcl/${SUBSYS_NAME}/line_iterator.h
       include/pcl/${SUBSYS_NAME}/mesh_base.h
       include/pcl/${SUBSYS_NAME}/mesh_circulators.h
+      include/pcl/${SUBSYS_NAME}/mesh_conversion.h
       include/pcl/${SUBSYS_NAME}/mesh_elements.h
       include/pcl/${SUBSYS_NAME}/mesh_indices.h
       include/pcl/${SUBSYS_NAME}/mesh_io.h
