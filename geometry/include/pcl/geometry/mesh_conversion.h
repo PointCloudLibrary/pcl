@@ -67,7 +67,7 @@ namespace pcl
         toFaceVertexMesh (const HalfEdgeMeshT& half_edge_mesh, pcl::PolygonMesh& face_vertex_mesh)
         {
           typedef HalfEdgeMeshT HalfEdgeMesh;
-          typedef typename HalfEdgeMeshT::VertexAroundFaceCirculator VAFC;
+          typedef typename HalfEdgeMesh::VertexAroundFaceCirculator VAFC;
           typedef typename HalfEdgeMesh::FaceIndex FaceIndex;
 
           pcl::Vertices polygon;

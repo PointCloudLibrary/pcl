@@ -49,7 +49,10 @@
 #include <pcl/common/time.h>
 #include <pcl/common/transforms.h>
 #include <pcl/io/openni_grabber.h>
+#include <pcl/io/ply_io.h>
+#include <pcl/io/vtk_io.h>
 #include <pcl/geometry/get_boundary.h>
+#include <pcl/geometry/mesh_conversion.h>
 #include <pcl/apps/in_hand_scanner/icp.h>
 #include <pcl/apps/in_hand_scanner/input_data_processing.h>
 #include <pcl/apps/in_hand_scanner/integration.h>
@@ -230,6 +233,36 @@ pcl::ihs::InHandScanner::reset ()
 
   lock.unlock ();
   this->showUnprocessedData ();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+void
+pcl::ihs::InHandScanner::savePly (const std::string& file)
+{
+  boost::mutex::scoped_lock lock (mutex_);
+  if (destructor_called_) return;
+
+  pcl::PolygonMesh pm;
+  pcl::geometry::MeshConversion converter;
+  converter.toFaceVertexMesh (*mesh_model_, pm);
+
+  pcl::io::savePLYFile (file, pm);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+void
+pcl::ihs::InHandScanner::saveVtk (const std::string& file)
+{
+  boost::mutex::scoped_lock lock (mutex_);
+  if (destructor_called_) return;
+
+  pcl::PolygonMesh pm;
+  pcl::geometry::MeshConversion converter;
+  converter.toFaceVertexMesh (*mesh_model_, pm);
+
+  pcl::io::saveVTKFile (file, pm);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

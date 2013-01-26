@@ -206,7 +206,7 @@
           <x>0</x>
           <y>0</y>
           <width>300</width>
-          <height>423</height>
+          <height>408</height>
          </rect>
         </property>
         <attribute name="label">
@@ -580,7 +580,7 @@
           <x>0</x>
           <y>0</y>
           <width>300</width>
-          <height>423</height>
+          <height>401</height>
          </rect>
         </property>
         <attribute name="label">
@@ -720,7 +720,7 @@
           <x>0</x>
           <y>0</y>
           <width>300</width>
-          <height>423</height>
+          <height>401</height>
          </rect>
         </property>
         <attribute name="label">
@@ -838,6 +838,23 @@
    <addaction name="actionMesh_representation"/>
    <addaction name="actionHelp"/>
   </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1008</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionSaveAs"/>
+   </widget>
+   <addaction name="menuFile"/>
+  </widget>
   <action name="actionHelp">
    <property name="text">
     <string>Help</string>
@@ -865,6 +882,14 @@
    </property>
    <property name="toolTip">
     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Toggle the display of the mesh (Shortcut: s):&lt;/p&gt;&lt;p&gt;- Points&lt;/p&gt;&lt;p&gt;- Wireframe&lt;/p&gt;&lt;p&gt;- Closed surface&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+  </action>
+  <action name="actionSaveAs">
+   <property name="text">
+    <string>Save As ...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
    </property>
   </action>
  </widget>

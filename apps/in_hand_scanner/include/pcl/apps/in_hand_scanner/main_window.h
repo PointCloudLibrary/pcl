@@ -85,8 +85,8 @@ namespace pcl
 
       public slots:
 
-        // Help
         void showHelp ();
+        void saveAs ();
 
         // In hand scanner
         void runningModeChanged (const RunningMode mode);

@@ -43,11 +43,12 @@
 
 #include <limits>
 
-#include <QHBoxLayout>
 #include <QDoubleValidator>
+#include <QFileDialog>
+#include <QHBoxLayout>
+#include <QMessageBox>
 #include <QString>
 #include <QTimer>
-#include <QMessageBox>
 
 #include <pcl/apps/in_hand_scanner/help_window.h>
 #include <pcl/apps/in_hand_scanner/in_hand_scanner.h>
@@ -89,6 +90,8 @@ pcl::ihs::MainWindow::MainWindow (QWidget* parent)
   connect (ui_->actionReset_camera,        SIGNAL (triggered ()), ihs_, SLOT (resetCamera ()));
   connect (ui_->actionToggle_coloring,     SIGNAL (triggered ()), ihs_, SLOT (toggleColoring ()));
   connect (ui_->actionMesh_representation, SIGNAL (triggered ()), ihs_, SLOT (toggleMeshRepresentation ()));
+
+  connect (ui_->actionSaveAs, SIGNAL (triggered ()), this, SLOT (saveAs ()));
 
   connect (ihs_, SIGNAL (runningModeChanged (RunningMode)), this, SLOT (runningModeChanged (RunningMode)));
 
@@ -152,6 +155,19 @@ void
 pcl::ihs::MainWindow::showHelp ()
 {
   help_window_->show ();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+void
+pcl::ihs::MainWindow::saveAs ()
+{
+  QString filename = QFileDialog::getSaveFileName (this, "Save the model mesh.", "", "Polygon File Format (*.ply);;VTK File Format (*.vtk)");
+
+  if (filename.isEmpty ()) return;
+
+  if      (filename.endsWith ("ply", Qt::CaseInsensitive)) ihs_->savePly (filename.toStdString ());
+  else if (filename.endsWith ("vtk", Qt::CaseInsensitive)) ihs_->saveVtk (filename.toStdString ());
 }
 
 ////////////////////////////////////////////////////////////////////////////////

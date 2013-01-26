@@ -171,6 +171,14 @@ namespace pcl
         void
         reset ();
 
+        /** \brief Saves the model mesh as ply file. */
+        void
+        savePly (const std::string& file);
+
+        /** \brief Saves the model mesh as vtk file. */
+        void
+        saveVtk (const std::string& file);
+
         /** \see http://doc.qt.digia.com/qt/qwidget.html#keyPressEvent */
         void
         keyPressEvent (QKeyEvent* event);
