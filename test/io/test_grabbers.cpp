@@ -40,10 +40,8 @@ cloud_callback_vector (std::vector<CloudT::ConstPtr> *vector_to_fill,
 
 TEST (PCL, PCDGrabber)
 {
-  PCL_INFO ("Creating grabber...\n");
   pcl::PCDGrabber<PointT> grabber (pcd_files_, 10, false); // TODO add directory functionality
   EXPECT_EQ (grabber.size (), pcds_.size ());
-  PCL_INFO ("Done.\n");
   vector<CloudT::ConstPtr> grabbed_clouds;
   boost::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> 
     fxn = boost::bind (cloud_callback_vector, &grabbed_clouds, _1);

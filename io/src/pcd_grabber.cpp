@@ -317,7 +317,7 @@ pcl::PCDGrabberBase::PCDGrabberImpl::scrapeForClouds (bool force)
     }
     else if (openTARFile (pcd_file) >= 0)
     {
-      while (readTARHeader () && reader.readHeader (pcd_file, blob, tar_offset_))
+      while (readTARHeader () && (reader.readHeader (pcd_file, blob, tar_offset_) == 0))
       {
         tar_offsets_.push_back (tar_offset_);
         cloud_idx_to_file_idx_.push_back (i);
@@ -325,6 +325,8 @@ pcl::PCDGrabberBase::PCDGrabberImpl::scrapeForClouds (bool force)
         tar_offset_ += (tar_header_.getFileSize ()) + (512 - tar_header_.getFileSize () % 512);
         int result = static_cast<int> (pcl_lseek (tar_fd_, tar_offset_, SEEK_SET));
         if (result < 0)
+          break;
+        if (tar_fd_ == -1)
           break;
       }
       closeTARFile ();
