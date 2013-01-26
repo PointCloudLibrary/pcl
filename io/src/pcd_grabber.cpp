@@ -68,6 +68,21 @@ struct pcl::PCDGrabberBase::PCDGrabberImpl
   int openTARFile (const std::string &file_name);
   void closeTARFile ();
   bool readTARHeader ();
+  
+  //! Initialize (find the locations of all clouds, if we haven't yet)
+  void
+  scrapeForClouds (bool force=false);
+
+  //! Get cloud at a particular location
+  bool
+  getCloudAt (size_t idx, 
+              sensor_msgs::PointCloud2 &blob, 
+              Eigen::Vector4f &origin, 
+              Eigen::Quaternionf &orientation);
+
+  //! Returns the size
+  size_t
+  numFrames ();
 
   pcl::PCDGrabberBase& grabber_;
   float frames_per_second_;
@@ -87,6 +102,11 @@ struct pcl::PCDGrabberBase::PCDGrabberImpl
   int tar_offset_;
   std::string tar_file_;
   pcl::io::TARHeader tar_header_;
+
+  // True if we have already found the location of all clouds (for tar only)
+  bool scraped_;
+  std::vector<int> tar_offsets_;
+  std::vector<size_t> cloud_idx_to_file_idx_;
 
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW 
 };
@@ -108,6 +128,7 @@ pcl::PCDGrabberBase::PCDGrabberImpl::PCDGrabberImpl (pcl::PCDGrabberBase& grabbe
   , tar_offset_ (0)
   , tar_file_ ()
   , tar_header_ ()
+  , scraped_ (false)
 {
   pcd_files_.push_back (pcd_path);
   pcd_iterator_ = pcd_files_.begin ();
@@ -131,6 +152,7 @@ pcl::PCDGrabberBase::PCDGrabberImpl::PCDGrabberImpl (pcl::PCDGrabberBase& grabbe
   , tar_offset_ (0)
   , tar_file_ ()
   , tar_header_ ()
+  , scraped_ (false)
 {
   pcd_files_ = pcd_files;
   pcd_iterator_ = pcd_files_.begin ();
@@ -268,6 +290,81 @@ pcl::PCDGrabberBase::PCDGrabberImpl::trigger ()
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
+void 
+pcl::PCDGrabberBase::PCDGrabberImpl::scrapeForClouds (bool force)
+{
+  // Do nothing if we've already scraped (unless force is set)
+  if (scraped_ && !force)
+    return;
+  // Store temporary information
+  int tmp_fd = tar_fd_;
+  int tmp_offset = tar_offset_;
+  pcl::io::TARHeader tmp_header = tar_header_;
+  tar_fd_ = -1;
+  tar_offset_ = 0;
+
+  // Go through and index the clouds
+  PCDReader reader;
+  sensor_msgs::PointCloud2 blob;
+  for (size_t i = 0; i < pcd_files_.size (); ++i)
+  {
+    std::string pcd_file = pcd_files_[i];
+    // Try to read the file header (TODO this is a huge waste just to make sure it's PCD...is extension enough?)
+    if (reader.readHeader (pcd_file, blob) == 0)
+    {
+      tar_offsets_.push_back (0);
+      cloud_idx_to_file_idx_.push_back (i);
+    }
+    else if (openTARFile (pcd_file) >= 0)
+    {
+      while (readTARHeader () && reader.readHeader (pcd_file, blob, tar_offset_))
+      {
+        tar_offsets_.push_back (tar_offset_);
+        cloud_idx_to_file_idx_.push_back (i);
+        // Update offset
+        tar_offset_ += (tar_header_.getFileSize ()) + (512 - tar_header_.getFileSize () % 512);
+        int result = static_cast<int> (pcl_lseek (tar_fd_, tar_offset_, SEEK_SET));
+        if (result < 0)
+          break;
+      }
+      closeTARFile ();
+    }
+  }
+
+  // Re-save temporary information
+  tar_fd_ = tmp_fd;
+  tar_offset_ = tmp_offset;
+  tar_header_ = tmp_header;
+  // Flag scraped
+  scraped_ = true;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+bool 
+pcl::PCDGrabberBase::PCDGrabberImpl::getCloudAt (size_t idx, 
+                                                 sensor_msgs::PointCloud2 &blob, 
+                                                 Eigen::Vector4f &origin, 
+                                                 Eigen::Quaternionf &orientation)
+{
+  scrapeForClouds (); // Make sure we've scraped
+  if (idx >= numFrames ())
+    return false;
+  
+  PCDReader reader;
+  int pcd_version;
+  std::string filename = pcd_files_[cloud_idx_to_file_idx_[idx]];
+  return (reader.read (filename, blob, origin, orientation, pcd_version, tar_offsets_[idx]));
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+size_t
+pcl::PCDGrabberBase::PCDGrabberImpl::numFrames ()
+{
+  scrapeForClouds (); // Make sure we've scraped
+  return (cloud_idx_to_file_idx_.size ());
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////// GrabberBase //////////////////////
 pcl::PCDGrabberBase::PCDGrabberBase (const std::string& pcd_path, float frames_per_second, bool repeat)
 : impl_ (new PCDGrabberImpl (*this, pcd_path, frames_per_second, repeat))
@@ -358,4 +455,22 @@ pcl::PCDGrabberBase::isRepeatOn () const
 {
   return (impl_->repeat_);
 }
+
+///////////////////////////////////////////////////////////////////////////////////////////
+bool
+pcl::PCDGrabberBase::getCloudAt (size_t idx, 
+                                 sensor_msgs::PointCloud2 &blob, 
+                                 Eigen::Vector4f &origin, 
+                                 Eigen::Quaternionf &orientation) const
+{
+  return (impl_->getCloudAt (idx, blob, origin, orientation));
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+size_t
+pcl::PCDGrabberBase::numFrames () const
+{
+  return (impl_->numFrames ());
+}
+
 

@@ -17,6 +17,7 @@ string tiff_dir_;
 string pclzf_dir_;
 string pcd_dir_;
 vector<CloudT::ConstPtr> pcds_;
+vector<std::string> pcd_files_;
 
 
 // Helper function for grabbing a cloud
@@ -29,11 +30,90 @@ cloud_callback (bool *signal_received,
   *ptr_to_fill = input_cloud;
 }
 
+// Helper function for grabbing a cloud (vector
+void
+cloud_callback_vector (std::vector<CloudT::ConstPtr> *vector_to_fill, 
+                       const CloudT::ConstPtr &input_cloud)
+{
+  vector_to_fill->push_back (input_cloud);
+}
+
+TEST (PCL, PCDGrabber)
+{
+  PCL_INFO ("Creating grabber...\n");
+  pcl::PCDGrabber<PointT> grabber (pcd_files_, 10, false); // TODO add directory functionality
+  EXPECT_EQ (grabber.size (), pcds_.size ());
+  PCL_INFO ("Done.\n");
+  vector<CloudT::ConstPtr> grabbed_clouds;
+  boost::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> 
+    fxn = boost::bind (cloud_callback_vector, &grabbed_clouds, _1);
+  grabber.registerCallback (fxn);
+  grabber.start ();
+  // 1 second should be /plenty/ of time
+  boost::this_thread::sleep (boost::posix_time::microseconds (1E6));
+  grabber.stop ();
+
+  //// Make sure they match
+  ASSERT_EQ (pcds_.size (), grabbed_clouds.size ());
+  for (size_t i = 0; i < pcds_.size (); i++)
+  {
+    // Also compare against FileGrabber-style loaded cloud
+    CloudT::ConstPtr cloud_from_file_grabber = grabber[i];
+    EXPECT_EQ (grabbed_clouds[i]->size (), pcds_[i]->size ());
+    EXPECT_EQ (cloud_from_file_grabber->size (), pcds_[i]->size ());
+    for (size_t j = 0; j < pcds_[i]->size (); j++)
+    {
+      const PointT &pcd_pt = pcds_[i]->at(j);
+      const PointT &grabbed_pt = grabbed_clouds[i]->at(j);
+      const PointT &fg_pt = cloud_from_file_grabber->at(j);
+      if (pcl_isnan (pcd_pt.x))
+      {
+        EXPECT_TRUE (pcl_isnan (grabbed_pt.x));
+        EXPECT_TRUE (pcl_isnan (fg_pt.x));
+      }
+      else
+      {
+        EXPECT_FLOAT_EQ (pcd_pt.x, grabbed_pt.x);
+        EXPECT_FLOAT_EQ (pcd_pt.x, fg_pt.x);
+      }
+      if (pcl_isnan (pcd_pt.y))
+      {
+        EXPECT_TRUE (pcl_isnan (grabbed_pt.y));
+        EXPECT_TRUE (pcl_isnan (fg_pt.y));
+      }
+      else
+      {
+        EXPECT_FLOAT_EQ (pcd_pt.y, grabbed_pt.y);
+        EXPECT_FLOAT_EQ (pcd_pt.y, fg_pt.y);
+      }
+      if (pcl_isnan (pcd_pt.z))
+      {
+        EXPECT_TRUE (pcl_isnan (grabbed_pt.z));
+        EXPECT_TRUE (pcl_isnan (fg_pt.z));
+      }
+      else
+      {
+        EXPECT_FLOAT_EQ (pcd_pt.z, grabbed_pt.z);
+        EXPECT_FLOAT_EQ (pcd_pt.z, fg_pt.z);
+      }
+      EXPECT_EQ (pcd_pt.r, grabbed_pt.r);
+      EXPECT_EQ (pcd_pt.g, grabbed_pt.g);
+      EXPECT_EQ (pcd_pt.b, grabbed_pt.b);
+      EXPECT_EQ (pcd_pt.a, grabbed_pt.a);
+      EXPECT_EQ (pcd_pt.r, fg_pt.r);
+      EXPECT_EQ (pcd_pt.g, fg_pt.g);
+      EXPECT_EQ (pcd_pt.b, fg_pt.b);
+      EXPECT_EQ (pcd_pt.a, fg_pt.a);
+    }
+  }
+
+}
+
 TEST (PCL, ImageGrabberTIFF)
 {
   // Get all clouds from the grabber
   pcl::ImageGrabber<PointT> grabber (tiff_dir_, 0, false, false);
-  vector <CloudT::ConstPtr> tiff_clouds;
+  vector<CloudT::ConstPtr> tiff_clouds;
   CloudT::ConstPtr cloud_buffer;
   bool signal_received = false;
   boost::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> 
@@ -346,7 +426,6 @@ int
   pclzf_dir_ = grabber_sequences + "/pclzf";
   pcd_dir_ = grabber_sequences + "/pcd";
   // Get pcd files
-  vector<string> pcd_files;
   boost::filesystem::directory_iterator end_itr;
   for (boost::filesystem::directory_iterator itr (pcd_dir_); itr != end_itr; ++itr)
   {
@@ -357,20 +436,20 @@ int
 #endif
     {
 #if BOOST_FILESYSTEM_VERSION == 3
-      pcd_files.push_back (itr->path ().string ());
+      pcd_files_.push_back (itr->path ().string ());
       std::cout << "added: " << itr->path ().string () << std::endl;
 #else
-      pcd_files.push_back (itr->pcd_dir_ ().string ());
+      pcd_files_.push_back (itr->pcd_dir_ ().string ());
       std::cout << "added: " << itr->pcd_dir_ () << std::endl;
 #endif
     }
   }
-  sort (pcd_files.begin (), pcd_files.end ());
+  sort (pcd_files_.begin (), pcd_files_.end ());
   // And load them
-  for (size_t i = 0; i < pcd_files.size (); i++)
+  for (size_t i = 0; i < pcd_files_.size (); i++)
   {
     CloudT::Ptr cloud (new CloudT);
-    pcl::io::loadPCDFile (pcd_files[i], *cloud); 
+    pcl::io::loadPCDFile (pcd_files_[i], *cloud); 
     pcds_.push_back (cloud);
   }
 

@@ -42,6 +42,7 @@
 
 #include <pcl/common/io.h>
 #include <pcl/io/grabber.h>
+#include <pcl/io/file_grabber.h>
 #include <pcl/io/openni_camera/openni_image.h>
 #include <pcl/io/openni_camera/openni_image_rgb24.h>
 #include <pcl/common/time_trigger.h>
@@ -129,6 +130,17 @@ namespace pcl
       /** \brief Returns whether the repeat flag is on */
       bool 
       isRepeatOn () const;
+  
+      /** \brief Get cloud (in ROS form) at a particular location */
+      bool
+      getCloudAt (size_t idx, 
+                  sensor_msgs::PointCloud2 &blob, 
+                  Eigen::Vector4f &origin, 
+                  Eigen::Quaternionf &orientation) const;
+
+      /** \brief Returns the size */
+      size_t
+      numFrames () const;
 
     private:
       virtual void 
@@ -141,12 +153,21 @@ namespace pcl
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   template <typename T> class PointCloud;
-  template <typename PointT> class PCDGrabber : public PCDGrabberBase
+  template <typename PointT> class PCDGrabber : public PCDGrabberBase, public FileGrabber<PointT>
   {
     public:
       PCDGrabber (const std::string& pcd_path, float frames_per_second = 0, bool repeat = false);
       PCDGrabber (const std::vector<std::string>& pcd_files, float frames_per_second = 0, bool repeat = false);
+    
+      // Inherited from FileGrabber
+      const boost::shared_ptr< const pcl::PointCloud<PointT> >
+      operator[] (size_t idx) const;
+
+      // Inherited from FileGrabber
+      size_t
+      size () const;
     protected:
+
       virtual void 
       publish (const sensor_msgs::PointCloud2& blob, const Eigen::Vector4f& origin, const Eigen::Quaternionf& orientation) const;
       
@@ -183,6 +204,28 @@ namespace pcl
     image_signal_ = createSignal <void (const boost::shared_ptr<openni_wrapper::Image>&)> ();
     image_depth_image_signal_ = createSignal <void (const boost::shared_ptr<openni_wrapper::Image>&, const boost::shared_ptr<openni_wrapper::DepthImage>&, float constant)> ();
 #endif
+  }
+
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  template<typename PointT> const boost::shared_ptr< const pcl::PointCloud<PointT> >
+  PCDGrabber<PointT>::operator[] (size_t idx) const
+  {
+    sensor_msgs::PointCloud2 blob;
+    Eigen::Vector4f origin;
+    Eigen::Quaternionf orientation;
+    getCloudAt (idx, blob, origin, orientation);
+    typename pcl::PointCloud<PointT>::Ptr cloud (new pcl::PointCloud<PointT> ());
+    pcl::fromROSMsg (blob, *cloud);
+    cloud->sensor_origin_ = origin;
+    cloud->sensor_orientation_ = orientation;
+    return (cloud);
+  }
+
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  template <typename PointT> size_t
+  PCDGrabber<PointT>::size () const
+  {
+    return (numFrames ());
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
