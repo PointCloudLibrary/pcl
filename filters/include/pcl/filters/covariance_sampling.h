@@ -78,7 +78,7 @@ namespace pcl
  
       /** \brief Empty constructor. */
       CovarianceSampling ()
-      { filter_name_ = "NormalSpaceSampling"; }
+      { filter_name_ = "CovarianceSampling"; }
 
       /** \brief Set number of indices to be sampled.
         * \param[in] sample the number of sample indices
