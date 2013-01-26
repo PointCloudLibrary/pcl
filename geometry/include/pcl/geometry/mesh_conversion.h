@@ -48,45 +48,86 @@ namespace pcl
 {
   namespace geometry
   {
-    /** \brief Conversions for the half-edge mesh.
+    /** \brief Convert a half-edge mesh to a face-vertex mesh.
+      * \param[in] half_edge_mesh The input mesh.
+      * \param[out] face_vertex_mesh The output mesh.
       * \author Martin Saelzle
       * \ingroup geometry
       */
-    class MeshConversion
+    template <class HalfEdgeMeshT> void
+    toFaceVertexMesh (const HalfEdgeMeshT& half_edge_mesh, pcl::PolygonMesh& face_vertex_mesh)
     {
-      public:
+      typedef HalfEdgeMeshT HalfEdgeMesh;
+      typedef typename HalfEdgeMesh::VertexAroundFaceCirculator VAFC;
+      typedef typename HalfEdgeMesh::FaceIndex FaceIndex;
 
-        /** \brief Constructor. */
-        MeshConversion () {}
+      pcl::Vertices polygon;
+      pcl::toROSMsg (half_edge_mesh.getVertexDataCloud (), face_vertex_mesh.cloud);
 
-        /** \brief Convert from a half-edge mesh to a face-vertex mesh.
-          * \param[in] half_edge_mesh The input mesh.
-          * \param[out] face_vertex_mesh The output mesh.
-          */
-        template <class HalfEdgeMeshT> void
-        toFaceVertexMesh (const HalfEdgeMeshT& half_edge_mesh, pcl::PolygonMesh& face_vertex_mesh)
+      face_vertex_mesh.polygons.reserve (half_edge_mesh.sizeFaces ());
+      for (size_t i=0; i<half_edge_mesh.sizeFaces (); ++i)
+      {
+        VAFC       circ     = half_edge_mesh.getVertexAroundFaceCirculator (FaceIndex (i));
+        const VAFC circ_end = circ;
+        polygon.vertices.clear ();
+        do
         {
-          typedef HalfEdgeMeshT HalfEdgeMesh;
-          typedef typename HalfEdgeMesh::VertexAroundFaceCirculator VAFC;
-          typedef typename HalfEdgeMesh::FaceIndex FaceIndex;
+          polygon.vertices.push_back (circ.getTargetIndex ().get ());
+        } while (++circ != circ_end);
+        face_vertex_mesh.polygons.push_back (polygon);
+      }
+    }
 
-          pcl::Vertices polygon;
-          pcl::toROSMsg (half_edge_mesh.getVertexDataCloud (), face_vertex_mesh.cloud);
+    /** \brief Convert a face-vertex mesh to a half-edge mesh.
+      * \param[in] face_vertex_mesh The input mesh.
+      * \param[out] half_edge_mesh The output mesh. It must have data associated with the vertices.
+      * \return The number of faces that could NOT be added to the half-edge mesh.
+      * \author Martin Saelzle
+      * \ingroup geometry
+      */
+    template <class HalfEdgeMeshT> int
+    toHalfEdgeMesh (const pcl::PolygonMesh& face_vertex_mesh, HalfEdgeMeshT& half_edge_mesh)
+    {
+      typedef HalfEdgeMeshT                          HalfEdgeMesh;
+      typedef typename HalfEdgeMesh::VertexDataCloud VertexDataCloud;
+      typedef typename HalfEdgeMesh::VertexIndex     VertexIndex;
+      typedef typename HalfEdgeMesh::VertexIndices   VertexIndices;
 
-          face_vertex_mesh.polygons.reserve (half_edge_mesh.sizeFaces ());
-          for (size_t i=0; i<half_edge_mesh.sizeFaces (); ++i)
-          {
-            VAFC       circ     = half_edge_mesh.getVertexAroundFaceCirculator (FaceIndex (i));
-            const VAFC circ_end = circ;
-            polygon.vertices.clear ();
-            do
-            {
-              polygon.vertices.push_back (circ.getTargetIndex ().get ());
-            } while (++circ != circ_end);
-            face_vertex_mesh.polygons.push_back (polygon);
-          }
+      BOOST_STATIC_ASSERT (HalfEdgeMesh::HasVertexData::value); // Output mesh must have data associated with the vertices!
+
+      VertexDataCloud vertices;
+      pcl::fromROSMsg (face_vertex_mesh.cloud, vertices);
+
+      half_edge_mesh.reserveVertices (vertices.size ());
+      half_edge_mesh.reserveEdges (3 * face_vertex_mesh.polygons.size ());
+      half_edge_mesh.reserveFaces (    face_vertex_mesh.polygons.size ());
+
+      for (typename VertexDataCloud::const_iterator it=vertices.begin (); it!=vertices.end (); ++it)
+      {
+        half_edge_mesh.addVertex (*it);
+      }
+
+      assert (half_edge_mesh.sizeVertices () == vertices.size ());
+
+      int count_not_added = 0;
+      VertexIndices vi;
+      vi.reserve (3); // Minimum number (triangle)
+      for (size_t i=0; i<face_vertex_mesh.polygons.size (); ++i)
+      {
+        vi.clear ();
+        for (size_t j=0; j<face_vertex_mesh.polygons [i].vertices.size (); ++j)
+        {
+          vi.push_back (VertexIndex (face_vertex_mesh.polygons [i].vertices [j]));
         }
-    };
+
+        if (!half_edge_mesh.addFace (vi).isValid ())
+        {
+          ++count_not_added;
+        }
+      }
+
+      return (count_not_added);
+    }
   } // End namespace geometry
 } // End namespace pcl
 

@@ -40,6 +40,8 @@
 
 #include <gtest/gtest.h>
 
+#include <pcl/geometry/triangle_mesh.h>
+#include <pcl/geometry/quad_mesh.h>
 #include <pcl/geometry/polygon_mesh.h>
 #include <pcl/geometry/mesh_conversion.h>
 #include <pcl/point_types.h>
@@ -49,128 +51,296 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 
-TEST (TestMeshConversion, HalfEdgeMeshToFaceVertexMesh)
+template <class MeshTraitsT>
+class TestMeshConversion : public ::testing::Test
 {
-  typedef pcl::geometry::DefaultMeshTraits <pcl::PointXYZRGBNormal> MeshTraits;
-  typedef pcl::geometry::PolygonMesh <MeshTraits>                   Mesh;
+  protected:
 
-  // 2 - 1  7 - 6         17 - 16    //
-  //  \ /   |   |        /       \   //
-  //   0    8 - 5 - 11  12       15  //
-  //  / \       |    |   \       /   //
-  // 3 - 4      9 - 10    13 - 14    //
+    typedef MeshTraitsT MeshTraits;
 
+    // 2 - 1  7 - 6         17 - 16   //
+    //  \ /   |   |        /       \  //
+    //   0    8 - 5 - 11  12       15 //
+    //  / \       |    |   \       /  //
+    // 3 - 4      9 - 10    13 - 14   //
+    void
+    SetUp ()
+    {
+      // Vertices
+      pcl::PointXYZRGBNormal pt;
+      for (unsigned int i=0; i<18; ++i)
+      {
+        pt.x = static_cast <float> (10 * i);
+        pt.y = static_cast <float> (20 * i);
+        pt.z = static_cast <float> (30 * i);
+
+        pt.normal_x = static_cast <float> (100 * i);
+        pt.normal_y = static_cast <float> (200 * i);
+        pt.normal_z = static_cast <float> (300 * i);
+
+        pt.r = static_cast <uint8_t> (1 * i);
+        pt.g = static_cast <uint8_t> (2 * i);
+        pt.b = static_cast <uint8_t> (3 * i);
+
+        vertices_.push_back (pt);
+      }
+
+      // Faces
+      std::vector <uint32_t> face;
+
+      face.push_back (0);
+      face.push_back (1);
+      face.push_back (2);
+      manifold_faces_.push_back (face);
+      non_manifold_faces_.push_back (face);
+
+      face.clear ();
+      face.push_back (0);
+      face.push_back (3);
+      face.push_back (4);
+      non_manifold_faces_.push_back (face);
+
+      face.clear ();
+      face.push_back (5);
+      face.push_back (6);
+      face.push_back (7);
+      face.push_back (8);
+      manifold_faces_.push_back (face);
+      non_manifold_faces_.push_back (face);
+
+      face.clear ();
+      face.push_back ( 5);
+      face.push_back ( 9);
+      face.push_back (10);
+      face.push_back (11);
+      non_manifold_faces_.push_back (face);
+
+      face.clear ();
+      face.push_back (12);
+      face.push_back (13);
+      face.push_back (14);
+      face.push_back (15);
+      face.push_back (16);
+      face.push_back (17);
+      manifold_faces_.push_back (face);
+      non_manifold_faces_.push_back (face);
+    }
+
+    pcl::PointCloud <pcl::PointXYZRGBNormal> vertices_;
+    std::vector <std::vector <uint32_t> >    non_manifold_faces_;
+    std::vector <std::vector <uint32_t> >    manifold_faces_;
+
+  public:
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+};
+
+template <bool IsManifoldT>
+struct MeshTraits
+{
+    typedef pcl::PointXYZRGBNormal                       VertexData;
+    typedef pcl::geometry::NoData                        HalfEdgeData;
+    typedef pcl::geometry::NoData                        EdgeData;
+    typedef pcl::geometry::NoData                        FaceData;
+    typedef boost::integral_constant <bool, IsManifoldT> IsManifold;
+};
+
+typedef MeshTraits <true > ManifoldMeshTraits;
+typedef MeshTraits <false> NonManifoldMeshTraits;
+
+typedef testing::Types <ManifoldMeshTraits, NonManifoldMeshTraits> MeshTraitsTypes;
+
+TYPED_TEST_CASE (TestMeshConversion, MeshTraitsTypes);
+
+////////////////////////////////////////////////////////////////////////////////
+
+TYPED_TEST (TestMeshConversion, HalfEdgeMeshToFaceVertexMesh)
+{
+  typedef typename TestFixture::MeshTraits    Traits;
+  typedef pcl::geometry::PolygonMesh <Traits> Mesh;
+  typedef typename Mesh::VertexIndex          VertexIndex;
+  typedef typename Mesh::VertexIndices        VertexIndices;
+
+  const std::vector <std::vector <uint32_t> > faces =
+      Mesh::IsManifold::value ? TestFixture::manifold_faces_ :
+                                TestFixture::non_manifold_faces_;
+
+  // Generate the mesh
   Mesh half_edge_mesh;
-  Mesh::VertexIndices vi, hexagon;
-  pcl::PointXYZRGBNormal pt;
-  pcl::PointCloud <pcl::PointXYZRGBNormal> expected_cloud;
-  for (unsigned int i=0; i<18; ++i)
+  VertexIndices vi;
+
+  for (size_t i=0; i<TestFixture::vertices_.size (); ++i)
   {
-    pt.x = static_cast <float> (10 * i);
-    pt.y = static_cast <float> (20 * i);
-    pt.z = static_cast <float> (30 * i);
-
-    pt.normal_x = static_cast <float> (100 * i);
-    pt.normal_y = static_cast <float> (200 * i);
-    pt.normal_z = static_cast <float> (300 * i);
-
-    pt.r = static_cast <uint8_t> (1 * i);
-    pt.g = static_cast <uint8_t> (2 * i);
-    pt.b = static_cast <uint8_t> (3 * i);
-
-    expected_cloud.push_back (pt);
-    vi.push_back (half_edge_mesh.addVertex (pt));
+    half_edge_mesh.addVertex (TestFixture::vertices_ [i]);
   }
 
-  ASSERT_TRUE (half_edge_mesh.addFace (vi [0], vi [1], vi [ 2]).isValid ());
-  ASSERT_TRUE (half_edge_mesh.addFace (vi [0], vi [3], vi [ 4]).isValid ());
+  for (size_t i=0; i<faces.size (); ++i)
+  {
+    vi.clear ();
+    for (int j=0; j<faces [i].size (); ++j)
+    {
+      vi.push_back (VertexIndex (static_cast <int> (faces [i][j])));
+    }
 
-  ASSERT_TRUE (half_edge_mesh.addFace (vi [5], vi [6], vi [ 7], vi [ 8]).isValid ());
-  ASSERT_TRUE (half_edge_mesh.addFace (vi [5], vi [9], vi [10], vi [11]).isValid ());
+    ASSERT_TRUE (half_edge_mesh.addFace (vi).isValid ()) << "Face number " << i;
+  }
 
-  hexagon.push_back (vi [12]);
-  hexagon.push_back (vi [13]);
-  hexagon.push_back (vi [14]);
-  hexagon.push_back (vi [15]);
-  hexagon.push_back (vi [16]);
-  hexagon.push_back (vi [17]);
-  ASSERT_TRUE (half_edge_mesh.addFace (hexagon).isValid ());
-
-  // The conversion
-  pcl::geometry::MeshConversion conv;
+  // Convert
   pcl::PolygonMesh face_vertex_mesh;
-  conv.toFaceVertexMesh (half_edge_mesh, face_vertex_mesh);
+  pcl::geometry::toFaceVertexMesh (half_edge_mesh, face_vertex_mesh);
 
   // Check if the cloud got copied correctly.
   pcl::PointCloud <pcl::PointXYZRGBNormal> converted_cloud;
   pcl::fromROSMsg (face_vertex_mesh.cloud, converted_cloud);
-  ASSERT_EQ (expected_cloud.size (), converted_cloud.size ());
-  for (unsigned int i=0; i<expected_cloud.size (); ++i)
+  ASSERT_EQ (TestFixture::vertices_.size (), converted_cloud.size ());
+  for (size_t i=0; i<TestFixture::vertices_.size (); ++i)
   {
-    const pcl::PointXYZRGBNormal& expected_pt  = expected_cloud  [i];
-    const pcl::PointXYZRGBNormal& converted_pt = converted_cloud [i];
+    const pcl::PointXYZRGBNormal& expected_pt = TestFixture::vertices_ [i];
+    const pcl::PointXYZRGBNormal& actual_pt   = converted_cloud [i];
 
-    EXPECT_FLOAT_EQ (expected_pt.x, converted_pt.x);
-    EXPECT_FLOAT_EQ (expected_pt.y, converted_pt.y);
-    EXPECT_FLOAT_EQ (expected_pt.z, converted_pt.z);
+    EXPECT_FLOAT_EQ (expected_pt.x, actual_pt.x);
+    EXPECT_FLOAT_EQ (expected_pt.y, actual_pt.y);
+    EXPECT_FLOAT_EQ (expected_pt.z, actual_pt.z);
 
-    EXPECT_FLOAT_EQ (expected_pt.normal_x, converted_pt.normal_x);
-    EXPECT_FLOAT_EQ (expected_pt.normal_y, converted_pt.normal_y);
-    EXPECT_FLOAT_EQ (expected_pt.normal_z, converted_pt.normal_z);
+    EXPECT_FLOAT_EQ (expected_pt.normal_x, actual_pt.normal_x);
+    EXPECT_FLOAT_EQ (expected_pt.normal_y, actual_pt.normal_y);
+    EXPECT_FLOAT_EQ (expected_pt.normal_z, actual_pt.normal_z);
 
-    EXPECT_EQ (expected_pt.r, converted_pt.r);
-    EXPECT_EQ (expected_pt.g, converted_pt.g);
-    EXPECT_EQ (expected_pt.b, converted_pt.b);
+    EXPECT_EQ (expected_pt.r, actual_pt.r);
+    EXPECT_EQ (expected_pt.g, actual_pt.g);
+    EXPECT_EQ (expected_pt.b, actual_pt.b);
   }
 
   // Check the polygons
-  ASSERT_EQ (5, face_vertex_mesh.polygons.size ());
-  ASSERT_EQ (3, face_vertex_mesh.polygons [0].vertices.size ());
-  ASSERT_EQ (3, face_vertex_mesh.polygons [1].vertices.size ());
-  ASSERT_EQ (4, face_vertex_mesh.polygons [2].vertices.size ());
-  ASSERT_EQ (4, face_vertex_mesh.polygons [3].vertices.size ());
-  ASSERT_EQ (6, face_vertex_mesh.polygons [4].vertices.size ());
+  ASSERT_EQ (faces.size (), face_vertex_mesh.polygons.size ());
+  for (size_t i=0; i<faces.size (); ++i)
+  {
+    EXPECT_TRUE (isCircularPermutation (faces [i], face_vertex_mesh.polygons [i].vertices)) << "Face number " << i;
+  }
+}
 
-  std::vector <uint32_t> actual, expected;
+////////////////////////////////////////////////////////////////////////////////
 
-  actual = face_vertex_mesh.polygons [0].vertices;
-  expected.push_back (0);
-  expected.push_back (1);
-  expected.push_back (2);
-  EXPECT_TRUE (isCircularPermutation (expected, actual));
+TYPED_TEST (TestMeshConversion, FaceVertexMeshToHalfEdgeMesh)
+{
+  typedef typename TestFixture::MeshTraits          Traits;
+  typedef pcl::geometry::PolygonMesh <Traits>       Mesh;
+  typedef typename Mesh::FaceIndex                  FaceIndex;
+  typedef typename Mesh::VertexAroundFaceCirculator VAFC;
 
-  actual = face_vertex_mesh.polygons [1].vertices;
-  expected.clear ();
-  expected.push_back (0);
-  expected.push_back (3);
-  expected.push_back (4);
-  EXPECT_TRUE (isCircularPermutation (expected, actual));
+  // Generate the mesh
+  pcl::PolygonMesh face_vertex_mesh;
+  pcl::toROSMsg (TestFixture::vertices_, face_vertex_mesh.cloud);
+  pcl::Vertices face;
+  for (size_t i=0; i<TestFixture::non_manifold_faces_.size (); ++i)
+  {
+    face.vertices = TestFixture::non_manifold_faces_ [i];
+    face_vertex_mesh.polygons.push_back (face);
+  }
 
-  actual = face_vertex_mesh.polygons [2].vertices;
-  expected.clear ();
-  expected.push_back (5);
-  expected.push_back (6);
-  expected.push_back (7);
-  expected.push_back (8);
-  EXPECT_TRUE (isCircularPermutation (expected, actual));
+  // Convert
+  Mesh half_edge_mesh;
 
-  actual = face_vertex_mesh.polygons [3].vertices;
-  expected.clear ();
-  expected.push_back ( 5);
-  expected.push_back ( 9);
-  expected.push_back (10);
-  expected.push_back (11);
-  EXPECT_TRUE (isCircularPermutation (expected, actual));
+  int n_not_added = pcl::geometry::toHalfEdgeMesh (face_vertex_mesh, half_edge_mesh);
+  if (Mesh::IsManifold::value) ASSERT_EQ (2, n_not_added);
+  else                         ASSERT_EQ (0, n_not_added);
 
-  actual = face_vertex_mesh.polygons [4].vertices;
-  expected.clear ();
-  expected.push_back (12);
-  expected.push_back (13);
-  expected.push_back (14);
-  expected.push_back (15);
-  expected.push_back (16);
-  expected.push_back (17);
-  EXPECT_TRUE (isCircularPermutation (expected, actual));
+  // Check if the cloud got copied correctly.
+  ASSERT_EQ (TestFixture::vertices_.size (), half_edge_mesh.getVertexDataCloud ().size ());
+  for (size_t i=0; i<TestFixture::vertices_.size (); ++i)
+  {
+    const pcl::PointXYZRGBNormal& expected_pt = TestFixture::vertices_ [i];
+    const pcl::PointXYZRGBNormal& actual_pt   = half_edge_mesh.getVertexDataCloud () [i];
+
+    EXPECT_FLOAT_EQ (expected_pt.x, actual_pt.x);
+    EXPECT_FLOAT_EQ (expected_pt.y, actual_pt.y);
+    EXPECT_FLOAT_EQ (expected_pt.z, actual_pt.z);
+
+    EXPECT_FLOAT_EQ (expected_pt.normal_x, actual_pt.normal_x);
+    EXPECT_FLOAT_EQ (expected_pt.normal_y, actual_pt.normal_y);
+    EXPECT_FLOAT_EQ (expected_pt.normal_z, actual_pt.normal_z);
+
+    EXPECT_EQ (expected_pt.r, actual_pt.r);
+    EXPECT_EQ (expected_pt.g, actual_pt.g);
+    EXPECT_EQ (expected_pt.b, actual_pt.b);
+  }
+
+  // Check the faces
+  const std::vector <std::vector <uint32_t> > expected_faces =
+      Mesh::IsManifold::value ? TestFixture::manifold_faces_ :
+                                TestFixture::non_manifold_faces_;
+
+  ASSERT_EQ (expected_faces.size (), half_edge_mesh.sizeFaces ());
+
+  std::vector <uint32_t> converted_face;
+  for (size_t i=0; i<half_edge_mesh.sizeFaces (); ++i)
+  {
+    VAFC       circ     = half_edge_mesh.getVertexAroundFaceCirculator (FaceIndex (i));
+    const VAFC circ_end = circ;
+    converted_face.clear ();
+    do
+    {
+      converted_face.push_back (static_cast <uint32_t> (circ.getTargetIndex ().get ()));
+    } while (++circ != circ_end);
+
+    EXPECT_TRUE (isCircularPermutation (expected_faces [i], converted_face)) << "Face number " << i;
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+// This test should not compile (mesh has no vertex data).
+
+//TEST (TestFaceVertexMeshToHalfEdgeMesh, NoVertexData)
+//{
+//  typedef pcl::geometry::DefaultMeshTraits <>     MeshTraits;
+//  typedef pcl::geometry::PolygonMesh <MeshTraits> Mesh;
+
+//  Mesh half_edge_mesh;
+//  pcl::PolygonMesh face_vertex_mesh;
+
+//  pcl::geometry::toHalfEdgeMesh (face_vertex_mesh, half_edge_mesh);
+//}
+
+////////////////////////////////////////////////////////////////////////////////
+
+TYPED_TEST (TestMeshConversion, NonConvertibleCases)
+{
+  typedef typename TestFixture::MeshTraits     Traits;
+  typedef pcl::geometry::TriangleMesh <Traits> TriangleMesh;
+  typedef pcl::geometry::QuadMesh     <Traits> QuadMesh;
+  typedef pcl::geometry::PolygonMesh  <Traits> PolygonMesh;
+
+  // Generate the mesh
+  pcl::PolygonMesh face_vertex_mesh;
+  pcl::toROSMsg (TestFixture::vertices_, face_vertex_mesh.cloud);
+  pcl::Vertices face;
+  for (size_t i=0; i<TestFixture::non_manifold_faces_.size (); ++i)
+  {
+    face.vertices = TestFixture::non_manifold_faces_ [i];
+    face_vertex_mesh.polygons.push_back (face);
+  }
+
+  // Convert
+  TriangleMesh tm;
+  QuadMesh     qm;
+  PolygonMesh  pm;
+
+  const int n_not_added_t = pcl::geometry::toHalfEdgeMesh (face_vertex_mesh, tm);
+  const int n_not_added_q = pcl::geometry::toHalfEdgeMesh (face_vertex_mesh, qm);
+  const int n_not_added_p = pcl::geometry::toHalfEdgeMesh (face_vertex_mesh, pm);
+
+  if (Traits::IsManifold::value)
+  {
+    ASSERT_EQ (4, n_not_added_t);
+    ASSERT_EQ (4, n_not_added_q);
+    ASSERT_EQ (2, n_not_added_p);
+  }
+  else
+  {
+    ASSERT_EQ (3, n_not_added_t);
+    ASSERT_EQ (3, n_not_added_q);
+    ASSERT_EQ (0, n_not_added_p);
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
