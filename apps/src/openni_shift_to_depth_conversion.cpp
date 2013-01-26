@@ -151,8 +151,8 @@ protected:
 
   /* helper method to convert depth&rgb data to pointcloud*/
   void
-  convert (typename std::vector<uint16_t>& depthData_arg,
-           typename std::vector<uint8_t>& rgbData_arg,
+  convert (std::vector<uint16_t>& depthData_arg,
+           std::vector<uint8_t>& rgbData_arg,
            size_t width_arg,
            size_t height_arg,
            float focalLength_arg,
