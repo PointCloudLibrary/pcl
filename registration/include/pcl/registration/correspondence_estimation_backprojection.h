@@ -95,7 +95,7 @@ namespace pcl
           , target_normals_ ()
           , k_ (10)
         {
-          corr_name_ = "CorrespondenceEstimationNormalShooting";
+          corr_name_ = "CorrespondenceEstimationBackProjection";
         }
 
         /** \brief Set the normals computed on the source point cloud
