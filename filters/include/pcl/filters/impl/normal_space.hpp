@@ -59,9 +59,11 @@ pcl::NormalSpaceSampling<PointT, NormalT>::initCompute ()
     return false;
   }
 
-  boost::mt19937 *rng = new boost::mt19937 (static_cast<unsigned int> (seed_));
-  boost::uniform_int<unsigned int> *uniform_distrib = new boost::uniform_int<unsigned int> (0, unsigned (input_->size ()));
-  rng_uniform_distribution_ = new boost::variate_generator<boost::mt19937, boost::uniform_int<unsigned int> > (*rng, *uniform_distrib);
+  boost::mt19937 rng (static_cast<unsigned int> (seed_));
+  boost::uniform_int<unsigned int> uniform_distrib (0, unsigned (input_->size ()));
+  if (rng_uniform_distribution_ != NULL)
+    delete rng_uniform_distribution_;
+  rng_uniform_distribution_ = new boost::variate_generator<boost::mt19937, boost::uniform_int<unsigned int> > (rng, uniform_distrib);
 
   return (true);
 }
