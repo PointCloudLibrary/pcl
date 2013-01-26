@@ -113,6 +113,13 @@ namespace pcl
           RM_REGISTRATION_SINGLE = 4  /**< Registers new data once and returns to showing the processed data. */
         } RunningMode;
 
+        /** \brief File type for saving and loading files. */
+        typedef enum FileType
+        {
+          FT_PLY = 0, /**< Polygon File Format. */
+          FT_VTK = 1  /**< VTK File Format. */
+        } FileType;
+
         /** \brief Constructor. */
         explicit InHandScanner (Base* parent=0);
 
@@ -171,13 +178,11 @@ namespace pcl
         void
         reset ();
 
-        /** \brief Saves the model mesh as ply file. */
+        /** \brief Saves the model mesh in a file with the given filename and filetype.
+          * \note The extension of the filename is ignored!
+          */
         void
-        savePly (const std::string& file);
-
-        /** \brief Saves the model mesh as vtk file. */
-        void
-        saveVtk (const std::string& file);
+        saveAs (const std::string& filename, const FileType& filetype);
 
         /** \see http://doc.qt.digia.com/qt/qwidget.html#keyPressEvent */
         void

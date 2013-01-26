@@ -166,8 +166,10 @@ pcl::ihs::MainWindow::saveAs ()
 
   if (filename.isEmpty ()) return;
 
-  if      (filename.endsWith ("ply", Qt::CaseInsensitive)) ihs_->savePly (filename.toStdString ());
-  else if (filename.endsWith ("vtk", Qt::CaseInsensitive)) ihs_->saveVtk (filename.toStdString ());
+  if      (filename.endsWith ("ply", Qt::CaseInsensitive))
+    ihs_->saveAs (filename.toStdString (), pcl::ihs::InHandScanner::FT_PLY);
+  else if (filename.endsWith ("vtk", Qt::CaseInsensitive))
+    ihs_->saveAs (filename.toStdString (), pcl::ihs::InHandScanner::FT_VTK);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -238,31 +238,20 @@ pcl::ihs::InHandScanner::reset ()
 ////////////////////////////////////////////////////////////////////////////////
 
 void
-pcl::ihs::InHandScanner::savePly (const std::string& file)
+pcl::ihs::InHandScanner::saveAs (const std::string& filename, const FileType& filetype)
 {
   boost::mutex::scoped_lock lock (mutex_);
   if (destructor_called_) return;
 
   pcl::PolygonMesh pm;
-  pcl::geometry::MeshConversion converter;
-  converter.toFaceVertexMesh (*mesh_model_, pm);
+  pcl::geometry::toFaceVertexMesh (*mesh_model_, pm);
 
-  pcl::io::savePLYFile (file, pm);
-}
-
-////////////////////////////////////////////////////////////////////////////////
-
-void
-pcl::ihs::InHandScanner::saveVtk (const std::string& file)
-{
-  boost::mutex::scoped_lock lock (mutex_);
-  if (destructor_called_) return;
-
-  pcl::PolygonMesh pm;
-  pcl::geometry::MeshConversion converter;
-  converter.toFaceVertexMesh (*mesh_model_, pm);
-
-  pcl::io::saveVTKFile (file, pm);
+  switch (filetype)
+  {
+    case FT_PLY: pcl::io::savePLYFile (filename, pm); break;
+    case FT_VTK: pcl::io::saveVTKFile (filename, pm); break;
+    default:                                          break;
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
