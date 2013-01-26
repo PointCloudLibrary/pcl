@@ -1011,7 +1011,7 @@ pcl::ImageGrabberBase::setDepthImageUnits (const float units)
 size_t
 pcl::ImageGrabberBase::numFrames () const
 {
-  return impl_->numFrames ();
+  return (impl_->numFrames ());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1022,7 +1022,7 @@ pcl::ImageGrabberBase::getCloudAt (size_t idx,
                                    Eigen::Quaternionf &orientation) const
 {
   double fx, fy, cx, cy;
-  return impl_->getCloudAt (idx, blob, origin, orientation, fx, fy, cx, cy);
+  return (impl_->getCloudAt (idx, blob, origin, orientation, fx, fy, cx, cy));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
