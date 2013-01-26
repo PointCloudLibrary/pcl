@@ -215,7 +215,7 @@ namespace pcl
                   bool repeat = false);
     
     // Inherited from FileGrabber
-    boost::shared_ptr< const pcl::PointCloud<PointT> >
+    const boost::shared_ptr< const pcl::PointCloud<PointT> >
     operator[] (size_t idx) const;
 
     // Inherited from FileGrabber
@@ -263,7 +263,7 @@ namespace pcl
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  template<typename PointT> boost::shared_ptr< const pcl::PointCloud<PointT> >
+  template<typename PointT> const boost::shared_ptr< const pcl::PointCloud<PointT> >
   ImageGrabber<PointT>::operator[] (size_t idx) const
   {
     sensor_msgs::PointCloud2 blob;
@@ -274,14 +274,14 @@ namespace pcl
     pcl::fromROSMsg (blob, *cloud);
     cloud->sensor_origin_ = origin;
     cloud->sensor_orientation_ = orientation;
-    return cloud;
+    return (cloud);
   }
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
   template <typename PointT> size_t
   ImageGrabber<PointT>::size () const
   {
-    return numFrames ();
+    return (numFrames ());
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////

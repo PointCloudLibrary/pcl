@@ -60,7 +60,7 @@ namespace pcl
      *  Note that in the future, this could easily be modified to do caching
      *  \param[in] idx The frame to load
      */
-    virtual boost::shared_ptr< const pcl::PointCloud<PointT> >
+    virtual const boost::shared_ptr< const pcl::PointCloud<PointT> >
     operator[] (size_t idx) const = 0;
 
     /** \brief size Returns the number of clouds currently loaded by the grabber */
@@ -70,7 +70,7 @@ namespace pcl
     /** \brief at Returns the idx-th cloud in the dataset, with bounds checking
      *  \param[in] idx The frame to load
      */
-    virtual boost::shared_ptr< const pcl::PointCloud<PointT> >
+    virtual const boost::shared_ptr< const pcl::PointCloud<PointT> >
     at (size_t idx) const
     {
       if (idx >= size ())
