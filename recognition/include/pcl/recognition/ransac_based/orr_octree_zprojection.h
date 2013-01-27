@@ -134,8 +134,8 @@ namespace pcl
         {
           int x, y; this->getPixelCoordinates (p, x, y);
 
-          if ( 0 < x || x >= num_pixels_x_ ) return (NULL);
-          if ( 0 < y || y >= num_pixels_y_ ) return (NULL);
+          if ( x < 0 || x >= num_pixels_x_ ) return (NULL);
+          if ( y < 0 || y >= num_pixels_y_ ) return (NULL);
 
           return (pixels_[x][y]);
         }

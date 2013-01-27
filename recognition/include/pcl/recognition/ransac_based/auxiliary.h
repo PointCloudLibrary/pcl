@@ -41,12 +41,25 @@
 #include <cmath>
 #include <cstdlib>
 
+#define AUX_HALF_PI  1.57079632679489661923f
+
 namespace pcl
 {
   namespace recognition
   {
     namespace aux
     {
+      template<typename T> float
+      clamp (T value, T min, T max)
+      {
+        if ( value < min )
+          return min;
+        else if ( value > max )
+          return max;
+
+        return value;
+      }
+
       /** \brief Returns a random integer in [min, max] (including both min and max). This method uses rand() from
        * the C Standard General Utilities Library <cstdlib>. That's why it uses a seed to generate the integers, which
        * should be initialized to some distinctive value using srand(). */
@@ -169,7 +182,7 @@ namespace pcl
         out[8] = x[2]*m[0][2] + y[2]*m[1][2] + z[2]*m[2][2];
       }
 
-      /** The first 9 elements of 't' are treated as a 3x3 matrix (row major order) and the last 3 as a translation.
+      /** \brief The first 9 elements of 't' are treated as a 3x3 matrix (row major order) and the last 3 as a translation.
         * First, 'p' is multiplied by that matrix and then translated. The result is saved in 'out'. */
       template<class T> void
       transform(const T t[12], const T p[3], T out[3])
@@ -177,6 +190,31 @@ namespace pcl
         out[0] = t[0]*p[0] + t[1]*p[1] + t[2]*p[2] + t[9];
         out[1] = t[3]*p[0] + t[4]*p[1] + t[5]*p[2] + t[10];
         out[2] = t[6]*p[0] + t[7]*p[1] + t[8]*p[2] + t[11];
+      }
+
+      /** \brief Returns true if the points 'p1' and 'p2' are co-planar and false otherwise. The method assumes that 'n1'
+        * is a normal at 'p1' and 'n2' is a normal at 'p2'. 'max_angle' is the threshold used for the test. The bigger
+        * the value the larger the deviation between the normals can be which still leads to a positive test result. The
+        * angle has to be in radians. */
+      template<typename T> bool
+      pointsAreCoplanar (const T p1[3], const T n1[3], const T p2[3], const T n2[3], T max_angle)
+      {
+        // Compute the angle between 'n1' and 'n2' and compare it with 'max_angle'
+        if ( std::acos (aux::clamp (aux::vecDot3 (n1, n2), -1.0f, 1.0f)) > max_angle )
+          return (false);
+
+        T cl[3] = {p2[0] - p1[0], p2[1] - p1[1], p2[2] - p1[2]};
+        vecNormalize3 (cl);
+
+        // Compute the angle between 'cl' and 'n1'
+        T tmp_angle = std::acos (aux::clamp (aux::vecDot3 (n1, cl), -1.0f, 1.0f));
+
+        // 'tmp_angle' should not deviate too much from 90 degrees
+        if ( std::fabs (tmp_angle - max_angle) > AUX_HALF_PI )
+          return (false);
+
+        // All tests passed => the points are coplanar
+        return (true);
       }
     }
   }

@@ -50,6 +50,8 @@
 #include <set>
 #include <map>
 
+#define MLIB_HALF_PI   1.57079632679489661923f
+
 namespace pcl
 {
   namespace recognition
@@ -106,8 +108,24 @@ namespace pcl
         bool
         addModel (PointCloudIn* points, PointCloudN* normals, const std::string& object_name);
 
+        /** \biref Call this method in order NOT to add co-planar point pairs to the hash table. The default behavior
+          * is ignoring co-planar points on. */
+        inline void
+        ignoreCoplanarPointsOn ()
+        {
+          ignore_coplanar_points_ = true;
+        }
+
+        /** \biref Call this method in order to add all point pairs (co-planar as well) to the hash table. The default
+          * behavior is ignoring co-planar points on. */
+        inline void
+        ignoreCoplanarPointsOff ()
+        {
+          ignore_coplanar_points_ = false;
+        }
+
         /** \brief Returns the hash table built by this instance. */
-        const HashTable*
+        inline const HashTable*
         getHashTable ()
         {
           return (&hash_table_);
@@ -118,12 +136,14 @@ namespace pcl
         void
         clear ();
 
-        void
+        /** \brief Returns true if the oriented point pair was added to the hash table and false otherwise. */
+        bool
         addToHashTable (Model* model, ORROctree::Node::Data* data1, ORROctree::Node::Data* data2);
 
       protected:
         std::map<std::string,Model*> models_;
         float pair_width_, pair_width_eps_, voxel_size_;
+        bool ignore_coplanar_points_;
 
         HashTable hash_table_;
         int num_of_cells_[3];

@@ -256,7 +256,7 @@ namespace pcl
         generateHypotheses(const std::list<OrientedPointPair>& pairs, std::list<Hypothesis*>& out);
 
         void
-        testHypotheses (std::list<Hypothesis*>& hypotheses, std::vector<Hypothesis*>& accepted_hypotheses);
+        testHypotheses (std::list<Hypothesis*>& hypotheses, int num_hypotheses, std::vector<Hypothesis*>& accepted_hypotheses);
 
         void
         buildConflictGraph (std::vector<Hypothesis*>& hypotheses, ORRGraph& graph);
@@ -326,12 +326,12 @@ namespace pcl
         compute_oriented_point_pair_signature (const float *p1, const float *n1, const float *p2, const float *n2, float signature[3])
         {
           // Get the line from p1 to p2
-          float line[3] = {p2[0] - p1[0], p2[1] - p1[1], p2[2] - p1[2]};
-          aux::vecNormalize3 (line);
+          float cl[3] = {p2[0] - p1[0], p2[1] - p1[1], p2[2] - p1[2]};
+          aux::vecNormalize3 (cl);
 
-          signature[0] = static_cast<float> (acos (aux::vecDot3 (n1,line))); line[0] = -line[0]; line[1] = -line[1]; line[2] = -line[2];
-          signature[1] = static_cast<float> (acos (aux::vecDot3 (n2,line)));
-          signature[2] = static_cast<float> (acos (aux::vecDot3 (n1,n2)));
+          signature[0] = std::acos (aux::clamp (aux::vecDot3 (n1,cl), -1.0f, 1.0f)); cl[0] = -cl[0]; cl[1] = -cl[1]; cl[2] = -cl[2];
+          signature[1] = std::acos (aux::clamp (aux::vecDot3 (n2,cl), -1.0f, 1.0f));
+          signature[2] = std::acos (aux::clamp (aux::vecDot3 (n1,n2), -1.0f, 1.0f));
         }
 
       protected:

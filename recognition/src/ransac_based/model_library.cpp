@@ -66,6 +66,8 @@ ModelLibrary::ModelLibrary (float pair_width, float voxel_size)
                      -eps, M_PIf + eps};
  
   hash_table_.build (bounds, num_of_cells_);
+
+  this->ignoreCoplanarPointsOn ();
 }
 
 //============================================================================================================================================
@@ -142,9 +144,8 @@ ModelLibrary::addModel (PointCloudIn* points, PointCloudN* normals, const std::s
     for ( list<ORROctree::Node*>::iterator leaf2 = inter_leaves.begin () ; leaf2 != inter_leaves.end () ; ++leaf2 )
     {
       // Compute the hash table key
-      this->addToHashTable(new_model, node_data1, (*leaf2)->getData ());
-
-      ++num_of_pairs;
+      if ( this->addToHashTable(new_model, node_data1, (*leaf2)->getData ()) )
+        ++num_of_pairs;
     }
   }
 
@@ -157,8 +158,8 @@ ModelLibrary::addModel (PointCloudIn* points, PointCloudN* normals, const std::s
 
 //============================================================================================================================================
 
-void
-ModelLibrary::addToHashTable (ModelLibrary::Model* model, ORROctree::Node::Data* data1, ORROctree::Node::Data* data2)
+bool
+ModelLibrary::addToHashTable (Model* model, ORROctree::Node::Data* data1, ORROctree::Node::Data* data2)
 {
   float key[3];
 
@@ -167,11 +168,22 @@ ModelLibrary::addToHashTable (ModelLibrary::Model* model, ORROctree::Node::Data*
     data1->getPoint (), data1->getNormal (),
     data2->getPoint (), data2->getNormal (), key);
 
+  if ( ignore_coplanar_points_ )
+  {
+    // about 3 degrees threshold
+    if ( std::fabs (key[0]-MLIB_HALF_PI) < 0.05f &&
+         std::fabs (key[1]-MLIB_HALF_PI) < 0.05f &&
+         key[2] < 0.05f )
+      return (false);
+  }
+
   // Get the hash table cell containing 'key' (there is for sure such a cell since the hash table bounds are large enough)
   HashTableCell* cell = hash_table_.getVoxel (key);
 
   // Insert the pair (data1,data2) belonging to 'model'
   (*cell)[model].push_back (std::pair<ORROctree::Node::Data*,ORROctree::Node::Data*> (data1, data2));
+
+  return (true);
 }
 
 //============================================================================================================================================

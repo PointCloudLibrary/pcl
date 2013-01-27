@@ -87,6 +87,7 @@ pcl::recognition::ObjRecRANSAC::recognize (const PointCloudIn* scene, const Poin
   list<Hypothesis*> hypotheses;
   vector<Hypothesis*> accepted_hypotheses;
   ORRGraph graph;
+  int num_hypotheses;
 
   this->sampleOrientedPointPairs (num_iterations, full_leaves, sampled_oriented_point_pairs_);
 
@@ -96,8 +97,8 @@ pcl::recognition::ObjRecRANSAC::recognize (const PointCloudIn* scene, const Poin
 
   if ( rec_mode_ == ObjRecRANSAC::FULL_RECOGNITION )
   {
-    this->generateHypotheses (sampled_oriented_point_pairs_, hypotheses);
-    this->testHypotheses (hypotheses, accepted_hypotheses);
+    num_hypotheses = this->generateHypotheses (sampled_oriented_point_pairs_, hypotheses);
+    this->testHypotheses (hypotheses, num_hypotheses, accepted_hypotheses);
     this->buildConflictGraph (accepted_hypotheses, graph);
     this->filterWeakHypotheses (graph, recognized_objects);
 
@@ -245,7 +246,7 @@ pcl::recognition::ObjRecRANSAC::generateHypotheses (const list<OrientedPointPair
 //=========================================================================================================================================================================
 
 void
-pcl::recognition::ObjRecRANSAC::testHypotheses (list<Hypothesis*>& hypotheses, vector<Hypothesis*>& accepted_hypotheses)
+pcl::recognition::ObjRecRANSAC::testHypotheses (list<Hypothesis*>& hypotheses, int num_hypotheses, vector<Hypothesis*>& accepted_hypotheses)
 {
   float transformed_point[3];
   int match, penalty, match_thresh, penalty_thresh;
@@ -253,7 +254,10 @@ pcl::recognition::ObjRecRANSAC::testHypotheses (list<Hypothesis*>& hypotheses, v
   const float *rigid_transform;
 
 #ifdef OBJ_REC_RANSAC_VERBOSE
-  printf("ObjRecRANSAC::%s(): testing the hypotheses ... ", __func__); fflush(stdout);
+  printf("ObjRecRANSAC::%s(): testing %i hypotheses ...\n", __func__, num_hypotheses);
+  // These are some variables needed when printing the recognition progress
+  float printed = 0.0f, done = 0.0f, step = 100.0f/static_cast<float> (num_hypotheses);
+  int num_done = 0;
 #endif
 
   for ( list<Hypothesis*>::iterator hypo_it = hypotheses.begin () ; hypo_it != hypotheses.end () ; ++hypo_it )
@@ -298,10 +302,20 @@ pcl::recognition::ObjRecRANSAC::testHypotheses (list<Hypothesis*>& hypotheses, v
     else
       // We do not need that hypothesis => destroy it
       delete *hypo_it;
+
+#ifdef OBJ_REC_RANSAC_VERBOSE
+    // Update progress
+    done = static_cast<float> (++num_done)*step;
+    if ( done > printed )
+    {
+      printf ("\r%.1f%% ", printed); fflush (stdout);
+      printed += 0.1f;
+    }
+#endif
   }
 
 #ifdef OBJ_REC_RANSAC_VERBOSE
-	printf("%i accepted.\n", static_cast<int> (accepted_hypotheses.size ())); fflush (stdout);
+	printf("done\n%i accepted.\n", static_cast<int> (accepted_hypotheses.size ())); fflush (stdout);
 #endif
 }
 
