@@ -161,16 +161,16 @@ TYPED_TEST (TestMeshConversion, HalfEdgeMeshToFaceVertexMesh)
   typedef typename Mesh::VertexIndices        VertexIndices;
 
   const std::vector <std::vector <uint32_t> > faces =
-      Mesh::IsManifold::value ? TestFixture::manifold_faces_ :
-                                TestFixture::non_manifold_faces_;
+      Mesh::IsManifold::value ? this->manifold_faces_ :
+                                this->non_manifold_faces_;
 
   // Generate the mesh
   Mesh half_edge_mesh;
   VertexIndices vi;
 
-  for (size_t i=0; i<TestFixture::vertices_.size (); ++i)
+  for (size_t i=0; i<this->vertices_.size (); ++i)
   {
-    half_edge_mesh.addVertex (TestFixture::vertices_ [i]);
+    half_edge_mesh.addVertex (this->vertices_ [i]);
   }
 
   for (size_t i=0; i<faces.size (); ++i)
@@ -191,10 +191,10 @@ TYPED_TEST (TestMeshConversion, HalfEdgeMeshToFaceVertexMesh)
   // Check if the cloud got copied correctly.
   pcl::PointCloud <pcl::PointXYZRGBNormal> converted_cloud;
   pcl::fromROSMsg (face_vertex_mesh.cloud, converted_cloud);
-  ASSERT_EQ (TestFixture::vertices_.size (), converted_cloud.size ());
-  for (size_t i=0; i<TestFixture::vertices_.size (); ++i)
+  ASSERT_EQ (this->vertices_.size (), converted_cloud.size ());
+  for (size_t i=0; i<this->vertices_.size (); ++i)
   {
-    const pcl::PointXYZRGBNormal& expected_pt = TestFixture::vertices_ [i];
+    const pcl::PointXYZRGBNormal& expected_pt = this->vertices_ [i];
     const pcl::PointXYZRGBNormal& actual_pt   = converted_cloud [i];
 
     EXPECT_FLOAT_EQ (expected_pt.x, actual_pt.x);
@@ -229,11 +229,11 @@ TYPED_TEST (TestMeshConversion, FaceVertexMeshToHalfEdgeMesh)
 
   // Generate the mesh
   pcl::PolygonMesh face_vertex_mesh;
-  pcl::toROSMsg (TestFixture::vertices_, face_vertex_mesh.cloud);
+  pcl::toROSMsg (this->vertices_, face_vertex_mesh.cloud);
   pcl::Vertices face;
-  for (size_t i=0; i<TestFixture::non_manifold_faces_.size (); ++i)
+  for (size_t i=0; i<this->non_manifold_faces_.size (); ++i)
   {
-    face.vertices = TestFixture::non_manifold_faces_ [i];
+    face.vertices = this->non_manifold_faces_ [i];
     face_vertex_mesh.polygons.push_back (face);
   }
 
@@ -245,10 +245,10 @@ TYPED_TEST (TestMeshConversion, FaceVertexMeshToHalfEdgeMesh)
   else                         ASSERT_EQ (0, n_not_added);
 
   // Check if the cloud got copied correctly.
-  ASSERT_EQ (TestFixture::vertices_.size (), half_edge_mesh.getVertexDataCloud ().size ());
-  for (size_t i=0; i<TestFixture::vertices_.size (); ++i)
+  ASSERT_EQ (this->vertices_.size (), half_edge_mesh.getVertexDataCloud ().size ());
+  for (size_t i=0; i<this->vertices_.size (); ++i)
   {
-    const pcl::PointXYZRGBNormal& expected_pt = TestFixture::vertices_ [i];
+    const pcl::PointXYZRGBNormal& expected_pt = this->vertices_ [i];
     const pcl::PointXYZRGBNormal& actual_pt   = half_edge_mesh.getVertexDataCloud () [i];
 
     EXPECT_FLOAT_EQ (expected_pt.x, actual_pt.x);
@@ -266,8 +266,8 @@ TYPED_TEST (TestMeshConversion, FaceVertexMeshToHalfEdgeMesh)
 
   // Check the faces
   const std::vector <std::vector <uint32_t> > expected_faces =
-      Mesh::IsManifold::value ? TestFixture::manifold_faces_ :
-                                TestFixture::non_manifold_faces_;
+      Mesh::IsManifold::value ? this->manifold_faces_ :
+                                this->non_manifold_faces_;
 
   ASSERT_EQ (expected_faces.size (), half_edge_mesh.sizeFaces ());
 
@@ -312,11 +312,11 @@ TYPED_TEST (TestMeshConversion, NonConvertibleCases)
 
   // Generate the mesh
   pcl::PolygonMesh face_vertex_mesh;
-  pcl::toROSMsg (TestFixture::vertices_, face_vertex_mesh.cloud);
+  pcl::toROSMsg (this->vertices_, face_vertex_mesh.cloud);
   pcl::Vertices face;
-  for (size_t i=0; i<TestFixture::non_manifold_faces_.size (); ++i)
+  for (size_t i=0; i<this->non_manifold_faces_.size (); ++i)
   {
-    face.vertices = TestFixture::non_manifold_faces_ [i];
+    face.vertices = this->non_manifold_faces_ [i];
     face_vertex_mesh.polygons.push_back (face);
   }
 
