@@ -80,133 +80,11 @@ getCuboid (double minX, double maxX, double minY, double maxY, double minZ, doub
   return cube->GetOutput ();
 }
 
-
-void
-getAxisActors (Eigen::Vector4f origin, Eigen::Quaternionf orientation,
-               vtkSmartPointer<vtkActorCollection> coll)
-{
-  Eigen::Vector3f x (0.25, 0.0, 0.0);
-  Eigen::Vector3f y (0.0, 0.25, 0.0);
-  Eigen::Vector3f z (0.0, 0.0, 0.25);
-  
-  Eigen::Matrix3f rot = orientation.toRotationMatrix ();
-
-  x = rot * x;
-  y = rot * y;
-  z = rot * z;
-
-  x = origin.head (3) + x;
-  y = origin.head (3) + y;
-  z = origin.head (3) + z;
-
-  // Create a vtkPoints object and store the points in it
-  vtkSmartPointer<vtkPoints> pts = vtkSmartPointer<vtkPoints>::New();
-  pts->InsertNextPoint(origin.x (), origin.y (), origin.z ());
-  pts->InsertNextPoint(x.x (), x.y (), x.z ());
-  pts->InsertNextPoint(y.x (), y.y (), y.z ());
-  pts->InsertNextPoint(z.x (), z.y (), z.z ());
-
-  // Setup two colors - one for each line
-  unsigned char red[3] = {255, 0, 0};
-  unsigned char green[3] = {0, 255, 0};
-  unsigned char blue[3] = {0, 0, 255};
-
-  // Setup the colors array
-  vtkSmartPointer<vtkUnsignedCharArray> colors =
-    vtkSmartPointer<vtkUnsignedCharArray>::New();
-  colors->SetNumberOfComponents(3);
-  colors->SetName("Colors");
-
-  // Add the colors we created to the colors array
-  colors->InsertNextTupleValue(red);
-  colors->InsertNextTupleValue(green);
-  colors->InsertNextTupleValue(blue);
-
-  // Create the first line (between Origin and P0)
-  vtkSmartPointer<vtkLine> line0 =
-    vtkSmartPointer<vtkLine>::New();
-  line0->GetPointIds()->SetId(0,0); //the second 0 is the index of the Origin in the vtkPoints
-  line0->GetPointIds()->SetId(1,1); //the second 1 is the index of P0 in the vtkPoints
- 
-  // Create the second line (between Origin and P1)
-  vtkSmartPointer<vtkLine> line1 =
-    vtkSmartPointer<vtkLine>::New();
-  line1->GetPointIds()->SetId(0,0); //the second 0 is the index of the Origin in the vtkPoints
-  line1->GetPointIds()->SetId(1,2); //2 is the index of P1 in the vtkPoints
-
-  // Create the second line (between Origin and P2)
-  vtkSmartPointer<vtkLine> line2 =
-    vtkSmartPointer<vtkLine>::New();
-  line2->GetPointIds()->SetId(0,0); //the third 0 is the index of the Origin in the vtkPoints
-  line2->GetPointIds()->SetId(1,3); //3 is the index of P2 in the vtkPoints
-
-  // Create a cell array to store the lines in and add the lines to it
-  vtkSmartPointer<vtkCellArray> lines =
-    vtkSmartPointer<vtkCellArray>::New();
-  lines->InsertNextCell(line0);
-  lines->InsertNextCell(line1);
-  lines->InsertNextCell(line2);
-
-  // Create a polydata to store everything in
-  vtkSmartPointer<vtkPolyData> linesPolyData =
-    vtkSmartPointer<vtkPolyData>::New();
- 
-  // Add the points to the dataset
-  linesPolyData->SetPoints(pts);
-
-  // Add the lines to the dataset
-  linesPolyData->SetLines(lines);
-
-  linesPolyData->GetCellData()->SetScalars(colors);
- 
-  // Visualize
-  vtkSmartPointer<vtkPolyDataMapper> mapper =
-    vtkSmartPointer<vtkPolyDataMapper>::New();
-  mapper->SetInput(linesPolyData);
-
-  vtkSmartPointer<vtkActor> actor =
-    vtkSmartPointer<vtkActor>::New();
-  actor->SetMapper(mapper);
-
-  actor->GetProperty ()->SetLineWidth (5);
-
-  coll->AddItem (actor);
-}
-
-void
-getPointActors (pcl::PointCloud<pcl::PointXYZ>& cloud, vtkSmartPointer<vtkActorCollection> coll,
-                float point_size = 4.0f)
-{
-  vtkPolyData* points_poly;
-
-  size_t i;
-
-  vtkPoints *octreeLeafPoints = vtkPoints::New ();
-
-  // add all points from octree to vtkPoint object                  
-  for (i=0; i< cloud.points.size(); i++) {
-    octreeLeafPoints->InsertNextPoint (cloud.points[i].x, cloud.points[i].y, cloud.points[i].z);
-  }
-  points_poly = (vtkPolyData*)createDataSetFromVTKPoints(octreeLeafPoints);
-
-  vtkSmartPointer<vtkActor> pointsActor = vtkSmartPointer<vtkActor>::New ();
-
-  vtkSmartPointer<vtkDataSetMapper> mapper = vtkSmartPointer<vtkDataSetMapper>::New ();
-  mapper->SetInput (points_poly);
-  pointsActor->SetMapper (mapper);
-
-  pointsActor->GetProperty ()->SetColor (1.0, 0.0, 0.0);
-  pointsActor->GetProperty ()->SetPointSize (point_size);
-  coll->AddItem (pointsActor);
-
-}
-
 void
 getVoxelActors (pcl::PointCloud<pcl::PointXYZ>& voxelCenters,
                  double voxelSideLen, Eigen::Vector3f color,
                  vtkSmartPointer<vtkActorCollection> coll)
 {
-
   vtkSmartPointer < vtkAppendPolyData > treeWireframe = vtkSmartPointer<vtkAppendPolyData>::New ();
   
   size_t i;
@@ -300,11 +178,10 @@ int main (int argc, char** argv)
   CloudT::Ptr input_cloud (new CloudT);
   loadPCDFile (argv[1], *input_cloud);
 
-  Eigen::Vector4f sensor_origin = input_cloud->sensor_origin_;
-  Eigen::Quaternionf sensor_orientation = input_cloud->sensor_orientation_;
-
+  // VTK actors
   vtkSmartPointer<vtkActorCollection> coll = vtkActorCollection::New ();
 
+  // voxel grid
   VoxelGridOcclusionEstimation<PointT> vg;
   vg.setInputCloud (input_cloud);
   vg.setLeafSize (leaf_x, leaf_y, leaf_z);
@@ -328,6 +205,7 @@ int main (int argc, char** argv)
   occ_centroids->width = static_cast<int> (occluded_voxels.size ());
   occ_centroids->height = 1;
   occ_centroids->is_dense = false;
+  occ_centroids->points.resize (occluded_voxels.size ());
   for (size_t i = 0; i < occluded_voxels.size (); ++i)
   {
     Eigen::Vector4f xyz = vg.getCentroidCoordinate (occluded_voxels[i]);
@@ -335,20 +213,38 @@ int main (int argc, char** argv)
     point.x = xyz[0];
     point.y = xyz[1];
     point.z = xyz[2];
-    occ_centroids->points.push_back (point);
+    occ_centroids->points[i] = point;
+  }
+
+  CloudT::Ptr cloud_centroids (new CloudT);
+  cloud_centroids->width = static_cast<int> (input_cloud->points.size ());
+  cloud_centroids->height = 1;
+  cloud_centroids->is_dense = false;
+  cloud_centroids->points.resize (input_cloud->points.size ());
+
+  for (size_t i = 0; i < input_cloud->points.size (); ++i)
+  {
+    float x = input_cloud->points[i].x;
+    float y = input_cloud->points[i].y;
+    float z = input_cloud->points[i].z;
+    Eigen::Vector3i c = vg.getGridCoordinates (x, y, z);
+    Eigen::Vector4f xyz = vg.getCentroidCoordinate (c);
+    PointT point;
+    point.x = xyz[0];
+    point.y = xyz[1];
+    point.z = xyz[2];
+    cloud_centroids->points[i] = point;
   }
 
   // visualization
   Eigen::Vector3f red (1.0, 0.0, 0.0);  
   Eigen::Vector3f blue (0.0, 0.0, 1.0);
-  // visualize axis
-  getAxisActors (sensor_origin, sensor_orientation ,coll);
-  // draw point cloud
-  getPointActors ( *input_cloud, coll);
+  // draw point cloud voxels
+  getVoxelActors (*cloud_centroids, leaf_x, red, coll);
   // draw the bounding box of the voxel grid
   displayBoundingBox (b_min, b_max, coll);
   // draw the occluded voxels
-  getVoxelActors (*occ_centroids, leaf_x, red, coll);
+  getVoxelActors (*occ_centroids, leaf_x, blue, coll);
 
   // Create the RenderWindow, Renderer and RenderWindowInteractor
   vtkSmartPointer<vtkRenderer> renderer = vtkSmartPointer<vtkRenderer>::New();
