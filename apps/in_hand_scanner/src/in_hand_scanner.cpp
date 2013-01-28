@@ -259,31 +259,12 @@ pcl::ihs::InHandScanner::saveAs (const std::string& filename, const FileType& fi
 void
 pcl::ihs::InHandScanner::keyPressEvent (QKeyEvent* event)
 {
-  // Don't allow keyboard callbacks when the grabber is starting up.
+  // Don't allow keyboard callbacks while the grabber is starting up.
   if (starting_grabber_)  return;
   if (destructor_called_) return;
 
   switch (event->key ())
   {
-    case Qt::Key_H:
-    {
-      std::cerr << "======================================================================\n"
-                << "Help:\n"
-                << "----------------------------------------------------------------------\n"
-                << "1  : Shows the unprocessed input data.\n"
-                << "2  : Shows the processed input data.\n"
-                << "3  : Registers new data to the first acquired data continuously.\n"
-                << "4  : Registers new data once and returns to '2'.\n"
-                << "5  : Shows the model shape.\n"
-                << "6  : Removes unfit vertices from the mesh.\n"
-                << "0  : Reset the scanning pipeline.\n"
-                << "----------------------------------------------------------------------\n"
-                << "c  : Reset the camera.\n"
-                << "k  : Toggle the coloring (rgb, one color, visibility-confidence).\n"
-                << "s  : Toggle the mesh representation between points and faces.\n"
-                << "======================================================================\n";
-      break;
-    }
     case Qt::Key_1: this->showUnprocessedData ();      break;
     case Qt::Key_2: this->showProcessedData ();        break;
     case Qt::Key_3: this->registerContinuously ();     break;
