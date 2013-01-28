@@ -34,6 +34,7 @@ if(build)
         src/frustum_culling.cpp
         src/covariance_sampling.cpp
         src/median_filter.cpp
+	src/voxel_grid_occlusion_estimation.cpp
         )
 
     set(incs
@@ -64,6 +65,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/convolution.h
         include/pcl/${SUBSYS_NAME}/convolution_3d.h
         include/pcl/${SUBSYS_NAME}/voxel_grid_label.h
+        include/pcl/${SUBSYS_NAME}/voxel_grid_occlusion_estimation.h
         include/pcl/${SUBSYS_NAME}/frustum_culling.h
         include/pcl/${SUBSYS_NAME}/covariance_sampling.h
         include/pcl/${SUBSYS_NAME}/median_filter.h
@@ -94,6 +96,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/voxel_grid_covariance.hpp
         include/pcl/${SUBSYS_NAME}/impl/convolution.hpp
         include/pcl/${SUBSYS_NAME}/impl/convolution_3d.hpp
+        include/pcl/${SUBSYS_NAME}/impl/voxel_grid_occlusion_estimation.hpp
         include/pcl/${SUBSYS_NAME}/impl/frustum_culling.hpp
         include/pcl/${SUBSYS_NAME}/impl/covariance_sampling.hpp
         include/pcl/${SUBSYS_NAME}/impl/median_filter.hpp

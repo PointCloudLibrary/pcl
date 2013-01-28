@@ -72,6 +72,9 @@ if (build)
   PCL_ADD_EXECUTABLE (pcl_crf_segmentation ${SUBSYS_NAME} crf_segmentation.cpp)
   target_link_libraries (pcl_crf_segmentation pcl_common pcl_io pcl_segmentation)
   
+  PCL_ADD_EXECUTABLE (pcl_voxel_grid_occlusion_estimation ${SUBSYS_NAME} voxel_grid_occlusion_estimation.cpp)
+  target_link_libraries (pcl_voxel_grid_occlusion_estimation pcl_common pcl_io pcl_filters)
+
   # NOTE: boost/uuid/uuid.hpp only exists for versions > 1.41
   if(Boost_MAJOR_VERSION GREATER 1 OR Boost_MINOR_VERSION GREATER 41)
     PCL_ADD_EXECUTABLE (pcl_add_gaussian_noise ${SUBSYS_NAME} add_gaussian_noise.cpp)
