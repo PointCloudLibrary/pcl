@@ -61,7 +61,7 @@ using namespace pcl::gpu::people;
 pcl::gpu::people::PeopleDetector::PeopleDetector() 
     : fx_(525.f), fy_(525.f), cx_(319.5f), cy_(239.5f), delta_hue_tolerance_(5)
 {
-  PCL_DEBUG ("[pcl::gpu::people::PeopleDetector] : (D) : Constructor called");
+  PCL_DEBUG ("[pcl::gpu::people::PeopleDetector] : (D) : Constructor called\n");
 
   // Create a new probability_processor
   probability_processor_ = ProbabilityProcessor::Ptr (new ProbabilityProcessor());
@@ -70,7 +70,7 @@ pcl::gpu::people::PeopleDetector::PeopleDetector()
   person_attribs_ = PersonAttribs::Ptr (new PersonAttribs());
 
   // Just created, indicates first time callback (allows for tracking features to start from second frame)
-  first_iteration = true;
+  first_iteration_ = true;
 
   // allocation buffers with default sizes
   // if input size is other than the defaults, 
@@ -290,7 +290,7 @@ pcl::gpu::people::PeopleDetector::processProb ()
     PCL_INFO("\t Entry %d \t: %lf\n", i, kernel_ptr_host[i]);
 
   if(probability_processor_->GaussianBlur(depth_device1_,rdf_detector_->P_l_, kernel_device, rdf_detector_->P_l_Gaus_Temp_ ,rdf_detector_->P_l_Gaus_) != 1)
-    PCL_ERROR("[pcl::gpu::people::PeopleDetector::processProb] : (E) : Gaussian Blur failed");
+    PCL_ERROR("[pcl::gpu::people::PeopleDetector::processProb] : (E) : Gaussian Blur failed\n");
 
   // get labels
   probability_processor_->SelectLabel(depth_device1_, rdf_detector_->labels_, rdf_detector_->P_l_);
@@ -363,14 +363,14 @@ pcl::gpu::people::PeopleDetector::processProb ()
       static int counter = 0; // TODO move this logging to PeopleApp
 
       //cerr << t2.nr_parts << ";" << par << ";" << t2.total_dist_error << ";" << t2.norm_dist_error << ";" << counter++ << ";" << endl;
-      first_iteration = false;
+      first_iteration_ = false;
       return 2;
     }
-    first_iteration = false;
+    first_iteration_ = false;
     return 1;
     //output: Tree2 and PointCloud<XYZRGBL>
   }
-  first_iteration = false;
+  first_iteration_ = false;
   return 0;
 }
 
