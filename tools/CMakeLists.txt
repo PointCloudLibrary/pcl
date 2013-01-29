@@ -72,8 +72,6 @@ if (build)
   PCL_ADD_EXECUTABLE (pcl_crf_segmentation ${SUBSYS_NAME} crf_segmentation.cpp)
   target_link_libraries (pcl_crf_segmentation pcl_common pcl_io pcl_segmentation)
   
-  PCL_ADD_EXECUTABLE (pcl_voxel_grid_occlusion_estimation ${SUBSYS_NAME} voxel_grid_occlusion_estimation.cpp)
-  target_link_libraries (pcl_voxel_grid_occlusion_estimation pcl_common pcl_io pcl_filters)
 
   # NOTE: boost/uuid/uuid.hpp only exists for versions > 1.41
   if(Boost_MAJOR_VERSION GREATER 1 OR Boost_MINOR_VERSION GREATER 41)
@@ -209,6 +207,9 @@ if (build)
         
         PCL_ADD_EXECUTABLE(pcl_virtual_scanner ${SUBSYS_NAME} virtual_scanner.cpp)
         target_link_libraries(pcl_virtual_scanner pcl_common pcl_io pcl_filters pcl_visualization vtkCommon vtkGraphics)
+
+        PCL_ADD_EXECUTABLE (pcl_voxel_grid_occlusion_estimation ${SUBSYS_NAME} voxel_grid_occlusion_estimation.cpp)
+        target_link_libraries (pcl_voxel_grid_occlusion_estimation pcl_common pcl_io pcl_filters pcl_visualization)
         
         if(BUILD_OPENNI AND OPENNI_FOUND)
           PCL_ADD_EXECUTABLE(pcl_openni_save_image ${SUBSYS_NAME} openni_save_image.cpp)
