@@ -26,6 +26,7 @@ if(build)
             include/pcl/io/oni_grabber.h
             )
         set(OPENNI_INCLUDES
+            include/pcl/io/openni_camera/openni_shift_to_depth_conversion.h
             include/pcl/io/openni_camera/openni.h
             include/pcl/io/openni_camera/openni_depth_image.h
             include/pcl/io/openni_camera/openni_device.h
