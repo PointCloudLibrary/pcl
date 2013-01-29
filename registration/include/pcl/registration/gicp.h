@@ -66,6 +66,7 @@ namespace pcl
       using IterativeClosestPoint<PointSource, PointTarget>::target_;
       using IterativeClosestPoint<PointSource, PointTarget>::input_;
       using IterativeClosestPoint<PointSource, PointTarget>::tree_;
+      using IterativeClosestPoint<PointSource, PointTarget>::tree_reciprocal_;
       using IterativeClosestPoint<PointSource, PointTarget>::nr_iterations_;
       using IterativeClosestPoint<PointSource, PointTarget>::max_iterations_;
       using IterativeClosestPoint<PointSource, PointTarget>::previous_transformation_;
@@ -116,18 +117,23 @@ namespace pcl
         rigid_transformation_estimation_ = 
           boost::bind (&GeneralizedIterativeClosestPoint<PointSource, PointTarget>::estimateRigidTransformationBFGS, 
                        this, _1, _2, _3, _4, _5); 
-        input_tree_.reset (new InputKdTree);
       }
+      
+      /** \brief Provide a pointer to the input dataset
+        * \param cloud the const boost shared pointer to a PointCloud message
+        */
+      PCL_DEPRECATED (void setInputCloud (const PointCloudSourceConstPtr &cloud), "[pcl::registration::GeneralizedIterativeClosestPoint::setInputCloud] setInputCloud is deprecated. Please use setInputSource instead.");
 
       /** \brief Provide a pointer to the input dataset
         * \param cloud the const boost shared pointer to a PointCloud message
         */
       inline void
-      setInputCloud (const PointCloudSourceConstPtr &cloud)
+      setInputSource (const PointCloudSourceConstPtr &cloud)
       {
+
         if (cloud->points.empty ())
         {
-          PCL_ERROR ("[pcl::%s::setInputInput] Invalid or empty point cloud dataset given!\n", getClassName ().c_str ());
+          PCL_ERROR ("[pcl::%s::setInputSource] Invalid or empty point cloud dataset given!\n", getClassName ().c_str ());
           return;
         }
         PointCloudSource input = *cloud;
@@ -135,8 +141,7 @@ namespace pcl
         for (size_t i = 0; i < input.size (); ++i)
           input[i].data[3] = 1.0;
         
-        input_ = input.makeShared ();
-        input_tree_->setInputCloud (input_);
+        pcl::IterativeClosestPoint<PointSource, PointTarget>::setInputSource (cloud);
         input_covariances_.reserve (input_->size ());
       }
 
@@ -146,7 +151,7 @@ namespace pcl
       inline void 
       setInputTarget (const PointCloudTargetConstPtr &target)
       {
-        pcl::Registration<PointSource, PointTarget>::setInputTarget(target);
+        pcl::IterativeClosestPoint<PointSource, PointTarget>::setInputTarget(target);
         target_covariances_.reserve (target_->size ());
       }
 
@@ -255,8 +260,6 @@ namespace pcl
       /** \brief Temporary pointer to the target dataset indices. */
       const std::vector<int> *tmp_idx_tgt_;
 
-      /** \brief KD tree pointer of the input cloud. */
-      InputKdTreePtr input_tree_;
       
       /** \brief Input cloud points covariances. */
       std::vector<Eigen::Matrix3d> input_covariances_;

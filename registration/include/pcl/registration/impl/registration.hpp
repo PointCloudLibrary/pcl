@@ -82,6 +82,7 @@ pcl::Registration<PointSource, PointTarget, Scalar>::initCompute ()
     tree_->setInputCloud (target_);
     target_cloud_updated_ = false;
   }
+
   
   // Update the correspondence estimation
   if (correspondence_estimation_)
@@ -94,6 +95,24 @@ pcl::Registration<PointSource, PointTarget, Scalar>::initCompute ()
   // nothing about them. If they should be cached, they must be cached individually.
 
   return (PCLBase<PointSource>::initCompute ());
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointSource, typename PointTarget, typename Scalar> bool
+pcl::Registration<PointSource, PointTarget, Scalar>::initComputeReciprocal ()
+{
+  if (!input_)
+  {
+    PCL_ERROR ("[pcl::registration::%s::compute] No input source dataset was given!\n", getClassName ().c_str ());
+    return (false);
+  }
+
+  if (source_cloud_updated_ && !force_no_recompute_reciprocal_)
+  {
+    tree_reciprocal_->setInputCloud (input_);
+    source_cloud_updated_ = false;
+  }
+  return (true);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

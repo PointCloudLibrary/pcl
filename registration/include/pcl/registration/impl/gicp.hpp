@@ -43,6 +43,14 @@
 #include <pcl/registration/boost.h>
 #include <pcl/registration/exceptions.h>
 
+///////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointSource, typename PointTarget> void
+pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::setInputCloud (
+    const typename pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::PointCloudSourceConstPtr &cloud)
+{
+  setInputSource (cloud);
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget> 
 template<typename PointT> void
@@ -343,6 +351,7 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::OptimizationFun
 template <typename PointSource, typename PointTarget> inline void
 pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeTransformation (PointCloudSource &output, const Eigen::Matrix4f& guess)
 {
+  pcl::IterativeClosestPoint<PointSource, PointTarget>::initComputeReciprocal ();
   using namespace std;
   // Difference between consecutive transforms
   double delta = 0;
@@ -353,7 +362,7 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeTransfor
   // Compute target cloud covariance matrices
   computeCovariances<PointTarget> (target_, tree_, target_covariances_);
   // Compute input cloud covariance matrices
-  computeCovariances<PointSource> (input_, input_tree_, input_covariances_);
+  computeCovariances<PointSource> (input_, tree_reciprocal_, input_covariances_);
 
   base_transformation_ = guess;
   nr_iterations_ = 0;

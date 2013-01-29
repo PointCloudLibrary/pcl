@@ -421,6 +421,10 @@ namespace pcl
       bool
       initCompute ();
 
+      /** \brief Internal computation when reciprocal lookup is needed */
+      bool
+      initComputeReciprocal ();
+
       /** \brief Add a new correspondence rejector to the list
         * \param[in] rejector the new correspondence rejector to concatenate
         *
