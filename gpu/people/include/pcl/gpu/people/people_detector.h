@@ -121,13 +121,12 @@ namespace pcl
           /** \brief Class getName method. */
           inline const std::string getClassName () const { return "PeopleDetector"; }
 
-        public:       
           typedef DeviceArray2D<unsigned char> Labels;
           typedef DeviceArray2D<unsigned char> Mask;
           typedef DeviceArray2D<float> Hue;
 
           /** \brief indicates first time callback (allows for tracking features to start from second frame) **/
-          bool first_iteration;
+          bool first_iteration_;
           float fx_, fy_, cx_, cy_;
           unsigned int  delta_hue_tolerance_;
                    
