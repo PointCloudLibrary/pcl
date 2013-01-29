@@ -142,26 +142,24 @@ namespace pcl
         if ( (this->maxOctreeDepth_>=stackEntry.depth_) &&
              (stackEntry.node_->getNodeType () == BRANCH_NODE) )
         {
-          char childIdx;
+          unsigned char childIdx;
 
           // current node is a branch node
           BranchNode* currentBranch =
               static_cast<BranchNode*> (stackEntry.node_);
 
           // add all children to stack
-          for (childIdx = 7; childIdx >=0 ; --childIdx)
+          for (childIdx = 0; childIdx < 8; ++childIdx)
           {
-
-            unsigned char idx = static_cast<unsigned char> (childIdx);
 
             // if child exist
 
-            if (this->octree_->branchHasChild(*currentBranch, idx))
+            if (this->octree_->branchHasChild(*currentBranch, childIdx))
             {
               // add child to stack
-              currentKey.pushBranch (idx);
+              currentKey.pushBranch (childIdx);
 
-              stackEntry.node_ = this->octree_->getBranchChildPtr(*currentBranch, idx);
+              stackEntry.node_ = this->octree_->getBranchChildPtr(*currentBranch, childIdx);
 
               stack_.push_back(stackEntry);
 
@@ -251,25 +249,23 @@ namespace pcl
         if ( (this->maxOctreeDepth_>=FIFOEntry.depth_) &&
              (FIFOEntry.node_->getNodeType () == BRANCH_NODE) )
         {
-          char childIdx;
-
+          unsigned char childIdx;
+          
           // current node is a branch node
           BranchNode* currentBranch =
               static_cast<BranchNode*> (FIFOEntry.node_);
 
           // iterate over all children
-          for (childIdx = 7; childIdx >=0 ; --childIdx)
+          for (childIdx = 0; childIdx < 8 ; ++childIdx)
           {
 
-            unsigned char idx = static_cast<unsigned char> (childIdx);
-
             // if child exist
-            if (this->octree_->branchHasChild(*currentBranch, idx))
+            if (this->octree_->branchHasChild(*currentBranch, childIdx))
             {
               // add child to stack
-              currentKey.pushBranch (static_cast<unsigned char> (idx));
+              currentKey.pushBranch (static_cast<unsigned char> (childIdx));
 
-              FIFOEntry.node_ = this->octree_->getBranchChildPtr(*currentBranch, idx);
+              FIFOEntry.node_ = this->octree_->getBranchChildPtr(*currentBranch, childIdx);
 
               FIFO_.push_back(FIFOEntry);
 
