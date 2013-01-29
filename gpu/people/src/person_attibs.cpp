@@ -47,7 +47,7 @@
 
 pcl::gpu::people::PersonAttribs::PersonAttribs()
 {
-  PCL_INFO("(I) : PersonAttribs constructor\n");
+  PCL_DEBUG("[pcl::gpu::people::PersonAttribs] : (D) : Constructor called\n");
 
   // INIT
   max_part_size_.resize(pcl::gpu::people::NUM_PARTS);
@@ -68,7 +68,7 @@ pcl::gpu::people::PersonAttribs::PersonAttribs()
 int
 pcl::gpu::people::PersonAttribs::readPersonXMLConfig (std::istream& is)
 {
-  PCL_INFO("(I) : PersonAttribs readPersonXMLConfig\n");
+  PCL_DEBUG("[pcl::gpu::people::PersonAttribs::readPersonXMLConfig] : (D) : called\n");
   // Read in the property tree
   boost::property_tree::ptree pt;
   read_xml(is,pt);
@@ -77,7 +77,7 @@ pcl::gpu::people::PersonAttribs::readPersonXMLConfig (std::istream& is)
   int version = pt.get<int>("version");
   if(version != pcl::gpu::people::XML_VERSION)
   {
-    PCL_ERROR("(E) : readPersonXMLConfig : Incompatible XML_VERSIONS\n");
+    PCL_ERROR("[pcl::gpu::people::PersonAttribs::readPersonXMLConfig] : (E) : Incompatible XML_VERSIONS\n");
     return -1;
   }
 
@@ -85,7 +85,7 @@ pcl::gpu::people::PersonAttribs::readPersonXMLConfig (std::istream& is)
   int num_parts = pt.get<int>("num_parts");
   if(num_parts != pcl::gpu::people::NUM_PARTS)
   {
-    PCL_ERROR("(E) : readPersonXMLConfig : num_parts doesn't match\n");
+    PCL_ERROR("[pcl::gpu::people::PersonAttribs::readPersonXMLConfig] : (E) : num_parts doesn't match\n");
     return -1;
   }
 
@@ -93,13 +93,13 @@ pcl::gpu::people::PersonAttribs::readPersonXMLConfig (std::istream& is)
   int num_labels = pt.get<int>("num_labels");
   if(num_labels != pcl::gpu::people::NUM_LABELS)
   {
-    PCL_ERROR("(E) : readPersonXMLConfig : num_labels doesn't match\n");
+    PCL_ERROR("[pcl::gpu::people::PersonAttribs::readPersonXMLConfig] : (E) : num_labels doesn't match\n");
     return -1;
   }
 
   name_ = pt.get<std::string>("person.name");
 
-  PCL_INFO("(I) : PersonAttribs readPersonXMLConfig : loaded %s\n", name_.c_str());
+  PCL_DEBUG("[pcl::gpu::people::PersonAttribs::readPersonXMLConfig] : (D) : loaded %s\n", name_.c_str());
 
   // Get max_part_size_
   for(int i = 0; i < pcl::gpu::people::NUM_PARTS; i++)
@@ -145,7 +145,7 @@ pcl::gpu::people::PersonAttribs::readPersonXMLConfig (std::istream& is)
 void
 pcl::gpu::people::PersonAttribs::writePersonXMLConfig (std::ostream& os)
 {
-  PCL_INFO("(I) : Person Attribs writePersonXMLConfig\n");
+  PCL_DEBUG("[pcl::gpu::people::PersonAttribs::writePersonXMLConfig] : (D) : called\n");
   boost::property_tree::ptree pt;
 
   // Write global information which is not person specific

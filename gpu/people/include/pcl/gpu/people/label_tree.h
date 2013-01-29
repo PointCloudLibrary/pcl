@@ -342,7 +342,7 @@ namespace pcl
       inline int
       buildRelations( std::vector<std::vector<Blob2, Eigen::aligned_allocator<pcl::gpu::people::Blob2> > >& sorted)
       {
-        PCL_INFO("(I) : buildRelations : regular version\n");
+        PCL_VERBOSE("[pcl::gpu::people::buildRelations] : (I) : buildRelations : regular version\n");
         if(sorted.size() == 0){
           std::cout << "(E) : Damn you, you gave me an empty matrix!" << std::endl;
           return (-1);
@@ -445,7 +445,7 @@ namespace pcl
       buildRelations( std::vector<std::vector<Blob2, Eigen::aligned_allocator<pcl::gpu::people::Blob2> > >& sorted,
                       PersonAttribs::Ptr person_attribs)
       {
-        PCL_INFO("(I) : buildRelations : person specific version\n");
+        PCL_VERBOSE("[pcl::gpu::people::buildRelations] : (I) : buildRelations : person specific version\n");
         if(sorted.size() == 0){
           std::cout << "(E) : Damn you, you gave me an empty matrix!" << std::endl;
           return (-1);

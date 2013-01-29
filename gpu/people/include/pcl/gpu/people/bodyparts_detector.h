@@ -120,14 +120,15 @@ namespace pcl
           Labels labels_smoothed_;
 
           /** These contain the histograms of the labels for this detector **/
-          pcl::device::LabelProbability P_l_; // the one is current worked in
-          pcl::device::LabelProbability P_l_Gaus_; // the current Gaussian buffer
-          pcl::device::LabelProbability P_l_1_; // for the first iteration
-          pcl::device::LabelProbability P_l_2_; // for the second iteration
+          pcl::device::LabelProbability P_l_;             // the one is current worked in
+          pcl::device::LabelProbability P_l_Gaus_;        // the current Gaussian buffer
+          pcl::device::LabelProbability P_l_Gaus_Temp_;   // the current Gaussian buffer to store the intermediate
+          pcl::device::LabelProbability P_l_1_;           // storage for the first iteration
+          pcl::device::LabelProbability P_l_2_;           // storage for the second iteration
 
           /** These contain the histograms of the labels for this detector of the previous timestep **/
-          pcl::device::LabelProbability P_l_prev_1_; // for the first iteration
-          pcl::device::LabelProbability P_l_prev_2_; // for the second iteration
+          pcl::device::LabelProbability P_l_prev_1_;  // for the first iteration
+          pcl::device::LabelProbability P_l_prev_2_;  // for the second iteration
 
         private:
           boost::shared_ptr<device::MultiTreeLiveProc> impl_;

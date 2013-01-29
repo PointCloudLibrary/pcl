@@ -35,5 +35,37 @@
  */
 
 #include <pcl/gpu/people/face_detector.h>
+#include <pcl/console/print.h>
+#include <pcl/gpu/utils/safe_call.hpp>
 
+#include <cuda_runtime_api.h>
 
+//#include "NCVHaarObjectDetection.hpp"
+
+pcl::gpu::people::FaceDetector::FaceDetector()
+{
+  cuda_dev_id_ = 0;
+  cudaSafeCall ( cudaSetDevice (cuda_dev_id_));
+  cudaSafeCall ( cudaGetDeviceProperties (&cuda_dev_prop_, cuda_dev_id_));
+  PCL_DEBUG("(I) : FaceDetector : Using GPU: %d ( %s ), arch= %d . %d\n",cuda_dev_id_, cuda_dev_prop_.name, cuda_dev_prop_.major, cuda_dev_prop_.minor);
+}
+
+void
+pcl::gpu::people::FaceDetector::setDeviceId( int id )
+{
+  cuda_dev_id_ = id;
+  cudaSafeCall ( cudaSetDevice (cuda_dev_id_));
+  cudaSafeCall ( cudaGetDeviceProperties (&cuda_dev_prop_, cuda_dev_id_));
+}
+
+void
+pcl::gpu::people::FaceDetector::process()
+{
+
+}
+
+void
+pcl::gpu::people::FaceDetector::allocate_buffers(int rows, int cols)
+{
+
+}

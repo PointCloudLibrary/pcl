@@ -45,6 +45,8 @@
 #include <string>
 #include <vector>
 
+#include <cuda_runtime_api.h>
+
 namespace pcl
 {
   namespace gpu
@@ -63,8 +65,29 @@ namespace pcl
           /** \brief This is the constructor **/
           FaceDetector();
 
+          /** \brief Process step, this wraps the Nvidia code **/
+          void
+          process();
+
+          /** \brief largest object sets return configuration **/
+          inline void
+          setLargestObject(bool largest_object) {largest_object_ = largest_object;}
+
+          inline bool
+          getLargestObject() {return largest_object_;}
+
+          /** \brief Set the cuda GPU to use **/
+          void
+          setDeviceId( int id );
+
         private:
           void allocate_buffers(int rows = 480, int cols = 640);
+
+          bool                largest_object_;      /** \brief only give back largest object **/
+
+          int                 cuda_dev_id_;
+          cudaDeviceProp      cuda_dev_prop_;
+
       };
     }
   }

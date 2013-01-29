@@ -40,6 +40,7 @@
 
 #include <pcl/gpu/people/tree.h>
 #include <pcl/gpu/people/label_common.h>
+#include <pcl/console/print.h>
 
 #include <fstream>
 #include <string>
@@ -84,9 +85,6 @@ namespace pcl
   } // end namespace gpu
 } // end namespace pcl
 
-
-
-
 using pcl::gpu::people::trees::NUM_ATTRIBS;
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -118,7 +116,7 @@ pcl::gpu::people::trees::loadTree ( std::istream&       is,
   }
 
   // Check loading of the tree in terminal
-  std::cout<<"(I) : loadTree(): loaded with " << numNodes << " Nodes, " << numLeaves << " Leaves and Depth " << maxDepth << std::endl;
+  PCL_DEBUG("[pcl::gpu::people::trees::loadTree] : (D) : loaded %d nodes, %d leaves and depth %d\n", numNodes, numLeaves, maxDepth);
 
   if( is.fail() )
      throw std::runtime_error(std::string("(E) malformed *.tree stream") );
@@ -132,7 +130,7 @@ pcl::gpu::people::trees::loadTree ( const std::string&        filename,
 {
   std::ifstream fin(filename.c_str() );
   if( !fin.is_open() ) 
-    throw std::runtime_error(std::string("(E) could not open ") + filename );
+    throw std::runtime_error(std::string("[pcl::gpu::people::trees::loadTree] : (E) could not open ") + filename );
   return loadTree(fin, tree, leaves);
 }
 

@@ -19,10 +19,11 @@ if(build)
 
   #Label_skeleton
   #FILE(GLOB srcs src/*.cpp src/*.h* src/label_skeleton/*.cpp)
-  FILE(GLOB srcs src/*.cpp src/*.h*)  
-  FILE(GLOB srcs_cuda src/cuda/*.cu src/cuda/*.h)  
+  FILE(GLOB srcs src/*.cpp src/*.h*)
+  FILE(GLOB srcs_cuda src/cuda/*.cu src/cuda/*.h)
+  #FILE(GLOB srcs_cuda src/cuda/*.cu src/cuda/*.h src/cuda/*.hpp)  
   FILE(GLOB hdrs include/pcl/gpu/people/*.h*)
-  
+
   source_group("Source files\\cuda" FILES ${srcs_cuda} )
   source_group("Source files" FILES ${srcs} )    
 

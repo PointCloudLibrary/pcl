@@ -243,7 +243,7 @@ void pcl::gpu::printShortCudaDeviceInfo(int device)
         cudaSafeCall( cudaGetDeviceProperties(&prop, dev) );
 
         const char *arch_str = prop.major < 2 ? " (pre-Fermi)" : "";
-        printf("Device %d:  \"%s\"  %.0fMb", dev, prop.name, (float)prop.totalGlobalMem/1048576.0f);                
+        printf("[pcl::gpu::printShortCudaDeviceInfo] : Device %d:  \"%s\"  %.0fMb", dev, prop.name, (float)prop.totalGlobalMem/1048576.0f);
         printf(", sm_%d%d%s, %d cores", prop.major, prop.minor, arch_str, convertSMVer2Cores(prop.major, prop.minor) * prop.multiProcessorCount);                
         printf(", Driver/Runtime ver.%d.%d/%d.%d\n", driverVersion/1000, driverVersion%100, runtimeVersion/1000, runtimeVersion%100);
     }

@@ -61,7 +61,7 @@ using namespace pcl::gpu::people;
 pcl::gpu::people::PeopleDetector::PeopleDetector() 
     : fx_(525.f), fy_(525.f), cx_(319.5f), cy_(239.5f), delta_hue_tolerance_(5)
 {
-  PCL_DEBUG ("(I) : PeopleDector Constructor called");
+  PCL_DEBUG ("[pcl::gpu::people::PeopleDetector] : (D) : Constructor called");
 
   // Create a new probability_processor
   probability_processor_ = ProbabilityProcessor::Ptr (new ProbabilityProcessor());
@@ -265,7 +265,7 @@ pcl::gpu::people::PeopleDetector::processProb ()
   int cols = cloud_device_.cols();
   int rows = cloud_device_.rows();
 
-  PCL_DEBUG("(I) : PeopleDetector::processProb() called");
+  PCL_DEBUG("[pcl::gpu::people::PeopleDetector::processProb] : (D) : called\n");
 
   // Backup P_l_1_ value in P_l_prev_1_;
   rdf_detector_->P_l_prev_1_.swap(rdf_detector_->P_l_1_);
@@ -285,12 +285,12 @@ pcl::gpu::people::PeopleDetector::processProb ()
   kernel_device.upload(kernel_ptr_host, kernel_size * sizeof(float));
 
   // Output kernel for verification
-  std::cout << "(I) : processProb : kernel:" << std::endl;
+  PCL_INFO("[pcl::gpu::people::PeopleDetector::processProb] : (I) : kernel:\n");
   for(int i = 0; i < kernel_size; i++)
-    std::cout << " "  << i << ": " << kernel_ptr_host[i];
-  std::cout << std::endl;
+    PCL_INFO("\t Entry %d \t: %lf\n", i, kernel_ptr_host[i]);
 
-  probability_processor_->GaussianBlur(depth_device1_,rdf_detector_->P_l_, kernel_device, rdf_detector_->P_l_Gaus_);
+  if(probability_processor_->GaussianBlur(depth_device1_,rdf_detector_->P_l_, kernel_device, rdf_detector_->P_l_Gaus_Temp_ ,rdf_detector_->P_l_Gaus_) != 1)
+    PCL_ERROR("[pcl::gpu::people::PeopleDetector::processProb] : (E) : Gaussian Blur failed");
 
   // get labels
   probability_processor_->SelectLabel(depth_device1_, rdf_detector_->labels_, rdf_detector_->P_l_);
@@ -359,6 +359,7 @@ pcl::gpu::people::PeopleDetector::processProb ()
         else
            cerr << "0;";
       }
+      std::cerr << std::endl;
       static int counter = 0; // TODO move this logging to PeopleApp
 
       //cerr << t2.nr_parts << ";" << par << ";" << t2.total_dist_error << ";" << t2.norm_dist_error << ";" << counter++ << ";" << endl;

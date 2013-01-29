@@ -57,7 +57,7 @@ const float CLUST_TOL = 0.05f;
 pcl::gpu::people::RDFBodyPartsDetector::RDFBodyPartsDetector( const vector<string>& tree_files, int rows, int cols)    
 : max_cluster_size_(MAX_CLUST_SIZE), cluster_tolerance_(CLUST_TOL)
 {
-  PCL_DEBUG("(I) : RDFBodyPartsDetector constructor called");
+  PCL_DEBUG("[pcl::gpu::people::RDFBodyPartsDetector::RDFBodyPartsDetector] : (D) : Constructor called\n");
   //TODO replace all asserts with exceptions
   assert(!tree_files.empty());
 
@@ -141,6 +141,7 @@ pcl::gpu::people::RDFBodyPartsDetector::allocate_buffers(int rows, int cols)
   // Create all the label probabilities
   P_l_.create(rows,cols);
   P_l_Gaus_.create(rows,cols);
+  P_l_Gaus_Temp_.create(rows,cols);
   P_l_1_.create(rows,cols);
   P_l_2_.create(rows,cols);
   P_l_prev_1_.create(rows,cols);

@@ -98,7 +98,7 @@ struct SampledScopeTime : public StopWatch
     time_ms_ += getTime ();    
     if (i_ % EACH == 0 && i_)
     {
-      cout << "Average frame time = " << time_ms_ / EACH << "ms ( " << 1000.f * EACH / time_ms_ << "fps )" << endl;
+      cout << "[~SampledScopeTime] : Average frame time = " << time_ms_ / EACH << "ms ( " << 1000.f * EACH / time_ms_ << "fps )" << endl;
       time_ms_ = 0;        
     }
     ++i_;
@@ -140,7 +140,15 @@ class PeoplePCDApp
 
     enum { COLS = 640, ROWS = 480 };
 
-    PeoplePCDApp (pcl::Grabber& capture) : capture_(capture), exit_(false), time_ms_(0), cloud_cb_(true), counter_(0), final_view_("Final labeling"), depth_view_("Depth")
+    PeoplePCDApp (pcl::Grabber& capture, bool write)
+      : capture_(capture),
+        write_ (write),
+        exit_(false),
+        time_ms_(0),
+        cloud_cb_(true),
+        counter_(0),
+        final_view_("Final labeling"),
+        depth_view_("Depth")
     {
       final_view_.setSize (COLS, ROWS);
       depth_view_.setSize (COLS, ROWS);
@@ -163,7 +171,7 @@ class PeoplePCDApp
     }
 
     void
-    visualizeAndWrite(bool write = false)
+    visualizeAndWrite()
     {
       const PeopleDetector::Labels& labels = people_detector_.rdf_detector_->getLabels();
       people::colorizeLabels(color_map_, labels, cmap_device_);
@@ -189,8 +197,9 @@ class PeoplePCDApp
       depth_view_.showShortImage(&depth_host_.points[0], depth_host_.width, depth_host_.height, 0, 5000, true);      
       depth_view_.spinOnce(1, true);
 
-      if (write)
+      if (write_)
       {
+        PCL_VERBOSE("PeoplePCDApp::visualizeAndWrite : (I) : Writing to disk");
         if (cloud_cb_)
           savePNGFile(make_name(counter_, "ii"), cloud_host_);
         else
@@ -316,6 +325,7 @@ class PeoplePCDApp
     pcl::Grabber& capture_;
     
     bool cloud_cb_;
+    bool write_;
     bool exit_;
     int time_ms_;
     int counter_;
@@ -348,6 +358,8 @@ void print_help()
   cout << "\t -tree2       \t<path_to_tree_file>" << endl;
   cout << "\t -tree3       \t<path_to_tree_file>" << endl;
   cout << "\t -gpu         \t<GPU_device_id>" << endl;
+  cout << "\t -w           \t<bool> \tWrite results to disk" << endl;
+  cout << "\t -h           \tPrint this help" << endl;
   cout << "\t -dev         \t<Kinect_device_id>" << endl;  
   cout << "\t -pcd         \t<path_to_pcd_file>" << endl;
   cout << "\t -oni         \t<path_to_oni_file>" << endl;  
@@ -357,7 +369,7 @@ void print_help()
 int main(int argc, char** argv)
 {
   // answering for help 
-  PCL_INFO("People tracking App version 0.1\n");
+  PCL_INFO("People tracking App version 0.2\n");
   if(pc::find_switch (argc, argv, "--help") || pc::find_switch (argc, argv, "-h"))
     return print_help(), 0;
   
@@ -367,6 +379,9 @@ int main(int argc, char** argv)
   pcl::gpu::setDevice (device);
   pcl::gpu::printShortCudaDeviceInfo (device);
   
+  bool write = 0;
+  pc::parse_argument (argc, argv, "-w", write);
+
   // selecting data source
   boost::shared_ptr<pcl::Grabber> capture;
   string openni_device, oni_file, pcd_file, pcd_folder;  
@@ -423,26 +438,30 @@ int main(int argc, char** argv)
     
   tree_files.resize(num_trees);
   if (num_trees == 0 || num_trees > 4)
-    return cout << "Invalid number of trees" << endl, -1;
+  {
+    PCL_ERROR("[Main] : Invalid number of trees");
+    print_help();
+    return -1;
+  }
   
   try
   {
     // loading trees
     typedef pcl::gpu::people::RDFBodyPartsDetector RDFBodyPartsDetector;
     RDFBodyPartsDetector::Ptr rdf(new RDFBodyPartsDetector(tree_files));
-    PCL_INFO("Loaded files into rdf");
+    PCL_VERBOSE("[Main] : Loaded files into rdf");
 
     // Create the app
-    PeoplePCDApp app(*capture);  
+    PeoplePCDApp app(*capture, write);
     app.people_detector_.rdf_detector_ = rdf;
             
     // executing
     app.startMainLoop ();
   }
-  catch (const pcl::PCLException& e) { cout << "PCLException: " << e.detailedMessage() << endl; }  
-  catch (const std::runtime_error& e) { cout << e.what() << endl; }
-  catch (const std::bad_alloc& /*e*/) { cout << "Bad alloc" << endl; }
-  catch (const std::exception& /*e*/) { cout << "Exception" << endl; }
+  catch (const pcl::PCLException& e) { cout << "PCLException: " << e.detailedMessage() << endl; print_help();}
+  catch (const std::runtime_error& e) { cout << e.what() << endl; print_help(); }
+  catch (const std::bad_alloc& /*e*/) { cout << "Bad alloc" << endl; print_help(); }
+  catch (const std::exception& /*e*/) { cout << "Exception" << endl; print_help(); }
 
   return 0;
 }  

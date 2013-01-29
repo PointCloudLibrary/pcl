@@ -1,5 +1,5 @@
 /*
-   * Software License Agreement (BSD License)
+ * Software License Agreement (BSD License)
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2012, Willow Garage, Inc.
@@ -179,7 +179,6 @@ namespace pcl
       for(int l = 0; l< NUM_LABELS; l++)
       {
         float sum = 0;        // This contains the kernel convolution
-        float normalizer = 0; // This contains the sum of all kernel values
         int j = 0;            // This contains the offset in the kernel
 
         // KernelSize needs to be odd! This should be fetched in the calling function before calling this method
@@ -189,20 +188,18 @@ namespace pcl
           if((u+i) < 0 || (u+i) > probIn.cols)
           {
             j++;  // skip to the next point
-            //normalizer += kernel[j];
           }
           else
           {
-            int k = u+i;
+            //int k = u+i;
 
             // This line fails, why??
-            //sum += probIn.ptr(v)[u].probs[l] * kernel[j];
+            sum += probIn.ptr(v)[u+i].probs[l] * kernel[j];
             j++;
-            //normalizer += kernel[j];
           }
         }
-        //sum = sum/normalizer;
         probOut.ptr(v)[u].probs[l] = sum;
+        //probOut.ptr(v)[u].probs[l] = probIn.ptr(v)[u].probs[l];
       }
     }
 
@@ -230,7 +227,6 @@ namespace pcl
       for(int l = 0; l< NUM_LABELS; l++)
       {
         float sum = 0;        // This contains the kernel convolution
-        float normalizer = 0; // This contains the sum of all kernel values
         int j = 0;            // This contains the offset in the kernel
 
         // KernelSize needs to be odd! This should be fetched in the calling function before calling this method
@@ -240,16 +236,13 @@ namespace pcl
           if((v+i) < 0 || (v+i) > probIn.rows)
           {
             j++;  // skip to the next point
-            //normalizer += kernel[j];
           }
           else
           {
             sum += probIn.ptr(v+i)[u].probs[l] * kernel[j];
             j++;
-            //normalizer += kernel[j];
           }
         }
-        //sum = sum/normalizer;
         probOut.ptr(v)[u].probs[l] = sum;
       }
     }
@@ -336,17 +329,19 @@ namespace pcl
       if(kernel.size()/sizeof(float) % 2 == 0) //kernelSize is even, should be odd
         return -1;
 
-      std::cout << "(I) : CUDA_GaussianBlur called c: " << probIn.cols() << " r: " << probIn.rows() << std::endl;
-
+      std::cout << "[pcl::device::ProbabilityProc::CUDA_GaussianBlur] : (I) : called c: " << probIn.cols() << " r: " << probIn.rows() << std::endl;
+      //PCL_INFO("[pcl::device::ProbabilityProc::CUDA_GaussianBlur] : (I) : called c: %d r: %d\n", probIn.cols(), probIn.rows());
 
       // CUDA kernel call Vertical
       KernelCUDA_GaussianBlurVer<<< grid, block >>>( probIn, kernel, kernel.size(), probTemp );
+      //KernelCUDA_GaussianBlurVer<<< grid, block >>>( probIn, kernel, kernel.size(), probOut );
       cudaSafeCall( cudaGetLastError() );
       cudaSafeCall( cudaThreadSynchronize() );
+
       // CUDA kernel call Horizontal
-      //KernelCUDA_GaussianBlurHor<<< grid, block >>>( probTemp, kernel, kernel.size(), probOut );
-      //cudaSafeCall( cudaGetLastError() );
-      //cudaSafeCall( cudaThreadSynchronize() );
+      KernelCUDA_GaussianBlurHor<<< grid, block >>>( probTemp, kernel, kernel.size(), probOut );
+      cudaSafeCall( cudaGetLastError() );
+      cudaSafeCall( cudaThreadSynchronize() );
       return 1;
     }
   }

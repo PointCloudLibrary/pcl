@@ -41,7 +41,7 @@
 
 pcl::gpu::people::ProbabilityProcessor::ProbabilityProcessor()
 {
-  PCL_DEBUG("(I) : ProbabilityProcessor Constructor called\n");
+  PCL_DEBUG("[pcl::gpu::people::ProbabilityProcessor] : (D) : Constructor called\n");
   impl_.reset (new device::ProbabilityProc());
 }
 
@@ -72,10 +72,21 @@ pcl::gpu::people::ProbabilityProcessor::WeightedSumProb ( const Depth& depth, pc
 int
 pcl::gpu::people::ProbabilityProcessor::GaussianBlur( const Depth&                    depth,
                                                       pcl::device::LabelProbability&  probIn,
-                                                      DeviceArray<float>&              kernel,
+                                                      DeviceArray<float>&             kernel,
                                                       pcl::device::LabelProbability&  probOut)
 {
   return impl_->CUDA_GaussianBlur( depth, probIn, kernel, probOut);
+}
+
+/** \brief This will do a GaussianBlur over the LabelProbability **/
+int
+pcl::gpu::people::ProbabilityProcessor::GaussianBlur( const Depth&                    depth,
+                                                      pcl::device::LabelProbability&  probIn,
+                                                      DeviceArray<float>&             kernel,
+                                                      pcl::device::LabelProbability&  probTemp,
+                                                      pcl::device::LabelProbability&  probOut)
+{
+  return impl_->CUDA_GaussianBlur( depth, probIn, kernel, probTemp, probOut);
 }
 
 /** \brief This will create a Gaussian Kernel **/
@@ -90,9 +101,18 @@ pcl::gpu::people::ProbabilityProcessor::CreateGaussianKernel ( float sigma,
   int mid = static_cast<int> (floor (static_cast<float> (kernelSize)/2.f));
 
   // Create a symmetric kernel, could also be solved in CUDA kernel but let's do it here :D
+  float sum = 0;
   for(int i = 0; i < kernelSize; i++)
   {
     f[i] = static_cast<float> (mult * exp (-(pow (i-mid,2.f)/2*sigma_sq)));
+    sum += f[i];
   }
+
+  // Normalize f
+  for(int i = 0; i < kernelSize; i++)
+  {
+    f[i] = f[i]/sum;
+  }
+
   return f;
 }
