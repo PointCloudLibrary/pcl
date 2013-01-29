@@ -119,7 +119,9 @@ namespace pcl
         
         /** \brief Constructor. */
         PointCloudColorHandlerRGBCloud (const PointCloudConstPtr& cloud, const RgbCloudConstPtr& colors)
+          : rgb_ (colors)
         {
+          cloud_  = cloud;
           capable_ = true;
         }
               
@@ -133,7 +135,7 @@ namespace pcl
         {
           if (!capable_ || !cloud_)
             return (false);
-          
+         
           if (!scalars)
             scalars = vtkSmartPointer<vtkUnsignedCharArray>::New ();
           scalars->SetNumberOfComponents (3);
@@ -153,7 +155,7 @@ namespace pcl
               colors[idx + 1] = rgb_->points[cp].g;
               colors[idx + 2] = rgb_->points[cp].b;
             }
-          return (false);
+          return (true);
         }
 
       private:
