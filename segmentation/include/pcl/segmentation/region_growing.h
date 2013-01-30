@@ -224,6 +224,15 @@ namespace pcl
       pcl::PointCloud<pcl::PointXYZRGB>::Ptr
       getColoredCloud ();
 
+      /** \brief If the cloud was successfully segmented, then function
+        * returns colored cloud. Otherwise it returns an empty pointer.
+        * Points that belong to the same segment have the same color.
+        * But this function doesn't guarantee that different segments will have different
+        * color(it all depends on RNG). Points that were not listed in the indices array will have red color.
+        */
+      pcl::PointCloud<pcl::PointXYZRGBA>::Ptr
+      getColoredCloudRGBA ();
+
     protected:
 
       /** \brief This method simply checks if it is possible to execute the segmentation algorithm with
