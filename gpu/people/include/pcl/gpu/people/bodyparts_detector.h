@@ -93,14 +93,17 @@ namespace pcl
 
           /**
            * \brief This processes the blob_matrix_
+           * \return negative if failed
            */
-          void processRelations ();
+          int
+          processRelations ();
 
           /**
            * \brief This processes the blob_matrix_
            * \param[in] person_attribs the custom person parameters
+           * \return negative if failed
            */
-          void
+          int
           processRelations (PersonAttribs::Ptr person_attribs);
 
           //getters

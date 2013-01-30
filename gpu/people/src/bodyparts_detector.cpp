@@ -295,7 +295,7 @@ pcl::gpu::people::RDFBodyPartsDetector::processSmooth (const pcl::device::Depth&
 
   // This was sort indices to blob (sortIndicesToBlob2) method (till line 236)
   {
-    ScopeTime time("cvt");
+    ScopeTime time("[pcl::gpu::people::RDFBodyPartsDetector::processSmooth] : cvt");
     std::fill(remap_.begin(), remap_.end(), -1);
     std::fill(region_sizes_.begin(), region_sizes_.end(), 0);
 
@@ -352,14 +352,14 @@ pcl::gpu::people::RDFBodyPartsDetector::processSmooth (const pcl::device::Depth&
   }
 }
 
-void
+int
 pcl::gpu::people::RDFBodyPartsDetector::processRelations ()
 {
-  buildRelations ( blob_matrix_ );
+  return buildRelations ( blob_matrix_ );
 }
 
-void
+int
 pcl::gpu::people::RDFBodyPartsDetector::processRelations (PersonAttribs::Ptr person_attribs)
 {
-  buildRelations ( blob_matrix_, person_attribs );
+  return buildRelations ( blob_matrix_, person_attribs );
 }

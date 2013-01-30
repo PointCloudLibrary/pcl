@@ -1,7 +1,7 @@
 set(SUBSYS_NAME gpu_people)
 set(SUBSYS_PATH gpu/people)
 set(SUBSYS_DESC "Point cloud people library")
-set(SUBSYS_DEPS common io segmentation filters octree search kdtree gpu_containers gpu_utils visualization geometry)
+set(SUBSYS_DEPS common io segmentation filters features octree search kdtree gpu_containers gpu_utils visualization geometry)
 
 set(build FALSE)
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} OFF)
@@ -44,7 +44,7 @@ if(build)
   set(LIB_NAME pcl_${SUBSYS_NAME})
 
   PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${hdrs} ${srcs_cuda} ${objs_cuda})
-  target_link_libraries(${LIB_NAME} pcl_common pcl_io pcl_search pcl_sample_consensus pcl_gpu_utils pcl_gpu_containers ${CUDA_CUDART_LIBRARY} ${CUDA_npp_LIBRARY})
+  target_link_libraries(${LIB_NAME} pcl_common pcl_io pcl_search pcl_features pcl_sample_consensus pcl_gpu_utils pcl_gpu_containers ${CUDA_CUDART_LIBRARY} ${CUDA_npp_LIBRARY})
   PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}" "${SUBSYS_DEPS}" "" "" "" "")
 
   # install include files

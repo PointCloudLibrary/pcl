@@ -50,6 +50,7 @@
 //#include <opencv2/core/core.hpp>
 
 #include <pcl/gpu/people/bodyparts_detector.h>
+#include <pcl/gpu/people/organized_plane_detector.h>
 #include <pcl/gpu/people/probability_processor.h>
 
 namespace pcl
@@ -74,13 +75,17 @@ namespace pcl
         public:
           typedef boost::shared_ptr<PeopleDetector> Ptr;                              
 
-          typedef pcl::PointXYZ PointType;
-          typedef DeviceArray2D<unsigned short> Depth;
-          typedef DeviceArray2D<pcl::RGB> Image;
+          typedef pcl::PointXYZ                   PointType;
+          typedef DeviceArray2D<unsigned short>   Depth;
+          typedef DeviceArray2D<pcl::RGB>         Image;
 
-          RDFBodyPartsDetector::Ptr rdf_detector_;
-          //FaceDetector::Ptr         face_detector_;
-          //OtherDetector::Ptr        other_detector_;
+          // ALL THE DETECTOR OBJECTS
+          RDFBodyPartsDetector::Ptr     rdf_detector_;
+          OrganizedPlaneDetector::Ptr   org_plane_detector_;
+          //FaceDetector::Ptr           face_detector_;
+          //OtherDetector::Ptr          other_detector_;
+
+          // ALL THE OTHER PEOPLE STUFF
           PersonAttribs::Ptr        person_attribs_;
           ProbabilityProcessor::Ptr probability_processor_;
 

@@ -274,26 +274,39 @@ pcl::gpu::people::PeopleDetector::processProb ()
 
   //Process input pointcloud with RDF
   rdf_detector_->processProb(depth_device1_);
-  // TODO: merge with prior probabilities at this line
 
-  // Create Gaussian Kernel for this iteration
-  float* kernel_ptr_host;
-  int kernel_size = 5;
-  float sigma = 1.0;
-  kernel_ptr_host = probability_processor_->CreateGaussianKernel(sigma, kernel_size);
-  DeviceArray<float> kernel_device(kernel_size * sizeof(float));
-  kernel_device.upload(kernel_ptr_host, kernel_size * sizeof(float));
+  // First iteration no tracking can take place
+  if(first_iteration_)
+  {
+    probability_processor_->SelectLabel(depth_device1_, rdf_detector_->labels_, rdf_detector_->P_l_);
+  }
+  // Join probabilities from previous result
+  else
+  {
+    // Create Gaussian Kernel for this iteration, in order to smooth P_l_2_
+    float* kernel_ptr_host;
+    int kernel_size = 5;
+    float sigma = 1.0;
+    kernel_ptr_host = probability_processor_->CreateGaussianKernel(sigma, kernel_size);
+    DeviceArray<float> kernel_device(kernel_size * sizeof(float));
+    kernel_device.upload(kernel_ptr_host, kernel_size * sizeof(float));
 
-  // Output kernel for verification
-  PCL_INFO("[pcl::gpu::people::PeopleDetector::processProb] : (I) : kernel:\n");
-  for(int i = 0; i < kernel_size; i++)
-    PCL_INFO("\t Entry %d \t: %lf\n", i, kernel_ptr_host[i]);
+    // Output kernel for verification
+    PCL_DEBUG("[pcl::gpu::people::PeopleDetector::processProb] : (D) : kernel:\n");
+    for(int i = 0; i < kernel_size; i++)
+      PCL_DEBUG("\t Entry %d \t: %lf\n", i, kernel_ptr_host[i]);
 
-  if(probability_processor_->GaussianBlur(depth_device1_,rdf_detector_->P_l_, kernel_device, rdf_detector_->P_l_Gaus_Temp_ ,rdf_detector_->P_l_Gaus_) != 1)
-    PCL_ERROR("[pcl::gpu::people::PeopleDetector::processProb] : (E) : Gaussian Blur failed\n");
+    if(probability_processor_->GaussianBlur(depth_device1_,rdf_detector_->P_l_2_, kernel_device, rdf_detector_->P_l_Gaus_Temp_ ,rdf_detector_->P_l_Gaus_) != 1)
+      PCL_ERROR("[pcl::gpu::people::PeopleDetector::processProb] : (E) : Gaussian Blur failed\n");
 
-  // get labels
-  probability_processor_->SelectLabel(depth_device1_, rdf_detector_->labels_, rdf_detector_->P_l_);
+    // merge with prior probabilities at this line
+    probability_processor_->CombineProb(depth_device1_, rdf_detector_->P_l_Gaus_, 0.5, rdf_detector_->P_l_, 0.5, rdf_detector_->P_l_Gaus_Temp_);
+    PCL_DEBUG("[pcl::gpu::people::PeopleDetector::processProb] : (D) : CombineProb called\n");
+
+    // get labels
+    probability_processor_->SelectLabel(depth_device1_, rdf_detector_->labels_, rdf_detector_->P_l_Gaus_Temp_);
+  }
+
   // This executes the connected components
   rdf_detector_->processSmooth(depth_device1_, cloud_host_, AREA_THRES);
   // This creates the blobmatrix

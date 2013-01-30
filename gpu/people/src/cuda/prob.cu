@@ -253,7 +253,7 @@ namespace pcl
                                         Labels& labels,
                                         LabelProbability& probabilities)
     {
-      std::cout << "(I) : ProbabilityProc::CUDA_SelectLabel() called" << std::endl;
+      std::cout << "[pcl::device::ProbabilityProc::CUDA_SelectLabel] : (I) : Called" << std::endl;
       //labels.create(depth.rows(), depth.cols());
       //probabilities.create(depth.rows(), depth.cols());
 

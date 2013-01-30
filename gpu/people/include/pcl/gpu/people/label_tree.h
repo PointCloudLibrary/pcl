@@ -445,9 +445,9 @@ namespace pcl
       buildRelations( std::vector<std::vector<Blob2, Eigen::aligned_allocator<pcl::gpu::people::Blob2> > >& sorted,
                       PersonAttribs::Ptr person_attribs)
       {
-        PCL_VERBOSE("[pcl::gpu::people::buildRelations] : (I) : buildRelations : person specific version\n");
+        PCL_DEBUG("[pcl::gpu::people::buildRelations] : (D) : person specific version\n");
         if(sorted.size() == 0){
-          std::cout << "(E) : Damn you, you gave me an empty matrix!" << std::endl;
+          PCL_ERROR("[pcl::gpu::people::buildRelations] : (E) : Damn you, you gave me an empty matrix!\n");
           return (-1);
         }
         // Iterate over all parts

@@ -49,7 +49,7 @@ pcl::gpu::people::ProbabilityProcessor::ProbabilityProcessor()
 void
 pcl::gpu::people::ProbabilityProcessor::SelectLabel (const Depth& depth, Labels& labels, pcl::device::LabelProbability& probabilities)
 {
-  PCL_DEBUG("(I) : ProbabilityProcessor SelectLabel called\n");
+  PCL_DEBUG("[pcl::gpu::people::ProbabilityProcessor::SelectLabel] : (D) : Called\n");
   impl_->CUDA_SelectLabel(depth, labels, probabilities);
 }
 

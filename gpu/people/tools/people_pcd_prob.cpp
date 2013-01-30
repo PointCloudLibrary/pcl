@@ -201,7 +201,7 @@ class PeoplePCDApp
     void
     writeProb(const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud)
     {
-      PCL_INFO("(I) : visualizeAndWriteProb() Callback\n");
+      PCL_DEBUG("[PeoplePCDApp::writeProb] : (D) : Called\n");
       //const pcl::device::LabelProbability& prob = people_detector_.rdf_detector_->getProbability1();
       int c;
       // first write the first iteration
@@ -211,7 +211,7 @@ class PeoplePCDApp
       prob_host.width = people_detector_.rdf_detector_->P_l_1_.cols();
       prob_host.height = people_detector_.rdf_detector_->P_l_1_.rows();
 
-      PCL_DEBUG("[PeoplePCDApp::writeProb] : (D) : visualizeAndWriteProb() savePNGFile\n");
+      PCL_DEBUG("[PeoplePCDApp::writeProb] : (D) : savePNGFile\n");
       for(int i = 0; i < pcl::gpu::people::NUM_LABELS; i++)
       {
         pcl::PointCloud<pcl::RGB> rgb;
@@ -219,8 +219,8 @@ class PeoplePCDApp
         savePNGFile(make_ext_name(counter_,i, "hist1"), rgb);
       }
 
-      PCL_DEBUG("[PeoplePCDApp::writeProb] : (D) : visualizeAndWriteProb() : cols1: %d\n", people_detector_.rdf_detector_->P_l_1_.cols ());
-      PCL_DEBUG("[PeoplePCDApp::writeProb] : (D) : visualizeAndWriteProb() : rows1: %d\n", people_detector_.rdf_detector_->P_l_1_.rows ());
+      PCL_DEBUG("[PeoplePCDApp::writeProb] : (D) : cols1: %d\n", people_detector_.rdf_detector_->P_l_1_.cols ());
+      PCL_DEBUG("[PeoplePCDApp::writeProb] : (D) : rows1: %d\n", people_detector_.rdf_detector_->P_l_1_.rows ());
 
       // and now again for the second iteration
 
@@ -229,15 +229,15 @@ class PeoplePCDApp
       prob_host.width = people_detector_.rdf_detector_->P_l_2_.cols();
       prob_host.height = people_detector_.rdf_detector_->P_l_2_.rows();
 
-      PCL_DEBUG("[PeoplePCDApp::writeProb] : (D) : visualizeAndWriteProb() savePNGFile\n");
+      PCL_DEBUG("[PeoplePCDApp::writeProb] : (D) : savePNGFile\n");
       for(int i = 0; i < pcl::gpu::people::NUM_LABELS; i++)
       {
         pcl::PointCloud<pcl::RGB> rgb;
         convertProbToRGB(prob_host2, i, rgb);
         savePNGFile(make_ext_name(counter_, i, "hist2"), rgb);
       }
-      PCL_DEBUG("[PeoplePCDApp::writeProb] : (D) : visualizeAndWriteProb() : cols2: %d\n", people_detector_.rdf_detector_->P_l_2_.cols());
-      PCL_DEBUG("[PeoplePCDApp::writeProb] : (D) : visualizeAndWriteProb() : rows2: %d\n", people_detector_.rdf_detector_->P_l_2_.rows());
+      PCL_DEBUG("[PeoplePCDApp::writeProb] : (D) : cols2: %d\n", people_detector_.rdf_detector_->P_l_2_.cols());
+      PCL_DEBUG("[PeoplePCDApp::writeProb] : (D) : rows2: %d\n", people_detector_.rdf_detector_->P_l_2_.rows());
 
       // and now again for the Gaus test
 
