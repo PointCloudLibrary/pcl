@@ -105,7 +105,7 @@ namespace pcl
             BoxCoefficients (const float x_min, const float x_max,
                              const float y_min, const float y_max,
                              const float z_min, const float z_max,
-                             const Eigen::Isometry3d& T = Eigen::Isometry3d::Identity ())
+                             const Eigen::Isometry3d& T)
               : x_min (x_min), x_max (x_max),
                 y_min (y_min), y_max (y_max),
                 z_min (z_min), z_max (z_max),

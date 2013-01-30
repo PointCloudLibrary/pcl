@@ -421,7 +421,8 @@ pcl::ihs::InHandScanner::paintEvent (QPaintEvent* event)
                                 input_data_processing_->getYMin (),
                                 input_data_processing_->getYMax (),
                                 input_data_processing_->getZMin (),
-                                input_data_processing_->getZMax ());
+                                input_data_processing_->getZMax (),
+                                Eigen::Isometry3d::Identity ());
   Base::setBoxCoefficients (coeffs);
 
   Base::setVisibilityConfidenceNormalization (static_cast <float> (integration_->getMinDirections ()));
