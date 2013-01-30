@@ -118,7 +118,7 @@ main (int argc, char** argv)
     out_folder = "./";
   }
   else
-    PCL_INFO("Using %s as output dir", out_folder);
+    PCL_INFO("Using %s as output dir", out_folder.c_str());
 
   if (rgb_path != "" && depth_path != "" && boost::filesystem::exists (rgb_path) && boost::filesystem::exists (depth_path))
   {
