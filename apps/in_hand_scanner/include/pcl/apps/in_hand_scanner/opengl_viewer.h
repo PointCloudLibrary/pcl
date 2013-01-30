@@ -55,6 +55,52 @@ namespace pcl
 {
   namespace ihs
   {
+    namespace detail
+    {
+      /** \brief Mesh format more efficient for visualization than the half-edge data structure.
+        * \see http://en.wikipedia.org/wiki/Polygon_mesh#Face-vertex_meshes
+        * \note Only triangles are currently supported.
+        */
+      class FaceVertexMesh
+      {
+        public:
+
+          class Triangle
+          {
+            public:
+
+              Triangle () : first (0), second (0), third (0) {}
+              Triangle (const unsigned int first, const unsigned int second, const unsigned int third)
+                : first (first), second (second), third (third)
+              {
+              }
+
+              unsigned int first;
+              unsigned int second;
+              unsigned int third;
+          };
+
+          /** \brief Constructor */
+          FaceVertexMesh ();
+
+          /** \brief Constructor. Converts the input mesh into a face vertex mesh. */
+          FaceVertexMesh (const Mesh& mesh, const Eigen::Isometry3d& T);
+
+          typedef pcl::ihs::PointIHS         PointIHS;
+          typedef pcl::ihs::CloudIHS         CloudIHS;
+          typedef pcl::ihs::CloudIHSPtr      CloudIHSPtr;
+          typedef pcl::ihs::CloudIHSConstPtr CloudIHSConstPtr;
+
+          CloudIHS               vertices;
+          std::vector <Triangle> triangles;
+          Eigen::Isometry3d      transformation;
+
+        public:
+
+          EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      };
+    } // End namespace detail
+
     /** \brief Viewer for the in-hand scanner based on Qt and OpenGL.
       * \note Currently you have to derive from this class to use it. Implement the paintEvent: Call the paint event of this class and declare a QPainter.
       */
@@ -292,44 +338,7 @@ namespace pcl
         typedef pcl::ihs::CloudIHSPtr      CloudIHSPtr;
         typedef pcl::ihs::CloudIHSConstPtr CloudIHSConstPtr;
 
-        /** \brief Mesh format more efficient for visualization than the half-edge data structure.
-          * \see http://en.wikipedia.org/wiki/Polygon_mesh#Face-vertex_meshes
-          * \note Only triangles are currently supported.
-          */
-        class FaceVertexMesh
-        {
-          public:
-
-            class Triangle
-            {
-              public:
-
-                Triangle () : first (0), second (0), third (0) {}
-                Triangle (const unsigned int first, const unsigned int second, const unsigned int third)
-                  : first (first), second (second), third (third)
-                {
-                }
-
-                unsigned int first;
-                unsigned int second;
-                unsigned int third;
-            };
-
-            /** \brief Constructor */
-            FaceVertexMesh ();
-
-            /** \brief Constructor. Converts the input mesh into a face vertex mesh. */
-            FaceVertexMesh (const Mesh& mesh, const Eigen::Isometry3d& T);
-
-            pcl::ihs::OpenGLViewer::CloudIHS vertices;
-            std::vector <Triangle>           triangles;
-            Eigen::Isometry3d                transformation;
-
-          public:
-
-            EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-        };
-
+        typedef pcl::ihs::detail::FaceVertexMesh                      FaceVertexMesh;
         typedef boost::shared_ptr <      FaceVertexMesh>              FaceVertexMeshPtr;
         typedef boost::shared_ptr <const FaceVertexMesh>              FaceVertexMeshConstPtr;
         typedef boost::unordered_map <std::string, FaceVertexMeshPtr> FaceVertexMeshMap;

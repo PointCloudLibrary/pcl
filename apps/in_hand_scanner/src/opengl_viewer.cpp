@@ -59,10 +59,10 @@
 #include <pcl/apps/in_hand_scanner/visibility_confidence.h>
 
 ////////////////////////////////////////////////////////////////////////////////
-// Internal classes
+// FaceVertexMesh
 ////////////////////////////////////////////////////////////////////////////////
 
-pcl::ihs::OpenGLViewer::FaceVertexMesh::FaceVertexMesh ()
+pcl::ihs::detail::FaceVertexMesh::FaceVertexMesh ()
   : vertices       (),
     triangles      (),
     transformation (Eigen::Isometry3d::Identity ())
@@ -71,7 +71,7 @@ pcl::ihs::OpenGLViewer::FaceVertexMesh::FaceVertexMesh ()
 
 ////////////////////////////////////////////////////////////////////////////////
 
-pcl::ihs::OpenGLViewer::FaceVertexMesh::FaceVertexMesh (const Mesh& mesh, const Eigen::Isometry3d& T)
+pcl::ihs::detail::FaceVertexMesh::FaceVertexMesh (const Mesh& mesh, const Eigen::Isometry3d& T)
   : vertices       (mesh.getVertexDataCloud ()),
     triangles      (),
     transformation (T)
@@ -88,7 +88,7 @@ pcl::ihs::OpenGLViewer::FaceVertexMesh::FaceVertexMesh (const Mesh& mesh, const 
   }
 
   triangles.reserve (mesh.sizeFaces ());
-  pcl::ihs::OpenGLViewer::FaceVertexMesh::Triangle triangle;
+  pcl::ihs::detail::FaceVertexMesh::Triangle triangle;
 
   for (unsigned int i=0; i<mesh.sizeFaces (); ++i)
   {
