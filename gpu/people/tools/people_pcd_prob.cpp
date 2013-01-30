@@ -61,14 +61,16 @@ using namespace pcl::console;
 using namespace pcl::gpu;
 using namespace std;
 
+typedef pcl::PointXYZRGBA PointT;
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-struct ProjMatrix : public pcl::search::OrganizedNeighbor<pcl::PointXYZRGB>
+struct ProjMatrix : public pcl::search::OrganizedNeighbor<PointT>
 {  
-  using pcl::search::OrganizedNeighbor<pcl::PointXYZRGB>::projection_matrix_;
+  using pcl::search::OrganizedNeighbor<PointT>::projection_matrix_;
 };
 
-float estimateFocalLength(const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud)
+float estimateFocalLength(const pcl::PointCloud<PointT>::ConstPtr &cloud)
 {
   ProjMatrix proj_matrix;
   proj_matrix.setInputCloud(cloud);  
@@ -128,7 +130,7 @@ class PeoplePCDApp
       people::uploadColorMap(color_map_);
     }
 
-    void cloud_cb (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud)
+    void cloud_cb (const pcl::PointCloud<PointT>::ConstPtr &cloud)
     {
       PCL_DEBUG("[PeoplePCDApp::cloud_cb] : (D) : Cloud Callback\n");
       processReturn = people_detector_.processProb(cloud);
@@ -157,7 +159,7 @@ class PeoplePCDApp
     }
 
     void
-    visualizeAndWrite(const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud)
+    visualizeAndWrite(const pcl::PointCloud<PointT>::ConstPtr &cloud)
     {
       PCL_DEBUG("[PeoplePCDApp::visualizeAndWrite] : (D) : called\n");
       const PeopleDetector::Labels& labels = people_detector_.rdf_detector_->getLabels();
@@ -170,7 +172,7 @@ class PeoplePCDApp
       //final_view_.showRGBImage<pcl::RGB>(cmap);
       //final_view_.spinOnce(1, true);
 
-      //image_view_.showRGBImage<pcl::PointXYZRGB>(cloud);
+      //image_view_.showRGBImage<PointT>(cloud);
       //image_view_.spinOnce(1, true);
 
       savePNGFile(make_name(counter_, "ii"), *cloud);
@@ -199,7 +201,7 @@ class PeoplePCDApp
     }
 
     void
-    writeProb(const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud)
+    writeProb(const pcl::PointCloud<PointT>::ConstPtr &cloud)
     {
       PCL_DEBUG("[PeoplePCDApp::writeProb] : (D) : Called\n");
       //const pcl::device::LabelProbability& prob = people_detector_.rdf_detector_->getProbability1();
@@ -323,10 +325,10 @@ int main(int argc, char** argv)
   PCL_DEBUG("[Main] : (D) : Will read %s\n", pcdname.c_str());
 
   // loading cloud file
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZRGB>);
+  pcl::PointCloud<PointT>::Ptr cloud (new pcl::PointCloud<PointT>);
 
-  //int res = pcl::io::loadPCDFile<pcl::PointXYZRGB> ("/home/u0062536/Data/pcd/koen.pcd", *cloud);
-  int res = pcl::io::loadPCDFile<pcl::PointXYZRGB> (pcdname, *cloud);
+  //int res = pcl::io::loadPCDFile<PointT> ("/home/u0062536/Data/pcd/koen.pcd", *cloud);
+  int res = pcl::io::loadPCDFile<PointT> (pcdname, *cloud);
 
   if (res == -1) //* load the file
   {

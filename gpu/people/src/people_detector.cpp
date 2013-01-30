@@ -145,7 +145,7 @@ pcl::gpu::people::PeopleDetector::process(const Depth& depth, const Image& rgba)
 }
 
 int
-pcl::gpu::people::PeopleDetector::process (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud)
+pcl::gpu::people::PeopleDetector::process (const pcl::PointCloud<PointTC>::ConstPtr &cloud)
 {
   allocate_buffers(cloud->height, cloud->width);
 
@@ -234,7 +234,7 @@ pcl::gpu::people::PeopleDetector::process ()
 }
 
 int
-pcl::gpu::people::PeopleDetector::processProb (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud)
+pcl::gpu::people::PeopleDetector::processProb (const pcl::PointCloud<PointTC>::ConstPtr &cloud)
 {
   allocate_buffers(cloud->height, cloud->width);
 
@@ -242,9 +242,10 @@ pcl::gpu::people::PeopleDetector::processProb (const pcl::PointCloud<pcl::PointX
 
   for(size_t i = 0; i < cloud->points.size(); ++i)
   {
-    cloud_host_.points[i].x = cloud->points[i].x;
-    cloud_host_.points[i].y = cloud->points[i].y;
-    cloud_host_.points[i].z = cloud->points[i].z;
+    cloud_host_color_.points[i].x  = cloud_host_.points[i].x = cloud->points[i].x;
+    cloud_host_color_.points[i].y  = cloud_host_.points[i].y = cloud->points[i].y;
+    cloud_host_color_.points[i].z  = cloud_host_.points[i].z = cloud->points[i].z;
+    cloud_host_color_.points[i].rgba = cloud->points[i].rgba;
 
     bool valid = isFinite(cloud_host_.points[i]);
 
@@ -267,22 +268,25 @@ pcl::gpu::people::PeopleDetector::processProb ()
 
   PCL_DEBUG("[pcl::gpu::people::PeopleDetector::processProb] : (D) : called\n");
 
-  // Backup P_l_1_ value in P_l_prev_1_;
-  rdf_detector_->P_l_prev_1_.swap(rdf_detector_->P_l_1_);
-  // Backup P_l_2_ value in P_l_prev_2_;
-  rdf_detector_->P_l_prev_2_.swap(rdf_detector_->P_l_2_);
-
-  //Process input pointcloud with RDF
-  rdf_detector_->processProb(depth_device1_);
-
   // First iteration no tracking can take place
   if(first_iteration_)
   {
+    //Process input pointcloud with RDF
+    rdf_detector_->processProb(depth_device1_);
+
     probability_processor_->SelectLabel(depth_device1_, rdf_detector_->labels_, rdf_detector_->P_l_);
   }
   // Join probabilities from previous result
   else
   {
+    // Backup P_l_1_ value in P_l_prev_1_;
+    rdf_detector_->P_l_prev_1_.swap(rdf_detector_->P_l_1_);
+    // Backup P_l_2_ value in P_l_prev_2_;
+    rdf_detector_->P_l_prev_2_.swap(rdf_detector_->P_l_2_);
+
+    //Process input pointcloud with RDF
+    rdf_detector_->processProb(depth_device1_);
+
     // Create Gaussian Kernel for this iteration, in order to smooth P_l_2_
     float* kernel_ptr_host;
     int kernel_size = 5;
@@ -466,7 +470,7 @@ namespace
 }
 
 void 
-pcl::gpu::people::PeopleDetector::shs5(const pcl::PointCloud<pcl::PointXYZ> &cloud, const std::vector<int>& indices, unsigned char *mask)
+pcl::gpu::people::PeopleDetector::shs5(const pcl::PointCloud<PointT> &cloud, const std::vector<int>& indices, unsigned char *mask)
 {
   pcl::device::Intr intr(fx_, fy_, cx_, cy_);
   intr.setDefaultPPIfIncorrect(cloud.width, cloud.height);
@@ -494,13 +498,13 @@ pcl::gpu::people::PeopleDetector::shs5(const pcl::PointCloud<pcl::PointXYZ> &clo
     int sq_idx = 0;
     seed_queue.push_back (i);
 
-    pcl::PointXYZ p = cloud.points[i];
+    PointT p = cloud.points[i];
     float h = hue[i];    
 
     while (sq_idx < (int)seed_queue.size ())
     {
       int index = seed_queue[sq_idx];
-      const pcl::PointXYZ& q = cloud.points[index];
+      const PointT& q = cloud.points[index];
 
       if(!pcl::isFinite (q))
         continue;

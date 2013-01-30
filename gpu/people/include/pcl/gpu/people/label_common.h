@@ -105,6 +105,7 @@ namespace pcl
         Groundplane = 27,
         Ceiling     = 28,
         Background  = 29,
+        Plane       = 30,
         NOLABEL     = 31
       };
 
@@ -261,7 +262,8 @@ namespace pcl
         float probs[pcl::gpu::people::NUM_LABELS];       /** \brief A single float probability for each body part **/
     };
 
-    typedef DeviceArray2D<prob_histogram> LabelProbability;    
+    typedef DeviceArray2D<prob_histogram>                 LabelProbability;
+
   }
 }
 

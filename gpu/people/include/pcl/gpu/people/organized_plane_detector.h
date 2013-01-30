@@ -44,6 +44,7 @@
 #include <pcl/features/integral_image_normal.h>
 #include <pcl/segmentation/organized_multi_plane_segmentation.h>
 #include <pcl/common/transforms.h>
+#include <pcl/gpu/people/label_common.h>
 
 #include <boost/shared_ptr.hpp>
 #include <string>
@@ -57,9 +58,27 @@ namespace pcl
     {
       class OrganizedPlaneDetector
       {
+        public:
+          typedef boost::shared_ptr<OrganizedPlaneDetector> Ptr;
+
+          typedef pcl::PointXYZRGBA                         PointTC;
+          typedef pcl::PointXYZ                             PointT;
+
+          typedef pcl::PointCloud<pcl::device::prob_histogram>  HostLabelProbability;
+
+          //typedef DeviceArray2D<unsigned char> Labels;
+          //typedef DeviceArray2D<unsigned short> Depth;
+          //typedef DeviceArray2D<pcl::RGB> Image;
+
+          HostLabelProbability                 P_l_host_;         // This is a HOST histogram!
+          HostLabelProbability                 P_l_host_prev_;
+
+          pcl::device::LabelProbability                     P_l_dev_;         // This is a DEVICE histogram!
+          pcl::device::LabelProbability                     P_l_dev_prev_;
+
         protected:
-          pcl::IntegralImageNormalEstimation<pcl::PointXYZRGB, pcl::Normal>               ne_;
-          pcl::OrganizedMultiPlaneSegmentation<pcl::PointXYZRGB, pcl::Normal, pcl::Label> mps_;
+          pcl::IntegralImageNormalEstimation<PointTC, pcl::Normal>               ne_;
+          pcl::OrganizedMultiPlaneSegmentation<PointTC, pcl::Normal, pcl::Label> mps_;
 
           float   ne_NormalSmoothingSize_;
           float   ne_MaxDepthChangeFactor_;
@@ -70,16 +89,11 @@ namespace pcl
           bool    mps_use_planar_refinement_;
 
         public:
-          typedef boost::shared_ptr<OrganizedPlaneDetector> Ptr;
-          //typedef DeviceArray2D<unsigned char> Labels;
-          //typedef DeviceArray2D<unsigned short> Depth;
-          //typedef DeviceArray2D<pcl::RGB> Image;
-
           /** \brief This is the constructor **/
-          OrganizedPlaneDetector ();
+          OrganizedPlaneDetector (int rows, int cols);
 
           /** \brief Process step, this wraps Organized Plane Segmentation code **/
-          void process (const PointCloud<PointXYZRGB>::ConstPtr &cloud);
+          void process (const PointCloud<PointTC>::ConstPtr &cloud);
 
           double getMpsAngularThreshold () const
           {
@@ -137,6 +151,17 @@ namespace pcl
             ne_NormalSmoothingSize_ = neNormalSmoothingSize;
             ne_.setNormalSmoothingSize (ne_NormalSmoothingSize_);
           }
+
+          void
+          emptyHostLabelProbability(HostLabelProbability& histogram);
+
+          int
+          copyHostLabelProbability(HostLabelProbability& src,
+                                   HostLabelProbability& dst);
+
+          int
+          copyAndClearHostLabelProbability(HostLabelProbability& src,
+                                           HostLabelProbability& dst);
 
         private:
           void allocate_buffers(int rows = 480, int cols = 640);
