@@ -51,6 +51,7 @@ using pcl::console::print_value;
 //boost::mutex mutex_;
 boost::shared_ptr<pcl::ImageGrabber<pcl::PointXYZRGBA> > grabber;
 pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr cloud_;
+std::string out_folder;
 int counter;
 
 void
@@ -58,9 +59,10 @@ printHelp (int, char **argv)
 {
   print_error ("Syntax is: %s <options>\n", argv[0]);
   print_info (" where options are:\n");
-  print_info ("\t-rgb_dir directory_path      = directory path to RGB images to be read from\n");
-  print_info ("\t-depth_dir directory_path      = directory path to Depth images to be read from\n");
-  print_info ("\t-fps frequency           = frames per second\n");
+  print_info ("\t-rgb_dir   \t<directory_path>    \t= directory path to RGB images to be read from\n");
+  print_info ("\t-depth_dir \t<directory_path>    \t= directory path to Depth images to be read from\n");
+  print_info ("\t-out_dir   \t<directory_path>    \t= directory path to put the pcd files\n");
+  //print_info ("\t-fps frequency           = frames per second\n");
   print_info ("\n");
 }
 
@@ -70,7 +72,7 @@ struct EventHelper
   cloud_cb (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr & cloud)
   {
     std::stringstream ss;
-    ss << grabber->getPrevDepthFileName() << ".pcd";
+    ss << out_folder << "/" << grabber->getPrevDepthFileName() << ".pcd";
     pcl::io::savePCDFileASCII (ss.str(), *cloud);
   }
 };
@@ -80,6 +82,7 @@ int
 main (int argc, char** argv)
 {
   counter = 0;
+  out_folder.clear();
 
   if (argc > 1)
   {
@@ -106,6 +109,16 @@ main (int argc, char** argv)
 
   std::string rgb_path = "";
   pcl::console::parse_argument (argc, argv, "-rgb_dir", rgb_path);
+
+  pcl::console::parse_argument (argc, argv, "-out_dir", out_folder);
+
+  if (out_folder == "" || !boost::filesystem::exists (out_folder))
+  {
+    PCL_INFO("No correct directory was given with the -out_dir flag. Setting to current dir\n");
+    out_folder = "./";
+  }
+  else
+    PCL_INFO("Using %s as output dir", out_folder);
 
   if (rgb_path != "" && depth_path != "" && boost::filesystem::exists (rgb_path) && boost::filesystem::exists (depth_path))
   {
