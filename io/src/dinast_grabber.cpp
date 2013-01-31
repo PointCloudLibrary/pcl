@@ -52,6 +52,7 @@ pcl::DinastGrabber::DinastGrabber (const int device_position)
   onInit(device_position);
   
   point_cloud_signal_ = createSignal<sig_cb_dinast_point_cloud> ();
+  raw_buffer_ = new unsigned char[(RGB16 * (IMAGE_SIZE) + SYNC_PACKET_SIZE)*2];
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -67,6 +68,8 @@ pcl::DinastGrabber::~DinastGrabber () throw ()
     libusb_release_interface (device_handle_, 0);
     // Close it
     libusb_close (device_handle_); 
+    delete[] raw_buffer_;
+    delete[] image_;
   }
   catch (...)
   {
@@ -99,7 +102,7 @@ pcl::DinastGrabber::onInit (const int device_position)
 {
   setupDevice (device_position);
   capture_thread_ = boost::thread (&DinastGrabber::captureThreadFunction, this);
-  image_ =  reinterpret_cast <unsigned char*> (malloc (IMAGE_HEIGHT*IMAGE_WIDTH));
+  image_ = new unsigned char [IMAGE_HEIGHT*IMAGE_WIDTH];
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -187,11 +190,11 @@ pcl::DinastGrabber::setupDevice (int device_position, const int id_vendor, const
 std::string
 pcl::DinastGrabber::getDeviceVersion ()
 {
-  unsigned char data[30];
+  unsigned char data[21];
   if (!USBRxControlData (CMD_GET_VERSION, data, 21))
      PCL_THROW_EXCEPTION (pcl::IOException, "Error trying to get device version");
  
-  data[21] = 0;
+  //data[21] = 0;
   return (std::string (reinterpret_cast<const char*> (data)));
 }
 
@@ -199,7 +202,7 @@ pcl::DinastGrabber::getDeviceVersion ()
 void
 pcl::DinastGrabber::start ()
 {
-  unsigned char ctrl_buf[3];
+  unsigned char ctrl_buf[1];
   if (!USBTxControlData (CMD_READ_START, ctrl_buf, 1))
     PCL_THROW_EXCEPTION (pcl::IOException, "Could not start the USB data reading");
   running_ = true;
@@ -209,14 +212,14 @@ pcl::DinastGrabber::start ()
 void
 pcl::DinastGrabber::stop ()
 {
-  unsigned char ctrl_buf[3];
+  unsigned char ctrl_buf[1];
   if (!USBTxControlData (CMD_READ_STOP, ctrl_buf, 1))
     PCL_THROW_EXCEPTION (pcl::IOException, "Could not stop the USB data reading");
   running_ = false;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-int
+void
 pcl::DinastGrabber::readImage ()
 {
   // Do we have enough data in the buffer for the second image?
@@ -228,7 +231,7 @@ pcl::DinastGrabber::readImage ()
     g_buffer_.rerase (g_buffer_.begin(), g_buffer_.begin() + IMAGE_SIZE);
     second_image_ = false;
     
-    return (IMAGE_SIZE);
+    return;
   }
 
   // Read data in two image blocks until we get a header
@@ -247,20 +250,21 @@ pcl::DinastGrabber::readImage ()
     }
 
     // Copy data from the USB port if we actually read anything
-    //std::cerr << "read " << actual_length << ", buf size: " << g_buffer_.size () <<  std::endl;
+    PCL_DEBUG("Read: %d, size of the buffer: %d\n" ,actual_length ,g_buffer_.size ());
+    
     // Copy data into the buffer
     int back = int (g_buffer_.size ());
     g_buffer_.resize (back + actual_length);
     //memcpy (&g_buffer_[back], &raw_buffer_[0], actual_length);
     for (int i = 0; i < actual_length; ++i)
       g_buffer_[back++] = raw_buffer_[i];
-    //std::cerr << "buf size: " << g_buffer_.size () << std::endl;
+    PCL_DEBUG ("Buffer size: %d\n", g_buffer_.size());
 
     // Check if the header is set already
     if (!first_image && data_adr == -1)
     {
       data_adr = checkHeader ();
-      //std::cerr << "search for header: " << data_adr << std::endl;
+      PCL_DEBUG("Searching for header at: %d", data_adr);
     }
 
     // Is there enough data in the buffer to return one image, and did we find the header?
@@ -280,8 +284,6 @@ pcl::DinastGrabber::readImage ()
     if (first_image && g_buffer_.size () >= IMAGE_SIZE)
       break;
   }
-
-  return (IMAGE_SIZE);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -303,8 +305,9 @@ pcl::DinastGrabber::getXYZIPointCloud ()
     {
       double pixel = image_[x + IMAGE_WIDTH * y]; //image[depth_idx];
 
-      float xc = float(x - 160);
-      float yc = float(y - 120);
+      //Correcting distortion, data emprically got in a calibration test
+      double xc = static_cast <double>(x - IMAGE_WIDTH / 2);
+      double yc = static_cast <double>(y - IMAGE_HEIGHT / 2);
       double r1 = sqrt (xc * xc + yc * yc);
       double r2 = r1 * r1;
       double r3 = r1 * r2;
@@ -315,25 +318,19 @@ pcl::DinastGrabber::getXYZIPointCloud ()
       if (pixel > A)
         pixel = A;
       double dy = y*0.1;
-      double dist = (log(double(pixel/A))/B-dy)*(7E-07*r3 - 0.0001*r2 + 0.004*r1 + 0.9985)*1.5;
-      //float dist_2d = r1;
-//       static const float dist_max_2d = 1 / 212.60291;
-      static const double dist_max_2d = 1 / 160.0; /// @todo Why not 200?
-      //static const double dist_max_2d = 1 / 200.0;
-//       static const double FOV = 40. * M_PI / 180.0; // diagonal FOV?
-      static const double FOV = 64.0 * M_PI / 180.0; // diagonal FOV?
-      double theta_colati = FOV * r1 * dist_max_2d;
+      double dist = (log(static_cast<double>(pixel/A))/B-dy)*(7E-07*r3 - 0.0001*r2 + 0.004*r1 + 0.9985)*1.5;
+      double theta_colati = FOV * r1 * DIST_MAX_2D;
       double c_theta = cos (theta_colati);
       double s_theta = sin (theta_colati);
-      double c_ksai = (double(x - 160.)) / r1;
-      double s_ksai = (double(y - 120.)) / r1;
-      cloud->points[depth_idx].x = float ((dist * s_theta * c_ksai) / 500.0 + 0.5);
-      cloud->points[depth_idx].y = float ((dist * s_theta * s_ksai) / 500.0 + 0.5);
-      cloud->points[depth_idx].z = float ((dist * c_theta));
+      double c_ksai = (static_cast<double>(x - 160.)) / r1;
+      double s_ksai = (static_cast<double>(y - 120.)) / r1;
+      cloud->points[depth_idx].x = static_cast<float> ((dist * s_theta * c_ksai) / 500.0 + 0.5);
+      cloud->points[depth_idx].y = static_cast<float> ((dist * s_theta * s_ksai) / 500.0 + 0.5);
+      cloud->points[depth_idx].z = static_cast<float> ((dist * c_theta));
       if (cloud->points[depth_idx].z < 0.01)
-        cloud->points[depth_idx].z = float(0.01);
-      cloud->points[depth_idx].z /= float(500.0);
-      cloud->points[depth_idx].intensity = float(pixel);
+        cloud->points[depth_idx].z = static_cast<float>(0.01);
+      cloud->points[depth_idx].z /= static_cast<float>(500.0);
+      cloud->points[depth_idx].intensity = static_cast<float>(pixel);
 
       
       // Get rid of the noise
@@ -342,7 +339,7 @@ pcl::DinastGrabber::getXYZIPointCloud ()
         cloud->points[depth_idx].x = std::numeric_limits<float>::quiet_NaN ();
       	cloud->points[depth_idx].y = std::numeric_limits<float>::quiet_NaN ();
       	cloud->points[depth_idx].z = std::numeric_limits<float>::quiet_NaN ();
-      	cloud->points[depth_idx].intensity = float(pixel);
+      	cloud->points[depth_idx].intensity = static_cast<float>(pixel);
       }
     }
   }

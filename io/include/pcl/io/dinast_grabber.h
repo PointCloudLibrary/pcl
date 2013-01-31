@@ -44,6 +44,7 @@
 #include <pcl/point_cloud.h>
 #include <pcl/io/grabber.h>
 #include <pcl/common/time.h>
+#include <pcl/console/print.h>
 #include <libusb-1.0/libusb.h>
 #include <boost/circular_buffer.hpp>
 
@@ -140,10 +141,9 @@ namespace pcl
       int
       checkHeader ();
       
-      /** \brief Read image data
-        * \param[out] the image data in unsigned short format
+      /** \brief Read image data and leaves it on image_
         */
-      int
+      void
       readImage ();
       
       /** \brief Obtains XYZI Point Cloud from the image of the camera
@@ -158,7 +158,7 @@ namespace pcl
       captureThreadFunction ();
       
       /** \brief Width of image */
-      const static int IMAGE_WIDTH = 320;
+      static const int IMAGE_WIDTH = 320;
       
       /** \brief Height of image */
       const static int IMAGE_HEIGHT  = 240;
@@ -168,6 +168,14 @@ namespace pcl
       
       /** \brief Length of a sync packet */
       const static int SYNC_PACKET_SIZE = 512;
+      
+      //static const float dist_max_2d = 1 / 212.60291;
+      //static const double dist_max_2d = 1 / 200.0;
+      const static double DIST_MAX_2D = 1. / (IMAGE_WIDTH / 2.);
+      
+      /** \brief diagonal Field of View*/
+      //static const double FOV = 40. * M_PI / 180.0; 
+      const static double FOV = 64.0 * M_PI / 180.0;
       
       /** \brief Size of pixel */
       enum pixel_syze { RAW8=1, RGB16=2, RGB24=3, RGB32=4 };
@@ -181,7 +189,7 @@ namespace pcl
       /** \brief Temporary USB read buffer, since we read two RGB16 images at a time size is the double of two images
         * plus a sync packet.
         */
-      unsigned char raw_buffer_[(RGB16 * (IMAGE_SIZE) + SYNC_PACKET_SIZE)*2];
+      unsigned char *raw_buffer_ ;
 
       /** \brief Global circular buffer */
       boost::circular_buffer<unsigned char> g_buffer_;
