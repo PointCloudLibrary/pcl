@@ -473,7 +473,7 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::applyState(Eige
   R = Eigen::AngleAxisf (static_cast<float> (x[5]), Eigen::Vector3f::UnitZ ())
     * Eigen::AngleAxisf (static_cast<float> (x[4]), Eigen::Vector3f::UnitY ())
     * Eigen::AngleAxisf (static_cast<float> (x[3]), Eigen::Vector3f::UnitX ());
-  t.topLeftCorner<3,3> () = R * t.topLeftCorner<3,3> ();
+  t.topLeftCorner<3,3> ().matrix () = R * t.topLeftCorner<3,3> ().matrix ();
   Eigen::Vector4f T (static_cast<float> (x[0]), static_cast<float> (x[1]), static_cast<float> (x[2]), 0.0f);
   t.col (3) += T;
 }
