@@ -181,20 +181,20 @@ if (build)
         PCL_ADD_EXECUTABLE(pcl_obj_rec_ransac_model_opps ${SUBSYS_NAME} obj_rec_ransac_model_opps.cpp)
         target_link_libraries(pcl_obj_rec_ransac_model_opps pcl_common pcl_visualization pcl_recognition)
 
-#        PCL_ADD_EXECUTABLE(pcl_visualize_obj_rec_ransac_hash_table ${SUBSYS_NAME} visualize_obj_rec_ransac_hash_table.cpp)
-#        target_link_libraries(pcl_visualize_obj_rec_ransac_hash_table pcl_common pcl_visualization pcl_io pcl_recognition)
+        PCL_ADD_EXECUTABLE(pcl_obj_rec_ransac_hash_table ${SUBSYS_NAME} obj_rec_ransac_hash_table.cpp)
+        target_link_libraries(pcl_obj_rec_ransac_hash_table pcl_common pcl_visualization pcl_io pcl_recognition)
 
-#        PCL_ADD_EXECUTABLE(pcl_visualize_obj_rec_ransac_opp ${SUBSYS_NAME} visualize_obj_rec_ransac_opp.cpp) 
-#        target_link_libraries(pcl_visualize_obj_rec_ransac_opp pcl_common pcl_visualization pcl_io pcl_recognition)
+        PCL_ADD_EXECUTABLE(pcl_obj_rec_ransac_scene_opps ${SUBSYS_NAME} obj_rec_ransac_scene_opps.cpp) 
+        target_link_libraries(pcl_obj_rec_ransac_scene_opps pcl_common pcl_visualization pcl_io pcl_recognition)
 
-#        PCL_ADD_EXECUTABLE(pcl_visualize_orr_octree ${SUBSYS_NAME} visualize_orr_octree.cpp)
-#        target_link_libraries(pcl_visualize_orr_octree pcl_common pcl_visualization pcl_io pcl_recognition)
+        PCL_ADD_EXECUTABLE(pcl_obj_rec_ransac_orr_octree ${SUBSYS_NAME} obj_rec_ransac_orr_octree.cpp)
+        target_link_libraries(pcl_obj_rec_ransac_orr_octree pcl_common pcl_visualization pcl_io pcl_recognition)
 
-#        PCL_ADD_EXECUTABLE(pcl_visualize_orr_octree_zprojection ${SUBSYS_NAME} visualize_orr_octree_zprojection.cpp)
-#        target_link_libraries(pcl_visualize_orr_octree_zprojection pcl_common pcl_visualization pcl_io pcl_recognition)
+        PCL_ADD_EXECUTABLE(pcl_obj_rec_ransac_orr_octree_zprojection ${SUBSYS_NAME} obj_rec_ransac_orr_octree_zprojection.cpp)
+        target_link_libraries(pcl_obj_rec_ransac_orr_octree_zprojection pcl_common pcl_visualization pcl_io pcl_recognition)
 
-#        PCL_ADD_EXECUTABLE(pcl_visualize_obj_rec_ransac_result ${SUBSYS_NAME} visualize_obj_rec_ransac_result.cpp)
-#        target_link_libraries(pcl_visualize_obj_rec_ransac_result pcl_common pcl_visualization pcl_io pcl_recognition)
+        PCL_ADD_EXECUTABLE(pcl_obj_rec_ransac_result ${SUBSYS_NAME} obj_rec_ransac_result.cpp)
+        target_link_libraries(pcl_obj_rec_ransac_result pcl_common pcl_visualization pcl_io pcl_recognition)
 
         PCL_ADD_EXECUTABLE(pcl_registration_visualizer ${SUBSYS_NAME} registration_visualizer.cpp)
         target_link_libraries(pcl_registration_visualizer pcl_common pcl_io pcl_kdtree pcl_filters pcl_registration pcl_visualization)
