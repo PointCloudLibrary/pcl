@@ -376,17 +376,9 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloudOut
       omp_mem[tid][1] = e3c / e2c;;
       omp_mem[tid][2] = e3c;
     }
-    else
-    {
-      omp_mem[tid][0] = 0.0;
-      omp_mem[tid][1] = 0.0;
-      omp_mem[tid][2] = 0.0;
-    }
 
     for (int d = 0; d < omp_mem[tid].size (); d++)
-    {
         prg_mem[index][d] = omp_mem[tid][d];
-    }
   }
 
   for (index = 0; index < int (input_->size ()); index++)
