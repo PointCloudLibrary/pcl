@@ -309,7 +309,7 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloudOut
     borders[index] = false;
     PointInT current_point = input_->points[index];
 
-    if ((border_radius_ > 0.0) and (pcl::isFinite(current_point)))
+    if ((border_radius_ > 0.0) && (pcl::isFinite(current_point)))
     {
       std::vector<int> nn_indices;
       std::vector<float> nn_distances;
@@ -350,7 +350,7 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloudOut
 #endif
     PointInT current_point = input_->points[index];
 
-    if ((!borders[index]) and pcl::isFinite(current_point))
+    if ((!borders[index]) && pcl::isFinite(current_point))
     {
       //if the considered point is not a border point and the point is "finite", then compute the scatter matrix
       Eigen::Matrix3d cov_m = Eigen::Matrix3d::Zero ();
@@ -401,7 +401,7 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloudOut
     feat_max [index] = false;
     PointInT current_point = input_->points[index];
 
-    if ((third_eigen_value_[index] > 0.0) and (pcl::isFinite(current_point)))
+    if ((third_eigen_value_[index] > 0.0) && (pcl::isFinite(current_point)))
     {
       std::vector<int> nn_indices;
       std::vector<float> nn_distances;
