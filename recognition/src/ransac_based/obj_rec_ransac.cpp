@@ -43,15 +43,16 @@
 using namespace std;
 using namespace pcl::common;
 
-pcl::recognition::ObjRecRANSAC::ObjRecRANSAC (float pair_width, float voxel_size, float fraction_of_pairs_in_hash_table)
+pcl::recognition::ObjRecRANSAC::ObjRecRANSAC (float pair_width, float voxel_size)
 : pair_width_ (pair_width),
   voxel_size_ (voxel_size),
-  fraction_of_pairs_in_hash_table_ (fraction_of_pairs_in_hash_table),
   relative_obj_size_ (0.05f),
   visibility_ (0.06f),
   relative_num_of_illegal_pts_ (0.02f),
   intersection_fraction_ (0.03f),
-  model_library_ (pair_width, voxel_size),
+  max_coplanarity_angle_ (3.0f*AUX_DEG_TO_RADIANS_FACTOR),
+  ignore_coplanar_opps_ (true),
+  model_library_ (pair_width, voxel_size, max_coplanarity_angle_),
   rec_mode_ (ObjRecRANSAC::FULL_RECOGNITION)
 {
   abs_zdist_thresh_ = 1.5f*voxel_size_;
@@ -60,13 +61,13 @@ pcl::recognition::ObjRecRANSAC::ObjRecRANSAC (float pair_width, float voxel_size
 //=========================================================================================================================================================================
 
 void
-pcl::recognition::ObjRecRANSAC::recognize (const PointCloudIn* scene, const PointCloudN* normals, list<ObjRecRANSAC::Output>& recognized_objects, double success_probability)
+pcl::recognition::ObjRecRANSAC::recognize (const PointCloudIn& scene, const PointCloudN& normals, list<ObjRecRANSAC::Output>& recognized_objects, double success_probability)
 {
   // Clear some stuff
   sampled_oriented_point_pairs_.clear ();
 
   // Build the scene octree
-  scene_octree_.build(*scene, voxel_size_, normals);
+  scene_octree_.build(scene, voxel_size_, &normals);
   // Project it on the xy-plane (which roughly corresponds to the projection plane of the scanning device)
   scene_octree_proj_.build(scene_octree_, abs_zdist_thresh_, abs_zdist_thresh_);
 
@@ -164,6 +165,9 @@ pcl::recognition::ObjRecRANSAC::sampleOrientedPointPairs (int num_iterations, co
     p2 = leaf2->getData ()->getPoint ();
     n2 = leaf2->getData ()->getNormal ();
 
+    if ( aux::pointsAreCoplanar (p1, n1, p2, n2, max_coplanarity_angle_) )
+      continue;
+
     // Save the sampled point pair
     output.push_back (OrientedPointPair (p1, n1, p2, n2));
 
@@ -189,7 +193,7 @@ pcl::recognition::ObjRecRANSAC::generateHypotheses (const list<OrientedPointPair
   const float *model_p1, *model_n1, *model_p2, *model_n2;
   const float *scene_p1, *scene_n1, *scene_p2, *scene_n2;
   int i, num_hypotheses = 0;
-  ModelLibrary::Model* obj_model;
+  const ModelLibrary::Model* obj_model;
 
 #ifdef OBJ_REC_RANSAC_VERBOSE
   printf("ObjRecRANSAC::%s(): generating hypotheses ... ", __func__); fflush (stdout);
@@ -206,7 +210,7 @@ pcl::recognition::ObjRecRANSAC::generateHypotheses (const list<OrientedPointPair
     // Use normals and points to compute a hash table key
     this->compute_oriented_point_pair_signature (scene_p1, scene_n1, scene_p2, scene_n2, hash_table_key);
     // Get the cell and its neighbors based on 'key'
-    int num_neigh_cells = model_library_.getHashTable ()->getNeighbors (hash_table_key, neigh_cells);
+    int num_neigh_cells = model_library_.getHashTable ().getNeighbors (hash_table_key, neigh_cells);
 
     for ( i = 0 ; i < num_neigh_cells ; ++i )
     {
@@ -268,14 +272,14 @@ pcl::recognition::ObjRecRANSAC::testHypotheses (list<Hypothesis*>& hypotheses, i
     match = penalty = 0;
 
     // For better code readability
-    vector<ORROctree::Node*>& full_model_leaves = (*hypo_it)->obj_model_->getOctree ().getFullLeaves ();
+    const vector<ORROctree::Node*>& full_model_leaves = (*hypo_it)->obj_model_->getOctree ().getFullLeaves ();
     rigid_transform = (*hypo_it)->rigid_transform_;
 
 	match_thresh = static_cast<int> (static_cast<float> (full_model_leaves.size ())*visibility_ + 0.5f);
 	penalty_thresh = static_cast<int> (static_cast<float> (full_model_leaves.size ())*relative_num_of_illegal_pts_ + 0.5f);
 
     // The match/penalty loop
-    for ( vector<ORROctree::Node*>::iterator leaf_it = full_model_leaves.begin () ; leaf_it != full_model_leaves.end () ; ++leaf_it )
+    for ( vector<ORROctree::Node*>::const_iterator leaf_it = full_model_leaves.begin () ; leaf_it != full_model_leaves.end () ; ++leaf_it )
     {
       // Transform the model point with the current rigid transform
       aux::transform (rigid_transform, (*leaf_it)->getData ()->getPoint (), transformed_point);
@@ -341,7 +345,7 @@ pcl::recognition::ObjRecRANSAC::buildConflictGraph (vector<Hypothesis*>& hypothe
   for ( vector<Hypothesis*>::iterator hypo_it = hypotheses.begin () ; hypo_it != hypotheses.end () ; ++hypo_it, ++hypothesis_id )
   {
 	// For better code readability
-	vector<ORROctree::Node*>& full_model_leaves = (*hypo_it)->obj_model_->getOctree ().getFullLeaves ();
+	const vector<ORROctree::Node*>& full_model_leaves = (*hypo_it)->obj_model_->getOctree ().getFullLeaves ();
 	rigid_transform = (*hypo_it)->rigid_transform_;
 
 	// The i-th node corresponds to the i-th hypothesis and has id 'i'
@@ -351,7 +355,7 @@ pcl::recognition::ObjRecRANSAC::buildConflictGraph (vector<Hypothesis*>& hypothe
 	// At the end of the next loop this will be the number of model points ending up in some range image pixel
 	score = 0;
 
-    for ( vector<ORROctree::Node*>::iterator leaf_it = full_model_leaves.begin () ; leaf_it != full_model_leaves.end () ; ++leaf_it )
+    for ( vector<ORROctree::Node*>::const_iterator leaf_it = full_model_leaves.begin () ; leaf_it != full_model_leaves.end () ; ++leaf_it )
     {
       // Transform the model point with the current rigid transform
       aux::transform (rigid_transform, (*leaf_it)->getData ()->getPoint (), transformed_point);
@@ -479,7 +483,7 @@ pcl::recognition::ObjRecRANSAC::filterWeakHypotheses (ORRGraph& graph, list<ObjR
     (*it)->state_ = ORRGraph::Node::ON;
     // Save the hypothesis as an accepted solution
     recognized_objects.push_back (
-      ObjRecRANSAC::Output ((*it)->hypothesis_->obj_model_->obj_name_, (*it)->hypothesis_->rigid_transform_, (*it)->hypothesis_->match_confidence_)
+      ObjRecRANSAC::Output ((*it)->hypothesis_->obj_model_->getObjectName (), (*it)->hypothesis_->rigid_transform_, (*it)->hypothesis_->match_confidence_)
     );
 
     // Set all its neighbors to OFF

@@ -42,18 +42,20 @@
 #include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/kdtree/impl/kdtree_flann.hpp>
 #include <pcl/console/print.h>
+#include <cmath>
 
 using namespace std;
 using namespace pcl;
 using namespace console;
 using namespace pcl::recognition;
 
-#define M_PIf 3.14159265358979323846f
-
 //============================================================================================================================================
 
-ModelLibrary::ModelLibrary (float pair_width, float voxel_size)
-: pair_width_ (pair_width), pair_width_eps_ (0.1f*pair_width), voxel_size_(voxel_size)
+ModelLibrary::ModelLibrary (float pair_width, float voxel_size, float max_coplanarity_angle)
+: pair_width_ (pair_width),
+  voxel_size_ (voxel_size),
+  max_coplanarity_angle_ (max_coplanarity_angle),
+  ignore_coplanar_opps_ (true)
 {
   num_of_cells_[0] = 60;
   num_of_cells_[1] = 60;
@@ -61,13 +63,11 @@ ModelLibrary::ModelLibrary (float pair_width, float voxel_size)
 
   // Compute the bounds of the hash table
   float eps = 0.000001f; // To be sure that an angle of 0 or PI will not be excluded because it lies on the boundary of the voxel structure
-  float bounds[6] = {-eps, M_PIf + eps,
-                     -eps, M_PIf + eps,
-                     -eps, M_PIf + eps};
+  float bounds[6] = {-eps, static_cast<float> (M_PI) + eps,
+                     -eps, static_cast<float> (M_PI) + eps,
+                     -eps, static_cast<float> (M_PI) + eps};
  
   hash_table_.build (bounds, num_of_cells_);
-
-  this->ignoreCoplanarPointsOn ();
 }
 
 //============================================================================================================================================
@@ -103,7 +103,7 @@ ModelLibrary::removeAllModels ()
 //============================================================================================================================================
 
 bool
-ModelLibrary::addModel (PointCloudIn* points, PointCloudN* normals, const std::string& object_name)
+ModelLibrary::addModel (const PointCloudIn& points, const PointCloudN& normals, const std::string& object_name)
 {
 #ifdef OBJ_REC_RANSAC_VERBOSE
   printf("ModelLibrary::%s(): begin [%s]\n", __func__, object_name.c_str ());
@@ -119,21 +119,18 @@ ModelLibrary::addModel (PointCloudIn* points, PointCloudN* normals, const std::s
     return (false);
   }
 
-  // It is unique -> create a new library model
-  Model* new_model = new Model (points, normals, object_name);
+  // It is unique -> create a new library model and save it
+  Model* new_model = new Model (points, normals, voxel_size_, object_name);
   result.first->second = new_model;
 
-  // Build the octree
-  ORROctree& octree = new_model->getOctree ();
-  octree.build (*points, voxel_size_, normals);
-
-  vector<ORROctree::Node*> &full_leaves = octree.getFullLeaves ();
+  const ORROctree& octree = new_model->getOctree ();
+  const vector<ORROctree::Node*> &full_leaves = octree.getFullLeaves ();
   list<ORROctree::Node*> inter_leaves;
   ORROctree::Node::Data *node_data1;
   int num_of_pairs = 0;
 
   // Run through all full leaves
-  for ( vector<ORROctree::Node*>::iterator leaf1 = full_leaves.begin () ; leaf1 != full_leaves.end () ; ++leaf1 )
+  for ( vector<ORROctree::Node*>::const_iterator leaf1 = full_leaves.begin () ; leaf1 != full_leaves.end () ; ++leaf1 )
   {
     node_data1 = (*leaf1)->getData ();
 
@@ -168,12 +165,11 @@ ModelLibrary::addToHashTable (Model* model, ORROctree::Node::Data* data1, ORROct
     data1->getPoint (), data1->getNormal (),
     data2->getPoint (), data2->getNormal (), key);
 
-  if ( ignore_coplanar_points_ )
+  if ( ignore_coplanar_opps_ )
   {
-    // about 3 degrees threshold
-    if ( std::fabs (key[0]-MLIB_HALF_PI) < 0.05f &&
-         std::fabs (key[1]-MLIB_HALF_PI) < 0.05f &&
-         key[2] < 0.05f )
+    // If the angle between one of the normals and the connecting vector is about 90° and
+    // the angle between both normals is about 0° then the points are co-planar ignore them!
+    if ( std::fabs (key[0]-AUX_HALF_PI) < max_coplanarity_angle_ && key[2] < max_coplanarity_angle_ )
       return (false);
   }
 

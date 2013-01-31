@@ -69,7 +69,7 @@ inline double
 my_sqr (double a){ return a*a;}
 
 bool vtk_to_pointcloud (const char* file_name, PointCloud<PointXYZ>& points_in, PointCloud<Normal>& normals_in, double bounds[6]);
-void visualize (const ModelLibrary::HashTable* hash_table);
+void visualize (const ModelLibrary::HashTable& hash_table);
 
 //===========================================================================================================================================
 
@@ -97,7 +97,7 @@ main (int argc, char** argv)
 
   // Create the recognition object (we need it only for its hash table)
   ObjRecRANSAC objrec (diag/8.0f, diag/60.0f);
-  objrec.addModel (&points_in, &normals_in, string ("test_model"));
+  objrec.addModel (points_in, normals_in, "test_model");
 
   // Start visualization (and the main VTK loop)
   visualize (objrec.getHashTable ());
@@ -161,15 +161,15 @@ bool vtk_to_pointcloud (const char* file_name, PointCloud<PointXYZ>& points_in, 
 //===========================================================================================================================================
 
 void
-visualize (const ModelLibrary::HashTable* hash_table)
+visualize (const ModelLibrary::HashTable& hash_table)
 {
   PCLVisualizer vis;
   vis.setBackgroundColor (0.1, 0.1, 0.1);
 
-  const ModelLibrary::HashTableCell* cells = hash_table->getVoxels ();
+  const ModelLibrary::HashTableCell* cells = hash_table.getVoxels ();
   size_t max_num_entries = 0;
-  int i, id3[3], num_cells = hash_table->getNumberOfVoxels ();
-  float half_side, b[6], cell_center[3], spacing = hash_table->getVoxelSpacing ()[0];
+  int i, id3[3], num_cells = hash_table.getNumberOfVoxels ();
+  float half_side, b[6], cell_center[3], spacing = hash_table.getVoxelSpacing ()[0];
   char cube_id[128];
 
   // Just get the maximal number of entries in the cells
@@ -191,13 +191,13 @@ visualize (const ModelLibrary::HashTable* hash_table)
   cout << "s = " << s << ", max_num_entries = " << max_num_entries << endl;
 
   // Now, render a sphere with the right radius at the right place
-  for ( i = 0, cells = hash_table->getVoxels () ; i < num_cells ; ++i, ++cells )
+  for ( i = 0, cells = hash_table.getVoxels () ; i < num_cells ; ++i, ++cells )
   {
     // Does the cell have any entries?
     if (cells->size ())
     {
-      hash_table->compute3dId (i, id3);
-      hash_table->computeVoxelCenter (id3, cell_center);
+      hash_table.compute3dId (i, id3);
+      hash_table.computeVoxelCenter (id3, cell_center);
 
       // That's half of the cube's side length
       half_side = s*static_cast<float> ((*cells->begin ()).second.size ());

@@ -83,6 +83,36 @@ namespace pcl
         typedef ModelLibrary::PointCloudIn PointCloudIn;
         typedef ModelLibrary::PointCloudN PointCloudN;
 
+#if 0
+    	class Parameters
+    	{
+    	  public:
+            Parameters (
+              float relative_obj_size,
+              float abs_zdist_thresh,
+              float visibility,
+              float relative_num_of_illegal_pts,
+              float intersection_fraction,
+              float max_coplanarity_angle = 3.0f*AUX_DEG_TO_RADIANS_FACTOR)
+            : relative_obj_size_ (relative_obj_size),
+              abs_zdist_thresh_ (abs_zdist_thresh),
+              visibility_ (visibility),
+              relative_num_of_illegal_pts_ (relative_num_of_illegal_pts),
+              intersection_fraction_ (intersection_fraction),
+              max_coplanarity_angle_ (max_coplanarity_angle)
+            {}
+
+          public:
+            /** */
+            float relative_obj_size_;
+            float abs_zdist_thresh_;
+            float visibility_;
+            float relative_num_of_illegal_pts_;
+            float intersection_fraction_;
+            float max_coplanarity_angle_;
+    	};
+#endif
+
         /** \brief This is an output item of the ObjRecRANSAC::recognize() method. It contains the recognized model, its name (the ones passed to
           * ObjRecRANSAC::addModel()), the rigid transform which aligns the model with the input scene and the match confidence which is a number
           * in the interval (0, 1] which gives the fraction of the model surface area matched to the scene. E.g., a match confidence of 0.3 means
@@ -123,7 +153,7 @@ namespace pcl
     	class Hypothesis
     	{
           public:
-            Hypothesis (ModelLibrary::Model* obj_model)
+            Hypothesis (const ModelLibrary::Model* obj_model)
              : match_confidence_ (0.0f),
                obj_model_ (obj_model)
             {}
@@ -131,7 +161,7 @@ namespace pcl
 
           public:
             float rigid_transform_[12], match_confidence_;
-            ModelLibrary::Model* obj_model_;
+            const ModelLibrary::Model* obj_model_;
             std::set<int> explained_pixels_;
     	};
 
@@ -144,11 +174,8 @@ namespace pcl
           *
           * \param[in] voxel_size is the size of the leafs of the octree, i.e., the "size" of the discretization. Tradeoff: High values lead to less
           * computation time but ignore object details. Small values allow to better distinguish between objects, but will introduce more holes in the resulting
-          * "voxel-surface" (especially for a sparsely sampled scene).
-          *
-          * \param[in] fraction_of_pairs_in_hash_table determines how many pairs (as fraction of the total number) will be kept in the hashtable. Use the default
-          * value (check the papers above for more details). */
-        ObjRecRANSAC (float pair_width, float voxel_size, float fraction_of_pairs_in_hash_table = 0.8f);
+          * "voxel-surface" (especially for a sparsely sampled scene). */
+        ObjRecRANSAC (float pair_width, float voxel_size);
         virtual ~ObjRecRANSAC ()
         {
           this->clear();
@@ -164,6 +191,33 @@ namespace pcl
           sampled_oriented_point_pairs_.clear ();
         }
 
+        /** \brief This is a threshold. The larger the value the more point pairs will be considered as co-planar and will
+          * be ignored in the off-line model pre-processing and in the online recognition phases. This makes sense only if
+          * "ignore co-planar points" is on. Call this method before calling addModel. This method calls the corresponding
+          * method of the model library. */
+        inline void
+        setMaxCoplanarityAngleDegrees (float max_coplanarity_angle_degrees)
+        {
+          max_coplanarity_angle_ = max_coplanarity_angle_degrees*AUX_DEG_TO_RADIANS_FACTOR;
+          model_library_.setMaxCoplanarityAngleDegrees (max_coplanarity_angle_degrees);
+        }
+
+        /** \brief Default is on. This method calls the corresponding method of the model library. */
+        inline void
+        ignoreCoplanarPointPairsOn ()
+        {
+          ignore_coplanar_opps_ = true;
+          model_library_.ignoreCoplanarPointPairsOn ();
+        }
+
+        /** \brief Default is on. This method calls the corresponding method of the model library. */
+        inline void
+        ignoreCoplanarPointPairsOff ()
+        {
+          ignore_coplanar_opps_ = false;
+          model_library_.ignoreCoplanarPointPairsOff ();
+        }
+
         /** \brief Add an object model to be recognized.
           *
           * \param[in] points are the object points.
@@ -174,7 +228,7 @@ namespace pcl
           * The method returns true if the model was successfully added to the model library and false otherwise (e.g., if 'object_name' is already in use).
           */
         inline bool
-        addModel (PointCloudIn* points, PointCloudN* normals, const std::string& object_name)
+        addModel (const PointCloudIn& points, const PointCloudN& normals, const std::string& object_name)
         {
           return (model_library_.addModel (points, normals, object_name));
         }
@@ -188,7 +242,7 @@ namespace pcl
           * \param[in]  success_probability is the user-defined probability of detecting all objects in the scene.
           */
         void
-        recognize (const PointCloudIn* scene, const PointCloudN* normals, std::list<ObjRecRANSAC::Output>& recognized_objects, double success_probability = 0.99);
+        recognize (const PointCloudIn& scene, const PointCloudN& normals, std::list<ObjRecRANSAC::Output>& recognized_objects, double success_probability = 0.99);
 
         inline void
         enterTestModeSampleOPP ()
@@ -203,14 +257,26 @@ namespace pcl
         }
 
         /** \brief Returns the hash table in the model library. */
-        inline const pcl::recognition::ModelLibrary::HashTable*
-        getHashTable ()
+        inline const pcl::recognition::ModelLibrary::HashTable&
+        getHashTable () const
         {
           return (model_library_.getHashTable ());
         }
 
+        inline const ModelLibrary&
+        getModelLibrary () const
+        {
+          return (model_library_);
+        }
+
+        inline const ModelLibrary::Model*
+        getModel (const std::string& name) const
+        {
+          return (model_library_.getModel (name));
+        }
+
         inline const ORROctree&
-        getSceneOctree ()
+        getSceneOctree () const
         {
           return (scene_octree_);
         }
@@ -239,9 +305,9 @@ namespace pcl
         {
           // 'p_obj' is the probability that given that the first sample point belongs to an object,
           // the second sample point will belong to the same object
-          double p, p_obj = 0.25f;
-
-          p = p_obj*relative_obj_size_*fraction_of_pairs_in_hash_table_;
+          const double p_obj = 0.25f;
+          // old version: p = p_obj*relative_obj_size_*fraction_of_pairs_in_hash_table_;
+          const double p = p_obj*relative_obj_size_;
 
           if ( 1.0 - p <= 0.0 )
             return 1;
@@ -335,9 +401,16 @@ namespace pcl
         }
 
       protected:
-        float pair_width_, voxel_size_, fraction_of_pairs_in_hash_table_, relative_obj_size_;
+        // Parameters
+        float pair_width_;
+        float voxel_size_;
+        float relative_obj_size_;
         float abs_zdist_thresh_;
-    	float visibility_, relative_num_of_illegal_pts_, intersection_fraction_;
+        float visibility_;
+        float relative_num_of_illegal_pts_;
+        float intersection_fraction_;
+        float max_coplanarity_angle_;
+        bool ignore_coplanar_opps_;
 
         ModelLibrary model_library_;
         ORROctree scene_octree_;

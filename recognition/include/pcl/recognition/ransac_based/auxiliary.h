@@ -41,7 +41,8 @@
 #include <cmath>
 #include <cstdlib>
 
-#define AUX_HALF_PI  1.57079632679489661923f
+#define AUX_HALF_PI                  1.57079632679489661923f
+#define AUX_DEG_TO_RADIANS_FACTOR   (3.14159265358979323846f/180.0f)
 
 namespace pcl
 {
@@ -210,7 +211,7 @@ namespace pcl
         T tmp_angle = std::acos (aux::clamp (aux::vecDot3 (n1, cl), -1.0f, 1.0f));
 
         // 'tmp_angle' should not deviate too much from 90 degrees
-        if ( std::fabs (tmp_angle - max_angle) > AUX_HALF_PI )
+        if ( std::fabs (tmp_angle - AUX_HALF_PI) > max_angle )
           return (false);
 
         // All tests passed => the points are coplanar

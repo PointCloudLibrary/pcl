@@ -39,9 +39,9 @@
 #ifndef PCL_RECOGNITION_MODEL_LIBRARY_H_
 #define PCL_RECOGNITION_MODEL_LIBRARY_H_
 
+#include "auxiliary.h"
 #include <pcl/recognition/ransac_based/voxel_structure.h>
 #include <pcl/recognition/ransac_based/orr_octree.h>
-
 #include <pcl/pcl_exports.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
@@ -49,8 +49,6 @@
 #include <list>
 #include <set>
 #include <map>
-
-#define MLIB_HALF_PI   1.57079632679489661923f
 
 namespace pcl
 {
@@ -66,29 +64,38 @@ namespace pcl
         class Model
         {
           public:
-            Model (PointCloudIn* points, PointCloudN* normals, std::string object_name):
-              points_ (points),
-              normals_(normals),
-              obj_name_(object_name){}
+            Model (const PointCloudIn& points, const PointCloudN& normals, float voxel_size, std::string object_name)
+            : obj_name_(object_name)
+            {
+              octree_.build (points, voxel_size, &normals);
+            }
             virtual ~Model (){}
 
-            ORROctree& getOctree() { return octree_;}
+            inline const std::string&
+            getObjectName () const
+            {
+              return (obj_name_);
+            }
 
-          public:
-            PointCloudIn *points_;
-            PointCloudN *normals_;
+            inline const ORROctree&
+            getOctree() const
+            {
+              return (octree_);
+            }
+
+          protected:
             const std::string obj_name_;
             ORROctree octree_;
         };
 
         typedef std::list<std::pair<ORROctree::Node::Data*,ORROctree::Node::Data*> > node_data_pair_list;
-        typedef std::map<Model*, node_data_pair_list> HashTableCell;
+        typedef std::map<const Model*, node_data_pair_list> HashTableCell;
         typedef VoxelStructure<HashTableCell, float> HashTable;
 
       public:
         /** \brief This class is used by 'ObjRecRANSAC' to maintain the object models to be recognized. Normally, you do not need to use
           * this class directly. */
-        ModelLibrary (float pair_width, float voxel_size);
+        ModelLibrary (float pair_width, float voxel_size, float max_coplanarity_angle = 3.0f*AUX_DEG_TO_RADIANS_FACTOR/*3 degrees*/);
         virtual ~ModelLibrary ()
         {
           this->clear();
@@ -98,6 +105,31 @@ namespace pcl
         void
         removeAllModels ();
 
+        /** \brief This is a threshold. The larger the value the more point pairs will be considered as co-planar and will
+          * be ignored in the off-line model pre-processing and in the online recognition phases. This makes sense only if
+          * "ignore co-planar points" is on. Call this method before calling addModel. */
+        inline void
+        setMaxCoplanarityAngleDegrees (float max_coplanarity_angle_degrees)
+        {
+          max_coplanarity_angle_ = max_coplanarity_angle_degrees*AUX_DEG_TO_RADIANS_FACTOR;
+        }
+
+        /** \biref Call this method in order NOT to add co-planar point pairs to the hash table. The default behavior
+          * is ignoring co-planar points on. */
+        inline void
+        ignoreCoplanarPointPairsOn ()
+        {
+          ignore_coplanar_opps_ = true;
+        }
+
+        /** \biref Call this method in order to add all point pairs (co-planar as well) to the hash table. The default
+          * behavior is ignoring co-planar points on. */
+        inline void
+        ignoreCoplanarPointPairsOff ()
+        {
+          ignore_coplanar_opps_ = false;
+        }
+
         /** \brief Adds a model to the hash table.
           *
           * \param[in]  points represents the model to be added.
@@ -106,29 +138,23 @@ namespace pcl
           *
           * Returns true if model successfully added and false otherwise (e.g., if object_name is not unique). */
         bool
-        addModel (PointCloudIn* points, PointCloudN* normals, const std::string& object_name);
-
-        /** \biref Call this method in order NOT to add co-planar point pairs to the hash table. The default behavior
-          * is ignoring co-planar points on. */
-        inline void
-        ignoreCoplanarPointsOn ()
-        {
-          ignore_coplanar_points_ = true;
-        }
-
-        /** \biref Call this method in order to add all point pairs (co-planar as well) to the hash table. The default
-          * behavior is ignoring co-planar points on. */
-        inline void
-        ignoreCoplanarPointsOff ()
-        {
-          ignore_coplanar_points_ = false;
-        }
+        addModel (const PointCloudIn& points, const PointCloudN& normals, const std::string& object_name);
 
         /** \brief Returns the hash table built by this instance. */
-        inline const HashTable*
-        getHashTable ()
+        inline const HashTable&
+        getHashTable () const
         {
-          return (&hash_table_);
+          return (hash_table_);
+        }
+
+        inline const Model*
+        getModel (const std::string& name) const
+        {
+          std::map<std::string,Model*>::const_iterator it = models_.find (name);
+          if ( it != models_.end () )
+            return (it->second);
+
+          return (NULL);
         }
 
       protected:
@@ -141,10 +167,12 @@ namespace pcl
         addToHashTable (Model* model, ORROctree::Node::Data* data1, ORROctree::Node::Data* data2);
 
       protected:
-        std::map<std::string,Model*> models_;
-        float pair_width_, pair_width_eps_, voxel_size_;
-        bool ignore_coplanar_points_;
+        float pair_width_;
+        float voxel_size_;
+        float max_coplanarity_angle_;
+        bool ignore_coplanar_opps_;
 
+        std::map<std::string,Model*> models_;
         HashTable hash_table_;
         int num_of_cells_[3];
     };

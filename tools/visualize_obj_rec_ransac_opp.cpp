@@ -80,7 +80,7 @@ void update (CallbackParameters* params);
 class CallbackParameters
 {
   public:
-    CallbackParameters (ObjRecRANSAC& objrec, PCLVisualizer& viz, PointCloud<PointXYZ>* points, PointCloud<Normal>* normals)
+    CallbackParameters (ObjRecRANSAC& objrec, PCLVisualizer& viz, PointCloud<PointXYZ>& points, PointCloud<Normal>& normals)
     : objrec_ (objrec),
       viz_ (viz),
       points_ (points),
@@ -89,8 +89,8 @@ class CallbackParameters
 
     ObjRecRANSAC& objrec_;
     PCLVisualizer& viz_;
-    PointCloud<PointXYZ>* points_;
-    PointCloud<Normal>* normals_;
+    PointCloud<PointXYZ>& points_;
+    PointCloud<Normal>& normals_;
 };
 
 //===========================================================================================================================================
@@ -205,7 +205,7 @@ void run (const char* file_name, float voxel_size)
   // The visualizer
   PCLVisualizer viz;
 
-  CallbackParameters params(objrec, viz, &(*points_in), &(*normals_in));
+  CallbackParameters params(objrec, viz, *points_in, *normals_in);
   viz.registerKeyboardCallback (keyboardCB, static_cast<void*> (&params));
 
   // Run the recognition and update the viewer

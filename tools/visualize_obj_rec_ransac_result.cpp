@@ -79,7 +79,7 @@ void keyboardCB (const pcl::visualization::KeyboardEvent &event, void* params_vo
 class CallbackParameters
 {
   public:
-    CallbackParameters (ObjRecRANSAC& objrec, PCLVisualizer& viz, PointCloud<PointXYZ>* points, PointCloud<Normal>* normals)
+    CallbackParameters (ObjRecRANSAC& objrec, PCLVisualizer& viz, PointCloud<PointXYZ>& points, PointCloud<Normal>& normals)
     : objrec_ (objrec),
       viz_ (viz),
       points_ (points),
@@ -88,8 +88,8 @@ class CallbackParameters
 
     ObjRecRANSAC& objrec_;
     PCLVisualizer& viz_;
-    PointCloud<PointXYZ>* points_;
-    PointCloud<Normal>* normals_;
+    PointCloud<PointXYZ>& points_;
+    PointCloud<Normal>& normals_;
 };
 
 //===========================================================================================================================================
@@ -117,11 +117,11 @@ main ()
   // The recognition object
   ObjRecRANSAC objrec (pair_width, voxel_size);
   // Add a model
-  objrec.addModel (&(*amicelli_points), &(*amicelli_normals), "amicelli box");
+  objrec.addModel (*amicelli_points, *amicelli_normals, "amicelli box");
 
   // The visualizer
   PCLVisualizer viz;
-  CallbackParameters params(objrec, viz, &(*scene_points), &(*scene_normals));
+  CallbackParameters params(objrec, viz, *scene_points, *scene_normals);
   viz.registerKeyboardCallback (keyboardCB, static_cast<void*> (&params));
 
   // Run the recognition and update the viewer. Have a look at this method, to see how to start the recognition and use the result!
