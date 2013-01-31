@@ -34,7 +34,7 @@
  */
 
 /*
- * visualize_obj_rec_ransac_hash_table.cpp
+ * obj_rec_ransac_hash_table.cpp
  *
  *  Created on: Jun 20, 2012
  *      Author: papazov
@@ -81,7 +81,7 @@ main (int argc, char** argv)
   {
     print_info ("\nVisualizes the hash table after adding the provided mesh to it.\n"
         "usage:\n"
-        "./visualize_obj_rec_ransac_hash_table mesh.vtk\n");
+        "./obj_rec_ransac_hash_table <mesh.vtk>\n");
     return (-1);
   }
 

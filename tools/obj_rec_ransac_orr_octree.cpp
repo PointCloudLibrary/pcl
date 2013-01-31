@@ -38,7 +38,7 @@
  */
 
 /*
- * visualize_orr_octree.cpp
+ * obj_rec_ransac_orr_octree.cpp
  *
  *  Created on: Oct 24, 2012
  *      Author: papazov
@@ -96,8 +96,8 @@ int main (int argc, char ** argv)
 {
   if ( argc != 3 )
   {
-    fprintf(stderr, "\nERROR: Syntax is ./pcl_visualize_orr_octree <vtk file> <leaf_size>\n"
-                    "EXAMPLE: ./pcl_visualize_orr_octree ../../test/tum_rabbit.vtk 6\n\n");
+    fprintf(stderr, "\nERROR: Syntax is ./pcl_obj_rec_ransac_orr_octree <vtk file> <leaf_size>\n"
+                    "EXAMPLE: ./pcl_obj_rec_ransac_orr_octree ../../test/tum_rabbit.vtk 6\n\n");
     return -1;
   }
 

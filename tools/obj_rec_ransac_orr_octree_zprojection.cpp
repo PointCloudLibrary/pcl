@@ -38,7 +38,7 @@
  */
 
 /*
- * visualize_orr_octree_zprojection.cpp
+ * obj_rec_ransac_orr_octree_zprojection.cpp
  *
  *  Created on: Jan 15, 2013
  *      Author: papazov
@@ -83,8 +83,8 @@ int main (int argc, char ** argv)
 {
   if ( argc != 3 )
   {
-    fprintf(stderr, "\nERROR: Syntax is ./visualize_orr_octree_zprojection <vtk file> <leaf_size>\n"
-                    "EXAMPLE: ./visualize_orr_octree_zprojection ../../test/tum_table_scene.vtk 6\n\n");
+    fprintf(stderr, "\nERROR: Syntax is ./pcl_obj_rec_ransac_orr_octree_zprojection <vtk file> <leaf_size>\n"
+                    "EXAMPLE: ./pcl_obj_rec_ransac_orr_octree_zprojection ../../test/tum_table_scene.vtk 6\n\n");
     return -1;
   }
 

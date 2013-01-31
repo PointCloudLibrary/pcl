@@ -34,7 +34,7 @@
  */
 
 /*
- * visualize_obj_rec_ransac_result.cpp
+ * obj_rec_ransac_result.cpp
  *
  *  Created on: Jan 23, 2013
  *      Author: papazov
@@ -65,13 +65,14 @@ using namespace visualization;
 
 class CallbackParameters;
 
+void run (float pair_width, float voxel_size, float max_coplanarity_angle);
 void show_octree (const ORROctree& octree, PCLVisualizer& viz);
 bool vtk_to_pointcloud (const char* file_name, PointCloud<PointXYZ>& pcl_points, PointCloud<Normal>& pcl_normals);
 void node_to_cube (const ORROctree::Node* node, vtkAppendPolyData* additive_octree);
 void update (CallbackParameters* params);
 void keyboardCB (const pcl::visualization::KeyboardEvent &event, void* params_void);
 
-//#define _SHOW_INPUT_POINTS_
+//#define _SHOW_SCENE_POINTS_
 #define _SHOW_OCTREE_POINTS_
 //#define _SHOW_OCTREE_NORMALS_
 //#define _SHOW_OCTREE_
@@ -95,27 +96,59 @@ class CallbackParameters
 //===========================================================================================================================================
 
 int
-main ()
+main (int argc, char** argv)
+{
+  // THIS IS STILL WORK IN PROGRESS!!
+
+  printf ("\nUsage: ./pcl_obj_rec_ransac_scene_opps <pair_width> <voxel_size> <max_coplanarity_angle>\n\n");
+
+  const int num_params = 3;
+  float parameters[num_params] = {40.0f/*pair width*/, 5.0f/*voxel size*/, 15.0f/*max co-planarity angle*/};
+  string parameter_names[num_params] = {"pair_width", "voxel_size", "max_coplanarity_angle"};
+
+  // Read the user input if any
+  for ( int i = 0 ; i < argc-1 && i < num_params ; ++i )
+  {
+    parameters[i] = static_cast<float> (atof (argv[i+1]));
+    if ( parameters[i] <= 0.0f )
+    {
+      fprintf(stderr, "ERROR: the %i-th parameter has to be positive and not %f\n", i+1, parameters[i]);
+      return (-1);
+    }
+  }
+
+  printf ("The following parameter values will be used:\n");
+  for ( int i = 0 ; i < num_params ; ++i )
+    cout << "  " << parameter_names[i] << " = " << parameters[i] << endl;
+  cout << endl;
+
+  run (parameters[0], parameters[1], parameters[2]);
+}
+
+//===========================================================================================================================================
+
+void
+run (float pair_width, float voxel_size, float max_coplanarity_angle)
 {
   // THIS IS STILL WORK IN PROGRESS!!
 
   // The input to the object recognition instance
   char scene_file_name[] = "../../test/tum_table_scene.vtk\0", model_file_name[] = "../../test/tum_amicelli_box.vtk\0";
-  float pair_width = 45.0f, voxel_size = 3.5f;
 
   PointCloud<PointXYZ>::Ptr scene_points (new PointCloud<PointXYZ> ()), amicelli_points (new PointCloud<PointXYZ> ());
   PointCloud<Normal>::Ptr scene_normals (new PointCloud<Normal> ()), amicelli_normals (new PointCloud<Normal> ());
 
   // Get the points and normals from the input model
   if ( !vtk_to_pointcloud (model_file_name, *amicelli_points, *amicelli_normals) )
-    return (-1);
+    return;
 
   // Get the points and normals from the input scene
   if ( !vtk_to_pointcloud (scene_file_name, *scene_points, *scene_normals) )
-    return (-1);
+    return;
 
   // The recognition object
   ObjRecRANSAC objrec (pair_width, voxel_size);
+  objrec.setMaxCoplanarityAngleDegrees (max_coplanarity_angle);
   // Add a model
   objrec.addModel (*amicelli_points, *amicelli_normals, "amicelli box");
 
@@ -132,9 +165,9 @@ main ()
   show_octree(objrec.getSceneOctree (), viz);
 #endif
 
-#ifdef _SHOW_INPUT_POINTS_
-  viz.addPointCloud (points_in, "cloud in");
-  viz.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2, "cloud in");
+#ifdef _SHOW_SCENE_POINTS_
+  viz.addPointCloud (scene_points, "scene points");
+  viz.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2, "scene points");
 #endif
 
 #ifdef _SHOW_OCTREE_POINTS_
@@ -158,8 +191,6 @@ main ()
     viz.spinOnce (100);
     boost::this_thread::sleep (boost::posix_time::microseconds (100000));
   }
-
-  return (0);
 }
 
 //===============================================================================================================================
@@ -232,56 +263,6 @@ bool vtk_to_pointcloud (const char* file_name, PointCloud<PointXYZ>& pcl_points,
   }
 
   return true;
-}
-
-//===============================================================================================================================
-
-void show_octree (const ORROctree& octree, PCLVisualizer& viz)
-{
-  vtkSmartPointer<vtkPolyData> vtk_octree = vtkSmartPointer<vtkPolyData>::New ();
-  vtkSmartPointer<vtkAppendPolyData> append = vtkSmartPointer<vtkAppendPolyData>::New ();
-
-  cout << "There are " << octree.getFullLeaves ().size () << " full leaves.\n";
-
-  const std::vector<ORROctree::Node*>& full_leaves = octree.getFullLeaves ();
-  for ( std::vector<ORROctree::Node*>::const_iterator it = full_leaves.begin () ; it != full_leaves.end () ; ++it )
-    // Add it to the other cubes
-    node_to_cube (*it, append);
-
-  // Just print the leaf size
-  std::vector<ORROctree::Node*>::const_iterator first_leaf = octree.getFullLeaves ().begin ();
-  if ( first_leaf != octree.getFullLeaves ().end () )
-	  printf("leaf size = %f\n", (*first_leaf)->getBounds ()[1] - (*first_leaf)->getBounds ()[0]);
-
-  // Save the result
-  append->Update();
-  vtk_octree->DeepCopy (append->GetOutput ());
-
-  // Add to the visualizer
-  vtkRenderer *renderer = viz.getRenderWindow ()->GetRenderers ()->GetFirstRenderer ();
-  vtkSmartPointer<vtkActor> octree_actor = vtkSmartPointer<vtkActor>::New();
-  vtkSmartPointer<vtkDataSetMapper> mapper = vtkSmartPointer<vtkDataSetMapper>::New ();
-  mapper->SetInput(vtk_octree);
-  octree_actor->SetMapper(mapper);
-
-  // Set the appearance & add to the renderer
-  octree_actor->GetProperty ()->SetColor (1.0, 1.0, 1.0);
-  octree_actor->GetProperty ()->SetLineWidth (1);
-  octree_actor->GetProperty ()->SetRepresentationToWireframe ();
-  renderer->AddActor(octree_actor);
-}
-
-//===============================================================================================================================
-
-void node_to_cube (const ORROctree::Node* node, vtkAppendPolyData* additive_octree)
-{
-  // Define the cube representing the leaf
-  const float *b = node->getBounds ();
-  vtkSmartPointer<vtkCubeSource> cube = vtkSmartPointer<vtkCubeSource>::New ();
-  cube->SetBounds (b[0], b[1], b[2], b[3], b[4], b[5]);
-  cube->Update ();
-
-  additive_octree->AddInput (cube->GetOutput ());
 }
 
 //===============================================================================================================================

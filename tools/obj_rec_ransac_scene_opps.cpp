@@ -34,7 +34,7 @@
  */
 
 /*
- * visualize_obj_rec_ransac_opp.cpp
+ * obj_rec_ransac_scene_opps.cpp
  *
  *  Created on: Jan 17, 2013
  *      Author: papazov
@@ -66,16 +66,13 @@ using namespace visualization;
 
 class CallbackParameters;
 
-void run (const char* file_name, float voxel_size);
-void show_octree (const ORROctree& octree, PCLVisualizer& viz);
+void run (float pair_width, float voxel_size, float max_coplanarity_angle);
 bool vtk_to_pointcloud (const char* file_name, PointCloud<PointXYZ>& pcl_points, PointCloud<Normal>& pcl_normals);
-void node_to_cube (const ORROctree::Node* node, vtkAppendPolyData* additive_octree);
 void update (CallbackParameters* params);
 
-//#define _SHOW_INPUT_POINTS_
+//#define _SHOW_SCENE_POINTS_
 #define _SHOW_OCTREE_POINTS_
 //#define _SHOW_OCTREE_NORMALS_
-//#define _SHOW_OCTREE_
 
 class CallbackParameters
 {
@@ -98,22 +95,29 @@ class CallbackParameters
 int
 main (int argc, char** argv)
 {
-  if ( argc != 3 )
+  printf ("\nUsage: ./pcl_obj_rec_ransac_scene_opps <pair_width> <voxel_size> <max_coplanarity_angle>\n\n");
+
+  const int num_params = 3;
+  float parameters[num_params] = {40.0f/*pair width*/, 5.0f/*voxel size*/, 15.0f/*max co-planarity angle*/};
+  string parameter_names[num_params] = {"pair_width", "voxel_size", "max_coplanarity_angle"};
+
+  // Read the user input if any
+  for ( int i = 0 ; i < argc-1 && i < num_params ; ++i )
   {
-    fprintf(stderr, "\nERROR: Syntax is ./pcl_visualize_obj_rec_ransac_opp <vtk file> <leaf_size>\n"
-                    "EXAMPLE: ./pcl_visualize_obj_rec_ransac_opp ../../test/tum_table_scene.vtk 6\n\n");
-    return (-1);
+    parameters[i] = static_cast<float> (atof (argv[i+1]));
+    if ( parameters[i] <= 0.0f )
+    {
+      fprintf(stderr, "ERROR: the %i-th parameter has to be positive and not %f\n", i+1, parameters[i]);
+      return (-1);
+    }
   }
 
-  // Get the voxel size
-  float voxel_size = static_cast<float> (atof (argv[2]));
-  if ( voxel_size <= 0.0 )
-  {
-    fprintf(stderr, "ERROR: leaf_size has to be positive and not %lf\n", voxel_size);
-    return (-1);
-  }
+  printf ("The following parameter values will be used:\n");
+  for ( int i = 0 ; i < num_params ; ++i )
+    cout << "  " << parameter_names[i] << " = " << parameters[i] << endl;
+  cout << endl;
 
-  run(argv[1], voxel_size);
+  run (parameters[0], parameters[1], parameters[2]);
 
   return (0);
 }
@@ -168,7 +172,7 @@ void update (CallbackParameters* params)
 
   vtkSmartPointer<vtkHedgeHog> vtk_hh = vtkSmartPointer<vtkHedgeHog>::New ();
   vtk_hh->SetVectorModeToUseNormal ();
-  vtk_hh->SetScaleFactor (0.3f*params->objrec_.getPairWidth ());
+  vtk_hh->SetScaleFactor (0.5f*params->objrec_.getPairWidth ());
   vtk_hh->SetInput (vtk_opps);
   vtk_hh->Update ();
 
@@ -187,50 +191,47 @@ void update (CallbackParameters* params)
 
 //===============================================================================================================================
 
-void run (const char* file_name, float voxel_size)
+void run (float pair_width, float voxel_size, float max_coplanarity_angle)
 {
-  PointCloud<PointXYZ>::Ptr points_in (new PointCloud<PointXYZ> ());
-  PointCloud<PointXYZ>::Ptr points_octree (new PointCloud<PointXYZ> ());
-  PointCloud<Normal>::Ptr normals_in (new PointCloud<Normal> ());
+  PointCloud<PointXYZ>::Ptr scene_points (new PointCloud<PointXYZ> ());
+  PointCloud<Normal>::Ptr scene_normals (new PointCloud<Normal> ());
 
   // Get the points and normals from the input vtk file
-  if ( !vtk_to_pointcloud (file_name, *points_in, *normals_in) )
+  if ( !vtk_to_pointcloud ("../../test/tum_table_scene.vtk", *scene_points, *scene_normals) )
     return;
 
   // The recognition object
-  ObjRecRANSAC objrec (40.0f, voxel_size);
+  ObjRecRANSAC objrec (pair_width, voxel_size);
+  objrec.setMaxCoplanarityAngleDegrees (max_coplanarity_angle);
   // Switch to the test mode in which only oriented point pairs from the scene are sampled
   objrec.enterTestModeSampleOPP ();
 
   // The visualizer
   PCLVisualizer viz;
 
-  CallbackParameters params(objrec, viz, *points_in, *normals_in);
+  CallbackParameters params(objrec, viz, *scene_points, *scene_normals);
   viz.registerKeyboardCallback (keyboardCB, static_cast<void*> (&params));
 
   // Run the recognition and update the viewer
   update (&params);
 
-#ifdef _SHOW_OCTREE_
-  show_octree(objrec.getSceneOctree (), viz);
-#endif
-
-#ifdef _SHOW_INPUT_POINTS_
-  viz.addPointCloud (points_in, "cloud in");
+#ifdef _SHOW_SCENE_POINTS_
+  viz.addPointCloud (scene_points, "cloud in");
   viz.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2, "cloud in");
 #endif
 
 #ifdef _SHOW_OCTREE_POINTS_
-  objrec.getSceneOctree ().getFullLeafPoints (*points_octree);
-  viz.addPointCloud (points_octree, "octree points");
+  PointCloud<PointXYZ>::Ptr octree_points (new PointCloud<PointXYZ> ());
+  objrec.getSceneOctree ().getFullLeafPoints (*octree_points);
+  viz.addPointCloud (octree_points, "octree points");
   viz.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 5, "octree points");
   viz.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_COLOR, 1.0, 0.0, 0.0, "octree points");
 #endif
 
 #if defined _SHOW_OCTREE_NORMALS_ && defined _SHOW_OCTREE_POINTS_
-  PointCloud<Normal>::Ptr normals_octree (new PointCloud<Normal> ());
-  objrec.getSceneOctree ().getNormalsOfFullLeaves (*normals_octree);
-  viz.addPointCloudNormals<PointXYZ,Normal> (points_octree, normals_octree, 1, 6.0f, "normals out");
+  PointCloud<Normal>::Ptr octree_normals (new PointCloud<Normal> ());
+  objrec.getSceneOctree ().getNormalsOfFullLeaves (*octree_normals);
+  viz.addPointCloudNormals<PointXYZ,Normal> (octree_points, octree_normals, 1, 6.0f, "normals out");
 #endif
 
   // Enter the main loop
@@ -291,56 +292,6 @@ bool vtk_to_pointcloud (const char* file_name, PointCloud<PointXYZ>& pcl_points,
   }
 
   return true;
-}
-
-//===============================================================================================================================
-
-void show_octree (const ORROctree& octree, PCLVisualizer& viz)
-{
-  vtkSmartPointer<vtkPolyData> vtk_octree = vtkSmartPointer<vtkPolyData>::New ();
-  vtkSmartPointer<vtkAppendPolyData> append = vtkSmartPointer<vtkAppendPolyData>::New ();
-
-  cout << "There are " << octree.getFullLeaves ().size () << " full leaves.\n";
-
-  const std::vector<ORROctree::Node*>& full_leaves = octree.getFullLeaves ();
-  for ( std::vector<ORROctree::Node*>::const_iterator it = full_leaves.begin () ; it != full_leaves.end () ; ++it )
-    // Add it to the other cubes
-    node_to_cube (*it, append);
-
-  // Just print the leaf size
-  std::vector<ORROctree::Node*>::const_iterator first_leaf = octree.getFullLeaves ().begin ();
-  if ( first_leaf != octree.getFullLeaves ().end () )
-	  printf("leaf size = %f\n", (*first_leaf)->getBounds ()[1] - (*first_leaf)->getBounds ()[0]);
-
-  // Save the result
-  append->Update();
-  vtk_octree->DeepCopy (append->GetOutput ());
-
-  // Add to the visualizer
-  vtkRenderer *renderer = viz.getRenderWindow ()->GetRenderers ()->GetFirstRenderer ();
-  vtkSmartPointer<vtkActor> octree_actor = vtkSmartPointer<vtkActor>::New();
-  vtkSmartPointer<vtkDataSetMapper> mapper = vtkSmartPointer<vtkDataSetMapper>::New ();
-  mapper->SetInput(vtk_octree);
-  octree_actor->SetMapper(mapper);
-
-  // Set the appearance & add to the renderer
-  octree_actor->GetProperty ()->SetColor (1.0, 1.0, 1.0);
-  octree_actor->GetProperty ()->SetLineWidth (1);
-  octree_actor->GetProperty ()->SetRepresentationToWireframe ();
-  renderer->AddActor(octree_actor);
-}
-
-//===============================================================================================================================
-
-void node_to_cube (const ORROctree::Node* node, vtkAppendPolyData* additive_octree)
-{
-  // Define the cube representing the leaf
-  const float *b = node->getBounds ();
-  vtkSmartPointer<vtkCubeSource> cube = vtkSmartPointer<vtkCubeSource>::New ();
-  cube->SetBounds (b[0], b[1], b[2], b[3], b[4], b[5]);
-  cube->Update ();
-
-  additive_octree->AddInput (cube->GetOutput ());
 }
 
 //===============================================================================================================================
