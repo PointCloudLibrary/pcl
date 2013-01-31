@@ -799,7 +799,7 @@ namespace pcl
     inline PointNormal (const _PointNormal &p)
     {
       x = p.x; y = p.y; z = p.z; data[3] = 1.0f;
-      normal_x = p.normal_x; normal_y = p.normal_y; z = p.normal_z; data_n[3] = 0.0f;
+      normal_x = p.normal_x; normal_y = p.normal_y; normal_z = p.normal_z; data_n[3] = 0.0f;
       curvature = p.curvature;
     }
 
@@ -930,7 +930,7 @@ namespace pcl
     inline PointXYZINormal (const _PointXYZINormal &p)
     {
       x = p.x; y = p.y; z = p.z; data[3] = 1.0f;
-      normal_x = p.normal_x; normal_y = p.normal_y; z = p.normal_z; data_n[3] = 0.0f;
+      normal_x = p.normal_x; normal_y = p.normal_y; normal_z = p.normal_z; data_n[3] = 0.0f;
       curvature = p.curvature;
       intensity = p.intensity;
     }
