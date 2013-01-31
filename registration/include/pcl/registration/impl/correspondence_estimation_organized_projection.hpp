@@ -87,21 +87,23 @@ pcl::registration::CorrespondenceEstimationOrganizedProjection<PointSource, Poin
       Eigen::Vector3f uv (projection_matrix_ * p_src3);
 
       /// Check if the point was behind the camera
-      if (uv[2] < 0)
+      if (uv[2] <= 0)
         continue;
 
       int u = static_cast<int> (uv[0] / uv[2]);
       int v = static_cast<int> (uv[1] / uv[2]);
 
       if (u >= 0 && u < static_cast<int> (target_->width) &&
-          v >= 0 && v < static_cast<int> (target_->height) &&
-          isFinite ((*target_) (u, v)))
+          v >= 0 && v < static_cast<int> (target_->height))
       {
+        const PointTarget &pt_tgt = target_->at (u, v);
+        if (!isFinite (pt_tgt))
+          continue;
         /// Check if the depth difference is larger than the threshold
-        if (fabs (uv[2] - (*target_) (u, v).z) > depth_threshold_)
+        if (fabs (uv[2] - pt_tgt.z) > depth_threshold_)
           continue;
 
-        double dist = (p_src3 - (*target_) (u, v).getVector3fMap ()).norm ();
+        double dist = (p_src3 - pt_tgt.getVector3fMap ()).norm ();
         if (dist < max_distance)
           correspondences[c_index++] =  pcl::Correspondence (*src_it, v * target_->width + u, static_cast<float> (dist));
       }
