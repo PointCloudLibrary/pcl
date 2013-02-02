@@ -36,6 +36,7 @@ if(build)
   # Set Qt files and resources here  
 #  set(uis main_window.ui)
   set(moc_incs include/pcl/apps/${SUBSYS_NAME}/main_window.h
+               include/pcl/apps/${SUBSYS_NAME}/filter_window.h
                include/pcl/apps/${SUBSYS_NAME}/openni_grabber.h)
 #           include/pcl/apps/${SUBSYS_NAME}/scene_tree.h
 #           include/pcl/apps/${SUBSYS_NAME}/parameter_dialog.h
@@ -48,10 +49,14 @@ if(build)
 #  set(incs ${moc_incs})
   set(incs include/pcl/apps/${SUBSYS_NAME}/qt.h
            include/pcl/apps/${SUBSYS_NAME}/openni_grabber.h
-           include/pcl/apps/${SUBSYS_NAME}/main_window.h)
+		   include/pcl/apps/${SUBSYS_NAME}/cloud_filter.h
+           include/pcl/apps/${SUBSYS_NAME}/main_window.h
+           include/pcl/apps/${SUBSYS_NAME}/filter_window.h)
 
   set(srcs src/main.cpp
+           src/cloud_filter.cpp
            src/openni_grabber.cpp
+           src/filter_window.cpp
            src/main_window.cpp)
 
   set(impl_incs )
