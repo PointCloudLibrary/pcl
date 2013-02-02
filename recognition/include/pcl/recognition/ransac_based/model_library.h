@@ -64,8 +64,9 @@ namespace pcl
         class Model
         {
           public:
-            Model (const PointCloudIn& points, const PointCloudN& normals, float voxel_size, std::string object_name)
-            : obj_name_(object_name)
+            Model (const PointCloudIn& points, const PointCloudN& normals, float voxel_size, std::string object_name, void* user_data = NULL)
+            : obj_name_(object_name),
+              user_data_ (user_data)
             {
               octree_.build (points, voxel_size, &normals);
             }
@@ -83,9 +84,16 @@ namespace pcl
               return (octree_);
             }
 
+            inline void*
+            getUserData() const
+            {
+              return (user_data_);
+            }
+
           protected:
             const std::string obj_name_;
             ORROctree octree_;
+            void* user_data_;
         };
 
         typedef std::list<std::pair<ORROctree::Node::Data*,ORROctree::Node::Data*> > node_data_pair_list;
@@ -132,13 +140,14 @@ namespace pcl
 
         /** \brief Adds a model to the hash table.
           *
-          * \param[in]  points represents the model to be added.
-          * \param[in]  normals are the normals at the model points.
+          * \param[in] points represents the model to be added.
+          * \param[in] normals are the normals at the model points.
           * \param[in] object_name is the unique name of the object to be added.
+          * \param[in] user_data is a pointer to some data (can be NULL)
           *
           * Returns true if model successfully added and false otherwise (e.g., if object_name is not unique). */
         bool
-        addModel (const PointCloudIn& points, const PointCloudN& normals, const std::string& object_name);
+        addModel (const PointCloudIn& points, const PointCloudN& normals, const std::string& object_name, void* user_data = NULL);
 
         /** \brief Returns the hash table built by this instance. */
         inline const HashTable&

@@ -46,6 +46,7 @@ using namespace pcl::common;
 pcl::recognition::ObjRecRANSAC::ObjRecRANSAC (float pair_width, float voxel_size)
 : pair_width_ (pair_width),
   voxel_size_ (voxel_size),
+  abs_zdist_thresh_ (1.5f*voxel_size_),
   relative_obj_size_ (0.05f),
   visibility_ (0.06f),
   relative_num_of_illegal_pts_ (0.02f),
@@ -55,7 +56,6 @@ pcl::recognition::ObjRecRANSAC::ObjRecRANSAC (float pair_width, float voxel_size
   model_library_ (pair_width, voxel_size, max_coplanarity_angle_),
   rec_mode_ (ObjRecRANSAC::FULL_RECOGNITION)
 {
-  abs_zdist_thresh_ = 1.5f*voxel_size_;
 }
 
 //=========================================================================================================================================================================
@@ -64,7 +64,7 @@ void
 pcl::recognition::ObjRecRANSAC::recognize (const PointCloudIn& scene, const PointCloudN& normals, list<ObjRecRANSAC::Output>& recognized_objects, double success_probability)
 {
   // Clear some stuff
-  sampled_oriented_point_pairs_.clear ();
+  this->clearTestData ();
 
   // Build the scene octree
   scene_octree_.build(scene, voxel_size_, &normals);
@@ -78,7 +78,8 @@ pcl::recognition::ObjRecRANSAC::recognize (const PointCloudIn& scene, const Poin
   vector<ORROctree::Node*>& full_leaves = scene_octree_.getFullLeaves();
   int num_iterations = this->computeNumberOfIterations(success_probability), num_full_leaves = static_cast<int> (full_leaves.size ());
 
-  if ( num_full_leaves < num_iterations )
+  // Make sure that there are not more iterations than full leaves
+  if ( num_iterations > num_full_leaves )
     num_iterations = num_full_leaves;
 
 #ifdef OBJ_REC_RANSAC_VERBOSE
@@ -86,31 +87,35 @@ pcl::recognition::ObjRecRANSAC::recognize (const PointCloudIn& scene, const Poin
 #endif
 
   list<Hypothesis*> hypotheses;
-  vector<Hypothesis*> accepted_hypotheses;
   ORRGraph graph;
   int num_hypotheses;
 
+  // Now perform the recognition step by step
   this->sampleOrientedPointPairs (num_iterations, full_leaves, sampled_oriented_point_pairs_);
 
   // Leave if we are in the SAMPLE_OPP test mode
   if ( rec_mode_ == ObjRecRANSAC::SAMPLE_OPP )
     return;
 
-  if ( rec_mode_ == ObjRecRANSAC::FULL_RECOGNITION )
-  {
-    num_hypotheses = this->generateHypotheses (sampled_oriented_point_pairs_, hypotheses);
-    this->testHypotheses (hypotheses, num_hypotheses, accepted_hypotheses);
-    this->buildConflictGraph (accepted_hypotheses, graph);
-    this->filterWeakHypotheses (graph, recognized_objects);
+  // Now that we have sampled some opps from the scene -> generate and test the hypotheses
+  num_hypotheses = this->generateHypotheses (sampled_oriented_point_pairs_, hypotheses);
+  this->testHypotheses (hypotheses, num_hypotheses, accepted_hypotheses_);
+  hypotheses.clear ();
 
-    // Cleanup
-    for ( vector<Hypothesis*>::iterator it = accepted_hypotheses.begin () ; it != accepted_hypotheses.end () ; ++it )
-      delete *it;
+  // Leave if we are in the TEST_HYPOTHESES mode
+  if ( rec_mode_ == ObjRecRANSAC::TEST_HYPOTHESES )
+    return;
+
+  // The last two steps in the recognition
+  this->buildConflictGraph (accepted_hypotheses_, graph);
+  this->filterWeakHypotheses (graph, recognized_objects);
+
+  // Cleanup
+  this->clearTestData ();
 
 #ifdef OBJ_REC_RANSAC_VERBOSE
     printf("ObjRecRANSAC::%s(): done [%i object(s)]\n", __func__, static_cast<int> (recognized_objects.size ()));
 #endif
-  }
 }
 
 //=========================================================================================================================================================================
@@ -230,7 +235,7 @@ pcl::recognition::ObjRecRANSAC::generateHypotheses (const list<OrientedPointPair
           model_p2 = (*model_pair_it).second->getPoint ();
           model_n2 = (*model_pair_it).second->getNormal ();
 
-          Hypothesis* hypothesis = new Hypothesis (obj_model);
+          Hypothesis* hypothesis = new Hypothesis (*obj_model);
           // Get the rigid transform from model to scene
           this->computeRigidTransform(model_p1, model_n1, model_p2, model_n2, scene_p1, scene_n1, scene_p2, scene_n2, hypothesis->rigid_transform_);
           // Save the current object hypothesis
@@ -268,15 +273,14 @@ pcl::recognition::ObjRecRANSAC::testHypotheses (list<Hypothesis*>& hypotheses, i
   {
     // Todo: Perform an ICP iteration
 
-    // Some initializations for the second loop (the match/penalty loop)
-    match = penalty = 0;
-
     // For better code readability
-    const vector<ORROctree::Node*>& full_model_leaves = (*hypo_it)->obj_model_->getOctree ().getFullLeaves ();
+    const vector<ORROctree::Node*>& full_model_leaves = (*hypo_it)->obj_model_.getOctree ().getFullLeaves ();
     rigid_transform = (*hypo_it)->rigid_transform_;
 
+    // Some initializations
 	match_thresh = static_cast<int> (static_cast<float> (full_model_leaves.size ())*visibility_ + 0.5f);
 	penalty_thresh = static_cast<int> (static_cast<float> (full_model_leaves.size ())*relative_num_of_illegal_pts_ + 0.5f);
+	match = penalty = 0;
 
     // The match/penalty loop
     for ( vector<ORROctree::Node*>::const_iterator leaf_it = full_model_leaves.begin () ; leaf_it != full_model_leaves.end () ; ++leaf_it )
@@ -302,9 +306,13 @@ pcl::recognition::ObjRecRANSAC::testHypotheses (list<Hypothesis*>& hypotheses, i
 
     // Check if we should accept this hypothesis
     if ( match >= match_thresh && penalty <= penalty_thresh )
+    {
+      // Compute the match confidence which is the number of explained points divided by the total number of model points
+      (*hypo_it)->match_confidence_ = static_cast<float> (match)/static_cast<float> (full_model_leaves.size ());
       accepted_hypotheses.push_back (*hypo_it);
+    }
     else
-      // We do not need that hypothesis => destroy it
+      // We do not need that hypothesis => delete it
       delete *hypo_it;
 
 #ifdef OBJ_REC_RANSAC_VERBOSE
@@ -345,7 +353,7 @@ pcl::recognition::ObjRecRANSAC::buildConflictGraph (vector<Hypothesis*>& hypothe
   for ( vector<Hypothesis*>::iterator hypo_it = hypotheses.begin () ; hypo_it != hypotheses.end () ; ++hypo_it, ++hypothesis_id )
   {
 	// For better code readability
-	const vector<ORROctree::Node*>& full_model_leaves = (*hypo_it)->obj_model_->getOctree ().getFullLeaves ();
+	const vector<ORROctree::Node*>& full_model_leaves = (*hypo_it)->obj_model_.getOctree ().getFullLeaves ();
 	rigid_transform = (*hypo_it)->rigid_transform_;
 
 	// The i-th node corresponds to the i-th hypothesis and has id 'i'
@@ -372,10 +380,6 @@ pcl::recognition::ObjRecRANSAC::buildConflictGraph (vector<Hypothesis*>& hypothe
         pixel->hypotheses_ids_.insert (hypothesis_id); // 'hypothesis_id' is the position of the hypothesis in the vector
       }
     }
-
-    // Save the match confidence which is the number of model points falling within a range image pixel
-    // divided by the total number of model points
-    (*hypo_it)->match_confidence_ = static_cast<float> (score)/static_cast<float> (full_model_leaves.size ());
   }
 
   list<ORROctreeZProjection::Pixel*>& pixels = scene_octree_proj_.getFullPixels ();
@@ -483,7 +487,10 @@ pcl::recognition::ObjRecRANSAC::filterWeakHypotheses (ORRGraph& graph, list<ObjR
     (*it)->state_ = ORRGraph::Node::ON;
     // Save the hypothesis as an accepted solution
     recognized_objects.push_back (
-      ObjRecRANSAC::Output ((*it)->hypothesis_->obj_model_->getObjectName (), (*it)->hypothesis_->rigid_transform_, (*it)->hypothesis_->match_confidence_)
+      ObjRecRANSAC::Output ((*it)->hypothesis_->obj_model_.getObjectName (),
+                            (*it)->hypothesis_->rigid_transform_,
+                            (*it)->hypothesis_->match_confidence_,
+                            (*it)->hypothesis_->obj_model_.getUserData ())
     );
 
     // Set all its neighbors to OFF

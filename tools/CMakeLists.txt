@@ -187,6 +187,9 @@ if (build)
         PCL_ADD_EXECUTABLE(pcl_obj_rec_ransac_scene_opps ${SUBSYS_NAME} obj_rec_ransac_scene_opps.cpp) 
         target_link_libraries(pcl_obj_rec_ransac_scene_opps pcl_common pcl_visualization pcl_io pcl_recognition)
 
+        PCL_ADD_EXECUTABLE(pcl_obj_rec_ransac_accepted_hypotheses ${SUBSYS_NAME} obj_rec_ransac_accepted_hypotheses.cpp) 
+        target_link_libraries(pcl_obj_rec_ransac_accepted_hypotheses pcl_common pcl_visualization pcl_io pcl_recognition)
+
         PCL_ADD_EXECUTABLE(pcl_obj_rec_ransac_orr_octree ${SUBSYS_NAME} obj_rec_ransac_orr_octree.cpp)
         target_link_libraries(pcl_obj_rec_ransac_orr_octree pcl_common pcl_visualization pcl_io pcl_recognition)
 

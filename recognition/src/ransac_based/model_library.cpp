@@ -103,7 +103,7 @@ ModelLibrary::removeAllModels ()
 //============================================================================================================================================
 
 bool
-ModelLibrary::addModel (const PointCloudIn& points, const PointCloudN& normals, const std::string& object_name)
+ModelLibrary::addModel (const PointCloudIn& points, const PointCloudN& normals, const std::string& object_name, void* user_data)
 {
 #ifdef OBJ_REC_RANSAC_VERBOSE
   printf("ModelLibrary::%s(): begin [%s]\n", __func__, object_name.c_str ());
@@ -120,7 +120,7 @@ ModelLibrary::addModel (const PointCloudIn& points, const PointCloudN& normals, 
   }
 
   // It is unique -> create a new library model and save it
-  Model* new_model = new Model (points, normals, voxel_size_, object_name);
+  Model* new_model = new Model (points, normals, voxel_size_, object_name, user_data);
   result.first->second = new_model;
 
   const ORROctree& octree = new_model->getOctree ();

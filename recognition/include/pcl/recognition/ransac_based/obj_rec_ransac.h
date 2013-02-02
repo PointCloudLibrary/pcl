@@ -83,36 +83,6 @@ namespace pcl
         typedef ModelLibrary::PointCloudIn PointCloudIn;
         typedef ModelLibrary::PointCloudN PointCloudN;
 
-#if 0
-    	class Parameters
-    	{
-    	  public:
-            Parameters (
-              float relative_obj_size,
-              float abs_zdist_thresh,
-              float visibility,
-              float relative_num_of_illegal_pts,
-              float intersection_fraction,
-              float max_coplanarity_angle = 3.0f*AUX_DEG_TO_RADIANS_FACTOR)
-            : relative_obj_size_ (relative_obj_size),
-              abs_zdist_thresh_ (abs_zdist_thresh),
-              visibility_ (visibility),
-              relative_num_of_illegal_pts_ (relative_num_of_illegal_pts),
-              intersection_fraction_ (intersection_fraction),
-              max_coplanarity_angle_ (max_coplanarity_angle)
-            {}
-
-          public:
-            /** */
-            float relative_obj_size_;
-            float abs_zdist_thresh_;
-            float visibility_;
-            float relative_num_of_illegal_pts_;
-            float intersection_fraction_;
-            float max_coplanarity_angle_;
-    	};
-#endif
-
         /** \brief This is an output item of the ObjRecRANSAC::recognize() method. It contains the recognized model, its name (the ones passed to
           * ObjRecRANSAC::addModel()), the rigid transform which aligns the model with the input scene and the match confidence which is a number
           * in the interval (0, 1] which gives the fraction of the model surface area matched to the scene. E.g., a match confidence of 0.3 means
@@ -122,9 +92,10 @@ namespace pcl
         class Output
         {
           public:
-            Output (const std::string& object_name, const float rigid_transform[12], float match_confidence) :
+            Output (const std::string& object_name, const float rigid_transform[12], float match_confidence, void* user_data) :
               object_name_ (object_name),
-              match_confidence_ (match_confidence)
+              match_confidence_ (match_confidence),
+              user_data_ (user_data)
             {
               for ( int i = 0 ; i < 12 ; ++i )
                 rigid_transform_[i] = rigid_transform[i];
@@ -133,35 +104,38 @@ namespace pcl
 
           public:
             std::string object_name_;
-            float rigid_transform_[12], match_confidence_;
+            float rigid_transform_[12];
+            float match_confidence_;
+            void* user_data_;
         };
 
     	class OrientedPointPair
     	{
-    	  public:
+          public:
             OrientedPointPair (const float *p1, const float *n1, const float *p2, const float *n2)
+            : p1_ (p1), n1_ (n1), p2_ (p2), n2_ (n2)
             {
-              memcpy(p1_, p1, 3*sizeof (float));
-              memcpy(n1_, n1, 3*sizeof (float));
-              memcpy(p2_, p2, 3*sizeof (float));
-              memcpy(n2_, n2, 3*sizeof (float));
             }
+
             virtual ~OrientedPointPair (){}
-            float p1_[3], n1_[3], p2_[3], n2_[3];
+
+          public:
+            const float *p1_, *n1_, *p2_, *n2_;
     	};
 
     	class Hypothesis
     	{
           public:
-            Hypothesis (const ModelLibrary::Model* obj_model)
-             : match_confidence_ (0.0f),
+            Hypothesis (const ModelLibrary::Model& obj_model)
+             : match_confidence_ (-1.0f),
                obj_model_ (obj_model)
             {}
             virtual ~Hypothesis (){}
 
           public:
-            float rigid_transform_[12], match_confidence_;
-            const ModelLibrary::Model* obj_model_;
+            float rigid_transform_[12];
+            float match_confidence_;
+            const ModelLibrary::Model& obj_model_;
             std::set<int> explained_pixels_;
     	};
 
@@ -178,7 +152,8 @@ namespace pcl
         ObjRecRANSAC (float pair_width, float voxel_size);
         virtual ~ObjRecRANSAC ()
         {
-          this->clear();
+          this->clear ();
+          this->clearTestData ();
         }
 
         /** \brief Removes all models from the model library and releases some memory dynamically allocated by this instance. */
@@ -222,15 +197,17 @@ namespace pcl
           *
           * \param[in] points are the object points.
           * \param[in] normals at each point.
-          * \param[in] object_name is an identifier for the object. If that object is detected in the scene 'object_name' is returned by the recognition
-          * method and you know which object has been detected. Note that 'object_name' has to be unique!
+          * \param[in] object_name is an identifier for the object. If that object is detected in the scene 'object_name'
+          * is returned by the recognition method and you know which object has been detected. Note that 'object_name' has
+          * to be unique!
+          * \param[in] user_data is a pointer to some data (can be NULL)
           *
           * The method returns true if the model was successfully added to the model library and false otherwise (e.g., if 'object_name' is already in use).
           */
         inline bool
-        addModel (const PointCloudIn& points, const PointCloudN& normals, const std::string& object_name)
+        addModel (const PointCloudIn& points, const PointCloudN& normals, const std::string& object_name, void* user_data = NULL)
         {
-          return (model_library_.addModel (points, normals, object_name));
+          return (model_library_.addModel (points, normals, object_name, user_data));
         }
 
         /** \brief This method performs the recognition of the models loaded to the model library with the method addModel().
@@ -251,9 +228,39 @@ namespace pcl
         }
 
         inline void
+        enterTestModeTestHypotheses ()
+        {
+          rec_mode_ = ObjRecRANSAC::TEST_HYPOTHESES;
+        }
+
+        inline void
         leaveTestMode ()
         {
           rec_mode_ = ObjRecRANSAC::FULL_RECOGNITION;
+        }
+
+        /** \brief This function is useful for testing purposes. It returns the oriented point pairs which were sampled from the
+          * scene during the recognition process. Makes sense only if some of the testing modes are active. */
+        inline const std::list<ObjRecRANSAC::OrientedPointPair>&
+        getSampledOrientedPointPairs () const
+        {
+          return (sampled_oriented_point_pairs_);
+        }
+
+        /** \brief This function is useful for testing purposes. It returns the accepted hypotheses generated during the
+          * recognition process. Makes sense only if some of the testing modes are active. */
+        inline const std::vector<ObjRecRANSAC::Hypothesis*>&
+        getAcceptedHypotheses () const
+        {
+          return (accepted_hypotheses_);
+        }
+
+        /** \brief This function is useful for testing purposes. It returns the accepted hypotheses generated during the
+          * recognition process. Makes sense only if some of the testing modes are active. */
+        inline void
+        getAcceptedHypotheses (std::vector<ObjRecRANSAC::Hypothesis*>& out) const
+        {
+          out = accepted_hypotheses_;
         }
 
         /** \brief Returns the hash table in the model library. */
@@ -281,14 +288,6 @@ namespace pcl
           return (scene_octree_);
         }
 
-        /** \brief This function is useful for testing purposes. It returns the otiented point pairs which were sampled from the
-          * scene during the recognition process. */
-        inline const std::list<ObjRecRANSAC::OrientedPointPair>&
-        getSampledOrientedPointPairs () const
-        {
-          return (sampled_oriented_point_pairs_);
-        }
-
         inline float
         getPairWidth () const
         {
@@ -296,7 +295,7 @@ namespace pcl
         }
 
       protected:
-        enum Recognition_Mode {SAMPLE_OPP, /*GENERATE_HYPOTHESES, TEST_HYPOTHESES, BUILD_CONFLICT_GRAPH,*/ FULL_RECOGNITION};
+        enum Recognition_Mode {SAMPLE_OPP, TEST_HYPOTHESES, /*BUILD_CONFLICT_GRAPH,*/ FULL_RECOGNITION};
 
         friend class ModelLibrary;
 
@@ -313,6 +312,15 @@ namespace pcl
             return 1;
 
           return static_cast<int> (log (1.0-success_probability)/log (1.0-p) + 1.0);
+        }
+
+        inline void
+        clearTestData ()
+        {
+          sampled_oriented_point_pairs_.clear ();
+          for ( std::vector<ObjRecRANSAC::Hypothesis*>::iterator it = accepted_hypotheses_.begin () ; it != accepted_hypotheses_.end () ; ++it )
+            delete *it;
+          accepted_hypotheses_.clear ();
         }
 
         void
@@ -404,8 +412,8 @@ namespace pcl
         // Parameters
         float pair_width_;
         float voxel_size_;
-        float relative_obj_size_;
         float abs_zdist_thresh_;
+        float relative_obj_size_;
         float visibility_;
         float relative_num_of_illegal_pts_;
         float intersection_fraction_;
@@ -417,6 +425,7 @@ namespace pcl
         ORROctreeZProjection scene_octree_proj_;
 
         std::list<OrientedPointPair> sampled_oriented_point_pairs_;
+        std::vector<Hypothesis*> accepted_hypotheses_;
         Recognition_Mode rec_mode_;
     };
   } // namespace recognition

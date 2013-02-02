@@ -75,37 +75,18 @@ pcl::recognition::ORROctree::clear ()
 //================================================================================================================================================================
 
 void
-pcl::recognition::ORROctree::build (const PointCloudIn& points, float voxelsize, const PointCloudN* normals)
+pcl::recognition::ORROctree::build (const float* bounds, float voxel_size)
 {
-  if ( voxelsize <= 0 )
+  if ( voxel_size <= 0.0f )
     return;
 
   this->clear();
 
-  points_ = &points;
-  voxel_size_ = voxelsize;
+  voxel_size_ = voxel_size;
 
-  // Get the bounds of the input point set
-  PointXYZ min, max;
-  getMinMax3D(points, min, max);
-
-#ifdef PCL_REC_ORR_OCTREE_VERBOSE
-  printf("ORROctree::%s(): start\n", __func__);
-  printf("point set bounds =\n"
-         "[%f, %f]\n"
-         "[%f, %f]\n"
-         "[%f, %f]\n", min.x, max.x, min.y, max.y, min.z, max.z);
-#endif
-
-  // Get the largest side of the bounding box of the input point set
-  float point_set_extent = std::max (std::max (max.x-min.x, max.y-min.y), max.z-min.z);
-
-  // Enlarge the extent a little bit in order to avoid points lying exact on the boundaries of the octree
-  point_set_extent += point_set_extent*0.00001f;
-
-  // Compute the center of the octree
-  float center[3] = {0.5f*(min.x+max.x), 0.5f*(min.y+max.y), 0.5f*(min.z+max.z)};
-  float arg = point_set_extent/voxelsize;
+  float extent = std::max (std::max (bounds[1]-bounds[0], bounds[3]-bounds[2]), bounds[5]-bounds[4]);
+  float center[3] = {0.5f*(bounds[0]+bounds[1]), 0.5f*(bounds[2]+bounds[3]), 0.5f*(bounds[4]+bounds[5])};
+  float arg = extent/voxel_size;
 
   // Compute the number of tree levels
   if ( arg > 1.0f )
@@ -114,7 +95,7 @@ pcl::recognition::ORROctree::build (const PointCloudIn& points, float voxelsize,
     tree_levels_ = 0;
 
   // Compute the number of octree levels and the bounds of the root
-  float half_root_side = static_cast<float> (0.5f*pow (2.0, tree_levels_)*voxelsize);
+  float half_root_side = static_cast<float> (0.5f*pow (2.0, tree_levels_)*voxel_size);
 
   // Determine the bounding box of the octree
   bounds_[0] = center[0] - half_root_side;
@@ -130,33 +111,54 @@ pcl::recognition::ORROctree::build (const PointCloudIn& points, float voxelsize,
   root_->setBounds(bounds_);
   root_->setParent(NULL);
   root_->computeRadius();
+}
 
-  const float *c;
-  int i, l, id, num_points = static_cast<int> (points_->size ());
+//================================================================================================================================================================
+
+void
+pcl::recognition::ORROctree::build (const PointCloudIn& points, float voxel_size, const PointCloudN* normals)
+{
+  if ( voxel_size <= 0.0f )
+    return;
+
+  // Get the bounds of the input point set
+  PointXYZ min, max;
+  getMinMax3D(points, min, max);
+
+  // Enlarge the bounds a bit to avoid points lying exact on the octree boundaries
+  float eps = 0.00001f*std::max (std::max (max.x-min.x, max.y-min.y), max.z-min.z);
+  float b[6] = {min.x-eps, max.x+eps, min.y-eps, max.y+eps, min.z-eps, max.z+eps};
+
+  // Build an empty octree with the right boundaries and the right number of levels
+  this->build (b, voxel_size);
+
+#ifdef PCL_REC_ORR_OCTREE_VERBOSE
+  printf("ORROctree::%s(): start\n", __func__);
+  printf("point set bounds =\n"
+         "[%f, %f]\n"
+         "[%f, %f]\n"
+         "[%f, %f]\n", min.x, max.x, min.y, max.y, min.z, max.z);
+#endif
+
+  int i, num_points = static_cast<int> (points.size ());
   ORROctree::Node* node;
 
   // Fill the leaves with the points
   for ( i = 0 ; i < num_points ; ++i )
   {
-    // Some initialization
-    node = root_;
+    // Create a leaf which contains the i-th point.
+    node = this->addPoint (points[i].x, points[i].y, points[i].z);
 
-    // Go down to the right leaf
-    for ( l = 0 ; l < tree_levels_ ; ++l )
+    // Make sure that the point is within some leaf
+    if ( !node )
     {
-      node->createChildren (); // If this node already has children -> nothing will happen
-      c = node->getCenter ();
-      id = 0;
-
-      if ( points[i].x >= c[0] ) id |= 4;
-      if ( points[i].y >= c[1] ) id |= 2;
-      if ( points[i].z >= c[2] ) id |= 1;
-
-      node = node->getChild (id);
+      fprintf (stderr, "WARNING in 'ORROctree::%s()': the point (%f, %f, %f) should be within the octree bounds!\n",
+        __func__, points[i].x, points[i].y, points[i].z);
+      continue;
     }
 
     // Now, that we have the right leaf -> fill it
-    if ( node->getData() == NULL )
+    if ( !node->getData() )
     {
       Node::Data* data = new Node::Data ();
       // Compute the 3d integer id of the leaf
@@ -170,11 +172,11 @@ pcl::recognition::ORROctree::build (const PointCloudIn& points, float voxelsize,
     }
 
     node->getData ()->addToPoint (points[i].x, points[i].y, points[i].z);
-    node->getData ()->addPointId (i);
     if ( normals )
       node->getData ()->addToNormal (normals->at(i).normal_x, normals->at(i).normal_y, normals->at(i).normal_z);
   }
 
+  // Compute the normals and average points for each full octree node
   if ( normals )
   {
     float normal_length;
@@ -182,7 +184,7 @@ pcl::recognition::ORROctree::build (const PointCloudIn& points, float voxelsize,
     for ( vector<ORROctree::Node*>::iterator it = full_leaves_.begin() ; it != full_leaves_.end() ; )
     {
       // Compute the average point in the current octree leaf
-      aux::vecMult3 ((*it)->getData ()->getPoint (), 1.0f/static_cast<float> ((*it)->getData ()->getNumberOfPoints ()));
+      (*it)->getData ()->computeAveragePoint ();
 
       // Compute the length of the average normal
       normal_length = aux::vecLength3 ((*it)->getData ()->getNormal ());
@@ -205,7 +207,7 @@ pcl::recognition::ORROctree::build (const PointCloudIn& points, float voxelsize,
   {
     // Iterate over all full leaves and average points
     for ( vector<ORROctree::Node*>::iterator it = full_leaves_.begin() ; it != full_leaves_.end() ; ++it )
-      aux::vecMult3 ((*it)->getData ()->getPoint (), 1.0f/static_cast<float> ((*it)->getData ()->getNumberOfPoints ()));
+      (*it)->getData ()->computeAveragePoint ();
   }
 
 #ifdef PCL_REC_ORR_OCTREE_VERBOSE
