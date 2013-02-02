@@ -37,6 +37,7 @@
 
 #include <pcl/apps/optronic_viewer/main_window.h>
 #include <pcl/apps/optronic_viewer/openni_grabber.h>
+#include <pcl/apps/optronic_viewer/filter_window.h>
 
 #include <pcl/io/openni_grabber.h>
 #include <pcl/io/fotonic_grabber.h>
@@ -58,6 +59,11 @@ MainWindow ()
 {
   // initialize API
   pcl::FotonicGrabber::initAPI ();
+
+
+  // setup filters
+  filter_factories_.push_back (new VoxelGridCFF ());
+  filter_factories_.push_back (new VoxelGridCFF ());
 
 
   // reset point cloud
@@ -88,7 +94,9 @@ MainWindow ()
   }
   connect (sensor_selection_combo_box, SIGNAL(activated (int)), this, SLOT(selectedSensorChanged (int)));
   
-  processing_list_view_ = new QListView (central_widget);
+  processing_list_ = new QListWidget (central_widget);
+
+  connect (processing_list_, SIGNAL (itemDoubleClicked (QListWidgetItem*)), this, SLOT (updateFilter (QListWidgetItem*)));
 
   pcl_visualizer_ = new pcl::visualization::PCLVisualizer ("", false);
   qvtk_widget_ = new QVTKWidget (central_widget);
@@ -104,7 +112,7 @@ MainWindow ()
 
   QVBoxLayout * sensor_processing_list_layout = new QVBoxLayout ();
   sensor_processing_list_layout->addLayout (sensor_layout);
-  sensor_processing_list_layout->addWidget (processing_list_view_);
+  sensor_processing_list_layout->addWidget (processing_list_);
 
   QHBoxLayout * main_layout = new QHBoxLayout (central_widget);
   main_layout->addLayout (sensor_processing_list_layout, 0);
@@ -129,17 +137,27 @@ pcl::apps::optronic_viewer::
 MainWindow::
 createFileMenu ()
 {
+  // File menu
   //QAction * open_pcd_file_act = new QAction (tr ("&Open PCD file"), this);
   //open_pcd_file_act->setStatusTip(tr("Opens a PCD file"));
   //connect(newAct, SIGNAL(triggered()), this, SLOT(newFile()));
 
   QAction * exit_act = new QAction (tr ("E&xit"), this);
-  exit_act->setStatusTip(tr("Closes the viewer"));
+  exit_act->setStatusTip (tr ("Closes the viewer"));
   //connect(newAct, SIGNAL(triggered()), this, SLOT(newFile()));
 
   QMenu * file_menu = this->menuBar ()->addMenu (tr ("&File"));
   //file_menu->addAction (open_pcd_file_act);
   file_menu->addAction (exit_act);
+
+
+  // Process menu
+  QAction * add_filter_act = new QAction (tr ("Add &Filter"), this);
+  add_filter_act->setStatusTip (tr ("Adds a filter"));
+  connect(add_filter_act, SIGNAL (triggered ()), this, SLOT (addFilter ()));
+
+  QMenu * process_menu = this->menuBar ()->addMenu (tr ("&Process"));
+  process_menu->addAction (add_filter_act);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -262,9 +280,20 @@ refresh ()
 
   if (cloud_mutex_.try_lock ())
   {
-    if (!pcl_visualizer_->updatePointCloud (cloud_, "OpenNICloud"))
+    // apply filters
+    pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr cloud_in = cloud_;
+    pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud_out (new pcl::PointCloud<pcl::PointXYZRGBA> ());
+    for (int i = 0; i < active_cloud_filters_.size (); ++i)
     {
-      pcl_visualizer_->addPointCloud (cloud_, "OpenNICloud");
+      active_cloud_filters_[i]->filter (cloud_in, cloud_out);
+      cloud_in = cloud_out;
+      cloud_out.reset (new pcl::PointCloud<pcl::PointXYZRGBA> ());
+    }
+
+    // visualize
+    if (!pcl_visualizer_->updatePointCloud (cloud_in, "OpenNICloud"))
+    {
+      pcl_visualizer_->addPointCloud (cloud_in, "OpenNICloud");
       pcl_visualizer_->resetCameraViewpoint ("OpenNICloud");
     }          
     cloud_mutex_.unlock ();
@@ -297,4 +326,47 @@ cloud_callback (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr cloud)
   }
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////
+void 
+pcl::apps::optronic_viewer::
+MainWindow::
+addFilter ()
+{
+  std::cerr << "add filter..." << std::endl;
 
+  // open window to select new filter
+  pcl::apps::optronic_viewer::FilterWindow * filter_dialog = new pcl::apps::optronic_viewer::FilterWindow (filter_factories_, active_cloud_filters_);
+  filter_dialog->setWindowTitle (tr ("Add Filter..."));
+
+  connect (filter_dialog, SIGNAL (filterCreated ()), this, SLOT (refreshFilterList ()));
+
+  filter_dialog->show ();
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void 
+pcl::apps::optronic_viewer::
+MainWindow::
+updateFilter (QListWidgetItem * item)
+{
+  int id = processing_list_->row (item);
+
+  QWizard * wizard = new QWizard ();
+  wizard->addPage (active_cloud_filters_[id]->getParameterPage ());
+  wizard->show ();
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void 
+pcl::apps::optronic_viewer::
+MainWindow::
+refreshFilterList ()
+{
+  processing_list_->clear ();
+  std::cerr << "filters: " << std::endl;
+  for (int i = 0; i < active_cloud_filters_.size (); ++i)
+  {
+    std::cerr << "  " << active_cloud_filters_[i]->getName () << std::endl;
+    processing_list_->addItem (QString (active_cloud_filters_[i]->getName ().c_str ()));
+  }
+}

@@ -89,8 +89,11 @@
 #include <QStyledItemDelegate>
 #include <QVTKWidget.h>
 #include <QListView>
+#include <QListWidget>
 #include <QBoxLayout>
 #include <QLabel>
+#include <QWizard>
+#include <QLineEdit>
 
 #include <QTimer>
 #include <QTime>

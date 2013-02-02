@@ -42,6 +42,7 @@
 
 #include <pcl/apps/optronic_viewer/qt.h>
 #include <pcl/apps/optronic_viewer/openni_grabber.h>
+#include <pcl/apps/optronic_viewer/cloud_filter.h>
 #include <pcl/io/openni_grabber.h>
 #include <pcl/visualization/pcl_visualizer.h>
 
@@ -114,6 +115,7 @@ namespace pcl
           void selectedSensorChanged (int index);
           void cloud_callback (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr cloud);
           void refresh ();
+          void refreshFilterList ();
 
         private:
           // create the file menu in the menu bar
@@ -122,7 +124,9 @@ namespace pcl
           // find connected devices
           void findConnectedDevices ();
 
-        private slots:
+          private slots:
+            void addFilter ();
+            void updateFilter (QListWidgetItem*);
 
         private:
           MainWindow();
@@ -131,7 +135,7 @@ namespace pcl
           ~MainWindow();
 
           // visualization of processing chain
-          QListView * processing_list_view_;
+          QListWidget * processing_list_;
 
           // visualization of point clouds
           QVTKWidget * qvtk_widget_;
@@ -145,6 +149,10 @@ namespace pcl
           //std::vector<OpenNIDevice> connected_openni_devices_;
           pcl::Grabber * grabber_;
           pcl::apps::optronic_viewer::OpenNIGrabber * grabber_thread_;
+
+          // filters
+          std::vector<CloudFilterFactory*> filter_factories_;
+          std::vector<CloudFilter*> active_cloud_filters_;
 
           // mutexes
           boost::mutex cloud_mutex_;
