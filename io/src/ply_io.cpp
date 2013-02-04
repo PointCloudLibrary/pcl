@@ -1547,7 +1547,7 @@ pcl::io::savePLYFileBinary (const std::string &file_name, const pcl::PolygonMesh
   // Write down faces
   for (size_t i = 0; i < nr_faces; i++)
   {
-    unsigned char value = mesh.polygons[i].vertices.size ();
+    unsigned char value = static_cast<unsigned char> (mesh.polygons[i].vertices.size ());
     fpout.write (reinterpret_cast<const char*> (&value), sizeof (unsigned char));
     size_t j = 0;
     for (j = 0; j < mesh.polygons[i].vertices.size (); ++j)
