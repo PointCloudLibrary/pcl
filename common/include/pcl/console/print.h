@@ -50,6 +50,23 @@
 #define PCL_DEBUG(...)   pcl::console::print (pcl::console::L_DEBUG, __VA_ARGS__)
 #define PCL_VERBOSE(...) pcl::console::print (pcl::console::L_VERBOSE, __VA_ARGS__)
 
+#define PCL_ASSERT_ERROR_PRINT_CHECK(pred, msg) \
+    do \
+    { \
+        if (!(pred)) \
+        { \
+            PCL_ERROR(msg); \
+            PCL_ERROR("In File %s, in line %d\n" __FILE__, __LINE__); \
+        } \
+    } while (0)
+
+#define PCL_ASSERT_ERROR_PRINT_RETURN(pred, msg, err) \
+    do \
+    { \
+        PCL_ASSERT_ERROR_PRINT_CHECK(pred, msg); \
+        if (!(pred)) return err; \
+    } while (0)
+
 namespace pcl
 {
   namespace console
@@ -231,4 +248,4 @@ namespace pcl
   }
 } 
 
-#endif
+#endif // TERMINAL_TOOLS_PRINT_H_
