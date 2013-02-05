@@ -234,12 +234,15 @@ TEST (PCL, NormalEstimation_BigTest_32_vs_64_bit)
       EXPECT_EQ (pcl_isnan (expected_normal_estimation_32_vs_64_bit[i].normal_x), pcl_isnan (cloud_normals[i].normal_x));
       EXPECT_EQ (pcl_isnan (expected_normal_estimation_32_vs_64_bit[i].normal_y), pcl_isnan (cloud_normals[i].normal_y));
       EXPECT_EQ (pcl_isnan (expected_normal_estimation_32_vs_64_bit[i].normal_z), pcl_isnan (cloud_normals[i].normal_z));
+      EXPECT_EQ (pcl_isnan (expected_normal_estimation_32_vs_64_bit[i].curvature), pcl_isnan (cloud_normals[i].curvature));
+
     }
     else
     {
       EXPECT_NEAR (expected_normal_estimation_32_vs_64_bit[i].normal_x, cloud_normals[i].normal_x, 2e-4);
       EXPECT_NEAR (expected_normal_estimation_32_vs_64_bit[i].normal_y, cloud_normals[i].normal_y, 2e-4);
       EXPECT_NEAR (expected_normal_estimation_32_vs_64_bit[i].normal_z, cloud_normals[i].normal_z, 2e-4);
+      EXPECT_NEAR (expected_normal_estimation_32_vs_64_bit[i].curvature, cloud_normals[i].curvature, 2e-4);
     }
   }
 
@@ -260,12 +263,15 @@ TEST (PCL, NormalEstimation_BigTest_32_vs_64_bit)
       EXPECT_EQ (pcl_isnan (expected_normal_estimation_32_vs_64_bit[i].normal_x), pcl_isnan (cloud_normals[i].normal_x));
       EXPECT_EQ (pcl_isnan (expected_normal_estimation_32_vs_64_bit[i].normal_y), pcl_isnan (cloud_normals[i].normal_y));
       EXPECT_EQ (pcl_isnan (expected_normal_estimation_32_vs_64_bit[i].normal_z), pcl_isnan (cloud_normals[i].normal_z));
+      EXPECT_EQ (pcl_isnan (expected_normal_estimation_32_vs_64_bit[i].curvature), pcl_isnan (cloud_normals[i].curvature));
+
     }
     else
     {
       EXPECT_NEAR (expected_normal_estimation_32_vs_64_bit[i].normal_x, cloud_normals[i].normal_x, 2e-4);
       EXPECT_NEAR (expected_normal_estimation_32_vs_64_bit[i].normal_y, cloud_normals[i].normal_y, 2e-4);
       EXPECT_NEAR (expected_normal_estimation_32_vs_64_bit[i].normal_z, cloud_normals[i].normal_z, 2e-4);
+      EXPECT_NEAR (expected_normal_estimation_32_vs_64_bit[i].curvature, cloud_normals[i].curvature, 2e-4);
     }
   }
 }
