@@ -42,6 +42,7 @@
 //#include <pcl/gpu/people/label_segment.h>
 #include <pcl/gpu/people/label_tree.h>
 #include <pcl/gpu/people/probability_processor.h>
+#include <pcl/gpu/people/organized_plane_detector.h>
 #include <pcl/console/print.h>
 #include "internal.h"
 
@@ -62,6 +63,9 @@ pcl::gpu::people::PeopleDetector::PeopleDetector()
     : fx_(525.f), fy_(525.f), cx_(319.5f), cy_(239.5f), delta_hue_tolerance_(5)
 {
   PCL_DEBUG ("[pcl::gpu::people::PeopleDetector] : (D) : Constructor called\n");
+
+  // Create a new organized plane detector
+  org_plane_detector_ = OrganizedPlaneDetector::Ptr (new OrganizedPlaneDetector());
 
   // Create a new probability_processor
   probability_processor_ = ProbabilityProcessor::Ptr (new ProbabilityProcessor());

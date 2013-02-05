@@ -50,6 +50,7 @@
 //#include <opencv2/core/core.hpp>
 
 #include <pcl/gpu/people/bodyparts_detector.h>
+#include <pcl/gpu/people/face_detector.h>
 #include <pcl/gpu/people/organized_plane_detector.h>
 #include <pcl/gpu/people/probability_processor.h>
 
@@ -60,11 +61,6 @@ namespace pcl
     namespace people
     {
       /*
-      struct FaceDetector
-      {
-          typedef boost::shared_ptr<FaceDetector> Ptr;
-      };
-
       struct OtherDetector
       {
           typedef boost::shared_ptr<OtherDetector> Ptr;
@@ -83,12 +79,12 @@ namespace pcl
           // ALL THE DETECTOR OBJECTS
           RDFBodyPartsDetector::Ptr     rdf_detector_;
           OrganizedPlaneDetector::Ptr   org_plane_detector_;
-          //FaceDetector::Ptr           face_detector_;
+          FaceDetector::Ptr             face_detector_;
           //OtherDetector::Ptr          other_detector_;
 
           // ALL THE OTHER PEOPLE STUFF
-          PersonAttribs::Ptr        person_attribs_;
-          ProbabilityProcessor::Ptr probability_processor_;
+          PersonAttribs::Ptr            person_attribs_;
+          ProbabilityProcessor::Ptr     probability_processor_;
 
           /** \brief Class constructor. */
           PeopleDetector ();
@@ -136,7 +132,7 @@ namespace pcl
           float fx_, fy_, cx_, cy_;
           unsigned int  delta_hue_tolerance_;
                    
-          DeviceArray<unsigned char> kernelRect5x5_;
+          DeviceArray<unsigned char>  kernelRect5x5_;
 
           PointCloud<PointT>          cloud_host_;
           PointCloud<PointTC>         cloud_host_color_;

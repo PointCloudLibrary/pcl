@@ -47,46 +47,133 @@
 
 #include <cuda_runtime_api.h>
 
+#include "NCVHaarObjectDetection.hpp"
+
 namespace pcl
 {
   namespace gpu
   {
     namespace people
     {
-      class PCL_EXPORTS FaceDetector
+      class FaceDetector
       {
         public:
           typedef boost::shared_ptr<FaceDetector> Ptr;
-
           //typedef DeviceArray2D<unsigned char> Labels;
           //typedef DeviceArray2D<unsigned short> Depth;
           //typedef DeviceArray2D<pcl::RGB> Image;
 
           /** \brief This is the constructor **/
-          FaceDetector();
+          FaceDetector ( int cols, int rows);
+
+          NCVStatus
+          loadFromXML(const std::string &filename,
+                      HaarClassifierCascadeDescriptor &haar,
+                      std::vector<HaarStage64> &haarStages,
+                      std::vector<HaarClassifierNode128> &haarClassifierNodes,
+                      std::vector<HaarFeature64> &haarFeatures);
+
+          static NCVStatus
+          loadFromNVBIN(const std::string &filename,
+                        HaarClassifierCascadeDescriptor &haar,
+                        std::vector<HaarStage64> &haarStages,
+                        std::vector<HaarClassifierNode128> &haarClassifierNodes,
+                        std::vector<HaarFeature64> &haarFeatures);
+
+          NCVStatus
+          ncvHaarLoadFromFile_host(const std::string &filename,
+                                   HaarClassifierCascadeDescriptor &haar,
+                                   NCVVector<HaarStage64> &h_HaarStages,
+                                   NCVVector<HaarClassifierNode128> &h_HaarNodes,
+                                   NCVVector<HaarFeature64> &h_HaarFeatures);
+
+          NCVStatus
+          ncvHaarGetClassifierSize(const std::string &filename, Ncv32u &numStages,
+                                   Ncv32u &numNodes, Ncv32u &numFeatures);
+
+          NCVStatus
+          NCVprocess(pcl::PointCloud<pcl::RGB>,
+                     Ncv32u width,
+                     Ncv32u height,
+                     NcvBool bFilterRects,
+                     NcvBool bLargestFace,
+                     HaarClassifierCascadeDescriptor &haar,
+                     NCVVector<HaarStage64> &d_haarStages,
+                     NCVVector<HaarClassifierNode128> &d_haarNodes,
+                     NCVVector<HaarFeature64> &d_haarFeatures,
+                     NCVVector<HaarStage64> &h_haarStages,
+                     INCVMemAllocator &gpuAllocator,
+                     INCVMemAllocator &cpuAllocator,
+                     cudaDeviceProp &devProp);
+
+          int
+          configure (std::string cascade_file_name);
 
           /** \brief Process step, this wraps the Nvidia code **/
-          void
-          process();
+          void process ();
 
           /** \brief largest object sets return configuration **/
-          inline void
-          setLargestObject(bool largest_object) {largest_object_ = largest_object;}
+          inline void setLargestObject (bool largest_object)
+          {
+            largest_object_ = largest_object;
+          }
 
-          inline bool
-          getLargestObject() {return largest_object_;}
+          inline bool getLargestObject () const
+          {
+            return largest_object_;
+          }
 
           /** \brief Set the cuda GPU to use **/
+          void setDeviceId (int id);
+
+          int getCols () const
+          {
+            return cols_;
+          }
+
+          void setCols (int cols)
+          {
+            cols_ = cols;
+          }
+
+          int getRows () const
+          {
+            return rows_;
+          }
+
+          void setRows (int rows)
+          {
+            rows_ = rows;
+          }
+
+          std::string
+          getCascadeFileName () const
+          {
+            return cascade_file_name_;
+          }
+
           void
-          setDeviceId( int id );
+          setCascadeFileName (std::string cascadeFileName)
+          {
+            cascade_file_name_ = cascadeFileName;
+          }
+
+          /** \brief Get the cuda GPU device id in use **/
+          int
+          getDeviceId() {return cuda_dev_id_;}
 
         private:
           void allocate_buffers(int rows = 480, int cols = 640);
 
           bool                largest_object_;      /** \brief only give back largest object **/
 
-          int                 cuda_dev_id_;
+          int                 cuda_dev_id_;         /** \brief indicates which GPU to use for this **/
           cudaDeviceProp      cuda_dev_prop_;
+
+          std::string         cascade_file_name_;
+
+          int                 rows_;                // should default to 480
+          int                 cols_;                // should default to 640
 
       };
     }

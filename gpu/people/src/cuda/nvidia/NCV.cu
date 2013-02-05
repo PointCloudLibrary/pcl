@@ -650,9 +650,9 @@ double ncvEndQueryTimerMs(NcvTimer t)
 
 
 //from OpenCV
-void groupRectangles(std::vector<NcvRect32u> &hypotheses, int groupThreshold, double eps, std::vector<Ncv32u> *weights);
+//void groupRectangles(std::vector<NcvRect32u> &hypotheses, int groupThreshold, double eps, std::vector<Ncv32u> *weights);
 
-
+/*
 NCVStatus ncvGroupRectangles_host(NCVVector<NcvRect32u> &hypotheses,
                                   Ncv32u &numHypotheses,
                                   Ncv32u minNeighbors,
@@ -698,7 +698,7 @@ NCVStatus ncvGroupRectangles_host(NCVVector<NcvRect32u> &hypotheses,
 
     return NCV_SUCCESS;
 }
-
+*/
 
 template <class T>
 static NCVStatus drawRectsWrapperHost(T *h_dst,

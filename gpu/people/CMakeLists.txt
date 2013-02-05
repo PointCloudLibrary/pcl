@@ -18,17 +18,18 @@ if(build)
   find_cuda_helper_libs(npp)
 
   #Label_skeleton
-  #FILE(GLOB srcs src/*.cpp src/*.h* src/label_skeleton/*.cpp)
+
   FILE(GLOB srcs src/*.cpp src/*.h*)
-  FILE(GLOB srcs_cuda src/cuda/*.cu src/cuda/*.h)
-  #FILE(GLOB srcs_cuda src/cuda/*.cu src/cuda/*.h src/cuda/*.hpp)  
+  FILE(GLOB srcs_cuda src/cuda/*.cu src/cuda/*.h src/cuda/nvidia/*.cu src/cuda/nvidia/*.hpp)
+  #FILE(GLOB srcs_cuda src/cuda/*.cu src/cuda/*.h src/cuda/nvidia/*.cu src/cuda/nvidia/*.hpp)
   FILE(GLOB hdrs include/pcl/gpu/people/*.h*)
 
   source_group("Source files\\cuda" FILES ${srcs_cuda} )
   source_group("Source files" FILES ${srcs} )    
 
   include_directories(${VTK_INCLUDE_DIRS})
-  include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_SOURCE_DIR}/src/cuda)
+  include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_SOURCE_DIR}/src/cuda ${CMAKE_CURRENT_SOURCE_DIR}/src/cuda/nvidia)
+  #include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_SOURCE_DIR}/src/cuda)
   include_directories(${OpenCV_INCLUDE_DIRS} ${CUDA_INCLUDE_DIRS})
 
   if (UNIX OR APPLE)

@@ -1739,6 +1739,8 @@ NCVStatus ncvDetectObjectsMultiScale_device(NCVMatrix<Ncv8u> &d_srcImg,
             }
 
             Ncv32u numStrongHypothesesNow = dstNumRects;
+            // TODO Fix this to be back operational
+            /*
             ncvStat = ncvGroupRectangles_host(
                 h_hypothesesIntermediate,
                 numStrongHypothesesNow,
@@ -1746,7 +1748,7 @@ NCVStatus ncvDetectObjectsMultiScale_device(NCVMatrix<Ncv8u> &d_srcImg,
                 RECT_SIMILARITY_PROPORTION,
                 NULL);
             ncvAssertReturnNcvStat(ncvStat);
-
+            */
             if (numStrongHypothesesNow > 0)
             {
                 NcvRect32u maxRect = h_hypothesesIntermediate.ptr()[0];
@@ -1800,7 +1802,8 @@ NCVStatus ncvDetectObjectsMultiScale_device(NCVMatrix<Ncv8u> &d_srcImg,
             ncvAssertReturnNcvStat(ncvStat);
             ncvAssertCUDAReturn(cudaStreamSynchronize(cuStream), NCV_CUDA_ERROR);
         }
-
+        // Todo fix this to be back operational
+        /*
         ncvStat = ncvGroupRectangles_host(
             h_hypothesesIntermediate,
             dstNumRects,
@@ -1808,7 +1811,7 @@ NCVStatus ncvDetectObjectsMultiScale_device(NCVMatrix<Ncv8u> &d_srcImg,
             RECT_SIMILARITY_PROPORTION,
             NULL);
         ncvAssertReturnNcvStat(ncvStat);
-
+        */
         if (dstNumRects > d_dstRects.length())
         {
             ncvRetCode = NCV_WARNING_HAAR_DETECTIONS_VECTOR_OVERFLOW;
@@ -1848,6 +1851,8 @@ NCVStatus ncvDetectObjectsMultiScale_device(NCVMatrix<Ncv8u> &d_srcImg,
 #include <float.h>
 #endif
 
+#define NVBIN_HAAR_SIZERESERVED     16
+#define NVBIN_HAAR_VERSION          0x1
 
 NCVStatus ncvApplyHaarClassifierCascade_host(NCVMatrix<Ncv32u> &h_integralImage,
                                              NCVMatrix<Ncv32f> &h_weights,
@@ -2012,7 +2017,6 @@ NCVStatus ncvApplyHaarClassifierCascade_host(NCVMatrix<Ncv32u> &h_integralImage,
     return NCV_SUCCESS;
 }
 
-
 NCVStatus ncvGrowDetectionsVector_host(NCVVector<Ncv32u> &pixelMask,
                                        Ncv32u numPixelMaskDetections,
                                        NCVVector<NcvRect32u> &hypotheses,
@@ -2053,180 +2057,6 @@ NCVStatus ncvGrowDetectionsVector_host(NCVVector<Ncv32u> &pixelMask,
     totalDetections += numDetsToCopy;
     return ncvStat;
 }
-
-
-NCVStatus loadFromXML(const std::string &filename,
-                      HaarClassifierCascadeDescriptor &haar,
-                      std::vector<HaarStage64> &haarStages,
-                      std::vector<HaarClassifierNode128> &haarClassifierNodes,
-                      std::vector<HaarFeature64> &haarFeatures);
-
-
-#define NVBIN_HAAR_SIZERESERVED     16
-#define NVBIN_HAAR_VERSION          0x1
-
-
-static NCVStatus loadFromNVBIN(const std::string &filename,
-                               HaarClassifierCascadeDescriptor &haar,
-                               std::vector<HaarStage64> &haarStages,
-                               std::vector<HaarClassifierNode128> &haarClassifierNodes,
-                               std::vector<HaarFeature64> &haarFeatures)
-{
-    size_t readCount;
-    FILE *fp = fopen(filename.c_str(), "rb");
-    ncvAssertReturn(fp != NULL, NCV_FILE_ERROR);
-    Ncv32u fileVersion;
-    readCount = fread(&fileVersion, sizeof(Ncv32u), 1, fp);
-    ncvAssertReturn(1 == readCount, NCV_FILE_ERROR);
-    ncvAssertReturn(fileVersion == NVBIN_HAAR_VERSION, NCV_FILE_ERROR);
-    Ncv32u fsize;
-    readCount = fread(&fsize, sizeof(Ncv32u), 1, fp);
-    ncvAssertReturn(1 == readCount, NCV_FILE_ERROR);
-    fseek(fp, 0, SEEK_END);
-    Ncv32u fsizeActual = ftell(fp);
-    ncvAssertReturn(fsize == fsizeActual, NCV_FILE_ERROR);
-
-    std::vector<unsigned char> fdata;
-    fdata.resize(fsize);
-    Ncv32u dataOffset = 0;
-    fseek(fp, 0, SEEK_SET);
-    readCount = fread(&fdata[0], fsize, 1, fp);
-    ncvAssertReturn(1 == readCount, NCV_FILE_ERROR);
-    fclose(fp);
-
-    //data
-    dataOffset = NVBIN_HAAR_SIZERESERVED;
-    haar.NumStages = *(Ncv32u *)(&fdata[0]+dataOffset);
-    dataOffset += sizeof(Ncv32u);
-    haar.NumClassifierRootNodes = *(Ncv32u *)(&fdata[0]+dataOffset);
-    dataOffset += sizeof(Ncv32u);
-    haar.NumClassifierTotalNodes = *(Ncv32u *)(&fdata[0]+dataOffset);
-    dataOffset += sizeof(Ncv32u);
-    haar.NumFeatures = *(Ncv32u *)(&fdata[0]+dataOffset);
-    dataOffset += sizeof(Ncv32u);
-    haar.ClassifierSize = *(NcvSize32u *)(&fdata[0]+dataOffset);
-    dataOffset += sizeof(NcvSize32u);
-    haar.bNeedsTiltedII = *(NcvBool *)(&fdata[0]+dataOffset);
-    dataOffset += sizeof(NcvBool);
-    haar.bHasStumpsOnly = *(NcvBool *)(&fdata[0]+dataOffset);
-    dataOffset += sizeof(NcvBool);
-
-    haarStages.resize(haar.NumStages);
-    haarClassifierNodes.resize(haar.NumClassifierTotalNodes);
-    haarFeatures.resize(haar.NumFeatures);
-
-    Ncv32u szStages = haar.NumStages * sizeof(HaarStage64);
-    Ncv32u szClassifiers = haar.NumClassifierTotalNodes * sizeof(HaarClassifierNode128);
-    Ncv32u szFeatures = haar.NumFeatures * sizeof(HaarFeature64);
-
-    memcpy(&haarStages[0], &fdata[0]+dataOffset, szStages);
-    dataOffset += szStages;
-    memcpy(&haarClassifierNodes[0], &fdata[0]+dataOffset, szClassifiers);
-    dataOffset += szClassifiers;
-    memcpy(&haarFeatures[0], &fdata[0]+dataOffset, szFeatures);
-    dataOffset += szFeatures;
-
-    return NCV_SUCCESS;
-}
-
-
-NCVStatus ncvHaarGetClassifierSize(const std::string &filename, Ncv32u &numStages,
-                                   Ncv32u &numNodes, Ncv32u &numFeatures)
-{
-    size_t readCount;
-    NCVStatus ncvStat;
-
-    std::string fext = filename.substr(filename.find_last_of(".") + 1);
-    std::transform(fext.begin(), fext.end(), fext.begin(), ::tolower);
-
-    if (fext == "nvbin")
-    {
-        FILE *fp = fopen(filename.c_str(), "rb");
-        ncvAssertReturn(fp != NULL, NCV_FILE_ERROR);
-        Ncv32u fileVersion;
-        readCount = fread(&fileVersion, sizeof(Ncv32u), 1, fp);
-        ncvAssertReturn(1 == readCount, NCV_FILE_ERROR);
-        ncvAssertReturn(fileVersion == NVBIN_HAAR_VERSION, NCV_FILE_ERROR);
-        fseek(fp, NVBIN_HAAR_SIZERESERVED, SEEK_SET);
-        Ncv32u tmp;
-        readCount = fread(&numStages,   sizeof(Ncv32u), 1, fp);
-        ncvAssertReturn(1 == readCount, NCV_FILE_ERROR);
-        readCount = fread(&tmp,         sizeof(Ncv32u), 1, fp);
-        ncvAssertReturn(1 == readCount, NCV_FILE_ERROR);
-        readCount = fread(&numNodes,    sizeof(Ncv32u), 1, fp);
-        ncvAssertReturn(1 == readCount, NCV_FILE_ERROR);
-        readCount = fread(&numFeatures, sizeof(Ncv32u), 1, fp);
-        ncvAssertReturn(1 == readCount, NCV_FILE_ERROR);
-        fclose(fp);
-    }
-    else if (fext == "xml")
-    {
-        HaarClassifierCascadeDescriptor haar;
-        std::vector<HaarStage64> haarStages;
-        std::vector<HaarClassifierNode128> haarNodes;
-        std::vector<HaarFeature64> haarFeatures;
-
-        ncvStat = loadFromXML(filename, haar, haarStages, haarNodes, haarFeatures);
-        ncvAssertReturnNcvStat(ncvStat);
-
-        numStages = haar.NumStages;
-        numNodes = haar.NumClassifierTotalNodes;
-        numFeatures = haar.NumFeatures;
-    }
-    else
-    {
-        return NCV_HAAR_XML_LOADING_EXCEPTION;
-    }
-
-    return NCV_SUCCESS;
-}
-
-
-NCVStatus ncvHaarLoadFromFile_host(const std::string &filename,
-                                   HaarClassifierCascadeDescriptor &haar,
-                                   NCVVector<HaarStage64> &h_HaarStages,
-                                   NCVVector<HaarClassifierNode128> &h_HaarNodes,
-                                   NCVVector<HaarFeature64> &h_HaarFeatures)
-{
-    ncvAssertReturn(h_HaarStages.memType() == NCVMemoryTypeHostPinned &&
-                    h_HaarNodes.memType() == NCVMemoryTypeHostPinned &&
-                    h_HaarFeatures.memType() == NCVMemoryTypeHostPinned, NCV_MEM_RESIDENCE_ERROR);
-
-    NCVStatus ncvStat;
-
-    std::string fext = filename.substr(filename.find_last_of(".") + 1);
-    std::transform(fext.begin(), fext.end(), fext.begin(), ::tolower);
-
-    std::vector<HaarStage64> haarStages;
-    std::vector<HaarClassifierNode128> haarNodes;
-    std::vector<HaarFeature64> haarFeatures;
-
-    if (fext == "nvbin")
-    {
-        ncvStat = loadFromNVBIN(filename, haar, haarStages, haarNodes, haarFeatures);
-        ncvAssertReturnNcvStat(ncvStat);
-    }
-    else if (fext == "xml")
-    {
-        ncvStat = loadFromXML(filename, haar, haarStages, haarNodes, haarFeatures);
-        ncvAssertReturnNcvStat(ncvStat);
-    }
-    else
-    {
-        return NCV_HAAR_XML_LOADING_EXCEPTION;
-    }
-
-    ncvAssertReturn(h_HaarStages.length() >= haarStages.size(), NCV_MEM_INSUFFICIENT_CAPACITY);
-    ncvAssertReturn(h_HaarNodes.length() >= haarNodes.size(), NCV_MEM_INSUFFICIENT_CAPACITY);
-    ncvAssertReturn(h_HaarFeatures.length() >= haarFeatures.size(), NCV_MEM_INSUFFICIENT_CAPACITY);
-
-    memcpy(h_HaarStages.ptr(), &haarStages[0], haarStages.size()*sizeof(HaarStage64));
-    memcpy(h_HaarNodes.ptr(), &haarNodes[0], haarNodes.size()*sizeof(HaarClassifierNode128));
-    memcpy(h_HaarFeatures.ptr(), &haarFeatures[0], haarFeatures.size()*sizeof(HaarFeature64));
-
-    return NCV_SUCCESS;
-}
-
 
 NCVStatus ncvHaarStoreNVBIN_host(const std::string &filename,
                                  HaarClassifierCascadeDescriptor haar,

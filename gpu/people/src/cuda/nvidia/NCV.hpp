@@ -54,7 +54,7 @@
 #include <cuda_runtime.h>
 #include <sstream>
 #include <iostream>
-
+#include <pcl/console/print.h>
 
 //==============================================================================
 //

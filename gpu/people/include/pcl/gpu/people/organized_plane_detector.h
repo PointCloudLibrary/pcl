@@ -90,7 +90,7 @@ namespace pcl
 
         public:
           /** \brief This is the constructor **/
-          OrganizedPlaneDetector (int rows, int cols);
+          OrganizedPlaneDetector (int rows = 480, int cols = 640);
 
           /** \brief Process step, this wraps Organized Plane Segmentation code **/
           void process (const PointCloud<PointTC>::ConstPtr &cloud);
