@@ -39,6 +39,8 @@
 #ifndef PCL_TYPE_CONVERSIONS_H
 #define PCL_TYPE_CONVERSIONS_H
 
+#include <limits>
+
 namespace pcl
 {
   // r,g,b, i values are from 0 to 1
@@ -58,7 +60,39 @@ namespace pcl
     out.intensity = 0.299f * in.r + 0.587f * in.g + 0.114f * in.b;
   }
 
-  
+  /** \brief Convert a RGB point type to a I
+    * \param[in] in the input RGB point
+    * \param[out] out the output Intensity point
+    */
+  inline void
+  PointRGBtoI (RGB&          in,
+               Intensity&    out)
+  {
+    out.intensity = 0.299f * in.r + 0.587f * in.g + 0.114f * in.b;
+  }
+
+  /** \brief Convert a RGB point type to a I
+    * \param[in] in the input RGB point
+    * \param[out] out the output Intensity point
+    */
+  inline void
+  PointRGBtoI (RGB&          in,
+               Intensity8u&  out)
+  {
+    out.intensity = static_cast<uint8_t>(std::numeric_limits<uint8_t>::max() * 0.299f * in.r + 0.587f * in.g + 0.114f * in.b);
+  }
+
+  /** \brief Convert a RGB point type to a I
+    * \param[in] in the input RGB point
+    * \param[out] out the output Intensity point
+    */
+  inline void
+  PointRGBtoI (RGB&          in,
+               Intensity32u& out)
+  {
+    out.intensity = static_cast<uint32_t>(std::numeric_limits<uint32_t>::max() * 0.299f * in.r + 0.587f * in.g + 0.114f * in.b);
+  }
+
   /** \brief Convert a XYZRGB point type to a XYZHSV
     * \param[in] in the input XYZRGB point 
     * \param[out] out the output XYZHSV point
@@ -93,7 +127,6 @@ namespace pcl
     if (out.h < 0)
       out.h += 360;
   }
-
 
   /** \brief Convert a XYZHSV point type to a XYZRGB
     * \param[in] in the input XYZHSV point 
@@ -163,6 +196,59 @@ namespace pcl
     }
   }
 
+  /** \brief Convert a RGB point cloud to a Intensity
+    * \param[in] in the input RGB point cloud
+    * \param[out] out the output Intensity point cloud
+    */
+  inline void
+  PointCloudRGBtoI (PointCloud<RGB>&        in,
+                    PointCloud<Intensity>&  out)
+  {
+    out.width   = in.width;
+    out.height  = in.height;
+    for (size_t i = 0; i < in.points.size (); i++)
+    {
+      Intensity p;
+      PointRGBtoI (in.points[i], p);
+      out.points.push_back (p);
+    }
+  }
+
+  /** \brief Convert a RGB point cloud to a Intensity
+    * \param[in] in the input RGB point cloud
+    * \param[out] out the output Intensity point cloud
+    */
+  inline void
+  PointCloudRGBtoI (PointCloud<RGB>&          in,
+                    PointCloud<Intensity8u>&  out)
+  {
+    out.width   = in.width;
+    out.height  = in.height;
+    for (size_t i = 0; i < in.points.size (); i++)
+    {
+      Intensity8u p;
+      PointRGBtoI (in.points[i], p);
+      out.points.push_back (p);
+    }
+  }
+
+  /** \brief Convert a RGB point cloud to a Intensity
+    * \param[in] in the input RGB point cloud
+    * \param[out] out the output Intensity point cloud
+    */
+  inline void
+  PointCloudRGBtoI (PointCloud<RGB>&        in,
+                    PointCloud<Intensity32u>&  out)
+  {
+    out.width   = in.width;
+    out.height  = in.height;
+    for (size_t i = 0; i < in.points.size (); i++)
+    {
+      Intensity32u p;
+      PointRGBtoI (in.points[i], p);
+      out.points.push_back (p);
+    }
+  }
 
   /** \brief Convert a XYZRGB point cloud to a XYZHSV
     * \param[in] in the input XYZRGB point cloud
@@ -181,6 +267,7 @@ namespace pcl
       out.points.push_back (p);
     }
   }
+
   /** \brief Convert a XYZRGB point cloud to a XYZI
     * \param[in] in the input XYZRGB point cloud
     * \param[out] out the output XYZI point cloud
