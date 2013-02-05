@@ -80,6 +80,11 @@ namespace pcl
     */
   struct Intensity8u;
 
+  /** \brief Members: intensity (uint32_t)
+    * \ingroup common
+    */
+  struct Intensity32u;
+
   /** \brief Members: float x, y, z, intensity
     * \ingroup common
     */
@@ -326,6 +331,11 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::_Intensity8u,
     (uint8_t, intensity, intensity)
 )
 POINT_CLOUD_REGISTER_POINT_WRAPPER(pcl::Intensity8u, pcl::_Intensity8u)
+
+POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::_Intensity32u,
+    (uint32_t, intensity, intensity)
+)
+POINT_CLOUD_REGISTER_POINT_WRAPPER(pcl::Intensity32u, pcl::_Intensity32u)
 
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::_PointXYZ,
     (float, x, x)

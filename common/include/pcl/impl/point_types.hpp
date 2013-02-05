@@ -207,6 +207,11 @@ namespace pcl
       uint8_t intensity; \
     }; \
 
+#define PCL_ADD_INTENSITY_32U \
+    struct \
+    { \
+        uint32_t intensity; \
+    }; \
 
   typedef Eigen::Map<Eigen::Array3f> Array3fMap;
   typedef const Eigen::Map<const Eigen::Array3f> Array3fMapConst;
@@ -348,6 +353,30 @@ namespace pcl
     friend std::ostream& operator << (std::ostream& os, const Intensity8u& p);
   };
 
+  struct _Intensity32u
+  {
+    PCL_ADD_INTENSITY_32U;
+  };
+
+  PCL_EXPORTS std::ostream& operator << (std::ostream& os, const Intensity32u& p);
+  /** \brief A point structure representing the grayscale intensity in single-channel images.
+    * Intensity is represented as a uint8_t value.
+    * \ingroup common
+    */
+  struct Intensity32u: public _Intensity32u
+  {
+    inline Intensity32u (const _Intensity32u &p)
+    {
+      intensity = p.intensity;
+    }
+
+    inline Intensity32u ()
+    {
+      intensity = 0;
+    }
+
+    friend std::ostream& operator << (std::ostream& os, const Intensity32u& p);
+  };
 
   /** \brief A point structure representing Euclidean xyz coordinates, and the intensity value.
     * \ingroup common
