@@ -69,7 +69,7 @@ TEST (PCL, computePointNormal)
   c.push_back (p11); c.push_back (p21); c.push_back (p31);
 
   computePointNormal (cloud, plane_parameters, curvature);
-  cerr << plane_parameters << "\n";
+//  cerr << plane_parameters << "\n";
   
   c.clear ();
   PointXYZ p12 (-439747.72f, -43597.250f, 0.0000000f),
@@ -79,7 +79,7 @@ TEST (PCL, computePointNormal)
   c.push_back (p12); c.push_back (p22); c.push_back (p32);
 
   computePointNormal (cloud, plane_parameters, curvature);
-  cerr << plane_parameters << "\n";
+//  cerr << plane_parameters << "\n";
 
   c.clear ();
   PointXYZ p13 (567011.56f, -7741.8179f, 0.00000000f),
@@ -89,7 +89,7 @@ TEST (PCL, computePointNormal)
   c.push_back (p13); c.push_back (p23); c.push_back (p33);
 
   computePointNormal (cloud, plane_parameters, curvature);
-  cerr << plane_parameters << "\n";
+//  cerr << plane_parameters << "\n";
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -224,6 +224,32 @@ TEST (PCL, NormalEstimation_BigTest_32_vs_64_bit)
 
   PointCloud<Normal> cloud_normals;
   ne.compute (cloud_normals);
+
+  EXPECT_EQ (expected_normal_estimation_32_vs_64_bit.size (), cloud_normals.size ());
+
+  for (size_t i = 0; i < cloud_normals.size (); ++i)
+  {
+    if (pcl_isnan (expected_normal_estimation_32_vs_64_bit[i].normal_x))
+    {
+      EXPECT_EQ (pcl_isnan (expected_normal_estimation_32_vs_64_bit[i].normal_x), pcl_isnan (cloud_normals[i].normal_x));
+      EXPECT_EQ (pcl_isnan (expected_normal_estimation_32_vs_64_bit[i].normal_y), pcl_isnan (cloud_normals[i].normal_y));
+      EXPECT_EQ (pcl_isnan (expected_normal_estimation_32_vs_64_bit[i].normal_z), pcl_isnan (cloud_normals[i].normal_z));
+    }
+    else
+    {
+      EXPECT_NEAR (expected_normal_estimation_32_vs_64_bit[i].normal_x, cloud_normals[i].normal_x, 2e-4);
+      EXPECT_NEAR (expected_normal_estimation_32_vs_64_bit[i].normal_y, cloud_normals[i].normal_y, 2e-4);
+      EXPECT_NEAR (expected_normal_estimation_32_vs_64_bit[i].normal_z, cloud_normals[i].normal_z, 2e-4);
+    }
+  }
+
+
+  /// Repeat the process for the OpenMP version
+  NormalEstimationOMP<PointXYZ, Normal> ne_omp (4); // instantiate 4 threads
+  ne_omp.setInputCloud (cloud_big);
+  ne_omp.setRadiusSearch (0.02);
+  cloud_normals.clear ();
+  ne_omp.compute (cloud_normals);
 
   EXPECT_EQ (expected_normal_estimation_32_vs_64_bit.size (), cloud_normals.size ());
 
