@@ -114,6 +114,11 @@ pcl::KdTreeFLANN<PointT, Dist>::setInputCloud (const PointCloudConstPtr &cloud, 
     convertCloudToArray (*input_);
   }
   total_nr_points_ = static_cast<int> (index_mapping_.size ());
+  if (total_nr_points_ == 0)
+  {
+    PCL_ERROR ("[pcl::KdTreeFLANN::setInputCloud] Cannot create a KDTree with an empty input cloud!\n");
+    return;
+  }
 
   flann_index_.reset (new FLANNIndex (::flann::Matrix<float> (cloud_, 
                                                               index_mapping_.size (), 
