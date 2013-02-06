@@ -7,6 +7,7 @@
 
 #include <string>
 #include <iostream>
+#include <iomanip>
 
 #include <pcl/io/hdl_grabber.h>
 #include <pcl/console/parse.h>
@@ -42,10 +43,16 @@ class SimpleHDLGrabber
 
     void 
     sweepScan (
-        const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZ> >&) 
+        const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZ> >& sweep)
     {
       static unsigned count = 0;
       static double last = pcl::getTime();
+
+      if (sweep->header.seq == 0) {
+        time_t systemTime = static_cast<time_t>(((sweep->header.stamp & 0xffffffff00000000l) >> 32) & 0x00000000ffffffff);
+        uint32_t usec = static_cast<uint32_t>(sweep->header.stamp & 0x00000000ffffffff);
+        std::cout << std::hex << sweep->header.stamp << "  " << ctime(&systemTime) << " usec: " << usec << std::endl;
+      }
 
       if (++count == 30) 
       {

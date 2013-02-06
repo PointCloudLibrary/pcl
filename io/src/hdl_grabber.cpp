@@ -309,12 +309,28 @@ pcl::HDLGrabber::processVelodynePackets ()
 void
 pcl::HDLGrabber::toPointClouds (HDLDataPacket *dataPacket)
 {
+  static uint32_t scanCounter = 0;
+  static uint32_t sweepCounter = 0;
   if (sizeof (HDLLaserReturn) != 3)
     return;
 
   current_scan_xyz_.reset (new pcl::PointCloud<pcl::PointXYZ> ());
   current_scan_xyzrgb_.reset (new pcl::PointCloud<pcl::PointXYZRGBA> ());
   current_scan_xyzi_.reset (new pcl::PointCloud<pcl::PointXYZI> ());
+
+  time_t  time_;
+  time(&time_);
+  time_t velodyneTime = (time_ & 0x00000000ffffffffl) << 32 | dataPacket->gpsTimestamp;
+
+  current_scan_xyz_->header.stamp = velodyneTime;
+  current_scan_xyzrgb_->header.stamp = velodyneTime;
+  current_scan_xyzi_->header.stamp = velodyneTime;
+
+  current_scan_xyz_->header.seq = scanCounter;
+  current_scan_xyzrgb_->header.seq = scanCounter;
+  current_scan_xyzi_->header.seq = scanCounter;
+  scanCounter++;
+
   for (int i = 0; i < HDL_FIRING_PER_PKT; ++i)
   {
     HDLFiringData firingData = dataPacket->firingData[i];
@@ -327,6 +343,16 @@ pcl::HDLGrabber::toPointClouds (HDLDataPacket *dataPacket)
         if (current_sweep_xyzrgb_->size () > 0)
         {
           current_sweep_xyz_->is_dense = current_sweep_xyzrgb_->is_dense = current_sweep_xyzi_->is_dense = false;
+
+          current_sweep_xyz_->header.stamp = velodyneTime;
+          current_sweep_xyzrgb_->header.stamp = velodyneTime;
+          current_sweep_xyzi_->header.stamp = velodyneTime;
+
+          current_sweep_xyz_->header.seq = sweepCounter;
+          current_sweep_xyzrgb_->header.seq = sweepCounter;
+          current_sweep_xyzi_->header.seq = sweepCounter;
+
+          sweepCounter++;
 
           fireCurrentSweep ();
         }
