@@ -615,7 +615,7 @@ namespace pcl
 
     /** 
       * \brief Templated version for saving point cloud data to a PCD file
-      * containing a specific given cloud format.
+      * containing a specific given cloud format. The resulting file will be an uncompressed binary.
       *
       *      This version is to retain backwards compatibility.
       * \param[in] file_name the output file name
@@ -656,6 +656,24 @@ namespace pcl
       PCDWriter w;
       return (w.write<PointT> (file_name, cloud, indices, binary_mode));
     }
+
+
+    /**
+      * \brief Templated version for saving point cloud data to a PCD file
+      * containing a specific given cloud format. This method will write a compressed binary file.
+      *
+      *      This version is to retain backwards compatibility.
+      * \param[in] file_name the output file name
+      * \param[in] cloud the point cloud data message
+      * \ingroup io
+      */
+    template<typename PointT> inline int
+    savePCDFileBinaryCompressed (const std::string &file_name, const pcl::PointCloud<PointT> &cloud)
+    {
+      PCDWriter w;
+      return (w.writeBinaryCompressed<PointT> (file_name, cloud));
+    }
+
   }
 }
 
