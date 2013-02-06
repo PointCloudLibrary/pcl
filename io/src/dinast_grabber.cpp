@@ -48,11 +48,17 @@ pcl::DinastGrabber::DinastGrabber (const int device_position)
   , bulk_ep_ (std::numeric_limits<unsigned char>::max ())
   , second_image_ (false)
   , running_ (false)
+  , image_width_ (320)
+  , image_height_ (240)
+  , sync_packet_size_ (512)
+  , fov_ (64. * M_PI / 180.)
 {
+  image_size_ = image_width_ * image_height_;
+  dist_max_2d_ = 1. / (image_width_ / 2.);
   onInit(device_position);
   
   point_cloud_signal_ = createSignal<sig_cb_dinast_point_cloud> ();
-  raw_buffer_ = new unsigned char[(RGB16 * (IMAGE_SIZE) + SYNC_PACKET_SIZE)*2];
+  raw_buffer_ = new unsigned char[(RGB16 * (image_size_) + sync_packet_size_) * 2];
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -102,7 +108,7 @@ pcl::DinastGrabber::onInit (const int device_position)
 {
   setupDevice (device_position);
   capture_thread_ = boost::thread (&DinastGrabber::captureThreadFunction, this);
-  image_ = new unsigned char [IMAGE_HEIGHT*IMAGE_WIDTH];
+  image_ = new unsigned char [image_size_];
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -225,10 +231,10 @@ pcl::DinastGrabber::readImage ()
   // Do we have enough data in the buffer for the second image?
   if (second_image_)
   {
-    for (int i = 0; i < IMAGE_SIZE; ++i)
+    for (int i = 0; i < image_size_; ++i)
       image_[i] = g_buffer_[i];
 
-    g_buffer_.rerase (g_buffer_.begin(), g_buffer_.begin() + IMAGE_SIZE);
+    g_buffer_.rerase (g_buffer_.begin (), g_buffer_.begin () + image_size_);
     second_image_ = false;
     
     return;
@@ -242,46 +248,48 @@ pcl::DinastGrabber::readImage ()
     // Read at least two images in synchronous mode
     int actual_length;
     int res = libusb_bulk_transfer (device_handle_, bulk_ep_, raw_buffer_,
-                                    RGB16 * (IMAGE_SIZE) + SYNC_PACKET_SIZE, &actual_length, 1000);
+                                    RGB16 * (image_size_) + sync_packet_size_, &actual_length, 1000);
     if (res != 0 || actual_length == 0)
     {
-      memset (&image_[0], 0x00, IMAGE_SIZE);
+      memset (&image_[0], 0x00, image_size_);
       PCL_THROW_EXCEPTION (pcl::IOException, "USB read error!");
     }
 
     // Copy data from the USB port if we actually read anything
-    PCL_DEBUG("Read: %d, size of the buffer: %d\n" ,actual_length ,g_buffer_.size ());
+    PCL_DEBUG ("Read: %d, size of the buffer: %d\n" ,actual_length, g_buffer_.size ());
     
     // Copy data into the buffer
     int back = int (g_buffer_.size ());
     g_buffer_.resize (back + actual_length);
-    //memcpy (&g_buffer_[back], &raw_buffer_[0], actual_length);
+
     for (int i = 0; i < actual_length; ++i)
       g_buffer_[back++] = raw_buffer_[i];
+
     PCL_DEBUG ("Buffer size: %d\n", g_buffer_.size());
 
     // Check if the header is set already
     if (!first_image && data_adr == -1)
     {
       data_adr = checkHeader ();
-      PCL_DEBUG("Searching for header at: %d", data_adr);
+      PCL_DEBUG ("Searching for header at: %d", data_adr);
     }
 
     // Is there enough data in the buffer to return one image, and did we find the header?
     // If not, go back and read some more data off the USB port
     // Else, read the data, clean the g_buffer_, return to the user
-    if (!first_image && (g_buffer_.size () >= IMAGE_SIZE + data_adr) && data_adr != -1)
+    if (!first_image && (g_buffer_.size () >= image_size_ + data_adr) && data_adr != -1)
     {
       // An image found. Copy it from the buffer into the user given buffer
 
-      for (int i = 0; i < IMAGE_SIZE; ++i)
+      for (int i = 0; i < image_size_; ++i)
         image_[i] = g_buffer_[data_adr + i];
+
       // Pop the data from the global buffer. 
-      g_buffer_.rerase (g_buffer_.begin(), g_buffer_.begin() + data_adr + IMAGE_SIZE);
+      g_buffer_.rerase (g_buffer_.begin(), g_buffer_.begin() + data_adr + image_size_);
       first_image = true;
     }
 
-    if (first_image && g_buffer_.size () >= IMAGE_SIZE)
+    if (first_image && g_buffer_.size () >= image_size_)
       break;
   }
 }
@@ -292,9 +300,9 @@ pcl::DinastGrabber::getXYZIPointCloud ()
 {
   pcl::PointCloud<pcl::PointXYZI>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZI>);
   
-  cloud->points.resize (IMAGE_WIDTH * IMAGE_HEIGHT);
-  cloud->width = IMAGE_WIDTH;
-  cloud->height = IMAGE_HEIGHT;
+  cloud->points.resize (image_size_);
+  cloud->width = image_width_;
+  cloud->height = image_height_;
   cloud->is_dense = false;
   
   int depth_idx = 0;
@@ -303,11 +311,11 @@ pcl::DinastGrabber::getXYZIPointCloud ()
   {
     for (int y = 0; y < cloud->height; ++y, ++depth_idx)
     {
-      double pixel = image_[x + IMAGE_WIDTH * y]; //image[depth_idx];
+      double pixel = image_[x + image_width_ * y];
 
-      //Correcting distortion, data emprically got in a calibration test
-      double xc = static_cast <double>(x - IMAGE_WIDTH / 2);
-      double yc = static_cast <double>(y - IMAGE_HEIGHT / 2);
+      // Correcting distortion, data emprically got in a calibration test
+      double xc = static_cast<double> (x - image_width_ / 2);
+      double yc = static_cast<double> (y - image_height_ / 2);
       double r1 = sqrt (xc * xc + yc * yc);
       double r2 = r1 * r1;
       double r3 = r1 * r2;
@@ -318,28 +326,28 @@ pcl::DinastGrabber::getXYZIPointCloud ()
       if (pixel > A)
         pixel = A;
       double dy = y*0.1;
-      double dist = (log(static_cast<double>(pixel/A))/B-dy)*(7E-07*r3 - 0.0001*r2 + 0.004*r1 + 0.9985)*1.5;
-      double theta_colati = FOV * r1 * DIST_MAX_2D;
+      double dist = (log (static_cast<double> (pixel / A)) / B - dy) * (7E-07*r3 - 0.0001*r2 + 0.004*r1 + 0.9985) * 1.5;
+      double theta_colati = fov_ * r1 * dist_max_2d_;
       double c_theta = cos (theta_colati);
       double s_theta = sin (theta_colati);
-      double c_ksai = (static_cast<double>(x - 160.)) / r1;
-      double s_ksai = (static_cast<double>(y - 120.)) / r1;
+      double c_ksai = static_cast<double> (x - 160) / r1;
+      double s_ksai = static_cast<double> (y - 120) / r1;
       cloud->points[depth_idx].x = static_cast<float> ((dist * s_theta * c_ksai) / 500.0 + 0.5);
       cloud->points[depth_idx].y = static_cast<float> ((dist * s_theta * s_ksai) / 500.0 + 0.5);
-      cloud->points[depth_idx].z = static_cast<float> ((dist * c_theta));
-      if (cloud->points[depth_idx].z < 0.01)
-        cloud->points[depth_idx].z = static_cast<float>(0.01);
-      cloud->points[depth_idx].z /= static_cast<float>(500.0);
-      cloud->points[depth_idx].intensity = static_cast<float>(pixel);
+      cloud->points[depth_idx].z = static_cast<float> (dist * c_theta);
+      if (cloud->points[depth_idx].z < 0.01f)
+        cloud->points[depth_idx].z = 0.01f;
+      cloud->points[depth_idx].z /= 500.0f;
+      cloud->points[depth_idx].intensity = static_cast<float> (pixel);
 
       
       // Get rid of the noise
-      if(cloud->points[depth_idx].z > 0.8 or cloud->points[depth_idx].z < 0.02)
+      if(cloud->points[depth_idx].z > 0.8f or cloud->points[depth_idx].z < 0.02f)
       {
         cloud->points[depth_idx].x = std::numeric_limits<float>::quiet_NaN ();
       	cloud->points[depth_idx].y = std::numeric_limits<float>::quiet_NaN ();
       	cloud->points[depth_idx].z = std::numeric_limits<float>::quiet_NaN ();
-      	cloud->points[depth_idx].intensity = static_cast<float>(pixel);
+        cloud->points[depth_idx].intensity = static_cast<float> (pixel);
       }
     }
   }
@@ -363,7 +371,7 @@ pcl::DinastGrabber::USBRxControlData (const unsigned char req_code,
   uint16_t timeout = 1000;
   
   int nr_read = libusb_control_transfer (device_handle_, requesttype,
-                                         req_code, value, index, buffer, uint16_t(length), timeout);
+                                         req_code, value, index, buffer, static_cast<uint16_t> (length), timeout);
   if (nr_read != int(length))
     PCL_THROW_EXCEPTION (pcl::IOException, "control data error");
 
@@ -387,12 +395,12 @@ pcl::DinastGrabber::USBTxControlData (const unsigned char req_code,
   uint16_t timeout = 1000;
   
   int nr_read = libusb_control_transfer (device_handle_, requesttype,
-                                         req_code, value, index, buffer, uint16_t(length), timeout);
+                                         req_code, value, index, buffer, static_cast<uint16_t> (length), timeout);
   if (nr_read != int(length))
   {
     std::stringstream sstream;
     sstream << "USB control data error, LIBUSB_ERROR: " << nr_read;
-    PCL_THROW_EXCEPTION (pcl::IOException, sstream.str());
+    PCL_THROW_EXCEPTION (pcl::IOException, sstream.str ());
   }
 
   return (true);
@@ -404,7 +412,7 @@ pcl::DinastGrabber::checkHeader ()
 {
   // We need at least 2 full sync packets, in case the header starts at the end of the first sync packet to 
   // guarantee that the index returned actually exists in g_buffer_ (we perform no checking in the rest of the code)
-  if (g_buffer_.size () < 2 * SYNC_PACKET_SIZE)
+  if (g_buffer_.size () < 2 * sync_packet_size_)
     return (-1);
 
   int data_ptr = -1;
@@ -416,19 +424,12 @@ pcl::DinastGrabber::checkHeader ()
         (g_buffer_[i + 4] == 0xBB) && (g_buffer_[i + 5] == 0xBB) &&
         (g_buffer_[i + 6] == 0x77) && (g_buffer_[i + 7] == 0x77))
     {
-      data_ptr = int (i) + SYNC_PACKET_SIZE;
+      data_ptr = int (i) + sync_packet_size_;
       break;
     }
   }
 
   return (data_ptr);
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-std::string
-pcl::DinastGrabber::getName () const
-{
-    return (std::string ("DinastGrabber"));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -439,11 +440,11 @@ pcl::DinastGrabber::captureThreadFunction ()
   {
     // Lock before checking running flag
     boost::unique_lock<boost::mutex> capture_lock (capture_mutex_);
-    readImage();
+    readImage ();
     
     // Check for point clouds slots
     if (num_slots<sig_cb_dinast_point_cloud> () > 0 )
-      point_cloud_signal_->operator()(getXYZIPointCloud());
+      point_cloud_signal_->operator() (getXYZIPointCloud ());
       
     capture_lock.unlock ();
   }

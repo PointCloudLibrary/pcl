@@ -37,8 +37,8 @@
  *
  */
 
-#ifndef __PCL_IO_DINAST_GRABBER__
-#define __PCL_IO_DINAST_GRABBER__
+#ifndef PCL_IO_DINAST_GRABBER_
+#define PCL_IO_DINAST_GRABBER_
 
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
@@ -60,7 +60,7 @@ namespace pcl
     typedef void (sig_cb_dinast_point_cloud) (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZI> >&);
     
     public:
-      /** \brief Constructor. 
+      /** \brief Constructor that sets up the grabber constants.
         * \param[in] device_position Number corresponding the device to grab
         */
       DinastGrabber (const int device_position=1);
@@ -78,7 +78,8 @@ namespace pcl
         * \return DinastGrabber.
         */
       virtual std::string
-      getName () const;
+      getName () const
+      { return (std::string ("DinastGrabber")); }
       
       /** \brief Start the data acquisition process.
         */
@@ -158,27 +159,24 @@ namespace pcl
       captureThreadFunction ();
       
       /** \brief Width of image */
-      static const int IMAGE_WIDTH = 320;
+      int image_width_;
       
       /** \brief Height of image */
-      const static int IMAGE_HEIGHT  = 240;
+      int image_height_;
       
       /** \brief Total size of image */
-      const static int IMAGE_SIZE = IMAGE_HEIGHT * IMAGE_WIDTH;
+      int image_size_;
       
       /** \brief Length of a sync packet */
-      const static int SYNC_PACKET_SIZE = 512;
+      int sync_packet_size_;
       
-      //static const float dist_max_2d = 1 / 212.60291;
-      //static const double dist_max_2d = 1 / 200.0;
-      const static double DIST_MAX_2D = 1. / (IMAGE_WIDTH / 2.);
+      double dist_max_2d_;
       
       /** \brief diagonal Field of View*/
-      //static const double FOV = 40. * M_PI / 180.0; 
-      const static double FOV = 64.0 * M_PI / 180.0;
+      double fov_;
       
       /** \brief Size of pixel */
-      enum pixel_syze { RAW8=1, RGB16=2, RGB24=3, RGB32=4 };
+      enum pixel_size { RAW8=1, RGB16=2, RGB24=3, RGB32=4 };
       
       /** \brief The libusb context*/
       libusb_context *context_;
@@ -214,4 +212,4 @@ namespace pcl
   };
 } //namespace pcl
 
-#endif // __PCL_IO_DINAST_GRABBER__
+#endif // PCL_IO_DINAST_GRABBER_
