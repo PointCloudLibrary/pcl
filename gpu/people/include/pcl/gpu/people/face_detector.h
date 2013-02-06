@@ -92,11 +92,7 @@ namespace pcl
                                    Ncv32u &numNodes, Ncv32u &numFeatures);
 
           NCVStatus
-          NCVprocess(pcl::PointCloud<pcl::RGB>,
-                     Ncv32u width,
-                     Ncv32u height,
-                     NcvBool bFilterRects,
-                     NcvBool bLargestFace,
+          NCVprocess(pcl::PointCloud<pcl::RGB>& cloud,
                      HaarClassifierCascadeDescriptor &haar,
                      NCVVector<HaarStage64> &d_haarStages,
                      NCVVector<HaarClassifierNode128> &d_haarNodes,
@@ -104,13 +100,17 @@ namespace pcl
                      NCVVector<HaarStage64> &h_haarStages,
                      INCVMemAllocator &gpuAllocator,
                      INCVMemAllocator &cpuAllocator,
-                     cudaDeviceProp &devProp);
+                     cudaDeviceProp &devProp,
+                     Ncv32u width=640,
+                     Ncv32u height=480,
+                     NcvBool bFilterRects=false,
+                     NcvBool bLargestFace=true);
 
           int
           configure (std::string cascade_file_name);
 
           /** \brief Process step, this wraps the Nvidia code **/
-          void process ();
+          void process (pcl::PointCloud<pcl::RGB>& cloud);
 
           /** \brief largest object sets return configuration **/
           inline void setLargestObject (bool largest_object)
@@ -166,6 +166,7 @@ namespace pcl
           void allocate_buffers(int rows = 480, int cols = 640);
 
           bool                largest_object_;      /** \brief only give back largest object **/
+          bool                filter_rects_;        /** \brief rectangular filter **/
 
           int                 cuda_dev_id_;         /** \brief indicates which GPU to use for this **/
           cudaDeviceProp      cuda_dev_prop_;
@@ -174,6 +175,17 @@ namespace pcl
 
           int                 rows_;                // should default to 480
           int                 cols_;                // should default to 640
+
+          HaarClassifierCascadeDescriptor         haar_clas_casc_descr_;
+          NCVVectorAlloc<HaarStage64>*            haar_stages_dev_;
+          NCVVectorAlloc<HaarStage64>*            haar_stages_host_;
+          NCVVectorAlloc<HaarClassifierNode128>*  haar_nodes_dev_;
+          NCVVectorAlloc<HaarClassifierNode128>*  haar_nodes_host_;
+          NCVVectorAlloc<HaarFeature64>*          haar_features_dev_;
+          NCVVectorAlloc<HaarFeature64>*          haar_features_host_;
+
+          INCVMemAllocator*                   gpu_allocator_;
+          INCVMemAllocator*                   cpu_allocator_;
 
       };
     }
