@@ -163,8 +163,6 @@ namespace pcl
           getDeviceId() {return cuda_dev_id_;}
 
         private:
-          void allocate_buffers(int rows = 480, int cols = 640);
-
           bool                largest_object_;      /** \brief only give back largest object **/
           bool                filter_rects_;        /** \brief rectangular filter **/
 
@@ -186,6 +184,12 @@ namespace pcl
 
           INCVMemAllocator*                   gpu_allocator_;
           INCVMemAllocator*                   cpu_allocator_;
+
+          NCVMemStackAllocator*               gpu_stack_allocator_;
+          NCVMemStackAllocator*               cpu_stack_allocator_;
+
+          NCVMemStackAllocator*               gpu_counter_;
+          NCVMemStackAllocator*               cpu_counter_;
 
       };
     }

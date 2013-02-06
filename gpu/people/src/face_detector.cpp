@@ -492,7 +492,6 @@ pcl::gpu::people::FaceDetector::ncvHaarGetClassifierSize(const std::string &file
 
 NCVStatus
 pcl::gpu::people::FaceDetector::NCVprocess(pcl::PointCloud<pcl::RGB>& cloud,
-                                           //Mat *srcdst,
                                            HaarClassifierCascadeDescriptor &haar,
                                            NCVVector<HaarStage64> &d_haarStages,
                                            NCVVector<HaarClassifierNode128> &d_haarNodes,
@@ -506,7 +505,7 @@ pcl::gpu::people::FaceDetector::NCVprocess(pcl::PointCloud<pcl::RGB>& cloud,
                                            NcvBool bFilterRects,
                                            NcvBool bLargestFace)
 {
-  // TODO fix this part
+  // TODO fix this part to the new class variables
 
   pcl::PointCloud<Intensity32u>  input_gray;
   PointCloudRGBtoI(cloud, input_gray);
@@ -627,13 +626,12 @@ pcl::gpu::people::FaceDetector::configure(std::string cascade_file_name)
   ncvStat = haar_features_host_->copySolid(*haar_features_dev_, 0);
   PCL_ASSERT_ERROR_PRINT_RETURN(ncvStat == NCV_SUCCESS, "[pcl::gpu::people::FaceDetector::FaceDetector] : Error copying cascade to GPU", -1);
 
-  // TODO: COPY VARIABLES TO CLASS VARIABLES
-
   // Calculate memory requirements and create real allocators
-  NCVMemStackAllocator gpuCounter(static_cast<Ncv32u>(cuda_dev_prop_.textureAlignment));
-  PCL_ASSERT_ERROR_PRINT_RETURN(gpuCounter.isInitialized(), "[pcl::gpu::people::FaceDetector::FaceDetector] : Error creating GPU memory counter", -1);
-  NCVMemStackAllocator cpuCounter(static_cast<Ncv32u>(cuda_dev_prop_.textureAlignment));
-  PCL_ASSERT_ERROR_PRINT_RETURN(cpuCounter.isInitialized(), "[pcl::gpu::people::FaceDetector::FaceDetector] : Error creating CPU memory counter", -1);
+  gpu_counter_ = new NCVMemStackAllocator(static_cast<Ncv32u>(cuda_dev_prop_.textureAlignment));
+  PCL_ASSERT_ERROR_PRINT_RETURN(gpu_counter_->isInitialized(), "[pcl::gpu::people::FaceDetector::FaceDetector] : Error creating GPU memory counter", -1);
+
+  cpu_counter_ = new NCVMemStackAllocator(static_cast<Ncv32u>(cuda_dev_prop_.textureAlignment));
+  PCL_ASSERT_ERROR_PRINT_RETURN(cpu_counter_->isInitialized(), "[pcl::gpu::people::FaceDetector::FaceDetector] : Error creating CPU memory counter", -1);
 
   // TODO fix this fake call
   /*
@@ -645,10 +643,11 @@ pcl::gpu::people::FaceDetector::configure(std::string cascade_file_name)
   PCL_ASSERT_ERROR_PRINT_RETURN(ncvStat == NCV_SUCCESS, "[pcl::gpu::people::FaceDetector::FaceDetector] : Error in memory counting pass", -1);
   */
 
-  NCVMemStackAllocator gpuAllocator(NCVMemoryTypeDevice, gpuCounter.maxSize(), static_cast<Ncv32u>(cuda_dev_prop_.textureAlignment));
-  PCL_ASSERT_ERROR_PRINT_RETURN(gpuAllocator.isInitialized(), "[pcl::gpu::people::FaceDetector::FaceDetector] : Error creating GPU memory allocator", -1);
-  NCVMemStackAllocator cpuAllocator(NCVMemoryTypeHostPinned, cpuCounter.maxSize(), static_cast<Ncv32u>(cuda_dev_prop_.textureAlignment));
-  PCL_ASSERT_ERROR_PRINT_RETURN(cpuAllocator.isInitialized(), "[pcl::gpu::people::FaceDetector::FaceDetector] : Error creating CPU memory allocator", -1);
+  gpu_stack_allocator_ = new NCVMemStackAllocator(NCVMemoryTypeDevice, gpu_counter_->maxSize(), static_cast<Ncv32u>(cuda_dev_prop_.textureAlignment));
+  PCL_ASSERT_ERROR_PRINT_RETURN(gpu_stack_allocator_->isInitialized(), "[pcl::gpu::people::FaceDetector::FaceDetector] : Error creating GPU memory allocator", -1);
+
+  cpu_stack_allocator_ = new NCVMemStackAllocator(NCVMemoryTypeHostPinned, cpu_counter_->maxSize(), static_cast<Ncv32u>(cuda_dev_prop_.textureAlignment));
+  PCL_ASSERT_ERROR_PRINT_RETURN(cpu_stack_allocator_->isInitialized(), "[pcl::gpu::people::FaceDetector::FaceDetector] : Error creating CPU memory allocator", -1);
 
   PCL_DEBUG("[pcl::gpu::people::FaceDetector::FaceDetector] : (D) : Initialized for frame size [%dx%d]\n", cols_, rows_);
 
@@ -686,8 +685,3 @@ pcl::gpu::people::FaceDetector::process(pcl::PointCloud<pcl::RGB>& cloud)
 
 }
 
-void
-pcl::gpu::people::FaceDetector::allocate_buffers(int rows, int cols)
-{
-
-}
