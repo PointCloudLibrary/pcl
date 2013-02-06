@@ -348,15 +348,15 @@ pcl::HDLGrabber::toPointClouds (HDLDataPacket *dataPacket)
         if (current_sweep_xyzrgb_->size () > 0)
         {
           current_sweep_xyz_->is_dense = current_sweep_xyzrgb_->is_dense = current_sweep_xyzi_->is_dense = false;
-          #ifdef USE_ROS
+#ifdef USE_ROS
           current_sweep_xyz_->header.stamp.fromNSec (velodyneTime * 1000);
           current_sweep_xyzrgb_->header.stamp.fromNSec (velodyneTime * 1000);
           current_sweep_xyzi_->header.stamp.fromNSec (velodyneTime * 1000);
-          #else //USE_ROS
+#else //USE_ROS
           current_sweep_xyz_->header.stamp = velodyneTime;
           current_sweep_xyzrgb_->header.stamp = velodyneTime;
           current_sweep_xyzi_->header.stamp = velodyneTime;
-          #endif //USE_ROS
+#endif //USE_ROS
           current_sweep_xyz_->header.seq = sweepCounter;
           current_sweep_xyzrgb_->header.seq = sweepCounter;
           current_sweep_xyzi_->header.seq = sweepCounter;

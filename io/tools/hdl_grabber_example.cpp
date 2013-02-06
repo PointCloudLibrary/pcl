@@ -49,9 +49,15 @@ class SimpleHDLGrabber
       static double last = pcl::getTime();
 
       if (sweep->header.seq == 0) {
-        time_t systemTime = static_cast<time_t>(((sweep->header.stamp & 0xffffffff00000000l) >> 32) & 0x00000000ffffffff);
-        uint32_t usec = static_cast<uint32_t>(sweep->header.stamp & 0x00000000ffffffff);
-        std::cout << std::hex << sweep->header.stamp << "  " << ctime(&systemTime) << " usec: " << usec << std::endl;
+        uint64_t stamp;
+#ifdef USE_ROS
+        stamp = sweep->header.stamp.toNSec () / 1000;
+#else //USE_ROS
+        stamp = sweep->header.stamp;
+#endif //USE_ROS
+        time_t systemTime = static_cast<time_t>(((stamp & 0xffffffff00000000l) >> 32) & 0x00000000ffffffff);
+        uint32_t usec = static_cast<uint32_t>(stamp & 0x00000000ffffffff);
+        std::cout << std::hex << stamp << "  " << ctime(&systemTime) << " usec: " << usec << std::endl;
       }
 
       if (++count == 30) 
