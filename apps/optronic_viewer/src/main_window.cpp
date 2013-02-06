@@ -63,7 +63,6 @@ MainWindow ()
 
   // setup filters
   filter_factories_.push_back (new VoxelGridCFF ());
-  filter_factories_.push_back (new VoxelGridCFF ());
 
 
   // reset point cloud
@@ -95,7 +94,6 @@ MainWindow ()
   connect (sensor_selection_combo_box, SIGNAL(activated (int)), this, SLOT(selectedSensorChanged (int)));
   
   processing_list_ = new QListWidget (central_widget);
-
   connect (processing_list_, SIGNAL (itemDoubleClicked (QListWidgetItem*)), this, SLOT (updateFilter (QListWidgetItem*)));
 
   pcl_visualizer_ = new pcl::visualization::PCLVisualizer ("", false);
