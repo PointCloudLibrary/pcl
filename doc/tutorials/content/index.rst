@@ -481,6 +481,22 @@ I/O
      .. |i_o4| image:: images/openni_grabber.png
                :height: 100px
 
+  * :ref:`hdl_grabber`
+
+     ======  ======
+     |i_o5|  Title: **Grabbing Point Clouds from a Velodyne High Definition LiDAR (HDL)**
+
+             Author: *Keven Ring*
+
+             Compatibility: >= PCL 1.7
+
+             In this tutorial, we will learn how to acquire point cloud data from a Velodyne HDL.
+     ======  ======
+
+     .. |i_o5| image:: images/hdl_grabber.png
+               :height: 100px
+
+
 .. _keypoints_tutorial:
 
 Keypoints
