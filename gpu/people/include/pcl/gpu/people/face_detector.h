@@ -67,6 +67,13 @@ namespace pcl
           FaceDetector ( int cols, int rows);
 
           NCVStatus
+          loadFromXML2(const std::string                   &filename,
+                       HaarClassifierCascadeDescriptor     &haar,
+                       std::vector<HaarStage64>            &haarStages,
+                       std::vector<HaarClassifierNode128>  &haarClassifierNodes,
+                       std::vector<HaarFeature64>          &haarFeatures);
+
+          NCVStatus
           loadFromXML(const std::string &filename,
                       HaarClassifierCascadeDescriptor &haar,
                       std::vector<HaarStage64> &haarStages,
@@ -92,25 +99,27 @@ namespace pcl
                                    Ncv32u &numNodes, Ncv32u &numFeatures);
 
           NCVStatus
-          NCVprocess(pcl::PointCloud<pcl::RGB>& cloud,
-                     HaarClassifierCascadeDescriptor &haar,
-                     NCVVector<HaarStage64> &d_haarStages,
-                     NCVVector<HaarClassifierNode128> &d_haarNodes,
-                     NCVVector<HaarFeature64> &d_haarFeatures,
-                     NCVVector<HaarStage64> &h_haarStages,
-                     INCVMemAllocator &gpuAllocator,
-                     INCVMemAllocator &cpuAllocator,
-                     cudaDeviceProp &devProp,
-                     Ncv32u width=640,
-                     Ncv32u height=480,
-                     NcvBool bFilterRects=false,
-                     NcvBool bLargestFace=true);
+          NCVprocess(pcl::PointCloud<pcl::RGB>&           cloud_in,
+                     pcl::PointCloud<pcl::Intensity32u>&  cloud_out,
+                     HaarClassifierCascadeDescriptor      &haar,
+                     NCVVector<HaarStage64>               &d_haarStages,
+                     NCVVector<HaarClassifierNode128>     &d_haarNodes,
+                     NCVVector<HaarFeature64>             &d_haarFeatures,
+                     NCVVector<HaarStage64>               &h_haarStages,
+                     INCVMemAllocator                     &gpuAllocator,
+                     INCVMemAllocator                     &cpuAllocator,
+                     cudaDeviceProp                       &devProp,
+                     Ncv32u                               width=640,
+                     Ncv32u                               height=480,
+                     NcvBool                              bFilterRects=false,
+                     NcvBool                              bLargestFace=true);
 
           int
           configure (std::string cascade_file_name);
 
           /** \brief Process step, this wraps the Nvidia code **/
-          void process (pcl::PointCloud<pcl::RGB>& cloud);
+          void process (pcl::PointCloud<pcl::RGB>& cloud,
+                        pcl::PointCloud<pcl::Intensity32u>& cloud_out);
 
           /** \brief largest object sets return configuration **/
           inline void setLargestObject (bool largest_object)

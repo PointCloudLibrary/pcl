@@ -62,7 +62,6 @@
 //
 //==============================================================================
 
-
 /**
 * Compile-time assert namespace
 */
@@ -78,10 +77,8 @@ namespace NcvCTprep
     struct assertTest{};
 }
 
-
 #define NCV_CT_PREP_PASTE_AUX(a,b)      a##b                         ///< Concatenation indirection macro
 #define NCV_CT_PREP_PASTE(a,b)          NCV_CT_PREP_PASTE_AUX(a, b)  ///< Concatenation macro
-
 
 /**
 * Performs compile-time assertion of a condition on the file scope
@@ -90,14 +87,11 @@ namespace NcvCTprep
     typedef NcvCTprep::assertTest<sizeof(NcvCTprep::CT_ASSERT_FAILURE< (bool)(X) >)> \
     NCV_CT_PREP_PASTE(__ct_assert_typedef_, __LINE__)
 
-
-
 //==============================================================================
 //
 // Alignment macros
 //
 //==============================================================================
-
 
 #if !defined(__align__) && !defined(__CUDACC__)
     #if defined(_WIN32) || defined(_WIN64)
@@ -107,13 +101,11 @@ namespace NcvCTprep
     #endif
 #endif
 
-
 //==============================================================================
 //
 // Integral and compound types of guaranteed size
 //
 //==============================================================================
-
 
 typedef               bool NcvBool;
 typedef          long long Ncv64s;
@@ -133,7 +125,6 @@ typedef      unsigned char Ncv8u;
 typedef              float Ncv32f;
 typedef             double Ncv64f;
 
-
 struct NcvRect8u
 {
     Ncv8u x;
@@ -143,7 +134,6 @@ struct NcvRect8u
     __host__ __device__ NcvRect8u() : x(0), y(0), width(0), height(0) {};
     __host__ __device__ NcvRect8u(Ncv8u x, Ncv8u y, Ncv8u width, Ncv8u height) : x(x), y(y), width(width), height(height) {}
 };
-
 
 struct NcvRect32s
 {
@@ -155,7 +145,6 @@ struct NcvRect32s
     __host__ __device__ NcvRect32s(Ncv32s x, Ncv32s y, Ncv32s width, Ncv32s height) : x(x), y(y), width(width), height(height) {}
 };
 
-
 struct NcvRect32u
 {
     Ncv32u x;          ///< x-coordinate of upper left corner.
@@ -166,7 +155,6 @@ struct NcvRect32u
     __host__ __device__ NcvRect32u(Ncv32u x, Ncv32u y, Ncv32u width, Ncv32u height) : x(x), y(y), width(width), height(height) {}
 };
 
-
 struct NcvSize32s
 {
     Ncv32s width;  ///< Rectangle width.
@@ -174,7 +162,6 @@ struct NcvSize32s
     __host__ __device__ NcvSize32s() : width(0), height(0) {};
     __host__ __device__ NcvSize32s(Ncv32s width, Ncv32s height) : width(width), height(height) {}
 };
-
 
 struct NcvSize32u
 {
@@ -185,7 +172,6 @@ struct NcvSize32u
     __host__ __device__ bool operator == (const NcvSize32u &another) const {return this->width == another.width && this->height == another.height;}
 };
 
-
 struct NcvPoint2D32s
 {
     Ncv32s x; ///< Point X.
@@ -194,7 +180,6 @@ struct NcvPoint2D32s
     __host__ __device__ NcvPoint2D32s(Ncv32s x, Ncv32s y) : x(x), y(y) {}
 };
 
-
 struct NcvPoint2D32u
 {
     Ncv32u x; ///< Point X.
@@ -202,7 +187,6 @@ struct NcvPoint2D32u
     __host__ __device__ NcvPoint2D32u() : x(0), y(0) {};
     __host__ __device__ NcvPoint2D32u(Ncv32u x, Ncv32u y) : x(x), y(y) {}
 };
-
 
 NCV_CT_ASSERT(sizeof(NcvBool) <= 4);
 NCV_CT_ASSERT(sizeof(Ncv64s) == 8);
@@ -228,10 +212,8 @@ NCV_CT_ASSERT(sizeof(NcvPoint2D32u) == 2 * sizeof(Ncv32u));
 //
 //==============================================================================
 
-
 const Ncv32u K_WARP_SIZE = 32;
 const Ncv32u K_LOG2_WARP_SIZE = 5;
-
 
 //==============================================================================
 //
@@ -239,15 +221,11 @@ const Ncv32u K_LOG2_WARP_SIZE = 5;
 //
 //==============================================================================
 
-
 NCV_EXPORTS void ncvDebugOutput(const std::string &msg);
-
 
 typedef void NCVDebugOutputHandler(const std::string &msg);
 
-
 NCV_EXPORTS void ncvSetDebugOutputHandler(NCVDebugOutputHandler* func);
-
 
 #define ncvAssertPrintCheck(pred, msg) \
     do \
@@ -260,7 +238,6 @@ NCV_EXPORTS void ncvSetDebugOutputHandler(NCVDebugOutputHandler* func);
         } \
     } while (0)
 
-
 #define ncvAssertPrintReturn(pred, msg, err) \
     do \
     { \
@@ -268,10 +245,8 @@ NCV_EXPORTS void ncvSetDebugOutputHandler(NCVDebugOutputHandler* func);
         if (!(pred)) return err; \
     } while (0)
 
-
 #define ncvAssertReturn(pred, err) \
     ncvAssertPrintReturn(pred, "retcode=" << (int)err, err)
-
 
 #define ncvAssertReturnNcvStat(ncvOp) \
     do \
@@ -280,7 +255,6 @@ NCV_EXPORTS void ncvSetDebugOutputHandler(NCVDebugOutputHandler* func);
         ncvAssertPrintReturn(NCV_SUCCESS==_ncvStat, "NcvStat=" << (int)_ncvStat, _ncvStat); \
     } while (0)
 
-
 #define ncvAssertCUDAReturn(cudacall, errCode) \
     do \
     { \
@@ -288,14 +262,12 @@ NCV_EXPORTS void ncvSetDebugOutputHandler(NCVDebugOutputHandler* func);
         ncvAssertPrintReturn(cudaSuccess==res, "cudaError_t=" << res, errCode); \
     } while (0)
 
-
 #define ncvAssertCUDALastErrorReturn(errCode) \
     do \
     { \
         cudaError_t res = cudaGetLastError(); \
         ncvAssertPrintReturn(cudaSuccess==res, "cudaError_t=" << res, errCode); \
     } while (0)
-
 
 /**
 * Return-codes for status notification, errors and warnings
@@ -362,21 +334,16 @@ enum
     NCV_LAST_STATUS                           ///< Marker to continue error numeration in other files
 };
 
-
 typedef Ncv32u NCVStatus;
-
 
 #define NCV_SET_SKIP_COND(x) \
     bool __ncv_skip_cond = x
 
-
 #define NCV_RESET_SKIP_COND(x) \
     __ncv_skip_cond = x
 
-
 #define NCV_SKIP_COND_BEGIN \
     if (!__ncv_skip_cond) {
-
 
 #define NCV_SKIP_COND_END \
     }
