@@ -116,7 +116,7 @@ pcl::recognition::ORROctree::build (const float* bounds, float voxel_size)
 //================================================================================================================================================================
 
 void
-pcl::recognition::ORROctree::build (const PointCloudIn& points, float voxel_size, const PointCloudN* normals)
+pcl::recognition::ORROctree::build (const PointCloudIn& points, float voxel_size, const PointCloudN* normals, float enlarge_bounds)
 {
   if ( voxel_size <= 0.0f )
     return;
@@ -126,7 +126,7 @@ pcl::recognition::ORROctree::build (const PointCloudIn& points, float voxel_size
   getMinMax3D(points, min, max);
 
   // Enlarge the bounds a bit to avoid points lying exact on the octree boundaries
-  float eps = 0.00001f*std::max (std::max (max.x-min.x, max.y-min.y), max.z-min.z);
+  float eps = enlarge_bounds*std::max (std::max (max.x-min.x, max.y-min.y), max.z-min.z);
   float b[6] = {min.x-eps, max.x+eps, min.y-eps, max.y+eps, min.z-eps, max.z+eps};
 
   // Build an empty octree with the right boundaries and the right number of levels
@@ -147,7 +147,7 @@ pcl::recognition::ORROctree::build (const PointCloudIn& points, float voxel_size
   for ( i = 0 ; i < num_points ; ++i )
   {
     // Create a leaf which contains the i-th point.
-    node = this->addPoint (points[i].x, points[i].y, points[i].z);
+    node = this->createLeaf (points[i].x, points[i].y, points[i].z);
 
     // Make sure that the point is within some leaf
     if ( !node )
@@ -217,11 +217,11 @@ pcl::recognition::ORROctree::build (const PointCloudIn& points, float voxel_size
 
 //================================================================================================================================================================
 
-void
+bool
 pcl::recognition::ORROctree::Node::createChildren()
 {
   if ( children_ )
-    return;
+    return (false);
 
   float bounds[6], center[3], childside = 0.5f*(bounds_[1]-bounds_[0]);
   children_ = new ORROctree::Node[8];
@@ -296,10 +296,11 @@ pcl::recognition::ORROctree::Node::createChildren()
 
   for ( int i = 0 ; i < 8 ; ++i )
   {
-    children_[i].child_nr_ = i;
     children_[i].computeRadius();
     children_[i].setParent(this);
   }
+
+  return (true);
 }
 
 //====================================================================================================

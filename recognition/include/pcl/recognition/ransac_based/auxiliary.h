@@ -41,8 +41,8 @@
 #include <cmath>
 #include <cstdlib>
 
-#define AUX_HALF_PI                  1.57079632679489661923f
-#define AUX_DEG_TO_RADIANS_FACTOR   (3.14159265358979323846f/180.0f)
+#define AUX_HALF_PI             1.57079632679489661923f
+#define AUX_DEG_TO_RADIANS     (3.14159265358979323846f/180.0f)
 
 namespace pcl
 {
@@ -68,6 +68,22 @@ namespace pcl
       getRandomInteger(int min, int max)
       {
         return static_cast<int>(static_cast<double>(min) + (static_cast<double>(rand())/static_cast<double>(RAND_MAX))*static_cast<double>(max-min) + 0.5);
+      }
+
+      /** \brief v[0] = v[1] = v[2] = value */
+      template <typename T> void
+      vecSet3 (T v[3], T value)
+      {
+        v[0] = v[1] = v[2] = value;
+      }
+
+      /** \brief a += b */
+      template <typename T> void
+      vecAdd3 (T a[3], const T b[3])
+      {
+        a[0] += b[0];
+        a[1] += b[1];
+        a[2] += b[2];
       }
 
       /** \brief c = a + b */
@@ -116,6 +132,13 @@ namespace pcl
       vecDot3 (const T a[3], const T b[3])
       {
         return (a[0]*b[0] + a[1]*b[1] + a[2]*b[2]);
+      }
+
+      /** \brief Returns the dot product (x, y, z)*(u, v, w) = x*u + y*v + z*w */
+      template <typename T> T
+      vecDot3 (T x, T y, T z, T u, T v, T w)
+      {
+        return (x*u + y*v + z*w);
       }
 
       /** \brief v = scalar*v. */
@@ -216,6 +239,24 @@ namespace pcl
 
         // All tests passed => the points are coplanar
         return (true);
+      }
+
+      template <typename T> T
+      computeRotationalDifference (const T u[9], const T v[9])
+      {
+        // We use local variables for better code readability
+        T min = static_cast<T> (-1.0);
+        T max = static_cast<T> ( 1.0);
+        // The first columns
+        T a = std::acos (aux::clamp(aux::vecDot3 (u[0], u[3], u[6], v[0], v[3], v[6]), min, max));
+        // The second columns
+        T b = std::acos (aux::clamp(aux::vecDot3 (u[1], u[4], u[7], v[1], v[4], v[7]), min, max));
+        // The third columns
+        T c = std::acos (aux::clamp(aux::vecDot3 (u[2], u[5], u[8], v[2], v[5], v[8]), min, max));
+
+        T d = a > b ? a : b;
+
+        return (c > d ? c : d);
       }
     }
   }

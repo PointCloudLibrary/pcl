@@ -69,6 +69,7 @@ namespace pcl
               user_data_ (user_data)
             {
               octree_.build (points, voxel_size, &normals);
+              aux::vecSet3 (center_of_mass_, 0.0f);
             }
             virtual ~Model (){}
 
@@ -90,9 +91,32 @@ namespace pcl
               return (user_data_);
             }
 
+            inline const float*
+            getCenterOfMass () const
+            {
+              return (center_of_mass_);
+            }
+
+            inline void
+            computeCenterOfMass ()
+            {
+              const std::vector<ORROctree::Node*>& full_leaves = octree_.getFullLeaves ();
+              if ( full_leaves.empty () )
+                return;
+
+              // Reset
+              aux::vecSet3(center_of_mass_, 0.0f);
+              // Sum up
+              for ( std::vector<ORROctree::Node*>::const_iterator it = full_leaves.begin () ; it != full_leaves.end () ; ++it )
+                aux::vecAdd3 (center_of_mass_, (*it)->getData ()->getPoint ());
+              // Divide
+              aux::vecMult3 (center_of_mass_, 1.0f/static_cast<float> (full_leaves.size ()));
+            }
+
           protected:
             const std::string obj_name_;
             ORROctree octree_;
+            float center_of_mass_[3];
             void* user_data_;
         };
 
@@ -103,7 +127,7 @@ namespace pcl
       public:
         /** \brief This class is used by 'ObjRecRANSAC' to maintain the object models to be recognized. Normally, you do not need to use
           * this class directly. */
-        ModelLibrary (float pair_width, float voxel_size, float max_coplanarity_angle = 3.0f*AUX_DEG_TO_RADIANS_FACTOR/*3 degrees*/);
+        ModelLibrary (float pair_width, float voxel_size, float max_coplanarity_angle = 3.0f*AUX_DEG_TO_RADIANS/*3 degrees*/);
         virtual ~ModelLibrary ()
         {
           this->clear();
@@ -119,7 +143,7 @@ namespace pcl
         inline void
         setMaxCoplanarityAngleDegrees (float max_coplanarity_angle_degrees)
         {
-          max_coplanarity_angle_ = max_coplanarity_angle_degrees*AUX_DEG_TO_RADIANS_FACTOR;
+          max_coplanarity_angle_ = max_coplanarity_angle_degrees*AUX_DEG_TO_RADIANS;
         }
 
         /** \biref Call this method in order NOT to add co-planar point pairs to the hash table. The default behavior

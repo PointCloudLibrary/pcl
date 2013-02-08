@@ -51,6 +51,7 @@
 #include <list>
 
 #define OBJ_REC_RANSAC_VERBOSE
+#define ORR_USE_OCTREE_TRANSFORM_BUCKETING
 
 namespace pcl
 {
@@ -139,6 +140,25 @@ namespace pcl
             std::set<int> explained_pixels_;
     	};
 
+        class RotationSpace
+        {
+          public:
+    		RotationSpace ()
+    		{
+              // We want to describe each rotation by treating the rows of the rotation matrix as vectors
+              // and saving the angle between the first row and the x-axis, the second row and y-axis and
+              // the third row and z-axis. This space of three angles is discretized in 4° steps and saved
+              // in an octree.
+              float min = -(static_cast<float> (M_PI) + 0.000000001f), max = static_cast<float> (M_PI) + 0.000000001f;
+              float b[6] = {min, max, min, max, min, max};
+
+              octree_.build (b, 4.0f*AUX_DEG_TO_RADIANS);
+    		}
+
+          public:
+            ORROctree octree_;
+        };
+
       public:
         /** \brief Constructor with some important parameters which can not be changed once an instance of that class is created.
           *
@@ -164,6 +184,9 @@ namespace pcl
           scene_octree_.clear ();
           scene_octree_proj_.clear ();
           sampled_oriented_point_pairs_.clear ();
+#ifdef ORR_USE_OCTREE_TRANSFORM_BUCKETING
+          transform_octree_.clear ();
+#endif
         }
 
         /** \brief This is a threshold. The larger the value the more point pairs will be considered as co-planar and will
@@ -173,8 +196,14 @@ namespace pcl
         inline void
         setMaxCoplanarityAngleDegrees (float max_coplanarity_angle_degrees)
         {
-          max_coplanarity_angle_ = max_coplanarity_angle_degrees*AUX_DEG_TO_RADIANS_FACTOR;
+          max_coplanarity_angle_ = max_coplanarity_angle_degrees*AUX_DEG_TO_RADIANS;
           model_library_.setMaxCoplanarityAngleDegrees (max_coplanarity_angle_degrees);
+        }
+
+        inline void
+        setSceneBoundsEnlargementFactor (float value)
+        {
+          scene_bounds_enlargement_factor_ = value;
         }
 
         /** \brief Default is on. This method calls the corresponding method of the model library. */
@@ -329,6 +358,9 @@ namespace pcl
         int
         generateHypotheses(const std::list<OrientedPointPair>& pairs, std::list<Hypothesis*>& out);
 
+        int
+        groupHypotheses(std::list<Hypothesis*>& hypotheses, int num_hypotheses, std::list<Hypothesis*>& out);
+
         void
         testHypotheses (std::list<Hypothesis*>& hypotheses, int num_hypotheses, std::vector<Hypothesis*>& accepted_hypotheses);
 
@@ -390,6 +422,42 @@ namespace pcl
           rigid_transform[11] = o2[2] - Ro1[2];
         }
 
+        inline void
+        computeAxisAnglesOfRotation (const float* rotation, float& angle_x_axis, float& angle_y_axis, float& angle_z_axis) const
+        {
+          // Compute the absolute value of the angles
+          angle_x_axis = std::acos (aux::clamp (rotation[0], -1.0f, 1.0f)); // Angle between the first row and the x-axis
+          angle_y_axis = std::acos (aux::clamp (rotation[4], -1.0f, 1.0f)); // Angle between the second row and the y-axis
+          angle_z_axis = std::acos (aux::clamp (rotation[8], -1.0f, 1.0f)); // Angle between the third row and the z-axis
+
+          // Determine the sign of the angle with the x-axis
+          if ( rotation[1] < 0.0f )
+            angle_x_axis = -angle_x_axis;
+          else if ( rotation[1] == 0.0f )
+          {
+            if ( rotation[2] < 0.0f )
+              angle_x_axis = -angle_x_axis;
+          }
+
+          // Determine the sign of the angle with the y-axis
+          if ( rotation[5] < 0.0f )
+            angle_y_axis = -angle_y_axis;
+          else if ( rotation[5] == 0.0f )
+          {
+            if ( rotation[3] < 0.0f )
+              angle_y_axis = -angle_y_axis;
+          }
+
+          // Determine the sign of the angle with the z-axis
+          if ( rotation[6] < 0.0f )
+            angle_z_axis = -angle_z_axis;
+          else if ( rotation[6] == 0.0f )
+          {
+            if ( rotation[7] < 0.0f )
+              angle_z_axis = -angle_z_axis;
+          }
+        }
+
         /** \brief Computes the signature of the oriented point pair ((p1, n1), (p2, n2)) consisting of the angles between
           * n1 and (p2-p1),
           * n2 and (p1-p2),
@@ -412,16 +480,19 @@ namespace pcl
         // Parameters
         float pair_width_;
         float voxel_size_;
+        float transform_octree_voxel_size_;
         float abs_zdist_thresh_;
         float relative_obj_size_;
         float visibility_;
         float relative_num_of_illegal_pts_;
         float intersection_fraction_;
         float max_coplanarity_angle_;
+        float scene_bounds_enlargement_factor_;
         bool ignore_coplanar_opps_;
 
         ModelLibrary model_library_;
         ORROctree scene_octree_;
+        ORROctree transform_octree_;
         ORROctreeZProjection scene_octree_proj_;
 
         std::list<OrientedPointPair> sampled_oriented_point_pairs_;

@@ -82,7 +82,10 @@ namespace pcl
             {
               public:
                 Data ()
-                : num_points_(0),
+                : id_x_ (-1),
+                  id_y_ (-1),
+                  id_z_ (-1),
+                  num_points_(0),
                   user_data_ (NULL)
                 {
                   n_[0] = n_[1] = n_[2] = p_[0] = p_[1] = p_[2] = 0.0f;
@@ -154,6 +157,7 @@ namespace pcl
 
             Node ()
             : data_ (NULL),
+              parent_ (NULL),
               children_(NULL)
             {}
 
@@ -207,7 +211,7 @@ namespace pcl
             inline float
             getRadius (){ return radius_;}
 
-            void
+            bool
             createChildren ();
 
             inline void
@@ -234,7 +238,6 @@ namespace pcl
             Node::Data *data_;
             float center_[3], bounds_[6], radius_;
             Node *parent_, *children_;
-            int child_nr_;
         };
 
         ORROctree ();
@@ -243,34 +246,45 @@ namespace pcl
         void
         clear ();
 
+        /** \brief Creates an octree which encloses 'points' and with leaf size equal to 'voxel_size'.
+          * 'enlarge_bounds' makes sure that no points from the input will lie on the octree boundary
+          * by enlarging the bounds by that factor. For example, enlarge_bounds = 1 means that the
+          * bounds will be enlarged by 100%. The default value is fine. */
         void
-        build (const PointCloudIn& points, float voxel_size, const PointCloudN* normals = NULL);
+        build (const PointCloudIn& points, float voxel_size, const PointCloudN* normals = NULL, float enlarge_bounds = 0.00001f);
 
         /** \brief Creates an empty octree with bounds at least as large as the ones provided as input and with leaf
           * size equal to 'voxel_size'. */
         void
         build (const float* bounds, float voxel_size);
 
-        /** \brief Adds p = (x, y, z) to the octree, however, only if p lies within the octree bounds! A more general
-          * version which allows p to be out of bounds is not implemented yet. The method returns the leaf which contains
-          * p or NULL if p is not within the root bounds. Note that the data contained in the returned leaf is unchanged! */
+        /** \brief Creates the leaf containing p = (x, y, z) and returns a pointer to it, however, only if p lies within
+          * the octree bounds! A more general version which allows p to be out of bounds is not implemented yet. The method
+          * returns NULL if p is not within the root bounds. If the leaf containing p already exists nothing happens and
+          * method just returns a pointer to the leaf. If 'leaf_was_created' != NULL, the method sets this boolean to true
+          * if a new leaf was created or to false if p ends up in an existing leaf. */
         inline Node*
-        addPoint (float x, float y, float z)
+        createLeaf (float x, float y, float z, bool* leaf_was_created = NULL)
         {
           // Make sure that the input point is within the octree bounds
           if ( x < bounds_[0] || x > bounds_[1] ||
                y < bounds_[2] || y > bounds_[3] ||
                z < bounds_[4] || z > bounds_[5] )
+          {
+            if ( leaf_was_created )
+              *leaf_was_created = false;
             return (NULL);
+          }
 
           ORROctree::Node* node = root_;
           const float *c;
           int id;
+          bool created = false;
 
           // Go down to the right leaf
           for ( int l = 0 ; l < tree_levels_ ; ++l )
           {
-            node->createChildren (); // If this node already has children -> nothing will happen
+            created |= node->createChildren ();
             c = node->getCenter ();
             id = 0;
 
@@ -280,6 +294,9 @@ namespace pcl
 
             node = node->getChild (id);
           }
+
+          if ( leaf_was_created )
+            *leaf_was_created = created;
 
           return (node);
         }
