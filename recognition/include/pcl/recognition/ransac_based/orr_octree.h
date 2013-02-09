@@ -264,27 +264,24 @@ namespace pcl
           * method just returns a pointer to the leaf. If 'leaf_was_created' != NULL, the method sets this boolean to true
           * if a new leaf was created or to false if p ends up in an existing leaf. */
         inline Node*
-        createLeaf (float x, float y, float z, bool* leaf_was_created = NULL)
+        createLeaf (float x, float y, float z)
         {
           // Make sure that the input point is within the octree bounds
           if ( x < bounds_[0] || x > bounds_[1] ||
                y < bounds_[2] || y > bounds_[3] ||
                z < bounds_[4] || z > bounds_[5] )
           {
-            if ( leaf_was_created )
-              *leaf_was_created = false;
             return (NULL);
           }
 
           ORROctree::Node* node = root_;
           const float *c;
           int id;
-          bool created = false;
 
           // Go down to the right leaf
           for ( int l = 0 ; l < tree_levels_ ; ++l )
           {
-            created |= node->createChildren ();
+            node->createChildren ();
             c = node->getCenter ();
             id = 0;
 
@@ -294,9 +291,6 @@ namespace pcl
 
             node = node->getChild (id);
           }
-
-          if ( leaf_was_created )
-            *leaf_was_created = created;
 
           return (node);
         }

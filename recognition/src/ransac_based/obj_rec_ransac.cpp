@@ -46,7 +46,7 @@ using namespace pcl::common;
 pcl::recognition::ObjRecRANSAC::ObjRecRANSAC (float pair_width, float voxel_size)
 : pair_width_ (pair_width),
   voxel_size_ (voxel_size),
-  transform_octree_voxel_size_ (1.5f*voxel_size_),
+  transform_octree_voxel_size_ (5.0f*voxel_size_),
   abs_zdist_thresh_ (1.5f*voxel_size_),
   relative_obj_size_ (0.05f),
   visibility_ (0.06f),
@@ -73,9 +73,7 @@ pcl::recognition::ObjRecRANSAC::recognize (const PointCloudIn& scene, const Poin
   // Project it on the xy-plane (which roughly corresponds to the projection plane of the scanning device)
   scene_octree_proj_.build(scene_octree_, abs_zdist_thresh_, abs_zdist_thresh_);
   // Build the transform octree
-#ifdef ORR_USE_OCTREE_TRANSFORM_BUCKETING
   transform_octree_.build (scene_octree_.getBounds (), transform_octree_voxel_size_);
-#endif
 
   if ( success_probability >= 1.0 )
     success_probability = 0.99;
@@ -92,7 +90,7 @@ pcl::recognition::ObjRecRANSAC::recognize (const PointCloudIn& scene, const Poin
   printf("ObjRecRANSAC::%s(): recognizing objects [%i iteration(s)]\n", __func__, num_iterations);
 #endif
 
-  list<Hypothesis*> hypotheses;
+  list<Hypothesis*> hypotheses, grouped_hypotheses;
   ORRGraph graph;
   int num_hypotheses;
 
@@ -103,10 +101,10 @@ pcl::recognition::ObjRecRANSAC::recognize (const PointCloudIn& scene, const Poin
   if ( rec_mode_ == ObjRecRANSAC::SAMPLE_OPP )
     return;
 
-  // Now that we have sampled some opps from the scene -> generate and test the hypotheses
+  // Now that we have sampled some opps from the scene -> generate, group and test the hypotheses
   num_hypotheses = this->generateHypotheses (sampled_oriented_point_pairs_, hypotheses);
-  this->testHypotheses (hypotheses, num_hypotheses, accepted_hypotheses_);
-  hypotheses.clear ();
+  num_hypotheses = this->groupHypotheses (hypotheses, num_hypotheses, grouped_hypotheses); hypotheses.clear ();
+  this->testHypotheses (grouped_hypotheses, num_hypotheses, accepted_hypotheses_); grouped_hypotheses.clear ();
 
   // Leave if we are in the TEST_HYPOTHESES mode
   if ( rec_mode_ == ObjRecRANSAC::TEST_HYPOTHESES )
@@ -270,14 +268,13 @@ pcl::recognition::ObjRecRANSAC::groupHypotheses(list<Hypothesis*>& hypotheses, i
   int num_done = 0;
 #endif
 
-  bool leaf_was_created;
   ORROctree::Node *translation_space_node, *rot_space_node;
   float angle_x_axis, angle_y_axis, angle_z_axis, transformed_point[3];
   const float *rigid_transform;
   list<RotationSpace*> rot_space_list;
   int num_after_grouping = 0;
 
-  for ( list<Hypothesis*>::iterator hypo_it = hypotheses.begin () ; hypo_it != hypotheses.end () ; )
+  for ( list<Hypothesis*>::iterator hypo_it = hypotheses.begin () ; hypo_it != hypotheses.end () ; ++hypo_it )
   {
     // For better code readability
     rigid_transform = (*hypo_it)->rigid_transform_;
@@ -285,7 +282,7 @@ pcl::recognition::ObjRecRANSAC::groupHypotheses(list<Hypothesis*>& hypotheses, i
     // First transform the center of mass of the model
     aux::transform (rigid_transform, (*hypo_it)->obj_model_.getCenterOfMass (), transformed_point);
     // Get the leaf 'transformed_point' ends up in
-    translation_space_node = transform_octree_.createLeaf (transformed_point[0], transformed_point[1], transformed_point[2], &leaf_was_created);
+    translation_space_node = transform_octree_.createLeaf (transformed_point[0], transformed_point[1], transformed_point[2]);
 
     if ( !translation_space_node )
     {
@@ -295,7 +292,7 @@ pcl::recognition::ObjRecRANSAC::groupHypotheses(list<Hypothesis*>& hypotheses, i
       continue;
     }
 
-    if ( leaf_was_created )
+    if ( !translation_space_node->getData () )
     {
       translation_space_node->setData (new ORROctree::Node::Data ());
       translation_space_node->getData ()->setUserData (new RotationSpace ());
@@ -303,37 +300,34 @@ pcl::recognition::ObjRecRANSAC::groupHypotheses(list<Hypothesis*>& hypotheses, i
     }
 
     // Get the octree which discretizes the rotation space
-    ORROctree &rot_octree = static_cast<RotationSpace*> (translation_space_node->getData ()->getUserData ())->octree_;
+    ORROctree &rot_octree = (static_cast<RotationSpace*> (translation_space_node->getData ()->getUserData ()))->octree_;
 
     // Compute the angles between each row in the rotation matrix and the canonical x, y and z axes
     this->computeAxisAnglesOfRotation (rigid_transform, angle_x_axis, angle_y_axis, angle_z_axis);
 
-    // Use the angkes as a key to the octree to see whether there are some rotations there or not
-    rot_space_node = rot_octree.createLeaf (angle_x_axis, angle_y_axis, angle_z_axis, &leaf_was_created);
+    // Use the angles as a key to the octree to see whether there are rotations there or not
+    rot_space_node = rot_octree.createLeaf (angle_x_axis, angle_y_axis, angle_z_axis);
 
     if ( !rot_space_node )
     {
-      printf ("WARNING in 'ObjRecRANSAC::%s()': the transformed center of mass is out of bounds! "
-              "Enlarge the scene octree bounds by calling 'setSceneBoundsEnlargementFactor()' with a larger value. "
-              "The current one is %f.\n", __func__, scene_bounds_enlargement_factor_);
+      const float *b = rot_octree.getBounds ();
+      printf ("WARNING in 'ObjRecRANSAC::%s()': the angles (%f, %f, %f) are out of the octree bounds ([%f, %f], [%f, %f], [%f, %f]).\n",
+              __func__, angle_x_axis, angle_y_axis, angle_z_axis, b[0], b[1], b[2], b[3], b[4], b[5]);
       continue;
     }
 
     // If that part of the rotational space is free -> store the current hypothesis as a representative. If no new leaf
     // was created then just check the next hypothesis, since that part of the transform space already has a representative
     // hypothesis
-    if ( leaf_was_created )
+    if ( !rot_space_node->getData () )
     {
+      rot_space_node->setData (new ORROctree::Node::Data ()); // That's just a dummy data object
       out.push_back (*hypo_it);
       ++num_after_grouping;
-      hypo_it = hypotheses.erase (hypo_it);
     }
     else
-    {
       // We do not need that hypothesis -> delete it
       delete *hypo_it;
-      ++hypo_it;
-    }
 
 #ifdef OBJ_REC_RANSAC_VERBOSE
     // Update progress

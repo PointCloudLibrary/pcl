@@ -147,12 +147,11 @@ namespace pcl
     		{
               // We want to describe each rotation by treating the rows of the rotation matrix as vectors
               // and saving the angle between the first row and the x-axis, the second row and y-axis and
-              // the third row and z-axis. This space of three angles is discretized in 4° steps and saved
-              // in an octree.
+              // the third row and z-axis. This space of three angles is discretized and saved in an octree.
               float min = -(static_cast<float> (M_PI) + 0.000000001f), max = static_cast<float> (M_PI) + 0.000000001f;
               float b[6] = {min, max, min, max, min, max};
 
-              octree_.build (b, 4.0f*AUX_DEG_TO_RADIANS);
+              octree_.build (b, 10.0f*AUX_DEG_TO_RADIANS);
     		}
 
           public:
@@ -358,6 +357,9 @@ namespace pcl
         int
         generateHypotheses(const std::list<OrientedPointPair>& pairs, std::list<Hypothesis*>& out);
 
+        /** \brief Groups repeating hypotheses in 'hypotheses'. Saves a representative for each group of repeating hypotheses
+          * in 'out'. Returns the number of hypotheses after grouping. WARNING: the method copies the selected representatives
+          * from 'hypotheses' to 'out' and frees the memory occupied by the other hypotheses. */
         int
         groupHypotheses(std::list<Hypothesis*>& hypotheses, int num_hypotheses, std::list<Hypothesis*>& out);
 
