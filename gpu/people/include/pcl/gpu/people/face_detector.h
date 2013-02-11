@@ -73,13 +73,6 @@ namespace pcl
                        std::vector<HaarClassifierNode128>  &haarClassifierNodes,
                        std::vector<HaarFeature64>          &haarFeatures);
 
-          NCVStatus
-          loadFromXML(const std::string &filename,
-                      HaarClassifierCascadeDescriptor &haar,
-                      std::vector<HaarStage64> &haarStages,
-                      std::vector<HaarClassifierNode128> &haarClassifierNodes,
-                      std::vector<HaarFeature64> &haarFeatures);
-
           static NCVStatus
           loadFromNVBIN(const std::string &filename,
                         HaarClassifierCascadeDescriptor &haar,

@@ -84,212 +84,170 @@ pcl::gpu::people::FaceDetector::loadFromXML2(const std::string                  
                                              std::vector<HaarClassifierNode128>  &haarClassifierNodes,
                                              std::vector<HaarFeature64>          &haarFeatures)
 {
+  NCVStatus ncvStat;
   // Read in the property tree
   ptree pt;
-  read_xml(filename,pt);
 
-  // Check file version
-  BOOST_FOREACH(const ptree::value_type &v, pt)
+  haar.NumStages = 0;
+  haar.NumClassifierRootNodes = 0;
+  haar.NumClassifierTotalNodes = 0;
+  haar.NumFeatures = 0;
+  haar.ClassifierSize.width = 0;
+  haar.ClassifierSize.height = 0;
+  haar.bNeedsTiltedII = false;
+  haar.bHasStumpsOnly = false;
+
+  try   // Fetch error loading the file
   {
-      //std::cout << v.first << " : " << v.second.data() << "\n";
-      PCL_ASSERT_ERROR_PRINT_RETURN(!strcmp(v.first.c_str(), "opencv_storage"), "NCV_HAAR_XML_LOADING_EXCEPTION",NCV_HAAR_XML_LOADING_EXCEPTION);
-
-      ptree pt2 = v.second;
-      BOOST_FOREACH(const ptree::value_type &w, pt2)
-      {
-        //std::cout << w.first << " : " << w.second.data() << "\n";
-        PCL_ASSERT_ERROR_PRINT_RETURN(!strcmp(w.second.get("<xmlattr>.type_id","").c_str(), "opencv-haar-classifier"), "NCV_HAAR_XML_LOADING_EXCEPTION",NCV_HAAR_XML_LOADING_EXCEPTION);
-
-        std::string size  = pt2.get<std::string>("size");
-        BOOST_FOREACH(const ptree::value_type &stage, pt2.get_child("stages._"))
-        {
-
-        }
-      }
+    read_xml(filename,pt);
   }
-}
+  catch(boost::exception const&  exb)
+  {
+    PCL_DEBUG("[pcl::gpu::people::FaceDetector::loadFromXML2] : (D) : Unable to read filename with boost exception\n");
+    return NCV_HAAR_XML_LOADING_EXCEPTION;
+  }
+  catch (std::exception const&  ex)
+  {
+    PCL_DEBUG("[pcl::gpu::people::FaceDetector::loadFromXML2] : (D) : Unable to read filename with exception %s\n", ex.what());
+    return NCV_HAAR_XML_LOADING_EXCEPTION;
+  }
+  catch (...)
+  {
+    PCL_DEBUG("[pcl::gpu::people::FaceDetector::loadFromXML2] : (D) : Unable to read filename\n");
+    return NCV_HAAR_XML_LOADING_EXCEPTION;
+  }
 
-NCVStatus
-pcl::gpu::people::FaceDetector::loadFromXML(const std::string                   &filename,
-                                            HaarClassifierCascadeDescriptor     &haar,
-                                            std::vector<HaarStage64>            &haarStages,
-                                            std::vector<HaarClassifierNode128>  &haarClassifierNodes,
-                                            std::vector<HaarFeature64>          &haarFeatures)
-{
-    NCVStatus ncvStat;
+  haar.bHasStumpsOnly = true;
+  haar.bNeedsTiltedII = false;
+  Ncv32u curMaxTreeDepth;
 
-    haar.NumStages = 0;
-    haar.NumClassifierRootNodes = 0;
-    haar.NumClassifierTotalNodes = 0;
-    haar.NumFeatures = 0;
-    haar.ClassifierSize.width = 0;
-    haar.ClassifierSize.height = 0;
-    haar.bNeedsTiltedII = false;
-    haar.bHasStumpsOnly = false;
+  std::vector<HaarClassifierNode128> h_TmpClassifierNotRootNodes;
+  haarStages.resize(0);
+  haarClassifierNodes.resize(0);
+  haarFeatures.resize(0);
 
-    FILE *fp;
-    fp = fopen(filename.c_str(), "r");
-//    fopen_s(&fp, filename.c_str(), "r");
-    PCL_ASSERT_ERROR_PRINT_CHECK(fp != NULL, "NCV_FILE_ERROR");
-
-    //get file size
-    fseek(fp, 0, SEEK_END);
-    Ncv32u xmlSize = ftell(fp);
-    fseek(fp, 0, SEEK_SET);
-
-    // TODO fix this part
-    /*
-    //load file to vector
-    std::vector<char> xmlFileCont;
-    xmlFileCont.resize(xmlSize+1);
-    memset(&xmlFileCont[0], 0, xmlSize+1);
-    fread_s(&xmlFileCont[0], xmlSize, 1, xmlSize, fp);
-    fclose(fp);
-
-    haar.bHasStumpsOnly = true;
-    haar.bNeedsTiltedII = false;
-    Ncv32u curMaxTreeDepth;
-
-    std::vector<HaarClassifierNode128> h_TmpClassifierNotRootNodes;
-    haarStages.resize(0);
-    haarClassifierNodes.resize(0);
-    haarFeatures.resize(0);
-
-    //XML loading and OpenCV XML classifier syntax verification
-    try
+  try   // Fetch all parsing errors
+  {
+    int level1 = 0;     // For debug output only
+    /// LEVEL1 (opencv_storage)
+    BOOST_FOREACH(const ptree::value_type &v, pt)
     {
-        rapidxml::xml_document<> doc;
-        doc.parse<0>(&xmlFileCont[0]);
+      if(!strcmp(v.first.c_str(), "opencv_storage"))      // Else NCV_HAAR_XML_LOADING_EXCEPTION
+      {
+        PCL_DEBUG("[pcl::gpu::people::FaceDetector::loadFromXML2] : (D) : level 1, node %d, first : %s\n", level1, v.first.c_str());
 
-        //opencv_storage
-        rapidxml::xml_node<> *parserGlobal = doc.first_node();
-        ncvAssertReturn(!strcmp(parserGlobal->name(), "opencv_storage"), NCV_HAAR_XML_LOADING_EXCEPTION);
+        int level2 = 0;
+        ptree pt2 = v.second;
 
-        //classifier type
-        parserGlobal = parserGlobal->first_node();
-        ncvAssertReturn(parserGlobal, NCV_HAAR_XML_LOADING_EXCEPTION);
-        rapidxml::xml_attribute<> *attr = parserGlobal->first_attribute("type_id");
-        ncvAssertReturn(!strcmp(attr->value(), "opencv-haar-classifier"), NCV_HAAR_XML_LOADING_EXCEPTION);
-
-        //classifier size
-        parserGlobal = parserGlobal->first_node("size");
-        ncvAssertReturn(parserGlobal, NCV_HAAR_XML_LOADING_EXCEPTION);
-        sscanf_s(parserGlobal->value(), "%d %d", &(haar.ClassifierSize.width), &(haar.ClassifierSize.height));
-
-        //parse stages
-        parserGlobal = parserGlobal->next_sibling("stages");
-        ncvAssertReturn(parserGlobal, NCV_HAAR_XML_LOADING_EXCEPTION);
-        parserGlobal = parserGlobal->first_node("_");
-        ncvAssertReturn(parserGlobal, NCV_HAAR_XML_LOADING_EXCEPTION);
-
-        while (parserGlobal)
+        /// LEVEL2 (haarcascade)
+        BOOST_FOREACH(const ptree::value_type &w, pt2)
         {
-            HaarStage64 curStage;
-            curStage.setStartClassifierRootNodeOffset(haarClassifierNodes.size());
-            Ncv32u tmpNumClassifierRootNodes = 0;
+          if(!strcmp(w.second.get("<xmlattr>.type_id","").c_str(), "opencv-haar-classifier"))    // Else NCV_HAAR_XML_LOADING_EXCEPTION
+          {
+            PCL_DEBUG("[pcl::gpu::people::FaceDetector::loadFromXML2] : (D) : level 2, node %d, first : %s\n", level2, w.first.c_str());
 
-            rapidxml::xml_node<> *parserStageThreshold = parserGlobal->first_node("stage_threshold");
-            ncvAssertReturn(parserStageThreshold, NCV_HAAR_XML_LOADING_EXCEPTION);
-            Ncv32f tmpStageThreshold;
-            sscanf_s(parserStageThreshold->value(), "%f", &tmpStageThreshold);
-            curStage.setStageThreshold(tmpStageThreshold);
+            std::string size  = w.second.get<std::string>("size");
+            std::cout << "loadFromXML2: level 2 : size string: " << size << std::endl;
+            std::istringstream l( size );
+            int size1 = 0, size2 = 0;
+            l >> std::skipws >> size1 >> size2;
+            if ( !l || size1 <= 0 || size2 <= 0 )
+              PCL_WARN("[pcl::gpu::people::FaceDetector::loadFromXML2] : (D) : level 2 : size format error\n"); //  format error: line doesn't start with an int.
+            else
+              PCL_DEBUG("[pcl::gpu::people::FaceDetector::loadFromXML2] : (D) : level2 : size int1 %d, int2 %d\n", size1, size2);
+            haar.ClassifierSize.width = size1; haar.ClassifierSize.height = size2;
 
-            //parse trees
-            rapidxml::xml_node<> *parserTree;
-            parserTree = parserGlobal->first_node("trees");
-            ncvAssertReturn(parserTree, NCV_HAAR_XML_LOADING_EXCEPTION);
-            parserTree = parserTree->first_node("_");
-            ncvAssertReturn(parserTree, NCV_HAAR_XML_LOADING_EXCEPTION);
-
-            while (parserTree)
+            int level3 = 0;
+            /// LEVEL3 (Stages)
+            BOOST_FOREACH(const ptree::value_type &stage, w.second.get_child("stages"))
             {
-                rapidxml::xml_node<> *parserNode;
-                parserNode = parserTree->first_node("_");
-                ncvAssertReturn(parserNode, NCV_HAAR_XML_LOADING_EXCEPTION);
+              PCL_DEBUG("[pcl::gpu::people::FaceDetector::loadFromXML2] : (D) : level 3, node %d, first : %s\n", level3, stage.first.c_str());
+              level3++;
+
+              HaarStage64 curStage;
+              curStage.setStartClassifierRootNodeOffset(haarClassifierNodes.size());
+              Ncv32u tmpNumClassifierRootNodes = 0;
+
+              float stage_threshold = stage.second.get<float>("stage_threshold");
+              int parent = stage.second.get<int>("parent");
+              int next = stage.second.get<int>("next");
+
+              curStage.setStageThreshold(stage_threshold);
+
+              PCL_DEBUG("[pcl::gpu::people::FaceDetector::loadFromXML2] : (D) : level 3 stage_threshold %f, parent %d, next %d", stage_threshold, parent, next);
+
+              int level4 = 0;
+              /// LEVEL4 (Trees)
+              BOOST_FOREACH(const ptree::value_type &tree, stage.second.get_child("trees"))
+              {
+                PCL_DEBUG("[pcl::gpu::people::FaceDetector::loadFromXML2] : (D) : level 4, node %d, first : %s\n", level4, tree.first.c_str());
+                level4++;
                 Ncv32u nodeId = 0;
 
-                while (parserNode)
+                int level5 = 0;
+                ptree root = tree.second;
+
+                /// LEVEL5 (Root_node)
+                BOOST_FOREACH(const ptree::value_type &root_node, root)
                 {
-                    HaarClassifierNode128 curNode;
+                  PCL_DEBUG("[pcl::gpu::people::FaceDetector::loadFromXML2] : (D) : level 5, node %d, first : %s\n", level5, root_node.first.c_str());
+                  level5++;
+                  HaarClassifierNode128 curNode;
 
-                    rapidxml::xml_node<> *parserNodeThreshold = parserNode->first_node("threshold");
-                    ncvAssertReturn(parserNodeThreshold, NCV_HAAR_XML_LOADING_EXCEPTION);
-                    Ncv32f tmpThreshold;
-                    sscanf_s(parserNodeThreshold->value(), "%f", &tmpThreshold);
-                    curNode.setThreshold(tmpThreshold);
+                  if(!strcmp(root_node.first.c_str(), "_"))
+                  {
+                    float node_threshold = root_node.second.get<float>("threshold");
+                    float left_val = root_node.second.get<float>("left_val");         // TODO Test if left node is available! see Nvidia code for solution
+                    float right_val = root_node.second.get<float>("right_val");
+                    bool tilted = root_node.second.get<bool>("feature.tilted");
 
-                    rapidxml::xml_node<> *parserNodeLeft = parserNode->first_node("left_val");
+                    curNode.setThreshold(node_threshold);
+
+                    PCL_DEBUG("[pcl::gpu::people::FaceDetector::loadFromXML2] : (D) : level 5 node_threshold %f, left_val %f, right_val %f, tilted %d\n", node_threshold, left_val, right_val, tilted);
+
                     HaarClassifierNodeDescriptor32 nodeLeft;
-                    if (parserNodeLeft)
-                    {
-                        Ncv32f leftVal;
-                        sscanf_s(parserNodeLeft->value(), "%f", &leftVal);
-                        ncvStat = nodeLeft.create(leftVal);
-                        ncvAssertReturn(ncvStat == NCV_SUCCESS, ncvStat);
-                    }
-                    else
-                    {
-                        parserNodeLeft = parserNode->first_node("left_node");
-                        ncvAssertReturn(parserNodeLeft, NCV_HAAR_XML_LOADING_EXCEPTION);
-                        Ncv32u leftNodeOffset;
-                        sscanf_s(parserNodeLeft->value(), "%d", &leftNodeOffset);
-                        nodeLeft.create(h_TmpClassifierNotRootNodes.size() + leftNodeOffset - 1);
-                        haar.bHasStumpsOnly = false;
-                    }
+                    ncvStat = nodeLeft.create(left_val);                              // TODO check ncvStat return value line below and return
                     curNode.setLeftNodeDesc(nodeLeft);
 
-                    rapidxml::xml_node<> *parserNodeRight = parserNode->first_node("right_val");
                     HaarClassifierNodeDescriptor32 nodeRight;
-                    if (parserNodeRight)
-                    {
-                        Ncv32f rightVal;
-                        sscanf_s(parserNodeRight->value(), "%f", &rightVal);
-                        ncvStat = nodeRight.create(rightVal);
-                        ncvAssertReturn(ncvStat == NCV_SUCCESS, ncvStat);
-                    }
-                    else
-                    {
-                        parserNodeRight = parserNode->first_node("right_node");
-                        ncvAssertReturn(parserNodeRight, NCV_HAAR_XML_LOADING_EXCEPTION);
-                        Ncv32u rightNodeOffset;
-                        sscanf_s(parserNodeRight->value(), "%d", &rightNodeOffset);
-                        nodeRight.create(h_TmpClassifierNotRootNodes.size() + rightNodeOffset - 1);
-                        haar.bHasStumpsOnly = false;
-                    }
+                    ncvStat = nodeRight.create(right_val);
                     curNode.setRightNodeDesc(nodeRight);
 
-                    rapidxml::xml_node<> *parserNodeFeatures = parserNode->first_node("feature");
-                    ncvAssertReturn(parserNodeFeatures, NCV_HAAR_XML_LOADING_EXCEPTION);
-
-                    rapidxml::xml_node<> *parserNodeFeaturesTilted = parserNodeFeatures->first_node("tilted");
-                    ncvAssertReturn(parserNodeFeaturesTilted, NCV_HAAR_XML_LOADING_EXCEPTION);
-                    Ncv32u tiltedVal;
-                    sscanf_s(parserNodeFeaturesTilted->value(), "%d", &tiltedVal);
-                    haar.bNeedsTiltedII = (tiltedVal != 0);
-
-                    rapidxml::xml_node<> *parserNodeFeaturesRects = parserNodeFeatures->first_node("rects");
-                    ncvAssertReturn(parserNodeFeaturesRects, NCV_HAAR_XML_LOADING_EXCEPTION);
-                    parserNodeFeaturesRects = parserNodeFeaturesRects->first_node("_");
-                    ncvAssertReturn(parserNodeFeaturesRects, NCV_HAAR_XML_LOADING_EXCEPTION);
+                    haar.bNeedsTiltedII = (tilted != 0);
                     Ncv32u featureId = 0;
 
-                    while (parserNodeFeaturesRects)
+                    /// LEVEL6 (Rects)
+                    BOOST_FOREACH(const ptree::value_type &rect, root_node.second.get_child("feature.rects"))
                     {
-                        Ncv32u rectX, rectY, rectWidth, rectHeight;
-                        Ncv32f rectWeight;
-                        sscanf_s(parserNodeFeaturesRects->value(), "%d %d %d %d %f", &rectX, &rectY, &rectWidth, &rectHeight, &rectWeight);
+                      PCL_DEBUG("[pcl::gpu::people::FaceDetector::loadFromXML2] : (D) : level 6, first : %s\n", rect.first.c_str());
+
+                      std::string r = rect.second.data();
+
+                      std::istringstream re( r );
+                      int rectX = 0, rectY = 0, rectWidth = 0, rectHeight =0;
+                      float rectWeight = 0;
+                      re >> std::skipws >> rectX >> rectY >> rectWidth >> rectHeight >> rectWeight;
+
+                      if ( !re )
+                      {
+                        //  format error: line doesn't start with an int.
+                        PCL_WARN("[pcl::gpu::people::FaceDetector::loadFromXML2] : (W) : level 6 : size format error\n");
+                      }
+                      else
+                      {
+                        PCL_DEBUG("[pcl::gpu::people::FaceDetector::loadFromXML2] : (D) : level 6 : rectX %d, rectY %d, rectW %d, rectH %d, rectWeight %f\n", rectX, rectY, rectWidth, rectHeight, rectWeight);
                         HaarFeature64 curFeature;
                         ncvStat = curFeature.setRect(rectX, rectY, rectWidth, rectHeight, haar.ClassifierSize.width, haar.ClassifierSize.height);
                         curFeature.setWeight(rectWeight);
-                        ncvAssertReturn(NCV_SUCCESS == ncvStat, ncvStat);
+                        //ncvAssertReturn(NCV_SUCCESS == ncvStat, ncvStat); TODO
                         haarFeatures.push_back(curFeature);
-
-                        parserNodeFeaturesRects = parserNodeFeaturesRects->next_sibling("_");
                         featureId++;
+                      }
                     }
 
                     HaarFeatureDescriptor32 tmpFeatureDesc;
-                    ncvStat = tmpFeatureDesc.create(haar.bNeedsTiltedII, featureId, haarFeatures.size() - featureId);
+                    // FIXME
+                    //ncvStat = tmpFeatureDesc.create(haar.bNeedsTiltedII, featureId, haarFeatures.size() - featureId);
                     ncvAssertReturn(NCV_SUCCESS == ncvStat, ncvStat);
                     curNode.setFeatureDesc(tmpFeatureDesc);
 
@@ -305,73 +263,93 @@ pcl::gpu::people::FaceDetector::loadFromXML(const std::string                   
                         h_TmpClassifierNotRootNodes.push_back(curNode);
                         curMaxTreeDepth++;
                     }
-
-                    parserNode = parserNode->next_sibling("_");
                     nodeId++;
+                  }
+                  else
+                    PCL_WARN("[pcl::gpu::people::FaceDetector::loadFromXML2] : (W) : Found fifth level node that is atypical : %s\n", root_node.first.c_str());
                 }
-
-                parserTree = parserTree->next_sibling("_");
                 tmpNumClassifierRootNodes++;
+              }
+              curStage.setNumClassifierRootNodes(tmpNumClassifierRootNodes);
+              haarStages.push_back(curStage);
             }
-
-            curStage.setNumClassifierRootNodes(tmpNumClassifierRootNodes);
-            haarStages.push_back(curStage);
-
-            parserGlobal = parserGlobal->next_sibling("_");
+          }
+          else
+            PCL_WARN("loadFromXML2: Found second level node that is atypical : %s\n", w.first.c_str());
         }
+      }
+      else
+        PCL_WARN("loadFromXML2: Found first level node that is atypical : %s\n", v.first.c_str());
+      level1++;
     }
-    catch (...)
-    {
-        return NCV_HAAR_XML_LOADING_EXCEPTION;
-    }
+  }
+  catch(boost::exception const&  exb)
+  {
+    PCL_DEBUG("[pcl::gpu::people::FaceDetector::loadFromXML2] : (D) : Unable to process content with boost exception\n");
+    return NCV_HAAR_XML_LOADING_EXCEPTION;
+  }
+  catch (std::exception const&  ex)
+  {
+    PCL_DEBUG("[pcl::gpu::people::FaceDetector::loadFromXML2] : (D) : Unable to process content with std exception %s\n", ex.what());
+    return NCV_HAAR_XML_LOADING_EXCEPTION;
+  }
+  catch (...)
+  {
+    PCL_DEBUG("[pcl::gpu::people::FaceDetector::loadFromXML2] : (D) : Unable to process content\n");
+    return NCV_HAAR_XML_LOADING_EXCEPTION;
+  }
 
-    //fill in cascade stats
-    haar.NumStages = haarStages.size();
-    haar.NumClassifierRootNodes = haarClassifierNodes.size();
-    haar.NumClassifierTotalNodes = haar.NumClassifierRootNodes + h_TmpClassifierNotRootNodes.size();
-    haar.NumFeatures = haarFeatures.size();
+  //fill in cascade stats
+  haar.NumStages = haarStages.size();
+  haar.NumClassifierRootNodes = haarClassifierNodes.size();
+  haar.NumClassifierTotalNodes = haar.NumClassifierRootNodes + h_TmpClassifierNotRootNodes.size();
+  haar.NumFeatures = haarFeatures.size();
 
-    //merge root and leaf nodes in one classifiers array
-    Ncv32u offsetRoot = haarClassifierNodes.size();
-    for (Ncv32u i=0; i<haarClassifierNodes.size(); i++)
-    {
-        HaarClassifierNodeDescriptor32 nodeLeft = haarClassifierNodes[i].getLeftNodeDesc();
-        if (!nodeLeft.isLeaf())
-        {
-            Ncv32u newOffset = nodeLeft.getNextNodeOffset() + offsetRoot;
-            nodeLeft.create(newOffset);
-        }
-        haarClassifierNodes[i].setLeftNodeDesc(nodeLeft);
+  /* FIXME
 
-        HaarClassifierNodeDescriptor32 nodeRight = haarClassifierNodes[i].getRightNodeDesc();
-        if (!nodeRight.isLeaf())
-        {
-            Ncv32u newOffset = nodeRight.getNextNodeOffset() + offsetRoot;
-            nodeRight.create(newOffset);
-        }
-        haarClassifierNodes[i].setRightNodeDesc(nodeRight);
-    }
-    for (Ncv32u i=0; i<h_TmpClassifierNotRootNodes.size(); i++)
-    {
-        HaarClassifierNodeDescriptor32 nodeLeft = h_TmpClassifierNotRootNodes[i].getLeftNodeDesc();
-        if (!nodeLeft.isLeaf())
-        {
-            Ncv32u newOffset = nodeLeft.getNextNodeOffset() + offsetRoot;
-            nodeLeft.create(newOffset);
-        }
-        h_TmpClassifierNotRootNodes[i].setLeftNodeDesc(nodeLeft);
+  //merge root and leaf nodes in one classifiers array
+  Ncv32u offsetRoot = haarClassifierNodes.size();
+  for (Ncv32u i=0; i<haarClassifierNodes.size(); i++)
+  {
+      HaarClassifierNodeDescriptor32 nodeLeft = haarClassifierNodes[i].getLeftNodeDesc();
+      if (!nodeLeft.isLeaf())
+      {
+          Ncv32u newOffset = nodeLeft.getNextNodeOffset() + offsetRoot;
+          nodeLeft.create(newOffset);
+      }
+      haarClassifierNodes[i].setLeftNodeDesc(nodeLeft);
 
-        HaarClassifierNodeDescriptor32 nodeRight = h_TmpClassifierNotRootNodes[i].getRightNodeDesc();
-        if (!nodeRight.isLeaf())
-        {
-            Ncv32u newOffset = nodeRight.getNextNodeOffset() + offsetRoot;
-            nodeRight.create(newOffset);
-        }
-        h_TmpClassifierNotRootNodes[i].setRightNodeDesc(nodeRight);
+      HaarClassifierNodeDescriptor32 nodeRight = haarClassifierNodes[i].getRightNodeDesc();
+      if (!nodeRight.isLeaf())
+      {
+          Ncv32u newOffset = nodeRight.getNextNodeOffset() + offsetRoot;
+          nodeRight.create(newOffset);
+      }
+      haarClassifierNodes[i].setRightNodeDesc(nodeRight);
+  }
+  for (Ncv32u i=0; i<h_TmpClassifierNotRootNodes.size(); i++)
+  {
+      HaarClassifierNodeDescriptor32 nodeLeft = h_TmpClassifierNotRootNodes[i].getLeftNodeDesc();
+      if (!nodeLeft.isLeaf())
+      {
+          Ncv32u newOffset = nodeLeft.getNextNodeOffset() + offsetRoot;
+          nodeLeft.create(newOffset);
+      }
+      h_TmpClassifierNotRootNodes[i].setLeftNodeDesc(nodeLeft);
 
-        haarClassifierNodes.push_back(h_TmpClassifierNotRootNodes[i]);
-    }
+      HaarClassifierNodeDescriptor32 nodeRight = h_TmpClassifierNotRootNodes[i].getRightNodeDesc();
+      if (!nodeRight.isLeaf())
+      {
+          Ncv32u newOffset = nodeRight.getNextNodeOffset() + offsetRoot;
+          nodeRight.create(newOffset);
+      }
+      h_TmpClassifierNotRootNodes[i].setRightNodeDesc(nodeRight);
+
+      haarClassifierNodes.push_back(h_TmpClassifierNotRootNodes[i]);
+  }
+
   */
+
   return NCV_SUCCESS;
 }
 
@@ -472,7 +450,7 @@ pcl::gpu::people::FaceDetector::ncvHaarLoadFromFile_host(const std::string &file
     }
     else if (fext == "xml")
     {
-        ncvStat = loadFromXML(filename, haar, haarStages, haarNodes, haarFeatures);
+        ncvStat = loadFromXML2(filename, haar, haarStages, haarNodes, haarFeatures);
         PCL_ASSERT_NCVSTAT(ncvStat);
     }
     else
@@ -533,7 +511,7 @@ pcl::gpu::people::FaceDetector::ncvHaarGetClassifierSize(const std::string &file
         std::vector<HaarClassifierNode128> haarNodes;
         std::vector<HaarFeature64> haarFeatures;
 
-        ncvStat = loadFromXML(filename, haar, haarStages, haarNodes, haarFeatures);
+        ncvStat = loadFromXML2(filename, haar, haarStages, haarNodes, haarFeatures);
         PCL_ASSERT_NCVSTAT(ncvStat);    // TODO convert this to PCL methodS
 
         numStages = haar.NumStages;
