@@ -250,7 +250,7 @@ pcl::gpu::kinfuLS::KinfuTracker::reset ()
   last_estimated_translation_= Vector3f (volume_size_, volume_size_, volume_size_) * 0.5f - Vector3f (0, 0, volume_size_ / 2 * 1.2f);
   
   
-  lost_=true;
+  lost_=false;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
